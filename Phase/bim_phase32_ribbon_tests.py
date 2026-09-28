@@ -1,0 +1,57 @@
+from playwright.sync_api import sync_playwright
+errs=[]
+with sync_playwright() as p:
+    b=p.chromium.launch(args=['--use-gl=swiftshader','--enable-unsafe-swiftshader'])
+    pg=b.new_page(viewport={'width':1700,'height':1000})
+    pg.on('pageerror', lambda e: errs.append(str(e)[:250]))
+    pg.goto('file:///home/claude/canvas_v10.html'); pg.wait_for_timeout(1800)
+    def js(e):
+        try: return pg.evaluate(e)
+        except Exception as ex: return "THREW "+str(ex)[:200]
+    pg.evaluate("window.__a3dEnter()"); pg.wait_for_timeout(1200)
+    def vis(): return js("Array.from(document.querySelectorAll('#acad-tabs .acad-tab')).filter(e=>e.style.display!=='none').map(e=>e.textContent).join(' | ')")
+    print("3D workspace tabs:", vis())
+    print("active tab:", js("(document.querySelector('#acad-tabs .acad-tab.active')||{}).textContent"))
+    print("Architecture panels:", js("Array.from(document.querySelectorAll('#acad-panels .acad-panel-title')).map(e=>e.textContent.trim()).join(' | ')"))
+    print("panels fit on screen:", js("""(()=>{var h=document.querySelector('#acad-panels');
+      return h.scrollWidth<=h.clientWidth+4 ? 'YES ('+h.scrollWidth+'<='+h.clientWidth+')' : 'NO overflow '+h.scrollWidth+'>'+h.clientWidth;})()"""))
+    print()
+    print("dropdown carets present:", js("document.querySelectorAll('[data-a3drmenu]').length"))
+    js("(()=>{var c=document.querySelector('[data-a3drmenu=\"bim:wall\"]');if(c)c.click();})()")
+    pg.wait_for_timeout(400)
+    print("Wall dropdown open:", js("!!document.querySelector('.acad-drop.open')"))
+    print("  items:", js("Array.from(document.querySelectorAll('.acad-drop.open .acad-dropitem')).map(e=>e.textContent.trim()).join(' | ')"))
+    js("document.body.click()"); pg.wait_for_timeout(300)
+    print("closes on outside click:", js("!document.querySelector('.acad-drop.open')"))
+    print()
+    for t in ["struct","a3dannotate","a3dview","a3dmodify","a3dmanage"]:
+        js(f"(()=>{{var b=document.querySelector('[data-acad-tab=\"{t}\"]');if(b)b.click();}})()")
+        pg.wait_for_timeout(350)
+        n=js("document.querySelectorAll('#acad-panels .acad-panel').length")
+        titles=js("Array.from(document.querySelectorAll('#acad-panels .acad-panel-title')).map(e=>e.textContent.trim()).join(', ')")
+        fit=js("(()=>{var h=document.querySelector('#acad-panels');return h.scrollWidth<=h.clientWidth+4;})()")
+        print(f"  {t}: {n} panels [{titles}] fits={fit}")
+    print()
+    js("(()=>{var b=document.querySelector('[data-acad-tab=\"struct\"]');if(b)b.click();})()")
+    pg.wait_for_timeout(350)
+    print("disabled (unimplemented) buttons on Structure:", js("document.querySelectorAll('.a3dr-dis').length"))
+    js("(()=>{var b=document.querySelector('[data-a3dr=\"bim:beam\"]');if(b)b.click();})()")
+    pg.wait_for_timeout(400)
+    print("clicking a stub gives honest feedback:", js("(document.querySelector('#a3d-toast')||{}).textContent||'none'"))
+    print()
+    # real command still works from the new tab
+    js("(()=>{var b=document.querySelector('[data-acad-tab=\"arch\"]');if(b)b.click();})()")
+    pg.wait_for_timeout(350)
+    box=pg.evaluate("(()=>{var c=document.querySelector('#a3d-canvas');var r=c.getBoundingClientRect();return{x:r.x,y:r.y,w:r.width,h:r.height};})()")
+    cx,cy=box['x']+box['w']/2, box['y']+box['h']/2
+    js("(()=>{var b=document.querySelector('[data-a3dr=\"bim:wall\"]');if(b)b.click();})()")
+    pg.wait_for_timeout(300)
+    for (x,y) in [(cx-180,cy-100),(cx+180,cy-100),(cx+180,cy+100),(cx-180,cy+100)]:
+        pg.mouse.click(x,y); pg.wait_for_timeout(130)
+    pg.keyboard.press('c'); pg.wait_for_timeout(350)
+    js("(()=>{var d=document.querySelector('.a3d-dlg');if(d)d.querySelector('[data-a3dlg=ok]').click();})()")
+    pg.wait_for_timeout(800)
+    print("Wall from Architecture tab works:", js("document.querySelectorAll('[data-a3dblock]').length>0"))
+    print("errors:", errs if errs else "none")
+    pg.screenshot(path='/home/claude/ribbon_new.png')
+    b.close()

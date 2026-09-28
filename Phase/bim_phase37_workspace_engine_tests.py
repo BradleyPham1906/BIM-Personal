@@ -1,0 +1,63 @@
+from playwright.sync_api import sync_playwright
+errs=[]
+with sync_playwright() as p:
+    b=p.chromium.launch(args=['--use-gl=swiftshader','--enable-unsafe-swiftshader'])
+    pg=b.new_page(viewport={'width':1500,'height':950})
+    pg.on('pageerror', lambda e: errs.append(str(e)[:250]))
+    pg.goto('file:///home/claude/canvas_v10.html'); pg.wait_for_timeout(1800)
+    def js(e):
+        try: return pg.evaluate(e)
+        except Exception as ex: return "THREW "+str(ex)[:200]
+    def ws(k):
+        js("document.querySelector('.acad-ws').click()"); pg.wait_for_timeout(250)
+        js(f"(()=>{{var i=document.querySelector('[data-wsm=\"{k}\"]');if(i)i.click();}})()"); pg.wait_for_timeout(1500)
+    def tabs(): return js("Array.from(document.querySelectorAll('#acad-tabs .acad-tab')).filter(e=>e.style.display!=='none').map(e=>e.textContent).join(' | ')")
+
+    print("=== ISSUE 1: secondary '3D — Part' toolbar gone? ===")
+    ws('3d')
+    print("  toolbar buttons remaining:", js("Array.from(document.querySelectorAll('.a3d-tb .a3d-btn')).map(e=>e.textContent.trim()).join(' | ') || '(none)'"))
+    print("  '3D — Part' title present:", js("!!document.querySelector('.a3d-title')"))
+    print("  toolbar height:", js("Math.round(document.querySelector('.a3d-tb').getBoundingClientRect().height)"))
+    print("  Save Project reachable in Manage:", js("""(()=>{var b=Array.from(document.querySelectorAll('#acad-tabs .acad-tab')).filter(e=>e.style.display!=='none'&&e.textContent.trim()==='Manage')[0];
+      if(b)b.click();return !!document.querySelector('[data-a3dr="m:saveproj"]');})()"""))
+    print()
+    print("=== ISSUE 3+4: D&A is a plan view of the MODEL, not the whiteboard ===")
+    ws('3d')
+    # build a wall in 3D first
+    js("(()=>{var b=Array.from(document.querySelectorAll('#acad-tabs .acad-tab')).filter(e=>e.style.display!=='none'&&e.textContent.trim()==='Architecture')[0];if(b)b.click();})()")
+    pg.wait_for_timeout(400)
+    box=pg.evaluate("(()=>{var c=document.querySelector('#a3d-canvas');var r=c.getBoundingClientRect();return{x:r.x,y:r.y,w:r.width,h:r.height};})()")
+    cx,cy=box['x']+box['w']/2, box['y']+box['h']/2
+    js("(()=>{var b=document.querySelector('[data-a3dr=\"bim:wall\"]');if(b)b.click();})()"); pg.wait_for_timeout(300)
+    for (x,y) in [(cx-180,cy-90),(cx+180,cy-90),(cx+180,cy+90),(cx-180,cy+90)]:
+        pg.mouse.click(x,y); pg.wait_for_timeout(140)
+    pg.keyboard.press('c'); pg.wait_for_timeout(350)
+    js("(()=>{var d=document.querySelector('.a3d-dlg');if(d)d.querySelector('[data-a3dlg=ok]').click();})()")
+    pg.wait_for_timeout(900)
+    print("  model has objects:", js("document.querySelectorAll('[data-a3did]').length"))
+    ws('da')
+    print("  D&A tabs:", tabs())
+    print("  BIM engine still running (not whiteboard):", js("!!window.__a3dOn"))
+    print("  camera is FLAT/plan:", js("(()=>{var r=document.querySelector('#acad3d');return r&&r.classList.contains('flat');})()"))
+    print("  view label:", js("(document.querySelector('#a3d-view')||{}).textContent"))
+    print("  SAME model visible in D&A:", js("document.querySelectorAll('[data-a3did]').length"), "objects")
+    print("  GL rendering the model:", js("window.__a3dGlFaces()"), "faces")
+    print()
+    print("=== ISSUE 2: Drafting tab tools act on BIM, not canvas ===")
+    js("(()=>{var b=Array.from(document.querySelectorAll('#acad-tabs .acad-tab')).filter(e=>e.style.display!=='none'&&e.textContent.trim()==='Drafting')[0];if(b)b.click();})()")
+    pg.wait_for_timeout(400)
+    print("  Drafting panels:", js("Array.from(document.querySelectorAll('#acad-panels .acad-panel-title')).map(e=>e.textContent.trim()).join(' | ')"))
+    print("  commands:", js("Array.from(document.querySelectorAll('#acad-panels button[data-a3dr]')).map(e=>e.getAttribute('data-a3dr')).join(', ')"))
+    n0=js("document.querySelectorAll('[data-a3did]').length")
+    js("(()=>{var b=document.querySelector('[data-a3dr=\"bim:wall\"]');if(b)b.click();})()"); pg.wait_for_timeout(300)
+    pg.mouse.click(cx-250, cy+160); pg.wait_for_timeout(150)
+    pg.mouse.click(cx+250, cy+160); pg.wait_for_timeout(150)
+    pg.keyboard.press('Enter'); pg.wait_for_timeout(300)
+    js("(()=>{var d=document.querySelector('.a3d-dlg');if(d)d.querySelector('[data-a3dlg=ok]').click();})()")
+    pg.wait_for_timeout(900)
+    n1=js("document.querySelectorAll('[data-a3did]').length")
+    print(f"  drawing a wall FROM the Drafting tab: {n0} -> {n1} objects (BIM model updated)")
+    print()
+    print("errors:", errs if errs else "none")
+    pg.screenshot(path='/home/claude/da_planview.png')
+    b.close()
