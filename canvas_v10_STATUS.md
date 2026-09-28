@@ -10546,3 +10546,116 @@ ES5 rule excludes, went in and came out.
     sha256            43c6439d714639197131a7d8a49ddfa99bd890619339f5d03d2b86c8e559307b
     markers           __acad3dV60 ... __acad3dV125, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
                       __acad3dV121b
+
+## Phase 126 (V126) - The section-profile library: steel and concrete sections for columns and beams
+
+PIPELINE, Track B item 2: "Section-profile library -- steel sections, reinforcement, bolt patterns."
+V125 analysed every member as a solid rectangle of one material. A column or beam type may now carry
+a profile, and the member is that section: in the model, in the analysis and in Properties. The
+interface follows the owner's V125 rule: nothing new is opened. The section is chosen where a type
+already is (Properties' Type list), and browsed and dropped where materials and wall types already
+are (Assets).
+
+### What was built (patches 126a to 126e)
+
+- **a -- a profile, and everything that follows from it.** Six shapes in the member's own y-z plane
+  (y its depth direction -- up in a beam, the width direction in a column): rect (b, d), circle (D),
+  hss (B, H, t), pipe (D, t), ibeam (d, bf, tf, tw -- W and IPE) and channel (d, bf, tf, tw).
+  `bimProfileProps` computes A, Iz, Iy and J exactly for the idealised shape: the Saint-Venant series
+  for a rectangle (V125's `bimRectSection`, so an unprofiled member is unchanged), pi D^4/32 for a
+  round, Bredt's 4 Am^2 t / p for a thin closed wall, the sum of b t^3 / 3 for an open section.
+  A channel's centroid is off its back, and its outline is placed so the centroid lies on the
+  member's line. `bimProfileProblem` refuses a profile that cannot be built, by name.
+  `bimProfileLoops` gives the outline, plus the hole for a hollow section; a round is a 32-gon, whose
+  properties are the true circle's. `bimSweepMesh` sweeps the outline along a member: sides, caps
+  (ear-clipped, or a ring for a hollow section), then turned outward by its signed volume.
+- **b -- the catalogue.** No tabulated property is bundled: a section's name and nominal dimensions
+  are facts, and the properties follow from them (law 3).
+  - Beams: AISC W8x31 to W24x76, EN 10365 IPE 200 to 400, and C channels.
+  - Columns: W8 to W14, square HSS, standard pipes, and concrete rounds of 400 to 600 mm.
+  - Steel types are Steel, so the analysis takes 210 GPa. A type's width and depth are its
+    section's extent, so schedules, picking, grips and footings keep working.
+  - A project stored before V126 gains the sections once, by id. Its own types are untouched, and a
+    section it removes later is not put back (`A3D.types.__v126`).
+  - The Type list is grouped by material. Edit Type shows a profiled type's shape and locks its size.
+- **c -- the section in the model.** A member of a profiled type carries a copy of the profile as
+  `o.bim.section`, which `bimCarryBim` takes through every rebuild and copy. Its solid is the swept
+  section:
+  - A beam hangs from its level by its top, web upright.
+  - A column's section turns with the column.
+  - Every place a column or beam is rebuilt passes the section on: a type change, height, turn
+    (Properties and gizmo), copy, mirror, and V123's push.
+  - A new width or depth for a profiled member is refused, with a message to choose another type.
+- **d -- the analysis, Properties and Assets.**
+  - `bimAnalyticalModel` reads `bimMemberSection`: the type's profile, else the rectangle of the
+    member's width and depth.
+  - The Structural page in Properties opens with the section, read-only: name and shape, A, Iz, Iy,
+    J, mass per metre, and the basis ("nominal dimensions; fillets not modelled").
+  - Assets gains one folded group, Sections. A section goes on the selected members of its kind, or
+    on the member it is dropped on, through `bimAssignTypeTo` with one undo. On the wrong kind it is
+    refused, and the message names the kind it needs.
+- **e -- the hooks and the marker.**
+
+### Bugs found, and what each taught
+
+**1. Five checks could not tell right from wrong, and falsification found them:**
+- The column turned in the suite was a W10x49, 10 in by 10 in, whose extents are the same either way
+  round. A variant that never turned the section passed. The column is now a W12x65 (12.1 x 12.0 in)
+  and its extents are checked.
+- A column rebuilt as a box of its section's extent has the same bounding box as the section.
+  Variants that lost the section on a height change or a turn passed. Each is now checked by the
+  solid's volume, A x h.
+- No check changed a profiled member back to a rectangle, so a section left behind went unseen.
+  Now one does.
+- The Assets search check matched on type names, so the shape label's part in the search was
+  untested. A search for "hollow" now finds the three HSS sections.
+
+**The lesson (V125's, again): a symmetric fixture agrees with a wrong rule by accident. A square
+section is a symmetric fixture, and so is a bounding box.**
+
+**2. The falsify runner reads variant names in lower case only.** Six variants named after their
+formulas (`circle_J_is_I` and others) were never run. The first run reported "29 variants, 29 caught"
+for a script of 35. They are renamed, and all 35 are caught. **The lesson: compare the number of
+variants run with the number written.**
+
+**3. The first search check for "ipe" found 19 rows,** because "Pipe" contains it and every I shape's
+label reads "I (W, IPE)". The search was right and the check was wrong.
+
+**4. The seeding flag is stored with the next save, not at load.** A project that is opened and never
+edited is seeded again the next time it opens, with the same result. Removing a type is an edit, so
+it is saved with the flag. The check now makes an edit before reading the stored record, as a person
+would.
+
+### Deliberately not done
+
+- Reinforcement and bolt patterns, the item's second half.
+- Angles and built-up sections. An angle's principal axes lie across its legs.
+- Fillets and rounded corners. W12x26 comes to 7.56 in^2 and 201 in^4 against the manual's 7.65 and
+  204, and IPE sections are up to 4.3% under. The read-out says so.
+- A channel's shear centre and warping torsion. A channel beam under gravity is analysed as if
+  loaded through its centroid.
+- Drawing a steel member directly. The Column and Beam tools still draw a rectangle; its type, and
+  so its section, is chosen afterwards in Properties or from Assets.
+
+### Suites
+
+- New: `bim_phase126_section_profiles_browser_tests.py`, 61 checks in seven sections. What they test:
+  - Every property against the textbook formula, written independently in the suite, to 1e-12.
+  - W12x26 and W14x90 against the AISC manual: under it, and by less than 4%.
+  - Every swept solid's volume against A x L; the rounds against their 32-gon.
+  - A W column cantilever's sway against PL^3/3EI with E = 210 GPa.
+  - The Properties, Edit Type and Assets paths, driven as a person drives them.
+  - A copy, and a stored pre-V126 project.
+- Falsified by 35 variants (`Phase/falsify_phase126.py`), all caught.
+
+### Full regression
+
+82 suites, 2789 checks, 0 failures. Falsification: 35 variants, 35 caught. The patch chain rebuilds
+the build byte for byte from `Phase/canvas_v10.html.bak_phase126_pre`.
+
+### State after V126
+
+    canvas_v10.html   1,693,481 bytes
+    sha256            525fc46992ccd5caa25217c0729a98ab2ebe1630d54a09803bfe7ed173ca2e3f
+    markers           __acad3dV60 ... __acad3dV126, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
+                      __acad3dV121b

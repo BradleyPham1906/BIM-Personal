@@ -2,11 +2,11 @@
 
 **Read this first in a new session.** One page. The detail lives in the docs listed at the bottom.
 
-    canvas_v10.html   1,675,990 bytes
-    sha256            43c6439d714639197131a7d8a49ddfa99bd890619339f5d03d2b86c8e559307b
-    markers           __acad3dV60 ... __acad3dV125, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
+    canvas_v10.html   1,693,481 bytes
+    sha256            525fc46992ccd5caa25217c0729a98ab2ebe1630d54a09803bfe7ed173ca2e3f
+    markers           __acad3dV60 ... __acad3dV126, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
                       __acad3dV121b
-    tests             81 suites, 2728 checks, 0 failures
+    tests             82 suites, 2789 checks, 0 failures
 
     Run the regression in parallel: tests/run_all.py [build] [filter] [-jN], default -j6,
     about 4 minutes; give it the build's absolute path. tests/falsify_all.py
@@ -22,26 +22,26 @@ with anchored Python scripts that assert exact match counts.
 
 ---
 
-## NOW - Track B: the section-profile library (V126)
+## NOW - Track B: alignment and profile objects (V127)
 
-V125 built Track B item 1: the analytical model, supports, loads, combinations and a 3D frame solve,
-set in Properties and shown as an analysis display (see Recently finished). Its members are
-rectangles of one material; item 2 gives them real sections, which is what the ARCH5 port, the
-PennDOT input writer and any design check need next.
+V125 and V126 built Track B items 1 and 2: the frame model and solve, and real steel and concrete
+sections feeding it (see Recently finished). Item 3 is the civil half: a horizontal alignment, its
+vertical profile, and station-and-offset. The PennDOT work (Track C) and DIMORDINATE (Track A 117)
+both read stations.
 
-**Design rule (owner, V125):** the interface stays clean and consistent -- Rhino's model, see
-`reference/research-structural-ui.md`: settings are pages of Properties that follow the selection,
-an analysis is a display turned on and off by its command, and a feature adds a window, rail tab or
-toolbar strip only when no existing one can hold it.
+**Design rule (owner, V125):** the interface stays clean and consistent. It follows Rhino's model
+(see `reference/research-structural-ui.md`): settings are Properties pages that follow the
+selection, an analysis is a display turned on and off by its command, and a feature adds a window,
+rail tab or toolbar strip only when no existing one can hold it.
 
 | # | Phase | Scope | Notes |
 |---|---|---|---|
-| 126 | Section-profile library | Steel sections (W, HSS, channels, angles), concrete rectangles and circles, and their properties feeding the V125 solve; a member's section chosen in Properties | **Start here.** V125 computes A, I and J for a rectangle only (`bimRectSection`); a profile supplies its own tabulated properties (AISC Shapes Database for steel -- check the licence before bundling the table, or derive from dimensions), and its outline for the model's solids. Reinforcement and bolt patterns are the item's second half and can follow. The Assets library (V124) is where a profile is browsed, as its type catalogue is the Properties dropdown. |
+| 127 | Alignment and profile | A horizontal alignment (tangents, circular curves, and spirals if they fit) built from a polyline or by its PI points; stationing along it; a vertical profile of grades and parabolic vertical curves; a point's station and offset | **Start here.** Research first: AASHTO's Green Book for curve and vertical-curve geometry, and how Civil 3D and OpenRoads present an alignment (its Properties, labels and station ticks), fitted to the rule above. An alignment is a new object kind, so decide how it is stored the way V88 decided arcs. The profile view is a drawing of the profile, not a new window. Check stations against closed forms: arc length R x delta, tangent T = R tan(delta/2), and a vertical curve's high point at x = -g1 L / (g2 - g1). |
 
 ### LATER - Track A, drafting (moved behind Track B in V100)
 
 The numbers in this table are its order, not phase numbers: a phase takes the next free V number
-when it starts (V111 to V125 went to other work; V126 is in NOW).
+when it starts (V111 to V126 went to other work; V127 is in NOW).
 
 | # | Phase | Scope | Notes |
 |---|---|---|---|
@@ -55,7 +55,20 @@ when it starts (V111 to V125 went to other work; V126 is in NOW).
 | 118 | Blocks and data | ATTDEF ATTEDIT BEDIT WBLOCK DATAEXTRACTION TABLESTYLE TABLEDIT TABLEEXPORT | First phase that's about the disciplines, not drafting. BLOCK and INSERT landed in V124, as the Assets library's blocks: saved records inserted as independent copies. A block reference that follows its definition (what BEDIT edits) is not built. |
 | 119 | Sheets and plotting, rest | MVIEW (draw a viewport on the paper) PAGESETUP (plot settings beyond Sheet Setup) PUBLISH (V122's Print set prints every sheet in one job; a chosen subset and page setups remain) EXPORTPDF (vector PDF of a sheet) VPLAYER (per-viewport layer visibility) viewport lock | LAYOUT, MSPACE and PSPACE landed in V116, with layout tabs and model space through a viewport. |
 
-**Recently finished:** Phase 125 (V125), **the structural object model**, Track B item 1. The
+**Recently finished:** Phase 126 (V126), **the section-profile library**, Track B item 2. A column or
+beam type may carry a profile -- rectangle, round, HSS, pipe, I (W and IPE) or channel -- and the
+member is that section: its solid is the profile swept along it (a beam hung by its top with its web
+upright, a column's section turned with it), its analysis takes the section's A, I and J (computed
+exactly from its nominal dimensions, fillets stated as not modelled), and Properties' Structural page
+shows them with the mass per metre. 28 sections ship: AISC W, C, HSS and pipe, EN IPE, and concrete
+rounds, all Steel except the rounds. A stored project gains them once and keeps its own types. The
+section is chosen in the Type list (now grouped by material), or dropped from a folded Sections group
+in Assets; a profiled member's width is refused, and Edit Type locks it. Checked against the textbook
+to 1e-12, the AISC manual within the fillets' share, A x L for every solid, and PL^3/3EI. Found: a
+square section and a bounding box each hid a wrong rule from the checks; the falsify runner skipped
+six variants with capitals in their names.
+
+Phase 125 (V125), **the structural object model**, Track B item 1. The
 analytical model is derived from the live columns and beams (lines at column centres and beam tops,
 ends merged within 50 mm, a member split where another lands on it); supports at column bases
 (Automatic, Fixed, Pinned, Free) and beam end connections (Rigid, Pinned); D and L loads -- self-
@@ -475,7 +488,7 @@ first time, and fixed the typed-coordinate class bug.
 
 ## NEXT — Track B, the object model
 
-Item 1 was built in V125; item 2 is in NOW.
+Items 1 and 2 were built in V125 and V126; item 3 is in NOW.
 
 The command audit's central finding: implementing all 902 AutoCAD commands would still leave MEP,
 HVAC and civil alignment work **entirely unbuilt**. The object model is where the discipline value
@@ -614,3 +627,10 @@ they ship as compiled binaries.
   handler can re-render (V125 -- a typed load value was lost).
 - New features fit the existing interface first: Properties pages that follow the selection, a
   command and its Off form for a display, one toolbar button (owner, V125; Rhino's model).
+- A square section is a symmetric fixture, and so is a bounding box: check a turn on a section that
+  is not square, and check that a rebuild kept its shape by the solid's volume, not by its extent
+  (V126).
+- Count the variants the falsify runner ran against the number written: it reads lower-case names
+  only, and a skipped variant reads as caught (V126 -- six were skipped).
+- One reader for a derived quantity: the solid, the analysis, Properties and Assets all read a
+  section through `bimProfileProps` and `bimMemberSection`, so they cannot disagree (V126).
