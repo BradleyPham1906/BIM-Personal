@@ -746,11 +746,6 @@ body.a3d-tree-docked #a3d-leftpanel > .a3d-tree .a3d-palhd .a3d-palbtns{flex-wra
     ['PSPACE',['PS'],'pspace','Back to paper space on this sheet'],
     /* __acad3dV124: the library */
     ['BLOCK',['B','BMAKE'],'blockmake','Save the selection to the library as a block'],
-    /* __acad3dV125: the frame analysis -- a display turned on and off, as Rhino's analysis modes are */
-    ['ANALYZE',['ANALYSE','AN'],'analyze','Solve the frame and show its forces and deflection over the model'],
-    ['ANALYZEOFF',['ANALYSEOFF'],'analyzeoff','Turn the analysis display off'],
-    ['SUPPORT',['SUP'],'structsupport','Set how the selected column\'s base is held (Properties)'],
-    ['LOAD',['LD'],'structload','Add a load to the selected beam or column (Properties)'],
     ['INSERT',['I','DDINSERT'],'blockinsert','Insert a block: drag it from the library onto the drawing'],
     ['ASSETS',['ADCENTER','CONTENT','TOOLPALETTES'],'assets','Open the Assets library of models, blocks and templates']
   ];
@@ -4663,127 +4658,10 @@ try{
      padMesh (which only extrudes vertically), so the six faces are emitted directly with
      outward winding. Revit hangs a beam below its level, so the level elevation is the
      top of the section and depth runs downward. ---------- */
-  /* ================= __acad3dV126: section profiles ================= */
-  var BIM_PROFILE_SHAPES={rect:'Rectangle',circle:'Round',hss:'Rectangular hollow (HSS)',pipe:'Pipe',ibeam:'I (W, IPE)',channel:'Channel'};
-  var BIM_ROUND_N=32;
-  /* Is a profile one this app can build and analyse? null when it is, the reason when not. */
-  function bimProfileProblem(p){
-    if(!p||!BIM_PROFILE_SHAPES[p.shape])return 'not a known section shape';
-    var need={rect:['b','d'],circle:['D'],hss:['B','H','t'],pipe:['D','t'],ibeam:['d','bf','tf','tw'],channel:['d','bf','tf','tw']}[p.shape],i;
-    for(i=0;i<need.length;i++)if(!(p[need[i]]>0))return 'its '+need[i]+' must be a positive length';
-    if(p.shape==='hss'&&!(2*p.t<Math.min(p.B,p.H)))return 'its walls meet: 2t must be less than B and H';
-    if(p.shape==='pipe'&&!(2*p.t<p.D))return 'its wall fills it: 2t must be less than D';
-    if((p.shape==='ibeam'||p.shape==='channel')&&!(2*p.tf<p.d&&p.tw<p.bf))return 'its flanges or web do not fit its depth and width';
-    return null;
-  }
-  /* The profile's centroidal properties, in m and m^4. y is its depth direction, z across it. */
-  function bimProfileProps(p){
-    var A,Iz,Iy,J,zc=0,PI=Math.PI;
-    if(p.shape==='rect'){
-      var s=bimRectSection(p.d,p.b);A=s.A;Iz=s.Iz;Iy=s.Iy;J=s.J;
-    }else if(p.shape==='circle'){
-      A=PI*p.D*p.D/4;Iz=Iy=PI*Math.pow(p.D,4)/64;J=PI*Math.pow(p.D,4)/32;
-    }else if(p.shape==='pipe'){
-      var di=p.D-2*p.t;
-      A=PI*(p.D*p.D-di*di)/4;Iz=Iy=PI*(Math.pow(p.D,4)-Math.pow(di,4))/64;J=2*Iz;
-    }else if(p.shape==='hss'){
-      var bi=p.B-2*p.t,hi=p.H-2*p.t,Am=(p.B-p.t)*(p.H-p.t),per=2*((p.B-p.t)+(p.H-p.t));
-      A=p.B*p.H-bi*hi;Iz=(p.B*p.H*p.H*p.H-bi*hi*hi*hi)/12;Iy=(p.H*p.B*p.B*p.B-hi*bi*bi*bi)/12;
-      J=4*Am*Am*p.t/per;
-    }else{
-      var hw=p.d-2*p.tf;
-      A=2*p.bf*p.tf+hw*p.tw;
-      Iz=(p.bf*p.d*p.d*p.d-(p.bf-p.tw)*hw*hw*hw)/12;
-      J=(2*p.bf*p.tf*p.tf*p.tf+hw*p.tw*p.tw*p.tw)/3;
-      if(p.shape==='ibeam')Iy=(2*p.tf*p.bf*p.bf*p.bf+hw*p.tw*p.tw*p.tw)/12;
-      else{
-        /* the back of the channel at z = 0, its flanges running to z = bf */
-        zc=(2*p.bf*p.tf*p.bf/2+hw*p.tw*p.tw/2)/A;
-        Iy=2*(p.tf*p.bf*p.bf*p.bf/12+p.bf*p.tf*Math.pow(p.bf/2-zc,2))+(hw*p.tw*p.tw*p.tw/12+hw*p.tw*Math.pow(p.tw/2-zc,2));
-      }
-    }
-    return {A:A,Iz:Iz,Iy:Iy,J:J,zc:zc};
-  }
-  /* The outline -- and the hole of a hollow section -- as [y, z] points about the centroid.
-     A round is a 32-gon: its solid is that polygon, its properties the true circle's. */
-  function bimProfileLoops(p){
-    var out,inn=null,i,hd,hb;
-    function ring(r){var a=[];for(var k=0;k<BIM_ROUND_N;k++){var th=2*Math.PI*k/BIM_ROUND_N;a.push([r*Math.cos(th),r*Math.sin(th)]);}return a;}
-    if(p.shape==='rect'){hd=p.d/2;hb=p.b/2;out=[[-hd,-hb],[hd,-hb],[hd,hb],[-hd,hb]];}
-    else if(p.shape==='circle')out=ring(p.D/2);
-    else if(p.shape==='pipe'){out=ring(p.D/2);inn=ring(p.D/2-p.t);}
-    else if(p.shape==='hss'){
-      hd=p.H/2;hb=p.B/2;out=[[-hd,-hb],[hd,-hb],[hd,hb],[-hd,hb]];
-      inn=[[-hd+p.t,-hb+p.t],[hd-p.t,-hb+p.t],[hd-p.t,hb-p.t],[-hd+p.t,hb-p.t]];
-    }else if(p.shape==='ibeam'){
-      var D2=p.d/2,B2=p.bf/2,W2=p.tw/2,F=D2-p.tf;
-      out=[[-D2,-B2],[-D2,B2],[-F,B2],[-F,W2],[F,W2],[F,B2],[D2,B2],[D2,-B2],[F,-B2],[F,-W2],[-F,-W2],[-F,-B2]];
-    }else{
-      var zc=bimProfileProps(p).zc,C2=p.d/2,G=C2-p.tf;
-      out=[[-C2,0],[-C2,p.bf],[-G,p.bf],[-G,p.tw],[G,p.tw],[G,p.bf],[C2,p.bf],[C2,0]].map(function(q){return [q[0],q[1]-zc];});
-    }
-    return {outer:out,inner:inn};
-  }
-  /* the profile's extent: its depth along y and width across z */
-  function bimProfileExtent(p){
-    var L=bimProfileLoops(p).outer,mn=[Infinity,Infinity],mx=[-Infinity,-Infinity],i;
-    for(i=0;i<L.length;i++){mn[0]=Math.min(mn[0],L[i][0]);mn[1]=Math.min(mn[1],L[i][1]);mx[0]=Math.max(mx[0],L[i][0]);mx[1]=Math.max(mx[1],L[i][1]);}
-    return {depth:mx[0]-mn[0],width:mx[1]-mn[1],ymax:mx[0]};
-  }
-  function bimLoopArea(L){var a=0,i;for(i=0;i<L.length;i++){var q=L[(i+1)%L.length];a+=L[i][0]*q[1]-q[0]*L[i][1];}return a/2;}
-  /* Sweep a profile along a length: place(y, z, s) is the world point at (y, z) on the profile, s
-     along the member. Closed, and turned outward by its signed volume. */
-  function bimSweepMesh(p,len,place){
-    var lp=bimProfileLoops(p),out=lp.outer.slice(),inn=lp.inner?lp.inner.slice():null,v=[],f=[],i,j,n,m;
-    if(bimLoopArea(out)<0)out.reverse();
-    if(inn&&bimLoopArea(inn)<0)inn.reverse();
-    n=out.length;
-    for(i=0;i<n;i++)v.push(place(out[i][0],out[i][1],0));
-    for(i=0;i<n;i++)v.push(place(out[i][0],out[i][1],len));
-    for(i=0;i<n;i++){j=(i+1)%n;f.push([i,j,j+n,i+n]);}
-    if(inn){
-      m=inn.length;var b=2*n;
-      for(i=0;i<m;i++)v.push(place(inn[i][0],inn[i][1],0));
-      for(i=0;i<m;i++)v.push(place(inn[i][0],inn[i][1],len));
-      for(i=0;i<m;i++){j=(i+1)%m;f.push([b+j,b+i,b+i+m,b+j+m]);}
-      /* the ends are rings, outer to inner vertex for vertex */
-      for(i=0;i<n;i++){j=(i+1)%n;f.push([j,i,b+i,b+j]);f.push([i+n,j+n,b+j+m,b+i+m]);}
-    }else{
-      var tris=earClip(out);
-      for(i=0;i<tris.length;i++){
-        f.push([tris[i][2],tris[i][1],tris[i][0]]);
-        f.push([tris[i][0]+n,tris[i][1]+n,tris[i][2]+n]);
-      }
-    }
-    var mesh={v:v,f:f};
-    if(bimMeshSignedVolume(mesh)<0)mesh.f=mesh.f.map(function(fc){return fc.slice().reverse();});
-    return mesh;
-  }
-  function bimMeshSignedVolume(m){
-    var V=0,i,k;
-    for(i=0;i<m.f.length;i++){
-      var fc=m.f[i],a=m.v[fc[0]];
-      for(k=1;k+1<fc.length;k++){
-        var b=m.v[fc[k]],c=m.v[fc[k+1]];
-        V+=(a[0]*(b[1]*c[2]-b[2]*c[1])-a[1]*(b[0]*c[2]-b[2]*c[0])+a[2]*(b[0]*c[1]-b[1]*c[0]))/6;
-      }
-    }
-    return V;
-  }
-  function bimBuildBeamGeometry(p1,p2,topY,w,dep,sec){
+  function bimBuildBeamGeometry(p1,p2,topY,w,dep){
     var dx=p2[0]-p1[0],dz=p2[1]-p1[1];
     var L=Math.sqrt(dx*dx+dz*dz);
     if(!(L>1e-9))return {error:'Beam endpoints coincide'};
-    /* __acad3dV126: a section, swept -- hung from the level by its top, its web upright */
-    if(sec){
-      var sp=bimProfileProblem(sec);
-      if(sp)return {error:'The beam\'s section cannot be built: '+sp};
-      var ex=bimProfileExtent(sec),ux=dx/L,uz=dz/L,ya=topY-ex.ymax;
-      var sm=bimSweepMesh(sec,L,function(y,z,s){return [p1[0]+ux*s-uz*z,ya+y,p1[1]+uz*s+ux*z];});
-      return {mesh:sm,length:L,
-        bim:{type:'beam',p1:[p1[0],p1[1]],p2:[p2[0],p2[1]],width:ex.width,depth:ex.depth,
-          baseY:topY-ex.depth,topY:topY,length:L,levelId:A3D.activeLevel,section:JSON.parse(JSON.stringify(sec))}};
-    }
     if(!(w>0))return {error:'Beam width must be positive'};
     if(!(dep>0))return {error:'Beam depth must be positive'};
     var ux=dx/L,uz=dz/L,nx=-uz,nz=ux,hw=w/2;
@@ -5393,37 +5271,6 @@ try{
     {id:'ct-600',name:'600 x 600mm',params:{width:0.6,depth:0.6,material:'Concrete'}},
     {id:'ct-300x600',name:'300 x 600mm',params:{width:0.3,depth:0.6,material:'Concrete'}}
   ];
-  /* __acad3dV126: steel columns and concrete rounds */
-  [['ct-w8x31','W8x31',{shape:'ibeam',d:8.00*0.0254,bf:8.00*0.0254,tf:0.435*0.0254,tw:0.285*0.0254},'Steel'],
-   ['ct-w10x49','W10x49',{shape:'ibeam',d:10.0*0.0254,bf:10.0*0.0254,tf:0.560*0.0254,tw:0.340*0.0254},'Steel'],
-   ['ct-w12x65','W12x65',{shape:'ibeam',d:12.1*0.0254,bf:12.0*0.0254,tf:0.605*0.0254,tw:0.390*0.0254},'Steel'],
-   ['ct-w14x90','W14x90',{shape:'ibeam',d:14.0*0.0254,bf:14.5*0.0254,tf:0.710*0.0254,tw:0.440*0.0254},'Steel'],
-   ['ct-hss6x6','HSS6x6x3/8',{shape:'hss',B:6*0.0254,H:6*0.0254,t:0.349*0.0254},'Steel'],
-   ['ct-hss8x8','HSS8x8x1/2',{shape:'hss',B:8*0.0254,H:8*0.0254,t:0.465*0.0254},'Steel'],
-   ['ct-hss10x10','HSS10x10x1/2',{shape:'hss',B:10*0.0254,H:10*0.0254,t:0.465*0.0254},'Steel'],
-   ['ct-pipe6','Pipe 6 STD',{shape:'pipe',D:6.625*0.0254,t:0.280*0.0254},'Steel'],
-   ['ct-pipe8','Pipe 8 STD',{shape:'pipe',D:8.625*0.0254,t:0.322*0.0254},'Steel'],
-   ['ct-r400','Round 400mm',{shape:'circle',D:0.4},'Concrete'],
-   ['ct-r500','Round 500mm',{shape:'circle',D:0.5},'Concrete'],
-   ['ct-r600','Round 600mm',{shape:'circle',D:0.6},'Concrete']
-  ].forEach(function(r){COL_TYPE_DEFAULTS.push(bimSectionType('column',r[0],r[1],r[2],r[3]));});
-  /* __acad3dV126: a profile's extent without its outline -- this runs while the catalogues below are
-     being built, before the round's segment count is set */
-  function bimProfileBox(p){
-    if(p.shape==='rect')return {y:p.d,z:p.b};
-    if(p.shape==='circle'||p.shape==='pipe')return {y:p.D,z:p.D};
-    if(p.shape==='hss')return {y:p.H,z:p.B};
-    return {y:p.d,z:p.bf};
-  }
-  /* a profiled type: a column's width runs along its y, a beam's depth is its y */
-  function bimSectionType(cat,id,name,prof,mat){
-    var b=bimProfileBox(prof);
-    return {id:id,name:name,params:cat==='column'?{width:b.y,depth:b.z,material:mat,profile:prof}:{width:b.z,depth:b.y,material:mat,profile:prof}};
-  }
-  var BIM_IN=0.0254;
-  function bimW(d,bf,tf,tw){return {shape:'ibeam',d:d*BIM_IN,bf:bf*BIM_IN,tf:tf*BIM_IN,tw:tw*BIM_IN};}
-  function bimIPE(d,bf,tf,tw){return {shape:'ibeam',d:d/1000,bf:bf/1000,tf:tf/1000,tw:tw/1000};}
-  function bimC(d,bf,tf,tw){return {shape:'channel',d:d*BIM_IN,bf:bf*BIM_IN,tf:tf*BIM_IN,tw:tw*BIM_IN};}
   /* __acad3dV102: the structural catalogue */
   var BEAM_TYPE_DEFAULTS=[
     {id:'bt-250x450',name:'250 x 450mm',params:{width:0.25,depth:0.45,material:'Concrete'}},
@@ -5431,17 +5278,6 @@ try{
     {id:'bt-300x600',name:'300 x 600mm',params:{width:0.3,depth:0.6,material:'Concrete'}},
     {id:'bt-400x700',name:'400 x 700mm',params:{width:0.4,depth:0.7,material:'Concrete'}}
   ];
-  /* __acad3dV126: steel beams -- AISC W and C (inches), EN 10365 IPE (mm), nominal dimensions */
-  [['bt-w8x31','W8x31',bimW(8.00,8.00,0.435,0.285)],['bt-w10x33','W10x33',bimW(9.73,7.96,0.435,0.290)],
-   ['bt-w12x26','W12x26',bimW(12.2,6.49,0.380,0.230)],['bt-w14x30','W14x30',bimW(13.8,6.73,0.385,0.270)],
-   ['bt-w16x40','W16x40',bimW(16.0,7.00,0.505,0.305)],['bt-w18x50','W18x50',bimW(18.0,7.50,0.570,0.355)],
-   ['bt-w21x62','W21x62',bimW(21.0,8.24,0.615,0.400)],['bt-w24x76','W24x76',bimW(23.9,8.99,0.680,0.440)],
-   ['bt-ipe200','IPE 200',bimIPE(200,100,8.5,5.6)],['bt-ipe240','IPE 240',bimIPE(240,120,9.8,6.2)],
-   ['bt-ipe300','IPE 300',bimIPE(300,150,10.7,7.1)],['bt-ipe360','IPE 360',bimIPE(360,170,12.7,8.0)],
-   ['bt-ipe400','IPE 400',bimIPE(400,180,13.5,8.6)],
-   ['bt-c8x11','C8x11.5',bimC(8.00,2.26,0.390,0.220)],['bt-c10x15','C10x15.3',bimC(10.0,2.60,0.436,0.240)],
-   ['bt-c12x21','C12x20.7',bimC(12.0,2.94,0.501,0.282)]
-  ].forEach(function(r){BEAM_TYPE_DEFAULTS.push(bimSectionType('beam',r[0],r[1],r[2],'Steel'));});
   var FOOTING_TYPE_DEFAULTS=[
     {id:'ft-iso1200',name:'1200 x 1200 x 400mm',params:{width:1.2,length:1.2,thickness:0.4,material:'Concrete'}},
     {id:'ft-iso1500',name:'1500 x 1500 x 500mm',params:{width:1.5,length:1.5,thickness:0.5,material:'Concrete'}},
@@ -5891,20 +5727,6 @@ try{
       var list=A3D.types[c],ti;
       for(ti=0;ti<list.length;ti++)list[ti].graphics=bimSanitizeGraphics(list[ti].graphics);
     }
-    /* __acad3dV126: a project stored before V126 gains the section types once, by id -- its own types
-       are untouched, and one it deletes later is not put back */
-    if(!A3D.types.__v126){
-      ['column','beam'].forEach(function(cat){
-        var have={},list=A3D.types[cat],k;
-        for(k=0;k<list.length;k++)have[list[k].id]=1;
-        TYPE_CATS[cat].defaults.forEach(function(dt){
-          if(dt.params&&dt.params.profile&&!have[dt.id]){
-            var cp=JSON.parse(JSON.stringify(dt));cp.graphics=bimSanitizeGraphics(cp.graphics);list.push(cp);
-          }
-        });
-      });
-      A3D.types.__v126=1;
-    }
     if(!A3D.activeWallType)A3D.activeWallType=A3D.types.wall[0].id;
     return A3D.types;
   }
@@ -5962,21 +5784,17 @@ try{
     if(cat==='column'){
       if(!o.bim.center)return false;
       // __acad3dV81: and through a TYPE change, for the same reason.
-      var tp4=t.params.profile||null;   /* __acad3dV126 */
-      var r4=bimBuildColumnGeometry(o.bim.center,o.bim.baseY,t.params.width,t.params.depth,o.bim.height,o.bim.rotation||0,tp4);
+      var r4=bimBuildColumnGeometry(o.bim.center,o.bim.baseY,t.params.width,t.params.depth,o.bim.height,o.bim.rotation||0);
       if(r4.error)return false;
       o.mesh=r4.mesh;o.bim.width=t.params.width;o.bim.depth=t.params.depth;
-      if(tp4)o.bim.section=JSON.parse(JSON.stringify(tp4));else delete o.bim.section;
       bimAfterWallRebuild(o);   /* __acad3dV102: a footing under it follows */
       return true;
     }
     if(cat==='beam'){   /* __acad3dV102 */
       if(!o.bim.p1||!o.bim.p2)return false;
-      var tp5=t.params.profile||null;   /* __acad3dV126 */
-      var r5=bimBuildBeamGeometry(o.bim.p1,o.bim.p2,o.bim.topY,t.params.width,t.params.depth,tp5);
+      var r5=bimBuildBeamGeometry(o.bim.p1,o.bim.p2,o.bim.topY,t.params.width,t.params.depth);
       if(r5.error)return false;
-      o.mesh=r5.mesh;o.bim.width=r5.bim.width;o.bim.depth=r5.bim.depth;o.bim.baseY=r5.bim.baseY;
-      if(tp5)o.bim.section=JSON.parse(JSON.stringify(tp5));else delete o.bim.section;
+      o.mesh=r5.mesh;o.bim.width=t.params.width;o.bim.depth=t.params.depth;o.bim.baseY=r5.bim.baseY;
       return true;
     }
     if(cat==='footing'||cat==='stripfooting'){   /* __acad3dV102 */
@@ -6004,18 +5822,6 @@ try{
       name:newName,params:JSON.parse(JSON.stringify(src.params))};
     A3D.types[cat].push(copy);
     return copy;
-  }
-  /* __acad3dV126: a category's types as options, grouped by material once there is more than one */
-  function bimTypeOptionsHtml(cat,curId){
-    var list=A3D.types[cat]||[],groups=[],by={},i;
-    for(i=0;i<list.length;i++){
-      var m=(list[i].params&&list[i].params.material)||'Other';
-      if(!by[m]){by[m]=[];groups.push(m);}
-      by[m].push(list[i]);
-    }
-    function opts(a){return a.map(function(x){return '<option value="'+x.id+'"'+(curId===x.id?' selected':'')+'>'+bimEsc(x.name)+'</option>';}).join('');}
-    if(groups.length<2)return opts(list);
-    return groups.map(function(g){return '<optgroup label="'+bimEsc(g)+'">'+opts(by[g])+'</optgroup>';}).join('');
   }
   function bimAssignTypeTo(o,cat,typeId){
     var t=bimFindType(cat,typeId);
@@ -6065,12 +5871,9 @@ try{
     closeDlg();
     var d=document.createElement('div');
     d.className='a3d-dlg';
-    var prof=t.params&&t.params.profile;   /* __acad3dV126 */
-    var paramRows=(prof?'<div class="a3d-dlgrow"><label>Section</label><span class="a3d-pstatic">'+bimEsc(BIM_PROFILE_SHAPES[prof.shape]||prof.shape)+'</span></div>':'')+
-      def.typeParams.map(function(k){
+    var paramRows=def.typeParams.map(function(k){
       return '<div class="a3d-dlgrow"><label>'+k.charAt(0).toUpperCase()+k.slice(1)+' (m)</label>'+
-        '<input type="number" step="any" min="0.001" data-typep="'+k+'" value="'+t.params[k]+'"'+
-        (prof?' disabled title="Set by the section: choose another type to change it"':'')+'></div>';
+        '<input type="number" step="any" min="0.001" data-typep="'+k+'" value="'+t.params[k]+'"></div>';
     }).join('');
     /* __acad3dV59: Phase 51 type-level graphics rows. Same six fields as the instance-level
        override in the Properties palette, but written straight to t.graphics[mode][key] on OK --
@@ -7543,15 +7346,7 @@ try{
     }
     return quad;
   }
-  function bimBuildColumnGeometry(center,y0,w,dep,h,rot,sec){
-    /* __acad3dV126: a section, swept up the column and turned with it */
-    if(sec){
-      var sp=bimProfileProblem(sec);
-      if(sp)return {error:'The column\'s section cannot be built: '+sp};
-      if(!(h>0))return {error:'Column height must be positive'};
-      var c=Math.cos(rot||0),sn=Math.sin(rot||0);
-      return {mesh:bimSweepMesh(sec,h,function(y,z,s){return [center[0]+y*c-z*sn,y0+s,center[1]+y*sn+z*c];})};
-    }
+  function bimBuildColumnGeometry(center,y0,w,dep,h,rot){
     var quad=bimRectFootprint(center,w,dep,rot);
     var mesh;
     try{mesh=padMesh(sketchCCW(quad),y0,h);}
@@ -7575,12 +7370,7 @@ try{
   function bimRebuildColumn(o,newW,newDep,newH){
     if(!o||!o.bim||o.bim.type!=='column')return false;
     // __acad3dV81: orientation is carried through a resize; editing width must not straighten it.
-    /* __acad3dV126: a section's size is the section's */
-    if(o.bim.section&&(Math.abs(newW-o.bim.width)>1e-9||Math.abs(newDep-o.bim.depth)>1e-9)){
-      a3dToast(o.name+'\'s size is set by its section ('+(bimTypeNameOf(o)||'its type')+'): choose another type to change it');
-      return false;
-    }
-    var res=bimBuildColumnGeometry(o.bim.center,o.bim.baseY,newW,newDep,newH,o.bim.rotation||0,o.bim.section||null);
+    var res=bimBuildColumnGeometry(o.bim.center,o.bim.baseY,newW,newDep,newH,o.bim.rotation||0);
     if(res.error){a3dToast(res.error);return false;}
     pushUndo();
     o.mesh=res.mesh;
@@ -10835,7 +10625,6 @@ try{
       lrows+=bimPropRow('Live (kPa)','<input type="number" step="any" min="0" data-propmodel="ll" value="'+(lvA.ll==null?'':lvA.ll)+'" placeholder="not set" title="Live load on '+bimEsc(lvA.name)+', kPa, unreduced">');
       h+=bimPropGroup('Floor Loads: '+bimEsc(lvA.name),lrows);
     }
-    h+=bimAnalysisPropsHtml();   /* __acad3dV125: the model's Analysis page, beside its floor loads */
     h+=bimPropGroup('Statistics',srows);
     return h;
   }
@@ -10983,7 +10772,9 @@ try{
     if(o.bim&&TYPE_CATS[o.bim.type]&&o.bim.type!=='wall'){
       bimEnsureTypes();
       var cur=bimEnsureObjType(o);
-      cons+=bimPropRow('Type','<select data-propf="objtype">'+bimTypeOptionsHtml(o.bim.type,cur&&cur.id)+'</select>');
+      cons+=bimPropRow('Type','<select data-propf="objtype">'+
+        A3D.types[o.bim.type].map(function(x){return '<option value="'+x.id+'"'+(cur&&cur.id===x.id?' selected':'')+'>'+bimEsc(x.name)+'</option>';}).join('')+
+        '</select>');
     }
     cons+=bimPropText('Level',lvlName);
     /* __acad3dV77: Revit's own name for this field, and Revit's own home for Location Line --
@@ -11200,7 +10991,6 @@ try{
       }
     }
     h+=bimPropGroup('Dimensions',dims);
-    if(bimIsFrameMember(o))h+=bimStructPropsHtml(o);   /* __acad3dV125 */
 
     // ---- Sketch Constraints (V45) -- only for sketches, and only shown once at least one point
     // exists to constrain. Lists each stored constraint in plain English with a per-row delete,
@@ -12427,7 +12217,6 @@ try{
     drawTextLabels(ctx,V,W,H);
     drawRoomTags(ctx,V,W,H);       /* __acad3dV101 */
     drawTribAreas(ctx,V,W,H);          /* __acad3dV106 */
-    drawStructResults(ctx,V,W,H);      /* __acad3dV125: the analysis display */
     drawAreaPlan(ctx,V,W,H);           /* __acad3dV105b */
     drawSunPath(ctx,V,W,H);            /* __acad3dV107 */
     drawRoomSchemeLegend(ctx,V,W,H);   /* __acad3dV105: the colour fill's legend, from what drawRooms just drew */
@@ -16182,7 +15971,7 @@ try{
   function bimPushColumn(o,f,dist){
     var b=o.bim,h=b.height+dist;
     if(!(h>=A3D_PUSH.min))return {ok:false,why:'A column cannot be shorter than '+bimFmtLen(A3D_PUSH.min)};
-    var res=bimBuildColumnGeometry(b.center,b.baseY,b.width,b.depth,h,b.rotation||0,b.section||null);   /* __acad3dV126 */
+    var res=bimBuildColumnGeometry(b.center,b.baseY,b.width,b.depth,h,b.rotation||0);
     if(res.error)return {ok:false,why:res.error};
     o.mesh=res.mesh;b.height=h;
     bimPropagateFrom([o.id],'rebuild');
@@ -16994,7 +16783,7 @@ try{
     }else if(o.bim&&o.bim.type==='column'){
       var newCenter=[o.bim.center[0]+dx,o.bim.center[1]+dz];
       // __acad3dV81: an array copy keeps the original's orientation.
-      var res3=bimBuildColumnGeometry(newCenter,o.bim.baseY,o.bim.width,o.bim.depth,o.bim.height,o.bim.rotation||0,o.bim.section||null);   /* __acad3dV126 */
+      var res3=bimBuildColumnGeometry(newCenter,o.bim.baseY,o.bim.width,o.bim.depth,o.bim.height,o.bim.rotation||0);
       if(res3.error)return null;
       A3D.counts.column=(A3D.counts.column||0)+1;
       copy={id:'a3d-'+Date.now().toString(36)+'-'+(A3D.seq++),t:'solid',name:'Column_'+A3D.counts.column,col:o.col,pos:bimObjOffset(o),mesh:res3.mesh,
@@ -17206,7 +16995,7 @@ try{
         var phi=Math.atan2(xf.P2[1]-xf.P1[1],xf.P2[0]-xf.P1[0]);
         rotN=2*phi-rot0;
       }
-      var res3=bimBuildColumnGeometry(newCenter,o.bim.baseY,o.bim.width,o.bim.depth,o.bim.height,rotN,o.bim.section||null);   /* __acad3dV126 */
+      var res3=bimBuildColumnGeometry(newCenter,o.bim.baseY,o.bim.width,o.bim.depth,o.bim.height,rotN);
       if(res3.error)return {error:res3.error};
       return {kind:'column',mesh:res3.mesh,bim:{type:'column',width:o.bim.width,depth:o.bim.depth,height:o.bim.height,baseY:o.bim.baseY,levelId:o.bim.levelId,center:newCenter,rotation:rotN}};
     }
@@ -20722,7 +20511,7 @@ try{
      project not an overview of stuff". Models, blocks and templates first, as tiles; annotation, and
      then what goes ON something -- materials, wall types, patterns -- folded. Every tile and row does
      what its label says: a row with no live target is disabled and says why. */
-  var A3D_ASSETS_UI={q:'',closed:{materials:true,sections:true,walltypes:true,patterns:true}};
+  var A3D_ASSETS_UI={q:'',closed:{materials:true,walltypes:true,patterns:true}};
   function bimAssetMatch(q,words){
     if(!q)return true;
     return words.join(' ').toLowerCase().indexOf(q)>=0;
@@ -20750,7 +20539,7 @@ try{
       '</div></div>';
     h+='<div class="a3d-asnote">Drag onto the drawing to place it there, or click to place it at the centre of the view. '+(sel
         ? 'Selected: <b>'+bimEsc(sel.name)+'</b>'
-        : 'Materials, sections, wall types and patterns go on the selection, or on what they are dropped on.')+'</div>';
+        : 'Materials, wall types and patterns go on the selection, or on what they are dropped on.')+'</div>';
     var shown=0;
     function grp(id,title,sub,body,tiles){
       if(!body)return '';
@@ -20819,19 +20608,6 @@ try{
         solidSel?cards[i].kind+' \u00b7 '+cards[i].density+' kg/m\u00b3':'drag onto a solid, or select one',true,'');
     }
     h+=grp('materials','Materials',cards.length+' card(s)',body,false);
-    // __acad3dV126: Sections -- the profiled column and beam types, onto a member of their kind
-    var secs=[];
-    try{bimEnsureTypes();['column','beam'].forEach(function(c){(A3D.types[c]||[]).forEach(function(ty){if(ty.params&&ty.params.profile)secs.push({cat:c,t:ty});});});}
-    catch(eS){console.warn('[BIM] The section types could not be read',eS);secs=[];}
-    body='';
-    for(i=0;i<secs.length;i++){
-      var sp=secs[i].t.params,sm=bimMaterialByName(sp.material||''),sbad=bimProfileProblem(sp.profile);
-      if(!bimAssetMatch(q,[secs[i].t.name,secs[i].cat,'section',sp.material||'',BIM_PROFILE_SHAPES[sp.profile.shape]||'']))continue;
-      body+=row('section',secs[i].cat+'/'+secs[i].t.id,secs[i].t.name,
-        (sp.material?sp.material+' ':'')+secs[i].cat+(sm&&sm.density&&!sbad?' \u00b7 '+bimDispNum(bimProfileProps(sp.profile).A*sm.density,1)+' kg/m':''),
-        !sbad,'its section cannot be read: '+sbad);
-    }
-    h+=grp('sections','Sections',secs.length+' section(s)',body,false);
     // Wall types -- made active for the next wall, and applied to the wall they go on
     var wts=[];
     try{bimEnsureTypes();wts=A3D.types.wall||[];}catch(eW){wts=[];}
@@ -20902,24 +20678,6 @@ try{
       refreshTree();refreshProps();paint();saveSoon();
       a3dToast(key+' assigned to '+o.name);
       return true;
-    }
-    if(kind==='section'){   /* __acad3dV126 */
-      var sl=key.indexOf('/'),scat=key.slice(0,sl),sty=bimFindType(scat,key.slice(sl+1));
-      if(!sty){a3dToast('That section is no longer in the project');return false;}
-      var tg=drop?(o?[o]:[]):bimAssetSelIds().map(objById);
-      tg=tg.filter(function(x){return x&&x.bim&&x.bim.type===scat;});
-      if(!tg.length){
-        a3dToast(drop?(o?sty.name+' is a '+scat+' section: drop it on a '+scat:'Drop a section on a '+scat)
-                     :'Select a '+scat+', or drag '+sty.name+' onto one');
-        return false;
-      }
-      pushUndo();
-      var sok=[],sno=[];
-      tg.forEach(function(x){if(bimAssignTypeTo(x,scat,sty.id))sok.push(x.name);else{sno.push(x.name);console.warn('[BIM] Section '+sty.id+' could not be applied to '+x.name);}});
-      A3D.meshes={};refreshTree();refreshProps();paint();saveSoon();
-      a3dToast(sok.length?(sok.length===1?sok[0]+' is now '+sty.name:sok.length+' '+scat+'s are now '+sty.name)+(sno.length?'; not '+sno.join(', '):'')
-                         :sty.name+' could not be applied - see the console');
-      return sok.length>0;
     }
     if(kind==='walltype'){
       A3D.activeWallType=key;
@@ -21085,7 +20843,7 @@ try{
       var sn=bimSnapPoint([cx,cy],g,{tool:'familyplace',pts:[],y:y0,on:null});
       pt=[sn[0],sn[1]];
     }
-    if(kind==='material'||kind==='pattern'||kind==='walltype'||kind==='section')obj=pick(cx,cy)||null;
+    if(kind==='material'||kind==='pattern'||kind==='walltype')obj=pick(cx,cy)||null;
     if(!pt&&(kind==='family'||kind==='block'||kind==='note')){
       a3dToast('That point is not on the level: drop it where the drawing is');
       return false;
@@ -22709,858 +22467,6 @@ try{
     }
     ctx.restore();
   }
-  /* ================= __acad3dV125: the analytical model =================
-     Derived on every call from the live columns and beams, never stored: the lines cannot fall out
-     of step with the members they stand for. Units kN, m, kPa. */
-  var BIM_AN_TOL=0.05;
-  var BIM_SUPPORTS=['fixed','pinned','free'];
-  /* '210 GPa' -> kN/m2 */
-  function bimModulusKPa(s){
-    var m=/([0-9]*\.?[0-9]+)\s*(GPa|MPa|kPa)/i.exec(String(s||''));
-    if(!m)return null;
-    var v=parseFloat(m[1]),u=m[2].toLowerCase();
-    return u==='gpa'?v*1e6:(u==='mpa'?v*1e3:v);
-  }
-  /* the member's own material, else its type's, else Concrete */
-  function bimMemberMaterial(o){
-    var n=o&&o.materialName||null;
-    if(!n&&o&&o.bim&&o.bim.typeId){
-      try{var ty=bimFindType(o.bim.typeCat||o.bim.type,o.bim.typeId);if(ty&&ty.params&&ty.params.material)n=ty.params.material;}
-      catch(eT){console.warn('[BIM] A member type could not be read',eT);}
-    }
-    return bimMaterialByName(n||'Concrete')||bimMaterialByName('Concrete');
-  }
-  /* A rectangle hy deep along the member's local y and hz wide along its local z. J by the
-     Saint-Venant series for a rectangle, a the long side and b the short. */
-  function bimRectSection(hy,hz){
-    var a=Math.max(hy,hz),b=Math.min(hy,hz);
-    return {A:hy*hz,Iz:hz*hy*hy*hy/12,Iy:hy*hz*hz*hz/12,
-            J:a*b*b*b*(1/3-0.21*(b/a)*(1-Math.pow(b/a,4)/12))};
-  }
-  /* __acad3dV126: a member's section -- its type's profile, else the rectangle of its width and depth,
-     in its own y (a column's width, a beam's depth) and z */
-  function bimMemberSection(o){
-    var b=o.bim;
-    if(b.section)return b.section;
-    return b.type==='column'?{shape:'rect',d:b.width,b:b.depth}:{shape:'rect',d:b.depth,b:b.width};
-  }
-  function bimVSub(a,b){return [a[0]-b[0],a[1]-b[1],a[2]-b[2]];}
-  function bimVDot(a,b){return a[0]*b[0]+a[1]*b[1]+a[2]*b[2];}
-  function bimVLen(a){return Math.sqrt(bimVDot(a,a));}
-  function bimVCross(a,b){return [a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];}
-  function bimVUnit(a){var l=bimVLen(a);return l>1e-12?[a[0]/l,a[1]/l,a[2]/l]:null;}
-  /* A member's local axes: x along it; y the reference direction made square to x; z = x cross y. */
-  function bimMemberAxes(p1,p2,yRef){
-    var ex=bimVUnit(bimVSub(p2,p1));
-    if(!ex)return null;
-    var y=bimVSub(yRef,[ex[0]*bimVDot(yRef,ex),ex[1]*bimVDot(yRef,ex),ex[2]*bimVDot(yRef,ex)]);
-    var ey=bimVUnit(y);
-    if(!ey){y=Math.abs(ex[1])<0.9?[0,1,0]:[1,0,0];ey=bimVUnit(bimVSub(y,[ex[0]*bimVDot(y,ex),ex[1]*bimVDot(y,ex),ex[2]*bimVDot(y,ex)]));}
-    return {ex:ex,ey:ey,ez:bimVCross(ex,ey)};
-  }
-  function bimIsFrameMember(o){
-    return !!(o&&o.t==='solid'&&o.bim&&(o.bim.type==='column'||o.bim.type==='beam'));
-  }
-  function bimStructOf(o){
-    return (o&&o.bim&&o.bim.struct&&typeof o.bim.struct==='object')?o.bim.struct:{};
-  }
-  /* The lowest level's elevation: a column that starts there stands on the ground. */
-  function bimLowestElev(){
-    var i,m=Infinity;
-    for(i=0;i<A3D.levels.length;i++)if(isFinite(A3D.levels[i].elev)&&A3D.levels[i].elev<m)m=A3D.levels[i].elev;
-    return isFinite(m)?m:0;
-  }
-  /* A column's base support: what is set on it, or -- unset -- Fixed on a footing or the lowest
-     level, and otherwise nothing: it stands on whatever it meets there. */
-  function bimColumnSupport(o,baseY,automatic){
-    var s=automatic?null:bimStructOf(o).support;
-    if(BIM_SUPPORTS.indexOf(s)>=0)return {kind:s==='free'?null:s,set:true};
-    if(bimFootingOf(o.id))return {kind:'fixed',set:false,why:'on its footing'};
-    if(Math.abs(baseY-bimLowestElev())<=BIM_AN_TOL)return {kind:'fixed',set:false,why:'on the lowest level'};
-    return {kind:null,set:false,why:'stands on what it meets'};
-  }
-  function bimAnalyticalModel(){
-    var nodes=[],members=[],els=[],skipped=[],notAnalysed={},i,j,k;
-    function nodeAt(p){
-      for(var n=0;n<nodes.length;n++){
-        var q=nodes[n].p;
-        if(Math.abs(q[0]-p[0])<=BIM_AN_TOL&&Math.abs(q[1]-p[1])<=BIM_AN_TOL&&Math.abs(q[2]-p[2])<=BIM_AN_TOL)return n;
-      }
-      nodes.push({i:nodes.length,p:[p[0],p[1],p[2]],sup:null,supBy:null,supWhy:''});
-      return nodes.length-1;
-    }
-    for(i=0;i<A3D.objs.length;i++){
-      var o=A3D.objs[i];
-      if(!bimIsFrameMember(o)){
-        if(o.t==='solid'&&o.bim&&o.bim.type&&o.bim.type!=='opening'){
-          var kk=o.bim.type;notAnalysed[kk]=(notAnalysed[kk]||0)+1;
-        }
-        continue;
-      }
-      var q=bimObjOffset(o),b=o.bim,p1,p2,yRef,hy,hz;
-      if(b.type==='column'){
-        if(!b.center||!(b.height>0)||!(b.width>0)||!(b.depth>0)){skipped.push({id:o.id,name:o.name,why:'has no parametric size'});continue;}
-        var r=b.rotation||0;
-        p1=[b.center[0]+q[0],b.baseY+q[1],b.center[1]+q[2]];
-        p2=[p1[0],p1[1]+b.height,p1[2]];
-        yRef=[Math.cos(r),0,Math.sin(r)];hy=b.width;hz=b.depth;
-      }else{
-        if(!b.p1||!b.p2||!(b.width>0)||!(b.depth>0)){skipped.push({id:o.id,name:o.name,why:'has no parametric size'});continue;}
-        var ty=(isFinite(b.topY)?b.topY:(b.baseY+b.depth))+q[1];
-        p1=[b.p1[0]+q[0],ty,b.p1[1]+q[2]];
-        p2=[b.p2[0]+q[0],ty,b.p2[1]+q[2]];
-        yRef=[0,1,0];hy=b.depth;hz=b.width;
-      }
-      var ax=bimMemberAxes(p1,p2,yRef);
-      if(!ax){skipped.push({id:o.id,name:o.name,why:'has no length'});continue;}
-      var mat=bimMemberMaterial(o),E=bimModulusKPa(mat&&mat.youngsModulus);
-      var nu=mat&&isFinite(mat.poissonRatio)?mat.poissonRatio:0.2;
-      if(!(E>0)){skipped.push({id:o.id,name:o.name,why:'its material ('+(mat?mat.name:'none')+') has no modulus'});continue;}
-      var pf=bimMemberSection(o),pq=bimProfileProblem(pf);   /* __acad3dV126 */
-      if(pq){skipped.push({id:o.id,name:o.name,why:'its section cannot be read: '+pq});continue;}
-      var sec=bimProfileProps(pf);
-      members.push({id:o.id,name:o.name,kind:b.type,p1:p1,p2:p2,L:bimVLen(bimVSub(p2,p1)),ax:ax,
-        n1:nodeAt(p1),n2:nodeAt(p2),sec:sec,E:E,G:E/(2*(1+nu)),rho:mat&&mat.density||0,material:mat?mat.name:'',
-        hy:hy,hz:hz,els:[]});
-    }
-    /* a node on another member's line splits it there */
-    for(i=0;i<members.length;i++){
-      var m=members[i],on=[];
-      for(k=0;k<nodes.length;k++){
-        if(k===m.n1||k===m.n2)continue;
-        var d=bimVSub(nodes[k].p,m.p1),s=bimVDot(d,m.ax.ex);
-        if(s<=BIM_AN_TOL||s>=m.L-BIM_AN_TOL)continue;
-        var perp=bimVSub(d,[m.ax.ex[0]*s,m.ax.ex[1]*s,m.ax.ex[2]*s]);
-        if(bimVLen(perp)<=BIM_AN_TOL)on.push({n:k,s:s});
-      }
-      on.sort(function(a,c){return a.s-c.s;});
-      var chain=[{n:m.n1,s:0}].concat(on).concat([{n:m.n2,s:m.L}]);
-      for(j=0;j+1<chain.length;j++){
-        var e={i:els.length,member:i,memberId:m.id,name:m.name,kind:m.kind,n1:chain[j].n,n2:chain[j+1].n,
-          s0:chain[j].s,s1:chain[j+1].s,L:chain[j+1].s-chain[j].s,ax:m.ax,sec:m.sec,E:m.E,G:m.G,rho:m.rho};
-        /* __acad3dV125: a pinned beam releases both bending rotations at its two ENDS -- the
-           pieces between split points stay continuous */
-        var rel=[];
-        if(m.kind==='beam'&&bimStructOf(objById(m.id)).ends==='pinned'){
-          if(j===0)rel.push(4,5);
-          if(j+2===chain.length)rel.push(10,11);
-        }
-        e.rel=rel;
-        els.push(e);m.els.push(e.i);
-      }
-    }
-    /* supports: a column base */
-    for(i=0;i<members.length;i++){
-      if(members[i].kind!=='column')continue;
-      var co=objById(members[i].id),sp=bimColumnSupport(co,members[i].p1[1]),nd=nodes[members[i].n1];
-      if(sp.kind&&(!nd.sup||sp.kind==='fixed')){nd.sup=sp.kind;nd.supBy=members[i].id;nd.supWhy=sp.set?'set':sp.why;}
-    }
-    return {nodes:nodes,members:members,els:els,skipped:skipped,notAnalysed:notAnalysed};
-  }
-  /* ================= __acad3dV125: loads and combinations ================= */
-  var BIM_G=9.80665;
-  var BIM_COMBOS=[
-    {name:'1.2D+1.6L',f:{D:1.2,L:1.6},why:'strength, ASCE 7 2.3.1 combination 2'},
-    {name:'1.4D',f:{D:1.4},why:'strength, ASCE 7 2.3.1 combination 1'},
-    {name:'D+L',f:{D:1,L:1},why:'service'},
-    {name:'D',f:{D:1},why:'dead load alone'},
-    {name:'L',f:{L:1},why:'live load alone'}
-  ];
-  var BIM_LOAD_KINDS={line:'Line (kN/m, down)',point:'Point (kN, down)',lateral:'Lateral at top (kN)'};
-  /* the analysis settings and the last result: a view of the model, not saved with it */
-  var A3D_STRUCT={combo:'1.2D+1.6L',selfWeight:true,show:false,diagram:'M',deflected:true,res:null};
-  function bimCombo(name){
-    var i;
-    for(i=0;i<BIM_COMBOS.length;i++)if(BIM_COMBOS[i].name===name)return BIM_COMBOS[i];
-    return null;
-  }
-  /* Is a load one this member can carry? Returns null when it is, the reason when not. */
-  function bimLoadProblem(o,ld){
-    if(!ld||(ld.lc!=='D'&&ld.lc!=='L'))return 'A load is in case D or L';
-    if(!BIM_LOAD_KINDS[ld.kind])return 'Unknown kind of load';
-    if(!isFinite(ld.v))return 'A load needs a value';
-    var kind=o&&o.bim&&o.bim.type;
-    if((ld.kind==='line'||ld.kind==='point')&&kind!=='beam')return 'Line and point loads go on beams';
-    if(ld.kind==='lateral'&&kind!=='column')return 'A lateral load goes on a column';
-    if(ld.kind==='lateral'&&ld.dir!=='x'&&ld.dir!=='z')return 'A lateral load is along X or Z';
-    if(ld.kind==='point'){
-      var L=o.bim.length||(o.bim.p1&&o.bim.p2?Math.hypot(o.bim.p2[0]-o.bim.p1[0],o.bim.p2[1]-o.bim.p1[1]):0);
-      if(!isFinite(ld.at)||ld.at<0||ld.at>L+1e-9)return 'A point load is between 0 and '+bimDispNum(L,3)+' m from the start';
-    }
-    return null;
-  }
-  /* The factored loads of one combination on the analytical model:
-       el[i]    {q:[x,y,z] kN/m global, pts:[{a, P:[x,y,z]}]} on each element
-       nodal[n] [fx,fy,fz] kN on each node
-       total    [Fx,Fy,Fz], everything applied -- the equilibrium check's other side */
-  function bimStructLoads(model,combo,selfWeight){
-    var el=model.els.map(function(){return {q:[0,0,0],pts:[]};}),nodal={},total=[0,0,0],i,j,k;
-    var fD=combo.f.D||0;
-    if(selfWeight&&fD){
-      for(i=0;i<model.els.length;i++){
-        var e=model.els[i],w=e.rho*e.sec.A*BIM_G/1000*fD;
-        el[i].q[1]-=w;total[1]-=w*e.L;
-      }
-    }
-    for(i=0;i<model.members.length;i++){
-      var m=model.members[i],o=objById(m.id),loads=bimStructOf(o).loads||[];
-      for(j=0;j<loads.length;j++){
-        var ld=loads[j],f=combo.f[ld.lc]||0;
-        if(!f||bimLoadProblem(o,ld))continue;
-        var v=ld.v*f;
-        if(ld.kind==='line'){
-          for(k=0;k<m.els.length;k++){var ee=model.els[m.els[k]];el[m.els[k]].q[1]-=v;total[1]-=v*ee.L;}
-        }else if(ld.kind==='point'){
-          for(k=0;k<m.els.length;k++){
-            var ep=model.els[m.els[k]];
-            if(ld.at>=ep.s0-1e-9&&(ld.at<ep.s1-1e-9||k===m.els.length-1)){
-              el[m.els[k]].pts.push({a:Math.min(Math.max(ld.at-ep.s0,0),ep.L),P:[0,-v,0]});total[1]-=v;break;
-            }
-          }
-        }else if(ld.kind==='lateral'){
-          var nd=nodal[m.n2]||(nodal[m.n2]=[0,0,0]),ix=ld.dir==='x'?0:2;
-          nd[ix]+=v;total[ix]+=v;
-        }
-      }
-    }
-    return {el:el,nodal:nodal,total:total};
-  }
-  /* ================= __acad3dV125: the frame solve (direct stiffness) ================= */
-  /* A prismatic member's stiffness in its own axes; dofs u v w rx ry rz at each end. */
-  function bimFrameKLocal(e){
-    var L=e.L,E=e.E,G=e.G,A=e.sec.A,Iy=e.sec.Iy,Iz=e.sec.Iz,J=e.sec.J,k=[],i,j;
-    for(i=0;i<12;i++){k.push([]);for(j=0;j<12;j++)k[i].push(0);}
-    var a=E*A/L,t=G*J/L,z1=12*E*Iz/(L*L*L),z2=6*E*Iz/(L*L),z3=4*E*Iz/L,z4=2*E*Iz/L;
-    var y1=12*E*Iy/(L*L*L),y2=6*E*Iy/(L*L),y3=4*E*Iy/L,y4=2*E*Iy/L;
-    function s(r,c,v){k[r][c]=v;k[c][r]=v;}
-    s(0,0,a);s(0,6,-a);s(6,6,a);
-    s(3,3,t);s(3,9,-t);s(9,9,t);
-    s(1,1,z1);s(1,5,z2);s(1,7,-z1);s(1,11,z2);s(5,5,z3);s(5,7,-z2);s(5,11,z4);s(7,7,z1);s(7,11,-z2);s(11,11,z3);
-    s(2,2,y1);s(2,4,-y2);s(2,8,-y1);s(2,10,-y2);s(4,4,y3);s(4,8,y2);s(4,10,y4);s(8,8,y1);s(8,10,y2);s(10,10,y3);
-    return k;
-  }
-  function bimFrameRot(e){return [e.ax.ex,e.ax.ey,e.ax.ez];}
-  /* local = R global, for a 12-vector (four 3-blocks) */
-  function bimFrameToLocal(R,g){
-    var l=[],b,i;
-    for(b=0;b<4;b++)for(i=0;i<3;i++)l.push(R[i][0]*g[b*3]+R[i][1]*g[b*3+1]+R[i][2]*g[b*3+2]);
-    return l;
-  }
-  function bimFrameToGlobal(R,l){
-    var g=[],b,i;
-    for(b=0;b<4;b++)for(i=0;i<3;i++)g.push(R[0][i]*l[b*3]+R[1][i]*l[b*3+1]+R[2][i]*l[b*3+2]);
-    return g;
-  }
-  /* The load an element carries, in its own axes: q (kN/m) and point loads {a, P}. */
-  function bimFrameElLoad(e,ld){
-    var R=bimFrameRot(e);
-    function loc(v){return [bimVDot(R[0],v),bimVDot(R[1],v),bimVDot(R[2],v)];}
-    return {q:loc(ld.q),pts:ld.pts.map(function(p){return {a:p.a,P:loc(p.P)};})};
-  }
-  /* Fixed-end forces (the forces the fixed ends put on the member) of those loads, local. */
-  function bimFrameFef(e,lq){
-    var L=e.L,r=[0,0,0,0,0,0,0,0,0,0,0,0],q=lq.q,i;
-    r[0]-=q[0]*L/2;r[6]-=q[0]*L/2;
-    r[1]-=q[1]*L/2;r[5]-=q[1]*L*L/12;r[7]-=q[1]*L/2;r[11]+=q[1]*L*L/12;
-    r[2]-=q[2]*L/2;r[4]+=q[2]*L*L/12;r[8]-=q[2]*L/2;r[10]-=q[2]*L*L/12;
-    for(i=0;i<lq.pts.length;i++){
-      var a=lq.pts[i].a,b=L-a,P=lq.pts[i].P,L2=L*L,L3=L2*L;
-      r[0]-=P[0]*b/L;r[6]-=P[0]*a/L;
-      r[1]-=P[1]*b*b*(3*a+b)/L3;r[5]-=P[1]*a*b*b/L2;r[7]-=P[1]*a*a*(a+3*b)/L3;r[11]+=P[1]*a*a*b/L2;
-      r[2]-=P[2]*b*b*(3*a+b)/L3;r[4]+=P[2]*a*b*b/L2;r[8]-=P[2]*a*a*(a+3*b)/L3;r[10]-=P[2]*a*a*b/L2;
-    }
-    return r;
-  }
-  /* Gauss-Jordan inverse of a small matrix (a released set is at most four rotations). */
-  function bimSmallInv(M){
-    var n=M.length,A=M.map(function(r,i){var x=r.slice();for(var j=0;j<n;j++)x.push(i===j?1:0);return x;}),i,j,k;
-    for(i=0;i<n;i++){
-      var p=i;for(k=i+1;k<n;k++)if(Math.abs(A[k][i])>Math.abs(A[p][i]))p=k;
-      if(Math.abs(A[p][i])<1e-300)return null;
-      var t=A[i];A[i]=A[p];A[p]=t;
-      var d=A[i][i];for(j=0;j<2*n;j++)A[i][j]/=d;
-      for(k=0;k<n;k++)if(k!==i){var f=A[k][i];if(f)for(j=0;j<2*n;j++)A[k][j]-=f*A[i][j];}
-    }
-    return A.map(function(r){return r.slice(n);});
-  }
-  /* Condense the released dofs out of an element's stiffness and fixed-end forces. Returns the
-     condensed pair and what it needs to recover the released rotations. */
-  function bimFrameCondense(kl,fef,rel){
-    if(!rel||!rel.length)return {k:kl,fef:fef,inv:null};
-    var keep=[],i,j,a,b;
-    for(i=0;i<12;i++)if(rel.indexOf(i)<0)keep.push(i);
-    var kbb=rel.map(function(r){return rel.map(function(c){return kl[r][c];});}),inv=bimSmallInv(kbb);
-    if(!inv)return {k:kl,fef:fef,inv:null};
-    var k=kl.map(function(r){return r.slice();}),f=fef.slice();
-    for(i=0;i<keep.length;i++){
-      a=keep[i];
-      for(j=0;j<keep.length;j++){
-        b=keep[j];var s=0,p,q;
-        for(p=0;p<rel.length;p++)for(q=0;q<rel.length;q++)s+=kl[a][rel[p]]*inv[p][q]*kl[rel[q]][b];
-        k[a][b]=kl[a][b]-s;
-      }
-      var sf=0,p2,q2;
-      for(p2=0;p2<rel.length;p2++)for(q2=0;q2<rel.length;q2++)sf+=kl[a][rel[p2]]*inv[p2][q2]*fef[rel[q2]];
-      f[a]=fef[a]-sf;
-    }
-    for(i=0;i<rel.length;i++){f[rel[i]]=0;for(j=0;j<12;j++){k[rel[i]][j]=0;k[j][rel[i]]=0;}}
-    return {k:k,fef:f,inv:inv,rel:rel,kl:kl,fef0:fef};
-  }
-  /* Reverse Cuthill-McKee: a node order that keeps the stiffness a narrow band. */
-  function bimFrameRcm(nN,els){
-    var adj=[],i,seen=[],order=[];
-    for(i=0;i<nN;i++){adj.push([]);seen.push(false);}
-    for(i=0;i<els.length;i++){
-      var a=els[i].n1,b=els[i].n2;
-      if(adj[a].indexOf(b)<0)adj[a].push(b);
-      if(adj[b].indexOf(a)<0)adj[b].push(a);
-    }
-    var byDeg=[];for(i=0;i<nN;i++)byDeg.push(i);
-    byDeg.sort(function(x,y){return adj[x].length-adj[y].length||x-y;});
-    for(var s=0;s<byDeg.length;s++){
-      if(seen[byDeg[s]])continue;
-      var queue=[byDeg[s]];seen[byDeg[s]]=true;
-      while(queue.length){
-        var n=queue.shift();order.push(n);
-        var nb=adj[n].filter(function(x){return !seen[x];}).sort(function(x,y){return adj[x].length-adj[y].length||x-y;});
-        for(i=0;i<nb.length;i++){seen[nb[i]]=true;queue.push(nb[i]);}
-      }
-    }
-    return order.reverse();
-  }
-  var BIM_DOF_NAMES=['moves along X','moves along Y','moves along Z','turns about X','turns about Y','turns about Z'];
-  function bimFrameSolve(model,combo,selfWeight){
-    if(!model.els.length)return {error:'There are no columns or beams to analyse'};
-    var nN=model.nodes.length,i,j,k,m,e;
-    var sup=0;for(i=0;i<nN;i++)if(model.nodes[i].sup)sup++;
-    if(!sup)return {error:'Nothing holds the frame up: no column stands on a footing or the lowest level, and no support is set'};
-    var ld=bimStructLoads(model,combo,selfWeight);
-    /* equation numbers: a restrained dof has none */
-    var order=bimFrameRcm(nN,model.els),eq=[],nEq=0;
-    for(i=0;i<nN;i++)eq.push([-1,-1,-1,-1,-1,-1]);
-    for(k=0;k<order.length;k++){
-      var nd=model.nodes[order[k]],fix=nd.sup==='fixed'?6:(nd.sup==='pinned'?3:0);
-      for(j=0;j<6;j++)if(j>=fix)eq[order[k]][j]=nEq++;
-    }
-    function edofs(e){var d=[],j2;for(j2=0;j2<6;j2++)d.push(eq[e.n1][j2]);for(j2=0;j2<6;j2++)d.push(eq[e.n2][j2]);return d;}
-    var hb=0;
-    for(i=0;i<model.els.length;i++){
-      var dd=edofs(model.els[i]).filter(function(x){return x>=0;});
-      if(dd.length)hb=Math.max(hb,Math.max.apply(null,dd)-Math.min.apply(null,dd));
-    }
-    var K=[],F=new Float64Array(nEq);
-    for(i=0;i<nEq;i++)K.push(new Float64Array(hb+1));
-    var info=[];
-    for(i=0;i<model.els.length;i++){
-      e=model.els[i];
-      var R=bimFrameRot(e),T=[],r,c;
-      var lq=bimFrameElLoad(e,ld.el[i]),cond=bimFrameCondense(bimFrameKLocal(e),bimFrameFef(e,lq),e.rel);
-      var kl=cond.k,fef=cond.fef;
-      /* kg = T' kl T, with T four copies of R */
-      var kg=[];
-      for(r=0;r<12;r++){kg.push(new Array(12));}
-      var tmp=[];
-      for(r=0;r<12;r++){tmp.push(new Array(12));for(c=0;c<12;c++){var bc=Math.floor(c/3)*3,cc=c%3,sm=0;
-        for(m=0;m<3;m++)sm+=kl[r][bc+m]*R[m][cc];tmp[r][c]=sm;}}
-      for(r=0;r<12;r++){var br=Math.floor(r/3)*3,rr=r%3;for(c=0;c<12;c++){var sm2=0;
-        for(m=0;m<3;m++)sm2+=R[m][rr]*tmp[br+m][c];kg[r][c]=sm2;}}
-      var dofs=edofs(e);
-      for(r=0;r<12;r++){if(dofs[r]<0)continue;for(c=0;c<12;c++){if(dofs[c]<dofs[r])continue;K[dofs[r]][dofs[c]-dofs[r]]+=kg[r][c];}}
-      var fg=bimFrameToGlobal(R,fef);
-      for(r=0;r<12;r++)if(dofs[r]>=0)F[dofs[r]]-=fg[r];
-      info.push({R:R,kl:kl,lq:lq,fef:fef,dofs:dofs,cond:cond});
-    }
-    var nk;
-    for(nk in ld.nodal)if(ld.nodal.hasOwnProperty(nk))for(j=0;j<3;j++){var q=eq[+nk][j];if(q>=0)F[q]+=ld.nodal[nk][j];}
-    /* banded Cholesky, L stored by row as L[i][i-j] */
-    var diag0=new Float64Array(nEq),maxd=0;
-    for(i=0;i<nEq;i++){diag0[i]=K[i][0];if(diag0[i]>maxd)maxd=diag0[i];}
-    var Lb=[];for(i=0;i<nEq;i++)Lb.push(new Float64Array(hb+1));
-    function A(ii,jj){return jj<=ii?(ii-jj<=hb?K[jj][ii-jj]:0):0;}
-    var bad=-1;
-    for(i=0;i<nEq&&bad<0;i++){
-      var j0=Math.max(0,i-hb);
-      for(j=j0;j<=i;j++){
-        var s=A(i,j),kk;
-        for(kk=j0;kk<j;kk++)s-=Lb[i][i-kk]*Lb[j][j-kk];
-        if(i===j){
-          if(!(s>1e-10*Math.max(diag0[i],1e-12*maxd))||!isFinite(s)){bad=i;break;}
-          Lb[i][0]=Math.sqrt(s);
-        }else Lb[i][i-j]=s/Lb[j][0];
-      }
-    }
-    if(bad>=0){
-      var bn=-1,bd=-1;
-      for(i=0;i<nN&&bn<0;i++)for(j=0;j<6;j++)if(eq[i][j]===bad){bn=i;bd=j;break;}
-      var near='';
-      for(i=0;i<model.els.length&&!near;i++)if(model.els[i].n1===bn||model.els[i].n2===bn)near=model.els[i].name;
-      var np=model.nodes[bn]?model.nodes[bn].p:[0,0,0];
-      return {error:'The frame is unstable: the node at '+np.map(function(v){return v.toFixed(2);}).join(', ')+
-        (near?' ('+near+')':'')+' '+(BIM_DOF_NAMES[bd]||'moves')+' freely. Set a support, or connect it.',node:bn,dof:bd};
-    }
-    var y=new Float64Array(nEq),x=new Float64Array(nEq);
-    for(i=0;i<nEq;i++){var s1=F[i];for(k=Math.max(0,i-hb);k<i;k++)s1-=Lb[i][i-k]*y[k];y[i]=s1/Lb[i][0];}
-    for(i=nEq-1;i>=0;i--){var s2=y[i];for(k=i+1;k<=Math.min(nEq-1,i+hb);k++)s2-=Lb[k][k-i]*x[k];x[i]=s2/Lb[i][0];}
-    var disp=[];
-    for(i=0;i<nN;i++){var dv=[];for(j=0;j<6;j++)dv.push(eq[i][j]>=0?x[eq[i][j]]:0);disp.push(dv);}
-    /* member end forces, and what the supports push back with */
-    var nodeF=[];for(i=0;i<nN;i++)nodeF.push([0,0,0,0,0,0]);
-    var elRes=[];
-    for(i=0;i<model.els.length;i++){
-      e=model.els[i];var inf=info[i];
-      var dgl=disp[e.n1].concat(disp[e.n2]),dl=bimFrameToLocal(inf.R,dgl),f=[];
-      for(r=0;r<12;r++){var sf=inf.fef[r];for(c=0;c<12;c++)sf+=inf.kl[r][c]*dl[c];f.push(sf);}
-      /* a released end's own rotation: theta = -kbb^-1 (fef_b + kba d_a) */
-      if(inf.cond.inv){
-        var cd=inf.cond,p3,q3,c3;
-        for(p3=0;p3<cd.rel.length;p3++){
-          var th=0;
-          for(q3=0;q3<cd.rel.length;q3++){
-            var rhs=cd.fef0[cd.rel[q3]];
-            for(c3=0;c3<12;c3++)if(cd.rel.indexOf(c3)<0)rhs+=cd.kl[cd.rel[q3]][c3]*dl[c3];
-            th-=cd.inv[p3][q3]*rhs;
-          }
-          dl[cd.rel[p3]]=th;
-        }
-      }
-      var fgl=bimFrameToGlobal(inf.R,f);
-      for(j=0;j<6;j++){nodeF[e.n1][j]+=fgl[j];nodeF[e.n2][j]+=fgl[6+j];}
-      elRes.push({f:f,dl:dl,lq:inf.lq});
-    }
-    var reactions=[],rs=[0,0,0];
-    for(i=0;i<nN;i++){
-      if(!model.nodes[i].sup)continue;
-      var Rv=nodeF[i].slice(),an=ld.nodal[i]||[0,0,0];
-      for(j=0;j<3;j++)Rv[j]-=an[j];
-      for(j=0;j<6;j++)if(eq[i][j]>=0)Rv[j]=0;
-      reactions.push({node:i,p:model.nodes[i].p,sup:model.nodes[i].sup,by:model.nodes[i].supBy,R:Rv});
-      for(j=0;j<3;j++)rs[j]+=Rv[j];
-    }
-    var errMax=0;for(j=0;j<3;j++)errMax=Math.max(errMax,Math.abs(rs[j]+ld.total[j]));
-    var res={combo:combo.name,selfWeight:!!selfWeight,disp:disp,els:elRes,reactions:reactions,
-      equilibrium:{load:ld.total.slice(),reaction:rs,err:errMax},members:[]};
-    for(i=0;i<model.members.length;i++)res.members.push(bimFrameMemberResult(model,res,i));
-    return res;
-  }
-  /* Forces and deflection at x along one element, from its end forces f and its loads. */
-  function bimFrameAt(e,er,x){
-    var f=er.f,q=er.lq.q,pts=er.lq.pts,L=e.L,i;
-    var N=-(f[0]+q[0]*x),Vy=f[1]+q[1]*x,Vz=f[2]+q[2]*x;
-    var Mz=-f[5]+f[1]*x+q[1]*x*x/2,My=-(f[4]+f[2]*x+q[2]*x*x/2),Tq=-f[3];
-    for(i=0;i<pts.length;i++){
-      var a=pts[i].a,P=pts[i].P;
-      if(x>a+1e-12){N-=P[0];Vy+=P[1];Vz+=P[2];Mz+=P[1]*(x-a);My-=P[2]*(x-a);}
-    }
-    /* deflection: Hermite on the end movements, plus the fixed-end deflection of the loads */
-    var dl=er.dl,xi=x/L,h1=1-3*xi*xi+2*xi*xi*xi,h2=L*(xi-2*xi*xi+xi*xi*xi),h3=3*xi*xi-2*xi*xi*xi,h4=L*(-xi*xi+xi*xi*xi);
-    var u=dl[0]+(dl[6]-dl[0])*xi;
-    var v=h1*dl[1]+h2*dl[5]+h3*dl[7]+h4*dl[11];
-    var w=h1*dl[2]-h2*dl[4]+h3*dl[8]-h4*dl[10];
-    var EIz=e.E*e.sec.Iz,EIy=e.E*e.sec.Iy;
-    v+=q[1]*x*x*(L-x)*(L-x)/(24*EIz);w+=q[2]*x*x*(L-x)*(L-x)/(24*EIy);
-    for(i=0;i<pts.length;i++){
-      var aa=pts[i].a,bb=L-aa,PP=pts[i].P,L3=L*L*L,fp;
-      if(x<=aa)fp=x*x*(3*aa*L-(3*aa+bb)*x)*bb*bb/(6*L3);
-      else{var xr=L-x;fp=xr*xr*(3*bb*L-(3*bb+aa)*xr)*aa*aa/(6*L3);}
-      v+=PP[1]*fp/EIz;w+=PP[2]*fp/EIy;
-    }
-    return {N:N,Vy:Vy,Vz:Vz,Mz:Mz,My:My,T:Tq,u:u,v:v,w:w};
-  }
-  /* A member's results: the extremes along it, sampled at twenty points a piece and at every point
-     load; its deflection measured from the line joining its moved ends, and its largest movement. */
-  function bimFrameMemberResult(model,res,mi){
-    var m=model.members[mi],out={id:m.id,name:m.name,kind:m.kind,L:m.L,N:[0,0],V:0,Mz:{v:0,at:0},My:{v:0,at:0},T:0,dmax:0,drel:0,samples:[]};
-    var k,s,first=true;
-    var d1=res.disp[m.n1],d2=res.disp[m.n2];
-    for(k=0;k<m.els.length;k++){
-      var e=model.els[m.els[k]],er=res.els[m.els[k]],xs=[],i;
-      for(i=0;i<=20;i++)xs.push(e.L*i/20);
-      for(i=0;i<er.lq.pts.length;i++)xs.push(er.lq.pts[i].a);
-      xs.sort(function(a,b){return a-b;});
-      /* and where a shear passes through zero -- where the moment peaks between loads -- so the
-         extreme reported is the extreme, not the nearest sample to it */
-      var qv=er.lq.q,zs=[];
-      for(i=0;i+1<xs.length;i++){
-        var x0=xs[i],x1=xs[i+1];
-        if(x1-x0<1e-9)continue;
-        var r0=bimFrameAt(e,er,x0+(x1-x0)*1e-9);
-        if(Math.abs(qv[1])>1e-12){var zy=x0+(x1-x0)*1e-9-r0.Vy/qv[1];if(zy>x0&&zy<x1)zs.push(zy);}
-        if(Math.abs(qv[2])>1e-12){var zz=x0+(x1-x0)*1e-9-r0.Vz/qv[2];if(zz>x0&&zz<x1)zs.push(zz);}
-      }
-      xs=xs.concat(zs).sort(function(a,b){return a-b;});
-      for(i=0;i<xs.length;i++){
-        var x=xs[i],r=bimFrameAt(e,er,x),sm=e.s0+x,R=bimFrameRot(e);
-        var gd=[R[0][0]*r.u+R[1][0]*r.v+R[2][0]*r.w,R[0][1]*r.u+R[1][1]*r.v+R[2][1]*r.w,R[0][2]*r.u+R[1][2]*r.v+R[2][2]*r.w];
-        if(first||r.N>out.N[1])out.N[1]=r.N;
-        if(first||r.N<out.N[0])out.N[0]=r.N;
-        first=false;
-        var vv=Math.sqrt(r.Vy*r.Vy+r.Vz*r.Vz);if(vv>out.V)out.V=vv;
-        if(Math.abs(r.Mz)>Math.abs(out.Mz.v))out.Mz={v:r.Mz,at:sm};
-        if(Math.abs(r.My)>Math.abs(out.My.v))out.My={v:r.My,at:sm};
-        if(Math.abs(r.T)>out.T)out.T=Math.abs(r.T);
-        var mag=bimVLen(gd);if(mag>out.dmax)out.dmax=mag;
-        /* movement across the line joining the member's moved ends */
-        var t2=sm/m.L,ch=[d1[0]+(d2[0]-d1[0])*t2,d1[1]+(d2[1]-d1[1])*t2,d1[2]+(d2[2]-d1[2])*t2];
-        var rel=bimVSub(gd,ch),along=bimVDot(rel,m.ax.ex);
-        var tr=bimVLen(bimVSub(rel,[m.ax.ex[0]*along,m.ax.ex[1]*along,m.ax.ex[2]*along]));
-        if(tr>out.drel)out.drel=tr;
-        out.samples.push({s:sm,N:r.N,Mz:r.Mz,My:r.My,Vy:r.Vy,d:gd});
-      }
-    }
-    return out;
-  }
-  /* ================= __acad3dV125: the analysis display ================= */
-  var BIM_DIAGRAMS={M:'Bending moment (kN\u00b7m)',N:'Axial force (kN)',V:'Shear (kN)'};
-  /* what the solve depends on: when it changes, the result on screen is out of date */
-  function bimStructSig(model){
-    var loads=model.members.map(function(m){var st=bimStructOf(objById(m.id));return [m.id,st.loads||[],st.ends||'',st.support||''];});
-    return JSON.stringify({n:model.nodes.map(function(n){return [n.p,n.sup];}),
-      e:model.els.map(function(e){return [e.n1,e.n2,e.E,e.G,e.rho,e.sec,e.rel,e.ax.ey];}),
-      l:loads,c:A3D_STRUCT.combo,w:A3D_STRUCT.selfWeight});
-  }
-  /* Solve, or return the result already solved for exactly this model. */
-  function bimStructAnalyze(){
-    var model=bimAnalyticalModel(),sig=bimStructSig(model);
-    if(A3D_STRUCT.res&&A3D_STRUCT.res.sig===sig)return A3D_STRUCT.res;
-    var combo=bimCombo(A3D_STRUCT.combo)||BIM_COMBOS[0],res;
-    try{res=bimFrameSolve(model,combo,A3D_STRUCT.selfWeight);}
-    catch(eS){console.warn('[BIM] The frame could not be solved',eS);res={error:'The frame could not be solved - see the console'};}
-    res.sig=sig;res.model=model;
-    A3D_STRUCT.res=res;
-    return res;
-  }
-  /* the last result, if it is still the model's -- otherwise null */
-  function bimStructCurrent(){
-    var r=A3D_STRUCT.res;
-    if(!r||r.error)return null;
-    return bimStructSig(bimAnalyticalModel())===r.sig?r:null;
-  }
-  /* Karamba's headline numbers: the largest moment, the largest deflection and its span ratio, and
-     equilibrium */
-  function bimStructHeadline(r){
-    var mM=null,mD=null,i,a;
-    for(i=0;i<r.members.length;i++){
-      var m=r.members[i];
-      a=Math.max(Math.abs(m.Mz.v),Math.abs(m.My.v));
-      if(!mM||a>mM.v)mM={v:a,name:m.name};
-      if(!mD||m.drel>mD.v)mD={v:m.drel,name:m.name,L:m.L};
-    }
-    var ld=r.equilibrium.load,re=r.equilibrium.reaction;
-    return {moment:mM,defl:mD,
-      ratio:mD&&mD.v>1e-9?Math.round(mD.L/mD.v):null,
-      load:Math.sqrt(ld[0]*ld[0]+ld[1]*ld[1]+ld[2]*ld[2]),reaction:Math.sqrt(re[0]*re[0]+re[1]*re[1]+re[2]*re[2]),
-      balanced:r.equilibrium.err<=1e-6*Math.max(1,Math.abs(ld[1])+Math.abs(ld[0])+Math.abs(ld[2]))};
-  }
-  function bimStructSummary(r){
-    var h=bimStructHeadline(r);
-    return r.combo+': '+r.members.length+' member(s). Largest moment '+(h.moment?h.moment.v.toFixed(1)+' kN\u00b7m ('+h.moment.name+')':'none')+
-      '. Largest deflection '+(h.defl?(h.defl.v*1000).toFixed(1)+' mm'+(h.ratio?' = L/'+h.ratio:'')+' ('+h.defl.name+')':'none')+
-      '. Loads '+h.load.toFixed(1)+' kN, reactions '+h.reaction.toFixed(1)+' kN'+(h.balanced?'':' -- NOT in equilibrium')+'.';
-  }
-  function bimAnalyzeCommand(){
-    A3D_STRUCT.res=null;
-    var r=bimStructAnalyze();
-    if(r.error){A3D_STRUCT.show=false;paint();refreshProps();a3dToast(r.error);return false;}
-    A3D_STRUCT.show=true;
-    if(!A3D_STRUCT.diagram)A3D_STRUCT.diagram='M';
-    paint();refreshProps();
-    var na=r.model.notAnalysed,k,parts=[];
-    for(k in na)if(na.hasOwnProperty(k))parts.push(na[k]+' '+k+(na[k]===1?'':'s'));
-    a3dToast(bimStructSummary(r)+(parts.length?' Not in the frame: '+parts.join(', ')+'.':''));
-    return true;
-  }
-  function bimAnalyzeOff(){
-    A3D_STRUCT.show=false;paint();refreshProps();
-    a3dToast('Analysis display off');
-    return true;
-  }
-  /* the value a diagram shows at one sample */
-  function bimDiagramValue(s,kind){
-    return kind==='N'?s.N:(kind==='V'?s.Vy:s.Mz);
-  }
-  function drawStructResults(ctx,V,W,H){
-    A3D.lastStructDrawn=null;
-    if(!A3D_STRUCT.show||A3D.section||A3D.sheetCapture)return;
-    ctx.save();
-    try{
-      var r=bimStructCurrent();
-      if(!r){
-        ctx.font='12px sans-serif';ctx.textAlign='left';ctx.textBaseline='top';
-        var msg='Analysis results are out of date - run ANALYZE';
-        ctx.lineWidth=3;ctx.strokeStyle='rgba(0,0,0,0.75)';ctx.strokeText(msg,14,14);
-        ctx.fillStyle='#ffe8a3';ctx.fillText(msg,14,14);
-        A3D.lastStructDrawn={stale:true};
-        ctx.restore();return;
-      }
-      var m=r.model,i,j,k,drawn={stale:false,lines:0,diagram:A3D_STRUCT.diagram||'',diagPts:0,deflPts:0,labels:[]};
-      /* the model's size sets the scales: a diagram's peak is an eighth of it, the largest movement a
-         twentieth */
-      var mn=[1e9,1e9,1e9],mx=[-1e9,-1e9,-1e9];
-      for(i=0;i<m.nodes.length;i++)for(k=0;k<3;k++){mn[k]=Math.min(mn[k],m.nodes[i].p[k]);mx[k]=Math.max(mx[k],m.nodes[i].p[k]);}
-      var ext=Math.max(bimVLen(bimVSub(mx,mn)),1);
-      function sc(p){var q=toScreen(p,V,W,H);return q&&isFinite(q[0])&&isFinite(q[1])?q:null;}
-      /* the analytical lines */
-      ctx.setLineDash([]);ctx.lineWidth=1.5;ctx.strokeStyle='#5ec8f0';
-      for(i=0;i<m.els.length;i++){
-        var a=sc(m.nodes[m.els[i].n1].p),b=sc(m.nodes[m.els[i].n2].p);
-        if(!a||!b)continue;
-        ctx.beginPath();ctx.moveTo(a[0],a[1]);ctx.lineTo(b[0],b[1]);ctx.stroke();drawn.lines++;
-      }
-      /* supports: a filled triangle fixed, an open one pinned */
-      for(i=0;i<m.nodes.length;i++){
-        var nd=m.nodes[i];if(!nd.sup)continue;
-        var sp=sc(nd.p);if(!sp)continue;
-        ctx.beginPath();ctx.moveTo(sp[0],sp[1]);ctx.lineTo(sp[0]-7,sp[1]+11);ctx.lineTo(sp[0]+7,sp[1]+11);ctx.closePath();
-        ctx.strokeStyle='#5ec8f0';ctx.fillStyle='#5ec8f0';
-        if(nd.sup==='fixed')ctx.fill();else ctx.stroke();
-      }
-      /* the diagram, drawn on each member's local y side: a sagging moment below a beam */
-      var kind=A3D_STRUCT.diagram,peak=0;
-      if(BIM_DIAGRAMS[kind]){
-        for(i=0;i<r.members.length;i++)for(j=0;j<r.members[i].samples.length;j++)peak=Math.max(peak,Math.abs(bimDiagramValue(r.members[i].samples[j],kind)));
-        var dsc=peak>1e-9?ext/8/peak:0;
-        drawn.diagScale=dsc;
-        ctx.lineWidth=1.2;ctx.strokeStyle=kind==='N'?'#9be38a':(kind==='V'?'#f5a3ff':'#ff9d6b');
-        ctx.fillStyle=kind==='N'?'rgba(155,227,138,0.10)':(kind==='V'?'rgba(245,163,255,0.10)':'rgba(255,157,107,0.10)');
-        for(i=0;i<r.members.length;i++){
-          var rm=r.members[i],mm=null;
-          for(k=0;k<m.members.length;k++)if(m.members[k].id===rm.id)mm=m.members[k];
-          if(!mm||!rm.samples.length)continue;
-          var ey=mm.ax.ey,pts=[],best=null;
-          for(j=0;j<rm.samples.length;j++){
-            var s=rm.samples[j],val=bimDiagramValue(s,kind);
-            var base=[mm.p1[0]+mm.ax.ex[0]*s.s,mm.p1[1]+mm.ax.ex[1]*s.s,mm.p1[2]+mm.ax.ex[2]*s.s];
-            var off=kind==='M'?-val*dsc:val*dsc;
-            pts.push({b:base,o:[base[0]+ey[0]*off,base[1]+ey[1]*off,base[2]+ey[2]*off]});
-            if(!best||Math.abs(val)>Math.abs(best.v))best={v:val,o:pts[pts.length-1].o};
-          }
-          var b0=sc(pts[0].b),poly=[];
-          for(j=0;j<pts.length;j++){var q=sc(pts[j].o);if(q)poly.push(q);}
-          var b1=sc(pts[pts.length-1].b);
-          if(b0&&b1&&poly.length>1){
-            ctx.beginPath();ctx.moveTo(b0[0],b0[1]);
-            for(j=0;j<poly.length;j++)ctx.lineTo(poly[j][0],poly[j][1]);
-            ctx.lineTo(b1[0],b1[1]);ctx.closePath();ctx.fill();ctx.stroke();
-            drawn.diagPts+=poly.length;
-          }
-          /* the member's peak, where it is -- only where it matters, to keep the picture clear */
-          if(best&&peak>0&&Math.abs(best.v)>=0.05*peak){
-            var lp=sc(best.o);
-            if(lp){
-              var txt=best.v.toFixed(1);
-              ctx.font='11px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
-              ctx.lineWidth=3;ctx.strokeStyle='rgba(0,0,0,0.75)';ctx.strokeText(txt,lp[0],lp[1]);
-              ctx.fillStyle='#fff3e6';ctx.fillText(txt,lp[0],lp[1]);
-              drawn.labels.push({member:rm.name,v:best.v});
-              ctx.lineWidth=1.2;ctx.strokeStyle=kind==='N'?'#9be38a':(kind==='V'?'#f5a3ff':'#ff9d6b');
-            }
-          }
-        }
-      }
-      /* the deflected shape, dashed, at a stated scale */
-      if(A3D_STRUCT.deflected){
-        var dmax=0;
-        for(i=0;i<r.members.length;i++)dmax=Math.max(dmax,r.members[i].dmax);
-        var fs=dmax>1e-12?ext/20/dmax:0;
-        drawn.deflScale=fs;
-        ctx.setLineDash([5,4]);ctx.lineWidth=1.4;ctx.strokeStyle='#ffd24a';
-        for(i=0;i<r.members.length;i++){
-          var rs=r.members[i],m2=null;
-          for(k=0;k<m.members.length;k++)if(m.members[k].id===rs.id)m2=m.members[k];
-          if(!m2)continue;
-          ctx.beginPath();var st=false;
-          for(j=0;j<rs.samples.length;j++){
-            var sj=rs.samples[j],bp=[m2.p1[0]+m2.ax.ex[0]*sj.s+sj.d[0]*fs,m2.p1[1]+m2.ax.ex[1]*sj.s+sj.d[1]*fs,m2.p1[2]+m2.ax.ex[2]*sj.s+sj.d[2]*fs];
-            var qq=sc(bp);if(!qq)continue;
-            if(st)ctx.lineTo(qq[0],qq[1]);else{ctx.moveTo(qq[0],qq[1]);st=true;}
-            drawn.deflPts++;
-          }
-          ctx.stroke();
-        }
-        ctx.setLineDash([]);
-      }
-      /* what is shown, stated once */
-      var cap=r.combo+(BIM_DIAGRAMS[kind]?'  \u00b7  '+BIM_DIAGRAMS[kind]:'')+
-        (A3D_STRUCT.deflected&&drawn.deflScale?'  \u00b7  deflection x'+Math.round(drawn.deflScale):'');
-      ctx.font='12px sans-serif';ctx.textAlign='left';ctx.textBaseline='top';
-      ctx.lineWidth=3;ctx.strokeStyle='rgba(0,0,0,0.75)';ctx.strokeText(cap,14,14);
-      ctx.fillStyle='#dfe7f1';ctx.fillText(cap,14,14);
-      drawn.caption=cap;
-      A3D.lastStructDrawn=drawn;
-    }catch(e){
-      console.warn('[BIM] analysis display',e);
-      if(!A3D.structWarned){A3D.structWarned=true;a3dToast('The analysis display could not be drawn');}
-    }
-    ctx.restore();
-  }
-  /* the two tables */
-  function bimMemberForceRows(){
-    var r=bimStructAnalyze();
-    if(r.error)return [{member:'',note:r.error}];
-    return r.members.map(function(m){
-      return {member:m.name,kind:m.kind==='beam'?'Beam':'Column',combo:r.combo,length:m.L,
-        tension:Math.max(m.N[1],0),compression:Math.max(-m.N[0],0),shear:m.V,mz:m.Mz.v,my:m.My.v,
-        defl:m.drel*1000,ratio:m.drel>1e-9?'L/'+Math.round(m.L/m.drel):'',note:''};
-    });
-  }
-  function bimReactionRows(){
-    var r=bimStructAnalyze();
-    if(r.error)return [{at:'',note:r.error}];
-    return r.reactions.map(function(x){
-      var by=objById(x.by);
-      return {at:(by?by.name:'')+' base',support:x.sup==='fixed'?'Fixed':'Pinned',combo:r.combo,
-        fx:x.R[0],fy:x.R[1],fz:x.R[2],mx:x.R[3],my:x.R[4],mz:x.R[5],note:''};
-    });
-  }
-  /* ================= __acad3dV125: the analysis in Properties ================= */
-  function bimLoadLabel(ld){
-    var s=ld.lc+'  ';
-    if(ld.kind==='line')s+=bimDispNum(ld.v,2)+' kN/m along the beam';
-    else if(ld.kind==='point')s+=bimDispNum(ld.v,2)+' kN at '+bimDispNum(ld.at,3)+' m';
-    else s+=bimDispNum(ld.v,2)+' kN along '+(ld.dir==='z'?'Z':'X')+' at the top';
-    return s;
-  }
-  function bimOpt(v,label,cur){return '<option value="'+v+'"'+(v===cur?' selected':'')+'>'+bimEsc(label)+'</option>';}
-  /* __acad3dV126: the section's rows -- the numbers the analysis uses */
-  function bimSectionPropsRows(o){
-    var pf=bimMemberSection(o),pq=bimProfileProblem(pf),rows='';
-    if(pq)return bimPropText('Section','Cannot be read: '+pq);
-    var pp=bimProfileProps(pf),mat=bimMemberMaterial(o),tn=bimTypeNameOf(o);
-    rows+=bimPropText('Section',(pf.shape!=='rect'&&tn?tn+' \u00b7 ':'')+BIM_PROFILE_SHAPES[pf.shape]);
-    rows+=bimPropText('Area (cm\u00b2)',bimDispNum(pp.A*1e4,2));
-    rows+=bimPropText('Iz (cm\u2074)',bimDispNum(pp.Iz*1e8,1));
-    rows+=bimPropText('Iy (cm\u2074)',bimDispNum(pp.Iy*1e8,1));
-    rows+=bimPropText('J (cm\u2074)',bimDispNum(pp.J*1e8,1));
-    rows+=bimPropText('Mass (kg/m)',mat&&mat.density?bimDispNum(pp.A*mat.density,1)+' ('+mat.name+')':'\u2014');
-    rows+=bimPropText('Basis',pf.shape==='rect'?'Solid rectangle':'Nominal dimensions; fillets not modelled');
-    return rows;
-  }
-  function bimStructPropsHtml(o){
-    var st=bimStructOf(o),rows=bimSectionPropsRows(o),i;
-    if(o.bim.type==='column'){
-      var auto=bimColumnSupport(o,o.bim.baseY+bimObjOffset(o)[1],true);
-      var autoTxt='Automatic ('+(auto.kind?(auto.kind==='fixed'?'Fixed':'Pinned')+', '+auto.why:'none: '+auto.why)+')';
-      rows+=bimPropRow('Support at base','<select data-propstr="support">'+bimOpt('',autoTxt,st.support||'')+
-        bimOpt('fixed','Fixed',st.support)+bimOpt('pinned','Pinned',st.support)+bimOpt('free','Free (not held)',st.support)+'</select>');
-    }else{
-      rows+=bimPropRow('End connections','<select data-propstr="ends">'+bimOpt('','Rigid (moment)',st.ends==='pinned'?'x':'')+
-        bimOpt('pinned','Pinned (shear only)',st.ends)+'</select>');
-    }
-    var loads=st.loads||[];
-    for(i=0;i<loads.length;i++)
-      rows+=bimPropRow('Load '+(i+1),'<span class="a3d-pstatic">'+bimEsc(bimLoadLabel(loads[i]))+'</span>'+
-        '<button type="button" class="a3d-bdel" data-propstrdel="'+i+'" title="Remove this load">\u00d7</button>');
-    /* the new-load row renders from a draft kept per member, so a re-render of the panel -- which any
-       change in it may cause -- cannot throw away what is being typed */
-    var kinds=o.bim.type==='column'?['lateral']:['line','point'],dr=bimLoadDraft(o);
-    if(kinds.indexOf(dr.kind)<0)dr.kind=kinds[0];
-    rows+=bimPropRow('New load','<select data-propstrnew="lc">'+bimOpt('D','Dead (D)',dr.lc)+bimOpt('L','Live (L)',dr.lc)+'</select>');
-    rows+=bimPropRow('Kind','<select data-propstrnew="kind">'+kinds.map(function(k){return bimOpt(k,BIM_LOAD_KINDS[k],dr.kind);}).join('')+'</select>');
-    rows+=bimPropRow('Value','<input type="number" step="any" data-propstrnew="v" value="'+bimEsc(dr.v)+'" placeholder="'+(o.bim.type==='column'?'kN':'kN/m or kN')+'">');
-    if(o.bim.type==='column')rows+=bimPropRow('Direction','<select data-propstrnew="dir">'+bimOpt('x','Along X',dr.dir)+bimOpt('z','Along Z',dr.dir)+'</select>');
-    else rows+=bimPropRow('At (m from start)','<input type="number" step="any" min="0" data-propstrnew="at" value="'+bimEsc(dr.at)+'" placeholder="point loads">');
-    rows+=bimPropRow('','<button type="button" class="a3d-pedit" data-propstract="addload">Add load</button>');
-    return bimPropGroup('Structural',rows);
-  }
-  function bimLoadDraft(o){
-    var d=A3D_STRUCT.draft;
-    if(!d||d.id!==o.id)d=A3D_STRUCT.draft={id:o.id,lc:'D',kind:'',v:'',at:'',dir:'x'};
-    return d;
-  }
-  /* read first, in the capture phase, before any handler can re-render the panel */
-  function bimLoadDraftInput(ev){
-    var f=ev.target&&ev.target.getAttribute?ev.target.getAttribute('data-propstrnew'):null;
-    var o=objById(A3D.sel);
-    if(!f||!bimIsFrameMember(o))return;
-    bimLoadDraft(o)[f]=ev.target.value;
-  }
-  function bimAnalysisPropsHtml(){
-    var rows='',cur=A3D_STRUCT.show?(A3D_STRUCT.diagram||'M'):'off',nC=0,nB=0,i;
-    for(i=0;i<A3D.objs.length;i++)if(bimIsFrameMember(A3D.objs[i])){if(A3D.objs[i].bim.type==='column')nC++;else nB++;}
-    if(!nC&&!nB)return '';
-    rows+=bimPropText('Frame',nC+' column(s), '+nB+' beam(s)');
-    rows+=bimPropText('Basis',(bimCombo(A3D_STRUCT.combo)||BIM_COMBOS[0]).why);
-    rows+=bimPropRow('Combination','<select data-propstr="combo">'+BIM_COMBOS.map(function(c){return bimOpt(c.name,c.name,A3D_STRUCT.combo);}).join('')+'</select>');
-    rows+=bimPropRow('Self-weight','<select data-propstr="selfweight">'+bimOpt('1','Included in D',A3D_STRUCT.selfWeight?'1':'0')+bimOpt('0','Not included',A3D_STRUCT.selfWeight?'1':'0')+'</select>');
-    rows+=bimPropRow('Display','<select data-propstr="display">'+bimOpt('off','Off',cur)+bimOpt('M','Bending moment',cur)+bimOpt('N','Axial force',cur)+bimOpt('V','Shear',cur)+'</select>');
-    rows+=bimPropRow('Deflected shape','<select data-propstr="deflected">'+bimOpt('1','Shown',A3D_STRUCT.deflected?'1':'0')+bimOpt('0','Hidden',A3D_STRUCT.deflected?'1':'0')+'</select>');
-    var r=A3D_STRUCT.res;
-    if(r&&r.error)rows+=bimPropText('Result',r.error);
-    else{
-      var c=bimStructCurrent();
-      if(c){
-        var hd=bimStructHeadline(c);
-        rows+=bimPropText('Largest moment',hd.moment?hd.moment.v.toFixed(1)+' kN\u00b7m, '+hd.moment.name:'none');
-        rows+=bimPropText('Largest deflection',hd.defl?(hd.defl.v*1000).toFixed(1)+' mm'+(hd.ratio?' (L/'+hd.ratio+')':'')+', '+hd.defl.name:'none');
-        rows+=bimPropText('Equilibrium',hd.balanced?'Balanced, '+hd.load.toFixed(1)+' kN':'NOT balanced: loads '+hd.load.toFixed(1)+', reactions '+hd.reaction.toFixed(1)+' kN');
-      }else rows+=bimPropText('Result',r?'Out of date: run ANALYZE':'Run ANALYZE to solve the frame');
-    }
-    rows+=bimPropText('Not included','Floor loads, wind, seismic');
-    return bimPropGroup('Analysis',rows);
-  }
-  /* SUPPORT and LOAD: Properties, opened at the field they name */
-  function bimStructFocus(what){
-    var o=objById(A3D.sel);
-    if(what==='support'&&!(o&&o.bim&&o.bim.type==='column')){a3dToast('Select a column: SUPPORT sets how its base is held');return false;}
-    if(what==='load'&&!bimIsFrameMember(o)){a3dToast('Select a beam or a column: LOAD adds a load to it');return false;}
-    A3D_PROP_GROUPS_OPEN['Structural']=true;
-    refreshProps();
-    var f=document.querySelector(what==='support'?'[data-propstr="support"]':'[data-propstrnew="v"]');
-    if(f){if(f.scrollIntoView)f.scrollIntoView({block:'center'});f.focus();}
-    a3dToast(what==='support'?'Set the support at the base of '+o.name+' in Properties':'Add a load to '+o.name+' in Properties');
-    return true;
-  }
-  function bimStructEdit(o,fn){
-    pushUndo();
-    var st=JSON.parse(JSON.stringify(bimStructOf(o)));
-    fn(st);
-    o.bim.struct=st;
-    refreshProps();paint();saveSoon();
-  }
-  function bimStructPropChange(ev){
-    var el2=ev.target&&ev.target.closest?ev.target.closest('[data-propstr]'):null;
-    if(!el2)return false;
-    var k=el2.getAttribute('data-propstr'),v=el2.value,o=objById(A3D.sel);
-    if(k==='combo'||k==='selfweight'){
-      if(k==='combo'&&bimCombo(v))A3D_STRUCT.combo=v;
-      if(k==='selfweight')A3D_STRUCT.selfWeight=(v==='1');
-      if(A3D_STRUCT.show)bimStructAnalyze();
-      refreshProps();paint();return true;
-    }
-    if(k==='display'){
-      if(v==='off'){bimAnalyzeOff();return true;}
-      A3D_STRUCT.diagram=v;
-      if(!A3D_STRUCT.show)bimAnalyzeCommand();else{paint();refreshProps();}
-      return true;
-    }
-    if(k==='deflected'){A3D_STRUCT.deflected=(v==='1');paint();refreshProps();return true;}
-    if(!bimIsFrameMember(o))return true;
-    if(k==='support')bimStructEdit(o,function(st){if(BIM_SUPPORTS.indexOf(v)>=0)st.support=v;else delete st.support;});
-    else if(k==='ends')bimStructEdit(o,function(st){if(v==='pinned')st.ends='pinned';else delete st.ends;});
-    return true;
-  }
-  function bimStructPropClick(ev){
-    var o=objById(A3D.sel);
-    var del=ev.target&&ev.target.closest?ev.target.closest('[data-propstrdel]'):null;
-    if(del&&bimIsFrameMember(o)){
-      var ix=parseInt(del.getAttribute('data-propstrdel'),10);
-      bimStructEdit(o,function(st){if(st.loads&&st.loads[ix])st.loads.splice(ix,1);});
-      a3dToast('Load removed from '+o.name);
-      return true;
-    }
-    var add=ev.target&&ev.target.closest?ev.target.closest('[data-propstract="addload"]'):null;
-    if(!add||!bimIsFrameMember(o))return false;
-    var dr=bimLoadDraft(o);
-    var ld={lc:dr.lc,kind:dr.kind||(o.bim.type==='column'?'lateral':'line'),v:parseFloat(dr.v)};
-    if(ld.kind==='point')ld.at=parseFloat(dr.at);
-    if(ld.kind==='lateral')ld.dir=dr.dir;
-    var bad=bimLoadProblem(o,ld);
-    if(bad){a3dToast(bad);return true;}
-    dr.v='';dr.at='';
-    bimStructEdit(o,function(st){(st.loads=st.loads||[]).push(ld);});
-    a3dToast(bimLoadLabel(ld)+' added to '+o.name);
-    return true;
-  }
   function bimToggleTrib(){
     A3D.showTrib=!A3D.showTrib;
     paint();
@@ -23589,8 +22495,6 @@ try{
     footing:{label:'Isolated Footings',build:function(){return bimBuildFootingSchedule('footing');},cols:[{key:'name',label:'Name'},{key:'type',label:'Type'},{key:'host',label:'Under'},{key:'width',label:'Width (m)',fmt:2},{key:'length',label:'Length (m)',fmt:2},{key:'thickness',label:'Thickness (m)',fmt:2},{key:'volume',label:'Concrete (m\u00b3)',fmt:3},{key:'level',label:'Level'}]},   /* __acad3dV102 */
     stripfooting:{label:'Wall Foundations',build:function(){return bimBuildFootingSchedule('stripfooting');},cols:[{key:'name',label:'Name'},{key:'type',label:'Type'},{key:'host',label:'Under'},{key:'length',label:'Length (m)',fmt:2},{key:'width',label:'Width (m)',fmt:2},{key:'thickness',label:'Thickness (m)',fmt:2},{key:'volume',label:'Concrete (m\u00b3)',fmt:3},{key:'level',label:'Level'}]},
     beam:{label:'Beams',build:bimBuildBeamSchedule,cols:[{key:'name',label:'Name'},{key:'level',label:'Level'},{key:'span',label:'Span (m)',fmt:2},{key:'width',label:'Width (m)',fmt:2},{key:'depth',label:'Depth (m)',fmt:2},{key:'topY',label:'Top elev (m)',fmt:3}].concat(BIM_MAT_COLS)},
-    memberforces:{label:'Member Forces',build:bimMemberForceRows,cols:[{key:'member',label:'Member'},{key:'kind',label:'Kind'},{key:'combo',label:'Combination'},{key:'length',label:'Length (m)',fmt:2},{key:'tension',label:'Tension (kN)',fmt:1},{key:'compression',label:'Compression (kN)',fmt:1},{key:'shear',label:'Shear (kN)',fmt:1},{key:'mz',label:'Moment, major (kN\u00b7m)',fmt:1},{key:'my',label:'Moment, minor (kN\u00b7m)',fmt:1},{key:'defl',label:'Deflection (mm)',fmt:1},{key:'ratio',label:'Span / deflection'},{key:'note',label:'Note'}]},   /* __acad3dV125 */
-    reactions:{label:'Reactions',build:bimReactionRows,cols:[{key:'at',label:'At'},{key:'support',label:'Support'},{key:'combo',label:'Combination'},{key:'fx',label:'Fx (kN)',fmt:1},{key:'fy',label:'Fy (kN)',fmt:1},{key:'fz',label:'Fz (kN)',fmt:1},{key:'mx',label:'Mx (kN\u00b7m)',fmt:1},{key:'my',label:'My (kN\u00b7m)',fmt:1},{key:'mz',label:'Mz (kN\u00b7m)',fmt:1},{key:'note',label:'Note'}]},
     arealevel:{label:'Areas by Level',build:bimBuildAreaSchedule,cols:[{key:'level',label:'Level'},{key:'gross',label:'Gross (m\u00b2)',fmt:2},{key:'net',label:'Net (m\u00b2)',fmt:2},{key:'efficiency',label:'Efficiency (%)',fmt:1},{key:'rooms',label:'Rooms'},{key:'occupants',label:'Occupant Load'},{key:'note',label:'Note'}]}   /* __acad3dV105b */
   };
   /* __acad3dV74: schedules are a REGISTRY now, not a literal plus two hand-kept lists.
@@ -27713,7 +26617,6 @@ try{
     'bim:property':ric('<path d="M3 17L8 4l13 5-4 11z" stroke-dasharray="5 2 1.5 2"/>'),   /* __acad3dV103 */
     'bim:propshape':ric('<rect x="4" y="5" width="15" height="13" stroke-dasharray="5 2 1.5 2"/><path d="M8 11h7"/>'),
     'bim:truenorth':ric('<circle cx="12" cy="12" r="8"/><path d="M12 5l3 9-3-2-3 2z"/>'),
-    'bim:analyze':ric('<path d="M3 20h18"/><path d="M6 20V9M18 20V9M4 9h16"/><path d="M8 13q4 5 8 0" stroke-dasharray="2 2"/>'),   /* __acad3dV125 */
     'bim:footing':ric('<rect x="4" y="15" width="16" height="5"/><rect x="10" y="4" width="4" height="11"/>'),   /* __acad3dV102 */
     'bim:rebar':ric('<path d="M4 8h16M4 16h16"/><path d="M8 4v16M16 4v16"/>'),
     'bim:linkifc':ric('<path d="M10 13a4 4 0 0 0 6 .6l2-2a4 4 0 0 0-5.6-5.6l-1 1"/><path d="M14 11a4 4 0 0 0-6-.6l-2 2a4 4 0 0 0 5.6 5.6l1-1"/>'),
@@ -28017,7 +26920,7 @@ try{
       {t:'Work Plane',small:['v:top','v:front','v:right']}
     ]},
     {id:'struct',name:'Structure',disc:'struct',panels:[
-      {t:'Structure',small:['bim:column','bim:beam','bim:wall','bim:floor','bim:truss','bim:brace','bim:analyze']},   /* __acad3dV125 */
+      {t:'Structure',small:['bim:column','bim:beam','bim:wall','bim:floor','bim:truss','bim:brace']},
       {t:'Datum',small:['bim:grid','bim:level']},
       {t:'Foundation',small:['bim:footing','bim:foundwall','bim:foundslab']},
       {t:'Reinforcement',small:['bim:rebar']}
@@ -28161,7 +27064,7 @@ try{
     var L={'s:rect':'Rect','s:circle':'Circle','s:poly':'Polyline','p:pad':'Pad','p:pocket':'Pocket','bim:wall':'Wall','bim:floor':'Floor','bim:room':'Room','bim:roof':'Roof','bim:stair':'Stair','bim:column':'Column','bim:door':'Door','bim:window':'Window','bim:dim':'Dimension','bim:text':'Text','bim:section':'Section','bim:ceiling':'Ceiling','bim:dimang':'Angular','bim:dimrad':'Radius','bim:dimdia':'Diameter','bim:leader':'Leader','m:exportdxf':'DXF','m:exportsvg':'SVG','bim:mirror':'Mirror','bim:rotate':'Rotate','bim:polararray':'Polar Array','bim:joinwalls':'Join Walls','bim:extend':'Extend','bim:arc':'Arc','bim:fillet':'Fillet','bim:chamfer':'Chamfer','bim:break':'Break','bim:lengthen':'Lengthen','bim:scale':'Scale','b:union':'Union','b:cut':'Cut','b:isect':'Intersect','v:home':'Home','v:fit':'Fit','v:top':'Top','v:front':'Front','v:right':'Right','v:iso':'Iso','m:del':'Delete','m:desel':'Deselect','m:dup':'Duplicate','m:array':'Array','m:exportpng':'PNG','m:exportpdf':'PDF','m:exitsection':'Exit Section','m:flipsection':'Flip Section','m:saveproj':'Save Project','m:openproj':'Open\u2026',
       'bim:component':'Component','bim:famsave':'Save Family','bim:famimport':'Load Family',
       'bim:tagroom':'Tag Room','bim:tagallrooms':'Tag All Rooms','bim:tagcat':'Tag by Category','bim:level':'Level','bim:grid':'Grid',
-      'bim:beam':'Beam','bim:analyze':'Analyze','bim:truss':'Truss','bim:brace':'Brace','bim:foundwall':'Wall Foundation','bim:footing':'Isolated Footing','bim:property':'Property Line','bim:propshape':'Property from Shape','bim:truenorth':'True North',
+      'bim:beam':'Beam','bim:truss':'Truss','bim:brace':'Brace','bim:foundwall':'Wall Foundation','bim:footing':'Isolated Footing','bim:property':'Property Line','bim:propshape':'Property from Shape','bim:truenorth':'True North',
       'bim:foundslab':'Foundation Slab','bim:rebar':'Rebar','bim:linkifc':'Link IFC','bim:linkcad':'Link CAD',
       'bim:importcad':'Import CAD','bim:saveview':'Save View','bim:sheet':'Sheet','bim:titleblock':'Title Block',
       'bim:uipanels':'User Interface','bim:trim':'Trim','bim:offset':'Offset','bim:align':'Align',
@@ -28464,7 +27367,6 @@ try{
     if(act==='bim:dimdia'){startRadialDimTool(true);return;}
     if(act==='bim:leader'){startLeaderTool();return;}
     if(act==='bim:beam'){startBeamTool();return;}
-    if(act==='bim:analyze'){bimAnalyzeCommand();return;}   /* __acad3dV125 */
     if(act==='bim:grid'){startGridTool();return;}
     if(act==='bim:column'){startColumnTool();return;}
     if(act==='bim:door'){startDoorTool();return;}
@@ -29006,7 +27908,7 @@ try{
         if(!isFinite(cr)){a3dToast('Rotation must be a number');refreshProps();return;}
         pushUndo();
         var crRes=bimBuildColumnGeometry(o.bim.center,o.bim.baseY,o.bim.width,o.bim.depth,
-          o.bim.height,cr*Math.PI/180,o.bim.section||null);   /* __acad3dV126 */
+          o.bim.height,cr*Math.PI/180);
         if(crRes.error){a3dToast(crRes.error);refreshProps();return;}
         o.mesh=crRes.mesh;o.bim.rotation=cr*Math.PI/180;
         bimPropagateFrom([o.id],'rebuild');
@@ -29110,14 +28012,6 @@ try{
       if(!ga)return;
       var gg=bimSelectedGrid();
       if(gg&&ga.getAttribute('data-gridact')==='delete')bimRemoveGrid(gg.id);
-    });
-    /* __acad3dV125: the Structural and Analysis pages */
-    if(el.propsbody){el.propsbody.addEventListener('input',bimLoadDraftInput,true);el.propsbody.addEventListener('change',bimLoadDraftInput,true);}
-    if(el.propsbody)el.propsbody.addEventListener('change',function(ev){
-      try{bimStructPropChange(ev);}catch(eSP){console.warn('[BIM] Analysis setting failed',eSP);a3dToast('That setting could not be changed - see the console');}
-    });
-    if(el.propsbody)el.propsbody.addEventListener('click',function(ev){
-      try{bimStructPropClick(ev);}catch(eSC){console.warn('[BIM] Load edit failed',eSC);a3dToast('That load could not be changed - see the console');}
     });
     /* __acad3dV103: setbacks, per side or all at once */
     if(el.propsbody)el.propsbody.addEventListener('change',function(ev){
@@ -29751,10 +28645,6 @@ try{
     gizmo:function(){bimGizmoCommand();},     /* __acad3dV110 */
     presspull:function(){bimPressPullCommand();},   /* __acad3dV123 */
     blockmake:function(){openSaveBlockDlg();},                   /* __acad3dV124 */
-    analyze:function(){bimAnalyzeCommand();},                    /* __acad3dV125 */
-    analyzeoff:function(){bimAnalyzeOff();},
-    structsupport:function(){bimStructFocus('support');},
-    structload:function(){bimStructFocus('load');},
     blockinsert:function(){bimOpenLibraryAt('blocks');},
     assets:function(){bimOpenLibraryAt(null);},
     rotate:function(){startRotateTool();},
@@ -30671,60 +29561,6 @@ try{
   window.__a3dImportGuess=function(mesh){return bimGuessImportUnit(mesh);};
   window.__a3dImportMesh=function(mesh,unit,zUp){return bimImportModelMesh(mesh,unit,!!zUp);};
   window.__a3dAssetsUI=function(){return {q:A3D_ASSETS_UI.q,closed:JSON.parse(JSON.stringify(A3D_ASSETS_UI.closed)),dragging:!!(A3D_ASDRAG&&A3D_ASDRAG.on)};};
-  /* __acad3dV125: the analysis, read as data */
-  window.__a3dStructModel=function(){
-    var m=bimAnalyticalModel();
-    return {nodes:m.nodes.map(function(n){return {p:n.p.slice(),sup:n.sup,why:n.supWhy};}),
-      els:m.els.map(function(e){return {member:e.memberId,name:e.name,kind:e.kind,n1:e.n1,n2:e.n2,L:e.L,rel:e.rel.slice(),
-        E:e.E,G:e.G,A:e.sec.A,Iy:e.sec.Iy,Iz:e.sec.Iz,J:e.sec.J,rho:e.rho,ey:e.ax.ey.slice()};}),
-      notAnalysed:JSON.parse(JSON.stringify(m.notAnalysed)),skipped:JSON.parse(JSON.stringify(m.skipped))};
-  };
-  window.__a3dStructSolve=function(combo,selfWeight){
-    var c=bimCombo(combo||A3D_STRUCT.combo);
-    if(!c)return {error:'no such combination'};
-    var r=bimFrameSolve(bimAnalyticalModel(),c,selfWeight===undefined?A3D_STRUCT.selfWeight:!!selfWeight);
-    if(r.error)return {error:r.error,node:r.node,dof:r.dof};
-    return JSON.parse(JSON.stringify({combo:r.combo,disp:r.disp,reactions:r.reactions,equilibrium:r.equilibrium,
-      members:r.members.map(function(m){return {id:m.id,name:m.name,kind:m.kind,L:m.L,N:m.N,V:m.V,Mz:m.Mz,My:m.My,T:m.T,dmax:m.dmax,drel:m.drel,
-        samples:m.samples.map(function(s){return {s:s.s,N:s.N,Mz:s.Mz,My:s.My,Vy:s.Vy};})};})}));
-  };
-  window.__a3dStructSettings=function(patch){
-    var k;if(patch)for(k in patch)if(patch.hasOwnProperty(k)&&k!=='res')A3D_STRUCT[k]=patch[k];
-    return {combo:A3D_STRUCT.combo,selfWeight:A3D_STRUCT.selfWeight,show:A3D_STRUCT.show,diagram:A3D_STRUCT.diagram,
-      deflected:A3D_STRUCT.deflected,current:!!bimStructCurrent(),error:A3D_STRUCT.res&&A3D_STRUCT.res.error||null};
-  };
-  window.__a3dStructEditFor=function(id,st){
-    var o=objById(id);if(!bimIsFrameMember(o))return false;
-    bimStructEdit(o,function(s){var k;for(k in s)if(s.hasOwnProperty(k))delete s[k];for(k in st)if(st.hasOwnProperty(k))s[k]=JSON.parse(JSON.stringify(st[k]));});
-    return true;
-  };
-  window.__a3dStructOf=function(id){var o=objById(id);return o?JSON.parse(JSON.stringify(bimStructOf(o))):null;};
-  window.__a3dStructDrawn=function(){paint();return A3D.lastStructDrawn?JSON.parse(JSON.stringify(A3D.lastStructDrawn)):null;};
-  window.__a3dCombos=function(){return BIM_COMBOS.map(function(c){return c.name;});};
-  /* __acad3dV126: section profiles */
-  window.__a3dProfileProps=function(p){return bimProfileProblem(p)?null:bimProfileProps(p);};
-  window.__a3dProfileProblem=function(p){return bimProfileProblem(p);};
-  window.__a3dProfileLoops=function(p){return bimProfileProblem(p)?null:bimProfileLoops(p);};
-  window.__a3dSweepVolume=function(p,len){return bimMeshSignedVolume(bimSweepMesh(p,len,function(y,z,s){return [s,y,z];}));};
-  window.__a3dMeshVolume=function(id){var o=objById(id);return o&&o.mesh?bimMeshSignedVolume(o.mesh):null;};
-  window.__a3dMemberSection=function(id){
-    var o=objById(id);if(!bimIsFrameMember(o))return null;
-    var pf=bimMemberSection(o);
-    return {section:JSON.parse(JSON.stringify(pf)),props:bimProfileProblem(pf)?null:bimProfileProps(pf),problem:bimProfileProblem(pf)};
-  };
-  window.__a3dSectionTypes=function(){
-    bimEnsureTypes();var out=[];
-    ['column','beam'].forEach(function(c){(A3D.types[c]||[]).forEach(function(ty){
-      if(ty.params&&ty.params.profile)out.push({cat:c,id:ty.id,name:ty.name,material:ty.params.material||'',shape:ty.params.profile.shape});});});
-    return out;
-  };
-  window.__a3dTypeParams=function(cat,id){var ty=bimFindType(cat,id);return ty?JSON.parse(JSON.stringify(ty.params)):null;};
-  window.__acad3dV126='profileshapes,profileprops,profileloops,sweepmesh,sectioncatalogue,typeseeding,typegroups,'+
-    'edittypelocked,beamsection,columnsection,sectionrebuilds,sizelocked,sectionanalysis,sectionprops,assetsections';
-  window.__acad3dV125='analyticalmodel,nodemerge,membersplit,rectsection,materialmodulus,supports,pinnedends,'+
-    'loadcases,selfweight,lineload,pointload,lateralload,combinations,directstiffness,rcmband,cholesky,'+
-    'unstablerefused,equilibrium,memberforces,shearzero,deflection,analysisdisplay,stale,analyzeoff,'+
-    'structuralprops,analysisprops,supportcommand,loadcommand,analyzebutton,memberforceschedule,reactionschedule';
   window.__acad3dV124='librarykinds,starterset,thumbnails,importunit,importupaxis,blocks,blocklinks,blocklevel,'+
     'selectionmodel,templates,librarypanel,librarysearch,folds,removeasks,clickatviewcentre,dragdrop,dropsnap,'+
     'droponobject,blockcommand,insertcommand,assetscommand,componentopenslibrary';

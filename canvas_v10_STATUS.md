@@ -10283,3 +10283,379 @@ arrival itself (a MutationObserver), and the check reads the difference.
     sha256            9a04845a10e625c92a872ec867b345e424c5071cab12ad61b2bb443988573941
     markers           __acad3dV60 ... __acad3dV123, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
                       __acad3dV121b
+
+## Phase 124 (V124) - Assets: a library of models, blocks and templates, dragged into the project
+
+The owner, in V119: Assets "should be blocks templates premade for easy drag and drop into the project
+not an overview of stuff"; in V123, the library "can be built upon from time to time like when I go
+online and collect items, obj, or import models" and is "a way to quickly drag and drop stuff". The
+third panel of the owner's left-panel stack, after Layers (V121) and Presentation (V122). V21's Family
+Library is the store it grew from.
+
+### What was built (patches 124a to 124h)
+
+- **a -- the store.** One store (`acad3dFamilyLibrary`, surviving every project), three kinds read
+  through `bimAssetKind`: a **model** (a mesh placed as an independent instance -- every entry stored
+  before V124 is one, and nothing stored is rewritten), a **block** (object records inserted as
+  independent copies), a **template** (a starting project, whose record lives under its own key,
+  `acad3dTemplateV1:<id>`, so one big template cannot damage the library's key). A **starter set** of
+  nine models at real sizes -- chair, dining table, desk, double bed, sofa, base cabinet, WC, basin,
+  bathtub -- is generated in code (`A3D_ASSET_STARTER`, never stored, never removable) and resolved by
+  `bimFamilyLibraryGet`, so every placement path takes it unchanged. Every entry has a **thumbnail**:
+  `bimMeshThumb` draws a mesh flat-shaded from above a corner, faces sorted back to front and none
+  culled (an imported mesh's faces may run either way round); `bimRecsThumb` draws a block's or
+  template's records in plan. An old entry is given one the first time it is drawn, and keeps it.
+- **b -- an imported model asks what its numbers mean.** OBJ and STL carry no unit: the import dialog
+  asks the unit (mm, cm, m, in, ft) and the up axis (Y, OBJ's usual; Z, STL's and most CAD
+  programs'), and shows -- live, in the project's unit, with a picture -- the size the model would
+  come in at. The first unit offered is the one that brings the largest side nearest 1.5 m, and the
+  dialog says it is a guess. `bimImportModelMesh` is the one conversion; Z up is a quarter turn about
+  X, so a model is turned, never mirrored. The entry keeps its unit and the file it came from.
+- **c -- blocks, and a model from a whole selection.** BLOCK saves the selection's own records (a
+  wall comes back a wall with its type, a room a room), its base point the selection's centre in plan,
+  and the elevation of the level it came from. An insert makes copies through `bimDuplicateObject`,
+  moves them by the active level's elevation less the block's, puts them on the active level, gives a
+  layer this project lacks to the current layer, and points every link between members at the new
+  copies (`A3D_BLOCK_LINKS`: sourceId, linkSourceId, roomId, on, bim.sourceId, bim.hostWallId,
+  bim.hostId) -- so a room inserted with its wall follows the NEW wall. A link to something outside
+  the block is dropped, and the insert says how many. Openings and room tags are not saved (the save
+  dialog says how many were left); one undo step. Save as Model takes every selected solid, where it
+  stands, as one mesh -- it took the first selected object only.
+- **d -- templates.** Save as Template keeps the whole project; using one opens a new project tab
+  (V115) that starts as a copy of it, named as every new project is. The template never changes with
+  what is done in a project made from it. The record is stored before the entry is added, so a full
+  store adds nothing and says so.
+- **e -- the Assets tab is the library.** A search box and four actions (Import, Block, Model,
+  Template); Models, Blocks and Templates first, as tiles with thumbnails; then Annotation, and the
+  three that go ON something -- Materials, Wall Types, Patterns -- folded. Every group header folds
+  and unfolds; a search shows every group with a match, and keeps its focus and caret as the list
+  re-renders under it. A user's entry has a remove button that asks first; a starter model has none.
+  A click places a model or inserts a block at the centre of the view (not the level's origin, which
+  could be off screen) and leaves it selected; a template opens a new project. `bimAssetAction(spec,
+  drop)` is one path for a click and a drop. Materials and patterns stay live with nothing selected --
+  they are also dropped on things -- and a click with nothing selected changes nothing and says what
+  to do. The Project Browser's Families list the library's models only.
+- **f -- drag and drop.** Pointer events, so a finger drags as a mouse does. A press is not a drag
+  until it travels past `A3D_GIZ.click` (V123's rule); a card with the thing's picture follows the
+  pointer and is marked over the drawing. Let go over the drawing: a model or block lands at that
+  point on the active level, snapped as a click of the family tool is; an annotation is placed there;
+  a material, wall type or pattern goes on the object under the pointer (`pick`, the click's own
+  picking); a template opens a new project. Let go anywhere else, or press Escape, and nothing
+  changes. The click a browser sends with the release that ends a drag is the drag's.
+- **h -- a copy follows what it was copied with, never the original's sources.** One rule,
+  `bimRelinkCopies`, run by every path that copies by translation -- Ctrl+D, the gizmo's Ctrl-drag
+  copy, ARRAYRECT and a block insert. Each link is read from the ORIGINAL record: a link to an object
+  copied in the same operation points at that object's copy, any other is dropped and the copy says
+  so. A traced region (a hatch's or ceiling's seed and bounding shapes) is re-seeded where the copy
+  is, in its own frame and on its plane, when its shapes were copied with it, and dropped when they
+  were not. The polar array builds copies from transformed geometry and carries no links.
+- **g -- the commands.** BLOCK (B, BMAKE), INSERT (I, DDINSERT) opens the library at its blocks,
+  ASSETS (ADCENTER, CONTENT, TOOLPALETTES) opens it. The toolbar's Component, which only said "Place a
+  family from the Project Browser > Families", opens the library at its models. The shell audit claims
+  the library's controls, each driven by the suite first.
+
+Also removed: the family list written into `#a3d-famrows`, an element built with `display:none` and
+never shown, with its Place and remove buttons and their handler -- controls no pointer could reach.
+
+### Bugs found, and what each taught
+
+**1. A block's room did not follow its wall.** The first insert remapped links on the COPIES, and a
+room's copy (`bimDuplicateObject`) keeps its outline and drops its source -- so there was no link left
+to remap, and the inserted room was a dead outline beside a live wall. Found by the first insert,
+before any suite. **The lesson: rewrite a relationship from the record that holds it, not from a copy
+of it; a copy path decides what it carries, and a link it drops is invisible until the source moves.**
+The suite moves the new wall and asserts the new room grew and the original did not. Bug 3 below
+is the same fault met from the other side.
+
+**2. A real click was eaten after a drop.** "The click a drag leaves behind" was first eaten for
+400 ms after any drag, so a click on a tile soon after a drop placed nothing -- two of the suite's
+checks failed for this one cause, one of them on a row nowhere near the drag. The click a browser
+sends with a release is dispatched in the same turn as the release, so the flag is now set by the
+release and cleared by the next turn (`bimAssetEatClick`). **The lesson: suppress the one event you
+mean, by when it is dispatched, never by a window of time -- a time window eats whatever the user does
+next.** The suite drags out and back onto the same tile, the one case that sends such a click.
+
+**3. A copy followed the ORIGINAL's sources -- since V99, through Ctrl+D.** Found by falsifying
+the block's link handling: the variant that kept a link to an object outside the block was not
+caught, because the objects the suite tried (rooms, floors) are rebuilt by their copy path and drop
+their links anyway. The objects copied as whole records keep every link: a hatch traced in a sketch
+kept the original's seed and the original's sketch as its boundary, so editing that sketch made the
+COPY re-trace onto the original -- measured on the V123 build: Ctrl+D a hatch, drag a corner of its
+sketch, and the copy jumps across the drawing. A footing kept its host column the same way. **The
+lesson: a copy is a new object; every relationship it holds must be decided when it is made -- remapped
+to what was copied with it, or dropped -- never inherited by copying the record.** Patched as a class
+(124h) for every copy path, and the suite drives each: a hatch inserted with and without its sketch,
+a footing with and without its column, and V123's Ctrl+D case.
+
+**4. Escape did not end a drag once anything was selected.** The drag's own keydown listener was
+never reached: `onKey`, registered at load, stops Escape for the selection with
+stopImmediatePropagation. It passed in isolation, with nothing selected, and failed in the suite after
+a drop had selected what it placed. V83 recorded exactly this. **The lesson, again: in this app every
+Escape goes through `onKey`'s chain; a new transient state is a line at the head of that chain, not a
+listener of its own.**
+
+**5. The suite's own faults.** A folded group's row was dragged from nothing and the suite threw
+(found by the `fold_dead` variant): `drag` now fails the check it serves and the suite goes on. And
+two found by the suite failing honestly: A snap check aimed at the top of a wall
+end while the snap candidates are its base -- in the flat oblique view Zoom to Selection leaves, top
+and base project to different pixels. And a block's base compared with `==` against a float centre.
+
+### Deliberately not done
+
+- Nested blocks, BEDIT, WBLOCK, attributes (ATTDEF): Track A's row 118.
+- A block is inserted as independent copies, as V21's families are placed; there is no block
+  reference that updates when the definition changes.
+- Openings and room tags in blocks (an opening is cut into its wall when the wall is built).
+- A family instance keeps no link to its library entry's later edits (V21's product decision).
+- Online sources: the library is filled by import, by saving from the model, and by the starter set.
+- The project title at the top of the left panel is clipped by the panel's first row in every tab;
+  it was so in V123 too. On the Small list.
+
+### Suites
+
+- New: `bim_phase124_assets_library_browser_tests.py`, 67 checks in ten sections (the store,
+  click, drag and drop, blocks, the selection model, import, dropping on an object, the panel,
+  templates, commands and the audit). Falsified by 43 variants (`Phase/falsify_phase124.py`), all caught, each at its own check.
+- Amended: V80 (a material row stays live with nothing selected, since a material is also dropped
+  on a solid; the check now asserts on the model that a click with no target changes no material)
+  and V82 (Annotation is the first group after the library's own tiles, ahead of everything applied
+  to the model).
+
+### Full regression
+
+80 suites, 2676 checks, 0 failures. Falsification: 43 variants, 43 caught.
+
+### State after V124
+
+    canvas_v10.html   1,626,697 bytes
+    sha256            96d2bed3c8eaa0f4e43bd8f38ebbcd0d8d1adbe501491ff1a8ade5d06f8537e4
+    markers           __acad3dV60 ... __acad3dV124, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
+                      __acad3dV121b
+
+## Phase 125 (V125) - Structural 3: the analytical model, supports, loads and a frame solve
+
+PIPELINE, Track B item 1: "Structural object model -- loads, supports, load combinations, results."
+The prerequisite the ARCH5 port and the PennDOT input writer share. Mid-phase, the owner: "make sure
+this feature is cleanly add-in the design and not overloading the UI/UX. everything must be
+consistent. I also wants u to look into rhinoceros documentation of their apps. this would refine
+our design." The McNeel sites were not reachable from the build environment; what search summaries
+and V123's Gumball research give is in `reference/research-structural-ui.md`, and it set the
+interface below: no new window, rail tab or dialog.
+
+### What was built (patches 125a to 125f)
+
+- **a -- the analytical model, derived and never stored** (`bimAnalyticalModel`, Revit's default
+  alignment). A column is a line up its centre; a beam a line along its top, in the level plane.
+  Ends within 50 mm are one node; a node on another member's line splits it (a beam meeting a
+  column part way up, a secondary beam on a girder). Section properties of a rectangle -- A, both
+  second moments, J by the Saint-Venant series -- in the member's own axes (a column's local y is its
+  width direction, turned with it; a beam's is up). E from the material card's modulus, G = E/2(1+nu).
+  A column's base support is what is set on it (Fixed, Pinned, Free), or automatically Fixed on a
+  footing or on the lowest level, and otherwise it stands on what it meets. A beam's ends are Rigid
+  or Pinned (a shear connection). Walls, floors and roofs are named as not in the frame.
+- **b -- loads and combinations.** D and L; self-weight (density x A x g) in D; a line load and a
+  point load on a beam; a lateral load at a column's top along X or Z. 1.2D+1.6L and 1.4D (ASCE 7
+  2.3.1), D+L (service), and each case alone. Stored on the member as `o.bim.struct`, so `bimCarryBim`
+  carries them through every rebuild and copy; validated in one place (`bimLoadProblem`).
+- **c -- the solve** (`bimFrameSolve`): the direct stiffness method for a 3D frame, six degrees of
+  freedom a node, the 12 x 12 member stiffness turned into the model's axes, nodes ordered by reverse
+  Cuthill-McKee and the band factored by Cholesky. Loads between nodes by their fixed-end forces; a
+  pinned end condensed out of the member's stiffness and fixed-end forces, its rotation recovered for
+  the deflected shape. A vanished pivot is refused with the node and the way it moves. Along each
+  member, at twenty points a piece, every point load and every point where a shear passes zero: axial
+  force, shears, moments, torsion and the deflection (Hermite end movements plus the loads' own
+  fixed-end deflection -- exact for these loads). Equilibrium checked, not assumed.
+- **d -- the analysis display** (Rhino's analysis modes -- Zebra and ZebraOff): ANALYZE solves and
+  draws over the model on screen the analytical lines, the supports, a diagram along each member
+  labelled with its peak, and the deflected shape, with one caption naming the combination, the
+  diagram and the deflection scale; it says the largest moment, the largest deflection with its span
+  ratio, and the equilibrium check (Karamba's headline numbers). ANALYZEOFF turns it off. The display
+  compares the model's signature with the one solved on every paint, and a changed model shows no
+  result -- only that it is out of date. Member Forces and Reactions schedules read the same solve.
+- **e -- where it is set:** Properties, as Rhino's pages follow the selection. A column's Structural
+  page: its support (Automatic says what it is and why) and its loads; a beam's: its end connections
+  and its loads; a row to add a load and a button to remove one. With nothing selected, the Analysis
+  page beside V106's Floor Loads: the combination and its basis, self-weight, the display (Off,
+  moment, axial, shear), the deflected shape, and the last result -- or that it is out of date.
+  SUPPORT and LOAD open Properties at the field they name. One toolbar button, Analyze, in the
+  Structure strip.
+- **f -- the hooks** the suite reads the model, a solve and the display through, and the marker.
+
+### Bugs found, and what each taught
+
+**1. A sampled peak is not the peak.** The first member results took the extremes over twenty
+samples a piece and the point loads: a beam under a line load and a point load reported 67.2 kN.m
+where the peak is 67.222, at 2.333 m, between two samples. The peak of a moment is where its shear
+passes zero, and each piece between loads has a linear shear, so those points are added exactly.
+**The lesson: where an extreme can be found exactly, find it; a sampled maximum is a lower bound
+that reads as the answer.** The suite's combined-load check is the case only the exact point gets.
+
+**2. The closed forms needed a pinned connection, and so did real frames.** With every joint rigid
+and supports only at column bases, no simply supported beam could be built, so the textbook checks
+could not be made -- and nearly every steel beam is connected in shear. Pinned ends were added, by
+static condensation. **The lesson: when the check you need cannot be built, the model is usually
+missing something real.**
+
+**3. A value typed into the new-load row was lost.** Choosing the load's direction fired another
+Properties change handler that re-renders the panel, and the markup put the empty value back. The row
+now renders from a draft kept per member, written in the capture phase before any handler runs.
+**The lesson: a form whose panel can re-render under it keeps its state outside the DOM.**
+
+**4. Falsification found four checks that could not tell right from wrong:**
+- Every tested member lay along the model's axes, where a member's rotation matrix is its own
+  transpose, so a transposed turn changed nothing. A column turned 30 degrees now checks its top's
+  movement and its two base moments.
+- A beam's copy is its whole record, so the check that a copy keeps its loads never went through
+  `bimCarryBim`; a column's copy does, and is checked.
+- The reaction's subtraction of a load applied at a supported node looked unreachable; it is
+  reachable through a support set on an upper column, and that case is checked.
+- The singular-pivot guard: every mechanism tried -- axis-aligned and at 22 plan angles -- leaves a
+  zero or negative pivot, which the guard catches whatever its threshold. The variant now removes
+  the whole guard (then the solve returns NaN). **The threshold's size is not falsified; no case was
+  found where round-off leaves a small positive pivot.**
+**The lesson (V90's, again): a symmetric fixture agrees with a wrong rule by accident. Turn it.**
+
+**5. A patch slip, caught at the first load.** A JavaScript `\'` written as `\\'` inside a raw
+Python string ended a string early and the page did not load. And `Object.assign`, which the build's
+ES5 rule excludes, went in and came out.
+
+### Deliberately not done
+
+- Slab loads on beams: the level's floor loads (V106) are not distributed to the frame; V106's
+  Column Loads takedown remains their check, and the Analysis page says so.
+- Walls, floors and roofs as shells; bracing, trusses (their toolbar buttons are V102's, unwired).
+- Load patterns beyond D and L, wind and seismic generation, second-order (P-delta) effects,
+  member design checks (capacity, utilisation) -- the section-profile library comes first.
+- Results are not saved; ANALYZE after reopening a project.
+
+### Suites
+
+- New: `bim_phase125_structural_frame_browser_tests.py`, 50 checks in eight sections. Every number is
+  checked against a closed form (cantilevers in both planes, a turned cantilever, a simply supported
+  beam under a line load, a point load and both), against a plane-frame stiffness solve written in the
+  suite in Python (a portal's sway, base moments and horizontal reactions to 1e-9), or against
+  equilibrium. Falsified by 36 variants (`Phase/falsify_phase125.py`), all caught.
+
+### Full regression
+
+81 suites, 2728 checks, 0 failures. Falsification: 36 variants, 36 caught.
+
+### State after V125
+
+    canvas_v10.html   1,675,990 bytes
+    sha256            43c6439d714639197131a7d8a49ddfa99bd890619339f5d03d2b86c8e559307b
+    markers           __acad3dV60 ... __acad3dV125, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
+                      __acad3dV121b
+
+## Phase 126 (V126) - The section-profile library: steel and concrete sections for columns and beams
+
+PIPELINE, Track B item 2: "Section-profile library -- steel sections, reinforcement, bolt patterns."
+V125 analysed every member as a solid rectangle of one material. A column or beam type may now carry
+a profile, and the member is that section: in the model, in the analysis and in Properties. The
+interface follows the owner's V125 rule: nothing new is opened. The section is chosen where a type
+already is (Properties' Type list), and browsed and dropped where materials and wall types already
+are (Assets).
+
+### What was built (patches 126a to 126e)
+
+- **a -- a profile, and everything that follows from it.** Six shapes in the member's own y-z plane
+  (y its depth direction -- up in a beam, the width direction in a column): rect (b, d), circle (D),
+  hss (B, H, t), pipe (D, t), ibeam (d, bf, tf, tw -- W and IPE) and channel (d, bf, tf, tw).
+  `bimProfileProps` computes A, Iz, Iy and J exactly for the idealised shape: the Saint-Venant series
+  for a rectangle (V125's `bimRectSection`, so an unprofiled member is unchanged), pi D^4/32 for a
+  round, Bredt's 4 Am^2 t / p for a thin closed wall, the sum of b t^3 / 3 for an open section.
+  A channel's centroid is off its back, and its outline is placed so the centroid lies on the
+  member's line. `bimProfileProblem` refuses a profile that cannot be built, by name.
+  `bimProfileLoops` gives the outline, plus the hole for a hollow section; a round is a 32-gon, whose
+  properties are the true circle's. `bimSweepMesh` sweeps the outline along a member: sides, caps
+  (ear-clipped, or a ring for a hollow section), then turned outward by its signed volume.
+- **b -- the catalogue.** No tabulated property is bundled: a section's name and nominal dimensions
+  are facts, and the properties follow from them (law 3).
+  - Beams: AISC W8x31 to W24x76, EN 10365 IPE 200 to 400, and C channels.
+  - Columns: W8 to W14, square HSS, standard pipes, and concrete rounds of 400 to 600 mm.
+  - Steel types are Steel, so the analysis takes 210 GPa. A type's width and depth are its
+    section's extent, so schedules, picking, grips and footings keep working.
+  - A project stored before V126 gains the sections once, by id. Its own types are untouched, and a
+    section it removes later is not put back (`A3D.types.__v126`).
+  - The Type list is grouped by material. Edit Type shows a profiled type's shape and locks its size.
+- **c -- the section in the model.** A member of a profiled type carries a copy of the profile as
+  `o.bim.section`, which `bimCarryBim` takes through every rebuild and copy. Its solid is the swept
+  section:
+  - A beam hangs from its level by its top, web upright.
+  - A column's section turns with the column.
+  - Every place a column or beam is rebuilt passes the section on: a type change, height, turn
+    (Properties and gizmo), copy, mirror, and V123's push.
+  - A new width or depth for a profiled member is refused, with a message to choose another type.
+- **d -- the analysis, Properties and Assets.**
+  - `bimAnalyticalModel` reads `bimMemberSection`: the type's profile, else the rectangle of the
+    member's width and depth.
+  - The Structural page in Properties opens with the section, read-only: name and shape, A, Iz, Iy,
+    J, mass per metre, and the basis ("nominal dimensions; fillets not modelled").
+  - Assets gains one folded group, Sections. A section goes on the selected members of its kind, or
+    on the member it is dropped on, through `bimAssignTypeTo` with one undo. On the wrong kind it is
+    refused, and the message names the kind it needs.
+- **e -- the hooks and the marker.**
+
+### Bugs found, and what each taught
+
+**1. Five checks could not tell right from wrong, and falsification found them:**
+- The column turned in the suite was a W10x49, 10 in by 10 in, whose extents are the same either way
+  round. A variant that never turned the section passed. The column is now a W12x65 (12.1 x 12.0 in)
+  and its extents are checked.
+- A column rebuilt as a box of its section's extent has the same bounding box as the section.
+  Variants that lost the section on a height change or a turn passed. Each is now checked by the
+  solid's volume, A x h.
+- No check changed a profiled member back to a rectangle, so a section left behind went unseen.
+  Now one does.
+- The Assets search check matched on type names, so the shape label's part in the search was
+  untested. A search for "hollow" now finds the three HSS sections.
+
+**The lesson (V125's, again): a symmetric fixture agrees with a wrong rule by accident. A square
+section is a symmetric fixture, and so is a bounding box.**
+
+**2. The falsify runner reads variant names in lower case only.** Six variants named after their
+formulas (`circle_J_is_I` and others) were never run. The first run reported "29 variants, 29 caught"
+for a script of 35. They are renamed, and all 35 are caught. **The lesson: compare the number of
+variants run with the number written.**
+
+**3. The first search check for "ipe" found 19 rows,** because "Pipe" contains it and every I shape's
+label reads "I (W, IPE)". The search was right and the check was wrong.
+
+**4. The seeding flag is stored with the next save, not at load.** A project that is opened and never
+edited is seeded again the next time it opens, with the same result. Removing a type is an edit, so
+it is saved with the flag. The check now makes an edit before reading the stored record, as a person
+would.
+
+### Deliberately not done
+
+- Reinforcement and bolt patterns, the item's second half.
+- Angles and built-up sections. An angle's principal axes lie across its legs.
+- Fillets and rounded corners. W12x26 comes to 7.56 in^2 and 201 in^4 against the manual's 7.65 and
+  204, and IPE sections are up to 4.3% under. The read-out says so.
+- A channel's shear centre and warping torsion. A channel beam under gravity is analysed as if
+  loaded through its centroid.
+- Drawing a steel member directly. The Column and Beam tools still draw a rectangle; its type, and
+  so its section, is chosen afterwards in Properties or from Assets.
+
+### Suites
+
+- New: `bim_phase126_section_profiles_browser_tests.py`, 61 checks in seven sections. What they test:
+  - Every property against the textbook formula, written independently in the suite, to 1e-12.
+  - W12x26 and W14x90 against the AISC manual: under it, and by less than 4%.
+  - Every swept solid's volume against A x L; the rounds against their 32-gon.
+  - A W column cantilever's sway against PL^3/3EI with E = 210 GPa.
+  - The Properties, Edit Type and Assets paths, driven as a person drives them.
+  - A copy, and a stored pre-V126 project.
+- Falsified by 35 variants (`Phase/falsify_phase126.py`), all caught.
+
+### Full regression
+
+82 suites, 2789 checks, 0 failures. Falsification: 35 variants, 35 caught. The patch chain rebuilds
+the build byte for byte from `Phase/canvas_v10.html.bak_phase126_pre`.
+
+### State after V126
+
+    canvas_v10.html   1,693,481 bytes
+    sha256            525fc46992ccd5caa25217c0729a98ab2ebe1630d54a09803bfe7ed173ca2e3f
+    markers           __acad3dV60 ... __acad3dV126, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
+                      __acad3dV121b

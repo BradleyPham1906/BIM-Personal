@@ -246,9 +246,17 @@ async def run():
         await tab(page, 'assets')
         noSel = await page.evaluate("()=>window.__a3dAssetRows()")
         mats = [r for r in noSel if r['spec'].startswith('material:')]
-        ck(all(not r['live'] for r in mats) and 'select' in mats[0]['meta'],
-           "with nothing selected every material row is disabled and says what to do (%r)"
-           % mats[0]['meta'])
+        # AMENDED FOR V124: a material is also DROPPED on a solid, which needs no selection, so its
+        # row stays live with nothing selected. What this protected still holds, and is now asserted
+        # on the model rather than on the row: the row says what to do, and a click with no target
+        # changes nothing.
+        m0 = await page.evaluate("(id)=>window.__a3dMaterialOf(id)", wid)
+        clicked = await page.evaluate("()=>window.__a3dAssetClick('material:Steel')")
+        await page.wait_for_timeout(300)
+        ck(mats and all('select' in r['meta'] for r in mats) and clicked is True
+           and await page.evaluate("(id)=>window.__a3dMaterialOf(id)", wid) == m0,
+           "with nothing selected every material row says what to do (%r), and a click changes no "
+           "material (%s)" % (mats and mats[0]['meta'], m0))
         wts = [r for r in noSel if r['spec'].startswith('walltype:')]
         ck(all(r['live'] for r in wts),
            "while wall types stay live -- they set the ACTIVE type, which needs no selection")

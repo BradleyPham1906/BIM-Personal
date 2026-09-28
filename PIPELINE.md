@@ -2,52 +2,46 @@
 
 **Read this first in a new session.** One page. The detail lives in the docs listed at the bottom.
 
-    canvas_v10.html   1,582,993 bytes
-    sha256            9a04845a10e625c92a872ec867b345e424c5071cab12ad61b2bb443988573941
-    markers           __acad3dV60 ... __acad3dV123, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
+    canvas_v10.html   1,693,481 bytes
+    sha256            525fc46992ccd5caa25217c0729a98ab2ebe1630d54a09803bfe7ed173ca2e3f
+    markers           __acad3dV60 ... __acad3dV126, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
                       __acad3dV121b
-    tests             79 suites, 2609 checks, 0 failures
+    tests             82 suites, 2789 checks, 0 failures
 
     Run the regression in parallel: tests/run_all.py [build] [filter] [-jN], default -j6,
     about 4 minutes; give it the build's absolute path. tests/falsify_all.py
     <falsify_phaseNN.py> <suite.py> [-jN] proves every broken variant is caught: a minute for a
     small suite, seventeen for V123's (56 variants of a 108-check suite); a suite that hangs on a
-    variant is reported TIMEOUT. On the Mac every current suite is in tests/, the
-    folder the runner reads; commit new and amended suites there. Suites in the folder root and
-    Phase/ are copies.
+    variant is reported TIMEOUT. Every current suite is in tests/, the folder the runner reads;
+    commit new and amended suites there. Patch and falsify scripts, and each phase's pre-phase
+    backup, are in Phase/. The suites need Playwright's Python package and Pillow (V116's reads
+    pixels) -- in a fresh container, pip install playwright pillow before the baseline run.
 
 Start every session by verifying that hash and taking a backup. Never output the whole file; patch
 with anchored Python scripts that assert exact match counts.
 
 ---
 
-## NOW - the owner's left-panel stack (V124)
+## NOW - Track B: alignment and profile objects (V127)
 
-The owner, in V119, with screenshots of the Rayon web app: "here is the stack im thinking on the left
-panel: 1. layers (this should combine with model) and i should be able to manipulate a table like how
-autocad do like linetype, color, hide/show, layer, sub layer, transparency, ... do some research on
-this 2. Need a presentation for doing presentation with clients. using layout spaces, with multi pages
-view like a pdf viewer." Assets "should be blocks templates premade for easy drag and drop into the
-project not an overview of stuff", and "project browser sound good": the Project Browser stays. V119
-took the first step -- the view dropdown gone, the rail in Rayon's style. V120 was the owner's next
-request, ahead of the stack: "it look very messy and still contain some of the old canvas
-configuretion in there please clean that up before we make any further progress" -- the whiteboard's
-stylesheet, names and scaffolding are gone, the CSS is one stylesheet, and the shell's ids are its own
-(`#a3d-shell`, `#a3d-rail`, `#a3d-leftpanel`, `.a3d-railbtn`, the tab `'browser'`, `--a3d-left-w`,
-`--a3d-top-h`). V121 built the first of the stack, Layers, and V121b cleared the old canvas's saved
-data on the owner's answer; V122 built the second, Presentation. V123 was the owner's request ahead of
-the third: direct manipulation, "this would help set the base" -- the base the library's objects are
-placed and edited on (see Recently finished). Track B (rooms, structural, site, interleaved as V100 set
-it) resumes after these.
+V125 and V126 built Track B items 1 and 2: the frame model and solve, and real steel and concrete
+sections feeding it (see Recently finished). Item 3 is the civil half: a horizontal alignment, its
+vertical profile, and station-and-offset. The PennDOT work (Track C) and DIMORDINATE (Track A 117)
+both read stations.
+
+**Design rule (owner, V125):** the interface stays clean and consistent. It follows Rhino's model
+(see `reference/research-structural-ui.md`): settings are Properties pages that follow the
+selection, an analysis is a display turned on and off by its command, and a feature adds a window,
+rail tab or toolbar strip only when no existing one can hold it.
 
 | # | Phase | Scope | Notes |
 |---|---|---|---|
-| 124 | Assets | A library of premade blocks, templates and imported models, dragged into the project | **Start here.** Replaces the Assets overview. The owner, in V123: the library "can be built upon from time to time like when I go online and collect items, obj, or import models" and is "a way to quickly drag and drop stuff". V21's Family Library is the store to grow from: its own key (`acad3dFamilyLibrary`, survives every project), OBJ and STL import into it, six categories, placed instances independent copies. A drop places at the drop point through the placement the family tool already uses, and V123's body drag and faces edit what lands. An imported model needs its unit (OBJ carries none: ask, and show the size it would come in at) and a thumbnail. A block needs a definition and an insert (BLOCK, INSERT) -- Track A's row 118 overlaps; a template is a starting project (V115's project tabs). |
+| 127 | Alignment and profile | A horizontal alignment (tangents, circular curves, and spirals if they fit) built from a polyline or by its PI points; stationing along it; a vertical profile of grades and parabolic vertical curves; a point's station and offset | **Start here.** Research first: AASHTO's Green Book for curve and vertical-curve geometry, and how Civil 3D and OpenRoads present an alignment (its Properties, labels and station ticks), fitted to the rule above. An alignment is a new object kind, so decide how it is stored the way V88 decided arcs. The profile view is a drawing of the profile, not a new window. Check stations against closed forms: arc length R x delta, tangent T = R tan(delta/2), and a vertical curve's high point at x = -g1 L / (g2 - g1). |
 
 ### LATER - Track A, drafting (moved behind Track B in V100)
 
 The numbers in this table are its order, not phase numbers: a phase takes the next free V number
-when it starts (V111 to V123 went to other work; V124 is in NOW).
+when it starts (V111 to V126 went to other work; V127 is in NOW).
 
 | # | Phase | Scope | Notes |
 |---|---|---|---|
@@ -58,10 +52,54 @@ when it starts (V111 to V123 went to other work; V124 is in NOW).
 | 115 | Join and Merge on curves | Colinearity replaced by concentricity | Smaller than 101 and independent of it. Finishes the eight modify tools. |
 | 116 | Modify toolbox, rest | STRETCH EXPLODE ARRAYPATH PEDIT MATCHPROP PROPERTIES OOPS OVERKILL | What V87 did not cover. |
 | 117 | Dimension set | DIMORDINATE DIMBASELINE DIMCONTINUE DIMALIGNED DIMARC DIMSTYLE QDIM DIMEDIT DIMTEDIT | DIMORDINATE is station-and-offset — civil and bridge drawings can't be issued without it. |
-| 118 | Blocks and data | ATTDEF ATTEDIT BEDIT WBLOCK DATAEXTRACTION TABLESTYLE TABLEDIT TABLEEXPORT | First phase that's about the disciplines, not drafting. |
+| 118 | Blocks and data | ATTDEF ATTEDIT BEDIT WBLOCK DATAEXTRACTION TABLESTYLE TABLEDIT TABLEEXPORT | First phase that's about the disciplines, not drafting. BLOCK and INSERT landed in V124, as the Assets library's blocks: saved records inserted as independent copies. A block reference that follows its definition (what BEDIT edits) is not built. |
 | 119 | Sheets and plotting, rest | MVIEW (draw a viewport on the paper) PAGESETUP (plot settings beyond Sheet Setup) PUBLISH (V122's Print set prints every sheet in one job; a chosen subset and page setups remain) EXPORTPDF (vector PDF of a sheet) VPLAYER (per-viewport layer visibility) viewport lock | LAYOUT, MSPACE and PSPACE landed in V116, with layout tabs and model space through a viewport. |
 
-**Recently finished:** Phase 123 (V123), **direct manipulation**, taken ahead of Assets on the
+**Recently finished:** Phase 126 (V126), **the section-profile library**, Track B item 2. A column or
+beam type may carry a profile -- rectangle, round, HSS, pipe, I (W and IPE) or channel -- and the
+member is that section: its solid is the profile swept along it (a beam hung by its top with its web
+upright, a column's section turned with it), its analysis takes the section's A, I and J (computed
+exactly from its nominal dimensions, fillets stated as not modelled), and Properties' Structural page
+shows them with the mass per metre. 28 sections ship: AISC W, C, HSS and pipe, EN IPE, and concrete
+rounds, all Steel except the rounds. A stored project gains them once and keeps its own types. The
+section is chosen in the Type list (now grouped by material), or dropped from a folded Sections group
+in Assets; a profiled member's width is refused, and Edit Type locks it. Checked against the textbook
+to 1e-12, the AISC manual within the fillets' share, A x L for every solid, and PL^3/3EI. Found: a
+square section and a bounding box each hid a wrong rule from the checks; the falsify runner skipped
+six variants with capitals in their names.
+
+Phase 125 (V125), **the structural object model**, Track B item 1. The
+analytical model is derived from the live columns and beams (lines at column centres and beam tops,
+ends merged within 50 mm, a member split where another lands on it); supports at column bases
+(Automatic, Fixed, Pinned, Free) and beam end connections (Rigid, Pinned); D and L loads -- self-
+weight, line and point loads on beams, lateral loads at column tops -- and the ASCE 7 combinations;
+a 3D direct stiffness solve (RCM-ordered band, Cholesky) that refuses an unstable frame by node and
+direction. ANALYZE shows the analytical lines, a moment, axial or shear diagram labelled with each
+member's peak and the deflected shape over the model; ANALYZEOFF hides it; a changed model shows no
+result, only that it is out of date. Set in Properties -- the member's Structural page, the model's
+Analysis page -- with SUPPORT and LOAD opening them, and one Analyze button: the owner asked mid-phase
+for a clean, consistent interface after Rhino's, and nothing new was opened. Checked against closed
+forms, a plane-frame solve written in the suite, and equilibrium. Found: a sampled peak missed the
+real one between samples; a typed load value was lost when the panel re-rendered; four checks that
+could not tell right from wrong (an axis-aligned member's turn is its own transpose).
+
+Phase 124 (V124), **Assets**, the third panel of the owner's stack: "blocks
+templates premade for easy drag and drop into the project", a library that "can be built upon ... when
+I go online and collect items, obj, or import models". The Assets tab is the library: a search, Import,
+Block, Model and Template; models (a starter set of nine at real sizes, and the user's), blocks and
+templates as tiles with thumbnails; annotation, materials, wall types and patterns after them. Drag a
+tile onto the drawing and it lands at that point on the active level, snapped as a click is; a
+material, wall type or pattern goes on the object it is dropped on; a click places at the centre of
+the view. An imported OBJ or STL asks its unit and up axis and shows the size it would come in at. A
+block is the selection's own records -- a wall stays a wall with its type -- inserted on the active
+level at its elevation, its members' links pointing at each other's copies; a template opens a new
+project tab. BLOCK, INSERT and ASSETS on the command line. Found: a block's room did not follow its
+wall; a copy made by Ctrl+D, the gizmo or an array kept the ORIGINAL's links, so a copied hatch
+re-traced onto the original when the original's sketch was edited (since V99) -- one relink rule for
+every copy path now; a real click was eaten after a drop; Escape did not end a drag once anything was
+selected (V83's lesson again).
+
+Phase 123 (V123), **direct manipulation**, taken ahead of Assets on the
 owner's word: "geometry manipulation for objects, shapes and assetts ... quite limited for my push,
 pull, rotate ... Look into Autodesk but also Rhinoceros by McNeel on how they do it." Researched
 against Rhino's gumball, AutoCAD's PRESSPULL, Revit's drag controls and temporary dimensions,
@@ -439,6 +477,8 @@ first time, and fixed the typed-coordinate class bug.
   (`bimGizmoBeginPivot`, the plane pick), so in an elevation they act on an edge-on plane. The fix
   is the view plane, not `bimCameraIsPlan`. Found in V119.
 - Fit to Model does not count grids, so a model of grids alone fits to nothing. Found in V119.
+- The project title at the top of the left panel is clipped by the panel's first row in every tab
+  (the Assets tab's search box, the Project Browser's first group). Seen in V124; V123 is the same.
 - ROTATE's dialog is labelled "Angle (degrees, CCW)" and a positive angle turns the plan
   CLOCKWISE; the V110 gizmo reads angles the Revit way (positive is counter-clockwise seen from
   above), so the two disagree. The sign belongs to ROTATE, the polar array's fill angle and the
@@ -447,6 +487,8 @@ first time, and fixed the typed-coordinate class bug.
 ---
 
 ## NEXT — Track B, the object model
+
+Items 1 and 2 were built in V125 and V126; item 3 is in NOW.
 
 The command audit's central finding: implementing all 902 AutoCAD commands would still leave MEP,
 HVAC and civil alignment work **entirely unbuilt**. The object model is where the discipline value
@@ -568,3 +610,27 @@ they ship as compiled binaries.
   cube ran outward, and the outward-normal code went untested). Press where only the gesture under
   test answers: at an object's centre a press is the gizmo's.
 - Time is measured in the page, where it happens: a slow suite reads late, never early (V123).
+- A copy is a new object: every link it holds is decided when it is made -- pointed at what was copied
+  with it, or dropped and said -- read from the ORIGINAL record, never inherited by copying the record
+  (V124 -- a copied hatch re-traced onto the original's sketch since V99; `bimRelinkCopies` is the one
+  rule for every copy path).
+- Suppress the one event you mean by when it is dispatched, never by a window of time: a time window
+  eats whatever the user does next (V124 -- a click after a drop was lost for 400 ms).
+- A new state that Escape ends is a line at the head of `onKey`'s chain, not a listener of its own:
+  `onKey` is registered at load and stops Escape for anything selected (V83, and again in V124).
+- A fixture that is symmetric agrees with a wrong rule by accident: a member along the model's axes
+  has a rotation matrix equal to its transpose, so a transposed turn passed every check (V125). Test a
+  member turned off the axes.
+- Where an extreme can be found exactly, find it: a sampled maximum is a lower bound that reads as the
+  answer (V125 -- a moment's peak is where its shear passes zero).
+- A form in a panel that can re-render under it keeps its state outside the DOM, read before any
+  handler can re-render (V125 -- a typed load value was lost).
+- New features fit the existing interface first: Properties pages that follow the selection, a
+  command and its Off form for a display, one toolbar button (owner, V125; Rhino's model).
+- A square section is a symmetric fixture, and so is a bounding box: check a turn on a section that
+  is not square, and check that a rebuild kept its shape by the solid's volume, not by its extent
+  (V126).
+- Count the variants the falsify runner ran against the number written: it reads lower-case names
+  only, and a skipped variant reads as caught (V126 -- six were skipped).
+- One reader for a derived quantity: the solid, the analysis, Properties and Assets all read a
+  section through `bimProfileProps` and `bimMemberSection`, so they cannot disagree (V126).
