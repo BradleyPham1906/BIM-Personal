@@ -258,35 +258,6 @@ body.light-theme #acad3d{color-scheme:light}
 .a3d-schedtbl th{text-align:left;color:#8a939d;font-weight:600;padding:5px 6px;border-bottom:1px solid #3a4048;position:sticky;top:0;background:#1c2024}
 .a3d-schedtbl td{padding:5px 6px;border-bottom:1px solid #262b31;color:#dfe4ea}
 .a3d-schedtbl tr:hover td{background:#262b31}
-.a3d-astools{display:flex;flex-direction:column;gap:6px;margin-bottom:6px}
-.a3d-assearch{width:100%;box-sizing:border-box;background:#1b1f24;border:1px solid #333a42;border-radius:6px;color:#dfe4ea;padding:6px 8px;font:inherit}
-.a3d-assearch:focus{outline:none;border-color:#4d86c0}
-.a3d-asacts{display:grid;grid-template-columns:repeat(4,1fr);gap:4px}
-.a3d-asact{background:#262b31;border:1px solid #333a42;border-radius:5px;color:#d5dae0;padding:5px 2px;font:inherit;font-size:10.5px;cursor:pointer}
-.a3d-asact:hover{background:#2f353c;border-color:#46505a}
-.a3d-asact:disabled{opacity:.45;cursor:default}
-.a3d-asgrp{cursor:pointer;user-select:none}
-.a3d-asgrp>span:first-child::before{content:'\25be';display:inline-block;width:12px;color:#7d8590}
-.a3d-asgrp.shut>span:first-child::before{content:'\25b8'}
-.a3d-asbody.shut{display:none}
-.a3d-astiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
-.a3d-ascell{position:relative;min-width:0}
-.a3d-astile{display:flex;flex-direction:column;align-items:stretch;width:100%;background:#22262b;border:1px solid #2f353c;border-radius:7px;padding:5px;color:#d5dae0;cursor:grab;font:inherit;text-align:left;touch-action:none}
-.a3d-astile:hover{border-color:#4d86c0;background:#262b31}
-.a3d-astile.off{opacity:.45;cursor:default}
-.a3d-astile .a3d-asnm{margin-top:4px;font-size:11px}
-.a3d-astile .a3d-asmeta{font-size:9.5px}
-.a3d-asimg{display:block;height:64px;border-radius:5px;background:#1b1f24;overflow:hidden}
-.a3d-asimg img{display:block;width:100%;height:100%;object-fit:contain;pointer-events:none}
-.a3d-asdel{position:absolute;top:3px;right:3px;width:20px;height:20px;padding:0;border-radius:4px;border:1px solid #3a4048;background:rgba(27,31,36,.85);color:#9aa3ad;font-size:12px;line-height:1;cursor:pointer}
-.a3d-asdel:hover{color:#e08080;border-color:#e08080}
-.a3d-astile,.a3d-asrow{user-select:none;-webkit-user-select:none}
-.a3d-asghost{position:fixed;z-index:100000;pointer-events:none;display:flex;align-items:center;gap:6px;padding:4px 8px 4px 4px;background:rgba(34,38,43,.94);border:1px solid #46505a;border-radius:7px;color:#dfe4ea;font:11px/1.3 Inter,system-ui,sans-serif;box-shadow:0 6px 18px rgba(0,0,0,.35);opacity:.7}
-.a3d-asghost.ok{border-color:#4d86c0;opacity:1}
-.a3d-asghost img{width:40px;height:30px;object-fit:contain;background:#1b1f24;border-radius:4px}
-.a3d-impprev{display:flex;align-items:center;gap:10px;margin:6px 0}
-.a3d-impprev img{width:120px;height:90px;background:#1b1f24;border:1px solid #2f353c;border-radius:6px;flex:0 0 auto}
-.a3d-impsize{font-size:11.5px;color:#dfe4ea;line-height:1.45}
 .a3d-famrow{display:flex;align-items:center;gap:6px;padding:6px 8px;border-bottom:1px solid #262b31}
 .a3d-famrow:hover{background:#262b31}
 .a3d-famcat{font-size:9px;color:#8a939d;background:#2b3138;border-radius:3px;padding:2px 5px;flex:0 0 auto}
@@ -743,11 +714,7 @@ body.a3d-tree-docked #a3d-leftpanel > .a3d-tree .a3d-palhd .a3d-palbtns{flex-wra
     ['LAYOUT',['NEWSHEET'],'newSheet','New sheet, opened on its own layout tab'],
     ['MODEL',[],'modelTab','Back to the Model tab'],
     ['MSPACE',['MS'],'mspace','Work in the model through a viewport on this sheet'],
-    ['PSPACE',['PS'],'pspace','Back to paper space on this sheet'],
-    /* __acad3dV124: the library */
-    ['BLOCK',['B','BMAKE'],'blockmake','Save the selection to the library as a block'],
-    ['INSERT',['I','DDINSERT'],'blockinsert','Insert a block: drag it from the library onto the drawing'],
-    ['ASSETS',['ADCENTER','CONTENT','TOOLPALETTES'],'assets','Open the Assets library of models, blocks and templates']
+    ['PSPACE',['PS'],'pspace','Back to paper space on this sheet']
   ];
   /* __acad3dV86: a command runs through the BIM engine and reports whether it ran, so a command
      that did nothing cannot report success (V120: the engine is the only thing it can run on). */
@@ -13325,11 +13292,10 @@ try{
   }
   /* Placed at the centre of the SAFE view rectangle (V79), un-projected onto the active level --
      so a new note lands where the user is looking and not behind the tool dock. */
-  function bimPlaceNoteAtViewCentre(kind,opts,atPt){
+  function bimPlaceNoteAtViewCentre(kind,opts){
     var s=bimSafeViewRect();
     var lvl=bimGetActiveLevel();
-    /* __acad3dV124: a note dropped from the library goes where it was dropped */
-    var g=atPt?[atPt[0],lvl?lvl.elev:0,atPt[1]]:groundPoint(s.x+s.w/2,s.y+s.h/2,lvl?lvl.elev:0);
+    var g=groundPoint(s.x+s.w/2,s.y+s.h/2,lvl?lvl.elev:0);
     if(!g){
       console.warn('[BIM] Could not un-project the view centre; placing the '+kind+' at the origin.');
       g=[0,0,0];
@@ -13343,7 +13309,7 @@ try{
   }
   /* The one kind that needs a file. Read as a data URI so the drawing stays self-contained and
      keeps working with no server and no external reference (Principle 5). */
-  function bimPlaceImageNote(atPt){
+  function bimPlaceImageNote(){
     var inp=document.createElement('input');
     inp.type='file';inp.accept='image/*';
     inp.onchange=function(){
@@ -13354,7 +13320,7 @@ try{
         return;
       }
       var rd=new FileReader();
-      rd.onload=function(){bimPlaceNoteAtViewCentre('image',{src:String(rd.result)},atPt);};
+      rd.onload=function(){bimPlaceNoteAtViewCentre('image',{src:String(rd.result)});};
       rd.onerror=function(){
         console.warn('[BIM] Could not read the chosen image file.');
         a3dToast('That image could not be read');
@@ -14179,21 +14145,20 @@ try{
      the drag takes the COPIES, so the originals stay exactly where they were -- which is what
      makes this a copy rather than a move that leaves something behind. */
   function bimGizmoCopySelection(ids){
-    var made=[],pairs=[],i,prevSel=A3D.sel,prevSet=(A3D.selSet||[]).slice();
+    var made=[],i,prevSel=A3D.sel,prevSet=(A3D.selSet||[]).slice();
     for(i=0;i<ids.length;i++){
       var o=objById(ids[i]);
       if(!o)continue;
       var c=bimDuplicateObject(o,0,0);
-      if(c){A3D.objs.push(c);made.push(c.id);pairs.push([o,c]);}
+      if(c){A3D.objs.push(c);made.push(c.id);}
     }
-    var cut=pairs.length?bimRelinkCopies(pairs,0,0,0):0;   /* __acad3dV124 */
     if(!made.length){
       console.warn('[BIM] Ctrl-drag: nothing in the selection could be copied.');
       a3dToast('These object(s) cannot be copied - dragging the originals instead');
       return null;
     }
     A3D.selSet=made;A3D.sel=made[0];A3D.sel2=null;
-    a3dToast('Copying '+made.length+' object(s) - the originals stay where they are'+bimRelinkNote(cut));
+    a3dToast('Copying '+made.length+' object(s) - the originals stay where they are');
     refreshTree();
     return {ids:made,sel:prevSel,set:prevSet};
   }
@@ -16860,19 +16825,18 @@ try{
     var ids=(A3D.selSet&&A3D.selSet.length)?A3D.selSet.slice():(A3D.sel?[A3D.sel]:[]);
     if(!ids.length){a3dToast('Nothing selected to duplicate');return;}
     pushUndo();
-    var newIds=[],pairs=[],i;
+    var newIds=[],i;
     for(i=0;i<ids.length;i++){
       var o=objById(ids[i]);
       if(!o)continue;
       var copy=bimDuplicateObject(o,1,1);
-      if(copy){A3D.objs.push(copy);newIds.push(copy.id);pairs.push([o,copy]);}
+      if(copy){A3D.objs.push(copy);newIds.push(copy.id);}
     }
     if(!newIds.length){a3dToast('Nothing could be duplicated (unsupported object type)');return;}
-    var cut=bimRelinkCopies(pairs,1,1,0);   /* __acad3dV124 */
     A3D.selSet=newIds;
     A3D.sel=newIds[0];A3D.sel2=null;
     refreshTree();refreshHud();paint();saveSoon();
-    a3dToast('Duplicated '+newIds.length+' object(s)'+bimRelinkNote(cut));
+    a3dToast('Duplicated '+newIds.length+' object(s)');
   }
   // ---- __acad3dV17: Precision editing for BIM objects (Mirror, Rotate, Polar Array, Wall Join).
   // Operates on A3D.objs directly. ----
@@ -20207,20 +20171,18 @@ try{
   function buildArray(ids,n,ax,az){
     pushUndo();
     var newIds=[],i,k;
-    var steps={},cut=0;   /* __acad3dV124: the copies of one step are relinked among themselves */
     for(i=0;i<ids.length;i++){
       var o=objById(ids[i]);
       if(!o)continue;
       for(k=1;k<n;k++){
         var copy=bimDuplicateObject(o,ax*k,az*k);
-        if(copy){A3D.objs.push(copy);newIds.push(copy.id);(steps[k]=steps[k]||[]).push([o,copy]);}
+        if(copy){A3D.objs.push(copy);newIds.push(copy.id);}
       }
     }
     if(!newIds.length){a3dToast('Array failed: unsupported object type(s)');return;}
-    for(k=1;k<n;k++)if(steps[k])cut+=bimRelinkCopies(steps[k],ax*k,az*k,0);
     A3D.selSet=ids.concat(newIds);
     refreshTree();refreshHud();paint();saveSoon();
-    a3dToast('Array created '+newIds.length+' cop'+(newIds.length===1?'y':'ies')+bimRelinkNote(cut));
+    a3dToast('Array created '+newIds.length+' cop'+(newIds.length===1?'y':'ies'));
   }
   function cubeHit(x,y){
     var i;
@@ -20458,10 +20420,7 @@ try{
     {sel:'[data-prpact]',why:'Presentation panel action: present, a new page, print the set'},
     {sel:'[data-prpitem]',why:'a page: click to read it, double-click to edit its layout, drag to move it, right-click for its menu'},
     {sel:'[data-prpren]',why:'the name of a page being renamed'},
-    {sel:'.a3d-railbtn[data-tab="assets"]',why:'Assets tab: the library of models, blocks and templates, dragged into the project'},
-    /* __acad3dV124: the library's controls -- each driven by the V124 suite before it was claimed */
-    {sel:'[data-a3dasact]',why:'library action: import a model, save the selection as a block or a model, save the project as a template'},
-    {sel:'[data-a3dasdel]',why:'removes a model, block or template the user added to the library, after asking'},
+    {sel:'.a3d-railbtn[data-tab="assets"]',why:'Assets tab: the BIM asset libraries'},
     /* __acad3dV83: every control in the rail's utility stack, claimed. That is the point of
        this whitelist -- a control added without being claimed fails the audit, which is exactly
        what should happen to a control added without being wired. */
@@ -20476,8 +20435,8 @@ try{
     {sel:'.a3d-row',why:'selects an object'},
     {sel:'.a3d-brow',why:'Project Browser row'},
     {sel:'.a3d-bgrp',why:'Project Browser group header'},
-    {sel:'[data-a3dassets]',why:'a library item: click to place or apply it, or drag it onto the drawing'},
-    {sel:'[data-a3dassetgrp]',why:'a library group header: folds and unfolds the group'},
+    {sel:'[data-a3dassets]',why:'BIM asset row'},
+    {sel:'[data-a3dassetgrp]',why:'BIM asset group header'},
     {sel:'input',why:'a field, not an action'},
     {sel:'select',why:'a field, not an action'}
   ];
@@ -20506,126 +20465,72 @@ try{
     return {ok:unclaimed.length===0,claimed:claimed,unclaimed:unclaimed};
   }
 
-  /* ================= __acad3dV124: the Assets library =================
-     The owner, in V119: Assets "should be blocks templates premade for easy drag and drop into the
-     project not an overview of stuff". Models, blocks and templates first, as tiles; annotation, and
-     then what goes ON something -- materials, wall types, patterns -- folded. Every tile and row does
-     what its label says: a row with no live target is disabled and says why. */
-  var A3D_ASSETS_UI={q:'',closed:{materials:true,walltypes:true,patterns:true}};
-  function bimAssetMatch(q,words){
-    if(!q)return true;
-    return words.join(' ').toLowerCase().indexOf(q)>=0;
-  }
-  function bimAssetSelIds(){
-    return (A3D.selSet&&A3D.selSet.length)?A3D.selSet.slice():(A3D.sel?[A3D.sel]:[]);
-  }
+  /* ---- the BIM asset libraries ----
+     The four this app actually has. Every row does the thing its label says; a row with no live
+     target disables itself and says why, rather than looking clickable and doing nothing -- which
+     is the fault this whole phase is about. */
   function bimAssetsHtml(){
-    var selId=A3D.sel,sel=objById(selId),q=String(A3D_ASSETS_UI.q||'').trim().toLowerCase();
-    var selIds=bimAssetSelIds(),hasSolid=false,i;
-    for(i=0;i<selIds.length;i++){
-      var so=objById(selIds[i]),sm=so?meshOf(so):null;
-      if(sm&&sm.f&&sm.f.length){hasSolid=true;break;}
-    }
-    function act(k,label,tip,live,why){
-      return '<button type="button" class="a3d-asact" data-a3dasact="'+k+'"'+(live?' title="'+bimEsc(tip)+'"':' disabled title="'+bimEsc(why)+'"')+'>'+bimEsc(label)+'</button>';
-    }
+    var selId=A3D.sel,sel=objById(selId);
     var h='<div class="a3d-assets">';
-    h+='<div class="a3d-astools"><input type="search" class="a3d-assearch" data-a3dassearch placeholder="Search the library" value="'+bimEsc(A3D_ASSETS_UI.q||'')+'">'+
-      '<div class="a3d-asacts">'+
-      act('import','Import','Import an OBJ or STL model into the library',true,'')+
-      act('block','Block','Save the selection to the library as a block',selIds.length>0,'Select the objects to save as a block')+
-      act('model','Model','Save the selected solids to the library as one model',hasSolid,'Select a solid to save as a model')+
-      act('template','Template','Save this project to the library as a template for new projects',true,'')+
-      '</div></div>';
-    h+='<div class="a3d-asnote">Drag onto the drawing to place it there, or click to place it at the centre of the view. '+(sel
+    h+='<div class="a3d-asnote">'+(sel
         ? 'Selected: <b>'+bimEsc(sel.name)+'</b>'
-        : 'Materials, wall types and patterns go on the selection, or on what they are dropped on.')+'</div>';
-    var shown=0;
-    function grp(id,title,sub,body,tiles){
-      if(!body)return '';
-      var shut=!!A3D_ASSETS_UI.closed[id]&&!q;
-      return '<div class="a3d-asgrp'+(shut?' shut':'')+'" data-a3dassetgrp="'+id+'" role="button" tabindex="0" aria-expanded="'+(shut?'false':'true')+'">'+
-        '<span>'+bimEsc(title)+'</span><span class="a3d-assub">'+bimEsc(sub)+'</span></div>'+
-        '<div class="a3d-asbody'+(tiles?' a3d-astiles':'')+(shut?' shut':'')+'">'+body+'</div>';
+        : 'Nothing selected — rows that act on a selection are disabled')+'</div>';
+    function grp(id,title,sub,rows){
+      if(!rows)return '';
+      return '<div class="a3d-asgrp" data-a3dassetgrp="'+id+'">'+bimEsc(title)+
+        '<span class="a3d-assub">'+bimEsc(sub)+'</span></div><div class="a3d-asbody">'+rows+'</div>';
     }
     function row(kind,key,label,meta,live,why){
-      shown++;
-      return '<button type="button" class="a3d-asrow'+(live?'':' off')+'" data-a3dassets="'+kind+':'+bimEsc(key)+'"'+
+      return '<button class="a3d-asrow'+(live?'':' off')+'" data-a3dassets="'+kind+':'+bimEsc(key)+'"'+
         (live?'':' disabled title="'+bimEsc(why)+'"')+'>'+
         '<span class="a3d-asnm">'+bimEsc(label)+'</span>'+
         '<span class="a3d-asmeta">'+bimEsc(live?meta:why)+'</span></button>';
     }
-    function tile(spec,e,meta,live,why){
-      shown++;
-      var th=bimAssetThumb(e);
-      return '<div class="a3d-ascell"><button type="button" class="a3d-astile'+(live?'':' off')+'" data-a3dassets="'+bimEsc(spec)+'"'+
-        (live?' title="'+bimEsc(e.name+' -- drag onto the drawing, or click')+'"':' disabled title="'+bimEsc(why)+'"')+'>'+
-        '<span class="a3d-asimg">'+(th?'<img src="'+th+'" alt="" draggable="false">':'')+'</span>'+
-        '<span class="a3d-asnm">'+bimEsc(e.name||'(unnamed)')+'</span>'+
-        '<span class="a3d-asmeta">'+bimEsc(live?meta:why)+'</span></button>'+
-        (e.builtin?'':'<button type="button" class="a3d-asdel" data-a3dasdel="'+bimEsc(e.id)+'" title="Remove from the library" aria-label="Remove '+bimEsc(e.name)+' from the library">\u00d7</button>')+
-        '</div>';
+    var i,rows;
+    /* __acad3dV82: Annotation FIRST, because it is what a user reaches for while drafting.
+       None of these need a selection -- they are placed, not applied. */
+    rows='';
+    for(i=0;i<BIM_NOTE_KINDS.length;i++)
+      rows+=row('note',BIM_NOTE_KINDS[i].k,BIM_NOTE_KINDS[i].label,
+        BIM_NOTE_KINDS[i].why,true,'');
+    h+=grp('annotation','Annotation',BIM_NOTE_KINDS.length+' item(s)',rows);
+    // Families -- placed into the model, so they need no selection
+    var fams=A3D_FAMLIB||[];
+    rows='';
+    for(i=0;i<fams.length;i++){
+      /* A family whose mesh carries no faces places an object nobody can see. Offering it as a
+         live 'place' row would be this phase's own fault in miniature, so it is disabled and
+         says why. Found by placing one: the row reported success and the model gained nothing. */
+      var fm=fams[i].mesh,hasGeom=!!(fm&&fm.f&&fm.f.length);
+      rows+=row('family',fams[i].id,fams[i].name||'(unnamed family)',
+        (fams[i].category||'Other')+' \u00b7 place',hasGeom,'this family has no geometry');
     }
-    // Models: the user's first, then the starter set
-    var models=bimLibEntries('model').concat(A3D_ASSET_BUILTINS),body='';
-    for(i=0;i<models.length;i++){
-      var fm=models[i].mesh,hasGeom=!!(fm&&fm.f&&fm.f.length);
-      if(!bimAssetMatch(q,[models[i].name||'',models[i].category||'','model']))continue;
-      /* A family whose mesh carries no faces places an object nobody can see: disabled, and says why. */
-      body+=tile('family:'+models[i].id,models[i],(models[i].builtin?'Starter':(models[i].category||'Other')),hasGeom,'this family has no geometry');
-    }
-    if(!q&&!models.length)body='<div class="a3d-asempty">No models yet.</div>';
-    h+=grp('families','Models',models.length+' item(s)',body,true);
-    // Blocks
-    var blocks=bimLibEntries('block');body='';
-    for(i=0;i<blocks.length;i++){
-      if(!bimAssetMatch(q,[blocks[i].name||'','block']))continue;
-      body+=tile('block:'+blocks[i].id,blocks[i],(blocks[i].count||0)+' object(s)',true,'');
-    }
-    if(!q&&!blocks.length)body='<div class="a3d-asempty">No blocks yet: select objects and click Block.</div>';
-    h+=grp('blocks','Blocks',blocks.length+' item(s)',body,true);
-    // Templates
-    var tpls=bimLibEntries('template');body='';
-    for(i=0;i<tpls.length;i++){
-      if(!bimAssetMatch(q,[tpls[i].name||'','template','project']))continue;
-      body+=tile('template:'+tpls[i].id,tpls[i],'new project',true,'');
-    }
-    if(!q&&!tpls.length)body='<div class="a3d-asempty">No templates yet: click Template to keep this project as a start for new ones.</div>';
-    h+=grp('templates','Templates',tpls.length+' item(s)',body,true);
-    // Annotation -- placed, so none needs a selection
-    body='';
-    for(i=0;i<BIM_NOTE_KINDS.length;i++){
-      if(!bimAssetMatch(q,[BIM_NOTE_KINDS[i].label,BIM_NOTE_KINDS[i].why,'annotation']))continue;
-      body+=row('note',BIM_NOTE_KINDS[i].k,BIM_NOTE_KINDS[i].label,BIM_NOTE_KINDS[i].why,true,'');
-    }
-    h+=grp('annotation','Annotation',BIM_NOTE_KINDS.length+' item(s)',body,false);
-    // Materials -- on the selected solid, or on the solid they are dropped on
-    var cards=bimMaterialCards()||[],solidSel=!!(sel&&sel.t==='solid');
-    body='';
-    for(i=0;i<cards.length;i++){
-      if(!bimAssetMatch(q,[cards[i].name,cards[i].kind,'material']))continue;
-      body+=row('material',cards[i].name,cards[i].name,
-        solidSel?cards[i].kind+' \u00b7 '+cards[i].density+' kg/m\u00b3':'drag onto a solid, or select one',true,'');
-    }
-    h+=grp('materials','Materials',cards.length+' card(s)',body,false);
-    // Wall types -- made active for the next wall, and applied to the wall they go on
+    if(!fams.length)rows='<div class="a3d-asempty">No families yet — add one with +Fam in the '+
+      'Project Browser.</div>';
+    h+=grp('families','Families',fams.length+' item(s)',rows);
+    // Materials -- assigned to the selection
+    var cards=bimMaterialCards()||[];
+    rows='';
+    for(i=0;i<cards.length;i++)
+      rows+=row('material',cards[i].name,cards[i].name,
+        cards[i].kind+' · '+cards[i].density+' kg/m³',
+        !!(sel&&sel.t==='solid'),'select a solid first');
+    h+=grp('materials','Materials',cards.length+' card(s)',rows);
+    // Wall types -- made active for the next wall, and applied to the selection if it is a wall
     var wts=[];
     try{bimEnsureTypes();wts=A3D.types.wall||[];}catch(eW){wts=[];}
-    body='';
-    for(i=0;i<wts.length;i++){
-      if(!bimAssetMatch(q,[wts[i].name,'wall type']))continue;
-      body+=row('walltype',wts[i].id,wts[i].name,(A3D.activeWallType===wts[i].id?'active \u00b7 ':'')+'make active',true,'');
-    }
-    h+=grp('walltypes','Wall Types',wts.length+' type(s)',body,false);
-    // Patterns -- a presentation graphics override
+    rows='';
+    for(i=0;i<wts.length;i++)
+      rows+=row('walltype',wts[i].id,wts[i].name,
+        (A3D.activeWallType===wts[i].id?'active · ':'')+'make active',true,'');
+    h+=grp('walltypes','Wall Types',wts.length+' type(s)',rows);
+    // Patterns -- a presentation graphics override on the selection
     var pats=BIM_HATCH_PATTERNS||[];
-    body='';
-    for(i=0;i<pats.length;i++){
-      if(!bimAssetMatch(q,[bimPatternLabel(pats[i]),'pattern hatch']))continue;
-      body+=row('pattern',pats[i],bimPatternLabel(pats[i]),sel?'presentation fill':'drag onto an element, or select one',true,'');
-    }
-    h+=grp('patterns','Patterns',pats.length+' pattern(s)',body,false);
-    if(q&&!shown)h+='<div class="a3d-asempty">Nothing in the library matches "'+bimEsc(A3D_ASSETS_UI.q)+'".</div>';
+    rows='';
+    for(i=0;i<pats.length;i++)
+      rows+=row('pattern',pats[i],bimPatternLabel(pats[i]),'presentation fill',
+        !!sel,'select an element first');
+    h+=grp('patterns','Patterns',pats.length+' pattern(s)',rows);
     h+='</div>';
     return h;
   }
@@ -20635,44 +20540,25 @@ try{
     for(i=0;i<a.length;i++)if(a[i].id===id)return a[i].name;
     return id;
   }
-  /* the plan point at the centre of what can be seen, on the active level */
-  function bimViewCentrePlan(){
-    var s=bimSafeViewRect(),lvl=bimGetActiveLevel();
-    var g=groundPoint(s.x+s.w/2,s.y+s.h/2,lvl?lvl.elev:0);
-    if(!g){console.warn('[BIM] Could not un-project the view centre; using the origin.');return [0,0];}
-    return [g[0],g[2]];
-  }
-  /* One path for a click and a drop. drop is {pt:[x, z], obj} -- where it was let go and what it was
-     let go on -- or absent for a click, which places at the view centre and applies to the
-     selection. */
-  function bimAssetAction(spec,drop){
+  function bimAssetAction(spec){
     var parts=spec.split(':'),kind=parts[0],key=parts.slice(1).join(':');
-    var o=drop?(drop.obj||null):objById(A3D.sel);
-    var at=drop&&drop.pt?drop.pt:null;
+    var o=objById(A3D.sel);
     if(kind==='note'){
-      if(key==='image')return bimPlaceImageNote(at);
-      return !!bimPlaceNoteAtViewCentre(key,null,at);
+      if(key==='image')return bimPlaceImageNote();
+      return !!bimPlaceNoteAtViewCentre(key);
     }
     if(kind==='family'){
       var fam=bimFamilyLibraryGet(key);
-      if(!fam){a3dToast('That model is no longer in the library');return false;}
-      if(!(fam.mesh&&fam.mesh.f&&fam.mesh.f.length)){a3dToast('"'+fam.name+'" has no geometry to place');return false;}
-      /* Left SELECTED, so the gizmo is already on it and the next gesture moves it. */
-      bimPlaceFamilyInstance(fam,at||bimViewCentrePlan());
+      if(!fam){a3dToast('That family is no longer in the library');return false;}
+      /* Placed at the active level's origin and left SELECTED, so the V76 gizmo is already on it
+         and the next gesture moves it where the user wants -- rather than making them hunt for a
+         thing that appeared somewhere off screen. bimPlaceFamilyInstance takes the family OBJECT
+         and a plan point, and does its own undo, selection, refresh and toast. */
+      bimPlaceFamilyInstance(fam,[0,0]);
       return true;
     }
-    if(kind==='block'){
-      var blk=bimFamilyLibraryGet(key);
-      if(!blk){a3dToast('That block is no longer in the library');return false;}
-      return !!bimInsertBlock(blk,at||bimViewCentrePlan());
-    }
-    if(kind==='template'){
-      var tpl=bimFamilyLibraryGet(key);
-      if(!tpl){a3dToast('That template is no longer in the library');return false;}
-      return !!bimTemplateUse(tpl);
-    }
     if(kind==='material'){
-      if(!o||o.t!=='solid'){a3dToast(drop?'Drop a material on a solid':'Select a solid, or drag the material onto one');return false;}
+      if(!o||o.t!=='solid'){a3dToast('Select a solid first');return false;}
       pushUndo();
       if(!bimSetMaterial(o,key)){a3dToast('That material could not be assigned');return false;}
       refreshTree();refreshProps();paint();saveSoon();
@@ -20693,7 +20579,7 @@ try{
       return true;
     }
     if(kind==='pattern'){
-      if(!o){a3dToast(drop?'Drop a pattern on an element':'Select an element, or drag the pattern onto one');return false;}
+      if(!o){a3dToast('Select an element first');return false;}
       pushUndo();
       bimSetGraphicsOverride(o,'presentation','pattern',key);
       refreshProps();paint();saveSoon();
@@ -20702,153 +20588,15 @@ try{
     }
     return false;
   }
-  /* The Assets tab, with one group unfolded and brought into view. */
-  function bimOpenLibraryAt(gid){
-    bimShellSetTab('assets');
-    if(gid){
-      A3D_ASSETS_UI.closed[gid]=false;
-      refreshAssets();
-      var gh=document.querySelector('#a3d-leftpanel [data-a3dassetgrp="'+gid+'"]');
-      if(gh&&gh.scrollIntoView)gh.scrollIntoView({block:'start'});
-    }
-    if(gid==='blocks')a3dToast(bimLibEntries('block').length?'Drag a block onto the drawing, or click it to place it at the centre of the view'
-      :'No blocks yet: select objects and run BLOCK');
-    else if(gid==='families')a3dToast('Drag a model onto the drawing, or click it to place it at the centre of the view');
-    return true;
-  }
-  /* the four actions above the library */
-  function bimAssetsAct(k){
-    if(k==='import'){
-      var inp=document.createElement('input');
-      inp.type='file';inp.accept='.obj,.stl';
-      inp.onchange=function(){
-        var f=inp.files&&inp.files[0];
-        if(f)bimImportFamilyFile(f);
-      };
-      inp.click();
-      return true;
-    }
-    if(k==='block'){openSaveBlockDlg();return true;}
-    if(k==='model'){openSaveAsFamilyDlg();return true;}
-    if(k==='template'){openSaveTemplateDlg();return true;}
-    return false;
-  }
-  function bimAssetRemove(id){
-    var e=bimFamilyLibraryGet(id);
-    if(!e||e.builtin)return false;
-    var kd=bimAssetKind(e);
-    var what=kd==='template'?'Projects already made from it are not affected.':(kd==='block'?'Blocks already inserted are not affected.':'Models already placed are not affected.');
-    if(!confirm('Remove "'+e.name+'" from the library? '+what))return false;
-    if(!bimFamilyLibraryRemove(id))return false;
-    refreshFamilyPanel();
-    a3dToast('Removed "'+e.name+'" from the library');
-    return true;
-  }
   function refreshAssets(){
     var panel=document.getElementById('a3d-leftpanel');
     var shell=document.getElementById('a3d-shell');
     if(!panel||!shell||shell.dataset.tab!=='assets'||!A3D.on)return;
     var host=panel.querySelector('.a3d-assets');
     if(!host)return;
-    /* a search re-renders the list as it is typed into, so the box keeps its focus and caret */
-    var sI=host.querySelector('[data-a3dassearch]'),had=!!(sI&&document.activeElement===sI);
-    var s0=had?sI.selectionStart:0,s1=had?sI.selectionEnd:0;
-    var wrap=host.parentNode,top=wrap?wrap.scrollTop:0;
     var next=document.createElement('div');
     next.innerHTML=bimAssetsHtml();
     host.parentNode.replaceChild(next.firstChild,host);
-    if(wrap)wrap.scrollTop=top;
-    if(had){
-      var nI=panel.querySelector('[data-a3dassearch]');
-      if(nI){nI.focus();try{nI.setSelectionRange(s0,s1);}catch(eS){}}
-    }
-  }
-  /* ================= __acad3dV124: drag from the library onto the drawing =================
-     A press is not a drag until it travels past the click distance (V123); a drag ends with a drop
-     on the drawing, or with nothing. Pointer events, so a finger drags as a mouse does. */
-  var A3D_ASDRAG=null,A3D_ASDRAG_EAT=false;
-  /* the click the browser sends with this release, if any, is the drag's: eaten this turn only */
-  function bimAssetEatClick(){
-    A3D_ASDRAG_EAT=true;
-    setTimeout(function(){A3D_ASDRAG_EAT=false;},0);
-  }
-  function bimAssetDragDown(ev){
-    if(ev.button!==0||!A3D.on)return;
-    var b=ev.target&&ev.target.closest?ev.target.closest('[data-a3dassets]'):null;
-    if(!b||b.disabled)return;
-    A3D_ASDRAG={spec:b.getAttribute('data-a3dassets'),src:b,x0:ev.clientX,y0:ev.clientY,pid:ev.pointerId,on:false,ghost:null,cancelled:false};
-  }
-  /* the drawing under a viewport point, or null: only the model's own canvas takes a drop */
-  function bimAssetDropCanvas(x,y){
-    var tg=document.elementFromPoint(x,y);
-    return (tg&&el.cv&&tg===el.cv)?el.cv:null;
-  }
-  function bimAssetDragGhostOff(d){
-    if(d&&d.ghost&&d.ghost.parentNode)d.ghost.parentNode.removeChild(d.ghost);
-    if(d)d.ghost=null;
-  }
-  function bimAssetDragEnd(){
-    var d=A3D_ASDRAG;
-    A3D_ASDRAG=null;
-    bimAssetDragGhostOff(d);
-    return d;
-  }
-  /* Escape: the card goes and nothing will be placed, but the drag is held until the pointer is let
-     go, so that release -- and any click it sends -- does nothing either */
-  function bimAssetDragCancel(){
-    var d=A3D_ASDRAG;
-    if(!d||!d.on)return false;
-    bimAssetDragGhostOff(d);
-    d.cancelled=true;d.on=false;
-    return true;
-  }
-  function bimAssetDragMove(ev){
-    var d=A3D_ASDRAG;
-    if(!d||ev.pointerId!==d.pid||d.cancelled)return;
-    if(!d.on){
-      var dx=ev.clientX-d.x0,dy=ev.clientY-d.y0,cl=A3D_GIZ.click;
-      if(dx*dx+dy*dy<=cl*cl)return;
-      d.on=true;
-      var g=document.createElement('div');
-      g.className='a3d-asghost';
-      var im=d.src.querySelector('img'),nm=d.src.querySelector('.a3d-asnm');
-      g.innerHTML=(im?'<img src="'+im.getAttribute('src')+'" alt="">':'')+'<span>'+bimEsc(nm?nm.textContent:'')+'</span>';
-      document.body.appendChild(g);
-      d.ghost=g;
-    }
-    d.ghost.style.left=(ev.clientX+14)+'px';
-    d.ghost.style.top=(ev.clientY+14)+'px';
-    d.ghost.classList.toggle('ok',!!bimAssetDropCanvas(ev.clientX,ev.clientY));
-    ev.preventDefault();
-  }
-  function bimAssetDragUp(ev){
-    var d=A3D_ASDRAG;
-    if(!d||ev.pointerId!==d.pid)return;
-    bimAssetDragEnd();
-    if(d.cancelled){bimAssetEatClick();return;}
-    if(!d.on)return;   /* a press that did not travel is a click, and the click does it */
-    bimAssetEatClick();
-    var cv=bimAssetDropCanvas(ev.clientX,ev.clientY);
-    if(!cv){a3dToast('Drop onto the drawing to place it');return;}
-    var r=cv.getBoundingClientRect();
-    try{bimAssetDropAt(d.spec,ev.clientX-r.left,ev.clientY-r.top);}
-    catch(eD){console.warn('[BIM] The drop failed',eD);a3dToast('That could not be placed \u2014 see the console');}
-    refreshAssets();
-  }
-  /* What a drop at canvas point (cx, cy) does: the same action as a click, given where and on what. */
-  function bimAssetDropAt(spec,cx,cy){
-    var kind=spec.split(':')[0],lvl=bimGetActiveLevel(),y0=lvl?lvl.elev:0;
-    var g=groundPoint(cx,cy,y0),pt=null,obj=null;
-    if(g){
-      var sn=bimSnapPoint([cx,cy],g,{tool:'familyplace',pts:[],y:y0,on:null});
-      pt=[sn[0],sn[1]];
-    }
-    if(kind==='material'||kind==='pattern'||kind==='walltype')obj=pick(cx,cy)||null;
-    if(!pt&&(kind==='family'||kind==='block'||kind==='note')){
-      a3dToast('That point is not on the level: drop it where the drawing is');
-      return false;
-    }
-    return bimAssetAction(spec,{pt:pt,obj:obj});
   }
   /* The pass itself. Idempotent, and it only touches anything when there is something to fix, so
      the MutationObserver that drives it cannot feed itself. */
@@ -21004,45 +20752,12 @@ try{
     if(shell&&!shell.__a3dAssetsWired){
       shell.__a3dAssetsWired=true;
       shell.addEventListener('click',function(ev){
-        var cl=function(s){return ev.target&&ev.target.closest?ev.target.closest(s):null;};
-        /* __acad3dV124: the library's own controls */
-        var ab=cl('[data-a3dasact]'),db=cl('[data-a3dasdel]'),gh=cl('[data-a3dassetgrp]');
-        if(ab||db||gh){
-          ev.preventDefault();ev.stopPropagation();
-          try{
-            if(ab&&!ab.disabled)bimAssetsAct(ab.getAttribute('data-a3dasact'));
-            else if(db)bimAssetRemove(db.getAttribute('data-a3dasdel'));
-            else if(gh){var gid=gh.getAttribute('data-a3dassetgrp');A3D_ASSETS_UI.closed[gid]=!A3D_ASSETS_UI.closed[gid];refreshAssets();}
-          }catch(eL){console.warn('[BIM] Library action failed',eL);a3dToast('That library action failed \u2014 see the console');}
-          return;
-        }
-        var b=cl('[data-a3dassets]');
+        var b=ev.target&&ev.target.closest?ev.target.closest('[data-a3dassets]'):null;
         if(!b||b.disabled)return;
         ev.preventDefault();ev.stopPropagation();
-        if(A3D_ASDRAG_EAT)return;   /* __acad3dV124: the click sent with the release that ended a drag */
         try{bimAssetAction(b.getAttribute('data-a3dassets'));}
-        catch(eA){console.warn('[BIM] Asset action failed',eA);a3dToast('That asset action failed \u2014 see the console');}
+        catch(eA){console.warn('[BIM] Asset action failed',eA);a3dToast('That asset action failed — see the console');}
         refreshAssets();
-      },true);
-      shell.addEventListener('pointerdown',bimAssetDragDown,true);   /* __acad3dV124: drag onto the drawing */
-      window.addEventListener('pointermove',bimAssetDragMove,true);
-      window.addEventListener('pointerup',bimAssetDragUp,true);
-      window.addEventListener('pointercancel',function(ev){if(A3D_ASDRAG&&ev.pointerId===A3D_ASDRAG.pid)bimAssetDragEnd();},true);
-      shell.addEventListener('input',function(ev){   /* __acad3dV124: the search */
-        var s=ev.target&&ev.target.matches&&ev.target.matches('[data-a3dassearch]')?ev.target:null;
-        if(!s)return;
-        A3D_ASSETS_UI.q=s.value;
-        refreshAssets();
-      });
-      shell.addEventListener('keydown',function(ev){
-        var tg=ev.target;
-        if(tg&&tg.matches&&tg.matches('[data-a3dassearch]')&&ev.key==='Escape'&&tg.value){
-          ev.preventDefault();ev.stopPropagation();tg.value='';A3D_ASSETS_UI.q='';refreshAssets();
-          return;
-        }
-        if(tg&&tg.matches&&tg.matches('[data-a3dassetgrp]')&&(ev.key==='Enter'||ev.key===' ')){
-          ev.preventDefault();ev.stopPropagation();tg.click();
-        }
       },true);
     }
     return true;
@@ -21583,71 +21298,6 @@ try{
     var id=bimDocsAdd(rec,'create');
     if(id)a3dToast('New project: '+rec.titleBlock.project);
     return id;
-  }
-  /* ================= __acad3dV124: templates -- a starting project =================
-     The record goes under its own key before the entry is added, so a full store adds nothing. */
-  function bimTemplateSave(name){
-    var rec=JSON.parse(JSON.stringify(bimProjectRecord()));
-    delete rec.docId;
-    var id='tpl-'+Date.now().toString(36)+'-'+Math.floor(Math.random()*1e6);
-    try{localStorage.setItem(A3D_TEMPLATE_PREFIX+id,JSON.stringify(rec));}
-    catch(eS){
-      console.warn('[BIM] The template could not be stored.',eS);
-      a3dToast('The template could not be saved: browser storage is full');
-      return null;
-    }
-    var entry={id:id,kind:'template',name:name,category:'Templates',manufacturer:'',
-      count:Array.isArray(rec.objs)?rec.objs.length:0,
-      levels:Array.isArray(rec.levels)?rec.levels.length:0,
-      sheets:Array.isArray(rec.sheets)?rec.sheets.length:0,
-      createdAt:new Date().toISOString()};
-    entry.thumb=bimRecsThumb(rec.objs||[]);
-    A3D_FAMLIB.push(entry);
-    bimSaveFamilyLibrary();
-    return entry;
-  }
-  /* A new project tab that starts as a copy of the template. Returns the new project's id. */
-  function bimTemplateUse(entry){
-    if(!entry||bimAssetKind(entry)!=='template')return null;
-    var raw=null,rec=null;
-    try{raw=localStorage.getItem(A3D_TEMPLATE_PREFIX+entry.id);}
-    catch(eG){console.warn('[BIM] Browser storage could not be read.',eG);}
-    if(raw==null){a3dToast('The project stored for "'+entry.name+'" is no longer in this browser\'s storage');return null;}
-    try{rec=JSON.parse(raw);}catch(eP){console.warn('[BIM] A stored template is not valid JSON: '+entry.id,eP);rec=null;}
-    if(!rec||typeof rec!=='object'){a3dToast('"'+entry.name+'" could not be used: its stored project is damaged');return null;}
-    if(!rec.titleBlock||typeof rec.titleBlock!=='object')rec.titleBlock={project:'',client:'',drawnBy:'',checkedBy:''};
-    rec.titleBlock.project=bimNextProjectName();
-    var id=bimDocsAdd(rec,'create');
-    if(id)a3dToast('New project '+rec.titleBlock.project+' from the template "'+entry.name+'"');
-    return id;
-  }
-  function openSaveTemplateDlg(){
-    closeDlg();
-    var d=document.createElement('div');
-    d.className='a3d-dlg';
-    d.innerHTML='<div class="a3d-dlghd">Save as Template</div>'+
-      '<div class="a3d-dlgbody">'+
-      '<div class="a3d-dlgrow"><label>Name</label><input type="text" data-a3dp="name" value="'+bimEsc(bimProjectLabel()+' template')+'" maxlength="60"></div>'+
-      '<div class="a3d-propnote">Keeps this whole project -- its levels, grids, layers, types, views, sheets, title block and '+
-      A3D.objs.length+' object(s) -- as the start of new projects. A project made from it is a copy: the template does not change.</div>'+
-      '<div id="a3d-dlgerr" class="a3d-dlgerr"></div></div>'+
-      '<div class="a3d-dlgft"><button data-a3dlg="cancel">Cancel</button><button data-a3dlg="ok">Save</button></div>';
-    el.root.appendChild(d);
-    el.dlg=d;
-    var nI=d.querySelector('[data-a3dp="name"]');
-    function submit(){
-      var name=nI.value.trim();
-      var eb=document.getElementById('a3d-dlgerr');
-      if(!name){eb.textContent='Enter a name';return;}
-      closeDlg();
-      var e=bimTemplateSave(name);
-      if(!e)return;
-      refreshFamilyPanel();
-      a3dToast('Saved template "'+e.name+'" to the library');
-    }
-    d.addEventListener('click',function(ev){var b=ev.target&&ev.target.closest?ev.target.closest('[data-a3dlg]'):null;if(!b)return;if(b.getAttribute('data-a3dlg')==='ok')submit();else closeDlg();});
-    d.addEventListener('keydown',function(ev){if(ev.key==='Enter'){ev.preventDefault();ev.stopPropagation();submit();}else if(ev.key==='Escape'){ev.preventDefault();ev.stopPropagation();closeDlg();}});
-    nI.focus();nI.select();
   }
   function bimNameFromFile(filename){
     var n=String(filename||'').replace(/^.*[\\\/]/,'').replace(/\.acad3d\.json$/i,'').replace(/\.json$/i,'').trim();
@@ -22630,14 +22280,9 @@ try{
   function bimFamilyLibraryAdd(fam){
     var entry={
       id:'fam-'+Date.now().toString(36)+'-'+Math.floor(Math.random()*1e6),
-      kind:'model',   /* __acad3dV124 */
       name:fam.name,category:fam.category||'Other',manufacturer:fam.manufacturer||'',
       mesh:bimNormalizeMeshForFamily(fam.mesh),createdAt:new Date().toISOString()
     };
-    /* __acad3dV124: the unit and the file an imported model came from, and its thumbnail */
-    if(fam.unit)entry.unit=fam.unit;
-    if(fam.source)entry.source=fam.source;
-    entry.thumb=bimMeshThumb(entry.mesh);
     A3D_FAMLIB.push(entry);
     bimSaveFamilyLibrary();
     return entry;
@@ -22646,11 +22291,6 @@ try{
     var idx=-1,i;
     for(i=0;i<A3D_FAMLIB.length;i++)if(A3D_FAMLIB[i].id===id){idx=i;break;}
     if(idx<0)return false;
-    /* __acad3dV124: a template's project is stored under its own key, and goes with it */
-    if(bimAssetKind(A3D_FAMLIB[idx])==='template'){
-      try{localStorage.removeItem(A3D_TEMPLATE_PREFIX+id);}
-      catch(eR){console.warn('[BIM] A template\'s stored project could not be removed.',eR);}
-    }
     A3D_FAMLIB.splice(idx,1);
     bimSaveFamilyLibrary();
     return true;
@@ -22658,173 +22298,7 @@ try{
   function bimFamilyLibraryGet(id){
     var i;
     for(i=0;i<A3D_FAMLIB.length;i++)if(A3D_FAMLIB[i].id===id)return A3D_FAMLIB[i];
-    /* __acad3dV124: the starter set resolves through the same lookup, so every placement path
-       takes it unchanged */
-    for(i=0;i<A3D_ASSET_BUILTINS.length;i++)if(A3D_ASSET_BUILTINS[i].id===id)return A3D_ASSET_BUILTINS[i];
     return null;
-  }
-  /* ================= __acad3dV124: the Assets library =================
-     One store, three kinds: a MODEL is a mesh placed as an independent instance (every entry
-     written before V124 is one), a BLOCK is a set of object records inserted as independent copies,
-     a TEMPLATE is a starting project. The kind is read here and nowhere else, so an entry without
-     one is a model and nothing already stored has to be rewritten. */
-  var A3D_TEMPLATE_PREFIX='acad3dTemplateV1:';
-  function bimAssetKind(e){
-    var k=e&&e.kind;
-    return (k==='block'||k==='template')?k:'model';
-  }
-  /* the user's entries of one kind, in the library's own order */
-  function bimLibEntries(kind){
-    var out=[],i;
-    for(i=0;i<A3D_FAMLIB.length;i++)if(bimAssetKind(A3D_FAMLIB[i])===kind)out.push(A3D_FAMLIB[i]);
-    return out;
-  }
-  /* A mesh made of parts, each a box [cx,cy,cz,lx,ly,lz] or a cylinder {cyl:[cx,cy,cz,r,h]}, with
-     its centre given in metres and its base on y=0 once it is normalised. */
-  function bimAsmMesh(parts){
-    var meshes=[],i,j;
-    for(i=0;i<parts.length;i++){
-      var p=parts[i],m,c;
-      if(p.cyl){m=mkCylP(p.cyl[3],p.cyl[4],360,20);c=[p.cyl[0],p.cyl[1],p.cyl[2]];}
-      else{m=mkBoxP(p[3],p[4],p[5]);c=[p[0],p[1],p[2]];}
-      var mv=[];
-      for(j=0;j<m.v.length;j++)mv.push([m.v[j][0]+c[0],m.v[j][1]+c[1],m.v[j][2]+c[2]]);
-      meshes.push({v:mv,f:m.f});
-    }
-    return bimMergeMeshes(meshes);
-  }
-  /* The starter set: real sizes, in metres. Front is +Z. */
-  var A3D_ASSET_STARTER=[
-    {k:'chair',name:'Chair',cat:'Furniture',parts:[[-0.2,0.225,0.2,0.04,0.45,0.04],[0.2,0.225,0.2,0.04,0.45,0.04],
-      [-0.2,0.225,-0.2,0.04,0.45,0.04],[0.2,0.225,-0.2,0.04,0.45,0.04],[0,0.47,0,0.45,0.05,0.45],
-      [0,0.72,-0.205,0.45,0.45,0.04]]},
-    {k:'table',name:'Dining table',cat:'Furniture',parts:[[0,0.73,0,1.6,0.04,0.9],[-0.74,0.355,-0.39,0.06,0.71,0.06],
-      [0.74,0.355,-0.39,0.06,0.71,0.06],[-0.74,0.355,0.39,0.06,0.71,0.06],[0.74,0.355,0.39,0.06,0.71,0.06]]},
-    {k:'desk',name:'Desk',cat:'Furniture',parts:[[0,0.73,0,1.4,0.04,0.7],[-0.68,0.355,0,0.04,0.71,0.66],
-      [0.68,0.355,0,0.04,0.71,0.66],[0,0.45,-0.3,1.32,0.4,0.02]]},
-    {k:'bed',name:'Double bed',cat:'Furniture',parts:[[0,0.175,0.03,1.6,0.35,2.04],[0,0.45,0.05,1.5,0.2,1.95],
-      [0,0.45,-1.02,1.6,0.9,0.06]]},
-    {k:'sofa',name:'Sofa',cat:'Furniture',parts:[[0,0.2,0.05,1.6,0.4,0.8],[0,0.625,-0.35,2.0,0.45,0.2],
-      [-0.9,0.325,0.05,0.2,0.65,0.8],[0.9,0.325,0.05,0.2,0.65,0.8]]},
-    {k:'cabinet',name:'Base cabinet',cat:'Furniture',parts:[[0,0.43,0,0.6,0.86,0.58],[0,0.88,0.01,0.62,0.04,0.6]]},
-    {k:'wc',name:'WC',cat:'Fixtures',parts:[{cyl:[0,0.2,0.12,0.19,0.4]},[0,0.575,-0.17,0.4,0.35,0.18]]},
-    {k:'basin',name:'Basin',cat:'Fixtures',parts:[{cyl:[0,0.35,0,0.08,0.7]},[0,0.78,0.05,0.55,0.16,0.45]]},
-    {k:'bath',name:'Bathtub',cat:'Fixtures',parts:[[0,0.275,0,1.7,0.55,0.75]]}
-  ];
-  var A3D_ASSET_BUILTINS=A3D_ASSET_STARTER.map(function(s){
-    return {id:'builtin:'+s.k,kind:'model',builtin:true,name:s.name,category:s.cat,manufacturer:'',
-      mesh:bimNormalizeMeshForFamily(bimAsmMesh(s.parts)),thumb:''};
-  });
-  /* A mesh drawn from above one corner, flat-shaded, back faces first: what the thing looks like.
-     No face is culled, so a mesh whose faces run either way round still draws whole. */
-  function bimMeshThumb(mesh,w,h){
-    w=w||96;h=h||72;
-    try{
-      if(!mesh||!mesh.v||!mesh.v.length||!mesh.f||!mesh.f.length)return '';
-      var c=document.createElement('canvas');c.width=w;c.height=h;
-      var g=c.getContext('2d');if(!g)return '';
-      var S2=Math.SQRT2,S6=Math.sqrt(6),i,k;
-      var P=mesh.v.map(function(v){return [(v[0]-v[2])/S2,-(2*v[1]-v[0]-v[2])/S6];});
-      var mnx=Infinity,mny=Infinity,mxx=-Infinity,mxy=-Infinity;
-      for(i=0;i<P.length;i++){
-        if(P[i][0]<mnx)mnx=P[i][0];if(P[i][0]>mxx)mxx=P[i][0];
-        if(P[i][1]<mny)mny=P[i][1];if(P[i][1]>mxy)mxy=P[i][1];
-      }
-      var pad=6,sc=Math.min((w-2*pad)/Math.max(mxx-mnx,1e-9),(h-2*pad)/Math.max(mxy-mny,1e-9));
-      var ox=(w-(mxx-mnx)*sc)/2-mnx*sc,oy=(h-(mxy-mny)*sc)/2-mny*sc;
-      var L=[0.36,0.84,0.4],faces=[];
-      for(i=0;i<mesh.f.length;i++){
-        var f=mesh.f[i];if(!f||f.length<3)continue;
-        var n=[0,0,0],d=0;
-        for(k=0;k<f.length;k++){
-          var a=mesh.v[f[k]],b=mesh.v[f[(k+1)%f.length]];
-          if(!a||!b){n=null;break;}
-          n[0]+=(a[1]-b[1])*(a[2]+b[2]);n[1]+=(a[2]-b[2])*(a[0]+b[0]);n[2]+=(a[0]-b[0])*(a[1]+b[1]);
-          d+=a[0]+a[1]+a[2];
-        }
-        if(!n)continue;
-        var nl=Math.sqrt(n[0]*n[0]+n[1]*n[1]+n[2]*n[2])||1;
-        faces.push({f:f,d:d/f.length,l:Math.abs(n[0]*L[0]+n[1]*L[1]+n[2]*L[2])/nl});
-      }
-      faces.sort(function(p,q){return p.d-q.d;});
-      g.lineWidth=0.6;g.strokeStyle='rgba(20,28,40,.55)';
-      for(i=0;i<faces.length;i++){
-        var ff=faces[i].f,sh=Math.round(95+faces[i].l*120);
-        g.fillStyle='rgb('+Math.round(sh*0.82)+','+Math.round(sh*0.9)+','+sh+')';
-        g.beginPath();
-        for(k=0;k<ff.length;k++){
-          var q=P[ff[k]];
-          if(k)g.lineTo(ox+q[0]*sc,oy+q[1]*sc);else g.moveTo(ox+q[0]*sc,oy+q[1]*sc);
-        }
-        g.closePath();g.fill();
-        if(faces.length<4000)g.stroke();
-      }
-      return c.toDataURL('image/png');
-    }catch(eT){console.warn('[BIM] A thumbnail could not be drawn.',eT);return '';}
-  }
-  /* The plan lines of a set of object records: outlines, centrelines, profiles and the top view of
-     every mesh, each in world plan coordinates (x, z). */
-  function bimRecsPlanLines(recs){
-    var out=[],i,j,k;
-    function add(pts,close,off){
-      if(!pts||pts.length<2)return;
-      var ln=[];
-      for(k=0;k<pts.length;k++){var p=pts[k];if(p&&isFinite(p[0])&&isFinite(p[1]))ln.push([p[0]+off[0],p[1]+off[1]]);}
-      if(close&&ln.length>2)ln.push(ln[0]);
-      if(ln.length>1)out.push(ln);
-    }
-    for(i=0;i<(recs||[]).length;i++){
-      var r=recs[i];if(!r)continue;
-      var q=r.pos||[0,0,0],off=[q[0]||0,q[2]||0];
-      if(r.mesh&&r.mesh.f&&r.mesh.v){
-        for(j=0;j<r.mesh.f.length&&j<3000;j++){
-          var f=r.mesh.f[j],pl=[];
-          for(k=0;k<f.length;k++){var v=r.mesh.v[f[k]];if(v)pl.push([v[0],v[2]]);}
-          add(pl,true,off);
-        }
-      }else if(r.pts){add(r.pts,r.t==='room'||r.closed,off);}
-      else if(r.t==='dim'&&r.p1&&r.p2){add([r.p1,r.d1||r.p1,r.d2||r.p2,r.p2],false,off);}
-      else if(r.t==='text'&&r.pt){add([[r.pt[0]-0.3,r.pt[1]],[r.pt[0]+0.3,r.pt[1]]],false,off);}
-    }
-    return out;
-  }
-  function bimRecsThumb(recs,w,h){
-    w=w||96;h=h||72;
-    try{
-      var L=bimRecsPlanLines(recs),i,k;
-      if(!L.length)return '';
-      var c=document.createElement('canvas');c.width=w;c.height=h;
-      var g=c.getContext('2d');if(!g)return '';
-      var mnx=Infinity,mnz=Infinity,mxx=-Infinity,mxz=-Infinity;
-      for(i=0;i<L.length;i++)for(k=0;k<L[i].length;k++){
-        var p=L[i][k];
-        if(p[0]<mnx)mnx=p[0];if(p[0]>mxx)mxx=p[0];if(p[1]<mnz)mnz=p[1];if(p[1]>mxz)mxz=p[1];
-      }
-      var pad=6,sc=Math.min((w-2*pad)/Math.max(mxx-mnx,1e-9),(h-2*pad)/Math.max(mxz-mnz,1e-9));
-      var ox=(w-(mxx-mnx)*sc)/2-mnx*sc,oy=(h-(mxz-mnz)*sc)/2-mnz*sc;
-      g.strokeStyle='#c9d6e6';g.lineWidth=1;g.lineJoin='round';
-      for(i=0;i<L.length;i++){
-        g.beginPath();
-        for(k=0;k<L[i].length;k++){
-          var x=ox+L[i][k][0]*sc,y=oy+L[i][k][1]*sc;
-          if(k)g.lineTo(x,y);else g.moveTo(x,y);
-        }
-        g.stroke();
-      }
-      return c.toDataURL('image/png');
-    }catch(eT){console.warn('[BIM] A thumbnail could not be drawn.',eT);return '';}
-  }
-  /* An entry's thumbnail, made the first time it is asked for when the entry has none -- every
-     entry stored before V124, and the starter set -- and kept, so it is drawn once. */
-  function bimAssetThumb(e){
-    if(!e)return '';
-    if(typeof e.thumb==='string'&&e.thumb)return e.thumb;
-    var kd=bimAssetKind(e),th='';
-    if(kd==='model')th=bimMeshThumb(e.mesh);
-    else if(kd==='block')th=bimRecsThumb(e.recs);
-    e.thumb=th;
-    if(th&&!e.builtin)bimSaveFamilyLibrary();
-    return th;
   }
   function bimCreateFamilyInstance(fam,posXZ,levelElev,seq){
     var meshCopy=bimCloneMesh(fam.mesh);
@@ -22834,29 +22308,15 @@ try{
       bim:{type:'familyInstance',familyId:fam.id,familyName:fam.name,category:fam.category}
     };
   }
-  /* __acad3dV124: every selected solid, in world position, as one mesh -- so a table saved with its
-     chairs comes back with them. It took only the first selected object before. */
-  function bimSelectionMesh(ids){
-    var parts=[],i,j;
-    for(i=0;i<ids.length;i++){
-      var so=objById(ids[i]);if(!so)continue;
-      var sm=meshOf(so);if(!sm||!sm.f||!sm.f.length||!sm.v||!sm.v.length)continue;
-      var q=bimObjOffset(so),v=[];
-      for(j=0;j<sm.v.length;j++)v.push([sm.v[j][0]+q[0],sm.v[j][1]+q[1],sm.v[j][2]+q[2]]);
-      parts.push({v:v,f:sm.f});
-    }
-    return parts.length?bimMergeMeshes(parts):null;
-  }
   function openSaveAsFamilyDlg(){
     var o=objById(A3D.sel);
     if(!o){a3dToast('Select an object first');return;}
-    var selIds=(A3D.selSet&&A3D.selSet.length)?A3D.selSet.slice():[o.id];
-    var m=bimSelectionMesh(selIds);
-    if(!m||!m.f||!m.f.length){a3dToast('Nothing selected has geometry to save as a model');return;}
+    var m=meshOf(o);
+    if(!m||!m.f||!m.f.length){a3dToast('This object has no geometry to save as a family');return;}
     closeDlg();
     var d=document.createElement('div');
     d.className='a3d-dlg';
-    d.innerHTML='<div class="a3d-dlghd">Save as Model</div>'+
+    d.innerHTML='<div class="a3d-dlghd">Save as Family</div>'+
       '<div class="a3d-dlgbody">'+
       '<div class="a3d-dlgrow"><label>Name</label><input type="text" data-a3dp="name" value="'+bimEsc(o.name)+'" maxlength="60"></div>'+
       '<div class="a3d-dlgrow"><label>Category</label><select data-a3dp="cat">'+
@@ -22874,7 +22334,7 @@ try{
       closeDlg();
       var fam=bimFamilyLibraryAdd({name:name,category:cI.value,mesh:m});
       refreshFamilyPanel();
-      a3dToast('Saved "'+fam.name+'" to the library'+(selIds.length>1?' ('+selIds.length+' objects as one model)':''));
+      a3dToast('Saved "'+fam.name+'" to the Family Library');
     }
     d.addEventListener('click',function(ev){var b=ev.target&&ev.target.closest?ev.target.closest('[data-a3dlg]'):null;if(!b)return;if(b.getAttribute('data-a3dlg')==='ok')submit();else closeDlg();});
     d.addEventListener('keydown',function(ev){if(ev.key==='Enter'){ev.preventDefault();ev.stopPropagation();submit();}else if(ev.key==='Escape'){ev.preventDefault();ev.stopPropagation();closeDlg();}});
@@ -22887,7 +22347,7 @@ try{
     reader.onerror=function(){a3dToast('Failed to read '+name);};
     function afterParse(mesh){
       if(!mesh||!mesh.v.length||!mesh.f.length){a3dToast('No usable geometry found in '+name);return;}
-      openImportFamilyNameDlg(mesh,name.replace(/\.[^.]+$/,''),{ext:ext,source:name});   /* __acad3dV124 */
+      openImportFamilyNameDlg(mesh,name.replace(/\.[^.]+$/,''));
     }
     if(ext==='obj'){
       reader.onload=function(ev){
@@ -22912,264 +22372,33 @@ try{
       a3dToast('Family import supports .obj and .stl (got .'+ext+')');
     }
   }
-  /* __acad3dV124: what an imported model's numbers mean. OBJ carries no unit and STL none either,
-     so the unit is asked, and the up axis with it; bimImportModelMesh is the one conversion, so what
-     the dialog shows is what the library gets. */
-  var A3D_IMPORT_UNITS=[['mm',0.001,'millimetres'],['cm',0.01,'centimetres'],['m',1,'metres'],
-    ['in',0.0254,'inches'],['ft',0.3048,'feet']];
-  function bimImportUnitScale(u){
-    var i;
-    for(i=0;i<A3D_IMPORT_UNITS.length;i++)if(A3D_IMPORT_UNITS[i][0]===u)return A3D_IMPORT_UNITS[i][1];
-    return 1;
-  }
-  /* Z up to Y up is a quarter turn about X: the model's up (+Z) becomes +Y and its +Y runs away
-     from the viewer, to -Z, so a right-handed model stays right-handed and is not mirrored. */
-  function bimImportModelMesh(mesh,unit,zUp){
-    var f=bimImportUnitScale(unit);
-    return {v:mesh.v.map(function(p){return zUp?[p[0]*f,p[2]*f,-p[1]*f]:[p[0]*f,p[1]*f,p[2]*f];}),
-      f:mesh.f.map(function(fc){return fc.slice();})};
-  }
-  /* The first guess: the unit that brings the largest side nearest 1.5 m. A guess is all it can be
-     -- 180 is a person in centimetres and a door in millimetres -- so the dialog shows the size. */
-  function bimGuessImportUnit(mesh){
-    var b=bimMeshBounds(mesh),E=Math.max(b.mx[0]-b.mn[0],b.mx[1]-b.mn[1],b.mx[2]-b.mn[2]);
-    if(!(E>0)||!isFinite(E))return 'm';
-    var best='m',bd=Infinity,i;
-    for(i=0;i<A3D_IMPORT_UNITS.length;i++){
-      var d=Math.abs(Math.log(E*A3D_IMPORT_UNITS[i][1]/1.5));
-      if(d<bd-1e-12){bd=d;best=A3D_IMPORT_UNITS[i][0];}
-    }
-    return best;
-  }
-  function openImportFamilyNameDlg(mesh,suggestedName,opt){
-    opt=opt||{};
+  function openImportFamilyNameDlg(mesh,suggestedName){
     closeDlg();
-    var guess=bimGuessImportUnit(mesh),zUp=opt.ext==='stl';
     var d=document.createElement('div');
     d.className='a3d-dlg';
-    d.innerHTML='<div class="a3d-dlghd">Import Model</div>'+
+    d.innerHTML='<div class="a3d-dlghd">Import Family</div>'+
       '<div class="a3d-dlgbody">'+
       '<div class="a3d-dlgrow"><label>Name</label><input type="text" data-a3dp="name" value="'+bimEsc(suggestedName)+'" maxlength="60"></div>'+
       '<div class="a3d-dlgrow"><label>Category</label><select data-a3dp="cat">'+
         FAMILY_CATEGORIES.map(function(c){return '<option value="'+c+'">'+c+'</option>';}).join('')+
       '</select></div>'+
-      '<div class="a3d-dlgrow"><label>Drawn in</label><select data-a3dp="unit">'+
-        A3D_IMPORT_UNITS.map(function(u){return '<option value="'+u[0]+'"'+(u[0]===guess?' selected':'')+'>'+u[2]+'</option>';}).join('')+
-      '</select></div>'+
-      '<div class="a3d-dlgrow"><label>Up axis</label><select data-a3dp="up">'+
-        '<option value="y"'+(zUp?'':' selected')+'>Y up</option><option value="z"'+(zUp?' selected':'')+'>Z up</option>'+
-      '</select></div>'+
-      '<div class="a3d-impprev"><img data-a3dp="thumb" alt=""><div data-a3dp="size" class="a3d-impsize"></div></div>'+
-      '<div class="a3d-propnote">The file does not say what unit it was drawn in: the first choice is a guess from its size. Check the size above.</div>'+
       '<div id="a3d-dlgerr" class="a3d-dlgerr"></div></div>'+
-      '<div class="a3d-dlgft"><button data-a3dlg="cancel">Cancel</button><button data-a3dlg="ok">Import</button></div>';
+      '<div class="a3d-dlgft"><button data-a3dlg="cancel">Cancel</button><button data-a3dlg="ok">OK</button></div>';
     el.root.appendChild(d);
     el.dlg=d;
     var nI=d.querySelector('[data-a3dp="name"]'),cI=d.querySelector('[data-a3dp="cat"]');
-    var uI=d.querySelector('[data-a3dp="unit"]'),yI=d.querySelector('[data-a3dp="up"]');
-    var sz=d.querySelector('[data-a3dp="size"]'),im=d.querySelector('[data-a3dp="thumb"]');
-    function current(){return bimImportModelMesh(mesh,uI.value,yI.value==='z');}
-    function show(){
-      var m=current(),b=bimMeshBounds(m),u=bimUnitLabel();
-      sz.textContent='Comes in at '+bimDispLen(b.mx[0]-b.mn[0])+' '+u+' wide, '+bimDispLen(b.mx[2]-b.mn[2])+' '+u+
-        ' deep and '+bimDispLen(b.mx[1]-b.mn[1])+' '+u+' high';
-      var th=bimMeshThumb(m,120,90);
-      if(th)im.src=th;else im.removeAttribute('src');
-    }
-    uI.addEventListener('change',show);yI.addEventListener('change',show);
-    show();
-    function submit(){
-      var name=nI.value.trim();
-      var eb=document.getElementById('a3d-dlgerr');
-      if(!name){eb.textContent='Enter a name';return;}
-      var m=current();
-      closeDlg();
-      var fam=bimFamilyLibraryAdd({name:name,category:cI.value,mesh:m,unit:uI.value,source:opt.source||''});
-      refreshFamilyPanel();
-      var s=fam.mesh.size||[0,0,0],u=bimUnitLabel();
-      a3dToast('Imported "'+fam.name+'" into the library ('+bimDispLen(s[0])+' x '+bimDispLen(s[2])+' x '+bimDispLen(s[1])+' '+u+')');
-    }
-    d.addEventListener('click',function(ev){var b=ev.target&&ev.target.closest?ev.target.closest('[data-a3dlg]'):null;if(!b)return;if(b.getAttribute('data-a3dlg')==='ok')submit();else closeDlg();});
-    d.addEventListener('keydown',function(ev){if(ev.key==='Enter'){ev.preventDefault();ev.stopPropagation();submit();}else if(ev.key==='Escape'){ev.preventDefault();ev.stopPropagation();closeDlg();}});
-    nI.focus();nI.select();
-  }
-  /* ================= __acad3dV124: blocks =================
-     A block is object RECORDS, not a mesh, so what comes back is what went in: a wall with its
-     type, a room, a sketch. Inserted through bimDuplicateObject, the one way this app copies. */
-  /* The links an object can hold to another, read and rewritten here and nowhere else in a block. */
-  var A3D_BLOCK_LINKS=[['sourceId'],['linkSourceId'],['roomId'],['on'],['bim','sourceId'],['bim','hostWallId'],['bim','hostId']];
-  /* what a block cannot carry: an opening is cut into its wall when the wall is built, a room tag is
-     made for its room */
-  function bimBlockSkips(o){
-    return !o||o.t==='opening'||o.t==='roomtag';
-  }
-  function bimBlockLevelElev(o){
-    var lid=bimObjectLevelId(o),i;
-    if(lid)for(i=0;i<A3D.levels.length;i++)if(A3D.levels[i].id===lid)return A3D.levels[i].elev;
-    return null;
-  }
-  /* The block a selection makes: the records it can carry, deep-copied, its base point (the centre
-     of the selection in plan) and the elevation of the level it came from. */
-  function bimBlockFromIds(ids){
-    var recs=[],skipped=0,i,y0=null;
-    for(i=0;i<ids.length;i++){
-      var o=objById(ids[i]);
-      if(!o)continue;
-      if(bimBlockSkips(o)){skipped++;continue;}
-      recs.push(JSON.parse(JSON.stringify(o)));
-      if(y0===null)y0=bimBlockLevelElev(o);
-    }
-    if(!recs.length)return {recs:[],skipped:skipped};
-    var b=bimWorldBounds(recs.map(function(r){return r.id;})),base;
-    if(b)base=[(b.mn[0]+b.mx[0])/2,(b.mn[2]+b.mx[2])/2];
-    else{
-      var L=bimRecsPlanLines(recs),sx=0,sz=0,n=0,j,k;
-      for(j=0;j<L.length;j++)for(k=0;k<L[j].length;k++){sx+=L[j][k][0];sz+=L[j][k][1];n++;}
-      base=n?[sx/n,sz/n]:[0,0];
-    }
-    if(y0===null)y0=b?b.mn[1]:bimGetActiveLevel().elev;
-    return {recs:recs,skipped:skipped,base:base,y0:y0};
-  }
-  function bimBlockSave(name,ids){
-    var blk=bimBlockFromIds(ids||[]);
-    if(!blk.recs.length)return null;
-    var entry={id:'blk-'+Date.now().toString(36)+'-'+Math.floor(Math.random()*1e6),kind:'block',
-      name:name,category:'Blocks',manufacturer:'',recs:blk.recs,base:blk.base,y0:blk.y0,
-      count:blk.recs.length,createdAt:new Date().toISOString()};
-    entry.thumb=bimRecsThumb(entry.recs);
-    A3D_FAMLIB.push(entry);
-    bimSaveFamilyLibrary();
-    return entry;
-  }
-  function openSaveBlockDlg(){
-    var ids=(A3D.selSet&&A3D.selSet.length)?A3D.selSet.slice():(A3D.sel?[A3D.sel]:[]);
-    if(!ids.length){a3dToast('Select the objects to make a block of first');return;}
-    var blk=bimBlockFromIds(ids);
-    if(!blk.recs.length){a3dToast('None of the selected objects can be saved in a block (openings and room tags go with their wall and room)');return;}
-    var first=objById(ids[0]);
-    closeDlg();
-    var d=document.createElement('div');
-    d.className='a3d-dlg';
-    d.innerHTML='<div class="a3d-dlghd">Save as Block</div>'+
-      '<div class="a3d-dlgbody">'+
-      '<div class="a3d-dlgrow"><label>Name</label><input type="text" data-a3dp="name" value="'+bimEsc(first?first.name+' block':'Block')+'" maxlength="60"></div>'+
-      '<div class="a3d-propnote">'+blk.recs.length+' object(s). The base point is the centre of the selection: an insert puts it where you drop or click.'+
-      (blk.skipped?' '+blk.skipped+' opening(s) or room tag(s) are not included: they go with their wall and room.':'')+'</div>'+
-      '<div id="a3d-dlgerr" class="a3d-dlgerr"></div></div>'+
-      '<div class="a3d-dlgft"><button data-a3dlg="cancel">Cancel</button><button data-a3dlg="ok">Save</button></div>';
-    el.root.appendChild(d);
-    el.dlg=d;
-    var nI=d.querySelector('[data-a3dp="name"]');
     function submit(){
       var name=nI.value.trim();
       var eb=document.getElementById('a3d-dlgerr');
       if(!name){eb.textContent='Enter a name';return;}
       closeDlg();
-      var e=null;
-      try{e=bimBlockSave(name,ids);}
-      catch(eB){console.warn('[BIM] The block could not be saved.',eB);}
-      if(!e){a3dToast('The block could not be saved');return;}
+      var fam=bimFamilyLibraryAdd({name:name,category:cI.value,mesh:mesh});
       refreshFamilyPanel();
-      a3dToast('Saved block "'+e.name+'" ('+e.count+' object(s)) to the library');
+      a3dToast('Imported "'+fam.name+'" into the Family Library');
     }
     d.addEventListener('click',function(ev){var b=ev.target&&ev.target.closest?ev.target.closest('[data-a3dlg]'):null;if(!b)return;if(b.getAttribute('data-a3dlg')==='ok')submit();else closeDlg();});
     d.addEventListener('keydown',function(ev){if(ev.key==='Enter'){ev.preventDefault();ev.stopPropagation();submit();}else if(ev.key==='Escape'){ev.preventDefault();ev.stopPropagation();closeDlg();}});
     nI.focus();nI.select();
-  }
-  /* __acad3dV124: every copy made by translation is relinked here. pairs is [[original, copy], ...]
-     for ONE copy operation; (dx, dz) is how far it moved in plan, dY how far up. Each link is read
-     from the ORIGINAL -- a copy path decides what it carries, and a link it dropped or kept by
-     accident must not decide what the copy follows. A link to an object copied in the same
-     operation points at that object's copy; any other link is dropped. Returns how many were
-     dropped. */
-  function bimRelinkCopies(pairs,dx,dz,dY){
-    var map={},cut=0,i,j;
-    dx=dx||0;dz=dz||0;dY=dY||0;
-    for(i=0;i<pairs.length;i++)map[pairs[i][0].id]=pairs[i][1].id;
-    for(i=0;i<pairs.length;i++){
-      var from=pairs[i][0],c=pairs[i][1];
-      for(j=0;j<A3D_BLOCK_LINKS.length;j++){
-        var path=A3D_BLOCK_LINKS[j];
-        if(path.length===2&&!c[path[0]])continue;
-        var v=bimLinkGet(from,path);
-        if(v===undefined||v===null||v===''){
-          /* nothing to carry -- and nothing the copy may keep of its own */
-          if(bimLinkGet(c,path))bimLinkSet(c,path,null);
-          continue;
-        }
-        if(map[v]){
-          bimLinkSet(c,path,map[v]);
-          /* a source carries its kind beside it */
-          if(path[path.length-1]==='sourceId')bimLinkSet(c,path.slice(0,-1).concat(['sourceType']),bimLinkGet(from,path.slice(0,-1).concat(['sourceType'])));
-        }else{bimLinkSet(c,path,null);cut++;}
-      }
-      /* a traced region: its seed and the shapes that bound it */
-      if(bimIsRegionDep(from)){
-        var mem=[],k,ms=from.region.members||[];
-        for(k=0;k<ms.length;k++)if(map[ms[k]])mem.push(map[ms[k]]);
-        if(mem.length){
-          var q0=bimObjOffset(from),q1=bimObjOffset(c),rg=bimCloneRegion(from.region);
-          rg.seed=[rg.seed[0]+q0[0]-q1[0]+dx,rg.seed[1]+q0[2]-q1[2]+dz];
-          rg.y=(rg.y||0)+q0[1]-q1[1]+dY;
-          rg.members=mem;rg.sig='';
-          c.region=rg;
-        }else{
-          if(c.region)c.region=null;
-          cut++;
-        }
-      }else if(c.region){
-        c.region=null;
-      }
-    }
-    return cut;
-  }
-  function bimRelinkNote(cut){
-    return cut?'; '+cut+' link(s) to shapes that were not copied with them were not kept -- the copies are shapes of their own':'';
-  }
-  function bimLinkGet(o,path){
-    return path.length===1?o[path[0]]:(o[path[0]]?o[path[0]][path[1]]:undefined);
-  }
-  function bimLinkSet(o,path,v){
-    if(path.length===1)o[path[0]]=v;else if(o[path[0]])o[path[0]][path[1]]=v;
-  }
-  /* Insert a block with its base point at pt ([x, z] on the active level). Returns the new ids, or
-     null when nothing could be made. One undo step. */
-  function bimInsertBlock(entry,pt){
-    if(!entry||bimAssetKind(entry)!=='block'||!entry.recs||!entry.recs.length){a3dToast('That block has nothing in it');return null;}
-    var lvl=bimGetActiveLevel(),dx=pt[0]-entry.base[0],dz=pt[1]-entry.base[1];
-    var dY=lvl.elev-(isFinite(entry.y0)?entry.y0:lvl.elev);
-    pushUndo();
-    var mark=UNDO_STACK[UNDO_STACK.length-1];
-    var made=[],from=[],map={},failed=0,i,j;
-    for(i=0;i<entry.recs.length;i++){
-      var r=JSON.parse(JSON.stringify(entry.recs[i])),c=null;
-      try{c=bimDuplicateObject(r,dx,dz);}
-      catch(eD){console.warn('[BIM] A block member could not be copied: '+(r&&r.name),eD);c=null;}
-      if(!c){failed++;continue;}
-      map[r.id]=c.id;
-      from.push(r);
-      bimShiftObjectY(c,dY);
-      if(c.bim&&c.bim.levelId!==undefined)c.bim.levelId=lvl.id;
-      if(c.levelId!==undefined)c.levelId=lvl.id;
-      if(!c.layer||!bimLayerById(c.layer))c.layer=A3D.activeLayer;
-      made.push(c);
-    }
-    /* the links, read from the SAVED records (bimRelinkCopies) */
-    var cut=bimRelinkCopies(made.map(function(c,k){return [from[k],c];}),dx,dz,dY);
-    if(!made.length){
-      /* nothing was made, so the step this pushed would undo nothing */
-      if(!undoSuspend&&UNDO_STACK.length&&UNDO_STACK[UNDO_STACK.length-1]===mark)UNDO_STACK.pop();
-      a3dToast('Nothing in "'+entry.name+'" could be inserted');return null;
-    }
-    for(i=0;i<made.length;i++)A3D.objs.push(made[i]);
-    A3D.meshes={};
-    var ids=made.map(function(o){return o.id;});
-    A3D.selSet=ids.slice();A3D.sel=ids[0];A3D.sel2=null;
-    refreshTree();refreshHud();paint();saveSoon();
-    a3dToast('Inserted "'+entry.name+'" ('+made.length+' object(s))'+
-      (failed?', '+failed+' could not be copied':'')+
-      (cut?'; '+cut+' link(s) to objects outside the block were not kept':''));
-    return ids;
   }
   function startFamilyPlaceTool(famId){
     var fam=bimFamilyLibraryGet(famId);
@@ -23194,10 +22423,24 @@ try{
     a3dToast(inst.name+' placed');
   }
   function refreshFamilyPanel(){
-    /* __acad3dV124: the library shows in the Project Browser's Families and in the Assets tab.
-       The list this also wrote into #a3d-famrows, an element that was never shown, is gone. */
     if(el.browser)refreshBrowser();
-    refreshAssets();
+    if(!el.famrows)return;
+    if(!A3D_FAMLIB.length){el.famrows.innerHTML='<div class="a3d-propnote">No families yet. Select an object and click Save, or Import an OBJ/STL.</div>';return;}
+    var sorted=A3D_FAMLIB.slice().sort(function(a,b){
+      if(a.category!==b.category)return a.category<b.category?-1:1;
+      return a.name<b.name?-1:1;
+    });
+    var h='',i;
+    for(i=0;i<sorted.length;i++){
+      var f=sorted[i];
+      h+='<div class="a3d-famrow" data-famid="'+f.id+'">'+
+        '<div class="a3d-famcat">'+bimEsc(f.category)+'</div>'+
+        '<div class="a3d-famname">'+bimEsc(f.name)+'</div>'+
+        '<button class="a3d-famplace" data-famplace="'+f.id+'" title="Place an instance">Place</button>'+
+        '<button class="a3d-famdel" data-famdel="'+f.id+'" title="Remove from library">\u00d7</button>'+
+      '</div>';
+    }
+    el.famrows.innerHTML=h;
   }
   // ---- __acad3dV23: Saved views + view-specific annotations + level filtering ----
   // Saved views capture camera/mode/level/section (the section's cut PLANE only -- the cut-mesh
@@ -25803,13 +25046,13 @@ try{
     }
 
     // ---- Families ----
-    var byCat={},libModels=bimLibEntries('model');   /* __acad3dV124: blocks and templates are not families */
-    for(i=0;i<libModels.length;i++){
-      var f=libModels[i];
+    var byCat={};
+    for(i=0;i<A3D_FAMLIB.length;i++){
+      var f=A3D_FAMLIB[i];
       if(!byCat[f.category])byCat[f.category]=[];
       byCat[f.category].push(f);
     }
-    h+=bimBrowserGroup('families','Families',libModels.length,0);
+    h+=bimBrowserGroup('families','Families',A3D_FAMLIB.length,0);
     if(O.families){
       var cats=Object.keys(byCat).sort();
       if(!cats.length)h+='<div class="a3d-bempty" style="padding-left:18px">none loaded</div>';
@@ -26334,8 +25577,6 @@ try{
   }
   function onKey(ev){
     if(!A3D.on)return;
-    /* __acad3dV124: a drag from the library is the innermost thing Escape can end */
-    if(ev.key==='Escape'&&bimAssetDragCancel()){a3dToast('Nothing placed');ev.preventDefault();ev.stopImmediatePropagation();return;}
     if(A3D_SLIDESHOW.on){bimSlideshowKey(ev);return;}   /* __acad3dV122: nothing typed reaches the model */
     /* __acad3dV115: the Start page covers the project behind it; a key typed there is not for it */
     if(bimStartShowing())return;
@@ -27351,7 +26592,7 @@ try{
     if(act==='bim:clonelinked'){openCloneLinkedDlg();return;}
     if(act==='bim:syncclones'){applySyncClones();return;}
     if(A3DR_UNIMPL[act]){a3dToast(a3drLabel(act)+' is not implemented yet');return;}
-    if(act==='bim:component'){bimOpenLibraryAt('families');return;}   /* __acad3dV124 */
+    if(act==='bim:component'){a3dToast('Place a family from the Project Browser > Families');return;}
     if(act==='bim:famsave'){openSaveAsFamilyDlg();return;}
     if(act==='bim:famimport'){var ffi=document.getElementById('a3d-famfilein');if(ffi){ffi.value='';ffi.click();}return;}
     if(act==='bim:linkifc'||act==='bim:importcad'){var fi2=document.getElementById('a3d-filein');if(fi2){fi2.value='';fi2.click();}return;}
@@ -27500,6 +26741,7 @@ try{
         '</div>'+
         '<div id="a3d-rows" style="display:none"></div>'+
         '<div id="a3d-lvlrows" style="display:none"></div>'+
+        '<div id="a3d-famrows" style="display:none"></div>'+
         '<div id="a3d-viewrows" style="display:none"></div>'+
       '</div>'+
       '<div class="a3d-vp"><canvas id="a3d-glcanvas"></canvas><canvas id="a3d-canvas"></canvas>'+
@@ -27756,6 +26998,7 @@ try{
       el.sheetcv.addEventListener('touchmove',bimSheetPointerMove,{passive:false});
       el.sheetcv.addEventListener('touchend',bimSheetPointerUp);
     }
+    el.famrows=root.querySelector('#a3d-famrows');
     var famSaveBtn=root.querySelector('#a3d-famsave');
     if(famSaveBtn)famSaveBtn.addEventListener('click',function(ev){ev.stopPropagation();openSaveAsFamilyDlg();});
     var famImportBtn=root.querySelector('#a3d-famimport');
@@ -27764,6 +27007,21 @@ try{
     if(famFileIn)famFileIn.addEventListener('change',function(ev){
       var files=ev.target.files;
       if(files&&files.length)bimImportFamilyFile(files[0]);
+    });
+    if(el.famrows)el.famrows.addEventListener('click',function(ev){
+      var placeBtn=ev.target&&ev.target.closest?ev.target.closest('[data-famplace]'):null;
+      if(placeBtn){ev.stopPropagation();startFamilyPlaceTool(placeBtn.getAttribute('data-famplace'));return;}
+      var delBtn=ev.target&&ev.target.closest?ev.target.closest('[data-famdel]'):null;
+      if(delBtn){
+        ev.stopPropagation();
+        var fid=delBtn.getAttribute('data-famdel');
+        var fam=bimFamilyLibraryGet(fid);
+        if(fam&&confirm('Remove "'+fam.name+'" from the Family Library? Instances already placed in the model are not affected.')){
+          bimFamilyLibraryRemove(fid);
+          refreshFamilyPanel();
+          a3dToast('Removed from Family Library');
+        }
+      }
     });
     refreshFamilyPanel();
     el.viewrows=root.querySelector('#a3d-viewrows');
@@ -28644,9 +27902,6 @@ try{
     scale:function(){startScaleTool();},
     gizmo:function(){bimGizmoCommand();},     /* __acad3dV110 */
     presspull:function(){bimPressPullCommand();},   /* __acad3dV123 */
-    blockmake:function(){openSaveBlockDlg();},                   /* __acad3dV124 */
-    blockinsert:function(){bimOpenLibraryAt('blocks');},
-    assets:function(){bimOpenLibraryAt(null);},
     rotate:function(){startRotateTool();},
     arrayRect:function(){openArrayDlg();},
     arrayPolar:function(){startPolarArrayTool();},
@@ -29539,31 +28794,6 @@ try{
   /* a suite that counts undo steps starts each scene from an empty history: past UNDO_MAX a step
      pushes the oldest out and the depth stops moving */
   window.__a3dTestClearUndo=function(){UNDO_STACK.length=0;REDO_STACK.length=0;return true;};
-  /* __acad3dV124: the library, read and driven */
-  window.__a3dLibrary=function(){
-    var all=A3D_FAMLIB.concat(A3D_ASSET_BUILTINS);
-    return all.map(function(e){
-      return {id:e.id,kind:bimAssetKind(e),name:e.name,category:e.category,builtin:!!e.builtin,
-        count:e.count||0,unit:e.unit||null,source:e.source||null,size:e.mesh&&e.mesh.size?e.mesh.size.slice():null,
-        thumb:typeof e.thumb==='string'&&e.thumb.indexOf('data:image/png')===0};
-    });
-  };
-  window.__a3dBlockSave=function(name,ids){
-    var e=bimBlockSave(name,ids||bimAssetSelIds());
-    if(e)refreshFamilyPanel();
-    return e?e.id:null;
-  };
-  window.__a3dBlockInsert=function(id,x,z){return bimInsertBlock(bimFamilyLibraryGet(id),[x,z]);};
-  window.__a3dTemplateSave=function(name){var e=bimTemplateSave(name);if(e)refreshFamilyPanel();return e?e.id:null;};
-  window.__a3dTemplateUse=function(id){return bimTemplateUse(bimFamilyLibraryGet(id));};
-  window.__a3dAssetDropAt=function(spec,cx,cy){return bimAssetDropAt(spec,cx,cy);};
-  window.__a3dViewCentrePlan=function(){return bimViewCentrePlan();};
-  window.__a3dImportGuess=function(mesh){return bimGuessImportUnit(mesh);};
-  window.__a3dImportMesh=function(mesh,unit,zUp){return bimImportModelMesh(mesh,unit,!!zUp);};
-  window.__a3dAssetsUI=function(){return {q:A3D_ASSETS_UI.q,closed:JSON.parse(JSON.stringify(A3D_ASSETS_UI.closed)),dragging:!!(A3D_ASDRAG&&A3D_ASDRAG.on)};};
-  window.__acad3dV124='librarykinds,starterset,thumbnails,importunit,importupaxis,blocks,blocklinks,blocklevel,'+
-    'selectionmodel,templates,librarypanel,librarysearch,folds,removeasks,clickatviewcentre,dragdrop,dropsnap,'+
-    'droponobject,blockcommand,insertcommand,assetscommand,componentopenslibrary';
   window.__acad3dV123='projectunits,valuekinds,clicktotype,valuebox,noundoonclick,copyonfirstmove,bodydragisgizmomove,'+
     'carrybim,copyatoffset,flooroutlineturns,padatsketch,faces,facekeys,presspull,pushpull,pushsnap,pushrange,'+
     'sketchpull,primitivedimensions,primitivebase,openingfaces';

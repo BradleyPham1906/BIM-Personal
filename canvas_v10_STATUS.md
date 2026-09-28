@@ -10283,3 +10283,151 @@ arrival itself (a MutationObserver), and the check reads the difference.
     sha256            9a04845a10e625c92a872ec867b345e424c5071cab12ad61b2bb443988573941
     markers           __acad3dV60 ... __acad3dV123, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
                       __acad3dV121b
+
+## Phase 124 (V124) - Assets: a library of models, blocks and templates, dragged into the project
+
+The owner, in V119: Assets "should be blocks templates premade for easy drag and drop into the project
+not an overview of stuff"; in V123, the library "can be built upon from time to time like when I go
+online and collect items, obj, or import models" and is "a way to quickly drag and drop stuff". The
+third panel of the owner's left-panel stack, after Layers (V121) and Presentation (V122). V21's Family
+Library is the store it grew from.
+
+### What was built (patches 124a to 124h)
+
+- **a -- the store.** One store (`acad3dFamilyLibrary`, surviving every project), three kinds read
+  through `bimAssetKind`: a **model** (a mesh placed as an independent instance -- every entry stored
+  before V124 is one, and nothing stored is rewritten), a **block** (object records inserted as
+  independent copies), a **template** (a starting project, whose record lives under its own key,
+  `acad3dTemplateV1:<id>`, so one big template cannot damage the library's key). A **starter set** of
+  nine models at real sizes -- chair, dining table, desk, double bed, sofa, base cabinet, WC, basin,
+  bathtub -- is generated in code (`A3D_ASSET_STARTER`, never stored, never removable) and resolved by
+  `bimFamilyLibraryGet`, so every placement path takes it unchanged. Every entry has a **thumbnail**:
+  `bimMeshThumb` draws a mesh flat-shaded from above a corner, faces sorted back to front and none
+  culled (an imported mesh's faces may run either way round); `bimRecsThumb` draws a block's or
+  template's records in plan. An old entry is given one the first time it is drawn, and keeps it.
+- **b -- an imported model asks what its numbers mean.** OBJ and STL carry no unit: the import dialog
+  asks the unit (mm, cm, m, in, ft) and the up axis (Y, OBJ's usual; Z, STL's and most CAD
+  programs'), and shows -- live, in the project's unit, with a picture -- the size the model would
+  come in at. The first unit offered is the one that brings the largest side nearest 1.5 m, and the
+  dialog says it is a guess. `bimImportModelMesh` is the one conversion; Z up is a quarter turn about
+  X, so a model is turned, never mirrored. The entry keeps its unit and the file it came from.
+- **c -- blocks, and a model from a whole selection.** BLOCK saves the selection's own records (a
+  wall comes back a wall with its type, a room a room), its base point the selection's centre in plan,
+  and the elevation of the level it came from. An insert makes copies through `bimDuplicateObject`,
+  moves them by the active level's elevation less the block's, puts them on the active level, gives a
+  layer this project lacks to the current layer, and points every link between members at the new
+  copies (`A3D_BLOCK_LINKS`: sourceId, linkSourceId, roomId, on, bim.sourceId, bim.hostWallId,
+  bim.hostId) -- so a room inserted with its wall follows the NEW wall. A link to something outside
+  the block is dropped, and the insert says how many. Openings and room tags are not saved (the save
+  dialog says how many were left); one undo step. Save as Model takes every selected solid, where it
+  stands, as one mesh -- it took the first selected object only.
+- **d -- templates.** Save as Template keeps the whole project; using one opens a new project tab
+  (V115) that starts as a copy of it, named as every new project is. The template never changes with
+  what is done in a project made from it. The record is stored before the entry is added, so a full
+  store adds nothing and says so.
+- **e -- the Assets tab is the library.** A search box and four actions (Import, Block, Model,
+  Template); Models, Blocks and Templates first, as tiles with thumbnails; then Annotation, and the
+  three that go ON something -- Materials, Wall Types, Patterns -- folded. Every group header folds
+  and unfolds; a search shows every group with a match, and keeps its focus and caret as the list
+  re-renders under it. A user's entry has a remove button that asks first; a starter model has none.
+  A click places a model or inserts a block at the centre of the view (not the level's origin, which
+  could be off screen) and leaves it selected; a template opens a new project. `bimAssetAction(spec,
+  drop)` is one path for a click and a drop. Materials and patterns stay live with nothing selected --
+  they are also dropped on things -- and a click with nothing selected changes nothing and says what
+  to do. The Project Browser's Families list the library's models only.
+- **f -- drag and drop.** Pointer events, so a finger drags as a mouse does. A press is not a drag
+  until it travels past `A3D_GIZ.click` (V123's rule); a card with the thing's picture follows the
+  pointer and is marked over the drawing. Let go over the drawing: a model or block lands at that
+  point on the active level, snapped as a click of the family tool is; an annotation is placed there;
+  a material, wall type or pattern goes on the object under the pointer (`pick`, the click's own
+  picking); a template opens a new project. Let go anywhere else, or press Escape, and nothing
+  changes. The click a browser sends with the release that ends a drag is the drag's.
+- **h -- a copy follows what it was copied with, never the original's sources.** One rule,
+  `bimRelinkCopies`, run by every path that copies by translation -- Ctrl+D, the gizmo's Ctrl-drag
+  copy, ARRAYRECT and a block insert. Each link is read from the ORIGINAL record: a link to an object
+  copied in the same operation points at that object's copy, any other is dropped and the copy says
+  so. A traced region (a hatch's or ceiling's seed and bounding shapes) is re-seeded where the copy
+  is, in its own frame and on its plane, when its shapes were copied with it, and dropped when they
+  were not. The polar array builds copies from transformed geometry and carries no links.
+- **g -- the commands.** BLOCK (B, BMAKE), INSERT (I, DDINSERT) opens the library at its blocks,
+  ASSETS (ADCENTER, CONTENT, TOOLPALETTES) opens it. The toolbar's Component, which only said "Place a
+  family from the Project Browser > Families", opens the library at its models. The shell audit claims
+  the library's controls, each driven by the suite first.
+
+Also removed: the family list written into `#a3d-famrows`, an element built with `display:none` and
+never shown, with its Place and remove buttons and their handler -- controls no pointer could reach.
+
+### Bugs found, and what each taught
+
+**1. A block's room did not follow its wall.** The first insert remapped links on the COPIES, and a
+room's copy (`bimDuplicateObject`) keeps its outline and drops its source -- so there was no link left
+to remap, and the inserted room was a dead outline beside a live wall. Found by the first insert,
+before any suite. **The lesson: rewrite a relationship from the record that holds it, not from a copy
+of it; a copy path decides what it carries, and a link it drops is invisible until the source moves.**
+The suite moves the new wall and asserts the new room grew and the original did not. Bug 3 below
+is the same fault met from the other side.
+
+**2. A real click was eaten after a drop.** "The click a drag leaves behind" was first eaten for
+400 ms after any drag, so a click on a tile soon after a drop placed nothing -- two of the suite's
+checks failed for this one cause, one of them on a row nowhere near the drag. The click a browser
+sends with a release is dispatched in the same turn as the release, so the flag is now set by the
+release and cleared by the next turn (`bimAssetEatClick`). **The lesson: suppress the one event you
+mean, by when it is dispatched, never by a window of time -- a time window eats whatever the user does
+next.** The suite drags out and back onto the same tile, the one case that sends such a click.
+
+**3. A copy followed the ORIGINAL's sources -- since V99, through Ctrl+D.** Found by falsifying
+the block's link handling: the variant that kept a link to an object outside the block was not
+caught, because the objects the suite tried (rooms, floors) are rebuilt by their copy path and drop
+their links anyway. The objects copied as whole records keep every link: a hatch traced in a sketch
+kept the original's seed and the original's sketch as its boundary, so editing that sketch made the
+COPY re-trace onto the original -- measured on the V123 build: Ctrl+D a hatch, drag a corner of its
+sketch, and the copy jumps across the drawing. A footing kept its host column the same way. **The
+lesson: a copy is a new object; every relationship it holds must be decided when it is made -- remapped
+to what was copied with it, or dropped -- never inherited by copying the record.** Patched as a class
+(124h) for every copy path, and the suite drives each: a hatch inserted with and without its sketch,
+a footing with and without its column, and V123's Ctrl+D case.
+
+**4. Escape did not end a drag once anything was selected.** The drag's own keydown listener was
+never reached: `onKey`, registered at load, stops Escape for the selection with
+stopImmediatePropagation. It passed in isolation, with nothing selected, and failed in the suite after
+a drop had selected what it placed. V83 recorded exactly this. **The lesson, again: in this app every
+Escape goes through `onKey`'s chain; a new transient state is a line at the head of that chain, not a
+listener of its own.**
+
+**5. The suite's own faults.** A folded group's row was dragged from nothing and the suite threw
+(found by the `fold_dead` variant): `drag` now fails the check it serves and the suite goes on. And
+two found by the suite failing honestly: A snap check aimed at the top of a wall
+end while the snap candidates are its base -- in the flat oblique view Zoom to Selection leaves, top
+and base project to different pixels. And a block's base compared with `==` against a float centre.
+
+### Deliberately not done
+
+- Nested blocks, BEDIT, WBLOCK, attributes (ATTDEF): Track A's row 118.
+- A block is inserted as independent copies, as V21's families are placed; there is no block
+  reference that updates when the definition changes.
+- Openings and room tags in blocks (an opening is cut into its wall when the wall is built).
+- A family instance keeps no link to its library entry's later edits (V21's product decision).
+- Online sources: the library is filled by import, by saving from the model, and by the starter set.
+- The project title at the top of the left panel is clipped by the panel's first row in every tab;
+  it was so in V123 too. On the Small list.
+
+### Suites
+
+- New: `bim_phase124_assets_library_browser_tests.py`, 67 checks in ten sections (the store,
+  click, drag and drop, blocks, the selection model, import, dropping on an object, the panel,
+  templates, commands and the audit). Falsified by 43 variants (`Phase/falsify_phase124.py`), all caught, each at its own check.
+- Amended: V80 (a material row stays live with nothing selected, since a material is also dropped
+  on a solid; the check now asserts on the model that a click with no target changes no material)
+  and V82 (Annotation is the first group after the library's own tiles, ahead of everything applied
+  to the model).
+
+### Full regression
+
+80 suites, 2676 checks, 0 failures. Falsification: 43 variants, 43 caught.
+
+### State after V124
+
+    canvas_v10.html   1,626,697 bytes
+    sha256            96d2bed3c8eaa0f4e43bd8f38ebbcd0d8d1adbe501491ff1a8ade5d06f8537e4
+    markers           __acad3dV60 ... __acad3dV124, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
+                      __acad3dV121b

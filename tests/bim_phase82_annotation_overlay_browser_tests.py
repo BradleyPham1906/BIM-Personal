@@ -278,9 +278,13 @@ async def run():
         await page.wait_for_timeout(700)
         rows = await page.evaluate("()=>window.__a3dAssetRows()")
         specs = [r['spec'] for r in rows]
-        ck(specs[0].startswith('note:'),
-           "the first rows are Annotation (%s) -- it is what a user reaches for while drafting"
-           % specs[:3])
+        # AMENDED FOR V124: the tab is the owner's library now -- models, blocks and templates first,
+        # which is what it is for. Annotation still comes before everything that is APPLIED to the
+        # model (materials, wall types, patterns), which is the order this check protected.
+        placed = [s for s in specs if s.split(':')[0] not in ('family', 'block', 'template')]
+        ck(placed and placed[0].startswith('note:'),
+           "after the library's own tiles, the first rows are Annotation (%s) -- it is what a user "
+           "reaches for while drafting" % placed[:3])
         ck(len([s for s in specs if s.startswith('note:')]) == 6,
            "all six kinds are listed")
         ck(all(r['live'] for r in rows if r['spec'].startswith('note:')),
