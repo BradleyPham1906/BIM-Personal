@@ -2,11 +2,11 @@
 
 **Read this first in a new session.** One page. The detail lives in the docs listed at the bottom.
 
-    canvas_v10.html   1,626,697 bytes
-    sha256            96d2bed3c8eaa0f4e43bd8f38ebbcd0d8d1adbe501491ff1a8ade5d06f8537e4
-    markers           __acad3dV60 ... __acad3dV124, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
+    canvas_v10.html   1,675,990 bytes
+    sha256            43c6439d714639197131a7d8a49ddfa99bd890619339f5d03d2b86c8e559307b
+    markers           __acad3dV60 ... __acad3dV125, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
                       __acad3dV121b
-    tests             80 suites, 2676 checks, 0 failures
+    tests             81 suites, 2728 checks, 0 failures
 
     Run the regression in parallel: tests/run_all.py [build] [filter] [-jN], default -j6,
     about 4 minutes; give it the build's absolute path. tests/falsify_all.py
@@ -22,22 +22,26 @@ with anchored Python scripts that assert exact match counts.
 
 ---
 
-## NOW - Track B resumes: the structural object model (V125)
+## NOW - Track B: the section-profile library (V126)
 
-The owner's left-panel stack is built: Layers (V121), Presentation (V122) and Assets (V124), with the
-Project Browser kept as the owner asked, and direct manipulation (V123) under all three as the base
-the library's objects are placed and edited on. Track B -- the object model, interleaved as V100 set
-it -- resumes with its first NEXT item, which is also the common prerequisite for the ARCH5 port and
-the PennDOT input writer (see NEXT and PARKED below).
+V125 built Track B item 1: the analytical model, supports, loads, combinations and a 3D frame solve,
+set in Properties and shown as an analysis display (see Recently finished). Its members are
+rectangles of one material; item 2 gives them real sections, which is what the ARCH5 port, the
+PennDOT input writer and any design check need next.
+
+**Design rule (owner, V125):** the interface stays clean and consistent -- Rhino's model, see
+`reference/research-structural-ui.md`: settings are pages of Properties that follow the selection,
+an analysis is a display turned on and off by its command, and a feature adds a window, rail tab or
+toolbar strip only when no existing one can hold it.
 
 | # | Phase | Scope | Notes |
 |---|---|---|---|
-| 125 | Structural object model | Supports, loads and load combinations on the model's columns, beams and walls; a linear-elastic 3D frame solve (direct stiffness); results shown on the members | **Start here.** `TYPE_CATS` covers wall / floor / ceiling / column only; V102 added footing and beam types and V106 floor loads and tributary areas, which are the loads to start from. Validate the solver against closed-form cases (a cantilever tip load, a simply supported beam, a portal frame) before drawing a result on screen. Research how Revit's analytical model and STAAD's input separate the physical member from its analytical line before choosing the data model. |
+| 126 | Section-profile library | Steel sections (W, HSS, channels, angles), concrete rectangles and circles, and their properties feeding the V125 solve; a member's section chosen in Properties | **Start here.** V125 computes A, I and J for a rectangle only (`bimRectSection`); a profile supplies its own tabulated properties (AISC Shapes Database for steel -- check the licence before bundling the table, or derive from dimensions), and its outline for the model's solids. Reinforcement and bolt patterns are the item's second half and can follow. The Assets library (V124) is where a profile is browsed, as its type catalogue is the Properties dropdown. |
 
 ### LATER - Track A, drafting (moved behind Track B in V100)
 
 The numbers in this table are its order, not phase numbers: a phase takes the next free V number
-when it starts (V111 to V124 went to other work; V125 is in NOW).
+when it starts (V111 to V125 went to other work; V126 is in NOW).
 
 | # | Phase | Scope | Notes |
 |---|---|---|---|
@@ -51,7 +55,22 @@ when it starts (V111 to V124 went to other work; V125 is in NOW).
 | 118 | Blocks and data | ATTDEF ATTEDIT BEDIT WBLOCK DATAEXTRACTION TABLESTYLE TABLEDIT TABLEEXPORT | First phase that's about the disciplines, not drafting. BLOCK and INSERT landed in V124, as the Assets library's blocks: saved records inserted as independent copies. A block reference that follows its definition (what BEDIT edits) is not built. |
 | 119 | Sheets and plotting, rest | MVIEW (draw a viewport on the paper) PAGESETUP (plot settings beyond Sheet Setup) PUBLISH (V122's Print set prints every sheet in one job; a chosen subset and page setups remain) EXPORTPDF (vector PDF of a sheet) VPLAYER (per-viewport layer visibility) viewport lock | LAYOUT, MSPACE and PSPACE landed in V116, with layout tabs and model space through a viewport. |
 
-**Recently finished:** Phase 124 (V124), **Assets**, the third panel of the owner's stack: "blocks
+**Recently finished:** Phase 125 (V125), **the structural object model**, Track B item 1. The
+analytical model is derived from the live columns and beams (lines at column centres and beam tops,
+ends merged within 50 mm, a member split where another lands on it); supports at column bases
+(Automatic, Fixed, Pinned, Free) and beam end connections (Rigid, Pinned); D and L loads -- self-
+weight, line and point loads on beams, lateral loads at column tops -- and the ASCE 7 combinations;
+a 3D direct stiffness solve (RCM-ordered band, Cholesky) that refuses an unstable frame by node and
+direction. ANALYZE shows the analytical lines, a moment, axial or shear diagram labelled with each
+member's peak and the deflected shape over the model; ANALYZEOFF hides it; a changed model shows no
+result, only that it is out of date. Set in Properties -- the member's Structural page, the model's
+Analysis page -- with SUPPORT and LOAD opening them, and one Analyze button: the owner asked mid-phase
+for a clean, consistent interface after Rhino's, and nothing new was opened. Checked against closed
+forms, a plane-frame solve written in the suite, and equilibrium. Found: a sampled peak missed the
+real one between samples; a typed load value was lost when the panel re-rendered; four checks that
+could not tell right from wrong (an axis-aligned member's turn is its own transpose).
+
+Phase 124 (V124), **Assets**, the third panel of the owner's stack: "blocks
 templates premade for easy drag and drop into the project", a library that "can be built upon ... when
 I go online and collect items, obj, or import models". The Assets tab is the library: a search, Import,
 Block, Model and Template; models (a starter set of nine at real sizes, and the user's), blocks and
@@ -456,6 +475,8 @@ first time, and fixed the typed-coordinate class bug.
 
 ## NEXT — Track B, the object model
 
+Item 1 was built in V125; item 2 is in NOW.
+
 The command audit's central finding: implementing all 902 AutoCAD commands would still leave MEP,
 HVAC and civil alignment work **entirely unbuilt**. The object model is where the discipline value
 actually is.
@@ -584,3 +605,12 @@ they ship as compiled binaries.
   eats whatever the user does next (V124 -- a click after a drop was lost for 400 ms).
 - A new state that Escape ends is a line at the head of `onKey`'s chain, not a listener of its own:
   `onKey` is registered at load and stops Escape for anything selected (V83, and again in V124).
+- A fixture that is symmetric agrees with a wrong rule by accident: a member along the model's axes
+  has a rotation matrix equal to its transpose, so a transposed turn passed every check (V125). Test a
+  member turned off the axes.
+- Where an extreme can be found exactly, find it: a sampled maximum is a lower bound that reads as the
+  answer (V125 -- a moment's peak is where its shear passes zero).
+- A form in a panel that can re-render under it keeps its state outside the DOM, read before any
+  handler can re-render (V125 -- a typed load value was lost).
+- New features fit the existing interface first: Properties pages that follow the selection, a
+  command and its Off form for a display, one toolbar button (owner, V125; Rhino's model).

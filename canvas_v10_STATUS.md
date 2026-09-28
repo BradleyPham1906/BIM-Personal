@@ -10431,3 +10431,118 @@ and base project to different pixels. And a block's base compared with `==` agai
     sha256            96d2bed3c8eaa0f4e43bd8f38ebbcd0d8d1adbe501491ff1a8ade5d06f8537e4
     markers           __acad3dV60 ... __acad3dV124, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
                       __acad3dV121b
+
+## Phase 125 (V125) - Structural 3: the analytical model, supports, loads and a frame solve
+
+PIPELINE, Track B item 1: "Structural object model -- loads, supports, load combinations, results."
+The prerequisite the ARCH5 port and the PennDOT input writer share. Mid-phase, the owner: "make sure
+this feature is cleanly add-in the design and not overloading the UI/UX. everything must be
+consistent. I also wants u to look into rhinoceros documentation of their apps. this would refine
+our design." The McNeel sites were not reachable from the build environment; what search summaries
+and V123's Gumball research give is in `reference/research-structural-ui.md`, and it set the
+interface below: no new window, rail tab or dialog.
+
+### What was built (patches 125a to 125f)
+
+- **a -- the analytical model, derived and never stored** (`bimAnalyticalModel`, Revit's default
+  alignment). A column is a line up its centre; a beam a line along its top, in the level plane.
+  Ends within 50 mm are one node; a node on another member's line splits it (a beam meeting a
+  column part way up, a secondary beam on a girder). Section properties of a rectangle -- A, both
+  second moments, J by the Saint-Venant series -- in the member's own axes (a column's local y is its
+  width direction, turned with it; a beam's is up). E from the material card's modulus, G = E/2(1+nu).
+  A column's base support is what is set on it (Fixed, Pinned, Free), or automatically Fixed on a
+  footing or on the lowest level, and otherwise it stands on what it meets. A beam's ends are Rigid
+  or Pinned (a shear connection). Walls, floors and roofs are named as not in the frame.
+- **b -- loads and combinations.** D and L; self-weight (density x A x g) in D; a line load and a
+  point load on a beam; a lateral load at a column's top along X or Z. 1.2D+1.6L and 1.4D (ASCE 7
+  2.3.1), D+L (service), and each case alone. Stored on the member as `o.bim.struct`, so `bimCarryBim`
+  carries them through every rebuild and copy; validated in one place (`bimLoadProblem`).
+- **c -- the solve** (`bimFrameSolve`): the direct stiffness method for a 3D frame, six degrees of
+  freedom a node, the 12 x 12 member stiffness turned into the model's axes, nodes ordered by reverse
+  Cuthill-McKee and the band factored by Cholesky. Loads between nodes by their fixed-end forces; a
+  pinned end condensed out of the member's stiffness and fixed-end forces, its rotation recovered for
+  the deflected shape. A vanished pivot is refused with the node and the way it moves. Along each
+  member, at twenty points a piece, every point load and every point where a shear passes zero: axial
+  force, shears, moments, torsion and the deflection (Hermite end movements plus the loads' own
+  fixed-end deflection -- exact for these loads). Equilibrium checked, not assumed.
+- **d -- the analysis display** (Rhino's analysis modes -- Zebra and ZebraOff): ANALYZE solves and
+  draws over the model on screen the analytical lines, the supports, a diagram along each member
+  labelled with its peak, and the deflected shape, with one caption naming the combination, the
+  diagram and the deflection scale; it says the largest moment, the largest deflection with its span
+  ratio, and the equilibrium check (Karamba's headline numbers). ANALYZEOFF turns it off. The display
+  compares the model's signature with the one solved on every paint, and a changed model shows no
+  result -- only that it is out of date. Member Forces and Reactions schedules read the same solve.
+- **e -- where it is set:** Properties, as Rhino's pages follow the selection. A column's Structural
+  page: its support (Automatic says what it is and why) and its loads; a beam's: its end connections
+  and its loads; a row to add a load and a button to remove one. With nothing selected, the Analysis
+  page beside V106's Floor Loads: the combination and its basis, self-weight, the display (Off,
+  moment, axial, shear), the deflected shape, and the last result -- or that it is out of date.
+  SUPPORT and LOAD open Properties at the field they name. One toolbar button, Analyze, in the
+  Structure strip.
+- **f -- the hooks** the suite reads the model, a solve and the display through, and the marker.
+
+### Bugs found, and what each taught
+
+**1. A sampled peak is not the peak.** The first member results took the extremes over twenty
+samples a piece and the point loads: a beam under a line load and a point load reported 67.2 kN.m
+where the peak is 67.222, at 2.333 m, between two samples. The peak of a moment is where its shear
+passes zero, and each piece between loads has a linear shear, so those points are added exactly.
+**The lesson: where an extreme can be found exactly, find it; a sampled maximum is a lower bound
+that reads as the answer.** The suite's combined-load check is the case only the exact point gets.
+
+**2. The closed forms needed a pinned connection, and so did real frames.** With every joint rigid
+and supports only at column bases, no simply supported beam could be built, so the textbook checks
+could not be made -- and nearly every steel beam is connected in shear. Pinned ends were added, by
+static condensation. **The lesson: when the check you need cannot be built, the model is usually
+missing something real.**
+
+**3. A value typed into the new-load row was lost.** Choosing the load's direction fired another
+Properties change handler that re-renders the panel, and the markup put the empty value back. The row
+now renders from a draft kept per member, written in the capture phase before any handler runs.
+**The lesson: a form whose panel can re-render under it keeps its state outside the DOM.**
+
+**4. Falsification found four checks that could not tell right from wrong:**
+- Every tested member lay along the model's axes, where a member's rotation matrix is its own
+  transpose, so a transposed turn changed nothing. A column turned 30 degrees now checks its top's
+  movement and its two base moments.
+- A beam's copy is its whole record, so the check that a copy keeps its loads never went through
+  `bimCarryBim`; a column's copy does, and is checked.
+- The reaction's subtraction of a load applied at a supported node looked unreachable; it is
+  reachable through a support set on an upper column, and that case is checked.
+- The singular-pivot guard: every mechanism tried -- axis-aligned and at 22 plan angles -- leaves a
+  zero or negative pivot, which the guard catches whatever its threshold. The variant now removes
+  the whole guard (then the solve returns NaN). **The threshold's size is not falsified; no case was
+  found where round-off leaves a small positive pivot.**
+**The lesson (V90's, again): a symmetric fixture agrees with a wrong rule by accident. Turn it.**
+
+**5. A patch slip, caught at the first load.** A JavaScript `\'` written as `\\'` inside a raw
+Python string ended a string early and the page did not load. And `Object.assign`, which the build's
+ES5 rule excludes, went in and came out.
+
+### Deliberately not done
+
+- Slab loads on beams: the level's floor loads (V106) are not distributed to the frame; V106's
+  Column Loads takedown remains their check, and the Analysis page says so.
+- Walls, floors and roofs as shells; bracing, trusses (their toolbar buttons are V102's, unwired).
+- Load patterns beyond D and L, wind and seismic generation, second-order (P-delta) effects,
+  member design checks (capacity, utilisation) -- the section-profile library comes first.
+- Results are not saved; ANALYZE after reopening a project.
+
+### Suites
+
+- New: `bim_phase125_structural_frame_browser_tests.py`, 50 checks in eight sections. Every number is
+  checked against a closed form (cantilevers in both planes, a turned cantilever, a simply supported
+  beam under a line load, a point load and both), against a plane-frame stiffness solve written in the
+  suite in Python (a portal's sway, base moments and horizontal reactions to 1e-9), or against
+  equilibrium. Falsified by 36 variants (`Phase/falsify_phase125.py`), all caught.
+
+### Full regression
+
+81 suites, 2728 checks, 0 failures. Falsification: 36 variants, 36 caught.
+
+### State after V125
+
+    canvas_v10.html   1,675,990 bytes
+    sha256            43c6439d714639197131a7d8a49ddfa99bd890619339f5d03d2b86c8e559307b
+    markers           __acad3dV60 ... __acad3dV125, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
+                      __acad3dV121b
