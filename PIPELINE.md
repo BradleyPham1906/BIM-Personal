@@ -2,11 +2,11 @@
 
 **Read this first in a new session.** One page. The detail lives in the docs listed at the bottom.
 
-    canvas_v10.html   1,737,151 bytes
-    sha256            ca381a76a82848eed3ec41187b5af8d60a0799f961bdaf2126e50a7215f435cb
-    markers           __acad3dV60 ... __acad3dV127, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
+    canvas_v10.html   1,763,531 bytes
+    sha256            930fe35a405b105c1357b9ff46a3a5c2584b2db6657bb3bf1ca22874b8b3cfb1
+    markers           __acad3dV60 ... __acad3dV128, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
                       __acad3dV121b
-    tests             83 suites, 2845 checks, 0 failures
+    tests             84 suites, 2895 checks, 0 failures
 
     Run the regression in parallel: tests/run_all.py [build] [filter] [-jN], default -j6,
     about 4 minutes; give it the build's absolute path. tests/falsify_all.py
@@ -22,7 +22,11 @@ with anchored Python scripts that assert exact match counts.
 
 ---
 
-## NOW - Track B: connector-based MEP runs (V128)
+## NOW - Track B: connector-based MEP runs (V129)
+
+V128 took the owner's word first, "make command UI easy to use ... shortcuts searchable": one
+command search over every command and tool (see Recently finished). Every new command from here is
+added to it (`CADCMDS` or the ribbon registry; synonyms in `BIM_CMD_TERMS`).
 
 V125 to V127 built Track B items 1 to 3:
 - V125: the frame model and solve.
@@ -40,12 +44,12 @@ flow.
 
 | # | Phase | Scope | Notes |
 |---|---|---|---|
-| 128 | MEP runs | Duct and pipe as runs of segments and fittings joined at connectors (elbows, tees, reducers made where runs meet); a size and a system on each run; flow summed downstream from terminals, and velocity and friction loss per segment | **Start here.** Research first: how Revit MEP connectors and systems work, and the ASHRAE duct-friction and Darcy-Weisbach / Hazen-Williams pipe equations. Check them against their closed forms, as V125 did. A run is drawn like V127's alignment: derived geometry from stored points, set in Properties. |
+| 129 | MEP runs | Duct and pipe as runs of segments and fittings joined at connectors (elbows, tees, reducers made where runs meet); a size and a system on each run; flow summed downstream from terminals, and velocity and friction loss per segment | **Start here.** Research first: how Revit MEP connectors and systems work, and the ASHRAE duct-friction and Darcy-Weisbach / Hazen-Williams pipe equations. Check them against their closed forms, as V125 did. A run is drawn like V127's alignment: derived geometry from stored points, set in Properties. |
 
 ### LATER - Track A, drafting (moved behind Track B in V100)
 
 The numbers in this table are its order, not phase numbers: a phase takes the next free V number
-when it starts (V111 to V127 went to other work; V128 is in NOW).
+when it starts (V111 to V128 went to other work; V129 is in NOW).
 
 | # | Phase | Scope | Notes |
 |---|---|---|---|
@@ -59,7 +63,21 @@ when it starts (V111 to V127 went to other work; V128 is in NOW).
 | 118 | Blocks and data | ATTDEF ATTEDIT BEDIT WBLOCK DATAEXTRACTION TABLESTYLE TABLEDIT TABLEEXPORT | First phase that's about the disciplines, not drafting. BLOCK and INSERT landed in V124, as the Assets library's blocks: saved records inserted as independent copies. A block reference that follows its definition (what BEDIT edits) is not built. |
 | 119 | Sheets and plotting, rest | MVIEW (draw a viewport on the paper) PAGESETUP (plot settings beyond Sheet Setup) PUBLISH (V122's Print set prints every sheet in one job; a chosen subset and page setups remain) EXPORTPDF (vector PDF of a sheet) VPLAYER (per-viewport layer visibility) viewport lock | LAYOUT, MSPACE and PSPACE landed in V116, with layout tabs and model space through a viewport. |
 
-**Recently finished:** Phase 127 (V127), **alignments and profiles**, Track B item 3.
+**Recently finished:** Phase 128 (V128), **one command search**, the owner's request.
+- **One search.** Ctrl+K, the dock's magnifier, and typing a letter on the drawing (AutoCAD's
+  type-anywhere) all open the same search, which covers every command and every ribbon tool.
+- **Rows** show what each command does, where it sits on the ribbon, its alias and its keys, with
+  the matched letters marked.
+- **Matching:** synonyms (ROUND → FILLET), abbreviations (PLNE), keyboard chords (Ctrl+Z → UNDO),
+  and a typo when nothing else matches. Results are ordered by match, then by use, and an empty
+  search starts with the recently used.
+- **Shortcuts:** `?` searches the keyboard shortcuts, and so does the shortcut sheet's new search
+  box.
+- **Teaching:** every ribbon tooltip names the command to type.
+- **Checked** in 50 checks and 38 falsify variants. Falsification found two fixtures that matched
+  by more than the rule under test.
+
+Phase 127 (V127), **alignments and profiles**, Track B item 3.
 - **ALIGNMENT** turns an open polyline into a route, in its place. Each PI gets a circular curve,
   and curves that would overlap are refused.
 - **Stations** are ticked every 20 m and labelled every 100 m, and every PC and PT is marked.
@@ -655,3 +673,8 @@ they ship as compiled binaries.
   not tell whether the 100 m default respected its legs (V127). Pick the fixture the rule binds on.
 - An edit is made to a copy and checked before it is kept: a number that would break the model is
   refused by name and never reaches it (V127, `bimAlignEdit`).
+- Every command is found in one place: a new typed command goes in `CADCMDS`, a new tool in the
+  ribbon registry, and the command search (`bimCmdCatalog`) picks up both. Give it search words in
+  `BIM_CMD_TERMS`, and a chord in `A3D_KEYS` (with `cmd`) if it has one (V128).
+- Nothing listens for a plain letter on the drawing except type-anywhere, which asks
+  `__a3dTypeAnywhere` first. A new state that takes letters must make that test refuse (V128).

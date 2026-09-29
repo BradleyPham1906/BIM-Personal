@@ -467,6 +467,9 @@ async def run():
             await command('ANALYZEOFF')
             ck(await safe("()=>window.__a3dStructDrawn()") is None and not (await safe("()=>window.__a3dStructSettings()"))['show'],
                "ANALYZEOFF turns the display off")
+            # AMENDED FOR V128: the Structure strip is the Structure discipline's; its Analyze button was
+            # in the page under Architecture only through the dock's retired search popover.
+            await safe("()=>window.__a3dSetDiscipline('struct')")
             acts = await safe("()=>window.__a3dDockActions()") or []
             ok = await safe("""()=>{var b=document.querySelector('#a3d-dock [data-a3dr="bim:analyze"]');if(!b)return false;
               var p=b.closest('.a3d-dockpop');if(p&&!p.classList.contains('open')){var id=p.getAttribute('data-dockpop');window.__a3dDockOpenGroup(id);}
@@ -474,6 +477,7 @@ async def run():
             await page.wait_for_timeout(300)
             ck('bim:analyze' in acts and ok and (await safe("()=>window.__a3dStructSettings()"))['show'],
                "the toolbar's Analyze button, in the Structure strip, runs it too")
+            await safe("()=>window.__a3dSetDiscipline('arch')")
             await safe("()=>window.__a3dSelectFor([])")
             await command('SUPPORT')
             ck('Select a column' in await toast(), "SUPPORT with nothing selected says what to select (%r)" % await toast())

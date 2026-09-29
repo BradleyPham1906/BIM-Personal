@@ -103,6 +103,18 @@ async def run():
     async with async_playwright() as pw:
         browser = await pw.chromium.launch()
         page = await browser.new_page(viewport={'width': 1600, 'height': 950})
+        # AMENDED FOR V128: a bound on every page call (V123's rule, which this suite predates). One
+        # full regression run stalled here for its whole 900 s with the page idle, and six repeats
+        # did not reproduce it; a stall now fails at once and says which call it was in.
+        def bounded(f, nm):
+            async def g(*a, **k):
+                try:
+                    return await asyncio.wait_for(f(*a, **k), 60)
+                except asyncio.TimeoutError:
+                    raise RuntimeError('stalled 60 s in page.%s %s' % (nm, str(a[:1])[:60]))
+            return g
+        for nm in ('goto', 'evaluate', 'wait_for_timeout'):
+            setattr(page, nm, bounded(getattr(page, nm), nm))
         errs = []
         page.on('pageerror', lambda e: errs.append(str(e)))
         await page.goto('file://' + str(HTML))

@@ -10759,3 +10759,144 @@ the build byte for byte from `Phase/canvas_v10.html.bak_phase127_pre`.
     sha256            ca381a76a82848eed3ec41187b5af8d60a0799f961bdaf2126e50a7215f435cb
     markers           __acad3dV60 ... __acad3dV127, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
                       __acad3dV121b
+
+## Phase 128 (V128) - One command search, and a command line that listens everywhere
+
+The owner, before any more features: "lets make command UI easy to use. shortcuts searchable and
+stuff. i know we can do ctrl + k and it have a drop down for quick search. but as this app become
+more sophisticate, it is hard. pls research on how and execute." The research is in
+`reference/research-command-ui.md`: AutoCAD's Input Search Options, Rhino, Revit's Keyboard
+Shortcuts dialog, VS Code (from its source), Blender F3 (from its source), Figma and Linear, and the
+ARIA combobox pattern. Taken ahead of the MEP runs.
+
+### What the app had
+
+- **Two searches that disagreed.** Ctrl+K found the ~90 typed commands and none of the ribbon's
+  tools. The dock's magnifier found the ribbon's tools and none of the typed commands.
+- **No keys shown.** Neither search showed a command's keyboard shortcut.
+- **No forgiveness.** Neither search accepted a typo.
+- **No typing on the drawing.** A command could only be typed after Ctrl+K.
+- **A fixed shortcut sheet.** It could not be searched.
+
+### What was built (patches 128a to 128d)
+
+- **a -- one catalogue** (`bimCmdCatalog`).
+  - **Contents:** every typed command that runs, and every implemented ribbon tool. A ribbon
+    button that is a typed command merges into that command's row, with its ribbon place added,
+    by a table (`BIM_ACT_CMD`) or by name.
+  - **Keys** come from `A3D_KEYS`, the table the shortcut sheet draws, whose rows now name the
+    command a chord runs (`cmd`).
+  - **Names:** ribbon-only tools get one to type. The booleans are UNION, SUBTRACT and INTERSECT;
+    the sketch constraints use AutoCAD's GC/DC names; the exports are EXPORTPDF and so on. Each
+    also gets a description of what it does.
+  - **Synonyms** (`BIM_CMD_TERMS`, AutoCAD's search content): ROUND finds FILLET, and DELETE
+    finds ERASE.
+  - **The search** (`bimCmdSearch`) matches each word typed in layers:
+    1. an exact name or alias;
+    2. a keyboard chord (Ctrl and Cmd read as one);
+    3. a prefix;
+    4. letters anywhere in the name;
+    5. a word of the description or the synonyms;
+    6. the letters in order from the first (PLNE finds PLINE);
+    7. the ribbon place;
+    8. a one-letter typo, offered only when nothing matched as typed.
+
+    Every word typed must match. Results are ordered by match, then by use (kept per browser),
+    then by catalogue order.
+  - **The ribbon's dispatcher** is now a function (`bimRunAct`), so the search runs a ribbon tool
+    exactly as its button does. It has the same refusals on a sheet, and Enter repeats it.
+- **b -- the palette, rebuilt on the catalogue.**
+  - **Rows** show the name with the matched letters marked, what it does, where it sits on the
+    ribbon, its alias and its keys.
+  - **Empty,** it lists the recently used, then every command, with a count.
+  - **Typos** appear under "Did you mean".
+  - **`?`** searches the keyboard shortcuts, and Enter on one that runs a command runs it.
+  - **A command that cannot run here** says why in its row.
+  - **Tab** cycles the rows. The input follows the ARIA combobox pattern.
+  - **Type-anywhere:** a letter typed on the drawing, with nothing else listening for it, opens the
+    search holding that letter. WA then Enter is a wall.
+- **c -- one search, and teaching.**
+  - The dock's magnifier opens the command search, and its own popover is gone.
+  - Every ribbon button's tooltip ends with the command to type: "type WALL or WA".
+  - The shortcut sheet gains a search box, focused when it opens, which matches by what a key does
+    or by the key itself. Escape clears it, then closes the sheet.
+  - Ctrl+O, bound since V115 but never listed, is now on the sheet.
+- **d -- the hooks, and the one type-anywhere test** (`__a3dTypeAnywhere`). It refuses a key when:
+  - a field has focus, or a tool is taking points or options;
+  - a dialog is open, a face is held, or a gizmo value is being typed;
+  - a sheet, a slideshow or the Start page is showing;
+  - a drag or a rail menu is under way.
+
+### Bugs found, and what each taught
+
+**1. Two test fixtures matched by more than the rule under test.** Falsification found both:
+- **A typo check matched a description word.** The suite's typo, "fillit", also matched the word
+  "fillet" in FILLET's description, so removing the name-typo rule changed nothing. The suite now
+  also checks "rectnag" for RECTANG: two swapped letters, not a subsequence, and no description
+  word that close.
+- **Recency tied with frequency.** The recent-commands check ran GRID as often as FOOTINGSALL, so
+  a list ordered by use looked the same as one ordered by time. GRID now runs once.
+
+**The lesson (V127's, again): a fixture must need the rule it tests.**
+
+**2. Removing the dock's popover broke two suites, both honestly.**
+- **V120** found its CSS left behind, dead: `.a3d-searchpop` and `.a3d-dockwhere`. The rules were
+  removed.
+- **V70** measured "every ribbon action is reachable from the dock" by what was inside `#a3d-dock`,
+  which the old popover had filled with every discipline's tools. It was amended to measure what
+  V71 stated as the design: a tool is reachable when some discipline's dock shows it, or when the
+  search the magnifier opens finds it.
+
+**3. Two more suites clicked tools that a person could not see.**
+- **V102** clicked the Foundation panel's buttons, and **V125** the Structure strip's Analyze
+  button, while Architecture was the active discipline.
+- Both buttons were in the page only because the retired popover rendered every discipline's
+  tools, hidden.
+- Both suites now pick the Structure discipline first, as a person does.
+
+**4. A full regression run stalled for 900 s in V74** (the schedule registry), with the page idle.
+Six parallel repeats and a second full run did not reproduce it, and nothing in V128 touches that
+suite's path. V74 predates V123's rule that every page call is bounded, so it now is: a stall fails
+in 60 s and names the call. The cause is not known. **A suite with no bounds hides where it
+stopped, which is exactly why the rule exists.**
+
+**5. Loose letter-order matching was noise.** "pdf" matched EXPORTDXF (p..d..f in it). An
+abbreviation must now start at the name's first letter, as PLNE does for PLINE.
+
+**6. Typo guesses crowded real matches.** "filet" found FILLET, and also offered NEW, OPEN and SAVE
+("file"). A typo is now offered only when nothing matched as typed, VS Code's rule.
+
+### Deliberately not done
+
+- Rebinding keys and user aliases.
+- Revit's two-letter shortcuts without Enter.
+- AutoCAD's Find, which points at a command's ribbon button.
+- Pinned favourites and command history on Up and Down.
+- Searching project content (levels, views, families).
+
+### Suites
+
+- New: `bim_phase128_command_search_browser_tests.py`, 50 checks in seven sections:
+  - the catalogue against the command table, the ribbon and the shortcut sheet;
+  - each layer of matching, including a chord, a typo in a name, the matched letters, and
+    ordering by use without beating a better match;
+  - the palette driven by the keyboard: the recently used, a row's place, alias and keys, the ARIA
+    combobox, Tab, `?` running ORTHO, a ribbon-only tool run and then repeated with Enter, and a
+    refusal on a sheet with its reason;
+  - type-anywhere, and the three places it must not fire;
+  - the magnifier and the tooltips;
+  - the shortcut sheet's search.
+- Falsified by 38 variants (`Phase/falsify_phase128.py`), all 38 run and all caught.
+- Amended: V70 section 1 (bug 2); V102 section 1 and V125 section 7 (bug 3); V74 bounded (bug 4).
+
+### Full regression
+
+84 suites, 2895 checks, 0 failures. Falsification: 38 variants, 38 caught. The patch chain rebuilds
+the build byte for byte from `Phase/canvas_v10.html.bak_phase128_pre`.
+
+### State after V128
+
+    canvas_v10.html   1,763,531 bytes
+    sha256            930fe35a405b105c1357b9ff46a3a5c2584b2db6657bb3bf1ca22874b8b3cfb1
+    markers           __acad3dV60 ... __acad3dV128, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
+                      __acad3dV121b
