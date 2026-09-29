@@ -10659,3 +10659,103 @@ the build byte for byte from `Phase/canvas_v10.html.bak_phase126_pre`.
     sha256            525fc46992ccd5caa25217c0729a98ab2ebe1630d54a09803bfe7ed173ca2e3f
     markers           __acad3dV60 ... __acad3dV126, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
                       __acad3dV121b
+
+## Phase 127 (V127) - Alignment and profile: a route, its stations, its vertical design
+
+PIPELINE, Track B item 3: "Alignment / profile objects -- horizontal alignment, vertical profile,
+station-offset." Stations are what the PennDOT work, DIMORDINATE and any road or bridge layout
+read. The research is in `reference/research-alignment.md` (Civil 3D and AASHTO, from search
+summaries). The interface follows the owner's V125 rule: the settings are two Properties pages,
+there are three commands, and there is one button in the existing Site panel.
+
+### What was built (patches 127a to 127e)
+
+- **a -- the geometry.** An alignment is its own kind of object (`t:'alignment'`), as a property
+  line is, so no sketch tool can trim or offset it.
+  - **Stored:** its PIs, one radius per interior PI, a start station, and optionally a profile of
+    PVIs.
+  - **Derivation (`bimAlignGeom`):** each curve's deflection, T = R tan(D/2), L = R D,
+    E = R (sec(D/2) - 1), the PC and PT, and the elements with running stations.
+  - **Refused by name:** curves that overlap on a leg, and a curve longer than its end leg.
+  - **Station and offset (`bimAlignStationOffset`):** exact on the arcs, positive to the right, and
+    says when a point lies before the start or past the end.
+  - **Profile (`bimProfileGeom`, `bimProfileElevAt`):** AASHTO's symmetric parabola, with A, K and
+    the high or low point. A profile off the alignment and vertical curves that overlap are
+    refused.
+  - **Ground (`bimTinHeightAt`, new):** interpolates a V108 surface in the triangle a point falls
+    in. `bimAlignGround` samples it along the route.
+- **b -- the drawing.**
+  - The route is drawn with true arcs (the V88 chord tolerance). Minor ticks fall every 20 m and
+    labelled major ticks every 100 m, and every PC, PT and end is marked with its station. Ticks
+    thin out when zoomed too far out to read.
+  - With a profile, the route is drawn at its design elevations in 3D.
+  - The profile view is drawn in model space:
+    - a grid of station against elevation;
+    - the ground and the design line;
+    - each PVI, and each vertical curve's L, K and high or low point.
+  - Picking works on the route and anywhere in its profile view.
+  - Extents, Rotate, Mirror, Scale and copies all move the PIs and the profile view. Scale also
+    scales the radii.
+- **c -- where it is set.**
+  - ALIGNMENT turns the selected open polyline into an alignment, in its place. Each PI gets the
+    largest radius up to 100 m that the legs leave room for (95% of it, rounded down).
+  - **Properties, Alignment:** the start station, the stations and length, each PI's radius, and
+    each curve's deflection, direction, T, L, E, PC and PT.
+  - **Properties, Profile:** each PVI's station, elevation and curve length; the grades; and each
+    curve's A, K and high or low point.
+  - Add PVI starts a profile on the ground, then splits the longest grade.
+  - Every edit is made to a copy and checked before it is kept, as one undo step, so a bad number
+    never reaches the model. Changing the start station moves the profile with it.
+  - PROFILEVIEW places the profile view where you click. STATION reports and marks the station and
+    offset of each clicked point until Escape.
+- **d -- the Alignment and Profile schedules,** plus the route in DXF, SVG and on sheets, labelled
+  by station.
+- **e -- the hooks and the marker.**
+
+### Bugs found, and what each taught
+
+**1. A test fixture with room to spare.** The one polyline the suite made into an alignment left
+room for a 142 m curve, so the 100 m cap decided the radius. A variant that ignored the legs
+altogether passed. A polyline with short legs is now checked against the largest radius they
+allow. **The lesson (V126's, again): a fixture chosen so the rule is not needed cannot test it.**
+
+**2. The suite's own mistakes, caught before they were read as the app's:**
+- Undo dropped the selection, so Properties showed nothing and every field the suite set was
+  missing.
+- A schedule hook returns `{cols, rows}` and the DXF builder returns `{text, stats}`.
+- A refusal's message was right but worded differently from the check.
+
+Each was fixed in the suite, and the app was unchanged.
+
+### Deliberately not done
+
+- Spirals (clothoids), superelevation, corridors and cross-sections.
+- PI grips: PIs are set by the polyline they came from; the route moves, turns and mirrors whole.
+- US-customary 100-ft stations: the project has no feet unit.
+- The profile view in export.
+- DIMORDINATE, which can now read stations (Track A 117).
+
+### Suites
+
+- New: `bim_phase127_alignment_profile_browser_tests.py`, 54 checks in seven sections.
+  - **Geometry:** every number is checked against the textbook, written out in the suite, on a
+    route turned 30 degrees and set off the origin, with curves turning both ways and a PI the
+    route runs straight through.
+  - **Station and offset:** round trips on tangents and both arcs, left and right.
+  - **Profile:** the parabola, a crest and a sag, K, and the high and low points.
+  - **Ground:** a planar surface.
+  - **Interface:** ALIGNMENT, PROFILEVIEW and STATION by real clicks; the Properties pages with
+    Undo; copies, Rotate, Mirror, a reload, the schedules and the DXF.
+- Falsified by 36 variants (`Phase/falsify_phase127.py`), all 36 run and all caught.
+
+### Full regression
+
+83 suites, 2845 checks, 0 failures. Falsification: 36 variants, 36 caught. The patch chain rebuilds
+the build byte for byte from `Phase/canvas_v10.html.bak_phase127_pre`.
+
+### State after V127
+
+    canvas_v10.html   1,737,151 bytes
+    sha256            ca381a76a82848eed3ec41187b5af8d60a0799f961bdaf2126e50a7215f435cb
+    markers           __acad3dV60 ... __acad3dV127, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
+                      __acad3dV121b

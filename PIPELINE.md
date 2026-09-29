@@ -2,11 +2,11 @@
 
 **Read this first in a new session.** One page. The detail lives in the docs listed at the bottom.
 
-    canvas_v10.html   1,693,481 bytes
-    sha256            525fc46992ccd5caa25217c0729a98ab2ebe1630d54a09803bfe7ed173ca2e3f
-    markers           __acad3dV60 ... __acad3dV126, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
+    canvas_v10.html   1,737,151 bytes
+    sha256            ca381a76a82848eed3ec41187b5af8d60a0799f961bdaf2126e50a7215f435cb
+    markers           __acad3dV60 ... __acad3dV127, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
                       __acad3dV121b
-    tests             82 suites, 2789 checks, 0 failures
+    tests             83 suites, 2845 checks, 0 failures
 
     Run the regression in parallel: tests/run_all.py [build] [filter] [-jN], default -j6,
     about 4 minutes; give it the build's absolute path. tests/falsify_all.py
@@ -22,26 +22,30 @@ with anchored Python scripts that assert exact match counts.
 
 ---
 
-## NOW - Track B: alignment and profile objects (V127)
+## NOW - Track B: connector-based MEP runs (V128)
 
-V125 and V126 built Track B items 1 and 2: the frame model and solve, and real steel and concrete
-sections feeding it (see Recently finished). Item 3 is the civil half: a horizontal alignment, its
-vertical profile, and station-and-offset. The PennDOT work (Track C) and DIMORDINATE (Track A 117)
-both read stations.
+V125 to V127 built Track B items 1 to 3:
+- V125: the frame model and solve.
+- V126: steel and concrete sections.
+- V127: alignments, profiles and stations (see Recently finished).
 
-**Design rule (owner, V125):** the interface stays clean and consistent. It follows Rhino's model
-(see `reference/research-structural-ui.md`): settings are Properties pages that follow the
-selection, an analysis is a display turned on and off by its command, and a feature adds a window,
-rail tab or toolbar strip only when no existing one can hold it.
+Item 4 is the last of the object model: ducts and pipes as runs that connect, with a size and a
+flow.
+
+**Design rule (owner, V125):** keep the interface clean and consistent, following Rhino's model
+(see `reference/research-structural-ui.md`).
+- Settings are Properties pages that follow the selection.
+- An analysis is a display turned on and off by its command.
+- A feature adds a window, rail tab or toolbar strip only when no existing one can hold it.
 
 | # | Phase | Scope | Notes |
 |---|---|---|---|
-| 127 | Alignment and profile | A horizontal alignment (tangents, circular curves, and spirals if they fit) built from a polyline or by its PI points; stationing along it; a vertical profile of grades and parabolic vertical curves; a point's station and offset | **Start here.** Research first: AASHTO's Green Book for curve and vertical-curve geometry, and how Civil 3D and OpenRoads present an alignment (its Properties, labels and station ticks), fitted to the rule above. An alignment is a new object kind, so decide how it is stored the way V88 decided arcs. The profile view is a drawing of the profile, not a new window. Check stations against closed forms: arc length R x delta, tangent T = R tan(delta/2), and a vertical curve's high point at x = -g1 L / (g2 - g1). |
+| 128 | MEP runs | Duct and pipe as runs of segments and fittings joined at connectors (elbows, tees, reducers made where runs meet); a size and a system on each run; flow summed downstream from terminals, and velocity and friction loss per segment | **Start here.** Research first: how Revit MEP connectors and systems work, and the ASHRAE duct-friction and Darcy-Weisbach / Hazen-Williams pipe equations. Check them against their closed forms, as V125 did. A run is drawn like V127's alignment: derived geometry from stored points, set in Properties. |
 
 ### LATER - Track A, drafting (moved behind Track B in V100)
 
 The numbers in this table are its order, not phase numbers: a phase takes the next free V number
-when it starts (V111 to V126 went to other work; V127 is in NOW).
+when it starts (V111 to V127 went to other work; V128 is in NOW).
 
 | # | Phase | Scope | Notes |
 |---|---|---|---|
@@ -55,7 +59,20 @@ when it starts (V111 to V126 went to other work; V127 is in NOW).
 | 118 | Blocks and data | ATTDEF ATTEDIT BEDIT WBLOCK DATAEXTRACTION TABLESTYLE TABLEDIT TABLEEXPORT | First phase that's about the disciplines, not drafting. BLOCK and INSERT landed in V124, as the Assets library's blocks: saved records inserted as independent copies. A block reference that follows its definition (what BEDIT edits) is not built. |
 | 119 | Sheets and plotting, rest | MVIEW (draw a viewport on the paper) PAGESETUP (plot settings beyond Sheet Setup) PUBLISH (V122's Print set prints every sheet in one job; a chosen subset and page setups remain) EXPORTPDF (vector PDF of a sheet) VPLAYER (per-viewport layer visibility) viewport lock | LAYOUT, MSPACE and PSPACE landed in V116, with layout tabs and model space through a viewport. |
 
-**Recently finished:** Phase 126 (V126), **the section-profile library**, Track B item 2. A column or
+**Recently finished:** Phase 127 (V127), **alignments and profiles**, Track B item 3.
+- **ALIGNMENT** turns an open polyline into a route, in its place. Each PI gets a circular curve,
+  and curves that would overlap are refused.
+- **Stations** are ticked every 20 m and labelled every 100 m, and every PC and PT is marked.
+  STATION reads the station and offset of any clicked point, exactly on the arcs.
+- **The profile** has PVIs and AASHTO parabolic vertical curves, with K and the high or low point.
+  It is set in Properties next to the Alignment page. PROFILEVIEW draws it in model space over the
+  ground sampled from a V108 surface.
+- **Schedules and export:** Alignment and Profile schedules, and the route in DXF, SVG and on
+  sheets.
+- **Checked** against the textbook on a route turned off the axes. A fixture with room to spare
+  hid the fitted radius until falsification caught it.
+
+Phase 126 (V126), **the section-profile library**, Track B item 2. A column or
 beam type may carry a profile -- rectangle, round, HSS, pipe, I (W and IPE) or channel -- and the
 member is that section: its solid is the profile swept along it (a beam hung by its top with its web
 upright, a column's section turned with it), its analysis takes the section's A, I and J (computed
@@ -488,7 +505,7 @@ first time, and fixed the typed-coordinate class bug.
 
 ## NEXT — Track B, the object model
 
-Items 1 and 2 were built in V125 and V126; item 3 is in NOW.
+Items 1 to 3 were built in V125 to V127; item 4 is in NOW.
 
 The command audit's central finding: implementing all 902 AutoCAD commands would still leave MEP,
 HVAC and civil alignment work **entirely unbuilt**. The object model is where the discipline value
@@ -634,3 +651,7 @@ they ship as compiled binaries.
   only, and a skipped variant reads as caught (V126 -- six were skipped).
 - One reader for a derived quantity: the solid, the analysis, Properties and Assets all read a
   section through `bimProfileProps` and `bimMemberSection`, so they cannot disagree (V126).
+- A fixture must need the rule it tests: an alignment whose legs left room for a 142 m curve could
+  not tell whether the 100 m default respected its legs (V127). Pick the fixture the rule binds on.
+- An edit is made to a copy and checked before it is kept: a number that would break the model is
+  refused by name and never reaches it (V127, `bimAlignEdit`).
