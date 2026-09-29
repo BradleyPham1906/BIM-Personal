@@ -10900,3 +10900,111 @@ the build byte for byte from `Phase/canvas_v10.html.bak_phase128_pre`.
     sha256            930fe35a405b105c1357b9ff46a3a5c2584b2db6657bb3bf1ca22874b8b3cfb1
     markers           __acad3dV60 ... __acad3dV128, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
                       __acad3dV121b
+
+## Phase 129 (V129) - A shortcuts panel you can find your way around, and a dock that says what it is
+
+The owner, on the V128 sheet and the dock: "lets clean up these shortcuts stuff on the UI/UX
+becauase it kinda hard to navigate and things not very clear. can you research how a good design
+for that would look like for easy to nav and use?" A mockup went up on a design canvas first, and
+the owner answered: "oh i like that thats actually what i want". The research is in
+`reference/research-shortcuts-ui.md` (Figma, Google Docs, Linear, Fusion, Revit, and the tooltip
+guidance from MDN and others). The MEP runs move to V130.
+
+### What was wrong
+
+- **The sheet was cramped.** It was a narrow popover beside the rail, eight groups in one column,
+  with the keys wherever each label ended.
+- **Typed points were listed as keys.** Their grammar (x,y, @x,y, d<a) sat in Drawing as if it were
+  three shortcuts.
+- **The dock named nothing.** Icons only, with a tool's name only in a native `title`, which is
+  slow and never shows on keyboard focus. Groups had no names, the overflow was a bare triangle,
+  and search was an unlabelled magnifier.
+
+### What was built (patches 129a to 129c)
+
+- **a -- the shortcuts panel** (`bimShortcutsHtml`, `bimFilterShortcuts`).
+  - **Opening:** `?` typed on the drawing, or SHORTCUTS, opens it centred over the drawing (up to
+    880 by 600 px). Running SHORTCUTS again leaves it open.
+  - **Layout:** a title, the search box (focused) and a close button across the top. Categories
+    with their counts are on the left, and one list is on the right.
+  - **Rows:** what the key does on the left, then the command to type ("type UNDO"), then the keys,
+    which end on one right edge.
+  - **Categories:** choosing one shows only it, marks it with `aria-pressed`, scrolls the list to
+    its top, and gives the focus back to the search. The search stays inside the chosen category,
+    and the panel reopens on All.
+  - **Typing points** is a group of its own after Drawing (x,y, d<a, a bare length). Its note says
+    when it applies, and the note hides with its rows.
+  - **The panel lists its own key,** `?`, under Project.
+- **b -- the dock** (`bimBuildDock`).
+  - **Names:** under every tool and under every group. The overflow says More, with an icon.
+  - **Search:** a pill that reads "Search tools and commands" and shows Ctrl K.
+  - **Tooltips** (`bimTipShow`, `#a3d-tip`, `role=tooltip`, pointed to by `aria-describedby`):
+    - They show after 350 ms on hover, and at once on keyboard focus.
+    - They hide on leaving, a press, Escape or a scroll, and sit above the button, inside the
+      window.
+    - They give the tool's name, its keys, what to type ("Type WALL or WA"), what it does and where
+      it sits on the ribbon. A tool not built yet says so.
+    - The buttons lose their native `title`, so there is never a second, plainer tooltip. Their
+      accessible name keeps the V128 hint.
+  - **Appearance** gains "Tool names on the dock" and "Icons only", saved with the UI preferences.
+    Names are on by default.
+- **c -- the hooks** `__a3dDockTip`, `__a3dDockTipShown` and `__a3dDockLabels`.
+
+### Bugs found, and what each taught
+
+**1. The first labelled dock took 53 px from the drawing** (172 px against 119). Four suites failed
+on geometry that no longer fit:
+- V123: a body drag landed on the gizmo.
+- V99: a region grew to 31.17 instead of 32.
+- V79: a grip ended up under the dock.
+- V124: an "empty" drop point was on the dock.
+
+The fit shrank the model, and fixed-size handles then covered it. The buttons went from 46 to
+38 px, the icons from 18 to 16, and the search pill from 28 to 24. At 143 px, V123, V99 and V79
+pass unchanged. V124's empty point, at 85 % of the canvas height, was still on the dock, which
+rightly refuses a drop, so it moved to 70 %. The V129 suite keeps the dock at 150 px or less.
+**A chrome change is a change to every suite's drawing space: measure it before styling it.**
+
+**2. Every click in the panel counted as a category click.** The panel element carries
+`data-rkcat` (the chosen category), so `closest('[data-rkcat]')` matched the panel itself. The
+close button did nothing, and a click on a row cleared the choice. The handler now matches
+`.a3d-rkcat` only. The suite checks both the close button and a click on a row, and the falsify
+variant `category_any_click` restores the bug.
+
+**3. Two falsify variants survived the first suite.**
+- **The scroll reset:** every category is short, so the list clamped to its top anyway. The check
+  now picks All while scrolled down the full list.
+- **Reopening on All:** a stale category only shows once you type, so the check now searches after
+  reopening.
+
+**The lesson (V127's, again): a fixture must need the rule it tests.**
+
+### Deliberately not done
+
+- Rebinding keys from the panel.
+- Fusion's longer, second-stage tooltip.
+- Pinning a dock group open.
+
+### Suites
+
+- New: `bim_phase129_shortcuts_panel_dock_browser_tests.py`, 62 checks in eight sections: the
+  panel, categories, rows, typing points, closing, the dock's names, tooltips, and icons only.
+- Falsified by 34 variants (`Phase/falsify_phase129.py`), all 34 run and all caught.
+- Amended, each marked AMENDED FOR V129:
+  - V85: the groups now include Typing points.
+  - V83: Appearance has 6 rows.
+  - V128 and V71: the tooltip text is read from `aria-label`, not `title`.
+  - V124: the empty drop point (bug 1).
+- V128's 38 falsify variants were re-run against the amended V128 suite: 38 variants, 38 caught.
+
+### Full regression
+
+85 suites, 2957 checks, 0 failures. Falsification: 34 variants, 34 caught (V129), and 38 of 38 (V128, re-run). The patch chain rebuilds the build byte for byte from
+`Phase/canvas_v10.html.bak_phase129_pre`.
+
+### State after V129
+
+    canvas_v10.html   1,777,975 bytes
+    sha256            54d61a42f944669ba375292066df6467a31643de8b852a04b6295252045ed4f3
+    markers           __acad3dV60 ... __acad3dV129, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
+                      __acad3dV121b

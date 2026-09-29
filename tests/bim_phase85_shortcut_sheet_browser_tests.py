@@ -143,7 +143,9 @@ async def run():
             ck(pop['rows'] >= 12, "with a real number of shortcut rows (%d)" % pop['rows'])
             # AMENDED FOR V122: the Pages display's keys and Present's, drawn from their tables
             # AMENDED FOR V123: how a face is taken and the keys a held face listens to (Faces)
-            ck(pop['grps'] == ['Views', 'Drawing', 'Snaps', 'Editing', 'Project', 'Faces', 'Pages', 'Presenting'],
+            # AMENDED FOR V129: typed point input (x,y  @x,y  d<a) is a grammar, not a key, so it has
+            # its own page after Drawing instead of three rows inside it
+            ck(pop['grps'] == ['Views', 'Drawing', 'Typing points', 'Snaps', 'Editing', 'Project', 'Faces', 'Pages', 'Presenting'],
                "grouped by what the keys do (%s)" % pop['grps'])
             on_screen = (pop['left'] >= 0 and pop['top'] >= 0
                          and pop['right'] <= 1600 and pop['bottom'] <= 950)
