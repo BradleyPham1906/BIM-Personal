@@ -143,7 +143,8 @@ async def run():
            "had no handler at all" % geom['helpPresent'])
 
         print("\n-- 2. every menu opens fully ON SCREEN")
-        for mid, want in (('zoom', 3), ('appear', 4), ('snaps', 0), ('units', 3)):
+        # AMENDED FOR V129: Appearance gains 'Tool names on the dock' and 'Icons only' (4 -> 6)
+        for mid, want in (('zoom', 3), ('appear', 6), ('snaps', 0), ('units', 3)):
             p = await page.evaluate("(m)=>window.__a3dRailOpen(m)", mid)
             ck(p is not None and p['onScreen'] is True,
                "%s: opens inside the window (l%d t%d r%d b%d) -- V70's dock carets once opened at "

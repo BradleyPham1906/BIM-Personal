@@ -224,7 +224,7 @@ async def run():
         face = await page.evaluate("""()=>{
           const b=document.querySelector('#a3d-dock .a3d-dbtn[data-a3dr="brg:girder"]');
           return b?{found:true,hasIcon:!!b.querySelector('svg'),
-                    title:b.getAttribute('title')||''}:{found:false};}""")
+                    title:b.getAttribute('aria-label')||''}:{found:false};}""")   # AMENDED FOR V129: the native title became aria-label + a real tooltip
         ck(face['found'] is True, "Girder is on the dock's face")
         ck(face['hasIcon'] is True, "with the icon supplied at registration")
         ck('Girder' in face['title'], "and its label (%s)" % face['title'])

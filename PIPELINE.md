@@ -2,11 +2,11 @@
 
 **Read this first in a new session.** One page. The detail lives in the docs listed at the bottom.
 
-    canvas_v10.html   1,763,531 bytes
-    sha256            930fe35a405b105c1357b9ff46a3a5c2584b2db6657bb3bf1ca22874b8b3cfb1
-    markers           __acad3dV60 ... __acad3dV128, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
+    canvas_v10.html   1,777,975 bytes
+    sha256            54d61a42f944669ba375292066df6467a31643de8b852a04b6295252045ed4f3
+    markers           __acad3dV60 ... __acad3dV129, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
                       __acad3dV121b
-    tests             84 suites, 2895 checks, 0 failures
+    tests             85 suites, 2957 checks, 0 failures
 
     Run the regression in parallel: tests/run_all.py [build] [filter] [-jN], default -j6,
     about 4 minutes; give it the build's absolute path. tests/falsify_all.py
@@ -22,11 +22,17 @@ with anchored Python scripts that assert exact match counts.
 
 ---
 
-## NOW - Track B: connector-based MEP runs (V129)
+## NOW - Track B: connector-based MEP runs (V130)
 
-V128 took the owner's word first, "make command UI easy to use ... shortcuts searchable": one
-command search over every command and tool (see Recently finished). Every new command from here is
-added to it (`CADCMDS` or the ribbon registry; synonyms in `BIM_CMD_TERMS`).
+V128 and V129 took the owner's word first, on commands and shortcuts (see Recently finished):
+- **V128:** one command search over every command and tool.
+- **V129:** a shortcuts panel with categories, and a dock that names its tools and groups, with
+  real tooltips.
+
+Every new command from here goes into the search (`CADCMDS` or the ribbon registry, with synonyms
+in `BIM_CMD_TERMS`). Every new key goes in `A3D_KEYS`, with the command it runs (`cmd`). A new
+dock tool gets its name and tooltip from the ribbon registry. Check any chrome change against the
+drawing space: V129's first dock took 53 px and broke four suites' geometry.
 
 V125 to V127 built Track B items 1 to 3:
 - V125: the frame model and solve.
@@ -44,12 +50,12 @@ flow.
 
 | # | Phase | Scope | Notes |
 |---|---|---|---|
-| 129 | MEP runs | Duct and pipe as runs of segments and fittings joined at connectors (elbows, tees, reducers made where runs meet); a size and a system on each run; flow summed downstream from terminals, and velocity and friction loss per segment | **Start here.** Research first: how Revit MEP connectors and systems work, and the ASHRAE duct-friction and Darcy-Weisbach / Hazen-Williams pipe equations. Check them against their closed forms, as V125 did. A run is drawn like V127's alignment: derived geometry from stored points, set in Properties. |
+| 130 | MEP runs | Duct and pipe as runs of segments and fittings joined at connectors (elbows, tees, reducers made where runs meet); a size and a system on each run; flow summed downstream from terminals, and velocity and friction loss per segment | **Start here.** Research first: how Revit MEP connectors and systems work, and the ASHRAE duct-friction and Darcy-Weisbach / Hazen-Williams pipe equations. Check them against their closed forms, as V125 did. A run is drawn like V127's alignment: derived geometry from stored points, set in Properties. |
 
 ### LATER - Track A, drafting (moved behind Track B in V100)
 
 The numbers in this table are its order, not phase numbers: a phase takes the next free V number
-when it starts (V111 to V128 went to other work; V129 is in NOW).
+when it starts (V111 to V129 went to other work; V130 is in NOW).
 
 | # | Phase | Scope | Notes |
 |---|---|---|---|
@@ -63,7 +69,22 @@ when it starts (V111 to V128 went to other work; V129 is in NOW).
 | 118 | Blocks and data | ATTDEF ATTEDIT BEDIT WBLOCK DATAEXTRACTION TABLESTYLE TABLEDIT TABLEEXPORT | First phase that's about the disciplines, not drafting. BLOCK and INSERT landed in V124, as the Assets library's blocks: saved records inserted as independent copies. A block reference that follows its definition (what BEDIT edits) is not built. |
 | 119 | Sheets and plotting, rest | MVIEW (draw a viewport on the paper) PAGESETUP (plot settings beyond Sheet Setup) PUBLISH (V122's Print set prints every sheet in one job; a chosen subset and page setups remain) EXPORTPDF (vector PDF of a sheet) VPLAYER (per-viewport layer visibility) viewport lock | LAYOUT, MSPACE and PSPACE landed in V116, with layout tabs and model space through a viewport. |
 
-**Recently finished:** Phase 128 (V128), **one command search**, the owner's request.
+**Recently finished:** Phase 129 (V129), **the shortcuts panel and a labelled dock**, the owner's
+request, built to a mockup the owner approved.
+- **The panel:** `?` or SHORTCUTS opens it centred over the drawing, with a search, categories
+  with counts, and the keys in a right-hand column beside the command to type. Typing points (x,y,
+  d<a) is its own page.
+- **The dock:**
+  - every tool and every group is named, and the overflow says More;
+  - search is a labelled pill;
+  - tooltips show after a short pause, or at once on keyboard focus, with the name, keys, what to
+    type, what it does and where it lives;
+  - Appearance can switch to icons only.
+- **Checked** in 62 checks and 34 falsify variants. The first labelled dock was 53 px taller and
+  broke four suites' geometry. It was made compact (143 px against 119), and falsification caught
+  a panel whose every click counted as a category click.
+
+Phase 128 (V128), **one command search**, the owner's request.
 - **One search.** Ctrl+K, the dock's magnifier, and typing a letter on the drawing (AutoCAD's
   type-anywhere) all open the same search, which covers every command and every ribbon tool.
 - **Rows** show what each command does, where it sits on the ribbon, its alias and its keys, with

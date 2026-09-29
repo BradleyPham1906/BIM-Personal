@@ -327,7 +327,9 @@ async def run():
             ck(await pal_open() and not await safe("()=>!!document.querySelector('#a3d-dock [data-dockpop=\"__search\"]')"),
                "the dock's magnifier opens the command search; the dock has no search of its own")
             await close_all()
-            tips = await safe("""()=>{var o={};['bim:wall','bim:door','s:rect'].forEach(function(a){var b=document.querySelector('#a3d-dock .a3d-dbtn[data-a3dr="'+a+'"]');o[a]=b?b.title:null;});return o;}""")
+            # AMENDED FOR V129: the dock's native title became a real tooltip (#a3d-tip); the
+            # button's accessible name carries the same hint, so that is what is read here
+            tips = await safe("""()=>{var o={};['bim:wall','bim:door','s:rect'].forEach(function(a){var b=document.querySelector('#a3d-dock .a3d-dbtn[data-a3dr="'+a+'"]');o[a]=b?b.getAttribute('aria-label'):null;});return o;}""")
             ck(tips and 'type WALL or WA' in (tips.get('bim:wall') or '') and 'type DOOR or DR' in (tips.get('bim:door') or ''),
                "a ribbon button's tooltip names the command to type for it (%s)" % tips)
 

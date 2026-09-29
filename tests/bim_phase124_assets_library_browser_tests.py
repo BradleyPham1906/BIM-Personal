@@ -559,7 +559,9 @@ async def run():
                 await drag(src, tgt)
             ck(pats and await safe("(id)=>window.__a3dResolveGraphics(id,'presentation').pattern", wid) == pats[0].split(':', 1)[1],
                "and a pattern dropped on it goes in its presentation graphics (%s)" % (pats and pats[0]))
-            empty = await canvas_pt(0.15, 0.85)
+            # AMENDED FOR V129: the labelled dock is 24px taller, and 85% down the canvas is now on
+            # the dock, which rightly refuses a drop -- the empty spot moves up to 70%
+            empty = await canvas_pt(0.15, 0.7)
             n_under = await safe("(p)=>{var r=window.__a3dCanvasRect();return window.__a3dAssetDropAt('pattern:none',p[0]-r.left,p[1]-r.top);}", empty)
             ck(n_under is False, "a pattern dropped on nothing changes nothing (%s)" % n_under)
             if pats:

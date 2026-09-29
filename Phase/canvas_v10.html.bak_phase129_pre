@@ -230,34 +230,7 @@ body.light-theme #acad3d{color-scheme:light}
 #a3d-dock{position:absolute;left:0;right:0;bottom:14px;z-index:9600;display:flex;flex-direction:column;align-items:center;pointer-events:none}
 .a3d-dockbody{display:flex;flex-direction:column;gap:3px;background:#22262b;border:1px solid #3a4048;border-radius:10px;padding:5px;box-shadow:0 6px 22px rgba(0,0,0,0.45);max-width:calc(100% - 28px);pointer-events:auto}
 .a3d-dockrow{display:flex;align-items:center;gap:2px;min-width:0}
-.a3d-dockgrp{display:flex;flex-direction:column;align-items:center;gap:2px;flex:0 0 auto}
-.a3d-dgtools{display:flex;align-items:center;gap:1px}
-.a3d-dglbl{font-size:9px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#7d8590;line-height:1;white-space:nowrap}
-#a3d-dock.a3d-docklabels .a3d-dockgrp{gap:1px}
-#a3d-dock.a3d-docklabels .a3d-dbtn{width:60px;height:38px;flex-direction:column;gap:2px}
-#a3d-dock.a3d-docklabels .a3d-dbtn svg{width:16px;height:16px}
-#a3d-dock.a3d-docklabels .a3d-dcar{width:40px;height:38px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:#aab2bd}
-#a3d-dock.a3d-docklabels .a3d-dcar svg{width:16px;height:16px}
-.a3d-dblbl{font-size:10px;line-height:1.1;color:#aab2bd;max-width:58px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.a3d-dbtn:hover .a3d-dblbl,.a3d-dcar:hover .a3d-dblbl{color:#fff}
-.a3d-dsearchpill{display:flex;align-items:center;gap:7px;flex:1 1 auto;min-width:210px;height:24px;padding:0 9px;background:#1c2024;border:1px solid #3a4048;border-radius:6px;color:#8b949e;font:inherit;font-size:11.5px;cursor:pointer;text-align:left}
-.a3d-dsearchpill:hover{border-color:#4ea1ff;color:#dfe4ea}
-.a3d-dsearchpill svg{width:14px;height:14px;flex:0 0 auto}
-.a3d-dsearchpill span{flex:1 1 auto}
-.a3d-dsearchpill kbd{font:600 10px/1 Inter,system-ui,sans-serif;padding:2px 5px;border:1px solid #4a525c;border-radius:4px;color:#c7ced6}
-.a3d-dockhead .a3d-dockgrp{flex-direction:row;gap:6px;width:100%}
-.a3d-dbtn:focus-visible,.a3d-dcar:focus-visible,.a3d-dsearchpill:focus-visible{outline:2px solid #4ea1ff;outline-offset:1px}
-#a3d-tip{position:fixed;z-index:10050;display:none;max-width:260px;background:#0f1114;border:1px solid #3f4650;border-radius:8px;padding:8px 10px;box-shadow:0 8px 22px rgba(0,0,0,.5);font:12px/1.4 Inter,system-ui,sans-serif;color:#aab2bd;pointer-events:none}
-#a3d-tip.show{display:block}
-.a3d-tiphd{display:flex;align-items:center;justify-content:space-between;gap:12px}
-.a3d-tiphd strong{font-size:13px;color:#fff;font-weight:600}
-.a3d-tipkeys{display:flex;align-items:center;gap:3px}.a3d-tipkeys i{font-style:normal;color:#6e7781;font-size:10px}
-.a3d-tipkeys kbd{font:600 10.5px/1 Inter,system-ui,sans-serif;padding:2px 5px;border:1px solid #56606b;border-radius:4px;color:#e6eaef}
-.a3d-tiptype{margin-top:4px}.a3d-tiptype b{font-family:ui-monospace,Menlo,monospace;color:#8fb8ff;font-weight:600}
-.a3d-tipdesc{margin-top:2px}.a3d-tipdesc.off{color:#e8a87c}
-.a3d-tipwhere{margin-top:3px;font-size:11px;color:#7d8590}
-body.light-theme #a3d-tip{background:#fff;border-color:#c9ced4;color:#40464d;box-shadow:0 8px 22px rgba(0,0,0,.15)}
-body.light-theme #a3d-tip strong{color:#202124}body.light-theme .a3d-tiptype b{color:#1f5fbf}
+.a3d-dockgrp{display:flex;align-items:center;gap:1px;flex:0 0 auto}
 .a3d-dsep{width:1px;align-self:stretch;margin:3px 4px;background:#3a4048;flex:0 0 auto}
 .a3d-dbtn{width:34px;height:32px;display:flex;align-items:center;justify-content:center;background:transparent;border:1px solid transparent;border-radius:5px;color:#c3cad2;cursor:pointer;padding:0;flex:0 0 auto}
 .a3d-dbtn:hover{background:#2f353c;color:#fff}
@@ -489,30 +462,7 @@ body.light-theme #a3d-tip strong{color:#202124}body.light-theme .a3d-tiptype b{c
 .a3d-pval input[type=text],.a3d-pval input[type=number],.a3d-pval select{width:100%;background:#1c2024;border:1px solid #3a4048;color:#e6eaef;border-radius:4px;padding:4px 6px;font-size:11px;font-family:inherit}
 .a3d-pval input[type=checkbox]{margin:0}
 .a3d-pstatic{font-size:11px;color:#c3cad2}
-.a3d-prow.ro .a3d-pstatic{color:#7d8590}.a3d-pval{text-align:right}.a3d-pval select,.a3d-pval input[type=text]{text-align:left}.a3d-pval input[type=number]{text-align:right}.a3d-prow.ro{min-height:22px}.a3d-prow.ro .a3d-plabel{color:#868f99}.a3d-assets{padding:6px 8px 14px;font:11px/1.35 Inter,system-ui,sans-serif;color:#c3cad2}.a3d-asnote{padding:6px 8px;margin-bottom:6px;border-radius:5px;background:#22262b;color:#9aa3ad;font-size:10.5px}.a3d-asgrp{display:flex;align-items:center;justify-content:space-between;background:#262b31;border-radius:5px;padding:6px 9px;margin:8px 0 4px;font-size:10.5px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;color:#aeb8c2}.a3d-assub{font-weight:400;text-transform:none;letter-spacing:0;color:#7d8590}.a3d-asrow{display:flex;width:100%;align-items:center;justify-content:space-between;gap:8px;background:transparent;border:1px solid transparent;border-radius:5px;padding:6px 8px;color:#d5dae0;cursor:pointer;font:inherit;text-align:left}.a3d-asrow:hover{background:#2f353c;border-color:#3a4048}.a3d-asrow.off{opacity:.45;cursor:default}.a3d-asrow.off:hover{background:transparent;border-color:transparent}.a3d-asnm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.a3d-asmeta{flex:0 0 auto;color:#7d8590;font-size:10px}.a3d-asempty{padding:8px;color:#7d8590;font-size:10.5px}#a3d-railutil{display:flex;flex-direction:column;align-items:center;gap:2px;margin-bottom:6px}.a3d-ru{width:30px;height:30px;display:grid;place-items:center;background:transparent;border:1px solid transparent;border-radius:7px;color:#9aa3ad;cursor:pointer;padding:0}.a3d-ru svg{width:17px;height:17px}.a3d-ru:hover{background:rgba(255,255,255,.09);color:#fff}.a3d-ru.on{background:rgba(255,255,255,.12);color:#fff}#a3d-rupop{position:fixed;z-index:10000;display:none;min-width:194px;background:#22262b;border:1px solid #3a4048;border-radius:9px;padding:6px;box-shadow:0 10px 30px rgba(0,0,0,.5);font:12px/1.35 Inter,system-ui,sans-serif;color:#d5dae0}#a3d-rupop.open{display:block}.a3d-ruhd{font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#8b949e;padding:4px 8px 6px}.a3d-ruitem{display:block;width:100%;text-align:left;background:transparent;border:0;border-radius:6px;padding:7px 9px;color:#d5dae0;cursor:pointer;font:inherit}.a3d-ruitem:hover{background:#2f353c;color:#fff}.a3d-ruitem.on{background:#2c477d;color:#e4efff}.a3d-rusep{height:1px;background:#343a41;margin:5px 4px}.a3d-rurow{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 9px;color:#d5dae0}.a3d-rurow input[type=number]{width:62px;background:#1c2024;border:1px solid #3a4048;color:#e6eaef;border-radius:4px;padding:3px 5px;font:inherit}.a3d-rukeys{min-width:336px;max-height:64vh;overflow:auto;padding:0 2px 2px}.a3d-rkgrp{font-size:9.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#8b949e;padding:9px 8px 4px}.a3d-rkrow{display:flex;align-items:baseline;gap:10px;padding:4px 8px;border-radius:5px}.a3d-rkrow:hover{background:#2a2f35}.a3d-rkkeys{flex:0 0 96px;display:flex;align-items:center;gap:3px;justify-content:flex-end}.a3d-rkkeys kbd{font:600 10px/1 Inter,system-ui,sans-serif;color:#c7ced6;background:#1c2024;border:1px solid #3a4048;border-bottom-width:2px;border-radius:4px;padding:3px 5px;white-space:nowrap}.a3d-rkplus{color:#6e7781;font-size:9px}.a3d-rklab{flex:1;color:#c3cad2;font-size:11.5px;line-height:1.35}.a3d-rkfind{display:block;box-sizing:border-box;width:calc(100% - 8px);margin:0 4px 4px;background:#1c2024;border:1px solid #3a4048;color:#e6eaef;border-radius:6px;padding:6px 8px;font:inherit;font-size:11.5px}.a3d-rkfind:focus{outline:none;border-color:#4ea1ff}.a3d-rkempty{padding:10px 8px;color:#7d8590;font-size:11px}.a3d-rukeys [hidden]{display:none!important}
-#a3d-rupop.a3d-rksheet{width:min(880px,calc(100vw - 32px));height:min(600px,calc(100vh - 64px));padding:0;display:none;flex-direction:column;overflow:hidden;border-radius:12px;box-shadow:0 18px 50px rgba(0,0,0,.55)}
-#a3d-rupop.a3d-rksheet.open{display:flex}
-.a3d-rkhead{display:flex;align-items:center;gap:14px;padding:14px 16px;border-bottom:1px solid #343a41;flex:0 0 auto}
-.a3d-rktitle{margin:0;font-size:15px;font-weight:600;color:#e6eaef;flex:0 0 auto}
-#a3d-rupop.a3d-rksheet .a3d-rkfind{flex:1 1 auto;width:auto;margin:0;height:34px;font-size:13px;padding:0 12px;border-radius:8px}
-.a3d-rkclose{width:34px;height:34px;flex:0 0 auto;border-radius:8px;border:1px solid #3a4048;background:transparent;color:#aab2bd;font:inherit;font-size:18px;line-height:1;cursor:pointer}
-.a3d-rkclose:hover{background:#2f353c;color:#fff}
-.a3d-rkbody{display:flex;flex:1 1 auto;min-height:0}
-.a3d-rknav{width:190px;flex:0 0 auto;display:flex;flex-direction:column;gap:2px;padding:10px 8px;border-right:1px solid #343a41;overflow-y:auto;box-sizing:border-box}
-.a3d-rkcat{display:flex;justify-content:space-between;align-items:center;width:100%;min-height:34px;padding:0 10px;border:0;border-radius:7px;background:transparent;color:#c3cad2;font:inherit;font-size:13px;cursor:pointer;text-align:left}
-.a3d-rkcat:hover{background:#2a2f35;color:#fff}
-.a3d-rkcat.on{background:#2c477d;color:#fff}
-.a3d-rkn{font-size:11.5px;color:#8b949e}.a3d-rkcat.on .a3d-rkn{color:#c9dcff}
-#a3d-rupop.a3d-rksheet .a3d-rknote{margin-top:auto;border-top:0;padding:10px 6px 2px;font-size:11.5px;line-height:1.5}
-#a3d-rupop.a3d-rksheet .a3d-rukeys{flex:1 1 auto;min-width:0;max-height:none;overflow-y:auto;padding:4px 16px 16px}
-#a3d-rupop.a3d-rksheet .a3d-rkgrp{font-size:11px;padding:16px 8px 6px}
-.a3d-rkgnote{padding:0 8px 6px;font-size:12px;line-height:1.5;color:#9aa3ad}
-#a3d-rupop.a3d-rksheet .a3d-rkrow{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(90px,auto);align-items:center;gap:12px;padding:7px 8px;border-bottom:1px solid #2c3137;border-radius:0}
-#a3d-rupop.a3d-rksheet .a3d-rklab{font-size:13px;color:#dfe4ea}
-.a3d-rkcmd{font:500 11.5px/1 'IBM Plex Mono',ui-monospace,Menlo,monospace;color:#8fb8ff}
-#a3d-rupop.a3d-rksheet .a3d-rkkeys{flex:none;justify-content:flex-end}
-#a3d-rupop.a3d-rksheet .a3d-rkkeys kbd{font-size:11px;padding:4px 7px}
-body.light-theme .a3d-rktitle{color:#202124}body.light-theme .a3d-rkcat{color:#30343b}body.light-theme .a3d-rkcat.on{background:#dbe7ff;color:#12305f}body.light-theme .a3d-rkcmd{color:#1f5fbf}.a3d-rknote{border-top:1px solid #343a41;margin:6px 4px 0;padding:7px 4px 3px;color:#8b949e;font-size:10.5px;line-height:1.4}.a3d-rknote kbd{font:600 9.5px/1 Inter,system-ui,sans-serif;color:#c7ced6;background:#1c2024;border:1px solid #3a4048;border-radius:3px;padding:2px 4px}body.light-theme .a3d-rkfind{background:#fff;border-color:#c9ced4;color:#222}body.light-theme .a3d-rkkeys kbd{color:#333;background:#f2f3f5;border-color:#c9ced4}body.light-theme .a3d-rklab{color:#333}
+.a3d-prow.ro .a3d-pstatic{color:#7d8590}.a3d-pval{text-align:right}.a3d-pval select,.a3d-pval input[type=text]{text-align:left}.a3d-pval input[type=number]{text-align:right}.a3d-prow.ro{min-height:22px}.a3d-prow.ro .a3d-plabel{color:#868f99}.a3d-assets{padding:6px 8px 14px;font:11px/1.35 Inter,system-ui,sans-serif;color:#c3cad2}.a3d-asnote{padding:6px 8px;margin-bottom:6px;border-radius:5px;background:#22262b;color:#9aa3ad;font-size:10.5px}.a3d-asgrp{display:flex;align-items:center;justify-content:space-between;background:#262b31;border-radius:5px;padding:6px 9px;margin:8px 0 4px;font-size:10.5px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;color:#aeb8c2}.a3d-assub{font-weight:400;text-transform:none;letter-spacing:0;color:#7d8590}.a3d-asrow{display:flex;width:100%;align-items:center;justify-content:space-between;gap:8px;background:transparent;border:1px solid transparent;border-radius:5px;padding:6px 8px;color:#d5dae0;cursor:pointer;font:inherit;text-align:left}.a3d-asrow:hover{background:#2f353c;border-color:#3a4048}.a3d-asrow.off{opacity:.45;cursor:default}.a3d-asrow.off:hover{background:transparent;border-color:transparent}.a3d-asnm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.a3d-asmeta{flex:0 0 auto;color:#7d8590;font-size:10px}.a3d-asempty{padding:8px;color:#7d8590;font-size:10.5px}#a3d-railutil{display:flex;flex-direction:column;align-items:center;gap:2px;margin-bottom:6px}.a3d-ru{width:30px;height:30px;display:grid;place-items:center;background:transparent;border:1px solid transparent;border-radius:7px;color:#9aa3ad;cursor:pointer;padding:0}.a3d-ru svg{width:17px;height:17px}.a3d-ru:hover{background:rgba(255,255,255,.09);color:#fff}.a3d-ru.on{background:rgba(255,255,255,.12);color:#fff}#a3d-rupop{position:fixed;z-index:10000;display:none;min-width:194px;background:#22262b;border:1px solid #3a4048;border-radius:9px;padding:6px;box-shadow:0 10px 30px rgba(0,0,0,.5);font:12px/1.35 Inter,system-ui,sans-serif;color:#d5dae0}#a3d-rupop.open{display:block}.a3d-ruhd{font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#8b949e;padding:4px 8px 6px}.a3d-ruitem{display:block;width:100%;text-align:left;background:transparent;border:0;border-radius:6px;padding:7px 9px;color:#d5dae0;cursor:pointer;font:inherit}.a3d-ruitem:hover{background:#2f353c;color:#fff}.a3d-ruitem.on{background:#2c477d;color:#e4efff}.a3d-rusep{height:1px;background:#343a41;margin:5px 4px}.a3d-rurow{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 9px;color:#d5dae0}.a3d-rurow input[type=number]{width:62px;background:#1c2024;border:1px solid #3a4048;color:#e6eaef;border-radius:4px;padding:3px 5px;font:inherit}.a3d-rukeys{min-width:336px;max-height:64vh;overflow:auto;padding:0 2px 2px}.a3d-rkgrp{font-size:9.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#8b949e;padding:9px 8px 4px}.a3d-rkrow{display:flex;align-items:baseline;gap:10px;padding:4px 8px;border-radius:5px}.a3d-rkrow:hover{background:#2a2f35}.a3d-rkkeys{flex:0 0 96px;display:flex;align-items:center;gap:3px;justify-content:flex-end}.a3d-rkkeys kbd{font:600 10px/1 Inter,system-ui,sans-serif;color:#c7ced6;background:#1c2024;border:1px solid #3a4048;border-bottom-width:2px;border-radius:4px;padding:3px 5px;white-space:nowrap}.a3d-rkplus{color:#6e7781;font-size:9px}.a3d-rklab{flex:1;color:#c3cad2;font-size:11.5px;line-height:1.35}.a3d-rkfind{display:block;box-sizing:border-box;width:calc(100% - 8px);margin:0 4px 4px;background:#1c2024;border:1px solid #3a4048;color:#e6eaef;border-radius:6px;padding:6px 8px;font:inherit;font-size:11.5px}.a3d-rkfind:focus{outline:none;border-color:#4ea1ff}.a3d-rkempty{padding:10px 8px;color:#7d8590;font-size:11px}.a3d-rukeys [hidden]{display:none!important}.a3d-rknote{border-top:1px solid #343a41;margin:6px 4px 0;padding:7px 4px 3px;color:#8b949e;font-size:10.5px;line-height:1.4}.a3d-rknote kbd{font:600 9.5px/1 Inter,system-ui,sans-serif;color:#c7ced6;background:#1c2024;border:1px solid #3a4048;border-radius:3px;padding:2px 4px}body.light-theme .a3d-rkfind{background:#fff;border-color:#c9ced4;color:#222}body.light-theme .a3d-rkkeys kbd{color:#333;background:#f2f3f5;border-color:#c9ced4}body.light-theme .a3d-rklab{color:#333}
 .a3d-papply{display:flex;justify-content:flex-end;padding:7px 0 3px;border-top:1px solid #343a41;margin-top:7px}
 .a3d-papply button{background:#2f5d8a;border:1px solid #3f75a8;color:#e6eef6;border-radius:3px;font-size:10.5px;padding:3px 14px;cursor:pointer;font-family:inherit}
 .a3d-bsearch{padding:5px 7px;border-bottom:1px solid #30353c;flex:0 0 auto}
@@ -984,8 +934,6 @@ body.a3d-tree-docked #a3d-leftpanel > .a3d-tree .a3d-palhd .a3d-palbtns{flex-wra
          whether anything else is listening for it -- a tool, a dialog, a held face -- and only
          when nothing is does the letter open the search. */
       if(!pal.classList.contains('show')&&!e.defaultPrevented&&!e.isComposing&&window.__a3dTypeAnywhere&&window.__a3dTypeAnywhere(e)){
-        /* __acad3dV129: ? is the keyboard shortcuts panel (Linear's and GitHub's key) */
-        if(e.key==='?'&&window.__a3dRunCmd){e.preventDefault();window.__a3dRunCmd('shortcuts');return;}
         e.preventDefault();openPal(e.key);
       }
     });
@@ -14430,13 +14378,10 @@ try{
       {keys:['Enter'],k:null,label:'Finish the current line, polyline, wall or stair'},
       {keys:['C'],k:null,label:'Close the path (from three points on)'},
       {keys:['U'],k:null,label:'Undo the last point'},
-      {keys:['Arrows'],k:null,label:'Nudge the selected object'}
-    ]},
-    /* __acad3dV129: the grammar of a typed point is not a key: a group of its own, saying when */
-    {grp:'Typing points',note:'While a tool is taking points, type a position instead of clicking, then press Enter.',rows:[
       {keys:['x,y'],k:null,label:'Absolute point. @x,y is relative to the last point; # forces absolute'},
       {keys:['d<a'],k:null,label:'Polar point: distance, then angle. @5<45 is relative'},
-      {keys:['0-9'],k:null,label:'A bare length draws that far along the current direction'}
+      {keys:['0-9'],k:null,label:'A bare length draws that far along the current direction'},
+      {keys:['Arrows'],k:null,label:'Nudge the selected object'}
     ]},
     {grp:'Snaps',rows:[
       {keys:['F3'],k:'F3',label:'Object snap on or off',cmd:'OSNAP'},   /* __acad3dV128: cmd -- the command a chord runs */
@@ -14452,8 +14397,7 @@ try{
     {grp:'Project',rows:[
       {keys:[A3D_MODKEY,'S'],k:null,label:'Export the project file',cmd:'SAVE'},
       {keys:[A3D_MODKEY,'O'],k:null,label:'Open a project file',cmd:'OPEN'},   /* __acad3dV128: bound since V115, never listed */
-      {keys:[A3D_MODKEY,'K'],k:null,label:'Command search, or just start typing a command'},
-      {keys:['?'],k:null,label:'This panel: the keyboard shortcuts'}   /* __acad3dV129 */
+      {keys:[A3D_MODKEY,'K'],k:null,label:'Command search, or just start typing a command'}
     ]}
   ];
   /* __acad3dV122: the sheet's groups -- A3D_KEYS, and the keys of the Pages display and of Present,
@@ -14467,33 +14411,26 @@ try{
     return A3D_KEYS.concat([{grp:'Faces',rows:rows(A3D_FACE_GESTURES).concat(rows(A3D_FACE_KEYS))},   /* __acad3dV123 */
       {grp:'Pages',rows:rows(A3D_PAGEVIEW_KEYS)},{grp:'Presenting',rows:rows(A3D_SHOW_KEYS)}]);
   }
-  /* __acad3dV129: the shortcuts panel -- the categories on the left, one list, the keys on the right */
   function bimShortcutsHtml(){
-    var groups=bimShortcutGroups(),g,r,i,j,k,total=0,nav='',list='';   /* __acad3dV122 */
+    var h='<div class="a3d-ruhd">Keyboard shortcuts</div>'+
+      '<input type="search" class="a3d-rkfind" placeholder="Search: what it does, or a key (Ctrl+Z, F8)" aria-label="Search the keyboard shortcuts" autocomplete="off" spellcheck="false">'+   /* __acad3dV128 */
+      '<div class="a3d-rukeys">',g,r,i,j,k;
+    var groups=bimShortcutGroups();   /* __acad3dV122 */
     for(i=0;i<groups.length;i++){
-      g=groups[i];total+=g.rows.length;
-      nav+='<button type="button" class="a3d-rkcat" data-rkcat="'+bimEsc(g.grp)+'"><span>'+bimEsc(g.grp)+'</span><span class="a3d-rkn">'+g.rows.length+'</span></button>';
-      list+='<div class="a3d-rkgrp" data-rkg="'+bimEsc(g.grp)+'">'+bimEsc(g.grp)+'</div>';
-      if(g.note)list+='<div class="a3d-rkgnote" data-rkg="'+bimEsc(g.grp)+'">'+bimEsc(g.note)+'</div>';
+      g=groups[i];
+      h+='<div class="a3d-rkgrp">'+bimEsc(g.grp)+'</div>';
       for(j=0;j<g.rows.length;j++){
         r=g.rows[j];
-        list+='<div class="a3d-rkrow" data-rkg="'+bimEsc(g.grp)+'" data-rkhay="'+bimEsc((r.keys.join(' ')+' '+r.keys.join('+')+' '+r.label+' '+g.grp+' '+(r.cmd||'')).toLowerCase())+'">'+
-          '<span class="a3d-rklab">'+bimEsc(r.label)+'</span>'+
-          '<span class="a3d-rkcmd">'+(r.cmd?'type '+bimEsc(r.cmd):'')+'</span><span class="a3d-rkkeys">';
+        h+='<div class="a3d-rkrow" data-rkhay="'+bimEsc((r.keys.join(' ')+' '+r.keys.join('+')+' '+r.label+' '+g.grp).toLowerCase())+'"><span class="a3d-rkkeys">';
         for(k=0;k<r.keys.length;k++){
-          if(k)list+='<span class="a3d-rkplus">'+(r.alt?'/':'+')+'</span>';   /* __acad3dV122: a slash between alternatives */
-          list+='<kbd>'+bimEsc(r.keys[k])+'</kbd>';
+          if(k)h+='<span class="a3d-rkplus">'+(r.alt?'/':'+')+'</span>';   /* __acad3dV122: a slash between alternatives */
+          h+='<kbd>'+bimEsc(r.keys[k])+'</kbd>';
         }
-        list+='</span></div>';
+        h+='</span><span class="a3d-rklab">'+bimEsc(r.label)+'</span></div>';
       }
     }
-    return '<div class="a3d-rkhead"><h2 class="a3d-rktitle">Keyboard shortcuts</h2>'+
-      '<input type="search" class="a3d-rkfind" placeholder="Search by what it does, or a key: undo, ctrl z, F8" aria-label="Search the keyboard shortcuts" autocomplete="off" spellcheck="false">'+   /* __acad3dV128 */
-      '<button type="button" class="a3d-rkclose" data-rkclose aria-label="Close the keyboard shortcuts">\u00d7</button></div>'+
-      '<div class="a3d-rkbody"><nav class="a3d-rknav" aria-label="Shortcut categories">'+
-      '<button type="button" class="a3d-rkcat on" data-rkcat="all" aria-pressed="true"><span>All shortcuts</span><span class="a3d-rkn">'+total+'</span></button>'+nav+
-      '<div class="a3d-rknote">Every command, its alias and its keys: <kbd>'+bimEsc(A3D_MODKEY)+'</kbd>+<kbd>K</kbd>, or start typing a command on the drawing.</div></nav>'+
-      '<div class="a3d-rukeys">'+list+'<div class="a3d-rkempty" hidden>No shortcut matches. Try what it does, like \u201csnap\u201d, or a key, like \u201cF8\u201d.</div></div></div>';
+    return h+'<div class="a3d-rkempty" hidden>No shortcut matches</div></div>'+
+      '<div class="a3d-rknote">Every command, its alias and its keys: <kbd>'+bimEsc(A3D_MODKEY)+'</kbd>+<kbd>K</kbd>, or start typing a command on the drawing.</div>';
   }
   function bimRailStackHtml(){
     var h='<div id="a3d-railutil">',i;
@@ -14529,20 +14466,6 @@ try{
       p.addEventListener('click',function(ev){
         var b=ev.target&&ev.target.closest?ev.target.closest('[data-a3druitem]'):null;
         if(b){bimRailAction(b.getAttribute('data-a3druitem'));return;}
-        /* __acad3dV129: the shortcuts panel's categories and its close button */
-        var rc=ev.target&&ev.target.closest?ev.target.closest('.a3d-rkcat[data-rkcat]'):null;
-        if(rc){
-          var cats=p.querySelectorAll('[data-rkcat]'),ci;
-          for(ci=0;ci<cats.length;ci++){var on=cats[ci]===rc;cats[ci].classList.toggle('on',on);cats[ci].setAttribute('aria-pressed',on?'true':'false');}
-          p.setAttribute('data-rkcat',rc.getAttribute('data-rkcat'));
-          var rf=p.querySelector('.a3d-rkfind');
-          bimFilterShortcuts(p,rf?rf.value:'');
-          var lst=p.querySelector('.a3d-rukeys');if(lst)lst.scrollTop=0;
-          /* a click leaves the typing where it was, in the search box; a key press (Tab, Enter) keeps its place */
-          if(ev.detail&&rf){try{rf.focus({preventScroll:true});}catch(eRf){}}
-          return;
-        }
-        if(ev.target&&ev.target.closest&&ev.target.closest('[data-rkclose]')){bimCloseRailPop();return;}
       });
       p.addEventListener('change',function(ev){
         var f=ev.target&&ev.target.closest?ev.target.closest('[data-a3druset]'):null;
@@ -14583,10 +14506,7 @@ try{
         '<button class="a3d-ruitem'+(pres?' on':'')+'" data-a3druitem="appear:presentation">Presentation</button>'+
         '<div class="a3d-rusep"></div>'+
         '<button class="a3d-ruitem'+(light?'':' on')+'" data-a3druitem="appear:dark">Dark interface</button>'+
-        '<button class="a3d-ruitem'+(light?' on':'')+'" data-a3druitem="appear:light">Light interface</button>'+
-        '<div class="a3d-rusep"></div>'+   /* __acad3dV129 */
-        '<button class="a3d-ruitem'+(bimDockLabelsOn()?' on':'')+'" data-a3druitem="appear:docknames">Tool names on the dock</button>'+
-        '<button class="a3d-ruitem'+(bimDockLabelsOn()?'':' on')+'" data-a3druitem="appear:dockicons">Icons only</button>';
+        '<button class="a3d-ruitem'+(light?' on':'')+'" data-a3druitem="appear:light">Light interface</button>';
     }
     if(id==='snaps'){
       s=A3D_SNAP;
@@ -14612,17 +14532,15 @@ try{
      label or its group; Ctrl and Cmd read as one */
   function bimFilterShortcuts(p,q){
     var norm=function(s){return String(s).toLowerCase().replace(/cmd|ctrl|control|meta|\u2318/g,'mod');};
-    var cat=p.getAttribute('data-rkcat')||'all',note=null;   /* __acad3dV129: the category chosen on the left */
     var words=norm(q).split(/\s+/).filter(function(w){return !!w;}),kids=p.querySelectorAll('.a3d-rukeys > *'),i,grp=null,any=false,shown=0;
     for(i=0;i<kids.length;i++){
       var e=kids[i];
-      if(e.classList.contains('a3d-rkgrp')){if(grp){grp.hidden=!any;if(note)note.hidden=!any;}grp=e;note=null;any=false;continue;}
-      if(e.classList.contains('a3d-rkgnote')){note=e;continue;}
+      if(e.classList.contains('a3d-rkgrp')){if(grp)grp.hidden=!any;grp=e;any=false;continue;}
       if(!e.classList.contains('a3d-rkrow'))continue;
-      var hay=norm(e.getAttribute('data-rkhay')||''),ok=(cat==='all'||e.getAttribute('data-rkg')===cat)&&words.every(function(w){return hay.indexOf(w)>=0;});
+      var hay=norm(e.getAttribute('data-rkhay')||''),ok=words.every(function(w){return hay.indexOf(w)>=0;});
       e.hidden=!ok;if(ok){any=true;shown++;}
     }
-    if(grp){grp.hidden=!any;if(note)note.hidden=!any;}
+    if(grp)grp.hidden=!any;
     var em=p.querySelector('.a3d-rkempty');if(em)em.hidden=shown>0;
     return shown;
   }
@@ -14632,8 +14550,6 @@ try{
     bimCloseRailPop();
     if(already)return false;
     p.setAttribute('data-for',id);
-    p.classList.toggle('a3d-rksheet',id==='help');   /* __acad3dV129: the shortcuts are a panel, centred */
-    p.setAttribute('data-rkcat','all');
     p.innerHTML=bimRailMenuHtml(id);
     p.classList.add('open');
     btn.classList.add('on');
@@ -14644,7 +14560,6 @@ try{
     if(left+pw>window.innerWidth-8)left=Math.max(8,r.left-pw-8);
     if(top+ph>window.innerHeight-8)top=window.innerHeight-8-ph;
     if(top<8)top=8;
-    if(id==='help'){left=Math.max(8,(window.innerWidth-pw)/2);top=Math.max(8,(window.innerHeight-ph)/2);}   /* __acad3dV129 */
     p.style.left=Math.round(left)+'px';
     p.style.top=Math.round(top)+'px';
     var rkf=id==='help'?p.querySelector('.a3d-rkfind'):null;   /* __acad3dV128: ready to type into */
@@ -14691,8 +14606,7 @@ try{
       if(key==='window'){bimCloseRailPop();return bimStartZoomWindow();}
     }
     if(grp==='appear'){
-      if(key==='docknames'||key==='dockicons'){bimSetDockLabels(key==='docknames');}   /* __acad3dV129 */
-      else if(key==='technical'||key==='presentation'){
+      if(key==='technical'||key==='presentation'){
         A3D.presentMode=(key==='presentation');
         bimSyncPresentPill();
         refreshProps();paint();saveSoon();
@@ -29114,8 +29028,6 @@ try{
     if(!host)return false;
     var rows=a3drDockRows(a3drDockTabs(A3D_DISC_CUR));
     var h='<div class="a3d-dockbody">',pops='',r,g,tab,prim,i,grps,gi,ai,act,cat=bimCmdCatalog();   /* __acad3dV128 */
-    var names=bimDockLabelsOn();   /* __acad3dV129: tool names under the icons, unless Icons only */
-    host.classList.toggle('a3d-docklabels',names);
     /* The discipline group leads the dock: it is what decides which of the others are here. */
     h+='<div class="a3d-dockrow a3d-dockhead">'+
       '<div class="a3d-dockgrp" data-dockgrp="__disc">'+
@@ -29125,22 +29037,21 @@ try{
           (A3D_DISCIPLINES[d].id===A3D_DISC_CUR?' selected':'')+'>'+
           bimEsc(A3D_DISCIPLINES[d].name)+'</option>';return o;})()+
       '</select>'+
-      '<button type="button" class="a3d-dsearchpill" id="a3d-dsearch" aria-label="Search tools and commands" data-a3dtip="__search">'+
-      A3DR_SEARCH_ICON+'<span>Search tools and commands</span><kbd>'+bimEsc(A3D_MODKEY)+' K</kbd></button>'+   /* __acad3dV129: a search you can read */
+      '<button class="a3d-dbtn" id="a3d-dsearch" title="Search every command and tool (Ctrl+K, or start typing on the drawing)">'+
+      A3DR_SEARCH_ICON+'</button>'+
       '</div></div>';
     for(r=0;r<rows.length;r++){
       h+='<div class="a3d-dockrow">';
       for(g=0;g<rows[r].length;g++){
         tab=rows[r][g];
         prim=a3drTabPrimary(tab);
-        h+='<div class="a3d-dockgrp" data-dockgrp="'+tab.id+'"><div class="a3d-dgtools">';
-        for(i=0;i<prim.length;i++)   /* __acad3dV129: a name under the icon, a tooltip instead of a title */
-          h+='<button type="button" class="a3d-dbtn" data-a3dr="'+prim[i]+'" data-a3dtip="'+prim[i]+'" aria-label="'+
-            bimEsc(a3drLabel(prim[i])+bimActHint(prim[i],cat))+'">'+a3drIcon(prim[i])+
-            (names?'<span class="a3d-dblbl">'+bimEsc(a3drLabel(prim[i]))+'</span>':'')+'</button>';
-        h+='<button type="button" class="a3d-dcar" data-dockmore="'+tab.id+'" data-a3dtip="__more:'+bimEsc(tab.name)+'" aria-label="'+
-          bimEsc('All '+tab.name+' tools')+'">'+(names?A3DR_MORE_ICON+'<span class="a3d-dblbl">More</span>':'\u25b4')+'</button>';
-        h+='</div><span class="a3d-dglbl">'+bimEsc(tab.name)+'</span></div>';
+        h+='<div class="a3d-dockgrp" data-dockgrp="'+tab.id+'">';
+        for(i=0;i<prim.length;i++)
+          h+='<button class="a3d-dbtn" data-a3dr="'+prim[i]+'" title="'+
+            bimEsc(a3drLabel(prim[i])+'  \u00b7  '+tab.name+bimActHint(prim[i],cat))+'">'+a3drIcon(prim[i])+'</button>';
+        h+='<button class="a3d-dcar" data-dockmore="'+tab.id+'" title="'+
+          bimEsc(tab.name+' \u2014 all tools')+'">\u25b4</button>';
+        h+='</div>';
         if(g<rows[r].length-1)h+='<div class="a3d-dsep"></div>';
         grps=a3drTabGroups(tab);
         pops+='<div class="a3d-dockpop" data-dockpop="'+tab.id+'">';
@@ -29148,7 +29059,8 @@ try{
           pops+='<div class="a3d-dockpoph">'+bimEsc(tab.name+' \u00b7 '+grps[gi].t)+'</div>';
           for(ai=0;ai<grps[gi].acts.length;ai++){
             act=grps[gi].acts[ai];
-            pops+='<div class="a3d-dockitem'+(a3drIsUnimpl(act)?' a3dr-dis':'')+'" data-a3dr="'+act+'" data-a3dtip="'+act+'">'+a3drIcon(act)+
+            pops+='<div class="a3d-dockitem'+(a3drIsUnimpl(act)?' a3dr-dis':'')+'" data-a3dr="'+act+'"'+
+              (a3drIsUnimpl(act)?' title="Not implemented yet"':(bimActHint(act,cat)?' title="'+bimEsc(a3drLabel(act)+bimActHint(act,cat))+'"':''))+'>'+a3drIcon(act)+
               bimEsc(a3drLabel(act))+'</div>';
           }
         }
@@ -29159,7 +29071,6 @@ try{
     /* __acad3dV71: search spans EVERY discipline, so the dock's filter can be aggressive -- since
        V128 that search is the command search (the magnifier opens it). */
     bimRenderInto(host,h+'</div>'+pops);   /* __acad3dV118: the Discipline dropdown keeps the focus */
-    bimTipHide();bimBindDockTips(host);   /* __acad3dV129 */
     return true;
   }
   /* ================= __acad3dV128: one catalogue of every command ================= */
@@ -29384,75 +29295,6 @@ try{
       if((cad&&it.cad===cad)||it.act===act||it.ribbon===act)return '  \u00b7  type '+it.name+(it.aliases.length?' or '+it.aliases[0]:'');
     }
     return '';
-  }
-  /* ================= __acad3dV129: the dock's tooltips and its names ================= */
-  var A3DR_MORE_ICON=ric('<circle cx="6" cy="12" r="1.3"/><circle cx="12" cy="12" r="1.3"/><circle cx="18" cy="12" r="1.3"/>');
-  function bimDockLabelsOn(){var p=bimLoadUIPanelPrefs();return p.dockLabels!==false;}
-  function bimSetDockLabels(on){
-    var p=bimLoadUIPanelPrefs();p.dockLabels=!!on;bimSaveUIPanelPrefs(p);
-    bimBuildDock();
-    a3dToast(on?'Tool names are shown on the dock':'The dock shows icons only; hover a tool for its name');
-  }
-  /* what a tooltip says: the tool's name, its keys, what to type for it, what it does, where it is */
-  function bimDockTipData(spec){
-    if(spec==='__search')return {name:'Search tools and commands',keys:[A3D_MODKEY,'K'],desc:'Or just start typing a command on the drawing',type:[],where:''};
-    if(spec.indexOf('__more:')===0)return {name:'More',keys:null,desc:'All '+spec.slice(7)+' tools',type:[],where:''};
-    var cat=bimCmdCatalog(),cad=BIM_ACT_CMD[spec],it=null,i;
-    for(i=0;i<cat.length;i++)if((cad&&cat[i].cad===cad)||cat[i].act===spec||cat[i].ribbon===spec){it=cat[i];break;}
-    if(a3drIsUnimpl(spec))return {name:a3drLabel(spec),keys:null,desc:'Not built yet',type:[],where:'',off:true};
-    if(!it)return {name:a3drLabel(spec),keys:null,desc:'',type:[],where:''};
-    return {name:a3drLabel(spec),keys:it.keys,desc:it.desc,type:[it.name].concat(it.aliases.slice(0,1)),where:it.where[0]||''};
-  }
-  function bimDockTipHtml(spec){
-    var d=bimDockTipData(spec),h='<div class="a3d-tiphd"><strong>'+bimEsc(d.name)+'</strong>',k;
-    if(d.keys){h+='<span class="a3d-tipkeys">';for(k=0;k<d.keys.length;k++)h+=(k?'<i>+</i>':'')+'<kbd>'+bimEsc(d.keys[k])+'</kbd>';h+='</span>';}
-    h+='</div>';
-    if(d.type.length)h+='<div class="a3d-tiptype">Type '+d.type.map(function(x){return '<b>'+bimEsc(x)+'</b>';}).join(' or ')+'</div>';
-    if(d.desc)h+='<div class="a3d-tipdesc'+(d.off?' off':'')+'">'+bimEsc(d.desc)+'</div>';
-    if(d.where)h+='<div class="a3d-tipwhere">'+bimEsc(d.where)+'</div>';
-    return h;
-  }
-  var A3D_TIP={el:null,timer:null,at:null};
-  function bimTipHide(){
-    if(A3D_TIP.timer){clearTimeout(A3D_TIP.timer);A3D_TIP.timer=null;}
-    if(A3D_TIP.el)A3D_TIP.el.classList.remove('show');
-    if(A3D_TIP.at){A3D_TIP.at.removeAttribute('aria-describedby');A3D_TIP.at=null;}
-  }
-  function bimTipShow(target){
-    var spec=target&&target.getAttribute('data-a3dtip');
-    if(!spec||!document.body.contains(target))return;
-    var el=A3D_TIP.el;
-    if(!el){el=A3D_TIP.el=document.createElement('div');el.id='a3d-tip';el.setAttribute('role','tooltip');document.body.appendChild(el);}
-    el.innerHTML=bimDockTipHtml(spec);
-    el.classList.add('show');
-    var r=target.getBoundingClientRect(),w=el.offsetWidth,hh=el.offsetHeight;
-    var left=Math.max(8,Math.min(window.innerWidth-w-8,r.left+r.width/2-w/2)),top=r.top-hh-10;
-    if(top<8)top=r.bottom+10;
-    el.style.left=Math.round(left)+'px';el.style.top=Math.round(top)+'px';
-    target.setAttribute('aria-describedby','a3d-tip');A3D_TIP.at=target;
-  }
-  /* after a short pause on hover (so a pointer passing over does not flash them), at once on focus */
-  function bimBindDockTips(host){
-    if(host.getAttribute('data-tips'))return;
-    host.setAttribute('data-tips','1');
-    host.addEventListener('mouseover',function(ev){
-      var tg=ev.target&&ev.target.closest?ev.target.closest('[data-a3dtip]'):null;
-      if(!tg||tg===A3D_TIP.at)return;
-      bimTipHide();
-      A3D_TIP.timer=setTimeout(function(){A3D_TIP.timer=null;bimTipShow(tg);},350);
-    });
-    host.addEventListener('mouseout',function(ev){
-      var tg=ev.target&&ev.target.closest?ev.target.closest('[data-a3dtip]'):null;
-      if(tg&&!(ev.relatedTarget&&tg.contains(ev.relatedTarget)))bimTipHide();
-    });
-    host.addEventListener('focusin',function(ev){
-      var tg=ev.target&&ev.target.closest?ev.target.closest('[data-a3dtip]'):null;
-      bimTipHide();if(tg&&tg.matches(':focus-visible'))bimTipShow(tg);
-    });
-    host.addEventListener('focusout',bimTipHide);
-    host.addEventListener('pointerdown',bimTipHide,true);
-    host.addEventListener('keydown',function(ev){if(ev.key==='Escape')bimTipHide();});
-    window.addEventListener('scroll',bimTipHide,true);
   }
   var A3DR_SEARCH_ICON=ric('<circle cx="11" cy="11" r="6"/><path d="M16 16l4 4"/>');
   /* Every action in every tab, with the tab and panel it came from so a result can say where it
@@ -30944,8 +30786,6 @@ try{
     /* Opens the V85 sheet through its own rail button, so there is one shortcuts sheet with one
        renderer rather than a second copy that could drift from the first. */
     shortcuts:function(){
-      var hp=document.getElementById('a3d-rupop');   /* __acad3dV129: already open, it stays open */
-      if(hp&&hp.classList.contains('open')&&hp.getAttribute('data-for')==='help')return;
       var b=document.querySelector('[data-a3drumenu="help"]');
       if(!b){a3dToast('The shortcuts sheet is not available here');return;}
       b.click();
@@ -30976,12 +30816,6 @@ try{
       return true;
     }catch(eT){console.warn('[BIM] Type-anywhere check failed',eT);return false;}
   };
-  /* __acad3dV129: the shortcuts panel and the dock's names */
-  window.__a3dDockTip=function(spec){return bimDockTipData(spec);};
-  window.__a3dDockTipShown=function(){var e=document.getElementById('a3d-tip');return e&&e.classList.contains('show')?e.textContent:null;};
-  window.__a3dDockLabels=function(on){if(on!==undefined)bimSetDockLabels(!!on);return bimDockLabelsOn();};
-  window.__acad3dV129='shortcutspanel,centred,categories,keysright,typingpoints,questionkey,docknames,grouplabels,'+
-    'docktooltips,tooltipdelay,tooltipfocus,morebutton,searchpill,appearancetoggle';
   window.__acad3dV128='commandcatalog,ribbonmerged,aliases,synonyms,keysfromsheet,ribbonplace,layeredmatch,fuzzy,typo,'+
     'keychordsearch,frequency,recent,unavailablereason,typeanywhere,tabcycle,shortcutmode,ariacombobox,docksearchunified,'+
     'ribbontooltips,shortcutsheetsearch';
