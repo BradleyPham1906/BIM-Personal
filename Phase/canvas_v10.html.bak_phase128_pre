@@ -18,7 +18,7 @@ body.light-theme{--bg:#f5f5f0;--text:#1a1a1a;}
 body.light-theme svg text{paint-order:stroke;stroke:var(--bg);stroke-width:5}
 
 /* ---- the command palette (Ctrl+K) ---- */
-#a3d-cmdpal{position:fixed;left:50%;top:88px;transform:translateX(-50%) translateY(-10px);width:min(680px,calc(100vw - 32px));z-index:150;background:rgba(20,24,31,.96);color:#fff;border:1px solid rgba(196,211,237,.2);border-radius:18px;box-shadow:0 24px 90px rgba(0,0,0,.44);padding:10px;opacity:0;pointer-events:none;transition:opacity .14s,transform .14s;font-family:Inter,Work Sans,system-ui,sans-serif}
+#a3d-cmdpal{position:fixed;left:50%;top:88px;transform:translateX(-50%) translateY(-10px);width:min(430px,calc(100vw - 32px));z-index:150;background:rgba(20,24,31,.96);color:#fff;border:1px solid rgba(196,211,237,.2);border-radius:18px;box-shadow:0 24px 90px rgba(0,0,0,.44);padding:10px;opacity:0;pointer-events:none;transition:opacity .14s,transform .14s;font-family:Inter,Work Sans,system-ui,sans-serif}
 #a3d-cmdpal.show{opacity:1;pointer-events:auto;transform:translateX(-50%) translateY(0)}
 #a3d-cmdpal .a3d-cmdinput{display:flex;align-items:center;gap:9px;background:rgba(255,255,255,.06);border:1px solid rgba(196,211,237,.15);border-radius:12px;padding:9px 11px;margin-bottom:8px}
 #a3d-cmdpal input{all:unset;flex:1;font-size:14px;color:#fff}
@@ -30,28 +30,6 @@ body.light-theme #a3d-cmdpal{color:#202124}
 body.light-theme #a3d-cmdpal .a3d-cmdinput{background:rgba(0,0,0,.04);border-color:rgba(0,0,0,.08)}
 body.light-theme #a3d-cmdpal input{color:#202124}
 body.light-theme #a3d-cmdpal .a3d-cmdrow{color:#30343b}
-/* __acad3dV128: the command search's rows -- name, what it does, where it is, its alias and keys */
-#a3d-cmdpal .a3d-cmdresults{max-height:min(52vh,480px);overflow-y:auto;overscroll-behavior:contain}
-#a3d-cmdpal .a3d-cmdrow{gap:12px;padding:7px 10px}
-#a3d-cmdpal .a3d-cmdmain{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-#a3d-cmdpal .a3d-cmddesc{opacity:.5;font-weight:500}
-#a3d-cmdpal .a3d-cmdhl{color:#56ffa6;font-weight:850}
-#a3d-cmdpal .a3d-cmdmeta{display:flex;align-items:center;gap:8px;flex:0 0 auto;font-weight:600}
-#a3d-cmdpal .a3d-cmdwhere{font-size:10.5px;color:rgba(196,211,237,.5);max-width:190px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-#a3d-cmdpal .a3d-cmdoff{font-size:10.5px;color:#e8a87c}
-#a3d-cmdpal .a3d-cmdrowoff .a3d-cmdname{opacity:.6}
-#a3d-cmdpal kbd{font:inherit;font-size:10.5px;font-weight:700;padding:1px 5px;border-radius:4px;border:1px solid rgba(196,211,237,.28);color:rgba(196,211,237,.85);background:rgba(255,255,255,.04)}
-#a3d-cmdpal .a3d-cmdkbd i{font-style:normal;opacity:.5;margin:0 2px;font-size:10px}
-#a3d-cmdpal .a3d-cmdhd{font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:rgba(196,211,237,.45);padding:8px 10px 3px;font-weight:800}
-#a3d-cmdpal .a3d-cmdnone{cursor:default;font-weight:600}
-#a3d-cmdpal .a3d-cmdfoot{display:flex;gap:14px;flex-wrap:wrap;align-items:center;padding:8px 6px 2px;border-top:1px solid rgba(196,211,237,.1);margin-top:6px;font-size:10.5px;color:rgba(196,211,237,.5)}
-#a3d-cmdpal .a3d-cmdfoot kbd{margin-right:2px}
-#a3d-cmdpal .a3d-cmdcount{margin-left:auto}
-body.light-theme #a3d-cmdpal .a3d-cmdhl{color:#0f8a4c}
-body.light-theme #a3d-cmdpal .a3d-cmdwhere,body.light-theme #a3d-cmdpal .a3d-cmdhd,body.light-theme #a3d-cmdpal .a3d-cmdfoot{color:rgba(32,33,36,.55)}
-body.light-theme #a3d-cmdpal kbd{color:#30343b;border-color:rgba(0,0,0,.18);background:rgba(0,0,0,.03)}
-body.light-theme #a3d-cmdpal .a3d-cmdoff{color:#b45a1c}
-body.light-theme #a3d-cmdpal .a3d-cmdfoot{border-top-color:rgba(0,0,0,.08)}
 
 /* ---- the left shell: the rail, and the panel it opens ---- */
 #a3d-leftpanel .a3d-tabbody{display:flex;flex-direction:column;min-height:0;flex:1;min-width:242px}
@@ -249,6 +227,10 @@ body.light-theme #acad3d{color-scheme:light}
 .a3d-dockitem svg{width:15px;height:15px;flex:0 0 auto;color:#9aa3ad}
 .a3d-dockhead{padding-bottom:2px;border-bottom:1px solid #30353c;margin-bottom:2px}
 .a3d-discsel{background:#1c2024;border:1px solid #3a4048;color:#dfe4ea;border-radius:5px;font-size:11px;padding:3px 6px;font-family:inherit;max-width:150px}
+.a3d-searchpop{min-width:290px;padding:7px}
+#a3d-dsearchin{width:100%;box-sizing:border-box;background:#1c2024;border:1px solid #3a4048;color:#dfe4ea;border-radius:5px;padding:6px 8px;font-size:12px;font-family:inherit;margin-bottom:5px}
+#a3d-dsearchres{max-height:46vh;overflow:auto}
+.a3d-dockwhere{margin-left:auto;padding-left:12px;color:#7f858c;font-size:10px}
 #a3d-dock.a3d-hide-panel{display:none}
 /* __acad3dV67: the BIM status bar -- a 26px strip carrying the workspace's own state. It is the
        third flex child of #acad3d (toolbar / body / status), so it spans the work area exactly. */
@@ -462,7 +444,7 @@ body.light-theme #acad3d{color-scheme:light}
 .a3d-pval input[type=text],.a3d-pval input[type=number],.a3d-pval select{width:100%;background:#1c2024;border:1px solid #3a4048;color:#e6eaef;border-radius:4px;padding:4px 6px;font-size:11px;font-family:inherit}
 .a3d-pval input[type=checkbox]{margin:0}
 .a3d-pstatic{font-size:11px;color:#c3cad2}
-.a3d-prow.ro .a3d-pstatic{color:#7d8590}.a3d-pval{text-align:right}.a3d-pval select,.a3d-pval input[type=text]{text-align:left}.a3d-pval input[type=number]{text-align:right}.a3d-prow.ro{min-height:22px}.a3d-prow.ro .a3d-plabel{color:#868f99}.a3d-assets{padding:6px 8px 14px;font:11px/1.35 Inter,system-ui,sans-serif;color:#c3cad2}.a3d-asnote{padding:6px 8px;margin-bottom:6px;border-radius:5px;background:#22262b;color:#9aa3ad;font-size:10.5px}.a3d-asgrp{display:flex;align-items:center;justify-content:space-between;background:#262b31;border-radius:5px;padding:6px 9px;margin:8px 0 4px;font-size:10.5px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;color:#aeb8c2}.a3d-assub{font-weight:400;text-transform:none;letter-spacing:0;color:#7d8590}.a3d-asrow{display:flex;width:100%;align-items:center;justify-content:space-between;gap:8px;background:transparent;border:1px solid transparent;border-radius:5px;padding:6px 8px;color:#d5dae0;cursor:pointer;font:inherit;text-align:left}.a3d-asrow:hover{background:#2f353c;border-color:#3a4048}.a3d-asrow.off{opacity:.45;cursor:default}.a3d-asrow.off:hover{background:transparent;border-color:transparent}.a3d-asnm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.a3d-asmeta{flex:0 0 auto;color:#7d8590;font-size:10px}.a3d-asempty{padding:8px;color:#7d8590;font-size:10.5px}#a3d-railutil{display:flex;flex-direction:column;align-items:center;gap:2px;margin-bottom:6px}.a3d-ru{width:30px;height:30px;display:grid;place-items:center;background:transparent;border:1px solid transparent;border-radius:7px;color:#9aa3ad;cursor:pointer;padding:0}.a3d-ru svg{width:17px;height:17px}.a3d-ru:hover{background:rgba(255,255,255,.09);color:#fff}.a3d-ru.on{background:rgba(255,255,255,.12);color:#fff}#a3d-rupop{position:fixed;z-index:10000;display:none;min-width:194px;background:#22262b;border:1px solid #3a4048;border-radius:9px;padding:6px;box-shadow:0 10px 30px rgba(0,0,0,.5);font:12px/1.35 Inter,system-ui,sans-serif;color:#d5dae0}#a3d-rupop.open{display:block}.a3d-ruhd{font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#8b949e;padding:4px 8px 6px}.a3d-ruitem{display:block;width:100%;text-align:left;background:transparent;border:0;border-radius:6px;padding:7px 9px;color:#d5dae0;cursor:pointer;font:inherit}.a3d-ruitem:hover{background:#2f353c;color:#fff}.a3d-ruitem.on{background:#2c477d;color:#e4efff}.a3d-rusep{height:1px;background:#343a41;margin:5px 4px}.a3d-rurow{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 9px;color:#d5dae0}.a3d-rurow input[type=number]{width:62px;background:#1c2024;border:1px solid #3a4048;color:#e6eaef;border-radius:4px;padding:3px 5px;font:inherit}.a3d-rukeys{min-width:336px;max-height:64vh;overflow:auto;padding:0 2px 2px}.a3d-rkgrp{font-size:9.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#8b949e;padding:9px 8px 4px}.a3d-rkrow{display:flex;align-items:baseline;gap:10px;padding:4px 8px;border-radius:5px}.a3d-rkrow:hover{background:#2a2f35}.a3d-rkkeys{flex:0 0 96px;display:flex;align-items:center;gap:3px;justify-content:flex-end}.a3d-rkkeys kbd{font:600 10px/1 Inter,system-ui,sans-serif;color:#c7ced6;background:#1c2024;border:1px solid #3a4048;border-bottom-width:2px;border-radius:4px;padding:3px 5px;white-space:nowrap}.a3d-rkplus{color:#6e7781;font-size:9px}.a3d-rklab{flex:1;color:#c3cad2;font-size:11.5px;line-height:1.35}.a3d-rkfind{display:block;box-sizing:border-box;width:calc(100% - 8px);margin:0 4px 4px;background:#1c2024;border:1px solid #3a4048;color:#e6eaef;border-radius:6px;padding:6px 8px;font:inherit;font-size:11.5px}.a3d-rkfind:focus{outline:none;border-color:#4ea1ff}.a3d-rkempty{padding:10px 8px;color:#7d8590;font-size:11px}.a3d-rukeys [hidden]{display:none!important}.a3d-rknote{border-top:1px solid #343a41;margin:6px 4px 0;padding:7px 4px 3px;color:#8b949e;font-size:10.5px;line-height:1.4}.a3d-rknote kbd{font:600 9.5px/1 Inter,system-ui,sans-serif;color:#c7ced6;background:#1c2024;border:1px solid #3a4048;border-radius:3px;padding:2px 4px}body.light-theme .a3d-rkfind{background:#fff;border-color:#c9ced4;color:#222}body.light-theme .a3d-rkkeys kbd{color:#333;background:#f2f3f5;border-color:#c9ced4}body.light-theme .a3d-rklab{color:#333}
+.a3d-prow.ro .a3d-pstatic{color:#7d8590}.a3d-pval{text-align:right}.a3d-pval select,.a3d-pval input[type=text]{text-align:left}.a3d-pval input[type=number]{text-align:right}.a3d-prow.ro{min-height:22px}.a3d-prow.ro .a3d-plabel{color:#868f99}.a3d-assets{padding:6px 8px 14px;font:11px/1.35 Inter,system-ui,sans-serif;color:#c3cad2}.a3d-asnote{padding:6px 8px;margin-bottom:6px;border-radius:5px;background:#22262b;color:#9aa3ad;font-size:10.5px}.a3d-asgrp{display:flex;align-items:center;justify-content:space-between;background:#262b31;border-radius:5px;padding:6px 9px;margin:8px 0 4px;font-size:10.5px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;color:#aeb8c2}.a3d-assub{font-weight:400;text-transform:none;letter-spacing:0;color:#7d8590}.a3d-asrow{display:flex;width:100%;align-items:center;justify-content:space-between;gap:8px;background:transparent;border:1px solid transparent;border-radius:5px;padding:6px 8px;color:#d5dae0;cursor:pointer;font:inherit;text-align:left}.a3d-asrow:hover{background:#2f353c;border-color:#3a4048}.a3d-asrow.off{opacity:.45;cursor:default}.a3d-asrow.off:hover{background:transparent;border-color:transparent}.a3d-asnm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.a3d-asmeta{flex:0 0 auto;color:#7d8590;font-size:10px}.a3d-asempty{padding:8px;color:#7d8590;font-size:10.5px}#a3d-railutil{display:flex;flex-direction:column;align-items:center;gap:2px;margin-bottom:6px}.a3d-ru{width:30px;height:30px;display:grid;place-items:center;background:transparent;border:1px solid transparent;border-radius:7px;color:#9aa3ad;cursor:pointer;padding:0}.a3d-ru svg{width:17px;height:17px}.a3d-ru:hover{background:rgba(255,255,255,.09);color:#fff}.a3d-ru.on{background:rgba(255,255,255,.12);color:#fff}#a3d-rupop{position:fixed;z-index:10000;display:none;min-width:194px;background:#22262b;border:1px solid #3a4048;border-radius:9px;padding:6px;box-shadow:0 10px 30px rgba(0,0,0,.5);font:12px/1.35 Inter,system-ui,sans-serif;color:#d5dae0}#a3d-rupop.open{display:block}.a3d-ruhd{font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#8b949e;padding:4px 8px 6px}.a3d-ruitem{display:block;width:100%;text-align:left;background:transparent;border:0;border-radius:6px;padding:7px 9px;color:#d5dae0;cursor:pointer;font:inherit}.a3d-ruitem:hover{background:#2f353c;color:#fff}.a3d-ruitem.on{background:#2c477d;color:#e4efff}.a3d-rusep{height:1px;background:#343a41;margin:5px 4px}.a3d-rurow{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 9px;color:#d5dae0}.a3d-rurow input[type=number]{width:62px;background:#1c2024;border:1px solid #3a4048;color:#e6eaef;border-radius:4px;padding:3px 5px;font:inherit}.a3d-rukeys{min-width:336px;max-height:64vh;overflow:auto;padding:0 2px 2px}.a3d-rkgrp{font-size:9.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#8b949e;padding:9px 8px 4px}.a3d-rkrow{display:flex;align-items:baseline;gap:10px;padding:4px 8px;border-radius:5px}.a3d-rkrow:hover{background:#2a2f35}.a3d-rkkeys{flex:0 0 96px;display:flex;align-items:center;gap:3px;justify-content:flex-end}.a3d-rkkeys kbd{font:600 10px/1 Inter,system-ui,sans-serif;color:#c7ced6;background:#1c2024;border:1px solid #3a4048;border-bottom-width:2px;border-radius:4px;padding:3px 5px;white-space:nowrap}.a3d-rkplus{color:#6e7781;font-size:9px}.a3d-rklab{flex:1;color:#c3cad2;font-size:11.5px;line-height:1.35}body.light-theme .a3d-rkkeys kbd{color:#333;background:#f2f3f5;border-color:#c9ced4}body.light-theme .a3d-rklab{color:#333}
 .a3d-papply{display:flex;justify-content:flex-end;padding:7px 0 3px;border-top:1px solid #343a41;margin-top:7px}
 .a3d-papply button{background:#2f5d8a;border:1px solid #3f75a8;color:#e6eef6;border-radius:3px;font-size:10.5px;padding:3px 14px;cursor:pointer;font-family:inherit}
 .a3d-bsearch{padding:5px 7px;border-bottom:1px solid #30353c;flex:0 0 auto}
@@ -789,91 +771,38 @@ body.a3d-tree-docked #a3d-leftpanel > .a3d-tree .a3d-palhd .a3d-palbtns{flex-wra
   var REGISTRY=[];
   CADCMDS.forEach(function(c){ REGISTRY.push({name:c[0],aliases:c[1],desc:c[3],cad:c[2]}); });
 
-  /* __acad3dV128: the command search. The engine owns the catalogue (every command and every ribbon
-     tool, window.__a3dCommandSearch) and runs an entry (window.__a3dCommandRun); this draws it. */
-  window.__wsRegistry=REGISTRY;
   function buildPalette(){
     var pal=document.createElement('div'); pal.id='a3d-cmdpal';
-    pal.setAttribute('role','dialog'); pal.setAttribute('aria-label','Command search');
-    pal.innerHTML='<div class="a3d-cmdinput"><span aria-hidden="true">&gt;_</span><input placeholder="Search commands, tools and shortcuts \u2014 or type a command: L, WA, TRIM" aria-label="Search commands, tools and shortcuts" role="combobox" aria-expanded="true" aria-controls="a3d-cmdlist" aria-autocomplete="list" autocomplete="off" spellcheck="false"></div>'+
-      '<div class="a3d-cmdresults" id="a3d-cmdlist" role="listbox" aria-label="Commands"></div>'+
-      '<div class="a3d-cmdfoot"><span><kbd>\u2191</kbd><kbd>\u2193</kbd> or <kbd>Tab</kbd> choose</span><span><kbd>Enter</kbd> run</span>'+
-      '<span><kbd>?</kbd> keyboard shortcuts</span><span><kbd>Esc</kbd> close</span><span class="a3d-cmdcount"></span></div>';
+    pal.innerHTML='<div class="a3d-cmdinput"><span>&gt;_</span><input placeholder="Type a command: LINE, PLINE, REC, CIRCLE\u2026" aria-label="Type a command"></div><div class="a3d-cmdresults"></div>';
     document.body.appendChild(pal);
-    var input=pal.querySelector('input'), results=pal.querySelector('.a3d-cmdresults'), count=pal.querySelector('.a3d-cmdcount');
+    var input=pal.querySelector('input'), results=pal.querySelector('.a3d-cmdresults');
     var rows=[], active=0;
-    function escH(s){return String(s==null?'':s).replace(/[&<>"]/g,function(ch){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch];});}
-    function nameHtml(c){
-      var n=c.name,on={},h='',i;
-      if(!c.hl||!c.hl.length)return escH(n);
-      for(i=0;i<c.hl.length;i++)on[c.hl[i]]=1;
-      for(i=0;i<n.length;i++)h+=on[i]?'<b class="a3d-cmdhl">'+escH(n.charAt(i))+'</b>':escH(n.charAt(i));
-      return h;
+    function score(c,q){
+      var Q=q.toUpperCase();
+      if(c.name.toUpperCase()===Q) return 0;
+      if(c.aliases.some(function(a){return a.toUpperCase()===Q;})) return 1;
+      if(c.name.toUpperCase().indexOf(Q)===0) return 2;
+      if(c.name.toUpperCase().indexOf(Q)>=0) return 3;
+      if((c.desc||'').toUpperCase().indexOf(Q)>=0) return 4;
+      return 99;
     }
-    function kbdHtml(k,alt){
-      return (k&&k.length)?'<span class="a3d-cmdkbd">'+k.map(function(x){return '<kbd>'+escH(x)+'</kbd>';}).join(alt?'<i>/</i>':'<i>+</i>')+'</span>':'';
-    }
-    function rowHtml(c,i){
-      var meta='';
-      if(c.off)meta+='<span class="a3d-cmdoff">'+escH(c.off)+'</span>';
-      else if(c.where&&c.where.length)meta+='<span class="a3d-cmdwhere" title="On the ribbon: '+escH(c.where.join('; '))+'">'+escH(c.where[0])+(c.where.length>1?' +'+(c.where.length-1):'')+'</span>';
-      if(c.aliases&&c.aliases.length)meta+='<span class="a3d-cmdkey" title="Also typed as '+escH(c.aliases.join(', '))+'">'+escH(c.aliases[0])+'</span>';
-      meta+=kbdHtml(c.keys);
-      return '<div class="a3d-cmdrow'+(c.off?' a3d-cmdrowoff':'')+'" role="option" id="a3d-cmdopt-'+i+'" aria-selected="false" data-idx="'+i+'">'+
-        '<span class="a3d-cmdmain"><span class="a3d-cmdname">'+nameHtml(c)+'</span><span class="a3d-cmddesc"> \u2014 '+escH(c.desc)+'</span></span>'+
-        '<span class="a3d-cmdmeta">'+meta+'</span></div>';
-    }
-    /* ? -- the keyboard shortcuts, searched by what they do or by the key itself */
-    function keyRows(q){
-      var g=window.__a3dShortcuts?window.__a3dShortcuts():[],out=[],norm=function(s){return String(s).toLowerCase().replace(/cmd|ctrl|control|meta|\u2318/g,'mod');};
-      var words=norm(q).split(/\s+/).filter(function(w){return !!w;});
-      g.forEach(function(grp){grp.rows.forEach(function(r){
-        var hay=norm(r.keys.join(' ')+' '+r.keys.join('+')+' '+r.label+' '+grp.grp);
-        if(words.every(function(w){return hay.indexOf(w)>=0;}))out.push({kind:'key',keys:r.keys,alt:!!r.alt,desc:r.label,grp:grp.grp,cmd:r.cmd||null});
-      });});
-      return out;
-    }
-    function keyRowHtml(c,i){
-      return '<div class="a3d-cmdrow a3d-cmdkeyrow" role="option" id="a3d-cmdopt-'+i+'" aria-selected="false" data-idx="'+i+'">'+
-        '<span class="a3d-cmdmain"><span class="a3d-cmdname">'+kbdHtml(c.keys,c.alt)+'</span><span class="a3d-cmddesc"> \u2014 '+escH(c.desc)+'</span></span>'+
-        '<span class="a3d-cmdmeta"><span class="a3d-cmdwhere">'+escH(c.grp)+'</span>'+(c.cmd?'<span class="a3d-cmdkey">'+escH(c.cmd)+'</span>':'')+'</span></div>';
+    /* __acad3dV86: the palette offers only commands that RUN: a shorter list of working commands
+       beats a long list of dead ones. Before the engine has loaded, nothing runs. */
+    function pool(){
+      if(!window.__a3dCmdSupported)return [];
+      return REGISTRY.filter(function(c){return window.__a3dCmdSupported(c.cad);});
     }
     function draw(){
-      var q=input.value.trim(),h='',i;
-      if(q.charAt(0)==='?'){
-        rows=keyRows(q.slice(1).trim());
-        if(rows.length)h+='<div class="a3d-cmdhd">Keyboard shortcuts</div>';
-        for(i=0;i<rows.length;i++)h+=keyRowHtml(rows[i],i);
-        count.textContent=rows.length+' shortcut'+(rows.length===1?'':'s');
-        if(!rows.length)h='<div class="a3d-cmdrow a3d-cmdnone">No matching shortcut</div>';
-      }else{
-        var res=window.__a3dCommandSearch?window.__a3dCommandSearch(q,q?80:0):[];
-        var rec=(!q&&window.__a3dCommandRecent)?window.__a3dCommandRecent(5):[],seen={},typoAt=-1;
-        rec.forEach(function(c){seen[c.id]=1;});
-        var rest=res.filter(function(c){return !seen[c.id];});
-        rows=rec.concat(rest);
-        for(i=0;i<rows.length;i++){
-          if(i===0&&rec.length)h+='<div class="a3d-cmdhd">Recently used</div>';
-          if(i===rec.length&&rec.length)h+='<div class="a3d-cmdhd">All commands</div>';
-          if(rows[i].typo&&typoAt<0){typoAt=i;h+='<div class="a3d-cmdhd">Did you mean</div>';}
-          h+=rowHtml(rows[i],i);
-        }
-        count.textContent=q?(res.length+' match'+(res.length===1?'':'es')):(res.length+' commands');
-        if(!rows.length)h='<div class="a3d-cmdrow a3d-cmdnone">No matching command \u2014 try fewer letters, or ? for the keyboard shortcuts</div>';
-      }
-      results.innerHTML=h;
+      var q=input.value.trim(),P=pool();
+      rows=!q?P.slice(0,14):P.map(function(c){return {c:c,s:score(c,q)};}).filter(function(r){return r.s<99;}).sort(function(a,b){return a.s-b.s;}).slice(0,14).map(function(r){return r.c;});
       active=0;
-      highlight();
+      results.innerHTML=rows.map(function(c,i){
+        var key=c.aliases.length?c.aliases[0]:'';
+        return '<div class="a3d-cmdrow'+(i===0?' active':'')+'" data-idx="'+i+'"><span>'+c.name+' <span style="opacity:.45;font-weight:500">\u2014 '+c.desc+'</span></span><span class="a3d-cmdkey">'+key+'</span></div>';
+      }).join('')||'<div class="a3d-cmdrow">No matching command</div>';
     }
     function highlight(){
-      var els=results.querySelectorAll('.a3d-cmdrow[data-idx]'),i,cur=null;
-      for(i=0;i<els.length;i++){
-        var on=(+els[i].getAttribute('data-idx')===active);
-        els[i].classList.toggle('active',on);els[i].setAttribute('aria-selected',on?'true':'false');
-        if(on)cur=els[i];
-      }
-      if(cur){input.setAttribute('aria-activedescendant',cur.id);try{cur.scrollIntoView({block:'nearest'});}catch(eS){}}
-      else input.removeAttribute('aria-activedescendant');
+      Array.prototype.forEach.call(results.children,function(el,i){el.classList.toggle('active',i===active);});
     }
     /* __acad3dV86: hand the keyboard back to the drawing.
 
@@ -890,21 +819,14 @@ body.a3d-tree-docked #a3d-leftpanel > .a3d-tree .a3d-palhd .a3d-palbtns{flex-wra
     function runIdx(i){
       var c=rows[i]; if(!c) return;
       closePal();
-      if(c.kind==='key'){
-        if(c.cmd&&window.__a3dCommandRun){if(!window.__a3dCommandRun('cmd:'+c.cmd)&&window.__a3dToast)window.__a3dToast(c.cmd+' is not available here');}
-        else if(window.__a3dToast)window.__a3dToast('Press '+c.keys.join(c.alt?' or ':'+')+' on the drawing: '+c.desc);
-        return;
-      }
       /* A command that cannot run says so, instead of closing the palette over nothing. */
-      var ok=window.__a3dCommandRun?window.__a3dCommandRun(c.id):runCadAct(c.cad);
-      if(!ok&&window.__a3dToast)window.__a3dToast(c.name+' is not available here'+(c.off?': '+c.off:''));   /* __acad3dV120 */
+      var ok=runCadAct(c.cad);
+      if(!ok&&window.__a3dToast)window.__a3dToast(c.name+' is not available here');   /* __acad3dV120 */
     }
     input.addEventListener('input',draw);
     input.addEventListener('keydown',function(e){
-      var n=rows.length;
-      if(e.key==='ArrowDown'){active=Math.min(n-1,active+1);highlight();e.preventDefault();}
+      if(e.key==='ArrowDown'){active=Math.min(rows.length-1,active+1);highlight();e.preventDefault();}
       else if(e.key==='ArrowUp'){active=Math.max(0,active-1);highlight();e.preventDefault();}
-      else if(e.key==='Tab'){if(n){active=(active+(e.shiftKey?n-1:1))%n;highlight();}e.preventDefault();}   /* AutoCAD: Tab cycles */
       else if(e.key==='Enter'){runIdx(active);e.preventDefault();e.stopPropagation();}
       else if(e.key==='Escape'){closePal();}
     });
@@ -916,26 +838,17 @@ body.a3d-tree-docked #a3d-leftpanel > .a3d-tree .a3d-palhd .a3d-palbtns{flex-wra
     draw();
     /* __acad3dV113: Ctrl+K opens the palette; Escape, or a pointer outside it, closes it.
        window.openPalette and window.closePalette are what the suites drive. */
-    function openPal(initial){
+    function openPal(){
       pal.classList.add('show');
-      input.value=(typeof initial==='string')?initial:'';
+      input.value='';
       draw();
-      /* the caret goes in at once, so the letters typed after the first land in the search too */
-      try{input.focus();input.setSelectionRange(input.value.length,input.value.length);}catch(eO){}
-      setTimeout(function(){try{if(pal.classList.contains('show')&&document.activeElement!==input)input.focus();}catch(eO2){}},20);
+      setTimeout(function(){try{input.focus();}catch(eO){}},20);
     }
     window.openPalette=openPal;
     window.closePalette=closePal;
     document.addEventListener('keydown',function(e){
       if((e.metaKey||e.ctrlKey)&&e.key&&e.key.toLowerCase()==='k'){e.preventDefault();openPal();return;}
-      if(e.key==='Escape'&&pal.classList.contains('show')){closePal();return;}
-      /* __acad3dV128: AutoCAD's command line takes a letter typed on the drawing. The engine's
-         key chain has already run (window, capture) and has not claimed the key; the engine says
-         whether anything else is listening for it -- a tool, a dialog, a held face -- and only
-         when nothing is does the letter open the search. */
-      if(!pal.classList.contains('show')&&!e.defaultPrevented&&!e.isComposing&&window.__a3dTypeAnywhere&&window.__a3dTypeAnywhere(e)){
-        e.preventDefault();openPal(e.key);
-      }
+      if(e.key==='Escape'&&pal.classList.contains('show'))closePal();
     });
     document.addEventListener('pointerdown',function(e){
       if(!pal.classList.contains('show'))return;
@@ -14384,20 +14297,19 @@ try{
       {keys:['Arrows'],k:null,label:'Nudge the selected object'}
     ]},
     {grp:'Snaps',rows:[
-      {keys:['F3'],k:'F3',label:'Object snap on or off',cmd:'OSNAP'},   /* __acad3dV128: cmd -- the command a chord runs */
-      {keys:['F8'],k:'F8',label:'Ortho on or off',cmd:'ORTHO'},
-      {keys:['F9'],k:'F9',label:'Grid snap on or off',cmd:'GRID'}
+      {keys:['F3'],k:'F3',label:'Object snap on or off'},
+      {keys:['F8'],k:'F8',label:'Ortho on or off'},
+      {keys:['F9'],k:'F9',label:'Grid snap on or off'}
     ]},
     {grp:'Editing',rows:[
-      {keys:[A3D_MODKEY,'Z'],k:'z',mod:true,label:'Undo',cmd:'UNDO'},
-      {keys:[A3D_MODKEY,'Y'],k:'y',mod:true,label:'Redo',cmd:'REDO'},
-      {keys:[A3D_MODKEY,'D'],k:'d',mod:true,label:'Duplicate the selection',cmd:'COPY'},
-      {keys:['Delete'],k:null,label:'Delete the selection',cmd:'ERASE'}
+      {keys:[A3D_MODKEY,'Z'],k:'z',mod:true,label:'Undo'},
+      {keys:[A3D_MODKEY,'Y'],k:'y',mod:true,label:'Redo'},
+      {keys:[A3D_MODKEY,'D'],k:'d',mod:true,label:'Duplicate the selection'},
+      {keys:['Delete'],k:null,label:'Delete the selection'}
     ]},
     {grp:'Project',rows:[
-      {keys:[A3D_MODKEY,'S'],k:null,label:'Export the project file',cmd:'SAVE'},
-      {keys:[A3D_MODKEY,'O'],k:null,label:'Open a project file',cmd:'OPEN'},   /* __acad3dV128: bound since V115, never listed */
-      {keys:[A3D_MODKEY,'K'],k:null,label:'Command search, or just start typing a command'}
+      {keys:[A3D_MODKEY,'S'],k:null,label:'Export the project file'},
+      {keys:[A3D_MODKEY,'K'],k:null,label:'Command palette'}
     ]}
   ];
   /* __acad3dV122: the sheet's groups -- A3D_KEYS, and the keys of the Pages display and of Present,
@@ -14412,16 +14324,14 @@ try{
       {grp:'Pages',rows:rows(A3D_PAGEVIEW_KEYS)},{grp:'Presenting',rows:rows(A3D_SHOW_KEYS)}]);
   }
   function bimShortcutsHtml(){
-    var h='<div class="a3d-ruhd">Keyboard shortcuts</div>'+
-      '<input type="search" class="a3d-rkfind" placeholder="Search: what it does, or a key (Ctrl+Z, F8)" aria-label="Search the keyboard shortcuts" autocomplete="off" spellcheck="false">'+   /* __acad3dV128 */
-      '<div class="a3d-rukeys">',g,r,i,j,k;
+    var h='<div class="a3d-ruhd">Keyboard shortcuts</div><div class="a3d-rukeys">',g,r,i,j,k;
     var groups=bimShortcutGroups();   /* __acad3dV122 */
     for(i=0;i<groups.length;i++){
       g=groups[i];
       h+='<div class="a3d-rkgrp">'+bimEsc(g.grp)+'</div>';
       for(j=0;j<g.rows.length;j++){
         r=g.rows[j];
-        h+='<div class="a3d-rkrow" data-rkhay="'+bimEsc((r.keys.join(' ')+' '+r.keys.join('+')+' '+r.label+' '+g.grp).toLowerCase())+'"><span class="a3d-rkkeys">';
+        h+='<div class="a3d-rkrow"><span class="a3d-rkkeys">';
         for(k=0;k<r.keys.length;k++){
           if(k)h+='<span class="a3d-rkplus">'+(r.alt?'/':'+')+'</span>';   /* __acad3dV122: a slash between alternatives */
           h+='<kbd>'+bimEsc(r.keys[k])+'</kbd>';
@@ -14429,8 +14339,7 @@ try{
         h+='</span><span class="a3d-rklab">'+bimEsc(r.label)+'</span></div>';
       }
     }
-    return h+'<div class="a3d-rkempty" hidden>No shortcut matches</div></div>'+
-      '<div class="a3d-rknote">Every command, its alias and its keys: <kbd>'+bimEsc(A3D_MODKEY)+'</kbd>+<kbd>K</kbd>, or start typing a command on the drawing.</div>';
+    return h+'</div>';
   }
   function bimRailStackHtml(){
     var h='<div id="a3d-railutil">',i;
@@ -14470,16 +14379,6 @@ try{
       p.addEventListener('change',function(ev){
         var f=ev.target&&ev.target.closest?ev.target.closest('[data-a3druset]'):null;
         if(f)bimRailSet(f.getAttribute('data-a3druset'),f);
-      });
-      /* __acad3dV128: the shortcut sheet's search box */
-      p.addEventListener('input',function(ev){
-        if(ev.target&&ev.target.classList&&ev.target.classList.contains('a3d-rkfind'))bimFilterShortcuts(p,ev.target.value);
-      });
-      p.addEventListener('keydown',function(ev){
-        if(!(ev.target&&ev.target.classList&&ev.target.classList.contains('a3d-rkfind'))||ev.key!=='Escape')return;
-        ev.preventDefault();ev.stopPropagation();
-        if(ev.target.value){ev.target.value='';bimFilterShortcuts(p,'');}
-        else{bimCloseRailPop();try{ev.target.blur();}catch(eBl){}}
       });
     }
     return p;
@@ -14528,22 +14427,6 @@ try{
     return '<div class="a3d-ruhd">'+bimEsc(id)+'</div>';
   }
   function bimPresentModeOn(){return !!A3D.presentMode;}
-  /* __acad3dV128: the sheet's search -- a row stays when every word typed is in its keys, its
-     label or its group; Ctrl and Cmd read as one */
-  function bimFilterShortcuts(p,q){
-    var norm=function(s){return String(s).toLowerCase().replace(/cmd|ctrl|control|meta|\u2318/g,'mod');};
-    var words=norm(q).split(/\s+/).filter(function(w){return !!w;}),kids=p.querySelectorAll('.a3d-rukeys > *'),i,grp=null,any=false,shown=0;
-    for(i=0;i<kids.length;i++){
-      var e=kids[i];
-      if(e.classList.contains('a3d-rkgrp')){if(grp)grp.hidden=!any;grp=e;any=false;continue;}
-      if(!e.classList.contains('a3d-rkrow'))continue;
-      var hay=norm(e.getAttribute('data-rkhay')||''),ok=words.every(function(w){return hay.indexOf(w)>=0;});
-      e.hidden=!ok;if(ok){any=true;shown++;}
-    }
-    if(grp)grp.hidden=!any;
-    var em=p.querySelector('.a3d-rkempty');if(em)em.hidden=shown>0;
-    return shown;
-  }
   function bimOpenRailMenu(id,btn){
     var p=bimRailPop();
     var already=p.classList.contains('open')&&p.getAttribute('data-for')===id;
@@ -14562,8 +14445,6 @@ try{
     if(top<8)top=8;
     p.style.left=Math.round(left)+'px';
     p.style.top=Math.round(top)+'px';
-    var rkf=id==='help'?p.querySelector('.a3d-rkfind'):null;   /* __acad3dV128: ready to type into */
-    if(rkf){try{rkf.focus({preventScroll:true});}catch(eFo){}}
     return true;
   }
   function bimRailSet(spec,field){
@@ -29027,7 +28908,7 @@ try{
     var host=document.getElementById('a3d-dock');
     if(!host)return false;
     var rows=a3drDockRows(a3drDockTabs(A3D_DISC_CUR));
-    var h='<div class="a3d-dockbody">',pops='',r,g,tab,prim,i,grps,gi,ai,act,cat=bimCmdCatalog();   /* __acad3dV128 */
+    var h='<div class="a3d-dockbody">',pops='',r,g,tab,prim,i,grps,gi,ai,act;
     /* The discipline group leads the dock: it is what decides which of the others are here. */
     h+='<div class="a3d-dockrow a3d-dockhead">'+
       '<div class="a3d-dockgrp" data-dockgrp="__disc">'+
@@ -29037,7 +28918,7 @@ try{
           (A3D_DISCIPLINES[d].id===A3D_DISC_CUR?' selected':'')+'>'+
           bimEsc(A3D_DISCIPLINES[d].name)+'</option>';return o;})()+
       '</select>'+
-      '<button class="a3d-dbtn" id="a3d-dsearch" title="Search every command and tool (Ctrl+K, or start typing on the drawing)">'+
+      '<button class="a3d-dbtn" id="a3d-dsearch" title="Find a command (every discipline)">'+
       A3DR_SEARCH_ICON+'</button>'+
       '</div></div>';
     for(r=0;r<rows.length;r++){
@@ -29048,7 +28929,7 @@ try{
         h+='<div class="a3d-dockgrp" data-dockgrp="'+tab.id+'">';
         for(i=0;i<prim.length;i++)
           h+='<button class="a3d-dbtn" data-a3dr="'+prim[i]+'" title="'+
-            bimEsc(a3drLabel(prim[i])+'  \u00b7  '+tab.name+bimActHint(prim[i],cat))+'">'+a3drIcon(prim[i])+'</button>';
+            bimEsc(a3drLabel(prim[i])+'  \u00b7  '+tab.name)+'">'+a3drIcon(prim[i])+'</button>';
         h+='<button class="a3d-dcar" data-dockmore="'+tab.id+'" title="'+
           bimEsc(tab.name+' \u2014 all tools')+'">\u25b4</button>';
         h+='</div>';
@@ -29060,7 +28941,7 @@ try{
           for(ai=0;ai<grps[gi].acts.length;ai++){
             act=grps[gi].acts[ai];
             pops+='<div class="a3d-dockitem'+(a3drIsUnimpl(act)?' a3dr-dis':'')+'" data-a3dr="'+act+'"'+
-              (a3drIsUnimpl(act)?' title="Not implemented yet"':(bimActHint(act,cat)?' title="'+bimEsc(a3drLabel(act)+bimActHint(act,cat))+'"':''))+'>'+a3drIcon(act)+
+              (a3drIsUnimpl(act)?' title="Not implemented yet"':'')+'>'+a3drIcon(act)+
               bimEsc(a3drLabel(act))+'</div>';
           }
         }
@@ -29068,233 +28949,16 @@ try{
       }
       h+='</div>';
     }
-    /* __acad3dV71: search spans EVERY discipline, so the dock's filter can be aggressive -- since
-       V128 that search is the command search (the magnifier opens it). */
+    /* __acad3dV71: the command search. At a hundred commands an icon grid still works; at three
+       hundred it does not, and no amount of grouping saves it. Search spans EVERY discipline,
+       not just the active one, so filtering the dock by domain never puts a tool out of reach --
+       which is what lets the discipline filter be aggressive. */
+    pops+='<div class="a3d-dockpop a3d-searchpop" data-dockpop="__search">'+
+      '<input type="text" id="a3d-dsearchin" placeholder="Find a command">'+
+      '<div id="a3d-dsearchres"></div></div>';
     bimRenderInto(host,h+'</div>'+pops);   /* __acad3dV118: the Discipline dropdown keeps the focus */
+    bimRenderDockSearch('');
     return true;
-  }
-  /* ================= __acad3dV128: one catalogue of every command ================= */
-  /* A ribbon action that IS a typed command: one entry, the command's, with the ribbon place added */
-  var BIM_ACT_CMD={'bim:wall':'wall','s:poly':'poly','s:rect':'rect','s:circle':'circle','bim:arc':'arc','bim:floor':'floorTool',
-    'bim:room':'room','bim:tagroom':'roomtag','bim:tagallrooms':'roomtagall','bim:footing':'footing','bim:foundwall':'wallfoundation',
-    'bim:foundslab':'foundslab','bim:property':'propertyline','bim:propshape':'propertyshape','bim:truenorth':'truenorth',
-    'bim:alignment':'alignment','bim:roof':'roofTool','bim:stair':'stairTool','bim:dim':'bimDims','bim:text':'text',
-    'bim:section':'sectionTool','bim:ceiling':'ceilingTool','bim:offset':'offset','bim:trim':'trim','bim:align':'align',
-    'bim:leader':'leader','bim:beam':'beamTool','bim:analyze':'analyze','bim:grid':'gridline','bim:column':'columnTool',
-    'bim:door':'doorTool','bim:window':'windowTool','v:fit':'zoomFit','m:del':'del','m:dup':'duplicate','m:array':'arrayRect',
-    'm:saveproj':'saveJson','m:openproj':'openJson','bim:mirror':'mirror','bim:rotate':'rotate','bim:polararray':'arrayPolar',
-    'bim:mergewalls':'join','bim:extend':'extend','bim:fillet':'fillet','bim:chamfer':'chamfer','bim:lengthen':'lengthen',
-    'bim:scale':'scale','bim:presspull':'presspull','m:desel':'selNone','bim:layers':'layers','bim:sheet':'newSheet'};
-  /* ribbon actions left out of the search: each only says to use the Project Browser */
-  var BIM_ACT_HIDE={'bim:levels':1};
-  /* a ribbon-only tool's name, where its label alone would be ambiguous or not a command's name */
-  var BIM_ACT_NAMES={'v:top':'VIEWTOP','v:front':'VIEWFRONT','v:right':'VIEWRIGHT','v:iso':'VIEW3D','v:home':'VIEWHOME',
-    'm:exportpng':'EXPORTPNG','m:exportpdf':'EXPORTPDF','m:exportdxf':'EXPORTDXF','m:exportsvg':'EXPORTSVG',
-    'm:exitsection':'SECTIONEXIT','m:flipsection':'SECTIONFLIP','b:union':'UNION','b:cut':'SUBTRACT','b:isect':'INTERSECT',
-    'bim:dimang':'DIMANGULAR','bim:dimrad':'DIMRADIUS','bim:dimdia':'DIMDIAMETER','bim:famimport':'FAMILYLOAD',
-    'bim:famsave':'FAMILYSAVE','bim:component':'COMPONENT','bim:level':'LEVEL','bim:saveview':'SAVEVIEW',
-    'bim:uipanels':'USERINTERFACE','bim:classification':'CLASSIFY','bim:checkmodel':'CHECKMODEL','bim:importcad':'IMPORTCAD',
-    'bim:linkifc':'LINKIFC','bim:joinwalls':'JOINWALLS','bim:clonelinked':'CLONELINKED','bim:syncclones':'SYNCCLONES',
-    'bim:titleblock':'TITLEBLOCK','bim:break':'BREAK',
-    /* the sketch constraints by AutoCAD's names: GC geometric, DC dimensional */
-    'con:coincident':'GCCOINCIDENT','con:horizontal':'GCHORIZONTAL','con:vertical':'GCVERTICAL','con:parallel':'GCPARALLEL',
-    'con:perpendicular':'GCPERPENDICULAR','con:equal':'GCEQUAL','con:pointonline':'GCPOINTONLINE','con:midpoint':'GCMIDPOINT',
-    'con:symmetric_pt':'GCSYMMETRICPOINT','con:symmetric_line':'GCSYMMETRICLINE','con:distance':'DCDISTANCE','con:angle':'DCANGLE'};
-  /* what a ribbon-only tool does, where its button's label alone does not say */
-  var BIM_ACT_DESC={'bim:joinwalls':'Join two walls at their corner','bim:component':'Place a model from the library',
-    'bim:famsave':'Save the selection to the library as a model','bim:famimport':'Load an OBJ or STL model into the library',
-    'bim:level':'Add a level','v:top':'Look at the model from above','v:front':'Look at the model from the front',
-    'v:right':'Look at the model from the right','v:iso':'The default 3D view','v:home':'The home 3D view',
-    'con:coincident':'Make two sketch points meet','con:horizontal':'Make a sketch line horizontal','con:vertical':'Make a sketch line vertical',
-    'con:parallel':'Make two sketch lines parallel','con:perpendicular':'Make two sketch lines perpendicular',
-    'con:equal':'Make two sketch lines the same length','con:distance':'Fix the distance between two sketch points',
-    'con:angle':'Fix the angle between two sketch lines','con:pointonline':'Keep a sketch point on a line',
-    'con:midpoint':'Keep a sketch point at the middle of a line','con:symmetric_pt':'Make two sketch points symmetric about a point',
-    'con:symmetric_line':'Make two sketch points symmetric about a line','bim:dimang':'Angular dimension',
-    'bim:dimrad':'Radius dimension','bim:dimdia':'Diameter dimension','bim:saveview':'Save the current view to the Project Browser',
-    'bim:linkifc':'Link an IFC file','bim:importcad':'Import a CAD file','m:exitsection':'Leave the section view',
-    'm:flipsection':'Look at the section from the other side','bim:titleblock':'Edit the title block the sheets share',
-    'bim:uipanels':'Show or hide the interface panels','bim:clonelinked':'Make a linked clone of the selection',
-    'bim:syncclones':'Update the linked clones from their source','b:union':'Join the selected solids into one',
-    'b:cut':'Cut one solid out of another','b:isect':'Keep only where the selected solids overlap',
-    'p:pad':'Extrude the selected sketch into a solid','p:pocket':'Cut the selected sketch into a solid',
-    'box':'Place a box','cyl':'Place a cylinder','sphere':'Place a sphere','cone':'Place a cone','torus':'Place a torus',
-    'tube':'Place a tube','prism':'Place a prism','wedge':'Place a wedge','ellipsoid':'Place an ellipsoid',
-    'bim:classification':'Manage the classification systems','bim:checkmodel':'Check the model for problems',
-    'm:exportpng':'Export the view as a PNG image','m:exportpdf':'Export the plan as a PDF',
-    'm:exportdxf':'Export the drawing as a DXF file','m:exportsvg':'Export the drawing as an SVG file'};
-  /* AutoCAD's synonyms: the words a person might search for a command by, beyond its name */
-  var BIM_CMD_TERMS={FILLET:'round rounded corner radius',CHAMFER:'bevel corner',ERASE:'delete remove',COPY:'duplicate clone',
-    OFFSET:'parallel',TRIM:'cut clip shorten',EXTEND:'stretch longer',MIRROR:'flip reflect',ARRAYRECT:'grid pattern repeat rows columns',
-    ARRAYPOLAR:'circular radial repeat',DIST:'distance length measure',DIMLINEAR:'dimension measure',MTEXT:'label note annotation words',
-    TEXT:'label note annotation words',HATCH:'fill pattern poche',LAYER:'layers visibility',ZOOM:'fit extents all',UNDO:'back revert',
-    REDO:'again forward',ROTATE:'turn spin angle',SCALE:'resize size bigger smaller',PLOT:'print pdf paper',SAVE:'export file download',
-    OPEN:'load file import project',NEW:'project file blank',RECTANG:'box square',CIRCLE:'round',PLINE:'polyline path lines',
-    LINE:'segment',SELECTALL:'everything select',CLEAR:'deselect none',ANALYZE:'structural frame solve stiffness forces moments deflection',
-    ANALYZEOFF:'hide analysis',LOAD:'force kn',SUPPORT:'fixed pinned boundary base',ALIGNMENT:'road route centerline centreline chainage highway',
-    STATION:'chainage offset',PROFILEVIEW:'vertical profile grade',SURVEY:'terrain topography topo tin contours ground',
-    PROPERTYLINE:'parcel lot boundary site',GRIDLINE:'axis grid line',ROOM:'space area',SECTIONTOOL:'cut elevation',SECTION:'cut elevation',
-    BLOCK:'group symbol save',INSERT:'place block',ASSETS:'library models blocks templates content',PRESSPULL:'extrude push pull face',
-    SUNSTUDY:'sun shadow daylight',TRIBAREA:'tributary load area',AREAPLAN:'gross area',FOOTING:'foundation pad',WALLFOUNDATION:'strip footing',
-    FOUNDATIONSLAB:'mat raft slab',COLUMN:'post pillar',BEAM:'girder joist',FLOOR:'slab deck',JOIN:'merge walls',OSNAP:'snap object',
-    ORTHO:'orthogonal perpendicular',GRID:'snap grid',SHORTCUTS:'keyboard keys help hotkeys',LAYOUT:'sheet paper',PSPACE:'paper sheet',
-    MSPACE:'model viewport',GIZMO:'transform move handles',BOUNDARY:'region outline',DIVIDE:'split equal points',MEASURE:'spacing points',
-    ALIGN:'line up',BREAKATPOINT:'split',EXPORTPDF:'print save pdf',EXPORTPNG:'image picture screenshot',EXPORTDXF:'cad autocad',
-    EXPORTSVG:'vector image',UNION:'boolean add merge combine',SUBTRACT:'boolean difference cut minus',INTERSECT:'boolean common',
-    VIEW3D:'isometric iso 3d',VIEWTOP:'plan top',BOX:'cube block',CYLINDER:'tube pipe round',COMPONENT:'family furniture place',
-    LEVEL:'storey story floor elevation',SAVEVIEW:'camera bookmark',ROOMTAG:'label tag room',ROOMCOLOR:'color fill scheme department',
-    WINDOW:'opening glazing',DOOR:'opening entrance',ROOF:'pitch slope',STAIR:'stairs steps',CEILING:'soffit'};
-  var BIM_CMD_USE_KEY='acad3dCmdUsage';
-  /* the chord each command answers to, from A3D_KEYS -- the shortcut sheet's own table */
-  function bimCmdKeyMap(){
-    var m={},g,r;
-    for(g=0;g<A3D_KEYS.length;g++)for(r=0;r<A3D_KEYS[g].rows.length;r++){
-      var row=A3D_KEYS[g].rows[r];
-      if(row.cmd&&!m[row.cmd])m[row.cmd]=row.keys.slice();
-    }
-    return m;
-  }
-  function bimCmdCatalog(){
-    var reg=window.__wsRegistry||[],keys=bimCmdKeyMap(),out=[],byCad={},byName={},i,c,it;
-    for(i=0;i<reg.length;i++){
-      c=reg[i];
-      if(!BIM_CMD_MAP[c.cad])continue;   /* only commands that run (V86) */
-      it={id:'cmd:'+c.name,name:c.name,aliases:c.aliases.slice(),desc:c.desc,cad:c.cad,act:null,where:[],
-        keys:keys[c.name]||null,terms:BIM_CMD_TERMS[c.name]||''};
-      out.push(it);(byCad[c.cad]=byCad[c.cad]||[]).push(it);byName[c.name]=it;
-    }
-    var all=a3drAllCommands();
-    for(i=0;i<all.length;i++){
-      var a=all[i].act,where=all[i].tab.name+' \u203a '+all[i].panel,cad=BIM_ACT_CMD[a],lbl,nm;
-      if(BIM_ACT_HIDE[a]||a3drIsUnimpl(a))continue;
-      lbl=a3drLabel(a);nm=BIM_ACT_NAMES[a]||String(lbl).toUpperCase().replace(/[^A-Z0-9]+/g,'');
-      var same=(cad&&byCad[cad])||(byName[nm]?[byName[nm]]:null);
-      if(same){same.forEach(function(x){if(x.where.indexOf(where)<0)x.where.push(where);if(!x.act)x.ribbon=a;});continue;}
-      it={id:'act:'+a,name:nm,aliases:[],desc:BIM_ACT_DESC[a]||lbl,cad:null,act:a,where:[where],keys:null,terms:(BIM_CMD_TERMS[nm]||'')+' '+lbl};
-      out.push(it);byName[nm]=it;
-    }
-    return out;
-  }
-  function bimCmdWords(s){return String(s||'').toLowerCase().split(/[^a-z0-9]+/).filter(function(w){return !!w;});}
-  function bimKeyNorm(s){return String(s||'').toLowerCase().replace(/\s+/g,'').replace(/cmd|ctrl|control|meta|\u2318/g,'mod');}
-  /* within one edit: a letter changed, added, dropped, or two swapped */
-  function bimEditWithin1(a,b){
-    if(a===b)return true;
-    var la=a.length,lb=b.length,i=0;
-    if(Math.abs(la-lb)>1)return false;
-    while(i<la&&i<lb&&a.charAt(i)===b.charAt(i))i++;
-    if(la===lb){
-      if(a.slice(i+1)===b.slice(i+1))return true;
-      return i+1<la&&a.charAt(i)===b.charAt(i+1)&&a.charAt(i+1)===b.charAt(i)&&a.slice(i+2)===b.slice(i+2);
-    }
-    return la>lb?a.slice(i+1)===b.slice(i):a.slice(i)===b.slice(i+1);
-  }
-  /* the letters of t, in order, in s: their positions, or null */
-  function bimSubseq(s,t){
-    var out=[],j=0,i;
-    for(i=0;i<s.length&&j<t.length;i++)if(s.charAt(i)===t.charAt(j)){out.push(i);j++;}
-    return j===t.length?out:null;
-  }
-  function bimRange(a,n){var o=[],i;for(i=0;i<n;i++)o.push(a+i);return o;}
-  /* How well one typed word matches an entry: a tier (lower is better) and, when it matched the
-     name, which letters of the name matched. -1: no match. */
-  function bimCmdTier(it,t){
-    var nm=it.name.toLowerCase(),i,k;
-    if(nm===t)return {tier:0,hl:bimRange(0,nm.length)};
-    for(i=0;i<it.aliases.length;i++)if(it.aliases[i].toLowerCase()===t)return {tier:1};
-    if(it.keys&&(/\+/.test(t)||/^f\d+$/.test(t)||t==='delete')){
-      var kn=bimKeyNorm(it.keys.join('+')),tn=bimKeyNorm(t);
-      if(kn===tn)return {tier:1.5};
-    }
-    if(nm.indexOf(t)===0)return {tier:2,hl:bimRange(0,t.length)};
-    for(i=0;i<it.aliases.length;i++)if(it.aliases[i].toLowerCase().indexOf(t)===0)return {tier:3};
-    k=nm.indexOf(t);
-    if(k>0)return {tier:4,hl:bimRange(k,t.length)};
-    var words=bimCmdWords(it.desc+' '+it.terms+' '+(it.keys?it.keys.join(' '):''));
-    for(i=0;i<words.length;i++)if(words[i].indexOf(t)===0)return {tier:5};
-    if(t.length>=2&&nm.charAt(0)===t.charAt(0)){var sq=bimSubseq(nm,t);if(sq)return {tier:6,hl:sq};}   /* an abbreviation: from the first letter */
-    var ww=bimCmdWords(it.where.join(' '));
-    for(i=0;i<ww.length;i++)if(ww[i].indexOf(t)===0)return {tier:7};
-    if(t.length>=4){
-      if(bimEditWithin1(t,nm))return {tier:8,typo:true};
-      for(i=0;i<it.aliases.length;i++)if(bimEditWithin1(t,it.aliases[i].toLowerCase()))return {tier:8,typo:true};
-      for(i=0;i<words.length;i++)if(words[i].length>=4&&bimEditWithin1(t,words[i]))return {tier:8,typo:true};
-    }
-    return {tier:-1};
-  }
-  function bimCmdUsage(){
-    try{var u=JSON.parse(localStorage.getItem(BIM_CMD_USE_KEY)||'{}');return (u&&typeof u==='object')?u:{};}
-    catch(eU){console.warn('[BIM] The command history could not be read; it starts again',eU);return {};}
-  }
-  function bimCmdUsed(id){
-    var u=bimCmdUsage(),r=u[id]||{n:0,t:0},mx=0,k;
-    for(k in u)if(u.hasOwnProperty(k)&&u[k].t>mx)mx=u[k].t;
-    r.n++;r.t=Math.max(Date.now(),mx+1);u[id]=r;
-    try{localStorage.setItem(BIM_CMD_USE_KEY,JSON.stringify(u));}
-    catch(eS){console.warn('[BIM] The command history could not be saved',eS);}
-  }
-  /* why an entry cannot run where the user is now, or '' */
-  function bimCmdOff(it){
-    if(bimStartShowing())return (it.cad&&BIM_START_CMDS[it.cad])?'':'open a project first';
-    if(bimSheetOnScreen())return (it.cad?BIM_SHEET_CMDS[it.cad]:BIM_SHEET_ACTS[it.act])?'':'works on the model, not a sheet';
-    return '';
-  }
-  function bimCmdPublic(it,extra){
-    var o={id:it.id,name:it.name,aliases:it.aliases.slice(),desc:it.desc,kind:it.cad?'cmd':'act',cad:it.cad,act:it.act||it.ribbon||null,
-      where:it.where.slice(),keys:it.keys?it.keys.slice():null,off:bimCmdOff(it)};
-    if(extra)for(var k in extra)if(extra.hasOwnProperty(k))o[k]=extra[k];
-    return o;
-  }
-  /* The search. Every word typed must match; entries are ordered by how well, then by use. */
-  function bimCmdSearch(q,limit){
-    var cat=bimCmdCatalog(),use=bimCmdUsage(),s=String(q||'').trim().toLowerCase().replace(/^>\s*/,'');
-    var toks=s?s.split(/\s+/):[],res=[],i,j;
-    for(i=0;i<cat.length;i++){
-      var it=cat[i],sum=0,hl=null,typo=false,ok=true;
-      for(j=0;j<toks.length;j++){
-        var r=bimCmdTier(it,toks[j]);
-        if(r.tier<0){ok=false;break;}
-        sum+=r.tier;if(r.hl&&!hl)hl=r.hl;if(r.typo)typo=true;
-      }
-      if(!ok)continue;
-      var u=use[it.id];
-      res.push({it:it,s:sum,n:toks.length&&u?u.n:0,i:i,hl:hl,typo:typo});
-    }
-    /* a typo is offered only when nothing matched as typed (VS Code's "similar commands") */
-    var direct=res.filter(function(r){return !r.typo;});
-    if(direct.length)res=direct;
-    res.sort(function(a,b){return (a.s-b.s)||(b.n-a.n)||(a.i-b.i);});
-    if(limit>0)res=res.slice(0,limit);
-    return res.map(function(r){return bimCmdPublic(r.it,{hl:r.hl,typo:r.typo});});
-  }
-  function bimCmdRecent(k){
-    var cat=bimCmdCatalog(),use=bimCmdUsage(),by={},ids=[],i,id;
-    for(i=0;i<cat.length;i++)by[cat[i].id]=cat[i];
-    for(id in use)if(use.hasOwnProperty(id)&&by[id])ids.push(id);
-    ids.sort(function(a,b){return use[b].t-use[a].t;});
-    return ids.slice(0,k||5).map(function(x){return bimCmdPublic(by[x],{recent:true});});
-  }
-  /* run an entry as its button or its typed name would, and remember that it was used */
-  function bimCmdRun(id){
-    var cat=bimCmdCatalog(),it=null,i,ran;
-    for(i=0;i<cat.length;i++)if(cat[i].id===id){it=cat[i];break;}
-    if(!it){a3dToast('That command is not available');return false;}
-    if(it.cad)ran=!!(window.__a3dRunCmd&&window.__a3dRunCmd(it.cad));
-    else{
-      ran=bimRunAct(it.act)!==false;
-      if(ran)bimRecordCmd(function(){bimRunAct(it.act);},it.act);   /* Enter repeats it, as it repeats a typed command */
-    }
-    if(ran)bimCmdUsed(it.id);
-    return ran;
-  }
-  /* __acad3dV128: the command a ribbon action answers to when typed: "  . type WALL or WA" */
-  function bimActHint(act,cat){
-    var cad=BIM_ACT_CMD[act],i,it;
-    for(i=0;i<cat.length;i++){
-      it=cat[i];
-      if((cad&&it.cad===cad)||it.act===act||it.ribbon===act)return '  \u00b7  type '+it.name+(it.aliases.length?' or '+it.aliases[0]:'');
-    }
-    return '';
   }
   var A3DR_SEARCH_ICON=ric('<circle cx="11" cy="11" r="6"/><path d="M16 16l4 4"/>');
   /* Every action in every tab, with the tab and panel it came from so a result can say where it
@@ -29321,6 +28985,24 @@ try{
       }
     }
     return out;
+  }
+  function bimRenderDockSearch(q){
+    var res=document.getElementById('a3d-dsearchres');
+    if(!res)return 0;
+    var all=a3drAllCommands(),needle=String(q||'').trim().toLowerCase(),h='',n=0,i,c,lbl;
+    for(i=0;i<all.length;i++){
+      c=all[i];lbl=a3drLabel(c.act);
+      if(needle&&(lbl+' '+c.tab.name+' '+c.panel).toLowerCase().indexOf(needle)<0)continue;
+      n++;
+      if(n>40)continue;
+      h+='<div class="a3d-dockitem'+(a3drIsUnimpl(c.act)?' a3dr-dis':'')+'" data-a3dr="'+c.act+'">'+
+        a3drIcon(c.act)+'<span>'+bimEsc(lbl)+'</span>'+
+        '<span class="a3d-dockwhere">'+bimEsc(c.tab.name)+'</span></div>';
+    }
+    if(!n)h='<div class="a3d-dockpoph">No command matches</div>';
+    else if(n>40)h+='<div class="a3d-dockpoph">'+(n-40)+' more -- keep typing</div>';
+    res.innerHTML=h;
+    return n;
   }
   function bimCloseDockPops(){
     var all=document.querySelectorAll('.a3d-dockpop.open'),i;
@@ -29355,14 +29037,28 @@ try{
         }
         return;
       }
-      /* __acad3dV128: the magnifier opens THE command search, not a second one */
       var sbtn=ev.target&&ev.target.closest?ev.target.closest('#a3d-dsearch'):null;
       if(sbtn){
         ev.stopPropagation();
+        var sp=host.querySelector('[data-dockpop="__search"]');
+        var sOpen=sp&&sp.classList.contains('open');
         bimCloseDockPops();
-        if(window.openPalette)window.openPalette();
+        if(sp&&!sOpen){
+          sp.classList.add('open');
+          var sr=sbtn.getBoundingClientRect(),spr=sp.getBoundingClientRect();
+          var stop=sr.top-spr.height-6;
+          if(stop<8)stop=Math.min(sr.bottom+6,window.innerHeight-spr.height-8);
+          var sleft=sr.left+sr.width/2-spr.width/2;
+          if(sleft<8)sleft=8;
+          if(sleft+spr.width>window.innerWidth-8)sleft=Math.max(8,window.innerWidth-spr.width-8);
+          sp.style.top=Math.round(Math.max(8,stop))+'px';
+          sp.style.left=Math.round(sleft)+'px';
+          var si=document.getElementById('a3d-dsearchin');
+          if(si){si.value='';bimRenderDockSearch('');si.focus();}
+        }
         return;
       }
+      if(ev.target&&ev.target.closest&&ev.target.closest('#a3d-dsearchin'))return;
       /* Any other click inside the dock is a command; the document dispatcher runs it, and the
          popover closes so the drawing is not left behind a menu. */
       bimCloseDockPops();
@@ -29370,6 +29066,9 @@ try{
     document.addEventListener('click',function(ev){
       if(ev.target&&ev.target.closest&&ev.target.closest('#a3d-dock'))return;
       bimCloseDockPops();
+    });
+    host.addEventListener('input',function(ev){
+      if(ev.target&&ev.target.id==='a3d-dsearchin')bimRenderDockSearch(ev.target.value);
     });
     host.addEventListener('change',function(ev){
       if(ev.target&&ev.target.id==='a3d-discsel'){
@@ -29385,17 +29084,13 @@ try{
     if(!t||!t.closest)return;
     var b=t.closest('[data-a3dr]');
     if(!b||!A3D.on)return;
-    bimRunAct(b.getAttribute('data-a3dr'));
-  });
-  /* __acad3dV128: a ribbon action, run as its button runs it -- by a click, or from the command
-     search. false when it was refused or is not a command; anything else ran. */
-  function bimRunAct(act){
-    if(bimSheetOnScreen()&&!BIM_SHEET_ACTS[act]){a3dToast('That works on the model: go to the Model tab first');return false;}   /* __acad3dV116 */
+    var act=b.getAttribute('data-a3dr');
+    if(bimSheetOnScreen()&&!BIM_SHEET_ACTS[act]){a3dToast('That works on the model: go to the Model tab first');return;}   /* __acad3dV116 */
     /* __acad3dV71: registered commands run first, so a domain pack does not have to reach into
        the 60-branch chain below -- and can deliberately override a built-in for its domain. */
     var xr=a3drExt(act);
     if(xr){
-      if(xr.unimpl){a3dToast(a3drLabel(act)+' is not implemented yet');return false;}
+      if(xr.unimpl){a3dToast(a3drLabel(act)+' is not implemented yet');return;}
       if(xr.run){xr.run(act);return;}
     }
     if(act.indexOf('s:')===0){startSketch(act.slice(2));return;}
@@ -29427,7 +29122,7 @@ try{
     if(act==='bim:checkmodel'){openCheckModelDlg();return;}
     if(act==='bim:clonelinked'){openCloneLinkedDlg();return;}
     if(act==='bim:syncclones'){applySyncClones();return;}
-    if(A3DR_UNIMPL[act]){a3dToast(a3drLabel(act)+' is not implemented yet');return false;}
+    if(A3DR_UNIMPL[act]){a3dToast(a3drLabel(act)+' is not implemented yet');return;}
     if(act==='bim:component'){bimOpenLibraryAt('families');return;}   /* __acad3dV124 */
     if(act==='bim:famsave'){openSaveAsFamilyDlg();return;}
     if(act==='bim:famimport'){var ffi=document.getElementById('a3d-famfilein');if(ffi){ffi.value='';ffi.click();}return;}
@@ -29477,9 +29172,8 @@ try{
     if(act==='bim:scale'){startScaleTool();return;}
     if(act==='bim:presspull'){bimPressPullCommand();return;}   /* __acad3dV123 */
     if(act==='m:desel'){A3D.sel=null;A3D.sel2=null;A3D.selSet=[];refreshTree();paint();return;}
-    if(TYPES[act]){openDlg(act);return;}
-    return false;
-  }
+    if(TYPES[act])openDlg(act);
+  });
 
   // ---- __acad3dV20: UI panel visibility dropdown, matching the "show/hide panels" convention
   // from Revit's User Interface button / AutoCAD's palette toggles. Deliberately does NOT let
@@ -30792,33 +30486,6 @@ try{
     }
   };
   window.__a3dCmdSupported=function(act){return !!BIM_CMD_MAP[act];};
-  /* __acad3dV128: the command search */
-  window.__a3dCommandSearch=function(q,limit){
-    try{return bimCmdSearch(q,limit);}catch(eQ){console.warn('[BIM] The command search failed',eQ);return [];}
-  };
-  window.__a3dCommandRecent=function(k){
-    try{return bimCmdRecent(k);}catch(eR){console.warn('[BIM] The recent commands could not be read',eR);return [];}
-  };
-  window.__a3dCommandRun=function(id){
-    try{return bimCmdRun(id);}catch(eX){console.warn('[BIM] Command failed: '+id,eX);a3dToast('That command could not run');return false;}
-  };
-  window.__a3dCommandCatalog=function(){return bimCmdCatalog().map(function(it){return bimCmdPublic(it);});};
-  window.__a3dRunAct=function(act){return bimRunAct(act)!==false;};
-  window.__a3dCommandUsageClear=function(){try{localStorage.removeItem(BIM_CMD_USE_KEY);}catch(eC){}return true;};
-  window.__a3dTypeAnywhere=function(ev){
-    try{
-      if(!A3D.on||!ev||ev.ctrlKey||ev.metaKey||ev.altKey||!/^[A-Za-z?]$/.test(ev.key||''))return false;
-      if(bimKeyForControl(ev))return false;
-      if(bimStartShowing()||bimSheetOnScreen()||A3D_SLIDESHOW.on||el.dlg)return false;
-      if(A3D.sk||A3D.face||A3D.facePick||A3D.conPick||A3D.zoomWindow||A3D_TYPING.active||drag||bimTypingDrag())return false;
-      if(document.getElementById('a3d-gizmenu'))return false;
-      var rp=document.getElementById('a3d-rupop');if(rp&&rp.classList.contains('open'))return false;
-      return true;
-    }catch(eT){console.warn('[BIM] Type-anywhere check failed',eT);return false;}
-  };
-  window.__acad3dV128='commandcatalog,ribbonmerged,aliases,synonyms,keysfromsheet,ribbonplace,layeredmatch,fuzzy,typo,'+
-    'keychordsearch,frequency,recent,unavailablereason,typeanywhere,tabcycle,shortcutmode,ariacombobox,docksearchunified,'+
-    'ribbontooltips,shortcutsheetsearch';
   window.__a3dRunCmd=function(act){
     var f=BIM_CMD_MAP[act];
     if(!f)return false;
@@ -32201,12 +31868,18 @@ try{
     }
     return false;
   };
-  /* __acad3dV128: the dock's search is the command search -- what it matches, and the ribbon
-     actions among the matches */
   window.__a3dDockSearch=function(q){
-    var r=bimCmdSearch(q,0),acts=[],i;
-    for(i=0;i<r.length;i++)if(r[i].act)acts.push(r[i].act);
-    return {matches:r.length,shown:acts};
+    var sp=document.querySelector('#a3d-dock [data-dockpop="__search"]');
+    if(!sp)return null;
+    if(!sp.classList.contains('open')){
+      var sb=document.getElementById('a3d-dsearch');
+      if(sb)sb.click();
+    }
+    var n=bimRenderDockSearch(q);
+    var res=document.getElementById('a3d-dsearchres');
+    var acts=[],els=res?res.querySelectorAll('[data-a3dr]'):[],i;
+    for(i=0;i<els.length;i++)acts.push(els[i].getAttribute('data-a3dr'));
+    return {matches:n,shown:acts};
   };
   /* Coverage audit: every action any tab can reach must have a real label (not its own raw id)
      and a real icon. Those are two of the four places a command has to be defined, and the two a

@@ -104,7 +104,16 @@ async def run():
 
         print("\n-- 1. no command was lost in the rebuild")
         ribbon = await page.evaluate("()=>window.__a3dRibbonActions()")
-        dock = await page.evaluate("()=>window.__a3dDockActions()")
+        # AMENDED FOR V128: the dock's own search popover is gone -- its magnifier opens THE command
+        # search, which does not live inside #a3d-dock. A tool is reachable from the dock when some
+        # discipline's dock shows it, or when the search the magnifier opens finds it.
+        dock = await page.evaluate("""()=>{
+          var out={},cur=window.__a3dDiscipline();
+          window.__a3dDisciplines().forEach(function(d){window.__a3dSetDiscipline(d.id);
+            window.__a3dDockActions().forEach(function(a){out[a]=1;});});
+          window.__a3dSetDiscipline(cur);
+          window.__a3dDockSearch('').shown.forEach(function(a){out[a]=1;});
+          return Object.keys(out).sort();}""")
         missing = sorted(set(ribbon) - set(dock))
         extra = sorted(set(dock) - set(ribbon))
         ck(len(ribbon) > 50,
@@ -117,7 +126,7 @@ async def run():
         ck(sorted(ribbon) == sorted(dock),
            "the two sets are identical, %d actions each" % len(ribbon))
         # Since V71 the dock's GROUPS are filtered by discipline, so this equality holds because
-        # the command search spans every discipline. That is the design: the filter can be
+        # the command search spans every discipline (since V128, the one command search). That is the design: the filter can be
         # aggressive precisely because search never lets a tool fall out of reach.
 
         print("\n-- 2. the ribbon is gone and the height contract was updated")

@@ -128,6 +128,11 @@ async def run():
         col = await page.evaluate("()=>window.__a3dColumnAt([2,3],0,0.4,0.4,3)")
         wal = await page.evaluate("()=>window.__a3dWall([[6,0],[12,0]],0.3,3,'center',false)")
         await page.evaluate("()=>{window.__a3dSelectFor([]);window.__a3dFit();window.__a3dTestPaint();}")
+        # AMENDED FOR V128: the Foundation panel is the Structure discipline's. Its buttons used to be
+        # in the page under Architecture too, only because the dock's own search popover (retired in
+        # V128 for the one command search) rendered every discipline's tools. A person picks Structure.
+        await page.evaluate("()=>window.__a3dSetDiscipline('struct')")
+        await page.wait_for_timeout(150)
         rib = await page.evaluate("""()=>{const es=[...document.querySelectorAll('[data-a3dr="bim:footing"],[data-a3dr="bim:foundwall"],[data-a3dr="bim:foundslab"]')];
             return {n:es.length,dis:es.filter(e=>e.classList.contains('a3dr-dis')).length};}""")
         ck(rib['n'] >= 3 and rib['dis'] == 0,

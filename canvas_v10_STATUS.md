@@ -10659,3 +10659,244 @@ the build byte for byte from `Phase/canvas_v10.html.bak_phase126_pre`.
     sha256            525fc46992ccd5caa25217c0729a98ab2ebe1630d54a09803bfe7ed173ca2e3f
     markers           __acad3dV60 ... __acad3dV126, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
                       __acad3dV121b
+
+## Phase 127 (V127) - Alignment and profile: a route, its stations, its vertical design
+
+PIPELINE, Track B item 3: "Alignment / profile objects -- horizontal alignment, vertical profile,
+station-offset." Stations are what the PennDOT work, DIMORDINATE and any road or bridge layout
+read. The research is in `reference/research-alignment.md` (Civil 3D and AASHTO, from search
+summaries). The interface follows the owner's V125 rule: the settings are two Properties pages,
+there are three commands, and there is one button in the existing Site panel.
+
+### What was built (patches 127a to 127e)
+
+- **a -- the geometry.** An alignment is its own kind of object (`t:'alignment'`), as a property
+  line is, so no sketch tool can trim or offset it.
+  - **Stored:** its PIs, one radius per interior PI, a start station, and optionally a profile of
+    PVIs.
+  - **Derivation (`bimAlignGeom`):** each curve's deflection, T = R tan(D/2), L = R D,
+    E = R (sec(D/2) - 1), the PC and PT, and the elements with running stations.
+  - **Refused by name:** curves that overlap on a leg, and a curve longer than its end leg.
+  - **Station and offset (`bimAlignStationOffset`):** exact on the arcs, positive to the right, and
+    says when a point lies before the start or past the end.
+  - **Profile (`bimProfileGeom`, `bimProfileElevAt`):** AASHTO's symmetric parabola, with A, K and
+    the high or low point. A profile off the alignment and vertical curves that overlap are
+    refused.
+  - **Ground (`bimTinHeightAt`, new):** interpolates a V108 surface in the triangle a point falls
+    in. `bimAlignGround` samples it along the route.
+- **b -- the drawing.**
+  - The route is drawn with true arcs (the V88 chord tolerance). Minor ticks fall every 20 m and
+    labelled major ticks every 100 m, and every PC, PT and end is marked with its station. Ticks
+    thin out when zoomed too far out to read.
+  - With a profile, the route is drawn at its design elevations in 3D.
+  - The profile view is drawn in model space:
+    - a grid of station against elevation;
+    - the ground and the design line;
+    - each PVI, and each vertical curve's L, K and high or low point.
+  - Picking works on the route and anywhere in its profile view.
+  - Extents, Rotate, Mirror, Scale and copies all move the PIs and the profile view. Scale also
+    scales the radii.
+- **c -- where it is set.**
+  - ALIGNMENT turns the selected open polyline into an alignment, in its place. Each PI gets the
+    largest radius up to 100 m that the legs leave room for (95% of it, rounded down).
+  - **Properties, Alignment:** the start station, the stations and length, each PI's radius, and
+    each curve's deflection, direction, T, L, E, PC and PT.
+  - **Properties, Profile:** each PVI's station, elevation and curve length; the grades; and each
+    curve's A, K and high or low point.
+  - Add PVI starts a profile on the ground, then splits the longest grade.
+  - Every edit is made to a copy and checked before it is kept, as one undo step, so a bad number
+    never reaches the model. Changing the start station moves the profile with it.
+  - PROFILEVIEW places the profile view where you click. STATION reports and marks the station and
+    offset of each clicked point until Escape.
+- **d -- the Alignment and Profile schedules,** plus the route in DXF, SVG and on sheets, labelled
+  by station.
+- **e -- the hooks and the marker.**
+
+### Bugs found, and what each taught
+
+**1. A test fixture with room to spare.** The one polyline the suite made into an alignment left
+room for a 142 m curve, so the 100 m cap decided the radius. A variant that ignored the legs
+altogether passed. A polyline with short legs is now checked against the largest radius they
+allow. **The lesson (V126's, again): a fixture chosen so the rule is not needed cannot test it.**
+
+**2. The suite's own mistakes, caught before they were read as the app's:**
+- Undo dropped the selection, so Properties showed nothing and every field the suite set was
+  missing.
+- A schedule hook returns `{cols, rows}` and the DXF builder returns `{text, stats}`.
+- A refusal's message was right but worded differently from the check.
+
+Each was fixed in the suite, and the app was unchanged.
+
+### Deliberately not done
+
+- Spirals (clothoids), superelevation, corridors and cross-sections.
+- PI grips: PIs are set by the polyline they came from; the route moves, turns and mirrors whole.
+- US-customary 100-ft stations: the project has no feet unit.
+- The profile view in export.
+- DIMORDINATE, which can now read stations (Track A 117).
+
+### Suites
+
+- New: `bim_phase127_alignment_profile_browser_tests.py`, 54 checks in seven sections.
+  - **Geometry:** every number is checked against the textbook, written out in the suite, on a
+    route turned 30 degrees and set off the origin, with curves turning both ways and a PI the
+    route runs straight through.
+  - **Station and offset:** round trips on tangents and both arcs, left and right.
+  - **Profile:** the parabola, a crest and a sag, K, and the high and low points.
+  - **Ground:** a planar surface.
+  - **Interface:** ALIGNMENT, PROFILEVIEW and STATION by real clicks; the Properties pages with
+    Undo; copies, Rotate, Mirror, a reload, the schedules and the DXF.
+- Falsified by 36 variants (`Phase/falsify_phase127.py`), all 36 run and all caught.
+
+### Full regression
+
+83 suites, 2845 checks, 0 failures. Falsification: 36 variants, 36 caught. The patch chain rebuilds
+the build byte for byte from `Phase/canvas_v10.html.bak_phase127_pre`.
+
+### State after V127
+
+    canvas_v10.html   1,737,151 bytes
+    sha256            ca381a76a82848eed3ec41187b5af8d60a0799f961bdaf2126e50a7215f435cb
+    markers           __acad3dV60 ... __acad3dV127, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
+                      __acad3dV121b
+
+## Phase 128 (V128) - One command search, and a command line that listens everywhere
+
+The owner, before any more features: "lets make command UI easy to use. shortcuts searchable and
+stuff. i know we can do ctrl + k and it have a drop down for quick search. but as this app become
+more sophisticate, it is hard. pls research on how and execute." The research is in
+`reference/research-command-ui.md`: AutoCAD's Input Search Options, Rhino, Revit's Keyboard
+Shortcuts dialog, VS Code (from its source), Blender F3 (from its source), Figma and Linear, and the
+ARIA combobox pattern. Taken ahead of the MEP runs.
+
+### What the app had
+
+- **Two searches that disagreed.** Ctrl+K found the ~90 typed commands and none of the ribbon's
+  tools. The dock's magnifier found the ribbon's tools and none of the typed commands.
+- **No keys shown.** Neither search showed a command's keyboard shortcut.
+- **No forgiveness.** Neither search accepted a typo.
+- **No typing on the drawing.** A command could only be typed after Ctrl+K.
+- **A fixed shortcut sheet.** It could not be searched.
+
+### What was built (patches 128a to 128d)
+
+- **a -- one catalogue** (`bimCmdCatalog`).
+  - **Contents:** every typed command that runs, and every implemented ribbon tool. A ribbon
+    button that is a typed command merges into that command's row, with its ribbon place added,
+    by a table (`BIM_ACT_CMD`) or by name.
+  - **Keys** come from `A3D_KEYS`, the table the shortcut sheet draws, whose rows now name the
+    command a chord runs (`cmd`).
+  - **Names:** ribbon-only tools get one to type. The booleans are UNION, SUBTRACT and INTERSECT;
+    the sketch constraints use AutoCAD's GC/DC names; the exports are EXPORTPDF and so on. Each
+    also gets a description of what it does.
+  - **Synonyms** (`BIM_CMD_TERMS`, AutoCAD's search content): ROUND finds FILLET, and DELETE
+    finds ERASE.
+  - **The search** (`bimCmdSearch`) matches each word typed in layers:
+    1. an exact name or alias;
+    2. a keyboard chord (Ctrl and Cmd read as one);
+    3. a prefix;
+    4. letters anywhere in the name;
+    5. a word of the description or the synonyms;
+    6. the letters in order from the first (PLNE finds PLINE);
+    7. the ribbon place;
+    8. a one-letter typo, offered only when nothing matched as typed.
+
+    Every word typed must match. Results are ordered by match, then by use (kept per browser),
+    then by catalogue order.
+  - **The ribbon's dispatcher** is now a function (`bimRunAct`), so the search runs a ribbon tool
+    exactly as its button does. It has the same refusals on a sheet, and Enter repeats it.
+- **b -- the palette, rebuilt on the catalogue.**
+  - **Rows** show the name with the matched letters marked, what it does, where it sits on the
+    ribbon, its alias and its keys.
+  - **Empty,** it lists the recently used, then every command, with a count.
+  - **Typos** appear under "Did you mean".
+  - **`?`** searches the keyboard shortcuts, and Enter on one that runs a command runs it.
+  - **A command that cannot run here** says why in its row.
+  - **Tab** cycles the rows. The input follows the ARIA combobox pattern.
+  - **Type-anywhere:** a letter typed on the drawing, with nothing else listening for it, opens the
+    search holding that letter. WA then Enter is a wall.
+- **c -- one search, and teaching.**
+  - The dock's magnifier opens the command search, and its own popover is gone.
+  - Every ribbon button's tooltip ends with the command to type: "type WALL or WA".
+  - The shortcut sheet gains a search box, focused when it opens, which matches by what a key does
+    or by the key itself. Escape clears it, then closes the sheet.
+  - Ctrl+O, bound since V115 but never listed, is now on the sheet.
+- **d -- the hooks, and the one type-anywhere test** (`__a3dTypeAnywhere`). It refuses a key when:
+  - a field has focus, or a tool is taking points or options;
+  - a dialog is open, a face is held, or a gizmo value is being typed;
+  - a sheet, a slideshow or the Start page is showing;
+  - a drag or a rail menu is under way.
+
+### Bugs found, and what each taught
+
+**1. Two test fixtures matched by more than the rule under test.** Falsification found both:
+- **A typo check matched a description word.** The suite's typo, "fillit", also matched the word
+  "fillet" in FILLET's description, so removing the name-typo rule changed nothing. The suite now
+  also checks "rectnag" for RECTANG: two swapped letters, not a subsequence, and no description
+  word that close.
+- **Recency tied with frequency.** The recent-commands check ran GRID as often as FOOTINGSALL, so
+  a list ordered by use looked the same as one ordered by time. GRID now runs once.
+
+**The lesson (V127's, again): a fixture must need the rule it tests.**
+
+**2. Removing the dock's popover broke two suites, both honestly.**
+- **V120** found its CSS left behind, dead: `.a3d-searchpop` and `.a3d-dockwhere`. The rules were
+  removed.
+- **V70** measured "every ribbon action is reachable from the dock" by what was inside `#a3d-dock`,
+  which the old popover had filled with every discipline's tools. It was amended to measure what
+  V71 stated as the design: a tool is reachable when some discipline's dock shows it, or when the
+  search the magnifier opens finds it.
+
+**3. Two more suites clicked tools that a person could not see.**
+- **V102** clicked the Foundation panel's buttons, and **V125** the Structure strip's Analyze
+  button, while Architecture was the active discipline.
+- Both buttons were in the page only because the retired popover rendered every discipline's
+  tools, hidden.
+- Both suites now pick the Structure discipline first, as a person does.
+
+**4. A full regression run stalled for 900 s in V74** (the schedule registry), with the page idle.
+Six parallel repeats and a second full run did not reproduce it, and nothing in V128 touches that
+suite's path. V74 predates V123's rule that every page call is bounded, so it now is: a stall fails
+in 60 s and names the call. The cause is not known. **A suite with no bounds hides where it
+stopped, which is exactly why the rule exists.**
+
+**5. Loose letter-order matching was noise.** "pdf" matched EXPORTDXF (p..d..f in it). An
+abbreviation must now start at the name's first letter, as PLNE does for PLINE.
+
+**6. Typo guesses crowded real matches.** "filet" found FILLET, and also offered NEW, OPEN and SAVE
+("file"). A typo is now offered only when nothing matched as typed, VS Code's rule.
+
+### Deliberately not done
+
+- Rebinding keys and user aliases.
+- Revit's two-letter shortcuts without Enter.
+- AutoCAD's Find, which points at a command's ribbon button.
+- Pinned favourites and command history on Up and Down.
+- Searching project content (levels, views, families).
+
+### Suites
+
+- New: `bim_phase128_command_search_browser_tests.py`, 50 checks in seven sections:
+  - the catalogue against the command table, the ribbon and the shortcut sheet;
+  - each layer of matching, including a chord, a typo in a name, the matched letters, and
+    ordering by use without beating a better match;
+  - the palette driven by the keyboard: the recently used, a row's place, alias and keys, the ARIA
+    combobox, Tab, `?` running ORTHO, a ribbon-only tool run and then repeated with Enter, and a
+    refusal on a sheet with its reason;
+  - type-anywhere, and the three places it must not fire;
+  - the magnifier and the tooltips;
+  - the shortcut sheet's search.
+- Falsified by 38 variants (`Phase/falsify_phase128.py`), all 38 run and all caught.
+- Amended: V70 section 1 (bug 2); V102 section 1 and V125 section 7 (bug 3); V74 bounded (bug 4).
+
+### Full regression
+
+84 suites, 2895 checks, 0 failures. Falsification: 38 variants, 38 caught. The patch chain rebuilds
+the build byte for byte from `Phase/canvas_v10.html.bak_phase128_pre`.
+
+### State after V128
+
+    canvas_v10.html   1,763,531 bytes
+    sha256            930fe35a405b105c1357b9ff46a3a5c2584b2db6657bb3bf1ca22874b8b3cfb1
+    markers           __acad3dV60 ... __acad3dV128, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
+                      __acad3dV121b
