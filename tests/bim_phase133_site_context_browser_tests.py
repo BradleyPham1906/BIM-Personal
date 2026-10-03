@@ -311,7 +311,8 @@ async def run():
             ck(SRV['ext'] == [], "the page asked no server for anything on its way up")
             st = await safe("()=>window.__a3dCtxSettings()")
             ck(st == {'radius': 150, 'kinds': {k: True for k in ('buildings', 'roads', 'water', 'green', 'trees', 'terrain')},
-                      'overpass': 'https://overpass-api.de/api/interpreter'}, "150 m, all six kinds, overpass-api.de, by default (%s)" % st)
+                      'overpass': 'https://overpass-api.de/api/interpreter',
+                      'onGround': True}, "150 m, all six kinds, overpass-api.de, by default (%s)" % st)   # AMENDED FOR V137: buildings on the terrain
             await nosel()
             h = await props_html()
             ck('data-a3dpgrp="Site Context"' in h and h.index('data-a3dpgrp="Map"') < h.index('data-a3dpgrp="Site Context"') < h.index('data-a3dpgrp="View"'),

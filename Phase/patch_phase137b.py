@@ -1,7 +1,7 @@
 """patch_phase137b.py -- V137: Buildings on the terrain in the Site Context group; a building's
 standing height in its properties; hooks and the marker."""
 NAME = 'patch_phase137b.py'
-BASE = '4c8907d1555e64696e4cb80a123cfb2fa277adc08b909dce566a7f35c675798f'
+BASE = 'e4a74d4203b75443faff0b97636d218c5a8485baa10d76ad6651e8b8c1382944'
 import hashlib, pathlib, sys
 P = pathlib.Path(sys.argv[1] if len(sys.argv) > 1 else 'canvas_v10.html')
 raw = P.read_bytes()
@@ -34,7 +34,6 @@ rep("""      if(c.ground!=null)r+=bimPropText('Ground',bimDispNum(c.ground,2)+' 
 rep("""  /* __acad3dV136: the lens */
   window.__a3dLens=""", """  /* __acad3dV137: the map on 3D terrain */
   window.__a3dTerrain3d=function(){return A3D.lastTerrain3d?JSON.parse(JSON.stringify(A3D.lastTerrain3d)):null;};
-  window.__a3dTinHeightAt=function(id,x,z){var o=objById(id),tin=o?bimTerrainTin(o):null;return tin?bimTinHeightAt(tin,x,z):null;};
   window.__a3dCtxStand=function(on){return bimCtxStand(!!on);};
   window.__a3dDrapeTiles=function(ext,z,maxz){return bimDrapeTiles(ext,z,maxz||19);};
   window.__a3dTerrainPolys=function(){return (A3D.lastPolys||[]).filter(function(p){return p.terrain;}).length;};

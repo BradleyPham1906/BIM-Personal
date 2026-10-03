@@ -7,7 +7,7 @@
   texture placed by every vertex's Web Mercator position and anything outside the tile discarded. A
   tile still loading shows its loaded parent, stretched, as on the flat map.
 - The 2D renderer draws the surface's triangles, shaded, in 3D views.
-- Context buildings stand on the terrain (a Site Context setting, on unless turned off): each is
+- Context buildings stand on the terrain (heights read by V127's bimTinHeightAt) (a Site Context setting, on unless turned off): each is
   raised to the lowest terrain height under its footprint, when a fetch places it and when the
   setting changes, in one undo step."""
 NAME = 'patch_phase137a.py'
@@ -36,20 +36,7 @@ def rep(old, new, n=1):
 
 ENGINE = r"""  /* ================= __acad3dV137: the map on 3D terrain ================= */
   var BIM_DRAPE_ZREF=22,BIM_DRAPE_MAXT=36;
-  /* the height of a TIN at a plan point, or null outside it */
-  function bimTinHeightAt(tin,x,z){
-    var t,tr,A,B,C,d,l1,l2,l3;
-    for(t=0;t<tin.tris.length;t++){
-      tr=tin.tris[t];A=tin.P[tr[0]];B=tin.P[tr[1]];C=tin.P[tr[2]];
-      d=(B[1]-C[1])*(A[0]-C[0])+(C[0]-B[0])*(A[1]-C[1]);
-      if(Math.abs(d)<1e-12)continue;
-      l1=((B[1]-C[1])*(x-C[0])+(C[0]-B[0])*(z-C[1]))/d;
-      l2=((C[1]-A[1])*(x-C[0])+(A[0]-C[0])*(z-C[1]))/d;
-      l3=1-l1-l2;
-      if(l1>=-1e-9&&l2>=-1e-9&&l3>=-1e-9)return l1*tin.H[tr[0]]+l2*tin.H[tr[1]]+l3*tin.H[tr[2]];
-    }
-    return null;
-  }
+  /* the heights come from V127's bimTinHeightAt */
   /* the site context's surface, if it has one */
   function bimCtxTerrainObj(){
     var i;

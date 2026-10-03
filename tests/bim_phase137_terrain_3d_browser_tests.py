@@ -186,6 +186,19 @@ async def run():
             ck(shaded_like(px, rgb('#b08559')), "the hilltop in the surface's colour, shaded (%s)" % (px,))
             s2 = await at([0, 0, 0])
             ck(abs(s2[1] - s[1]) > 30, "standing 25 m up: its top is above model 0,0 on screen (%d px)" % abs(s2[1] - s[1]))
+            await safe("()=>window.__a3dSetView('front')")
+            await page.wait_for_timeout(300)
+            await safe("()=>window.__a3dCamSet({tx:0,tz:0,dist:420})")
+            await paint()
+            img = await shot()
+            sa, sb = await at([30, 8, 0]), await at([30, 40, 0])   # off the axis line at x = 0
+            pa, pb = img.getpixel((int(sa[0]), int(sa[1]))), img.getpixel((int(sb[0]), int(sb[1])))
+            ck(shaded_like(pa, rgb('#b08559'), 0.2) and not shaded_like(pb, rgb('#b08559'), 0.2),
+               "seen from the front, the hill rises: surface at 8 m, sky at 40 m (%s, %s)" % (str(pa), str(pb)))
+            await safe("()=>window.__a3dSetView('iso')")
+            await page.wait_for_timeout(300)
+            await safe("()=>window.__a3dCamSet({tx:0,tz:0,dist:420})")
+            await paint()
             ly = await safe("()=>{var l=window.__a3dAddLayer('Ground');return l&&l.id;}")
             await safe("(a)=>window.__a3dTestObjSet(a[0],'layer',a[1])", [tid, ly])
             await safe("(i)=>window.__a3dLayerSet(i,'visible',false)", ly)
@@ -204,6 +217,8 @@ async def run():
             need = {tile_of(x, z, zz) for x in (-150, 0, 150) for z in (-150, 0, 150)} if zz else set()
             ck(zz and need <= got and len(got) <= 36, "the tiles over the surface at zoom %s: %d, every corner's and the middle's" % (zz, len(got)))
             ck(r.get('drawn') == len(got) and all(t['up'] == 0 for t in r.get('tiles', [])), "each drawn, its own tile")
+            big = await safe("()=>window.__a3dDrapeTiles([-75.18,39.955,-75.155,39.975],19,19)") or []
+            ck(0 < len(big) <= 36 and big[0]['z'] < 19, "a wide surface is draped at a lower zoom, at most 36 tiles (%d at %s)" % (len(big), big[0]['z'] if big else None))
             last = (r['tiles'][-1]['x'], r['tiles'][-1]['y']) if r.get('tiles') else None
             cands = []
             for x in range(-120, 121, 30):
