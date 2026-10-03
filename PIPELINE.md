@@ -63,8 +63,8 @@ V128 to V130 settled how commands are found (see Recently finished):
 
 | # | Phase | Scope | Notes |
 |---|---|---|---|
-| 139 | LOD-A: LOD1.3, labelled LODs, CityJSON | **Start here.** `building:part` heights give LOD1.3; every building says its LOD and how it was made; CityJSON export and import; valid-solid checks | `reference/research-lod-reconstruction.md` (1, 4); Biljecki's refined LODs. |
-| 140 | LOD-B: LOD2 from OSM roofs | Procedural roofs from `roof:shape`, `roof:height`, `roof:direction`; roof and wall surfaces typed | OSM Simple 3D Buildings; the fallback where there is no LiDAR. |
+| 139 | LOD-A: LOD1.3, labelled LODs, CityJSON | **Done** (see Recently finished) | `reference/research-lod-reconstruction.md` (1, 4, 6). |
+| 140 | LOD-B: LOD2 from OSM roofs | **Start here.** Procedural roofs from `roof:shape`, `roof:height`, `roof:direction`; roof and wall surfaces typed | OSM Simple 3D Buildings; the fallback where there is no LiDAR. |
 | 141 | LOD-C: point clouds | LAS, LAZ (laz-perf, Apache-2.0) and PLY; USGS 3DEP fetched around the site (EPT or COPC); by class or height; ground to a V108 surface through V138's check | Philadelphia has city LiDAR (2015, 2018) and PA statewide QL2. |
 | 142 | LOD-D: LOD2.2 from LiDAR | Region-growing roof planes, roof partition, optimised and extruded; LOD1.3 from the same partition; per-building RMSE to the points | 3DBAG's published method (roofer is GPL-3 C++: the method, not the code). |
 | 143 | LOD-E: facade images | The owner's photos or Panoramax panoramas placed on an LOD2 wall and rectified straight-on, in metres | Texture2LoD3's rectification; Panoramax is CC BY-SA, no key. |
@@ -78,12 +78,12 @@ V128 to V130 settled how commands are found (see Recently finished):
 | later | Costs and pro forma | Cost, rent, yield and sale price per usage, and a feasibility summary | Builds on V131's formulas. |
 | later | Flows and an app SDK | Per-object node graphs (Giraffe's Flows, a light Grasshopper); a documented plugin API of read-only state snapshots with listeners and named commands over postMessage | The engine's `__a3dRegisterCommand`, `__a3dRegisterDiscipline` and `__a3dRegisterTab` are the start of it. Giraffe's model: one set of functions reached two ways, the browser console and a postMessage bridge for an iframe app in the right panel, over GeoJSON-like data (`reference/research-giraffe.md`). |
 
-### CANDIDATE - Track D, the owner's drone bridge project (Skydio, PennDOT/NYSDOT)
+### LATER - Track D, the owner's drone bridge project (Skydio, PennDOT/NYSDOT)
 
 The owner's live project: Skydio photos go through photogrammetry to a digital model of NSTM
 bridges that exist only as CAD. Photogrammetry stays outside the app, in Pix4D, iTwin Capture or
-free WebODM/OpenSplat. The app does everything before and after that step. Its place relative to
-the LOD track is the owner's call. D1 is small and useful on the current project at once. Detail
+free WebODM/OpenSplat. The app does everything before and after that step. Parked by the owner
+until after the LOD track ("Gaussian splats should be later on"). Detail
 is in `reference/research-bridge-splatting.md` (7).
 
 | # | Phase | Scope |
@@ -114,7 +114,17 @@ when it starts (V111 to V138 went to other work; V139 to V148 are in NOW).
 | 118 | Blocks and data | ATTDEF ATTEDIT BEDIT WBLOCK DATAEXTRACTION TABLESTYLE TABLEDIT TABLEEXPORT | First phase that's about the disciplines, not drafting. BLOCK and INSERT landed in V124, as the Assets library's blocks: saved records inserted as independent copies. A block reference that follows its definition (what BEDIT edits) is not built. |
 | 119 | Sheets and plotting, rest | MVIEW (draw a viewport on the paper) PAGESETUP (plot settings beyond Sheet Setup) PUBLISH (V122's Print set prints every sheet in one job; a chosen subset and page setups remain) EXPORTPDF (vector PDF of a sheet) VPLAYER (per-viewport layer visibility) viewport lock | LAYOUT, MSPACE and PSPACE landed in V116, with layout tabs and model space through a viewport. |
 
-**Recently finished:** Phase 138 (V138), **verify the survey**.
+**Recently finished:** Phase 139 (V139), **LOD-A: building parts, labelled LODs, CityJSON**.
+- **LOD1.3 from OSM's building parts:** an outline with parts is drawn as its parts, each from its
+  base to its top, standing on its building's ground; whole buildings stay LOD1.2.
+- **Every building says its LOD** and how it was made, with a **solid check** by val3dity's rules
+  (LODCHECK).
+- **CityJSON 2.0 out and in:** in the site's UTM zone, Building and BuildingPart, typed surfaces,
+  OSM's credit; read back to the millimetre; other grids placed by their centre and named.
+  CITYJSONOUT, CITYJSONIN.
+- **Checked** in 116 checks (cjval validates the export) and 62 falsify variants.
+
+Phase 138 (V138), **verify the survey**.
 - **A Survey Check on every surface:** lines skipped, duplicates, the surface through every point,
   bust shots, check shots' RMSE, control points, and the public terrain (offset, feet read as
   metres), with a verdict and a report to export. SURVEYCHECK.

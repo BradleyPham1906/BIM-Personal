@@ -172,7 +172,7 @@ automation offered on top.
 
 | Phase | Builds | Verified by |
 |---|---|---|
-| **LOD-A: LOD1.3, labelled LODs, CityJSON** | `building:part` heights (LOD1.3); every building says its LOD and how it was made; CityJSON export and import (CityGML's JSON form) | valid solids; round trip through CityJSON |
+| **LOD-A: LOD1.3, labelled LODs, CityJSON** (done, V139) | `building:part` heights (LOD1.3); every building says its LOD and how it was made; CityJSON export and import (CityGML's JSON form) | valid solids; round trip through CityJSON; cjval on the export |
 | **LOD-B: LOD2 from OSM roofs** | procedural roofs from `roof:shape`, `roof:height`, `roof:direction` (gabled, hipped, pyramidal, skillion, half-hipped, gambrel, mansard); roof and wall surfaces typed | valid solids; roof heights match the tags |
 | **LOD-C: point clouds** | read LAS, LAZ (laz-perf, Apache-2.0) and PLY; fetch USGS 3DEP around the site (EPT or COPC); show by class or height; ground points to a V108 surface through V138's check | the survey check; LiDAR against survey check shots |
 | **LOD-D: LOD2.2 from LiDAR** | each building's points: region-growing roof planes, roof partition from plane intersections and the footprint, optimised; extruded; LOD1.3 from the same partition (3DBAG's method, written here) | RMSE and 95th percentile to the points, per building; valid solids; seed buildings of known roofs |
@@ -200,3 +200,19 @@ automation offered on top.
 - Panoramax: https://github.com/osmberlin/street-level-imagery-provider-overview
 - val3dity: https://val3dity.readthedocs.io/2.5.0/
 - LoD2 accuracy metrics: https://www.researchgate.net/publication/359006698 (3DBAG RMSE figures)
+
+## 6. What V139 (LOD-A) settled
+
+- **Parts and outlines.** OSM's Simple 3D Buildings: when a building outline has parts, renderers
+  draw the parts, not the outline. The app does the same, and pairs each part with the smallest
+  outline that holds a point well inside it. Where parts leave part of an outline uncovered, that
+  part of the outline is not drawn (as in the renderers); the tagging, not the app, is then wrong.
+- **The solid check** follows val3dity's published rules and error codes (101, 105, 203, 301, 302,
+  303, 305, 307, 405), with its 1 cm planarity tolerance and 1 mm vertex snapping. Self-intersection
+  (306) and nested shells are not checked yet; val3dity itself (C++, CGAL, GPL-3) is not used.
+- **CityJSON 2.0** files are written in the site's UTM zone, checked by cjval (cityjson.org's Rust
+  validator, MIT) in the suite, and read back to the millimetre. UTM is Krueger's series to the
+  third order, within 0.05 mm of PROJ (pyproj) across a zone.
+- **Files in other grids** (the Dutch RD/NAP of 3DBAG, a US state plane) are placed by their
+  centre and named; converting them needs the grid's own projection, which a later phase can add
+  for the grids the owner uses.

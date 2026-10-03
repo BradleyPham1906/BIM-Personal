@@ -505,7 +505,6 @@ body.light-theme .a3d-uerr{color:#b3261e}
 .a3d-svck{display:inline-block;min-width:14px;font-weight:700;text-align:center}
 .a3d-svck-pass{color:#4caf50}.a3d-svck-warn{color:#ffb74d}.a3d-svck-fail{color:#ef5350}.a3d-svck-none{color:#8a96a3}
 .a3d-svrow .a3d-pstatic{white-space:normal}
-.a3d-lodtag{display:inline-block;padding:0 5px;border-radius:3px;background:#3a4656;color:#e8eef5;font-weight:700;font-size:11px}
 .a3d-dllens .a3d-ukv input[type=number]{width:54px}
 body.light-theme .a3d-ctxlink{color:#0b5cad}
 .a3d-dlgwide .a3d-dlgrow input{width:100%;box-sizing:border-box}
@@ -892,10 +891,6 @@ body.a3d-tree-docked #a3d-leftpanel > .a3d-tree .a3d-palhd .a3d-palbtns{flex-wra
     /* __acad3dV133: site context */
     ['CONTEXT',['SITECONTEXT','OSM'],'context','Get the buildings, roads, water, green, trees and terrain around the site, from OpenStreetMap and AWS Terrain Tiles'],
     ['CONTEXTREMOVE',['CONTEXTCLEAR'],'contextremove','Remove the site context'],
-    /* __acad3dV139: LOD and CityJSON */
-    ['LODCHECK',['CHECKSOLIDS','VALIDATESOLIDS','VAL3DITY'],'lodcheck','Check every building: its LOD, and whether it is a valid solid (closed, outward, flat faces, one piece)'],
-    ['CITYJSONOUT',['EXPORTCITYJSON','CITYJSON'],'cityjsonout','Export the buildings as CityJSON 2.0, in the site\'s UTM zone'],
-    ['CITYJSONIN',['IMPORTCITYJSON'],'cityjsonin','Import a CityJSON file\'s buildings, placed by their UTM coordinates'],
     /* __acad3dV134: data layers */
     ['FINDDATA',['OPENDATA','PORTAL'],'finddata','Find open data: search a US city, county, state or federal portal and add what it holds as a data layer'],   /* __acad3dV135 */
     ['DATALAYERS',['DATA','PARCELS','ZONING','FLOOD'],'datalayers','Parcels, zoning, flood zones: ArcGIS, WFS or GeoJSON data around the site, drawn on the plan and read by a click'],
@@ -12475,31 +12470,8 @@ try{
     r+=bimPropRow('Overpass','<input type="text" data-propctx="overpass" value="'+bimEsc(st.overpass)+'" spellcheck="false" title="The Overpass API server OpenStreetMap is read from">');
     r+=bimPropRow('','<button type="button" class="a3d-pedit" data-propctxact="get">Get Context</button> '+
       '<button type="button" class="a3d-pedit" data-propctxact="remove">Remove Context</button>');
-    r+=bimPropRow('LOD','<button type="button" class="a3d-pedit" data-propctxact="lodcheck" title="Every building\'s LOD, and whether it is a valid solid">Check LODs</button> '+
-      '<button type="button" class="a3d-pedit" data-propctxact="cjout" title="The buildings as CityJSON 2.0, in the site\'s UTM zone">Export CityJSON</button> '+
-      '<button type="button" class="a3d-pedit" data-propctxact="cjin">Import CityJSON</button>');   /* __acad3dV139 */
-    if(last)r+=bimPropText('Last Fetch',last.date+': '+bimCtxCountsText(last.counts)+(last.parts?' ('+last.parts+' building part'+(last.parts===1?'':'s')+', LOD1.3)':'')+   /* __acad3dV139 */
-      (last.errors&&last.errors.length?'; '+last.errors.join('; '):''));
+    if(last)r+=bimPropText('Last Fetch',last.date+': '+bimCtxCountsText(last.counts)+(last.errors&&last.errors.length?'; '+last.errors.join('; '):''));
     r+=bimPropText('Sources','OpenStreetMap (ODbL) through Overpass; AWS Terrain Tiles');
-    return r;
-  }
-  /* ================= __acad3dV139: the LOD group ================= */
-  function bimLodHtml(o){
-    var L=bimLodOf(o),r='',chk=bimObjSolidCheck(o),cj=o.cityjson,c=o.context;
-    if(!L)return '';
-    r+='<div class="a3d-prow" data-lodrow="lod"><div class="a3d-plabel">LOD</div><div class="a3d-pval"><span class="a3d-lodtag">LOD'+bimEsc(L.lod||'?')+'</span> '+
-      '<span class="a3d-pstatic">'+bimEsc(bimLodText(L.lod))+'</span></div></div>';
-    r+='<div class="a3d-prow" data-lodrow="how"><div class="a3d-plabel">How Made</div><div class="a3d-pval"><span class="a3d-pstatic">'+bimEsc(L.how)+'</span></div></div>';
-    if(chk)r+='<div class="a3d-prow a3d-svrow" data-lodrow="solid"><div class="a3d-plabel">'+(chk.surface?'Surfaces':'Solid')+'</div><div class="a3d-pval">'+
-      '<span class="a3d-svck a3d-svck-'+(chk.valid?'pass':'fail')+'">'+(chk.valid?'\u2713':'\u2717')+'</span> <span class="a3d-pstatic">'+bimEsc(bimSolidCheckText(chk))+'</span></div></div>';
-    if(c&&c.building)r+=bimPropText('Building',(c.building.name||'unnamed')+' ('+c.building.osm+' '+c.building.id+')');
-    if(cj){
-      r+=bimPropText('CityJSON',cj.type+' '+cj.id+(cj.geomType?', '+cj.geomType:''));
-      if(cj.parent)r+=bimPropText('Part Of',(cj.parentAttributes&&cj.parentAttributes.name?cj.parentAttributes.name+' ':'')+'('+cj.parent+')');
-      r+=bimPropText('File',cj.file+(cj.crs?', '+cj.crs:'')+(cj.placed==='centred'?', placed by its centre':''));
-      var k,n=0;
-      for(k in cj.attributes)if(cj.attributes.hasOwnProperty(k)&&n<40&&k!=='lodMethod'){n++;r+=bimPropText(k,cj.attributes[k]===null?'':String(cj.attributes[k]));}
-    }
     return r;
   }
   function bimCtxPropsHtml(o){
@@ -12512,8 +12484,7 @@ try{
         assumed:'assumed: OSM gives no height or levels'})[c.heightFrom]);
       if(c.courtyards)r+=bimPropText('Courtyards',c.courtyards+' filled in');
       if(c.ground!=null)r+=bimPropText('Ground',bimDispNum(c.ground,2)+' m from model y 0, on the terrain');
-      if(c.standY)r+=bimPropText('Stands at',bimDispNum(c.standY,2)+' m: the lowest ground under '+(c.standFp?'its building':'it'));   /* __acad3dV137 */
-      if(c.minHeight)r+=bimPropText('Base',bimDispNum(c.minHeight,2)+' m up, '+(c.minFrom==='levels'?'its min level at '+BIM_CTX_LEVEL_H+' m each':'from its min_height tag'));   /* __acad3dV139 */
+      if(c.standY)r+=bimPropText('Stands at',bimDispNum(c.standY,2)+' m: the lowest ground under it');   /* __acad3dV137 */
     }
     if(c.part==='hole')r+=bimPropText('Ring','a hole in the area before it');
     if(c.kind==='terrain'){
@@ -12536,9 +12507,6 @@ try{
     var a=b.getAttribute('data-propctxact');
     if(a==='get'){bimCtxFetch();return true;}
     if(a==='remove'){bimCtxRemove();return true;}
-    if(a==='lodcheck'){bimLodCheck();return true;}       /* __acad3dV139 */
-    if(a==='cjout'){bimCityJsonExport();return true;}
-    if(a==='cjin'){bimCityJsonPick();return true;}
     return false;
   }
   /* ================= __acad3dV134: data layers in Properties ================= */
@@ -13220,7 +13188,6 @@ try{
     if(bimIsAlignment(o))h+=bimAlignPropsHtml(o);       /* __acad3dV127 */
     if(bimUsageTarget(o))h+=bimUsagePropsHtml(o);       /* __acad3dV131 */
     if(o.geo)h+=bimGeoPropsHtml(o);                     /* __acad3dV132 */
-    if(bimLodOf(o))h+=bimPropGroup('LOD',bimLodHtml(o));   /* __acad3dV139 */
     if(o.context)h+=bimCtxPropsHtml(o);                 /* __acad3dV133 */
 
     // ---- Sketch Constraints (V45) -- only for sketches, and only shown once at least one point
@@ -14010,14 +13977,12 @@ try{
       reader.readAsText(file);
     }else if(ext==='geojson'||ext==='kml'||ext==='kmz'){   /* __acad3dV132: site data */
       bimGeoImportFile(file);
-    }else if(ext==='cityjson'||(ext==='json'&&/\.city\.json$/i.test(name))){   /* __acad3dV139 */
-      bimCityJsonFile(file);
     }else if(ext==='json'){
       bimOpenProjectFileObj(file);   /* __acad3dV115: the one project-file reader */
     }else if(ext==='dwg'||ext==='step'||ext==='stp'||ext==='iges'||ext==='igs'){
       a3dToast('.'+ext.toUpperCase()+' is not supported (proprietary binary / full B-rep format). Export as DXF (CAD) or IFC (BIM) instead.');
     }else{
-      a3dToast('Unsupported file type: .'+ext+' (supported: .dxf, .ifc, .obj, .stl, .json project files, .geojson and .kml site data, .city.json CityJSON)');
+      a3dToast('Unsupported file type: .'+ext+' (supported: .dxf, .ifc, .obj, .stl, .json project files, .geojson and .kml site data)');
     }
   }
 
@@ -14871,8 +14836,7 @@ try{
   /* the Overpass QL for the kinds asked, each statement on the area's box; '' when none */
   function bimCtxQuery(a,k){
     var b='('+a.s.toFixed(7)+','+a.w.toFixed(7)+','+a.n.toFixed(7)+','+a.e.toFixed(7)+')',q=[];
-    if(k.buildings)q.push('way["building"]'+b+';','relation["building"]["type"="multipolygon"]'+b+';',
-      'way["building:part"]'+b+';','relation["building:part"]["type"="multipolygon"]'+b+';');   /* __acad3dV139: LOD1.3 */
+    if(k.buildings)q.push('way["building"]'+b+';','relation["building"]["type"="multipolygon"]'+b+';');
     if(k.roads)q.push('way["highway"]'+b+';');
     if(k.water)q.push('way["natural"="water"]'+b+';','relation["natural"="water"]'+b+';','way["water"]'+b+';','way["waterway"]'+b+';');
     if(k.green)q.push('way["leisure"="park"]'+b+';','way["landuse"~"^(grass|forest|meadow|recreation_ground|village_green)$"]'+b+';',
@@ -14884,7 +14848,6 @@ try{
     var t=el.tags||{};
     if(el.type==='node')return t.natural==='tree'?'trees':'';
     if(t.building&&t.building!=='no')return 'buildings';
-    if(t['building:part']&&t['building:part']!=='no')return 'buildings';   /* __acad3dV139: a part */
     if(t.highway)return 'roads';
     if(t.natural==='water'||t.water||t.waterway)return 'water';
     if(t.leisure==='park'||/^(grass|forest|meadow|recreation_ground|village_green)$/.test(t.landuse||'')||/^(wood|scrub|grassland)$/.test(t.natural||''))return 'green';
@@ -14937,7 +14900,6 @@ try{
       var el=els[i]||{},kind=bimOsmKind(el),f,g,cl;
       if(!kind)continue;
       f={kind:kind,osm:el.type,id:el.id,tags:el.tags||{},outer:[],inner:[],line:null,point:null};
-      if(kind==='buildings'&&!(f.tags.building&&f.tags.building!=='no'))f.part=true;   /* __acad3dV139 */
       if(el.type==='node'){if(isFinite(el.lat)&&isFinite(el.lon))f.point=M([el.lon,el.lat]);}
       else if(el.type==='way'&&el.geometry&&el.geometry.length>1){
         g=el.geometry.map(function(p){return [p.lon,p.lat];});
@@ -15100,7 +15062,6 @@ try{
     function rec(kind,f2){return {kind:kind,source:'OpenStreetMap',credit:BIM_CTX_OSM_CREDIT,osm:f2.osm,id:f2.id,tags:bimCtxCleanTags(f2.tags),fetched:date};}
     function place(x,kind){x.layer=L[kind];x.col=BIM_CTX_COL[kind];x.locked=true;n[kind]++;ids.push(x.id);}
     var selWas=A3D.sel,setWas=(A3D.selSet||[]).slice();
-    var pinfo=feats?bimCtxPairParts(feats):{of:{},has:{}},nParts=0,nWhole=0,lowParts=0;   /* __acad3dV139 */
     pushUndo();
     undoSuspend=true;
     try{
@@ -15131,13 +15092,11 @@ try{
       for(i=0;feats&&i<feats.length;i++){
         f=feats[i];
         if(f.kind==='buildings'){
-          var hh=bimOsmHeight(f.tags),rg=f.part?bimOsmPartRange(f.tags):{min:0,minFrom:'',h:hh.h,from:hh.from};   /* __acad3dV139 */
-          if(!f.part&&pinfo.has[i]){nWhole++;continue;}   /* its parts stand for it */
-          if(f.part&&rg.h-rg.min<0.01){lowParts++;continue;}
+          var hh=bimOsmHeight(f.tags);
           for(j=0;j<f.outer.length;j++){
             var Pp=sketchCCW(f.outer[j]),mesh=null;
             if(Pp.length<3)continue;
-            try{mesh=padMesh(Pp,y0+rg.min,rg.h-rg.min);}catch(eM){mesh=null;}
+            try{mesh=padMesh(Pp,y0,hh.h);}catch(eM){mesh=null;}
             if(!mesh)continue;
             var cx=0,cz=0,q2;
             for(q2=0;q2<Pp.length;q2++){cx+=Pp[q2][0];cz+=Pp[q2][1];}
@@ -15145,18 +15104,6 @@ try{
               name:String(f.tags.name||((f.tags['addr:housenumber']&&f.tags['addr:street'])?f.tags['addr:housenumber']+' '+f.tags['addr:street']:('Building '+(n.buildings+1)))).slice(0,60)};
             c=rec('buildings',f);c.height=Math.round(hh.h*100)/100;c.heightFrom=hh.from;c.footprint=Pp;
             c.ground=ground([cx/Pp.length,cz/Pp.length]);
-            c.lod=f.part?'1.3':'1.2';   /* __acad3dV139 */
-            if(f.part){
-              nParts++;c.buildingPart=true;
-              if(rg.min>0){c.minHeight=Math.round(rg.min*100)/100;c.minFrom=rg.minFrom;}
-              var pw=pinfo.of[i+'_'+j];
-              if(pw){
-                var pf=feats[pw.f];
-                c.building={osm:pf.osm,id:pf.id,name:String(pf.tags.name||'').slice(0,60)};
-                c.standFp=sketchCCW(pf.outer[pw.r]);
-                if(!f.tags.name)o.name=String((pf.tags.name||('Building '+pf.osm+' '+pf.id))+' part').slice(0,60);
-              }
-            }
             if(f.inner.length){c.courtyards=f.inner.length;yards+=f.inner.length;}
             o.context=c;A3D.objs.push(o);place(o,'buildings');
             if(hh.from==='assumed')assumed++;
@@ -15184,7 +15131,6 @@ try{
       if(st.onGround)bimCtxStand(true);   /* __acad3dV137: the buildings on the terrain */
       A3D.site.context=A3D.site.context||{};
       A3D.site.context.last={date:date,counts:n,radius:st.radius,errors:bad.slice(),truncated:trunc,server:osm&&osm.ok?bimMapHost(osm.server):null};
-      if(nParts)A3D.site.context.last.parts=nParts;   /* __acad3dV139 */
     }finally{undoSuspend=false;}
     /* the selection stays what it was: the surface maker selects what it makes */
     A3D.sel=objById(selWas)?selWas:null;A3D.sel2=null;
@@ -15194,10 +15140,8 @@ try{
     for(i=0;i<BIM_CTX_KINDS.length;i++){kk=BIM_CTX_KINDS[i];if(repl[kk])said.push(n[kk]+' '+(kk==='terrain'?(n[kk]?'surface':'surfaces'):BIM_CTX_LABEL[kk].toLowerCase()));}
     a3dToast('Site context: '+said.join(', ')+(assumed?'; '+assumed+' building height'+(assumed===1?'':'s')+' assumed ('+BIM_CTX_DEFAULT_H+' m)':'')+
       (yards?'; '+yards+' courtyard'+(yards===1?'':'s')+' filled':'')+(trunc?'; stopped at '+BIM_CTX_MAX_FEATURES+' features':'')+
-      (nParts?'; '+nParts+' building part'+(nParts===1?'':'s')+' at their own heights (LOD1.3)':'')+   /* __acad3dV139 */
-      (lowParts?'; '+lowParts+' part'+(lowParts===1?'':'s')+' with no height above '+(lowParts===1?'its':'their')+' base left out':'')+
       (bad.length?'; '+bad.join('; '):''));
-    return {counts:n,ids:ids,errors:bad,truncated:trunc,assumed:assumed,courtyards:yards,parts:nParts,wholes:nWhole,lowParts:lowParts};
+    return {counts:n,ids:ids,errors:bad,truncated:trunc,assumed:assumed,courtyards:yards};
   }
   /* CONTEXTREMOVE: every context object, in one undo step */
   function bimCtxRemove(){
@@ -15218,507 +15162,6 @@ try{
     if(osm&&!skipOsm)p.push('Context <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">\u00a9 OpenStreetMap contributors</a>');
     if(ter)p.push(bimEsc(ter.credit||BIM_CTX_TERRAIN_CREDIT));
     return p.join(' \u00b7 ');
-  }
-  /* ================= __acad3dV139: LOD1.3 from building parts, and valid solids =================
-     OSM's Simple 3D Buildings: a building's outline, and parts inside it each with its own height and
-     min_height. Where parts are, the outline is not extruded: the parts are (LOD1.3, Biljecki's
-     refined LODs). The checks are val3dity's rules for a solid (ISO 19107), written here. */
-  /* a length tag in metres: "12.5", "12.5 m", "40 ft"; null when it does not read */
-  function bimOsmMetres(s){
-    var m=/^\s*(-?[0-9]*\.?[0-9]+)\s*(m|metres|meters|ft|feet|')?\s*$/i.exec(String(s==null?'':s).replace(/,/g,'.')),v;
-    if(!m)return null;
-    v=parseFloat(m[1]);
-    if(m[2]&&/^(ft|feet|')$/i.test(m[2]))v*=0.3048;
-    return isFinite(v)?v:null;
-  }
-  /* a part's base and top: min_height (or building:min_level x 3 m) to its height */
-  function bimOsmPartRange(t){
-    t=t||{};
-    var top=bimOsmHeight(t),mn=bimOsmMetres(t.min_height),from='min_height',L;
-    if(mn===null||mn<0||mn>=1000){
-      mn=null;L=parseFloat(t['building:min_level']);
-      if(isFinite(L)&&L>0&&L<300){mn=L*BIM_CTX_LEVEL_H;from='levels';}
-    }
-    if(mn===null){mn=0;from='';}
-    return {min:mn,minFrom:from,h:top.h,from:top.from};
-  }
-  /* a point well inside a ring: the middle of its largest ear */
-  function bimRingInside(P){
-    var tr=earClip(P),best=null,ba=-1,i,a,b,c,ar;
-    for(i=0;i<tr.length;i++){
-      a=P[tr[i][0]];b=P[tr[i][1]];c=P[tr[i][2]];
-      ar=Math.abs((b[0]-a[0])*(c[1]-a[1])-(b[1]-a[1])*(c[0]-a[0]));
-      if(ar>ba){ba=ar;best=[(a[0]+b[0]+c[0])/3,(a[1]+b[1]+c[1])/3];}
-    }
-    return best||P[0];
-  }
-  /* each part ring's building: the smallest building outline its inside point is in */
-  function bimCtxPairParts(feats){
-    var of={},has={},i,j,k,r,ip,best,ba,ar;
-    for(i=0;i<feats.length;i++){
-      if(feats[i].kind!=='buildings'||!feats[i].part)continue;
-      for(j=0;j<feats[i].outer.length;j++){
-        if(feats[i].outer[j].length<3)continue;
-        ip=bimRingInside(sketchCCW(feats[i].outer[j]));best=null;ba=Infinity;
-        for(k=0;k<feats.length;k++){
-          if(feats[k].kind!=='buildings'||feats[k].part)continue;
-          for(r=0;r<feats[k].outer.length;r++){
-            if(feats[k].outer[r].length<3||!bimPointInPoly(ip,feats[k].outer[r]))continue;
-            ar=bimPolyArea(feats[k].outer[r]);
-            if(ar<ba){ba=ar;best={f:k,r:r};}
-          }
-        }
-        if(best){of[i+'_'+j]=best;has[best.f]=1;}
-      }
-    }
-    return {of:of,has:has};
-  }
-  /* ---- LOD: what each building is, and how it was made ---- */
-  var BIM_LOD_TEXT={'0':'a footprint or roof outline, flat','1':'a block: the footprint extruded to one height',
-    '1.2':'a block: the whole footprint extruded to one height','1.3':'a part of a building, extruded to its own height',
-    '2':'roof shapes on walls straight up from the footprint','2.2':'roof planes, with dormers and other roof parts over about 2 m',
-    '3':'the facade: openings, overhangs and roof details'};
-  function bimLodText(l){
-    l=String(l==null?'':l);
-    return BIM_LOD_TEXT[l]||BIM_LOD_TEXT[l.charAt(0)]||'';
-  }
-  /* {lod, how} for a building object; null for anything else */
-  function bimLodOf(o){
-    if(!o)return null;
-    if(o.cityjson){
-      var cj=o.cityjson;
-      return {lod:String(cj.lod||''),how:(cj.attributes&&cj.attributes.lodMethod)?String(cj.attributes.lodMethod):
-        ('from '+(cj.file||'a CityJSON file')+(cj.crs?' ('+cj.crs+')':''))};
-    }
-    var c=o.context;
-    if(!c||c.kind!=='buildings')return null;
-    var hf=({height:'its height tag',levels:'its levels at '+BIM_CTX_LEVEL_H+' m each',assumed:'an assumed '+BIM_CTX_DEFAULT_H+' m (OSM gives no height or levels)'})[c.heightFrom]||'its height';
-    if(c.buildingPart||c.lod==='1.3')
-      return {lod:'1.3',how:'an OpenStreetMap building part, from '+(c.minHeight?bimDispNum(c.minHeight,2)+' m ('+(c.minFrom==='levels'?'its min level':'its min_height')+')':'the ground')+
-        ' up to '+bimDispNum(c.height,2)+' m ('+hf+')'};
-    return {lod:'1.2',how:'the OpenStreetMap footprint, extruded to '+bimDispNum(c.height,2)+' m ('+hf+')'};
-  }
-  /* ---- the solid check (val3dity's rules and error codes) ---- */
-  var BIM_SOLID_TOL={snap:0.001,planar:0.01,area:1e-8};
-  var BIM_SOLID_ERR={
-    101:'too few points',105:'a face with no area',203:'a face that is not flat',
-    301:'too few faces',302:'not closed',303:'edges shared by more than two faces',305:'more than one piece',
-    307:'faces turned the wrong way',405:'turned inside out'};
-  /* m: {v:[[x,y,z]], f:[[i,..]]}; o.surface: a set of surfaces, not a solid (closure not asked) */
-  function bimSolidCheck(m,o){
-    o=o||{};
-    var T=BIM_SOLID_TOL,key={},can=[],P=[],F=[],err={},i,j,k,a,b,fc,q;
-    function bad(code){err[code]=(err[code]||0)+1;}
-    if(!m||!m.v||!m.f)return {valid:false,errors:[{code:301,label:BIM_SOLID_ERR[301],count:1}],faces:0,vertices:0,volume:0};
-    for(i=0;i<m.v.length;i++){
-      var p=m.v[i],kk=Math.round(p[0]/T.snap)+','+Math.round(p[1]/T.snap)+','+Math.round(p[2]/T.snap);
-      if(!key.hasOwnProperty(kk)){key[kk]=P.length;P.push(p);}
-      can.push(key[kk]);
-    }
-    for(i=0;i<m.f.length;i++){
-      fc=[];
-      for(j=0;j<m.f[i].length;j++){q=can[m.f[i][j]];if(q===undefined)continue;if(!fc.length||fc[fc.length-1]!==q)fc.push(q);}
-      while(fc.length>1&&fc[0]===fc[fc.length-1])fc.pop();
-      if(fc.length<3){bad(101);continue;}
-      var nx=0,ny=0,nz=0,cx=0,cy=0,cz=0;
-      for(j=0;j<fc.length;j++){
-        a=P[fc[j]];b=P[fc[(j+1)%fc.length]];
-        nx+=(a[1]-b[1])*(a[2]+b[2]);ny+=(a[2]-b[2])*(a[0]+b[0]);nz+=(a[0]-b[0])*(a[1]+b[1]);
-        cx+=a[0];cy+=a[1];cz+=a[2];
-      }
-      var nl=Math.sqrt(nx*nx+ny*ny+nz*nz);
-      if(nl/2<T.area){bad(105);continue;}
-      cx/=fc.length;cy/=fc.length;cz/=fc.length;
-      if(fc.length>3){
-        var dm=0;
-        for(j=0;j<fc.length;j++){a=P[fc[j]];dm=Math.max(dm,Math.abs((a[0]-cx)*nx+(a[1]-cy)*ny+(a[2]-cz)*nz)/nl);}
-        if(dm>T.planar)bad(203);
-      }
-      F.push(fc);
-    }
-    /* edges: each undirected edge, and how many times each way */
-    var E={},up={};
-    for(i=0;i<F.length;i++)for(j=0;j<F[i].length;j++){
-      a=F[i][j];b=F[i][(j+1)%F[i].length];
-      k=a<b?a+'_'+b:b+'_'+a;
-      if(!E[k])E[k]={fw:0,bw:0,faces:[]};
-      if(a<b)E[k].fw++;else E[k].bw++;
-      E[k].faces.push(i);
-    }
-    for(i=0;i<F.length;i++)up[i]=i;
-    function root(x){while(up[x]!==x){up[x]=up[up[x]];x=up[x];}return x;}
-    var open=0,nonman=0,wrong=0;
-    for(k in E)if(E.hasOwnProperty(k)){
-      var e=E[k],n=e.fw+e.bw;
-      if(n===1)open++;
-      else if(n>2)nonman++;
-      else if(e.fw!==1)wrong++;
-      for(j=1;j<e.faces.length;j++)up[root(e.faces[j])]=root(e.faces[0]);
-    }
-    var parts={};
-    for(i=0;i<F.length;i++)parts[root(i)]=1;
-    var pieces=Object.keys(parts).length,vol=0;
-    for(i=0;i<F.length;i++)for(j=1;j+1<F[i].length;j++){
-      a=P[F[i][0]];b=P[F[i][j]];var c=P[F[i][j+1]];
-      vol+=(a[0]*(b[1]*c[2]-b[2]*c[1])-a[1]*(b[0]*c[2]-b[2]*c[0])+a[2]*(b[0]*c[1]-b[1]*c[0]))/6;
-    }
-    if(!o.surface){
-      if(F.length<4)bad(301);
-      if(open)err[302]=open;
-      if(nonman)err[303]=nonman;
-      if(wrong)err[307]=wrong;
-      if(pieces>1)err[305]=pieces;
-      if(!open&&!nonman&&!wrong&&F.length>=4&&vol<0)bad(405);
-    }
-    var list=[];
-    for(k in err)if(err.hasOwnProperty(k))list.push({code:+k,label:BIM_SOLID_ERR[k],count:err[k]});
-    list.sort(function(x,y){return x.code-y.code;});
-    return {valid:!list.length,errors:list,faces:F.length,vertices:P.length,pieces:pieces,
-      volume:Math.round(Math.abs(vol)*1000)/1000,surface:!!o.surface};
-  }
-  function bimSolidCheckText(r){
-    if(!r)return '';
-    if(r.valid)return (r.surface?'valid surfaces':'a valid solid')+': '+r.faces+' faces'+(r.surface?'':', '+bimDispNum(r.volume,1)+' m\u00b3');
-    return r.errors.map(function(e){return e.label+' ('+e.code+(e.count>1?', '+e.count:'')+')';}).join('; ');
-  }
-  /* the object's mesh in the world: its offset added */
-  function bimWorldMesh(o){
-    var m=meshOf(o),q=bimObjOffset(o);
-    if(!m)return null;
-    return {v:m.v.map(function(p){return [p[0]+q[0],p[1]+q[1],p[2]+q[2]];}),f:m.f};
-  }
-  function bimObjSolidCheck(o){
-    var m=meshOf(o);
-    if(!m)return null;
-    return bimSolidCheck(m,{surface:!!(o.cityjson&&o.cityjson.surface)});
-  }
-  /* the buildings this checks: context buildings and CityJSON objects */
-  function bimLodBuildings(){
-    return A3D.objs.filter(function(o){return !!bimLodOf(o);});
-  }
-  /* LODCHECK: every building's LOD and solid, in one toast; the first with a problem selected */
-  function bimLodCheck(){
-    var B=bimLodBuildings(),i,r,ok=0,badL=[],lods={},codes={};
-    if(!B.length){a3dToast('There are no buildings to check: get them with CONTEXT, or import CityJSON');return null;}
-    for(i=0;i<B.length;i++){
-      var L=bimLodOf(B[i]).lod||'?';lods[L]=(lods[L]||0)+1;
-      r=bimObjSolidCheck(B[i]);
-      if(r&&r.valid)ok++;
-      else{badL.push(B[i].id);(r?r.errors:[]).forEach(function(e){codes[e.code]=1;});}
-    }
-    var ls=Object.keys(lods).sort().map(function(l){return lods[l]+' LOD'+l;}).join(', ');
-    if(badL.length){
-      A3D.sel=badL[0];A3D.sel2=null;A3D.selSet=[badL[0]];
-      refreshTree();refreshProps();paint();
-    }
-    a3dToast(B.length+' building'+(B.length===1?'':'s')+' ('+ls+'): '+ok+' valid'+
-      (badL.length?'; '+badL.length+' with problems ('+Object.keys(codes).map(function(c){return BIM_SOLID_ERR[c]+' '+c;}).join(', ')+'), the first selected':''));
-    return {buildings:B.length,valid:ok,bad:badL,lods:lods,codes:Object.keys(codes).map(Number)};
-  }
-  /* ================= __acad3dV139: CityJSON =================
-     CityGML's JSON form (cityjson.org, 2.0): vertices once, as integers with a scale and a translate;
-     city objects with geometry by LOD; surfaces typed. Written in the site's UTM zone, so the file
-     lands where the site is in any CityJSON viewer. */
-  var BIM_UTM_K0=0.9996;
-  function bimUtmZone(lon){return Math.max(1,Math.min(60,Math.floor((lon+180)/6)+1));}
-  function bimAtanh(x){return 0.5*Math.log((1+x)/(1-x));}
-  function bimCosh(x){return (Math.exp(x)+Math.exp(-x))/2;}
-  /* Krueger's series (third order), WGS84 */
-  function bimUtmSeries(){
-    var f=1/298.257223563,n=f/(2-f),n2=n*n,n3=n2*n;
-    return {A:BIM_WGS84_A/(1+n)*(1+n2/4+n2*n2/64),e:Math.sqrt(f*(2-f)),
-      al:[n/2-2*n2/3+5*n3/16,13*n2/48-3*n3/5,61*n3/240],
-      be:[n/2-2*n2/3+37*n3/96,n2/48+n3/15,17*n3/480],
-      de:[2*n-2*n2/3-2*n3,7*n2/3-8*n3/5,56*n3/15]};
-  }
-  /* [easting, northing] in a zone (north, or south with its false northing) */
-  function bimUtmFwd(lon,lat,zone,south){
-    var S=bimUtmSeries(),l0=((zone-1)*6-180+3)*BIM_D2R,ph=lat*BIM_D2R,dl=lon*BIM_D2R-l0,j;
-    var tt=bimSinh(bimAtanh(Math.sin(ph))-S.e*bimAtanh(S.e*Math.sin(ph)));
-    var xi=Math.atan2(tt,Math.cos(dl)),et=bimAtanh(Math.sin(dl)/Math.sqrt(1+tt*tt)),x=et,y=xi;
-    for(j=1;j<=3;j++){x+=S.al[j-1]*Math.cos(2*j*xi)*bimSinh(2*j*et);y+=S.al[j-1]*Math.sin(2*j*xi)*bimCosh(2*j*et);}
-    return [500000+BIM_UTM_K0*S.A*x,(south?10000000:0)+BIM_UTM_K0*S.A*y];
-  }
-  /* [longitude, latitude] */
-  function bimUtmInv(E,N,zone,south){
-    var S=bimUtmSeries(),l0=((zone-1)*6-180+3)*BIM_D2R,xi=(N-(south?10000000:0))/(BIM_UTM_K0*S.A),et=(E-500000)/(BIM_UTM_K0*S.A),j;
-    var xp=xi,ep=et;
-    for(j=1;j<=3;j++){xp-=S.be[j-1]*Math.sin(2*j*xi)*bimCosh(2*j*et);ep-=S.be[j-1]*Math.cos(2*j*xi)*bimSinh(2*j*et);}
-    var chi=Math.asin(Math.sin(xp)/bimCosh(ep)),ph=chi;
-    for(j=1;j<=3;j++)ph+=S.de[j-1]*Math.sin(2*j*chi);
-    return [(l0+Math.atan2(bimSinh(ep),Math.cos(xp)))/BIM_D2R,ph/BIM_D2R];
-  }
-  function bimUtmEpsg(zone,south){return (south?32700:32600)+zone;}
-  /* a reference system's EPSG code, from any of the ways CityJSON writes it */
-  function bimCrsEpsg(s){
-    var m=/EPSG(?:\/\d+\/|::?|\/)(\d+)\s*$/i.exec(String(s||''));
-    return m?+m[1]:null;
-  }
-  var BIM_CJ_SURF={roof:'RoofSurface',wall:'WallSurface',ground:'GroundSurface'};
-  /* a face's type by its normal: up is roof, down is ground, else wall */
-  function bimCjFaceType(pts){
-    var n=faceNormal(pts);
-    if(n[1]>0.99)return 'roof';
-    if(n[1]<-0.99)return 'ground';
-    return 'wall';
-  }
-  /* a building's faces as world polygons: a context building's from its footprint (one ground, one
-     roof, a wall per edge), anything else's from its mesh */
-  function bimCjFaces(o){
-    var c=o.context,q=bimObjOffset(o),m=meshOf(o),i,j,F=[];
-    if(!m)return F;
-    if(c&&c.kind==='buildings'&&c.footprint&&c.footprint.length>=3){
-      var y0=Infinity,y1=-Infinity,P=sketchCCW(c.footprint),n=P.length;
-      for(i=0;i<m.v.length;i++){y0=Math.min(y0,m.v[i][1]);y1=Math.max(y1,m.v[i][1]);}
-      y0+=q[1];y1+=q[1];
-      F.push(P.map(function(p){return [p[0]+q[0],y0,p[1]+q[2]];}));
-      F.push(P.slice().reverse().map(function(p){return [p[0]+q[0],y1,p[1]+q[2]];}));
-      for(i=0;i<n;i++){
-        j=(i+1)%n;
-        F.push([[P[j][0]+q[0],y0,P[j][1]+q[2]],[P[i][0]+q[0],y0,P[i][1]+q[2]],[P[i][0]+q[0],y1,P[i][1]+q[2]],[P[j][0]+q[0],y1,P[j][1]+q[2]]]);
-      }
-      return F;
-    }
-    for(i=0;i<m.f.length;i++){
-      if(m.f[i].length<3)continue;
-      F.push(m.f[i].map(function(k){var p=m.v[k];return [p[0]+q[0],p[1]+q[1],p[2]+q[2]];}));
-    }
-    return F;
-  }
-  function bimCjAttrs(o){
-    var c=o.context,L=bimLodOf(o),a={},k,n=0;
-    if(o.cityjson&&o.cityjson.attributes)for(k in o.cityjson.attributes)if(o.cityjson.attributes.hasOwnProperty(k))a[k]=o.cityjson.attributes[k];
-    if(o.name)a.name=o.name;
-    if(c){
-      for(k in c.tags)if(c.tags.hasOwnProperty(k)&&n<60){n++;a['osm:'+k]=c.tags[k];}
-      a.source=c.source;a.credit=c.credit;a.osmType=c.osm;a.osmId=c.id;
-      a.measuredHeight=c.height;
-      if(c.minHeight)a.minHeight=c.minHeight;
-      a.heightFrom=c.heightFrom;
-      if(c.fetched)a.fetched=c.fetched;
-    }
-    if(L){a.lod=L.lod;a.lodMethod=L.how;}
-    return a;
-  }
-  /* the CityJSON document, or {error} */
-  function bimCityJsonDoc(){
-    var org=bimMapOrigin();
-    if(!org)return {error:'Set the site latitude and longitude first, or find an address: they put the buildings on the earth'};
-    var B=bimLodBuildings();
-    if(!B.length)return {error:'There are no buildings to export: get them with CONTEXT, or import CityJSON'};
-    var zone=bimUtmZone(org.lon),south=org.lat<0,datum=bimCtxDatum(),V=[],VK={},CO={},ids={},i,j,k;
-    var mn=[Infinity,Infinity,Infinity],mx=[-Infinity,-Infinity,-Infinity],faces=[];
-    function vid(p){
-      var g=bimModelToGeo(p[0],p[2],org),u=bimUtmFwd(g[0],g[1],zone,south),w=[u[0],u[1],p[1]+(datum===null?0:datum)];
-      var r=[Math.round(w[0]*1000),Math.round(w[1]*1000),Math.round(w[2]*1000)],kk=r.join(',');
-      if(!VK.hasOwnProperty(kk)){VK[kk]=V.length;V.push(r);for(var d=0;d<3;d++){mn[d]=Math.min(mn[d],r[d]);mx[d]=Math.max(mx[d],r[d]);}}
-      return VK[kk];
-    }
-    function uid(s){s=String(s).replace(/[^A-Za-z0-9_.:-]/g,'_')||'object';var u=s,n=2;while(ids[u])u=s+'-'+(n++);ids[u]=1;return u;}
-    for(i=0;i<B.length;i++){
-      var o=B[i],L=bimLodOf(o),F=bimCjFaces(o),shell=[],vals=[],sur=[],si={},c=o.context,cj=o.cityjson,id,type;
-      if(!F.length)continue;
-      for(j=0;j<F.length;j++){
-        var ft=bimCjFaceType(F[j]);
-        if(!si.hasOwnProperty(ft)){si[ft]=sur.length;sur.push({type:BIM_CJ_SURF[ft]});}
-        vals.push(si[ft]);
-        shell.push([F[j].map(vid)]);
-      }
-      var surf=!!(cj&&cj.surface);
-      var geom=surf?{type:'MultiSurface',lod:L.lod||'1',boundaries:shell,semantics:{surfaces:sur,values:vals}}:
-        {type:'Solid',lod:L.lod||'1',boundaries:[shell],semantics:{surfaces:sur,values:[vals]}};
-      type=cj?(cj.type||'Building'):(c.buildingPart?'BuildingPart':'Building');
-      id=uid(cj?cj.id:('osm-'+c.osm+'-'+c.id+(c.buildingPart?'-part':'')));
-      CO[id]={type:type,attributes:bimCjAttrs(o),geometry:[geom]};
-      faces.push(F.length);
-      /* a part's building: one Building, with the parts as its children */
-      var par=null;
-      if(c&&c.buildingPart&&c.building)par={key:'osm-'+c.building.osm+'-'+c.building.id,attrs:{name:c.building.name||undefined,source:c.source,credit:c.credit,osmType:c.building.osm,osmId:c.building.id}};
-      /* a BuildingPart must have a Building (CityJSON's schema): a part in no outline gets one of its own */
-      else if(c&&c.buildingPart)par={key:'osm-'+c.osm+'-'+c.id,attrs:{name:o.name||undefined,source:c.source,credit:c.credit,osmType:c.osm,osmId:c.id,
-        note:'OpenStreetMap has this building part with no building outline around it'}};
-      else if(cj&&cj.parent)par={key:String(cj.parent),attrs:cj.parentAttributes||{}};
-      if(par){
-        if(!CO[par.key]){ids[par.key]=1;CO[par.key]={type:cj&&cj.parentType?cj.parentType:'Building',attributes:par.attrs,children:[]};}
-        if(!CO[par.key].children)CO[par.key].children=[];
-        CO[par.key].children.push(id);CO[id].parents=[par.key];
-        if(!cj&&CO[id].type==='Building')CO[id].type='BuildingPart';
-      }
-    }
-    for(k in CO)if(CO.hasOwnProperty(k)&&CO[k].attributes){
-      var A=CO[k].attributes,kk2;for(kk2 in A)if(A.hasOwnProperty(kk2)&&A[kk2]===undefined)delete A[kk2];
-    }
-    var tr=[mn[0]/1000,mn[1]/1000,mn[2]/1000];
-    for(i=0;i<V.length;i++)V[i]=[V[i][0]-mn[0],V[i][1]-mn[1],V[i][2]-mn[2]];
-    return {type:'CityJSON',version:'2.0',
-      transform:{scale:[0.001,0.001,0.001],translate:tr},
-      metadata:{title:bimFileStem()+(datum===null?' (heights from model level 0: the site has no datum)':' (heights above sea level)'),
-        referenceSystem:'https://www.opengis.net/def/crs/EPSG/0/'+bimUtmEpsg(zone,south),
-        geographicalExtent:[mn[0]/1000,mn[1]/1000,mn[2]/1000,mx[0]/1000,mx[1]/1000,mx[2]/1000],
-        referenceDate:new Date().toISOString().slice(0,10)},
-      CityObjects:CO,vertices:V};
-  }
-  function bimCityJsonExport(){
-    var d=bimCityJsonDoc();
-    if(d.error){a3dToast(d.error);return d;}
-    var fn=bimFileStem()+'.city.json',n=Object.keys(d.CityObjects).length;
-    try{bimTriggerDownload(JSON.stringify(d),fn,'application/city+json');}
-    catch(eX){console.warn('[BIM] CityJSON export failed',eX);a3dToast('CityJSON export failed - see the console');return {error:String(eX)};}
-    a3dToast('Exported '+fn+': '+n+' city object'+(n===1?'':'s')+' in UTM zone '+(bimCrsEpsg(d.metadata.referenceSystem)%100)+
-      (bimCrsEpsg(d.metadata.referenceSystem)>32700?'S':'N')+' (EPSG:'+bimCrsEpsg(d.metadata.referenceSystem)+')');
-    return d;
-  }
-  /* ---- in ---- */
-  var BIM_CJ_MAX=5000,BIM_CJ_TYPES={Solid:1,MultiSolid:1,CompositeSolid:1,MultiSurface:1,CompositeSurface:1};
-  function bimCjCleanAttrs(a){
-    var o={},k,n=0,v;
-    for(k in a)if(a&&a.hasOwnProperty(k)&&n<60){
-      n++;v=a[k];
-      if(v===null||typeof v==='number'||typeof v==='boolean')o[String(k).slice(0,60)]=v;
-      else if(typeof v==='string')o[String(k).slice(0,60)]=v.slice(0,300);
-      else{try{o[String(k).slice(0,60)]=JSON.stringify(v).slice(0,300);}catch(eS){}}
-    }
-    return o;
-  }
-  /* a face's triangles in its own plane, when it is not convex (the GL fans a face) */
-  function bimCjFaceSplit(ring,W){
-    if(ring.length<=3)return [ring];
-    var pts=ring.map(function(k){return W[k];}),n=faceNormal(pts),ax=Math.abs(n[0]),ay=Math.abs(n[1]),az=Math.abs(n[2]),u,v,i,s=0,conv=true;
-    if(ax>=ay&&ax>=az){u=1;v=2;}else if(ay>=az){u=2;v=0;}else{u=0;v=1;}
-    var P2=pts.map(function(p){return [p[u],p[v]];});
-    for(i=0;i<P2.length;i++){
-      var a=P2[i],b=P2[(i+1)%P2.length],c=P2[(i+2)%P2.length],cr=(b[0]-a[0])*(c[1]-b[1])-(b[1]-a[1])*(c[0]-b[0]);
-      if(Math.abs(cr)<1e-12)continue;
-      if(!s)s=cr>0?1:-1;else if((cr>0?1:-1)!==s){conv=false;break;}
-    }
-    if(conv)return [ring];
-    /* earClip wants the ring counter-clockwise in the plane: a clockwise one is clipped reversed, and
-       each triangle turned back, so the face keeps its side */
-    var flip=false,ar=0,N=ring.length;
-    for(i=0;i<P2.length;i++){var j=(i+1)%P2.length;ar+=P2[i][0]*P2[j][1]-P2[j][0]*P2[i][1];}
-    if(ar<0){P2=P2.slice().reverse();flip=true;}
-    return earClip(P2).map(function(tr){
-      if(!flip)return [ring[tr[0]],ring[tr[1]],ring[tr[2]]];
-      return [ring[N-1-tr[2]],ring[N-1-tr[1]],ring[N-1-tr[0]]];
-    });
-  }
-  /* parse and place; returns {ids, ...} or {error} */
-  function bimCityJsonImportText(text,name){
-    name=String(name||'CityJSON');
-    var d;
-    try{d=JSON.parse(text);}catch(eJ){var m0=name+' is not JSON: '+(eJ&&eJ.message?eJ.message:eJ);a3dToast(m0);return {error:m0};}
-    if(!d||d.type!=='CityJSON'||!d.CityObjects||!d.vertices){
-      var m1=(d&&d.type==='CityJSONFeature')?name+' is CityJSON Lines (one feature per line): open the full CityJSON file':name+' is not a CityJSON file';
-      a3dToast(m1);return {error:m1};
-    }
-    var tr=d.transform||{scale:[1,1,1],translate:[0,0,0]},sc=tr.scale||[1,1,1],tl=tr.translate||[0,0,0];
-    var epsg=bimCrsEpsg(d.metadata&&d.metadata.referenceSystem),utm=null,i,j,k;
-    if(epsg>32600&&epsg<=32660)utm={zone:epsg-32600,south:false};
-    else if(epsg>32700&&epsg<=32760)utm={zone:epsg-32700,south:true};
-    var W=[],mn=[Infinity,Infinity,Infinity],mx=[-Infinity,-Infinity,-Infinity];
-    for(i=0;i<d.vertices.length;i++){
-      var r=d.vertices[i],w=[r[0]*sc[0]+tl[0],r[1]*sc[1]+tl[1],r[2]*sc[2]+tl[2]];
-      W.push(w);
-      for(k=0;k<3;k++){mn[k]=Math.min(mn[k],w[k]);mx[k]=Math.max(mx[k],w[k]);}
-    }
-    if(!W.length){var m2='No vertices in '+name;a3dToast(m2);return {error:m2};}
-    /* each city object's highest LOD with surfaces */
-    var picks=[],tmpl=0,holes=0,none=0,trunc=false,ids=Object.keys(d.CityObjects);
-    for(i=0;i<ids.length;i++){
-      var co=d.CityObjects[ids[i]],best=null,bl=-1;
-      (co.geometry||[]).forEach(function(g){
-        if(g&&g.type==='GeometryInstance'){tmpl++;return;}
-        if(!g||!BIM_CJ_TYPES[g.type])return;
-        var l=parseFloat(g.lod);if(!isFinite(l))l=0;
-        if(l>bl){bl=l;best=g;}
-      });
-      if(!best){if(!(co.children&&co.children.length))none++;continue;}
-      if(picks.length>=BIM_CJ_MAX){trunc=true;break;}
-      picks.push({id:ids[i],co:co,g:best});
-    }
-    if(!picks.length){
-      var m3='Nothing in '+name+' with surfaces to place'+(tmpl?' ('+tmpl+' template geometr'+(tmpl===1?'y':'ies')+' are not read)':'');
-      a3dToast(m3);return {error:m3};
-    }
-    var org=bimMapOrigin(),placed=false,datum=bimCtxDatum(),local=!utm;
-    var cE=(mn[0]+mx[0])/2,cN=(mn[1]+mx[1])/2;
-    pushUndo();
-    undoSuspend=true;
-    var out=[],nOk=0,nBad=0,lods={},types={};
-    try{
-      if(utm&&!org){
-        var cg=bimUtmInv(cE,cN,utm.zone,utm.south);
-        if(!A3D.site||typeof A3D.site!=='object')A3D.site={name:'Site'};
-        A3D.site.sun=A3D.site.sun||{};
-        A3D.site.sun.lat=Math.round(cg[1]*1e7)/1e7;A3D.site.sun.lon=Math.round(cg[0]*1e7)/1e7;
-        org=bimMapOrigin();placed=true;
-      }
-      var z0=(utm&&datum!==null)?datum:mn[2];
-      /* a file vertex in the model: x east-ish, y up, z south-ish */
-      var MC={},M=function(ix){
-        if(MC.hasOwnProperty(ix))return MC[ix];
-        var w=W[ix],p;
-        if(utm){var g=bimUtmInv(w[0],w[1],utm.zone,utm.south);p=bimGeoToModel(g[0],g[1],org);}
-        else p=[w[0]-cE,-(w[1]-cN)];
-        return (MC[ix]=[p[0],w[2]-z0,p[1]]);
-      };
-      var was=A3D.activeLayer,ly=addLayer('CityJSON','#c9b48a');
-      if(bimLayerById(was))A3D.activeLayer=was;
-      for(i=0;i<picks.length;i++){
-        var pk=picks[i],g2=pk.g,rings=[],sh;
-        if(g2.type==='Solid')sh=[g2.boundaries[0]||[]];
-        else if(g2.type==='MultiSolid'||g2.type==='CompositeSolid')sh=(g2.boundaries||[]).map(function(s){return s[0]||[];});
-        else sh=[g2.boundaries||[]];
-        sh.forEach(function(shell){(shell||[]).forEach(function(srf){if(srf&&srf.length){rings.push(srf[0]);holes+=srf.length-1;}});});
-        var vmap={},v=[],f=[];
-        rings.forEach(function(rg){
-          var loc=[];
-          (rg||[]).forEach(function(ix){
-            if(!vmap.hasOwnProperty(ix)){vmap[ix]=v.length;v.push(M(ix));}
-            loc.push(vmap[ix]);
-          });
-          if(loc.length>=3)bimCjFaceSplit(loc,v).forEach(function(ff){f.push(ff);});
-        });
-        if(f.length<1)continue;
-        var surf=!(g2.type==='Solid'||g2.type==='MultiSolid'||g2.type==='CompositeSolid');
-        var at=bimCjCleanAttrs(pk.co.attributes||{}),par=(pk.co.parents||[])[0],pco=par?d.CityObjects[par]:null;
-        var nm=at.name||(pco&&pco.attributes&&pco.attributes.name?pco.attributes.name+' part':'')||(pk.co.type+' '+pk.id);
-        var o={id:'a3d-'+Date.now().toString(36)+'-'+(A3D.seq++),t:'solid',pos:[0,0,0],mesh:{v:v,f:f},
-          name:String(nm).slice(0,60),layer:ly.id,col:ly.color||'#c9b48a',locked:true};
-        o.cityjson={id:String(pk.id).slice(0,120),type:pk.co.type,lod:String(g2.lod),geomType:g2.type,surface:surf,
-          attributes:at,file:name.slice(0,120),crs:epsg?'EPSG:'+epsg:'none given',placed:local?'centred':'utm'};
-        if(par){o.cityjson.parent=String(par).slice(0,120);if(pco){o.cityjson.parentType=pco.type;o.cityjson.parentAttributes=bimCjCleanAttrs(pco.attributes||{});}}
-        var chk=bimSolidCheck(o.mesh,{surface:surf});
-        if(chk.valid)nOk++;else nBad++;
-        lods[o.cityjson.lod]=(lods[o.cityjson.lod]||0)+1;types[pk.co.type]=(types[pk.co.type]||0)+1;
-        A3D.objs.push(o);out.push(o.id);
-      }
-    }finally{undoSuspend=false;}
-    refreshTree();refreshLayers();refreshProps();fitScene();paint();saveSoon();
-    var ts=Object.keys(types).map(function(x){return types[x]+' '+x;}).join(', '),ls=Object.keys(lods).sort().map(function(x){return 'LOD'+x;}).join(', ');
-    a3dToast('CityJSON: '+ts+' ('+ls+') from '+name+' on the CityJSON layer; '+nOk+' valid'+(nBad?', '+nBad+' with problems (see each one\'s LOD group)':'')+
-      (local?'; '+(epsg?'EPSG:'+epsg+' is not a grid this app converts':'it names no grid')+': placed by its centre at model 0,0, heights from its lowest point':'')+
-      (placed?'; the site latitude and longitude were set to its centre':'')+
-      (holes?'; '+holes+' opening'+(holes===1?'':'s')+' in faces filled':'')+(tmpl?'; '+tmpl+' template geometr'+(tmpl===1?'y':'ies')+' not read':'')+
-      (trunc?'; stopped at '+BIM_CJ_MAX+' objects':''));
-    return {ids:out,valid:nOk,bad:nBad,lods:lods,types:types,epsg:epsg,local:local,placedSite:placed,holes:holes,templates:tmpl,truncated:trunc};
-  }
-  function bimCityJsonPick(){
-    var inp=document.createElement('input');
-    inp.type='file';inp.accept='.json,.cityjson,application/json';
-    inp.onchange=function(){var f=inp.files&&inp.files[0];if(f)bimCityJsonFile(f);};
-    inp.click();
-    return true;
-  }
-  function bimCityJsonFile(file){
-    var name=(file&&file.name)||'CityJSON';
-    var rd=new FileReader();
-    rd.onerror=function(){a3dToast('Failed to read '+name);};
-    rd.onload=function(ev){
-      try{bimCityJsonImportText(String(ev.target.result||''),name);}
-      catch(eC){console.warn('[BIM] CityJSON import',eC);a3dToast('CityJSON import failed: '+(eC&&eC.message?eC.message:eC));}
-    };
-    rd.readAsText(file);
   }
   /* ================= __acad3dV134: data layers =================
      The public record of a site -- parcels, zoning, flood zones -- from the GIS servers councils and
@@ -16236,7 +15679,7 @@ try{
       if(!o.context||o.context.kind!=='buildings')continue;
       y=0;
       if(tin){
-        fp=o.context.standFp||o.context.footprint||[];h=null;   /* __acad3dV139: a part, on its building's ground */
+        fp=o.context.footprint||[];h=null;
         for(j=0;j<fp.length;j++){var hh=bimTinHeightAt(tin,fp[j][0],fp[j][1]);if(hh!==null&&(h===null||hh<h))h=hh;}
         if(h===null&&typeof o.context.ground==='number')h=o.context.ground;
         if(h!==null){y=Math.round(h*1000)/1000;n++;}
@@ -33057,9 +32500,6 @@ try{
     GEOEXPORT:'geojson gis export longitude latitude',
     CONTEXT:'neighbours neighbors surrounding buildings osm openstreetmap overpass roads streets water rivers parks trees terrain elevation contours ground giraffe',   /* __acad3dV133 */
     CONTEXTREMOVE:'delete clear neighbours context',
-    LODCHECK:'lod level of detail validate valid solid closed watertight val3dity buildings check citygml',   /* __acad3dV139 */
-    CITYJSONOUT:'cityjson citygml 3d city model export buildings lod utm 3dbag',
-    CITYJSONIN:'cityjson citygml 3d city model import buildings lod 3dbag',
     DATALAYERS:'gis arcgis wfs geojson parcels lots zoning flood fema council open data layers attributes lookup',   /* __acad3dV134 */
     FINDDATA:'search catalog portal hub socrata city county state federal datasets browse discover',   /* __acad3dV135 */
     ANALYZEOFF:'hide analysis',LOAD:'force kn',SUPPORT:'fixed pinned boundary base',ALIGNMENT:'road route centerline centreline chainage highway',
@@ -33510,7 +32950,7 @@ try{
     '<div class="a3d-tb">'+
       '<button class="a3d-btn a3d-drawerbtn" data-a3d="drawer" title="Show panel">\u2630</button>'+
       '<button class="a3d-btn a3d-rdrawerbtn" data-a3d="rdrawer" title="Show properties">Props</button>'+
-      '<input type="file" id="a3d-filein" accept=".dxf,.ifc,.obj,.stl,.json,.geojson,.kml,.cityjson" style="display:none">'+
+      '<input type="file" id="a3d-filein" accept=".dxf,.ifc,.obj,.stl,.json,.geojson,.kml" style="display:none">'+
       '<input type="file" id="a3d-projin" accept=".json" style="display:none">'+   /* __acad3dV115 */
       '<span class="a3d-hud">View: <b id="a3d-view">Home</b><span id="a3d-count">0 objects</span></span>'+
       '<span class="a3d-uiwrap">'+
@@ -34789,9 +34229,6 @@ try{
     geoexport:function(){bimGeoExport();},
     context:function(){bimCtxFetch();},                          /* __acad3dV133 */
     contextremove:function(){bimCtxRemove();},
-    lodcheck:function(){bimLodCheck();},              /* __acad3dV139 */
-    cityjsonout:function(){bimCityJsonExport();},
-    cityjsonin:function(){bimCityJsonPick();},
     finddata:function(){bimFindCommand();},                      /* __acad3dV135 */
     datalayers:function(){bimDataCommand();},                    /* __acad3dV134 */                /* __acad3dV127 */
     profileview:function(){bimStartProfileViewTool();},
@@ -34953,19 +34390,6 @@ try{
   window.__a3dCtxRemove=function(){return bimCtxRemove();};
   window.__a3dCtxOf=function(id){var o=objById(id);return o&&o.context?JSON.parse(JSON.stringify(o.context)):null;};
   window.__a3dCtxHeight=function(tags){return bimOsmHeight(tags);};
-  /* __acad3dV139: LOD, solids, UTM, CityJSON */
-  window.__a3dCtxPartRange=function(tags){return bimOsmPartRange(tags);};
-  window.__a3dLodOf=function(id){var o=objById(id);return o?bimLodOf(o):null;};
-  window.__a3dSolidCheck=function(id){var o=objById(id);return o?bimObjSolidCheck(o):null;};
-  window.__a3dSolidCheckMesh=function(m,surface){return bimSolidCheck(m,{surface:!!surface});};
-  window.__a3dLodCheck=function(){return bimLodCheck();};
-  window.__a3dUtm=function(lon,lat,zone,south){return bimUtmFwd(lon,lat,zone||bimUtmZone(lon),!!south);};
-  window.__a3dUtmInv=function(E,N,zone,south){return bimUtmInv(E,N,zone,!!south);};
-  window.__a3dCityJson=function(){return bimCityJsonDoc();};
-  window.__a3dCityJsonExport=function(){var d=bimCityJsonExport();return d&&d.error?d:{ok:true};};
-  window.__a3dCityJsonImport=function(text,name){return bimCityJsonImportText(text,name);};
-  window.__a3dImportFileText=function(text,name){bimHandleImportFile(new File([text],name));return true;};
-  window.__acad3dV139='buildingparts,lod13,lodlabels,lodgroup,solidcheck,lodcheck,utm,cityjsonout,cityjsonin,cityjsonfile,cityjsoncommands';
   window.__a3dCtxRings=function(members,role){return bimOsmRings(members,role);};
   window.__a3dCtxCredit=function(){return bimCtxCreditHtml(false);};
   window.__a3dCtxDatum=function(){return bimCtxDatum();};
