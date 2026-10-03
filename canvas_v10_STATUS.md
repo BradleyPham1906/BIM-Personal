@@ -12105,3 +12105,54 @@ build from `Phase/canvas_v10.html.bak_phase140_pre`. The diff is ES5-clean.
     canvas_v10.html   2066633 bytes
     sha256            8865255cbd70859646657afb7270f847db226977c180eae4084d9226e8f39b9d
     markers           __acad3dV60 ... __acad3dV140, __acad3dV134d (and the 133d to 133f markers)
+
+## Phase 141 (V141) - A shorter right panel, and an Analyze tab
+
+The owner: "clean up the right side panels because it is too much as we add more stuff", and
+"adding analyze below assets". With nothing selected, Properties held nine groups, about 2,460 px.
+The owner chose tabs in Properties for the site's settings, and this order: panels and Analyze,
+then Simulation (V142), then terrain (V143). A picture: `reference/v141_analyze.png`.
+
+### What was built (patch 141a)
+
+- **Tabs in Properties,** with nothing selected: Project | Site | View | Analysis.
+  - Project: Identity Data (project, client, site), Statistics.
+  - Site: **Location** (true north, latitude, longitude, UTC offset, the sun's date and time,
+    moved out of Identity Data), Map, Site Context, Data Layers.
+  - View: View. Analysis: Floor Loads, the frame's Analysis page, Areas by Usage, Usages.
+  - Every tab's groups stay in the page, the others hidden, so the 31 handlers on the panel keep
+    working and commands can reach any field. A tab turns in place. The tab is remembered per
+    viewer (localStorage, with fall-backs). A selection shows the object, with no tabs.
+  - Each tab is a fraction of the old height (Project, View and Analysis about 710 px, Site about
+    1,370 px).
+  - USAGES, COLOURBY, DATALAYERS and FINDDATA turn to their group's tab (`bimPropReveal`).
+- **Analyze, on the rail below Assets:** seven cards -- Structure, Sun and Shadows, Colour By,
+  Areas by Usage, Survey Check, Buildings: LOD and Solids, Statistics. Each says what it shows
+  now, with buttons to run it (ANALYZE, SUNSTUDY, SURVEYCHECK, LODCHECK, Export CityJSON) or
+  open its settings in Properties on the right tab. A button with nothing to act on is disabled
+  and says why. The panel follows the model (it redraws with Properties). LODCHECK's last result
+  is kept for its card. ANALYSES opens the tab. Both new controls are claimed in V80's shell audit.
+
+### Bugs found
+
+- The Analyze tab's long content squeezed the panel's project header; it keeps its height there.
+- The LOD card called a CityJSON plaza a building: it counts "buildings and city objects".
+- The first falsify run missed one variant (a tab click that did not save the tab): the reload
+  check had set the tab through a hook, not a click. It clicks now.
+
+### Suites
+
+- New: `bim_phase141_panels_analyze_browser_tests.py`, 49 checks.
+- Falsified by `Phase/falsify_phase141.py`, 21 variants, all caught.
+- Amended for V141 (each marked): V73 (ten groups), V106 and V125 (Analysis tab), V107, V119 and
+  V132 (Site tab), V113, V119 and V120 (the fifth rail button), V118 (after Client comes Site),
+  V121 (View tab).
+
+### Full regression and state after V141
+
+98 suites, 3859 checks, 0 failures. Falsification: V141 21 of 21. Patch 141a rebuilds the build from
+`Phase/canvas_v10.html.bak_phase141_pre`. The diff is ES5-clean.
+
+    canvas_v10.html   2081160 bytes
+    sha256            2318f9ba19eb452e6badb03f1bbcfb0ea90cbf960936c19e967664eeb0e96d5d
+    markers           __acad3dV60 ... __acad3dV141, __acad3dV134d (and the 133d to 133f markers)

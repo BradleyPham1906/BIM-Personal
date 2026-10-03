@@ -766,6 +766,7 @@ async def run():
             await safe("()=>window.__a3dMapFindReset()")
             await nosel()
             n0 = len(SRV['nom'])
+            await safe("()=>window.__a3dSetPropTab&&window.__a3dSetPropTab('site')")   # AMENDED FOR V141: the field is on Properties' Site tab
             await safe("""()=>{var e=document.querySelector('#a3d-propsbody [data-propmap="addr"]');e.value='Big Ben';e.focus();}""")
             await page.keyboard.press('Enter')
             await page.wait_for_timeout(500)

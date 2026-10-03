@@ -91,6 +91,7 @@ async def run():
 
         async def set_field(key, v):
             await model_props()
+            await safe("()=>window.__a3dSetPropTab&&window.__a3dSetPropTab('site')")   # AMENDED FOR V141: the field is on Properties' Site tab
             try:
                 loc = page.locator('input[data-propmodel="%s"]' % key)
                 await loc.fill(v, timeout=3000)

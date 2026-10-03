@@ -207,7 +207,8 @@ async def run():
         ck(shell and shell['built'] == 'ASIDE#a3d-shell', 'the shell is the BIM engine\'s own <aside> (%s) -- AMENDED FOR V120: its builder no longer marks itself, being the only one' % (shell and shell['built']))
         ck(shell and shell['chain'][:4] == ['a3d-browser', '.a3d-tree', 'a3d-leftpanel', 'a3d-shell'],
            'and the Project Browser sits inside it (%s)' % (shell and shell['chain'][:4]))
-        ck(shell and shell['tabs'] == 4 and not shell['help'] and not shell['pages'],
+        # AMENDED FOR V141: and Analyze, below Assets
+        ck(shell and shell['tabs'] == 5 and not shell['help'] and not shell['pages'],
            'with Layers (V121), Presentation (V122), the Project Browser and Assets -- AMENDED FOR V122: the owner\'s stack\'s second panel -- and none of the whiteboard blocks V80 had to clean out (%s)'
            % {k: shell.get(k) for k in ('tabs', 'help', 'pages')} if shell else 'no shell')
         und = await safe("()=>Array.prototype.filter.call(document.querySelectorAll('#a3d-railutil .a3d-ru'),"

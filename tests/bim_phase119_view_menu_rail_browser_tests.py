@@ -551,6 +551,7 @@ async def drive(ck):
         tid = await safe("()=>window.__a3dMakeTerrain([[-5,-5,100,'',''],[5,-5,100,'',''],[5,5,100,'',''],[-5,5,100,'',''],[0,0,104,'','']])")
         await safe("()=>window.__a3dColumnAt([3,3],0,0.4,0.4,3)")
         await model_props()
+        await safe("()=>window.__a3dSetPropTab&&window.__a3dSetPropTab('site')")   # AMENDED FOR V141: the field is on Properties' Site tab
         for fld, val in (('sunlat', '40.2732'), ('sunlon', '-76.8867'), ('suntz', '-4'), ('sundate', '2024-06-20'), ('suntime', '13:00')):
             try:
                 loc = page.locator('input[data-propmodel="%s"]' % fld)
@@ -598,7 +599,8 @@ async def drive(ck):
             return {tab:b.getAttribute('data-tab'),text:b.textContent.trim(),aria:b.getAttribute('aria-label'),title:b.getAttribute('title'),
                     icon:!!(s&&s.children.length&&r&&r.width>=14&&r.height>=14)};})""") or []
         ck([(r['tab'], r['aria'], r['title']) for r in rail] == [('layers', 'Layers', 'Layers'), ('presentation', 'Presentation', 'Presentation'),
-                                                                 ('browser', 'Project Browser', 'Project Browser'), ('assets', 'Assets', 'Assets')]
+                                                                 ('browser', 'Project Browser', 'Project Browser'), ('assets', 'Assets', 'Assets'),
+                                                                 ('analyze', 'Analyze', 'Analyze')]   # AMENDED FOR V141: Analyze below Assets
            and all(r['text'] == '' and r['icon'] for r in rail),
            'the rail buttons -- AMENDED FOR V121: Layers first; FOR V122: Presentation second -- icons only, each named for what it opens (%s)' % rail)
 

@@ -631,7 +631,7 @@ async def drive(ck):
 
         print('\n-- 9. the left shell: the rail switches the panel, the toggle moves the workspace edge')
         rail = await safe("()=>[].map.call(document.querySelectorAll('#a3d-rail .a3d-railbtn'),function(b){return [b.getAttribute('data-tab'),b.getAttribute('aria-label')];})")
-        ck(rail == [['layers', 'Layers'], ['presentation', 'Presentation'], ['browser', 'Project Browser'], ['assets', 'Assets']],
+        ck(rail == [['layers', 'Layers'], ['presentation', 'Presentation'], ['browser', 'Project Browser'], ['assets', 'Assets'], ['analyze', 'Analyze']],   # AMENDED FOR V141
            'the rail buttons, Layers (V121), Presentation (V122), Project Browser and Assets -- AMENDED FOR V122 (%s)' % rail)
         first = await safe("()=>[document.getElementById('a3d-shell').getAttribute('data-tab'),"
                            "[].map.call(document.querySelectorAll('#a3d-rail .a3d-railbtn.active'),function(b){return b.getAttribute('data-tab');})]")

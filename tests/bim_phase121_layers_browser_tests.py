@@ -576,6 +576,7 @@ async def drive(ck):
            and all(tx.startswith('\u00a0' * 3 * x['depth']) and not tx.startswith('\u00a0' * (3 * x['depth'] + 1)) for tx, x in zip(ac['txt'], tree)),
            'Model Properties\' Active Layer lists the same tree, sub-layers indented (%d)' % (len(ac['ids']) if ac else 0))
         fzid = await safe("""(ids)=>{window.__a3dLayerSet(ids.full,'frozen',true);window.__a3dRefreshProps();return ids.full;}""", ids)
+        await safe("()=>window.__a3dSetPropTab&&window.__a3dSetPropTab('view')")   # AMENDED FOR V141: the field is on Properties' View tab
         await page.select_option('[data-propmodel="layer"]', fzid)
         await page.wait_for_timeout(200)
         shown = await safe("()=>document.querySelector('[data-propmodel=\"layer\"]').value")

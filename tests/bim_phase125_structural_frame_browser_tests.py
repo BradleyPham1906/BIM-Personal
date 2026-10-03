@@ -458,6 +458,7 @@ async def run():
             ck(dr and dr.get('stale') and 'labels' not in dr and res and 'Out of date' in res,
                "a changed load puts the display out of date: no result drawn, and Properties says so (%s, %r)" % (dr, res))
             await safe("()=>{var s=document.querySelector('[data-propstr=\"display\"]');}")
+            await safe("()=>window.__a3dSetPropTab&&window.__a3dSetPropTab('analysis')")   # AMENDED FOR V141: the model's Analysis page is on Properties' Analysis tab
             await page.select_option('[data-propstr="display"]', 'N')
             await page.wait_for_timeout(300)
             await command('ANALYZE')
