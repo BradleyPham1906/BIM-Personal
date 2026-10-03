@@ -1,0 +1,33 @@
+{
+  "file": "seed_site_m.txt",
+  "format": "PNEZD",
+  "units": "m",
+  "base": {
+    "n": 5000.0,
+    "e": 2000.0,
+    "z": 100.0
+  },
+  "checkCode": "CHK",
+  "control": "1=100.000, 113=105.234",
+  "note": "Seed: a 15 x 15 grid at 10 m with a header, a mistyped line, a duplicate, a bust shot and six check shots.",
+  "expect": {
+    "verdict": "fail",
+    "points": 224,
+    "checks": 6,
+    "skippedLines": [
+      1,
+      59
+    ],
+    "duplicates": [
+      "300"
+    ],
+    "busts": [
+      "88"
+    ],
+    "fidelity": "pass",
+    "triangles": "pass",
+    "checkStatus": "pass",
+    "checkRmseMax": 0.05,
+    "control": "pass"
+  }
+}
