@@ -11016,7 +11016,7 @@ table and use search, filter sorting. group the features and stuff here. and in 
 only show the keys one (those that most likely use the most)". The research is in
 `reference/research-tools-panel.md`. While this phase was open, the owner also had Giraffe
 researched (`reference/research-giraffe.md`) and chose four of its ideas, ahead of the MEP runs
-(now V137, after the map). See `PIPELINE.md`.
+(now V138, after the map and open data). See `PIPELINE.md`.
 
 ### What was built (patches 130a to 130c)
 

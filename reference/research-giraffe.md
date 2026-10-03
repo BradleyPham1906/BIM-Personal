@@ -120,12 +120,15 @@ help articles, via search summaries.
 The owner chose all four, ahead of the MEP runs, and then asked for the map "just like how giraffe do" (see PIPELINE.md for the order):
 
 1. **V131 Usages and live areas,** with simple formula properties.
-2. **V132 The map:** a georeferenced basemap, address search, and GeoJSON/KML import and export.
-3. **V133 GIS data layers** by URL, with feature query.
-4. **V134 A zoning envelope:** setbacks, stepbacks and a height limit, in 3D.
-5. **V135 A colour-by-property lens.**
-6. **V136 Design scenarios.**
-7. **Later:** generators (parking, subdivision), costs and pro forma.
+2. **V132 The map:** basemaps, address search, and GeoJSON/KML import and export.
+3. **V133 Site context in one click:** OSM buildings, roads and water, and terrain.
+4. **V134 Data layers** by URL, with presets and feature query.
+5. **V135 A zoning envelope:** setbacks, stepbacks and a height limit, in 3D.
+6. **V136 A colour-by-property lens.**
+7. **V137 Design scenarios.** Then V138 MEP runs; later, generators, costs and pro forma.
+
+The data behind 2 to 4 is all free and open: `research-open-data.md`.
+
 8. **Later: Flows and an app SDK.**
    - Per-object node graphs.
    - A documented plugin API: read-only state snapshots with listeners, plus named commands over
