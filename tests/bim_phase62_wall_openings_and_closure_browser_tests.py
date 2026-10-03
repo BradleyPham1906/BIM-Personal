@@ -224,7 +224,13 @@ def source_level_checks(path):
     print("\n== Source-level: no remote dependency ==")
     src = path.read_text(errors="replace")
     hosts = set(re.findall(r'https?://([A-Za-z0-9._-]+)', src))
-    external = sorted(h for h in hosts if not h.endswith("w3.org"))
+    # AMENDED FOR V132: the owner asked for the map and open data ("just like how giraffe do").
+    # The map's own servers and their credit links are the only remote names allowed, and they are
+    # asked only once the map is turned on or an address is found -- V132's suite proves no
+    # request is made before that. example.org is the reserved name in the custom URL's hint.
+    v132 = {"tile.openstreetmap.org", "server.arcgisonline.com", "nominatim.openstreetmap.org",
+            "www.openstreetmap.org", "www.arcgis.com", "tiles.example.org"}
+    external = sorted(h for h in hosts if not h.endswith("w3.org") and h not in v132)
     check(not external,
           "no external host referenced anywhere in the file (found: " + (", ".join(external) or "none") + ")")
     check("@font-face" not in src or "font-public" not in src,

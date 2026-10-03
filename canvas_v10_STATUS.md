@@ -11220,3 +11220,166 @@ has its own full-width line.
     sha256            14630df8e1b0b95de2f917793cbb76fc652cd16a7cedba5dcbf8d10ef3739e7f
     markers           __acad3dV60 ... __acad3dV131, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
                       __acad3dV121b
+
+## Phase 132 (V132) - The map
+
+The owner wants the map "just like how giraffe do", with free sources only ("i just want free
+stuff"), and "as much open public data as possible". The research is in
+`reference/research-map.md`; the sources and their terms are catalogued in
+`reference/research-open-data.md`.
+
+### What was built (patches 132a to 132c)
+
+- **a -- the engine.**
+  - **Georeferencing.**
+    - The latitude and longitude the project already stores (V107's sun settings) are model 0,0,
+      the same convention as V108's survey base point.
+    - True north (V103) turns the model on the earth: east is model `(cos tn, sin tn)`, north
+      `(sin tn, -cos tn)`.
+    - Metres become degrees through the WGS84 ellipsoid's meridian and prime-vertical radii at the
+      site's latitude. A sphere would be up to 0.7% off north-south.
+    - Checked against an independent Vincenty geodesic: 2 cm over 300 m, 0.005°.
+  - **Which tiles.** The map is Web Mercator, on the slippy-map tile scheme.
+    - The zoom is the view's metres per pixel: `z = round(log2(156543.034 · cos φ / mpp))`. It is
+      clamped to 1 to 19, then lowered while the view would need more than 80 tiles.
+    - The extent is the screen on the ground: in plan, the four corners; in 3D, a 7 × 7 grid of
+      screen points, with any point past three camera distances from the target pulled in to it.
+    - Nearest the centre first.
+  - **The tile store.**
+    - Image elements asked with `crossOrigin`, at most 12 in flight.
+    - About 400 kept; the least recently drawn go first.
+    - While a tile loads, its parent (up to four levels up) is drawn stretched over it.
+    - A failure is counted against its host.
+  - **Drawing.**
+    - **WebGL:** a textured quad per tile on the lowest level's plane, just under it. It is drawn
+      first, without writing depth, so every solid draws over it, with the solids' own view and
+      projection matrices. Opacity mixes toward the background in the shader.
+    - **The 2D canvas** (the presentation appearance, and the renderer without WebGL): in plan,
+      each tile is an image under an affine transform from three of its corners. A canvas has no
+      perspective texture, so in 3D this renderer draws no map, and says why.
+    - **Never on paper.** Sheets and every export leave the basemap out.
+  - **The credit line** over the viewport (bottom right; top left on a narrow screen):
+    - OpenStreetMap's credit, linked to its copyright page;
+    - Esri's for the imagery;
+    - the owner's own for custom tiles;
+    - each host whose tiles did not load, by name and count: "offline, or the server does not
+      allow browser access".
+  - **The settings** live in `A3D.site.map` (style, opacity, URL, credit), so the undo, the
+    project file, the browser store and the project tabs carry them with no list of their own.
+    Each change is one undo step, and refused with its reason (an opacity outside 10 to 100%, a
+    URL without `{z}`, `{x}` and `{y}`, or not http or https).
+- **b -- Properties, the address, site data, the commands.**
+  - **The Map group** (with nothing selected, after Identity Data). It holds:
+    - the basemap and its opacity;
+    - the custom tile URL and its credit;
+    - an address and Find;
+    - where model 0,0 is;
+    - Import GeoJSON or KML, and Export GeoJSON.
+  - **The address: Nominatim,** one request per Find.
+    - Nominatim's policy allows a request a second and no search as you type, so a second Find
+      inside the second is refused, with the reason, not sent.
+    - The place found becomes the site's latitude and longitude, so model 0,0 is there. The view
+      goes to it, and the street map comes on if the map was off. One undo puts it all back.
+    - FINDADDRESS opens a Find box; Enter in the Address field finds too.
+  - **Site data in (GEOIMPORT):** GeoJSON (RFC 7946) or KML.
+    - Each polygon ring becomes a closed sketch, holes included and marked. Lines become open
+      sketches, and points become points.
+    - Everything goes on a Site data layer at the lowest level; the current layer stays as it was.
+    - Each feature's properties are kept (`o.geo`) and shown in a Site Data group in Properties.
+    - Longitude and latitude only. A projected grid, or a `crs` naming anything but WGS84, is
+      refused with the position or the CRS named, and nothing is placed.
+    - With no site place yet, the data's centre becomes it.
+    - One undo takes the import back, the place included. KMZ is refused: unzip it first.
+    - `.geojson` and `.kml` also open through Import CAD and a drop.
+  - **The plan out (GEOEXPORT),** as GeoJSON in longitude and latitude:
+    - rooms, floors, roofs, ceilings, columns, footings, property lines, closed sketches and
+      masses as polygons (a mass as its footprint, sliced at its first floor, holes inside their
+      outer ring);
+    - walls (the centreline), alignments and open sketches as lines;
+    - points as points.
+
+    Each feature carries its name, kind, layer, level, usage and area (a mass also its height and
+    GFA). Coordinates are rounded to 8 decimals, about a millimetre. Site data goes back out with
+    its own properties and source. A `bim_site` member says where model 0,0 is and the true north.
+    Refused, with the reason, while the site has no place.
+  - **MAP (BASEMAP)** steps off, street, satellite, and custom once it has a URL.
+  - **The ribbon:** Map, Find Address and Import GeoJSON lead Massing & Site's Site panel, and
+    GeoJSON joins Manage's Export, so the tools panel and the search list all four. Their search
+    words include satellite, aerial, geocode, kml and parcels.
+- **c -- the hooks:**
+  - `__a3dModelToGeo`, `__a3dGeoToModel`;
+  - `__a3dMapSettings`, `__a3dMapSet`, `__a3dMapCommand`;
+  - `__a3dMapTiles`, `__a3dMapTileCorners`, `__a3dMapDrawn`, `__a3dMapFooter`, `__a3dMapCache`;
+  - `__a3dMapFind`, `__a3dMapFindReset`;
+  - `__a3dGeoImportText`, `__a3dGeoExport`, `__a3dGeoOf`;
+  - `__a3dCamSet`;
+  - the marker.
+- **Refactor:** V131's slicer now gives its loops (`bimMeshSliceLoops`). `bimMeshSliceArea`
+  measures them as before, and the export writes a mass's footprint from them.
+
+### Bugs found, and what each taught
+
+**1. A routed response cannot test CORS.** The first suite "failed" a tile server by answering
+through Playwright with no `Access-Control-Allow-Origin` header, and the tiles drew anyway: the
+harness answers CORS for a routed request. The check now starts a real HTTP server on this machine
+that sends no CORS header. Its log shows the browser asked, and the page shows the browser kept the
+tiles from it. **A browser security rule is tested against a real server, never a mocked
+response.** A dropped connection (`route.abort`) stands for offline.
+
+**2. A fallback check passed on the wrong tiles.** The parent-while-loading check first ran where
+an earlier section had already stored the finer tiles, so some came from the store, not their
+parent. It now runs over an area nothing has visited. **A cache check starts from an empty cache
+(V128's lesson again: the fixture must need the rule).**
+
+**3. Two checks were weaker than their words.** "The zoom steps down past 80 tiles" was an `or`
+that any count under 80 passed. It now shows the zoom stepped down from the formula's level to the
+first with at most 80 tiles, and that one level finer would have needed more (56 against 210). The
+data-centre check had its own arithmetic wrong; the page was right.
+
+### Deliberately not done
+
+- The basemap on sheets and exports. A plot with it would have to carry its credit; that is done
+  once, with V134's data layers.
+- Vector tiles (OpenFreeMap). They are the move if the app is ever sold or heavily used. The tile
+  URL is a setting, so raster providers change with no code.
+- Neighbouring buildings, terrain and data layers: V133 and V134.
+- KMZ (zipped KML): no unzipper is built in.
+
+### Suites
+
+- New: `bim_phase132_map_browser_tests.py`, 157 checks in eleven sections. Every server is
+  routed inside the browser, or is a real local server, so the suite runs offline. The sections:
+  - off until asked: no request at all before the map is on;
+  - georeferencing, against the closed form and an independent Vincenty geodesic, at three true
+    norths;
+  - which tiles: the zoom, the extent recomputed from the camera's own formulas, the URL
+    templates, the cap, the corners;
+  - the store: 12 in flight, nearest first, no tile asked twice, a parent while loading, the store
+    kept near 400;
+  - on screen: pixels 0.6 m either side of a tile's edges, in WebGL and on the 2D canvas, with true
+    north 0 and 30; opacity; a solid over the map; an elevation; a PNG export with none of the map;
+  - failures: offline, and a real server with no CORS header, each named;
+  - settings: refusals, custom tiles, undo, the credit line on a sheet;
+  - the address: one request, its URL, the place, the undo, the throttle, nothing found, a server
+    error, Enter, FINDADDRESS;
+  - site data in: GeoJSON and KML, through the hook and the file picker;
+  - the plan out, back onto the model within 2 mm;
+  - the commands, the search, and a reload.
+- Falsified by 49 variants, all caught (`Phase/falsify_phase132.py`).
+- Amended: V73 (the project page has a Map group after Identity Data); V62 (the map's servers are
+  the only remote names allowed).
+
+### Full regression
+
+88 suites, 3222 checks, 0 failures. Falsification: V132 49 of 49. The first sweep caught 46: an
+unreachable elevation guard (removed; the no-ground-point exit says "side"), an undo check that
+passed without its step, and a search word also in the description. The patch chain rebuilds the
+build byte for byte from `Phase/canvas_v10.html.bak_phase132_pre`. V62 was amended: its "no
+external host" rule now allows exactly the map's own servers and credit links.
+
+### State after V132
+
+    canvas_v10.html   1,865,050 bytes
+    sha256            e7d1a6001309b6bbced71d75664ae37b4cb1a1127af038c80783a31273e15de3
+    markers           __acad3dV60 ... __acad3dV132, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
+                      __acad3dV121b

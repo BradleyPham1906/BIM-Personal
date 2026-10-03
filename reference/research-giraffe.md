@@ -120,7 +120,8 @@ help articles, via search summaries.
 The owner chose all four, ahead of the MEP runs, and then asked for the map "just like how giraffe do" (see PIPELINE.md for the order):
 
 1. **V131 Usages and live areas,** with simple formula properties.
-2. **V132 The map:** basemaps, address search, and GeoJSON/KML import and export.
+2. **V132 The map:** basemaps, address search, and GeoJSON/KML import and export. Built; how it
+   works and why is in `research-map.md`.
 3. **V133 Site context in one click:** OSM buildings, roads and water, and terrain.
 4. **V134 Data layers** by URL, with presets and feature query.
 5. **V135 A zoning envelope:** setbacks, stepbacks and a height limit, in 3D.

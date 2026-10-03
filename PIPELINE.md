@@ -2,11 +2,11 @@
 
 **Read this first in a new session.** One page. The detail lives in the docs listed at the bottom.
 
-    canvas_v10.html   1,817,723 bytes
-    sha256            14630df8e1b0b95de2f917793cbb76fc652cd16a7cedba5dcbf8d10ef3739e7f
-    markers           __acad3dV60 ... __acad3dV131, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
+    canvas_v10.html   1,865,050 bytes
+    sha256            e7d1a6001309b6bbced71d75664ae37b4cb1a1127af038c80783a31273e15de3
+    markers           __acad3dV60 ... __acad3dV132, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
                       __acad3dV121b
-    tests             87 suites, 3065 checks, 0 failures
+    tests             88 suites, 3222 checks, 0 failures
 
     Run the regression in parallel: tests/run_all.py [build] [filter] [-jN], default -j6,
     about 4 minutes; give it the build's absolute path. tests/falsify_all.py
@@ -22,7 +22,7 @@ with anchored Python scripts that assert exact match counts.
 
 ---
 
-## NOW - the map and open data, Giraffe's other ideas, then the MEP runs (V132 to V138)
+## NOW - open data, Giraffe's other ideas, then the MEP runs (V133 to V138)
 
 The owner looked at Giraffe (giraffe.build), a map-first feasibility app, and chose four of its
 ideas, ahead of the MEP runs, then asked for the map "just like how giraffe do". The research, with an
@@ -53,8 +53,7 @@ V128 to V130 settled how commands are found (see Recently finished):
 
 | # | Phase | Scope | Notes |
 |---|---|---|---|
-| 132 | The map | **Start here.** Street and satellite basemaps under the plan and the 3D ground, placed by the project's latitude, longitude and true north and drawn by our own renderer; address search (Nominatim); a cached tile store and an attribution footer; GeoJSON/KML import of parcels and GeoJSON export | The owner: "just like how giraffe do", free only, "as much open public data as possible". Sources, licences and rules: `reference/research-open-data.md`. No API keys; offline-first. |
-| 133 | Site context in one click | From the site's extent: OSM buildings (at their height, or levels × 3 m), roads, water and trees via Overpass, as locked context; terrain from AWS Terrain Tiles into V108's TIN | Microsoft and Overture footprints as file imports where OSM is thin. |
+| 133 | Site context in one click | **Start here.** From the site's extent: OSM buildings (at their height, or levels × 3 m), roads, water and trees via Overpass, as locked context; terrain from AWS Terrain Tiles into V108's TIN | Microsoft and Overture footprints as file imports where OSM is thin. |
 | 134 | Data layers | A Data section: catalogue presets (council parcels and zoning, FEMA flood...) plus any ArcGIS REST, WMS, WFS or GeoJSON URL; click to read a feature; a parcel becomes a property line | Giraffe's data layers. A server without CORS is reported by name. |
 | 135 | Zoning envelope | Setbacks, stepbacks and a height limit on a property become a 3D envelope; massing outside it is flagged | Builds on V103's setbacks; Giraffe's Basic Envelope. |
 | 136 | Colour-by-property lens | Colour by usage, level, type or any property, with a legend, under Appearance | Giraffe's lenses; Revit's colour schemes. |
@@ -67,7 +66,7 @@ V128 to V130 settled how commands are found (see Recently finished):
 ### LATER - Track A, drafting (moved behind Track B in V100)
 
 The numbers in this table are its order, not phase numbers: a phase takes the next free V number
-when it starts (V111 to V131 went to other work; V132 to V138 are in NOW).
+when it starts (V111 to V132 went to other work; V133 to V138 are in NOW).
 
 | # | Phase | Scope | Notes |
 |---|---|---|---|
@@ -81,7 +80,24 @@ when it starts (V111 to V131 went to other work; V132 to V138 are in NOW).
 | 118 | Blocks and data | ATTDEF ATTEDIT BEDIT WBLOCK DATAEXTRACTION TABLESTYLE TABLEDIT TABLEEXPORT | First phase that's about the disciplines, not drafting. BLOCK and INSERT landed in V124, as the Assets library's blocks: saved records inserted as independent copies. A block reference that follows its definition (what BEDIT edits) is not built. |
 | 119 | Sheets and plotting, rest | MVIEW (draw a viewport on the paper) PAGESETUP (plot settings beyond Sheet Setup) PUBLISH (V122's Print set prints every sheet in one job; a chosen subset and page setups remain) EXPORTPDF (vector PDF of a sheet) VPLAYER (per-viewport layer visibility) viewport lock | LAYOUT, MSPACE and PSPACE landed in V116, with layout tabs and model space through a viewport. |
 
-**Recently finished:** Phase 131 (V131), **usages and live areas**, the first of Giraffe's ideas.
+**Recently finished:** Phase 132 (V132), **the map**, "just like how giraffe do", free sources only.
+- **Placed on the earth:** the site's latitude and longitude are model 0,0 and true north turns
+  the model; metres become degrees on the WGS84 ellipsoid (checked against a Vincenty geodesic).
+- **The basemap:** OpenStreetMap's street map, Esri's imagery, or any `{z}/{x}/{y}` tile URL with
+  its own credit, under the plan and the 3D ground, in WebGL and on the 2D canvas. Off until
+  turned on, so nothing is asked of the network until then; never on paper.
+- **Tiles:** zoom from metres per pixel, at most 80 a view, 12 in flight, nearest first, a parent
+  while one loads, about 400 kept. A server that fails, or does not allow browser access, is named
+  in the credit line.
+- **The address:** Find (Nominatim, one request a press, a second a second) puts the site there.
+- **Site data:** GeoJSON and KML in, as sketches and points with their properties on a Site data
+  layer (a projected file refused with the reason); the plan out as GeoJSON in longitude and
+  latitude, a mass as its footprint.
+- **Commands:** MAP, FINDADDRESS, GEOIMPORT, GEOEXPORT, on the ribbon and in the search.
+- **Checked** in 157 checks and 49 falsify variants. A routed response cannot fail CORS (the
+  harness answers it), so the suite starts a real local server that sends no CORS header.
+
+Phase 131 (V131), **usages and live areas**, the first of Giraffe's ideas.
 - **The library:** a usage (Residential, Office, Retail, Hotel, Parking, or your own) carries a
   colour, GBA→GFA and GFA→NSA ratios, a floor-to-floor height, parameters and formulas. It is kept
   with the project's types.
