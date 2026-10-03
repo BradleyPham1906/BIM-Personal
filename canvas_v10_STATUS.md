@@ -11795,3 +11795,144 @@ the build from `Phase/canvas_v10.html.bak_phase136_pre`. The diff is ES5-clean.
     canvas_v10.html   1985478 bytes
     sha256            170a93b676579f1451db50f0eda126ad6ee716133b69a164a259fd3f5892bd78
     markers           __acad3dV60 ... __acad3dV136, __acad3dV134d (and the 133d to 133f markers)
+
+## Phase 137 (V137) - The map on 3D terrain, and buildings on the ground
+
+The owner's Cửu Long screenshot: the satellite map over the hills. V108's surfaces were plan-only and
+V133's buildings stood on the flat level. The note is in `reference/research-map.md` (V137).
+
+### What was built (patches 137a, 137b)
+
+- **a -- the engine.**
+  - **A surface in 3D.** Every shown terrain surface is drawn in 3D views (not plan, not on paper)
+    as a GL mesh of its TIN. It is shaded by smooth vertex normals, in its colour (blue when
+    selected). Plan views keep V108's contours and the flat basemap.
+  - **The map draped over it.**
+    - With the map on, the tiles over the surface's area are taken at the view's zoom, lowered
+      while more than 36 would be needed.
+    - Each tile is drawn over the whole mesh, its texture placed by every vertex's Web Mercator
+      position (at zoom 22, from a corner of the surface's own, so the numbers stay small).
+      Anything outside the tile is discarded.
+    - A tile still loading shows its loaded parent, as on the flat map.
+    - The map's opacity mixes the surface colour and the tile, and the light still shades the drape.
+  - **The 2D renderer** puts the surface's triangles into its painter's sort in 3D views.
+  - **Buildings on the terrain:** a Site Context setting (`onGround`), on unless turned off.
+    - Each context building is raised to the lowest height of the context surface under its
+      footprint's corners, read by V127's `bimTinHeightAt`. Failing that, its recorded ground.
+    - This happens when CONTEXT places the buildings, and when the setting changes, in that
+      setting's undo step.
+- **b -- the panel, Properties, hooks and the marker.**
+  - Site Context's Buildings: On the terrain.
+  - A building's Properties: Stands at.
+  - Hooks `__a3dTerrain3d`, `__a3dCtxStand`, `__a3dDrapeTiles`, `__a3dTerrainPolys`.
+
+### Bugs found
+
+- **A second `bimTinHeightAt`.** V127 already had one, and mine silently replaced it, because the
+  later declaration wins. V97's check that every hook is defined once caught the duplicate hook.
+  Mine is gone, and V137 reads V127's.
+- **Two falsify variants were not caught at first:** a surface drawn flat, and the 36-tile cap.
+  - A flat and a raised hill look alike from above, so the suite now checks the hill's silhouette
+    from the front.
+  - The fixture never needs 36 tiles, so the cap is checked directly on a 2 km extent.
+- **Two test samples sat on lines:** the vertical axis at x = 0, and a percent sign in a check's
+  message, which needed escaping.
+
+### Suites
+
+- New: `bim_phase137_terrain_3d_browser_tests.py`, 28 checks. It reuses V132's tile colours and
+  V133's Overpass and terrain fixtures.
+- Falsified by `Phase/falsify_phase137.py`, 23 variants, all caught.
+- Amended: V133's default settings now include `onGround`.
+
+### Not done
+
+- Roads, water and green, which are sketches, stay on the flat level, not draped.
+- Buildings cut into a slope: they stand on the lowest corner, so they float over the higher side.
+- The map draped in the 2D renderer: a canvas has no perspective texture.
+
+### Full regression and state after V137
+
+94 suites, 3582 checks, 0 failures. Falsification: V137 23 of 23. The chain 137a, 137b rebuilds the
+build from `Phase/canvas_v10.html.bak_phase137_pre`. The diff is ES5-clean.
+
+    canvas_v10.html   1996745 bytes
+    sha256            3d63565958383183ad0a552210c7f21a45364d285396495d2d76dc61a6780b82
+    markers           __acad3dV60 ... __acad3dV137, __acad3dV134d (and the 133d to 133f markers)
+
+## Phase 138 (V138) - Verify the survey
+
+The owner: "build the genesis of a good foundation so data can be verified every time". The
+research is in `reference/research-survey-check.md`, and how to add a survey is in
+`tests/data/surveys/README.md`.
+
+### What was built (patches 138a, 138b)
+
+- **a -- the engine.** `bimSurveyCheck(o)` gives one report per surface, cached against the survey,
+  the check shots, the control and the context terrain:
+  - **read:** lines skipped, by number;
+  - **duplicates:** by point name (V108 now keeps their names);
+  - **through every point:** 1 mm;
+  - **triangles:** none of zero area; thin ones counted;
+  - **bust shots:** a weighted plane through each point's neighbours, widened at corners; over 0.5 m
+    and six times the scatter; the worst set aside and the rest looked at again;
+  - **check shots:** RMSE and the worst;
+  - **control points:** 2 cm;
+  - **public terrain:** offset, and the relief ratio for feet read as metres.
+
+  Also:
+  - **The verdict.**
+  - **A report page** to export.
+  - **Check shots at import:** shots whose description starts with the check code (CHK) are kept
+    out of the surface, in `o.checks`.
+  - **Control points,** typed as `name=elevation`, kept in `o.control` (one undo step).
+- **b -- the app.**
+  - SURVEY's dialog opens a file and names the check code.
+  - A surface's Survey Check group shows the verdict, each check with its mark, Control, and
+    Export Report.
+  - SURVEYCHECK (VERIFYSURVEY, QA).
+  - Hooks `__a3dSurvey*`, and the marker.
+- **Outside the build:**
+  - `tests/data/surveys/`: the seeds and the README.
+  - `tools/make_seed_survey.py`: writes the seeds.
+  - `tools/verify_survey.py`: any survey file checked headless, with a report and an exit status
+    (0 pass, 1 warn, 2 fail).
+
+### Bugs found
+
+- **The first bust predictor (an inverse-distance mean) flagged every edge point** of a tilted
+  ground: a mean cannot reproduce a slope when every neighbour is on one side. It is now a plane
+  through the neighbours.
+- **A survey's corners have two neighbours,** too few for a plane, so a corner uses theirs too.
+- **The first falsify run missed six variants,** each a gap closed with real data:
+  - a point moved under a stale triangulation (fidelity);
+  - a flat car park with a manhole lid (the 0.5 m floor);
+  - the RMSE checked to its exact value;
+  - a second control point away from the base, in feet;
+  - a missing control name alone;
+  - the panel read after an edit. The test hook had been clearing the cache and hiding stale
+    reports.
+- **The seed's own expectations were wrong twice:**
+  - the point count (the duplicate counted out twice);
+  - control point 113's position (row 8, column 8 is 2070 E).
+
+  Building the reference data is checked like the code.
+
+### Suites
+
+- New: `bim_phase138_survey_check_browser_tests.py`, 57 checks, including every dataset in
+  `tests/data/surveys/`.
+- Falsified by `Phase/falsify_phase138.py`, 33 variants, all caught.
+
+### Not done
+
+- Breaklines and boundaries, horizontal control, LandXML and raw total-station files.
+
+### Full regression and state after V138
+
+95 suites, 3639 checks, 0 failures. Falsification: V138 33 of 33. The chain 138a, 138b rebuilds the
+build from `Phase/canvas_v10.html.bak_phase138_pre`. The diff is ES5-clean.
+
+    canvas_v10.html   2017560 bytes
+    sha256            f2a259d2af039f63c7e5a2b76a27dc8bdd4ef705968db59615739bdfb1476aa5
+    markers           __acad3dV60 ... __acad3dV138, __acad3dV134d (and the 133d to 133f markers)

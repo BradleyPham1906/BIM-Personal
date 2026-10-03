@@ -170,3 +170,20 @@ placeholder stays for custom tile URLs that offer `@2x` tiles.
 **The lesson, twice over:** a free tile server's rules about who may ask (a Referer, a key) do not
 show in a routed suite, and its refusal is a picture. Only the owner's own screen shows it. A
 provider that already works for the owner, Esri, is the one to lean on.
+
+## V137: the map on 3D terrain
+
+- **The surface** is V108's TIN, drawn as a GL mesh with smooth normals.
+- **The drape.** Each tile is a separate pass over the whole mesh. A vertex carries its Web
+  Mercator position at zoom 22, measured from a corner of its own surface. A pass maps that
+  position to the tile's 0 to 1 square and discards everything outside it. So:
+  - the drape needs no clipping of triangles at tile edges;
+  - it lines up with the flat map exactly, because both come from the same tile corners and the
+    same georeferencing;
+  - Mercator is close enough to linear across one triangle (a few metres) for straight
+    interpolation.
+- **The tiles** are the view's zoom over the surface's area, at most 36. Lowering the zoom keeps a
+  wide surface to that.
+- **Buildings** stand on the lowest ground under their corners. That is what a site model shows
+  before grading: a building on a slope is stepped in or cut, and the lowest corner is where its
+  ground floor meets the ground.

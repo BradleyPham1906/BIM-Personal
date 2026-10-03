@@ -502,9 +502,6 @@ body.light-theme .a3d-uerr{color:#b3261e}
 .a3d-fdk{font-size:10.5px;opacity:.65;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .a3d-fdrow .a3d-pedit{flex:none}
 .a3d-dllens .a3d-ukv select{flex:1;min-width:0}
-.a3d-svck{display:inline-block;min-width:14px;font-weight:700;text-align:center}
-.a3d-svck-pass{color:#4caf50}.a3d-svck-warn{color:#ffb74d}.a3d-svck-fail{color:#ef5350}.a3d-svck-none{color:#8a96a3}
-.a3d-svrow .a3d-pstatic{white-space:normal}
 .a3d-dllens .a3d-ukv input[type=number]{width:54px}
 body.light-theme .a3d-ctxlink{color:#0b5cad}
 .a3d-dlgwide .a3d-dlgrow input{width:100%;box-sizing:border-box}
@@ -802,7 +799,6 @@ body.a3d-tree-docked #a3d-leftpanel > .a3d-tree .a3d-palhd .a3d-palbtns{flex-wra
     ['TRIBAREA',['TRIBUTARY','TRIB'],'tribarea','Show or hide the tributary area each column carries on this level'],   /* __acad3dV106 */
     ['AREAPLAN',['AREA','GROSSAREA','AP'],'areaplan','Show or hide the gross area inside the exterior walls on this level'],   /* __acad3dV105b */
     ['SUNSTUDY',['SHADOWS','SUNPATH'],'sunstudy','Show or hide the shadows on the ground and the sun path, for the site date and time'],   /* __acad3dV107 */
-    ['SURVEYCHECK',['VERIFYSURVEY','QA'],'surveycheck','Check a survey surface: every line read, duplicates, the surface through every point, bust shots, check shots, control points, and the public terrain'],   /* __acad3dV138 */
     ['SURVEY',['TOPO','SURFACE'],'survey','Make a terrain surface from survey points: contours, and cut and fill against building pads'],   /* __acad3dV108 */
     ['FOOTING',['FTG'],'footing','Isolated footing under a column'],
     ['FOOTINGSALL',[],'footingall','Footings under every column on the active level'],
@@ -4222,204 +4218,13 @@ try{
       return [dE*ct+dN*st,dE*st-dN*ct,(r.z-base.z)*u,r.p||'',r.d||''];
     });
   }
-  /* ================= __acad3dV138: verify the survey ================= */
-  var BIM_SURVEY_TOL={fidelity:0.001,bustMin:0.5,bustK:6,bustMax:25,checkPass:0.05,checkWarn:0.15,control:0.02,offsetWarn:1.0};
-  var BIM_SURVEY_CHECK_CODE='CHK';
-  var A3D_SURVEYCHK={};
-  function bimMedian(a){
-    if(!a.length)return 0;
-    var s=a.slice().sort(function(x,y){return x-y;}),m=s.length>>1;
-    return s.length%2?s[m]:(s[m-1]+s[m])/2;
-  }
-  function bimSurveyName(o,i){var s=o.survey[i];return String((s&&s[3])||('#'+(i+1)));}
-  /* the TIN's neighbours of each point */
-  function bimTinNeighbours(tin){
-    var nb=tin.P.map(function(){return {};}),t,k,a,b;
-    for(t=0;t<tin.tris.length;t++)for(k=0;k<3;k++){a=tin.tris[t][k];b=tin.tris[t][(k+1)%3];nb[a][b]=1;nb[b][a]=1;}
-    return nb.map(function(m){var out=[],j;for(j in m)if(m.hasOwnProperty(j))out.push(+j);return out;});
-  }
-  /* bust shots: each point against a plane through its neighbours, the flagged left out */
-  function bimSurveyBusts(tin){
-    var nb=bimTinNeighbours(tin),out=[],flag={},iter,i,j,k,ws,s,d,dev,devs,best,bi,thr,mad;
-    for(iter=0;iter<BIM_SURVEY_TOL.bustMax;iter++){
-      devs=[];best=0;bi=-1;
-      for(i=0;i<tin.P.length;i++){
-        if(flag[i]){devs.push(null);continue;}
-        /* a plane through the neighbours, weighted 1/d^2, read at the point: a tilted ground is
-           predicted exactly, even at the edge, where every neighbour is on one side */
-        var S=[0,0,0,0,0,0],R=[0,0,0],dx,dy,w,cnt=0,pr=null,J=[],seenJ={},k2;
-        for(k=0;k<nb[i].length;k++)if(!flag[nb[i][k]]){J.push(nb[i][k]);seenJ[nb[i][k]]=1;}
-        /* a corner has two neighbours, too few for a plane: their neighbours too */
-        if(J.length<3)for(k=0,k2=J.length;k<k2;k++)nb[J[k]].forEach(function(q){if(q!==i&&!flag[q]&&!seenJ[q]){seenJ[q]=1;J.push(q);}});
-        ws=0;s=0;
-        for(k=0;k<J.length;k++){
-          j=J[k];
-          dx=tin.P[j][0]-tin.P[i][0];dy=tin.P[j][1]-tin.P[i][1];d=dx*dx+dy*dy;if(!(d>1e-12))continue;
-          w=1/d;cnt++;ws+=w;s+=w*tin.H[j];
-          S[0]+=w;S[1]+=w*dx;S[2]+=w*dy;S[3]+=w*dx*dx;S[4]+=w*dx*dy;S[5]+=w*dy*dy;
-          R[0]+=w*tin.H[j];R[1]+=w*tin.H[j]*dx;R[2]+=w*tin.H[j]*dy;
-        }
-        if(cnt>=3){
-          var det=S[0]*(S[3]*S[5]-S[4]*S[4])-S[1]*(S[1]*S[5]-S[4]*S[2])+S[2]*(S[1]*S[4]-S[3]*S[2]);
-          if(Math.abs(det)>1e-12*Math.max(1,S[0]*S[3]*S[5]))
-            pr=(R[0]*(S[3]*S[5]-S[4]*S[4])-S[1]*(R[1]*S[5]-S[4]*R[2])+S[2]*(R[1]*S[4]-S[3]*R[2]))/det;
-        }
-        if(pr===null&&ws>0)pr=s/ws;   /* too few, or in a line: their weighted mean */
-        dev=pr!==null?tin.H[i]-pr:null;devs.push(dev);
-      }
-      mad=bimMedian(devs.filter(function(v){return v!==null;}).map(Math.abs))*1.4826;
-      thr=Math.max(BIM_SURVEY_TOL.bustMin,BIM_SURVEY_TOL.bustK*mad);
-      for(i=0;i<devs.length;i++)if(devs[i]!==null&&Math.abs(devs[i])>best){best=Math.abs(devs[i]);bi=i;}
-      if(bi<0||best<=thr)break;
-      flag[bi]=1;out.push({i:bi,dev:devs[bi],thr:thr});
-    }
-    return out;
-  }
-  function bimSurveyCheckKey(o){
-    var ct=bimCtxTerrainObj();
-    return (o.rev||0)+':'+(o.survey||[]).length+':'+JSON.stringify(o.checks||[]).length+':'+JSON.stringify(o.control||[])+':'+
-      (ct&&ct!==o?ct.id+'/'+(ct.rev||0)+'/'+ct.survey.length:'-')+':'+JSON.stringify(o.pos||[]);
-  }
-  /* the report */
-  function bimSurveyCheck(o){
-    if(!o||o.t!=='terrain'||!o.survey)return null;
-    var key=bimSurveyCheckKey(o),c=A3D_SURVEYCHK[o.id];
-    if(c&&c.key===key)return c.r;
-    var tin=bimTerrainTin(o),src=o.source||{},u=BIM_SURVEY_UNITS[src.units]||1,items=[],r,i,h,x;
-    function item(key,label,status,text,detail){items.push({key:key,label:label,status:status,text:text,detail:detail||null});}
-    var skipped=src.skipped||[],dups=src.duplicates||[];
-    item('read','Read',skipped.length?'warn':'pass',o.survey.length+' point'+(o.survey.length===1?'':'s')+' in the surface'+
-      ((o.checks||[]).length?', '+o.checks.length+' check shot'+(o.checks.length===1?'':'s')+' kept out':'')+
-      (skipped.length?'; line'+(skipped.length===1?' ':'s ')+skipped.slice(0,12).join(', ')+(skipped.length>12?' ...':'')+' could not be read':'; every line read'),{skipped:skipped.slice()});
-    item('duplicates','Duplicates',dups.length?'warn':'pass',dups.length?dups.length+' at a place already surveyed, left out: '+dups.slice(0,10).join(', ')+(dups.length>10?' ...':''):'none',{names:dups.slice()});
-    if(!tin||!tin.tris.length){item('fidelity','Surface','fail','could not be triangulated');}
-    else{
-      /* fidelity: the surface through every point */
-      var maxr=0,wi=-1,out=0;
-      for(i=0;i<tin.P.length;i++){
-        h=bimTinHeightAt(tin,tin.P[i][0],tin.P[i][1]);
-        if(h===null){out++;continue;}
-        if(Math.abs(h-tin.H[i])>maxr){maxr=Math.abs(h-tin.H[i]);wi=i;}
-      }
-      item('fidelity','Through every point',(maxr<=BIM_SURVEY_TOL.fidelity&&!out)?'pass':'fail',
-        out?out+' point'+(out===1?'':'s')+' not on the surface':('largest difference '+(maxr*1000).toFixed(1)+' mm'+(wi>=0&&maxr>BIM_SURVEY_TOL.fidelity?' at '+bimSurveyName(o,wi):'')),{max:maxr,outside:out});
-      /* triangles */
-      var degen=0,sliv=0,t2,A,B,C,ar,ang;
-      for(t2=0;t2<tin.tris.length;t2++){
-        A=tin.P[tin.tris[t2][0]];B=tin.P[tin.tris[t2][1]];C=tin.P[tin.tris[t2][2]];
-        ar=Math.abs((B[0]-A[0])*(C[1]-A[1])-(C[0]-A[0])*(B[1]-A[1]))/2;
-        if(!(ar>1e-9)){degen++;continue;}
-        /* the smallest angle is opposite the shortest side, between the two longer: sin = 2 area / (their product) */
-        var sd=[Math.hypot(B[0]-C[0],B[1]-C[1]),Math.hypot(A[0]-C[0],A[1]-C[1]),Math.hypot(A[0]-B[0],A[1]-B[1])].sort(function(p2,q2){return p2-q2;});
-        ang=Math.asin(Math.min(1,2*ar/(sd[1]*sd[2])))*180/Math.PI;
-        if(ang<1)sliv++;
-      }
-      item('triangles','Triangles',degen?'fail':'pass',tin.tris.length+' triangles'+(degen?', '+degen+' with no area':'')+(sliv?', '+sliv+' thin (under 1 degree) at the edge':''),{count:tin.tris.length,degenerate:degen,slivers:sliv});
-      /* bust shots */
-      var bs=bimSurveyBusts(tin);
-      item('busts','Bust shots',bs.length?'fail':'pass',bs.length?bs.length+' far from their neighbours: '+bs.slice(0,8).map(function(b){
-          return bimSurveyName(o,b.i)+' '+(b.dev>0?'+':'')+(b.dev/u).toFixed(2)+' '+(src.units||'m');}).join(', ')+(bs.length>8?' ...':''):'none far from its neighbours',
-        {points:bs.map(function(b){return {name:bimSurveyName(o,b.i),desc:String(o.survey[b.i][4]||''),dev:b.dev,devUnits:b.dev/u};})});
-      /* check shots */
-      var ch=o.checks||[],res=[],sq=0,mx=0,mw=null,oo=0;
-      for(i=0;i<ch.length;i++){
-        x=bimObjOffset(o);
-        h=bimTinHeightAt(tin,ch[i][0]+x[0],ch[i][1]+x[2]);
-        if(h===null){oo++;res.push({name:String(ch[i][3]||''),dev:null});continue;}
-        var dv=(ch[i][2]+x[1])-h;res.push({name:String(ch[i][3]||''),dev:dv});
-        sq+=dv*dv;if(Math.abs(dv)>mx){mx=Math.abs(dv);mw=String(ch[i][3]||'');}
-      }
-      var nIn=res.length-oo,rmse=nIn?Math.sqrt(sq/nIn):null;
-      item('checks','Check shots',!ch.length?'none':(nIn?(rmse<=BIM_SURVEY_TOL.checkPass?'pass':(rmse<=BIM_SURVEY_TOL.checkWarn?'warn':'fail')):'warn'),
-        !ch.length?'none: code shots '+BIM_SURVEY_CHECK_CODE+' to keep them out of the surface and measure it':
-        (nIn?'RMSE '+(rmse/u).toFixed(3)+' '+(src.units||'m')+', worst '+(mx/u).toFixed(3)+' at '+mw+' ('+nIn+' shot'+(nIn===1?'':'s')+(oo?', '+oo+' off the surface':'')+')':'every check shot is off the surface'),
-        {rmse:rmse,max:mx,worst:mw,shots:res});
-    }
-    /* control */
-    var ctl=o.control||[],cres=[],cf=0,bz=(src.base&&isFinite(src.base.z))?src.base.z:0,j;
-    for(i=0;i<ctl.length;i++){
-      var got=null,nm=String(ctl[i].p);
-      for(j=0;j<o.survey.length;j++)if(String(o.survey[j][3])===nm){got=o.survey[j][2]+bimObjOffset(o)[1];break;}
-      if(got===null)for(j=0;j<(o.checks||[]).length;j++)if(String(o.checks[j][3])===nm){got=o.checks[j][2]+bimObjOffset(o)[1];break;}
-      var want=(ctl[i].z-bz)*u,df=got===null?null:got-want,ok=df!==null&&Math.abs(df)<=BIM_SURVEY_TOL.control;
-      if(!ok)cf++;
-      cres.push({p:nm,z:ctl[i].z,diff:df,ok:ok});
-    }
-    item('control','Control points',!ctl.length?'none':(cf?'fail':'pass'),!ctl.length?'none given: type the known elevations below':
-      cres.map(function(q){return q.p+(q.diff===null?' not in the survey':(q.ok?' ok':' off by '+(q.diff/u).toFixed(3)+' '+(src.units||'m')));}).join('; '),{points:cres});
-    /* against the public terrain */
-    var ct=bimCtxTerrainObj(),ctin=ct&&ct!==o?bimTerrainTin(ct):null;
-    if(!ctin||!tin)item('public','Public terrain','none',ct&&ct!==o?'could not be read':'none to compare with: get the site context');
-    else{
-      var dd=[],ps=[],gh;
-      for(i=0;i<tin.P.length;i++){gh=bimTinHeightAt(ctin,tin.P[i][0],tin.P[i][1]);if(gh!==null){dd.push(tin.H[i]-gh);ps.push([gh,tin.H[i]]);}}
-      if(dd.length<3)item('public','Public terrain','none','the survey and the public terrain overlap at '+dd.length+' point'+(dd.length===1?'':'s'));
-      else{
-        var off=bimMedian(dd),spr=bimMedian(dd.map(function(v){return Math.abs(v-off);}))*1.4826,mxg=0,myg=0,sxx=0,sxy=0,slope=null,note='',st='pass';
-        for(i=0;i<ps.length;i++){mxg+=ps[i][0];myg+=ps[i][1];}mxg/=ps.length;myg/=ps.length;
-        for(i=0;i<ps.length;i++){sxx+=(ps[i][0]-mxg)*(ps[i][0]-mxg);sxy+=(ps[i][0]-mxg)*(ps[i][1]-myg);}
-        var rel=Math.sqrt(sxx/ps.length);
-        if(rel>=0.25){slope=sxy/sxx;
-          if(Math.abs(slope-1/0.3048)<0.45){note='the survey\u2019s relief is 3.28 times the public terrain\u2019s: elevations in feet read as metres?';st='warn';}
-          else if(Math.abs(slope-0.3048)<0.08){note='the survey\u2019s relief is 0.30 of the public terrain\u2019s: metres read as feet?';st='warn';}}
-        if(!note&&Math.abs(off)>BIM_SURVEY_TOL.offsetWarn){note='the survey sits '+Math.abs(off).toFixed(2)+' m '+(off>0?'above':'below')+' the public terrain: check the base elevation or the datum';st='warn';}
-        item('public','Public terrain',st,(note?note+'; ':'')+dd.length+' points compared: offset '+(off>=0?'+':'')+off.toFixed(2)+' m, spread '+spr.toFixed(2)+' m'+
-          (slope!==null?', relief ratio '+slope.toFixed(2):'')+' (public terrain is good to a few metres)',{n:dd.length,offset:off,spread:spr,slope:slope});
-      }
-    }
-    var verdict='pass';
-    for(i=0;i<items.length;i++){if(items[i].status==='fail'){verdict='fail';break;}if(items[i].status==='warn')verdict='warn';}
-    r={id:o.id,name:o.name,verdict:verdict,items:items,units:src.units||'m',format:src.format||null,base:src.base||null,date:new Date().toISOString().slice(0,10),tol:BIM_SURVEY_TOL};
-    A3D_SURVEYCHK[o.id]={key:key,r:r};
-    return r;
-  }
-  function bimSurveyItem(r,key){var i;for(i=0;r&&i<r.items.length;i++)if(r.items[i].key===key)return r.items[i];return null;}
-  /* control points, typed as "105=30.000, 201=28.45": one undo step */
-  function bimSurveySetControl(o,text){
-    if(!o||o.t!=='terrain')return false;
-    var parts=String(text==null?'':text).split(/[,;\n]+/),out=[],bad=[],i,m;
-    for(i=0;i<parts.length;i++){
-      var s=parts[i].replace(/^\s+|\s+$/g,'');if(!s)continue;
-      m=/^([^=\s]+)\s*=\s*(-?\d+(\.\d+)?)$/.exec(s);
-      if(m)out.push({p:m[1],z:parseFloat(m[2])});else bad.push(s);
-    }
-    if(bad.length){a3dToast('A control point is name=elevation, like 105=30.000: '+bad.slice(0,3).join(', ')+' is not');refreshProps();return false;}
-    if(JSON.stringify(out)===JSON.stringify(o.control||[]))return true;
-    pushUndo();
-    if(out.length)o.control=out;else delete o.control;
-    refreshProps();saveSoon();
-    var r=bimSurveyCheck(o),c=bimSurveyItem(r,'control');
-    a3dToast(o.name+': control '+(c?c.text:''));
-    return true;
-  }
-  /* the report as a page to keep with the project */
-  function bimSurveyReportHtml(o){
-    var r=bimSurveyCheck(o),h,i,it,col={pass:'#2e7d32',warn:'#b26a00',fail:'#c62828',none:'#666'};
-    if(!r)return '';
-    function e(s){return bimEsc(String(s==null?'':s));}
-    h='<!doctype html><html><head><meta charset="utf-8"><title>Survey check: '+e(r.name)+'</title><style>body{font:14px/1.45 system-ui,sans-serif;margin:24px;color:#222}'+
-      'table{border-collapse:collapse;width:100%}td,th{border-bottom:1px solid #ddd;padding:6px 8px;text-align:left;vertical-align:top}.s{font-weight:600;text-transform:uppercase}</style></head><body>'+
-      '<h1>Survey check: '+e(r.name)+'</h1><p>'+e(r.date)+' &middot; '+e((r.format||'surface')+', '+r.units)+(r.base?' &middot; base N '+e(r.base.n)+', E '+e(r.base.e)+', Z '+e(r.base.z):'')+
-      '</p><p class="s" style="color:'+col[r.verdict]+'">'+e(r.verdict)+'</p><table><tr><th>Check</th><th>Result</th><th></th></tr>';
-    for(i=0;i<r.items.length;i++){it=r.items[i];h+='<tr><td>'+e(it.label)+'</td><td class="s" style="color:'+col[it.status]+'">'+e(it.status)+'</td><td>'+e(it.text)+'</td></tr>';}
-    h+='</table><p>Tolerances: surface '+(r.tol.fidelity*1000)+' mm; bust shots over '+r.tol.bustMin+' m and '+r.tol.bustK+' times the typical scatter; check shots RMSE '+
-      r.tol.checkPass+' m (pass), '+r.tol.checkWarn+' m (warn); control '+r.tol.control+' m; public terrain offset '+r.tol.offsetWarn+' m.</p></body></html>';
-    return h;
-  }
-  function bimSurveyReportExport(o){
-    var h=bimSurveyReportHtml(o);
-    if(!h){a3dToast('Select a surface to report on');return false;}
-    bimTriggerDownload(h,bimFileStem()+'-'+String(o.name).replace(/[^\w\-]+/g,'_')+'-survey-check.html','text/html');
-    a3dToast('Survey check report saved');
-    return true;
-  }
   /* __acad3dV108: a terrain surface -- its survey points in model coordinates, [x, z, y, point,
      description], and where they came from. Duplicate plan positions keep the first point. */
   function bimCreateTerrain(model,src,skipUndo){
-    var seen={},keep=[],dup=0,i,k,tris,o,dupNames=[];
+    var seen={},keep=[],dup=0,i,k,tris,o;
     for(i=0;i<model.length;i++){
       k=Math.round(model[i][0]*1e6)+'_'+Math.round(model[i][1]*1e6);
-      if(seen[k]){dup++;dupNames.push(String(model[i][3]||('#'+(i+1))));continue;}   /* __acad3dV138: named */
+      if(seen[k]){dup++;continue;}
       seen[k]=1;keep.push(model[i]);
     }
     if(keep.length<3){a3dToast('A surface needs at least 3 points in different places');return null;}
@@ -4427,7 +4232,6 @@ try{
     catch(eD){console.warn('[BIM] survey triangulation',eD);a3dToast('Those points could not be triangulated - see the console');return null;}
     if(!tris.length){a3dToast('Those points all lie on one line, so they make no surface');return null;}
     if(!skipUndo)pushUndo();
-    if(src&&typeof src==='object'&&dupNames.length)src.duplicates=dupNames.slice(0,200);   /* __acad3dV138 */
     A3D.counts.terrain=(A3D.counts.terrain||0)+1;
     o={id:'a3d-'+Date.now().toString(36)+'-'+(A3D.seq++),t:'terrain',name:'Surface_'+A3D.counts.terrain,col:'#b08559',
       pos:[0,0,0],layer:A3D.activeLayer,survey:keep,source:src||null,rev:1};
@@ -5502,18 +5306,12 @@ try{
   /* __acad3dV108: SURVEY. The base point is the survey coordinate that sits at model 0,0 and the
      elevation that sits at model y 0; it is kept on the site so a second survey lands in the same
      place, and it is offered back here. Blank northing and easting take the first point. */
-  function bimImportSurvey(res,fmt,units,base,checkCode){
+  function bimImportSurvey(res,fmt,units,base){
     try{
       pushUndo();
       A3D.site.surveyBase={n:base.n,e:base.e,z:base.z,units:units};
-      /* __acad3dV138: shots coded as checks are kept out of the surface, to measure it */
-      var code=String(checkCode==null?BIM_SURVEY_CHECK_CODE:checkCode).replace(/^\s+|\s+$/g,'').toUpperCase(),pts=[],chk=[],q;
-      for(q=0;q<res.points.length;q++){
-        if(code&&String(res.points[q].d||'').replace(/^\s+/,'').toUpperCase().indexOf(code)===0)chk.push(res.points[q]);else pts.push(res.points[q]);
-      }
-      var model=bimSurveyToModel(pts,units,base,bimTrueNorthDeg());
-      var o=bimCreateTerrain(model,{format:fmt,units:units,base:{n:base.n,e:base.e,z:base.z},skipped:res.bad.slice(0,50),checkCode:code},true);
-      if(o&&chk.length)o.checks=bimSurveyToModel(chk,units,base,bimTrueNorthDeg());
+      var model=bimSurveyToModel(res.points,units,base,bimTrueNorthDeg());
+      var o=bimCreateTerrain(model,{format:fmt,units:units,base:{n:base.n,e:base.e,z:base.z},skipped:res.bad.slice(0,50)},true);
       if(o&&res.bad.length)a3dToast(o.name+': '+o.survey.length+' points; line'+(res.bad.length===1?' ':'s ')+res.bad.slice(0,8).join(', ')+(res.bad.length>8?' ...':'')+' could not be read');
       if(o)fitScene();
       return o;
@@ -5530,16 +5328,12 @@ try{
     d.className='a3d-dlg';
     d.innerHTML='<div class="a3d-dlghd">Survey Points to Surface</div><div class="a3d-dlgbody">'+
       '<div class="a3d-dlgrow"><label>Points, one per line</label><textarea data-a3dp="pts" rows="8" cols="46" placeholder="1, 5000.00, 2000.00, 342.10, EP"></textarea></div>'+
-      '<div class="a3d-dlgrow"><button type="button" data-a3dlg="file">Open a File ...</button> <span data-a3dp="fname" class="a3d-dlgnote"></span>'+
-        '<input type="file" data-a3dp="filein" accept=".txt,.csv,.pnezd,.penzd,.xyz,.asc,text/plain,text/csv" hidden></div>'+   /* __acad3dV138 */
       '<div class="a3d-dlgrow"><label>Columns</label><select data-a3dp="fmt">'+opt('PNEZD','Point, Northing, Easting, Elevation, Description','PNEZD')+
         opt('PENZD','Point, Easting, Northing, Elevation, Description','')+opt('NEZ','Northing, Easting, Elevation','')+opt('ENZ','Easting, Northing, Elevation','')+'</select></div>'+
       '<div class="a3d-dlgrow"><label>Units</label><select data-a3dp="units">'+opt('m','metres',u)+opt('ft','international feet',u)+opt('usft','US survey feet',u)+'</select></div>'+
       '<div class="a3d-dlgrow"><label>Base northing (blank: the first point)</label><input type="number" step="any" data-a3dp="bn" value="'+(b?b.n:'')+'"></div>'+
       '<div class="a3d-dlgrow"><label>Base easting (blank: the first point)</label><input type="number" step="any" data-a3dp="be" value="'+(b?b.e:'')+'"></div>'+
       '<div class="a3d-dlgrow"><label>Elevation at model 0 (blank: 0)</label><input type="number" step="any" data-a3dp="bz" value="'+(b?b.z:'')+'"></div>'+
-      '<div class="a3d-dlgrow"><label>Check shots: description starts with (blank: none)</label><input type="text" data-a3dp="chk" value="'+BIM_SURVEY_CHECK_CODE+'" '+
-        'title="Shots kept out of the surface and measured against it"></div>'+   /* __acad3dV138 */
       '<div id="a3d-dlgerr"></div></div><div class="a3d-dlgft"><button data-a3dlg="cancel">Cancel</button><button data-a3dlg="ok">Make Surface</button></div>';
     el.root.appendChild(d);el.dlg=d;
     function q(k){return d.querySelector('[data-a3dp="'+k+'"]').value;}
@@ -5549,22 +5343,10 @@ try{
       if(res.points.length<3){err.textContent='A surface needs at least 3 points; '+res.points.length+' read'+(res.bad.length?(', line'+(res.bad.length===1?' ':'s ')+res.bad.slice(0,6).join(', ')+' not numbers'):'');return;}
       base={n:bn===''?res.points[0].n:parseFloat(bn),e:be===''?res.points[0].e:parseFloat(be),z:bz===''?0:parseFloat(bz)};
       if(!isFinite(base.n)||!isFinite(base.e)||!isFinite(base.z)){err.textContent='The base point must be numbers';return;}
-      var chk=q('chk');
       closeDlg();
-      bimImportSurvey(res,fmt,units,base,chk);   /* __acad3dV138: the check shots */
+      bimImportSurvey(res,fmt,units,base);
     }
-    /* __acad3dV138: a survey file, read into the box */
-    var fin=d.querySelector('[data-a3dp="filein"]');
-    fin.addEventListener('change',function(){
-      var f=fin.files&&fin.files[0];if(!f)return;
-      var rd=new FileReader();
-      rd.onload=function(){d.querySelector('[data-a3dp="pts"]').value=String(rd.result||'');d.querySelector('[data-a3dp="fname"]').textContent=f.name;};
-      rd.onerror=function(){d.querySelector('#a3d-dlgerr').textContent=f.name+' could not be read';};
-      rd.readAsText(f);
-    });
-    d.addEventListener('click',function(ev){var bt=ev.target&&ev.target.closest?ev.target.closest('[data-a3dlg]'):null;if(!bt)return;
-      if(bt.getAttribute('data-a3dlg')==='file'){fin.click();return;}
-      if(bt.getAttribute('data-a3dlg')==='ok')submit();else closeDlg();});
+    d.addEventListener('click',function(ev){var bt=ev.target&&ev.target.closest?ev.target.closest('[data-a3dlg]'):null;if(!bt)return;if(bt.getAttribute('data-a3dlg')==='ok')submit();else closeDlg();});
     d.addEventListener('keydown',function(ev){
       if(ev.key==='Escape'){ev.preventDefault();ev.stopPropagation();closeDlg();}
       else if(ev.key==='Enter'&&!(ev.target&&ev.target.tagName==='TEXTAREA')){ev.preventDefault();ev.stopPropagation();submit();}
@@ -12683,52 +12465,6 @@ try{
     a3dToast('Colour by is in the View group: usage, level, type, layer, material, height or any property, with a legend');
     return true;
   }
-  /* ================= __acad3dV138: the survey check in Properties ================= */
-  var BIM_SURVEY_MARK={pass:'\u2713',warn:'!',fail:'\u2717',none:'\u2013'};
-  function bimSurveyCheckHtml(o){
-    var r=bimSurveyCheck(o),h='',i,it,ctl;
-    if(!r)return '';
-    h+='<div class="a3d-prow"><div class="a3d-plabel">Verdict</div><div class="a3d-pval"><span class="a3d-svck a3d-svck-'+r.verdict+'">'+
-      BIM_SURVEY_MARK[r.verdict]+' '+r.verdict.toUpperCase()+'</span></div></div>';
-    for(i=0;i<r.items.length;i++){
-      it=r.items[i];
-      h+='<div class="a3d-prow a3d-svrow" data-svitem="'+it.key+'"><div class="a3d-plabel">'+bimEsc(it.label)+'</div><div class="a3d-pval">'+
-        '<span class="a3d-svck a3d-svck-'+it.status+'">'+BIM_SURVEY_MARK[it.status]+'</span> <span class="a3d-pstatic">'+bimEsc(it.text)+'</span></div></div>';
-    }
-    ctl=(o.control||[]).map(function(c){return c.p+'='+c.z;}).join(', ');
-    h+=bimPropRow('Control','<input type="text" data-propsurvey="control" value="'+bimEsc(ctl)+'" placeholder="105=30.000, 201=28.45" spellcheck="false" '+
-      'title="Points whose elevation you know, in the survey\u2019s units">');
-    h+=bimPropRow('','<button type="button" class="a3d-pedit" data-propsurveyact="export">Export Report</button>');
-    return h;
-  }
-  function bimSurveyPropChange(ev){
-    var f=ev.target&&ev.target.closest?ev.target.closest('[data-propsurvey]'):null;
-    if(!f)return false;
-    var o=objById(A3D.sel);
-    if(f.getAttribute('data-propsurvey')==='control'&&o)bimSurveySetControl(o,f.value);
-    return true;
-  }
-  function bimSurveyPropClick(ev){
-    var b=ev.target&&ev.target.closest?ev.target.closest('[data-propsurveyact]'):null;
-    if(!b)return false;
-    var o=objById(A3D.sel);
-    if(b.getAttribute('data-propsurveyact')==='export'&&o)bimSurveyReportExport(o);
-    return true;
-  }
-  /* SURVEYCHECK: the selected surface, or the first */
-  function bimSurveyCheckCommand(){
-    var o=objById(A3D.sel),i;
-    if(!o||o.t!=='terrain'){o=null;for(i=0;i<A3D.objs.length;i++)if(A3D.objs[i].t==='terrain'&&A3D.objs[i].survey){o=A3D.objs[i];break;}}
-    if(!o){a3dToast('There is no surface to check: make one with SURVEY');return null;}
-    A3D.sel=o.id;A3D.sel2=null;A3D.selSet=[o.id];
-    A3D_PROP_GROUPS_OPEN['Survey Check']=true;
-    refreshTree();refreshProps();paint();
-    var g=el.propsbody&&el.propsbody.querySelector('[data-a3dpgrp="Survey Check"]');
-    if(g){try{g.scrollIntoView({block:'start'});}catch(eS){}}
-    var r=bimSurveyCheck(o),bad=r.items.filter(function(x){return x.status==='fail'||x.status==='warn';}).map(function(x){return x.label.toLowerCase();});
-    a3dToast(o.name+': '+r.verdict.toUpperCase()+(bad.length?' - see '+bad.join(', '):' - every check passed'));
-    return r;
-  }
   /* DATALAYERS: the group, with nothing selected */
   function bimDataCommand(){
     A3D.sel=null;A3D.sel2=null;A3D.selSet=[];
@@ -13183,7 +12919,6 @@ try{
       }
     }
     h+=bimPropGroup('Dimensions',dims);
-    if(o.t==='terrain'&&o.survey)h+=bimPropGroup('Survey Check',bimSurveyCheckHtml(o));   /* __acad3dV138 */
     if(bimIsFrameMember(o))h+=bimStructPropsHtml(o);   /* __acad3dV125 */
     if(bimIsAlignment(o))h+=bimAlignPropsHtml(o);       /* __acad3dV127 */
     if(bimUsageTarget(o))h+=bimUsagePropsHtml(o);       /* __acad3dV131 */
@@ -32503,7 +32238,7 @@ try{
     DATALAYERS:'gis arcgis wfs geojson parcels lots zoning flood fema council open data layers attributes lookup',   /* __acad3dV134 */
     FINDDATA:'search catalog portal hub socrata city county state federal datasets browse discover',   /* __acad3dV135 */
     ANALYZEOFF:'hide analysis',LOAD:'force kn',SUPPORT:'fixed pinned boundary base',ALIGNMENT:'road route centerline centreline chainage highway',
-    STATION:'chainage offset',PROFILEVIEW:'vertical profile grade',SURVEY:'terrain topography topo tin contours ground',SURVEYCHECK:'verify validate qa qc quality accuracy rmse bust blunder control benchmark check shots report',
+    STATION:'chainage offset',PROFILEVIEW:'vertical profile grade',SURVEY:'terrain topography topo tin contours ground',
     PROPERTYLINE:'parcel lot boundary site',GRIDLINE:'axis grid line',ROOM:'space area',SECTIONTOOL:'cut elevation',SECTION:'cut elevation',
     BLOCK:'group symbol save',INSERT:'place block',ASSETS:'library models blocks templates content',PRESSPULL:'extrude push pull face',
     SUNSTUDY:'sun shadow daylight',TRIBAREA:'tributary load area',AREAPLAN:'gross area',FOOTING:'foundation pad',WALLFOUNDATION:'strip footing',
@@ -33527,13 +33262,6 @@ try{
     if(el.propsbody)el.propsbody.addEventListener('click',function(ev){
       try{bimUsagePropClick(ev);}catch(eUK){console.warn('[BIM] Usage edit failed',eUK);a3dToast('That could not be changed - see the console');}
     });
-    /* __acad3dV138: the survey check */
-    if(el.propsbody)el.propsbody.addEventListener('change',function(ev){
-      try{bimSurveyPropChange(ev);}catch(eSC){console.warn('[BIM] Survey check failed',eSC);a3dToast('That could not be changed - see the console');}
-    });
-    if(el.propsbody)el.propsbody.addEventListener('click',function(ev){
-      try{bimSurveyPropClick(ev);}catch(eSK){console.warn('[BIM] Survey report failed',eSK);a3dToast('That did not work - see the console');}
-    });
     /* __acad3dV136: the lens */
     if(el.propsbody)el.propsbody.addEventListener('change',function(ev){
       try{bimLensPropChange(ev);}catch(eLC){console.warn('[BIM] Colour by failed',eLC);a3dToast('That could not be changed - see the console');}
@@ -34181,7 +33909,6 @@ try{
     areaplan:function(){bimToggleAreaPlan();},        /* __acad3dV105b */
     sunstudy:function(){bimToggleSun();},             /* __acad3dV107 */
     survey:function(){openSurveyDlg();},              /* __acad3dV108 */
-    surveycheck:function(){bimSurveyCheckCommand();},  /* __acad3dV138 */
     footing:function(){startFootingTool('column');},  /* __acad3dV102 */
     footingall:function(){bimFootingsUnderAllColumns();},
     wallfoundation:function(){startFootingTool('wall');},
@@ -34325,18 +34052,6 @@ try{
   window.__a3dDataToProperty=function(){var p=bimDataToProperty();return p?p.id:null;};
   window.__a3dDataDrawn=function(){return A3D.lastDataDrawn||0;};
   window.__a3dDataCredit=function(){return bimDataCreditHtml();};
-  /* __acad3dV138: verify the survey */
-  window.__a3dSurveyImport=function(text,fmt,units,base,code){
-    var res=bimParseSurvey(text,fmt||'PNEZD');if(res.error)return {error:res.error};
-    if(res.points.length<3)return {error:'too few points: '+res.points.length};
-    var b=base||{};b={n:b.n==null?res.points[0].n:b.n,e:b.e==null?res.points[0].e:b.e,z:b.z==null?0:b.z};
-    var o=bimImportSurvey(res,fmt||'PNEZD',units||'m',b,code);return o?{id:o.id,points:o.survey.length,checks:(o.checks||[]).length,bad:res.bad}:{error:'no surface'};};
-  window.__a3dSurveyCheck=function(id){var o=objById(id);return o?JSON.parse(JSON.stringify(bimSurveyCheck(o))):null;};   /* the cache as the panel sees it */
-  window.__a3dSurveyControl=function(id,txt){var o=objById(id);return o?bimSurveySetControl(o,txt):false;};
-  window.__a3dSurveyReportHtml=function(id){var o=objById(id);return o?bimSurveyReportHtml(o):'';};
-  window.__a3dSurveyTol=function(){return JSON.parse(JSON.stringify(BIM_SURVEY_TOL));};
-  window.__acad3dV138='surveyread,surveyduplicates,surveyfidelity,surveytriangles,surveybusts,surveychecks,surveycontrol,surveypublic,'+
-    'surveyverdict,surveypanel,surveyreport,surveyfile,surveycheckcode,surveycommand';
   /* __acad3dV137: the map on 3D terrain */
   window.__a3dTerrain3d=function(){return A3D.lastTerrain3d?JSON.parse(JSON.stringify(A3D.lastTerrain3d)):null;};
   window.__a3dCtxStand=function(on){return bimCtxStand(!!on);};

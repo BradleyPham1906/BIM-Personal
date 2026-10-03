@@ -1,0 +1,26 @@
+{
+  "file": "seed_site_usft.txt",
+  "format": "PENZD",
+  "units": "usft",
+  "base": {
+    "n": 16404.166666666668,
+    "e": 6561.666666666667,
+    "z": 328.08333333333337
+  },
+  "checkCode": "CHK",
+  "control": "1=328.0833, 113=345.2568",
+  "note": "Seed: the same ground in US survey feet, PENZD, space separated, a manhole lid 0.2 m proud (not a bust), no faults.",
+  "expect": {
+    "verdict": "pass",
+    "points": 225,
+    "checks": 6,
+    "skippedLines": [],
+    "duplicates": [],
+    "busts": [],
+    "fidelity": "pass",
+    "triangles": "pass",
+    "checkStatus": "pass",
+    "checkRmseMax": 0.05,
+    "control": "pass"
+  }
+}
