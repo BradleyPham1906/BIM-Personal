@@ -11859,3 +11859,80 @@ build from `Phase/canvas_v10.html.bak_phase137_pre`. The diff is ES5-clean.
     canvas_v10.html   1996745 bytes
     sha256            3d63565958383183ad0a552210c7f21a45364d285396495d2d76dc61a6780b82
     markers           __acad3dV60 ... __acad3dV137, __acad3dV134d (and the 133d to 133f markers)
+
+## Phase 138 (V138) - Verify the survey
+
+The owner: "build the genesis of a good foundation so data can be verified every time". The
+research is in `reference/research-survey-check.md`, and how to add a survey is in
+`tests/data/surveys/README.md`.
+
+### What was built (patches 138a, 138b)
+
+- **a -- the engine.** `bimSurveyCheck(o)` gives one report per surface, cached against the survey,
+  the check shots, the control and the context terrain:
+  - **read:** lines skipped, by number;
+  - **duplicates:** by point name (V108 now keeps their names);
+  - **through every point:** 1 mm;
+  - **triangles:** none of zero area; thin ones counted;
+  - **bust shots:** a weighted plane through each point's neighbours, widened at corners; over 0.5 m
+    and six times the scatter; the worst set aside and the rest looked at again;
+  - **check shots:** RMSE and the worst;
+  - **control points:** 2 cm;
+  - **public terrain:** offset, and the relief ratio for feet read as metres.
+
+  Also:
+  - **The verdict.**
+  - **A report page** to export.
+  - **Check shots at import:** shots whose description starts with the check code (CHK) are kept
+    out of the surface, in `o.checks`.
+  - **Control points,** typed as `name=elevation`, kept in `o.control` (one undo step).
+- **b -- the app.**
+  - SURVEY's dialog opens a file and names the check code.
+  - A surface's Survey Check group shows the verdict, each check with its mark, Control, and
+    Export Report.
+  - SURVEYCHECK (VERIFYSURVEY, QA).
+  - Hooks `__a3dSurvey*`, and the marker.
+- **Outside the build:**
+  - `tests/data/surveys/`: the seeds and the README.
+  - `tools/make_seed_survey.py`: writes the seeds.
+  - `tools/verify_survey.py`: any survey file checked headless, with a report and an exit status
+    (0 pass, 1 warn, 2 fail).
+
+### Bugs found
+
+- **The first bust predictor (an inverse-distance mean) flagged every edge point** of a tilted
+  ground: a mean cannot reproduce a slope when every neighbour is on one side. It is now a plane
+  through the neighbours.
+- **A survey's corners have two neighbours,** too few for a plane, so a corner uses theirs too.
+- **The first falsify run missed six variants,** each a gap closed with real data:
+  - a point moved under a stale triangulation (fidelity);
+  - a flat car park with a manhole lid (the 0.5 m floor);
+  - the RMSE checked to its exact value;
+  - a second control point away from the base, in feet;
+  - a missing control name alone;
+  - the panel read after an edit. The test hook had been clearing the cache and hiding stale
+    reports.
+- **The seed's own expectations were wrong twice:**
+  - the point count (the duplicate counted out twice);
+  - control point 113's position (row 8, column 8 is 2070 E).
+
+  Building the reference data is checked like the code.
+
+### Suites
+
+- New: `bim_phase138_survey_check_browser_tests.py`, 57 checks, including every dataset in
+  `tests/data/surveys/`.
+- Falsified by `Phase/falsify_phase138.py`, 33 variants, all caught.
+
+### Not done
+
+- Breaklines and boundaries, horizontal control, LandXML and raw total-station files.
+
+### Full regression and state after V138
+
+95 suites, 3639 checks, 0 failures. Falsification: V138 33 of 33. The chain 138a, 138b rebuilds the
+build from `Phase/canvas_v10.html.bak_phase138_pre`. The diff is ES5-clean.
+
+    canvas_v10.html   2017560 bytes
+    sha256            f2a259d2af039f63c7e5a2b76a27dc8bdd4ef705968db59615739bdfb1476aa5
+    markers           __acad3dV60 ... __acad3dV138, __acad3dV134d (and the 133d to 133f markers)

@@ -165,10 +165,21 @@ async def run():
             cs = item(rep, 'checks').get('detail') or {}
             ck(len(cs.get('shots', [])) == 6 and all(s['dev'] is not None and abs(s['dev']) < 0.05 for s in cs['shots']), "each check shot measured against the surface")
             ck('RMSE 0.0' in item(rep, 'checks').get('text', '') and 'worst' in item(rep, 'checks').get('text', ''), "its RMSE and worst said (%s)" % item(rep, 'checks').get('text'))
+            want = math.sqrt(sum(s_['dev'] ** 2 for s_ in cs.get('shots', [])) / max(1, len(cs.get('shots', []))))
+            ck(cs.get('rmse') is not None and abs(cs['rmse'] - want) < 1e-12, "the RMSE is the root of the mean square (%.5f)" % want)
             ck(item(rep, 'control').get('text') == '1 ok; 113 ok', "both control points ok (%s)" % item(rep, 'control').get('text'))
             ck(item(rep, 'triangles').get('status') == 'pass' and (item(rep, 'triangles').get('detail') or {}).get('degenerate') == 0, "no triangle without area")
             ck(item(rep, 'public').get('status') == 'none' and 'get the site context' in item(rep, 'public').get('text', ''), "no public terrain yet: said, not failed")
             ck(rep.get('verdict') == 'fail', "the verdict: fail, for the bust shot")
+            # the surface must pass through its points: a point moved under a stale triangulation does not
+            mv = await safe("(i)=>{var o=window.__a3dState().objs.filter(function(x){return x.id===i;})[0];var s=o.survey.map(function(p){return String(p[3])==='113'?[p[0]+25,p[1],p[2],p[3],p[4]]:p;});"
+                            "window.__a3dTestObjSet(i,'survey',s);return s.length;}", sid)
+            await safe("(i)=>window.__a3dTestObjSet(i,'pos',[0,0.0001,0])", sid)   # a new key for the report, the triangles kept
+            fd = item(await check(sid), 'fidelity')
+            ck(mv and fd.get('status') == 'fail', "a surface that no longer passes through its points fails (%s)" % fd.get('text'))
+            await fresh()
+            r = await load(meta)
+            sid = r.get('id')
 
             # ---------------------------------------------------------------------------------
             print("\n-- 3. control points")
@@ -181,6 +192,8 @@ async def run():
             await page.wait_for_timeout(100)
             rep = await check(sid)
             ck(item(rep, 'control').get('text') == '1 ok; 113 ok' and (await safe("()=>window.__a3dMapSettings()"))['opacity'] == 0.7, "one undo step, its own")
+            await safe("(i)=>window.__a3dSurveyControl(i,'999=12')", sid)
+            ck(item(await check(sid), 'control').get('status') == 'fail', "a control point not in the survey fails on its own")
             ok = await safe("(i)=>window.__a3dSurveyControl(i,'1:100')", sid)
             ck(ok is False and 'name=elevation' in await toast(), "a mistyped control is refused with the form")
             ok = await safe("(i)=>window.__a3dSurveyControl(i,'500=%.3f')" % (z_at(E0 + 31.7, N0 + 23.4) + 0.012), sid)
@@ -194,6 +207,14 @@ async def run():
             r2 = await load(meta, code='')
             rep2 = await check(r2.get('id'))
             ck(r2.get('points') == 230 and r2.get('checks') == 0 and item(rep2, 'checks').get('status') == 'none', "a blank code keeps every shot in the surface (%s)" % r2.get('points'))
+
+            # a flat car park: the scatter is nothing, so only the 0.5 m floor keeps a lid from being a bust
+            await fresh()
+            lot = '\n'.join('%d,%.3f,%.3f,%.3f,%s' % (i * 10 + j + 1, 1000 + 5 * i, 3000 + 5 * j, 50 + 0.01 * i + (0.3 if (i, j) == (4, 5) else 0),
+                                                       'MH' if (i, j) == (4, 5) else 'PAV') for i in range(10) for j in range(10))
+            rl = await safe("(t)=>window.__a3dSurveyImport(t,'PNEZD','m',{n:1000,e:3000,z:50},'CHK')", lot) or {}
+            rpl = await check(rl.get('id'))
+            ck(item(rpl, 'busts').get('status') == 'pass', "a flat car park: a manhole lid 0.3 m proud is not a bust (%s)" % item(rpl, 'busts').get('text'))
 
             # ---------------------------------------------------------------------------------
             print("\n-- 5. the public terrain")
@@ -232,7 +253,8 @@ async def run():
             ck('data-propsurvey="control"' in h and '113=' in h and 'data-propsurveyact="export"' in h, "its control points to edit, and Export Report")
             ok = await safe("""()=>{var e=document.querySelector('#a3d-propsbody [data-propsurvey="control"]');e.value='1=99.000';e.dispatchEvent(new Event('change',{bubbles:true}));return true;}""")
             await page.wait_for_timeout(150)
-            ck(item(await check(sid), 'control').get('status') == 'fail', "a control edited in the panel is checked")
+            h = await props_html()
+            ck(item(await check(sid), 'control').get('status') == 'fail' and '1 off by 1.000 m' in h, "a control edited in the panel is checked, and the panel says so")
             pdf = b''
             try:
                 async with page.expect_download() as dl:

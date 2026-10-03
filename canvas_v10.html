@@ -34331,7 +34331,7 @@ try{
     if(res.points.length<3)return {error:'too few points: '+res.points.length};
     var b=base||{};b={n:b.n==null?res.points[0].n:b.n,e:b.e==null?res.points[0].e:b.e,z:b.z==null?0:b.z};
     var o=bimImportSurvey(res,fmt||'PNEZD',units||'m',b,code);return o?{id:o.id,points:o.survey.length,checks:(o.checks||[]).length,bad:res.bad}:{error:'no surface'};};
-  window.__a3dSurveyCheck=function(id){var o=objById(id);delete A3D_SURVEYCHK[id];return o?JSON.parse(JSON.stringify(bimSurveyCheck(o))):null;};
+  window.__a3dSurveyCheck=function(id){var o=objById(id);return o?JSON.parse(JSON.stringify(bimSurveyCheck(o))):null;};   /* the cache as the panel sees it */
   window.__a3dSurveyControl=function(id,txt){var o=objById(id);return o?bimSurveySetControl(o,txt):false;};
   window.__a3dSurveyReportHtml=function(id){var o=objById(id);return o?bimSurveyReportHtml(o):'';};
   window.__a3dSurveyTol=function(){return JSON.parse(JSON.stringify(BIM_SURVEY_TOL));};

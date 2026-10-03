@@ -2,11 +2,11 @@
 
 **Read this first in a new session.** One page. The detail lives in the docs listed at the bottom.
 
-    canvas_v10.html   1996745 bytes
-    sha256            3d63565958383183ad0a552210c7f21a45364d285396495d2d76dc61a6780b82
-    markers           __acad3dV60 ... __acad3dV137, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
+    canvas_v10.html   2017560 bytes
+    sha256            f2a259d2af039f63c7e5a2b76a27dc8bdd4ef705968db59615739bdfb1476aa5
+    markers           __acad3dV60 ... __acad3dV138, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
                       __acad3dV121b
-    tests             94 suites, 3582 checks, 0 failures
+    tests             95 suites, 3639 checks, 0 failures
 
     Run the regression in parallel: tests/run_all.py [build] [filter] [-jN], default -j6,
     about 4 minutes; give it the build's absolute path. tests/falsify_all.py
@@ -22,7 +22,7 @@ with anchored Python scripts that assert exact match counts.
 
 ---
 
-## NOW - Giraffe's and GeoLibre's ideas, then the MEP runs (V138 to V140)
+## NOW - Giraffe's and GeoLibre's ideas, then the MEP runs (V139 to V141)
 
 The owner looked at Giraffe (giraffe.build), a map-first feasibility app, and chose four of its
 ideas, ahead of the MEP runs, then asked for the map "just like how giraffe do". The research, with an
@@ -56,9 +56,10 @@ V128 to V130 settled how commands are found (see Recently finished):
 
 | # | Phase | Scope | Notes |
 |---|---|---|---|
-| 138 | Zoning envelope | **Start here.** Setbacks, stepbacks and a height limit on a property become a 3D envelope; massing outside it is flagged | Builds on V103's setbacks; Giraffe's Basic Envelope. |
-| 139 | Design scenarios | Options within one project, switched between and compared by their numbers | Giraffe's scenarios; Revit's Design Options. |
-| 140 | MEP runs | Duct and pipe runs at connectors, systems, flow, velocity and friction | MEP is its own discipline (the owner's choice). The research is drafted in `reference/research-mep-runs.md`. |
+| 139 | Zoning envelope | **Start here.** Setbacks, stepbacks and a height limit on a property become a 3D envelope; massing outside it is flagged | Builds on V103's setbacks; Giraffe's Basic Envelope. |
+| 140 | Design scenarios | Options within one project, switched between and compared by their numbers | Giraffe's scenarios; Revit's Design Options. |
+| 141 | MEP runs | Duct and pipe runs at connectors, systems, flow, velocity and friction | MEP is its own discipline (the owner's choice). The research is drafted in `reference/research-mep-runs.md`. |
+| later | Survey breaklines | Breaklines and boundaries in a surface, horizontal control, LandXML and raw total-station files | V138's checks then cover them; the owner's survey data first. |
 | later | Generators | Parking layout to a ratio, subdivision into lots, and envelope-filling massing | Giraffe's generative editors; after the map and the envelope. |
 | later | Costs and pro forma | Cost, rent, yield and sale price per usage, and a feasibility summary | Builds on V131's formulas. |
 | later | Flows and an app SDK | Per-object node graphs (Giraffe's Flows, a light Grasshopper); a documented plugin API of read-only state snapshots with listeners and named commands over postMessage | The engine's `__a3dRegisterCommand`, `__a3dRegisterDiscipline` and `__a3dRegisterTab` are the start of it. Giraffe's model: one set of functions reached two ways, the browser console and a postMessage bridge for an iframe app in the right panel, over GeoJSON-like data (`reference/research-giraffe.md`). |
@@ -66,7 +67,7 @@ V128 to V130 settled how commands are found (see Recently finished):
 ### LATER - Track A, drafting (moved behind Track B in V100)
 
 The numbers in this table are its order, not phase numbers: a phase takes the next free V number
-when it starts (V111 to V137 went to other work; V138 to V140 are in NOW).
+when it starts (V111 to V138 went to other work; V139 to V141 are in NOW).
 
 | # | Phase | Scope | Notes |
 |---|---|---|---|
@@ -80,7 +81,15 @@ when it starts (V111 to V137 went to other work; V138 to V140 are in NOW).
 | 118 | Blocks and data | ATTDEF ATTEDIT BEDIT WBLOCK DATAEXTRACTION TABLESTYLE TABLEDIT TABLEEXPORT | First phase that's about the disciplines, not drafting. BLOCK and INSERT landed in V124, as the Assets library's blocks: saved records inserted as independent copies. A block reference that follows its definition (what BEDIT edits) is not built. |
 | 119 | Sheets and plotting, rest | MVIEW (draw a viewport on the paper) PAGESETUP (plot settings beyond Sheet Setup) PUBLISH (V122's Print set prints every sheet in one job; a chosen subset and page setups remain) EXPORTPDF (vector PDF of a sheet) VPLAYER (per-viewport layer visibility) viewport lock | LAYOUT, MSPACE and PSPACE landed in V116, with layout tabs and model space through a viewport. |
 
-**Recently finished:** Phase 137 (V137), **the map on 3D terrain**.
+**Recently finished:** Phase 138 (V138), **verify the survey**.
+- **A Survey Check on every surface:** lines skipped, duplicates, the surface through every point,
+  bust shots, check shots' RMSE, control points, and the public terrain (offset, feet read as
+  metres), with a verdict and a report to export. SURVEYCHECK.
+- **Verified every time:** surveys in `tests/data/surveys/` with a sidecar are held to it on every
+  build; `tools/verify_survey.py` checks any file headless. See `tests/data/surveys/README.md`.
+- **Checked** in 57 checks and 33 falsify variants.
+
+Phase 137 (V137), **the map on 3D terrain**.
 - **Terrain in 3D:** a surface (the one CONTEXT brings, or a survey) drawn shaded in 3D views, the
   basemap draped over it tile by tile, lined up with the flat map around it.
 - **Buildings on the ground:** context buildings stand on the lowest ground under their footprint

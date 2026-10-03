@@ -8,8 +8,8 @@
     "z": 328.08333333333337
   },
   "checkCode": "CHK",
-  "control": "1=328.0833",
-  "note": "Seed: the same ground in US survey feet, PENZD, space separated, no faults.",
+  "control": "1=328.0833, 113=345.2568",
+  "note": "Seed: the same ground in US survey feet, PENZD, space separated, a manhole lid 0.2 m proud (not a bust), no faults.",
   "expect": {
     "verdict": "pass",
     "points": 225,

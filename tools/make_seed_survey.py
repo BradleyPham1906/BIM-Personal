@@ -71,15 +71,18 @@ def seed_usft():
     pts = grid()
     lines = []
     for p in pts:
-        lines.append('%s %.4f %.4f %.4f %s' % (p[0], p[2] / USFT, p[1] / USFT, p[3] / USFT, p[4]))
+        z, d = p[3], p[4]
+        if p[0] == '140':
+            z, d = z + 0.20, 'MH'   # a manhole lid 0.2 m proud of the ground: real, not a bust
+        lines.append('%s %.4f %.4f %.4f %s' % (p[0], p[2] / USFT, p[1] / USFT, z / USFT, d))
     for k, ((dn, de), nz) in enumerate(zip(CHECKS, NOISE)):
         n, e = N0 + dn, E0 + de
         lines.append('%d %.4f %.4f %.4f CHK-%d' % (500 + k, e / USFT, n / USFT, (z_at(e, n) + nz) / USFT, k + 1))
     text = '\n'.join(lines) + '\n'
     meta = {
         'file': 'seed_site_usft.txt', 'format': 'PENZD', 'units': 'usft', 'base': {'n': N0 / USFT, 'e': E0 / USFT, 'z': 100.0 / USFT}, 'checkCode': 'CHK',
-        'control': '1=%.4f' % (z_at(E0, N0) / USFT),
-        'note': 'Seed: the same ground in US survey feet, PENZD, space separated, no faults.',
+        'control': '1=%.4f, 113=%.4f' % (pts[0][3] / USFT, pts[112][3] / USFT),
+        'note': 'Seed: the same ground in US survey feet, PENZD, space separated, a manhole lid 0.2 m proud (not a bust), no faults.',
         'expect': {'verdict': 'pass', 'points': 225, 'checks': 6, 'skippedLines': [], 'duplicates': [], 'busts': [],
                    'fidelity': 'pass', 'triangles': 'pass', 'checkStatus': 'pass', 'checkRmseMax': 0.05, 'control': 'pass'}}
     return text, meta
