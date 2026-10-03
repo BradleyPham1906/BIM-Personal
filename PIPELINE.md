@@ -2,11 +2,11 @@
 
 **Read this first in a new session.** One page. The detail lives in the docs listed at the bottom.
 
-    canvas_v10.html   1,777,975 bytes
-    sha256            54d61a42f944669ba375292066df6467a31643de8b852a04b6295252045ed4f3
-    markers           __acad3dV60 ... __acad3dV129, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
+    canvas_v10.html   1,817,723 bytes
+    sha256            14630df8e1b0b95de2f917793cbb76fc652cd16a7cedba5dcbf8d10ef3739e7f
+    markers           __acad3dV60 ... __acad3dV131, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
                       __acad3dV121b
-    tests             85 suites, 2957 checks, 0 failures
+    tests             87 suites, 3065 checks, 0 failures
 
     Run the regression in parallel: tests/run_all.py [build] [filter] [-jN], default -j6,
     about 4 minutes; give it the build's absolute path. tests/falsify_all.py
@@ -22,25 +22,28 @@ with anchored Python scripts that assert exact match counts.
 
 ---
 
-## NOW - Track B: connector-based MEP runs (V130)
+## NOW - the map and open data, Giraffe's other ideas, then the MEP runs (V132 to V138)
 
-V128 and V129 took the owner's word first, on commands and shortcuts (see Recently finished):
+The owner looked at Giraffe (giraffe.build), a map-first feasibility app, and chose four of its
+ideas, ahead of the MEP runs, then asked for the map "just like how giraffe do". The research, with an
+inventory of everything Giraffe does against this app, is in `reference/research-giraffe.md`.
+
+V128 to V130 settled how commands are found (see Recently finished):
 - **V128:** one command search over every command and tool.
-- **V129:** a shortcuts panel with categories, and a dock that names its tools and groups, with
-  real tooltips.
+- **V129:** a centred shortcuts panel, and real tooltips.
+- **V130:** that panel holds every tool too. The dock is one row of the tools pinned for the
+  discipline.
 
-Every new command from here goes into the search (`CADCMDS` or the ribbon registry, with synonyms
-in `BIM_CMD_TERMS`). Every new key goes in `A3D_KEYS`, with the command it runs (`cmd`). A new
-dock tool gets its name and tooltip from the ribbon registry. Check any chrome change against the
-drawing space: V129's first dock took 53 px and broke four suites' geometry.
-
-V125 to V127 built Track B items 1 to 3:
-- V125: the frame model and solve.
-- V126: steel and concrete sections.
-- V127: alignments, profiles and stations (see Recently finished).
-
-Item 4 is the last of the object model: ducts and pipes as runs that connect, with a size and a
-flow.
+**Rules for new commands and keys:**
+- A new command goes into the search (`CADCMDS` or the ribbon registry, with synonyms in
+  `BIM_CMD_TERMS`).
+- A new key goes in `A3D_KEYS`, with the command it runs (`cmd`).
+- A new ribbon tool appears in the Tools and shortcuts panel by itself. Only add it to
+  `A3D_DOCK_PIN_DEFAULTS` if it is one of a discipline's few most-used tools.
+- Check any chrome change against the drawing space and the suites' fitted views:
+  - V129's taller dock broke four suites' geometry.
+  - V130's shorter one put a sketch's midpoint grip under the gizmo's X box in V110 (a grip wins
+    a press, V97).
 
 **Design rule (owner, V125):** keep the interface clean and consistent, following Rhino's model
 (see `reference/research-structural-ui.md`).
@@ -50,12 +53,21 @@ flow.
 
 | # | Phase | Scope | Notes |
 |---|---|---|---|
-| 130 | MEP runs | Duct and pipe as runs of segments and fittings joined at connectors (elbows, tees, reducers made where runs meet); a size and a system on each run; flow summed downstream from terminals, and velocity and friction loss per segment | **Start here.** Research first: how Revit MEP connectors and systems work, and the ASHRAE duct-friction and Darcy-Weisbach / Hazen-Williams pipe equations. Check them against their closed forms, as V125 did. A run is drawn like V127's alignment: derived geometry from stored points, set in Properties. |
+| 132 | The map | **Start here.** Street and satellite basemaps under the plan and the 3D ground, placed by the project's latitude, longitude and true north and drawn by our own renderer; address search (Nominatim); a cached tile store and an attribution footer; GeoJSON/KML import of parcels and GeoJSON export | The owner: "just like how giraffe do", free only, "as much open public data as possible". Sources, licences and rules: `reference/research-open-data.md`. No API keys; offline-first. |
+| 133 | Site context in one click | From the site's extent: OSM buildings (at their height, or levels × 3 m), roads, water and trees via Overpass, as locked context; terrain from AWS Terrain Tiles into V108's TIN | Microsoft and Overture footprints as file imports where OSM is thin. |
+| 134 | Data layers | A Data section: catalogue presets (council parcels and zoning, FEMA flood...) plus any ArcGIS REST, WMS, WFS or GeoJSON URL; click to read a feature; a parcel becomes a property line | Giraffe's data layers. A server without CORS is reported by name. |
+| 135 | Zoning envelope | Setbacks, stepbacks and a height limit on a property become a 3D envelope; massing outside it is flagged | Builds on V103's setbacks; Giraffe's Basic Envelope. |
+| 136 | Colour-by-property lens | Colour by usage, level, type or any property, with a legend, under Appearance | Giraffe's lenses; Revit's colour schemes. |
+| 137 | Design scenarios | Options within one project, switched between and compared by their numbers | Giraffe's scenarios; Revit's Design Options. |
+| 138 | MEP runs | Duct and pipe runs at connectors, systems, flow, velocity and friction | MEP is its own discipline (the owner's choice). The research is drafted in `reference/research-mep-runs.md`. |
+| later | Generators | Parking layout to a ratio, subdivision into lots, and envelope-filling massing | Giraffe's generative editors; after the map and the envelope. |
+| later | Costs and pro forma | Cost, rent, yield and sale price per usage, and a feasibility summary | Builds on V131's formulas. |
+| later | Flows and an app SDK | Per-object node graphs (Giraffe's Flows, a light Grasshopper); a documented plugin API of read-only state snapshots with listeners and named commands over postMessage | The engine's `__a3dRegisterCommand`, `__a3dRegisterDiscipline` and `__a3dRegisterTab` are the start of it. Giraffe's model: one set of functions reached two ways, the browser console and a postMessage bridge for an iframe app in the right panel, over GeoJSON-like data (`reference/research-giraffe.md`). |
 
 ### LATER - Track A, drafting (moved behind Track B in V100)
 
 The numbers in this table are its order, not phase numbers: a phase takes the next free V number
-when it starts (V111 to V129 went to other work; V130 is in NOW).
+when it starts (V111 to V131 went to other work; V132 to V138 are in NOW).
 
 | # | Phase | Scope | Notes |
 |---|---|---|---|
@@ -69,8 +81,38 @@ when it starts (V111 to V129 went to other work; V130 is in NOW).
 | 118 | Blocks and data | ATTDEF ATTEDIT BEDIT WBLOCK DATAEXTRACTION TABLESTYLE TABLEDIT TABLEEXPORT | First phase that's about the disciplines, not drafting. BLOCK and INSERT landed in V124, as the Assets library's blocks: saved records inserted as independent copies. A block reference that follows its definition (what BEDIT edits) is not built. |
 | 119 | Sheets and plotting, rest | MVIEW (draw a viewport on the paper) PAGESETUP (plot settings beyond Sheet Setup) PUBLISH (V122's Print set prints every sheet in one job; a chosen subset and page setups remain) EXPORTPDF (vector PDF of a sheet) VPLAYER (per-viewport layer visibility) viewport lock | LAYOUT, MSPACE and PSPACE landed in V116, with layout tabs and model space through a viewport. |
 
-**Recently finished:** Phase 129 (V129), **the shortcuts panel and a labelled dock**, the owner's
-request, built to a mockup the owner approved.
+**Recently finished:** Phase 131 (V131), **usages and live areas**, the first of Giraffe's ideas.
+- **The library:** a usage (Residential, Office, Retail, Hotel, Parking, or your own) carries a
+  colour, GBA→GFA and GFA→NSA ratios, a floor-to-floor height, parameters and formulas. It is kept
+  with the project's types.
+- **Measuring:**
+  - a mass is stacked into floors and each floor sliced at mid-height;
+  - a floor slab is one floor of gross;
+  - a room is net, measured.
+- **Formulas:** `units = floor(NSA / unitSize)`, read by our own evaluator, with every mistake said
+  in words.
+- **In Properties:** the Usage page (for a whole selection at once), the project's Areas by Usage,
+  and the usage editor. An Areas by Usage schedule, and USAGE and USAGES.
+- **Checked** in 56 checks and 32 falsify variants. Falsification found two undo checks that passed
+  without their undo step.
+
+Phase 130 (V130), **every tool in one panel, and a dock of the few used
+most**, the owner's request ("this tool bar is very crowded ... only show the keys one").
+- **The panel:** Tools and shortcuts lists every ribbon tool, grouped by tab, then every key. It has:
+  - one search;
+  - All / Tools / Keys filters;
+  - sorting by group, by name, or by most used;
+  - an On the dock list, and a pin on each tool.
+
+  A row runs its tool.
+- **The dock:** one row, about 50 px tall against V129's 143. It holds the discipline, the tools
+  pinned for it (the most used by default, twelve at most), All tools (`?`) and the search.
+- **Checked** in 59 checks and 21 falsify variants. Sixteen older suites were amended, because their
+  tools moved from the dock's More menus into the panel. V129's falsify retired three variants and
+  re-anchored three.
+
+Phase 129 (V129), **the shortcuts panel and a labelled dock**, the owner's request, built to a
+mockup the owner approved.
 - **The panel:** `?` or SHORTCUTS opens it centred over the drawing, with a search, categories
   with counts, and the keys in a right-hand column beside the command to type. Typing points (x,y,
   d<a) is its own page.

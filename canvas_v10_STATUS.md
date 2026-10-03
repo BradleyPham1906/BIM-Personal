@@ -11008,3 +11008,215 @@ variant `category_any_click` restores the bug.
     sha256            54d61a42f944669ba375292066df6467a31643de8b852a04b6295252045ed4f3
     markers           __acad3dV60 ... __acad3dV129, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
                       __acad3dV121b
+
+## Phase 130 (V130) - Every tool in one panel, and a dock of the few used most
+
+The owner, on the V129 dock: "this tool bar is very crowded. I say we combine it in the shortcut
+table and use search, filter sorting. group the features and stuff here. and in the main screen
+only show the keys one (those that most likely use the most)". The research is in
+`reference/research-tools-panel.md`. While this phase was open, the owner also had Giraffe
+researched (`reference/research-giraffe.md`) and chose four of its ideas, ahead of the MEP runs
+(now V138, after the map and open data). See `PIPELINE.md`.
+
+### What was built (patches 130a to 130c)
+
+- **a -- the panel and the dock.**
+  - **Tools and shortcuts** (`bimShortcutsHtml`) lists every ribbon action once, grouped by its tab
+    in `A3DR_TABS`. A tool's first tab wins, and an action the search leaves out (`BIM_ACT_HIDE`)
+    is still listed. Every key follows, grouped as before.
+  - **A tool row** has its icon, name and what it does, the command to type, its keys, and a pin.
+    - A click runs it through the document's `data-a3dr` dispatcher, and the panel goes away.
+    - A tool not built yet is greyed, has no `data-a3dr`, and has no pin.
+  - **The bar** offers All / Tools / Keys (`data-rkkind`), and a sort (`bimSortShortcuts`):
+    - by group, which puts every row back by its `data-rkord`;
+    - by name;
+    - by most used, from the V128 usage counts.
+
+    It also says how many rows are shown.
+  - **The categories** are All, On the dock, then the tabs (under Tools) and the key groups (under
+    Keys).
+  - **The dock** (`bimBuildDock`) is one row: the discipline, the pinned tools, All tools and a
+    compact search.
+    - **Pins:** `bimDockPins` reads them per discipline from `acad3dUIPrefs.dockPins`. The
+      defaults (`A3D_DOCK_PIN_DEFAULTS`) are the tools each discipline uses most. A discipline
+      added later starts with its own tabs' first tools. Twelve at most; a tool not built yet is
+      never shown.
+  - **Usage:** a tool run from the dock or the panel counts as a use (`bimActUsed`), so Most used
+    reflects the whole app.
+  - **One way in:** SHORTCUTS, `?` and All tools all open the panel through `bimOpenToolsPanel`,
+    which never toggles it shut.
+- **b -- the hooks:**
+  - `__a3dDockPins`, `__a3dSetDockPin`, `__a3dDockPinDefaults`;
+  - `__a3dToolsPanel`, `__a3dToolActions`, `__a3dCmdUsageOf`;
+  - `__a3dDockOpenGroup`, which now opens the panel on that group;
+  - the marker.
+- **c -- what the More menus left behind,** removed as V120's audit asks:
+  - the pop-up, caret, header and group-label rules;
+  - `.a3dr-dis`, which only the menus carried;
+  - `a3drDockRows`, the menus' open and close code, and `__a3dDockPopGeom`;
+  - the More tooltip text.
+
+  `__a3dHitSizes` now measures All tools.
+
+### Bugs found, and what each taught
+
+**1. Sixteen suites clicked tools that were no longer on the page.** The More menus had rendered
+every group's tools into the DOM, hidden. Tests found them with
+`document.querySelector('[data-a3dr="…"]')` and clicked them, as a person never could. Each now
+opens the panel first and clicks the row, as a person does:
+- V45, V46-48, V49, V101, V102, V103, V119, V120, V123, V124 and V127.
+
+The suites that tested the dock's own shape were rewritten for the one-row dock and the panel:
+- V70, V71, V73, V85 and V129.
+
+**2. A shorter dock moved V110's fixture under a grip.** The dock went from 143 px to about 50, so
+zoom-to-selection fitted the 4 × 2 sketch larger. Its left edge's midpoint grip then sat exactly
+under the gizmo's fixed-size X box, and a grip wins a press (V97, on purpose). So the "stretch"
+inserted a vertex. The fixture is now a 2 × 4 sketch, whose edges stay inside the box at any fit.
+**A change to the chrome changes every suite's fitted view (V129's lesson, from the other side).**
+
+**3. Falsification found a guard made redundant.** V129's SHORTCUTS kept its own "already open,
+stay open" guard, and V130 put the same guard in `bimOpenToolsPanel`, so removing V129's changed
+nothing. The duplicate is gone. V130's suite now checks that All tools and SHORTCUTS each leave the
+panel open, and `panel_toggles_closed` tests the one guard.
+
+**4. A search-hidden action fell out of the panel.** The first panel skipped `BIM_ACT_HIDE`
+(`bim:levels`), which hides an action only from the search. V70 caught it: every ribbon action must
+be reachable. The suite now checks that the rows are exactly `__a3dToolActions()`.
+
+### Deliberately not done
+
+- Reordering the pins by dragging.
+- Pins that follow a person across browsers.
+- An automatic dock that re-orders itself by use: adaptive menus that move items slow people down,
+  so the dock is adaptable, and Most used points the user at what to pin.
+
+### Suites
+
+- New: `bim_phase130_tools_panel_dock_browser_tests.py`, 59 checks in eight sections:
+  - the one-row dock;
+  - pins per discipline;
+  - every tool once in the panel;
+  - the kind filter;
+  - one search;
+  - the three sorts and use counting;
+  - pinning, the maximum, and persistence;
+  - a row runs, and the one way in.
+- Falsified by 21 variants, all 21 caught (`Phase/falsify_phase130.py`).
+- `Phase/falsify_phase129.py`: three variants retired (`no_group_labels`, `bare_caret`,
+  `dock_tall`) and one more (`shortcuts_toggles_closed`, bug 3). Three were re-anchored to the new
+  dock (`no_dock_names`, `native_title_back`, `search_icon_only`). Result: 30 variants, 30 caught.
+- `Phase/falsify_phase128.py`: 38 of 38 caught.
+
+### Full regression
+
+86 suites, 3008 checks, 0 failures. Falsification: V130 21 of 21, V129 30 of 30, V128 38 of 38. The patch chain rebuilds the build byte for byte from
+`Phase/canvas_v10.html.bak_phase130_pre`.
+
+### State after V130
+
+    canvas_v10.html   1,787,923 bytes
+    sha256            8d5857417d52274ebe35817b5eedc47866b3f07df62aed64cfaffcdb572459b8
+    markers           __acad3dV60 ... __acad3dV130, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
+                      __acad3dV121b
+
+## Phase 131 (V131) - Usages and live areas
+
+The first of Giraffe's ideas the owner chose (`reference/research-giraffe.md`), then "now lets get
+building". The research is in `reference/research-usages.md`: GBA, GFA and NSA, IPMS and BOMA, and
+Giraffe's usages.
+
+### What was built (patches 131a to 131c)
+
+- **a -- the engine.**
+  - **The library.** A usage is a name, a colour, a GBA→GFA ratio, a GFA→NSA ratio, a
+    floor-to-floor height, parameters and formulas. The library is kept in the project's types
+    (`A3D.types.usage`), so the undo, the browser store, the project file and the project tabs all
+    carry it with no list of their own. It starts with Residential, Office, Retail, Hotel and
+    Parking.
+  - **What takes a usage** (`bimUsageTarget`):
+    - **A mass** (a primitive, or a solid that is no building element, such as a pad) is stacked
+      into floors at its usage's floor-to-floor height (`n = max(1, floor(h / ftf))`). Each floor
+      is measured by slicing the solid at the floor's mid-height (`bimMeshSliceArea`): the triangle
+      cuts chain into loops (`bimChainEdgesToLoops`, from the section tool), and a loop inside an
+      odd number of others is a hole. A tapered or stepped mass is measured as it is.
+    - **A floor slab** is one floor of gross area, its outline's.
+    - **A room** is already net, so it counts as NSA, measured. It adds no GBA or GFA.
+  - **Formulas** use our own reader (`bimExprParse`, `bimExprEval`). Never `eval`, and not
+    HyperFormula (GPLv3).
+    - Syntax: numbers, + − × ÷ ^ (the power reaches right, and a minus binds looser than it),
+      brackets, and `min max round floor ceil abs sqrt`.
+    - Names, in any case: GBA, GFA, NSA, levels, height, footprint, the usage's parameters and its
+      earlier formulas.
+    - Every mistake is said in words: "unknown name price", "divides by zero", "a bracket is not
+      closed".
+  - **The areas by usage** (`bimUsageSummary`), for the project or for a selection.
+  - **The Areas by Usage schedule:** per usage and level, then each usage's total with its formulas'
+    sums.
+  - **Copies:** a mirrored or arrayed copy keeps its usage.
+- **b -- Properties and the commands.**
+  - **The Usage page** of a room, a floor or a mass. It sets the usage for every selected room,
+    floor and mass at once ("Mixed" when they differ). It shows floors, GBA, GFA, NSA, and each
+    formula's value or error. With several selected, it shows the selection's areas.
+  - **With nothing selected,** Properties shows the project's Areas by Usage, and the Usages. Each
+    usage is a line; Edit opens its colour, name, ratios, floor-to-floor height, parameters and
+    formulas. An edit is one undo step, and refused with its reason (a ratio over 100%, a twin
+    name, a parameter named like an area). Remove usage takes it off its objects in the same step.
+  - **USAGE (US)** puts the keyboard on the selection's Usage. With nothing that can take one
+    selected, it says so and shows the usages.
+  - **USAGES (USES, PROGRAM)** opens the library.
+  - **Where they live:** both are on the ribbon (Room & Area, and a new Program panel in Massing &
+    Site), so the tools panel and the search list them.
+- **c -- the hooks:**
+  - `__a3dUsages`, `__a3dUsageDefaults`, `__a3dUsageAssign`, `__a3dUsageAdd`, `__a3dUsageRemove`;
+  - `__a3dUsageMeasure`, `__a3dUsageSummary`, `__a3dUsageOf`;
+  - `__a3dExpr`, `__a3dSliceArea`;
+  - the marker.
+
+### Bugs found, and what each taught
+
+**1. Two undo checks passed without their undo step.** Assigning a usage and removing one each ran
+without `pushUndo`, and the suite's Undo still showed the right state: the snapshot it fell back to,
+taken earlier, happened to hold the same values. Each check now changes the state just before, so
+only the action's own step can give the right answer. **An undo check must make the step before it
+different (V128's lesson, a fixture must need the rule it tests).**
+
+**2. A first-draft suite checked `units` was not 0.** For the 12 × 8 slab as Residential, 0 is right:
+floor(69.12 / 75). The check now states the arithmetic.
+
+**3. Property panel rows wrapped.** The colour swatch beside the Usage dropdown, and the formula's
+name, expression and remove button on one row, did not fit the panel. The swatch went, and a formula
+has its own full-width line.
+
+### Deliberately not done
+
+- Colouring the model by usage: that is the lens, V136.
+- Jurisdiction-specific GFA exclusion lists.
+- Costs and a pro forma (formulas can already carry rates).
+
+### Suites
+
+- New: `bim_phase131_usages_browser_tests.py`, 56 checks in eight sections:
+  - the library;
+  - the formula reader (twelve closed-form cases, eight worded errors, no JavaScript);
+  - masses, checked against closed forms (a box, a cone sliced at mid-floor against its 20-gon, a
+    tube's ring);
+  - floors and rooms;
+  - the areas by usage;
+  - the Usage page;
+  - editing the library;
+  - the schedule, the commands, a mirrored copy and a reload.
+- Falsified by 32 variants, all 32 caught (`Phase/falsify_phase131.py`).
+- Amended: V73 (the project page has Areas by Usage and Usages before Statistics).
+
+### Full regression
+
+87 suites, 3065 checks, 0 failures. Falsification: V131 32 of 32, V130 21 of 21. The patch chain rebuilds the build byte for byte from
+`Phase/canvas_v10.html.bak_phase131_pre`.
+
+### State after V131
+
+    canvas_v10.html   1,817,723 bytes
+    sha256            14630df8e1b0b95de2f917793cbb76fc652cd16a7cedba5dcbf8d10ef3739e7f
+    markers           __acad3dV60 ... __acad3dV131, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
+                      __acad3dV121b

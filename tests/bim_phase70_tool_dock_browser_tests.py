@@ -112,7 +112,9 @@ async def run():
           window.__a3dDisciplines().forEach(function(d){window.__a3dSetDiscipline(d.id);
             window.__a3dDockActions().forEach(function(a){out[a]=1;});});
           window.__a3dSetDiscipline(cur);
-          window.__a3dDockSearch('').shown.forEach(function(a){out[a]=1;});
+          /* AMENDED FOR V130: the dock holds the pinned few; every tool is a row of the Tools and
+             shortcuts panel its All tools button opens */
+          window.__a3dToolActions().forEach(function(a){out[a]=1;});
           return Object.keys(out).sort();}""")
         missing = sorted(set(ribbon) - set(dock))
         extra = sorted(set(dock) - set(ribbon))
@@ -170,29 +172,26 @@ async def run():
         # are no longer constants -- asserting "== 2 rows" would now be asserting the bug V71
         # fixed. What still has to hold is the shape: a leading __disc group carrying the
         # discipline selector and search, then one caret-bearing group per visible tab.
-        tool_groups = [g for g in info['groups'] if g['id'] != '__disc']
-        ck(info['rows'] >= 2,
-           "the dock lays out in at least two rows (%d, including the discipline row)"
-           % info['rows'])
-        ck(any(g['id'] == '__disc' for g in info['groups']),
-           "the discipline/search group leads the dock")
-        ck(len(tool_groups) >= 5,
-           "the active discipline's tabs are all present as groups (%d: %s)"
-           % (len(tool_groups), [g['id'] for g in tool_groups]))
-        ck(all(g['hasCaret'] for g in tool_groups),
-           "every TOOL group has a caret, so that tab's full toolset is one click away")
-        ck(all(1 <= g['buttons'] <= 3 for g in tool_groups),
-           "each group shows between one and three headline tools (%s)"
-           % [g['buttons'] for g in tool_groups])
+        # AMENDED FOR V130. The owner: "this tool bar is very crowded ... in the main screen only show
+        # the keys one (those that most likely use the most)". The dock is ONE row: the discipline,
+        # the tools pinned for it, All tools and the search. The groups' carets and popovers are
+        # retired; a group's full toolset is the Tools and shortcuts panel opened on that group, and
+        # the checks below ask the same of it: it opens, lands on screen, and lists the tools.
+        pins = [g for g in info['groups'] if g['id'] == '__pins']
+        ck(info['rows'] == 1, "the dock is one row (%d)" % info['rows'])
+        ck(len(pins) == 1 and 1 <= pins[0]['buttons'] <= 12,
+           "holding the pinned tools, one to twelve (%s)" % [g['buttons'] for g in pins])
         ck(info['insideViewport'] is True,
            "the dock sits inside the drawing area, not over the panels or off the bottom")
 
-        # A group at each END of each row is the case a transform or clamp bug breaks first.
         for gid in ('arch', 'a3dmodify', 'a3dinsert', 'a3dmanage'):
             opened = await page.evaluate("(g)=>window.__a3dDockOpenGroup(g)", gid)
             await page.wait_for_timeout(220)
-            geom = await page.evaluate("(g)=>window.__a3dDockPopGeom(g)", gid)
-            ck(opened is True and geom['open'] is True, "the '%s' caret opens its popover" % gid)
+            geom = await page.evaluate("""(g)=>{var p=document.getElementById('a3d-rupop'),r=p.getBoundingClientRect();
+              return {open:p.classList.contains('open'),left:Math.round(r.left),top:Math.round(r.top),right:Math.round(r.right),bottom:Math.round(r.bottom),
+                onScreen:r.left>=0&&r.top>=0&&r.right<=window.innerWidth&&r.bottom<=window.innerHeight,
+                items:[...p.querySelectorAll('.a3d-rktool[data-rkg="tool:'+g+'"]')].filter(e=>e.offsetParent!==null).length};}""", gid)
+            ck(opened is True and geom['open'] is True, "the '%s' group opens in the tools panel" % gid)
             ck(geom['onScreen'] is True,
                "and it lands fully on screen (%s: l=%d t=%d r=%d b=%d)"
                % (gid, geom['left'], geom['top'], geom['right'], geom['bottom']))
@@ -200,8 +199,8 @@ async def run():
             await page.evaluate("()=>{document.body.click();}")
             await page.wait_for_timeout(150)
 
-        closed = await page.evaluate("()=>document.querySelectorAll('.a3d-dockpop.open').length")
-        ck(closed == 0, "clicking away closes every popover (%d still open)" % closed)
+        closed = await page.evaluate("()=>document.getElementById('a3d-rupop').classList.contains('open')")
+        ck(closed is False, "clicking away closes it")
 
         print("\n-- 5. unimplemented tools are listed, never promoted")
         ck(info['unimplementedOnFace'] == 0,
@@ -213,11 +212,11 @@ async def run():
         await page.wait_for_timeout(300)
         await page.evaluate("()=>window.__a3dDockOpenGroup('struct')")
         await page.wait_for_timeout(220)
-        greyed = await page.evaluate("""()=>{const p=document.querySelector(
-          '#a3d-dock [data-dockpop=\"struct\"]');
-          return p?p.querySelectorAll('.a3d-dockitem.a3dr-dis').length:0;}""")
+        # AMENDED FOR V130: listed greyed in the tools panel, opened on the Structure group
+        greyed = await page.evaluate("""()=>[...document.querySelectorAll('#a3d-rupop .a3d-rktool.off[data-rkg="tool:struct"]')]
+          .filter(e=>e.offsetParent!==null&&e.querySelector('.a3d-rkrun').disabled).length""")
         ck(greyed > 0,
-           "but Structure's unimplemented tools are still listed greyed inside its caret (%d), "
+           "but Structure's unimplemented tools are still listed greyed in its group of the tools panel (%d), "
            "so the toolset's real shape stays visible" % greyed)
         await page.evaluate("()=>{document.body.click();window.__a3dSetDiscipline('arch');}")
         await page.wait_for_timeout(250)
@@ -228,16 +227,16 @@ async def run():
         # this suite failed against working code for that reason. __a3dActiveSketchTool is the
         # read-only probe.
         before = await page.evaluate("()=>window.__a3dActiveSketchTool()")
+        # AMENDED FOR V130: Rectangle is not among the pinned few; Polyline is
         ran = await page.evaluate("""()=>{
-          const b=document.querySelector('#a3d-dock .a3d-dbtn[data-a3dr=\"s:rect\"]')||
-                  document.querySelector('#a3d-dock [data-a3dr=\"s:rect\"]');
+          const b=document.querySelector('#a3d-dock .a3d-dbtn[data-a3dr=\"s:poly\"]');
           if(!b)return null; b.click(); return true;}""")
         await page.wait_for_timeout(350)
         after = await page.evaluate("()=>window.__a3dActiveSketchTool()")
-        ck(ran is True, "the Rectangle sketch tool has a dock entry")
+        ck(ran is True, "the Polyline sketch tool has a dock button")
         ck(before is None, "no sketch tool is armed beforehand")
-        ck(after == 'rect',
-           "and clicking it arms the Rectangle tool (%s -> %s) -- the data-a3dr contract survived "
+        ck(after == 'poly',
+           "and clicking it arms the Polyline tool (%s -> %s) -- the data-a3dr contract survived "
            "the rebuild, with no new routing added" % (before, after))
 
         # AMENDED FOR V120: section 7, "the dock belongs to the workspace" (leaving BIM gave the ribbon

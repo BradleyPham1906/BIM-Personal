@@ -704,9 +704,9 @@ async def run():
             ck(await safe("()=>document.getElementById('a3d-shell').getAttribute('data-tab')") == 'assets',
                "ASSETS, by its alias ADCENTER, opens the library")
             await tab('browser')
-            acts = await safe("()=>window.__a3dDockActions()") or []
-            ok = await safe("""()=>{var b=document.querySelector('#a3d-dock [data-a3dr="bim:component"]');if(!b)return false;
-              var p=b.closest('.a3d-dockpop');if(p&&!p.classList.contains('open')){var id=p.getAttribute('data-dockpop');window.__a3dDockOpenGroup(id);}
+            # AMENDED FOR V130: the dock holds the pinned few; every other tool is a row of Tools and shortcuts
+            acts = await safe("()=>window.__a3dToolActions()") or []
+            ok = await safe("""()=>{window.__a3dToolsPanel();var b=document.querySelector('#a3d-rupop [data-a3dr="bim:component"]');if(!b)return false;
               b.click();return true;}""")
             await page.wait_for_timeout(400)
             ck('bim:component' in acts and ok and await safe("()=>document.getElementById('a3d-shell').getAttribute('data-tab')") == 'assets'

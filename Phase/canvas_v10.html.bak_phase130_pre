@@ -231,17 +231,22 @@ body.light-theme #acad3d{color-scheme:light}
 .a3d-dockbody{display:flex;flex-direction:column;gap:3px;background:#22262b;border:1px solid #3a4048;border-radius:10px;padding:5px;box-shadow:0 6px 22px rgba(0,0,0,0.45);max-width:calc(100% - 28px);pointer-events:auto}
 .a3d-dockrow{display:flex;align-items:center;gap:2px;min-width:0}
 .a3d-dockgrp{display:flex;flex-direction:column;align-items:center;gap:2px;flex:0 0 auto}
+.a3d-dgtools{display:flex;align-items:center;gap:1px}
+.a3d-dglbl{font-size:9px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#7d8590;line-height:1;white-space:nowrap}
 #a3d-dock.a3d-docklabels .a3d-dockgrp{gap:1px}
 #a3d-dock.a3d-docklabels .a3d-dbtn{width:60px;height:38px;flex-direction:column;gap:2px}
 #a3d-dock.a3d-docklabels .a3d-dbtn svg{width:16px;height:16px}
+#a3d-dock.a3d-docklabels .a3d-dcar{width:40px;height:38px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:#aab2bd}
+#a3d-dock.a3d-docklabels .a3d-dcar svg{width:16px;height:16px}
 .a3d-dblbl{font-size:10px;line-height:1.1;color:#aab2bd;max-width:58px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.a3d-dbtn:hover .a3d-dblbl,.a3d-dall:hover .a3d-dblbl{color:#fff}
+.a3d-dbtn:hover .a3d-dblbl,.a3d-dcar:hover .a3d-dblbl{color:#fff}
 .a3d-dsearchpill{display:flex;align-items:center;gap:7px;flex:1 1 auto;min-width:210px;height:24px;padding:0 9px;background:#1c2024;border:1px solid #3a4048;border-radius:6px;color:#8b949e;font:inherit;font-size:11.5px;cursor:pointer;text-align:left}
 .a3d-dsearchpill:hover{border-color:#4ea1ff;color:#dfe4ea}
 .a3d-dsearchpill svg{width:14px;height:14px;flex:0 0 auto}
 .a3d-dsearchpill span{flex:1 1 auto}
 .a3d-dsearchpill kbd{font:600 10px/1 Inter,system-ui,sans-serif;padding:2px 5px;border:1px solid #4a525c;border-radius:4px;color:#c7ced6}
-.a3d-dbtn:focus-visible,.a3d-dsearchpill:focus-visible{outline:2px solid #4ea1ff;outline-offset:1px}
+.a3d-dockhead .a3d-dockgrp{flex-direction:row;gap:6px;width:100%}
+.a3d-dbtn:focus-visible,.a3d-dcar:focus-visible,.a3d-dsearchpill:focus-visible{outline:2px solid #4ea1ff;outline-offset:1px}
 #a3d-tip{position:fixed;z-index:10050;display:none;max-width:260px;background:#0f1114;border:1px solid #3f4650;border-radius:8px;padding:8px 10px;box-shadow:0 8px 22px rgba(0,0,0,.5);font:12px/1.4 Inter,system-ui,sans-serif;color:#aab2bd;pointer-events:none}
 #a3d-tip.show{display:block}
 .a3d-tiphd{display:flex;align-items:center;justify-content:space-between;gap:12px}
@@ -261,6 +266,15 @@ body.light-theme #a3d-tip strong{color:#202124}body.light-theme .a3d-tiptype b{c
        guideline there is, and it is the control a user reaches for most, because it is the way
        into the rest of a group's tools. Widened to 22px with a visible hover plate so it reads
        as a button rather than as decoration on the one beside it. */
+.a3d-dcar{width:22px;height:32px;background:transparent;border:1px solid transparent;border-radius:5px;color:#9aa3ad;font-size:10px;cursor:pointer;padding:0;line-height:1;font-family:inherit;flex:0 0 auto}
+.a3d-dcar:hover{color:#fff;background:#2f353c}
+.a3d-dockpop{display:none;position:fixed;z-index:9700;min-width:212px;max-height:60vh;pointer-events:auto;overflow:auto;background:#22262b;border:1px solid #3a4048;border-radius:8px;padding:5px;box-shadow:0 10px 30px rgba(0,0,0,0.5)}
+.a3d-dockpop.open{display:block}
+.a3d-dockpoph{padding:7px 7px 3px;font-size:9.5px;font-weight:800;letter-spacing:.06em;color:#8d9196;text-transform:uppercase}
+.a3d-dockitem{display:flex;align-items:center;gap:8px;padding:5px 7px;font-size:11.5px;color:#dfe4ea;cursor:pointer;border-radius:4px;white-space:nowrap}
+.a3d-dockitem:hover{background:#2b3138}
+.a3d-dockitem svg{width:15px;height:15px;flex:0 0 auto;color:#9aa3ad}
+.a3d-dockhead{padding-bottom:2px;border-bottom:1px solid #30353c;margin-bottom:2px}
 .a3d-discsel{background:#1c2024;border:1px solid #3a4048;color:#dfe4ea;border-radius:5px;font-size:11px;padding:3px 6px;font-family:inherit;max-width:150px}
 #a3d-dock.a3d-hide-panel{display:none}
 /* __acad3dV67: the BIM status bar -- a 26px strip carrying the workspace's own state. It is the
@@ -453,6 +467,8 @@ body.light-theme #a3d-tip strong{color:#202124}body.light-theme .a3d-tiptype b{c
 .a3d-sheetview.open~#a3d-dock{display:none}/* __acad3dV116: the model's tools, not the paper's */
 #a3d-statusbar.a3d-onsheet .a3d-stlvl,#a3d-statusbar.a3d-onsheet #a3d-stcoords,#a3d-statusbar.a3d-onsheet #a3d-snapgrp,#a3d-statusbar.a3d-onsheet #a3d-navgrp{display:none}
 #a3d-sheetcanvas{background:#fff;box-shadow:0 6px 24px rgba(0,0,0,0.5);max-width:100%;height:auto;cursor:default;touch-action:none}
+.a3dr-dis{opacity:0.32;cursor:not-allowed}
+.a3dr-dis:hover{background:transparent}
 .a3d-ptypehd{display:flex;align-items:center;gap:7px;padding:6px 7px;background:#272c32;border-bottom:1px solid #3a4048;margin:-5px -8px 6px}
 .a3d-ptypeic{width:26px;height:26px;flex:0 0 auto;display:flex;align-items:center;justify-content:center;background:#1c2024;border:1px solid #3a4048;border-radius:3px;color:#c3cad2}
 .a3d-ptypeic svg{width:16px;height:16px}
@@ -474,49 +490,6 @@ body.light-theme #a3d-tip strong{color:#202124}body.light-theme .a3d-tiptype b{c
 .a3d-pval input[type=checkbox]{margin:0}
 .a3d-pstatic{font-size:11px;color:#c3cad2}
 .a3d-prow.ro .a3d-pstatic{color:#7d8590}.a3d-pval{text-align:right}.a3d-pval select,.a3d-pval input[type=text]{text-align:left}.a3d-pval input[type=number]{text-align:right}.a3d-prow.ro{min-height:22px}.a3d-prow.ro .a3d-plabel{color:#868f99}.a3d-assets{padding:6px 8px 14px;font:11px/1.35 Inter,system-ui,sans-serif;color:#c3cad2}.a3d-asnote{padding:6px 8px;margin-bottom:6px;border-radius:5px;background:#22262b;color:#9aa3ad;font-size:10.5px}.a3d-asgrp{display:flex;align-items:center;justify-content:space-between;background:#262b31;border-radius:5px;padding:6px 9px;margin:8px 0 4px;font-size:10.5px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;color:#aeb8c2}.a3d-assub{font-weight:400;text-transform:none;letter-spacing:0;color:#7d8590}.a3d-asrow{display:flex;width:100%;align-items:center;justify-content:space-between;gap:8px;background:transparent;border:1px solid transparent;border-radius:5px;padding:6px 8px;color:#d5dae0;cursor:pointer;font:inherit;text-align:left}.a3d-asrow:hover{background:#2f353c;border-color:#3a4048}.a3d-asrow.off{opacity:.45;cursor:default}.a3d-asrow.off:hover{background:transparent;border-color:transparent}.a3d-asnm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.a3d-asmeta{flex:0 0 auto;color:#7d8590;font-size:10px}.a3d-asempty{padding:8px;color:#7d8590;font-size:10.5px}#a3d-railutil{display:flex;flex-direction:column;align-items:center;gap:2px;margin-bottom:6px}.a3d-ru{width:30px;height:30px;display:grid;place-items:center;background:transparent;border:1px solid transparent;border-radius:7px;color:#9aa3ad;cursor:pointer;padding:0}.a3d-ru svg{width:17px;height:17px}.a3d-ru:hover{background:rgba(255,255,255,.09);color:#fff}.a3d-ru.on{background:rgba(255,255,255,.12);color:#fff}#a3d-rupop{position:fixed;z-index:10000;display:none;min-width:194px;background:#22262b;border:1px solid #3a4048;border-radius:9px;padding:6px;box-shadow:0 10px 30px rgba(0,0,0,.5);font:12px/1.35 Inter,system-ui,sans-serif;color:#d5dae0}#a3d-rupop.open{display:block}.a3d-ruhd{font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#8b949e;padding:4px 8px 6px}.a3d-ruitem{display:block;width:100%;text-align:left;background:transparent;border:0;border-radius:6px;padding:7px 9px;color:#d5dae0;cursor:pointer;font:inherit}.a3d-ruitem:hover{background:#2f353c;color:#fff}.a3d-ruitem.on{background:#2c477d;color:#e4efff}.a3d-rusep{height:1px;background:#343a41;margin:5px 4px}.a3d-rurow{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 9px;color:#d5dae0}.a3d-rurow input[type=number]{width:62px;background:#1c2024;border:1px solid #3a4048;color:#e6eaef;border-radius:4px;padding:3px 5px;font:inherit}.a3d-rukeys{min-width:336px;max-height:64vh;overflow:auto;padding:0 2px 2px}.a3d-rkgrp{font-size:9.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#8b949e;padding:9px 8px 4px}.a3d-rkrow{display:flex;align-items:baseline;gap:10px;padding:4px 8px;border-radius:5px}.a3d-rkrow:hover{background:#2a2f35}.a3d-rkkeys{flex:0 0 96px;display:flex;align-items:center;gap:3px;justify-content:flex-end}.a3d-rkkeys kbd{font:600 10px/1 Inter,system-ui,sans-serif;color:#c7ced6;background:#1c2024;border:1px solid #3a4048;border-bottom-width:2px;border-radius:4px;padding:3px 5px;white-space:nowrap}.a3d-rkplus{color:#6e7781;font-size:9px}.a3d-rklab{flex:1;color:#c3cad2;font-size:11.5px;line-height:1.35}.a3d-rkfind{display:block;box-sizing:border-box;width:calc(100% - 8px);margin:0 4px 4px;background:#1c2024;border:1px solid #3a4048;color:#e6eaef;border-radius:6px;padding:6px 8px;font:inherit;font-size:11.5px}.a3d-rkfind:focus{outline:none;border-color:#4ea1ff}.a3d-rkempty{padding:10px 8px;color:#7d8590;font-size:11px}.a3d-rukeys [hidden]{display:none!important}
-.a3d-uswatch{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px;border:1px solid rgba(0,0,0,.35);flex:0 0 auto}
-.a3d-uhead .a3d-plabel{font-weight:600}
-.a3d-uarea .a3d-pstatic{line-height:1.45}
-.a3d-uerr{color:#ff9b8f;font-size:11px;margin-top:3px}
-.a3d-ukv{display:flex;align-items:center;gap:4px}
-.a3d-ukv input{flex:1 1 0;min-width:0;width:auto}
-.a3d-ukv span{color:#8b949e}
-.a3d-uexpr{display:block;width:100%;box-sizing:border-box;margin-top:4px;font-family:ui-monospace,Menlo,monospace}
-body.light-theme .a3d-uerr{color:#b3261e}
-.a3d-rkbar{display:flex;align-items:center;gap:14px;padding:8px 16px;border-bottom:1px solid #343a41;flex:0 0 auto;font-size:12px;color:#9aa3ad}
-.a3d-rkkinds{display:flex;background:#1c2024;border:1px solid #3a4048;border-radius:7px;padding:2px}
-.a3d-rkkind{border:0;background:transparent;color:#c3cad2;font:inherit;font-size:12px;padding:4px 12px;border-radius:5px;cursor:pointer}
-.a3d-rkkind.on{background:#2c477d;color:#fff}
-.a3d-rksortl{display:flex;align-items:center;gap:6px}
-.a3d-rksort{background:#1c2024;border:1px solid #3a4048;color:#dfe4ea;border-radius:6px;font:inherit;font-size:12px;padding:3px 6px}
-.a3d-rkshown{margin-left:auto}
-.a3d-rknavh{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#7d8590;padding:10px 10px 3px}
-#a3d-rupop.a3d-rksheet .a3d-rkcat{min-height:28px;font-size:12.5px}
-.a3d-rkcat i{font-style:normal;font-size:10.5px;color:#7d8590;margin-left:4px}
-#a3d-rupop.a3d-rksheet .a3d-rukeys .a3d-rkrow{grid-template-columns:minmax(0,1fr) auto minmax(90px,auto) 30px}
-.a3d-rkrun{display:flex;align-items:center;gap:10px;min-width:0;background:transparent;border:0;padding:0;margin:0;color:inherit;font:inherit;text-align:left;cursor:pointer}
-.a3d-rkrun svg{width:18px;height:18px;flex:0 0 auto;color:#aab2bd}
-.a3d-rkrun .a3d-rklab{flex:0 0 auto}
-.a3d-rkdesc{color:#8b949e;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
-.a3d-rktool:hover .a3d-rklab{color:#fff}
-.a3d-rktool.off .a3d-rkrun{cursor:default;opacity:.5}
-.a3d-rkpin{width:28px;height:28px;display:grid;place-items:center;border:0;border-radius:6px;background:transparent;color:#59616b;cursor:pointer;padding:0}
-.a3d-rkpin svg{width:15px;height:15px}
-.a3d-rkpin:hover{background:#2f353c;color:#dfe4ea}
-.a3d-rkpin[aria-pressed="true"]{color:#f2c94c}
-.a3d-rkpin[aria-pressed="true"] svg{fill:currentColor}
-#a3d-rupop[data-rksort="name"] .a3d-rkgrp,#a3d-rupop[data-rksort="name"] .a3d-rkgnote,#a3d-rupop[data-rksort="used"] .a3d-rkgrp,#a3d-rupop[data-rksort="used"] .a3d-rkgnote{display:none!important}
-.a3d-dockpins{flex-direction:row!important;align-items:center;gap:1px!important}
-.a3d-dockone{gap:4px}
-.a3d-dall{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;width:34px;height:32px;background:transparent;border:1px solid transparent;border-radius:5px;color:#c3cad2;cursor:pointer;padding:0;flex:0 0 auto;font:inherit}
-.a3d-dall svg{width:18px;height:18px}
-.a3d-dall:hover{background:#2f353c;color:#fff}
-#a3d-dock.a3d-docklabels .a3d-dall{width:60px;height:38px}
-#a3d-dock.a3d-docklabels .a3d-dall svg{width:16px;height:16px}
-.a3d-dall:focus-visible{outline:2px solid #4ea1ff;outline-offset:1px}
-#a3d-dock .a3d-dsearchpill{flex:0 0 auto;min-width:0;margin-left:6px}
-body.light-theme .a3d-rkkind{color:#30343b}body.light-theme .a3d-rkkind.on{background:#dbe7ff;color:#12305f}body.light-theme .a3d-rkkinds,body.light-theme .a3d-rksort{background:#fff;border-color:#c9ced6;color:#202124}
-body.light-theme .a3d-rkdesc{color:#5f6670}body.light-theme .a3d-dall{color:#30343b}
 #a3d-rupop.a3d-rksheet{width:min(880px,calc(100vw - 32px));height:min(600px,calc(100vh - 64px));padding:0;display:none;flex-direction:column;overflow:hidden;border-radius:12px;box-shadow:0 18px 50px rgba(0,0,0,.55)}
 #a3d-rupop.a3d-rksheet.open{display:flex}
 .a3d-rkhead{display:flex;align-items:center;gap:14px;padding:14px 16px;border-bottom:1px solid #343a41;flex:0 0 auto}
@@ -591,6 +564,7 @@ body.light-theme .a3d-rktitle{color:#202124}body.light-theme .a3d-rkcat{color:#3
 .a3d-dockbody{max-width:none}
 .a3d-dockrow{overflow-x:auto;-webkit-overflow-scrolling:touch}
 .a3d-dbtn{width:34px;height:34px}
+.a3d-dcar{height:34px}
 /* On the compact tier the bar is the ONLY snap surface, so its buttons have to be
          thumb-sized like the pills they replaced, and everything else in the bar gives way for
          them. The hint goes first. The COORDINATE read-out goes too, and not only for space:
@@ -849,9 +823,6 @@ body.a3d-tree-docked #a3d-leftpanel > .a3d-tree .a3d-palhd .a3d-palbtns{flex-wra
     ['ALIGNMENT',['ALIGN_CREATE','ALN'],'alignment','Make the selected open polyline an alignment: its vertices become the PIs'],
     ['PROFILEVIEW',['PV'],'profileview','Place the selected alignment\'s profile view where you click'],
     ['STATION',['STA','STAOFF'],'stationoffset','Read the station and offset of points along the selected alignment'],
-    /* __acad3dV131: usages */
-    ['USAGE',['US'],'usage','Give the selected rooms, floors or masses a usage (Residential, Office...); with none selected, the usages'],
-    ['USAGES',['USES','PROGRAM'],'usages','The usages: each one\'s colour, area ratios, floor-to-floor height, parameters and formulas'],
     ['INSERT',['I','DDINSERT'],'blockinsert','Insert a block: drag it from the library onto the drawing'],
     ['ASSETS',['ADCENTER','CONTENT','TOOLPALETTES'],'assets','Open the Assets library of models, blocks and templates']
   ];
@@ -11578,228 +11549,6 @@ try{
     if(o.t==='sketch')return 'Lines : Model Lines';
     return (TYPES[o.t]&&TYPES[o.t].n)?('Generic Models : '+TYPES[o.t].n):'Generic Models';
   }
-  /* ================= __acad3dV131: usages in Properties ================= */
-  var A3D_USAGE_OPEN=null;   /* the usage whose fields are open in the library, by id */
-  function bimUsageSelTargets(){
-    var ids=(A3D.selSet&&A3D.selSet.length)?A3D.selSet:(A3D.sel?[A3D.sel]:[]);
-    return ids.filter(function(id){return !!bimUsageTarget(objById(id));});
-  }
-  function bimUsagePct(x){return String(Math.round(x*1000)/10)+'%';}
-  function bimUsageNum(v){return String(Math.round(v*100)/100);}
-  function bimUsageArea(v){return bimDispNum(v,2)+' m\u00b2';}
-  function bimUsageSwatch(col){return '<span class="a3d-uswatch" style="background:'+bimEsc(col)+'"></span>';}
-  /* the names a formula can read at its place in the usage, and the first it reads that it cannot */
-  function bimUsageFormulaProblem(u,j){
-    var f=u.formulas[j],pz=bimExprParse(f.expr),known={},k,bad=null;
-    if(pz.error)return pz.error;
-    for(k in BIM_EXPR_NAMES)if(BIM_EXPR_NAMES.hasOwnProperty(k))known[k]=1;
-    (u.params||[]).forEach(function(p){known[String(p.key).toLowerCase()]=1;});
-    for(k=0;k<j;k++)known[String(u.formulas[k].key).toLowerCase()]=1;
-    (function walk(nd){
-      if(bad||!nd)return;
-      if(nd.v!==undefined&&!known[nd.v.toLowerCase()])bad='unknown name '+nd.v;
-      if(nd.neg)walk(nd.neg);
-      if(nd.a){walk(nd.a);walk(nd.b);}
-      if(nd.args)nd.args.forEach(walk);
-    })(pz.ast);
-    return bad;
-  }
-  function bimUsageOptionsHtml(cur){
-    var h='<option value=""'+(cur===''?' selected':'')+'>None</option>';
-    bimUsages().forEach(function(u){h+='<option value="'+bimEsc(u.id)+'"'+(u.id===cur?' selected':'')+'>'+bimEsc(u.name)+'</option>';});
-    if(cur==='__mixed')h+='<option value="__mixed" selected disabled>Mixed</option>';
-    return h;
-  }
-  /* the Usage page of a room, a floor or a mass */
-  function bimUsagePropsHtml(o){
-    var tg=bimUsageSelTargets(),many=tg.length>1,u=o.usage?bimUsageById(o.usage):null,r='',k;
-    var same=tg.every(function(id){var x=objById(id);return (x.usage||'')===(o.usage||'');});
-    r+=bimPropRow(many?'Usage ('+tg.length+' selected)':'Usage',
-      '<select data-propusage="set">'+bimUsageOptionsHtml(same?(o.usage||''):'__mixed')+'</select>');
-    if(!many&&u){
-      var m=bimUsageMeasure(o);
-      if(m.kind==='mass')r+=bimPropText('Floors',m.levels+' at '+bimUsageNum(u.ftf)+' m, '+bimDispNum(m.height,2)+' m tall');
-      if(m.kind!=='room'){
-        r+=bimPropText('GBA',bimUsageArea(m.GBA));
-        r+=bimPropText('GFA',bimUsageArea(m.GFA)+' ('+bimUsagePct(u.gfa)+' of GBA)');
-      }
-      r+=bimPropText('NSA',bimUsageArea(m.NSA)+(m.netMeasured?' (the room, measured)':' ('+bimUsagePct(u.nsa)+' of GFA)'));
-      for(k in m.values)if(m.values.hasOwnProperty(k))r+=bimPropText(k,m.errors[k]?('error: '+m.errors[k]):bimUsageNum(m.values[k]));
-    }
-    var h=bimPropGroup('Usage',r);
-    if(many)h+=bimUsageAreasHtml(tg,'Areas: the Selection');
-    return h;
-  }
-  /* the areas by usage, as a Properties group */
-  function bimUsageAreasHtml(ids,title){
-    var s=bimUsageSummary(ids),r='';
-    if(!s.rows.length)r+=bimPropText('None yet',ids?'nothing selected has a usage':'give a room, a floor or a mass a usage');
-    s.rows.forEach(function(g){
-      var k,v=[];
-      for(k in g.values)if(g.values.hasOwnProperty(k))v.push(k+' '+bimUsageNum(g.values[k]));
-      r+='<div class="a3d-prow ro a3d-uarea"><div class="a3d-plabel">'+bimUsageSwatch(g.color)+bimEsc(g.name)+'</div>'+
-        '<div class="a3d-pval"><span class="a3d-pstatic">'+g.count+' \u00b7 GBA '+bimDispNum(g.GBA,2)+' \u00b7 GFA '+bimDispNum(g.GFA,2)+
-        ' \u00b7 NSA '+bimDispNum(g.NSA,2)+' m\u00b2'+(v.length?'<br>'+bimEsc(v.join(', ')):'')+(g.errors?'<br>'+g.errors+' formula error'+(g.errors===1?'':'s'):'')+'</span></div></div>';
-    });
-    if(s.rows.length>1)r+=bimPropText('Total','GBA '+bimDispNum(s.total.GBA,2)+' \u00b7 GFA '+bimDispNum(s.total.GFA,2)+' \u00b7 NSA '+bimDispNum(s.total.NSA,2)+' m\u00b2');
-    return bimPropGroup(title,r);
-  }
-  /* the library: one line per usage, the open one's fields under it */
-  function bimUsageLibraryHtml(){
-    var L=bimUsages(),r='',i,j,u,id;
-    for(i=0;i<L.length;i++){
-      u=L[i];id=bimEsc(u.id);
-      r+='<div class="a3d-prow a3d-uhead"><div class="a3d-plabel">'+bimUsageSwatch(u.color)+bimEsc(u.name)+'</div><div class="a3d-pval">'+
-        '<span class="a3d-pstatic">GFA '+bimUsagePct(u.gfa)+' \u00b7 NSA '+bimUsagePct(u.nsa)+' \u00b7 '+bimUsageNum(u.ftf)+' m</span> '+
-        '<button type="button" class="a3d-pedit" data-propusageact="open:'+id+'" aria-expanded="'+(A3D_USAGE_OPEN===u.id?'true':'false')+'">'+(A3D_USAGE_OPEN===u.id?'Done':'Edit')+'</button></div></div>';
-      if(A3D_USAGE_OPEN!==u.id)continue;
-      r+=bimPropRow('Name','<input type="color" data-propusage="u:'+id+':color" value="'+bimEsc(u.color)+'" aria-label="Colour"> '+
-        '<input type="text" data-propusage="u:'+id+':name" value="'+bimEsc(u.name)+'" style="width:62%">');
-      r+=bimPropRow('GBA \u2192 GFA (%)','<input type="number" step="any" min="0" max="100" data-propusage="u:'+id+':gfa" value="'+bimUsageNum(u.gfa*100)+'">');
-      r+=bimPropRow('GFA \u2192 NSA (%)','<input type="number" step="any" min="0" max="100" data-propusage="u:'+id+':nsa" value="'+bimUsageNum(u.nsa*100)+'">');
-      r+=bimPropRow('Floor to Floor (m)','<input type="number" step="any" min="1" max="20" data-propusage="u:'+id+':ftf" value="'+bimUsageNum(u.ftf)+'">');
-      for(j=0;j<(u.params||[]).length;j++)
-        r+=bimPropRow('Parameter','<div class="a3d-ukv"><input type="text" data-propusage="p:'+id+':'+j+':key" value="'+bimEsc(u.params[j].key)+'" aria-label="Name">'+
-          '<span>=</span><input type="number" step="any" data-propusage="p:'+id+':'+j+':value" value="'+bimEsc(u.params[j].value)+'" aria-label="Value">'+
-          '<button type="button" class="a3d-bdel" data-propusageact="pdel:'+id+':'+j+'" title="Remove this parameter">\u00d7</button></div>');
-      for(j=0;j<(u.formulas||[]).length;j++){
-        var fp=bimUsageFormulaProblem(u,j);
-        r+=bimPropRow('Formula','<div class="a3d-ukv"><input type="text" data-propusage="f:'+id+':'+j+':key" value="'+bimEsc(u.formulas[j].key)+'" aria-label="Name"><span>=</span>'+
-          '<button type="button" class="a3d-bdel" data-propusageact="fdel:'+id+':'+j+'" title="Remove this formula">\u00d7</button></div>'+
-          '<input type="text" class="a3d-uexpr" data-propusage="f:'+id+':'+j+':expr" value="'+bimEsc(u.formulas[j].expr)+'" aria-label="Formula" spellcheck="false">'+
-          (fp?'<div class="a3d-uerr" role="alert">'+bimEsc(fp)+'</div>':''));
-      }
-      r+=bimPropRow('','<button type="button" class="a3d-pedit" data-propusageact="padd:'+id+'">Add parameter</button> '+
-        '<button type="button" class="a3d-pedit" data-propusageact="fadd:'+id+'">Add formula</button> '+
-        '<button type="button" class="a3d-pedit" data-propusageact="udel:'+id+'">Remove usage</button>');
-    }
-    r+=bimPropRow('','<button type="button" class="a3d-pedit" data-propusageact="uadd">Add usage</button>');
-    return r;
-  }
-  /* one change to one usage, one undo step; refused with its reason, nothing changed */
-  function bimUsageEdit(id,fn){
-    var L=bimUsages(),ix=-1,i;
-    for(i=0;i<L.length;i++)if(L[i].id===id)ix=i;
-    if(ix<0){a3dToast('That usage is gone');refreshProps();return false;}
-    var c=JSON.parse(JSON.stringify(L[ix])),err=fn(c);
-    if(err){a3dToast(err);refreshProps();return false;}
-    pushUndo();
-    bimUsages()[ix]=c;
-    refreshTree();refreshProps();paint();saveSoon();
-    return true;
-  }
-  function bimUsageUniqueKey(u,base){
-    var n=1,k=base;
-    while(bimUsageKeyProblem(u,k,null))k=base+(++n);
-    return k;
-  }
-  function bimUsageAssign(ids,usageId){
-    var u=usageId?bimUsageById(usageId):null,n=0;
-    if(usageId&&!u){a3dToast('There is no such usage');return 0;}
-    var objs=ids.map(objById).filter(function(o){return !!bimUsageTarget(o);});
-    if(!objs.length){a3dToast('Select a room, a floor or a mass to give it a usage');return 0;}
-    pushUndo();
-    objs.forEach(function(o){if(u)o.usage=u.id;else delete o.usage;n++;});
-    refreshTree();refreshProps();paint();saveSoon();
-    a3dToast(u?(u.name+' given to '+n+' object'+(n===1?'':'s')):('Usage cleared on '+n+' object'+(n===1?'':'s')));
-    return n;
-  }
-  function bimUsageAdd(name){
-    var L=bimUsages(),base=String(name||'Usage').slice(0,40)||'Usage',nm=base,n=1,i;
-    function taken(x){for(i=0;i<L.length;i++)if(L[i].name.toLowerCase()===x.toLowerCase())return true;return false;}
-    while(taken(nm))nm=base+' '+(++n);
-    pushUndo();
-    var u={id:'use-'+Date.now().toString(36)+'-'+(A3D.seq++),name:nm,color:BIM_SCHEME_COLS[L.length%BIM_SCHEME_COLS.length],
-      gfa:0.9,nsa:0.8,ftf:3.2,params:[],formulas:[]};
-    L.push(u);
-    A3D_USAGE_OPEN=u.id;
-    refreshTree();refreshProps();saveSoon();
-    return u.id;
-  }
-  function bimUsageRemove(id){
-    var L=bimUsages(),ix=-1,i,n=0;
-    for(i=0;i<L.length;i++)if(L[i].id===id)ix=i;
-    if(ix<0)return false;
-    pushUndo();
-    var nm=L[ix].name;
-    L.splice(ix,1);
-    for(i=0;i<A3D.objs.length;i++)if(A3D.objs[i].usage===id){delete A3D.objs[i].usage;n++;}
-    if(A3D_USAGE_OPEN===id)A3D_USAGE_OPEN=null;
-    refreshTree();refreshProps();paint();saveSoon();
-    a3dToast(nm+' removed'+(n?'; '+n+' object'+(n===1?' has':'s have')+' no usage now':''));
-    return true;
-  }
-  function bimUsagePropChange(ev){
-    var f=ev.target&&ev.target.closest?ev.target.closest('[data-propusage]'):null;
-    if(!f)return false;
-    var k=f.getAttribute('data-propusage'),v=f.value;
-    if(k==='set'){if(v!=='__mixed')bimUsageAssign(bimUsageSelTargets(),v||null);return true;}
-    var b=k.split(':'),kind=b[0],id=b[1];
-    if(kind==='u')return bimUsageEdit(id,function(u){
-      var fld=b[2],x;
-      if(fld==='name'){
-        x=String(v||'').replace(/\s+/g,' ').replace(/^ | $/g,'').slice(0,40);
-        if(!x)return 'A usage needs a name';
-        if(bimUsages().some(function(o){return o.id!==u.id&&o.name.toLowerCase()===x.toLowerCase();}))return 'There is already a usage called '+x;
-        u.name=x;return;
-      }
-      if(fld==='color'){if(!/^#[0-9a-fA-F]{6}$/.test(v))return 'That is not a colour';u.color=v.toLowerCase();return;}
-      x=parseFloat(v);
-      if(!isFinite(x))return 'That must be a number';
-      if(fld==='gfa'||fld==='nsa'){if(x<0||x>100)return 'A ratio is from 0 to 100%';u[fld]=x/100;return;}
-      if(fld==='ftf'){if(x<1||x>20)return 'A floor-to-floor height is from 1 to 20 m';u.ftf=x;return;}
-      return 'Unknown field';
-    });
-    var j=parseInt(b[2],10),part=b[3];
-    if(kind==='p')return bimUsageEdit(id,function(u){
-      var p=u.params[j];if(!p)return 'That parameter is gone';
-      if(part==='key'){var e=bimUsageKeyProblem(u,v,p);if(e)return e;p.key=v;return;}
-      var x=parseFloat(v);if(!isFinite(x))return 'A parameter is a number';p.value=x;
-    });
-    if(kind==='f')return bimUsageEdit(id,function(u){
-      var fo=u.formulas[j];if(!fo)return 'That formula is gone';
-      if(part==='key'){var e=bimUsageKeyProblem(u,v,fo);if(e)return e;fo.key=v;return;}
-      fo.expr=String(v||'').slice(0,200);   /* kept even when it does not read yet: its error is shown */
-    });
-    return false;
-  }
-  function bimUsagePropClick(ev){
-    var bt=ev.target&&ev.target.closest?ev.target.closest('[data-propusageact]'):null;
-    if(!bt)return false;
-    var a=bt.getAttribute('data-propusageact'),b=a.split(':'),id=b[1],j=parseInt(b[2],10);
-    if(a==='uadd'){bimUsageAdd('Usage');a3dToast('Usage added: name it and set its ratios');return true;}
-    if(b[0]==='open'){A3D_USAGE_OPEN=(A3D_USAGE_OPEN===id)?null:id;refreshProps();return true;}
-    if(b[0]==='udel'){bimUsageRemove(id);return true;}
-    if(b[0]==='padd')return bimUsageEdit(id,function(u){u.params=u.params||[];u.params.push({key:bimUsageUniqueKey(u,'rate'),value:0});});
-    if(b[0]==='fadd')return bimUsageEdit(id,function(u){u.formulas=u.formulas||[];u.formulas.push({key:bimUsageUniqueKey(u,'value'),expr:'GFA'});});
-    if(b[0]==='pdel')return bimUsageEdit(id,function(u){if(!u.params[j])return 'That parameter is gone';u.params.splice(j,1);});
-    if(b[0]==='fdel')return bimUsageEdit(id,function(u){if(!u.formulas[j])return 'That formula is gone';u.formulas.splice(j,1);});
-    return false;
-  }
-  /* USAGE: the selection's usage, in Properties; with nothing to give one to, the library */
-  function bimUsageCommand(){
-    var tg=bimUsageSelTargets();
-    if(!tg.length){
-      a3dToast('Select a room, a floor or a mass to give it a usage. The usages are below.');
-      bimUsageLibraryCommand(true);
-      return false;
-    }
-    A3D_PROP_GROUPS_OPEN['Usage']=true;
-    refreshProps();
-    var s=el.propsbody&&el.propsbody.querySelector('[data-propusage="set"]');
-    if(s){try{s.focus();s.scrollIntoView({block:'nearest'});}catch(eF){}}
-    return true;
-  }
-  /* USAGES: the library, with nothing selected */
-  function bimUsageLibraryCommand(quiet){
-    A3D.sel=null;A3D.sel2=null;A3D.selSet=[];
-    A3D_PROP_GROUPS_OPEN['Usages']=true;
-    refreshTree();refreshProps();paint();
-    var g=el.propsbody&&el.propsbody.querySelector('[data-a3dpgrp="Usages"]');
-    if(g){try{g.scrollIntoView({block:'start'});}catch(eS){}}
-    if(!quiet)a3dToast('The usages are in Properties: Edit one to change its ratios, parameters and formulas');
-    return true;
-  }
   /* __acad3dV73: the no-selection inspector. Project and Site are editable and write to the
      title block and site record that the sheet title block already prints. Level, Layer and
      Appearance are the three switches that change what the drawing shows, and each one already
@@ -11873,8 +11622,6 @@ try{
       h+=bimPropGroup('Floor Loads: '+bimEsc(lvA.name),lrows);
     }
     h+=bimAnalysisPropsHtml();   /* __acad3dV125: the model's Analysis page, beside its floor loads */
-    h+=bimUsageAreasHtml(null,'Areas by Usage');   /* __acad3dV131 */
-    h+=bimPropGroup('Usages',bimUsageLibraryHtml());
     h+=bimPropGroup('Statistics',srows);
     return h;
   }
@@ -12241,7 +11988,6 @@ try{
     h+=bimPropGroup('Dimensions',dims);
     if(bimIsFrameMember(o))h+=bimStructPropsHtml(o);   /* __acad3dV125 */
     if(bimIsAlignment(o))h+=bimAlignPropsHtml(o);       /* __acad3dV127 */
-    if(bimUsageTarget(o))h+=bimUsagePropsHtml(o);       /* __acad3dV131 */
 
     // ---- Sketch Constraints (V45) -- only for sketches, and only shown once at least one point
     // exists to constrain. Lists each stored constraint in plain English with a per-row delete,
@@ -14722,108 +14468,32 @@ try{
       {grp:'Pages',rows:rows(A3D_PAGEVIEW_KEYS)},{grp:'Presenting',rows:rows(A3D_SHOW_KEYS)}]);
   }
   /* __acad3dV129: the shortcuts panel -- the categories on the left, one list, the keys on the right */
-  /* __acad3dV130: tools and shortcuts -- every tool and every key in one list, the categories on
-     the left (the ribbon's tabs, then the key groups), a filter by kind, a sort, and a pin for the
-     dock. Every child of the list carries its place (data-rkord), so By group can put it back. */
   function bimShortcutsHtml(){
-    var groups=bimShortcutGroups(),g,r,i,j,k,total=0,nav='',list='',ord=0,use=bimCmdUsage(),cat=bimCmdCatalog();
-    var pins=bimDockPins(A3D_DISC_CUR),tabs=A3DR_TABS,seen={},nTools=0,nPinned=0,tnav='',tlist='';
-    for(i=0;i<tabs.length;i++){
-      var tab=tabs[i],gid='tool:'+tab.id,grs=a3drTabGroups(tab),rows='',n=0,gi,ai,a;
-      for(gi=0;gi<grs.length;gi++)for(ai=0;ai<grs[gi].acts.length;ai++){
-        a=grs[gi].acts[ai];
-        if(seen[a])continue;   /* every ribbon action, even one the search leaves out (BIM_ACT_HIDE) */
-        seen[a]=1;n++;
-        var it=bimCatForAct(cat,a),off=a3drIsUnimpl(a),lab=a3drLabel(a),pinned=pins.indexOf(a)>=0;
-        var desc=off?'Not built yet':((it&&it.desc)||BIM_ACT_DESC[a]||'');
-        var ks=(it&&it.keys)||null,nuse=(it&&use[it.id]&&use[it.id].n)||0;
-        if(pinned)nPinned++;
-        rows+='<div class="a3d-rkrow a3d-rktool'+(off?' off':'')+'" data-rkg="'+gid+'" data-rkkind="tool" data-rkact="'+bimEsc(a)+'" data-rkord="'+(ord++)+'"'+
-          ' data-rkname="'+bimEsc(String(lab).toLowerCase())+'" data-rkuse="'+nuse+'" data-rkpinned="'+(pinned?1:0)+'"'+
-          ' data-rkhay="'+bimEsc((lab+' '+desc+' '+tab.name+' '+grs[gi].t+' '+(it?it.name+' '+it.aliases.join(' ')+' '+(it.terms||''):'')+' '+(ks?ks.join(' ')+' '+ks.join('+'):'')).toLowerCase())+'">'+
-          '<button type="button" class="a3d-rkrun"'+(off?' disabled':' data-a3dr="'+bimEsc(a)+'"')+'>'+a3drIcon(a)+
-          '<span class="a3d-rklab">'+bimEsc(lab)+'</span><span class="a3d-rkdesc">'+bimEsc(desc)+'</span></button>'+
-          '<span class="a3d-rkcmd">'+(it?'type '+bimEsc(it.name):'')+'</span><span class="a3d-rkkeys">';
-        if(ks)for(k=0;k<ks.length;k++)rows+=(k?'<span class="a3d-rkplus">+</span>':'')+'<kbd>'+bimEsc(ks[k])+'</kbd>';
-        rows+='</span>'+(off?'<span class="a3d-rkpinx"></span>':'<button type="button" class="a3d-rkpin" data-rkpin="'+bimEsc(a)+'" aria-pressed="'+(pinned?'true':'false')+'"'+
-          ' aria-label="'+bimEsc((pinned?'Take '+lab+' off the dock':'Put '+lab+' on the dock'))+'" title="'+(pinned?'On the dock: click to take it off':'Put it on the dock')+'">'+A3DR_PIN_ICON+'</button>')+'</div>';
-      }
-      if(!n)continue;
-      nTools+=n;
-      var dn=tab.disc?bimDiscName(tab.disc):'';
-      tnav+='<button type="button" class="a3d-rkcat" data-rkcat="'+gid+'"><span>'+bimEsc(tab.name)+(dn&&dn!==tab.name?' <i>'+bimEsc(dn)+'</i>':'')+'</span><span class="a3d-rkn">'+n+'</span></button>';
-      tlist+='<div class="a3d-rkgrp" data-rkg="'+gid+'" data-rkord="'+(ord++)+'">'+bimEsc(tab.name)+'</div>'+rows;
-    }
+    var groups=bimShortcutGroups(),g,r,i,j,k,total=0,nav='',list='';   /* __acad3dV122 */
     for(i=0;i<groups.length;i++){
       g=groups[i];total+=g.rows.length;
       nav+='<button type="button" class="a3d-rkcat" data-rkcat="'+bimEsc(g.grp)+'"><span>'+bimEsc(g.grp)+'</span><span class="a3d-rkn">'+g.rows.length+'</span></button>';
-      list+='<div class="a3d-rkgrp" data-rkg="'+bimEsc(g.grp)+'" data-rkord="'+(ord++)+'">'+bimEsc(g.grp)+'</div>';
-      if(g.note)list+='<div class="a3d-rkgnote" data-rkg="'+bimEsc(g.grp)+'" data-rkord="'+(ord++)+'">'+bimEsc(g.note)+'</div>';
+      list+='<div class="a3d-rkgrp" data-rkg="'+bimEsc(g.grp)+'">'+bimEsc(g.grp)+'</div>';
+      if(g.note)list+='<div class="a3d-rkgnote" data-rkg="'+bimEsc(g.grp)+'">'+bimEsc(g.note)+'</div>';
       for(j=0;j<g.rows.length;j++){
         r=g.rows[j];
-        var ru=(r.cmd&&use['cmd:'+r.cmd]&&use['cmd:'+r.cmd].n)||0;
-        list+='<div class="a3d-rkrow" data-rkg="'+bimEsc(g.grp)+'" data-rkkind="key" data-rkord="'+(ord++)+'" data-rkname="'+bimEsc(r.label.toLowerCase())+'" data-rkuse="'+ru+'"'+
-          ' data-rkhay="'+bimEsc((r.keys.join(' ')+' '+r.keys.join('+')+' '+r.label+' '+g.grp+' '+(r.cmd||'')).toLowerCase())+'">'+
+        list+='<div class="a3d-rkrow" data-rkg="'+bimEsc(g.grp)+'" data-rkhay="'+bimEsc((r.keys.join(' ')+' '+r.keys.join('+')+' '+r.label+' '+g.grp+' '+(r.cmd||'')).toLowerCase())+'">'+
           '<span class="a3d-rklab">'+bimEsc(r.label)+'</span>'+
           '<span class="a3d-rkcmd">'+(r.cmd?'type '+bimEsc(r.cmd):'')+'</span><span class="a3d-rkkeys">';
         for(k=0;k<r.keys.length;k++){
           if(k)list+='<span class="a3d-rkplus">'+(r.alt?'/':'+')+'</span>';   /* __acad3dV122: a slash between alternatives */
           list+='<kbd>'+bimEsc(r.keys[k])+'</kbd>';
         }
-        list+='</span><span class="a3d-rkpinx"></span></div>';
+        list+='</span></div>';
       }
     }
-    tlist=bimRkReorder(tlist);
-    return '<div class="a3d-rkhead"><h2 class="a3d-rktitle">Tools and shortcuts</h2>'+
-      '<input type="search" class="a3d-rkfind" placeholder="Search tools and keys: wall, undo, ctrl z, F8" aria-label="Search the tools and keyboard shortcuts" autocomplete="off" spellcheck="false">'+   /* __acad3dV128 */
-      '<button type="button" class="a3d-rkclose" data-rkclose aria-label="Close the tools and shortcuts">\u00d7</button></div>'+
-      '<div class="a3d-rkbar"><div class="a3d-rkkinds" role="group" aria-label="Show">'+
-      '<button type="button" class="a3d-rkkind on" data-rkkindf="all" aria-pressed="true">All</button>'+
-      '<button type="button" class="a3d-rkkind" data-rkkindf="tool" aria-pressed="false">Tools</button>'+
-      '<button type="button" class="a3d-rkkind" data-rkkindf="key" aria-pressed="false">Keys</button></div>'+
-      '<label class="a3d-rksortl">Sort <select class="a3d-rksort" aria-label="Sort the list">'+
-      '<option value="group">By group</option><option value="name">By name</option><option value="used">Most used</option></select></label>'+
-      '<span class="a3d-rkshown" aria-live="polite"></span></div>'+
-      '<div class="a3d-rkbody"><nav class="a3d-rknav" aria-label="Categories">'+
-      '<button type="button" class="a3d-rkcat on" data-rkcat="all" aria-pressed="true"><span>All</span><span class="a3d-rkn">'+(nTools+total)+'</span></button>'+
-      '<button type="button" class="a3d-rkcat" data-rkcat="__pinned"><span>On the dock</span><span class="a3d-rkn a3d-rkpinn">'+nPinned+'</span></button>'+
-      '<div class="a3d-rknavh">Tools</div>'+tnav+'<div class="a3d-rknavh">Keys</div>'+nav+
-      '<div class="a3d-rknote">Pin a tool to put it on the dock. Every command by name: <kbd>'+bimEsc(A3D_MODKEY)+'</kbd>+<kbd>K</kbd>, or start typing on the drawing.</div></nav>'+
-      '<div class="a3d-rukeys">'+tlist+list+'<div class="a3d-rkempty" hidden>Nothing matches. Try what it does, like \u201csnap\u201d, or a key, like \u201cF8\u201d.</div></div></div>';
-  }
-  /* the tools' rows were numbered before their header was: number the list again, as it stands */
-  function bimRkReorder(html){
-    var box=document.createElement('div'),i;
-    box.innerHTML=html;
-    for(i=0;i<box.children.length;i++)box.children[i].setAttribute('data-rkord',String(i));
-    return box.innerHTML;
-  }
-  function bimDiscName(id){
-    for(var i=0;i<A3D_DISCIPLINES.length;i++)if(A3D_DISCIPLINES[i].id===id)return A3D_DISCIPLINES[i].name;
-    return id;
-  }
-  /* the catalogue's entry for a ribbon action: its own, or the typed command it runs */
-  function bimCatForAct(cat,act){
-    var cad=BIM_ACT_CMD[act],i;
-    for(i=0;i<cat.length;i++)if((cad&&cat[i].cad===cad)||cat[i].act===act||cat[i].ribbon===act)return cat[i];
-    return null;
-  }
-  /* By group puts every row back in its place; By name and Most used make one list */
-  function bimSortShortcuts(p){
-    var lst=p.querySelector('.a3d-rukeys');if(!lst)return;
-    var how=p.getAttribute('data-rksort')||'group',em=lst.querySelector('.a3d-rkempty');
-    var kids=Array.prototype.slice.call(lst.children).filter(function(e){return e!==em;});
-    kids.sort(function(a,b){
-      if(how==='group')return (+a.getAttribute('data-rkord'))-(+b.getAttribute('data-rkord'));
-      var ar=a.classList.contains('a3d-rkrow'),br=b.classList.contains('a3d-rkrow');
-      if(ar!==br)return ar?1:-1;   /* the headers, hidden, first */
-      if(how==='used'){var du=(+b.getAttribute('data-rkuse')||0)-(+a.getAttribute('data-rkuse')||0);if(du)return du;}
-      var an=a.getAttribute('data-rkname')||'',bn=b.getAttribute('data-rkname')||'';
-      return an<bn?-1:(an>bn?1:0);
-    });
-    kids.forEach(function(e){lst.appendChild(e);});
-    if(em)lst.appendChild(em);
-    lst.scrollTop=0;
+    return '<div class="a3d-rkhead"><h2 class="a3d-rktitle">Keyboard shortcuts</h2>'+
+      '<input type="search" class="a3d-rkfind" placeholder="Search by what it does, or a key: undo, ctrl z, F8" aria-label="Search the keyboard shortcuts" autocomplete="off" spellcheck="false">'+   /* __acad3dV128 */
+      '<button type="button" class="a3d-rkclose" data-rkclose aria-label="Close the keyboard shortcuts">\u00d7</button></div>'+
+      '<div class="a3d-rkbody"><nav class="a3d-rknav" aria-label="Shortcut categories">'+
+      '<button type="button" class="a3d-rkcat on" data-rkcat="all" aria-pressed="true"><span>All shortcuts</span><span class="a3d-rkn">'+total+'</span></button>'+nav+
+      '<div class="a3d-rknote">Every command, its alias and its keys: <kbd>'+bimEsc(A3D_MODKEY)+'</kbd>+<kbd>K</kbd>, or start typing a command on the drawing.</div></nav>'+
+      '<div class="a3d-rukeys">'+list+'<div class="a3d-rkempty" hidden>No shortcut matches. Try what it does, like \u201csnap\u201d, or a key, like \u201cF8\u201d.</div></div></div>';
   }
   function bimRailStackHtml(){
     var h='<div id="a3d-railutil">',i;
@@ -14859,18 +14529,6 @@ try{
       p.addEventListener('click',function(ev){
         var b=ev.target&&ev.target.closest?ev.target.closest('[data-a3druitem]'):null;
         if(b){bimRailAction(b.getAttribute('data-a3druitem'));return;}
-        /* __acad3dV130: a tool row runs (the document's dispatcher runs it) and the panel goes */
-        if(ev.target&&ev.target.closest&&ev.target.closest('.a3d-rkrun[data-a3dr]')){bimCloseRailPop();return;}
-        var pn=ev.target&&ev.target.closest?ev.target.closest('[data-rkpin]'):null;
-        if(pn){bimToggleDockPin(p,pn.getAttribute('data-rkpin'));return;}
-        var kf=ev.target&&ev.target.closest?ev.target.closest('[data-rkkindf]'):null;
-        if(kf){
-          var kbs=p.querySelectorAll('[data-rkkindf]'),kk;
-          for(kk=0;kk<kbs.length;kk++){var kon=kbs[kk]===kf;kbs[kk].classList.toggle('on',kon);kbs[kk].setAttribute('aria-pressed',kon?'true':'false');}
-          p.setAttribute('data-rkkind',kf.getAttribute('data-rkkindf'));
-          var kfi=p.querySelector('.a3d-rkfind');bimFilterShortcuts(p,kfi?kfi.value:'');
-          return;
-        }
         /* __acad3dV129: the shortcuts panel's categories and its close button */
         var rc=ev.target&&ev.target.closest?ev.target.closest('.a3d-rkcat[data-rkcat]'):null;
         if(rc){
@@ -14889,9 +14547,6 @@ try{
       p.addEventListener('change',function(ev){
         var f=ev.target&&ev.target.closest?ev.target.closest('[data-a3druset]'):null;
         if(f)bimRailSet(f.getAttribute('data-a3druset'),f);
-        if(ev.target&&ev.target.classList&&ev.target.classList.contains('a3d-rksort')){   /* __acad3dV130 */
-          p.setAttribute('data-rksort',ev.target.value);bimSortShortcuts(p);
-        }
       });
       /* __acad3dV128: the shortcut sheet's search box */
       p.addEventListener('input',function(ev){
@@ -14958,8 +14613,6 @@ try{
   function bimFilterShortcuts(p,q){
     var norm=function(s){return String(s).toLowerCase().replace(/cmd|ctrl|control|meta|\u2318/g,'mod');};
     var cat=p.getAttribute('data-rkcat')||'all',note=null;   /* __acad3dV129: the category chosen on the left */
-    var kind=p.getAttribute('data-rkkind')||'all',pinnedOnly=cat==='__pinned';   /* __acad3dV130: Tools or Keys, and On the dock */
-    if(pinnedOnly)cat='all';
     var words=norm(q).split(/\s+/).filter(function(w){return !!w;}),kids=p.querySelectorAll('.a3d-rukeys > *'),i,grp=null,any=false,shown=0;
     for(i=0;i<kids.length;i++){
       var e=kids[i];
@@ -14967,13 +14620,10 @@ try{
       if(e.classList.contains('a3d-rkgnote')){note=e;continue;}
       if(!e.classList.contains('a3d-rkrow'))continue;
       var hay=norm(e.getAttribute('data-rkhay')||''),ok=(cat==='all'||e.getAttribute('data-rkg')===cat)&&words.every(function(w){return hay.indexOf(w)>=0;});
-      if(ok&&kind!=='all'&&e.getAttribute('data-rkkind')!==kind)ok=false;
-      if(ok&&pinnedOnly&&e.getAttribute('data-rkpinned')!=='1')ok=false;
       e.hidden=!ok;if(ok){any=true;shown++;}
     }
     if(grp){grp.hidden=!any;if(note)note.hidden=!any;}
     var em=p.querySelector('.a3d-rkempty');if(em)em.hidden=shown>0;
-    var sh=p.querySelector('.a3d-rkshown');if(sh)sh.textContent=shown+' shown';   /* __acad3dV130 */
     return shown;
   }
   function bimOpenRailMenu(id,btn){
@@ -14984,7 +14634,6 @@ try{
     p.setAttribute('data-for',id);
     p.classList.toggle('a3d-rksheet',id==='help');   /* __acad3dV129: the shortcuts are a panel, centred */
     p.setAttribute('data-rkcat','all');
-    p.setAttribute('data-rkkind','all');p.setAttribute('data-rksort','group');   /* __acad3dV130 */
     p.innerHTML=bimRailMenuHtml(id);
     p.classList.add('open');
     btn.classList.add('on');
@@ -14998,7 +14647,6 @@ try{
     if(id==='help'){left=Math.max(8,(window.innerWidth-pw)/2);top=Math.max(8,(window.innerHeight-ph)/2);}   /* __acad3dV129 */
     p.style.left=Math.round(left)+'px';
     p.style.top=Math.round(top)+'px';
-    if(id==='help')bimFilterShortcuts(p,'');   /* __acad3dV130: the count shown */
     var rkf=id==='help'?p.querySelector('.a3d-rkfind'):null;   /* __acad3dV128: ready to type into */
     if(rkf){try{rkf.focus({preventScroll:true});}catch(eFo){}}
     return true;
@@ -18444,7 +18092,6 @@ try{
     var g=bimComputeTransformedGeometry(o,transformPt,{kind:'mirror',P1:P1,P2:P2});
     if(g.error)return g;
     var copy={id:'a3d-'+Date.now().toString(36)+'-'+(A3D.seq++),pos:bimObjOffset(o),col:o.col,layer:o.layer};   /* __acad3dV110: the geometry below is in o's own frame */
-    if(o.usage)copy.usage=o.usage;   /* __acad3dV131 */
     if(g.kind==='sketch'){copy.t='sketch';copy.pts=g.pts;copy.y=g.y;copy.closed=o.closed;A3D.counts.sketch=(A3D.counts.sketch||0)+1;copy.name=(o.name||'Sketch')+' mirror';
       if(o.bulges)copy.bulges=o.bulges.map(function(bv){return -bv;});}   /* __acad3dV110: arcs kept, reflected */
     else if(g.kind==='room'){A3D.counts.room=(A3D.counts.room||0)+1;copy.t='room';copy.name='Room_'+A3D.counts.room;copy.pts=g.pts;copy.y=g.y;copy.area=g.area;copy.levelId=o.levelId;}
@@ -18610,7 +18257,6 @@ try{
   }
   function bimBuildArrayCopyFromGeometry(o,g){
     var copy={id:'a3d-'+Date.now().toString(36)+'-'+(A3D.seq++),pos:bimObjOffset(o),col:o.col,layer:o.layer};   /* __acad3dV110: the geometry below is in o's own frame */
-    if(o.usage)copy.usage=o.usage;   /* __acad3dV131 */
     if(g.kind==='sketch'){copy.t='sketch';copy.pts=g.pts;copy.y=g.y;copy.closed=o.closed;copy.name=(o.name||'Sketch')+' copy';
       if(o.bulges)copy.bulges=o.bulges.slice();}   /* __acad3dV110: a turned arc is the same arc */
     else if(g.kind==='room'){A3D.counts.room=(A3D.counts.room||0)+1;copy.t='room';copy.name='Room_'+A3D.counts.room;copy.pts=g.pts;copy.y=g.y;copy.area=g.area;copy.levelId=o.levelId;}
@@ -23472,266 +23118,6 @@ try{
               finishCeiling:bimRoomField(o,'finishCeiling'),source:o.sourceType||'-'};   /* __acad3dV101 */
     });
   }
-  /* ================= __acad3dV131: usages and live areas =================
-     A usage is a set of assumptions (Giraffe's): a colour, the GBA->GFA and GFA->NSA ratios, the
-     floor-to-floor height a mass is stacked at, its own parameters and formulas. The library lives
-     in the project's types, so the undo, the browser store, the project file and the project tabs
-     all carry it without a list of their own. */
-  var BIM_USAGE_DEFAULTS=[
-    {id:'use-res',name:'Residential',color:'#e8a33d',gfa:0.9,nsa:0.8,ftf:3.1,
-      params:[{key:'unitSize',value:75}],formulas:[{key:'units',expr:'floor(NSA / unitSize)'}]},
-    {id:'use-off',name:'Office',color:'#4e8fd6',gfa:0.9,nsa:0.85,ftf:3.6,params:[],formulas:[]},
-    {id:'use-ret',name:'Retail',color:'#d6584e',gfa:0.95,nsa:0.9,ftf:4.5,params:[],formulas:[]},
-    {id:'use-hot',name:'Hotel',color:'#9a6fd0',gfa:0.9,nsa:0.65,ftf:3.2,
-      params:[{key:'keySize',value:30}],formulas:[{key:'keys',expr:'floor(NSA / keySize)'}]},
-    {id:'use-car',name:'Parking',color:'#8a9099',gfa:0.95,nsa:0,ftf:3,
-      params:[{key:'bayArea',value:30}],formulas:[{key:'bays',expr:'floor(GFA / bayArea)'}]}
-  ];
-  /* the names a formula can always read, and the functions it can call */
-  var BIM_EXPR_NAMES={gba:1,gfa:1,nsa:1,levels:1,height:1,footprint:1};
-  var BIM_EXPR_FN={min:Math.min,max:Math.max,round:Math.round,floor:Math.floor,ceil:Math.ceil,abs:Math.abs,sqrt:Math.sqrt};
-  function bimUsages(){
-    bimEnsureTypes();
-    if(!Array.isArray(A3D.types.usage))A3D.types.usage=JSON.parse(JSON.stringify(BIM_USAGE_DEFAULTS));
-    return A3D.types.usage;
-  }
-  function bimUsageById(id){
-    var L=bimUsages(),i;
-    for(i=0;i<L.length;i++)if(L[i].id===id)return L[i];
-    return null;
-  }
-  /* what a usage can be given to: a room, a floor slab, or a mass (a primitive, or a solid that is
-     no building element -- a pad) */
-  function bimUsageTarget(o){
-    if(!o)return '';
-    if(o.t==='room'&&o.pts)return 'room';
-    if(o.t==='solid'&&o.bim&&o.bim.type==='floor'&&o.bim.profile)return 'floor';
-    if(TYPES[o.t]&&o.prm)return 'mass';
-    if(o.t==='solid'&&o.mesh&&(!o.bim||!o.bim.type))return 'mass';
-    return '';
-  }
-  /* ---- the plan area of a solid's cross-section at a world elevation ----
-     Each triangle the plane crosses gives a segment, its ends computed from each edge's lower vertex
-     index so two triangles sharing an edge give the same point; the segments chain into loops, and
-     a loop inside an odd number of others is a hole. */
-  function bimTriSliceY(m,ia,ib,ic,y){
-    var I=[ia,ib,ic],pts=[],k;
-    for(k=0;k<3;k++){
-      var a=I[k],b=I[(k+1)%3],lo=Math.min(a,b),hi=Math.max(a,b),P=m.v[lo],Q=m.v[hi];
-      var dp=P[1]-y,dq=Q[1]-y;
-      if((dp>=0)===(dq>=0))continue;
-      var s=dp/(dp-dq);
-      pts.push([P[0]+(Q[0]-P[0])*s,y,P[2]+(Q[2]-P[2])*s]);
-    }
-    return pts.length===2?pts:null;
-  }
-  function bimMeshSliceArea(o,y){
-    var m=meshOf(o);
-    if(!m||!m.f||!m.v)return 0;
-    var q=bimObjOffset(o),ly=y-q[1],edges=[],i,j,fc,seg;
-    for(i=0;i<m.f.length;i++){
-      fc=m.f[i];
-      for(j=2;j<fc.length;j++){seg=bimTriSliceY(m,fc[0],fc[j-1],fc[j],ly);if(seg)edges.push(seg);}
-    }
-    var loops=bimChainEdgesToLoops(edges),polys=[],area=0,d;
-    for(i=0;i<loops.length;i++)polys.push(loops[i].map(function(p){return [p[0],p[2]];}));
-    for(i=0;i<polys.length;i++){
-      var a=bimPolyArea(polys[i]);
-      if(!(a>1e-9))continue;
-      d=0;
-      for(j=0;j<polys.length;j++)if(j!==i&&bimPointInPoly(polys[i][0],polys[j]))d++;
-      area+=(d%2)?-a:a;
-    }
-    return Math.max(0,area);
-  }
-  /* the level a floor starting at world elevation y belongs to: the highest at or below it */
-  function bimLevelAtElev(y){
-    var best=null,low=null,i,lv;
-    for(i=0;i<A3D.levels.length;i++){
-      lv=A3D.levels[i];
-      if(!low||lv.elev<low.elev)low=lv;
-      if(lv.elev<=y+1e-6&&(!best||lv.elev>best.elev))best=lv;
-    }
-    return (best||low||{id:null}).id;
-  }
-  /* ---- one object, measured ---- */
-  function bimUsageMeasure(o){
-    var kind=bimUsageTarget(o),u=(kind&&o.usage)?bimUsageById(o.usage):null,k;
-    var r={id:o?o.id:null,name:o?o.name:'',kind:kind,usage:u?u.id:null,floors:[],GBA:0,GFA:0,NSA:0,
-           levels:0,height:0,footprint:0,netMeasured:false,values:{},errors:{}};
-    if(!kind)return r;
-    if(kind==='room'){
-      r.NSA=o.area>0?o.area:0;r.footprint=r.NSA;r.levels=1;r.netMeasured=true;
-      r.floors.push({levelId:o.levelId||null,gba:0,gfa:0,nsa:r.NSA});
-    }else if(kind==='floor'){
-      var fa=bimPolyArea(o.bim.profile);
-      r.GBA=fa;r.footprint=fa;r.levels=1;
-      r.floors.push({levelId:o.bim.levelId||null,gba:fa});
-    }else{
-      var bb=objBBox(o);
-      if(!bb)return r;
-      var h=bb.mx[1]-bb.mn[1],ftf=(u&&u.ftf>0)?u.ftf:3,n=Math.max(1,Math.floor(h/ftf+1e-6));
-      r.height=h;r.levels=n;
-      for(k=0;k<n;k++){
-        var y0=bb.mn[1]+k*ftf,band=Math.min(ftf,h-k*ftf),a=bimMeshSliceArea(o,y0+band/2);
-        r.floors.push({levelId:bimLevelAtElev(y0),gba:a});
-        r.GBA+=a;
-      }
-      r.footprint=r.floors.length?r.floors[0].gba:0;
-    }
-    if(u&&kind!=='room'){
-      r.GFA=r.GBA*u.gfa;r.NSA=r.GFA*u.nsa;
-      for(k=0;k<r.floors.length;k++){r.floors[k].gfa=r.floors[k].gba*u.gfa;r.floors[k].nsa=r.floors[k].gfa*u.nsa;}
-    }
-    if(u)bimUsageValues(u,r);
-    return r;
-  }
-  /* ---- formulas: our own reader. A parse error and an evaluation error each say what is wrong. ---- */
-  function bimExprParse(src){
-    var s=String(src==null?'':src),i=0,toks=[],c;
-    while(i<s.length){
-      c=s.charAt(i);
-      if(/\s/.test(c)){i++;continue;}
-      var mn=/^(\d+\.?\d*(?:[eE][+-]?\d+)?|\.\d+(?:[eE][+-]?\d+)?)/.exec(s.slice(i));
-      if(mn){toks.push({t:'n',v:parseFloat(mn[1])});i+=mn[1].length;continue;}
-      var mi=/^[A-Za-z_][A-Za-z0-9_]*/.exec(s.slice(i));
-      if(mi){toks.push({t:'i',v:mi[0]});i+=mi[0].length;continue;}
-      if('+-*/^(),'.indexOf(c)>=0){toks.push({t:c});i++;continue;}
-      return {error:'cannot read "'+c+'"'};
-    }
-    if(!toks.length)return {error:'empty'};
-    var p=0;
-    function peek(){return toks[p]||{t:''};}
-    function fail(m){throw {bimExpr:m};}
-    function expr(){var a=term();while(peek().t==='+'||peek().t==='-'){var op=toks[p++].t;a={op:op,a:a,b:term()};}return a;}
-    function term(){var a=unary();while(peek().t==='*'||peek().t==='/'){var op=toks[p++].t;a={op:op,a:a,b:unary()};}return a;}
-    function unary(){if(peek().t==='-'){p++;return {neg:unary()};}if(peek().t==='+'){p++;return unary();}return power();}
-    function power(){var a=primary();if(peek().t==='^'){p++;return {op:'^',a:a,b:unary()};}return a;}
-    function primary(){
-      var tk=toks[p];
-      if(!tk)fail('ends too soon');
-      if(tk.t==='n'){p++;return {n:tk.v};}
-      if(tk.t==='i'){
-        p++;
-        if(peek().t==='('){
-          var fn=tk.v.toLowerCase(),args=[];
-          if(!BIM_EXPR_FN[fn])fail('unknown function '+tk.v);
-          p++;
-          if(peek().t!==')'){args.push(expr());while(peek().t===','){p++;args.push(expr());}}
-          if(peek().t!==')')fail('a bracket is not closed');
-          p++;
-          if(!args.length)fail(tk.v+' needs a value');
-          return {fn:fn,args:args};
-        }
-        return {v:tk.v};
-      }
-      if(tk.t==='('){p++;var e=expr();if(peek().t!==')')fail('a bracket is not closed');p++;return e;}
-      fail('unexpected "'+tk.t+'"');
-    }
-    try{
-      var ast=expr();
-      if(p<toks.length)fail('unexpected "'+(toks[p].t==='n'?toks[p].v:(toks[p].v||toks[p].t))+'"');
-      return {ast:ast};
-    }catch(eX){
-      if(eX&&eX.bimExpr)return {error:eX.bimExpr};
-      throw eX;
-    }
-  }
-  function bimExprEval(ast,vars){
-    function ev(nd){
-      if(nd.n!==undefined)return nd.n;
-      if(nd.v!==undefined){
-        var k=nd.v.toLowerCase();
-        if(!vars.hasOwnProperty(k))throw {bimExpr:'unknown name '+nd.v};
-        var vv=vars[k];
-        if(vv===null||!isFinite(vv))throw {bimExpr:nd.v+' has no value'};
-        return vv;
-      }
-      if(nd.neg)return -ev(nd.neg);
-      if(nd.fn){var as=nd.args.map(ev);return BIM_EXPR_FN[nd.fn].apply(null,as);}
-      var a=ev(nd.a),b=ev(nd.b);
-      if(nd.op==='+')return a+b;
-      if(nd.op==='-')return a-b;
-      if(nd.op==='*')return a*b;
-      if(nd.op==='/'){if(b===0)throw {bimExpr:'divides by zero'};return a/b;}
-      return Math.pow(a,b);
-    }
-    try{
-      var r=ev(ast);
-      if(!isFinite(r))return {error:'is not a finite number'};
-      return {value:r};
-    }catch(eE){
-      if(eE&&eE.bimExpr)return {error:eE.bimExpr};
-      throw eE;
-    }
-  }
-  function bimExpr(src,vars){
-    var pz=bimExprParse(src);
-    return pz.error?pz:bimExprEval(pz.ast,vars||{});
-  }
-  /* a parameter's or formula's name: a word, not a name the formulas already read */
-  function bimUsageKeyProblem(u,key,skip){
-    if(!/^[A-Za-z_][A-Za-z0-9_]*$/.test(key||''))return 'a name is a word: letters, digits and _';
-    var lk=key.toLowerCase(),i;
-    if(BIM_EXPR_NAMES[lk])return key+' is one of the areas';
-    if(BIM_EXPR_FN[lk])return key+' is a function';
-    var all=(u.params||[]).concat(u.formulas||[]);
-    for(i=0;i<all.length;i++)if(all[i]!==skip&&String(all[i].key).toLowerCase()===lk)return key+' is used twice';
-    return '';
-  }
-  /* the usage's formulas for one measured object, in order: each can read the ones before it */
-  function bimUsageValues(u,r){
-    var vars={gba:r.GBA,gfa:r.GFA,nsa:r.NSA,levels:r.levels,height:r.height,footprint:r.footprint},i,f;
-    for(i=0;i<(u.params||[]).length;i++)vars[String(u.params[i].key).toLowerCase()]=+u.params[i].value;
-    for(i=0;i<(u.formulas||[]).length;i++){
-      f=u.formulas[i];
-      var ev=bimExpr(f.expr,vars);
-      if(ev.error){r.errors[f.key]=ev.error;vars[String(f.key).toLowerCase()]=null;r.values[f.key]=null;}
-      else{r.values[f.key]=ev.value;vars[String(f.key).toLowerCase()]=ev.value;}
-    }
-    return r;
-  }
-  /* ---- the areas by usage: the selection's, or the whole project's ---- */
-  function bimUsageSummary(ids){
-    var objs=ids?ids.map(objById).filter(function(o){return !!o;}):A3D.objs,L=bimUsages(),by={},i,k,o,r,g;
-    for(i=0;i<objs.length;i++){
-      o=objs[i];
-      if(!bimUsageTarget(o)||!o.usage||!bimUsageById(o.usage))continue;
-      r=bimUsageMeasure(o);
-      g=by[r.usage]||(by[r.usage]={usage:r.usage,count:0,GBA:0,GFA:0,NSA:0,values:{},errors:0,levels:{}});
-      g.count++;g.GBA+=r.GBA;g.GFA+=r.GFA;g.NSA+=r.NSA;
-      for(k in r.values)if(r.values.hasOwnProperty(k)&&r.values[k]!==null)g.values[k]=(g.values[k]||0)+r.values[k];
-      for(k in r.errors)if(r.errors.hasOwnProperty(k))g.errors++;
-      r.floors.forEach(function(fl){
-        var lk=fl.levelId||'',lg=g.levels[lk]||(g.levels[lk]={levelId:fl.levelId,GBA:0,GFA:0,NSA:0,objs:{}});
-        lg.GBA+=fl.gba||0;lg.GFA+=fl.gfa||0;lg.NSA+=fl.nsa||0;lg.objs[r.id]=1;
-      });
-    }
-    var rows=[],tot={count:0,GBA:0,GFA:0,NSA:0};
-    for(i=0;i<L.length;i++){
-      g=by[L[i].id];
-      if(!g)continue;
-      g.name=L[i].name;g.color=L[i].color;
-      rows.push(g);
-      tot.count+=g.count;tot.GBA+=g.GBA;tot.GFA+=g.GFA;tot.NSA+=g.NSA;
-    }
-    return {rows:rows,total:tot};
-  }
-  /* the schedule: per usage and level, then the usage's total with its formulas' sums */
-  function bimUsageScheduleRows(){
-    var s=bimUsageSummary(null),out=[],i;
-    for(i=0;i<s.rows.length;i++){
-      var g=s.rows[i],lv,k,vals=[];
-      for(lv=0;lv<A3D.levels.length;lv++){
-        var lg=g.levels[A3D.levels[lv].id];
-        if(lg)out.push({usage:g.name,level:A3D.levels[lv].name,objects:Object.keys(lg.objs).length,gba:lg.GBA,gfa:lg.GFA,nsa:lg.NSA,values:''});
-      }
-      for(k in g.values)if(g.values.hasOwnProperty(k))vals.push(k+' '+String(Math.round(g.values[k]*100)/100));
-      out.push({usage:g.name,level:'All levels',objects:g.count,gba:g.GBA,gfa:g.GFA,nsa:g.NSA,
-        values:vals.join(', ')+(g.errors?(vals.length?'; ':'')+g.errors+' formula error'+(g.errors===1?'':'s'):'')});
-    }
-    return out;
-  }
   function bimBuildAreaSchedule(){
     var out=[],i,a;
     for(i=0;i<A3D.levels.length;i++){
@@ -25079,7 +24465,6 @@ try{
     alignment:{label:'Alignment',build:bimAlignScheduleRows,cols:[{key:'alignment',label:'Alignment'},{key:'pi',label:'PI'},{key:'station',label:'Station'},{key:'delta',label:'Deflection (\u00b0)'},{key:'turn',label:'Turn'},{key:'radius',label:'Radius (m)',fmt:3},{key:'tangent',label:'T (m)',fmt:3},{key:'length',label:'L (m)',fmt:3},{key:'external',label:'E (m)',fmt:3},{key:'pc',label:'PC'},{key:'pt',label:'PT'},{key:'note',label:'Note'}]},   /* __acad3dV127 */
     profile:{label:'Profile',build:bimProfileScheduleRows,cols:[{key:'alignment',label:'Alignment'},{key:'pvi',label:'PVI'},{key:'station',label:'Station'},{key:'elev',label:'Elevation (m)',fmt:3},{key:'gin',label:'Grade in (%)',fmt:3},{key:'gout',label:'Grade out (%)',fmt:3},{key:'L',label:'Curve L (m)',fmt:2},{key:'K',label:'K',fmt:2},{key:'kind',label:'Curve'},{key:'turn',label:'High / low point'},{key:'note',label:'Note'}]},
     reactions:{label:'Reactions',build:bimReactionRows,cols:[{key:'at',label:'At'},{key:'support',label:'Support'},{key:'combo',label:'Combination'},{key:'fx',label:'Fx (kN)',fmt:1},{key:'fy',label:'Fy (kN)',fmt:1},{key:'fz',label:'Fz (kN)',fmt:1},{key:'mx',label:'Mx (kN\u00b7m)',fmt:1},{key:'my',label:'My (kN\u00b7m)',fmt:1},{key:'mz',label:'Mz (kN\u00b7m)',fmt:1},{key:'note',label:'Note'}]},
-    usage:{label:'Areas by Usage',build:bimUsageScheduleRows,cols:[{key:'usage',label:'Usage'},{key:'level',label:'Level'},{key:'objects',label:'Objects'},{key:'gba',label:'GBA (m\u00b2)',fmt:2},{key:'gfa',label:'GFA (m\u00b2)',fmt:2},{key:'nsa',label:'NSA (m\u00b2)',fmt:2},{key:'values',label:'Formulas'}]},   /* __acad3dV131 */
     arealevel:{label:'Areas by Level',build:bimBuildAreaSchedule,cols:[{key:'level',label:'Level'},{key:'gross',label:'Gross (m\u00b2)',fmt:2},{key:'net',label:'Net (m\u00b2)',fmt:2},{key:'efficiency',label:'Efficiency (%)',fmt:1},{key:'rooms',label:'Rooms'},{key:'occupants',label:'Occupant Load'},{key:'note',label:'Note'}]}   /* __acad3dV105b */
   };
   /* __acad3dV74: schedules are a REGISTRY now, not a literal plus two hand-kept lists.
@@ -29205,8 +28590,6 @@ try{
     'bim:foundslab':ric('<rect x="2" y="12" width="20" height="7"/><path d="M6 12V8M18 12V8"/>'),
     'bim:property':ric('<path d="M3 17L8 4l13 5-4 11z" stroke-dasharray="5 2 1.5 2"/>'),   /* __acad3dV103 */
     'bim:propshape':ric('<rect x="4" y="5" width="15" height="13" stroke-dasharray="5 2 1.5 2"/><path d="M8 11h7"/>'),
-    'bim:usage':ric('<rect x="5" y="4" width="14" height="5" rx="1"/><rect x="5" y="10" width="14" height="5" rx="1"/><rect x="5" y="16" width="14" height="4" rx="1"/><path d="M8 6.5h4M8 12.5h7"/>'),   /* __acad3dV131 */
-    'bim:usages':ric('<rect x="4" y="4" width="5" height="5" rx="1"/><path d="M12 6.5h8"/><rect x="4" y="10" width="5" height="5" rx="1"/><path d="M12 12.5h8"/><rect x="4" y="16" width="5" height="4" rx="1"/><path d="M12 18h8"/>'),
     'bim:alignment':ric('<path d="M3 19c5 0 5-7 9-7s4-7 9-7" stroke-dasharray="6 2 1.5 2"/><path d="M6 17.5l1 2M11 13l1.6 1.4M16 7.2l.6 1.8"/>'),   /* __acad3dV127 */
     'bim:truenorth':ric('<circle cx="12" cy="12" r="8"/><path d="M12 5l3 9-3-2-3 2z"/>'),
     'bim:analyze':ric('<path d="M3 20h18"/><path d="M6 20V9M18 20V9M4 9h16"/><path d="M8 13q4 5 8 0" stroke-dasharray="2 2"/>'),   /* __acad3dV125 */
@@ -29508,7 +28891,7 @@ try{
         {act:'bim:window',label:'Window'},
         {act:'bim:component',label:'Component',menu:[['bim:component','Place a Component'],['bim:famsave','Save Selection as Family'],['bim:famimport','Import Family (OBJ/STL)']]}
       ],small:['bim:column','bim:roof','bim:ceiling','bim:floor','bim:stair']},
-      {t:'Room & Area',small:['bim:room','bim:tagroom','bim:tagallrooms','bim:usage']},   /* __acad3dV131: Usage */
+      {t:'Room & Area',small:['bim:room','bim:tagroom','bim:tagallrooms']},
       {t:'Datum',small:['bim:level','bim:grid']},
       {t:'Work Plane',small:['v:top','v:front','v:right']}
     ]},
@@ -29564,7 +28947,6 @@ try{
     ]},
     {id:'a3dmassing',name:'Massing & Site',panels:[
       {t:'Conceptual Mass',small:['box','cyl','sphere','cone','torus']},
-      {t:'Program',small:['bim:usage','bim:usages']},   /* __acad3dV131 */
       {t:'Model by Face',small:['tube','prism','wedge','ellipsoid']},
       {t:'Site',small:['bim:property','bim:propshape','bim:truenorth','bim:alignment']}   /* __acad3dV103; __acad3dV127: Alignment */
     ]},
@@ -29615,6 +28997,15 @@ try{
     for(i=0;i<A3DR_TABS.length;i++)if(a3drTabInDiscipline(A3DR_TABS[i],disc))out.push(A3DR_TABS[i]);
     return out;
   }
+  /* Rows are computed, not listed. Up to five groups per row, balanced so two rows never read
+     as one long row with a stub under it; more than ten groups simply adds rows. */
+  function a3drDockRows(tabs){
+    var n=tabs.length;
+    if(n<=3)return [tabs.slice()];
+    var rows=Math.ceil(n/5),per=Math.ceil(n/rows),out=[],i;
+    for(i=0;i<n;i+=per)out.push(tabs.slice(i,i+per));
+    return out;
+  }
   function a3drRegisterCommand(spec){
     if(!spec||!spec.id)return false;
     A3D_CMD_EXT[spec.id]={label:spec.label||spec.id,icon:spec.icon||'',
@@ -29649,7 +29040,7 @@ try{
     var L={'s:rect':'Rect','s:circle':'Circle','s:poly':'Polyline','p:pad':'Pad','p:pocket':'Pocket','bim:wall':'Wall','bim:floor':'Floor','bim:room':'Room','bim:roof':'Roof','bim:stair':'Stair','bim:column':'Column','bim:door':'Door','bim:window':'Window','bim:dim':'Dimension','bim:text':'Text','bim:section':'Section','bim:ceiling':'Ceiling','bim:dimang':'Angular','bim:dimrad':'Radius','bim:dimdia':'Diameter','bim:leader':'Leader','m:exportdxf':'DXF','m:exportsvg':'SVG','bim:mirror':'Mirror','bim:rotate':'Rotate','bim:polararray':'Polar Array','bim:joinwalls':'Join Walls','bim:extend':'Extend','bim:arc':'Arc','bim:fillet':'Fillet','bim:chamfer':'Chamfer','bim:break':'Break','bim:lengthen':'Lengthen','bim:scale':'Scale','b:union':'Union','b:cut':'Cut','b:isect':'Intersect','v:home':'Home','v:fit':'Fit','v:top':'Top','v:front':'Front','v:right':'Right','v:iso':'Iso','m:del':'Delete','m:desel':'Deselect','m:dup':'Duplicate','m:array':'Array','m:exportpng':'PNG','m:exportpdf':'PDF','m:exitsection':'Exit Section','m:flipsection':'Flip Section','m:saveproj':'Save Project','m:openproj':'Open\u2026',
       'bim:component':'Component','bim:famsave':'Save Family','bim:famimport':'Load Family',
       'bim:tagroom':'Tag Room','bim:tagallrooms':'Tag All Rooms','bim:tagcat':'Tag by Category','bim:level':'Level','bim:grid':'Grid',
-      'bim:beam':'Beam','bim:analyze':'Analyze','bim:truss':'Truss','bim:brace':'Brace','bim:foundwall':'Wall Foundation','bim:footing':'Isolated Footing','bim:property':'Property Line','bim:propshape':'Property from Shape','bim:truenorth':'True North','bim:alignment':'Alignment','bim:usage':'Usage','bim:usages':'Usages',
+      'bim:beam':'Beam','bim:analyze':'Analyze','bim:truss':'Truss','bim:brace':'Brace','bim:foundwall':'Wall Foundation','bim:footing':'Isolated Footing','bim:property':'Property Line','bim:propshape':'Property from Shape','bim:truenorth':'True North','bim:alignment':'Alignment',
       'bim:foundslab':'Foundation Slab','bim:rebar':'Rebar','bim:linkifc':'Link IFC','bim:linkcad':'Link CAD',
       'bim:importcad':'Import CAD','bim:saveview':'Save View','bim:sheet':'Sheet','bim:titleblock':'Title Block',
       'bim:uipanels':'User Interface','bim:trim':'Trim','bim:offset':'Offset','bim:align':'Align',
@@ -29718,101 +29109,65 @@ try{
     }
     return out;
   }
-  /* __acad3dV130: the dock is one row -- the discipline, the tools pinned for it, All tools and the
-     search. Everything else is in the Tools and shortcuts panel. */
   function bimBuildDock(){
     var host=document.getElementById('a3d-dock');
     if(!host)return false;
-    var cat=bimCmdCatalog(),pins=bimDockPins(A3D_DISC_CUR),i,a;
+    var rows=a3drDockRows(a3drDockTabs(A3D_DISC_CUR));
+    var h='<div class="a3d-dockbody">',pops='',r,g,tab,prim,i,grps,gi,ai,act,cat=bimCmdCatalog();   /* __acad3dV128 */
     var names=bimDockLabelsOn();   /* __acad3dV129: tool names under the icons, unless Icons only */
     host.classList.toggle('a3d-docklabels',names);
-    var h='<div class="a3d-dockbody"><div class="a3d-dockrow a3d-dockone">'+
-      '<select id="a3d-discsel" class="a3d-discsel" aria-label="Discipline: which tools the dock and the panel start with">'+
+    /* The discipline group leads the dock: it is what decides which of the others are here. */
+    h+='<div class="a3d-dockrow a3d-dockhead">'+
+      '<div class="a3d-dockgrp" data-dockgrp="__disc">'+
+      '<select id="a3d-discsel" class="a3d-discsel" title="Discipline -- which domain toolset the dock shows">'+
       (function(){var o='',d;for(d=0;d<A3D_DISCIPLINES.length;d++)
         o+='<option value="'+bimEsc(A3D_DISCIPLINES[d].id)+'"'+
           (A3D_DISCIPLINES[d].id===A3D_DISC_CUR?' selected':'')+'>'+
           bimEsc(A3D_DISCIPLINES[d].name)+'</option>';return o;})()+
-      '</select><div class="a3d-dsep"></div>'+
-      '<div class="a3d-dockgrp a3d-dockpins" data-dockgrp="__pins">';
-    for(i=0;i<pins.length;i++){
-      a=pins[i];
-      h+='<button type="button" class="a3d-dbtn" data-a3dr="'+a+'" data-a3dtip="'+a+'" aria-label="'+
-        bimEsc(a3drLabel(a)+bimActHint(a,cat))+'">'+a3drIcon(a)+
-        (names?'<span class="a3d-dblbl">'+bimEsc(a3drLabel(a))+'</span>':'')+'</button>';
-    }
-    h+='</div><div class="a3d-dsep"></div>'+
-      '<button type="button" class="a3d-dall" id="a3d-dall" data-a3dtip="__all" aria-label="All tools and shortcuts">'+A3DR_ALL_ICON+
-      (names?'<span class="a3d-dblbl">All tools</span>':'')+'</button>'+
+      '</select>'+
       '<button type="button" class="a3d-dsearchpill" id="a3d-dsearch" aria-label="Search tools and commands" data-a3dtip="__search">'+
-      A3DR_SEARCH_ICON+'<span>Search</span><kbd>'+bimEsc(A3D_MODKEY)+' K</kbd></button>'+
+      A3DR_SEARCH_ICON+'<span>Search tools and commands</span><kbd>'+bimEsc(A3D_MODKEY)+' K</kbd></button>'+   /* __acad3dV129: a search you can read */
       '</div></div>';
-    bimRenderInto(host,h);   /* __acad3dV118: the Discipline dropdown keeps the focus */
+    for(r=0;r<rows.length;r++){
+      h+='<div class="a3d-dockrow">';
+      for(g=0;g<rows[r].length;g++){
+        tab=rows[r][g];
+        prim=a3drTabPrimary(tab);
+        h+='<div class="a3d-dockgrp" data-dockgrp="'+tab.id+'"><div class="a3d-dgtools">';
+        for(i=0;i<prim.length;i++)   /* __acad3dV129: a name under the icon, a tooltip instead of a title */
+          h+='<button type="button" class="a3d-dbtn" data-a3dr="'+prim[i]+'" data-a3dtip="'+prim[i]+'" aria-label="'+
+            bimEsc(a3drLabel(prim[i])+bimActHint(prim[i],cat))+'">'+a3drIcon(prim[i])+
+            (names?'<span class="a3d-dblbl">'+bimEsc(a3drLabel(prim[i]))+'</span>':'')+'</button>';
+        h+='<button type="button" class="a3d-dcar" data-dockmore="'+tab.id+'" data-a3dtip="__more:'+bimEsc(tab.name)+'" aria-label="'+
+          bimEsc('All '+tab.name+' tools')+'">'+(names?A3DR_MORE_ICON+'<span class="a3d-dblbl">More</span>':'\u25b4')+'</button>';
+        h+='</div><span class="a3d-dglbl">'+bimEsc(tab.name)+'</span></div>';
+        if(g<rows[r].length-1)h+='<div class="a3d-dsep"></div>';
+        grps=a3drTabGroups(tab);
+        pops+='<div class="a3d-dockpop" data-dockpop="'+tab.id+'">';
+        for(gi=0;gi<grps.length;gi++){
+          pops+='<div class="a3d-dockpoph">'+bimEsc(tab.name+' \u00b7 '+grps[gi].t)+'</div>';
+          for(ai=0;ai<grps[gi].acts.length;ai++){
+            act=grps[gi].acts[ai];
+            pops+='<div class="a3d-dockitem'+(a3drIsUnimpl(act)?' a3dr-dis':'')+'" data-a3dr="'+act+'" data-a3dtip="'+act+'">'+a3drIcon(act)+
+              bimEsc(a3drLabel(act))+'</div>';
+          }
+        }
+        pops+='</div>';
+      }
+      h+='</div>';
+    }
+    /* __acad3dV71: search spans EVERY discipline, so the dock's filter can be aggressive -- since
+       V128 that search is the command search (the magnifier opens it). */
+    bimRenderInto(host,h+'</div>'+pops);   /* __acad3dV118: the Discipline dropdown keeps the focus */
     bimTipHide();bimBindDockTips(host);   /* __acad3dV129 */
     return true;
-  }
-  /* The tools on the dock when nobody has pinned any: the ones a person reaches for most, per
-     discipline. A discipline added later (a domain pack) starts with its own tabs' first tools. */
-  var A3D_DOCK_PIN_DEFAULTS={
-    arch:['bim:wall','bim:door','bim:window','bim:floor','bim:column','bim:room','s:poly','bim:dim','m:dup'],
-    struct:['bim:column','bim:beam','bim:floor','bim:brace','bim:footing','bim:grid','bim:level','bim:analyze','bim:dim']
-  };
-  var A3D_DOCK_PIN_MAX=12;
-  function bimDockPins(disc){
-    var p=bimLoadUIPanelPrefs(),set=p.dockPins&&p.dockPins[disc],known={},all=a3drAllCommands(),i,out=[];
-    for(i=0;i<all.length;i++)known[all[i].act]=1;
-    if(!set){
-      set=A3D_DOCK_PIN_DEFAULTS[disc];
-      if(!set){set=[];var tabs=a3drDockTabs(disc);for(i=0;i<tabs.length;i++)if(tabs[i].disc===disc)set=set.concat(a3drTabPrimary(tabs[i]));}
-    }
-    for(i=0;i<set.length&&out.length<A3D_DOCK_PIN_MAX;i++)if(known[set[i]]&&!a3drIsUnimpl(set[i])&&out.indexOf(set[i])<0)out.push(set[i]);
-    return out;
-  }
-  function bimSetDockPin(act,on){
-    var pins=bimDockPins(A3D_DISC_CUR),ix=pins.indexOf(act),lab=a3drLabel(act);
-    if(on&&ix<0){
-      if(pins.length>=A3D_DOCK_PIN_MAX){a3dToast('The dock holds '+A3D_DOCK_PIN_MAX+' tools: take one off first');return false;}
-      pins.push(act);
-    }else if(!on&&ix>=0)pins.splice(ix,1);
-    else return true;
-    var p=bimLoadUIPanelPrefs();p.dockPins=p.dockPins||{};p.dockPins[A3D_DISC_CUR]=pins;bimSaveUIPanelPrefs(p);
-    bimBuildDock();
-    a3dToast(on?lab+' is on the dock':lab+' is off the dock; it stays in All tools');
-    return true;
-  }
-  function bimToggleDockPin(p,act){
-    var row=p.querySelector('.a3d-rkrow[data-rkact="'+act+'"]'),on=!(row&&row.getAttribute('data-rkpinned')==='1');
-    if(!bimSetDockPin(act,on))return false;
-    var now=bimDockPins(A3D_DISC_CUR),rows=p.querySelectorAll('.a3d-rktool'),i;
-    for(i=0;i<rows.length;i++){
-      var a=rows[i].getAttribute('data-rkact'),pin=now.indexOf(a)>=0,b=rows[i].querySelector('[data-rkpin]'),l=a3drLabel(a);
-      rows[i].setAttribute('data-rkpinned',pin?'1':'0');
-      if(b){b.setAttribute('aria-pressed',pin?'true':'false');b.setAttribute('aria-label',pin?'Take '+l+' off the dock':'Put '+l+' on the dock');
-        b.title=pin?'On the dock: click to take it off':'Put it on the dock';}
-    }
-    var pc=p.querySelector('.a3d-rkpinn');if(pc)pc.textContent=String(now.length);
-    var f=p.querySelector('.a3d-rkfind');bimFilterShortcuts(p,f?f.value:'');
-    return true;
-  }
-  /* the panel, from the dock's All tools, SHORTCUTS or ? -- opened once, never toggled shut */
-  function bimOpenToolsPanel(){
-    var hp=document.getElementById('a3d-rupop');
-    if(hp&&hp.classList.contains('open')&&hp.getAttribute('data-for')==='help')return true;
-    var b=document.querySelector('[data-a3drumenu="help"]');
-    if(!b){a3dToast('The tools and shortcuts panel is not available here');return false;}
-    b.click();
-    return true;
-  }
-  /* a tool run from the dock or the panel is a use, as one run from the search is */
-  function bimActUsed(act){
-    var it=bimCatForAct(bimCmdCatalog(),act);
-    if(it)bimCmdUsed(it.id);
   }
   /* ================= __acad3dV128: one catalogue of every command ================= */
   /* A ribbon action that IS a typed command: one entry, the command's, with the ribbon place added */
   var BIM_ACT_CMD={'bim:wall':'wall','s:poly':'poly','s:rect':'rect','s:circle':'circle','bim:arc':'arc','bim:floor':'floorTool',
     'bim:room':'room','bim:tagroom':'roomtag','bim:tagallrooms':'roomtagall','bim:footing':'footing','bim:foundwall':'wallfoundation',
     'bim:foundslab':'foundslab','bim:property':'propertyline','bim:propshape':'propertyshape','bim:truenorth':'truenorth',
-    'bim:alignment':'alignment','bim:usage':'usage','bim:usages':'usages','bim:roof':'roofTool','bim:stair':'stairTool','bim:dim':'bimDims','bim:text':'text',
+    'bim:alignment':'alignment','bim:roof':'roofTool','bim:stair':'stairTool','bim:dim':'bimDims','bim:text':'text',
     'bim:section':'sectionTool','bim:ceiling':'ceilingTool','bim:offset':'offset','bim:trim':'trim','bim:align':'align',
     'bim:leader':'leader','bim:beam':'beamTool','bim:analyze':'analyze','bim:grid':'gridline','bim:column':'columnTool',
     'bim:door':'doorTool','bim:window':'windowTool','v:fit':'zoomFit','m:del':'del','m:dup':'duplicate','m:array':'arrayRect',
@@ -29865,8 +29220,6 @@ try{
     REDO:'again forward',ROTATE:'turn spin angle',SCALE:'resize size bigger smaller',PLOT:'print pdf paper',SAVE:'export file download',
     OPEN:'load file import project',NEW:'project file blank',RECTANG:'box square',CIRCLE:'round',PLINE:'polyline path lines',
     LINE:'segment',SELECTALL:'everything select',CLEAR:'deselect none',ANALYZE:'structural frame solve stiffness forces moments deflection',
-    USAGE:'program use department gross floor area gfa gba nsa net saleable lettable yield efficiency residential office retail',   /* __acad3dV131 */
-    USAGES:'program library gross net area ratios efficiency formulas parameters units',
     ANALYZEOFF:'hide analysis',LOAD:'force kn',SUPPORT:'fixed pinned boundary base',ALIGNMENT:'road route centerline centreline chainage highway',
     STATION:'chainage offset',PROFILEVIEW:'vertical profile grade',SURVEY:'terrain topography topo tin contours ground',
     PROPERTYLINE:'parcel lot boundary site',GRIDLINE:'axis grid line',ROOM:'space area',SECTIONTOOL:'cut elevation',SECTION:'cut elevation',
@@ -30043,7 +29396,7 @@ try{
   /* what a tooltip says: the tool's name, its keys, what to type for it, what it does, where it is */
   function bimDockTipData(spec){
     if(spec==='__search')return {name:'Search tools and commands',keys:[A3D_MODKEY,'K'],desc:'Or just start typing a command on the drawing',type:[],where:''};
-    if(spec==='__all')return {name:'All tools and shortcuts',keys:['?'],desc:'Every tool and key: search, filter, sort, and pin tools to the dock',type:[],where:''};   /* __acad3dV130 */
+    if(spec.indexOf('__more:')===0)return {name:'More',keys:null,desc:'All '+spec.slice(7)+' tools',type:[],where:''};
     var cat=bimCmdCatalog(),cad=BIM_ACT_CMD[spec],it=null,i;
     for(i=0;i<cat.length;i++)if((cad&&cat[i].cad===cad)||cat[i].act===spec||cat[i].ribbon===spec){it=cat[i];break;}
     if(a3drIsUnimpl(spec))return {name:a3drLabel(spec),keys:null,desc:'Not built yet',type:[],where:'',off:true};
@@ -30101,8 +29454,6 @@ try{
     host.addEventListener('keydown',function(ev){if(ev.key==='Escape')bimTipHide();});
     window.addEventListener('scroll',bimTipHide,true);
   }
-  var A3DR_ALL_ICON=ric('<rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><rect x="14" y="14" width="6" height="6" rx="1"/>');   /* __acad3dV130 */
-  var A3DR_PIN_ICON=ric('<path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"/>');
   var A3DR_SEARCH_ICON=ric('<circle cx="11" cy="11" r="6"/><path d="M16 16l4 4"/>');
   /* Every action in every tab, with the tab and panel it came from so a result can say where it
      lives. Rebuilt per query rather than cached: A3DR_TABS is extensible at runtime through
@@ -30129,6 +29480,10 @@ try{
     }
     return out;
   }
+  function bimCloseDockPops(){
+    var all=document.querySelectorAll('.a3d-dockpop.open'),i;
+    for(i=0;i<all.length;i++)all[i].classList.remove('open');
+  }
   var A3D_DOCK_BOUND=false;
   function bimBindDock(){
     if(A3D_DOCK_BOUND)return;
@@ -30136,16 +29491,43 @@ try{
     if(!host)return;
     A3D_DOCK_BOUND=true;
     host.addEventListener('click',function(ev){
-      /* __acad3dV130: All tools opens the panel */
-      if(ev.target&&ev.target.closest&&ev.target.closest('#a3d-dall')){ev.stopPropagation();bimOpenToolsPanel();return;}
+      var car=ev.target&&ev.target.closest?ev.target.closest('[data-dockmore]'):null;
+      if(car){
+        ev.stopPropagation();
+        var key=car.getAttribute('data-dockmore');
+        var d=host.querySelector('[data-dockpop="'+key+'"]');
+        var wasOpen=d&&d.classList.contains('open');
+        bimCloseDockPops();
+        if(d&&!wasOpen){
+          d.classList.add('open');
+          /* Opens UPWARD from the caret, because the dock sits at the bottom of the viewport;
+             then clamped to the window so a group near either edge is still fully readable. */
+          var cr=car.getBoundingClientRect(),dr=d.getBoundingClientRect();
+          var top=cr.top-dr.height-6;
+          if(top<8)top=Math.min(cr.bottom+6,window.innerHeight-dr.height-8);
+          var left=cr.left+cr.width/2-dr.width/2;
+          if(left<8)left=8;
+          if(left+dr.width>window.innerWidth-8)left=Math.max(8,window.innerWidth-dr.width-8);
+          d.style.top=Math.round(Math.max(8,top))+'px';
+          d.style.left=Math.round(left)+'px';
+        }
+        return;
+      }
       /* __acad3dV128: the magnifier opens THE command search, not a second one */
       var sbtn=ev.target&&ev.target.closest?ev.target.closest('#a3d-dsearch'):null;
       if(sbtn){
         ev.stopPropagation();
+        bimCloseDockPops();
         if(window.openPalette)window.openPalette();
         return;
       }
-      /* Any other click inside the dock is a command; the document dispatcher runs it. */
+      /* Any other click inside the dock is a command; the document dispatcher runs it, and the
+         popover closes so the drawing is not left behind a menu. */
+      bimCloseDockPops();
+    });
+    document.addEventListener('click',function(ev){
+      if(ev.target&&ev.target.closest&&ev.target.closest('#a3d-dock'))return;
+      bimCloseDockPops();
     });
     host.addEventListener('change',function(ev){
       if(ev.target&&ev.target.id==='a3d-discsel'){
@@ -30154,14 +29536,14 @@ try{
         a3dToast('Discipline: '+ev.target.options[ev.target.selectedIndex].text);
       }
     });
+    window.addEventListener('resize',bimCloseDockPops);
   }
   document.addEventListener('click',function(ev){
     var t=ev.target;
     if(!t||!t.closest)return;
     var b=t.closest('[data-a3dr]');
     if(!b||!A3D.on)return;
-    var ra=b.getAttribute('data-a3dr');
-    if(bimRunAct(ra)!==false&&(b.closest('#a3d-dock')||b.closest('#a3d-rupop')))bimActUsed(ra);   /* __acad3dV130 */
+    bimRunAct(b.getAttribute('data-a3dr'));
   });
   /* __acad3dV128: a ribbon action, run as its button runs it -- by a click, or from the command
      search. false when it was refused or is not a command; anything else ran. */
@@ -30188,9 +29570,7 @@ try{
     if(act==='bim:property'){openPropertyDlg(null);return;}              /* __acad3dV103 */
     if(act==='bim:propshape'){bimPropertyFromSketch(objById(A3D.sel));return;}
     if(act==='bim:truenorth'){openTrueNorthDlg();return;}
-    if(act==='bim:alignment'){bimAlignmentCommand();return;}
-    if(act==='bim:usage'){bimUsageCommand();return;}                    /* __acad3dV131 */
-    if(act==='bim:usages'){bimUsageLibraryCommand();return;}            /* __acad3dV127 */
+    if(act==='bim:alignment'){bimAlignmentCommand();return;}            /* __acad3dV127 */
     if(act==='bim:tagallrooms'){bimTagAllRooms();return;}     /* __acad3dV101 */
     if(act==='bim:roof'){startRoofTool();return;}
     if(act==='bim:stair'){startStairTool();return;}
@@ -30878,13 +30258,6 @@ try{
     if(el.propsbody)el.propsbody.addEventListener('click',function(ev){
       try{bimStructPropClick(ev);}catch(eSC){console.warn('[BIM] Load edit failed',eSC);a3dToast('That load could not be changed - see the console');}
     });
-    /* __acad3dV131: the Usage page and the usages */
-    if(el.propsbody)el.propsbody.addEventListener('change',function(ev){
-      try{bimUsagePropChange(ev);}catch(eUC){console.warn('[BIM] Usage edit failed',eUC);a3dToast('That could not be changed - see the console');}
-    });
-    if(el.propsbody)el.propsbody.addEventListener('click',function(ev){
-      try{bimUsagePropClick(ev);}catch(eUK){console.warn('[BIM] Usage edit failed',eUK);a3dToast('That could not be changed - see the console');}
-    });
     /* __acad3dV127: the Alignment and Profile pages */
     if(el.propsbody)el.propsbody.addEventListener('change',function(ev){
       try{bimAlignPropChange(ev);}catch(eAL){console.warn('[BIM] Alignment edit failed',eAL);a3dToast('That could not be changed - see the console');}
@@ -31525,9 +30898,7 @@ try{
     presspull:function(){bimPressPullCommand();},   /* __acad3dV123 */
     blockmake:function(){openSaveBlockDlg();},                   /* __acad3dV124 */
     analyze:function(){bimAnalyzeCommand();},                    /* __acad3dV125 */
-    alignment:function(){bimAlignmentCommand();},
-    usage:function(){bimUsageCommand();},                        /* __acad3dV131 */
-    usages:function(){bimUsageLibraryCommand();},                /* __acad3dV127 */
+    alignment:function(){bimAlignmentCommand();},                /* __acad3dV127 */
     profileview:function(){bimStartProfileViewTool();},
     stationoffset:function(){bimStartStationTool();},
     analyzeoff:function(){bimAnalyzeOff();},
@@ -31573,7 +30944,11 @@ try{
     /* Opens the V85 sheet through its own rail button, so there is one shortcuts sheet with one
        renderer rather than a second copy that could drift from the first. */
     shortcuts:function(){
-      bimOpenToolsPanel();   /* __acad3dV130: the panel; already open, it stays open (the one guard is there) */
+      var hp=document.getElementById('a3d-rupop');   /* __acad3dV129: already open, it stays open */
+      if(hp&&hp.classList.contains('open')&&hp.getAttribute('data-for')==='help')return;
+      var b=document.querySelector('[data-a3drumenu="help"]');
+      if(!b){a3dToast('The shortcuts sheet is not available here');return;}
+      b.click();
     }
   };
   window.__a3dCmdSupported=function(act){return !!BIM_CMD_MAP[act];};
@@ -31605,33 +30980,6 @@ try{
   window.__a3dDockTip=function(spec){return bimDockTipData(spec);};
   window.__a3dDockTipShown=function(){var e=document.getElementById('a3d-tip');return e&&e.classList.contains('show')?e.textContent:null;};
   window.__a3dDockLabels=function(on){if(on!==undefined)bimSetDockLabels(!!on);return bimDockLabelsOn();};
-  /* __acad3dV131: usages and live areas */
-  window.__a3dUsages=function(){return JSON.parse(JSON.stringify(bimUsages()));};
-  window.__a3dUsageDefaults=function(){return JSON.parse(JSON.stringify(BIM_USAGE_DEFAULTS));};
-  window.__a3dUsageAssign=function(ids,usageId){return bimUsageAssign(ids,usageId||null);};
-  window.__a3dUsageAdd=function(name){return bimUsageAdd(name);};
-  window.__a3dUsageRemove=function(id){return bimUsageRemove(id);};
-  window.__a3dUsageMeasure=function(id){var o=objById(id);return o?JSON.parse(JSON.stringify(bimUsageMeasure(o))):null;};
-  window.__a3dUsageSummary=function(ids){return JSON.parse(JSON.stringify(bimUsageSummary(ids||null)));};
-  window.__a3dUsageOf=function(id){var o=objById(id);return o?(o.usage||null):null;};
-  window.__a3dExpr=function(src,vars){return bimExpr(src,vars||{});};
-  window.__a3dSliceArea=function(id,y){var o=objById(id);return o?bimMeshSliceArea(o,y):null;};
-  window.__acad3dV131='usagelibrary,usageintypes,usageonroomfloormass,massslicedbyfloor,floorslabgross,roomnetmeasured,'+
-    'gbagfansa,formulaevaluator,formulaerrors,usageparams,usagepage,selectionareas,projectareas,usageeditor,usageschedule,'+
-    'usagecommand,usagescommand,usageribbon,mirrorkeepsusage';
-  /* __acad3dV130: every tool in the panel, and the dock's pins */
-  window.__a3dDockPins=function(disc){return bimDockPins(disc||A3D_DISC_CUR);};
-  window.__a3dSetDockPin=function(act,on){return bimSetDockPin(act,!!on);};
-  window.__a3dDockPinDefaults=function(){return JSON.parse(JSON.stringify(A3D_DOCK_PIN_DEFAULTS));};
-  window.__a3dToolsPanel=function(){return bimOpenToolsPanel();};
-  window.__a3dToolActions=function(){   /* every tool the panel lists: every action of every tab */
-    var out={},i,g,j,grs;
-    for(i=0;i<A3DR_TABS.length;i++){grs=a3drTabGroups(A3DR_TABS[i]);for(g=0;g<grs.length;g++)for(j=0;j<grs[g].acts.length;j++)out[grs[g].acts[j]]=1;}
-    return Object.keys(out).sort();
-  };
-  window.__a3dCmdUsageOf=function(act){var it=bimCatForAct(bimCmdCatalog(),act),u=bimCmdUsage();return it&&u[it.id]?u[it.id].n:0;};
-  window.__acad3dV130='toolspanel,everytool,toolgroups,kindfilter,sortgroupnameused,pinnedcategory,pintodock,pinsperdiscipline,'+
-    'pindefaults,pinsremembered,rowruns,panelcloses,usefromdock,dockonerow,alltoolsbutton,compactsearch';
   window.__acad3dV129='shortcutspanel,centred,categories,keysright,typingpoints,questionkey,docknames,grouplabels,'+
     'docktooltips,tooltipdelay,tooltipfocus,morebutton,searchpill,appearancetoggle';
   window.__acad3dV128='commandcatalog,ribbonmerged,aliases,synonyms,keysfromsheet,ribbonplace,layeredmatch,fuzzy,typo,'+
@@ -32949,7 +32297,7 @@ try{
       return [Math.round(r.width),Math.round(r.height)];
     }
     return {dockButton:box('#a3d-dock .a3d-dbtn'),
-      dockAll:box('#a3d-dock .a3d-dall'),   /* __acad3dV130: the control that opens the rest */
+      dockCaret:box('#a3d-dock .a3d-dcar'),
       propGroupCaret:box('#a3d-propsbody .a3d-pgcar'),
       paletteButton:box('.a3d-palbtn')};
   };
@@ -33064,7 +32412,8 @@ try{
     var rows=d.querySelectorAll('.a3d-dockrow'),grps=d.querySelectorAll('.a3d-dockgrp');
     var r=d.getBoundingClientRect(),i,g=[];
     for(i=0;i<grps.length;i++)g.push({id:grps[i].getAttribute('data-dockgrp'),
-      buttons:grps[i].querySelectorAll('.a3d-dbtn').length});
+      buttons:grps[i].querySelectorAll('.a3d-dbtn').length,
+      hasCaret:!!grps[i].querySelector('.a3d-dcar')});
     return {rows:rows.length,groups:g,
       visible:!!(d.offsetParent!==null),
       insideViewport:(function(){
@@ -33080,12 +32429,21 @@ try{
         return n;
       })()};
   };
-  window.__a3dDockOpenGroup=function(id){   /* __acad3dV130: the group, in the tools panel */
-    if(!bimOpenToolsPanel())return false;
-    var p=document.getElementById('a3d-rupop'),c=p&&p.querySelector('.a3d-rkcat[data-rkcat="tool:'+id+'"]');
+  window.__a3dDockOpenGroup=function(id){
+    var c=document.querySelector('#a3d-dock [data-dockmore="'+id+'"]');
     if(!c)return false;
     c.click();
-    return p.classList.contains('open');
+    var p=document.querySelector('#a3d-dock [data-dockpop="'+id+'"]');
+    return !!(p&&p.classList.contains('open'));
+  };
+  window.__a3dDockPopGeom=function(id){
+    var p=document.querySelector('#a3d-dock [data-dockpop="'+id+'"]');
+    if(!p)return null;
+    var r=p.getBoundingClientRect();
+    return {open:p.classList.contains('open'),left:Math.round(r.left),top:Math.round(r.top),
+      right:Math.round(r.right),bottom:Math.round(r.bottom),
+      onScreen:r.left>=0&&r.top>=0&&r.right<=window.innerWidth&&r.bottom<=window.innerHeight,
+      items:p.querySelectorAll('[data-a3dr]').length};
   };
   /* __acad3dV69: material test surface. __a3dMaterialCards returns the library itself, not a copy,
      so a test can prove every reader shares one list. */

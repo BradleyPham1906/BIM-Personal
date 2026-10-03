@@ -133,11 +133,11 @@ async def run():
         # V128 for the one command search) rendered every discipline's tools. A person picks Structure.
         await page.evaluate("()=>window.__a3dSetDiscipline('struct')")
         await page.wait_for_timeout(150)
-        rib = await page.evaluate("""()=>{const es=[...document.querySelectorAll('[data-a3dr="bim:footing"],[data-a3dr="bim:foundwall"],[data-a3dr="bim:foundslab"]')];
+        rib = await page.evaluate("""()=>{window.__a3dToolsPanel();const es=[...document.querySelectorAll('#a3d-rupop [data-rkact="bim:footing"],#a3d-rupop [data-rkact="bim:foundwall"],#a3d-rupop [data-rkact="bim:foundslab"]')].map(r=>{if(r.classList.contains('off'))r.classList.add('a3dr-dis');return r;});   /* AMENDED FOR V130: the dock's More menus are gone; a ribbon tool is a row of the Tools and shortcuts panel, opened first */
             return {n:es.length,dis:es.filter(e=>e.classList.contains('a3dr-dis')).length};}""")
         ck(rib['n'] >= 3 and rib['dis'] == 0,
            "the Foundation panel's Isolated Footing, Wall Foundation and Foundation Slab are live, none greyed (%s)" % rib)
-        await page.evaluate("()=>{const e=document.querySelector('[data-a3dr=\"bim:footing\"]');if(e)e.click();}")
+        await page.evaluate("()=>{window.__a3dToolsPanel();const e=document.querySelector('#a3d-rupop [data-a3dr=\"bim:footing\"]');if(e)e.click();}")
         await page.wait_for_timeout(250)
         pr = await page.evaluate("()=>window.__a3dPrompt()")
         ck('column' in pr.lower(), "the ribbon button starts the footing command (%r)" % pr)

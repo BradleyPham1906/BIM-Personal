@@ -134,7 +134,7 @@ async def run():
 
         # ------------------------------------------------ 4. the dialog
         print("\n-- 4. the Property Line dialog, from the ribbon")
-        await ev("()=>{const e=document.querySelector('[data-a3dr=\"bim:property\"]');if(e)e.click();}")
+        await ev("()=>{window.__a3dToolsPanel();const e=document.querySelector('#a3d-rupop [data-a3dr=\"bim:property\"]');if(e)e.click();}")
         await page.wait_for_timeout(250)
         ta = await page.query_selector('.a3d-dlg [data-a3dp="legs"]')
         ck(ta is not None, "the ribbon's Property Line button opens the dialog")
@@ -167,7 +167,7 @@ async def run():
         await ev("""()=>window.__a3dTestSetObjs([{id:'LOT',t:'sketch',name:'LOT',col:'#5ec4b8',pos:[0,0,0],
             pts:[[0,0],[30,0],[30,20],[0,20]],y:0}])""")
         await ev("()=>window.__a3dSelectFor(['LOT'])")
-        await ev("()=>{const e=document.querySelector('[data-a3dr=\"bim:propshape\"]');if(e)e.click();}")
+        await ev("()=>{window.__a3dToolsPanel();const e=document.querySelector('#a3d-rupop [data-a3dr=\"bim:propshape\"]');if(e)e.click();}")
         await page.wait_for_timeout(200)
         props = await objs('property')
         pid = props[0]['id'] if props else None

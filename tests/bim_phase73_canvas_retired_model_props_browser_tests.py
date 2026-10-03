@@ -178,8 +178,9 @@ async def run():
            "the 'No object selected' placeholder is gone")
         # V106 added the active level's floor loads between View and Statistics, on purpose: the
         # Levels rows are not on screen, and this panel already carries the level picker.
-        ck(mp['groups'] == ['Identity Data', 'View', 'Floor Loads: Level 0', 'Statistics'],
-           "four groups: %s" % mp['groups'])
+        # AMENDED FOR V131: the project's Areas by Usage and the Usages library, before Statistics
+        ck(mp['groups'] == ['Identity Data', 'View', 'Floor Loads: Level 0', 'Areas by Usage', 'Usages', 'Statistics'],
+           "six groups: %s" % mp['groups'])
         for key in ('project', 'client', 'site', 'level', 'layer', 'present'):
             ck(key in mp['editable'], "'%s' is an editable field" % key)
         ro = dict(mp['readonly'])
@@ -217,9 +218,10 @@ async def run():
         print("     " + str(hits))
         ck(hits['dockButton'][0] >= 32 and hits['dockButton'][1] >= 30,
            "dock buttons are at least 32x30 (%s)" % hits['dockButton'])
-        ck(hits['dockCaret'][0] >= 20,
-           "the dock caret is at least 20px wide (%s) -- it was a 13px sliver, and it is the "
-           "control that opens the rest of every group" % hits['dockCaret'])
+        # AMENDED FOR V130: the groups' carets are retired; All tools is the control that opens the rest
+        ck(hits['dockAll'] and hits['dockAll'][0] >= 32 and hits['dockAll'][1] >= 30,
+           "the dock's All tools button is at least 32x30 (%s) -- the caret it replaces was once a "
+           "13px sliver, and it is the control that opens the rest" % hits['dockAll'])
         ck(hits['propGroupCaret'] and hits['propGroupCaret'][0] >= 20
            and hits['propGroupCaret'][1] >= 20,
            "the property-group caret has a real box (%s)" % hits['propGroupCaret'])

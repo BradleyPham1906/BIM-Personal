@@ -23,6 +23,11 @@ want". Research: reference/research-shortcuts-ui.md (Figma, Google Docs, Linear,
   8. ICONS ONLY from Appearance: the names go, the dock gets shorter, the tooltip still names the
      tool, and the choice outlives a reload.
 
+AMENDED FOR V130. The owner then found the dock crowded: "combine it in the shortcut table and use
+search, filter sorting ... in the main screen only show the keys one". The panel became Tools and
+shortcuts (every tool, then every key) and the dock one row of pinned tools, so the checks of the
+dock's group names and More buttons are retired, and the rest read the new layout.
+
 The harness never waits without a bound (V123).
 """
 import asyncio, pathlib, sys, traceback
@@ -159,7 +164,8 @@ async def run():
             await page.wait_for_timeout(300)
             p = await panel()
             ck(p and p['open'] and p['forId'] == 'help', "? typed on the drawing opens the keyboard shortcuts (%s)" % (p and p['forId']))
-            ck(p and p['sheet'] and p['title'] == 'Keyboard shortcuts', "as the shortcuts panel, titled (%r)" % (p and p['title']))
+            # AMENDED FOR V130: the panel is Tools and shortcuts
+            ck(p and p['sheet'] and p['title'] == 'Tools and shortcuts', "as the shortcuts panel, titled (%r)" % (p and p['title']))
             if p:
                 ck(abs(p['l'] + p['w'] / 2 - 800) <= 2 and abs(p['t'] + p['h'] / 2 - 475) <= 2,
                    "centred over the drawing, not squeezed beside the rail (centre %.0f,%.0f)" % (p['l'] + p['w'] / 2, p['t'] + p['h'] / 2))
@@ -174,13 +180,14 @@ async def run():
             # ---------------------------------------------------------------------------------
             print("\n-- 2. categories on the left, with counts, and one list")
             p = await panel()
+            # AMENDED FOR V130: All, On the dock, then every group (the tools', then the keys') in the list's order
             names = [c['name'] for c in p['cats']]
-            ck(names[0] == 'All shortcuts' and names[1:] == p['grps'],
-               "the categories are All shortcuts, then every group in the list's order (%s)" % names)
+            ck(names[:2] == ['All', 'On the dock'] and [c['name'] for c in p['cats'][2:]] == p['grps'],
+               "the categories are All, On the dock, then every group in the list's order (%s)" % names)
             per = {}
             for r in p['rows']:
                 per[r['g']] = per.get(r['g'], 0) + 1
-            ck(all(c['n'] == per.get(c['id'], -1) for c in p['cats'][1:]) and p['cats'][0]['n'] == len(p['rows']),
+            ck(all(c['n'] == per.get(c['id'], -1) for c in p['cats'][2:]) and p['cats'][0]['n'] == len(p['rows']),   # AMENDED FOR V130: past On the dock
                "each category counts its own rows, and All counts them all (%d)" % p['cats'][0]['n'])
             ck(p['cats'][0]['on'] and p['cats'][0]['pressed'] == 'true' and not any(c['on'] for c in p['cats'][1:]),
                "All is the category chosen when it opens")
@@ -220,11 +227,14 @@ async def run():
                "Undo says the command to type for it and its keys (%s)" % (undo and undo[0]))
             ck(all(r['cmd'] == '' for r in p['rows'] if r['lab'].startswith('Switch between')),
                "a key with no command says nothing there")
+            # AMENDED FOR V130: a tool row ends in its pin, so the keys end on one edge a pin's width in
+            # from the row's; a key row's label starts at its left (a tool row's icon comes first)
             keyed = [r for r in p['rows'] if r['keys']]
             rights = sorted(set(round(r['rowR'] - r['keyR']) for r in keyed))
-            ck(keyed and all(abs(r['rowR'] - r['keyR']) <= 2 for r in keyed),
-               "every row's keys end at the row's right edge, one column to scan down (gaps %s)" % rights[:6])
-            ck(all(abs(r['labL'] - r['rowL']) <= 12 for r in keyed), "and every label starts at its left")
+            ck(keyed and max(r['keyR'] for r in keyed) - min(r['keyR'] for r in keyed) <= 2,
+               "every row's keys end on one right edge, one column to scan down (gaps %s)" % rights[:6])
+            krows = [r for r in keyed if not r['g'].startswith('tool:')]
+            ck(krows and all(abs(r['labL'] - r['rowL']) <= 12 for r in krows), "and every key's label starts at its left")
 
             # ---------------------------------------------------------------------------------
             print("\n-- 4. typing points is a page of its own, and says when it applies")
@@ -240,7 +250,8 @@ async def run():
             await page.keyboard.type('polar')
             await page.wait_for_timeout(150)
             p = await panel()
-            ck([r['keys'] for r in p['rows']] == [['d<a']] and p['notes'] == ['Typing points'],
+            # AMENDED FOR V130: the tools are in the list too (Polar Array); the key it finds is d<a
+            ck([r['keys'] for r in p['rows'] if not r['g'].startswith('tool:')] == [['d<a']] and p['notes'] == ['Typing points'],
                "'polar' finds the d<a row, its note still above it")
             await page.keyboard.press('Control+a')
             await page.keyboard.type('f8')
@@ -301,13 +312,12 @@ async def run():
                "every tool on the dock has its name under its icon (%s)" % [b['lbl'] for b in d['btns']][:8])
             clipped = [b['lbl'] for b in d['btns'] if b['clipped']]
             ck(len(clipped) <= 2, "and the names fit (cut short: %s)" % clipped)
-            ck(d['grps'] and all(g['lbl'] and g['lblShown'] for g in d['grps']),
-               "every group is named under its tools (%s)" % [g['lbl'] for g in d['grps']])
+            # AMENDED FOR V130: "every group is named under its tools" and "each group's overflow says
+            # More" are retired with the groups: the dock is one row of pinned tools
             ck(not any(b['title'] for b in d['btns']) and not any(c['title'] for c in d['cars']),
                "no native title, which would show a second, plainer tooltip on top of the real one")
-            ck(d['cars'] and all('More' in c['text'] and c['svg'] and c['aria'].startswith('All ') for c in d['cars']),
-               "each group's overflow says More, not a bare triangle (%s)" % [c['aria'] for c in d['cars']][:3])
-            ck(d['pill'] and d['pill']['text'] == 'Search tools and commands' and d['pill']['kbd'].endswith('K') and d['pill']['w'] >= 200,
+            # AMENDED FOR V130: the one-row dock's pill is compact, its full name in its accessible name
+            ck(d['pill'] and d['pill']['text'] == 'Search' and d['pill']['kbd'].endswith('K') and d['pill']['aria'] == 'Search tools and commands',
                "search is a labelled pill with its keys (%s)" % d['pill'])
             ck(d['h'] <= 150 and d['bottom'] <= 950 and d['left'] >= 0 and d['right'] <= 1600,
                "with names on, the dock still leaves the drawing its room (%.0fpx tall)" % d['h'])
@@ -339,7 +349,7 @@ async def run():
             ck(await tip() is None, "leaving the button hides it")
             rt = await safe("()=>window.__a3dDockTip('s:rect')")
             ck(rt and rt['type'] and rt['name'] == 'Rect', "a drafting tool's tooltip also names what to type (%s)" % (rt and rt['type']))
-            await safe("()=>document.getElementById('a3d-dsearch').focus()")
+            await safe("()=>document.getElementById('a3d-discsel').focus()")   # AMENDED FOR V130: the pinned tools follow the discipline
             await page.keyboard.press('Tab')
             await page.wait_for_timeout(60)
             ft = await safe("()=>{var a=document.activeElement;return a&&a.getAttribute('data-a3dtip');}")
@@ -350,11 +360,13 @@ async def run():
             await page.wait_for_timeout(60)
             ck(await tip() is None, "and Escape puts it away")
             await blur()
-            unimpl = await safe("()=>{var e=document.querySelector('#a3d-dock .a3d-dockitem.a3dr-dis');return e?e.getAttribute('data-a3dr'):null;}")
+            # AMENDED FOR V130: the unbuilt tools are greyed rows of the tools panel
+            unimpl = await safe("()=>{window.__a3dToolsPanel();var e=document.querySelector('#a3d-rupop .a3d-rktool.off');var a=e?e.getAttribute('data-rkact'):null;document.querySelector('#a3d-rupop [data-rkclose]').click();return a;}")
             ud = await safe("(s)=>window.__a3dDockTip(s)", unimpl) if unimpl else None
             ck(ud and ud['desc'] == 'Not built yet', "a tool not built yet says so (%s: %s)" % (unimpl, ud))
-            md = await safe("()=>window.__a3dDockTip('__more:Build')")
-            ck(md and md['desc'] == 'All Build tools', "More says what it opens (%s)" % md)
+            # AMENDED FOR V130: "More says what it opens" is retired with the More buttons; All tools says so
+            md = await safe("()=>window.__a3dDockTip('__all')")
+            ck(md and 'Every tool and key' in md['desc'], "All tools says what it opens (%s)" % md)
 
             # ---------------------------------------------------------------------------------
             print("\n-- 8. icons only, from Appearance, and remembered")
