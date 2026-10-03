@@ -11383,3 +11383,115 @@ external host" rule now allows exactly the map's own servers and credit links.
     sha256            e7d1a6001309b6bbced71d75664ae37b4cb1a1127af038c80783a31273e15de3
     markers           __acad3dV60 ... __acad3dV132, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
                       __acad3dV121b
+
+## Phase 133 (V133) - Site context in one click
+
+The owner: "as much open public data as possible", and the map "just like how giraffe do". The
+research is in `reference/research-site-context.md`.
+
+### What was built (patches 133a to 133c)
+
+- **a -- the engine.**
+  - **The area:** a square of the context radius (150 m by default, 50 to 1000 m) beyond the
+    property lines' half-size, centred on them, or around model 0,0 when there are none. It is
+    turned into a longitude and latitude box through V132's georeferencing, true north included.
+  - **OpenStreetMap through Overpass:** one POST (`data=` as a form, so no preflight) asking only
+    for the kinds ticked, each statement on the box, `out geom`.
+    - **Buildings** (ways, and multipolygon relations whose member ways are joined end to end
+      into rings) are extruded from their footprint (`padMesh`, ear-clipped, so a concave block
+      is right). Height comes from `height` (metres, or feet when marked), else
+      `building:levels` × 3 m, else 6 m, and each building says which. A courtyard is filled and
+      counted.
+    - **Roads** are centrelines (a roundabout a closed one).
+    - **Water:** areas, lines for streams, a lake's island as a marked hole.
+    - **Green:** parks, grass, woods.
+    - **Trees:** points.
+    - Anything else (a car park) is left out.
+  - **The ground, AWS Terrain Tiles (Terrarium).**
+    - The tiles over the area at zoom 15 (fewer, coarser, past nine) are decoded as
+      `R·256 + G + B/256 − 32768`, checked on the real tile under Everest (8,753 m).
+    - They are sampled bilinearly between pixel centres on a 25 × 25 grid into a V108 surface.
+    - **The datum:** the survey base's elevation when V108 set one, else the ground at model
+      0,0, kept on the site (`terrainBase`) so the next fetch lands on the same datum.
+    - **The credit** names the sources each tile's `x-amz-meta-x-imagery-sources` header gives.
+    - Each building keeps the ground under it, for a later 3D ground.
+  - **Placed:**
+    - on a Context layer with a sub-layer per kind;
+    - pinned;
+    - each object with its source, credit, OSM type and id, tags and fetch date.
+
+    A fresh fetch replaces only the kinds it brings, in one undo step, and the selection is left
+    as it was. Each failure is named per source ("overpass-api.de is busy (HTTP 429): try again in
+    a minute", "... sent an answer that does not read", "... could not be reached (offline, or it
+    does not allow browser access)"). What came is placed. Nothing at all spends no undo step, and
+    a second press while one runs is refused.
+  - **Elsewhere:**
+    - The credit line carries the context's credits, with OSM's given once when the street map
+      is on.
+    - Context is not a mass for the usages.
+    - GeoJSON export writes a neighbour as its footprint, and every context object with its tags,
+      source, credit and OSM id.
+- **b -- Properties and the commands.**
+  - **A Site Context group** after the Map: the radius, a box for each of the six kinds, the
+    Overpass server, Get Context and Remove Context, what the last fetch brought, and the sources.
+  - **A context object's Context group:** its source, credit and link on openstreetmap.org, a
+    building's height and where it came from, its courtyards, the ground under it, its tags; the
+    terrain's zoom and datum.
+  - **Commands:** CONTEXT (SITECONTEXT, OSM) and CONTEXTREMOVE (CONTEXTCLEAR). Site Context is on
+    the Site panel beside the map's tools.
+- **c -- the hooks:**
+  - `__a3dCtxSettings`, `__a3dCtxSet`, `__a3dCtxArea`, `__a3dCtxQuery`;
+  - `__a3dCtxFetch`, `__a3dCtxBusy`, `__a3dCtxRemove`, `__a3dCtxOf`;
+  - `__a3dCtxHeight`, `__a3dCtxRings`, `__a3dCtxCredit`, `__a3dCtxDatum`;
+  - the marker.
+
+### Bugs found, and what each taught
+
+**1. The surface maker left the terrain selected.** V108's `bimCreateTerrain` selects what it
+makes, so after a fetch the whole TIN showed highlighted. It was found from a screenshot, not the
+suite. The fetch now leaves the selection as it was, and a check holds it. **Look at the screen
+after building a feature; a suite only checks what someone thought to ask.**
+
+**2. Dead code that the falsify run found.** The fetch saved and restored the current layer around
+making the Context layers, but `bimLayerNew` makes a layer current only when asked to. The restore
+was removed, and the check that the current layer stays put still stands.
+
+**3. An undo check undid the wrong step.** The credit check switched the map on and off after the
+fetch, so "one undo takes it back" undid the map. The test now undoes those two steps first.
+**An undo check counts every step between the action and itself.**
+
+**4. A test assumed a property line keeps its shape under a new true north.** Its legs are
+bearings, so it turns with true north. The check is now against the area the page reports.
+
+### Deliberately not done
+
+- The terrain in 3D, and the basemap draped on it: V108's surfaces are plan-only, and the
+  buildings stand on the flat ground under the flat basemap.
+- Building parts, roof shapes, courtyards cut out.
+- Microsoft and Overture footprints.
+- Overpass could not be reached from this sandbox (its proxy refuses it), so the suite answers it
+  with a fixture in its answer's shape. The Terrarium tiles were checked live.
+
+### Suites
+
+- New: `bim_phase133_site_context_browser_tests.py`, 102 checks in seven sections. Overpass is
+  answered by a fixture of buildings (height, levels, feet, none, a multipolygon in two halves
+  with a courtyard), roads, water, a park, trees and a car park. The tiles are PNGs encoding a
+  ground linear in the zoom-15 pixels, so bilinear sampling has to give it back exactly (to
+  0.006 m, the encoding's 1/256 m).
+- Falsified by 49 variants, all caught (`Phase/falsify_phase133.py`).
+- Amended:
+  - V62: the context's two sources join the map's as the only remote names.
+  - V73: the project page has a Site Context group after the Map.
+
+### Full regression
+
+89 suites, 3324 checks, 0 failures. Falsification: V133 49 of 49, V132 49 of 49. The patch chain
+rebuilds the build byte for byte from `Phase/canvas_v10.html.bak_phase133_pre`.
+
+### State after V133
+
+    canvas_v10.html   1,893,525 bytes
+    sha256            c6a0a1da1945979bb54e3223d7d2c99ae355d7832c41276a91e111b8ccde9116
+    markers           __acad3dV60 ... __acad3dV133, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
+                      __acad3dV121b

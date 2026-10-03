@@ -2,11 +2,11 @@
 
 **Read this first in a new session.** One page. The detail lives in the docs listed at the bottom.
 
-    canvas_v10.html   1,865,050 bytes
-    sha256            e7d1a6001309b6bbced71d75664ae37b4cb1a1127af038c80783a31273e15de3
-    markers           __acad3dV60 ... __acad3dV132, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
+    canvas_v10.html   1,893,525 bytes
+    sha256            c6a0a1da1945979bb54e3223d7d2c99ae355d7832c41276a91e111b8ccde9116
+    markers           __acad3dV60 ... __acad3dV133, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
                       __acad3dV121b
-    tests             88 suites, 3222 checks, 0 failures
+    tests             89 suites, 3324 checks, 0 failures
 
     Run the regression in parallel: tests/run_all.py [build] [filter] [-jN], default -j6,
     about 4 minutes; give it the build's absolute path. tests/falsify_all.py
@@ -22,7 +22,7 @@ with anchored Python scripts that assert exact match counts.
 
 ---
 
-## NOW - open data, Giraffe's other ideas, then the MEP runs (V133 to V138)
+## NOW - open data, Giraffe's other ideas, then the MEP runs (V134 to V138)
 
 The owner looked at Giraffe (giraffe.build), a map-first feasibility app, and chose four of its
 ideas, ahead of the MEP runs, then asked for the map "just like how giraffe do". The research, with an
@@ -53,8 +53,7 @@ V128 to V130 settled how commands are found (see Recently finished):
 
 | # | Phase | Scope | Notes |
 |---|---|---|---|
-| 133 | Site context in one click | **Start here.** From the site's extent: OSM buildings (at their height, or levels × 3 m), roads, water and trees via Overpass, as locked context; terrain from AWS Terrain Tiles into V108's TIN | Microsoft and Overture footprints as file imports where OSM is thin. |
-| 134 | Data layers | A Data section: catalogue presets (council parcels and zoning, FEMA flood...) plus any ArcGIS REST, WMS, WFS or GeoJSON URL; click to read a feature; a parcel becomes a property line | Giraffe's data layers. A server without CORS is reported by name. |
+| 134 | Data layers | **Start here.** A Data section: catalogue presets (council parcels and zoning, FEMA flood...) plus any ArcGIS REST, WMS, WFS or GeoJSON URL; click to read a feature; a parcel becomes a property line | Giraffe's data layers. A server without CORS is reported by name. |
 | 135 | Zoning envelope | Setbacks, stepbacks and a height limit on a property become a 3D envelope; massing outside it is flagged | Builds on V103's setbacks; Giraffe's Basic Envelope. |
 | 136 | Colour-by-property lens | Colour by usage, level, type or any property, with a legend, under Appearance | Giraffe's lenses; Revit's colour schemes. |
 | 137 | Design scenarios | Options within one project, switched between and compared by their numbers | Giraffe's scenarios; Revit's Design Options. |
@@ -66,7 +65,7 @@ V128 to V130 settled how commands are found (see Recently finished):
 ### LATER - Track A, drafting (moved behind Track B in V100)
 
 The numbers in this table are its order, not phase numbers: a phase takes the next free V number
-when it starts (V111 to V132 went to other work; V133 to V138 are in NOW).
+when it starts (V111 to V133 went to other work; V134 to V138 are in NOW).
 
 | # | Phase | Scope | Notes |
 |---|---|---|---|
@@ -80,7 +79,20 @@ when it starts (V111 to V132 went to other work; V133 to V138 are in NOW).
 | 118 | Blocks and data | ATTDEF ATTEDIT BEDIT WBLOCK DATAEXTRACTION TABLESTYLE TABLEDIT TABLEEXPORT | First phase that's about the disciplines, not drafting. BLOCK and INSERT landed in V124, as the Assets library's blocks: saved records inserted as independent copies. A block reference that follows its definition (what BEDIT edits) is not built. |
 | 119 | Sheets and plotting, rest | MVIEW (draw a viewport on the paper) PAGESETUP (plot settings beyond Sheet Setup) PUBLISH (V122's Print set prints every sheet in one job; a chosen subset and page setups remain) EXPORTPDF (vector PDF of a sheet) VPLAYER (per-viewport layer visibility) viewport lock | LAYOUT, MSPACE and PSPACE landed in V116, with layout tabs and model space through a viewport. |
 
-**Recently finished:** Phase 132 (V132), **the map**, "just like how giraffe do", free sources only.
+**Recently finished:** Phase 133 (V133), **site context in one click**.
+- **One press** (CONTEXT, or Get Context in Properties) brings the buildings, roads, water, green
+  and trees around the site from OpenStreetMap (Overpass), and the ground from AWS Terrain Tiles.
+  The area is 150 m by default, around the property lines or model 0,0.
+- **Buildings** are extruded to their height tag, levels × 3 m, or an assumed 6 m (said).
+  Multipolygons are joined; a courtyard is filled and counted.
+- **The terrain** becomes a V108 surface sampled from the Terrarium tiles. Its datum is kept on the
+  site, or is the survey base's, and its credit names the tiles' own sources.
+- **The objects** are pinned, on Context sub-layers, each with its source, credit, OSM id and tags.
+  A fresh fetch replaces only what it brings, in one undo step. Each source's failure is named.
+- **Checked** in 102 checks and 49 falsify variants. A screenshot found the new surface left
+  selected; falsification found a dead current-layer restore.
+
+Phase 132 (V132), **the map**, "just like how giraffe do", free sources only.
 - **Placed on the earth:** the site's latitude and longitude are model 0,0 and true north turns
   the model; metres become degrees on the WGS84 ellipsoid (checked against a Vincenty geodesic).
 - **The basemap:** OpenStreetMap's street map, Esri's imagery, or any `{z}/{x}/{y}` tile URL with
