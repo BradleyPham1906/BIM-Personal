@@ -2,11 +2,11 @@
 
 **Read this first in a new session.** One page. The detail lives in the docs listed at the bottom.
 
-    canvas_v10.html   1,895,947 bytes
-    sha256            c4d52859062256d8157b22fd71433915e40ed5b4081382f5b7cf38dd208fc5ed
+    canvas_v10.html   1,896,286 bytes
+    sha256            8df5aba2a0f27fc27d56373d16861e3e19a2e5cbb35fbc527d2998aaadfe6950
     markers           __acad3dV60 ... __acad3dV133, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
                       __acad3dV121b
-    tests             90 suites, 3345 checks, 0 failures
+    tests             90 suites, 3347 checks, 0 failures
 
     Run the regression in parallel: tests/run_all.py [build] [filter] [-jN], default -j6,
     about 4 minutes; give it the build's absolute path. tests/falsify_all.py
@@ -80,8 +80,8 @@ when it starts (V111 to V133 went to other work; V134 to V138 are in NOW).
 | 119 | Sheets and plotting, rest | MVIEW (draw a viewport on the paper) PAGESETUP (plot settings beyond Sheet Setup) PUBLISH (V122's Print set prints every sheet in one job; a chosen subset and page setups remain) EXPORTPDF (vector PDF of a sheet) VPLAYER (per-viewport layer visibility) viewport lock | LAYOUT, MSPACE and PSPACE landed in V116, with layout tabs and model space through a viewport. |
 
 **Recently finished:** V133d and V133e, from the owner's first real use.
-- **The street map** is CARTO's Voyager, because OSM's own servers block a page opened as a file.
-  It uses `@2x` tiles on a dense screen.
+- **The street map** is Esri's World Street Map (V133f). OSM's own servers answer a page opened as
+  a file with "Access blocked" tiles, and CARTO's with "API KEY REQUIRED".
 - **The satellite's zoom** counts screen density, and every tile is mipmapped.
 - **Zoom** goes from 0.5 m to 200 km, about the cursor, as in AutoCAD and Revit. The far plane
   follows the view.

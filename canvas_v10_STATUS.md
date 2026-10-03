@@ -11554,3 +11554,20 @@ The patch chain 133a to 133e rebuilds the build byte for byte from
     sha256            c4d52859062256d8157b22fd71433915e40ed5b4081382f5b7cf38dd208fc5ed
     markers           __acad3dV60 ... __acad3dV133, __acad3dV133d, __acad3dV133e, plus __acad3dV105b,
                       __acad3dV113b, __acad3dV113c, __acad3dV121b
+
+## Phase 133f (V133f) - The street map is Esri's
+
+The owner's screenshot showed "API KEY REQUIRED" tiles from CARTO, opened as a file, as OSM's had
+shown "Access blocked". The street style is now Esri's World Street Map, keyless, from the same
+server as the satellite imagery, which the owner's page already showed. It is credited to Esri's
+sources, OpenStreetMap's contributors among them. The `{r}` (@2x) placeholder stays for custom
+URLs, and the density suite now tests it through one. Amended:
+- V132 suite: the street map's URL, label and credit; Esri's route answers the street map and stays
+  offline for the imagery.
+- V133d suite: section 1.
+- falsify_phase133d: `osm_street` re-anchored as `carto_street`.
+
+90 suites, 3347 checks, 0 failures; falsification V133d 11 of 11, V132 49 of 49.
+
+    canvas_v10.html   1896286 bytes
+    sha256            8df5aba2a0f27fc27d56373d16861e3e19a2e5cbb35fbc527d2998aaadfe6950

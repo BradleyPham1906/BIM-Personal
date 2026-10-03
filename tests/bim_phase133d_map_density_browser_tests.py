@@ -3,8 +3,8 @@
 
 Run at device scale 2, as the owner's Retina screen is. The tile servers are routed in the browser.
 
-  1. THE STREET MAP is CARTO's Voyager (OSM's own servers refuse a page opened as a file), with
-     @2x tiles on a dense screen, its zoom not raised for them, and both credits.
+  1. THE STREET MAP is Esri's World Street Map (OSM's and CARTO's servers refuse a page opened as a
+     file -- V133f), its zoom counting the density; a custom URL with {r} gets @2x tiles instead.
   2. THE SATELLITE's zoom counts the screen's density; the tile cap grows with it.
   3. MIPMAPS on every tile.
   4. NOMINATIM's refusal and being busy are said as such.
@@ -79,7 +79,7 @@ async def run():
             REQ.append(u)
             await route.fulfill(status=200, body=png(512 if '@2x' in u else 256),
                                 headers={'Content-Type': 'image/png', 'Access-Control-Allow-Origin': '*'})
-        await ctx.route('https://basemaps.cartocdn.com/**', tiles)
+        await ctx.route('https://tiles.example.org/**', tiles)
         await ctx.route('https://server.arcgisonline.com/**', tiles)
 
         async def nom(route):
@@ -129,13 +129,17 @@ async def run():
             await safe("()=>window.__a3dCamSet({tx:60,tz:-60,dist:600})")
             H = await safe("()=>document.getElementById('a3d-canvas').height/window.devicePixelRatio")
             T = await safe("()=>window.__a3dMapTiles()") or {}
-            ck(T.get('tiles') and all(re.match(r'^https://basemaps\.cartocdn\.com/rastertiles/voyager/\d+/\d+/\d+@2x\.png$', t['url']) for t in T['tiles']),
-               "street tiles are CARTO's Voyager, @2x on this screen (%s)" % (T.get('tiles') or [{}])[0].get('url'))
-            ck(T.get('z') == zf(600, H, 1), "and their zoom is not raised for the density: @2x tiles carry it (z%s)" % T.get('z'))
+            ck(T.get('tiles') and all(re.match(r'^https://server\.arcgisonline\.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/\d+/\d+/\d+$', t['url']) for t in T['tiles']),
+               "street tiles are Esri's World Street Map, keyless (%s)" % (T.get('tiles') or [{}])[0].get('url'))
+            ck(T.get('z') == zf(600, H, 2), "their zoom counts the density (z%s)" % T.get('z'))
             await settle()
             ft = await safe("()=>window.__a3dMapFooter()") or ''
-            ck('© OpenStreetMap contributors © CARTO' in ft and 'openstreetmap.org/copyright' in ft, "credited to OpenStreetMap's contributors and CARTO")
-            ck(not [u for u in REQ if 'tile.openstreetmap.org' in u], "and OpenStreetMap's own tile servers are not asked")
+            ck('Map: Esri, HERE, Garmin, USGS, © OpenStreetMap contributors, and the GIS User Community' in ft, "credited to Esri's sources, OpenStreetMap's contributors among them")
+            ck(not [u for u in REQ if 'tile.openstreetmap.org' in u or 'cartocdn' in u], "and neither OpenStreetMap's own nor CARTO's servers are asked")
+            await safe("()=>{window.__a3dMapSet('url','https://tiles.example.org/{z}/{x}/{y}{r}.png');window.__a3dMapSet('style','custom');}")
+            T = await safe("()=>window.__a3dMapTiles()") or {}
+            ck(T.get('tiles') and all(t['url'].endswith('@2x.png') for t in T['tiles']), "a URL with {r} gets @2x tiles on this screen (%s)" % (T.get('tiles') or [{}])[0].get('url'))
+            ck(T.get('z') == zf(600, H, 1), "and its zoom is not raised for the density: @2x tiles carry it (z%s)" % T.get('z'))
 
             print("\n-- 2. the satellite")
             await safe("()=>window.__a3dMapSet('style','satellite')")

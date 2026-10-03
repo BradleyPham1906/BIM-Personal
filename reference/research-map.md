@@ -156,3 +156,17 @@ and their terms are catalogued in `research-open-data.md`.
 - **Zoom (V133e):** the view went only from 6 m to 150 m from its target. It now goes from 0.5 m
   to 200 km, about the cursor as in AutoCAD and Revit. The far clipping plane, fixed at 4 km,
   follows the view (eight camera distances).
+
+## V133f: the street map is Esri's
+
+CARTO's basemaps then answered the owner's file-opened page with "API KEY REQUIRED" tiles. Like
+OSM's "Access blocked", they are images, so the page cannot tell them from a map. Esri's tile
+server, whose imagery the same page shows, also serves **World Street Map**
+(`server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}`). It is
+keyless and credited "Esri, HERE, Garmin, USGS, © OpenStreetMap contributors, and the GIS User
+Community". Esri's terms favour non-commercial use, as for its imagery. The `{r}` template
+placeholder stays for custom tile URLs that offer `@2x` tiles.
+
+**The lesson, twice over:** a free tile server's rules about who may ask (a Referer, a key) do not
+show in a routed suite, and its refusal is a picture. Only the owner's own screen shows it. A
+provider that already works for the owner, Esri, is the one to lean on.
