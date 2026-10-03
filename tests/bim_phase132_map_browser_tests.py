@@ -239,7 +239,8 @@ async def run():
                                     headers={'Content-Type': 'image/png', 'Access-Control-Allow-Origin': '*'})
             except Exception:
                 pass
-        await ctx.route('https://tile.openstreetmap.org/**', tile_route)
+        # AMENDED FOR V133d: the street map is CARTO's (OSM's own servers refuse a page opened as a file)
+        await ctx.route('https://basemaps.cartocdn.com/**', tile_route)
         await ctx.route('https://tiles.example.org/**', tile_route)
 
         async def esri_route(route):
@@ -368,7 +369,7 @@ async def run():
             ck(h.index('data-a3dpgrp="Identity Data"') < h.index('data-a3dpgrp="Map"') < h.index('data-a3dpgrp="View"'),
                "the Map group sits after the latitude and longitude, before View")
             opts = await safe("()=>Array.prototype.map.call(document.querySelectorAll('#a3d-propsbody [data-propmap=\"style\"] option'),function(o){return o.value+'|'+o.textContent;})")
-            ck(opts == ['off|Off', 'street|Street (OpenStreetMap)', 'satellite|Satellite (Esri World Imagery)', 'custom|Custom tiles'],
+            ck(opts == ['off|Off', 'street|Street (CARTO, OpenStreetMap data)', 'satellite|Satellite (Esri World Imagery)', 'custom|Custom tiles'],   # AMENDED FOR V133d
                "four choices, each saying whose it is (%s)" % opts)
             ck('not placed' in h, "Model 0,0 says it is not placed yet")
             await set_field('[data-propmap="style"]', 'street')
@@ -448,8 +449,8 @@ async def run():
                        for y in range(int(math.floor(ty(la1, z0))), int(math.floor(ty(la0, z0))) + 1))
             got = set((t['x'], t['y']) for t in T.get('tiles', []))
             ck(got == want and len(got) <= 80, "every tile the extent touches, and no other (%d tiles)" % len(got))
-            ck(all(t['url'] == 'https://tile.openstreetmap.org/%d/%d/%d.png' % (t['z'], t['x'], t['y']) for t in T.get('tiles', [])),
-               "street tiles are OpenStreetMap's, {z}/{x}/{y}")
+            ck(all(t['url'] == 'https://basemaps.cartocdn.com/rastertiles/voyager/%d/%d/%d.png' % (t['z'], t['x'], t['y']) for t in T.get('tiles', [])),
+               "street tiles are CARTO's Voyager, {z}/{x}/{y}, no @2x on a 1x screen")   # AMENDED FOR V133d
             cx_, cy_ = tx((lo0 + lo1) / 2, z0), ty((la0 + la1) / 2, z0)
             ks = [(t['x'] + 0.5 - cx_) ** 2 + (t['y'] + 0.5 - cy_) ** 2 for t in T.get('tiles', [])]
             ck(ks == sorted(ks), "nearest the centre first")
@@ -650,9 +651,9 @@ async def run():
             # ---------------------------------------------------------------------------------
             print("\n-- 6. failures are said")
             ft = await safe("()=>window.__a3dMapFooter()") or ''
-            ck('href="https://www.openstreetmap.org/copyright"' in ft and '© OpenStreetMap contributors' in ft,
-               "the street map's credit: OpenStreetMap contributors, linked to their copyright page")
-            ck(await safe("()=>{var f=document.getElementById('a3d-mapattr');return !f.hidden&&f.textContent;}") == '© OpenStreetMap contributors',
+            ck('href="https://www.openstreetmap.org/copyright"' in ft and '© OpenStreetMap contributors © CARTO' in ft,
+               "the street map's credit: OpenStreetMap contributors and CARTO, linked to OSM's copyright page")   # AMENDED FOR V133d
+            ck(await safe("()=>{var f=document.getElementById('a3d-mapattr');return !f.hidden&&f.textContent;}") == '© OpenStreetMap contributors © CARTO',
                "and it is on screen over the viewport")
             n0 = len(SRV['req'])
             await nosel()
@@ -755,8 +756,8 @@ async def run():
                (await safe("()=>window.__a3dSunSettings()"))['lat'] == before['lat'], "nothing found: said, nothing changed")
             await safe("()=>window.__a3dMapFindReset()")
             r = await safe("()=>window.__a3dMapFind('error please')")
-            ck(r and r.get('found') is False and 'Address search failed: nominatim.openstreetmap.org could not be reached' in await toast(),
-               "a server error: said, naming the server")
+            ck(r and r.get('found') is False and 'Address search failed: nominatim.openstreetmap.org answered HTTP 500' in await toast(),
+               "a server error: said, naming the server and the status")   # AMENDED FOR V133d
             await safe("()=>window.__a3dMapFindReset()")
             await nosel()
             n0 = len(SRV['nom'])
@@ -999,7 +1000,7 @@ async def run():
             seq = [await safe("()=>window.__a3dMapCommand()") for _ in range(4)]
             ck(seq == ['street', 'satellite', 'custom', 'off'], "and custom once it has one (%s)" % seq)
             await safe("()=>window.__a3dRunCmd('map')")
-            ck((await safe("()=>window.__a3dMapSettings()"))['style'] == 'street' and 'Map: Street (OpenStreetMap)' in await toast(),
+            ck((await safe("()=>window.__a3dMapSettings()"))['style'] == 'street' and 'Map: Street (CARTO, OpenStreetMap data)' in await toast(),   # AMENDED FOR V133d
                "MAP runs as a command and says what is on, with its credit (%r)" % await toast())
             cat = await safe("()=>window.__a3dCommandCatalog().filter(c=>['MAP','FINDADDRESS','GEOIMPORT','GEOEXPORT'].indexOf(c.name)>=0).map(c=>({n:c.name,where:c.where}))") or []
             wh = {c['n']: ' '.join(c['where']) for c in cat}

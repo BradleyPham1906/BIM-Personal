@@ -231,7 +231,9 @@ def source_level_checks(path):
     v132 = {"tile.openstreetmap.org", "server.arcgisonline.com", "nominatim.openstreetmap.org",
             "www.openstreetmap.org", "www.arcgis.com", "tiles.example.org",
             # AMENDED FOR V133: the site context's two sources, asked only on CONTEXT
-            "overpass-api.de", "s3.amazonaws.com"}
+            "overpass-api.de", "s3.amazonaws.com",
+            # AMENDED FOR V133d: the street map is CARTO's
+            "basemaps.cartocdn.com"}
     external = sorted(h for h in hosts if not h.endswith("w3.org") and h not in v132)
     check(not external,
           "no external host referenced anywhere in the file (found: " + (", ".join(external) or "none") + ")")

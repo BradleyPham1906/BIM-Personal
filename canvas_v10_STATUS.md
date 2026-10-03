@@ -11495,3 +11495,62 @@ rebuilds the build byte for byte from `Phase/canvas_v10.html.bak_phase133_pre`.
     sha256            c6a0a1da1945979bb54e3223d7d2c99ae355d7832c41276a91e111b8ccde9116
     markers           __acad3dV60 ... __acad3dV133, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
                       __acad3dV121b
+
+## Phase 133d and 133e (V133d, V133e) - The map on a real screen, and zoom like AutoCAD
+
+The owner's first use, from the app opened as a file on a Retina screen: "first image is from Esri
+and it kinda blurry. second is blocked", then "is there a way that we can zoom out further like how
+autocad or revit has because i feel a bit limited here".
+
+### What was built
+
+- **133d: the map on a real screen.**
+  - **The street map is CARTO's Voyager.** OpenStreetMap's own tile servers refuse a request with
+    no Referer, which a page opened as a file never sends, and the refusal is an image the page
+    cannot tell from a map. CARTO uses OSM's data, needs no key, and is credited
+    "© OpenStreetMap contributors © CARTO". It serves `@2x` tiles on a dense screen through a new
+    `{r}` in the URL template.
+  - **The zoom counts the screen's density** (1 to 2), except for `@2x` tiles. The tile cap grows
+    with it.
+  - **Mipmaps on every tile.**
+  - **Nominatim's refusal (HTTP 403) and being busy (429) are said as such.** The refusal points
+    to typing the latitude and longitude.
+- **133e: zoom like AutoCAD and Revit.**
+  - The wheel and the pinch go from 0.5 m to 200 km, where they stopped at 6 m and 150 m.
+  - The wheel zooms about the cursor: the ground under it stays under it.
+  - The far clipping plane, a fixed 4 km, now follows the view (eight camera distances). The near
+    plane moves out with a very far view, to keep the depth buffer's precision.
+- **Hooks:** `__a3dMapDpr`, `__a3dMapMipmapped`, `__a3dZoomAbout`, `__a3dZoomLimits`, and the
+  markers `__acad3dV133d` and `__acad3dV133e`.
+
+### What it taught
+
+- **A routed suite cannot see a provider's policy.** Every map test answered the tile servers
+  itself, so OSM's Referer rule never showed. The research notes now say which rules a routed test
+  cannot see: Referer, usage limits, and missing-imagery pictures.
+- **Run at the owner's screen density.** The new suite runs at device scale 2. At scale 1 the
+  coarse-zoom bug does not exist.
+- **The falsify run found a check that could not fail.** The density-cap check passed with either
+  cap, because its view needed only 56 tiles. It now finds a view that needs between 81 and 160.
+
+### Suites
+
+- New: `bim_phase133d_map_density_browser_tests.py`, 21 checks at device scale 2: the street map
+  and its credit, the satellite's zoom, the cap, mipmaps, Nominatim's refusals, and the zoom (its
+  range, about the cursor, and the map still drawn 50 km out in plan and 30 km out in 3D).
+- Falsified by 11 variants, all caught (`Phase/falsify_phase133d.py`).
+- Amended:
+  - V132: the street map is CARTO's; a server error is said with its status.
+  - V62: basemaps.cartocdn.com joins the allowed hosts.
+- V132's falsify script has `no_tile_cap` re-anchored to the new cap.
+
+### Full regression and state after V133e
+
+90 suites, 3345 checks, 0 failures. Falsification: V133d 11 of 11, V133 49 of 49, V132 49 of 49.
+The patch chain 133a to 133e rebuilds the build byte for byte from
+`Phase/canvas_v10.html.bak_phase133_pre`.
+
+    canvas_v10.html   1,895,947 bytes
+    sha256            c4d52859062256d8157b22fd71433915e40ed5b4081382f5b7cf38dd208fc5ed
+    markers           __acad3dV60 ... __acad3dV133, __acad3dV133d, __acad3dV133e, plus __acad3dV105b,
+                      __acad3dV113b, __acad3dV113c, __acad3dV121b

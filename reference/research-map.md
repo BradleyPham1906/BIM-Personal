@@ -131,3 +131,28 @@ and their terms are catalogued in `research-open-data.md`.
 - [RFC 7946 GeoJSON](https://datatracker.ietf.org/doc/html/rfc7946), [OGC KML 2.2](https://www.ogc.org/standard/kml/)
 - [WGS84 (NGA TR8350.2)](https://earth-info.nga.mil/), for the ellipsoid constants
 - Giraffe: `research-giraffe.md`
+
+## After the owner's first use (V133d, V133e)
+
+- **OpenStreetMap's own tiles came back "Access blocked".** OSM's volunteer tile servers refuse a
+  request with no `Referer`, and a page opened as a file sends none. The refusal is an image, so
+  the page cannot tell it from a map. The street style is now **CARTO's Voyager**
+  (`basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png`): OSM's data, free with the credit
+  "© OpenStreetMap contributors © CARTO", no key. `{r}` becomes `@2x` on a dense screen.
+  - CARTO's free basemaps are for non-commercial use within their mapview allowance. A sold app
+    moves to a keyed provider by changing the URL.
+  - Nominatim has the same Referer rule. A refusal (HTTP 403) now says so and points to typing the
+    latitude and longitude. Serving the app from a website (GitHub Pages, for one) sends a Referer
+    and satisfies both.
+- **The satellite looked blurry**, for two reasons:
+  - The zoom was picked in CSS pixels, so a Retina screen got tiles a level too coarse. The zoom
+    now counts the density (1 to 2), except for `@2x` tiles, which carry it themselves. The tile
+    cap grows with the density (80, up to 160).
+  - A tile drawn smaller than its pixels had no mipmaps. Every power-of-two tile now has them.
+
+  Past Esri's zoom 19 (about 0.23 m a pixel at 40°N) the imagery is the source's finest, and it is
+  stretched. Zoom 20 exists in some cities only, and an absent tile is a "not yet available"
+  picture the page cannot tell from imagery. So 19 stays the limit.
+- **Zoom (V133e):** the view went only from 6 m to 150 m from its target. It now goes from 0.5 m
+  to 200 km, about the cursor as in AutoCAD and Revit. The far clipping plane, fixed at 4 km,
+  follows the view (eight camera distances).

@@ -2,11 +2,11 @@
 
 **Read this first in a new session.** One page. The detail lives in the docs listed at the bottom.
 
-    canvas_v10.html   1,893,525 bytes
-    sha256            c6a0a1da1945979bb54e3223d7d2c99ae355d7832c41276a91e111b8ccde9116
+    canvas_v10.html   1,895,947 bytes
+    sha256            c4d52859062256d8157b22fd71433915e40ed5b4081382f5b7cf38dd208fc5ed
     markers           __acad3dV60 ... __acad3dV133, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
                       __acad3dV121b
-    tests             89 suites, 3324 checks, 0 failures
+    tests             90 suites, 3345 checks, 0 failures
 
     Run the regression in parallel: tests/run_all.py [build] [filter] [-jN], default -j6,
     about 4 minutes; give it the build's absolute path. tests/falsify_all.py
@@ -79,7 +79,15 @@ when it starts (V111 to V133 went to other work; V134 to V138 are in NOW).
 | 118 | Blocks and data | ATTDEF ATTEDIT BEDIT WBLOCK DATAEXTRACTION TABLESTYLE TABLEDIT TABLEEXPORT | First phase that's about the disciplines, not drafting. BLOCK and INSERT landed in V124, as the Assets library's blocks: saved records inserted as independent copies. A block reference that follows its definition (what BEDIT edits) is not built. |
 | 119 | Sheets and plotting, rest | MVIEW (draw a viewport on the paper) PAGESETUP (plot settings beyond Sheet Setup) PUBLISH (V122's Print set prints every sheet in one job; a chosen subset and page setups remain) EXPORTPDF (vector PDF of a sheet) VPLAYER (per-viewport layer visibility) viewport lock | LAYOUT, MSPACE and PSPACE landed in V116, with layout tabs and model space through a viewport. |
 
-**Recently finished:** Phase 133 (V133), **site context in one click**.
+**Recently finished:** V133d and V133e, from the owner's first real use.
+- **The street map** is CARTO's Voyager, because OSM's own servers block a page opened as a file.
+  It uses `@2x` tiles on a dense screen.
+- **The satellite's zoom** counts screen density, and every tile is mipmapped.
+- **Zoom** goes from 0.5 m to 200 km, about the cursor, as in AutoCAD and Revit. The far plane
+  follows the view.
+- **Checked** in 21 checks at device scale 2, and 11 falsify variants.
+
+Phase 133 (V133), **site context in one click**.
 - **One press** (CONTEXT, or Get Context in Properties) brings the buildings, roads, water, green
   and trees around the site from OpenStreetMap (Overpass), and the ground from AWS Terrain Tiles.
   The area is 150 m by default, around the property lines or model 0,0.
