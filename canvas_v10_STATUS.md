@@ -12031,3 +12031,77 @@ rebuilds the build from `Phase/canvas_v10.html.bak_phase139_pre`. The diff is ES
     canvas_v10.html   2051220 bytes
     sha256            5787ea35787bee139f312548b1fb0e2c6c7d3a1987ece60796283575e082d85b
     markers           __acad3dV60 ... __acad3dV139, __acad3dV134d (and the 133d to 133f markers)
+
+## Phase 140 (V140) - LOD-B: LOD2 roofs from OpenStreetMap's tags
+
+The owner: "I don't want to see any surface that's too smooth. We want from LOD1 to LOD2 and
+ultimately LOD3." Every roof is planes; none is a smoothed mesh. A picture: `reference/v140_roofs.png`.
+
+### What was built (patches 140a, 140b)
+
+- **a -- the roofs.** `bimOsmRoof(footprint, tags, base, h, from)`:
+  - **hipped:** Phase 39's straight skeleton (any footprint without a deep notch), its slope set
+    so the ridge is at the roof's height;
+  - **gabled, half-hipped, gambrel, mansard, skillion** on a convex footprint: the **lower envelope
+    of planes** -- planes rising from the eaves (and from a knee, or from the ends), each keeping
+    the part of the footprint where it is lowest (a convex polygon clipped by half-planes). Ridges,
+    hips and knees are exact plane intersections;
+  - **pyramidal** on a convex footprint: a triangle from each edge to an apex over the centre;
+  - **flat:** the block, its top a roof.
+  - Walls rise to the roof's edge (every roof vertex on a footprint edge becomes a point of that
+    wall's top), so each building is one closed solid: ground, walls, roof. LOD **2.0**.
+  - Ridges run along the longest side of the smallest bounding rectangle, across it with
+    `roof:orientation=across`, or across `roof:direction` (compass points or degrees, turned by
+    true north). A skillion slopes down towards `roof:direction`.
+  - Heights: `height` is the whole building, `building:levels` the walls (the roof on top);
+    `roof:height`, else `roof:levels` x 3 m, else `roof:angle`, else an assumed 30 degrees. A roof
+    taller than its building is cut down to leave 0.5 m of wall, and says so.
+  - **Not faked:** dome, onion, round, cone, saltbox and the like, a non-convex footprint for
+    anything but hipped, and unknown shapes keep the LOD1 block, with the reason kept and shown.
+  - The context places the roofs (parts too, from their base); the toast and the last fetch
+    count them; the LOD's "how made" says the shape, its height and where it came from.
+  - CityJSON: a roofed building's faces come from its mesh; a face facing up is a RoofSurface.
+- **b -- the app.** A Roof row in the LOD group (shape, height, planes, eaves; a warning when not
+  built); the count in Last Fetch; hooks `__a3dOsmRoof`, `__a3dRoofDir`; the marker.
+
+### Checked against hand-worked volumes
+
+| Roof | Footprint | Volume |
+|---|---|---|
+| gabled, 8 m, roof 3 m | 10 x 6 | 390 m3 |
+| hipped, 9 m, roof 3 m | 12 x 8 | 688 m3 |
+| pyramidal, 2 levels, roof 4 m | 8 x 8 | 469.333 m3 |
+| skillion, 7 m, roof 2 m | 10 x 6 | 360 m3 |
+| half-hipped, 10 m, roof 4 m | 12 x 8 | 765.269 m3 |
+| gambrel, 10 m, roof 4 m | 10 x 8 | 704 m3 |
+| mansard, 10 m, roof 4 m | 12 x 10 | 1000 m3 |
+
+Every one a valid solid (V139's check), every face flat to 1 cm, and the CityJSON valid by cjval.
+
+### Bugs found
+
+- None in the build. The suite's own expectations were wrong three times (a 45 degree roof on 6 m
+  walls is 450 m3, not 390; heights are kept to the millimetre; six LOD2 objects, not seven).
+
+### Suites
+
+- New: `bim_phase140_lod2_roofs_browser_tests.py`, 55 checks (it reuses V133's and V139's
+  fixtures).
+- Falsified by `Phase/falsify_phase140.py`, 32 variants, all caught on the first run.
+- `Phase/falsify_phase139.py` anchors on two lines V140 changed (the extrusion); it is run against
+  V139's build, as every falsify script is against its own phase.
+
+### Not done
+
+- Gabled (and the other ridged shapes) on non-convex footprints: OSM mappers usually split those
+  into parts, which are roofed one by one. A straight skeleton with gable ends would cover them.
+- Curved roofs; roof overhangs and dormers (LOD2.2+, from LiDAR in LOD-D).
+
+### Full regression and state after V140
+
+97 suites, 3810 checks, 0 failures. Falsification: V140 32 of 32. The chain 140a, 140b rebuilds the
+build from `Phase/canvas_v10.html.bak_phase140_pre`. The diff is ES5-clean.
+
+    canvas_v10.html   2066633 bytes
+    sha256            8865255cbd70859646657afb7270f847db226977c180eae4084d9226e8f39b9d
+    markers           __acad3dV60 ... __acad3dV140, __acad3dV134d (and the 133d to 133f markers)

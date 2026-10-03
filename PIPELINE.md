@@ -2,11 +2,11 @@
 
 **Read this first in a new session.** One page. The detail lives in the docs listed at the bottom.
 
-    canvas_v10.html   2051220 bytes
-    sha256            5787ea35787bee139f312548b1fb0e2c6c7d3a1987ece60796283575e082d85b
-    markers           __acad3dV60 ... __acad3dV139, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
+    canvas_v10.html   2066633 bytes
+    sha256            8865255cbd70859646657afb7270f847db226977c180eae4084d9226e8f39b9d
+    markers           __acad3dV60 ... __acad3dV140, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
                       __acad3dV121b
-    tests             96 suites, 3755 checks, 0 failures
+    tests             97 suites, 3810 checks, 0 failures
 
     Run the regression in parallel: tests/run_all.py [build] [filter] [-jN], default -j6,
     about 4 minutes; give it the build's absolute path. tests/falsify_all.py
@@ -64,8 +64,8 @@ V128 to V130 settled how commands are found (see Recently finished):
 | # | Phase | Scope | Notes |
 |---|---|---|---|
 | 139 | LOD-A: LOD1.3, labelled LODs, CityJSON | **Done** (see Recently finished) | `reference/research-lod-reconstruction.md` (1, 4, 6). |
-| 140 | LOD-B: LOD2 from OSM roofs | **Start here.** Procedural roofs from `roof:shape`, `roof:height`, `roof:direction`; roof and wall surfaces typed | OSM Simple 3D Buildings; the fallback where there is no LiDAR. |
-| 141 | LOD-C: point clouds | LAS, LAZ (laz-perf, Apache-2.0) and PLY; USGS 3DEP fetched around the site (EPT or COPC); by class or height; ground to a V108 surface through V138's check | Philadelphia has city LiDAR (2015, 2018) and PA statewide QL2. |
+| 140 | LOD-B: LOD2 from OSM roofs | **Done** (see Recently finished) | `reference/research-lod-reconstruction.md` (7). |
+| 141 | LOD-C: point clouds | **Start here.** LAS, LAZ (laz-perf, Apache-2.0) and PLY; USGS 3DEP fetched around the site (EPT or COPC); by class or height; ground to a V108 surface through V138's check | Philadelphia has city LiDAR (2015, 2018) and PA statewide QL2. |
 | 142 | LOD-D: LOD2.2 from LiDAR | Region-growing roof planes, roof partition, optimised and extruded; LOD1.3 from the same partition; per-building RMSE to the points | 3DBAG's published method (roofer is GPL-3 C++: the method, not the code). |
 | 143 | LOD-E: facade images | The owner's photos or Panoramax panoramas placed on an LOD2 wall and rectified straight-on, in metres | Texture2LoD3's rectification; Panoramax is CC BY-SA, no key. |
 | 144 | LOD-F: LOD3 openings | Windows and doors drawn on the rectified facade, regularised into rows and columns, optionally detected (SAM in the browser, on request), cut into the wall | Checked against measured openings. |
@@ -114,7 +114,15 @@ when it starts (V111 to V138 went to other work; V139 to V148 are in NOW).
 | 118 | Blocks and data | ATTDEF ATTEDIT BEDIT WBLOCK DATAEXTRACTION TABLESTYLE TABLEDIT TABLEEXPORT | First phase that's about the disciplines, not drafting. BLOCK and INSERT landed in V124, as the Assets library's blocks: saved records inserted as independent copies. A block reference that follows its definition (what BEDIT edits) is not built. |
 | 119 | Sheets and plotting, rest | MVIEW (draw a viewport on the paper) PAGESETUP (plot settings beyond Sheet Setup) PUBLISH (V122's Print set prints every sheet in one job; a chosen subset and page setups remain) EXPORTPDF (vector PDF of a sheet) VPLAYER (per-viewport layer visibility) viewport lock | LAYOUT, MSPACE and PSPACE landed in V116, with layout tabs and model space through a viewport. |
 
-**Recently finished:** Phase 139 (V139), **LOD-A: building parts, labelled LODs, CityJSON**.
+**Recently finished:** Phase 140 (V140), **LOD-B: LOD2 roofs from OSM's tags**.
+- **Roofs made of planes, never smoothed:** hipped by the straight skeleton; gabled, half-hipped,
+  gambrel, mansard and skillion as the lower envelope of planes; pyramidal to an apex; flat. Walls
+  rise to the roof's edge: one closed solid, LOD2.0.
+- **From the tags:** roof:height, roof:levels, roof:angle (else 30 degrees), roof:direction,
+  roof:orientation; curved and unknown shapes kept as blocks, with the reason.
+- **Checked** against hand-worked volumes in 55 checks, and 32 falsify variants.
+
+Phase 139 (V139), **LOD-A: building parts, labelled LODs, CityJSON**.
 - **LOD1.3 from OSM's building parts:** an outline with parts is drawn as its parts, each from its
   base to its top, standing on its building's ground; whole buildings stay LOD1.2.
 - **Every building says its LOD** and how it was made, with a **solid check** by val3dity's rules
