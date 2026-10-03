@@ -11936,3 +11936,98 @@ build from `Phase/canvas_v10.html.bak_phase138_pre`. The diff is ES5-clean.
     canvas_v10.html   2017560 bytes
     sha256            f2a259d2af039f63c7e5a2b76a27dc8bdd4ef705968db59615739bdfb1476aa5
     markers           __acad3dV60 ... __acad3dV138, __acad3dV134d (and the 133d to 133f markers)
+
+## Phase 139 (V139) - LOD-A: building parts, labelled LODs, valid solids, CityJSON
+
+The owner: "a progression from LOD1 to LOD2, and then ultimately LOD3 ... make sure you do it
+carefully." This is the first of the seven phases planned in `reference/research-lod-reconstruction.md`
+(LOD-A); it also parked the drone bridge track (Track D in `PIPELINE.md`) for later, at the owner's
+word.
+
+### What was built (patches 139a, 139b, 139c)
+
+- **a -- parts and solids.**
+  - CONTEXT asks Overpass for `building:part` ways and multipolygons too.
+  - A building outline with parts inside it is not extruded; each part is, from its `min_height`
+    (or `building:min_level` x 3 m) to its `height` (or levels): **LOD1.3**. A building with no
+    parts is one block: **LOD1.2** (Biljecki's refined LODs).
+  - A part's building is the smallest outline holding a point well inside the part (the middle of
+    its largest ear), so parts drawn on their outline's edges, or beside a shared wall, find the
+    right one. A part with no height above its base is left out and said; a part in no outline is
+    still placed.
+  - Parts stand on their whole building's lowest ground (V137), so a building's parts do not step.
+  - Every building says its LOD and how it was made (`bimLodOf`).
+  - `bimSolidCheck(mesh)`: val3dity's rules (ISO 19107) and error codes, written here -- 101 too few
+    points, 105 no area, 203 not flat (1 cm), 301 too few faces, 302 not closed, 303 non-manifold
+    edges, 305 more than one piece, 307 faces turned the wrong way, 405 inside out. Vertices within
+    1 mm are one. Surfaces (a MultiSurface) are not asked to close. Not checked: self-intersection
+    (306) and shells inside one another (4xx beyond 405).
+  - LODCHECK: every building's LOD and solid in one toast; the first with a problem selected.
+- **b -- CityJSON.**
+  - UTM (WGS84), forward and back, by Krueger's series to the third order, no library: within
+    0.05 mm of pyproj over the zone.
+  - CITYJSONOUT: CityJSON 2.0 in the site's UTM zone (`EPSG:326zz`/`327zz`), vertices in
+    millimetres; heights above sea level when the site has a datum. A building with parts is a
+    `Building` (no geometry) with `BuildingPart` children; a part in no outline gets a `Building`
+    of its own (CityJSON's schema requires one -- cjval caught it). Context buildings are written
+    from their footprint: one ground, one roof, a wall per edge, each typed. Attributes carry the
+    LOD, how it was made, the height, the OSM tags (`osm:` prefix) and OSM's credit.
+  - CITYJSONIN (and IMPORT of a `.city.json` or `.cityjson`): each city object's highest LOD with
+    surfaces (Solid, MultiSolid, CompositeSolid, MultiSurface, CompositeSurface) becomes a locked
+    solid on a CityJSON layer, its CityJSON id, type, LOD, attributes and parent kept. UTM files land
+    on the site (setting it when there is none); any other grid is placed by its centre at model
+    0,0, heights from its lowest point, and named. Concave faces are ear-clipped in their own plane
+    (the viewport fans a face); openings in faces are filled and counted; templates are counted and
+    not read. Every solid is checked as it comes in. CityJSON Lines and non-CityJSON files are
+    refused by name.
+- **c -- the app.** A building's LOD group (LOD, its meaning, how made, the solid check, its
+  building or CityJSON record); Check LODs, Export CityJSON and Import CityJSON in the Site Context
+  group; the three commands with search words; hooks; the marker.
+
+### Bugs found
+
+- **cjval (cityjson.org's validator, built here with cargo) rejected the first export:** a
+  `BuildingPart` with no parent is not valid CityJSON. A part in no outline now gets a `Building`
+  of its own, with a note saying why.
+- **OSM tags shadowed by the app's own attributes:** the `osm:` copy skipped a tag whose bare name
+  the app had already written (`name`). Every tag is now copied under its `osm:` name.
+- **The first falsify run missed four variants:**
+  - pairing a part by its first corner (on the outline) still worked on the fixture; a part
+    beside a shared wall, whose first corner is on the wall, now tells them apart;
+  - LODCHECK's selection was already the bad object from an earlier step;
+  - an import that skipped the solid check was not counted;
+  - one variant broke the build (a dangling `else`) -- rewritten.
+- **The suite's own expectations were wrong twice:** lifting a box's top corner leaves its walls
+  flat (one face not flat, not three); a duplicated vertex welds into "too few points", not "no
+  area" (a collinear point gives that).
+
+### Suites
+
+- New: `bim_phase139_lod_cityjson_browser_tests.py`, 116 checks. It reuses V133's Overpass and
+  terrain fixtures; UTM is checked against pyproj's numbers (hard-coded, so pyproj is not needed to
+  run it); every exported solid is checked closed and outward by a second implementation in
+  Python; the export is validated by cjval when it is installed (`cargo install cjval --features
+  build-binary`), and skipped with a note when not.
+- Falsified by `Phase/falsify_phase139.py`, 62 variants, all caught.
+
+### Not done
+
+- LOD2 roofs (LOD-B, V140), point clouds (LOD-C), and the rest of the plan.
+- The outline is not split where parts leave it uncovered (Simple 3D Buildings: the outline is not
+  drawn when it has parts); the design's own massing is not yet exported to CityJSON.
+- Imported CityJSON keeps its surfaces' types only through the face normals on re-export.
+
+### Bugs found by the full regression
+
+- V62's host scan found `www.opengis.net`, the OGC name CityJSON gives a grid; it is written into
+  files, never fetched. V62's list now has it (AMENDED FOR V139).
+- V120 found `bimWorldMesh`, written and never used; removed.
+
+### Full regression and state after V139
+
+96 suites, 3755 checks, 0 failures. Falsification: V139 62 of 62. The chain 139a, 139b, 139c
+rebuilds the build from `Phase/canvas_v10.html.bak_phase139_pre`. The diff is ES5-clean.
+
+    canvas_v10.html   2051220 bytes
+    sha256            5787ea35787bee139f312548b1fb0e2c6c7d3a1987ece60796283575e082d85b
+    markers           __acad3dV60 ... __acad3dV139, __acad3dV134d (and the 133d to 133f markers)

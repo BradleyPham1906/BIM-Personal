@@ -2,11 +2,11 @@
 
 **Read this first in a new session.** One page. The detail lives in the docs listed at the bottom.
 
-    canvas_v10.html   2017560 bytes
-    sha256            f2a259d2af039f63c7e5a2b76a27dc8bdd4ef705968db59615739bdfb1476aa5
-    markers           __acad3dV60 ... __acad3dV138, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
+    canvas_v10.html   2051220 bytes
+    sha256            5787ea35787bee139f312548b1fb0e2c6c7d3a1987ece60796283575e082d85b
+    markers           __acad3dV60 ... __acad3dV139, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
                       __acad3dV121b
-    tests             95 suites, 3639 checks, 0 failures
+    tests             96 suites, 3755 checks, 0 failures
 
     Run the regression in parallel: tests/run_all.py [build] [filter] [-jN], default -j6,
     about 4 minutes; give it the build's absolute path. tests/falsify_all.py
@@ -22,7 +22,7 @@ with anchored Python scripts that assert exact match counts.
 
 ---
 
-## NOW - Giraffe's and GeoLibre's ideas, then the MEP runs (V139 to V141)
+## NOW - Buildings from LOD1 to LOD3 (V139 to V145), then the envelope, scenarios and MEP
 
 The owner looked at Giraffe (giraffe.build), a map-first feasibility app, and chose four of its
 ideas, ahead of the MEP runs, then asked for the map "just like how giraffe do". The research, with an
@@ -30,6 +30,13 @@ inventory of everything Giraffe does against this app, is in `reference/research
 In V135 the owner pointed at GeoLibre (an open-source GIS) and chose its portal search (V135), then
 colour by attribute with legends (V136) and the map on 3D terrain (V137), ahead of the envelope.
 What was and was not taken from it is in `reference/research-open-data-portals.md`.
+
+After V138 the owner set the next track: "a progression from LOD1 to LOD2, and then ultimately LOD3
+... imagery reconstruction based on the facade ... do it carefully". The research, the sources and the
+reasons for the order are in `reference/research-lod-reconstruction.md`. In short: automatic where the
+research is proven (LOD1.3, LOD2 from OSM roofs and from LiDAR, 3DBAG's method), guided by the owner
+where it is not yet (LOD3 openings from rectified facade photos), each level verified as V138 verifies a
+survey. The GPL tools (roofer, City3D, val3dity) are methods to follow, not code to copy.
 
 V128 to V130 settled how commands are found (see Recently finished):
 - **V128:** one command search over every command and tool.
@@ -56,18 +63,44 @@ V128 to V130 settled how commands are found (see Recently finished):
 
 | # | Phase | Scope | Notes |
 |---|---|---|---|
-| 139 | Zoning envelope | **Start here.** Setbacks, stepbacks and a height limit on a property become a 3D envelope; massing outside it is flagged | Builds on V103's setbacks; Giraffe's Basic Envelope. |
-| 140 | Design scenarios | Options within one project, switched between and compared by their numbers | Giraffe's scenarios; Revit's Design Options. |
-| 141 | MEP runs | Duct and pipe runs at connectors, systems, flow, velocity and friction | MEP is its own discipline (the owner's choice). The research is drafted in `reference/research-mep-runs.md`. |
+| 139 | LOD-A: LOD1.3, labelled LODs, CityJSON | **Done** (see Recently finished) | `reference/research-lod-reconstruction.md` (1, 4, 6). |
+| 140 | LOD-B: LOD2 from OSM roofs | **Start here.** Procedural roofs from `roof:shape`, `roof:height`, `roof:direction`; roof and wall surfaces typed | OSM Simple 3D Buildings; the fallback where there is no LiDAR. |
+| 141 | LOD-C: point clouds | LAS, LAZ (laz-perf, Apache-2.0) and PLY; USGS 3DEP fetched around the site (EPT or COPC); by class or height; ground to a V108 surface through V138's check | Philadelphia has city LiDAR (2015, 2018) and PA statewide QL2. |
+| 142 | LOD-D: LOD2.2 from LiDAR | Region-growing roof planes, roof partition, optimised and extruded; LOD1.3 from the same partition; per-building RMSE to the points | 3DBAG's published method (roofer is GPL-3 C++: the method, not the code). |
+| 143 | LOD-E: facade images | The owner's photos or Panoramax panoramas placed on an LOD2 wall and rectified straight-on, in metres | Texture2LoD3's rectification; Panoramax is CC BY-SA, no key. |
+| 144 | LOD-F: LOD3 openings | Windows and doors drawn on the rectified facade, regularised into rows and columns, optionally detected (SAM in the browser, on request), cut into the wall | Checked against measured openings. |
+| 145 | LOD-G: Gaussian splats | A `.splat` capture placed on the site as a photoreal backdrop to trace against | antimatter15/splat, MIT. |
+| 146 | Zoning envelope | Setbacks, stepbacks and a height limit on a property become a 3D envelope; massing outside it is flagged | Builds on V103's setbacks; Giraffe's Basic Envelope. |
+| 147 | Design scenarios | Options within one project, switched between and compared by their numbers | Giraffe's scenarios; Revit's Design Options. |
+| 148 | MEP runs | Duct and pipe runs at connectors, systems, flow, velocity and friction | MEP is its own discipline (the owner's choice). The research is drafted in `reference/research-mep-runs.md`. |
 | later | Survey breaklines | Breaklines and boundaries in a surface, horizontal control, LandXML and raw total-station files | V138's checks then cover them; the owner's survey data first. |
 | later | Generators | Parking layout to a ratio, subdivision into lots, and envelope-filling massing | Giraffe's generative editors; after the map and the envelope. |
 | later | Costs and pro forma | Cost, rent, yield and sale price per usage, and a feasibility summary | Builds on V131's formulas. |
 | later | Flows and an app SDK | Per-object node graphs (Giraffe's Flows, a light Grasshopper); a documented plugin API of read-only state snapshots with listeners and named commands over postMessage | The engine's `__a3dRegisterCommand`, `__a3dRegisterDiscipline` and `__a3dRegisterTab` are the start of it. Giraffe's model: one set of functions reached two ways, the browser console and a postMessage bridge for an iframe app in the right panel, over GeoJSON-like data (`reference/research-giraffe.md`). |
 
+### LATER - Track D, the owner's drone bridge project (Skydio, PennDOT/NYSDOT)
+
+The owner's live project: Skydio photos go through photogrammetry to a digital model of NSTM
+bridges that exist only as CAD. Photogrammetry stays outside the app, in Pix4D, iTwin Capture or
+free WebODM/OpenSplat. The app does everything before and after that step. Parked by the owner
+until after the LOD track ("Gaussian splats should be later on"). Detail
+is in `reference/research-bridge-splatting.md` (7).
+
+| # | Phase | Scope |
+|---|---|---|
+| D1 | Flight read-in and coverage | Skydio JPEG EXIF/XMP (or the geolocation CSV) to cameras on the map and in 3D; GSD, overlap and blind spots, checked on site |
+| D2 | Hand-off to processing | Image list, control and check points, CRS, written for ODM/COLMAP and Pix4D |
+| D3 | Bring the capture back | Point cloud, mesh, splat and solved camera positions, in site coordinates (shared with LOD-C, LOD-G) |
+| D4 | Bridge model from the CAD | DXF to IFC 4.3 `IfcBridge` members with NSTM flags and member IDs |
+| D5 | Register and compare | Control points then ICP; per-member deviation by colour; check-point RMSE |
+| D6 | Photo-linked findings | A point on a member lists the raw photos that saw it; findings with condition state, tied to the member and the photos; report |
+
+Project photos, models and drawings are never committed: the repo and its site are public.
+
 ### LATER - Track A, drafting (moved behind Track B in V100)
 
 The numbers in this table are its order, not phase numbers: a phase takes the next free V number
-when it starts (V111 to V138 went to other work; V139 to V141 are in NOW).
+when it starts (V111 to V138 went to other work; V139 to V148 are in NOW).
 
 | # | Phase | Scope | Notes |
 |---|---|---|---|
@@ -81,7 +114,17 @@ when it starts (V111 to V138 went to other work; V139 to V141 are in NOW).
 | 118 | Blocks and data | ATTDEF ATTEDIT BEDIT WBLOCK DATAEXTRACTION TABLESTYLE TABLEDIT TABLEEXPORT | First phase that's about the disciplines, not drafting. BLOCK and INSERT landed in V124, as the Assets library's blocks: saved records inserted as independent copies. A block reference that follows its definition (what BEDIT edits) is not built. |
 | 119 | Sheets and plotting, rest | MVIEW (draw a viewport on the paper) PAGESETUP (plot settings beyond Sheet Setup) PUBLISH (V122's Print set prints every sheet in one job; a chosen subset and page setups remain) EXPORTPDF (vector PDF of a sheet) VPLAYER (per-viewport layer visibility) viewport lock | LAYOUT, MSPACE and PSPACE landed in V116, with layout tabs and model space through a viewport. |
 
-**Recently finished:** Phase 138 (V138), **verify the survey**.
+**Recently finished:** Phase 139 (V139), **LOD-A: building parts, labelled LODs, CityJSON**.
+- **LOD1.3 from OSM's building parts:** an outline with parts is drawn as its parts, each from its
+  base to its top, standing on its building's ground; whole buildings stay LOD1.2.
+- **Every building says its LOD** and how it was made, with a **solid check** by val3dity's rules
+  (LODCHECK).
+- **CityJSON 2.0 out and in:** in the site's UTM zone, Building and BuildingPart, typed surfaces,
+  OSM's credit; read back to the millimetre; other grids placed by their centre and named.
+  CITYJSONOUT, CITYJSONIN.
+- **Checked** in 116 checks (cjval validates the export) and 62 falsify variants.
+
+Phase 138 (V138), **verify the survey**.
 - **A Survey Check on every surface:** lines skipped, duplicates, the surface through every point,
   bust shots, check shots' RMSE, control points, and the public terrain (offset, feet read as
   metres), with a verdict and a report to export. SURVEYCHECK.
