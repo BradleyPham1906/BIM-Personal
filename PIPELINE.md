@@ -2,11 +2,11 @@
 
 **Read this first in a new session.** One page. The detail lives in the docs listed at the bottom.
 
-    canvas_v10.html   1,787,923 bytes
-    sha256            8d5857417d52274ebe35817b5eedc47866b3f07df62aed64cfaffcdb572459b8
-    markers           __acad3dV60 ... __acad3dV130, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
+    canvas_v10.html   1,817,723 bytes
+    sha256            14630df8e1b0b95de2f917793cbb76fc652cd16a7cedba5dcbf8d10ef3739e7f
+    markers           __acad3dV60 ... __acad3dV131, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
                       __acad3dV121b
-    tests             86 suites, 3008 checks, 0 failures
+    tests             87 suites, 3065 checks, 0 failures
 
     Run the regression in parallel: tests/run_all.py [build] [filter] [-jN], default -j6,
     about 4 minutes; give it the build's absolute path. tests/falsify_all.py
@@ -22,7 +22,7 @@ with anchored Python scripts that assert exact match counts.
 
 ---
 
-## NOW - Giraffe's ideas and the map, then the MEP runs (V131 to V138)
+## NOW - the map and open data, Giraffe's other ideas, then the MEP runs (V132 to V138)
 
 The owner looked at Giraffe (giraffe.build), a map-first feasibility app, and chose four of its
 ideas, ahead of the MEP runs, then asked for the map "just like how giraffe do". The research, with an
@@ -53,8 +53,7 @@ V128 to V130 settled how commands are found (see Recently finished):
 
 | # | Phase | Scope | Notes |
 |---|---|---|---|
-| 131 | Usages and live areas | A usage (Residential, Retail, Office...) on rooms and masses: a colour, GBA→GFA→NSA efficiencies, and simple formula properties (`GFA * rate`) with our own evaluator (not HyperFormula, which is GPLv3). Defined once and edited in Properties. A live area table for the selection, by usage and level | **Start here.** Giraffe's Usages (`reference/research-giraffe.md`). Research first: area definitions (GBA, GFA, NSA, and IPMS / BOMA / local equivalents) and Revit's Area Schemes. Builds on rooms, Areas by Level and the schedules. |
-| 132 | The map | Street and satellite basemaps under the plan and the 3D ground, placed by the project's latitude, longitude and true north and drawn by our own renderer; address search (Nominatim); a cached tile store and an attribution footer; GeoJSON/KML import of parcels and GeoJSON export | The owner: "just like how giraffe do", free only, "as much open public data as possible". Sources, licences and rules: `reference/research-open-data.md`. No API keys; offline-first. |
+| 132 | The map | **Start here.** Street and satellite basemaps under the plan and the 3D ground, placed by the project's latitude, longitude and true north and drawn by our own renderer; address search (Nominatim); a cached tile store and an attribution footer; GeoJSON/KML import of parcels and GeoJSON export | The owner: "just like how giraffe do", free only, "as much open public data as possible". Sources, licences and rules: `reference/research-open-data.md`. No API keys; offline-first. |
 | 133 | Site context in one click | From the site's extent: OSM buildings (at their height, or levels × 3 m), roads, water and trees via Overpass, as locked context; terrain from AWS Terrain Tiles into V108's TIN | Microsoft and Overture footprints as file imports where OSM is thin. |
 | 134 | Data layers | A Data section: catalogue presets (council parcels and zoning, FEMA flood...) plus any ArcGIS REST, WMS, WFS or GeoJSON URL; click to read a feature; a parcel becomes a property line | Giraffe's data layers. A server without CORS is reported by name. |
 | 135 | Zoning envelope | Setbacks, stepbacks and a height limit on a property become a 3D envelope; massing outside it is flagged | Builds on V103's setbacks; Giraffe's Basic Envelope. |
@@ -68,7 +67,7 @@ V128 to V130 settled how commands are found (see Recently finished):
 ### LATER - Track A, drafting (moved behind Track B in V100)
 
 The numbers in this table are its order, not phase numbers: a phase takes the next free V number
-when it starts (V111 to V130 went to other work; V131 to V138 are in NOW).
+when it starts (V111 to V131 went to other work; V132 to V138 are in NOW).
 
 | # | Phase | Scope | Notes |
 |---|---|---|---|
@@ -82,7 +81,22 @@ when it starts (V111 to V130 went to other work; V131 to V138 are in NOW).
 | 118 | Blocks and data | ATTDEF ATTEDIT BEDIT WBLOCK DATAEXTRACTION TABLESTYLE TABLEDIT TABLEEXPORT | First phase that's about the disciplines, not drafting. BLOCK and INSERT landed in V124, as the Assets library's blocks: saved records inserted as independent copies. A block reference that follows its definition (what BEDIT edits) is not built. |
 | 119 | Sheets and plotting, rest | MVIEW (draw a viewport on the paper) PAGESETUP (plot settings beyond Sheet Setup) PUBLISH (V122's Print set prints every sheet in one job; a chosen subset and page setups remain) EXPORTPDF (vector PDF of a sheet) VPLAYER (per-viewport layer visibility) viewport lock | LAYOUT, MSPACE and PSPACE landed in V116, with layout tabs and model space through a viewport. |
 
-**Recently finished:** Phase 130 (V130), **every tool in one panel, and a dock of the few used
+**Recently finished:** Phase 131 (V131), **usages and live areas**, the first of Giraffe's ideas.
+- **The library:** a usage (Residential, Office, Retail, Hotel, Parking, or your own) carries a
+  colour, GBA→GFA and GFA→NSA ratios, a floor-to-floor height, parameters and formulas. It is kept
+  with the project's types.
+- **Measuring:**
+  - a mass is stacked into floors and each floor sliced at mid-height;
+  - a floor slab is one floor of gross;
+  - a room is net, measured.
+- **Formulas:** `units = floor(NSA / unitSize)`, read by our own evaluator, with every mistake said
+  in words.
+- **In Properties:** the Usage page (for a whole selection at once), the project's Areas by Usage,
+  and the usage editor. An Areas by Usage schedule, and USAGE and USAGES.
+- **Checked** in 56 checks and 32 falsify variants. Falsification found two undo checks that passed
+  without their undo step.
+
+Phase 130 (V130), **every tool in one panel, and a dock of the few used
 most**, the owner's request ("this tool bar is very crowded ... only show the keys one").
 - **The panel:** Tools and shortcuts lists every ribbon tool, grouped by tab, then every key. It has:
   - one search;

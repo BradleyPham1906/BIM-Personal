@@ -11119,3 +11119,104 @@ be reachable. The suite now checks that the rows are exactly `__a3dToolActions()
     sha256            8d5857417d52274ebe35817b5eedc47866b3f07df62aed64cfaffcdb572459b8
     markers           __acad3dV60 ... __acad3dV130, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
                       __acad3dV121b
+
+## Phase 131 (V131) - Usages and live areas
+
+The first of Giraffe's ideas the owner chose (`reference/research-giraffe.md`), then "now lets get
+building". The research is in `reference/research-usages.md`: GBA, GFA and NSA, IPMS and BOMA, and
+Giraffe's usages.
+
+### What was built (patches 131a to 131c)
+
+- **a -- the engine.**
+  - **The library.** A usage is a name, a colour, a GBA→GFA ratio, a GFA→NSA ratio, a
+    floor-to-floor height, parameters and formulas. The library is kept in the project's types
+    (`A3D.types.usage`), so the undo, the browser store, the project file and the project tabs all
+    carry it with no list of their own. It starts with Residential, Office, Retail, Hotel and
+    Parking.
+  - **What takes a usage** (`bimUsageTarget`):
+    - **A mass** (a primitive, or a solid that is no building element, such as a pad) is stacked
+      into floors at its usage's floor-to-floor height (`n = max(1, floor(h / ftf))`). Each floor
+      is measured by slicing the solid at the floor's mid-height (`bimMeshSliceArea`): the triangle
+      cuts chain into loops (`bimChainEdgesToLoops`, from the section tool), and a loop inside an
+      odd number of others is a hole. A tapered or stepped mass is measured as it is.
+    - **A floor slab** is one floor of gross area, its outline's.
+    - **A room** is already net, so it counts as NSA, measured. It adds no GBA or GFA.
+  - **Formulas** use our own reader (`bimExprParse`, `bimExprEval`). Never `eval`, and not
+    HyperFormula (GPLv3).
+    - Syntax: numbers, + − × ÷ ^ (the power reaches right, and a minus binds looser than it),
+      brackets, and `min max round floor ceil abs sqrt`.
+    - Names, in any case: GBA, GFA, NSA, levels, height, footprint, the usage's parameters and its
+      earlier formulas.
+    - Every mistake is said in words: "unknown name price", "divides by zero", "a bracket is not
+      closed".
+  - **The areas by usage** (`bimUsageSummary`), for the project or for a selection.
+  - **The Areas by Usage schedule:** per usage and level, then each usage's total with its formulas'
+    sums.
+  - **Copies:** a mirrored or arrayed copy keeps its usage.
+- **b -- Properties and the commands.**
+  - **The Usage page** of a room, a floor or a mass. It sets the usage for every selected room,
+    floor and mass at once ("Mixed" when they differ). It shows floors, GBA, GFA, NSA, and each
+    formula's value or error. With several selected, it shows the selection's areas.
+  - **With nothing selected,** Properties shows the project's Areas by Usage, and the Usages. Each
+    usage is a line; Edit opens its colour, name, ratios, floor-to-floor height, parameters and
+    formulas. An edit is one undo step, and refused with its reason (a ratio over 100%, a twin
+    name, a parameter named like an area). Remove usage takes it off its objects in the same step.
+  - **USAGE (US)** puts the keyboard on the selection's Usage. With nothing that can take one
+    selected, it says so and shows the usages.
+  - **USAGES (USES, PROGRAM)** opens the library.
+  - **Where they live:** both are on the ribbon (Room & Area, and a new Program panel in Massing &
+    Site), so the tools panel and the search list them.
+- **c -- the hooks:**
+  - `__a3dUsages`, `__a3dUsageDefaults`, `__a3dUsageAssign`, `__a3dUsageAdd`, `__a3dUsageRemove`;
+  - `__a3dUsageMeasure`, `__a3dUsageSummary`, `__a3dUsageOf`;
+  - `__a3dExpr`, `__a3dSliceArea`;
+  - the marker.
+
+### Bugs found, and what each taught
+
+**1. Two undo checks passed without their undo step.** Assigning a usage and removing one each ran
+without `pushUndo`, and the suite's Undo still showed the right state: the snapshot it fell back to,
+taken earlier, happened to hold the same values. Each check now changes the state just before, so
+only the action's own step can give the right answer. **An undo check must make the step before it
+different (V128's lesson, a fixture must need the rule it tests).**
+
+**2. A first-draft suite checked `units` was not 0.** For the 12 × 8 slab as Residential, 0 is right:
+floor(69.12 / 75). The check now states the arithmetic.
+
+**3. Property panel rows wrapped.** The colour swatch beside the Usage dropdown, and the formula's
+name, expression and remove button on one row, did not fit the panel. The swatch went, and a formula
+has its own full-width line.
+
+### Deliberately not done
+
+- Colouring the model by usage: that is the lens, V136.
+- Jurisdiction-specific GFA exclusion lists.
+- Costs and a pro forma (formulas can already carry rates).
+
+### Suites
+
+- New: `bim_phase131_usages_browser_tests.py`, 56 checks in eight sections:
+  - the library;
+  - the formula reader (twelve closed-form cases, eight worded errors, no JavaScript);
+  - masses, checked against closed forms (a box, a cone sliced at mid-floor against its 20-gon, a
+    tube's ring);
+  - floors and rooms;
+  - the areas by usage;
+  - the Usage page;
+  - editing the library;
+  - the schedule, the commands, a mirrored copy and a reload.
+- Falsified by 32 variants, all 32 caught (`Phase/falsify_phase131.py`).
+- Amended: V73 (the project page has Areas by Usage and Usages before Statistics).
+
+### Full regression
+
+87 suites, 3065 checks, 0 failures. Falsification: V131 32 of 32, V130 21 of 21. The patch chain rebuilds the build byte for byte from
+`Phase/canvas_v10.html.bak_phase131_pre`.
+
+### State after V131
+
+    canvas_v10.html   1,817,723 bytes
+    sha256            14630df8e1b0b95de2f917793cbb76fc652cd16a7cedba5dcbf8d10ef3739e7f
+    markers           __acad3dV60 ... __acad3dV131, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
+                      __acad3dV121b

@@ -474,15 +474,6 @@ body.light-theme #a3d-tip strong{color:#202124}body.light-theme .a3d-tiptype b{c
 .a3d-pval input[type=checkbox]{margin:0}
 .a3d-pstatic{font-size:11px;color:#c3cad2}
 .a3d-prow.ro .a3d-pstatic{color:#7d8590}.a3d-pval{text-align:right}.a3d-pval select,.a3d-pval input[type=text]{text-align:left}.a3d-pval input[type=number]{text-align:right}.a3d-prow.ro{min-height:22px}.a3d-prow.ro .a3d-plabel{color:#868f99}.a3d-assets{padding:6px 8px 14px;font:11px/1.35 Inter,system-ui,sans-serif;color:#c3cad2}.a3d-asnote{padding:6px 8px;margin-bottom:6px;border-radius:5px;background:#22262b;color:#9aa3ad;font-size:10.5px}.a3d-asgrp{display:flex;align-items:center;justify-content:space-between;background:#262b31;border-radius:5px;padding:6px 9px;margin:8px 0 4px;font-size:10.5px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;color:#aeb8c2}.a3d-assub{font-weight:400;text-transform:none;letter-spacing:0;color:#7d8590}.a3d-asrow{display:flex;width:100%;align-items:center;justify-content:space-between;gap:8px;background:transparent;border:1px solid transparent;border-radius:5px;padding:6px 8px;color:#d5dae0;cursor:pointer;font:inherit;text-align:left}.a3d-asrow:hover{background:#2f353c;border-color:#3a4048}.a3d-asrow.off{opacity:.45;cursor:default}.a3d-asrow.off:hover{background:transparent;border-color:transparent}.a3d-asnm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.a3d-asmeta{flex:0 0 auto;color:#7d8590;font-size:10px}.a3d-asempty{padding:8px;color:#7d8590;font-size:10.5px}#a3d-railutil{display:flex;flex-direction:column;align-items:center;gap:2px;margin-bottom:6px}.a3d-ru{width:30px;height:30px;display:grid;place-items:center;background:transparent;border:1px solid transparent;border-radius:7px;color:#9aa3ad;cursor:pointer;padding:0}.a3d-ru svg{width:17px;height:17px}.a3d-ru:hover{background:rgba(255,255,255,.09);color:#fff}.a3d-ru.on{background:rgba(255,255,255,.12);color:#fff}#a3d-rupop{position:fixed;z-index:10000;display:none;min-width:194px;background:#22262b;border:1px solid #3a4048;border-radius:9px;padding:6px;box-shadow:0 10px 30px rgba(0,0,0,.5);font:12px/1.35 Inter,system-ui,sans-serif;color:#d5dae0}#a3d-rupop.open{display:block}.a3d-ruhd{font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#8b949e;padding:4px 8px 6px}.a3d-ruitem{display:block;width:100%;text-align:left;background:transparent;border:0;border-radius:6px;padding:7px 9px;color:#d5dae0;cursor:pointer;font:inherit}.a3d-ruitem:hover{background:#2f353c;color:#fff}.a3d-ruitem.on{background:#2c477d;color:#e4efff}.a3d-rusep{height:1px;background:#343a41;margin:5px 4px}.a3d-rurow{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 9px;color:#d5dae0}.a3d-rurow input[type=number]{width:62px;background:#1c2024;border:1px solid #3a4048;color:#e6eaef;border-radius:4px;padding:3px 5px;font:inherit}.a3d-rukeys{min-width:336px;max-height:64vh;overflow:auto;padding:0 2px 2px}.a3d-rkgrp{font-size:9.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#8b949e;padding:9px 8px 4px}.a3d-rkrow{display:flex;align-items:baseline;gap:10px;padding:4px 8px;border-radius:5px}.a3d-rkrow:hover{background:#2a2f35}.a3d-rkkeys{flex:0 0 96px;display:flex;align-items:center;gap:3px;justify-content:flex-end}.a3d-rkkeys kbd{font:600 10px/1 Inter,system-ui,sans-serif;color:#c7ced6;background:#1c2024;border:1px solid #3a4048;border-bottom-width:2px;border-radius:4px;padding:3px 5px;white-space:nowrap}.a3d-rkplus{color:#6e7781;font-size:9px}.a3d-rklab{flex:1;color:#c3cad2;font-size:11.5px;line-height:1.35}.a3d-rkfind{display:block;box-sizing:border-box;width:calc(100% - 8px);margin:0 4px 4px;background:#1c2024;border:1px solid #3a4048;color:#e6eaef;border-radius:6px;padding:6px 8px;font:inherit;font-size:11.5px}.a3d-rkfind:focus{outline:none;border-color:#4ea1ff}.a3d-rkempty{padding:10px 8px;color:#7d8590;font-size:11px}.a3d-rukeys [hidden]{display:none!important}
-.a3d-uswatch{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px;border:1px solid rgba(0,0,0,.35);flex:0 0 auto}
-.a3d-uhead .a3d-plabel{font-weight:600}
-.a3d-uarea .a3d-pstatic{line-height:1.45}
-.a3d-uerr{color:#ff9b8f;font-size:11px;margin-top:3px}
-.a3d-ukv{display:flex;align-items:center;gap:4px}
-.a3d-ukv input{flex:1 1 0;min-width:0;width:auto}
-.a3d-ukv span{color:#8b949e}
-.a3d-uexpr{display:block;width:100%;box-sizing:border-box;margin-top:4px;font-family:ui-monospace,Menlo,monospace}
-body.light-theme .a3d-uerr{color:#b3261e}
 .a3d-rkbar{display:flex;align-items:center;gap:14px;padding:8px 16px;border-bottom:1px solid #343a41;flex:0 0 auto;font-size:12px;color:#9aa3ad}
 .a3d-rkkinds{display:flex;background:#1c2024;border:1px solid #3a4048;border-radius:7px;padding:2px}
 .a3d-rkkind{border:0;background:transparent;color:#c3cad2;font:inherit;font-size:12px;padding:4px 12px;border-radius:5px;cursor:pointer}
@@ -849,9 +840,6 @@ body.a3d-tree-docked #a3d-leftpanel > .a3d-tree .a3d-palhd .a3d-palbtns{flex-wra
     ['ALIGNMENT',['ALIGN_CREATE','ALN'],'alignment','Make the selected open polyline an alignment: its vertices become the PIs'],
     ['PROFILEVIEW',['PV'],'profileview','Place the selected alignment\'s profile view where you click'],
     ['STATION',['STA','STAOFF'],'stationoffset','Read the station and offset of points along the selected alignment'],
-    /* __acad3dV131: usages */
-    ['USAGE',['US'],'usage','Give the selected rooms, floors or masses a usage (Residential, Office...); with none selected, the usages'],
-    ['USAGES',['USES','PROGRAM'],'usages','The usages: each one\'s colour, area ratios, floor-to-floor height, parameters and formulas'],
     ['INSERT',['I','DDINSERT'],'blockinsert','Insert a block: drag it from the library onto the drawing'],
     ['ASSETS',['ADCENTER','CONTENT','TOOLPALETTES'],'assets','Open the Assets library of models, blocks and templates']
   ];
@@ -11578,228 +11566,6 @@ try{
     if(o.t==='sketch')return 'Lines : Model Lines';
     return (TYPES[o.t]&&TYPES[o.t].n)?('Generic Models : '+TYPES[o.t].n):'Generic Models';
   }
-  /* ================= __acad3dV131: usages in Properties ================= */
-  var A3D_USAGE_OPEN=null;   /* the usage whose fields are open in the library, by id */
-  function bimUsageSelTargets(){
-    var ids=(A3D.selSet&&A3D.selSet.length)?A3D.selSet:(A3D.sel?[A3D.sel]:[]);
-    return ids.filter(function(id){return !!bimUsageTarget(objById(id));});
-  }
-  function bimUsagePct(x){return String(Math.round(x*1000)/10)+'%';}
-  function bimUsageNum(v){return String(Math.round(v*100)/100);}
-  function bimUsageArea(v){return bimDispNum(v,2)+' m\u00b2';}
-  function bimUsageSwatch(col){return '<span class="a3d-uswatch" style="background:'+bimEsc(col)+'"></span>';}
-  /* the names a formula can read at its place in the usage, and the first it reads that it cannot */
-  function bimUsageFormulaProblem(u,j){
-    var f=u.formulas[j],pz=bimExprParse(f.expr),known={},k,bad=null;
-    if(pz.error)return pz.error;
-    for(k in BIM_EXPR_NAMES)if(BIM_EXPR_NAMES.hasOwnProperty(k))known[k]=1;
-    (u.params||[]).forEach(function(p){known[String(p.key).toLowerCase()]=1;});
-    for(k=0;k<j;k++)known[String(u.formulas[k].key).toLowerCase()]=1;
-    (function walk(nd){
-      if(bad||!nd)return;
-      if(nd.v!==undefined&&!known[nd.v.toLowerCase()])bad='unknown name '+nd.v;
-      if(nd.neg)walk(nd.neg);
-      if(nd.a){walk(nd.a);walk(nd.b);}
-      if(nd.args)nd.args.forEach(walk);
-    })(pz.ast);
-    return bad;
-  }
-  function bimUsageOptionsHtml(cur){
-    var h='<option value=""'+(cur===''?' selected':'')+'>None</option>';
-    bimUsages().forEach(function(u){h+='<option value="'+bimEsc(u.id)+'"'+(u.id===cur?' selected':'')+'>'+bimEsc(u.name)+'</option>';});
-    if(cur==='__mixed')h+='<option value="__mixed" selected disabled>Mixed</option>';
-    return h;
-  }
-  /* the Usage page of a room, a floor or a mass */
-  function bimUsagePropsHtml(o){
-    var tg=bimUsageSelTargets(),many=tg.length>1,u=o.usage?bimUsageById(o.usage):null,r='',k;
-    var same=tg.every(function(id){var x=objById(id);return (x.usage||'')===(o.usage||'');});
-    r+=bimPropRow(many?'Usage ('+tg.length+' selected)':'Usage',
-      '<select data-propusage="set">'+bimUsageOptionsHtml(same?(o.usage||''):'__mixed')+'</select>');
-    if(!many&&u){
-      var m=bimUsageMeasure(o);
-      if(m.kind==='mass')r+=bimPropText('Floors',m.levels+' at '+bimUsageNum(u.ftf)+' m, '+bimDispNum(m.height,2)+' m tall');
-      if(m.kind!=='room'){
-        r+=bimPropText('GBA',bimUsageArea(m.GBA));
-        r+=bimPropText('GFA',bimUsageArea(m.GFA)+' ('+bimUsagePct(u.gfa)+' of GBA)');
-      }
-      r+=bimPropText('NSA',bimUsageArea(m.NSA)+(m.netMeasured?' (the room, measured)':' ('+bimUsagePct(u.nsa)+' of GFA)'));
-      for(k in m.values)if(m.values.hasOwnProperty(k))r+=bimPropText(k,m.errors[k]?('error: '+m.errors[k]):bimUsageNum(m.values[k]));
-    }
-    var h=bimPropGroup('Usage',r);
-    if(many)h+=bimUsageAreasHtml(tg,'Areas: the Selection');
-    return h;
-  }
-  /* the areas by usage, as a Properties group */
-  function bimUsageAreasHtml(ids,title){
-    var s=bimUsageSummary(ids),r='';
-    if(!s.rows.length)r+=bimPropText('None yet',ids?'nothing selected has a usage':'give a room, a floor or a mass a usage');
-    s.rows.forEach(function(g){
-      var k,v=[];
-      for(k in g.values)if(g.values.hasOwnProperty(k))v.push(k+' '+bimUsageNum(g.values[k]));
-      r+='<div class="a3d-prow ro a3d-uarea"><div class="a3d-plabel">'+bimUsageSwatch(g.color)+bimEsc(g.name)+'</div>'+
-        '<div class="a3d-pval"><span class="a3d-pstatic">'+g.count+' \u00b7 GBA '+bimDispNum(g.GBA,2)+' \u00b7 GFA '+bimDispNum(g.GFA,2)+
-        ' \u00b7 NSA '+bimDispNum(g.NSA,2)+' m\u00b2'+(v.length?'<br>'+bimEsc(v.join(', ')):'')+(g.errors?'<br>'+g.errors+' formula error'+(g.errors===1?'':'s'):'')+'</span></div></div>';
-    });
-    if(s.rows.length>1)r+=bimPropText('Total','GBA '+bimDispNum(s.total.GBA,2)+' \u00b7 GFA '+bimDispNum(s.total.GFA,2)+' \u00b7 NSA '+bimDispNum(s.total.NSA,2)+' m\u00b2');
-    return bimPropGroup(title,r);
-  }
-  /* the library: one line per usage, the open one's fields under it */
-  function bimUsageLibraryHtml(){
-    var L=bimUsages(),r='',i,j,u,id;
-    for(i=0;i<L.length;i++){
-      u=L[i];id=bimEsc(u.id);
-      r+='<div class="a3d-prow a3d-uhead"><div class="a3d-plabel">'+bimUsageSwatch(u.color)+bimEsc(u.name)+'</div><div class="a3d-pval">'+
-        '<span class="a3d-pstatic">GFA '+bimUsagePct(u.gfa)+' \u00b7 NSA '+bimUsagePct(u.nsa)+' \u00b7 '+bimUsageNum(u.ftf)+' m</span> '+
-        '<button type="button" class="a3d-pedit" data-propusageact="open:'+id+'" aria-expanded="'+(A3D_USAGE_OPEN===u.id?'true':'false')+'">'+(A3D_USAGE_OPEN===u.id?'Done':'Edit')+'</button></div></div>';
-      if(A3D_USAGE_OPEN!==u.id)continue;
-      r+=bimPropRow('Name','<input type="color" data-propusage="u:'+id+':color" value="'+bimEsc(u.color)+'" aria-label="Colour"> '+
-        '<input type="text" data-propusage="u:'+id+':name" value="'+bimEsc(u.name)+'" style="width:62%">');
-      r+=bimPropRow('GBA \u2192 GFA (%)','<input type="number" step="any" min="0" max="100" data-propusage="u:'+id+':gfa" value="'+bimUsageNum(u.gfa*100)+'">');
-      r+=bimPropRow('GFA \u2192 NSA (%)','<input type="number" step="any" min="0" max="100" data-propusage="u:'+id+':nsa" value="'+bimUsageNum(u.nsa*100)+'">');
-      r+=bimPropRow('Floor to Floor (m)','<input type="number" step="any" min="1" max="20" data-propusage="u:'+id+':ftf" value="'+bimUsageNum(u.ftf)+'">');
-      for(j=0;j<(u.params||[]).length;j++)
-        r+=bimPropRow('Parameter','<div class="a3d-ukv"><input type="text" data-propusage="p:'+id+':'+j+':key" value="'+bimEsc(u.params[j].key)+'" aria-label="Name">'+
-          '<span>=</span><input type="number" step="any" data-propusage="p:'+id+':'+j+':value" value="'+bimEsc(u.params[j].value)+'" aria-label="Value">'+
-          '<button type="button" class="a3d-bdel" data-propusageact="pdel:'+id+':'+j+'" title="Remove this parameter">\u00d7</button></div>');
-      for(j=0;j<(u.formulas||[]).length;j++){
-        var fp=bimUsageFormulaProblem(u,j);
-        r+=bimPropRow('Formula','<div class="a3d-ukv"><input type="text" data-propusage="f:'+id+':'+j+':key" value="'+bimEsc(u.formulas[j].key)+'" aria-label="Name"><span>=</span>'+
-          '<button type="button" class="a3d-bdel" data-propusageact="fdel:'+id+':'+j+'" title="Remove this formula">\u00d7</button></div>'+
-          '<input type="text" class="a3d-uexpr" data-propusage="f:'+id+':'+j+':expr" value="'+bimEsc(u.formulas[j].expr)+'" aria-label="Formula" spellcheck="false">'+
-          (fp?'<div class="a3d-uerr" role="alert">'+bimEsc(fp)+'</div>':''));
-      }
-      r+=bimPropRow('','<button type="button" class="a3d-pedit" data-propusageact="padd:'+id+'">Add parameter</button> '+
-        '<button type="button" class="a3d-pedit" data-propusageact="fadd:'+id+'">Add formula</button> '+
-        '<button type="button" class="a3d-pedit" data-propusageact="udel:'+id+'">Remove usage</button>');
-    }
-    r+=bimPropRow('','<button type="button" class="a3d-pedit" data-propusageact="uadd">Add usage</button>');
-    return r;
-  }
-  /* one change to one usage, one undo step; refused with its reason, nothing changed */
-  function bimUsageEdit(id,fn){
-    var L=bimUsages(),ix=-1,i;
-    for(i=0;i<L.length;i++)if(L[i].id===id)ix=i;
-    if(ix<0){a3dToast('That usage is gone');refreshProps();return false;}
-    var c=JSON.parse(JSON.stringify(L[ix])),err=fn(c);
-    if(err){a3dToast(err);refreshProps();return false;}
-    pushUndo();
-    bimUsages()[ix]=c;
-    refreshTree();refreshProps();paint();saveSoon();
-    return true;
-  }
-  function bimUsageUniqueKey(u,base){
-    var n=1,k=base;
-    while(bimUsageKeyProblem(u,k,null))k=base+(++n);
-    return k;
-  }
-  function bimUsageAssign(ids,usageId){
-    var u=usageId?bimUsageById(usageId):null,n=0;
-    if(usageId&&!u){a3dToast('There is no such usage');return 0;}
-    var objs=ids.map(objById).filter(function(o){return !!bimUsageTarget(o);});
-    if(!objs.length){a3dToast('Select a room, a floor or a mass to give it a usage');return 0;}
-    pushUndo();
-    objs.forEach(function(o){if(u)o.usage=u.id;else delete o.usage;n++;});
-    refreshTree();refreshProps();paint();saveSoon();
-    a3dToast(u?(u.name+' given to '+n+' object'+(n===1?'':'s')):('Usage cleared on '+n+' object'+(n===1?'':'s')));
-    return n;
-  }
-  function bimUsageAdd(name){
-    var L=bimUsages(),base=String(name||'Usage').slice(0,40)||'Usage',nm=base,n=1,i;
-    function taken(x){for(i=0;i<L.length;i++)if(L[i].name.toLowerCase()===x.toLowerCase())return true;return false;}
-    while(taken(nm))nm=base+' '+(++n);
-    pushUndo();
-    var u={id:'use-'+Date.now().toString(36)+'-'+(A3D.seq++),name:nm,color:BIM_SCHEME_COLS[L.length%BIM_SCHEME_COLS.length],
-      gfa:0.9,nsa:0.8,ftf:3.2,params:[],formulas:[]};
-    L.push(u);
-    A3D_USAGE_OPEN=u.id;
-    refreshTree();refreshProps();saveSoon();
-    return u.id;
-  }
-  function bimUsageRemove(id){
-    var L=bimUsages(),ix=-1,i,n=0;
-    for(i=0;i<L.length;i++)if(L[i].id===id)ix=i;
-    if(ix<0)return false;
-    pushUndo();
-    var nm=L[ix].name;
-    L.splice(ix,1);
-    for(i=0;i<A3D.objs.length;i++)if(A3D.objs[i].usage===id){delete A3D.objs[i].usage;n++;}
-    if(A3D_USAGE_OPEN===id)A3D_USAGE_OPEN=null;
-    refreshTree();refreshProps();paint();saveSoon();
-    a3dToast(nm+' removed'+(n?'; '+n+' object'+(n===1?' has':'s have')+' no usage now':''));
-    return true;
-  }
-  function bimUsagePropChange(ev){
-    var f=ev.target&&ev.target.closest?ev.target.closest('[data-propusage]'):null;
-    if(!f)return false;
-    var k=f.getAttribute('data-propusage'),v=f.value;
-    if(k==='set'){if(v!=='__mixed')bimUsageAssign(bimUsageSelTargets(),v||null);return true;}
-    var b=k.split(':'),kind=b[0],id=b[1];
-    if(kind==='u')return bimUsageEdit(id,function(u){
-      var fld=b[2],x;
-      if(fld==='name'){
-        x=String(v||'').replace(/\s+/g,' ').replace(/^ | $/g,'').slice(0,40);
-        if(!x)return 'A usage needs a name';
-        if(bimUsages().some(function(o){return o.id!==u.id&&o.name.toLowerCase()===x.toLowerCase();}))return 'There is already a usage called '+x;
-        u.name=x;return;
-      }
-      if(fld==='color'){if(!/^#[0-9a-fA-F]{6}$/.test(v))return 'That is not a colour';u.color=v.toLowerCase();return;}
-      x=parseFloat(v);
-      if(!isFinite(x))return 'That must be a number';
-      if(fld==='gfa'||fld==='nsa'){if(x<0||x>100)return 'A ratio is from 0 to 100%';u[fld]=x/100;return;}
-      if(fld==='ftf'){if(x<1||x>20)return 'A floor-to-floor height is from 1 to 20 m';u.ftf=x;return;}
-      return 'Unknown field';
-    });
-    var j=parseInt(b[2],10),part=b[3];
-    if(kind==='p')return bimUsageEdit(id,function(u){
-      var p=u.params[j];if(!p)return 'That parameter is gone';
-      if(part==='key'){var e=bimUsageKeyProblem(u,v,p);if(e)return e;p.key=v;return;}
-      var x=parseFloat(v);if(!isFinite(x))return 'A parameter is a number';p.value=x;
-    });
-    if(kind==='f')return bimUsageEdit(id,function(u){
-      var fo=u.formulas[j];if(!fo)return 'That formula is gone';
-      if(part==='key'){var e=bimUsageKeyProblem(u,v,fo);if(e)return e;fo.key=v;return;}
-      fo.expr=String(v||'').slice(0,200);   /* kept even when it does not read yet: its error is shown */
-    });
-    return false;
-  }
-  function bimUsagePropClick(ev){
-    var bt=ev.target&&ev.target.closest?ev.target.closest('[data-propusageact]'):null;
-    if(!bt)return false;
-    var a=bt.getAttribute('data-propusageact'),b=a.split(':'),id=b[1],j=parseInt(b[2],10);
-    if(a==='uadd'){bimUsageAdd('Usage');a3dToast('Usage added: name it and set its ratios');return true;}
-    if(b[0]==='open'){A3D_USAGE_OPEN=(A3D_USAGE_OPEN===id)?null:id;refreshProps();return true;}
-    if(b[0]==='udel'){bimUsageRemove(id);return true;}
-    if(b[0]==='padd')return bimUsageEdit(id,function(u){u.params=u.params||[];u.params.push({key:bimUsageUniqueKey(u,'rate'),value:0});});
-    if(b[0]==='fadd')return bimUsageEdit(id,function(u){u.formulas=u.formulas||[];u.formulas.push({key:bimUsageUniqueKey(u,'value'),expr:'GFA'});});
-    if(b[0]==='pdel')return bimUsageEdit(id,function(u){if(!u.params[j])return 'That parameter is gone';u.params.splice(j,1);});
-    if(b[0]==='fdel')return bimUsageEdit(id,function(u){if(!u.formulas[j])return 'That formula is gone';u.formulas.splice(j,1);});
-    return false;
-  }
-  /* USAGE: the selection's usage, in Properties; with nothing to give one to, the library */
-  function bimUsageCommand(){
-    var tg=bimUsageSelTargets();
-    if(!tg.length){
-      a3dToast('Select a room, a floor or a mass to give it a usage. The usages are below.');
-      bimUsageLibraryCommand(true);
-      return false;
-    }
-    A3D_PROP_GROUPS_OPEN['Usage']=true;
-    refreshProps();
-    var s=el.propsbody&&el.propsbody.querySelector('[data-propusage="set"]');
-    if(s){try{s.focus();s.scrollIntoView({block:'nearest'});}catch(eF){}}
-    return true;
-  }
-  /* USAGES: the library, with nothing selected */
-  function bimUsageLibraryCommand(quiet){
-    A3D.sel=null;A3D.sel2=null;A3D.selSet=[];
-    A3D_PROP_GROUPS_OPEN['Usages']=true;
-    refreshTree();refreshProps();paint();
-    var g=el.propsbody&&el.propsbody.querySelector('[data-a3dpgrp="Usages"]');
-    if(g){try{g.scrollIntoView({block:'start'});}catch(eS){}}
-    if(!quiet)a3dToast('The usages are in Properties: Edit one to change its ratios, parameters and formulas');
-    return true;
-  }
   /* __acad3dV73: the no-selection inspector. Project and Site are editable and write to the
      title block and site record that the sheet title block already prints. Level, Layer and
      Appearance are the three switches that change what the drawing shows, and each one already
@@ -11873,8 +11639,6 @@ try{
       h+=bimPropGroup('Floor Loads: '+bimEsc(lvA.name),lrows);
     }
     h+=bimAnalysisPropsHtml();   /* __acad3dV125: the model's Analysis page, beside its floor loads */
-    h+=bimUsageAreasHtml(null,'Areas by Usage');   /* __acad3dV131 */
-    h+=bimPropGroup('Usages',bimUsageLibraryHtml());
     h+=bimPropGroup('Statistics',srows);
     return h;
   }
@@ -12241,7 +12005,6 @@ try{
     h+=bimPropGroup('Dimensions',dims);
     if(bimIsFrameMember(o))h+=bimStructPropsHtml(o);   /* __acad3dV125 */
     if(bimIsAlignment(o))h+=bimAlignPropsHtml(o);       /* __acad3dV127 */
-    if(bimUsageTarget(o))h+=bimUsagePropsHtml(o);       /* __acad3dV131 */
 
     // ---- Sketch Constraints (V45) -- only for sketches, and only shown once at least one point
     // exists to constrain. Lists each stored constraint in plain English with a per-row delete,
@@ -18444,7 +18207,6 @@ try{
     var g=bimComputeTransformedGeometry(o,transformPt,{kind:'mirror',P1:P1,P2:P2});
     if(g.error)return g;
     var copy={id:'a3d-'+Date.now().toString(36)+'-'+(A3D.seq++),pos:bimObjOffset(o),col:o.col,layer:o.layer};   /* __acad3dV110: the geometry below is in o's own frame */
-    if(o.usage)copy.usage=o.usage;   /* __acad3dV131 */
     if(g.kind==='sketch'){copy.t='sketch';copy.pts=g.pts;copy.y=g.y;copy.closed=o.closed;A3D.counts.sketch=(A3D.counts.sketch||0)+1;copy.name=(o.name||'Sketch')+' mirror';
       if(o.bulges)copy.bulges=o.bulges.map(function(bv){return -bv;});}   /* __acad3dV110: arcs kept, reflected */
     else if(g.kind==='room'){A3D.counts.room=(A3D.counts.room||0)+1;copy.t='room';copy.name='Room_'+A3D.counts.room;copy.pts=g.pts;copy.y=g.y;copy.area=g.area;copy.levelId=o.levelId;}
@@ -18610,7 +18372,6 @@ try{
   }
   function bimBuildArrayCopyFromGeometry(o,g){
     var copy={id:'a3d-'+Date.now().toString(36)+'-'+(A3D.seq++),pos:bimObjOffset(o),col:o.col,layer:o.layer};   /* __acad3dV110: the geometry below is in o's own frame */
-    if(o.usage)copy.usage=o.usage;   /* __acad3dV131 */
     if(g.kind==='sketch'){copy.t='sketch';copy.pts=g.pts;copy.y=g.y;copy.closed=o.closed;copy.name=(o.name||'Sketch')+' copy';
       if(o.bulges)copy.bulges=o.bulges.slice();}   /* __acad3dV110: a turned arc is the same arc */
     else if(g.kind==='room'){A3D.counts.room=(A3D.counts.room||0)+1;copy.t='room';copy.name='Room_'+A3D.counts.room;copy.pts=g.pts;copy.y=g.y;copy.area=g.area;copy.levelId=o.levelId;}
@@ -23472,266 +23233,6 @@ try{
               finishCeiling:bimRoomField(o,'finishCeiling'),source:o.sourceType||'-'};   /* __acad3dV101 */
     });
   }
-  /* ================= __acad3dV131: usages and live areas =================
-     A usage is a set of assumptions (Giraffe's): a colour, the GBA->GFA and GFA->NSA ratios, the
-     floor-to-floor height a mass is stacked at, its own parameters and formulas. The library lives
-     in the project's types, so the undo, the browser store, the project file and the project tabs
-     all carry it without a list of their own. */
-  var BIM_USAGE_DEFAULTS=[
-    {id:'use-res',name:'Residential',color:'#e8a33d',gfa:0.9,nsa:0.8,ftf:3.1,
-      params:[{key:'unitSize',value:75}],formulas:[{key:'units',expr:'floor(NSA / unitSize)'}]},
-    {id:'use-off',name:'Office',color:'#4e8fd6',gfa:0.9,nsa:0.85,ftf:3.6,params:[],formulas:[]},
-    {id:'use-ret',name:'Retail',color:'#d6584e',gfa:0.95,nsa:0.9,ftf:4.5,params:[],formulas:[]},
-    {id:'use-hot',name:'Hotel',color:'#9a6fd0',gfa:0.9,nsa:0.65,ftf:3.2,
-      params:[{key:'keySize',value:30}],formulas:[{key:'keys',expr:'floor(NSA / keySize)'}]},
-    {id:'use-car',name:'Parking',color:'#8a9099',gfa:0.95,nsa:0,ftf:3,
-      params:[{key:'bayArea',value:30}],formulas:[{key:'bays',expr:'floor(GFA / bayArea)'}]}
-  ];
-  /* the names a formula can always read, and the functions it can call */
-  var BIM_EXPR_NAMES={gba:1,gfa:1,nsa:1,levels:1,height:1,footprint:1};
-  var BIM_EXPR_FN={min:Math.min,max:Math.max,round:Math.round,floor:Math.floor,ceil:Math.ceil,abs:Math.abs,sqrt:Math.sqrt};
-  function bimUsages(){
-    bimEnsureTypes();
-    if(!Array.isArray(A3D.types.usage))A3D.types.usage=JSON.parse(JSON.stringify(BIM_USAGE_DEFAULTS));
-    return A3D.types.usage;
-  }
-  function bimUsageById(id){
-    var L=bimUsages(),i;
-    for(i=0;i<L.length;i++)if(L[i].id===id)return L[i];
-    return null;
-  }
-  /* what a usage can be given to: a room, a floor slab, or a mass (a primitive, or a solid that is
-     no building element -- a pad) */
-  function bimUsageTarget(o){
-    if(!o)return '';
-    if(o.t==='room'&&o.pts)return 'room';
-    if(o.t==='solid'&&o.bim&&o.bim.type==='floor'&&o.bim.profile)return 'floor';
-    if(TYPES[o.t]&&o.prm)return 'mass';
-    if(o.t==='solid'&&o.mesh&&(!o.bim||!o.bim.type))return 'mass';
-    return '';
-  }
-  /* ---- the plan area of a solid's cross-section at a world elevation ----
-     Each triangle the plane crosses gives a segment, its ends computed from each edge's lower vertex
-     index so two triangles sharing an edge give the same point; the segments chain into loops, and
-     a loop inside an odd number of others is a hole. */
-  function bimTriSliceY(m,ia,ib,ic,y){
-    var I=[ia,ib,ic],pts=[],k;
-    for(k=0;k<3;k++){
-      var a=I[k],b=I[(k+1)%3],lo=Math.min(a,b),hi=Math.max(a,b),P=m.v[lo],Q=m.v[hi];
-      var dp=P[1]-y,dq=Q[1]-y;
-      if((dp>=0)===(dq>=0))continue;
-      var s=dp/(dp-dq);
-      pts.push([P[0]+(Q[0]-P[0])*s,y,P[2]+(Q[2]-P[2])*s]);
-    }
-    return pts.length===2?pts:null;
-  }
-  function bimMeshSliceArea(o,y){
-    var m=meshOf(o);
-    if(!m||!m.f||!m.v)return 0;
-    var q=bimObjOffset(o),ly=y-q[1],edges=[],i,j,fc,seg;
-    for(i=0;i<m.f.length;i++){
-      fc=m.f[i];
-      for(j=2;j<fc.length;j++){seg=bimTriSliceY(m,fc[0],fc[j-1],fc[j],ly);if(seg)edges.push(seg);}
-    }
-    var loops=bimChainEdgesToLoops(edges),polys=[],area=0,d;
-    for(i=0;i<loops.length;i++)polys.push(loops[i].map(function(p){return [p[0],p[2]];}));
-    for(i=0;i<polys.length;i++){
-      var a=bimPolyArea(polys[i]);
-      if(!(a>1e-9))continue;
-      d=0;
-      for(j=0;j<polys.length;j++)if(j!==i&&bimPointInPoly(polys[i][0],polys[j]))d++;
-      area+=(d%2)?-a:a;
-    }
-    return Math.max(0,area);
-  }
-  /* the level a floor starting at world elevation y belongs to: the highest at or below it */
-  function bimLevelAtElev(y){
-    var best=null,low=null,i,lv;
-    for(i=0;i<A3D.levels.length;i++){
-      lv=A3D.levels[i];
-      if(!low||lv.elev<low.elev)low=lv;
-      if(lv.elev<=y+1e-6&&(!best||lv.elev>best.elev))best=lv;
-    }
-    return (best||low||{id:null}).id;
-  }
-  /* ---- one object, measured ---- */
-  function bimUsageMeasure(o){
-    var kind=bimUsageTarget(o),u=(kind&&o.usage)?bimUsageById(o.usage):null,k;
-    var r={id:o?o.id:null,name:o?o.name:'',kind:kind,usage:u?u.id:null,floors:[],GBA:0,GFA:0,NSA:0,
-           levels:0,height:0,footprint:0,netMeasured:false,values:{},errors:{}};
-    if(!kind)return r;
-    if(kind==='room'){
-      r.NSA=o.area>0?o.area:0;r.footprint=r.NSA;r.levels=1;r.netMeasured=true;
-      r.floors.push({levelId:o.levelId||null,gba:0,gfa:0,nsa:r.NSA});
-    }else if(kind==='floor'){
-      var fa=bimPolyArea(o.bim.profile);
-      r.GBA=fa;r.footprint=fa;r.levels=1;
-      r.floors.push({levelId:o.bim.levelId||null,gba:fa});
-    }else{
-      var bb=objBBox(o);
-      if(!bb)return r;
-      var h=bb.mx[1]-bb.mn[1],ftf=(u&&u.ftf>0)?u.ftf:3,n=Math.max(1,Math.floor(h/ftf+1e-6));
-      r.height=h;r.levels=n;
-      for(k=0;k<n;k++){
-        var y0=bb.mn[1]+k*ftf,band=Math.min(ftf,h-k*ftf),a=bimMeshSliceArea(o,y0+band/2);
-        r.floors.push({levelId:bimLevelAtElev(y0),gba:a});
-        r.GBA+=a;
-      }
-      r.footprint=r.floors.length?r.floors[0].gba:0;
-    }
-    if(u&&kind!=='room'){
-      r.GFA=r.GBA*u.gfa;r.NSA=r.GFA*u.nsa;
-      for(k=0;k<r.floors.length;k++){r.floors[k].gfa=r.floors[k].gba*u.gfa;r.floors[k].nsa=r.floors[k].gfa*u.nsa;}
-    }
-    if(u)bimUsageValues(u,r);
-    return r;
-  }
-  /* ---- formulas: our own reader. A parse error and an evaluation error each say what is wrong. ---- */
-  function bimExprParse(src){
-    var s=String(src==null?'':src),i=0,toks=[],c;
-    while(i<s.length){
-      c=s.charAt(i);
-      if(/\s/.test(c)){i++;continue;}
-      var mn=/^(\d+\.?\d*(?:[eE][+-]?\d+)?|\.\d+(?:[eE][+-]?\d+)?)/.exec(s.slice(i));
-      if(mn){toks.push({t:'n',v:parseFloat(mn[1])});i+=mn[1].length;continue;}
-      var mi=/^[A-Za-z_][A-Za-z0-9_]*/.exec(s.slice(i));
-      if(mi){toks.push({t:'i',v:mi[0]});i+=mi[0].length;continue;}
-      if('+-*/^(),'.indexOf(c)>=0){toks.push({t:c});i++;continue;}
-      return {error:'cannot read "'+c+'"'};
-    }
-    if(!toks.length)return {error:'empty'};
-    var p=0;
-    function peek(){return toks[p]||{t:''};}
-    function fail(m){throw {bimExpr:m};}
-    function expr(){var a=term();while(peek().t==='+'||peek().t==='-'){var op=toks[p++].t;a={op:op,a:a,b:term()};}return a;}
-    function term(){var a=unary();while(peek().t==='*'||peek().t==='/'){var op=toks[p++].t;a={op:op,a:a,b:unary()};}return a;}
-    function unary(){if(peek().t==='-'){p++;return {neg:unary()};}if(peek().t==='+'){p++;return unary();}return power();}
-    function power(){var a=primary();if(peek().t==='^'){p++;return {op:'^',a:a,b:unary()};}return a;}
-    function primary(){
-      var tk=toks[p];
-      if(!tk)fail('ends too soon');
-      if(tk.t==='n'){p++;return {n:tk.v};}
-      if(tk.t==='i'){
-        p++;
-        if(peek().t==='('){
-          var fn=tk.v.toLowerCase(),args=[];
-          if(!BIM_EXPR_FN[fn])fail('unknown function '+tk.v);
-          p++;
-          if(peek().t!==')'){args.push(expr());while(peek().t===','){p++;args.push(expr());}}
-          if(peek().t!==')')fail('a bracket is not closed');
-          p++;
-          if(!args.length)fail(tk.v+' needs a value');
-          return {fn:fn,args:args};
-        }
-        return {v:tk.v};
-      }
-      if(tk.t==='('){p++;var e=expr();if(peek().t!==')')fail('a bracket is not closed');p++;return e;}
-      fail('unexpected "'+tk.t+'"');
-    }
-    try{
-      var ast=expr();
-      if(p<toks.length)fail('unexpected "'+(toks[p].t==='n'?toks[p].v:(toks[p].v||toks[p].t))+'"');
-      return {ast:ast};
-    }catch(eX){
-      if(eX&&eX.bimExpr)return {error:eX.bimExpr};
-      throw eX;
-    }
-  }
-  function bimExprEval(ast,vars){
-    function ev(nd){
-      if(nd.n!==undefined)return nd.n;
-      if(nd.v!==undefined){
-        var k=nd.v.toLowerCase();
-        if(!vars.hasOwnProperty(k))throw {bimExpr:'unknown name '+nd.v};
-        var vv=vars[k];
-        if(vv===null||!isFinite(vv))throw {bimExpr:nd.v+' has no value'};
-        return vv;
-      }
-      if(nd.neg)return -ev(nd.neg);
-      if(nd.fn){var as=nd.args.map(ev);return BIM_EXPR_FN[nd.fn].apply(null,as);}
-      var a=ev(nd.a),b=ev(nd.b);
-      if(nd.op==='+')return a+b;
-      if(nd.op==='-')return a-b;
-      if(nd.op==='*')return a*b;
-      if(nd.op==='/'){if(b===0)throw {bimExpr:'divides by zero'};return a/b;}
-      return Math.pow(a,b);
-    }
-    try{
-      var r=ev(ast);
-      if(!isFinite(r))return {error:'is not a finite number'};
-      return {value:r};
-    }catch(eE){
-      if(eE&&eE.bimExpr)return {error:eE.bimExpr};
-      throw eE;
-    }
-  }
-  function bimExpr(src,vars){
-    var pz=bimExprParse(src);
-    return pz.error?pz:bimExprEval(pz.ast,vars||{});
-  }
-  /* a parameter's or formula's name: a word, not a name the formulas already read */
-  function bimUsageKeyProblem(u,key,skip){
-    if(!/^[A-Za-z_][A-Za-z0-9_]*$/.test(key||''))return 'a name is a word: letters, digits and _';
-    var lk=key.toLowerCase(),i;
-    if(BIM_EXPR_NAMES[lk])return key+' is one of the areas';
-    if(BIM_EXPR_FN[lk])return key+' is a function';
-    var all=(u.params||[]).concat(u.formulas||[]);
-    for(i=0;i<all.length;i++)if(all[i]!==skip&&String(all[i].key).toLowerCase()===lk)return key+' is used twice';
-    return '';
-  }
-  /* the usage's formulas for one measured object, in order: each can read the ones before it */
-  function bimUsageValues(u,r){
-    var vars={gba:r.GBA,gfa:r.GFA,nsa:r.NSA,levels:r.levels,height:r.height,footprint:r.footprint},i,f;
-    for(i=0;i<(u.params||[]).length;i++)vars[String(u.params[i].key).toLowerCase()]=+u.params[i].value;
-    for(i=0;i<(u.formulas||[]).length;i++){
-      f=u.formulas[i];
-      var ev=bimExpr(f.expr,vars);
-      if(ev.error){r.errors[f.key]=ev.error;vars[String(f.key).toLowerCase()]=null;r.values[f.key]=null;}
-      else{r.values[f.key]=ev.value;vars[String(f.key).toLowerCase()]=ev.value;}
-    }
-    return r;
-  }
-  /* ---- the areas by usage: the selection's, or the whole project's ---- */
-  function bimUsageSummary(ids){
-    var objs=ids?ids.map(objById).filter(function(o){return !!o;}):A3D.objs,L=bimUsages(),by={},i,k,o,r,g;
-    for(i=0;i<objs.length;i++){
-      o=objs[i];
-      if(!bimUsageTarget(o)||!o.usage||!bimUsageById(o.usage))continue;
-      r=bimUsageMeasure(o);
-      g=by[r.usage]||(by[r.usage]={usage:r.usage,count:0,GBA:0,GFA:0,NSA:0,values:{},errors:0,levels:{}});
-      g.count++;g.GBA+=r.GBA;g.GFA+=r.GFA;g.NSA+=r.NSA;
-      for(k in r.values)if(r.values.hasOwnProperty(k)&&r.values[k]!==null)g.values[k]=(g.values[k]||0)+r.values[k];
-      for(k in r.errors)if(r.errors.hasOwnProperty(k))g.errors++;
-      r.floors.forEach(function(fl){
-        var lk=fl.levelId||'',lg=g.levels[lk]||(g.levels[lk]={levelId:fl.levelId,GBA:0,GFA:0,NSA:0,objs:{}});
-        lg.GBA+=fl.gba||0;lg.GFA+=fl.gfa||0;lg.NSA+=fl.nsa||0;lg.objs[r.id]=1;
-      });
-    }
-    var rows=[],tot={count:0,GBA:0,GFA:0,NSA:0};
-    for(i=0;i<L.length;i++){
-      g=by[L[i].id];
-      if(!g)continue;
-      g.name=L[i].name;g.color=L[i].color;
-      rows.push(g);
-      tot.count+=g.count;tot.GBA+=g.GBA;tot.GFA+=g.GFA;tot.NSA+=g.NSA;
-    }
-    return {rows:rows,total:tot};
-  }
-  /* the schedule: per usage and level, then the usage's total with its formulas' sums */
-  function bimUsageScheduleRows(){
-    var s=bimUsageSummary(null),out=[],i;
-    for(i=0;i<s.rows.length;i++){
-      var g=s.rows[i],lv,k,vals=[];
-      for(lv=0;lv<A3D.levels.length;lv++){
-        var lg=g.levels[A3D.levels[lv].id];
-        if(lg)out.push({usage:g.name,level:A3D.levels[lv].name,objects:Object.keys(lg.objs).length,gba:lg.GBA,gfa:lg.GFA,nsa:lg.NSA,values:''});
-      }
-      for(k in g.values)if(g.values.hasOwnProperty(k))vals.push(k+' '+String(Math.round(g.values[k]*100)/100));
-      out.push({usage:g.name,level:'All levels',objects:g.count,gba:g.GBA,gfa:g.GFA,nsa:g.NSA,
-        values:vals.join(', ')+(g.errors?(vals.length?'; ':'')+g.errors+' formula error'+(g.errors===1?'':'s'):'')});
-    }
-    return out;
-  }
   function bimBuildAreaSchedule(){
     var out=[],i,a;
     for(i=0;i<A3D.levels.length;i++){
@@ -25079,7 +24580,6 @@ try{
     alignment:{label:'Alignment',build:bimAlignScheduleRows,cols:[{key:'alignment',label:'Alignment'},{key:'pi',label:'PI'},{key:'station',label:'Station'},{key:'delta',label:'Deflection (\u00b0)'},{key:'turn',label:'Turn'},{key:'radius',label:'Radius (m)',fmt:3},{key:'tangent',label:'T (m)',fmt:3},{key:'length',label:'L (m)',fmt:3},{key:'external',label:'E (m)',fmt:3},{key:'pc',label:'PC'},{key:'pt',label:'PT'},{key:'note',label:'Note'}]},   /* __acad3dV127 */
     profile:{label:'Profile',build:bimProfileScheduleRows,cols:[{key:'alignment',label:'Alignment'},{key:'pvi',label:'PVI'},{key:'station',label:'Station'},{key:'elev',label:'Elevation (m)',fmt:3},{key:'gin',label:'Grade in (%)',fmt:3},{key:'gout',label:'Grade out (%)',fmt:3},{key:'L',label:'Curve L (m)',fmt:2},{key:'K',label:'K',fmt:2},{key:'kind',label:'Curve'},{key:'turn',label:'High / low point'},{key:'note',label:'Note'}]},
     reactions:{label:'Reactions',build:bimReactionRows,cols:[{key:'at',label:'At'},{key:'support',label:'Support'},{key:'combo',label:'Combination'},{key:'fx',label:'Fx (kN)',fmt:1},{key:'fy',label:'Fy (kN)',fmt:1},{key:'fz',label:'Fz (kN)',fmt:1},{key:'mx',label:'Mx (kN\u00b7m)',fmt:1},{key:'my',label:'My (kN\u00b7m)',fmt:1},{key:'mz',label:'Mz (kN\u00b7m)',fmt:1},{key:'note',label:'Note'}]},
-    usage:{label:'Areas by Usage',build:bimUsageScheduleRows,cols:[{key:'usage',label:'Usage'},{key:'level',label:'Level'},{key:'objects',label:'Objects'},{key:'gba',label:'GBA (m\u00b2)',fmt:2},{key:'gfa',label:'GFA (m\u00b2)',fmt:2},{key:'nsa',label:'NSA (m\u00b2)',fmt:2},{key:'values',label:'Formulas'}]},   /* __acad3dV131 */
     arealevel:{label:'Areas by Level',build:bimBuildAreaSchedule,cols:[{key:'level',label:'Level'},{key:'gross',label:'Gross (m\u00b2)',fmt:2},{key:'net',label:'Net (m\u00b2)',fmt:2},{key:'efficiency',label:'Efficiency (%)',fmt:1},{key:'rooms',label:'Rooms'},{key:'occupants',label:'Occupant Load'},{key:'note',label:'Note'}]}   /* __acad3dV105b */
   };
   /* __acad3dV74: schedules are a REGISTRY now, not a literal plus two hand-kept lists.
@@ -29205,8 +28705,6 @@ try{
     'bim:foundslab':ric('<rect x="2" y="12" width="20" height="7"/><path d="M6 12V8M18 12V8"/>'),
     'bim:property':ric('<path d="M3 17L8 4l13 5-4 11z" stroke-dasharray="5 2 1.5 2"/>'),   /* __acad3dV103 */
     'bim:propshape':ric('<rect x="4" y="5" width="15" height="13" stroke-dasharray="5 2 1.5 2"/><path d="M8 11h7"/>'),
-    'bim:usage':ric('<rect x="5" y="4" width="14" height="5" rx="1"/><rect x="5" y="10" width="14" height="5" rx="1"/><rect x="5" y="16" width="14" height="4" rx="1"/><path d="M8 6.5h4M8 12.5h7"/>'),   /* __acad3dV131 */
-    'bim:usages':ric('<rect x="4" y="4" width="5" height="5" rx="1"/><path d="M12 6.5h8"/><rect x="4" y="10" width="5" height="5" rx="1"/><path d="M12 12.5h8"/><rect x="4" y="16" width="5" height="4" rx="1"/><path d="M12 18h8"/>'),
     'bim:alignment':ric('<path d="M3 19c5 0 5-7 9-7s4-7 9-7" stroke-dasharray="6 2 1.5 2"/><path d="M6 17.5l1 2M11 13l1.6 1.4M16 7.2l.6 1.8"/>'),   /* __acad3dV127 */
     'bim:truenorth':ric('<circle cx="12" cy="12" r="8"/><path d="M12 5l3 9-3-2-3 2z"/>'),
     'bim:analyze':ric('<path d="M3 20h18"/><path d="M6 20V9M18 20V9M4 9h16"/><path d="M8 13q4 5 8 0" stroke-dasharray="2 2"/>'),   /* __acad3dV125 */
@@ -29508,7 +29006,7 @@ try{
         {act:'bim:window',label:'Window'},
         {act:'bim:component',label:'Component',menu:[['bim:component','Place a Component'],['bim:famsave','Save Selection as Family'],['bim:famimport','Import Family (OBJ/STL)']]}
       ],small:['bim:column','bim:roof','bim:ceiling','bim:floor','bim:stair']},
-      {t:'Room & Area',small:['bim:room','bim:tagroom','bim:tagallrooms','bim:usage']},   /* __acad3dV131: Usage */
+      {t:'Room & Area',small:['bim:room','bim:tagroom','bim:tagallrooms']},
       {t:'Datum',small:['bim:level','bim:grid']},
       {t:'Work Plane',small:['v:top','v:front','v:right']}
     ]},
@@ -29564,7 +29062,6 @@ try{
     ]},
     {id:'a3dmassing',name:'Massing & Site',panels:[
       {t:'Conceptual Mass',small:['box','cyl','sphere','cone','torus']},
-      {t:'Program',small:['bim:usage','bim:usages']},   /* __acad3dV131 */
       {t:'Model by Face',small:['tube','prism','wedge','ellipsoid']},
       {t:'Site',small:['bim:property','bim:propshape','bim:truenorth','bim:alignment']}   /* __acad3dV103; __acad3dV127: Alignment */
     ]},
@@ -29649,7 +29146,7 @@ try{
     var L={'s:rect':'Rect','s:circle':'Circle','s:poly':'Polyline','p:pad':'Pad','p:pocket':'Pocket','bim:wall':'Wall','bim:floor':'Floor','bim:room':'Room','bim:roof':'Roof','bim:stair':'Stair','bim:column':'Column','bim:door':'Door','bim:window':'Window','bim:dim':'Dimension','bim:text':'Text','bim:section':'Section','bim:ceiling':'Ceiling','bim:dimang':'Angular','bim:dimrad':'Radius','bim:dimdia':'Diameter','bim:leader':'Leader','m:exportdxf':'DXF','m:exportsvg':'SVG','bim:mirror':'Mirror','bim:rotate':'Rotate','bim:polararray':'Polar Array','bim:joinwalls':'Join Walls','bim:extend':'Extend','bim:arc':'Arc','bim:fillet':'Fillet','bim:chamfer':'Chamfer','bim:break':'Break','bim:lengthen':'Lengthen','bim:scale':'Scale','b:union':'Union','b:cut':'Cut','b:isect':'Intersect','v:home':'Home','v:fit':'Fit','v:top':'Top','v:front':'Front','v:right':'Right','v:iso':'Iso','m:del':'Delete','m:desel':'Deselect','m:dup':'Duplicate','m:array':'Array','m:exportpng':'PNG','m:exportpdf':'PDF','m:exitsection':'Exit Section','m:flipsection':'Flip Section','m:saveproj':'Save Project','m:openproj':'Open\u2026',
       'bim:component':'Component','bim:famsave':'Save Family','bim:famimport':'Load Family',
       'bim:tagroom':'Tag Room','bim:tagallrooms':'Tag All Rooms','bim:tagcat':'Tag by Category','bim:level':'Level','bim:grid':'Grid',
-      'bim:beam':'Beam','bim:analyze':'Analyze','bim:truss':'Truss','bim:brace':'Brace','bim:foundwall':'Wall Foundation','bim:footing':'Isolated Footing','bim:property':'Property Line','bim:propshape':'Property from Shape','bim:truenorth':'True North','bim:alignment':'Alignment','bim:usage':'Usage','bim:usages':'Usages',
+      'bim:beam':'Beam','bim:analyze':'Analyze','bim:truss':'Truss','bim:brace':'Brace','bim:foundwall':'Wall Foundation','bim:footing':'Isolated Footing','bim:property':'Property Line','bim:propshape':'Property from Shape','bim:truenorth':'True North','bim:alignment':'Alignment',
       'bim:foundslab':'Foundation Slab','bim:rebar':'Rebar','bim:linkifc':'Link IFC','bim:linkcad':'Link CAD',
       'bim:importcad':'Import CAD','bim:saveview':'Save View','bim:sheet':'Sheet','bim:titleblock':'Title Block',
       'bim:uipanels':'User Interface','bim:trim':'Trim','bim:offset':'Offset','bim:align':'Align',
@@ -29812,7 +29309,7 @@ try{
   var BIM_ACT_CMD={'bim:wall':'wall','s:poly':'poly','s:rect':'rect','s:circle':'circle','bim:arc':'arc','bim:floor':'floorTool',
     'bim:room':'room','bim:tagroom':'roomtag','bim:tagallrooms':'roomtagall','bim:footing':'footing','bim:foundwall':'wallfoundation',
     'bim:foundslab':'foundslab','bim:property':'propertyline','bim:propshape':'propertyshape','bim:truenorth':'truenorth',
-    'bim:alignment':'alignment','bim:usage':'usage','bim:usages':'usages','bim:roof':'roofTool','bim:stair':'stairTool','bim:dim':'bimDims','bim:text':'text',
+    'bim:alignment':'alignment','bim:roof':'roofTool','bim:stair':'stairTool','bim:dim':'bimDims','bim:text':'text',
     'bim:section':'sectionTool','bim:ceiling':'ceilingTool','bim:offset':'offset','bim:trim':'trim','bim:align':'align',
     'bim:leader':'leader','bim:beam':'beamTool','bim:analyze':'analyze','bim:grid':'gridline','bim:column':'columnTool',
     'bim:door':'doorTool','bim:window':'windowTool','v:fit':'zoomFit','m:del':'del','m:dup':'duplicate','m:array':'arrayRect',
@@ -29865,8 +29362,6 @@ try{
     REDO:'again forward',ROTATE:'turn spin angle',SCALE:'resize size bigger smaller',PLOT:'print pdf paper',SAVE:'export file download',
     OPEN:'load file import project',NEW:'project file blank',RECTANG:'box square',CIRCLE:'round',PLINE:'polyline path lines',
     LINE:'segment',SELECTALL:'everything select',CLEAR:'deselect none',ANALYZE:'structural frame solve stiffness forces moments deflection',
-    USAGE:'program use department gross floor area gfa gba nsa net saleable lettable yield efficiency residential office retail',   /* __acad3dV131 */
-    USAGES:'program library gross net area ratios efficiency formulas parameters units',
     ANALYZEOFF:'hide analysis',LOAD:'force kn',SUPPORT:'fixed pinned boundary base',ALIGNMENT:'road route centerline centreline chainage highway',
     STATION:'chainage offset',PROFILEVIEW:'vertical profile grade',SURVEY:'terrain topography topo tin contours ground',
     PROPERTYLINE:'parcel lot boundary site',GRIDLINE:'axis grid line',ROOM:'space area',SECTIONTOOL:'cut elevation',SECTION:'cut elevation',
@@ -30188,9 +29683,7 @@ try{
     if(act==='bim:property'){openPropertyDlg(null);return;}              /* __acad3dV103 */
     if(act==='bim:propshape'){bimPropertyFromSketch(objById(A3D.sel));return;}
     if(act==='bim:truenorth'){openTrueNorthDlg();return;}
-    if(act==='bim:alignment'){bimAlignmentCommand();return;}
-    if(act==='bim:usage'){bimUsageCommand();return;}                    /* __acad3dV131 */
-    if(act==='bim:usages'){bimUsageLibraryCommand();return;}            /* __acad3dV127 */
+    if(act==='bim:alignment'){bimAlignmentCommand();return;}            /* __acad3dV127 */
     if(act==='bim:tagallrooms'){bimTagAllRooms();return;}     /* __acad3dV101 */
     if(act==='bim:roof'){startRoofTool();return;}
     if(act==='bim:stair'){startStairTool();return;}
@@ -30878,13 +30371,6 @@ try{
     if(el.propsbody)el.propsbody.addEventListener('click',function(ev){
       try{bimStructPropClick(ev);}catch(eSC){console.warn('[BIM] Load edit failed',eSC);a3dToast('That load could not be changed - see the console');}
     });
-    /* __acad3dV131: the Usage page and the usages */
-    if(el.propsbody)el.propsbody.addEventListener('change',function(ev){
-      try{bimUsagePropChange(ev);}catch(eUC){console.warn('[BIM] Usage edit failed',eUC);a3dToast('That could not be changed - see the console');}
-    });
-    if(el.propsbody)el.propsbody.addEventListener('click',function(ev){
-      try{bimUsagePropClick(ev);}catch(eUK){console.warn('[BIM] Usage edit failed',eUK);a3dToast('That could not be changed - see the console');}
-    });
     /* __acad3dV127: the Alignment and Profile pages */
     if(el.propsbody)el.propsbody.addEventListener('change',function(ev){
       try{bimAlignPropChange(ev);}catch(eAL){console.warn('[BIM] Alignment edit failed',eAL);a3dToast('That could not be changed - see the console');}
@@ -31525,9 +31011,7 @@ try{
     presspull:function(){bimPressPullCommand();},   /* __acad3dV123 */
     blockmake:function(){openSaveBlockDlg();},                   /* __acad3dV124 */
     analyze:function(){bimAnalyzeCommand();},                    /* __acad3dV125 */
-    alignment:function(){bimAlignmentCommand();},
-    usage:function(){bimUsageCommand();},                        /* __acad3dV131 */
-    usages:function(){bimUsageLibraryCommand();},                /* __acad3dV127 */
+    alignment:function(){bimAlignmentCommand();},                /* __acad3dV127 */
     profileview:function(){bimStartProfileViewTool();},
     stationoffset:function(){bimStartStationTool();},
     analyzeoff:function(){bimAnalyzeOff();},
@@ -31605,20 +31089,6 @@ try{
   window.__a3dDockTip=function(spec){return bimDockTipData(spec);};
   window.__a3dDockTipShown=function(){var e=document.getElementById('a3d-tip');return e&&e.classList.contains('show')?e.textContent:null;};
   window.__a3dDockLabels=function(on){if(on!==undefined)bimSetDockLabels(!!on);return bimDockLabelsOn();};
-  /* __acad3dV131: usages and live areas */
-  window.__a3dUsages=function(){return JSON.parse(JSON.stringify(bimUsages()));};
-  window.__a3dUsageDefaults=function(){return JSON.parse(JSON.stringify(BIM_USAGE_DEFAULTS));};
-  window.__a3dUsageAssign=function(ids,usageId){return bimUsageAssign(ids,usageId||null);};
-  window.__a3dUsageAdd=function(name){return bimUsageAdd(name);};
-  window.__a3dUsageRemove=function(id){return bimUsageRemove(id);};
-  window.__a3dUsageMeasure=function(id){var o=objById(id);return o?JSON.parse(JSON.stringify(bimUsageMeasure(o))):null;};
-  window.__a3dUsageSummary=function(ids){return JSON.parse(JSON.stringify(bimUsageSummary(ids||null)));};
-  window.__a3dUsageOf=function(id){var o=objById(id);return o?(o.usage||null):null;};
-  window.__a3dExpr=function(src,vars){return bimExpr(src,vars||{});};
-  window.__a3dSliceArea=function(id,y){var o=objById(id);return o?bimMeshSliceArea(o,y):null;};
-  window.__acad3dV131='usagelibrary,usageintypes,usageonroomfloormass,massslicedbyfloor,floorslabgross,roomnetmeasured,'+
-    'gbagfansa,formulaevaluator,formulaerrors,usageparams,usagepage,selectionareas,projectareas,usageeditor,usageschedule,'+
-    'usagecommand,usagescommand,usageribbon,mirrorkeepsusage';
   /* __acad3dV130: every tool in the panel, and the dock's pins */
   window.__a3dDockPins=function(disc){return bimDockPins(disc||A3D_DISC_CUR);};
   window.__a3dSetDockPin=function(act,on){return bimSetDockPin(act,!!on);};
