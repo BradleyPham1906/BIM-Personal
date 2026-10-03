@@ -11571,3 +11571,86 @@ URLs, and the density suite now tests it through one. Amended:
 
     canvas_v10.html   1896286 bytes
     sha256            8df5aba2a0f27fc27d56373d16861e3e19a2e5cbb35fbc527d2998aaadfe6950
+
+## Phase 134 (V134) - Data layers, and Overpass's mirrors (V134d)
+
+The public record of a site: parcels, zoning and flood zones, from the GIS servers councils and
+agencies publish. The research is in `reference/research-data-layers.md`.
+
+### What was built (patches 134a to 134d)
+
+- **a -- the engine.**
+  - **A data layer is one of three kinds.**
+    - An ArcGIS REST layer (FeatureServer or MapServer with its number), asked with `query` for
+      the area: everything, as GeoJSON in longitude and latitude, at most 2000.
+    - A WFS with its `typeNames`, asked with `GetFeature` 2.0.0 as JSON in CRS:84.
+    - A GeoJSON file, kept to the area.
+  - **Refused, with the reason:** a whole ArcGIS service without its number, a WFS without its
+    layer, and anything that is not a web address.
+  - **Three presets:** FEMA's flood zones, and Philadelphia's parcels and zoning (unverified from
+    the sandbox).
+  - **The area** is V133's.
+  - **Storage.** The layers are in `A3D.site.dataLayers`, so adding and removing one is an undo
+    step. Their features are in `A3D.dataFeatures`: saved with the project, the browser store and
+    the tabs, kept out of the undo snapshots, and pruned of orphans on load.
+    - Removing a layer keeps its features, so an undo brings it back whole.
+  - **Drawing.** Each shown layer is drawn on the plan in its colour: areas faintly filled
+    (holes, by even-odd), lines, points. It is never drawn on paper.
+  - **Reading.** A click that hits nothing in the model reads the data under it: a point, then a
+    line, then the smallest area. A hidden layer is neither drawn nor read.
+  - **A parcel becomes a property line,** from its largest outer ring, in one undo step. The line
+    keeps where it came from.
+  - **Failures are named.** The server, and one of: its own error message, its HTTP status, "does
+    not read", "could not be reached", or a projected grid. The features already held are kept.
+    "More on the server" is said.
+  - **Credits.** Each shown layer's credit joins the credit line.
+- **b -- Properties and the command.**
+  - **A Data Layers group** after the Site Context: each layer with its box, colour, status,
+    Refresh and Remove; the presets; an address and Add.
+  - **The clicked feature heads the page:** its layer, source, attributes and area, with Make
+    Property Line and Close.
+  - **DATALAYERS** (DATA, PARCELS, ZONING, FLOOD) opens the group. It is on the Site panel.
+- **c -- the hooks** `__a3dData*`, and the marker.
+- **d -- the owner's "i cant get any context".**
+  - overpass-api.de refused the page (likely busy, or because a page opened as a file sends no
+    Referer), with no CORS header on the refusal.
+  - CONTEXT now asks with a plain GET, and tries Overpass's other public instances in turn
+    (private.coffee, mail.ru, kumi.systems), naming each failure only if all fail.
+
+### Bugs found
+
+- **Two undo checks passed without their undo step,** adding a layer and making a property line.
+  The falsify run found them; the step before each is now different. Again: **an undo check needs
+  a step before it that differs.**
+- **A test clicked off the canvas.** At the test's zoom, (-90, -90) was 580 px from centre, beyond
+  the screen's edge. The check now clicks inside the view.
+- **Removing a layer deleted its features,** so its undo brought an empty layer back. It now keeps
+  them, and a load drops orphans.
+
+### Suites
+
+- New: `bim_phase134_data_layers_browser_tests.py`, 72 checks. Every server is routed: an ArcGIS
+  FeatureServer, FEMA's MapServer, a WFS, a GeoJSON file, and five kinds of failure.
+- Falsified by `Phase/falsify_phase134.py`, 32 variants.
+- Amended:
+  - V133: Overpass asked by GET; the main server refusing and a mirror answering; each instance
+    named.
+  - V62: the presets' and the mirrors' hosts.
+  - V73: the Data Layers group.
+- V133's falsify script: `failures_unnamed` re-anchored; `no_mirrors` and
+  `mirror_failures_dropped` added.
+
+### Not done
+
+- WMS (pictures) as data layers: a blended raster pass of its own.
+- Colouring a layer by an attribute: that is the lens, V136.
+
+### Full regression and state after V134
+
+91 suites, 3421 checks, 0 failures. Falsification: V134 32 of 32, V133 51 of 51 (with the mirror
+variants). The chain 134a to 134d rebuilds the build from `Phase/canvas_v10.html.bak_phase134_pre`.
+The diff is ES5-clean.
+
+    canvas_v10.html   1920406 bytes
+    sha256            9632fa60cd5e98df2445af587c7985dec6ef6ebda108e34182e32872051c12d0
+    markers           __acad3dV60 ... __acad3dV134, __acad3dV134d (and the 133d to 133f markers)

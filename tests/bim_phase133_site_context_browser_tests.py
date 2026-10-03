@@ -11,7 +11,7 @@ tile pixels, so bilinear sampling must give it back exactly).
   2. THE AREA AND THE QUERY: the square around model 0,0 or the property lines, true north; each
      kind's statements; none ticked.
   3. READING OSM: heights (metres, feet, levels, assumed), multipolygon rings joined.
-  4. ONE PRESS: one POST, the tiles over the area; buildings extruded where and as tall as OSM
+  4. ONE PRESS: one GET (V134d), the tiles over the area; buildings extruded where and as tall as OSM
      says, roads, water, green, trees; the ground under each building; the terrain to the
      millimetre; layers, pins, credits, Properties; not a mass; one undo.
   5. AGAIN: a fresh fetch replaces only what it brings; the datum kept; the survey base's used.
@@ -220,6 +220,8 @@ async def run():
                 except asyncio.TimeoutError:
                     pass
             m = SRV['ovp_mode']
+            if m == 'mainblocked':   # AMENDED FOR V134d: overpass-api.de refuses with no CORS header; the mirrors answer
+                m = 'abort' if 'overpass-api.de' in route.request.url else 'ok'
             if m == 'abort':
                 await route.abort('internetdisconnected')
             elif m == '429':
@@ -231,6 +233,9 @@ async def run():
                                     headers={'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json'})
         await ctx.route('https://overpass-api.de/**', ovp_route)
         await ctx.route('https://overpass.example.org/**', ovp_route)
+        # AMENDED FOR V134d: Overpass's other public instances, tried in turn when one fails
+        for mirror in ('https://overpass.private.coffee/**', 'https://maps.mail.ru/**', 'https://overpass.kumi.systems/**'):
+            await ctx.route(mirror, ovp_route)
 
         async def ter_route(route):
             u = route.request.url
@@ -390,9 +395,9 @@ async def run():
             tt = await toast()
             ck(r and r.get('assumed') == 1 and r.get('courtyards') == 1 and '1 building height assumed (6 m)' in tt and '1 courtyard filled' in tt,
                "it says how many heights it assumed and courtyards it filled (%r)" % tt)
-            ck(len(SRV['ovp']) == 1 and SRV['ovp'][0]['method'] == 'POST' and 'x-www-form-urlencoded' in SRV['ovp'][0]['ctype'],
-               "one POST to Overpass, as a form")
-            body = SRV['ovp'][0]['body'] if SRV['ovp'] else ''
+            ck(len(SRV['ovp']) == 1 and SRV['ovp'][0]['method'] == 'GET' and SRV['ovp'][0]['url'].startswith('https://overpass-api.de/api/interpreter?data='),
+               "one plain GET to Overpass, the simplest request a browser makes")   # AMENDED FOR V134d
+            body = SRV['ovp'][0]['url'].split('?', 1)[1] if SRV['ovp'] else ''
             ck(body.startswith('data=') and urllib.parse.unquote(body[5:]) == await safe("()=>window.__a3dCtxQuery()"),
                "carrying exactly the query")
             want_t = set()
@@ -552,6 +557,9 @@ async def run():
             SRV['ovp_mode'] = 'junk'
             r = await fetch()
             ck(r and 'overpass-api.de sent an answer that does not read' in r.get('errors', []), "an answer that is not JSON: named")
+            hosts = [urllib.parse.urlparse(x['url']).netloc for x in SRV['ovp'][-4:]]
+            ck(hosts == ['overpass-api.de', 'overpass.private.coffee', 'maps.mail.ru', 'overpass.kumi.systems'] and
+               all(h_ + ' sent an answer that does not read' in r.get('errors', []) for h_ in hosts), "each of Overpass's public instances was tried in turn, and each named (V134d)")
             SRV['ovp_mode'] = 'abort'
             SRV['ter_mode'] = 'abort'
             r = await fetch()
@@ -562,6 +570,12 @@ async def run():
             await page.wait_for_timeout(100)
             ck(len(await ctx_objs('terrain')) == 1 and len(await ctx_objs('buildings')) == 5, "and no undo step was spent on nothing")
             await safe("()=>window.__a3dRedo&&window.__a3dRedo()")
+            SRV['ovp_mode'] = 'mainblocked'
+            SRV['ter_mode'] = 'ok'
+            n_ovp = len(SRV['ovp'])
+            r = await fetch()
+            ck(r and r['counts']['buildings'] == 5 and not r.get('errors') and [urllib.parse.urlparse(x['url']).netloc for x in SRV['ovp'][n_ovp:]] ==
+               ['overpass-api.de', 'overpass.private.coffee'], "the owner's case: overpass-api.de refuses, the next instance answers, and the context comes (V134d)")
             SRV['ovp_mode'] = 'ok'
             SRV['ter_mode'] = 'ok'
             SRV['hold'] = asyncio.Event()
@@ -578,7 +592,7 @@ async def run():
             await safe("()=>window.__a3dCtxSet('overpass','https://overpass.example.org/api/interpreter')")
             n_ovp = len(SRV['ovp'])
             await fetch()
-            ck(len(SRV['ovp']) == n_ovp + 1 and SRV['ovp'][-1]['url'] == 'https://overpass.example.org/api/interpreter', "another Overpass server, when set, is the one asked")
+            ck(len(SRV['ovp']) == n_ovp + 1 and SRV['ovp'][-1]['url'].startswith('https://overpass.example.org/api/interpreter?data='), "another Overpass server, when set, is the one asked")
 
             # ---------------------------------------------------------------------------------
             print("\n-- 7. settings, remove, export, commands, a reload")
