@@ -11893,7 +11893,7 @@ try{
     A3D_MAP.lastFind=now;
     a3dToast('Finding '+q+' ...');
     return fetch(BIM_GEOCODE_URL+encodeURIComponent(q)).then(function(res){
-      if(!res.ok)throw {http:res.status};   /* __acad3dV133d */
+      if(!res.ok)throw new Error('HTTP '+res.status);
       return res.json();
     }).then(function(js){
       var hit=(js&&js.length)?js[0]:null,lat=hit?parseFloat(hit.lat):NaN,lon=hit?parseFloat(hit.lon):NaN;
@@ -11903,10 +11903,8 @@ try{
       catch(eP){console.warn('[BIM] placing the site',eP);a3dToast('The site could not be placed - see the console');return {found:false,q:q,error:String(eP)};}
       return {found:true,q:q,lat:lat,lon:lon,name:nm};
     },function(err){
-      var hs=err&&err.http;
-      a3dToast('Address search failed: nominatim.openstreetmap.org '+(hs===403?'refused it (HTTP 403): it asks for the app to be opened from a website, not a file -- set the latitude and longitude in Properties instead':
-        (hs===429?'is busy (HTTP 429): try again in a minute':(hs?'answered HTTP '+hs:'could not be reached (offline, or it does not allow browser access)'))));
-      return {found:false,q:q,error:hs?'HTTP '+hs:String(err&&err.message?err.message:err)};
+      a3dToast('Address search failed: nominatim.openstreetmap.org could not be reached (offline, or it does not allow browser access)');
+      return {found:false,q:q,error:String(err&&err.message?err.message:err)};
     });
   }
   /* the site goes where the address is: model 0,0 there, the view on it, the street map on if the
@@ -13594,7 +13592,7 @@ try{
     ]);
   }
   function bimGlProjMatrix(W,H,flat,camDist){
-    var near=camDist>1000?camDist/2000:0.5,far=Math.max(4000,camDist*8);   /* __acad3dV133e: the view's own depth */
+    var near=0.5,far=4000;
     if(flat){
       var k=H*1.2/Math.max(camDist,0.5);
       return new Float32Array([
@@ -13718,10 +13716,8 @@ try{
      until asked. The site's latitude and longitude (V107) are model 0,0, as V108's survey base point
      is, and true north (V103) turns the model on the map. */
   var BIM_MAP_STYLES={
-    /* __acad3dV133d: CARTO's Voyager, OSM's data. OpenStreetMap's own tile servers refuse a request
-       with no Referer, which is every request from a page opened as a file. */
-    street:{name:'Street (CARTO, OpenStreetMap data)',url:'https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',maxz:19,
-      credit:'\u00a9 OpenStreetMap contributors \u00a9 CARTO',link:'https://www.openstreetmap.org/copyright'},
+    street:{name:'Street (OpenStreetMap)',url:'https://tile.openstreetmap.org/{z}/{x}/{y}.png',maxz:19,
+      credit:'\u00a9 OpenStreetMap contributors',link:'https://www.openstreetmap.org/copyright'},
     satellite:{name:'Satellite (Esri World Imagery)',url:'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',maxz:19,
       credit:'Imagery: Esri, Maxar, Earthstar Geographics, and the GIS User Community',link:'https://www.arcgis.com/home/item.html?id=10df2279f9684e4a9f6a7f08febac2a9'},
     custom:{name:'Custom tiles',url:'',maxz:19,credit:'',link:''}
@@ -13787,11 +13783,8 @@ try{
   }
   function bimMapTileUrl(tpl,x,y,z){
     var n=Math.pow(2,z),xx=((x%n)+n)%n;
-    return tpl.split('{z}').join(String(z)).split('{x}').join(String(xx)).split('{y}').join(String(y))
-      .split('{r}').join(bimMapDpr()>1.5?'@2x':'');   /* __acad3dV133d */
+    return tpl.split('{z}').join(String(z)).split('{x}').join(String(xx)).split('{y}').join(String(y));
   }
-  /* __acad3dV133d: the screen's density, 1 to 2 */
-  function bimMapDpr(){var d=window.devicePixelRatio||1;return d>2?2:(d<1?1:d);}
   function bimMapHost(url){var m=/^[a-z]+:\/\/([^\/?#]+)/i.exec(url||'');return m?m[1]:'the tile server';}
   /* The tiles a view needs. The zoom is the view's metres per pixel -- exact in plan, and at the
      target in 3D -- lowered while the view would need more than BIM_MAP_MAXT tiles. The extent is the
@@ -13825,14 +13818,13 @@ try{
       lo0=Math.min(lo0,q[0]);lo1=Math.max(lo1,q[0]);la0=Math.min(la0,q[1]);la1=Math.max(la1,q[1]);
     }
     var mpp=Math.max(c.dist,0.5)/(H*1.2),maxz=BIM_MAP_STYLES[st.style].maxz;
-    var dz=tpl.indexOf('{r}')>=0?1:bimMapDpr(),maxT=Math.round(BIM_MAP_MAXT*bimMapDpr());   /* __acad3dV133d */
-    var z=Math.round(Math.log(156543.03392*Math.cos(org.lat*BIM_D2R)*dz/mpp)/Math.LN2),x0,x1,y0,y1,n;
+    var z=Math.round(Math.log(156543.03392*Math.cos(org.lat*BIM_D2R)/mpp)/Math.LN2),x0,x1,y0,y1,n;
     z=Math.max(1,Math.min(maxz,z));
     for(;;){
       n=Math.pow(2,z);
       x0=Math.floor(bimLonToTileX(lo0,z));x1=Math.floor(bimLonToTileX(lo1,z));
       y0=Math.max(0,Math.floor(bimLatToTileY(la1,z)));y1=Math.min(n-1,Math.floor(bimLatToTileY(la0,z)));
-      if((x1-x0+1)*(y1-y0+1)<=maxT||z<=1)break;
+      if((x1-x0+1)*(y1-y0+1)<=BIM_MAP_MAXT||z<=1)break;
       z--;
     }
     var cx=bimLonToTileX((lo0+lo1)/2,z),cy=bimLatToTileY((la0+la1)/2,z),T=[],x,y;
@@ -13935,10 +13927,7 @@ try{
       gl.bindTexture(gl.TEXTURE_2D,tx);
       gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,false);
       gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,e.img);
-      /* __acad3dV133d: mipmaps, so a tile drawn smaller than its pixels is filtered, not sparkling */
-      var tw=e.img.naturalWidth||e.img.width,th=e.img.naturalHeight||e.img.height;
-      if(tw&&th&&!(tw&(tw-1))&&!(th&(th-1))){gl.generateMipmap(gl.TEXTURE_2D);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR_MIPMAP_LINEAR);e.mip=true;}
-      else gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);
+      gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);
       gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
       gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);
       gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
@@ -30007,22 +29996,11 @@ try{
     }
     refreshTree();paint();
   }
-  /* __acad3dV133e: how near and how far the view may go -- a door handle to the whole town */
-  var BIM_ZOOM_MIN=0.5,BIM_ZOOM_MAX=200000;
-  function bimZoomClamp(d){return d<BIM_ZOOM_MIN?BIM_ZOOM_MIN:(d>BIM_ZOOM_MAX?BIM_ZOOM_MAX:d);}
-  /* zoom by a factor about a screen point: the ground under it stays under it, as in AutoCAD and Revit */
-  function bimZoomAbout(f,sx,sy){
-    var c=A3D.cam,y0=c.ty,p0=(sx==null)?null:groundPoint(sx,sy,y0),p1;
-    c.dist=bimZoomClamp(c.dist*f);
-    if(p0){
-      p1=groundPoint(sx,sy,y0);
-      if(p1){c.tx+=p0[0]-p1[0];c.tz+=p0[2]-p1[2];}
-    }
-    return c.dist;
-  }
   function onWheel(ev){
-    var xy=cvXY(ev);
-    bimZoomAbout(Math.pow(1.0015,ev.deltaY),xy[0],xy[1]);
+    var c=A3D.cam;
+    c.dist*=Math.pow(1.0015,ev.deltaY);
+    if(c.dist<6)c.dist=6;
+    if(c.dist>150)c.dist=150;
     ev.preventDefault();paint();saveSoon();
   }
   // ---- __acad3dV8: Touch input (single-finger nav/select/move, long-press marquee, two-finger pinch/pan, touch-aim sketch placement) ----
@@ -30097,7 +30075,8 @@ try{
       var d1=bimTouchDist(ev.touches[0],ev.touches[1]),m1=bimTouchMid(ev.touches[0],ev.touches[1]);
       var c2=A3D.cam,scale=A3D_TOUCH.d0/Math.max(d1,1);
       c2.dist=A3D_TOUCH.camStart.dist*scale;
-      c2.dist=bimZoomClamp(c2.dist);   /* __acad3dV133e */
+      if(c2.dist<6)c2.dist=6;
+      if(c2.dist>150)c2.dist=150;
       var V2=camVecs(c2),k2=c2.dist*0.0018,dxp=m1[0]-A3D_TOUCH.mid0[0],dyp=m1[1]-A3D_TOUCH.mid0[1];
       c2.tx=A3D_TOUCH.camStart.tx-(V2.r[0]*dxp-V2.u[0]*dyp)*k2;
       c2.ty=A3D_TOUCH.camStart.ty-(V2.r[1]*dxp-V2.u[1]*dyp)*k2;
@@ -32888,12 +32867,6 @@ try{
   window.__a3dCtxRings=function(members,role){return bimOsmRings(members,role);};
   window.__a3dCtxCredit=function(){return bimCtxCreditHtml(false);};
   window.__a3dCtxDatum=function(){return bimCtxDatum();};
-  window.__acad3dV133e='zoomrange,zoomaboutcursor,farplanefollows';
-  window.__a3dZoomAbout=function(f,sx,sy){var d=bimZoomAbout(f,sx,sy);paint();return d;};
-  window.__a3dZoomLimits=function(){return [BIM_ZOOM_MIN,BIM_ZOOM_MAX];};
-  window.__acad3dV133d='cartostreet,retinatiles,dprzoom,mipmaps,nominatimrefusal';
-  window.__a3dMapDpr=function(){return bimMapDpr();};
-  window.__a3dMapMipmapped=function(){var k,n=0,m=0;for(k in A3D_MAP.cache)if(A3D_MAP.cache.hasOwnProperty(k)&&A3D_MAP.cache[k].tex){n++;if(A3D_MAP.cache[k].mip)m++;}return {textures:n,mipmapped:m};};
   window.__acad3dV133='contextarea,overpassquery,osmkinds,multipolygonrings,buildingheights,extrudedbuildings,roadswatergreentrees,'+
     'terrarium,bilinearground,terraindatum,contextlayers,pinned,replacebykind,oneundo,failuresnamed,contextcredit,contextexport,'+
     'notamass,contextproperties,contextcommand,contextremove,contextribbon';

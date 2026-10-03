@@ -16,7 +16,8 @@ VARIANTS = {
     'lon_not_scaled': [("return [org.lon+E/(R.N*Math.cos(org.lat*BIM_D2R))/BIM_D2R,", "return [org.lon+E/R.N/BIM_D2R,")],
     # ---- 132a: which tiles
     'zoom_off_by_one': [("    z=Math.max(1,Math.min(maxz,z));\n    for(;;){", "    z=Math.max(1,Math.min(maxz,z+1));\n    for(;;){")],
-    'no_tile_cap': [("      if((x1-x0+1)*(y1-y0+1)<=BIM_MAP_MAXT||z<=1)break;", "      break;")],
+    # RE-ANCHORED IN V133d: the cap is maxT, BIM_MAP_MAXT times the screen's density
+    'no_tile_cap': [("      if((x1-x0+1)*(y1-y0+1)<=maxT||z<=1)break;", "      break;")],
     'no_horizon_clamp': [("        if(d>R)p=[tg[0]+dx*R/d,g,tg[2]+dz*R/d];\n", "")],
     'side_drawn': [("    if(!pts.length){r.reason='side';return r;}", "")],
     'not_nearest_first': [("    T.sort(function(a,b){return a.k-b.k;});\n", "")],
