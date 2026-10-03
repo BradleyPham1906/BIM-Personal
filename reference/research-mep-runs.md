@@ -1,4 +1,4 @@
-# Research: duct and pipe runs that connect, with a size and a flow (V134)
+# Research: duct and pipe runs that connect, with a size and a flow (V137)
 
 This is Track B item 4, the last of the object model. The owner asked "are these mep features
 being group under MEP?" and chose **one MEP discipline** in the dock's picker, as Revit gathers
@@ -52,7 +52,7 @@ and are checked in the suite against their closed forms.
   - Units: h and L in metres, Q in m³/s, d in metres.
   - C = 140 for copper (its design value).
 
-## What V134 takes
+## What V137 takes
 
 - **The MEP discipline** in the dock's picker, with three groups:
   - **HVAC:** Duct and Air Terminal.

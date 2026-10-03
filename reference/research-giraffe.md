@@ -93,18 +93,40 @@ are an extension API. An app SDK, then, is mostly three things:
 That is Giraffe's "same set of functions, two ways in", and it keeps the plugin route free of
 build tooling.
 
+## Everything else Giraffe does, and where this app stands
+
+The owner: "i want to integrate the map feature in it just like how giraffe do. and there can be
+more that i dont know what giraffe can do". This is an inventory from Giraffe's product pages and
+help articles, via search summaries.
+
+| Giraffe | What it is | This app today |
+|---|---|---|
+| **Live map** | A basemap, with your design drawn on real sites | **Missing.** The project already stores latitude, longitude and true north (used for the sun). |
+| **Data layers and data packs** | Tens of thousands of GIS layers: zoning, parcels, ownership, flood, contours, infrastructure, demographics. Packs are linked to council map servers and stay current. Right-click a feature to query it | **Missing** |
+| **Parcels and site screening** | Automated constraint checks and "red flags" | Property lines from bearings or a shape, and setbacks with violation checks (V103) |
+| **Basic Envelope and Setback Lines** | Setbacks, stepbacks and height limits as a 3D envelope; easements and rights of way | Setbacks in plan only. **No 3D envelope, stepbacks or height limit** |
+| **2D outline to 3D massing** | Outlines stacked into floors, with usages | Walls, floors and solids; **usages are V131** |
+| **Solar and shadow** | Sunlight exposure against targets | Sun position and shadows exist |
+| **Terrain** | Contours and elevation | TIN terrain, contours and earthwork (V108) |
+| **Parking layout** | Car parks laid out to ratios | **Missing** |
+| **Subdivision** | Lots by width or area, along a skeleton | **Missing** |
+| **Generative design and Flows** | Envelope, subdivision, parking and skeleton generators, and node graphs | **Missing** |
+| **Calculator and pro forma** | Excel-like assumptions: costs, rent, yield, sale price | Areas and schedules. **No costs or formulas** |
+| **Scenarios, Paper, Chat AI** | Options, presentations, an assistant | Sheets and presentation exist; **scenarios are planned** |
+| **Import and export** | Import CAD, PDF, images and survey data. Export DXF, IFC, OBJ, STL, CSV, XLS and images | IFC reading, DXF, SVG, PDF, PNG and CSV. **No GeoJSON or KML** |
+
 ## What this app takes
 
-The owner chose all four, ahead of the MEP runs:
+The owner chose all four, ahead of the MEP runs, and then asked for the map "just like how giraffe do" (see PIPELINE.md for the order):
 
-1. **V131 Usages and live areas.** A usage on rooms and masses carries a colour and GBA→GFA→NSA
-   efficiencies. It is edited in Properties, with a live area table for the selection. It builds on
-   rooms, Areas by Level and the schedules.
-2. **V132 A colour-by-property lens.** Colour by usage, level, type or any property, with a legend,
-   under Appearance.
-3. **V133 Design scenarios.** Options within one project, switched between and compared by their
-   numbers.
-4. **Later: Flows and an app SDK.**
+1. **V131 Usages and live areas,** with simple formula properties.
+2. **V132 The map:** a georeferenced basemap, address search, and GeoJSON/KML import and export.
+3. **V133 GIS data layers** by URL, with feature query.
+4. **V134 A zoning envelope:** setbacks, stepbacks and a height limit, in 3D.
+5. **V135 A colour-by-property lens.**
+6. **V136 Design scenarios.**
+7. **Later:** generators (parking, subdivision), costs and pro forma.
+8. **Later: Flows and an app SDK.**
    - Per-object node graphs.
    - A documented plugin API: read-only state snapshots with listeners, plus named commands over
      postMessage. The engine's `__a3dRegisterCommand`, `__a3dRegisterDiscipline` and
@@ -126,3 +148,5 @@ It also confirms V130's direction: few tools on screen, and the work done in Pro
 - [Architosh: ToolTalk, Giraffe](https://architosh.com/2025/09/tooltalk-giraffe-reimagines-urban-design-and-development/)
 - [npm: @gi-nx/iframe-sdk](https://www.npmjs.com/package/@gi-nx/iframe-sdk), [SDK docs](https://gi-docs.web.app/)
 - Giraffe help: "The Giraffe Javascript SDK" ([help centre](https://help.giraffe.build/)), text pasted by the owner
+- [Giraffe: site analysis](https://www.giraffe.build/site-analysis/), [generative design](https://www.giraffe.build/generative-design/), [plugins and data packs](https://www.giraffe.build/plugins/)
+- [Help: layer types](https://help.giraffe.build/en/articles/11814863-layer-types), [solar overview](https://help.giraffe.build/en/articles/12216675-solar-overview)

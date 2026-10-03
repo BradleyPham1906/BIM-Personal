@@ -22,10 +22,11 @@ with anchored Python scripts that assert exact match counts.
 
 ---
 
-## NOW - ideas from Giraffe, then the MEP runs (V131 to V134)
+## NOW - Giraffe's ideas and the map, then the MEP runs (V131 to V137)
 
 The owner looked at Giraffe (giraffe.build), a map-first feasibility app, and chose four of its
-ideas, ahead of the MEP runs. The research is in `reference/research-giraffe.md`.
+ideas, ahead of the MEP runs, then asked for the map "just like how giraffe do". The research, with an
+inventory of everything Giraffe does against this app, is in `reference/research-giraffe.md`.
 
 V128 to V130 settled how commands are found (see Recently finished):
 - **V128:** one command search over every command and tool.
@@ -52,16 +53,21 @@ V128 to V130 settled how commands are found (see Recently finished):
 
 | # | Phase | Scope | Notes |
 |---|---|---|---|
-| 131 | Usages and live areas | A usage (Residential, Retail, Office...) on rooms and masses: a colour and GBA→GFA→NSA efficiencies, defined once and edited in Properties. A live area table for the selection, by usage and level | **Start here.** Giraffe's Usages (`reference/research-giraffe.md`). Research first: area definitions (GBA, GFA, NSA, and the IPMS / BOMA / local equivalents) and how Revit's Area Schemes do it. Builds on rooms, Areas by Level and the schedules. |
-| 132 | Colour-by-property lens | Colour the model by usage, level, type, material or any property, with a legend. A display under Appearance, turned on and off like ANALYZE | Giraffe's lenses; Revit's colour schemes and view filters. |
-| 133 | Design scenarios | Options within one project, switched between and compared by their numbers side by side | Giraffe's scenarios; Revit's Design Options. |
-| 134 | MEP runs | Duct and pipe as runs of segments and fittings joined at connectors (elbows, tees, reducers made where runs meet); a size and a system on each run; flow summed downstream from terminals, and velocity and friction loss per segment | Track B item 4. MEP is its own discipline in the dock's picker (the owner's choice), with HVAC, Plumbing and Systems groups. The research is drafted in `reference/research-mep-runs.md`: Revit connectors, Darcy-Weisbach with Colebrook, and Hazen-Williams. Check against the closed forms, as V125 did. |
+| 131 | Usages and live areas | A usage (Residential, Retail, Office...) on rooms and masses: a colour, GBA→GFA→NSA efficiencies, and simple formula properties (`GFA * rate`) with our own evaluator (not HyperFormula, which is GPLv3). Defined once and edited in Properties. A live area table for the selection, by usage and level | **Start here.** Giraffe's Usages (`reference/research-giraffe.md`). Research first: area definitions (GBA, GFA, NSA, and IPMS / BOMA / local equivalents) and Revit's Area Schemes. Builds on rooms, Areas by Level and the schedules. |
+| 132 | The map | A georeferenced basemap under the plan and the 3D ground: Web Mercator tiles placed by the project's latitude, longitude and true north, drawn by our own renderer (no MapLibre). Address search to set the site. GeoJSON (and KML) import of parcels as property lines, and GeoJSON export of the model | The owner: "integrate the map feature in it just like how giraffe do". Needs the network and a tile provider: OpenStreetMap's own tile servers forbid app use, so decide on a provider and an API key at the start. The map is optional, and the app stays offline-first. |
+| 133 | GIS data layers | Add a layer by URL (GeoJSON, ArcGIS REST, WMS/WFS) in a Data section of the Layers panel; style it; click a feature to read its attributes | Giraffe's data layers. Council servers must allow cross-origin requests; note the ones that do not. |
+| 134 | Zoning envelope | Setbacks, stepbacks and a height limit on a property become a 3D envelope; massing outside it is flagged | Builds on V103's setbacks; Giraffe's Basic Envelope. |
+| 135 | Colour-by-property lens | Colour by usage, level, type or any property, with a legend, under Appearance | Giraffe's lenses; Revit's colour schemes. |
+| 136 | Design scenarios | Options within one project, switched between and compared by their numbers | Giraffe's scenarios; Revit's Design Options. |
+| 137 | MEP runs | Duct and pipe runs at connectors, systems, flow, velocity and friction | MEP is its own discipline (the owner's choice). The research is drafted in `reference/research-mep-runs.md`. |
+| later | Generators | Parking layout to a ratio, subdivision into lots, and envelope-filling massing | Giraffe's generative editors; after the map and the envelope. |
+| later | Costs and pro forma | Cost, rent, yield and sale price per usage, and a feasibility summary | Builds on V131's formulas. |
 | later | Flows and an app SDK | Per-object node graphs (Giraffe's Flows, a light Grasshopper); a documented plugin API of read-only state snapshots with listeners and named commands over postMessage | The engine's `__a3dRegisterCommand`, `__a3dRegisterDiscipline` and `__a3dRegisterTab` are the start of it. Giraffe's model: one set of functions reached two ways, the browser console and a postMessage bridge for an iframe app in the right panel, over GeoJSON-like data (`reference/research-giraffe.md`). |
 
 ### LATER - Track A, drafting (moved behind Track B in V100)
 
 The numbers in this table are its order, not phase numbers: a phase takes the next free V number
-when it starts (V111 to V130 went to other work; V131 to V134 are in NOW).
+when it starts (V111 to V130 went to other work; V131 to V137 are in NOW).
 
 | # | Phase | Scope | Notes |
 |---|---|---|---|
