@@ -501,8 +501,6 @@ body.light-theme .a3d-uerr{color:#b3261e}
 .a3d-fdt a{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .a3d-fdk{font-size:10.5px;opacity:.65;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .a3d-fdrow .a3d-pedit{flex:none}
-.a3d-dllens .a3d-ukv select{flex:1;min-width:0}
-.a3d-dllens .a3d-ukv input[type=number]{width:54px}
 body.light-theme .a3d-ctxlink{color:#0b5cad}
 .a3d-dlgwide .a3d-dlgrow input{width:100%;box-sizing:border-box}
 .a3d-sheetview.open~#a3d-mapattr{display:none}
@@ -794,7 +792,6 @@ body.a3d-tree-docked #a3d-leftpanel > .a3d-tree .a3d-palhd .a3d-palbtns{flex-wra
     ['ROOM',['RM'],'room','Make a room from an enclosed region'],
     ['ROOMTAG',['RT','TAGROOM'],'roomtag','Tag a room with its number and name'],
     ['TAGALLROOMS',['TAGALL'],'roomtagall','Tag every untagged room on the active level'],
-    ['COLOURBY',['COLORBY','LENS'],'colourby','Colour the model by usage, level, type, layer, material, height or any property, with a legend'],   /* __acad3dV136 */
     ['ROOMCOLOR',['COLORFILL','ROOMCOLOUR'],'roomcolor','Fill rooms by Department, then by Occupancy, then off'],   /* __acad3dV105 */
     ['TRIBAREA',['TRIBUTARY','TRIB'],'tribarea','Show or hide the tributary area each column carries on this level'],   /* __acad3dV106 */
     ['AREAPLAN',['AREA','GROSSAREA','AP'],'areaplan','Show or hide the gross area inside the exterior walls on this level'],   /* __acad3dV105b */
@@ -12305,7 +12302,6 @@ try{
         '<div class="a3d-pval"><span class="a3d-pstatic'+(L[i].status&&L[i].status.error?' a3d-uerr':'')+'">'+bimEsc(bimDataStatusText(L[i]))+'</span> '+
         '<button type="button" class="a3d-pedit" data-propdataact="refresh:'+id+'">Refresh</button> '+
         '<button type="button" class="a3d-bdel" data-propdataact="remove:'+id+'" title="Remove this data layer">\u00d7</button></div></div>';
-      r+=bimDataLensRow(L[i]);   /* __acad3dV136 */
     }
     if(!L.length)r+=bimPropText('None yet','parcels, zoning or flood zones: add a preset or a web address');
     for(i=0;i<BIM_DATA_PRESETS.length;i++)o+='<option value="'+i+'">'+bimEsc(BIM_DATA_PRESETS[i].name)+'</option>';
@@ -12344,8 +12340,6 @@ try{
     }
     if(b[0]==='vis')return bimDataSet(b[1],'visible',f.checked);
     if(b[0]==='color')return bimDataSet(b[1],'color',f.value);
-    if(b[0]==='by')return bimDataSet(b[1],'by',f.value);             /* __acad3dV136 */
-    if(b[0]==='opacity')return bimDataSet(b[1],'opacity',f.value);
     return false;
   }
   function bimDataPropClick(ev){
@@ -12421,47 +12415,6 @@ try{
     a3dToast('Find data: pick a city, county, state or agency portal, type what you need, and Search');
     return true;
   }
-  /* ================= __acad3dV136: the lens in Properties ================= */
-  function bimLensHtml(){
-    var st=bimLensSettings(),o='<option value=""'+(st.by?'':' selected')+'>Off</option>',i,r='',keys,k;
-    for(i=0;i<BIM_LENS_BY.length;i++)o+='<option value="'+BIM_LENS_BY[i]+'"'+(st.by===BIM_LENS_BY[i]?' selected':'')+'>'+BIM_LENS_LABEL[BIM_LENS_BY[i]]+'</option>';
-    r+=bimPropRow('Colour by','<select data-proplens="by" aria-label="Colour the model by">'+o+'</select>');
-    if(st.by==='prop'){
-      keys=bimLensPropKeys();
-      if(st.prop&&keys.indexOf(st.prop)<0)keys.unshift(st.prop);
-      o='<option value="">Pick a property ...</option>';
-      for(k=0;k<keys.length;k++)o+='<option value="'+bimEsc(keys[k])+'"'+(keys[k]===st.prop?' selected':'')+'>'+bimEsc(keys[k])+'</option>';
-      r+=bimPropRow('Property',keys.length?'<select data-proplens="prop" aria-label="Property to colour by">'+o+'</select>':
-        '<span class="a3d-pstatic">no object carries one yet: get the site context, or import GeoJSON</span>');
-    }
-    return r;
-  }
-  function bimDataLensRow(L){
-    var keys=bimDataAttrKeys(L.id),o='<option value="">Its colour</option>',k,id=bimEsc(L.id);
-    if(!keys.length)return '';
-    for(k=0;k<keys.length;k++)o+='<option value="'+bimEsc(keys[k])+'"'+(keys[k]===L.by?' selected':'')+'>'+bimEsc(keys[k])+'</option>';
-    return '<div class="a3d-prow a3d-dllens"><div class="a3d-plabel">Colour by</div><div class="a3d-pval"><div class="a3d-ukv">'+
-      '<select data-propdata="by:'+id+'" aria-label="Colour '+bimEsc(L.name)+' by">'+o+'</select>'+
-      '<input type="number" min="10" max="100" step="10" data-propdata="opacity:'+id+'" value="'+Math.round(bimDataOpacity(L)*100)+'" aria-label="Opacity (%)" title="Opacity (%)"></div></div></div>';
-  }
-  function bimLensPropChange(ev){
-    var f=ev.target&&ev.target.closest?ev.target.closest('[data-proplens]'):null;
-    if(!f)return false;
-    var k=f.getAttribute('data-proplens'),st=bimLensSettings();
-    if(k==='by'){bimLensSet(f.value,f.value==='prop'?st.prop:'');return true;}
-    if(k==='prop'){bimLensSet('prop',f.value);return true;}
-    return false;
-  }
-  /* COLOURBY: the View group, at Colour by */
-  function bimLensCommand(){
-    A3D.sel=null;A3D.sel2=null;A3D.selSet=[];
-    A3D_PROP_GROUPS_OPEN['View']=true;
-    refreshTree();refreshProps();paint();
-    var s=el.propsbody&&el.propsbody.querySelector('[data-proplens="by"]');
-    if(s){try{s.focus();s.scrollIntoView({block:'center'});}catch(eF){}}
-    a3dToast('Colour by is in the View group: usage, level, type, layer, material, height or any property, with a legend');
-    return true;
-  }
   /* DATALAYERS: the group, with nothing selected */
   function bimDataCommand(){
     A3D.sel=null;A3D.sel2=null;A3D.selSet=[];
@@ -12510,7 +12463,6 @@ try{
     vrows+=bimPropRow('Active Level','<select data-propmodel="level">'+lvlOpts+'</select>');
     /* __acad3dV121: the same tree as every other Layer field; this one listed the layers for itself */
     vrows+=bimPropRow('Active Layer','<select data-propmodel="layer">'+bimLayerOptionsHtml(A3D.activeLayer)+'</select>');
-    vrows+=bimLensHtml();   /* __acad3dV136: the lens */
     vrows+=bimPropRow('Appearance','<select data-propmodel="present">'+
       '<option value="0"'+(A3D.presentMode?'':' selected')+'>Technical</option>'+
       '<option value="1"'+(A3D.presentMode?' selected':'')+'>Presentation</option></select>');
@@ -13899,229 +13851,10 @@ try{
      toScreen() exactly or the GL layer and the 2D overlay drift apart. The GL canvas and its
      viewport, though, are the backing store and must be in DEVICE pixels -- otherwise the whole
      shaded layer renders at half resolution under a crisp overlay. */
-  /* ================= __acad3dV136: the colour-by-property lens ================= */
-  var BIM_LENS_BY=['usage','level','type','layer','material','height','prop'];
-  var BIM_LENS_LABEL={usage:'Usage',level:'Level',type:'Type',layer:'Layer',material:'Material',height:'Height',prop:'Property'};
-  var BIM_LENS_RAMP=['#ffffb2','#fed976','#feb24c','#fd8d3c','#f03b20','#bd0026'];
-  var BIM_LENS_NONE='#6b7480';
-  var BIM_LENS_MAX_ROWS=14;
-  var A3D_LENS={cur:null};
-  function bimLensSettings(){
-    var l=A3D.site&&A3D.site.lens;
-    return {by:l&&BIM_LENS_BY.indexOf(l.by)>=0?l.by:'',prop:l&&typeof l.prop==='string'?l.prop:''};
-  }
-  /* the named properties an object carries: its OSM tags, its imported attributes, its context record */
-  function bimLensProps(o){
-    var out={},k,s;
-    function take(src){for(k in src)if(src.hasOwnProperty(k)&&!out.hasOwnProperty(k)){s=src[k];if(s!==null&&(typeof s==='string'||typeof s==='number'||typeof s==='boolean'))out[k]=s;}}
-    if(o.context&&o.context.tags)take(o.context.tags);
-    if(o.geo&&o.geo.props)take(o.geo.props);
-    if(o.context)take(o.context);
-    return out;
-  }
-  function bimLensHeight(o){
-    if(o.context&&typeof o.context.height==='number'&&isFinite(o.context.height))return o.context.height;
-    var m=meshOf(o),i,a=Infinity,b=-Infinity;
-    if(!m||!m.v||!m.v.length)return null;
-    for(i=0;i<m.v.length;i++){if(m.v[i][1]<a)a=m.v[i][1];if(m.v[i][1]>b)b=m.v[i][1];}
-    return isFinite(b-a)?Math.round((b-a)*100)/100:null;
-  }
-  /* one object's value under the lens: {v, name, col?} or null */
-  function bimLensValue(o,st){
-    var v,u,ly,k;
-    if(st.by==='usage'){u=o.usage?bimUsageById(o.usage):null;return u?{v:'u:'+u.id,name:u.name,col:u.color}:null;}
-    if(st.by==='level'){
-      if(!o.level)return null;
-      for(k=0;k<A3D.levels.length;k++)if(A3D.levels[k].id===o.level)return {v:'l:'+k,name:A3D.levels[k].name,order:k};
-      return null;
-    }
-    if(st.by==='type'){k=(o.bim&&o.bim.type)||o.t;return k?{v:'t:'+k,name:(TYPES[k]&&TYPES[k].n)||(String(k).charAt(0).toUpperCase()+String(k).slice(1))}:null;}
-    if(st.by==='layer'){ly=bimLayerById(o.layer);return ly?{v:'y:'+ly.id,name:ly.name}:null;}
-    if(st.by==='material')return o.materialName?{v:'m:'+o.materialName,name:o.materialName}:null;
-    if(st.by==='height'){v=bimLensHeight(o);return v===null?null:{num:v};}
-    if(st.by==='prop'&&st.prop){
-      v=bimLensProps(o)[st.prop];
-      if(v===undefined||v==='')return null;
-      if(typeof v==='number'||(/^-?\d+(\.\d+)?$/.test(String(v))&&isFinite(parseFloat(v))))return {num:parseFloat(v),raw:String(v)};
-      return {v:'p:'+String(v).toLowerCase(),name:String(v)};
-    }
-    return null;
-  }
-  /* the scale: categories in name order (level in level order), or six steps between the lowest and highest number */
-  function bimLensScale(vals){
-    var cats={},list=[],nums=[],i,x,lo=Infinity,hi=-Infinity;
-    for(i=0;i<vals.length;i++){
-      x=vals[i];if(!x)continue;
-      if(x.num!==undefined){nums.push(x.num);if(x.num<lo)lo=x.num;if(x.num>hi)hi=x.num;continue;}
-      if(!cats[x.v]){cats[x.v]={name:x.name,col:x.col||'',order:x.order,n:0};list.push(x.v);}
-      cats[x.v].n++;
-    }
-    if(nums.length&&!list.length){
-      var bins=[],step=(hi-lo)/BIM_LENS_RAMP.length;
-      for(i=0;i<BIM_LENS_RAMP.length;i++)bins.push({lo:lo+step*i,hi:i===BIM_LENS_RAMP.length-1?hi:lo+step*(i+1),col:BIM_LENS_RAMP[i],n:0});
-      return {kind:'num',lo:lo,hi:hi,bins:bins};
-    }
-    list.sort(function(a,b){
-      var A=cats[a],B=cats[b];
-      if(A.order!==undefined&&B.order!==undefined)return A.order-B.order;
-      var p=A.name.toLowerCase(),q=B.name.toLowerCase();return p<q?-1:(p>q?1:0);
-    });
-    for(i=0;i<list.length;i++)if(!cats[list[i]].col)cats[list[i]].col=BIM_SCHEME_COLS[i%BIM_SCHEME_COLS.length];
-    return {kind:'cat',cats:cats,list:list};
-  }
-  function bimLensPick(sc,x){
-    var i;
-    if(!x)return null;
-    if(sc.kind==='num'){
-      if(x.num===undefined)return null;
-      if(sc.hi<=sc.lo)return sc.bins[sc.bins.length-1];
-      i=Math.min(sc.bins.length-1,Math.max(0,Math.floor((x.num-sc.lo)/(sc.hi-sc.lo)*sc.bins.length)));
-      return sc.bins[i];
-    }
-    return x.v!==undefined?sc.cats[x.v]||null:null;
-  }
-  /* once per paint: the lens's colour for every object, and the legend */
-  function bimLensCurrent(){
-    if(A3D_LENS.cur)return A3D_LENS.cur;
-    var st=bimLensSettings(),cur={by:st.by,prop:st.prop,col:{},none:0,scale:null},vals=[],ids=[],i,o,x,e;
-    if(st.by&&!(st.by==='prop'&&!st.prop)){
-      for(i=0;i<A3D.objs.length;i++){
-        o=A3D.objs[i];
-        if(!meshOf(o))continue;
-        x=bimLensValue(o,st);vals.push(x);ids.push(o.id);
-      }
-      cur.scale=bimLensScale(vals);
-      for(i=0;i<ids.length;i++){
-        e=bimLensPick(cur.scale,vals[i]);
-        if(e){cur.col[ids[i]]=e.col;e.n=(e.n||0)+(cur.scale.kind==='num'?1:0);}
-        else{cur.col[ids[i]]=BIM_LENS_NONE;cur.none++;}
-      }
-    }
-    A3D_LENS.cur=cur;
-    return cur;
-  }
-  function bimLensCol(o){
-    var c=bimLensCurrent();
-    return c.by?(c.col[o.id]||null):null;
-  }
-  function bimLensTitle(st){
-    if(!st.by)return '';
-    return 'Coloured by '+(st.by==='prop'?st.prop:BIM_LENS_LABEL[st.by].toLowerCase())+(st.by==='height'?' (m)':'');
-  }
-  function bimLensFmt(v){return Math.abs(v)>=100?String(Math.round(v)):String(Math.round(v*10)/10);}
-  /* the legend's rows for a scale: a colour and a name for each, the count, and "no value" */
-  function bimLensRows(sc,none){
-    var r=[],i,c;
-    if(!sc)return r;
-    if(sc.kind==='num'){
-      for(i=0;i<sc.bins.length;i++)if(sc.bins[i].n)r.push({col:sc.bins[i].col,name:bimLensFmt(sc.bins[i].lo)+' to '+bimLensFmt(sc.bins[i].hi),n:sc.bins[i].n});
-    }else for(i=0;i<sc.list.length;i++){c=sc.cats[sc.list[i]];r.push({col:c.col,name:c.name,n:c.n});}
-    if(none)r.push({col:BIM_LENS_NONE,name:'no value',n:none});
-    return r;
-  }
-  /* a data layer coloured by one of its attributes: the scale over its features, kept with its model */
-  function bimDataLensScale(L){
-    if(!L.by)return null;
-    var F=bimDataFeats(L.id),vals=[],i,v,none=0;
-    for(i=0;i<F.length;i++){
-      v=F[i].p?F[i].p[L.by]:undefined;
-      if(v===undefined||v===null||v===''){vals.push(null);none++;continue;}
-      if(typeof v==='number'||(/^-?\d+(\.\d+)?$/.test(String(v))&&isFinite(parseFloat(v))))vals.push({num:parseFloat(v)});
-      else vals.push({v:'p:'+String(v).toLowerCase(),name:String(v)});
-    }
-    var sc=bimLensScale(vals),k;
-    if(sc.kind==='num')for(i=0;i<vals.length;i++){k=bimLensPick(sc,vals[i]);if(k)k.n++;}
-    return {scale:sc,vals:vals,none:none};
-  }
-  function bimDataFeatCol(L,ds,fi){
-    if(!ds)return L.color;
-    var e=bimLensPick(ds.scale,ds.vals[fi]);
-    return e?e.col:BIM_LENS_NONE;
-  }
-  function bimDataAttrKeys(id){
-    var F=bimDataFeats(id),seen={},out=[],i,k;
-    for(i=0;i<F.length&&i<500;i++)for(k in F[i].p)if(F[i].p.hasOwnProperty(k)&&!seen[k]){seen[k]=1;out.push(k);}
-    return out.sort(function(a,b){a=a.toLowerCase();b=b.toLowerCase();return a<b?-1:(a>b?1:0);});
-  }
-  /* the properties the model's objects carry, most common first, for the lens's Property */
-  function bimLensPropKeys(){
-    var cnt={},out=[],i,k,p;
-    for(i=0;i<A3D.objs.length;i++){p=bimLensProps(A3D.objs[i]);for(k in p)if(p.hasOwnProperty(k))cnt[k]=(cnt[k]||0)+1;}
-    for(k in cnt)if(cnt.hasOwnProperty(k))out.push(k);
-    out.sort(function(a,b){return cnt[b]-cnt[a]||(a<b?-1:(a>b?1:0));});
-    return out.slice(0,80);
-  }
-  /* the lens is an undo step of its own */
-  function bimLensSet(by,prop){
-    by=BIM_LENS_BY.indexOf(by)>=0?by:'';
-    prop=String(prop==null?'':prop).slice(0,80);
-    var st=bimLensSettings();
-    if(by!=='prop')prop=by===st.by?st.prop:'';
-    if(by===st.by&&prop===st.prop)return st;
-    pushUndo();
-    if(!A3D.site||typeof A3D.site!=='object')A3D.site={name:'Site'};
-    A3D.site.lens={by:by,prop:prop};
-    A3D_LENS.cur=null;
-    refreshProps();paint();saveSoon();
-    var c=bimLensCurrent(),rows=by?bimLensRows(c.scale,c.none):[];
-    a3dToast(!by?'Colour by: off':(by==='prop'&&!prop)?'Colour by property: pick the property':
-      (bimLensTitle(bimLensSettings())+': '+(rows.length?rows.length+' entr'+(rows.length===1?'y':'ies'):'nothing has one')));
-    return bimLensSettings();
-  }
-  /* the legend panel: the lens, then each shown data layer coloured by an attribute */
-  function drawLensLegend(ctx,V,W,H){
-    A3D.lastLensLegend=null;
-    if(A3D.sheetCapture||A3D_PLOT.on)return;
-    var blocks=[],c=bimLensCurrent(),st=bimLensSettings(),L=bimDataList(),i,ds,rows;
-    if(c.by&&c.scale){rows=bimLensRows(c.scale,c.none);if(rows.length)blocks.push({title:bimLensTitle(st),rows:rows});}
-    for(i=0;i<L.length;i++){
-      if(!L[i].visible||!L[i].by)continue;
-      ds=bimDataLensScale(L[i]);
-      rows=ds?bimLensRows(ds.scale,ds.none):[];
-      if(rows.length)blocks.push({title:L[i].name+': '+L[i].by,rows:rows});
-    }
-    if(!blocks.length)return;
-    ctx.save();
-    try{
-      var sr=bimSafeViewRect(),rowH=16,pad=8,sw=11,w=0,h=pad,x,y,b,j,tw,ry,more,shown=[];
-      ctx.font='11px sans-serif';ctx.textBaseline='middle';ctx.textAlign='left';
-      for(i=0;i<blocks.length;i++){
-        b=blocks[i];more=b.rows.length>BIM_LENS_MAX_ROWS?b.rows.length-BIM_LENS_MAX_ROWS+1:0;
-        b.show=more?b.rows.slice(0,BIM_LENS_MAX_ROWS-1):b.rows;b.more=more;
-        tw=ctx.measureText(b.title).width;if(tw>w)w=tw;
-        for(j=0;j<b.show.length;j++){tw=sw+6+ctx.measureText(b.show[j].name+'  '+b.show[j].n).width;if(tw>w)w=tw;}
-        h+=rowH*(1+b.show.length+(more?1:0))+(i?6:0);
-      }
-      w=Math.ceil(w+pad*2+10);h+=pad;
-      x=sr.x+12;y=sr.y+12;
-      if(A3D.lastRoomLegend&&A3D.lastRoomLegend.box)y=A3D.lastRoomLegend.box[1]+A3D.lastRoomLegend.box[3]+8;
-      ctx.globalAlpha=1;
-      ctx.fillStyle='rgba(22,26,32,0.9)';ctx.fillRect(x,y,w,h);
-      ctx.strokeStyle='rgba(255,255,255,0.18)';ctx.lineWidth=1;ctx.strokeRect(x+0.5,y+0.5,w-1,h-1);
-      ry=y+pad;
-      for(i=0;i<blocks.length;i++){
-        b=blocks[i];if(i)ry+=6;
-        ctx.fillStyle='#e8edf2';ctx.fillText(b.title,x+pad,ry+rowH/2);ry+=rowH;
-        for(j=0;j<b.show.length;j++){
-          ctx.fillStyle=b.show[j].col;ctx.fillRect(x+pad,ry+(rowH-sw)/2,sw,sw);
-          ctx.fillStyle='#e8edf2';ctx.fillText(b.show[j].name,x+pad+sw+6,ry+rowH/2);
-          ctx.fillStyle='#9aa7b4';ctx.textAlign='right';ctx.fillText(String(b.show[j].n),x+w-pad,ry+rowH/2);ctx.textAlign='left';
-          ry+=rowH;
-        }
-        if(b.more){ctx.fillStyle='#9aa7b4';ctx.fillText('and '+b.more+' more',x+pad+sw+6,ry+rowH/2);ry+=rowH;}
-        shown.push({title:b.title,rows:b.show,more:b.more});
-      }
-      A3D.lastLensLegend={blocks:shown,box:[x,y,w,h]};
-    }catch(e){
-      console.warn('[BIM] lens legend',e);
-      if(!A3D.lensLegendWarned){A3D.lensLegendWarned=true;a3dToast('The colour legend could not be drawn');}
-    }
-    ctx.restore();
-  }
   /* __acad3dV121: one solid's faces, at an alpha -- the body of the face pass, shared by the opaque
      pass and the transparent one */
   function bimGlDrawFaces(G,o,rec,alpha){
-    var gl=G.gl,col=bimHexToRgb(bimLensCol(o)||o.col||(TYPES[o.t]||{}).c||'#7f9db8');   /* __acad3dV136: the lens first */
+    var gl=G.gl,col=bimHexToRgb(o.col||(TYPES[o.t]||{}).c||'#7f9db8');
     gl.uniform3f(G.loc.offset,o.pos[0],o.pos[1],o.pos[2]);
     gl.uniform3f(G.loc.color,col[0],col[1],col[2]);
     gl.uniform1f(G.loc.boost,(A3D.sel===o.id)?0.25:0);
@@ -15256,17 +14989,14 @@ try{
     if(field==='visible'){v=!!val&&val!=='false';if(L.visible===v)return true;}
     else if(field==='name'){v=String(val==null?'':val).replace(/\s+/g,' ').replace(/^ | $/g,'').slice(0,60);if(!v){a3dToast('A data layer needs a name');refreshProps();return false;}}
     else if(field==='color'){v=String(val||'');if(!/^#[0-9a-fA-F]{6}$/.test(v)){a3dToast('That is not a colour');refreshProps();return false;}v=v.toLowerCase();}
-    else if(field==='by'){v=String(val==null?'':val).slice(0,80);if(v&&bimDataAttrKeys(id).indexOf(v)<0){a3dToast(L.name+' has no attribute '+v);refreshProps();return false;}}   /* __acad3dV136 */
-    else if(field==='opacity'){v=parseFloat(val);if(!isFinite(v)){a3dToast('Opacity is a percentage, 10 to 100');refreshProps();return false;}v=Math.max(0.1,Math.min(1,v>1?v/100:v));v=Math.round(v*100)/100;}
     else return false;
-    if(L[field]===v||(field==='by'&&!v&&!L.by))return true;
+    if(L[field]===v)return true;
     pushUndo();
     L[field]=v;
     if(field==='visible'&&!v&&A3D_DATA.sel&&A3D_DATA.sel.layer===id)A3D_DATA.sel=null;
     refreshProps();paint();saveSoon();
     return true;
   }
-  function bimDataOpacity(L){var v=L.opacity;return typeof v==='number'&&v>=0.1&&v<=1?v:1;}   /* __acad3dV136 */
   /* a layer's features in model terms, kept until the site's place, true north or the features change */
   function bimDataModel(L){
     var org=bimMapOrigin(),F=bimDataFeats(L.id),key,c;
@@ -15310,17 +15040,14 @@ try{
       if(!c)continue;
       ctx.save();
       ctx.strokeStyle=L[i].color;ctx.fillStyle=L[i].color;
-      var ds=bimDataLensScale(L[i]),op=bimDataOpacity(L[i]),fa=ds?0.5:0.16,fc;   /* __acad3dV136: by an attribute, at an opacity */
-      ctx.globalAlpha=op;
       for(j=0;j<c.feats.length;j++){
         f=c.feats[j];
-        if(ds){fc=bimDataFeatCol(L[i],ds,f.fi);ctx.strokeStyle=fc;ctx.fillStyle=fc;}
         sel=!!(A3D_DATA.sel&&A3D_DATA.sel.layer===L[i].id&&A3D_DATA.sel.fi===f.fi);
         ctx.lineWidth=sel?2.6:1.2;
         if(f.rings.length){
           ctx.beginPath();
           f.rings.forEach(function(r){path(r.pts,true);});
-          ctx.globalAlpha=(sel?Math.min(1,fa*2.1):fa)*op;ctx.fill('evenodd');ctx.globalAlpha=op;ctx.stroke();
+          ctx.globalAlpha=sel?0.34:0.16;ctx.fill('evenodd');ctx.globalAlpha=1;ctx.stroke();
         }
         if(f.lines.length){ctx.beginPath();f.lines.forEach(function(l){path(l,false);});ctx.stroke();}
         f.points.forEach(function(q){var p=S(q);ctx.beginPath();ctx.arc(p[0],p[1],sel?5:3.5,0,Math.PI*2);ctx.fill();});
@@ -15481,7 +15208,6 @@ try{
   }
   function paint(){
     var cv=el.cv;if(!cv||!el.ctx)return;
-    A3D_LENS.cur=null;   /* __acad3dV136: the lens is worked out once per paint */
     /* __acad3dV72: scale the context by the device pixel ratio and keep every drawing call
        below in CSS pixels. Done here rather than once in size() because any ctx.setTransform
        or ctx.restore elsewhere in a frame would silently drop it, and a lost transform is a
@@ -15547,7 +15273,7 @@ try{
       var ob=A3D.objs[i],m=meshOf(ob);if(!m)continue;
       if(!bimLayerShown(ob))continue;   /* __acad3dV121 */
       if(!bimObjectVisibleOnLevel(ob))continue;
-      var lcol=bimLensCol(ob),col=lcol||ob.col||(TYPES[ob.t]||{}).c||'#7f9db8';   /* __acad3dV136 */
+      var col=ob.col||(TYPES[ob.t]||{}).c||'#7f9db8';
       var wv=[];
       for(j=0;j<m.v.length;j++){wv.push([m.v[j][0]+ob.pos[0],m.v[j][1]+ob.pos[1],m.v[j][2]+ob.pos[2]]);}
       for(j=0;j<m.f.length;j++){
@@ -15556,7 +15282,7 @@ try{
           var sp2=toScreen(wv[fc[k]],V,W,H);
           pts.push(sp2);zs+=sp2[2];wpts.push(wv[fc[k]]);
         }
-        polys.push({o:ob,pts:pts,z:zs/fc.length,n:faceNormal(wpts),col:col,lens:!!lcol,lock:!bimLayerPickable(ob),la:bimLayerAlpha(ob)});   /* __acad3dV121, __acad3dV136 */
+        polys.push({o:ob,pts:pts,z:zs/fc.length,n:faceNormal(wpts),col:col,lock:!bimLayerPickable(ob),la:bimLayerAlpha(ob)});   /* __acad3dV121 */
       }
     }
     polys.sort(function(a,b){return b.z-a.z;});
@@ -15580,7 +15306,7 @@ try{
       /* __acad3dV122: a canvas does not scale a shadow with its transform, so it is given in the
          canvas's own pixels -- the drawing's times its scale (pxs) */
       if(rg&&rg.shadow){ctx.shadowColor='rgba(0,0,0,0.45)';ctx.shadowBlur=10*pxs;ctx.shadowOffsetX=3*pxs;ctx.shadowOffsetY=4*pxs;}
-      var baseFill=pl.lens?pl.col:((rg&&rg.fill!=='none')?rg.fill:pl.col);   /* __acad3dV136: the lens over Presentation's fill */
+      var baseFill=(rg&&rg.fill!=='none')?rg.fill:pl.col;
       ctx.fillStyle=shade(baseFill,kk);
       ctx.globalAlpha=pl.la*(rg?rg.opacity:1);   /* __acad3dV121: the layer's transparency */
       ctx.fill();
@@ -15628,7 +15354,6 @@ try{
     drawAreaPlan(ctx,V,W,H);           /* __acad3dV105b */
     drawSunPath(ctx,V,W,H);            /* __acad3dV107 */
     drawRoomSchemeLegend(ctx,V,W,H);   /* __acad3dV105: the colour fill's legend, from what drawRooms just drew */
-    drawLensLegend(ctx,V,W,H);         /* __acad3dV136: the lens's and the data layers' legend, below it */
     drawNotes(ctx,V,W,H);          // __acad3dV82: the annotation overlay, above the model
     if(!capMode)drawSkLivePreview(ctx,V,W,H);   /* __acad3dV122: a tool's rubber band is not on the paper */
     if(!capMode){
@@ -32066,7 +31791,7 @@ try{
     ALIGN:'line up',BREAKATPOINT:'split',EXPORTPDF:'print save pdf',EXPORTPNG:'image picture screenshot',EXPORTDXF:'cad autocad',
     EXPORTSVG:'vector image',UNION:'boolean add merge combine',SUBTRACT:'boolean difference cut minus',INTERSECT:'boolean common',
     VIEW3D:'isometric iso 3d',VIEWTOP:'plan top',BOX:'cube block',CYLINDER:'tube pipe round',COMPONENT:'family furniture place',
-    LEVEL:'storey story floor elevation',SAVEVIEW:'camera bookmark',ROOMTAG:'label tag room',ROOMCOLOR:'color fill scheme department',COLOURBY:'color colour lens legend scheme theme thematic height usage heatmap',
+    LEVEL:'storey story floor elevation',SAVEVIEW:'camera bookmark',ROOMTAG:'label tag room',ROOMCOLOR:'color fill scheme department',
     WINDOW:'opening glazing',DOOR:'opening entrance',ROOF:'pitch slope',STAIR:'stairs steps',CEILING:'soffit'};
   var BIM_CMD_USE_KEY='acad3dCmdUsage';
   /* the chord each command answers to, from A3D_KEYS -- the shortcut sheet's own table */
@@ -33080,10 +32805,6 @@ try{
     if(el.propsbody)el.propsbody.addEventListener('click',function(ev){
       try{bimUsagePropClick(ev);}catch(eUK){console.warn('[BIM] Usage edit failed',eUK);a3dToast('That could not be changed - see the console');}
     });
-    /* __acad3dV136: the lens */
-    if(el.propsbody)el.propsbody.addEventListener('change',function(ev){
-      try{bimLensPropChange(ev);}catch(eLC){console.warn('[BIM] Colour by failed',eLC);a3dToast('That could not be changed - see the console');}
-    });
     /* __acad3dV135: find open data */
     if(el.propsbody)el.propsbody.addEventListener('change',function(ev){
       try{bimFindPropChange(ev);}catch(eFC){console.warn('[BIM] Find data setting failed',eFC);a3dToast('That could not be changed - see the console');}
@@ -33721,7 +33442,6 @@ try{
     room:function(){startRoomTool();},
     roomtag:function(){startRoomTagTool();},          /* __acad3dV101 */
     roomtagall:function(){bimTagAllRooms();},         /* __acad3dV101 */
-    colourby:function(){bimLensCommand();},          /* __acad3dV136 */
     roomcolor:function(){bimCycleRoomScheme();},       /* __acad3dV105 */
     tribarea:function(){bimToggleTrib();},             /* __acad3dV106 */
     areaplan:function(){bimToggleAreaPlan();},        /* __acad3dV105b */
@@ -33870,22 +33590,6 @@ try{
   window.__a3dDataToProperty=function(){var p=bimDataToProperty();return p?p.id:null;};
   window.__a3dDataDrawn=function(){return A3D.lastDataDrawn||0;};
   window.__a3dDataCredit=function(){return bimDataCreditHtml();};
-  /* __acad3dV136: the lens */
-  window.__a3dLens=function(by,prop){if(by!==undefined)bimLensSet(by,prop);return bimLensSettings();};
-  window.__a3dLensCol=function(id){var o=objById(id);A3D_LENS.cur=null;return o?bimLensCol(o):null;};
-  window.__a3dLensValue=function(id){var o=objById(id);return o?bimLensValue(o,bimLensSettings()):null;};
-  window.__a3dLensLegend=function(){return A3D.lastLensLegend?JSON.parse(JSON.stringify(A3D.lastLensLegend)):null;};
-  window.__a3dLensPropKeys=function(){return bimLensPropKeys();};
-  window.__a3dLensRamp=function(){return BIM_LENS_RAMP.slice();};
-  window.__a3dLensNone=function(){return BIM_LENS_NONE;};
-  window.__a3dDataAttrKeys=function(id){return bimDataAttrKeys(id);};
-  window.__a3dDataFeatCol=function(id,fi){var L=bimDataById(id);return L?bimDataFeatCol(L,bimDataLensScale(L),fi):null;};
-  window.__a3dLensCommand=function(){return bimLensCommand();};
-  window.__a3dTestLegendOnPaper=function(){var s=A3D.sheetCapture;A3D.sheetCapture=true;try{drawLensLegend(el.ctx,null,0,0);}finally{A3D.sheetCapture=s;}return A3D.lastLensLegend;};
-  window.__a3dTestLevelName=function(id,n){var i;for(i=0;i<A3D.levels.length;i++)if(A3D.levels[i].id===id){A3D.levels[i].name=n;A3D_LENS.cur=null;return true;}return false;};
-  window.__a3dTestObjSet=function(id,k,v){var o=objById(id);if(!o)return false;if(v===null)delete o[k];else o[k]=v;A3D_LENS.cur=null;return true;};
-  window.__acad3dV136='lensby,lensusage,lenslevel,lenstype,lenslayer,lensmaterial,lensheight,lensprop,lensramp,lensnovalue,lensgl,lens2d,'+
-    'lensoverpresentation,lensundo,lenssaved,lenslegend,datalens,dataopacity,lenspanel,lenscommand';
   /* __acad3dV135: find open data */
   window.__a3dFindPortals=function(){return JSON.parse(JSON.stringify(BIM_DATA_PORTALS));};
   window.__a3dFindPortal=function(h){if(h!==undefined)bimFindSetPortal(h);var P=bimFindCurrent();return P?JSON.parse(JSON.stringify(P)):null;};
