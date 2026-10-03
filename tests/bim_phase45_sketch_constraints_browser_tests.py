@@ -257,12 +257,12 @@ async def main():
           out.sketchId = sid;
 
           // Switch to the Modify ribbon tab, which carries the Constraints panel.
-          const tabBtn = document.querySelector('[data-dockgrp="a3dmodify"]')   /* AMENDED FOR V120: the hidden ribbon is gone; the tool dock has the group */;
+          const tabBtn = (window.__a3dDockOpenGroup('a3dmodify')&&document.querySelector('#a3d-rupop .a3d-rkcat[data-rkcat="tool:a3dmodify"]'))   /* AMENDED FOR V120: the hidden ribbon is gone; the tool dock has the group. AMENDED FOR V130: and the group's tools are in the Tools and shortcuts panel */;
           out.tabFound = !!tabBtn;
           if (tabBtn) tabBtn.click();
           await sleep(50);
 
-          const conBtn = document.querySelector('[data-a3dr="con:horizontal"]');
+          const conBtn = (window.__a3dToolsPanel(),document.querySelector('#a3d-rupop [data-a3dr="con:horizontal"]'));
           out.ribbonButtonFound = !!conBtn;
           if (conBtn) conBtn.click();
           await sleep(50);
@@ -292,7 +292,7 @@ async def main():
           out.horizAdded = consAfterHoriz.some(c => c.type === 'horizontal');
 
           // Now a Distance constraint, which routes through a value dialog.
-          document.querySelector('[data-a3dr="con:distance"]').click();
+          (window.__a3dToolsPanel(),document.querySelector('#a3d-rupop [data-a3dr="con:distance"]')).click();
           await sleep(30);
           clickGrip(0);
           await sleep(30);
@@ -315,7 +315,7 @@ async def main():
           out.dofRowInProps = propsHtml.indexOf('Degrees of Freedom') >= 0;
 
           // Escape cancels an in-progress pick.
-          document.querySelector('[data-a3dr="con:parallel"]').click();
+          (window.__a3dToolsPanel(),document.querySelector('#a3d-rupop [data-a3dr="con:parallel"]')).click();
           await sleep(30);
           out.pickArmedBeforeEscape = !!window.__a3dConPickState();
           window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));

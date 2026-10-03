@@ -203,13 +203,13 @@ PROBE_RIBBON = r"""
   res.hasLabelHook = !!window.__a3drLabel;
 
   // Ribbon buttons present in the DOM (Modify tab's Constraints panel).
-  const tabBtn = document.querySelector('[data-dockgrp="a3dmodify"]')   /* AMENDED FOR V120: the hidden ribbon is gone; the tool dock has the group */;
+  const tabBtn = (window.__a3dDockOpenGroup('a3dmodify')&&document.querySelector('#a3d-rupop .a3d-rkcat[data-rkcat="tool:a3dmodify"]'))   /* AMENDED FOR V120: the hidden ribbon is gone; the tool dock has the group. AMENDED FOR V130: and the group's tools are in the Tools and shortcuts panel */;
   if (tabBtn) tabBtn.click();
   res.buttonsFound = {
-    pointonline: !!document.querySelector('[data-a3dr="con:pointonline"]'),
-    midpoint: !!document.querySelector('[data-a3dr="con:midpoint"]'),
-    symmetric_pt: !!document.querySelector('[data-a3dr="con:symmetric_pt"]'),
-    symmetric_line: !!document.querySelector('[data-a3dr="con:symmetric_line"]')
+    pointonline: !!(window.__a3dToolsPanel(),document.querySelector('#a3d-rupop [data-a3dr="con:pointonline"]')),
+    midpoint: !!(window.__a3dToolsPanel(),document.querySelector('#a3d-rupop [data-a3dr="con:midpoint"]')),
+    symmetric_pt: !!(window.__a3dToolsPanel(),document.querySelector('#a3d-rupop [data-a3dr="con:symmetric_pt"]')),
+    symmetric_line: !!(window.__a3dToolsPanel(),document.querySelector('#a3d-rupop [data-a3dr="con:symmetric_line"]'))
   };
   return res;
 }

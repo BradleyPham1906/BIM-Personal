@@ -12,7 +12,9 @@ VARIANTS = {
     'panel_not_centred': [("    if(id==='help'){left=Math.max(8,(window.innerWidth-pw)/2);top=Math.max(8,(window.innerHeight-ph)/2);}   /* __acad3dV129 */\n", "")],
     'panel_not_a_sheet': [("    p.classList.toggle('a3d-rksheet',id==='help');", "    p.classList.toggle('a3d-rksheet',false);")],
     'no_question_key': [("        if(e.key==='?'&&window.__a3dRunCmd){e.preventDefault();window.__a3dRunCmd('shortcuts');return;}\n", "")],
-    'shortcuts_toggles_closed': [("      if(hp&&hp.classList.contains('open')&&hp.getAttribute('data-for')==='help')return;\n", "")],
+    # RETIRED IN V130: 'shortcuts_toggles_closed' removed SHORTCUTS' own already-open guard. V130 moved the
+    # guard into bimOpenToolsPanel, which every way in (SHORTCUTS, ?, All tools) goes through; V130's
+    # 'panel_toggles_closed' removes it there.
     'no_categories': [("      nav+='<button type=\"button\" class=\"a3d-rkcat\" data-rkcat=", "      if(0)nav+='<button type=\"button\" class=\"a3d-rkcat\" data-rkcat=")],
     'category_ignored': [("ok=(cat==='all'||e.getAttribute('data-rkg')===cat)&&words.every(", "ok=words.every(")],
     'category_not_marked': [("cats[ci].setAttribute('aria-pressed',on?'true':'false');", "")],
@@ -27,12 +29,18 @@ VARIANTS = {
     'no_typing_note': [("      if(g.note)list+='<div class=\"a3d-rkgnote\"", "      if(0)list+='<div class=\"a3d-rkgnote\"")],
     'note_outlives_its_rows': [("{if(grp){grp.hidden=!any;if(note)note.hidden=!any;}grp=e;note=null;", "{if(grp){grp.hidden=!any;}grp=e;note=null;")],
     # ---- 129b: the dock
-    'no_dock_names': [("(names?'<span class=\"a3d-dblbl\">'+bimEsc(a3drLabel(prim[i]))+'</span>':'')", "''")],
-    'no_group_labels': [("h+='</div><span class=\"a3d-dglbl\">'+bimEsc(tab.name)+'</span></div>';", "h+='</div></div>';")],
-    'native_title_back': [("'<button type=\"button\" class=\"a3d-dbtn\" data-a3dr=\"'+prim[i]+'\" data-a3dtip=", "'<button type=\"button\" class=\"a3d-dbtn\" title=\"'+bimEsc(a3drLabel(prim[i]))+'\" data-a3dr=\"'+prim[i]+'\" data-a3dtip=")],
-    'bare_caret': [("(names?A3DR_MORE_ICON+'<span class=\"a3d-dblbl\">More</span>':'\\u25b4')", "'\\u25b4'")],
-    'search_icon_only': [("A3DR_SEARCH_ICON+'<span>Search tools and commands</span><kbd>'+bimEsc(A3D_MODKEY)+' K</kbd></button>'", "A3DR_SEARCH_ICON+'</button>'")],
-    'dock_tall': [("#a3d-dock.a3d-docklabels .a3d-dbtn{width:60px;height:38px;", "#a3d-dock.a3d-docklabels .a3d-dbtn{width:60px;height:56px;")],
+    # RE-ANCHORED IN V130: the dock's buttons are the pinned tools, built in one loop over pins[i]
+    'no_dock_names': [("(names?'<span class=\"a3d-dblbl\">'+bimEsc(a3drLabel(a))+'</span>':'')", "''")],
+    # RETIRED IN V130: 'no_group_labels' removed the names under the dock's groups. The owner found the
+    # dock crowded and it became one row of pinned tools, with no groups to name.
+    # RE-ANCHORED IN V130: the pinned tools' button
+    'native_title_back': [("h+='<button type=\"button\" class=\"a3d-dbtn\" data-a3dr=\"'+a+'\" data-a3dtip=", "h+='<button type=\"button\" class=\"a3d-dbtn\" title=\"'+bimEsc(a3drLabel(a))+'\" data-a3dr=\"'+a+'\" data-a3dtip=")],
+    # RETIRED IN V130: 'bare_caret' put the bare triangle back on the groups' More buttons, which went
+    # with the groups; All tools opens the rest.
+    # RE-ANCHORED IN V130: the one-row dock's pill reads Search
+    'search_icon_only': [("A3DR_SEARCH_ICON+'<span>Search</span><kbd>'+bimEsc(A3D_MODKEY)+' K</kbd></button>'", "A3DR_SEARCH_ICON+'</button>'")],
+    # RETIRED IN V130: 'dock_tall' made the labelled buttons 56px; a one-row dock stays far inside this
+    # suite's 150px, so it is V130's suite that holds the dock to 60px, and V130's 'dock_tall' that tests it.
     'no_tooltip_delay': [("A3D_TIP.timer=setTimeout(function(){A3D_TIP.timer=null;bimTipShow(tg);},350);", "A3D_TIP.timer=setTimeout(function(){A3D_TIP.timer=null;bimTipShow(tg);},0);")],
     'no_hover_tooltip': [("A3D_TIP.timer=setTimeout(function(){A3D_TIP.timer=null;bimTipShow(tg);},350);", "")],
     'tooltip_not_on_focus': [("      bimTipHide();if(tg&&tg.matches(':focus-visible'))bimTipShow(tg);", "      bimTipHide();")],

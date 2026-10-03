@@ -217,9 +217,10 @@ async def run():
         print("     " + str(hits))
         ck(hits['dockButton'][0] >= 32 and hits['dockButton'][1] >= 30,
            "dock buttons are at least 32x30 (%s)" % hits['dockButton'])
-        ck(hits['dockCaret'][0] >= 20,
-           "the dock caret is at least 20px wide (%s) -- it was a 13px sliver, and it is the "
-           "control that opens the rest of every group" % hits['dockCaret'])
+        # AMENDED FOR V130: the groups' carets are retired; All tools is the control that opens the rest
+        ck(hits['dockAll'] and hits['dockAll'][0] >= 32 and hits['dockAll'][1] >= 30,
+           "the dock's All tools button is at least 32x30 (%s) -- the caret it replaces was once a "
+           "13px sliver, and it is the control that opens the rest" % hits['dockAll'])
         ck(hits['propGroupCaret'] and hits['propGroupCaret'][0] >= 20
            and hits['propGroupCaret'][1] >= 20,
            "the property-group caret has a real box (%s)" % hits['propGroupCaret'])

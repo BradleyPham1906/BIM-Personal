@@ -2,11 +2,11 @@
 
 **Read this first in a new session.** One page. The detail lives in the docs listed at the bottom.
 
-    canvas_v10.html   1,777,975 bytes
-    sha256            54d61a42f944669ba375292066df6467a31643de8b852a04b6295252045ed4f3
-    markers           __acad3dV60 ... __acad3dV129, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
+    canvas_v10.html   1,787,923 bytes
+    sha256            8d5857417d52274ebe35817b5eedc47866b3f07df62aed64cfaffcdb572459b8
+    markers           __acad3dV60 ... __acad3dV130, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
                       __acad3dV121b
-    tests             85 suites, 2957 checks, 0 failures
+    tests             86 suites, 3008 checks, 0 failures
 
     Run the regression in parallel: tests/run_all.py [build] [filter] [-jN], default -j6,
     about 4 minutes; give it the build's absolute path. tests/falsify_all.py
@@ -22,25 +22,27 @@ with anchored Python scripts that assert exact match counts.
 
 ---
 
-## NOW - Track B: connector-based MEP runs (V130)
+## NOW - ideas from Giraffe, then the MEP runs (V131 to V134)
 
-V128 and V129 took the owner's word first, on commands and shortcuts (see Recently finished):
+The owner looked at Giraffe (giraffe.build), a map-first feasibility app, and chose four of its
+ideas, ahead of the MEP runs. The research is in `reference/research-giraffe.md`.
+
+V128 to V130 settled how commands are found (see Recently finished):
 - **V128:** one command search over every command and tool.
-- **V129:** a shortcuts panel with categories, and a dock that names its tools and groups, with
-  real tooltips.
+- **V129:** a centred shortcuts panel, and real tooltips.
+- **V130:** that panel holds every tool too. The dock is one row of the tools pinned for the
+  discipline.
 
-Every new command from here goes into the search (`CADCMDS` or the ribbon registry, with synonyms
-in `BIM_CMD_TERMS`). Every new key goes in `A3D_KEYS`, with the command it runs (`cmd`). A new
-dock tool gets its name and tooltip from the ribbon registry. Check any chrome change against the
-drawing space: V129's first dock took 53 px and broke four suites' geometry.
-
-V125 to V127 built Track B items 1 to 3:
-- V125: the frame model and solve.
-- V126: steel and concrete sections.
-- V127: alignments, profiles and stations (see Recently finished).
-
-Item 4 is the last of the object model: ducts and pipes as runs that connect, with a size and a
-flow.
+**Rules for new commands and keys:**
+- A new command goes into the search (`CADCMDS` or the ribbon registry, with synonyms in
+  `BIM_CMD_TERMS`).
+- A new key goes in `A3D_KEYS`, with the command it runs (`cmd`).
+- A new ribbon tool appears in the Tools and shortcuts panel by itself. Only add it to
+  `A3D_DOCK_PIN_DEFAULTS` if it is one of a discipline's few most-used tools.
+- Check any chrome change against the drawing space and the suites' fitted views:
+  - V129's taller dock broke four suites' geometry.
+  - V130's shorter one put a sketch's midpoint grip under the gizmo's X box in V110 (a grip wins
+    a press, V97).
 
 **Design rule (owner, V125):** keep the interface clean and consistent, following Rhino's model
 (see `reference/research-structural-ui.md`).
@@ -50,12 +52,16 @@ flow.
 
 | # | Phase | Scope | Notes |
 |---|---|---|---|
-| 130 | MEP runs | Duct and pipe as runs of segments and fittings joined at connectors (elbows, tees, reducers made where runs meet); a size and a system on each run; flow summed downstream from terminals, and velocity and friction loss per segment | **Start here.** Research first: how Revit MEP connectors and systems work, and the ASHRAE duct-friction and Darcy-Weisbach / Hazen-Williams pipe equations. Check them against their closed forms, as V125 did. A run is drawn like V127's alignment: derived geometry from stored points, set in Properties. |
+| 131 | Usages and live areas | A usage (Residential, Retail, Office...) on rooms and masses: a colour and GBA→GFA→NSA efficiencies, defined once and edited in Properties. A live area table for the selection, by usage and level | **Start here.** Giraffe's Usages (`reference/research-giraffe.md`). Research first: area definitions (GBA, GFA, NSA, and the IPMS / BOMA / local equivalents) and how Revit's Area Schemes do it. Builds on rooms, Areas by Level and the schedules. |
+| 132 | Colour-by-property lens | Colour the model by usage, level, type, material or any property, with a legend. A display under Appearance, turned on and off like ANALYZE | Giraffe's lenses; Revit's colour schemes and view filters. |
+| 133 | Design scenarios | Options within one project, switched between and compared by their numbers side by side | Giraffe's scenarios; Revit's Design Options. |
+| 134 | MEP runs | Duct and pipe as runs of segments and fittings joined at connectors (elbows, tees, reducers made where runs meet); a size and a system on each run; flow summed downstream from terminals, and velocity and friction loss per segment | Track B item 4. MEP is its own discipline in the dock's picker (the owner's choice), with HVAC, Plumbing and Systems groups. The research is drafted in `reference/research-mep-runs.md`: Revit connectors, Darcy-Weisbach with Colebrook, and Hazen-Williams. Check against the closed forms, as V125 did. |
+| later | Flows and an app SDK | Per-object node graphs (Giraffe's Flows, a light Grasshopper); a documented plugin API of read-only state snapshots with listeners and named commands over postMessage | The engine's `__a3dRegisterCommand`, `__a3dRegisterDiscipline` and `__a3dRegisterTab` are the start of it. |
 
 ### LATER - Track A, drafting (moved behind Track B in V100)
 
 The numbers in this table are its order, not phase numbers: a phase takes the next free V number
-when it starts (V111 to V129 went to other work; V130 is in NOW).
+when it starts (V111 to V130 went to other work; V131 to V134 are in NOW).
 
 | # | Phase | Scope | Notes |
 |---|---|---|---|
@@ -69,8 +75,23 @@ when it starts (V111 to V129 went to other work; V130 is in NOW).
 | 118 | Blocks and data | ATTDEF ATTEDIT BEDIT WBLOCK DATAEXTRACTION TABLESTYLE TABLEDIT TABLEEXPORT | First phase that's about the disciplines, not drafting. BLOCK and INSERT landed in V124, as the Assets library's blocks: saved records inserted as independent copies. A block reference that follows its definition (what BEDIT edits) is not built. |
 | 119 | Sheets and plotting, rest | MVIEW (draw a viewport on the paper) PAGESETUP (plot settings beyond Sheet Setup) PUBLISH (V122's Print set prints every sheet in one job; a chosen subset and page setups remain) EXPORTPDF (vector PDF of a sheet) VPLAYER (per-viewport layer visibility) viewport lock | LAYOUT, MSPACE and PSPACE landed in V116, with layout tabs and model space through a viewport. |
 
-**Recently finished:** Phase 129 (V129), **the shortcuts panel and a labelled dock**, the owner's
-request, built to a mockup the owner approved.
+**Recently finished:** Phase 130 (V130), **every tool in one panel, and a dock of the few used
+most**, the owner's request ("this tool bar is very crowded ... only show the keys one").
+- **The panel:** Tools and shortcuts lists every ribbon tool, grouped by tab, then every key. It has:
+  - one search;
+  - All / Tools / Keys filters;
+  - sorting by group, by name, or by most used;
+  - an On the dock list, and a pin on each tool.
+
+  A row runs its tool.
+- **The dock:** one row, about 50 px tall against V129's 143. It holds the discipline, the tools
+  pinned for it (the most used by default, twelve at most), All tools (`?`) and the search.
+- **Checked** in 59 checks and 21 falsify variants. Sixteen older suites were amended, because their
+  tools moved from the dock's More menus into the panel. V129's falsify retired three variants and
+  re-anchored three.
+
+Phase 129 (V129), **the shortcuts panel and a labelled dock**, the owner's request, built to a
+mockup the owner approved.
 - **The panel:** `?` or SHORTCUTS opens it centred over the drawing, with a search, categories
   with counts, and the keys in a right-hand column beside the command to type. Typing points (x,y,
   d<a) is its own page.

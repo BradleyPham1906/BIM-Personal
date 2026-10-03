@@ -1250,10 +1250,10 @@ async def run():
         ck(v == '5000' and b2 and near(b2['mx'][1] - b2['mn'][1], 6, 1e-9),
            "in millimetres it reads 5000, and 6000 makes it 6 m (%s)" % v)
         await safe("()=>window.__a3dSetUnits('m')")
-        acts = await safe("()=>window.__a3dDockActions()")
+        # AMENDED FOR V130: the dock holds the pinned few; every other tool is a row of Tools and shortcuts
+        acts = await safe("()=>window.__a3dToolActions()")
         ck(acts is not None and 'bim:presspull' in acts, "Push/Pull is on the toolbar")
-        ok = await safe("""()=>{var b=document.querySelector('#a3d-dock [data-a3dr="bim:presspull"]');if(!b)return false;
-          var p=b.closest('.a3d-dockpop');if(p&&!p.classList.contains('open')){var id=p.getAttribute('data-dockpop');window.__a3dDockOpenGroup(id);}
+        ok = await safe("""()=>{window.__a3dToolsPanel();var b=document.querySelector('#a3d-rupop [data-a3dr="bim:presspull"]');if(!b)return false;
           b.click();return true;}""")
         pend = await safe("()=>window.__a3dFacePending()")
         ck(ok and pend and pend['facePick'], "and clicking it waits for a face, as PRESSPULL does")

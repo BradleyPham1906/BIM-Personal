@@ -11008,3 +11008,114 @@ variant `category_any_click` restores the bug.
     sha256            54d61a42f944669ba375292066df6467a31643de8b852a04b6295252045ed4f3
     markers           __acad3dV60 ... __acad3dV129, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
                       __acad3dV121b
+
+## Phase 130 (V130) - Every tool in one panel, and a dock of the few used most
+
+The owner, on the V129 dock: "this tool bar is very crowded. I say we combine it in the shortcut
+table and use search, filter sorting. group the features and stuff here. and in the main screen
+only show the keys one (those that most likely use the most)". The research is in
+`reference/research-tools-panel.md`. While this phase was open, the owner also had Giraffe
+researched (`reference/research-giraffe.md`) and chose four of its ideas, ahead of the MEP runs
+(now V134). See `PIPELINE.md`.
+
+### What was built (patches 130a to 130c)
+
+- **a -- the panel and the dock.**
+  - **Tools and shortcuts** (`bimShortcutsHtml`) lists every ribbon action once, grouped by its tab
+    in `A3DR_TABS`. A tool's first tab wins, and an action the search leaves out (`BIM_ACT_HIDE`)
+    is still listed. Every key follows, grouped as before.
+  - **A tool row** has its icon, name and what it does, the command to type, its keys, and a pin.
+    - A click runs it through the document's `data-a3dr` dispatcher, and the panel goes away.
+    - A tool not built yet is greyed, has no `data-a3dr`, and has no pin.
+  - **The bar** offers All / Tools / Keys (`data-rkkind`), and a sort (`bimSortShortcuts`):
+    - by group, which puts every row back by its `data-rkord`;
+    - by name;
+    - by most used, from the V128 usage counts.
+
+    It also says how many rows are shown.
+  - **The categories** are All, On the dock, then the tabs (under Tools) and the key groups (under
+    Keys).
+  - **The dock** (`bimBuildDock`) is one row: the discipline, the pinned tools, All tools and a
+    compact search.
+    - **Pins:** `bimDockPins` reads them per discipline from `acad3dUIPrefs.dockPins`. The
+      defaults (`A3D_DOCK_PIN_DEFAULTS`) are the tools each discipline uses most. A discipline
+      added later starts with its own tabs' first tools. Twelve at most; a tool not built yet is
+      never shown.
+  - **Usage:** a tool run from the dock or the panel counts as a use (`bimActUsed`), so Most used
+    reflects the whole app.
+  - **One way in:** SHORTCUTS, `?` and All tools all open the panel through `bimOpenToolsPanel`,
+    which never toggles it shut.
+- **b -- the hooks:**
+  - `__a3dDockPins`, `__a3dSetDockPin`, `__a3dDockPinDefaults`;
+  - `__a3dToolsPanel`, `__a3dToolActions`, `__a3dCmdUsageOf`;
+  - `__a3dDockOpenGroup`, which now opens the panel on that group;
+  - the marker.
+- **c -- what the More menus left behind,** removed as V120's audit asks:
+  - the pop-up, caret, header and group-label rules;
+  - `.a3dr-dis`, which only the menus carried;
+  - `a3drDockRows`, the menus' open and close code, and `__a3dDockPopGeom`;
+  - the More tooltip text.
+
+  `__a3dHitSizes` now measures All tools.
+
+### Bugs found, and what each taught
+
+**1. Sixteen suites clicked tools that were no longer on the page.** The More menus had rendered
+every group's tools into the DOM, hidden. Tests found them with
+`document.querySelector('[data-a3dr="…"]')` and clicked them, as a person never could. Each now
+opens the panel first and clicks the row, as a person does:
+- V45, V46-48, V49, V101, V102, V103, V119, V120, V123, V124 and V127.
+
+The suites that tested the dock's own shape were rewritten for the one-row dock and the panel:
+- V70, V71, V73, V85 and V129.
+
+**2. A shorter dock moved V110's fixture under a grip.** The dock went from 143 px to about 50, so
+zoom-to-selection fitted the 4 × 2 sketch larger. Its left edge's midpoint grip then sat exactly
+under the gizmo's fixed-size X box, and a grip wins a press (V97, on purpose). So the "stretch"
+inserted a vertex. The fixture is now a 2 × 4 sketch, whose edges stay inside the box at any fit.
+**A change to the chrome changes every suite's fitted view (V129's lesson, from the other side).**
+
+**3. Falsification found a guard made redundant.** V129's SHORTCUTS kept its own "already open,
+stay open" guard, and V130 put the same guard in `bimOpenToolsPanel`, so removing V129's changed
+nothing. The duplicate is gone. V130's suite now checks that All tools and SHORTCUTS each leave the
+panel open, and `panel_toggles_closed` tests the one guard.
+
+**4. A search-hidden action fell out of the panel.** The first panel skipped `BIM_ACT_HIDE`
+(`bim:levels`), which hides an action only from the search. V70 caught it: every ribbon action must
+be reachable. The suite now checks that the rows are exactly `__a3dToolActions()`.
+
+### Deliberately not done
+
+- Reordering the pins by dragging.
+- Pins that follow a person across browsers.
+- An automatic dock that re-orders itself by use: adaptive menus that move items slow people down,
+  so the dock is adaptable, and Most used points the user at what to pin.
+
+### Suites
+
+- New: `bim_phase130_tools_panel_dock_browser_tests.py`, 59 checks in eight sections:
+  - the one-row dock;
+  - pins per discipline;
+  - every tool once in the panel;
+  - the kind filter;
+  - one search;
+  - the three sorts and use counting;
+  - pinning, the maximum, and persistence;
+  - a row runs, and the one way in.
+- Falsified by 21 variants, all 21 caught (`Phase/falsify_phase130.py`).
+- `Phase/falsify_phase129.py`: three variants retired (`no_group_labels`, `bare_caret`,
+  `dock_tall`) and one more (`shortcuts_toggles_closed`, bug 3). Three were re-anchored to the new
+  dock (`no_dock_names`, `native_title_back`, `search_icon_only`). Result: 30 variants, 30 caught.
+- `Phase/falsify_phase128.py`: 38 of 38 caught.
+
+### Full regression
+
+86 suites, 3008 checks, 0 failures. Falsification: V130 21 of 21, V129 30 of 30, V128 38 of 38. The patch chain rebuilds the build byte for byte from
+`Phase/canvas_v10.html.bak_phase130_pre`.
+
+### State after V130
+
+    canvas_v10.html   1,787,923 bytes
+    sha256            8d5857417d52274ebe35817b5eedc47866b3f07df62aed64cfaffcdb572459b8
+    markers           __acad3dV60 ... __acad3dV130, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
+                      __acad3dV121b

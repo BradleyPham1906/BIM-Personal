@@ -182,11 +182,11 @@ async () => {
   const wallId = window.__a3dWall([[90, 0], [94, 0]], 0.2, 3, 'center', false);
   out.wallId = wallId;
 
-  const tabBtn = document.querySelector('[data-dockgrp="a3dmanage"]')   /* AMENDED FOR V120: the hidden ribbon is gone; the tool dock has the group */;
+  const tabBtn = (window.__a3dDockOpenGroup('a3dmanage')&&document.querySelector('#a3d-rupop .a3d-rkcat[data-rkcat="tool:a3dmanage"]'))   /* AMENDED FOR V120: the hidden ribbon is gone; the tool dock has the group. AMENDED FOR V130: and the group's tools are in the Tools and shortcuts panel */;
   out.tabFound = !!tabBtn;
   if (tabBtn) tabBtn.click();
   await sleep(50);
-  const ribbonBtn = document.querySelector('[data-a3dr="bim:classification"]');
+  const ribbonBtn = (window.__a3dToolsPanel(),document.querySelector('#a3d-rupop [data-a3dr="bim:classification"]'));
   out.ribbonBtnFound = !!ribbonBtn;
   if (ribbonBtn) ribbonBtn.click();
   await sleep(50);
@@ -291,10 +291,10 @@ PROBE_UI_CHECK_MODEL = r"""
 async () => {
   const out = {};
   const sleep = (ms) => new Promise(r => setTimeout(r, ms));
-  const tabBtn = document.querySelector('[data-dockgrp="a3dmanage"]')   /* AMENDED FOR V120: the hidden ribbon is gone; the tool dock has the group */;
+  const tabBtn = (window.__a3dDockOpenGroup('a3dmanage')&&document.querySelector('#a3d-rupop .a3d-rkcat[data-rkcat="tool:a3dmanage"]'))   /* AMENDED FOR V120: the hidden ribbon is gone; the tool dock has the group. AMENDED FOR V130: and the group's tools are in the Tools and shortcuts panel */;
   if (tabBtn) tabBtn.click();
   await sleep(50);
-  const btn = document.querySelector('[data-a3dr="bim:checkmodel"]');
+  const btn = (window.__a3dToolsPanel(),document.querySelector('#a3d-rupop [data-a3dr="bim:checkmodel"]'));
   out.btnFound = !!btn;
   if (btn) btn.click();
   await sleep(60);

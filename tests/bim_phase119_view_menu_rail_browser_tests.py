@@ -139,6 +139,13 @@ async def drive(ck):
                 print('      (nothing visible to click for %s)' % sel)
             return box is not None
 
+        # AMENDED FOR V130: the dock holds the pinned few (Top, 3D View and Section are not among
+        # them); every tool is a row of the Tools and shortcuts panel, which a click on a row closes
+        async def tool_sel(sel):
+            await safe("()=>window.__a3dToolsPanel()")
+            await page.wait_for_timeout(150)
+            await click_sel(sel)
+
         async def blur():
             await safe("()=>{if(document.activeElement&&document.activeElement.blur)document.activeElement.blur();}")
 
@@ -286,10 +293,10 @@ async def drive(ck):
            'orbited and zoomed out, its Home opens the 3D view framed as it starts: yaw -0.7, distance 30 (%s -> %s)'
            % (moved3d and (moved3d['yaw'], moved3d['dist']), c2))
         await consistent('after the cube\'s Home')
-        await click_sel('#a3d-dock [data-a3dr="v:top"]')
+        await tool_sel('#a3d-rupop [data-a3dr="v:top"]')
         d1 = await view()
         await consistent('after the dock\'s Top')
-        await click_sel('#a3d-dock [data-a3dr="v:iso"]')
+        await tool_sel('#a3d-rupop [data-a3dr="v:iso"]')
         d2 = await view()
         await consistent('after the dock\'s 3D View')
         ck(d1 and d2 and d1['kind'] == 'plan' and d1['hud'] == v0['name'] and d2['kind'] == '3d' and d2['hud'] == '3D View',
@@ -315,7 +322,7 @@ async def drive(ck):
         await click_sel('#a3d-leftpanel [data-a3dbplan]')
 
         async def draw_section():
-            await click_sel('#a3d-dock [data-a3dr="bim:section"]')
+            await tool_sel('#a3d-rupop [data-a3dr="bim:section"]')
             a = await safe("()=>window.__a3dToScreen([0,-3])")
             b = await safe("()=>window.__a3dToScreen([0,3])")
             cbx = await canvas_box()
@@ -363,7 +370,7 @@ async def drive(ck):
 
         # started in an elevation, the tool cuts from the plan and Escape goes back to the elevation
         await click_sel('#a3d-leftpanel [data-a3dbviewpreset="front"]')
-        await click_sel('#a3d-dock [data-a3dr="bim:section"]')
+        await tool_sel('#a3d-rupop [data-a3dr="bim:section"]')
         e0 = await view()
         a = await safe("()=>window.__a3dToScreen([0,-3])")
         b = await safe("()=>window.__a3dToScreen([0,3])")

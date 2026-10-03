@@ -175,11 +175,12 @@ async def run():
            "Escape ends it and adds nothing")
         tA = ([t['id'] for t in tags if t['roomId'] == A] or [None])[0]
         tB = ([t['id'] for t in tags if t['roomId'] == B] or [None])[0]
-        rib = await page.evaluate("""()=>{const es=[...document.querySelectorAll('[data-a3dr="bim:tagroom"]')];
+        rib = await page.evaluate("""()=>{window.__a3dToolsPanel();const es=[...document.querySelectorAll('#a3d-rupop [data-a3dr="bim:tagroom"],#a3d-rupop .a3d-rktool[data-rkact="bim:tagroom"].off')];   /* AMENDED FOR V130: the dock's More menus are gone; a ribbon tool is a row of the Tools and shortcuts panel, opened first */
+            es.forEach(e=>{if(e.classList.contains('off'))e.classList.add('a3dr-dis');});
             return {n:es.length,dis:es.filter(e=>e.classList.contains('a3dr-dis')).length};}""")
         ck(rib['n'] >= 1 and rib['dis'] == 0,
            "the ribbon's Tag Room button is no longer greyed as unimplemented (%s)" % rib)
-        await page.evaluate("()=>{const e=document.querySelector('[data-a3dr=\"bim:tagroom\"]');if(e)e.click();}")
+        await page.evaluate("()=>{window.__a3dToolsPanel();const e=document.querySelector('#a3d-rupop [data-a3dr=\"bim:tagroom\"]');if(e)e.click();}")
         await page.wait_for_timeout(250)
         pr2 = await page.evaluate("()=>window.__a3dPrompt()")
         ck('tag' in pr2.lower(), "and pressing it starts the tag command (%r)" % pr2)

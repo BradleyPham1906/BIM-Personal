@@ -442,7 +442,10 @@ async def run():
         st = await safe("(id)=>window.__t110.snap(id).pos", box)
         ck(st is not None, "and Shift did not pan instead")
 
-        sk = await setup("function(){return window.__a3dSketch('rect',[[0,0],[4,2]]);}", ortho=True)
+        # AMENDED FOR V130: a 4 x 2 rectangle zoomed to fill the view put its left edge's midpoint grip
+        # exactly under the X box once the slimmer dock gave the drawing more room, and a grip wins a
+        # press (V97). A rectangle deeper than it is wide keeps its edges inside the box at any fit.
+        sk = await setup("function(){return window.__a3dSketch('rect',[[0,0],[2,4]]);}", ortho=True)
         g = await gizmo()
         ck(g is not None and g['caps']['scale'] == {'x': True, 'y': False, 'z': True} and g['caps']['tilt'] is False
            and not g['tilts'],

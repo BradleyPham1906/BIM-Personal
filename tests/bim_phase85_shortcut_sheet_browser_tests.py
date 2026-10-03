@@ -91,7 +91,7 @@ async def open_help(page):
               left:r.left,top:r.top,right:r.right,bottom:r.bottom,
               w:r.width,h:r.height,
               rows:[...p.querySelectorAll('.a3d-rkrow')].length,
-              grps:[...p.querySelectorAll('.a3d-rkgrp')].map(e=>e.textContent.trim())};
+              grps:[...p.querySelectorAll('.a3d-rkgrp')].filter(e=>(e.getAttribute('data-rkg')||'').indexOf('tool:')!==0).map(e=>e.textContent.trim())};   /* AMENDED FOR V130: the panel lists the tools too; these are the key groups */
     }""")
 
 
@@ -155,7 +155,8 @@ async def run():
                "at top 1109 while every state check passed"
                % (pop['left'], pop['top'], pop['right'], pop['bottom']))
 
-        keys_in_dom = await page.evaluate("""()=>[...document.querySelectorAll('#a3d-rupop .a3d-rkrow')]
+        # AMENDED FOR V130: the panel is Tools and shortcuts; the registry's rows are its key rows
+        keys_in_dom = await page.evaluate("""()=>[...document.querySelectorAll('#a3d-rupop .a3d-rkrow[data-rkkind="key"]')]
           .map(r=>({keys:[...r.querySelectorAll('kbd')].map(k=>k.textContent.trim()),
                     label:r.querySelector('.a3d-rklab').textContent.trim()}))""")
         reg = await page.evaluate("()=>window.__a3dShortcuts()")

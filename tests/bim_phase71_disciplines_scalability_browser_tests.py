@@ -105,10 +105,6 @@ class Checks:
             self.failed.append(msg)
 
 
-def group_ids(info):
-    return [g['id'] for g in info['groups']]
-
-
 async def run():
     ck = Checks()
     async with async_playwright() as pw:
@@ -142,20 +138,30 @@ async def run():
            "two disciplines ship (%s)" % [d['id'] for d in discs])
         ck(await page.evaluate("()=>window.__a3dDiscipline()") == 'arch',
            "Architecture is the default")
-        arch = group_ids(await page.evaluate("()=>window.__a3dDockInfo()"))
-        ck('arch' in arch, "the Architecture group is in the dock")
-        ck('struct' not in arch,
-           "and Structure is NOT, so a domain's tools are not on screen while you work in "
+        # AMENDED FOR V130. The dock is one row of the tools pinned for the active discipline (the
+        # owner: "only show the keys one"); every tool of every tab is in the Tools and shortcuts
+        # panel. The filter these checks meant is the dock's: a domain's tools are not on it while
+        # you work in another, and the shared tools are listed whatever the discipline.
+        arch = await page.evaluate("()=>window.__a3dDockActions()")
+        ck('bim:wall' in arch, "the Architecture tools are on the dock (%s)" % arch)
+        ck('bim:beam' not in arch and 'bim:analyze' not in arch,
+           "and Structure's are NOT, so a domain's tools are not on screen while you work in "
            "another (%s)" % arch)
-        shared = [g for g in arch if g not in ('__disc', 'arch')]
+        async def panel_groups():
+            await page.evaluate("()=>window.__a3dToolsPanel()")
+            await page.wait_for_timeout(200)
+            g = await page.evaluate("()=>[...document.querySelectorAll('#a3d-rupop .a3d-rkcat')].map(c=>c.getAttribute('data-rkcat')).filter(c=>c.indexOf('tool:')===0)")
+            await page.evaluate("()=>document.querySelector('#a3d-rupop [data-rkclose]').click()")
+            return g
+        shared = [g for g in await panel_groups() if g not in ('tool:arch', 'tool:struct')]
         ck(len(shared) >= 6,
-           "the shared tabs stay regardless of discipline (%s)" % shared)
+           "the shared tabs are all in the tools panel (%s)" % shared)
         await page.evaluate("()=>window.__a3dSetDiscipline('struct')")
         await page.wait_for_timeout(300)
-        struct = group_ids(await page.evaluate("()=>window.__a3dDockInfo()"))
-        ck('struct' in struct and 'arch' not in struct,
-           "switching swaps the domain group (%s)" % struct)
-        ck([g for g in struct if g not in ('__disc', 'struct')] == shared,
+        struct = await page.evaluate("()=>window.__a3dDockActions()")
+        ck('bim:beam' in struct and 'bim:door' not in struct,
+           "switching swaps the domain's tools on the dock (%s)" % struct)
+        ck([g for g in await panel_groups() if g not in ('tool:arch', 'tool:struct')] == shared,
            "and leaves the shared tabs exactly as they were")
         await page.evaluate("()=>window.__a3dSetDiscipline('arch')")
         await page.wait_for_timeout(250)
@@ -163,7 +169,6 @@ async def run():
            "an unknown discipline is refused rather than blanking the dock")
 
         print("\n-- 3. a whole new engineering domain, added through the public API only")
-        rows_before = (await page.evaluate("()=>window.__a3dDockInfo()"))['rows']
         reg = await page.evaluate(REGISTER_BRIDGE)
         ck(reg['disc'] is True, "the Bridge discipline registers")
         ck(reg['cmd1'] is True and reg['cmd2'] is True and reg['cmd3'] is True,
@@ -183,18 +188,16 @@ async def run():
            "Bridge can be made active")
         await page.wait_for_timeout(400)
         info_b = await page.evaluate("()=>window.__a3dDockInfo()")
-        bridge = group_ids(info_b)
-        ck('bridge' in bridge,
-           "the dock grew a Bridge group with no layout constant edited (%s)" % bridge)
-        ck('arch' not in bridge and 'struct' not in bridge,
+        bridge = await page.evaluate("()=>window.__a3dDockActions()")
+        # AMENDED FOR V130: a discipline nobody has pinned for starts with its own tabs' tools
+        ck('brg:girder' in bridge,
+           "the dock shows the Bridge tools with no layout constant edited (%s)" % bridge)
+        ck('bim:wall' not in bridge and 'bim:beam' not in bridge,
            "and the other domains stepped aside")
 
-        print("\n-- 4. the rows are computed, not listed")
-        ck(all(g['hasCaret'] for g in info_b['groups'] if g['id'] != '__disc'),
-           "every tool group, the new one included, got its caret")
-        # Swapping one domain group for another leaves the COUNT unchanged, so that alone proves
-        # nothing about the layout. Growing it does. Four more shared tabs take the dock from 9
-        # groups to 13 -- past the 10 the old [[5],[4]] literal could physically hold.
+        print("\n-- 4. the panel grows with the registry")
+        # AMENDED FOR V130: the computed dock rows and their carets are retired with the groups; a
+        # new tab is a new group of the tools panel, and the dock stays one row.
         grow = await page.evaluate("""()=>{
           let ok=true;
           for(let i=1;i<=4;i++){
@@ -208,17 +211,12 @@ async def run():
         ck(grow is True, "four more shared tabs register")
         await page.evaluate("()=>window.__a3dSetDiscipline('bridge')")
         await page.wait_for_timeout(400)
+        grown = await panel_groups()
+        ck(all(('tool:syn%d' % i) in grown for i in range(1, 5)) and 'tool:bridge' in grown,
+           "all four, and Bridge, are groups of the tools panel (%s)" % grown[-6:])
         info_g = await page.evaluate("()=>window.__a3dDockInfo()")
-        grown = group_ids(info_g)
-        ck(len(grown) == len(bridge) + 4,
-           "all four land in the dock (%d -> %d groups)" % (len(bridge), len(grown)))
-        ck(info_g['rows'] > info_b['rows'],
-           "and the dock grew a ROW to hold them on its own (%d -> %d) -- a hardcoded "
-           "[[5],[4]] could not have" % (info_b['rows'], info_g['rows']))
-        ck(info_g['insideViewport'] is True,
-           "the grown dock still fits inside the drawing area rather than overflowing it")
-        ck(all(g['hasCaret'] for g in info_g['groups'] if g['id'] != '__disc'),
-           "and every one of the %d tool groups has its caret" % (len(grown) - 1))
+        ck(info_g['rows'] == 1 and info_g['insideViewport'] is True,
+           "the dock stays one row inside the drawing area rather than overflowing it")
 
         print("\n-- 5. the new domain's tools are real")
         face = await page.evaluate("""()=>{
@@ -234,16 +232,15 @@ async def run():
            "the unimplemented Bearing is NOT promoted to the face")
         await page.evaluate("()=>window.__a3dDockOpenGroup('bridge')")
         await page.wait_for_timeout(250)
-        pop = await page.evaluate("""()=>{const p=document.querySelector(
-          '#a3d-dock [data-dockpop="bridge"]');
-          if(!p)return null;
-          return {items:p.querySelectorAll('[data-a3dr]').length,
-                  greyed:p.querySelectorAll('.a3d-dockitem.a3dr-dis').length,
-                  heads:p.querySelectorAll('.a3d-dockpoph').length};}""")
+        # AMENDED FOR V130: the group, in the tools panel. The panel groups by tab; a tool's panel
+        # heading (Superstructure, Sequencing) is in its search words instead
+        pop = await page.evaluate("""()=>{const r=[...document.querySelectorAll('#a3d-rupop .a3d-rktool[data-rkg="tool:bridge"]')].filter(e=>e.offsetParent!==null);
+          return {items:r.length,greyed:r.filter(e=>e.classList.contains('off')&&e.querySelector('.a3d-rkrun').disabled).length,
+            heads:['superstructure','sequencing'].filter(h=>r.some(e=>e.getAttribute('data-rkhay').indexOf(h)>=0)).length};}""")
         ck(pop is not None and pop['items'] == 3,
-           "its caret lists all three tools (%s)" % pop)
+           "its group lists all three tools (%s)" % pop)
         ck(pop['greyed'] == 1, "with the unimplemented one greyed, as the ribbon always did")
-        ck(pop['heads'] == 2, "under both panel headings it declared")
+        ck(pop['heads'] == 2, "and both panel headings it declared find its tools")
         await page.evaluate("()=>{document.body.click();}")
         await page.wait_for_timeout(150)
 
@@ -259,8 +256,8 @@ async def run():
         print("\n-- 6. search reaches every discipline, not just the active one")
         await page.evaluate("()=>window.__a3dSetDiscipline('arch')")
         await page.wait_for_timeout(300)
-        cur = group_ids(await page.evaluate("()=>window.__a3dDockInfo()"))
-        ck('bridge' not in cur, "Bridge is out of the dock's groups while Architecture is active")
+        cur = await page.evaluate("()=>window.__a3dDockActions()")   # AMENDED FOR V130: the dock's tools
+        ck('brg:girder' not in cur, "Bridge is off the dock while Architecture is active")
         found = await page.evaluate("()=>window.__a3dDockSearch('girder')")
         ck(found is not None and 'brg:girder' in found['shown'],
            "but search still finds it (%s) -- which is what makes the filter safe to be "

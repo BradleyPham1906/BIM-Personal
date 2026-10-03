@@ -658,9 +658,11 @@ async def drive(ck):
         ck(c1 == ['54px', 54] and c2 == ['296px', 296], 'collapsing and reopening the panel moves the workspace edge with it (%s / %s)' % (c1, c2))
 
         print('\n-- 10. the User Interface menu, from the tool dock (V120n)')
-        await page.click('[data-dockmore="a3dview"]')
+        # AMENDED FOR V130: the dock's More menus are gone; the View group's tools are in the Tools and
+        # shortcuts panel, opened on that group
+        await page.evaluate("()=>window.__a3dDockOpenGroup('a3dview')")
         await page.wait_for_timeout(300)
-        await page.click('[data-dockpop="a3dview"] [data-a3dr="bim:uipanels"]')
+        await page.click('#a3d-rupop [data-a3dr="bim:uipanels"]')
         await page.wait_for_timeout(300)
         um = await safe("()=>{var m=document.getElementById('a3d-uimenu'),r=m.getBoundingClientRect();"
                         "return {open:m.classList.contains('open'),inside:r.left>=0&&r.right<=window.innerWidth&&r.bottom<=window.innerHeight&&r.width>0};}")

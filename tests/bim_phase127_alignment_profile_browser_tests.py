@@ -390,7 +390,10 @@ async def run():
             await page.keyboard.press('Escape')
             await page.wait_for_timeout(200)
             ck(await safe("()=>!window.__a3dState().sk||!window.__a3dState().sk.tool") is not False, "Escape ends STATION")
-            btn = await safe("()=>!!document.querySelector('[data-a3dr=\"bim:alignment\"]')")
+            # AMENDED FOR V130: the ribbon's tools are rows of the Tools and shortcuts panel
+            btn = await safe("""()=>{window.__a3dToolsPanel();var r=[...document.querySelectorAll('#a3d-rupop .a3d-rktool[data-rkact="bim:alignment"]')];
+              var ok=r.length===1&&r[0].getAttribute('data-rkg')==='tool:a3dmassing'&&!!r[0].querySelector('[data-a3dr="bim:alignment"]');
+              document.querySelector('#a3d-rupop [data-rkclose]').click();return ok;}""")
             ck(btn, "one Alignment button, in the Site panel")
 
             # ---------------------------------------------------------------------------------
