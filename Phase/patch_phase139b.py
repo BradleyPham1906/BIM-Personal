@@ -10,7 +10,7 @@
   CityJSON layer, the highest LOD of each; UTM files placed on the site; any other grid placed by its
   centre at model 0,0 and named; every solid checked as it comes in."""
 NAME = 'patch_phase139b.py'
-BASE = '3084b24709d9f9626e7272806d325b668c797e5bcabb99bb1fe35433e054c6e1'
+BASE = '1274a6c9b513c5ff6e3c16b0434540de97db2a4bc69893592503ede5c14a62a6'
 import hashlib, pathlib, sys
 P = pathlib.Path(sys.argv[1] if len(sys.argv) > 1 else 'canvas_v10.html')
 raw = P.read_bytes()

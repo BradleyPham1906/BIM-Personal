@@ -12016,3 +12016,18 @@ word.
 - The outline is not split where parts leave it uncovered (Simple 3D Buildings: the outline is not
   drawn when it has parts); the design's own massing is not yet exported to CityJSON.
 - Imported CityJSON keeps its surfaces' types only through the face normals on re-export.
+
+### Bugs found by the full regression
+
+- V62's host scan found `www.opengis.net`, the OGC name CityJSON gives a grid; it is written into
+  files, never fetched. V62's list now has it (AMENDED FOR V139).
+- V120 found `bimWorldMesh`, written and never used; removed.
+
+### Full regression and state after V139
+
+96 suites, 3755 checks, 0 failures. Falsification: V139 62 of 62. The chain 139a, 139b, 139c
+rebuilds the build from `Phase/canvas_v10.html.bak_phase139_pre`. The diff is ES5-clean.
+
+    canvas_v10.html   2051220 bytes
+    sha256            5787ea35787bee139f312548b1fb0e2c6c7d3a1987ece60796283575e082d85b
+    markers           __acad3dV60 ... __acad3dV139, __acad3dV134d (and the 133d to 133f markers)

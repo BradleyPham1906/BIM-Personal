@@ -5,7 +5,7 @@
 - The Site Context group: Check LODs, Export CityJSON, Import CityJSON.
 - Commands: CITYJSONOUT, CITYJSONIN, LODCHECK. Hooks for the suites; the marker."""
 NAME = 'patch_phase139c.py'
-BASE = 'dd69aad7954cd9f78da36e13deaf20c8e4414303a84cf1acf399585b5a756162'
+BASE = '7facd0ef2911c166d536cf6755ae1bffad1af426680c78607ec724b4644f00f2'
 import hashlib, pathlib, sys
 P = pathlib.Path(sys.argv[1] if len(sys.argv) > 1 else 'canvas_v10.html')
 raw = P.read_bytes()

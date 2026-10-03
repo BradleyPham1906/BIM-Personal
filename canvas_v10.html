@@ -15381,12 +15381,6 @@ try{
     if(r.valid)return (r.surface?'valid surfaces':'a valid solid')+': '+r.faces+' faces'+(r.surface?'':', '+bimDispNum(r.volume,1)+' m\u00b3');
     return r.errors.map(function(e){return e.label+' ('+e.code+(e.count>1?', '+e.count:'')+')';}).join('; ');
   }
-  /* the object's mesh in the world: its offset added */
-  function bimWorldMesh(o){
-    var m=meshOf(o),q=bimObjOffset(o);
-    if(!m)return null;
-    return {v:m.v.map(function(p){return [p[0]+q[0],p[1]+q[1],p[2]+q[2]];}),f:m.f};
-  }
   function bimObjSolidCheck(o){
     var m=meshOf(o);
     if(!m)return null;
