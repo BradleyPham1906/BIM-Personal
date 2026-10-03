@@ -59,6 +59,40 @@ The app itself is closed. Its only public code is the SDK for embedded apps:
   mentions `evaluateFeatures`, which resolves stacking in one call.
 - **Types.** The package that defines them, `@gi-nx/gi-types`, is not public.
 
+From Giraffe's own help article "The Giraffe Javascript SDK", pasted by the owner (the page cannot
+be opened from the build environment):
+
+- **One set of functions, two ways in:**
+  - **The Iframe Post-message SDK** is for an app the customer deploys and owns, whose UI appears
+    inside Giraffe in an iframe on the **right** of the screen. It combines Giraffe's features with
+    the customer's own APIs, data or workflows.
+  - **The Console JS SDK** is for the same functions typed in the browser console. It is meant for
+    one-off automations (for example: import a CSV of points, join them to cadastre boundaries,
+    save them as projects), advanced GIS work, and prototyping an algorithm before it becomes an
+    app.
+- **What an app can do.** It reads and writes geometries, layers and UI state (for example the
+  current selection). It uses Giraffe's authentication and hosting.
+- **The data is GeoJSON,** chosen because "simple formats like this drive automation and
+  interesting analysis".
+- **What came before:**
+  - a pub/sub API, still used to drive Giraffe live from Grasshopper;
+  - a first JavaScript SDK that customers built apps with;
+  - Bit and webpack module federation, which they tried.
+
+  All of these needed "significant technical setup", so they went with plain postMessage instead.
+
+**For this app:** the engine already has the console half. Its `window.__a3d…` hooks are what
+every suite drives, and `__a3dRegisterCommand`, `__a3dRegisterDiscipline` and `__a3dRegisterTab`
+are an extension API. An app SDK, then, is mostly three things:
+- choosing and documenting a stable subset of those functions;
+- giving the model a plain export format: plan outlines and extrusions as GeoJSON-like features,
+  plus the BIM properties;
+- adding a postMessage bridge to the same function table, for an iframe app docked in the right
+  panel.
+
+That is Giraffe's "same set of functions, two ways in", and it keeps the plugin route free of
+build tooling.
+
 ## What this app takes
 
 The owner chose all four, ahead of the MEP runs:
@@ -91,3 +125,4 @@ It also confirms V130's direction: few tools on screen, and the work done in Pro
 - [TRXL: Giraffe feature spotlight](https://www.trxl.co/feature-spotlight-giraffe/)
 - [Architosh: ToolTalk, Giraffe](https://architosh.com/2025/09/tooltalk-giraffe-reimagines-urban-design-and-development/)
 - [npm: @gi-nx/iframe-sdk](https://www.npmjs.com/package/@gi-nx/iframe-sdk), [SDK docs](https://gi-docs.web.app/)
+- Giraffe help: "The Giraffe Javascript SDK" ([help centre](https://help.giraffe.build/)), text pasted by the owner
