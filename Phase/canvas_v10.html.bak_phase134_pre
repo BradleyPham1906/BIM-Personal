@@ -493,8 +493,6 @@ body.light-theme .a3d-uerr{color:#b3261e}
 .a3d-ctxk{display:inline-flex;align-items:center;gap:3px;white-space:nowrap;font-size:11.5px;color:inherit}
 .a3d-ctxlink{color:#9cc4ff;text-decoration:none}
 .a3d-ctxlink:hover{text-decoration:underline}
-.a3d-dlrow input[type=color]{width:18px;height:16px;padding:0;border:none;background:none;vertical-align:-3px}
-.a3d-dlrow .a3d-pstatic{display:inline-block;max-width:160px;white-space:normal}
 body.light-theme .a3d-ctxlink{color:#0b5cad}
 .a3d-dlgwide .a3d-dlgrow input{width:100%;box-sizing:border-box}
 .a3d-sheetview.open~#a3d-mapattr{display:none}
@@ -878,8 +876,6 @@ body.a3d-tree-docked #a3d-leftpanel > .a3d-tree .a3d-palhd .a3d-palbtns{flex-wra
     /* __acad3dV133: site context */
     ['CONTEXT',['SITECONTEXT','OSM'],'context','Get the buildings, roads, water, green, trees and terrain around the site, from OpenStreetMap and AWS Terrain Tiles'],
     ['CONTEXTREMOVE',['CONTEXTCLEAR'],'contextremove','Remove the site context'],
-    /* __acad3dV134: data layers */
-    ['DATALAYERS',['DATA','PARCELS','ZONING','FLOOD'],'datalayers','Parcels, zoning, flood zones: ArcGIS, WFS or GeoJSON data around the site, drawn on the plan and read by a click'],
     ['GEOEXPORT',['EXPORTGEOJSON'],'geoexport','Export the plan as GeoJSON, in longitude and latitude'],
     ['INSERT',['I','DDINSERT'],'blockinsert','Insert a block: drag it from the library onto the drawing'],
     ['ASSETS',['ADCENTER','CONTENT','TOOLPALETTES'],'assets','Open the Assets library of models, blocks and templates']
@@ -1322,9 +1318,6 @@ try{
       }
       if(st&&typeof st.activeBuilding==='string')A3D.activeBuilding=st.activeBuilding;
       if(st&&st.site&&typeof st.site==='object'&&typeof st.site.name==='string')A3D.site=st.site;
-      A3D.dataFeatures={};   /* __acad3dV134: the features of the project's data layers, orphans dropped */
-      if(st&&st.dataFeatures&&typeof st.dataFeatures==='object'&&A3D.site&&Array.isArray(A3D.site.dataLayers))
-        A3D.site.dataLayers.forEach(function(L){if(L&&Array.isArray(st.dataFeatures[L.id]))A3D.dataFeatures[L.id]=st.dataFeatures[L.id];});
       if(st&&(st.roomScheme==='dept'||st.roomScheme==='occupancy'))A3D.roomScheme=st.roomScheme;   /* __acad3dV105 */
       if(st&&Array.isArray(st.classifications)){
         A3D.classifications=st.classifications.filter(function(c){return c&&typeof c.id==='string'&&typeof c.code==='string';});
@@ -8221,7 +8214,7 @@ try{
   // foreign JSON file can be confidently rejected instead of silently corrupting the model. ----
   function bimBuildProjectEnvelope(){
     return JSON.stringify({app:'acad3d-project',formatVersion:1,savedAt:new Date().toISOString(),
-      data:{objs:A3D.objs,levels:A3D.levels,grids:A3D.grids,layers:A3D.layers,counts:A3D.counts,activeLevel:A3D.activeLevel,activeLayer:A3D.activeLayer,views:A3D.views,activeViewId:A3D.activeViewId,levelFilter:A3D.levelFilter,types:A3D.types,activeWallType:A3D.activeWallType,sheets:A3D.sheets,titleBlock:A3D.titleBlock,buildings:A3D.buildings,activeBuilding:A3D.activeBuilding,site:A3D.site,roomScheme:A3D.roomScheme||'',classifications:A3D.classifications,dataFeatures:A3D.dataFeatures||{}}});
+      data:{objs:A3D.objs,levels:A3D.levels,grids:A3D.grids,layers:A3D.layers,counts:A3D.counts,activeLevel:A3D.activeLevel,activeLayer:A3D.activeLayer,views:A3D.views,activeViewId:A3D.activeViewId,levelFilter:A3D.levelFilter,types:A3D.types,activeWallType:A3D.activeWallType,sheets:A3D.sheets,titleBlock:A3D.titleBlock,buildings:A3D.buildings,activeBuilding:A3D.activeBuilding,site:A3D.site,roomScheme:A3D.roomScheme||'',classifications:A3D.classifications}});
   }
   function bimParseProjectEnvelope(text){
     var parsed;
@@ -12278,83 +12271,6 @@ try{
     if(a==='remove'){bimCtxRemove();return true;}
     return false;
   }
-  /* ================= __acad3dV134: data layers in Properties ================= */
-  function bimDataStatusText(L){
-    var s=L.status;
-    if(A3D_DATA.busy[L.id])return 'getting ...';
-    if(!s)return 'not fetched yet';
-    if(s.error)return s.error;
-    return s.count+' feature'+(s.count===1?'':'s')+(s.more?' (more on the server)':'')+', '+s.date;
-  }
-  function bimDataModelHtml(){
-    var L=bimDataList(),r='',i,o='';
-    for(i=0;i<L.length;i++){
-      var id=bimEsc(L[i].id);
-      r+='<div class="a3d-prow a3d-uhead a3d-dlrow"><div class="a3d-plabel"><label class="a3d-ctxk"><input type="checkbox" data-propdata="vis:'+id+'"'+(L[i].visible?' checked':'')+
-        ' aria-label="Show '+bimEsc(L[i].name)+'"> <input type="color" data-propdata="color:'+id+'" value="'+bimEsc(L[i].color)+'" aria-label="Colour"> '+bimEsc(L[i].name)+'</label></div>'+
-        '<div class="a3d-pval"><span class="a3d-pstatic'+(L[i].status&&L[i].status.error?' a3d-uerr':'')+'">'+bimEsc(bimDataStatusText(L[i]))+'</span> '+
-        '<button type="button" class="a3d-pedit" data-propdataact="refresh:'+id+'">Refresh</button> '+
-        '<button type="button" class="a3d-bdel" data-propdataact="remove:'+id+'" title="Remove this data layer">\u00d7</button></div></div>';
-    }
-    if(!L.length)r+=bimPropText('None yet','parcels, zoning or flood zones: add a preset or a web address');
-    for(i=0;i<BIM_DATA_PRESETS.length;i++)o+='<option value="'+i+'">'+bimEsc(BIM_DATA_PRESETS[i].name)+'</option>';
-    r+=bimPropRow('Preset','<select data-propdata="preset"><option value="">Add a preset ...</option>'+o+'</select>');
-    r+=bimPropRow('Address','<div class="a3d-ukv"><input type="text" data-propdata="url" placeholder="ArcGIS .../FeatureServer/0, a WFS, or GeoJSON" spellcheck="false" aria-label="Data layer address">'+
-      '<button type="button" class="a3d-pedit" data-propdataact="add">Add</button></div>');
-    r+=bimPropText('Area','the site context radius, '+bimCtxSettings().radius+' m');
-    return r;
-  }
-  /* the feature clicked on the plan */
-  function bimDataFeatureHtml(){
-    var s=A3D_DATA.sel,L=s?bimDataById(s.layer):null,F=L?bimDataFeats(L.id)[s.fi]:null,r='',k,n=0,c;
-    if(!F)return '';
-    r+=bimPropText('Layer',L.name);
-    r+=bimPropText('Source',L.credit);
-    for(k in F.p)if(F.p.hasOwnProperty(k)&&n<60){n++;r+=bimPropText(k,F.p[k]===null?'':String(F.p[k]));}
-    if(!n)r+=bimPropText('Attributes','none');
-    c=bimDataModel(L);
-    var f=null,i;
-    if(c)for(i=0;i<c.feats.length;i++)if(c.feats[i].fi===s.fi)f=c.feats[i];
-    if(f&&f.rings.length)r+=bimPropText('Area',bimDispNum(f.area,2)+' m\u00b2');
-    r+=bimPropRow('',(f&&f.rings.length?'<button type="button" class="a3d-pedit" data-propdataact="toprop">Make Property Line</button> ':'')+
-      '<button type="button" class="a3d-pedit" data-propdataact="clear">Close</button>');
-    return bimPropGroup('Data Feature',r);
-  }
-  function bimDataPropChange(ev){
-    var f=ev.target&&ev.target.closest?ev.target.closest('[data-propdata]'):null;
-    if(!f)return false;
-    var k=f.getAttribute('data-propdata'),b=k.split(':');
-    if(k==='url')return true;   /* added by Add, never as it is typed */
-    if(k==='preset'){
-      var p=BIM_DATA_PRESETS[parseInt(f.value,10)];
-      if(p)bimDataAdd(p.url,p.name,p.color,p.credit);
-      return true;
-    }
-    if(b[0]==='vis')return bimDataSet(b[1],'visible',f.checked);
-    if(b[0]==='color')return bimDataSet(b[1],'color',f.value);
-    return false;
-  }
-  function bimDataPropClick(ev){
-    var bt=ev.target&&ev.target.closest?ev.target.closest('[data-propdataact]'):null;
-    if(!bt)return false;
-    var a=bt.getAttribute('data-propdataact'),b=a.split(':');
-    if(a==='add'){var u=el.propsbody.querySelector('[data-propdata="url"]');bimDataAdd(u?u.value:'');return true;}
-    if(a==='toprop'){bimDataToProperty();return true;}
-    if(a==='clear'){A3D_DATA.sel=null;refreshProps();paint();return true;}
-    if(b[0]==='refresh'){bimDataFetch(b[1]);refreshProps();return true;}
-    if(b[0]==='remove'){bimDataRemove(b[1]);return true;}
-    return false;
-  }
-  /* DATALAYERS: the group, with nothing selected */
-  function bimDataCommand(){
-    A3D.sel=null;A3D.sel2=null;A3D.selSet=[];
-    A3D_PROP_GROUPS_OPEN['Data Layers']=true;
-    refreshTree();refreshProps();paint();
-    var g=el.propsbody&&el.propsbody.querySelector('[data-a3dpgrp="Data Layers"]');
-    if(g){try{g.scrollIntoView({block:'start'});}catch(eS){}}
-    a3dToast('Data layers are in Properties: add a preset, or the web address of an ArcGIS layer, a WFS or a GeoJSON file');
-    return true;
-  }
   /* __acad3dV73: the no-selection inspector. Project and Site are editable and write to the
      title block and site record that the sheet title block already prints. Level, Layer and
      Appearance are the three switches that change what the drawing shows, and each one already
@@ -12378,11 +12294,9 @@ try{
     rows+=bimPropText('Sun',bimSunText(bimSunNow()));
     rows+=bimPropRow('Site','<input type="text" data-propmodel="site" value="'+
       bimEsc(A3D.site.name||'')+'">');
-    h+=bimDataFeatureHtml();   /* __acad3dV134: the data clicked on the plan, first */
     h+=bimPropGroup('Identity Data',rows);
     h+=bimPropGroup('Map',bimMapPropsHtml());   /* __acad3dV132 */
     h+=bimPropGroup('Site Context',bimCtxModelHtml());   /* __acad3dV133 */
-    h+=bimPropGroup('Data Layers',bimDataModelHtml());   /* __acad3dV134 */
 
     var vrows='',lvlOpts='';
     for(i=0;i<A3D.levels.length;i++){
@@ -14121,8 +14035,6 @@ try{
     if(!f)return;
     var h=bimMapFooterHtml(),cc=bimCtxCreditHtml(h.indexOf('OpenStreetMap contributors')>=0);   /* __acad3dV133 */
     if(cc)h=h?h+' \u00b7 '+cc:cc;
-    var dcr=bimDataCreditHtml();   /* __acad3dV134 */
-    if(dcr)h=h?h+' \u00b7 '+dcr:dcr;
     if(h===A3D_MAP.footKey)return;
     A3D_MAP.footKey=h;
     f.innerHTML=h;
@@ -14395,7 +14307,16 @@ try{
     for(i=0;i<BIM_CTX_KINDS.length;i++)if(k[BIM_CTX_KINDS[i]])names.push(BIM_CTX_LABEL[BIM_CTX_KINDS[i]].toLowerCase());
     A3D_CTX.busy=true;
     a3dToast('Getting the site context: '+names.join(', ')+', '+st.radius+' m around the '+(a.fromProperty?'property':'site')+' ...');
-    var pOsm=q?bimCtxOverpass(q,st.overpass):Promise.resolve(null);   /* __acad3dV134d */
+    var pOsm=q?fetch(st.overpass,{method:'POST',body:'data='+encodeURIComponent(q),headers:{'Content-Type':'application/x-www-form-urlencoded'}})
+      .then(function(r){
+        if(!r.ok)throw {http:r.status};
+        return r.text();
+      }).then(function(tx){
+        var js;
+        try{js=JSON.parse(tx);}catch(eJ){throw {bad:true};}
+        if(!js||!js.elements)throw {bad:true};
+        return {ok:true,js:js};
+      }).then(null,function(e){return {ok:false,err:e};}):Promise.resolve(null);
     var pTer=k.terrain?bimCtxTerrain(a):Promise.resolve(null);
     return Promise.all([pOsm,pTer]).then(function(r){
       A3D_CTX.busy=false;
@@ -14403,36 +14324,11 @@ try{
       catch(eA){console.warn('[BIM] site context',eA);a3dToast('The site context could not be placed - see the console');return {error:String(eA)};}
     },function(e){A3D_CTX.busy=false;console.warn('[BIM] site context',e);return {error:String(e)};});
   }
-  /* __acad3dV134d: Overpass's public instances, the one set first, each asked with a plain GET until
-     one answers; every failure kept, to be named if none does */
-  var BIM_OVERPASS_MIRRORS=['https://overpass-api.de/api/interpreter','https://overpass.private.coffee/api/interpreter',
-    'https://maps.mail.ru/osm/tools/overpass/api/interpreter','https://overpass.kumi.systems/api/interpreter'];
-  function bimCtxOverpass(q,first){
-    var list=[first],tried=[];
-    BIM_OVERPASS_MIRRORS.forEach(function(u){if(list.indexOf(u)<0)list.push(u);});
-    function one(i){
-      if(i>=list.length)return Promise.resolve({ok:false,msgs:tried});
-      var u=list[i];
-      return fetch(u+(u.indexOf('?')<0?'?':'&')+'data='+encodeURIComponent(q)).then(function(r){
-        if(!r.ok)throw {http:r.status};
-        return r.text();
-      }).then(function(tx){
-        var js;
-        try{js=JSON.parse(tx);}catch(eJ){throw {bad:true};}
-        if(!js||!js.elements)throw {bad:true};
-        return {ok:true,js:js,server:u,msgs:tried};
-      },function(e){throw e;}).then(null,function(e){
-        tried.push(bimCtxErr(bimMapHost(u),e));
-        return one(i+1);
-      });
-    }
-    return one(0);
-  }
   function bimCtxApply(a,st,osm,ter){
     var k=st.kinds,bad=[],feats=null,trunc=false,i,j,f,o,c,n={buildings:0,roads:0,water:0,green:0,trees:0,terrain:0},ids=[],assumed=0,yards=0;
     if(osm){
       if(osm.ok){var fr=bimCtxFeatures(osm.js,a.org);feats=fr.features;trunc=fr.truncated;}
-      else bad=bad.concat(osm.msgs&&osm.msgs.length?osm.msgs:[bimCtxErr(bimMapHost(st.overpass),osm.err)]);   /* __acad3dV134d: each server tried */
+      else bad.push(bimCtxErr(bimMapHost(st.overpass),osm.err));
     }
     if(ter&&!ter.ok)bad.push(bimCtxErr('s3.amazonaws.com',ter.err));
     var terOk=!!(ter&&ter.ok);
@@ -14516,7 +14412,7 @@ try{
         }
       }
       A3D.site.context=A3D.site.context||{};
-      A3D.site.context.last={date:date,counts:n,radius:st.radius,errors:bad.slice(),truncated:trunc,server:osm&&osm.ok?bimMapHost(osm.server):null};
+      A3D.site.context.last={date:date,counts:n,radius:st.radius,errors:bad.slice(),truncated:trunc};
     }finally{undoSuspend=false;}
     /* the selection stays what it was: the surface maker selects what it makes */
     A3D.sel=objById(selWas)?selWas:null;A3D.sel2=null;
@@ -14548,278 +14444,6 @@ try{
     if(osm&&!skipOsm)p.push('Context <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">\u00a9 OpenStreetMap contributors</a>');
     if(ter)p.push(bimEsc(ter.credit||BIM_CTX_TERRAIN_CREDIT));
     return p.join(' \u00b7 ');
-  }
-  /* ================= __acad3dV134: data layers =================
-     The public record of a site -- parcels, zoning, flood zones -- from the GIS servers councils and
-     agencies publish: an ArcGIS REST layer, a WFS, or a GeoJSON file. Read for the site's area, kept
-     with the project so it opens offline, drawn on the plan, read by a click. */
-  var BIM_DATA_PRESETS=[
-    {name:'Flood zones (FEMA NFHL, US)',url:'https://hazards.fema.gov/arcgis/rest/services/public/NFHL/MapServer/28',color:'#3d7fd6',credit:'FEMA National Flood Hazard Layer'},
-    {name:'Parcels (Philadelphia Water Dept.)',url:'https://services.arcgis.com/fLeGjb7u4uXqeF9q/arcgis/rest/services/PWD_PARCELS/FeatureServer/0',color:'#e0a040',credit:'City of Philadelphia (OpenDataPhilly)'},
-    {name:'Zoning base districts (Philadelphia)',url:'https://services.arcgis.com/fLeGjb7u4uXqeF9q/arcgis/rest/services/Zoning_BaseDistricts/FeatureServer/0',color:'#b067d6',credit:'City of Philadelphia (OpenDataPhilly)'}
-  ];
-  var BIM_DATA_MAX=2000;
-  var A3D_DATA={busy:{},pending:{},sel:null,cache:{}};
-  function bimDataList(){return (A3D.site&&Array.isArray(A3D.site.dataLayers))?A3D.site.dataLayers:[];}
-  function bimDataById(id){var L=bimDataList(),i;for(i=0;i<L.length;i++)if(L[i].id===id)return L[i];return null;}
-  function bimDataFeats(id){return (A3D.dataFeatures&&A3D.dataFeatures[id])||[];}
-  /* what an address is: an ArcGIS layer, a WFS, or a GeoJSON file -- or why it is none */
-  function bimDataKind(url){
-    var u=String(url==null?'':url).replace(/^\s+|\s+$/g,'');
-    if(!/^https?:\/\/[^\s\/]+\/\S*$/i.test(u))return {error:'A data layer is a web address, starting https://'};
-    if(/\/(FeatureServer|MapServer)\/\d+\/?(\?.*)?$/i.test(u))return {kind:'arcgis'};
-    if(/\/(FeatureServer|MapServer)\/?(\?.*)?$/i.test(u))return {error:'That is a whole ArcGIS service: add the layer\'s number, like .../FeatureServer/0'};
-    if(/[?&]service=wfs(&|$)/i.test(u)||/\/wfs\/?(\?|$)/i.test(u)){
-      if(!/[?&]typenames?=[^&]+/i.test(u))return {error:'A WFS address needs its layer: add typeNames=... to it'};
-      return {kind:'wfs'};
-    }
-    return {kind:'geojson'};
-  }
-  function bimDataNameFromUrl(u){
-    var m=/\/services\/(?:[^\/]+\/)*?([^\/]+)\/(?:FeatureServer|MapServer)\/(\d+)/i.exec(u);
-    if(m)return m[1].replace(/_/g,' ')+(m[2]!=='0'?' '+m[2]:'');
-    m=/[?&]typenames?=([^&]+)/i.exec(u);
-    if(m)return decodeURIComponent(m[1]).replace(/^[^:]*:/,'');
-    m=/\/([^\/?#]+?)(\.geo)?(\.json)?(\?|#|$)/i.exec(u);
-    return m?decodeURIComponent(m[1]):'Data';
-  }
-  /* the request for the area: ArcGIS's query, WFS's GetFeature in CRS:84 (longitude first), or the file */
-  function bimDataQueryUrl(L,a){
-    var b=[a.w,a.s,a.e,a.n].map(function(v){return v.toFixed(7);}).join(',');
-    if(L.kind==='arcgis')return L.url.replace(/\/?(\?.*)?$/,'')+'/query?where=1%3D1&geometry='+encodeURIComponent(b)+
-      '&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=*&returnGeometry=true&outSR=4326&resultRecordCount='+BIM_DATA_MAX+'&f=geojson';
-    if(L.kind==='wfs'){
-      var m=/[?&]typenames?=([^&]+)/i.exec(L.url),base=L.url.split('?')[0];
-      return base+'?service=WFS&version=2.0.0&request=GetFeature&typeNames='+m[1]+'&outputFormat=application%2Fjson&srsName=CRS%3A84&bbox='+
-        encodeURIComponent(b+',CRS:84')+'&count='+BIM_DATA_MAX;
-    }
-    return L.url;
-  }
-  /* an answer as stored features: longitude and latitude only, touching the area, at most BIM_DATA_MAX */
-  function bimDataParse(js,a){
-    if(js&&js.error&&!js.type)return {error:'said: '+String(js.error.message||js.error.code||'an error').slice(0,160)};
-    var r=bimGeoJsonFeatures(js),out=[],i,j,k,ps,pt,bb,okf,bad=0;
-    if(r.error)return r;
-    for(i=0;i<r.features.length&&out.length<BIM_DATA_MAX;i++){
-      ps=bimGeoParts(r.features[i].geom);bb=[Infinity,Infinity,-Infinity,-Infinity];okf=ps.length>0;
-      for(j=0;okf&&j<ps.length;j++){
-        if(ps[j].kind==='unknown'){okf=false;break;}
-        pt=bimGeoPositions(ps[j].pts);
-        if(!pt){okf=false;break;}
-        for(k=0;k<pt.length;k++){
-          if(Math.abs(pt[k][0])>180||Math.abs(pt[k][1])>90)return {error:'answered in a projected grid ('+pt[k][0]+', '+pt[k][1]+'), not longitude and latitude'};
-          bb[0]=Math.min(bb[0],pt[k][0]);bb[1]=Math.min(bb[1],pt[k][1]);bb[2]=Math.max(bb[2],pt[k][0]);bb[3]=Math.max(bb[3],pt[k][1]);
-        }
-      }
-      if(!okf){bad++;continue;}
-      if(bb[2]<a.w||bb[0]>a.e||bb[3]<a.s||bb[1]>a.n)continue;   /* not in the area */
-      out.push({g:r.features[i].geom,p:bimGeoCleanProps(r.features[i].props||{})});
-    }
-    return {features:out,skipped:bad,more:!!(js&&(js.exceededTransferLimit||(js.properties&&js.properties.exceededTransferLimit)))||i<r.features.length};
-  }
-  /* one request; what comes replaces the layer's features */
-  function bimDataFetch(id){
-    var L=bimDataById(id),a=bimCtxArea(),url,host,p;
-    if(!L)return null;
-    if(!a){a3dToast('Set the site latitude and longitude first, or find an address: data is read around the site');return null;}
-    if(A3D_DATA.busy[id]){a3dToast(L.name+' is already on its way');return null;}
-    if(typeof fetch!=='function'){a3dToast('This browser cannot fetch data');return null;}
-    url=bimDataQueryUrl(L,a);host=bimMapHost(url);
-    A3D_DATA.busy[id]=true;
-    a3dToast('Getting '+L.name+' from '+host+' ...');
-    function done(st){var L2=bimDataById(id);if(L2){L2.status=st;}A3D_DATA.busy[id]=false;}
-    p=fetch(url).then(function(r){
-      if(!r.ok)throw {http:r.status};
-      return r.text();
-    }).then(function(tx){
-      var js,res,L2,date=new Date().toISOString().slice(0,10);
-      try{js=JSON.parse(tx);}catch(eJ){throw {bad:true};}
-      res=bimDataParse(js,a);
-      if(res.error){
-        done({date:date,error:host+' '+res.error});
-        refreshProps();saveSoon();
-        a3dToast(L.name+': '+host+' '+res.error);
-        return {error:host+' '+res.error};
-      }
-      L2=bimDataById(id);
-      if(!L2){A3D_DATA.busy[id]=false;return {error:'removed'};}
-      A3D.dataFeatures=A3D.dataFeatures||{};
-      A3D.dataFeatures[id]=res.features;
-      delete A3D_DATA.cache[id];
-      if(A3D_DATA.sel&&A3D_DATA.sel.layer===id)A3D_DATA.sel=null;
-      done({date:date,count:res.features.length,more:res.more});
-      refreshProps();paint();saveSoon();
-      a3dToast(L2.name+': '+res.features.length+' feature'+(res.features.length===1?'':'s')+' around the site'+
-        (res.more?' (the first '+res.features.length+'; there are more)':'')+(res.skipped?'; '+res.skipped+' could not be read':''));
-      return {count:res.features.length,more:res.more,skipped:res.skipped};
-    }).then(null,function(e){
-      var m=bimCtxErr(host,e);
-      done({date:new Date().toISOString().slice(0,10),error:m});
-      refreshProps();saveSoon();
-      a3dToast(L.name+': '+m);
-      return {error:m};
-    });
-    A3D_DATA.pending[id]=p;
-    return p;
-  }
-  /* a layer added is one undo step, and fetched at once */
-  function bimDataAdd(url,name,color,credit){
-    var u=String(url==null?'':url).replace(/^\s+|\s+$/g,''),k=bimDataKind(u),L=bimDataList(),i,lyr;
-    if(k.error){a3dToast(k.error);return null;}
-    for(i=0;i<L.length;i++)if(L[i].url===u){a3dToast('That layer is here already: '+L[i].name);return null;}
-    pushUndo();
-    if(!A3D.site||typeof A3D.site!=='object')A3D.site={name:'Site'};
-    if(!Array.isArray(A3D.site.dataLayers))A3D.site.dataLayers=[];
-    lyr={id:'data-'+Date.now().toString(36)+'-'+(A3D.seq++),name:String(name||bimDataNameFromUrl(u)).slice(0,60),kind:k.kind,url:u,
-      color:/^#[0-9a-fA-F]{6}$/.test(color||'')?color.toLowerCase():BIM_SCHEME_COLS[A3D.site.dataLayers.length%BIM_SCHEME_COLS.length],
-      visible:true,credit:String(credit||bimMapHost(u)).slice(0,160)};
-    A3D.site.dataLayers.push(lyr);
-    refreshProps();saveSoon();
-    if(bimCtxArea())bimDataFetch(lyr.id);
-    else a3dToast(lyr.name+' added: set the site latitude and longitude, then Refresh it');
-    return lyr.id;
-  }
-  function bimDataRemove(id){
-    var L=bimDataList(),i;
-    for(i=0;i<L.length;i++)if(L[i].id===id)break;
-    if(i>=L.length)return false;
-    pushUndo();
-    var nm=L[i].name;
-    L.splice(i,1);
-    /* its features stay stored, so an undo brings the layer back whole; a load drops orphans */
-    delete A3D_DATA.cache[id];
-    if(A3D_DATA.sel&&A3D_DATA.sel.layer===id)A3D_DATA.sel=null;
-    refreshProps();paint();saveSoon();
-    a3dToast(nm+' removed');
-    return true;
-  }
-  function bimDataSet(id,field,val){
-    var L=bimDataById(id),v;
-    if(!L)return false;
-    if(field==='visible'){v=!!val&&val!=='false';if(L.visible===v)return true;}
-    else if(field==='name'){v=String(val==null?'':val).replace(/\s+/g,' ').replace(/^ | $/g,'').slice(0,60);if(!v){a3dToast('A data layer needs a name');refreshProps();return false;}}
-    else if(field==='color'){v=String(val||'');if(!/^#[0-9a-fA-F]{6}$/.test(v)){a3dToast('That is not a colour');refreshProps();return false;}v=v.toLowerCase();}
-    else return false;
-    if(L[field]===v)return true;
-    pushUndo();
-    L[field]=v;
-    if(field==='visible'&&!v&&A3D_DATA.sel&&A3D_DATA.sel.layer===id)A3D_DATA.sel=null;
-    refreshProps();paint();saveSoon();
-    return true;
-  }
-  /* a layer's features in model terms, kept until the site's place, true north or the features change */
-  function bimDataModel(L){
-    var org=bimMapOrigin(),F=bimDataFeats(L.id),key,c;
-    if(!org)return null;
-    key=org.lat+','+org.lon+','+bimTrueNorthDeg();
-    c=A3D_DATA.cache[L.id];
-    if(c&&c.key===key&&c.F===F)return c;
-    c={key:key,F:F,feats:[]};
-    F.forEach(function(f,fi){
-      var x={fi:fi,rings:[],lines:[],points:[],area:0};
-      bimGeoParts(f.g).forEach(function(pp){
-        var pt=bimGeoPositions(pp.pts),m;
-        if(!pt)return;
-        m=pt.map(function(q){return bimGeoToModel(q[0],q[1],org);});
-        if(pp.kind==='ring'){
-          if(m.length>1&&m[0][0]===m[m.length-1][0]&&m[0][1]===m[m.length-1][1])m.pop();
-          if(m.length>=3){x.rings.push({pts:m,hole:!!pp.hole});x.area+=(pp.hole?-1:1)*bimPolyArea(m);}
-        }else if(pp.kind==='line'){if(m.length>=2)x.lines.push(m);}
-        else if(pp.kind==='point')x.points.push(m[0]);
-      });
-      c.feats.push(x);
-    });
-    A3D_DATA.cache[L.id]=c;
-    return c;
-  }
-  /* on the plan, under the model's linework: never on paper */
-  function drawDataLayers(ctx,V,W,H){
-    A3D.lastDataDrawn=0;
-    if(A3D.sheetCapture||A3D_PLOT.on)return;
-    var L=bimDataList(),y=bimShadowGround(),i,j,c,f,sel,n=0;
-    function S(p){return toScreen([p[0],y,p[1]],V,W,H);}
-    function path(pts,close){
-      var p=S(pts[0]),k;
-      ctx.moveTo(p[0],p[1]);
-      for(k=1;k<pts.length;k++){p=S(pts[k]);ctx.lineTo(p[0],p[1]);}
-      if(close)ctx.closePath();
-    }
-    for(i=0;i<L.length;i++){
-      if(!L[i].visible)continue;
-      c=bimDataModel(L[i]);
-      if(!c)continue;
-      ctx.save();
-      ctx.strokeStyle=L[i].color;ctx.fillStyle=L[i].color;
-      for(j=0;j<c.feats.length;j++){
-        f=c.feats[j];
-        sel=!!(A3D_DATA.sel&&A3D_DATA.sel.layer===L[i].id&&A3D_DATA.sel.fi===f.fi);
-        ctx.lineWidth=sel?2.6:1.2;
-        if(f.rings.length){
-          ctx.beginPath();
-          f.rings.forEach(function(r){path(r.pts,true);});
-          ctx.globalAlpha=sel?0.34:0.16;ctx.fill('evenodd');ctx.globalAlpha=1;ctx.stroke();
-        }
-        if(f.lines.length){ctx.beginPath();f.lines.forEach(function(l){path(l,false);});ctx.stroke();}
-        f.points.forEach(function(q){var p=S(q);ctx.beginPath();ctx.arc(p[0],p[1],sel?5:3.5,0,Math.PI*2);ctx.fill();});
-        n++;
-      }
-      ctx.restore();
-    }
-    A3D.lastDataDrawn=n;
-  }
-  /* what data is under a screen point: a point, then a line, then the smallest area; later layers first */
-  function bimDataPick(sx,sy){
-    var L=bimDataList(),y=bimShadowGround(),g=groundPoint(sx,sy,y),P,tol,i,j,k,c,f,best=null,bestA=Infinity,pass,inside;
-    if(!g)return null;
-    P=[g[0],g[2]];
-    tol=6*Math.max(A3D.cam.dist,0.5)/(Math.max(1,cvH())*1.2);
-    for(pass=0;pass<3;pass++){
-      for(i=L.length-1;i>=0;i--){
-        if(!L[i].visible)continue;
-        c=bimDataModel(L[i]);
-        if(!c)continue;
-        for(j=c.feats.length-1;j>=0;j--){
-          f=c.feats[j];
-          if(pass===0){
-            for(k=0;k<f.points.length;k++)if(Math.hypot(f.points[k][0]-P[0],f.points[k][1]-P[1])<=tol)return {layer:L[i].id,fi:f.fi};
-          }else if(pass===1){
-            for(k=0;k<f.lines.length;k++){
-              var l=f.lines[k],m;
-              for(m=0;m+1<l.length;m++)if(bimPointSegDist(P[0],P[1],l[m][0],l[m][1],l[m+1][0],l[m+1][1])<=tol)return {layer:L[i].id,fi:f.fi};
-            }
-          }else if(f.rings.length){
-            inside=0;
-            for(k=0;k<f.rings.length;k++)if(bimPointInPoly(P,f.rings[k].pts))inside++;
-            if(inside%2===1&&f.area<bestA){bestA=f.area;best={layer:L[i].id,fi:f.fi};}
-          }
-        }
-      }
-    }
-    return best;
-  }
-  /* the picked area's largest outer ring as a property line: one undo step */
-  function bimDataToProperty(){
-    var s=A3D_DATA.sel,L=s?bimDataById(s.layer):null,c=L?bimDataModel(L):null,f=null,outer=null,i,legs,pr;
-    if(c)for(i=0;i<c.feats.length;i++)if(c.feats[i].fi===s.fi)f=c.feats[i];
-    if(!f||!f.rings.length){a3dToast('Pick an area, such as a parcel, to make a property line from');return null;}
-    f.rings.forEach(function(r){if(!r.hole&&(!outer||bimPolyArea(r.pts)>bimPolyArea(outer)))outer=r.pts;});
-    if(!outer){a3dToast('That area has no outer ring');return null;}
-    legs=bimLegsFromRing(outer);
-    if(legs.length<3){a3dToast('That area has fewer than 3 sides');return null;}
-    pushUndo();
-    pr=bimNewProperty(outer[0],legs);
-    pr.dataSource={layer:L.name,credit:L.credit,props:JSON.parse(JSON.stringify(bimDataFeats(L.id)[s.fi].p||{}))};
-    A3D.objs.push(pr);
-    A3D.sel=pr.id;A3D.selSet=[pr.id];A3D_DATA.sel=null;
-    refreshTree();refreshProps();paint();saveSoon();
-    a3dToast(pr.name+' from '+L.name+': '+bimClosureText(bimPropertyGeometry(pr)));
-    return pr;
-  }
-  /* the shown layers' credits, for the line over the viewport */
-  function bimDataCreditHtml(){
-    var L=bimDataList(),c=[],i;
-    for(i=0;i<L.length;i++)if(L[i].visible&&bimDataFeats(L[i].id).length&&c.indexOf(L[i].credit)<0)c.push(L[i].credit);
-    return c.length?'Data: '+bimEsc(c.join('; ')):'';
   }
   function bimGlRender(V,W,H){
     var G=bimGlInit();
@@ -15048,7 +14672,6 @@ try{
     A3D.lastPolys=polys;
     }
     drawGrids(ctx,V,W,H);
-    drawDataLayers(ctx,V,W,H);     /* __acad3dV134: the public record, under the property lines */
     drawProperties(ctx,V,W,H);     /* __acad3dV103: under the model, like grids */
     drawAlignments(ctx,V,W,H);     /* __acad3dV127 */
     drawStationMark(ctx,V,W,H);
@@ -24373,7 +23996,7 @@ try{
      need the same list to park a project in its own key and to know what a fresh project is,
      and two copies of one field list are two lists that will eventually disagree. */
   function bimProjectRecord(){
-    return {objs:A3D.objs,cam:A3D.cam,seq:A3D.seq,counts:A3D.counts,levels:A3D.levels,grids:A3D.grids,activeLevel:A3D.activeLevel,layers:A3D.layers,activeLayer:A3D.activeLayer,types:A3D.types,activeWallType:A3D.activeWallType,views:A3D.views,activeViewId:A3D.activeViewId,levelFilter:A3D.levelFilter,sheets:A3D.sheets,titleBlock:A3D.titleBlock,buildings:A3D.buildings,activeBuilding:A3D.activeBuilding,site:A3D.site,roomScheme:A3D.roomScheme||'',classifications:A3D.classifications,dataFeatures:A3D.dataFeatures||{}};
+    return {objs:A3D.objs,cam:A3D.cam,seq:A3D.seq,counts:A3D.counts,levels:A3D.levels,grids:A3D.grids,activeLevel:A3D.activeLevel,layers:A3D.layers,activeLayer:A3D.activeLayer,types:A3D.types,activeWallType:A3D.activeWallType,views:A3D.views,activeViewId:A3D.activeViewId,levelFilter:A3D.levelFilter,sheets:A3D.sheets,titleBlock:A3D.titleBlock,buildings:A3D.buildings,activeBuilding:A3D.activeBuilding,site:A3D.site,roomScheme:A3D.roomScheme||'',classifications:A3D.classifications};
   }
   /* __acad3dV115: a save that failed went into an empty catch, so a full browser store lost every
      later edit without a word. It says so now -- once per run of failures, not once per edit. */
@@ -30383,9 +30006,6 @@ try{
       var gpk=o?null:bimPickGrid(xy[0],xy[1]);
       A3D.selGrid=gpk?gpk.id:null;
       if(gpk)refreshLevels();
-      /* __acad3dV134: under them all, the data layers */
-      A3D_DATA.sel=(o||gpk)?null:bimDataPick(xy[0],xy[1]);
-      if(!o)refreshProps();
     }
     refreshTree();paint();
   }
@@ -30817,7 +30437,6 @@ try{
     'bim:findaddress':ric('<path d="M12 21s-6-5.5-6-11a6 6 0 0 1 12 0c0 5.5-6 11-6 11z"/><circle cx="12" cy="10" r="2.2"/>'),
     'bim:geoimport':ric('<circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.6 2.6 2.6 14.4 0 17M12 3.5c-2.6 2.6-2.6 14.4 0 17"/>'),
     exportgeojson:ric('<path d="M6 2h9l5 5v15H6z"/><path d="M15 2v5h5"/><circle cx="12" cy="15" r="3.6"/><path d="M8.4 15h7.2M12 11.4c1.2 1.2 1.2 6 0 7.2"/>'),
-    'bim:datalayers':ric('<path d="M12 3l9 5-9 5-9-5z"/><path d="M3 12l9 5 9-5"/><path d="M3 16l9 5 9-5"/>'),   /* __acad3dV134 */
     'bim:context':ric('<path d="M3 21h18"/><rect x="4" y="11" width="5" height="10"/><rect x="10" y="5" width="6" height="16"/><rect x="17" y="13" width="4" height="8"/><path d="M12 9h2M12 13h2"/>'),   /* __acad3dV133 */
     'bim:usage':ric('<rect x="5" y="4" width="14" height="5" rx="1"/><rect x="5" y="10" width="14" height="5" rx="1"/><rect x="5" y="16" width="14" height="4" rx="1"/><path d="M8 6.5h4M8 12.5h7"/>'),   /* __acad3dV131 */
     'bim:usages':ric('<rect x="4" y="4" width="5" height="5" rx="1"/><path d="M12 6.5h8"/><rect x="4" y="10" width="5" height="5" rx="1"/><path d="M12 12.5h8"/><rect x="4" y="16" width="5" height="4" rx="1"/><path d="M12 18h8"/>'),
@@ -31180,7 +30799,7 @@ try{
       {t:'Conceptual Mass',small:['box','cyl','sphere','cone','torus']},
       {t:'Program',small:['bim:usage','bim:usages']},   /* __acad3dV131 */
       {t:'Model by Face',small:['tube','prism','wedge','ellipsoid']},
-      {t:'Site',small:['bim:map','bim:findaddress','bim:geoimport','bim:context','bim:datalayers','bim:property','bim:propshape','bim:truenorth','bim:alignment']}   /* __acad3dV132: the map first */   /* __acad3dV103; __acad3dV127: Alignment */
+      {t:'Site',small:['bim:map','bim:findaddress','bim:geoimport','bim:context','bim:property','bim:propshape','bim:truenorth','bim:alignment']}   /* __acad3dV132: the map first */   /* __acad3dV103; __acad3dV127: Alignment */
     ]},
     {id:'a3dmanage',name:'Manage',panels:[
       {t:'Settings',small:['bim:layers','bim:levels','bim:classification','bim:units']},
@@ -31263,7 +30882,7 @@ try{
     var L={'s:rect':'Rect','s:circle':'Circle','s:poly':'Polyline','p:pad':'Pad','p:pocket':'Pocket','bim:wall':'Wall','bim:floor':'Floor','bim:room':'Room','bim:roof':'Roof','bim:stair':'Stair','bim:column':'Column','bim:door':'Door','bim:window':'Window','bim:dim':'Dimension','bim:text':'Text','bim:section':'Section','bim:ceiling':'Ceiling','bim:dimang':'Angular','bim:dimrad':'Radius','bim:dimdia':'Diameter','bim:leader':'Leader','m:exportdxf':'DXF','m:exportsvg':'SVG','bim:mirror':'Mirror','bim:rotate':'Rotate','bim:polararray':'Polar Array','bim:joinwalls':'Join Walls','bim:extend':'Extend','bim:arc':'Arc','bim:fillet':'Fillet','bim:chamfer':'Chamfer','bim:break':'Break','bim:lengthen':'Lengthen','bim:scale':'Scale','b:union':'Union','b:cut':'Cut','b:isect':'Intersect','v:home':'Home','v:fit':'Fit','v:top':'Top','v:front':'Front','v:right':'Right','v:iso':'Iso','m:del':'Delete','m:desel':'Deselect','m:dup':'Duplicate','m:array':'Array','m:exportpng':'PNG','m:exportpdf':'PDF','m:exitsection':'Exit Section','m:flipsection':'Flip Section','m:saveproj':'Save Project','m:openproj':'Open\u2026',
       'bim:component':'Component','bim:famsave':'Save Family','bim:famimport':'Load Family',
       'bim:tagroom':'Tag Room','bim:tagallrooms':'Tag All Rooms','bim:tagcat':'Tag by Category','bim:level':'Level','bim:grid':'Grid',
-      'bim:beam':'Beam','bim:analyze':'Analyze','bim:truss':'Truss','bim:brace':'Brace','bim:foundwall':'Wall Foundation','bim:footing':'Isolated Footing','bim:property':'Property Line','bim:propshape':'Property from Shape','bim:truenorth':'True North','bim:alignment':'Alignment','bim:usage':'Usage','bim:usages':'Usages','bim:map':'Map','bim:findaddress':'Find Address','bim:geoimport':'Import GeoJSON','bim:context':'Site Context','bim:datalayers':'Data Layers','m:exportgeojson':'GeoJSON',
+      'bim:beam':'Beam','bim:analyze':'Analyze','bim:truss':'Truss','bim:brace':'Brace','bim:foundwall':'Wall Foundation','bim:footing':'Isolated Footing','bim:property':'Property Line','bim:propshape':'Property from Shape','bim:truenorth':'True North','bim:alignment':'Alignment','bim:usage':'Usage','bim:usages':'Usages','bim:map':'Map','bim:findaddress':'Find Address','bim:geoimport':'Import GeoJSON','bim:context':'Site Context','m:exportgeojson':'GeoJSON',
       'bim:foundslab':'Foundation Slab','bim:rebar':'Rebar','bim:linkifc':'Link IFC','bim:linkcad':'Link CAD',
       'bim:importcad':'Import CAD','bim:saveview':'Save View','bim:sheet':'Sheet','bim:titleblock':'Title Block',
       'bim:uipanels':'User Interface','bim:trim':'Trim','bim:offset':'Offset','bim:align':'Align',
@@ -31427,7 +31046,7 @@ try{
     'bim:room':'room','bim:tagroom':'roomtag','bim:tagallrooms':'roomtagall','bim:footing':'footing','bim:foundwall':'wallfoundation',
     'bim:foundslab':'foundslab','bim:property':'propertyline','bim:propshape':'propertyshape','bim:truenorth':'truenorth',
     'bim:alignment':'alignment','bim:usage':'usage','bim:usages':'usages','bim:map':'map','bim:findaddress':'findaddress',
-    'bim:geoimport':'geoimport','bim:context':'context','bim:datalayers':'datalayers','m:exportgeojson':'geoexport','bim:roof':'roofTool','bim:stair':'stairTool','bim:dim':'bimDims','bim:text':'text',
+    'bim:geoimport':'geoimport','bim:context':'context','m:exportgeojson':'geoexport','bim:roof':'roofTool','bim:stair':'stairTool','bim:dim':'bimDims','bim:text':'text',
     'bim:section':'sectionTool','bim:ceiling':'ceilingTool','bim:offset':'offset','bim:trim':'trim','bim:align':'align',
     'bim:leader':'leader','bim:beam':'beamTool','bim:analyze':'analyze','bim:grid':'gridline','bim:column':'columnTool',
     'bim:door':'doorTool','bim:window':'windowTool','v:fit':'zoomFit','m:del':'del','m:dup':'duplicate','m:array':'arrayRect',
@@ -31488,7 +31107,6 @@ try{
     GEOEXPORT:'geojson gis export longitude latitude',
     CONTEXT:'neighbours neighbors surrounding buildings osm openstreetmap overpass roads streets water rivers parks trees terrain elevation contours ground giraffe',   /* __acad3dV133 */
     CONTEXTREMOVE:'delete clear neighbours context',
-    DATALAYERS:'gis arcgis wfs geojson parcels lots zoning flood fema council open data layers attributes lookup',   /* __acad3dV134 */
     ANALYZEOFF:'hide analysis',LOAD:'force kn',SUPPORT:'fixed pinned boundary base',ALIGNMENT:'road route centerline centreline chainage highway',
     STATION:'chainage offset',PROFILEVIEW:'vertical profile grade',SURVEY:'terrain topography topo tin contours ground',
     PROPERTYLINE:'parcel lot boundary site',GRIDLINE:'axis grid line',ROOM:'space area',SECTIONTOOL:'cut elevation',SECTION:'cut elevation',
@@ -31817,8 +31435,7 @@ try{
     if(act==='bim:findaddress'){openFindAddressDlg();return;}
     if(act==='bim:geoimport'){bimGeoImportPick();return;}
     if(act==='m:exportgeojson'){bimGeoExport();return;}
-    if(act==='bim:context'){bimCtxFetch();return;}                      /* __acad3dV133 */
-    if(act==='bim:datalayers'){bimDataCommand();return;}                /* __acad3dV134 */            /* __acad3dV127 */
+    if(act==='bim:context'){bimCtxFetch();return;}                      /* __acad3dV133 */            /* __acad3dV127 */
     if(act==='bim:tagallrooms'){bimTagAllRooms();return;}     /* __acad3dV101 */
     if(act==='bim:roof'){startRoofTool();return;}
     if(act==='bim:stair'){startStairTool();return;}
@@ -32514,13 +32131,6 @@ try{
     if(el.propsbody)el.propsbody.addEventListener('click',function(ev){
       try{bimUsagePropClick(ev);}catch(eUK){console.warn('[BIM] Usage edit failed',eUK);a3dToast('That could not be changed - see the console');}
     });
-    /* __acad3dV134: the Data Layers group and a data feature */
-    if(el.propsbody)el.propsbody.addEventListener('change',function(ev){
-      try{bimDataPropChange(ev);}catch(eDC){console.warn('[BIM] Data layer setting failed',eDC);a3dToast('That could not be changed - see the console');}
-    });
-    if(el.propsbody)el.propsbody.addEventListener('click',function(ev){
-      try{bimDataPropClick(ev);}catch(eDK){console.warn('[BIM] Data layer action failed',eDK);a3dToast('That did not work - see the console');}
-    });
     /* __acad3dV133: the Site Context group */
     if(el.propsbody)el.propsbody.addEventListener('change',function(ev){
       try{bimCtxPropChange(ev);}catch(eXC){console.warn('[BIM] Context setting failed',eXC);a3dToast('That could not be changed - see the console');}
@@ -33189,8 +32799,7 @@ try{
     geoimport:function(){bimGeoImportPick();},
     geoexport:function(){bimGeoExport();},
     context:function(){bimCtxFetch();},                          /* __acad3dV133 */
-    contextremove:function(){bimCtxRemove();},
-    datalayers:function(){bimDataCommand();},                    /* __acad3dV134 */                /* __acad3dV127 */
+    contextremove:function(){bimCtxRemove();},                /* __acad3dV127 */
     profileview:function(){bimStartProfileViewTool();},
     stationoffset:function(){bimStartStationTool();},
     analyzeoff:function(){bimAnalyzeOff();},
@@ -33268,27 +32877,6 @@ try{
   window.__a3dDockTip=function(spec){return bimDockTipData(spec);};
   window.__a3dDockTipShown=function(){var e=document.getElementById('a3d-tip');return e&&e.classList.contains('show')?e.textContent:null;};
   window.__a3dDockLabels=function(on){if(on!==undefined)bimSetDockLabels(!!on);return bimDockLabelsOn();};
-  /* __acad3dV134: data layers */
-  window.__a3dDataLayers=function(){return JSON.parse(JSON.stringify(bimDataList()));};
-  window.__a3dDataFeatures=function(id){return JSON.parse(JSON.stringify(bimDataFeats(id)));};
-  window.__a3dDataPresets=function(){return JSON.parse(JSON.stringify(BIM_DATA_PRESETS));};
-  window.__a3dDataKind=function(u){return bimDataKind(u);};
-  window.__a3dDataQueryUrl=function(id){var L=bimDataById(id),a=bimCtxArea();return L&&a?bimDataQueryUrl(L,a):null;};
-  window.__a3dDataAdd=function(u,n,c,cr){var id=bimDataAdd(u,n,c,cr);return Promise.resolve(id?A3D_DATA.pending[id]:null).then(function(r){return {id:id,result:r||null};});};
-  window.__a3dDataFetch=function(id){return Promise.resolve(bimDataFetch(id));};
-  window.__a3dDataBusy=function(id){return !!A3D_DATA.busy[id];};
-  window.__a3dDataRemove=function(id){return bimDataRemove(id);};
-  window.__a3dDataSet=function(id,f,v){return bimDataSet(id,f,v);};
-  window.__a3dDataPick=function(sx,sy){return bimDataPick(sx,sy);};
-  window.__a3dDataSel=function(){return A3D_DATA.sel?JSON.parse(JSON.stringify(A3D_DATA.sel)):null;};
-  window.__a3dDataSelect=function(layer,fi){A3D_DATA.sel=layer?{layer:layer,fi:fi}:null;refreshProps();paint();return true;};
-  window.__a3dDataToProperty=function(){var p=bimDataToProperty();return p?p.id:null;};
-  window.__a3dDataDrawn=function(){return A3D.lastDataDrawn||0;};
-  window.__a3dDataCredit=function(){return bimDataCreditHtml();};
-  window.__acad3dV134d='overpassmirrors,overpassget';
-  window.__a3dOverpassMirrors=function(){return BIM_OVERPASS_MIRRORS.slice();};
-  window.__acad3dV134='datakinds,arcgisquery,wfsgetfeature,geojsonfile,presets,areafilter,maxfeatures,featuresoutsideundo,'+
-    'featuressaved,planoverlay,notonpaper,clicktoread,pickorder,parceltoproperty,failuresnamed,datacredit,datapanel,datacommand';
   /* __acad3dV133: site context */
   window.__a3dCtxSettings=function(){return bimCtxSettings();};
   window.__a3dCtxSet=function(f,v){return bimCtxSet(f,v);};

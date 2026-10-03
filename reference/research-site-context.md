@@ -78,3 +78,19 @@ It is turned to longitude and latitude through V132's georeferencing, so true no
 
 - [Overpass API](https://wiki.openstreetmap.org/wiki/Overpass_API), [Overpass QL](https://wiki.openstreetmap.org/wiki/Overpass_API/Overpass_QL), [Key:height](https://wiki.openstreetmap.org/wiki/Key:height), [Key:building:levels](https://wiki.openstreetmap.org/wiki/Key:building:levels)
 - [Terrain Tiles on AWS](https://registry.opendata.aws/terrain-tiles/), [tilezen/joerd: formats and data sources](https://github.com/tilezen/joerd/blob/master/docs/formats.md)
+
+## V134d: Overpass's mirrors
+
+The owner: "i cant get any context". The terrain came, but overpass-api.de "could not be reached".
+The main Overpass instance turns some requests away: when it is overloaded, and for clients it
+cannot identify (a page opened as a file sends no Referer). Its refusal carries no CORS header, so
+the browser reports only a network failure.
+
+CONTEXT now asks with a plain GET (`?data=`), the simplest request a browser makes. When the server
+it is set to fails, it tries Overpass's other public instances in turn:
+- `overpass.private.coffee`
+- `maps.mail.ru/osm/tools/overpass`
+- `overpass.kumi.systems`
+
+Only when all of them fail does it say so, naming each failure. None could be reached from the
+build sandbox, so they are tested only against routed answers.

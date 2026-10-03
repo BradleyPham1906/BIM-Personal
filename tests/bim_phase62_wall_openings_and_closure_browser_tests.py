@@ -233,7 +233,9 @@ def source_level_checks(path):
             # AMENDED FOR V133: the site context's two sources, asked only on CONTEXT
             "overpass-api.de", "s3.amazonaws.com",
             # AMENDED FOR V133d: the street map is CARTO's
-            "basemaps.cartocdn.com"}
+            "basemaps.cartocdn.com",
+            # AMENDED FOR V134: the data-layer presets' servers and Overpass's mirrors, asked only when told
+            "hazards.fema.gov", "services.arcgis.com", "overpass.private.coffee", "maps.mail.ru", "overpass.kumi.systems"}
     external = sorted(h for h in hosts if not h.endswith("w3.org") and h not in v132)
     check(not external,
           "no external host referenced anywhere in the file (found: " + (", ".join(external) or "none") + ")")

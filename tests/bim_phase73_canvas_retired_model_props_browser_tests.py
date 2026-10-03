@@ -181,8 +181,9 @@ async def run():
         # AMENDED FOR V131: the project's Areas by Usage and the Usages library, before Statistics
         # AMENDED FOR V132: the Map, beside the latitude and longitude in Identity Data
         # AMENDED FOR V133: the Site Context, after the Map
-        ck(mp['groups'] == ['Identity Data', 'Map', 'Site Context', 'View', 'Floor Loads: Level 0', 'Areas by Usage', 'Usages', 'Statistics'],
-           "eight groups: %s" % mp['groups'])
+        # AMENDED FOR V134: the Data Layers, after the Site Context
+        ck(mp['groups'] == ['Identity Data', 'Map', 'Site Context', 'Data Layers', 'View', 'Floor Loads: Level 0', 'Areas by Usage', 'Usages', 'Statistics'],
+           "nine groups: %s" % mp['groups'])
         for key in ('project', 'client', 'site', 'level', 'layer', 'present'):
             ck(key in mp['editable'], "'%s' is an editable field" % key)
         ro = dict(mp['readonly'])

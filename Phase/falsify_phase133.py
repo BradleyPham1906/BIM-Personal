@@ -8,13 +8,17 @@ SRC = pathlib.Path('canvas_v10.html')
 base = SRC.read_text(encoding='utf-8')
 
 VARIANTS = {
+    # ---- 134d: Overpass's public mirrors, tried in turn
+    'no_mirrors': [("    BIM_OVERPASS_MIRRORS.forEach(function(u){if(list.indexOf(u)<0)list.push(u);});\n", "")],
+    'mirror_failures_dropped': [("        tried.push(bimCtxErr(bimMapHost(u),e));\n", "")],
     # ---- 133a: the area and the query
     'area_no_radius': [("h=(n?Math.max(x1-x0,z1-z0)/2:0)+st.radius;", "h=(n?Math.max(x1-x0,z1-z0)/2:0)+150;")],
     'area_ignores_property': [("    var cx=n?(x0+x1)/2:0,cz=n?(z0+z1)/2:0,", "    var cx=0,cz=0,")],
     'area_two_corners': [("    for(i=0;i<4;i++){\n      q=bimModelToGeo(C[i][0],C[i][1],org);", "    for(i=0;i<4;i+=2){\n      q=bimModelToGeo(C[i][0],C[i][1],org);")],
     'no_trees_query': [("    if(k.trees)q.push('node[\"natural\"=\"tree\"]'+b+';');\n", "")],
     'kinds_ignored': [("    if(k.roads)q.push('way[\"highway\"]'+b+';');", "    q.push('way[\"highway\"]'+b+';');")],
-    'overpass_setting_ignored': [("    var pOsm=q?fetch(st.overpass,", "    var pOsm=q?fetch(BIM_OVERPASS_URL,")],
+    # RE-ANCHORED IN V134d: the server set goes first into bimCtxOverpass
+    'overpass_setting_ignored': [("    var pOsm=q?bimCtxOverpass(q,st.overpass):Promise.resolve(null);", "    var pOsm=q?bimCtxOverpass(q,BIM_OVERPASS_URL):Promise.resolve(null);")],
     # ---- 133a: reading OSM
     'feet_as_metres': [("      if(m[2]&&/^(ft|feet|')$/i.test(m[2]))v*=0.3048;\n", "")],
     'levels_ignored': [("    if(isFinite(L)&&L>0&&L<300)return {h:L*BIM_CTX_LEVEL_H,from:'levels'};\n", "")],
@@ -45,7 +49,8 @@ VARIANTS = {
     'courtyards_uncounted': [("            if(f.inner.length){c.courtyards=f.inner.length;yards+=f.inner.length;}\n", "")],
     'assumed_unsaid': [("            if(hh.from==='assumed')assumed++;\n", "")],
     # ---- 133a: failures
-    'failures_unnamed': [("      else bad.push(bimCtxErr(bimMapHost(st.overpass),osm.err));\n", "")],
+    # RE-ANCHORED IN V134d: each Overpass instance tried is named
+    'failures_unnamed': [("      else bad=bad.concat(osm.msgs&&osm.msgs.length?osm.msgs:[bimCtxErr(bimMapHost(st.overpass),osm.err)]);", "      else bad=bad;")],
     'busy_not_guarded': [("    if(A3D_CTX.busy){a3dToast('The site context is already on its way');return null;}\n", "")],
     'busy_stuck': [("      A3D_CTX.busy=false;\n      try{return bimCtxApply(a,st,r[0],r[1]);}", "      try{return bimCtxApply(a,st,r[0],r[1]);}")],
     'nothing_still_steps': [("    if(!feats&&!terOk){a3dToast('No site context: '+bad.join('; '));return {error:bad.join('; ')};}", "")],
