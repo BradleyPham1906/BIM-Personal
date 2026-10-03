@@ -9,7 +9,8 @@ base = SRC.read_text(encoding='utf-8')
 
 VARIANTS = {
     # ---- 133d: the map on a real screen
-    'osm_street': [("url:'https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png'", "url:'https://tile.openstreetmap.org/{z}/{x}/{y}.png'")],
+    # RE-ANCHORED IN V133f: the street map is Esri's
+    'carto_street': [("url:'https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}'", "url:'https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png'")],
     'no_retina_tiles': [(".split('{r}').join(bimMapDpr()>1.5?'@2x':'');", ".split('{r}').join('');")],
     'density_ignored': [("    var dz=tpl.indexOf('{r}')>=0?1:bimMapDpr(),", "    var dz=1,")],
     'density_counted_twice': [("    var dz=tpl.indexOf('{r}')>=0?1:bimMapDpr(),", "    var dz=bimMapDpr(),")],

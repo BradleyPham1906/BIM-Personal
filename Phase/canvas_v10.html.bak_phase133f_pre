@@ -13720,10 +13720,8 @@ try{
   var BIM_MAP_STYLES={
     /* __acad3dV133d: CARTO's Voyager, OSM's data. OpenStreetMap's own tile servers refuse a request
        with no Referer, which is every request from a page opened as a file. */
-    /* __acad3dV133f: Esri's World Street Map. OSM's own servers answer a page opened as a file with
-       "Access blocked" tiles, and CARTO's with "API KEY REQUIRED"; Esri's serve it, keyless. */
-    street:{name:'Street (Esri World Street Map)',url:'https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',maxz:19,
-      credit:'Map: Esri, HERE, Garmin, USGS, \u00a9 OpenStreetMap contributors, and the GIS User Community',link:'https://www.arcgis.com/home/item.html?id=3b93337983e9436f8db950e38a8629af'},
+    street:{name:'Street (CARTO, OpenStreetMap data)',url:'https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',maxz:19,
+      credit:'\u00a9 OpenStreetMap contributors \u00a9 CARTO',link:'https://www.openstreetmap.org/copyright'},
     satellite:{name:'Satellite (Esri World Imagery)',url:'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',maxz:19,
       credit:'Imagery: Esri, Maxar, Earthstar Geographics, and the GIS User Community',link:'https://www.arcgis.com/home/item.html?id=10df2279f9684e4a9f6a7f08febac2a9'},
     custom:{name:'Custom tiles',url:'',maxz:19,credit:'',link:''}
@@ -32890,7 +32888,6 @@ try{
   window.__a3dCtxRings=function(members,role){return bimOsmRings(members,role);};
   window.__a3dCtxCredit=function(){return bimCtxCreditHtml(false);};
   window.__a3dCtxDatum=function(){return bimCtxDatum();};
-  window.__acad3dV133f='esristreet';
   window.__acad3dV133e='zoomrange,zoomaboutcursor,farplanefollows';
   window.__a3dZoomAbout=function(f,sx,sy){var d=bimZoomAbout(f,sx,sy);paint();return d;};
   window.__a3dZoomLimits=function(){return [BIM_ZOOM_MIN,BIM_ZOOM_MAX];};
