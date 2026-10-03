@@ -2,11 +2,11 @@
 
 **Read this first in a new session.** One page. The detail lives in the docs listed at the bottom.
 
-    canvas_v10.html   1968128 bytes
-    sha256            874b82bc0527d3d73d96fd854f5fff679e17253c5ec1ea41408e621c0cffe6df
-    markers           __acad3dV60 ... __acad3dV135, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
+    canvas_v10.html   1985478 bytes
+    sha256            170a93b676579f1451db50f0eda126ad6ee716133b69a164a259fd3f5892bd78
+    markers           __acad3dV60 ... __acad3dV136, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
                       __acad3dV121b
-    tests             92 suites, 3498 checks, 0 failures
+    tests             93 suites, 3554 checks, 0 failures
 
     Run the regression in parallel: tests/run_all.py [build] [filter] [-jN], default -j6,
     about 4 minutes; give it the build's absolute path. tests/falsify_all.py
@@ -22,7 +22,7 @@ with anchored Python scripts that assert exact match counts.
 
 ---
 
-## NOW - Giraffe's and GeoLibre's ideas, then the MEP runs (V136 to V140)
+## NOW - Giraffe's and GeoLibre's ideas, then the MEP runs (V137 to V140)
 
 The owner looked at Giraffe (giraffe.build), a map-first feasibility app, and chose four of its
 ideas, ahead of the MEP runs, then asked for the map "just like how giraffe do". The research, with an
@@ -56,8 +56,7 @@ V128 to V130 settled how commands are found (see Recently finished):
 
 | # | Phase | Scope | Notes |
 |---|---|---|---|
-| 136 | Colour-by-property lens, and layer legends | **Start here.** Colour by usage, level, type or any property, with a legend, under Appearance; it also colours V133's context buildings (by height) and V134's data layers (by an attribute), each with an opacity | Giraffe's lenses; Revit's colour schemes; GeoLibre's legend and layer opacity (owner's screenshots, V135). |
-| 137 | Map on 3D terrain | The basemap draped over V133's terrain in 3D, the context buildings standing on it | The owner's Cửu Long screenshot. V108's surfaces are plan-only today. |
+| 137 | Map on 3D terrain | **Start here.** The basemap draped over V133's terrain in 3D, the context buildings standing on it | The owner's Cửu Long screenshot. V108's surfaces are plan-only today. |
 | 138 | Zoning envelope | Setbacks, stepbacks and a height limit on a property become a 3D envelope; massing outside it is flagged | Builds on V103's setbacks; Giraffe's Basic Envelope. |
 | 139 | Design scenarios | Options within one project, switched between and compared by their numbers | Giraffe's scenarios; Revit's Design Options. |
 | 140 | MEP runs | Duct and pipe runs at connectors, systems, flow, velocity and friction | MEP is its own discipline (the owner's choice). The research is drafted in `reference/research-mep-runs.md`. |
@@ -68,7 +67,7 @@ V128 to V130 settled how commands are found (see Recently finished):
 ### LATER - Track A, drafting (moved behind Track B in V100)
 
 The numbers in this table are its order, not phase numbers: a phase takes the next free V number
-when it starts (V111 to V135 went to other work; V136 to V140 are in NOW).
+when it starts (V111 to V136 went to other work; V137 to V140 are in NOW).
 
 | # | Phase | Scope | Notes |
 |---|---|---|---|
@@ -82,7 +81,14 @@ when it starts (V111 to V135 went to other work; V136 to V140 are in NOW).
 | 118 | Blocks and data | ATTDEF ATTEDIT BEDIT WBLOCK DATAEXTRACTION TABLESTYLE TABLEDIT TABLEEXPORT | First phase that's about the disciplines, not drafting. BLOCK and INSERT landed in V124, as the Assets library's blocks: saved records inserted as independent copies. A block reference that follows its definition (what BEDIT edits) is not built. |
 | 119 | Sheets and plotting, rest | MVIEW (draw a viewport on the paper) PAGESETUP (plot settings beyond Sheet Setup) PUBLISH (V122's Print set prints every sheet in one job; a chosen subset and page setups remain) EXPORTPDF (vector PDF of a sheet) VPLAYER (per-viewport layer visibility) viewport lock | LAYOUT, MSPACE and PSPACE landed in V116, with layout tabs and model space through a viewport. |
 
-**Recently finished:** Phase 135 (V135), **find open data**.
+**Recently finished:** Phase 136 (V136), **colour by property**.
+- **The model coloured by** usage, level, type, layer, material, height or any property (OSM tags,
+  imported attributes), in 3D and 2D, with a legend of each colour and its count. Kept with the
+  project; one undo step. COLOURBY.
+- **A data layer coloured by** one of its attributes, at an opacity.
+- **Checked** in 56 checks and 38 falsify variants.
+
+Phase 135 (V135), **find open data**.
 - **238 US open-data portals** (federal, state, city and county) from GeoLibre (MIT), searched from
   the Data Layers group: ArcGIS Hub through ArcGIS Online's search, Socrata through its Discovery
   API. The portal is guessed from the site's address.

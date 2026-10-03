@@ -31,6 +31,7 @@ rep("""  /* __acad3dV135: find open data */
   window.__a3dDataFeatCol=function(id,fi){var L=bimDataById(id);return L?bimDataFeatCol(L,bimDataLensScale(L),fi):null;};
   window.__a3dLensCommand=function(){return bimLensCommand();};
   window.__a3dTestLegendOnPaper=function(){var s=A3D.sheetCapture;A3D.sheetCapture=true;try{drawLensLegend(el.ctx,null,0,0);}finally{A3D.sheetCapture=s;}return A3D.lastLensLegend;};
+  window.__a3dTestLevelName=function(id,n){var i;for(i=0;i<A3D.levels.length;i++)if(A3D.levels[i].id===id){A3D.levels[i].name=n;A3D_LENS.cur=null;return true;}return false;};
   window.__a3dTestObjSet=function(id,k,v){var o=objById(id);if(!o)return false;if(v===null)delete o[k];else o[k]=v;A3D_LENS.cur=null;return true;};
   window.__acad3dV136='lensby,lensusage,lenslevel,lenstype,lenslayer,lensmaterial,lensheight,lensprop,lensramp,lensnovalue,lensgl,lens2d,'+
     'lensoverpresentation,lensundo,lenssaved,lenslegend,datalens,dataopacity,lenspanel,lenscommand';

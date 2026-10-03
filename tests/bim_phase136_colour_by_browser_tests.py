@@ -191,13 +191,20 @@ async def run():
             ck(len(lvids) >= 3, "three levels (%d)" % len(lvids))
             for i_, lid in ((A, lvids[2]), (B, lvids[0]), (C, lvids[1]), (D, lvids[0])):
                 await oset(i_, 'level', lid)
+            for lid, nm in ((lvids[0], 'Ground'), (lvids[1], 'Mezzanine'), (lvids[2], 'Attic')):   # names out of alphabetical order
+                await safe("(a)=>window.__a3dTestLevelName(a[0],a[1])", [lid, nm])
             await lens('level')
             ck(await col(B) == SCHEME[0] and await col(D) == SCHEME[0] and await col(C) == SCHEME[1] and await col(A) == SCHEME[2],
                "by level: in level order, not name order")
             lg = await legend()
-            ck([x['n'] for x in lg['blocks'][0]['rows']] == [2, 1, 1] and lg['blocks'][0]['title'] == 'Coloured by level', "two on the first level")
+            ck([(x['name'], x['n']) for x in lg['blocks'][0]['rows']] == [('Ground', 2), ('Mezzanine', 1), ('Attic', 1)] and lg['blocks'][0]['title'] == 'Coloured by level',
+               "the legend in level order: two on the ground")
             await lens('type')
             ck(len({await col(x) for x in ids}) == 1 and (await legend())['blocks'][0]['rows'][0]['name'] == 'Box', "by type: all boxes, one colour, named")
+            cy = await safe("()=>window.__a3dAdd('cyl',{Radius:1,Height:2}).id")
+            ck((await safe("(i)=>window.__a3dLensValue(i)", cy) or {}).get('name') == 'Cylinder', "a type is named as the app names it: Cylinder")
+            await safe("()=>window.__a3dUndo()")
+            await page.wait_for_timeout(100)
             ly = await safe("()=>{var l=window.__a3dAddLayer('Massing');return l&&l.id;}")
             await oset(B, 'layer', ly)
             await lens('layer')
@@ -226,7 +233,7 @@ async def run():
             await safe("()=>window.__a3dTestPaint()")
             ck((await safe("(i)=>window.__a3dLensValue(i)", A) or {}).get('num') == 21.5, "a context building's height is its recorded one")
             keys = await safe("()=>window.__a3dLensPropKeys()") or []
-            ck(keys[:1] == ['building'] and 'OWNER' in keys and 'building:levels' in keys and 'kind' in keys, "the properties objects carry, the most common first (%s)" % keys[:5])
+            ck(keys[:5] == ['building', 'building:levels', 'height', 'kind', 'OWNER'], "the properties objects carry, the most common first, then by name (%s)" % keys[:5])
             await lens('prop', 'building')
             ck(await col(B) == SCHEME[1] and await col(A) == SCHEME[0] and await col(C) == SCHEME[0] and await col(D) == NONE, "by a property's words: house, retail")
             await lens('prop', 'building:levels')
@@ -271,6 +278,14 @@ async def run():
             await safe("()=>window.__a3dTestPaint()")
             dsA = await safe("(i)=>window.__a3dLastDrawStyle(i)", A)
             ck(dsA and dsA['fill'] != RAMP[5], "and its own with the lens off")
+            await lens('usage')
+            await safe("()=>window.__a3dTestPaint()")
+            f0 = (await safe("(i)=>window.__a3dLastDrawStyle(i)", D) or {}).get('fill')
+            await safe("(a)=>window.__a3dUsageAssign([a[0]],'use-off')", [D])
+            await safe("()=>window.__a3dTestPaint()")
+            f1 = (await safe("(i)=>window.__a3dLastDrawStyle(i)", D) or {}).get('fill')
+            ck(f0 == '#e8a33d' and f1 == '#4e8fd6', "worked out afresh each paint: a usage changed shows at once (%s -> %s)" % (f0, f1))
+            await safe("()=>window.__a3dUndo()")
             await safe("()=>window.__a3dSetPresentMode(false)")
             await lens('usage')
             await safe("()=>window.__a3dTestPaint()")
@@ -333,7 +348,6 @@ async def run():
             await page.wait_for_timeout(300)
             await safe("()=>window.__a3dCamSet({tx:0,tz:0,dist:260})")
             await safe("()=>window.__a3dTestObjSet&&window.__a3dTestSetObjs([])")
-            await safe("(i)=>window.__a3dDataSet(i,'by','')", zid)
             await safe("()=>window.__a3dMapSet('style','off')")
 
             async def px_at(x, z):
@@ -343,6 +357,11 @@ async def run():
                 s = await safe("(p)=>{var r=document.getElementById('a3d-canvas').getBoundingClientRect(),q=window.__a3dProject([p[0],0,p[1]]);return [r.left+q.x,r.top+q.y];}", [x, z])
                 return im.getpixel((int(s[0]), int(s[1])))
             bg = await px_at(0, 20)
+            await safe("(i)=>window.__a3dDataSet(i,'by','ZONE')", zid)
+            pz = await px_at(-70, -90)
+            wz = tuple(bg[i] + (rgb(SCHEME[0])[i] - bg[i]) * 0.5 for i in range(3))
+            ck(all(abs(pz[i] - wz[i]) <= 8 for i in range(3)), "on the plan: a district filled in its value's colour, more strongly (%s, %s)" % (pz, wz))
+            await safe("(i)=>window.__a3dDataSet(i,'by','')", zid)
             p1 = await px_at(-70, -90)
             ok = await safe("(i)=>window.__a3dDataSet(i,'opacity','40')", zid)
             L = (await safe("()=>window.__a3dDataLayers()") or [{}])[0]

@@ -11724,3 +11724,74 @@ The diff is ES5-clean.
     canvas_v10.html   1968128 bytes
     sha256            874b82bc0527d3d73d96fd854f5fff679e17253c5ec1ea41408e621c0cffe6df
     markers           __acad3dV60 ... __acad3dV135, __acad3dV134d (and the 133d to 133f markers)
+
+## Phase 136 (V136) - Colour by property, with legends
+
+Giraffe's lenses and GeoLibre's legends, from the owner's screenshots. The research is in
+`reference/research-colour-by.md`.
+
+### What was built (patches 136a to 136c)
+
+- **a -- the engine.**
+  - **The lens** (`A3D.site.lens = {by, prop}`): off, usage, level, type, layer, material,
+    height, or a named property. It is kept on the site, so it is saved, undone and loaded with the
+    project.
+  - **A property** is any name an object carries: an OSM tag on the context, an attribute imported
+    with GeoJSON, or a context field. They are offered most common first.
+  - **Categories:**
+    - usage keeps each usage's own colour;
+    - level follows level order;
+    - the rest take V105's twelve scheme colours in name order.
+  - **Numbers** (height; a property whose values are numbers): six equal steps from the lowest to
+    the highest, ColorBrewer's YlOrRd. Height is a context building's recorded height, else the
+    solid's own.
+  - **No value** is grey, with its own legend row.
+  - **Computed once per paint** and used where every solid takes its colour:
+    - the GL face pass;
+    - the 2D face loop, over Presentation's fill.
+  - **Data layers:**
+    - Colour by one of the layer's attributes (categories or numbers, filled at 0.5).
+    - An opacity, 10 to 100%.
+    - Both are undo steps, and an attribute the layer does not have is refused.
+  - **One legend panel,** below V105's room legend.
+    - The lens, then each data layer coloured by an attribute.
+    - Each row with its colour and count; only steps that hold something; "and N more" past
+      fourteen rows.
+    - Not on paper.
+- **b -- Properties and the command.**
+  - **View group:** Colour by above Appearance, and Property when it is picked.
+  - **Each data layer:** Colour by and Opacity.
+  - **COLOURBY** (COLORBY, LENS) opens the View group at Colour by.
+- **c -- the hooks** `__a3dLens*`, `__a3dDataAttrKeys`, `__a3dDataFeatCol`, and the test hooks
+  `__a3dTestObjSet`, `__a3dTestLevelName` and `__a3dTestLegendOnPaper`; the marker.
+
+### Bugs found
+
+- **The first falsify run missed five variants,** each a gap in the suite:
+  - level names that happened to sort in level order;
+  - a type whose name capitalises to its key ("box", "Box");
+  - property keys whose first-found order matched the sorted one;
+  - a per-paint recompute that the test hooks hid, because they reset the cache themselves;
+  - data-layer colours checked through a hook but never on the plan.
+
+  Each now has a check that tells the difference (renamed levels, a cylinder, a full key order, a
+  usage changed between two paints, a pixel).
+- **A pixel taken at a box's centre** sat on the face edges' lines; it is now taken off them.
+
+### Suites
+
+- New: `bim_phase136_colour_by_browser_tests.py`, 56 checks.
+- Falsified by `Phase/falsify_phase136.py`, 38 variants, all caught.
+
+### Not done
+
+- A lens table of totals per value; hand-picked colours and ranges; a legend placed on sheets.
+
+### Full regression and state after V136
+
+93 suites, 3554 checks, 0 failures. Falsification: V136 38 of 38. The chain 136a to 136c rebuilds
+the build from `Phase/canvas_v10.html.bak_phase136_pre`. The diff is ES5-clean.
+
+    canvas_v10.html   1985478 bytes
+    sha256            170a93b676579f1451db50f0eda126ad6ee716133b69a164a259fd3f5892bd78
+    markers           __acad3dV60 ... __acad3dV136, __acad3dV134d (and the 133d to 133f markers)
