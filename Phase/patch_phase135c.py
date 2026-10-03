@@ -1,6 +1,6 @@
 """patch_phase135c.py -- V135: hooks for the suite, and the marker."""
 NAME = 'patch_phase135c.py'
-BASE = 'e4d37c96985810423888f8b85154be211bb89939d5e0b0641f4eeaa229cbbb30'
+BASE = '404c18f41f7f7f7591fa5155be5dc42751a9c10322f323926d6e3cc8e5f4586c'
 import hashlib, pathlib, sys
 P = pathlib.Path(sys.argv[1] if len(sys.argv) > 1 else 'canvas_v10.html')
 raw = P.read_bytes()

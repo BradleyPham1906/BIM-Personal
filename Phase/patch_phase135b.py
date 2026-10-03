@@ -7,7 +7,7 @@
 - The credit to GeoLibre for the list and the searches.
 - FINDDATA (OPENDATA, PORTAL) opens the group at the search."""
 NAME = 'patch_phase135b.py'
-BASE = '134c4737ebe29758f63f8faba0bac93e960bc869f4846c25a170f75f8bf2c9e2'
+BASE = 'ae3aab71b665a5160cf30a131dbe85371377e58fda8d155e3a7822a77ba47c39'
 import hashlib, pathlib, sys
 P = pathlib.Path(sys.argv[1] if len(sys.argv) > 1 else 'canvas_v10.html')
 raw = P.read_bytes()

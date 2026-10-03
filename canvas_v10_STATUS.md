@@ -11654,3 +11654,61 @@ The diff is ES5-clean.
     canvas_v10.html   1920406 bytes
     sha256            9632fa60cd5e98df2445af587c7985dec6ef6ebda108e34182e32872051c12d0
     markers           __acad3dV60 ... __acad3dV134, __acad3dV134d (and the 133d to 133f markers)
+
+## Phase 135 (V135) - Find open data, from GeoLibre's portal list
+
+The owner pointed at GeoLibre (geolibre.app), an open-source GIS, and asked to copy it in. It is a
+React, MapLibre and DuckDB app of about 2,000 TypeScript files, which cannot run in this one-file
+app as it is. What does carry over was taken under its MIT licence: its list of US open-data portals
+and its two searches. The research is in `reference/research-open-data-portals.md`. The licence is
+in `THIRD_PARTY_NOTICES.md` and, in full, beside the list in the build.
+
+### What was built (patches 135a to 135c)
+
+- **a -- the engine.**
+  - **238 portals** (`BIM_DATA_PORTALS`): 24 federal, 68 state, and 146 city and county.
+    - `tools/geolibre_portals.py` makes the list from GeoLibre's three catalog files, into
+      `Phase/geolibre_portals_phase135.json`, which the patch embeds.
+  - **Which portal.** It is guessed from the site's address (its city or county, else its state),
+    then the one last picked is remembered in the browser.
+  - **An ArcGIS Hub portal.**
+    - Its Hub site's catalog groups are read once (catalogV2, or catalog on older sites).
+    - Then ArcGIS Online's item search runs: the words with Lucene syntax dropped; Feature
+      Service, Map Service and GeoJson; the groups, or the organisation when there are none; public
+      only; and the site's box when Near the site only is ticked.
+  - **A Socrata portal.** The Discovery API, scoped to the portal, keeping its own spatial datasets
+    and reading on in batches of 100 until it has 20.
+  - **More results** continues the search.
+  - **A result becomes a V134 data layer,** credited to its portal.
+    - A layer is added as it is.
+    - A whole service lists its feature layers (no group layers, no imagery): one is added at once,
+      several are listed to pick from.
+    - A GeoJSON item is added as its data.
+    - A Socrata dataset is a new kind, `socrata`, asked for the site's box with `within_box` on its
+      geometry column, at most 2000.
+  - **Failures are named:** the host and its HTTP status, its own message, "does not read" or
+    "could not be reached". A second search while one runs is refused.
+- **b -- the panel and the command.**
+  - Inside the Data Layers group: Find data (the portals, grouped), the words, Search (or Enter),
+    Near the site only, the results with their kind, owner, a link to their page and Add (or
+    "added"), the layers to pick, More results, and the credit to GeoLibre.
+  - **FINDDATA** (OPENDATA, PORTAL) opens the group at the words.
+- **c -- the hooks** `__a3dFind*` and `__a3dSetSiteAddress`, and the marker.
+
+### Bugs found
+
+- **The command map line for DATALAYERS carried a stray older comment** (`/* __acad3dV127 */`)
+  after its own. Inserting after it split the line, so FINDDATA now goes before it.
+
+### Suites
+
+- New: `bim_phase135_find_open_data_browser_tests.py`, 77 checks. Every server is routed: ArcGIS
+  Online's search and Hub site items, the Socrata Discovery API, ArcGIS services, a Socrata portal,
+  and four kinds of failure.
+- Falsified by `Phase/falsify_phase135.py`, 51 variants, all caught.
+
+### Not done
+
+- Checking the portals live: none of them, nor arcgis.com or Socrata's API, can be reached from the
+  sandbox. The request shapes are GeoLibre's, which its web build uses from the browser.
+- GeoLibre's map engine, vector tiles and 3D Tiles; photorealistic 3D Tiles need an API key.
