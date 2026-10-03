@@ -11712,3 +11712,15 @@ in `THIRD_PARTY_NOTICES.md` and, in full, beside the list in the build.
 - Checking the portals live: none of them, nor arcgis.com or Socrata's API, can be reached from the
   sandbox. The request shapes are GeoLibre's, which its web build uses from the browser.
 - GeoLibre's map engine, vector tiles and 3D Tiles; photorealistic 3D Tiles need an API key.
+- Amended: V62's list of external hosts, for `api.us.socrata.com` (the portals' own hosts are
+  listed without a scheme).
+
+### Full regression and state after V135
+
+92 suites, 3498 checks, 0 failures (after the V62 amendment; before it, 3497 of 3498). Falsification:
+V135 51 of 51. The chain 135a to 135c rebuilds the build from `Phase/canvas_v10.html.bak_phase135_pre`.
+The diff is ES5-clean.
+
+    canvas_v10.html   1968128 bytes
+    sha256            874b82bc0527d3d73d96fd854f5fff679e17253c5ec1ea41408e621c0cffe6df
+    markers           __acad3dV60 ... __acad3dV135, __acad3dV134d (and the 133d to 133f markers)

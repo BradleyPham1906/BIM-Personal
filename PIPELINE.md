@@ -2,11 +2,11 @@
 
 **Read this first in a new session.** One page. The detail lives in the docs listed at the bottom.
 
-    canvas_v10.html   1920406 bytes
-    sha256            9632fa60cd5e98df2445af587c7985dec6ef6ebda108e34182e32872051c12d0
-    markers           __acad3dV60 ... __acad3dV133, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
+    canvas_v10.html   1968128 bytes
+    sha256            874b82bc0527d3d73d96fd854f5fff679e17253c5ec1ea41408e621c0cffe6df
+    markers           __acad3dV60 ... __acad3dV135, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
                       __acad3dV121b
-    tests             91 suites, 3421 checks, 0 failures
+    tests             92 suites, 3498 checks, 0 failures
 
     Run the regression in parallel: tests/run_all.py [build] [filter] [-jN], default -j6,
     about 4 minutes; give it the build's absolute path. tests/falsify_all.py
