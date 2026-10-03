@@ -179,8 +179,9 @@ async def run():
         # V106 added the active level's floor loads between View and Statistics, on purpose: the
         # Levels rows are not on screen, and this panel already carries the level picker.
         # AMENDED FOR V131: the project's Areas by Usage and the Usages library, before Statistics
-        ck(mp['groups'] == ['Identity Data', 'View', 'Floor Loads: Level 0', 'Areas by Usage', 'Usages', 'Statistics'],
-           "six groups: %s" % mp['groups'])
+        # AMENDED FOR V132: the Map, beside the latitude and longitude in Identity Data
+        ck(mp['groups'] == ['Identity Data', 'Map', 'View', 'Floor Loads: Level 0', 'Areas by Usage', 'Usages', 'Statistics'],
+           "seven groups: %s" % mp['groups'])
         for key in ('project', 'client', 'site', 'level', 'layer', 'present'):
             ck(key in mp['editable'], "'%s' is an editable field" % key)
         ro = dict(mp['readonly'])
