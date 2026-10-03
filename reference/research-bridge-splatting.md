@@ -155,6 +155,70 @@ DJI Terra, RealityCapture or iTwin Capture. What the app can do, in line with it
 A bridge-specific track (IfcBridge members from drawings, member-deviation checks, splat and point
 cloud side by side) would be its own set of phases, after the owner's priorities are set.
 
+## 7. The owner's project: Skydio photos into the app
+
+The owner's PennDOT/NYSDOT project flies **Skydio** (Blue UAS, cleared for DoD use). The aircraft
+returns a set of overlapping photos. The owner runs photogrammetry on them to build the digital
+model. Their CAD drawings are the only existing model of each bridge.
+
+### What the Skydio photos carry
+
+- **Skydio 3D Scan** flies the structure on its own and captures overlapping photos, with metadata.
+  Onboard Modeling builds a quick 2D or 3D preview on site, so gaps are seen before leaving.
+- **Exports:** every 3D Scan photo can be exported with its full metadata to any photogrammetry
+  program. Skydio names Pix4D, Bentley iTwin Capture, DroneDeploy, Esri Site Scan, gNext and
+  RealityCapture. A `Pix4D_geolocation.csv` comes with the photos.
+- **Metadata:**
+  - EXIF holds the GPS position, camera, time and focal length.
+  - XMP holds the camera intrinsics and orientation.
+  - X10 RTK/PPK photos record the gimbal as Omega, Phi and Kappa. Some firmware records yaw, pitch
+    and roll instead.
+
+  The exact tag names come from Skydio's support pages (support.skydio.com), which this research
+  could not open. Read them off a real photo before writing the parser.
+- **Is this a first?** Drone bridge inspection is not new in the US. Skydio says 43 of 50 state DOTs
+  fly its drones, and AASHTO issued a UAS bridge inspection guide in early 2026. A splat and
+  photogrammetry twin of an NSTM bridge, tied to a BIM model built from the CAD, does look new.
+  No published DOT programme doing that turned up. Florida DOT research in 2026 used splats only
+  to help a drone navigate under the deck, not as the deliverable.
+
+### What runs where
+
+Photogrammetry cannot run in the browser. A bridge scan is hundreds to thousands of
+high-resolution photos, and structure from motion, dense matching and splat training take hours on
+a GPU. That work stays in a desktop or cloud program:
+
+- **Paid:** what the project already licenses, such as Pix4D, iTwin Capture or RealityCapture.
+- **Free:**
+  - **WebODM / OpenDroneMap** (AGPL-3), run as its own program. Its SfM gives the camera
+    positions.
+  - **OpenSplat** (AGPL-3) reads ODM's or COLMAP's camera positions and trains the splat.
+  - **COLMAP** (BSD-3) and **gsplat** (Apache-2.0) are alternatives.
+
+  These run as separate programs, so the AGPL does not reach this app.
+
+Everything before and after that step fits the app. It all runs offline, on local files: the
+photos are opened in the browser and never uploaded. That matters for DoD-cleared capture of
+critical infrastructure.
+
+### Possible phases (Track D), smallest and most useful first
+
+| # | Phase | What it does |
+|---|---|---|
+| D1 | Flight read-in and coverage check | Open a folder of Skydio photos (or the geolocation CSV). An ES5 JPEG reader takes the EXIF GPS and the XMP orientation. Each photo appears as a camera on the map and in 3D. The app reports photo count, GSD (millimetres per pixel at the distance to the bridge, from the CAD or the terrain), overlap between neighbours, and parts of the bridge no photo sees well (under the deck, bearings, the backs of connections). Run it on site, before demobilising. |
+| D2 | Hand-off to processing | Write the image list, ground control and check points (V138's control), and the coordinate system in the forms ODM/COLMAP and Pix4D read. Return the processed result to the same site position. |
+| D3 | Bring the capture back | Point cloud (LAS, LAZ, PLY; shared with LOD-C), textured mesh (OBJ, glTF), splat (`.ply`, `.splat`; shared with LOD-G) and the solved camera positions (COLMAP `images.txt`, ODM `shots.geojson`). All placed in site coordinates. |
+| D4 | Bridge model from the CAD | DXF plans and sections become IFC 4.3 `IfcBridge` members: girders, floor beams, stringers, cross frames, bearings, deck. Each member carries its NSTM flag and member ID. Builds on V125/V126 framing and profiles and V127 alignment. |
+| D5 | Register and compare | Fit the capture to the model, first by control points, then by ICP. Show each member's deviation from the CAD as a V136 colour-by. Report check-point RMSE in V138's form. |
+| D6 | Photo-linked findings | Click a point on a member to list every raw photo that saw it (from the solved camera positions). The full-resolution photo opens with the point marked. Record a finding (crack, section loss, corrosion, condition state) on that member, linked to those photos. Export an inspection-ready report. This is the most valuable step: the inspector judges from the original pixels, not the splat. |
+| later | Defect detection | Suggest cracks on the raw photos with a model run on request. Always reviewed by the inspector. |
+
+### Data handling
+
+The repository and its GitHub Pages site are public. Project photos, models and drawings must
+never be committed. Like V138's survey files, they stay on the owner's machine. Only synthetic
+fixtures go in `tests/data/`.
+
 ## Sources
 
 - FHWA NSTM memorandum: https://www.fhwa.dot.gov/bridge/pubs/memo_nstm_inspection.pdf
@@ -167,7 +231,10 @@ cloud side by side) would be its own set of phases, after the owner's priorities
 - Cesium splats in 3D Tiles: https://cesium.com/blog/2026/04/27/3d-gaussian-splats-lod/ ; Bentley: https://www.bentley.com/en/blog/why-gaussian-splats-could-change-infrastructure/
 - Pix4D georeferenced splats: https://www.pix4d.com/blog/pix4dcloud-georeferenced-gaussian-splatting-drones
 - DJI Terra splats: https://terra.dji.com/user-manual/en/lidar/gaussian-splatting.html
-- Skydio: https://www.skydio.com/solutions/bridge-inspection
+- Skydio: https://www.skydio.com/solutions/bridge-inspection ; X10 https://www.skydio.com/x10 ; 3D Scan https://www.skydio.com/blog/introducing-skydio-3d-scan ; support (blocked here, from search summaries): https://support.skydio.com/hc/en-us/articles/20866347470491-Skydio-X10-camera-and-metadata-overview , https://support.skydio.com/hc/en-us/articles/32887502774171-Skydio-X10-RTK-PPK-metadata-overview , https://support.skydio.com/hc/en-us/articles/4402426074907-How-to-access-3D-Scan-data
+- AASHTO UAS bridge inspection guide (2026): https://aashtojournal.transportation.org/bridge-inspection-guide-for-unmanned-aircraft-systems/
+- FDOT splat navigation under decks (2026): https://www.researchgate.net/publication/408113408
+- OpenSplat (AGPL-3): https://github.com/WebODM/OpenSplat ; gsplat (Apache-2.0): https://arxiv.org/pdf/2409.06765
 - Flyability: https://www.flyability.com/casestudies/bridge-drone-inspection
 - Voliro: https://voliro.com/industry/maintain-top-quality-infrastructure-using-voliro-t-for-aerial-ndt-inspections/
 - Twinsity: https://twinsity.com/autobahn-bridge-inspection/ ; https://twinsity.com/cowi-partnership-digital-inspections/

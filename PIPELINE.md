@@ -78,6 +78,25 @@ V128 to V130 settled how commands are found (see Recently finished):
 | later | Costs and pro forma | Cost, rent, yield and sale price per usage, and a feasibility summary | Builds on V131's formulas. |
 | later | Flows and an app SDK | Per-object node graphs (Giraffe's Flows, a light Grasshopper); a documented plugin API of read-only state snapshots with listeners and named commands over postMessage | The engine's `__a3dRegisterCommand`, `__a3dRegisterDiscipline` and `__a3dRegisterTab` are the start of it. Giraffe's model: one set of functions reached two ways, the browser console and a postMessage bridge for an iframe app in the right panel, over GeoJSON-like data (`reference/research-giraffe.md`). |
 
+### CANDIDATE - Track D, the owner's drone bridge project (Skydio, PennDOT/NYSDOT)
+
+The owner's live project: Skydio photos go through photogrammetry to a digital model of NSTM
+bridges that exist only as CAD. Photogrammetry stays outside the app, in Pix4D, iTwin Capture or
+free WebODM/OpenSplat. The app does everything before and after that step. Its place relative to
+the LOD track is the owner's call. D1 is small and useful on the current project at once. Detail
+is in `reference/research-bridge-splatting.md` (7).
+
+| # | Phase | Scope |
+|---|---|---|
+| D1 | Flight read-in and coverage | Skydio JPEG EXIF/XMP (or the geolocation CSV) to cameras on the map and in 3D; GSD, overlap and blind spots, checked on site |
+| D2 | Hand-off to processing | Image list, control and check points, CRS, written for ODM/COLMAP and Pix4D |
+| D3 | Bring the capture back | Point cloud, mesh, splat and solved camera positions, in site coordinates (shared with LOD-C, LOD-G) |
+| D4 | Bridge model from the CAD | DXF to IFC 4.3 `IfcBridge` members with NSTM flags and member IDs |
+| D5 | Register and compare | Control points then ICP; per-member deviation by colour; check-point RMSE |
+| D6 | Photo-linked findings | A point on a member lists the raw photos that saw it; findings with condition state, tied to the member and the photos; report |
+
+Project photos, models and drawings are never committed: the repo and its site are public.
+
 ### LATER - Track A, drafting (moved behind Track B in V100)
 
 The numbers in this table are its order, not phase numbers: a phase takes the next free V number
