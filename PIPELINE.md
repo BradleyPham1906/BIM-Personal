@@ -22,7 +22,7 @@ with anchored Python scripts that assert exact match counts.
 
 ---
 
-## NOW - Giraffe's and GeoLibre's ideas, then the MEP runs (V139 to V141)
+## NOW - Buildings from LOD1 to LOD3 (V139 to V145), then the envelope, scenarios and MEP
 
 The owner looked at Giraffe (giraffe.build), a map-first feasibility app, and chose four of its
 ideas, ahead of the MEP runs, then asked for the map "just like how giraffe do". The research, with an
@@ -30,6 +30,13 @@ inventory of everything Giraffe does against this app, is in `reference/research
 In V135 the owner pointed at GeoLibre (an open-source GIS) and chose its portal search (V135), then
 colour by attribute with legends (V136) and the map on 3D terrain (V137), ahead of the envelope.
 What was and was not taken from it is in `reference/research-open-data-portals.md`.
+
+After V138 the owner set the next track: "a progression from LOD1 to LOD2, and then ultimately LOD3
+... imagery reconstruction based on the facade ... do it carefully". The research, the sources and the
+reasons for the order are in `reference/research-lod-reconstruction.md`. In short: automatic where the
+research is proven (LOD1.3, LOD2 from OSM roofs and from LiDAR, 3DBAG's method), guided by the owner
+where it is not yet (LOD3 openings from rectified facade photos), each level verified as V138 verifies a
+survey. The GPL tools (roofer, City3D, val3dity) are methods to follow, not code to copy.
 
 V128 to V130 settled how commands are found (see Recently finished):
 - **V128:** one command search over every command and tool.
@@ -56,9 +63,16 @@ V128 to V130 settled how commands are found (see Recently finished):
 
 | # | Phase | Scope | Notes |
 |---|---|---|---|
-| 139 | Zoning envelope | **Start here.** Setbacks, stepbacks and a height limit on a property become a 3D envelope; massing outside it is flagged | Builds on V103's setbacks; Giraffe's Basic Envelope. |
-| 140 | Design scenarios | Options within one project, switched between and compared by their numbers | Giraffe's scenarios; Revit's Design Options. |
-| 141 | MEP runs | Duct and pipe runs at connectors, systems, flow, velocity and friction | MEP is its own discipline (the owner's choice). The research is drafted in `reference/research-mep-runs.md`. |
+| 139 | LOD-A: LOD1.3, labelled LODs, CityJSON | **Start here.** `building:part` heights give LOD1.3; every building says its LOD and how it was made; CityJSON export and import; valid-solid checks | `reference/research-lod-reconstruction.md` (1, 4); Biljecki's refined LODs. |
+| 140 | LOD-B: LOD2 from OSM roofs | Procedural roofs from `roof:shape`, `roof:height`, `roof:direction`; roof and wall surfaces typed | OSM Simple 3D Buildings; the fallback where there is no LiDAR. |
+| 141 | LOD-C: point clouds | LAS, LAZ (laz-perf, Apache-2.0) and PLY; USGS 3DEP fetched around the site (EPT or COPC); by class or height; ground to a V108 surface through V138's check | Philadelphia has city LiDAR (2015, 2018) and PA statewide QL2. |
+| 142 | LOD-D: LOD2.2 from LiDAR | Region-growing roof planes, roof partition, optimised and extruded; LOD1.3 from the same partition; per-building RMSE to the points | 3DBAG's published method (roofer is GPL-3 C++: the method, not the code). |
+| 143 | LOD-E: facade images | The owner's photos or Panoramax panoramas placed on an LOD2 wall and rectified straight-on, in metres | Texture2LoD3's rectification; Panoramax is CC BY-SA, no key. |
+| 144 | LOD-F: LOD3 openings | Windows and doors drawn on the rectified facade, regularised into rows and columns, optionally detected (SAM in the browser, on request), cut into the wall | Checked against measured openings. |
+| 145 | LOD-G: Gaussian splats | A `.splat` capture placed on the site as a photoreal backdrop to trace against | antimatter15/splat, MIT. |
+| 146 | Zoning envelope | Setbacks, stepbacks and a height limit on a property become a 3D envelope; massing outside it is flagged | Builds on V103's setbacks; Giraffe's Basic Envelope. |
+| 147 | Design scenarios | Options within one project, switched between and compared by their numbers | Giraffe's scenarios; Revit's Design Options. |
+| 148 | MEP runs | Duct and pipe runs at connectors, systems, flow, velocity and friction | MEP is its own discipline (the owner's choice). The research is drafted in `reference/research-mep-runs.md`. |
 | later | Survey breaklines | Breaklines and boundaries in a surface, horizontal control, LandXML and raw total-station files | V138's checks then cover them; the owner's survey data first. |
 | later | Generators | Parking layout to a ratio, subdivision into lots, and envelope-filling massing | Giraffe's generative editors; after the map and the envelope. |
 | later | Costs and pro forma | Cost, rent, yield and sale price per usage, and a feasibility summary | Builds on V131's formulas. |
@@ -67,7 +81,7 @@ V128 to V130 settled how commands are found (see Recently finished):
 ### LATER - Track A, drafting (moved behind Track B in V100)
 
 The numbers in this table are its order, not phase numbers: a phase takes the next free V number
-when it starts (V111 to V138 went to other work; V139 to V141 are in NOW).
+when it starts (V111 to V138 went to other work; V139 to V148 are in NOW).
 
 | # | Phase | Scope | Notes |
 |---|---|---|---|
