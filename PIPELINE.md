@@ -2,11 +2,11 @@
 
 **Read this first in a new session.** One page. The detail lives in the docs listed at the bottom.
 
-    canvas_v10.html   2184726 bytes
-    sha256            34327630112b809a8ff30cf81a3fefb4f2bf5333a01ee374085b81565797cd0f
-    markers           __acad3dV60 ... __acad3dV145, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
+    canvas_v10.html   2204594 bytes
+    sha256            da4c4fa7658db37b5fcf0f30a0d6466b8a08e1203a18349276b515271f524f73
+    markers           __acad3dV60 ... __acad3dV146, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
                       __acad3dV121b
-    tests             102 suites, 4078 checks, 0 failures
+    tests             103 suites, 4120 checks, 0 failures
 
     The user guide (V142): every phase updates docs/src/, its log entry and BIM_APP_VERSION, then
     runs tools/dump_catalog.py and tools/build_docs.py. The V142 suite and the Pages workflow
@@ -74,8 +74,8 @@ V128 to V130 settled how commands are found (see Recently finished):
 | 143 | Simulation | **Done** (see Recently finished) | Next: weather years (EPW, NASA POWER) for expected yield; sun on facades; wind and energy later. |
 | 144 | Terrain | **Done** (see Recently finished) | Breaklines, boundaries, own faces, slope/elevation/aspect bands, LandXML 1.2 in and out. |
 | 145 | Grading | **Done** (see Recently finished) | Daylight slopes (fans, valleys), the proposed surface, exact TIN-to-TIN cut and fill, the cut and fill map, spot elevations, slope arrows. Next: sloped pads, retaining walls, sections along an alignment. |
-| 146 | Hub H1: element history | **Start here.** Commits with a message, a change log, a diff per element by its ID ("Wall W12: height 3.0 -> 3.2", added, removed, moved), and going back to any version; history saved with the project | The first piece of the owner's "GitHub for BIM" (`reference/research-bim-hub.md`). Every object already has a stable ID and the project is JSON. |
-| 147 | Hub H2: branches and merge | Design options as branches, switched between and compared by their numbers (areas, usages, cut and fill, solar); a three-way merge per element with conflicts shown side by side | Replaces "Design scenarios" (Giraffe's scenarios, Revit's Design Options). |
+| 146 | Hub H1: element history | **Done** (see Recently finished): commits, per-element diffs, restore, an element's history, saved with the project | The first piece of the owner's "GitHub for BIM" (`reference/research-bim-hub.md`). Every object already has a stable ID and the project is JSON. |
+| 147 | Hub H2: branches and merge | **Start here.** Design options as branches, switched between and compared by their numbers (areas, usages, cut and fill, solar); a three-way merge per element with conflicts shown side by side | Replaces "Design scenarios" (Giraffe's scenarios, Revit's Design Options). |
 | 148-154 | Freeform (F1-F7) | NURBS curves; surfaces from curves (extrude, revolve, loft, planar, edge); sweeps, pipe, cap; surface analysis (zebra, curvature, draft) in Analyze; point editing and blends; picture planes, text objects, flow along a surface; Make2D and rendering | `reference/research-rhino-guide-gap.md`: what the owner's Rhino guide teaches that the app lacks. Placed here pending the owner's word; the LOD track follows. |
 | 155 | LOD-C: point clouds | LAS, LAZ (laz-perf, Apache-2.0) and PLY; USGS 3DEP fetched around the site (EPT or COPC); by class or height; ground to a V108 surface through V138's check | Philadelphia has city LiDAR (2015, 2018) and PA statewide QL2. |
 | 156 | LOD-D: LOD2.2 from LiDAR | Region-growing roof planes, roof partition, optimised and extruded; LOD1.3 from the same partition; per-building RMSE to the points | 3DBAG's published method (roofer is GPL-3 C++: the method, not the code). |
@@ -132,7 +132,15 @@ when it starts (V111 to V138 went to other work; V139 to V161 are in NOW).
 | 118 | Blocks and data | ATTDEF ATTEDIT BEDIT WBLOCK DATAEXTRACTION TABLESTYLE TABLEDIT TABLEEXPORT | First phase that's about the disciplines, not drafting. BLOCK and INSERT landed in V124, as the Assets library's blocks: saved records inserted as independent copies. A block reference that follows its definition (what BEDIT edits) is not built. |
 | 119 | Sheets and plotting, rest | MVIEW (draw a viewport on the paper) PAGESETUP (plot settings beyond Sheet Setup) PUBLISH (V122's Print set prints every sheet in one job; a chosen subset and page setups remain) EXPORTPDF (vector PDF of a sheet) VPLAYER (per-viewport layer visibility) viewport lock | LAYOUT, MSPACE and PSPACE landed in V116, with layout tabs and model space through a viewport. |
 
-**Recently finished:** Phase 145 (V145), **grading**.
+**Recently finished:** Phase 146 (V146), **history by element** (the Hub's H1).
+- **COMMIT** keeps the model as a version; each element (every object, and each project part)
+  stored once by a 128-bit hash of its canonical JSON, so a version adds only what changed.
+- **HISTORY**: changes since the latest version, field by field ("moved by 1, 0, 2", "Level 1
+  added"); each version's changes; Restore (undoable, the history never rewritten); an element's
+  own history. Saved with the project.
+- **Checked** in 42 checks (the hash recomputed in Python) and 28 falsify variants.
+
+Phase 145 (V145), **grading**.
 - **GRADE** runs each pad's cut and fill slopes out to the ground -- square to its edges, fanning
   round outside corners, meeting in valleys at inside ones -- into a proposed surface, updated in
   place and out of date when a pad or the ground changes.

@@ -56,7 +56,8 @@ async def within(aw, what):
 
 
 GROUP_TAB = {'Identity Data': 'project', 'Statistics': 'project', 'Location': 'site', 'Map': 'site', 'Site Context': 'site',
-             'Data Layers': 'site', 'View': 'view', 'Floor Loads: Level 0': 'analysis', 'Areas by Usage': 'analysis', 'Usages': 'analysis'}
+             'Data Layers': 'site', 'View': 'view', 'Floor Loads: Level 0': 'analysis', 'Areas by Usage': 'analysis', 'Usages': 'analysis',
+             'History': 'project'}   # AMENDED FOR V146: the History group, on the Project tab
 
 
 async def run():
@@ -125,7 +126,8 @@ async def run():
             ck([t[:2] for t in s.get('tabs', [])] == [['project', 'Project'], ['site', 'Site'], ['view', 'View'], ['analysis', 'Analysis']],
                "with nothing selected, four tabs: Project, Site, View, Analysis (%s)" % s.get('tabs'))
             ck(s['tabs'][0][2] and s['tabs'][0][3] == 'true' and not any(t[2] for t in s['tabs'][1:]), "Project is the first shown")
-            ck(s.get('groups') == ['Identity Data', 'Statistics'], "on it, only Identity Data and Statistics (%s)" % s.get('groups'))
+            # AMENDED FOR V146: and History, after Statistics
+            ck(s.get('groups') == ['Identity Data', 'Statistics', 'History'], "on it, only Identity Data, Statistics and History (%s)" % s.get('groups'))
             all_g = await safe("()=>[].map.call(document.querySelectorAll('#a3d-propsbody [data-a3dpgrp]'),function(e){return [e.getAttribute('data-a3dpgrp'),e.closest('[data-ptab]').getAttribute('data-ptab')];})") or []
             ck(dict(all_g) == GROUP_TAB, "each group on its tab, every one still in the page (%s)" % all_g)
             tabof = await safe("()=>['Identity Data','Location','Map','Site Context','Data Layers','View','Floor Loads: Level 2','Analysis','Areas by Usage','Usages','Statistics','Constraints'].map(window.__a3dPropTabOf)")
