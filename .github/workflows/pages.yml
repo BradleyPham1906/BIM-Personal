@@ -1,6 +1,6 @@
 # Publishes the app to GitHub Pages on every push to main.
-# Only the app goes out: canvas_v10.html, also served as index.html so the site's
-# address opens it. Served from https, the app sends a real origin and Referer,
+# The app (canvas_v10.html, also served as index.html so the site's address opens it), the user
+# guide (docs/, V142) and every older version kept in Phase/ (v/<version>/). Served from https, the app sends a real origin and Referer,
 # which tile, geocoding and Overpass servers expect from a browser.
 name: Publish app to Pages
 
@@ -26,12 +26,10 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
+      - name: Check the user guide is current
+        run: python3 tools/build_docs.py --check
       - name: Build site
-        run: |
-          mkdir -p _site
-          cp canvas_v10.html _site/index.html
-          cp canvas_v10.html _site/canvas_v10.html
-          touch _site/.nojekyll
+        run: python3 tools/build_site.py _site
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

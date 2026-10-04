@@ -29,8 +29,8 @@ catalogue (164 commands) and its ribbon.
 | Rhino Objects | points, curves, surfaces, polysurfaces, solids, meshes, Properties | **Partial:** points, lines, arcs, polylines, BIM solids and meshes. **Missing:** NURBS curves and surfaces, polysurfaces, Untrim, SolidPtOn. |
 | Selecting Objects | click, window and crossing, SelAll, SelNone, selection by type | **Have:** click, window/crossing, SELECTALL. **Missing:** selection by type (SelCrv, SelSrf, SelPolysrf), SelNone as a command. |
 | Accurate Modeling | typed coordinates, distance and angle, snaps, grid, ortho | **Have:** OSNAP, ORTHO, GRID, typed values, distance and angle constraints (DC*, GC*). |
-| Transforms | Move, Copy, Rotate, Scale, Scale2D, Mirror, Orient | **Have:** MOVE, COPY, ROTATE, SCALE, MIRROR, arrays, the gizmo (Rhino's Gumball). **Missing:** Orient (two reference points to two targets), non-uniform Scale2D. |
-| Edit Curves and Surfaces | Join, Explode, Trim, Split, Extend, Fillet, Untrim | **Have** for lines, arcs, polylines and walls: JOIN, EXPLODE, TRIM, BREAK, EXTEND, FILLET, CHAMFER. **Missing** for surfaces: Split, Untrim. |
+| Transforms | Move, Copy, Rotate, Scale, Scale2D, Mirror, Orient | **Have:** COPY, ROTATE, SCALE, MIRROR, arrays, the gizmo (Rhino's Gumball), dragging. **Partial:** MOVE and EXPLODE are in the old command list but do not run in the current engine (V142's guide check found it). **Missing:** Orient (two reference points to two targets), non-uniform Scale2D. |
+| Edit Curves and Surfaces | Join, Explode, Trim, Split, Extend, Fillet, Untrim | **Have** for lines, arcs, polylines and walls: JOIN, TRIM, BREAK, EXTEND, FILLET, CHAMFER (EXPLODE does not run yet). **Missing** for surfaces: Split, Untrim. |
 | Create Surfaces from Curves | ExtrudeCrv, Loft, Revolve, RailRevolve, Sweep1, Sweep2, EdgeSrf, PlanarSrf | **Partial:** PAD and PRESSPULL extrude a closed planar profile. **Missing:** all the rest. |
 | Curve and Surface Analysis | Dir, CurvatureGraph, Zebra, EMap, CurvatureAnalysis, DraftAngleAnalysis, ShowEdges, Audit | **Partial:** the solid check (V139) finds open (naked) and non-manifold edges and faces turned wrong. CHECKMODEL. **Missing:** the visual surface analyses. |
 | Organization and Annotation | layers, dimensions, text, leaders, hatches, dots, notes | **Have:** layers (V121), linear/angular/radius/diameter dimensions, text, leaders, hatches. **Missing:** Dot (a small always-facing label), document Notes. |
@@ -68,6 +68,7 @@ phase is (a suite, falsified variants, the regression).
 
 **Quick wins outside the track:**
 - selection by type (SelCrv, SelSrf, SelPolysrf, SelNone);
+- MOVE and EXPLODE as commands that run;
 - Orient; non-uniform scale;
 - Dot;
 - hide, show and lock single objects;

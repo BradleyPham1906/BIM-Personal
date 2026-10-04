@@ -2,11 +2,15 @@
 
 **Read this first in a new session.** One page. The detail lives in the docs listed at the bottom.
 
-    canvas_v10.html   2081160 bytes
-    sha256            2318f9ba19eb452e6badb03f1bbcfb0ea90cbf960936c19e967664eeb0e96d5d
-    markers           __acad3dV60 ... __acad3dV141, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
+    canvas_v10.html   2084107 bytes
+    sha256            44aceab1c180f1ff19e2c223e7be1a52a4274d126685d4a602090454fb1ebf7f
+    markers           __acad3dV60 ... __acad3dV142, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
                       __acad3dV121b
-    tests             98 suites, 3859 checks, 0 failures
+    tests             99 suites, 3890 checks, 0 failures
+
+    The user guide (V142): every phase updates docs/src/, its log entry and BIM_APP_VERSION, then
+    runs tools/dump_catalog.py and tools/build_docs.py. The V142 suite and the Pages workflow
+    refuse a guide that does not match the build.
 
     Run the regression in parallel: tests/run_all.py [build] [filter] [-jN], default -j6,
     about 4 minutes; give it the build's absolute path. tests/falsify_all.py
@@ -66,8 +70,8 @@ V128 to V130 settled how commands are found (see Recently finished):
 | 139 | LOD-A: LOD1.3, labelled LODs, CityJSON | **Done** (see Recently finished) | `reference/research-lod-reconstruction.md` (1, 4, 6). |
 | 140 | LOD-B: LOD2 from OSM roofs | **Done** (see Recently finished) | `reference/research-lod-reconstruction.md` (7). |
 | 141 | Panels and Analyze | **Done** (see Recently finished) | The owner's order: panels and Analyze, Simulation, terrain, then the LOD track again. |
-| 142 | User guide and versions | **Start here.** A documentation site on GitHub Pages in the app's own words (features, how-tos, a changelog by version), the version in the app with a link to its notes; a gap list against the Rhino user's guide the owner shared | Rhino's text and images are McNeel's: features are rebuilt, not their pages copied. |
-| 143 | Simulation | A Simulation section in Analyze: sun and shadows over a day and a year (hours of sun on the ground and on facades), solar radiation on roofs (the LOD2 roofs), rain on the terrain (flow paths and ponding) | NOAA sun, already in the app; free climate data (NASA POWER, EPW) for radiation. |
+| 142 | User guide and versions | **Done** (see Recently finished) | `docs/`, `tools/build_docs.py`, `tools/build_site.py`; the site keeps every older build at v/<version>/. |
+| 143 | Simulation | **Start here.** A Simulation section in Analyze: sun and shadows over a day and a year (hours of sun on the ground and on facades), solar radiation on roofs (the LOD2 roofs), rain on the terrain (flow paths and ponding) | NOAA sun, already in the app; free climate data (NASA POWER, EPW) for radiation. |
 | 144 | Terrain | Slope, elevation and aspect bands; breaklines and boundaries; grading pads with daylight slopes; a cut and fill report; LandXML in and out; spot elevations | V108, V127, V137, V138 underneath. |
 | 145-151 | Freeform (F1-F7) | NURBS curves; surfaces from curves (extrude, revolve, loft, planar, edge); sweeps, pipe, cap; surface analysis (zebra, curvature, draft) in Analyze; point editing and blends; picture planes, text objects, flow along a surface; Make2D and rendering | `reference/research-rhino-guide-gap.md`: what the owner's Rhino guide teaches that the app lacks. Placed here pending the owner's word; the LOD track follows. |
 | 152 | LOD-C: point clouds | LAS, LAZ (laz-perf, Apache-2.0) and PLY; USGS 3DEP fetched around the site (EPT or COPC); by class or height; ground to a V108 surface through V138's check | Philadelphia has city LiDAR (2015, 2018) and PA statewide QL2. |
@@ -119,7 +123,15 @@ when it starts (V111 to V138 went to other work; V139 to V148 are in NOW).
 | 118 | Blocks and data | ATTDEF ATTEDIT BEDIT WBLOCK DATAEXTRACTION TABLESTYLE TABLEDIT TABLEEXPORT | First phase that's about the disciplines, not drafting. BLOCK and INSERT landed in V124, as the Assets library's blocks: saved records inserted as independent copies. A block reference that follows its definition (what BEDIT edits) is not built. |
 | 119 | Sheets and plotting, rest | MVIEW (draw a viewport on the paper) PAGESETUP (plot settings beyond Sheet Setup) PUBLISH (V122's Print set prints every sheet in one job; a chosen subset and page setups remain) EXPORTPDF (vector PDF of a sheet) VPLAYER (per-viewport layer visibility) viewport lock | LAYOUT, MSPACE and PSPACE landed in V116, with layout tabs and model space through a viewport. |
 
-**Recently finished:** Phase 141 (V141), **a shorter right panel, and an Analyze tab**.
+**Recently finished:** Phase 142 (V142), **the user guide, and versions**.
+- **A guide on the site** (`/docs/`): nine pages written for this app, a command reference built
+  from the app's own catalogue, release notes for V87 to V142, and a versions page.
+- **Every older build kept** at `/v/<version>/` (55 of them), from the builds kept in `Phase/`.
+- **In the app:** the version in Properties > Project > Statistics; DOCS, RELEASENOTES; F1 in the
+  command search opens the command's entry.
+- **Checked** in 31 checks (the guide is held to the build) and 12 falsify variants.
+
+Phase 141 (V141), **a shorter right panel, and an Analyze tab**.
 - **Properties' tabs** with nothing selected: Project | Site | View | Analysis; the site's place and
   sun in a Location group; commands turn to their group's tab; the tab is remembered.
 - **Analyze**, on the rail below Assets: seven cards, each saying what it shows, to run it or open

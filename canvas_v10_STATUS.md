@@ -12156,3 +12156,79 @@ then Simulation (V142), then terrain (V143). A picture: `reference/v141_analyze.
     canvas_v10.html   2081160 bytes
     sha256            2318f9ba19eb452e6badb03f1bbcfb0ea90cbf960936c19e967664eeb0e96d5d
     markers           __acad3dV60 ... __acad3dV141, __acad3dV134d (and the 133d to 133f markers)
+
+## Phase 142 (V142) - The user guide, and versions
+
+The owner: "something documented like AutoCAD and Rhinoceros on their websites ... as this app
+evolves we need documentation and versioning". The app now has a user guide on its own site,
+release notes for every version, every older build kept online, and help from inside the app.
+The owner's Rhino guide chapters were read for what the app lacks
+(`reference/research-rhino-guide-gap.md`); none of McNeel's text is in the guide, which is written
+about this app in its own words.
+
+### What was built
+
+- **In the app (patch 142a):**
+  - The app knows its version (V142 and the date). Properties > Project > Statistics shows it,
+    linked to its release notes and to the guide.
+  - DOCS (GUIDE, MANUAL, USERGUIDE) opens the guide; RELEASENOTES (VERSION, WHATSNEW) opens this
+    version's notes.
+  - F1 in the command search opens the highlighted command's entry in the reference.
+- **The guide (`docs/`), built by `tools/build_docs.py`** (standard library only):
+  - **Nine pages,** written for this app: getting started, drawing, building model, site and
+    context, survey and terrain, buildings and LOD, analysis, sheets and files.
+  - **A command reference** generated from the app's own catalogue and keys
+    (`tools/dump_catalog.py` writes `docs/data/catalog.json` from the build).
+  - **Release notes,** one per phase from this log, newest first.
+  - **A versions page.**
+- **The site (`tools/build_site.py`, run by the Pages workflow):**
+  - the newest app;
+  - the guide, refused if it is not current (`build_docs.py --check`);
+  - every build kept in `Phase/` before a phase, at `v/<version>/`, named by the newest phase
+    marker in it (55 versions, V86 to V141).
+
+### Bugs found
+
+- **The guide's own check caught two false claims.** `MOVE` and `EXPLODE` are in the old command
+  list but do not run in the engine, so the guide no longer names them. The Rhino comparison was
+  corrected the same way, and the two commands are listed as quick wins.
+- **Four more claims were cut down to what each command says it does:** AREAPLAN, JOIN,
+  LENGTHEN and BREAKATPOINT (walls), CLASSIFY.
+- **Builds V113 to V122 carry their markers only in comments,** so the first version labels
+  skipped them. A version is now named by any marker in the build.
+- **The suite caught a real clash:** the guide's state was first named `A3D_DOCS`, the name of
+  the project list behind the tabs. It overwrote that list and broke the tabs at load. It is
+  `A3D_GUIDE` now.
+- **The release notes needed ordering:** V105b was logged after V112, and two headings name two
+  versions each (V133d and V133e; V134 and V134d). The notes are sorted by version number, with an
+  anchor for every version a heading names.
+
+### Suites
+
+- New: `bim_phase142_guide_versions_browser_tests.py`, 31 checks. It holds the guide to the build:
+  - the catalogue file is the build's own;
+  - `build_docs.py --check` passes;
+  - every command named in a page runs, every link and anchor resolves, every command has an
+    entry;
+  - the notes cover V87 to V142, newest first;
+  - the site build carries every older version byte for byte;
+  - the pages open with no errors and no network, and fit a phone screen.
+- Falsified by `Phase/falsify_phase142.py`, 12 variants, all caught.
+
+### How to keep it current (every phase from now on)
+
+1. Write or amend the guide page the phase touches (`docs/src/*.md`).
+2. Add the phase's entry to this log.
+3. Raise `BIM_APP_VERSION`.
+4. Run `python3 tools/dump_catalog.py`, then `python3 tools/build_docs.py`.
+
+The V142 suite and the Pages workflow refuse a guide that does not match the build.
+
+### Full regression and state after V142
+
+99 suites, 3890 checks, 0 failures. Falsification: V142 12 of 12. Patch 142a rebuilds the build from
+`Phase/canvas_v10.html.bak_phase142_pre`. The diff is ES5-clean.
+
+    canvas_v10.html   2084107 bytes
+    sha256            44aceab1c180f1ff19e2c223e7be1a52a4274d126685d4a602090454fb1ebf7f
+    markers           __acad3dV60 ... __acad3dV142, __acad3dV134d (and the 133d to 133f markers)
