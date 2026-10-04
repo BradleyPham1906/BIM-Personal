@@ -100,5 +100,14 @@ Properties → Project →
 Statistics shows which one drew the last frame. `GRAPHICS` switches this browser to WebGL and
 back, for a driver that misbehaves.
 
+**What is out of view is not drawn.** The model is kept in chunks by place, 64 m squares of the
+ground, and a chunk wholly outside the view is skipped, so a large site costs little when you are
+looking at one corner of it.
+
+**How fast is this device?** `BENCHMARK` draws 5,000 and then 20,000 elements for a few seconds,
+with WebGPU where the browser has it and with WebGL, and shows the time a frame takes in
+Properties → Project → Statistics. Your model is put back exactly as it was. Run it on each
+phone, tablet and computer you use.
+
 **Outlines** are drawn a hair in front of the faces they lie on (0.02% of their distance from you),
 so they no longer flicker or break up as the view turns.

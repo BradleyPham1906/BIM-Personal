@@ -13216,3 +13216,60 @@ is ES5-clean (the scan's hits are `let` inside WGSL shader text).
     canvas_v10.html   2350405 bytes
     sha256            4a3dd3e88964fc7e3ad0bb4fb947c33c80d0e163869c95e796d38c8ed5d68bbc
     markers           __acad3dV60 ... __acad3dV154, __acad3dV134d (and the 133d to 133f markers)
+
+## Phase 155 (V155) - Culling and BENCHMARK (Render R4)
+
+The scene is now kept by place, and what is out of view is not drawn. And because this
+environment has only a software GPU, the app can now time itself on the owner's own devices.
+
+### What was built (patch 155a)
+
+- **Chunks by place.** A new object joins the open chunk of its 64 m cell of the ground; when that
+  chunk is full, another chunk for the same cell. Each frame a chunk's box is the union of its
+  objects' boxes where they stand now, so an object moved far takes its chunk's box with it.
+- **Culling.** A chunk whose box's eight corners all lie beyond one side of the view, behind the
+  eye, or past the far plane is not drawn, in WebGL batched and in WebGPU alike.
+- **A bundle a chunk and pass.** WebGPU records a chunk's solids, blended solids, outlines and
+  blended outlines each in its own bundle, when first wanted, and keeps them with the chunk. A
+  frame executes those of the chunks in view, in that order. The view moving chooses among
+  bundles and records nothing. A transparent layer appearing or going records nothing either.
+  Bundles are recorded again only when a chunk is rebuilt or the table is reallocated (the bind
+  group's version).
+- **BENCHMARK.** For a few seconds the app draws 5,000 and then 20,000 elements in place of the
+  model: 30 frames each, turning, with WebGPU where there is one and with WebGL. Then it puts back
+  the model, the view and the engine. Nothing of the test is saved or undone. The times are in a
+  message and in Statistics.
+- **The version** is V155; the guide's Getting started has both.
+
+### Measured here
+
+Up close on 20,000 elements, 15 of 16 chunks are left out: one draw instead of sixteen, and the
+same picture. BENCHMARK on this machine's software GPU: 5,000 elements about 105 ms a frame with
+either engine, 20,000 about 325 to 345 ms. These are SwiftShader's numbers, with the whole grid in
+view; the owner's devices will say what a real GPU does.
+
+### Bugs found
+
+- `__a3dRunCmd('zoomextents')`, used by the V152 to V154 suites, was never a command: it did
+  nothing, and those suites framed the model by the default camera. V155's suite sets the camera.
+- The far-plane cut was not tested; elements 9 km ahead of and behind a level camera now are.
+
+### Suites
+
+- New: `bim_phase155_culling_benchmark_browser_tests.py`, 24 checks.
+- Amended: V153 (AMENDED FOR V155): a transparent layer appearing or going records nothing now.
+- **Falsified by `Phase/falsify_phase155.py`,** 15 variants, all caught.
+- V153's falsify file re-anchored to the bundles per chunk (three variants), one retired: 20 of 20.
+
+### Not done
+
+- Picking and sun hours on the GPU; the owner's BENCHMARK numbers (V156).
+
+### Full regression and state after V155
+
+112 suites, 4558 checks, 0 failures. Falsification: V155 15 of 15; V153 20 of 20. Patch 155a
+rebuilds the build from `Phase/canvas_v10.html.bak_phase155_pre`. The diff is ES5-clean.
+
+    canvas_v10.html   2356934 bytes
+    sha256            327e9572ce8ca631cd458f60eb7df8a56ba7037bda7e242cc60c701aa6346b2e
+    markers           __acad3dV60 ... __acad3dV155, __acad3dV134d (and the 133d to 133f markers)

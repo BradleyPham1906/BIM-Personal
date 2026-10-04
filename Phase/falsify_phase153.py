@@ -17,10 +17,12 @@ VARIANTS = {
     'no_blend': [("targets:[pass?{format:fmt,blend:blend}:{format:fmt}]", "targets:[{format:fmt}]")],
     'transparent_writes_depth': [("depthWriteEnabled:!(pass&&!edge)", "depthWriteEnabled:true")],
     'no_msaa': [("          multisample:{count:4}});", "          multisample:{count:1}});")],
-    'no_transparent_pass': [("      if(F.hasTrans)run(P.pipes.face1,0);\n", "")],
-    'no_edges': [("      if(F.edges){run(P.pipes.edge0,1);if(F.hasTrans)run(P.pipes.edge1,1);}\n", "")],
-    'record_every_frame': [("    if(re||!P.bundle||P.bkey!==key){", "    if(true){")],
-    'stale_bundle': [("    if(re||!P.bundle||P.bkey!==key){", "    if(!P.bundle){")],
+    'no_transparent_pass': [("      if(c.count){L0.push(bun(c,'f0'));if(F.hasTrans)L1.push(bun(c,'f1'));}", "      if(c.count){L0.push(bun(c,'f0'));}")],   # RE-ANCHORED IN V155
+    'no_edges': [("      if(F.edges&&c.ecount){L2.push(bun(c,'e0'));if(F.hasTrans)L3.push(bun(c,'e1'));}\n", "")],   # RE-ANCHORED IN V155
+    'record_every_frame': [("      if(g.bun[which])return g.bun[which];", "")],   # RE-ANCHORED IN V155
+    # RETIRED IN V155: one bundle for the whole scene, kept too long, is no more; a chunk's bundles go
+    # with its buffers, and V155's stale_bindgroup breaks the other way they could go stale.
+    #   'stale_bundle': [("    if(re||!P.bundle||P.bkey!==key){", "    if(!P.bundle){")],
     'whole_table_sent': [("    }else if(R.lo>=0){\n      dev.queue.writeBuffer(P.tab,R.lo*32,B.data.buffer,B.data.byteOffset+R.lo*32,(R.hi-R.lo+1)*32);",
                           "    }else if(R.lo>=0){R.lo=0;R.hi=B.cap-1;\n      dev.queue.writeBuffer(P.tab,R.lo*32,B.data.buffer,B.data.byteOffset+R.lo*32,(R.hi-R.lo+1)*32);")],
     'rows_not_sent': [("      dev.queue.writeBuffer(P.tab,R.lo*32,B.data.buffer,B.data.byteOffset+R.lo*32,(R.hi-R.lo+1)*32);\n", "")],
