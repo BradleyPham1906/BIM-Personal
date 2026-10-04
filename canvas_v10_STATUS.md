@@ -13498,6 +13498,9 @@ makes that the app's workspace.
   rows (caret, swatch, count, one eye column, no gap), their eyes, dimming and undo.
 - Amended for the Site tab: V113, V119, V120, V141, V149; for the Layers groups: V148 (each marked
   AMENDED FOR V158).
+- **Falsified by `Phase/falsify_phase158.py`,** 34 variants, all caught. One gap closed: the V133
+  ground is one plane, so a slope not weighed by area went unseen; a check on uneven triangles
+  now catches it.
 
 ### Not done
 
