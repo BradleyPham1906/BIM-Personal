@@ -1,6 +1,6 @@
 {
  "version": {
-  "v": "V150",
+  "v": "V153",
   "date": "2026-10-04"
  },
  "commands": [
@@ -211,6 +211,20 @@
    "anchor": "act-box"
   },
   {
+   "id": "cmd:BRANCH",
+   "name": "BRANCH",
+   "aliases": [
+    "NEWBRANCH",
+    "DESIGNOPTION",
+    "OPTION"
+   ],
+   "desc": "Start a design option: a branch of the history, switched to and compared with the others",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-BRANCH"
+  },
+  {
    "id": "cmd:BREAK",
    "name": "BREAK",
    "aliases": [
@@ -414,6 +428,19 @@
    "where": [],
    "keys": null,
    "anchor": "cmd-COMMIT"
+  },
+  {
+   "id": "cmd:COMPAREBRANCHES",
+   "name": "COMPAREBRANCHES",
+   "aliases": [
+    "COMPAREOPTIONS",
+    "OPTIONS"
+   ],
+   "desc": "Each branch's numbers side by side: walls, rooms, areas, cut and fill",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-COMPAREBRANCHES"
   },
   {
    "id": "act:bim:component",
@@ -1067,6 +1094,20 @@
    "anchor": "cmd-GRADE"
   },
   {
+   "id": "cmd:GRAPHICS",
+   "name": "GRAPHICS",
+   "aliases": [
+    "RENDERER",
+    "WEBGPU",
+    "WEBGL"
+   ],
+   "desc": "Draw 3D with WebGPU where the browser has it, or always with WebGL in this browser",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-GRAPHICS"
+  },
+  {
    "id": "cmd:GRID",
    "name": "GRID",
    "aliases": [],
@@ -1363,6 +1404,18 @@
    "where": [],
    "keys": null,
    "anchor": "cmd-MEASURE"
+  },
+  {
+   "id": "cmd:MERGE",
+   "name": "MERGE",
+   "aliases": [
+    "MERGEBRANCH"
+   ],
+   "desc": "Merge another branch into this one, element by element, with conflicts shown side by side",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-MERGE"
   },
   {
    "id": "cmd:MIRROR",

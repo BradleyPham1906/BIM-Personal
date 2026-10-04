@@ -2,11 +2,11 @@
 
 **Read this first in a new session.** One page. The detail lives in the docs listed at the bottom.
 
-    canvas_v10.html   2279623 bytes
-    sha256            068c32e9b694acb046e0ae6194d1ca35d649baf9b9854005a218f1c276864bfa
-    markers           __acad3dV60 ... __acad3dV150, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
+    canvas_v10.html   2336573 bytes
+    sha256            38bf38edf529788217a11a330242d6251afb588298e6a86f8f489c268aa2dc58
+    markers           __acad3dV60 ... __acad3dV153, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
                       __acad3dV121b
-    tests             107 suites, 4377 checks, 0 failures
+    tests             110 suites, 4510 checks, 0 failures
 
     The user guide (V142): every phase updates docs/src/, its log entry and BIM_APP_VERSION, then
     runs tools/dump_catalog.py and tools/build_docs.py. The V142 suite and the Pages workflow
@@ -89,18 +89,21 @@ three tiers: compact up to 720 px wide or 500 px high, medium up to 1024 px, des
 | 148 | Analyze, redesigned; results as layers | **Done** (see Recently finished): a list in four groups with a search; Add as layer for sun hours, rain, slope, elevation, aspect and cut and fill; Layers' Analysis and Data sections. Next: result layers on sheets, locking, blend modes with the boards | QGIS writes a processing run's outputs as layers into a named group. `reference/research-presentation-panels.md` (2). |
 | 149 | The shell on phone and tablet | **Done** (see Recently finished): a tab bar and a drawer on a phone upright, the rail and a drawer on a tablet upright or a phone on its side, unchanged on a computer; safe areas. Next: a context menu on a long press when the drawing has one | The owner (V147): "consider the adaptation for phone, iPad/tablet, and computer". |
 | 150 | A tool palette for a phone and a tablet | **Done** (see Recently finished): the essentials in a frosted capsule, dragged anywhere, docked upright at an edge, folded to one button; the dock gives way to it on a phone and an upright tablet | The owner: "make it clean like how Apple did it ... only the essential ones". |
-| 151 | Hub H2: branches and merge | **Start here.** Design options as branches, switched between and compared by their numbers (areas, usages, cut and fill, solar); a three-way merge per element with conflicts shown side by side | Replaces "Design scenarios" (Giraffe's scenarios, Revit's Design Options). |
-| 152 | Presentation P1: boards | A board is a sheet you design on: one layer tree (frames, groups, lock, hide, reorder), opacity and blend modes on every element (canvas compositing, the same 16 modes as Figma), masks, shapes, text, images; align, distribute, smart spacing; rows and columns that space their children (a light auto layout) | Figma's layer model. `reference/research-presentation-panels.md` (1). |
-| 153 | Presentation P2: live elements | Elements linked to their source and redrawn when the model changes: model views, schedules, legends, analysis results (sun hours, cut and fill, solar), numbers (GBA, cut volume, site area), text bound to project data (autotext). An edit on the board is an override, marked, with Reset | Archicad's linked drawings and autotext; SketchUp LayOut's overrides and Reset. The data stays connected (the owner's rule). |
-| 154 | Presentation P3: styles, templates, export | Reusable components with variants (title blocks, legend cards, callouts); shared colour and text styles (a brand kit); master boards; templates; a presenting mode, one board per slide; PDF, PNG and SVG export with blend modes, opacity and masks kept | Canva's templates and brand kits; Figma's components; Archicad's master layouts. |
-| 154-160 | Freeform (F1-F7) | NURBS curves; surfaces from curves (extrude, revolve, loft, planar, edge); sweeps, pipe, cap; surface analysis (zebra, curvature, draft) in Analyze; point editing and blends; picture planes, text objects, flow along a surface; Make2D and rendering | `reference/research-rhino-guide-gap.md`: what the owner's Rhino guide teaches that the app lacks. Placed here pending the owner's word; the LOD track follows. |
-| 162 | LOD-C: point clouds | LAS, LAZ (laz-perf, Apache-2.0) and PLY; USGS 3DEP fetched around the site (EPT or COPC); by class or height; ground to a V108 surface through V138's check | Philadelphia has city LiDAR (2015, 2018) and PA statewide QL2. |
-| 163 | LOD-D: LOD2.2 from LiDAR | Region-growing roof planes, roof partition, optimised and extruded; LOD1.3 from the same partition; per-building RMSE to the points | 3DBAG's published method (roofer is GPL-3 C++: the method, not the code). |
-| 164 | LOD-E: facade images | The owner's photos or Panoramax panoramas placed on an LOD2 wall and rectified straight-on, in metres | Texture2LoD3's rectification; Panoramax is CC BY-SA, no key. |
-| 165 | LOD-F: LOD3 openings | Windows and doors drawn on the rectified facade, regularised into rows and columns, optionally detected (SAM in the browser, on request), cut into the wall | Checked against measured openings. |
-| 166 | LOD-G: Gaussian splats | A `.splat` capture placed on the site as a photoreal backdrop to trace against | antimatter15/splat, MIT. |
-| 167 | Zoning envelope | Setbacks, stepbacks and a height limit on a property become a 3D envelope; massing outside it is flagged | Builds on V103's setbacks; Giraffe's Basic Envelope. |
-| 168 | MEP runs | Duct and pipe runs at connectors, systems, flow, velocity and friction | MEP is its own discipline (the owner's choice). The research is drafted in `reference/research-mep-runs.md`. |
+| 151 | Hub H2: branches and merge | **Done** (see Recently finished): branches switched between and compared by their numbers; a three-way merge per element and per field, conflicts side by side, Keep or Take; a merge version with two parents. Next: a graph of the branches; solar and usages in Compare | Replaces "Design scenarios" (Giraffe's scenarios, Revit's Design Options). |
+| 152 | Render R1: GPU-friendly batches | **Done** (see Recently finished): merged chunks, one object table on the GPU sending only the rows that change, the camera alone sending nothing; 5,000 elements in 1 draw call instead of 5,000, the same pixels; the per-object path kept as the fallback. Next: the table's upkeep only for objects that changed; culling; instances | The owner (V151): WebGPU for efficiency and scale. |
+| 153 | Render R2: the WebGPU engine, WebGL kept | **Done** (see Recently finished): WebGPU where the browser has it, from V152's description; WGSL shaders, the table as a storage buffer, 4x multisampling, every draw in a render bundle replayed with only the camera sent; WebGL while it starts, without it, after a lost device or a failed frame, by choice (GRAPHICS), and for the map and terrain in 3D | WebGL stays for devices without WebGPU (iOS before 26, some Android phones and browsers). |
+| 154 | Render R3: the map, terrain and the GPU's own work | **Start here.** The basemap and the draped terrain in WebGPU (tile textures with mipmaps), so a site project stays on WebGPU; outlines pulled a hair toward the camera in both engines (no depth tie with their face); off-screen chunks culled; picking and sun hours as GPU compute | V153 hands those frames to WebGL. |
+| 155 | Presentation P1: boards | A board is a sheet you design on: one layer tree (frames, groups, lock, hide, reorder), opacity and blend modes on every element (canvas compositing, the same 16 modes as Figma), masks, shapes, text, images; align, distribute, smart spacing; rows and columns that space their children (a light auto layout) | Figma's layer model. `reference/research-presentation-panels.md` (1). |
+| 156 | Presentation P2: live elements | Elements linked to their source and redrawn when the model changes: model views, schedules, legends, analysis results (sun hours, cut and fill, solar), numbers (GBA, cut volume, site area), text bound to project data (autotext). An edit on the board is an override, marked, with Reset | Archicad's linked drawings and autotext; SketchUp LayOut's overrides and Reset. The data stays connected (the owner's rule). |
+| 157 | Presentation P3: styles, templates, export | Reusable components with variants (title blocks, legend cards, callouts); shared colour and text styles (a brand kit); master boards; templates; a presenting mode, one board per slide; PDF, PNG and SVG export with blend modes, opacity and masks kept | Canva's templates and brand kits; Figma's components; Archicad's master layouts. |
+| 158-164 | Freeform (F1-F7) | NURBS curves; surfaces from curves (extrude, revolve, loft, planar, edge); sweeps, pipe, cap; surface analysis (zebra, curvature, draft) in Analyze; point editing and blends; picture planes, text objects, flow along a surface; Make2D and rendering | `reference/research-rhino-guide-gap.md`: what the owner's Rhino guide teaches that the app lacks. Placed here pending the owner's word; the LOD track follows. |
+| 165 | LOD-C: point clouds | LAS, LAZ (laz-perf, Apache-2.0) and PLY; USGS 3DEP fetched around the site (EPT or COPC); by class or height; ground to a V108 surface through V138's check | Philadelphia has city LiDAR (2015, 2018) and PA statewide QL2. |
+| 166 | LOD-D: LOD2.2 from LiDAR | Region-growing roof planes, roof partition, optimised and extruded; LOD1.3 from the same partition; per-building RMSE to the points | 3DBAG's published method (roofer is GPL-3 C++: the method, not the code). |
+| 167 | LOD-E: facade images | The owner's photos or Panoramax panoramas placed on an LOD2 wall and rectified straight-on, in metres | Texture2LoD3's rectification; Panoramax is CC BY-SA, no key. |
+| 168 | LOD-F: LOD3 openings | Windows and doors drawn on the rectified facade, regularised into rows and columns, optionally detected (SAM in the browser, on request), cut into the wall | Checked against measured openings. |
+| 169 | LOD-G: Gaussian splats | A `.splat` capture placed on the site as a photoreal backdrop to trace against | antimatter15/splat, MIT. |
+| 170 | Zoning envelope | Setbacks, stepbacks and a height limit on a property become a 3D envelope; massing outside it is flagged | Builds on V103's setbacks; Giraffe's Basic Envelope. |
+| 171 | MEP runs | Duct and pipe runs at connectors, systems, flow, velocity and friction | MEP is its own discipline (the owner's choice). The research is drafted in `reference/research-mep-runs.md`. |
 | later | Hub H3: full IFC | web-ifc (WebAssembly, MPL-2.0) to read and write full IFC 4 and 4.3; IFC GUIDs kept on the elements so H1's diffs are IFC diffs | Our IFC writer and reader cover a subset today. |
 | later | Hub H4: share and sync | Push and pull a project's history to a repository, one file per element so git diffs and merges per element; GitHub as the first hub; only when asked | The first network piece of the hub. |
 | later | Hub H5: the server | Accounts, permissions per element, private models checked on the server (clashes, codes) returning only the result, paid access | Needs a backend: beyond a static site. "Zero-knowledge" checks in the viewer's browser are not possible: what runs there can be read there. |
@@ -135,7 +138,7 @@ Project photos, models and drawings are never committed: the repo and its site a
 ### LATER - Track A, drafting (moved behind Track B in V100)
 
 The numbers in this table are its order, not phase numbers: a phase takes the next free V number
-when it starts (V111 to V138 went to other work; V139 to V167 are in NOW).
+when it starts (V111 to V138 went to other work; V139 to V171 are in NOW).
 
 | # | Phase | Scope | Notes |
 |---|---|---|---|
@@ -149,7 +152,32 @@ when it starts (V111 to V138 went to other work; V139 to V167 are in NOW).
 | 118 | Blocks and data | ATTDEF ATTEDIT BEDIT WBLOCK DATAEXTRACTION TABLESTYLE TABLEDIT TABLEEXPORT | First phase that's about the disciplines, not drafting. BLOCK and INSERT landed in V124, as the Assets library's blocks: saved records inserted as independent copies. A block reference that follows its definition (what BEDIT edits) is not built. |
 | 119 | Sheets and plotting, rest | MVIEW (draw a viewport on the paper) PAGESETUP (plot settings beyond Sheet Setup) PUBLISH (V122's Print set prints every sheet in one job; a chosen subset and page setups remain) EXPORTPDF (vector PDF of a sheet) VPLAYER (per-viewport layer visibility) viewport lock | LAYOUT, MSPACE and PSPACE landed in V116, with layout tabs and model space through a viewport. |
 
-**Recently finished:** Phase 150 (V150), **a tool palette for a phone and a tablet**.
+**Recently finished:** Phase 153 (V153), **the WebGPU engine, WebGL kept**.
+- WebGPU draws the model where the browser has it, from V152's description; every draw recorded
+  once in a render bundle and replayed with only the camera sent.
+- WebGL draws while it starts, without it, after a lost device or a failed frame, by choice
+  (GRAPHICS), and for the map and terrain in 3D; Statistics names the engine.
+- Checked against WebGL pixel by pixel, offscreen (a headless browser cannot present WebGPU).
+- **Checked** in 38 checks and 23 falsify variants.
+
+Phase 152 (V152), **the 3D scene in GPU-friendly batches**.
+- Objects merged into chunks; each object's offset, transparency, colour and selection in one
+  table on the GPU, only changed rows sent; the camera alone rebuilds and sends nothing.
+- 5,000 elements: 1 draw call instead of 5,000, a frame about twice as fast in software; 20,000:
+  4 instead of 20,000, about three times. The same pixels as before in every case checked.
+- **Checked** in 39 checks and 19 falsify variants.
+
+Phase 151 (V151), **branches and merge (the Hub's H2)**.
+- Design options as branches: New Branch, switch (refused over changes not committed), each
+  branch's own line of versions, Compare's numbers side by side, Delete asked once.
+- Merge In, three ways against the version both share: one side's change taken, both sides'
+  fields put together, the same field both ways or a change against a delete a conflict, shown
+  side by side, kept or taken; Finish Merge makes a version with two parents.
+- On a phone and a tablet the History commands open the Properties sheet; the tab strip is no
+  longer see-through as the panel scrolls.
+- **Checked** in 56 checks and 37 falsify variants.
+
+Phase 150 (V150), **a tool palette for a phone and a tablet**.
 - Select, Pan, Line, Rectangle, Circle, Wall, Door, Window, Dimension, Delete and All tools in a
   frosted capsule; the tool in use in blue; dragged by its grip, docked upright at an edge or flat,
   folded to one round button, kept where it was left. The dock gives way to it on touch layouts.

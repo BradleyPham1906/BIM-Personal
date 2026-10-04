@@ -12906,3 +12906,242 @@ Pictures: `reference/v150_phone_palette.png`, `v150_tablet_palette.png`.
     sha256            068c32e9b694acb046e0ae6194d1ca35d649baf9b9854005a218f1c276864bfa
     markers           __acad3dV60 ... __acad3dV150, __acad3dV134d (and the 133d to 133f markers)
 
+
+## Phase 151 (V151) - Branches and merge (the Hub's H2)
+
+Design options as branches of the V146 history: a branch is a name at a version, switched to,
+compared with the others by their numbers, and merged three ways, element by element and field by
+field, with the conflicts shown side by side to be kept or taken.
+
+### What was built (patches 151a, 151b)
+
+- **Branches.** Every project starts on main; a V146 history opens as main at its latest version.
+  New Branch starts one at the latest version and puts you on it, with what is not committed. A
+  commit moves only the branch you are on, and the version list shows that branch's line, each
+  branch's name on its latest version. Names: letters, numbers, spaces, dots and dashes, up to 40.
+- **Switch** loads the branch's latest version; Undo takes it back. It is refused over changes not
+  committed, so nothing is lost.
+- **Merge**, against the nearest version both share (merges count, so the next merge starts from
+  the last): nothing new here moves this branch up; nothing new there does nothing; otherwise each
+  element changed on one side is taken, and an element changed on both has the fields each changed
+  put together. The same field changed both ways, or an element changed on one side and deleted on
+  the other, is a conflict: listed in History with the two sides next to each other, Keep or Take,
+  then Finish Merge (greyed until each is decided) or Cancel. The merge is a version with two
+  parents.
+- **Compare**: objects, walls and their length, doors and windows, rooms and their area, gross
+  area, levels, cut and fill, a column a branch; this branch counted as the model is now; rows
+  that differ in bold.
+- **Delete** a branch other than the one you are on, from the panel; it asks once first.
+- **Commands** BRANCH, MERGE and COMPAREBRANCHES (with design option, option and compare options
+  as other names). Branches are saved in the browser and the project file.
+- **The version** is V151; the guide's Sheets and files page has branches and merging.
+
+### Bugs found
+
+- The Properties tab strip sticks to the top of the panel as it scrolls, but its background was a
+  see-through tint: a heading scrolled under it showed through ("History" over "Project"), seen on
+  this phase's picture. It is the tint over the panel's colour now (151b).
+- On a phone or a tablet HISTORY and the new commands opened the History group with the Properties
+  sheet still shut, so nothing seemed to happen. They open the sheet now (151b).
+- The other branch picked for Merge In or Delete went back to the first one whenever the panel
+  redrew; it is kept (151b).
+- `bimHistValid` runs as the project loads, before the branch-name pattern below it is set: it
+  uses its own literal pattern (the V148 lesson again).
+- The stylesheet passed V114's 90,000-byte ceiling (V150's note); the ceiling is now 100,000, with
+  the reason in the V114 suite: the shell, the palette and the panels are CSS the app needs.
+
+### Suites
+
+- New: `bim_phase151_branches_merge_browser_tests.py`, 56 checks: names refused, New Branch,
+  commit per branch, switch refused and done and undone, the branch's own log; fast-forward, up to
+  date, the field merge, the merge's parents and base; a conflict in the panel, Keep, Take, delete
+  against change, Cancel, refusals; Compare's numbers; Enter, the Branch list, Merge In, Delete
+  asked once, the commands, the search, the project file, a reload on another branch, a V146 file,
+  bad branches let go; the tabs not see-through; the sheet opened on a phone.
+- Amended: V114 (the ceiling, AMENDED FOR V151).
+- **Falsified by `Phase/falsify_phase151.py`,** 37 variants, all caught. One gap closed: the
+  branch you were on after a reload was not checked, since the suite reloaded on main.
+
+### Not done
+
+- Merging the parts of a project that are not objects field by field (levels, sheets): they are
+  merged whole, a conflict when both changed.
+- Compare's solar and usage rows (the gross area is there); a compare on a sheet.
+- A graph of the branches.
+
+### Full regression and state after V151
+
+108 suites, 4433 checks, 0 failures. Falsification: V151 37 of 37. Patches 151a and 151b rebuild
+the build from `Phase/canvas_v10.html.bak_phase151_pre`. The diff is ES5-clean.
+Pictures: `reference/v151_branches_compare.png`, `v151_phone_history.png`.
+
+    canvas_v10.html   2302577 bytes
+    sha256            7837b8047ea47d646d6303f4cd81af7a1cc059d122307fb9bd48c6897a8f82e8
+    markers           __acad3dV60 ... __acad3dV151, __acad3dV134d (and the 133d to 133f markers)
+
+## Phase 152 (V152) - The 3D scene in GPU-friendly batches (Render R1)
+
+The owner asked for WebGPU, for efficiency and scale. The first step, which speeds every device
+and that the WebGPU engine (V153) will read too: one shared description of the 3D scene, drawn in
+a few large batches instead of object by object.
+
+### What was built (patch 152a)
+
+- **Before:** for every object, every frame, about ten WebGL calls to set its offset, colour,
+  highlight and transparency, bind its buffers and draw, and as many again for its edges: 5,000
+  elements were 10,000 draw calls and some 100,000 calls in all, each paid on the main thread.
+- **Chunks.** The objects' triangles are merged into large buffers of at most 196,608 vertices,
+  each vertex tagged with its object's slot; the edges the same way. A chunk is rebuilt only when
+  one of its objects' meshes changes, or an object is added or removed. A mesh shared by many
+  objects (a family's) is triangulated once a rebuild.
+- **The object table.** Each object's offset, transparency, colour (the lens first) and selection
+  in two texels of a float texture the vertex shader reads. Only the rows that changed are sent:
+  a move, a selection or a layer turned off is one row. A hidden object (layer off, another level)
+  stays in its chunk and is dropped by the shader, so showing it again rebuilds nothing.
+- **The camera alone** changes nothing but two matrices: nothing rebuilt, nothing sent.
+- **The frame:** opaque solids, the transparent ones blended without writing depth, then the edges,
+  as before. The picture is the same, pixel for pixel, in every case checked.
+- **The fallback.** A device without float or vertex textures draws object by object, as before;
+  `__a3dGlBatch(false)` switches to it, and gives the batches back.
+- **Measures:** `__a3dStressModel(n)` builds n elements, `__a3dRenderBench(frames)` times frames
+  with the camera turning, each finished before the next. `__a3dGlStats` and `__a3dGlTotals` count
+  draw calls, rebuilds and bytes sent.
+- **The version** is V152; the guide's Getting started has a section on large models.
+
+### Measured (headless Chromium, software WebGL, 1500 x 950)
+
+| Elements | Draw calls before | after | Frame before | after |
+|---|---|---|---|---|
+| 1,000 | 2,000 | 2 | 42 ms | 26 ms |
+| 5,000 | 5,000 | 1 | 85 ms | 30 to 44 ms |
+| 20,000 | 20,000 | 4 | 330 ms | 90 to 150 ms |
+
+The software renderer rasterises on the CPU, so the frames left are mostly fill. On a real
+graphics card the calls saved are most of the frame. Of a 20,000-element frame, about 20 ms is the
+table's upkeep in JavaScript (each object's layer, level and colour looked up); that is the next
+thing to cut.
+
+### Bugs found
+
+- The table compared each new value with the stored 32-bit one, and a colour of n/255 is never
+  exact in 32 bits: every row looked changed and the whole table was sent every frame. Values are
+  now compared as stored.
+- The batch shaders would not link: a uniform used in both shaders had different precisions. The
+  renderer fell back to object by object silently, which the suite now checks against.
+
+### Suites
+
+- New: `bim_phase152_gpu_batches_browser_tests.py`, 39 checks: batched from the start; one chunk,
+  two draw calls; the object's row; the same pixels batched and object by object (plain, selected,
+  a 60% transparent layer, the type lens, a layer off, after changes, after a delete and an add);
+  the camera rebuilding and sending nothing; a layer off and on, a move and a selection one row; a
+  new shape one rebuild; a deleted object's slot freed and reused; 5,000 and 20,000 elements in a
+  few calls, chunks under their cap, quicker than object by object, one row sent for one move; the
+  fallback giving the batches back.
+- **Falsified by `Phase/falsify_phase152.py`,** 20 variants: 19 caught, one retired (a hidden
+  object let through blends to nothing in the transparent pass: wasted work, not a different
+  picture). One gap closed: the suite switched batching on itself, so batching off by default
+  went unseen; it now checks the default first.
+
+### Not done
+
+- The table's upkeep in JavaScript, about 1 ms a 1,000 elements: next, only objects that changed.
+- Culling what is off screen, and drawing many copies of one mesh as instances.
+- The WebGPU engine (V153).
+
+### Full regression and state after V152
+
+109 suites, 4472 checks, 0 failures. Falsification: V152 19 of 19, one retired. Patch 152a
+rebuilds the build from `Phase/canvas_v10.html.bak_phase152_pre`. The diff is ES5-clean.
+
+    canvas_v10.html   2317202 bytes
+    sha256            1d2347693a2f7e50e1d44f78d12104f34befdbdc2f0e07579e8d7e456b9fa1fb
+    markers           __acad3dV60 ... __acad3dV152, __acad3dV134d (and the 133d to 133f markers)
+
+## Phase 153 (V153) - The WebGPU engine, WebGL kept (Render R2)
+
+The owner's plan: WebGPU where the browser has it, WebGL kept for devices without it. The model is
+drawn with WebGPU from V152's description of the scene; WebGL takes the frame whenever WebGPU
+cannot.
+
+### What was built (patch 153a)
+
+- **One description, two engines.** V152's batches became the engines' common part
+  (`bimSceneSync`): the chunks' arrays, the object table, the rebuilds. Each engine keeps its own
+  GPU copies of the chunks (rebuilt by a version number) and its own record of the table rows it
+  has yet to receive, so either can take over at any frame.
+- **WebGPU.** Started asynchronously when 3D is first drawn; WebGL draws meanwhile. WGSL shaders
+  doing what V152's do (the table read from a storage buffer, WebGL's depth range mapped to
+  WebGPU's), 4x multisampling as WebGL's antialias, four pipelines (solids, blended solids, edges,
+  blended edges).
+- **Recorded once.** Every draw goes into a render bundle; each frame replays it with only the
+  camera's two matrices sent. It is recorded again only when a chunk is rebuilt, the table grows,
+  or the passes change (a transparent layer appears or goes, the outlines are dropped on a heavy
+  model). A move or a selection is one 32-byte row of the table.
+- **WebGL draws** while WebGPU starts, on a browser without it, after a lost device (a driver
+  reset), after a frame that fails (never a broken frame on screen), when chosen with `GRAPHICS`,
+  and for a frame with the map or a terrain surface in 3D, which WebGPU does not draw yet (V154).
+- **GRAPHICS** switches this browser between WebGPU-where-available and WebGL, kept in the browser;
+  choosing WebGPU again tries again after a failure. Statistics shows which engine drew the last
+  frame and why, e.g. "WebGL (for the terrain)".
+- **The version** is V153; the guide's Getting started says how 3D is drawn.
+
+### How it was checked
+
+Chromium is started with WebGPU on (SwiftShader, a software GPU). A headless browser cannot present
+a WebGPU canvas: the GPU process cannot make the shared image behind it, and the device and the
+page's WebGL context are both lost. So a test sets `__BIM_GPU_OFFSCREEN` before the page loads and
+the engine draws into a texture the size of the canvas, which `__a3dGpuCompare` reads back and
+compares with WebGL's frame of the same view.
+
+- In plan, the two differ by more than 16 of 255 on 0.06% of pixels (antialiasing) and by more
+  than 48 on none.
+- In perspective, the thin outlines are rasterised a pixel differently: up to 269 pixels differ
+  by more than 48, all but 61 of them explained by the same colour a pixel over. The 61 are
+  outlines lying on their own face, a depth tie each engine breaks its own way: they z-fight in
+  WebGL already. V154 pulls outlines a hair toward the camera in both engines.
+
+### Measured
+
+In SwiftShader both engines rasterise on the CPU, and the frame is fill: 5,000 elements about 31 ms
+with WebGPU against 29 ms with WebGL; 20,000 about 90 ms against 87 ms. The engine's saving is the
+main thread's work of issuing the draws, which a real GPU makes visible and a software one hides.
+That cannot be measured here.
+
+### Bugs found
+
+- The first WebGPU frame of an empty scene had no table yet and threw; it is now a 32-byte
+  placeholder, and any frame that throws hands over to WebGL.
+- The suite's camera was flat (plan) after the second `3D` command, so it compared plan views only
+  and the terrain test had nothing in 3D; it now sets a perspective camera, and checks plan too.
+- A label "Canvas (no WebGL)" broke V120's rule against canvas-era names.
+
+### Suites
+
+- New: `bim_phase153_webgpu_engine_browser_tests.py`, 38 checks: WebGPU starts and draws; the same
+  picture as WebGL (plain, selected, transparent layer, lens, layer off, a move, plan, after
+  changes, 20,000 elements); the camera replays the bundle and sends nothing; a move or a
+  selection is a row; a new shape and a change of passes record again; 5,000 and 20,000 elements;
+  terrain and the map handed to WebGL and back; GRAPHICS, kept, in Statistics, searchable; a failed
+  frame and a lost device handed to WebGL; started again; a browser without WebGPU.
+- V152's suite passes unchanged; four of its falsify variants re-anchored to the refactored code.
+- **Falsified by `Phase/falsify_phase153.py`,** 24 variants: 23 caught, one retired (a hidden
+  object let through blends to nothing, as in V152). One gap closed: a frame that throws was not
+  tested; a test-only switch now breaks the next frame.
+
+### Not done
+
+- The map and the draped terrain in WebGPU (V154), so a site project stays on WebGPU.
+- Outlines pulled toward the camera in both engines; culling; picking and sun hours as compute.
+- A measurement on a real GPU.
+
+### Full regression and state after V153
+
+110 suites, 4510 checks, 0 failures (the regression's browser has no WebGPU, so every suite but
+V153's runs on WebGL, as before). Falsification: V153 23 of 23, one retired; V152 19 of 19 again.
+Patch 153a rebuilds the build from `Phase/canvas_v10.html.bak_phase153_pre`. The diff is
+ES5-clean (the scan's one hit is `let` inside the WGSL shader text, which is WGSL, not script).
+
+    canvas_v10.html   2336573 bytes
+    sha256            38bf38edf529788217a11a330242d6251afb588298e6a86f8f489c268aa2dc58
+    markers           __acad3dV60 ... __acad3dV153, __acad3dV134d (and the 133d to 133f markers)

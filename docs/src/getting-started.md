@@ -80,3 +80,21 @@ tool to put it on the dock.
 **Ctrl Z** and **Ctrl Y** (`UNDO`, `REDO`). Each action is one step, including fetches from
 the network: getting the site context is one step, and undoing it removes everything it
 brought.
+
+## Large models
+
+The 3D view draws the model in a few large batches instead of one element at a time. Each
+element's position, colour, selection and transparency is kept in one table on the graphics card.
+Turning or zooming the view sends nothing new to the card, and moving or selecting an element
+updates only that element's entry. A model of 5,000 elements is drawn in one or two calls rather
+than thousands, so large imports and city context stay smooth to orbit.
+
+A device whose graphics cannot read that table (some very old phones) draws element by element as
+before. The picture is the same either way.
+
+**WebGPU.** Where the browser has WebGPU (recent Chrome and Edge, Safari on iOS and macOS 26), the
+model is drawn with it. Every draw is recorded once and replayed each frame with only the camera
+changing. WebGL draws while WebGPU starts, on browsers without it, if the graphics driver resets,
+and for now whenever the map or a terrain surface is shown in 3D. Properties → Project →
+Statistics shows which one drew the last frame. `GRAPHICS` switches this browser to WebGL and
+back, for a driver that misbehaves.

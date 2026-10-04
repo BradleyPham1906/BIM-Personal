@@ -487,8 +487,7 @@ body.light-theme #a3d-tip strong{color:#202124}body.light-theme .a3d-tiptype b{c
 .a3d-dlgrow input,.a3d-dlgrow select{width:110px;background:#1c2024;border:1px solid #3a4048;color:#dfe4ea;border-radius:4px;padding:3px 6px}
 #a3d-dlgerr{color:#e08080;min-height:14px;margin-top:4px;font-size:11px}
 .a3d-dlgft{display:flex;justify-content:flex-end;gap:8px;padding:8px 12px;border-top:1px solid #30353c}
-#a3d-glcanvas,#a3d-gpucanvas{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:0}
-#a3d-gpucanvas{visibility:hidden}
+#a3d-glcanvas{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:0}
 #a3d-canvas{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:1}
 .a3d-vp{position:relative}
 .a3d-tree{width:268px}
@@ -659,10 +658,8 @@ body.light-theme #a3d-right{--pp-bg:#fbfbfc;--pp-line:rgba(0,0,0,.08);--pp-text:
 #a3d-right .a3d-ptypeic{width:32px;height:32px;border-radius:8px;background:var(--pp-hover);border-color:var(--pp-line);color:var(--pp-text)}
 #a3d-right .a3d-ptypename{font-size:13px;color:var(--pp-text)}
 #a3d-right .a3d-ptypesub{font-size:11px;color:var(--pp-muted)}
-#a3d-right .a3d-ptabs{margin:12px 0 2px;background:linear-gradient(var(--pp-hover),var(--pp-hover)),var(--pp-bg);box-shadow:0 -4px 0 var(--pp-bg)}
+#a3d-right .a3d-ptabs{margin:12px 0 2px;background:var(--pp-hover)}
 #a3d-right .a3d-histmore button{min-height:22px;padding:0 8px;font-size:11px}
-#a3d-right #a3d-propsbody button.warn{border-color:#e5534b;color:#ff7b72}
-#a3d-propsbody [data-brmergefrom]{flex:1 1 auto;min-width:0}
 .a3d-rgrip{position:absolute;left:-3px;top:0;bottom:0;width:7px;cursor:col-resize;z-index:6}
 .a3d-rgrip:hover,.a3d-rgrip.drag{background:linear-gradient(90deg,transparent 2px,var(--pp-acc,#4ea1ff) 2px,var(--pp-acc,#4ea1ff) 4px,transparent 4px)}
 .a3d-rmin{width:26px;height:26px;display:inline-grid;place-items:center;border:0;border-radius:6px;background:transparent;color:var(--pp-muted,#8f98a2);cursor:pointer;padding:0;flex:0 0 auto}
@@ -760,25 +757,6 @@ body.light-theme .a3d-anzbtn.lay{border-color:#4a8fe0;color:#1d63b8}
 .a3d-terrband i{width:12px;height:10px;border-radius:2px;flex:none}.a3d-terrbl{flex:1}.a3d-terrba{color:#9aa5b0}
 .a3d-terrband-0{opacity:.45}
 .a3d-hist{display:flex;flex-direction:column;gap:6px;font-size:12px}
-.a3d-brrow{display:flex;align-items:center;gap:8px;margin:0 0 6px}
-.a3d-brlbl{font-size:11.5px;color:var(--pp-muted,#8f98a2)}
-.a3d-brrow select{flex:1 1 auto;min-width:0}
-.a3d-brcmp{overflow-x:auto;margin:4px 0 8px}
-.a3d-brcmp table{border-collapse:collapse;width:100%;font-size:11.5px}
-.a3d-brcmp th,.a3d-brcmp td{padding:3px 6px;text-align:right;border-bottom:1px solid var(--pp-line,#30353c);white-space:nowrap}
-.a3d-brcmp th:first-child,.a3d-brcmp td:first-child{text-align:left;color:var(--pp-muted,#8f98a2)}
-.a3d-brcmp th.cur{color:var(--pp-accent,#4ea1ff)}
-.a3d-brcmp tr.diff td{font-weight:600}
-.a3d-brmerge{border:1px solid rgba(255,183,77,.45);border-radius:8px;padding:8px;margin:6px 0}
-.a3d-brconf{border-top:1px solid var(--pp-line,#30353c);padding:6px 0}
-.a3d-brconf.done{opacity:.7}
-.a3d-brlabel{font-weight:600;margin-bottom:3px}
-.a3d-brfield{display:grid;grid-template-columns:1fr 1fr;gap:2px 10px;margin:4px 0}
-.a3d-brf{grid-column:1/-1;font-size:11px;color:var(--pp-muted,#8f98a2)}
-.a3d-brside{min-width:0;font-size:11.5px;overflow-wrap:anywhere}
-.a3d-brside b{display:block;font-size:10.5px;color:var(--pp-muted,#8f98a2);font-weight:600}
-.a3d-histacts button.on{background:var(--pp-accent,#4ea1ff);color:#fff}
-.a3d-brtag{background:rgba(78,161,255,.18);color:#9cc9ff}
 .a3d-histst{color:#c9d1d9}.a3d-histrow{display:flex;gap:6px}.a3d-histrow input{flex:1;min-width:0}
 .a3d-histchg{display:flex;flex-direction:column;gap:3px;margin:2px 0 4px}
 .a3d-histd{color:#c9d1d9;line-height:1.35}.a3d-histd b{display:inline-block;width:12px}
@@ -1087,10 +1065,6 @@ body.a3d-tree-docked #a3d-leftpanel > .a3d-tree .a3d-palhd .a3d-palbtns{flex-wra
     ['SUNSTUDY',['SHADOWS','SUNPATH'],'sunstudy','Show or hide the shadows on the ground and the sun path, for the site date and time'],   /* __acad3dV107 */
     ['COMMIT',['CHECKPOINT','SAVEVERSION'],'commit','Keep this state of the model as a version, with a message: what changed, element by element'],   /* __acad3dV146 */
     ['HISTORY',['VERSIONS','VERSIONHISTORY'],'history','The model\'s versions: what changed in each, element by element, and Restore'],
-    ['BRANCH',['NEWBRANCH','DESIGNOPTION','OPTION'],'branch','Start a design option: a branch of the history, switched to and compared with the others'],   /* __acad3dV151 */
-    ['GRAPHICS',['RENDERER','WEBGPU','WEBGL'],'graphics','Draw 3D with WebGPU where the browser has it, or always with WebGL in this browser'],   /* __acad3dV153 */
-    ['MERGE',['MERGEBRANCH'],'merge','Merge another branch into this one, element by element, with conflicts shown side by side'],
-    ['COMPAREBRANCHES',['COMPAREOPTIONS','OPTIONS'],'comparebranches','Each branch\'s numbers side by side: walls, rooms, areas, cut and fill'],
     ['GRADE',['GRADING','DAYLIGHT','GRADEPADS'],'grade','Grade the pads onto the ground: cut and fill slopes run out to the daylight line, into a proposed surface'],   /* __acad3dV145 */
     ['CUTFILL',['VOLUMES','TINVOLUME','SURFACEVOLUME'],'cutfill','Cut and fill between two surfaces (the existing one first), or of every proposed surface against its existing one'],
     ['CUTFILLMAP',['CUTFILLCOLOUR','CUTFILLCOLOR'],'cutfillmap','Colour the proposed surface by how deep it cuts or fills'],
@@ -5466,20 +5440,11 @@ try{
     var C=h.commits.filter(function(c){return c&&typeof c.id==='string'&&Array.isArray(c.tree)&&c.tree.every(function(e){return Array.isArray(e)&&typeof e[0]==='string'&&typeof e[1]==='string';});});
     if(C.length!==h.commits.length)console.warn('[BIM] Discarded '+(h.commits.length-C.length)+' damaged version(s) from the history.');
     var head=typeof h.head==='string'&&C.some(function(c){return c.id===h.head;})?h.head:(C.length?C[C.length-1].id:null);
-    /* __acad3dV151: the branches, each a name at a version that is there; a history from before is "main" */
-    var ids={},br={},k;C.forEach(function(c){ids[c.id]=1;});
-    if(h.branches&&typeof h.branches==='object')for(k in h.branches)if(h.branches.hasOwnProperty(k)&&/^[A-Za-z0-9][A-Za-z0-9 _.\-]{0,39}$/.test(k)&&(h.branches[k]===null||ids[h.branches[k]]))br[k]=h.branches[k];
-    var cur=typeof h.branch==='string'&&br.hasOwnProperty(h.branch)?h.branch:'main';
-    if(!br.hasOwnProperty(cur))br[cur]=head;
-    return {v:1,head:head,commits:C,blobs:h.blobs,branches:br,branch:cur};
+    return {v:1,head:head,commits:C,blobs:h.blobs};
   }
   function bimHist(){
     if(!A3D.history||!Array.isArray(A3D.history.commits)||!A3D.history.blobs)A3D.history={v:1,head:null,commits:[],blobs:{}};
-    var H=A3D.history;   /* __acad3dV151 */
-    if(!H.branches||typeof H.branches!=='object')H.branches={};
-    if(typeof H.branch!=='string'||!H.branch)H.branch='main';
-    if(!H.branches.hasOwnProperty(H.branch))H.branches[H.branch]=H.head||null;
-    return H;
+    return A3D.history;
   }
   function bimHistCommitById(id){var C=bimHist().commits,i;for(i=0;i<C.length;i++)if(C[i].id===id)return C[i];return null;}
   function bimHistHead(){var H=bimHist();return H.head?bimHistCommitById(H.head):null;}
@@ -5563,16 +5528,15 @@ try{
     var H=bimHist(),p=c.parent?bimHistCommitById(c.parent):null;
     return bimHistDiff(p?p.tree:null,c.tree,H.blobs,H.blobs);
   }
-  function bimHistCommit(msg,parent2){
+  function bimHistCommit(msg){
     var H=bimHist(),W=bimHistWorking(),head=bimHistHead(),d=bimHistDiff(head?head.tree:null,W.tree,H.blobs,W.blobs),st={added:0,changed:0,removed:0};
     if(!d.length)return {error:head?'Nothing has changed since "'+head.msg+'"':'There is nothing to commit yet'};
     d.forEach(function(x){st[x.kind]++;});
     msg=String(msg==null?'':msg).replace(/^\s+|\s+$/g,'').slice(0,200)||('Version '+(H.commits.length+1));
     var c={id:'c-'+Date.now().toString(36)+'-'+(H.commits.length+1),parent:head?head.id:null,msg:msg,at:new Date().toISOString(),
-      by:String((A3D.titleBlock&&A3D.titleBlock.drawnBy)||''),tree:W.tree.slice(),stats:st,branch:H.branch};
-    if(parent2)c.parent2=parent2;   /* __acad3dV151: a merge */
+      by:String((A3D.titleBlock&&A3D.titleBlock.drawnBy)||''),tree:W.tree.slice(),stats:st};
     W.tree.forEach(function(e){if(!H.blobs.hasOwnProperty(e[1]))H.blobs[e[1]]=W.blobs[e[1]];});
-    H.commits.push(c);H.head=c.id;H.branches[H.branch]=c.id;
+    H.commits.push(c);H.head=c.id;
     saveSoon();
     return {id:c.id,msg:c.msg,stats:st};
   }
@@ -5587,271 +5551,6 @@ try{
       else st[k.slice(1)]=v;
     }
     return st;
-  }
-  /* ================= __acad3dV151: branches and merge (the Hub's H2) =================
-     A branch is a name at a version: a design option. Merging is three ways, element by element,
-     against the version both branches share -- git's merge, at the grain of a building element. */
-  var BIM_BR_NAME=/^[A-Za-z0-9][A-Za-z0-9 _.\-]{0,39}$/;
-  var A3D_MERGE=null,A3D_BR_CMP=false,A3D_BR_NEW='',A3D_BR_DEL='',A3D_BR_PICK='';
-  function bimHistDirty(){try{return bimHistChanges().length>0;}catch(eD){return false;}}
-  function bimHistBranches(){
-    var H=bimHist(),out=[],k;
-    for(k in H.branches)if(H.branches.hasOwnProperty(k)){var c=H.branches[k]?bimHistCommitById(H.branches[k]):null;out.push({name:k,head:H.branches[k],current:k===H.branch,msg:c?c.msg:'',at:c?c.at:''});}
-    out.sort(function(a,b){return a.name==='main'?-1:b.name==='main'?1:a.name<b.name?-1:a.name>b.name?1:0;});
-    return out;
-  }
-  function bimHistBranchNew(name){
-    var H=bimHist();
-    name=String(name==null?'':name).replace(/\s+/g,' ').replace(/^ | $/g,'');
-    if(!H.head)return {error:'Commit a version first: a branch starts at one'};
-    if(!BIM_BR_NAME.test(name))return {error:'A branch name is letters, numbers, spaces, dots, dashes, at most 40'};
-    if(H.branches.hasOwnProperty(name))return {error:'There is a branch "'+name+'" already'};
-    H.branches[name]=H.head;H.branch=name;
-    saveSoon();
-    return {name:name,at:H.head};
-  }
-  /* switch: the model as the branch's latest version; refused over changes not committed */
-  function bimHistSwitch(name){
-    var H=bimHist();
-    if(!H.branches.hasOwnProperty(name))return {error:'There is no branch "'+name+'"'};
-    if(name===H.branch)return {name:name,same:true};
-    if(bimHistDirty())return {error:'Commit or discard the changes first: switching would lose them'};
-    var id=H.branches[name],c=id?bimHistCommitById(id):null,st=c?bimHistStateOf(c):null;
-    if(c&&!st)return {error:'"'+c.msg+'" is damaged: some of its elements are missing'};
-    if(st){pushUndo();bimRestoreState(JSON.stringify(st));A3D.selSet=[];}
-    H.branch=name;H.head=id;A3D_MERGE=null;
-    refreshProps();paint();saveSoon();
-    return {name:name,head:id};
-  }
-  function bimHistBranchDelete(name){
-    var H=bimHist();
-    if(!H.branches.hasOwnProperty(name))return {error:'There is no branch "'+name+'"'};
-    if(name===H.branch)return {error:'Switch to another branch first'};
-    delete H.branches[name];saveSoon();
-    return {name:name};
-  }
-  /* every version a version comes from, nearest first */
-  function bimHistAncestry(id){
-    var out=[],seen={},q=[id],c;
-    while(q.length){id=q.shift();if(!id||seen[id])continue;seen[id]=1;out.push(id);c=bimHistCommitById(id);if(c){q.push(c.parent||null);if(c.parent2)q.push(c.parent2);}}
-    return out;
-  }
-  function bimHistBase(a,b){
-    var A={},L=bimHistAncestry(a),i;L.forEach(function(x){A[x]=1;});
-    L=bimHistAncestry(b);
-    for(i=0;i<L.length;i++)if(A[L[i]])return L[i];
-    return null;
-  }
-  /* three ways, element by element; fields put together where the two sides changed different ones */
-  function bimHistMerge3(base,ours,theirs){
-    var H=bimHist(),B=base?bimHistMap(base.tree):{},O=bimHistMap(ours.tree),T=bimHistMap(theirs.tree),keys=[],seen={},tree=[],blobs={},conflicts=[];
-    ours.tree.forEach(function(e){keys.push(e[0]);seen[e[0]]=1;});
-    theirs.tree.forEach(function(e){if(!seen[e[0]]){keys.push(e[0]);seen[e[0]]=1;}});
-    function val(h){return h===undefined?undefined:JSON.parse(H.blobs[h]);}
-    keys.forEach(function(k){
-      var b=B[k],o=O[k],t=T[k],fb,fo,ft,f,F={},m,cf=[],c;
-      if(o===t||b===t){if(o!==undefined)tree.push([k,o]);return;}
-      if(b===o){if(t!==undefined)tree.push([k,t]);return;}
-      if(k==='#meta'){if(o!==undefined)tree.push([k,o]);return;}   /* the active level and the like: this branch's */
-      if(o===undefined||t===undefined){
-        conflicts.push({key:k,kind:'deleted',label:bimHistLabel(k,val(o!==undefined?o:t)),gone:o===undefined?'ours':'theirs',ours:o,theirs:t,fields:[]});
-        tree.push([k,o!==undefined?o:t]);
-        return;
-      }
-      fb=b!==undefined?val(b):{};fo=val(o);ft=val(t);
-      if(!fb||!fo||!ft||typeof fo!=='object'||typeof ft!=='object'||Array.isArray(fo)||Array.isArray(ft)){
-        conflicts.push({key:k,kind:'both',label:bimHistLabel(k,fo),ours:o,theirs:t,fields:[{f:'(the whole element)',base:fb,ours:fo,theirs:ft}]});
-        tree.push([k,o]);return;
-      }
-      for(f in fo)if(fo.hasOwnProperty(f))F[f]=1;
-      for(f in ft)if(ft.hasOwnProperty(f))F[f]=1;
-      m={};
-      for(f in F){
-        var cb=bimCanon(fb[f]),co=bimCanon(fo[f]),ct=bimCanon(ft[f]);
-        if(co===ct||cb===ct){if(fo.hasOwnProperty(f))m[f]=fo[f];}
-        else if(cb===co){if(ft.hasOwnProperty(f))m[f]=ft[f];}
-        else{cf.push({f:f,base:fb[f],ours:fo[f],theirs:ft[f]});if(fo.hasOwnProperty(f))m[f]=fo[f];}
-      }
-      c=bimCanon(m);var hh=bimHash(c);blobs[hh]=c;tree.push([k,hh]);
-      if(cf.length)conflicts.push({key:k,kind:'both',label:bimHistLabel(k,fo),ours:o,theirs:t,merged:m,fields:cf});
-    });
-    return {tree:tree,blobs:blobs,conflicts:conflicts};
-  }
-  /* the model a tree describes, from the history's elements and a merge's own */
-  function bimHistStateOfTree(tree,extra){
-    var H=bimHist(),st={objs:[]},i,k,raw,v,m;
-    for(i=0;i<tree.length;i++){
-      k=tree[i][0];raw=(extra&&extra[tree[i][1]]!==undefined)?extra[tree[i][1]]:H.blobs[tree[i][1]];
-      if(raw===undefined)return null;
-      v=JSON.parse(raw);
-      if(k.indexOf('o:')===0)st.objs.push(v);
-      else if(k==='#meta'){for(m in v)if(v.hasOwnProperty(m))st[m]=v[m];}
-      else st[k.slice(1)]=v;
-    }
-    return st;
-  }
-  /* MERGE another branch into this one */
-  function bimHistMergeStart(from){
-    var H=bimHist();
-    if(!H.branches.hasOwnProperty(from))return {error:'There is no branch "'+from+'"'};
-    if(from===H.branch)return {error:'A branch cannot be merged into itself'};
-    if(bimHistDirty())return {error:'Commit or discard the changes first'};
-    var oid=H.head,tid=H.branches[from];
-    if(!tid)return {error:'"'+from+'" has no versions'};
-    if(!oid){return bimHistFastForward(from,tid);}
-    var base=bimHistBase(oid,tid);
-    if(base===tid)return {upToDate:true,msg:'"'+H.branch+'" already has everything in "'+from+'"'};
-    if(base===oid)return bimHistFastForward(from,tid);
-    var r=bimHistMerge3(base?bimHistCommitById(base):null,bimHistCommitById(oid),bimHistCommitById(tid));
-    A3D_MERGE={from:from,into:H.branch,ours:oid,theirs:tid,base:base,tree:r.tree,blobs:r.blobs,conflicts:r.conflicts};
-    if(!r.conflicts.length)return bimHistMergeFinish();
-    refreshProps();
-    return {conflicts:r.conflicts.length,from:from};
-  }
-  function bimHistFastForward(from,tid){
-    var H=bimHist(),c=bimHistCommitById(tid),st=bimHistStateOf(c);
-    if(!st)return {error:'"'+c.msg+'" is damaged'};
-    pushUndo();bimRestoreState(JSON.stringify(st));A3D.selSet=[];
-    H.head=tid;H.branches[H.branch]=tid;A3D_MERGE=null;
-    refreshProps();paint();saveSoon();
-    return {fastForward:true,from:from,head:tid};
-  }
-  /* a conflict decided: 'ours' keeps this branch's, 'theirs' takes the other's */
-  function bimHistMergeChoose(i,side){
-    var M=A3D_MERGE;
-    if(!M||!M.conflicts[i]||(side!=='ours'&&side!=='theirs'))return false;
-    M.conflicts[i].choice=side;
-    refreshProps();
-    return true;
-  }
-  function bimHistMergeFinish(){
-    var M=A3D_MERGE,H=bimHist(),tree,i,j,cf,k,v,c,hh,st,r;
-    if(!M)return {error:'No merge is under way'};
-    for(i=0;i<M.conflicts.length;i++)if(!M.conflicts[i].choice)return {error:M.conflicts.length-i+' conflict'+(M.conflicts.length-i===1?'':'s')+' to decide first',open:true};
-    tree=M.tree.map(function(e){return e.slice();});
-    for(i=0;i<M.conflicts.length;i++){
-      cf=M.conflicts[i];k=cf.key;
-      for(j=0;j<tree.length;j++)if(tree[j][0]===k)break;
-      if(cf.kind==='deleted'){
-        v=cf.choice==='ours'?cf.ours:cf.theirs;
-        if(v===undefined){if(j<tree.length)tree.splice(j,1);}
-        else if(j<tree.length)tree[j][1]=v;else tree.push([k,v]);
-      }else if(cf.merged){
-        var m=JSON.parse(JSON.stringify(cf.merged));
-        cf.fields.forEach(function(f){var x=cf.choice==='ours'?f.ours:f.theirs;if(x===undefined)delete m[f.f];else m[f.f]=x;});
-        c=bimCanon(m);hh=bimHash(c);M.blobs[hh]=c;tree[j][1]=hh;
-      }else tree[j][1]=cf.choice==='ours'?cf.ours:cf.theirs;
-    }
-    st=bimHistStateOfTree(tree,M.blobs);
-    if(!st)return {error:'The merge could not be put together: elements are missing'};
-    pushUndo();bimRestoreState(JSON.stringify(st));A3D.selSet=[];
-    A3D_MERGE=null;
-    r=bimHistCommit('Merge "'+M.from+'" into "'+M.into+'"',M.theirs);
-    if(r.error){H.branches[H.branch]=H.head;refreshProps();paint();return {merged:true,id:H.head,nothing:true,conflicts:M.conflicts.length};}
-    refreshProps();paint();saveSoon();
-    return {merged:true,id:r.id,stats:r.stats,conflicts:M.conflicts.length};
-  }
-  function bimHistMergeAbort(){var had=!!A3D_MERGE;A3D_MERGE=null;refreshProps();return had;}
-  /* each branch's numbers, from its latest version (this branch's: the model as it is) */
-  function bimHistMetricsOf(st){
-    var O=st.objs||[],r={objects:O.length,walls:0,wallLength:0,openings:0,rooms:0,roomArea:0,gba:0,levels:(st.levels||[]).length,cut:0,fill:0};
-    O.forEach(function(o){
-      if(o.t==='room'){r.rooms++;r.roomArea+=+o.area||0;}
-      else if(o.t==='opening')r.openings++;
-      else if(o.bim&&o.bim.type==='wall'){r.walls++;if(o.bim.centerline)try{r.wallLength+=bimWallLength(o.bim.centerline,o.bim.closed,o.bim.bulges)||0;}catch(eW){}}
-      if(o.t==='terrain'&&o.grading&&o.grading.volume){r.cut+=+o.grading.volume.cut||0;r.fill+=+o.grading.volume.fill||0;}
-    });
-    var keep={objs:A3D.objs,meshes:A3D.meshes};
-    try{A3D.objs=O;A3D.meshes={};r.gba=(bimUsageSummary(null).total||{}).GBA||0;}catch(eU){r.gba=0;}
-    finally{A3D.objs=keep.objs;A3D.meshes=keep.meshes;}
-    return r;
-  }
-  function bimHistCompare(){
-    var H=bimHist();
-    return bimHistBranches().map(function(b){
-      var st=b.current?JSON.parse(bimSnapshotState()):(b.head?bimHistStateOf(bimHistCommitById(b.head)):{objs:[],levels:[]});
-      return {name:b.name,current:b.current,m:st?bimHistMetricsOf(st):null};
-    });
-  }
-  var BIM_BR_ROWS=[['objects','Objects',0],['walls','Walls',0],['wallLength','Wall length (m)',1],['openings','Doors and windows',0],['rooms','Rooms',0],
-    ['roomArea','Room area (m\u00b2)',1],['gba','Gross area (m\u00b2)',1],['levels','Levels',0],['cut','Cut (m\u00b3)',1],['fill','Fill (m\u00b3)',1]];
-  function bimHistCompareHtml(){
-    var C=bimHistCompare();
-    return '<div class="a3d-brcmp"><table data-brcmp="1"><tr><th></th>'+C.map(function(c){return '<th'+(c.current?' class="cur"':'')+'>'+bimEsc(c.name)+'</th>';}).join('')+'</tr>'+
-      BIM_BR_ROWS.map(function(r){
-        var vs=C.map(function(c){return c.m?c.m[r[0]]:null;}),same=vs.every(function(v){return v===vs[0];});
-        return '<tr data-brrow="'+r[0]+'"'+(same?'':' class="diff"')+'><td>'+r[1]+'</td>'+vs.map(function(v){return '<td>'+(v===null?'-':bimDispNum(v,r[2]))+'</td>';}).join('')+'</tr>';
-      }).join('')+'</table></div>';
-  }
-  function bimBrVal(v){
-    if(v===undefined)return '(none)';
-    var s=typeof v==='object'?bimHistSumm(v):String(v);
-    return s.length>60?s.slice(0,57)+'...':s;
-  }
-  function bimHistMergeHtml(){
-    var M=A3D_MERGE;
-    if(!M)return '';
-    var left=M.conflicts.filter(function(c){return !c.choice;}).length;
-    return '<div class="a3d-brmerge" data-brmerge="1"><div class="a3d-histst">Merging "'+bimEsc(M.from)+'" into "'+bimEsc(M.into)+'": '+M.conflicts.length+' conflict'+(M.conflicts.length===1?'':'s')+
-      (left?', '+left+' to decide':', all decided')+'</div>'+M.conflicts.map(function(c,i){
-        var body=c.kind==='deleted'?'<div class="a3d-brfield"><div class="a3d-brside"><b>'+bimEsc(M.into)+'</b>'+(c.gone==='ours'?'deleted it':'changed it')+'</div><div class="a3d-brside"><b>'+bimEsc(M.from)+'</b>'+(c.gone==='theirs'?'deleted it':'changed it')+'</div></div>':
-          c.fields.map(function(f){return '<div class="a3d-brfield"><span class="a3d-brf">'+bimEsc(f.f)+'</span><div class="a3d-brside"><b>'+bimEsc(M.into)+'</b>'+bimEsc(bimBrVal(f.ours))+'</div><div class="a3d-brside"><b>'+bimEsc(M.from)+'</b>'+bimEsc(bimBrVal(f.theirs))+'</div></div>';}).join('');
-        return '<div class="a3d-brconf'+(c.choice?' done':'')+'" data-brconf="'+i+'"><div class="a3d-brlabel">'+bimEsc(c.label)+'</div>'+body+
-          '<div class="a3d-histacts"><button type="button" data-histact="mkeep:'+i+'"'+(c.choice==='ours'?' class="on"':'')+'>Keep '+bimEsc(M.into)+'\'s</button>'+
-          '<button type="button" data-histact="mtake:'+i+'"'+(c.choice==='theirs'?' class="on"':'')+'>Take '+bimEsc(M.from)+'\'s</button></div></div>';
-      }).join('')+'<div class="a3d-histacts"><button type="button" data-histact="mfinish"'+(left?' disabled':'')+'>Finish Merge</button><button type="button" data-histact="mabort">Cancel</button></div></div>';
-  }
-  function bimHistBranchHtml(){
-    var H=bimHist(),B=bimHistBranches(),others=B.filter(function(b){return !b.current;});
-    var r='<div class="a3d-brrow"><label class="a3d-brlbl">Branch</label><select data-histbranch="1" aria-label="The branch you are on">'+B.map(function(b){
-      return '<option value="'+bimEsc(b.name)+'"'+(b.current?' selected':'')+'>'+bimEsc(b.name)+'</option>';}).join('')+'</select></div>';
-    r+='<div class="a3d-histrow"><input type="text" data-brname="1" maxlength="40" placeholder="New branch: a design option" value="'+bimEsc(A3D_BR_NEW)+'"><button type="button" data-histact="branch"'+(H.head?'':' disabled title="Commit a version first"')+'>New Branch</button></div>';
-    if(!others.some(function(b){return b.name===A3D_BR_DEL;}))A3D_BR_DEL='';
-    if(others.length)r+='<div class="a3d-histrow"><select data-brmergefrom="1" aria-label="Another branch: to merge in, compare or delete">'+others.map(function(b){return '<option value="'+bimEsc(b.name)+'"'+(b.name===(A3D_BR_DEL||A3D_BR_PICK)?' selected':'')+'>'+bimEsc(b.name)+'</option>';}).join('')+
-      '</select></div><div class="a3d-histrow"><button type="button" data-histact="merge">Merge In</button><button type="button" data-histact="compare">'+(A3D_BR_CMP?'Hide Compare':'Compare')+'</button>'+
-      '<button type="button" data-histact="brdelete"'+(A3D_BR_DEL?' class="warn"':'')+'>'+(A3D_BR_DEL?'Delete '+bimEsc(A3D_BR_DEL)+'?':'Delete')+'</button></div>';
-    if(A3D_BR_CMP&&others.length)r+=bimHistCompareHtml();
-    r+=bimHistMergeHtml();
-    return r;
-  }
-  function bimHistBranchAct(k){
-    var r,s,n;
-    if(k==='branch'){
-      n=document.querySelector('#a3d-propsbody [data-brname]');
-      r=bimHistBranchNew((n&&n.value)||A3D_BR_NEW);
-      if(r.error){a3dToast(r.error);return r;}
-      A3D_BR_NEW='';refreshProps();a3dToast('On a new branch "'+r.name+'": what you commit now goes here');return r;
-    }
-    if(k==='merge'){
-      s=document.querySelector('#a3d-propsbody [data-brmergefrom]');
-      r=bimHistMergeStart(s?s.value:'');
-      if(r.error)a3dToast(r.error);
-      else if(r.upToDate)a3dToast(r.msg);
-      else if(r.fastForward)a3dToast('Moved up to "'+r.from+'": nothing here it did not have');
-      else if(r.conflicts)a3dToast(r.conflicts+' conflict'+(r.conflicts===1?'':'s')+': decide each, then Finish Merge');
-      else if(r.merged)a3dToast('Merged: '+(r.stats?bimHistStatsTxt(r.stats):'nothing changed'));
-      return r;
-    }
-    if(k==='compare'){A3D_BR_CMP=!A3D_BR_CMP;refreshProps();return A3D_BR_CMP;}
-    if(k==='brdelete'){   /* __acad3dV151: asked once, deleted on the second tap */
-      s=document.querySelector('#a3d-propsbody [data-brmergefrom]');n=s?s.value:'';
-      if(!n)return null;
-      if(A3D_BR_DEL!==n){A3D_BR_DEL=n;refreshProps();return {ask:n};}
-      A3D_BR_DEL='';r=bimHistBranchDelete(n);
-      if(r.error)a3dToast(r.error);else a3dToast('Branch "'+n+'" deleted: its versions stay in the project file');
-      refreshProps();return r;
-    }
-    if(k.indexOf('mkeep:')===0)return bimHistMergeChoose(+k.slice(6),'ours');
-    if(k.indexOf('mtake:')===0)return bimHistMergeChoose(+k.slice(6),'theirs');
-    if(k==='mfinish'){r=bimHistMergeFinish();if(r.error)a3dToast(r.error);else a3dToast('Merged, with '+r.conflicts+' conflict'+(r.conflicts===1?'':'s')+' decided');return r;}
-    if(k==='mabort'){bimHistMergeAbort();a3dToast('Merge cancelled: nothing changed');return true;}
-    return null;
-  }
-  function bimHistSwitchUI(name){
-    var r=bimHistSwitch(name);
-    if(r.error){a3dToast(r.error);refreshProps();return r;}
-    if(!r.same)a3dToast('On "'+r.name+'"'+(r.head?'':': no versions yet'));
-    return r;
   }
   /* the model as it was at a version: an edit, so undo takes it back; the history is not rewritten */
   function bimHistRestore(id){
@@ -5901,7 +5600,6 @@ try{
     var H=bimHist(),head=bimHistHead(),d=[],r='';
     try{d=bimHistChanges();}catch(eD){console.warn('[BIM] history',eD);}
     r+='<div class="a3d-hist">';
-    try{r+=bimHistBranchHtml();}catch(eB){console.warn('[BIM] branches',eB);}   /* __acad3dV151 */
     r+='<div class="a3d-histst" data-histstate="'+(d.length?'dirty':'clean')+'">'+(head?(d.length?d.length+' change'+(d.length===1?'':'s')+' since "'+bimEsc(head.msg)+'"':'No changes since "'+bimEsc(head.msg)+'"'):
       (d.length?'No version yet: '+d.length+' element'+(d.length===1?'':'s')+' to commit':'No version yet, and nothing to commit'))+'</div>';
     r+='<div class="a3d-histrow"><input type="text" data-histmsg maxlength="200" placeholder="What changed (Enter commits)" value="'+bimEsc(A3D_HIST_MSG)+'"><button type="button" data-histact="commit"'+(d.length?'':' disabled')+'>Commit</button></div>';
@@ -5909,12 +5607,10 @@ try{
       r+='<div class="a3d-histchg" data-histchanges>'+bimHistListHtml(d,A3D_HIST_ALL?d.length:12)+'</div>';
       if(head)r+='<div class="a3d-histrow"><button type="button" data-histact="discard">Discard Changes</button></div>';
     }
-    var line={};bimHistAncestry(H.head).forEach(function(x){line[x]=1;});   /* __acad3dV151: this branch's versions */
-    var C=H.commits.filter(function(c){return line[c.id];}).reverse(),sz=bimHistSize();
+    var C=H.commits.slice().reverse(),sz=bimHistSize();
     if(C.length)r+='<div class="a3d-histlog">'+C.slice(0,30).map(function(c){
       var open=!!A3D_HIST_OPEN[c.id];
-      var tags=bimHistBranches().filter(function(b){return b.head===c.id;}).map(function(b){return '<span class="a3d-histtag a3d-brtag">'+bimEsc(b.name)+'</span>';}).join(' ');   /* __acad3dV151 */
-      return '<div class="a3d-histc'+(c.id===H.head?' a3d-histc-head':'')+'" data-histc="'+c.id+'"><div class="a3d-histcm">'+bimEsc(c.msg)+(c.id===H.head?' <span class="a3d-histtag">latest</span>':'')+(tags?' '+tags:'')+'</div>'+
+      return '<div class="a3d-histc'+(c.id===H.head?' a3d-histc-head':'')+'" data-histc="'+c.id+'"><div class="a3d-histcm">'+bimEsc(c.msg)+(c.id===H.head?' <span class="a3d-histtag">latest</span>':'')+'</div>'+
         '<div class="a3d-histmeta">'+bimHistWhen(c.at)+(c.by?' &middot; '+bimEsc(c.by):'')+' &middot; '+bimHistStatsTxt(c.stats)+'</div>'+
         '<div class="a3d-histacts"><button type="button" data-histact="show:'+c.id+'">'+(open?'Hide':'Changes')+'</button><button type="button" data-histact="restore:'+c.id+'">Restore</button></div>'+
         (open?'<div class="a3d-histchg">'+bimHistListHtml(bimHistCommitDiff(c),40)+'</div>':'')+'</div>';
@@ -5950,14 +5646,12 @@ try{
     if(k==='all'){A3D_HIST_ALL=true;refreshProps();return true;}   /* __acad3dV147 */
     if(k.indexOf('show:')===0){var id=k.slice(5);A3D_HIST_OPEN[id]=!A3D_HIST_OPEN[id];refreshProps();return true;}
     if(k.indexOf('restore:')===0)return bimHistDoRestore(k.slice(8));
-    var rb=bimHistBranchAct(k);if(rb!==null)return rb;   /* __acad3dV151 */
     return false;
   }
   /* COMMIT and HISTORY: the History group, on the Project tab */
   function bimHistReveal(focus){
     A3D.sel=null;A3D.sel2=null;A3D.selSet=[];
     bimPropReveal('History');
-    if(bimShellOverlay()){var rpH=document.getElementById('a3d-right');if(rpH)rpH.classList.add('open');}   /* __acad3dV151: on a phone or tablet the sheet opens */
     refreshProps();paint();
     if(focus)setTimeout(function(){var i=document.querySelector('#a3d-propsbody [data-histmsg]');if(i)i.focus();},0);
     return true;
@@ -14801,7 +14495,7 @@ try{
   /* ================= __acad3dV142: the user guide, and versions =================
      The guide is in docs/ beside the app, on the same site (and in the repository, so it opens
      offline). Its command reference has a section per command, anchored by the command's id. */
-  var BIM_APP_VERSION={v:'V153',date:'2026-10-04'};   /* __acad3dV153 */
+  var BIM_APP_VERSION={v:'V150',date:'2026-10-04'};   /* __acad3dV150 */
   var BIM_DOCS_BASE='docs/';
   /* a command's anchor in the reference: cmd:LINE -> cmd-LINE, act:bim:wall -> act-bim-wall */
   function bimDocsAnchor(id){return String(id||'').replace(/[^A-Za-z0-9_-]+/g,'-');}
@@ -15744,7 +15438,6 @@ try{
     srows+=bimPropText('Layers',A3D.layers.length);
     srows+=bimPropText('Sheets',A3D.sheets.length);
     srows+=bimPropRow('Version','<span class="a3d-pstatic">'+bimVersionHtml()+'</span>');   /* __acad3dV142 */
-    srows+=bimPropRow('Graphics','<span class="a3d-pstatic" data-graphics="1">'+bimEsc(bimGraphicsLabel())+'</span>');   /* __acad3dV153 */
     /* __acad3dV106: the ACTIVE level's floor loads -- what its floors and roof put on the columns
        under them. Here, with the model's level picker, because the Levels rows are not on screen. */
     var lvA=null;
@@ -17118,508 +16811,6 @@ try{
     if(rec.pos)gl.deleteBuffer(rec.pos);
     if(rec.norm)gl.deleteBuffer(rec.norm);
     if(rec.edge)gl.deleteBuffer(rec.edge);
-  }
-  /* ================= __acad3dV152: the scene in GPU-friendly batches =================
-     One description of the scene, read by both engines (__acad3dV153: WebGL and WebGPU):
-     chunks of merged triangles and edges, each vertex tagged with its object's slot, and a table
-     of each object's offset, transparency, colour and selection, two texels (32 bytes) a slot.
-     The description keeps the arrays; each engine keeps its own copies on the GPU and its own
-     record of which rows of the table it has yet to receive. */
-  var A3D_GL_BATCH=true;
-  var BIM_GB_CHUNK=196608,BIM_GB_TEXW=1024;
-  var A3D_SCENE=null;
-  function bimScene(){
-    return A3D_SCENE||(A3D_SCENE={cap:0,data:null,slots:{},free:[],next:0,chunks:[],of:{},dirty:{},
-      st:null,tot:{frames:0,rebuilt:0,rebuiltVerts:0,uploads:0,uploadBytes:0,recorded:0}});
-  }
-  /* an engine's record of the table: rows lo..hi still to send, or all of it when it has none */
-  function bimSceneDirty(S,eng){return S.dirty[eng]||(S.dirty[eng]={lo:-1,hi:-1,cap:0});}
-  function bimGbSlot(B,id){
-    if(B.slots.hasOwnProperty(id))return B.slots[id];
-    var s=B.free.length?B.free.pop():B.next++;
-    if(s>=B.cap){
-      var cap=Math.max(512,B.cap*2),d=new Float32Array(cap*8);
-      if(B.data)d.set(B.data);
-      B.data=d;B.cap=cap;
-    }
-    B.slots[id]=s;
-    return s;
-  }
-  var BIM_GB_TMP=null;
-  function bimGbPut(B,s,v){
-    var d=B.data,o=s*8,i,ch=false,f=BIM_GB_TMP||(BIM_GB_TMP=new Float32Array(8)),k,R;
-    for(i=0;i<8;i++)f[i]=v[i];   /* compared as stored: a colour of n/255 is not exact in 32 bits */
-    for(i=0;i<8;i++)if(d[o+i]!==f[i]){d[o+i]=f[i];ch=true;}
-    if(ch)for(k in B.dirty)if(B.dirty.hasOwnProperty(k)){R=B.dirty[k];if(R.lo<0||s<R.lo)R.lo=s;if(s>R.hi)R.hi=s;}
-  }
-  function bimGbVerts(m){var n=0,i;for(i=0;i<m.f.length;i++)if(m.f[i].length>=3)n+=(m.f[i].length-2)*3;return n;}
-  /* a chunk's arrays, from its objects' meshes; a mesh shared by many objects is triangulated once */
-  function bimGbBuild(B,c){
-    var n=0,e=0,i,j,k,id,m,cache=[],fv,ev,tri,ed;
-    for(i=0;i<c.ids.length;i++){m=c.refs[c.ids[i]];n+=bimGbVerts(m);for(j=0;j<m.f.length;j++)if(m.f[j].length>=3)e+=m.f[j].length*2;}
-    tri=new Float32Array(n*7);ed=new Float32Array(e*4);fv=0;ev=0;
-    for(i=0;i<c.ids.length;i++){
-      id=c.ids[i];m=c.refs[id];var s=B.slots[id],T=null;
-      for(k=0;k<cache.length;k++)if(cache[k][0]===m){T=cache[k][1];break;}
-      if(!T){
-        T={t:[],e:[]};
-        for(j=0;j<m.f.length;j++){
-          var fc=m.f[j];if(fc.length<3)continue;
-          var wp=[],q;for(q=0;q<fc.length;q++)wp.push(m.v[fc[q]]);
-          var nn=faceNormal(wp);
-          for(q=2;q<fc.length;q++){var A=m.v[fc[0]],Bv=m.v[fc[q-1]],C=m.v[fc[q]];T.t.push(A[0],A[1],A[2],nn[0],nn[1],nn[2],Bv[0],Bv[1],Bv[2],nn[0],nn[1],nn[2],C[0],C[1],C[2],nn[0],nn[1],nn[2]);}
-          for(q=0;q<fc.length;q++){var p1=m.v[fc[q]],p2=m.v[fc[(q+1)%fc.length]];T.e.push(p1[0],p1[1],p1[2],p2[0],p2[1],p2[2]);}
-        }
-        if(cache.length>64)cache.shift();
-        cache.push([m,T]);
-      }
-      for(j=0;j<T.t.length;j+=6){tri[fv++]=T.t[j];tri[fv++]=T.t[j+1];tri[fv++]=T.t[j+2];tri[fv++]=T.t[j+3];tri[fv++]=T.t[j+4];tri[fv++]=T.t[j+5];tri[fv++]=s;}
-      for(j=0;j<T.e.length;j+=3){ed[ev++]=T.e[j];ed[ev++]=T.e[j+1];ed[ev++]=T.e[j+2];ed[ev++]=s;}
-    }
-    c.tri=tri;c.ed=ed;c.count=n;c.ecount=e;c.verts=n;c.dirty=false;c.ver=(c.ver||0)+1;
-    B.st.rebuilt++;B.st.rebuiltVerts+=n;
-  }
-  /* a chunk's GPU copies, in either engine */
-  function bimGbChunkFree(c){
-    if(c.gl&&A3D_GL){A3D_GL.gl.deleteBuffer(c.gl.buf);A3D_GL.gl.deleteBuffer(c.gl.ebuf);}
-    if(c.gpu){if(c.gpu.buf)c.gpu.buf.destroy();if(c.gpu.ebuf)c.gpu.ebuf.destroy();}
-    c.gl=null;c.gpu=null;
-  }
-  /* the description given back, with both engines' copies */
-  function bimSceneRelease(){
-    var S=A3D_SCENE,i;
-    if(!S)return;
-    for(i=0;i<S.chunks.length;i++)bimGbChunkFree(S.chunks[i]);
-    A3D_SCENE=null;
-    if(A3D_GL&&A3D_GL.gb)A3D_GL.gb.texCap=0;
-    if(A3D_GPU.tab){A3D_GPU.tab.destroy();A3D_GPU.tab=null;A3D_GPU.tabCap=0;A3D_GPU.bundle=null;}
-  }
-  /* the frame's part common to both engines: the table brought up to date, the chunks that
-     changed rebuilt. Returns what the engine needs to draw. */
-  function bimSceneSync(){
-    var B=bimScene(),i,o,m,id,c,seen={},totalFaces=0,hasTrans=false,sel=A3D.sel,sel2=A3D.sel2,v=[0,0,0,0,0,0,0,0],t0=performance.now(),rgbOf={};
-    B.st={draws:0,chunks:0,rebuilt:0,rebuiltVerts:0,uploads:0,uploadBytes:0,objects:0};
-    A3D.lastGlAlpha={};
-    for(i=0;i<A3D.objs.length;i++){
-      o=A3D.objs[i];m=meshOf(o);
-      if(!m||!m.f||!m.f.length)continue;
-      id=o.id;seen[id]=1;B.st.objects++;
-      var s=bimGbSlot(B,id);
-      c=B.of[id];
-      if(!c){
-        var nv=bimGbVerts(m),last=B.chunks[B.chunks.length-1];
-        if(!last||last.verts+nv>BIM_GB_CHUNK){last={ids:[],refs:{},verts:0,count:0,ecount:0,tri:null,ed:null,ver:0,gl:null,gpu:null,dirty:true};B.chunks.push(last);}
-        last.ids.push(id);last.refs[id]=m;last.verts+=nv;last.dirty=true;B.of[id]=last;
-      }else if(c.refs[id]!==m){c.verts+=bimGbVerts(m)-bimGbVerts(c.refs[id]);c.refs[id]=m;c.dirty=true;}
-      var shown=bimLayerShown(o)&&bimObjectVisibleOnLevel(o),la=1,col=null;
-      if(shown){
-        la=bimLayerAlpha(o);A3D.lastGlAlpha[id]=la;totalFaces+=m.f.length;if(la<1)hasTrans=true;
-        var hx=bimLensCol(o)||o.col||(TYPES[o.t]||{}).c||'#7f9db8';col=rgbOf[hx]||(rgbOf[hx]=bimHexToRgb(hx));
-      }
-      v[0]=o.pos[0];v[1]=o.pos[1];v[2]=o.pos[2];v[3]=shown?la:-1;
-      v[4]=col?col[0]:0;v[5]=col?col[1]:0;v[6]=col?col[2]:0;v[7]=sel===id?1:(sel2===id?2:0);
-      bimGbPut(B,s,v);
-    }
-    /* the objects gone: out of their chunk, their slot free */
-    for(id in B.of)if(B.of.hasOwnProperty(id)&&!seen[id]){
-      c=B.of[id];c.ids.splice(c.ids.indexOf(id),1);c.verts-=bimGbVerts(c.refs[id]);delete c.refs[id];c.dirty=true;
-      delete B.of[id];B.free.push(B.slots[id]);bimGbPut(B,B.slots[id],[0,0,0,-1,0,0,0,0]);delete B.slots[id];
-    }
-    for(i=B.chunks.length-1;i>=0;i--){
-      c=B.chunks[i];
-      if(!c.ids.length){bimGbChunkFree(c);B.chunks.splice(i,1);continue;}
-      if(c.dirty)bimGbBuild(B,c);
-    }
-    B.st.prepMs=performance.now()-t0;   /* the table and the rebuilds: the main thread's share */
-    return {S:B,totalFaces:totalFaces,hasTrans:hasTrans,edges:totalFaces<=GL_EDGE_FACE_LIMIT};
-  }
-  function bimSceneFrameDone(B,mode){
-    B.st.chunks=B.chunks.length;B.st.mode=mode;
-    var T=B.tot;
-    T.frames++;T.rebuilt+=B.st.rebuilt;T.rebuiltVerts+=B.st.rebuiltVerts;T.uploads+=B.st.uploads;T.uploadBytes+=B.st.uploadBytes;T.recorded+=B.st.recorded||0;
-    A3D.glStats=B.st;
-  }
-  /* ---- the WebGL engine's side: a program, the table as a float texture ---- */
-  function bimGbInit(G){
-    if(G.gb!==undefined)return G.gb;
-    var gl=G.gl;G.gb=null;
-    var ext=gl.getExtension('OES_texture_float');
-    if(!ext||!(gl.getParameter(gl.MAX_VERTEX_TEXTURE_IMAGE_UNITS)>0)){console.warn('[BIM] No vertex float textures: drawing object by object.');return null;}
-    var vsrc='attribute vec3 aPos;attribute vec3 aNorm;attribute float aObj;'+
-      'uniform mat4 uView;uniform mat4 uProj;uniform sampler2D uTab;uniform vec2 uTabSize;uniform float uPass;uniform float uEdge;'+
-      'varying vec3 vNorm;varying vec4 vCol;varying float vBoost;varying float vEdge;'+
-      'void main(){'+
-      ' vEdge=uEdge;float t=aObj*2.0;float row=floor(t/uTabSize.x);float col=t-row*uTabSize.x;'+
-      ' vec4 a=texture2D(uTab,vec2((col+0.5)/uTabSize.x,(row+0.5)/uTabSize.y));'+
-      ' vec4 b=texture2D(uTab,vec2((col+1.5)/uTabSize.x,(row+0.5)/uTabSize.y));'+
-      ' bool tr=a.w<0.999;'+
-      ' if(a.w<0.0||(uPass<0.5&&tr)||(uPass>0.5&&!tr)){gl_Position=vec4(2.0,2.0,2.0,1.0);vNorm=vec3(0.0,1.0,0.0);vCol=vec4(0.0);vBoost=0.0;return;}'+
-      ' vNorm=aNorm;vBoost=0.0;'+
-      ' if(uEdge>0.5){vCol=vec4(b.w>1.5?vec3(1.0,0.706,0.329):(b.w>0.5?vec3(0.306,0.631,1.0):vec3(0.09,0.10,0.11)),a.w);}'+
-      ' else{vCol=vec4(b.xyz,a.w);if(b.w>0.5&&b.w<1.5)vBoost=0.25;}'+
-      ' gl_Position=uProj*uView*vec4(aPos+a.xyz,1.0);}';
-    var fsrc='precision mediump float;varying vec3 vNorm;varying vec4 vCol;varying float vBoost;varying float vEdge;uniform vec3 uLight;'+
-      'void main(){'+
-      ' if(vEdge>0.5){gl_FragColor=vCol;return;}'+
-      ' float k=0.45+0.55*abs(dot(normalize(vNorm),uLight));'+
-      ' k=min(1.35,k+vBoost);'+
-      ' gl_FragColor=vec4(clamp(vCol.rgb*k,0.0,1.0),vCol.a);}';
-    var vs=bimGlCompile(gl,gl.VERTEX_SHADER,vsrc),fs=bimGlCompile(gl,gl.FRAGMENT_SHADER,fsrc);
-    if(!vs||!fs)return null;
-    var prog=gl.createProgram();
-    gl.attachShader(prog,vs);gl.attachShader(prog,fs);gl.bindAttribLocation(prog,0,'aPos');gl.linkProgram(prog);
-    if(!gl.getProgramParameter(prog,gl.LINK_STATUS)){console.warn('[BIM] batch shader link failed: '+gl.getProgramInfoLog(prog));return null;}
-    G.gb={prog:prog,tex:gl.createTexture(),texCap:0,texH:0,
-      loc:{pos:gl.getAttribLocation(prog,'aPos'),norm:gl.getAttribLocation(prog,'aNorm'),obj:gl.getAttribLocation(prog,'aObj'),
-        view:gl.getUniformLocation(prog,'uView'),proj:gl.getUniformLocation(prog,'uProj'),tab:gl.getUniformLocation(prog,'uTab'),
-        size:gl.getUniformLocation(prog,'uTabSize'),pass:gl.getUniformLocation(prog,'uPass'),edge:gl.getUniformLocation(prog,'uEdge'),
-        light:gl.getUniformLocation(prog,'uLight')}};
-    return G.gb;
-  }
-  function bimGbUpload(G,P,B){
-    var gl=G.gl,R=bimSceneDirty(B,'gl');
-    gl.activeTexture(gl.TEXTURE0);
-    gl.bindTexture(gl.TEXTURE_2D,P.tex);
-    if(P.texCap!==B.cap){   /* new, or grown: sent whole */
-      P.texCap=B.cap;P.texH=Math.ceil(B.cap*2/BIM_GB_TEXW);
-      gl.pixelStorei(gl.UNPACK_ALIGNMENT,1);
-      gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.NEAREST);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.NEAREST);
-      gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
-      gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,BIM_GB_TEXW,P.texH,0,gl.RGBA,gl.FLOAT,B.data);
-      R.lo=-1;R.hi=-1;B.st.uploads++;B.st.uploadBytes+=B.data.length*4;
-      return;
-    }
-    if(R.lo<0)return;
-    var r0=Math.floor(R.lo*2/BIM_GB_TEXW),r1=Math.floor((R.hi*2+1)/BIM_GB_TEXW),per=BIM_GB_TEXW*4;
-    gl.texSubImage2D(gl.TEXTURE_2D,0,0,r0,BIM_GB_TEXW,r1-r0+1,gl.RGBA,gl.FLOAT,B.data.subarray(r0*per,(r1+1)*per));
-    B.st.uploads++;B.st.uploadBytes+=(r1-r0+1)*per*4;
-    R.lo=-1;R.hi=-1;
-  }
-  /* the frame with WebGL: the description brought up to date, the chunks it has not got sent,
-     then drawn */
-  function bimGbRender(G,V,W,H){
-    var P=bimGbInit(G);
-    if(!P)return false;
-    var gl=G.gl,F=bimSceneSync(),B=F.S,i,c;
-    for(i=0;i<B.chunks.length;i++){
-      c=B.chunks[i];
-      if(c.gl&&c.gl.ver===c.ver)continue;
-      if(!c.gl)c.gl={buf:gl.createBuffer(),ebuf:gl.createBuffer(),ver:0};
-      gl.bindBuffer(gl.ARRAY_BUFFER,c.gl.buf);gl.bufferData(gl.ARRAY_BUFFER,c.tri,gl.STATIC_DRAW);
-      gl.bindBuffer(gl.ARRAY_BUFFER,c.gl.ebuf);gl.bufferData(gl.ARRAY_BUFFER,c.ed,gl.STATIC_DRAW);
-      c.gl.ver=c.ver;
-    }
-    bimGbUpload(G,P,B);
-    var L=P.loc,stride=28;
-    gl.useProgram(P.prog);
-    gl.uniformMatrix4fv(L.view,false,bimGlViewMatrix(V));
-    gl.uniformMatrix4fv(L.proj,false,bimGlProjMatrix(W,H,A3D.flat,A3D.cam.dist));
-    gl.uniform3f(L.light,LIGHT[0],LIGHT[1],LIGHT[2]);
-    gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,P.tex);
-    gl.uniform1i(L.tab,0);gl.uniform2f(L.size,BIM_GB_TEXW,P.texH||1);
-    function faces(pass){
-      gl.uniform1f(L.pass,pass);gl.uniform1f(L.edge,0);
-      gl.enableVertexAttribArray(L.pos);gl.enableVertexAttribArray(L.norm);gl.enableVertexAttribArray(L.obj);
-      for(var k=0;k<B.chunks.length;k++){
-        var ck=B.chunks[k];if(!ck.count)continue;
-        gl.bindBuffer(gl.ARRAY_BUFFER,ck.gl.buf);
-        gl.vertexAttribPointer(L.pos,3,gl.FLOAT,false,stride,0);
-        gl.vertexAttribPointer(L.norm,3,gl.FLOAT,false,stride,12);
-        gl.vertexAttribPointer(L.obj,1,gl.FLOAT,false,stride,24);
-        gl.drawArrays(gl.TRIANGLES,0,ck.count);B.st.draws++;
-      }
-      gl.disableVertexAttribArray(L.norm);
-    }
-    function edges(pass){
-      gl.uniform1f(L.pass,pass);gl.uniform1f(L.edge,1);
-      gl.enableVertexAttribArray(L.pos);gl.enableVertexAttribArray(L.obj);
-      gl.disableVertexAttribArray(L.norm);gl.vertexAttrib3f(L.norm,0,1,0);
-      for(var k=0;k<B.chunks.length;k++){
-        var ck=B.chunks[k];if(!ck.ecount)continue;
-        gl.bindBuffer(gl.ARRAY_BUFFER,ck.gl.ebuf);
-        gl.vertexAttribPointer(L.pos,3,gl.FLOAT,false,16,0);
-        gl.vertexAttribPointer(L.obj,1,gl.FLOAT,false,16,12);
-        gl.drawArrays(gl.LINES,0,ck.ecount);B.st.draws++;
-      }
-    }
-    faces(0);
-    if(F.hasTrans){
-      gl.enable(gl.BLEND);gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);gl.depthMask(false);
-      faces(1);
-      gl.depthMask(true);gl.disable(gl.BLEND);
-    }
-    if(F.edges){
-      edges(0);
-      if(F.hasTrans){gl.enable(gl.BLEND);gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);edges(1);gl.disable(gl.BLEND);}
-    }
-    gl.disableVertexAttribArray(L.pos);gl.disableVertexAttribArray(L.obj);
-    bimSceneFrameDone(B,'batched');
-    A3D.glFaces=F.totalFaces;
-    return true;
-  }
-  /* ================= __acad3dV153: the WebGPU engine =================
-     Where the browser has WebGPU the model is drawn with it, from the same description: the
-     chunks as vertex buffers, the table as a storage buffer, and every draw recorded once in a
-     render bundle that each frame replays, with only the camera's two matrices sent. The bundle
-     is recorded again only when a chunk is rebuilt, the table grows, or the passes change.
-     WebGPU starts asynchronously, so WebGL draws until it is ready, and takes over again if the
-     device is lost, if the person chooses WebGL (GRAPHICS), or for a frame with the map or a
-     terrain surface, which WebGPU does not draw yet. */
-  var A3D_GPU={state:'off',why:'',device:null,ctx:null,cv:null,format:'',tab:null,tabCap:0,bundle:null,bkey:'',bdraws:0,w:0,h:0,
-    pipes:null,ubuf:null,bg:null,depth:null,msaa:null,off:null,offscreen:!!(typeof window!=='undefined'&&window.__BIM_GPU_OFFSCREEN),engine:'',fallback:''};   /* offscreen: set before the page loads, by a test */
-  var BIM_GPU_KEY='acad3dGraphics';
-  var BIM_GPU_WGSL=
-    'struct U{view:mat4x4f,proj:mat4x4f,light:vec4f};\n'+
-    '@group(0) @binding(0) var<uniform> u:U;\n'+
-    '@group(0) @binding(1) var<storage,read> tab:array<vec4f>;\n'+
-    'override PASS:f32=0.0;override EDGE:f32=0.0;\n'+
-    'struct VO{@builtin(position) p:vec4f,@location(0) n:vec3f,@location(1) c:vec4f,@location(2) boost:f32};\n'+
-    'fn place(pos:vec3f,obj:f32,n:vec3f)->VO{\n'+
-    ' var o:VO;let s=u32(obj+0.5)*2u;let a=tab[s];let b=tab[s+1u];let tr=a.w<0.999;\n'+
-    ' if(a.w<0.0||(PASS<0.5&&tr)||(PASS>0.5&&!tr)){o.p=vec4f(2.0,2.0,2.0,1.0);o.n=vec3f(0.0,1.0,0.0);o.c=vec4f(0.0);o.boost=0.0;return o;}\n'+
-    ' o.n=n;o.boost=0.0;\n'+
-    ' if(EDGE>0.5){var ec=vec3f(0.09,0.10,0.11);if(b.w>1.5){ec=vec3f(1.0,0.706,0.329);}else if(b.w>0.5){ec=vec3f(0.306,0.631,1.0);}o.c=vec4f(ec,a.w);}\n'+
-    ' else{o.c=vec4f(b.xyz,a.w);if(b.w>0.5&&b.w<1.5){o.boost=0.25;}}\n'+
-    ' var p=u.proj*u.view*vec4f(pos+a.xyz,1.0);p.z=(p.z+p.w)*0.5;o.p=p;return o;}\n'+   /* WebGL's depth is -1..1, WebGPU's 0..1 */
-    '@vertex fn vsFace(@location(0) pos:vec3f,@location(1) n:vec3f,@location(2) obj:f32)->VO{return place(pos,obj,n);}\n'+
-    '@vertex fn vsEdge(@location(0) pos:vec3f,@location(2) obj:f32)->VO{return place(pos,obj,vec3f(0.0,1.0,0.0));}\n'+
-    '@fragment fn fsFace(i:VO)->@location(0) vec4f{var k=0.45+0.55*abs(dot(normalize(i.n),u.light.xyz));k=min(1.35,k+i.boost);\n'+
-    ' return vec4f(clamp(i.c.rgb*k,vec3f(0.0),vec3f(1.0)),i.c.a);}\n'+
-    '@fragment fn fsEdge(i:VO)->@location(0) vec4f{return i.c;}\n';
-  function bimGpuPref(){var p='auto';try{p=localStorage.getItem(BIM_GPU_KEY)||'auto';}catch(eP){}return p==='webgl'?'webgl':'auto';}
-  function bimGpuFail(why){
-    A3D_GPU.state='failed';A3D_GPU.why=String(why||'');A3D_GPU.bundle=null;
-    console.info('[BIM] WebGPU is not used: '+A3D_GPU.why+'. Drawing with WebGL.');
-  }
-  /* asked once, when 3D is first drawn: an adapter, a device, the canvas, the pipelines */
-  function bimGpuStart(){
-    if(A3D_GPU.state!=='off')return;
-    if(bimGpuPref()==='webgl'){A3D_GPU.why='WebGL chosen';return;}
-    if(typeof navigator==='undefined'||!navigator.gpu){A3D_GPU.state='none';A3D_GPU.why='this browser has no WebGPU';return;}
-    var cv=document.getElementById('a3d-gpucanvas');
-    if(!cv){A3D_GPU.why='no canvas yet';return;}
-    A3D_GPU.state='starting';
-    navigator.gpu.requestAdapter().then(function(ad){
-      if(!ad)throw new Error('no WebGPU adapter');
-      return ad.requestDevice();
-    }).then(function(dev){
-      var fmt=navigator.gpu.getPreferredCanvasFormat(),ctx=null;
-      if(!A3D_GPU.offscreen){   /* offscreen, the canvas is never configured */
-        ctx=cv.getContext('webgpu');
-        if(!ctx)throw new Error('no WebGPU canvas context');
-        ctx.configure({device:dev,format:fmt,alphaMode:'opaque'});
-      }
-      dev.pushErrorScope('validation');
-      var mod=dev.createShaderModule({code:BIM_GPU_WGSL});
-      var bgl=dev.createBindGroupLayout({entries:[
-        {binding:0,visibility:GPUShaderStage.VERTEX|GPUShaderStage.FRAGMENT,buffer:{type:'uniform'}},
-        {binding:1,visibility:GPUShaderStage.VERTEX,buffer:{type:'read-only-storage'}}]});
-      var lay=dev.createPipelineLayout({bindGroupLayouts:[bgl]});
-      var blend={color:{srcFactor:'src-alpha',dstFactor:'one-minus-src-alpha',operation:'add'},alpha:{srcFactor:'one',dstFactor:'one-minus-src-alpha',operation:'add'}};
-      function pipe(edge,pass){
-        return dev.createRenderPipeline({layout:lay,
-          vertex:{module:mod,entryPoint:edge?'vsEdge':'vsFace',constants:{PASS:pass,EDGE:edge},
-            buffers:[edge?{arrayStride:16,attributes:[{shaderLocation:0,offset:0,format:'float32x3'},{shaderLocation:2,offset:12,format:'float32'}]}:
-              {arrayStride:28,attributes:[{shaderLocation:0,offset:0,format:'float32x3'},{shaderLocation:1,offset:12,format:'float32x3'},{shaderLocation:2,offset:24,format:'float32'}]}]},
-          fragment:{module:mod,entryPoint:edge?'fsEdge':'fsFace',constants:{},targets:[pass?{format:fmt,blend:blend}:{format:fmt}]},
-          primitive:{topology:edge?'line-list':'triangle-list',cullMode:'none'},
-          depthStencil:{format:'depth24plus',depthWriteEnabled:!(pass&&!edge),depthCompare:'less-equal'},
-          multisample:{count:4}});
-      }
-      var pipes={face0:pipe(0,0),face1:pipe(0,1),edge0:pipe(1,0),edge1:pipe(1,1)};
-      var ubuf=dev.createBuffer({size:144,usage:GPUBufferUsage.UNIFORM|GPUBufferUsage.COPY_DST});
-      return dev.popErrorScope().then(function(err){
-        if(err)throw new Error('pipelines: '+err.message);
-        A3D_GPU.device=dev;A3D_GPU.ctx=ctx;A3D_GPU.cv=cv;A3D_GPU.format=fmt;A3D_GPU.pipes=pipes;A3D_GPU.bgl=bgl;A3D_GPU.ubuf=ubuf;
-        A3D_GPU.state='ready';A3D_GPU.why='';
-        dev.lost.then(function(info){
-          if(A3D_GPU.device!==dev)return;
-          bimGpuDrop();bimGpuFail('the device was lost ('+((info&&info.message)||'')+')');
-          if(A3D.on)paint();
-        });
-        dev.onuncapturederror=function(ev){console.warn('[BIM] WebGPU error: '+(ev.error&&ev.error.message));};
-        if(A3D.on)paint();
-      });
-    }).catch(function(e){bimGpuDrop();bimGpuFail(e&&e.message?e.message:e);});
-  }
-  /* everything the engine holds on the GPU given back; the description stays */
-  function bimGpuDrop(){
-    var S=A3D_SCENE,i;
-    if(S)for(i=0;i<S.chunks.length;i++){var c=S.chunks[i];if(c.gpu){if(c.gpu.buf)c.gpu.buf.destroy();if(c.gpu.ebuf)c.gpu.ebuf.destroy();c.gpu=null;}}
-    if(A3D_GPU.tab)A3D_GPU.tab.destroy();
-    if(A3D_GPU.depth)A3D_GPU.depth.destroy();
-    if(A3D_GPU.msaa)A3D_GPU.msaa.destroy();
-    if(A3D_GPU.off)A3D_GPU.off.destroy();A3D_GPU.off=null;
-    if(S&&S.dirty.gpu)delete S.dirty.gpu;
-    A3D_GPU.tab=null;A3D_GPU.tabCap=0;A3D_GPU.bundle=null;A3D_GPU.bkey='';A3D_GPU.depth=null;A3D_GPU.msaa=null;A3D_GPU.w=0;A3D_GPU.h=0;
-    if(A3D_GPU.device){var d=A3D_GPU.device;A3D_GPU.device=null;try{d.destroy();}catch(eD){}}
-    A3D_GPU.ctx=null;A3D_GPU.pipes=null;A3D_GPU.ubuf=null;A3D_GPU.bg=null;
-  }
-  /* what WebGPU does not draw yet: the map, and a terrain surface in 3D */
-  function bimGpuNeedsGl(V,W,H){
-    if(A3D_PLOT.on)return '';
-    var i,o;
-    if(!bimCameraIsPlan())for(i=0;i<A3D.objs.length;i++){o=A3D.objs[i];if(o.t==='terrain'&&o.survey&&bimLayerShown(o)&&!bimTerrainSuperseded(o))return 'terrain';}
-    if(bimMapSettings().style!=='off'&&bimMapPlan(V,W,H).tiles.length)return 'map';
-    return '';
-  }
-  function bimGpuBuf(dev,arr,usage){
-    var b=dev.createBuffer({size:Math.max(16,arr.byteLength),usage:usage|GPUBufferUsage.COPY_DST});
-    if(arr.byteLength)dev.queue.writeBuffer(b,0,arr.buffer,arr.byteOffset,arr.byteLength);
-    return b;
-  }
-  function bimGpuRender(V,W,H){
-    var P=A3D_GPU;
-    if(P.state!=='ready')return false;
-    if(P.breakNext){P.breakNext=false;throw new Error('a frame broken on purpose');}   /* a test's way to see a broken frame handed over */
-    var dev=P.device,F=bimSceneSync(),B=F.S,i,c,re=false;
-    var gs=cvScale(el.cv),wD=Math.max(1,Math.round(W*gs)),hD=Math.max(1,Math.round(H*gs));
-    if(P.cv.width!==wD||P.cv.height!==hD){P.cv.width=wD;P.cv.height=hD;}
-    if(P.w!==wD||P.h!==hD){
-      if(P.depth)P.depth.destroy();if(P.msaa)P.msaa.destroy();
-      P.depth=dev.createTexture({size:[wD,hD],format:'depth24plus',sampleCount:4,usage:GPUTextureUsage.RENDER_ATTACHMENT});
-      P.msaa=dev.createTexture({size:[wD,hD],format:P.format,sampleCount:4,usage:GPUTextureUsage.RENDER_ATTACHMENT});
-      P.w=wD;P.h=hD;
-    }
-    /* the chunks it has not got */
-    for(i=0;i<B.chunks.length;i++){
-      c=B.chunks[i];
-      if(c.gpu&&c.gpu.ver===c.ver)continue;
-      if(c.gpu){c.gpu.buf.destroy();c.gpu.ebuf.destroy();}
-      c.gpu={buf:bimGpuBuf(dev,c.tri,GPUBufferUsage.VERTEX),ebuf:bimGpuBuf(dev,c.ed,GPUBufferUsage.VERTEX),ver:c.ver};
-      re=true;
-    }
-    /* the table: whole when new or grown, else the rows that changed */
-    var R=bimSceneDirty(B,'gpu');
-    if(P.tabCap!==B.cap||!P.tab){
-      if(P.tab)P.tab.destroy();
-      P.tab=bimGpuBuf(dev,B.data||new Float32Array(8),GPUBufferUsage.STORAGE);P.tabCap=B.cap;
-      P.bg=dev.createBindGroup({layout:P.bgl,entries:[{binding:0,resource:{buffer:P.ubuf}},{binding:1,resource:{buffer:P.tab}}]});
-      R.lo=-1;R.hi=-1;B.st.uploads++;B.st.uploadBytes+=B.data?B.data.byteLength:0;re=true;
-    }else if(R.lo>=0){
-      dev.queue.writeBuffer(P.tab,R.lo*32,B.data.buffer,B.data.byteOffset+R.lo*32,(R.hi-R.lo+1)*32);
-      B.st.uploads++;B.st.uploadBytes+=(R.hi-R.lo+1)*32;R.lo=-1;R.hi=-1;
-    }
-    /* the camera: two matrices and the light */
-    var u=new Float32Array(36);
-    u.set(bimGlViewMatrix(V),0);u.set(bimGlProjMatrix(W,H,A3D.flat,A3D.cam.dist),16);u[32]=LIGHT[0];u[33]=LIGHT[1];u[34]=LIGHT[2];
-    dev.queue.writeBuffer(P.ubuf,0,u.buffer,0,144);
-    /* the draws, recorded once and replayed until something they draw from changes */
-    var key=B.chunks.length+':'+(F.hasTrans?1:0)+':'+(F.edges?1:0);
-    for(i=0;i<B.chunks.length;i++)key+=':'+B.chunks[i].count+'/'+B.chunks[i].ecount;
-    if(re||!P.bundle||P.bkey!==key){
-      var be=dev.createRenderBundleEncoder({colorFormats:[P.format],depthStencilFormat:'depth24plus',sampleCount:4}),nd=0;
-      be.setBindGroup(0,P.bg);
-      var run=function(pp,edge){
-        be.setPipeline(pp);
-        for(var k=0;k<B.chunks.length;k++){
-          var ck=B.chunks[k],n=edge?ck.ecount:ck.count;
-          if(!n)continue;
-          be.setVertexBuffer(0,edge?ck.gpu.ebuf:ck.gpu.buf);be.draw(n);nd++;
-        }
-      };
-      run(P.pipes.face0,0);
-      if(F.hasTrans)run(P.pipes.face1,0);
-      if(F.edges){run(P.pipes.edge0,1);if(F.hasTrans)run(P.pipes.edge1,1);}
-      P.bundle=be.finish();P.bkey=key;P.bdraws=nd;B.st.recorded=1;
-    }
-    /* the canvas, or a texture of the same size when asked (a headless browser cannot present one) */
-    var dst;
-    if(P.offscreen){
-      if(!P.off||P.off.width!==wD||P.off.height!==hD){if(P.off)P.off.destroy();P.off=dev.createTexture({size:[wD,hD],format:P.format,usage:GPUTextureUsage.RENDER_ATTACHMENT|GPUTextureUsage.COPY_SRC});}
-      dst=P.off;
-    }else dst=P.ctx.getCurrentTexture();
-    var enc=dev.createCommandEncoder();
-    var pass=enc.beginRenderPass({
-      colorAttachments:[{view:P.msaa.createView(),resolveTarget:dst.createView(),clearValue:{r:0.114,g:0.125,b:0.141,a:1},loadOp:'clear',storeOp:'discard'}],
-      depthStencilAttachment:{view:P.depth.createView(),depthClearValue:1,depthLoadOp:'clear',depthStoreOp:'discard'}});
-    pass.executeBundles([P.bundle]);
-    pass.end();
-    dev.queue.submit([enc.finish()]);
-    B.st.draws=P.bdraws;
-    bimSceneFrameDone(B,'webgpu');
-    A3D.glFaces=F.totalFaces;
-    return true;
-  }
-  /* the frame: WebGPU where it is ready and draws everything in view, else WebGL */
-  function bimRender3D(V,W,H){
-    var gc=document.getElementById('a3d-gpucanvas'),lc=document.getElementById('a3d-glcanvas'),why='';
-    if(A3D_GPU.state==='off')bimGpuStart();
-    if(A3D_GPU.state==='ready'&&bimGpuPref()!=='webgl'&&!A3D_GPU.forceOff){
-      why=bimGpuNeedsGl(V,W,H);
-      var okG=false;
-      if(!why){try{okG=bimGpuRender(V,W,H);}catch(eR){bimGpuDrop();bimGpuFail('a frame failed: '+(eR&&eR.message));}}   /* never a broken frame: WebGL takes over */
-      if(okG){
-        if(gc)gc.style.visibility='visible';if(lc)lc.style.visibility='hidden';
-        A3D_GPU.engine='webgpu';A3D_GPU.fallback='';
-        return true;
-      }
-    }
-    if(gc)gc.style.visibility='hidden';if(lc)lc.style.visibility='visible';
-    var ok=bimGlRender(V,W,H);
-    A3D_GPU.engine=ok?'webgl':'2d';A3D_GPU.fallback=why;
-    return ok;
-  }
-  /* GRAPHICS: which engine draws, and the choice of WebGL for this browser */
-  function bimGraphicsLabel(){
-    var P=A3D_GPU;
-    if(P.engine==='webgpu')return 'WebGPU';
-    if(P.engine==='2d')return 'Drawn in 2D (no WebGL)';
-    if(bimGpuPref()==='webgl')return 'WebGL (chosen)';
-    if(P.state==='ready'&&P.fallback)return 'WebGL (for the '+P.fallback+')';
-    if(P.state==='starting')return 'WebGL (WebGPU starting)';
-    return 'WebGL'+(P.why?' ('+P.why+')':'');
-  }
-  function bimGraphicsSet(pref){
-    try{localStorage.setItem(BIM_GPU_KEY,pref==='webgl'?'webgl':'auto');}catch(eS){}
-    if(pref!=='webgl'&&(A3D_GPU.state==='off'||A3D_GPU.state==='failed')){A3D_GPU.state='off';bimGpuStart();}   /* chosen again: tried again */
-    if(A3D.on)paint();
-    refreshProps();
-    return bimGpuPref();
-  }
-  function bimGraphicsCommand(){
-    var to=bimGpuPref()==='webgl'?'auto':'webgl';
-    bimGraphicsSet(to);
-    a3dToast(to==='webgl'?'Graphics: WebGL, in this browser':'Graphics: WebGPU where the browser has it, else WebGL');
-  }
-  /* the last WebGPU frame against a WebGL frame of the same view, pixel by pixel (offscreen only):
-     the largest difference of a channel, and how many pixels differ by more than 16 and 48 */
-  function bimGpuCompare(){
-    var P=A3D_GPU;
-    if(P.state!=='ready'||!P.offscreen)return Promise.resolve(null);
-    var V=camVecs(A3D.cam),W=cvW(),H=cvH();
-    if(!bimGpuRender(V,W,H))return Promise.resolve(null);
-    var dev=P.device,w=P.off.width,h=P.off.height,bpr=Math.ceil(w*4/256)*256;
-    var rb=dev.createBuffer({size:bpr*h,usage:GPUBufferUsage.COPY_DST|GPUBufferUsage.MAP_READ});
-    var enc=dev.createCommandEncoder();
-    enc.copyTextureToBuffer({texture:P.off},{buffer:rb,bytesPerRow:bpr},[w,h]);
-    dev.queue.submit([enc.finish()]);
-    var stats=A3D.glStats?JSON.parse(JSON.stringify(A3D.glStats)):null;
-    return rb.mapAsync(GPUMapMode.READ).then(function(){
-      var g=new Uint8Array(rb.getMappedRange().slice(0));rb.unmap();rb.destroy();
-      var lc=document.getElementById('a3d-glcanvas');
-      if(!bimGlRender(V,W,H))return null;
-      var gl=A3D_GL.gl,lw=gl.drawingBufferWidth,lh=gl.drawingBufferHeight,px=new Uint8Array(lw*lh*4);
-      gl.readPixels(0,0,lw,lh,gl.RGBA,gl.UNSIGNED_BYTE,px);
-      if(lw!==w||lh!==h)return {error:'sizes differ',gpu:[w,h],gl:[lw,lh]};
-      var bgra=P.format.indexOf('bgra')===0,mx=0,n16=0,n48=0,near=0,x,y,k,i,j,d,m,dx,dy,mm;
-      function diff(i,j){var m=0,k,d;for(k=0;k<3;k++){d=Math.abs(g[i+(bgra?2-k:k)]-px[j+k]);if(d>m)m=d;}return m;}
-      for(y=0;y<h;y++)for(x=0;x<w;x++){
-        i=y*bpr+x*4;j=((h-1-y)*w+x)*4;m=diff(i,j);
-        if(m>mx)mx=m;if(m>16)n16++;
-        if(m>48){
-          n48++;
-          /* a thin line rasterised a pixel over: the same colour beside it is not a difference */
-          mm=m;
-          for(dy=-1;dy<=1&&mm>48;dy++)for(dx=-1;dx<=1&&mm>48;dx++){
-            if(x+dx<0||x+dx>=w||y+dy<0||y+dy>=h)continue;
-            mm=Math.min(mm,diff(i,((h-1-(y+dy))*w+x+dx)*4));
-          }
-          if(mm>48)near++;
-        }
-      }
-      return {w:w,h:h,max:mx,over16:n16,over48:n48,over48near:near,pixels:w*h,gpuStats:stats};
-    });
   }
   /* __acad3dV72: W and H arrive in CSS pixels, because the projection matrix has to agree with
      toScreen() exactly or the GL layer and the 2D overlay drift apart. The GL canvas and its
@@ -20057,12 +19248,6 @@ try{
     gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
     bimMapDrawGl(G,V,W,H);   /* __acad3dV132: the basemap, under everything */
     bimTerrainDrawGl(G,V,W,H);   /* __acad3dV137: the terrain in 3D, the map draped on it */
-    if(A3D_GL_BATCH&&bimGbRender(G,V,W,H)){   /* __acad3dV152: the batches */
-      var kb;for(kb in G.bufs)if(G.bufs.hasOwnProperty(kb)){bimGlDisposeBuffer(G,G.bufs[kb]);delete G.bufs[kb];}
-      return true;
-    }
-    if(A3D_SCENE)bimSceneRelease();   /* __acad3dV153: object by object, the description given back */
-    var draws=0;   /* __acad3dV152: counted, to set against the batches */
     gl.useProgram(G.prog);
     gl.uniformMatrix4fv(G.loc.view,false,bimGlViewMatrix(V));
     gl.uniformMatrix4fv(G.loc.proj,false,bimGlProjMatrix(W,H,A3D.flat,A3D.cam.dist));
@@ -20087,11 +19272,11 @@ try{
       var la=bimLayerAlpha(o);
       A3D.lastGlAlpha[o.id]=la;
       if(la<1){trans.push([o,rec,la]);continue;}
-      bimGlDrawFaces(G,o,rec,1);draws++;
+      bimGlDrawFaces(G,o,rec,1);
     }
     if(trans.length){
       gl.enable(gl.BLEND);gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);gl.depthMask(false);
-      for(i=0;i<trans.length;i++){bimGlDrawFaces(G,trans[i][0],trans[i][1],trans[i][2]);draws++;}
+      for(i=0;i<trans.length;i++)bimGlDrawFaces(G,trans[i][0],trans[i][1],trans[i][2]);
       gl.depthMask(true);gl.disable(gl.BLEND);
     }
     // Edge outlines preserve the existing look, but only while the model is small enough that
@@ -20114,7 +19299,7 @@ try{
         gl.vertexAttribPointer(G.loc.pos,3,gl.FLOAT,false,0,0);
         gl.disableVertexAttribArray(G.loc.norm);
         gl.vertexAttrib3f(G.loc.norm,0,1,0);
-        gl.drawArrays(gl.LINES,0,rec2.edgeCount);draws++;
+        gl.drawArrays(gl.LINES,0,rec2.edgeCount);
       }
       gl.disable(gl.BLEND);
     }
@@ -20123,7 +19308,6 @@ try{
       if(G.bufs.hasOwnProperty(k)&&!live[k]){bimGlDisposeBuffer(G,G.bufs[k]);delete G.bufs[k];}
     }
     A3D.glFaces=totalFaces;
-    A3D.glStats={mode:'object',draws:draws,chunks:0,rebuilt:0,rebuiltVerts:0,uploads:0,uploadBytes:0,objects:Object.keys(G.bufs).length};
     return true;
   }
   // Picking still needs screen-space polygons, but only when the user actually clicks --
@@ -20166,7 +19350,7 @@ try{
        rather than silently leaving WebGL in charge while presentation styling sits unreachable
        behind it. This is a real, visible trade (CPU vector-quality rendering instead of GPU-
        shaded triangles) made only when a person opts in, not a silent slowdown. */
-    var glOn=(capMode||A3D.presentMode||bimPresentGraphics())?false:bimRender3D(V,W,H);   /* __acad3dV122; __acad3dV153: WebGPU or WebGL */
+    var glOn=(capMode||A3D.presentMode||bimPresentGraphics())?false:bimGlRender(V,W,H);   /* __acad3dV122 */
     if(capMode){ctx.fillStyle='#ffffff';ctx.fillRect(0,0,W,H);}
     else if(glOn){ctx.clearRect(0,0,W,H);}
     else{ctx.fillStyle='#1d2024';ctx.fillRect(0,0,W,H);}
@@ -24892,7 +24076,7 @@ try{
        them last let a room swallow a click on the label sitting inside it. */
     var an=bimPickAnnotation(x,y);
     if(an)return an;
-    if(A3D_GL||A3D_GPU.engine==='webgpu')bimBuildPickPolys();
+    if(A3D_GL)bimBuildPickPolys();
     for(i=A3D.lastPolys.length-1;i>=0;i--){
       if(A3D.lastPolys[i].lock)continue;
       if(inPoly(x,y,A3D.lastPolys[i].pts))return A3D.lastPolys[i].o;
@@ -37558,7 +36742,7 @@ try{
         '<div id="a3d-lvlrows" style="display:none"></div>'+
         '<div id="a3d-viewrows" style="display:none"></div>'+
       '</div>'+
-      '<div class="a3d-vp"><canvas id="a3d-gpucanvas"></canvas><canvas id="a3d-glcanvas"></canvas><canvas id="a3d-canvas"></canvas>'+
+      '<div class="a3d-vp"><canvas id="a3d-glcanvas"></canvas><canvas id="a3d-canvas"></canvas>'+
       '<div id="a3d-sheetview" class="a3d-sheetview">'+
         '<div class="a3d-sheettb">'+
           /* __acad3dV122: the sheet alone to edit, or every sheet as pages */
@@ -37894,14 +37078,8 @@ try{
     });
     if(el.propsbody)el.propsbody.addEventListener('input',function(ev){
       if(ev.target&&ev.target.hasAttribute&&ev.target.hasAttribute('data-histmsg'))A3D_HIST_MSG=ev.target.value;
-      if(ev.target&&ev.target.hasAttribute&&ev.target.hasAttribute('data-brname'))A3D_BR_NEW=ev.target.value;   /* __acad3dV151 */
-    });
-    if(el.propsbody)el.propsbody.addEventListener('change',function(ev){   /* __acad3dV151: switch branch */
-      if(ev.target&&ev.target.hasAttribute&&ev.target.hasAttribute('data-histbranch'))bimHistSwitchUI(ev.target.value);
-      if(ev.target&&ev.target.hasAttribute&&ev.target.hasAttribute('data-brmergefrom')){A3D_BR_PICK=ev.target.value;if(A3D_BR_DEL){A3D_BR_DEL='';refreshProps();}}   /* kept through a redraw; another picked: ask again */
     });
     if(el.propsbody)el.propsbody.addEventListener('keydown',function(ev){
-      if(ev.key==='Enter'&&ev.target&&ev.target.hasAttribute&&ev.target.hasAttribute('data-brname')){ev.preventDefault();ev.stopPropagation();bimHistBranchAct('branch');return;}   /* __acad3dV151 */
       if(ev.key!=='Enter'||!ev.target||!ev.target.hasAttribute||!ev.target.hasAttribute('data-histmsg'))return;
       ev.preventDefault();ev.stopPropagation();
       bimHistDoCommit(ev.target.value);
@@ -38781,10 +37959,6 @@ try{
     grade:function(){bimGradeCommand();},              /* __acad3dV145 */
     commit:function(){bimHistCommitCommand();},        /* __acad3dV146 */
     history:function(){bimHistReveal(false);},
-    branch:function(){bimHistReveal(false);setTimeout(function(){var i=document.querySelector('#a3d-propsbody [data-brname]');if(i)i.focus();},0);},   /* __acad3dV151 */
-    merge:function(){bimHistReveal(false);if(bimHistBranches().length<2)a3dToast('There is one branch: start another with BRANCH');},
-    comparebranches:function(){A3D_BR_CMP=true;bimHistReveal(false);},
-    graphics:function(){bimGraphicsCommand();},   /* __acad3dV153 */
     cutfill:function(){bimCutFillCommand();},
     cutfillmap:function(){bimCutFillMapCommand();},
     spotelev:function(){bimSpotCommand();},
@@ -39081,22 +38255,6 @@ try{
   window.__a3dToolPalAct=function(id){return bimTPalAct(id);};
   window.__a3dToolPalDrop=function(x,y){return bimTPalDrop(x,y);};
   window.__a3dToolPalFold=function(m){return bimTPalFold(m);};
-  /* __acad3dV151: branches and merge */
-  window.__a3dBranches=function(){return JSON.parse(JSON.stringify(bimHistBranches()));};
-  window.__a3dBranchNew=function(n){return bimHistBranchNew(n);};
-  window.__a3dBranchSwitch=function(n){return bimHistSwitch(n);};
-  window.__a3dBranchDelete=function(n){return bimHistBranchDelete(n);};
-  window.__a3dMergeStart=function(n){var r=bimHistMergeStart(n);return JSON.parse(JSON.stringify(r));};
-  window.__a3dMergeState=function(){return A3D_MERGE?JSON.parse(JSON.stringify({from:A3D_MERGE.from,into:A3D_MERGE.into,base:A3D_MERGE.base,
-    conflicts:A3D_MERGE.conflicts.map(function(c){return {key:c.key,kind:c.kind,label:c.label,gone:c.gone||null,choice:c.choice||null,fields:c.fields.map(function(f){return {f:f.f,base:f.base===undefined?null:f.base,ours:f.ours===undefined?null:f.ours,theirs:f.theirs===undefined?null:f.theirs};})};})})):null;};
-  window.__a3dMergeChoose=function(i,s){return bimHistMergeChoose(i,s);};
-  window.__a3dMergeFinish=function(){return JSON.parse(JSON.stringify(bimHistMergeFinish()));};
-  window.__a3dMergeAbort=function(){return bimHistMergeAbort();};
-  window.__a3dBranchCompare=function(){return JSON.parse(JSON.stringify(bimHistCompare()));};
-  window.__a3dHistBase=function(a,b){return bimHistBase(a,b);};
-  window.__acad3dV153='webgpu,sharedscene,storagetable,renderbundle,glfallback,maptogl,terraintogl,devicelost,graphicscommand,graphicsstat';
-  window.__acad3dV152='batches,objecttable,chunkrebuild,hiddenstays,transparentpass,edgebatch,fallback,stressmodel,bench';
-  window.__acad3dV151='branches,branchnew,branchswitch,switchrefused,mainbranch,mergebase,merge3,fieldmerge,conflicts,deleteconflict,fastforward,uptodate,mergecommit,compare,branchcommands,branchsaved';
   window.__acad3dV150='toolpalette,essentialtools,activetool,selectputsaway,pantoggle,draggable,edgedock,flat,fold,remembered,dockgivesway,moretools';
   window.__acad3dV149='addrdraft,typing16,keyboardlift,focusscroll,tierphone,tieroverlay,tabbar,tablabels,railmore,leftdrawer,drawerclosed,drawerscrim,tabtoggles,escshuts,fullwidth,safeareas,viewportfit,burgerdrawer,toastclear,tierfollows';
   window.__acad3dV148='anzlist,anzgroups,anzsearch,anzwords,anzexpand,anzremember,addaslayer,reslayers,ressnapshot,reslive,resstale,resupdate,resorder,resopacity,ressaved,resundo,layersanalysis,layersdata,touchrows';
@@ -39453,52 +38611,10 @@ try{
   window.__a3dRefreshBrowser=function(){refreshBrowser();};
   window.__a3dGlRender=function(){return !!A3D_GL;};
   window.__a3dGlFaces=function(){return A3D.glFaces||0;};
-  window.__a3dGpu=function(){var P=A3D_GPU;return {state:P.state,why:P.why,engine:P.engine,fallback:P.fallback,pref:bimGpuPref(),label:bimGraphicsLabel(),bundleDraws:P.bdraws,format:P.format};};   /* __acad3dV153 */
-  window.__a3dGraphics=function(pref){return bimGraphicsSet(pref);};
-  window.__a3dGpuCompare=function(){return bimGpuCompare();};
-  window.__a3dGpuRestart=function(){if(A3D_GPU.state==='starting'||A3D_GPU.state==='ready')return A3D_GPU.state;A3D_GPU.state='off';A3D_GPU.why='';bimGpuStart();return A3D_GPU.state;};
-  window.__a3dGpuBreakNext=function(){A3D_GPU.breakNext=true;return true;};
-  window.__a3dGpuLose=function(){if(!A3D_GPU.device)return false;A3D_GPU.device.destroy();return true;};   /* as a driver reset would */
-  window.__a3dGpuWait=function(ms){var t0=Date.now();return new Promise(function(res){(function w(){if(A3D_GPU.state!=='starting'||Date.now()-t0>(ms||8000))res(A3D_GPU.state);else setTimeout(w,50);})();});};
-  window.__a3dGlBatch=function(on){if(on!==undefined){A3D_GL_BATCH=!!on;paint();}return A3D_GL_BATCH;};   /* __acad3dV152 */
-  window.__a3dGlStats=function(){return A3D.glStats?JSON.parse(JSON.stringify(A3D.glStats)):null;};
-  window.__a3dGlBatchInfo=function(){var B=A3D_SCENE;if(!B)return (A3D_GL&&A3D_GL.gb)||A3D_GPU.state==='ready'?{chunks:[],slots:0,cap:0,free:0}:null;
-    return {chunks:B.chunks.map(function(c){return {objects:c.ids.length,verts:c.count,edges:c.ecount};}),slots:Object.keys(B.slots).length,cap:B.cap,free:B.free.length};};
-  window.__a3dGlTotals=function(){var B=A3D_SCENE;return B&&B.tot?JSON.parse(JSON.stringify(B.tot)):{frames:0,rebuilt:0,rebuiltVerts:0,uploads:0,uploadBytes:0};};
-  window.__a3dGlTableOf=function(id){var B=A3D_SCENE;if(!B||!B.slots.hasOwnProperty(id))return null;var s=B.slots[id];return [].slice.call(B.data.subarray(s*8,s*8+8));};
-  /* a grid of n boxes, each its own element, for measuring; the mesh is shared, as a family's is */
-  window.__a3dStressModel=function(n,size){
-    var L=[],k=Math.ceil(Math.sqrt(n)),i,sz=size||0.6;
-    for(i=0;i<n;i++)L.push({id:'stress-'+i,t:'box',prm:{Length:sz/SCALE,Width:sz/SCALE,Height:(1+(i%7)*0.4)/SCALE},pos:[(i%k)*1.5,0,Math.floor(i/k)*1.5],rot:[0,0,0]});
-    A3D.objs=L;A3D.sel=null;A3D.sel2=null;A3D.selSet=[];paint();
-    return L.length;
-  };
-  /* frames drawn with the camera turning a little each time, each finished before the next
-     (a pixel read waits for the GPU): the average and the slowest, in milliseconds */
-  window.__a3dRenderBench=function(frames){   /* __acad3dV153: either engine; a promise, as WebGPU's work is finished asynchronously */
-    var c=A3D.cam,y0=c.yaw,W=cvW(),H=cvH(),px=new Uint8Array(4),sum=0,mx=0,first=0,i=0,n=frames||20;
-    if(!bimGlInit()&&A3D_GPU.state!=='ready')return Promise.resolve(null);
-    function one(){
-      c.yaw=y0+i*0.01;
-      var t0=performance.now();
-      bimRender3D(camVecs(c),W,H);
-      var done=A3D_GPU.engine==='webgpu'?A3D_GPU.device.queue.onSubmittedWorkDone():(A3D_GL.gl.readPixels(0,0,1,1,A3D_GL.gl.RGBA,A3D_GL.gl.UNSIGNED_BYTE,px),Promise.resolve());
-      return done.then(function(){
-        var dt=performance.now()-t0;
-        if(i===0)first=dt;else{sum+=dt;if(dt>mx)mx=dt;}
-        i++;
-        return i<n?one():null;
-      });
-    }
-    return one().then(function(){
-      c.yaw=y0;paint();
-      return {first:first,avg:sum/Math.max(1,n-1),max:mx,engine:A3D_GPU.engine,stats:A3D.glStats?JSON.parse(JSON.stringify(A3D.glStats)):null};
-    });
-  };
   window.__a3dTestSetObjs=function(list){A3D.objs=list;A3D.sel=null;A3D.sel2=null;A3D.selSet=[];};
   window.__a3dTestPaint=function(){paint();};
   window.__a3dTestRotate=function(d){A3D.cam.yaw+=d;};
-  window.__a3dTestForceCpu=function(on){A3D_GL_FAILED=!!on;A3D_GPU.forceOff=!!on;if(on){bimSceneRelease();A3D_GL=null;}};
+  window.__a3dTestForceCpu=function(on){A3D_GL_FAILED=!!on;if(on)A3D_GL=null;};
   window.__a3dAngularDim=bimComputeAngularDim;
   window.__a3dCircleFrom3=bimCircleFrom3Points;
   window.__a3dBuildDXF=bimBuildDXF;
