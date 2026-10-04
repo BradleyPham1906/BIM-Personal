@@ -45,7 +45,9 @@ order: 1
   - **Props** opens Properties. On a phone it is a sheet from the bottom: tap its grab bar to raise
     it and lower it. On a tablet it is a drawer from the right. On either, the arrow beside the
     word Properties closes it.
-  - On a touch screen every field and button is sized for a finger. Two fingers pinch to zoom and
+  - On a touch screen every field and button is sized for a finger, and every field's text is
+    16 px, so a phone does not zoom in when you tap one. When the keyboard comes up, Properties and
+    the drawer sit on top of it, with the field you tapped in view. Two fingers pinch to zoom and
     drag to pan.
 - **The status bar.** Level, snaps, ortho, grid; pan, orbit, 2D and 3D.
 
