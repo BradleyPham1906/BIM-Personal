@@ -94,3 +94,35 @@ it is set to fails, it tries Overpass's other public instances in turn:
 
 Only when all of them fail does it say so, naming each failure. None could be reached from the
 build sandbox, so they are tested only against routed answers.
+
+## V156 note: the whole surroundings (planned as V157)
+
+The owner asked for more than buildings: trees, roads, tunnels, bridges, railways and airports, from
+anything free the app can connect to, world-wide. These are the sources:
+
+**OpenStreetMap through the Overpass API** is free, needs no key, and covers the world. It is
+already used here (V133). The kinds to add:
+- `railway=rail|light_rail|subway|tram`, plus stations and platforms;
+- `bridge=yes` and `man_made=bridge`, with the `layer` tag for the deck level;
+- `tunnel=yes`;
+- `aeroway=aerodrome|runway|taxiway|apron|terminal|helipad`;
+- `natural=tree_row`, `power=line|tower`, and `landuse=*`.
+
+Roads already come in, but as lines. Their width is the `width` tag, else `lanes`, else a width by
+`highway` class.
+
+**OpenRailwayMap** is built on the same OSM data and adds railway detail (speeds, signals,
+electrification). It is open source and has an API for its facilities.
+
+**For the US:**
+- the BTS National Transportation Atlas Database (bridges from the National Bridge Inventory,
+  rail lines, airports) is served as public ArcGIS REST layers, so it fits V134's data layers as
+  presets;
+- the FRA publishes rail safety and crossing data.
+
+**National railways elsewhere** have open APIs too: Finland's Digitraffic, SNCF, Network Rail.
+They are mostly about operations, not geometry, and are left for later.
+
+**Limits.** The public Overpass servers ask for light use, so a large area is fetched in tiles, the
+answer is cached with the project, and the mirrors (V134d) are tried in turn. A product with many
+users would extract OSM once and serve it itself; that is noted in V132's ground rules.
