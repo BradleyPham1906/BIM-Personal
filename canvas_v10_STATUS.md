@@ -12767,7 +12767,7 @@ three layouts: a phone upright gets a tab bar along the bottom and the panel as 
 upright or a phone on its side keeps the rail and gets the same drawer; a tablet on its side or a
 computer keeps the panel beside the drawing.
 
-### What was built (patches 149a, 149b)
+### What was built (patches 149a, 149b, 149c)
 
 - **Three layouts, chosen from the screen and chosen again when it turns or is resized.**
   - A phone upright (up to 720 px wide, portrait): the rail is a tab bar along the bottom (Layers,
@@ -12796,6 +12796,11 @@ computer keeps the panel beside the drawing.
   - The on-screen keyboard covered the Properties sheet the address field is in. Its height, read
     from visualViewport, now lifts the sheet and the drawer above it (a change under 80 px is a
     browser bar, not a keyboard), and the field tapped is scrolled to the middle of what is left.
+- **Find an address on a phone (149c).** The owner: "when searching for address, it keep saying
+  type an address or a place to find. Basically useless button." Find read the field, and the field
+  kept nothing of its own: the tap on Find takes the focus, the keyboard goes, the screen changes
+  size, Properties is drawn again and the field comes back empty. What is typed is now kept as it
+  is typed; the field is drawn with it and Find falls back to it. The keyboard's key reads Search.
 - **The version** is V149. The guide's Getting started page has the three layouts and the fields.
 
 ### Bugs found
@@ -12805,14 +12810,16 @@ computer keeps the panel beside the drawing.
 
 ### Suites
 
-- New: `bim_phase149_shell_phone_tablet_browser_tests.py`, 73 checks on five screens: a phone
+- New: `bim_phase149_shell_phone_tablet_browser_tests.py`, 74 checks on five screens: a phone
   upright and on its side, a tablet upright and on its side, a computer; the bar, its labels and
   sizes, the drawing's width, the drawer's opening and shutting four ways, More and a menu from it,
   a message above the bar, Properties' sheet, a two-finger pinch sent as real touches, the window
   narrowed and widened again, and the safe-area rules; and typing on a phone: all forty fields
   16 px, an address typed and sent with the keyboard's Enter finding its place (the geocoder
-  answered in the browser), the sheet and the drawer on a 320 px keyboard, a 40 px bar ignored.
-- **Falsified by `Phase/falsify_phase149.py`,** 37 variants, all caught. One rule 149b made dead
+  answered in the browser), the sheet and the drawer on a 320 px keyboard, a 40 px bar ignored; an address typed, the focus taken and Properties drawn again, then Find.
+- Amended for V149: V142 (the newest kept build may be this phase's own earlier release, kept
+  before 149c).
+- **Falsified by `Phase/falsify_phase149.py`,** 39 variants, all caught. One rule 149b made dead
   (the drawer's bottom, set again with the keyboard) was taken out. Two gaps closed: the
   menu-button check ran on the rail's toggle on a phone on its side, and the safe-area check
   matched #a3d-railutil for #a3d-rail.
@@ -12826,12 +12833,76 @@ computer keeps the panel beside the drawing.
 
 ### Full regression and state after V149
 
-106 suites, 4340 checks, 0 failures. (A first full run, before 149b, had V137 and V139 fail once
-under load; both passed alone and beside V130 to V139, and the run after 149b passed whole.)
-Falsification: V149 37 of 37. The chain 149a, 149b rebuilds the build from
-`Phase/canvas_v10.html.bak_phase149_pre`. The diff is ES5-clean. Pictures:
-`reference/v149_phone.png`, `v149_phone_drawer.png`, `v149_phone_more.png`, `v149_tablet.png`.
+106 suites, 4341 checks, 0 failures. Falsification: V149 39 of 39. The chain 149a, 149b rebuilds
+from `Phase/canvas_v10.html.bak_phase149_pre`, and 149c from `bak_phase149c_pre` (149b was merged
+on its own). The diff is ES5-clean. Pictures: `reference/v149_phone.png`, `v149_phone_drawer.png`,
+`v149_phone_more.png`, `v149_tablet.png`.
 
-    canvas_v10.html   2264103 bytes
-    sha256            9525be80653cedf945e9d8661814826fa4496877e247ee0fa7f7dd943dbe9599
+    canvas_v10.html   2264884 bytes
+    sha256            2afd8924b9723bd3a771dc885f6c531234fd6222136b97dd150a9074d544f550
     markers           __acad3dV60 ... __acad3dV149, __acad3dV134d (and the 133d to 133f markers)
+
+## Phase 150 (V150) - A tool palette for a phone and a tablet
+
+The owner: "improve the UI for the tool panel on the phone and tablet ... a dragable one and able
+to expand and contract. Make it clean like how Apple did it. Only key tools ... only the essential
+ones." On a phone and an upright tablet the dock gives way to a palette in the manner of
+Freeform's and the Apple Pencil's: a frosted capsule of eleven tools that is dragged where the
+hand wants it, docks upright at either edge, and folds to one round button.
+
+### What was built (patch 150a)
+
+- **The palette.** Select, Pan, Line, Rectangle, Circle, Wall, Door, Window, Dimension, Delete and
+  All tools (the Tools and shortcuts panel, with the search). 42 px buttons in a 24 px-cornered,
+  blurred, translucent capsule, light and dark. Undo and Redo stay in the top bar.
+- **The tool in use** is filled in Apple's blue, and follows whatever ended or changed it: a tap on
+  the drawing, Esc, a command. Select puts a tool away; Pan is a toggle, and a drawing tool turns it
+  off.
+- **Drag** by the grip. Let go near the left or right edge (judged by the finger) and it docks
+  there upright; anywhere else it lies flat. It stays over the drawing, and where it was left is
+  kept in this browser, per layout.
+- **Fold.** The chevron folds it to a 50 px round button showing the tool in use; a tap opens it,
+  and the button drags.
+- **Where it starts:** upright on the right edge of a phone, flat at the foot of a tablet's drawing.
+  Messages and the typed-length box sit above it on a tablet.
+- **A computer** keeps the dock; the palette is never there.
+- **Properties' sheet or drawer open,** the palette steps aside: the sheet is in the drawing's
+  layer, and the palette, on the page, would lie over it.
+- **The version** is V150. The guide's Getting started page has the palette.
+
+### Bugs found
+
+- The palette lay over Properties' sheet on a phone, Find under it (the V149 suite caught it).
+- All tools opened the panel and the same tap shut it: the panel closes on a click outside it,
+  and the palette's tap was one. It opens after the tap now.
+- The edge was judged by the palette's middle, so a flat palette, 400 px long, could never be
+  docked. It is judged by where the finger lets go.
+
+### Suites
+
+- New: `bim_phase150_tool_palette_browser_tests.py`, 36 checks: the eleven tools, the dock gone,
+  the capsule's look, the blue fill, Wall, Select, Line, Esc, Pan both ways, Delete, All tools;
+  dragged flat, docked left, stopped at the edge, kept through a reload; folded, showing the tool
+  in use, dragged folded, opened; a tablet's palette, message and length box; a computer's dock.
+- **Falsified by `Phase/falsify_phase150.py`,** 25 variants: 23 caught, two retired (the kept spot
+  is a fraction clamped on the drop, so the clamp on placing cannot be reached; the shell audit
+  reads the shell, and the palette is the page's). Two gaps closed: the fill is checked as a
+  colour, and Esc as the buttons' state.
+
+### Not done
+
+- Choosing which tools the palette holds (the dock's pins, V130, could feed it).
+- The palette on a computer, for a touch screen there.
+- The stylesheet is at 89,970 bytes against V114's 90,000-byte ceiling: the next phase with CSS
+  must take some out, or the ceiling must be argued up.
+
+### Full regression and state after V150
+
+107 suites, 4377 checks, 0 failures. Falsification: V150 23 of 23, two retired. Patch 150a
+rebuilds the build from `Phase/canvas_v10.html.bak_phase150_pre`. The diff is ES5-clean.
+Pictures: `reference/v150_phone_palette.png`, `v150_tablet_palette.png`.
+
+    canvas_v10.html   2279623 bytes
+    sha256            068c32e9b694acb046e0ae6194d1ca35d649baf9b9854005a218f1c276864bfa
+    markers           __acad3dV60 ... __acad3dV150, __acad3dV134d (and the 133d to 133f markers)
+

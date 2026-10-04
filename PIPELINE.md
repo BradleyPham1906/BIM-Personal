@@ -2,11 +2,11 @@
 
 **Read this first in a new session.** One page. The detail lives in the docs listed at the bottom.
 
-    canvas_v10.html   2264103 bytes
-    sha256            9525be80653cedf945e9d8661814826fa4496877e247ee0fa7f7dd943dbe9599
-    markers           __acad3dV60 ... __acad3dV149, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
+    canvas_v10.html   2279623 bytes
+    sha256            068c32e9b694acb046e0ae6194d1ca35d649baf9b9854005a218f1c276864bfa
+    markers           __acad3dV60 ... __acad3dV150, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
                       __acad3dV121b
-    tests             106 suites, 4340 checks, 0 failures
+    tests             107 suites, 4377 checks, 0 failures
 
     The user guide (V142): every phase updates docs/src/, its log entry and BIM_APP_VERSION, then
     runs tools/dump_catalog.py and tools/build_docs.py. The V142 suite and the Pages workflow
@@ -88,18 +88,19 @@ three tiers: compact up to 720 px wide or 500 px high, medium up to 1024 px, des
 | 147 | The right panel, redesigned | **Done** (see Recently finished): a bottom sheet on a phone, a 340 px drawer on a tablet, 36 px touch targets; tokens for dark and light, sentence-case headers, one row grid, one input and button style, Show all, resizable and minimisable. Next: More for rarely used fields, type by type | The owner's note: "clean up more... aesthetic and minimal, easy to use". `reference/research-presentation-panels.md` (3). Every Properties suite is amended where the markup changes, never the behaviour. |
 | 148 | Analyze, redesigned; results as layers | **Done** (see Recently finished): a list in four groups with a search; Add as layer for sun hours, rain, slope, elevation, aspect and cut and fill; Layers' Analysis and Data sections. Next: result layers on sheets, locking, blend modes with the boards | QGIS writes a processing run's outputs as layers into a named group. `reference/research-presentation-panels.md` (2). |
 | 149 | The shell on phone and tablet | **Done** (see Recently finished): a tab bar and a drawer on a phone upright, the rail and a drawer on a tablet upright or a phone on its side, unchanged on a computer; safe areas. Next: a context menu on a long press when the drawing has one | The owner (V147): "consider the adaptation for phone, iPad/tablet, and computer". |
-| 150 | Hub H2: branches and merge | **Start here.** Design options as branches, switched between and compared by their numbers (areas, usages, cut and fill, solar); a three-way merge per element with conflicts shown side by side | Replaces "Design scenarios" (Giraffe's scenarios, Revit's Design Options). |
-| 151 | Presentation P1: boards | A board is a sheet you design on: one layer tree (frames, groups, lock, hide, reorder), opacity and blend modes on every element (canvas compositing, the same 16 modes as Figma), masks, shapes, text, images; align, distribute, smart spacing; rows and columns that space their children (a light auto layout) | Figma's layer model. `reference/research-presentation-panels.md` (1). |
-| 152 | Presentation P2: live elements | Elements linked to their source and redrawn when the model changes: model views, schedules, legends, analysis results (sun hours, cut and fill, solar), numbers (GBA, cut volume, site area), text bound to project data (autotext). An edit on the board is an override, marked, with Reset | Archicad's linked drawings and autotext; SketchUp LayOut's overrides and Reset. The data stays connected (the owner's rule). |
-| 153 | Presentation P3: styles, templates, export | Reusable components with variants (title blocks, legend cards, callouts); shared colour and text styles (a brand kit); master boards; templates; a presenting mode, one board per slide; PDF, PNG and SVG export with blend modes, opacity and masks kept | Canva's templates and brand kits; Figma's components; Archicad's master layouts. |
+| 150 | A tool palette for a phone and a tablet | **Done** (see Recently finished): the essentials in a frosted capsule, dragged anywhere, docked upright at an edge, folded to one button; the dock gives way to it on a phone and an upright tablet | The owner: "make it clean like how Apple did it ... only the essential ones". |
+| 151 | Hub H2: branches and merge | **Start here.** Design options as branches, switched between and compared by their numbers (areas, usages, cut and fill, solar); a three-way merge per element with conflicts shown side by side | Replaces "Design scenarios" (Giraffe's scenarios, Revit's Design Options). |
+| 152 | Presentation P1: boards | A board is a sheet you design on: one layer tree (frames, groups, lock, hide, reorder), opacity and blend modes on every element (canvas compositing, the same 16 modes as Figma), masks, shapes, text, images; align, distribute, smart spacing; rows and columns that space their children (a light auto layout) | Figma's layer model. `reference/research-presentation-panels.md` (1). |
+| 153 | Presentation P2: live elements | Elements linked to their source and redrawn when the model changes: model views, schedules, legends, analysis results (sun hours, cut and fill, solar), numbers (GBA, cut volume, site area), text bound to project data (autotext). An edit on the board is an override, marked, with Reset | Archicad's linked drawings and autotext; SketchUp LayOut's overrides and Reset. The data stays connected (the owner's rule). |
+| 154 | Presentation P3: styles, templates, export | Reusable components with variants (title blocks, legend cards, callouts); shared colour and text styles (a brand kit); master boards; templates; a presenting mode, one board per slide; PDF, PNG and SVG export with blend modes, opacity and masks kept | Canva's templates and brand kits; Figma's components; Archicad's master layouts. |
 | 154-160 | Freeform (F1-F7) | NURBS curves; surfaces from curves (extrude, revolve, loft, planar, edge); sweeps, pipe, cap; surface analysis (zebra, curvature, draft) in Analyze; point editing and blends; picture planes, text objects, flow along a surface; Make2D and rendering | `reference/research-rhino-guide-gap.md`: what the owner's Rhino guide teaches that the app lacks. Placed here pending the owner's word; the LOD track follows. |
-| 161 | LOD-C: point clouds | LAS, LAZ (laz-perf, Apache-2.0) and PLY; USGS 3DEP fetched around the site (EPT or COPC); by class or height; ground to a V108 surface through V138's check | Philadelphia has city LiDAR (2015, 2018) and PA statewide QL2. |
-| 162 | LOD-D: LOD2.2 from LiDAR | Region-growing roof planes, roof partition, optimised and extruded; LOD1.3 from the same partition; per-building RMSE to the points | 3DBAG's published method (roofer is GPL-3 C++: the method, not the code). |
-| 163 | LOD-E: facade images | The owner's photos or Panoramax panoramas placed on an LOD2 wall and rectified straight-on, in metres | Texture2LoD3's rectification; Panoramax is CC BY-SA, no key. |
-| 164 | LOD-F: LOD3 openings | Windows and doors drawn on the rectified facade, regularised into rows and columns, optionally detected (SAM in the browser, on request), cut into the wall | Checked against measured openings. |
-| 165 | LOD-G: Gaussian splats | A `.splat` capture placed on the site as a photoreal backdrop to trace against | antimatter15/splat, MIT. |
-| 166 | Zoning envelope | Setbacks, stepbacks and a height limit on a property become a 3D envelope; massing outside it is flagged | Builds on V103's setbacks; Giraffe's Basic Envelope. |
-| 167 | MEP runs | Duct and pipe runs at connectors, systems, flow, velocity and friction | MEP is its own discipline (the owner's choice). The research is drafted in `reference/research-mep-runs.md`. |
+| 162 | LOD-C: point clouds | LAS, LAZ (laz-perf, Apache-2.0) and PLY; USGS 3DEP fetched around the site (EPT or COPC); by class or height; ground to a V108 surface through V138's check | Philadelphia has city LiDAR (2015, 2018) and PA statewide QL2. |
+| 163 | LOD-D: LOD2.2 from LiDAR | Region-growing roof planes, roof partition, optimised and extruded; LOD1.3 from the same partition; per-building RMSE to the points | 3DBAG's published method (roofer is GPL-3 C++: the method, not the code). |
+| 164 | LOD-E: facade images | The owner's photos or Panoramax panoramas placed on an LOD2 wall and rectified straight-on, in metres | Texture2LoD3's rectification; Panoramax is CC BY-SA, no key. |
+| 165 | LOD-F: LOD3 openings | Windows and doors drawn on the rectified facade, regularised into rows and columns, optionally detected (SAM in the browser, on request), cut into the wall | Checked against measured openings. |
+| 166 | LOD-G: Gaussian splats | A `.splat` capture placed on the site as a photoreal backdrop to trace against | antimatter15/splat, MIT. |
+| 167 | Zoning envelope | Setbacks, stepbacks and a height limit on a property become a 3D envelope; massing outside it is flagged | Builds on V103's setbacks; Giraffe's Basic Envelope. |
+| 168 | MEP runs | Duct and pipe runs at connectors, systems, flow, velocity and friction | MEP is its own discipline (the owner's choice). The research is drafted in `reference/research-mep-runs.md`. |
 | later | Hub H3: full IFC | web-ifc (WebAssembly, MPL-2.0) to read and write full IFC 4 and 4.3; IFC GUIDs kept on the elements so H1's diffs are IFC diffs | Our IFC writer and reader cover a subset today. |
 | later | Hub H4: share and sync | Push and pull a project's history to a repository, one file per element so git diffs and merges per element; GitHub as the first hub; only when asked | The first network piece of the hub. |
 | later | Hub H5: the server | Accounts, permissions per element, private models checked on the server (clashes, codes) returning only the result, paid access | Needs a backend: beyond a static site. "Zero-knowledge" checks in the viewer's browser are not possible: what runs there can be read there. |
@@ -148,15 +149,21 @@ when it starts (V111 to V138 went to other work; V139 to V167 are in NOW).
 | 118 | Blocks and data | ATTDEF ATTEDIT BEDIT WBLOCK DATAEXTRACTION TABLESTYLE TABLEDIT TABLEEXPORT | First phase that's about the disciplines, not drafting. BLOCK and INSERT landed in V124, as the Assets library's blocks: saved records inserted as independent copies. A block reference that follows its definition (what BEDIT edits) is not built. |
 | 119 | Sheets and plotting, rest | MVIEW (draw a viewport on the paper) PAGESETUP (plot settings beyond Sheet Setup) PUBLISH (V122's Print set prints every sheet in one job; a chosen subset and page setups remain) EXPORTPDF (vector PDF of a sheet) VPLAYER (per-viewport layer visibility) viewport lock | LAYOUT, MSPACE and PSPACE landed in V116, with layout tabs and model space through a viewport. |
 
-**Recently finished:** Phase 149 (V149), **the shell on a phone and a tablet**.
+**Recently finished:** Phase 150 (V150), **a tool palette for a phone and a tablet**.
+- Select, Pan, Line, Rectangle, Circle, Wall, Door, Window, Dimension, Delete and All tools in a
+  frosted capsule; the tool in use in blue; dragged by its grip, docked upright at an edge or flat,
+  folded to one round button, kept where it was left. The dock gives way to it on touch layouts.
+- **Checked** in 36 checks and 23 falsify variants.
+
+Phase 149 (V149), **the shell on a phone and a tablet**.
 - A phone upright: a labelled tab bar along the bottom with More for the rail's tools; the left
   panel a drawer over a full-width drawing, shut at the start, shut by its tab, a tap beside it
   or Esc. A tablet upright or a phone on its side: the rail and the same drawer. A computer and a
   tablet on its side: unchanged. The layout follows the screen as it turns.
 - Safe areas (notch, home bar) kept clear; messages above the bar; pinch and pan checked again.
 - Typing on a phone: every field 16 px on a touch screen, so iOS does not zoom in; the keyboard
-  lifts Properties and the drawer, the field tapped in view.
-- **Checked** in 73 checks on five screens, and 37 falsify variants.
+  lifts Properties and the drawer, the field tapped in view; Find keeps the address typed.
+- **Checked** in 74 checks on five screens, and 39 falsify variants.
 
 Phase 148 (V148), **Analyze, redesigned; results as layers**.
 - Analyze is a list in four groups (Model, Site and terrain, Structure, Environment): one line a

@@ -206,7 +206,7 @@ async def run():
             want = set(range(87, int(CUR[1:]) + 1)) - set(nums)
             ck(not want, "a note for every phase from V87 (%s missing)" % sorted(want))
             kept = build_docs.kept_versions()
-            ck(len(kept) >= 55 and all(lab.lower() in ''.join(pages['versions.html'].hrefs) for lab, _ in kept) and int(re.match(r'V(\d+)', kept[-1][0]).group(1)) == int(CUR[1:]) - 1,   # AMENDED FOR V143: the build kept before this phase
+            ck(len(kept) >= 55 and all(lab.lower() in ''.join(pages['versions.html'].hrefs) for lab, _ in kept) and int(re.match(r'V(\d+)', kept[-1][0]).group(1)) in (int(CUR[1:]) - 1, int(CUR[1:])),   # AMENDED FOR V143: the build kept before this phase; AMENDED FOR V149: or this phase's own earlier release, kept before a follow-up patch (149c)
                "the versions page lists every kept build, the newest the one before this phase (%d, %s)" % (len(kept), kept[-1][0]))
             labs = [lab for lab, _ in kept]
             ck(len(labs) == len(set(labs)), "each version once")

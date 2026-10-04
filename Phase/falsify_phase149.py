@@ -46,6 +46,9 @@ VARIANTS = {
     'sheet_under_keyboard': [("body.a3d-kb-up.a3d-props-right #a3d-right{bottom:var(--a3d-kb,0px)!important;", "body.a3d-kb-up.a3d-props-right #a3d-right{")],
     'drawer_under_keyboard': [("body.a3d-kb-up.a3d-tier-phone #a3d-leftpanel{bottom:var(--a3d-kb,0px)}", "")],
     'bar_taken_for_keyboard': [("    if(kb<80)kb=0;   /* a browser's bar showing and hiding is not a keyboard */\n", "")],
+    # ---- 149c: the address kept as typed
+    'addr_draft_dropped': [("      if(a)A3D_MAP_DRAFT=a.value;\n", "")],
+    'addr_drawn_empty': [("value=\"'+bimEsc(A3D_MAP_DRAFT!==null?A3D_MAP_DRAFT:((A3D.site&&A3D.site.address)||''))+", "value=\"'+bimEsc((A3D.site&&A3D.site.address)||'')+")],
     'no_resize': [("    window.addEventListener('resize',function(){bimShellApplyTier();});\n", "")],
 }
 
