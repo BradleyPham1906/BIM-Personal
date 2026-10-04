@@ -95,3 +95,69 @@ LandXML 1.2 is the open exchange format of civil design and survey software.
 - Feet and US survey feet are converted. Millimetre files are not read yet.
 
 **Re-triangulate** in Properties drops the file's triangles and triangulates the points again.
+
+## Grading
+
+A **pad** is a closed outline with a **Pad Elevation** (Properties). `GRADE` runs its slopes out
+to the existing ground and makes a **proposed surface**.
+
+**The slopes.** Each pad has a **Cut Slope** and a **Fill Slope** in Properties, as the
+horizontal run for a rise of one (2 is 2:1, the default).
+- Where the ground is above the pad, the slope rises at the cut slope until it meets the ground.
+- Where the ground is below, it falls at the fill slope.
+- The line where it meets the ground is the **daylight line**.
+
+The slope is always measured square to the pad's nearest edge:
+- along an edge, slope lines every 2 m;
+- round an outside corner, a fan of lines 15 degrees apart;
+- at an inside corner, the two slopes meet in a valley on the corner's bisector.
+
+**The proposed surface.** It is made of:
+- the existing points outside the daylight lines;
+- the pads, flat at their elevations;
+- the slopes, all held as breaklines.
+
+It keeps the existing surface's boundary, and the breaklines that stay clear of the grading.
+
+**Grading again.**
+- `GRADE` again (or **Grade Again** in its Properties) updates the proposed surface in place.
+- Pads graded before stay graded with the new ones.
+- A pad whose elevation is cleared leaves the grading.
+- When a pad or the existing ground changes, the surface says it is out of date.
+
+**What it tells you.**
+- Overlapping slopes are named.
+- A pad not wholly on the existing surface is refused.
+- Slopes that run off the surface's edge are counted.
+
+In plan, the proposed surface's contours are green and the existing ground under it is dashed. In
+3D, the proposed surface stands in for the existing one.
+
+## Cut and fill
+
+The proposed surface's **Grading** group gives the cut, the fill and the net, each with its area.
+`CUTFILL` measures them again, or, with two surfaces selected, measures the second against the
+first.
+
+The volume is exact for the two surfaces as triangulated:
+- each pair of overlapping triangles is clipped to their common piece;
+- on each piece, the difference of the two planes is integrated;
+- the piece is split where that difference is zero, so cut and fill are kept apart.
+
+The volume is measured only where both surfaces are.
+
+`CUTFILLMAP` (or **Colour By → Cut and fill**) colours the proposed surface by depth. The bands
+run from cut over 2 m to fill over 2 m, and the middle band is within 0.1 m. The Grading card in
+the **Analyze** tab does the same.
+
+## Spot elevations and slope arrows
+
+`SPOTELEV` labels the selected points (placed with `POINT`) with the height of the surface under
+them:
+- the proposed surface first;
+- or the surface selected with them.
+
+**Spot the Pad Corners**, in the proposed surface's Properties, places one at every pad corner.
+
+`SLOPEARROWS` (or **Slope Arrows** in Terrain Analysis) draws an arrow down each triangle large
+enough to hold one, with its slope in percent on the bigger ones.
