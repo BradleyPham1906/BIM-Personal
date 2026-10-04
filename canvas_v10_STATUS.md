@@ -12031,3 +12031,380 @@ rebuilds the build from `Phase/canvas_v10.html.bak_phase139_pre`. The diff is ES
     canvas_v10.html   2051220 bytes
     sha256            5787ea35787bee139f312548b1fb0e2c6c7d3a1987ece60796283575e082d85b
     markers           __acad3dV60 ... __acad3dV139, __acad3dV134d (and the 133d to 133f markers)
+
+## Phase 140 (V140) - LOD-B: LOD2 roofs from OpenStreetMap's tags
+
+The owner: "I don't want to see any surface that's too smooth. We want from LOD1 to LOD2 and
+ultimately LOD3." Every roof is planes; none is a smoothed mesh. A picture: `reference/v140_roofs.png`.
+
+### What was built (patches 140a, 140b)
+
+- **a -- the roofs.** `bimOsmRoof(footprint, tags, base, h, from)`:
+  - **hipped:** Phase 39's straight skeleton (any footprint without a deep notch), its slope set
+    so the ridge is at the roof's height;
+  - **gabled, half-hipped, gambrel, mansard, skillion** on a convex footprint: the **lower envelope
+    of planes** -- planes rising from the eaves (and from a knee, or from the ends), each keeping
+    the part of the footprint where it is lowest (a convex polygon clipped by half-planes). Ridges,
+    hips and knees are exact plane intersections;
+  - **pyramidal** on a convex footprint: a triangle from each edge to an apex over the centre;
+  - **flat:** the block, its top a roof.
+  - Walls rise to the roof's edge (every roof vertex on a footprint edge becomes a point of that
+    wall's top), so each building is one closed solid: ground, walls, roof. LOD **2.0**.
+  - Ridges run along the longest side of the smallest bounding rectangle, across it with
+    `roof:orientation=across`, or across `roof:direction` (compass points or degrees, turned by
+    true north). A skillion slopes down towards `roof:direction`.
+  - Heights: `height` is the whole building, `building:levels` the walls (the roof on top);
+    `roof:height`, else `roof:levels` x 3 m, else `roof:angle`, else an assumed 30 degrees. A roof
+    taller than its building is cut down to leave 0.5 m of wall, and says so.
+  - **Not faked:** dome, onion, round, cone, saltbox and the like, a non-convex footprint for
+    anything but hipped, and unknown shapes keep the LOD1 block, with the reason kept and shown.
+  - The context places the roofs (parts too, from their base); the toast and the last fetch
+    count them; the LOD's "how made" says the shape, its height and where it came from.
+  - CityJSON: a roofed building's faces come from its mesh; a face facing up is a RoofSurface.
+- **b -- the app.** A Roof row in the LOD group (shape, height, planes, eaves; a warning when not
+  built); the count in Last Fetch; hooks `__a3dOsmRoof`, `__a3dRoofDir`; the marker.
+
+### Checked against hand-worked volumes
+
+| Roof | Footprint | Volume |
+|---|---|---|
+| gabled, 8 m, roof 3 m | 10 x 6 | 390 m3 |
+| hipped, 9 m, roof 3 m | 12 x 8 | 688 m3 |
+| pyramidal, 2 levels, roof 4 m | 8 x 8 | 469.333 m3 |
+| skillion, 7 m, roof 2 m | 10 x 6 | 360 m3 |
+| half-hipped, 10 m, roof 4 m | 12 x 8 | 765.269 m3 |
+| gambrel, 10 m, roof 4 m | 10 x 8 | 704 m3 |
+| mansard, 10 m, roof 4 m | 12 x 10 | 1000 m3 |
+
+Every one a valid solid (V139's check), every face flat to 1 cm, and the CityJSON valid by cjval.
+
+### Bugs found
+
+- None in the build. The suite's own expectations were wrong three times (a 45 degree roof on 6 m
+  walls is 450 m3, not 390; heights are kept to the millimetre; six LOD2 objects, not seven).
+
+### Suites
+
+- New: `bim_phase140_lod2_roofs_browser_tests.py`, 55 checks (it reuses V133's and V139's
+  fixtures).
+- Falsified by `Phase/falsify_phase140.py`, 32 variants, all caught on the first run.
+- `Phase/falsify_phase139.py` anchors on two lines V140 changed (the extrusion); it is run against
+  V139's build, as every falsify script is against its own phase.
+
+### Not done
+
+- Gabled (and the other ridged shapes) on non-convex footprints: OSM mappers usually split those
+  into parts, which are roofed one by one. A straight skeleton with gable ends would cover them.
+- Curved roofs; roof overhangs and dormers (LOD2.2+, from LiDAR in LOD-D).
+
+### Full regression and state after V140
+
+97 suites, 3810 checks, 0 failures. Falsification: V140 32 of 32. The chain 140a, 140b rebuilds the
+build from `Phase/canvas_v10.html.bak_phase140_pre`. The diff is ES5-clean.
+
+    canvas_v10.html   2066633 bytes
+    sha256            8865255cbd70859646657afb7270f847db226977c180eae4084d9226e8f39b9d
+    markers           __acad3dV60 ... __acad3dV140, __acad3dV134d (and the 133d to 133f markers)
+
+## Phase 141 (V141) - A shorter right panel, and an Analyze tab
+
+The owner: "clean up the right side panels because it is too much as we add more stuff", and
+"adding analyze below assets". With nothing selected, Properties held nine groups, about 2,460 px.
+The owner chose tabs in Properties for the site's settings, and this order: panels and Analyze,
+then Simulation (V142), then terrain (V143). A picture: `reference/v141_analyze.png`.
+
+### What was built (patch 141a)
+
+- **Tabs in Properties,** with nothing selected: Project | Site | View | Analysis.
+  - Project: Identity Data (project, client, site), Statistics.
+  - Site: **Location** (true north, latitude, longitude, UTC offset, the sun's date and time,
+    moved out of Identity Data), Map, Site Context, Data Layers.
+  - View: View. Analysis: Floor Loads, the frame's Analysis page, Areas by Usage, Usages.
+  - Every tab's groups stay in the page, the others hidden, so the 31 handlers on the panel keep
+    working and commands can reach any field. A tab turns in place. The tab is remembered per
+    viewer (localStorage, with fall-backs). A selection shows the object, with no tabs.
+  - Each tab is a fraction of the old height (Project, View and Analysis about 710 px, Site about
+    1,370 px).
+  - USAGES, COLOURBY, DATALAYERS and FINDDATA turn to their group's tab (`bimPropReveal`).
+- **Analyze, on the rail below Assets:** seven cards -- Structure, Sun and Shadows, Colour By,
+  Areas by Usage, Survey Check, Buildings: LOD and Solids, Statistics. Each says what it shows
+  now, with buttons to run it (ANALYZE, SUNSTUDY, SURVEYCHECK, LODCHECK, Export CityJSON) or
+  open its settings in Properties on the right tab. A button with nothing to act on is disabled
+  and says why. The panel follows the model (it redraws with Properties). LODCHECK's last result
+  is kept for its card. ANALYSES opens the tab. Both new controls are claimed in V80's shell audit.
+
+### Bugs found
+
+- The Analyze tab's long content squeezed the panel's project header; it keeps its height there.
+- The LOD card called a CityJSON plaza a building: it counts "buildings and city objects".
+- The first falsify run missed one variant (a tab click that did not save the tab): the reload
+  check had set the tab through a hook, not a click. It clicks now.
+
+### Suites
+
+- New: `bim_phase141_panels_analyze_browser_tests.py`, 49 checks.
+- Falsified by `Phase/falsify_phase141.py`, 21 variants, all caught.
+- Amended for V141 (each marked): V73 (ten groups), V106 and V125 (Analysis tab), V107, V119 and
+  V132 (Site tab), V113, V119 and V120 (the fifth rail button), V118 (after Client comes Site),
+  V121 (View tab).
+
+### Full regression and state after V141
+
+98 suites, 3859 checks, 0 failures. Falsification: V141 21 of 21. Patch 141a rebuilds the build from
+`Phase/canvas_v10.html.bak_phase141_pre`. The diff is ES5-clean.
+
+    canvas_v10.html   2081160 bytes
+    sha256            2318f9ba19eb452e6badb03f1bbcfb0ea90cbf960936c19e967664eeb0e96d5d
+    markers           __acad3dV60 ... __acad3dV141, __acad3dV134d (and the 133d to 133f markers)
+
+## Phase 142 (V142) - The user guide, and versions
+
+The owner: "something documented like AutoCAD and Rhinoceros on their websites ... as this app
+evolves we need documentation and versioning". The app now has a user guide on its own site,
+release notes for every version, every older build kept online, and help from inside the app.
+The owner's Rhino guide chapters were read for what the app lacks
+(`reference/research-rhino-guide-gap.md`); none of McNeel's text is in the guide, which is written
+about this app in its own words.
+
+### What was built
+
+- **In the app (patch 142a):**
+  - The app knows its version (V142 and the date). Properties > Project > Statistics shows it,
+    linked to its release notes and to the guide.
+  - DOCS (GUIDE, MANUAL, USERGUIDE) opens the guide; RELEASENOTES (VERSION, WHATSNEW) opens this
+    version's notes.
+  - F1 in the command search opens the highlighted command's entry in the reference.
+- **The guide (`docs/`), built by `tools/build_docs.py`** (standard library only):
+  - **Nine pages,** written for this app: getting started, drawing, building model, site and
+    context, survey and terrain, buildings and LOD, analysis, sheets and files.
+  - **A command reference** generated from the app's own catalogue and keys
+    (`tools/dump_catalog.py` writes `docs/data/catalog.json` from the build).
+  - **Release notes,** one per phase from this log, newest first.
+  - **A versions page.**
+- **The site (`tools/build_site.py`, run by the Pages workflow):**
+  - the newest app;
+  - the guide, refused if it is not current (`build_docs.py --check`);
+  - every build kept in `Phase/` before a phase, at `v/<version>/`, named by the newest phase
+    marker in it (55 versions, V86 to V141).
+
+### Bugs found
+
+- **The guide's own check caught two false claims.** `MOVE` and `EXPLODE` are in the old command
+  list but do not run in the engine, so the guide no longer names them. The Rhino comparison was
+  corrected the same way, and the two commands are listed as quick wins.
+- **Four more claims were cut down to what each command says it does:** AREAPLAN, JOIN,
+  LENGTHEN and BREAKATPOINT (walls), CLASSIFY.
+- **Builds V113 to V122 carry their markers only in comments,** so the first version labels
+  skipped them. A version is now named by any marker in the build.
+- **The suite caught a real clash:** the guide's state was first named `A3D_DOCS`, the name of
+  the project list behind the tabs. It overwrote that list and broke the tabs at load. It is
+  `A3D_GUIDE` now.
+- **The release notes needed ordering:** V105b was logged after V112, and two headings name two
+  versions each (V133d and V133e; V134 and V134d). The notes are sorted by version number, with an
+  anchor for every version a heading names.
+
+### Suites
+
+- New: `bim_phase142_guide_versions_browser_tests.py`, 31 checks. It holds the guide to the build:
+  - the catalogue file is the build's own;
+  - `build_docs.py --check` passes;
+  - every command named in a page runs, every link and anchor resolves, every command has an
+    entry;
+  - the notes cover V87 to V142, newest first;
+  - the site build carries every older version byte for byte;
+  - the pages open with no errors and no network, and fit a phone screen.
+- Falsified by `Phase/falsify_phase142.py`, 12 variants, all caught.
+
+### How to keep it current (every phase from now on)
+
+1. Write or amend the guide page the phase touches (`docs/src/*.md`).
+2. Add the phase's entry to this log.
+3. Raise `BIM_APP_VERSION`.
+4. Run `python3 tools/dump_catalog.py`, then `python3 tools/build_docs.py`.
+
+The V142 suite and the Pages workflow refuse a guide that does not match the build.
+
+### Full regression and state after V142
+
+99 suites, 3890 checks, 0 failures. Falsification: V142 12 of 12. Patch 142a rebuilds the build from
+`Phase/canvas_v10.html.bak_phase142_pre`. The diff is ES5-clean.
+
+    canvas_v10.html   2084107 bytes
+    sha256            44aceab1c180f1ff19e2c223e7be1a52a4274d126685d4a602090454fb1ebf7f
+    markers           __acad3dV60 ... __acad3dV142, __acad3dV134d (and the 133d to 133f markers)
+
+## Phase 143 (V143) - Simulation: sun hours, solar on roofs and facades, rain on terrain
+
+The owner asked for simulation "below or in analyze mode". The Analyze tab gets a Simulation
+section with three simulations, each run on request, drawn over the plan, and saying when the
+model has changed since it ran.
+
+### What was built (patches 143a, 143b)
+
+- **SUNHOURS: hours of direct sun on the ground through the site's date.**
+  - Every 15 minutes of daylight, every solid's triangles are cast along the sun onto the ground
+    (V107's shadow model) and rasterised onto a grid. Each cell counts the steps it is lit.
+  - Cells under a building are its roof and are left out.
+  - Drawn as a heat map, with a legend in its card.
+- **SOLAR: a clear-sky year on every face of the solids.**
+  - The year: the 21st of each month, every half hour, weighted by the month's days.
+  - Beam: Meinel's DNI, 1361 x 0.7^(AM^0.678), with Kasten and Young's air mass.
+  - Sky: 0.1 x DNI on the horizontal, by (1 + cos tilt)/2.
+  - Shading: beam only when a ray from the face's centre to the sun meets no solid (a box test,
+    then Moller-Trumbore triangles).
+  - Run in slices so the page stays alive.
+  - Each solid keeps its roof's and facades' kWh/m2 a year (saved). Colour By offers them; the
+    LOD group shows them.
+  - The selection's solids, or every solid when nothing solid is selected.
+- **RAINFLOW: rain on a terrain.**
+  - The TIN is sampled on a grid.
+  - Priority-Flood (Barnes et al. 2014), with an epsilon, fills the depressions and makes every
+    cell drain.
+  - Each cell drains to its steepest lower neighbour (D8); inside a pond, the way the flood came.
+  - Accumulation, highest first, finds the flow lines. Ponds are joined into pools, each with its
+    area, volume, deepest point and level.
+  - Drawn as blue ponds and flow lines, thicker as they gather.
+- **Analyze:** Sun Hours, Solar on Roofs and Facades, and Rain on Terrain cards (Run, Clear, Colour
+  By, Date). States: On, Off, Running, Out of date.
+- **Commands:** SUNHOURS, SOLAR, RAINFLOW, SIMCLEAR, with search words.
+- **The version** is V143. The guide's Analysis page has a Simulation section.
+
+### Bugs found
+
+- **Solar on "0 solids":** with only a terrain selected, the selection gave no targets. A
+  selection with no solid in it now means every solid.
+- **The suite's own checks were wrong three times:**
+  - its times were not rounded to the minute as the app's are, so it read no sun at all;
+  - it measured a roof from the roof's middle, where the app measures each triangle from its own
+    centre;
+  - it shaded with the neighbour only, where the app (rightly) shades with every solid.
+
+### Suites
+
+- New: `bim_phase143_simulation_browser_tests.py`. Each simulation is held to an independent
+  calculation in Python from the same sun positions:
+  - every cell's sun hours against a ray cast past the tower's box, step by step;
+  - open, south, north and shaded faces against Meinel summed by hand;
+  - a bowl's pond against the same fill in Python;
+  - two bowls, a plane, a valley.
+- Amended for V143: V141 (the three simulation cards); V142 (the version is the newest in the log,
+  not V142 for ever).
+- **Falsified by `Phase/falsify_phase143.py`,** 24 variants, all caught. The first run missed
+  three, each a gap closed with a real case:
+  - roof cells counted as ground: the 6-hour share is now held to the rays to 0.1%;
+  - box-only shading: an L-shaped building whose box covers an empty notch;
+  - pond volume without the cell area: the bowl now has 2 m cells.
+
+### Not done
+
+- Clouds and weather: a year from EPW or NASA POWER data would turn the clear-sky potential into
+  an expected yield.
+- Sun hours on facades; wind; energy. Rain on the buildings' roofs.
+
+### Full regression and state after V143
+
+100 suites, 3933 checks, 0 failures. Falsification: V143 24 of 24. The chain 143a, 143b rebuilds the
+build from `Phase/canvas_v10.html.bak_phase143_pre`. The diff is ES5-clean.
+
+    canvas_v10.html   2112160 bytes
+    sha256            fbb7109fe64df201030f6b2ceabc6d8a23fe13fc53f60192ef7684fe1fb5b65e
+    markers           __acad3dV60 ... __acad3dV143, __acad3dV134d (and the 133d to 133f markers)
+
+## Phase 144 (V144) - Terrain: breaklines, boundaries, slope, elevation and aspect, LandXML
+
+The owner's third item, after panels and simulation: "continue working on terrain". This phase
+makes a surface follow the lines a surveyor or designer draws, trims it, analyses it and exchanges
+it. Grading (pads with daylight slopes, a cut and fill report, spot elevations) follows in V145.
+
+### What was built (patches 144a, 144b)
+
+- **How a surface is triangulated** (`bimTinBuild`, cached against the survey, its faces,
+  breaklines and boundary):
+  - a surface with its own triangles (from LandXML) keeps them;
+  - else Delaunay of the points, then each breakline and boundary segment forced in by flipping
+    the edges that cross it (Sloan 1993);
+  - a segment through an existing point is split at it;
+  - where two lines cross, both get a vertex at the crossing, else neither could be held;
+  - a vertex between survey points takes the height the surface already has there;
+  - with a boundary, triangles whose centroid is outside are dropped, and the survey points left
+    without a triangle are counted as outside.
+- **BREAKLINE:** the selected polylines, into the surface under them (or the selected one). Saved
+  as `o.breaklines` [{name, pts:[[x, z, y or null]], from}].
+- **Survey codes:** points described `BL1`, `BRK-ridge` and so on are joined in file order, one
+  line per name, at their own elevations.
+- **TERRAINBOUNDARY:** a closed polyline becomes `o.boundary`.
+- **Analysis:** each triangle's plane gives its slope (%), aspect (the compass way it falls,
+  through True North) and plan area.
+  - Slope bands: 0, 2, 5, 8.33 (1:12), 15, 25, 50%.
+  - Elevation: seven equal steps.
+  - Aspect: flat under 2%, then eight directions.
+  - Drawn in plan at 55%, with a legend in the safe area. Properties' Terrain Analysis group has
+    Colour By and the band table.
+  - Commands: SLOPEMAP, ELEVATIONMAP, ASPECTMAP, TERRAINANALYSISOFF (the selection, else every
+    surface). A Terrain card in Analyze.
+- **LandXML 1.2:**
+  - Out (LANDXMLOUT): points back in the survey's own northing, easting and elevation through True
+    North and its units (Metric, or Imperial foot or USSurveyFoot), faces, and breaklines and
+    boundary as SourceData.
+  - In (LANDXMLIN, IMPORTCAD .xml/.landxml): every TIN surface, with its faces kept (invisible
+    faces dropped, all turned counter-clockwise), placed by the site's survey base (else the first
+    point), feet converted, millimetres refused.
+  - Re-triangulate in Properties drops the file's faces.
+- **Survey check:** the survey's own points only, and those outside the boundary are left out and
+  said.
+- **The version** is V144. The guide's Survey and terrain page has Breaklines, The boundary, Slope,
+  elevation and aspect, and LandXML.
+
+### Bugs found
+
+- **A breakline crossing the boundary** left both unheld ("it crosses another breakline"), so the
+  trim was jagged. Fixed by splitting every pair of crossing lines at the crossing first.
+- **The survey check failed a bounded surface** because it walked the breaklines' new vertices as
+  if they were survey points. The check, bust shots and public-terrain comparison now use the
+  survey's own points (`tin.nSurvey`).
+- **A second `__a3dTerrainTin` hook** (V108's) defined later overrode the new one; it is now
+  extended in place.
+- **The legend's text was centred:** it inherited `textAlign` from the contour labels. It is set
+  explicitly now.
+- **LandXML breakline vertices outside the boundary** were written without heights; they now take
+  the height their vertex has in the surface.
+- **The cache key** used the length of the breakline JSON; it now uses the JSON itself.
+- **Units on export:** a surface with no source of its own now uses the site's survey base units.
+- **The suite's own mistakes:**
+  - the site was read from `__a3dState` (it has none);
+  - the elevation label was expected as "0.00" (bimDispNum trims to "0");
+  - the breakline coverage was expected past the boundary.
+
+### Suites
+
+- New: `bim_phase144_terrain_browser_tests.py`, 83 checks. Each result has its own calculation in
+  Python:
+  - a hand-written LandXML in feet;
+  - planes of known gradient and facing (and True North 90);
+  - a bowl's elevation bands from its triangles;
+  - breakline coverage measured from the TIN's edges;
+  - a coded ridge against a control without codes;
+  - the boundary's area to 1e-6;
+  - a survey in US survey feet at True North 30 coming back to its own coordinates;
+  - IMPORTCAD, Remove, undo and the reload.
+- Amended for V144: V141 (the terrain card in the Analyze list); V62 (LandXML's namespace host,
+  written into files, never fetched).
+- **Falsified by `Phase/falsify_phase144.py`,** 36 variants, all caught. The first run missed one:
+  a breakline straight through survey points. The suite now has one.
+
+### Not done
+
+- Grading: pads with daylight slopes, a proposed surface, a cut and fill report between two
+  surfaces, spot elevations and slope arrows (V145).
+- LandXML: alignments and profiles (V127 has them), millimetre files, and breaklines read back from
+  SourceData (the file's own faces already carry them).
+- Horizontal control and raw total-station files.
+
+### Full regression and state after V144
+
+101 suites, 4016 checks, 0 failures. Falsification: V144 36 of 36. The chain 144a, 144b rebuilds the
+build from `Phase/canvas_v10.html.bak_phase144_pre`. The diff is ES5-clean.
+
+    canvas_v10.html   2148830 bytes
+    sha256            79f1439d8351ea4c3669f44fdd1fb975567b39d404eb6cc28d6f96adec6b1353
+    markers           __acad3dV60 ... __acad3dV144, __acad3dV134d (and the 133d to 133f markers)

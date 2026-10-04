@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Drawing - BIM Personal guide</title><style>
+:root{--bg:#ffffff;--fg:#1d2329;--mut:#5b6670;--line:#e3e7eb;--side:#f6f7f9;--acc:#2f6fd6;--code:#f1f3f5}
+@media (prefers-color-scheme:dark){:root{--bg:#16191d;--fg:#e4e8ec;--mut:#9aa5b0;--line:#2c3238;--side:#1d2126;--acc:#6ea0ff;--code:#22272d}}
+*{box-sizing:border-box}html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.6 Inter,system-ui,-apple-system,Segoe UI,sans-serif}
+a{color:var(--acc);text-decoration:none}a:hover{text-decoration:underline}
+.wrap{display:grid;grid-template-columns:250px minmax(0,1fr);min-height:100vh}
+nav.side{background:var(--side);border-right:1px solid var(--line);padding:18px 16px;position:sticky;top:0;height:100vh;overflow:auto}
+nav.side .brand{font-weight:700;font-size:16px;margin-bottom:2px}
+nav.side .ver{color:var(--mut);font-size:12px;margin-bottom:14px}
+nav.side a{display:block;padding:4px 8px;border-radius:6px;color:var(--fg);font-size:14px}
+nav.side a.on{background:rgba(47,111,214,.12);color:var(--acc);font-weight:600}
+nav.side .sep{border-top:1px solid var(--line);margin:10px 0}
+main{padding:28px 40px 60px;max-width:900px}
+h1{font-size:28px;margin:0 0 14px}h2{font-size:20px;margin:30px 0 8px;padding-top:6px;border-top:1px solid var(--line)}h3{font-size:16px;margin:20px 0 6px}
+code{background:var(--code);padding:1px 5px;border-radius:4px;font:13px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace}
+pre{background:var(--code);padding:12px;border-radius:8px;overflow:auto}pre code{padding:0}
+table{border-collapse:collapse;width:100%;margin:10px 0 16px;font-size:14px;display:block;overflow-x:auto}
+th,td{border:1px solid var(--line);padding:6px 9px;text-align:left;vertical-align:top}th{background:var(--side)}
+ul,ol{padding-left:22px}li{margin:3px 0}
+.toc{font-size:13px;color:var(--mut);margin:-4px 0 18px}.toc a{margin-right:12px}
+.cmd{border:1px solid var(--line);border-radius:9px;padding:10px 14px;margin:10px 0}
+.cmd h3{margin:0 0 4px;font-size:16px}.cmd .al{color:var(--mut);font-size:13px}.cmd .wh{color:var(--mut);font-size:13px}
+.cmd:target{border-color:var(--acc);box-shadow:0 0 0 2px rgba(47,111,214,.25)}
+.filter{width:100%;padding:9px 12px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg);font:inherit;margin:6px 0 10px}
+.rel{border-left:3px solid var(--line);padding:2px 0 2px 14px;margin:14px 0}.rel:target{border-left-color:var(--acc)}
+.rel h3{margin:0}.rel p{margin:4px 0;color:var(--fg)}
+footer{color:var(--mut);font-size:12px;margin-top:40px;border-top:1px solid var(--line);padding-top:10px}
+@media (max-width:760px){.wrap{display:block}nav.side{position:static;height:auto;border-right:0;border-bottom:1px solid var(--line)}main{padding:18px 16px 40px}}
+</style></head><body><div class="wrap"><nav class="side"><div class="brand">BIM Personal</div><div class="ver">User guide for V144, 2026-10-04</div><a href="index.html">User Guide</a><a href="getting-started.html">Getting started</a><a href="drawing.html" class="on">Drawing</a><a href="bim.html">Building model</a><a href="site.html">Site and context</a><a href="survey-terrain.html">Survey and terrain</a><a href="buildings-lod.html">Buildings and LOD</a><a href="analysis.html">Analysis</a><a href="sheets-files.html">Sheets and files</a><div class="sep"></div><a href="commands.html">Command reference</a><a href="changelog.html">Release notes</a><a href="versions.html">Versions</a><div class="sep"></div><a href="../index.html">Open the app</a><a href="https://github.com/BradleyPham1906/BIM-Personal">Source on GitHub</a></nav><main><h1 id="drawing">Drawing</h1><div class="toc"><a href="#draw">Draw</a><a href="#constraints">Constraints</a><a href="#modify">Modify</a><a href="#dimensions-and-text">Dimensions and text</a><a href="#layers">Layers</a></div>
+<p>The drafting tools work in plan, on the active level.</p>
+<h2 id="draw">Draw</h2>
+<table><thead><tr><th>To draw</th><th>Command</th></tr></thead><tbody><tr><td>a line</td><td><code>LINE</code></td></tr><tr><td>a polyline (with arcs)</td><td><code>PLINE</code></td></tr><tr><td>a rectangle</td><td><code>RECTANG</code></td></tr><tr><td>an arc</td><td><code>ARC</code></td></tr><tr><td>a circle</td><td><code>CIRCLE</code></td></tr><tr><td>a regular polygon</td><td><code>POLYGON</code></td></tr><tr><td>a point</td><td><code>POINT</code></td></tr><tr><td>construction lines and rays</td><td><code>XLINE</code>, <code>RAY</code></td></tr><tr><td>points along a curve</td><td><code>DIVIDE</code>, <code>MEASURE</code></td></tr><tr><td>a closed boundary from what surrounds a point</td><td><code>BOUNDARY</code></td></tr><tr><td>a hatch</td><td><code>HATCH</code> (edit with <code>HATCHEDIT</code>)</td></tr></tbody></table>
+<p><strong>Exact input.</strong> While a tool is running, you can type:</p>
+<ul><li>a length or an angle;</li><li>a coordinate;</li><li><strong>C</strong> to close.</li></ul>
+<p><code>OSNAP</code> turns object snaps on and off, <code>ORTHO</code> locks to right angles, and <code>GRID</code> shows the grid.</p>
+<h2 id="constraints">Constraints</h2>
+<p>Geometric constraints keep relations as you edit:</p>
+<ul><li><code>GCHORIZONTAL</code>, <code>GCVERTICAL</code>, <code>GCPARALLEL</code>, <code>GCPERPENDICULAR</code>;</li><li><code>GCCOINCIDENT</code>, <code>GCEQUAL</code>, <code>GCMIDPOINT</code>;</li><li><code>GCSYMMETRICLINE</code>, <code>GCSYMMETRICPOINT</code>, <code>GCPOINTONLINE</code>.</li></ul>
+<p>Dimensional constraints fix a size: <code>DCDISTANCE</code>, <code>DCANGLE</code>.</p>
+<h2 id="modify">Modify</h2>
+<ul><li><strong>Moving and copying:</strong> drag a selection, or use the gizmo, to move it; <code>COPY</code>, <code>ROTATE</code>, <code>SCALE</code>, <code>MIRROR</code>, <code>ALIGN</code>.</li><li><strong>Arrays:</strong> <code>ARRAYRECT</code>, <code>ARRAYPOLAR</code>.</li><li><strong>Editing lines:</strong> <code>OFFSET</code>, <code>TRIM</code>, <code>EXTEND</code>, <code>BREAK</code>. For walls, <code>LENGTHEN</code> changes a length at one end and <code>BREAKATPOINT</code> splits a wall at a point.</li><li><strong>Corners:</strong> <code>FILLET</code>, <code>CHAMFER</code>.</li><li><strong>Deleting:</strong> <code>ERASE</code>.</li><li><strong>The gizmo</strong> (<code>GIZMO</code>): moves, rotates and scales a selection in place.</li><li><strong>Faces:</strong> <code>PRESSPULL</code>, or drag a face, to push or pull it.</li></ul>
+<p><code>SELECTALL</code> selects everything. A window drag selects what is inside it, and a crossing drag (right to left) what it touches.</p>
+<h2 id="dimensions-and-text">Dimensions and text</h2>
+<ul><li><strong>Dimensions:</strong> <code>DIMLINEAR</code>, <code>DIMANGULAR</code>, <code>DIMRADIUS</code>, <code>DIMDIAMETER</code>.</li><li><strong>Text and leaders:</strong> <code>TEXT</code>, <code>MTEXT</code>, <code>LEADER</code>.</li></ul>
+<p>Dimensions and hatches follow what they are attached to.</p>
+<h2 id="layers">Layers</h2>
+<p><code>LAYER</code> opens the Layers panel. There you can:</p>
+<ul><li>make sub-layers;</li><li>turn layers off;</li><li>freeze or lock them;</li><li>set colour, linetype and lineweight.</li></ul>
+<p>The layer tree is also the Layers tab on the left rail.</p><footer>Guide for V144 (2026-10-04). Built from the repository by tools/build_docs.py.</footer></main></div></body></html>

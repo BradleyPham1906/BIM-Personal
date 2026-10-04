@@ -77,6 +77,7 @@ async def run():
 
         async def set_load(lid, f, v):
             await show_level(lid)
+            await safe("()=>window.__a3dSetPropTab&&window.__a3dSetPropTab('analysis')")   # AMENDED FOR V141: the field is on Properties' Analysis tab
             try:
                 loc = page.locator('input[data-propmodel="%s"]' % f)
                 await loc.fill(v, timeout=3000)

@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Survey and terrain - BIM Personal guide</title><style>
+:root{--bg:#ffffff;--fg:#1d2329;--mut:#5b6670;--line:#e3e7eb;--side:#f6f7f9;--acc:#2f6fd6;--code:#f1f3f5}
+@media (prefers-color-scheme:dark){:root{--bg:#16191d;--fg:#e4e8ec;--mut:#9aa5b0;--line:#2c3238;--side:#1d2126;--acc:#6ea0ff;--code:#22272d}}
+*{box-sizing:border-box}html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.6 Inter,system-ui,-apple-system,Segoe UI,sans-serif}
+a{color:var(--acc);text-decoration:none}a:hover{text-decoration:underline}
+.wrap{display:grid;grid-template-columns:250px minmax(0,1fr);min-height:100vh}
+nav.side{background:var(--side);border-right:1px solid var(--line);padding:18px 16px;position:sticky;top:0;height:100vh;overflow:auto}
+nav.side .brand{font-weight:700;font-size:16px;margin-bottom:2px}
+nav.side .ver{color:var(--mut);font-size:12px;margin-bottom:14px}
+nav.side a{display:block;padding:4px 8px;border-radius:6px;color:var(--fg);font-size:14px}
+nav.side a.on{background:rgba(47,111,214,.12);color:var(--acc);font-weight:600}
+nav.side .sep{border-top:1px solid var(--line);margin:10px 0}
+main{padding:28px 40px 60px;max-width:900px}
+h1{font-size:28px;margin:0 0 14px}h2{font-size:20px;margin:30px 0 8px;padding-top:6px;border-top:1px solid var(--line)}h3{font-size:16px;margin:20px 0 6px}
+code{background:var(--code);padding:1px 5px;border-radius:4px;font:13px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace}
+pre{background:var(--code);padding:12px;border-radius:8px;overflow:auto}pre code{padding:0}
+table{border-collapse:collapse;width:100%;margin:10px 0 16px;font-size:14px;display:block;overflow-x:auto}
+th,td{border:1px solid var(--line);padding:6px 9px;text-align:left;vertical-align:top}th{background:var(--side)}
+ul,ol{padding-left:22px}li{margin:3px 0}
+.toc{font-size:13px;color:var(--mut);margin:-4px 0 18px}.toc a{margin-right:12px}
+.cmd{border:1px solid var(--line);border-radius:9px;padding:10px 14px;margin:10px 0}
+.cmd h3{margin:0 0 4px;font-size:16px}.cmd .al{color:var(--mut);font-size:13px}.cmd .wh{color:var(--mut);font-size:13px}
+.cmd:target{border-color:var(--acc);box-shadow:0 0 0 2px rgba(47,111,214,.25)}
+.filter{width:100%;padding:9px 12px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg);font:inherit;margin:6px 0 10px}
+.rel{border-left:3px solid var(--line);padding:2px 0 2px 14px;margin:14px 0}.rel:target{border-left-color:var(--acc)}
+.rel h3{margin:0}.rel p{margin:4px 0;color:var(--fg)}
+footer{color:var(--mut);font-size:12px;margin-top:40px;border-top:1px solid var(--line);padding-top:10px}
+@media (max-width:760px){.wrap{display:block}nav.side{position:static;height:auto;border-right:0;border-bottom:1px solid var(--line)}main{padding:18px 16px 40px}}
+</style></head><body><div class="wrap"><nav class="side"><div class="brand">BIM Personal</div><div class="ver">User guide for V144, 2026-10-04</div><a href="index.html">User Guide</a><a href="getting-started.html">Getting started</a><a href="drawing.html">Drawing</a><a href="bim.html">Building model</a><a href="site.html">Site and context</a><a href="survey-terrain.html" class="on">Survey and terrain</a><a href="buildings-lod.html">Buildings and LOD</a><a href="analysis.html">Analysis</a><a href="sheets-files.html">Sheets and files</a><div class="sep"></div><a href="commands.html">Command reference</a><a href="changelog.html">Release notes</a><a href="versions.html">Versions</a><div class="sep"></div><a href="../index.html">Open the app</a><a href="https://github.com/BradleyPham1906/BIM-Personal">Source on GitHub</a></nav><main><h1 id="survey-and-terrain">Survey and terrain</h1><div class="toc"><a href="#a-surface-from-survey-points">A surface from survey points</a><a href="#verify-every-survey">Verify every survey</a><a href="#the-terrain-in-3d">The terrain in 3D</a><a href="#breaklines">Breaklines</a><a href="#the-boundary">The boundary</a><a href="#slope-elevation-and-aspect">Slope, elevation and aspect</a><a href="#landxml">LandXML</a></div>
+<h2 id="a-surface-from-survey-points">A surface from survey points</h2>
+<p><code>SURVEY</code> reads survey points and builds a terrain surface (a TIN) with contours.</p>
+<p><strong>What it reads:</strong></p>
+<ul><li>point files in PNEZD, PENZD or XYZ order, from a file or pasted in;</li><li>metres or US survey feet;</li><li>an elevation at model 0.</li></ul>
+<p><strong>Check shots.</strong> Points whose description starts with the check code (CHK by default) are kept out of the surface and measured against it.</p>
+<p><strong>Earthwork.</strong> The surface gives cut and fill against building pads.</p>
+<h2 id="verify-every-survey">Verify every survey</h2>
+<p><code>SURVEYCHECK</code> checks a surface, and its Survey Check group in Properties shows each check with a pass, warning or failure:</p>
+<table><thead><tr><th>Check</th><th>What it looks at</th></tr></thead><tbody><tr><td>read</td><td>lines that could not be read, by number</td></tr><tr><td>duplicates</td><td>points with the same name</td></tr><tr><td>through every point</td><td>the surface passes through every point, to 1 mm</td></tr><tr><td>triangles</td><td>no triangle without area</td></tr><tr><td>bust shots</td><td>points far from the plane through their neighbours</td></tr><tr><td>check shots</td><td>RMSE of the check shots against the surface</td></tr><tr><td>control</td><td>points whose elevation you know, typed as name=elevation, to 2 cm</td></tr><tr><td>public terrain</td><td>the offset from the public terrain, and feet read as metres</td></tr></tbody></table>
+<p><strong>Export Report</strong> writes the result as a page to keep with the survey.</p>
+<h2 id="the-terrain-in-3d">The terrain in 3D</h2>
+<p>In 3D views, the surface is drawn shaded with the basemap draped over it. Context buildings stand on it.</p>
+<h2 id="breaklines">Breaklines</h2>
+<p>A breakline is a line the surface must follow: a ridge, a ditch, the top or toe of a bank, a kerb. Without one, the triangles join whatever points are nearest and can cut across the line.</p>
+<p><strong>From the drawing.</strong> Draw a polyline over the surface, select it (and the surface, if there are several), then run <code>BREAKLINE</code>. Each segment is forced into the triangles. Where the line meets ground between survey points, a vertex is added at the height the surface already has there.</p>
+<p><strong>From the survey.</strong> Points whose description starts with BL or BRK and a name (BL1, BRK-ridge) are joined, in file order, into one breakline per name. They keep their own elevations.</p>
+<p>Lines that cross each other get a shared vertex where they cross, so both are held. A segment that cannot be held is named in the message and in Properties.</p>
+<h2 id="the-boundary">The boundary</h2>
+<p><code>TERRAINBOUNDARY</code> trims the surface to the selected closed polyline. The boundary is held like a breakline, and the triangles outside it are dropped. The survey points outside stay in the survey but are left out of the surface. The survey check counts them and does not treat them as errors.</p>
+<h2 id="slope-elevation-and-aspect">Slope, elevation and aspect</h2>
+<p>Properties of a surface → <strong>Terrain Analysis → Colour By</strong> colours it in plan, with a legend and the area in each band.</p>
+<table><thead><tr><th>Colour By</th><th>Bands</th></tr></thead><tbody><tr><td>Slope</td><td>0–2%, 2–5%, 5–8.33% (1:12), 8.33–15%, 15–25%, 25–50%, 50% and over</td></tr><tr><td>Elevation</td><td>seven equal steps from the lowest point to the highest</td></tr><tr><td>Aspect</td><td>flat (under 2%), then north, north-east ... north-west: the way the ground falls, measured from True North</td></tr></tbody></table>
+<p>Each triangle is measured on its own plane, and its plan area goes to its band. The same commands are <code>SLOPEMAP</code>, <code>ELEVATIONMAP</code>, <code>ASPECTMAP</code> and <code>TERRAINANALYSISOFF</code>. Each works on the selected surfaces, or on every surface when nothing is selected. The Terrain card in the <strong>Analyze</strong> tab does the same.</p>
+<h2 id="landxml">LandXML</h2>
+<p>LandXML 1.2 is the open exchange format of civil design and survey software.</p>
+<p><strong>Out.</strong> <code>LANDXMLOUT</code> writes every surface (or the selected ones) with:</p>
+<ul><li>its points, back in the survey's own northings, eastings and elevations and in its own units;</li><li>its triangles;</li><li>its breaklines and boundary, as source data.</li></ul>
+<p><strong>In.</strong> <code>LANDXMLIN</code>, or <code>IMPORTCAD</code> with a <code>.xml</code> file, reads each TIN surface.</p>
+<ul><li>The file's own triangles are kept. Faces marked invisible are left out, and every face is turned to the same winding.</li><li>The surface is placed by the site's survey base. With no base, the first point becomes the base.</li><li>Feet and US survey feet are converted. Millimetre files are not read yet.</li></ul>
+<p><strong>Re-triangulate</strong> in Properties drops the file's triangles and triangulates the points again.</p><footer>Guide for V144 (2026-10-04). Built from the repository by tools/build_docs.py.</footer></main></div></body></html>

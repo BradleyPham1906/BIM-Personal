@@ -173,7 +173,7 @@ automation offered on top.
 | Phase | Builds | Verified by |
 |---|---|---|
 | **LOD-A: LOD1.3, labelled LODs, CityJSON** (done, V139) | `building:part` heights (LOD1.3); every building says its LOD and how it was made; CityJSON export and import (CityGML's JSON form) | valid solids; round trip through CityJSON; cjval on the export |
-| **LOD-B: LOD2 from OSM roofs** | procedural roofs from `roof:shape`, `roof:height`, `roof:direction` (gabled, hipped, pyramidal, skillion, half-hipped, gambrel, mansard); roof and wall surfaces typed | valid solids; roof heights match the tags |
+| **LOD-B: LOD2 from OSM roofs** (done, V140) | procedural roofs from `roof:shape`, `roof:height`, `roof:direction` (gabled, hipped, pyramidal, skillion, half-hipped, gambrel, mansard); roof and wall surfaces typed | valid solids; roof heights match the tags |
 | **LOD-C: point clouds** | read LAS, LAZ (laz-perf, Apache-2.0) and PLY; fetch USGS 3DEP around the site (EPT or COPC); show by class or height; ground points to a V108 surface through V138's check | the survey check; LiDAR against survey check shots |
 | **LOD-D: LOD2.2 from LiDAR** | each building's points: region-growing roof planes, roof partition from plane intersections and the footprint, optimised; extruded; LOD1.3 from the same partition (3DBAG's method, written here) | RMSE and 95th percentile to the points, per building; valid solids; seed buildings of known roofs |
 | **LOD-E: facade images** | the owner's photos or Panoramax panoramas placed on an LOD2 wall: the four corners picked (a homography), or the camera's position and heading; the wall shown straight-on, in metres | known rectangles come out square and to size |
@@ -216,3 +216,15 @@ automation offered on top.
 - **Files in other grids** (the Dutch RD/NAP of 3DBAG, a US state plane) are placed by their
   centre and named; converting them needs the grid's own projection, which a later phase can add
   for the grids the owner uses.
+
+## 7. What V140 (LOD-B) settled
+
+- **No smoothing, anywhere.** A roof is a set of planes. Hipped roofs come from the straight
+  skeleton (every face planar by construction, since height is distance to the face's own eave
+  times the slope). The other ridged shapes are the lower envelope of planes over a convex
+  footprint: each plane keeps the convex region where it is lowest, so every ridge, hip and knee is
+  an exact plane-plane line. Each face is checked flat to val3dity's 1 cm.
+- **The same principle scales up:** LOD-D's LiDAR roofs are also planes (region growing, then a
+  partition chosen by optimisation, 3DBAG's method), not a mesh fitted to the points. Splats and
+  photogrammetry meshes stay backdrops to trace against.
+- **Heights** follow Simple 3D Buildings: height includes the roof; levels count the walls.

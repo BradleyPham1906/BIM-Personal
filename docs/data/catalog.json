@@ -1,0 +1,2716 @@
+{
+ "version": {
+  "v": "V144",
+  "date": "2026-10-04"
+ },
+ "commands": [
+  {
+   "id": "cmd:ALIGN",
+   "name": "ALIGN",
+   "aliases": [
+    "AL"
+   ],
+   "desc": "Align objects to the first selected",
+   "kind": "cmd",
+   "where": [
+    "Drafting › Modify"
+   ],
+   "keys": null,
+   "anchor": "cmd-ALIGN"
+  },
+  {
+   "id": "cmd:ALIGNMENT",
+   "name": "ALIGNMENT",
+   "aliases": [
+    "ALIGN_CREATE",
+    "ALN"
+   ],
+   "desc": "Make the selected open polyline an alignment: its vertices become the PIs",
+   "kind": "cmd",
+   "where": [
+    "Massing & Site › Site"
+   ],
+   "keys": null,
+   "anchor": "cmd-ALIGNMENT"
+  },
+  {
+   "id": "cmd:ANALYSES",
+   "name": "ANALYSES",
+   "aliases": [
+    "ANALYZEPANEL",
+    "ANALYSISPANEL"
+   ],
+   "desc": "The Analyze tab: every analysis, what it shows now, and its settings",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-ANALYSES"
+  },
+  {
+   "id": "cmd:ANALYZE",
+   "name": "ANALYZE",
+   "aliases": [
+    "ANALYSE",
+    "AN"
+   ],
+   "desc": "Solve the frame and show its forces and deflection over the model",
+   "kind": "cmd",
+   "where": [
+    "Structure › Structure"
+   ],
+   "keys": null,
+   "anchor": "cmd-ANALYZE"
+  },
+  {
+   "id": "cmd:ANALYZEOFF",
+   "name": "ANALYZEOFF",
+   "aliases": [
+    "ANALYSEOFF"
+   ],
+   "desc": "Turn the analysis display off",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-ANALYZEOFF"
+  },
+  {
+   "id": "cmd:ARC",
+   "name": "ARC",
+   "aliases": [
+    "A"
+   ],
+   "desc": "Draw a 3-point arc",
+   "kind": "cmd",
+   "where": [
+    "Drafting › Draw"
+   ],
+   "keys": null,
+   "anchor": "cmd-ARC"
+  },
+  {
+   "id": "cmd:AREAPLAN",
+   "name": "AREAPLAN",
+   "aliases": [
+    "AREA",
+    "GROSSAREA",
+    "AP"
+   ],
+   "desc": "Show or hide the gross area inside the exterior walls on this level",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-AREAPLAN"
+  },
+  {
+   "id": "cmd:ARRAYPOLAR",
+   "name": "ARRAYPOLAR",
+   "aliases": [
+    "ARP"
+   ],
+   "desc": "Polar array",
+   "kind": "cmd",
+   "where": [
+    "Drafting › Modify"
+   ],
+   "keys": null,
+   "anchor": "cmd-ARRAYPOLAR"
+  },
+  {
+   "id": "cmd:ARRAYRECT",
+   "name": "ARRAYRECT",
+   "aliases": [
+    "AR",
+    "ARRAY",
+    "ARRAYCLASSIC"
+   ],
+   "desc": "Rectangular array",
+   "kind": "cmd",
+   "where": [
+    "Drafting › Modify"
+   ],
+   "keys": null,
+   "anchor": "cmd-ARRAYRECT"
+  },
+  {
+   "id": "cmd:ASPECTMAP",
+   "name": "ASPECTMAP",
+   "aliases": [
+    "ASPECT",
+    "ASPECTANALYSIS"
+   ],
+   "desc": "Colour the terrain by the way it faces: north, north-east, east ...",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-ASPECTMAP"
+  },
+  {
+   "id": "cmd:ASSETS",
+   "name": "ASSETS",
+   "aliases": [
+    "ADCENTER",
+    "CONTENT",
+    "TOOLPALETTES"
+   ],
+   "desc": "Open the Assets library of models, blocks and templates",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-ASSETS"
+  },
+  {
+   "id": "cmd:BEAM",
+   "name": "BEAM",
+   "aliases": [
+    "BM"
+   ],
+   "desc": "Draw a beam between two points",
+   "kind": "cmd",
+   "where": [
+    "Structure › Structure"
+   ],
+   "keys": null,
+   "anchor": "cmd-BEAM"
+  },
+  {
+   "id": "cmd:BLOCK",
+   "name": "BLOCK",
+   "aliases": [
+    "B",
+    "BMAKE"
+   ],
+   "desc": "Save the selection to the library as a block",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-BLOCK"
+  },
+  {
+   "id": "cmd:BOUNDARY",
+   "name": "BOUNDARY",
+   "aliases": [
+    "BO",
+    "BPOLY"
+   ],
+   "desc": "Trace the closed region around a picked point",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-BOUNDARY"
+  },
+  {
+   "id": "act:box",
+   "name": "BOX",
+   "aliases": [],
+   "desc": "Place a box",
+   "kind": "act",
+   "where": [
+    "Massing & Site › Conceptual Mass"
+   ],
+   "keys": null,
+   "anchor": "act-box"
+  },
+  {
+   "id": "cmd:BREAK",
+   "name": "BREAK",
+   "aliases": [
+    "BR"
+   ],
+   "desc": "Break a wall between two points",
+   "kind": "cmd",
+   "where": [
+    "Drafting › Modify"
+   ],
+   "keys": null,
+   "anchor": "cmd-BREAK"
+  },
+  {
+   "id": "cmd:BREAKATPOINT",
+   "name": "BREAKATPOINT",
+   "aliases": [
+    "BRP",
+    "BREAKAT"
+   ],
+   "desc": "Split a wall at one point",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-BREAKATPOINT"
+  },
+  {
+   "id": "cmd:BREAKLINE",
+   "name": "BREAKLINE",
+   "aliases": [
+    "BRK",
+    "BREAKLINES"
+   ],
+   "desc": "Hold the selected polylines in the terrain surface as breaklines: the triangles follow them",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-BREAKLINE"
+  },
+  {
+   "id": "cmd:CEILING",
+   "name": "CEILING",
+   "aliases": [
+    "CEIL"
+   ],
+   "desc": "Place a ceiling in a closed region",
+   "kind": "cmd",
+   "where": [
+    "Architecture › Build"
+   ],
+   "keys": null,
+   "anchor": "cmd-CEILING"
+  },
+  {
+   "id": "cmd:CHAMFER",
+   "name": "CHAMFER",
+   "aliases": [
+    "CHA"
+   ],
+   "desc": "Chamfer a corner between two walls",
+   "kind": "cmd",
+   "where": [
+    "Drafting › Modify"
+   ],
+   "keys": null,
+   "anchor": "cmd-CHAMFER"
+  },
+  {
+   "id": "act:bim:checkmodel",
+   "name": "CHECKMODEL",
+   "aliases": [],
+   "desc": "Check the model for problems",
+   "kind": "act",
+   "where": [
+    "Manage › Project"
+   ],
+   "keys": null,
+   "anchor": "act-bim-checkmodel"
+  },
+  {
+   "id": "cmd:CIRCLE",
+   "name": "CIRCLE",
+   "aliases": [
+    "C"
+   ],
+   "desc": "Draw a circle",
+   "kind": "cmd",
+   "where": [
+    "Drafting › Draw"
+   ],
+   "keys": null,
+   "anchor": "cmd-CIRCLE"
+  },
+  {
+   "id": "cmd:CITYJSONIN",
+   "name": "CITYJSONIN",
+   "aliases": [
+    "IMPORTCITYJSON"
+   ],
+   "desc": "Import a CityJSON file's buildings, placed by their UTM coordinates",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-CITYJSONIN"
+  },
+  {
+   "id": "cmd:CITYJSONOUT",
+   "name": "CITYJSONOUT",
+   "aliases": [
+    "EXPORTCITYJSON",
+    "CITYJSON"
+   ],
+   "desc": "Export the buildings as CityJSON 2.0, in the site's UTM zone",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-CITYJSONOUT"
+  },
+  {
+   "id": "act:bim:classification",
+   "name": "CLASSIFY",
+   "aliases": [],
+   "desc": "Manage the classification systems",
+   "kind": "act",
+   "where": [
+    "Manage › Settings"
+   ],
+   "keys": null,
+   "anchor": "act-bim-classification"
+  },
+  {
+   "id": "cmd:CLEAR",
+   "name": "CLEAR",
+   "aliases": [],
+   "desc": "Clear selection",
+   "kind": "cmd",
+   "where": [
+    "Modify › Modify"
+   ],
+   "keys": null,
+   "anchor": "cmd-CLEAR"
+  },
+  {
+   "id": "act:bim:clonelinked",
+   "name": "CLONELINKED",
+   "aliases": [],
+   "desc": "Make a linked clone of the selection",
+   "kind": "act",
+   "where": [
+    "Modify › Modify"
+   ],
+   "keys": null,
+   "anchor": "act-bim-clonelinked"
+  },
+  {
+   "id": "cmd:CLOSE",
+   "name": "CLOSE",
+   "aliases": [],
+   "desc": "Close this project's tab",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-CLOSE"
+  },
+  {
+   "id": "cmd:COLOURBY",
+   "name": "COLOURBY",
+   "aliases": [
+    "COLORBY",
+    "LENS"
+   ],
+   "desc": "Colour the model by usage, level, type, layer, material, height or any property, with a legend",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-COLOURBY"
+  },
+  {
+   "id": "cmd:COLUMN",
+   "name": "COLUMN",
+   "aliases": [
+    "COL"
+   ],
+   "desc": "Place a column",
+   "kind": "cmd",
+   "where": [
+    "Architecture › Build"
+   ],
+   "keys": null,
+   "anchor": "cmd-COLUMN"
+  },
+  {
+   "id": "act:bim:component",
+   "name": "COMPONENT",
+   "aliases": [],
+   "desc": "Place a model from the library",
+   "kind": "act",
+   "where": [
+    "Architecture › Build"
+   ],
+   "keys": null,
+   "anchor": "act-bim-component"
+  },
+  {
+   "id": "act:cone",
+   "name": "CONE",
+   "aliases": [],
+   "desc": "Place a cone",
+   "kind": "act",
+   "where": [
+    "Massing & Site › Conceptual Mass"
+   ],
+   "keys": null,
+   "anchor": "act-cone"
+  },
+  {
+   "id": "cmd:CONTEXT",
+   "name": "CONTEXT",
+   "aliases": [
+    "SITECONTEXT",
+    "OSM"
+   ],
+   "desc": "Get the buildings, roads, water, green, trees and terrain around the site, from OpenStreetMap and AWS Terrain Tiles",
+   "kind": "cmd",
+   "where": [
+    "Massing & Site › Site"
+   ],
+   "keys": null,
+   "anchor": "cmd-CONTEXT"
+  },
+  {
+   "id": "cmd:CONTEXTREMOVE",
+   "name": "CONTEXTREMOVE",
+   "aliases": [
+    "CONTEXTCLEAR"
+   ],
+   "desc": "Remove the site context",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-CONTEXTREMOVE"
+  },
+  {
+   "id": "cmd:COPY",
+   "name": "COPY",
+   "aliases": [
+    "CO",
+    "CP"
+   ],
+   "desc": "Copy selection",
+   "kind": "cmd",
+   "where": [
+    "Drafting › Modify"
+   ],
+   "keys": [
+    "Ctrl",
+    "D"
+   ],
+   "anchor": "cmd-COPY"
+  },
+  {
+   "id": "act:cyl",
+   "name": "CYLINDER",
+   "aliases": [],
+   "desc": "Place a cylinder",
+   "kind": "act",
+   "where": [
+    "Massing & Site › Conceptual Mass"
+   ],
+   "keys": null,
+   "anchor": "act-cyl"
+  },
+  {
+   "id": "cmd:DATALAYERS",
+   "name": "DATALAYERS",
+   "aliases": [
+    "DATA",
+    "PARCELS",
+    "ZONING",
+    "FLOOD"
+   ],
+   "desc": "Parcels, zoning, flood zones: ArcGIS, WFS or GeoJSON data around the site, drawn on the plan and read by a click",
+   "kind": "cmd",
+   "where": [
+    "Massing & Site › Site"
+   ],
+   "keys": null,
+   "anchor": "cmd-DATALAYERS"
+  },
+  {
+   "id": "act:con:angle",
+   "name": "DCANGLE",
+   "aliases": [],
+   "desc": "Fix the angle between two sketch lines",
+   "kind": "act",
+   "where": [
+    "Drafting › Constraints"
+   ],
+   "keys": null,
+   "anchor": "act-con-angle"
+  },
+  {
+   "id": "act:con:distance",
+   "name": "DCDISTANCE",
+   "aliases": [],
+   "desc": "Fix the distance between two sketch points",
+   "kind": "act",
+   "where": [
+    "Drafting › Constraints"
+   ],
+   "keys": null,
+   "anchor": "act-con-distance"
+  },
+  {
+   "id": "act:bim:dimang",
+   "name": "DIMANGULAR",
+   "aliases": [],
+   "desc": "Angular dimension",
+   "kind": "act",
+   "where": [
+    "Drafting › Dimension"
+   ],
+   "keys": null,
+   "anchor": "act-bim-dimang"
+  },
+  {
+   "id": "act:bim:dimdia",
+   "name": "DIMDIAMETER",
+   "aliases": [],
+   "desc": "Diameter dimension",
+   "kind": "act",
+   "where": [
+    "Drafting › Dimension"
+   ],
+   "keys": null,
+   "anchor": "act-bim-dimdia"
+  },
+  {
+   "id": "cmd:DIMLINEAR",
+   "name": "DIMLINEAR",
+   "aliases": [
+    "DLI",
+    "DIM"
+   ],
+   "desc": "Linear dimension",
+   "kind": "cmd",
+   "where": [
+    "Drafting › Dimension"
+   ],
+   "keys": null,
+   "anchor": "cmd-DIMLINEAR"
+  },
+  {
+   "id": "act:bim:dimrad",
+   "name": "DIMRADIUS",
+   "aliases": [],
+   "desc": "Radius dimension",
+   "kind": "act",
+   "where": [
+    "Drafting › Dimension"
+   ],
+   "keys": null,
+   "anchor": "act-bim-dimrad"
+  },
+  {
+   "id": "cmd:DIST",
+   "name": "DIST",
+   "aliases": [
+    "DI"
+   ],
+   "desc": "Measure distance",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-DIST"
+  },
+  {
+   "id": "cmd:DIVIDE",
+   "name": "DIVIDE",
+   "aliases": [
+    "DIV"
+   ],
+   "desc": "Place points dividing an object into equal parts",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-DIVIDE"
+  },
+  {
+   "id": "cmd:DOCS",
+   "name": "DOCS",
+   "aliases": [
+    "GUIDE",
+    "MANUAL",
+    "USERGUIDE"
+   ],
+   "desc": "Open the user guide: getting started, every topic, and the command reference",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-DOCS"
+  },
+  {
+   "id": "cmd:DOOR",
+   "name": "DOOR",
+   "aliases": [
+    "DR"
+   ],
+   "desc": "Place a door in a wall",
+   "kind": "cmd",
+   "where": [
+    "Architecture › Build"
+   ],
+   "keys": null,
+   "anchor": "cmd-DOOR"
+  },
+  {
+   "id": "cmd:ELEVATIONMAP",
+   "name": "ELEVATIONMAP",
+   "aliases": [
+    "ELEVATIONBANDS",
+    "HYPSOMETRIC"
+   ],
+   "desc": "Colour the terrain by elevation, in seven bands, with the area of each",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-ELEVATIONMAP"
+  },
+  {
+   "id": "act:ellipsoid",
+   "name": "ELLIPSOID",
+   "aliases": [],
+   "desc": "Place an ellipsoid",
+   "kind": "act",
+   "where": [
+    "Massing & Site › Model by Face"
+   ],
+   "keys": null,
+   "anchor": "act-ellipsoid"
+  },
+  {
+   "id": "cmd:ERASE",
+   "name": "ERASE",
+   "aliases": [
+    "E",
+    "DEL"
+   ],
+   "desc": "Delete selection",
+   "kind": "cmd",
+   "where": [
+    "Drafting › Modify"
+   ],
+   "keys": [
+    "Delete"
+   ],
+   "anchor": "cmd-ERASE"
+  },
+  {
+   "id": "act:m:exportdxf",
+   "name": "EXPORTDXF",
+   "aliases": [],
+   "desc": "Export the drawing as a DXF file",
+   "kind": "act",
+   "where": [
+    "Manage › Export"
+   ],
+   "keys": null,
+   "anchor": "act-m-exportdxf"
+  },
+  {
+   "id": "act:m:exportpdf",
+   "name": "EXPORTPDF",
+   "aliases": [],
+   "desc": "Export the plan as a PDF",
+   "kind": "act",
+   "where": [
+    "Manage › Export"
+   ],
+   "keys": null,
+   "anchor": "act-m-exportpdf"
+  },
+  {
+   "id": "act:m:exportpng",
+   "name": "EXPORTPNG",
+   "aliases": [],
+   "desc": "Export the view as a PNG image",
+   "kind": "act",
+   "where": [
+    "Manage › Export"
+   ],
+   "keys": null,
+   "anchor": "act-m-exportpng"
+  },
+  {
+   "id": "act:m:exportsvg",
+   "name": "EXPORTSVG",
+   "aliases": [],
+   "desc": "Export the drawing as an SVG file",
+   "kind": "act",
+   "where": [
+    "Manage › Export"
+   ],
+   "keys": null,
+   "anchor": "act-m-exportsvg"
+  },
+  {
+   "id": "cmd:EXTEND",
+   "name": "EXTEND",
+   "aliases": [
+    "EX"
+   ],
+   "desc": "Extend to boundary",
+   "kind": "cmd",
+   "where": [
+    "Drafting › Modify"
+   ],
+   "keys": null,
+   "anchor": "cmd-EXTEND"
+  },
+  {
+   "id": "act:bim:famimport",
+   "name": "FAMILYLOAD",
+   "aliases": [],
+   "desc": "Load an OBJ or STL model into the library",
+   "kind": "act",
+   "where": [
+    "Architecture › Build"
+   ],
+   "keys": null,
+   "anchor": "act-bim-famimport"
+  },
+  {
+   "id": "act:bim:famsave",
+   "name": "FAMILYSAVE",
+   "aliases": [],
+   "desc": "Save the selection to the library as a model",
+   "kind": "act",
+   "where": [
+    "Architecture › Build"
+   ],
+   "keys": null,
+   "anchor": "act-bim-famsave"
+  },
+  {
+   "id": "cmd:FILLET",
+   "name": "FILLET",
+   "aliases": [
+    "F"
+   ],
+   "desc": "Fillet two walls (radius 0)",
+   "kind": "cmd",
+   "where": [
+    "Drafting › Modify"
+   ],
+   "keys": null,
+   "anchor": "cmd-FILLET"
+  },
+  {
+   "id": "cmd:FINDADDRESS",
+   "name": "FINDADDRESS",
+   "aliases": [
+    "ADDRESS",
+    "GEOCODE"
+   ],
+   "desc": "Find an address on OpenStreetMap and put the site there: model 0,0",
+   "kind": "cmd",
+   "where": [
+    "Massing & Site › Site"
+   ],
+   "keys": null,
+   "anchor": "cmd-FINDADDRESS"
+  },
+  {
+   "id": "cmd:FINDDATA",
+   "name": "FINDDATA",
+   "aliases": [
+    "OPENDATA",
+    "PORTAL"
+   ],
+   "desc": "Find open data: search a US city, county, state or federal portal and add what it holds as a data layer",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-FINDDATA"
+  },
+  {
+   "id": "cmd:FLOOR",
+   "name": "FLOOR",
+   "aliases": [
+    "FL",
+    "SLAB"
+   ],
+   "desc": "Place a floor slab in a closed region",
+   "kind": "cmd",
+   "where": [
+    "Architecture › Build"
+   ],
+   "keys": null,
+   "anchor": "cmd-FLOOR"
+  },
+  {
+   "id": "cmd:FOOTING",
+   "name": "FOOTING",
+   "aliases": [
+    "FTG"
+   ],
+   "desc": "Isolated footing under a column",
+   "kind": "cmd",
+   "where": [
+    "Structure › Foundation"
+   ],
+   "keys": null,
+   "anchor": "cmd-FOOTING"
+  },
+  {
+   "id": "cmd:FOOTINGSALL",
+   "name": "FOOTINGSALL",
+   "aliases": [],
+   "desc": "Footings under every column on the active level",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-FOOTINGSALL"
+  },
+  {
+   "id": "cmd:FOUNDATIONSLAB",
+   "name": "FOUNDATIONSLAB",
+   "aliases": [
+    "FS"
+   ],
+   "desc": "Foundation slab in an enclosed region",
+   "kind": "cmd",
+   "where": [
+    "Structure › Foundation"
+   ],
+   "keys": null,
+   "anchor": "cmd-FOUNDATIONSLAB"
+  },
+  {
+   "id": "act:con:coincident",
+   "name": "GCCOINCIDENT",
+   "aliases": [],
+   "desc": "Make two sketch points meet",
+   "kind": "act",
+   "where": [
+    "Drafting › Constraints"
+   ],
+   "keys": null,
+   "anchor": "act-con-coincident"
+  },
+  {
+   "id": "act:con:equal",
+   "name": "GCEQUAL",
+   "aliases": [],
+   "desc": "Make two sketch lines the same length",
+   "kind": "act",
+   "where": [
+    "Drafting › Constraints"
+   ],
+   "keys": null,
+   "anchor": "act-con-equal"
+  },
+  {
+   "id": "act:con:horizontal",
+   "name": "GCHORIZONTAL",
+   "aliases": [],
+   "desc": "Make a sketch line horizontal",
+   "kind": "act",
+   "where": [
+    "Drafting › Constraints"
+   ],
+   "keys": null,
+   "anchor": "act-con-horizontal"
+  },
+  {
+   "id": "act:con:midpoint",
+   "name": "GCMIDPOINT",
+   "aliases": [],
+   "desc": "Keep a sketch point at the middle of a line",
+   "kind": "act",
+   "where": [
+    "Drafting › Constraints"
+   ],
+   "keys": null,
+   "anchor": "act-con-midpoint"
+  },
+  {
+   "id": "act:con:parallel",
+   "name": "GCPARALLEL",
+   "aliases": [],
+   "desc": "Make two sketch lines parallel",
+   "kind": "act",
+   "where": [
+    "Drafting › Constraints"
+   ],
+   "keys": null,
+   "anchor": "act-con-parallel"
+  },
+  {
+   "id": "act:con:perpendicular",
+   "name": "GCPERPENDICULAR",
+   "aliases": [],
+   "desc": "Make two sketch lines perpendicular",
+   "kind": "act",
+   "where": [
+    "Drafting › Constraints"
+   ],
+   "keys": null,
+   "anchor": "act-con-perpendicular"
+  },
+  {
+   "id": "act:con:pointonline",
+   "name": "GCPOINTONLINE",
+   "aliases": [],
+   "desc": "Keep a sketch point on a line",
+   "kind": "act",
+   "where": [
+    "Drafting › Constraints"
+   ],
+   "keys": null,
+   "anchor": "act-con-pointonline"
+  },
+  {
+   "id": "act:con:symmetric_line",
+   "name": "GCSYMMETRICLINE",
+   "aliases": [],
+   "desc": "Make two sketch points symmetric about a line",
+   "kind": "act",
+   "where": [
+    "Drafting › Constraints"
+   ],
+   "keys": null,
+   "anchor": "act-con-symmetric_line"
+  },
+  {
+   "id": "act:con:symmetric_pt",
+   "name": "GCSYMMETRICPOINT",
+   "aliases": [],
+   "desc": "Make two sketch points symmetric about a point",
+   "kind": "act",
+   "where": [
+    "Drafting › Constraints"
+   ],
+   "keys": null,
+   "anchor": "act-con-symmetric_pt"
+  },
+  {
+   "id": "act:con:vertical",
+   "name": "GCVERTICAL",
+   "aliases": [],
+   "desc": "Make a sketch line vertical",
+   "kind": "act",
+   "where": [
+    "Drafting › Constraints"
+   ],
+   "keys": null,
+   "anchor": "act-con-vertical"
+  },
+  {
+   "id": "cmd:GEOEXPORT",
+   "name": "GEOEXPORT",
+   "aliases": [
+    "EXPORTGEOJSON"
+   ],
+   "desc": "Export the plan as GeoJSON, in longitude and latitude",
+   "kind": "cmd",
+   "where": [
+    "Manage › Export"
+   ],
+   "keys": null,
+   "anchor": "cmd-GEOEXPORT"
+  },
+  {
+   "id": "cmd:GEOIMPORT",
+   "name": "GEOIMPORT",
+   "aliases": [
+    "IMPORTGEOJSON",
+    "KML",
+    "GEOJSON"
+   ],
+   "desc": "Import GeoJSON or KML as site data, placed by longitude and latitude",
+   "kind": "cmd",
+   "where": [
+    "Massing & Site › Site"
+   ],
+   "keys": null,
+   "anchor": "cmd-GEOIMPORT"
+  },
+  {
+   "id": "cmd:GIZMO",
+   "name": "GIZMO",
+   "aliases": [
+    "GZ"
+   ],
+   "desc": "Show the transform gizmo, or set its alignment",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-GIZMO"
+  },
+  {
+   "id": "cmd:GRID",
+   "name": "GRID",
+   "aliases": [],
+   "desc": "Toggle grid",
+   "kind": "cmd",
+   "where": [],
+   "keys": [
+    "F9"
+   ],
+   "anchor": "cmd-GRID"
+  },
+  {
+   "id": "cmd:GRIDLINE",
+   "name": "GRIDLINE",
+   "aliases": [
+    "GL"
+   ],
+   "desc": "Draw a structural gridline",
+   "kind": "cmd",
+   "where": [
+    "Architecture › Datum"
+   ],
+   "keys": null,
+   "anchor": "cmd-GRIDLINE"
+  },
+  {
+   "id": "cmd:HATCH",
+   "name": "HATCH",
+   "aliases": [
+    "H",
+    "BH"
+   ],
+   "desc": "Hatch closed region",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-HATCH"
+  },
+  {
+   "id": "cmd:HATCHEDIT",
+   "name": "HATCHEDIT",
+   "aliases": [
+    "HE"
+   ],
+   "desc": "Change a hatch pattern, angle or scale",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-HATCHEDIT"
+  },
+  {
+   "id": "act:bim:importcad",
+   "name": "IMPORTCAD",
+   "aliases": [],
+   "desc": "Import a CAD file",
+   "kind": "act",
+   "where": [
+    "Insert › Import"
+   ],
+   "keys": null,
+   "anchor": "act-bim-importcad"
+  },
+  {
+   "id": "cmd:INSERT",
+   "name": "INSERT",
+   "aliases": [
+    "I",
+    "DDINSERT"
+   ],
+   "desc": "Insert a block: drag it from the library onto the drawing",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-INSERT"
+  },
+  {
+   "id": "act:b:isect",
+   "name": "INTERSECT",
+   "aliases": [],
+   "desc": "Keep only where the selected solids overlap",
+   "kind": "act",
+   "where": [
+    "Modify › Geometry"
+   ],
+   "keys": null,
+   "anchor": "act-b-isect"
+  },
+  {
+   "id": "cmd:JOIN",
+   "name": "JOIN",
+   "aliases": [
+    "J"
+   ],
+   "desc": "Join two colinear walls into one",
+   "kind": "cmd",
+   "where": [
+    "Modify › Modify"
+   ],
+   "keys": null,
+   "anchor": "cmd-JOIN"
+  },
+  {
+   "id": "act:bim:joinwalls",
+   "name": "JOINWALLS",
+   "aliases": [],
+   "desc": "Join two walls at their corner",
+   "kind": "act",
+   "where": [
+    "Architecture › Build"
+   ],
+   "keys": null,
+   "anchor": "act-bim-joinwalls"
+  },
+  {
+   "id": "cmd:LANDXMLIN",
+   "name": "LANDXMLIN",
+   "aliases": [
+    "IMPORTLANDXML"
+   ],
+   "desc": "Import the TIN surfaces of a LandXML file, keeping their own triangles",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-LANDXMLIN"
+  },
+  {
+   "id": "cmd:LANDXMLOUT",
+   "name": "LANDXMLOUT",
+   "aliases": [
+    "EXPORTLANDXML",
+    "LANDXML"
+   ],
+   "desc": "Export the terrain surfaces as LandXML 1.2: points, triangles, breaklines and boundary, in the survey's own coordinates",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-LANDXMLOUT"
+  },
+  {
+   "id": "cmd:LAYER",
+   "name": "LAYER",
+   "aliases": [
+    "LA",
+    "LAYERS"
+   ],
+   "desc": "Layer Properties Manager",
+   "kind": "cmd",
+   "where": [
+    "Manage › Settings"
+   ],
+   "keys": null,
+   "anchor": "cmd-LAYER"
+  },
+  {
+   "id": "cmd:LAYOUT",
+   "name": "LAYOUT",
+   "aliases": [
+    "NEWSHEET"
+   ],
+   "desc": "New sheet, opened on its own layout tab",
+   "kind": "cmd",
+   "where": [
+    "View › Sheet Composition"
+   ],
+   "keys": null,
+   "anchor": "cmd-LAYOUT"
+  },
+  {
+   "id": "cmd:LEADER",
+   "name": "LEADER",
+   "aliases": [
+    "LE",
+    "QLEADER"
+   ],
+   "desc": "Leader balloon",
+   "kind": "cmd",
+   "where": [
+    "Drafting › Dimension"
+   ],
+   "keys": null,
+   "anchor": "cmd-LEADER"
+  },
+  {
+   "id": "cmd:LENGTHEN",
+   "name": "LENGTHEN",
+   "aliases": [
+    "LEN"
+   ],
+   "desc": "Change a wall length at one end",
+   "kind": "cmd",
+   "where": [
+    "Drafting › Modify"
+   ],
+   "keys": null,
+   "anchor": "cmd-LENGTHEN"
+  },
+  {
+   "id": "act:bim:level",
+   "name": "LEVEL",
+   "aliases": [],
+   "desc": "Add a level",
+   "kind": "act",
+   "where": [
+    "Architecture › Datum"
+   ],
+   "keys": null,
+   "anchor": "act-bim-level"
+  },
+  {
+   "id": "cmd:LINE",
+   "name": "LINE",
+   "aliases": [
+    "L"
+   ],
+   "desc": "Draw a line",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-LINE"
+  },
+  {
+   "id": "act:bim:linkifc",
+   "name": "LINKIFC",
+   "aliases": [],
+   "desc": "Link an IFC file",
+   "kind": "act",
+   "where": [
+    "Insert › Link"
+   ],
+   "keys": null,
+   "anchor": "act-bim-linkifc"
+  },
+  {
+   "id": "cmd:LOAD",
+   "name": "LOAD",
+   "aliases": [
+    "LD"
+   ],
+   "desc": "Add a load to the selected beam or column (Properties)",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-LOAD"
+  },
+  {
+   "id": "cmd:LODCHECK",
+   "name": "LODCHECK",
+   "aliases": [
+    "CHECKSOLIDS",
+    "VALIDATESOLIDS",
+    "VAL3DITY"
+   ],
+   "desc": "Check every building: its LOD, and whether it is a valid solid (closed, outward, flat faces, one piece)",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-LODCHECK"
+  },
+  {
+   "id": "cmd:MAP",
+   "name": "MAP",
+   "aliases": [
+    "BASEMAP"
+   ],
+   "desc": "The basemap under the drawing: off, street map, satellite, your own tiles -- each run the next",
+   "kind": "cmd",
+   "where": [
+    "Massing & Site › Site"
+   ],
+   "keys": null,
+   "anchor": "cmd-MAP"
+  },
+  {
+   "id": "cmd:MEASURE",
+   "name": "MEASURE",
+   "aliases": [
+    "ME"
+   ],
+   "desc": "Place points at a set spacing along an object",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-MEASURE"
+  },
+  {
+   "id": "cmd:MIRROR",
+   "name": "MIRROR",
+   "aliases": [
+    "MI"
+   ],
+   "desc": "Mirrored copy",
+   "kind": "cmd",
+   "where": [
+    "Drafting › Modify"
+   ],
+   "keys": null,
+   "anchor": "cmd-MIRROR"
+  },
+  {
+   "id": "cmd:MODEL",
+   "name": "MODEL",
+   "aliases": [],
+   "desc": "Back to the Model tab",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-MODEL"
+  },
+  {
+   "id": "cmd:MSPACE",
+   "name": "MSPACE",
+   "aliases": [
+    "MS"
+   ],
+   "desc": "Work in the model through a viewport on this sheet",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-MSPACE"
+  },
+  {
+   "id": "cmd:MTEXT",
+   "name": "MTEXT",
+   "aliases": [
+    "T",
+    "MT"
+   ],
+   "desc": "Text box",
+   "kind": "cmd",
+   "where": [
+    "Drafting › Dimension"
+   ],
+   "keys": null,
+   "anchor": "cmd-MTEXT"
+  },
+  {
+   "id": "cmd:NEW",
+   "name": "NEW",
+   "aliases": [
+    "QNEW"
+   ],
+   "desc": "Start a new project in a tab of its own",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-NEW"
+  },
+  {
+   "id": "cmd:OFFSET",
+   "name": "OFFSET",
+   "aliases": [
+    "O"
+   ],
+   "desc": "Parallel copy",
+   "kind": "cmd",
+   "where": [
+    "Drafting › Modify"
+   ],
+   "keys": null,
+   "anchor": "cmd-OFFSET"
+  },
+  {
+   "id": "cmd:OPEN",
+   "name": "OPEN",
+   "aliases": [],
+   "desc": "Open a project file in a tab of its own",
+   "kind": "cmd",
+   "where": [
+    "Manage › Project"
+   ],
+   "keys": [
+    "Ctrl",
+    "O"
+   ],
+   "anchor": "cmd-OPEN"
+  },
+  {
+   "id": "cmd:ORTHO",
+   "name": "ORTHO",
+   "aliases": [],
+   "desc": "Toggle ortho mode",
+   "kind": "cmd",
+   "where": [],
+   "keys": [
+    "F8"
+   ],
+   "anchor": "cmd-ORTHO"
+  },
+  {
+   "id": "cmd:OSNAP",
+   "name": "OSNAP",
+   "aliases": [
+    "OS"
+   ],
+   "desc": "Toggle object snap",
+   "kind": "cmd",
+   "where": [],
+   "keys": [
+    "F3"
+   ],
+   "anchor": "cmd-OSNAP"
+  },
+  {
+   "id": "act:p:pad",
+   "name": "PAD",
+   "aliases": [],
+   "desc": "Extrude the selected sketch into a solid",
+   "kind": "act",
+   "where": [
+    "Modify › Sketch"
+   ],
+   "keys": null,
+   "anchor": "act-p-pad"
+  },
+  {
+   "id": "cmd:PLINE",
+   "name": "PLINE",
+   "aliases": [
+    "PL",
+    "POLYLINE",
+    "POLY"
+   ],
+   "desc": "Draw a polyline",
+   "kind": "cmd",
+   "where": [
+    "Drafting › Draw"
+   ],
+   "keys": null,
+   "anchor": "cmd-PLINE"
+  },
+  {
+   "id": "cmd:PLOT",
+   "name": "PLOT",
+   "aliases": [
+    "PRINT"
+   ],
+   "desc": "Plot the open sheet, or model space to PDF",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-PLOT"
+  },
+  {
+   "id": "act:p:pocket",
+   "name": "POCKET",
+   "aliases": [],
+   "desc": "Cut the selected sketch into a solid",
+   "kind": "act",
+   "where": [
+    "Modify › Sketch"
+   ],
+   "keys": null,
+   "anchor": "act-p-pocket"
+  },
+  {
+   "id": "cmd:POINT",
+   "name": "POINT",
+   "aliases": [
+    "PO"
+   ],
+   "desc": "Point",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-POINT"
+  },
+  {
+   "id": "cmd:POLYGON",
+   "name": "POLYGON",
+   "aliases": [
+    "POL"
+   ],
+   "desc": "Draw a polygon",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-POLYGON"
+  },
+  {
+   "id": "cmd:PRESSPULL",
+   "name": "PRESSPULL",
+   "aliases": [
+    "PP",
+    "PUSHPULL"
+   ],
+   "desc": "Push or pull a face: click the face, then drag its arrow or type",
+   "kind": "cmd",
+   "where": [
+    "Drafting › Modify"
+   ],
+   "keys": null,
+   "anchor": "cmd-PRESSPULL"
+  },
+  {
+   "id": "act:prism",
+   "name": "PRISM",
+   "aliases": [],
+   "desc": "Place a prism",
+   "kind": "act",
+   "where": [
+    "Massing & Site › Model by Face"
+   ],
+   "keys": null,
+   "anchor": "act-prism"
+  },
+  {
+   "id": "cmd:PROFILEVIEW",
+   "name": "PROFILEVIEW",
+   "aliases": [
+    "PV"
+   ],
+   "desc": "Place the selected alignment's profile view where you click",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-PROFILEVIEW"
+  },
+  {
+   "id": "cmd:PROPERTYEDIT",
+   "name": "PROPERTYEDIT",
+   "aliases": [
+    "PROPED"
+   ],
+   "desc": "Edit the legs of the selected property line",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-PROPERTYEDIT"
+  },
+  {
+   "id": "cmd:PROPERTYFROMSHAPE",
+   "name": "PROPERTYFROMSHAPE",
+   "aliases": [
+    "PROPSH"
+   ],
+   "desc": "Property line from the selected closed shape",
+   "kind": "cmd",
+   "where": [
+    "Massing & Site › Site"
+   ],
+   "keys": null,
+   "anchor": "cmd-PROPERTYFROMSHAPE"
+  },
+  {
+   "id": "cmd:PROPERTYLINE",
+   "name": "PROPERTYLINE",
+   "aliases": [
+    "PROP"
+   ],
+   "desc": "Property line from bearings and distances",
+   "kind": "cmd",
+   "where": [
+    "Massing & Site › Site"
+   ],
+   "keys": null,
+   "anchor": "cmd-PROPERTYLINE"
+  },
+  {
+   "id": "cmd:PSPACE",
+   "name": "PSPACE",
+   "aliases": [
+    "PS"
+   ],
+   "desc": "Back to paper space on this sheet",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-PSPACE"
+  },
+  {
+   "id": "cmd:RAINFLOW",
+   "name": "RAINFLOW",
+   "aliases": [
+    "RAIN",
+    "DRAINAGE",
+    "PONDING",
+    "RUNOFF"
+   ],
+   "desc": "Where rain runs and ponds on the terrain: flow lines and ponds over the plan",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-RAINFLOW"
+  },
+  {
+   "id": "cmd:RAY",
+   "name": "RAY",
+   "aliases": [],
+   "desc": "Construction ray, infinite one way",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-RAY"
+  },
+  {
+   "id": "cmd:RECTANG",
+   "name": "RECTANG",
+   "aliases": [
+    "REC",
+    "RECT",
+    "RECTANGLE"
+   ],
+   "desc": "Draw a rectangle",
+   "kind": "cmd",
+   "where": [
+    "Drafting › Draw"
+   ],
+   "keys": null,
+   "anchor": "cmd-RECTANG"
+  },
+  {
+   "id": "cmd:REDO",
+   "name": "REDO",
+   "aliases": [],
+   "desc": "Redo what was undone",
+   "kind": "cmd",
+   "where": [],
+   "keys": [
+    "Ctrl",
+    "Y"
+   ],
+   "anchor": "cmd-REDO"
+  },
+  {
+   "id": "cmd:RELEASENOTES",
+   "name": "RELEASENOTES",
+   "aliases": [
+    "VERSION",
+    "WHATSNEW"
+   ],
+   "desc": "What changed in this version, and every version before it",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-RELEASENOTES"
+  },
+  {
+   "id": "cmd:ROOF",
+   "name": "ROOF",
+   "aliases": [
+    "RF"
+   ],
+   "desc": "Place a roof over a closed region",
+   "kind": "cmd",
+   "where": [
+    "Architecture › Build"
+   ],
+   "keys": null,
+   "anchor": "cmd-ROOF"
+  },
+  {
+   "id": "cmd:ROOM",
+   "name": "ROOM",
+   "aliases": [
+    "RM"
+   ],
+   "desc": "Make a room from an enclosed region",
+   "kind": "cmd",
+   "where": [
+    "Architecture › Room & Area"
+   ],
+   "keys": null,
+   "anchor": "cmd-ROOM"
+  },
+  {
+   "id": "cmd:ROOMCOLOR",
+   "name": "ROOMCOLOR",
+   "aliases": [
+    "COLORFILL",
+    "ROOMCOLOUR"
+   ],
+   "desc": "Fill rooms by Department, then by Occupancy, then off",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-ROOMCOLOR"
+  },
+  {
+   "id": "cmd:ROOMTAG",
+   "name": "ROOMTAG",
+   "aliases": [
+    "RT",
+    "TAGROOM"
+   ],
+   "desc": "Tag a room with its number and name",
+   "kind": "cmd",
+   "where": [
+    "Architecture › Room & Area"
+   ],
+   "keys": null,
+   "anchor": "cmd-ROOMTAG"
+  },
+  {
+   "id": "cmd:ROTATE",
+   "name": "ROTATE",
+   "aliases": [
+    "RO"
+   ],
+   "desc": "Rotate about a base point",
+   "kind": "cmd",
+   "where": [
+    "Drafting › Modify"
+   ],
+   "keys": null,
+   "anchor": "cmd-ROTATE"
+  },
+  {
+   "id": "cmd:SAVE",
+   "name": "SAVE",
+   "aliases": [
+    "QSAVE",
+    "SAVEAS"
+   ],
+   "desc": "Save this project as a file",
+   "kind": "cmd",
+   "where": [
+    "Manage › Project"
+   ],
+   "keys": [
+    "Ctrl",
+    "S"
+   ],
+   "anchor": "cmd-SAVE"
+  },
+  {
+   "id": "act:bim:saveview",
+   "name": "SAVEVIEW",
+   "aliases": [],
+   "desc": "Save the current view to the Project Browser",
+   "kind": "act",
+   "where": [
+    "Drafting › View"
+   ],
+   "keys": null,
+   "anchor": "act-bim-saveview"
+  },
+  {
+   "id": "cmd:SCALE",
+   "name": "SCALE",
+   "aliases": [
+    "SC",
+    "SCU"
+   ],
+   "desc": "Scale about a base point",
+   "kind": "cmd",
+   "where": [
+    "Drafting › Modify"
+   ],
+   "keys": null,
+   "anchor": "cmd-SCALE"
+  },
+  {
+   "id": "cmd:SECTION",
+   "name": "SECTION",
+   "aliases": [
+    "SEC"
+   ],
+   "desc": "Cut a section through the model",
+   "kind": "cmd",
+   "where": [
+    "View › Create"
+   ],
+   "keys": null,
+   "anchor": "cmd-SECTION"
+  },
+  {
+   "id": "act:m:exitsection",
+   "name": "SECTIONEXIT",
+   "aliases": [],
+   "desc": "Leave the section view",
+   "kind": "act",
+   "where": [
+    "View › Section"
+   ],
+   "keys": null,
+   "anchor": "act-m-exitsection"
+  },
+  {
+   "id": "act:m:flipsection",
+   "name": "SECTIONFLIP",
+   "aliases": [],
+   "desc": "Look at the section from the other side",
+   "kind": "act",
+   "where": [
+    "View › Section"
+   ],
+   "keys": null,
+   "anchor": "act-m-flipsection"
+  },
+  {
+   "id": "cmd:SELECTALL",
+   "name": "SELECTALL",
+   "aliases": [
+    "SA",
+    "ALL"
+   ],
+   "desc": "Select every object",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-SELECTALL"
+  },
+  {
+   "id": "cmd:SHORTCUTS",
+   "name": "SHORTCUTS",
+   "aliases": [
+    "KEYS",
+    "HELP",
+    "?"
+   ],
+   "desc": "Keyboard shortcuts",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-SHORTCUTS"
+  },
+  {
+   "id": "cmd:SIMCLEAR",
+   "name": "SIMCLEAR",
+   "aliases": [
+    "CLEARSIM"
+   ],
+   "desc": "Clear the simulations from the drawing",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-SIMCLEAR"
+  },
+  {
+   "id": "cmd:SLOPEMAP",
+   "name": "SLOPEMAP",
+   "aliases": [
+    "SLOPE",
+    "SLOPEANALYSIS",
+    "GRADEANALYSIS"
+   ],
+   "desc": "Colour the terrain by slope in bands (0 to 2%, 2 to 5%, 5 to 8.33% ...), with the area of each",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-SLOPEMAP"
+  },
+  {
+   "id": "cmd:SOLAR",
+   "name": "SOLAR",
+   "aliases": [
+    "SOLARRADIATION",
+    "INSOLATION",
+    "IRRADIATION"
+   ],
+   "desc": "A clear-sky year of sun on the roofs and facades: kWh/m2 on each building, shaded by the others",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-SOLAR"
+  },
+  {
+   "id": "act:sphere",
+   "name": "SPHERE",
+   "aliases": [],
+   "desc": "Place a sphere",
+   "kind": "act",
+   "where": [
+    "Massing & Site › Conceptual Mass"
+   ],
+   "keys": null,
+   "anchor": "act-sphere"
+  },
+  {
+   "id": "cmd:STAIR",
+   "name": "STAIR",
+   "aliases": [
+    "STAIRS"
+   ],
+   "desc": "Draw a stair run",
+   "kind": "cmd",
+   "where": [
+    "Architecture › Build"
+   ],
+   "keys": null,
+   "anchor": "cmd-STAIR"
+  },
+  {
+   "id": "cmd:STATION",
+   "name": "STATION",
+   "aliases": [
+    "STA",
+    "STAOFF"
+   ],
+   "desc": "Read the station and offset of points along the selected alignment",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-STATION"
+  },
+  {
+   "id": "act:b:cut",
+   "name": "SUBTRACT",
+   "aliases": [],
+   "desc": "Cut one solid out of another",
+   "kind": "act",
+   "where": [
+    "Modify › Geometry"
+   ],
+   "keys": null,
+   "anchor": "act-b-cut"
+  },
+  {
+   "id": "cmd:SUNHOURS",
+   "name": "SUNHOURS",
+   "aliases": [
+    "SUNLIGHTHOURS",
+    "DAYLIGHTHOURS"
+   ],
+   "desc": "Hours of direct sun on the ground through the site's date, drawn over the plan",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-SUNHOURS"
+  },
+  {
+   "id": "cmd:SUNSTUDY",
+   "name": "SUNSTUDY",
+   "aliases": [
+    "SHADOWS",
+    "SUNPATH"
+   ],
+   "desc": "Show or hide the shadows on the ground and the sun path, for the site date and time",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-SUNSTUDY"
+  },
+  {
+   "id": "cmd:SUPPORT",
+   "name": "SUPPORT",
+   "aliases": [
+    "SUP"
+   ],
+   "desc": "Set how the selected column's base is held (Properties)",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-SUPPORT"
+  },
+  {
+   "id": "cmd:SURVEY",
+   "name": "SURVEY",
+   "aliases": [
+    "TOPO",
+    "SURFACE"
+   ],
+   "desc": "Make a terrain surface from survey points: contours, and cut and fill against building pads",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-SURVEY"
+  },
+  {
+   "id": "cmd:SURVEYCHECK",
+   "name": "SURVEYCHECK",
+   "aliases": [
+    "VERIFYSURVEY",
+    "QA"
+   ],
+   "desc": "Check a survey surface: every line read, duplicates, the surface through every point, bust shots, check shots, control points, and the public terrain",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-SURVEYCHECK"
+  },
+  {
+   "id": "act:bim:syncclones",
+   "name": "SYNCCLONES",
+   "aliases": [],
+   "desc": "Update the linked clones from their source",
+   "kind": "act",
+   "where": [
+    "Modify › Modify"
+   ],
+   "keys": null,
+   "anchor": "act-bim-syncclones"
+  },
+  {
+   "id": "cmd:TAGALLROOMS",
+   "name": "TAGALLROOMS",
+   "aliases": [
+    "TAGALL"
+   ],
+   "desc": "Tag every untagged room on the active level",
+   "kind": "cmd",
+   "where": [
+    "Architecture › Room & Area"
+   ],
+   "keys": null,
+   "anchor": "cmd-TAGALLROOMS"
+  },
+  {
+   "id": "cmd:TERRAINANALYSISOFF",
+   "name": "TERRAINANALYSISOFF",
+   "aliases": [
+    "TERRAINOFF"
+   ],
+   "desc": "Stop colouring the terrain",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-TERRAINANALYSISOFF"
+  },
+  {
+   "id": "cmd:TERRAINBOUNDARY",
+   "name": "TERRAINBOUNDARY",
+   "aliases": [
+    "TINBOUNDARY",
+    "SURFACEBOUNDARY"
+   ],
+   "desc": "Trim the terrain surface to the selected closed polyline",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-TERRAINBOUNDARY"
+  },
+  {
+   "id": "cmd:TEXT",
+   "name": "TEXT",
+   "aliases": [
+    "DT"
+   ],
+   "desc": "Text box",
+   "kind": "cmd",
+   "where": [
+    "Drafting › Dimension"
+   ],
+   "keys": null,
+   "anchor": "cmd-TEXT"
+  },
+  {
+   "id": "act:bim:titleblock",
+   "name": "TITLEBLOCK",
+   "aliases": [],
+   "desc": "Edit the title block the sheets share",
+   "kind": "act",
+   "where": [
+    "View › Sheet Composition"
+   ],
+   "keys": null,
+   "anchor": "act-bim-titleblock"
+  },
+  {
+   "id": "act:torus",
+   "name": "TORUS",
+   "aliases": [],
+   "desc": "Place a torus",
+   "kind": "act",
+   "where": [
+    "Massing & Site › Conceptual Mass"
+   ],
+   "keys": null,
+   "anchor": "act-torus"
+  },
+  {
+   "id": "cmd:TRIBAREA",
+   "name": "TRIBAREA",
+   "aliases": [
+    "TRIBUTARY",
+    "TRIB"
+   ],
+   "desc": "Show or hide the tributary area each column carries on this level",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-TRIBAREA"
+  },
+  {
+   "id": "cmd:TRIM",
+   "name": "TRIM",
+   "aliases": [
+    "TR"
+   ],
+   "desc": "Trim to intersection",
+   "kind": "cmd",
+   "where": [
+    "Drafting › Modify"
+   ],
+   "keys": null,
+   "anchor": "cmd-TRIM"
+  },
+  {
+   "id": "cmd:TRUENORTH",
+   "name": "TRUENORTH",
+   "aliases": [
+    "TN"
+   ],
+   "desc": "Set the angle from project north to true north",
+   "kind": "cmd",
+   "where": [
+    "Massing & Site › Site"
+   ],
+   "keys": null,
+   "anchor": "cmd-TRUENORTH"
+  },
+  {
+   "id": "act:tube",
+   "name": "TUBE",
+   "aliases": [],
+   "desc": "Place a tube",
+   "kind": "act",
+   "where": [
+    "Massing & Site › Model by Face"
+   ],
+   "keys": null,
+   "anchor": "act-tube"
+  },
+  {
+   "id": "cmd:UNDO",
+   "name": "UNDO",
+   "aliases": [
+    "U"
+   ],
+   "desc": "Undo the last change",
+   "kind": "cmd",
+   "where": [],
+   "keys": [
+    "Ctrl",
+    "Z"
+   ],
+   "anchor": "cmd-UNDO"
+  },
+  {
+   "id": "act:b:union",
+   "name": "UNION",
+   "aliases": [],
+   "desc": "Join the selected solids into one",
+   "kind": "act",
+   "where": [
+    "Modify › Geometry"
+   ],
+   "keys": null,
+   "anchor": "act-b-union"
+  },
+  {
+   "id": "cmd:USAGE",
+   "name": "USAGE",
+   "aliases": [
+    "US"
+   ],
+   "desc": "Give the selected rooms, floors or masses a usage (Residential, Office...); with none selected, the usages",
+   "kind": "cmd",
+   "where": [
+    "Architecture › Room & Area"
+   ],
+   "keys": null,
+   "anchor": "cmd-USAGE"
+  },
+  {
+   "id": "cmd:USAGES",
+   "name": "USAGES",
+   "aliases": [
+    "USES",
+    "PROGRAM"
+   ],
+   "desc": "The usages: each one's colour, area ratios, floor-to-floor height, parameters and formulas",
+   "kind": "cmd",
+   "where": [
+    "Massing & Site › Program"
+   ],
+   "keys": null,
+   "anchor": "cmd-USAGES"
+  },
+  {
+   "id": "act:bim:uipanels",
+   "name": "USERINTERFACE",
+   "aliases": [],
+   "desc": "Show or hide the interface panels",
+   "kind": "act",
+   "where": [
+    "View › Windows"
+   ],
+   "keys": null,
+   "anchor": "act-bim-uipanels"
+  },
+  {
+   "id": "act:v:iso",
+   "name": "VIEW3D",
+   "aliases": [],
+   "desc": "The default 3D view",
+   "kind": "act",
+   "where": [
+    "View › Create"
+   ],
+   "keys": null,
+   "anchor": "act-v-iso"
+  },
+  {
+   "id": "act:v:front",
+   "name": "VIEWFRONT",
+   "aliases": [],
+   "desc": "Look at the model from the front",
+   "kind": "act",
+   "where": [
+    "Architecture › Work Plane"
+   ],
+   "keys": null,
+   "anchor": "act-v-front"
+  },
+  {
+   "id": "act:v:home",
+   "name": "VIEWHOME",
+   "aliases": [],
+   "desc": "The home 3D view",
+   "kind": "act",
+   "where": [
+    "View › Create"
+   ],
+   "keys": null,
+   "anchor": "act-v-home"
+  },
+  {
+   "id": "act:v:right",
+   "name": "VIEWRIGHT",
+   "aliases": [],
+   "desc": "Look at the model from the right",
+   "kind": "act",
+   "where": [
+    "Architecture › Work Plane"
+   ],
+   "keys": null,
+   "anchor": "act-v-right"
+  },
+  {
+   "id": "act:v:top",
+   "name": "VIEWTOP",
+   "aliases": [],
+   "desc": "Look at the model from above",
+   "kind": "act",
+   "where": [
+    "Architecture › Work Plane"
+   ],
+   "keys": null,
+   "anchor": "act-v-top"
+  },
+  {
+   "id": "cmd:WALL",
+   "name": "WALL",
+   "aliases": [
+    "WA"
+   ],
+   "desc": "Draw a wall (A for arc segments)",
+   "kind": "cmd",
+   "where": [
+    "Architecture › Build"
+   ],
+   "keys": null,
+   "anchor": "cmd-WALL"
+  },
+  {
+   "id": "cmd:WALLFOUNDATION",
+   "name": "WALLFOUNDATION",
+   "aliases": [
+    "WF"
+   ],
+   "desc": "Strip footing under a wall",
+   "kind": "cmd",
+   "where": [
+    "Structure › Foundation"
+   ],
+   "keys": null,
+   "anchor": "cmd-WALLFOUNDATION"
+  },
+  {
+   "id": "act:wedge",
+   "name": "WEDGE",
+   "aliases": [],
+   "desc": "Place a wedge",
+   "kind": "act",
+   "where": [
+    "Massing & Site › Model by Face"
+   ],
+   "keys": null,
+   "anchor": "act-wedge"
+  },
+  {
+   "id": "cmd:WINDOW",
+   "name": "WINDOW",
+   "aliases": [
+    "WIN"
+   ],
+   "desc": "Place a window in a wall",
+   "kind": "cmd",
+   "where": [
+    "Architecture › Build"
+   ],
+   "keys": null,
+   "anchor": "cmd-WINDOW"
+  },
+  {
+   "id": "cmd:XLINE",
+   "name": "XLINE",
+   "aliases": [
+    "XL"
+   ],
+   "desc": "Construction line, infinite both ways",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-XLINE"
+  },
+  {
+   "id": "cmd:ZOOM",
+   "name": "ZOOM",
+   "aliases": [
+    "Z",
+    "ZE",
+    "FIT"
+   ],
+   "desc": "Zoom to fit",
+   "kind": "cmd",
+   "where": [
+    "View › Create"
+   ],
+   "keys": null,
+   "anchor": "cmd-ZOOM"
+  }
+ ],
+ "shortcuts": [
+  {
+   "grp": "Views",
+   "rows": [
+    {
+     "keys": [
+      ">"
+     ],
+     "alt": false,
+     "label": "Switch between the plan and 3D",
+     "cmd": null
+    },
+    {
+     "keys": [
+      "Esc"
+     ],
+     "alt": false,
+     "label": "Back out one step: menu, zoom window, dialog, sketch, section, then clear the selection",
+     "cmd": null
+    },
+    {
+     "keys": [
+      "Enter"
+     ],
+     "alt": false,
+     "label": "With nothing running, repeats the last command",
+     "cmd": null
+    }
+   ]
+  },
+  {
+   "grp": "Drawing",
+   "rows": [
+    {
+     "keys": [
+      "Enter"
+     ],
+     "alt": false,
+     "label": "Finish the current line, polyline, wall or stair",
+     "cmd": null
+    },
+    {
+     "keys": [
+      "C"
+     ],
+     "alt": false,
+     "label": "Close the path (from three points on)",
+     "cmd": null
+    },
+    {
+     "keys": [
+      "U"
+     ],
+     "alt": false,
+     "label": "Undo the last point",
+     "cmd": null
+    },
+    {
+     "keys": [
+      "Arrows"
+     ],
+     "alt": false,
+     "label": "Nudge the selected object",
+     "cmd": null
+    }
+   ]
+  },
+  {
+   "grp": "Typing points",
+   "rows": [
+    {
+     "keys": [
+      "x,y"
+     ],
+     "alt": false,
+     "label": "Absolute point. @x,y is relative to the last point; # forces absolute",
+     "cmd": null
+    },
+    {
+     "keys": [
+      "d<a"
+     ],
+     "alt": false,
+     "label": "Polar point: distance, then angle. @5<45 is relative",
+     "cmd": null
+    },
+    {
+     "keys": [
+      "0-9"
+     ],
+     "alt": false,
+     "label": "A bare length draws that far along the current direction",
+     "cmd": null
+    }
+   ]
+  },
+  {
+   "grp": "Snaps",
+   "rows": [
+    {
+     "keys": [
+      "F3"
+     ],
+     "alt": false,
+     "label": "Object snap on or off",
+     "cmd": "OSNAP"
+    },
+    {
+     "keys": [
+      "F8"
+     ],
+     "alt": false,
+     "label": "Ortho on or off",
+     "cmd": "ORTHO"
+    },
+    {
+     "keys": [
+      "F9"
+     ],
+     "alt": false,
+     "label": "Grid snap on or off",
+     "cmd": "GRID"
+    }
+   ]
+  },
+  {
+   "grp": "Editing",
+   "rows": [
+    {
+     "keys": [
+      "Ctrl",
+      "Z"
+     ],
+     "alt": false,
+     "label": "Undo",
+     "cmd": "UNDO"
+    },
+    {
+     "keys": [
+      "Ctrl",
+      "Y"
+     ],
+     "alt": false,
+     "label": "Redo",
+     "cmd": "REDO"
+    },
+    {
+     "keys": [
+      "Ctrl",
+      "D"
+     ],
+     "alt": false,
+     "label": "Duplicate the selection",
+     "cmd": "COPY"
+    },
+    {
+     "keys": [
+      "Delete"
+     ],
+     "alt": false,
+     "label": "Delete the selection",
+     "cmd": "ERASE"
+    }
+   ]
+  },
+  {
+   "grp": "Project",
+   "rows": [
+    {
+     "keys": [
+      "Ctrl",
+      "S"
+     ],
+     "alt": false,
+     "label": "Export the project file",
+     "cmd": "SAVE"
+    },
+    {
+     "keys": [
+      "Ctrl",
+      "O"
+     ],
+     "alt": false,
+     "label": "Open a project file",
+     "cmd": "OPEN"
+    },
+    {
+     "keys": [
+      "Ctrl",
+      "K"
+     ],
+     "alt": false,
+     "label": "Command search, or just start typing a command",
+     "cmd": null
+    },
+    {
+     "keys": [
+      "?"
+     ],
+     "alt": false,
+     "label": "This panel: the keyboard shortcuts",
+     "cmd": null
+    }
+   ]
+  },
+  {
+   "grp": "Faces",
+   "rows": [
+    {
+     "keys": [
+      "Double-click"
+     ],
+     "alt": true,
+     "label": "Take the face under the cursor to push or pull it",
+     "cmd": null
+    },
+    {
+     "keys": [
+      "Ctrl+Shift+click"
+     ],
+     "alt": true,
+     "label": "Take a face, as Rhino picks a sub-object",
+     "cmd": null
+    },
+    {
+     "keys": [
+      "PRESSPULL"
+     ],
+     "alt": true,
+     "label": "The command: click a face to take it",
+     "cmd": null
+    },
+    {
+     "keys": [
+      "Tab"
+     ],
+     "alt": true,
+     "label": "Next face of the object",
+     "cmd": null
+    },
+    {
+     "keys": [
+      "Shift+Tab"
+     ],
+     "alt": true,
+     "label": "Previous face",
+     "cmd": null
+    },
+    {
+     "keys": [
+      "0-9"
+     ],
+     "alt": true,
+     "label": "Type the face's size, or how far to move it",
+     "cmd": null
+    },
+    {
+     "keys": [
+      "Esc"
+     ],
+     "alt": true,
+     "label": "Let go of the face, back to the whole object",
+     "cmd": null
+    }
+   ]
+  },
+  {
+   "grp": "Pages",
+   "rows": [
+    {
+     "keys": [
+      "Page Down",
+      "Right"
+     ],
+     "alt": true,
+     "label": "Next page",
+     "cmd": null
+    },
+    {
+     "keys": [
+      "Page Up",
+      "Left"
+     ],
+     "alt": true,
+     "label": "Previous page",
+     "cmd": null
+    },
+    {
+     "keys": [
+      "Home"
+     ],
+     "alt": true,
+     "label": "First page",
+     "cmd": null
+    },
+    {
+     "keys": [
+      "End"
+     ],
+     "alt": true,
+     "label": "Last page",
+     "cmd": null
+    },
+    {
+     "keys": [
+      "Down"
+     ],
+     "alt": true,
+     "label": "Scroll down",
+     "cmd": null
+    },
+    {
+     "keys": [
+      "Up"
+     ],
+     "alt": true,
+     "label": "Scroll up",
+     "cmd": null
+    }
+   ]
+  },
+  {
+   "grp": "Presenting",
+   "rows": [
+    {
+     "keys": [
+      "Right",
+      "Down",
+      "Page Down",
+      "Space",
+      "Enter",
+      "N"
+     ],
+     "alt": true,
+     "label": "Next page",
+     "cmd": null
+    },
+    {
+     "keys": [
+      "Left",
+      "Up",
+      "Page Up",
+      "Backspace",
+      "P"
+     ],
+     "alt": true,
+     "label": "Previous page",
+     "cmd": null
+    },
+    {
+     "keys": [
+      "Home"
+     ],
+     "alt": true,
+     "label": "First page",
+     "cmd": null
+    },
+    {
+     "keys": [
+      "End"
+     ],
+     "alt": true,
+     "label": "Last page",
+     "cmd": null
+    },
+    {
+     "keys": [
+      "Esc"
+     ],
+     "alt": true,
+     "label": "End the presentation",
+     "cmd": null
+    }
+   ]
+  }
+ ]
+}

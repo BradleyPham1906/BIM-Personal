@@ -250,7 +250,8 @@ async def drive(ck):
         await press('Tab')
         fb = await focused()
         tb = (await safe("()=>window.__a3dTitleBlockGet()")) or {}
-        ck(fa == 'client' and fb == 'truenorth' and tb.get('project') == 'Tower' and tb.get('client') == 'Client Co',
+        # AMENDED FOR V141: true north moved to the Location group, so after Client comes Site
+        ck(fa == 'client' and fb == 'site' and tb.get('project') == 'Tower' and tb.get('client') == 'Client Co',
            'a Tab in Model Properties lands on the next field each time, and both edits are the model\'s (%s, %s, %s)'
            % (fa, fb, {k: tb.get(k) for k in ('project', 'client')}))
         await blur()
