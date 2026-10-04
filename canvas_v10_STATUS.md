@@ -12563,7 +12563,7 @@ its own history, at the grain of a building element.
 
 ### Not done
 
-- Branches and merge (H2, V147).
+- Branches and merge (H2, V149).
 - Pruning old versions.
 - Sharing the history (H4).
 - Full IFC GUIDs (H3).
