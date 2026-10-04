@@ -1,6 +1,6 @@
 {
  "version": {
-  "v": "V157",
+  "v": "V158",
   "date": "2026-10-04"
  },
  "commands": [
@@ -487,7 +487,7 @@
     "SITECONTEXT",
     "OSM"
    ],
-   "desc": "Get the buildings, roads, water, green, trees and terrain around the site, from OpenStreetMap and AWS Terrain Tiles",
+   "desc": "Get the buildings, roads, bridges, tunnels, railways, airports, power lines, land use, water, green, trees and terrain around the site, from OpenStreetMap and AWS Terrain Tiles",
    "kind": "cmd",
    "where": [
     "Massing & Site › Site"
@@ -1854,6 +1854,19 @@
    "anchor": "cmd-ROTATE"
   },
   {
+   "id": "cmd:SAFILL",
+   "name": "SAFILL",
+   "aliases": [
+    "SITEANALYSISFILL",
+    "SAFROMMODEL"
+   ],
+   "desc": "Fill the site analysis from what the model already knows: location, context, property, terrain, sun, access",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-SAFILL"
+  },
+  {
    "id": "cmd:SAVE",
    "name": "SAVE",
    "aliases": [
@@ -1974,6 +1987,20 @@
    "where": [],
    "keys": null,
    "anchor": "cmd-SIMCLEAR"
+  },
+  {
+   "id": "cmd:SITEANALYSIS",
+   "name": "SITEANALYSIS",
+   "aliases": [
+    "SA",
+    "SITEAN",
+    "SITEPROCESS"
+   ],
+   "desc": "The Site analysis tab: the standard process, ten categories, findings with their sources, on the plan",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-SITEANALYSIS"
   },
   {
    "id": "cmd:SLOPEARROWS",

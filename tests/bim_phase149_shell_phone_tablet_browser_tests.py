@@ -103,9 +103,9 @@ async def run():
             ck(acad and acad['b'] <= rail['y'] + 1, "and the drawing area stops above it (%d <= %d)" % (acad['b'], rail['y']))
             tabs = await safe("""()=>[].map.call(document.querySelectorAll('#a3d-rail .a3d-railbtn,#a3d-rail .a3d-railmore'),function(e){var r=e.getBoundingClientRect();
               return {k:e.getAttribute('data-tab')||'more',w:Math.round(r.width),h:Math.round(r.height),x:Math.round(r.left),r:Math.round(r.right),lab:getComputedStyle(e,'::after').content};})""") or []
-            ck([t['k'] for t in tabs] == ['layers', 'presentation', 'browser', 'assets', 'analyze', 'more'], "its tabs: Layers, Present, Browser, Assets, Analyze, and More (%s)" % [t['k'] for t in tabs])
+            ck([t['k'] for t in tabs] == ['layers', 'presentation', 'browser', 'assets', 'analyze', 'site', 'more'], "its tabs: Layers, Present, Browser, Assets, Analyze, Site, and More (%s)" % [t['k'] for t in tabs])   # AMENDED FOR V158: the Site tab
             ck(all(t['h'] >= 44 and t['w'] >= 44 and t['x'] >= 0 and t['r'] <= 390 for t in tabs), "every tab 44 px or more, on the screen (%s)" % [(t['w'], t['h']) for t in tabs])
-            ck([t['lab'] for t in tabs] == ['"Layers"', '"Present"', '"Browser"', '"Assets"', '"Analyze"', '"More"'], "each labelled under its icon (%s)" % [t['lab'] for t in tabs])
+            ck([t['lab'] for t in tabs] == ['"Layers"', '"Present"', '"Browser"', '"Assets"', '"Analyze"', '"Site"', '"More"'], "each labelled under its icon (%s)" % [t['lab'] for t in tabs])   # AMENDED FOR V158
             ck(not shown(await safe(BOX, '#a3d-rail .a3d-paneltoggle')) and not shown(await safe(BOX, '.a3d-drawerbtn')),
                "the rail's panel toggle and the toolbar's menu button give way to the tabs")
             # the drawer

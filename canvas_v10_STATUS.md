@@ -13418,3 +13418,103 @@ rebuild the build from `Phase/canvas_v10.html.bak_phase157_pre`. The diff is ES5
     canvas_v10.html   2376193 bytes
     sha256            ecf72c2ad310634fc282b38b0311df305e3a72c304134263d203f210f6be394f
     markers           __acad3dV60 ... __acad3dV157, __acad3dV134d (and the 133d to 133f markers)
+
+## Phase 158 (V158) - Site analysis SA1: the workspace and the standard
+
+The owner (V156): "do some research on how professionals do site analysis. i want to standardize
+the whole process." The research (`reference/research-site-analysis-process.md`) set one standard:
+the stages of RIBA Stage 1 and a developer's due diligence; ten fixed categories (Lynch's natural
+and cultural factors, McHarg's order, the due-diligence items); findings that each name a source,
+a date and how sure they are, classed as constraints, opportunities, red flags or facts. This phase
+makes that the app's workspace.
+
+### What was built (patch 158a)
+
+- **A Site tab on the rail** (Site analysis), after Analyze, on a computer, a tablet and a phone's
+  tab bar. `SITEANALYSIS` opens it; `SAFILL` fills it.
+- **The stages:** Define, then Desktop study, Site visit, Surveys, Analysis, Synthesis, Report,
+  as buttons. The stage pressed is the project's, kept with it, and a line says what it means.
+- **Define:**
+  - the boundary: the property line and its area, or the two ways to make one;
+  - the project type, from a list;
+  - the questions the analysis must answer;
+  - a switch for the pins on the plan.
+- **The ten categories**, in their fixed order. Each shows:
+  - what it covers;
+  - its findings, numbered by category (7.1 is the first under Environmental risk);
+  - what to find at the desk and what to check on site, as boxes to tick;
+  - Add finding;
+  - in its header, the count of findings, constraints, opportunities and red flags, how many
+    boxes are ticked, and the best confidence reached.
+- **A finding:** a title and what was found; a class (fact, opportunity, constraint, red flag)
+  and a severity (low, medium, high); a confidence (desktop, seen on site, surveyed); a source; a
+  date; a note; a photograph, kept as a JPEG at most 960 px across; and a pin. Each field is
+  checked as it is set, and each change is one undo step. Red flags are listed first.
+- **Fill from the model** adds what the app already knows as findings, each with its source and
+  date:
+  - the location;
+  - the built context (count, mean and tallest heights);
+  - the property line (area, perimeter, misclosure);
+  - the data layers and any flood layer;
+  - the terrain: heights above sea level, relief, an area-weighted mean slope, the steepest
+    slope, and the share steeper than 15%. Gentle ground is an opportunity; 15% and 30% mean slope
+    are medium and high constraints;
+  - water features and rain-flow ponds;
+  - the day lengths on 21 June and 21 December, from V107's NOAA sun;
+  - trees and green;
+  - streets counted by use (V157), with bridges and tunnels;
+  - railways;
+  - an airport (a medium constraint: noise and height limits);
+  - overhead power (a medium constraint);
+  - the land use around.
+
+  Filling again updates them in place. A class, severity or confidence the owner set is kept. A
+  finding the model no longer supports is removed, unless the owner wrote on it, pinned it or
+  classed it: then it stays, no longer refilled. The first fill moves the project to the desktop
+  study.
+- **On the plan:** *Place on the plan* waits for a click there. The pin is a numbered marker in
+  the class's colour, and the switch hides the pins. Pins are not drawn on sheets yet.
+- **Saved with the project** in `A3D.site.analysis`, so it survives a reload and goes with the
+  file. Which categories are open is the viewer's own, kept in this browser.
+- **Analysis and Data in Layers, as Context is (158b).** The owner: "analysis and datalayer ...
+  should be part of layer management. just like how context layer is". V148 had them as two
+  sections below the tree, in small bold type behind a rule. Now each is a group row in the tree,
+  right under the layers. A row has a layer row's columns: the caret, a swatch, the name and count,
+  and an eye that shows or hides everything in the group in one undo step (the group dims when all
+  are hidden; an empty group says so). Its layers sit under it, with every eye in the layers' eye
+  column. Freeze and lock do not apply to results and data, so their columns stay empty.
+- CONTEXT's description now names V157's kinds, so a search for "railway" finds it.
+- **The version** is V158; the guide's Site page has a Site analysis section.
+
+### Suites
+
+- New: `bim_phase158_site_analysis_browser_tests.py`, 92 checks: the tab and commands; the stages
+  and ten categories; fill from nothing and from the V157 fixture with a property and two buildings
+  (eleven findings, each value checked); refill, a kept class, removal with kept notes, undo;
+  findings added, numbered, every field taken or refused, undo, moved, deleted; define and the
+  checklists; a pin by a click, drawn where clicked, hidden, removed; a photograph made small; the
+  panel (opening, typing, classing, ticking, staging, adding); a reload; a phone (fits, touch
+  sizes, 16 px fields); the slope weighed by area on uneven triangles; Analysis and Data as group
+  rows (caret, swatch, count, one eye column, no gap), their eyes, dimming and undo.
+- Amended for the Site tab: V113, V119, V120, V141, V149; for the Layers groups: V148 (each marked
+  AMENDED FOR V158).
+- **Falsified by `Phase/falsify_phase158.py`,** 34 variants, all caught. One gap closed: the V133
+  ground is one plane, so a slope not weighed by area went unseen; a check on uneven triangles
+  now catches it.
+
+### Not done
+
+- Pins on sheets, and a click on a pin opening its finding.
+- Findings drawn as White's diagrams (the Analysis stage), and the synthesis (V160, V161).
+- The climate, risk and regulation data (SA2, SA3).
+
+### Full regression and state after V158
+
+115 suites, 4789 checks, 0 failures. Under the six-worker run, V155's BENCHMARK stalled once
+(it times two engines at 20,000 elements against five other browsers) and V149's keyboard check
+missed once; both pass alone, 24 of 24 and 74 of 74. Patches 158a and 158b rebuild the build from
+`Phase/canvas_v10.html.bak_phase158_pre`. The diff is ES5-clean.
+
+    canvas_v10.html   2418797 bytes
+    sha256            3156aeb6f6e0beba05dbb6ed88630744288284ef1472c064a87c04c3ea44860b
+    markers           __acad3dV60 ... __acad3dV158, __acad3dV134d (and the 133d to 133f markers)

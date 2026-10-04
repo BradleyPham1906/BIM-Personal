@@ -2,11 +2,11 @@
 
 **Read this first in a new session.** One page. The detail lives in the docs listed at the bottom.
 
-    canvas_v10.html   2376193 bytes
-    sha256            ecf72c2ad310634fc282b38b0311df305e3a72c304134263d203f210f6be394f
-    markers           __acad3dV60 ... __acad3dV157, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
+    canvas_v10.html   2418797 bytes
+    sha256            3156aeb6f6e0beba05dbb6ed88630744288284ef1472c064a87c04c3ea44860b
+    markers           __acad3dV60 ... __acad3dV158, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
                       __acad3dV121b
-    tests             114 suites, 4697 checks, 0 failures
+    tests             115 suites, 4789 checks, 0 failures
 
     The user guide (V142): every phase updates docs/src/, its log entry and BIM_APP_VERSION, then
     runs tools/dump_catalog.py and tools/build_docs.py. The V142 suite and the Pages workflow
@@ -96,8 +96,8 @@ three tiers: compact up to 720 px wide or 500 px high, medium up to 1024 px, des
 | 155 | Render R4: culling and BENCHMARK | **Done** (see Recently finished): chunks by 64 m cells, a chunk out of view not drawn in either engine; WebGPU bundles per chunk and pass, kept; BENCHMARK times 5,000 and 20,000 elements with both engines on the owner's own devices | The owner's "easier to scale later". |
 | 156 | Render R5: the frame's upkeep and picking | **Done** (see Recently finished): the owner's BENCHMARK read in (5,000: WebGPU 3.1 ms, WebGL 4.1; 20,000: 9.3 and 10.5, all well within 60 fps); the frame's upkeep cut down (no search for removed objects unless the count says one is gone; a type's colour once a frame); a click on a model over 20,000 faces picked by a WebGL id pass, even while WebGPU draws (here 56 ms against 198) | The next cut: upkeep only for what changed, once every edit path marks what it changed. |
 | 157 | Site context C2: the whole surroundings | **Done** (see Recently finished): from the same free Overpass API, four new kinds (railways, airports, power, land use) and every line kind with a 3D surface: roads as strips of their width (the width tag, lanes at 3.3 m, else by class), coloured by use (car road, pedestrian zone, footway, cycleway, path); bridges as decks 6 m up a layer, on piers every 30 m; tunnels as their line only; rail 3.2 m, tram 2.6 m, platforms 1 m high; runways 45 m, taxiways 18 m, aprons and helipads paved, the aerodrome its boundary; trees as trunk and crown at their height, tree rows a tree about every 8 m; pylons and the line hung 20 m up; land use as a ground tint; all following the terrain. Not done yet: fetching a large area in tiles; woods filled with trees; tunnels dashed in plan; man_made=bridge outlines, stations and terminals; OpenRailwayMap; the US NBI, NTAD and FAA layers as V134 presets | `reference/research-site-context.md`; the owner's notes on free infrastructure sources (Overpass, OpenRailwayMap, NTAD). |
-| 158 | Site analysis SA1: the workspace and the standard | **Start here.** The six stages (define, desktop study, site visit, surveys, analysis, synthesis, report) and the ten categories (location, legal, landform, water, climate, ecology, risk, access, utilities, people and place) as a checklist for the site; the site boundary from a parcel or drawn; every finding a record with its source, date, confidence (desktop, seen on site, surveyed) and class (constraint, opportunity, red flag) and severity; site-visit notes and photographs placed on the plan; what the app already knows filled in from V131 to V145 | `reference/research-site-analysis-process.md`. The owner: "i want to standardize the whole process". |
-| 159 | Site analysis SA2: climate and risk | The dashboard's climate chart (monthly temperature, daily range, rainfall, Köppen zone), wind rose, sun path (solstices, equinox), degree days, solar kWh/m² a year; air quality against the WHO guideline, seismic history, flood summary; each a finding with its source. Free sources: Open-Meteo (ERA5, wind, CAMS), NASA POWER, USGS quakes, FEMA (V134) | `reference/research-arcgis-site-analysis.md` (2, 3). |
+| 158 | Site analysis SA1: the workspace and the standard | **Done** (see Recently finished): a Site tab on the rail; the stages as buttons; Define (boundary, project type, questions); the ten categories in their fixed order, each with its findings, a desk checklist and a site checklist; findings with class, severity, confidence, source, date, note, photograph and a numbered pin on the plan, red flags first; Fill from the model (location, built context, property, data layers, terrain relief and slope, water, day lengths, trees, streets by use, rail, airport, power, land use), refilled in place keeping what the owner said. Analysis and Data made group rows in the Layers tree, as Context is. Not yet: pins on sheets and opening a finding from its pin; findings drawn as diagrams | `reference/research-site-analysis-process.md`. The owner: "i want to standardize the whole process". |
+| 159 | Site analysis SA2: climate and risk | **Start here.** The dashboard's climate chart (monthly temperature, daily range, rainfall, Köppen zone), wind rose, sun path (solstices, equinox), degree days, solar kWh/m² a year; air quality against the WHO guideline, seismic history, flood summary; each a finding with its source. Free sources: Open-Meteo (ERA5, wind, CAMS), NASA POWER, USGS quakes, FEMA (V134) | `reference/research-arcgis-site-analysis.md` (2, 3). |
 | 160 | Site analysis SA3: regulation and access | A zoning summary (permitted uses, FAR, height, setbacks, coverage, parking), from a council layer where there is one and by hand where not; the zoning envelope in 3D (setbacks, stepbacks, height limit, massing outside it flagged) and the yield (GFA by FAR, units, parking against the ratio); street hierarchy and street use, transit stops, walk-time rings to amenities (OSM), demographics (US Census ACS) | Replaces the "Zoning envelope" row. |
 | 161 | Site analysis SA4: tools and synthesis, ArcGIS's way | One pane for every analysis tool (typed parameters checked as filled, Run, messages, History to rerun from, results as layers); buffer, distance, slope classes, exclusions, weighted suitability in Esri's four steps (criteria, transform, weight, locate); the constraints and opportunities map; the buildable area; sun hours on the GPU; each tool a guide page in one template (summary, usage, parameters, how it works) | `reference/research-arcgis-site-analysis.md` (1). |
 | 162 | Site analysis SA5: the Contents pane | The layer stack by drawing order, by source and by selection, a legend patch under each layer; symbology (by category, graduated, stretch), labels and a filter (definition query); the stack exploded in 3D as McHarg's layer cake | ArcGIS Pro's Contents pane. |
@@ -159,7 +159,18 @@ when it starts (V111 to V138 went to other work; V139 to V178 are in NOW).
 | 118 | Blocks and data | ATTDEF ATTEDIT BEDIT WBLOCK DATAEXTRACTION TABLESTYLE TABLEDIT TABLEEXPORT | First phase that's about the disciplines, not drafting. BLOCK and INSERT landed in V124, as the Assets library's blocks: saved records inserted as independent copies. A block reference that follows its definition (what BEDIT edits) is not built. |
 | 119 | Sheets and plotting, rest | MVIEW (draw a viewport on the paper) PAGESETUP (plot settings beyond Sheet Setup) PUBLISH (V122's Print set prints every sheet in one job; a chosen subset and page setups remain) EXPORTPDF (vector PDF of a sheet) VPLAYER (per-viewport layer visibility) viewport lock | LAYOUT, MSPACE and PSPACE landed in V116, with layout tabs and model space through a viewport. |
 
-**Recently finished:** Phase 157 (V157), **the whole surroundings, in 3D**.
+**Recently finished:** Phase 158 (V158), **the site analysis workspace and its standard**.
+- The owner: "i want to standardize the whole process." A Site tab runs every site analysis the
+  same way: the stages, the ten categories, checklists for the desk and the site.
+- Every finding names its source, date and confidence, and is classed (fact, opportunity,
+  constraint, red flag) and weighed; red flags come first; findings are pinned on the plan, with
+  photographs.
+- Fill from the model turns what the app already knows into findings with their sources.
+- Analysis and Data are group rows in the Layers tree, as Context is, each with one eye for all
+  it holds.
+- **Checked** in 92 checks and 34 falsify variants.
+
+Phase 157 (V157), **the whole surroundings, in 3D**.
 - The owner: "the trees and roads and tunnels, bridges railway and airports. currently we only
   have buildings." From the same free Overpass API, the context now brings railways, airports,
   power lines and land use too, each on its own layer under Context.
