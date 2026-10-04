@@ -196,6 +196,19 @@ async def run():
             ss = await safe("()=>window.__a3dSunSettings()") or {}
             ck(fz == '16px' and abs(float(ss.get('lat') or 0) - 51.5034) < 1e-6 and abs(float(ss.get('lon') or 0) + 0.1276) < 1e-6,
                "the address typed on the phone and sent with the keyboard's Enter finds the place (%s, %s)" % (ss.get('lat'), ss.get('lon')))
+            # 149c: Find after the field has been drawn again (the keyboard going changes the screen's size)
+            await p.wait_for_timeout(1100)   # Nominatim's one-a-second
+            await safe("()=>{var e=document.querySelector('#a3d-propsbody [data-propmap=\"addr\"]');e.value='';e.dispatchEvent(new Event('input',{bubbles:true}));}")
+            await p.tap('#a3d-propsbody [data-propmap="addr"]')
+            await p.keyboard.type('Paris')
+            await safe("()=>document.activeElement.blur()")
+            await safe("()=>window.__a3dRefreshProps()")
+            kept = await safe("()=>document.querySelector('#a3d-propsbody [data-propmap=\"addr\"]').value")
+            await safe("()=>window.__a3dSunSettings&&0")
+            await p.tap('#a3d-propsbody [data-propmapact="find"]')
+            await p.wait_for_timeout(900)
+            ck(kept == 'Paris' and 'Type an address' not in (await safe("()=>(document.getElementById('a3d-toast')||{}).textContent") or ''),
+               "typed, the keyboard put away and Properties drawn again: the field keeps 'Paris' and Find looks it up (%r)" % kept)
             await p.wait_for_timeout(400)
             kb = await safe("()=>window.__a3dKbFit(320)")
             sh = await safe(BOX, '#a3d-right')

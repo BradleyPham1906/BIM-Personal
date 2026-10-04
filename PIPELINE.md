@@ -2,11 +2,11 @@
 
 **Read this first in a new session.** One page. The detail lives in the docs listed at the bottom.
 
-    canvas_v10.html   2264103 bytes
-    sha256            9525be80653cedf945e9d8661814826fa4496877e247ee0fa7f7dd943dbe9599
+    canvas_v10.html   2264884 bytes
+    sha256            2afd8924b9723bd3a771dc885f6c531234fd6222136b97dd150a9074d544f550
     markers           __acad3dV60 ... __acad3dV149, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
                       __acad3dV121b
-    tests             106 suites, 4340 checks, 0 failures
+    tests             106 suites, 4341 checks, 0 failures
 
     The user guide (V142): every phase updates docs/src/, its log entry and BIM_APP_VERSION, then
     runs tools/dump_catalog.py and tools/build_docs.py. The V142 suite and the Pages workflow
@@ -155,8 +155,8 @@ when it starts (V111 to V138 went to other work; V139 to V167 are in NOW).
   tablet on its side: unchanged. The layout follows the screen as it turns.
 - Safe areas (notch, home bar) kept clear; messages above the bar; pinch and pan checked again.
 - Typing on a phone: every field 16 px on a touch screen, so iOS does not zoom in; the keyboard
-  lifts Properties and the drawer, the field tapped in view.
-- **Checked** in 73 checks on five screens, and 37 falsify variants.
+  lifts Properties and the drawer, the field tapped in view; Find keeps the address typed.
+- **Checked** in 74 checks on five screens, and 39 falsify variants.
 
 Phase 148 (V148), **Analyze, redesigned; results as layers**.
 - Analyze is a list in four groups (Model, Site and terrain, Structure, Environment): one line a

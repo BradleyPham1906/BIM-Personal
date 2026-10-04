@@ -13749,7 +13749,7 @@ try{
       r+=bimPropRow('Tile URL','<input type="text" data-propmap="url" value="'+bimEsc(st.url)+'" placeholder="https://tiles.example.org/{z}/{x}/{y}.png" spellcheck="false">');
       r+=bimPropRow('Credit','<input type="text" data-propmap="credit" value="'+bimEsc(st.credit)+'" placeholder="Who the tiles are from">');
     }else if(st.style!=='off')r+=bimPropText('Credit',bimMapCredit(st));
-    r+=bimPropRow('Address','<div class="a3d-ukv"><input type="text" data-propmap="addr" enterkeyhint="search" value="'+bimEsc(A3D_MAP_DRAFT!==null?A3D_MAP_DRAFT:((A3D.site&&A3D.site.address)||''))+
+    r+=bimPropRow('Address','<div class="a3d-ukv"><input type="text" data-propmap="addr" value="'+bimEsc((A3D.site&&A3D.site.address)||'')+
       '" placeholder="Street, town" aria-label="Address to find"><button type="button" class="a3d-pedit" data-propmapact="find">Find</button></div>');
     r+=bimPropText('Model 0,0',org?(bimGeoFmt(org.lat,'N','S')+', '+bimGeoFmt(org.lon,'E','W')):'not placed: set the latitude and longitude, or find an address');
     r+=bimPropRow('Site Data','<button type="button" class="a3d-pedit" data-propmapact="import">Import GeoJSON or KML</button> '+
@@ -13777,9 +13777,7 @@ try{
     var b=ev.target&&ev.target.closest?ev.target.closest('[data-propmapact]'):null;
     if(!b)return false;
     var a=b.getAttribute('data-propmapact');
-    if(a==='find'){var q=el.propsbody.querySelector('[data-propmap="addr"]'),qv=q?q.value:'';
-      if(!/\S/.test(qv)&&A3D_MAP_DRAFT)qv=A3D_MAP_DRAFT;   /* __acad3dV149c: the field drawn again empty under the tap */
-      bimMapFind(qv);return true;}
+    if(a==='find'){var q=el.propsbody.querySelector('[data-propmap="addr"]');bimMapFind(q?q.value:'');return true;}
     if(a==='import'){bimGeoImportPick();return true;}
     if(a==='export'){bimGeoExport();return true;}
     return false;
@@ -13795,10 +13793,6 @@ try{
   /* ---- the address: Nominatim, one request per Find. Its policy is a request a second at most and
      no search as you type, so a second Find inside the second is refused, with the reason. ---- */
   var BIM_GEOCODE_URL='https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q=';
-  /* __acad3dV149c: the address as it is typed. Properties is drawn again when the screen changes
-     size -- on a phone, when the keyboard goes as Find is tapped -- and a field that kept nothing of
-     its own came back empty. */
-  var A3D_MAP_DRAFT=null;
   function bimMapFind(q){
     q=String(q==null?'':q).replace(/\s+/g,' ').replace(/^ | $/g,'');
     if(!q){a3dToast('Type an address or a place to find');return null;}
@@ -37127,13 +37121,9 @@ try{
     if(el.propsbody)el.propsbody.addEventListener('click',function(ev){
       try{bimMapPropClick(ev);}catch(eMK){console.warn('[BIM] Map action failed',eMK);a3dToast('That did not work - see the console');}
     });
-    if(el.propsbody)el.propsbody.addEventListener('input',function(ev){   /* __acad3dV149c: kept as typed */
-      var a=ev.target&&ev.target.closest?ev.target.closest('[data-propmap="addr"]'):null;
-      if(a)A3D_MAP_DRAFT=a.value;
-    });
     if(el.propsbody)el.propsbody.addEventListener('keydown',function(ev){
       var a=ev.target&&ev.target.closest?ev.target.closest('[data-propmap="addr"]'):null;
-      if(!a||(ev.key!=='Enter'&&ev.keyCode!==13))return;
+      if(!a||ev.key!=='Enter')return;
       ev.preventDefault();ev.stopPropagation();
       bimMapFind(a.value);
     });
@@ -38034,8 +38024,7 @@ try{
   window.__a3dShellMore=function(on){return bimShellMore(on);};
   window.__a3dShellApplyTier=function(){return bimShellApplyTier();};
   window.__a3dKbFit=function(kb){return bimKbFit(kb);};   /* __acad3dV149b */
-  window.__a3dMapDraft=function(){return A3D_MAP_DRAFT;};
-  window.__acad3dV149='addrdraft,typing16,keyboardlift,focusscroll,tierphone,tieroverlay,tabbar,tablabels,railmore,leftdrawer,drawerclosed,drawerscrim,tabtoggles,escshuts,fullwidth,safeareas,viewportfit,burgerdrawer,toastclear,tierfollows';
+  window.__acad3dV149='typing16,keyboardlift,focusscroll,tierphone,tieroverlay,tabbar,tablabels,railmore,leftdrawer,drawerclosed,drawerscrim,tabtoggles,escshuts,fullwidth,safeareas,viewportfit,burgerdrawer,toastclear,tierfollows';
   window.__acad3dV148='anzlist,anzgroups,anzsearch,anzwords,anzexpand,anzremember,addaslayer,reslayers,ressnapshot,reslive,resstale,resupdate,resorder,resopacity,ressaved,resundo,layersanalysis,layersdata,touchrows';
   window.__acad3dV147='phonesheet,tabletdrawer,touchtargets,paneltokens,sentencecase,rowgrid,inputstyle,buttonstyle,typeheader,showall,resizable,minimise,lightdark';
   window.__acad3dV146='canon,hash128,elementtree,blobstore,commit,diff,fielddiff,idrecords,restore,elementhistory,historygroup,historycommands,savedwithproject';

@@ -12767,7 +12767,7 @@ three layouts: a phone upright gets a tab bar along the bottom and the panel as 
 upright or a phone on its side keeps the rail and gets the same drawer; a tablet on its side or a
 computer keeps the panel beside the drawing.
 
-### What was built (patches 149a, 149b)
+### What was built (patches 149a, 149b, 149c)
 
 - **Three layouts, chosen from the screen and chosen again when it turns or is resized.**
   - A phone upright (up to 720 px wide, portrait): the rail is a tab bar along the bottom (Layers,
@@ -12796,6 +12796,11 @@ computer keeps the panel beside the drawing.
   - The on-screen keyboard covered the Properties sheet the address field is in. Its height, read
     from visualViewport, now lifts the sheet and the drawer above it (a change under 80 px is a
     browser bar, not a keyboard), and the field tapped is scrolled to the middle of what is left.
+- **Find an address on a phone (149c).** The owner: "when searching for address, it keep saying
+  type an address or a place to find. Basically useless button." Find read the field, and the field
+  kept nothing of its own: the tap on Find takes the focus, the keyboard goes, the screen changes
+  size, Properties is drawn again and the field comes back empty. What is typed is now kept as it
+  is typed; the field is drawn with it and Find falls back to it. The keyboard's key reads Search.
 - **The version** is V149. The guide's Getting started page has the three layouts and the fields.
 
 ### Bugs found
@@ -12805,14 +12810,16 @@ computer keeps the panel beside the drawing.
 
 ### Suites
 
-- New: `bim_phase149_shell_phone_tablet_browser_tests.py`, 73 checks on five screens: a phone
+- New: `bim_phase149_shell_phone_tablet_browser_tests.py`, 74 checks on five screens: a phone
   upright and on its side, a tablet upright and on its side, a computer; the bar, its labels and
   sizes, the drawing's width, the drawer's opening and shutting four ways, More and a menu from it,
   a message above the bar, Properties' sheet, a two-finger pinch sent as real touches, the window
   narrowed and widened again, and the safe-area rules; and typing on a phone: all forty fields
   16 px, an address typed and sent with the keyboard's Enter finding its place (the geocoder
-  answered in the browser), the sheet and the drawer on a 320 px keyboard, a 40 px bar ignored.
-- **Falsified by `Phase/falsify_phase149.py`,** 37 variants, all caught. One rule 149b made dead
+  answered in the browser), the sheet and the drawer on a 320 px keyboard, a 40 px bar ignored; an address typed, the focus taken and Properties drawn again, then Find.
+- Amended for V149: V142 (the newest kept build may be this phase's own earlier release, kept
+  before 149c).
+- **Falsified by `Phase/falsify_phase149.py`,** 39 variants, all caught. One rule 149b made dead
   (the drawer's bottom, set again with the keyboard) was taken out. Two gaps closed: the
   menu-button check ran on the rail's toggle on a phone on its side, and the safe-area check
   matched #a3d-railutil for #a3d-rail.
@@ -12826,12 +12833,11 @@ computer keeps the panel beside the drawing.
 
 ### Full regression and state after V149
 
-106 suites, 4340 checks, 0 failures. (A first full run, before 149b, had V137 and V139 fail once
-under load; both passed alone and beside V130 to V139, and the run after 149b passed whole.)
-Falsification: V149 37 of 37. The chain 149a, 149b rebuilds the build from
-`Phase/canvas_v10.html.bak_phase149_pre`. The diff is ES5-clean. Pictures:
-`reference/v149_phone.png`, `v149_phone_drawer.png`, `v149_phone_more.png`, `v149_tablet.png`.
+106 suites, 4341 checks, 0 failures. Falsification: V149 39 of 39. The chain 149a, 149b rebuilds
+from `Phase/canvas_v10.html.bak_phase149_pre`, and 149c from `bak_phase149c_pre` (149b was merged
+on its own). The diff is ES5-clean. Pictures: `reference/v149_phone.png`, `v149_phone_drawer.png`,
+`v149_phone_more.png`, `v149_tablet.png`.
 
-    canvas_v10.html   2264103 bytes
-    sha256            9525be80653cedf945e9d8661814826fa4496877e247ee0fa7f7dd943dbe9599
+    canvas_v10.html   2264884 bytes
+    sha256            2afd8924b9723bd3a771dc885f6c531234fd6222136b97dd150a9074d544f550
     markers           __acad3dV60 ... __acad3dV149, __acad3dV134d (and the 133d to 133f markers)
