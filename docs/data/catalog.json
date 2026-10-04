@@ -1,6 +1,6 @@
 {
  "version": {
-  "v": "V154",
+  "v": "V155",
   "date": "2026-10-04"
  },
  "commands": [
@@ -171,6 +171,20 @@
    ],
    "keys": null,
    "anchor": "cmd-BEAM"
+  },
+  {
+   "id": "cmd:BENCHMARK",
+   "name": "BENCHMARK",
+   "aliases": [
+    "BENCH",
+    "FRAMETIME",
+    "SPEEDTEST"
+   ],
+   "desc": "Time this device drawing 5,000 and 20,000 elements, with WebGPU and with WebGL; the model is put back as it was",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-BENCHMARK"
   },
   {
    "id": "cmd:BLOCK",

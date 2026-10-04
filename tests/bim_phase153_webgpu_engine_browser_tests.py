@@ -151,10 +151,11 @@ async def run():
             ck(d['recorded'] >= 1 and d['rebuilt'] >= 1, "a new shape: its chunk rebuilt and the draws recorded again (%s)" % d)
             d = await did("(l)=>window.__a3dLayerSet(l,'transparency',0)", ly)
             st = await safe("()=>window.__a3dGlStats()")
-            ck(d['recorded'] >= 1 and st.get('draws') == 2, "no transparent layer left: recorded again without the blended passes (%s draws)" % st.get('draws'))
+            # AMENDED FOR V155: a bundle a chunk and pass, kept: the blended passes are left out, nothing recorded
+            ck(d['recorded'] == 0 and st.get('draws') == 2, "no transparent layer left: the blended passes left out, nothing recorded (%s draws)" % st.get('draws'))
             d = await did("(l)=>window.__a3dLayerSet(l,'transparency',60)", ly)
             st = await safe("()=>window.__a3dGlStats()")
-            ck(d['recorded'] >= 1 and st.get('draws') == 4, "and with them again (%s draws)" % st.get('draws'))
+            ck(d['recorded'] == 0 and st.get('draws') == 4, "and with them again, their bundles kept (%s draws)" % st.get('draws'))   # AMENDED FOR V155
             await same('after the changes')
 
             print("\n-- 3. scale")
