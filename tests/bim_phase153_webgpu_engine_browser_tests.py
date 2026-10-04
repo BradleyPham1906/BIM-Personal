@@ -10,7 +10,7 @@ WebGL's frame of the same view.
   2. RECORDED ONCE: the camera replays the bundle; a move or a selection is one row; a new shape
      or a change of passes records it again.
   3. SCALE: 5,000 and 20,000 elements in a few draws, replayed.
-  4. WEBGL STILL DRAWS: a terrain surface in 3D, the map.
+  4. THE TERRAIN AND THE MAP: drawn with WebGL in V153, with WebGPU since V154 (AMENDED FOR V154).
   5. GRAPHICS chooses WebGL and back, kept, in Statistics; a lost device hands over to WebGL.
   6. A BROWSER WITHOUT WEBGPU: WebGL, batched.
 
@@ -79,8 +79,9 @@ async def run():
 
         async def same(what):
             r = await safe("()=>window.__a3dGpuCompare()") or {}
-            # an outline lying on its own face is a depth tie each engine breaks its own way: at most 0.02%
-            ok = r.get('pixels') and r.get('over48near') <= r['pixels'] * 0.0002 and r['over48'] <= r['pixels'] * 0.001 and r['over16'] <= r['pixels'] * 0.005 and r.get('gpuStats', {}).get('mode') == 'webgpu'
+            # AMENDED FOR V154: outlines pulled toward the eye no longer tie with their face; what is left is a
+            # silhouette pixel where outline, face and background meet, antialiased its own way: at most 10
+            ok = r.get('pixels') and r.get('over48near') <= 10 and r['over48'] <= r['pixels'] * 0.001 and r['over16'] <= r['pixels'] * 0.005 and r.get('gpuStats', {}).get('mode') == 'webgpu'
             ck(bool(ok), "WebGPU draws what WebGL draws: %s (of %s pixels, %s differ by more than 16 of 255, %s by more than 48, %s of them not explained by a line a pixel over)"
                % (what, r.get('pixels'), r.get('over16'), r.get('over48'), r.get('over48near')))
             await frame()
@@ -173,7 +174,8 @@ async def run():
             t = await safe("(m)=>window.__a3dMakeTerrain(m)", [[-5, -5, 0, '', ''], [5, -5, 0, '', ''], [5, 5, 0, '', ''], [-5, 5, 0, '', ''], [0, 0, 2, '', '']])
             await frame()
             G = await gpu()
-            ck(G.get('engine') == 'webgl' and G.get('fallback') == 'terrain' and G.get('label') == 'WebGL (for the terrain)', "a terrain surface in 3D: WebGL draws the frame (%s)" % G.get('label'))
+            # AMENDED FOR V154: WebGPU draws the terrain itself
+            ck(G.get('engine') == 'webgpu' and G.get('fallback') == '' and (await safe("()=>window.__a3dTerrainShown3d?1:(window.__a3dGlStats().siteDraws||0)")) >= 1, "a terrain surface in 3D: WebGPU draws it (%s)" % G.get('label'))
             await safe("()=>window.__a3dTestSetObjs([])")
             await frame()
             ck((await gpu()).get('engine') == 'webgpu', "gone: WebGPU again")
@@ -184,7 +186,8 @@ async def run():
             await safe("()=>{window.__a3dMapSet('url','https://tiles.invalid/{z}/{x}/{y}.png');window.__a3dMapSet('style','custom');}")
             await frame()
             G = await gpu()
-            ck(G.get('engine') == 'webgl' and G.get('fallback') == 'map', "the map on: WebGL draws the frame (%s)" % G.get('label'))
+            # AMENDED FOR V154: WebGPU draws the map itself
+            ck(G.get('engine') == 'webgpu' and (await safe("()=>{var m=window.__a3dMapDrawn();return m&&m.path;}")) == 'webgpu', "the map on: WebGPU draws it (%s)" % G.get('label'))
             await safe("()=>window.__a3dMapSet('style','off')")
             await frame()
             ck((await gpu()).get('engine') == 'webgpu', "the map off: WebGPU again")

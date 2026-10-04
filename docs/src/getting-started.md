@@ -94,7 +94,11 @@ before. The picture is the same either way.
 
 **WebGPU.** Where the browser has WebGPU (recent Chrome and Edge, Safari on iOS and macOS 26), the
 model is drawn with it. Every draw is recorded once and replayed each frame with only the camera
-changing. WebGL draws while WebGPU starts, on browsers without it, if the graphics driver resets,
-and for now whenever the map or a terrain surface is shown in 3D. Properties → Project →
+changing. The basemap and a terrain surface with the map draped on it are drawn with WebGPU too.
+WebGL draws while WebGPU starts, on browsers without it, or if the graphics driver resets.
+Properties → Project →
 Statistics shows which one drew the last frame. `GRAPHICS` switches this browser to WebGL and
 back, for a driver that misbehaves.
+
+**Outlines** are drawn a hair in front of the faces they lie on (0.02% of their distance from you),
+so they no longer flicker or break up as the view turns.

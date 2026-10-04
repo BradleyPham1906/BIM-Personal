@@ -13145,3 +13145,74 @@ ES5-clean (the scan's one hit is `let` inside the WGSL shader text, which is WGS
     canvas_v10.html   2336573 bytes
     sha256            38bf38edf529788217a11a330242d6251afb588298e6a86f8f489c268aa2dc58
     markers           __acad3dV60 ... __acad3dV153, __acad3dV134d (and the 133d to 133f markers)
+
+## Phase 154 (V154) - The map and terrain in WebGPU; outlines that hold (Render R3)
+
+V153 handed every frame with the map or a terrain surface in 3D to WebGL. Now WebGPU draws them,
+so a site project stays on WebGPU. And the outlines, which tied in depth with their own faces,
+are pulled a hair toward the eye in both engines.
+
+### What was built (patches 154a, 154b)
+
+- **Outlines (154a).** Each outline vertex moves toward the eye by 0.02% of its distance: a
+  millimetre at 5 m, 2 cm at 100 m. A tie with its face is always won by the outline; an outline
+  behind a face 2 cm thick or more at 100 m stays hidden. The same pull in the object-by-object
+  WebGL shader, the batched one, and WebGPU's (the eye now sent with the camera).
+- **The map (154b).** The tiles as textured quads on the ground, drawn first without writing depth
+  and mixed toward the background by the map's opacity, as WebGL draws them.
+- **The terrain.** The surface shaded by its smooth normals, then the map draped on it tile by
+  tile, nothing outside a tile. The surface's arrays are built once (`bimTerrainMeshData`) for
+  either engine.
+- **Tiles on the GPU.** Each a texture with all its mipmap levels, made on the GPU by a 2x2 average
+  a level (as `generateMipmap`); made once, kept with the tile, and destroyed when the tile is
+  given back. A tile the browser will not hand over is counted against its host, as with WebGL.
+- **Per draw.** Colour, opacity and the tile's place in one uniform buffer, read at a 256-byte
+  offset per draw. These draws are made each frame (the tiles come and go), before the model's
+  recorded bundle is replayed.
+- **The version** is V154; the guide's Getting started is updated.
+
+### How it was checked
+
+As V153: WebGPU offscreen, compared with WebGL's frame of the same view, tiles served in the
+browser (gridded, coloured PNGs). A difference counts when it is more than 64 of 255 after allowing
+a line a pixel over: one of the four multisamples of a bright outline's edge covered the other way
+is up to 55.
+- Outlines on their faces in perspective, and from 400 m: none.
+- The terrain, selected, with a column on it, and a column inside the hill: none.
+- The map draped on the terrain, in plan, at 55% opacity, and in 3D with tiles drawn smaller than
+  their pixels (the mipmaps): none.
+- A bright selected outline on dark: 6, silhouette pixels where outline, face and background meet,
+  antialiased their own way (at most 10 allowed).
+
+### Bugs found
+
+- After the pull, V153's 61 depth-tie pixels were gone. But the comparison then counted, as
+  differences, outline edges whose multisample coverage differed by one sample. The threshold for
+  "not explained" is now one sample's worth (64).
+- A tile from a server without CORS cannot be tested here: a response the harness serves is not
+  CORS-checked. Such a tile fails as it loads, before either engine sees it.
+
+### Suites
+
+- New: `bim_phase154_webgpu_map_terrain_browser_tests.py`, 24 checks.
+- Amended: V153 (AMENDED FOR V154): the terrain and the map are WebGPU's now; the depth-tie
+  allowance is replaced by at most 10 silhouette pixels.
+- **Falsified by `Phase/falsify_phase154.py`,** 18 variants, all caught. Three gaps closed: the
+  object-by-object path was not exercised, the map's opacity was always 100%, and nothing stood
+  inside the terrain.
+- V152's and V153's falsify files re-anchored for the pull (offset); V153's map and terrain
+  hand-over variants retired. V152 19 of 19, V153 21 of 21.
+
+### Not done
+
+- Spatial chunks and culling; picking and sun hours on the GPU; a measurement on a real GPU (V155).
+
+### Full regression and state after V154
+
+111 suites, 4534 checks, 0 failures. Falsification: V154 18 of 18; V153 21 of 21; V152 19 of 19.
+Patches 154a and 154b rebuild the build from `Phase/canvas_v10.html.bak_phase154_pre`. The diff
+is ES5-clean (the scan's hits are `let` inside WGSL shader text).
+
+    canvas_v10.html   2350405 bytes
+    sha256            4a3dd3e88964fc7e3ad0bb4fb947c33c80d0e163869c95e796d38c8ed5d68bbc
+    markers           __acad3dV60 ... __acad3dV154, __acad3dV134d (and the 133d to 133f markers)
