@@ -12758,3 +12758,68 @@ from `Phase/canvas_v10.html.bak_phase148_pre`. The diff is ES5-clean. Pictures:
     canvas_v10.html   2252576 bytes
     sha256            ffde091c9c18a002bc08518f5f5acdf22d8680859918ff8cdc8bf1222de7d525
     markers           __acad3dV60 ... __acad3dV148, __acad3dV134d (and the 133d to 133f markers)
+
+## Phase 149 (V149) - The shell on a phone and a tablet
+
+The owner (V147): "consider the adaptation for phone, iPad/tablet, and computer use when redesign".
+On a 390 px phone the left panel took 296 px and left the drawing 94. Now the screen picks one of
+three layouts: a phone upright gets a tab bar along the bottom and the panel as a drawer; a tablet
+upright or a phone on its side keeps the rail and gets the same drawer; a tablet on its side or a
+computer keeps the panel beside the drawing.
+
+### What was built (patch 149a)
+
+- **Three layouts, chosen from the screen and chosen again when it turns or is resized.**
+  - A phone upright (up to 720 px wide, portrait): the rail is a tab bar along the bottom (Layers,
+    Present, Browser, Assets, Analyze, More), each tab labelled and at least 44 px. The drawing takes
+    the whole width.
+  - A tablet upright (721 to 1024 px, portrait) and a phone on its side: the rail stays down the
+    left, its buttons 44 px for a finger, and the drawing starts at the rail.
+  - A tablet on its side and a computer: unchanged.
+- **The drawer.** In the first two, the left panel opens over the drawing, which stays where it is,
+  with a shade over the rest. It is shut at the start. A tab opens it on that tab; the same tab, a
+  tap on the shade or Esc shuts it. The toolbar's menu button opens it on a phone on its side (it
+  toggled a tree drawer retired in V67).
+- **More** (phone): the rail's six tools (zoom, appearance, snaps, units, save image, shortcuts) in
+  a column over the bar; their menus open on the screen; a touch elsewhere puts it away.
+- **The way back.** Leaving a drawer layout for a computer's, the panel is as it was there, open or
+  shut.
+- **Safe areas.** viewport-fit=cover, and the top bar, the tab bar, More and the drawer keep clear of
+  a notch and the home bar with env(safe-area-inset-*). Messages show above the bar.
+- Pinch to zoom and two-finger pan (V8) work on the full-width drawing, checked again.
+- **The version** is V149. The guide's Getting started page has the three layouts.
+
+### Bugs found
+
+- **Entering the workspace opened the panel** whatever the screen (V65's "the panel hosts the
+  navigator, so it opens on entry"), so the drawer started open on a phone. It stays shut there now.
+
+### Suites
+
+- New: `bim_phase149_shell_phone_tablet_browser_tests.py`, 66 checks on five screens: a phone
+  upright and on its side, a tablet upright and on its side, a computer; the bar, its labels and
+  sizes, the drawing's width, the drawer's opening and shutting four ways, More and a menu from it,
+  a message above the bar, Properties' sheet, a two-finger pinch sent as real touches, the window
+  narrowed and widened again, and the safe-area rules.
+- **Falsified by `Phase/falsify_phase149.py`,** 32 variants, all caught. Two gaps closed: the
+  menu-button check ran on the rail's toggle on a phone on its side, and the safe-area check
+  matched #a3d-railutil for #a3d-rail.
+
+### Not done
+
+- The ribbon: there is none since V130's dock; the dock and status bar keep their compact rules.
+- A long press for a context menu: a long press is the marquee (V8), and the drawing has no context
+  menu yet.
+- The Properties sheet and the drawer can both be open on a phone; the sheet lies over the drawer.
+
+### Full regression and state after V149
+
+106 suites, 4333 checks, 0 failures. In the full parallel run V137 (one map-tile check) and V139
+(an exception partway) failed; both passed alone and again beside V130 to V139 at six workers
+(805 of 805), and neither touches the shell. Falsification: V149 32 of 32. Patch 149a rebuilds the
+build from `Phase/canvas_v10.html.bak_phase149_pre`. The diff is ES5-clean. Pictures:
+`reference/v149_phone.png`, `v149_phone_drawer.png`, `v149_phone_more.png`, `v149_tablet.png`.
+
+    canvas_v10.html   2262067 bytes
+    sha256            bbb4cb220e6e7a837cba822cf35c56e7287b2bfec8e2d82208dfd3367cba5ebc
+    markers           __acad3dV60 ... __acad3dV149, __acad3dV134d (and the 133d to 133f markers)
