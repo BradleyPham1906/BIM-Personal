@@ -13338,3 +13338,83 @@ named `__a3dPickAt`, which V94 and V97 already use; it is `__a3dPickInfo`. Falsi
     canvas_v10.html   2363307 bytes
     sha256            3564c6bf85d65cf0d288d6e9831bea406c50051622b6f451437aee67750f09e6
     markers           __acad3dV60 ... __acad3dV156, __acad3dV134d (and the 133d to 133f markers)
+
+## Phase 157 (V157) - The whole surroundings, in 3D (Site context C2)
+
+The owner: "i want more context from the site than the current one. and the trees and roads and
+tunnels, bridges railway and airports. currently we only have buildings." V133 already asked
+OpenStreetMap for roads, water, green and trees, but drew them flat, as lines and points, so in 3D
+only the buildings read. Now the same free Overpass API (no key, the whole world) brings four more
+kinds, and every line kind carries a surface.
+
+### What was built (patches 157a, 157b)
+
+- **Four new kinds (157a):** railways (rail, light rail, narrow gauge, subway, tram, monorail,
+  platforms), airports (runways, taxiways, aprons, aerodromes, helipads), power (pylons and lines)
+  and land use (residential, commercial, retail, industrial, railway and construction land). Each
+  is ticked by default, has its box in Site Context, its statements in the query and its layer
+  under Context. Tree rows come with the trees. An abandoned railway, a power cable or farmland is
+  not brought.
+- **Surfaces (157a).** An element keeps its centre line or outline, as V133 made it (its counts,
+  layers and Properties unchanged), and carries its 3D surface as its mesh:
+  - a road: a mitred strip as wide as its `width` tag, else its lanes at 3.3 m, else a width for
+    its class; coloured by its use, as UrbanEyes' street use: car road, pedestrian zone, footway,
+    cycleway, path;
+  - a bridge (`bridge=yes` on a road or railway): a deck 0.8 m thick, 6 m up for each `layer` (at
+    least one), on piers every 30 m from 15 m; named "Bridge: ...";
+  - a tunnel: its centre line only, named "Tunnel: ...", nothing on the ground;
+  - a railway 3.2 m wide, a tram 2.6 m; a platform 1 m high;
+  - a runway 45 m, a taxiway 18 m, or as tagged; an apron or helipad paved; the aerodrome its
+    boundary only;
+  - a tree: a hexagonal trunk and a crown of 20 faces, as tall as its `height` tag (else 8 m), its
+    crown from `diameter_crown` (else 0.6 of its height); a tree row planted evenly about every
+    8 m, both ends included (at most 3,000 trees a fetch);
+  - a pylon: a tapering tower 25 m tall, or as tagged; a power line hung 20 m up;
+  - land use: a tint at the ground, under the roads.
+  - With On the ground ticked, each point of a surface stands on the terrain under it.
+- **The message** counts each kind, and says how many bridges were raised and tunnels are below
+  ground; the result carries `bridges`, `tunnels` and `surfaces`. CONTEXT is found by searching
+  railway, tram, bridges, tunnels, airport, runway, power, pylons or land use.
+- **Properties (157b)** says what a surface is: its use and width, a bridge's deck and piers, a
+  tunnel, a tree's height and crown, a row tree. Test hooks for the kinds, uses, widths and the
+  points along a line.
+- **The version** is V157; the guide's Site page has a table of what each kind becomes.
+
+### Found
+
+- A row of trees 40 m long, read back from latitude and longitude, is 39.9999 m: stepping 8 m from
+  its start dropped the tree at its end. A row is now planted evenly, by count.
+- The land use tint first sat 2 cm under the ground, where on the terrain it fought the surface;
+  it sits at the ground.
+
+### Suites
+
+- New: `bim_phase157_site_context_infra_browser_tests.py`, 121 checks: the four kinds in the
+  settings, Properties and the query; 13 tag sets to kinds, 9 road uses, 11 widths in metres,
+  13 surface widths, rows; one press against an Overpass fixture of 21 elements on the V133
+  terrain (counts, bridges, tunnels, surfaces, the message, the layers); every surface's width, its
+  height over the ground point by point, the deck and its four piers, the tunnel, rail, tram,
+  platform, runway, taxiway, apron, aerodrome, land use, trees and the row, pylons and the line;
+  Properties; the 3D scene's table; off the ground; undo and redo; CONTEXTREMOVE; search.
+- Amended: V133 (AMENDED FOR V157: the settings' kinds, the kinds unticked and ticked again, the
+  counts, the sub-layers).
+- **Falsified by `Phase/falsify_phase157.py`,** 25 variants, all caught. V133's falsify file
+  re-anchored (four variants, all caught).
+
+### Not done
+
+- A large area fetched in tiles, to keep within the public servers' limits; woods filled with
+  trees; tunnels dashed in plan; `man_made=bridge` outlines, stations and terminals; OpenRailwayMap's
+  detail; the US national bridge inventory, NTAD rail and FAA airports as V134 presets.
+- A change to On the ground moves the buildings at once (V137), but the other surfaces only at the
+  next CONTEXT.
+
+### Full regression and state after V157
+
+114 suites, 4697 checks, 0 failures (V142 passes once the guide is rebuilt for V157).
+Falsification: V157 25 of 25; V133's four re-anchored variants all caught. Patches 157a and 157b
+rebuild the build from `Phase/canvas_v10.html.bak_phase157_pre`. The diff is ES5-clean.
+
+    canvas_v10.html   2376193 bytes
+    sha256            ecf72c2ad310634fc282b38b0311df305e3a72c304134263d203f210f6be394f
+    markers           __acad3dV60 ... __acad3dV157, __acad3dV134d (and the 133d to 133f markers)

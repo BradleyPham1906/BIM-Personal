@@ -15,7 +15,8 @@ VARIANTS = {
     'area_no_radius': [("h=(n?Math.max(x1-x0,z1-z0)/2:0)+st.radius;", "h=(n?Math.max(x1-x0,z1-z0)/2:0)+150;")],
     'area_ignores_property': [("    var cx=n?(x0+x1)/2:0,cz=n?(z0+z1)/2:0,", "    var cx=0,cz=0,")],
     'area_two_corners': [("    for(i=0;i<4;i++){\n      q=bimModelToGeo(C[i][0],C[i][1],org);", "    for(i=0;i<4;i+=2){\n      q=bimModelToGeo(C[i][0],C[i][1],org);")],
-    'no_trees_query': [("    if(k.trees)q.push('node[\"natural\"=\"tree\"]'+b+';');\n", "")],
+    # RE-ANCHORED FOR V157: the trees' statements now ask for tree rows too
+    'no_trees_query': [("    if(k.trees)q.push('node[\"natural\"=\"tree\"]'+b+';','way[\"natural\"=\"tree_row\"]'+b+';');\n", "")],
     'kinds_ignored': [("    if(k.roads)q.push('way[\"highway\"]'+b+';');", "    q.push('way[\"highway\"]'+b+';');")],
     # RE-ANCHORED IN V134d: the server set goes first into bimCtxOverpass
     'overpass_setting_ignored': [("    var pOsm=q?bimCtxOverpass(q,st.overpass):Promise.resolve(null);", "    var pOsm=q?bimCtxOverpass(q,BIM_OVERPASS_URL):Promise.resolve(null);")],
@@ -26,7 +27,8 @@ VARIANTS = {
     'rings_not_joined': [("      while(!same(r[0],r[r.length-1])&&grew){", "      while(false){")],
     'open_chain_kept': [("      if(r.length>=4&&same(r[0],r[r.length-1]))rings.push(r);", "      if(r.length>=2)rings.push(r);")],
     'inner_as_outer': [("        bimOsmRings(el.members,'inner').forEach(function(r){f.inner.push(", "        bimOsmRings(el.members,'inner').forEach(function(r){f.outer.push(")],
-    'trees_dropped': [("    if(el.type==='node')return t.natural==='tree'?'trees':'';", "    if(el.type==='node')return '';")],
+    # RE-ANCHORED FOR V157: a node may be a pylon too
+    'trees_dropped': [("    if(el.type==='node')return t.natural==='tree'?'trees':(t.power==='tower'?'power':'');", "    if(el.type==='node')return t.power==='tower'?'power':'';")],
     # ---- 133a: the ground
     'decode_off_by_one': [("e[i]=d[i*4]*256+d[i*4+1]+d[i*4+2]/256-32768;", "e[i]=d[i*4]*256+d[i*4+1]+d[i*4+2]/256-32767;")],
     'decode_no_fraction': [("e[i]=d[i*4]*256+d[i*4+1]+d[i*4+2]/256-32768;", "e[i]=d[i*4]*256+d[i*4+1]-32768;")],
@@ -39,7 +41,8 @@ VARIANTS = {
     'sources_dropped': [("        String(s).split(/\\s*,\\s*/).forEach(function(v){if(v)src[v]=1;});\n", "")],
     # ---- 133a: placing
     'no_replace': [("      A3D.objs=A3D.objs.filter(function(x){return !(x.context&&repl[x.context.kind]);});\n", "")],
-    'replace_all_kinds': [("    if(feats)for(i=0;i<5;i++)if(k[BIM_CTX_KINDS[i]])repl[BIM_CTX_KINDS[i]]=1;", "    if(feats)for(i=0;i<6;i++)repl[BIM_CTX_KINDS[i]]=1;")],
+    # RE-ANCHORED FOR V157: the loop runs over every kind but the terrain
+    'replace_all_kinds': [("    if(feats)for(i=0;i<BIM_CTX_KINDS.length;i++)if(BIM_CTX_KINDS[i]!=='terrain'&&k[BIM_CTX_KINDS[i]])repl[BIM_CTX_KINDS[i]]=1;", "    if(feats)for(i=0;i<BIM_CTX_KINDS.length;i++)repl[BIM_CTX_KINDS[i]]=1;")],
     'fetch_not_undoable': [("    var selWas=A3D.sel,setWas=(A3D.selSet||[]).slice();\n    pushUndo();", "    var selWas=A3D.sel,setWas=(A3D.selSet||[]).slice();")],
     'not_pinned': [("x.col=BIM_CTX_COL[kind];x.locked=true;n[kind]++;", "x.col=BIM_CTX_COL[kind];n[kind]++;")],
     'layers_flat': [("ly=bimLayerByName('Context '+k)||bimLayerNew({name:'Context '+k,color:BIM_CTX_COL[k],parent:par.id});",
@@ -72,7 +75,8 @@ VARIANTS = {
     'no_context_page': [("    if(o.context)h+=bimCtxPropsHtml(o);                 /* __acad3dV133 */\n", "")],
     'checkbox_value': [("    bimCtxSet(k,k.indexOf('kind:')===0?f.checked:f.value);", "    bimCtxSet(k,f.value);")],
     'context_not_on_ribbon': [("'bim:map','bim:findaddress','bim:geoimport','bim:context',", "'bim:map','bim:findaddress','bim:geoimport',")],
-    'no_context_terms': [("    CONTEXT:'neighbours neighbors surrounding buildings osm openstreetmap overpass roads streets water rivers parks trees terrain elevation contours ground giraffe',   /* __acad3dV133 */\n", "")],
+    # RE-ANCHORED FOR V157: the words now name railways, bridges, airports and the rest
+    'no_context_terms': [("    CONTEXT:'neighbours neighbors surrounding buildings osm openstreetmap overpass roads streets water rivers parks trees terrain elevation contours ground giraffe railway railways train tram subway bridges tunnels airport runway power pylons land use infrastructure',   /* __acad3dV133; __acad3dV157 */\n", "")],
 }
 
 name = sys.argv[1]
