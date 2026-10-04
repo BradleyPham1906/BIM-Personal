@@ -32,10 +32,21 @@ order: 1
 - **Sizing Properties.** Drag the panel's left edge to widen it (240 to 560 px); double-click the
   edge to put it back. The arrow beside the word Properties minimises the panel to a strip. Both
   are remembered.
-- **On a phone or a tablet.** **Props** opens Properties. On a phone it is a sheet from the bottom:
-  tap its grab bar to raise it and lower it. On a tablet it is a drawer from the right. On either,
-  the arrow beside the word Properties closes it, and on a touch screen every field and button is
-  sized for a finger.
+- **On a phone or a tablet.** The drawing gets the screen:
+  - **A phone held upright:** the rail is a bar of tabs along the bottom (Layers, Present,
+    Browser, Assets, Analyze). A tab opens its panel as a drawer over the drawing; tap the same
+    tab, tap beside the drawer or press **Esc** to close it. **More** holds the rail's tools: zoom,
+    appearance, snaps, units, save image, shortcuts.
+  - **A tablet held upright, or a phone on its side:** the rail stays down the left, and the panel
+    opens as the same drawer, from a rail tab or the panel button.
+  - **A tablet on its side, or a computer:** the panel sits beside the drawing, as before.
+  - The panel starts closed on a phone or an upright tablet, and the layout follows the screen as
+    it turns.
+  - **Props** opens Properties. On a phone it is a sheet from the bottom: tap its grab bar to raise
+    it and lower it. On a tablet it is a drawer from the right. On either, the arrow beside the
+    word Properties closes it.
+  - On a touch screen every field and button is sized for a finger. Two fingers pinch to zoom and
+    drag to pan.
 - **The status bar.** Level, snaps, ortho, grid; pan, orbit, 2D and 3D.
 
 ## Finding a command
