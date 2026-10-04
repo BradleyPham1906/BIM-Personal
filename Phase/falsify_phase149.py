@@ -19,9 +19,8 @@ VARIANTS = {
                     "body.a3d-tier-phone #a3d-rail .a3d-railbtn,body.a3d-tier-phone #a3d-rail .a3d-railmore{flex:0 0 auto;max-width:76px;width:34px;height:34px;")],
     'rail_touch_small': [("@media(pointer:coarse){body.a3d-tier-overlay #a3d-rail .a3d-railbtn,body.a3d-tier-overlay #a3d-rail .a3d-paneltoggle{min-width:44px;min-height:44px}}", "")],
     'drawing_under_bar': [("body.a3d-tier-phone #acad3d{bottom:calc(58px + env(safe-area-inset-bottom,0px))}\n", "")],
-    'drawer_full_width': [("body.a3d-tier-phone #a3d-leftpanel{left:0;bottom:calc(58px + env(safe-area-inset-bottom,0px));width:min(360px,88vw);",
-                           "body.a3d-tier-phone #a3d-leftpanel{left:0;bottom:calc(58px + env(safe-area-inset-bottom,0px));width:100vw;")],
-    'drawer_covers_bar': [("body.a3d-tier-phone #a3d-leftpanel{left:0;bottom:calc(58px + env(safe-area-inset-bottom,0px));", "body.a3d-tier-phone #a3d-leftpanel{left:0;bottom:0;")],
+    'drawer_full_width': [("body.a3d-tier-phone #a3d-leftpanel{left:0;width:min(360px,88vw);", "body.a3d-tier-phone #a3d-leftpanel{left:0;width:100vw;")],
+    'drawer_covers_bar': [("body.a3d-tier-phone #a3d-leftpanel{bottom:calc(58px + env(safe-area-inset-bottom,0px) + var(--a3d-kb,0px))}", "body.a3d-tier-phone #a3d-leftpanel{bottom:0}")],
     'drawer_a_column': [("body.a3d-tier-overlay #a3d-leftpanel{position:fixed;z-index:3;top:var(--a3d-top-h);bottom:0;left:54px;", "body.a3d-tier-overlay #a3d-leftpanel{z-index:3;")],
     'shut_drawer_shown': [("transform:translateX(-104%);opacity:0;visibility:hidden;pointer-events:none}", "transform:none;opacity:1}")],
     'no_scrim': [("body.a3d-tier-overlay #a3d-shell:not(.collapsed) #a3d-shellscrim{display:block;", "body.a3d-tier-overlay #a3d-shell:not(.collapsed) #a3d-shellscrimx{display:block;")],
@@ -40,6 +39,13 @@ VARIANTS = {
                        ("padding:4px max(6px,env(safe-area-inset-right,0px)) env(safe-area-inset-bottom,0px) max(6px,env(safe-area-inset-left,0px));", "padding:4px 6px 0;")],
     'no_safe_top': [("body.a3d-tier-phone #acad-shell{padding-top:env(safe-area-inset-top,0px);", "body.a3d-tier-phone #acad-shell{")],
     'audit_unclaimed': [("    {sel:'[data-railmore]',why:'on a phone, shows the rail\\'s tools over the tab bar'},   /* __acad3dV149 */\n", "")],
+    # ---- 149b: typing on a phone
+    'fields_zoom': [("@media(pointer:coarse){input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=color]):not([type=file]),select,textarea{font-size:16px!important}}", "")],
+    'fields_16_everywhere': [("@media(pointer:coarse){input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=color]):not([type=file]),select,textarea{font-size:16px!important}}",
+                              "input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=color]):not([type=file]),select,textarea{font-size:16px!important}")],
+    'sheet_under_keyboard': [("body.a3d-kb-up.a3d-props-right #a3d-right{bottom:var(--a3d-kb,0px)!important;", "body.a3d-kb-up.a3d-props-right #a3d-right{")],
+    'drawer_under_keyboard': [("body.a3d-kb-up.a3d-tier-phone #a3d-leftpanel{bottom:var(--a3d-kb,0px)}", "")],
+    'bar_taken_for_keyboard': [("    if(kb<80)kb=0;   /* a browser's bar showing and hiding is not a keyboard */\n", "")],
     'no_resize': [("    window.addEventListener('resize',function(){bimShellApplyTier();});\n", "")],
 }
 

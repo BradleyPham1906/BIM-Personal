@@ -103,13 +103,20 @@ body.a3d-tier-phone #a3d-shell.collapsed #a3d-rail .a3d-railbtn.active{color:#9a
 body.a3d-tier-phone #a3d-railutil{display:none}
 body.a3d-tier-phone.a3d-railutil-open #a3d-railutil{display:flex;flex-direction:column;gap:4px;position:fixed;right:max(8px,env(safe-area-inset-right,0px));bottom:calc(66px + env(safe-area-inset-bottom,0px));padding:6px;background:#262626;border:1px solid rgba(255,255,255,.12);border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.5)}
 body.a3d-tier-phone.a3d-railutil-open #a3d-railutil .a3d-ru{width:44px;height:44px}
-body.a3d-tier-phone #a3d-leftpanel{left:0;bottom:calc(58px + env(safe-area-inset-bottom,0px));width:min(360px,88vw);border-radius:0 14px 0 0}
+body.a3d-tier-phone #a3d-leftpanel{left:0;width:min(360px,88vw);border-radius:0 14px 0 0}
 body.a3d-tier-phone #a3d-shell.collapsed #a3d-leftpanel{width:min(360px,88vw)}
 body.a3d-tier-phone .a3d-drawerbtn{display:none!important}
 body.a3d-tier-phone #a3d-toast{bottom:calc(74px + env(safe-area-inset-bottom,0px))!important}
 body.light-theme.a3d-tier-phone #a3d-railutil{background:#f6f6f4;border-color:rgba(0,0,0,.12)}
 body.light-theme.a3d-tier-phone #a3d-rail .a3d-railbtn.active,body.light-theme.a3d-tier-phone #a3d-rail .a3d-railmore.on{color:#111;background:rgba(0,0,0,.07)}
 @media(pointer:coarse){body.a3d-tier-overlay #a3d-rail .a3d-railbtn,body.a3d-tier-overlay #a3d-rail .a3d-paneltoggle{min-width:44px;min-height:44px}}
+/* __acad3dV149b: iOS zooms the page in on a field under 16 px when it takes the focus, and stays
+   zoomed. On a touch screen every field is 16 px. */
+@media(pointer:coarse){input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=color]):not([type=file]),select,textarea{font-size:16px!important}}
+/* __acad3dV149b: the on-screen keyboard (--a3d-kb, its height) lifts what is fixed to the bottom */
+body.a3d-tier-phone #a3d-leftpanel{bottom:calc(58px + env(safe-area-inset-bottom,0px) + var(--a3d-kb,0px))}
+body.a3d-kb-up.a3d-tier-phone #a3d-leftpanel{bottom:var(--a3d-kb,0px)}
+body.a3d-kb-up.a3d-props-right #a3d-right{bottom:var(--a3d-kb,0px)!important;max-height:calc(100% - var(--a3d-kb,0px) - var(--a3d-top-h,44px))}
 body.light-theme #a3d-rail{background:#f6f6f4;border-color:rgba(0,0,0,.1)}
 body.light-theme #a3d-rail button{color:#222}
 body.light-theme #a3d-rail .a3d-railbtn{color:#6b7280}
@@ -28429,6 +28436,17 @@ try{
     bimShellMore(false);
     return !sh.classList.contains('collapsed');
   }
+  /* __acad3dV149b: the on-screen keyboard's height, from the visual viewport (or given, for a test):
+     what is fixed to the bottom of the screen sits on it rather than under it */
+  function bimKbFit(kb){
+    var vv=window.visualViewport,b=document.body;
+    if(kb===undefined)kb=vv?Math.max(0,window.innerHeight-vv.height-vv.offsetTop):0;
+    kb=Math.round(+kb||0);
+    if(kb<80)kb=0;   /* a browser's bar showing and hiding is not a keyboard */
+    document.documentElement.style.setProperty('--a3d-kb',kb+'px');
+    if(b)b.classList.toggle('a3d-kb-up',kb>0);
+    return kb;
+  }
   /* the phone's More: the rail's tools, over the tab bar */
   function bimShellMore(on){
     var b=document.body,m=document.querySelector('#a3d-rail [data-railmore]');
@@ -28505,6 +28523,17 @@ try{
     /* __acad3dV149: the layout follows the screen; More shuts when something else is touched; Esc
        shuts an open drawer */
     window.addEventListener('resize',function(){bimShellApplyTier();});
+    /* __acad3dV149b: the keyboard, and the field it would cover */
+    if(window.visualViewport){
+      window.visualViewport.addEventListener('resize',function(){bimKbFit();});
+      window.visualViewport.addEventListener('scroll',function(){bimKbFit();});
+    }
+    document.addEventListener('focusin',function(ev){
+      var f=ev.target;
+      if(!bimShellOverlay()||!f||!f.matches||!f.matches('input,select,textarea'))return;
+      setTimeout(function(){bimKbFit();try{f.scrollIntoView({block:'center',inline:'nearest'});}catch(eSI){}},280);
+    });
+    document.addEventListener('focusout',function(){setTimeout(function(){bimKbFit();},300);});
     document.addEventListener('pointerdown',function(ev){
       if(!document.body.classList.contains('a3d-railutil-open'))return;
       var x=ev.target;
@@ -37994,7 +38023,8 @@ try{
   window.__a3dShellDrawer=function(open,tab){return bimShellDrawer(open,tab);};
   window.__a3dShellMore=function(on){return bimShellMore(on);};
   window.__a3dShellApplyTier=function(){return bimShellApplyTier();};
-  window.__acad3dV149='tierphone,tieroverlay,tabbar,tablabels,railmore,leftdrawer,drawerclosed,drawerscrim,tabtoggles,escshuts,fullwidth,safeareas,viewportfit,burgerdrawer,toastclear,tierfollows';
+  window.__a3dKbFit=function(kb){return bimKbFit(kb);};   /* __acad3dV149b */
+  window.__acad3dV149='typing16,keyboardlift,focusscroll,tierphone,tieroverlay,tabbar,tablabels,railmore,leftdrawer,drawerclosed,drawerscrim,tabtoggles,escshuts,fullwidth,safeareas,viewportfit,burgerdrawer,toastclear,tierfollows';
   window.__acad3dV148='anzlist,anzgroups,anzsearch,anzwords,anzexpand,anzremember,addaslayer,reslayers,ressnapshot,reslive,resstale,resupdate,resorder,resopacity,ressaved,resundo,layersanalysis,layersdata,touchrows';
   window.__acad3dV147='phonesheet,tabletdrawer,touchtargets,paneltokens,sentencecase,rowgrid,inputstyle,buttonstyle,typeheader,showall,resizable,minimise,lightdark';
   window.__acad3dV146='canon,hash128,elementtree,blobstore,commit,diff,fielddiff,idrecords,restore,elementhistory,historygroup,historycommands,savedwithproject';
