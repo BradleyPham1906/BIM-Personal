@@ -203,7 +203,7 @@ async def run():
             # ---------------------------------------------------------------------------------
             print("\n-- 4. Analyze")
             rail = await safe("()=>[].map.call(document.querySelectorAll('#a3d-rail .a3d-railbtn'),function(b){return [b.getAttribute('data-tab'),b.getAttribute('title'),!!b.querySelector('svg path')];})")
-            ck(rail and [r[0] for r in rail] == ['layers', 'presentation', 'browser', 'assets', 'analyze'] and rail[-1][1] == 'Analyze' and rail[-1][2],
+            ck(rail and [r[0] for r in rail] == ['layers', 'presentation', 'browser', 'assets', 'analyze', 'site'] and rail[4][1] == 'Analyze' and rail[4][2],   # AMENDED FOR V158: Site analysis after it
                "the rail: Analyze below Assets, with its icon (%s)" % rail)
             await page.click('#a3d-rail [data-tab="analyze"]')
             await page.wait_for_timeout(250)

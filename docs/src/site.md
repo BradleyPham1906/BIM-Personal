@@ -66,6 +66,66 @@ height in Properties.
 
 `CONTEXTREMOVE` takes it all away.
 
+## Site analysis
+
+The **Site** tab on the rail (`SITEANALYSIS`) runs a site analysis the same way every time. It
+follows the order professionals use: the RIBA Plan of Work's Stage 1 and a developer's due
+diligence. The stages are:
+
+0. **Define:** the boundary (the property line), the project type, and the questions the analysis
+   must answer.
+1. **Desktop study:** each category filled from open data and the model.
+2. **Site visit:** each category's checklist, with notes and photographs pinned on the plan.
+3. **Surveys:** where the visit leaves doubt.
+4. **Analysis:** each finding classed and weighed.
+5. **Synthesis:** the buildable area, the envelope and the yield.
+6. **Report:** the standard boards.
+
+Press a stage to mark where the project is.
+
+**Ten categories, always in this order:**
+1. Location and context
+2. Legal and regulatory
+3. Landform
+4. Water
+5. Climate
+6. Ecology
+7. Environmental risk
+8. Access and circulation
+9. Utilities
+10. People and place
+
+Each category lists what to find at the desk and what to check on site, as boxes to tick.
+
+**A finding** has:
+- a title and what was found;
+- a class: fact, opportunity, constraint or red flag;
+- a severity: low, medium or high;
+- a confidence: desktop, seen on site, or surveyed;
+- a source and a date;
+- a note and a photograph (kept at most 960 px across).
+
+*Place on the plan* pins a finding where you click. The pins carry the finding's number, such as
+7.1, the first finding under Environmental risk, coloured by class. Red flags are listed first.
+
+**Fill from the model** (`SAFILL`) adds what the app already knows, with the source and date of
+each:
+- the location;
+- the built context (count, mean and tallest heights);
+- the property line's area;
+- the data layers and flood zones;
+- the terrain's height, relief and slope;
+- water and rain flow;
+- the day lengths at the solstices;
+- trees and green areas;
+- streets by use, bridges and tunnels;
+- railways, airports, overhead power and land use around.
+
+Filling again updates these in place. A class or note you set is kept. A finding the model no
+longer supports is removed, unless you have written on it.
+
+Everything is saved with the project, and every change is one undo step.
+
 ## Data layers
 
 `DATALAYERS` adds public GIS data around the site: parcels, zoning, flood zones. A layer can be:
