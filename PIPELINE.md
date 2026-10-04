@@ -26,7 +26,7 @@ with anchored Python scripts that assert exact match counts.
 
 ---
 
-## NOW - Buildings from LOD1 to LOD3 (V139 to V145), then the envelope, scenarios and MEP
+## NOW - Buildings from LOD1 to LOD3 (V139 to V145), then the hub's history and branches, the envelope and MEP
 
 The owner looked at Giraffe (giraffe.build), a map-first feasibility app, and chose four of its
 ideas, ahead of the MEP runs, then asked for the map "just like how giraffe do". The research, with an
@@ -74,15 +74,23 @@ V128 to V130 settled how commands are found (see Recently finished):
 | 143 | Simulation | **Done** (see Recently finished) | Next: weather years (EPW, NASA POWER) for expected yield; sun on facades; wind and energy later. |
 | 144 | Terrain | **Done** (see Recently finished) | Breaklines, boundaries, own faces, slope/elevation/aspect bands, LandXML 1.2 in and out. |
 | 145 | Grading | **Start here.** Grading pads with daylight slopes (cut and fill slopes run out to the ground), a proposed surface, a cut and fill report between two surfaces, spot elevations and slope arrows on plans | V108's pads and earthwork, V144's breaklines underneath. |
-| 146-152 | Freeform (F1-F7) | NURBS curves; surfaces from curves (extrude, revolve, loft, planar, edge); sweeps, pipe, cap; surface analysis (zebra, curvature, draft) in Analyze; point editing and blends; picture planes, text objects, flow along a surface; Make2D and rendering | `reference/research-rhino-guide-gap.md`: what the owner's Rhino guide teaches that the app lacks. Placed here pending the owner's word; the LOD track follows. |
-| 153 | LOD-C: point clouds | LAS, LAZ (laz-perf, Apache-2.0) and PLY; USGS 3DEP fetched around the site (EPT or COPC); by class or height; ground to a V108 surface through V138's check | Philadelphia has city LiDAR (2015, 2018) and PA statewide QL2. |
-| 154 | LOD-D: LOD2.2 from LiDAR | Region-growing roof planes, roof partition, optimised and extruded; LOD1.3 from the same partition; per-building RMSE to the points | 3DBAG's published method (roofer is GPL-3 C++: the method, not the code). |
-| 155 | LOD-E: facade images | The owner's photos or Panoramax panoramas placed on an LOD2 wall and rectified straight-on, in metres | Texture2LoD3's rectification; Panoramax is CC BY-SA, no key. |
-| 156 | LOD-F: LOD3 openings | Windows and doors drawn on the rectified facade, regularised into rows and columns, optionally detected (SAM in the browser, on request), cut into the wall | Checked against measured openings. |
-| 157 | LOD-G: Gaussian splats | A `.splat` capture placed on the site as a photoreal backdrop to trace against | antimatter15/splat, MIT. |
-| 158 | Zoning envelope | Setbacks, stepbacks and a height limit on a property become a 3D envelope; massing outside it is flagged | Builds on V103's setbacks; Giraffe's Basic Envelope. |
-| 159 | Design scenarios | Options within one project, switched between and compared by their numbers | Giraffe's scenarios; Revit's Design Options. |
-| 160 | MEP runs | Duct and pipe runs at connectors, systems, flow, velocity and friction | MEP is its own discipline (the owner's choice). The research is drafted in `reference/research-mep-runs.md`. |
+| 146 | Hub H1: element history | Commits with a message, a change log, a diff per element by its ID ("Wall W12: height 3.0 -> 3.2", added, removed, moved), and going back to any version; history saved with the project | The first piece of the owner's "GitHub for BIM" (`reference/research-bim-hub.md`). Every object already has a stable ID and the project is JSON. |
+| 147 | Hub H2: branches and merge | Design options as branches, switched between and compared by their numbers (areas, usages, cut and fill, solar); a three-way merge per element with conflicts shown side by side | Replaces "Design scenarios" (Giraffe's scenarios, Revit's Design Options). |
+| 148-154 | Freeform (F1-F7) | NURBS curves; surfaces from curves (extrude, revolve, loft, planar, edge); sweeps, pipe, cap; surface analysis (zebra, curvature, draft) in Analyze; point editing and blends; picture planes, text objects, flow along a surface; Make2D and rendering | `reference/research-rhino-guide-gap.md`: what the owner's Rhino guide teaches that the app lacks. Placed here pending the owner's word; the LOD track follows. |
+| 155 | LOD-C: point clouds | LAS, LAZ (laz-perf, Apache-2.0) and PLY; USGS 3DEP fetched around the site (EPT or COPC); by class or height; ground to a V108 surface through V138's check | Philadelphia has city LiDAR (2015, 2018) and PA statewide QL2. |
+| 156 | LOD-D: LOD2.2 from LiDAR | Region-growing roof planes, roof partition, optimised and extruded; LOD1.3 from the same partition; per-building RMSE to the points | 3DBAG's published method (roofer is GPL-3 C++: the method, not the code). |
+| 157 | LOD-E: facade images | The owner's photos or Panoramax panoramas placed on an LOD2 wall and rectified straight-on, in metres | Texture2LoD3's rectification; Panoramax is CC BY-SA, no key. |
+| 158 | LOD-F: LOD3 openings | Windows and doors drawn on the rectified facade, regularised into rows and columns, optionally detected (SAM in the browser, on request), cut into the wall | Checked against measured openings. |
+| 159 | LOD-G: Gaussian splats | A `.splat` capture placed on the site as a photoreal backdrop to trace against | antimatter15/splat, MIT. |
+| 160 | Zoning envelope | Setbacks, stepbacks and a height limit on a property become a 3D envelope; massing outside it is flagged | Builds on V103's setbacks; Giraffe's Basic Envelope. |
+| 161 | MEP runs | Duct and pipe runs at connectors, systems, flow, velocity and friction | MEP is its own discipline (the owner's choice). The research is drafted in `reference/research-mep-runs.md`. |
+| later | Hub H3: full IFC | web-ifc (WebAssembly, MPL-2.0) to read and write full IFC 4 and 4.3; IFC GUIDs kept on the elements so H1's diffs are IFC diffs | Our IFC writer and reader cover a subset today. |
+| later | Hub H4: share and sync | Push and pull a project's history to a repository, one file per element so git diffs and merges per element; GitHub as the first hub; only when asked | The first network piece of the hub. |
+| later | Hub H5: the server | Accounts, permissions per element, private models checked on the server (clashes, codes) returning only the result, paid access | Needs a backend: beyond a static site. "Zero-knowledge" checks in the viewer's browser are not possible: what runs there can be read there. |
+| later | Streaming | OGC 3D Tiles out and in, so a district or a city streams by what is in view | After the LOD track. |
+| later | Rendering on WebGPU | One rendering layer, WebGPU where the browser has it and WebGL where not (Figma's route); compute shaders for the simulations | When performance asks for it; the renderer is our own WebGL today. |
+| later | Water and presentation rendering | Evan Wallace's WebGL Water techniques: a heightfield water surface for V143's ponds and for flooding, raytraced reflections and refractions, soft shadows, caustics; with F7's rendering | Techniques from his write-up, written ourselves. |
+| later | Structural and wind analysis | A frame solver (stiffness method) for V125's columns and beams: reactions, moments, deflections; wind around buildings by lattice Boltzmann on the GPU | Feeds the Analyze tab's Simulation section. |
 | later | Survey control | Horizontal control and raw total-station files | Breaklines, boundaries and LandXML landed in V144; V138's checks cover them. |
 | later | Generators | Parking layout to a ratio, subdivision into lots, and envelope-filling massing | Giraffe's generative editors; after the map and the envelope. |
 | later | Costs and pro forma | Cost, rent, yield and sale price per usage, and a feasibility summary | Builds on V131's formulas. |
@@ -110,7 +118,7 @@ Project photos, models and drawings are never committed: the repo and its site a
 ### LATER - Track A, drafting (moved behind Track B in V100)
 
 The numbers in this table are its order, not phase numbers: a phase takes the next free V number
-when it starts (V111 to V138 went to other work; V139 to V160 are in NOW).
+when it starts (V111 to V138 went to other work; V139 to V161 are in NOW).
 
 | # | Phase | Scope | Notes |
 |---|---|---|---|
