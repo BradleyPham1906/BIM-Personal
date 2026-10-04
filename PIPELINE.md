@@ -2,11 +2,11 @@
 
 **Read this first in a new session.** One page. The detail lives in the docs listed at the bottom.
 
-    canvas_v10.html   2302577 bytes
-    sha256            7837b8047ea47d646d6303f4cd81af7a1cc059d122307fb9bd48c6897a8f82e8
-    markers           __acad3dV60 ... __acad3dV151, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
+    canvas_v10.html   2317202 bytes
+    sha256            1d2347693a2f7e50e1d44f78d12104f34befdbdc2f0e07579e8d7e456b9fa1fb
+    markers           __acad3dV60 ... __acad3dV152, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
                       __acad3dV121b
-    tests             108 suites, 4433 checks, 0 failures
+    tests             109 suites, 4472 checks, 0 failures
 
     The user guide (V142): every phase updates docs/src/, its log entry and BIM_APP_VERSION, then
     runs tools/dump_catalog.py and tools/build_docs.py. The V142 suite and the Pages workflow
@@ -90,8 +90,8 @@ three tiers: compact up to 720 px wide or 500 px high, medium up to 1024 px, des
 | 149 | The shell on phone and tablet | **Done** (see Recently finished): a tab bar and a drawer on a phone upright, the rail and a drawer on a tablet upright or a phone on its side, unchanged on a computer; safe areas. Next: a context menu on a long press when the drawing has one | The owner (V147): "consider the adaptation for phone, iPad/tablet, and computer". |
 | 150 | A tool palette for a phone and a tablet | **Done** (see Recently finished): the essentials in a frosted capsule, dragged anywhere, docked upright at an edge, folded to one button; the dock gives way to it on a phone and an upright tablet | The owner: "make it clean like how Apple did it ... only the essential ones". |
 | 151 | Hub H2: branches and merge | **Done** (see Recently finished): branches switched between and compared by their numbers; a three-way merge per element and per field, conflicts side by side, Keep or Take; a merge version with two parents. Next: a graph of the branches; solar and usages in Compare | Replaces "Design scenarios" (Giraffe's scenarios, Revit's Design Options). |
-| 152 | Render R1: GPU-friendly batches | **Start here.** One shared description of the 3D scene that both engines draw from: objects grouped by material into large merged buffers, each object's position, colour, highlight and transparency in one per-object table, uploaded only when that object changes; edges batched the same way; a frame that only moves the camera redraws without rebuilding anything. Measured on a 1,000 / 5,000 / 20,000-element stress model before and after (draw calls and frame time per frame) | The owner (V151): WebGPU for efficiency and scale. Today's renderer makes about 20 WebGL calls per object per frame; most of the gain is the batching, and it speeds every device, WebGL included. |
-| 153 | Render R2: the WebGPU engine, WebGL kept | The engine is chosen once at start-up: WebGPU where the browser has it, else WebGL (today's), else the 2D fallback. The first frame draws with WebGL while WebGPU starts, so 3D is never blank. WGSL shaders for solids, edges and the map; the scene recorded as a render bundle and replayed with only the camera changing; picking and off-screen culling as GPU compute, ready for sun hours and cut and fill on the GPU later. Both engines drawn and compared pixel for pixel where WebGPU exists; the 108 suites keep testing WebGL, since the test browser has no WebGPU | WebGL stays for devices without WebGPU (iOS before 26, some Android phones and browsers). |
+| 152 | Render R1: GPU-friendly batches | **Done** (see Recently finished): merged chunks, one object table on the GPU sending only the rows that change, the camera alone sending nothing; 5,000 elements in 1 draw call instead of 5,000, the same pixels; the per-object path kept as the fallback. Next: the table's upkeep only for objects that changed; culling; instances | The owner (V151): WebGPU for efficiency and scale. |
+| 153 | Render R2: the WebGPU engine, WebGL kept | **Start here.** The engine is chosen once at start-up: WebGPU where the browser has it, else WebGL (today's), else the 2D fallback. The first frame draws with WebGL while WebGPU starts, so 3D is never blank. WGSL shaders for solids, edges and the map; the scene recorded as a render bundle and replayed with only the camera changing; picking and off-screen culling as GPU compute, ready for sun hours and cut and fill on the GPU later. Both engines drawn and compared pixel for pixel where WebGPU exists; the 108 suites keep testing WebGL, since the test browser has no WebGPU | WebGL stays for devices without WebGPU (iOS before 26, some Android phones and browsers). |
 | 154 | Presentation P1: boards | A board is a sheet you design on: one layer tree (frames, groups, lock, hide, reorder), opacity and blend modes on every element (canvas compositing, the same 16 modes as Figma), masks, shapes, text, images; align, distribute, smart spacing; rows and columns that space their children (a light auto layout) | Figma's layer model. `reference/research-presentation-panels.md` (1). |
 | 155 | Presentation P2: live elements | Elements linked to their source and redrawn when the model changes: model views, schedules, legends, analysis results (sun hours, cut and fill, solar), numbers (GBA, cut volume, site area), text bound to project data (autotext). An edit on the board is an override, marked, with Reset | Archicad's linked drawings and autotext; SketchUp LayOut's overrides and Reset. The data stays connected (the owner's rule). |
 | 156 | Presentation P3: styles, templates, export | Reusable components with variants (title blocks, legend cards, callouts); shared colour and text styles (a brand kit); master boards; templates; a presenting mode, one board per slide; PDF, PNG and SVG export with blend modes, opacity and masks kept | Canva's templates and brand kits; Figma's components; Archicad's master layouts. |
@@ -151,7 +151,14 @@ when it starts (V111 to V138 went to other work; V139 to V170 are in NOW).
 | 118 | Blocks and data | ATTDEF ATTEDIT BEDIT WBLOCK DATAEXTRACTION TABLESTYLE TABLEDIT TABLEEXPORT | First phase that's about the disciplines, not drafting. BLOCK and INSERT landed in V124, as the Assets library's blocks: saved records inserted as independent copies. A block reference that follows its definition (what BEDIT edits) is not built. |
 | 119 | Sheets and plotting, rest | MVIEW (draw a viewport on the paper) PAGESETUP (plot settings beyond Sheet Setup) PUBLISH (V122's Print set prints every sheet in one job; a chosen subset and page setups remain) EXPORTPDF (vector PDF of a sheet) VPLAYER (per-viewport layer visibility) viewport lock | LAYOUT, MSPACE and PSPACE landed in V116, with layout tabs and model space through a viewport. |
 
-**Recently finished:** Phase 151 (V151), **branches and merge (the Hub's H2)**.
+**Recently finished:** Phase 152 (V152), **the 3D scene in GPU-friendly batches**.
+- Objects merged into chunks; each object's offset, transparency, colour and selection in one
+  table on the GPU, only changed rows sent; the camera alone rebuilds and sends nothing.
+- 5,000 elements: 1 draw call instead of 5,000, a frame about twice as fast in software; 20,000:
+  4 instead of 20,000, about three times. The same pixels as before in every case checked.
+- **Checked** in 39 checks and 19 falsify variants.
+
+Phase 151 (V151), **branches and merge (the Hub's H2)**.
 - Design options as branches: New Branch, switch (refused over changes not committed), each
   branch's own line of versions, Compare's numbers side by side, Delete asked once.
 - Merge In, three ways against the version both share: one side's change taken, both sides'

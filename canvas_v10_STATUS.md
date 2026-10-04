@@ -12978,3 +12978,82 @@ Pictures: `reference/v151_branches_compare.png`, `v151_phone_history.png`.
     canvas_v10.html   2302577 bytes
     sha256            7837b8047ea47d646d6303f4cd81af7a1cc059d122307fb9bd48c6897a8f82e8
     markers           __acad3dV60 ... __acad3dV151, __acad3dV134d (and the 133d to 133f markers)
+
+## Phase 152 (V152) - The 3D scene in GPU-friendly batches (Render R1)
+
+The owner asked for WebGPU, for efficiency and scale. The first step, which speeds every device
+and that the WebGPU engine (V153) will read too: one shared description of the 3D scene, drawn in
+a few large batches instead of object by object.
+
+### What was built (patch 152a)
+
+- **Before:** for every object, every frame, about ten WebGL calls to set its offset, colour,
+  highlight and transparency, bind its buffers and draw, and as many again for its edges: 5,000
+  elements were 10,000 draw calls and some 100,000 calls in all, each paid on the main thread.
+- **Chunks.** The objects' triangles are merged into large buffers of at most 196,608 vertices,
+  each vertex tagged with its object's slot; the edges the same way. A chunk is rebuilt only when
+  one of its objects' meshes changes, or an object is added or removed. A mesh shared by many
+  objects (a family's) is triangulated once a rebuild.
+- **The object table.** Each object's offset, transparency, colour (the lens first) and selection
+  in two texels of a float texture the vertex shader reads. Only the rows that changed are sent:
+  a move, a selection or a layer turned off is one row. A hidden object (layer off, another level)
+  stays in its chunk and is dropped by the shader, so showing it again rebuilds nothing.
+- **The camera alone** changes nothing but two matrices: nothing rebuilt, nothing sent.
+- **The frame:** opaque solids, the transparent ones blended without writing depth, then the edges,
+  as before. The picture is the same, pixel for pixel, in every case checked.
+- **The fallback.** A device without float or vertex textures draws object by object, as before;
+  `__a3dGlBatch(false)` switches to it, and gives the batches back.
+- **Measures:** `__a3dStressModel(n)` builds n elements, `__a3dRenderBench(frames)` times frames
+  with the camera turning, each finished before the next. `__a3dGlStats` and `__a3dGlTotals` count
+  draw calls, rebuilds and bytes sent.
+- **The version** is V152; the guide's Getting started has a section on large models.
+
+### Measured (headless Chromium, software WebGL, 1500 x 950)
+
+| Elements | Draw calls before | after | Frame before | after |
+|---|---|---|---|---|
+| 1,000 | 2,000 | 2 | 42 ms | 26 ms |
+| 5,000 | 5,000 | 1 | 85 ms | 30 to 44 ms |
+| 20,000 | 20,000 | 4 | 330 ms | 90 to 150 ms |
+
+The software renderer rasterises on the CPU, so the frames left are mostly fill. On a real
+graphics card the calls saved are most of the frame. Of a 20,000-element frame, about 20 ms is the
+table's upkeep in JavaScript (each object's layer, level and colour looked up); that is the next
+thing to cut.
+
+### Bugs found
+
+- The table compared each new value with the stored 32-bit one, and a colour of n/255 is never
+  exact in 32 bits: every row looked changed and the whole table was sent every frame. Values are
+  now compared as stored.
+- The batch shaders would not link: a uniform used in both shaders had different precisions. The
+  renderer fell back to object by object silently, which the suite now checks against.
+
+### Suites
+
+- New: `bim_phase152_gpu_batches_browser_tests.py`, 39 checks: batched from the start; one chunk,
+  two draw calls; the object's row; the same pixels batched and object by object (plain, selected,
+  a 60% transparent layer, the type lens, a layer off, after changes, after a delete and an add);
+  the camera rebuilding and sending nothing; a layer off and on, a move and a selection one row; a
+  new shape one rebuild; a deleted object's slot freed and reused; 5,000 and 20,000 elements in a
+  few calls, chunks under their cap, quicker than object by object, one row sent for one move; the
+  fallback giving the batches back.
+- **Falsified by `Phase/falsify_phase152.py`,** 20 variants: 19 caught, one retired (a hidden
+  object let through blends to nothing in the transparent pass: wasted work, not a different
+  picture). One gap closed: the suite switched batching on itself, so batching off by default
+  went unseen; it now checks the default first.
+
+### Not done
+
+- The table's upkeep in JavaScript, about 1 ms a 1,000 elements: next, only objects that changed.
+- Culling what is off screen, and drawing many copies of one mesh as instances.
+- The WebGPU engine (V153).
+
+### Full regression and state after V152
+
+109 suites, 4472 checks, 0 failures. Falsification: V152 19 of 19, one retired. Patch 152a
+rebuilds the build from `Phase/canvas_v10.html.bak_phase152_pre`. The diff is ES5-clean.
+
+    canvas_v10.html   2317202 bytes
+    sha256            1d2347693a2f7e50e1d44f78d12104f34befdbdc2f0e07579e8d7e456b9fa1fb
+    markers           __acad3dV60 ... __acad3dV152, __acad3dV134d (and the 133d to 133f markers)
