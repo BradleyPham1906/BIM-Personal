@@ -12651,3 +12651,110 @@ build from `Phase/canvas_v10.html.bak_phase147_pre`. The diff is ES5-clean. Pict
     canvas_v10.html   2214813 bytes
     sha256            cff2ad402b13f8b5a3cabc2a076cc9deb3e511b8542deefdfc30105b59944d34
     markers           __acad3dV60 ... __acad3dV147, __acad3dV134d (and the 133d to 133f markers)
+
+## Phase 148 (V148) - Analyze, redesigned; results as layers
+
+The owner's note: "Analytic: gotta clean that panel up. Right now it looks very unprofessional and
+not easy to use or navigate. When analytics run, it should have an option to create layers in
+layer management. Same thing with data layer." And, mid-V147: every redesign must suit a phone, a
+tablet and a computer. The direction is `reference/research-presentation-panels.md`, section 2:
+QGIS writes a processing run's outputs as layers into a named group; Figma's UI3 puts what matters
+first and the rest a click away.
+
+### What was built (patches 148a, 148b)
+
+- **The Analyze tab is a list.**
+  - Four groups: Model (colour by, areas by usage, buildings and LOD, statistics), Site and terrain
+    (survey check, slope/elevation/aspect, grading, rain), Structure (frame analysis), Environment
+    (sun and shadows, sun hours, solar).
+  - A row is one line: a chevron, the name, what it shows (one line, ellipsed), the state chip and
+    the first action. A click opens it in place to the whole status, the legend and the other
+    actions. A row opened stays open in this browser.
+  - An analysis that is off says so to a screen reader only: a column of the word Off was noise.
+  - Names and buttons in sentence case, as the rest of the panels since V147.
+  - A search at the top. It matches the starts of words (rain is not in terrain), the group's name
+    and the buttons' labels ("cityjson" finds the LOD row). Esc empties it. It keeps its text, its
+    focus and the rows it found when the panel refreshes, which now redraws the rows only.
+- **Add as layer** on the rows whose result is a picture on the plan.
+  - Sun hours and rain are kept as they were when run: one character per cell, the colour's place
+    on the ramp (a roof left clear), and the rain's flow lines to the millimetre. Saved with the
+    project, so a layer opens offline and two runs (December and June) can be laid over each other.
+  - Out of date when the model changes after the run (the key is taken from the run's stamp, not
+    from when it was added). For the sun, the site's place counts and the date does not: a layer
+    keeps its own date, and **Update** runs it again on that date and on its own surface.
+  - A surface's slope, elevation, aspect, or a proposed surface's cut and fill follow the surface,
+    so they are never out of date; the surface's own colours step aside; a layer whose surface is
+    deleted says **Gone** and draws nothing until an undo brings the surface back.
+  - A run kept as a layer is drawn as the layer: the live overlay steps aside, so nothing is drawn
+    twice, and the same run cannot be added twice. Removing the layer brings the overlay back.
+- **Layers holds the results and the data.** Below the layer tree, an **Analysis** section and a
+  **Data** section (the site's data layers, V134).
+  - A row: its colours, its name, a badge (Out of date, Gone, Failed) and an eye.
+  - A click opens the row: opacity (shown live while dragged, one undo step when let go), the
+    legend, what it is and when it was added, and Update, Rename and Remove (Data: Settings, which
+    opens its group in Properties).
+  - Double-click a name to rename it. Drag a result onto another to move it there; the top of the
+    list is drawn last, on top.
+  - A data layer's eye, opacity, name and removal are the V134 layer's own, so Properties follows.
+  - The layers' search reaches these rows; each section closes to its heading.
+- **Saved** in the project, in a project file and in the undo snapshot. A damaged layer from a file
+  is let go of. History (V146) does not keep them: a version restored leaves them as they are, and
+  a layer is not a change to commit.
+- **A phone, a tablet, a computer.** On a touch screen the rows are 46 px, the buttons 34 px, the
+  search 36 px, the Layers rows 44 px. On a phone the Project Browser's tree no longer lies over
+  the other tabs of the left panel (the V67 rule forced it on with `!important`).
+- **The version** is V148. The guide's Analysis page has the list, the search and Results as layers.
+
+### Bugs found
+
+- **A sun layer's out-of-date key was taken when it was added,** not when it ran: a building put up
+  between the run and Add as layer went unnoticed. It is taken from the run's stamp now.
+- **Two values read before they were set:** the rows remembered open were read from a key not yet
+  defined at start-up, and the check of a loaded layer's mode used a table defined further down
+  the file -- which would have thrown inside the start-up load and dropped the whole stored model.
+  Both are written out.
+- **On a phone, the Project Browser's tree lay over Analyze and Layers** (pre-existing since V141).
+- **The panel's refresh replaced the whole tab,** so a field in it would lose its focus at every
+  change to the model; with the search, typing would stop. It redraws the rows only now.
+
+### Suites
+
+- New: `bim_phase148_analyze_layers_browser_tests.py`, 114 checks: the groups and their rows, one
+  line each and opening in place, remembered; the search's rules, through a refresh; Add as layer
+  for the sun (its picture checked cell by cell against the run's hours), the rain (its pond cells
+  and flow lines counted), slope and cut and fill; the plan's pixels for the layer, its opacity and
+  its eye; out of date, Update on the layer's own date, undo; the stack by a real drag; the Data
+  rows against Properties; the reload, a project file opened in a new tab, a damaged layer, a
+  History restore; the shell audit; and a 390 x 844 phone, an 820 x 1180 tablet (both touch) and a
+  computer.
+- Amended for V148: V141 (the rows' order, opened before a button inside is clicked), V143 (the
+  groups instead of a Simulation section), V144 (the terrain row opened first).
+- **Falsified by `Phase/falsify_phase148.py`,** 58 variants: 57 caught, one retired.
+  - Retired: Esc in the search. Chromium empties a search field on Escape by itself, so the
+    handler cannot be reached in the suite's browser; it stays for the browsers that do not.
+  - Five gaps closed. The search is tested with a word only a button has ("arrows"; "cityjson" is
+    in the LOD row's status too). Undo after Update, after Remove and after a data layer's eye is
+    pinned to one step: an unrelated edit made just before must survive it. Settings is clicked
+    with Properties on another tab.
+
+### Not done
+
+- Locking a result layer (nothing edits one, so there is nothing to lock yet); blend modes, which
+  come with the boards (V151).
+- Result layers on sheets and in exports: they are drawn on the plan only.
+- Solar and the frame's forces as layers: they colour the model rather than draw over the plan.
+- The rest of the shell on a phone and a tablet (V149): on a 390 px phone the left panel still
+  takes three quarters of the screen.
+
+### Full regression and state after V148
+
+105 suites, 4267 checks, 0 failures. In the full parallel run, V116 (layout tabs) stalled and
+was stopped at its time limit, with every other suite passing (4211 of 4211 checks); it then
+passed alone (56 of 56) and again beside V110 to V119 at six workers (410 of 410). The stall did
+not come back. Falsification: V148 57 of 57, one retired. The chain 148a, 148b rebuilds the build
+from `Phase/canvas_v10.html.bak_phase148_pre`. The diff is ES5-clean. Pictures:
+`reference/v148_analyze.png`, `v148_layers.png`, `v148_phone.png`.
+
+    canvas_v10.html   2252576 bytes
+    sha256            ffde091c9c18a002bc08518f5f5acdf22d8680859918ff8cdc8bf1222de7d525
+    markers           __acad3dV60 ... __acad3dV148, __acad3dV134d (and the 133d to 133f markers)

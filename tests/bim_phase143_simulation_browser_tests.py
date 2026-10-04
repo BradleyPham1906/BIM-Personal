@@ -334,9 +334,13 @@ async def run():
             await safe("()=>window.__a3dSetPlanView&&window.__a3dSetPlanView()")
             await page.click('#a3d-rail [data-tab="analyze"]')
             await page.wait_for_timeout(250)
+            # AMENDED FOR V148: the cards are rows that open, every one opened so each button can be
+            # clicked; the simulations are in the groups they belong to, not a section of their own
+            await safe("()=>window.__a3dAnzOpenAll(true)")
+            await page.wait_for_timeout(100)
             C = {c['id']: c for c in await cards()}
-            hd = await safe("()=>[].map.call(document.querySelectorAll('.a3d-analyze-wrap .a3d-anzttl0'),function(e){return e.textContent;})")
-            ck(hd == ['Analyze', 'Simulation'] and all(k in C for k in ('sunhours', 'solar', 'rain')), "a Simulation section: Sun Hours, Solar, Rain on Terrain (%s)" % hd)
+            hd = await safe("()=>[].map.call(document.querySelectorAll('.a3d-analyze-wrap .a3d-anzgrphd'),function(e){return e.textContent;})")
+            ck(hd == ['Model', 'Site and terrain', 'Structure', 'Environment'] and all(k in C for k in ('sunhours', 'solar', 'rain')), "the simulations among the groups: Sun hours, Solar, Rain on terrain (%s)" % hd)
             ck(C['rain']['state'] == 'On' and 'no pond' not in C['rain']['st'] and 'flow lines where' in C['rain']['st'], "the rain card says what it shows (%s)" % C['rain']['st'])
             await safe("()=>window.__a3dSimClear()")
             await page.wait_for_timeout(100)

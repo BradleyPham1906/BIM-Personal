@@ -2,11 +2,11 @@
 
 **Read this first in a new session.** One page. The detail lives in the docs listed at the bottom.
 
-    canvas_v10.html   2214813 bytes
-    sha256            cff2ad402b13f8b5a3cabc2a076cc9deb3e511b8542deefdfc30105b59944d34
-    markers           __acad3dV60 ... __acad3dV147, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
+    canvas_v10.html   2252576 bytes
+    sha256            ffde091c9c18a002bc08518f5f5acdf22d8680859918ff8cdc8bf1222de7d525
+    markers           __acad3dV60 ... __acad3dV148, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
                       __acad3dV121b
-    tests             104 suites, 4153 checks, 0 failures
+    tests             105 suites, 4267 checks, 0 failures
 
     The user guide (V142): every phase updates docs/src/, its log entry and BIM_APP_VERSION, then
     runs tools/dump_catalog.py and tools/build_docs.py. The V142 suite and the Pages workflow
@@ -86,8 +86,8 @@ three tiers: compact up to 720 px wide or 500 px high, medium up to 1024 px, des
 | 145 | Grading | **Done** (see Recently finished) | Daylight slopes (fans, valleys), the proposed surface, exact TIN-to-TIN cut and fill, the cut and fill map, spot elevations, slope arrows. Next: sloped pads, retaining walls, sections along an alignment. |
 | 146 | Hub H1: element history | **Done** (see Recently finished): commits, per-element diffs, restore, an element's history, saved with the project | The first piece of the owner's "GitHub for BIM" (`reference/research-bim-hub.md`). Every object already has a stable ID and the project is JSON. |
 | 147 | The right panel, redesigned | **Done** (see Recently finished): a bottom sheet on a phone, a 340 px drawer on a tablet, 36 px touch targets; tokens for dark and light, sentence-case headers, one row grid, one input and button style, Show all, resizable and minimisable. Next: More for rarely used fields, type by type | The owner's note: "clean up more... aesthetic and minimal, easy to use". `reference/research-presentation-panels.md` (3). Every Properties suite is amended where the markup changes, never the behaviour. |
-| 148 | Analyze, redesigned; results as layers | **Start here.** Analyses as a compact list grouped Model, Site and terrain, Structure, Environment: one status chip, one primary action, the rest in a menu; a row opens a detail view (settings, the last result with its legend and numbers, when it ran, out of date or not); search. **Add as Layer**: a result becomes a layer in Layer Management (an Analysis group), shown, hidden, faded, locked, linked to its run and saying when the model has moved on. The site's Data Layers (V134) join the same layer tree under Data | QGIS writes a processing run's outputs as layers into a named group. `reference/research-presentation-panels.md` (2). |
-| 149 | The shell on phone and tablet | The left panel an overlay drawer, closed by default, on a phone and a tablet in portrait; the rail a bottom tab bar on a phone; the ribbon into a menu; the dock and status bar compact; pinch to zoom, two fingers to pan, a long press for the context menu; the screen's safe areas (notch, home bar) | The owner (V147): "consider the adaptation for phone, iPad/tablet, and computer". Today, on a 390 px phone the left panel takes three quarters of the screen. |
+| 148 | Analyze, redesigned; results as layers | **Done** (see Recently finished): a list in four groups with a search; Add as layer for sun hours, rain, slope, elevation, aspect and cut and fill; Layers' Analysis and Data sections. Next: result layers on sheets, locking, blend modes with the boards | QGIS writes a processing run's outputs as layers into a named group. `reference/research-presentation-panels.md` (2). |
+| 149 | The shell on phone and tablet | **Start here.** The left panel an overlay drawer, closed by default, on a phone and a tablet in portrait; the rail a bottom tab bar on a phone; the ribbon into a menu; the dock and status bar compact; pinch to zoom, two fingers to pan, a long press for the context menu; the screen's safe areas (notch, home bar) | The owner (V147): "consider the adaptation for phone, iPad/tablet, and computer". Today, on a 390 px phone the left panel takes three quarters of the screen. |
 | 150 | Hub H2: branches and merge | Design options as branches, switched between and compared by their numbers (areas, usages, cut and fill, solar); a three-way merge per element with conflicts shown side by side | Replaces "Design scenarios" (Giraffe's scenarios, Revit's Design Options). |
 | 151 | Presentation P1: boards | A board is a sheet you design on: one layer tree (frames, groups, lock, hide, reorder), opacity and blend modes on every element (canvas compositing, the same 16 modes as Figma), masks, shapes, text, images; align, distribute, smart spacing; rows and columns that space their children (a light auto layout) | Figma's layer model. `reference/research-presentation-panels.md` (1). |
 | 152 | Presentation P2: live elements | Elements linked to their source and redrawn when the model changes: model views, schedules, legends, analysis results (sun hours, cut and fill, solar), numbers (GBA, cut volume, site area), text bound to project data (autotext). An edit on the board is an override, marked, with Reset | Archicad's linked drawings and autotext; SketchUp LayOut's overrides and Reset. The data stays connected (the owner's rule). |
@@ -148,7 +148,17 @@ when it starts (V111 to V138 went to other work; V139 to V167 are in NOW).
 | 118 | Blocks and data | ATTDEF ATTEDIT BEDIT WBLOCK DATAEXTRACTION TABLESTYLE TABLEDIT TABLEEXPORT | First phase that's about the disciplines, not drafting. BLOCK and INSERT landed in V124, as the Assets library's blocks: saved records inserted as independent copies. A block reference that follows its definition (what BEDIT edits) is not built. |
 | 119 | Sheets and plotting, rest | MVIEW (draw a viewport on the paper) PAGESETUP (plot settings beyond Sheet Setup) PUBLISH (V122's Print set prints every sheet in one job; a chosen subset and page setups remain) EXPORTPDF (vector PDF of a sheet) VPLAYER (per-viewport layer visibility) viewport lock | LAYOUT, MSPACE and PSPACE landed in V116, with layout tabs and model space through a viewport. |
 
-**Recently finished:** Phase 147 (V147), **the right panel, redesigned**.
+**Recently finished:** Phase 148 (V148), **Analyze, redesigned; results as layers**.
+- Analyze is a list in four groups (Model, Site and terrain, Structure, Environment): one line a
+  row, opened in place to the rest; a search that matches the starts of words.
+- **Add as layer**: sun hours and rain kept as run (saved, comparable, out of date when the model
+  moves, Update on their own date); slope, elevation, aspect and cut and fill following their
+  surface. Layers has Analysis and Data sections: eye, opacity, legend, rename, reorder, remove.
+- Sized for a finger on a phone and a tablet; the Project Browser's tree no longer covers the
+  other tabs on a phone.
+- **Checked** in 114 checks measured in the browser, and 57 falsify variants.
+
+Phase 147 (V147), **the right panel, redesigned**.
 - One set of tokens for dark and light; sentence-case headers on a hairline; one row grid that
   stays inside the padding; one input and one button style; the element's name at 13 px.
 - Resizable from its left edge (240-560 px, remembered, double click resets) and minimisable to a

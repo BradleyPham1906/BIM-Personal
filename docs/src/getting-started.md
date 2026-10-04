@@ -14,11 +14,13 @@ order: 1
 - **The dock,** at the bottom of the drawing. The tools pinned for the current discipline, with
   **All tools** and the search beside them.
 - **The left rail,** a column of panels:
-  - **Layers:** the layer tree, with the objects on each layer.
+  - **Layers:** the layer tree, with the objects on each layer; below it, **Analysis** (the
+    results you keep as layers) and **Data** (the site's data layers). See
+    [Analysis](analysis.html).
   - **Presentation:** the pages of the set, to present and print.
   - **Project Browser:** views, sheets, schedules, families.
   - **Assets:** a library of models, blocks and templates. Drag one onto the drawing.
-  - **Analyze:** every analysis, what it shows now, and its settings. See [Analysis](analysis.html).
+  - **Analyze:** every analysis, in four groups, with a search. See [Analysis](analysis.html).
 - **Properties,** on the right. With an object selected, its properties. With nothing selected,
   four tabs:
   - **Project:** project, client and site name, and the statistics, including the app's version.
