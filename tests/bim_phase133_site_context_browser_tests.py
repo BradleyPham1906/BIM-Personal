@@ -310,7 +310,7 @@ async def run():
             print("\n-- 1. nothing until asked")
             ck(SRV['ext'] == [], "the page asked no server for anything on its way up")
             st = await safe("()=>window.__a3dCtxSettings()")
-            ck(st == {'radius': 150, 'kinds': {k: True for k in ('buildings', 'roads', 'water', 'green', 'trees', 'terrain')},
+            ck(st == {'radius': 150, 'kinds': {k: True for k in ('buildings', 'roads', 'water', 'green', 'trees', 'rail', 'airports', 'power', 'landuse', 'terrain')},   # AMENDED FOR V157: rail, airports, power, land use
                       'overpass': 'https://overpass-api.de/api/interpreter',
                       'onGround': True}, "150 m, all six kinds, overpass-api.de, by default (%s)" % st)   # AMENDED FOR V137: buildings on the terrain
             await nosel()
@@ -353,7 +353,7 @@ async def run():
                "turned by true north, the box holds the turned square")
             await safe("()=>window.__a3dSetTrueNorth(0)")
             await safe("()=>{window.__a3dTestSetObjs([]);}")
-            for k in ('roads', 'water', 'green', 'trees'):
+            for k in ('roads', 'water', 'green', 'trees', 'rail', 'airports', 'power', 'landuse'):   # AMENDED FOR V157
                 await safe("(k)=>window.__a3dCtxSet('kind:'+k,false)", k)
             q = await safe("()=>window.__a3dCtxQuery()") or ''
             ck('way["building"]' in q and 'highway' not in q and 'water' not in q and 'park' not in q and 'tree' not in q,
@@ -364,7 +364,7 @@ async def run():
             n0 = len(SRV['ext'])
             r = await fetch()
             ck(r is None and 'Tick at least one kind' in await toast() and len(SRV['ext']) == n0, "nothing ticked: refused, nothing asked")
-            for k in ('buildings', 'roads', 'water', 'green', 'trees', 'terrain'):
+            for k in ('buildings', 'roads', 'water', 'green', 'trees', 'rail', 'airports', 'power', 'landuse', 'terrain'):   # AMENDED FOR V157
                 await safe("(k)=>window.__a3dCtxSet('kind:'+k,true)", k)
 
             # ---------------------------------------------------------------------------------
@@ -391,7 +391,7 @@ async def run():
             SRV['ter'].clear()
             before = len(await objs())
             r = await fetch()
-            ck(r and r.get('counts') == {'buildings': 5, 'roads': 2, 'water': 4, 'green': 1, 'trees': 3, 'terrain': 1} and not r.get('errors'),
+            ck(r and r.get('counts') == {'buildings': 5, 'roads': 2, 'water': 4, 'green': 1, 'trees': 3, 'rail': 0, 'airports': 0, 'power': 0, 'landuse': 0, 'terrain': 1} and not r.get('errors'),   # AMENDED FOR V157: the new kinds, none in this fixture
                "one press: 5 buildings, 2 roads, 4 water (a pond, a stream, a lake and its island), a park, 3 trees, the terrain (%s)" % (r and r.get('counts')))
             tt = await toast()
             ck(r and r.get('assumed') == 1 and r.get('courtyards') == 1 and '1 building height assumed (6 m)' in tt and '1 courtyard filled' in tt,
@@ -473,7 +473,7 @@ async def run():
             byid = {l['id']: l for l in L}
             par = [l for l in L if l['name'] == 'Context']
             kids = {l['name']: l for l in L if par and l.get('parent') == par[0]['id']}
-            ck(par and set(kids) == {'Context ' + k for k in ('buildings', 'roads', 'water', 'green', 'trees', 'terrain')},
+            ck(par and set(kids) == {'Context ' + k for k in ('buildings', 'roads', 'water', 'green', 'trees', 'rail', 'airports', 'power', 'landuse', 'terrain')},   # AMENDED FOR V157
                "a Context layer with a sub-layer for each kind")
             ck(all(byid.get(o['layer'], {}).get('name') == 'Context ' + o['context']['kind'] for o in await ctx_objs()),
                "every object on its kind's layer")
