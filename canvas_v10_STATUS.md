@@ -12576,3 +12576,78 @@ build from `Phase/canvas_v10.html.bak_phase146_pre`. The diff is ES5-clean.
     canvas_v10.html   2204594 bytes
     sha256            da4c4fa7658db37b5fcf0f30a0d6466b8a08e1203a18349276b515271f524f73
     markers           __acad3dV60 ... __acad3dV146, __acad3dV134d (and the 133d to 133f markers)
+
+## Phase 147 (V147) - The right panel, redesigned
+
+The owner's note: "Right panel need to clean up more and the design should be aesthetic and
+minimal, easy to use". The direction is Figma's UI3 (`reference/research-presentation-panels.md`,
+section 3): the work first, the panel quiet.
+
+### What was built (patches 147a, 147b)
+
+- **Tokens.** One set of variables on the panel (surface, line, text, muted, input, input line,
+  hover, accent), redefined for the light theme. Every rule below uses them.
+- **Headers and rows.**
+  - Group headers are in sentence case at 12 px on a hairline, instead of uppercase boxes.
+  - One row grid, label and value as fractions (38:62) with a 10 px gap.
+  - One input style, 26 px high, 6 px corners, with an accent focus ring.
+  - One button style; checkboxes in the accent colour.
+  - The element's header is flat, with a 32 px icon and a 13 px name.
+- **Show all.** A long list (History's changes) shows twelve and then a Show all button, instead
+  of "and N more".
+- **Resize and minimise.**
+  - The panel resizes from its left edge, from 240 to 560 px. The width is remembered, and a
+    double click on the edge resets it. It is not applied on a narrow screen, where the panel is a
+    drawer.
+  - An arrow in the header minimises the panel to a 42 px strip and brings it back. This is
+    remembered too, and the header's text is still "Properties".
+- **A phone, a tablet, a finger (147b).** The owner asked mid-phase that every redesign suit a
+  phone, an iPad and a computer.
+  - On a phone (the compact tier), Properties is a bottom sheet: the full width, 62% of the
+    height, with a grab bar that raises it to 92% and back.
+  - On a tablet, it is a 340 px drawer from the right.
+  - On any touch screen, inputs and buttons are 36 px and rows 40 px.
+  - On a phone or tablet the resize edge is gone, and the panel's arrow closes the sheet or drawer
+    rather than minimising it.
+- **Nothing in the panel's markup or data attributes changed,** so everything it does is the same.
+- **The version** is V147. The guide's Getting started page says how to size the panel.
+
+### Bugs found
+
+- **The phone's sheet was trapped** in the strip to the right of the left panel, 94 px wide. It
+  is fixed to the screen now.
+- **Fixed columns overflowed:** the first grid (38% and 62% plus a 10 px gap) pushed every input
+  10 px past the panel's padding. The columns are fractions now, and the suite measures every row
+  and control against the padding.
+
+### Suites
+
+- New: `bim_phase147_right_panel_browser_tests.py`, 33 checks, all measured in the browser: the
+  tokens in both themes, headers, rows inside the padding, input heights, button shape, the
+  drawing taking the room given up, the drag, the clamp, the reset, minimise, the reload, Show
+  all, the narrow screen, and a 390 x 844 phone and an 820 x 1180 tablet, both touch (the
+  sheet, the grab bar, the drawer, the 36 px targets, and the arrow closing them).
+- Amended for V147: V68 (the inspector on the compact tier is a sheet fixed to the screen, which
+  has no offsetParent; shown is now displayed and given a size).
+- **Falsified by `Phase/falsify_phase147.py`,** 25 variants, all caught.
+  - One variant was retired: the drawing follows the panel through the viewport's ResizeObserver,
+    so the explicit size() after a width change is not needed.
+  - One gap was closed: the narrow-screen check now has a saved width to refuse.
+
+### Not done
+
+- "More" for rarely used fields, decided type by type.
+- Merging geometry into one section.
+- The left panel and the Analyze tab (V148).
+- The rest of the shell on a phone and a tablet (V149): on a 390 px phone the left panel still
+  takes three quarters of the screen.
+
+### Full regression and state after V147
+
+104 suites, 4153 checks, 0 failures. Falsification: V147 25 of 25. The chain 147a, 147b rebuilds the
+build from `Phase/canvas_v10.html.bak_phase147_pre`. The diff is ES5-clean. Pictures:
+`reference/v147_right_panel.png`, `v147_phone.png`, `v147_tablet.png`.
+
+    canvas_v10.html   2214813 bytes
+    sha256            cff2ad402b13f8b5a3cabc2a076cc9deb3e511b8542deefdfc30105b59944d34
+    markers           __acad3dV60 ... __acad3dV147, __acad3dV134d (and the 133d to 133f markers)

@@ -189,7 +189,9 @@ async def run():
         ck(cm['btnShown'] is True, "a Props button is laid out in the toolbar to open it")
         await page2.click('[data-a3d="rdrawer"]')
         await page2.wait_for_timeout(300)
-        ck(await page2.evaluate("()=>document.getElementById('a3d-right').offsetParent!==null"),
+        # AMENDED FOR V147: on the compact tier the inspector is a bottom sheet, fixed to the screen,
+        # and a fixed element has no offsetParent; shown means displayed and given a size
+        ck(await page2.evaluate("()=>{var r=document.getElementById('a3d-right'),b=r.getBoundingClientRect();return getComputedStyle(r).display!=='none'&&b.width>0&&b.height>0;}"),
            "clicking it opens the inspector (the button is wired, not decoration)")
         await page2.click('[data-a3d="rdrawer"]')
         await page2.wait_for_timeout(300)
