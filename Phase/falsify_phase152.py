@@ -21,10 +21,10 @@ VARIANTS = {
     'transparent_in_opaque': [("' bool tr=a.w<0.999;'", "' bool tr=false;'")],
     'edges_not_selected': [("' if(uEdge>0.5){vCol=vec4(b.w>1.5?vec3(1.0,0.706,0.329):(b.w>0.5?vec3(0.306,0.631,1.0):vec3(0.09,0.10,0.11)),a.w);}'", "' if(uEdge>0.5){vCol=vec4(vec3(0.09,0.10,0.11),a.w);}'")],
     'no_highlight': [("if(b.w>0.5&&b.w<1.5)vBoost=0.25;", "")],
-    'no_lens': [("        var hx=bimLensCol(o)||o.col||", "        var hx=o.col||")],
+    'no_lens': [("        var hx=bimLensCol(o)||o.col;", "        var hx=o.col;")],   # RE-ANCHORED IN V156
     'offset_ignored': [("      ' vec3 w=aPos+a.xyz;if(uEdge>0.5)", "      ' vec3 w=aPos;if(uEdge>0.5)")],   # RE-ANCHORED IN V154
-    'slot_kept': [("      delete B.of[id];B.free.push(B.slots[id]);bimGbPut", "      delete B.of[id];bimGbPut")],
-    'deleted_still_drawn': [("    for(id in B.of)if(B.of.hasOwnProperty(id)&&!seen[id]){", "    for(id in B.of)if(false){")],
+    'slot_kept': [("delete B.of[id];delete mark[id];B.n--;B.free.push(B.slots[id]);", "delete B.of[id];delete mark[id];B.n--;")],   # RE-ANCHORED IN V156
+    'deleted_still_drawn': [("    if(seenN!==B.n)for(id in B.of)if(B.of.hasOwnProperty(id)&&mark[id]!==B.frame){", "    if(false)for(id in B.of){")],   # RE-ANCHORED IN V156
     'no_chunk_cap': [("        if(!last||last.verts+nv>BIM_GB_CHUNK){", "        if(!last){")],
     'no_edges': [("      edges(0);\n", "")],
     'not_given_back': [("    if(A3D_SCENE)bimSceneRelease();   /* __acad3dV153: object by object, the description given back */\n", "")],   # RE-ANCHORED IN V153

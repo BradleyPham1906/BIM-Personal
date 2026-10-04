@@ -13273,3 +13273,68 @@ rebuilds the build from `Phase/canvas_v10.html.bak_phase155_pre`. The diff is ES
     canvas_v10.html   2356934 bytes
     sha256            327e9572ce8ca631cd458f60eb7df8a56ba7037bda7e242cc60c701aa6346b2e
     markers           __acad3dV60 ... __acad3dV155, __acad3dV134d (and the 133d to 133f markers)
+
+## Phase 156 (V156) - The frame's upkeep, and a click picked by the GPU (Render R5)
+
+The owner ran BENCHMARK on their computer: 5,000 elements 3.1 ms a frame with WebGPU and 4.1 ms
+with WebGL; 20,000 elements 9.3 and 10.5 ms. All are far inside the 16.7 ms a frame of 60 fps.
+WebGPU is 25% quicker at 5,000 and 11% at 20,000. The gap closes as the model grows because most of
+a 20,000-element frame is the JavaScript upkeep both engines share. So this phase cuts that upkeep,
+and fixes the one thing still slow on a large model: a click.
+
+### What was built (patches 156a, 156b)
+
+- **Upkeep (156a).** Each frame built a fresh 20,000-key "seen" object and then walked every
+  tracked object again to find the ones removed. Now each object keeps the frame it was last seen
+  in, the objects are counted as they are walked, and the search runs only when the count says one
+  is gone. A colour by type is looked up once a frame, not per object. A profile showed about a
+  quarter of the remaining upkeep is `meshOf` building the cache key of parametric boxes; real BIM
+  elements carry their mesh.
+- **A click (156b).** `pick()` projected every face of every element and walked them back to
+  front: about 200 ms a click at 20,000 elements here. On a model of more than 20,000 faces, the
+  click is now answered by an id pass:
+  - the batched scene is drawn into an offscreen target, only the pixel under the pointer (a
+    scissor), each element's slot in its colour;
+  - that pixel is read back, giving the frontmost element by the depth test;
+  - the pass is WebGL's, whose read is immediate, even while WebGPU draws the screen.
+  - The fallbacks are unchanged: an element on a locked layer leaves the decision to the old walk,
+    which finds what is under it; nothing hit tries the sketches; a smaller model keeps the old
+    walk exactly.
+- **The version** is V156; the guide's Getting started says so.
+
+### Found
+
+- The old walk "finds" an element at a pixel where none is drawn: in a gap between elements, and
+  off the screen altogether. The id pass answers with what is drawn there. The suite tests clicks
+  where both should agree.
+- V152's falsify variant for the chunk cap had become unreachable since V155 (a chunk holds one
+  64 m cell, and V152's model never fills one); V152's suite now crowds 6,400 elements into 60 m.
+
+### Suites
+
+- New: `bim_phase156_upkeep_gpu_pick_browser_tests.py`, 17 checks: no search when nothing is gone,
+  one gone found, the next frame not searching, one back; twelve tops of elements from above, the
+  GPU as the walk and sooner; empty ground; in perspective; a tall column behind lower elements in
+  a low view; a locked layer over the click; a small model; WebGL drawing.
+- Amended: V152 (AMENDED FOR V156: a crowded cell).
+- **Falsified by `Phase/falsify_phase156.py`,** 10 variants, all caught. One gap closed: from
+  above nothing overlaps, so a missing depth test went unseen.
+- V152's falsify file re-anchored (three variants): 19 of 19. V155 15 of 15 (one variant missed
+  once under a parallel run and was caught on the rerun: a timing check).
+
+### Not done
+
+- Upkeep only for what changed: it needs every edit path (drag, properties, layers, lens, levels)
+  to mark what it changed, or the frame shows a stale model. It is worth doing when the owner's
+  20,000-element frames matter.
+
+### Full regression and state after V156
+
+113 suites, 4576 checks, 0 failures. One collision found by the regression: the new hook was first
+named `__a3dPickAt`, which V94 and V97 already use; it is `__a3dPickInfo`. Falsification: V156
+10 of 10; V152 19 of 19; V155 15 of 15. Patches 156a and 156b rebuild the build from
+`Phase/canvas_v10.html.bak_phase156_pre`. The diff is ES5-clean.
+
+    canvas_v10.html   2363307 bytes
+    sha256            3564c6bf85d65cf0d288d6e9831bea406c50051622b6f451437aee67750f09e6
+    markers           __acad3dV60 ... __acad3dV156, __acad3dV134d (and the 133d to 133f markers)

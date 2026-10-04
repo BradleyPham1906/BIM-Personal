@@ -104,6 +104,10 @@ back, for a driver that misbehaves.
 ground, and a chunk wholly outside the view is skipped, so a large site costs little when you are
 looking at one corner of it.
 
+**Clicking on a large model.** On a model of more than 20,000 faces, what is under the pointer is
+found by the graphics card, from the picture as it is drawn, instead of by projecting every face:
+a click stays immediate on a city block. A smaller model is picked as before.
+
 **How fast is this device?** `BENCHMARK` draws 5,000 and then 20,000 elements for a few seconds,
 with WebGPU where the browser has it and with WebGL, and shows the time a frame takes in
 Properties → Project → Statistics. Your model is put back exactly as it was. Run it on each

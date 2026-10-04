@@ -217,6 +217,12 @@ async def run():
                 ck(0 < u1['uploadBytes'] - u0['uploadBytes'] <= 16384 and u1['rebuilt'] == u0['rebuilt'],
                    "one element moved among %d: one row of the table sent (%d bytes), nothing rebuilt" % (n, u1['uploadBytes'] - u0['uploadBytes']))
 
+            # AMENDED FOR V156: since V155 a chunk holds one 64 m cell, so the cap is met only by a crowded cell
+            await safe("()=>{var L=[],i;for(i=0;i<6400;i++)L.push({id:'dense-'+i,t:'box',prm:{Length:0.4,Width:0.4,Height:1},pos:[(i%80)*0.75,0,Math.floor(i/80)*0.75],rot:[0,0,0]});window.__a3dTestSetObjs(L);window.__a3dGlBatch(true);}")
+            info = await safe("()=>window.__a3dGlBatchInfo()")
+            ck(info and len(info['chunks']) >= 2 and all(c['verts'] <= 196608 for c in info['chunks']) and sum(c['objects'] for c in info['chunks']) == 6400,
+               "6,400 elements crowded into 60 m: more than one chunk, each under its cap (%s chunks)" % (info and len(info['chunks'])))
+
             print("\n-- 5. the fallback")
             await safe("()=>window.__a3dTestSetObjs([])")
             await safe("()=>window.__a3dGlBatch(false)")

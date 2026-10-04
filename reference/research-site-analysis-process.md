@@ -120,4 +120,4 @@ Site analysis becomes a workspace with this structure. Finding-level records car
 date, the confidence and a constraint or opportunity class. The categories' data, diagrams,
 synthesis and report fill it in phase by phase. The tool pane, the Contents pane and the
 presentation work from the ArcGIS note (`research-arcgis-site-analysis.md`) serve it. See
-`PIPELINE.md`, V157 to V164.
+`PIPELINE.md`, V158 to V165 (V157 brings the whole surroundings in first).
