@@ -9,8 +9,8 @@ VARIANTS = {
     'never_batched': [("  var A3D_GL_BATCH=true;", "  var A3D_GL_BATCH=false;")],
     'send_every_row': [("    for(i=0;i<8;i++)if(d[o+i]!==f[i]){d[o+i]=f[i];ch=true;}", "    for(i=0;i<8;i++){d[o+i]=f[i];ch=true;}")],
     'compare_unrounded': [("    for(i=0;i<8;i++)if(d[o+i]!==f[i]){d[o+i]=f[i];ch=true;}", "    for(i=0;i<8;i++)if(d[o+i]!==v[i]){d[o+i]=f[i];ch=true;}")],
-    'whole_table_sent': [("    var r0=Math.floor(B.lo*2/BIM_GB_TEXW),r1=Math.floor((B.hi*2+1)/BIM_GB_TEXW),per=BIM_GB_TEXW*4;", "    var r0=0,r1=B.texH-1,per=BIM_GB_TEXW*4;")],
-    'rebuild_every_frame': [("      if(c.dirty)bimGbBuild(G,B,c,byId);", "      bimGbBuild(G,B,c,byId);")],
+    'whole_table_sent': [("    var r0=Math.floor(R.lo*2/BIM_GB_TEXW),r1=Math.floor((R.hi*2+1)/BIM_GB_TEXW),per=BIM_GB_TEXW*4;", "    var r0=0,r1=P.texH-1,per=BIM_GB_TEXW*4;")],   # RE-ANCHORED IN V153
+    'rebuild_every_frame': [("      if(c.dirty)bimGbBuild(B,c);", "      bimGbBuild(B,c);")],   # RE-ANCHORED IN V153
     'mesh_change_missed': [("      }else if(c.refs[id]!==m){", "      }else if(false){")],
     'hidden_dropped': [("      var shown=bimLayerShown(o)&&bimObjectVisibleOnLevel(o),la=1,col=null;", "      var shown=bimLayerShown(o)&&bimObjectVisibleOnLevel(o),la=1,col=null;\n      if(!shown){c=B.of[id];if(c){c.ids.splice(c.ids.indexOf(id),1);c.verts-=bimGbVerts(c.refs[id]);delete c.refs[id];c.dirty=true;delete B.of[id];}continue;}")],
     # RETIRED IN V152: a hidden object let through reaches only the transparent pass with an
@@ -27,8 +27,8 @@ VARIANTS = {
     'deleted_still_drawn': [("    for(id in B.of)if(B.of.hasOwnProperty(id)&&!seen[id]){", "    for(id in B.of)if(false){")],
     'no_chunk_cap': [("        if(!last||last.verts+nv>BIM_GB_CHUNK){", "        if(!last){")],
     'no_edges': [("      edges(0);\n", "")],
-    'not_given_back': [("    if(G.gb&&(G.gb.chunks.length||G.gb.next))bimGbDispose(G);\n", "")],
-    'faces_miscounted': [("    A3D.glStats=B.st;\n    A3D.glFaces=totalFaces;", "    A3D.glStats=B.st;\n    A3D.glFaces=B.st.objects;")],
+    'not_given_back': [("    if(A3D_SCENE)bimSceneRelease();   /* __acad3dV153: object by object, the description given back */\n", "")],   # RE-ANCHORED IN V153
+    'faces_miscounted': [("    bimSceneFrameDone(B,'batched');\n    A3D.glFaces=F.totalFaces;", "    bimSceneFrameDone(B,'batched');\n    A3D.glFaces=B.st.objects;")],   # RE-ANCHORED IN V153
 }
 
 name = sys.argv[1]

@@ -13057,3 +13057,91 @@ rebuilds the build from `Phase/canvas_v10.html.bak_phase152_pre`. The diff is ES
     canvas_v10.html   2317202 bytes
     sha256            1d2347693a2f7e50e1d44f78d12104f34befdbdc2f0e07579e8d7e456b9fa1fb
     markers           __acad3dV60 ... __acad3dV152, __acad3dV134d (and the 133d to 133f markers)
+
+## Phase 153 (V153) - The WebGPU engine, WebGL kept (Render R2)
+
+The owner's plan: WebGPU where the browser has it, WebGL kept for devices without it. The model is
+drawn with WebGPU from V152's description of the scene; WebGL takes the frame whenever WebGPU
+cannot.
+
+### What was built (patch 153a)
+
+- **One description, two engines.** V152's batches became the engines' common part
+  (`bimSceneSync`): the chunks' arrays, the object table, the rebuilds. Each engine keeps its own
+  GPU copies of the chunks (rebuilt by a version number) and its own record of the table rows it
+  has yet to receive, so either can take over at any frame.
+- **WebGPU.** Started asynchronously when 3D is first drawn; WebGL draws meanwhile. WGSL shaders
+  doing what V152's do (the table read from a storage buffer, WebGL's depth range mapped to
+  WebGPU's), 4x multisampling as WebGL's antialias, four pipelines (solids, blended solids, edges,
+  blended edges).
+- **Recorded once.** Every draw goes into a render bundle; each frame replays it with only the
+  camera's two matrices sent. It is recorded again only when a chunk is rebuilt, the table grows,
+  or the passes change (a transparent layer appears or goes, the outlines are dropped on a heavy
+  model). A move or a selection is one 32-byte row of the table.
+- **WebGL draws** while WebGPU starts, on a browser without it, after a lost device (a driver
+  reset), after a frame that fails (never a broken frame on screen), when chosen with `GRAPHICS`,
+  and for a frame with the map or a terrain surface in 3D, which WebGPU does not draw yet (V154).
+- **GRAPHICS** switches this browser between WebGPU-where-available and WebGL, kept in the browser;
+  choosing WebGPU again tries again after a failure. Statistics shows which engine drew the last
+  frame and why, e.g. "WebGL (for the terrain)".
+- **The version** is V153; the guide's Getting started says how 3D is drawn.
+
+### How it was checked
+
+Chromium is started with WebGPU on (SwiftShader, a software GPU). A headless browser cannot present
+a WebGPU canvas: the GPU process cannot make the shared image behind it, and the device and the
+page's WebGL context are both lost. So a test sets `__BIM_GPU_OFFSCREEN` before the page loads and
+the engine draws into a texture the size of the canvas, which `__a3dGpuCompare` reads back and
+compares with WebGL's frame of the same view.
+
+- In plan, the two differ by more than 16 of 255 on 0.06% of pixels (antialiasing) and by more
+  than 48 on none.
+- In perspective, the thin outlines are rasterised a pixel differently: up to 269 pixels differ
+  by more than 48, all but 61 of them explained by the same colour a pixel over. The 61 are
+  outlines lying on their own face, a depth tie each engine breaks its own way: they z-fight in
+  WebGL already. V154 pulls outlines a hair toward the camera in both engines.
+
+### Measured
+
+In SwiftShader both engines rasterise on the CPU, and the frame is fill: 5,000 elements about 31 ms
+with WebGPU against 29 ms with WebGL; 20,000 about 90 ms against 87 ms. The engine's saving is the
+main thread's work of issuing the draws, which a real GPU makes visible and a software one hides.
+That cannot be measured here.
+
+### Bugs found
+
+- The first WebGPU frame of an empty scene had no table yet and threw; it is now a 32-byte
+  placeholder, and any frame that throws hands over to WebGL.
+- The suite's camera was flat (plan) after the second `3D` command, so it compared plan views only
+  and the terrain test had nothing in 3D; it now sets a perspective camera, and checks plan too.
+- A label "Canvas (no WebGL)" broke V120's rule against canvas-era names.
+
+### Suites
+
+- New: `bim_phase153_webgpu_engine_browser_tests.py`, 38 checks: WebGPU starts and draws; the same
+  picture as WebGL (plain, selected, transparent layer, lens, layer off, a move, plan, after
+  changes, 20,000 elements); the camera replays the bundle and sends nothing; a move or a
+  selection is a row; a new shape and a change of passes record again; 5,000 and 20,000 elements;
+  terrain and the map handed to WebGL and back; GRAPHICS, kept, in Statistics, searchable; a failed
+  frame and a lost device handed to WebGL; started again; a browser without WebGPU.
+- V152's suite passes unchanged; four of its falsify variants re-anchored to the refactored code.
+- **Falsified by `Phase/falsify_phase153.py`,** 24 variants: 23 caught, one retired (a hidden
+  object let through blends to nothing, as in V152). One gap closed: a frame that throws was not
+  tested; a test-only switch now breaks the next frame.
+
+### Not done
+
+- The map and the draped terrain in WebGPU (V154), so a site project stays on WebGPU.
+- Outlines pulled toward the camera in both engines; culling; picking and sun hours as compute.
+- A measurement on a real GPU.
+
+### Full regression and state after V153
+
+110 suites, 4510 checks, 0 failures (the regression's browser has no WebGPU, so every suite but
+V153's runs on WebGL, as before). Falsification: V153 23 of 23, one retired; V152 19 of 19 again.
+Patch 153a rebuilds the build from `Phase/canvas_v10.html.bak_phase153_pre`. The diff is
+ES5-clean (the scan's one hit is `let` inside the WGSL shader text, which is WGSL, not script).
+
+    canvas_v10.html   2336573 bytes
+    sha256            38bf38edf529788217a11a330242d6251afb588298e6a86f8f489c268aa2dc58
+    markers           __acad3dV60 ... __acad3dV153, __acad3dV134d (and the 133d to 133f markers)

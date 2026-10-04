@@ -91,3 +91,10 @@ than thousands, so large imports and city context stay smooth to orbit.
 
 A device whose graphics cannot read that table (some very old phones) draws element by element as
 before. The picture is the same either way.
+
+**WebGPU.** Where the browser has WebGPU (recent Chrome and Edge, Safari on iOS and macOS 26), the
+model is drawn with it. Every draw is recorded once and replayed each frame with only the camera
+changing. WebGL draws while WebGPU starts, on browsers without it, if the graphics driver resets,
+and for now whenever the map or a terrain surface is shown in 3D. Properties → Project →
+Statistics shows which one drew the last frame. `GRAPHICS` switches this browser to WebGL and
+back, for a driver that misbehaves.

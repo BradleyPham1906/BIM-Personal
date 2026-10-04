@@ -1,6 +1,6 @@
 {
  "version": {
-  "v": "V152",
+  "v": "V153",
   "date": "2026-10-04"
  },
  "commands": [
@@ -1092,6 +1092,20 @@
    "where": [],
    "keys": null,
    "anchor": "cmd-GRADE"
+  },
+  {
+   "id": "cmd:GRAPHICS",
+   "name": "GRAPHICS",
+   "aliases": [
+    "RENDERER",
+    "WEBGPU",
+    "WEBGL"
+   ],
+   "desc": "Draw 3D with WebGPU where the browser has it, or always with WebGL in this browser",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-GRAPHICS"
   },
   {
    "id": "cmd:GRID",
