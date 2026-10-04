@@ -144,51 +144,6 @@ body.light-theme .a3d-projsub{color:#777}
 .a3d-lyty{flex:0 0 auto;color:#6e7781;font-size:10px}
 .a3d-lyobj .a3d-lynm{color:#aeb6bf}
 .a3d-lyempty{padding:8px;color:#6e7781}
-/* __acad3dV148: Layers' Analysis and Data sections */
-.a3d-lysec{margin:2px 0 0;border-top:1px solid rgba(255,255,255,.07);padding-top:4px}
-.a3d-lysechd{display:flex;align-items:center;gap:3px;height:28px;padding:0 4px 0 4px}
-.a3d-lysecttl{flex:1 1 auto;font-size:11px;font-weight:600;color:#aeb8c2}
-.a3d-lyres{display:flex;align-items:center;gap:6px;height:28px;padding:0 2px 0 22px;border-radius:6px;cursor:pointer;user-select:none;min-width:0}
-.a3d-lyres:hover{background:rgba(255,255,255,.06)}
-.a3d-lyres.sel{background:rgba(78,161,255,.18)}
-.a3d-lyres.dim .a3d-lynm{color:#6e7781}
-.a3d-lyres.a3d-dropbefore{box-shadow:0 -2px 0 #4ea1ff}
-.a3d-lyramp{flex:0 0 18px;width:18px;height:12px;border-radius:3px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.18)}
-.a3d-lybadge{flex:0 0 auto;font-size:10px;padding:1px 6px;border-radius:8px;background:rgba(255,183,77,.18);color:#ffb74d;white-space:nowrap}
-.a3d-lybadge.gone{background:rgba(239,83,80,.18);color:#ef9a9a}
-.a3d-lyresd{margin:2px 2px 6px 22px;padding:8px 9px;border-radius:7px;background:rgba(255,255,255,.04);display:flex;flex-direction:column;gap:8px;font-size:11.5px;min-width:0}
-.a3d-lyopl{display:flex;align-items:center;gap:8px;color:#aeb6bf}
-.a3d-lyopl input[type=range]{flex:1 1 auto;min-width:0;margin:0;accent-color:#4ea1ff}
-.a3d-lyopv{flex:0 0 36px;text-align:right;color:#dfe4ea;font-variant-numeric:tabular-nums}
-.a3d-lyresmeta{color:#8b949e;line-height:1.4;overflow-wrap:anywhere}
-.a3d-lyleg{display:flex;flex-wrap:wrap;gap:3px 10px}
-.a3d-lyleg span{display:inline-flex;align-items:center;gap:4px;color:#aeb6bf}
-.a3d-lyleg i{width:10px;height:10px;border-radius:2px;flex:0 0 10px}
-.a3d-lyleg i.ln{height:3px;border-radius:2px}
-.a3d-lyresacts{display:flex;gap:5px;flex-wrap:wrap}
-.a3d-lyresacts button{border:1px solid #3a4048;border-radius:6px;background:#2a2f35;color:#dfe4ea;font:inherit;padding:0 10px;min-height:24px;cursor:pointer}
-.a3d-lyresacts button:hover{background:#343a41}
-.a3d-lyresacts button.danger:hover{border-color:#e06c6c;color:#ffb4b4}
-.a3d-lyresacts button.pri{background:#2f6fd6;border-color:#2f6fd6;color:#fff}
-.a3d-lyhint{padding:4px 8px 8px 26px;line-height:1.4}
-@media(pointer:coarse){
-.a3d-lysechd{height:40px}
-.a3d-lyres{height:44px}
-.a3d-lyres .a3d-lyi{width:36px;height:36px;flex-basis:36px}
-.a3d-lyresacts button{min-height:36px;padding:0 14px}
-.a3d-lyopl input[type=range]{height:32px}
-.a3d-lysec .a3d-lycar{width:32px;height:32px;flex-basis:32px}
-}
-/* on a phone the docked tree is forced on (V67); it is still the Project Browser tab's alone, or it
-   lies over Analyze and Layers */
-body.a3d-tree-docked #a3d-shell:not([data-tab="browser"]) #a3d-leftpanel > .a3d-tree{display:none!important}
-body.light-theme .a3d-lysec{border-color:rgba(0,0,0,.08)}
-body.light-theme .a3d-lysecttl{color:#555}
-body.light-theme .a3d-lyres:hover{background:rgba(0,0,0,.05)}
-body.light-theme .a3d-lyresd{background:rgba(0,0,0,.035)}
-body.light-theme .a3d-lyopv{color:#222}
-body.light-theme .a3d-lyresacts button{background:#fff;border-color:#c9ced4;color:#222}
-body.light-theme .a3d-lyleg span,body.light-theme .a3d-lyopl{color:#444}
 /* __acad3dV121: the Layer Properties Manager */
 .a3d-dlg.a3d-lpm{width:min(1060px,95vw);max-height:78vh;display:flex;flex-direction:column;overflow:hidden}
 .a3d-lpmhd{display:flex;align-items:center;justify-content:space-between}
@@ -618,61 +573,29 @@ body.a3d-props-right #a3d-right .a3d-palhd{padding-top:4px}
 }
 #a3d-shell[data-tab="analyze"] .a3d-projhead{flex-shrink:0}
 #a3d-shell[data-tab="analyze"] .a3d-analyze-wrap{flex:1 1 auto;min-height:0}
-/* __acad3dV148: Analyze, a list of rows in four groups */
-.a3d-anz{display:flex;flex-direction:column;min-height:0;flex:1;overflow:auto;padding:8px 10px 18px}
-.a3d-anz [hidden]{display:none!important}
-.a3d-anzhead{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin:2px 2px 8px}
-.a3d-anzttl0{font-weight:650;font-size:13px}
-.a3d-anzcount{color:#8a96a3;font-size:11.5px;white-space:nowrap}
-.a3d-anzsearch{display:block;width:100%;box-sizing:border-box;margin:0 0 4px;background:#1f2327;border:1px solid #3a4048;border-radius:6px;color:#e6eaef;padding:4px 8px;min-height:28px;font:inherit;font-size:12px}
-.a3d-anzsearch:focus{border-color:#4ea1ff;outline:0}
-.a3d-anzgrphd{font-size:11px;font-weight:600;color:#8a96a3;padding:12px 4px 4px}
-.a3d-anzlist{display:flex;flex-direction:column;gap:1px}
-.a3d-anzcard{border-radius:7px;min-width:0}
-.a3d-anzcard.open{background:rgba(255,255,255,.035)}
-.a3d-anzhd{display:flex;align-items:center;gap:6px;min-height:36px;padding:0 4px 0 0;border-radius:7px;min-width:0}
-.a3d-anzhd:hover{background:rgba(255,255,255,.045)}
-.a3d-anztog{flex:1 1 auto;min-width:0;display:flex;align-items:center;gap:4px;background:transparent;border:0;padding:4px 0 4px 2px;margin:0;color:inherit;font:inherit;text-align:left;cursor:pointer}
-.a3d-anztog:focus-visible{outline:2px solid #4ea1ff;outline-offset:-2px;border-radius:6px}
-.a3d-anzchev{flex:0 0 16px;width:16px;height:16px;display:grid;place-items:center;color:#8b949e;transition:transform .12s}
-.a3d-anzcard.open .a3d-anzchev{transform:rotate(90deg)}
-.a3d-anzname{display:flex;flex-direction:column;min-width:0;flex:1 1 auto}
-.a3d-anzttl{font-weight:500;font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.a3d-anzsum{font-size:11px;color:#8a96a3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
-.a3d-anzcard.open .a3d-anzsum{display:none}
-.a3d-anzstate{flex:0 0 auto;font-size:10.5px;padding:1px 6px;border-radius:9px;background:rgba(255,255,255,.08);color:#9aa3ad;white-space:nowrap}
-.a3d-anzstate-off{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}   /* said, not shown */
+.a3d-anz{display:flex;flex-direction:column;min-height:0;flex:1;overflow:auto;padding:10px 12px 16px}
+.a3d-anzhead{display:flex;align-items:baseline;justify-content:space-between;margin:2px 0 10px}
+.a3d-anzttl0{font-weight:700;font-size:14px}
+.a3d-anzcount{color:#8a96a3;font-size:12px}
+.a3d-anzlist{display:flex;flex-direction:column;gap:8px}
+.a3d-anzcard{border:1px solid rgba(255,255,255,.1);border-radius:9px;padding:9px 10px;background:rgba(255,255,255,.03)}
+.a3d-anzhd{display:flex;align-items:center;justify-content:space-between;gap:6px}
+.a3d-anzttl{font-weight:600;font-size:13px}
+.a3d-anzstate{font-size:11px;padding:1px 6px;border-radius:9px;background:rgba(255,255,255,.08);color:#9aa3ad}
 .a3d-anzstate-on{background:rgba(76,175,80,.18);color:#81c784}
 .a3d-anzstate-warn{background:rgba(255,183,77,.18);color:#ffb74d}
 .a3d-anzstate-fail{background:rgba(239,83,80,.18);color:#ef9a9a}
-.a3d-anzbody{display:none;padding:0 8px 10px 22px}
-.a3d-anzcard.open .a3d-anzbody{display:block}
-.a3d-anzst{color:#aab4bf;font-size:12px;margin:0 0 8px;line-height:1.4}
+.a3d-anzst{color:#aab4bf;font-size:12px;margin:4px 0 7px;line-height:1.35}
 .a3d-anzacts{display:flex;flex-wrap:wrap;gap:5px}
-.a3d-anzbtn{flex:0 0 auto;border:1px solid rgba(255,255,255,.14);border-radius:6px;padding:0 9px;min-height:24px;background:transparent;color:#dfe5ea;font:inherit;font-size:11.5px;cursor:pointer;white-space:nowrap}
+.a3d-anzbtn{border:1px solid rgba(255,255,255,.14);border-radius:6px;padding:3px 9px;background:transparent;color:#dfe5ea;font:inherit;font-size:12px;cursor:pointer}
 .a3d-anzbtn:hover{background:rgba(255,255,255,.08)}
 .a3d-anzbtn.pri{background:#2f6fd6;border-color:#2f6fd6;color:#fff}
-.a3d-anzbtn.pri:hover{background:#3a7be0}
-.a3d-anzbtn.lay{border-color:rgba(78,161,255,.55);color:#9cc9ff}
 .a3d-anzbtn:disabled{opacity:.45;cursor:default}
-.a3d-anzempty{padding:14px 6px;color:#8a96a3;font-size:12px}
-@media(pointer:coarse){
-.a3d-anzhd{min-height:46px}
-.a3d-anztog{padding:6px 0 6px 2px}
-.a3d-anzttl{font-size:13.5px}
-.a3d-anzsum{font-size:12px}
-.a3d-anzbtn{min-height:34px;padding:0 12px;font-size:12.5px}
-.a3d-anzsearch{min-height:36px;font-size:13px}
-.a3d-anzchev{flex-basis:22px;width:22px}
-}
-body.light-theme .a3d-anzcard.open{background:rgba(0,0,0,.035)}
-body.light-theme .a3d-anzhd:hover{background:rgba(0,0,0,.04)}
-body.light-theme .a3d-anzsearch{background:#fff;border-color:#c9ced4;color:#222}
+body.light-theme .a3d-anzcard{border-color:rgba(0,0,0,.1);background:#fff}
 body.light-theme .a3d-anzst{color:#555}
-body.light-theme .a3d-anzsum,body.light-theme .a3d-anzgrphd,body.light-theme .a3d-anzcount{color:#6b737c}
 body.light-theme .a3d-anzbtn{border-color:rgba(0,0,0,.15);color:#222}
 body.light-theme .a3d-anzbtn.pri{color:#fff}
-body.light-theme .a3d-anzbtn.lay{border-color:#4a8fe0;color:#1d63b8}
+.a3d-anzsimhd{margin-top:16px}
 .a3d-anzleg{display:flex;align-items:center;gap:6px;font-size:11px;color:#9aa5b0;margin:0 0 7px}
 .a3d-anzramp{display:flex;flex:1;height:8px;border-radius:3px;overflow:hidden}.a3d-anzramp i{flex:1}
 .a3d-anzstate-stale{background:rgba(255,183,77,.18);color:#ffb74d}.a3d-anzstate-busy{background:rgba(110,160,255,.18);color:#8fb4ff}
@@ -1557,8 +1480,6 @@ try{
         A3D.site.dataLayers.forEach(function(L){if(L&&Array.isArray(st.dataFeatures[L.id]))A3D.dataFeatures[L.id]=st.dataFeatures[L.id];});
       if(st&&(st.roomScheme==='dept'||st.roomScheme==='occupancy'))A3D.roomScheme=st.roomScheme;   /* __acad3dV105 */
       A3D.history=bimHistValid(st&&st.history);   /* __acad3dV146: its history, or none */
-      A3D.resultLayers=bimResValid(st&&st.resultLayers);   /* __acad3dV148: its result layers, or none */
-      A3D_RES_IMG={};
       if(st&&Array.isArray(st.classifications)){
         A3D.classifications=st.classifications.filter(function(c){return c&&typeof c.id==='string'&&typeof c.code==='string';});
         if(A3D.classifications.length!==st.classifications.length)console.warn('[BIM] Discarded malformed classification(s) from '+LSK+' storage.');
@@ -2089,7 +2010,7 @@ try{
   }
   var UNDO_STACK=[],REDO_STACK=[],UNDO_MAX=50,undoSuspend=false;
   function bimSnapshotState(){
-    return JSON.stringify({objs:A3D.objs,levels:A3D.levels,grids:A3D.grids,layers:A3D.layers,counts:A3D.counts,activeLevel:A3D.activeLevel,activeLayer:A3D.activeLayer,views:A3D.views,levelFilter:A3D.levelFilter,types:A3D.types,activeWallType:A3D.activeWallType,sheets:A3D.sheets,titleBlock:A3D.titleBlock,buildings:A3D.buildings,activeBuilding:A3D.activeBuilding,site:A3D.site,roomScheme:A3D.roomScheme||'',classifications:A3D.classifications,resultLayers:A3D.resultLayers||[]});   /* __acad3dV148 */
+    return JSON.stringify({objs:A3D.objs,levels:A3D.levels,grids:A3D.grids,layers:A3D.layers,counts:A3D.counts,activeLevel:A3D.activeLevel,activeLayer:A3D.activeLayer,views:A3D.views,levelFilter:A3D.levelFilter,types:A3D.types,activeWallType:A3D.activeWallType,sheets:A3D.sheets,titleBlock:A3D.titleBlock,buildings:A3D.buildings,activeBuilding:A3D.activeBuilding,site:A3D.site,roomScheme:A3D.roomScheme||'',classifications:A3D.classifications});
   }
   function pushUndo(){
     if(undoSuspend)return;
@@ -2121,7 +2042,6 @@ try{
     A3D.site=(st.site&&typeof st.site==='object')?st.site:A3D.site;
     A3D.roomScheme=(st.roomScheme==='dept'||st.roomScheme==='occupancy')?st.roomScheme:'';   /* __acad3dV105 */
     A3D.classifications=Array.isArray(st.classifications)?st.classifications:[];
-    if(Array.isArray(st.resultLayers))A3D.resultLayers=st.resultLayers;   /* __acad3dV148: a version from History has none, and keeps today's */
     bimEnsureTypes();
     bimEnsureBuildings();
     A3D.sel=null;A3D.sel2=null;A3D.meshes={};
@@ -5895,7 +5815,15 @@ try{
         var tb=o.tview?(o.tview==='cutfill'?bimBandsOf(o,'cutfill'):bimTerrainBands(tin,o.tview)):null;   /* __acad3dV144: coloured by its bands */
         var sup=!o.grading&&!!bimTerrainSuperseded(o);   /* __acad3dV145: an existing surface under a proposed one */
         if(tb){
-          bimDrawBandTris(ctx,tin,tb,sp,0.55);   /* __acad3dV148: shared with the terrain's layers */
+          ctx.save();ctx.globalAlpha*=0.55;
+          for(j=0;j<tin.tris.length;j++){
+            if(tb.tri[j]<0)continue;
+            a=sp[tin.tris[j][0]];b=sp[tin.tris[j][1]];c=sp[tin.tris[j][2]];
+            if(!a||!b||!c)continue;
+            ctx.fillStyle=ctx.strokeStyle=tb.bands[tb.tri[j]].col;ctx.lineWidth=0.5;
+            ctx.beginPath();ctx.moveTo(a[0],a[1]);ctx.lineTo(b[0],b[1]);ctx.lineTo(c[0],c[1]);ctx.closePath();ctx.fill();ctx.stroke();
+          }
+          ctx.restore();
           if(!legendFor||sel)legendFor={name:o.name,view:o.tview,bands:tb.bands};
         }
         ctx.setLineDash([]);ctx.lineWidth=0.6;ctx.strokeStyle=sel?'rgba(78,161,255,0.35)':'rgba(176,133,89,0.2)';
@@ -9911,7 +9839,7 @@ try{
   // foreign JSON file can be confidently rejected instead of silently corrupting the model. ----
   function bimBuildProjectEnvelope(){
     return JSON.stringify({app:'acad3d-project',formatVersion:1,savedAt:new Date().toISOString(),
-      data:{objs:A3D.objs,levels:A3D.levels,grids:A3D.grids,layers:A3D.layers,counts:A3D.counts,activeLevel:A3D.activeLevel,activeLayer:A3D.activeLayer,views:A3D.views,activeViewId:A3D.activeViewId,levelFilter:A3D.levelFilter,types:A3D.types,activeWallType:A3D.activeWallType,sheets:A3D.sheets,titleBlock:A3D.titleBlock,buildings:A3D.buildings,activeBuilding:A3D.activeBuilding,site:A3D.site,roomScheme:A3D.roomScheme||'',classifications:A3D.classifications,dataFeatures:A3D.dataFeatures||{},history:A3D.history||null,resultLayers:A3D.resultLayers||[]}});   /* __acad3dV146, __acad3dV148 */
+      data:{objs:A3D.objs,levels:A3D.levels,grids:A3D.grids,layers:A3D.layers,counts:A3D.counts,activeLevel:A3D.activeLevel,activeLayer:A3D.activeLayer,views:A3D.views,activeViewId:A3D.activeViewId,levelFilter:A3D.levelFilter,types:A3D.types,activeWallType:A3D.activeWallType,sheets:A3D.sheets,titleBlock:A3D.titleBlock,buildings:A3D.buildings,activeBuilding:A3D.activeBuilding,site:A3D.site,roomScheme:A3D.roomScheme||'',classifications:A3D.classifications,dataFeatures:A3D.dataFeatures||{},history:A3D.history||null}});   /* __acad3dV146 */
   }
   function bimParseProjectEnvelope(text){
     var parsed;
@@ -12863,157 +12791,7 @@ try{
     }
     A3D.layers.forEach(function(l){if(!bimLayerParentOk(l))render(l,0);});
     if(f&&!Object.keys(seen).length)h+='<div class="a3d-lyempty">Nothing matches</div>';
-    return h+'</div>'+bimLySectionsHtml(f)+'</div>';   /* __acad3dV148: the results and the data, below the layers */
-  }
-  /* ================= __acad3dV148: Analysis and Data, in Layers =================
-     A row's key is its section and its id: res:<id> a result layer, data:<id> a data layer. */
-  var BIM_LY_IC_UPD='<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19.5 12a7.5 7.5 0 1 1-2.2-5.3M19.5 4.5v4.2h-4.2"/></svg>';
-  function bimLyKey(k){k=String(k||'');var i=k.indexOf(':');return {t:i>0?k.slice(0,i):'',id:i>0?k.slice(i+1):''};}
-  function bimLyTarget(k){var s=bimLyKey(k);return s.t==='res'?bimResById(s.id):s.t==='data'?bimDataById(s.id):null;}
-  function bimResSwatch(R){
-    var c=R.kind==='sunhours'?BIM_SIM_RAMP:R.kind==='rain'?['#7fb6f0','#2f7fe0','#1565c0']:R.mode==='slope'?BIM_SLOPE_COLS:R.mode==='elevation'?BIM_ELEV_COLS:
-      R.mode==='cutfill'?BIM_CUTFILL_COLS:BIM_ASPECT.map(function(a){return a.c;});
-    return 'linear-gradient(90deg,'+c.join(',')+')';
-  }
-  function bimResLegendHtml(R){
-    var o,b=null,d=R.data;
-    if(R.kind==='sunhours'&&d)return '<div class="a3d-anzleg"><span>0 h</span><span class="a3d-anzramp">'+BIM_SIM_RAMP.map(function(c){return '<i style="background:'+c+'"></i>';}).join('')+'</span><span>'+bimDispNum(d.day,1)+' h</span></div>';
-    if(R.kind==='rain')return '<div class="a3d-lyleg"><span><i style="background:#2f7fe0"></i>Ponds</span><span><i class="ln" style="background:#1565c0"></i>Flow lines</span></div>';
-    if(R.kind!=='terrain'||bimResGone(R))return '';
-    o=objById(R.src);
-    try{b=bimBandsOf(o,R.mode);}catch(eB){b=null;}
-    return b?'<div class="a3d-lyleg">'+b.bands.filter(function(x){return x.area>0;}).map(function(x){return '<span><i style="background:'+x.col+'"></i>'+bimEsc(x.label)+'</span>';}).join('')+'</div>':'';
-  }
-  function bimResMetaText(R){
-    var d=R.data,o=objById(R.src),s='';
-    if(R.kind==='sunhours'&&d)s='Direct sun on the ground on '+d.date+': '+bimDispNum(d.min,1)+' to '+bimDispNum(d.max,1)+' h of '+bimDispNum(d.day,1)+' h; '+Math.round((d.sixPlus||0)*100)+'% has 6 h or more.';
-    else if(R.kind==='rain'&&d)s=d.ponds+' pond'+(d.ponds===1?'':'s')+(d.ponds?', '+bimDispNum(d.pondVolume,1)+' m\u00b3 held, the deepest '+bimDispNum(d.deepest||0,2)+' m':'')+
-      '; flow lines where '+bimDispNum(d.threshold*d.cell*d.cell,0)+' m\u00b2 or more drains.';
-    else if(R.kind==='terrain')s=bimResGone(R)?'The surface it showed is gone, or is no longer a proposed one.':BIM_TVIEW_LABEL[R.mode]+' of '+o.name+'. It follows the surface, so it is never out of date.';
-    if(R.kind!=='terrain'&&bimResStale(R))s+=' The model has changed since: Update runs it again'+(R.kind==='sunhours'?' for '+(d&&d.date):'')+'.';
-    return s+(R.created?' Added '+R.created+(R.updated?', updated '+R.updated:'')+'.':'');
-  }
-  function bimLyNameHtml(key,name){
-    return A3D_LY.redit===key?'<input type="text" class="a3d-lyren" data-lyresren="'+bimEsc(key)+'" value="'+bimEsc(name)+'" aria-label="Name of the layer">':
-      '<span class="a3d-lynm" data-lyresname="'+bimEsc(key)+'" title="'+bimEsc(name)+' -- double-click to rename">'+bimEsc(name)+'</span>';
-  }
-  function bimLyOpacityHtml(key,name,op){
-    op=Math.round(op*100);
-    return '<label class="a3d-lyopl">Opacity<input type="range" min="10" max="100" step="5" value="'+op+'" data-lyresop="'+bimEsc(key)+'" aria-label="Opacity of '+bimEsc(name)+'"><span class="a3d-lyopv">'+op+'%</span></label>';
-  }
-  function bimLyResRowHtml(R){
-    var key='res:'+R.id,sel=A3D_LY.rsel===key,hid=R.visible===false,gone=bimResGone(R),st=!gone&&bimResStale(R),h;
-    h='<div class="a3d-lyres'+(sel?' sel':'')+(hid?' dim':'')+'" data-lyres="'+bimEsc(key)+'" draggable="true" aria-expanded="'+sel+'">'+
-      '<span class="a3d-lyramp" style="background:'+bimResSwatch(R)+'"></span>'+bimLyNameHtml(key,R.name)+
-      (gone?'<span class="a3d-lybadge gone" title="The surface it showed is gone">Gone</span>':st?'<span class="a3d-lybadge" title="The model has changed since it was run">Out of date</span>':'')+
-      bimLyTgl('lyreson',key,hid,hid?'Show '+R.name:'Hide '+R.name,BIM_LY_IC.off,BIM_LY_IC.on)+'</div>';
-    if(sel)h+='<div class="a3d-lyresd" data-lyresd="'+bimEsc(key)+'">'+bimLyOpacityHtml(key,R.name,bimResOpacity(R))+bimResLegendHtml(R)+
-      '<div class="a3d-lyresmeta">'+bimEsc(bimResMetaText(R))+'</div><div class="a3d-lyresacts">'+
-      (R.kind!=='terrain'?'<button type="button" data-lyresupd="'+bimEsc(key)+'"'+(st?' class="pri"':'')+'>Update</button>':'')+
-      '<button type="button" data-lyresrn="'+bimEsc(key)+'">Rename</button><button type="button" class="danger" data-lyresdel="'+bimEsc(key)+'">Remove</button></div></div>';
-    return h;
-  }
-  function bimLyDataRowHtml(L){
-    var key='data:'+L.id,sel=A3D_LY.rsel===key,hid=!L.visible,n=bimDataFeats(L.id).length,h,col=/^#[0-9a-fA-F]{6}$/.test(L.color||'')?L.color:'#7f9db8';
-    h='<div class="a3d-lyres'+(sel?' sel':'')+(hid?' dim':'')+'" data-lyres="'+bimEsc(key)+'" aria-expanded="'+sel+'">'+
-      '<span class="a3d-lyramp" style="background:'+col+'"></span>'+bimLyNameHtml(key,L.name)+
-      (L.status&&L.status.error?'<span class="a3d-lybadge gone" title="'+bimEsc(bimDataStatusText(L))+'">Failed</span>':'')+
-      bimLyTgl('lyreson',key,hid,hid?'Show '+L.name:'Hide '+L.name,BIM_LY_IC.off,BIM_LY_IC.on)+'</div>';
-    if(sel)h+='<div class="a3d-lyresd" data-lyresd="'+bimEsc(key)+'">'+bimLyOpacityHtml(key,L.name,bimDataOpacity(L))+
-      '<div class="a3d-lyresmeta">'+bimEsc(bimDataStatusText(L)+(n?'; '+n+' feature'+(n===1?'':'s'):'')+(L.credit?'. Source: '+L.credit:''))+'</div><div class="a3d-lyresacts">'+
-      '<button type="button" data-lyresset="'+bimEsc(key)+'">Settings</button><button type="button" data-lyresrn="'+bimEsc(key)+'">Rename</button>'+
-      '<button type="button" class="danger" data-lyresdel="'+bimEsc(key)+'">Remove</button></div></div>';
-    return h;
-  }
-  function bimLySectionsHtml(f){
-    var shut=A3D_LY.secShut||{},rb='',db='';
-    function hit(s){return !f||String(s).toLowerCase().indexOf(f)>=0;}
-    bimResLayers().forEach(function(R){if(hit(R.name))rb+=bimLyResRowHtml(R);});
-    bimDataList().forEach(function(L){if(hit(L.name))db+=bimLyDataRowHtml(L);});
-    function sec(key,label,n,body,empty){
-      if(f&&!body)return '';
-      var open=!!f||!shut[key];
-      return '<div class="a3d-lysec" data-lysec="'+key+'"><div class="a3d-lysechd"><button type="button" class="a3d-lycar" data-lysectog="'+key+'" aria-expanded="'+open+'" title="'+
-        (open?'Close ':'Open ')+label+'" aria-label="'+(open?'Close ':'Open ')+label+'">'+(open?BIM_LY_IC.open:BIM_LY_IC.closed)+'</button>'+
-        '<span class="a3d-lysecttl">'+label+'</span><span class="a3d-lycnt">'+(n||'')+'</span></div>'+
-        (open?(body||'<div class="a3d-lyempty a3d-lyhint">'+empty+'</div>'):'')+'</div>';
-    }
-    return sec('analysis','Analysis',bimResLayers().length,rb,'Results you keep from Analyze, with Add as layer, are listed here')+
-      sec('data','Data',bimDataList().length,db,'Data layers added in Properties, Site, Data Layers, are listed here');
-  }
-  /* ---- a row's actions, either section ---- */
-  function bimLyResVisible(k){
-    var s=bimLyKey(k),T=bimLyTarget(k);
-    if(!T)return false;
-    if(s.t==='res')return bimResultLayerSet(s.id,'visible',T.visible===false);
-    var ok=bimDataSet(s.id,'visible',!T.visible);
-    refreshLayers();
-    return ok;
-  }
-  function bimLyResSetOpacity(k,v){
-    var s=bimLyKey(k),ok;
-    if(s.t==='res')return bimResultLayerSet(s.id,'opacity',v);
-    if(s.t!=='data')return false;
-    ok=bimDataSet(s.id,'opacity',v);
-    refreshLayers();
-    return ok;
-  }
-  function bimLyResRename(k,name){
-    var s=bimLyKey(k),ok;
-    if(s.t==='res')return bimResultLayerSet(s.id,'name',name);
-    if(s.t!=='data')return false;
-    ok=bimDataSet(s.id,'name',name);
-    refreshLayers();
-    return ok;
-  }
-  function bimLyResRemove(k){
-    var s=bimLyKey(k),ok;
-    if(s.t==='res')return bimResultLayerRemove(s.id);
-    if(s.t!=='data')return false;
-    ok=bimDataRemove(s.id);
-    if(A3D_LY.rsel===k)A3D_LY.rsel=null;
-    refreshLayers();
-    return ok;
-  }
-  /* the opacity while it is dragged: shown, not yet an edit; let go, it is one undo step */
-  function bimLyResOpPreview(inp){
-    var k=inp.getAttribute('data-lyresop'),T=bimLyTarget(k),v=Math.max(10,Math.min(100,+inp.value||0))/100,lab;
-    if(!T)return;
-    if(!A3D_LY.opWas||A3D_LY.opWas.k!==k)A3D_LY.opWas={k:k,had:T.hasOwnProperty('opacity'),v:T.opacity};
-    T.opacity=v;
-    lab=inp.parentNode?inp.parentNode.querySelector('.a3d-lyopv'):null;
-    if(lab)lab.textContent=Math.round(v*100)+'%';
-    paint();
-  }
-  function bimLyResOpCommit(inp){
-    var k=inp.getAttribute('data-lyresop'),T=bimLyTarget(k),w=A3D_LY.opWas;
-    if(!T)return;
-    if(w&&w.k===k){if(w.had)T.opacity=w.v;else delete T.opacity;}
-    A3D_LY.opWas=null;
-    bimLyResSetOpacity(k,+inp.value);
-  }
-  function bimLyResFocusEdit(){
-    var inp=document.querySelector('#a3d-leftpanel [data-lyresren]');
-    if(inp){try{inp.focus();inp.select();}catch(eF){}}
-  }
-  function bimLyResEndEdit(inp,cancel){
-    var k=inp.getAttribute('data-lyresren');
-    if(A3D_LY.redit!==k)return;
-    A3D_LY.redit=null;
-    if(!cancel)bimLyResRename(k,inp.value);
-    refreshLayers();
-  }
-  function bimLyResClick(t){
-    var b,k;
-    if((b=t.closest('[data-lysectog]'))){k=b.getAttribute('data-lysectog');A3D_LY.secShut=A3D_LY.secShut||{};A3D_LY.secShut[k]=!A3D_LY.secShut[k];refreshLayers();return true;}
-    if((b=t.closest('[data-lyreson]'))){bimLyResVisible(b.getAttribute('data-lyreson'));return true;}
-    if((b=t.closest('[data-lyresupd]'))){bimResultLayerUpdate(bimLyKey(b.getAttribute('data-lyresupd')).id);return true;}
-    if((b=t.closest('[data-lyresdel]'))){bimLyResRemove(b.getAttribute('data-lyresdel'));return true;}
-    if((b=t.closest('[data-lyresrn]'))){A3D_LY.redit=b.getAttribute('data-lyresrn');refreshLayers();bimLyResFocusEdit();return true;}
-    if((b=t.closest('[data-lyresset]'))){bimAnzAct('open:Data Layers');return true;}
-    if(t.closest('input')||t.closest('[data-lyresd]'))return !!t.closest('[data-lyresd],[data-lyres]');
-    if((b=t.closest('[data-lyres]'))){k=b.getAttribute('data-lyres');A3D_LY.rsel=A3D_LY.rsel===k?null:k;refreshLayers();return true;}
-    return false;
+    return h+'</div></div>';
   }
   function bimLayersPanelRefresh(){
     var host=document.querySelector('#a3d-leftpanel .a3d-layers-wrap');
@@ -13078,7 +12856,6 @@ try{
         if((b=t.closest('[data-lyfrz]'))){l=bimLayerById(b.getAttribute('data-lyfrz'));if(l)bimLayerSet(l.id,'frozen',!l.frozen);return;}
         if((b=t.closest('[data-lylock]'))){l=bimLayerById(b.getAttribute('data-lylock'));if(l)bimLayerSet(l.id,'locked',!l.locked);return;}
         if((b=t.closest('[data-lypin]'))){var po=objById(b.getAttribute('data-lypin'));if(po)bimSetLocked(po,!bimIsLocked(po));return;}
-        if(t.closest('.a3d-lysec')){bimLyResClick(t);return;}   /* __acad3dV148: Analysis and Data */
         if(t.closest('input'))return;
         if((b=t.closest('[data-lyobj]'))){bimLySelectObj(b.getAttribute('data-lyobj'));return;}
         if((b=t.closest('[data-lyid]'))){A3D_LY.sel=b.getAttribute('data-lyid');refreshLayers();return;}
@@ -13088,8 +12865,6 @@ try{
       }
     });
     panel.addEventListener('dblclick',function(ev){
-      var rn=inLyp(ev.target)?ev.target.closest('[data-lyresname]'):null;   /* __acad3dV148 */
-      if(rn){A3D_LY.redit=rn.getAttribute('data-lyresname');refreshLayers();bimLyResFocusEdit();return;}
       var n=inLyp(ev.target)?ev.target.closest('[data-lyname]'):null;
       if(!n)return;
       A3D_LY.edit=n.getAttribute('data-lyname');A3D_LY.sel=A3D_LY.edit;
@@ -13118,8 +12893,8 @@ try{
     panel.addEventListener('dragstart',function(ev){
       var t=ev.target;
       if(!inLyp(t))return;
-      var o=t.closest('[data-lyobj]'),l=t.closest('[data-lyid]'),rr=t.closest('[data-lyres]'),rk=rr?bimLyKey(rr.getAttribute('data-lyres')):null;   /* __acad3dV148: a result layer, in its stack */
-      A3D_LY.drag=o?'obj:'+o.getAttribute('data-lyobj'):(l?'layer:'+l.getAttribute('data-lyid'):(rk&&rk.t==='res'?'rl:'+rk.id:null));
+      var o=t.closest('[data-lyobj]'),l=t.closest('[data-lyid]');
+      A3D_LY.drag=o?'obj:'+o.getAttribute('data-lyobj'):(l?'layer:'+l.getAttribute('data-lyid'):null);
       if(A3D_LY.drag){
         try{ev.dataTransfer.setData('text/plain',A3D_LY.drag);ev.dataTransfer.effectAllowed='move';}
         catch(eD){console.warn('[BIM] The drag could not carry its data',eD);}
@@ -13128,7 +12903,6 @@ try{
     panel.addEventListener('dragover',function(ev){
       var t=ev.target;
       if(A3D_LY.drag&&inLyp(t)&&(t.closest('[data-lyid]')||t.closest('[data-lylist]')))ev.preventDefault();
-      else if(A3D_LY.drag&&A3D_LY.drag.indexOf('rl:')===0&&inLyp(t)&&t.closest('[data-lyres^="res:"]'))ev.preventDefault();
     });
     panel.addEventListener('drop',function(ev){
       var t=ev.target,v=A3D_LY.drag;
@@ -13137,9 +12911,7 @@ try{
       ev.preventDefault();
       var row=t.closest('[data-lyid]'),tgt=row?row.getAttribute('data-lyid'):null;
       try{
-        var rt=t.closest('[data-lyres]'),rtk=rt?bimLyKey(rt.getAttribute('data-lyres')):null;
-        if(v.indexOf('rl:')===0){if(rtk&&rtk.t==='res')bimResultLayerMove(v.slice(3),rtk.id);}   /* __acad3dV148: onto a row, to its place */
-        else if(v.indexOf('obj:')===0){if(tgt)bimObjSetLayer(v.slice(4),tgt);}
+        if(v.indexOf('obj:')===0){if(tgt)bimObjSetLayer(v.slice(4),tgt);}
         else if(v.indexOf('layer:')===0&&v.slice(6)!==tgt){
           if(tgt)A3D_LY.open[tgt]=true;
           bimLayerSet(v.slice(6),'parent',tgt);
@@ -13150,25 +12922,6 @@ try{
       }
     });
     panel.addEventListener('dragend',function(){A3D_LY.drag=null;});
-    /* __acad3dV148: the Analysis and Data rows -- a name typed, the opacity dragged */
-    panel.addEventListener('keydown',function(ev){
-      var t=ev.target;
-      if(!inLyp(t)||!t.hasAttribute('data-lyresren'))return;
-      if(ev.key==='Enter'){ev.preventDefault();bimLyResEndEdit(t,false);}
-      else if(ev.key==='Escape'){ev.preventDefault();ev.stopPropagation();bimLyResEndEdit(t,true);}
-    });
-    panel.addEventListener('focusout',function(ev){
-      var t=ev.target;
-      if(t&&t.hasAttribute&&t.hasAttribute('data-lyresren'))bimLyResEndEdit(t,false);
-    });
-    panel.addEventListener('input',function(ev){
-      var t=ev.target;
-      if(inLyp(t)&&t.hasAttribute('data-lyresop'))bimLyResOpPreview(t);
-    });
-    panel.addEventListener('change',function(ev){
-      var t=ev.target;
-      if(inLyp(t)&&t.hasAttribute('data-lyresop'))bimLyResOpCommit(t);
-    });
   }
   /* ================= __acad3dV121: the Layer Properties Manager (LAYER, LA) =================
      AutoCAD's table: Status, Name, On, Freeze, Lock, Plot, Color, Linetype, Lineweight,
@@ -14413,7 +14166,7 @@ try{
   /* ================= __acad3dV142: the user guide, and versions =================
      The guide is in docs/ beside the app, on the same site (and in the repository, so it opens
      offline). Its command reference has a section per command, anchored by the command's id. */
-  var BIM_APP_VERSION={v:'V148',date:'2026-10-04'};   /* __acad3dV148 */
+  var BIM_APP_VERSION={v:'V147',date:'2026-10-04'};   /* __acad3dV147 */
   var BIM_DOCS_BASE='docs/';
   /* a command's anchor in the reference: cmd:LINE -> cmd-LINE, act:bim:wall -> act-bim-wall */
   function bimDocsAnchor(id){return String(id||'').replace(/[^A-Za-z0-9_-]+/g,'-');}
@@ -14775,215 +14528,25 @@ try{
     if(!bimCameraIsPlan())return;
     try{
       var s=A3D_SIM.sun;
-      if(s&&s.show!==false&&!bimResHolds(s)){   /* __acad3dV148: a run kept as a layer is drawn as the layer */
+      if(s&&s.show!==false){
         if(!s.img)s.img=bimSimGridImage(s,function(k){return s.roof[k]?null:bimSimRampCol(s.day?s.hours[k]/s.day:0);});
         bimSimDrawGrid(ctx,V,W,H,s,s.img,s.ground,0.55);
       }
       var r=A3D_SIM.rain;
-      if(r&&r.show!==false&&!bimResHolds(r)){
+      if(r&&r.show!==false){
         if(!r.img)r.img=bimSimGridImage(r,function(k){return r.pid[k]?'#2f7fe0c0':null;});
         bimSimDrawGrid(ctx,V,W,H,r,r.img,0,0.9);
-        bimSimDrawFlow(ctx,V,W,H,r.segs,r.maxAcc,1);   /* __acad3dV148: shared with the rain's layers */
+        ctx.save();ctx.strokeStyle='#1565c0';ctx.lineCap='round';
+        var lm=Math.log(r.maxAcc+1),i,g,a,b;
+        for(i=0;i<r.segs.length;i++){
+          g=r.segs[i];a=toScreen([g[0],0,g[1]],V,W,H);b=toScreen([g[2],0,g[3]],V,W,H);
+          if(!a||!b)continue;
+          ctx.lineWidth=0.8+2.6*Math.log(g[4]+1)/lm;
+          ctx.beginPath();ctx.moveTo(a[0],a[1]);ctx.lineTo(b[0],b[1]);ctx.stroke();
+        }
+        ctx.restore();
       }
     }catch(eD){console.warn('[BIM] simulation overlay',eD);}
-  }
-  /* ================= __acad3dV148: results as layers =================
-     A result kept as a layer. Sun hours and rain are kept as they were when run -- their picture is
-     saved with the project, so it opens offline and two runs (June and December, say) can be laid
-     over each other. A terrain's slope, elevation, aspect or cut and fill follows its surface, so
-     it is never out of date. Each layer has its visibility, its opacity and its place in the
-     stack; the top of the list is drawn last, over the rest, as in any layers panel. */
-  var A3D_RES_IMG={};
-  var BIM_TVIEW_LABEL={slope:'Slope',elevation:'Elevation',aspect:'Aspect',cutfill:'Cut and fill'};
-  function bimResLayers(){if(!Array.isArray(A3D.resultLayers))A3D.resultLayers=[];return A3D.resultLayers;}
-  function bimResById(id){var L=bimResLayers(),i;for(i=0;i<L.length;i++)if(L[i].id===id)return L[i];return null;}
-  function bimResOpacity(R){var v=R&&R.opacity;return typeof v==='number'&&v>=0.1&&v<=1?v:0.6;}
-  /* a run that a layer keeps: drawn as that layer, not twice */
-  function bimResHolds(s){
-    if(!s||!s.runId)return false;
-    var L=bimResLayers(),i;
-    for(i=0;i<L.length;i++)if(L[i].run===s.runId)return true;
-    return false;
-  }
-  function bimResNow(){var d=new Date();function p(n){return (n<10?'0':'')+n;}return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+' '+p(d.getHours())+':'+p(d.getMinutes());}
-  /* what a kept result depends on: the model, and for the sun the site's place -- not the date,
-     which the layer keeps as its own */
-  function bimResKeyFrom(stamp,kind){
-    stamp=String(stamp||'');
-    var i=stamp.indexOf(':'),j=i<0?-1:stamp.indexOf(':',i+1),st;
-    if(i<0)return stamp;
-    if(kind!=='sunhours')return stamp.slice(0,i);
-    try{st=JSON.parse(stamp.slice(j+1));}catch(eK){st={};}
-    return stamp.slice(0,i)+':'+stamp.slice(i+1,j)+':'+[st.lat,st.lon,st.tz].join(',');
-  }
-  function bimResKey(kind){return bimResKeyFrom(bimSimStamp(),kind);}
-  function bimResStale(R){return !!(R&&R.kind!=='terrain'&&R.key&&R.key!==bimResKey(R.kind));}
-  /* a terrain layer whose surface is gone, or no longer proposed */
-  function bimResGone(R){
-    if(!R)return true;
-    if(R.kind!=='terrain')return false;
-    var o=objById(R.src);
-    return !(o&&o.t==='terrain'&&o.survey)||(R.mode==='cutfill'&&!o.grading);
-  }
-  /* a run's picture as text: one character a cell, the colour's place on the ramp */
-  function bimResSunData(s){
-    var n=s.nx*s.nz,m=BIM_SIM_RAMP.length,a=[],k;
-    for(k=0;k<n;k++)a.push(s.roof[k]?'.':String(Math.min(m-1,Math.floor(Math.max(0,Math.min(1,s.day?s.hours[k]/s.day:0))*m))));
-    return {x0:s.x0,z0:s.z0,cell:s.cell,nx:s.nx,nz:s.nz,ground:s.ground,date:s.date,day:s.day,min:s.min,max:s.max,sixPlus:s.sixPlus,cells:a.join('')};
-  }
-  function bimResRainData(r){
-    var n=r.nx*r.nz,a=[],k;
-    function r3(v){return Math.round(v*1000)/1000;}
-    for(k=0;k<n;k++)a.push(r.pid[k]?'1':'0');
-    return {x0:r.x0,z0:r.z0,cell:r.cell,nx:r.nx,nz:r.nz,cells:a.join(''),maxAcc:r.maxAcc,ponds:r.ponds.length,pondVolume:r.pondVolume,
-      deepest:r.ponds.length?r.ponds[0].depth:0,threshold:r.threshold,segs:r.segs.map(function(g){return [r3(g[0]),r3(g[1]),r3(g[2]),r3(g[3]),Math.round(g[4]*100)/100];})};
-  }
-  /* Add as layer: sunhours, rain, terrain (the surface shown by slope, elevation or aspect, or
-     opts.id and opts.mode), cutfill (a proposed surface's cut and fill) */
-  function bimResultLayerAdd(kind,opts){
-    opts=opts||{};
-    var R=null,s=null,o=null,mode;
-    if(kind==='sunhours'||kind==='rain'){
-      s=kind==='sunhours'?A3D_SIM.sun:A3D_SIM.rain;
-      if(!s){a3dToast('Run '+(kind==='sunhours'?'Sun hours':'Rain on terrain')+' first, then add it as a layer');return null;}
-      if(bimResHolds(s)){a3dToast('This run is a layer already');return null;}
-      R=kind==='sunhours'?{kind:'sunhours',name:'Sun hours, '+s.date,data:bimResSunData(s),opacity:0.6}:
-        {kind:'rain',name:'Rain on '+s.name,src:s.terrain,data:bimResRainData(s),opacity:0.9};
-    }else if(kind==='terrain'||kind==='cutfill'){
-      o=opts.id?objById(opts.id):(kind==='cutfill'?A3D.objs.filter(function(x){return x.t==='terrain'&&x.grading;})[0]:bimAnzTerrainShown())||null;
-      mode=kind==='cutfill'?'cutfill':String(opts.mode||(o&&o.tview)||'');
-      if(!o||o.t!=='terrain'||!o.survey){a3dToast(kind==='cutfill'?'There is no proposed surface: GRADE a pad first':'Show a surface by slope, elevation or aspect first');return null;}
-      if(!BIM_TVIEW_LABEL.hasOwnProperty(mode)||(mode==='cutfill'&&!o.grading)){a3dToast('A terrain layer shows slope, elevation or aspect, or a proposed surface\'s cut and fill');return null;}
-      R={kind:'terrain',mode:mode,name:BIM_TVIEW_LABEL[mode]+', '+o.name,src:o.id,opacity:0.55};
-    }else return null;
-    pushUndo();
-    R.id='res-'+Date.now().toString(36)+'-'+(A3D.seq++);
-    R.visible=true;R.created=bimResNow();
-    if(s){if(!s.runId)s.runId='run-'+Date.now().toString(36)+'-'+(A3D.seq++);R.run=s.runId;R.key=bimResKeyFrom(s.stamp,R.kind);}   /* as it was when it ran, not when it was added */
-    bimResLayers().unshift(R);   /* a new layer goes on top */
-    if(o&&o.tview===mode)delete o.tview;   /* the surface's own colours step aside for the layer's */
-    A3D_LY.rsel='res:'+R.id;
-    if(A3D_LY.secShut)delete A3D_LY.secShut.analysis;
-    refreshLayers();refreshProps();paint();saveSoon();bimAnalyzeRefresh();
-    a3dToast(R.name+' is a layer now, in Layers under Analysis');
-    return R;
-  }
-  /* Update: run it again, on the layer's own date and surface */
-  function bimResultLayerUpdate(id){
-    var R=bimResById(id),r;
-    if(!R)return false;
-    if(R.kind==='terrain'){a3dToast(R.name+' follows its surface: it is up to date');return true;}
-    if(R.kind==='sunhours'){r=bimSunHours({date:R.data&&R.data.date});if(r.error){a3dToast('Sun hours: '+r.error);return false;}}
-    else{r=bimRainFlow(objById(R.src)?R.src:null);if(r.error){a3dToast('Rain flow: '+r.error);return false;}}
-    pushUndo();
-    R.data=R.kind==='sunhours'?bimResSunData(r):bimResRainData(r);
-    if(R.kind==='rain')R.src=r.terrain;
-    R.key=bimResKeyFrom(r.stamp,R.kind);R.updated=bimResNow();
-    delete A3D_RES_IMG[R.id];
-    refreshLayers();paint();saveSoon();bimAnalyzeRefresh();
-    a3dToast(R.name+' updated');
-    return true;
-  }
-  function bimResultLayerRemove(id){
-    var L=bimResLayers(),i,nm;
-    for(i=0;i<L.length;i++)if(L[i].id===id)break;
-    if(i>=L.length)return false;
-    pushUndo();
-    nm=L[i].name;L.splice(i,1);delete A3D_RES_IMG[id];
-    if(A3D_LY.rsel==='res:'+id)A3D_LY.rsel=null;
-    refreshLayers();paint();saveSoon();bimAnalyzeRefresh();
-    a3dToast(nm+' removed');
-    return true;
-  }
-  function bimResultLayerSet(id,field,val){
-    var R=bimResById(id),v;
-    if(!R)return false;
-    if(field==='visible')v=!!val&&val!=='false';
-    else if(field==='opacity'){v=parseFloat(val);if(!isFinite(v)){a3dToast('Opacity is a percentage, 10 to 100');return false;}v=Math.max(0.1,Math.min(1,v>1?v/100:v));v=Math.round(v*100)/100;}
-    else if(field==='name'){v=String(val==null?'':val).replace(/\s+/g,' ').replace(/^ | $/g,'').slice(0,60);if(!v){a3dToast('A layer needs a name');refreshLayers();return false;}}
-    else return false;
-    if(field==='visible'?(R.visible!==false)===v:R[field]===v)return true;
-    pushUndo();
-    R[field]=v;
-    refreshLayers();paint();saveSoon();
-    return true;
-  }
-  /* to: another layer's id (its place), or an index */
-  function bimResultLayerMove(id,to){
-    var L=bimResLayers(),i=-1,j=-1,k,R;
-    for(k=0;k<L.length;k++){if(L[k].id===id)i=k;if(L[k].id===to)j=k;}
-    if(typeof to==='number'&&isFinite(to))j=Math.max(0,Math.min(L.length-1,Math.round(to)));
-    if(i<0||j<0||i===j)return false;
-    pushUndo();
-    R=L.splice(i,1)[0];L.splice(j,0,R);
-    refreshLayers();paint();saveSoon();
-    return true;
-  }
-  /* the layers from a file or a store: what can be drawn, the rest let go */
-  function bimResValid(a){
-    if(!Array.isArray(a))return [];
-    return a.filter(function(R){
-      if(!R||typeof R.id!=='string'||typeof R.name!=='string')return false;
-      if(R.kind==='terrain')return typeof R.src==='string'&&/^(slope|elevation|aspect|cutfill)$/.test(R.mode);   /* a regex: this runs at start-up, before the table above is set */
-      return (R.kind==='sunhours'||R.kind==='rain')&&!!R.data&&typeof R.data.cells==='string'&&R.data.cells.length===R.data.nx*R.data.nz&&
-        isFinite(R.data.x0)&&isFinite(R.data.z0)&&R.data.cell>0;
-    });
-  }
-  /* ---- drawing ---- */
-  function bimDrawBandTris(ctx,tin,tb,sp,alpha){
-    var j,a,b,c;
-    ctx.save();ctx.globalAlpha*=alpha;
-    for(j=0;j<tin.tris.length;j++){
-      if(tb.tri[j]<0)continue;
-      a=sp[tin.tris[j][0]];b=sp[tin.tris[j][1]];c=sp[tin.tris[j][2]];
-      if(!a||!b||!c)continue;
-      ctx.fillStyle=ctx.strokeStyle=tb.bands[tb.tri[j]].col;ctx.lineWidth=0.5;
-      ctx.beginPath();ctx.moveTo(a[0],a[1]);ctx.lineTo(b[0],b[1]);ctx.lineTo(c[0],c[1]);ctx.closePath();ctx.fill();ctx.stroke();
-    }
-    ctx.restore();
-  }
-  function bimSimDrawFlow(ctx,V,W,H,segs,maxAcc,alpha){
-    var lm=Math.log(maxAcc+1)||1,i,g,a,b;
-    ctx.save();ctx.globalAlpha=alpha;ctx.strokeStyle='#1565c0';ctx.lineCap='round';
-    for(i=0;i<segs.length;i++){
-      g=segs[i];a=toScreen([g[0],0,g[1]],V,W,H);b=toScreen([g[2],0,g[3]],V,W,H);
-      if(!a||!b)continue;
-      ctx.lineWidth=0.8+2.6*Math.log(g[4]+1)/lm;
-      ctx.beginPath();ctx.moveTo(a[0],a[1]);ctx.lineTo(b[0],b[1]);ctx.stroke();
-    }
-    ctx.restore();
-  }
-  function bimResImage(R){
-    var c=A3D_RES_IMG[R.id],d=R.data,img;
-    if(c&&c.d===d)return c.img;
-    img=bimSimGridImage(d,R.kind==='sunhours'?function(k){var ch=d.cells.charAt(k);return ch==='.'?null:(BIM_SIM_RAMP[+ch]||null);}:function(k){return d.cells.charAt(k)==='1'?'#2f7fe0c0':null;});
-    A3D_RES_IMG[R.id]={d:d,img:img};
-    return img;
-  }
-  function bimResDraw(ctx,V,W,H,R){
-    var op=bimResOpacity(R),d=R.data,o,tin,tb;
-    if(R.kind==='sunhours'||R.kind==='rain'){
-      if(!d||typeof d.cells!=='string')return false;
-      bimSimDrawGrid(ctx,V,W,H,d,bimResImage(R),R.kind==='sunhours'?(d.ground||0):0,op);
-      if(R.kind==='rain'&&Array.isArray(d.segs))bimSimDrawFlow(ctx,V,W,H,d.segs,d.maxAcc||0,op);
-      return true;
-    }
-    if(R.kind!=='terrain'||bimResGone(R))return false;
-    o=objById(R.src);tin=bimTerrainTin(o);
-    tb=tin?(R.mode==='cutfill'?bimBandsOf(o,'cutfill'):bimTerrainBands(tin,R.mode)):null;
-    if(!tb)return false;
-    bimDrawBandTris(ctx,tin,tb,tin.P.map(function(p){return toScreen([p[0],0,p[1]],V,W,H);}),op);
-    return true;
-  }
-  function drawResultLayers(ctx,V,W,H){
-    A3D.lastResultDrawn=[];
-    if(!bimCameraIsPlan())return;
-    var L=bimResLayers(),i;
-    for(i=L.length-1;i>=0;i--){
-      if(L[i].visible===false)continue;
-      try{if(bimResDraw(ctx,V,W,H,L[i]))A3D.lastResultDrawn.push(L[i].id);}
-      catch(eR){console.warn('[BIM] A result layer could not be drawn',eR);}
-    }
   }
   /* the commands */
   function bimSunHoursCommand(opts){
@@ -15072,57 +14635,13 @@ try{
     return true;
   }
   /* ================= __acad3dV141: the Analyze tab ================= */
-  var A3D_ANZ={lod:null,open:bimAnzOpenLoad(),q:''};   /* __acad3dV148: the rows open, and the search */
-  /* __acad3dV148: a row, not a card. Its name, what it shows, its state and its first action on one
-     line; the whole status, the legend and every other action a click away. A row is opened by the
-     viewer, and stays open, in this browser. */
-  var BIM_ANZ_GROUPS=[['model','Model'],['site','Site and terrain'],['structure','Structure'],['env','Environment']];
-  var BIM_ANZ_GROUP_OF={lens:'model',areas:'model',lod:'model',stats:'model',survey:'site',terrain:'site',grading:'site',rain:'site',structure:'structure',sun:'env',sunhours:'env',solar:'env'};
-  var BIM_ANZ_KEY='acad3dAnzOpen';
-  var BIM_ANZ_CHEV='<svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3.5 10.5 8 6 12.5"/></svg>';
-  /* the key written out: A3D_ANZ is made before BIM_ANZ_KEY is set */
-  function bimAnzOpenLoad(){try{var v=JSON.parse(localStorage.getItem('acad3dAnzOpen')||'{}');return v&&typeof v==='object'&&!Array.isArray(v)?v:{};}catch(eO){return {};}}
-  function bimAnzStateText(s){return s==='on'?'On':s==='warn'?'Check':s==='fail'?'Problems':s==='stale'?'Out of date':s==='busy'?'Running':'Off';}
-  function bimAnzBtn(a){
-    return '<button type="button" class="a3d-anzbtn'+(a.pri?' pri':'')+(a.lay?' lay':'')+'" data-anzact="'+a.act+'"'+(a.off?' disabled title="'+bimEsc(a.off)+'"':(a.tip?' title="'+bimEsc(a.tip)+'"':''))+'>'+bimEsc(a.label)+'</button>';
-  }
-  /* the surface shown by slope, elevation or aspect, if one is */
-  function bimAnzTerrainShown(){return A3D.objs.filter(function(o){return o.t==='terrain'&&o.survey&&o.tview&&o.tview!=='cutfill';})[0]||null;}
-  /* Add as layer, on the analyses whose result is a picture on the plan */
-  function bimAnzLayerAct(id){
-    var tip='Keep it as a layer, in Layers under Analysis',s,o;
-    if(id==='sunhours'||id==='rain'){
-      s=id==='sunhours'?A3D_SIM.sun:A3D_SIM.rain;
-      return {act:'layer:'+id,label:'Add as layer',lay:true,tip:tip,off:!s?'Run it first':bimResHolds(s)?'This run is a layer already':''};
-    }
-    if(id==='terrain'){o=bimAnzTerrainShown();return {act:'layer:terrain',label:'Add as layer',lay:true,tip:tip,off:o?'':'Show slope, elevation or aspect first'};}
-    if(id==='grading'){
-      o=A3D.objs.filter(function(x){return x.t==='terrain'&&x.grading;})[0];
-      return {act:'layer:cutfill',label:'Add as layer',lay:true,tip:tip,off:!o?'Grade first':bimResLayers().some(function(R){return R.kind==='terrain'&&R.mode==='cutfill'&&R.src===o.id;})?'Its cut and fill is a layer already':''};
-    }
-    return null;
-  }
-  function bimAnzCard(c){
-    var open=!!A3D_ANZ.open[c.id],a0=c.acts[0],rest=c.acts.slice(1),ly=bimAnzLayerAct(c.id);
-    if(ly)rest.push(ly);
-    return '<div class="a3d-anzcard'+(open?' open':'')+'" data-anzcard="'+c.id+'">'+
-      '<div class="a3d-anzhd"><button type="button" class="a3d-anztog" data-anztog="'+c.id+'" aria-expanded="'+open+'">'+
-      '<span class="a3d-anzchev">'+BIM_ANZ_CHEV+'</span><span class="a3d-anzname"><span class="a3d-anzttl">'+bimEsc(c.title)+'</span>'+
-      '<span class="a3d-anzsum">'+bimEsc(c.status)+'</span></span></button>'+
-      (c.state?'<span class="a3d-anzstate a3d-anzstate-'+c.state+'">'+bimAnzStateText(c.state)+'</span>':'')+(a0?bimAnzBtn(a0):'')+'</div>'+
-      '<div class="a3d-anzbody"><div class="a3d-anzst">'+bimEsc(c.status)+'</div>'+(c.extra||'')+
-      (rest.length?'<div class="a3d-anzacts">'+rest.map(bimAnzBtn).join('')+'</div>':'')+'</div></div>';
-  }
-  /* a row opened or closed, in place */
-  function bimAnzToggle(id,on){
-    id=String(id||'');
-    if(!/^[a-z]+$/.test(id))return false;
-    var v=on===undefined?!A3D_ANZ.open[id]:!!on;
-    if(v)A3D_ANZ.open[id]=true;else delete A3D_ANZ.open[id];
-    try{localStorage.setItem(BIM_ANZ_KEY,JSON.stringify(A3D_ANZ.open));}catch(eS){}
-    var w=document.querySelector('.a3d-analyze-wrap'),c=w?w.querySelector('[data-anzcard="'+id+'"]'):null,b;
-    if(c){c.classList.toggle('open',v);b=c.querySelector('[data-anztog]');if(b)b.setAttribute('aria-expanded',String(v));}
-    return v;
+  var A3D_ANZ={lod:null};
+  function bimAnzCard(id,title,status,acts,state,extra){
+    return '<div class="a3d-anzcard" data-anzcard="'+id+'"><div class="a3d-anzhd"><span class="a3d-anzttl">'+bimEsc(title)+'</span>'+
+      (state?'<span class="a3d-anzstate a3d-anzstate-'+state+'">'+(state==='on'?'On':state==='warn'?'Check':state==='fail'?'Problems':state==='stale'?'Out of date':state==='busy'?'Running':'Off')+'</span>':'')+'</div>'+
+      '<div class="a3d-anzst">'+bimEsc(status)+'</div>'+(extra||'')+'<div class="a3d-anzacts">'+acts.map(function(a){
+        return '<button type="button" class="a3d-anzbtn'+(a.pri?' pri':'')+'" data-anzact="'+a.act+'"'+(a.off?' disabled title="'+bimEsc(a.off)+'"':(a.tip?' title="'+bimEsc(a.tip)+'"':''))+'>'+bimEsc(a.label)+'</button>';
+      }).join('')+'</div></div>';
   }
   /* each analysis: what it shows now, and its buttons */
   function bimAnzCards(){
@@ -15135,43 +14654,43 @@ try{
       var L=bimLodOf(o);if(L)lods[L.lod]=(lods[L.lod]||0)+1;
     }
     var fr=nC+nB;
-    C.push({id:'structure',title:'Frame analysis',state:A3D_STRUCT.show?'on':'off',
+    C.push({id:'structure',title:'Structure',state:A3D_STRUCT.show?'on':'off',
       status:fr?nC+' column'+(nC===1?'':'s')+', '+nB+' beam'+(nB===1?'':'s')+(A3D_STRUCT.show?': forces and deflection shown':''):'No frame yet: place columns and beams',
-      acts:[{act:'structure:run',label:A3D_STRUCT.show?'Run again':'Run',pri:true,off:fr?'':'Place columns and beams first'},
+      acts:[{act:'structure:run',label:A3D_STRUCT.show?'Run Again':'Run',pri:true,off:fr?'':'Place columns and beams first'},
         {act:'structure:off',label:'Hide',off:A3D_STRUCT.show?'':'Not shown'},{act:'open:Analysis',label:'Settings',off:fr?'':'Place columns and beams first'}]});
     var sun=bimSunNow();
-    C.push({id:'sun',title:'Sun and shadows',state:A3D.showSun?'on':'off',
+    C.push({id:'sun',title:'Sun and Shadows',state:A3D.showSun?'on':'off',
       status:sun.missing?'Set the site '+sun.missing.join(', ')+' (Site: Location)':(sun.settings.time+' on '+sun.settings.date+(sun.elevation>0?', the sun at '+sun.elevation.toFixed(1)+'\u00b0':', the sun below the horizon')),
       acts:[{act:'sun:toggle',label:A3D.showSun?'Hide':'Show',pri:!A3D.showSun},{act:'open:Location',label:'Settings'}]});
     var ls=bimLensSettings();
-    C.push({id:'lens',title:'Colour by',state:ls.by?'on':'off',status:ls.by?(BIM_LENS_LABEL[ls.by]||ls.by)+(ls.by==='prop'&&ls.prop?': '+ls.prop:''):'Off: colour the model by usage, level, type or any property',
+    C.push({id:'lens',title:'Colour By',state:ls.by?'on':'off',status:ls.by?(BIM_LENS_LABEL[ls.by]||ls.by)+(ls.by==='prop'&&ls.prop?': '+ls.prop:''):'Off: colour the model by usage, level, type or any property',
       acts:[{act:'open:View',label:'Settings',pri:true}]});
     var us=bimUsageSummary(null);
-    C.push({id:'areas',title:'Areas by usage',state:null,status:us.rows.length?us.rows.length+' usage'+(us.rows.length===1?'':'s')+' on '+nU+' object'+(nU===1?'':'s')+', GBA '+bimDispNum(us.total.GBA,2)+' m\u00b2':'No usages given yet',
+    C.push({id:'areas',title:'Areas by Usage',state:null,status:us.rows.length?us.rows.length+' usage'+(us.rows.length===1?'':'s')+' on '+nU+' object'+(nU===1?'':'s')+', GBA '+bimDispNum(us.total.GBA,2)+' m\u00b2':'No usages given yet',
       acts:[{act:'open:Areas by Usage',label:'Open',pri:true},{act:'open:Usages',label:'Usages'}]});
-    C.push({id:'survey',title:'Survey check',state:nTer?(sv.fail?'fail':sv.warn?'warn':'on'):null,
+    C.push({id:'survey',title:'Survey Check',state:nTer?(sv.fail?'fail':sv.warn?'warn':'on'):null,
       status:nTer?nTer+' surface'+(nTer===1?'':'s')+': '+sv.pass+' pass, '+sv.warn+' warn, '+sv.fail+' fail':'No survey surface yet: make one with SURVEY',
       acts:[{act:'survey:run',label:'Check',pri:true,off:nTer?'':'No survey surface yet'}]});
     /* __acad3dV144: terrain analysis */
     var TT=A3D.objs.filter(function(o){return o.t==='terrain'&&o.survey;}),tv=TT.filter(function(o){return o.tview;})[0],tvs='';
     if(tv){try{var tvb=bimBandsOf(tv,tv.tview),tvt=tvb.bands.slice().sort(function(x,y){return y.area-x.area;})[0];
       tvs=tv.name+' coloured by '+tv.tview+(tvt&&tvt.area>0?': most of it '+tvt.label+' ('+Math.round(tvt.share*100)+'%)':'');}catch(eTv){tvs=tv.name+' could not be measured';}}
-    C.push({id:'terrain',title:'Slope, elevation, aspect',state:TT.length?(tv?'on':'off'):null,
+    C.push({id:'terrain',title:'Terrain: Slope, Elevation, Aspect',state:TT.length?(tv?'on':'off'):null,
       status:TT.length?(tvs||TT.length+' surface'+(TT.length===1?'':'s')+': colour by slope, elevation or the way the ground faces'):'No terrain yet: make one with SURVEY, or import LandXML',
       acts:[{act:'terrain:slope',label:'Slope',pri:true,off:TT.length?'':'No terrain yet'},{act:'terrain:elevation',label:'Elevation',off:TT.length?'':'No terrain yet'},
         {act:'terrain:aspect',label:'Aspect',off:TT.length?'':'No terrain yet'},{act:'terrain:off',label:'Off',off:tv?'':'Not coloured'},
         {act:'terrain:landxml',label:'Export LandXML',off:TT.length?'':'No terrain yet'}]});
     /* __acad3dV145: grading */
     var GP=A3D.objs.filter(bimIsPad),GS=A3D.objs.filter(function(o){return o.t==='terrain'&&o.grading;}),gs0=GS[0],gv=gs0&&gs0.grading.volume,gst=gs0&&bimGradeStale(gs0);
-    C.push({id:'grading',title:'Grading, cut and fill',state:gs0?(gst?'stale':'on'):(GP.length?'off':null),
+    C.push({id:'grading',title:'Grading: Cut and Fill',state:gs0?(gst?'stale':'on'):(GP.length?'off':null),
       status:gs0?gs0.name+(gv?': cut '+bimDispNum(gv.cut,1)+' m\u00b3, fill '+bimDispNum(gv.fill,1)+' m\u00b3, net '+(gv.net>=0?bimDispNum(gv.net,1)+' m\u00b3 to take away':bimDispNum(-gv.net,1)+' m\u00b3 to bring in'):'')+
         (gst?' (the pads or the ground have changed since)':''):
         (GP.length?GP.length+' pad'+(GP.length===1?'':'s')+' ready: Grade runs their slopes out to the ground':'No pads yet: give a closed outline a Pad Elevation'),
-      acts:[{act:'grade:run',label:gs0?'Grade again':'Grade',pri:true,off:GP.length?'':'No pads yet'},{act:'grade:map',label:'Cut and fill map',off:gs0?'':'Grade first'},
-        {act:'grade:arrows',label:'Slope arrows',off:TT.length?'':'No terrain yet'}]});
+      acts:[{act:'grade:run',label:gs0?'Grade Again':'Grade',pri:true,off:GP.length?'':'No pads yet'},{act:'grade:map',label:'Cut and Fill Map',off:gs0?'':'Grade first'},
+        {act:'grade:arrows',label:'Slope Arrows',off:TT.length?'':'No terrain yet'}]});
     var lk=Object.keys(lods).sort(),nb=0;lk.forEach(function(k){nb+=lods[k];});
     var last=A3D_ANZ.lod;
-    C.push({id:'lod',title:'Buildings, LOD and solids',state:last?(last.bad.length?'fail':'on'):null,
+    C.push({id:'lod',title:'Buildings: LOD and Solids',state:last?(last.bad.length?'fail':'on'):null,
       status:nb?nb+' '+(nb===1?'building or city object':'buildings and city objects')+' ('+lk.map(function(k){return lods[k]+' LOD'+k;}).join(', ')+')'+(last?'; last check: '+last.valid+' valid'+(last.bad.length?', '+last.bad.length+' with problems':''):''):'No buildings yet: get them with Site Context, or import CityJSON',
       acts:[{act:'lod:run',label:'Check',pri:true,off:nb?'':'No buildings yet'},{act:'lod:cityjson',label:'Export CityJSON',off:nb?'':'No buildings yet'}]});
     C.push({id:'stats',title:'Statistics',state:null,status:A3D.objs.length+' object'+(A3D.objs.length===1?'':'s')+', '+A3D.levels.length+' level'+(A3D.levels.length===1?'':'s')+', '+A3D.sheets.length+' sheet'+(A3D.sheets.length===1?'':'s'),
@@ -15179,73 +14698,37 @@ try{
     /* __acad3dV143: the simulations */
     var miss=bimSunNow().missing,ms=miss?'Set the site '+miss.join(', ')+' first (Site: Location)':'',sh=A3D_SIM.sun,so=A3D_SIM.solar,ra=A3D_SIM.rain;
     var nSol=bimSolarTargets(null).length,ter=bimRainTerrain(null);
-    C.push({id:'sunhours',sim:true,title:'Sun hours',state:sh?(bimSimStale(sh)?'stale':'on'):'off',
+    C.push({id:'sunhours',sim:true,title:'Sun Hours',state:sh?(bimSimStale(sh)?'stale':'on'):'off',
       status:ms||(sh?'Ground in direct sun on '+sh.date+': '+bimDispNum(sh.min,1)+' to '+bimDispNum(sh.max,1)+' h of '+bimDispNum(sh.day,1)+' h; '+Math.round(sh.sixPlus*100)+'% has 6 h or more'+(bimSimStale(sh)?' (the model or the date has changed since)':''):
         'Hours of direct sun on the ground through the site\'s date, every 15 minutes'),
       extra:sh?'<div class="a3d-anzleg"><span>'+bimDispNum(0,0)+' h</span><span class="a3d-anzramp">'+BIM_SIM_RAMP.map(function(c){return '<i style="background:'+c+'"></i>';}).join('')+'</span><span>'+bimDispNum(sh.day,1)+' h</span></div>':'',
-      acts:[{act:'sunhours:run',label:sh?'Run again':'Run',pri:true,off:ms},{act:'sim:clear:sun',label:'Clear',off:sh?'':'Not run'},{act:'open:Location',label:'Date'}]});
-    C.push({id:'solar',sim:true,title:'Solar on roofs and facades',state:A3D_SIM.busy==='solar'?'busy':so?(bimSimStale(so)?'stale':'on'):'off',
+      acts:[{act:'sunhours:run',label:sh?'Run Again':'Run',pri:true,off:ms},{act:'sim:clear:sun',label:'Clear',off:sh?'':'Not run'},{act:'open:Location',label:'Date'}]});
+    C.push({id:'solar',sim:true,title:'Solar on Roofs and Facades',state:A3D_SIM.busy==='solar'?'busy':so?(bimSimStale(so)?'stale':'on'):'off',
       status:ms||(A3D_SIM.busy==='solar'?'Running ...':so?so.count+' solid'+(so.count===1?'':'s')+(so.roofMean!==null?': roofs '+Math.round(so.roofMean)+' kWh/m\u00b2 a year on average':'')+
         ' (clear sky, no clouds'+(so.shaded?', shaded by the others':'')+')'+(bimSimStale(so)?'; the model has changed since':''):
         (nSol?'A clear-sky year of sun on the faces of '+nSol+' solid'+(nSol===1?'':'s')+' (the selection, if any)':'No buildings or solids yet')),
-      acts:[{act:'solar:run',label:so?'Run again':'Run',pri:true,off:ms||(nSol?'':'No buildings or solids yet')||(A3D_SIM.busy?'Running':'')},
-        {act:'solar:colour',label:'Colour by',off:so?'':'Run it first'},{act:'sim:clear:solar',label:'Clear',off:so?'':'Not run'}]});
-    C.push({id:'rain',sim:true,title:'Rain on terrain',state:ra?(bimSimStale(ra)?'stale':'on'):'off',
+      acts:[{act:'solar:run',label:so?'Run Again':'Run',pri:true,off:ms||(nSol?'':'No buildings or solids yet')||(A3D_SIM.busy?'Running':'')},
+        {act:'solar:colour',label:'Colour By',off:so?'':'Run it first'},{act:'sim:clear:solar',label:'Clear',off:so?'':'Not run'}]});
+    C.push({id:'rain',sim:true,title:'Rain on Terrain',state:ra?(bimSimStale(ra)?'stale':'on'):'off',
       status:ra?ra.name+': '+ra.ponds.length+' pond'+(ra.ponds.length===1?'':'s')+(ra.ponds.length?', '+bimDispNum(ra.pondVolume,1)+' m\u00b3 held, the deepest '+bimDispNum(ra.ponds[0].depth,2)+' m':'')+
         '; flow lines where '+bimDispNum(ra.threshold*ra.cell*ra.cell,0)+' m\u00b2 or more drains'+(bimSimStale(ra)?' (the surface has changed since)':''):
         (ter?'Where rain runs and ponds on '+ter.name:'No terrain yet: make one with SURVEY, or get the site context'),
-      acts:[{act:'rain:run',label:ra?'Run again':'Run',pri:true,off:ter?'':'No terrain yet'},{act:'sim:clear:rain',label:'Clear',off:ra?'':'Not run'}]});
-    C.forEach(function(c){c.group=BIM_ANZ_GROUP_OF[c.id]||'model';});   /* __acad3dV148 */
+      acts:[{act:'rain:run',label:ra?'Run Again':'Run',pri:true,off:ter?'':'No terrain yet'},{act:'sim:clear:rain',label:'Clear',off:ra?'':'Not run'}]});
     return C;
-  }
-  function bimAnzCountText(C){
-    var n=C.filter(function(c){return c.state==='on'||c.state==='stale'||c.state==='busy';}).length;
-    return C.length+' analyses'+(n?' \u00b7 '+n+' on':'');
-  }
-  function bimAnzRowsHtml(C){
-    return BIM_ANZ_GROUPS.map(function(g){
-      var R=C.filter(function(c){return c.group===g[0];});
-      return R.length?'<div class="a3d-anzgrp" data-anzgrp="'+g[0]+'"><div class="a3d-anzgrphd">'+g[1]+'</div><div class="a3d-anzlist">'+R.map(bimAnzCard).join('')+'</div></div>':'';
-    }).join('')+'<div class="a3d-anzempty" hidden>Nothing matches</div>';
   }
   function bimAnalyzeHtml(){
     var C=bimAnzCards();
-    return '<div class="a3d-anz"><div class="a3d-anzhead"><span class="a3d-anzttl0">Analyze</span><span class="a3d-anzcount">'+bimAnzCountText(C)+'</span></div>'+
-      '<input type="search" class="a3d-anzsearch" data-anzsearch="1" placeholder="Search analyses" aria-label="Search analyses" autocomplete="off" value="'+bimEsc(A3D_ANZ.q||'')+'">'+
-      '<div class="a3d-anzrows">'+bimAnzRowsHtml(C)+'</div></div>';
+    var A=C.filter(function(c){return !c.sim;}),S=C.filter(function(c){return c.sim;});   /* __acad3dV143 */
+    return '<div class="a3d-anz"><div class="a3d-anzhead"><span class="a3d-anzttl0">Analyze</span><span class="a3d-anzcount">'+A.length+' analyses, '+S.length+' simulations</span></div>'+
+      '<div class="a3d-anzlist">'+A.map(function(c){return bimAnzCard(c.id,c.title,c.status,c.acts,c.state);}).join('')+'</div>'+
+      '<div class="a3d-anzhead a3d-anzsimhd"><span class="a3d-anzttl0">Simulation</span></div>'+
+      '<div class="a3d-anzlist">'+S.map(function(c){return bimAnzCard(c.id,c.title,c.status,c.acts,c.state,c.extra);}).join('')+'</div></div>';
   }
-  /* every word asked for starts a word of the text: rain is not in terrain */
-  function bimAnzWordsHit(q,text){
-    var s=' '+String(text).toLowerCase().replace(/[^a-z0-9\u00c0-\u024f]+/g,' ')+' ',W=String(q).toLowerCase().split(/[^a-z0-9\u00c0-\u024f]+/),i;
-    for(i=0;i<W.length;i++)if(W[i]&&s.indexOf(' '+W[i])<0)return false;
-    return true;
-  }
-  /* the search: rows by their name, what they say, their buttons and their group; in place */
-  function bimAnzFilter(w){
-    var q=String(A3D_ANZ.q||'').toLowerCase().replace(/^\s+|\s+$/g,''),G=w?w.querySelectorAll('[data-anzgrp]'):[],n=0,i,j,R,k,hd,hit,e;
-    for(i=0;i<G.length;i++){
-      hd=G[i].querySelector('.a3d-anzgrphd');R=G[i].querySelectorAll('[data-anzcard]');k=0;
-      for(j=0;j<R.length;j++){
-        hit=!q||bimAnzWordsHit(q,R[j].getAttribute('data-anzcard')+' '+[].map.call(R[j].querySelectorAll('.a3d-anzttl,.a3d-anzst,.a3d-anzbtn'),function(e){return e.textContent;}).join(' ')+' '+(hd?hd.textContent:''));
-        if(hit){R[j].removeAttribute('hidden');k++;}else R[j].setAttribute('hidden','');
-      }
-      if(k)G[i].removeAttribute('hidden');else G[i].setAttribute('hidden','');
-      n+=k;
-    }
-    e=w?w.querySelector('.a3d-anzempty'):null;
-    if(e){if(n)e.setAttribute('hidden','');else e.removeAttribute('hidden');}
-    return n;
-  }
-  /* the panel again, when it is open: the rows only, so the search, its focus and the scroll stay */
+  /* the panel again, when it is open */
   function bimAnalyzeRefresh(){
     var sh=document.getElementById('a3d-shell'),w=sh&&sh.dataset.tab==='analyze'?sh.querySelector('.a3d-analyze-wrap'):null;
     if(!w)return false;
-    try{
-      var rows=w.querySelector('.a3d-anzrows'),cnt=w.querySelector('.a3d-anzcount'),C;
-      if(rows&&cnt){C=bimAnzCards();bimRenderInto(rows,bimAnzRowsHtml(C));cnt.textContent=bimAnzCountText(C);}
-      else w.innerHTML=bimAnalyzeHtml();
-      bimAnzFilter(w);
-    }catch(eA){console.warn('[BIM] Analyze panel',eA);}
+    try{w.innerHTML=bimAnalyzeHtml();}catch(eA){console.warn('[BIM] Analyze panel',eA);}
     return true;
   }
   /* a button: run it, or open its settings in Properties */
@@ -15278,7 +14761,6 @@ try{
     else if(k==='solar:colour'){bimLensSet('prop','Solar on roof (kWh/m2 a year)');}
     else if(k==='rain:run')bimRainCommand(null);
     else if(k.indexOf('sim:clear:')===0)bimSimClear(k.slice(10));
-    else if(k.indexOf('layer:')===0)bimResultLayerAdd(k.slice(6));   /* __acad3dV148 */
     else return false;
     bimAnalyzeRefresh();
     return true;
@@ -18831,7 +18313,7 @@ try{
       visible:true,credit:String(credit||bimMapHost(u)).slice(0,160)};
     if(extra&&/^[A-Za-z_][A-Za-z0-9_]*$/.test(extra.geom||''))lyr.geom=extra.geom;   /* __acad3dV135: a Socrata dataset's geometry column */
     A3D.site.dataLayers.push(lyr);
-    refreshProps();saveSoon();bimLayersPanelRefresh();   /* __acad3dV148 */
+    refreshProps();saveSoon();
     if(bimCtxArea())bimDataFetch(lyr.id);
     else a3dToast(lyr.name+' added: set the site latitude and longitude, then Refresh it');
     return lyr.id;
@@ -18846,7 +18328,7 @@ try{
     /* its features stay stored, so an undo brings the layer back whole; a load drops orphans */
     delete A3D_DATA.cache[id];
     if(A3D_DATA.sel&&A3D_DATA.sel.layer===id)A3D_DATA.sel=null;
-    refreshProps();paint();saveSoon();bimLayersPanelRefresh();   /* __acad3dV148 */
+    refreshProps();paint();saveSoon();
     a3dToast(nm+' removed');
     return true;
   }
@@ -18863,7 +18345,7 @@ try{
     pushUndo();
     L[field]=v;
     if(field==='visible'&&!v&&A3D_DATA.sel&&A3D_DATA.sel.layer===id)A3D_DATA.sel=null;
-    refreshProps();paint();saveSoon();bimLayersPanelRefresh();   /* __acad3dV148 */
+    refreshProps();paint();saveSoon();
     return true;
   }
   function bimDataOpacity(L){var v=L.opacity;return typeof v==='number'&&v>=0.1&&v<=1?v:1;}   /* __acad3dV136 */
@@ -19305,7 +18787,6 @@ try{
     drawTerrain(ctx,V,W,H);                  /* __acad3dV108: the ground, under everything */
     if(!capMode)drawSunShadows(ctx,V,W,H);   /* __acad3dV107: first, so everything else draws over it */
     if(!capMode)drawSimOverlays(ctx,V,W,H);  /* __acad3dV143: sun hours, ponds and flow lines */
-    if(!capMode)drawResultLayers(ctx,V,W,H); /* __acad3dV148: the results kept as layers, over the live ones */
     var presentRooms=bimPresentGraphics();   /* __acad3dV122 */
     if(presentRooms)drawRooms(ctx,V,W,H);
     var polys=[];
@@ -27829,13 +27310,6 @@ try{
     /* __acad3dV141: the Analyze tab -- each driven by the V141 suite before it was claimed */
     {sel:'.a3d-railbtn[data-tab="analyze"]',why:'Analyze tab: every analysis, what it shows now, run it or open its settings'},
     {sel:'[data-anzact]',why:'an analysis: run it, show or hide it, or open its settings in Properties'},
-    {sel:'[data-anztog]',why:'an analysis row: opens and closes it, to its whole status, legend and other actions'},   /* __acad3dV148 */
-    {sel:'[data-lysectog]',why:'opens or closes the Analysis or Data section of the Layers panel'},
-    {sel:'[data-lyreson]',why:'shows or hides a result layer or a data layer'},
-    {sel:'[data-lyresupd]',why:'runs a result layer again, on its own date and surface'},
-    {sel:'[data-lyresrn]',why:'renames a result layer or a data layer'},
-    {sel:'[data-lyresdel]',why:'removes a result layer or a data layer'},
-    {sel:'[data-lyresset]',why:'opens a data layer\'s settings in Properties'},
     /* __acad3dV83: every control in the rail's utility stack, claimed. That is the point of
        this whitelist -- a control added without being claimed fails the audit, which is exactly
        what should happen to a control added without being wired. */
@@ -28315,21 +27789,10 @@ try{
       var abox=document.createElement('div');
       abox.className='a3d-tabbody a3d-analyze-wrap';
       abox.innerHTML=bimAnalyzeHtml();
-      bimAnzFilter(abox);   /* __acad3dV148: the search kept from before */
       abox.addEventListener('click',function(ev){
-        var tg=ev.target&&ev.target.closest?ev.target.closest('[data-anztog]'):null;   /* __acad3dV148: a row opens and closes */
-        if(tg){bimAnzToggle(tg.getAttribute('data-anztog'));return;}
         var b=ev.target&&ev.target.closest?ev.target.closest('[data-anzact]'):null;
         if(!b||b.disabled)return;
         try{bimAnzAct(b.getAttribute('data-anzact'));}catch(eZ){console.warn('[BIM] Analyze',eZ);a3dToast('That did not work - see the console');}
-      });
-      abox.addEventListener('input',function(ev){
-        var s=ev.target;
-        if(s&&s.hasAttribute&&s.hasAttribute('data-anzsearch')){A3D_ANZ.q=s.value;bimAnzFilter(abox);}
-      });
-      abox.addEventListener('keydown',function(ev){
-        var s=ev.target;
-        if(s&&s.hasAttribute&&s.hasAttribute('data-anzsearch')&&ev.key==='Escape'&&s.value){ev.preventDefault();ev.stopPropagation();s.value='';A3D_ANZ.q='';bimAnzFilter(abox);}
       });
       panel.appendChild(abox);
       did=true;
@@ -28751,7 +28214,7 @@ try{
      need the same list to park a project in its own key and to know what a fresh project is,
      and two copies of one field list are two lists that will eventually disagree. */
   function bimProjectRecord(){
-    return {objs:A3D.objs,cam:A3D.cam,seq:A3D.seq,counts:A3D.counts,levels:A3D.levels,grids:A3D.grids,activeLevel:A3D.activeLevel,layers:A3D.layers,activeLayer:A3D.activeLayer,types:A3D.types,activeWallType:A3D.activeWallType,views:A3D.views,activeViewId:A3D.activeViewId,levelFilter:A3D.levelFilter,sheets:A3D.sheets,titleBlock:A3D.titleBlock,buildings:A3D.buildings,activeBuilding:A3D.activeBuilding,site:A3D.site,roomScheme:A3D.roomScheme||'',classifications:A3D.classifications,dataFeatures:A3D.dataFeatures||{},history:A3D.history||null,resultLayers:A3D.resultLayers||[]};   /* __acad3dV146, __acad3dV148 */
+    return {objs:A3D.objs,cam:A3D.cam,seq:A3D.seq,counts:A3D.counts,levels:A3D.levels,grids:A3D.grids,activeLevel:A3D.activeLevel,layers:A3D.layers,activeLayer:A3D.activeLayer,types:A3D.types,activeWallType:A3D.activeWallType,views:A3D.views,activeViewId:A3D.activeViewId,levelFilter:A3D.levelFilter,sheets:A3D.sheets,titleBlock:A3D.titleBlock,buildings:A3D.buildings,activeBuilding:A3D.activeBuilding,site:A3D.site,roomScheme:A3D.roomScheme||'',classifications:A3D.classifications,dataFeatures:A3D.dataFeatures||{},history:A3D.history||null};   /* __acad3dV146 */
   }
   /* __acad3dV115: a save that failed went into an empty catch, so a full browser store lost every
      later edit without a word. It says so now -- once per run of failures, not once per edit. */
@@ -37861,30 +37324,6 @@ try{
   window.__a3dDocsOpen=function(page,id){return bimDocsOpen(page,id?bimDocsAnchor(id):'');};
   window.__a3dDocsOpened=function(){return A3D_GUIDE.opened.slice();};
   window.__a3dDocsAnchor=function(id){return bimDocsAnchor(id);};
-  /* __acad3dV148: Analyze as a list; results as layers */
-  window.__a3dAnzToggle=function(id,on){return bimAnzToggle(id,on);};
-  window.__a3dAnzOpenAll=function(on){bimAnzCards().forEach(function(c){bimAnzToggle(c.id,on!==false);});return Object.keys(A3D_ANZ.open).sort();};
-  window.__a3dAnzSearch=function(q){
-    A3D_ANZ.q=String(q==null?'':q);
-    var w=document.querySelector('.a3d-analyze-wrap'),s=w?w.querySelector('[data-anzsearch]'):null;
-    if(s)s.value=A3D_ANZ.q;
-    if(w)bimAnzFilter(w);
-    return w?[].filter.call(w.querySelectorAll('[data-anzcard]'),function(e){return !e.hasAttribute('hidden');}).map(function(e){return e.getAttribute('data-anzcard');}):null;
-  };
-  window.__a3dAnzWordsHit=function(q,s){return bimAnzWordsHit(q,s);};
-  window.__a3dResultLayers=function(){return bimResLayers().map(function(R){
-    return {id:R.id,name:R.name,kind:R.kind,mode:R.mode||null,src:R.src||null,visible:R.visible!==false,opacity:bimResOpacity(R),stale:bimResStale(R),gone:bimResGone(R),
-      created:R.created||null,run:R.run||null,cells:R.data?R.data.cells.length:0,date:R.data&&R.data.date||null,segs:R.data&&R.data.segs?R.data.segs.length:0};});};
-  window.__a3dResultLayerData=function(id){var R=bimResById(id);return R&&R.data?JSON.parse(JSON.stringify(R.data)):null;};
-  window.__a3dResultLayerAdd=function(k,o){var R=bimResultLayerAdd(k,o||{});return R?R.id:null;};
-  window.__a3dResultLayerSet=function(id,f,v){return bimResultLayerSet(id,f,v);};
-  window.__a3dResultLayerRemove=function(id){return bimResultLayerRemove(id);};
-  window.__a3dResultLayerUpdate=function(id){return bimResultLayerUpdate(id);};
-  window.__a3dResultLayerMove=function(id,to){return bimResultLayerMove(id,to);};
-  window.__a3dResultDrawn=function(){return (A3D.lastResultDrawn||[]).slice();};
-  window.__a3dResultLayersValid=function(a){return bimResValid(a).map(function(R){return R.id;});};
-  window.__a3dSimHolds=function(){return {sun:bimResHolds(A3D_SIM.sun),rain:bimResHolds(A3D_SIM.rain)};};
-  window.__acad3dV148='anzlist,anzgroups,anzsearch,anzwords,anzexpand,anzremember,addaslayer,reslayers,ressnapshot,reslive,resstale,resupdate,resorder,resopacity,ressaved,resundo,layersanalysis,layersdata,touchrows';
   window.__acad3dV147='phonesheet,tabletdrawer,touchtargets,paneltokens,sentencecase,rowgrid,inputstyle,buttonstyle,typeheader,showall,resizable,minimise,lightdark';
   window.__acad3dV146='canon,hash128,elementtree,blobstore,commit,diff,fielddiff,idrecords,restore,elementhistory,historygroup,historycommands,savedwithproject';
   window.__acad3dV145='daylight,fans,valleys,proposedsurface,regrade,tinvolume,cutfillbands,cutfillmap,spotelevations,slopearrows,gradingcard,gradecommands';

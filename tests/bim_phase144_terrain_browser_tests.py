@@ -409,6 +409,9 @@ async def run():
             # the Analyze card
             await page.click('#a3d-rail [data-tab="analyze"]')
             await page.wait_for_timeout(250)
+            # AMENDED FOR V148: a row's other buttons are inside it, so the row is opened first
+            await page.click('.a3d-analyze-wrap [data-anztog="terrain"]')
+            await page.wait_for_timeout(100)
             cards = await safe("()=>window.__a3dAnalyzeCards()") or []
             C = {c['id']: c for c in cards}
             ck('terrain' in C and C['terrain']['state'] == 'on' and 'coloured by slope' in C['terrain']['status'], "an Analyze card says the terrain is coloured by slope (%s)" % C.get('terrain', {}).get('status'))

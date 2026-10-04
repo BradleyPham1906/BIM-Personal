@@ -207,11 +207,15 @@ async def run():
                "the rail: Analyze below Assets, with its icon (%s)" % rail)
             await page.click('#a3d-rail [data-tab="analyze"]')
             await page.wait_for_timeout(250)
+            # AMENDED FOR V148: the cards are rows that open; every one opened, so each button can be clicked
+            await safe("()=>window.__a3dAnzOpenAll(true)")
+            await page.wait_for_timeout(100)
             pc = await panel_cards()
             # AMENDED FOR V143: the Simulation section's three cards follow the seven
             # AMENDED FOR V144: the terrain card follows the survey's
             # AMENDED FOR V145: the grading card follows the terrain's
-            ck(pc and [c['id'] for c in pc] == ['structure', 'sun', 'lens', 'areas', 'survey', 'terrain', 'grading', 'lod', 'stats', 'sunhours', 'solar', 'rain'],
+            # AMENDED FOR V148: in four groups -- Model, Site and terrain, Structure, Environment
+            ck(pc and [c['id'] for c in pc] == ['lens', 'areas', 'lod', 'stats', 'survey', 'terrain', 'grading', 'rain', 'structure', 'sun', 'sunhours', 'solar'],
                "seven cards: structure, sun, colour by, areas, survey, LOD, statistics (%s)" % (pc and [c['id'] for c in pc]))
             P = {c['id']: c for c in pc or []}
             ck(P.get('structure', {}).get('st') == 'No frame yet: place columns and beams' and P['structure']['btns'][0][2] and
