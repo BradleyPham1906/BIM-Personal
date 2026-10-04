@@ -72,17 +72,18 @@ V128 to V130 settled how commands are found (see Recently finished):
 | 141 | Panels and Analyze | **Done** (see Recently finished) | The owner's order: panels and Analyze, Simulation, terrain, then the LOD track again. |
 | 142 | User guide and versions | **Done** (see Recently finished) | `docs/`, `tools/build_docs.py`, `tools/build_site.py`; the site keeps every older build at v/<version>/. |
 | 143 | Simulation | **Done** (see Recently finished) | Next: weather years (EPW, NASA POWER) for expected yield; sun on facades; wind and energy later. |
-| 144 | Terrain | **Start here.** Slope, elevation and aspect bands; breaklines and boundaries; grading pads with daylight slopes; a cut and fill report; LandXML in and out; spot elevations | V108, V127, V137, V138 underneath. |
-| 145-151 | Freeform (F1-F7) | NURBS curves; surfaces from curves (extrude, revolve, loft, planar, edge); sweeps, pipe, cap; surface analysis (zebra, curvature, draft) in Analyze; point editing and blends; picture planes, text objects, flow along a surface; Make2D and rendering | `reference/research-rhino-guide-gap.md`: what the owner's Rhino guide teaches that the app lacks. Placed here pending the owner's word; the LOD track follows. |
-| 152 | LOD-C: point clouds | LAS, LAZ (laz-perf, Apache-2.0) and PLY; USGS 3DEP fetched around the site (EPT or COPC); by class or height; ground to a V108 surface through V138's check | Philadelphia has city LiDAR (2015, 2018) and PA statewide QL2. |
-| 153 | LOD-D: LOD2.2 from LiDAR | Region-growing roof planes, roof partition, optimised and extruded; LOD1.3 from the same partition; per-building RMSE to the points | 3DBAG's published method (roofer is GPL-3 C++: the method, not the code). |
-| 154 | LOD-E: facade images | The owner's photos or Panoramax panoramas placed on an LOD2 wall and rectified straight-on, in metres | Texture2LoD3's rectification; Panoramax is CC BY-SA, no key. |
-| 155 | LOD-F: LOD3 openings | Windows and doors drawn on the rectified facade, regularised into rows and columns, optionally detected (SAM in the browser, on request), cut into the wall | Checked against measured openings. |
-| 156 | LOD-G: Gaussian splats | A `.splat` capture placed on the site as a photoreal backdrop to trace against | antimatter15/splat, MIT. |
-| 157 | Zoning envelope | Setbacks, stepbacks and a height limit on a property become a 3D envelope; massing outside it is flagged | Builds on V103's setbacks; Giraffe's Basic Envelope. |
-| 158 | Design scenarios | Options within one project, switched between and compared by their numbers | Giraffe's scenarios; Revit's Design Options. |
-| 159 | MEP runs | Duct and pipe runs at connectors, systems, flow, velocity and friction | MEP is its own discipline (the owner's choice). The research is drafted in `reference/research-mep-runs.md`. |
-| later | Survey breaklines | Breaklines and boundaries in a surface, horizontal control, LandXML and raw total-station files | V138's checks then cover them; the owner's survey data first. |
+| 144 | Terrain | **Done** (see Recently finished) | Breaklines, boundaries, own faces, slope/elevation/aspect bands, LandXML 1.2 in and out. |
+| 145 | Grading | **Start here.** Grading pads with daylight slopes (cut and fill slopes run out to the ground), a proposed surface, a cut and fill report between two surfaces, spot elevations and slope arrows on plans | V108's pads and earthwork, V144's breaklines underneath. |
+| 146-152 | Freeform (F1-F7) | NURBS curves; surfaces from curves (extrude, revolve, loft, planar, edge); sweeps, pipe, cap; surface analysis (zebra, curvature, draft) in Analyze; point editing and blends; picture planes, text objects, flow along a surface; Make2D and rendering | `reference/research-rhino-guide-gap.md`: what the owner's Rhino guide teaches that the app lacks. Placed here pending the owner's word; the LOD track follows. |
+| 153 | LOD-C: point clouds | LAS, LAZ (laz-perf, Apache-2.0) and PLY; USGS 3DEP fetched around the site (EPT or COPC); by class or height; ground to a V108 surface through V138's check | Philadelphia has city LiDAR (2015, 2018) and PA statewide QL2. |
+| 154 | LOD-D: LOD2.2 from LiDAR | Region-growing roof planes, roof partition, optimised and extruded; LOD1.3 from the same partition; per-building RMSE to the points | 3DBAG's published method (roofer is GPL-3 C++: the method, not the code). |
+| 155 | LOD-E: facade images | The owner's photos or Panoramax panoramas placed on an LOD2 wall and rectified straight-on, in metres | Texture2LoD3's rectification; Panoramax is CC BY-SA, no key. |
+| 156 | LOD-F: LOD3 openings | Windows and doors drawn on the rectified facade, regularised into rows and columns, optionally detected (SAM in the browser, on request), cut into the wall | Checked against measured openings. |
+| 157 | LOD-G: Gaussian splats | A `.splat` capture placed on the site as a photoreal backdrop to trace against | antimatter15/splat, MIT. |
+| 158 | Zoning envelope | Setbacks, stepbacks and a height limit on a property become a 3D envelope; massing outside it is flagged | Builds on V103's setbacks; Giraffe's Basic Envelope. |
+| 159 | Design scenarios | Options within one project, switched between and compared by their numbers | Giraffe's scenarios; Revit's Design Options. |
+| 160 | MEP runs | Duct and pipe runs at connectors, systems, flow, velocity and friction | MEP is its own discipline (the owner's choice). The research is drafted in `reference/research-mep-runs.md`. |
+| later | Survey control | Horizontal control and raw total-station files | Breaklines, boundaries and LandXML landed in V144; V138's checks cover them. |
 | later | Generators | Parking layout to a ratio, subdivision into lots, and envelope-filling massing | Giraffe's generative editors; after the map and the envelope. |
 | later | Costs and pro forma | Cost, rent, yield and sale price per usage, and a feasibility summary | Builds on V131's formulas. |
 | later | Flows and an app SDK | Per-object node graphs (Giraffe's Flows, a light Grasshopper); a documented plugin API of read-only state snapshots with listeners and named commands over postMessage | The engine's `__a3dRegisterCommand`, `__a3dRegisterDiscipline` and `__a3dRegisterTab` are the start of it. Giraffe's model: one set of functions reached two ways, the browser console and a postMessage bridge for an iframe app in the right panel, over GeoJSON-like data (`reference/research-giraffe.md`). |
@@ -109,7 +110,7 @@ Project photos, models and drawings are never committed: the repo and its site a
 ### LATER - Track A, drafting (moved behind Track B in V100)
 
 The numbers in this table are its order, not phase numbers: a phase takes the next free V number
-when it starts (V111 to V138 went to other work; V139 to V148 are in NOW).
+when it starts (V111 to V138 went to other work; V139 to V160 are in NOW).
 
 | # | Phase | Scope | Notes |
 |---|---|---|---|
@@ -123,7 +124,17 @@ when it starts (V111 to V138 went to other work; V139 to V148 are in NOW).
 | 118 | Blocks and data | ATTDEF ATTEDIT BEDIT WBLOCK DATAEXTRACTION TABLESTYLE TABLEDIT TABLEEXPORT | First phase that's about the disciplines, not drafting. BLOCK and INSERT landed in V124, as the Assets library's blocks: saved records inserted as independent copies. A block reference that follows its definition (what BEDIT edits) is not built. |
 | 119 | Sheets and plotting, rest | MVIEW (draw a viewport on the paper) PAGESETUP (plot settings beyond Sheet Setup) PUBLISH (V122's Print set prints every sheet in one job; a chosen subset and page setups remain) EXPORTPDF (vector PDF of a sheet) VPLAYER (per-viewport layer visibility) viewport lock | LAYOUT, MSPACE and PSPACE landed in V116, with layout tabs and model space through a viewport. |
 
-**Recently finished:** Phase 143 (V143), **Simulation**.
+**Recently finished:** Phase 144 (V144), **terrain: breaklines, boundaries, analysis, LandXML**.
+- **Breaklines** from polylines (BREAKLINE) or the survey's BL/BRK codes, forced into the
+  triangles; crossing lines meet at a shared vertex. **A boundary** trims the surface
+  (TERRAINBOUNDARY); points outside are left out and counted, not failed.
+- **Slope, elevation and aspect** bands in plan, with a legend and the area of each (SLOPEMAP,
+  ELEVATIONMAP, ASPECTMAP; Properties and the Analyze tab).
+- **LandXML 1.2** out in the survey's own coordinates and units, with breaklines and boundary;
+  in with the file's own triangles (LANDXMLOUT, LANDXMLIN, IMPORTCAD).
+- **Checked** in 83 checks against independent calculations, and 36 falsify variants.
+
+Phase 143 (V143), **Simulation**.
 - **Sun hours** on the ground through a day (SUNHOURS), **clear-sky solar** on every face through a
   year with shading (SOLAR, shown by Colour By), **rain on terrain**: ponds, their volume, and flow
   lines (RAINFLOW). In the Analyze tab's Simulation section.

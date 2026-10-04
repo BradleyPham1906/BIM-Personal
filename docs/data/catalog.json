@@ -1,6 +1,6 @@
 {
  "version": {
-  "v": "V143",
+  "v": "V144",
   "date": "2026-10-04"
  },
  "commands": [
@@ -132,6 +132,19 @@
    "anchor": "cmd-ARRAYRECT"
   },
   {
+   "id": "cmd:ASPECTMAP",
+   "name": "ASPECTMAP",
+   "aliases": [
+    "ASPECT",
+    "ASPECTANALYSIS"
+   ],
+   "desc": "Colour the terrain by the way it faces: north, north-east, east ...",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-ASPECTMAP"
+  },
+  {
    "id": "cmd:ASSETS",
    "name": "ASSETS",
    "aliases": [
@@ -223,6 +236,19 @@
    "where": [],
    "keys": null,
    "anchor": "cmd-BREAKATPOINT"
+  },
+  {
+   "id": "cmd:BREAKLINE",
+   "name": "BREAKLINE",
+   "aliases": [
+    "BRK",
+    "BREAKLINES"
+   ],
+   "desc": "Hold the selected polylines in the terrain surface as breaklines: the triangles follow them",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-BREAKLINE"
   },
   {
    "id": "cmd:CEILING",
@@ -600,6 +626,19 @@
    ],
    "keys": null,
    "anchor": "cmd-DOOR"
+  },
+  {
+   "id": "cmd:ELEVATIONMAP",
+   "name": "ELEVATIONMAP",
+   "aliases": [
+    "ELEVATIONBANDS",
+    "HYPSOMETRIC"
+   ],
+   "desc": "Colour the terrain by elevation, in seven bands, with the area of each",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-ELEVATIONMAP"
   },
   {
    "id": "act:ellipsoid",
@@ -1086,6 +1125,31 @@
    ],
    "keys": null,
    "anchor": "act-bim-joinwalls"
+  },
+  {
+   "id": "cmd:LANDXMLIN",
+   "name": "LANDXMLIN",
+   "aliases": [
+    "IMPORTLANDXML"
+   ],
+   "desc": "Import the TIN surfaces of a LandXML file, keeping their own triangles",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-LANDXMLIN"
+  },
+  {
+   "id": "cmd:LANDXMLOUT",
+   "name": "LANDXMLOUT",
+   "aliases": [
+    "EXPORTLANDXML",
+    "LANDXML"
+   ],
+   "desc": "Export the terrain surfaces as LandXML 1.2: points, triangles, breaklines and boundary, in the survey's own coordinates",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-LANDXMLOUT"
   },
   {
    "id": "cmd:LAYER",
@@ -1778,6 +1842,20 @@
    "anchor": "cmd-SIMCLEAR"
   },
   {
+   "id": "cmd:SLOPEMAP",
+   "name": "SLOPEMAP",
+   "aliases": [
+    "SLOPE",
+    "SLOPEANALYSIS",
+    "GRADEANALYSIS"
+   ],
+   "desc": "Colour the terrain by slope in bands (0 to 2%, 2 to 5%, 5 to 8.33% ...), with the area of each",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-SLOPEMAP"
+  },
+  {
    "id": "cmd:SOLAR",
    "name": "SOLAR",
    "aliases": [
@@ -1931,6 +2009,31 @@
    ],
    "keys": null,
    "anchor": "cmd-TAGALLROOMS"
+  },
+  {
+   "id": "cmd:TERRAINANALYSISOFF",
+   "name": "TERRAINANALYSISOFF",
+   "aliases": [
+    "TERRAINOFF"
+   ],
+   "desc": "Stop colouring the terrain",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-TERRAINANALYSISOFF"
+  },
+  {
+   "id": "cmd:TERRAINBOUNDARY",
+   "name": "TERRAINBOUNDARY",
+   "aliases": [
+    "TINBOUNDARY",
+    "SURFACEBOUNDARY"
+   ],
+   "desc": "Trim the terrain surface to the selected closed polyline",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-TERRAINBOUNDARY"
   },
   {
    "id": "cmd:TEXT",

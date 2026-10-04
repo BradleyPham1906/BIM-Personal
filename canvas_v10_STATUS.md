@@ -12309,3 +12309,92 @@ build from `Phase/canvas_v10.html.bak_phase143_pre`. The diff is ES5-clean.
     canvas_v10.html   2112160 bytes
     sha256            fbb7109fe64df201030f6b2ceabc6d8a23fe13fc53f60192ef7684fe1fb5b65e
     markers           __acad3dV60 ... __acad3dV143, __acad3dV134d (and the 133d to 133f markers)
+
+## Phase 144 (V144) - Terrain: breaklines, boundaries, slope, elevation and aspect, LandXML
+
+The owner's third item, after panels and simulation: "continue working on terrain". This phase
+makes a surface follow the lines a surveyor or designer draws, trims it, analyses it and exchanges
+it. Grading (pads with daylight slopes, a cut and fill report, spot elevations) follows in V145.
+
+### What was built (patches 144a, 144b)
+
+- **How a surface is triangulated** (`bimTinBuild`, cached against the survey, its faces,
+  breaklines and boundary):
+  - a surface with its own triangles (from LandXML) keeps them;
+  - else Delaunay of the points, then each breakline and boundary segment forced in by flipping
+    the edges that cross it (Sloan 1993);
+  - a segment through an existing point is split at it;
+  - where two lines cross, both get a vertex at the crossing, else neither could be held;
+  - a vertex between survey points takes the height the surface already has there;
+  - with a boundary, triangles whose centroid is outside are dropped, and the survey points left
+    without a triangle are counted as outside.
+- **BREAKLINE:** the selected polylines, into the surface under them (or the selected one). Saved
+  as `o.breaklines` [{name, pts:[[x, z, y or null]], from}].
+- **Survey codes:** points described `BL1`, `BRK-ridge` and so on are joined in file order, one
+  line per name, at their own elevations.
+- **TERRAINBOUNDARY:** a closed polyline becomes `o.boundary`.
+- **Analysis:** each triangle's plane gives its slope (%), aspect (the compass way it falls,
+  through True North) and plan area.
+  - Slope bands: 0, 2, 5, 8.33 (1:12), 15, 25, 50%.
+  - Elevation: seven equal steps.
+  - Aspect: flat under 2%, then eight directions.
+  - Drawn in plan at 55%, with a legend in the safe area. Properties' Terrain Analysis group has
+    Colour By and the band table.
+  - Commands: SLOPEMAP, ELEVATIONMAP, ASPECTMAP, TERRAINANALYSISOFF (the selection, else every
+    surface). A Terrain card in Analyze.
+- **LandXML 1.2:**
+  - Out (LANDXMLOUT): points back in the survey's own northing, easting and elevation through True
+    North and its units (Metric, or Imperial foot or USSurveyFoot), faces, and breaklines and
+    boundary as SourceData.
+  - In (LANDXMLIN, IMPORTCAD .xml/.landxml): every TIN surface, with its faces kept (invisible
+    faces dropped, all turned counter-clockwise), placed by the site's survey base (else the first
+    point), feet converted, millimetres refused.
+  - Re-triangulate in Properties drops the file's faces.
+- **Survey check:** the survey's own points only, and those outside the boundary are left out and
+  said.
+- **The version** is V144. The guide's Survey and terrain page has Breaklines, The boundary, Slope,
+  elevation and aspect, and LandXML.
+
+### Bugs found
+
+- **A breakline crossing the boundary** left both unheld ("it crosses another breakline"), so the
+  trim was jagged. Fixed by splitting every pair of crossing lines at the crossing first.
+- **The survey check failed a bounded surface** because it walked the breaklines' new vertices as
+  if they were survey points. The check, bust shots and public-terrain comparison now use the
+  survey's own points (`tin.nSurvey`).
+- **A second `__a3dTerrainTin` hook** (V108's) defined later overrode the new one; it is now
+  extended in place.
+- **The legend's text was centred:** it inherited `textAlign` from the contour labels. It is set
+  explicitly now.
+- **LandXML breakline vertices outside the boundary** were written without heights; they now take
+  the height their vertex has in the surface.
+- **The cache key** used the length of the breakline JSON; it now uses the JSON itself.
+- **Units on export:** a surface with no source of its own now uses the site's survey base units.
+- **The suite's own mistakes:**
+  - the site was read from `__a3dState` (it has none);
+  - the elevation label was expected as "0.00" (bimDispNum trims to "0");
+  - the breakline coverage was expected past the boundary.
+
+### Suites
+
+- New: `bim_phase144_terrain_browser_tests.py`, 83 checks. Each result has its own calculation in
+  Python:
+  - a hand-written LandXML in feet;
+  - planes of known gradient and facing (and True North 90);
+  - a bowl's elevation bands from its triangles;
+  - breakline coverage measured from the TIN's edges;
+  - a coded ridge against a control without codes;
+  - the boundary's area to 1e-6;
+  - a survey in US survey feet at True North 30 coming back to its own coordinates;
+  - IMPORTCAD, Remove, undo and the reload.
+- Amended for V144: V141 (the terrain card in the Analyze list).
+- **Falsified by `Phase/falsify_phase144.py`,** 36 variants, all caught. The first run missed one:
+  a breakline straight through survey points. The suite now has one.
+
+### Not done
+
+- Grading: pads with daylight slopes, a proposed surface, a cut and fill report between two
+  surfaces, spot elevations and slope arrows (V145).
+- LandXML: alignments and profiles (V127 has them), millimetre files, and breaklines read back from
+  SourceData (the file's own faces already carry them).
+- Horizontal control and raw total-station files.

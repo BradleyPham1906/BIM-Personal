@@ -207,7 +207,8 @@ async def run():
             await page.wait_for_timeout(250)
             pc = await panel_cards()
             # AMENDED FOR V143: the Simulation section's three cards follow the seven
-            ck(pc and [c['id'] for c in pc] == ['structure', 'sun', 'lens', 'areas', 'survey', 'lod', 'stats', 'sunhours', 'solar', 'rain'],
+            # AMENDED FOR V144: the terrain card follows the survey's
+            ck(pc and [c['id'] for c in pc] == ['structure', 'sun', 'lens', 'areas', 'survey', 'terrain', 'lod', 'stats', 'sunhours', 'solar', 'rain'],
                "seven cards: structure, sun, colour by, areas, survey, LOD, statistics (%s)" % (pc and [c['id'] for c in pc]))
             P = {c['id']: c for c in pc or []}
             ck(P.get('structure', {}).get('st') == 'No frame yet: place columns and beams' and P['structure']['btns'][0][2] and
