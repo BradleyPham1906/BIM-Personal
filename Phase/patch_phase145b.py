@@ -226,7 +226,6 @@ rep("""  window.__a3dTerrainLegend=function(){""", """  window.__a3dGrade=functi
       r:s.r.off?{off:true}:{t:s.r.t,end:s.r.end,h:s.r.h,kind:s.r.kind,dir:s.r.dir}};})};
   };
   window.__a3dTinVolume=function(a,b){var A=objById(a),B=objById(b);return A&&B?bimTinVolume(bimTerrainTin(A),bimTerrainTin(B)):null;};
-  window.__a3dAddPoint=function(x,z){var o=bimAddPoint(x,z);refreshTree();paint();return o.id;};
   window.__a3dSetPadSlope=function(id,which,v){return bimSetPadSlope(objById(id),which,v);};
   window.__a3dSpotsShown=function(){return A3D.lastSpotsDrawn||null;};
   window.__a3dSpotElev=function(id){var o=objById(id);return bimIsPoint(o)?bimSpotElev(o):null;};

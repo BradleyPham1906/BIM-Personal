@@ -19,7 +19,7 @@ Every result is held to a second calculation here in Python:
 
 The harness never waits without a bound (V123).
 """
-import asyncio, math, pathlib, sys, tempfile, traceback, xml.etree.ElementTree as ET
+import asyncio, math, pathlib, re, sys, tempfile, traceback, xml.etree.ElementTree as ET
 from playwright.async_api import async_playwright
 
 HTML = pathlib.Path(sys.argv[1]).resolve() if len(sys.argv) > 1 else \
@@ -133,7 +133,10 @@ async def run():
             print("\n-- 0. the version")
             ver = await safe("()=>window.__a3dAppVersion?window.__a3dAppVersion():null")
             src = HTML.read_text(encoding='utf-8')
-            ck("var BIM_APP_VERSION={v:'V144'" in src, "the app says V144 (%s)" % (ver,))
+            # AMENDED FOR V145: the version moves on with each phase; V144 or later
+            mv = re.search(r"var BIM_APP_VERSION=\{v:'V(\d+)'", src)
+            vn = int(mv.group(1)) if mv else 0
+            ck(vn >= 144, "the app says V144 or later (V%d)" % vn)
 
             # ---------------------------------------------------------------------------------
             print("\n-- 1. LandXML in")
@@ -353,7 +356,7 @@ async def run():
             imp = root.find('l:Units/l:Imperial', ns)
             ck(imp is not None and imp.get('linearUnit') == 'USSurveyFoot', "in US survey feet, as surveyed")
             app = root.find('l:Application', ns)
-            ck(app is not None and app.get('version') == 'V144', "naming the app and its version")
+            ck(app is not None and app.get('version') == 'V%d' % vn, "naming the app and its version")   # AMENDED FOR V145: this build's
             P = root.findall('.//l:Pnts/l:P', ns)
             F = root.findall('.//l:Faces/l:F', ns)
             got = sorted(tuple(round(float(v), 3) for v in p.text.split()) for p in P)

@@ -2,11 +2,11 @@
 
 **Read this first in a new session.** One page. The detail lives in the docs listed at the bottom.
 
-    canvas_v10.html   2148830 bytes
-    sha256            79f1439d8351ea4c3669f44fdd1fb975567b39d404eb6cc28d6f96adec6b1353
-    markers           __acad3dV60 ... __acad3dV144, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
+    canvas_v10.html   2184726 bytes
+    sha256            34327630112b809a8ff30cf81a3fefb4f2bf5333a01ee374085b81565797cd0f
+    markers           __acad3dV60 ... __acad3dV145, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
                       __acad3dV121b
-    tests             101 suites, 4016 checks, 0 failures
+    tests             102 suites, 4078 checks, 0 failures
 
     The user guide (V142): every phase updates docs/src/, its log entry and BIM_APP_VERSION, then
     runs tools/dump_catalog.py and tools/build_docs.py. The V142 suite and the Pages workflow
@@ -73,8 +73,8 @@ V128 to V130 settled how commands are found (see Recently finished):
 | 142 | User guide and versions | **Done** (see Recently finished) | `docs/`, `tools/build_docs.py`, `tools/build_site.py`; the site keeps every older build at v/<version>/. |
 | 143 | Simulation | **Done** (see Recently finished) | Next: weather years (EPW, NASA POWER) for expected yield; sun on facades; wind and energy later. |
 | 144 | Terrain | **Done** (see Recently finished) | Breaklines, boundaries, own faces, slope/elevation/aspect bands, LandXML 1.2 in and out. |
-| 145 | Grading | **Start here.** Grading pads with daylight slopes (cut and fill slopes run out to the ground), a proposed surface, a cut and fill report between two surfaces, spot elevations and slope arrows on plans | V108's pads and earthwork, V144's breaklines underneath. |
-| 146 | Hub H1: element history | Commits with a message, a change log, a diff per element by its ID ("Wall W12: height 3.0 -> 3.2", added, removed, moved), and going back to any version; history saved with the project | The first piece of the owner's "GitHub for BIM" (`reference/research-bim-hub.md`). Every object already has a stable ID and the project is JSON. |
+| 145 | Grading | **Done** (see Recently finished) | Daylight slopes (fans, valleys), the proposed surface, exact TIN-to-TIN cut and fill, the cut and fill map, spot elevations, slope arrows. Next: sloped pads, retaining walls, sections along an alignment. |
+| 146 | Hub H1: element history | **Start here.** Commits with a message, a change log, a diff per element by its ID ("Wall W12: height 3.0 -> 3.2", added, removed, moved), and going back to any version; history saved with the project | The first piece of the owner's "GitHub for BIM" (`reference/research-bim-hub.md`). Every object already has a stable ID and the project is JSON. |
 | 147 | Hub H2: branches and merge | Design options as branches, switched between and compared by their numbers (areas, usages, cut and fill, solar); a three-way merge per element with conflicts shown side by side | Replaces "Design scenarios" (Giraffe's scenarios, Revit's Design Options). |
 | 148-154 | Freeform (F1-F7) | NURBS curves; surfaces from curves (extrude, revolve, loft, planar, edge); sweeps, pipe, cap; surface analysis (zebra, curvature, draft) in Analyze; point editing and blends; picture planes, text objects, flow along a surface; Make2D and rendering | `reference/research-rhino-guide-gap.md`: what the owner's Rhino guide teaches that the app lacks. Placed here pending the owner's word; the LOD track follows. |
 | 155 | LOD-C: point clouds | LAS, LAZ (laz-perf, Apache-2.0) and PLY; USGS 3DEP fetched around the site (EPT or COPC); by class or height; ground to a V108 surface through V138's check | Philadelphia has city LiDAR (2015, 2018) and PA statewide QL2. |
@@ -132,7 +132,16 @@ when it starts (V111 to V138 went to other work; V139 to V161 are in NOW).
 | 118 | Blocks and data | ATTDEF ATTEDIT BEDIT WBLOCK DATAEXTRACTION TABLESTYLE TABLEDIT TABLEEXPORT | First phase that's about the disciplines, not drafting. BLOCK and INSERT landed in V124, as the Assets library's blocks: saved records inserted as independent copies. A block reference that follows its definition (what BEDIT edits) is not built. |
 | 119 | Sheets and plotting, rest | MVIEW (draw a viewport on the paper) PAGESETUP (plot settings beyond Sheet Setup) PUBLISH (V122's Print set prints every sheet in one job; a chosen subset and page setups remain) EXPORTPDF (vector PDF of a sheet) VPLAYER (per-viewport layer visibility) viewport lock | LAYOUT, MSPACE and PSPACE landed in V116, with layout tabs and model space through a viewport. |
 
-**Recently finished:** Phase 144 (V144), **terrain: breaklines, boundaries, analysis, LandXML**.
+**Recently finished:** Phase 145 (V145), **grading**.
+- **GRADE** runs each pad's cut and fill slopes out to the ground -- square to its edges, fanning
+  round outside corners, meeting in valleys at inside ones -- into a proposed surface, updated in
+  place and out of date when a pad or the ground changes.
+- **CUTFILL** is exact between any two surfaces (overlapping triangles clipped, plane differences
+  integrated); **CUTFILLMAP**, **SPOTELEV**, **SLOPEARROWS**; a Grading card in Analyze.
+- **Checked** in 62 checks against closed forms and a 5 cm integral of the defining surface, and
+  38 falsify variants.
+
+Phase 144 (V144), **terrain: breaklines, boundaries, analysis, LandXML**.
 - **Breaklines** from polylines (BREAKLINE) or the survey's BL/BRK codes, forced into the
   triangles; crossing lines meet at a shared vertex. **A boundary** trims the surface
   (TERRAINBOUNDARY); points outside are left out and counted, not failed.

@@ -20,7 +20,7 @@ Every number is held to a second calculation here in Python:
 
 The harness never waits without a bound (V123).
 """
-import asyncio, math, pathlib, sys, traceback
+import asyncio, math, pathlib, re, sys, traceback
 import numpy as np
 from playwright.async_api import async_playwright
 
@@ -140,7 +140,8 @@ async def run():
             print("\n%d/%d checks passed\nRESULT: FAIL" % (ck.n - len(ck.bad), ck.n))
             await browser.close()
             return 1
-        ck("var BIM_APP_VERSION={v:'V145'" in HTML.read_text(encoding='utf-8'), "the app says V145")
+        mv = re.search(r"var BIM_APP_VERSION=\{v:'V(\d+)'", HTML.read_text(encoding='utf-8'))
+        ck(mv and int(mv.group(1)) >= 145, "the app says V145 or later (%s)" % (mv and mv.group(1)))
 
         async def toast():
             return await safe("()=>{var t=document.getElementById('a3d-toast');return t?t.textContent:'';}") or ''

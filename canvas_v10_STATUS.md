@@ -12408,3 +12408,97 @@ build from `Phase/canvas_v10.html.bak_phase144_pre`. The diff is ES5-clean.
     canvas_v10.html   2148830 bytes
     sha256            79f1439d8351ea4c3669f44fdd1fb975567b39d404eb6cc28d6f96adec6b1353
     markers           __acad3dV60 ... __acad3dV144, __acad3dV134d (and the 133d to 133f markers)
+
+## Phase 145 (V145) - Grading: daylight slopes, a proposed surface, cut and fill between surfaces
+
+The last of the owner's terrain items. A pad (V108's closed outline with a Pad Elevation) is graded
+onto the existing ground: slopes run out to the daylight line, into a proposed surface. The cut and
+fill between the two is exact for the triangles.
+
+### What was built (patches 145a, 145b)
+
+- **Daylight slopes** (`bimGradePad`):
+  - Each pad has a cut and a fill slope (H:V, default 2:1).
+  - Slope lines run square to each edge every 2 m, as a fan 15 degrees apart round an outside
+    corner, and along the bisector at an inside corner (rising at cos of half the turn).
+  - Each line is marched outward and solved by bisection to where it meets the ground. It stops
+    instead where it meets the slope from another edge (the valley), or where it leaves the
+    surface.
+  - The defining surface: the ground held between Z - d/fill and Z + d/cut, d the distance to the
+    pad.
+- **The proposed surface** (`bimGrade`):
+  - the existing points outside every daylight line, plus the pads and their slope lines, with
+    breaklines for the pad, every slope line and the daylight line (V144's constraint
+    triangulation);
+  - the existing boundary, and the existing breaklines clear of the grading;
+  - updated in place when graded again, keeping the pads graded before;
+  - overlapping slopes named; a pad off the surface refused; slopes that run off it counted;
+  - out of date when a pad or the existing ground changes (a stamp of both).
+- **Cut and fill between any two surfaces** (`bimTinVolume`): every pair of overlapping triangles
+  is clipped to each other, and the difference of their planes is integrated, split at its zero
+  line. A bucket index (`bimTinIndex`) finds the pairs, and the heights.
+- **The cut and fill map:** nine bands by depth at each triangle's centroid, from cut over 2 m to
+  fill over 2 m. Colour By on a proposed surface; CUTFILLMAP.
+- **Spot elevations:** SPOTELEV labels points with the height of the surface under them (the
+  proposed one first, or the one selected). Spot the Pad Corners. Labels in plan, to 2 decimals.
+- **Slope arrows:** SLOPEARROWS, or a checkbox in Terrain Analysis. Downhill on every triangle big
+  enough on screen; the percentage on the bigger ones.
+- **The app:**
+  - Properties: the pad's slopes and the surface it is graded into; the proposed surface's
+    Grading group (pads, cut, fill, net with areas, up to date or not, Grade Again, Spot the Pad
+    Corners).
+  - In plan, the proposed surface's contours are green and the existing ground under it dashed. In
+    3D, the proposed surface stands in for the existing one.
+  - A proposed surface has no survey check: it was not surveyed.
+  - A Grading card in Analyze. Commands GRADE, CUTFILL, CUTFILLMAP, SPOTELEV, SLOPEARROWS.
+- **The version** is V145. The guide's Survey and terrain page has Grading, Cut and fill, and Spot
+  elevations and slope arrows.
+
+### Bugs found
+
+- **Slivers made fill out of nothing:** a piece clipped down to 2e-13 m2 had its centroid computed
+  far away, giving 6e-12 m3 of fill on a pure cut. Pieces under 1e-9 m2 are now skipped.
+- **Arrows were too shy:** at a site-wide zoom a 5 m triangle is 23 px, under the first 26 px
+  threshold, so none drew. Lowered to 16 px.
+- **Spot labels** read "2" for 2.00; they now always show two decimals.
+- **A second `__a3dAddPoint` hook** shadowed V93's (the regression's V97 check found it); dropped,
+  V93's does the same.
+- **The suite's own mistakes:**
+  - a point 3.5 m out was beyond a 3 m daylight;
+  - an edge sample exactly at the ground's level has no direction (0), which the suite had not
+    allowed for;
+  - the overlap check looked for a toast the hook never shows.
+- **Falsification found one gap:** GRADE on a selected proposed surface was tested where every
+  fallback gives the same answer. It now uses a second site, so the wrong surface would be graded.
+
+### Suites
+
+- New: `bim_phase145_grading_browser_tests.py`, 62 checks. Each result has its own calculation:
+  - a rectangle in fill and in cut, in closed form (prism, edge wedges, each corner's fan cone,
+    H w^2 sin 15);
+  - an L on flat ground in closed form (the inside corner's offset lines meet: -2s of length);
+  - an L on 6% and 2% ground against the defining surface integrated on a 5 cm grid, to 0.1%
+    (0.012% seen);
+  - planes, a tent and half-overlapping surfaces against volumes worked by hand;
+  - the cut and fill bands recomputed from the triangles;
+  - spots, arrows on a plane, Properties, Analyze, commands, 3D, undo, LandXML, reload.
+- Amended for V145: V141 (the grading card in the Analyze list); V144 (the app's version is V144 or
+  later, and LandXML names this build's).
+- **Falsified by `Phase/falsify_phase145.py`,** 38 variants, all caught.
+
+### Not done
+
+- Grading to a surface other than the existing ground, or to a target elevation.
+- Sloped pads, pads at several elevations, and pads with their own drainage falls.
+- Retaining walls where the slope would run too far.
+- Cut and fill per pad when slopes overlap.
+- A sectional (average end area) report along an alignment.
+
+### Full regression and state after V145
+
+102 suites, 4078 checks, 0 failures. Falsification: V145 38 of 38. The chain 145a, 145b rebuilds the
+build from `Phase/canvas_v10.html.bak_phase145_pre`. The diff is ES5-clean.
+
+    canvas_v10.html   2184726 bytes
+    sha256            34327630112b809a8ff30cf81a3fefb4f2bf5333a01ee374085b81565797cd0f
+    markers           __acad3dV60 ... __acad3dV145, __acad3dV134d (and the 133d to 133f markers)

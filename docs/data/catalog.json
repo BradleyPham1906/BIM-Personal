@@ -1,6 +1,6 @@
 {
  "version": {
-  "v": "V144",
+  "v": "V145",
   "date": "2026-10-04"
  },
  "commands": [
@@ -470,6 +470,33 @@
     "D"
    ],
    "anchor": "cmd-COPY"
+  },
+  {
+   "id": "cmd:CUTFILL",
+   "name": "CUTFILL",
+   "aliases": [
+    "VOLUMES",
+    "TINVOLUME",
+    "SURFACEVOLUME"
+   ],
+   "desc": "Cut and fill between two surfaces (the existing one first), or of every proposed surface against its existing one",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-CUTFILL"
+  },
+  {
+   "id": "cmd:CUTFILLMAP",
+   "name": "CUTFILLMAP",
+   "aliases": [
+    "CUTFILLCOLOUR",
+    "CUTFILLCOLOR"
+   ],
+   "desc": "Colour the proposed surface by how deep it cuts or fills",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-CUTFILLMAP"
   },
   {
    "id": "act:cyl",
@@ -1011,6 +1038,20 @@
    "where": [],
    "keys": null,
    "anchor": "cmd-GIZMO"
+  },
+  {
+   "id": "cmd:GRADE",
+   "name": "GRADE",
+   "aliases": [
+    "GRADING",
+    "DAYLIGHT",
+    "GRADEPADS"
+   ],
+   "desc": "Grade the pads onto the ground: cut and fill slopes run out to the daylight line, into a proposed surface",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-GRADE"
   },
   {
    "id": "cmd:GRID",
@@ -1842,6 +1883,19 @@
    "anchor": "cmd-SIMCLEAR"
   },
   {
+   "id": "cmd:SLOPEARROWS",
+   "name": "SLOPEARROWS",
+   "aliases": [
+    "ARROWS",
+    "FLOWARROWS"
+   ],
+   "desc": "Show or hide arrows down the slope of the terrain, with its percentage",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-SLOPEARROWS"
+  },
+  {
    "id": "cmd:SLOPEMAP",
    "name": "SLOPEMAP",
    "aliases": [
@@ -1880,6 +1934,20 @@
    ],
    "keys": null,
    "anchor": "act-sphere"
+  },
+  {
+   "id": "cmd:SPOTELEV",
+   "name": "SPOTELEV",
+   "aliases": [
+    "SPOT",
+    "SPOTELEVATION",
+    "SPOTHEIGHT"
+   ],
+   "desc": "Label the selected points with the height of the surface under them",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-SPOTELEV"
   },
   {
    "id": "cmd:STAIR",
