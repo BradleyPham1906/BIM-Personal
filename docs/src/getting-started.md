@@ -42,6 +42,12 @@ order: 1
   - **A tablet on its side, or a computer:** the panel sits beside the drawing, as before.
   - The panel starts closed on a phone or an upright tablet, and the layout follows the screen as
     it turns.
+  - **The tool palette** takes the dock's place: Select, Pan, Line, Rectangle, Circle, Wall,
+    Door, Window, Dimension, Delete, and **More** for every other tool and the search. The tool in
+    use is filled in blue; Select puts it away. Drag the palette by its grip: let go near the left
+    or right edge and it stands upright there, anywhere else it lies flat. The chevron folds it to
+    one round button showing the tool in use; tap the button to open it again, or drag it. The
+    palette stays where you leave it.
   - **Props** opens Properties. On a phone it is a sheet from the bottom: tap its grab bar to raise
     it and lower it. On a tablet it is a drawer from the right. On either, the arrow beside the
     word Properties closes it.
