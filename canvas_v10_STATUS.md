@@ -12502,3 +12502,77 @@ build from `Phase/canvas_v10.html.bak_phase145_pre`. The diff is ES5-clean.
     canvas_v10.html   2184726 bytes
     sha256            34327630112b809a8ff30cf81a3fefb4f2bf5333a01ee374085b81565797cd0f
     markers           __acad3dV60 ... __acad3dV145, __acad3dV134d (and the 133d to 133f markers)
+
+## Phase 146 (V146) - Hub H1: history by element
+
+The first piece of the owner's "GitHub for BIM" (`reference/research-bim-hub.md`). The model keeps
+its own history, at the grain of a building element.
+
+### What was built (patches 146a, 146b)
+
+- **The store.**
+  - A commit is the model split into elements: every object by its id, and each of ten project
+    parts as one (levels, grids, layers, types, sheets, title block, buildings, site,
+    classifications, saved views). The project's bookkeeping (counters, active level and layer,
+    and the like) is a hidden element, restored but never listed as a change.
+  - Each element is stored once, by a 128-bit hash of its canonical JSON (keys sorted). The hash
+    is two 64-bit cyrb53-style mixes with an ES5 32-bit multiply, since `Math.imul` is not used.
+  - A commit records its tree ([key, hash] in the model's order), its parent, message, time,
+    author (the title block's Drawn By) and counts.
+- **Diff:** element by element (added, removed, changed). A changed element is diffed field by
+  field, to three levels deep:
+  - a move reads "moved by dx, dy, dz";
+  - a shape reads "shape changed";
+  - records with ids (levels, sheets, layers...) are compared by id ("Level 1 added").
+- **Restore:** any version comes back through bimRestoreState after a pushUndo, so undo takes it
+  back. The history is never rewritten. Discard Changes restores the latest version.
+- **An element's own history:** the versions that added, changed or removed it, with what changed.
+- **Saved with the project:** in bimProjectRecord and the project file envelope, and validated on
+  load (damaged versions are dropped and named). Each project has its own history.
+- **The app:**
+  - Properties, Project tab: a History group with the changes since the latest version, a message
+    box (Enter commits) and Commit, Discard Changes, and the versions newest first with Changes and
+    Restore, plus the store's size.
+  - An element's Properties: its History group.
+  - Commands COMMIT and HISTORY.
+- **The version** is V146. The guide's Sheets and files page has Versions and history.
+
+### Bugs found
+
+- **The typed message was lost:** clicking Commit blurred the message box, and the panel
+  re-rendered with an empty box before the click arrived, so the version was named "Version 3".
+  The message is now kept as it is typed.
+- **The suite's own mistakes:**
+  - a stray probe committed before the test began;
+  - empty project parts share one stored entry, which the suite had not expected;
+  - a test object was given its layer by the app after it was first committed.
+
+### Suites
+
+- New: `bim_phase146_history_browser_tests.py`, 42 checks:
+  - the hash recomputed in Python, bit for bit;
+  - canonical JSON in any key order;
+  - a move, a delete, a new object, a renamed site and a new level giving exactly those five
+    changes, each said field by field;
+  - only changed elements stored again;
+  - restore, undo of a restore, an element's history, a field three levels deep;
+  - the group's Enter, Commit, Changes, Restore and Discard; the commands; the reload.
+- Amended for V146: V141 and V73 (the History group, after Statistics on the Project tab).
+- **Falsified by `Phase/falsify_phase146.py`,** 28 variants, all caught. The first run missed two,
+  each closed with a real case: a nested field, and the Commit button's message.
+
+### Not done
+
+- Branches and merge (H2, V149).
+- Pruning old versions.
+- Sharing the history (H4).
+- Full IFC GUIDs (H3).
+
+### Full regression and state after V146
+
+103 suites, 4120 checks, 0 failures. Falsification: V146 28 of 28. The chain 146a, 146b rebuilds the
+build from `Phase/canvas_v10.html.bak_phase146_pre`. The diff is ES5-clean.
+
+    canvas_v10.html   2204594 bytes
+    sha256            da4c4fa7658db37b5fcf0f30a0d6466b8a08e1203a18349276b515271f524f73
+    markers           __acad3dV60 ... __acad3dV146, __acad3dV134d (and the 133d to 133f markers)

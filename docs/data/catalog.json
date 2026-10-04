@@ -1,6 +1,6 @@
 {
  "version": {
-  "v": "V145",
+  "v": "V146",
   "date": "2026-10-04"
  },
  "commands": [
@@ -401,6 +401,19 @@
    ],
    "keys": null,
    "anchor": "cmd-COLUMN"
+  },
+  {
+   "id": "cmd:COMMIT",
+   "name": "COMMIT",
+   "aliases": [
+    "CHECKPOINT",
+    "SAVEVERSION"
+   ],
+   "desc": "Keep this state of the model as a version, with a message: what changed, element by element",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-COMMIT"
   },
   {
    "id": "act:bim:component",
@@ -1103,6 +1116,19 @@
    "where": [],
    "keys": null,
    "anchor": "cmd-HATCHEDIT"
+  },
+  {
+   "id": "cmd:HISTORY",
+   "name": "HISTORY",
+   "aliases": [
+    "VERSIONS",
+    "VERSIONHISTORY"
+   ],
+   "desc": "The model's versions: what changed in each, element by element, and Restore",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-HISTORY"
   },
   {
    "id": "act:bim:importcad",
