@@ -241,7 +241,10 @@ def source_level_checks(path):
             "api.us.socrata.com",
             # AMENDED FOR V139: CityJSON names a grid by its OGC URI (www.opengis.net/def/crs/EPSG/0/...);
             # it is an identifier written into exported files, never fetched
-            "www.opengis.net"}
+            "www.opengis.net",
+            # AMENDED FOR V144: LandXML's namespace (www.landxml.org/schema/LandXML-1.2), written into
+            # exported files, never fetched
+            "www.landxml.org"}
     external = sorted(h for h in hosts if not h.endswith("w3.org") and h not in v132)
     check(not external,
           "no external host referenced anywhere in the file (found: " + (", ".join(external) or "none") + ")")

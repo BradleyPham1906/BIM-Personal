@@ -50,8 +50,8 @@ Without one, the triangles join whatever points are nearest and can cut across t
 several), then run `BREAKLINE`. Each segment is forced into the triangles. Where the line meets
 ground between survey points, a vertex is added at the height the surface already has there.
 
-**From the survey.** Points whose description starts with `BL` or `BRK` and a name (`BL1`,
-`BRK-ridge`) are joined, in file order, into one breakline per name. They keep their own
+**From the survey.** Points whose description starts with BL or BRK and a name (BL1,
+BRK-ridge) are joined, in file order, into one breakline per name. They keep their own
 elevations.
 
 Lines that cross each other get a shared vertex where they cross, so both are held. A segment that

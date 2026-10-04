@@ -2,11 +2,11 @@
 
 **Read this first in a new session.** One page. The detail lives in the docs listed at the bottom.
 
-    canvas_v10.html   2112160 bytes
-    sha256            fbb7109fe64df201030f6b2ceabc6d8a23fe13fc53f60192ef7684fe1fb5b65e
-    markers           __acad3dV60 ... __acad3dV143, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
+    canvas_v10.html   2148830 bytes
+    sha256            79f1439d8351ea4c3669f44fdd1fb975567b39d404eb6cc28d6f96adec6b1353
+    markers           __acad3dV60 ... __acad3dV144, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
                       __acad3dV121b
-    tests             100 suites, 3933 checks, 0 failures
+    tests             101 suites, 4016 checks, 0 failures
 
     The user guide (V142): every phase updates docs/src/, its log entry and BIM_APP_VERSION, then
     runs tools/dump_catalog.py and tools/build_docs.py. The V142 suite and the Pages workflow

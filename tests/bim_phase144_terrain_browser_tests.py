@@ -19,12 +19,11 @@ Every result is held to a second calculation here in Python:
 
 The harness never waits without a bound (V123).
 """
-import asyncio, math, pathlib, sys, traceback, xml.etree.ElementTree as ET
+import asyncio, math, pathlib, sys, tempfile, traceback, xml.etree.ElementTree as ET
 from playwright.async_api import async_playwright
 
 HTML = pathlib.Path(sys.argv[1]).resolve() if len(sys.argv) > 1 else \
     pathlib.Path(__file__).resolve().parent.parent / 'canvas_v10.html'
-TMP = pathlib.Path(__file__).resolve().parent / '_tmp_v144'
 
 
 class Checks:
@@ -91,7 +90,7 @@ ASPECT_NAMES = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW']
 
 async def run():
     ck = CK
-    TMP.mkdir(exist_ok=True)
+    TMP = pathlib.Path(tempfile.mkdtemp(prefix='v144_'))   # outside the repo
     async with async_playwright() as pw:
         browser = await pw.chromium.launch()
         ctx = await browser.new_context(viewport={'width': 1500, 'height': 950}, accept_downloads=True)

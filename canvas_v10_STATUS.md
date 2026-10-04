@@ -12387,7 +12387,8 @@ it. Grading (pads with daylight slopes, a cut and fill report, spot elevations) 
   - the boundary's area to 1e-6;
   - a survey in US survey feet at True North 30 coming back to its own coordinates;
   - IMPORTCAD, Remove, undo and the reload.
-- Amended for V144: V141 (the terrain card in the Analyze list).
+- Amended for V144: V141 (the terrain card in the Analyze list); V62 (LandXML's namespace host,
+  written into files, never fetched).
 - **Falsified by `Phase/falsify_phase144.py`,** 36 variants, all caught. The first run missed one:
   a breakline straight through survey points. The suite now has one.
 
@@ -12398,3 +12399,12 @@ it. Grading (pads with daylight slopes, a cut and fill report, spot elevations) 
 - LandXML: alignments and profiles (V127 has them), millimetre files, and breaklines read back from
   SourceData (the file's own faces already carry them).
 - Horizontal control and raw total-station files.
+
+### Full regression and state after V144
+
+101 suites, 4016 checks, 0 failures. Falsification: V144 36 of 36. The chain 144a, 144b rebuilds the
+build from `Phase/canvas_v10.html.bak_phase144_pre`. The diff is ES5-clean.
+
+    canvas_v10.html   2148830 bytes
+    sha256            79f1439d8351ea4c3669f44fdd1fb975567b39d404eb6cc28d6f96adec6b1353
+    markers           __acad3dV60 ... __acad3dV144, __acad3dV134d (and the 133d to 133f markers)
