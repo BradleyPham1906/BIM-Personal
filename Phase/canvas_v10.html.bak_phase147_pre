@@ -513,41 +513,6 @@ body.light-theme .a3d-uerr{color:#b3261e}
 body.light-theme .a3d-ptabs{background:rgba(0,0,0,.05)}
 body.light-theme .a3d-ptabbtn{color:#6b7280}
 body.light-theme .a3d-ptabbtn.on{background:#fff;color:#111}
-/* __acad3dV147: the right panel -- one set of tokens, one row grid, sentence case, quiet */
-#a3d-right{--pp-bg:#1e2226;--pp-line:rgba(255,255,255,.075);--pp-text:#e6eaef;--pp-muted:#8f98a2;--pp-in:#16191c;--pp-inline:#353b43;--pp-hover:rgba(255,255,255,.055);--pp-acc:#4ea1ff;--pp-accbg:rgba(78,161,255,.16);background:var(--pp-bg);position:relative}
-body.light-theme #a3d-right{--pp-bg:#fbfbfc;--pp-line:rgba(0,0,0,.08);--pp-text:#1f2328;--pp-muted:#687280;--pp-in:#fff;--pp-inline:#d5d9df;--pp-hover:rgba(0,0,0,.045);--pp-acc:#2f6fb8;--pp-accbg:rgba(47,111,184,.12)}
-#a3d-right .a3d-palhd{background:transparent;border-bottom:1px solid var(--pp-line);font-size:13px;font-weight:600;letter-spacing:0;color:var(--pp-text);padding:11px 10px 11px 16px}
-#a3d-right #a3d-propsbody{padding:2px 16px 22px}
-#a3d-right .a3d-pgrp{background:transparent;border-radius:0;border-top:1px solid var(--pp-line);margin:14px 0 0;padding:12px 0 4px;font-size:12px;font-weight:600;letter-spacing:0;text-transform:none;color:var(--pp-text)}
-#a3d-right .a3d-pgrp:hover{background:transparent;color:var(--pp-text)}
-#a3d-right .a3d-pgcar{color:var(--pp-muted);border-radius:6px}
-#a3d-right .a3d-pgrp:hover .a3d-pgcar{background:var(--pp-hover);color:var(--pp-text)}
-#a3d-right .a3d-pgbody{padding:4px 0 2px}
-#a3d-right .a3d-prow{grid-template-columns:minmax(0,38fr) minmax(0,62fr);gap:10px;padding:2px 0;min-height:30px}
-#a3d-right .a3d-prow.ro{min-height:26px}
-#a3d-right .a3d-plabel,#a3d-right .a3d-prow.ro .a3d-plabel{font-size:11.5px;color:var(--pp-muted)}
-#a3d-right .a3d-pstatic,#a3d-right .a3d-prow.ro .a3d-pstatic{color:var(--pp-text);font-size:11.5px}
-#a3d-right input[type=text],#a3d-right input[type=number],#a3d-right input[type=search],#a3d-right select,#a3d-right textarea{background:var(--pp-in);border:1px solid var(--pp-inline);color:var(--pp-text);border-radius:6px;min-height:26px;padding:3px 8px;font:inherit;font-size:11.5px;box-sizing:border-box;transition:border-color .12s ease,box-shadow .12s ease}
-#a3d-right input:focus,#a3d-right select:focus,#a3d-right textarea:focus{outline:none;border-color:var(--pp-acc);box-shadow:0 0 0 3px var(--pp-accbg)}
-#a3d-right input[type=checkbox]{accent-color:var(--pp-acc);width:14px;height:14px}
-#a3d-right #a3d-propsbody button{min-height:26px;padding:0 10px;border-radius:6px;border:1px solid var(--pp-inline);background:var(--pp-hover);color:var(--pp-text);font:inherit;font-size:11.5px;cursor:pointer;transition:background .12s ease,border-color .12s ease}
-#a3d-right #a3d-propsbody button:hover:not(:disabled){border-color:var(--pp-acc);background:var(--pp-accbg)}
-#a3d-right #a3d-propsbody button:disabled{opacity:.45;cursor:default}
-#a3d-right .a3d-ptypehd{background:transparent;border-bottom:1px solid var(--pp-line);margin:0 0 2px;padding:12px 0}
-#a3d-right .a3d-ptypeic{width:32px;height:32px;border-radius:8px;background:var(--pp-hover);border-color:var(--pp-line);color:var(--pp-text)}
-#a3d-right .a3d-ptypename{font-size:13px;color:var(--pp-text)}
-#a3d-right .a3d-ptypesub{font-size:11px;color:var(--pp-muted)}
-#a3d-right .a3d-ptabs{margin:12px 0 2px;background:var(--pp-hover)}
-#a3d-right .a3d-histmore button{min-height:22px;padding:0 8px;font-size:11px}
-.a3d-rgrip{position:absolute;left:-3px;top:0;bottom:0;width:7px;cursor:col-resize;z-index:6}
-.a3d-rgrip:hover,.a3d-rgrip.drag{background:linear-gradient(90deg,transparent 2px,var(--pp-acc,#4ea1ff) 2px,var(--pp-acc,#4ea1ff) 4px,transparent 4px)}
-.a3d-rmin{width:26px;height:26px;display:inline-grid;place-items:center;border:0;border-radius:6px;background:transparent;color:var(--pp-muted,#8f98a2);cursor:pointer;padding:0;flex:0 0 auto}
-.a3d-rmin:hover{background:var(--pp-hover,rgba(255,255,255,.06));color:var(--pp-text,#fff)}
-.a3d-rmin svg{width:15px;height:15px;transition:transform .15s ease}
-body.a3d-rmin #a3d-right{width:42px!important;min-width:42px}
-body.a3d-rmin #a3d-right #a3d-propsbody,body.a3d-rmin .a3d-rgrip{display:none}
-body.a3d-rmin #a3d-right .a3d-palhd{font-size:0;justify-content:center;padding:10px 0;border-bottom:0}
-body.a3d-rmin .a3d-rmin svg{transform:rotate(180deg)}
 #a3d-shell[data-tab="analyze"] .a3d-projhead{flex-shrink:0}
 #a3d-shell[data-tab="analyze"] .a3d-analyze-wrap{flex:1 1 auto;min-height:0}
 .a3d-anz{display:flex;flex-direction:column;min-height:0;flex:1;overflow:auto;padding:10px 12px 16px}
@@ -5400,7 +5365,7 @@ try{
   }
   function bimHistSize(){var H=bimHist(),n=0,k;for(k in H.blobs)if(H.blobs.hasOwnProperty(k))n+=H.blobs[k].length;return {blobs:Object.keys(H.blobs).length,chars:n};}
   /* __acad3dV146: the History group and its actions */
-  var A3D_HIST_OPEN={},A3D_HIST_MSG='',A3D_HIST_ALL=false;   /* __acad3dV147: Show all */   /* the message as typed: a re-render of the panel must not lose it */
+  var A3D_HIST_OPEN={},A3D_HIST_MSG='';   /* the message as typed: a re-render of the panel must not lose it */
   function bimHistWhen(iso){
     var d=new Date(iso);if(isNaN(d.getTime()))return '';
     function p(n){return n<10?'0'+n:''+n;}
@@ -5415,7 +5380,7 @@ try{
     return d.slice(0,max).map(function(x){
       return '<div class="a3d-histd a3d-histd-'+x.kind+'" data-histkey="'+bimEsc(x.key)+'" data-histkind="'+x.kind+'"><b>'+(x.kind==='added'?'+':x.kind==='removed'?'\u2212':'~')+'</b> '+bimEsc(x.label)+
         (x.props&&x.props.length?'<div class="a3d-histp">'+x.props.slice(0,6).map(function(p){return bimEsc(p.text);}).join('<br>')+(x.props.length>6?'<br>and '+(x.props.length-6)+' more':'')+'</div>':'')+'</div>';
-    }).join('')+(d.length>max?'<div class="a3d-histmore"><button type="button" data-histact="all">Show all '+d.length+'</button></div>':'');
+    }).join('')+(d.length>max?'<div class="a3d-histmore">and '+(d.length-max)+' more</div>':'');
   }
   function bimHistHtml(){
     var H=bimHist(),head=bimHistHead(),d=[],r='';
@@ -5425,7 +5390,7 @@ try{
       (d.length?'No version yet: '+d.length+' element'+(d.length===1?'':'s')+' to commit':'No version yet, and nothing to commit'))+'</div>';
     r+='<div class="a3d-histrow"><input type="text" data-histmsg maxlength="200" placeholder="What changed (Enter commits)" value="'+bimEsc(A3D_HIST_MSG)+'"><button type="button" data-histact="commit"'+(d.length?'':' disabled')+'>Commit</button></div>';
     if(d.length){
-      r+='<div class="a3d-histchg" data-histchanges>'+bimHistListHtml(d,A3D_HIST_ALL?d.length:12)+'</div>';
+      r+='<div class="a3d-histchg" data-histchanges>'+bimHistListHtml(d,20)+'</div>';
       if(head)r+='<div class="a3d-histrow"><button type="button" data-histact="discard">Discard Changes</button></div>';
     }
     var C=H.commits.slice().reverse(),sz=bimHistSize();
@@ -5450,7 +5415,7 @@ try{
   function bimHistDoCommit(msg){
     var r=bimHistCommit(msg);
     if(r.error){a3dToast(r.error);return r;}
-    A3D_HIST_MSG='';A3D_HIST_ALL=false;
+    A3D_HIST_MSG='';
     a3dToast('Committed "'+r.msg+'": '+bimHistStatsTxt(r.stats));
     refreshProps();
     return r;
@@ -5464,7 +5429,6 @@ try{
   function bimHistAct(k,ev){
     if(k==='commit'){var inp=document.querySelector('#a3d-propsbody [data-histmsg]');return bimHistDoCommit((inp&&inp.value)||A3D_HIST_MSG);}
     if(k==='discard'){var hd=bimHistHead();return hd?bimHistDoRestore(hd.id):null;}
-    if(k==='all'){A3D_HIST_ALL=true;refreshProps();return true;}   /* __acad3dV147 */
     if(k.indexOf('show:')===0){var id=k.slice(5);A3D_HIST_OPEN[id]=!A3D_HIST_OPEN[id];refreshProps();return true;}
     if(k.indexOf('restore:')===0)return bimHistDoRestore(k.slice(8));
     return false;
@@ -5481,59 +5445,6 @@ try{
     var d=bimHistChanges(),hd=bimHistHead();
     if(!d.length){a3dToast(hd?'Nothing has changed since "'+hd.msg+'"':'There is nothing to commit yet');return false;}
     return bimHistReveal(true);
-  }
-  /* __acad3dV147: the right panel's width and its minimised state, remembered */
-  var BIM_RIGHT_KEY='acad3dRightPanel',BIM_RIGHT_MIN=240,BIM_RIGHT_MAX=560;
-  function bimRightPrefs(){try{var v=JSON.parse(localStorage.getItem(BIM_RIGHT_KEY)||'null');return v&&typeof v==='object'?v:{};}catch(eR){return {};}}
-  function bimRightSave(p){try{localStorage.setItem(BIM_RIGHT_KEY,JSON.stringify(p));}catch(eW){}}
-  function bimRightDesktop(){return (window.innerWidth||0)>900;}
-  function bimRightApply(){
-    var rp=document.getElementById('a3d-right'),p=bimRightPrefs();
-    if(!rp)return null;
-    document.body.classList.toggle('a3d-rmin',!!p.min);
-    var w=isFinite(p.w)?Math.max(BIM_RIGHT_MIN,Math.min(BIM_RIGHT_MAX,p.w)):null;
-    rp.style.width=(w&&bimRightDesktop()&&!p.min)?w+'px':'';
-    var b=document.getElementById('a3d-rminbtn');
-    if(b){b.setAttribute('aria-pressed',p.min?'true':'false');b.title=p.min?'Show the Properties panel':'Minimise the Properties panel';}
-    return {w:rp.getBoundingClientRect().width,min:!!p.min};
-  }
-  function bimRightSetWidth(w){
-    var p=bimRightPrefs();p.w=Math.round(Math.max(BIM_RIGHT_MIN,Math.min(BIM_RIGHT_MAX,w)));bimRightSave(p);
-    var r=bimRightApply();try{size();paint();}catch(eS){}
-    return r;
-  }
-  function bimRightToggleMin(on){
-    var p=bimRightPrefs();p.min=on===undefined?!p.min:!!on;bimRightSave(p);
-    var r=bimRightApply();try{size();paint();}catch(eS){}
-    return r;
-  }
-  function bimRightWire(rp,sec){
-    if(!rp||rp.querySelector('.a3d-rgrip'))return;
-    var g=document.createElement('div');g.className='a3d-rgrip';g.title='Drag to resize';g.setAttribute('aria-hidden','true');
-    rp.insertBefore(g,rp.firstChild);
-    var hd=sec&&sec.querySelector('.a3d-palhd');
-    if(hd&&!document.getElementById('a3d-rminbtn')){
-      var b=document.createElement('button');b.type='button';b.id='a3d-rminbtn';b.className='a3d-rmin';b.setAttribute('aria-label','Minimise the Properties panel');
-      b.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 6l6 6-6 6"/></svg>';
-      b.addEventListener('click',function(){bimRightToggleMin();});
-      hd.appendChild(b);
-    }
-    g.addEventListener('mousedown',function(ev){
-      if(!bimRightDesktop())return;
-      ev.preventDefault();
-      var x0=ev.clientX,w0=rp.getBoundingClientRect().width;
-      g.classList.add('drag');document.body.style.cursor='col-resize';
-      function mv(e){var w=Math.max(BIM_RIGHT_MIN,Math.min(BIM_RIGHT_MAX,w0+(x0-e.clientX)));rp.style.width=w+'px';try{size();paint();}catch(eS){}}
-      function up(e){
-        document.removeEventListener('mousemove',mv);document.removeEventListener('mouseup',up);
-        g.classList.remove('drag');document.body.style.cursor='';
-        bimRightSetWidth(rp.getBoundingClientRect().width);
-      }
-      document.addEventListener('mousemove',mv);document.addEventListener('mouseup',up);
-    });
-    g.addEventListener('dblclick',function(){var p=bimRightPrefs();delete p.w;bimRightSave(p);bimRightApply();try{size();paint();}catch(eS){}});
-    window.addEventListener('resize',function(){bimRightApply();});
-    bimRightApply();
   }
   /* ================= __acad3dV138: verify the survey ================= */
   var BIM_SURVEY_TOL={fidelity:0.001,bustMin:0.5,bustK:6,bustMax:25,checkPass:0.05,checkWarn:0.15,control:0.02,offsetWarn:1.0};
@@ -14136,7 +14047,7 @@ try{
   /* ================= __acad3dV142: the user guide, and versions =================
      The guide is in docs/ beside the app, on the same site (and in the repository, so it opens
      offline). Its command reference has a section per command, anchored by the command's id. */
-  var BIM_APP_VERSION={v:'V147',date:'2026-10-04'};   /* __acad3dV147 */
+  var BIM_APP_VERSION={v:'V146',date:'2026-10-04'};   /* __acad3dV146 */
   var BIM_DOCS_BASE='docs/';
   /* a command's anchor in the reference: cmd:LINE -> cmd-LINE, act:bim:wall -> act-bim-wall */
   function bimDocsAnchor(id){return String(id||'').replace(/[^A-Za-z0-9_-]+/g,'-');}
@@ -36770,7 +36681,6 @@ try{
         rightPane.appendChild(propsSec);
         document.body.classList.add('a3d-props-right');
       }
-      try{bimRightWire(rightPane,propsSec);}catch(eRw){console.warn('[BIM] The Properties panel could not be made resizable.',eRw);}   /* __acad3dV147 */
     }catch(eRight){console.warn('[BIM] Could not move Properties to the right inspector; it stays in the left column.',eRight);a3dToast('Properties panel could not be docked right');}
     /* __acad3dV70: the dock is the tool surface in this workspace now. Built on entry rather
        than at buildUI time so it always reflects the current A3DR_TABS, and bound once. */
@@ -37294,7 +37204,6 @@ try{
   window.__a3dDocsOpen=function(page,id){return bimDocsOpen(page,id?bimDocsAnchor(id):'');};
   window.__a3dDocsOpened=function(){return A3D_GUIDE.opened.slice();};
   window.__a3dDocsAnchor=function(id){return bimDocsAnchor(id);};
-  window.__acad3dV147='paneltokens,sentencecase,rowgrid,inputstyle,buttonstyle,typeheader,showall,resizable,minimise,lightdark';
   window.__acad3dV146='canon,hash128,elementtree,blobstore,commit,diff,fielddiff,idrecords,restore,elementhistory,historygroup,historycommands,savedwithproject';
   window.__acad3dV145='daylight,fans,valleys,proposedsurface,regrade,tinvolume,cutfillbands,cutfillmap,spotelevations,slopearrows,gradingcard,gradecommands';
   window.__acad3dV144='breaklines,surveybreaklines,boundary,ownfaces,slopebands,elevationbands,aspectbands,terrainlegend,landxmlout,landxmlin,terraincard,terraincommands';
@@ -38351,9 +38260,6 @@ try{
   window.__a3dHistOf=function(id){return JSON.parse(JSON.stringify(bimHistOf('o:'+id)));};
   window.__a3dHash=function(s){return bimHash(String(s));};
   window.__a3dCanon=function(v){return bimCanon(v);};
-  window.__a3dRightPanel=function(){var r=bimRightApply();return r;};   /* __acad3dV147 */
-  window.__a3dRightSetWidth=function(w){return bimRightSetWidth(w);};
-  window.__a3dRightToggleMin=function(on){return bimRightToggleMin(on);};
   window.__a3dTerrainLegend=function(){return A3D.lastTerrainLegend||null;};
   window.__a3dTinHeightAt=function(tid,x,z){var o=objById(tid);return o&&o.t==='terrain'?bimTinHeightAt(bimTerrainTin(o),x,z):null;};
   window.__a3dAlignGround=function(id){var o=objById(id);return bimIsAlignment(o)?bimJ(bimAlignGround(o,bimAlignGeom(o))):null;};
