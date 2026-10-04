@@ -12906,3 +12906,75 @@ Pictures: `reference/v150_phone_palette.png`, `v150_tablet_palette.png`.
     sha256            068c32e9b694acb046e0ae6194d1ca35d649baf9b9854005a218f1c276864bfa
     markers           __acad3dV60 ... __acad3dV150, __acad3dV134d (and the 133d to 133f markers)
 
+
+## Phase 151 (V151) - Branches and merge (the Hub's H2)
+
+Design options as branches of the V146 history: a branch is a name at a version, switched to,
+compared with the others by their numbers, and merged three ways, element by element and field by
+field, with the conflicts shown side by side to be kept or taken.
+
+### What was built (patches 151a, 151b)
+
+- **Branches.** Every project starts on main; a V146 history opens as main at its latest version.
+  New Branch starts one at the latest version and puts you on it, with what is not committed. A
+  commit moves only the branch you are on, and the version list shows that branch's line, each
+  branch's name on its latest version. Names: letters, numbers, spaces, dots and dashes, up to 40.
+- **Switch** loads the branch's latest version; Undo takes it back. It is refused over changes not
+  committed, so nothing is lost.
+- **Merge**, against the nearest version both share (merges count, so the next merge starts from
+  the last): nothing new here moves this branch up; nothing new there does nothing; otherwise each
+  element changed on one side is taken, and an element changed on both has the fields each changed
+  put together. The same field changed both ways, or an element changed on one side and deleted on
+  the other, is a conflict: listed in History with the two sides next to each other, Keep or Take,
+  then Finish Merge (greyed until each is decided) or Cancel. The merge is a version with two
+  parents.
+- **Compare**: objects, walls and their length, doors and windows, rooms and their area, gross
+  area, levels, cut and fill, a column a branch; this branch counted as the model is now; rows
+  that differ in bold.
+- **Delete** a branch other than the one you are on, from the panel; it asks once first.
+- **Commands** BRANCH, MERGE and COMPAREBRANCHES (with design option, option and compare options
+  as other names). Branches are saved in the browser and the project file.
+- **The version** is V151; the guide's Sheets and files page has branches and merging.
+
+### Bugs found
+
+- The Properties tab strip sticks to the top of the panel as it scrolls, but its background was a
+  see-through tint: a heading scrolled under it showed through ("History" over "Project"), seen on
+  this phase's picture. It is the tint over the panel's colour now (151b).
+- On a phone or a tablet HISTORY and the new commands opened the History group with the Properties
+  sheet still shut, so nothing seemed to happen. They open the sheet now (151b).
+- The other branch picked for Merge In or Delete went back to the first one whenever the panel
+  redrew; it is kept (151b).
+- `bimHistValid` runs as the project loads, before the branch-name pattern below it is set: it
+  uses its own literal pattern (the V148 lesson again).
+- The stylesheet passed V114's 90,000-byte ceiling (V150's note); the ceiling is now 100,000, with
+  the reason in the V114 suite: the shell, the palette and the panels are CSS the app needs.
+
+### Suites
+
+- New: `bim_phase151_branches_merge_browser_tests.py`, 56 checks: names refused, New Branch,
+  commit per branch, switch refused and done and undone, the branch's own log; fast-forward, up to
+  date, the field merge, the merge's parents and base; a conflict in the panel, Keep, Take, delete
+  against change, Cancel, refusals; Compare's numbers; Enter, the Branch list, Merge In, Delete
+  asked once, the commands, the search, the project file, a reload on another branch, a V146 file,
+  bad branches let go; the tabs not see-through; the sheet opened on a phone.
+- Amended: V114 (the ceiling, AMENDED FOR V151).
+- **Falsified by `Phase/falsify_phase151.py`,** 37 variants, all caught. One gap closed: the
+  branch you were on after a reload was not checked, since the suite reloaded on main.
+
+### Not done
+
+- Merging the parts of a project that are not objects field by field (levels, sheets): they are
+  merged whole, a conflict when both changed.
+- Compare's solar and usage rows (the gross area is there); a compare on a sheet.
+- A graph of the branches.
+
+### Full regression and state after V151
+
+108 suites, 4433 checks, 0 failures. Falsification: V151 37 of 37. Patches 151a and 151b rebuild
+the build from `Phase/canvas_v10.html.bak_phase151_pre`. The diff is ES5-clean.
+Pictures: `reference/v151_branches_compare.png`, `v151_phone_history.png`.
+
+    canvas_v10.html   2302577 bytes
+    sha256            7837b8047ea47d646d6303f4cd81af7a1cc059d122307fb9bd48c6897a8f82e8
+    markers           __acad3dV60 ... __acad3dV151, __acad3dV134d (and the 133d to 133f markers)

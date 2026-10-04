@@ -1,6 +1,6 @@
 {
  "version": {
-  "v": "V150",
+  "v": "V151",
   "date": "2026-10-04"
  },
  "commands": [
@@ -211,6 +211,20 @@
    "anchor": "act-box"
   },
   {
+   "id": "cmd:BRANCH",
+   "name": "BRANCH",
+   "aliases": [
+    "NEWBRANCH",
+    "DESIGNOPTION",
+    "OPTION"
+   ],
+   "desc": "Start a design option: a branch of the history, switched to and compared with the others",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-BRANCH"
+  },
+  {
    "id": "cmd:BREAK",
    "name": "BREAK",
    "aliases": [
@@ -414,6 +428,19 @@
    "where": [],
    "keys": null,
    "anchor": "cmd-COMMIT"
+  },
+  {
+   "id": "cmd:COMPAREBRANCHES",
+   "name": "COMPAREBRANCHES",
+   "aliases": [
+    "COMPAREOPTIONS",
+    "OPTIONS"
+   ],
+   "desc": "Each branch's numbers side by side: walls, rooms, areas, cut and fill",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-COMPAREBRANCHES"
   },
   {
    "id": "act:bim:component",
@@ -1363,6 +1390,18 @@
    "where": [],
    "keys": null,
    "anchor": "cmd-MEASURE"
+  },
+  {
+   "id": "cmd:MERGE",
+   "name": "MERGE",
+   "aliases": [
+    "MERGEBRANCH"
+   ],
+   "desc": "Merge another branch into this one, element by element, with conflicts shown side by side",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-MERGE"
   },
   {
    "id": "cmd:MIRROR",

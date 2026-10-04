@@ -2,11 +2,11 @@
 
 **Read this first in a new session.** One page. The detail lives in the docs listed at the bottom.
 
-    canvas_v10.html   2279623 bytes
-    sha256            068c32e9b694acb046e0ae6194d1ca35d649baf9b9854005a218f1c276864bfa
-    markers           __acad3dV60 ... __acad3dV150, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
+    canvas_v10.html   2302577 bytes
+    sha256            7837b8047ea47d646d6303f4cd81af7a1cc059d122307fb9bd48c6897a8f82e8
+    markers           __acad3dV60 ... __acad3dV151, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
                       __acad3dV121b
-    tests             107 suites, 4377 checks, 0 failures
+    tests             108 suites, 4433 checks, 0 failures
 
     The user guide (V142): every phase updates docs/src/, its log entry and BIM_APP_VERSION, then
     runs tools/dump_catalog.py and tools/build_docs.py. The V142 suite and the Pages workflow
@@ -89,8 +89,8 @@ three tiers: compact up to 720 px wide or 500 px high, medium up to 1024 px, des
 | 148 | Analyze, redesigned; results as layers | **Done** (see Recently finished): a list in four groups with a search; Add as layer for sun hours, rain, slope, elevation, aspect and cut and fill; Layers' Analysis and Data sections. Next: result layers on sheets, locking, blend modes with the boards | QGIS writes a processing run's outputs as layers into a named group. `reference/research-presentation-panels.md` (2). |
 | 149 | The shell on phone and tablet | **Done** (see Recently finished): a tab bar and a drawer on a phone upright, the rail and a drawer on a tablet upright or a phone on its side, unchanged on a computer; safe areas. Next: a context menu on a long press when the drawing has one | The owner (V147): "consider the adaptation for phone, iPad/tablet, and computer". |
 | 150 | A tool palette for a phone and a tablet | **Done** (see Recently finished): the essentials in a frosted capsule, dragged anywhere, docked upright at an edge, folded to one button; the dock gives way to it on a phone and an upright tablet | The owner: "make it clean like how Apple did it ... only the essential ones". |
-| 151 | Hub H2: branches and merge | **Start here.** Design options as branches, switched between and compared by their numbers (areas, usages, cut and fill, solar); a three-way merge per element with conflicts shown side by side | Replaces "Design scenarios" (Giraffe's scenarios, Revit's Design Options). |
-| 152 | Presentation P1: boards | A board is a sheet you design on: one layer tree (frames, groups, lock, hide, reorder), opacity and blend modes on every element (canvas compositing, the same 16 modes as Figma), masks, shapes, text, images; align, distribute, smart spacing; rows and columns that space their children (a light auto layout) | Figma's layer model. `reference/research-presentation-panels.md` (1). |
+| 151 | Hub H2: branches and merge | **Done** (see Recently finished): branches switched between and compared by their numbers; a three-way merge per element and per field, conflicts side by side, Keep or Take; a merge version with two parents. Next: a graph of the branches; solar and usages in Compare | Replaces "Design scenarios" (Giraffe's scenarios, Revit's Design Options). |
+| 152 | Presentation P1: boards | **Start here.** A board is a sheet you design on: one layer tree (frames, groups, lock, hide, reorder), opacity and blend modes on every element (canvas compositing, the same 16 modes as Figma), masks, shapes, text, images; align, distribute, smart spacing; rows and columns that space their children (a light auto layout) | Figma's layer model. `reference/research-presentation-panels.md` (1). |
 | 153 | Presentation P2: live elements | Elements linked to their source and redrawn when the model changes: model views, schedules, legends, analysis results (sun hours, cut and fill, solar), numbers (GBA, cut volume, site area), text bound to project data (autotext). An edit on the board is an override, marked, with Reset | Archicad's linked drawings and autotext; SketchUp LayOut's overrides and Reset. The data stays connected (the owner's rule). |
 | 154 | Presentation P3: styles, templates, export | Reusable components with variants (title blocks, legend cards, callouts); shared colour and text styles (a brand kit); master boards; templates; a presenting mode, one board per slide; PDF, PNG and SVG export with blend modes, opacity and masks kept | Canva's templates and brand kits; Figma's components; Archicad's master layouts. |
 | 154-160 | Freeform (F1-F7) | NURBS curves; surfaces from curves (extrude, revolve, loft, planar, edge); sweeps, pipe, cap; surface analysis (zebra, curvature, draft) in Analyze; point editing and blends; picture planes, text objects, flow along a surface; Make2D and rendering | `reference/research-rhino-guide-gap.md`: what the owner's Rhino guide teaches that the app lacks. Placed here pending the owner's word; the LOD track follows. |
@@ -149,7 +149,17 @@ when it starts (V111 to V138 went to other work; V139 to V167 are in NOW).
 | 118 | Blocks and data | ATTDEF ATTEDIT BEDIT WBLOCK DATAEXTRACTION TABLESTYLE TABLEDIT TABLEEXPORT | First phase that's about the disciplines, not drafting. BLOCK and INSERT landed in V124, as the Assets library's blocks: saved records inserted as independent copies. A block reference that follows its definition (what BEDIT edits) is not built. |
 | 119 | Sheets and plotting, rest | MVIEW (draw a viewport on the paper) PAGESETUP (plot settings beyond Sheet Setup) PUBLISH (V122's Print set prints every sheet in one job; a chosen subset and page setups remain) EXPORTPDF (vector PDF of a sheet) VPLAYER (per-viewport layer visibility) viewport lock | LAYOUT, MSPACE and PSPACE landed in V116, with layout tabs and model space through a viewport. |
 
-**Recently finished:** Phase 150 (V150), **a tool palette for a phone and a tablet**.
+**Recently finished:** Phase 151 (V151), **branches and merge (the Hub's H2)**.
+- Design options as branches: New Branch, switch (refused over changes not committed), each
+  branch's own line of versions, Compare's numbers side by side, Delete asked once.
+- Merge In, three ways against the version both share: one side's change taken, both sides'
+  fields put together, the same field both ways or a change against a delete a conflict, shown
+  side by side, kept or taken; Finish Merge makes a version with two parents.
+- On a phone and a tablet the History commands open the Properties sheet; the tab strip is no
+  longer see-through as the panel scrolls.
+- **Checked** in 56 checks and 37 falsify variants.
+
+Phase 150 (V150), **a tool palette for a phone and a tablet**.
 - Select, Pan, Line, Rectangle, Circle, Wall, Door, Window, Dimension, Delete and All tools in a
   frosted capsule; the tool in use in blue; dragged by its grip, docked upright at an edge or flat,
   folded to one round button, kept where it was left. The dock gives way to it on touch layouts.
