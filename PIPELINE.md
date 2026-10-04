@@ -2,11 +2,11 @@
 
 **Read this first in a new session.** One page. The detail lives in the docs listed at the bottom.
 
-    canvas_v10.html   2336573 bytes
-    sha256            38bf38edf529788217a11a330242d6251afb588298e6a86f8f489c268aa2dc58
-    markers           __acad3dV60 ... __acad3dV153, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
+    canvas_v10.html   2350405 bytes
+    sha256            4a3dd3e88964fc7e3ad0bb4fb947c33c80d0e163869c95e796d38c8ed5d68bbc
+    markers           __acad3dV60 ... __acad3dV154, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
                       __acad3dV121b
-    tests             110 suites, 4510 checks, 0 failures
+    tests             111 suites, 4534 checks, 0 failures
 
     The user guide (V142): every phase updates docs/src/, its log entry and BIM_APP_VERSION, then
     runs tools/dump_catalog.py and tools/build_docs.py. The V142 suite and the Pages workflow
@@ -92,18 +92,19 @@ three tiers: compact up to 720 px wide or 500 px high, medium up to 1024 px, des
 | 151 | Hub H2: branches and merge | **Done** (see Recently finished): branches switched between and compared by their numbers; a three-way merge per element and per field, conflicts side by side, Keep or Take; a merge version with two parents. Next: a graph of the branches; solar and usages in Compare | Replaces "Design scenarios" (Giraffe's scenarios, Revit's Design Options). |
 | 152 | Render R1: GPU-friendly batches | **Done** (see Recently finished): merged chunks, one object table on the GPU sending only the rows that change, the camera alone sending nothing; 5,000 elements in 1 draw call instead of 5,000, the same pixels; the per-object path kept as the fallback. Next: the table's upkeep only for objects that changed; culling; instances | The owner (V151): WebGPU for efficiency and scale. |
 | 153 | Render R2: the WebGPU engine, WebGL kept | **Done** (see Recently finished): WebGPU where the browser has it, from V152's description; WGSL shaders, the table as a storage buffer, 4x multisampling, every draw in a render bundle replayed with only the camera sent; WebGL while it starts, without it, after a lost device or a failed frame, by choice (GRAPHICS), and for the map and terrain in 3D | WebGL stays for devices without WebGPU (iOS before 26, some Android phones and browsers). |
-| 154 | Render R3: the map, terrain and the GPU's own work | **Start here.** The basemap and the draped terrain in WebGPU (tile textures with mipmaps), so a site project stays on WebGPU; outlines pulled a hair toward the camera in both engines (no depth tie with their face); off-screen chunks culled; picking and sun hours as GPU compute | V153 hands those frames to WebGL. |
-| 155 | Presentation P1: boards | A board is a sheet you design on: one layer tree (frames, groups, lock, hide, reorder), opacity and blend modes on every element (canvas compositing, the same 16 modes as Figma), masks, shapes, text, images; align, distribute, smart spacing; rows and columns that space their children (a light auto layout) | Figma's layer model. `reference/research-presentation-panels.md` (1). |
-| 156 | Presentation P2: live elements | Elements linked to their source and redrawn when the model changes: model views, schedules, legends, analysis results (sun hours, cut and fill, solar), numbers (GBA, cut volume, site area), text bound to project data (autotext). An edit on the board is an override, marked, with Reset | Archicad's linked drawings and autotext; SketchUp LayOut's overrides and Reset. The data stays connected (the owner's rule). |
-| 157 | Presentation P3: styles, templates, export | Reusable components with variants (title blocks, legend cards, callouts); shared colour and text styles (a brand kit); master boards; templates; a presenting mode, one board per slide; PDF, PNG and SVG export with blend modes, opacity and masks kept | Canva's templates and brand kits; Figma's components; Archicad's master layouts. |
-| 158-164 | Freeform (F1-F7) | NURBS curves; surfaces from curves (extrude, revolve, loft, planar, edge); sweeps, pipe, cap; surface analysis (zebra, curvature, draft) in Analyze; point editing and blends; picture planes, text objects, flow along a surface; Make2D and rendering | `reference/research-rhino-guide-gap.md`: what the owner's Rhino guide teaches that the app lacks. Placed here pending the owner's word; the LOD track follows. |
-| 165 | LOD-C: point clouds | LAS, LAZ (laz-perf, Apache-2.0) and PLY; USGS 3DEP fetched around the site (EPT or COPC); by class or height; ground to a V108 surface through V138's check | Philadelphia has city LiDAR (2015, 2018) and PA statewide QL2. |
-| 166 | LOD-D: LOD2.2 from LiDAR | Region-growing roof planes, roof partition, optimised and extruded; LOD1.3 from the same partition; per-building RMSE to the points | 3DBAG's published method (roofer is GPL-3 C++: the method, not the code). |
-| 167 | LOD-E: facade images | The owner's photos or Panoramax panoramas placed on an LOD2 wall and rectified straight-on, in metres | Texture2LoD3's rectification; Panoramax is CC BY-SA, no key. |
-| 168 | LOD-F: LOD3 openings | Windows and doors drawn on the rectified facade, regularised into rows and columns, optionally detected (SAM in the browser, on request), cut into the wall | Checked against measured openings. |
-| 169 | LOD-G: Gaussian splats | A `.splat` capture placed on the site as a photoreal backdrop to trace against | antimatter15/splat, MIT. |
-| 170 | Zoning envelope | Setbacks, stepbacks and a height limit on a property become a 3D envelope; massing outside it is flagged | Builds on V103's setbacks; Giraffe's Basic Envelope. |
-| 171 | MEP runs | Duct and pipe runs at connectors, systems, flow, velocity and friction | MEP is its own discipline (the owner's choice). The research is drafted in `reference/research-mep-runs.md`. |
+| 154 | Render R3: the map and terrain in WebGPU | **Done** (see Recently finished): the basemap and the draped terrain drawn with WebGPU (tile textures with mipmaps made on the GPU, given back with their tiles); outlines pulled toward the eye in both engines, ending their depth tie with the face | V153 handed those frames to WebGL. |
+| 155 | Render R4: the GPU's own work | **Start here.** Spatial chunks and off-screen culling (bundles per chunk, chosen per frame); picking from a GPU id pass; sun hours as a compute pass; a measurement on a real GPU (a page the owner opens on a phone, a tablet and a computer, reporting frame times) | The owner's "easier to scale later". |
+| 156 | Presentation P1: boards | A board is a sheet you design on: one layer tree (frames, groups, lock, hide, reorder), opacity and blend modes on every element (canvas compositing, the same 16 modes as Figma), masks, shapes, text, images; align, distribute, smart spacing; rows and columns that space their children (a light auto layout) | Figma's layer model. `reference/research-presentation-panels.md` (1). |
+| 157 | Presentation P2: live elements | Elements linked to their source and redrawn when the model changes: model views, schedules, legends, analysis results (sun hours, cut and fill, solar), numbers (GBA, cut volume, site area), text bound to project data (autotext). An edit on the board is an override, marked, with Reset | Archicad's linked drawings and autotext; SketchUp LayOut's overrides and Reset. The data stays connected (the owner's rule). |
+| 158 | Presentation P3: styles, templates, export | Reusable components with variants (title blocks, legend cards, callouts); shared colour and text styles (a brand kit); master boards; templates; a presenting mode, one board per slide; PDF, PNG and SVG export with blend modes, opacity and masks kept | Canva's templates and brand kits; Figma's components; Archicad's master layouts. |
+| 159-165 | Freeform (F1-F7) | NURBS curves; surfaces from curves (extrude, revolve, loft, planar, edge); sweeps, pipe, cap; surface analysis (zebra, curvature, draft) in Analyze; point editing and blends; picture planes, text objects, flow along a surface; Make2D and rendering | `reference/research-rhino-guide-gap.md`: what the owner's Rhino guide teaches that the app lacks. Placed here pending the owner's word; the LOD track follows. |
+| 166 | LOD-C: point clouds | LAS, LAZ (laz-perf, Apache-2.0) and PLY; USGS 3DEP fetched around the site (EPT or COPC); by class or height; ground to a V108 surface through V138's check | Philadelphia has city LiDAR (2015, 2018) and PA statewide QL2. |
+| 167 | LOD-D: LOD2.2 from LiDAR | Region-growing roof planes, roof partition, optimised and extruded; LOD1.3 from the same partition; per-building RMSE to the points | 3DBAG's published method (roofer is GPL-3 C++: the method, not the code). |
+| 168 | LOD-E: facade images | The owner's photos or Panoramax panoramas placed on an LOD2 wall and rectified straight-on, in metres | Texture2LoD3's rectification; Panoramax is CC BY-SA, no key. |
+| 169 | LOD-F: LOD3 openings | Windows and doors drawn on the rectified facade, regularised into rows and columns, optionally detected (SAM in the browser, on request), cut into the wall | Checked against measured openings. |
+| 170 | LOD-G: Gaussian splats | A `.splat` capture placed on the site as a photoreal backdrop to trace against | antimatter15/splat, MIT. |
+| 171 | Zoning envelope | Setbacks, stepbacks and a height limit on a property become a 3D envelope; massing outside it is flagged | Builds on V103's setbacks; Giraffe's Basic Envelope. |
+| 172 | MEP runs | Duct and pipe runs at connectors, systems, flow, velocity and friction | MEP is its own discipline (the owner's choice). The research is drafted in `reference/research-mep-runs.md`. |
 | later | Hub H3: full IFC | web-ifc (WebAssembly, MPL-2.0) to read and write full IFC 4 and 4.3; IFC GUIDs kept on the elements so H1's diffs are IFC diffs | Our IFC writer and reader cover a subset today. |
 | later | Hub H4: share and sync | Push and pull a project's history to a repository, one file per element so git diffs and merges per element; GitHub as the first hub; only when asked | The first network piece of the hub. |
 | later | Hub H5: the server | Accounts, permissions per element, private models checked on the server (clashes, codes) returning only the result, paid access | Needs a backend: beyond a static site. "Zero-knowledge" checks in the viewer's browser are not possible: what runs there can be read there. |
@@ -138,7 +139,7 @@ Project photos, models and drawings are never committed: the repo and its site a
 ### LATER - Track A, drafting (moved behind Track B in V100)
 
 The numbers in this table are its order, not phase numbers: a phase takes the next free V number
-when it starts (V111 to V138 went to other work; V139 to V171 are in NOW).
+when it starts (V111 to V138 went to other work; V139 to V172 are in NOW).
 
 | # | Phase | Scope | Notes |
 |---|---|---|---|
@@ -152,7 +153,14 @@ when it starts (V111 to V138 went to other work; V139 to V171 are in NOW).
 | 118 | Blocks and data | ATTDEF ATTEDIT BEDIT WBLOCK DATAEXTRACTION TABLESTYLE TABLEDIT TABLEEXPORT | First phase that's about the disciplines, not drafting. BLOCK and INSERT landed in V124, as the Assets library's blocks: saved records inserted as independent copies. A block reference that follows its definition (what BEDIT edits) is not built. |
 | 119 | Sheets and plotting, rest | MVIEW (draw a viewport on the paper) PAGESETUP (plot settings beyond Sheet Setup) PUBLISH (V122's Print set prints every sheet in one job; a chosen subset and page setups remain) EXPORTPDF (vector PDF of a sheet) VPLAYER (per-viewport layer visibility) viewport lock | LAYOUT, MSPACE and PSPACE landed in V116, with layout tabs and model space through a viewport. |
 
-**Recently finished:** Phase 153 (V153), **the WebGPU engine, WebGL kept**.
+**Recently finished:** Phase 154 (V154), **the map and terrain in WebGPU; outlines that hold**.
+- The basemap and a terrain surface with the map draped on it drawn with WebGPU, each tile a
+  texture with mipmaps made on the GPU; a site project now stays on WebGPU.
+- Outlines pulled toward the eye by 0.02% of their distance in all three shaders: no more depth
+  tie with their face, no flicker, and the two engines agree.
+- **Checked** in 24 checks and 18 falsify variants.
+
+Phase 153 (V153), **the WebGPU engine, WebGL kept**.
 - WebGPU draws the model where the browser has it, from V152's description; every draw recorded
   once in a render bundle and replayed with only the camera sent.
 - WebGL draws while it starts, without it, after a lost device or a failed frame, by choice

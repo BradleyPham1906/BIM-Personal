@@ -14801,7 +14801,7 @@ try{
   /* ================= __acad3dV142: the user guide, and versions =================
      The guide is in docs/ beside the app, on the same site (and in the repository, so it opens
      offline). Its command reference has a section per command, anchored by the command's id. */
-  var BIM_APP_VERSION={v:'V154',date:'2026-10-04'};   /* __acad3dV154 */
+  var BIM_APP_VERSION={v:'V153',date:'2026-10-04'};   /* __acad3dV153 */
   var BIM_DOCS_BASE='docs/';
   /* a command's anchor in the reference: cmd:LINE -> cmd-LINE, act:bim:wall -> act-bim-wall */
   function bimDocsAnchor(id){return String(id||'').replace(/[^A-Za-z0-9_-]+/g,'-');}
@@ -17010,7 +17010,6 @@ try{
   //  - Falls back to the canvas-2D path if WebGL is unavailable.
   var A3D_GL=null,A3D_GL_FAILED=false;
   var GL_EDGE_FACE_LIMIT=20000;
-  var BIM_EDGE_PULL=0.0002;   /* __acad3dV154: an outline vertex moved toward the eye by this part of its distance */
   function bimGlViewMatrix(V){
     var r=V.r,u=V.u,d=V.d,e=V.eye;
     return new Float32Array([
@@ -17056,9 +17055,9 @@ try{
     catch(eG){gl=null;}
     if(!gl){console.warn('[BIM] WebGL unavailable; using the canvas-2D renderer.');A3D_GL_FAILED=true;return null;}
     var vsrc='attribute vec3 aPos;attribute vec3 aNorm;'+
-      'uniform mat4 uView;uniform mat4 uProj;uniform vec3 uOffset;uniform vec3 uEye;uniform float uPull;'+
+      'uniform mat4 uView;uniform mat4 uProj;uniform vec3 uOffset;'+
       'varying vec3 vNorm;'+
-      'void main(){vNorm=aNorm;vec3 w=aPos+uOffset;w+=(uEye-w)*uPull;gl_Position=uProj*uView*vec4(w,1.0);}';   /* __acad3dV154: uPull for outlines */
+      'void main(){vNorm=aNorm;gl_Position=uProj*uView*vec4(aPos+uOffset,1.0);}';
     var fsrc='precision mediump float;varying vec3 vNorm;'+
       'uniform vec3 uColor;uniform vec3 uLight;uniform float uBoost;uniform float uFlatCol;uniform float uAlpha;'+   /* __acad3dV121 */
       'void main(){'+
@@ -17079,8 +17078,7 @@ try{
         view:gl.getUniformLocation(prog,'uView'),proj:gl.getUniformLocation(prog,'uProj'),
         offset:gl.getUniformLocation(prog,'uOffset'),color:gl.getUniformLocation(prog,'uColor'),
         light:gl.getUniformLocation(prog,'uLight'),boost:gl.getUniformLocation(prog,'uBoost'),
-        flatCol:gl.getUniformLocation(prog,'uFlatCol'),alpha:gl.getUniformLocation(prog,'uAlpha'),   /* __acad3dV121 */
-        eye:gl.getUniformLocation(prog,'uEye'),pull:gl.getUniformLocation(prog,'uPull')}};   /* __acad3dV154 */
+        flatCol:gl.getUniformLocation(prog,'uFlatCol'),alpha:gl.getUniformLocation(prog,'uAlpha')}};   /* __acad3dV121 */
     return A3D_GL;
   }
   function bimHexToRgb(hex){
@@ -17248,7 +17246,7 @@ try{
     var ext=gl.getExtension('OES_texture_float');
     if(!ext||!(gl.getParameter(gl.MAX_VERTEX_TEXTURE_IMAGE_UNITS)>0)){console.warn('[BIM] No vertex float textures: drawing object by object.');return null;}
     var vsrc='attribute vec3 aPos;attribute vec3 aNorm;attribute float aObj;'+
-      'uniform mat4 uView;uniform mat4 uProj;uniform sampler2D uTab;uniform vec2 uTabSize;uniform float uPass;uniform float uEdge;uniform vec3 uEye;'+
+      'uniform mat4 uView;uniform mat4 uProj;uniform sampler2D uTab;uniform vec2 uTabSize;uniform float uPass;uniform float uEdge;'+
       'varying vec3 vNorm;varying vec4 vCol;varying float vBoost;varying float vEdge;'+
       'void main(){'+
       ' vEdge=uEdge;float t=aObj*2.0;float row=floor(t/uTabSize.x);float col=t-row*uTabSize.x;'+
@@ -17259,8 +17257,7 @@ try{
       ' vNorm=aNorm;vBoost=0.0;'+
       ' if(uEdge>0.5){vCol=vec4(b.w>1.5?vec3(1.0,0.706,0.329):(b.w>0.5?vec3(0.306,0.631,1.0):vec3(0.09,0.10,0.11)),a.w);}'+
       ' else{vCol=vec4(b.xyz,a.w);if(b.w>0.5&&b.w<1.5)vBoost=0.25;}'+
-      ' vec3 w=aPos+a.xyz;if(uEdge>0.5)w+=(uEye-w)*'+BIM_EDGE_PULL.toFixed(6)+';'+   /* __acad3dV154 */
-      ' gl_Position=uProj*uView*vec4(w,1.0);}';
+      ' gl_Position=uProj*uView*vec4(aPos+a.xyz,1.0);}';
     var fsrc='precision mediump float;varying vec3 vNorm;varying vec4 vCol;varying float vBoost;varying float vEdge;uniform vec3 uLight;'+
       'void main(){'+
       ' if(vEdge>0.5){gl_FragColor=vCol;return;}'+
@@ -17276,7 +17273,7 @@ try{
       loc:{pos:gl.getAttribLocation(prog,'aPos'),norm:gl.getAttribLocation(prog,'aNorm'),obj:gl.getAttribLocation(prog,'aObj'),
         view:gl.getUniformLocation(prog,'uView'),proj:gl.getUniformLocation(prog,'uProj'),tab:gl.getUniformLocation(prog,'uTab'),
         size:gl.getUniformLocation(prog,'uTabSize'),pass:gl.getUniformLocation(prog,'uPass'),edge:gl.getUniformLocation(prog,'uEdge'),
-        light:gl.getUniformLocation(prog,'uLight'),eye:gl.getUniformLocation(prog,'uEye')}};
+        light:gl.getUniformLocation(prog,'uLight')}};
     return G.gb;
   }
   function bimGbUpload(G,P,B){
@@ -17318,7 +17315,6 @@ try{
     gl.uniformMatrix4fv(L.view,false,bimGlViewMatrix(V));
     gl.uniformMatrix4fv(L.proj,false,bimGlProjMatrix(W,H,A3D.flat,A3D.cam.dist));
     gl.uniform3f(L.light,LIGHT[0],LIGHT[1],LIGHT[2]);
-    gl.uniform3f(L.eye,V.eye[0],V.eye[1],V.eye[2]);   /* __acad3dV154 */
     gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,P.tex);
     gl.uniform1i(L.tab,0);gl.uniform2f(L.size,BIM_GB_TEXW,P.texH||1);
     function faces(pass){
@@ -17373,7 +17369,7 @@ try{
     pipes:null,ubuf:null,bg:null,depth:null,msaa:null,off:null,offscreen:!!(typeof window!=='undefined'&&window.__BIM_GPU_OFFSCREEN),engine:'',fallback:''};   /* offscreen: set before the page loads, by a test */
   var BIM_GPU_KEY='acad3dGraphics';
   var BIM_GPU_WGSL=
-    'struct U{view:mat4x4f,proj:mat4x4f,light:vec4f,eye:vec4f};\n'+
+    'struct U{view:mat4x4f,proj:mat4x4f,light:vec4f};\n'+
     '@group(0) @binding(0) var<uniform> u:U;\n'+
     '@group(0) @binding(1) var<storage,read> tab:array<vec4f>;\n'+
     'override PASS:f32=0.0;override EDGE:f32=0.0;\n'+
@@ -17384,187 +17380,12 @@ try{
     ' o.n=n;o.boost=0.0;\n'+
     ' if(EDGE>0.5){var ec=vec3f(0.09,0.10,0.11);if(b.w>1.5){ec=vec3f(1.0,0.706,0.329);}else if(b.w>0.5){ec=vec3f(0.306,0.631,1.0);}o.c=vec4f(ec,a.w);}\n'+
     ' else{o.c=vec4f(b.xyz,a.w);if(b.w>0.5&&b.w<1.5){o.boost=0.25;}}\n'+
-    ' var w=pos+a.xyz;if(EDGE>0.5){w=w+(u.eye.xyz-w)*'+BIM_EDGE_PULL.toFixed(6)+';}\n'+   /* __acad3dV154 */
-    ' var p=u.proj*u.view*vec4f(w,1.0);p.z=(p.z+p.w)*0.5;o.p=p;return o;}\n'+   /* WebGL's depth is -1..1, WebGPU's 0..1 */
+    ' var p=u.proj*u.view*vec4f(pos+a.xyz,1.0);p.z=(p.z+p.w)*0.5;o.p=p;return o;}\n'+   /* WebGL's depth is -1..1, WebGPU's 0..1 */
     '@vertex fn vsFace(@location(0) pos:vec3f,@location(1) n:vec3f,@location(2) obj:f32)->VO{return place(pos,obj,n);}\n'+
     '@vertex fn vsEdge(@location(0) pos:vec3f,@location(2) obj:f32)->VO{return place(pos,obj,vec3f(0.0,1.0,0.0));}\n'+
     '@fragment fn fsFace(i:VO)->@location(0) vec4f{var k=0.45+0.55*abs(dot(normalize(i.n),u.light.xyz));k=min(1.35,k+i.boost);\n'+
     ' return vec4f(clamp(i.c.rgb*k,vec3f(0.0),vec3f(1.0)),i.c.a);}\n'+
     '@fragment fn fsEdge(i:VO)->@location(0) vec4f{return i.c;}\n';
-  /* __acad3dV154: the map and the terrain. Group 0: the camera, and this draw's values at an offset;
-     group 1: a tile's sampler and texture. */
-  var BIM_GPU_SITE_WGSL=
-    'struct U{view:mat4x4f,proj:mat4x4f,light:vec4f,eye:vec4f};\n'+
-    'struct M{color:vec4f,sub:vec4f,tile:vec4f};\n'+   /* color.a: the opacity; tile: offset x y, 1/scale, mode */
-    '@group(0) @binding(0) var<uniform> u:U;\n'+
-    '@group(0) @binding(1) var<uniform> m:M;\n'+
-    '@group(1) @binding(0) var smp:sampler;\n'+
-    '@group(1) @binding(1) var tx:texture_2d<f32>;\n'+
-    'fn clip(p:vec4f)->vec4f{var q=p;q.z=(q.z+q.w)*0.5;return q;}\n'+
-    'struct MO{@builtin(position) p:vec4f,@location(0) uv:vec2f};\n'+
-    '@vertex fn vsMap(@location(0) pos:vec3f,@location(1) uv:vec2f)->MO{var o:MO;o.p=clip(u.proj*u.view*vec4f(pos,1.0));o.uv=uv;return o;}\n'+
-    '@fragment fn fsMap(i:MO)->@location(0) vec4f{let c=textureSample(tx,smp,i.uv).rgb;return vec4f(mix(vec3f(0.114,0.125,0.141),c,m.color.a),1.0);}\n'+
-    'struct TO{@builtin(position) p:vec4f,@location(0) uv:vec2f,@location(1) k:f32};\n'+
-    '@vertex fn vsTer(@location(0) pos:vec3f,@location(1) n:vec3f,@location(2) mc:vec2f)->TO{var o:TO;\n'+
-    ' o.uv=(mc-m.tile.xy)*m.tile.z;o.k=0.5+0.5*abs(dot(normalize(n),u.light.xyz));o.p=clip(u.proj*u.view*vec4f(pos,1.0));return o;}\n'+
-    '@fragment fn fsTer(i:TO)->@location(0) vec4f{\n'+   /* sampled first: a texture is read in uniform control flow */
-    ' let c=textureSample(tx,smp,m.sub.xy+clamp(i.uv,vec2f(0.0),vec2f(1.0))*(m.sub.zw-m.sub.xy)).rgb;\n'+
-    ' if(m.tile.w<0.5){return vec4f(m.color.rgb*i.k,1.0);}\n'+
-    ' if(i.uv.x<0.0||i.uv.x>1.0||i.uv.y<0.0||i.uv.y>1.0){discard;}\n'+
-    ' return vec4f(mix(m.color.rgb*i.k,c*(0.62+0.38*i.k),m.color.a),1.0);}\n';
-  /* a level of a tile's mipmap from the one above it: a 2x2 average, as generateMipmap */
-  var BIM_GPU_MIP_WGSL=
-    '@group(0) @binding(0) var s:sampler;\n'+
-    '@group(0) @binding(1) var t:texture_2d<f32>;\n'+
-    'struct O{@builtin(position) p:vec4f,@location(0) uv:vec2f};\n'+
-    '@vertex fn vs(@builtin(vertex_index) i:u32)->O{var P=array<vec2f,3>(vec2f(-1.0,-1.0),vec2f(3.0,-1.0),vec2f(-1.0,3.0));\n'+
-    ' var o:O;o.p=vec4f(P[i],0.0,1.0);o.uv=vec2f((P[i].x+1.0)*0.5,(1.0-P[i].y)*0.5);return o;}\n'+
-    '@fragment fn fs(i:O)->@location(0) vec4f{return textureSample(t,s,i.uv);}\n';
-  function bimGpuSitePipes(dev,fmt){
-    var mod=dev.createShaderModule({code:BIM_GPU_SITE_WGSL});
-    var g0=dev.createBindGroupLayout({entries:[
-      {binding:0,visibility:GPUShaderStage.VERTEX|GPUShaderStage.FRAGMENT,buffer:{type:'uniform'}},
-      {binding:1,visibility:GPUShaderStage.VERTEX|GPUShaderStage.FRAGMENT,buffer:{type:'uniform',hasDynamicOffset:true,minBindingSize:48}}]});
-    var g1=dev.createBindGroupLayout({entries:[
-      {binding:0,visibility:GPUShaderStage.FRAGMENT,sampler:{type:'filtering'}},
-      {binding:1,visibility:GPUShaderStage.FRAGMENT,texture:{sampleType:'float'}}]});
-    var lay=dev.createPipelineLayout({bindGroupLayouts:[g0,g1]});
-    function pipe(map,write){
-      return dev.createRenderPipeline({layout:lay,
-        vertex:{module:mod,entryPoint:map?'vsMap':'vsTer',buffers:[map?
-          {arrayStride:20,attributes:[{shaderLocation:0,offset:0,format:'float32x3'},{shaderLocation:1,offset:12,format:'float32x2'}]}:
-          {arrayStride:32,attributes:[{shaderLocation:0,offset:0,format:'float32x3'},{shaderLocation:1,offset:12,format:'float32x3'},{shaderLocation:2,offset:24,format:'float32x2'}]}]},
-        fragment:{module:mod,entryPoint:map?'fsMap':'fsTer',targets:[{format:fmt}]},
-        primitive:{topology:'triangle-list',cullMode:'none'},
-        depthStencil:{format:'depth24plus',depthWriteEnabled:write,depthCompare:'less-equal'},
-        multisample:{count:4}});
-    }
-    var mm=dev.createShaderModule({code:BIM_GPU_MIP_WGSL});
-    var mip=dev.createRenderPipeline({layout:'auto',vertex:{module:mm,entryPoint:'vs'},fragment:{module:mm,entryPoint:'fs',targets:[{format:'rgba8unorm'}]},primitive:{topology:'triangle-list'}});
-    var smp=dev.createSampler({magFilter:'linear',minFilter:'linear',mipmapFilter:'linear',addressModeU:'clamp-to-edge',addressModeV:'clamp-to-edge'});
-    var dummy=dev.createTexture({size:[1,1],format:'rgba8unorm',usage:GPUTextureUsage.TEXTURE_BINDING|GPUTextureUsage.COPY_DST});
-    return {map:pipe(true,false),ter:pipe(false,true),drape:pipe(false,false),mip:mip,g0:g0,g1:g1,smp:smp,
-      dummyBg:dev.createBindGroup({layout:g1,entries:[{binding:0,resource:smp},{binding:1,resource:dummy.createView()}]}),dummy:dummy};
-  }
-  /* a tile's texture on this device, its mipmaps made here; null when the browser will not hand it over */
-  function bimGpuTileTex(P,e){
-    var dev=P.device,S=P.site;
-    if(e.gtx&&e.gtx.dev===dev)return e.gtx;
-    if(!e.img)return null;
-    var w=e.img.naturalWidth||e.img.width,h=e.img.naturalHeight||e.img.height;
-    if(!w||!h)return null;
-    var pow2=!(w&(w-1))&&!(h&(h-1)),lv=pow2?Math.floor(Math.log(Math.max(w,h))/Math.LN2)+1:1,tex,l;
-    tex=dev.createTexture({size:[w,h],format:'rgba8unorm',mipLevelCount:lv,usage:GPUTextureUsage.TEXTURE_BINDING|GPUTextureUsage.COPY_DST|GPUTextureUsage.RENDER_ATTACHMENT});
-    try{dev.queue.copyExternalImageToTexture({source:e.img},{texture:tex},[w,h]);}
-    catch(eT){   /* as bimMapTex: counted against its host, not drawn */
-      tex.destroy();
-      e.state='fail';A3D_MAP.fail[e.host]=(A3D_MAP.fail[e.host]||0)+1;
-      return null;
-    }
-    if(lv>1){
-      var enc=dev.createCommandEncoder();
-      for(l=1;l<lv;l++){
-        var bg=dev.createBindGroup({layout:S.mip.getBindGroupLayout(0),entries:[{binding:0,resource:S.smp},{binding:1,resource:tex.createView({baseMipLevel:l-1,mipLevelCount:1})}]});
-        var ps=enc.beginRenderPass({colorAttachments:[{view:tex.createView({baseMipLevel:l,mipLevelCount:1}),loadOp:'clear',storeOp:'store',clearValue:{r:0,g:0,b:0,a:0}}]});
-        ps.setPipeline(S.mip);ps.setBindGroup(0,bg);ps.draw(3);ps.end();
-      }
-      dev.queue.submit([enc.finish()]);
-    }
-    A3D_GPU.tileLive=(A3D_GPU.tileLive||0)+1;
-    e.gtx={dev:dev,tex:tex,bg:dev.createBindGroup({layout:S.g1,entries:[{binding:0,resource:S.smp},{binding:1,resource:tex.createView()}]})};
-    return e.gtx;
-  }
-  /* the frame's map and terrain, as bimMapDrawGl and bimTerrainDrawGl: what to draw, its values sent */
-  function bimGpuSitePrepare(P,V,W,H){
-    var dev=P.device,S=P.site,out={map:[],ter:[],mapVB:null,mapPrm:0,n:0},prm=[],i,j,o,c,s,tex,k,plan=null,srcs=[],drawn=0,verts=[];
-    function put(col,a,sub,tile){prm.push(col[0],col[1],col[2],a,sub[0],sub[1],sub[2],sub[3],tile[0],tile[1],tile[2],tile[3]);return prm.length/12-1;}
-    if(!A3D_PLOT.on){
-      A3D_MAP.frame++;
-      plan=bimMapPlan(V,W,H);
-      if(plan.tiles.length){
-        out.mapPrm=put([0,0,0],plan.opacity,[0,0,1,1],[0,0,1,0]);
-        for(i=0;i<plan.tiles.length;i++){
-          s=bimMapSource(plan.tiles[i],plan.tpl);tex=s?bimGpuTileTex(P,s.e):null;
-          srcs.push(tex?s:null);
-          if(!tex)continue;
-          k=bimMapTileCorners(plan.tiles[i],plan.org,plan.ground-0.02);
-          out.map.push({bg:tex.bg,first:verts.length/5});
-          verts.push(k.nw[0],k.nw[1],k.nw[2],s.u0,s.v0, k.ne[0],k.ne[1],k.ne[2],s.u1,s.v0, k.se[0],k.se[1],k.se[2],s.u1,s.v1,
-            k.nw[0],k.nw[1],k.nw[2],s.u0,s.v0, k.se[0],k.se[1],k.se[2],s.u1,s.v1, k.sw[0],k.sw[1],k.sw[2],s.u0,s.v1);
-          drawn++;
-        }
-      }
-      bimMapRecord('webgpu',plan,drawn,srcs);
-      bimMapEvict();
-    }
-    A3D.lastTerrain3d=null;
-    if(!A3D_PLOT.on&&!bimCameraIsPlan()){
-      var list=[],org=bimMapOrigin(),tl=[],D,rec,col,sel,tiles;
-      for(i=0;i<A3D.objs.length;i++){o=A3D.objs[i];if(o.t==='terrain'&&o.survey&&bimLayerShown(o)&&!bimTerrainSuperseded(o))list.push(o);}
-      if(list.length){
-        if(!plan)plan=bimMapPlan(V,W,H);
-        for(i=0;i<list.length;i++){
-          o=list[i];D=bimTerrainMeshData(o,org);
-          if(!D)continue;
-          rec=P.terBufs[o.id];
-          if(!rec||rec.key!==D.key){
-            if(rec)rec.vb.destroy();
-            var iv=new Float32Array(D.count*8),q;
-            for(q=0;q<D.count;q++){iv[q*8]=D.pos[q*3];iv[q*8+1]=D.pos[q*3+1];iv[q*8+2]=D.pos[q*3+2];iv[q*8+3]=D.nor[q*3];iv[q*8+4]=D.nor[q*3+1];iv[q*8+5]=D.nor[q*3+2];iv[q*8+6]=D.mer[q*2];iv[q*8+7]=D.mer[q*2+1];}
-            rec=P.terBufs[o.id]={key:D.key,vb:bimGpuBuf(dev,iv,GPUBufferUsage.VERTEX)};
-          }
-          sel=(o.id===A3D.sel||(A3D.selSet&&A3D.selSet.indexOf(o.id)>=0));
-          col=bimHexToRgb(sel?'#4ea1ff':(o.col||'#b08559'));
-          out.ter.push({vb:rec.vb,count:D.count,prm:put(col,1,[0,0,1,1],[0,0,1,0]),bg:S.dummyBg,drape:false});
-          c={id:o.id,triangles:D.count/3,tiles:[],drawn:0,z:null};
-          if(plan.tiles.length&&D.ext){
-            tiles=bimDrapeTiles(D.ext,plan.z,BIM_MAP_STYLES[plan.style].maxz);
-            c.z=tiles.length?tiles[0].z:null;
-            for(j=0;j<tiles.length;j++){
-              s=bimMapSource(tiles[j],plan.tpl);tex=s?bimGpuTileTex(P,s.e):null;
-              c.tiles.push({x:tiles[j].x,y:tiles[j].y,z:tiles[j].z,up:tex?s.up:null});
-              if(!tex)continue;
-              var sc=Math.pow(2,BIM_DRAPE_ZREF-tiles[j].z);
-              out.ter.push({vb:rec.vb,count:D.count,prm:put(col,plan.opacity,[s.u0,s.v0,s.u1,s.v1],[tiles[j].x*sc-D.ox,tiles[j].y*sc-D.oy,1/sc,1]),bg:tex.bg,drape:true});
-              c.drawn++;
-            }
-          }
-          tl.push(c);
-        }
-        A3D.lastTerrain3d=tl;
-      }
-    }
-    if(!prm.length)return out;
-    /* the values, one 256-byte slot a draw (the offset a uniform buffer is read at) */
-    var n=prm.length/12,pb=new Float32Array(n*64);
-    for(i=0;i<n;i++)for(j=0;j<12;j++)pb[i*64+j]=prm[i*12+j];
-    if(!P.prmBuf||P.prmCap<n){
-      if(P.prmBuf)P.prmBuf.destroy();
-      P.prmCap=Math.max(16,n*2);
-      P.prmBuf=dev.createBuffer({size:P.prmCap*256,usage:GPUBufferUsage.UNIFORM|GPUBufferUsage.COPY_DST});
-      P.siteBg=dev.createBindGroup({layout:S.g0,entries:[{binding:0,resource:{buffer:P.ubuf}},{binding:1,resource:{buffer:P.prmBuf,size:48}}]});
-    }
-    dev.queue.writeBuffer(P.prmBuf,0,pb.buffer,0,n*256);
-    if(verts.length){
-      var vb=new Float32Array(verts);
-      if(!P.mapVB||P.mapCap<vb.byteLength){if(P.mapVB)P.mapVB.destroy();P.mapCap=Math.max(4096,vb.byteLength*2);P.mapVB=dev.createBuffer({size:P.mapCap,usage:GPUBufferUsage.VERTEX|GPUBufferUsage.COPY_DST});}
-      dev.queue.writeBuffer(P.mapVB,0,vb.buffer,0,vb.byteLength);
-      out.mapVB=P.mapVB;
-    }
-    out.n=out.map.length+out.ter.length;
-    return out;
-  }
-  function bimGpuSiteEncode(P,pass,out){
-    var S=P.site,i,d;
-    if(out.map.length){
-      pass.setPipeline(S.map);pass.setVertexBuffer(0,out.mapVB);pass.setBindGroup(0,P.siteBg,[out.mapPrm*256]);
-      for(i=0;i<out.map.length;i++){d=out.map[i];pass.setBindGroup(1,d.bg);pass.draw(6,1,d.first,0);}
-    }
-    for(i=0;i<out.ter.length;i++){
-      d=out.ter[i];
-      pass.setPipeline(d.drape?S.drape:S.ter);pass.setBindGroup(0,P.siteBg,[d.prm*256]);pass.setBindGroup(1,d.bg);pass.setVertexBuffer(0,d.vb);pass.draw(d.count);
-    }
-  }
   function bimGpuPref(){var p='auto';try{p=localStorage.getItem(BIM_GPU_KEY)||'auto';}catch(eP){}return p==='webgl'?'webgl':'auto';}
   function bimGpuFail(why){
     A3D_GPU.state='failed';A3D_GPU.why=String(why||'');A3D_GPU.bundle=null;
@@ -17606,12 +17427,10 @@ try{
           multisample:{count:4}});
       }
       var pipes={face0:pipe(0,0),face1:pipe(0,1),edge0:pipe(1,0),edge1:pipe(1,1)};
-      var site=bimGpuSitePipes(dev,fmt);   /* __acad3dV154 */
-      var ubuf=dev.createBuffer({size:160,usage:GPUBufferUsage.UNIFORM|GPUBufferUsage.COPY_DST});
+      var ubuf=dev.createBuffer({size:144,usage:GPUBufferUsage.UNIFORM|GPUBufferUsage.COPY_DST});
       return dev.popErrorScope().then(function(err){
         if(err)throw new Error('pipelines: '+err.message);
         A3D_GPU.device=dev;A3D_GPU.ctx=ctx;A3D_GPU.cv=cv;A3D_GPU.format=fmt;A3D_GPU.pipes=pipes;A3D_GPU.bgl=bgl;A3D_GPU.ubuf=ubuf;
-        A3D_GPU.site=site;A3D_GPU.terBufs={};A3D_GPU.prmBuf=null;A3D_GPU.prmCap=0;A3D_GPU.mapVB=null;A3D_GPU.mapCap=0;A3D_GPU.siteBg=null;
         A3D_GPU.state='ready';A3D_GPU.why='';
         dev.lost.then(function(info){
           if(A3D_GPU.device!==dev)return;
@@ -17631,9 +17450,6 @@ try{
     if(A3D_GPU.depth)A3D_GPU.depth.destroy();
     if(A3D_GPU.msaa)A3D_GPU.msaa.destroy();
     if(A3D_GPU.off)A3D_GPU.off.destroy();A3D_GPU.off=null;
-    var kt;if(A3D_GPU.terBufs)for(kt in A3D_GPU.terBufs)if(A3D_GPU.terBufs.hasOwnProperty(kt))A3D_GPU.terBufs[kt].vb.destroy();   /* __acad3dV154 */
-    if(A3D_GPU.prmBuf)A3D_GPU.prmBuf.destroy();if(A3D_GPU.mapVB)A3D_GPU.mapVB.destroy();
-    A3D_GPU.terBufs={};A3D_GPU.prmBuf=null;A3D_GPU.prmCap=0;A3D_GPU.mapVB=null;A3D_GPU.mapCap=0;A3D_GPU.siteBg=null;A3D_GPU.site=null;A3D_GPU.tileLive=0;
     if(S&&S.dirty.gpu)delete S.dirty.gpu;
     A3D_GPU.tab=null;A3D_GPU.tabCap=0;A3D_GPU.bundle=null;A3D_GPU.bkey='';A3D_GPU.depth=null;A3D_GPU.msaa=null;A3D_GPU.w=0;A3D_GPU.h=0;
     if(A3D_GPU.device){var d=A3D_GPU.device;A3D_GPU.device=null;try{d.destroy();}catch(eD){}}
@@ -17641,7 +17457,11 @@ try{
   }
   /* what WebGPU does not draw yet: the map, and a terrain surface in 3D */
   function bimGpuNeedsGl(V,W,H){
-    return '';   /* __acad3dV154: the map and the terrain are drawn with WebGPU too */
+    if(A3D_PLOT.on)return '';
+    var i,o;
+    if(!bimCameraIsPlan())for(i=0;i<A3D.objs.length;i++){o=A3D.objs[i];if(o.t==='terrain'&&o.survey&&bimLayerShown(o)&&!bimTerrainSuperseded(o))return 'terrain';}
+    if(bimMapSettings().style!=='off'&&bimMapPlan(V,W,H).tiles.length)return 'map';
+    return '';
   }
   function bimGpuBuf(dev,arr,usage){
     var b=dev.createBuffer({size:Math.max(16,arr.byteLength),usage:usage|GPUBufferUsage.COPY_DST});
@@ -17681,10 +17501,9 @@ try{
       B.st.uploads++;B.st.uploadBytes+=(R.hi-R.lo+1)*32;R.lo=-1;R.hi=-1;
     }
     /* the camera: two matrices and the light */
-    var u=new Float32Array(40);
+    var u=new Float32Array(36);
     u.set(bimGlViewMatrix(V),0);u.set(bimGlProjMatrix(W,H,A3D.flat,A3D.cam.dist),16);u[32]=LIGHT[0];u[33]=LIGHT[1];u[34]=LIGHT[2];
-    u[36]=V.eye[0];u[37]=V.eye[1];u[38]=V.eye[2];   /* __acad3dV154 */
-    dev.queue.writeBuffer(P.ubuf,0,u.buffer,0,160);
+    dev.queue.writeBuffer(P.ubuf,0,u.buffer,0,144);
     /* the draws, recorded once and replayed until something they draw from changes */
     var key=B.chunks.length+':'+(F.hasTrans?1:0)+':'+(F.edges?1:0);
     for(i=0;i<B.chunks.length;i++)key+=':'+B.chunks[i].count+'/'+B.chunks[i].ecount;
@@ -17704,8 +17523,6 @@ try{
       if(F.edges){run(P.pipes.edge0,1);if(F.hasTrans)run(P.pipes.edge1,1);}
       P.bundle=be.finish();P.bkey=key;P.bdraws=nd;B.st.recorded=1;
     }
-    var site=bimGpuSitePrepare(P,V,W,H);   /* __acad3dV154: the map and the terrain, under the model */
-    B.st.siteDraws=site.n;
     /* the canvas, or a texture of the same size when asked (a headless browser cannot present one) */
     var dst;
     if(P.offscreen){
@@ -17716,7 +17533,6 @@ try{
     var pass=enc.beginRenderPass({
       colorAttachments:[{view:P.msaa.createView(),resolveTarget:dst.createView(),clearValue:{r:0.114,g:0.125,b:0.141,a:1},loadOp:'clear',storeOp:'discard'}],
       depthStencilAttachment:{view:P.depth.createView(),depthClearValue:1,depthLoadOp:'clear',depthStoreOp:'discard'}});
-    bimGpuSiteEncode(P,pass,site);
     pass.executeBundles([P.bundle]);
     pass.end();
     dev.queue.submit([enc.finish()]);
@@ -17793,14 +17609,13 @@ try{
         if(m>mx)mx=m;if(m>16)n16++;
         if(m>48){
           n48++;
-          /* a thin line rasterised a pixel over: the same colour beside it is not a difference; nor is
-             one of the four samples of an outline's edge covered the other way (__acad3dV154: up to 64) */
+          /* a thin line rasterised a pixel over: the same colour beside it is not a difference */
           mm=m;
-          for(dy=-1;dy<=1&&mm>64;dy++)for(dx=-1;dx<=1&&mm>64;dx++){
+          for(dy=-1;dy<=1&&mm>48;dy++)for(dx=-1;dx<=1&&mm>48;dx++){
             if(x+dx<0||x+dx>=w||y+dy<0||y+dy>=h)continue;
             mm=Math.min(mm,diff(i,((h-1-(y+dy))*w+x+dx)*4));
           }
-          if(mm>64)near++;
+          if(mm>48)near++;
         }
       }
       return {w:w,h:h,max:mx,over16:n16,over48:n48,over48near:near,pixels:w*h,gpuStats:stats};
@@ -18041,7 +17856,6 @@ try{
     gl.uniform3f(G.loc.color,col[0],col[1],col[2]);
     gl.uniform1f(G.loc.boost,(A3D.sel===o.id)?0.25:0);
     gl.uniform1f(G.loc.flatCol,0);
-    gl.uniform1f(G.loc.pull,0);   /* __acad3dV154 */
     gl.uniform1f(G.loc.alpha,alpha);
     gl.bindBuffer(gl.ARRAY_BUFFER,rec.pos);
     gl.enableVertexAttribArray(G.loc.pos);
@@ -18215,7 +18029,6 @@ try{
   function bimMapDrop(e){
     if(e.tex&&e.texGl){try{e.texGl.deleteTexture(e.tex);}catch(eD){}}
     e.tex=null;e.texGl=null;
-    if(e.gtx){try{e.gtx.tex.destroy();}catch(eG){}if(e.gtx.dev===A3D_GPU.device)A3D_GPU.tileLive--;e.gtx=null;}   /* __acad3dV154 */
     if(e.state==='loading'){e.state='dropped';A3D_MAP.inflight=Math.max(0,A3D_MAP.inflight-1);}
     if(A3D_MAP.cache[e.url]===e){delete A3D_MAP.cache[e.url];A3D_MAP.n--;}
   }
@@ -20119,12 +19932,12 @@ try{
   }
   /* a surface's triangles with smooth normals and each vertex's Mercator position (at BIM_DRAPE_ZREF,
      from a corner of its own, so the numbers stay small); kept until the survey or the place changes */
-  var A3D_TER_DATA={};   /* __acad3dV154: a surface's arrays, for either engine */
-  function bimTerrainMeshData(o,org){
-    var tin=bimTerrainTin(o),tn=bimTrueNorthDeg(),key,D=A3D_TER_DATA[o.id],i,k,tr,nrm,pos=[],nor=[],mer=[],A,B,C,ux,uy,uz,vx,vy,vz,nx,ny,nz,L;
+  function bimTerrainGlMesh(G,T,o,org){
+    var tin=bimTerrainTin(o),tn=bimTrueNorthDeg(),key,rec=T.bufs[o.id],gl=G.gl,i,k,tr,nrm,pos=[],nor=[],mer=[],A,B,C,ux,uy,uz,vx,vy,vz,nx,ny,nz,L;
     if(!tin||!tin.tris.length)return null;
     key=(o.rev||0)+':'+o.survey.length+':'+(o.pos||[0,0,0]).join(',')+':'+tn+':'+(org?org.lat+','+org.lon:'-');
-    if(D&&D.key===key)return D;
+    if(rec&&rec.key===key)return rec;
+    if(rec){gl.deleteBuffer(rec.pos);gl.deleteBuffer(rec.nor);gl.deleteBuffer(rec.mer);}
     nrm=tin.P.map(function(){return [0,0,0];});
     for(i=0;i<tin.tris.length;i++){
       tr=tin.tris[i];A=[tin.P[tr[0]][0],tin.H[tr[0]],tin.P[tr[0]][1]];B=[tin.P[tr[1]][0],tin.H[tr[1]],tin.P[tr[1]][1]];C=[tin.P[tr[2]][0],tin.H[tr[2]],tin.P[tr[2]][1]];
@@ -20145,18 +19958,10 @@ try{
       nor.push(nrm[v][0]/L,nrm[v][1]/L,nrm[v][2]/L);
       mer.push(mx?mx[v][0]-ox:0,mx?mx[v][1]-oy:0);
     }
+    function mk(a){var b=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,b);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(a),gl.STATIC_DRAW);return b;}
     var lo0=Infinity,lo1=-Infinity,la0=Infinity,la1=-Infinity,g;
     if(org)for(i=0;i<tin.P.length;i++){g=bimModelToGeo(tin.P[i][0],tin.P[i][1],org);lo0=Math.min(lo0,g[0]);lo1=Math.max(lo1,g[0]);la0=Math.min(la0,g[1]);la1=Math.max(la1,g[1]);}
-    D=A3D_TER_DATA[o.id]={key:key,pos:new Float32Array(pos),nor:new Float32Array(nor),mer:new Float32Array(mer),count:pos.length/3,ox:ox,oy:oy,ext:org?[lo0,la0,lo1,la1]:null};
-    return D;
-  }
-  function bimTerrainGlMesh(G,T,o,org){
-    var D=bimTerrainMeshData(o,org),rec=T.bufs[o.id],gl=G.gl;
-    if(!D)return null;
-    if(rec&&rec.key===D.key)return rec;
-    if(rec){gl.deleteBuffer(rec.pos);gl.deleteBuffer(rec.nor);gl.deleteBuffer(rec.mer);}
-    function mk(a){var b=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,b);gl.bufferData(gl.ARRAY_BUFFER,a,gl.STATIC_DRAW);return b;}
-    rec=T.bufs[o.id]={key:D.key,pos:mk(D.pos),nor:mk(D.nor),mer:mk(D.mer),count:D.count,ox:D.ox,oy:D.oy,ext:D.ext};
+    rec=T.bufs[o.id]={key:key,pos:mk(pos),nor:mk(nor),mer:mk(mer),count:pos.length/3,ox:ox,oy:oy,ext:org?[lo0,la0,lo1,la1]:null};
     return rec;
   }
   /* the tiles over a surface's area: the view's zoom, lowered while more than BIM_DRAPE_MAXT */
@@ -20262,7 +20067,6 @@ try{
     gl.uniformMatrix4fv(G.loc.view,false,bimGlViewMatrix(V));
     gl.uniformMatrix4fv(G.loc.proj,false,bimGlProjMatrix(W,H,A3D.flat,A3D.cam.dist));
     gl.uniform3f(G.loc.light,LIGHT[0],LIGHT[1],LIGHT[2]);
-    gl.uniform3f(G.loc.eye,V.eye[0],V.eye[1],V.eye[2]);   /* __acad3dV154 */
     var live={},totalFaces=0,i,trans=[];   /* __acad3dV121 */
     A3D.lastGlAlpha={};
     for(i=0;i<A3D.objs.length;i++){
@@ -20299,7 +20103,6 @@ try{
         if(!rec2||!rec2.edge||!live[o2.id])continue;
         gl.uniform3f(G.loc.offset,o2.pos[0],o2.pos[1],o2.pos[2]);
         gl.uniform1f(G.loc.flatCol,1);
-        gl.uniform1f(G.loc.pull,BIM_EDGE_PULL);   /* __acad3dV154 */
         var la2=bimLayerAlpha(o2);   /* __acad3dV121: the edges fade with their faces */
         gl.uniform1f(G.loc.alpha,la2);
         if(la2<1){gl.enable(gl.BLEND);gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);}else gl.disable(gl.BLEND);
@@ -20314,7 +20117,6 @@ try{
         gl.drawArrays(gl.LINES,0,rec2.edgeCount);draws++;
       }
       gl.disable(gl.BLEND);
-      gl.uniform1f(G.loc.pull,0);
     }
     var k;
     for(k in G.bufs){
@@ -39292,7 +39094,6 @@ try{
   window.__a3dMergeAbort=function(){return bimHistMergeAbort();};
   window.__a3dBranchCompare=function(){return JSON.parse(JSON.stringify(bimHistCompare()));};
   window.__a3dHistBase=function(a,b){return bimHistBase(a,b);};
-  window.__acad3dV154='edgepull,gpumap,gputerrain,gpudrape,tilemipmaps,tilefreed,terraindata,sitefirst';
   window.__acad3dV153='webgpu,sharedscene,storagetable,renderbundle,glfallback,maptogl,terraintogl,devicelost,graphicscommand,graphicsstat';
   window.__acad3dV152='batches,objecttable,chunkrebuild,hiddenstays,transparentpass,edgebatch,fallback,stressmodel,bench';
   window.__acad3dV151='branches,branchnew,branchswitch,switchrefused,mainbranch,mergebase,merge3,fieldmerge,conflicts,deleteconflict,fastforward,uptodate,mergecommit,compare,branchcommands,branchsaved';
@@ -39656,8 +39457,6 @@ try{
   window.__a3dGraphics=function(pref){return bimGraphicsSet(pref);};
   window.__a3dGpuCompare=function(){return bimGpuCompare();};
   window.__a3dGpuRestart=function(){if(A3D_GPU.state==='starting'||A3D_GPU.state==='ready')return A3D_GPU.state;A3D_GPU.state='off';A3D_GPU.why='';bimGpuStart();return A3D_GPU.state;};
-  window.__a3dGpuTiles=function(){var k,e,n=0,lv=[];for(k in A3D_MAP.cache)if(A3D_MAP.cache.hasOwnProperty(k)){e=A3D_MAP.cache[k];if(e.gtx&&e.gtx.dev===A3D_GPU.device){n++;lv.push(e.gtx.tex.mipLevelCount);}}return {textures:n,levels:lv,live:A3D_GPU.tileLive||0};};   /* __acad3dV154 */
-  window.__a3dMapDropAll=function(){var k,L=[];for(k in A3D_MAP.cache)if(A3D_MAP.cache.hasOwnProperty(k))L.push(A3D_MAP.cache[k]);L.forEach(bimMapDrop);return L.length;};
   window.__a3dGpuBreakNext=function(){A3D_GPU.breakNext=true;return true;};
   window.__a3dGpuLose=function(){if(!A3D_GPU.device)return false;A3D_GPU.device.destroy();return true;};   /* as a driver reset would */
   window.__a3dGpuWait=function(ms){var t0=Date.now();return new Promise(function(res){(function w(){if(A3D_GPU.state!=='starting'||Date.now()-t0>(ms||8000))res(A3D_GPU.state);else setTimeout(w,50);})();});};
