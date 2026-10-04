@@ -30,6 +30,10 @@ order: 1
 - **Sizing Properties.** Drag the panel's left edge to widen it (240 to 560 px); double-click the
   edge to put it back. The arrow beside the word Properties minimises the panel to a strip. Both
   are remembered.
+- **On a phone or a tablet.** **Props** opens Properties. On a phone it is a sheet from the bottom:
+  tap its grab bar to raise it and lower it. On a tablet it is a drawer from the right. On either,
+  the arrow beside the word Properties closes it, and on a touch screen every field and button is
+  sized for a finger.
 - **The status bar.** Level, snaps, ortho, grid; pan, orbit, 2D and 3D.
 
 ## Finding a command

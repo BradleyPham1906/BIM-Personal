@@ -2,11 +2,11 @@
 
 **Read this first in a new session.** One page. The detail lives in the docs listed at the bottom.
 
-    canvas_v10.html   2212613 bytes
-    sha256            69aa59e5b9eb29c674b668151f06c3d8096ab78918ab8ffeceed0ad5499aea60
+    canvas_v10.html   2214813 bytes
+    sha256            cff2ad402b13f8b5a3cabc2a076cc9deb3e511b8542deefdfc30105b59944d34
     markers           __acad3dV60 ... __acad3dV147, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
                       __acad3dV121b
-    tests             104 suites, 4144 checks, 0 failures
+    tests             104 suites, 4153 checks, 0 failures
 
     The user guide (V142): every phase updates docs/src/, its log entry and BIM_APP_VERSION, then
     runs tools/dump_catalog.py and tools/build_docs.py. The V142 suite and the Pages workflow
@@ -59,6 +59,16 @@ V128 to V130 settled how commands are found (see Recently finished):
   - V130's shorter one put a sketch's midpoint grip under the gizmo's X box in V110 (a grip wins
     a press, V97).
 
+**Design rule (owner, V147): every redesign works on a phone, a tablet and a computer.** Each UI
+phase's suite checks three sizes, measured in the browser:
+- a phone, 390 x 844, touch;
+- a tablet, 820 x 1180, touch (and 1180 x 820 where it differs);
+- a computer, 1500 x 950, mouse.
+
+On touch, targets are at least 36 px and nothing depends on hover. On a phone, panels are bottom
+sheets; on a tablet, drawers; on a computer, docked and resizable. The breakpoints are the app's
+three tiers: compact up to 720 px wide or 500 px high, medium up to 1024 px, desktop above.
+
 **Design rule (owner, V125):** keep the interface clean and consistent, following Rhino's model
 (see `reference/research-structural-ui.md`).
 - Settings are Properties pages that follow the selection.
@@ -75,20 +85,21 @@ V128 to V130 settled how commands are found (see Recently finished):
 | 144 | Terrain | **Done** (see Recently finished) | Breaklines, boundaries, own faces, slope/elevation/aspect bands, LandXML 1.2 in and out. |
 | 145 | Grading | **Done** (see Recently finished) | Daylight slopes (fans, valleys), the proposed surface, exact TIN-to-TIN cut and fill, the cut and fill map, spot elevations, slope arrows. Next: sloped pads, retaining walls, sections along an alignment. |
 | 146 | Hub H1: element history | **Done** (see Recently finished): commits, per-element diffs, restore, an element's history, saved with the project | The first piece of the owner's "GitHub for BIM" (`reference/research-bim-hub.md`). Every object already has a stable ID and the project is JSON. |
-| 147 | The right panel, redesigned | **Done** (see Recently finished): tokens for dark and light, sentence-case headers, one row grid, one input and button style, Show all, resizable and minimisable. Next: More for rarely used fields, type by type | The owner's note: "clean up more... aesthetic and minimal, easy to use". `reference/research-presentation-panels.md` (3). Every Properties suite is amended where the markup changes, never the behaviour. |
+| 147 | The right panel, redesigned | **Done** (see Recently finished): a bottom sheet on a phone, a 340 px drawer on a tablet, 36 px touch targets; tokens for dark and light, sentence-case headers, one row grid, one input and button style, Show all, resizable and minimisable. Next: More for rarely used fields, type by type | The owner's note: "clean up more... aesthetic and minimal, easy to use". `reference/research-presentation-panels.md` (3). Every Properties suite is amended where the markup changes, never the behaviour. |
 | 148 | Analyze, redesigned; results as layers | **Start here.** Analyses as a compact list grouped Model, Site and terrain, Structure, Environment: one status chip, one primary action, the rest in a menu; a row opens a detail view (settings, the last result with its legend and numbers, when it ran, out of date or not); search. **Add as Layer**: a result becomes a layer in Layer Management (an Analysis group), shown, hidden, faded, locked, linked to its run and saying when the model has moved on. The site's Data Layers (V134) join the same layer tree under Data | QGIS writes a processing run's outputs as layers into a named group. `reference/research-presentation-panels.md` (2). |
-| 149 | Hub H2: branches and merge | Design options as branches, switched between and compared by their numbers (areas, usages, cut and fill, solar); a three-way merge per element with conflicts shown side by side | Replaces "Design scenarios" (Giraffe's scenarios, Revit's Design Options). |
-| 150 | Presentation P1: boards | A board is a sheet you design on: one layer tree (frames, groups, lock, hide, reorder), opacity and blend modes on every element (canvas compositing, the same 16 modes as Figma), masks, shapes, text, images; align, distribute, smart spacing; rows and columns that space their children (a light auto layout) | Figma's layer model. `reference/research-presentation-panels.md` (1). |
-| 151 | Presentation P2: live elements | Elements linked to their source and redrawn when the model changes: model views, schedules, legends, analysis results (sun hours, cut and fill, solar), numbers (GBA, cut volume, site area), text bound to project data (autotext). An edit on the board is an override, marked, with Reset | Archicad's linked drawings and autotext; SketchUp LayOut's overrides and Reset. The data stays connected (the owner's rule). |
-| 152 | Presentation P3: styles, templates, export | Reusable components with variants (title blocks, legend cards, callouts); shared colour and text styles (a brand kit); master boards; templates; a presenting mode, one board per slide; PDF, PNG and SVG export with blend modes, opacity and masks kept | Canva's templates and brand kits; Figma's components; Archicad's master layouts. |
-| 153-159 | Freeform (F1-F7) | NURBS curves; surfaces from curves (extrude, revolve, loft, planar, edge); sweeps, pipe, cap; surface analysis (zebra, curvature, draft) in Analyze; point editing and blends; picture planes, text objects, flow along a surface; Make2D and rendering | `reference/research-rhino-guide-gap.md`: what the owner's Rhino guide teaches that the app lacks. Placed here pending the owner's word; the LOD track follows. |
-| 160 | LOD-C: point clouds | LAS, LAZ (laz-perf, Apache-2.0) and PLY; USGS 3DEP fetched around the site (EPT or COPC); by class or height; ground to a V108 surface through V138's check | Philadelphia has city LiDAR (2015, 2018) and PA statewide QL2. |
-| 161 | LOD-D: LOD2.2 from LiDAR | Region-growing roof planes, roof partition, optimised and extruded; LOD1.3 from the same partition; per-building RMSE to the points | 3DBAG's published method (roofer is GPL-3 C++: the method, not the code). |
-| 162 | LOD-E: facade images | The owner's photos or Panoramax panoramas placed on an LOD2 wall and rectified straight-on, in metres | Texture2LoD3's rectification; Panoramax is CC BY-SA, no key. |
-| 163 | LOD-F: LOD3 openings | Windows and doors drawn on the rectified facade, regularised into rows and columns, optionally detected (SAM in the browser, on request), cut into the wall | Checked against measured openings. |
-| 164 | LOD-G: Gaussian splats | A `.splat` capture placed on the site as a photoreal backdrop to trace against | antimatter15/splat, MIT. |
-| 165 | Zoning envelope | Setbacks, stepbacks and a height limit on a property become a 3D envelope; massing outside it is flagged | Builds on V103's setbacks; Giraffe's Basic Envelope. |
-| 166 | MEP runs | Duct and pipe runs at connectors, systems, flow, velocity and friction | MEP is its own discipline (the owner's choice). The research is drafted in `reference/research-mep-runs.md`. |
+| 149 | The shell on phone and tablet | The left panel an overlay drawer, closed by default, on a phone and a tablet in portrait; the rail a bottom tab bar on a phone; the ribbon into a menu; the dock and status bar compact; pinch to zoom, two fingers to pan, a long press for the context menu; the screen's safe areas (notch, home bar) | The owner (V147): "consider the adaptation for phone, iPad/tablet, and computer". Today, on a 390 px phone the left panel takes three quarters of the screen. |
+| 150 | Hub H2: branches and merge | Design options as branches, switched between and compared by their numbers (areas, usages, cut and fill, solar); a three-way merge per element with conflicts shown side by side | Replaces "Design scenarios" (Giraffe's scenarios, Revit's Design Options). |
+| 151 | Presentation P1: boards | A board is a sheet you design on: one layer tree (frames, groups, lock, hide, reorder), opacity and blend modes on every element (canvas compositing, the same 16 modes as Figma), masks, shapes, text, images; align, distribute, smart spacing; rows and columns that space their children (a light auto layout) | Figma's layer model. `reference/research-presentation-panels.md` (1). |
+| 152 | Presentation P2: live elements | Elements linked to their source and redrawn when the model changes: model views, schedules, legends, analysis results (sun hours, cut and fill, solar), numbers (GBA, cut volume, site area), text bound to project data (autotext). An edit on the board is an override, marked, with Reset | Archicad's linked drawings and autotext; SketchUp LayOut's overrides and Reset. The data stays connected (the owner's rule). |
+| 153 | Presentation P3: styles, templates, export | Reusable components with variants (title blocks, legend cards, callouts); shared colour and text styles (a brand kit); master boards; templates; a presenting mode, one board per slide; PDF, PNG and SVG export with blend modes, opacity and masks kept | Canva's templates and brand kits; Figma's components; Archicad's master layouts. |
+| 154-160 | Freeform (F1-F7) | NURBS curves; surfaces from curves (extrude, revolve, loft, planar, edge); sweeps, pipe, cap; surface analysis (zebra, curvature, draft) in Analyze; point editing and blends; picture planes, text objects, flow along a surface; Make2D and rendering | `reference/research-rhino-guide-gap.md`: what the owner's Rhino guide teaches that the app lacks. Placed here pending the owner's word; the LOD track follows. |
+| 161 | LOD-C: point clouds | LAS, LAZ (laz-perf, Apache-2.0) and PLY; USGS 3DEP fetched around the site (EPT or COPC); by class or height; ground to a V108 surface through V138's check | Philadelphia has city LiDAR (2015, 2018) and PA statewide QL2. |
+| 162 | LOD-D: LOD2.2 from LiDAR | Region-growing roof planes, roof partition, optimised and extruded; LOD1.3 from the same partition; per-building RMSE to the points | 3DBAG's published method (roofer is GPL-3 C++: the method, not the code). |
+| 163 | LOD-E: facade images | The owner's photos or Panoramax panoramas placed on an LOD2 wall and rectified straight-on, in metres | Texture2LoD3's rectification; Panoramax is CC BY-SA, no key. |
+| 164 | LOD-F: LOD3 openings | Windows and doors drawn on the rectified facade, regularised into rows and columns, optionally detected (SAM in the browser, on request), cut into the wall | Checked against measured openings. |
+| 165 | LOD-G: Gaussian splats | A `.splat` capture placed on the site as a photoreal backdrop to trace against | antimatter15/splat, MIT. |
+| 166 | Zoning envelope | Setbacks, stepbacks and a height limit on a property become a 3D envelope; massing outside it is flagged | Builds on V103's setbacks; Giraffe's Basic Envelope. |
+| 167 | MEP runs | Duct and pipe runs at connectors, systems, flow, velocity and friction | MEP is its own discipline (the owner's choice). The research is drafted in `reference/research-mep-runs.md`. |
 | later | Hub H3: full IFC | web-ifc (WebAssembly, MPL-2.0) to read and write full IFC 4 and 4.3; IFC GUIDs kept on the elements so H1's diffs are IFC diffs | Our IFC writer and reader cover a subset today. |
 | later | Hub H4: share and sync | Push and pull a project's history to a repository, one file per element so git diffs and merges per element; GitHub as the first hub; only when asked | The first network piece of the hub. |
 | later | Hub H5: the server | Accounts, permissions per element, private models checked on the server (clashes, codes) returning only the result, paid access | Needs a backend: beyond a static site. "Zero-knowledge" checks in the viewer's browser are not possible: what runs there can be read there. |
@@ -123,7 +134,7 @@ Project photos, models and drawings are never committed: the repo and its site a
 ### LATER - Track A, drafting (moved behind Track B in V100)
 
 The numbers in this table are its order, not phase numbers: a phase takes the next free V number
-when it starts (V111 to V138 went to other work; V139 to V166 are in NOW).
+when it starts (V111 to V138 went to other work; V139 to V167 are in NOW).
 
 | # | Phase | Scope | Notes |
 |---|---|---|---|
@@ -142,6 +153,8 @@ when it starts (V111 to V138 went to other work; V139 to V166 are in NOW).
   stays inside the padding; one input and one button style; the element's name at 13 px.
 - Resizable from its left edge (240-560 px, remembered, double click resets) and minimisable to a
   strip; long lists end in Show all.
+- On a phone a bottom sheet (62%, a grab bar to 92%); on a tablet a 340 px drawer; 36 px targets
+  on any touch screen.
 - **Checked** in 24 checks measured in the browser, and 19 falsify variants.
 
 Phase 146 (V146), **history by element** (the Hub's H1).

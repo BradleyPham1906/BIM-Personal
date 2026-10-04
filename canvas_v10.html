@@ -548,6 +548,29 @@ body.a3d-rmin #a3d-right{width:42px!important;min-width:42px}
 body.a3d-rmin #a3d-right #a3d-propsbody,body.a3d-rmin .a3d-rgrip{display:none}
 body.a3d-rmin #a3d-right .a3d-palhd{font-size:0;justify-content:center;padding:10px 0;border-bottom:0}
 body.a3d-rmin .a3d-rmin svg{transform:rotate(180deg)}
+/* __acad3dV147: a phone, a tablet, a finger */
+.a3d-rsheetbar{display:none}
+@media(max-width:1024px),(max-height:500px){.a3d-rgrip{display:none}}
+@media(pointer:coarse){
+#a3d-right input[type=text],#a3d-right input[type=number],#a3d-right input[type=search],#a3d-right select,#a3d-right textarea{min-height:36px;font-size:13px}
+#a3d-right #a3d-propsbody button{min-height:36px;font-size:13px;padding:0 12px}
+#a3d-right .a3d-prow{min-height:40px}
+#a3d-right .a3d-plabel,#a3d-right .a3d-pstatic{font-size:12.5px}
+#a3d-right .a3d-pgrp{padding:15px 0 9px;font-size:13px}
+#a3d-right .a3d-pgcar{width:32px;height:32px}
+#a3d-right input[type=checkbox]{width:20px;height:20px}
+.a3d-rmin{width:36px;height:36px}
+}
+@media(min-width:721px) and (max-width:1024px) and (min-height:501px){
+body.a3d-props-right #a3d-right{width:340px;max-width:85vw}
+}
+@media(max-width:720px),(max-height:500px){
+body.a3d-props-right #a3d-right{position:fixed;z-index:9700;top:auto;left:0;right:0;bottom:0;width:auto;max-width:none;height:62vh;border-radius:14px 14px 0 0;border-left:0;box-shadow:0 -10px 30px rgba(0,0,0,.5);transition:height .18s ease}
+body.a3d-props-right #a3d-right.a3d-rtall{height:92vh}
+body.a3d-props-right #a3d-right .a3d-rsheetbar{display:flex;justify-content:center;align-items:center;height:22px;flex:0 0 auto;cursor:pointer;touch-action:none}
+body.a3d-props-right #a3d-right .a3d-rsheetbar i{display:block;width:40px;height:5px;border-radius:3px;background:var(--pp-muted,#8f98a2);opacity:.6}
+body.a3d-props-right #a3d-right .a3d-palhd{padding-top:4px}
+}
 #a3d-shell[data-tab="analyze"] .a3d-projhead{flex-shrink:0}
 #a3d-shell[data-tab="analyze"] .a3d-analyze-wrap{flex:1 1 auto;min-height:0}
 .a3d-anz{display:flex;flex-direction:column;min-height:0;flex:1;overflow:auto;padding:10px 12px 16px}
@@ -5490,7 +5513,7 @@ try{
   function bimRightApply(){
     var rp=document.getElementById('a3d-right'),p=bimRightPrefs();
     if(!rp)return null;
-    document.body.classList.toggle('a3d-rmin',!!p.min);
+    document.body.classList.toggle('a3d-rmin',!!p.min&&bimRightDesktop());   /* minimised is a computer's; a phone or tablet closes the panel */
     var w=isFinite(p.w)?Math.max(BIM_RIGHT_MIN,Math.min(BIM_RIGHT_MAX,p.w)):null;
     rp.style.width=(w&&bimRightDesktop()&&!p.min)?w+'px':'';
     var b=document.getElementById('a3d-rminbtn');
@@ -5511,11 +5534,18 @@ try{
     if(!rp||rp.querySelector('.a3d-rgrip'))return;
     var g=document.createElement('div');g.className='a3d-rgrip';g.title='Drag to resize';g.setAttribute('aria-hidden','true');
     rp.insertBefore(g,rp.firstChild);
+    /* the phone's sheet: a grab bar that raises it and lowers it */
+    var sb=document.createElement('div');sb.className='a3d-rsheetbar';sb.setAttribute('role','button');sb.setAttribute('aria-label','Raise or lower Properties');sb.innerHTML='<i></i>';
+    sb.addEventListener('click',function(){rp.classList.toggle('a3d-rtall');});
+    rp.insertBefore(sb,sec||null);
     var hd=sec&&sec.querySelector('.a3d-palhd');
     if(hd&&!document.getElementById('a3d-rminbtn')){
       var b=document.createElement('button');b.type='button';b.id='a3d-rminbtn';b.className='a3d-rmin';b.setAttribute('aria-label','Minimise the Properties panel');
       b.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 6l6 6-6 6"/></svg>';
-      b.addEventListener('click',function(){bimRightToggleMin();});
+      b.addEventListener('click',function(){
+        if(!bimRightDesktop()){rp.classList.remove('open');rp.classList.remove('a3d-rtall');return;}   /* the sheet or drawer closes */
+        bimRightToggleMin();
+      });
       hd.appendChild(b);
     }
     g.addEventListener('mousedown',function(ev){
@@ -37294,7 +37324,7 @@ try{
   window.__a3dDocsOpen=function(page,id){return bimDocsOpen(page,id?bimDocsAnchor(id):'');};
   window.__a3dDocsOpened=function(){return A3D_GUIDE.opened.slice();};
   window.__a3dDocsAnchor=function(id){return bimDocsAnchor(id);};
-  window.__acad3dV147='paneltokens,sentencecase,rowgrid,inputstyle,buttonstyle,typeheader,showall,resizable,minimise,lightdark';
+  window.__acad3dV147='phonesheet,tabletdrawer,touchtargets,paneltokens,sentencecase,rowgrid,inputstyle,buttonstyle,typeheader,showall,resizable,minimise,lightdark';
   window.__acad3dV146='canon,hash128,elementtree,blobstore,commit,diff,fielddiff,idrecords,restore,elementhistory,historygroup,historycommands,savedwithproject';
   window.__acad3dV145='daylight,fans,valleys,proposedsurface,regrade,tinvolume,cutfillbands,cutfillmap,spotelevations,slopearrows,gradingcard,gradecommands';
   window.__acad3dV144='breaklines,surveybreaklines,boundary,ownfaces,slopebands,elevationbands,aspectbands,terrainlegend,landxmlout,landxmlin,terraincard,terraincommands';
