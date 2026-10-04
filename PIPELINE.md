@@ -2,11 +2,11 @@
 
 **Read this first in a new session.** One page. The detail lives in the docs listed at the bottom.
 
-    canvas_v10.html   2084107 bytes
-    sha256            44aceab1c180f1ff19e2c223e7be1a52a4274d126685d4a602090454fb1ebf7f
-    markers           __acad3dV60 ... __acad3dV142, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
+    canvas_v10.html   2112160 bytes
+    sha256            fbb7109fe64df201030f6b2ceabc6d8a23fe13fc53f60192ef7684fe1fb5b65e
+    markers           __acad3dV60 ... __acad3dV143, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
                       __acad3dV121b
-    tests             99 suites, 3890 checks, 0 failures
+    tests             100 suites, 3933 checks, 0 failures
 
     The user guide (V142): every phase updates docs/src/, its log entry and BIM_APP_VERSION, then
     runs tools/dump_catalog.py and tools/build_docs.py. The V142 suite and the Pages workflow
@@ -71,8 +71,8 @@ V128 to V130 settled how commands are found (see Recently finished):
 | 140 | LOD-B: LOD2 from OSM roofs | **Done** (see Recently finished) | `reference/research-lod-reconstruction.md` (7). |
 | 141 | Panels and Analyze | **Done** (see Recently finished) | The owner's order: panels and Analyze, Simulation, terrain, then the LOD track again. |
 | 142 | User guide and versions | **Done** (see Recently finished) | `docs/`, `tools/build_docs.py`, `tools/build_site.py`; the site keeps every older build at v/<version>/. |
-| 143 | Simulation | **Start here.** A Simulation section in Analyze: sun and shadows over a day and a year (hours of sun on the ground and on facades), solar radiation on roofs (the LOD2 roofs), rain on the terrain (flow paths and ponding) | NOAA sun, already in the app; free climate data (NASA POWER, EPW) for radiation. |
-| 144 | Terrain | Slope, elevation and aspect bands; breaklines and boundaries; grading pads with daylight slopes; a cut and fill report; LandXML in and out; spot elevations | V108, V127, V137, V138 underneath. |
+| 143 | Simulation | **Done** (see Recently finished) | Next: weather years (EPW, NASA POWER) for expected yield; sun on facades; wind and energy later. |
+| 144 | Terrain | **Start here.** Slope, elevation and aspect bands; breaklines and boundaries; grading pads with daylight slopes; a cut and fill report; LandXML in and out; spot elevations | V108, V127, V137, V138 underneath. |
 | 145-151 | Freeform (F1-F7) | NURBS curves; surfaces from curves (extrude, revolve, loft, planar, edge); sweeps, pipe, cap; surface analysis (zebra, curvature, draft) in Analyze; point editing and blends; picture planes, text objects, flow along a surface; Make2D and rendering | `reference/research-rhino-guide-gap.md`: what the owner's Rhino guide teaches that the app lacks. Placed here pending the owner's word; the LOD track follows. |
 | 152 | LOD-C: point clouds | LAS, LAZ (laz-perf, Apache-2.0) and PLY; USGS 3DEP fetched around the site (EPT or COPC); by class or height; ground to a V108 surface through V138's check | Philadelphia has city LiDAR (2015, 2018) and PA statewide QL2. |
 | 153 | LOD-D: LOD2.2 from LiDAR | Region-growing roof planes, roof partition, optimised and extruded; LOD1.3 from the same partition; per-building RMSE to the points | 3DBAG's published method (roofer is GPL-3 C++: the method, not the code). |
@@ -123,7 +123,13 @@ when it starts (V111 to V138 went to other work; V139 to V148 are in NOW).
 | 118 | Blocks and data | ATTDEF ATTEDIT BEDIT WBLOCK DATAEXTRACTION TABLESTYLE TABLEDIT TABLEEXPORT | First phase that's about the disciplines, not drafting. BLOCK and INSERT landed in V124, as the Assets library's blocks: saved records inserted as independent copies. A block reference that follows its definition (what BEDIT edits) is not built. |
 | 119 | Sheets and plotting, rest | MVIEW (draw a viewport on the paper) PAGESETUP (plot settings beyond Sheet Setup) PUBLISH (V122's Print set prints every sheet in one job; a chosen subset and page setups remain) EXPORTPDF (vector PDF of a sheet) VPLAYER (per-viewport layer visibility) viewport lock | LAYOUT, MSPACE and PSPACE landed in V116, with layout tabs and model space through a viewport. |
 
-**Recently finished:** Phase 142 (V142), **the user guide, and versions**.
+**Recently finished:** Phase 143 (V143), **Simulation**.
+- **Sun hours** on the ground through a day (SUNHOURS), **clear-sky solar** on every face through a
+  year with shading (SOLAR, shown by Colour By), **rain on terrain**: ponds, their volume, and flow
+  lines (RAINFLOW). In the Analyze tab's Simulation section.
+- **Checked** in 43 checks, each against an independent Python calculation, and 24 falsify variants.
+
+Phase 142 (V142), **the user guide, and versions**.
 - **A guide on the site** (`/docs/`): nine pages written for this app, a command reference built
   from the app's own catalogue, release notes for V87 to V142, and a versions page.
 - **Every older build kept** at `/v/<version>/` (55 of them), from the builds kept in `Phase/`.

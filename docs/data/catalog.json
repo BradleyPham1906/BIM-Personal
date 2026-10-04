@@ -1,6 +1,6 @@
 {
  "version": {
-  "v": "V142",
+  "v": "V143",
   "date": "2026-10-04"
  },
  "commands": [
@@ -1519,6 +1519,21 @@
    "anchor": "cmd-PSPACE"
   },
   {
+   "id": "cmd:RAINFLOW",
+   "name": "RAINFLOW",
+   "aliases": [
+    "RAIN",
+    "DRAINAGE",
+    "PONDING",
+    "RUNOFF"
+   ],
+   "desc": "Where rain runs and ponds on the terrain: flow lines and ponds over the plan",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-RAINFLOW"
+  },
+  {
    "id": "cmd:RAY",
    "name": "RAY",
    "aliases": [],
@@ -1751,6 +1766,32 @@
    "anchor": "cmd-SHORTCUTS"
   },
   {
+   "id": "cmd:SIMCLEAR",
+   "name": "SIMCLEAR",
+   "aliases": [
+    "CLEARSIM"
+   ],
+   "desc": "Clear the simulations from the drawing",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-SIMCLEAR"
+  },
+  {
+   "id": "cmd:SOLAR",
+   "name": "SOLAR",
+   "aliases": [
+    "SOLARRADIATION",
+    "INSOLATION",
+    "IRRADIATION"
+   ],
+   "desc": "A clear-sky year of sun on the roofs and facades: kWh/m2 on each building, shaded by the others",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-SOLAR"
+  },
+  {
    "id": "act:sphere",
    "name": "SPHERE",
    "aliases": [],
@@ -1800,6 +1841,19 @@
    ],
    "keys": null,
    "anchor": "act-b-cut"
+  },
+  {
+   "id": "cmd:SUNHOURS",
+   "name": "SUNHOURS",
+   "aliases": [
+    "SUNLIGHTHOURS",
+    "DAYLIGHTHOURS"
+   ],
+   "desc": "Hours of direct sun on the ground through the site's date, drawn over the plan",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-SUNHOURS"
   },
   {
    "id": "cmd:SUNSTUDY",

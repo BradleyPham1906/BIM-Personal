@@ -12232,3 +12232,80 @@ The V142 suite and the Pages workflow refuse a guide that does not match the bui
     canvas_v10.html   2084107 bytes
     sha256            44aceab1c180f1ff19e2c223e7be1a52a4274d126685d4a602090454fb1ebf7f
     markers           __acad3dV60 ... __acad3dV142, __acad3dV134d (and the 133d to 133f markers)
+
+## Phase 143 (V143) - Simulation: sun hours, solar on roofs and facades, rain on terrain
+
+The owner asked for simulation "below or in analyze mode". The Analyze tab gets a Simulation
+section with three simulations, each run on request, drawn over the plan, and saying when the
+model has changed since it ran.
+
+### What was built (patches 143a, 143b)
+
+- **SUNHOURS: hours of direct sun on the ground through the site's date.**
+  - Every 15 minutes of daylight, every solid's triangles are cast along the sun onto the ground
+    (V107's shadow model) and rasterised onto a grid. Each cell counts the steps it is lit.
+  - Cells under a building are its roof and are left out.
+  - Drawn as a heat map, with a legend in its card.
+- **SOLAR: a clear-sky year on every face of the solids.**
+  - The year: the 21st of each month, every half hour, weighted by the month's days.
+  - Beam: Meinel's DNI, 1361 x 0.7^(AM^0.678), with Kasten and Young's air mass.
+  - Sky: 0.1 x DNI on the horizontal, by (1 + cos tilt)/2.
+  - Shading: beam only when a ray from the face's centre to the sun meets no solid (a box test,
+    then Moller-Trumbore triangles).
+  - Run in slices so the page stays alive.
+  - Each solid keeps its roof's and facades' kWh/m2 a year (saved). Colour By offers them; the
+    LOD group shows them.
+  - The selection's solids, or every solid when nothing solid is selected.
+- **RAINFLOW: rain on a terrain.**
+  - The TIN is sampled on a grid.
+  - Priority-Flood (Barnes et al. 2014), with an epsilon, fills the depressions and makes every
+    cell drain.
+  - Each cell drains to its steepest lower neighbour (D8); inside a pond, the way the flood came.
+  - Accumulation, highest first, finds the flow lines. Ponds are joined into pools, each with its
+    area, volume, deepest point and level.
+  - Drawn as blue ponds and flow lines, thicker as they gather.
+- **Analyze:** Sun Hours, Solar on Roofs and Facades, and Rain on Terrain cards (Run, Clear, Colour
+  By, Date). States: On, Off, Running, Out of date.
+- **Commands:** SUNHOURS, SOLAR, RAINFLOW, SIMCLEAR, with search words.
+- **The version** is V143. The guide's Analysis page has a Simulation section.
+
+### Bugs found
+
+- **Solar on "0 solids":** with only a terrain selected, the selection gave no targets. A
+  selection with no solid in it now means every solid.
+- **The suite's own checks were wrong three times:**
+  - its times were not rounded to the minute as the app's are, so it read no sun at all;
+  - it measured a roof from the roof's middle, where the app measures each triangle from its own
+    centre;
+  - it shaded with the neighbour only, where the app (rightly) shades with every solid.
+
+### Suites
+
+- New: `bim_phase143_simulation_browser_tests.py`. Each simulation is held to an independent
+  calculation in Python from the same sun positions:
+  - every cell's sun hours against a ray cast past the tower's box, step by step;
+  - open, south, north and shaded faces against Meinel summed by hand;
+  - a bowl's pond against the same fill in Python;
+  - two bowls, a plane, a valley.
+- Amended for V143: V141 (the three simulation cards); V142 (the version is the newest in the log,
+  not V142 for ever).
+- **Falsified by `Phase/falsify_phase143.py`,** 24 variants, all caught. The first run missed
+  three, each a gap closed with a real case:
+  - roof cells counted as ground: the 6-hour share is now held to the rays to 0.1%;
+  - box-only shading: an L-shaped building whose box covers an empty notch;
+  - pond volume without the cell area: the bowl now has 2 m cells.
+
+### Not done
+
+- Clouds and weather: a year from EPW or NASA POWER data would turn the clear-sky potential into
+  an expected yield.
+- Sun hours on facades; wind; energy. Rain on the buildings' roofs.
+
+### Full regression and state after V143
+
+100 suites, 3933 checks, 0 failures. Falsification: V143 24 of 24. The chain 143a, 143b rebuilds the
+build from `Phase/canvas_v10.html.bak_phase143_pre`. The diff is ES5-clean.
+
+    canvas_v10.html   2112160 bytes
+    sha256            fbb7109fe64df201030f6b2ceabc6d8a23fe13fc53f60192ef7684fe1fb5b65e
+    markers           __acad3dV60 ... __acad3dV143, __acad3dV134d (and the 133d to 133f markers)

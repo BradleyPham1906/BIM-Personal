@@ -114,20 +114,23 @@ async def run():
             # ---------------------------------------------------------------------------------
             print("\n-- 1. the app knows its version")
             ver = await safe("()=>window.__a3dVersion()") or {}
-            ck(ver.get('v') == 'V142' and re.match(r'^\d{4}-\d{2}-\d{2}$', ver.get('date', '')), "the app says it is V142, with a date (%s)" % ver)
+            # AMENDED FOR V143: the app's version is the newest phase in the log, not V142 for ever
+            CUR = build_docs.changelog((ROOT / 'canvas_v10_STATUS.md').read_text(encoding='utf-8'))[0]['v']
+            cur = CUR.lower()
+            ck(ver.get('v') == CUR and int(CUR[1:]) >= 142 and re.match(r'^\d{4}-\d{2}-\d{2}$', ver.get('date', '')), "the app says it is %s, the newest in the log, with a date (%s)" % (CUR, ver))
             await safe("()=>{window.__a3dSelectFor([]);window.__a3dSetPropTab('project');window.__a3dRefreshProps();}")
             await page.wait_for_timeout(100)
             row = await safe("""()=>{var a=document.querySelector('#a3d-propsbody [data-docslink="notes"]'),g=document.querySelector('#a3d-propsbody [data-docslink="guide"]');
               return a&&g?{notes:a.getAttribute('href'),text:a.textContent,guide:g.getAttribute('href'),vis:a.getBoundingClientRect().height>0,
                 grp:a.closest('.a3d-pgbody').previousElementSibling.getAttribute('data-a3dpgrp')}:null;}""")
-            ck(row and row['notes'] == 'docs/changelog.html#v142' and row['guide'] == 'docs/index.html' and row['text'].startswith('V142, ') and row['vis'] and row['grp'] == 'Statistics',
+            ck(row and row['notes'] == 'docs/changelog.html#' + cur and row['guide'] == 'docs/index.html' and row['text'].startswith(CUR + ', ') and row['vis'] and row['grp'] == 'Statistics',
                "Statistics, on the Project tab, shows the version linked to its notes, and the guide (%s)" % row)
             ck((HTML.parent / 'docs' / 'changelog.html').exists() and (HTML.parent / 'docs' / 'index.html').exists() or (DOCS / 'index.html').exists(),
                "the links reach files beside the app")
             await safe("()=>window.__a3dRunCmd('docs')")
             await safe("()=>window.__a3dRunCmd('releasenotes')")
             o = await opened()
-            ck(o[-2:] == ['docs/index.html', 'docs/changelog.html#v142'] and 'Opening the user guide' in await toast(), "DOCS opens the guide; RELEASENOTES this version's notes (%s)" % o[-2:])
+            ck(o[-2:] == ['docs/index.html', 'docs/changelog.html#' + cur] and 'Opening the user guide' in await toast(), "DOCS opens the guide; RELEASENOTES this version's notes (%s)" % o[-2:])
             # F1 in the command search
             await page.keyboard.press('Control+k')
             await page.wait_for_timeout(150)
@@ -197,14 +200,14 @@ async def run():
             ck(not miss and len(set(c['anchor'] for c in cat['commands'])) == len(cat['commands']), "every command has its own entry in the reference (%s)" % miss[:5])
             ents = build_docs.changelog((ROOT / 'canvas_v10_STATUS.md').read_text(encoding='utf-8'))
             vs = [e['v'] for e in ents]
-            ck(vs and vs[0] == 'V142' and 'v142' in pages['changelog.html'].ids, "the release notes open with this version, V142 (%s)" % vs[:3])
+            ck(vs and vs[0] == CUR and cur in pages['changelog.html'].ids, "the release notes open with this version, %s (%s)" % (CUR, vs[:3]))
             nums = [int(re.match(r'V(\d+)', v).group(1)) for v in vs]
             ck(all(a >= b for a, b in zip(nums, nums[1:])) and len(vs) >= 55, "newest first, %d entries" % len(vs))
-            want = set(range(87, 143)) - set(nums)
+            want = set(range(87, int(CUR[1:]) + 1)) - set(nums)
             ck(not want, "a note for every phase from V87 (%s missing)" % sorted(want))
             kept = build_docs.kept_versions()
-            ck(len(kept) >= 55 and all(lab.lower() in ''.join(pages['versions.html'].hrefs) for lab, _ in kept) and kept[-1][0] == 'V141',
-               "the versions page lists every kept build, the newest V141 (%d)" % len(kept))
+            ck(len(kept) >= 55 and all(lab.lower() in ''.join(pages['versions.html'].hrefs) for lab, _ in kept) and int(re.match(r'V(\d+)', kept[-1][0]).group(1)) == int(CUR[1:]) - 1,   # AMENDED FOR V143: the build kept before this phase
+               "the versions page lists every kept build, the newest the one before this phase (%d, %s)" % (len(kept), kept[-1][0]))
             labs = [lab for lab, _ in kept]
             ck(len(labs) == len(set(labs)), "each version once")
             for lab, p in kept:
