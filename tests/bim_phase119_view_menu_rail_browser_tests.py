@@ -600,8 +600,7 @@ async def drive(ck):
                     icon:!!(s&&s.children.length&&r&&r.width>=14&&r.height>=14)};})""") or []
         ck([(r['tab'], r['aria'], r['title']) for r in rail] == [('layers', 'Layers', 'Layers'), ('presentation', 'Presentation', 'Presentation'),
                                                                  ('browser', 'Project Browser', 'Project Browser'), ('assets', 'Assets', 'Assets'),
-                                                                 ('analyze', 'Analyze', 'Analyze'),   # AMENDED FOR V141: Analyze below Assets
-                                                                 ('site', 'Site analysis', 'Site analysis')]   # AMENDED FOR V158: Site analysis below Analyze
+                                                                 ('analyze', 'Analyze', 'Analyze')]   # AMENDED FOR V141: Analyze below Assets; FOR V159: Site analysis inside it
            and all(r['text'] == '' and r['icon'] for r in rail),
            'the rail buttons -- AMENDED FOR V121: Layers first; FOR V122: Presentation second -- icons only, each named for what it opens (%s)' % rail)
 

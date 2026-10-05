@@ -20,8 +20,10 @@ VARIANTS = {
     'reveal_no_tab': [("    if(tb){A3D_PTAB=tb;try{localStorage.setItem(BIM_PTAB_KEY,tb);}catch(eS){}}", "")],
     'usages_not_revealed': [("    bimPropReveal('Usages');   /* __acad3dV141: on the Analysis tab */", "    A3D_PROP_GROUPS_OPEN['Usages']=true;")],
     'datalayers_not_revealed': [("    bimPropReveal('Data Layers');   /* __acad3dV141: on the Site tab */", "    A3D_PROP_GROUPS_OPEN['Data Layers']=true;")],
-    'no_rail_button': [("      '<button type=\"button\" class=\"a3d-railbtn\" data-tab=\"analyze\" title=\"Analyze\" aria-label=\"Analyze\">'+   /* __acad3dV141 */\n      bimRailIcon('analyze')+'</button>'+\n", "")],
-    'panel_not_built': [("    if(shell.dataset.tab==='analyze'&&!panel.querySelector('.a3d-analyze-wrap')){   /* __acad3dV141 */", "    if(false){")],
+    # RE-ANCHORED FOR V159: the button carries its phone label (data-short) since V149
+    'no_rail_button': [("      '<button type=\"button\" class=\"a3d-railbtn\" data-tab=\"analyze\" data-short=\"Analyze\" title=\"Analyze\" aria-label=\"Analyze\">'+   /* __acad3dV141 */\n      bimRailIcon('analyze')+'</button>'+\n", "")],
+    # RE-ANCHORED FOR V159: the analyses are one of Analyze's two views
+    'panel_not_built': [("    if(shell.dataset.tab==='analyze'&&!saView&&!panel.querySelector('.a3d-analyze-wrap')){   /* __acad3dV141 */", "    if(false){")],
     'panel_stale': [("    bimAnalyzeRefresh();   /* __acad3dV141 */\n", "")],
     'run_not_wired': [("    if(k==='structure:run')bimAnalyzeCommand();", "    if(k==='structure:run'){}")],
     'open_keeps_selection': [("      A3D.sel=null;A3D.sel2=null;A3D.selSet=[];\n      bimPropReveal(g);", "      bimPropReveal(g);")],

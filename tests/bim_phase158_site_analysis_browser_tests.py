@@ -116,13 +116,16 @@ async def run():
 
             # ---------------------------------------------------------------------------------
             print("\n-- 1. the tab and the standard")
-            rb = await safe("""()=>{var b=document.querySelector('#a3d-rail .a3d-railbtn[data-tab="site"]');
-              return b?{label:b.getAttribute('aria-label'),short:b.getAttribute('data-short'),svg:!!b.querySelector('svg path'),
-                after:b.previousElementSibling&&b.previousElementSibling.getAttribute('data-tab')}:null;}""")
-            ck(rb == {'label': 'Site analysis', 'short': 'Site', 'svg': True, 'after': 'analyze'}, "a Site tab on the rail, after Analyze (%s)" % rb)
+            # AMENDED FOR V159: the owner asked for Site analysis inside Analyze, so no rail tab of its own:
+            # Analyze's switch, Analyses | Site analysis
+            await safe("()=>{document.querySelector('#a3d-rail .a3d-railbtn[data-tab=\"analyze\"]').click();}")
+            await page.wait_for_timeout(150)
+            rb = await safe("""()=>{var b=document.querySelector('#a3d-leftpanel [data-anzview="site"]');
+              return b?{text:b.textContent,role:b.getAttribute('role'),rail:!!document.querySelector('#a3d-rail [data-tab="site"]')}:null;}""")
+            ck(rb == {'text': 'Site analysis', 'role': 'tab', 'rail': False}, "Site analysis in Analyze's switch, no rail tab of its own (%s)" % rb)
             await safe("()=>window.__a3dRunCmd('siteanalysis')")
             await page.wait_for_timeout(150)
-            ck(await safe("()=>document.getElementById('a3d-shell').dataset.tab") == 'site' and await panel(),
+            ck(await safe("()=>document.getElementById('a3d-shell').dataset.tab") == 'analyze' and await panel(),
                "SITEANALYSIS opens it")
             for q, want in (('site analysis', 'SITEANALYSIS'), ('due diligence', None), ('fill site analysis', 'SAFILL')):
                 nm = [x['name'] for x in (await safe("(q)=>window.__a3dCommandSearch(q,5)", q) or [])]
@@ -379,7 +382,9 @@ async def run():
             await p2.wait_for_timeout(1800)
             await within(p2.evaluate("()=>{window.__a3dEnter();}"), 'enter')
             await p2.wait_for_timeout(300)
-            await within(p2.evaluate("()=>{document.querySelector('#a3d-rail .a3d-railbtn[data-tab=\"site\"]').click();}"), 'tab')
+            await within(p2.evaluate("()=>{document.querySelector('#a3d-rail .a3d-railbtn[data-tab=\"analyze\"]').click();}"), 'tab')   # AMENDED FOR V159: in Analyze
+            await p2.wait_for_timeout(300)
+            await within(p2.evaluate("()=>{document.querySelector('#a3d-leftpanel [data-anzview=\"site\"]').click();}"), 'view')
             await p2.wait_for_timeout(300)
             g = await within(p2.evaluate("""()=>{var w=document.querySelector('.a3d-sa');if(!w)return null;var r=w.getBoundingClientRect(),
               b=document.querySelector('.a3d-sa [data-saact="fill"]').getBoundingClientRect(),s=document.querySelector('.a3d-sa select').getBoundingClientRect();

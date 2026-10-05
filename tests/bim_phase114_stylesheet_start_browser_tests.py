@@ -154,7 +154,9 @@ async def run():
     # AMENDED FOR V151: the ceiling was 90,000 bytes, and V150 left 30 of it. What this check is for is the
     # whiteboard's 251,329-byte sheet coming back (the selectors it named are checked by name above); the
     # phases since V114 have added their own CSS. 100,000 still tells the two apart by 150 KB.
-    ck(sheet < 100000, 'the whiteboard stylesheet is gone: %d bytes of CSS in style elements, was 251,329' % sheet)
+    # AMENDED FOR V159: the site analysis (V158) and its Climate and risk board (V159) add about 15 KB of
+    # their own; 150,000 still tells this sheet from the whiteboard's 251,329 by 100 KB.
+    ck(sheet < 150000, 'the whiteboard stylesheet is gone: %d bytes of CSS in style elements, was 251,329' % sheet)
     for word in ('chart-panel', 'table-card', 'canvas-quick-ui', 'ctxmenu', 'formatbar', 'uploaded-layers-panel'):
         pass
     ck(not any(w in t for w in ('#chart-panel', '.table-card', 'canvas-quick-ui-v', '#ctxmenu', '#formatbar')),

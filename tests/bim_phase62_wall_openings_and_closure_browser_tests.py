@@ -244,7 +244,10 @@ def source_level_checks(path):
             "www.opengis.net",
             # AMENDED FOR V144: LandXML's namespace (www.landxml.org/schema/LandXML-1.2), written into
             # exported files, never fetched
-            "www.landxml.org"}
+            "www.landxml.org",
+            # AMENDED FOR V159: the climate and risk sources, asked only on CLIMATEGET, and the WHO
+            # guideline and the sources' home pages, linked from the board's notes, never fetched
+            "archive-api.open-meteo.com", "air-quality-api.open-meteo.com", "earthquake.usgs.gov", "open-meteo.com", "www.who.int"}
     external = sorted(h for h in hosts if not h.endswith("w3.org") and h not in v132)
     check(not external,
           "no external host referenced anywhere in the file (found: " + (", ".join(external) or "none") + ")")

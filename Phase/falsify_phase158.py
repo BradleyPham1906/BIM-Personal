@@ -6,7 +6,9 @@ SRC = pathlib.Path('canvas_v10.html')
 base = SRC.read_text(encoding='utf-8')
 
 VARIANTS = {
-    'no_site_tab': [("      '<button type=\"button\" class=\"a3d-railbtn\" data-tab=\"site\" data-short=\"Site\" title=\"Site analysis\" aria-label=\"Site analysis\">'+   /* __acad3dV158 */\n      bimRailIcon('site')+'</button>'+\n", "")],
+    # RETIRED IN V159: the owner asked for Site analysis inside Analyze; there is no Site tab to remove. V159's
+    # falsify file breaks the switch that replaced it.
+    # 'no_site_tab': [("      '<button type=\"button\" class=\"a3d-railbtn\" data-tab=\"site\" data-short=\"Site\" title=\"Site analysis\" aria-label=\"Site analysis\">'+   /* __acad3dV158 */\n      bimRailIcon('site')+'</button>'+\n", "")],
     'nine_categories': [("    {id:'people',n:'People and place',", "    {id:'people',hide:1,n:'People and place',"), ("  function bimSaCat(id){var i;", "  BIM_SA_CATS=BIM_SA_CATS.slice(0,9);\n  function bimSaCat(id){var i;")],
     'refill_doubles': [("      f=null;s.findings.forEach(function(x){if(x.auto===A[i].auto)f=x;});", "      f=null;")],
     'refill_overwrites_class': [("        if(!f.touched){f.cls=", "        if(true){f.cls=")],
@@ -33,7 +35,8 @@ VARIANTS = {
     'no_red_flags_block': [("    if(R.length)h+='<div class=\"a3d-saflags\">", "    if(false)h+='<div class=\"a3d-saflags\">")],
     'panel_field_ignored': [("      if((k=e.getAttribute('data-saff'))){var i=k.lastIndexOf(':');bimSaSet(k.slice(0,i),k.slice(i+1),e.value);return;}", "")],
     'phone_small_fields': [(".a3d-sa select,.a3d-sa input[type=text],.a3d-sa input[type=date],.a3d-sa textarea{min-height:36px;font-size:16px}", "")],
-    'no_command': [("    siteanalysis:function(){bimShellSetTab('site');},            /* __acad3dV158 */\n", "")],
+    # RE-ANCHORED FOR V159: SITEANALYSIS opens Analyze on Site analysis
+    'no_command': [("    siteanalysis:function(){bimAnzView('site');},                /* __acad3dV158; __acad3dV159: in Analyze */\n", "")],
     # 158b: Analysis and Data as layer groups
     'group_eye_dead': [("    if((b=t.closest('[data-lysecon]'))){bimLySecVisible(b.getAttribute('data-lysecon'));return true;}   /* __acad3dV158 */\n", "")],
     'group_not_dim': [("return '<div class=\"a3d-lysec'+(off?' dim':'')+'\" data-lysec=", "return '<div class=\"a3d-lysec\" data-lysec=")],
