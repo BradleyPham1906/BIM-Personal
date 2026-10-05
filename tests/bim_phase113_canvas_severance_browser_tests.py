@@ -208,7 +208,7 @@ async def run():
         ck(shell and shell['chain'][:4] == ['a3d-browser', '.a3d-tree', 'a3d-leftpanel', 'a3d-shell'],
            'and the Project Browser sits inside it (%s)' % (shell and shell['chain'][:4]))
         # AMENDED FOR V141: and Analyze, below Assets
-        ck(shell and shell['tabs'] == 6 and   # AMENDED FOR V158: the Site analysis tab
+        ck(shell and shell['tabs'] == 5 and   # AMENDED FOR V159: Site analysis is inside Analyze, no tab of its own
             not shell['help'] and not shell['pages'],
            'with Layers (V121), Presentation (V122), the Project Browser and Assets -- AMENDED FOR V122: the owner\'s stack\'s second panel -- and none of the whiteboard blocks V80 had to clean out (%s)'
            % {k: shell.get(k) for k in ('tabs', 'help', 'pages')} if shell else 'no shell')

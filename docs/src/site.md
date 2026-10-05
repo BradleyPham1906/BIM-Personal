@@ -68,7 +68,8 @@ height in Properties.
 
 ## Site analysis
 
-The **Site** tab on the rail (`SITEANALYSIS`) runs a site analysis the same way every time. It
+**Site analysis** is the second view of the **Analyze** tab: the switch at its top reads
+*Analyses | Site analysis* (`SITEANALYSIS` opens it). It runs a site analysis the same way every time. It
 follows the order professionals use: the RIBA Plan of Work's Stage 1 and a developer's due
 diligence. The stages are:
 
@@ -125,6 +126,53 @@ Filling again updates these in place. A class or note you set is kept. A finding
 longer supports is removed, unless you have written on it.
 
 Everything is saved with the project, and every change is one undo step.
+
+## Climate and risk
+
+In Site analysis, **Get climate and risk** (`CLIMATEGET`) fetches, for the site's latitude and longitude:
+- **ten full years of daily weather and the last full year hour by hour** from ERA5 reanalysis, via
+  Open-Meteo;
+- **92 days of PM2.5** from CAMS, via Open-Meteo;
+- **the earthquakes of magnitude 4.5 and above within 100 km since 1976** from the USGS.
+
+All three sources are free and need no account. What is worked out is kept with the project, so
+the board opens offline. Each result also becomes a finding under Climate or Environmental risk.
+
+**Open the board** (`CLIMATE`) shows the result as a professional site-analysis board.
+
+The **header** gives the place, the Köppen–Geiger climate zone, the period and the date.
+
+The **indicators** are:
+- climate zone;
+- mean temperature;
+- rainfall;
+- prevailing wind;
+- heating and cooling degree days;
+- solar energy;
+- outdoor comfort;
+- PM2.5, with a state against the WHO guideline;
+- earthquakes, with a state.
+
+**Nine figures**, each titled with what it shows, with its source and a table:
+1. temperature (the mean daily high and low, and the band of 80% of real days), with rainfall below
+   it on the same months;
+2. the wind rose for the year, with winter and summer beside it;
+3. every hour of the year as a heat map in named temperature bands;
+4. the sun path;
+5. heating and cooling degree days (base 18 °C);
+6. solar energy by month;
+7. the psychrometric chart with the comfort zone and the share of hours in it;
+8. the earthquakes by distance and direction, with the largest listed;
+9. daily PM2.5 against the WHO guideline and interim targets.
+
+Notes on method and the sources close the board.
+
+Hover any mark for its values, and press **Tables** for every number. The board follows the app's
+theme, prints on A3 landscape on white, and redraws its charts for a phone's width.
+
+The climate is modelled at about 25 km, so a city's heat island or a valley's frost may differ.
+Confirm with a local station where it matters. Earthquakes are history, not a hazard model: for
+design, use the national seismic hazard map and code.
 
 ## Data layers
 

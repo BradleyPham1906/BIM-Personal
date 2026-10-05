@@ -1,7 +1,7 @@
 {
  "version": {
-  "v": "V158",
-  "date": "2026-10-04"
+  "v": "V159",
+  "date": "2026-10-05"
  },
  "commands": [
   {
@@ -380,6 +380,38 @@
    ],
    "keys": null,
    "anchor": "cmd-CLEAR"
+  },
+  {
+   "id": "cmd:CLIMATE",
+   "name": "CLIMATE",
+   "aliases": [
+    "CLIMATEBOARD",
+    "CLIMATEANALYSIS",
+    "WINDROSE",
+    "PSYCHROMETRIC",
+    "DEGREEDAYS",
+    "SEISMIC",
+    "AIRQUALITY"
+   ],
+   "desc": "The Climate and risk board: temperature, rain, hourly heat map, wind rose, sun path, degree days, solar, psychrometric comfort, air quality, earthquakes",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-CLIMATE"
+  },
+  {
+   "id": "cmd:CLIMATEGET",
+   "name": "CLIMATEGET",
+   "aliases": [
+    "GETCLIMATE",
+    "WEATHERDATA",
+    "CLIMATEDATA"
+   ],
+   "desc": "Get the site's climate (ten years of ERA5), air quality (PM2.5) and earthquakes within 100 km, from free open sources",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-CLIMATEGET"
   },
   {
    "id": "act:bim:clonelinked",
@@ -1996,7 +2028,7 @@
     "SITEAN",
     "SITEPROCESS"
    ],
-   "desc": "The Site analysis tab: the standard process, ten categories, findings with their sources, on the plan",
+   "desc": "Site analysis, in the Analyze tab: the standard process, ten categories, findings with their sources, on the plan",
    "kind": "cmd",
    "where": [],
    "keys": null,

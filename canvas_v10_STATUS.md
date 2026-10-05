@@ -13518,3 +13518,132 @@ missed once; both pass alone, 24 of 24 and 74 of 74. Patches 158a and 158b rebui
     canvas_v10.html   2418797 bytes
     sha256            3156aeb6f6e0beba05dbb6ed88630744288284ef1472c064a87c04c3ea44860b
     markers           __acad3dV60 ... __acad3dV158, __acad3dV134d (and the 133d to 133f markers)
+
+## Phase 159 (V159) - Site analysis SA2: climate and risk, and the board
+
+The owner: "continue. and please make sure u did some research online on how they present the
+analysis (architectural, arcgis, data analysis,..) dont just give me mediore format. i want it to be
+really really really professional." And, while it was being built: "why this site analysis separate
+from 'analyze' on the left panel? they should be together".
+
+The research is in `reference/research-climate-risk-presentation.md`:
+- the CBE Clima Tool, Ladybug Tools and Climate Consultant, the tools climate-led architects use;
+- Weather Spark's percentile bands, and the Walter–Lieth diagram (with the reason its two scales on
+  one plot are not copied);
+- the conventions for wind roses and sun paths, and the definitions of degree days, the Köppen–Geiger
+  rules (Beck et al. 2018) and the WHO 2021 PM2.5 guideline;
+- ArcGIS Dashboards' layout and indicator guidance, architectural board practice, and the Financial
+  Times' case for titles that state the finding.
+
+The charts follow the data-visualisation reference rules: no dual axes; one hue for magnitude; a
+diverging pair with a grey midpoint; validated categorical colours (the first three, all-pairs, in
+both themes; the wind and density ramps checked as ordinal); hairline grids; hover; a table for
+every chart.
+
+### What was built (patches 159a, 159b)
+
+- **Site analysis inside Analyze (159b).** The Site tab leaves the rail. Analyze opens with a
+  switch, *Analyses | Site analysis*, remembered in this browser. `SITEANALYSIS` opens Analyze on
+  Site analysis. The switch and the Site analysis controls are claimed in the shell audit.
+- **The data (159a).** `CLIMATEGET`, or *Get climate and risk* in Site analysis, asks four free
+  sources at once, with no key:
+  - Open-Meteo's ERA5 archive: the ten full years before this one, day by day;
+  - the same archive: the last full year, hour by hour, wind in m/s;
+  - Open-Meteo's CAMS air quality: PM2.5 over the last 92 days;
+  - the USGS catalogue: M4.5+ within 100 km since 1976.
+
+  What is worked out, not the raw series, is kept with the project:
+  - the twelve months' mean daily high and low, their 90th and 10th percentiles, the mean,
+    rainfall, wet days, solar energy (MJ to kWh), and degree days on (high + low) / 2 against
+    18 °C;
+  - the annual figures and extremes;
+  - the Köppen–Geiger zone, polar first, then dry, tropical, temperate and cold, hemisphere-aware;
+  - the year's hours in whole degrees;
+  - the wind roses: 16 sectors, 5 speed bands, calm under 0.5 m/s, for the year, winter and summer,
+    with the prevailing and the strongest directions;
+  - the psychrometric density in 1 °C by 1 g/kg cells, and the share of hours in the comfort zone
+    (20–27 °C, 20–80% RH), too cool, or too hot or humid;
+  - PM2.5 daily means, their state against WHO;
+  - the earthquakes by distance, direction and depth, with a state.
+
+  A source that fails is named by its host, and what did come is kept (an earlier result is not
+  wiped). When all four fail, nothing changes. The whole fetch is one undo step. Nine findings join
+  the Site analysis, each with its source and date.
+- **The board (159b).** Opened from Site analysis or with `CLIMATE`, as a dialog over the app:
+  - a header: the place, the zone, the period, the date;
+  - nine indicators, one row on a computer and two to a row on a phone, with a state (icon and word)
+    only for PM2.5 and earthquakes, where a reference exists;
+  - nine figures, each with a numbered caption, a title stating the finding, its source, and a
+    table:
+    1. temperature, with rainfall on the same months;
+    2. the wind rose, with the two seasons;
+    3. the hourly heat map, in eleven named bands with runs merged;
+    4. the sun path;
+    5. degree days, mirrored on one axis;
+    6. solar;
+    7. psychrometric;
+    8. earthquakes, as a polar plot and the largest eight;
+    9. PM2.5 against the guideline and interim targets.
+  - method notes and sources.
+
+  Hover works on every mark, including each cell of the heat map. *Tables* shows every number.
+  Esc closes the board. It follows the light and dark themes, and prints alone on A3 landscape on
+  white. On a phone its charts are redrawn for the width and the heat map swipes.
+- `CLIMATE`, `CLIMATEGET` and their search words; the version is V159; the guide's Site page has
+  Climate and risk.
+
+### Found
+
+- On a phone the board first shrank 640-wide charts into 326 px, making their text about 5 px. The
+  charts are now drawn for the screen.
+- Fig. 3 first called 20–24 °C "comfortable" beside the comfort zone's 20–27 °C. It now names the
+  band.
+- V141's falsify variant for the Analyze rail button had been unanchored since V149 added phone
+  labels. It is re-anchored.
+
+### Suites
+
+- New: `bim_phase159_climate_risk_browser_tests.py`, 89 checks. Every number the app works out is
+  worked out again in the suite from the same fixture (`tests/climate_fixture.py`, a deterministic
+  record in each service's own answer shape):
+  - the monthly normals, percentiles, degree days and solar;
+  - seven known climates' Köppen zones;
+  - three humidity ratios against ASHRAE;
+  - the heat map hour by hour;
+  - the roses;
+  - comfort and the psychrometric cells;
+  - PM2.5;
+  - the earthquakes.
+
+  It also checks the switch, the commands, the requests, the findings, undo, the failures, the board
+  (indicators, figures, labels, merged runs, tables, hover, theme, print, Esc), a reload offline, and
+  a phone.
+- Amended for Site analysis inside Analyze: V113, V119, V120, V141, V149, V158 (each marked AMENDED
+  FOR V159).
+- V62 allows the new hosts, which are asked only on `CLIMATEGET` or only linked.
+- V114's CSS ceiling goes from 100,000 to 150,000 bytes, which still tells this sheet from the
+  whiteboard's 251,329.
+- **Falsified by `Phase/falsify_phase159.py`,** 29 variants, all caught. Two gaps closed:
+  - nothing checked that the Analyze view is remembered;
+  - one undo after the fetch looked right only because the step before it predated the data too.
+    The suite now also checks that the settings made before the fetch survive the undo.
+- Falsify: V158 retires `no_site_tab` (replaced by V159's `no_view_switch`) and re-anchors
+  `no_command`. V141 re-anchors `panel_not_built` and `no_rail_button`.
+
+### Not done
+
+- Wind and sun on the plan.
+- Natural-ventilation potential and UTCI.
+- Monthly wind roses.
+- EPW files as a local source.
+- A station's own records where one is near.
+- The flood summary waits for SA3, with the regulation layers.
+
+### Full regression and state after V159
+
+116 suites, 4878 checks, 0 failures. Patches 159a and 159b rebuild the build from
+`Phase/canvas_v10.html.bak_phase159_pre`. The diff is ES5-clean.
+
+    canvas_v10.html   2497751 bytes
+    sha256            759e7383cf4424e311d5cb4aa05c5b37019d3caa4a0a2e9a5c11115e2eb735ee
+    markers           __acad3dV60 ... __acad3dV159, __acad3dV134d (and the 133d to 133f markers)
