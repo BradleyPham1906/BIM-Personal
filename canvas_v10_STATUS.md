@@ -13798,3 +13798,282 @@ The research (`reference/research-zoning-envelope-yield.md`) covers:
     canvas_v10.html   2579872 bytes
     sha256            2a04374b678742d62079a7052b76552ecebe061592a121f97bf4edd30a278246
     markers           __acad3dV60 ... __acad3dV160, __acad3dV134d (and the 133d to 133f markers)
+
+## Phase 161 (V161) - Site analysis SA4: access and people: walk times, transit, the frontage, connectivity, the census, and the board
+
+The owner: "Continue" (V161 as planned: access and people), with the standing bar for the site
+analysis: "really really really professional ... research online on how they present the analysis
+(architectural, arcgis, data analysis)".
+
+The research (`reference/research-access-people.md`) covers:
+- ArcGIS Network Analyst's service areas: lines or polygons, rings or disks, and why the lines are
+  honest on a network;
+- walking at 80 m a minute, so 400 and 800 m are 5 and 10 minutes;
+- Walk Score's method, which the app follows openly without computing a score;
+- the 15-minute city's functions, for the kinds of daily need;
+- transit catchments (TOD, ITDP), and why OpenStreetMap gives stops and lines but not frequency;
+- the FHWA's functional classes and OpenStreetMap's crosswalk;
+- LEED ND's intersection density, and route directness;
+- the ACS: its margins of error, the Census Bureau's formulas, comparing a tract with its county and
+  state, Business Analyst's key facts, and the age pyramid's conventions.
+
+### What was built (patches 161a, 161b)
+
+- **The data (161a).** `ACCESSGET`, or *Get access and people* in Site analysis, asks two free
+  sources at once:
+  - **OpenStreetMap, in one Overpass request:**
+    - every highway way within 20 minutes' walk of the lot, with its nodes;
+    - the places of daily need, by node or centre;
+    - parks with their outlines;
+    - the stops, and the routes that serve them with their members.
+
+    The request's radii are measured from the lot, not the site's point.
+  - **The US Census Bureau:**
+    - TIGERweb's identify at the site gives the tract, county and state, with their land areas,
+      picked by their layers' names;
+    - the ACS 5-year gives 22 figures, each an estimate and its margin, for all three, and
+      B01001's 46 age and sex cells for the tract and the county.
+
+    The newest year is asked first, then the year before if it is not out yet. A site outside the
+    US asks the census nothing.
+- **The walk (161a).** Dijkstra with a binary heap along the network, at 80 m a minute, with steps
+  at half that.
+  - **Where the walk starts.** It leaves the lot anywhere: the edges within 30 m of the lot line
+    are cut every 5 m, where the lot's corners come nearest and where they cross it. Every ground
+    node within 30 m is a start, its time the straight step from the line. A point on such an edge
+    takes its own straight step too, so the cuts cost nothing there.
+  - **Who may walk where.** Motorways, foot=no and private ways are left out, unless foot=yes.
+    Sidewalks and crossings are walked but not drawn. A bridge or tunnel is not the lot's ground.
+  - **No street within 30 m.** The walk starts where the nearest one comes nearest, and the
+    finding says how far.
+- **What it works out (161a).**
+  - **The network reached.** Each edge is walked from both ends, as a tent with its peak where the
+    walks meet. Lengths come by band and class. The lines are kept to 20 minutes, cut exactly there,
+    simplified (Douglas-Peucker on x, z and minutes as metres walked).
+  - **Places, in seven kinds.** Each takes the network's time where it meets the nearest edge, plus
+    the step to it. A park's is the nearest point of its edge, and its area has its holes taken
+    off. Places beyond 20 minutes and private gardens are left out.
+  - **Stops.** They are grouped by name: a stop's two sides and its stop position count as one, and
+    so does a station with its unnamed entrances, so the walk is to the nearest entrance. Each line
+    is counted once, though it runs both ways. The board gives the nearest bus or tram and the
+    nearest rail or metro.
+  - **The frontage.** The lot line is walked metre by metre, and each metre goes to the street that
+    faces it within 30 m, square to the line. Each street keeps its length along the line, class,
+    speed, lanes, sidewalks and cycleway. Sidewalks mapped beside a road that does not tag them are
+    found.
+  - **Connectivity, as LEED ND counts it.** Intersections of streets and paths within 400 m of the
+    lot, with dead ends taken off until none is left and corners within 12 m merged. The area is the
+    lot and 400 m round it. Also route directness.
+  - **The people.** Shares and their margins come by the derived-proportion formula, with the ratio
+    formula where the root goes negative. Sums come with the root of the sum of the squares. The
+    ACS's special values are read as they mean: a controlled total's margin is 0, an estimate it
+    could not make is none.
+- **The results (161a).**
+  - Eight findings: walk times, transit, frontage and connectivity under Access and circulation;
+    daily needs, who lives here, households, and how people move under People and place. Each is
+    classed by its reference, with its source and date.
+  - A **Walk times** layer under Analysis in Layers (V148), drawn on the plan in the board's ramp,
+    darker over a light street map. It follows its data as a terrain layer follows its surface, so
+    it is never out of date. `WALKTIMES` adds it again.
+  - The panel says when the lot or the site has changed since.
+  - The fetch is one undo step. A source that fails is named, and what came before is kept.
+- **The board (161b).** `ACCESS`, *Open the board*, in the Climate board's frame:
+  - ten indicators in two rows, with states where a reference exists;
+  - Fig. 1, the walk-time map: rings, stops, the nearest of each need, 400 and 800 m as the crow
+    flies, north up, a scale bar;
+  - Fig. 2, daily needs on one scale of minutes, with the nearest of each always shown;
+  - Fig. 3, the street hierarchy within 400 m: line weight by class, the frontage, the
+    intersections counted, the frontage table always shown;
+  - Fig. 4, transit by walk time, with each stop's lines;
+  - Fig. 5, intersection density against LEED ND's thresholds, and route directness;
+  - Fig. 6, the tract against its county and state, each measure on its own scale, the tract's
+    margin of error, a difference counted only beyond the margins; and the key facts;
+  - Fig. 7, how people get to work, 100% bars in the categorical slots 1 to 7;
+  - Fig. 8, the age pyramid with the county's outline;
+  - notes on method and sources.
+
+  Each wide figure sits beside a column of two, so the rows balance. The categorical slots 5 to 7
+  were added to the board's tokens, in both themes and print, as validated (V159). Every figure
+  has a table, every mark a tooltip. It prints, follows the theme, and is redrawn for a phone.
+- Version V161; `ACCESSGET`, `ACCESS` and `WALKTIMES` with their search words; the guide's Site
+  page has Access and people.
+
+### Found
+
+- The first frontage seeding (10 m cuts, seeds at nodes only) put a stop beside the lot 1 m late.
+  A point on an edge beside the lot now takes its own straight step from the line, and the cuts are
+  5 m apart.
+- The fixture had places equally near two different streets: their walk is either's, so the app
+  and the reference could both be right and disagree. Every place and stop is now nearer one street.
+  The mid-block lot was 45 m from two streets; it is now 44 m from one.
+- The street map's labels and the walk map's stop labels could leave the frame on a phone. They
+  are now kept inside it.
+- The minute axes put "min" on the last tick, which ran into the next column's header. The axes
+  now have a caption.
+- On the phone, Fig. 6's longest labels were cut. Short labels are used there.
+
+### Suites
+
+- New: `bim_phase161_access_people_browser_tests.py`, 152 checks, against `access_fixture.py`
+  (Overpass, TIGERweb and the Census API, in their own shapes). The fixture is a grid with:
+  - a divided road and a Y-shaped cul-de-sac;
+  - steps, an expressway and a private drive (both shortcuts, were they walkable), and a private
+    drive with foot=yes;
+  - a footbridge over the lot, and separately mapped sidewalks;
+  - parks (one a relation with a hole) and a private garden;
+  - stops on both sides of a street, a metro station with entrances, routes both ways.
+
+  Every walk time is worked out again in `access_reference.py`, another way: a half-metre net
+  beside the lot, heapq, numpy for the nearest edge, parks sampled every metre, and LEED ND's count
+  and the Census formulas written out again. Each rule is shown to matter by a reference that breaks
+  it: walking the expressway or the private drive, ignoring foot=yes, full-speed steps, seeding the
+  footbridge.
+- V62 allows tigerweb.geo.census.gov, api.census.gov and www.census.gov: the two sources, asked only
+  on ACCESSGET for a US site, and the ACS pages linked from the board's notes (AMENDED FOR V161).
+- **Falsified by `Phase/falsify_phase161.py`:** 64 variants, 64 caught. The first run caught 63:
+  `fetch_not_undoable` passed, because the undo check also held when the undo took back the move
+  of the site before the fetch. The check now also asks that the site stays where it was moved,
+  and catches it. The full run was then repeated on the final build: 64 of 64 (1245 s, 3 workers).
+
+### Found after the first commit
+
+- V120's checks of the build found three things in V161's code:
+  - the categorical slots `--s5` to `--s7` read only through a string built at run time;
+  - `bimAccXZ`, left unused;
+  - two blank lines in a row.
+
+  The commute's colours now come from a list of the slots' literal names, the function is gone, and
+  the engine's block no longer starts with an extra line. The build changed by those alone.
+
+### Not done
+
+- Service frequency (GTFS feeds are per operator, and most need a key or a download).
+- Cycling times, and walking times that account for slope (the terrain is there).
+- Census figures for the whole walk shed, apportioning tracts by area, rather than the site's tract.
+- Crime, schools' ratings and other figures that need paid or keyed sources.
+
+### Full regression and state after V161
+
+118 suites, 5162 checks, 0 failures. The regression ran with V162's amended suites already in the folder; those seven (V141, V142, V143, V148, V158, V159, V161) were run again in their V161 form, on this build: all pass. V153 failed once under load in the first run, and passes alone and in the second. Patches 161a and 161b rebuild the build from
+`Phase/canvas_v10.html.bak_phase161_pre`. The diff is ES5-clean.
+
+    canvas_v10.html   2697156 bytes
+    sha256            e987ca2c332be3de03923756aa1036933e82e9fd1312b02cd650384722ea04df
+    markers           __acad3dV60 ... __acad3dV161, __acad3dV134d (and the 133d to 133f markers)
+
+## Phase 162 (V162) - One Analyze, by the ten categories; the boards are pages of the set
+
+The owner: "ok lets fix the analysis stuff first. you are splitting the analysis and site analysis
+on 2 different layers. they should be just one. in this thing, for the report/ dashboard, it should
+be on the presentation layer not its own thing. im trying to make everything consistent not
+sprawling everywhere". Asked how, the owner chose Analyze by the ten categories, and the boards as
+pages in the set.
+
+The research (`reference/research-one-analyze-boards.md`) covers:
+- ArcGIS Pro's one Geoprocessing pane, with one search and its tools grouped by what they do;
+- the site analysis standard's ten categories (V158), where each tool belongs with its findings;
+- reports and layouts as project items exported together (ArcGIS Pro), dashboards as story points
+  (Tableau), sheets printed as a set (Revit, V122).
+
+### What was built (patches 162a, 162b)
+
+- **One Analyze (162a).** The Analyses | Site analysis switch is gone. One tab body carries both
+  old classes, so everything that reached either half reaches it. It holds one list, in the order
+  the work goes:
+  - the stages, red flags first, and Define (the boundary, the project, the questions, Fill from
+    the model);
+  - the ten categories, each with its data, its analyses, its findings and its checklists:
+    - Location: the site context;
+    - Legal: zoning and yield;
+    - Landform: the survey check, slope, elevation and aspect, and grading;
+    - Water: rain on the terrain;
+    - Climate: the climate and risk data, sun and shadows, sun hours and solar;
+    - Access: the access and people data;
+    - Environmental risk and People and place link to the Climate and Access data they share;
+  - Model at the end: colour by, areas by usage, buildings LOD and solids, statistics, frame
+    analysis.
+
+  A category's line says its findings, its checklist ticked and the analyses on. A row inside a
+  category opens on its own. Commands and links go where the work is: ZONING opens Legal with its
+  form, Risk's link opens Climate.
+- **One search (162a).** The search covers everything:
+  - A category matched by its own words (its name, question, data, findings or checklist) shows
+    whole, opened.
+  - Otherwise only the analyses in it that match are shown: "cut fill" shows Grading, inside
+    Landform.
+  - Model and Define are searched too.
+  - The words are read node by node, so a label and its value are not one word.
+  - The search stays at the top of the panel as the list scrolls.
+- **A refresh waits for a field being typed in (162a).** The list is redrawn for every analysis
+  now. A redraw under a finding's field would lose the words, so it waits until the field is left.
+- **The boards are pages of the set (162b).** Climate and risk, Zoning and yield, and Access and
+  people:
+  - **In the set.** + Board in Presentation adds one. Analyze's *Show in Presentation* and the
+    ACCESS, CLIMATE and ZONINGBOARD commands put it in the set if needed, open it and show its
+    page. There is one board of each kind; its data stays in Analyze when it leaves the set.
+  - **The order.** The set's order is a list of ids. The sheets keep their own order (the layout
+    tabs) and a board keeps its place among them. Dragging a sheet past a board reorders the sheets,
+    and the tabs with them. The page's menu (present from here, open, print, move, remove), the
+    sheets' Move up and Move down, and + Page all work in the set. Each change is one undo step.
+  - **In the panel.** The board has a thumbnail: the board as it prints, in a frame scaled to the
+    column, rewritten when the model moves.
+  - **In the main view.** It opens with the rail, the panel and Properties beside it. The drawing
+    tools step aside. It lays out by its own width (classes from the main view's width, not the
+    window's), and is redrawn when that width crosses a phone's.
+  - **Its keys.** While it is on screen it owns the keys, as a sheet does: Esc gives the main view
+    back, and the model's keys do not reach the hidden model. A field in a panel keeps its keys.
+    A view or a sheet also gives the main view back.
+  - **Present** shows it as on screen, with the canvas aside. The wheel scrolls it to its end, then
+    moves to the next page. Ending on a board comes back to it.
+  - **Print set** prints it on A3 landscape pages of its own, in its place, in its print look. Its
+    own Print opens it alone in a print window, and the browser's print puts it alone on the paper.
+  - **Kept** in the project file, the browser's store, the project tabs, an undo and History. A bad
+    record is cleaned: one board of a kind it knows, an order of names.
+- Version V162. The guide's Analysis, Site, and Sheets and files pages are updated.
+
+### Found
+
+- The board kinds were a list made late in the script. A project read from storage at boot, before
+  the list existed, lost its boards on every reload. They are a function now, which exists from the
+  start.
+- The app's own key handler ended Escape (to clear the selection) before the board's handler saw
+  it. The board's page now owns the keys inside that handler, as a sheet's page does. This also
+  stops Delete from deleting an unseen selection behind a board.
+- Text read for the search ran a label into its value ("DefineBoundary", "7.1Badger"), so a word
+  at the start of a value was missed. Text is now read node by node.
+- An indicator's unit could break mid-word in a narrow tile ("me / dian"). Units stay whole.
+- Present's key hint sat over the board's first line. The board leaves room for it.
+- In Presentation, a long set squashed the project's name above it to a sliver, the set's heading
+  drawn over it (since V122). Only Analyze kept the header's height; every tab does now.
+
+### Suites
+
+- New: `bim_phase162_one_analyze_board_pages_browser_tests.py`, 107 checks, with the V161 access
+  fixture for real board figures. It covers the one list's order and grouping, rows in categories,
+  the search's rules, the held refresh, the commands, + Board, the order (drag, step, menus, +
+  Page, removal and undo), the main view (geometry, width, keys), the thumbnail, Present, Print set
+  and the board's print, the project file, a bad record, a reload, a tablet and a phone.
+- Amended, each marked AMENDED FOR V162:
+  - V141, V143, V148: the analyses in their categories, Model last;
+  - V144, V160: open a row's category before using its row;
+  - V148: the search's rules for categories;
+  - V158, V159: no switch; the board is a page in the main view (`role="region"`);
+  - V161: Show in Presentation; each category's data in the categories' order.
+- The test hook `__a3dAnzOpenAll` opens the categories that hold the rows it opens.
+- **Falsified by `Phase/falsify_phase162.py`:** 60 variants; the run is recorded in the next commit.
+
+### Not done
+
+- A board for every category (three boards exist; the categories link to them).
+- A board's figures as separate pages: a board is one page running over as many sheets of paper as
+  it needs.
+- Thumbnails in the dark theme: a board's thumbnail is its print look, white paper like the sheets'.
+
+### Full regression and state after V162
+
+The full regression is recorded in the next commit. Patches 162a and 162b rebuild the build from
+`Phase/canvas_v10.html.bak_phase162_pre`. The diff is ES5-clean.
+
+    canvas_v10.html   2725761 bytes
+    sha256            e206ae4501c1b76d143f7df47ccbabce6a5efbf39401c5b943ffdb662fed7796
+    markers           __acad3dV60 ... __acad3dV162, __acad3dV134d (and the 133d to 133f markers)

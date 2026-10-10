@@ -68,8 +68,9 @@ height in Properties.
 
 ## Site analysis
 
-**Site analysis** is the second view of the **Analyze** tab: the switch at its top reads
-*Analyses | Site analysis* (`SITEANALYSIS` opens it). It runs a site analysis the same way every time. It
+**Site analysis** is in the **Analyze** tab, one list with the analyses (`SITEANALYSIS` opens it):
+the stages and Define at the top, then the ten categories, each with its data, its analyses and its
+findings. It runs a site analysis the same way every time. It
 follows the order professionals use: the RIBA Plan of Work's Stage 1 and a developer's due
 diligence. The stages are:
 
@@ -129,7 +130,7 @@ Everything is saved with the project, and every change is one undo step.
 
 ## Climate and risk
 
-In Site analysis, **Get climate and risk** (`CLIMATEGET`) fetches, for the site's latitude and longitude:
+In Analyze, under 5. Climate, **Get climate and risk** (`CLIMATEGET`) fetches, for the site's latitude and longitude:
 - **ten full years of daily weather and the last full year hour by hour** from ERA5 reanalysis, via
   Open-Meteo;
 - **92 days of PM2.5** from CAMS, via Open-Meteo;
@@ -138,7 +139,7 @@ In Site analysis, **Get climate and risk** (`CLIMATEGET`) fetches, for the site'
 All three sources are free and need no account. What is worked out is kept with the project, so
 the board opens offline. Each result also becomes a finding under Climate or Environmental risk.
 
-**Open the board** (`CLIMATE`) shows the result as a professional site-analysis board.
+**Show in Presentation** (`CLIMATE`) puts the Climate and risk board in the set and opens it. It shows the result as a professional site-analysis board.
 
 The **header** gives the place, the Köppen–Geiger climate zone, the period and the date.
 
@@ -176,7 +177,7 @@ design, use the national seismic hazard map and code.
 
 ## Zoning and yield
 
-In Site analysis, **Enter zoning** (`ZONING`) opens the district's controls:
+In Analyze, under 2. Legal, **Enter zoning** (`ZONING`) opens the district's controls:
 - the district, its permitted uses and the source (code, section, date);
 - the floor area ratio, the height limit, a storeys limit and the coverage limit;
 - a rule for each kind of side: the **front** (the street), the **sides** and the **rear**.
@@ -209,7 +210,7 @@ From the envelope the app works out:
 It also checks the design: GFA from the usages, the height, the ground coverage, and every element
 outside the envelope in plan or in height. Below the ground the envelope does not apply.
 
-**Open the board** (`ZONINGBOARD`) shows it all as a professional zoning and yield board:
+**Show in Presentation** (`ZONINGBOARD`) puts the Zoning and yield board in the set and opens it. It shows it all as a professional zoning and yield board:
 - **indicators**: lot, FAR, height, coverage, capacity, achievable GFA, units, parking, and the
   design, with a state;
 - **the zoning analysis table**: each control, what is permitted, what is proposed, and whether it
@@ -227,6 +228,67 @@ a finding under Legal and regulatory, and every change is one undo step.
 Check every control against the current code, and any overlay, variance or bonus, before relying on
 it. A lot whose setbacks would split it in two is worked out up to that height, and the board says
 so.
+
+## Access and people
+
+In Analyze, under 8. Access, **Get access and people** (`ACCESSGET`) asks two free sources at once, with no
+account:
+- **OpenStreetMap, through Overpass:** every street and path around the site, the transit stops and
+  the routes that serve them, and the places of daily needs;
+- **the US Census Bureau:** TIGERweb names the census tract, county and state at the site, and the
+  American Community Survey's 5-year estimates give their people, with margins of error.
+
+From the streets the app works out **walk times from the lot**, along the network at 80 m a minute
+(4.8 km/h), with steps at half that. The walk leaves the lot anywhere within 30 m of its line, so a
+lot with two frontages starts from both. Motorways, private roads and ways closed to people on foot
+are left out, unless a private way is tagged for walking. Sidewalks are walked but not drawn. A
+footbridge over the lot is walked, but it is not where the lot opens onto. With no property line,
+the walk starts at the site's point.
+
+It works out:
+- **the rings:** the streets and paths reached within 5, 10 and 15 minutes, drawn as lines along
+  the streets, as ArcGIS Network Analyst draws service areas;
+- **daily needs:** the walk to the nearest food shop, health care, school or library, park or
+  playground, café, bank or post office, and community centre or place of worship, and how many of
+  each lie within 5, 10, 15 and 20 minutes. A park is reached at the nearest point of its edge. The
+  kinds follow the 15-minute city; this is not a Walk Score;
+- **transit:** the stops by walk time, with the lines that serve them. A stop's two sides, and a
+  station with its entrances, count as one. OpenStreetMap holds no timetables, so how often a line
+  runs needs the operator's GTFS feed;
+- **the frontage:** each street the lot faces within 30 m, with the length of lot line it fronts,
+  its class (arterial, collector, local, service), speed limit, lanes, sidewalks and cycleway;
+- **connectivity:** the intersections within 400 m of the lot, counted as LEED ND counts them. A
+  junction leading only to dead ends is left out, and a divided road's crossing counts once. The
+  density is set against LEED ND's thresholds (90 per square mile to qualify, 300 and 400 for
+  points). It also works out how much longer the walks are than the straight line.
+
+The walk times appear on the plan as a **Walk times** layer, under Analysis in Layers (`WALKTIMES`
+adds it again). It follows the access data, so a refresh updates it.
+
+The people's figures are for the tract, its county and its state: population and density, age,
+households, income, renting, homes empty, households without a car, and how people get to work.
+Each comes with its 90% margin of error. A share's margin is worked out by the Census Bureau's
+formula for a derived proportion, and the tract differs from its county only where the difference
+is larger than the two margins together.
+
+**Show in Presentation** (`ACCESS`) puts the Access and people board in the set and opens it. It shows it all as a professional access and people board:
+- **indicators** in two rows, with a state where a reference exists: daily needs, the nearest bus
+  and rail, lines within 10 minutes, intersections; population, age, income, renting, no car;
+- **the walk-time map**, north up, with 400 and 800 m as the crow flies for comparison;
+- **daily needs** on one scale of minutes, with the nearest of each kind;
+- **the street hierarchy** within 400 m, line weight by class, with the frontage table;
+- **transit** by walk time, with each stop's lines;
+- **connectivity** against LEED ND, and route directness;
+- **the tract against its county and state**, each measure with its margin, and the key facts;
+- **how people get to work**, as 100% bars;
+- **the age pyramid**, men and women in five-year bands, with the county's outline.
+
+Each result is also a finding under Access and circulation or People and place, and all of it is
+one undo step. Hover, **Tables**, the theme, print and the phone work as on the Climate board.
+
+The census part covers US sites. Elsewhere the walk times still work, and the board says where the
+national statistics office publishes the equivalent. If a server refuses the request, or does not
+allow browser access, it is named; the app never routes around it.
 
 ## Data layers
 
