@@ -170,7 +170,7 @@ when it starts (V111 to V138 went to other work; V139 to V179 are in NOW).
 - The Zoning and yield board: the permit-style zoning analysis table, true-scale sections after
   ZD1, the rules by side, the plan, plates and yield.
 - **Checked** in 132 checks against independent working (rectangles by formula, an L-shaped and a
-  U-shaped lot by hand, the mesh as a closed surface), with 43 falsify variants.
+  U-shaped lot by hand, the mesh as a closed surface), and 42 falsify variants, all caught.
 
 Phase 159 (V159), **climate and risk, and the board**.
 - The owner asked for research on how professionals present it, and for a really professional

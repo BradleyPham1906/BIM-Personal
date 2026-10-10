@@ -13772,8 +13772,8 @@ The research (`reference/research-zoning-envelope-yield.md`) covers:
 - V120's dead-code check found `bimZnClip` left over from the first engine. It is removed.
 - #29 was merged just before that fix was pushed, so the fix, this entry and the guide's release
   notes followed in #30.
-- **Falsified by `Phase/falsify_phase160.py`,** 42 variants after one was retired; the re-run is
-  recorded in the next commit. The first run caught 40 of 43, and
+- **Falsified by `Phase/falsify_phase160.py`:** 42 variants, all caught (one more was retired,
+  below). The first run caught 40 of 43, and
   the three it missed were each fixed at the root:
   - a finding refreshed on a change was checked with a new value ("Residential") contained in the
     old one ("Residential; community facility"), so a stale finding passed. The check now uses a
