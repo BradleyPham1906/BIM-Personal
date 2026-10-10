@@ -2,11 +2,11 @@
 
 **Read this first in a new session.** One page. The detail lives in the docs listed at the bottom.
 
-    canvas_v10.html   2497751 bytes
-    sha256            759e7383cf4424e311d5cb4aa05c5b37019d3caa4a0a2e9a5c11115e2eb735ee
-    markers           __acad3dV60 ... __acad3dV159, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
+    canvas_v10.html   2579969 bytes
+    sha256            846684e31dcc1955239eb3419ae17b06d9af63af252992acc3e9c8de2865559a
+    markers           __acad3dV60 ... __acad3dV160, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
                       __acad3dV121b
-    tests             116 suites, 4878 checks, 0 failures
+    tests             117 suites, 5010 checks, 0 failures
 
     The user guide (V142): every phase updates docs/src/, its log entry and BIM_APP_VERSION, then
     runs tools/dump_catalog.py and tools/build_docs.py. The V142 suite and the Pages workflow
@@ -160,7 +160,19 @@ when it starts (V111 to V138 went to other work; V139 to V179 are in NOW).
 | 118 | Blocks and data | ATTDEF ATTEDIT BEDIT WBLOCK DATAEXTRACTION TABLESTYLE TABLEDIT TABLEEXPORT | First phase that's about the disciplines, not drafting. BLOCK and INSERT landed in V124, as the Assets library's blocks: saved records inserted as independent copies. A block reference that follows its definition (what BEDIT edits) is not built. |
 | 119 | Sheets and plotting, rest | MVIEW (draw a viewport on the paper) PAGESETUP (plot settings beyond Sheet Setup) PUBLISH (V122's Print set prints every sheet in one job; a chosen subset and page setups remain) EXPORTPDF (vector PDF of a sheet) VPLAYER (per-viewport layer visibility) viewport lock | LAYOUT, MSPACE and PSPACE landed in V116, with layout tabs and model space through a viewport. |
 
-**Recently finished:** Phase 159 (V159), **climate and risk, and the board**.
+**Recently finished:** Phase 160 (V160), **zoning, the envelope by side, the yield, and the board**.
+- The owner asked, mid-phase, whether this matches Giraffe's zoning analysis. On the core it does;
+  the one gap in the envelope (a profile for every side, not the front only) was closed before
+  shipping. Generated massing and costs are their own later phases.
+- The zoning record, by hand or from council layers (MapPLUTO, FSR and height layers). Each kind of
+  side has a rule (a setback, steps, an angular plane). The envelope is worked out exactly and
+  built as a closed solid of whole faces. Then the yield, and the design checked against it.
+- The Zoning and yield board: the permit-style zoning analysis table, true-scale sections after
+  ZD1, the rules by side, the plan, plates and yield.
+- **Checked** in 132 checks against independent working (rectangles by formula, an L-shaped and a
+  U-shaped lot by hand, the mesh as a closed surface), with 43 falsify variants.
+
+Phase 159 (V159), **climate and risk, and the board**.
 - The owner asked for research on how professionals present it, and for a really professional
   result. The board follows CBE Clima, Ladybug, Weather Spark, ArcGIS Dashboards and data-journalism
   practice: indicators with references, figures titled with their findings, every number sourced
