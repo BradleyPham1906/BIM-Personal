@@ -13930,7 +13930,20 @@ The research (`reference/research-access-people.md`) covers:
   footbridge.
 - V62 allows tigerweb.geo.census.gov, api.census.gov and www.census.gov: the two sources, asked only
   on ACCESSGET for a US site, and the ACS pages linked from the board's notes (AMENDED FOR V161).
-- **Falsified by `Phase/falsify_phase161.py`:** 64 variants; the run is recorded in the next commit.
+- **Falsified by `Phase/falsify_phase161.py`:** 64 variants, 64 caught. The first run caught 63:
+  `fetch_not_undoable` passed, because the undo check also held when the undo took back the move
+  of the site before the fetch. The check now also asks that the site stays where it was moved,
+  and catches it. The full run was then repeated on the final build: 64 of 64 (1245 s, 3 workers).
+
+### Found after the first commit
+
+- V120's checks of the build found three things in V161's code:
+  - the categorical slots `--s5` to `--s7` read only through a string built at run time;
+  - `bimAccXZ`, left unused;
+  - two blank lines in a row.
+
+  The commute's colours now come from a list of the slots' literal names, the function is gone, and
+  the engine's block no longer starts with an extra line. The build changed by those alone.
 
 ### Not done
 
@@ -13941,9 +13954,9 @@ The research (`reference/research-access-people.md`) covers:
 
 ### Full regression and state after V161
 
-The full regression is recorded in the next commit. Patches 161a and 161b rebuild the build from
+118 suites, 5162 checks, 0 failures. The regression ran with V162's amended suites already in the folder; those seven (V141, V142, V143, V148, V158, V159, V161) were run again in their V161 form, on this build: all pass. V153 failed once under load in the first run, and passes alone and in the second. Patches 161a and 161b rebuild the build from
 `Phase/canvas_v10.html.bak_phase161_pre`. The diff is ES5-clean.
 
-    canvas_v10.html   2697113 bytes
-    sha256            4ec777cc536a3ff6c259d0c3b21c29ca50f48afaac09181a077cccb5cf16037b
+    canvas_v10.html   2697156 bytes
+    sha256            e987ca2c332be3de03923756aa1036933e82e9fd1312b02cd650384722ea04df
     markers           __acad3dV60 ... __acad3dV161, __acad3dV134d (and the 133d to 133f markers)

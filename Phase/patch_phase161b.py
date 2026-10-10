@@ -19,7 +19,7 @@ reference/research-access-people.md (8). The Access and people board, in the Cli
 Every figure has its table and a tooltip on every mark; it prints, follows the theme, and is
 redrawn for a phone."""
 NAME = 'patch_phase161b.py'
-BASE = 'e7c833de913dc545b400ce56bd70054e264195d4e580cbd7aabe330913715a43'   # the output of patch_phase161a.py
+BASE = '392c4c9aae48fa4e8af2ef294ee179f9aaee7e85c0005b140b1eb1ae60c8dac7'   # the output of patch_phase161a.py
 import hashlib, pathlib, sys
 P = pathlib.Path(sys.argv[1] if len(sys.argv) > 1 else 'canvas_v10.html')
 raw = P.read_bytes()
@@ -88,10 +88,10 @@ BOARD = r"""
   var BIM_ACC_SHORT={food:'Food',health:'Health',learn:'Learning',parks:'Parks, play',eat:'Eating out',services:'Banks, post',community:'Community'};
   var BIM_ACC_WCOL=['var(--w5)','var(--w3)','var(--w1)','var(--grid)'];
   var BIM_ACC_COMMUTE=[['Drove alone',['drv']],['Carpooled',['cpl']],['Transit',['trn']],['Walked',['wlk']],['Bicycle',['bik']],['Other',['txi','mcy','oth']],['Worked from home',['wfh']]];
+  var BIM_ACC_SLOT=['var(--s1)','var(--s2)','var(--s3)','var(--s4)','var(--s5)','var(--s6)','var(--s7)'];   /* the categorical slots, in their fixed order */
   var BIM_ACC_GEO_LABEL={tract:'Tract',county:'County',state:'State'};
   /* model plan metres to east and north, so every map is drawn north up */
   function bimAccEN(x,z){var t=bimTrueNorthDeg()*BIM_D2R,c=Math.cos(t),s=Math.sin(t);return [x*c+z*s,x*s-z*c];}
-  function bimAccXZ(e,n){var t=bimTrueNorthDeg()*BIM_D2R,c=Math.cos(t),s=Math.sin(t);return [e*c+n*s,e*s-n*c];}
   /* the frame that holds box [e0, n0, e1, n1] in W by H at one scale, m from the edges */
   function bimAccFrame(b,W,H,m){
     var w=Math.max(b[2]-b[0],1),h=Math.max(b[3]-b[1],1),k=Math.min((W-2*m)/w,(H-2*m)/h),ox=(W-k*w)/2,oy=(H-k*h)/2;
@@ -374,7 +374,7 @@ BOARD = r"""
       sh.forEach(function(S,j){
         if(!S||!(S[0]>0))return;
         var x0=L+cum*(R-L),w=S[0]*(R-L);cum+=S[0];
-        s+='<rect class="mk" x="'+bimClbF(x0)+'" y="'+y+'" width="'+bimClbF(Math.max(0.5,w))+'" height="'+bh+'" fill="var(--s'+(j+1)+')" stroke="var(--surf)" stroke-width="2"'+
+        s+='<rect class="mk" x="'+bimClbF(x0)+'" y="'+y+'" width="'+bimClbF(Math.max(0.5,w))+'" height="'+bh+'" fill="'+BIM_ACC_SLOT[j]+'" stroke="var(--surf)" stroke-width="2"'+
           bimClbTip(P.geo[g].name+'|'+BIM_ACC_COMMUTE[j][0]+': '+bimCenPct(S))+' data-acccom="'+g+':'+j+'"/>';
         if(w>=(nw?30:34))s+='<text class="lb" x="'+bimClbF(x0+w/2)+'" y="'+bimClbF(y+bh/2+4)+'" text-anchor="middle">'+Math.round(S[0]*100)+'%</text>';
       });
@@ -516,7 +516,7 @@ BOARD = r"""
           var sv=P.v.state?bimAccCommuteShares(P.v.state):null;
           col+=bimClbCard('s5',++fig,BIM_ACC_COMMUTE[bj][0]+': '+Math.round(cs[bj][0]*100)+'% of the tract\'s workers'+(cc&&cc[bj]?', against '+Math.round(cc[bj][0]*100)+'% in the county'+(sv&&sv[bj]?' and '+Math.round(sv[bj][0]*100)+'% in the state':''):''),
             'How workers 16 and over get to work (ACS table B08301), the share of each means, the tract against its county and state. Other: taxi, motorcycle and other means.',
-            '<div class="a3d-clb-chart">'+bimAccCommuteSvg(P)+'</div>'+bimClbLeg(BIM_ACC_COMMUTE.map(function(c,j){return ['var(--s'+(j+1)+')',c[0]];}))+
+            '<div class="a3d-clb-chart">'+bimAccCommuteSvg(P)+'</div>'+bimClbLeg(BIM_ACC_COMMUTE.map(function(c,j){return [BIM_ACC_SLOT[j],c[0]];}))+
             bimClbTable(['Means','Tract','County','State'],BIM_ACC_COMMUTE.map(function(c,j){
               function one(g){var x=bimAccCommuteShares(P.v[g]);return x&&x[j]?bimCenPct(x[j]):'—';}
               return [c[0],one('tract'),P.v.county?one('county'):'—',P.v.state?one('state'):'—'];})),psrc);

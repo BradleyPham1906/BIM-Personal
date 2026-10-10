@@ -79,7 +79,7 @@ VARIANTS = {
     'no_crow_circles': [("    [400,800].forEach(function(r){var rp=bimClbF(r*F.k);", "    [].forEach(function(r){var rp=bimClbF(r*F.k);")],
     'frontage_table_gone': [("        bimClbLeg([['var(--ink2)','Arterial, collector, local (by weight)','ln'],['var(--muted)','Service road or path','ln'],['var(--s4)','Frontage'],['var(--s1)','Intersection counted']])+bimAccFrontTable(S)+",
                              "        bimClbLeg([['var(--ink2)','Arterial, collector, local (by weight)','ln'],['var(--muted)','Service road or path','ln'],['var(--s4)','Frontage'],['var(--s1)','Intersection counted']])+")],
-    'commute_cycled': [("fill=\"var(--s'+(j+1)+')\" stroke=\"var(--surf)\" stroke-width=\"2\"'+", "fill=\"var(--s'+(j%4+1)+')\" stroke=\"var(--surf)\" stroke-width=\"2\"'+")],
+    'commute_cycled': [("fill=\"'+BIM_ACC_SLOT[j]+'\" stroke=\"var(--surf)\" stroke-width=\"2\"'+", "fill=\"'+BIM_ACC_SLOT[j%4]+'\" stroke=\"var(--surf)\" stroke-width=\"2\"'+")],
     'pyramid_no_county': [("    if(C){\n      var pm='',pf='';", "    if(false){\n      var pm='',pf='';")],
     'no_moe_bar': [("        if(T[1]!==null)s+='<line x1=\"'+x(Math.max(lo,T[0]-T[1]))+'\"", "        if(false)s+='<line x1=\"'+x(Math.max(lo,T[0]-T[1]))+'\"")],
     'stale_unsaid': [("    if(S.lot&&S.lot.key!==bimAccLotKey(bimAccLot()))return 'The lot has changed since: refresh to walk from it.';\n", "")],

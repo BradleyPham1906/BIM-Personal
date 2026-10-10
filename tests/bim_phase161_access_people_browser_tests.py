@@ -407,8 +407,10 @@ async def run():
             now = await acc()
             await safe("()=>window.__a3dUndo()")
             back = await acc()
-            ck(back.get('people', {}).get('outside') is True and back.get('access') and await fnd('people.population') is None and await fnd('access.walk'),
-               "one undo takes the last fetch back, whole: the people return to the record before it (no tract), and their findings go")
+            sun = await safe("()=>window.__a3dSunSettings()") or {}
+            ck(back.get('people', {}).get('outside') is True and back.get('access') and await fnd('people.population') is None and await fnd('access.walk')
+               and str(sun.get('lat')) == '40' and str(sun.get('lon')) == '-75',
+               "one undo takes the last fetch back, whole and alone: the people return to the record before it (no tract), their findings go, and the site stays where it was moved (%s, %s)" % (sun.get('lat'), sun.get('lon')))
             await safe("()=>window.__a3dRedo()")
             ck(await acc() == now and await fnd('people.population'), "redo returns them")
 

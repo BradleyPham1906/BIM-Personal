@@ -93,8 +93,7 @@ rep("""    if(R.kind!=='terrain'||bimResGone(R))return false;
     if(R.kind!=='terrain'||bimResGone(R))return false;
     o=objById(R.src);tin=bimTerrainTin(o);""")
 
-ENGINE = r"""
-  /* ================= __acad3dV161: Site analysis SA4, access and people: the data =================
+ENGINE = r"""  /* ================= __acad3dV161: Site analysis SA4, access and people: the data =================
      reference/research-access-people.md. Asked only when asked, from two free sources, no key:
      - OpenStreetMap, in one Overpass request: the streets and paths with their nodes, the transit
        stops and the routes that serve them, and the places of daily needs around the site;

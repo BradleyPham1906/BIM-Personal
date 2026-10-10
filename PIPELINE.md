@@ -2,11 +2,11 @@
 
 **Read this first in a new session.** One page. The detail lives in the docs listed at the bottom.
 
-    canvas_v10.html   2579872 bytes
-    sha256            2a04374b678742d62079a7052b76552ecebe061592a121f97bf4edd30a278246
-    markers           __acad3dV60 ... __acad3dV160, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
+    canvas_v10.html   2697156 bytes
+    sha256            e987ca2c332be3de03923756aa1036933e82e9fd1312b02cd650384722ea04df
+    markers           __acad3dV60 ... __acad3dV161, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
                       __acad3dV121b
-    tests             117 suites, 5010 checks, 0 failures
+    tests             118 suites, 5162 checks, 0 failures
 
     The user guide (V142): every phase updates docs/src/, its log entry and BIM_APP_VERSION, then
     runs tools/dump_catalog.py and tools/build_docs.py. The V142 suite and the Pages workflow
@@ -168,9 +168,9 @@ when it starts (V111 to V138 went to other work; V139 to V179 are in NOW).
   LEED ND counts it; the tract against its county and state, with every margin of error.
 - The Access and people board (ten indicators, eight figures), eight findings, and a Walk times
   layer on the plan.
-- **Checked** in CHECKS161 checks against an independent working (a half-metre net, heapq,
+- **Checked** in 152 checks against an independent working (a half-metre net, heapq,
   numpy, the Census formulas written out again), with a reference that breaks each walking rule
-  to show it matters, and FALS161 falsify variants.
+  to show it matters, and 64 falsify variants, all caught.
 
 Phase 160 (V160), **zoning, the envelope by side, the yield, and the board**.
 - The owner asked, mid-phase, whether this matches Giraffe's zoning analysis. On the core it does;
