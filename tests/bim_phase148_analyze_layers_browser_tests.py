@@ -71,8 +71,9 @@ def mk_safe(page):
 
 ROWS = """()=>{var w=document.querySelector('.a3d-analyze-wrap');if(!w)return null;
   return [].map.call(w.querySelectorAll('[data-anzcard]'),function(c){var hd=c.querySelector('.a3d-anzhd'),b=c.querySelector('.a3d-anzbody'),st=c.querySelector('.a3d-anzstate');
-    return {id:c.getAttribute('data-anzcard'),grp:c.closest('[data-anzgrp]').getAttribute('data-anzgrp'),open:c.classList.contains('open'),
-      hidden:c.hasAttribute('hidden'),h:Math.round(hd.getBoundingClientRect().height),bodyH:Math.round(b.getBoundingClientRect().height),
+    var k=c.closest('[data-sacat]'),g=c.closest('[data-anzgrp]');   /* AMENDED FOR V162: a row sits in a category, or in Model */
+    return {id:c.getAttribute('data-anzcard'),grp:k?k.getAttribute('data-sacat'):g.getAttribute('data-anzgrp'),open:c.classList.contains('open'),
+      hidden:!!c.closest('[hidden]'),h:Math.round(hd.getBoundingClientRect().height),bodyH:Math.round(b.getBoundingClientRect().height),
       tog:hd.querySelectorAll('[data-anztog]').length,first:(hd.querySelector('[data-anzact]')||{getAttribute:function(){return null;}}).getAttribute('data-anzact'),
       state:st?st.textContent:null,stateW:st?Math.round(st.getBoundingClientRect().width):null,sum:(c.querySelector('.a3d-anzsum')||{}).textContent,
       st:(c.querySelector('.a3d-anzst')||{}).textContent,aria:(hd.querySelector('[data-anztog]')||{getAttribute:function(){return null;}}).getAttribute('aria-expanded'),
@@ -148,14 +149,18 @@ async def run():
             # ---------------------------------------------------------------------------------
             print("\n-- 1. the list")
             await tab('analyze')
+            # AMENDED FOR V162: one Analyze -- the analyses in the categories they answer (opened here,
+            # so their rows can be measured), Model the one group left at the end
+            await safe("()=>['landform','water','climate'].forEach(function(c){window.__a3dSaGoto(c);})")
+            await page.wait_for_timeout(150)
             R = await rows()
             order = await safe("()=>[].map.call(document.querySelectorAll('.a3d-analyze-wrap .a3d-anzgrphd'),function(e){return e.textContent;})")
-            ck(order == ['Model', 'Site and terrain', 'Structure', 'Environment'], "four groups, in order: Model, Site and terrain, Structure, Environment (%s)" % order)
+            ck(order == ['Model'], "one group left of the four, Model, at the end (%s)" % order)
             G = {}
             for r in R.values():
                 G.setdefault(r['grp'], []).append(r['id'])
-            ck(G == {'model': ['lens', 'areas', 'lod', 'stats'], 'site': ['survey', 'terrain', 'grading', 'rain'], 'structure': ['structure'], 'env': ['sun', 'sunhours', 'solar']},
-               "each analysis in its group (%s)" % G)
+            ck(G == {'landform': ['survey', 'terrain', 'grading'], 'water': ['rain'], 'climate': ['sun', 'sunhours', 'solar'], 'model': ['lens', 'areas', 'lod', 'stats', 'structure']},
+               "each analysis in its category, or in Model (%s)" % G)
             ck(all(not r['open'] and r['bodyH'] == 0 and r['aria'] == 'false' for r in R.values()), "every row starts closed: its body takes no room")
             ck(all(r['tog'] == 1 for r in R.values()), "each row has one control that opens it")
             cards = {c['id']: c for c in await safe("()=>window.__a3dAnalyzeCards()") or []}
@@ -191,13 +196,16 @@ async def run():
             # ---------------------------------------------------------------------------------
             print("\n-- 2. the search")
             s = await safe("(q)=>window.__a3dAnzSearch(q)", 'rain')
-            ck(s == ['rain'], "'rain' finds Rain on terrain, not every row that says terrain (%s)" % s)
+            # AMENDED FOR V162: a category whose own words say rain shows whole -- Climate's question
+            # names rain -- and still no row that only says terrain
+            ck(s == ['rain', 'sun', 'sunhours', 'solar'], "'rain' finds Rain on terrain and the Climate category, not every row that says terrain (%s)" % s)
             s = await safe("(q)=>window.__a3dAnzSearch(q)", 'arrows')
             ck(s == ['grading'], "'arrows' finds the row whose button is Slope arrows: the buttons are searched too (%s)" % s)
-            s = await safe("(q)=>window.__a3dAnzSearch(q)", 'environment')
-            ck(s == ['sun', 'sunhours', 'solar'], "a group's name finds its rows (%s)" % s)
-            s = await safe("(q)=>window.__a3dAnzSearch(q)", 'sun hours')
-            ck(s == ['sunhours'], "two words, both at the start of words (%s)" % s)
+            # AMENDED FOR V162: a category's name finds its rows; two words that only a row has find the row
+            s = await safe("(q)=>window.__a3dAnzSearch(q)", 'climate')
+            ck(s == ['sun', 'sunhours', 'solar'], "a category's name finds its rows (%s)" % s)
+            s = await safe("(q)=>window.__a3dAnzSearch(q)", 'cut fill')
+            ck(s == ['grading'], "two words, both at the start of words (%s)" % s)
             ck(await safe("(a)=>[window.__a3dAnzWordsHit(a[0],a[1]),window.__a3dAnzWordsHit(a[2],a[1])]", ['rain', 'Slope on the terrain', 'ter']) == [False, True],
                "the rule: a word asked for starts a word of the text")
             s = await safe("(q)=>window.__a3dAnzSearch(q)", 'zzzq')
@@ -205,16 +213,16 @@ async def run():
             ck(s == [] and nm == [True, 0], "nothing found: 'Nothing matches', and no empty group headings (%s)" % nm)
             await safe("(q)=>window.__a3dAnzSearch(q)", '')
             await page.click('.a3d-analyze-wrap [data-anzsearch]')
-            await page.keyboard.type('sola')   # not 'sol': solids, in Buildings, LOD and solids, start so too
+            await page.keyboard.type('cityj')   # AMENDED FOR V162: 'sola' is in Climate's own question now, so the whole category shows
             await page.wait_for_timeout(100)
             vis = [k for k, r in (await rows()).items() if not r['hidden']]
-            ck(vis == ['solar'], "typed into the field, the list narrows as it is typed (%s)" % vis)
+            ck(vis == ['lod'], "typed into the field, the list narrows as it is typed (%s)" % vis)
             await safe("()=>window.__a3dColumnAt([200,200],0,1,1,3)")
             await safe("()=>window.__a3dRefreshProps()")
             await page.wait_for_timeout(150)
             f = await safe("()=>{var a=document.activeElement;return [a&&a.getAttribute('data-anzsearch'),a&&a.value];}")
             vis = [k for k, r in (await rows()).items() if not r['hidden']]
-            ck(f == ['1', 'sola'] and vis == ['solar'], "the model changes and the panel refreshes: the search keeps its text, its focus and its rows (%s, %s)" % (f, vis))
+            ck(f == ['1', 'cityj'] and vis == ['lod'], "the model changes and the panel refreshes: the search keeps its text, its focus and its rows (%s, %s)" % (f, vis))
             await page.keyboard.press('Escape')
             await page.wait_for_timeout(100)
             vis = [k for k, r in (await rows()).items() if not r['hidden']]
@@ -610,9 +618,9 @@ async def run():
                 await sf("()=>{window.__a3dEnter();window.__a3dSetPlanView&&window.__a3dSetPlanView();window.__a3dTestSetObjs([]);}")
                 await p.click('#a3d-rail [data-tab="analyze"]')
                 await p.wait_for_timeout(300)
-                await sf("()=>window.__a3dAnzToggle('sunhours',true)")
+                await sf("()=>{window.__a3dSaGoto('climate');window.__a3dAnzToggle('sunhours',true);}")   # AMENDED FOR V162: Sun hours is in 5. Climate
                 m = await sf("""()=>{var w=document.querySelector('.a3d-analyze-wrap'),a=w.querySelector('.a3d-anz'),lp=document.getElementById('a3d-leftpanel').getBoundingClientRect();
-                  var hd=[].map.call(w.querySelectorAll('.a3d-anzhd'),function(e){return e.getBoundingClientRect().height;});
+                  var hd=[].map.call(w.querySelectorAll('.a3d-anzhd'),function(e){return e.getBoundingClientRect().height;}).filter(function(h){return h>0;});   /* AMENDED FOR V162: the rows on screen; a shut category's are not */
                   var bt=[].map.call(w.querySelectorAll('.a3d-anzbtn'),function(e){return e.getBoundingClientRect();}).filter(function(r){return r.height>0;});
                   var tree=document.querySelector('#a3d-leftpanel > .a3d-tree');
                   return {hd:Math.min.apply(0,hd),hdMax:Math.max.apply(0,hd),bt:Math.min.apply(0,bt.map(function(r){return r.height;})),over:a.scrollWidth-a.clientWidth,

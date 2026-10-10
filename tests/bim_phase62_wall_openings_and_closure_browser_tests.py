@@ -250,7 +250,11 @@ def source_level_checks(path):
             "archive-api.open-meteo.com", "air-quality-api.open-meteo.com", "earthquake.usgs.gov", "open-meteo.com", "www.who.int",
             # AMENDED FOR V160: New York's ZD1 zoning diagram guide, linked from the Zoning and yield
             # board's notes as the drawing standard it follows, never fetched
-            "www.nyc.gov"}
+            "www.nyc.gov",
+            # AMENDED FOR V161: the US Census Bureau's TIGERweb and Data API, asked only on ACCESSGET
+            # (and never for a site outside the US), and its ACS pages, linked from the Access and
+            # people board's notes, never fetched
+            "tigerweb.geo.census.gov", "api.census.gov", "www.census.gov"}
     external = sorted(h for h in hosts if not h.endswith("w3.org") and h not in v132)
     check(not external,
           "no external host referenced anywhere in the file (found: " + (", ".join(external) or "none") + ")")

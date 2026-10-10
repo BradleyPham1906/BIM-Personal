@@ -8,8 +8,17 @@ order: 8
 
 - **Layouts:** `LAYOUT` adds a sheet layout with viewports. `TITLEBLOCK` edits the title block.
 - **Model and paper space:** `MSPACE` and `PSPACE` switch between them.
-- **Presenting:** the **Presentation** tab on the left rail lists the pages. From there you can
-  present them full screen or print the set.
+- **Presenting:** the **Presentation** tab on the left rail lists the pages of the set, with their
+  thumbnails. From there you can present them full screen or print the set.
+- **Boards in the set:** **+ Board** adds a board of the site analysis as a page: Climate and risk,
+  Zoning and yield, or Access and people. Analyze's **Show in Presentation** does the same.
+  - A board's page opens in the main view, with the panels beside it, and lays out by the room it
+    has. **Esc** gives the drawing back.
+  - Drag a board to move it among the sheets; the sheets keep their own order, as the layout tabs
+    show it. Right-click it to present from it, print it alone, move it or remove it from the set.
+    Its data stays in Analyze.
+  - **Present** shows it as on screen; the wheel scrolls it to its end, then goes on to the next
+    page. **Print set** prints it on A3 landscape pages of its own, in its place in the set.
 - **Printing one sheet:** `PLOT`.
 
 ## Exporting

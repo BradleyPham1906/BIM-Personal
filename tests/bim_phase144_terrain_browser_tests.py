@@ -410,6 +410,9 @@ async def run():
             await page.click('#a3d-rail [data-tab="analyze"]')
             await page.wait_for_timeout(250)
             # AMENDED FOR V148: a row's other buttons are inside it, so the row is opened first
+            # AMENDED FOR V162: and the row is inside 3. Landform, which is opened first
+            await safe("()=>window.__a3dSaGoto('landform')")
+            await page.wait_for_timeout(100)
             await page.click('.a3d-analyze-wrap [data-anztog="terrain"]')
             await page.wait_for_timeout(100)
             cards = await safe("()=>window.__a3dAnalyzeCards()") or []

@@ -120,9 +120,10 @@ async def run():
             # Analyze's switch, Analyses | Site analysis
             await safe("()=>{document.querySelector('#a3d-rail .a3d-railbtn[data-tab=\"analyze\"]').click();}")
             await page.wait_for_timeout(150)
-            rb = await safe("""()=>{var b=document.querySelector('#a3d-leftpanel [data-anzview="site"]');
-              return b?{text:b.textContent,role:b.getAttribute('role'),rail:!!document.querySelector('#a3d-rail [data-tab="site"]')}:null;}""")
-            ck(rb == {'text': 'Site analysis', 'role': 'tab', 'rail': False}, "Site analysis in Analyze's switch, no rail tab of its own (%s)" % rb)
+            # AMENDED FOR V162: one Analyze -- the site analysis is in its one list, no switch, no rail tab
+            rb = await safe("""()=>{var w=document.querySelector('#a3d-leftpanel .a3d-analyze-wrap');
+              return w?{sa:w.classList.contains('a3d-sa-wrap'),cats:w.querySelectorAll('[data-sacat]').length,sw:document.querySelectorAll('[data-anzview]').length,rail:!!document.querySelector('#a3d-rail [data-tab="site"]')}:null;}""")
+            ck(rb == {'sa': True, 'cats': 10, 'sw': 0, 'rail': False}, "Site analysis in Analyze's one list, no rail tab of its own (%s)" % rb)
             await safe("()=>window.__a3dRunCmd('siteanalysis')")
             await page.wait_for_timeout(150)
             ck(await safe("()=>document.getElementById('a3d-shell').dataset.tab") == 'analyze' and await panel(),
@@ -304,7 +305,8 @@ async def run():
             print("\n-- 6. the panel")
             h = await panel() or ''
             ck('Red flags first' in h and '7.1 Former petrol station next door' in h, "red flags first, numbered")
-            ck(re.search(r'class="a3d-anzcount">\d+ findings, 2 red flags<', h) is not None, "the count says the red flags (%s)" % re.findall(r'a3d-anzcount">([^<]*)<', h))
+            # AMENDED FOR V162: the one list's count says the analyses on as well
+            ck(re.search(r'class="a3d-anzcount">\d+ findings, 2 red flags( \u00b7 \d+ on)?<', h) is not None, "the count says the red flags (%s)" % re.findall(r'a3d-anzcount">([^<]*)<', h))
             ck('Property_1, 600 m' in h, "the boundary: the property and its area")
             ck(await safe("()=>document.querySelector('.a3d-sa-wrap [data-sacat=\"risk\"]').classList.contains('open')"), "a category opens with a click")
             await safe("""(i)=>{var e=document.querySelector('.a3d-sa-wrap [data-saff="'+i+':title"]');e.value='Former filling station next door';e.dispatchEvent(new Event('change',{bubbles:true}));}""", a)
@@ -384,7 +386,7 @@ async def run():
             await p2.wait_for_timeout(300)
             await within(p2.evaluate("()=>{document.querySelector('#a3d-rail .a3d-railbtn[data-tab=\"analyze\"]').click();}"), 'tab')   # AMENDED FOR V159: in Analyze
             await p2.wait_for_timeout(300)
-            await within(p2.evaluate("()=>{document.querySelector('#a3d-leftpanel [data-anzview=\"site\"]').click();}"), 'view')
+            # AMENDED FOR V162: no view to choose: the site analysis is in Analyze's one list
             await p2.wait_for_timeout(300)
             g = await within(p2.evaluate("""()=>{var w=document.querySelector('.a3d-sa');if(!w)return null;var r=w.getBoundingClientRect(),
               b=document.querySelector('.a3d-sa [data-saact="fill"]').getBoundingClientRect(),s=document.querySelector('.a3d-sa select').getBoundingClientRect();

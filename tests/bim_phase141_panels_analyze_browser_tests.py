@@ -215,7 +215,8 @@ async def run():
             # AMENDED FOR V144: the terrain card follows the survey's
             # AMENDED FOR V145: the grading card follows the terrain's
             # AMENDED FOR V148: in four groups -- Model, Site and terrain, Structure, Environment
-            ck(pc and [c['id'] for c in pc] == ['lens', 'areas', 'lod', 'stats', 'survey', 'terrain', 'grading', 'rain', 'structure', 'sun', 'sunhours', 'solar'],
+            # AMENDED FOR V162: one Analyze -- each analysis in the category it answers, then Model
+            ck(pc and [c['id'] for c in pc] == ['survey', 'terrain', 'grading', 'rain', 'sun', 'sunhours', 'solar', 'lens', 'areas', 'lod', 'stats', 'structure'],
                "seven cards: structure, sun, colour by, areas, survey, LOD, statistics (%s)" % (pc and [c['id'] for c in pc]))
             P = {c['id']: c for c in pc or []}
             ck(P.get('structure', {}).get('st') == 'No frame yet: place columns and beams' and P['structure']['btns'][0][2] and
@@ -255,7 +256,8 @@ async def run():
             await page.click('.a3d-analyze-wrap [data-anzact="sun:toggle"]')
             await page.wait_for_timeout(150)
             ck((await cards())['sun']['state'] == 'off', "and Hide off")
-            await page.click('.a3d-analyze-wrap [data-anzact="open:Location"]')
+            # AMENDED FOR V162: the sun card's own Settings -- Location's data block has a Location button too
+            await page.click('.a3d-analyze-wrap [data-anzcard="sun"] [data-anzact="open:Location"]')
             await page.wait_for_timeout(200)
             ck(await safe("()=>window.__a3dPropTab()") == 'site' and (await shown()).get('groups', [None])[0] == 'Location', "its Settings open Location, on Site")
             # a survey
