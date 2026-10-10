@@ -247,7 +247,10 @@ def source_level_checks(path):
             "www.landxml.org",
             # AMENDED FOR V159: the climate and risk sources, asked only on CLIMATEGET, and the WHO
             # guideline and the sources' home pages, linked from the board's notes, never fetched
-            "archive-api.open-meteo.com", "air-quality-api.open-meteo.com", "earthquake.usgs.gov", "open-meteo.com", "www.who.int"}
+            "archive-api.open-meteo.com", "air-quality-api.open-meteo.com", "earthquake.usgs.gov", "open-meteo.com", "www.who.int",
+            # AMENDED FOR V160: New York's ZD1 zoning diagram guide, linked from the Zoning and yield
+            # board's notes as the drawing standard it follows, never fetched
+            "www.nyc.gov"}
     external = sorted(h for h in hosts if not h.endswith("w3.org") and h not in v132)
     check(not external,
           "no external host referenced anywhere in the file (found: " + (", ".join(external) or "none") + ")")

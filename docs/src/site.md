@@ -174,6 +174,60 @@ The climate is modelled at about 25 km, so a city's heat island or a valley's fr
 Confirm with a local station where it matters. Earthquakes are history, not a hazard model: for
 design, use the national seismic hazard map and code.
 
+## Zoning and yield
+
+In Site analysis, **Enter zoning** (`ZONING`) opens the district's controls:
+- the district, its permitted uses and the source (code, section, date);
+- the floor area ratio, the height limit, a storeys limit and the coverage limit;
+- a rule for each kind of side: the **front** (the street), the **sides** and the **rear**.
+
+Each rule has a setback at the ground and, as the code gives them:
+- **steps**: "above 15 m, set back 6 m";
+- an **angular plane** rising from the lot line at a ratio: the front's sky exposure plane, or a
+  side or rear daylight plane.
+
+The front also takes the familiar street wall height and stepback above it. Pick the lot's front.
+The rear is the side facing it and the rest are sides; any side can be set by hand, for example a
+corner lot's second front.
+
+**From the layers** reads a council zoning layer under the lot (see Data layers): the district and,
+where the layer has them, the FAR and the height. That covers NYC's MapPLUTO (its residential or
+commercial FAR, by the scheme's use) and an FSR and building-height layer, and a height given in
+feet is turned into metres. Each value is credited to its layer and field.
+
+**Build envelope** (`ENVELOPE`) builds the zoning envelope as a translucent, locked solid on its own
+**Zoning envelope** layer. At every height, the envelope is the lot with each side moved in by its
+rule there, up to the height limit. Every change to the record rebuilds it.
+
+From the envelope the app works out:
+- the floor plate at each storey's ceiling, capped by coverage;
+- the envelope's capacity;
+- the FAR's gross floor area;
+- the **achievable** area, the lesser of the two, and which one **governs**;
+- the net area, the units and the parking.
+
+It also checks the design: GFA from the usages, the height, the ground coverage, and every element
+outside the envelope in plan or in height. Below the ground the envelope does not apply.
+
+**Open the board** (`ZONINGBOARD`) shows it all as a professional zoning and yield board:
+- **indicators**: lot, FAR, height, coverage, capacity, achievable GFA, units, parking, and the
+  design, with a state;
+- **the zoning analysis table**: each control, what is permitted, what is proposed, and whether it
+  complies, with an icon and a word;
+- **two sections at true scale**, front to rear and side to side, with every setback, step and
+  plane dimensioned, after New York's ZD1 zoning diagram;
+- **the rules by side**: each kind of side's setback against height;
+- **the lot plan**, turned so the street is at the bottom;
+- **the floor plates by storey**;
+- **the yield**, from gross area to units and parking.
+
+Hover, **Tables**, the theme, print and the phone work as on the Climate board. Each result is also
+a finding under Legal and regulatory, and every change is one undo step.
+
+Check every control against the current code, and any overlay, variance or bonus, before relying on
+it. A lot whose setbacks would split it in two is worked out up to that height, and the board says
+so.
+
 ## Data layers
 
 `DATALAYERS` adds public GIS data around the site: parcels, zoning, flood zones. A layer can be:
