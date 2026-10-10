@@ -715,7 +715,7 @@ async def run():
             await lot([[0, 0], [30, 0], [30, 40], [0, 40]], pg=p2)
             for k, v in (('district', 'R7-2'), ('far', '4'), ('maxH', '30'), ('front', '3'), ('side', '2'), ('rear', '5'), ('baseH', '15'), ('step', '3')):
                 await zset(k, v, pg=p2)
-            await safe("()=>{window.__a3dAnzView('site');window.__a3dZnEdit(true);}", pg=p2)
+            await safe("()=>{window.__a3dAnzView('site');window.__a3dZnEdit(true);window.__a3dSaGoto('legal');}", pg=p2)   # AMENDED FOR V162: the zoning form is in 2. Legal
             await p2.wait_for_timeout(200)
             t = await safe("""()=>{var i=document.querySelector('[data-znsec] [data-znf="far"]'),b=document.querySelector('[data-znsec] [data-saact="znstepadd:front"]');
               return i&&b?{i:i.getBoundingClientRect().height,f:parseFloat(getComputedStyle(i).fontSize),b:b.getBoundingClientRect().height}:null;}""", pg=p2) or {}

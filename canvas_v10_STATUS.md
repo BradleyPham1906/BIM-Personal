@@ -13960,3 +13960,120 @@ The research (`reference/research-access-people.md`) covers:
     canvas_v10.html   2697156 bytes
     sha256            e987ca2c332be3de03923756aa1036933e82e9fd1312b02cd650384722ea04df
     markers           __acad3dV60 ... __acad3dV161, __acad3dV134d (and the 133d to 133f markers)
+
+## Phase 162 (V162) - One Analyze, by the ten categories; the boards are pages of the set
+
+The owner: "ok lets fix the analysis stuff first. you are splitting the analysis and site analysis
+on 2 different layers. they should be just one. in this thing, for the report/ dashboard, it should
+be on the presentation layer not its own thing. im trying to make everything consistent not
+sprawling everywhere". Asked how, the owner chose Analyze by the ten categories, and the boards as
+pages in the set.
+
+The research (`reference/research-one-analyze-boards.md`) covers:
+- ArcGIS Pro's one Geoprocessing pane, with one search and its tools grouped by what they do;
+- the site analysis standard's ten categories (V158), where each tool belongs with its findings;
+- reports and layouts as project items exported together (ArcGIS Pro), dashboards as story points
+  (Tableau), sheets printed as a set (Revit, V122).
+
+### What was built (patches 162a, 162b)
+
+- **One Analyze (162a).** The Analyses | Site analysis switch is gone. One tab body carries both
+  old classes, so everything that reached either half reaches it. It holds one list, in the order
+  the work goes:
+  - the stages, red flags first, and Define (the boundary, the project, the questions, Fill from
+    the model);
+  - the ten categories, each with its data, its analyses, its findings and its checklists:
+    - Location: the site context;
+    - Legal: zoning and yield;
+    - Landform: the survey check, slope, elevation and aspect, and grading;
+    - Water: rain on the terrain;
+    - Climate: the climate and risk data, sun and shadows, sun hours and solar;
+    - Access: the access and people data;
+    - Environmental risk and People and place link to the Climate and Access data they share;
+  - Model at the end: colour by, areas by usage, buildings LOD and solids, statistics, frame
+    analysis.
+
+  A category's line says its findings, its checklist ticked and the analyses on. A row inside a
+  category opens on its own. Commands and links go where the work is: ZONING opens Legal with its
+  form, Risk's link opens Climate.
+- **One search (162a).** The search covers everything:
+  - A category matched by its own words (its name, question, data, findings or checklist) shows
+    whole, opened.
+  - Otherwise only the analyses in it that match are shown: "cut fill" shows Grading, inside
+    Landform.
+  - Model and Define are searched too.
+  - The words are read node by node, so a label and its value are not one word.
+  - The search stays at the top of the panel as the list scrolls.
+- **A refresh waits for a field being typed in (162a).** The list is redrawn for every analysis
+  now. A redraw under a finding's field would lose the words, so it waits until the field is left.
+- **The boards are pages of the set (162b).** Climate and risk, Zoning and yield, and Access and
+  people:
+  - **In the set.** + Board in Presentation adds one. Analyze's *Show in Presentation* and the
+    ACCESS, CLIMATE and ZONINGBOARD commands put it in the set if needed, open it and show its
+    page. There is one board of each kind; its data stays in Analyze when it leaves the set.
+  - **The order.** The set's order is a list of ids. The sheets keep their own order (the layout
+    tabs) and a board keeps its place among them. Dragging a sheet past a board reorders the sheets,
+    and the tabs with them. The page's menu (present from here, open, print, move, remove), the
+    sheets' Move up and Move down, and + Page all work in the set. Each change is one undo step.
+  - **In the panel.** The board has a thumbnail: the board as it prints, in a frame scaled to the
+    column, rewritten when the model moves.
+  - **In the main view.** It opens with the rail, the panel and Properties beside it. The drawing
+    tools step aside. It lays out by its own width (classes from the main view's width, not the
+    window's), and is redrawn when that width crosses a phone's.
+  - **Its keys.** While it is on screen it owns the keys, as a sheet does: Esc gives the main view
+    back, and the model's keys do not reach the hidden model. A field in a panel keeps its keys.
+    A view or a sheet also gives the main view back.
+  - **Present** shows it as on screen, with the canvas aside. The wheel scrolls it to its end, then
+    moves to the next page. Ending on a board comes back to it.
+  - **Print set** prints it on A3 landscape pages of its own, in its place, in its print look. Its
+    own Print opens it alone in a print window, and the browser's print puts it alone on the paper.
+  - **Kept** in the project file, the browser's store, the project tabs, an undo and History. A bad
+    record is cleaned: one board of a kind it knows, an order of names.
+- Version V162. The guide's Analysis, Site, and Sheets and files pages are updated.
+
+### Found
+
+- The board kinds were a list made late in the script. A project read from storage at boot, before
+  the list existed, lost its boards on every reload. They are a function now, which exists from the
+  start.
+- The app's own key handler ended Escape (to clear the selection) before the board's handler saw
+  it. The board's page now owns the keys inside that handler, as a sheet's page does. This also
+  stops Delete from deleting an unseen selection behind a board.
+- Text read for the search ran a label into its value ("DefineBoundary", "7.1Badger"), so a word
+  at the start of a value was missed. Text is now read node by node.
+- An indicator's unit could break mid-word in a narrow tile ("me / dian"). Units stay whole.
+- Present's key hint sat over the board's first line. The board leaves room for it.
+- In Presentation, a long set squashed the project's name above it to a sliver, the set's heading
+  drawn over it (since V122). Only Analyze kept the header's height; every tab does now.
+
+### Suites
+
+- New: `bim_phase162_one_analyze_board_pages_browser_tests.py`, 107 checks, with the V161 access
+  fixture for real board figures. It covers the one list's order and grouping, rows in categories,
+  the search's rules, the held refresh, the commands, + Board, the order (drag, step, menus, +
+  Page, removal and undo), the main view (geometry, width, keys), the thumbnail, Present, Print set
+  and the board's print, the project file, a bad record, a reload, a tablet and a phone.
+- Amended, each marked AMENDED FOR V162:
+  - V141, V143, V148: the analyses in their categories, Model last;
+  - V144, V160: open a row's category before using its row;
+  - V148: the search's rules for categories;
+  - V158, V159: no switch; the board is a page in the main view (`role="region"`);
+  - V161: Show in Presentation; each category's data in the categories' order.
+- The test hook `__a3dAnzOpenAll` opens the categories that hold the rows it opens.
+- **Falsified by `Phase/falsify_phase162.py`:** 60 variants; the run is recorded in the next commit.
+
+### Not done
+
+- A board for every category (three boards exist; the categories link to them).
+- A board's figures as separate pages: a board is one page running over as many sheets of paper as
+  it needs.
+- Thumbnails in the dark theme: a board's thumbnail is its print look, white paper like the sheets'.
+
+### Full regression and state after V162
+
+The full regression is recorded in the next commit. Patches 162a and 162b rebuild the build from
+`Phase/canvas_v10.html.bak_phase162_pre`. The diff is ES5-clean.
+
+    canvas_v10.html   2725761 bytes
+    sha256            e206ae4501c1b76d143f7df47ccbabce6a5efbf39401c5b943ffdb662fed7796
+    markers           __acad3dV60 ... __acad3dV162, __acad3dV134d (and the 133d to 133f markers)

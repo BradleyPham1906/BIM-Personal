@@ -132,10 +132,14 @@ async def run():
             await page.wait_for_timeout(150)
             sec = await safe("""()=>{var s=document.querySelector('.a3d-sa-wrap [data-accsec]');if(!s)return null;
               return {hd:s.querySelector('.a3d-sasechd').textContent,acts:[].map.call(s.querySelectorAll('[data-saact]'),function(b){return [b.getAttribute('data-saact'),b.textContent];})};}""") or {}
-            ck(sec.get('hd') == 'Access and people' and sec.get('acts') == [['accget', 'Get access and people'], ['accboard', 'Open the board']],
-               "Site analysis has an Access and people section: Get access and people, Open the board (%s)" % sec)
+            # AMENDED FOR V162: the board is a page of the set: Analyze links to it, Show in Presentation
+            ck(sec.get('hd') == 'Access and people' and sec.get('acts') == [['accget', 'Get access and people'], ['accboard', 'Show in Presentation']],
+               "Site analysis has an Access and people section: Get access and people, Show in Presentation (%s)" % sec)
+            # AMENDED FOR V162: each category holds its own data, in the categories' order -- Location's
+            # context, Legal's zoning, Climate's climate and risk, Access's access and people
             order = await safe("()=>[].map.call(document.querySelectorAll('.a3d-sa-wrap .a3d-clsec .a3d-sasechd'),function(h){return h.textContent;})")
-            ck(order == ['Climate and risk', 'Zoning and yield', 'Access and people'], "after Climate and risk and Zoning and yield (%s)" % order)
+            inacc = await safe("()=>!!document.querySelector('.a3d-sa-wrap [data-sacat=\"access\"] [data-accsec]')")
+            ck(order == ['Site context', 'Zoning and yield', 'Climate and risk', 'Access and people'] and inacc, "in 8. Access, after the data of Location, Legal and Climate (%s)" % order)
 
             # ---------------------------------------------------------------------------------
             print("\n-- 2. the requests")

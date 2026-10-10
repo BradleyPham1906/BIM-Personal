@@ -340,7 +340,11 @@ async def run():
             await page.wait_for_timeout(100)
             C = {c['id']: c for c in await cards()}
             hd = await safe("()=>[].map.call(document.querySelectorAll('.a3d-analyze-wrap .a3d-anzgrphd'),function(e){return e.textContent;})")
-            ck(hd == ['Model', 'Site and terrain', 'Structure', 'Environment'] and all(k in C for k in ('sunhours', 'solar', 'rain')), "the simulations among the groups: Sun hours, Solar, Rain on terrain (%s)" % hd)
+            # AMENDED FOR V162: one Analyze -- the simulations in the categories they answer (Climate,
+            # Water); Model is the one group left at the end
+            cat = await safe("()=>{var o={};['sunhours','solar','rain'].forEach(function(k){var r=document.querySelector('.a3d-analyze-wrap [data-anzcard=\"'+k+'\"]'),c=r&&r.closest('[data-sacat]');o[k]=c?c.getAttribute('data-sacat'):null;});return o;}") or {}
+            ck(hd == ['Model'] and all(k in C for k in ('sunhours', 'solar', 'rain')) and cat == {'sunhours': 'climate', 'solar': 'climate', 'rain': 'water'},
+               "the simulations among the categories: Sun hours and Solar in Climate, Rain on terrain in Water (%s, %s)" % (hd, cat))
             ck(C['rain']['state'] == 'On' and 'no pond' not in C['rain']['st'] and 'flow lines where' in C['rain']['st'], "the rain card says what it shows (%s)" % C['rain']['st'])
             await safe("()=>window.__a3dSimClear()")
             await page.wait_for_timeout(100)

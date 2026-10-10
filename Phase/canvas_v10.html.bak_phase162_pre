@@ -192,11 +192,6 @@ body.light-theme .a3d-projsub{color:#777}
 .a3d-prpitem.a3d-dropafter{box-shadow:0 3px 0 #4ea1ff}
 .a3d-prpthumb{background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.45);line-height:0}
 .a3d-prpthumb canvas{display:block;width:100%;height:auto}
-/* __acad3dV162: a board's page: the board as it prints, laid out at 1280 px and scaled to the column */
-.a3d-prpbthumb{position:relative;overflow:hidden;aspect-ratio:420/297}
-.a3d-prpbthumb iframe{position:absolute;left:0;top:0;width:1280px;height:905px;border:0;transform-origin:0 0;pointer-events:none;background:#fff}
-.a3d-prptag{flex:0 0 auto;font-size:10px;color:#9aa5b0;border:1px solid rgba(255,255,255,.16);border-radius:4px;padding:0 4px;line-height:15px}
-body.light-theme .a3d-prptag{color:#666;border-color:rgba(0,0,0,.18)}
 .a3d-prpcap{display:flex;align-items:center;gap:6px;padding:6px 1px 0;min-width:0}
 .a3d-prpno{flex:0 0 auto;min-width:18px;height:18px;padding:0 4px;border-radius:5px;background:#3a4048;color:#fff;font-size:10px;font-weight:700;display:inline-flex;align-items:center;justify-content:center}
 .a3d-prpname{flex:1 1 auto;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -705,7 +700,7 @@ body.a3d-props-right #a3d-right .a3d-rsheetbar{display:flex;justify-content:cent
 body.a3d-props-right #a3d-right .a3d-rsheetbar i{display:block;width:40px;height:5px;border-radius:3px;background:var(--pp-muted,#8f98a2);opacity:.6}
 body.a3d-props-right #a3d-right .a3d-palhd{padding-top:4px}
 }
-#a3d-shell .a3d-projhead{flex-shrink:0}   /* __acad3dV162: a tab's long list scrolls under the project's name in every tab, not over it (Presentation's squashed it) */
+#a3d-shell[data-tab="analyze"] .a3d-projhead{flex-shrink:0}
 #a3d-shell[data-tab="analyze"] .a3d-analyze-wrap{flex:1 1 auto;min-height:0}
 /* __acad3dV148: Analyze, a list of rows in four groups */
 .a3d-anz{display:flex;flex-direction:column;min-height:0;flex:1;overflow:auto;padding:8px 10px 18px}
@@ -724,18 +719,18 @@ body.a3d-props-right #a3d-right .a3d-palhd{padding-top:4px}
 .a3d-anztog{flex:1 1 auto;min-width:0;display:flex;align-items:center;gap:4px;background:transparent;border:0;padding:4px 0 4px 2px;margin:0;color:inherit;font:inherit;text-align:left;cursor:pointer}
 .a3d-anztog:focus-visible{outline:2px solid #4ea1ff;outline-offset:-2px;border-radius:6px}
 .a3d-anzchev{flex:0 0 16px;width:16px;height:16px;display:grid;place-items:center;color:#8b949e;transition:transform .12s}
-.a3d-anzcard.open>.a3d-anzhd .a3d-anzchev{transform:rotate(90deg)}   /* __acad3dV162: its own, not a row inside it */
+.a3d-anzcard.open .a3d-anzchev{transform:rotate(90deg)}
 .a3d-anzname{display:flex;flex-direction:column;min-width:0;flex:1 1 auto}
 .a3d-anzttl{font-weight:500;font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .a3d-anzsum{font-size:11px;color:#8a96a3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
-.a3d-anzcard.open>.a3d-anzhd .a3d-anzsum{display:none}
+.a3d-anzcard.open .a3d-anzsum{display:none}
 .a3d-anzstate{flex:0 0 auto;font-size:10.5px;padding:1px 6px;border-radius:9px;background:rgba(255,255,255,.08);color:#9aa3ad;white-space:nowrap}
 .a3d-anzstate-off{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}   /* said, not shown */
 .a3d-anzstate-on{background:rgba(76,175,80,.18);color:#81c784}
 .a3d-anzstate-warn{background:rgba(255,183,77,.18);color:#ffb74d}
 .a3d-anzstate-fail{background:rgba(239,83,80,.18);color:#ef9a9a}
 .a3d-anzbody{display:none;padding:0 8px 10px 22px}
-.a3d-anzcard.open>.a3d-anzbody{display:block}
+.a3d-anzcard.open .a3d-anzbody{display:block}
 .a3d-anzst{color:#aab4bf;font-size:12px;margin:0 0 8px;line-height:1.4}
 .a3d-anzacts{display:flex;flex-wrap:wrap;gap:5px}
 .a3d-anzbtn{flex:0 0 auto;border:1px solid rgba(255,255,255,.14);border-radius:6px;padding:0 9px;min-height:24px;background:transparent;color:#dfe5ea;font:inherit;font-size:11.5px;cursor:pointer;white-space:nowrap}
@@ -816,7 +811,7 @@ body.light-theme .a3d-clb{--surf:#fcfcfb;--page:#f1f0ec;--ink:#0b0b0b;--ink2:#52
 .a3d-clb-h1{font-size:26px;line-height:1.2;font-weight:650;margin:4px 0 6px;letter-spacing:-.01em}
 .a3d-clb-sub{color:var(--ink2);margin:0 0 18px;font-size:13px}
 .a3d-clb-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:0 0 16px}
-.a3d-clb.w-l .a3d-clb-kpis{grid-template-columns:repeat(var(--n,9),minmax(0,1fr))}   /* __acad3dV162: by the board's own width */
+@media(min-width:1240px){.a3d-clb-kpis{grid-template-columns:repeat(var(--n,9),minmax(0,1fr))}}
 .a3d-clb-kpi{background:var(--surf);border:1px solid var(--ring);border-radius:10px;padding:11px 12px 12px;min-width:0}
 .a3d-clb-kl{font-size:11.5px;color:var(--ink2);margin:0 0 4px}
 .a3d-clb-kv{font-size:24px;font-weight:650;line-height:1.15;letter-spacing:-.01em;overflow-wrap:anywhere}
@@ -866,7 +861,7 @@ body.light-theme .a3d-clb{--surf:#fcfcfb;--page:#f1f0ec;--ink:#0b0b0b;--ink2:#52
 .a3d-zn-chain td.op{color:var(--muted);width:18px;text-align:center}
 .a3d-zn-chain tr.tot td{border-bottom:0;border-top:1px solid var(--base)}
 .a3d-zn-out{margin:8px 0 0;font-size:12px;color:var(--ink2)}
-.a3d-clb.w-s .a3d-zn-zt{font-size:12px}.a3d-clb.w-s .a3d-zn-zt th,.a3d-clb.w-s .a3d-zn-zt td{padding:6px 5px}
+@media(max-width:760px){.a3d-zn-zt{font-size:12px}.a3d-zn-zt th,.a3d-zn-zt td{padding:6px 5px}}
 /* __acad3dV161: the Access and people board */
 .a3d-acc-kh{grid-column:1/-1;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600;margin:2px 0 -4px}
 .a3d-acc-sec{grid-column:1/-1;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink2);font-weight:650;margin:10px 0 -2px;padding-top:8px;border-top:1px solid var(--ring)}
@@ -883,8 +878,8 @@ body.light-theme .a3d-clb{--surf:#fcfcfb;--page:#f1f0ec;--ink:#0b0b0b;--ink2:#52
 .a3d-acc-nt td.k{color:var(--ink2);white-space:nowrap}
 .a3d-acc-nt td.n{text-align:right;white-space:nowrap;font-weight:600}
 .a3d-acc-nt td small{display:block;color:var(--muted);font-size:11px}
-.a3d-clb.w-m .a3d-acc-col{grid-column:span 6}
-.a3d-clb.w-s .a3d-acc-col{grid-column:span 12}
+@media(max-width:1100px){.a3d-acc-col{grid-column:span 6}}
+@media(max-width:760px){.a3d-acc-col{grid-column:span 12}}
 .a3d-clb-notes{margin:16px 0 0;background:var(--surf);border:1px solid var(--ring);border-radius:12px;padding:14px 16px;font-size:12px;color:var(--ink2)}
 .a3d-clb-notes h3{font-size:13px;color:var(--ink);margin:0 0 6px;font-weight:620}
 .a3d-clb-notes ul{margin:0 0 8px;padding-left:18px}
@@ -904,28 +899,10 @@ body.light-theme .a3d-clb{--surf:#fcfcfb;--page:#f1f0ec;--ink:#0b0b0b;--ink2:#52
 .a3d-clb .hit{fill:transparent;cursor:crosshair}
 .a3d-clb .hit:hover,.a3d-clb .hit:focus{fill:var(--band);outline:none}
 .a3d-clb .mk:hover,.a3d-clb .mk:focus{opacity:.8;outline:none}
-.a3d-clb.w-m .a3d-clb-card.s4,.a3d-clb.w-m .a3d-clb-card.s5,.a3d-clb.w-m .a3d-clb-card.s6,.a3d-clb.w-m .a3d-clb-card.s7{grid-column:span 6}.a3d-clb.w-m .a3d-clb-card.wide{grid-column:span 12}
-.a3d-clb.w-s .a3d-clb-card.s4,.a3d-clb.w-s .a3d-clb-card.s5,.a3d-clb.w-s .a3d-clb-card.s6,.a3d-clb.w-s .a3d-clb-card.s7{grid-column:span 12}.a3d-clb.w-s .a3d-clb-h1{font-size:21px}
-.a3d-clb.w-s .a3d-clb-heat{overflow-x:auto;-webkit-overflow-scrolling:touch}.a3d-clb.w-s .a3d-clb-heat svg{min-width:880px}
-.a3d-clb.w-s .a3d-clb-kpis{grid-template-columns:repeat(auto-fit,minmax(130px,1fr))}.a3d-clb.w-s .a3d-clb-kv{font-size:20px}.a3d-clb.w-s .a3d-clb-btn{min-height:38px}.a3d-clb.w-s .a3d-clb-bar .a3d-clb-hide-s{display:none}
-/* __acad3dV162: a board is a page: in the main view, the panels beside it; nothing to draw with over it */
-.a3d-vp>.a3d-clb{position:absolute;inset:0;z-index:700}
-body.a3d-clb-open #a3d-dock,body.a3d-clb-open .a3d-tpal{display:none!important}
-/* as it prints, in a print window and in its thumbnail: on paper, in the print tokens */
-.a3d-clb.prt{position:static;inset:auto;z-index:auto;overflow:visible;background:#fff;color-scheme:light;
-  --surf:#fff;--page:#fff;--ink:#0b0b0b;--ink2:#52514e;--muted:#6f6d68;--grid:#e1e0d9;--base:#c3c2b7;--ring:rgba(11,11,11,.14);
-  --s1:#2a78d6;--s2:#eb6834;--s3:#1baf7a;--s4:#eda100;--s5:#e87ba4;--s6:#008300;--s7:#6250d6;--band:rgba(11,11,11,.07);
-  --w1:#86b6ef;--w2:#5598e7;--w3:#2a78d6;--w4:#1c5cab;--w5:#104281;--hn:#e7e5df}
-.a3d-clb.prt .a3d-clb-bar,.a3d-clb.prt .a3d-clb-tip{display:none!important}
-.a3d-clb.prt .a3d-clb-page{max-width:none}
-.a3d-clb.prt .a3d-clb-card,.a3d-clb.prt .a3d-clb-kpi,.a3d-clb.prt .a3d-clb-notes{break-inside:avoid;page-break-inside:avoid}
-/* in Present: the board over the black, scrolled with the wheel or a finger; the controls over it */
-.a3d-slideshow .a3d-ssboard{position:absolute;inset:0;z-index:1}
-.a3d-slideshow .a3d-ssboard .a3d-clb-bar{display:none}
-.a3d-slideshow .a3d-ssbar,.a3d-slideshow .a3d-sshint{z-index:2}
-.a3d-slideshow .a3d-ssboard .a3d-clb-page{padding-top:46px;padding-bottom:84px}
-/* a unit stays whole beside its number, however narrow the tile */
-.a3d-clb-ku{white-space:nowrap}
+@media(max-width:1100px){.a3d-clb-card.s4,.a3d-clb-card.s5,.a3d-clb-card.s6,.a3d-clb-card.s7{grid-column:span 6}.a3d-clb-card.wide{grid-column:span 12}}
+@media(max-width:760px){.a3d-clb-card.s4,.a3d-clb-card.s5,.a3d-clb-card.s6,.a3d-clb-card.s7{grid-column:span 12}.a3d-clb-h1{font-size:21px}
+  .a3d-clb-heat{overflow-x:auto;-webkit-overflow-scrolling:touch}.a3d-clb-heat svg{min-width:880px}
+  .a3d-clb-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.a3d-clb-kv{font-size:20px}.a3d-clb-btn{min-height:38px}.a3d-clb-bar .a3d-clb-hide-s{display:none}}
 @media print{
   body.a3d-clb-open>*:not(.a3d-clb){display:none!important}
   body.a3d-clb-open .a3d-clb{position:static;overflow:visible;background:#fff;
@@ -937,6 +914,15 @@ body.a3d-clb-open #a3d-dock,body.a3d-clb-open .a3d-tpal{display:none!important}
   .a3d-clb-card,.a3d-clb-kpi,.a3d-clb-notes{break-inside:avoid;page-break-inside:avoid}
   @page{size:A3 landscape;margin:10mm}
 }
+.a3d-anzview{display:flex;gap:2px;padding:2px;margin:0 0 10px;border-radius:8px;background:rgba(255,255,255,.06)}
+.a3d-anzviewbtn{flex:1 1 0;border:0;border-radius:6px;background:transparent;color:#aab4bf;font:inherit;font-size:12px;font-weight:500;min-height:28px;cursor:pointer;padding:0 8px;white-space:nowrap}
+.a3d-anzviewbtn:hover{color:#fff}
+.a3d-anzviewbtn[aria-selected="true"]{background:#2f3540;color:#fff;box-shadow:0 1px 2px rgba(0,0,0,.35)}
+.a3d-anzviewbtn:focus-visible{outline:2px solid #4ea1ff;outline-offset:-2px}
+@media(pointer:coarse){.a3d-anzviewbtn{min-height:38px;font-size:13px}}
+body.light-theme .a3d-anzview{background:rgba(0,0,0,.06)}
+body.light-theme .a3d-anzviewbtn{color:#555}
+body.light-theme .a3d-anzviewbtn[aria-selected="true"]{background:#fff;color:#111;box-shadow:0 1px 2px rgba(0,0,0,.15)}
 .a3d-sastages{display:flex;flex-wrap:wrap;gap:3px;margin:0 0 4px}
 .a3d-sastage{flex:1 0 auto;min-width:34px;border:1px solid rgba(255,255,255,.14);border-radius:6px;background:transparent;color:#9aa3ad;font:inherit;font-size:11px;padding:3px 6px;min-height:26px;cursor:pointer;white-space:nowrap}
 .a3d-sastage.done{color:#81c784;border-color:rgba(129,199,132,.35)}
@@ -954,21 +940,7 @@ body.a3d-clb-open #a3d-dock,body.a3d-clb-open .a3d-tpal{display:none!important}
 .a3d-saflags{margin:0 0 6px;padding:7px 9px;border-radius:7px;background:rgba(229,72,77,.12);border:1px solid rgba(229,72,77,.35)}
 .a3d-saflags .a3d-sasechd{color:#ef9a9a;margin-bottom:4px}
 .a3d-saflag{font-size:12px;color:#f3c4c4;margin:2px 0}
-.a3d-sacat>.a3d-anzbody{padding-left:20px}
-/* __acad3dV162: a category holds its analyses, its data and its findings; a search opens what it finds */
-.a3d-anz.q .a3d-sacat.qhit>.a3d-anzbody{display:block}
-.a3d-anz.q .a3d-sacat.qhit>.a3d-anzhd .a3d-anzchev{transform:rotate(90deg)}
-.a3d-anz.q .a3d-sacat.qhit>.a3d-anzhd .a3d-anzsum{display:none}
-.a3d-satools{margin:0 -4px 4px;padding:2px 0;border-radius:7px}
-.a3d-satools .a3d-anzbody{padding-left:22px}
-.a3d-salink{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;font-size:11.5px;color:#aab4bf;line-height:1.4;margin:2px 0 8px}
-.a3d-sacap{font-size:11.5px;color:#8a96a3;margin:-2px 2px 6px;line-height:1.4}
-/* the panel scrolls, not the list in it: the search stays at its top while the list goes under it */
-.a3d-analyze-wrap>.a3d-anz{overflow:visible}
-.a3d-sacat{scroll-margin-top:44px}
-.a3d-anz>.a3d-anzsearch{position:sticky;top:0;z-index:2;box-shadow:0 0 0 6px #2c2c2c}
-body.light-theme .a3d-anz>.a3d-anzsearch{box-shadow:0 0 0 6px #fff}
-body.light-theme .a3d-salink,body.light-theme .a3d-sacap{color:#555}
+.a3d-sacat .a3d-anzbody{padding-left:20px}
 .a3d-saq{color:#8a96a3;font-size:11.5px;margin:0 0 8px;line-height:1.4}
 .a3d-safind{border-left:3px solid #8b949e;padding:4px 0 6px 8px;margin:0 0 6px}
 .a3d-safind.c-constraint{border-left-color:#f5a524}.a3d-safind.c-opportunity{border-left-color:#30a46c}.a3d-safind.c-redflag{border-left-color:#e5484d}
@@ -1918,7 +1890,6 @@ try{
       if(st&&(st.roomScheme==='dept'||st.roomScheme==='occupancy'))A3D.roomScheme=st.roomScheme;   /* __acad3dV105 */
       A3D.history=bimHistValid(st&&st.history);   /* __acad3dV146: its history, or none */
       A3D.resultLayers=bimResValid(st&&st.resultLayers);   /* __acad3dV148: its result layers, or none */
-      A3D.pres=bimPresValid(st&&st.pres);   /* __acad3dV162: its boards in the set, and the set's order */
       A3D_RES_IMG={};
       if(st&&Array.isArray(st.classifications)){
         A3D.classifications=st.classifications.filter(function(c){return c&&typeof c.id==='string'&&typeof c.code==='string';});
@@ -2450,7 +2421,7 @@ try{
   }
   var UNDO_STACK=[],REDO_STACK=[],UNDO_MAX=50,undoSuspend=false;
   function bimSnapshotState(){
-    return JSON.stringify({objs:A3D.objs,levels:A3D.levels,grids:A3D.grids,layers:A3D.layers,counts:A3D.counts,activeLevel:A3D.activeLevel,activeLayer:A3D.activeLayer,views:A3D.views,levelFilter:A3D.levelFilter,types:A3D.types,activeWallType:A3D.activeWallType,sheets:A3D.sheets,titleBlock:A3D.titleBlock,buildings:A3D.buildings,activeBuilding:A3D.activeBuilding,site:A3D.site,roomScheme:A3D.roomScheme||'',classifications:A3D.classifications,resultLayers:A3D.resultLayers||[],pres:A3D.pres||null});   /* __acad3dV148; __acad3dV162 */
+    return JSON.stringify({objs:A3D.objs,levels:A3D.levels,grids:A3D.grids,layers:A3D.layers,counts:A3D.counts,activeLevel:A3D.activeLevel,activeLayer:A3D.activeLayer,views:A3D.views,levelFilter:A3D.levelFilter,types:A3D.types,activeWallType:A3D.activeWallType,sheets:A3D.sheets,titleBlock:A3D.titleBlock,buildings:A3D.buildings,activeBuilding:A3D.activeBuilding,site:A3D.site,roomScheme:A3D.roomScheme||'',classifications:A3D.classifications,resultLayers:A3D.resultLayers||[]});   /* __acad3dV148 */
   }
   function pushUndo(){
     if(undoSuspend)return;
@@ -2483,14 +2454,12 @@ try{
     A3D.roomScheme=(st.roomScheme==='dept'||st.roomScheme==='occupancy')?st.roomScheme:'';   /* __acad3dV105 */
     A3D.classifications=Array.isArray(st.classifications)?st.classifications:[];
     if(Array.isArray(st.resultLayers))A3D.resultLayers=st.resultLayers;   /* __acad3dV148: a version from History has none, and keeps today's */
-    A3D.pres=bimPresValid(st.pres);   /* __acad3dV162: the set as it was */
     bimEnsureTypes();
     bimEnsureBuildings();
     A3D.sel=null;A3D.sel2=null;A3D.meshes={};
     if(A3D.sheetActiveVp&&!bimSheetVp(bimSheetById(A3D.activeSheetId),A3D.sheetActiveVp))A3D.sheetActiveVp=null;   /* __acad3dV116 */
     bimSyncActiveGlobal();
     refreshTree();refreshHud();refreshLevels();refreshLayers();refreshViews();bimSheetViewRefresh();paint();
-    bimPresPanelRefresh();   /* __acad3dV162 */
     undoSuspend=false;
     return true;
   }
@@ -10558,7 +10527,7 @@ try{
   // foreign JSON file can be confidently rejected instead of silently corrupting the model. ----
   function bimBuildProjectEnvelope(){
     return JSON.stringify({app:'acad3d-project',formatVersion:1,savedAt:new Date().toISOString(),
-      data:{objs:A3D.objs,levels:A3D.levels,grids:A3D.grids,layers:A3D.layers,counts:A3D.counts,activeLevel:A3D.activeLevel,activeLayer:A3D.activeLayer,views:A3D.views,activeViewId:A3D.activeViewId,levelFilter:A3D.levelFilter,types:A3D.types,activeWallType:A3D.activeWallType,sheets:A3D.sheets,titleBlock:A3D.titleBlock,buildings:A3D.buildings,activeBuilding:A3D.activeBuilding,site:A3D.site,roomScheme:A3D.roomScheme||'',classifications:A3D.classifications,dataFeatures:A3D.dataFeatures||{},history:A3D.history||null,resultLayers:A3D.resultLayers||[],pres:A3D.pres||null}});   /* __acad3dV146, __acad3dV148 */
+      data:{objs:A3D.objs,levels:A3D.levels,grids:A3D.grids,layers:A3D.layers,counts:A3D.counts,activeLevel:A3D.activeLevel,activeLayer:A3D.activeLayer,views:A3D.views,activeViewId:A3D.activeViewId,levelFilter:A3D.levelFilter,types:A3D.types,activeWallType:A3D.activeWallType,sheets:A3D.sheets,titleBlock:A3D.titleBlock,buildings:A3D.buildings,activeBuilding:A3D.activeBuilding,site:A3D.site,roomScheme:A3D.roomScheme||'',classifications:A3D.classifications,dataFeatures:A3D.dataFeatures||{},history:A3D.history||null,resultLayers:A3D.resultLayers||[]}});   /* __acad3dV146, __acad3dV148 */
   }
   function bimParseProjectEnvelope(text){
     var parsed;
@@ -15104,7 +15073,7 @@ try{
   /* ================= __acad3dV142: the user guide, and versions =================
      The guide is in docs/ beside the app, on the same site (and in the repository, so it opens
      offline). Its command reference has a section per command, anchored by the command's id. */
-  var BIM_APP_VERSION={v:'V162',date:'2026-10-10'};   /* __acad3dV162 */
+  var BIM_APP_VERSION={v:'V161',date:'2026-10-10'};   /* __acad3dV161 */
   var BIM_DOCS_BASE='docs/';
   /* a command's anchor in the reference: cmd:LINE -> cmd-LINE, act:bim:wall -> act-bim-wall */
   function bimDocsAnchor(id){return String(id||'').replace(/[^A-Za-z0-9_-]+/g,'-');}
@@ -15771,31 +15740,29 @@ try{
     return true;
   }
   /* ================= __acad3dV141: the Analyze tab ================= */
-  var A3D_ANZ={lod:null,open:bimAnzOpenLoad(),q:'',pend:false};   /* __acad3dV148: the rows open, and the search; __acad3dV162: a refresh held while a field is typed in */
-  /* __acad3dV162: one Analyze. The analyses and the site analysis were two views behind a switch;
-     they are one list now. Opening it to either is opening it. */
-  function bimAnzView(){
-    bimShellSetTab('analyze');
-    var p=document.getElementById('a3d-leftpanel');
-    return !!(p&&p.querySelector('.a3d-analyze-wrap'));
+  var A3D_ANZ={lod:null,open:bimAnzOpenLoad(),q:'',view:(function(){try{return localStorage.getItem('acad3dAnzView')==='site'?'site':'analyses';}catch(eV){return 'analyses';}})()};   /* __acad3dV148: the rows open, and the search; __acad3dV159: the view */
+  /* __acad3dV159: Analyses | Site analysis, the switch at the top of the Analyze tab */
+  function bimAnzViewHtml(){
+    var v=A3D_ANZ.view;
+    return '<div class="a3d-anzview" role="tablist" aria-label="Analyze">'+
+      '<button type="button" role="tab" class="a3d-anzviewbtn" data-anzview="analyses" aria-selected="'+(v!=='site')+'">Analyses</button>'+
+      '<button type="button" role="tab" class="a3d-anzviewbtn" data-anzview="site" aria-selected="'+(v==='site')+'">Site analysis</button></div>';
   }
-  /* a category opened, and brought into view; a search that hides it is cleared */
-  function bimSaGoto(id){
-    if(!bimSaCat(id))return false;
-    bimAnzView();
-    var w=document.querySelector('.a3d-analyze-wrap'),s=w?w.querySelector('[data-anzsearch]'):null,c;
-    if(A3D_ANZ.q){A3D_ANZ.q='';if(s)s.value='';if(w)bimAnzFilter(w);}
-    bimSaToggle(id,true);
-    c=w?w.querySelector('[data-sacat="'+id+'"]'):null;
-    if(c){try{c.scrollIntoView({block:'start',behavior:'smooth'});}catch(eS){c.scrollIntoView();}}
-    return !!c;
+  function bimAnzView(v){
+    v=v==='site'?'site':'analyses';
+    A3D_ANZ.view=v;
+    try{localStorage.setItem('acad3dAnzView',v);}catch(eS){}
+    var p=document.getElementById('a3d-leftpanel'),w;
+    if(p){w=p.querySelector('.a3d-analyze-wrap');if(w)w.parentNode.removeChild(w);w=p.querySelector('.a3d-sa-wrap');if(w)w.parentNode.removeChild(w);}
+    bimShellSetTab('analyze');
+    var b=p&&p.querySelector('[data-anzview="'+v+'"]');
+    return !!b;
   }
   /* __acad3dV148: a row, not a card. Its name, what it shows, its state and its first action on one
      line; the whole status, the legend and every other action a click away. A row is opened by the
      viewer, and stays open, in this browser. */
-  /* __acad3dV162: an analysis sits in the category it answers; what reads the model itself is Model */
-  var BIM_ANZ_GROUP_OF={survey:'landform',terrain:'landform',grading:'landform',rain:'water',sun:'climate',sunhours:'climate',solar:'climate'};
-  var BIM_ANZ_MODEL=['lens','areas','lod','stats','structure'];
+  var BIM_ANZ_GROUPS=[['model','Model'],['site','Site and terrain'],['structure','Structure'],['env','Environment']];
+  var BIM_ANZ_GROUP_OF={lens:'model',areas:'model',lod:'model',stats:'model',survey:'site',terrain:'site',grading:'site',rain:'site',structure:'structure',sun:'env',sunhours:'env',solar:'env'};
   var BIM_ANZ_KEY='acad3dAnzOpen';
   var BIM_ANZ_CHEV='<svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3.5 10.5 8 6 12.5"/></svg>';
   /* the key written out: A3D_ANZ is made before BIM_ANZ_KEY is set */
@@ -15917,37 +15884,20 @@ try{
     return C;
   }
   function bimAnzCountText(C){
-    var n=C.filter(function(c){return c.state==='on'||c.state==='stale'||c.state==='busy';}).length,F=bimSa().findings,r=0;
-    F.forEach(function(f){if(f.cls==='redflag')r++;});
-    return bimSaN(F.length,'finding')+(r?', '+bimSaN(r,'red flag'):'')+(n?' · '+n+' on':'');
+    var n=C.filter(function(c){return c.state==='on'||c.state==='stale'||c.state==='busy';}).length;
+    return C.length+' analyses'+(n?' \u00b7 '+n+' on':'');
   }
-  /* __acad3dV162: under the search, in the order the work goes: the stages, red flags, Define, the
-     ten categories with their analyses, data and findings, and the model */
-  function bimAnzBodyHtml(C){
-    var s=bimSa(),F=s.findings,R=F.filter(function(f){return f.cls==='redflag';}),P=A3D.objs.filter(bimIsProperty),bd,h;
-    if(P.length){var g=bimPropertyGeometry(P[0]);bd=bimEsc(P[0].name)+', '+bimDispNum(g.area,1)+' m²';}
-    else bd='None yet: <button type="button" class="a3d-anzbtn" data-saact="cmd:propertyshape">From a shape</button> <button type="button" class="a3d-anzbtn" data-saact="cmd:propertyline">From bearings</button>';
-    h='<div data-anzsec="stages"><div class="a3d-sastages" role="group" aria-label="Stage">'+BIM_SA_STAGES.map(function(x,i){
-        return '<button type="button" class="a3d-sastage'+(i===s.stage?' on':(i<s.stage?' done':''))+'" data-sastage="'+i+'" aria-pressed="'+(i===s.stage)+'" title="'+bimEsc(x[1])+'">'+i+' '+bimEsc(x[0])+'</button>';}).join('')+'</div>'+
-      '<div class="a3d-sastagecap">'+bimEsc(BIM_SA_STAGES[s.stage][1])+'</div></div>';
-    if(R.length)h+='<div class="a3d-saflags" data-anzsec="flags"><div class="a3d-sasechd">Red flags first</div>'+R.map(function(f){return '<div class="a3d-saflag">'+bimSaNumber(f)+' '+bimEsc(f.title)+(f.value?': '+bimEsc(f.value):'')+'</div>';}).join('')+'</div>';
-    h+='<div class="a3d-sasec" data-anzsec="define"><div class="a3d-sasechd">Define</div>'+
-      '<div class="a3d-sarow"><span class="a3d-salab">Boundary</span><span class="a3d-saval">'+bd+'</span></div>'+
-      '<div class="a3d-sarow"><label for="a3d-saptype">Project</label><select id="a3d-saptype" data-saf="ptype">'+BIM_SA_TYPES.map(function(x){return '<option value="'+bimEsc(x)+'"'+(x===s.ptype?' selected':'')+'>'+(x?bimEsc(x):'Not set')+'</option>';}).join('')+'</select></div>'+
-      '<div class="a3d-sarow"><label for="a3d-saq">Questions</label><textarea id="a3d-saq" data-saf="questions" maxlength="2000" placeholder="What must the analysis answer?">'+bimEsc(s.questions)+'</textarea></div>'+
-      '<label class="a3d-sachk"><input type="checkbox" data-saf="pins"'+(s.pins?' checked':'')+'><span>Show the findings on the plan</span></label>'+
-      '<div class="a3d-saacts"><button type="button" class="a3d-anzbtn pri" data-saact="fill" title="Location, context, property, terrain, sun, access: what the model knows, with its sources">Fill from the model</button></div></div>';
-    h+='<div class="a3d-sasec" data-anzsec="cats"><div class="a3d-sasechd">The ten categories</div><div class="a3d-anzlist">'+BIM_SA_CATS.map(function(c,i){return bimSaCatHtml(c,i,C);}).join('')+'</div></div>';
-    var M=BIM_ANZ_MODEL.map(function(id){return C.filter(function(c){return c.id===id;})[0];}).filter(function(c){return !!c;});
-    h+='<div class="a3d-sasec a3d-anzgrp" data-anzgrp="model"><div class="a3d-sasechd a3d-anzgrphd">Model</div><div class="a3d-sacap">What the model itself shows; no site data needed.</div>'+
-      '<div class="a3d-anzlist">'+M.map(bimAnzCard).join('')+'</div></div>';
-    return h+'<div class="a3d-anzempty" hidden>Nothing matches</div>';
+  function bimAnzRowsHtml(C){
+    return BIM_ANZ_GROUPS.map(function(g){
+      var R=C.filter(function(c){return c.group===g[0];});
+      return R.length?'<div class="a3d-anzgrp" data-anzgrp="'+g[0]+'"><div class="a3d-anzgrphd">'+g[1]+'</div><div class="a3d-anzlist">'+R.map(bimAnzCard).join('')+'</div></div>':'';
+    }).join('')+'<div class="a3d-anzempty" hidden>Nothing matches</div>';
   }
   function bimAnalyzeHtml(){
     var C=bimAnzCards();
-    return '<div class="a3d-anz a3d-sa"><div class="a3d-anzhead"><span class="a3d-anzttl0">Analyze</span><span class="a3d-anzcount">'+bimAnzCountText(C)+'</span></div>'+
-      '<input type="search" class="a3d-anzsearch" data-anzsearch="1" placeholder="Search analyses, data and findings" aria-label="Search Analyze" autocomplete="off" value="'+bimEsc(A3D_ANZ.q||'')+'">'+
-      '<div class="a3d-anzrows">'+bimAnzBodyHtml(C)+'</div></div>';
+    return '<div class="a3d-anz">'+bimAnzViewHtml()+'<div class="a3d-anzhead"><span class="a3d-anzttl0">Analyses</span><span class="a3d-anzcount">'+bimAnzCountText(C)+'</span></div>'+
+      '<input type="search" class="a3d-anzsearch" data-anzsearch="1" placeholder="Search analyses" aria-label="Search analyses" autocomplete="off" value="'+bimEsc(A3D_ANZ.q||'')+'">'+
+      '<div class="a3d-anzrows">'+bimAnzRowsHtml(C)+'</div></div>';
   }
   /* every word asked for starts a word of the text: rain is not in terrain */
   function bimAnzWordsHit(q,text){
@@ -15955,59 +15905,29 @@ try{
     for(i=0;i<W.length;i++)if(W[i]&&s.indexOf(' '+W[i])<0)return false;
     return true;
   }
-  /* __acad3dV162: the search, over everything, in place. A category asked for by its own words --
-     its name, its question, its data, its findings, its checklist -- shows whole and opened; otherwise
-     the analyses in it that match, by their name, what they say and their buttons. */
-  /* an element's words, each text apart: its textContent runs "Define" and "Boundary" into one */
-  function bimAnzText(el){
-    var w=document.createTreeWalker(el,NodeFilter.SHOW_TEXT,null,false),s=[],n;
-    while((n=w.nextNode()))s.push(n.nodeValue);
-    return s.join(' ');
-  }
-  function bimAnzTexts(root,sel){return [].map.call(root.querySelectorAll(sel),bimAnzText).join(' ');}
-  function bimAnzRowText(r,more){return r.getAttribute('data-anzcard')+' '+bimAnzTexts(r,'.a3d-anzttl,.a3d-anzst,.a3d-anzbtn')+' '+(more||'');}
+  /* the search: rows by their name, what they say, their buttons and their group; in place */
   function bimAnzFilter(w){
-    var q=String(A3D_ANZ.q||'').toLowerCase().replace(/^\s+|\s+$/g,''),root=w?w.querySelector('.a3d-anz'):null,n=0,i,j,S,K,G,R,k,on,name,whole,hit,e;
-    if(!root)return 0;
-    function show(x,v){if(v)x.removeAttribute('hidden');else x.setAttribute('hidden','');}
-    root.classList.toggle('q',!!q);
-    S=root.querySelectorAll('[data-anzsec="stages"],[data-anzsec="flags"],[data-anzsec="define"]');
-    for(i=0;i<S.length;i++){
-      on=!q||(S[i].getAttribute('data-anzsec')!=='stages'&&bimAnzWordsHit(q,bimAnzText(S[i])));
-      show(S[i],on);if(q&&on)n++;
-    }
-    K=root.querySelectorAll('[data-sacat]');
-    for(i=0;i<K.length;i++){
-      name=(K[i].querySelector('.a3d-anzttl')||{textContent:''}).textContent;
-      whole=!q||bimAnzWordsHit(q,name+' '+bimAnzTexts(K[i],'.a3d-saq,.a3d-clsec,.a3d-salink,.a3d-safind,.a3d-sachk'));
-      R=K[i].querySelectorAll('[data-anzcard]');k=0;
-      for(j=0;j<R.length;j++){hit=whole||bimAnzWordsHit(q,bimAnzRowText(R[j],name));show(R[j],hit);if(hit)k++;}
-      on=whole||k>0;
-      show(K[i],on);K[i].classList.toggle('qhit',!!q&&on);
-      if(on)n+=1+k;
-    }
-    G=root.querySelectorAll('[data-anzgrp]');
+    var q=String(A3D_ANZ.q||'').toLowerCase().replace(/^\s+|\s+$/g,''),G=w?w.querySelectorAll('[data-anzgrp]'):[],n=0,i,j,R,k,hd,hit,e;
     for(i=0;i<G.length;i++){
-      name=(G[i].querySelector('.a3d-anzgrphd')||{textContent:''}).textContent;
-      R=G[i].querySelectorAll('[data-anzcard]');k=0;
-      for(j=0;j<R.length;j++){hit=!q||bimAnzWordsHit(q,bimAnzRowText(R[j],name));show(R[j],hit);if(hit)k++;}
-      show(G[i],k>0);
+      hd=G[i].querySelector('.a3d-anzgrphd');R=G[i].querySelectorAll('[data-anzcard]');k=0;
+      for(j=0;j<R.length;j++){
+        hit=!q||bimAnzWordsHit(q,R[j].getAttribute('data-anzcard')+' '+[].map.call(R[j].querySelectorAll('.a3d-anzttl,.a3d-anzst,.a3d-anzbtn'),function(e){return e.textContent;}).join(' ')+' '+(hd?hd.textContent:''));
+        if(hit){R[j].removeAttribute('hidden');k++;}else R[j].setAttribute('hidden','');
+      }
+      if(k)G[i].removeAttribute('hidden');else G[i].setAttribute('hidden','');
       n+=k;
     }
-    e=root.querySelector('.a3d-anzempty');
-    if(e)show(e,!!q&&!n);
+    e=w?w.querySelector('.a3d-anzempty'):null;
+    if(e){if(n)e.setAttribute('hidden','');else e.removeAttribute('hidden');}
     return n;
   }
-  /* the panel again, when it is open: the list only, so the search, its focus and the scroll stay.
-     __acad3dV162: not under a field being typed in, whose words would go -- then when it is left. */
-  function bimAnalyzeRefresh(force){
-    var sh=document.getElementById('a3d-shell'),w=sh&&sh.dataset.tab==='analyze'?sh.querySelector('.a3d-analyze-wrap'):null,a=document.activeElement;
+  /* the panel again, when it is open: the rows only, so the search, its focus and the scroll stay */
+  function bimAnalyzeRefresh(){
+    var sh=document.getElementById('a3d-shell'),w=sh&&sh.dataset.tab==='analyze'?sh.querySelector('.a3d-analyze-wrap'):null;
     if(!w)return false;
-    if(!force&&a&&w.contains(a)&&/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)&&!a.hasAttribute('data-anzsearch')&&a.type!=='checkbox'&&a.type!=='file'){A3D_ANZ.pend=true;return false;}
-    A3D_ANZ.pend=false;
     try{
       var rows=w.querySelector('.a3d-anzrows'),cnt=w.querySelector('.a3d-anzcount'),C;
-      if(rows&&cnt){C=bimAnzCards();bimRenderInto(rows,bimAnzBodyHtml(C));cnt.textContent=bimAnzCountText(C);}
+      if(rows&&cnt){C=bimAnzCards();bimRenderInto(rows,bimAnzRowsHtml(C));cnt.textContent=bimAnzCountText(C);}
       else w.innerHTML=bimAnalyzeHtml();
       bimAnzFilter(w);
     }catch(eA){console.warn('[BIM] Analyze panel',eA);}
@@ -16554,33 +16474,10 @@ try{
     warning:['Watch','var(--warning)','<path d="M8 3.5v5.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="8" cy="12" r="1.2" fill="currentColor"/>'],
     serious:['Serious','var(--serious)','<path d="M8 3 14 13H2z" fill="currentColor"/>'],
     critical:['Critical','var(--critical)','<path d="M4.5 4.5l7 7M11.5 4.5l-7 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>']};
-  var A3D_CLB={open:false,tables:false,narrow:false,kind:'climate',board:null,printFrom:null};   /* __acad3dV160: which board; __acad3dV162: its page in the set */
-  window.addEventListener('resize',function(){var b=bimClbEl();if(A3D_CLB.open&&b)bimClbFit(b);});
-  /* __acad3dV162: the keys on a board's page, as a sheet's page has its own. Esc gives the main view
-     back; the model's keys do not reach the model behind it (the arrows and Space scroll the board);
-     Ctrl, Alt and the function keys do. A field in a panel beside it keeps its keys. The app's own
-     key handler asks this first; this listener is for when that one is not listening. */
-  function bimClbKey(ev){
-    if(!A3D_CLB.open)return false;
-    var a=document.activeElement,b=bimClbEl();
-    if(a&&a!==document.body&&!(b&&b.contains(a))&&(/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)||a.isContentEditable))return false;
-    if(ev.key==='Escape'){ev.preventDefault();ev.stopImmediatePropagation();bimClbClose();return true;}
-    if(ev.ctrlKey||ev.metaKey||ev.altKey||/^F\d+$/.test(ev.key))return false;
-    return true;
-  }
-  document.addEventListener('keydown',function(ev){if(ev.key==='Escape')bimClbKey(ev);},true);
-  /* the main board, not Present's */
-  function bimClbEl(){return document.querySelector('.a3d-clb:not(.a3d-ssboard)');}
-  /* the width it lays out by: the main view's */
-  function bimClbW(b){var p=b&&b.parentNode;return Math.round(p&&p!==document.body?(p.clientWidth||window.innerWidth):window.innerWidth);}
-  function bimClbWidthCls(w){return (w>=1240?' w-l':'')+(w<1100?' w-m':'')+(w<760?' w-s':'');}
-  function bimClbFit(b){
-    if(!A3D_CLB.open||!b.parentNode)return;
-    var w=bimClbW(b),cls;
-    if((w<760)!==A3D_CLB.narrow){bimClbOpen();return;}   /* the figures are drawn for a phone, or not */
-    cls='a3d-clb'+(A3D_CLB.tables?' tables':'')+bimClbWidthCls(w);
-    if(b.className!==cls)b.className=cls;
-  }
+  var A3D_CLB={open:false,tables:false,narrow:false,kind:'climate'};   /* __acad3dV160: which board */
+  window.addEventListener('resize',function(){if(A3D_CLB.open&&(window.innerWidth<760)!==A3D_CLB.narrow)bimClbOpen();});
+  /* Esc shuts the board wherever the focus is, before the app's own keys see it */
+  document.addEventListener('keydown',function(ev){if(A3D_CLB.open&&ev.key==='Escape'){ev.preventDefault();ev.stopPropagation();bimClbClose();}},true);
   function bimClbE(s){return bimEsc(String(s==null?'':s));}
   function bimClbTip(t){return ' data-tip="'+bimClbE(t)+'" tabindex="0"';}
   /* clean ticks: about n of them over lo..hi, steps of 1, 2, 2.5 or 5 times a power of ten */
@@ -16958,57 +16855,24 @@ try{
       '</ul></footer></div>';
     return h;
   }
-  /* open, refresh, close; the tooltip; Esc. __acad3dV162: in the main view, the panels beside it */
+  /* open, refresh, close; the tooltip; Esc */
   function bimClbOpen(kind){
-    var was=A3D_CLB.open?A3D_CLB.kind:null;
     if(kind==='climate'||kind==='zoning'||kind==='access')A3D_CLB.kind=kind;   /* __acad3dV160; __acad3dV161 */
-    var host=document.querySelector('.a3d-vp')||document.body,b=bimClbEl(),w;
+    var b=document.querySelector('.a3d-clb');
     if(!b){
-      b=document.createElement('div');
-      b.setAttribute('role','region');
-      bimClbWire(b);
+      b=document.createElement('div');b.className='a3d-clb'+(A3D_CLB.tables?' tables':'');
+      b.setAttribute('role','dialog');b.setAttribute('aria-modal','true');
+      document.body.appendChild(b);bimClbWire(b);
     }
-    if(b.parentNode!==host)host.appendChild(b);
-    if(!b.__clbRO&&typeof ResizeObserver!=='undefined'){
-      try{b.__clbRO=new ResizeObserver(function(){bimClbFit(b);});b.__clbRO.observe(b);}
-      catch(eR){console.warn('[BIM] The board cannot follow the width of the main view',eR);}
-    }
-    w=bimClbW(b);
-    A3D_CLB.narrow=w<760;
-    A3D_CLB.board=bimBoardById('board-'+A3D_CLB.kind)?'board-'+A3D_CLB.kind:null;
-    b.className='a3d-clb'+(A3D_CLB.tables?' tables':'')+bimClbWidthCls(w);
-    b.setAttribute('aria-label',bimBoardName(A3D_CLB.kind)+' board');
+    A3D_CLB.narrow=window.innerWidth<760;
+    b.setAttribute('aria-label',A3D_CLB.kind==='zoning'?'Zoning and yield board':(A3D_CLB.kind==='access'?'Access and people board':'Climate and risk board'));   /* __acad3dV160; __acad3dV161 */
     b.innerHTML=bimClbHtml()+'<div class="a3d-clb-tip" role="tooltip" hidden></div>';
     A3D_CLB.open=true;document.body.classList.add('a3d-clb-open');
-    if(was!==A3D_CLB.kind){   /* a board opened, not one redrawn: the focus and the top go to it */
-      b.scrollTop=0;
-      var c=b.querySelector('[data-clb="close"]');if(c)try{c.focus({preventScroll:true});}catch(eF){}
-    }
-    bimPresPanelRefresh();
+    var c=b.querySelector('[data-clb="close"]');if(c)try{c.focus();}catch(eF){}
     return true;
   }
-  function bimClbClose(){
-    var b=bimClbEl(),was=A3D_CLB.open;
-    if(b){if(b.__clbRO){try{b.__clbRO.disconnect();}catch(eD){}}if(b.parentNode)b.parentNode.removeChild(b);}
-    A3D_CLB.open=false;A3D_CLB.board=null;document.body.classList.remove('a3d-clb-open');
-    if(was)bimPresPanelRefresh();
-    return true;
-  }
-  function bimClbRefresh(){if(A3D_CLB.open)bimClbOpen();bimPresThumbsQueue();}
-  /* the browser's own print (Ctrl+P) of an open board: the board alone on the paper, as before it
-     was a page in the main view */
-  window.addEventListener('beforeprint',function(){
-    var b=bimClbEl();
-    if(!A3D_CLB.open||!b||b.parentNode===document.body)return;
-    A3D_CLB.printFrom=b.parentNode;document.body.appendChild(b);
-    b.className='a3d-clb'+(A3D_CLB.tables?' tables':'')+' w-l';
-  });
-  window.addEventListener('afterprint',function(){
-    var b=bimClbEl();
-    if(!b||!A3D_CLB.printFrom)return;
-    A3D_CLB.printFrom.appendChild(b);A3D_CLB.printFrom=null;
-    bimClbFit(b);
-  });
+  function bimClbClose(){var b=document.querySelector('.a3d-clb');if(b)b.parentNode.removeChild(b);A3D_CLB.open=false;document.body.classList.remove('a3d-clb-open');return true;}
+  function bimClbRefresh(){if(A3D_CLB.open)bimClbOpen();}
   function bimClbTipShow(b,x,y,txt){
     var t=b.querySelector('.a3d-clb-tip');if(!t)return;
     var P=String(txt).split('|');
@@ -17035,7 +16899,7 @@ try{
       var k=ev.target&&ev.target.closest?ev.target.closest('[data-clb]'):null;if(!k)return;
       var a=k.getAttribute('data-clb');
       if(a==='close')bimClbClose();
-      else if(a==='print')bimClbPrint(A3D_CLB.kind);   /* __acad3dV162: alone, in a print window, as Print set prints it */
+      else if(a==='print'){try{window.print();}catch(eP){}}
       else if(a==='refresh'){if(A3D_CLB.kind==='access')bimAccFetch();else bimClimFetch();}   /* __acad3dV161 */
       else if(a==='envelope')bimZnBuild();   /* __acad3dV160 */
       else if(a==='tables'){A3D_CLB.tables=!A3D_CLB.tables;b.classList.toggle('tables',A3D_CLB.tables);k.setAttribute('aria-pressed',String(A3D_CLB.tables));}
@@ -17529,9 +17393,9 @@ try{
       if(K&&K.air)p.push('PM2.5 '+bimClbNum(K.air.mean)+' µg/m³');
       if(K&&K.quakes)p.push(K.quakes.count+' earthquake'+(K.quakes.count===1?'':'s')+' nearby');
       s+='<p class="a3d-clsum">'+bimClbE(p.join(' · '))+'. Data of '+bimClbE((C&&C.fetched)||(K&&K.fetched))+'.</p>'+
-        '<div class="a3d-saacts"><button type="button" class="a3d-anzbtn pri" data-saact="climboard" title="The board is a page of the set: it opens here and presents and prints with the sheets">Show in Presentation</button><button type="button" class="a3d-anzbtn" data-saact="climget">Refresh</button></div>';
+        '<div class="a3d-saacts"><button type="button" class="a3d-anzbtn pri" data-saact="climboard">Open the board</button><button type="button" class="a3d-anzbtn" data-saact="climget">Refresh</button></div>';
     }else s+='<p class="a3d-clsum">Ten years of climate, a year of hours, air quality and earthquakes, from free open sources: a board of ten figures, and findings in Climate and Environmental risk.</p>'+
-      '<div class="a3d-saacts"><button type="button" class="a3d-anzbtn pri" data-saact="climget">Get climate and risk</button><button type="button" class="a3d-anzbtn" data-saact="climboard" title="The board is a page of the set: it opens here and presents and prints with the sheets">Show in Presentation</button></div>';
+      '<div class="a3d-saacts"><button type="button" class="a3d-anzbtn pri" data-saact="climget">Get climate and risk</button><button type="button" class="a3d-anzbtn" data-saact="climboard">Open the board</button></div>';
     return s+'</div>';
   }
 
@@ -17612,7 +17476,7 @@ try{
     if(!L||!(i>=0&&i<L.length))return false;
     return bimZnEdit(function(){L.splice(i,1);});
   }
-  function bimZnDone(){refreshTree();refreshLayers();refreshProps();paint();saveSoon();bimSaRefresh(true);if(A3D_CLB.open&&A3D_CLB.kind==='zoning')bimClbOpen('zoning');bimPresThumbsQueue();}
+  function bimZnDone(){refreshTree();refreshLayers();refreshProps();paint();saveSoon();bimSaRefresh(true);if(A3D_CLB.open&&A3D_CLB.kind==='zoning')bimClbOpen('zoning');}
   /* the property's sides: each one's inward normal, and whether it is a front, a side or a rear --
      picked by hand, else the chosen front, the rear facing it, the sides between */
   function bimZnLegs(P,front,roles){
@@ -18481,7 +18345,7 @@ try{
     }else s+='<p class="a3d-clsum">The district\'s controls: FAR, height, setbacks by side with their steps and angular planes, coverage and parking. They give the envelope in 3D, the yield, and a zoning analysis table.</p>';
     s+='<div class="a3d-saacts"><button type="button" class="a3d-anzbtn'+(z?'':' pri')+'" data-saact="znedit" aria-expanded="'+A3D_ZN.edit+'">'+(A3D_ZN.edit?'Done':(z?'Edit zoning':'Enter zoning'))+'</button>'+
       (z?'<button type="button" class="a3d-anzbtn pri" data-saact="znbuild"'+(P?'':' disabled title="Make a property line first"')+'>'+(bimZnEnvelopeObj()?'Rebuild envelope':'Build envelope')+'</button>'+
-        '<button type="button" class="a3d-anzbtn" data-saact="znboard" title="The board is a page of the set: it opens here and presents and prints with the sheets">Show in Presentation</button>':'')+'</div>';
+        '<button type="button" class="a3d-anzbtn" data-saact="znboard">Open the board</button>':'')+'</div>';
     if(A3D_ZN.edit){
       var cand=bimZnFromLayer(false),G=P?bimZnLegs(P,bimZn().frontLeg,bimZn().legRoles):null,lay=[];
       if(cand)['district','far','height'].forEach(function(k){if(cand[k])lay.push(cand[k].layer+': '+cand[k].attr);});
@@ -19434,11 +19298,11 @@ try{
       else if(P&&P.v&&P.v.tract&&P.v.tract.pop[0]!==null)p.push(P.geo.tract.name+': '+bimClimInt(P.v.tract.pop[0])+' people');
       var stl=S?bimAccStaleText(S):'',lay=bimResLayers().some(function(R){return R.kind==='walk';});
       s+='<p class="a3d-clsum">'+bimEsc(p.join(' · '))+'. Data of '+bimEsc((S&&S.fetched)||(P&&P.fetched))+'.'+(stl?' '+bimEsc(stl):'')+'</p>'+
-        '<div class="a3d-saacts"><button type="button" class="a3d-anzbtn pri" data-saact="accboard" title="The board is a page of the set: it opens here and presents and prints with the sheets">Show in Presentation</button>'+
+        '<div class="a3d-saacts"><button type="button" class="a3d-anzbtn pri" data-saact="accboard">Open the board</button>'+
         (S?'<button type="button" class="a3d-anzbtn" data-saact="acclayer"'+(lay?' disabled title="The walk times are a layer already (Layers, Analysis)"':' title="Draw the walk times on the plan, under Analysis in Layers"')+'>Walk times layer</button>':'')+
         '<button type="button" class="a3d-anzbtn" data-saact="accget">Refresh</button></div>';
     }else s+='<p class="a3d-clsum">Walk times along the streets to daily needs and transit, the streets the lot fronts and how well they connect, and the census tract\'s people with their margins of error: from OpenStreetMap and the US Census, free.</p>'+
-      '<div class="a3d-saacts"><button type="button" class="a3d-anzbtn pri" data-saact="accget">Get access and people</button><button type="button" class="a3d-anzbtn" data-saact="accboard" title="The board is a page of the set: it opens here and presents and prints with the sheets">Show in Presentation</button></div>';
+      '<div class="a3d-saacts"><button type="button" class="a3d-anzbtn pri" data-saact="accget">Get access and people</button><button type="button" class="a3d-anzbtn" data-saact="accboard">Open the board</button></div>';
     return s+'</div>';
   }
 
@@ -19586,31 +19450,21 @@ try{
     }
     return h+'</div>';
   }
-  /* __acad3dV162: what each category holds besides its findings. Risk and People share the data
-     Climate and Access fetch, and say where it is. */
-  var BIM_SA_DATA={location:function(){return bimSaCtxHtml();},legal:function(){return bimZnSaHtml();},climate:function(){return bimClbSaHtml();},access:function(){return bimAccSaHtml();}};
-  var BIM_SA_SEE={risk:['climate','Air quality and earthquakes come with the climate data'],people:['access','The census and the daily needs within a walk come with the access data']};
-  function bimSaCatHtml(c,i,C){
-    var s=bimSa(),F=bimSaOf(c.id),open=!!A3D_SA.open[c.id],nc=0,no=0,nr=0,cf=bimSaConfOf(c.id),j,dn=0,dat=BIM_SA_DATA[c.id],see=BIM_SA_SEE[c.id];
-    var T=(C||[]).filter(function(x){return x.group===c.id;}),on=T.filter(function(x){return x.state==='on'||x.state==='stale'||x.state==='busy';});
+  function bimSaCatHtml(c,i){
+    var s=bimSa(),F=bimSaOf(c.id),open=!!A3D_SA.open[c.id],nc=0,no=0,nr=0,cf=bimSaConfOf(c.id),j,dn=0;
     F.forEach(function(f){if(f.cls==='constraint')nc++;else if(f.cls==='opportunity')no++;else if(f.cls==='redflag')nr++;});
     for(j=0;j<c.desk.length;j++)if(s.checks[c.id+':d:'+j])dn++;
     for(j=0;j<c.visit.length;j++)if(s.checks[c.id+':v:'+j])dn++;
     var sum=F.length?bimSaN(F.length,'finding')+(nr?', '+bimSaN(nr,'red flag'):'')+(nc?', '+bimSaN(nc,'constraint'):'')+(no?', '+bimSaN(no,'opportunity','opportunities'):''):'No findings yet';
-    sum+=' · '+dn+' of '+(c.desk.length+c.visit.length)+' checked';
-    if(on.length)sum+=' · '+on.map(function(x){return x.title;}).join(', ')+' on';
-    var stt=cf==='surveyed'?'on':cf==='site'?'on':cf==='desktop'?'warn':'',k;
+    sum+=' \u00b7 '+dn+' of '+(c.desk.length+c.visit.length)+' checked';
+    var stt=cf==='surveyed'?'on':cf==='site'?'on':cf==='desktop'?'warn':'';
     var h='<div class="a3d-anzcard a3d-sacat'+(open?' open':'')+'" data-sacat="'+c.id+'">'+
       '<div class="a3d-anzhd"><button type="button" class="a3d-anztog" data-satog="'+c.id+'" aria-expanded="'+open+'">'+
       '<span class="a3d-anzchev">'+BIM_ANZ_CHEV+'</span><span class="a3d-anzname"><span class="a3d-anzttl">'+(i+1)+'. '+bimEsc(c.n)+'</span>'+
       '<span class="a3d-anzsum">'+bimEsc(sum)+'</span></span></button>'+
       (cf?'<span class="a3d-anzstate a3d-anzstate-'+stt+'">'+bimEsc(bimSaPair(BIM_SA_CONF,cf))+'</span>':'')+'</div>'+
-      '<div class="a3d-anzbody"><div class="a3d-saq">'+bimEsc(c.q)+'</div>';
-    if(dat)h+=dat();
-    if(see){for(k=0;k<BIM_SA_CATS.length;k++)if(BIM_SA_CATS[k].id===see[0])break;
-      h+='<div class="a3d-salink">'+bimEsc(see[1])+'<button type="button" class="a3d-anzbtn" data-saact="goto:'+see[0]+'">'+(k+1)+'. '+bimEsc(BIM_SA_CATS[k].n)+'</button></div>';}
-    if(T.length)h+='<div class="a3d-sachkhd">Analyses</div><div class="a3d-anzlist a3d-satools">'+T.map(bimAnzCard).join('')+'</div>';
-    h+='<div class="a3d-sachkhd">Findings</div>'+(F.length?F.map(bimSaFindingHtml).join(''):'<div class="a3d-sanote">No findings yet.</div>')+
+      '<div class="a3d-anzbody"><div class="a3d-saq">'+bimEsc(c.q)+'</div>'+
+      (F.length?F.map(bimSaFindingHtml).join(''):'<div class="a3d-sanote">No findings yet.</div>')+
       '<div class="a3d-saacts"><button type="button" class="a3d-anzbtn" data-saact="add:'+c.id+'">Add finding</button></div>'+
       '<div class="a3d-sachkhd">At the desk</div>'+c.desk.map(function(t,k){var key=c.id+':d:'+k,on=!!s.checks[key];
         return '<label class="a3d-sachk'+(on?' on':'')+'"><input type="checkbox" data-sachk="'+key+'"'+(on?' checked':'')+'><span>'+bimEsc(t)+'</span></label>';}).join('')+
@@ -19619,20 +19473,34 @@ try{
       '</div></div>';
     return h;
   }
-  /* __acad3dV162: Location's data: where the site is, and its context (V133) */
-  function bimSaCtxHtml(){
-    var c=A3D.site&&A3D.site.context&&A3D.site.context.last,st=bimSunSettings(),at='';
-    if(bimSunNum(st.lat)&&bimSunNum(st.lon))at=Math.abs(st.lat).toFixed(4)+'° '+(st.lat<0?'S':'N')+', '+Math.abs(st.lon).toFixed(4)+'° '+(st.lon<0?'W':'E');
-    return '<div class="a3d-clsec" data-ctxsec="1"><div class="a3d-sasechd">Site context</div>'+
-      '<p class="a3d-clsum">'+(at?bimEsc('The site: '+at+'.'):'The site is not placed yet: give its latitude and longitude, or find its address, in Location.')+' '+
-      (c?bimEsc('Context of '+c.date+': '+bimCtxCountsText(c.counts)+'.'):'The buildings, roads, water and trees around it, from OpenStreetMap, and the terrain: free, no account.')+'</p>'+
-      '<div class="a3d-saacts"><button type="button" class="a3d-anzbtn'+(c?'':' pri')+'" data-saact="cmd:context">'+(c?'Get the context again':'Get the context')+'</button>'+
-      '<button type="button" class="a3d-anzbtn" data-anzact="open:Location">Location</button></div></div>';
+  function bimSaHtml(){
+    var s=bimSa(),F=s.findings,R=F.filter(function(f){return f.cls==='redflag';}),P=A3D.objs.filter(bimIsProperty),bd;
+    if(P.length){var g=bimPropertyGeometry(P[0]);bd=bimEsc(P[0].name)+', '+bimDispNum(g.area,1)+' m\u00b2';}
+    else bd='None yet: <button type="button" class="a3d-anzbtn" data-saact="cmd:propertyshape">From a shape</button> <button type="button" class="a3d-anzbtn" data-saact="cmd:propertyline">From bearings</button>';
+    var h='<div class="a3d-anz a3d-sa">'+bimAnzViewHtml()+'<div class="a3d-anzhead"><span class="a3d-anzttl0">Site analysis</span><span class="a3d-anzcount">'+
+      bimSaN(F.length,'finding')+(R.length?', '+bimSaN(R.length,'red flag'):'')+'</span></div>'+
+      '<div class="a3d-sastages" role="group" aria-label="Stage">'+BIM_SA_STAGES.map(function(x,i){
+        return '<button type="button" class="a3d-sastage'+(i===s.stage?' on':(i<s.stage?' done':''))+'" data-sastage="'+i+'" aria-pressed="'+(i===s.stage)+'" title="'+bimEsc(x[1])+'">'+i+' '+bimEsc(x[0])+'</button>';}).join('')+'</div>'+
+      '<div class="a3d-sastagecap">'+bimEsc(BIM_SA_STAGES[s.stage][1])+'</div>';
+    if(R.length)h+='<div class="a3d-saflags"><div class="a3d-sasechd">Red flags first</div>'+R.map(function(f){return '<div class="a3d-saflag">'+bimSaNumber(f)+' '+bimEsc(f.title)+(f.value?': '+bimEsc(f.value):'')+'</div>';}).join('')+'</div>';
+    h+='<div class="a3d-sasec"><div class="a3d-sasechd">Define</div>'+
+      '<div class="a3d-sarow"><span class="a3d-salab">Boundary</span><span class="a3d-saval">'+bd+'</span></div>'+
+      '<div class="a3d-sarow"><label for="a3d-saptype">Project</label><select id="a3d-saptype" data-saf="ptype">'+BIM_SA_TYPES.map(function(x){return '<option value="'+bimEsc(x)+'"'+(x===s.ptype?' selected':'')+'>'+(x?bimEsc(x):'Not set')+'</option>';}).join('')+'</select></div>'+
+      '<div class="a3d-sarow"><label for="a3d-saq">Questions</label><textarea id="a3d-saq" data-saf="questions" maxlength="2000" placeholder="What must the analysis answer?">'+bimEsc(s.questions)+'</textarea></div>'+
+      '<label class="a3d-sachk'+(s.pins?'':'')+'"><input type="checkbox" data-saf="pins"'+(s.pins?' checked':'')+'><span>Show the findings on the plan</span></label>'+
+      bimClbSaHtml()+   /* __acad3dV159 */
+      bimZnSaHtml()+    /* __acad3dV160 */
+      bimAccSaHtml()+   /* __acad3dV161 */
+      '<div class="a3d-saacts"><button type="button" class="a3d-anzbtn pri" data-saact="fill" title="Location, context, property, terrain, sun, access: what the model knows, with its sources">Fill from the model</button>'+
+      '<button type="button" class="a3d-anzbtn" data-saact="cmd:context">Get the context</button></div></div>'+
+      '<div class="a3d-sasec"><div class="a3d-sasechd">The ten categories</div><div class="a3d-anzlist">'+BIM_SA_CATS.map(bimSaCatHtml).join('')+'</div></div></div>';
+    return h;
   }
   function bimSaWire(w){
     w.addEventListener('click',function(ev){
       var t=ev.target&&ev.target.closest?ev.target:null,b;
       if(!t)return;
+      b=t.closest('[data-anzview]');if(b){bimAnzView(b.getAttribute('data-anzview'));return;}   /* __acad3dV159 */
       b=t.closest('[data-sastage]');if(b){bimSaSetDefine('stage',b.getAttribute('data-sastage'));return;}
       b=t.closest('[data-satog]');if(b){bimSaToggle(b.getAttribute('data-satog'));return;}
       b=t.closest('[data-saact]');if(!b||b.disabled)return;
@@ -19660,14 +19528,13 @@ try{
   function bimSaAct(a){
     var k=String(a||''),i=k.indexOf(':'),v=i<0?'':k.slice(i+1),c=i<0?k:k.slice(0,i);
     if(c==='fill')return bimSaFill();
-    if(c==='goto')return bimSaGoto(v);   /* __acad3dV162 */
     if(c==='climget')return bimClimFetch();   /* __acad3dV159 */
-    if(c==='climboard')return bimBoardShow('climate');   /* __acad3dV162: a page of the set */
+    if(c==='climboard')return bimClbOpen('climate');
     if(c==='znedit'){A3D_ZN.edit=!A3D_ZN.edit;bimSaRefresh(true);return true;}   /* __acad3dV160 */
     if(c==='znbuild')return bimZnBuild();
-    if(c==='znboard')return bimBoardShow('zoning');
+    if(c==='znboard')return bimClbOpen('zoning');
     if(c==='accget')return bimAccFetch();   /* __acad3dV161 */
-    if(c==='accboard')return bimBoardShow('access');
+    if(c==='accboard')return bimClbOpen('access');
     if(c==='acclayer')return bimResultLayerAdd('walk');
     if(c==='znlayer')return bimZnFromLayer(true);
     if(c==='znclear')return bimZnRemoveEnvelope();
@@ -19683,8 +19550,15 @@ try{
     if(c==='cmd'&&/^(propertyshape|propertyline|context)$/.test(v))return window.__a3dRunCmd(v);
     return false;
   }
-  /* __acad3dV162: the site analysis is in Analyze's one list; its refresh is that list's */
-  function bimSaRefresh(force){return bimAnalyzeRefresh(force);}
+  /* the panel again: not while something in it has the focus, or what is typed would be lost */
+  function bimSaRefresh(force){
+    var sh=document.getElementById('a3d-shell'),w=sh&&sh.dataset.tab==='analyze'?sh.querySelector('.a3d-sa-wrap'):null;   /* __acad3dV159 */
+    if(!w)return false;
+    if(!force&&document.activeElement&&w.contains(document.activeElement)&&/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName))return false;
+    var sc=w.querySelector('.a3d-sa'),top=sc?sc.scrollTop:0;
+    try{w.innerHTML=bimSaHtml();var sc2=w.querySelector('.a3d-sa');if(sc2)sc2.scrollTop=top;}catch(eR){console.warn('[BIM] Site analysis panel',eR);}
+    return true;
+  }
   /* the pins: a numbered circle in the finding's colour */
   function drawSaPins(ctx,V,W,H){
     var s=A3D.site&&A3D.site.analysis,out=[],i,f,p;
@@ -19908,7 +19782,8 @@ try{
        programmatic selection, the constraint picker) call refreshProps alone -- syncing from
        refreshTree only would leave the bar naming an object that is no longer selected. */
     bimSyncStatusHint();
-    bimAnalyzeRefresh();   /* __acad3dV141; __acad3dV162: the site analysis with it */
+    bimAnalyzeRefresh();   /* __acad3dV141 */
+    bimSaRefresh();        /* __acad3dV158 */
     if(!el.propsbody)return;
     var o=objById(A3D.sel);
     var gP=o?null:bimSelectedGrid();   /* __acad3dV98 */
@@ -33829,12 +33704,15 @@ try{
       var stale=panel.querySelector('.a3d-assets-wrap');
       if(stale){stale.parentNode.removeChild(stale);did=true;}
     }
-    if(shell.dataset.tab==='analyze'&&!panel.querySelector('.a3d-analyze-wrap')){   /* __acad3dV141; __acad3dV162: the site analysis in it, one list */
+    var saView=shell.dataset.tab==='analyze'&&A3D_ANZ.view==='site';   /* __acad3dV159: one of Analyze's two views */
+    if(shell.dataset.tab==='analyze'&&!saView&&!panel.querySelector('.a3d-analyze-wrap')){   /* __acad3dV141 */
       var abox=document.createElement('div');
-      abox.className='a3d-tabbody a3d-analyze-wrap a3d-sa-wrap';
+      abox.className='a3d-tabbody a3d-analyze-wrap';
       abox.innerHTML=bimAnalyzeHtml();
       bimAnzFilter(abox);   /* __acad3dV148: the search kept from before */
       abox.addEventListener('click',function(ev){
+        var vw=ev.target&&ev.target.closest?ev.target.closest('[data-anzview]'):null;   /* __acad3dV159 */
+        if(vw){bimAnzView(vw.getAttribute('data-anzview'));return;}
         var tg=ev.target&&ev.target.closest?ev.target.closest('[data-anztog]'):null;   /* __acad3dV148: a row opens and closes */
         if(tg){bimAnzToggle(tg.getAttribute('data-anztog'));return;}
         var b=ev.target&&ev.target.closest?ev.target.closest('[data-anzact]'):null;
@@ -33849,15 +33727,24 @@ try{
         var s=ev.target;
         if(s&&s.hasAttribute&&s.hasAttribute('data-anzsearch')&&ev.key==='Escape'&&s.value){ev.preventDefault();ev.stopPropagation();s.value='';A3D_ANZ.q='';bimAnzFilter(abox);}
       });
-      /* a refresh held for a field being typed in happens when it is left */
-      abox.addEventListener('focusout',function(){if(A3D_ANZ.pend)setTimeout(function(){if(A3D_ANZ.pend)bimAnalyzeRefresh();},0);});
-      bimSaWire(abox);   /* __acad3dV158 */
       panel.appendChild(abox);
       did=true;
     }
-    if(shell.dataset.tab!=='analyze'){
+    if(shell.dataset.tab!=='analyze'||saView){
       var astale=panel.querySelector('.a3d-analyze-wrap');
-      if(astale){astale.parentNode.removeChild(astale);A3D_SA.edit=null;A3D_ANZ.pend=false;did=true;}
+      if(astale){astale.parentNode.removeChild(astale);did=true;}
+    }
+    if(saView&&!panel.querySelector('.a3d-sa-wrap')){   /* __acad3dV158; __acad3dV159: inside Analyze */
+      var sbox=document.createElement('div');
+      sbox.className='a3d-tabbody a3d-sa-wrap';
+      sbox.innerHTML=bimSaHtml();
+      bimSaWire(sbox);
+      panel.appendChild(sbox);
+      did=true;
+    }
+    if(!saView){
+      var sstale=panel.querySelector('.a3d-sa-wrap');
+      if(sstale){sstale.parentNode.removeChild(sstale);A3D_SA.edit=null;did=true;}
     }
     return did;
   }
@@ -34538,7 +34425,7 @@ try{
      need the same list to park a project in its own key and to know what a fresh project is,
      and two copies of one field list are two lists that will eventually disagree. */
   function bimProjectRecord(){
-    return {objs:A3D.objs,cam:A3D.cam,seq:A3D.seq,counts:A3D.counts,levels:A3D.levels,grids:A3D.grids,activeLevel:A3D.activeLevel,layers:A3D.layers,activeLayer:A3D.activeLayer,types:A3D.types,activeWallType:A3D.activeWallType,views:A3D.views,activeViewId:A3D.activeViewId,levelFilter:A3D.levelFilter,sheets:A3D.sheets,titleBlock:A3D.titleBlock,buildings:A3D.buildings,activeBuilding:A3D.activeBuilding,site:A3D.site,roomScheme:A3D.roomScheme||'',classifications:A3D.classifications,dataFeatures:A3D.dataFeatures||{},history:A3D.history||null,resultLayers:A3D.resultLayers||[],pres:A3D.pres||null};   /* __acad3dV146, __acad3dV148; __acad3dV162 */
+    return {objs:A3D.objs,cam:A3D.cam,seq:A3D.seq,counts:A3D.counts,levels:A3D.levels,grids:A3D.grids,activeLevel:A3D.activeLevel,layers:A3D.layers,activeLayer:A3D.activeLayer,types:A3D.types,activeWallType:A3D.activeWallType,views:A3D.views,activeViewId:A3D.activeViewId,levelFilter:A3D.levelFilter,sheets:A3D.sheets,titleBlock:A3D.titleBlock,buildings:A3D.buildings,activeBuilding:A3D.activeBuilding,site:A3D.site,roomScheme:A3D.roomScheme||'',classifications:A3D.classifications,dataFeatures:A3D.dataFeatures||{},history:A3D.history||null,resultLayers:A3D.resultLayers||[]};   /* __acad3dV146, __acad3dV148 */
   }
   /* __acad3dV115: a save that failed went into an empty catch, so a full browser store lost every
      later edit without a word. It says so now -- once per run of failures, not once per edit. */
@@ -37649,7 +37536,6 @@ try{
   function bimActivateView(kind,id,opts){
     opts=opts||{};
     var anim=(opts.anim!==false),sv=null,q;
-    if(A3D_CLB.open)bimClbClose();   /* __acad3dV162: a board's page gives the main view back */
     try{
       /* Leaving a sheet is not optional: the paper canvas covers the model canvas, so any view
          that is not a sheet must close it first or the user opens a view they cannot see. */
@@ -38610,8 +38496,6 @@ try{
       }catch(eC){console.warn('[BIM] A presentation step failed',eC);a3dToast('That step failed -- see the console');}
     });
     ov.addEventListener('wheel',function(ev){
-      var bd=ev.target&&ev.target.closest?ev.target.closest('.a3d-ssboard'):null;   /* __acad3dV162: a board scrolls, to its end */
-      if(bd&&ev.deltaY&&(ev.deltaY>0?bd.scrollTop+bd.clientHeight<bd.scrollHeight-1:bd.scrollTop>0))return;
       ev.preventDefault();
       var now=Date.now();
       if(now-A3D_SLIDESHOW.wheelAt<BIM_SHOW_WHEEL_MS||!ev.deltaY)return;
@@ -38632,14 +38516,13 @@ try{
   }
   function bimSlideshowStart(fromId){
     if(A3D_SLIDESHOW.on)return true;
-    var Q=bimPresSeq(),idx=0,i,ov;   /* __acad3dV162: the set, boards and all */
-    if(!Q.length){a3dToast('There are no pages to present yet: every sheet is a page');return false;}
-    for(i=0;i<Q.length;i++)if(Q[i].id===fromId){idx=i;break;}
+    if(!A3D.sheets.length){a3dToast('There are no pages to present yet: every sheet is a page');return false;}
+    var idx=0,i,ov;
+    for(i=0;i<A3D.sheets.length;i++)if(A3D.sheets[i].id===fromId){idx=i;break;}
     try{ov=bimSlideshowEl();}
     catch(eE){console.warn('[BIM] The presentation could not be set up',eE);a3dToast('The presentation could not start -- see the console');return false;}
     A3D_SLIDESHOW.on=true;A3D_SLIDESHOW.idx=idx;A3D_SLIDESHOW.ahead=null;A3D_SLIDESHOW.msg='';
-    A3D_SLIDESHOW.from={kind:A3D_VIEW.kind,id:A3D_VIEW.id,board:A3D_CLB.open?A3D_CLB.kind:null};
-    if(A3D_CLB.open)bimClbClose();   /* one board on the screen: Present's */
+    A3D_SLIDESHOW.from={kind:A3D_VIEW.kind,id:A3D_VIEW.id};
     ov.classList.add('open');
     bimSlideshowFullscreen(ov);
     bimSlideshowShow();
@@ -38664,7 +38547,7 @@ try{
     bimSlideshowBar();
   }
   function bimSlideshowBar(){
-    var ov=A3D_SLIDESHOW.el,n=bimPresSeq().length,i=A3D_SLIDESHOW.idx;
+    var ov=A3D_SLIDESHOW.el,n=A3D.sheets.length,i=A3D_SLIDESHOW.idx;
     if(!ov)return;
     ov.querySelector('.a3d-sspos').textContent=(i+1)+' / '+n;
     ov.querySelector('[data-ssact="prev"]').disabled=(i<=0);
@@ -38674,13 +38557,10 @@ try{
   /* the page on screen: fitted with a small margin, drawn for this screen, the next one drawn ahead */
   function bimSlideshowShow(){
     if(!A3D_SLIDESHOW.on)return;
-    var Q=bimPresSeq(),n=Q.length;
+    var n=A3D.sheets.length;
     if(!n){bimSlideshowEnd();return;}
     if(A3D_SLIDESHOW.idx>n-1)A3D_SLIDESHOW.idx=n-1;
-    var e=Q[A3D_SLIDESHOW.idx];
-    if(e.t==='board'){bimSlideshowBoard(e);bimSlideshowBar();bimSlideshowAhead(A3D_SLIDESHOW.idx+1);return;}   /* __acad3dV162 */
-    bimSlideshowBoard(null);
-    var s=e.s,ov=A3D_SLIDESHOW.el,cv=A3D_SLIDESHOW.cv;
+    var s=A3D.sheets[A3D_SLIDESHOW.idx],ov=A3D_SLIDESHOW.el,cv=A3D_SLIDESHOW.cv;
     var vw=ov.clientWidth||window.innerWidth,vh=ov.clientHeight||window.innerHeight,m=Math.round(Math.min(vw,vh)*0.03);
     var k=Math.max(0.05,Math.min((vw-2*m)/s.w,(vh-2*m)/s.h));
     var W=Math.max(1,Math.round(s.w*k)),H=Math.max(1,Math.round(s.h*k)),sc=bimPageScaleFor(s,W);
@@ -38700,31 +38580,10 @@ try{
     bimSlideshowBar();
     bimSlideshowAhead(A3D_SLIDESHOW.idx+1);
   }
-  /* __acad3dV162: a board's page in Present: the board as on screen, over the black, scrolled with the
-     wheel or a finger; the canvas stands aside */
-  function bimSlideshowBoard(e){
-    var ov=A3D_SLIDESHOW.el,cv=A3D_SLIDESHOW.cv,bd=ov?ov.querySelector('.a3d-ssboard'):null,w,sig;
-    if(!ov)return;
-    if(!e){if(bd)bd.parentNode.removeChild(bd);cv.style.display='';return;}
-    cv.style.display='none';
-    cv.setAttribute('data-sspage',e.id);cv.removeAttribute('data-sskey');
-    if(!bd){bd=document.createElement('div');bd.setAttribute('role','document');ov.insertBefore(bd,cv.nextSibling);bimClbWire(bd);}
-    w=ov.clientWidth||window.innerWidth;
-    bd.className='a3d-clb a3d-ssboard'+bimClbWidthCls(w);
-    bd.setAttribute('data-sspage',e.id);
-    bd.setAttribute('aria-label',bimBoardName(e.b.kind)+' board');
-    sig=e.b.kind+'|'+A3D_REV+'|'+(w<760);
-    if(bd.getAttribute('data-sssig')!==sig){
-      bd.innerHTML=bimBoardHtmlFor(e.b.kind,w<760)+'<div class="a3d-clb-tip" role="tooltip" hidden></div>';
-      bd.setAttribute('data-sssig',sig);bd.scrollTop=0;
-    }
-    A3D_SLIDESHOW.scale=0;
-  }
   function bimSlideshowAhead(i){
     setTimeout(function(){
-      var Q=bimPresSeq();
-      if(!A3D_SLIDESHOW.on||i>=Q.length||Q[i].t!=='sheet')return;   /* __acad3dV162: a board is not drawn ahead */
-      var s=Q[i].s,ov=A3D_SLIDESHOW.el,vw=ov.clientWidth||window.innerWidth,vh=ov.clientHeight||window.innerHeight;
+      if(!A3D_SLIDESHOW.on||i>=A3D.sheets.length)return;
+      var s=A3D.sheets[i],ov=A3D_SLIDESHOW.el,vw=ov.clientWidth||window.innerWidth,vh=ov.clientHeight||window.innerHeight;
       var m=Math.round(Math.min(vw,vh)*0.03),k=Math.max(0.05,Math.min((vw-2*m)/s.w,(vh-2*m)/s.h));
       var W=Math.max(1,Math.round(s.w*k)),sc=bimPageScaleFor(s,W),key=bimPageSig(s)+'|'+sc.toFixed(5);
       if(A3D_SLIDESHOW.ahead&&A3D_SLIDESHOW.ahead.id===s.id&&A3D_SLIDESHOW.ahead.key===key)return;
@@ -38737,7 +38596,7 @@ try{
   }
   function bimSlideshowGo(i){
     if(!A3D_SLIDESHOW.on)return false;
-    var n=bimPresSeq().length;
+    var n=A3D.sheets.length;
     i=Math.max(0,Math.min(n-1,i));
     if(i!==A3D_SLIDESHOW.idx){A3D_SLIDESHOW.idx=i;bimSlideshowShow();}
     else bimSlideshowBar();
@@ -38748,7 +38607,7 @@ try{
     if(act==='next')return bimSlideshowGo(i+1);
     if(act==='prev')return bimSlideshowGo(i-1);
     if(act==='first')return bimSlideshowGo(0);
-    if(act==='last')return bimSlideshowGo(bimPresSeq().length-1);
+    if(act==='last')return bimSlideshowGo(A3D.sheets.length-1);
     if(act==='end')return bimSlideshowEnd();
     return false;
   }
@@ -38765,8 +38624,7 @@ try{
   /* back where it was started; on paper, to the page last shown */
   function bimSlideshowEnd(){
     if(!A3D_SLIDESHOW.on)return false;
-    var e=bimPresSeq()[A3D_SLIDESHOW.idx]||null,s=e&&e.t==='sheet'?e.s:null,from=A3D_SLIDESHOW.from||{},ov=A3D_SLIDESHOW.el;
-    bimSlideshowBoard(null);
+    var s=A3D.sheets[A3D_SLIDESHOW.idx],from=A3D_SLIDESHOW.from||{},ov=A3D_SLIDESHOW.el;
     A3D_SLIDESHOW.on=false;A3D_SLIDESHOW.ahead=null;
     if(A3D_SLIDESHOW.idleT){clearTimeout(A3D_SLIDESHOW.idleT);A3D_SLIDESHOW.idleT=null;}
     if(ov)ov.classList.remove('open','idle');
@@ -38776,8 +38634,6 @@ try{
       catch(eX){console.warn('[BIM] Full screen could not be left',eX);a3dToast('Full screen could not be left -- press Esc');}
     }
     A3D_SLIDESHOW.fs=false;
-    if(e&&e.t==='board'){bimClbOpen(e.b.kind);return true;}   /* __acad3dV162: back on the board last shown */
-    if(s&&from.board){bimActivateView('sheet',s.id);return true;}   /* started on a board: to the sheet last shown */
     if(s&&from.kind==='sheet'&&bimSheetOnScreen()){
       if(A3D_PAGES.display==='pages'){if(s.id!==A3D.activeSheetId)bimPagesSetCurrent(s.id);bimPagesScrollTo(s.id);}
       else if(s.id!==A3D.activeSheetId)bimActivateView('sheet',s.id);
@@ -39642,27 +39498,15 @@ try{
      named @page per size (the first size is also the plain @page, for a browser without named
      pages). A page whose vector build fails goes in as its image, and the presenter is told. */
   function bimPrintSetHtml(){
-    var Q=bimPresSeq(),n=Q.length,mode=A3D.presentMode?'presentation':'technical',sizes={},css='',body='',bad=[],lost=[],i,e,s,nm,svg,cv,first=true,brd=false;   /* __acad3dV162 */
+    var n=A3D.sheets.length,mode=A3D.presentMode?'presentation':'technical',sizes={},css='',body='',bad=[],i,s,nm,svg,cv;
     for(i=0;i<n;i++){
-      e=Q[i];
-      if(e.t==='board'){   /* __acad3dV162: a board on A3 landscape pages of its own, as it prints alone */
-        if(!brd){brd=true;css+='@page a3dbrd{size:420mm 297mm;margin:10mm}';}
-        try{body+='<div class="a3dbrd" data-page="'+bimEsc(e.id)+'" style="page:a3dbrd">'+bimBoardPrintHtml(e.b.kind)+'</div>';}
-        catch(eB){
-          console.warn('[BIM] Page '+(i+1)+', the '+bimBoardName(e.b.kind)+' board, could not be put together',eB);
-          lost.push(i+1);
-          body+='<div class="a3dbrd" data-page="'+bimEsc(e.id)+'"><div class="a3dpgerr">Page '+(i+1)+' ('+bimEsc(bimBoardName(e.b.kind))+') could not be drawn</div></div>';
-        }
-        continue;
-      }
-      s=e.s;
+      s=A3D.sheets[i];
       nm='a3dsz'+String(s.w.toFixed(1)+'x'+s.h.toFixed(1)).replace(/[^0-9x]/g,'_');
       if(!sizes[nm]){
         sizes[nm]=1;
-        if(first)css+='@page{size:'+s.w+'mm '+s.h+'mm;margin:0}';
+        if(i===0)css+='@page{size:'+s.w+'mm '+s.h+'mm;margin:0}';
         css+='@page '+nm+'{size:'+s.w+'mm '+s.h+'mm;margin:0}';
       }
-      first=false;
       try{svg=bimBuildSheetSVG(s,mode);}
       catch(eS){
         console.warn('[BIM] Page '+(i+1)+' could not be built as a vector drawing; it is printed from its image',eS);
@@ -39677,15 +39521,14 @@ try{
       }
       body+='<div class="a3dpg" data-page="'+bimEsc(s.id)+'" style="page:'+nm+';width:'+s.w+'mm;height:'+s.h+'mm">'+svg+'</div>';
     }
-    if(brd)css+=bimClbCss()+'.a3dbrd{break-after:page;page-break-after:always}.a3dbrd:last-child{break-after:auto;page-break-after:auto}';
     var html='<html><head><title>'+bimEsc(bimProjectLabel())+' - '+n+' page'+(n===1?'':'s')+'</title><style>'+css+
       'body{margin:0}.a3dpg{break-after:page;page-break-after:always;overflow:hidden}.a3dpg:last-child{break-after:auto;page-break-after:auto}'+
       '.a3dpg svg,.a3dpg img{width:100%;height:100%;display:block}.a3dpgerr{padding:20mm;font:14pt sans-serif;color:#c33}'+
       '</style></head><body>'+body+'<script>window.onload=function(){window.focus();window.print();};<\/script></body></html>';
-    return {html:html,bad:bad,lost:lost,n:n};
+    return {html:html,bad:bad,n:n};
   }
   function bimPrintSet(){
-    if(!bimPresSeq().length){a3dToast('There are no pages to print yet: every sheet is a page');return false;}   /* __acad3dV162: a board is one too */
+    if(!A3D.sheets.length){a3dToast('There are no pages to print yet: every sheet is a page');return false;}
     var r;
     try{r=bimPrintSetHtml();}
     catch(eB){console.warn('[BIM] The set could not be put together for printing',eB);a3dToast('The set could not be printed -- see the console');return false;}
@@ -39693,8 +39536,7 @@ try{
     if(!w){a3dToast('The print window was blocked -- allow pop-ups for this page and try again');return false;}
     try{w.document.write(r.html);w.document.close();}
     catch(eW){console.warn('[BIM] The print window could not be written',eW);a3dToast('The set could not be printed -- see the console');return false;}
-    if(r.lost&&r.lost.length)a3dToast('Page'+(r.lost.length>1?'s ':' ')+r.lost.join(', ')+' could not be drawn -- see the console');   /* __acad3dV162 */
-    else if(r.bad.length)a3dToast('Page'+(r.bad.length>1?'s ':' ')+r.bad.join(', ')+' printed from '+(r.bad.length>1?'their images':'its image')+': the vector drawing failed -- see the console');
+    if(r.bad.length)a3dToast('Page'+(r.bad.length>1?'s ':' ')+r.bad.join(', ')+' printed from '+(r.bad.length>1?'their images':'its image')+': the vector drawing failed -- see the console');
     else a3dToast('Printing '+r.n+' page'+(r.n===1?'':'s')+' -- Save as PDF in the print dialog makes a PDF');
     return true;
   }
@@ -39888,7 +39730,7 @@ try{
   }
   /* the menu of a sheet: 'tabs' for a layout tab, 'pages' for a page in the Presentation panel */
   function bimSheetMenuItems(id,where){
-    var pg=(where==='pages'),i=pg?bimPresIndex(id):bimSheetIndex(id),n=pg?bimPresSeq().length:A3D.sheets.length,it=[];   /* __acad3dV162: a page's place is in the set */
+    var i=bimSheetIndex(id),n=A3D.sheets.length,pg=(where==='pages'),it=[];
     if(pg)it.push(['Present from this page','present'],'-');
     it.push(['New sheet','new'],['Rename','rename'],['Delete','del',true],'-');
     if(i>0)it.push([pg?'Move up':'Move left','earlier']);
@@ -39904,252 +39746,35 @@ try{
     if(a==='new')return bimLayoutNew();
     if(a==='rename')return (where==='pages')?bimPresRename(id):bimLayoutRename(id);
     if(a==='del')return bimConfirmDeleteSheet(id);
-    if(a==='earlier'||a==='later')return where==='pages'?bimPresStep(id,a==='earlier'?-1:1):bimSheetMove(id,bimSheetIndex(id)+(a==='earlier'?-1:1));
+    if(a==='earlier'||a==='later')return bimSheetMove(id,bimSheetIndex(id)+(a==='earlier'?-1:1));
     if(a==='setup'){if(bimActivateView('sheet',id))bimOpenSheetPropsDlg();return true;}
     if(a==='plot'){if(bimActivateView('sheet',id))bimPrintSheet();return true;}
     if(a==='present')return bimSlideshowStart(id);
     return false;
   }
-  /* ================= __acad3dV162: the boards are pages of the set =================
-     reference/research-one-analyze-boards.md. A board is a page of the presentation beside the
-     sheets: in the Presentation panel with its thumbnail, in the main view, in Present and in Print
-     set. Analyze fetches the data and links to it. A3D.pres keeps the boards in the set and the
-     set's order; the sheets keep their order among themselves (the layout tabs), and a board its
-     place among them. */
-  /* a function, not a list: a project is read from storage early in the boot, before a list here
-     would have been made */
-  function bimBoards(){return [['climate','Climate and risk'],['zoning','Zoning and yield'],['access','Access and people']];}
-  function bimBoardName(kind){var B=bimBoards(),i;for(i=0;i<B.length;i++)if(B[i][0]===kind)return B[i][1];return '';}
-  /* the record as saved: one board of each kind, an order of ids */
-  function bimPresValid(p){
-    var out={boards:[],order:[]},seen={};
-    if(p&&typeof p==='object'){
-      if(Array.isArray(p.boards))p.boards.forEach(function(b){
-        if(b&&typeof b==='object'&&bimBoardName(b.kind)&&!seen[b.kind]){seen[b.kind]=1;out.boards.push({id:'board-'+b.kind,kind:b.kind});}
-      });
-      if(Array.isArray(p.order))out.order=p.order.filter(function(x){return typeof x==='string';});
-    }
-    return out;
-  }
-  function bimPresData(){
-    if(!A3D.pres||typeof A3D.pres!=='object'||!Array.isArray(A3D.pres.boards)||!Array.isArray(A3D.pres.order))A3D.pres=bimPresValid(A3D.pres);
-    return A3D.pres;
-  }
-  function bimBoardById(id){var B=bimPresData().boards,i;for(i=0;i<B.length;i++)if(B[i].id===id)return B[i];return null;}
-  /* the set in its order, [{t:'sheet',id,s} or {t:'board',id,b}]: each place the order gives a sheet
-     is filled by the sheets in their own order; a sheet the order does not have yet comes last */
-  function bimPresSeq(){
-    var P=bimPresData(),B={},S={},used={},out=[],sh=A3D.sheets,i,id,k=0;
-    P.boards.forEach(function(b){B[b.id]=b;});
-    sh.forEach(function(s){S[s.id]=1;});
-    for(i=0;i<P.order.length;i++){
-      id=P.order[i];
-      if(used[id])continue;
-      if(B[id]){used[id]=1;out.push({t:'board',id:id,b:B[id]});}
-      else if(S[id]){used[id]=1;out.push(null);}
-    }
-    for(i=0;i<out.length;i++)if(out[i]===null){out[i]={t:'sheet',id:sh[k].id,s:sh[k]};k++;}
-    for(;k<sh.length;k++)out.push({t:'sheet',id:sh[k].id,s:sh[k]});
-    P.boards.forEach(function(b){if(!used[b.id])out.push({t:'board',id:b.id,b:b});});
-    return out;
-  }
-  function bimPresIndex(id){var Q=bimPresSeq(),i;for(i=0;i<Q.length;i++)if(Q[i].id===id)return i;return -1;}
-  /* a new order for the set, as its ids: the sheets take the order they have in it. One undo step. */
-  function bimPresSetOrder(Q){
-    var S={},ord;
-    A3D.sheets.forEach(function(s){S[s.id]=s;});
-    ord=Q.filter(function(id){return S[id];}).map(function(id){return S[id];});
-    if(ord.length!==A3D.sheets.length){console.warn('[BIM] A new order for the set left a sheet out; nothing was moved');return false;}
-    pushUndo();
-    A3D.sheets.length=0;ord.forEach(function(s){A3D.sheets.push(s);});
-    bimPresData().order=Q.slice();
-    refreshBrowser();bimSheetViewRefresh();saveSoon();bimPresPanelRefresh();
-    return true;
-  }
-  /* dropped on a page, above or below its middle; with no board in the set, a sheet's move as ever */
-  function bimPresMoveNear(id,targetId,after){
-    if(!bimPresData().boards.length)return bimSheetMoveNear(id,targetId,after);
-    var Q=bimPresSeq().map(function(e){return e.id;}),from=Q.indexOf(id),to=Q.indexOf(targetId);
-    if(from<0||to<0)return false;
-    if(after)to++;
-    if(from<to)to--;
-    if(to===from)return true;
-    Q.splice(to,0,Q.splice(from,1)[0]);
-    return bimPresSetOrder(Q);
-  }
-  /* a page one place earlier (-1) or later (+1) in the set */
-  function bimPresStep(id,d){
-    var Q=bimPresSeq().map(function(e){return e.id;}),i=Q.indexOf(id),j=i+d;
-    if(i<0||j<0||j>=Q.length)return false;
-    if(!bimPresData().boards.length)return bimSheetMove(id,j);
-    Q.splice(j,0,Q.splice(i,1)[0]);
-    return bimPresSetOrder(Q);
-  }
-  /* a board into the set, as its last page: one undo step; one of each kind */
-  function bimBoardAdd(kind){
-    if(!bimBoardName(kind)){a3dToast('There is no such board');return null;}
-    var id='board-'+kind,P;
-    if(bimBoardById(id))return id;
-    pushUndo();
-    P=bimPresData();
-    P.order=bimPresSeq().map(function(e){return e.id;});
-    P.boards.push({id:id,kind:kind});
-    P.order.push(id);
-    saveSoon();bimPresPanelRefresh();
-    return id;
-  }
-  /* out of the set: one undo step. Its data stays in Analyze. */
-  function bimBoardRemove(id){
-    var b=bimBoardById(id),P;
-    if(!b)return false;
-    pushUndo();
-    P=bimPresData();
-    P.order=bimPresSeq().map(function(e){return e.id;}).filter(function(x){return x!==id;});
-    P.boards=P.boards.filter(function(x){return x.id!==id;});
-    if(A3D_CLB.open&&A3D_CLB.kind===b.kind)bimClbClose();
-    saveSoon();bimPresPanelRefresh();
-    a3dToast(bimBoardName(b.kind)+' is out of the set; its data stays in Analyze');
-    return true;
-  }
-  /* a board's page in the main view, the panels beside it; on a phone or a tablet the drawer makes
-     way for it */
-  function bimPresOpenBoard(id){
-    var b=bimBoardById(id);
-    if(!b){a3dToast('That board is no longer in the set');return false;}
-    bimClbOpen(b.kind);
-    if(bimShellOverlay())bimShellDrawer(false);
-    return true;
-  }
-  /* from Analyze, or a command: the board in the set if it is not, open, and its page shown in
-     Presentation */
-  function bimBoardShow(kind){
-    if(!bimBoardName(kind)){a3dToast('There is no such board');return false;}
-    var had=!!bimBoardById('board-'+kind),id=bimBoardAdd(kind);
-    if(!id)return false;
-    bimShellSetTab('presentation');
-    if(!bimPresOpenBoard(id))return false;
-    if(!had)a3dToast(bimBoardName(kind)+' is page '+(bimPresIndex(id)+1)+' of the set, in Presentation: it presents and prints with the sheets');
-    return true;
-  }
-  function bimBoardMenu(btn){
-    var r=btn.getBoundingClientRect();
-    bimLtMenuOpen(r.left,r.bottom+4,bimBoards().map(function(x){return [x[1]+(bimBoardById('board-'+x[0])?' (in the set)':''),x[0]];}),function(k){bimBoardShow(k);});
-    return true;
-  }
-  function bimBoardMenuItems(id){
-    var i=bimPresIndex(id),n=bimPresSeq().length,it=[['Present from this page','present'],'-',['Open','open'],['Print…','print']];
-    if(i>0||i<n-1)it.push('-');
-    if(i>0)it.push(['Move up','earlier']);
-    if(i>=0&&i<n-1)it.push(['Move down','later']);
-    it.push('-',['Remove from the set','remove',true]);
-    return it;
-  }
-  function bimBoardMenuDo(a,id){
-    var b=bimBoardById(id);
-    if(!b)return false;
-    if(a==='present')return bimSlideshowStart(id);
-    if(a==='open')return bimPresOpenBoard(id);
-    if(a==='print')return bimClbPrint(b.kind);
-    if(a==='earlier'||a==='later')return bimPresStep(id,a==='earlier'?-1:1);
-    if(a==='remove')return bimBoardRemove(id);
-    return false;
-  }
-  /* a board's markup for a kind, drawn for a phone or not, whatever is open */
-  function bimBoardHtmlFor(kind,narrow){
-    var k=A3D_CLB.kind,n=A3D_CLB.narrow,h;
-    A3D_CLB.kind=kind;A3D_CLB.narrow=!!narrow;
-    try{h=bimClbHtml();}finally{A3D_CLB.kind=k;A3D_CLB.narrow=n;}
-    return h;
-  }
-  /* as it prints: wide, on paper */
-  function bimBoardPrintHtml(kind){return '<div class="a3d-clb prt w-l">'+bimBoardHtmlFor(kind,false)+'</div>';}
-  /* the boards' own style rules, out of this page's style sheet, for a print window or a thumbnail */
-  var A3D_CLB_CSS='';
-  function bimClbCss(){
-    if(A3D_CLB_CSS)return A3D_CLB_CSS;
-    var re=/a3d-(clb|acc-|zn-)/,out=[],i;
-    function take(L){
-      var s='',k,r,inner;
-      for(k=0;k<L.length;k++){
-        r=L[k];
-        if(typeof r.selectorText==='string'){if(re.test(r.selectorText))s+=r.cssText;}
-        else if(r.cssRules&&r.cssRules.length){inner=take(r.cssRules);if(inner)s+=r.cssText.slice(0,r.cssText.indexOf('{'))+'{'+inner+'}';}
-      }
-      return s;
-    }
-    for(i=0;i<document.styleSheets.length;i++){
-      try{out.push(take(document.styleSheets[i].cssRules||[]));}
-      catch(eC){console.warn('[BIM] A style sheet could not be read for the boards',eC);}
-    }
-    A3D_CLB_CSS=out.join('');
-    return A3D_CLB_CSS;
-  }
-  /* a board alone, in a print window: A3 landscape, as Print set prints it */
-  function bimClbPrint(kind){
-    if(!bimBoardName(kind))kind=A3D_CLB.kind;
-    var w=window.open('','_blank');
-    if(!w){a3dToast('The print window was blocked -- allow pop-ups for this page and try again');return false;}
-    try{
-      w.document.write('<html><head><title>'+bimEsc(bimProjectLabel()+' - '+bimBoardName(kind))+'</title><style>'+bimClbCss()+
-        '@page{size:420mm 297mm;margin:10mm}body{margin:0;background:#fff}</style></head><body>'+bimBoardPrintHtml(kind)+
-        '<script>window.onload=function(){window.focus();window.print();};<\/script></body></html>');
-      w.document.close();
-    }catch(eW){console.warn('[BIM] The board could not be put in the print window',eW);a3dToast('The board could not be printed -- see the console');return false;}
-    a3dToast('Printing '+bimBoardName(kind)+' -- Save as PDF in the print dialog makes a PDF');
-    return true;
-  }
-  /* a board's thumbnail: the board as it prints, written into its frame when the model has moved
-     and the board's markup with it */
-  function bimPresBoardThumb(b,doc,key){
-    try{
-      var T=A3D_PRP.bthumbs[b.id];
-      if(!T||T.key!==key)T=A3D_PRP.bthumbs[b.id]={key:key,html:bimBoardPrintHtml(b.kind)};
-      if(doc.__prpHtml!==T.html){
-        doc.open();
-        doc.write('<!doctype html><html><head><meta charset="utf-8"><style>'+bimClbCss()+
-          'html,body{margin:0;overflow:hidden;background:#fff}.a3d-clb.prt .a3d-clb-page{padding:28px 32px}</style></head><body>'+T.html+'</body></html>');
-        doc.close();
-        doc.__prpHtml=T.html;
-      }
-    }catch(eT){
-      console.warn('[BIM] The thumbnail of the '+bimBoardName(b.kind)+' board could not be drawn',eT);
-      a3dToast('A board thumbnail could not be drawn -- see the console');
-    }
-    doc.__prpKey=key;   /* drawn or failed, not tried again until the model moves */
-  }
   /* ================= __acad3dV122: the Presentation panel =================
      The presentation's pages, the thumbnail column of a PDF reader. A thumbnail is the page as it
      plots, drawn by the renderer the pages and Present use, at twice its pixels and reduced. */
-  var A3D_PRP={thumbs:{},timer:null,edit:null,drag:null,bthumbs:{}};   /* __acad3dV162: the boards' thumbnails too */
+  var A3D_PRP={thumbs:{},timer:null,edit:null,drag:null};
   var BIM_THUMB_CSS_W=206;   /* the panel's width less its padding */
   function bimPresThumbDims(s){
     var W=Math.max(1,Math.round(BIM_THUMB_CSS_W*bimDevicePixelRatio()));
     return {W:W,H:Math.max(1,Math.round(W*s.h/s.w))};
   }
   function bimPresPanelHtml(){
-    var Q=bimPresSeq(),n=Q.length,cur=A3D_CLB.open&&A3D_CLB.board?A3D_CLB.board:(bimSheetOnScreen()?A3D.activeSheetId:null),i,e,s,d,lab,h;   /* __acad3dV162 */
+    var n=A3D.sheets.length,cur=bimSheetOnScreen()?A3D.activeSheetId:null,i,s,d,lab,h;
     h='<div class="a3d-prp"><div class="a3d-prphd"><span class="a3d-prpttl">Presentation</span>'+
       '<span class="a3d-prpcount">'+n+' page'+(n===1?'':'s')+'</span></div>'+
       '<div class="a3d-prpbar">'+
       '<button type="button" class="a3d-prpbtn pri" data-prpact="present"'+(n?'':' disabled')+
         ' title="'+(n?'Present the pages full screen, one at a time':'No pages to present yet')+'">Present</button>'+
       '<button type="button" class="a3d-prpbtn" data-prpact="new" title="A new sheet, the last page of the set">+ Page</button>'+
-      '<button type="button" class="a3d-prpbtn" data-prpact="board" title="A board of the site analysis -- climate and risk, zoning and yield, access and people -- as a page of the set" aria-haspopup="menu">+ Board</button>'+
       '<button type="button" class="a3d-prpbtn" data-prpact="print"'+(n?'':' disabled')+
         ' title="'+(n?'Print every page in one go -- Save as PDF in the print dialog makes a PDF':'No pages to print yet')+'">Print set</button>'+
       '</div><div class="a3d-prplist" data-prplist="1">';
-    if(!n)h+='<div class="a3d-prpempty">No pages yet. Every sheet is a page, in the order of the layout tabs; + Page makes the first. + Board adds a board of the site analysis.</div>';
+    if(!n)h+='<div class="a3d-prpempty">No pages yet. Every sheet is a page, in the order of the layout tabs; + Page makes the first.</div>';
     for(i=0;i<n;i++){
-      e=Q[i];
-      if(e.t==='board'){
-        lab=bimBoardName(e.b.kind);
-        h+='<div class="a3d-prpitem a3d-prpbrd'+(e.id===cur?' cur':'')+'" data-prpitem="'+bimEsc(e.id)+'" draggable="true" title="Page '+(i+1)+': the '+bimEsc(lab)+
-          ' board -- click to open it, drag to move it, right-click for more">'+
-          '<div class="a3d-prpthumb a3d-prpbthumb"><iframe data-prpbframe="'+bimEsc(e.id)+'" tabindex="-1" aria-hidden="true" title=""></iframe></div>'+
-          '<div class="a3d-prpcap"><span class="a3d-prpno">'+(i+1)+'</span><span class="a3d-prpname">'+bimEsc(lab)+'</span><span class="a3d-prptag">Board</span></div></div>';
-        continue;
-      }
-      s=e.s;d=bimPresThumbDims(s);lab=bimSheetLabel(s);
+      s=A3D.sheets[i];d=bimPresThumbDims(s);lab=bimSheetLabel(s);
       h+='<div class="a3d-prpitem'+(s.id===cur?' cur':'')+'" data-prpitem="'+bimEsc(s.id)+'" draggable="true" title="Page '+(i+1)+': '+bimEsc(lab)+
         ' -- click to read it, double-click to edit its layout, drag to move it, right-click for more">'+
         '<div class="a3d-prpthumb"><canvas data-prpthumb="'+bimEsc(s.id)+'" width="'+d.W+'" height="'+d.H+'"></canvas></div>'+
@@ -40193,24 +39818,6 @@ try{
       A3D_PRP.timer=setTimeout(bimPresThumbNext,0);
       return;
     }
-    /* __acad3dV162: the boards' frames, scaled to the column, written when the model has moved */
-    var F=host.querySelectorAll('iframe[data-prpbframe]'),fr,doc,b,k;
-    for(id in A3D_PRP.bthumbs)if(A3D_PRP.bthumbs.hasOwnProperty(id)&&!bimBoardById(id))delete A3D_PRP.bthumbs[id];
-    for(i=0;i<F.length;i++){
-      fr=F[i];b=bimBoardById(fr.getAttribute('data-prpbframe'));
-      if(!b)continue;
-      k=(fr.parentNode.clientWidth||BIM_THUMB_CSS_W)/1280;
-      fr.style.transform='scale('+k.toFixed(5)+')';
-      if(!fr.__prpWired){fr.__prpWired=1;fr.addEventListener('load',bimPresThumbsQueue);}   /* a frame that loaded afresh is written again */
-      doc=fr.contentDocument;
-      key='brd|'+A3D_REV;
-      if(!doc||doc.__prpKey===key)continue;
-      r=fr.parentNode.getBoundingClientRect();
-      if(r.bottom<pr.top-pr.height||r.top>pr.bottom+pr.height)continue;
-      bimPresBoardThumb(b,doc,key);
-      A3D_PRP.timer=setTimeout(bimPresThumbNext,0);
-      return;
-    }
   }
   function bimThumbBlit(dst,src){
     var x=dst.getContext('2d');
@@ -40234,9 +39841,7 @@ try{
   }
   /* a page opened from the panel is read in the Pages display: on paper already, it is scrolled to */
   function bimPresOpenPage(id){
-    if(bimBoardById(id))return bimPresOpenBoard(id);   /* __acad3dV162 */
     if(!bimSheetById(id)){a3dToast('That page is no longer in the project');return false;}
-    if(A3D_CLB.open)bimClbClose();
     if(bimSheetOnScreen()&&A3D_PAGES.display==='pages'){
       if(id!==A3D.activeSheetId)bimPagesSetCurrent(id);
       return bimPagesScrollTo(id);
@@ -40249,13 +39854,8 @@ try{
     bimPagesSetDisplay('layout');
     return bimActivateView('sheet',id);
   }
-  function bimPresAct(a,btn){
-    var Q;
-    if(a==='present'){   /* __acad3dV162: from the page on screen, a board's or a sheet's, or the first */
-      Q=bimPresSeq();
-      return bimSlideshowStart(A3D_CLB.open&&A3D_CLB.board?A3D_CLB.board:(bimSheetOnScreen()?A3D.activeSheetId:(Q[0]&&Q[0].id)));
-    }
-    if(a==='board')return btn?bimBoardMenu(btn):false;
+  function bimPresAct(a){
+    if(a==='present')return bimSlideshowStart(bimSheetOnScreen()?A3D.activeSheetId:(A3D.sheets[0]&&A3D.sheets[0].id));
     if(a==='new')return bimLayoutNew();
     if(a==='print')return bimPrintSet();
     return false;
@@ -40292,7 +39892,7 @@ try{
       var t=ev.target,b;
       if(!inPrp(t))return;
       try{
-        if((b=t.closest('[data-prpact]'))){if(!b.disabled)bimPresAct(b.getAttribute('data-prpact'),b);return;}
+        if((b=t.closest('[data-prpact]'))){if(!b.disabled)bimPresAct(b.getAttribute('data-prpact'));return;}
         if(t.closest('input'))return;
         if((b=t.closest('[data-prpitem]')))bimPresOpenPage(b.getAttribute('data-prpitem'));
       }catch(eP){console.warn('[BIM] A Presentation panel action failed',eP);a3dToast('That did not work -- see the console');}
@@ -40302,15 +39902,13 @@ try{
       if(!inPrp(t)||t.closest('input'))return;
       try{
         if((n=t.closest('[data-prpname]'))){bimPresRename(n.getAttribute('data-prpname'));return;}
-        if((it=t.closest('[data-prpitem]'))){if(bimBoardById(it.getAttribute('data-prpitem')))bimPresOpenBoard(it.getAttribute('data-prpitem'));else bimPresEditLayout(it.getAttribute('data-prpitem'));}
+        if((it=t.closest('[data-prpitem]')))bimPresEditLayout(it.getAttribute('data-prpitem'));
       }catch(eD){console.warn('[BIM] A Presentation panel action failed',eD);a3dToast('That did not work -- see the console');}
     });
     panel.addEventListener('contextmenu',function(ev){
       var it=inPrp(ev.target)?ev.target.closest('[data-prpitem]'):null;
       if(!it)return;
       ev.preventDefault();
-      var bid=it.getAttribute('data-prpitem');   /* __acad3dV162: a board's page has its own menu */
-      if(bimBoardById(bid)){bimLtMenuOpen(ev.clientX,ev.clientY,bimBoardMenuItems(bid),function(a){bimBoardMenuDo(a,bid);});return;}
       bimSheetMenu(ev,it.getAttribute('data-prpitem'),'pages');
     });
     panel.addEventListener('keydown',function(ev){
@@ -40346,7 +39944,7 @@ try{
       A3D_PRP.drag=null;bimPresDropMark(null);
       if(!it)return;
       r=it.getBoundingClientRect();
-      try{bimPresMoveNear(id,it.getAttribute('data-prpitem'),ev.clientY>r.top+r.height/2);}   /* __acad3dV162: in the set, boards and all */
+      try{bimSheetMoveNear(id,it.getAttribute('data-prpitem'),ev.clientY>r.top+r.height/2);}
       catch(eM){console.warn('[BIM] The page could not be moved',eM);a3dToast('The page could not be moved -- see the console');}
     });
     panel.addEventListener('dragend',function(){A3D_PRP.drag=null;bimPresDropMark(null);});
@@ -40990,7 +40588,6 @@ try{
     if(A3D_SLIDESHOW.on){bimSlideshowKey(ev);return;}   /* __acad3dV122: nothing typed reaches the model */
     /* __acad3dV115: the Start page covers the project behind it; a key typed there is not for it */
     if(bimStartShowing())return;
-    if(bimClbKey(ev))return;   /* __acad3dV162: a board's page owns the keys, as a sheet's does */
     if(bimSheetOnScreen()&&bimSheetKey(ev))return;   /* __acad3dV116 */
     /* __acad3dV112: a gizmo drag is listening. Digits build an exact value, Enter applies it,
        Escape puts everything back -- and the key is consumed here, before anything else in the
@@ -43768,15 +43365,15 @@ try{
     geoimport:function(){bimGeoImportPick();},
     geoexport:function(){bimGeoExport();},
     context:function(){bimCtxFetch();},                          /* __acad3dV133 */
-    siteanalysis:function(){bimAnzView();},                      /* __acad3dV158; __acad3dV162: Analyze is one list */
-    safill:function(){bimAnzView();bimSaFill();},
-    climate:function(){bimBoardShow('climate');},                     /* __acad3dV162: the board's page in the set */
-    zoning:function(){A3D_ZN.edit=true;bimSaGoto('legal');bimSaRefresh(true);},   /* __acad3dV160; __acad3dV162: in Legal */
+    siteanalysis:function(){bimAnzView('site');},                /* __acad3dV158; __acad3dV159: in Analyze */
+    safill:function(){bimAnzView('site');bimSaFill();},
+    climate:function(){bimClbOpen('climate');},
+    zoning:function(){bimAnzView('site');A3D_ZN.edit=true;bimSaRefresh(true);},   /* __acad3dV160 */
     envelope:function(){bimZnBuild();},
-    zoningboard:function(){bimBoardShow('zoning');},                           /* __acad3dV159 */
+    zoningboard:function(){bimClbOpen('zoning');},                           /* __acad3dV159 */
     climateget:function(){bimClimFetch();},                      /* __acad3dV159 */
     accessget:function(){bimAccFetch();},                        /* __acad3dV161 */
-    access:function(){bimBoardShow('access');},
+    access:function(){bimClbOpen('access');},
     walktimes:function(){bimResultLayerAdd('walk');},
     contextremove:function(){bimCtxRemove();},
     lodcheck:function(){bimLodCheck();},              /* __acad3dV139 */
@@ -43974,13 +43571,13 @@ try{
   window.__a3dDocsAnchor=function(id){return bimDocsAnchor(id);};
   /* __acad3dV148: Analyze as a list; results as layers */
   window.__a3dAnzToggle=function(id,on){return bimAnzToggle(id,on);};
-  window.__a3dAnzOpenAll=function(on){bimAnzCards().forEach(function(c){bimAnzToggle(c.id,on!==false);if(on!==false&&c.group!=='model')bimSaToggle(c.group,true);});return Object.keys(A3D_ANZ.open).sort();};   /* __acad3dV162: and the categories they sit in, so every row shows */
+  window.__a3dAnzOpenAll=function(on){bimAnzCards().forEach(function(c){bimAnzToggle(c.id,on!==false);});return Object.keys(A3D_ANZ.open).sort();};
   window.__a3dAnzSearch=function(q){
     A3D_ANZ.q=String(q==null?'':q);
     var w=document.querySelector('.a3d-analyze-wrap'),s=w?w.querySelector('[data-anzsearch]'):null;
     if(s)s.value=A3D_ANZ.q;
     if(w)bimAnzFilter(w);
-    return w?[].filter.call(w.querySelectorAll('[data-anzcard]'),function(e){return !e.closest('[hidden]');}).map(function(e){return e.getAttribute('data-anzcard');}):null;   /* __acad3dV162: in a category the search hid too */
+    return w?[].filter.call(w.querySelectorAll('[data-anzcard]'),function(e){return !e.hasAttribute('hidden');}).map(function(e){return e.getAttribute('data-anzcard');}):null;
   };
   window.__a3dAnzWordsHit=function(q,s){return bimAnzWordsHit(q,s);};
   window.__a3dResultLayers=function(){return bimResLayers().map(function(R){
@@ -44023,7 +43620,6 @@ try{
   window.__a3dMergeAbort=function(){return bimHistMergeAbort();};
   window.__a3dBranchCompare=function(){return JSON.parse(JSON.stringify(bimHistCompare()));};
   window.__a3dHistBase=function(a,b){return bimHistBase(a,b);};
-  window.__acad3dV162='oneanalyze,categories,modelgroup,onesearch,heldrefresh,boardpages,boardorder,boardthumbs,boardinview,boardwidth,boardpresent,boardprint,printset';
   window.__acad3dV161='accessfetch,walknetwork,walktimes,frontageseeds,dailyneeds,parkedges,transitstops,routes,frontage,connectivity,directness,census,acs,moe,pyramid,accessfindings,walklayer';
   window.__a3dAccQuery=function(lat,lon,rn,rp){return bimAccQuery(lat,lon,rn,rp);};
   window.__a3dAccFetch=function(){return bimAccFetch();};
@@ -44065,11 +43661,7 @@ try{
   window.__a3dZnEnvelope=function(){var o=bimZnEnvelopeObj();return o?{id:o.id,name:o.name,layer:o.layer,locked:o.locked,envelope:o.envelope,nv:o.mesh.v.length,nf:o.mesh.f.length,
     v:o.mesh.v,f:o.mesh.f}:null;};
   window.__a3dZnEdit=function(on){A3D_ZN.edit=!!on;bimSaRefresh(true);return true;};
-  window.__a3dAnzView=function(v){if(v)return bimAnzView();return 'analyze';};   /* __acad3dV162: one view; opening it to either opens it */
-  window.__a3dSaGoto=function(id){return bimSaGoto(id);};
-  window.__a3dAnalyzeRefresh=function(f){return bimAnalyzeRefresh(!!f);};
-  window.__a3dAnzPending=function(){return A3D_ANZ.pend;};
-  window.__a3dAnzCats=function(){return bimAnzCards().map(function(c){return {id:c.id,group:c.group};});};
+  window.__a3dAnzView=function(v){if(v)return bimAnzView(v);return A3D_ANZ.view;};
   window.__acad3dV158='layergroups,stages,categories,findings,sources,confidence,classes,checklists,fillfrommodel,pins,photos,sitetab';
   window.__a3dSa=function(){return JSON.parse(JSON.stringify(bimSa()));};
   window.__a3dSaStandard=function(){return {stages:BIM_SA_STAGES.map(function(x){return x[0];}),cats:BIM_SA_CATS.map(function(c){return {id:c.id,n:c.n,desk:c.desk.length,visit:c.visit.length};})};};
@@ -44615,22 +44207,18 @@ try{
     var host=bimPresHost(),items=[];
     if(host)Array.prototype.forEach.call(host.querySelectorAll('[data-prpitem]'),function(it){
       var id=it.getAttribute('data-prpitem'),cv=it.querySelector('canvas[data-prpthumb]'),s=bimSheetById(id),nm=it.querySelector('.a3d-prpname'),no=it.querySelector('.a3d-prpno');
-      var fr=it.querySelector('iframe[data-prpbframe]'),bd=bimBoardById(id),fd=fr&&fr.contentDocument;   /* __acad3dV162: a board's page */
       items.push({id:id,no:no?no.textContent:null,name:nm?nm.textContent:null,cur:it.classList.contains('cur'),w:cv?cv.width:0,h:cv?cv.height:0,
-        drawn:bd?!!(fd&&fd.__prpKey==='brd|'+A3D_REV&&fd.querySelector('.a3d-clb.prt')):!!(cv&&s&&cv.__prpKey===bimPageSig(s)+'|'+cv.width+'x'+cv.height),
-        board:bd?bd.kind:null,scale:fr?fr.style.transform:null,thumbTitle:fd&&fd.querySelector('.a3d-clb-h1')?fd.querySelector('.a3d-clb-h1').textContent:null});
+        drawn:!!(cv&&s&&cv.__prpKey===bimPageSig(s)+'|'+cv.width+'x'+cv.height)});
     });
-    return {open:!!host,count:bimPresSeq().length,items:items,edit:A3D_PRP.edit,
+    return {open:!!host,count:A3D.sheets.length,items:items,edit:A3D_PRP.edit,
       head:host?(host.querySelector('.a3d-prpcount')||{}).textContent:null,cached:Object.keys(A3D_PRP.thumbs).length};
   };
   window.__a3dSheetMove=function(id,to){return bimSheetMove(id,to);};
   window.__a3dSheetMenuItems=function(id,where){return bimSheetMenuItems(id,where).map(function(x){return x==='-'?'-':x[0];});};
   /* __acad3dV122: Present, as the engine holds it */
   window.__a3dSlideshow=function(){
-    var ov=A3D_SLIDESHOW.el,cv=A3D_SLIDESHOW.cv,Q=bimPresSeq(),e=Q[A3D_SLIDESHOW.idx]||null,s=e&&e.t==='sheet'?e.s:null,bd=ov?ov.querySelector('.a3d-ssboard'):null;   /* __acad3dV162 */
-    return {on:A3D_SLIDESHOW.on,idx:A3D_SLIDESHOW.idx,id:e?e.id:null,n:Q.length,fs:A3D_SLIDESHOW.fs,board:e&&e.t==='board'?e.b.kind:null,
-      boardShown:bd?bd.getAttribute('data-sspage'):null,boardTitle:bd&&bd.querySelector('.a3d-clb-h1')?bd.querySelector('.a3d-clb-h1').textContent:null,
-      canvasShown:!!(cv&&cv.style.display!=='none'),
+    var ov=A3D_SLIDESHOW.el,cv=A3D_SLIDESHOW.cv,s=A3D.sheets[A3D_SLIDESHOW.idx]||null;
+    return {on:A3D_SLIDESHOW.on,idx:A3D_SLIDESHOW.idx,id:s?s.id:null,n:A3D.sheets.length,fs:A3D_SLIDESHOW.fs,
       fsEl:!!(document.fullscreenElement||document.webkitFullscreenElement),open:!!(ov&&ov.classList.contains('open')),
       idle:!!(ov&&ov.classList.contains('idle')),cssW:cv?cv.offsetWidth:0,cssH:cv?cv.offsetHeight:0,devW:cv?cv.width:0,devH:cv?cv.height:0,
       shown:cv?cv.getAttribute('data-sspage'):null,drawnKey:cv?cv.getAttribute('data-sskey'):null,scale:A3D_SLIDESHOW.scale,
@@ -44639,21 +44227,6 @@ try{
       keys:A3D_SHOW_KEYS.map(function(k){return {act:k.act,keys:k.keys.slice(),say:k.say.slice(),label:k.label};})};
   };
   window.__a3dSlideshowStart=function(id){return bimSlideshowStart(id);};
-  /* __acad3dV162: the boards as pages of the set */
-  window.__a3dPresSeq=function(){return bimPresSeq().map(function(e){return {id:e.id,t:e.t,kind:e.t==='board'?e.b.kind:null};});};
-  window.__a3dPresRecord=function(){return JSON.parse(JSON.stringify(bimPresData()));};
-  window.__a3dBoardAdd=function(k){return bimBoardAdd(k);};
-  window.__a3dBoardRemove=function(id){return bimBoardRemove(id);};
-  window.__a3dBoardShow=function(k){return bimBoardShow(k);};
-  window.__a3dPresOpen=function(id){return bimPresOpenPage(id);};
-  window.__a3dPresMoveNear=function(id,t,after){return bimPresMoveNear(id,t,!!after);};
-  window.__a3dPresStep=function(id,d){return bimPresStep(id,d);};
-  window.__a3dBoardMenuItems=function(id){return bimBoardMenuItems(id).map(function(x){return x==='-'?'-':x[0];});};
-  window.__a3dBoardMenuDo=function(a,id){return bimBoardMenuDo(a,id);};
-  window.__a3dBoardPrintHtml=function(k){return bimBoardPrintHtml(k);};
-  window.__a3dPrintSetHtml=function(){return bimPrintSetHtml();};
-  window.__a3dClbCss=function(){return bimClbCss();};
-  window.__a3dClbState=function(){var b=bimClbEl();return {open:A3D_CLB.open,kind:A3D_CLB.kind,board:A3D_CLB.board,narrow:A3D_CLB.narrow,inView:!!(b&&b.parentNode&&b.parentNode.classList&&b.parentNode.classList.contains('a3d-vp')),cls:b?b.className:null,w:b?bimClbW(b):0};};
   window.__a3dSlideshowEnd=function(){return bimSlideshowEnd();};
   window.__a3dPagesGo=function(i){return bimPagesGo(i);};
   window.__a3dPagesZoom=function(z){return bimPagesZoom(z);};

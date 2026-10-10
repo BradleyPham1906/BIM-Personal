@@ -68,8 +68,9 @@ height in Properties.
 
 ## Site analysis
 
-**Site analysis** is the second view of the **Analyze** tab: the switch at its top reads
-*Analyses | Site analysis* (`SITEANALYSIS` opens it). It runs a site analysis the same way every time. It
+**Site analysis** is in the **Analyze** tab, one list with the analyses (`SITEANALYSIS` opens it):
+the stages and Define at the top, then the ten categories, each with its data, its analyses and its
+findings. It runs a site analysis the same way every time. It
 follows the order professionals use: the RIBA Plan of Work's Stage 1 and a developer's due
 diligence. The stages are:
 
@@ -129,7 +130,7 @@ Everything is saved with the project, and every change is one undo step.
 
 ## Climate and risk
 
-In Site analysis, **Get climate and risk** (`CLIMATEGET`) fetches, for the site's latitude and longitude:
+In Analyze, under 5. Climate, **Get climate and risk** (`CLIMATEGET`) fetches, for the site's latitude and longitude:
 - **ten full years of daily weather and the last full year hour by hour** from ERA5 reanalysis, via
   Open-Meteo;
 - **92 days of PM2.5** from CAMS, via Open-Meteo;
@@ -138,7 +139,7 @@ In Site analysis, **Get climate and risk** (`CLIMATEGET`) fetches, for the site'
 All three sources are free and need no account. What is worked out is kept with the project, so
 the board opens offline. Each result also becomes a finding under Climate or Environmental risk.
 
-**Open the board** (`CLIMATE`) shows the result as a professional site-analysis board.
+**Show in Presentation** (`CLIMATE`) puts the Climate and risk board in the set and opens it. It shows the result as a professional site-analysis board.
 
 The **header** gives the place, the Köppen–Geiger climate zone, the period and the date.
 
@@ -176,7 +177,7 @@ design, use the national seismic hazard map and code.
 
 ## Zoning and yield
 
-In Site analysis, **Enter zoning** (`ZONING`) opens the district's controls:
+In Analyze, under 2. Legal, **Enter zoning** (`ZONING`) opens the district's controls:
 - the district, its permitted uses and the source (code, section, date);
 - the floor area ratio, the height limit, a storeys limit and the coverage limit;
 - a rule for each kind of side: the **front** (the street), the **sides** and the **rear**.
@@ -209,7 +210,7 @@ From the envelope the app works out:
 It also checks the design: GFA from the usages, the height, the ground coverage, and every element
 outside the envelope in plan or in height. Below the ground the envelope does not apply.
 
-**Open the board** (`ZONINGBOARD`) shows it all as a professional zoning and yield board:
+**Show in Presentation** (`ZONINGBOARD`) puts the Zoning and yield board in the set and opens it. It shows it all as a professional zoning and yield board:
 - **indicators**: lot, FAR, height, coverage, capacity, achievable GFA, units, parking, and the
   design, with a state;
 - **the zoning analysis table**: each control, what is permitted, what is proposed, and whether it
@@ -230,7 +231,7 @@ so.
 
 ## Access and people
 
-In Site analysis, **Get access and people** (`ACCESSGET`) asks two free sources at once, with no
+In Analyze, under 8. Access, **Get access and people** (`ACCESSGET`) asks two free sources at once, with no
 account:
 - **OpenStreetMap, through Overpass:** every street and path around the site, the transit stops and
   the routes that serve them, and the places of daily needs;
@@ -270,7 +271,7 @@ Each comes with its 90% margin of error. A share's margin is worked out by the C
 formula for a derived proportion, and the tract differs from its county only where the difference
 is larger than the two margins together.
 
-**Open the board** (`ACCESS`) shows it all as a professional access and people board:
+**Show in Presentation** (`ACCESS`) puts the Access and people board in the set and opens it. It shows it all as a professional access and people board:
 - **indicators** in two rows, with a state where a reference exists: daily needs, the nearest bus
   and rail, lines within 10 minutes, intersections; population, age, income, renting, no car;
 - **the walk-time map**, north up, with 400 and 800 m as the crow flies for comparison;

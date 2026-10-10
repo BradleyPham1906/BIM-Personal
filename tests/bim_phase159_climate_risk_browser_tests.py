@@ -199,18 +199,15 @@ async def run():
             await page.wait_for_timeout(150)
             sw = await safe("""()=>{var w=document.querySelector('.a3d-analyze-wrap');if(!w)return null;
               return [].map.call(w.querySelectorAll('[data-anzview]'),function(b){return [b.getAttribute('data-anzview'),b.textContent,b.getAttribute('aria-selected')];});}""")
-            ck(sw == [['analyses', 'Analyses', 'true'], ['site', 'Site analysis', 'false']], "Analyze opens with the switch: Analyses | Site analysis (%s)" % sw)
-            await safe("()=>document.querySelector('.a3d-analyze-wrap [data-anzview=\"site\"]').click()")
-            await page.wait_for_timeout(150)
-            ck(await safe("()=>!!document.querySelector('.a3d-sa-wrap')&&!document.querySelector('.a3d-analyze-wrap')&&document.getElementById('a3d-shell').dataset.tab==='analyze'"),
-               "pressed: the Site analysis view, still the Analyze tab")
-            ck(await safe("()=>document.querySelector('.a3d-sa-wrap [data-anzview=\"site\"]').getAttribute('aria-selected')") == 'true', "with the switch on it")
-            await safe("()=>document.querySelector('.a3d-sa-wrap [data-anzview=\"analyses\"]').click()")
-            await page.wait_for_timeout(150)
-            ck(await safe("()=>!!document.querySelector('.a3d-analyze-wrap [data-anzcard]')"), "and back to the analyses")
+            # AMENDED FOR V162: one Analyze -- no switch; the site analysis and the analyses in one list
+            ck(sw == [], "Analyze has no switch: it is one list (%s)" % sw)
+            ck(await safe("()=>{var w=document.querySelector('.a3d-analyze-wrap');return !!w&&w===document.querySelector('.a3d-sa-wrap')&&!!w.querySelector('[data-sastage]')&&!!w.querySelector('[data-anzcard]')&&document.getElementById('a3d-shell').dataset.tab==='analyze';}"),
+               "the site analysis's stages and the analyses' rows in the one tab body")
+            ck(await safe("()=>!!document.querySelector('.a3d-analyze-wrap [data-sacat=\"climate\"] [data-anzcard=\"sunhours\"]')"), "the analyses inside their categories: Sun hours in Climate")
+            ck(await safe("()=>!!document.querySelector('.a3d-analyze-wrap [data-anzcard]')"), "and the analyses are there")
             await safe("()=>window.__a3dRunCmd('siteanalysis')")
             await page.wait_for_timeout(150)
-            ck(await safe("()=>window.__a3dAnzView()") == 'site' and await safe("()=>!!document.querySelector('.a3d-sa-wrap')"), "SITEANALYSIS opens Analyze on Site analysis")
+            ck(await safe("()=>window.__a3dAnzView()") == 'analyze' and await safe("()=>!!document.querySelector('.a3d-sa-wrap')"), "SITEANALYSIS opens Analyze")
             ck('Get climate and risk' in (await safe("()=>document.querySelector('.a3d-sa-wrap').innerHTML") or ''), "where Climate and risk waits to be fetched")
             for q, want in (('climate', 'CLIMATE'), ('wind rose', 'CLIMATE'), ('weather data', 'CLIMATEGET'), ('earthquake', 'CLIMATE')):
                 nm = [x['name'] for x in (await safe("(q)=>window.__a3dCommandSearch(q,6)", q) or [])]
@@ -338,7 +335,9 @@ async def run():
                 figs:[].map.call(b.querySelectorAll('.a3d-clb-card'),function(c){return {no:c.getAttribute('data-fig'),t:c.querySelector('.a3d-clb-h2').textContent,svg:c.querySelectorAll('svg').length,
                   src:!!c.querySelector('.a3d-clb-src'),tbl:!!c.querySelector('.a3d-clb-table')};}),
                 notes:!!b.querySelector('.a3d-clb-notes'),dialog:b.getAttribute('role'),open:document.body.classList.contains('a3d-clb-open')};}""") or {}
-            ck(B.get('dialog') == 'dialog' and B.get('open') and B['h1'].endswith(': climate and risk'), "the board opens from Site analysis, a dialog over the app")
+            # AMENDED FOR V162: the board is a page of the set, shown in the main view, not a dialog over the app
+            ck(B.get('dialog') == 'region' and B.get('open') and B['h1'].endswith(': climate and risk') and (await safe("()=>window.__a3dClbState()") or {}).get('inView'),
+               "the board opens from Analyze as a page of the set, in the main view")
             ck(kp.get('code', '?') in B.get('sub', '') and '%d–%d' % (Y0, Y1) in B['sub'] and '40.0000° N, 75.0000° W' in B['sub'], "its header: the place, the zone, the period")
             labels = [k[0] for k in B.get('kpis', [])]
             ck(labels == ['Climate zone', 'Mean temperature', 'Rainfall', 'Prevailing wind', 'Degree days', 'Solar energy', 'Outdoor comfort', 'PM2.5', 'Earthquakes'],
@@ -405,7 +404,7 @@ async def run():
             await within(page.reload(), 'reload')
             await page.wait_for_timeout(2300)
             ck(await clim() == before, "a reload keeps it all")
-            ck(await safe("()=>window.__a3dAnzView()") == 'site', "and Analyze opens on the view last chosen, Site analysis")
+            ck(await safe("()=>window.__a3dAnzView()") == 'analyze', "and Analyze is its one list")   # AMENDED FOR V162: no view to remember
             await safe("()=>window.__a3dClbOpen()")
             ck(await safe("()=>document.querySelectorAll('.a3d-clb-card').length") == 9, "and the board opens offline, all nine figures")
             ck(not errs, "no page errors (%s)" % errs[:3])
