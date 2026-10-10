@@ -18,7 +18,7 @@ and Giraffe's envelope tool (each side's setback against height):
 - notes: method, every assumption, the source.
 Each figure has a table; every mark a tooltip; drawn again for a phone; printable."""
 NAME = 'patch_phase160b.py'
-BASE = 'c49545faec3c6f8a3b6ab0df8b07deca190b4c29ffae7b7c6d25d0ce00b07dbd'
+BASE = 'b9fef0cf78ebc91da10ab93dd267ce2e7466948f7ebc2ae0ec9a3cf6e8fb6f91'
 import hashlib, pathlib, sys
 P = pathlib.Path(sys.argv[1] if len(sys.argv) > 1 else 'canvas_v10.html')
 raw = P.read_bytes()

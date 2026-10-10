@@ -52,8 +52,6 @@ rep("""    if(c==='climboard')return bimClbOpen();""", """    if(c==='climboard'
 rep("""      if((k=e.getAttribute('data-saphoto'))){bimSaPhotoFile(k,e.files&&e.files[0]);return;}""",
     """      if((k=e.getAttribute('data-saphoto'))){bimSaPhotoFile(k,e.files&&e.files[0]);return;}
       if((k=e.getAttribute('data-znf'))){bimZnSet(k,e.value);return;}   /* __acad3dV160 */""")
-rep("""    {sel:'[data-saphoto]'""", """    {sel:'[data-znf]',why:'Site analysis: a control of the zoning record'},   /* __acad3dV160 */
-    {sel:'[data-saphoto]'""")
 rep("""  var A3D_CLB={open:false,tables:false,narrow:false};""", """  var A3D_CLB={open:false,tables:false,narrow:false,kind:'climate'};   /* __acad3dV160: which board */""")
 rep("""  function bimClbOpen(){""", """  function bimClbOpen(kind){
     if(kind==='climate'||kind==='zoning')A3D_CLB.kind=kind;   /* __acad3dV160 */""")
@@ -202,16 +200,6 @@ ENGINE = r"""
       if(!s)s=cr>0?1:-1;else if((cr>0?1:-1)!==s)return false;
     }
     return true;
-  }
-  /* a polygon cut by the half-plane D(p) >= c (keep) or <= c */
-  function bimZnClip(poly,D,c,keepAbove){
-    var out=[],i,n=poly.length;
-    for(i=0;i<n;i++){
-      var p=poly[i],q=poly[(i+1)%n],dp=D(p)-c,dq=D(q)-c,ip=keepAbove?dp>=-1e-9:dp<=1e-9,iq=keepAbove?dq>=-1e-9:dq<=1e-9;
-      if(ip)out.push(p);
-      if(ip!==iq){var tt=dp/(dp-dq);out.push([p[0]+(q[0]-p[0])*tt,p[1]+(q[1]-p[1])*tt]);}
-    }
-    return out.length>=3?out:[];
   }
   function bimZnCentroid(P){
     var a=0,cx=0,cz=0,i;

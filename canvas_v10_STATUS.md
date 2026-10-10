@@ -13647,3 +13647,154 @@ every chart.
     canvas_v10.html   2497751 bytes
     sha256            759e7383cf4424e311d5cb4aa05c5b37019d3caa4a0a2e9a5c11115e2eb735ee
     markers           __acad3dV60 ... __acad3dV159, __acad3dV134d (and the 133d to 133f markers)
+
+## Phase 160 (V160) - Site analysis SA3: regulation: the zoning record, the envelope by side, the yield, and the board
+
+The owner: "Contnue" (V160 as planned: regulation). Partway through, a check-in: "are we doing what
+Giraffe also doing for the zone analysis? I know they have very elaborate analysis on their
+website." The answer was "mostly, on the core", with one gap in the envelope itself. Giraffe gives
+each side of a lot its own setback-against-height profile; the first V160 engine stepped back and had
+a sky plane on the front only. The engine was reworked before shipping, so each kind of side has its
+own rule. The comparison, and what was and was not taken, is in
+`reference/research-zoning-envelope-yield.md` (4).
+
+The research (`reference/research-zoning-envelope-yield.md`) covers:
+- the permit zoning analysis table (permitted, proposed, complies);
+- New York's ZD1 zoning diagram, with sections at true scale and every distance dimensioned, and
+  ZR 23-736's sky exposure plane;
+- ArcGIS Urban's envelopes;
+- TestFit, Archistar and Giraffe;
+- how a yield study is worked: FAR × lot, capacity storey by storey, what governs, efficiency,
+  units, parking.
+
+### What was built (patches 160a, 160b)
+
+- **The zoning record (160a).** `ZONING`, or *Enter zoning* in Site analysis, holds:
+  - the district, the permitted uses and the source;
+  - FAR, a height limit, a storeys limit and coverage;
+  - a rule for each kind of side (front, side, rear). Each rule is a setback at the ground, up to
+    six steps ("above 15 m, set back 6 m") and an angular plane from the lot line (start height,
+    V:H ratio). The front's street wall and stepback are its first step, and its plane is the sky
+    exposure plane;
+  - the yield assumptions.
+
+  Every field is checked against its range, and a blank means none (0 for setbacks). Every change
+  is one undo step, rebuilds a built envelope, and refreshes the findings.
+- **The sides.** The front is picked; the rear is the side facing it; the rest are sides. Any side
+  can be set by hand, for example a corner lot's second front.
+- **From the layers (160a).** A council layer under the lot gives the district and, where the layer
+  has them, the FAR and the height:
+  - MapPLUTO's ZoneDist1, and its ResidFAR or CommFAR by the scheme's use;
+  - an FSR and a building height (MAX_B_H and the usual names);
+  - a height in feet, turned into metres.
+
+  Each value is credited to its layer and field. The panel offers what it found in one button.
+- **The envelope (160a).**
+  - **The plate.** At any height, the plate is the lot with each side moved in by its rule's
+    setback there, up to the height limit. A convex lot is clipped by each side's half-plane. A lot
+    that is not convex has its sides moved in and joined where they meet, as the setback line is,
+    with a squeezed-out side dropped.
+  - **The pieces.** The work is split at the heights where a rule changes, and again wherever a
+    corner comes or goes. Within a piece every corner moves in a straight line, so the area is a
+    quadratic and Simpson's rule is exact. The plates are taken at each storey's ceiling, and
+    coverage caps them.
+  - **A split lot.** Where the setbacks would split a lot in two, the envelope stops 1 mm short and
+    the board says so.
+  - **The solid.** `ENVELOPE` builds it from whole flat faces:
+    - per piece, a face for each side;
+    - a terrace face for each side that steps in;
+    - convex roofs and floors, cut into convex parts where the lot is not convex.
+
+    Corners are matched between heights by the two sides they lie on, and each ring is carried
+    exactly to its piece's ends. The solid is locked, on a 70% transparent Zoning envelope layer,
+    and one undo step.
+- **The yield and the design (160a).**
+  - The yield: capacity, FAR × lot, the achievable (the lesser) and which governs, net area, units
+    (rounded down) and parking (rounded up).
+  - The design: GFA from the usages; height from the highest building element; coverage from the
+    usages standing on the ground; every element outside the envelope in plan or in height. At and
+    below the ground the envelope does not apply.
+  - Four findings in Legal and regulatory: zoning, envelope, yield, and the design against them (a
+    red flag when over the FAR or the height).
+- **The board (160b).** `ZONINGBOARD`, *Open the board*, in the Climate board's frame:
+  - nine indicators, the design with a state;
+  - Fig. 1, the zoning analysis table: permitted, proposed, complies, with an icon and a word, and
+    "Not checked" where the model cannot check;
+  - Figs. 2 and 3, sections front to rear and side to side, at true scale, after ZD1: street, lot
+    lines, the envelope, floors, height limit, planes in each side's colour, the proposed height,
+    setbacks, steps and their heights dimensioned, a scale bar;
+  - Fig. 4, the rules by side, as setback against height, after Giraffe's editor;
+  - Fig. 5, the lot plan, the street at the bottom, with each side's length, role and setback, the
+    buildable area, the plate above each step, north and a scale bar;
+  - Fig. 6, the floor plates by storey;
+  - Fig. 7, the yield on one scale, and the chain from gross area to units and parking;
+  - notes on method, assumptions and sources.
+
+  Every figure has a table, every mark a tooltip. It prints, follows the theme, and is redrawn for a
+  phone.
+- Version V160; `ZONING`, `ENVELOPE` and `ZONINGBOARD` with their search words; the guide's Site
+  page has Zoning and yield.
+
+### Found
+
+- The first engine measured heights from the front only. A rear yard's angular plane or a side
+  setback that grows with height could not be entered. This was reworked after the Giraffe check-in.
+- The mesh was first open on a trapezoid. Where the rear side is squeezed out, the lower piece got a
+  roof but the piece above got no floor. It was also read a hair inside each break, so flat faces
+  came out slightly tilted. Rings are now carried exactly to their ends, outlines that differ only
+  by a zero-length edge are one, and a real step closes both pieces.
+- A U-shaped lot's roof at the height where it splits was a ring touching itself, and the
+  triangulation laid a triangle over the gap. The envelope now stops 1 mm short, and a cap whose
+  parts miss any area stays one face.
+- The layer reader looked for `.props`; data features keep their attributes in `.p`. The suite
+  caught it.
+- A basement roof flush with the ground was flagged as outside the envelope, and a basement would
+  have counted as the ground's coverage. Both are fixed.
+- Number inputs were unstyled (white) in the Site analysis panel. They now match its text inputs in
+  both themes and are 36 px tall on touch.
+
+### Suites
+
+- New: `bim_phase160_zoning_envelope_browser_tests.py`, 132 checks. Every number is worked out
+  again in the suite, a different way:
+  - rectangles by (width − the two side setbacks) × (depth − front − rear), the rules evaluated
+    and integrated exactly piece by piece;
+  - an L-shaped lot and a U-shaped lot by hand;
+  - a trapezoid by 2,000 slices;
+  - the mesh checked as a closed surface: its faces' vector areas sum to nothing, every face is flat
+    and convex, and its volume, by the divergence theorem, is the working's.
+
+  It also covers the record, refusals, undo, the sides and a corner lot, the layers (MapPLUTO, an
+  FSR and height layer, feet), the design checks, the findings, the panel and its form, the shell
+  audit, the command search, the board (indicators, the table, sections, rules, tooltips, tables,
+  print, Esc, the theme), a reload, and a phone.
+- V62 allows www.nyc.gov, linked from the board's notes (AMENDED FOR V160).
+- V120's dead-code check found `bimZnClip` left over from the first engine. It is removed.
+- #29 was merged just before that fix was pushed, so the fix, this entry and the guide's release
+  notes followed in #30.
+- **Falsified by `Phase/falsify_phase160.py`:** 42 variants, all caught (one more was retired,
+  below). The first run caught 40 of 43, and
+  the three it missed were each fixed at the root:
+  - a finding refreshed on a change was checked with a new value ("Residential") contained in the
+    old one ("Residential; community facility"), so a stale finding passed. The check now uses a
+    value of its own;
+  - an envelope built without its undo step passed, because the undo it took was the step before,
+    which also had no envelope. The check now also asks that the step before survives;
+  - a shell-audit claim for the form's controls was dead: the audit claims every input and select
+    as such. The claim is removed and the variant retired.
+
+### Not done
+
+- Massing generated inside the envelope (the Generators row) and costs and pro forma: Giraffe has
+  both; each is its own phase.
+- Overlays, bonuses and variances; parking and loading layout; the flood summary.
+- Envelopes for lots that split (the upper floors are left to be checked by hand).
+
+### Full regression and state after V160
+
+117 suites, 5010 checks, 0 failures. Patches 160a and 160b rebuild the build from
+`Phase/canvas_v10.html.bak_phase160_pre`. The diff is ES5-clean.
+
+    canvas_v10.html   2579872 bytes
+    sha256            2a04374b678742d62079a7052b76552ecebe061592a121f97bf4edd30a278246
+    markers           __acad3dV60 ... __acad3dV160, __acad3dV134d (and the 133d to 133f markers)
