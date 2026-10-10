@@ -48,7 +48,8 @@ VARIANTS = {
     # the panel
     'no_step_rows': [("  function bimZnStepsHtml(role){\n    var z=bimZn(),L=z[role+'Steps']||[];", "  function bimZnStepsHtml(role){\n    return '';\n    var z=bimZn(),L=z[role+'Steps']||[];")],
     'front_role_editable': [("data-znf=\"legRoles.'+i+'\"'+(i===G.front?' disabled':'')+'>'", "data-znf=\"legRoles.'+i+'\">'")],
-    'form_unclaimed': [("    {sel:'[data-znf]',why:'Site analysis: a control of the zoning record'},   /* __acad3dV160 */\n", "")],
+    # form_unclaimed RETIRED IN V160: the shell audit claims every input and select as such, so a claim for
+    # [data-znf] (only ever on inputs and selects) was dead; the claim was removed instead of tested
     'no_envelope_keywords': [("    ENVELOPE:'zoning envelope buildable volume massing setback stepback sky exposure plane daylight plane angular plane height limit 3d',\n", "")],
     # the board
     'board_kind_ignored': [("    if(kind==='climate'||kind==='zoning')A3D_CLB.kind=kind;   /* __acad3dV160 */", "")],

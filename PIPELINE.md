@@ -2,8 +2,8 @@
 
 **Read this first in a new session.** One page. The detail lives in the docs listed at the bottom.
 
-    canvas_v10.html   2579969 bytes
-    sha256            846684e31dcc1955239eb3419ae17b06d9af63af252992acc3e9c8de2865559a
+    canvas_v10.html   2579872 bytes
+    sha256            2a04374b678742d62079a7052b76552ecebe061592a121f97bf4edd30a278246
     markers           __acad3dV60 ... __acad3dV160, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
                       __acad3dV121b
     tests             117 suites, 5010 checks, 0 failures

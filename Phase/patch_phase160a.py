@@ -52,8 +52,6 @@ rep("""    if(c==='climboard')return bimClbOpen();""", """    if(c==='climboard'
 rep("""      if((k=e.getAttribute('data-saphoto'))){bimSaPhotoFile(k,e.files&&e.files[0]);return;}""",
     """      if((k=e.getAttribute('data-saphoto'))){bimSaPhotoFile(k,e.files&&e.files[0]);return;}
       if((k=e.getAttribute('data-znf'))){bimZnSet(k,e.value);return;}   /* __acad3dV160 */""")
-rep("""    {sel:'[data-saphoto]'""", """    {sel:'[data-znf]',why:'Site analysis: a control of the zoning record'},   /* __acad3dV160 */
-    {sel:'[data-saphoto]'""")
 rep("""  var A3D_CLB={open:false,tables:false,narrow:false};""", """  var A3D_CLB={open:false,tables:false,narrow:false,kind:'climate'};   /* __acad3dV160: which board */""")
 rep("""  function bimClbOpen(){""", """  function bimClbOpen(kind){
     if(kind==='climate'||kind==='zoning')A3D_CLB.kind=kind;   /* __acad3dV160 */""")

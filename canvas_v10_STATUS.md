@@ -13770,7 +13770,18 @@ The research (`reference/research-zoning-envelope-yield.md`) covers:
   print, Esc, the theme), a reload, and a phone.
 - V62 allows www.nyc.gov, linked from the board's notes (AMENDED FOR V160).
 - V120's dead-code check found `bimZnClip` left over from the first engine. It is removed.
-- **Falsified by `Phase/falsify_phase160.py`,** 43 variants. The run's result is recorded in the commit after this one.
+- #29 was merged just before that fix was pushed, so the fix, this entry and the guide's release
+  notes followed in #30.
+- **Falsified by `Phase/falsify_phase160.py`,** 42 variants after one was retired; the re-run is
+  recorded in the next commit. The first run caught 40 of 43, and
+  the three it missed were each fixed at the root:
+  - a finding refreshed on a change was checked with a new value ("Residential") contained in the
+    old one ("Residential; community facility"), so a stale finding passed. The check now uses a
+    value of its own;
+  - an envelope built without its undo step passed, because the undo it took was the step before,
+    which also had no envelope. The check now also asks that the step before survives;
+  - a shell-audit claim for the form's controls was dead: the audit claims every input and select
+    as such. The claim is removed and the variant retired.
 
 ### Not done
 
@@ -13784,6 +13795,6 @@ The research (`reference/research-zoning-envelope-yield.md`) covers:
 117 suites, 5010 checks, 0 failures. Patches 160a and 160b rebuild the build from
 `Phase/canvas_v10.html.bak_phase160_pre`. The diff is ES5-clean.
 
-    canvas_v10.html   2579969 bytes
-    sha256            846684e31dcc1955239eb3419ae17b06d9af63af252992acc3e9c8de2865559a
+    canvas_v10.html   2579872 bytes
+    sha256            2a04374b678742d62079a7052b76552ecebe061592a121f97bf4edd30a278246
     markers           __acad3dV60 ... __acad3dV160, __acad3dV134d (and the 133d to 133f markers)
