@@ -172,7 +172,7 @@ when it starts (V111 to V138 went to other work; V139 to V181 are in NOW).
 - Climate and risk, Zoning and yield, and Access and people are pages in Presentation beside the
   sheets: a thumbnail, the main view with the panels beside it, Present, Print set on A3
   landscape, + Board, dragged among the sheets. Analyze fetches the data and links to them.
-- **Checked** in 107 checks, with FALS162 falsify variants, all caught; eight older suites amended.
+- **Checked** in 109 checks, with FALS162 falsify variants, all caught; eight older suites amended.
 
 Phase 161 (V161), **access and people: walk times, transit, the frontage, connectivity, the census, and the board**.
 - From free sources, no key: OpenStreetMap through Overpass (the walking network, the places of

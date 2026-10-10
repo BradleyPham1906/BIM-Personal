@@ -245,6 +245,25 @@ async def run():
             ttl = [f['title'] for f in sa.get('findings', []) if f['id'] == fid]
             ck(ttl == ['Badger sett by the oak'] and await safe("()=>window.__a3dAnzPending()") is False, "left, the field is kept and the refresh happens (%s)" % ttl)
             await safe("()=>window.__a3dSaEdit(null)")
+            # a field left as it was: no change to force a redraw, so the held one must happen on leaving it
+            await page.click('.a3d-analyze-wrap [data-saf="questions"]')
+            st0 = await safe("()=>document.querySelector('.a3d-analyze-wrap [data-anzcard=\"stats\"] .a3d-anzsum').textContent")
+            await safe("""()=>{var o=window.__a3dState().objs;o.push({id:'EXTRA1',t:'sketch',name:'Extra',col:'#888',pos:[0,0,0],pts:[[90,90],[95,90],[95,95]],y:0,closed:true,layer:'layer-0'});window.__a3dTestSetObjs(o);window.__a3dRefreshProps();}""")
+            st1 = await safe("()=>document.querySelector('.a3d-analyze-wrap [data-anzcard=\"stats\"] .a3d-anzsum').textContent")
+            pend = await safe("()=>window.__a3dAnzPending()")
+            await page.click('.a3d-analyze-wrap .a3d-anzhead')
+            await page.wait_for_timeout(200)
+            st2 = await safe("()=>document.querySelector('.a3d-analyze-wrap [data-anzcard=\"stats\"] .a3d-anzsum').textContent")
+            ck(st1 == st0 and pend is True and st2 != st0 and await safe("()=>window.__a3dAnzPending()") is False,
+               "a field left unchanged: the held refresh happens as it is left (%s -> %s)" % (st0, st2))
+            await safe("()=>{window.__a3dTestSetObjs(window.__a3dState().objs.filter(function(o){return o.id!=='EXTRA1';}));window.__a3dRefreshProps();}")
+            # every row opened, with the categories it is in, so each shows (the hook the older suites use)
+            await safe("()=>{[].forEach.call(document.querySelectorAll('.a3d-analyze-wrap [data-sacat].open>.a3d-anzhd [data-satog]'),function(b){b.click();});}")
+            await safe("()=>window.__a3dAnzOpenAll(true)")
+            await page.wait_for_timeout(150)
+            oa = await safe("()=>[].filter.call(document.querySelectorAll('.a3d-analyze-wrap [data-anzcard]'),function(r){return r.querySelector('.a3d-anzhd').getBoundingClientRect().height===0;}).map(function(r){return r.getAttribute('data-anzcard');})")
+            ck(oa == [], "open all: every row shows, its category opened with it (%s hidden)" % oa)
+            await safe("()=>window.__a3dAnzOpenAll(false)")
 
             # ---------------------------------------------------------------------------------
             print("\n-- 5. commands and hooks")
@@ -273,8 +292,6 @@ async def run():
             await tab('presentation')
             bar = await safe("()=>[].map.call(document.querySelectorAll('#a3d-leftpanel .a3d-prpbar [data-prpact]'),function(b){return b.textContent;})")
             ck(bar == ['Present', '+ Page', '+ Board', 'Print set'], "the set's bar: Present, + Page, + Board, Print set (%s)" % bar)
-            hdr = await safe("()=>{var h=document.querySelector('#a3d-leftpanel .a3d-projhead').getBoundingClientRect(),w=document.querySelector('#a3d-leftpanel .a3d-pres-wrap').getBoundingClientRect();return [Math.round(h.height),Math.round(w.top-h.bottom)];}") or [0, -1]
-            ck(hdr[0] >= 30 and hdr[1] >= 0, "the project's name above the set, whole, not under it (%s)" % hdr)
             await page.click('#a3d-leftpanel [data-prpact="board"]')
             await page.wait_for_timeout(150)
             menu = await safe("()=>[].map.call(document.querySelectorAll('#a3d-ltmenu [data-ltm]'),function(b){return [b.textContent,b.getAttribute('data-ltm')];})")
@@ -315,6 +332,9 @@ async def run():
                "CLIMATE puts its board in the set and opens it (%s)" % await seq())
             await safe("()=>window.__a3dRunCmd('climate')")
             ck(await seq() == [s1, s2, 'board-access', 'board-climate'], "one of each kind")
+            await tab('presentation')
+            hdr = await safe("()=>{var p=document.getElementById('a3d-leftpanel'),h=p.querySelector('.a3d-projhead').getBoundingClientRect(),w=p.querySelector('.a3d-pres-wrap'),r=w.getBoundingClientRect();return [Math.round(h.height),Math.round(r.top-h.bottom),w.scrollHeight>p.clientHeight];}") or [0, -1, False]
+            ck(hdr[0] >= 30 and hdr[1] >= 0 and hdr[2], "a set longer than the panel: the project's name stays whole above it (%s)" % hdr)
 
             # ---------------------------------------------------------------------------------
             print("\n-- 7. in the main view")

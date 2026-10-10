@@ -14048,7 +14048,7 @@ The research (`reference/research-one-analyze-boards.md`) covers:
 
 ### Suites
 
-- New: `bim_phase162_one_analyze_board_pages_browser_tests.py`, 107 checks, with the V161 access
+- New: `bim_phase162_one_analyze_board_pages_browser_tests.py`, 109 checks, with the V161 access
   fixture for real board figures. It covers the one list's order and grouping, rows in categories,
   the search's rules, the held refresh, the commands, + Board, the order (drag, step, menus, +
   Page, removal and undo), the main view (geometry, width, keys), the thumbnail, Present, Print set
@@ -14060,7 +14060,15 @@ The research (`reference/research-one-analyze-boards.md`) covers:
   - V158, V159: no switch; the board is a page in the main view (`role="region"`);
   - V161: Show in Presentation; each category's data in the categories' order.
 - The test hook `__a3dAnzOpenAll` opens the categories that hold the rows it opens.
-- **Falsified by `Phase/falsify_phase162.py`:** 60 variants; the run is recorded in the next commit.
+- **Falsified by `Phase/falsify_phase162.py`:** 60 variants. The first run caught 57; three passed, each
+  because the suite never reached its case:
+  - `held_forever`: a field edited forces its own redraw, so the held one was never left waiting.
+    The suite now leaves a field unchanged while the model moves.
+  - `open_all_rows_only`: the open-all hook was used only by older suites. It is now checked here.
+  - `header_squashed`: the set was too short to squash the header where it was checked. It is now
+    checked with a set longer than the panel.
+
+  Each of the three fails the suite now. FALSIFY_RERUN
 
 ### Not done
 
