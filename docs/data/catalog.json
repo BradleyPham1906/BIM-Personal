@@ -1,9 +1,38 @@
 {
  "version": {
-  "v": "V160",
+  "v": "V161",
   "date": "2026-10-10"
  },
  "commands": [
+  {
+   "id": "cmd:ACCESS",
+   "name": "ACCESS",
+   "aliases": [
+    "ACCESSBOARD",
+    "PEOPLEBOARD",
+    "WALKABILITY",
+    "DEMOGRAPHICS"
+   ],
+   "desc": "The Access and people board: the walk-time map, daily needs, transit, the street hierarchy and frontage, connectivity, and the census tract against its county and state",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-ACCESS"
+  },
+  {
+   "id": "cmd:ACCESSGET",
+   "name": "ACCESSGET",
+   "aliases": [
+    "GETACCESS",
+    "CENSUSGET",
+    "WALKABILITYDATA"
+   ],
+   "desc": "Get walk times to daily needs and transit, the streets the lot fronts, connectivity, and the census tract's people, from OpenStreetMap and the US Census (free, no key)",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-ACCESSGET"
+  },
   {
    "id": "cmd:ALIGN",
    "name": "ALIGN",
@@ -2487,6 +2516,20 @@
    ],
    "keys": null,
    "anchor": "act-v-top"
+  },
+  {
+   "id": "cmd:WALKTIMES",
+   "name": "WALKTIMES",
+   "aliases": [
+    "WALKSHED",
+    "ISOCHRONES",
+    "SERVICEAREA"
+   ],
+   "desc": "Draw the walk times (5, 10 and 15 minutes along the streets from the lot) on the plan, as a layer under Analysis",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-WALKTIMES"
   },
   {
    "id": "cmd:WALL",
