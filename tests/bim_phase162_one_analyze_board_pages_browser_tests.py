@@ -359,9 +359,12 @@ async def run():
             await safe("()=>window.__a3dShellDrawer(true,'presentation')")
             await page.wait_for_timeout(400)
             ck(kp and kp >= 3, "the indicators in a row across the main view (%s)" % kp)
+            # with something selected: the app's own Esc would clear the selection, and must not see this one
+            pid = await safe("()=>{var p=window.__a3dState().objs.filter(function(o){return o.t==='property';})[0];if(p)window.__a3dSelectFor([p.id]);return p?p.id:null;}")
             await page.focus('.a3d-clb:not(.a3d-ssboard) [data-clb="close"]')
             await page.keyboard.press('Escape')
-            ck((await clb()).get('open') is False, "Esc gives the main view back")
+            sel = (await safe("()=>window.__a3dState()") or {}).get('sel')
+            ck(pid and (await clb()).get('open') is False and sel == pid, "Esc gives the main view back, and only that: the selection stays (%s)" % sel)
             await safe("()=>window.__a3dPresOpen('board-access')")
             await tab('analyze')
             await page.focus('.a3d-analyze-wrap [data-anzsearch]')

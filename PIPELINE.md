@@ -6,7 +6,7 @@
     sha256            e206ae4501c1b76d143f7df47ccbabce6a5efbf39401c5b943ffdb662fed7796
     markers           __acad3dV60 ... __acad3dV162, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
                       __acad3dV121b
-    tests             SUITES162 suites, CHECKS162 checks, 0 failures
+    tests             119 suites, 5271 checks, 0 failures
 
     The user guide (V142): every phase updates docs/src/, its log entry and BIM_APP_VERSION, then
     runs tools/dump_catalog.py and tools/build_docs.py. The V142 suite and the Pages workflow
@@ -172,7 +172,7 @@ when it starts (V111 to V138 went to other work; V139 to V181 are in NOW).
 - Climate and risk, Zoning and yield, and Access and people are pages in Presentation beside the
   sheets: a thumbnail, the main view with the panels beside it, Present, Print set on A3
   landscape, + Board, dragged among the sheets. Analyze fetches the data and links to them.
-- **Checked** in 109 checks, with FALS162 falsify variants, all caught; eight older suites amended.
+- **Checked** in 109 checks, with 60 falsify variants, all caught; eight older suites amended.
 
 Phase 161 (V161), **access and people: walk times, transit, the frontage, connectivity, the census, and the board**.
 - From free sources, no key: OpenStreetMap through Overpass (the walking network, the places of

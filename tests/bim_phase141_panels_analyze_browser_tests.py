@@ -256,7 +256,8 @@ async def run():
             await page.click('.a3d-analyze-wrap [data-anzact="sun:toggle"]')
             await page.wait_for_timeout(150)
             ck((await cards())['sun']['state'] == 'off', "and Hide off")
-            await page.click('.a3d-analyze-wrap [data-anzact="open:Location"]')
+            # AMENDED FOR V162: the sun card's own Settings -- Location's data block has a Location button too
+            await page.click('.a3d-analyze-wrap [data-anzcard="sun"] [data-anzact="open:Location"]')
             await page.wait_for_timeout(200)
             ck(await safe("()=>window.__a3dPropTab()") == 'site' and (await shown()).get('groups', [None])[0] == 'Location', "its Settings open Location, on Site")
             # a survey

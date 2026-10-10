@@ -14058,7 +14058,9 @@ The research (`reference/research-one-analyze-boards.md`) covers:
   - V144, V160: open a row's category before using its row;
   - V148: the search's rules for categories;
   - V158, V159: no switch; the board is a page in the main view (`role="region"`);
-  - V161: Show in Presentation; each category's data in the categories' order.
+  - V161: Show in Presentation; each category's data in the categories' order;
+  - V141 again, after the regression: it clicked the first `open:Location` button, which is now
+    Location's own, in a shut category. It clicks the sun card's Settings, as it meant to.
 - The test hook `__a3dAnzOpenAll` opens the categories that hold the rows it opens.
 - **Falsified by `Phase/falsify_phase162.py`:** 60 variants. The first run caught 57; three passed, each
   because the suite never reached its case:
@@ -14068,7 +14070,11 @@ The research (`reference/research-one-analyze-boards.md`) covers:
   - `header_squashed`: the set was too short to squash the header where it was checked. It is now
     checked with a set longer than the panel.
 
-  Each of the three fails the suite now. FALSIFY_RERUN
+  Each of the three fails the suite now. The full run, repeated with that suite, caught 59:
+  `esc_eaten` passed this time. Esc only goes astray with something selected (the app's own Esc
+  clears the selection first), and the new check before it had left nothing selected. The Esc
+  check now selects something itself, and asks that Esc gives the main view back and leaves the
+  selection alone. The full run on the final suite: 60 of 60 (780 s, 3 workers).
 
 ### Not done
 
@@ -14079,7 +14085,8 @@ The research (`reference/research-one-analyze-boards.md`) covers:
 
 ### Full regression and state after V162
 
-The full regression is recorded in the next commit. Patches 162a and 162b rebuild the build from
+119 suites, 5271 checks, 0 failures (V141 failed in the run as above, and passes alone with its
+amendment, 49 of 49). Patches 162a and 162b rebuild the build from
 `Phase/canvas_v10.html.bak_phase162_pre`. The diff is ES5-clean.
 
     canvas_v10.html   2725761 bytes
