@@ -1,7 +1,7 @@
 {
  "version": {
-  "v": "V159",
-  "date": "2026-10-05"
+  "v": "V160",
+  "date": "2026-10-10"
  },
  "commands": [
   {
@@ -764,6 +764,20 @@
    ],
    "keys": null,
    "anchor": "act-ellipsoid"
+  },
+  {
+   "id": "cmd:ENVELOPE",
+   "name": "ENVELOPE",
+   "aliases": [
+    "ZONINGENVELOPE",
+    "BUILDABLEENVELOPE",
+    "ENV"
+   ],
+   "desc": "Build the zoning envelope in 3D from the zoning record and the property, and flag massing outside it",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-ENVELOPE"
   },
   {
    "id": "cmd:ERASE",
@@ -2539,6 +2553,34 @@
    "where": [],
    "keys": null,
    "anchor": "cmd-XLINE"
+  },
+  {
+   "id": "cmd:ZONING",
+   "name": "ZONING",
+   "aliases": [
+    "ZONINGSUMMARY",
+    "ZONINGANALYSIS",
+    "ZONE"
+   ],
+   "desc": "The site's zoning: district, uses, FAR, height, setbacks by side, steps and angular planes, coverage, parking (Site analysis)",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-ZONING"
+  },
+  {
+   "id": "cmd:ZONINGBOARD",
+   "name": "ZONINGBOARD",
+   "aliases": [
+    "YIELD",
+    "YIELDSTUDY",
+    "FEASIBILITY"
+   ],
+   "desc": "The Zoning and yield board: the zoning analysis table, sections, the rules by side, the plan, floor plates, the yield",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-ZONINGBOARD"
   },
   {
    "id": "cmd:ZOOM",
