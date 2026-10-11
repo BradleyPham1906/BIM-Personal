@@ -18,7 +18,7 @@ analysis". So:
 import hashlib, pathlib, sys
 
 SRC = pathlib.Path('canvas_v10.html')
-BASE = 'bdcfa85bcc4d73049d45476a097fd783c8ca505a4fac402781b598235986088f'   # after patch_phase164b.py
+BASE = '259ec25237433333dd4ab5eb4093fc0f25f5670869c4baef07b3ec3584724f93'   # after patch_phase164b.py
 
 raw = SRC.read_bytes()
 sha = hashlib.sha256(raw).hexdigest()
@@ -70,7 +70,7 @@ RUN = r"""  /* ================= __acad3dV164: Analyze site =================
   /* why a fetch would not start: it says so in the message it shows */
   function bimSiteToastText(){var t=document.getElementById('a3d-toast'),L=t?String(t.textContent||'').split('\n'):[];return L.length?L[L.length-1]:'';}
   function bimSitePlaceText(){
-    var st=bimSunSettings(),at=Math.abs(st.lat).toFixed(5)+'° '+(st.lat<0?'S':'N')+', '+Math.abs(st.lon).toFixed(5)+'° '+(st.lon<0?'W':'E');
+    var st=bimSunSettings(),at=Math.abs(st.lat).toFixed(5)+'\u00b0 '+(st.lat<0?'S':'N')+', '+Math.abs(st.lon).toFixed(5)+'\u00b0 '+(st.lon<0?'W':'E');
     return A3D.site&&A3D.site.address?String(A3D.site.address).slice(0,140)+' ('+at+')':at;
   }
   function bimSiteAddrFocus(){
@@ -114,7 +114,7 @@ RUN = r"""  /* ================= __acad3dV164: Analyze site =================
         var got=[];
         if(r.climate)got.push('ten years of climate');if(r.hourly)got.push('a year of hourly wind and heat');if(r.air)got.push('air quality');
         if(r.quakes!==null&&r.quakes!==undefined)got.push(bimSaN(r.quakes,'earthquake')+' within 100 km');
-        if(r.tz!==null&&r.tz!==undefined)got.push('UTC'+(r.tz>=0?'+':'−')+bimDispNum(Math.abs(r.tz),2)+(r.tzSet?'':' (the offset already given is kept)'));
+        if(r.tz!==null&&r.tz!==undefined)got.push('UTC'+(r.tz>=0?'+':'\u2212')+bimDispNum(Math.abs(r.tz),2)+(r.tzSet?'':' (the offset already given is kept)'));
         return [bimSiteState(got.length,r.errors),got.join(', ')+(r.errors&&r.errors.length?'. Not available: '+r.errors.join('; '):'')];
       });
       var pc=bimSiteOne('context',bimCtxFetch(),function(r){
@@ -172,7 +172,7 @@ RUN = r"""  /* ================= __acad3dV164: Analyze site =================
   /* the top of Analyze: where the site is, the button, and what the last run brought */
   function bimSiteRunHtml(){
     var st=bimSunSettings(),placed=bimSunNum(st.lat)&&bimSunNum(st.lon),D=bimDgState(),R=A3D_SITERUN,P=A3D.objs.filter(bimIsProperty),bd,h,steps;
-    if(P.length){var g=bimPropertyGeometry(P[0]);bd=bimEsc(P[0].name)+', '+bimDispNum(g.area,1)+' m²';}
+    if(P.length){var g=bimPropertyGeometry(P[0]);bd=bimEsc(P[0].name)+', '+bimDispNum(g.area,1)+' m\u00b2';}
     else bd='None yet <button type="button" class="a3d-anzbtn" data-saact="cmd:propertyshape">From a shape</button> <button type="button" class="a3d-anzbtn" data-saact="cmd:propertyline">From bearings</button>';
     h='<div class="a3d-sasec a3d-sarun" data-anzsec="site"><div class="a3d-sasechd">Site</div>'+
       '<div class="a3d-sarow"><span class="a3d-salab">Place</span><span class="a3d-saval">'+(placed?bimEsc(bimSitePlaceText()):'Not placed yet')+'</span></div>';

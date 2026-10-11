@@ -831,12 +831,12 @@ async def run():
                 await p6.wait_for_timeout(400)
                 lg6 = await safe("()=>window.__a3dDgLegend()", pg=p6)
                 sr6 = await safe("()=>window.__a3dSafeViewRect()", pg=p6) or {}
-                if lg6:
-                    b6 = lg6['box']
-                    ck(b6[0] >= sr6['x'] - 0.5 and b6[0] + b6[2] <= sr6['x'] + sr6['w'] + 0.5 and (sr6['w'] >= 620 or all(not b['rows'] for b in lg6['blocks'])),
-                       "%s: the legend inside the view%s" % (label, '' if sr6['w'] >= 620 else ', titles only on a narrow one'))
+                if sr6.get('w', 0) < 620:
+                    ck(lg6 is None, "%s: no legend over a view %d px wide; the keys are in Analyze's rows" % (label, sr6.get('w', 0)))
                 else:
-                    ck(sr6.get('w', 0) > 0, "%s: the view is the panel's (no legend over it)" % label)
+                    b6 = (lg6 or {}).get('box') or [0, 0, 99999, 0]
+                    ck(lg6 is not None and b6[0] >= sr6['x'] - 0.5 and b6[0] + b6[2] <= sr6['x'] + sr6['w'] + 0.5 and b6[1] + b6[3] <= sr6['y'] + sr6['h'] + 0.5,
+                       "%s: the legend inside the view, %d px wide" % (label, sr6.get('w', 0)))
                 ck(not e6, "%s: no page errors (%s)" % (label, e6[:3]))
                 await c6.close()
         except Stalled as e:

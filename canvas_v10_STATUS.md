@@ -14262,7 +14262,8 @@ traffic stress, catchments), acoustic analysts (CRTN, CNOSSOS-EU, DIN 18005's co
     symbols and words over it; words placed by priority so none covers another (the compass
     points, then each analysis's labels, then the sun's hours); picked before the model, by their
     lines, dots, labels and symbols only, never by a fill. A key at the top right, under the north
-    arrow, each analysis shown with its swatches and source; titles only on a narrow view.
+    arrow, each analysis shown with its swatches and source; none over a phone's view, where it would
+    cover the drawing and the tools (each analysis's row in Analyze carries its key).
   - **Apart.** No mesh: schedules, quantities, the LOD checks and the exports pass them by.
     Zoom Extents fits them.
 - **The analyses (164b):**
@@ -14318,6 +14319,10 @@ traffic stress, catchments), acoustic analysts (CRTN, CNOSSOS-EU, DIN 18005's co
   they were built as `'s-'+state`. They are written out in a table.
 - **A layer name with a comma** ("Shadows, 20 March") is refused by the layer rules, as AutoCAD's
   are; the date's layers are "Site analysis - Shadows 20 March".
+- **The legend under the tools.** On a phone the legend, titles only, sat under the floating tool
+  palette, cut off. A phone's view has none now; each analysis's row in Analyze carries its key.
+- **Literal symbols in the patches.** The degree sign, the minus and the ellipsis went into three
+  patches as characters, not escapes. They are escapes now; the diff is ASCII.
 
 ### Suites
 

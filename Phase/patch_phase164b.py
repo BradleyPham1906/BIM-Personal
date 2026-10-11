@@ -17,7 +17,7 @@ zone comes with it, so the sun needs no typing.
 import hashlib, pathlib, sys
 
 SRC = pathlib.Path('canvas_v10.html')
-BASE = 'd0d9e62b44735d88926d5bf81483a9c5a569030401ab152e62389d1dbdb98b1f'   # after patch_phase164a.py
+BASE = '3fa9e308c9c0de8899c95c649dfa73dc1b588c9de1e3928b4df94d871010a4ab'   # after patch_phase164a.py
 
 raw = SRC.read_bytes()
 sha = hashlib.sha256(raw).hexdigest()
@@ -65,7 +65,7 @@ ANALYSES = r"""  /* ---- the analyses, each laid down by bimDgPlace ----
   function bimDgFrameRun(S){
     var E=[],Rc=S.Rc,y=S.y+0.05,T=[],lb=[],k,d;
     E.push({k:'ring',name:'Compass ring',g:{kind:'line',pts:bimDgCircle(S,Rc,y,96),closed:true},s:{stroke:'#c9d3dd',w:1.6},
-      info:{title:'The compass ring, '+Rc+' m from the centre of the site',rows:[['True north',bimDispNum(bimTrueNorthDeg(),1)+'° from the plan\'s up']],
+      info:{title:'The compass ring, '+Rc+' m from the centre of the site',rows:[['True north',bimDispNum(bimTrueNorthDeg(),1)+'\u00b0 from the plan\'s up']],
         method:'A circle about the site\'s centre, turned by the site\'s true-north angle',source:'The site\'s settings'}});
     E.push({k:'ring2',name:'Compass ring, outer',g:{kind:'line',pts:bimDgCircle(S,Rc*1.045,y,96),closed:true},s:{stroke:'#c9d3dd',w:0.8,op:0.8},
       info:{title:'The compass ring\'s outer line',method:'A circle about the site\'s centre'}});
@@ -75,7 +75,7 @@ ANALYSES = r"""  /* ---- the analyses, each laid down by bimDgPlace ----
       lb.push({t:BIM_DG_DIRS[k],p:bimDgAt(S,k*22.5,Rc*(k%4===0?1.2:1.15),y),sz:k%4===0?13:10,col:k===0?'#ffffff':'#c9d3dd',pri:k%4===0?1:3});
     }
     E.push({k:'ticks',name:'Compass points',g:{kind:'segs',pts:T},s:{stroke:'#c9d3dd',w:1.2},lb:lb,
-      info:{title:'The sixteen points of the compass, on true north',method:'Every 22.5° from true north'}});
+      info:{title:'The sixteen points of the compass, on true north',method:'Every 22.5\u00b0 from true north'}});
     var max=Math.min(500,S.ctxR||500),first=100*Math.ceil((Rc*1.3)/100);
     for(d=first;d<=max;d+=100)
       E.push({k:'dist:'+d,name:d+' m from the site',g:{kind:'line',pts:bimDgCircle(S,d,y,120),closed:true},s:{stroke:'#9aa7b4',w:1.1,dash:[8,6],op:0.85},
@@ -92,7 +92,7 @@ ANALYSES = r"""  /* ---- the analyses, each laid down by bimDgPlace ----
   function bimDgSunRun(S){
     var st=bimSunSettings(),E=[],k,m;
     if(bimDgNoPlace())return {E:[],run:{note:'The site\'s latitude, longitude and UTC offset are needed: Analyze site gets the offset with the climate'}};
-    var yr=bimDgYear(),R=S.Rc,tzt='UTC'+(st.tz>=0?'+':'−')+bimDispNum(Math.abs(st.tz),2);
+    var yr=bimDgYear(),R=S.Rc,tzt='UTC'+(st.tz>=0?'+':'\u2212')+bimDispNum(Math.abs(st.tz),2);
     for(k=0;k<BIM_DG_SUNDAYS.length;k++){
       var dd=yr+'-'+BIM_DG_SUNDAYS[k][0],pts=[],marks=[],noon=null;
       for(m=0;m<1440;m+=10){
@@ -107,7 +107,7 @@ ANALYSES = r"""  /* ---- the analyses, each laid down by bimDgPlace ----
       E.push({k:'path:'+BIM_DG_SUNDAYS[k][0],name:'Sun path, '+BIM_DG_SUNDAYS[k][1],g:{kind:'marks',pts:pts,marks:marks},
         s:{stroke:BIM_DG_SUNDAYS[k][2],w:1.6,dash:[6,4],mark:'#ffd23f'},
         lb:[{t:BIM_DG_SUNDAYS[k][1],p:[noon.p[0],noon.p[1]+R*0.05,noon.p[2]],col:BIM_DG_SUNDAYS[k][2]}],
-        info:{title:'The sun on '+BIM_DG_SUNDAYS[k][1],rows:[['Highest',bimDispNum(noon.e,1)+'° up, at '+bimDispNum(noon.az,0)+'° from north'],
+        info:{title:'The sun on '+BIM_DG_SUNDAYS[k][1],rows:[['Highest',bimDispNum(noon.e,1)+'\u00b0 up, at '+bimDispNum(noon.az,0)+'\u00b0 from north'],
           ['Sunrise',day&&day.sunrise!==null?bimHHMM(day.sunrise):'-'],['Sunset',day&&day.sunset!==null?bimHHMM(day.sunset):'-'],
           ['Daylight',day&&day.sunrise!==null?bimDispNum((day.sunset-day.sunrise)/60,1)+' h':(day&&day.polar==='day'?'the sun does not set':'the sun does not rise')],
           ['Clock',tzt+(A3D.site.climate&&A3D.site.climate.tzName?' ('+A3D.site.climate.tzName+')':'')]],
@@ -119,7 +119,7 @@ ANALYSES = r"""  /* ---- the analyses, each laid down by bimDgPlace ----
       var q=bimDgDome(S,R,now);
       E.push({k:'now',name:'The sun now',g:{kind:'line',pts:[]},sym:{type:'dot',p:q,r:6,col:'#e5484d'},
         lb:[{t:'Now',p:[q[0],q[1]+R*0.06,q[2]],col:'#ff8a8f'}],
-        info:{title:'The sun at '+now.settings.time+' on '+now.settings.date,rows:[['Position',bimDispNum(now.elevation,1)+'° up, at '+bimDispNum(now.azimuth,0)+'° from north']],
+        info:{title:'The sun at '+now.settings.time+' on '+now.settings.date,rows:[['Position',bimDispNum(now.elevation,1)+'\u00b0 up, at '+bimDispNum(now.azimuth,0)+'\u00b0 from north']],
           method:'The date and time in Properties, Site, Location',source:'Sun position (NOAA)'}});
     }
     return {E:E,run:{legend:[{name:'21 June',short:'June',col:'#ffb347',kind:'dash'},{name:'20 March, 22 September',short:'March, September',col:'#e8d36a',kind:'dash'},{name:'21 December',short:'December',col:'#8ab4f8',kind:'dash'},
@@ -141,7 +141,7 @@ ANALYSES = r"""  /* ---- the analyses, each laid down by bimDgPlace ----
         if(!sp||!(sp.elevation>0))continue;
         E.push({k:'sh:'+D[0]+':'+BIM_DG_SHTIMES[t][1],name:'Shadow, '+nm+' '+BIM_DG_SHTIMES[t][1],layer:key,
           g:{kind:'live',live:{kind:'shadow',date:yr+'-'+D[0],time:BIM_DG_SHTIMES[t][0],c:S.c,r:S.r+80}},s:{fill:BIM_DG_SHTIMES[t][2],fop:0.38},
-          info:{title:'The model\'s shadow at '+BIM_DG_SHTIMES[t][0]+' on '+nm,rows:[['Sun',bimDispNum(sp.elevation,1)+'° up, at '+bimDispNum(sp.azimuth,0)+'° from north'],
+          info:{title:'The model\'s shadow at '+BIM_DG_SHTIMES[t][0]+' on '+nm,rows:[['Sun',bimDispNum(sp.elevation,1)+'\u00b0 up, at '+bimDispNum(sp.azimuth,0)+'\u00b0 from north'],
             ['Shadow',bimDispNum(1/Math.tan(sp.elevation*Math.PI/180),2)+' times a building\'s height long']],
             method:'The model\'s own solids projected along the sun onto the ground, drawn again whenever the model changes',source:'Sun position (NOAA); the model',date:yr+'-'+D[0]}});
       }
@@ -291,11 +291,11 @@ ANALYSES = r"""  /* ---- the analyses, each laid down by bimDgPlace ----
     function ring(D,yy){var P=[];for(var q=0;q<180;q++)P.push(bimDgAt(S,q*2,Math.max(1,D[q]),yy));return P;}
     function openPct(D){var n=0;D.forEach(function(d){if(d>=Rv*0.98)n++;});return Math.round(n/1.8);}
     E.push({k:'iso:eye',name:'What can be seen at eye level',g:{kind:'line',pts:ring(Ie.D,y),closed:true},s:{stroke:'#8fd694',fill:'#8fd694',fop:0.12,w:1},
-      info:{title:'From the ground at eye height (1.6 m), '+openPct(Ie.D)+'% of the horizon is open to '+Rv+' m',rows:[['Sight lines','180, every 2°, to '+Rv+' m']],
+      info:{title:'From the ground at eye height (1.6 m), '+openPct(Ie.D)+'% of the horizon is open to '+Rv+' m',rows:[['Sight lines','180, every 2\u00b0, to '+Rv+' m']],
         method:'An isovist: each sight line stops at the first building or tree around the site taller than the eye',source:src}});
     E.push({k:'iso:top',name:'What can be seen from the top floor',g:{kind:'line',pts:ring(It.D,y+0.02),closed:true},s:{stroke:'#c6f0a8',w:1.2,dash:[5,4]},
       info:{title:'From '+bimDispNum(top-S.y,1)+' m up'+(S.own?' (the top floor)':' (no building drawn yet: about a fourth floor)')+', '+openPct(It.D)+'% of the horizon is open to '+Rv+' m',
-        rows:[['Sight lines','180, every 2°, to '+Rv+' m']],method:'An isovist: only what stands taller than this eye stops a sight line',source:src}});
+        rows:[['Sight lines','180, every 2\u00b0, to '+Rv+' m']],method:'An isovist: only what stands taller than this eye stops a sight line',source:src}});
     /* what each sight line from the top floor reaches */
     var F=bimDgViewFeats(),LM=Bs.filter(function(b){return b.lm&&!bimPointInPoly(S.c,b.pts);});
     function add(key,pri,label,kk,d){if(!T[key])T[key]={pri:pri,label:label,ks:[],d:d};T[key].ks.push(kk);T[key].d=Math.min(T[key].d,d);}
@@ -326,7 +326,7 @@ ANALYSES = r"""  /* ---- the analyses, each laid down by bimDgPlace ----
       E.push({k:'view:'+o.key,name:lab,g:{kind:'line',pts:[p1,p2]},s:{stroke:'#8fd694',w:2.2,dash:[7,5],head:true},
         lb:[{t:lab.toUpperCase(),p:bimDgAt(S,o.az,S.Rc*1.78,y),col:'#b6f0b0'}],
         info:{title:lab+', towards '+BIM_DG_DIRS[Math.round(o.az/22.5)%16]+(o.d?', about '+Math.round(o.d)+' m away':''),
-          rows:[['Seen across',w+'° of the horizon from the top floor'],['From',bimDispNum(top-S.y,1)+' m up']],
+          rows:[['Seen across',w+'\u00b0 of the horizon from the top floor'],['From',bimDispNum(top-S.y,1)+' m up']],
           method:'The top floor\'s sight lines that reach it before a building or a tree taller than the eye stops them; water, then parks and woods, then landmarks, then open land',
           source:'OpenStreetMap'}});
     });

@@ -449,17 +449,18 @@ ENGINE = r"""  /* ================= __acad3dV164: site analysis drawn in the mod
   }
   /* ---- the legend, on the view: each analysis shown, its key and its source ----
      A key, not a list: each analysis's title, then its swatches with short names flowing in lines,
-     then its source, shortened to fit. On a narrow view, the titles alone. */
+     then its source, shortened to fit. Not on a view under 620 px, a phone's: there it would cover
+     the drawing and the tools, and each analysis's key is in its row in Analyze. */
   function bimDgFit(ctx,t,w){
     if(ctx.measureText(t).width<=w)return t;
-    while(t.length>1&&ctx.measureText(t+'…').width>w)t=t.slice(0,-1);
-    return t+'…';
+    while(t.length>1&&ctx.measureText(t+'\u2026').width>w)t=t.slice(0,-1);
+    return t+'\u2026';
   }
   function drawDiagramLegend(ctx,V,W,H){
     A3D_DG.legend=null;
     if(A3D.sheetCapture||A3D_PLOT.on)return;
-    var D=bimDgState();
-    if(D.legendOff)return;
+    var D=bimDgState(),sr=bimSafeViewRect();
+    if(D.legendOff||sr.w<620)return;
     var blocks=[],i;
     for(i=0;i<BIM_DG_AN.length;i++){
       var A=BIM_DG_AN[i],R=D.runs[A.id],ly=bimLayerById(D.layers[A.id]);
@@ -470,12 +471,11 @@ ENGINE = r"""  /* ================= __acad3dV164: site analysis drawn in the mod
     if(!blocks.length)return;
     ctx.save();
     try{
-      var sr=bimSafeViewRect(),narrow=sr.w<620,pad=8,rowH=15,sw=12,maxW=Math.round(Math.min(300,Math.max(170,sr.w*0.3))),inner=maxW-2*pad,ops=[],y=pad,x,j,b,w=0;
+      var pad=8,rowH=15,sw=12,maxW=Math.round(Math.min(300,Math.max(170,sr.w*0.3))),inner=maxW-2*pad,ops=[],y=pad,x,j,b,w=0;
       for(i=0;i<blocks.length;i++){
         b=blocks[i];if(i)y+=6;
         ctx.font='bold 11px sans-serif';
         var tt=bimDgFit(ctx,b.title,inner);ops.push({k:'t',t:tt,x:pad,y:y+rowH/2});w=Math.max(w,ctx.measureText(tt).width);y+=rowH;
-        if(narrow)continue;
         ctx.font='11px sans-serif';x=pad;
         for(j=0;j<b.rows.length;j++){
           var r=b.rows[j],nm=r.short||r.name,iw=sw+4+ctx.measureText(nm).width;
@@ -501,7 +501,7 @@ ENGINE = r"""  /* ================= __acad3dV164: site analysis drawn in the mod
         else{ctx.setLineDash(rr.kind==='dash'?[4,3]:[]);ctx.beginPath();ctx.moveTo(ox,oy);ctx.lineTo(ox+sw,oy);ctx.stroke();ctx.setLineDash([]);}
         ctx.font='11px sans-serif';ctx.fillStyle='#e8edf2';ctx.fillText(op.t,ox+sw+4,oy);
       }
-      A3D_DG.legend={box:[X,Y,w,h],blocks:blocks.map(function(bb){return {title:bb.title,rows:narrow?[]:bb.rows.map(function(r2){return r2.short||r2.name;}),src:bb.src};})};
+      A3D_DG.legend={box:[X,Y,w,h],blocks:blocks.map(function(bb){return {title:bb.title,rows:bb.rows.map(function(r2){return r2.short||r2.name;}),src:bb.src};})};
     }catch(eL){console.warn('[BIM] The site analysis legend could not be drawn',eL);}
     ctx.restore();
   }

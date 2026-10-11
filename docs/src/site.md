@@ -116,7 +116,7 @@ analysis**:
 - Diagram elements are not building elements. Schedules, quantities, the LOD checks and the
   exports pass them by.
 - A legend at the top right keys each analysis shown, with its source. **Hide the legend** turns it
-  off.
+  off. On a phone there is none over the drawing: each analysis's row in Analyze carries its key.
 - Each analysis is also a row in its category, with Show or Hide, Run again, Select, Reset and its
   key: Compass in Location; Sun paths, Shadows and Winds in Climate; Noise in Environmental risk;
   Views in People and place.
