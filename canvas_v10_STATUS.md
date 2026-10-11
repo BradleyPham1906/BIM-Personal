@@ -14338,3 +14338,19 @@ traffic stress, catchments), acoustic analysts (CRTN, CNOSSOS-EU, DIN 18005's co
   from the model's eight context findings; the phone's field and button), V159 (the site and its
   button head the list), V162 (the list's order; the search's site and finding; the field being
   typed in is the zoning form's), V163 (a later version).
+- **Falsified by `Phase/falsify_phase164.py`:** 67 variants. The first run caught 61 (1246 s, 3
+  workers). The six it missed, and what changed:
+  - `newer_unmarked` (a changed element never marked when the analysis would draw it otherwise):
+    the suite asked only that an element was not marked. It now turns true north under a restyled
+    ring and asks for the mark, in the list and in Properties.
+  - `reset_leaves_move`: Reset was tried on a restyled element only. That element is moved too
+    now, and Reset must put it back.
+  - `ring_unscaled`: the fixture's building is small enough that the ring's 30 m floor hid its
+    scale. A wing added must make it 60 m.
+  - `legend_full_names`: the legend's test hook worked its rows out again from the run, apart from
+    what was drawn. It reports what was drawn, as drawn.
+  - `legend_hidden_layer`: the guard was unreachable. An analysis whose layer is off or frozen has
+    no element shown, which the next line asks; the guard is gone, and the variant breaks that line.
+  - `search_hides_site`: the suite searched for "noise", which the site's own steps name, so a
+    search that filtered the site kept it. It searches for "seismic" now, and asks that none of the
+    site's words hold it.
