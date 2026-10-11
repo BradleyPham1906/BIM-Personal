@@ -6,21 +6,24 @@ order: 7
 
 The **Analyze** tab on the left rail is one list: every analysis and the site analysis together.
 `ANALYSES` and `SITEANALYSIS` both open it. It runs in the order the work goes:
-1. **The stages** of the site analysis, and red flags first when there are any.
-2. **Define:** the boundary, the project type, and the questions the analysis must answer.
-3. **The ten categories.** Each holds its data, its analyses, its findings, and what to check at
-   the desk and on site (see [Site](site.html)).
+1. **Site:** where the site is, its boundary, **Analyze site**, and each step of its last run
+   (see [Site](site.html)).
+2. **Red flags** first, when there are any.
+3. **The ten categories.** Each holds its data, its analyses (those Analyze site draws first) and
+   its findings.
 4. **Model:** what reads the model itself, with no site data needed.
 
 - **One line each.** A row has the analysis's name, what it shows now, its state (On, Out of
   date, Problems), and its main button (Run, Check, Show, Open). A category's line says how many
-  findings it has, how much of its checklist is ticked, and which of its analyses are on.
+  findings it has and which of its analyses are on.
 - **Click a row to open it.** It opens to the whole status, the legend and the other buttons:
   Clear, Settings, Export, **Add as layer**. A row you open stays open the next time. A row inside a
   category opens on its own; opening the category does not open its rows.
 - **Search.** The field at the top searches all of it:
   - analyses, by their name, what they say or their buttons;
-  - categories, by their question, their data, their findings and their checklists.
+  - categories, by their question, their data and their findings.
+
+  The site and its button stay at the top while you search.
 
   A category your words name shows whole, opened. Otherwise only the analyses in it that match are
   shown: "cut fill" shows Grading, inside Landform. It matches the start of words, so "rain" finds
@@ -29,6 +32,7 @@ The **Analyze** tab on the left rail is one list: every analysis and the site an
 
 | Where | Analysis | Run it | Settings |
 |---|---|---|---|
+| 1. Location | Compass and distance | `ANALYZESITE` | Layers > Site analysis |
 | 3. Landform | Survey check | `SURVEYCHECK` | the surface's Survey Check group |
 | 3. Landform | Slope, elevation, aspect | `SLOPEMAP`, `ELEVATIONMAP`, `ASPECTMAP` | the surface's Analysis group |
 | 3. Landform | Grading, cut and fill | `GRADE`, `CUTFILLMAP` | the pad's Pad Elevation |
@@ -36,6 +40,9 @@ The **Analyze** tab on the left rail is one list: every analysis and the site an
 | 5. Climate | Sun and shadows | `SUNSTUDY` | Properties > Site > Location |
 | 5. Climate | Sun hours | `SUNHOURS` | Properties > Site > Location |
 | 5. Climate | Solar on roofs and facades | `SOLAR` | |
+| 5. Climate | Sun paths, Shadows, Winds | `ANALYZESITE` | Layers > Site analysis |
+| 7. Environmental risk | Noise | `ANALYZESITE` | Layers > Site analysis |
+| 10. People and place | Views | `ANALYZESITE` | Layers > Site analysis |
 | Model | Colour by usage, level, type, layer or any property | `COLOURBY` | Properties > View |
 | Model | Areas by usage | live | Properties > Analysis |
 | Model | Buildings, LOD and solids | `LODCHECK` | each building's LOD group |

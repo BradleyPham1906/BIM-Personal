@@ -144,7 +144,7 @@ async def run():
             ck(glob == [], "and leaves nothing else on the page: its helpers stay inside it (%s)" % glob)
             ck('skpimport' in (await safe("()=>window.__acad3dV163") or ''), "the V163 marker is there")
             ver = await safe("""()=>{var m=Array.prototype.map.call(document.scripts,function(s){return s.textContent;}).join('').match(/var BIM_APP_VERSION=\\{v:'(V\\d+)'/);return m?m[1]:null;}""")
-            ck(ver == 'V163', "and the app says V163 (%s)" % ver)
+            ck(ver and int(ver[1:]) >= 163, "and the app says V163 or later (%s)" % ver)   # AMENDED FOR V164: a later version
 
             # ---------------------------------------------------------------------------------
             print("\n-- 2. the file")

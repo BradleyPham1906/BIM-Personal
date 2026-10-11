@@ -14211,3 +14211,125 @@ address, which did not wrap. The guide's text now wraps a word too long for its 
     canvas_v10.html   2966477 bytes
     sha256            7fac61cb6717f63cd883c9471ada85eca6608c26e67febc3a1edf8db10161e8a
     markers           __acad3dV60 ... __acad3dV163, __acad3dV134d (and the 133d to 133f markers)
+
+## Phase 164 (V164) - Site analysis in the model I: one button, and the climate around the building
+
+The owner: "for site analysis, i think we need to update the functions. the purpose of site
+analysis was to understand whats surrounding using existing data, then make it understandable using
+diagrams. The current tool we built only provide the report in the board, and i have to input
+information, which is not the right way. and i don't understand why we have to build a checklist
+(remove that entirely from our site analysis). all i want is button then the analysis run, then it
+leverage appropriate relevant data from target api to analyze the site, then put that under
+analysis layers, built straight in the model that i can interact with." Asked how live it should
+be, the owner chose "a live analysis that is editable", and that everything typed by hand go; the
+boards stay as they are. Then: "it should make site analysis quicker with complex logic to run each
+type of analysis. research how architects, GIS scientist, landscape architect, transportation
+planner, analysist do this and how they present each analysis in a professional way".
+
+The research (`reference/research-site-analysis-in-model.md`) covers how each discipline works and
+draws: architects (the sun's paths, shadows, winds by season, views), landscape architects (slope,
+aspect, water), GIS scientists (isovists, map design), transportation planners (street hierarchy,
+traffic stress, catchments), acoustic analysts (CRTN, CNOSSOS-EU, DIN 18005's colours) and planners
+(land use, figure-ground). It plans four phases, V164 to V167, each adding layers to the one button.
+
+### What was built (patches 164a, 164b, 164c)
+
+- **Analyze site (164c).** One button at the top of Analyze, and `ANALYZESITE` (SITEANALYZE,
+  RUNSITEANALYSIS, and SAFILL, whose Fill from the model it now is). It needs only the site's place:
+  the latitude and longitude, or an address typed beside it and found on OpenStreetMap. It fetches
+  the context (300 m at least, the radius raised and said so), then the access and people after it
+  -- the public Overpass servers asked one thing at a time -- and the climate beside them; reads
+  the zoning where a council layer covers the property; then draws every analysis. Each step is
+  listed as it goes: Done, Partly (some sources down, named), Failed (why) or Skipped (why). What
+  fails leaves the rest standing. One undo step: the snapshot taken as it starts, or the one placing
+  the site takes, and every step after it held (`pushUndo` gains a hold). An address not found
+  leaves none. The site's UTC offset comes with the climate (Open-Meteo's `utc_offset_seconds`), so
+  the sun needs no typing; an offset already given is kept.
+- **The engine (164a).** Each analysis lays its diagram down as objects of their own kind, `diag`,
+  on a layer under Layers > Site analysis:
+  - **Live.** A run lays the analysis down again. An element keeps the analysis's own version of
+    itself; one the owner has moved, turned, mirrored, scaled, restyled or relabelled no longer
+    matches it and is kept, marked when the analysis would now draw it differently; one deleted
+    stays deleted; one the analysis no longer draws goes, unless changed, when it is kept as no
+    longer drawn. All of it worked out by comparison when a run comes, so no editing path reports
+    itself. Reset gives an element back; an analysis's Reset gives back its whole layer.
+  - **Editable** through the paths the app already has: the gizmo and MOVE (its position), Rotate,
+    Mirror, Scale and the arrays (a branch of the one transform, `bimComputeTransformedGeometry`),
+    Delete, undo. A copy is the owner's: a key of its own, nothing to reset to. Properties: what it
+    shows, how it was worked out, its source and date; its colour, line width, dash, opacity,
+    labels and layer; its status, Reset and Run again.
+  - **Drawn** in plan and 3D, the colour (bands, fills, shadows) under the model and the lines,
+    symbols and words over it; words placed by priority so none covers another (the compass
+    points, then each analysis's labels, then the sun's hours); picked before the model, by their
+    lines, dots, labels and symbols only, never by a fill. A key at the top right, under the north
+    arrow, each analysis shown with its swatches and source; titles only on a narrow view.
+  - **Apart.** No mesh: schedules, quantities, the LOD checks and the exports pass them by.
+    Zoom Extents fits them.
+- **The analyses (164b):**
+  - **Compass and distance:** the ring on true north, sixteen points, rings every 100 m to the
+    context's edge.
+  - **Sun paths:** 21 June, 20 March and 22 September, 21 December on a dome over the site (NOAA's
+    equations, every 10 minutes), a dot an hour by the site's clock, the sun now.
+  - **Shadows:** the model's own solids at 9, 12 and 15 on those dates, drawn from the model on
+    every paint, so they follow it; each date a layer, 20 March shown.
+  - **Winds:** a year of hourly ERA5 wind (Open-Meteo), now binned for spring and autumn too, with
+    each direction's mean speed; an arrow for each prevailing direction, as wide as its share,
+    naming the seasons it blows in; the strongest winds; the year's rose.
+  - **Views:** isovists of 180 sight lines at eye height and from the top floor, against the
+    context's buildings and trees at their heights; each view named by what the top floor's lines
+    reach -- water, then parks and woods, then a landmark, then open land -- at least 15 degrees
+    apart.
+  - **Noise:** CRTN from each road's class (FHWA's typical daily traffic, urban or rural), its speed
+    limit and lanes, in 5 dB classes from 55 dB coloured after DIN 18005, no class past 300 m; each
+    class found every 15 m along the street, out to the first building and screened behind it by
+    ISO 9613-2's barrier term (at most 20 dB); a street in many ways is one, the unnamed roads of a
+    class one; the loudest five marked; the railways named; the site's level, each street once,
+    added as energy. A tunnel or a footway makes none.
+- **What went from Analyze (164c).** The stages, Define (project type, questions, the pins switch,
+  Fill from the model), typed findings and their editing, photographs, pins on the plan and the
+  checklists -- with their functions, their hooks, the pin tool, their CSS and their controls in
+  the audit. Findings are the ones the data writes, read only, numbered by category. What a project
+  stored of the rest stays in its file, unread.
+- **The cards.** Each analysis is a row in its category -- Compass in Location; Sun paths, Shadows
+  and Winds in Climate; Noise in Environmental risk; Views in People and place -- with Show or
+  Hide, Run again, Select, Reset, its key and its source.
+- Version V164. The guide's Site and Analysis pages, and the research note's noise section as
+  built.
+
+### Found
+
+- **Noise unscreened said nothing.** Drawn first as plain bands, a motorway's 65 dB class reached
+  the 300 m limit on both sides, and the whole plan was one colour. A noise map is a canyon: loud
+  along the street, quiet behind the first row. So each class now stops at the frontage and goes on
+  behind it only less the building's screening.
+- **A landmark seen from everywhere.** The first view of the fixture's tower pointed south: a sight
+  line's ray test returns its limit when nothing is hit, and the test was "at most the limit", so
+  every line "reached" the tower.
+- **Three winds, one quarter.** Winter, spring and autumn all blew most often from the WNW and drew
+  three arrows a few metres apart with their labels stacked. Seasons from one quarter share one
+  arrow, which names them.
+- **Words over words.** The sun's hours, the compass points and the winds' labels overlapped; the
+  legend, a list, was 516 px tall. Words are placed by priority, and the legend is a key.
+- **An empty undo step.** An address not found left an undo step behind it: the run took its
+  snapshot before looking the address up. Placing the site takes the snapshot now.
+- **Partly is not Done.** With Overpass down the terrain still came, and the context step read
+  Done. It reads Partly, the servers named.
+- **Classes the audit could not see.** V114's audit found the steps' and keys' state classes dead:
+  they were built as `'s-'+state`. They are written out in a table.
+- **A layer name with a comma** ("Shadows, 20 March") is refused by the layer rules, as AutoCAD's
+  are; the date's layers are "Site analysis - Shadows 20 March".
+
+### Suites
+
+- New: `bim_phase164_site_analysis_in_model_browser_tests.py`, with `tests/site_analysis_fixture.py`:
+  one made-up block at 40 N, 75 W answering Overpass (the context query and, through V161's
+  fixture, the access query), Open-Meteo with the zone's offset, USGS, TIGERweb, the Census API,
+  the terrain tiles and Nominatim, each breakable. What is drawn is worked out again in the suite:
+  CRTN and ISO 9613-2 written out from the standards, the sight lines cast again in Python against
+  the context's footprints, the climate fixture's year of hours binned again, the sun's highest
+  elevation from its declination, the screened classes along Market Street and the site's level.
+- Amended, each AMENDED FOR V164: V141 and V148 (the six new rows in their categories), V158 (the
+  stages, Define, findings by hand, checklists, pins and photographs gone, with their hooks; Fill
+  from the model's eight context findings; the phone's field and button), V159 (the site and its
+  button head the list), V162 (the list's order; the search's site and finding; the field being
+  typed in is the zoning form's), V163 (a later version).

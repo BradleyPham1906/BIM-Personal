@@ -224,6 +224,8 @@ async def run():
             stdz = await safe("()=>window.__a3dSaStandard()") or {}
             ck('stages' not in stdz and len(stdz.get('cats', [])) == 10 and all(set(c) == {'id', 'n'} for c in stdz['cats']), "the standard: ten categories, no stages, no checklists")
             ck(await safe("()=>window.__acad3dV158.length>0&&/analyzesite/.test(window.__acad3dV164)") is True, "the V164 marker")
+            ver = await safe("""()=>{var m=Array.prototype.map.call(document.scripts,function(s){return s.textContent;}).join('').match(/var BIM_APP_VERSION=\\{v:'(V\\d+)'/);return m?m[1]:null;}""")
+            ck(ver == 'V164', "and the app says V164 (%s)" % ver)
             cards = await safe("()=>window.__a3dAnzCats().filter(function(c){return /^dg/.test(c.id);})") or []
             ck(cards == [{'id': 'dgframe', 'group': 'location'}, {'id': 'dgsun', 'group': 'climate'}, {'id': 'dgshadow', 'group': 'climate'},
                          {'id': 'dgwind', 'group': 'climate'}, {'id': 'dgviews', 'group': 'people'}, {'id': 'dgnoise', 'group': 'risk'}],
@@ -378,6 +380,11 @@ async def run():
             await safe("()=>{window.__a3dSelectFor([]);window.__a3dSetPlanView();window.__a3dCamSet({tx:0,tz:0,dist:120});}")
             await page.wait_for_timeout(400)
             ck(await shade_diff([0, 0, -22]) is True, "the equinox's shadows are drawn: north of the building at noon, the ground darker")
+            await safe("()=>window.__a3dCamSet({tx:0,tz:-70,dist:120})")
+            await page.wait_for_timeout(300)
+            ck(await shade_diff([45, 0, -110]) is False, "the tower next door casts none: the shadows are the project's, the context is what they fall among")
+            await safe("()=>window.__a3dCamSet({tx:0,tz:0,dist:120})")
+            await page.wait_for_timeout(300)
             await safe("()=>{window.__a3dMoveObjects(['TOWER'],60,0,0);window.__a3dCamSet({tx:30,tz:0,dist:120});}")   # both points clear of the legend
             await page.wait_for_timeout(300)
             ck(await shade_diff([60, 0, -22]) is True and await shade_diff([0, 0, -22]) is False, "move the building and its shadow follows: drawn from the model each time")
@@ -730,12 +737,16 @@ async def run():
             reg = [c for c in await safe("()=>window.__wsRegistry") if c['name'] in ('ANALYZESITE', 'SAFILL')]
             ck(len(reg) == 1 and reg[0]['name'] == 'ANALYZESITE' and 'SAFILL' in reg[0]['aliases'], "SAFILL is typed into it now")
             n0 = len([h for h in ST['hits'] if h[0] == 'geo'])
-            await safe("()=>window.__a3dRunCmd('analyzesite')")
-            await page.wait_for_timeout(100)
-            await safe("()=>window.__a3dRunCmd('analyzesite')")
-            ck('already running' in await toast(), "a second run while one runs is refused")
+            await safe("""()=>{window.__a3dSelectFor([]);window.__a3dSetPropTab('site');window.__a3dRefreshProps();var e=document.querySelector('#a3d-propsbody input[data-propmodel="suntz"]');e.value='-4';e.dispatchEvent(new Event('change',{bubbles:true}));}""")
+            u = await safe("()=>window.__a3dUndoDepth()")
+            twice = await safe("""()=>{window.__a3dRunCmd('analyzesite');var b=window.__a3dSiteRunState().busy,r=window.__a3dSiteRun('');
+              var t=document.getElementById('a3d-toast');return {busy:b,second:r,said:t?t.textContent:''};}""") or {}
+            ck(twice.get('busy') is True and twice.get('second') is None and 'already running' in twice.get('said', ''), "a second run while one runs is refused, and says so")
             fin = await wait_run()
             ck(len([h for h in ST['hits'] if h[0] == 'geo']) == n0 and {s['id']: s['state'] for s in fin['steps']}['place'] == 'ok', "with the site placed, no address is looked up")
+            ck(await safe("()=>window.__a3dUndoDepth()") == u + 1, "and the run is one undo step")
+            tz2 = await safe("""()=>{window.__a3dSelectFor([]);window.__a3dSetPropTab('site');window.__a3dRefreshProps();var e=document.querySelector('#a3d-propsbody input[data-propmodel="suntz"]');return e?e.value:null;}""")
+            ck(tz2 == '-4' and 'the offset already given is kept' in {s['id']: s for s in fin['steps']}['climate']['text'], "an offset you gave is yours: kept, and the step says so")
             ck(not errs, "no page errors (%s)" % errs[:3])
             await page.wait_for_timeout(700)
 

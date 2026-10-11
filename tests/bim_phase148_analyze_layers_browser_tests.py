@@ -151,7 +151,7 @@ async def run():
             await tab('analyze')
             # AMENDED FOR V162: one Analyze -- the analyses in the categories they answer (opened here,
             # so their rows can be measured), Model the one group left at the end
-            await safe("()=>['landform','water','climate'].forEach(function(c){window.__a3dSaGoto(c);})")
+            await safe("()=>['location','landform','water','climate','risk','people'].forEach(function(c){window.__a3dSaGoto(c);})")   # AMENDED FOR V164: and the categories of the analyses Analyze site draws
             await page.wait_for_timeout(150)
             R = await rows()
             order = await safe("()=>[].map.call(document.querySelectorAll('.a3d-analyze-wrap .a3d-anzgrphd'),function(e){return e.textContent;})")
@@ -159,7 +159,9 @@ async def run():
             G = {}
             for r in R.values():
                 G.setdefault(r['grp'], []).append(r['id'])
-            ck(G == {'landform': ['survey', 'terrain', 'grading'], 'water': ['rain'], 'climate': ['sun', 'sunhours', 'solar'], 'model': ['lens', 'areas', 'lod', 'stats', 'structure']},
+            # AMENDED FOR V164: the six analyses Analyze site draws, first in their categories
+            ck(G == {'location': ['dgframe'], 'landform': ['survey', 'terrain', 'grading'], 'water': ['rain'], 'climate': ['dgsun', 'dgshadow', 'dgwind', 'sun', 'sunhours', 'solar'],
+                     'risk': ['dgnoise'], 'people': ['dgviews'], 'model': ['lens', 'areas', 'lod', 'stats', 'structure']},
                "each analysis in its category, or in Model (%s)" % G)
             ck(all(not r['open'] and r['bodyH'] == 0 and r['aria'] == 'false' for r in R.values()), "every row starts closed: its body takes no room")
             ck(all(r['tog'] == 1 for r in R.values()), "each row has one control that opens it")
@@ -198,12 +200,13 @@ async def run():
             s = await safe("(q)=>window.__a3dAnzSearch(q)", 'rain')
             # AMENDED FOR V162: a category whose own words say rain shows whole -- Climate's question
             # names rain -- and still no row that only says terrain
-            ck(s == ['rain', 'sun', 'sunhours', 'solar'], "'rain' finds Rain on terrain and the Climate category, not every row that says terrain (%s)" % s)
+            ck(s == ['rain', 'dgsun', 'dgshadow', 'dgwind', 'sun', 'sunhours', 'solar'], "'rain' finds Rain on terrain and the Climate category, not every row that says terrain (%s)" % s)   # AMENDED FOR V164: Climate's rows include Analyze site's
             s = await safe("(q)=>window.__a3dAnzSearch(q)", 'arrows')
             ck(s == ['grading'], "'arrows' finds the row whose button is Slope arrows: the buttons are searched too (%s)" % s)
             # AMENDED FOR V162: a category's name finds its rows; two words that only a row has find the row
             s = await safe("(q)=>window.__a3dAnzSearch(q)", 'climate')
-            ck(s == ['sun', 'sunhours', 'solar'], "a category's name finds its rows (%s)" % s)
+            # AMENDED FOR V164: Climate's rows include Analyze site's; Risk, whose link names the climate, shows Noise
+            ck(s == ['dgsun', 'dgshadow', 'dgwind', 'sun', 'sunhours', 'solar', 'dgnoise'], "a category's name finds its rows (%s)" % s)
             s = await safe("(q)=>window.__a3dAnzSearch(q)", 'cut fill')
             ck(s == ['grading'], "two words, both at the start of words (%s)" % s)
             ck(await safe("(a)=>[window.__a3dAnzWordsHit(a[0],a[1]),window.__a3dAnzWordsHit(a[2],a[1])]", ['rain', 'Slope on the terrain', 'ter']) == [False, True],
@@ -226,7 +229,7 @@ async def run():
             await page.keyboard.press('Escape')
             await page.wait_for_timeout(100)
             vis = [k for k, r in (await rows()).items() if not r['hidden']]
-            ck(len(vis) == 12 and await safe("()=>document.querySelector('.a3d-analyze-wrap [data-anzsearch]').value") == '', "Escape empties it: every row again")
+            ck(len(vis) == 18 and await safe("()=>document.querySelector('.a3d-analyze-wrap [data-anzsearch]').value") == '', "Escape empties it: every row again")   # AMENDED FOR V164: 18 rows
             # the left panel is the one scroll container (V65)
             sc = await safe("()=>{var a=document.getElementById('a3d-leftpanel');window.__a3dAnzOpenAll(true);a.scrollTop=a.scrollHeight;return a.scrollTop;}")
             await safe("()=>window.__a3dColumnAt([210,200],0,1,1,3)")

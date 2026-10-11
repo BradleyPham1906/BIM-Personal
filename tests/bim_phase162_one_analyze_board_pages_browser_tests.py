@@ -6,12 +6,12 @@ just one ... for the report/ dashboard, it should be on the presentation layer n
 The access data comes from tests/access_fixture.py (Overpass, TIGERweb and the Census API in their
 own shapes), as in V161, so the Access and people board has real figures to show.
 
-  1. ONE ANALYZE: one tab body (the old two classes on it), no switch, one search; stages, Define,
-     the ten categories in order, Model last; each analysis in the category it answers; each
+  1. ONE ANALYZE: one tab body (the old two classes on it), no switch, one search; the site and
+     Analyze site (V164: where the stages and Define were), the ten categories in order, Model last; each analysis in the category it answers; each
      category's data; Risk and People pointing to the data they share.
   2. A ROW INSIDE A CATEGORY: opens on its own, not with its category.
   3. ONE SEARCH: a category asked for by its own words shows whole and opened; otherwise only its
-     analyses that match; Model; Define; a finding's words; nothing; Esc; kept over a refresh.
+     analyses that match; Model; the site staying; a finding's words; nothing; Esc; kept over a refresh.
   4. A FIELD BEING TYPED IN: a refresh waits for it, then happens.
   5. COMMANDS AND HOOKS: SITEANALYSIS, ZONING into Legal, a category's link, the old view hook.
   6. A BOARD IS A PAGE: + Board, in the set's order, numbered, its tag; one undo step; Show in
@@ -150,13 +150,16 @@ async def run():
             ck(A.get('n') == 1 and A.get('ns') == 1 and A.get('same'), "one tab body, carrying both of the old classes (%s, %s)" % (A.get('n'), A.get('ns')))
             ck(A.get('sw') == 0, "no Analyses | Site analysis switch")
             ck(A.get('title') == 'Analyze' and A.get('search') == 1 and 'findings' in (A.get('ph') or ''), "titled Analyze, one search, over analyses, data and findings (%s)" % A.get('ph'))
-            ck(A.get('order') == ['stages', 'define', 'cats', 'model'], "the stages, Define, the ten categories, then Model (%s)" % A.get('order'))
+            # AMENDED FOR V164: the site and Analyze site where the stages and Define were
+            ck(A.get('order') == ['site', 'cats', 'model'], "the site, the ten categories, then Model (%s)" % A.get('order'))
             ck(A.get('cats') == CATS, "the ten categories, in the standard's order (%s)" % A.get('cats'))
             ck((A.get('names') or [''])[0] == '1. Location and context' and (A.get('names') or [''] * 10)[9] == '10. People and place', "numbered 1 to 10 (%s)" % (A.get('names') or [])[:2])
             ck(A.get('model') == ['lens', 'areas', 'lod', 'stats', 'structure'], "Model: colour by, areas by usage, buildings LOD, statistics, frame analysis (%s)" % A.get('model'))
             W = A.get('where') or {}
             want = {'survey': 'landform', 'terrain': 'landform', 'grading': 'landform', 'rain': 'water', 'sun': 'climate', 'sunhours': 'climate', 'solar': 'climate',
-                    'lens': 'model', 'areas': 'model', 'lod': 'model', 'stats': 'model', 'structure': 'model'}
+                    'lens': 'model', 'areas': 'model', 'lod': 'model', 'stats': 'model', 'structure': 'model',
+                    # AMENDED FOR V164: the analyses Analyze site draws, each in its category
+                    'dgframe': 'location', 'dgsun': 'climate', 'dgshadow': 'climate', 'dgwind': 'climate', 'dgviews': 'people', 'dgnoise': 'risk'}
             ck(W == want, "each analysis in the category it answers: landform, water, climate; the model's in Model (%s)" % W)
             cats = await safe("()=>window.__a3dAnzCats()") or []
             ck({c['id']: c['group'] for c in cats} == want, "the engine's grouping says the same")
@@ -164,8 +167,9 @@ async def run():
             ck(D.get('location') and D.get('legal') and D.get('climate') == 'Climate and risk' and D.get('access'),
                "each category's data in it: Location the context, Legal zoning, Climate the climate and risk, Access the access and people (%s)" % D)
             ck((A.get('links') or {}) == {'risk': 'goto:climate', 'people': 'goto:access'}, "Risk and People point to the data they share (%s)" % A.get('links'))
-            ck(A.get('defineData') == 0 and A.get('defineCtx') == 0 and A.get('locCtx') == 1 and A.get('defineFill') == 1,
-               "Define is the boundary, the project, the questions; the context moved to Location")
+            # AMENDED FOR V164: no Define and no Fill: Analyze site does it; the context stays in Location
+            ck(A.get('defineData') == 0 and A.get('defineCtx') == 0 and A.get('locCtx') == 1 and A.get('defineFill') == 0,
+               "no Define, no Fill from the model; the context in Location")
             ck(re.match(r'^\d+ findings?', A.get('count') or ''), "the count: the findings (%s)" % A.get('count'))
 
             # ---------------------------------------------------------------------------------
@@ -194,22 +198,24 @@ async def run():
             q1 = await search('cut fill')
             st1 = await safe("""()=>{var x=document.querySelector('.a3d-analyze-wrap'),c=x.querySelector('[data-sacat="landform"]');
               return {qhit:c.classList.contains('qhit'),body:getComputedStyle(c.querySelector(':scope>.a3d-anzbody')).display,model:!!x.querySelector('[data-anzgrp="model"]').hasAttribute('hidden'),
-                stages:x.querySelector('[data-anzsec="stages"]').hasAttribute('hidden'),root:x.querySelector('.a3d-anz').classList.contains('q')};}""") or {}
+                site:!x.querySelector('[data-anzsec="site"]').hasAttribute('hidden'),root:x.querySelector('.a3d-anz').classList.contains('q')};}""") or {}   # AMENDED FOR V164: the site stays
             ck(q1 == ['grading'] and await visible_cats() == ['landform'], "'cut fill' finds Grading alone, in Landform (%s)" % q1)
-            ck(st1.get('qhit') and st1.get('body') == 'block' and st1.get('model') and st1.get('stages') and st1.get('root'),
-               "Landform is opened for it; Model and the stages step aside (%s)" % st1)
+            ck(st1.get('qhit') and st1.get('body') == 'block' and st1.get('model') and st1.get('site') and st1.get('root'),
+               "Landform is opened for it; Model steps aside, the site and its button stay (%s)" % st1)
             q2 = await search('slope')
             ck(q2 == ['survey', 'terrain', 'grading'] and await visible_cats() == ['landform'], "'slope' is in Landform's own question: the category shows whole (%s)" % q2)
             q3 = await search('frame')
             ck(q3 == ['structure'] and await visible_cats() == [], "'frame' finds the frame analysis in Model, and no category (%s)" % q3)
             await search('boundary')
-            bd = await safe("()=>!document.querySelector('.a3d-analyze-wrap [data-anzsec=\"define\"]').hasAttribute('hidden')")
+            bd = await safe("()=>/Boundary/.test(document.querySelector('.a3d-analyze-wrap [data-anzsec=\"site\"]').textContent)&&!document.querySelector('.a3d-analyze-wrap [data-anzsec=\"site\"]').hasAttribute('hidden')")
             vc = await visible_cats()
-            ck(bd and 'legal' in vc, "'boundary' finds Define's boundary and Legal's markers (%s)" % vc)
-            fid = await safe("()=>window.__a3dSaAdd('ecology',{title:'Badger sett',value:'Active, near the north hedge'})")
+            # AMENDED FOR V164: Legal found 'boundary' in its checklist ("Find the boundary markers"), which is gone; the
+            # boundary is the site's, at the top, in view
+            ck(bd and vc == [], "'boundary' is the site's own: shown at the top, and no category holds the word now (%s)" % vc)
+            # AMENDED FOR V164: findings are the data's: a word of the property line's finding finds Legal
             await safe("()=>window.__a3dAnzView('site')")
-            q4 = await search('badger')
-            ck(fid and await visible_cats() == ['ecology'], "a finding's words find its category (%s)" % await visible_cats())
+            q4 = await search('perimeter')
+            ck(await visible_cats() == ['legal'], "a finding's words find its category (%s)" % await visible_cats())
             q5 = await search('zzqx')
             emp = await safe("()=>!document.querySelector('.a3d-analyze-wrap .a3d-anzempty').hasAttribute('hidden')")
             ck(q5 == [] and await visible_cats() == [] and emp, "nothing matches: it says so")
@@ -227,26 +233,25 @@ async def run():
 
             # ---------------------------------------------------------------------------------
             print("\n-- 4. a field being typed in")
-            await safe("(id)=>window.__a3dSaEdit(id)", fid)
-            await page.wait_for_timeout(150)
-            sel = '.a3d-analyze-wrap [data-saff="%s:title"]' % fid
+            # AMENDED FOR V164: no finding to type in: the zoning form's fields, in Legal, are the panel's fields now
+            await safe("()=>{window.__a3dZnEdit(true);window.__a3dSaGoto('legal');}")
+            await page.wait_for_timeout(250)
+            sel = '.a3d-analyze-wrap [data-znf="district"]'
             await page.click(sel)
             await page.keyboard.press('End')
-            await page.keyboard.type(' by the oak')
+            await page.keyboard.type('R6 by the oak')
             held = await safe("()=>window.__a3dAnalyzeRefresh()")
             v1 = await safe("(s)=>document.querySelector(s).value", sel)
-            ck(held is False and await safe("()=>window.__a3dAnzPending()") is True and v1 == 'Badger sett by the oak',
+            ck(held is False and await safe("()=>window.__a3dAnzPending()") is True and v1.endswith('R6 by the oak'),
                "a refresh while a field is typed in waits: the words stay (%s)" % v1)
             await safe("()=>window.__a3dRefreshProps()")
-            ck(await safe("(s)=>document.querySelector(s).value", sel) == 'Badger sett by the oak', "and every refresh after it waits too")
+            ck((await safe("(s)=>document.querySelector(s).value", sel) or '').endswith('R6 by the oak'), "and every refresh after it waits too")
             await page.click('.a3d-analyze-wrap .a3d-anzhead')
             await page.wait_for_timeout(200)
-            sa = await safe("()=>window.__a3dSa()") or {}
-            ttl = [f['title'] for f in sa.get('findings', []) if f['id'] == fid]
-            ck(ttl == ['Badger sett by the oak'] and await safe("()=>window.__a3dAnzPending()") is False, "left, the field is kept and the refresh happens (%s)" % ttl)
-            await safe("()=>window.__a3dSaEdit(null)")
+            ttl = (await safe("()=>window.__a3dZn()") or {}).get('district', '')
+            ck(ttl.endswith('R6 by the oak') and await safe("()=>window.__a3dAnzPending()") is False, "left, the field is kept and the refresh happens (%s)" % ttl)
             # a field left as it was: no change to force a redraw, so the held one must happen on leaving it
-            await page.click('.a3d-analyze-wrap [data-saf="questions"]')
+            await page.click('.a3d-analyze-wrap [data-znf="uses"]')
             st0 = await safe("()=>document.querySelector('.a3d-analyze-wrap [data-anzcard=\"stats\"] .a3d-anzsum').textContent")
             await safe("""()=>{var o=window.__a3dState().objs;o.push({id:'EXTRA1',t:'sketch',name:'Extra',col:'#888',pos:[0,0,0],pts:[[90,90],[95,90],[95,95]],y:0,closed:true,layer:'layer-0'});window.__a3dTestSetObjs(o);window.__a3dRefreshProps();}""")
             st1 = await safe("()=>document.querySelector('.a3d-analyze-wrap [data-anzcard=\"stats\"] .a3d-anzsum').textContent")
@@ -257,6 +262,7 @@ async def run():
             ck(st1 == st0 and pend is True and st2 != st0 and await safe("()=>window.__a3dAnzPending()") is False,
                "a field left unchanged: the held refresh happens as it is left (%s -> %s)" % (st0, st2))
             await safe("()=>{window.__a3dTestSetObjs(window.__a3dState().objs.filter(function(o){return o.id!=='EXTRA1';}));window.__a3dRefreshProps();}")
+            await safe("()=>window.__a3dZnEdit(false)")
             # every row opened, with the categories it is in, so each shows (the hook the older suites use)
             await safe("()=>{[].forEach.call(document.querySelectorAll('.a3d-analyze-wrap [data-sacat].open>.a3d-anzhd [data-satog]'),function(b){b.click();});}")
             await safe("()=>window.__a3dAnzOpenAll(true)")
@@ -277,7 +283,8 @@ async def run():
             ck(zn.get('open') and zn.get('form'), "ZONING opens Legal with the zoning form in it (%s)" % zn)
             await safe("()=>window.__a3dZnEdit(false)")
             await safe("()=>window.__a3dSaToggle&&window.__a3dSaToggle('climate',false)")
-            await page.click('.a3d-analyze-wrap [data-sacat="risk"] [data-satog]')
+            # AMENDED FOR V164: Risk holds a row now (Noise), so open-all left it open: open it if it is shut
+            await safe("()=>{var c=document.querySelector('.a3d-analyze-wrap [data-sacat=\"risk\"]');if(!c.classList.contains('open'))c.querySelector('[data-satog]').click();}")
             await page.click('.a3d-analyze-wrap [data-sacat="risk"] [data-saact="goto:climate"]')
             await page.wait_for_timeout(700)
             gl = await safe("""()=>{var c=document.querySelector('.a3d-analyze-wrap [data-sacat="climate"]'),p=document.getElementById('a3d-leftpanel').getBoundingClientRect(),r=c.getBoundingClientRect();

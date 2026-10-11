@@ -69,7 +69,8 @@ VARIANTS = {
     'props_missing': [("    if(o.skp)h+=bimPropGroup('SketchUp',bimSkpPropsHtml(o));   /* __acad3dV163 */\n", "")],
     'props_texture_unsaid': [("    if(s.texture)r+=bimPropText('Texture',s.texture+', drawn in the colour SketchUp keeps with it');\n", "")],
     'props_inside_unsaid': [("    if(s.path&&s.path.length>1)r+=bimPropText('Inside',s.path.slice(0,-1).join(' / '));\n", "")],
-    'version_old': [("  var BIM_APP_VERSION={v:'V163',date:'2026-10-10'};", "  var BIM_APP_VERSION={v:'V162',date:'2026-10-10'};")],
+    # RETIRED IN V164: 'version_old' -- anchored on V163's version; V164's script checks the version now.
+    # 'version_old': [("  var BIM_APP_VERSION={v:'V163',date:'2026-10-10'};", "  var BIM_APP_VERSION={v:'V162',date:'2026-10-10'};")],
 }
 
 name = sys.argv[1]

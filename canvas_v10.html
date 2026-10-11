@@ -20353,6 +20353,7 @@ try{
   var BIM_SITERUN_RADIUS=300;   /* far enough for the noise (CRTN holds to 300 m) and the views */
   var BIM_SITERUN_STEPS=[['place','The site'],['context','Context'],['climate','Climate and time zone'],['access','Access and people'],['zoning','Zoning'],['draw','The analyses, in the model']];
   var BIM_SITERUN_WORD={wait:'Waiting',busy:'Running',ok:'Done',part:'Partly',fail:'Failed',skip:'Skipped'};
+  var BIM_SITERUN_CLS={wait:'s-wait',busy:'s-busy',ok:'s-ok',part:'s-part',fail:'s-fail',skip:'s-skip'};
   function bimSiteStep(id,state,text){
     var s=A3D_SITERUN.steps,i;
     for(i=0;i<s.length;i++)if(s[i].id===id){s[i].state=state;s[i].text=String(text==null?'':text).slice(0,400);}
@@ -20475,16 +20476,17 @@ try{
         'Gets what is around the site from free open data -- buildings, roads, terrain, climate, access, zoning -- and draws each analysis in the model, on Layers, Site analysis. One undo step.')+'</div>';
     steps=R.steps.length?R.steps:((D.last&&D.last.steps)||[]);
     if(steps.length)h+='<ol class="a3d-sasteps" data-sasteps="1">'+steps.map(function(s){
-      return '<li class="a3d-sastep s-'+bimEsc(s.state)+'" data-sastep="'+bimEsc(s.id)+'"><span class="a3d-sastepic" aria-hidden="true"></span><span class="a3d-sastepn">'+bimEsc(s.name)+'</span>'+
+      return '<li class="a3d-sastep '+(BIM_SITERUN_CLS[s.state]||'s-wait')+'" data-sastep="'+bimEsc(s.id)+'"><span class="a3d-sastepic" aria-hidden="true"></span><span class="a3d-sastepn">'+bimEsc(s.name)+'</span>'+
         '<span class="a3d-sastepst">'+bimEsc(BIM_SITERUN_WORD[s.state]||s.state)+'</span>'+(s.text?'<span class="a3d-sastept">'+bimEsc(s.text)+'</span>':'')+'</li>';}).join('')+'</ol>';
     return h+'</div>';
   }
   /* ---- each analysis drawn in the model, a row in its category ---- */
+  var BIM_DG_KEYCLS={fill:'k-fill',line:'k-line',dash:'k-dash',dot:'k-dot'};
   function bimDgLegendHtml(rows){
     if(!rows||!rows.length)return '';
     return '<div class="a3d-dgleg">'+rows.map(function(r){
       var st=(r.kind==='line'||r.kind==='dash')?'color:'+r.col:'background:'+r.col;
-      return '<span class="a3d-dglegi"><i class="k-'+bimEsc(r.kind||'fill')+'" style="'+bimEsc(st)+'"></i>'+bimEsc(r.name)+'</span>';}).join('')+'</div>';
+      return '<span class="a3d-dglegi"><i class="'+(BIM_DG_KEYCLS[r.kind]||'k-fill')+'" style="'+bimEsc(st)+'"></i>'+bimEsc(r.name)+'</span>';}).join('')+'</div>';
   }
   function bimDgCards(){
     var D=bimDgState();

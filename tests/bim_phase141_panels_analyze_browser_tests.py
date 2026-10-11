@@ -216,7 +216,9 @@ async def run():
             # AMENDED FOR V145: the grading card follows the terrain's
             # AMENDED FOR V148: in four groups -- Model, Site and terrain, Structure, Environment
             # AMENDED FOR V162: one Analyze -- each analysis in the category it answers, then Model
-            ck(pc and [c['id'] for c in pc] == ['survey', 'terrain', 'grading', 'rain', 'sun', 'sunhours', 'solar', 'lens', 'areas', 'lod', 'stats', 'structure'],
+            # AMENDED FOR V164: the analyses Analyze site draws, first in their categories
+            ck(pc and [c['id'] for c in pc] == ['dgframe', 'survey', 'terrain', 'grading', 'rain', 'dgsun', 'dgshadow', 'dgwind', 'sun', 'sunhours', 'solar', 'dgnoise', 'dgviews',
+                                               'lens', 'areas', 'lod', 'stats', 'structure'],
                "seven cards: structure, sun, colour by, areas, survey, LOD, statistics (%s)" % (pc and [c['id'] for c in pc]))
             P = {c['id']: c for c in pc or []}
             ck(P.get('structure', {}).get('st') == 'No frame yet: place columns and beams' and P['structure']['btns'][0][2] and

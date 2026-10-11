@@ -68,22 +68,71 @@ height in Properties.
 
 ## Site analysis
 
-**Site analysis** is in the **Analyze** tab, one list with the analyses (`SITEANALYSIS` opens it):
-the stages and Define at the top, then the ten categories, each with its data, its analyses and its
-findings. It runs a site analysis the same way every time. It
-follows the order professionals use: the RIBA Plan of Work's Stage 1 and a developer's due
-diligence. The stages are:
+**Site analysis** is in the **Analyze** tab (`SITEANALYSIS` opens it). It starts with one button.
 
-0. **Define:** the boundary (the property line), the project type, and the questions the analysis
-   must answer.
-1. **Desktop study:** each category filled from open data and the model.
-2. **Site visit:** each category's checklist, with notes and photographs pinned on the plan.
-3. **Surveys:** where the visit leaves doubt.
-4. **Analysis:** each finding classed and weighed.
-5. **Synthesis:** the buildable area, the envelope and the yield.
-6. **Report:** the standard boards.
+### Analyze site
 
-Press a stage to mark where the project is.
+**Analyze site** (`ANALYZESITE`) needs only where the site is: its latitude and longitude, or an
+address typed in the box beside the button. It does the rest from free open data, and lists each
+step as it goes:
+1. **The site:** the address found on OpenStreetMap (Nominatim), if the site is not placed yet.
+2. **Context:** the buildings, roads, water, green, trees, railways, land use and terrain, at least
+   300 m around. A smaller context radius is raised to 300 m, which the noise and the views need.
+3. **Climate and time zone:** ten years of daily climate, a year of hourly wind and heat, air
+   quality and earthquakes. The site's UTC offset comes with them, so the sun needs no typing. An
+   offset you gave is kept.
+4. **Access and people:** walk times to daily needs and transit, and the census tract (US sites).
+5. **Zoning:** read from a council layer, where one is loaded in Data Layers and the property line
+   is drawn.
+6. **The analyses, drawn in the model** (below).
+
+Each step reads Done, Partly (some of its sources down, each named), Failed (with the reason) or
+Skipped (with why). What fails leaves the rest standing. The whole run is **one undo step**.
+**Analyze site again** fetches everything again, and keeps what you changed in the diagrams.
+
+### The analyses in the model
+
+Each analysis draws its diagram as elements of the model, on its own layer under **Layers > Site
+analysis**:
+
+| Analysis | What it draws | Worked out from |
+|---|---|---|
+| Compass and distance | the compass ring on true north, its sixteen points, and a ring every 100 m out to the context's edge | the site's true north |
+| Sun paths | the sun's path on 21 June, on 20 March and 22 September, and on 21 December, on a dome over the site; a dot an hour; the sun now | NOAA's solar position equations |
+| Shadows | the model's own shadows at 9, 12 and 15 on those dates. 20 March is shown; the solstices are on layers of their own, off | the sun and the model, drawn again whenever the model changes |
+| Winds | an arrow for each season's prevailing wind, as wide as its share of hours (seasons from the same quarter share one); the strongest winds; the year's wind rose | a year of hourly ERA5 wind, via Open-Meteo |
+| Views | what can be seen at eye height and from the top floor (isovists); each view named by what it reaches: water, a park or woods, a landmark, open land | the context's buildings and trees, at their heights |
+| Noise | each road's noise in 5 dB classes from 55 dB, following the street and screened behind buildings; the loudest roads and the railways marked; the level at the site | an estimate from each road's class (below) |
+
+**Live and editable.**
+- Select an element to move, turn, mirror, scale or delete it, or to change its colour, line,
+  opacity or labels in Properties.
+- **Run the analysis again** (in Properties, or on its row) lays it down again from what the
+  project holds now. What you have not touched is refreshed. What you changed is kept, and marked
+  when the analysis would now draw it differently. What you deleted stays deleted.
+- **Reset to the analysis** gives one element back. An analysis's **Reset** gives back its whole
+  layer: what you deleted comes back, and what you changed or copied goes.
+- Properties says what each element shows, how it was worked out, and its source and date.
+- Diagram elements are not building elements. Schedules, quantities, the LOD checks and the
+  exports pass them by.
+- A legend at the top right keys each analysis shown, with its source. **Hide the legend** turns it
+  off.
+- Each analysis is also a row in its category, with Show or Hide, Run again, Select, Reset and its
+  key: Compass in Location; Sun paths, Shadows and Winds in Climate; Noise in Environmental risk;
+  Views in People and place.
+
+**How the noise is estimated.** Open data gives a road's class and seldom its traffic, so:
+- the traffic is the class's typical daily flow, from FHWA's functional classes (urban where the
+  area is built up), with 94% of it in the 18 hours;
+- the level 10 m from the kerb, and how it falls with distance, follow CRTN (1988), at a point 4 m
+  up and no further than 300 m, where the method stops;
+- a building in between screens what is behind it, by ISO 9613-2's barrier term at 500 Hz, at most
+  20 dB;
+- the ground is taken as hard, and only the first building on each line counts.
+
+So it errs loud. It is a screening estimate: measure where it matters.
+
+### The ten categories and the findings
 
 **Ten categories, always in this order:**
 1. Location and context
@@ -97,21 +146,12 @@ Press a stage to mark where the project is.
 9. Utilities
 10. People and place
 
-Each category lists what to find at the desk and what to check on site, as boxes to tick.
+Each category holds its data, its analyses and its **findings**. The data writes the findings:
+Analyze site, and each fetch on its own. Each finding has a class (fact, opportunity, constraint or
+red flag), a severity, a source and a date. It is numbered by category: 7.1 is the first under
+Environmental risk. Red flags are listed first. Findings are to read; there is nothing to type.
 
-**A finding** has:
-- a title and what was found;
-- a class: fact, opportunity, constraint or red flag;
-- a severity: low, medium or high;
-- a confidence: desktop, seen on site, or surveyed;
-- a source and a date;
-- a note and a photograph (kept at most 960 px across).
-
-*Place on the plan* pins a finding where you click. The pins carry the finding's number, such as
-7.1, the first finding under Environmental risk, coloured by class. Red flags are listed first.
-
-**Fill from the model** (`SAFILL`) adds what the app already knows, with the source and date of
-each:
+They cover:
 - the location;
 - the built context (count, mean and tallest heights);
 - the property line's area;
@@ -121,12 +161,10 @@ each:
 - the day lengths at the solstices;
 - trees and green areas;
 - streets by use, bridges and tunnels;
-- railways, airports, overhead power and land use around.
+- railways, airports, overhead power and land use around;
+- and the climate, risk, zoning, access and people data, below.
 
-Filling again updates these in place. A class or note you set is kept. A finding the model no
-longer supports is removed, unless you have written on it.
-
-Everything is saved with the project, and every change is one undo step.
+A finding the data no longer supports goes. Everything is saved with the project.
 
 ## Climate and risk
 
