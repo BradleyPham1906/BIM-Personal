@@ -14173,14 +14173,19 @@ The research (`reference/research-sketchup-import.md`) covers:
 
 ### Suites
 
-- New: `bim_phase163_sketchup_import_browser_tests.py`, 114 checks. The file it opens,
+- New: `bim_phase163_sketchup_import_browser_tests.py`, 115 checks. The file it opens,
   `tests/skp/site_kit.skp`, is written by openskp's own writer (`tools/openskp/make_fixtures.mjs`)
   from geometry defined there; its expectations (`site_kit.expected.json`) are worked out by the
   same script from that geometry, never read back through the reader. It holds walls in a group,
   chairs on two tags (one hidden), one turned and one mirrored, glass, a textured face, an unpainted
   face, a bracketed material, a slab with a hole, and a desk with a chair placed inside it.
 - Amended: V120 (three scripts, the reader's between the shell and the engine), AMENDED FOR V163.
-- **Falsified by `Phase/falsify_phase163.py`:** 54 variants, running when this entry was first committed; the result is recorded below once it is in.
+- **Falsified by `Phase/falsify_phase163.py`:** 54 variants. The first run caught 53 (751 s, 3
+  workers). `no_reader_crash` -- the reader taken on trust, without checking it has its functions
+  -- passed: the suite took the reader away entirely, and a missing reader fails the plain check as
+  well. The suite now also hands the import an `OpenSkp` without the reader's functions, which the
+  check must refuse before the import fails inside it. The full run on the final suite is recorded
+  in the next commit.
 - **By hand** on openskp's own samples, which are not copied into the repo (their origin is not
   stated): SketchUp 2025 (two ZIP files: 1 object; 43 groups on 11 tags, 18,636 triangles in about
   a second), SketchUp 2020 in Portuguese (161 objects, 53,269 triangles, one block), SketchUp 2017

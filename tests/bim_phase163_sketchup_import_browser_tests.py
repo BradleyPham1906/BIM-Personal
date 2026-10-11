@@ -319,6 +319,9 @@ async def run():
                "and none of them changes the model")
             gone = await safe("""([b])=>{var k=window.OpenSkp;window.OpenSkp=undefined;var r;try{r=window.__a3dSkpImport(b,'site_kit.skp');}finally{window.OpenSkp=k;}return r;}""", [B64]) or {}
             ck(str(gone.get('error', '')).startswith('The SketchUp reader did not load in this browser'), "with no reader, it says the reader did not load (%s)" % gone.get('error'))
+            half = await safe("""([b])=>{var k=window.OpenSkp;window.OpenSkp={parseSkp:k.parseSkp};var r;try{r=window.__a3dSkpImport(b,'site_kit.skp');}finally{window.OpenSkp=k;}return r;}""", [B64]) or {}
+            ck(str(half.get('error', '')).startswith('The SketchUp reader did not load in this browser'),
+               "and so with an OpenSkp that lacks the reader's functions, rather than failing inside it (%s)" % half.get('error'))
             await safe("()=>window.__a3dSkpLimits({maxTris:40})")
             rt = await imp()
             ck(rt.get('truncated') is True and 0 < rt.get('triangles', 99) <= 40 and sum(o['tris'] for o in await skp_objs()) == rt.get('triangles')
