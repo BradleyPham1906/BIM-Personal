@@ -473,14 +473,17 @@ def static_checks(ck, t):
     silent = [m.group(0)[:60] for m in re.finditer(r'catch\(\w+\)\{\s*window\.__\w+Err=[^}]*\}', t) if 'console.warn' not in m.group(0)]
     ck(not silent, 'no catch only records an error where nothing reads it (%s)' % silent[:2])
 
-    print('\n-- 3. one stylesheet, two scripts, no whitespace debris')
+    print('\n-- 3. one stylesheet, three scripts, no whitespace debris')   # AMENDED FOR V163
     els = elements(t)
     styles = [x for x in els if x[0] == 'style']
     scripts = [x for x in els if x[0] == 'script']
     head_end = t.index('</head>')
     ck(len(styles) == 1 and styles[0][1] < head_end, 'one <style>, in <head> (%d style elements)' % len(styles))
-    ck(len(scripts) == 2 and all(x[1] > head_end for x in scripts),
-       'two <script> elements in <body>: the shell and the engine (%d)' % len(scripts))
+    # AMENDED FOR V163: the SketchUp reader (openskp, MIT) is a script of its own between the two,
+    # so a browser that cannot run it still starts the app; it opens with its marker
+    rd = [x for x in scripts if t[x[1]:x[1] + 400].find('__acad3dV163: the SketchUp reader') >= 0]
+    ck(len(scripts) == 3 and all(x[1] > head_end for x in scripts) and len(rd) == 1 and scripts.index(rd[0]) == 1,
+       'three <script> elements in <body>: the shell, the SketchUp reader and the engine (%d)' % len(scripts))
     lines = t.split('\n')
     trailing = [i + 1 for i, l in enumerate(lines) if l != l.rstrip(' \t')]
     ck(not trailing, 'no line ends in blanks (%s)' % trailing[:5])

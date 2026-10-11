@@ -41,10 +41,44 @@ order: 8
 | IFC as a linked model | `LINKIFC` |
 | GeoJSON, KML | `GEOIMPORT` |
 | CityJSON | `CITYJSONIN` (or `IMPORTCAD` with a `.city.json` file) |
+| SketchUp (.skp) | `SKPIN` (or `IMPORTCAD` with a `.skp` file) |
 | survey points | `SURVEY` |
 | a project file | `OPEN` |
 
 DWG, STEP and IGES are not read: export DXF or IFC from the other program instead.
+
+### SketchUp files
+
+`SKPIN` (also `IMPORTSKP` or `SKETCHUP`) opens a `.skp` file from any SketchUp, including SketchUp
+2021 and later. The file is read by openskp's reader (MIT), which is built into the page, so nothing
+is uploaded. The model comes in where it was drawn, in metres:
+
+- **Faces.** Each group or component, in each of its materials, is one locked solid. Faces drawn
+  loose in the model are one solid per material, for example "Concrete faces". A face is brought
+  in once, even when its back is painted a colour of its own.
+- **Tags.** The file has a layer of its own, named after the file. Each tag is a sub-layer of it,
+  for example "site_kit - Walls", in the tag's colour. A tag that was off in SketchUp is off here.
+  Untagged faces go on the file's layer. Opening the same file again uses the same layers.
+- **Materials.** Each solid takes its material's colour. A textured material takes the colour
+  SketchUp keeps with the texture (the image's average, which SketchUp's Shaded style shows). The
+  texture's file is named in Properties. An unpainted face is SketchUp's white.
+- **Glass.** A see-through material goes on a sub-layer of its tag at the material's transparency,
+  for example "site_kit - Windows - 65% see-through". This app keeps transparency on layers.
+- **Components.** Each component that has a name is kept in **Assets** → **Blocks** as a block
+  from SketchUp, with what is inside it. It is kept in its own frame, and its insertion point is
+  the block's base point. Groups, and components left with SketchUp's own name (Component#1), stay
+  in the model only. Opening the same file again replaces its blocks.
+- **Properties** → **SketchUp** shows where a selected object came from: the file and the SketchUp
+  that saved it, its component or group (and what it is inside), its tag, and its material.
+- **Undo.** The whole file is one undo step. The blocks stay in the library, which is kept apart
+  from any project.
+
+The library's **Import** in **Assets** also takes a `.skp` file. It keeps the file's components as
+blocks and places nothing.
+
+Limits: 250,000 triangles a file; a block of up to 6,000 triangles, and as many blocks as fit in
+the library's storage. Each limit says when it is reached. A file the reader cannot read is
+refused, with the reader's reason. Some very old files (SketchUp 3) are among these.
 
 ## Versions and history
 
