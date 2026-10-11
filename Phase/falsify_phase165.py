@@ -48,7 +48,10 @@ VARIANTS = {
     'saddle_fixed': [("up=(a+b+c+d)/4>=lev;", "up=false;")],
     'closed_loops_open': [("for(s=0;s<segs.length;s++)if(!used[s]){var rg=walk(s,segs[s][0]);if(o)rg.pop();out.push(rg);}",
                            "for(s=0;s<segs.length;s++)if(!used[s]){var rg=walk(s,segs[s][0]);rg.pop();out.push(rg);}")],
-    'rings_simplified': [("r=bimLandDP(r,D.cell*0.002,true);", "r=bimLandDP(r,D.cell*0.12,true);")],
+    # Not a variant: 'rings_simplified' put back the first tolerance, 0.12 of a cell. On the test ground and on a bowl
+    # whose classes' edges are round, it kept exactly the points 0.002 keeps (each class's every point on its
+    # neighbour's edge): at 5 m cells it drops only the points along a straight run too. 0.002 stays as the guard.
+    'rings_coarse': [("r=bimLandDP(r,D.cell*0.002,true);", "r=bimLandDP(r,D.cell*0.5,true);")],
     'contours_from_model_zero': [("var base=D.datum||0,st=bimLandStep(D,base)", "var base=0,st=bimLandStep(D,base)")],
     'index_every_fourth': [("idx=Math.round(k)%5===0", "idx=Math.round(k)%4===0")],
     'contour_label_unit': [("lb:idx&&best?[{t:ht.replace(/ m$/,''),", "lb:idx&&best?[{t:ht,")],

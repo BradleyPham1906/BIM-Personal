@@ -293,6 +293,14 @@ def exits(Y, M):
     return out
 
 
+def seg_dist(v, a, b):
+    """a point's distance in plan to a segment"""
+    dx, dz = b[0] - a[0], b[2] - a[2]
+    L2 = dx * dx + dz * dz
+    t = 0.0 if L2 == 0 else max(0.0, min(1.0, ((v[0] - a[0]) * dx + (v[2] - a[2]) * dz) / L2))
+    return math.hypot(v[0] - a[0] - t * dx, v[2] - a[2] - t * dz)
+
+
 def ring_area(R):
     a = 0.0
     for i in range(len(R)):
@@ -687,18 +695,24 @@ async def run():
             await safe("()=>{window.__a3dSetPlanView();window.__a3dCamSet({tx:0,tz:0,dist:300});}")
             await page.wait_for_timeout(400)
             alpha = "(P)=>{var c=document.getElementById('a3d-canvas'),r=window.devicePixelRatio||1,x=c.getContext('2d'),out=[];P.forEach(function(p){var s=window.__a3dDgToScreen(p);if(s[2]<=0.5||s[0]<30||s[1]<30||s[0]>c.clientWidth-30||s[1]>c.clientHeight-30)return;out.push(x.getImageData(Math.round(s[0]*r),Math.round(s[1]*r),1,1).data[3]);});return out;}"
+            alpha_min = "(P)=>{var c=document.getElementById('a3d-canvas'),r=window.devicePixelRatio||1,x=c.getContext('2d'),out=[];P.forEach(function(p){var s=window.__a3dDgToScreen(p);if(s[2]<=0.5||s[0]<30||s[1]<30||s[0]>c.clientWidth-30||s[1]>c.clientHeight-30)return;var d=x.getImageData(Math.round(s[0]*r)-1,Math.round(s[1]*r)-1,3,3).data,m=255,i;for(i=3;i<d.length;i+=4)m=Math.min(m,d[i]);out.push(m);});return out;}"
+            feet = [[(p_[0] + (o.get('pos') or [0, 0, 0])[0], p_[1] + (o.get('pos') or [0, 0, 0])[2]) for p_ in o['context']['footprint']]
+                    for o in ((await safe("()=>window.__a3dState().objs")) or []) if (o.get('context') or {}).get('kind') == 'buildings' and (o.get('context') or {}).get('footprint')]
             along = []
-            for rg in (await el('slope', 'class:0'))['dg']['g']['bands'][0]['rings']:
-                for m in range(len(rg)):
-                    p_, q_ = rg[m], rg[(m + 1) % len(rg)]
-                    if min(min((u[0] - x0) / cell, (u[2] - z0) / cell, nx - 1 - (u[0] - x0) / cell, nz - 1 - (u[2] - z0) / cell) for u in (p_, q_)) < 1:
-                        continue
-                    n_ = max(1, int(math.hypot(q_[0] - p_[0], q_[2] - p_[2]) / 2))
-                    for t_ in range(n_):
-                        f_ = (t_ + 0.5) / n_
-                        along.append([p_[0] + (q_[0] - p_[0]) * f_, p_[1] + (q_[1] - p_[1]) * f_, p_[2] + (q_[2] - p_[2]) * f_])
-            al = sorted(await safe(alpha, along) or [0])
-            ck(len(al) >= 40 and al[len(al) // 2] >= 128, "where two classes meet, one edge filled to from both sides: no hairline (%d points along the edges, the middle one at %d of %d)" % (len(al), al[len(al) // 2], round(0.55 * 255)))
+            for i_ in range(5):
+                for rg in (await el('slope', 'class:%d' % i_))['dg']['g']['bands'][0]['rings']:
+                    for m in range(len(rg)):
+                        p_, q_ = rg[m], rg[(m + 1) % len(rg)]
+                        if min(min((u[0] - x0) / cell, (u[2] - z0) / cell, nx - 1 - (u[0] - x0) / cell, nz - 1 - (u[2] - z0) / cell) for u in (p_, q_)) < 1:
+                            continue
+                        n_ = max(1, int(math.hypot(q_[0] - p_[0], q_[2] - p_[2]) / 1.5))
+                        for t_ in range(n_):
+                            f_ = (t_ + 0.5) / n_
+                            u_ = [p_[0] + (q_[0] - p_[0]) * f_, p_[1] + (q_[1] - p_[1]) * f_, p_[2] + (q_[2] - p_[2]) * f_]
+                            if not any(min(a_[0] for a_ in F) - 3 <= u_[0] <= max(a_[0] for a_ in F) + 3 and min(a_[1] for a_ in F) - 3 <= u_[2] <= max(a_[1] for a_ in F) + 3 for F in feet):
+                                along.append(u_)
+            al = sorted(await safe(alpha_min, along) or [0])
+            ck(len(al) >= 500 and al[len(al) // 2] >= 128, "where two classes meet, one edge filled to from both sides: no hairline (%d points along the edges, the faintest pixel round the middle one at %d of %d)" % (len(al), al[len(al) // 2], round(0.55 * 255)))
             await safe("(p)=>{window.__a3dSetPlanView();window.__a3dCamSet({tx:p[0],tz:p[2],dist:120});}", list(pick))
             await page.wait_for_timeout(400)
             px = "(p)=>{var s=window.__a3dDgToScreen(p),c=document.getElementById('a3d-canvas'),r=window.devicePixelRatio||1,d=c.getContext('2d').getImageData(Math.round(s[0]*r)-2,Math.round(s[1]*r)-2,5,5).data,m={},i,k,best=null;for(i=0;i<d.length;i+=4){k=d[i]+','+d[i+1]+','+d[i+2];m[k]=(m[k]||0)+1;if(!best||m[k]>m[best])best=k;}return best.split(',').map(Number);}"
@@ -709,6 +723,20 @@ async def run():
             c1 = await safe(px, list(pick)) or [0, 0, 0]
             ck(c0[0] > 200 and c0[1] > 200 and c1[0] < 60 and c1[1] > 200 and c1[2] < 60, "a class drawn in its colour (%s), and restyled, in its new fill (%s)" % (c0, c1))
             await safe("()=>window.__a3dUndo()")
+            # the hill's top, ringed by its steepest flanks: the over-25% class is a ring with a hole, read even-odd
+            top = max(range(nx * nz), key=lambda k: Hn[k])
+            tcls = sum(1 for b in SLOPE_BREAKS if sl[top] >= b)
+            o4 = await el('slope', 'class:4')
+            holed = o4 and len(o4['dg']['g']['bands'][0]['rings']) >= 2
+            tp = [x0 + (top % nx) * cell, Hn[top], z0 + (top // nx) * cell]
+            await safe("(p)=>{window.__a3dSetPlanView();window.__a3dCamSet({tx:p[0],tz:p[2],dist:120});}", tp)
+            await page.wait_for_timeout(400)
+            ct_ = await safe(px, tp) or [0, 0, 0]
+            want_ = [int(SLOPE_COLS[tcls][i_:i_ + 2], 16) for i_ in (1, 3, 5)]
+            ck(holed and tcls < 4 and sum(abs(ct_[i_] - want_[i_]) for i_ in range(3)) < 40,
+               "the hill's top, inside its steepest flanks, drawn in its own class (%s, %s): the flanks' ring has a hole, read even-odd" % (SLOPE_NAMES[tcls], ct_))
+            await safe("(p)=>{window.__a3dSetPlanView();window.__a3dCamSet({tx:p[0],tz:p[2],dist:120});}", list(pick))
+            await page.wait_for_timeout(400)
             # a class has no line of its own: a click inside it picks it, last, where nothing else is
             at = "(p)=>{var s=window.__a3dDgToScreen(p),r=document.getElementById('a3d-canvas').getBoundingClientRect();return [r.left+s[0],r.top+s[1]];}"
             await safe("()=>window.__a3dSelectFor([])")
@@ -873,6 +901,39 @@ async def run():
             W5 = [1.1, 1.7, 2.4, 3.1, 3.8]
             ck(od.count(1) >= 2 and 2 in od and all(o['dg']['s']['w'] == W5[min(5, int(o['name'].split()[-1])) - 1] for o in FY),
                "two valleys meeting: below them the line is order 2, drawn wider (%s)" % [(o['name'], o['dg']['s']['w']) for o in FY])
+            # pits with flat bottoms 30 cm under their lowest edge: one of a cell (25 m2) is no pond, one of nine cells is
+            hp, nxd = list(hv), dem['nx']
+
+            def nbrs(k):
+                return [(k // nxd + b_) * nxd + k % nxd + a_ for a_ in (-1, 0, 1) for b_ in (-1, 0, 1) if a_ or b_]
+            pit1 = 20 * nxd + 10
+            hp[pit1] = min(hv[n_] for n_ in nbrs(pit1)) - 30
+            pit9 = [(40 + b_) * nxd + 45 + a_ for a_ in (-1, 0, 1) for b_ in (-1, 0, 1)]
+            low9 = min(hv[n_] for n_ in set(n_ for k_ in pit9 for n_ in nbrs(k_)) - set(pit9)) - 30
+            for k_ in pit9:
+                hp[k_] = low9
+            await safe("(v)=>window.__a3dLandSet(v)", dict(saved, dem=dict(dem, h=hp)))
+            await safe("()=>window.__a3dDgRun('ponds')")
+            PD = await diags('ponds')
+            ck(len(PD) == 1 and int(PD[0]['dg']['k'][5:]) in pit9 and rows(PD[0]).get('Area') == '225 m²',
+               "a pit of one cell, 25 m², is no pond; one of nine cells is (%s)" % [(o['dg']['k'], rows(o).get('Area')) for o in PD])
+            # a bowl: the slope classes in rings round its middle, their edges round, not along the grid
+            hb = [int(round((100 + 0.002 * ((dem['x0'] + i * dem['cell'] - 17.3) ** 2 + (dem['z0'] + j * dem['cell'] + 23.9) ** 2)) * 100)) for j in range(dem['nz']) for i in range(dem['nx'])]
+            await safe("(v)=>window.__a3dLandSet(v)", dict(saved, dem=dict(dem, h=hb)))
+            await safe("()=>window.__a3dDgRun('slope')")
+            C2 = {o['dg']['k']: o['dg']['g']['bands'][0]['rings'] for o in await diags('slope') if o['dg']['k'].startswith('class:')}
+            worst, nv = 0.0, 0
+            for k_, RR in C2.items():
+                others = [(R[m], R[(m + 1) % len(R)]) for k2, R2 in C2.items() if k2 != k_ for R in R2 for m in range(len(R))]
+                for R in RR:
+                    for v in R:
+                        g_ = ((v[0] - dem['x0']) / dem['cell'], (v[2] - dem['z0']) / dem['cell'])
+                        if min(g_[0], g_[1], dem['nx'] - 1 - g_[0], dem['nz'] - 1 - g_[1]) < 1:
+                            continue
+                        nv += 1
+                        worst = max(worst, min(seg_dist(v, a_, b_) for a_, b_ in others))
+            ck(len(C2) == 5 and nv > 50 and worst < 0.011,
+               "a bowl, its classes in rings round its middle: every point of a class on its neighbour's edge, so nothing shows between them (%d points, the farthest %.3f m off)" % (nv, worst))
             await safe("(f)=>window.__a3dLandSet({flood:f})", saved['flood'])
             await safe("()=>window.__a3dDgRun('slope')")
             d2 = await safe("()=>window.__a3dLandDem()") or {}
@@ -913,6 +974,7 @@ async def run():
 
             S2 = {'ground': 'land', 'flood': 'zones', 'mode': {'flood': 'abort'}}
             c2, p2, e2 = await fresh(S2)
+            await safe("()=>window.__a3dCtxSet('kind:terrain',false)", pg=p2)   # and the context's terrain left out
             f2 = await analyze(p2)
             s2 = {s['id']: s for s in f2.get('steps', [])}
             ck(s2['land']['state'] == 'part' and 'hazards.fema.gov could not be reached' in s2['land']['text'] and 'the ground every 5 m' in s2['land']['text'],
@@ -920,6 +982,11 @@ async def run():
             n2 = ((await safe("()=>window.__a3dDgState()", pg=p2) or {}).get('runs') or {}).get('flood', {}).get('note', '')
             ck('hazards.fema.gov could not be reached' in n2 and (await safe("()=>window.__a3dDgState()", pg=p2) or {}).get('runs', {}).get('slope', {}).get('keys'),
                "the flood row says why; the slope drawn all the same")
+            d5 = await safe("()=>window.__a3dLandDem()", pg=p2) or {}
+            c5 = await safe("()=>window.__a3dCtxDatum()", pg=p2)
+            ks = [int(o['dg']['k'][2:]) for o in await diags('contours', pg=p2)]
+            ck(d5.get('from') == 'tiles' and d5.get('datum') is not None and abs(d5['datum'] - round(LFX.land_height(0, 0), 2)) <= 0.011 and c5 == d5['datum'] and ks and all(k_ % 200 == 0 for k_ in ks),
+               "the context's terrain left out: the fine ground sets the model's 0 itself, the ground under the site's origin; the contours keep to round heights (%s, %s)" % (d5.get('datum'), c5))
             ck(not e2, "no page errors (%s)" % e2[:3])
             await c2.close()
 
