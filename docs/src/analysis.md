@@ -33,9 +33,11 @@ The **Analyze** tab on the left rail is one list: every analysis and the site an
 | Where | Analysis | Run it | Settings |
 |---|---|---|---|
 | 1. Location | Compass and distance | `ANALYZESITE` | Layers > Site analysis |
+| 3. Landform | Contours, Slope and Aspect of the ground around the site | `ANALYZESITE` | Layers > Site analysis |
 | 3. Landform | Survey check | `SURVEYCHECK` | the surface's Survey Check group |
 | 3. Landform | Slope, elevation, aspect | `SLOPEMAP`, `ELEVATIONMAP`, `ASPECTMAP` | the surface's Analysis group |
 | 3. Landform | Grading, cut and fill | `GRADE`, `CUTFILLMAP` | the pad's Pad Elevation |
+| 4. Water | Water flow, Ponds, Flood zones (FEMA) | `ANALYZESITE` | Layers > Site analysis |
 | 4. Water | Rain on terrain | `RAINFLOW` | |
 | 5. Climate | Sun and shadows | `SUNSTUDY` | Properties > Site > Location |
 | 5. Climate | Sun hours | `SUNHOURS` | Properties > Site > Location |

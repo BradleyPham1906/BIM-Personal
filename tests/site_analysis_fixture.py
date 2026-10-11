@@ -16,7 +16,8 @@ answer, so the app reads it as it would them:
     (land_fixture);
   Nominatim: one place, the site;
   AMENDED FOR V165: FEMA's flood map: no zone, unless store['flood'] = 'zones' (land_fixture's).
-store['mode'] breaks a service: ctx abort|429, clim abort, acc abort, ter abort, geo none|abort, flood abort.
+store['mode'] breaks a service: ctx abort|429, clim abort, acc abort, ter abort, geo none|abort, flood abort|slow
+(AMENDED FOR V165: slow answers 2.5 s late, after everything else).
 Deterministic: no randomness but the climate fixture's fixed seeds."""
 import asyncio, json, pathlib, re, sys
 from urllib.parse import unquote

@@ -119,7 +119,9 @@ how it is drawn.
     drains; then each cell drains to its steepest neighbour (D8, O'Callaghan and Mark, 1984). Flow
     lines are the cells draining 0.25 ha or more, ordered by Strahler's rule (two streams of one
     order make the next), drawn wider by order, each with an arrowhead where it runs out. Catchments are the cells
-    draining to one outlet; the large ones are outlined, dashed, as the divides between them. For
+    draining to one outlet; the large ones (4% of the ground or more) are named at their middles,
+    and the divide between two of them is drawn once, dashed, along the edges between their cells.
+    Outlining each catchment on its own drew every divide twice, the two dash patterns out of step. For
     the site: the land whose water reaches it, and where it leaves. Ponds are where the filled
     ground stands 10 cm or more above the real one: their depth, area and volume, the deepest point
     marked.
