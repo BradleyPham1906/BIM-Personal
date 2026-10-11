@@ -299,6 +299,31 @@ async def run():
             # AMENDED FOR V158: the groups are rows of the tree, right after the last layer row (as Context is)
             after = await safe("()=>{var r=document.querySelectorAll('#a3d-leftpanel [data-lylist] .a3d-lyrow'),s=document.querySelector('#a3d-leftpanel [data-lysec=\"analysis\"]');return r[r.length-1].getBoundingClientRect().bottom<=s.getBoundingClientRect().top+1;}")
             ck(after, "after the layers, not among them")
+            # ADDED IN V165: nor among them to a drag. A sub-layer let go over the Analysis heading is
+            # refused there and stays under its parent, while the tree's room below its rows takes it.
+            # The drop is sent only where the dragover took it, as a browser does.
+            par = await safe("()=>window.__a3dLayerNew({name:'Drag parent'})")
+            kid = await safe("(p)=>window.__a3dLayerNew({name:'Drag child',parent:p})", par)
+            await page.wait_for_timeout(120)
+            if not await safe("(k)=>!!document.querySelector('#a3d-leftpanel [data-lyid=\"'+k+'\"]')", kid):
+                await page.click('#a3d-leftpanel [data-lytog="%s"]' % par)
+                await page.wait_for_timeout(120)
+            dz = await safe("""(k)=>{var out={};
+              ['[data-lysec="analysis"] .a3d-lysecttl','[data-lylist]'].forEach(function(q,i){
+                var src=document.querySelector('#a3d-leftpanel [data-lyid="'+k+'"]'),dst=document.querySelector('#a3d-leftpanel '+q),dt=new DataTransfer();
+                src.dispatchEvent(new DragEvent('dragstart',{bubbles:true,dataTransfer:dt}));
+                var ov=new DragEvent('dragover',{bubbles:true,cancelable:true,dataTransfer:dt});dst.dispatchEvent(ov);
+                if(i===0){out.took=ov.defaultPrevented;
+                  if(ov.defaultPrevented)dst.dispatchEvent(new DragEvent('drop',{bubbles:true,cancelable:true,dataTransfer:dt}));
+                  out.parent=(window.__a3dLayers().filter(function(l){return l.id===k;})[0]||{}).parent;}
+                else out.list=ov.defaultPrevented;
+                src.dispatchEvent(new DragEvent('dragend',{bubbles:true,dataTransfer:dt}));});
+              return out;}""", kid)
+            ck(par and kid and dz and dz.get('took') is False and dz.get('parent') == par and dz.get('list') is True,
+               "nor to a drag: a sub-layer let go over the Analysis heading is refused and stays under its parent; the room below the rows takes it (%s)" % dz)
+            await safe("()=>{window.__a3dUndo();window.__a3dUndo();}")
+            await page.wait_for_timeout(120)
+            ck(not [y for y in (await safe("()=>window.__a3dLayers()") or []) if y['id'] in (par, kid)], "two undos take the two layers away")
             hint = await safe("()=>(document.querySelector('#a3d-leftpanel [data-lysec=\"data\"] .a3d-lyhint')||{}).textContent")
             ck(hint and 'Data Layers' in hint, "an empty Data section says where its layers come from (%s)" % hint)
             Y = await lyrows()

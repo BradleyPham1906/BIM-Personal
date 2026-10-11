@@ -2,11 +2,11 @@
 
 **Read this first in a new session.** One page. The detail lives in the docs listed at the bottom.
 
-    canvas_v10.html   3041149 bytes
-    sha256            8443b9f531a762f90e397c6e8f117d63a4ebd8b7ac687020f9d31a11a831e097
-    markers           __acad3dV60 ... __acad3dV164, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
+    canvas_v10.html   3105612 bytes
+    sha256            e8ec917e636002dc97278233a4ea7770f0530d2a3d7159d54b1707863ca95cb2
+    markers           __acad3dV60 ... __acad3dV165, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
                       __acad3dV121b
-    tests             121 suites, 5521 checks, 0 failures
+    tests             122 suites, 5635 checks, 0 failures
 
     The user guide (V142): every phase updates docs/src/, its log entry and BIM_APP_VERSION, then
     runs tools/dump_catalog.py and tools/build_docs.py. The V142 suite and the Pages workflow
@@ -186,7 +186,9 @@ when it starts (V111 to V138 went to other work; V139 to V181 are in NOW).
 - **Checked** in 111 checks against every method worked out again in Python (Horn, marching
   squares, Priority-Flood with D8, Strahler, the catchments, the divides, the ponds, FEMA's
   classes), on a made-up ground served as Terrarium tiles and a FEMA answer, with FEMA down, a site
-  outside the US, the context's terrain and a survey of the project's own.
+  outside the US, the context's terrain and a survey of the project's own; 82 falsify variants,
+  all caught; four older suites amended. V148's falsify script was re-anchored, and its suite
+  closes a gap left since V158: a layer dragged onto the Analysis heading is refused.
 
 Phase 164 (V164), **site analysis in the model, from one button**.
 - The owner: "all i want is button then the analysis run ... then put that under analysis layers,

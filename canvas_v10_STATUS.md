@@ -14576,9 +14576,11 @@ warmth, contours on a hypsometric ramp, FEMA's zones in the FIRM's colours).
     reason in the script, and `rings_coarse` (half a cell) takes its place, caught by the bowl's
     shared edges and by the hill's top.
 
-  The five again, on the final suite: 5 of 5 (164 s). The cleanup after it added five variants
-  (`labels_bunched`, `legend_drops_last`, `recency_not_noticed`, `labels_under_key`,
-  `arrow_not_kept_clear`) and re-anchored three of the key's: 8 of 8 (248 s).
+  The five again, on the final suite: 5 of 5 (164 s). The divides' fix added `divides_stepped`
+  (eased to 0.6 of a cell again). The cleanup after it added five variants (`labels_bunched`,
+  `legend_drops_last`, `recency_not_noticed`, `labels_under_key`, `arrow_not_kept_clear`) and
+  re-anchored three of the key's: 8 of 8 (248 s). All 82 on the final build: 82 caught (2255 s,
+  3 workers).
 - **The amended suites' scripts.** `falsify_phase164.py`: three of the key's variants re-anchored
   in bimDgLegendLayout, 3 of 3. `falsify_phase148.py` and `falsify_phase141.py` had gone stale:
   nine and two variants anchored on code V161 and V162 had moved. They are re-anchored, each saying
@@ -14586,6 +14588,16 @@ warmth, contours on a hypsometric ramp, FEMA's zones in the FIRM's colours).
   `search_no_group` (a group's name left out of its rows' words), was not: nothing searched by a
   group's name. The V148 suite asks that 'model' find every row in the Model group now, and the
   variant is caught.
+- **The earlier phases' falsifications, on the final build:** `falsify_phase164.py` 68 of 68
+  (1716 s), `falsify_phase162.py` 59 of 59 (780 s), `falsify_phase141.py` 21 of 21 (168 s), and
+  `falsify_phase148.py` 56 of 57 (776 s). The one it missed, `sections_in_tree` (the Analysis and
+  Data groups put inside the layer tree), had gone unseen since V158: the check that they come
+  after the tree compares their tops with the last layer row's bottom, the same in either place.
+  Inside the tree they would take a dragged layer: let go over the Analysis heading, a sub-layer
+  would be lifted to the top of the tree. The V148 suite drags a sub-layer there now (refused,
+  still under its parent) and onto the room below the rows (taken), then undoes the two layers it
+  made: 2 of 2 with `drop_refused` (40 s).
+
 ### Not done
 
 - The ground finer than the tiles: USGS 3DEP's 1 m lidar where it exists (the tiles carry 10 m or
@@ -14593,3 +14605,14 @@ warmth, contours on a hypsometric ramp, FEMA's zones in the FIRM's colours).
 - Kerbs, swales, culverts and pipes; the site's own drainage design; how deep a flood would stand.
 - FEMA's own colours (its renderer could not be read from here) and its other layers (the base
   flood elevation lines, the cross sections, the LOMRs).
+
+### Full regression and state after V165
+
+122 suites, 5633 checks, 0 failures (457 s, 5 workers). The V148 suite's drag check came after
+that run, and the suite passes alone, 117 of 117: 5635 checks in all. Patches 165a, 165b and 165c
+rebuild the build byte for byte from `Phase/canvas_v10.html.bak_phase165_pre`. The diff is
+ES5-clean and ASCII.
+
+    canvas_v10.html   3105612 bytes
+    sha256            e8ec917e636002dc97278233a4ea7770f0530d2a3d7159d54b1707863ca95cb2
+    markers           __acad3dV60 ... __acad3dV165, __acad3dV134d (and the 133d to 133f markers)
