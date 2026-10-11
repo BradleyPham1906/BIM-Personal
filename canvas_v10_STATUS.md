@@ -14354,3 +14354,5 @@ traffic stress, catchments), acoustic analysts (CRTN, CNOSSOS-EU, DIN 18005's co
   - `search_hides_site`: the suite searched for "noise", which the site's own steps name, so a
     search that filtered the site kept it. It searches for "seismic" now, and asks that none of the
     site's words hold it.
+
+  The full run on the final suite and build: 67 of 67 (1464 s, 3 workers).
