@@ -1,6 +1,6 @@
 {
  "version": {
-  "v": "V162",
+  "v": "V163",
   "date": "2026-10-10"
  },
  "commands": [
@@ -2076,6 +2076,19 @@
    "where": [],
    "keys": null,
    "anchor": "cmd-SITEANALYSIS"
+  },
+  {
+   "id": "cmd:SKPIN",
+   "name": "SKPIN",
+   "aliases": [
+    "IMPORTSKP",
+    "SKETCHUP"
+   ],
+   "desc": "Open a SketchUp file: its faces as solids, its tags as layers, its components as blocks",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-SKPIN"
   },
   {
    "id": "cmd:SLOPEARROWS",

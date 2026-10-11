@@ -1,0 +1,328 @@
+{
+ "file": "site_kit.skp",
+ "stem": "site_kit",
+ "format": "SketchUp 2017",
+ "zip": false,
+ "sha256": "b11bfcb7e3809b0a1cba20e4b476bdb6117aca298f5629279bc41b511ce2375e",
+ "inch": 0.0254,
+ "tags": {
+  "Walls": {
+   "color": "#c8503c",
+   "hidden": false
+  },
+  "Furniture": {
+   "color": "#5a8c3c",
+   "hidden": false
+  },
+  "Windows": {
+   "color": "#508cdc",
+   "hidden": false
+  },
+  "Hidden stuff": {
+   "color": "#808080",
+   "hidden": true
+  }
+ },
+ "seeThrough": {
+  "layer": "site_kit - Windows - 65% see-through",
+  "parent": "site_kit - Windows",
+  "transparency": 65
+ },
+ "objects": [
+  {
+   "name": "Group",
+   "tag": "Walls",
+   "kind": "group",
+   "definition": "Group#1",
+   "material": "Brick",
+   "color": "#b22222",
+   "bounds": {
+    "min": [
+     0,
+     0,
+     2.032
+    ],
+    "max": [
+     5.08,
+     2.54,
+     2.54
+    ]
+   },
+   "area": 33.54832
+  },
+  {
+   "name": "Desk 1",
+   "tag": "Furniture",
+   "kind": "component",
+   "definition": "Desk",
+   "material": "Walnut",
+   "color": "#5c402a",
+   "bounds": {
+    "min": [
+     4.572,
+     0.7111999999999999,
+     -8.636
+    ],
+    "max": [
+     5.08,
+     0.762,
+     -7.62
+    ]
+   },
+   "area": 1.1870943999999999
+  },
+  {
+   "name": "Desk chair",
+   "tag": "Furniture",
+   "kind": "component",
+   "definition": "Chair",
+   "material": "Oak",
+   "color": "#8b5a2b",
+   "inside": "Desk 1",
+   "bounds": {
+    "min": [
+     4.444999999999999,
+     0,
+     -7.874
+    ],
+    "max": [
+     4.952999999999999,
+     1.016,
+     -7.366
+    ]
+   },
+   "area": 2.58064
+  },
+  {
+   "name": "Chair A",
+   "tag": "Furniture",
+   "kind": "component",
+   "definition": "Chair",
+   "material": "Oak",
+   "color": "#8b5a2b",
+   "bounds": {
+    "min": [
+     1.27,
+     0,
+     -1.778
+    ],
+    "max": [
+     1.778,
+     1.016,
+     -1.27
+    ]
+   },
+   "area": 2.58064,
+   "volume": 0.262193024,
+   "mirrored": false,
+   "hidden": false
+  },
+  {
+   "name": "Chair B",
+   "tag": "Furniture",
+   "kind": "component",
+   "definition": "Chair",
+   "material": "Oak",
+   "color": "#8b5a2b",
+   "bounds": {
+    "min": [
+     3.302,
+     0,
+     -1.778
+    ],
+    "max": [
+     3.81,
+     1.016,
+     -1.27
+    ]
+   },
+   "area": 2.58064,
+   "volume": 0.262193024,
+   "mirrored": false,
+   "hidden": false
+  },
+  {
+   "name": "Chair C",
+   "tag": "Hidden stuff",
+   "kind": "component",
+   "definition": "Chair",
+   "material": "Oak",
+   "color": "#8b5a2b",
+   "bounds": {
+    "min": [
+     7.62,
+     0,
+     -8.128
+    ],
+    "max": [
+     8.128,
+     1.016,
+     -7.62
+    ]
+   },
+   "area": 2.58064,
+   "volume": 0.262193024,
+   "mirrored": false,
+   "hidden": true
+  },
+  {
+   "name": "Chair D",
+   "tag": "Furniture",
+   "kind": "component",
+   "definition": "Chair",
+   "material": "Oak",
+   "color": "#8b5a2b",
+   "bounds": {
+    "min": [
+     8.382,
+     0,
+     -1.778
+    ],
+    "max": [
+     8.889999999999999,
+     1.016,
+     -1.27
+    ]
+   },
+   "area": 2.58064,
+   "volume": 0.262193024,
+   "mirrored": true,
+   "hidden": false
+  },
+  {
+   "name": "Pane 1",
+   "tag": "Windows",
+   "kind": "component",
+   "definition": "Pane",
+   "material": "Glass",
+   "color": "#78aadc",
+   "opacity": 0.35,
+   "bounds": {
+    "min": [
+     2.54,
+     0.508,
+     2.794
+    ],
+    "max": [
+     3.556,
+     2.032,
+     2.794
+    ]
+   },
+   "area": 1.548384
+  },
+  {
+   "name": "Concrete faces",
+   "tag": null,
+   "kind": "loose",
+   "material": "Concrete",
+   "color": "#a0a0a0",
+   "bounds": {
+    "min": [
+     0,
+     0,
+     -10.16
+    ],
+    "max": [
+     10.16,
+     0,
+     0
+    ]
+   },
+   "area": 96.774
+  },
+  {
+   "name": "Tiles faces",
+   "tag": null,
+   "kind": "loose",
+   "material": "Tiles",
+   "texture": "tiles.png",
+   "color": "#ffffff",
+   "bounds": {
+    "min": [
+     10.668,
+     0,
+     -1.27
+    ],
+    "max": [
+     11.937999999999999,
+     0,
+     0
+    ]
+   },
+   "area": 1.6129
+  },
+  {
+   "name": "Unpainted faces",
+   "tag": null,
+   "kind": "loose",
+   "material": "",
+   "color": "#ffffff",
+   "bounds": {
+    "min": [
+     0,
+     0,
+     -12.7
+    ],
+    "max": [
+     1.27,
+     0,
+     -11.43
+    ]
+   },
+   "area": 1.6129
+  }
+ ],
+ "blocks": [
+  {
+   "name": "Chair",
+   "bounds": {
+    "min": [
+     0,
+     0,
+     -0.508
+    ],
+    "max": [
+     0.508,
+     1.016,
+     0
+    ]
+   },
+   "area": 2.58064
+  },
+  {
+   "name": "Pane",
+   "bounds": {
+    "min": [
+     0,
+     0,
+     0
+    ],
+    "max": [
+     1.016,
+     1.524,
+     0
+    ]
+   },
+   "area": 1.548384
+  },
+  {
+   "name": "Desk",
+   "count": 2,
+   "bounds": {
+    "min": [
+     -0.254,
+     0,
+     -0.635
+    ],
+    "max": [
+     1.016,
+     1.016,
+     0
+    ]
+   },
+   "area": 3.7677343999999997
+  }
+ ],
+ "textureAverage": "#dc8c78"
+}

@@ -14092,3 +14092,104 @@ amendment, 49 of 49). Patches 162a and 162b rebuild the build from
     canvas_v10.html   2725761 bytes
     sha256            e206ae4501c1b76d143f7df47ccbabce6a5efbf39401c5b943ffdb662fed7796
     markers           __acad3dV60 ... __acad3dV162, __acad3dV134d (and the 133d to 133f markers)
+
+## Phase 163 (V163) - SketchUp files open as the app's own objects
+
+The owner: "can you clone this github repo and copy and paste their code into our:
+https://github.com/iamahsanmehmood/openskp.git? they opensource sketchup like app and their design
+pretty good. just copy and paste their whole code and make it work in our app". openskp is a
+toolkit that reads and writes SketchUp files in several languages, with a small web viewer; it is
+not a modelling app. Asked what to take, the owner chose **Open .skp files**: the reader goes in,
+and a SketchUp file opens as this app's objects -- faces and solids, materials and textures, tags as
+layers, components as blocks -- after V162.
+
+The research (`reference/research-sketchup-import.md`) covers:
+- the file: one header naming the SketchUp that saved it, then SketchUp's own archive (to 2020) or
+  a ZIP (2021 on); inches, Z up; tags, materials, groups and components, and how SketchUp names
+  what nobody named, in its own language;
+- what openskp's reader gives and what it drops (the group or component class, hidden instances,
+  a face's own tag), and how it draws a face whose back is painted differently;
+- how Rhino and Revit bring SketchUp in (tags as layers; groups kept or not; linked at the origin).
+
+### What was built (patches 163a, 163b)
+
+- **The reader (163a).** openskp's TypeScript reader at commit 359d183 -- `parseSkp`,
+  `buildInstancedScene`, `buildScene`, `SkpParseError` and what they use -- with fflate (MIT) and
+  earcut (ISC):
+  - `tools/openskp/build_reader.mjs` bundles it (esbuild) and compiles it to ES5 syntax
+    (TypeScript), wraps it in one function so its helpers are not page globals, and opens it with
+    the three licences in full. The versions are pinned and the output is the same bytes every run.
+  - The patch inlines `vendor/openskp/openskp_reader.es5.js` by its hash, as a script of its own
+    between the shell and the engine: a browser that cannot run it still starts the app, and the
+    import then says so. It adds one global, `OpenSkp`. The code is not edited by hand.
+- **The import (163b).** `bimSkpScan` reads the file into pieces; `bimSkpImportBuffer` places them
+  in one undo step:
+  - **Faces.** A locked solid for each placement and material, in world position, welded at a
+    hundredth of a millimetre. A mirroring placement is turned back the right way out.
+  - **One face, once.** openskp draws a face whose back is painted differently twice, the back wound
+    the other way. Of two such triangles, the one in the colour an unpainted face falls back to goes
+    (when both sides are painted, the later one).
+  - **Tags.** The file's own layer, a sub-layer per tag (`site_kit - Walls`) in the tag's colour,
+    off where SketchUp had it off; untagged faces on the file's layer. A project layer of the same
+    name is not taken over; the same file opened again uses its layers.
+  - **Materials.** The solid's colour, named in Properties without the brackets SketchUp keeps its
+    own materials' names in; an unpainted face is SketchUp's white. A texture is drawn in the
+    colour SketchUp keeps with it (its average) and its file is named.
+  - **Glass.** A see-through material goes on a sub-layer of its tag at its opacity, in 5% steps.
+  - **Components as blocks.** Each named component, with everything inside it, is an Assets block
+    in its own frame with its insertion point as the base point, category SketchUp, kept with its
+    file's name; the same file opened again replaces them. Groups, and components left as SketchUp
+    named them, are not blocks. The reader keeps no mark of which a definition is, so the name
+    decides: `<word>#N` is SketchUp's own, in any language (Group#1, Agrupar#2, Componente#1),
+    unless `<word>` is itself a definition in the file (Make Unique's Chair#1).
+  - **Limits.** 250,000 triangles a file, 6,000 a block, and blocks up to 1.5 million characters a
+    file, so the library stays within browser storage; each says when it is reached.
+  - **What it says.** How many objects from which SketchUp, on which layers, how many tags (and how
+    many off), the glass, the blocks. A file it cannot read is refused with the reader's reason.
+- **The ways in.** Import CAD takes `.skp`; SKPIN (IMPORTSKP, SKETCHUP) opens one; the Assets
+  library's Import takes a file's components as blocks and places nothing. Library blocks from
+  SketchUp say so in their tile and are found by their file's name.
+- **Properties → SketchUp.** The file and the SketchUp that saved it; the component (and instance)
+  or group, and what it is inside; the tag; the material; the texture's file; the opacity.
+- `THIRD_PARTY_NOTICES.md` carries the three licences. Version V163. The guide's Sheets and files
+  page has a SketchUp section.
+
+### Found
+
+- **The back sides.** In the reader's output for the fixture every box was 24 triangles: openskp's
+  back copies. Kept, they would have doubled each area and painted every box twice, once in its
+  tag's colour.
+- **Which SketchUp.** The ZIP of 2021 is not at the file's start: both containers open with the
+  same "SketchUp Model" header. The version in it now names the SketchUp (2025, not "2020 or
+  earlier").
+- **Groups in Portuguese.** On openskp's Portuguese sample every group became a block: SketchUp had
+  named them Agrupar#N, and the first rule knew only Group#N.
+- **The fixture's bytes.** openskp's writer stamps a random GUID on each definition and the time on
+  the file. The generator seeds the one and fixes the other, so the fixture is the same bytes on
+  every run and its hash is checked.
+- **The licence years.** The banner's copyright lines were typed from memory and two were wrong.
+  They are now read from each package's own licence file.
+- **One block** was "1 component kept as blocks".
+
+### Suites
+
+- New: `bim_phase163_sketchup_import_browser_tests.py`, 114 checks. The file it opens,
+  `tests/skp/site_kit.skp`, is written by openskp's own writer (`tools/openskp/make_fixtures.mjs`)
+  from geometry defined there; its expectations (`site_kit.expected.json`) are worked out by the
+  same script from that geometry, never read back through the reader. It holds walls in a group,
+  chairs on two tags (one hidden), one turned and one mirrored, glass, a textured face, an unpainted
+  face, a bracketed material, a slab with a hole, and a desk with a chair placed inside it.
+- Amended: V120 (three scripts, the reader's between the shell and the engine), AMENDED FOR V163.
+- **Falsified by `Phase/falsify_phase163.py`:** 54 variants, running when this entry was first committed; the result is recorded below once it is in.
+- **By hand** on openskp's own samples, which are not copied into the repo (their origin is not
+  stated): SketchUp 2025 (two ZIP files: 1 object; 43 groups on 11 tags, 18,636 triangles in about
+  a second), SketchUp 2020 in Portuguese (161 objects, 53,269 triangles, one block), SketchUp 2017
+  with textures and two glasses, the web viewer's chair and table (9 nested components as blocks),
+  SketchUp 6, 7 and 2014; a SketchUp 3 file is refused with the reader's reason.
+
+### Not done
+
+- Textures drawn as images on the solids (the app draws solids in colours).
+- A face's own tag, an instance's hidden flag, SketchUp's scenes as saved views, its dimensions and
+  text: the reader reads some of these, the import does not place them yet.
+- Writing `.skp` files (openskp's writer makes only the archive container).
