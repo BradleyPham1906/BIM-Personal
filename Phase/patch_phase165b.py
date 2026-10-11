@@ -17,7 +17,7 @@ said. On that ground:
 import hashlib, pathlib, sys
 
 SRC = pathlib.Path('canvas_v10.html')
-BASE = '7efc547a0f9eb6b6a5c7608ee55f0cf11fb0d54af3303ce1cc8506478daed215'   # after patch_phase165a.py
+BASE = '395f144afaafa7e321f41a47a3ba864cbede2421083dda94f7009a25c62e71a7'   # after patch_phase165a.py
 
 raw = SRC.read_bytes()
 sha = hashlib.sha256(raw).hexdigest()
@@ -255,25 +255,57 @@ LAND = r"""  /* ================= __acad3dV165: site analysis in the model II, l
     if(closed)out.pop();
     return out;
   }
-  /* the areas where mask is 1, as rings of model points lifted just over the ground */
+  /* the areas where mask is 1, as rings of model points lifted just over the ground. Only the points
+     along a straight run go: two classes side by side keep one edge between them, with no sliver */
   function bimLandRings(D,mask,lift){
     var ch=bimLandMs(mask,D.nx,D.nz,0.5,0),out=[],i,j,r;
     for(i=0;i<ch.length;i++){
       r=[];for(j=0;j<ch[i].length;j++)r.push([D.x0+ch[i][j][0]*D.cell,D.z0+ch[i][j][1]*D.cell]);
-      r=bimLandDP(r,D.cell*0.12,true);
+      r=bimLandDP(r,D.cell*0.002,true);
       if(r.length<3)continue;
       out.push(r.map(function(q){var y=bimLandAt(D,q[0],q[1]);return [bimLandR(q[0]),bimLandR((y===null?0:y)+(lift||0.03)),bimLandR(q[1])];}));
     }
     return out;
   }
-  /* a ring's runs away from the grid's edge: a divide, not the edge of what was analysed */
-  function bimLandOpenRuns(R,nx,nz){
-    function B(p){return p[0]<-0.25||p[1]<-0.25||p[0]>nx-0.75||p[1]>nz-0.75;}
-    var n=R.length,s=-1,i,out=[],cur=[];
-    for(i=0;i<n;i++)if(B(R[i])){s=i;break;}
-    if(s<0)return [R.concat([R[0]])];
-    for(i=1;i<=n;i++){var p=R[(s+i)%n];if(B(p)){if(cur.length>1)out.push(cur);cur=[];}else cur.push(p);}
-    if(cur.length>1)out.push(cur);
+  /* the divides: where a cell of one large catchment sits beside a cell of another, the edge between
+     them, chained into lines -- each divide once, so its dashes are not drawn twice out of step; in the
+     grid's coordinates, kept within the ground analysed */
+  function bimLandDivides(D,Y,big){
+    var nx=D.nx,nz=D.nz,G={},order=[],i,j,k,a,b,out=[];
+    function cl(v,n){return Math.max(0,Math.min(n-1,v));}
+    function add(p,q,x1,z1,x2,z2){   /* the corners doubled, so they are whole numbers to join by */
+      var lo=Math.min(p,q),hi=Math.max(p,q),key=lo+'-'+hi,g=G[key];
+      if(!g){g=G[key]={a:lo,b:hi,seg:[],adj:{}};order.push(key);}
+      var n=g.seg.length,e1=x1+','+z1,e2=x2+','+z2;
+      g.seg.push([e1,e2,[cl(x1/2,nx),cl(z1/2,nz)],[cl(x2/2,nx),cl(z2/2,nz)]]);
+      (g.adj[e1]||(g.adj[e1]=[])).push(n);(g.adj[e2]||(g.adj[e2]=[])).push(n);
+    }
+    for(j=0;j<nz;j++)for(i=0;i<nx;i++){
+      k=j*nx+i;
+      if(!D.ok[k]||!big[Y.lab[k]])continue;
+      a=Y.lab[k];
+      if(i+1<nx&&D.ok[k+1]&&(b=Y.lab[k+1])!==a&&big[b])add(a,b,2*i+1,2*j-1,2*i+1,2*j+1);
+      if(j+1<nz&&D.ok[k+nx]&&(b=Y.lab[k+nx])!==a&&big[b])add(a,b,2*i-1,2*j+1,2*i+1,2*j+1);
+    }
+    order.forEach(function(key){
+      var g=G[key],used=new Uint8Array(g.seg.length),lines=[],e,s2,q;
+      function walk(si,at){   /* on to the next edge until an end, a meeting of three, or back to the start */
+        var pts=[g.seg[si][0]===at?g.seg[si][2]:g.seg[si][3]],cur=si,guard=0;
+        while(guard++<=g.seg.length){
+          used[cur]=1;
+          var S2=g.seg[cur],to=S2[0]===at?S2[1]:S2[0],L=g.adj[to];
+          pts.push(S2[0]===at?S2[3]:S2[2]);
+          if(L.length!==2)break;
+          var nxt=L[0]===cur?L[1]:L[0];
+          if(used[nxt])break;
+          cur=nxt;at=to;
+        }
+        return pts;
+      }
+      for(e in g.adj)if(g.adj.hasOwnProperty(e)&&g.adj[e].length!==2)for(q=0;q<g.adj[e].length;q++)if(!used[g.adj[e][q]])lines.push(walk(g.adj[e][q],e));
+      for(s2=0;s2<g.seg.length;s2++)if(!used[s2])lines.push(walk(s2,g.seg[s2][0]));   /* the loops */
+      out.push({a:g.a,b:g.b,lines:lines});
+    });
     return out;
   }
   /* the cells inside the site: its property line, else the ring of its buildings; at least the one under it */
@@ -532,22 +564,29 @@ LAND = r"""  /* ================= __acad3dV165: site analysis in the model II, l
         info:{title:'Water running over the ground: '+bimLandHa(ac)+' drains through its end',rows:[['Order',lk.order+(lk.order>1?' (Strahler: two of order '+(lk.order-1)+' have joined)':' (it starts here)')],['Draining',bimLandHa(ac)],['Ends',lk.outlet?'off the ground analysed':'where it joins another']],
           method:meth+'; a flow line where '+bimLandHa(BIM_LAND_STREAM)+' or more drains',source:D.src}});
     });
-    /* the large catchments, outlined where they meet: the divides */
+    /* the large catchments, each named at its middle; the divides between them dashed, each once */
+    var big={};
     Y.outlets.filter(function(o){return Y.outCells[o]>=BIM_LAND_CATCH*tot;}).sort(function(p,q){return Y.outCells[q]-Y.outCells[p]||p-q;}).forEach(function(o){
-      var mask=new Uint8Array(N),sx=0,sz=0,n=0,j;
-      for(k=0;k<N;k++)if(Y.lab[k]===o){mask[k]=1;sx+=k%D.nx;sz+=(k-k%D.nx)/D.nx;n++;}
-      var ch=bimLandMs(mask,D.nx,D.nz,0.5,0),lines=[];
-      for(i=0;i<ch.length;i++)bimLandOpenRuns(ch[i],D.nx,D.nz).forEach(function(run){
-        var L=bimLandDP(run.map(function(g){return [D.x0+g[0]*D.cell,D.z0+g[1]*D.cell];}),D.cell*0.12,false);
+      var sx=0,sz=0,n=0,j;
+      big[o]=1;
+      for(k=0;k<N;k++)if(Y.lab[k]===o){sx+=k%D.nx;sz+=(k-k%D.nx)/D.nx;n++;}
+      var ci=Math.round(sx/n),cj=Math.round(sz/n),ck=cj*D.nx+ci,bd=Infinity;
+      if(Y.lab[ck]!==o)for(j=0;j<N;j++)if(Y.lab[j]===o){var dx=j%D.nx-ci,dz=(j-j%D.nx)/D.nx-cj;if(dx*dx+dz*dz<bd){bd=dx*dx+dz*dz;ck=j;}}
+      E.push({k:'catch:'+o,name:'Catchment, '+bimLandHa(n*a2),g:{kind:'line',pts:[]},
+        lb:[{t:'Catchment, '+bimLandHa(n*a2),p:bimLandP(D,ck,0.1),sz:10,col:'#b8cde0',pri:4}],
+        info:{title:'A catchment: '+bimLandHa(n*a2)+' of the ground around drains to one point',rows:[['Area',bimLandHa(n*a2)],['Of the ground analysed',bimLandPct(n,tot)]],
+          method:meth+'; each cell belongs to the outlet it drains to',source:D.src}});
+    });
+    bimLandDivides(D,Y,big).forEach(function(dv){
+      var lines=[];
+      dv.lines.forEach(function(L0){
+        var L=bimLandDP(L0.map(function(g){return [D.x0+g[0]*D.cell,D.z0+g[1]*D.cell];}),D.cell*0.6,false);   /* the cells' steps eased */
         if(L.length>=2)lines.push(L.map(function(q){var y=bimLandAt(D,q[0],q[1]);return [bimLandR(q[0]),bimLandR((y===null?0:y)+0.06),bimLandR(q[1])];}));
       });
       if(!lines.length)return;
-      var ci=Math.round(sx/n),cj=Math.round(sz/n),ck=cj*D.nx+ci,bd=Infinity;
-      if(Y.lab[ck]!==o)for(j=0;j<N;j++)if(Y.lab[j]===o){var dx=j%D.nx-ci,dz=(j-j%D.nx)/D.nx-cj;if(dx*dx+dz*dz<bd){bd=dx*dx+dz*dz;ck=j;}}
-      E.push({k:'catch:'+o,name:'Catchment, '+bimLandHa(n*a2),g:{kind:'lines',lines:lines},s:{stroke:'#8fa9c4',w:1.1,dash:[6,4],op:0.85},
-        lb:[{t:'Catchment, '+bimLandHa(n*a2),p:bimLandP(D,ck,0.1),sz:10,col:'#b8cde0',pri:4}],
-        info:{title:'A catchment: '+bimLandHa(n*a2)+' of the ground around drains to one point',rows:[['Area',bimLandHa(n*a2)],['Of the ground analysed',bimLandPct(n,tot)]],
-          method:meth+'; each cell belongs to the outlet it drains to, and the dashed line is where two meet',source:D.src}});
+      E.push({k:'divide:'+dv.a+'-'+dv.b,name:'Divide between catchments',g:{kind:'lines',lines:lines},s:{stroke:'#8fa9c4',w:1.1,dash:[6,4],op:0.85},
+        info:{title:'A divide: the water either side of it runs to a different place',rows:[['One side','a catchment of '+bimLandHa(Y.outCells[dv.a]*a2)],['The other','a catchment of '+bimLandHa(Y.outCells[dv.b]*a2)]],
+          method:meth+'; the line runs along the edges between the cells of the two catchments',source:D.src}});
     });
     /* the land draining onto the site, and where its water leaves it */
     var U=bimLandUpstream(D,Y,M),nu=0,ns=0,ux=0,uz=0,um=new Uint8Array(N);
@@ -635,8 +674,7 @@ LAND = r"""  /* ================= __acad3dV165: site analysis in the model II, l
         if(!pos||pos.length<3)continue;
         var r=bimLandClip(pos.map(function(q){return bimGeoToModel(q[0],q[1]);}),box);
         if(r.length<3)continue;
-        r=bimLandDP(r,0.3,true);
-        if(r.length>=3)rings.push(r);
+        rings.push(r);   /* as published, not simplified: two zones keep their one edge */
       }
       if(!rings.length)continue;
       if(bimLandInRings([S.c[0],S.c[1]],rings)&&BIM_LAND_ZORDER.indexOf(zc)<rank){rank=BIM_LAND_ZORDER.indexOf(zc);out.site={zc:zc,p:p};}
@@ -659,7 +697,7 @@ LAND = r"""  /* ================= __acad3dV165: site analysis in the model II, l
       var p=z.p,zc=z.zc,Z=BIM_LAND_ZONES[zc],rings=z.rings;
       var zn=String(p.FLD_ZONE||p.fld_zone||'').replace(/^\s+|\s+$/g,''),bfe=bimLandBfe(p),lp=bimLandLabelAt(rings,S),sub=String(p.ZONE_SUBTY||p.zone_subty||'').replace(/^\s+|\s+$/g,'');
       E.push({k:z.key,name:'Flood zone '+zn+(zc==='floodway'?', floodway':''),g:{kind:'line',pts:[],bands:[{lv:Z.lv,col:Z.col,rings:rings.map(function(r2){return r2.map(function(q){return y3(q,0.05);});})}]},s:{fill:Z.col,fop:0.42},
-        lb:lp?[{t:'Zone '+zn+(zc==='floodway'?', floodway':'')+(bfe?', BFE '+bfe.short:''),p:y3(lp,0.1),sz:10,col:'#d9e9ff',pri:3}]:[],
+        lb:lp?[{t:'Zone '+zn+(zc==='floodway'?', floodway':(zc==='x02'?' (0.2%)':''))+(bfe?', BFE '+bfe.short:''),p:y3(lp,0.1),sz:10,col:'#d9e9ff',pri:3}]:[],
         info:{title:Z.name+': zone '+zn,rows:[['Zone',zn+(sub?' ('+sub.toLowerCase()+')':'')],['Base flood elevation',bfe?bfe.text:'not given'],['Special flood hazard area',String(p.SFHA_TF||p.sfha_tf||'').toUpperCase()==='T'?'yes':'no']],
           method:'FEMA\'s zones as published, cut to 150 m around the site',source:src}});
     });

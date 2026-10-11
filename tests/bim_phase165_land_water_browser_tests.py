@@ -305,7 +305,7 @@ async def run():
     ck = CK
     async with async_playwright() as pw:
         browser = await pw.chromium.launch()
-        ST = {'ground': 'land', 'flood': 'zones'}
+        ST = {'ground': 'land', 'flood': 'zones', 'mode': {'flood': 'slow'}}   # FEMA last: the drawing waits for it
 
         async def fresh(store, vw=(1440, 900), mobile=False):
             c = await browser.new_context(viewport={'width': vw[0], 'height': vw[1]}, has_touch=mobile, is_mobile=mobile)
@@ -348,6 +348,10 @@ async def run():
         async def analyze(pg=None):
             await (pg or page).fill('[data-saaddr]', '1 Market Street')
             await safe("()=>document.querySelector('[data-saact=\"analyze\"]').click()", pg=pg)
+            return await wait_run(pg=pg)
+
+        async def again(pg=None):
+            await safe("()=>{window.__a3dAnzView(true);document.querySelector('[data-saact=\"analyze\"]').click();}", pg=pg)
             return await wait_run(pg=pg)
 
         async def diags(a=None, pg=None):
@@ -488,10 +492,33 @@ async def run():
                             continue
                         worst = max(worst, abs(hv - y))
             ck(onlevel and worst < 0.01, "each point on a grid edge, where the ground between its two points is at the height (within %.4f m)" % worst)
+
+            def at_edge(p):
+                gx, gz = (p[0] - x0) / cell, (p[2] - z0) / cell
+                return min(abs(gx), abs(gz), abs(gx - (nx - 1)), abs(gz - (nz - 1))) < 0.003
+            ends_ok, nclosed = True, 0
+            for o in CT:
+                for line in o['dg']['g']['lines']:
+                    if line[0] == line[-1]:
+                        nclosed += 1
+                    elif not (at_edge(line[0]) and at_edge(line[-1])):
+                        ends_ok = False
+            ck(ends_ok and nclosed >= 1, "a line ends only at the edge of the ground analysed, or where it began (%d closed, round the hill and the hollow)" % nclosed)
             idx = [o for o in CT if round(int(o['dg']['k'][2:]) / 100.0 / step) % 5 == 0]
             ck(idx and all(o['dg']['lb'] and o['dg']['lb'][0]['t'] == disp(int(o['dg']['k'][2:]) / 100.0, 0) and o['dg']['s']['w'] == 1.7 for o in idx) and
                all(not o['dg']['lb'] and o['dg']['s']['w'] == 0.8 for o in CT if o not in idx),
                "every fifth an index contour, thicker, labelled with its height as a number (%s)" % [o['dg']['lb'][0]['t'] for o in idx if o['dg']['lb']])
+            HY = ['#2f7d4a', '#7fb86a', '#d9cf86', '#b98a4e', '#7d5537']
+
+            def hypso(t):
+                t = max(0.0, min(1.0, t))
+                n_ = len(HY) - 1
+                i_ = min(n_ - 1, int(math.floor(t * n_)))
+                f_ = t * n_ - i_
+                A_, B_ = [int(HY[i_][c:c + 2], 16) for c in (1, 3, 5)], [int(HY[i_ + 1][c:c + 2], 16) for c in (1, 3, 5)]
+                return '#%02x%02x%02x' % tuple(int(math.floor(A_[c] * (1 - f_) + B_[c] * f_ + 0.5)) for c in range(3))
+            want_cols = [hypso((int(o['dg']['k'][2:]) / 100.0 - datum - lo) / ((hi - lo) or 1)) for o in CT]
+            ck([o['dg']['s']['stroke'] for o in CT] == want_cols and len(set(want_cols)) == len(CT), "each line coloured by its height, from green low to brown high (%s to %s)" % (want_cols[0], want_cols[-1]))
             lgc = ((D.get('runs') or {}).get('contours') or {}).get('legend') or []
             ck(lgc and lgc[2]['name'] == 'Every 2 m; every fifth labelled with its height in metres above sea level', "the key gives the step and the unit")
 
@@ -505,6 +532,15 @@ async def run():
             ramp = await safe("()=>{var V=[],i,j;for(j=0;j<4;j++)for(i=0;i<5;i++)V.push(i);return window.__a3dLandMs(V,5,4,1.5,null);}") or []
             ck(len(ramp) == 1 and len(ramp[0]) == 4 and all(abs(p[0] - 1.5) < 1e-12 for p in ramp[0]) and sorted(p[1] for p in ramp[0]) == [0, 1, 2, 3],
                "a ramp's 1.5 contour: one line at x 1.5 running out at both edges")
+            sad = await safe("()=>[window.__a3dLandMs([1,0,0,1],2,2,0.5,null),window.__a3dLandMs([0.9,0,0,0.9],2,2,0.5,null)]") or [[], []]
+
+            def side(p):
+                return 'T' if abs(p[1]) < 1e-9 else ('B' if abs(p[1] - 1) < 1e-9 else ('L' if abs(p[0]) < 1e-9 else 'R'))
+
+            def joins(L):
+                return sorted(''.join(sorted(side(l[0]) + side(l[-1]))) for l in L)
+            ck(joins(sad[0]) == ['BL', 'RT'] and joins(sad[1]) == ['BR', 'LT'],
+               "a saddle read by its middle: at the level or above, the high corners joined; below, parted (%s, %s)" % (joins(sad[0]), joins(sad[1])))
 
             # ---------------------------------------------------------------------------------
             print("\n-- 6. Water")
@@ -533,16 +569,28 @@ async def run():
             tot_ok = sum(ok)
             big = sorted([o for o, n in Y['outCells'].items() if n >= 0.04 * tot_ok])
             CA = sorted(int(o['dg']['k'][6:]) for o in FL if o['dg']['k'].startswith('catch:'))
-            ck(CA == big and all(o['dg']['g']['kind'] == 'lines' and o['dg']['s']['dash'] for o in FL if o['dg']['k'].startswith('catch:')),
-               "the catchments of 4%% or more, %d, outlined dashed" % len(big))
-            edgefree = True
-            for o in FL:
-                if o['dg']['k'].startswith('catch:'):
-                    for line in o['dg']['g']['lines']:
-                        for p in line:
-                            if (p[0] - x0) / cell < -0.25 or (p[2] - z0) / cell < -0.25 or (p[0] - x0) / cell > nx - 0.75 or (p[2] - z0) / cell > nz - 0.75:
-                                edgefree = False
-            ck(edgefree, "the divides only: no line along the edge of the ground analysed")
+            ck(CA == big and all(o['dg']['lb'] and o['dg']['lb'][0]['t'] == 'Catchment, ' + ha(Y['outCells'][int(o['dg']['k'][6:])] * cell * cell) for o in FL if o['dg']['k'].startswith('catch:')),
+               "the catchments of 4%% or more, %d, each named with its area" % len(big))
+            # the divides worked out here: the edges between a cell of one of them and a cell of another,
+            # their corners kept within the ground analysed
+            bigs, ref = set(big), {}
+            for j in range(nz):
+                for i in range(nx):
+                    k = j * nx + i
+                    a = Y['lab'][k]
+                    if not ok[k] or a not in bigs:
+                        continue
+                    for b, c1, c2 in ((Y['lab'][k + 1] if i + 1 < nx and ok[k + 1] else None, (i + 0.5, j - 0.5), (i + 0.5, j + 0.5)),
+                                      (Y['lab'][k + nx] if j + 1 < nz and ok[k + nx] else None, (i - 0.5, j + 0.5), (i + 0.5, j + 0.5))):
+                        if b is None or b == a or b not in bigs:
+                            continue
+                        cs = ref.setdefault('%d-%d' % (min(a, b), max(a, b)), set())
+                        for c in (c1, c2):
+                            cs.add((round(max(0.0, min(nx - 1.0, c[0])), 3), round(max(0.0, min(nz - 1.0, c[1])), 3)))
+            DV = {o['dg']['k'][7:]: o for o in FL if o['dg']['k'].startswith('divide:')}
+            on_edges = all(DV[key]['dg']['s'].get('dash') and DV[key]['dg']['g']['kind'] == 'lines' and
+                           all((round((p[0] - x0) / cell, 3), round((p[2] - z0) / cell, 3)) in ref[key] for L in DV[key]['dg']['g']['lines'] for p in L) for key in DV if key in ref)
+            ck(ref and sorted(DV) == sorted(ref) and on_edges, "the divides between them dashed, each once, along the edges between their cells (%d: %s)" % (len(ref), sorted(DV)))
             nu = sum(1 for k in range(nx * nz) if U[k] and not M[k])
             uo = await el('flow', 'upstream')
             ck(uo and uo['dg']['lb'][0]['t'] == ha(nu * 25) + ' drains onto the site' and uo['dg']['g']['bands'][0]['rings'], "the land draining onto the site, %s, shaded and said" % ha(nu * 25))
@@ -563,7 +611,8 @@ async def run():
             ck(FZ.get('zone:FIX_1', {}).get('dg', {}).get('s', {}).get('fill') == '#c2416b' and FZ['zone:FIX_2']['dg']['s']['fill'] == '#3d85d8' and FZ['zone:FIX_3']['dg']['s']['fill'] == '#f0a04b',
                "the floodway crimson, the 1% blue, the 0.2% orange")
             ck(len(FZ.get('zone:FIX_2', {}).get('dg', {}).get('g', {}).get('bands', [{}])[0].get('rings', [])) == 2, "zone AE's two strips, one element")
-            ck(FZ['zone:FIX_2']['dg']['lb'][0]['t'] == 'Zone AE, BFE 315 ft' and FZ['zone:FIX_1']['dg']['lb'][0]['t'] == 'Zone AE, floodway, BFE 315 ft', "labelled with the zone and its base flood elevation")
+            ck(FZ['zone:FIX_2']['dg']['lb'][0]['t'] == 'Zone AE, BFE 315 ft' and FZ['zone:FIX_1']['dg']['lb'][0]['t'] == 'Zone AE, floodway, BFE 315 ft' and FZ['zone:FIX_3']['dg']['lb'][0]['t'] == 'Zone X (0.2%)',
+               "labelled with the zone and its base flood elevation; shaded X as the 0.2%, unshaded X being X too")
             ck(rows(FZ['zone:FIX_2']).get('Base flood elevation') == '315 ft (96.01 m), NAVD88', "the elevation in its feet, in metres, on its datum")
             inbox = all(-150.001 <= p[0] <= 150.001 and -150.001 <= p[2] <= 150.001 for o in FZ.values() for B in o['dg']['g'].get('bands', []) for R in B['rings'] for p in R)
             ck(inbox, "cut to the square analysed")
@@ -575,6 +624,25 @@ async def run():
             ck(bf[0] is None and bf[1] and bf[1]['text'] == '12.5 m, NAVD88', "no elevation where FEMA gives none; metres as metres")
             us = await safe("()=>[[40,-75],[61.2,-149.9],[21.3,-157.8],[18.2,-66.5],[13.4,144.8],[-14.3,-170.7],[51.5,-0.12],[35.7,139.7],[-33.9,151.2]].map(function(p){return window.__a3dLandUS(p[0],p[1]);})")
             ck(us == [True, True, True, True, True, True, False, False, False], "FEMA asked for the US and its territories only (%s)" % us)
+            L7 = await safe("()=>window.__a3dLandGet()")
+            feats = L7['flood']['features']
+            f3 = [f for f in feats if (f.get('p') or {}).get('FLD_AR_ID') == 'FIX_3'][0]
+
+            async def site_in(extra):
+                z = json.loads(json.dumps(f3))
+                z['p'].update(extra)
+                await safe("(v)=>window.__a3dLandSet(v)", dict(L7, flood=dict(L7['flood'], features=feats + [z])))
+                await safe("()=>window.__a3dDgRun('flood')")
+                so = await el('flood', 'site')
+                fa = {f.get('auto'): f for f in (await safe("()=>window.__a3dSaAuto()") or [])}.get('water.fema', {})
+                return (so['dg']['lb'][0]['t'] if so else None), fa.get('cls'), fa.get('sev')
+            r9 = await site_in({'FLD_AR_ID': 'FIX_9', 'FLD_ZONE': 'AE', 'ZONE_SUBTY': ' ', 'SFHA_TF': 'T'})
+            ck(r9 == ('Site: zone AE, 1% annual chance', 'constraint', 3), "two zones over the site: the more hazardous said, the 1%%, a constraint (%s)" % (r9,))
+            r9 = await site_in({'FLD_AR_ID': 'FIX_9', 'FLD_ZONE': 'AE', 'ZONE_SUBTY': 'FLOODWAY', 'SFHA_TF': 'T'})
+            ck(r9 == ('Site: zone AE, in the regulatory floodway', 'redflag', 3), "in the floodway: a red flag (%s)" % (r9,))
+            await safe("(v)=>window.__a3dLandSet(v)", L7)
+            await safe("()=>window.__a3dDgRun('flood')")
+            ck(sorted(o['dg']['k'] for o in await diags('flood')) == ['site', 'zone:FIX_1', 'zone:FIX_2', 'zone:FIX_3'], "and back as FEMA has it")
 
             # ---------------------------------------------------------------------------------
             print("\n-- 8. Findings")
@@ -599,6 +667,8 @@ async def run():
             await page.wait_for_timeout(150)
             LY = {l['id']: l for l in (await safe("()=>window.__a3dLayers()") or [])}
             ck(LY[D['layers']['slope']].get('visible') is not False, "and Show turns it on")
+            grp = await safe("()=>['dgcontours','dgslope','dgaspect','dgflow','dgponds','dgflood'].map(function(i){var r=document.querySelector('[data-anzcard=\"'+i+'\"]'),c=r&&r.closest('[data-sacat]');return c?c.getAttribute('data-sacat'):null;})")
+            ck(grp == ['landform', 'landform', 'landform', 'water', 'water', 'water'], "their rows in Analyze: contours, slope and aspect in Landform; flow, ponds and flood zones in Water (%s)" % grp)
             for a in [x for x in D['layers'] if x not in ('root', 'slope') and not x.startswith('shadow:')]:
                 await safe("(i)=>window.__a3dLayerSet(i,'visible',false)", D['layers'][a])
             # a class-0 point inside its region: all eight neighbours of the class too, away from the site
@@ -613,6 +683,22 @@ async def run():
                         break
                 if pick:
                     break
+            # where two classes meet there is one edge, filled to from both sides: no hairline between them
+            await safe("()=>{window.__a3dSetPlanView();window.__a3dCamSet({tx:0,tz:0,dist:300});}")
+            await page.wait_for_timeout(400)
+            alpha = "(P)=>{var c=document.getElementById('a3d-canvas'),r=window.devicePixelRatio||1,x=c.getContext('2d'),out=[];P.forEach(function(p){var s=window.__a3dDgToScreen(p);if(s[2]<=0.5||s[0]<30||s[1]<30||s[0]>c.clientWidth-30||s[1]>c.clientHeight-30)return;out.push(x.getImageData(Math.round(s[0]*r),Math.round(s[1]*r),1,1).data[3]);});return out;}"
+            along = []
+            for rg in (await el('slope', 'class:0'))['dg']['g']['bands'][0]['rings']:
+                for m in range(len(rg)):
+                    p_, q_ = rg[m], rg[(m + 1) % len(rg)]
+                    if min(min((u[0] - x0) / cell, (u[2] - z0) / cell, nx - 1 - (u[0] - x0) / cell, nz - 1 - (u[2] - z0) / cell) for u in (p_, q_)) < 1:
+                        continue
+                    n_ = max(1, int(math.hypot(q_[0] - p_[0], q_[2] - p_[2]) / 2))
+                    for t_ in range(n_):
+                        f_ = (t_ + 0.5) / n_
+                        along.append([p_[0] + (q_[0] - p_[0]) * f_, p_[1] + (q_[1] - p_[1]) * f_, p_[2] + (q_[2] - p_[2]) * f_])
+            al = sorted(await safe(alpha, along) or [0])
+            ck(len(al) >= 40 and al[len(al) // 2] >= 128, "where two classes meet, one edge filled to from both sides: no hairline (%d points along the edges, the middle one at %d of %d)" % (len(al), al[len(al) // 2], round(0.55 * 255)))
             await safe("(p)=>{window.__a3dSetPlanView();window.__a3dCamSet({tx:p[0],tz:p[2],dist:120});}", list(pick))
             await page.wait_for_timeout(400)
             px = "(p)=>{var s=window.__a3dDgToScreen(p),c=document.getElementById('a3d-canvas'),r=window.devicePixelRatio||1,d=c.getContext('2d').getImageData(Math.round(s[0]*r)-2,Math.round(s[1]*r)-2,5,5).data,m={},i,k,best=null;for(i=0;i<d.length;i+=4){k=d[i]+','+d[i+1]+','+d[i+2];m[k]=(m[k]||0)+1;if(!best||m[k]>m[best])best=k;}return best.split(',').map(Number);}"
@@ -644,6 +730,36 @@ async def run():
             await page.wait_for_timeout(250)
             ck(await safe("()=>window.__a3dSelSet()") == ['TOWER'], "the model over it picked first: the tower, not the class under it")
             await safe("()=>window.__a3dSelectFor([])")
+            # the floodway over the slope: each analysis laid at its own opacity, so the two read through each other
+            await safe("()=>{window.__a3dSetPlanView();window.__a3dCamSet({tx:45,tz:0,dist:300});}")
+            strip = [[45 + s_ * math.sqrt(0.5), 100.0, -s_ * math.sqrt(0.5)] for s_ in range(-120, 121, 10)]
+            for p_ in strip:
+                p_[1] = LFX.land_height(p_[0], p_[2]) - datum
+
+            async def strip_alpha(slope_on, flood_on):
+                await safe("(a)=>window.__a3dLayerSet(a[0],'visible',a[1])", [D['layers']['slope'], slope_on])
+                await safe("(a)=>window.__a3dLayerSet(a[0],'visible',a[1])", [D['layers']['flood'], flood_on])
+                await page.wait_for_timeout(300)
+                v = sorted(await safe(alpha, strip) or [0])
+                return v[len(v) // 2]
+            a_s, a_f, a_b = await strip_alpha(True, False), await strip_alpha(False, True), await strip_alpha(True, True)
+            ck(abs(a_s - 0.55 * 255) < 10 and abs(a_f - 0.42 * 255) < 10 and a_b > max(a_s, a_f) + 30,
+               "the floodway over the slope, each laid at its own opacity, reading through each other (%d, %d; together %d)" % (a_s, a_f, a_b))
+            clickp = None
+            for s_ in (-90, -70, -110, -50, 70, 90, 110):
+                p_ = [45 + s_ * math.sqrt(0.5), 0, -s_ * math.sqrt(0.5)]
+                p_[1] = LFX.land_height(p_[0], p_[2]) - datum
+                sp = await safe("(p)=>window.__a3dDgToScreen(p)", p_)
+                if sp and await safe("(a)=>window.__a3dPick(a[0],a[1])", sp[:2]) is None:
+                    clickp = p_
+                    break
+            q = await safe(at, clickp) if clickp else [0, 0]
+            await page.mouse.click(q[0], q[1])
+            await page.wait_for_timeout(250)
+            fw = await el('flood', 'zone:FIX_1')
+            ck(clickp and await safe("()=>window.__a3dSelSet()") == [fw['id']], "a click there picks the floodway, drawn over the slope, not the class under it (at %s)" % clickp)
+            await safe("()=>window.__a3dSelectFor([])")
+            await safe("(i)=>window.__a3dLayerSet(i,'visible',false)", D['layers']['flood'])
             await safe("()=>{window.__a3dSetPlanView();window.__a3dCamSet({tx:p[0],tz:p[2],dist:120});}".replace('p[0]', str(pick[0])).replace('p[2]', str(pick[2])))
             await page.wait_for_timeout(300)
             r0 = o0['dg']['g']['bands'][0]['rings'][0][0]
@@ -674,6 +790,51 @@ async def run():
                     picked.append((o['id'], await safe("(a)=>window.__a3dPick(a[0],a[1])", sp[:2])))
                     break
             ck(tried >= 3 and all(a_ == b_ for a_, b_ in picked), "a contour, several lines in one element, picked by its line, away from its words (%d of %d)" % (sum(a_ == b_ for a_, b_ in picked), tried))
+            await safe("(i)=>window.__a3dLayerSet(i,'visible',false)", D['layers']['slope'])
+            await page.wait_for_timeout(300)
+            ci = idx[0]
+            near = "(a)=>{var s=window.__a3dDgToScreen(a[0]),c=document.getElementById('a3d-canvas'),r=window.devicePixelRatio||1,d=c.getContext('2d').getImageData(Math.round(s[0]*r)-2,Math.round(s[1]*r)-2,5,5).data,n=0,i;for(i=0;i<d.length;i+=4)if(d[i+3]>100&&Math.abs(d[i]-a[1][0])+Math.abs(d[i+1]-a[1][1])+Math.abs(d[i+2]-a[1][2])<90)n++;return n;}"
+            lgb = (await safe("()=>window.__a3dDgLegend()") or {}).get('box') or [0, 0, 0, 0]
+            drawn = []
+            for o in idx:
+                cc = [int(o['dg']['s']['stroke'][i_:i_ + 2], 16) for i_ in (1, 3, 5)]
+                for line in o['dg']['g']['lines']:
+                    for m in range(0, len(line) - 1, 3):
+                        mp = [(line[m][0] + line[m + 1][0]) / 2, (line[m][1] + line[m + 1][1]) / 2, (line[m][2] + line[m + 1][2]) / 2]
+                        sp = await safe("(p)=>window.__a3dDgToScreen(p)", mp)
+                        if not sp or not (30 < sp[0] < vw[0] - 30 and 30 < sp[1] < vw[1] - 30) or any(b[0] - 14 <= sp[0] <= b[0] + b[2] + 14 and b[1] - 14 <= sp[1] <= b[1] + b[3] + 14 for b in boxes + [lgb]):
+                            continue
+                        drawn.append(await safe(near, [mp, cc]))
+            ck(len(drawn) >= 6 and sorted(drawn)[len(drawn) // 2] >= 2, "the index contours drawn along their lines in their colours (%d points, the middle one %s pixels)" % (len(drawn), sorted(drawn)[len(drawn) // 2] if drawn else None))
+            c_0 = ci['dg']['g']['lines'][0][0]
+            await safe("(i)=>window.__a3dRotateSelection([i],[0,0],Math.PI/2)", ci['id'])
+            c_1 = (await el('contours', ci['dg']['k']))['dg']['g']['lines'][0][0]
+            ck(abs(math.hypot(c_1[0], c_1[2]) - math.hypot(c_0[0], c_0[2])) < 0.02 and abs(c_1[1] - c_0[1]) < 1e-9 and (abs(c_1[0] - c_0[0]) > 1 or abs(c_1[2] - c_0[2]) > 1),
+               "a contour turned a quarter about the site: its lines turned with it")
+            await safe("()=>window.__a3dUndo()")
+            ck((await el('contours', ci['dg']['k']))['dg']['g']['lines'][0][0] == c_0, "and undone")
+            await safe("(i)=>window.__a3dLayerSet(i,'visible',true)", D['layers']['slope'])
+            keep = (await safe("()=>window.__a3dState().objs")) or []
+            fits = []
+            for o in (await el('slope', 'class:0'), ci):
+                pts = [p_ for B in o['dg']['g'].get('bands', []) for R in B.get('rings', []) for p_ in R] + [p_ for L in o['dg']['g'].get('lines', []) for p_ in L]
+                ext = max(max(p_[0] for p_ in pts) - min(p_[0] for p_ in pts), max(p_[2] for p_ in pts) - min(p_[2] for p_ in pts))
+                await safe("(o)=>{window.__a3dTestSetObjs([o]);window.__a3dCamSet({tx:0,tz:0,dist:20});window.__a3dFit();}", o)
+                fits.append((round((await safe("()=>window.__a3dState().cam") or {}).get('dist', 0)), round(ext)))
+            await safe("(o)=>window.__a3dTestSetObjs(o)", keep)
+            ck(all(d_ > 0.5 * e_ for d_, e_ in fits), "Zoom Extents frames a class by its rings and a contour by its lines (distance, extent: %s)" % fits)
+            # as the view shrinks, the key drops its sources before any analysis
+            for a in [x for x in D['layers'] if x != 'root' and not x.startswith('shadow:')]:
+                await safe("(a)=>window.__a3dLayerSet(a[0],'visible',a[1])", [D['layers'][a], a in ('contours', 'flow', 'flood')])
+            first = None
+            for hgt in range(900, 279, -20):
+                await page.set_viewport_size({'width': 1440, 'height': hgt})
+                await page.wait_for_timeout(150)
+                lg = await safe("()=>window.__a3dDgLegend()") or {}
+                if lg.get('sources') is False or lg.get('more', 0) > 0:
+                    first = (hgt, lg.get('sources'), lg.get('more'), [b['title'] for b in lg.get('blocks', [])])
+                    break
+            ck(first and first[1] is False and first[2] == 0 and len(first[3]) == 3, "as the view shrinks, the key drops its sources before any analysis (%s)" % (first,))
             for a in [x for x in D['layers'] if x != 'root' and not x.startswith('shadow:')]:
                 await safe("(i)=>window.__a3dLayerSet(i,'visible',true)", D['layers'][a])
             await page.set_viewport_size({'width': 1440, 'height': 540})
@@ -683,7 +844,8 @@ async def run():
             bx = LG.get('box') or [0, 0, 0, 99999]
             ck(LG and (LG.get('more', 0) > 0 or LG.get('sources') is False) and bx[1] + bx[3] <= sr.get('y', 0) + sr.get('h', 0) + 0.5,
                "every analysis shown in a small view: the key drops its sources, then its last blocks, and stays in the view (%s more, sources %s)" % (LG.get('more'), LG.get('sources')))
-            ck(LG.get('more', 0) == 0 or True, "(the key's blocks: %s)" % [b['title'] for b in LG.get('blocks', [])])
+            ck(LG.get('more', 0) > 0 and LG.get('moreText') == '+ %d more: their keys are in Analyze' % LG.get('more', 0),
+               "and says how many more, and where their keys are (%s; the key's blocks %s)" % (LG.get('moreText'), [b['title'] for b in LG.get('blocks', [])]))
             await page.set_viewport_size({'width': 1440, 'height': 900})
             await page.wait_for_timeout(300)
             L2 = await safe("()=>window.__a3dDgLegend()") or {}
@@ -726,6 +888,27 @@ async def run():
             await safe("()=>window.__a3dDel('OWN')")
             await safe("()=>window.__a3dDgRun('slope')")
             ck((await safe("()=>window.__a3dLandDem()") or {}).get('from') == 'tiles', "and the fine ground again once it goes")
+            # the site moved: the ground kept for where it was is not read there
+            await safe("()=>{window.__a3dSelectFor([]);window.__a3dSetPropTab('site');window.__a3dRefreshProps();}")
+            lat0 = (await safe("()=>window.__a3dSunSettings()") or {}).get('lat')
+
+            async def set_lat(v):
+                await safe("""(v)=>{var e=document.querySelector('#a3d-propsbody input[data-propmodel="sunlat"]');e.value=v;e.dispatchEvent(new Event('change',{bubbles:true}));}""", v)
+                await page.wait_for_timeout(120)
+            await set_lat(repr(lat0 + 0.01))
+            await safe("()=>window.__a3dDgRun('slope')")
+            dm1 = (await safe("()=>window.__a3dLandDem()") or {}).get('from')
+            await set_lat(repr(lat0))
+            await safe("()=>window.__a3dDgRun('slope')")
+            dm2 = (await safe("()=>window.__a3dLandDem()") or {}).get('from')
+            ck(dm1 == 'context' and dm2 == 'tiles', "the site moved: the ground kept for where it was is not read; moved back, it is (%s, %s)" % (dm1, dm2))
+            # FEMA down on a second run: the zones it gave before are kept
+            ST['mode'] = {'flood': 'abort'}
+            f4 = await again()
+            s4 = {s_['id']: s_ for s_ in f4.get('steps', [])}
+            fz4 = sorted(o['dg']['k'] for o in await diags('flood'))
+            ck(s4.get('land', {}).get('state') == 'part' and 'hazards.fema.gov could not be reached' in s4['land']['text'] and fz4 == ['site', 'zone:FIX_1', 'zone:FIX_2', 'zone:FIX_3'],
+               "FEMA down on a second run: the step says so, and the zones it gave before are kept (%s)" % fz4)
             await ctx.close()
 
             S2 = {'ground': 'land', 'flood': 'zones', 'mode': {'flood': 'abort'}}

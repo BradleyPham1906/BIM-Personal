@@ -109,7 +109,7 @@ rep("""  /* bands -- a road's noise classes -- of every element on one canvas, c
     }
 """)
 
-# ---- polylines: drawn, headed, picked by their segments ----
+# ---- polylines: drawn, and picked by their segments ----
 rep("""    if(g.kind==='segs'){
       ctx.beginPath();
       for(i=0;i+1<P.length;i+=2){""",
@@ -120,23 +120,12 @@ rep("""    if(g.kind==='segs'){
         if(lp.length<2)continue;
         if(sel){bimDgPath(ctx,lp,g.closed);ctx.setLineDash([]);ctx.strokeStyle='#ffd166';ctx.lineWidth=(s.w||1.2)+4;ctx.globalAlpha=Math.min(1,a+0.3);ctx.stroke();ctx.globalAlpha=a;}
         if(s.stroke){bimDgPath(ctx,lp,g.closed);ctx.setLineDash(s.dash||[]);ctx.strokeStyle=s.stroke;ctx.lineWidth=s.w||1.2;ctx.stroke();ctx.setLineDash([]);}
-        if(s.head&&!g.closed)bimDgHead(ctx,lp,s);
         for(i=0;i+1<lp.length;i++)if(lp[i][2]>0.5&&lp[i+1][2]>0.5)hit.segs.push([lp[i][0],lp[i][1],lp[i+1][0],lp[i+1][1]]);
         if(g.closed&&lp.length>2&&lp[0][2]>0.5&&lp[lp.length-1][2]>0.5)hit.segs.push([lp[lp.length-1][0],lp[lp.length-1][1],lp[0][0],lp[0][1]]);
       }
     }else if(g.kind==='segs'){
       ctx.beginPath();
       for(i=0;i+1<P.length;i+=2){""")
-rep("""  /* the words, the most telling first: the compass points, then each analysis's own labels, then the""",
-    """  /* an arrowhead at a polyline's end, on the screen, where the water or the wind runs out */
-  function bimDgHead(ctx,P,s){
-    var e=P[P.length-1],b=P[P.length-2];
-    if(!(e[2]>0.5&&b[2]>0.5))return;
-    var ang=Math.atan2(e[1]-b[1],e[0]-b[0]),hl=7+(s.w||1.2)*2;
-    ctx.beginPath();ctx.moveTo(e[0],e[1]);ctx.lineTo(e[0]-hl*Math.cos(ang-0.42),e[1]-hl*Math.sin(ang-0.42));ctx.lineTo(e[0]-hl*Math.cos(ang+0.42),e[1]-hl*Math.sin(ang+0.42));ctx.closePath();
-    ctx.fillStyle=s.stroke||'#e8edf2';ctx.fill();
-  }
-  /* the words, the most telling first: the compass points, then each analysis's own labels, then the""")
 
 # ---- turned, mirrored or scaled; fitted to ----
 rep("    if(g.bands)g.bands.forEach(function(B){B.pts=B.pts.map(P);});\n",
@@ -248,8 +237,9 @@ rep("""    ctx.save();
           if(b.rows.length)y+=rowH;
           if(withSrc&&b.src){ctx.font='10px sans-serif';var st=bimDgFit(ctx,b.src,inner);ops.push({k:'s',t:st,x:pad,y:y+rowH/2-1});b.st=st;w=Math.max(w,ctx.measureText(st).width);y+=rowH-2;}
         }
-        if(nb<blocks.length){ctx.font='10px sans-serif';var mt=bimDgFit(ctx,'+ '+(blocks.length-nb)+' more: their keys are in Analyze',inner);y+=6;ops.push({k:'s',t:mt,x:pad,y:y+rowH/2-1});w=Math.max(w,ctx.measureText(mt).width);y+=rowH-2;}
-        return {ops:ops,w:Math.ceil(Math.min(maxW,w+2*pad)),h:y+pad,src:withSrc,nb:nb};
+        var mt='';
+        if(nb<blocks.length){ctx.font='10px sans-serif';mt=bimDgFit(ctx,'+ '+(blocks.length-nb)+' more: their keys are in Analyze',inner);y+=6;ops.push({k:'s',t:mt,x:pad,y:y+rowH/2-1});w=Math.max(w,ctx.measureText(mt).width);y+=rowH-2;}
+        return {ops:ops,w:Math.ceil(Math.min(maxW,w+2*pad)),h:y+pad,src:withSrc,nb:nb,mt:mt};
       };
       var Y=sr.y+12;
       if(sr.x+sr.w-12>W-84&&Y<108)Y=108;   /* under the north arrow */
@@ -259,7 +249,7 @@ rep("""    ctx.save();
       var ops=LY.ops,w=LY.w,h=LY.h,X=sr.x+sr.w-w-12;
 """)
 rep("      A3D_DG.legend={box:[X,Y,w,h],blocks:blocks.map(function(bb){return {title:bb.tt,rows:bb.drawn,src:bb.st||''};})};   /* what was drawn, as drawn */\n",
-    "      A3D_DG.legend={box:[X,Y,w,h],blocks:blocks.slice(0,LY.nb).map(function(bb){return {title:bb.tt,rows:bb.drawn,src:bb.st||''};}),more:blocks.length-LY.nb,sources:LY.src};   /* what was drawn, as drawn */\n")
+    "      A3D_DG.legend={box:[X,Y,w,h],blocks:blocks.slice(0,LY.nb).map(function(bb){return {title:bb.tt,rows:bb.drawn,src:bb.st||''};}),more:blocks.length-LY.nb,moreText:LY.mt,sources:LY.src};   /* what was drawn, as drawn */\n")
 
 out = txt.encode('utf-8')
 SRC.write_bytes(out)

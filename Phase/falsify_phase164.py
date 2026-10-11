@@ -90,7 +90,8 @@ VARIANTS = {
     'typed_findings_shown': [("  function bimSaShown(){return bimSa().findings.filter(function(f){return !!f.auto;});}", "  function bimSaShown(){return bimSa().findings.filter(function(f){return true;}).slice(1);}")],
     'safill_alias_lost': [("['SITEANALYZE','RUNSITEANALYSIS','SAFILL','SITEANALYSISFILL','SAFROMMODEL']", "['SITEANALYZE','RUNSITEANALYSIS','SITEANALYSISFILL','SAFROMMODEL']")],
     'command_missing': [("    analyzesite:function(){bimAnzView();bimSiteAnalyze('');},   /* __acad3dV164 */\n", "")],
-    'version_old': [("  var BIM_APP_VERSION={v:'V164',date:'2026-10-11'};", "  var BIM_APP_VERSION={v:'V163',date:'2026-10-10'};")],
+    # RETIRED IN V165: 'version_old' -- anchored on V164's version; V165's script checks the version now.
+    # 'version_old': [("  var BIM_APP_VERSION={v:'V164',date:'2026-10-11'};", "  var BIM_APP_VERSION={v:'V163',date:'2026-10-10'};")],
 }
 
 name = sys.argv[1]

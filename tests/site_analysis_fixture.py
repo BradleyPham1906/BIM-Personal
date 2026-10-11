@@ -18,7 +18,7 @@ answer, so the app reads it as it would them:
   AMENDED FOR V165: FEMA's flood map: no zone, unless store['flood'] = 'zones' (land_fixture's).
 store['mode'] breaks a service: ctx abort|429, clim abort, acc abort, ter abort, geo none|abort, flood abort.
 Deterministic: no randomness but the climate fixture's fixed seeds."""
-import json, pathlib, re, sys
+import asyncio, json, pathlib, re, sys
 from urllib.parse import unquote
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
@@ -158,6 +158,8 @@ def route_handler(store):
             store.setdefault('hits', []).append(('flood', u))
             if mode.get('flood') == 'abort':
                 await route.abort('internetdisconnected'); return
+            if mode.get('flood') == 'slow':   # FEMA answering after everything else
+                await asyncio.sleep(2.5)
             await route.fulfill(status=200, body=json.dumps(LFX.fema_body(store.get('flood', 'none'))), headers=HDR); return
         await route.abort('addressunreachable')
     return handle
