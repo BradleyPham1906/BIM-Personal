@@ -88,6 +88,49 @@ how it is drawn.
   - Water is followed downhill cell by cell to flow lines, catchments and ponds (the D8 method,
     which the app's rain flow uses since V143). Flood zones come from the agency's map (FEMA's
     NFHL in the US).
+- **What V165 does (and why).**
+  - **The ground at site scale.** The context's terrain is a 25 by 25 grid over 600 m, a point
+    every 25 m: one point for a whole building. Analyze site fetches the same free tiles (AWS
+    Terrain Tiles, about 3.7 m a pixel at 40 degrees north at zoom 15) for 150 m around the site and
+    samples them every 5 m, kept with the project in metres above sea level so every analysis runs
+    again offline. A surface of the project's own (a survey, LandXML) is used instead where it
+    covers the site; with neither, the context's terrain, its 25 m said. The source's own
+    resolution is named on every element: the tiles carry 3DEP's 10 m or finer in the US and SRTM's
+    30 m elsewhere, so 5 m is a sampling, not a measurement.
+  - **Slope and aspect by Horn's method** (Horn, 1981, "Hill shading and the reflectance map"):
+    the fall across each cell from its eight neighbours, the centre ones counted twice; GDAL's
+    default ([xdem, terrain attributes](https://xdem.readthedocs.io/en/latest/terrain.html)). The
+    edge cells take their own value for a missing neighbour. Aspect is measured clockwise from true
+    north; under 2% a cell is flat.
+  - **Slope in the five classes above**, the steeper the darker and more saturated, as Esri's
+    Mapping Center maps slope ([aspect-slope map](https://www.esri.com/arcgis-blog/products/product/mapping/aspect-slope-map));
+    yellow to dark red, a sequential scheme that reads without red-green vision. 15% and 25% are
+    the breaks many ordinances use ([steep slopes, InRoads](https://communities.bentley.com/products/road___site_design/b/road_and_site_design_blog/posts/creating-a-steep-slopes-analysis-with-inroads-view-color-coded-slopes-tool),
+    [slope for site planning](https://atlas.co/blog/how-to-map-slope-for-site-planning/)).
+  - **Aspect read for warmth**: the slopes facing the equator warm (orange to red), those facing
+    the pole cool (blues), east and west between; a diverging scheme with a neutral middle, turned
+    for a site south of the equator. GIS's own default is a rainbow round the compass, which says
+    which way, not what it means for a building.
+  - **Contours** every 0.25 to 50 m, the step giving at most 24 lines over the area, every fifth an
+    index contour, thicker and labelled with its height above sea level; coloured on a hypsometric
+    ramp, green low to brown high.
+  - **Water.** The ground is filled by Priority-Flood (Barnes, Lehman and Mulla, 2014), each cell
+    raised to the lowest level water could leave it by, a little more every step so even a flat
+    drains; then each cell drains to its steepest neighbour (D8, O'Callaghan and Mark, 1984). Flow
+    lines are the cells draining 0.25 ha or more, ordered by Strahler's rule (two streams of one
+    order make the next), drawn wider by order, each with an arrowhead where it runs out. Catchments are the cells
+    draining to one outlet; the large ones are outlined, dashed, as the divides between them. For
+    the site: the land whose water reaches it, and where it leaves. Ponds are where the filled
+    ground stands 10 cm or more above the real one: their depth, area and volume, the deepest point
+    marked.
+  - **Flood zones from FEMA's National Flood Hazard Layer** (layer 28, the preset V134 added),
+    US sites only. The Special Flood Hazard Area, the 1% annual chance flood (zones A, AE, AH, AO,
+    AR, A99, V, VE), in blue; the regulatory floodway, the channel kept free of building, in crimson
+    over it; shaded zone X, the 0.2% annual chance flood, in orange; zone D, not determined, in
+    grey; unshaded X, minimal hazard, not drawn. The base flood elevation, where given, in its
+    feet and in metres. The colours follow the FIRM's convention of blue for the base flood; FEMA's
+    own renderer could not be read from the build environment, whose proxy refuses FEMA's host
+    ([NFHL zones](https://emilms.fema.gov/is_0273/groups/36.html)).
 
 ## 3. GIS scientists: what can be seen, and how a map is made
 

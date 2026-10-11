@@ -160,7 +160,9 @@ async def run():
             for r in R.values():
                 G.setdefault(r['grp'], []).append(r['id'])
             # AMENDED FOR V164: the six analyses Analyze site draws, first in their categories
-            ck(G == {'location': ['dgframe'], 'landform': ['survey', 'terrain', 'grading'], 'water': ['rain'], 'climate': ['dgsun', 'dgshadow', 'dgwind', 'sun', 'sunhours', 'solar'],
+            # AMENDED FOR V165: the land and water analyses, contours, slope and aspect in Landform, flow, ponds and flood in Water
+            ck(G == {'location': ['dgframe'], 'landform': ['dgcontours', 'dgslope', 'dgaspect', 'survey', 'terrain', 'grading'], 'water': ['dgflow', 'dgponds', 'dgflood', 'rain'],
+                     'climate': ['dgsun', 'dgshadow', 'dgwind', 'sun', 'sunhours', 'solar'],
                      'risk': ['dgnoise'], 'people': ['dgviews'], 'model': ['lens', 'areas', 'lod', 'stats', 'structure']},
                "each analysis in its category, or in Model (%s)" % G)
             ck(all(not r['open'] and r['bodyH'] == 0 and r['aria'] == 'false' for r in R.values()), "every row starts closed: its body takes no room")
@@ -229,7 +231,7 @@ async def run():
             await page.keyboard.press('Escape')
             await page.wait_for_timeout(100)
             vis = [k for k, r in (await rows()).items() if not r['hidden']]
-            ck(len(vis) == 18 and await safe("()=>document.querySelector('.a3d-analyze-wrap [data-anzsearch]').value") == '', "Escape empties it: every row again")   # AMENDED FOR V164: 18 rows
+            ck(len(vis) == 24 and await safe("()=>document.querySelector('.a3d-analyze-wrap [data-anzsearch]').value") == '', "Escape empties it: every row again")   # AMENDED FOR V164: 18 rows; AMENDED FOR V165: 24
             # the left panel is the one scroll container (V65)
             sc = await safe("()=>{var a=document.getElementById('a3d-leftpanel');window.__a3dAnzOpenAll(true);a.scrollTop=a.scrollHeight;return a.scrollTop;}")
             await safe("()=>window.__a3dColumnAt([210,200],0,1,1,3)")

@@ -227,8 +227,9 @@ async def run():
             ck('stages' not in stdz and len(stdz.get('cats', [])) == 10 and all(set(c) == {'id', 'n'} for c in stdz['cats']), "the standard: ten categories, no stages, no checklists")
             ck(await safe("()=>window.__acad3dV158.length>0&&/analyzesite/.test(window.__acad3dV164)") is True, "the V164 marker")
             ver = await safe("""()=>{var m=Array.prototype.map.call(document.scripts,function(s){return s.textContent;}).join('').match(/var BIM_APP_VERSION=\\{v:'(V\\d+)'/);return m?m[1]:null;}""")
-            ck(ver == 'V164', "and the app says V164 (%s)" % ver)
-            cards = await safe("()=>window.__a3dAnzCats().filter(function(c){return /^dg/.test(c.id);})") or []
+            ck(ver and int(ver[1:]) >= 164, "and the app says V164 or later (%s)" % ver)   # AMENDED FOR V165: a later version
+            # AMENDED FOR V165: the land and water rows are V165's to check; these six are as they were
+            cards = await safe("()=>window.__a3dAnzCats().filter(function(c){return /^dg(frame|sun|shadow|wind|views|noise)$/.test(c.id);})") or []
             ck(cards == [{'id': 'dgframe', 'group': 'location'}, {'id': 'dgsun', 'group': 'climate'}, {'id': 'dgshadow', 'group': 'climate'},
                          {'id': 'dgwind', 'group': 'climate'}, {'id': 'dgviews', 'group': 'people'}, {'id': 'dgnoise', 'group': 'risk'}],
                "six analysis rows, each in the category it answers (%s)" % cards)
@@ -299,6 +300,13 @@ async def run():
             ck(lay_ok, "every element on its analysis's layer, each shadow on its date's")
             ck(all('mesh' not in o for o in DG), "no element has a mesh: schedules, quantities, the LOD checks and the exports pass them by")
             ck(all(o['dg'].get('gen') and o['dg'].get('info', {}).get('title') for o in DG if o['dg']['g'].get('kind') != 'live' or True), "each keeps the analysis's own version and says what it shows")
+            # AMENDED FOR V165: the land and water layers off while the key is read, so it is V164's six as before;
+            # V165's suite reads the key with them, and its compacting
+            LAND = ('contours', 'slope', 'aspect', 'flow', 'ponds', 'flood')
+            was = {a: (LY.get(D['layers'].get(a)) or {}).get('visible') is not False for a in LAND}
+            for a in LAND:
+                if D['layers'].get(a):
+                    await safe("(i)=>window.__a3dLayerSet(i,'visible',false)", D['layers'][a])
             await safe("()=>{window.__a3dSetPlanView();window.__a3dCamSet({tx:0,tz:0,dist:300});}")
             await page.wait_for_timeout(400)
             LG = await safe("()=>window.__a3dDgLegend()") or {}
@@ -317,6 +325,9 @@ async def run():
             await safe("()=>document.querySelector('[data-saact=\"dglegend\"]').click()")
             await page.wait_for_timeout(150)
             ck(await safe("()=>window.__a3dDgLegend()") is not None, "and shows it again")
+            for a in LAND:   # AMENDED FOR V165: as they were
+                if D['layers'].get(a) and was[a]:
+                    await safe("(i)=>window.__a3dLayerSet(i,'visible',true)", D['layers'][a])
             keep = await objs()
             await safe("(o)=>{window.__a3dTestSetObjs(o.filter(function(x){return x.t==='diag';}));window.__a3dFit();}", keep)
             cam = await safe("()=>window.__a3dState().cam") or {}
@@ -691,7 +702,7 @@ async def run():
             await safe("()=>window.__a3dDgResetAnalysis('frame')")
             await safe("()=>{window.__a3dSelectFor([]);window.__a3dSetPlanView();window.__a3dCamSet({tx:0,tz:0,dist:260});}")
             await page.wait_for_timeout(400)
-            target = await by_key('site')
+            target = [o for o in await diags('noise') if o['dg']['k'] == 'site'][0]   # AMENDED FOR V165: a key is the analysis's own; slope, aspect and flood have a 'site' too
             hits = await safe("()=>window.__a3dDgHits()") or []
             hb = [h for h in hits if h['id'] == target['id'] and h['boxes']]
             ck(bool(hb), "the site's noise label is drawn, and kept to pick")
@@ -717,7 +728,8 @@ async def run():
             print("\n-- 11. The cards and the findings")
             await safe("()=>{window.__a3dSelectFor([]);window.__a3dAnzView(true);window.__a3dAnalyzeRefresh(true);}")
             await page.wait_for_timeout(200)
-            sums = await safe("()=>[].map.call(document.querySelectorAll('[data-anzcard^=\"dg\"] .a3d-anzsum'),function(e){return e.textContent;})") or []
+            # AMENDED FOR V165: V164's six rows; the land and water rows are V165's to read
+            sums = await safe("()=>[].map.call(document.querySelectorAll('[data-anzcard=\"dgframe\"],[data-anzcard=\"dgsun\"],[data-anzcard=\"dgshadow\"],[data-anzcard=\"dgwind\"],[data-anzcard=\"dgviews\"],[data-anzcard=\"dgnoise\"]'),function(r){return r.querySelector('.a3d-anzsum').textContent;})") or []
             ck(len(sums) == 6 and all('element' in t for t in sums), "each row counts its elements on its layer (%s)" % sums[:2])
             await safe("()=>document.querySelector('[data-anzact=\"dg:show:frame\"]').click()")
             await page.wait_for_timeout(150)
@@ -740,7 +752,7 @@ async def run():
             ck(shown == len([f for f in F if f.get('auto')]) and shown > 0, "the findings shown are those the data wrote (%d)" % shown)
             ck(await safe("()=>!document.querySelector('.a3d-analyze-wrap .a3d-safind button,.a3d-analyze-wrap .a3d-safind input,.a3d-analyze-wrap .a3d-safind textarea')") is True, "read only: nothing to edit in them")
             li = await safe("()=>[].map.call(document.querySelectorAll('[data-sasteps] li'),function(l){return l.className;})") or []
-            ck(len(li) == 6 and 's-ok' in li[0] and 's-skip' in li[4], "the last run's steps stay listed")
+            ck(len(li) == 7 and 's-ok' in li[0] and 's-skip' in li[5], "the last run's steps stay listed")   # AMENDED FOR V165: Ground and water is a step
             ck((await panel('[data-saact="analyze"]') or [''])[0] == 'Analyze site again', "the button: Analyze site again")
             # 'seismic' is in Environmental risk's question, nowhere in the site's own words (its steps name the noise)
             await safe("()=>{var s=document.querySelector('[data-anzsearch]');s.value='seismic';s.dispatchEvent(new Event('input',{bubbles:true}));}")
@@ -775,7 +787,8 @@ async def run():
             after = sorted((o['dg']['k'], json.dumps(o['dg']['g'], sort_keys=True)) for o in await diags())
             ck(after == before and len(after) > 30, "a reload keeps every element as it was")
             D2 = await state()
-            ck(set(D2.get('runs', {})) == set(NAMES) and D2.get('last', {}).get('steps') and D2['layers'] == D['layers'], "and the runs, the last run's steps and the layers")
+            # AMENDED FOR V165: V164's runs among them, beside the land and water ones
+            ck(set(NAMES) <= set(D2.get('runs', {})) and D2.get('last', {}).get('steps') and D2['layers'] == D['layers'], "and the runs, the last run's steps and the layers")
             await ctx.close()
 
             # ---- failures, each in a fresh browser ----
