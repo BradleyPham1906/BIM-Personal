@@ -1,7 +1,7 @@
 {
  "version": {
-  "v": "V163",
-  "date": "2026-10-10"
+  "v": "V164",
+  "date": "2026-10-11"
  },
  "commands": [
   {
@@ -101,6 +101,22 @@
    "where": [],
    "keys": null,
    "anchor": "cmd-ANALYZEOFF"
+  },
+  {
+   "id": "cmd:ANALYZESITE",
+   "name": "ANALYZESITE",
+   "aliases": [
+    "SITEANALYZE",
+    "RUNSITEANALYSIS",
+    "SAFILL",
+    "SITEANALYSISFILL",
+    "SAFROMMODEL"
+   ],
+   "desc": "Analyze site: get what is around the site from free open data and draw each analysis in the model -- compass, sun paths, shadows, winds, views, noise -- on Layers, Site analysis; one undo step",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-ANALYZESITE"
   },
   {
    "id": "cmd:ARC",
@@ -1929,19 +1945,6 @@
    "anchor": "cmd-ROTATE"
   },
   {
-   "id": "cmd:SAFILL",
-   "name": "SAFILL",
-   "aliases": [
-    "SITEANALYSISFILL",
-    "SAFROMMODEL"
-   ],
-   "desc": "Fill the site analysis from what the model already knows: location, context, property, terrain, sun, access",
-   "kind": "cmd",
-   "where": [],
-   "keys": null,
-   "anchor": "cmd-SAFILL"
-  },
-  {
    "id": "cmd:SAVE",
    "name": "SAVE",
    "aliases": [
@@ -2071,7 +2074,7 @@
     "SITEAN",
     "SITEPROCESS"
    ],
-   "desc": "Site analysis, in the Analyze tab: the standard process, ten categories, findings with their sources, on the plan",
+   "desc": "Site analysis, in the Analyze tab: Analyze site, the ten categories, the analyses drawn in the model and the findings with their sources",
    "kind": "cmd",
    "where": [],
    "keys": null,

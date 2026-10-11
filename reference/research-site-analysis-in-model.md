@@ -173,6 +173,26 @@ how it is drawn.
   almost never its traffic. So the level is a screening estimate: the class's typical flow (§4)
   through the basic formula, at the site's nearest façade. It is labelled as an estimate, with
   the assumptions named, and a survey is recommended where it matters.
+- **What V164 does (and why), found by drawing it.**
+  - The distance term as built: −10 log10(d′/13.5), d′ the slant distance from a line 3.5 m in from
+    the kerb and 0.5 m up, to a point 4 m up. It is 0 dB at 10 m from the kerb, as the basic level
+    requires; the speed and heavy-vehicle correction is 0 dB at 75 km/h with none heavy. No class
+    reaches past 300 m.
+  - **Unscreened, the map says nothing.** Drawn as plain bands, a motorway's 65 dB class reached the
+    300 m limit on both sides and every class covered every street around the site. Real noise
+    maps are canyons: loud along the street, quiet behind the first row of buildings. So each class
+    is now found every 15 m along the road, on each side, out to the first building, and behind it
+    the level is less the building's screening.
+  - **The screening is ISO 9613-2's barrier term** at 500 Hz: Dz = 10 log10(3 + 20 z / λ), z the
+    path over the building's roof less the straight path, λ = 0.686 m; nothing where the roof is
+    under the line of sight; at most 20 dB, the standard's limit for one edge. Mixing it with CRTN is
+    a screening estimate's licence, and it is said so. Only the first building on a line counts, and
+    the ground is taken as hard, so the estimate still errs loud.
+  - **Colours.** DIN 18005's named classes from 55 dB: orange, red, crimson, violet, blue. The
+    standard's exact RGB values are not free, so the colours are the app's own, after the names.
+  - **Traffic.** FHWA's typical daily ranges by functional class, the urban figure where 40 or more
+    buildings stand in the context, the rural otherwise; a slip road a quarter of its road. The urban
+    collector and local figures are the app's assumption, said so in Properties.
 
 ## 6. Analysts and planners: land use and form
 

@@ -201,8 +201,9 @@ async def run():
               return [].map.call(w.querySelectorAll('[data-anzview]'),function(b){return [b.getAttribute('data-anzview'),b.textContent,b.getAttribute('aria-selected')];});}""")
             # AMENDED FOR V162: one Analyze -- no switch; the site analysis and the analyses in one list
             ck(sw == [], "Analyze has no switch: it is one list (%s)" % sw)
-            ck(await safe("()=>{var w=document.querySelector('.a3d-analyze-wrap');return !!w&&w===document.querySelector('.a3d-sa-wrap')&&!!w.querySelector('[data-sastage]')&&!!w.querySelector('[data-anzcard]')&&document.getElementById('a3d-shell').dataset.tab==='analyze';}"),
-               "the site analysis's stages and the analyses' rows in the one tab body")
+            # AMENDED FOR V164: no stages: the site and its Analyze site button head the list
+            ck(await safe("()=>{var w=document.querySelector('.a3d-analyze-wrap');return !!w&&w===document.querySelector('.a3d-sa-wrap')&&!!w.querySelector('[data-anzsec=\"site\"] [data-saact=\"analyze\"]')&&!!w.querySelector('[data-anzcard]')&&document.getElementById('a3d-shell').dataset.tab==='analyze';}"),
+               "the site analysis's site and button, and the analyses' rows, in the one tab body")
             ck(await safe("()=>!!document.querySelector('.a3d-analyze-wrap [data-sacat=\"climate\"] [data-anzcard=\"sunhours\"]')"), "the analyses inside their categories: Sun hours in Climate")
             ck(await safe("()=>!!document.querySelector('.a3d-analyze-wrap [data-anzcard]')"), "and the analyses are there")
             await safe("()=>window.__a3dRunCmd('siteanalysis')")

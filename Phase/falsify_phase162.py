@@ -14,8 +14,9 @@ VARIANTS = {
     'climate_data_gone': [("climate:function(){return bimClbSaHtml();},", "")],
     'no_shared_links': [("var BIM_SA_SEE={risk:['climate','Air quality and earthquakes come with the climate data'],people:['access','The census and the daily needs within a walk come with the access data']};", "var BIM_SA_SEE={};")],
     'rows_open_with_category': [(".a3d-anzcard.open>.a3d-anzbody{display:block}", ".a3d-anzcard.open .a3d-anzbody{display:block}")],
-    'never_whole_category': [("whole=!q||bimAnzWordsHit(q,name+' '+bimAnzTexts(K[i],'.a3d-saq,.a3d-clsec,.a3d-salink,.a3d-safind,.a3d-sachk'));", "whole=!q;")],
-    'always_whole_category': [("whole=!q||bimAnzWordsHit(q,name+' '+bimAnzTexts(K[i],'.a3d-saq,.a3d-clsec,.a3d-salink,.a3d-safind,.a3d-sachk'));", "whole=true;")],
+    # RE-ANCHORED IN V164: the checklists' text is no longer searched, the checklists being gone.
+    'never_whole_category': [("whole=!q||bimAnzWordsHit(q,name+' '+bimAnzTexts(K[i],'.a3d-saq,.a3d-clsec,.a3d-salink,.a3d-safind'));", "whole=!q;")],
+    'always_whole_category': [("whole=!q||bimAnzWordsHit(q,name+' '+bimAnzTexts(K[i],'.a3d-saq,.a3d-clsec,.a3d-salink,.a3d-safind'));", "whole=true;")],
     'words_run_together': [("while((n=w.nextNode()))s.push(n.nodeValue);\n    return s.join(' ');", "while((n=w.nextNode()))s.push(n.nodeValue);\n    return s.join('');")],
     'search_not_opened': [("K[i].classList.toggle('qhit',!!q&&on);", "K[i].classList.toggle('qhit',false);")],
     'model_unfiltered': [("for(j=0;j<R.length;j++){hit=!q||bimAnzWordsHit(q,bimAnzRowText(R[j],name));show(R[j],hit);if(hit)k++;}", "for(j=0;j<R.length;j++){hit=true;show(R[j],hit);if(hit)k++;}")],
@@ -75,7 +76,8 @@ VARIANTS = {
     # ---- the open-all hook reaches the rows in their categories ----
     'open_all_rows_only': [("if(on!==false&&c.group!=='model')bimSaToggle(c.group,true);", "")],
     'header_squashed': [("#a3d-shell .a3d-projhead{flex-shrink:0}", "#a3d-shell[data-tab=\"analyze\"] .a3d-projhead{flex-shrink:0}")],
-    'version_old': [("  var BIM_APP_VERSION={v:'V162',date:'2026-10-10'};", "  var BIM_APP_VERSION={v:'V161',date:'2026-10-10'};")],
+    # RETIRED IN V164: 'version_old' -- anchored on V162's version, gone since V163; the newest phase's script checks it.
+    # 'version_old': [("  var BIM_APP_VERSION={v:'V162',date:'2026-10-10'};", "  var BIM_APP_VERSION={v:'V161',date:'2026-10-10'};")],
 }
 
 name = sys.argv[1]

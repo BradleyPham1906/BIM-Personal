@@ -2,11 +2,11 @@
 
 **Read this first in a new session.** One page. The detail lives in the docs listed at the bottom.
 
-    canvas_v10.html   2966477 bytes
-    sha256            7fac61cb6717f63cd883c9471ada85eca6608c26e67febc3a1edf8db10161e8a
-    markers           __acad3dV60 ... __acad3dV163, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
+    canvas_v10.html   3041149 bytes
+    sha256            8443b9f531a762f90e397c6e8f117d63a4ebd8b7ac687020f9d31a11a831e097
+    markers           __acad3dV60 ... __acad3dV164, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
                       __acad3dV121b
-    tests             120 suites, 5386 checks, 0 failures
+    tests             121 suites, 5521 checks, 0 failures
 
     The user guide (V142): every phase updates docs/src/, its log entry and BIM_APP_VERSION, then
     runs tools/dump_catalog.py and tools/build_docs.py. The V142 suite and the Pages workflow
@@ -102,8 +102,8 @@ three tiers: compact up to 720 px wide or 500 px high, medium up to 1024 px, des
 | 161 | Site analysis SA4: access and people | **Done** (see Recently finished): ACCESSGET from OpenStreetMap (one Overpass request: the network, places, parks, stops and routes) and the US Census (TIGERweb, the ACS 5-year), free; walk times from the lot along the network (Dijkstra, 80 m a minute, steps slower, leaving the lot anywhere along its frontage), the rings of 5, 10 and 15 minutes as service-area lines; daily needs in seven kinds (a park to its edge); stops grouped with their lines; the frontage streets with class, speed, lanes, sidewalks; LEED ND's intersection density and route directness; the tract, county and state with margins of error (the Census Bureau's formulas, differences tested at 90%); eight findings; a Walk times layer on the plan; the Access and people board (ten indicators, eight figures). Not yet: GTFS frequency, cycling and slope-aware walks, census figures for the whole walk shed | `reference/research-access-people.md`. |
 | 162 | One Analyze; the boards are pages of the set | **Done** (see Recently finished): Analyze is one list by the ten categories, each with its data, analyses and findings, Model at the end, one search; the boards are pages in Presentation beside the sheets (thumbnail, the main view, Present, Print set, + Board), and Analyze links to them | The owner: "they should be just one ... it should be on the presentation layer". `reference/research-one-analyze-boards.md`. |
 | 163 | Open SketchUp files | **Done** (see Recently finished): openskp's TypeScript reader (MIT, with fflate and earcut) bundled and compiled to ES5 syntax by `tools/openskp/build_reader.mjs`, inlined by its hash as a script of its own, the licences in it; a `.skp` from any SketchUp (the 2021 ZIP too) opens as locked solids per placement and material, each face once, the tags as sub-layers of the file's layer (colour, on and off), see-through materials on a sub-layer at their opacity, textures by the colour SketchUp keeps with them, named components as Assets blocks; Properties says where each came from; Import CAD, SKPIN, the library's Import. Not yet: textures drawn as images, a face's own tag, hidden instances, SketchUp's scenes as views | `reference/research-sketchup-import.md`. | The owner chose this from openskp (github.com/iamahsanmehmood/openskp): a file toolkit in five languages, not a modelling app, so only the browser reader is taken. After V162, as the owner asked. |
-| 164 | Site analysis in the model I: the button, and the climate around the building | **Start here.** The owner: "all i want is button then the analysis run ... put that under analysis layers, built straight in the model that i can interact with", and "a live analysis that is editable". **Analyze site** needs only the site's place; it fetches the context, climate, access and zoning at once, runs every analysis, one undo step, each source listed as it arrives or fails. Every diagram is live (run again refreshes it) and editable (move, restyle, relabel, delete; what you changed is kept through a re-run and can be reset), with its reading, method and source in Properties, out of schedules and exports. This phase: the engine; the compass ring and distance rings; the sun's paths for June, March and September, and December with their hours, and the sun now; the shadows at 9, 12 and 15 on the solstices and the equinox; the winds by season and the strongest; the views (an isovist at eye height and from the top floor against the context, with what lies in each open direction); road noise (a CRTN screening estimate from road class, in DIN 18005's 5 dB bands). Removed from Analyze: the stages, the questions and brief, typed findings, photographs and checklists (stored data kept). The boards stay | `reference/research-site-analysis-in-model.md` (sections 1, 3, 5, 7). |
-| 165 | Site analysis in the model II: land and water | Contours coloured by height, slope in five classes (15% and 25% the decision points), aspect, flow lines and catchments, ponds, flood zones; each a live, editable layer of the same button | `reference/research-site-analysis-in-model.md` (2). |
+| 164 | Site analysis in the model I: the button, and the climate around the building | **Done** (see Recently finished): **Analyze site** (`ANALYZESITE`) from the site's place or an address -- the context (300 m at least), then the access, the climate with the site's time zone beside them, the zoning where a council layer covers the property, each step listed (Done, Partly, Failed, Skipped), one undo step; six analyses drawn as live, editable `diag` elements on Layers > Site analysis (compass and distance rings, sun paths on a dome, the model's shadows on three dates, winds by season and the strongest, isovists and named views, road noise by CRTN screened behind buildings by ISO 9613-2); kept through a re-run when changed, deleted stays deleted, Reset; a key on the view; each a row in its category. Removed: the stages, Define, typed findings, photographs, pins, checklists | `reference/research-site-analysis-in-model.md` (sections 1, 3, 5, 7). |
+| 165 | Site analysis in the model II: land and water | **Start here.** Contours coloured by height, slope in five classes (15% and 25% the decision points), aspect, flow lines and catchments, ponds, flood zones; each a live, editable layer of the same button | `reference/research-site-analysis-in-model.md` (2). |
 | 166 | Site analysis in the model III: movement | The street hierarchy by class, cycling level of traffic stress (Furth's tables), transit stops and lines with their 8- and 12-minute catchments (PTAL's walk limits), walk times, the way to each daily need, vehicle entries and parking | `reference/research-site-analysis-in-model.md` (4). |
 | 167 | Site analysis in the model IV: land | Land use in LBCS colours, figure-ground, green and trees, zoning on the plan | `reference/research-site-analysis-in-model.md` (6). |
 | 168 | Site analysis SA5: tools and synthesis, ArcGIS's way | One pane for every analysis tool (typed parameters checked as filled, Run, messages, History to rerun from, results as layers); buffer, distance, slope classes, exclusions, weighted suitability in Esri's four steps (criteria, transform, weight, locate); the constraints and opportunities map; the buildable area; sun hours on the GPU; each tool a guide page in one template (summary, usage, parameters, how it works) | `reference/research-arcgis-site-analysis.md` (1). |
@@ -166,7 +166,23 @@ when it starts (V111 to V138 went to other work; V139 to V181 are in NOW).
 | 118 | Blocks and data | ATTDEF ATTEDIT BEDIT WBLOCK DATAEXTRACTION TABLESTYLE TABLEDIT TABLEEXPORT | First phase that's about the disciplines, not drafting. BLOCK and INSERT landed in V124, as the Assets library's blocks: saved records inserted as independent copies. A block reference that follows its definition (what BEDIT edits) is not built. |
 | 119 | Sheets and plotting, rest | MVIEW (draw a viewport on the paper) PAGESETUP (plot settings beyond Sheet Setup) PUBLISH (V122's Print set prints every sheet in one job; a chosen subset and page setups remain) EXPORTPDF (vector PDF of a sheet) VPLAYER (per-viewport layer visibility) viewport lock | LAYOUT, MSPACE and PSPACE landed in V116, with layout tabs and model space through a viewport. |
 
-**Recently finished:** Phase 163 (V163), **SketchUp files open as the app's own objects**.
+**Recently finished:** Phase 164 (V164), **site analysis in the model, from one button**.
+- The owner: "all i want is button then the analysis run ... then put that under analysis layers,
+  built straight in the model that i can interact with", "a live analysis that is editable", and
+  the checklist removed entirely.
+- **Analyze site** needs only the site's place (or an address): it fetches the context, the
+  access, the climate with the time zone and the zoning, lists each step as it arrives or fails,
+  and draws six analyses on Layers > Site analysis -- compass and distance, sun paths, shadows,
+  winds, views, noise. One undo step.
+- Each element is the analysis's and yours: moved, turned, restyled or relabelled it is kept
+  through a re-run; deleted it stays deleted; Reset gives it back. Properties says what it shows,
+  how, and from where. The stages, Define, typed findings, photographs, pins and checklists are gone.
+- **Checked** in 171 checks against the standards and geometry worked out again in Python (CRTN,
+  ISO 9613-2, the sight lines, the wind binned again, the sun's declination), with every service
+  answered by a fixture and each one broken in turn, and a project from before V164 opened; 69
+  falsify variants, all caught; six older suites amended.
+
+Phase 163 (V163), **SketchUp files open as the app's own objects**.
 - The owner asked for openskp's code ("they opensource sketchup like app ... make it work in our
   app") and chose Open .skp files. Its reader goes in as written, compiled to ES5 syntax by a
   pinned, reproducible build, its licence and its two packages' in the page.

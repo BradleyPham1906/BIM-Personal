@@ -937,11 +937,30 @@ body.a3d-clb-open #a3d-dock,body.a3d-clb-open .a3d-tpal{display:none!important}
   .a3d-clb-card,.a3d-clb-kpi,.a3d-clb-notes{break-inside:avoid;page-break-inside:avoid}
   @page{size:A3 landscape;margin:10mm}
 }
-.a3d-sastages{display:flex;flex-wrap:wrap;gap:3px;margin:0 0 4px}
-.a3d-sastage{flex:1 0 auto;min-width:34px;border:1px solid rgba(255,255,255,.14);border-radius:6px;background:transparent;color:#9aa3ad;font:inherit;font-size:11px;padding:3px 6px;min-height:26px;cursor:pointer;white-space:nowrap}
-.a3d-sastage.done{color:#81c784;border-color:rgba(129,199,132,.35)}
-.a3d-sastage.on{background:#2f6fd6;border-color:#2f6fd6;color:#fff}
-.a3d-sastagecap{font-size:11.5px;color:#aab4bf;margin:0 2px 10px;line-height:1.4}
+/* __acad3dV164: Analyze site, what each source brought, and the analyses' legends */
+.a3d-sarun{border-top:0;padding-top:2px}
+.a3d-sarun .a3d-sago{min-height:30px;padding:0 14px;font-size:12.5px;font-weight:600}
+.a3d-sarun .a3d-saval .a3d-anzbtn{margin:2px 4px 2px 0}
+.a3d-sasteps{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-direction:column;gap:5px}
+.a3d-sastep{display:grid;grid-template-columns:10px minmax(0,1fr) auto;column-gap:7px;align-items:center;font-size:12px;line-height:1.35;color:#d5dae0}
+.a3d-sastepic{width:8px;height:8px;border-radius:50%;box-sizing:border-box;border:1px solid #6b7785}
+.a3d-sastep.s-ok .a3d-sastepic{background:#30a46c;border-color:#30a46c}
+.a3d-sastep.s-fail .a3d-sastepic{background:#e5484d;border-color:#e5484d}
+.a3d-sastep.s-busy .a3d-sastepic{background:#f5a524;border-color:#f5a524;animation:a3d-sapulse .8s ease-in-out infinite alternate}
+.a3d-sastep.s-part .a3d-sastepic{background:#f5a524;border-color:#f5a524}
+.a3d-sastep.s-skip .a3d-sastepic{background:#6b7785}
+.a3d-sastepst{font-size:10.5px;color:#8a96a3;white-space:nowrap}
+.a3d-sastep.s-fail .a3d-sastepst{color:#ef8a8d}
+.a3d-sastep.s-part .a3d-sastepst{color:#f5b54a}
+.a3d-sastept{grid-column:2/4;font-size:11px;color:#8a96a3;overflow-wrap:anywhere}
+@keyframes a3d-sapulse{from{opacity:.35}to{opacity:1}}
+@media (prefers-reduced-motion:reduce){.a3d-sastep.s-busy .a3d-sastepic{animation:none}}
+.a3d-dgleg{display:flex;flex-wrap:wrap;gap:4px 10px;margin:4px 0 4px;font-size:11px;color:#c9d1d9}
+.a3d-dglegi{display:inline-flex;align-items:center;gap:5px}
+.a3d-dglegi i{display:inline-block;width:12px;height:8px;border-radius:2px;flex:none}
+.a3d-dglegi i.k-line,.a3d-dglegi i.k-dash{height:0;border-radius:0;border-top:2px solid currentColor}
+.a3d-dglegi i.k-dash{border-top-style:dashed}
+.a3d-dglegi i.k-dot{width:8px;height:8px;border-radius:50%}
 .a3d-sasec{border-top:1px solid rgba(255,255,255,.08);padding:8px 2px 10px}
 .a3d-sasechd{font-size:11px;font-weight:600;color:#8a96a3;margin:0 0 6px}
 .a3d-sarow{display:flex;align-items:center;gap:8px;margin:0 0 6px;font-size:12px}
@@ -979,30 +998,19 @@ body.light-theme .a3d-salink,body.light-theme .a3d-sacap{color:#555}
 .a3d-safm{font-size:10.5px;color:#8a96a3;line-height:1.4}
 .a3d-safm b{font-weight:600}
 .a3d-safm .k-constraint{color:#f5b54a}.a3d-safm .k-opportunity{color:#5cc48d}.a3d-safm .k-redflag{color:#ef8a8d}
-.a3d-safph{display:block;max-width:100%;max-height:150px;border-radius:5px;margin:5px 0 2px}
-.a3d-safed{margin:6px 0 2px;padding:7px 8px;border-radius:6px;background:rgba(255,255,255,.04)}
-.a3d-sachk{display:flex;align-items:flex-start;gap:7px;font-size:12px;color:#c9d1d9;margin:0 0 4px;line-height:1.35;cursor:pointer}
-.a3d-sachk input{margin:2px 0 0;flex:none}
-.a3d-sachk.on span{color:#8a96a3;text-decoration:line-through}
 .a3d-sachkhd{font-size:11px;color:#8a96a3;margin:8px 0 4px}
 .a3d-saacts{display:flex;flex-wrap:wrap;gap:5px;margin:6px 0 0}
 .a3d-sanote{font-size:11.5px;color:#8a96a3;margin:0 0 6px;line-height:1.4}
 @media(pointer:coarse){
-.a3d-sastage{min-height:36px;font-size:12.5px;padding:4px 10px}
+.a3d-sarun .a3d-sago{min-height:40px}
 .a3d-sa select,.a3d-sa input[type=text],.a3d-sa input[type=date],.a3d-sa textarea{min-height:36px;font-size:16px}
-.a3d-sachk{font-size:13.5px;min-height:30px}
-.a3d-sachk input{width:20px;height:20px}
 }
-body.light-theme .a3d-sastage{border-color:rgba(0,0,0,.15);color:#555}
-body.light-theme .a3d-sastage.on{color:#fff}
-body.light-theme .a3d-sastage.done{color:#2e7d32;border-color:rgba(46,125,50,.35)}
 body.light-theme .a3d-sasec{border-top-color:rgba(0,0,0,.08)}
 body.light-theme .a3d-sa select,body.light-theme .a3d-sa input[type=text],body.light-theme .a3d-sa input[type=date],body.light-theme .a3d-sa textarea{background:#fff;border-color:#c9ced4;color:#222}
-body.light-theme .a3d-saval,body.light-theme .a3d-safv,body.light-theme .a3d-sachk{color:#333}
-body.light-theme .a3d-sastagecap,body.light-theme .a3d-saq,body.light-theme .a3d-safm,body.light-theme .a3d-sanote,body.light-theme .a3d-sasechd,body.light-theme .a3d-sachkhd,body.light-theme .a3d-sarow>label,body.light-theme .a3d-sarow>.a3d-salab{color:#6b737c}
+body.light-theme .a3d-saval,body.light-theme .a3d-safv,body.light-theme .a3d-sastep,body.light-theme .a3d-dgleg{color:#333}
+body.light-theme .a3d-sastept,body.light-theme .a3d-sastepst,body.light-theme .a3d-saq,body.light-theme .a3d-safm,body.light-theme .a3d-sanote,body.light-theme .a3d-sasechd,body.light-theme .a3d-sachkhd,body.light-theme .a3d-sarow>label,body.light-theme .a3d-sarow>.a3d-salab{color:#6b737c}
 body.light-theme .a3d-saflags{background:rgba(229,72,77,.08)}
 body.light-theme .a3d-saflag{color:#9b1c20}
-body.light-theme .a3d-safed{background:rgba(0,0,0,.035)}
 .a3d-terrband{display:flex;align-items:center;gap:7px;font-size:11px;color:#c9d1d9}
 .a3d-terrband i{width:12px;height:10px;border-radius:2px;flex:none}.a3d-terrbl{flex:1}.a3d-terrba{color:#9aa5b0}
 .a3d-terrband-0{opacity:.45}
@@ -1447,7 +1455,7 @@ body.a3d-tree-docked #a3d-leftpanel > .a3d-tree .a3d-palhd .a3d-palbtns{flex-wra
     ['GEOIMPORT',['IMPORTGEOJSON','KML','GEOJSON'],'geoimport','Import GeoJSON or KML as site data, placed by longitude and latitude'],
     /* __acad3dV133: site context */
     ['CONTEXT',['SITECONTEXT','OSM'],'context','Get the buildings, roads, bridges, tunnels, railways, airports, power lines, land use, water, green, trees and terrain around the site, from OpenStreetMap and AWS Terrain Tiles'],   /* __acad3dV158: V157's kinds named */
-    ['SITEANALYSIS',['SA','SITEAN','SITEPROCESS'],'siteanalysis','Site analysis, in the Analyze tab: the standard process, ten categories, findings with their sources, on the plan'],   /* __acad3dV158; __acad3dV159 */
+    ['SITEANALYSIS',['SA','SITEAN','SITEPROCESS'],'siteanalysis','Site analysis, in the Analyze tab: Analyze site, the ten categories, the analyses drawn in the model and the findings with their sources'],   /* __acad3dV158; __acad3dV159 */
     ['ZONING',['ZONINGSUMMARY','ZONINGANALYSIS','ZONE'],'zoning','The site\'s zoning: district, uses, FAR, height, setbacks by side, steps and angular planes, coverage, parking (Site analysis)'],   /* __acad3dV160 */
     ['ENVELOPE',['ZONINGENVELOPE','BUILDABLEENVELOPE','ENV'],'envelope','Build the zoning envelope in 3D from the zoning record and the property, and flag massing outside it'],
     ['ZONINGBOARD',['YIELD','YIELDSTUDY','FEASIBILITY'],'zoningboard','The Zoning and yield board: the zoning analysis table, sections, the rules by side, the plan, floor plates, the yield'],
@@ -1456,7 +1464,7 @@ body.a3d-tree-docked #a3d-leftpanel > .a3d-tree .a3d-palhd .a3d-palbtns{flex-wra
     ['ACCESSGET',['GETACCESS','CENSUSGET','WALKABILITYDATA'],'accessget','Get walk times to daily needs and transit, the streets the lot fronts, connectivity, and the census tract\'s people, from OpenStreetMap and the US Census (free, no key)'],   /* __acad3dV161 */
     ['WALKTIMES',['WALKSHED','ISOCHRONES','SERVICEAREA'],'walktimes','Draw the walk times (5, 10 and 15 minutes along the streets from the lot) on the plan, as a layer under Analysis'],
     ['CLIMATEGET',['GETCLIMATE','WEATHERDATA','CLIMATEDATA'],'climateget','Get the site\'s climate (ten years of ERA5), air quality (PM2.5) and earthquakes within 100 km, from free open sources'],   /* __acad3dV159 */
-    ['SAFILL',['SITEANALYSISFILL','SAFROMMODEL'],'safill','Fill the site analysis from what the model already knows: location, context, property, terrain, sun, access'],
+    ['ANALYZESITE',['SITEANALYZE','RUNSITEANALYSIS','SAFILL','SITEANALYSISFILL','SAFROMMODEL'],'analyzesite','Analyze site: get what is around the site from free open data and draw each analysis in the model -- compass, sun paths, shadows, winds, views, noise -- on Layers, Site analysis; one undo step'],   /* __acad3dV164 */
     ['CONTEXTREMOVE',['CONTEXTCLEAR'],'contextremove','Remove the site context'],
     /* __acad3dV139: LOD and CityJSON */
     ['LODCHECK',['CHECKSOLIDS','VALIDATESOLIDS','VAL3DITY'],'lodcheck','Check every building: its LOD, and whether it is a valid solid (closed, outward, flat faces, one piece)'],
@@ -5695,8 +5703,10 @@ try{
   function bimSnapshotState(){
     return JSON.stringify({objs:A3D.objs,levels:A3D.levels,grids:A3D.grids,layers:A3D.layers,counts:A3D.counts,activeLevel:A3D.activeLevel,activeLayer:A3D.activeLayer,views:A3D.views,levelFilter:A3D.levelFilter,types:A3D.types,activeWallType:A3D.activeWallType,sheets:A3D.sheets,titleBlock:A3D.titleBlock,buildings:A3D.buildings,activeBuilding:A3D.activeBuilding,site:A3D.site,roomScheme:A3D.roomScheme||'',classifications:A3D.classifications,resultLayers:A3D.resultLayers||[],pres:A3D.pres||null});   /* __acad3dV148; __acad3dV162 */
   }
+  /* __acad3dV164: held while a run of many steps is under way, after the one snapshot it takes */
+  var bimUndoHold=false;
   function pushUndo(){
-    if(undoSuspend)return;
+    if(undoSuspend||bimUndoHold)return;
     UNDO_STACK.push(bimSnapshotState());
     if(UNDO_STACK.length>UNDO_MAX)UNDO_STACK.shift();
     REDO_STACK.length=0;
@@ -6525,10 +6535,6 @@ try{
         A3D.sk=null;
         openLeaderTextDlg(la,le,lt);
       }
-    }else if(sk.tool==='sapin'){   /* __acad3dV158: a finding placed on the plan */
-      var saF=sk.fid;
-      A3D.sk=null;
-      bimSaPlace(saF,[gx,gz]);
     }else if(sk.tool==='profileview'){   /* __acad3dV127 */
       var pvA=objById(sk.alignId);
       A3D.sk=null;
@@ -17369,6 +17375,7 @@ try{
       (open?'<div class="a3d-pgbody">'+rowsHtml+'</div>':'');
   }
   function bimObjTypeLabel(o){
+    if(bimIsDiag(o))return 'Site analysis : '+((bimDgAn(o.dg.a)||{}).name||'Diagram');   /* __acad3dV164 */
     if(o&&o.t==='terrain')return 'Topography : TIN Surface';   /* __acad3dV108 */
     if(o.bim&&o.bim.type){
       var t=o.bim.type;
@@ -18347,7 +18354,7 @@ try{
   /* ================= __acad3dV142: the user guide, and versions =================
      The guide is in docs/ beside the app, on the same site (and in the repository, so it opens
      offline). Its command reference has a section per command, anchored by the command's id. */
-  var BIM_APP_VERSION={v:'V163',date:'2026-10-10'};   /* __acad3dV162; __acad3dV163 */
+  var BIM_APP_VERSION={v:'V164',date:'2026-10-11'};   /* __acad3dV162; __acad3dV163; __acad3dV164 */
   var BIM_DOCS_BASE='docs/';
   /* a command's anchor in the reference: cmd:LINE -> cmd-LINE, act:bim:wall -> act-bim-wall */
   function bimDocsAnchor(id){return String(id||'').replace(/[^A-Za-z0-9_-]+/g,'-');}
@@ -19037,7 +19044,8 @@ try{
      line; the whole status, the legend and every other action a click away. A row is opened by the
      viewer, and stays open, in this browser. */
   /* __acad3dV162: an analysis sits in the category it answers; what reads the model itself is Model */
-  var BIM_ANZ_GROUP_OF={survey:'landform',terrain:'landform',grading:'landform',rain:'water',sun:'climate',sunhours:'climate',solar:'climate'};
+  var BIM_ANZ_GROUP_OF={survey:'landform',terrain:'landform',grading:'landform',rain:'water',sun:'climate',sunhours:'climate',solar:'climate',
+    dgframe:'location',dgsun:'climate',dgshadow:'climate',dgwind:'climate',dgviews:'people',dgnoise:'risk'};   /* __acad3dV164: the analyses in the model */
   var BIM_ANZ_MODEL=['lens','areas','lod','stats','structure'];
   var BIM_ANZ_KEY='acad3dAnzOpen';
   var BIM_ANZ_CHEV='<svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3.5 10.5 8 6 12.5"/></svg>';
@@ -19156,30 +19164,21 @@ try{
         '; flow lines where '+bimDispNum(ra.threshold*ra.cell*ra.cell,0)+' m\u00b2 or more drains'+(bimSimStale(ra)?' (the surface has changed since)':''):
         (ter?'Where rain runs and ponds on '+ter.name:'No terrain yet: make one with SURVEY, or get the site context'),
       acts:[{act:'rain:run',label:ra?'Run again':'Run',pri:true,off:ter?'':'No terrain yet'},{act:'sim:clear:rain',label:'Clear',off:ra?'':'Not run'}]});
+    C=bimDgCards().concat(C);   /* __acad3dV164: what Analyze site draws, first in its category */
     C.forEach(function(c){c.group=BIM_ANZ_GROUP_OF[c.id]||'model';});   /* __acad3dV148 */
     return C;
   }
   function bimAnzCountText(C){
-    var n=C.filter(function(c){return c.state==='on'||c.state==='stale'||c.state==='busy';}).length,F=bimSa().findings,r=0;
+    var n=C.filter(function(c){return c.state==='on'||c.state==='stale'||c.state==='busy';}).length,F=bimSaShown(),r=0;
     F.forEach(function(f){if(f.cls==='redflag')r++;});
     return bimSaN(F.length,'finding')+(r?', '+bimSaN(r,'red flag'):'')+(n?' · '+n+' on':'');
   }
-  /* __acad3dV162: under the search, in the order the work goes: the stages, red flags, Define, the
-     ten categories with their analyses, data and findings, and the model */
+  /* __acad3dV162: under the search, in the order the work goes. __acad3dV164: the site and Analyze
+     site first, where the stages and Define were; then the red flags, the ten categories with their
+     analyses, data and findings, and the model */
   function bimAnzBodyHtml(C){
-    var s=bimSa(),F=s.findings,R=F.filter(function(f){return f.cls==='redflag';}),P=A3D.objs.filter(bimIsProperty),bd,h;
-    if(P.length){var g=bimPropertyGeometry(P[0]);bd=bimEsc(P[0].name)+', '+bimDispNum(g.area,1)+' m²';}
-    else bd='None yet: <button type="button" class="a3d-anzbtn" data-saact="cmd:propertyshape">From a shape</button> <button type="button" class="a3d-anzbtn" data-saact="cmd:propertyline">From bearings</button>';
-    h='<div data-anzsec="stages"><div class="a3d-sastages" role="group" aria-label="Stage">'+BIM_SA_STAGES.map(function(x,i){
-        return '<button type="button" class="a3d-sastage'+(i===s.stage?' on':(i<s.stage?' done':''))+'" data-sastage="'+i+'" aria-pressed="'+(i===s.stage)+'" title="'+bimEsc(x[1])+'">'+i+' '+bimEsc(x[0])+'</button>';}).join('')+'</div>'+
-      '<div class="a3d-sastagecap">'+bimEsc(BIM_SA_STAGES[s.stage][1])+'</div></div>';
+    var F=bimSaShown(),R=F.filter(function(f){return f.cls==='redflag';}),h=bimSiteRunHtml();
     if(R.length)h+='<div class="a3d-saflags" data-anzsec="flags"><div class="a3d-sasechd">Red flags first</div>'+R.map(function(f){return '<div class="a3d-saflag">'+bimSaNumber(f)+' '+bimEsc(f.title)+(f.value?': '+bimEsc(f.value):'')+'</div>';}).join('')+'</div>';
-    h+='<div class="a3d-sasec" data-anzsec="define"><div class="a3d-sasechd">Define</div>'+
-      '<div class="a3d-sarow"><span class="a3d-salab">Boundary</span><span class="a3d-saval">'+bd+'</span></div>'+
-      '<div class="a3d-sarow"><label for="a3d-saptype">Project</label><select id="a3d-saptype" data-saf="ptype">'+BIM_SA_TYPES.map(function(x){return '<option value="'+bimEsc(x)+'"'+(x===s.ptype?' selected':'')+'>'+(x?bimEsc(x):'Not set')+'</option>';}).join('')+'</select></div>'+
-      '<div class="a3d-sarow"><label for="a3d-saq">Questions</label><textarea id="a3d-saq" data-saf="questions" maxlength="2000" placeholder="What must the analysis answer?">'+bimEsc(s.questions)+'</textarea></div>'+
-      '<label class="a3d-sachk"><input type="checkbox" data-saf="pins"'+(s.pins?' checked':'')+'><span>Show the findings on the plan</span></label>'+
-      '<div class="a3d-saacts"><button type="button" class="a3d-anzbtn pri" data-saact="fill" title="Location, context, property, terrain, sun, access: what the model knows, with its sources">Fill from the model</button></div></div>';
     h+='<div class="a3d-sasec" data-anzsec="cats"><div class="a3d-sasechd">The ten categories</div><div class="a3d-anzlist">'+BIM_SA_CATS.map(function(c,i){return bimSaCatHtml(c,i,C);}).join('')+'</div></div>';
     var M=BIM_ANZ_MODEL.map(function(id){return C.filter(function(c){return c.id===id;})[0];}).filter(function(c){return !!c;});
     h+='<div class="a3d-sasec a3d-anzgrp" data-anzgrp="model"><div class="a3d-sasechd a3d-anzgrphd">Model</div><div class="a3d-sacap">What the model itself shows; no site data needed.</div>'+
@@ -19199,9 +19198,9 @@ try{
     return true;
   }
   /* __acad3dV162: the search, over everything, in place. A category asked for by its own words --
-     its name, its question, its data, its findings, its checklist -- shows whole and opened; otherwise
+     its name, its question, its data, its findings -- shows whole and opened; otherwise
      the analyses in it that match, by their name, what they say and their buttons. */
-  /* an element's words, each text apart: its textContent runs "Define" and "Boundary" into one */
+  /* an element's words, each text apart: its textContent runs "Place" and "Boundary" into one */
   function bimAnzText(el){
     var w=document.createTreeWalker(el,NodeFilter.SHOW_TEXT,null,false),s=[],n;
     while((n=w.nextNode()))s.push(n.nodeValue);
@@ -19214,15 +19213,15 @@ try{
     if(!root)return 0;
     function show(x,v){if(v)x.removeAttribute('hidden');else x.setAttribute('hidden','');}
     root.classList.toggle('q',!!q);
-    S=root.querySelectorAll('[data-anzsec="stages"],[data-anzsec="flags"],[data-anzsec="define"]');
+    S=root.querySelectorAll('[data-anzsec="flags"]');
     for(i=0;i<S.length;i++){
-      on=!q||(S[i].getAttribute('data-anzsec')!=='stages'&&bimAnzWordsHit(q,bimAnzText(S[i])));
+      on=!q||bimAnzWordsHit(q,bimAnzText(S[i]));
       show(S[i],on);if(q&&on)n++;
     }
     K=root.querySelectorAll('[data-sacat]');
     for(i=0;i<K.length;i++){
       name=(K[i].querySelector('.a3d-anzttl')||{textContent:''}).textContent;
-      whole=!q||bimAnzWordsHit(q,name+' '+bimAnzTexts(K[i],'.a3d-saq,.a3d-clsec,.a3d-salink,.a3d-safind,.a3d-sachk'));
+      whole=!q||bimAnzWordsHit(q,name+' '+bimAnzTexts(K[i],'.a3d-saq,.a3d-clsec,.a3d-salink,.a3d-safind'));
       R=K[i].querySelectorAll('[data-anzcard]');k=0;
       for(j=0;j<R.length;j++){hit=whole||bimAnzWordsHit(q,bimAnzRowText(R[j],name));show(R[j],hit);if(hit)k++;}
       on=whole||k>0;
@@ -19287,61 +19286,1266 @@ try{
     else if(k==='rain:run')bimRainCommand(null);
     else if(k.indexOf('sim:clear:')===0)bimSimClear(k.slice(10));
     else if(k.indexOf('layer:')===0)bimResultLayerAdd(k.slice(6));   /* __acad3dV148 */
+    else if(k.indexOf('dg:')===0)bimDgAct(k.slice(3));   /* __acad3dV164 */
     else return false;
     bimAnalyzeRefresh();
     return true;
   }
   function bimAnalyzeCommandTab(){bimShellSetTab('analyze');return true;}
+  /* ================= __acad3dV164: site analysis drawn in the model =================
+     reference/research-site-analysis-in-model.md. The owner: "a live analysis that is editable".
+     Each analysis draws its diagram as elements of the model -- objects of their own kind, 'diag',
+     on a layer of their own under Site analysis -- so each can be selected, moved, turned, restyled,
+     relabelled or deleted like anything drawn by hand, and each is live: the analysis lays it down
+     again whenever it runs.
+
+     An element keeps the analysis's own version of itself (gen). One the owner has changed -- moved,
+     turned, restyled, relabelled -- no longer matches it, and a run leaves it as it is (marking it
+     when the analysis would now draw it differently); one the owner deleted stays deleted; Reset
+     gives either back to the analysis. That is worked out by comparison when a run comes, so no
+     editing path has to report itself.
+
+     An element: {t:'diag', name, layer, pos, dg:{a, k, g, s, lb, sym, info, gen}}
+       a, k   the analysis and the element's key within it
+       g      its geometry, in metres, [x, y, z] points about pos:
+                line   pts, closed            segs   pts in pairs
+                marks  pts (a path), marks [{p, t}] (dots with labels on it)
+                live   {kind:'shadow', date, time, c, r}: drawn from the model each time, never stored
+                bands  [{lv, col, pts}]: areas in classes (a road's noise), the higher class over
+       s      stroke, fill, w (pixels), dash, op, fop (the fill's opacity), head (an arrowhead)
+       lb     labels [{t, p, sz, col, al, pri}]: placed by priority, so none is drawn over another
+       sym    a symbol {type:'noise'|'storm'|'dot', p, r, col, toward}
+       info   {title, rows:[[label, value]], method, source, date}
+     The colour -- bands, fills, shadows -- is drawn under the model, as the result layers are; the
+     lines, symbols and words over it, so a building never hides what it is measured against.
+     Diagram elements carry no mesh, so schedules, quantities, the LOD checks and the IFC, DXF and
+     CityJSON exports, which read meshes and building types, pass them by. */
+  var A3D_DG={hits:[],legend:null,warned:false,shadowCv:null,bandCv:null};
+  var BIM_DG_AN=[
+    {id:'frame',name:'Compass and distance',col:'#c9d3dd'},
+    {id:'sun',name:'Sun paths',col:'#ffb347'},
+    {id:'shadow',name:'Shadows',col:'#7c8db0'},
+    {id:'wind',name:'Winds',col:'#7fd3e6'},
+    {id:'views',name:'Views',col:'#8fd694'},
+    {id:'noise',name:'Noise',col:'#f08a24'}];
+  function bimDgAn(id){var i;for(i=0;i<BIM_DG_AN.length;i++)if(BIM_DG_AN[i].id===id)return BIM_DG_AN[i];return null;}
+  function bimIsDiag(o){return !!(o&&o.t==='diag'&&o.dg&&o.dg.g);}
+  function bimDgState(){
+    A3D.site=A3D.site||{};
+    var D=A3D.site.diag;
+    if(!D||typeof D!=='object')D=A3D.site.diag={};
+    if(!D.runs||typeof D.runs!=='object')D.runs={};
+    if(!D.layers||typeof D.layers!=='object')D.layers={};
+    return D;
+  }
+  function bimDgCore(dg){return JSON.stringify({g:dg.g,s:dg.s||{},lb:dg.lb||[],sym:dg.sym||null});}
+  /* changed by the owner: moved, or not as the analysis drew it */
+  function bimDgEdited(o){
+    var q=o.pos||[0,0,0];
+    return !!(q[0]||q[1]||q[2])||!o.dg.gen||bimDgCore(o.dg)!==o.dg.gen;
+  }
+  function bimDgW(o,p){var q=bimObjOffset(o);return [p[0]+q[0],(p[1]||0)+q[1],p[2]+q[2]];}
+  function bimDgDiags(a){return A3D.objs.filter(function(x){return bimIsDiag(x)&&(!a||x.dg.a===a);});}
+  /* ---- the layers: Site analysis, and one under it for each analysis ---- */
+  function bimDgLayerFind(id,name,parentId){
+    var ly=id?bimLayerById(id):null;
+    if(ly&&(ly.parent||null)===(parentId||null))return ly;
+    var i;
+    for(i=0;i<A3D.layers.length;i++)if(A3D.layers[i].name===name&&(A3D.layers[i].parent||null)===(parentId||null))return A3D.layers[i];
+    return null;
+  }
+  function bimDgLayer(key,name,color,parentKey,hidden){
+    var D=bimDgState(),pid=parentKey?(D.layers[parentKey]||null):null,ly=bimDgLayerFind(D.layers[key],name,pid),n=name,k=2;
+    if(!ly){
+      while(bimLayerByName(n)){n=name+' '+k;k++;}
+      ly=bimLayerNew({name:n,color:color,parent:pid});
+      if(!ly)return null;
+      if(hidden)ly.visible=false;
+    }
+    D.layers[key]=ly.id;
+    return ly;
+  }
+  function bimDgRoot(){return bimDgLayer('root','Site analysis','#9aa7b4',null,false);}
+  function bimDgAnLayer(a){
+    var A=bimDgAn(a);
+    if(!bimDgRoot())return null;
+    return bimDgLayer(a,'Site analysis - '+A.name,A.col,'root',false);
+  }
+  /* ---- laying an analysis down ----
+     E: [{k, name, layer (a layer key of run.layers, or none for the analysis's own), g, s, lb, sym,
+     info}]. What the owner changed is kept, what they deleted stays deleted, the rest is the
+     analysis's again. run: {layers:{key:{name, col, hidden}}, legend, note, source}. */
+  function bimDgPlace(a,E,run){
+    var D=bimDgState(),R=D.runs[a]||{},prev=R.keys||[],have={},gone={},keys=[],L={},made=0,upd=0,kept=0,drop=0,i,k;
+    bimDgDiags(a).forEach(function(x){if(!have.hasOwnProperty(x.dg.k))have[x.dg.k]=x;});
+    prev.forEach(function(kk){if(!have.hasOwnProperty(kk))gone[kk]=1;});
+    (R.gone||[]).forEach(function(kk){gone[kk]=1;});
+    function lay(key){
+      if(!key)key=a;
+      if(!L.hasOwnProperty(key)){
+        var sub=run&&run.layers&&run.layers[key],ly=(key===a)?bimDgAnLayer(a):bimDgLayer(key,sub?sub.name:key,sub?sub.col:bimDgAn(a).col,a,!!(sub&&sub.hidden));
+        L[key]=ly?ly.id:null;
+      }
+      return L[key];
+    }
+    lay(a);   /* the analysis's layer first: its own sub-layers hang from it */
+    if(run&&run.layers)for(k in run.layers)if(run.layers.hasOwnProperty(k))lay(k);
+    for(i=0;i<E.length;i++){
+      var e=E[i],x=have[e.k],core={g:e.g,s:e.s||{},lb:e.lb||[],sym:e.sym||null},gen=JSON.stringify(core);
+      keys.push(e.k);
+      if(gone[e.k])continue;
+      if(x){
+        if(bimDgEdited(x)){
+          if(x.dg.gen!==gen)x.dg.newer=true;
+          x.dg.gen=gen;x.dg.info=e.info||{};delete x.dg.orphan;kept++;
+        }else{
+          x.dg.g=core.g;x.dg.s=core.s;x.dg.lb=core.lb;x.dg.sym=core.sym;x.dg.gen=gen;x.dg.info=e.info||{};
+          delete x.dg.newer;delete x.dg.orphan;x.name=String(e.name||x.name).slice(0,80);x.layer=lay(e.layer)||x.layer;upd++;
+        }
+        delete have[e.k];
+      }else{
+        A3D.objs.push({id:'a3d-'+Date.now().toString(36)+'-'+(A3D.seq++),t:'diag',name:String(e.name||e.k).slice(0,80),layer:lay(e.layer),pos:[0,0,0],
+          dg:{a:a,k:e.k,g:core.g,s:core.s,lb:core.lb,sym:core.sym,info:e.info||{},gen:gen}});
+        made++;
+      }
+    }
+    /* what the analysis no longer draws: gone, unless the owner changed it */
+    for(k in have)if(have.hasOwnProperty(k)){
+      if(bimDgEdited(have[k])){have[k].dg.orphan=true;kept++;}
+      else{A3D.objs=A3D.objs.filter(function(x){return x!==have[k];});drop++;}
+    }
+    if(A3D.sel&&!objById(A3D.sel))A3D.sel=null;
+    A3D.selSet=(A3D.selSet||[]).filter(function(id){return !!objById(id);});
+    D.runs[a]={keys:keys,gone:Object.keys(gone).filter(function(kk){return keys.indexOf(kk)>=0;}),date:bimSaToday(),
+      legend:run&&run.legend?run.legend:[],note:run&&run.note?run.note:'',source:run&&run.source?run.source:''};
+    return {made:made,updated:upd,kept:kept,dropped:drop,total:E.length};
+  }
+  /* Reset: the element as the analysis drew it, where it drew it */
+  function bimDgReset(id){
+    var o=objById(id);
+    if(!bimIsDiag(o)||!o.dg.gen){a3dToast('That element is not the analysis\'s: there is nothing to reset it to');return false;}
+    if(!bimDgEdited(o)&&!o.dg.newer){a3dToast(o.name+' is as the analysis drew it');return false;}
+    pushUndo();
+    var c=JSON.parse(o.dg.gen);
+    o.dg.g=c.g;o.dg.s=c.s;o.dg.lb=c.lb;o.dg.sym=c.sym;o.pos=[0,0,0];delete o.dg.newer;
+    refreshProps();paint();saveSoon();
+    a3dToast(o.name+' is as the analysis drew it again');
+    return true;
+  }
+  /* Reset a whole analysis: its layer as the analysis draws it -- what was deleted comes back, what
+     was changed or copied goes. One undo step. */
+  function bimDgResetAnalysis(a){
+    var D=bimDgState(),held=bimUndoHold,r;
+    if(!bimDgAn(a)||!D.runs[a]){a3dToast('That analysis has not run yet');return null;}
+    if(!held){pushUndo();bimUndoHold=true;}
+    try{
+      A3D.objs=A3D.objs.filter(function(x){return !(bimIsDiag(x)&&x.dg.a===a);});
+      D.runs[a].gone=[];D.runs[a].keys=[];
+      r=bimDgRunAll(a);
+    }finally{if(!held)bimUndoHold=false;}
+    a3dToast(bimDgAn(a).name+': as the analysis draws it');
+    return r?r[a]:null;
+  }
+  /* ---- drawing, in plan and in 3D ---- */
+  function bimDgDrawText(ctx,t,x,y,col,sz,cap){
+    ctx.font=(sz||11)+'px sans-serif';
+    ctx.lineWidth=3;ctx.strokeStyle=cap?'rgba(255,255,255,0.9)':'rgba(15,18,22,0.85)';ctx.lineJoin='round';
+    ctx.strokeText(t,x,y);
+    ctx.fillStyle=cap?'#1d2329':(col||'#e8edf2');
+    ctx.fillText(t,x,y);
+    var w=ctx.measureText(t).width;
+    return [x-(ctx.textAlign==='center'?w/2:(ctx.textAlign==='right'?w:0)),y-(sz||11)/2-2,w,(sz||11)+4];
+  }
+  function bimDgSym(ctx,sp,sym,col,a){
+    var r=Math.max(6,sym.r||1),i,k;
+    ctx.strokeStyle=col;ctx.fillStyle=col;ctx.setLineDash([]);
+    if(sym.type==='dot'){ctx.beginPath();ctx.arc(sp[0],sp[1],r,0,2*Math.PI);ctx.fill();return r;}
+    if(sym.type==='noise'){   /* sound arcs, either side of the source, turned towards the site */
+      var d=sym.dir||0;
+      ctx.lineWidth=2;
+      for(k=1;k<=3;k++){
+        ctx.globalAlpha=a*(1.1-k*0.22);
+        ctx.beginPath();ctx.arc(sp[0],sp[1],r*k*0.7,d-0.9,d+0.9);ctx.stroke();
+        ctx.beginPath();ctx.arc(sp[0],sp[1],r*k*0.7,d+Math.PI-0.9,d+Math.PI+0.9);ctx.stroke();
+      }
+      ctx.globalAlpha=a;ctx.beginPath();ctx.arc(sp[0],sp[1],2.5,0,2*Math.PI);ctx.fill();
+      return r*2.1;
+    }
+    if(sym.type==='storm'){   /* three arms of a spiral, the planners' mark for storms */
+      ctx.lineWidth=2.2;
+      for(k=0;k<3;k++){
+        ctx.beginPath();
+        for(i=0;i<=24;i++){var th=k*2*Math.PI/3+i*0.17,rr=r*0.15+r*1.25*i/24,X=sp[0]+rr*Math.cos(th),Y=sp[1]+rr*Math.sin(th);if(i)ctx.lineTo(X,Y);else ctx.moveTo(X,Y);}
+        ctx.stroke();
+      }
+      return r*1.4;
+    }
+    return 0;
+  }
+  function bimDgScreen(o,V,W,H){var P=[],g=o.dg.g,i;for(i=0;i<(g.pts||[]).length;i++)P.push(toScreen(bimDgW(o,g.pts[i]),V,W,H));return P;}
+  /* a path over the screen points, broken where a point is behind the eye */
+  function bimDgPath(c,P,closed){
+    var on=false,q;
+    c.beginPath();
+    for(q=0;q<P.length;q++){
+      if(P[q][2]<=0.5){on=false;continue;}
+      if(on)c.lineTo(P[q][0],P[q][1]);else{c.moveTo(P[q][0],P[q][1]);on=true;}
+    }
+    if(closed)c.closePath();
+  }
+  /* a canvas the size of the view, cleared, with the view's transform: what is drawn on it is laid
+     on the view at one opacity, so overlapping bands and shadows do not darken where they overlap */
+  function bimDgOff(ctx,key){
+    var cv=ctx.canvas,oc=A3D_DG[key]||(A3D_DG[key]=document.createElement('canvas'));
+    if(oc.width!==cv.width)oc.width=cv.width;
+    if(oc.height!==cv.height)oc.height=cv.height;
+    var c2=oc.getContext('2d');
+    c2.setTransform(1,0,0,1,0,0);c2.clearRect(0,0,oc.width,oc.height);
+    if(ctx.getTransform)c2.setTransform(ctx.getTransform());
+    return c2;
+  }
+  function bimDgBlit(ctx,c2,alpha){ctx.save();ctx.setTransform(1,0,0,1,0,0);ctx.globalAlpha=Math.max(0,Math.min(1,alpha));ctx.drawImage(c2.canvas,0,0);ctx.restore();}
+  /* under the model: a shadow, or a fill */
+  function bimDgDrawUnder(ctx,V,W,H,o){
+    var dg=o.dg,g=dg.g,s=dg.s||{},a=bimLayerAlpha(o)*(s.op===undefined?1:s.op);
+    if(g.kind==='live'){bimDgDrawShadow(ctx,V,W,H,o,a);return;}
+    if(g.kind==='segs'||!g.pts||g.pts.length<3||!s.fill||!g.closed)return;
+    ctx.save();bimDgPath(ctx,bimDgScreen(o,V,W,H),true);ctx.globalAlpha=a*(s.fop===undefined?0.35:s.fop);ctx.fillStyle=s.fill;ctx.fill();ctx.restore();
+  }
+  /* bands -- a road's noise classes -- of every element on one canvas, class by class, so where two
+     overlap the higher class shows; the context's buildings cut out, the colour lying on the ground
+     between them; laid on the view at one opacity */
+  function bimDgDrawBands(ctx,V,W,H,L){
+    var T=[],c2,i,j,k,a=1,gy=0;
+    for(i=0;i<L.length;i++){
+      var o=L[i],s=o.dg.s||{},al=s.op===undefined?1:s.op;
+      if(!i)a=bimLayerAlpha(o)*(s.fop===undefined?0.45:s.fop);
+      for(j=0;j<o.dg.g.bands.length;j++){
+        var B=o.dg.g.bands[j],P=[];
+        if(!B||!B.pts||B.pts.length<3)continue;
+        for(k=0;k<B.pts.length;k++)P.push(toScreen(bimDgW(o,B.pts[k]),V,W,H));
+        T.push({P:P,col:B.col,lv:B.lv||0,al:al});
+        gy=bimDgW(o,B.pts[0])[1];
+      }
+    }
+    if(!T.length)return;
+    T.sort(function(x,y){return x.lv-y.lv;});
+    c2=bimDgOff(ctx,'bandCv');
+    for(i=0;i<T.length;i++){bimDgPath(c2,T[i].P,true);c2.globalAlpha=T[i].al;c2.fillStyle=T[i].col;c2.fill('nonzero');}
+    c2.globalAlpha=1;c2.globalCompositeOperation='destination-out';c2.beginPath();
+    for(i=0;i<A3D.objs.length;i++){
+      var b=A3D.objs[i],cx=b.context;
+      if(!cx||cx.kind!=='buildings'||!cx.footprint||cx.footprint.length<3)continue;
+      var q=bimObjOffset(b);
+      for(j=0;j<cx.footprint.length;j++){var sp=toScreen([cx.footprint[j][0]+q[0],gy,cx.footprint[j][1]+q[2]],V,W,H);if(j)c2.lineTo(sp[0],sp[1]);else c2.moveTo(sp[0],sp[1]);}
+      c2.closePath();
+    }
+    c2.fill();c2.globalCompositeOperation='source-over';
+    bimDgBlit(ctx,c2,a);
+  }
+  /* over the model: the lines, arrowheads, marks and symbols, drawn; the words queued in Q, to be
+     placed by priority (bimDgPlaceLabels); what is drawn is kept to pick */
+  function bimDgDrawOver(ctx,V,W,H,o,sel,cap,Q){
+    var dg=o.dg,g=dg.g,s=dg.s||{},a=bimLayerAlpha(o)*(s.op===undefined?1:s.op),hit={id:o.id,segs:[],dots:[],boxes:[]},P,i,sp,e,b;
+    if(g.kind==='live')return hit;
+    sel=sel&&!cap;
+    P=bimDgScreen(o,V,W,H);
+    ctx.globalAlpha=a;ctx.lineJoin='round';ctx.lineCap='butt';
+    if(g.kind==='segs'){
+      ctx.beginPath();
+      for(i=0;i+1<P.length;i+=2){if(P[i][2]<=0.5||P[i+1][2]<=0.5)continue;ctx.moveTo(P[i][0],P[i][1]);ctx.lineTo(P[i+1][0],P[i+1][1]);hit.segs.push([P[i][0],P[i][1],P[i+1][0],P[i+1][1]]);}
+      if(sel){ctx.strokeStyle='#ffd166';ctx.lineWidth=(s.w||1.4)+4;ctx.stroke();}
+      if(s.stroke){ctx.setLineDash(s.dash||[]);ctx.strokeStyle=s.stroke;ctx.lineWidth=s.w||1.4;ctx.stroke();ctx.setLineDash([]);}
+    }else if(P.length>=2){
+      if(sel){bimDgPath(ctx,P,g.closed);ctx.setLineDash([]);ctx.strokeStyle='#ffd166';ctx.lineWidth=(s.w||1.5)+4;ctx.globalAlpha=Math.min(1,a+0.3);ctx.stroke();ctx.globalAlpha=a;}
+      if(s.stroke){bimDgPath(ctx,P,g.closed);ctx.setLineDash(s.dash||[]);ctx.strokeStyle=s.stroke;ctx.lineWidth=s.w||1.5;ctx.stroke();ctx.setLineDash([]);}
+      if(s.head&&P[P.length-1][2]>0.5&&P[P.length-2][2]>0.5){   /* an arrowhead at the end, on the screen */
+        e=P[P.length-1];b=P[P.length-2];
+        var ang=Math.atan2(e[1]-b[1],e[0]-b[0]),hl=9+(s.w||1.5)*2;
+        ctx.beginPath();ctx.moveTo(e[0],e[1]);ctx.lineTo(e[0]-hl*Math.cos(ang-0.42),e[1]-hl*Math.sin(ang-0.42));ctx.lineTo(e[0]-hl*Math.cos(ang+0.42),e[1]-hl*Math.sin(ang+0.42));ctx.closePath();
+        ctx.fillStyle=s.stroke||'#e8edf2';ctx.fill();
+      }
+      for(i=0;i+1<P.length;i++)if(P[i][2]>0.5&&P[i+1][2]>0.5)hit.segs.push([P[i][0],P[i][1],P[i+1][0],P[i+1][1]]);
+      if(g.closed&&P.length>2&&P[0][2]>0.5&&P[P.length-1][2]>0.5)hit.segs.push([P[P.length-1][0],P[P.length-1][1],P[0][0],P[0][1]]);
+    }
+    if(g.marks)for(i=0;i<g.marks.length;i++){
+      sp=toScreen(bimDgW(o,g.marks[i].p),V,W,H);if(sp[2]<=0.5)continue;
+      ctx.globalAlpha=a;ctx.fillStyle=s.mark||'#ffd23f';ctx.beginPath();ctx.arc(sp[0],sp[1],sel?5.5:4.5,0,2*Math.PI);ctx.fill();
+      hit.dots.push([sp[0],sp[1]]);
+      if(g.marks[i].t)Q.push({hit:hit,t:g.marks[i].t,x:sp[0]+8,y:sp[1],col:s.markText||'#f4f1e3',sz:10,al:'left',pri:sel?0:4,a:a,sel:sel,cap:cap});
+    }
+    if(dg.sym&&dg.sym.p){
+      sp=toScreen(bimDgW(o,dg.sym.p),V,W,H);
+      if(sp[2]>0.5){
+        var sy=dg.sym;
+        if(sy.toward){var tw=toScreen(bimDgW(o,sy.toward),V,W,H);sy={type:sy.type,r:sy.r,dir:Math.atan2(tw[1]-sp[1],tw[0]-sp[0])};}
+        ctx.globalAlpha=a;var rr=bimDgSym(ctx,sp,sy,dg.sym.col||s.stroke||'#e8edf2',a);
+        if(sel){ctx.globalAlpha=1;ctx.strokeStyle='#ffd166';ctx.lineWidth=2;ctx.beginPath();ctx.arc(sp[0],sp[1],rr+3,0,2*Math.PI);ctx.stroke();}
+        hit.boxes.push([sp[0]-rr,sp[1]-rr,2*rr,2*rr]);
+      }
+    }
+    for(i=0;i<(dg.lb||[]).length;i++){
+      var L=dg.lb[i];if(!L||!L.t||!L.p)continue;
+      sp=toScreen(bimDgW(o,L.p),V,W,H);if(sp[2]<=0.5)continue;
+      Q.push({hit:hit,t:L.t,x:sp[0]+(L.al==='left'?14:0),y:sp[1],col:L.col||s.stroke,sz:L.sz||11,al:L.al||'center',pri:sel?0:(L.pri||2),a:a,sel:sel,cap:cap});
+    }
+    ctx.globalAlpha=1;
+    return hit;
+  }
+  /* the words, the most telling first: the compass points, then each analysis's own labels, then the
+     hours along the sun's paths. One that would cover a word already placed tries a line above or
+     below, then gives way -- a diagram is read by what it says, not by how much. The selection's are
+     always drawn. */
+  function bimDgPlaceLabels(ctx,Q){
+    var placed=[],i,k;
+    for(i=0;i<Q.length;i++)Q[i].n=i;
+    Q.sort(function(x,y){return x.pri-y.pri||x.n-y.n;});
+    function free(b){for(var j=0;j<placed.length;j++){var p=placed[j];if(b[0]<p[0]+p[2]&&p[0]<b[0]+b[2]&&b[1]<p[1]+p[3]&&p[1]<b[1]+b[3])return false;}return true;}
+    for(i=0;i<Q.length;i++){
+      var q=Q[i],sz=q.sz||11,h=sz+4,w,x0,dy=null,tries=q.pri===0?[0]:[0,-h,h,-2*h,2*h];
+      ctx.font=sz+'px sans-serif';w=ctx.measureText(q.t).width;
+      x0=q.al==='left'?q.x:(q.al==='right'?q.x-w:q.x-w/2);
+      for(k=0;k<tries.length;k++)if(q.pri===0||free([x0-2,q.y-h/2+tries[k],w+4,h])){dy=tries[k];break;}
+      if(dy===null)continue;
+      placed.push([x0-2,q.y-h/2+dy,w+4,h]);
+      ctx.globalAlpha=q.a;ctx.textAlign=q.al;ctx.textBaseline='middle';
+      var bx=bimDgDrawText(ctx,q.t,q.x,q.y+dy,q.col,sz,q.cap);
+      if(q.sel){ctx.globalAlpha=1;ctx.strokeStyle='#ffd166';ctx.lineWidth=1;ctx.strokeRect(bx[0]-2,bx[1],bx[2]+4,bx[3]);}
+      q.hit.boxes.push(bx);
+    }
+    ctx.globalAlpha=1;
+  }
+  /* a shadow at its date and time, drawn from the model as it is now */
+  function bimDgSun(date,time){
+    var st=bimSunSettings();
+    if(!bimSunNum(st.lat)||!bimSunNum(st.lon)||!bimSunNum(st.tz))return null;
+    var r=bimSunCalc(st.lat,st.lon,st.tz,date,time);
+    return (r&&r.elevation>0)?r:null;
+  }
+  /* the project's own solids near the site: the context's buildings are what the site is set in */
+  function bimDgCasters(gr,c,r){
+    return bimShadowCasters(gr).filter(function(it){
+      var o=objById(it.id),k;
+      if(!o||o.context)return false;
+      for(k=0;k<it.w.length;k+=Math.max(1,Math.floor(it.w.length/8))){var dx=it.w[k][0]-c[0],dz=it.w[k][2]-c[1];if(dx*dx+dz*dz<=r*r)return true;}
+      return false;
+    });
+  }
+  function bimDgDrawShadow(ctx,V,W,H,o,a){
+    var L=o.dg.g.live,sun=L?bimDgSun(L.date,L.time):null;
+    if(!sun)return;
+    var sv=bimSunVector(sun),gr=bimShadowGround(),list=bimDgCasters(gr,L.c||[0,0],L.r||200);
+    if(!list.length)return;
+    var c2=bimDgOff(ctx,'shadowCv');
+    c2.globalCompositeOperation='source-over';c2.fillStyle=(o.dg.s&&o.dg.s.fill)||'#5b6c8a';
+    bimFillProjected(c2,list,function(p){return bimShadowPoint(p,sv,gr);},V,W,H,gr);
+    c2.globalCompositeOperation='destination-out';   /* not under the buildings themselves */
+    bimFillProjected(c2,list,function(p){return [p[0],p[2]];},V,W,H,gr);
+    c2.globalCompositeOperation='source-over';
+    bimDgBlit(ctx,c2,a*((o.dg.s&&o.dg.s.fop!==undefined)?o.dg.s.fop:0.4));
+  }
+  /* pass 'under' before the model, 'over' after it */
+  function drawDiagrams(ctx,V,W,H,pass){
+    var over=pass!=='under',L=bimDgDiags(),cap=!!A3D.sheetCapture,sel={},bands=[],Q=[],i;
+    if(over)A3D_DG.hits=[];
+    if(!L.length)return;
+    (A3D.selSet||[]).forEach(function(id){sel[id]=1;});if(A3D.sel)sel[A3D.sel]=1;
+    ctx.save();
+    try{
+      for(i=0;i<L.length;i++){
+        if(!bimLayerShown(L[i]))continue;
+        if(over)A3D_DG.hits.push(bimDgDrawOver(ctx,V,W,H,L[i],!!sel[L[i].id],cap,Q));
+        else if(L[i].dg.g.bands&&L[i].dg.g.bands.length)bands.push(L[i]);
+        else bimDgDrawUnder(ctx,V,W,H,L[i]);
+      }
+      if(bands.length)bimDgDrawBands(ctx,V,W,H,bands);
+      if(Q.length)bimDgPlaceLabels(ctx,Q);
+    }catch(eD){
+      console.warn('[BIM] The site analysis could not be drawn',eD);
+      if(!A3D_DG.warned){A3D_DG.warned=true;a3dToast('The site analysis could not be drawn - see the console');}
+    }
+    ctx.restore();
+  }
+  /* what is under the pointer: a line, a dot, a label or a symbol of a diagram, drawn over the
+     model and so picked before it. A band, a fill or a shadow is picked by its lines and words only,
+     so it never covers the model it lies over. */
+  function bimPickDiag(x,y){
+    var H=A3D_DG.hits,i,j,b;
+    for(i=H.length-1;i>=0;i--){
+      var o=objById(H[i].id);
+      if(!o||!bimLayerPickable(o))continue;
+      for(j=0;j<H[i].boxes.length;j++){b=H[i].boxes[j];if(x>=b[0]-2&&x<=b[0]+b[2]+2&&y>=b[1]&&y<=b[1]+b[3])return o;}
+      for(j=0;j<H[i].dots.length;j++){var dx=x-H[i].dots[j][0],dy=y-H[i].dots[j][1];if(dx*dx+dy*dy<=64)return o;}
+      for(j=0;j<H[i].segs.length;j++){var s=H[i].segs[j];if(bimPointSegDist(x,y,s[0],s[1],s[2],s[3])<=5)return o;}
+    }
+    return null;
+  }
+  /* turned, mirrored or scaled: the plan coordinates of every point, label and symbol */
+  function bimDgTransformed(dg,tp){
+    function P(p){var w=tp([p[0],p[2]]);return [w[0],p[1],w[1]];}
+    var g=JSON.parse(JSON.stringify(dg.g)),lb=JSON.parse(JSON.stringify(dg.lb||[])),sym=dg.sym?JSON.parse(JSON.stringify(dg.sym)):null;
+    if(g.pts)g.pts=g.pts.map(P);
+    if(g.marks)g.marks.forEach(function(m){m.p=P(m.p);});
+    if(g.bands)g.bands.forEach(function(B){B.pts=B.pts.map(P);});
+    lb.forEach(function(L){if(L.p)L.p=P(L.p);});
+    if(sym&&sym.p)sym.p=P(sym.p);
+    if(sym&&sym.toward)sym.toward=P(sym.toward);
+    return {kind:'diag',g:g,lb:lb,sym:sym};
+  }
+  /* a copy made by Mirror or an array is the owner's own: a key of its own, and nothing to reset to */
+  function bimDgCopy(o,g,copy,word){
+    copy.t='diag';copy.name=String(o.name+' '+word).slice(0,80);
+    copy.dg={a:o.dg.a,k:o.dg.k+'#'+copy.id,g:g.g,s:JSON.parse(JSON.stringify(o.dg.s||{})),lb:g.lb,sym:g.sym,info:JSON.parse(JSON.stringify(o.dg.info||{})),gen:''};
+    return copy;
+  }
+  function bimDgBounds(o){
+    var P=[],g=o.dg.g,i;
+    if(g.kind==='live'&&g.live){var c=g.live.c||[0,0],r=g.live.r||20;P.push([c[0]-r,0,c[1]-r],[c[0]+r,0,c[1]+r]);}
+    (g.pts||[]).forEach(function(p){P.push(p);});
+    (g.marks||[]).forEach(function(m){P.push(m.p);});
+    (g.bands||[]).forEach(function(B){(B.pts||[]).forEach(function(p){P.push(p);});});
+    (o.dg.lb||[]).forEach(function(L){if(L.p)P.push(L.p);});
+    if(o.dg.sym&&o.dg.sym.p)P.push(o.dg.sym.p);
+    for(i=0;i<P.length;i++)P[i]=bimDgW(o,P[i]);
+    return P;
+  }
+  /* ---- the legend, on the view: each analysis shown, its key and its source ----
+     A key, not a list: each analysis's title, then its swatches with short names flowing in lines,
+     then its source, shortened to fit. Not on a view under 620 px, a phone's: there it would cover
+     the drawing and the tools, and each analysis's key is in its row in Analyze. */
+  function bimDgFit(ctx,t,w){
+    if(ctx.measureText(t).width<=w)return t;
+    while(t.length>1&&ctx.measureText(t+'\u2026').width>w)t=t.slice(0,-1);
+    return t+'\u2026';
+  }
+  function drawDiagramLegend(ctx,V,W,H){
+    A3D_DG.legend=null;
+    if(A3D.sheetCapture||A3D_PLOT.on)return;
+    var D=bimDgState(),blocks=[],i,sr;
+    if(D.legendOff)return;
+    for(i=0;i<BIM_DG_AN.length;i++){
+      var A=BIM_DG_AN[i],R=D.runs[A.id];
+      if(!R)continue;
+      if(!bimDgDiags(A.id).some(function(o){return bimLayerShown(o);}))continue;   /* a layer off or frozen, its own or one above it: none of it shown */
+      blocks.push({title:A.name,rows:(R.legend||[]).slice(0,8),src:R.source||'',drawn:[]});
+    }
+    if(!blocks.length)return;
+    sr=bimSafeViewRect();   /* asked only with a key to place, as the other keys do: it warns when the chrome covers the view */
+    if(sr.w<620)return;   /* a phone's view: each analysis's row in Analyze carries its key */
+    ctx.save();
+    try{
+      var pad=8,rowH=15,sw=12,maxW=Math.round(Math.min(300,Math.max(170,sr.w*0.3))),inner=maxW-2*pad,ops=[],y=pad,x,j,b,w=0;
+      for(i=0;i<blocks.length;i++){
+        b=blocks[i];if(i)y+=6;
+        ctx.font='bold 11px sans-serif';
+        var tt=bimDgFit(ctx,b.title,inner);ops.push({k:'t',t:tt,x:pad,y:y+rowH/2});b.tt=tt;w=Math.max(w,ctx.measureText(tt).width);y+=rowH;
+        ctx.font='11px sans-serif';x=pad;
+        for(j=0;j<b.rows.length;j++){
+          var r=b.rows[j],nm=r.short||r.name,iw=sw+4+ctx.measureText(nm).width;
+          if(x>pad&&x+iw>pad+inner){x=pad;y+=rowH;}
+          ops.push({k:'r',r:r,t:nm,x:x,y:y+rowH/2});b.drawn.push(nm);w=Math.max(w,x+iw-pad);x+=iw+10;
+        }
+        if(b.rows.length)y+=rowH;
+        if(b.src){ctx.font='10px sans-serif';var st=bimDgFit(ctx,b.src,inner);ops.push({k:'s',t:st,x:pad,y:y+rowH/2-1});b.st=st;w=Math.max(w,ctx.measureText(st).width);y+=rowH-2;}
+      }
+      w=Math.ceil(Math.min(maxW,w+2*pad));var h=y+pad,X=sr.x+sr.w-w-12,Y=sr.y+12;
+      if(X+w>W-84&&Y<108)Y=108;   /* under the north arrow */
+      ctx.globalAlpha=1;ctx.fillStyle='rgba(22,26,32,0.9)';ctx.fillRect(X,Y,w,h);
+      ctx.strokeStyle='rgba(255,255,255,0.18)';ctx.lineWidth=1;ctx.strokeRect(X+0.5,Y+0.5,w-1,h-1);
+      ctx.beginPath();ctx.rect(X,Y,w,h);ctx.clip();
+      ctx.textBaseline='middle';ctx.textAlign='left';
+      for(i=0;i<ops.length;i++){
+        var op=ops[i],ox=X+op.x,oy=Y+op.y;
+        if(op.k==='t'){ctx.font='bold 11px sans-serif';ctx.fillStyle='#e8edf2';ctx.fillText(op.t,ox,oy);continue;}
+        if(op.k==='s'){ctx.font='10px sans-serif';ctx.fillStyle='#9aa7b4';ctx.fillText(op.t,ox,oy);continue;}
+        var rr=op.r;ctx.strokeStyle=rr.col;ctx.fillStyle=rr.col;ctx.lineWidth=2;
+        if(rr.kind==='fill'){ctx.globalAlpha=0.75;ctx.fillRect(ox,oy-5,sw,10);ctx.globalAlpha=1;}
+        else if(rr.kind==='dot'){ctx.beginPath();ctx.arc(ox+sw/2,oy,4,0,2*Math.PI);ctx.fill();}
+        else{ctx.setLineDash(rr.kind==='dash'?[4,3]:[]);ctx.beginPath();ctx.moveTo(ox,oy);ctx.lineTo(ox+sw,oy);ctx.stroke();ctx.setLineDash([]);}
+        ctx.font='11px sans-serif';ctx.fillStyle='#e8edf2';ctx.fillText(op.t,ox+sw+4,oy);
+      }
+      A3D_DG.legend={box:[X,Y,w,h],blocks:blocks.map(function(bb){return {title:bb.tt,rows:bb.drawn,src:bb.st||''};})};   /* what was drawn, as drawn */
+    }catch(eL){console.warn('[BIM] The site analysis legend could not be drawn',eL);}
+    ctx.restore();
+  }
+  /* ---- the analyses, each laid down by bimDgPlace ----
+     The site: the property line's ring if there is one, else the model's buildings, else the map's
+     origin; its ground is the lowest level's. Directions are true: an azimuth is measured clockwise
+     from true north, which the plan turns by the site's true-north angle (north is -Z). */
+  function bimDgSite(){
+    var P=A3D.objs.filter(bimIsProperty),ring=null,own,b=null,cx=0,cz=0,r=0,i;
+    own=A3D.objs.filter(function(o){return o.t==='solid'&&!o.context&&o.mesh&&o.mesh.v&&o.mesh.v.length&&bimLayerShown(o);});
+    if(own.length){b=bimWorldBounds(own.map(function(o){return o.id;}));if(b&&!(b.mn[0]<1e8))b=null;}
+    if(P.length){try{ring=bimPropertyGeometry(P[0]).ring;}catch(eP){ring=null;}}
+    if(ring&&ring.length>=3){
+      for(i=0;i<ring.length;i++){cx+=ring[i][0];cz+=ring[i][1];}
+      cx/=ring.length;cz/=ring.length;
+      for(i=0;i<ring.length;i++)r=Math.max(r,Math.sqrt((ring[i][0]-cx)*(ring[i][0]-cx)+(ring[i][1]-cz)*(ring[i][1]-cz)));
+    }else if(b){cx=(b.mn[0]+b.mx[0])/2;cz=(b.mn[2]+b.mx[2])/2;r=0.5*Math.sqrt((b.mx[0]-b.mn[0])*(b.mx[0]-b.mn[0])+(b.mx[2]-b.mn[2])*(b.mx[2]-b.mn[2]));}
+    r=Math.max(8,r||15);
+    var y=bimShadowGround(),Rc=Math.max(30,Math.ceil(r*1.7/5)*5),ctx=A3D.site&&A3D.site.context&&A3D.site.context.last;
+    return {c:[cx,cz],r:r,y:y,ring:ring,own:own.length,top:b?b.mx[1]:null,Rc:Rc,ctxR:(ctx&&ctx.radius>0)?+ctx.radius:null};
+  }
+  /* a plan point at an azimuth (degrees from true north) and a distance from the site's centre */
+  function bimDgAt(S,az,d,y){
+    var a=(az+bimTrueNorthDeg())*Math.PI/180;
+    return [S.c[0]+d*Math.sin(a),y===undefined?S.y:y,S.c[1]-d*Math.cos(a)];
+  }
+  function bimDgCircle(S,R,y,n){var P=[],i;for(i=0;i<n;i++)P.push(bimDgAt(S,360*i/n,R,y));return P;}
+  var BIM_DG_DIRS=['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSW','SW','WSW','W','WNW','NW','NNW'];
+  function bimDgYear(){var yr=String(bimSunSettings().date||'').slice(0,4);return /^\d{4}$/.test(yr)?yr:String(new Date().getFullYear());}
+  function bimDgNoPlace(){var st=bimSunSettings();return !bimSunNum(st.lat)||!bimSunNum(st.lon)||!bimSunNum(st.tz);}
+  /* the compass ring, north being true north, and the distance rings: the north arrow and the scale */
+  function bimDgFrameRun(S){
+    var E=[],Rc=S.Rc,y=S.y+0.05,T=[],lb=[],k,d;
+    E.push({k:'ring',name:'Compass ring',g:{kind:'line',pts:bimDgCircle(S,Rc,y,96),closed:true},s:{stroke:'#c9d3dd',w:1.6},
+      info:{title:'The compass ring, '+Rc+' m from the centre of the site',rows:[['True north',bimDispNum(bimTrueNorthDeg(),1)+'\u00b0 from the plan\'s up']],
+        method:'A circle about the site\'s centre, turned by the site\'s true-north angle',source:'The site\'s settings'}});
+    E.push({k:'ring2',name:'Compass ring, outer',g:{kind:'line',pts:bimDgCircle(S,Rc*1.045,y,96),closed:true},s:{stroke:'#c9d3dd',w:0.8,op:0.8},
+      info:{title:'The compass ring\'s outer line',method:'A circle about the site\'s centre'}});
+    for(k=0;k<16;k++){
+      var L=k%4===0?0.09:(k%2===0?0.06:0.035);
+      T.push(bimDgAt(S,k*22.5,Rc*(1-L*0.4),y),bimDgAt(S,k*22.5,Rc*(1.045+L*0.6),y));
+      lb.push({t:BIM_DG_DIRS[k],p:bimDgAt(S,k*22.5,Rc*(k%4===0?1.2:1.15),y),sz:k%4===0?13:10,col:k===0?'#ffffff':'#c9d3dd',pri:k%4===0?1:3});
+    }
+    E.push({k:'ticks',name:'Compass points',g:{kind:'segs',pts:T},s:{stroke:'#c9d3dd',w:1.2},lb:lb,
+      info:{title:'The sixteen points of the compass, on true north',method:'Every 22.5\u00b0 from true north'}});
+    var max=Math.min(500,S.ctxR||500),first=100*Math.ceil((Rc*1.3)/100);
+    for(d=first;d<=max;d+=100)
+      E.push({k:'dist:'+d,name:d+' m from the site',g:{kind:'line',pts:bimDgCircle(S,d,y,120),closed:true},s:{stroke:'#9aa7b4',w:1.1,dash:[8,6],op:0.85},
+        lb:[{t:d+' m',p:bimDgAt(S,90,d,y),col:'#c9d3dd'},{t:d+' m',p:bimDgAt(S,270,d,y),col:'#c9d3dd'}],
+        info:{title:d+' m from the centre of the site',rows:[['On foot','about '+Math.max(1,Math.round(d/80))+' min, at 80 m a minute, as the crow flies']],method:'A circle about the site\'s centre'}});
+    return {E:E,run:{legend:[{name:'Compass, on true north',short:'True north',col:'#c9d3dd',kind:'line'},{name:'Every 100 m',short:'100 m rings',col:'#9aa7b4',kind:'dash'}],source:'True north from the site\'s settings'}};
+  }
+  /* the sun's paths for the solstices and the equinoxes, on a dome over the site, with their hours */
+  var BIM_DG_SUNDAYS=[['06-21','21 June','#ffb347'],['03-20','20 March and 22 September','#e8d36a'],['12-21','21 December','#8ab4f8']];
+  function bimDgDome(S,R,sp){
+    var a=(sp.azimuth+bimTrueNorthDeg())*Math.PI/180,e=sp.elevation*Math.PI/180;
+    return [S.c[0]+R*Math.cos(e)*Math.sin(a),S.y+R*Math.sin(e),S.c[1]-R*Math.cos(e)*Math.cos(a)];
+  }
+  function bimDgSunRun(S){
+    var st=bimSunSettings(),E=[],k,m;
+    if(bimDgNoPlace())return {E:[],run:{note:'The site\'s latitude, longitude and UTC offset are needed: Analyze site gets the offset with the climate'}};
+    var yr=bimDgYear(),R=S.Rc,tzt='UTC'+(st.tz>=0?'+':'\u2212')+bimDispNum(Math.abs(st.tz),2);
+    for(k=0;k<BIM_DG_SUNDAYS.length;k++){
+      var dd=yr+'-'+BIM_DG_SUNDAYS[k][0],pts=[],marks=[],noon=null;
+      for(m=0;m<1440;m+=10){
+        var sp=bimSunCalc(st.lat,st.lon,st.tz,dd,bimPad2(m/60)+':'+bimPad2(m%60));
+        if(!sp||!(sp.elevation>0))continue;
+        var p=bimDgDome(S,R,sp);pts.push(p);
+        if(m%60===0)marks.push({p:p,t:(m/60)+'h'});
+        if(!noon||sp.elevation>noon.e)noon={e:sp.elevation,p:p,az:sp.azimuth};
+      }
+      if(pts.length<2)continue;
+      var day=bimSunCalc(st.lat,st.lon,st.tz,dd,'12:00');
+      E.push({k:'path:'+BIM_DG_SUNDAYS[k][0],name:'Sun path, '+BIM_DG_SUNDAYS[k][1],g:{kind:'marks',pts:pts,marks:marks},
+        s:{stroke:BIM_DG_SUNDAYS[k][2],w:1.6,dash:[6,4],mark:'#ffd23f'},
+        lb:[{t:BIM_DG_SUNDAYS[k][1],p:[noon.p[0],noon.p[1]+R*0.05,noon.p[2]],col:BIM_DG_SUNDAYS[k][2]}],
+        info:{title:'The sun on '+BIM_DG_SUNDAYS[k][1],rows:[['Highest',bimDispNum(noon.e,1)+'\u00b0 up, at '+bimDispNum(noon.az,0)+'\u00b0 from north'],
+          ['Sunrise',day&&day.sunrise!==null?bimHHMM(day.sunrise):'-'],['Sunset',day&&day.sunset!==null?bimHHMM(day.sunset):'-'],
+          ['Daylight',day&&day.sunrise!==null?bimDispNum((day.sunset-day.sunrise)/60,1)+' h':(day&&day.polar==='day'?'the sun does not set':'the sun does not rise')],
+          ['Clock',tzt+(A3D.site.climate&&A3D.site.climate.tzName?' ('+A3D.site.climate.tzName+')':'')]],
+          method:'NOAA\'s solar position equations every 10 minutes, on a dome '+R+' m from the site\'s centre; a dot an hour, by the clock at the site\'s UTC offset',
+          source:'Sun position (NOAA)',date:dd}});
+    }
+    var now=bimSunNow();
+    if(now&&!now.missing&&now.elevation>0){
+      var q=bimDgDome(S,R,now);
+      E.push({k:'now',name:'The sun now',g:{kind:'line',pts:[]},sym:{type:'dot',p:q,r:6,col:'#e5484d'},
+        lb:[{t:'Now',p:[q[0],q[1]+R*0.06,q[2]],col:'#ff8a8f'}],
+        info:{title:'The sun at '+now.settings.time+' on '+now.settings.date,rows:[['Position',bimDispNum(now.elevation,1)+'\u00b0 up, at '+bimDispNum(now.azimuth,0)+'\u00b0 from north']],
+          method:'The date and time in Properties, Site, Location',source:'Sun position (NOAA)'}});
+    }
+    return {E:E,run:{legend:[{name:'21 June',short:'June',col:'#ffb347',kind:'dash'},{name:'20 March, 22 September',short:'March, September',col:'#e8d36a',kind:'dash'},{name:'21 December',short:'December',col:'#8ab4f8',kind:'dash'},
+      {name:'An hour',short:'hour',col:'#ffd23f',kind:'dot'},{name:'The sun now',short:'now',col:'#e5484d',kind:'dot'}],source:'NOAA solar position equations'}};
+  }
+  /* the model's shadows at 9, 12 and 15 on the equinox and both solstices: drawn from the model each
+     time, so they follow it; each date a layer, the equinox shown */
+  var BIM_DG_SHTIMES=[['09:00','9h','#4f8bd6'],['12:00','12h','#8a93a3'],['15:00','15h','#a46bd6']];
+  function bimDgShadowRun(S){
+    var st=bimSunSettings(),E=[],layers={},k,t;
+    if(bimDgNoPlace())return {E:[],run:{note:'The site\'s place and UTC offset are needed for its shadows'}};
+    if(!S.own)return {E:[],run:{note:'No building in the model yet: shadows are cast by what is drawn'}};
+    var yr=bimDgYear(),order=[1,0,2];   /* the equinox first: the date planners compare */
+    for(k=0;k<order.length;k++){
+      var D=BIM_DG_SUNDAYS[order[k]],key='shadow:'+D[0],nm=D[1].split(' and ')[0];
+      layers[key]={name:'Site analysis - Shadows '+nm,col:'#7c8db0',hidden:k>0};
+      for(t=0;t<BIM_DG_SHTIMES.length;t++){
+        var sp=bimSunCalc(st.lat,st.lon,st.tz,yr+'-'+D[0],BIM_DG_SHTIMES[t][0]);
+        if(!sp||!(sp.elevation>0))continue;
+        E.push({k:'sh:'+D[0]+':'+BIM_DG_SHTIMES[t][1],name:'Shadow, '+nm+' '+BIM_DG_SHTIMES[t][1],layer:key,
+          g:{kind:'live',live:{kind:'shadow',date:yr+'-'+D[0],time:BIM_DG_SHTIMES[t][0],c:S.c,r:S.r+80}},s:{fill:BIM_DG_SHTIMES[t][2],fop:0.38},
+          info:{title:'The model\'s shadow at '+BIM_DG_SHTIMES[t][0]+' on '+nm,rows:[['Sun',bimDispNum(sp.elevation,1)+'\u00b0 up, at '+bimDispNum(sp.azimuth,0)+'\u00b0 from north'],
+            ['Shadow',bimDispNum(1/Math.tan(sp.elevation*Math.PI/180),2)+' times a building\'s height long']],
+            method:'The model\'s own solids projected along the sun onto the ground, drawn again whenever the model changes',source:'Sun position (NOAA); the model',date:yr+'-'+D[0]}});
+      }
+    }
+    return {E:E,run:{layers:layers,legend:BIM_DG_SHTIMES.map(function(x){return {name:'Shadow at '+x[1],short:x[1],col:x[2],kind:'fill'};}),source:'The model\'s own buildings; 20 March shown'}};
+  }
+  /* the winds by season from a year of hours, the strongest, and the year's rose */
+  var BIM_DG_SEASONS=[['winter','Winter','#7fd3e6'],['spring','Spring','#9be7a7'],['summer','Summer','#f5c26b'],['autumn','Autumn','#e59866']];
+  function bimDgSeasonMonths(s,lat){
+    var N={winter:'December to February',spring:'March to May',summer:'June to August',autumn:'September to November'},
+        So={winter:'June to August',spring:'September to November',summer:'December to February',autumn:'March to May'};
+    return (lat<0?So:N)[s];
+  }
+  /* an arrow from tail to tip, w half its shaft's width, in the plan at height y */
+  function bimDgArrow(tail,tip,hw,y){
+    var dx=tip[0]-tail[0],dz=tip[1]-tail[1],L=Math.sqrt(dx*dx+dz*dz)||1,u=[dx/L,dz/L],n=[-u[1],u[0]],hh=hw*2.3,hl=Math.min(L*0.45,hw*4.2),nk=[tip[0]-u[0]*hl,tip[1]-u[1]*hl];
+    function Q(p,w){return [p[0]+n[0]*w,y,p[1]+n[1]*w];}
+    return [Q(tail,hw),Q(nk,hw),Q(nk,hh),[tip[0],y,tip[1]],Q(nk,-hh),Q(nk,-hw),Q(tail,-hw)];
+  }
+  function bimDgWindRun(S){
+    var C=A3D.site&&A3D.site.climate,Hh=C&&C.hourly,Wd=Hh&&Hh.wind,E=[],leg=[],G={},order=[],k;
+    if(!Wd||!Wd.year)return {E:[],run:{note:'No wind yet: Analyze site gets a year of hourly wind with the climate'}};
+    var Rc=S.Rc,y=S.y+0.1,lat=bimSunSettings().lat||0,src='ERA5 reanalysis (ECMWF), via Open-Meteo';
+    /* seasons that blow from the same quarter share one arrow, which names them */
+    BIM_DG_SEASONS.forEach(function(x){
+      var R=Wd[x[0]];
+      if(!R||R.prev===null||R.prev===undefined)return;
+      if(!G[R.prev]){G[R.prev]=[];order.push(R.prev);}
+      G[R.prev].push({id:x[0],name:x[1],col:x[2],R:R});
+    });
+    order.forEach(function(sec,gi){
+      var L=G[sec],share=0,rows=[],a=(sec*22.5+bimTrueNorthDeg())*Math.PI/180,f=[Math.sin(a),-Math.cos(a)],yy=y+gi*0.02;
+      L.forEach(function(it){
+        var R=it.R,sp=(R.secMean&&R.secMean[sec]!==null&&R.secMean[sec]!==undefined)?R.secMean[sec]:null;
+        share=Math.max(share,R.prevPct||0);
+        rows.push([it.name+' ('+bimDgSeasonMonths(it.id,lat)+')',bimDispNum(R.prevPct||0,1)+'% of its hours from '+BIM_DG_DIRS[sec]+(sp!==null?', '+bimDispNum(sp,1)+' m/s on average from there':'')+'; calm '+bimDispNum(R.calm||0,1)+'%']);
+      });
+      var hw=Rc*(0.025+0.05*Math.min(share,40)/40),tail=[S.c[0]+f[0]*Rc*2.05,S.c[1]+f[1]*Rc*2.05],tip=[S.c[0]+f[0]*Rc*1.1,S.c[1]+f[1]*Rc*1.1];
+      var names=L.map(function(it){return it.name;}),words=L.map(function(it,j){return (j?it.name.toLowerCase():it.name)+' '+bimDispNum(it.R.prevPct||0,0)+'%';}).join(', ');
+      E.push({k:'prevail:'+BIM_DG_DIRS[sec],name:'Prevailing wind from '+BIM_DG_DIRS[sec]+' ('+names.join(', ').toLowerCase()+')',
+        g:{kind:'line',pts:bimDgArrow(tail,tip,hw,yy),closed:true},s:{stroke:L[0].col,fill:L[0].col,fop:0.42,w:1.2},
+        lb:[{t:'Wind from '+BIM_DG_DIRS[sec]+': '+words+' of hours',p:[tail[0]+f[0]*Rc*0.16,yy,tail[1]+f[1]*Rc*0.16],col:L[0].col}],
+        info:{title:(L.length>1?names.slice(0,-1).join(', ')+' and '+names[names.length-1].toLowerCase():names[0])+': the wind blows most often from '+BIM_DG_DIRS[sec],rows:rows,
+          method:'A year of hourly wind 10 m up in sixteen sectors; a season\'s prevailing sector is the one it blows from most often; the arrow is as wide as the largest share',
+          source:src,date:Hh.start?Hh.start.slice(0,4):''}});
+      leg.push({name:names.join(', ')+' prevailing wind',short:names.join(', '),col:L[0].col,kind:'fill'});
+    });
+    var Y=Wd.year;
+    if(Y.strong!==null&&Y.strong!==undefined&&Y.strong>=0){
+      E.push({k:'strong',name:'Strongest winds',g:{kind:'line',pts:[]},sym:{type:'storm',p:bimDgAt(S,Y.strong*22.5,Rc*0.86,y),r:13,col:'#e5484d'},
+        lb:[{t:'Strongest winds: '+BIM_DG_DIRS[Y.strong],p:bimDgAt(S,Y.strong*22.5,Rc*0.72,y),col:'#ff8a8f'}],
+        info:{title:'The strongest winds come from '+BIM_DG_DIRS[Y.strong],
+          rows:[['How','The sector with the most hours in the two fastest classes ('+(Wd.bins&&Wd.bins.length>1?Wd.bins[Wd.bins.length-2]+' m/s and over':'the fastest')+')']],
+          method:'A year of hourly wind: storms and gales come from where the fastest hours do',source:src}});
+      leg.push({name:'Strongest winds',short:'strongest',col:'#e5484d',kind:'line'});
+    }
+    var tot=[],mx=0;
+    for(k=0;k<16;k++){var sm=0;(Y.pct[k]||[]).forEach(function(v){sm+=v;});tot.push(sm);if(sm>mx)mx=sm;}
+    if(mx>0){
+      var rp=[];
+      for(k=0;k<16;k++){var rr=Rc*(0.16+0.5*tot[k]/mx);rp.push(bimDgAt(S,k*22.5-8,rr,y),bimDgAt(S,k*22.5+8,rr,y),bimDgAt(S,k*22.5+11.25,Rc*0.12,y));}
+      E.push({k:'rose',name:'Wind rose, the year',g:{kind:'line',pts:rp,closed:true},s:{stroke:'#7fd3e6',fill:'#7fd3e6',fop:0.16,w:1},
+        info:{title:'Where the wind comes from over the year',rows:[['Most often','from '+BIM_DG_DIRS[Y.prev]+', '+bimDispNum(Y.prevPct||0,1)+'% of hours'],['Calm',bimDispNum(Y.calm||0,1)+'%'],['Mean speed',bimDispNum(Y.mean||0,1)+' m/s']],
+          method:'Sixteen petals, each as long as its share of the year\'s hours',source:src}});
+      leg.push({name:'Wind rose, the year',short:'the year',col:'#7fd3e6',kind:'fill'});
+    }
+    return {E:E,run:{legend:leg,source:'ERA5 hourly wind via Open-Meteo'+(Hh.year?', '+Hh.year:'')}};
+  }
+  /* ---- views: what can be seen from the site ----
+     An isovist (Benedikt, 1979): sight lines every 2 degrees from the site's centre, each stopped by
+     the first building or tree around it that stands taller than the eye -- once at eye height on the
+     ground, once from the top floor. From the top floor, what a sight line reaches is a view: water,
+     then parks and woods, then a landmark (a tower, a listed or a sacred building, seen over the
+     roofs or standing in the way), then open land. Each such thing is one view, towards the middle
+     of the sight lines that reach it, as wide as they are. */
+  function bimDgObstacles(){
+    var B=[],i,o,c,q,t;
+    for(i=0;i<A3D.objs.length;i++){
+      o=A3D.objs[i];c=o.context;
+      if(!c||!bimLayerShown(o))continue;
+      q=bimObjOffset(o);t=c.tags||{};
+      if(c.kind==='buildings'&&c.footprint&&c.footprint.length>=3&&c.height>0)
+        B.push({kind:'b',pts:c.footprint.map(function(p){return [p[0]+q[0],p[1]+q[2]];}),top:c.height,name:String(t.name||o.name||'').slice(0,40),
+          lm:(c.height>=30||!!t.tourism||!!t.historic||t.amenity==='place_of_worship'),tall:c.height>=30});
+      else if(c.kind==='trees'&&c.height>0&&o.pts&&o.pts.length){
+        var cx=o.pts[0][0]+q[0],cz=o.pts[0][1]+q[2],rr=Math.max(1,(c.crown||4)/2),P=[],k;
+        for(k=0;k<8;k++)P.push([cx+rr*Math.cos(k*Math.PI/4),cz+rr*Math.sin(k*Math.PI/4)]);
+        B.push({kind:'t',pts:P,top:c.height,name:o.name});
+      }
+    }
+    return B;
+  }
+  function bimDgRayHit(ox,oz,dx,dz,P,max){
+    var best=max,i,n=P.length;
+    for(i=0;i<n;i++){
+      var a=P[i],b=P[(i+1)%n],ex=b[0]-a[0],ez=b[1]-a[1],den=dx*ez-dz*ex;
+      if(Math.abs(den)<1e-12)continue;
+      var t=((a[0]-ox)*ez-(a[1]-oz)*ex)/den,s=((a[0]-ox)*dz-(a[1]-oz)*dx)/den;
+      if(t>0.01&&s>=0&&s<=1&&t<best)best=t;
+    }
+    return best;
+  }
+  /* the sight lines from the site's centre at eye height: how far each runs, and what stops it */
+  function bimDgIsovist(S,eye,Bs,Rv){
+    var D=[],hit=[],k,i,t,cx=S.c[0],cz=S.c[1],tn=bimTrueNorthDeg();
+    /* what holds the eye is the site's own building, not in the way */
+    var use=Bs.filter(function(b){return b.top>eye-S.y&&!bimPointInPoly([cx,cz],b.pts);});
+    for(k=0;k<180;k++){
+      var a=(k*2+tn)*Math.PI/180,dx=Math.sin(a),dz=-Math.cos(a),d=Rv,h=null;
+      for(i=0;i<use.length;i++){t=bimDgRayHit(cx,cz,dx,dz,use[i].pts,d);if(t<d){d=t;h=use[i];}}
+      D.push(d);hit.push(h);
+    }
+    return {D:D,hit:hit};
+  }
+  function bimDgViewFeats(){
+    var F=[],i,o,c,q;
+    for(i=0;i<A3D.objs.length;i++){
+      o=A3D.objs[i];c=o.context;if(!c||!bimLayerShown(o))continue;
+      var t=c.tags||{},nm=t.name?String(t.name).slice(0,40):'';
+      q=bimObjOffset(o);
+      if((c.kind==='water'||c.kind==='green'||c.kind==='landuse')&&o.pts&&o.pts.length>=3&&o.closed&&c.part!=='hole'){
+        var open=/^(farmland|meadow|grass|recreation_ground|forest|orchard|vineyard)$/.test(t.landuse||''),pri=c.kind==='water'?1:(c.kind==='green'?2:(open?4:0));
+        if(!pri)continue;
+        var what=c.kind==='water'?'water':(c.kind==='green'?(t.leisure==='park'?'a park':(t.natural==='wood'||t.landuse==='forest'?'woods':'green space')):'open land');
+        F.push({pri:pri,key:c.kind+':'+(nm||c.id||o.id),poly:o.pts.map(function(p){return [p[0]+q[0],p[1]+q[2]];}),label:what+(nm?' ('+nm+')':'')});
+      }
+    }
+    return F;
+  }
+  /* a target's widest run of neighbouring sight lines, across north too: [first, count] */
+  function bimDgRun(ks){
+    var on=[],k,best=[0,0],st=-1,n;
+    for(k=0;k<180;k++)on.push(false);
+    ks.forEach(function(x){on[x]=true;});
+    if(ks.length>=180)return [0,180];
+    for(k=0;k<360;k++){
+      if(on[k%180]){if(st<0)st=k;n=k-st+1;if(n>best[1]&&n<=180)best=[st%180,n];}
+      else st=-1;
+    }
+    return best;
+  }
+  function bimDgViewsRun(S){
+    var Bs=bimDgObstacles(),E=[],T={},k,i;
+    if(!Bs.length)return {E:[],run:{note:'No buildings around the site yet: Analyze site gets them from OpenStreetMap'}};
+    var Rv=Math.min(400,S.ctxR||400),y=S.y+0.15,eye=S.y+1.6,top=S.own&&S.top!==null?Math.max(S.top-1.5,S.y+3):S.y+10,tn=bimTrueNorthDeg();
+    var Ie=bimDgIsovist(S,eye,Bs,Rv),It=bimDgIsovist(S,top,Bs,Rv),src='OpenStreetMap buildings and trees (their tagged heights, else their levels, else an assumed height)';
+    function ring(D,yy){var P=[];for(var q=0;q<180;q++)P.push(bimDgAt(S,q*2,Math.max(1,D[q]),yy));return P;}
+    function openPct(D){var n=0;D.forEach(function(d){if(d>=Rv*0.98)n++;});return Math.round(n/1.8);}
+    E.push({k:'iso:eye',name:'What can be seen at eye level',g:{kind:'line',pts:ring(Ie.D,y),closed:true},s:{stroke:'#8fd694',fill:'#8fd694',fop:0.12,w:1},
+      info:{title:'From the ground at eye height (1.6 m), '+openPct(Ie.D)+'% of the horizon is open to '+Rv+' m',rows:[['Sight lines','180, every 2\u00b0, to '+Rv+' m']],
+        method:'An isovist: each sight line stops at the first building or tree around the site taller than the eye',source:src}});
+    E.push({k:'iso:top',name:'What can be seen from the top floor',g:{kind:'line',pts:ring(It.D,y+0.02),closed:true},s:{stroke:'#c6f0a8',w:1.2,dash:[5,4]},
+      info:{title:'From '+bimDispNum(top-S.y,1)+' m up'+(S.own?' (the top floor)':' (no building drawn yet: about a fourth floor)')+', '+openPct(It.D)+'% of the horizon is open to '+Rv+' m',
+        rows:[['Sight lines','180, every 2\u00b0, to '+Rv+' m']],method:'An isovist: only what stands taller than this eye stops a sight line',source:src}});
+    /* what each sight line from the top floor reaches */
+    var F=bimDgViewFeats(),LM=Bs.filter(function(b){return b.lm&&!bimPointInPoly(S.c,b.pts);});
+    function add(key,pri,label,kk,d){if(!T[key])T[key]={pri:pri,label:label,ks:[],d:d};T[key].ks.push(kk);T[key].d=Math.min(T[key].d,d);}
+    for(k=0;k<180;k++){
+      var a=(k*2+tn)*Math.PI/180,dx=Math.sin(a),dz=-Math.cos(a),free=It.D[k],d,seen={};
+      for(d=20;d<=free;d+=10){
+        var x=S.c[0]+d*dx,z=S.c[1]+d*dz;
+        for(i=0;i<F.length;i++)if(!seen[i]&&bimPointInPoly([x,z],F[i].poly)){seen[i]=1;add(F[i].key,F[i].pri,F[i].label,k,d);}
+      }
+      for(i=0;i<LM.length;i++){var t=bimDgRayHit(S.c[0],S.c[1],dx,dz,LM[i].pts,free+0.5);if(t<free+0.5)add('lm:'+(LM[i].name||i),3,LM[i].name||(LM[i].tall?'a tall building':'a landmark'),k,t);}
+    }
+    var L=Object.keys(T).map(function(key){var r=bimDgRun(T[key].ks),o=T[key];o.key=key;o.st=r[0];o.n=r[1];o.az=((r[0]+(r[1]-1)/2)*2)%360;return o;})
+      .filter(function(o){return o.n>=2;})
+      .sort(function(p,q){return p.pri-q.pri||q.n-p.n;});
+    var chosen=[];
+    L.forEach(function(o){
+      if(chosen.length>=5)return;
+      for(var j=0;j<chosen.length;j++){var dd=Math.abs(chosen[j].az-o.az);if(Math.min(dd,360-dd)<15)return;}
+      chosen.push(o);
+    });
+    if(!chosen.length){   /* nothing named: the widest open run, if the horizon is not all open */
+      var ks=[];for(k=0;k<180;k++)if(It.D[k]>=Rv*0.98)ks.push(k);
+      var r0=bimDgRun(ks);
+      if(r0[1]>=6&&r0[1]<180)chosen.push({key:'open',pri:5,label:'',st:r0[0],n:r0[1],az:((r0[0]+(r0[1]-1)/2)*2)%360,d:null});
+    }
+    chosen.forEach(function(o){
+      var lab='View'+(o.label?': '+o.label:', open'),w=o.n*2,p1=bimDgAt(S,o.az,S.Rc*1.03,y),p2=bimDgAt(S,o.az,S.Rc*1.6,y);
+      E.push({k:'view:'+o.key,name:lab,g:{kind:'line',pts:[p1,p2]},s:{stroke:'#8fd694',w:2.2,dash:[7,5],head:true},
+        lb:[{t:lab.toUpperCase(),p:bimDgAt(S,o.az,S.Rc*1.78,y),col:'#b6f0b0'}],
+        info:{title:lab+', towards '+BIM_DG_DIRS[Math.round(o.az/22.5)%16]+(o.d?', about '+Math.round(o.d)+' m away':''),
+          rows:[['Seen across',w+'\u00b0 of the horizon from the top floor'],['From',bimDispNum(top-S.y,1)+' m up']],
+          method:'The top floor\'s sight lines that reach it before a building or a tree taller than the eye stops them; water, then parks and woods, then landmarks, then open land',
+          source:'OpenStreetMap'}});
+    });
+    return {E:E,run:{legend:[{name:'Seen at eye level',short:'eye level',col:'#8fd694',kind:'fill'},{name:'Seen from the top floor',short:'top floor',col:'#c6f0a8',kind:'dash'},{name:'A view',short:'a view',col:'#8fd694',kind:'line'}],
+      source:'OpenStreetMap buildings and trees'}};
+  }
+  /* ---- noise from the roads: a screening estimate ----
+     CRTN (Calculation of Road Traffic Noise, 1988): the basic level L10(18h) = 29.1 + 10 log Q dB(A)
+     10 m from the kerb, for the 18-hour flow Q; + 33 log(V + 40 + 500/V) + 10 log(1 + 5p/V) - 68.8
+     for the speed V (km/h) and heavy vehicles p (%); - 10 log(d'/13.5) for the distance, d' the slant
+     distance from a line 3.5 m in from the kerb and 0.5 m up to a point 4 m up. CRTN holds to 300 m,
+     so no class reaches further. Open data has a road's class and seldom its traffic, so the flow is
+     the class's typical daily traffic (FHWA's functional classes), 94% of it in the 18 hours.
+     A building between screens what is behind it, by ISO 9613-2's barrier term at 500 Hz -- the path
+     over its roof against the straight one -- and no more than the 20 dB it allows one edge. So the
+     classes follow the street: wide where it is open, stopped at the frontages. Hard ground, and only
+     the first building on each line: the estimate errs loud, and says it is an estimate. */
+  var BIM_DG_ROADS={
+    motorway:{fc:'Interstate or motorway',u:82000,r:23000,v:100,p:15,l:4},
+    trunk:{fc:'Other freeway or expressway',u:34000,r:11250,v:90,p:10,l:4},
+    primary:{fc:'Other principal arterial',u:17000,r:5250,v:60,p:8,l:2},
+    secondary:{fc:'Minor arterial',u:8500,r:3750,v:50,p:5,l:2},
+    tertiary:{fc:'Major collector',u:3700,r:1450,v:50,p:3,l:2},
+    unclassified:{fc:'Minor collector',u:3700,r:630,v:40,p:2,l:2},
+    residential:{fc:'Local road',u:390,r:210,v:40,p:2,l:2},
+    living_street:{fc:'Local road',u:390,r:210,v:20,p:1,l:1}};
+  var BIM_DG_NOISE_BANDS=[[55,'#f08a24','55 to 60 dB','55'],[60,'#e34a33','60 to 65 dB','60'],[65,'#b5174a','65 to 70 dB','65'],[70,'#8e4fa3','70 to 75 dB','70'],[75,'#3b5fc0','75 dB and over','75+ dB']];
+  var BIM_DG_CRTN_MAX=300,BIM_DG_LAMBDA=0.686,BIM_DG_STEP=15;
+  function bimDgRoadClass(hw){
+    hw=String(hw||'');var link=/_link$/.test(hw),base=hw.replace(/_link$/,''),c=BIM_DG_ROADS[base];
+    if(!c)return null;
+    return {key:base,link:link,fc:c.fc+(link?' (a slip road)':''),u:c.u*(link?0.25:1),r:c.r*(link?0.25:1),v:c.v,p:c.p,l:c.l};
+  }
+  function bimDgKmh(t){
+    var m=/^\s*(\d+(?:\.\d+)?)\s*(mph)?/.exec(String(t||''));
+    if(!m)return null;
+    var v=parseFloat(m[1]);
+    return v>0?(m[2]?v*1.609344:v):null;
+  }
+  function bimDgL0(Q18,V,p){return 29.1+10*Math.log(Q18)/Math.LN10+33*Math.log(V+40+500/V)/Math.LN10+10*Math.log(1+5*p/V)/Math.LN10-68.8;}
+  /* the level a distance from the road's centre line, 4 m up */
+  function bimDgLat(L0,dcl,half){
+    var d=Math.max(1,dcl-half),dp=Math.sqrt((d+3.5)*(d+3.5)+3.5*3.5);
+    return L0-10*Math.log(dp/13.5)/Math.LN10;
+  }
+  /* how far from the centre line the level falls to T, no further than CRTN holds */
+  function bimDgReach(L0,T,half){
+    var dp=13.5*Math.pow(10,(L0-T)/10),d2=dp*dp-3.5*3.5;
+    if(d2<=0)return 0;
+    var d=Math.sqrt(d2)-3.5;
+    return d>0?Math.min(BIM_DG_CRTN_MAX,d+half):0;
+  }
+  /* a building's screening, ISO 9613-2: Dz = 10 log(3 + 20 z / lambda), z the path over its roof less
+     the straight path, the source 0.5 m up at the road, the building's face a metres off and H high,
+     the point x metres off and 4 m up; nothing where the roof is under the line of sight; 20 dB at most */
+  function bimDgBarrier(a,H,x){
+    if(!(H>0)||!(x>a)||H<=0.5+3.5*a/x)return 0;
+    var z=Math.sqrt(a*a+(H-0.5)*(H-0.5))+Math.sqrt((x-a)*(x-a)+(H-4)*(H-4))-Math.sqrt(x*x+3.5*3.5);
+    return z>0?Math.min(20,10*Math.log(3+20*z/BIM_DG_LAMBDA)/Math.LN10):0;
+  }
+  function bimDgSegDist(px,pz,P){
+    var best=1e18,at=null,i;
+    for(i=0;i+1<P.length;i++){
+      var ax=P[i][0],az=P[i][1],ex=P[i+1][0]-ax,ez=P[i+1][1]-az,l2=ex*ex+ez*ez,t=l2>1e-9?((px-ax)*ex+(pz-az)*ez)/l2:0;
+      t=Math.max(0,Math.min(1,t));
+      var cx=ax+t*ex,cz=az+t*ez,d=Math.sqrt((px-cx)*(px-cx)+(pz-cz)*(pz-cz));
+      if(d<best){best=d;at=[cx,cz];}
+    }
+    return {d:best,at:at};
+  }
+  /* points about every step metres along a line, each with the line's left-hand normal there */
+  function bimDgAlong(P,step){
+    var out=[],i,k;
+    for(i=0;i+1<P.length;i++){
+      var ax=P[i][0],az=P[i][1],dx=P[i+1][0]-ax,dz=P[i+1][1]-az,L=Math.sqrt(dx*dx+dz*dz);
+      if(L<1e-6)continue;
+      var n=[-dz/L,dx/L],m=Math.max(1,Math.ceil(L/step));
+      for(k=out.length?1:0;k<=m;k++)out.push({p:[ax+dx*k/m,az+dz*k/m],n:n});
+    }
+    return out;
+  }
+  /* the first building along a line from a point: how far, and how high */
+  function bimDgFirstWall(ox,oz,dx,dz,Bb,max){
+    var hit=max,H=0,nm='',k,t;
+    for(k=0;k<Bb.length;k++){t=bimDgRayHit(ox,oz,dx,dz,Bb[k].pts,hit);if(t<hit){hit=t;H=Bb[k].top;nm=Bb[k].name;}}
+    return {d:hit,H:H,name:nm};
+  }
+  /* a way's classes: from its centre line every BIM_DG_STEP metres, each side out to where the level
+     falls to the class, screened behind the first building; each class an area */
+  function bimDgNoiseBands(w,Bb,y){
+    var R=BIM_DG_NOISE_BANDS.map(function(b){return bimDgReach(w.L0,b[0],w.half);}),Rm=R[0],out=[],A=bimDgAlong(w.P,BIM_DG_STEP),reach=[],i,j,sd;
+    if(!(Rm>0)||A.length<2)return out;
+    var bx0=1e18,bz0=1e18,bx1=-1e18,bz1=-1e18;
+    w.P.forEach(function(p){bx0=Math.min(bx0,p[0]-Rm);bz0=Math.min(bz0,p[1]-Rm);bx1=Math.max(bx1,p[0]+Rm);bz1=Math.max(bz1,p[1]+Rm);});
+    var near=Bb.filter(function(b){return b.x1>=bx0&&b.x0<=bx1&&b.z1>=bz0&&b.z0<=bz1;});
+    for(i=0;i<A.length;i++){
+      reach.push([]);
+      for(sd=0;sd<2;sd++){
+        var sg=sd?-1:1,wall=bimDgFirstWall(A[i].p[0],A[i].p[1],A[i].n[0]*sg,A[i].n[1]*sg,near,Rm),r=[];
+        for(j=0;j<R.length;j++){
+          if(R[j]<=wall.d){r.push(R[j]);continue;}
+          var x,best=wall.d,T=BIM_DG_NOISE_BANDS[j][0];
+          for(x=wall.d+5;x<=Rm+0.01;x+=5){if(bimDgLat(w.L0,x,w.half)-bimDgBarrier(wall.d,wall.H,x)>=T)best=x;else break;}
+          r.push(best);
+        }
+        reach[i].push(r);
+      }
+    }
+    for(j=0;j<R.length;j++){
+      if(!(R[j]>0))continue;
+      var poly=[];
+      for(i=0;i<A.length;i++)poly.push([A[i].p[0]+A[i].n[0]*reach[i][0][j],y,A[i].p[1]+A[i].n[1]*reach[i][0][j]]);
+      for(i=A.length-1;i>=0;i--)poly.push([A[i].p[0]-A[i].n[0]*reach[i][1][j],y,A[i].p[1]-A[i].n[1]*reach[i][1][j]]);
+      out.push({lv:BIM_DG_NOISE_BANDS[j][0],col:BIM_DG_NOISE_BANDS[j][1],pts:poly});
+    }
+    return out;
+  }
+  /* a way's level at the site's edge nearest it, screened by the first building between */
+  function bimDgNoiseAt(w,S,Bb){
+    var dx=S.c[0]-w.at[0],dz=S.c[1]-w.at[1],d=Math.sqrt(dx*dx+dz*dz)||1,x=Math.max(w.half+1,d-S.r);
+    var wall=bimDgFirstWall(w.at[0],w.at[1],dx/d,dz/d,Bb.filter(function(b){return !bimPointInPoly(S.c,b.pts);}),x);
+    var Dz=wall.d<x?bimDgBarrier(wall.d,wall.H,x):0;
+    return {L:bimDgLat(w.L0,x,w.half)-Dz,Dz:Dz,dcl:x,by:Dz>0?wall.name:''};
+  }
+  function bimDgNoiseRun(S){
+    var E=[],ways=[],groups={},rails={},nb=0,reach=BIM_DG_CRTN_MAX+S.r,i,o,c;
+    var Bb=bimDgObstacles().filter(function(b){return b.kind==='b';});
+    Bb.forEach(function(b){b.x0=1e18;b.z0=1e18;b.x1=-1e18;b.z1=-1e18;b.pts.forEach(function(p){b.x0=Math.min(b.x0,p[0]);b.z0=Math.min(b.z0,p[1]);b.x1=Math.max(b.x1,p[0]);b.z1=Math.max(b.z1,p[1]);});});
+    for(i=0;i<A3D.objs.length;i++){
+      o=A3D.objs[i];c=o.context;if(!c)continue;
+      if(c.kind==='buildings')nb++;
+      if(!o.pts||o.pts.length<2||c.part==='hole')continue;
+      var q=bimObjOffset(o),P=o.pts.map(function(p){return [p[0]+q[0],p[1]+q[2]];}),sd;
+      if(c.kind==='roads'&&c.tags){
+        var rc=bimDgRoadClass(c.tags.highway);if(!rc||c.tunnel||c.tags.tunnel==='yes')continue;
+        sd=bimDgSegDist(S.c[0],S.c[1],P);if(sd.d>reach)continue;
+        ways.push({P:P,rc:rc,tags:c.tags,d:sd.d,at:sd.at,name:String(c.tags.name||c.tags.ref||'').slice(0,60)});
+      }else if(c.kind==='rail'&&!c.tunnel&&!(c.tags&&c.tags.tunnel==='yes')&&!(c.tags&&c.tags.railway==='platform')){
+        sd=bimDgSegDist(S.c[0],S.c[1],P);if(sd.d>reach)continue;
+        var rn=String((c.tags&&c.tags.name)||'').slice(0,60),rk=rn||((c.osm||'way')+(c.id||o.id));
+        if(!rails[rk]||sd.d<rails[rk].d)rails[rk]={d:sd.d,at:sd.at,name:rn,key:rk};
+      }
+    }
+    var rl=Object.keys(rails).map(function(k){return rails[k];}).sort(function(a,b){return a.d-b.d;});
+    if(!ways.length&&!rl.length)return {E:[],run:{note:'No roads within '+BIM_DG_CRTN_MAX+' m yet: Analyze site gets them from OpenStreetMap'}};
+    var urban=nb>=40,y=S.y+0.02;
+    /* a street in many ways is one; the unnamed roads of a class are one */
+    ways.forEach(function(w){
+      var t=w.tags,rc=w.rc,lanes=parseInt(t.lanes,10);if(!(lanes>0))lanes=rc.l;
+      w.V=bimDgKmh(t.maxspeed)||rc.v;w.aadt=urban?rc.u:rc.r;w.lanes=lanes;w.half=lanes*3.65/2;
+      w.L0=bimDgL0(0.94*w.aadt,w.V,rc.p);
+      var at=bimDgNoiseAt(w,S,Bb);w.Ls=at.L;w.Dz=at.Dz;w.dcl=at.dcl;w.by=at.by;
+      var gk=w.name?'n:'+w.name+'|'+rc.key:'u:'+rc.key;
+      if(!groups[gk])groups[gk]={key:gk,name:w.name,rc:rc,ways:[],top:null};
+      groups[gk].ways.push(w);
+      if(!groups[gk].top||w.Ls>groups[gk].top.Ls)groups[gk].top=w;
+    });
+    var G=Object.keys(groups).map(function(k){return groups[k];}).sort(function(a,b){return b.top.Ls-a.top.Ls;}),sum=0;
+    G.forEach(function(g){
+      var w=g.top,nm=g.name||(w.rc.fc+(g.ways.length>1?'s':'')+', unnamed'),bands=[],segs=[];
+      sum+=Math.pow(10,w.Ls/10);
+      g.ways.forEach(function(x){
+        bands=bands.concat(bimDgNoiseBands(x,Bb,y));
+        for(var k=0;k+1<x.P.length;k++)segs.push([x.P[k][0],y,x.P[k][1]],[x.P[k+1][0],y,x.P[k+1][1]]);
+      });
+      if(!bands.length)return;
+      var r55=bimDgReach(w.L0,55,w.half);
+      E.push({k:'road:'+g.key,name:'Noise, '+nm,g:{kind:'segs',pts:segs,bands:bands},s:{fop:0.34},
+        info:{title:nm+': about '+Math.round(w.L0)+' dB 10 m from the kerb (L10,18h, estimated)',rows:[['Road',(g.name?g.name+', ':'')+'OpenStreetMap '+w.tags.highway+', taken as '+w.rc.fc+(g.ways.length>1?' ('+g.ways.length+' ways)':'')],
+          ['Traffic assumed',bimClimInt(w.aadt)+' vehicles a day ('+(urban?'urban':'rural')+': FHWA\'s typical range for the class)'],['Speed',Math.round(w.V)+' km/h'+(w.tags.maxspeed?' (its limit)':' (assumed for the class)')],
+          ['Heavy vehicles',w.rc.p+'% (assumed)'],['Lanes',w.lanes+(w.tags.lanes?'':' (assumed)')],['55 dB reaches',Math.round(r55)+' m from its centre line where nothing stands between'+(r55>=BIM_DG_CRTN_MAX?' (CRTN\'s limit)':'')],
+          ['At the site',Math.round(w.dcl)+' m from its centre line: about '+Math.round(w.Ls)+' dB'+(w.Dz>0?', '+Math.round(w.Dz)+' dB less behind '+(w.by||'a building'):'')]],
+          method:'CRTN (1988): the basic level, the speed and heavy-vehicle correction, and the distance to a point 4 m up, to 300 m; behind the first building, less its screening (ISO 9613-2, 500 Hz, at most 20 dB). Hard ground: it errs loud. A screening estimate: measure where it matters',
+          source:'OpenStreetMap roads and buildings; FHWA functional classification (typical daily traffic)'}});
+    });
+    G.slice(0,5).forEach(function(g){   /* the loudest, marked where they come nearest */
+      var w=g.top,nm=g.name||w.rc.fc,lab=nm+': about '+Math.round(w.Ls)+' dB',ap=[w.at[0],y,w.at[1]];
+      E.push({k:'src:'+g.key,name:'Noise source, '+nm,g:{kind:'line',pts:[]},sym:{type:'noise',p:ap,r:9,col:'#f0a04b',toward:[S.c[0],y,S.c[1]]},
+        lb:[{t:lab,p:ap,col:'#ffc27a',al:'left'}],
+        info:{title:nm+': about '+Math.round(w.Ls)+' dB L10,18h at the site, estimated',rows:[['Road',w.rc.fc],['Distance',Math.round(w.dcl)+' m from the site to its centre line'],
+          ['Screening',w.Dz>0?Math.round(w.Dz)+' dB, behind '+(w.by||'a building'):'none: the road is in sight']],method:'As the road\'s classes',source:'OpenStreetMap; FHWA; CRTN; ISO 9613-2'}});
+    });
+    rl.slice(0,3).forEach(function(r){
+      var rp=[r.at[0],y,r.at[1]];
+      E.push({k:'rail:'+r.key,name:'Noise source, railway'+(r.name?' '+r.name:''),g:{kind:'line',pts:[]},sym:{type:'noise',p:rp,r:9,col:'#d7a7ff',toward:[S.c[0],y,S.c[1]]},
+        lb:[{t:'Railway'+(r.name?' ('+r.name+')':'')+', '+Math.round(r.d)+' m: noise and vibration',p:rp,col:'#e2c4ff',al:'left'}],
+        info:{title:'A railway '+Math.round(r.d)+' m from the site: a noise and vibration source',rows:[['Level','not estimated: a railway\'s level needs its trains']],method:'Found in OpenStreetMap',source:'OpenStreetMap'}});
+    });
+    if(sum>0){
+      var Lt=10*Math.log(sum)/Math.LN10;
+      E.push({k:'site',name:'Noise at the site',g:{kind:'line',pts:[]},sym:{type:'dot',p:[S.c[0],y,S.c[1]],r:4,col:'#f0a04b'},
+        lb:[{t:'About '+Math.round(Lt)+' dB at the site',p:[S.c[0],y,S.c[1]+S.r*0.35],col:'#ffc27a',pri:1}],
+        info:{title:'About '+Math.round(Lt)+' dB L10,18h at the site from the roads, estimated',rows:[['Roads within '+BIM_DG_CRTN_MAX+' m',String(G.length)],['Loudest',G[0]?(G[0].name||G[0].rc.fc)+', '+Math.round(G[0].top.Ls)+' dB':'-'],
+          ['For scale','WHO advises road noise below 53 dB Lden; CRTN\'s L10,18h reads about 2 dB above it']],
+          method:'Each street once, at the edge of the site nearest it and screened as its classes are, added as energy: 10 log of the sum of 10^(L/10)',source:'OpenStreetMap; FHWA; CRTN; ISO 9613-2'}});
+    }
+    return {E:E,run:{legend:BIM_DG_NOISE_BANDS.map(function(b){return {name:b[2],short:b[3],col:b[1],kind:'fill'};}).concat([{name:'A noise source',short:'source',col:'#f0a04b',kind:'dot'}]),
+      source:'L10,18h estimated from road class (CRTN, FHWA), screened (ISO 9613-2)'}};
+  }
+  var BIM_DG_RUN={frame:bimDgFrameRun,sun:bimDgSunRun,shadow:bimDgShadowRun,wind:bimDgWindRun,views:bimDgViewsRun,noise:bimDgNoiseRun};
+  /* every analysis, or one, laid down from what the project holds now; one undo step */
+  function bimDgRunAll(only){
+    var S=bimDgSite(),out={},held=bimUndoHold,i;
+    if(only&&!bimDgAn(only))return null;
+    if(!held){pushUndo();bimUndoHold=true;}
+    try{
+      for(i=0;i<BIM_DG_AN.length;i++){
+        var a=BIM_DG_AN[i].id;
+        if(only&&only!==a)continue;
+        try{var r=BIM_DG_RUN[a](S);out[a]=bimDgPlace(a,r.E,r.run);out[a].note=(r.run&&r.run.note)||'';}
+        catch(eA){console.warn('[BIM] The '+a+' analysis failed',eA);out[a]={error:String(eA&&eA.message||eA),total:0,note:''};}
+      }
+    }finally{if(!held)bimUndoHold=false;}
+    refreshTree();refreshLayers();refreshProps();paint();saveSoon();
+    return out;
+  }
+  /* ---- Properties: what it is, how it was worked out, how it looks ---- */
+  function bimDgPropsHtml(o){
+    var dg=o.dg,A=bimDgAn(dg.a)||{name:dg.a},info=dg.info||{},ed=bimDgEdited(o),s=dg.s||{},live=dg.g.kind==='live',h='',r='',i;
+    h+='<div class="a3d-ptypehd"><div class="a3d-ptypeic">'+(a3drIcon('bim:analyses')||a3drIcon('box'))+'</div>'+
+      '<div class="a3d-ptypetx"><div class="a3d-ptypename">'+bimEsc(o.name)+'</div><div class="a3d-ptypesub">'+bimEsc(bimObjTypeLabel(o))+'</div></div></div>';
+    if(info.title)r+=bimPropText('What It Shows',info.title);
+    (info.rows||[]).forEach(function(row){r+=bimPropText(row[0],row[1]);});
+    h+=bimPropGroup('Reading',r);
+    r='';
+    if(info.method)r+=bimPropText('Method',info.method);
+    if(info.source)r+=bimPropText('Source',info.source+(info.date?', '+info.date:''));
+    h+=bimPropGroup('How It Was Worked Out',r);
+    r='';
+    if(!live)r+=bimPropRow('Line Colour','<input type="color" data-dgf="stroke" value="'+bimEsc(/^#[0-9a-f]{6}$/i.test(s.stroke||'')?s.stroke:'#c9d3dd')+'">');
+    if(s.fill!==undefined||live)r+=bimPropRow('Fill Colour','<input type="color" data-dgf="fill" value="'+bimEsc(/^#[0-9a-f]{6}$/i.test(s.fill||'')?s.fill:'#5b6c8a')+'">');
+    if(!live)r+=bimPropRow('Line Width (px)','<input type="number" min="0.5" max="12" step="0.5" data-dgf="w" value="'+(s.w||1.5)+'">');
+    if(!live)r+=bimPropRow('Dashed','<input type="checkbox" data-dgf="dash"'+(s.dash&&s.dash.length?' checked':'')+'>');
+    r+=bimPropRow('Opacity (%)','<input type="number" min="10" max="100" step="5" data-dgf="op" value="'+Math.round((s.op===undefined?1:s.op)*100)+'">');
+    for(i=0;i<(dg.lb||[]).length;i++)if(dg.lb[i]&&dg.lb[i].t!==undefined)r+=bimPropRow(i?'Label '+(i+1):'Label','<input type="text" maxlength="120" data-dgf="lb:'+i+'" value="'+bimEsc(dg.lb[i].t)+'">');
+    r+=bimPropRow('Layer','<select data-propf="layer">'+bimLayerOptionsHtml(o.layer||A3D.activeLayer)+'</select>');
+    h+=bimPropGroup('Appearance',r);
+    r=bimPropText('Status',dg.orphan?'Changed by you; the analysis no longer draws it':(!dg.gen?'Yours: a copy, which the analysis does not draw':(ed?'Changed by you: kept when the analysis runs again':'As the analysis drew it')));
+    if(dg.newer)r+=bimPropText('Newer','The analysis would draw it differently now: Reset takes its version');
+    r+=bimPropRow('','<button type="button" class="a3d-pedit" data-dgact="reset"'+((ed||dg.newer)&&dg.gen?'':' disabled')+'>Reset to the analysis</button> '+
+      '<button type="button" class="a3d-pedit" data-dgact="rerun">Run the analysis again</button>');
+    h+=bimPropGroup('Analysis',r);
+    return h;
+  }
+  function bimDgSet(o,f,v){
+    if(!bimIsDiag(o))return false;
+    var s=o.dg.s=o.dg.s||{},n=parseFloat(v),li=String(f).indexOf('lb:')===0?parseInt(String(f).slice(3),10):-1;
+    /* checked before the undo step, so a refused value leaves none */
+    if((f==='stroke'||f==='fill')&&!/^#[0-9a-f]{6}$/i.test(String(v)))return false;
+    if(f==='w'&&(!isFinite(n)||n<0.5||n>12)){a3dToast('A line width is 0.5 to 12 pixels');refreshProps();return false;}
+    if(f==='op'&&(!isFinite(n)||n<10||n>100)){a3dToast('Opacity is 10 to 100%');refreshProps();return false;}
+    if(li>=0&&!(o.dg.lb&&o.dg.lb[li]))return false;
+    if(!(f==='stroke'||f==='fill'||f==='w'||f==='dash'||f==='op'||li>=0))return false;
+    pushUndo();
+    if(f==='stroke'||f==='fill')s[f]=String(v).toLowerCase();
+    else if(f==='w')s.w=n;
+    else if(f==='dash')s.dash=v?[6,4]:null;
+    else if(f==='op')s.op=Math.round(n)/100;
+    else o.dg.lb[li].t=String(v).slice(0,120);
+    refreshProps();paint();saveSoon();
+    return true;
+  }
+  function bimDgPropChange(ev){
+    var e=ev.target,f=e&&e.getAttribute?e.getAttribute('data-dgf'):null,o;
+    if(!f)return;
+    o=objById(A3D.sel);
+    if(!bimIsDiag(o))return;
+    bimDgSet(o,f,e.type==='checkbox'?e.checked:e.value);
+  }
+  function bimDgPropClick(ev){
+    var b=ev.target&&ev.target.closest?ev.target.closest('[data-dgact]'):null,o;
+    if(!b||b.disabled)return;
+    o=objById(A3D.sel);
+    if(!bimIsDiag(o))return;
+    if(b.getAttribute('data-dgact')==='reset')bimDgReset(o.id);
+    else if(b.getAttribute('data-dgact')==='rerun')bimDgRunAll(o.dg.a);
+  }
+  /* ================= __acad3dV164: Analyze site =================
+     The owner: "all i want is button then the analysis run, then it leverage appropriate relevant
+     data from target api to analyze the site, then put that under analysis layers". One button,
+     needing only the site's place -- its latitude and longitude, or an address found on the map. It
+     fetches what the place lets the app fetch, each from its free source: the context (OpenStreetMap,
+     AWS Terrain Tiles), and after it the access and people (OpenStreetMap, the US Census), so the
+     public Overpass servers are asked one thing at a time; the climate (Open-Meteo, CAMS, USGS) beside
+     them, with the time zone; the zoning where a council's layer is loaded. Then every analysis is
+     drawn. Each source is listed as it arrives, or with its reason when it fails, and what failed
+     leaves the rest standing. One undo step: the snapshot taken as it starts -- or, when the address
+     is found first, the one placing the site takes -- and every step after it held. An address not
+     found leaves none. */
+  var A3D_SITERUN={busy:false,steps:[]};
+  var BIM_SITERUN_RADIUS=300;   /* far enough for the noise (CRTN holds to 300 m) and the views */
+  var BIM_SITERUN_STEPS=[['place','The site'],['context','Context'],['climate','Climate and time zone'],['access','Access and people'],['zoning','Zoning'],['draw','The analyses, in the model']];
+  var BIM_SITERUN_WORD={wait:'Waiting',busy:'Running',ok:'Done',part:'Partly',fail:'Failed',skip:'Skipped'};
+  var BIM_SITERUN_CLS={wait:'s-wait',busy:'s-busy',ok:'s-ok',part:'s-part',fail:'s-fail',skip:'s-skip'};
+  function bimSiteStep(id,state,text){
+    var s=A3D_SITERUN.steps,i;
+    for(i=0;i<s.length;i++)if(s[i].id===id){s[i].state=state;s[i].text=String(text==null?'':text).slice(0,400);}
+    bimAnalyzeRefresh(true);
+  }
+  /* why a fetch would not start: it says so in the message it shows */
+  function bimSiteToastText(){var t=document.getElementById('a3d-toast'),L=t?String(t.textContent||'').split('\n'):[];return L.length?L[L.length-1]:'';}
+  function bimSitePlaceText(){
+    var st=bimSunSettings(),at=Math.abs(st.lat).toFixed(5)+'\u00b0 '+(st.lat<0?'S':'N')+', '+Math.abs(st.lon).toFixed(5)+'\u00b0 '+(st.lon<0?'W':'E');
+    return A3D.site&&A3D.site.address?String(A3D.site.address).slice(0,140)+' ('+at+')':at;
+  }
+  function bimSiteAddrFocus(){
+    bimAnzView();
+    var i=document.querySelector('.a3d-analyze-wrap [data-saaddr]');
+    if(i){try{i.focus();}catch(eF){}}
+  }
+  function bimSiteAnalyze(q){
+    if(A3D_SITERUN.busy){a3dToast('Analyze site is already running');return null;}
+    var st=bimSunSettings(),placed=bimSunNum(st.lat)&&bimSunNum(st.lon),R;
+    q=String(q==null?'':q).replace(/^\s+|\s+$/g,'');
+    if(!placed&&!q){a3dToast('Where is the site? Type its address, or give its latitude and longitude in Properties, Site, Location');bimSiteAddrFocus();return null;}
+    if(typeof fetch!=='function'){a3dToast('This browser cannot fetch: Analyze site gets its data from the web');return null;}
+    R=A3D_SITERUN={busy:true,t0:Date.now(),held:false,steps:BIM_SITERUN_STEPS.map(function(s){return {id:s[0],name:s[1],state:'wait',text:''};})};
+    function hold(){if(!R.held){R.held=true;bimUndoHold=true;}}
+    if(placed){pushUndo();hold();}
+    function finish(ok){
+      if(R.held)bimUndoHold=false;
+      R.busy=false;
+      var D=bimDgState();
+      D.last={date:bimSaToday(),ok:!!ok,steps:R.steps.map(function(s){return {id:s.id,name:s.name,state:s.state,text:s.text};})};
+      refreshTree();refreshLayers();refreshProps();paint();saveSoon();
+      bimAnalyzeRefresh(true);
+      return {ok:!!ok,steps:D.last.steps};
+    }
+    bimSiteStep('place','busy',placed?'':'Finding '+q+' ...');
+    var p0=placed?Promise.resolve({found:true}):(bimMapFind(q)||Promise.resolve({found:false,error:bimSiteToastText()}));
+    return p0.then(function(f){
+      if(!f||!f.found){
+        bimSiteStep('place','fail',f&&f.error?f.error:'Nothing found for '+q+': try the street and the town, or give the latitude and longitude in Location');
+        a3dToast('Analyze site: the site could not be found');
+        return finish(false);
+      }
+      hold();   /* placing the site took the snapshot */
+      bimSiteStep('place','ok',bimSitePlaceText());
+      var cs=bimCtxSettings(),wid='';
+      if(cs.radius<BIM_SITERUN_RADIUS){A3D.site.context=A3D.site.context||{};A3D.site.context.radius=BIM_SITERUN_RADIUS;wid='; the context radius is '+BIM_SITERUN_RADIUS+' m now (it was '+cs.radius+' m), for the noise and the views';}
+      bimSiteStep('context','busy','Buildings, roads, water, green, trees, land use and terrain, '+Math.max(cs.radius,BIM_SITERUN_RADIUS)+' m around ...');
+      bimSiteStep('climate','busy','Ten years of days, a year of hours, air quality, earthquakes ...');
+      var pk=bimSiteOne('climate',bimClimFetch(),function(r){
+        var got=[];
+        if(r.climate)got.push('ten years of climate');if(r.hourly)got.push('a year of hourly wind and heat');if(r.air)got.push('air quality');
+        if(r.quakes!==null&&r.quakes!==undefined)got.push(bimSaN(r.quakes,'earthquake')+' within 100 km');
+        if(r.tz!==null&&r.tz!==undefined)got.push('UTC'+(r.tz>=0?'+':'\u2212')+bimDispNum(Math.abs(r.tz),2)+(r.tzSet?'':' (the offset already given is kept)'));
+        return [bimSiteState(got.length,r.errors),got.join(', ')+(r.errors&&r.errors.length?'. Not available: '+r.errors.join('; '):'')];
+      });
+      var pc=bimSiteOne('context',bimCtxFetch(),function(r){
+        return [bimSiteState(r.counts?1:0,r.errors),r.counts?bimCtxCountsText(r.counts)+wid+(r.errors&&r.errors.length?'. Not available: '+r.errors.join('; '):''):'nothing came back'];
+      }).then(function(){
+        bimSiteStep('access','busy','Walk times to daily needs and transit, the streets, the census tract ...');
+        return bimSiteOne('access',bimAccFetch(),function(r){
+          var got=[];
+          if(r.access)got.push('walk times, '+bimSaN(r.stops||0,'transit stop'));if(r.people)got.push('the census tract');if(r.outside)got.push('the census covers US sites only');
+          return [bimSiteState(got.length,r.errors),got.join(', ')+(r.errors&&r.errors.length?'. Not available: '+r.errors.join('; '):'')];
+        });
+      });
+      return Promise.all([pc,pk]).then(function(){
+        bimSiteZoning();
+        bimSiteStep('draw','busy','');
+        var out=bimDgRunAll(),said=[],notes=[],n=0,bad;
+        BIM_DG_AN.forEach(function(A){var r=out[A.id];if(!r)return;if(r.error)notes.push(A.name+': '+r.error);else if(r.total){n+=r.total;said.push(A.name.toLowerCase()+' '+r.total);}else if(r.note)notes.push(A.name+': '+r.note);});
+        bimSaFill(true);
+        bimSiteStep('draw',n?'ok':'fail',(n?bimSaN(n,'element')+' on Layers, Site analysis: '+said.join(', '):'Nothing to draw')+(notes.length?'. '+notes.join('. '):''));
+        bad=R.steps.filter(function(s){return s.state==='fail';}).map(function(s){return s.name;});
+        var res=finish(true);
+        a3dToast('Analyze site: '+(n?bimSaN(n,'element')+' drawn in the model, on Layers, Site analysis':'nothing could be drawn')+'; one undo step'+(bad.length?'. Not available: '+bad.join(', '):''));
+        return res;
+      });
+    }).then(null,function(e){
+      console.warn('[BIM] Analyze site',e);
+      a3dToast('Analyze site stopped - see the console');
+      R.steps.forEach(function(s){if(s.state==='busy'||s.state==='wait'){s.state='fail';s.text='Stopped: '+String(e&&e.message||e).slice(0,160);}});
+      return finish(false);
+    });
+  }
+  /* what came back: all of it, part of it (some sources down, named), or none */
+  function bimSiteState(got,errors){return !got?'fail':(errors&&errors.length?'part':'ok');}
+  /* one fetch, its step marked by what came back; a fetch that would not start says why */
+  function bimSiteOne(id,p,read){
+    if(!p){bimSiteStep(id,'fail',bimSiteToastText()||'It did not start');return Promise.resolve(null);}
+    return p.then(function(r){
+      var v;
+      try{v=r&&!r.error?read(r):['fail',(r&&r.error)||'nothing came back'];}
+      catch(eR){console.warn('[BIM] Analyze site: '+id,eR);v=['fail','It could not be read - see the console'];}
+      bimSiteStep(id,v[0],v[1]);
+      return r;
+    },function(e){bimSiteStep(id,'fail',String(e&&e.message||e).slice(0,200));return null;});
+  }
+  /* the zoning, where a council's layer loaded in Data Layers covers the property */
+  function bimSiteZoning(){
+    var DL=bimDataList(),f=null;
+    if(!bimZnProperty()){bimSiteStep('zoning','skip','Needs the property line: draw it from a shape or from its bearings');return;}
+    if(!DL.length){bimSiteStep('zoning','skip','No council layer loaded: add one in Properties, Site, Data Layers, and its zoning is read here');return;}
+    try{f=bimZnFromLayer(false);}catch(eZ){console.warn('[BIM] Analyze site: zoning',eZ);}
+    if(!f){bimSiteStep('zoning','skip','None of the '+bimSaN(DL.length,'loaded layer')+' gives the zoning at the property');return;}
+    try{bimZnFromLayer(true);}catch(eZ2){console.warn('[BIM] Analyze site: zoning',eZ2);bimSiteStep('zoning','fail','It could not be read - see the console');return;}
+    bimSiteStep('zoning','ok',bimZnFoundText(f)+' (from '+(f.district||f.far||f.height).layer+')');
+  }
+  /* the top of Analyze: where the site is, the button, and what the last run brought */
+  function bimSiteRunHtml(){
+    var st=bimSunSettings(),placed=bimSunNum(st.lat)&&bimSunNum(st.lon),D=bimDgState(),R=A3D_SITERUN,P=A3D.objs.filter(bimIsProperty),bd,h,steps;
+    if(P.length){var g=bimPropertyGeometry(P[0]);bd=bimEsc(P[0].name)+', '+bimDispNum(g.area,1)+' m\u00b2';}
+    else bd='None yet <button type="button" class="a3d-anzbtn" data-saact="cmd:propertyshape">From a shape</button> <button type="button" class="a3d-anzbtn" data-saact="cmd:propertyline">From bearings</button>';
+    h='<div class="a3d-sasec a3d-sarun" data-anzsec="site"><div class="a3d-sasechd">Site</div>'+
+      '<div class="a3d-sarow"><span class="a3d-salab">Place</span><span class="a3d-saval">'+(placed?bimEsc(bimSitePlaceText()):'Not placed yet')+'</span></div>';
+    if(!placed)h+='<div class="a3d-sarow"><label for="a3d-saaddr">Address</label><input type="text" id="a3d-saaddr" data-saaddr="1" maxlength="200" enterkeyhint="search" autocomplete="off" placeholder="A street address or a place"></div>';
+    h+='<div class="a3d-sarow"><span class="a3d-salab">Boundary</span><span class="a3d-saval">'+bd+'</span></div>'+
+      '<div class="a3d-saacts"><button type="button" class="a3d-anzbtn pri a3d-sago" data-saact="analyze"'+(R.busy?' disabled':'')+'>'+(R.busy?'Analyzing ...':(D.last?'Analyze site again':'Analyze site'))+'</button>'+
+      (D.last?'<button type="button" class="a3d-anzbtn" data-saact="dglegend" aria-pressed="'+(!D.legendOff)+'">'+(D.legendOff?'Show the legend':'Hide the legend')+'</button>':'')+'</div>'+
+      '<div class="a3d-sacap">'+(D.last&&!R.busy?bimEsc('Last run '+D.last.date+'. Each analysis is on Layers, Site analysis: select an element to move, restyle or relabel it; what you change is kept when it runs again.'):
+        'Gets what is around the site from free open data -- buildings, roads, terrain, climate, access, zoning -- and draws each analysis in the model, on Layers, Site analysis. One undo step.')+'</div>';
+    steps=R.steps.length?R.steps:((D.last&&D.last.steps)||[]);
+    if(steps.length)h+='<ol class="a3d-sasteps" data-sasteps="1">'+steps.map(function(s){
+      return '<li class="a3d-sastep '+(BIM_SITERUN_CLS[s.state]||'s-wait')+'" data-sastep="'+bimEsc(s.id)+'"><span class="a3d-sastepic" aria-hidden="true"></span><span class="a3d-sastepn">'+bimEsc(s.name)+'</span>'+
+        '<span class="a3d-sastepst">'+bimEsc(BIM_SITERUN_WORD[s.state]||s.state)+'</span>'+(s.text?'<span class="a3d-sastept">'+bimEsc(s.text)+'</span>':'')+'</li>';}).join('')+'</ol>';
+    return h+'</div>';
+  }
+  /* ---- each analysis drawn in the model, a row in its category ---- */
+  var BIM_DG_KEYCLS={fill:'k-fill',line:'k-line',dash:'k-dash',dot:'k-dot'};
+  function bimDgLegendHtml(rows){
+    if(!rows||!rows.length)return '';
+    return '<div class="a3d-dgleg">'+rows.map(function(r){
+      var st=(r.kind==='line'||r.kind==='dash')?'color:'+r.col:'background:'+r.col;
+      return '<span class="a3d-dglegi"><i class="'+(BIM_DG_KEYCLS[r.kind]||'k-fill')+'" style="'+bimEsc(st)+'"></i>'+bimEsc(r.name)+'</span>';}).join('')+'</div>';
+  }
+  function bimDgCards(){
+    var D=bimDgState();
+    return BIM_DG_AN.map(function(A){
+      var R=D.runs[A.id],L=bimDgDiags(A.id),ly=bimLayerById(D.layers[A.id]),on=!!(ly&&bimLayerEff(ly).on),ed=L.filter(bimDgEdited).length;
+      var st=!R?'Not run yet: Analyze site draws it':(L.length?bimSaN(L.length,'element')+' on Site analysis - '+A.name+(ed?', '+ed+' changed by you':'')+', '+R.date:(R.note||'Nothing to draw'));
+      return {id:'dg'+A.id,title:A.name,state:!R?null:(L.length?(on?'on':'off'):'warn'),status:st,
+        extra:R?bimDgLegendHtml(R.legend)+(R.note&&L.length?'<div class="a3d-sacap">'+bimEsc(R.note)+'</div>':'')+(R.source?'<div class="a3d-sacap">Source: '+bimEsc(R.source)+'</div>':''):'',
+        acts:[{act:'dg:show:'+A.id,label:on?'Hide':'Show',pri:!on&&L.length>0,off:L.length?'':'Nothing drawn yet'},
+          {act:'dg:run:'+A.id,label:R?'Run again':'Run',tip:'From what the project holds now; Analyze site fetches the data again'},
+          {act:'dg:select:'+A.id,label:'Select',off:L.length?'':'Nothing drawn yet'},
+          {act:'dg:reset:'+A.id,label:'Reset',off:R?'':'Not run yet',tip:'As the analysis draws it: what you changed, copied or deleted on it goes back'}]};
+    });
+  }
+  function bimDgAct(v){
+    v=String(v||'');
+    var i=v.indexOf(':'),c=v.slice(0,i),a=v.slice(i+1),D=bimDgState(),L,ly;
+    if(i<0||!bimDgAn(a))return false;
+    if(c==='run')return !!bimDgRunAll(a);
+    if(c==='reset')return !!bimDgResetAnalysis(a);
+    L=bimDgDiags(a);
+    if(c==='select'){
+      if(!L.length)return false;
+      A3D.selSet=L.map(function(o){return o.id;});A3D.sel=A3D.selSet[0];A3D.sel2=null;
+      refreshTree();refreshProps();paint();
+      return true;
+    }
+    if(c==='show'){
+      ly=bimLayerById(D.layers[a]);
+      if(!ly)return false;
+      if(bimLayerEff(ly).on)bimLayerSet(ly.id,'visible',false);
+      else bimLayerChain(ly).forEach(function(x){if(x.visible===false)bimLayerSet(x.id,'visible',true);});   /* the layer and those above it */
+      paint();
+      return true;
+    }
+    return false;
+  }
   /* ================= __acad3dV158: Site analysis SA1, the workspace and the standard =================
-     The standard is reference/research-site-analysis-process.md: six stages, ten fixed categories,
-     and findings that each name a source, a date and how sure they are, classed as a constraint, an
-     opportunity, a red flag or a fact. Kept with the project in A3D.site.analysis. */
-  var BIM_SA_STAGES=[
-    ['Define','The site boundary, the project type and the questions the analysis must answer.'],
-    ['Desktop','Each category filled from open data and the model, every value with its source and date.'],
-    ['Visit','Walk the site with each category\'s checklist; note and photograph what you see, pinned on the plan.'],
-    ['Surveys','Where the visit leaves doubt, a survey: topographic, title (ALTA), ground, trees, environmental (Phase I).'],
-    ['Analysis','Each finding classed as a constraint, an opportunity or a red flag, with its severity.'],
-    ['Synthesis','Constraints and opportunities overlaid: the buildable area, the envelope and the yield.'],
-    ['Report','The standard boards, every number credited.']];
+     The standard is reference/research-site-analysis-process.md: ten fixed categories, and findings
+     that each name a source, a date and how sure they are, classed as a constraint, an opportunity,
+     a red flag or a fact. Kept with the project in A3D.site.analysis. __acad3dV164: the findings are
+     the ones the data writes; the stages, the questions, typed findings, photographs, pins and
+     checklists are gone from it, and what a project stored of them stays in its file, unread. */
   var BIM_SA_CATS=[
-    {id:'location',n:'Location and context',q:'Where it is, what surrounds it, figure-ground, land use.',
-      desk:['Place the site (latitude and longitude, or an address)','Get the surrounding context (CONTEXT)','Note the neighbourhood character and landmarks'],
-      visit:['Photograph each approach and the views out','Check the neighbours against the context model','Note landmarks, edges and nodes']},
-    {id:'legal',n:'Legal and regulatory',q:'Zoning, permitted uses, FAR, height, setbacks, coverage, parking, easements, ownership, heritage.',
-      desk:['Draw or take the property line','Load the parcel and zoning layers (DATALAYERS)','Note FAR, height, setbacks, coverage and parking','Check easements, title and heritage listings'],
-      visit:['Find the boundary markers','Note encroachments and access easements in use']},
-    {id:'landform',n:'Landform',q:'Topography, slope, aspect, relief, geology, soils.',
-      desk:['Get the terrain (CONTEXT or SURVEY)','Read slope and aspect (Analyze)','Look up soils and geology'],
-      visit:['Check the slopes and levels at the boundaries','Note rock, fill and signs of instability']},
-    {id:'water',n:'Water',q:'Drainage, flood zones, water bodies, runoff.',
-      desk:['Load the flood zones (DATALAYERS)','Run the rain flow (RAINFLOW)','Note water bodies and streams'],
-      visit:['Look for ponding, wet ground and outfalls','Note where water leaves the site']},
-    {id:'climate',n:'Climate',q:'Temperature, rain, climate zone, sun path, shadows, wind, solar.',
-      desk:['Set the site\'s sun (Location)','Study the shadows (SUNSTUDY) and the sun hours','Get the climate and wind (SA2)'],
-      visit:['Note the prevailing wind and exposed corners','Note overshadowing from neighbours']},
-    {id:'ecology',n:'Ecology',q:'Vegetation, trees, habitat, protected areas.',
-      desk:['Get the trees and green areas (CONTEXT)','Check protected areas and species'],
-      visit:['Survey significant trees and their canopies','Note habitats and wildlife']},
-    {id:'risk',n:'Environmental risk',q:'Seismic, contamination, air quality, noise, wildfire.',
-      desk:['Check seismic history','Check past uses for contamination (Phase I)','Check air quality and noise sources'],
-      visit:['Note smells, staining, tanks and dumping','Listen for traffic, rail and aircraft noise']},
-    {id:'access',n:'Access and circulation',q:'Street hierarchy, street use, transit, walking and cycling, parking, entries.',
-      desk:['Get the roads, rail and transit (CONTEXT)','Note the street hierarchy and possible entries','Check transit stops and walk times'],
-      visit:['Check sight lines at the entries','Note how people arrive: on foot, by bike, by car, by transit','Note parking and servicing']},
-    {id:'utilities',n:'Utilities',q:'Water, sewer, power, stormwater, telecoms.',
-      desk:['Request the utility records','Note overhead lines and substations'],
-      visit:['Find manholes, hydrants, poles and meters','Note where the connections would come from']},
-    {id:'people',n:'People and place',q:'Demographics, amenities within a walk, history, views, landmarks, noise sources.',
-      desk:['Note the land use around (CONTEXT)','Look up the census and the amenities within a walk','Read the site\'s history'],
-      visit:['Talk to neighbours and users','Note activity at different times of day']}];
+    {id:'location',n:'Location and context',q:'Where it is, what surrounds it, figure-ground, land use.'},
+    {id:'legal',n:'Legal and regulatory',q:'Zoning, permitted uses, FAR, height, setbacks, coverage, parking, easements, ownership, heritage.'},
+    {id:'landform',n:'Landform',q:'Topography, slope, aspect, relief, geology, soils.'},
+    {id:'water',n:'Water',q:'Drainage, flood zones, water bodies, runoff.'},
+    {id:'climate',n:'Climate',q:'Temperature, rain, climate zone, sun path, shadows, wind, solar.'},
+    {id:'ecology',n:'Ecology',q:'Vegetation, trees, habitat, protected areas.'},
+    {id:'risk',n:'Environmental risk',q:'Seismic, contamination, air quality, noise, wildfire.'},
+    {id:'access',n:'Access and circulation',q:'Street hierarchy, street use, transit, walking and cycling, parking, entries.'},
+    {id:'utilities',n:'Utilities',q:'Water, sewer, power, stormwater, telecoms.'},
+    {id:'people',n:'People and place',q:'Demographics, amenities within a walk, history, views, landmarks, noise sources.'}];
   var BIM_SA_CLS=[['neutral','Fact'],['opportunity','Opportunity'],['constraint','Constraint'],['redflag','Red flag']];
   var BIM_SA_CONF=[['desktop','Desktop'],['site','Seen on site'],['surveyed','Surveyed']];
   var BIM_SA_SEV=[['1','Low'],['2','Medium'],['3','High']];
-  var BIM_SA_TYPES=['','Residential','Commercial','Mixed use','Industrial','Institutional','Public realm and landscape','Infrastructure','Other'];
-  var BIM_SA_COL={neutral:'#8b949e',opportunity:'#30a46c',constraint:'#f5a524',redflag:'#e5484d'};
-  var BIM_SA_PHOTO_PX=960;
-  var A3D_SA={edit:null,open:(function(){try{var v=JSON.parse(localStorage.getItem('acad3dSaOpen')||'{}');return v&&typeof v==='object'&&!Array.isArray(v)?v:{};}catch(eO){return {};}})()};
+  var A3D_SA={open:(function(){try{var v=JSON.parse(localStorage.getItem('acad3dSaOpen')||'{}');return v&&typeof v==='object'&&!Array.isArray(v)?v:{};}catch(eO){return {};}})()};
   function bimSaPair(L,k){var i;for(i=0;i<L.length;i++)if(L[i][0]===k)return L[i][1];return '';}
   function bimSaCat(id){var i;for(i=0;i<BIM_SA_CATS.length;i++)if(BIM_SA_CATS[i].id===id)return BIM_SA_CATS[i];return null;}
   function bimSaToday(){return new Date().toISOString().slice(0,10);}
@@ -19350,30 +20554,21 @@ try{
     A3D.site=A3D.site||{};
     var s=A3D.site.analysis;
     if(!s||typeof s!=='object')s=A3D.site.analysis={};
-    if(!(s.stage>=0&&s.stage<BIM_SA_STAGES.length))s.stage=0;
-    if(typeof s.ptype!=='string')s.ptype='';
-    if(typeof s.questions!=='string')s.questions='';
     if(!Array.isArray(s.findings))s.findings=[];
-    if(!s.checks||typeof s.checks!=='object')s.checks={};
     if(!(s.seq>=0))s.seq=0;
-    if(s.pins===undefined)s.pins=true;
     return s;
   }
+  /* __acad3dV164: the findings shown -- those the data writes; one typed by hand before stays unread */
+  function bimSaShown(){return bimSa().findings.filter(function(f){return !!f.auto;});}
   function bimSaFind(id){var F=bimSa().findings,i;for(i=0;i<F.length;i++)if(F[i].id===id)return F[i];return null;}
   /* "4.2": the category's number, then the finding's place in it */
   function bimSaNumber(f){
-    var F=bimSa().findings,ci=-1,k=0,i;
+    var F=bimSaShown(),ci=-1,k=0,i;
     for(i=0;i<BIM_SA_CATS.length;i++)if(BIM_SA_CATS[i].id===f.cat)ci=i;
     for(i=0;i<F.length;i++){if(F[i].cat===f.cat)k++;if(F[i]===f)break;}
     return (ci+1)+'.'+k;
   }
-  function bimSaOf(cat){return bimSa().findings.filter(function(f){return f.cat===cat;});}
-  /* the highest confidence any of a category's findings has */
-  function bimSaConfOf(cat){
-    var F=bimSaOf(cat),best=-1,i,k;
-    for(i=0;i<F.length;i++){for(k=0;k<BIM_SA_CONF.length;k++)if(BIM_SA_CONF[k][0]===F[i].conf&&k>best)best=k;}
-    return best<0?'':BIM_SA_CONF[best][0];
-  }
+  function bimSaOf(cat){return bimSaShown().filter(function(f){return f.cat===cat;});}
   function bimSaNew(cat,f){
     var s=bimSa();
     s.seq++;
@@ -19477,7 +20672,7 @@ try{
       if(f){
         if(f.value!==A[i].value||f.title!==A[i].title||f.source!==A[i].source)upd++;
         f.title=A[i].title;f.value=A[i].value;f.source=A[i].source;f.date=A[i].date;f.cat=A[i].cat;
-        if(!f.touched){f.cls=bimSaPair(BIM_SA_CLS,A[i].cls)?A[i].cls:'neutral';f.sev=A[i].sev||1;}
+        f.cls=bimSaPair(BIM_SA_CLS,A[i].cls)?A[i].cls:'neutral';f.sev=A[i].sev||1;   /* __acad3dV164: the data's class; one set by hand before gives way */
       }else{s.findings.push(bimSaNew(A[i].cat,A[i]));add++;}
     }
     s.findings=s.findings.filter(function(x){
@@ -19485,7 +20680,6 @@ try{
       if(x.note||x.photo||x.at||x.touched){x.auto='';return true;}   /* what was said about it stays, no longer refilled */
       del++;return false;
     });
-    if(s.stage<1)s.stage=1;
     bimSaDone();
     if(!quiet)a3dToast('Site analysis: '+(A.length?bimSaN(add,'finding')+' added, '+upd+' updated'+(del?', '+del+' gone':'')+' from the model':'nothing known yet: place the site and get its context first'));
     return {added:add,updated:upd,removed:del,total:A.length};
@@ -19611,19 +20805,20 @@ try{
     if(!h||!Array.isArray(h.time)||h.time.length<24*28)return null;
     var n=h.time.length,i,T=h.temperature_2m||[],RH=h.relative_humidity_2m||[],WS=h.wind_speed_10m||[],WD=h.wind_direction_10m||[];
     var heat=[],year=+String(h.time[0]).slice(0,4),nb=BIM_CLIM_WIND_BINS.length;
-    function rose(){var R=[],k;for(k=0;k<16;k++)R.push([0,0,0,0,0].slice(0,nb));return {c:R,calm:0,n:0,ws:0};}
-    var RS={year:rose(),winter:rose(),summer:rose()},rhm=[],rhn=[],psy={},inC=0,nC=0,cold=0,hot=0,m;
+    function rose(){var R=[],sw=[],sn=[],k;for(k=0;k<16;k++){R.push([0,0,0,0,0].slice(0,nb));sw.push(0);sn.push(0);}return {c:R,calm:0,n:0,ws:0,sws:sw,sn:sn};}
+    var RS={year:rose(),winter:rose(),summer:rose(),spring:rose(),autumn:rose()},rhm=[],rhn=[],psy={},inC=0,nC=0,cold=0,hot=0,m;   /* __acad3dV164: spring and autumn */
     for(m=0;m<12;m++){rhm.push(0);rhn.push(0);}
-    var win=lat>=0?[11,0,1]:[5,6,7],sum=lat>=0?[5,6,7]:[11,0,1];
+    var win=lat>=0?[11,0,1]:[5,6,7],sum=lat>=0?[5,6,7]:[11,0,1],spr=lat>=0?[2,3,4]:[8,9,10],aut=lat>=0?[8,9,10]:[2,3,4];
     for(i=0;i<n;i++){
       var mm=+String(h.time[i]).slice(5,7)-1,t=T[i],rh=RH[i],ws=WS[i],wd=WD[i];
       heat.push(bimClimNum(t)?Math.round(t):null);
       if(bimClimNum(rh)&&mm>=0&&mm<12){rhm[mm]+=rh;rhn[mm]++;}
       if(bimClimNum(ws)&&bimClimNum(wd)){
         var L=[RS.year];if(win.indexOf(mm)>=0)L.push(RS.winter);if(sum.indexOf(mm)>=0)L.push(RS.summer);
+        if(spr.indexOf(mm)>=0)L.push(RS.spring);if(aut.indexOf(mm)>=0)L.push(RS.autumn);
         var sec=Math.round(((wd%360)+360)%360/22.5)%16,b=-1,k;
         if(ws>=BIM_CLIM_CALM)for(k=nb-1;k>=0;k--)if(ws>=BIM_CLIM_WIND_BINS[k]){b=k;break;}
-        L.forEach(function(R){R.n++;R.ws+=ws;if(b<0)R.calm++;else R.c[sec][b]++;});
+        L.forEach(function(R){R.n++;R.ws+=ws;if(b<0)R.calm++;else{R.c[sec][b]++;R.sws[sec]+=ws;R.sn[sec]++;}});
       }
       if(bimClimNum(t)&&bimClimNum(rh)){
         var w=bimHumRatio(t,rh),key=Math.floor(t)+'|'+Math.floor(w);
@@ -19638,10 +20833,12 @@ try{
         tot=0;for(j=0;j<nb;j++)tot+=R.c[k][j];tot=R.n?100*tot/R.n:0;if(tot>o.prevPct){o.prevPct=bimClimR(tot,1);o.prev=k;}}
       /* the strongest: the sector with the largest share of the two top bands */
       var best=-1,bv=0;for(k=0;k<16;k++){var sv=R.c[k][nb-1]+R.c[k][nb-2];if(sv>bv){bv=sv;best=k;}}
-      o.strong=best;return o;
+      o.strong=best;
+      o.secMean=R.sn.map(function(c,j2){return c?bimClimR(R.sws[j2]/c,1):null;});   /* __acad3dV164: how hard it blows from each */
+      return o;
     }
     return {year:year,heat:heat,start:String(h.time[0]).slice(0,10),
-      wind:{bins:BIM_CLIM_WIND_BINS.slice(),year:fin(RS.year),winter:fin(RS.winter),summer:fin(RS.summer)},
+      wind:{bins:BIM_CLIM_WIND_BINS.slice(),year:fin(RS.year),winter:fin(RS.winter),summer:fin(RS.summer),spring:fin(RS.spring),autumn:fin(RS.autumn)},
       rh:rhm.map(function(v,j){return rhn[j]?Math.round(v/rhn[j]):null;}),
       psy:psy,comfort:nC?{inside:bimClimR(100*inC/nC,1),cold:bimClimR(100*cold/nC,1),hot:bimClimR(100*hot/nC,1),hours:nC}:null};
   }
@@ -19708,7 +20905,7 @@ try{
     },function(e){A3D_CLIM.busy=false;return {error:String(e)};});
   }
   function bimClimApply(lat,lon,R){
-    var today=bimSaToday(),bad=[],D=null,Hh=null,Q=null,E=null,y=bimClimYears();
+    var today=bimSaToday(),bad=[],D=null,Hh=null,Q=null,E=null,y=bimClimYears(),tzs=null,tzn='',tzSet=false;
     if(R[0].ok)D=bimClimDaily(R[0].js);else bad.push(R[0].err);
     if(R[0].ok&&!D)bad.push('the daily climate came back empty');
     if(R[1].ok)Hh=bimClimHourly(R[1].js,lat);else bad.push(R[1].err);
@@ -19724,6 +20921,14 @@ try{
       if(D){C.normals=D;C.period=[y[0],y[1]];C.koppen=bimKoppen(D.months.map(function(m){return m.tm;}),D.months.map(function(m){return m.p;}),lat);
         C.src='ERA5 reanalysis (ECMWF), via Open-Meteo';}
       if(Hh)C.hourly=Hh;
+      /* __acad3dV164: the time zone comes with the climate (timezone=auto), so the sun needs no
+         typing; an offset already given is the owner's and stays */
+      [R[1],R[0]].forEach(function(x){if(tzs===null&&x&&x.ok&&x.js&&bimClimNum(x.js.utc_offset_seconds)){tzs=x.js.utc_offset_seconds;tzn=String(x.js.timezone||'').slice(0,60);}});
+      if(tzs!==null){
+        C.tz=Math.round(tzs/36)/100;C.tzName=tzn;
+        A3D.site.sun=A3D.site.sun||{};
+        if(!bimSunNum(A3D.site.sun.tz)){A3D.site.sun.tz=C.tz;tzSet=true;}
+      }
       A3D.site.climate=C;
       var K=A3D.site.risk&&A3D.site.risk.lat===lat&&A3D.site.risk.lon===lon?A3D.site.risk:{};
       K.lat=lat;K.lon=lon;K.fetched=today;
@@ -19736,8 +20941,9 @@ try{
     if(typeof bimSaRefresh==='function')bimSaRefresh(true);
     if(typeof bimClbRefresh==='function')bimClbRefresh();
     var got=[];if(D)got.push('the climate');if(Hh)got.push('a year of hours');if(Q)got.push('air quality');if(E)got.push(E.count+' earthquake'+(E.count===1?'':'s'));
+    if(tzSet)got.push('the time zone (UTC'+(A3D.site.sun.tz>=0?'+':'\u2212')+bimDispNum(Math.abs(A3D.site.sun.tz),2)+(tzn?', '+tzn:'')+')');   /* __acad3dV164 */
     a3dToast('Climate and risk: '+got.join(', ')+(bad.length?'. Not available: '+bad.join('; '):''));
-    return {climate:!!D,hourly:!!Hh,air:!!Q,quakes:E?E.count:null,errors:bad};
+    return {climate:!!D,hourly:!!Hh,air:!!Q,quakes:E?E.count:null,errors:bad,tz:tzs!==null?Math.round(tzs/36)/100:null,tzSet:tzSet};
   }
   /* ---- the findings, for the Site analysis ---- */
   function bimClimFmt(v,d){return (v<0?'−':'')+Math.abs(v).toFixed(d===undefined?1:d);}
@@ -22685,180 +23891,36 @@ try{
     return s+'</div>';
   }
 
-  /* ---- edits: each one undo step ---- */
-  function bimSaAdd(cat,f){
-    if(!bimSaCat(cat))return null;
-    pushUndo();
-    var n=bimSaNew(cat,f||{title:'New finding'});
-    bimSa().findings.push(n);
-    A3D_SA.edit=n.id;A3D_SA.open[cat]=true;
-    bimSaDone();
-    return n.id;
-  }
-  var BIM_SA_FIELDS={title:120,value:2000,source:200,note:2000};
-  function bimSaSet(id,k,v){
-    var f=bimSaFind(id);
-    if(!f)return false;
-    if(BIM_SA_FIELDS[k])v=String(v==null?'':v).slice(0,BIM_SA_FIELDS[k]);
-    else if(k==='cls'){if(!bimSaPair(BIM_SA_CLS,v))return false;}
-    else if(k==='conf'){if(!bimSaPair(BIM_SA_CONF,v))return false;}
-    else if(k==='sev'){v=parseInt(v,10);if(!(v>=1&&v<=3))return false;}
-    else if(k==='date'){if(!/^\d{4}-\d{2}-\d{2}$/.test(String(v)))return false;}
-    else if(k==='cat'){if(!bimSaCat(v))return false;}
-    else return false;
-    if(f[k]===v)return true;
-    pushUndo();
-    f[k]=v;
-    if(k==='cls'||k==='sev'||k==='conf')f.touched=true;
-    bimSaDone();
-    return true;
-  }
-  function bimSaDel(id){
-    var s=bimSa(),n=s.findings.length;
-    if(!bimSaFind(id))return false;
-    pushUndo();
-    s.findings=s.findings.filter(function(f){return f.id!==id;});
-    if(A3D_SA.edit===id)A3D_SA.edit=null;
-    bimSaDone();
-    return s.findings.length<n;
-  }
-  function bimSaSetDefine(k,v){
-    var s=bimSa();
-    if(k==='stage'){v=parseInt(v,10);if(!(v>=0&&v<BIM_SA_STAGES.length))return false;}
-    else if(k==='ptype'){if(BIM_SA_TYPES.indexOf(v)<0)return false;}
-    else if(k==='questions')v=String(v==null?'':v).slice(0,2000);
-    else if(k==='pins')v=!!v;
-    else return false;
-    if(s[k]===v)return true;
-    pushUndo();
-    s[k]=v;
-    bimSaDone();
-    return true;
-  }
-  /* a checklist item: "location:d:0" (at the desk) or "location:v:1" (on site) */
-  function bimSaCheck(key,on){
-    var m=/^([a-z]+):(d|v):(\d+)$/.exec(String(key||'')),c=m?bimSaCat(m[1]):null;
-    if(!c||!(+m[3]<(m[2]==='d'?c.desk:c.visit).length))return false;
-    var s=bimSa();
-    on=!!on;
-    if(!!s.checks[key]===on)return true;
-    pushUndo();
-    if(on)s.checks[key]=true;else delete s.checks[key];
-    bimSaDone();
-    return true;
-  }
-  function bimSaPlace(id,pt){
-    var f=bimSaFind(id);
-    if(!f){a3dToast('That finding is gone');return false;}
-    pushUndo();
-    f.at=pt?[Math.round(pt[0]*1000)/1000,Math.round(pt[1]*1000)/1000]:null;
-    bimSaDone();
-    if(pt)a3dToast('Finding '+bimSaNumber(f)+' pinned on the plan');
-    return true;
-  }
-  function bimSaStartPin(id){
-    var f=bimSaFind(id);
-    if(!f)return false;
-    bimEnterDraftingMode();
-    var lvl=bimGetActiveLevel();
-    A3D.sk={tool:'sapin',pts:[],y:lvl?lvl.elev:0,on:null,fid:id};
-    a3dToast('Finding '+bimSaNumber(f)+': click where it is on the plan');
-    paint();
-    return true;
-  }
-  /* a photograph, made at most BIM_SA_PHOTO_PX across, as a JPEG kept with the project */
-  function bimSaPhotoFromUrl(id,url){
-    return new Promise(function(res){
-      var im=new Image();
-      im.onload=function(){
-        var k=Math.min(1,BIM_SA_PHOTO_PX/Math.max(im.width,im.height)),c=document.createElement('canvas');
-        c.width=Math.max(1,Math.round(im.width*k));c.height=Math.max(1,Math.round(im.height*k));
-        c.getContext('2d').drawImage(im,0,0,c.width,c.height);
-        var f=bimSaFind(id);
-        if(!f){res(false);return;}
-        pushUndo();
-        f.photo=c.toDataURL('image/jpeg',0.72);
-        bimSaDone();
-        res(true);
-      };
-      im.onerror=function(){a3dToast('That photograph could not be read');res(false);};
-      im.src=url;
-    });
-  }
-  function bimSaPhotoFile(id,file){
-    if(!file)return Promise.resolve(false);
-    var u=URL.createObjectURL(file);
-    return bimSaPhotoFromUrl(id,u).then(function(r){URL.revokeObjectURL(u);return r;});
-  }
-  function bimSaUnphoto(id){
-    var f=bimSaFind(id);
-    if(!f||!f.photo)return false;
-    pushUndo();f.photo=null;bimSaDone();return true;
-  }
   /* ---- the panel ---- */
-  function bimSaOpt(L,cur){return L.map(function(p){return '<option value="'+bimEsc(p[0])+'"'+(p[0]===String(cur)?' selected':'')+'>'+bimEsc(p[1])+'</option>';}).join('');}
+  /* __acad3dV164: a finding the data wrote, to read: its number, what it says, its class and source */
   function bimSaFindingHtml(f){
-    var cl=bimSaPair(BIM_SA_CLS,f.cls),ed=A3D_SA.edit===f.id,h;
-    h='<div class="a3d-safind c-'+f.cls+'" data-safind="'+bimEsc(f.id)+'">'+
-      '<div class="a3d-safhd"><span class="a3d-safno">'+bimSaNumber(f)+'</span><span class="a3d-saftt">'+bimEsc(f.title)+'</span>'+
-      '<button type="button" class="a3d-anzbtn" data-saact="'+(ed?'done':'edit:'+bimEsc(f.id))+'">'+(ed?'Done':'Edit')+'</button></div>'+
+    var cl=bimSaPair(BIM_SA_CLS,f.cls);
+    return '<div class="a3d-safind c-'+bimEsc(f.cls)+'" data-safind="'+bimEsc(f.id)+'">'+
+      '<div class="a3d-safhd"><span class="a3d-safno">'+bimSaNumber(f)+'</span><span class="a3d-saftt">'+bimEsc(f.title)+'</span></div>'+
       (f.value?'<div class="a3d-safv">'+bimEsc(f.value)+'</div>':'')+
-      (f.note?'<div class="a3d-safv"><b>Note:</b> '+bimEsc(f.note)+'</div>':'')+
-      '<div class="a3d-safm"><b class="k-'+f.cls+'">'+bimEsc(cl)+(f.cls!=='neutral'?', '+bimSaPair(BIM_SA_SEV,String(f.sev)).toLowerCase():'')+'</b> \u00b7 '+
-      bimEsc(bimSaPair(BIM_SA_CONF,f.conf))+' \u00b7 '+bimEsc(f.source||'no source given')+' \u00b7 '+bimEsc(f.date)+(f.at?' \u00b7 on the plan':'')+(f.auto?' \u00b7 from the model':'')+'</div>'+
-      (f.photo?'<img class="a3d-safph" alt="Photograph of finding '+bimSaNumber(f)+'" src="'+f.photo+'">':'');
-    if(ed){
-      var id=bimEsc(f.id);
-      h+='<div class="a3d-safed">'+
-        '<div class="a3d-sarow"><label>Title</label><input type="text" data-saff="'+id+':title" value="'+bimEsc(f.title)+'" maxlength="120"></div>'+
-        '<div class="a3d-sarow"><label>Finding</label><textarea data-saff="'+id+':value" maxlength="2000">'+bimEsc(f.value)+'</textarea></div>'+
-        '<div class="a3d-sarow"><label>Class</label><select data-saff="'+id+':cls">'+bimSaOpt(BIM_SA_CLS,f.cls)+'</select></div>'+
-        '<div class="a3d-sarow"><label>Severity</label><select data-saff="'+id+':sev">'+bimSaOpt(BIM_SA_SEV,String(f.sev))+'</select></div>'+
-        '<div class="a3d-sarow"><label>Confidence</label><select data-saff="'+id+':conf">'+bimSaOpt(BIM_SA_CONF,f.conf)+'</select></div>'+
-        '<div class="a3d-sarow"><label>Category</label><select data-saff="'+id+':cat">'+bimSaOpt(BIM_SA_CATS.map(function(c,i){return [c.id,(i+1)+'. '+c.n];}),f.cat)+'</select></div>'+
-        '<div class="a3d-sarow"><label>Source</label><input type="text" data-saff="'+id+':source" value="'+bimEsc(f.source)+'" maxlength="200" placeholder="Where it comes from"></div>'+
-        '<div class="a3d-sarow"><label>Date</label><input type="date" data-saff="'+id+':date" value="'+bimEsc(f.date)+'"></div>'+
-        '<div class="a3d-sarow"><label>Note</label><textarea data-saff="'+id+':note" maxlength="2000" placeholder="What you saw, what to do">'+bimEsc(f.note)+'</textarea></div>'+
-        '<div class="a3d-saacts">'+
-        '<button type="button" class="a3d-anzbtn" data-saact="pin:'+id+'">'+(f.at?'Move on the plan':'Place on the plan')+'</button>'+
-        (f.at?'<button type="button" class="a3d-anzbtn" data-saact="unpin:'+id+'">Take off the plan</button>':'')+
-        '<label class="a3d-anzbtn" style="display:inline-flex;align-items:center">'+(f.photo?'Replace photograph':'Add photograph')+
-        '<input type="file" accept="image/*" data-saphoto="'+id+'" hidden></label>'+
-        (f.photo?'<button type="button" class="a3d-anzbtn" data-saact="unphoto:'+id+'">Remove photograph</button>':'')+
-        '<button type="button" class="a3d-anzbtn" data-saact="del:'+id+'">Delete</button></div></div>';
-    }
-    return h+'</div>';
+      '<div class="a3d-safm"><b class="k-'+bimEsc(f.cls)+'">'+bimEsc(cl)+(f.cls!=='neutral'?', '+bimSaPair(BIM_SA_SEV,String(f.sev)).toLowerCase():'')+'</b> \u00b7 '+
+      bimEsc(f.source||'no source given')+' \u00b7 '+bimEsc(f.date)+'</div></div>';
   }
   /* __acad3dV162: what each category holds besides its findings. Risk and People share the data
      Climate and Access fetch, and say where it is. */
   var BIM_SA_DATA={location:function(){return bimSaCtxHtml();},legal:function(){return bimZnSaHtml();},climate:function(){return bimClbSaHtml();},access:function(){return bimAccSaHtml();}};
   var BIM_SA_SEE={risk:['climate','Air quality and earthquakes come with the climate data'],people:['access','The census and the daily needs within a walk come with the access data']};
   function bimSaCatHtml(c,i,C){
-    var s=bimSa(),F=bimSaOf(c.id),open=!!A3D_SA.open[c.id],nc=0,no=0,nr=0,cf=bimSaConfOf(c.id),j,dn=0,dat=BIM_SA_DATA[c.id],see=BIM_SA_SEE[c.id];
+    var F=bimSaOf(c.id),open=!!A3D_SA.open[c.id],nc=0,no=0,nr=0,dat=BIM_SA_DATA[c.id],see=BIM_SA_SEE[c.id],k;
     var T=(C||[]).filter(function(x){return x.group===c.id;}),on=T.filter(function(x){return x.state==='on'||x.state==='stale'||x.state==='busy';});
     F.forEach(function(f){if(f.cls==='constraint')nc++;else if(f.cls==='opportunity')no++;else if(f.cls==='redflag')nr++;});
-    for(j=0;j<c.desk.length;j++)if(s.checks[c.id+':d:'+j])dn++;
-    for(j=0;j<c.visit.length;j++)if(s.checks[c.id+':v:'+j])dn++;
     var sum=F.length?bimSaN(F.length,'finding')+(nr?', '+bimSaN(nr,'red flag'):'')+(nc?', '+bimSaN(nc,'constraint'):'')+(no?', '+bimSaN(no,'opportunity','opportunities'):''):'No findings yet';
-    sum+=' · '+dn+' of '+(c.desk.length+c.visit.length)+' checked';
-    if(on.length)sum+=' · '+on.map(function(x){return x.title;}).join(', ')+' on';
-    var stt=cf==='surveyed'?'on':cf==='site'?'on':cf==='desktop'?'warn':'',k;
+    if(on.length)sum+=' \u00b7 '+on.map(function(x){return x.title;}).join(', ')+' on';
     var h='<div class="a3d-anzcard a3d-sacat'+(open?' open':'')+'" data-sacat="'+c.id+'">'+
       '<div class="a3d-anzhd"><button type="button" class="a3d-anztog" data-satog="'+c.id+'" aria-expanded="'+open+'">'+
       '<span class="a3d-anzchev">'+BIM_ANZ_CHEV+'</span><span class="a3d-anzname"><span class="a3d-anzttl">'+(i+1)+'. '+bimEsc(c.n)+'</span>'+
-      '<span class="a3d-anzsum">'+bimEsc(sum)+'</span></span></button>'+
-      (cf?'<span class="a3d-anzstate a3d-anzstate-'+stt+'">'+bimEsc(bimSaPair(BIM_SA_CONF,cf))+'</span>':'')+'</div>'+
+      '<span class="a3d-anzsum">'+bimEsc(sum)+'</span></span></button></div>'+
       '<div class="a3d-anzbody"><div class="a3d-saq">'+bimEsc(c.q)+'</div>';
+    if(T.length)h+='<div class="a3d-sachkhd">Analyses</div><div class="a3d-anzlist a3d-satools">'+T.map(bimAnzCard).join('')+'</div>';
     if(dat)h+=dat();
     if(see){for(k=0;k<BIM_SA_CATS.length;k++)if(BIM_SA_CATS[k].id===see[0])break;
       h+='<div class="a3d-salink">'+bimEsc(see[1])+'<button type="button" class="a3d-anzbtn" data-saact="goto:'+see[0]+'">'+(k+1)+'. '+bimEsc(BIM_SA_CATS[k].n)+'</button></div>';}
-    if(T.length)h+='<div class="a3d-sachkhd">Analyses</div><div class="a3d-anzlist a3d-satools">'+T.map(bimAnzCard).join('')+'</div>';
-    h+='<div class="a3d-sachkhd">Findings</div>'+(F.length?F.map(bimSaFindingHtml).join(''):'<div class="a3d-sanote">No findings yet.</div>')+
-      '<div class="a3d-saacts"><button type="button" class="a3d-anzbtn" data-saact="add:'+c.id+'">Add finding</button></div>'+
-      '<div class="a3d-sachkhd">At the desk</div>'+c.desk.map(function(t,k){var key=c.id+':d:'+k,on=!!s.checks[key];
-        return '<label class="a3d-sachk'+(on?' on':'')+'"><input type="checkbox" data-sachk="'+key+'"'+(on?' checked':'')+'><span>'+bimEsc(t)+'</span></label>';}).join('')+
-      '<div class="a3d-sachkhd">On site</div>'+c.visit.map(function(t,k){var key=c.id+':v:'+k,on=!!s.checks[key];
-        return '<label class="a3d-sachk'+(on?' on':'')+'"><input type="checkbox" data-sachk="'+key+'"'+(on?' checked':'')+'><span>'+bimEsc(t)+'</span></label>';}).join('')+
+    h+='<div class="a3d-sachkhd">Findings</div>'+(F.length?F.map(bimSaFindingHtml).join(''):'<div class="a3d-sanote">None yet: Analyze site writes them from the data.</div>')+
       '</div></div>';
     return h;
   }
@@ -22876,7 +23938,6 @@ try{
     w.addEventListener('click',function(ev){
       var t=ev.target&&ev.target.closest?ev.target:null,b;
       if(!t)return;
-      b=t.closest('[data-sastage]');if(b){bimSaSetDefine('stage',b.getAttribute('data-sastage'));return;}
       b=t.closest('[data-satog]');if(b){bimSaToggle(b.getAttribute('data-satog'));return;}
       b=t.closest('[data-saact]');if(!b||b.disabled)return;
       try{bimSaAct(b.getAttribute('data-saact'));}catch(eS){console.warn('[BIM] Site analysis',eS);a3dToast('That did not work - see the console');}
@@ -22884,11 +23945,14 @@ try{
     w.addEventListener('change',function(ev){
       var e=ev.target,k;
       if(!e||!e.getAttribute)return;
-      if((k=e.getAttribute('data-saf'))){bimSaSetDefine(k,k==='pins'?e.checked:e.value);return;}
-      if((k=e.getAttribute('data-sachk'))){bimSaCheck(k,e.checked);return;}
-      if((k=e.getAttribute('data-saff'))){var i=k.lastIndexOf(':');bimSaSet(k.slice(0,i),k.slice(i+1),e.value);return;}
-      if((k=e.getAttribute('data-saphoto'))){bimSaPhotoFile(k,e.files&&e.files[0]);return;}
       if((k=e.getAttribute('data-znf'))){bimZnSet(k,e.value);return;}   /* __acad3dV160 */
+    });
+    /* __acad3dV164: Enter in the address runs it */
+    w.addEventListener('keydown',function(ev){
+      var e=ev.target;
+      if(ev.key!=='Enter'||!e||!e.getAttribute||!e.getAttribute('data-saaddr'))return;
+      ev.preventDefault();
+      try{bimSaAct('analyze');}catch(eS){console.warn('[BIM] Site analysis',eS);a3dToast('That did not work - see the console');}
     });
   }
   function bimSaToggle(id,on){
@@ -22902,7 +23966,6 @@ try{
   }
   function bimSaAct(a){
     var k=String(a||''),i=k.indexOf(':'),v=i<0?'':k.slice(i+1),c=i<0?k:k.slice(0,i);
-    if(c==='fill')return bimSaFill();
     if(c==='goto')return bimSaGoto(v);   /* __acad3dV162 */
     if(c==='climget')return bimClimFetch();   /* __acad3dV159 */
     if(c==='climboard')return bimBoardShow('climate');   /* __acad3dV162: a page of the set */
@@ -22916,41 +23979,16 @@ try{
     if(c==='znclear')return bimZnRemoveEnvelope();
     if(c==='znstepadd')return bimZnStepAdd(v);
     if(c==='znstepdel'){var di=v.indexOf('.');return bimZnStepDel(v.slice(0,di),+v.slice(di+1));}
-    if(c==='add')return bimSaAdd(v);
-    if(c==='edit'){A3D_SA.edit=v;bimSaRefresh(true);return true;}
-    if(c==='done'){A3D_SA.edit=null;bimSaRefresh(true);return true;}
-    if(c==='del')return bimSaDel(v);
-    if(c==='pin')return bimSaStartPin(v);
-    if(c==='unpin')return bimSaPlace(v,null);
-    if(c==='unphoto')return bimSaUnphoto(v);
+    if(c==='analyze'){   /* __acad3dV164 */
+      var ai=document.querySelector('.a3d-analyze-wrap [data-saaddr]');
+      return bimSiteAnalyze(ai?ai.value:'');
+    }
+    if(c==='dglegend'){var D=bimDgState();D.legendOff=!D.legendOff;saveSoon();paint();bimSaRefresh(true);return true;}
     if(c==='cmd'&&/^(propertyshape|propertyline|context)$/.test(v))return window.__a3dRunCmd(v);
     return false;
   }
   /* __acad3dV162: the site analysis is in Analyze's one list; its refresh is that list's */
   function bimSaRefresh(force){return bimAnalyzeRefresh(force);}
-  /* the pins: a numbered circle in the finding's colour */
-  function drawSaPins(ctx,V,W,H){
-    var s=A3D.site&&A3D.site.analysis,out=[],i,f,p;
-    A3D.lastSaPins=out;
-    if(!s||!s.pins||!Array.isArray(s.findings)||A3D.section)return;
-    var y=0;
-    ctx.save();
-    ctx.font='600 10px system-ui,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
-    for(i=0;i<s.findings.length;i++){
-      f=s.findings[i];
-      if(!f.at)continue;
-      p=toScreen([f.at[0],y,f.at[1]],V,W,H);
-      if(!p||!isFinite(p[0])||!isFinite(p[1]))continue;
-      var lab=bimSaNumber(f),r=Math.max(9,ctx.measureText(lab).width/2+5);
-      ctx.beginPath();ctx.moveTo(p[0],p[1]);ctx.lineTo(p[0]-4,p[1]-r-2);ctx.lineTo(p[0]+4,p[1]-r-2);ctx.closePath();
-      ctx.fillStyle=BIM_SA_COL[f.cls]||BIM_SA_COL.neutral;ctx.fill();
-      ctx.beginPath();ctx.arc(p[0],p[1]-r-6,r,0,Math.PI*2);ctx.fill();
-      ctx.lineWidth=1.5;ctx.strokeStyle='rgba(255,255,255,.9)';ctx.stroke();
-      ctx.fillStyle='#fff';ctx.fillText(lab,p[0],p[1]-r-6);
-      out.push({id:f.id,n:lab,x:p[0],y:p[1],cls:f.cls});
-    }
-    ctx.restore();
-  }
   /* __acad3dV73: the no-selection inspector. Project and Site are editable and write to the
      title block and site record that the sheet title block already prints. Level, Layer and
      Appearance are the three switches that change what the drawing shows, and each one already
@@ -23164,6 +24202,7 @@ try{
       bimRenderInto(el.propsbody,bimModelPropsHtml());   /* __acad3dV118 */
       return;
     }
+    if(bimIsDiag(o)){bimRenderInto(el.propsbody,bimDgPropsHtml(o));return;}   /* __acad3dV164: a site analysis element */
     var h='';
     // ---- type selector header, as in Revit ----
     h+='<div class="a3d-ptypehd">'+
@@ -28393,6 +29432,7 @@ try{
     if(!capMode)drawSunShadows(ctx,V,W,H);   /* __acad3dV107: first, so everything else draws over it */
     if(!capMode)drawSimOverlays(ctx,V,W,H);  /* __acad3dV143: sun hours, ponds and flow lines */
     if(!capMode)drawResultLayers(ctx,V,W,H); /* __acad3dV148: the results kept as layers, over the live ones */
+    drawDiagrams(ctx,V,W,H,'under');         /* __acad3dV164: the site analysis's bands, fills and shadows */
     var presentRooms=bimPresentGraphics();   /* __acad3dV122 */
     if(presentRooms)drawRooms(ctx,V,W,H);
     var polys=[];
@@ -28484,12 +29524,13 @@ try{
     drawRoomTags(ctx,V,W,H);       /* __acad3dV101 */
     drawTribAreas(ctx,V,W,H);          /* __acad3dV106 */
     drawStructResults(ctx,V,W,H);      /* __acad3dV125: the analysis display */
+    drawDiagrams(ctx,V,W,H,'over');    /* __acad3dV164: the site analysis's lines, symbols and words */
     drawAreaPlan(ctx,V,W,H);           /* __acad3dV105b */
     drawSunPath(ctx,V,W,H);            /* __acad3dV107 */
     drawRoomSchemeLegend(ctx,V,W,H);   /* __acad3dV105: the colour fill's legend, from what drawRooms just drew */
     drawLensLegend(ctx,V,W,H);         /* __acad3dV136: the lens's and the data layers' legend, below it */
+    drawDiagramLegend(ctx,V,W,H);      /* __acad3dV164: the site analysis's, at the top right */
     drawNotes(ctx,V,W,H);          // __acad3dV82: the annotation overlay, above the model
-    if(!capMode)drawSaPins(ctx,V,W,H);   /* __acad3dV158: the site analysis findings */
     if(!capMode)drawSkLivePreview(ctx,V,W,H);   /* __acad3dV122: a tool's rubber band is not on the paper */
     if(!capMode){
       var faceNow=bimFaceCurrent();   /* __acad3dV123: read first, so a face that has lapsed lets the gizmo back */
@@ -33078,6 +34119,8 @@ try{
        sitting over it. */
     var nt=bimPickNote(x,y);
     if(nt)return nt;
+    var dgp=bimPickDiag(x,y);   /* __acad3dV164: the site analysis, drawn over the model */
+    if(dgp)return dgp;
     /* __acad3dV98: then the dimensions and text, which are drawn above the model too. Testing
        them last let a room swallow a click on the label sitting inside it. */
     var an=bimPickAnnotation(x,y);
@@ -33392,6 +34435,10 @@ try{
       var w=worldPt([p[0]+q[0],p[1]+q[2]]);
       return [w[0]-q[0],w[1]-q[2]];
     };
+    if(bimIsDiag(o)){   /* __acad3dV164 */
+      if(o.dg.g.kind==='live')return {error:'A live shadow follows the sun and the model: it cannot be turned, mirrored or scaled'};
+      return bimDgTransformed(o.dg,transformPt);
+    }
     if(o.t==='sketch')return {kind:'sketch',pts:o.pts.map(transformPt),y:o.y};
     if(o.t==='alignment')return {kind:'alignment',pis:o.pis.map(transformPt),pv:o.profileView&&o.profileView.at?transformPt(o.profileView.at):null,k:xf&&xf.kind==='scale'&&xf.k>0?xf.k:1};   /* __acad3dV127 */
     if(o.t==='room')return {kind:'room',pts:o.pts.map(transformPt),y:o.y,area:o.area};
@@ -33477,6 +34524,7 @@ try{
     else if(g.kind==='column'){A3D.counts.column=(A3D.counts.column||0)+1;copy.t='solid';copy.name='Column_'+A3D.counts.column;copy.mesh=g.mesh;copy.bim=bimCarryBim(o.bim,g.bim);}
     else if(g.kind==='mesh'){copy.t=g.materialized?'solid':o.t;copy.name=o.name+' mirror';copy.mesh=g.mesh;if(o.prm&&!g.materialized)copy.prm=JSON.parse(JSON.stringify(o.prm));if(g.materialized)bimNoteMaterialized(copy.name);}   /* __acad3dV110 */
     else if(g.kind==='pos'){copy.t=o.t;copy.name=o.name+' mirror';copy.pos=g.pos;if(o.prm)copy.prm=JSON.parse(JSON.stringify(o.prm));}
+    else if(g.kind==='diag')bimDgCopy(o,g,copy,'mirror');   /* __acad3dV164 */
     else if(g.kind==='alignment'){   /* __acad3dV127 */
       A3D.counts.alignment=(A3D.counts.alignment||0)+1;copy.t='alignment';copy.name='Alignment_'+A3D.counts.alignment;
       copy.pis=g.pis;copy.radii=(o.radii||[]).slice();copy.sta0=o.sta0||0;copy.y=o.y||0;
@@ -33522,6 +34570,7 @@ try{
     else if(g.kind==='wall'||g.kind==='floor'||g.kind==='column'){o.mesh=g.mesh;o.bim=bimCarryBim(o.bim,g.bim);bimAfterWallRebuild(o);}   // __acad3dV53: floor/column now propagate too
     else if(g.kind==='mesh'){if(g.materialized)bimMaterializeInto(o,g.mesh);else o.mesh=g.mesh;}   /* __acad3dV110 */
     else if(g.kind==='pos'){o.pos=g.pos;}
+    else if(g.kind==='diag'){o.dg.g=g.g;o.dg.lb=g.lb;o.dg.sym=g.sym;}   /* __acad3dV164 */
     else if(g.kind==='alignment'){o.pis=g.pis;if(g.pv&&o.profileView)o.profileView.at=g.pv;if(g.k!==1)o.radii=(o.radii||[]).map(function(r){return r*g.k;});}   /* __acad3dV127: a scaled route keeps its shape */
     return true;
   }
@@ -33643,6 +34692,7 @@ try{
     else if(g.kind==='column'){A3D.counts.column=(A3D.counts.column||0)+1;copy.t='solid';copy.name='Column_'+A3D.counts.column;copy.mesh=g.mesh;copy.bim=bimCarryBim(o.bim,g.bim);}
     else if(g.kind==='mesh'){copy.t=g.materialized?'solid':o.t;copy.name=o.name+' copy';copy.mesh=g.mesh;if(o.prm&&!g.materialized)copy.prm=JSON.parse(JSON.stringify(o.prm));if(g.materialized)bimNoteMaterialized(copy.name);}   /* __acad3dV110 */
     else if(g.kind==='pos'){copy.t=o.t;copy.name=o.name+' copy';copy.pos=g.pos;if(o.prm)copy.prm=JSON.parse(JSON.stringify(o.prm));}
+    else if(g.kind==='diag')bimDgCopy(o,g,copy,'copy');   /* __acad3dV164 */
     else return null;
     return copy;
   }
@@ -36366,6 +37416,7 @@ try{
     else if(g.kind==='wall'||g.kind==='floor'||g.kind==='column'){o.mesh=g.mesh;o.bim=bimCarryBim(o.bim,g.bim);bimAfterWallRebuild(o);}
     else if(g.kind==='mesh'){if(g.materialized)bimMaterializeInto(o,g.mesh);else o.mesh=g.mesh;}   /* __acad3dV110 */
     else if(g.kind==='pos'){o.pos=g.pos;}
+    else if(g.kind==='diag'){o.dg.g=g.g;o.dg.lb=g.lb;o.dg.sym=g.sym;}   /* __acad3dV164 */
     else if(g.kind==='alignment'){o.pis=g.pis;if(g.pv&&o.profileView)o.profileView.at=g.pv;if(g.k!==1)o.radii=(o.radii||[]).map(function(r){return r*g.k;});}   /* __acad3dV127: a scaled route keeps its shape */
     return true;
   }
@@ -36842,6 +37893,9 @@ try{
           for(k=0;k<3;k++){if(tv[k]<mn[k])mn[k]=tv[k];if(tv[k]>mx[k])mx[k]=tv[k];}
         }
         any=true;
+      }else if(bimIsDiag(o)){   /* __acad3dV164: a diagram's points, labels and symbols */
+        var dgb=bimDgBounds(o);
+        for(j=0;j<dgb.length;j++)for(k=0;k<3;k++){if(dgb[j][k]<mn[k])mn[k]=dgb[j][k];if(dgb[j][k]>mx[k])mx[k]=dgb[j][k];any=true;}
       }else if(o.pts&&o.pts.length){
         /* Sketches and rooms have no mesh. Before V79 fitScene skipped them outright, so a
            drawing made only of sketches fit to nothing at all. */
@@ -36929,13 +37983,11 @@ try{
     /* __acad3dV141: the Analyze tab -- each driven by the V141 suite before it was claimed */
     {sel:'.a3d-railbtn[data-tab="analyze"]',why:'Analyze tab: every analysis, what it shows now, run it or open its settings'},
     {sel:'[data-anzview]',why:'Analyze: the switch between the analyses and the site analysis'},   /* __acad3dV159 */
-    {sel:'[data-sastage]',why:'Site analysis: the stage the project is at'},
     {sel:'[data-satog]',why:'Site analysis: a category opens and closes'},
-    {sel:'[data-saact]',why:'Site analysis: fill, add, edit, pin, photograph, delete; climate and risk'},
-    {sel:'[data-saf]',why:'Site analysis: the project type, the questions, the pins switch'},
-    {sel:'[data-saff]',why:'Site analysis: a field of a finding'},
-    {sel:'[data-sachk]',why:'Site analysis: a checklist item'},
-    {sel:'[data-saphoto]',why:'Site analysis: the photograph of a finding'},
+    {sel:'[data-saact]',why:'Site analysis: Analyze site, the legend, a category\'s data and boards, the property line'},   /* __acad3dV164 */
+    {sel:'[data-saaddr]',why:'Site analysis: the site\'s address, found when Analyze site runs'},
+    {sel:'[data-dgf]',why:'a site analysis element: its colour, line, opacity and labels'},
+    {sel:'[data-dgact]',why:'a site analysis element: reset it to the analysis, or run the analysis again'},
     {sel:'[data-anzact]',why:'an analysis: run it, show or hide it, or open its settings in Properties'},
     {sel:'[data-anztog]',why:'an analysis row: opens and closes it, to its whole status, legend and other actions'},   /* __acad3dV148 */
     {sel:'[data-lysectog]',why:'opens or closes the Analysis or Data section of the Layers panel'},
@@ -37447,7 +38499,7 @@ try{
     }
     if(shell.dataset.tab!=='analyze'){
       var astale=panel.querySelector('.a3d-analyze-wrap');
-      if(astale){astale.parentNode.removeChild(astale);A3D_SA.edit=null;A3D_ANZ.pend=false;did=true;}
+      if(astale){astale.parentNode.removeChild(astale);A3D_ANZ.pend=false;did=true;}
     }
     return did;
   }
@@ -45544,6 +46596,7 @@ try{
     WALKTIMES:'walk times walk shed walkshed isochrone isochrones service area network 5 10 15 minutes pedestrian catchment layer plan',
     CONTEXT:'neighbours neighbors surrounding buildings osm openstreetmap overpass roads streets water rivers parks trees terrain elevation contours ground giraffe railway railways train tram subway bridges tunnels airport runway power pylons land use infrastructure',   /* __acad3dV133; __acad3dV157 */
     CONTEXTREMOVE:'delete clear neighbours context',
+    ANALYZESITE:'site analysis analyze run one click diagrams sun path shadows wind rose views isovist noise compass distance rings layers climate context fill findings',   /* __acad3dV164 */
     DOCS:'help documentation manual guide tutorial learn how reference f1',   /* __acad3dV142 */
     SUNHOURS:'sun hours sunlight shadow study daylight right to light overshadowing simulation',   /* __acad3dV143 */
     SOLAR:'solar radiation irradiance energy photovoltaic pv roof potential kwh sun simulation',
@@ -46609,6 +47662,13 @@ try{
       var gg=bimSelectedGrid();
       if(gg&&ga.getAttribute('data-gridact')==='delete')bimRemoveGrid(gg.id);
     });
+    /* __acad3dV164: a site analysis element's appearance, Reset and Run again */
+    if(el.propsbody)el.propsbody.addEventListener('change',function(ev){
+      try{bimDgPropChange(ev);}catch(eDC){console.warn('[BIM] Site analysis element edit failed',eDC);a3dToast('That could not be changed - see the console');}
+    });
+    if(el.propsbody)el.propsbody.addEventListener('click',function(ev){
+      try{bimDgPropClick(ev);}catch(eDK){console.warn('[BIM] Site analysis element action failed',eDK);a3dToast('That did not work - see the console');}
+    });
     /* __acad3dV125: the Structural and Analysis pages */
     if(el.propsbody){el.propsbody.addEventListener('input',bimLoadDraftInput,true);el.propsbody.addEventListener('change',bimLoadDraftInput,true);}
     if(el.propsbody)el.propsbody.addEventListener('change',function(ev){
@@ -47363,7 +48423,7 @@ try{
     geoexport:function(){bimGeoExport();},
     context:function(){bimCtxFetch();},                          /* __acad3dV133 */
     siteanalysis:function(){bimAnzView();},                      /* __acad3dV158; __acad3dV162: Analyze is one list */
-    safill:function(){bimAnzView();bimSaFill();},
+    analyzesite:function(){bimAnzView();bimSiteAnalyze('');},   /* __acad3dV164 */
     climate:function(){bimBoardShow('climate');},                     /* __acad3dV162: the board's page in the set */
     zoning:function(){A3D_ZN.edit=true;bimSaGoto('legal');bimSaRefresh(true);},   /* __acad3dV160; __acad3dV162: in Legal */
     envelope:function(){bimZnBuild();},
@@ -47694,23 +48754,35 @@ try{
   window.__a3dAnzCats=function(){return bimAnzCards().map(function(c){return {id:c.id,group:c.group};});};
   window.__acad3dV158='layergroups,stages,categories,findings,sources,confidence,classes,checklists,fillfrommodel,pins,photos,sitetab';
   window.__a3dSa=function(){return JSON.parse(JSON.stringify(bimSa()));};
-  window.__a3dSaStandard=function(){return {stages:BIM_SA_STAGES.map(function(x){return x[0];}),cats:BIM_SA_CATS.map(function(c){return {id:c.id,n:c.n,desk:c.desk.length,visit:c.visit.length};})};};
+  window.__a3dSaStandard=function(){return {cats:BIM_SA_CATS.map(function(c){return {id:c.id,n:c.n};})};};   /* __acad3dV164: no stages, no checklists */
   window.__a3dSaAuto=function(){return bimSaAuto();};
   window.__a3dSaSlope=function(tin){return bimSaSlope(tin);};
   window.__a3dLySecVisible=function(key,v){return bimLySecVisible(key,v);};
   window.__a3dLySecHidden=function(key){return bimLySecHidden(key);};
   window.__a3dSaFill=function(){return bimSaFill();};
-  window.__a3dSaAdd=function(cat,f){return bimSaAdd(cat,f);};
-  window.__a3dSaSet=function(id,k,v){return bimSaSet(id,k,v);};
-  window.__a3dSaDel=function(id){return bimSaDel(id);};
-  window.__a3dSaDefine=function(k,v){return bimSaSetDefine(k,v);};
-  window.__a3dSaCheck=function(k,on){return bimSaCheck(k,on);};
-  window.__a3dSaPlace=function(id,pt){return bimSaPlace(id,pt);};
-  window.__a3dSaStartPin=function(id){return bimSaStartPin(id);};
-  window.__a3dSaPhotoUrl=function(id,url){return bimSaPhotoFromUrl(id,url);};
-  window.__a3dSaNumber=function(id){var f=bimSaFind(id);return f?bimSaNumber(f):null;};
-  window.__a3dSaPins=function(){return (A3D.lastSaPins||[]).slice();};
-  window.__a3dSaEdit=function(id){A3D_SA.edit=id||null;bimSaRefresh(true);return true;};
+  window.__a3dSaNumber=function(id){var f=bimSaFind(id);return f&&f.auto?bimSaNumber(f):null;};
+  /* __acad3dV164: Analyze site and the analyses in the model */
+  window.__a3dSiteRun=function(q){return bimSiteAnalyze(q);};
+  window.__a3dSiteRunState=function(){return JSON.parse(JSON.stringify({busy:A3D_SITERUN.busy,steps:A3D_SITERUN.steps}));};
+  window.__a3dDgRun=function(a){return bimDgRunAll(a||null);};
+  window.__a3dDgState=function(){return JSON.parse(JSON.stringify(bimDgState()));};
+  window.__a3dDgSite=function(){return JSON.parse(JSON.stringify(bimDgSite()));};
+  window.__a3dDgList=function(a){return bimDgDiags(a||null).map(function(o){return {id:o.id,name:o.name,a:o.dg.a,k:o.dg.k,kind:o.dg.g.kind,layer:o.layer,edited:bimDgEdited(o),newer:!!o.dg.newer,orphan:!!o.dg.orphan,mine:!o.dg.gen};});};
+  window.__a3dDgSet=function(id,f,v){return bimDgSet(objById(id),f,v);};
+  window.__a3dDgReset=function(id){return bimDgReset(id);};
+  window.__a3dDgResetAnalysis=function(a){return bimDgResetAnalysis(a);};
+  window.__a3dDgAct=function(v){return bimDgAct(v);};
+  window.__a3dDgPick=function(x,y){var o=bimPickDiag(x,y);return o?o.id:null;};
+  window.__a3dDgHits=function(){return A3D_DG.hits.map(function(h){return {id:h.id,segs:h.segs.length,dots:h.dots.length,boxes:h.boxes.map(function(b){return b.slice();})};});};
+  window.__a3dDgLegend=function(){return A3D_DG.legend?JSON.parse(JSON.stringify(A3D_DG.legend)):null;};
+  window.__a3dDgCrtn=function(Q18,V,p,dcl,half){var L0=bimDgL0(Q18,V,p);return {L0:L0,at:bimDgLat(L0,dcl,half||0),reach:BIM_DG_NOISE_BANDS.map(function(b){return bimDgReach(L0,b[0],half||0);})};};
+  window.__a3dDgRoadClass=function(hw){return bimDgRoadClass(hw);};
+  window.__a3dDgBarrier=function(a,H,x){return bimDgBarrier(a,H,x);};
+  window.__a3dUndoDepth=function(){return UNDO_STACK.length;};
+  window.__a3dDgToScreen=function(p){var q=toScreen(p,camVecs(A3D.cam),cvW(),cvH());return [q[0],q[1],q[2]];};
+  window.__acad3dV164='diagobjects,live,editable,keptedits,deletedstay,newer,orphans,copies,reset,resetanalysis,layers,sublayers,legend,underover,bandsbatched,pick,transform,props,'+
+    'frame,sunpaths,sunnow,shadows,winds,seasons,secmean,strongest,rose,isovist,views,noise,crtn,fhwa,dinbands,rails,timezone,'+
+    'analyzesite,address,steps,onestep,radius,zoningstep,cards,command,removedstages,removeddefine,removedtyped,removedphotos,removedpins,removedchecklists';
   window.__acad3dV157='railkind,airportkind,powerkind,landusekind,roadsurface,roaduse,bridgedeck,piers,tunnels,trees3d,treerows,pylons,drapedsurfaces';
   window.__acad3dV156='seencount,typecolour,gpupick,pickidpass,picklockedcpu,picksmallcpu';
   window.__acad3dV155='spatialchunks,chunkboxes,culling,bundleperchunk,benchmark,benchstat';

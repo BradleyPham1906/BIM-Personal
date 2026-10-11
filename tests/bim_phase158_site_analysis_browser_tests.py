@@ -10,11 +10,9 @@ opportunity, a red flag or a fact. The context comes from V157's Overpass fixtur
   2. FILL FROM THE MODEL: nothing known says so; then the location, the context, the property, the
      terrain's relief and slope, the sun's day lengths, trees, streets, rail, the airport, power,
      land use, each with its source and date; refilled in place, what was said about it kept.
-  3. FINDINGS: added, numbered, edited (each field checked), moved, deleted, each one undo step.
-  4. DEFINE AND CHECKLISTS: stage, project type, questions; the desk and site checklists.
-  5. ON THE PLAN AND PHOTOGRAPHS: placed by a click, numbered pins, hidden; a photograph kept small.
-  6. THE PANEL: categories open, Edit and a field typed, red flags first; a reload keeps it all;
-     a phone.
+  3-5. AMENDED FOR V164: findings by hand, Define and the checklists, pins and photographs are gone,
+     with their hooks; the data's findings are numbered by category.
+  6. THE PANEL: categories open, findings read only; a reload keeps them; a phone.
   7. ANALYSIS AND DATA IN LAYERS, as Context is: rows with a caret, swatch, count and an eye in the
      layers' eye column; the eye shows or hides the whole group, one undo step.
 
@@ -128,23 +126,23 @@ async def run():
             await page.wait_for_timeout(150)
             ck(await safe("()=>document.getElementById('a3d-shell').dataset.tab") == 'analyze' and await panel(),
                "SITEANALYSIS opens it")
-            for q, want in (('site analysis', 'SITEANALYSIS'), ('due diligence', None), ('fill site analysis', 'SAFILL')):
+            # AMENDED FOR V164: Fill from the model is in Analyze site now; SAFILL is one of its names
+            for q, want in (('site analysis', 'SITEANALYSIS'), ('due diligence', None), ('fill site analysis', 'ANALYZESITE')):
                 nm = [x['name'] for x in (await safe("(q)=>window.__a3dCommandSearch(q,5)", q) or [])]
                 if want:
                     ck(want in nm[:3], "searching %r finds %s (%s)" % (q, want, nm))
             nm = [x['name'] for x in (await safe("(q)=>window.__a3dCommandSearch(q,5)", 'railway') or [])]
             ck('CONTEXT' in nm[:2], "CONTEXT's description names V157's kinds")
             stn = await safe("()=>window.__a3dSaStandard()") or {}
-            ck(stn.get('stages') == ['Define', 'Desktop', 'Visit', 'Surveys', 'Analysis', 'Synthesis', 'Report'],
-               "seven stages: Define, then the six (%s)" % stn.get('stages'))
-            ck([c['id'] for c in stn.get('cats', [])] == CATS and all(c['desk'] >= 2 and c['visit'] >= 2 for c in stn.get('cats', [])),
-               "the ten categories in their fixed order, each with what to find at the desk and check on site")
+            # AMENDED FOR V164: the owner: remove the checklist entirely; the stages, Define and the checklists are gone
+            ck('stages' not in stn, "no stages (%s)" % stn.get('stages'))
+            ck([c['id'] for c in stn.get('cats', [])] == CATS and all(set(c) == {'id', 'n'} for c in stn.get('cats', [])),
+               "the ten categories in their fixed order, no checklists in them")
             s0 = await sa()
-            ck(s0.get('stage') == 0 and s0.get('findings') == [] and s0.get('pins') is True, "a new project: at Define, no findings")
+            ck(s0.get('findings') == [] and 'stage' not in s0 and 'pins' not in s0, "a new project: no findings, no stage")
             h = await panel() or ''
-            ck(h.count('data-sacat=') == 10 and h.count('data-sastage=') == 7 and 'data-sastage="0" aria-pressed="true"' in h,
-               "the panel: seven stage buttons, Define pressed, ten categories")
-            ck('From a shape' in h and 'Fill from the model' in h, "no boundary yet: it offers to make one")
+            ck(h.count('data-sacat=') == 10 and 'data-sastage=' not in h, "the panel: ten categories, no stage buttons")
+            ck('From a shape' in h and 'Analyze site' in h, "no boundary yet: it offers to make one, and Analyze site")
 
             # ---------------------------------------------------------------------------------
             print("\n-- 2. fill from the model")
@@ -169,7 +167,7 @@ async def run():
             ck(keys == want and r.get('added') == 11, "eleven findings from what the model knows (%s)" % keys)
             ck(all(f['source'] and re.match(r'^\d{4}-\d{2}-\d{2}$', f['date']) and f['conf'] == 'desktop' for f in S['findings']),
                "every one with a source, a date, and Desktop as its confidence")
-            ck(S.get('stage') == 1, "the project moved on to the desktop study")
+            ck('stage' not in S, "no stage to move on")   # AMENDED FOR V164: no stages
             f = await fnd('location.place')
             ck(f and f['value'].startswith('40.00000° N, 75.00000° W') and f['source'] == 'Project location', "the location (%s)" % (f and f['value']))
             f = await fnd('location.built')
@@ -206,135 +204,75 @@ async def run():
             n0 = len(S['findings'])
             r = await safe("()=>window.__a3dSaFill()") or {}
             ck(len((await sa())['findings']) == n0 and r.get('added') == 0 and r.get('updated') == 0, "filled again: nothing doubled, nothing changed")
-            fa = await fnd('access.airport')
-            await safe("(i)=>window.__a3dSaSet(i,'cls','redflag')", fa['id'])
-            await safe("(i)=>window.__a3dSaSet(i,'note','Check the airport\\'s height surfaces')", (await fnd('access.rail'))['id'])
-            await safe("()=>window.__a3dSaFill()")
-            ck((await fnd('access.airport'))['cls'] == 'redflag', "a class the owner set is kept on a refill")
+            # AMENDED FOR V164: findings are the data's: none is classed or written on by hand, so all of a source's go with it
             await safe("()=>window.__a3dRunCmd('contextremove')")
             r = await safe("()=>window.__a3dSaFill()") or {}
             S = await sa()
             keys2 = sorted(f.get('auto') for f in S['findings'])
-            kept = [f for f in S['findings'] if f['title'] == 'Railways']
-            ck(r.get('removed') == 6 and 'access.roads' not in keys2 and 'location.place' in keys2 and 'legal.boundary' in keys2,
-               "the context removed and refilled: its findings go (%s gone), the rest stay" % r.get('removed'))
-            ck(len(kept) == 1 and kept[0]['auto'] == '' and kept[0]['note'] and len([f for f in S['findings'] if f['title'] == 'Airport']) == 1,
-               "except those the owner wrote on or classed: kept, no longer refilled")
+            ck(r.get('removed') == 8 and 'access.roads' not in keys2 and 'location.place' in keys2 and 'legal.boundary' in keys2,
+               "the context removed and refilled: its eight findings go (%s gone), the rest stay" % r.get('removed'))
+            ck(all(f.get('auto') for f in S['findings']), "every finding left is one the data wrote")
             await safe("()=>window.__a3dUndo()")
             await safe("()=>window.__a3dUndo()")
             ck(await fnd('access.roads') is not None, "the fill and the removal, one undo step each")
 
             # ---------------------------------------------------------------------------------
-            print("\n-- 3. findings")
-            a = await safe("()=>window.__a3dSaAdd('risk',{title:'Former petrol station next door',value:'Tanks may remain',cls:'redflag',sev:3,source:'Historic aerial photographs, 1962'})")
-            b = await safe("()=>window.__a3dSaAdd('risk',{title:'Rail noise'})")
-            f = await fnd(fid=a)
-            ck(f and f['cat'] == 'risk' and f['cls'] == 'redflag' and f['sev'] == 3 and f['conf'] == 'desktop' and f['date'] == (await safe("()=>new Date().toISOString().slice(0,10)")),
-               "a finding added: its class, severity, confidence and today's date")
-            ck(await safe("(i)=>window.__a3dSaNumber(i)", a) == '7.1' and await safe("(i)=>window.__a3dSaNumber(i)", b) == '7.2',
-               "numbered by category: 7.1 and 7.2 under Environmental risk")
-            ck(await safe("()=>window.__a3dSaAdd('nonsense',{})") is None, "no finding in a category that is not one of the ten")
-            for k, v, ok in (('cls', 'constraint', True), ('cls', 'bad', False), ('sev', '2', True), ('sev', '5', False), ('conf', 'site', True),
-                             ('conf', 'rumour', False), ('date', '2026-09-30', True), ('date', '30/09/2026', False), ('title', 'Rail noise, day and night', True),
-                             ('source', 'Heard on the visit', True), ('nope', 'x', False)):
-                got = await safe("(a)=>window.__a3dSaSet(a[0],a[1],a[2])", [b, k, v])
-                ck(got is ok, "set %s to %r: %s" % (k, v, 'taken' if ok else 'refused'))
-            f = await fnd(fid=b)
-            ck(f['cls'] == 'constraint' and f['sev'] == 2 and f['conf'] == 'site' and f['date'] == '2026-09-30' and f['title'] == 'Rail noise, day and night',
-               "what was taken is kept; what was refused changed nothing")
-            await safe("()=>window.__a3dUndo()")
-            ck((await fnd(fid=b))['source'] == '', "each edit one undo step")
-            await safe("(i)=>window.__a3dSaSet(i,'cat','access')", b)
-            ck(await safe("(i)=>window.__a3dSaNumber(i)", b) == '8.%d' % (1 + len([x for x in (await sa())['findings'] if x['cat'] == 'access']) - 1),
-               "moved to Access: numbered there")
-            ck(await safe("(i)=>window.__a3dSaDel(i)", b) and await fnd(fid=b) is None and await safe("(i)=>window.__a3dSaDel(i)", b) is False,
-               "deleted, once")
-
-            # ---------------------------------------------------------------------------------
-            print("\n-- 4. define and the checklists")
-            ck(await safe("()=>window.__a3dSaDefine('ptype','Mixed use')") and (await sa())['ptype'] == 'Mixed use', "the project type")
-            ck(await safe("()=>window.__a3dSaDefine('ptype','Spaceport')") is False, "only a type from the list")
-            await safe("()=>window.__a3dSaDefine('questions','How many homes fit, and where is the entry?')")
-            await safe("()=>window.__a3dSaDefine('stage',2)")
+            print("\n-- 3, 4 and 5. findings by hand, Define and checklists, pins and photographs")
+            # AMENDED FOR V164: the owner: "i have to input information, which is not the right way ... remove that
+            # entirely". Adding and editing findings, the stages, project type and questions, the checklists,
+            # pins on the plan and photographs are gone, and so are the hooks that drove them.
+            gone = await safe("""()=>['__a3dSaAdd','__a3dSaSet','__a3dSaDel','__a3dSaDefine','__a3dSaCheck','__a3dSaPlace','__a3dSaStartPin','__a3dSaPhotoUrl','__a3dSaPins','__a3dSaEdit']
+              .filter(function(k){return typeof window[k]!=='undefined';})""")
+            ck(gone == [], "no way left to type a finding, a stage, a checklist, a pin or a photograph in (%s)" % gone)
+            # AMENDED FOR V164: every finding's number counted again here, by category in the list's order
             S = await sa()
-            ck(S['questions'].startswith('How many homes') and S['stage'] == 2, "the questions, and the stage: Visit")
-            ck(await safe("()=>window.__a3dSaDefine('stage',7)") is False, "no eighth stage")
-            ck(await safe("()=>window.__a3dSaCheck('legal:d:0',true)") and await safe("()=>window.__a3dSaCheck('legal:v:1',true)"), "two checklist items ticked")
-            ck(await safe("()=>window.__a3dSaCheck('legal:d:9',true)") is False and await safe("()=>window.__a3dSaCheck('mars:d:0',true)") is False,
-               "an item that is not on the list is refused")
-            ck((await sa())['checks'] == {'legal:d:0': True, 'legal:v:1': True}, "kept with the project")
-            await safe("()=>window.__a3dSaCheck('legal:v:1',false)")
-            ck((await sa())['checks'] == {'legal:d:0': True}, "and unticked")
-
-            # ---------------------------------------------------------------------------------
-            print("\n-- 5. on the plan, and photographs")
-            await safe("()=>window.__a3dRunCmd('siteanalysis')")
-            await safe("(i)=>window.__a3dSaPlace(i,[5,5])", a)
-            await safe("()=>window.__a3dTestPaint&&window.__a3dTestPaint()")
-            await page.wait_for_timeout(150)
-            pins = await safe("()=>window.__a3dSaPins()") or []
-            ck(len(pins) == 1 and pins[0]['n'] == '7.1' and pins[0]['cls'] == 'redflag', "a pin on the plan, numbered as in the list (%s)" % pins)
-            ck(await safe("(i)=>window.__a3dSaStartPin(i)", (await fnd('legal.boundary'))['id']), "Place on the plan: a click awaited")
-            cr = await safe("()=>window.__a3dCanvasRect()")
-            sp = await safe("(p)=>window.__a3dProject(p)", [12, 0, 8])
-            px, py = cr['left'] + sp['x'], cr['top'] + sp['y']
-            await page.mouse.click(px, py)
-            await page.wait_for_timeout(200)
-            fb = await fnd('legal.boundary')
-            pins = await safe("()=>window.__a3dSaPins()") or []
-            pb = [p for p in pins if p['id'] == fb['id']]
-            ck(fb['at'] and abs(fb['at'][0] - 12) < 0.05 and abs(fb['at'][1] - 8) < 0.05, "clicked: pinned at the point clicked, 12, 8 (%s)" % fb['at'])
-            ck(pb and abs(pb[0]['x'] - sp['x']) < 1.5 and abs(pb[0]['y'] - sp['y']) < 1.5, "its pin drawn there (%s)" % pb)
-            ck('pinned on the plan' in await toast(), "and it says so")
-            await safe("()=>window.__a3dSaDefine('pins',false)")
-            await safe("()=>window.__a3dTestPaint&&window.__a3dTestPaint()")
-            ck(await safe("()=>window.__a3dSaPins()") == [], "hidden with the switch")
-            await safe("()=>window.__a3dSaDefine('pins',true)")
-            await safe("(i)=>window.__a3dSaPlace(i,null)", fb['id'])
-            ck((await fnd(fid=fb['id']))['at'] is None, "taken off the plan")
-            ok = await safe("""(i)=>{var c=document.createElement('canvas');c.width=2400;c.height=1200;var x=c.getContext('2d');x.fillStyle='#3a7';x.fillRect(0,0,2400,1200);
-              return window.__a3dSaPhotoUrl(i,c.toDataURL('image/png'));}""", a)
-            fp = await fnd(fid=a)
-            dims = await safe("""(u)=>new Promise(function(r){var im=new Image();im.onload=function(){r([im.width,im.height]);};im.onerror=function(){r(null);};im.src=u;})""", fp.get('photo') or '')
-            ck(ok and fp['photo'].startswith('data:image/jpeg') and dims == [960, 480], "a photograph: a JPEG, at most 960 px across (%s)" % dims)
-            await safe("(i)=>window.__a3dSaEdit(i)", a)
-            await safe("()=>{var b=document.querySelector('.a3d-sa-wrap [data-satog=\"risk\"]');var c=b.closest('[data-sacat]');if(!c.classList.contains('open'))b.click();}")
-            ck(await safe("(i)=>!!document.querySelector('.a3d-sa-wrap [data-safind=\"'+i+'\"] img.a3d-safph')", a), "shown in the finding")
+            exp, seen = {}, {}
+            for f in S['findings']:
+                if f.get('auto'):
+                    seen[f['cat']] = seen.get(f['cat'], 0) + 1
+                    exp[f['id']] = '%d.%d' % (CATS.index(f['cat']) + 1, seen[f['cat']])
+            got = {i: await safe("(i)=>window.__a3dSaNumber(i)", i) for i in exp}
+            lb = [f['id'] for f in S['findings'] if f.get('auto') == 'legal.boundary']
+            ck(got == exp and lb and got.get(lb[0]) == '2.1' and len(seen) > 3,
+               "the data's findings numbered by category: Location's 1.1 and 1.2, then Legal's 2.1 (%s)" % [got.get(i) for i in list(exp)[:4]])
 
             # ---------------------------------------------------------------------------------
             print("\n-- 6. the panel")
             h = await panel() or ''
-            ck('Red flags first' in h and '7.1 Former petrol station next door' in h, "red flags first, numbered")
+            # AMENDED FOR V164: no red flags typed by hand: the count is the data's findings
             # AMENDED FOR V162: the one list's count says the analyses on as well
-            ck(re.search(r'class="a3d-anzcount">\d+ findings, 2 red flags( \u00b7 \d+ on)?<', h) is not None, "the count says the red flags (%s)" % re.findall(r'a3d-anzcount">([^<]*)<', h))
+            ck(re.search(r'class="a3d-anzcount">\d+ findings( \u00b7 \d+ on)?<', h) is not None, "the count says the findings (%s)" % re.findall(r'a3d-anzcount">([^<]*)<', h))
             ck('Property_1, 600 m' in h, "the boundary: the property and its area")
-            ck(await safe("()=>document.querySelector('.a3d-sa-wrap [data-sacat=\"risk\"]').classList.contains('open')"), "a category opens with a click")
-            await safe("""(i)=>{var e=document.querySelector('.a3d-sa-wrap [data-saff="'+i+':title"]');e.value='Former filling station next door';e.dispatchEvent(new Event('change',{bubbles:true}));}""", a)
+            # AMENDED FOR V164: no red flag is typed now, so the data raises one -- a mass on the lot 15 m tall, the
+            # zoning's limit 10 m (V160's check of the design) -- and the red flags come first
+            await safe("(a)=>window.__a3dZnSet(a[0],a[1])", ['maxH', '10'])
+            bid = await safe("(a)=>window.__a3dAdd('box',{Length:a[0],Width:a[1],Height:a[2]}).id", [10 / 0.35, 10 / 0.35, 15 / 0.35])
+            await safe("(a)=>{var L=window.__a3dState().objs;L.forEach(function(o){if(o.id===a[0])o.pos=[a[1],a[2],a[3]];});window.__a3dTestSetObjs(L);}", [bid, 15, 7.5, 10])
+            await safe("(a)=>window.__a3dUsageAssign([a[0]],a[1])", [bid, 'use-res'])
+            await safe("()=>window.__a3dSaFill()")
+            rf = await fnd('legal.compliance')
+            fl = await safe("""()=>{var b=document.querySelector('.a3d-sa-wrap [data-anzsec="flags"]'),c=document.querySelector('.a3d-sa-wrap [data-anzsec="cats"]');
+              return b?{text:b.textContent,first:!!(b.compareDocumentPosition(c)&Node.DOCUMENT_POSITION_FOLLOWING)}:null;}""") or {}
+            ck(rf and rf['cls'] == 'redflag' and 'over the limit of 10.0 m' in rf['value'] and 'Red flags first' in fl.get('text', '') and 'Design against the zoning' in fl.get('text', '') and fl.get('first'),
+               "the data's red flag, the design over the height limit, listed first, above the categories (%s)" % (rf and rf['value']))
+            await safe("(i)=>window.__a3dDel(i)", bid)
+            await safe("(a)=>window.__a3dZnSet(a[0],a[1])", ['maxH', ''])
+            await safe("()=>window.__a3dSaFill()")
+            ck(await fnd('legal.compliance') is None and not await safe("()=>document.querySelector('.a3d-sa-wrap [data-anzsec=\"flags\"]')"), "the mass gone: the red flag with it")
+            # AMENDED FOR V164: a category opens with a click; its findings are to read, not to edit
+            await safe("()=>{var b=document.querySelector('.a3d-sa-wrap [data-satog=\"legal\"]');var c=b.closest('[data-sacat]');if(!c.classList.contains('open'))b.click();}")
             await page.wait_for_timeout(120)
-            ck((await fnd(fid=a))['title'] == 'Former filling station next door', "a field typed in the panel is kept")
-            await safe("""(i)=>{var e=document.querySelector('.a3d-sa-wrap [data-saff="'+i+':cls"]');e.value='constraint';e.dispatchEvent(new Event('change',{bubbles:true}));}""", a)
-            await page.wait_for_timeout(120)
-            h = await panel() or ''
-            ck((await fnd(fid=a))['cls'] == 'constraint' and '7.1 Former filling' not in h.split('The ten categories')[0], "classed down: no longer a red flag")
-            await safe("()=>{var b=document.querySelector('.a3d-sa-wrap [data-sachk=\"risk:d:0\"]');b.click();}")
-            await page.wait_for_timeout(120)
-            ck((await sa())['checks'].get('risk:d:0') is True, "a checklist box ticked in the panel")
-            await safe("()=>{var b=document.querySelector('.a3d-sa-wrap [data-sastage=\"4\"]');b.click();}")
-            await page.wait_for_timeout(120)
-            ck((await sa())['stage'] == 4 and 'data-sastage="4" aria-pressed="true"' in (await panel() or ''), "a stage pressed in the panel")
-            await safe("()=>{var b=document.querySelector('.a3d-sa-wrap [data-saact=\"add:water\"]');b.click();}")
-            await page.wait_for_timeout(120)
-            S = await sa()
-            ck(any(f['cat'] == 'water' and f['title'] == 'New finding' for f in S['findings']) and 'data-saff=' in (await panel() or ''),
-               "Add finding in Water: a new one, open to edit")
+            ck(await safe("()=>document.querySelector('.a3d-sa-wrap [data-sacat=\"legal\"]').classList.contains('open')"), "a category opens with a click")
+            ck(await safe("()=>{var c=document.querySelector('.a3d-sa-wrap [data-sacat=\"legal\"]');return !!c.querySelector('.a3d-safind')&&!c.querySelector('.a3d-safind input,.a3d-safind select,.a3d-safind textarea,.a3d-safind button,[data-sachk]')&&!/Add finding|At the desk|On site/.test(c.textContent);}") is True,
+               "its findings read only: no field, no Add finding, no checklist")
             # a reload
             before = await sa()
             await page.wait_for_timeout(700)
             await within(page.reload(), 'reload')
             await page.wait_for_timeout(2300)
             after = await sa()
-            ck(after.get('findings') == before.get('findings') and after.get('checks') == before.get('checks') and after.get('stage') == 4 and after.get('ptype') == 'Mixed use',
-               "a reload keeps it all: findings, photograph, checklists, stage, project")
+            ck(after.get('findings') == before.get('findings') and len(after.get('findings', [])) > 0,
+               "a reload keeps the findings")   # AMENDED FOR V164: nothing else is typed to keep
 
             # ---------------------------------------------------------------------------------
             print("\n-- 7. analysis and data in Layers")
@@ -388,10 +326,11 @@ async def run():
             await p2.wait_for_timeout(300)
             # AMENDED FOR V162: no view to choose: the site analysis is in Analyze's one list
             await p2.wait_for_timeout(300)
+            # AMENDED FOR V164: the button is Analyze site, the field the site's address
             g = await within(p2.evaluate("""()=>{var w=document.querySelector('.a3d-sa');if(!w)return null;var r=w.getBoundingClientRect(),
-              b=document.querySelector('.a3d-sa [data-saact="fill"]').getBoundingClientRect(),s=document.querySelector('.a3d-sa select').getBoundingClientRect();
+              b=document.querySelector('.a3d-sa [data-saact="analyze"]').getBoundingClientRect(),s=document.querySelector('.a3d-sa [data-saaddr]').getBoundingClientRect();
               return {w:r.width,left:r.left,right:r.right,sw:w.scrollWidth,cw:w.clientWidth,bh:b.height,sh:s.height,
-                fs:parseFloat(getComputedStyle(document.querySelector('.a3d-sa select')).fontSize),vw:innerWidth};}"""), 'geom')
+                fs:parseFloat(getComputedStyle(document.querySelector('.a3d-sa [data-saaddr]')).fontSize),vw:innerWidth};}"""), 'geom')
             ck(g and g['right'] <= g['vw'] + 0.5 and g['sw'] <= g['cw'] + 1, "on a phone: the panel fits the screen, nothing scrolls sideways (%s)" % g)
             ck(g and g['bh'] >= 34 and g['sh'] >= 36 and g['fs'] >= 16, "touch-sized buttons and fields, 16 px text so the phone does not zoom")
             await ctx2.close()
