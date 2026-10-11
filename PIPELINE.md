@@ -180,7 +180,10 @@ when it starts (V111 to V138 went to other work; V139 to V181 are in NOW).
   follow: the site's slope, its drainage, its flood zone (a red flag in the floodway).
 - An area -- a slope class, a pond, a flood zone -- is selected by clicking inside it, after the
   model and the lines and words over it.
-- **Checked** in 103 checks against every method worked out again in Python (Horn, marching
+- Cleaned up on the owner's word: flood zones labelled apart, not stacked by the site; a short
+  view's key keeps the analyses turned on last; the diagrams' words keep clear of the north arrow,
+  the view cube and the key.
+- **Checked** in 111 checks against every method worked out again in Python (Horn, marching
   squares, Priority-Flood with D8, Strahler, the catchments, the divides, the ponds, FEMA's
   classes), on a made-up ground served as Terrarium tiles and a FEMA answer, with FEMA down, a site
   outside the US, the context's terrain and a survey of the project's own.

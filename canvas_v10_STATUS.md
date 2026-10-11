@@ -14461,8 +14461,9 @@ warmth, contours on a hypsometric ramp, FEMA's zones in the FIRM's colours).
     subtype (crimson), the 1% annual chance by its flag or zone (A, AE, AH, AO, AR, A99 in blue; V
     and VE on the coast in a darker blue), shaded X or B as the 0.2% (orange), D not determined
     (grey), unshaded X not drawn -- cut to the square, each labelled with its zone and its base
-    flood elevation (-9999 is none; feet also in metres, on FEMA's datum); the zone the site's
-    centre is in, the most hazardous where two overlap.
+    flood elevation (-9999 is none; feet also in metres, on FEMA's datum), each label well inside
+    its zone and apart from the others' and the site's; the zone the site's centre is in, the most
+    hazardous where two overlap.
 - **The engine (165a):**
   - an element of several polylines (a contour level, a divide), drawn, picked by its segments,
     turned, mirrored and scaled, and fitted to by Zoom Extents;
@@ -14474,8 +14475,11 @@ warmth, contours on a hypsometric ramp, FEMA's zones in the FIRM's colours).
   - an area picked by its inside, asked last on a click, after the model, the lines and words over
     it and the grids, so it never covers what lies on it; a selected area's edge lit in the
     selection's yellow on a dark edge;
-  - the key, when the view is too small, drops its sources, then its last analyses' keys, with a
-    line saying how many more.
+  - the key, when the view is too small, drops its sources, then the keys of the analyses shown
+    longest ago (noticed frame by frame, however their layers came on), with a line saying how many
+    more; the rest keep their order. Its layout is apart from its drawing, laid out before the words;
+  - the words keep clear of what is drawn over them later in the frame: the north arrow in plan, the
+    view cube in 3D, and the key.
 - **Findings (165c),** from the same ground: Landform, the site's slope (mean, steepest, how much
   under 5% and how much 15% or more; a constraint when over a quarter is that steep, an
   opportunity when three quarters is under 5%); Water, its drainage (which way it drains, the land
@@ -14501,6 +14505,14 @@ warmth, contours on a hypsometric ramp, FEMA's zones in the FIRM's colours).
   from a staircase's middle line. Douglas and Peucker measure from the line through its outer
   corners, which the inner ones stand 0.71 of a cell off, so every step of the cells' edges stayed:
   24 points where 4 do. A cell eases them, and the suite asks that no one-cell step is left.
+- **Flood labels all by the site.** Each zone was labelled at the middle of its largest ring, and
+  zones that cross the square together, as a valley's strips do, have their middles together: four
+  labels stacked by the site. Each is placed now well inside its zone, apart from the labels before
+  it, the most hazardous first.
+- **The key kept the first analyses.** Short of room, it dropped the last in its order, so the land
+  and water keys went first however recently they were turned on. It drops those shown longest ago.
+- **Words under the north arrow.** "2.6 ha runs off to the north-east" ran under the north arrow,
+  which is drawn after the words. The words keep clear of it, of the view cube and of the key.
 - **A link of one point.** A confluence on the ground's edge starts a link that ends where it
   starts: nothing to draw, and the suite counts only links of two points or more.
 - **One key, four analyses.** V164's suite looked its noise label up by the key 'site', which
@@ -14564,8 +14576,16 @@ warmth, contours on a hypsometric ramp, FEMA's zones in the FIRM's colours).
     reason in the script, and `rings_coarse` (half a cell) takes its place, caught by the bowl's
     shared edges and by the hill's top.
 
-  The five again, on the final suite: 5 of 5 (164 s).
-
+  The five again, on the final suite: 5 of 5 (164 s). The cleanup after it added five variants
+  (`labels_bunched`, `legend_drops_last`, `recency_not_noticed`, `labels_under_key`,
+  `arrow_not_kept_clear`) and re-anchored three of the key's: 8 of 8 (248 s).
+- **The amended suites' scripts.** `falsify_phase164.py`: three of the key's variants re-anchored
+  in bimDgLegendLayout, 3 of 3. `falsify_phase148.py` and `falsify_phase141.py` had gone stale:
+  nine and two variants anchored on code V161 and V162 had moved. They are re-anchored, each saying
+  where it went. Eight of V148's nine and both of V141's were caught at once. The ninth,
+  `search_no_group` (a group's name left out of its rows' words), was not: nothing searched by a
+  group's name. The V148 suite asks that 'model' find every row in the Model group now, and the
+  variant is caught.
 ### Not done
 
 - The ground finer than the tiles: USGS 3DEP's 1 m lidar where it exists (the tiles carry 10 m or
@@ -14573,6 +14593,3 @@ warmth, contours on a hypsometric ramp, FEMA's zones in the FIRM's colours).
 - Kerbs, swales, culverts and pipes; the site's own drainage design; how deep a flood would stand.
 - FEMA's own colours (its renderer could not be read from here) and its other layers (the base
   flood elevation lines, the cross sections, the LOMRs).
-- Labels for the flood zones placed apart: each sits at its zone's middle, so strips that cross
-  the square together label near each other.
-- A key that keeps the most recent analyses when the view is small; it keeps the first.

@@ -111,7 +111,7 @@ analysis**:
 | Aspect | the way the ground faces, in eight directions and flat, coloured for warmth: facing the equator warm, facing the pole cool. Off at first | Horn's method |
 | Water flow | the flow lines, wider by their Strahler order; the divides between the large catchments; the land draining onto the site, shaded; an arrow where the site's water leaves it | Priority-Flood and D8 on the same ground |
 | Ponds | where water would stand 10 cm or more over 50 m2 or more: its depth, area and volume, its deepest point marked | the same, filled |
-| Flood zones | FEMA's floodway, 1% annual chance (A, AE, AH, AO; V and VE on the coast), 0.2% (shaded X) and undetermined (D) zones, cut to 150 m around, each with its base flood elevation; the zone the site is in | FEMA's National Flood Hazard Layer (US sites) |
+| Flood zones | FEMA's floodway, 1% annual chance (A, AE, AH, AO; V and VE on the coast), 0.2% (shaded X) and undetermined (D) zones, cut to 150 m around, each labelled inside it with its base flood elevation, apart from the others' labels; the zone the site is in | FEMA's National Flood Hazard Layer (US sites) |
 
 **Live and editable.**
 - Select an element to move, turn, mirror, scale or delete it, or to change its colour, line,
@@ -129,9 +129,11 @@ analysis**:
 - Diagram elements are not building elements. Schedules, quantities, the LOD checks and the
   exports pass them by.
 - A legend at the top right keys each analysis shown, with its source. **Hide the legend** turns it
-  off. When the view is too small for every key, the sources go first, then the last analyses' keys,
-  with a line saying how many more. On a phone there is none over the drawing: each analysis's row
-  in Analyze carries its key.
+  off. When the view is too small for every key, the sources go first, then the keys of the analyses
+  you turned on longest ago, with a line saying how many more. On a phone there is none over the
+  drawing: each analysis's row in Analyze carries its key.
+- The diagrams' words keep clear of the north arrow, the view cube and the legend, which are drawn
+  over them: a word that would fall under one moves, or gives way.
 - Each analysis is also a row in its category, with Show or Hide, Run again, Select, Reset and its
   key: Compass in Location; Contours, Slope and Aspect in Landform; Water flow, Ponds and Flood
   zones in Water; Sun paths, Shadows and Winds in Climate; Noise in Environmental risk; Views in

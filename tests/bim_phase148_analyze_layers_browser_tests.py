@@ -211,6 +211,11 @@ async def run():
             ck(s == ['dgsun', 'dgshadow', 'dgwind', 'sun', 'sunhours', 'solar', 'dgnoise'], "a category's name finds its rows (%s)" % s)
             s = await safe("(q)=>window.__a3dAnzSearch(q)", 'cut fill')
             ck(s == ['grading'], "two words, both at the start of words (%s)" % s)
+            # ADDED IN V165: a group's name finds every row in it, though few of them say it -- the variant that
+            # leaves it out of a row's words (search_no_group, re-anchored) found nothing that asked
+            s = await safe("(q)=>window.__a3dAnzSearch(q)", 'model')
+            mrows = await safe("()=>[].map.call(document.querySelectorAll('.a3d-analyze-wrap [data-anzgrp=\"model\"] [data-anzcard]'),function(r){return r.getAttribute('data-anzcard');})") or []
+            ck(len(mrows) >= 3 and all(m in s for m in mrows), "a group's name finds every row in it: 'model' (%s of %s)" % ([m for m in mrows if m in s], mrows))
             ck(await safe("(a)=>[window.__a3dAnzWordsHit(a[0],a[1]),window.__a3dAnzWordsHit(a[2],a[1])]", ['rain', 'Slope on the terrain', 'ter']) == [False, True],
                "the rule: a word asked for starts a word of the text")
             s = await safe("(q)=>window.__a3dAnzSearch(q)", 'zzzq')
