@@ -211,9 +211,18 @@ how it is drawn.
     OpenStreetMap's attribution; a contact on the site that serves the app, the Referer standing in
     for the User-Agent a page cannot set; light use, contact first for heavy use. One request a run
     is light.
-  - **A GTFS file dropped in** is read locally, with no key. The build already holds a zip reader
-    (fflate 0.8.3's `unzipSync`, inside V163's SketchUp reader). A big city's `stop_times.txt`
-    runs to hundreds of MB, so it is scanned for the stops within reach, not read whole.
+  - **Not used in V166.** Its terms would put the app's code under an open-source licence and rule
+    out selling the app, which is the owner's call and not one to make for them; and a volunteer
+    service that may stop serving anyone is a thin base for a layer. Asked, the owner left it to
+    the work ("do what is best"). It stays a one-step switch if the owner opens the code.
+  - **No timetable files.** The owner: "i dont want to drop any timetable. use what's available
+    online free." A GTFS file dropped in is not part of the analysis.
+  - **Other free sources checked:** the US National Transit Map (BTS) is stops from the agencies'
+    GTFS `stops.txt`, on a public ArcGIS server, with no service frequency; TfL's PTAL grid is
+    London's alone, and its latest release is given on request
+    ([NTM stops](https://services.arcgis.com/xOi1kZaI0eWDREZv/arcgis/rest/services/NTAD_National_Transit_Map_Stops/FeatureServer/0),
+    [TfL open data](https://tfl.gov.uk/info-for/open-data-users/)). So OpenStreetMap's `interval`
+    is the one free, unconditional source of headways.
   - **Drawn as:** each stop within reach with its lines and its walk in minutes; the catchment
     along the streets out to 8 and 12 minutes; the index and its band where it can be worked out.
     TfL's map runs from blues at 0 to dark red at 6b; its exact colours could not be read from
@@ -310,9 +319,9 @@ how it is drawn.
   2. **Cycling stress:** each street in its LTS by the 2012 criteria, its assumptions said; the
      unsignalized crossings of main streets by the 2016 table; the site's low-stress reach. Off at
      first.
-  3. **Transit:** the stops within 8 and 12 minutes with their lines; the catchment; PTAL from
-     Transitous's departures if its terms are accepted, else where OpenStreetMap maps the
-     headways, a floor where some are not.
+  3. **Transit:** the stops within 8 and 12 minutes with their lines, and the catchment along the
+     streets. PTAL where OpenStreetMap maps every line's headway within reach, a floor where some
+     lines lack one; elsewhere the layer says why it gives no PTAL.
   4. **Walk times:** the network in 5, 10 and 15-minute bands from the lot, as lines along the
      streets.
   5. **Daily needs:** the way to the nearest of each kind, in minutes; the 400 m and 800 m checks
@@ -324,11 +333,15 @@ how it is drawn.
   Findings: the streets the lot fronts and their stress; transit (PTAL, or the stops within
   reach); the daily needs within 10 minutes; where vehicles can enter.
 
-  Open before coding:
-  - the 2012 bike-lane cells and the crossing table's refuge cells, against the report;
-  - for the owner: Transitous's terms (an open-source licence for the app, no commercial use, a
-    contact on the site);
-  - whether a GTFS drop is in V166 or later.
+  Open before coding: the 2012 bike-lane cells and the crossing table's refuge cells, against
+  the report. Until they can be read, a bike lane is rated by the rows read so far (speed, lanes,
+  parking), its width BNA's default where none is mapped, said so on the street; a refuge is not
+  counted, which errs stressful.
+
+  The owner, on the questions this note raised: Transitous not used (above); no timetable files;
+  and no class set by hand ("all i want is to leverage open api data"), which is already so: since
+  V164 the data writes every finding, and a class set by hand in an older project gives way to
+  the data's at the next run.
 
   The build environment refuses most web hosts (Furth's pages, the MTI report and its mirror,
   Wikipedia, TfL, geo.dot.gov): the facts above come from search results, their sources linked,
