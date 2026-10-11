@@ -197,35 +197,33 @@ rep("    (g.bands||[]).forEach(function(B){(B.pts||[]).forEach(function(p){P.pus
     "    (g.bands||[]).forEach(function(B){(B.pts||[]).forEach(function(p){P.push(p);});(B.rings||[]).forEach(function(Rg){Rg.forEach(function(p){P.push(p);});});});   /* __acad3dV165 */\n"
     "    (g.lines||[]).forEach(function(Ln){Ln.forEach(function(p){P.push(p);});});\n")
 
-# ---- the legend: with many analyses shown, the sources go, then the last blocks, said so ----
-rep("""    ctx.save();
-    try{
-      var pad=8,rowH=15,sw=12,maxW=Math.round(Math.min(300,Math.max(170,sr.w*0.3))),inner=maxW-2*pad,ops=[],y=pad,x,j,b,w=0;
-      for(i=0;i<blocks.length;i++){
-        b=blocks[i];if(i)y+=6;
-        ctx.font='bold 11px sans-serif';
-        var tt=bimDgFit(ctx,b.title,inner);ops.push({k:'t',t:tt,x:pad,y:y+rowH/2});b.tt=tt;w=Math.max(w,ctx.measureText(tt).width);y+=rowH;
-        ctx.font='11px sans-serif';x=pad;
-        for(j=0;j<b.rows.length;j++){
-          var r=b.rows[j],nm=r.short||r.name,iw=sw+4+ctx.measureText(nm).width;
-          if(x>pad&&x+iw>pad+inner){x=pad;y+=rowH;}
-          ops.push({k:'r',r:r,t:nm,x:x,y:y+rowH/2});b.drawn.push(nm);w=Math.max(w,x+iw-pad);x+=iw+10;
-        }
-        if(b.rows.length)y+=rowH;
-        if(b.src){ctx.font='10px sans-serif';var st=bimDgFit(ctx,b.src,inner);ops.push({k:'s',t:st,x:pad,y:y+rowH/2-1});b.st=st;w=Math.max(w,ctx.measureText(st).width);y+=rowH-2;}
-      }
-      w=Math.ceil(Math.min(maxW,w+2*pad));var h=y+pad,X=sr.x+sr.w-w-12,Y=sr.y+12;
-      if(X+w>W-84&&Y<108)Y=108;   /* under the north arrow */
-""",
-    """    ctx.save();
+# ---- the legend: laid out before the words are placed, which keep clear of it; when the view is
+#      short the sources go, then the analyses shown longest ago, said so ----
+rep("  function drawDiagramLegend(ctx,V,W,H){\n    A3D_DG.legend=null;\n    if(A3D.sheetCapture||A3D_PLOT.on)return;\n    var D=bimDgState(),blocks=[],i,sr;\n    if(D.legendOff)return;\n    for(i=0;i<BIM_DG_AN.length;i++){\n      var A=BIM_DG_AN[i],R=D.runs[A.id];\n      if(!R)continue;\n      if(!bimDgDiags(A.id).some(function(o){return bimLayerShown(o);}))continue;   /* a layer off or frozen, its own or one above it: none of it shown */\n      blocks.push({title:A.name,rows:(R.legend||[]).slice(0,8),src:R.source||'',drawn:[]});\n    }\n    if(!blocks.length)return;\n    sr=bimSafeViewRect();   /* asked only with a key to place, as the other keys do: it warns when the chrome covers the view */\n    if(sr.w<620)return;   /* a phone's view: each analysis's row in Analyze carries its key */\n    ctx.save();\n    try{\n      var pad=8,rowH=15,sw=12,maxW=Math.round(Math.min(300,Math.max(170,sr.w*0.3))),inner=maxW-2*pad,ops=[],y=pad,x,j,b,w=0;\n      for(i=0;i<blocks.length;i++){\n        b=blocks[i];if(i)y+=6;\n        ctx.font='bold 11px sans-serif';\n        var tt=bimDgFit(ctx,b.title,inner);ops.push({k:'t',t:tt,x:pad,y:y+rowH/2});b.tt=tt;w=Math.max(w,ctx.measureText(tt).width);y+=rowH;\n        ctx.font='11px sans-serif';x=pad;\n        for(j=0;j<b.rows.length;j++){\n          var r=b.rows[j],nm=r.short||r.name,iw=sw+4+ctx.measureText(nm).width;\n          if(x>pad&&x+iw>pad+inner){x=pad;y+=rowH;}\n          ops.push({k:'r',r:r,t:nm,x:x,y:y+rowH/2});b.drawn.push(nm);w=Math.max(w,x+iw-pad);x+=iw+10;\n        }\n        if(b.rows.length)y+=rowH;\n        if(b.src){ctx.font='10px sans-serif';var st=bimDgFit(ctx,b.src,inner);ops.push({k:'s',t:st,x:pad,y:y+rowH/2-1});b.st=st;w=Math.max(w,ctx.measureText(st).width);y+=rowH-2;}\n      }\n      w=Math.ceil(Math.min(maxW,w+2*pad));var h=y+pad,X=sr.x+sr.w-w-12,Y=sr.y+12;\n      if(X+w>W-84&&Y<108)Y=108;   /* under the north arrow */\n",
+    """  /* __acad3dV165: the key's layout, apart from its drawing, so the words placed before it can keep clear
+     of its box. What does not fit a short view goes: the sources first, then whole analyses, those
+     shown longest ago first, and a line says how many; the rest keep their order. When each analysis
+     was last shown is noticed here, frame by frame, however its layer came on. */
+  function bimDgLegendLayout(ctx,W,H){
+    if(A3D.sheetCapture||A3D_PLOT.on)return null;
+    var D=bimDgState(),blocks=[],i,sr,seen=A3D_DG.seen||(A3D_DG.seen={}),at=A3D_DG.at||(A3D_DG.at={}),tick=null;
+    if(D.legendOff)return null;
+    for(i=0;i<BIM_DG_AN.length;i++){
+      var A=BIM_DG_AN[i],R=D.runs[A.id],on=!!R&&bimDgDiags(A.id).some(function(o){return bimLayerShown(o);});   /* a layer off or frozen, its own or one above it: none of it shown */
+      if(on&&!seen[A.id]){if(tick===null)tick=A3D_DG.tick=(A3D_DG.tick||0)+1;at[A.id]=tick;}   /* shown again: the most recent */
+      seen[A.id]=on;
+      if(on)blocks.push({title:A.name,rows:(R.legend||[]).slice(0,8),src:R.source||'',drawn:[],at:at[A.id]||0,i:blocks.length});
+    }
+    if(!blocks.length)return null;
+    sr=bimSafeViewRect();   /* asked only with a key to place, as the other keys do: it warns when the chrome covers the view */
+    if(sr.w<620)return null;   /* a phone's view: each analysis's row in Analyze carries its key */
+    ctx.save();
     try{
       var pad=8,rowH=15,sw=12,maxW=Math.round(Math.min(300,Math.max(170,sr.w*0.3))),inner=maxW-2*pad,j,b;
-      /* the key laid out for the first nb blocks, with or without their sources; __acad3dV165: what does
-         not fit the view goes -- the sources first, then the last blocks, a line saying how many */
-      var lay=function(withSrc,nb){
+      var lay=function(withSrc,list){   /* the key for these blocks, with or without their sources */
         var ops=[],y=pad,x,w=0,k;
-        for(k=0;k<nb;k++){
-          b=blocks[k];if(k)y+=6;b.drawn=[];b.tt='';b.st='';
+        for(k=0;k<list.length;k++){
+          b=list[k];if(k)y+=6;b.drawn=[];b.tt='';b.st='';
           ctx.font='bold 11px sans-serif';
           var tt=bimDgFit(ctx,b.title,inner);ops.push({k:'t',t:tt,x:pad,y:y+rowH/2});b.tt=tt;w=Math.max(w,ctx.measureText(tt).width);y+=rowH;
           ctx.font='11px sans-serif';x=pad;
@@ -238,18 +236,52 @@ rep("""    ctx.save();
           if(withSrc&&b.src){ctx.font='10px sans-serif';var st=bimDgFit(ctx,b.src,inner);ops.push({k:'s',t:st,x:pad,y:y+rowH/2-1});b.st=st;w=Math.max(w,ctx.measureText(st).width);y+=rowH-2;}
         }
         var mt='';
-        if(nb<blocks.length){ctx.font='10px sans-serif';mt=bimDgFit(ctx,'+ '+(blocks.length-nb)+' more: their keys are in Analyze',inner);y+=6;ops.push({k:'s',t:mt,x:pad,y:y+rowH/2-1});w=Math.max(w,ctx.measureText(mt).width);y+=rowH-2;}
-        return {ops:ops,w:Math.ceil(Math.min(maxW,w+2*pad)),h:y+pad,src:withSrc,nb:nb,mt:mt};
+        if(list.length<blocks.length){ctx.font='10px sans-serif';mt=bimDgFit(ctx,'+ '+(blocks.length-list.length)+' more: their keys are in Analyze',inner);y+=6;ops.push({k:'s',t:mt,x:pad,y:y+rowH/2-1});w=Math.max(w,ctx.measureText(mt).width);y+=rowH-2;}
+        return {ops:ops,w:Math.ceil(Math.min(maxW,w+2*pad)),h:y+pad,src:withSrc,list:list,mt:mt};
       };
       var Y=sr.y+12;
       if(sr.x+sr.w-12>W-84&&Y<108)Y=108;   /* under the north arrow */
-      var avail=sr.y+sr.h-12-Y,LY=lay(true,blocks.length);
-      if(LY.h>avail)LY=lay(false,blocks.length);
-      while(LY.h>avail&&LY.nb>1)LY=lay(false,LY.nb-1);
-      var ops=LY.ops,w=LY.w,h=LY.h,X=sr.x+sr.w-w-12;
+      var avail=sr.y+sr.h-12-Y,LY=lay(true,blocks),gone={},n=0,
+        drop=blocks.slice().sort(function(p,q){return (p.at-q.at)||(q.i-p.i);});
+      if(LY.h>avail)LY=lay(false,blocks);
+      while(LY.h>avail&&n<blocks.length-1){gone[drop[n++].i]=1;LY=lay(false,blocks.filter(function(bb){return !gone[bb.i];}));}
+      LY.X=sr.x+sr.w-LY.w-12;LY.Y=Y;LY.all=blocks.length;
+      return LY;
+    }finally{ctx.restore();}
+  }
+  function drawDiagramLegend(ctx,V,W,H){
+    A3D_DG.legend=null;
+    var LY=(A3D_DG.lyCtx===ctx&&A3D_DG.lyFrame===A3D.frames)?A3D_DG.ly:bimDgLegendLayout(ctx,W,H);   /* laid out already this frame, as the words were placed */
+    A3D_DG.lyCtx=null;
+    if(!LY)return;
+    ctx.save();
+    try{
+      var sw=12,ops=LY.ops,w=LY.w,h=LY.h,X=LY.X,Y=LY.Y,i;
 """)
 rep("      A3D_DG.legend={box:[X,Y,w,h],blocks:blocks.map(function(bb){return {title:bb.tt,rows:bb.drawn,src:bb.st||''};})};   /* what was drawn, as drawn */\n",
-    "      A3D_DG.legend={box:[X,Y,w,h],blocks:blocks.slice(0,LY.nb).map(function(bb){return {title:bb.tt,rows:bb.drawn,src:bb.st||''};}),more:blocks.length-LY.nb,moreText:LY.mt,sources:LY.src};   /* what was drawn, as drawn */\n")
+    "      A3D_DG.legend={box:[X,Y,w,h],blocks:LY.list.map(function(bb){return {title:bb.tt,rows:bb.drawn,src:bb.st||''};}),more:LY.all-LY.list.length,moreText:LY.mt,sources:LY.src};   /* what was drawn, as drawn */\n")
+
+# ---- the words keep clear of what is drawn over them later in the frame ----
+rep("  function bimDgPlaceLabels(ctx,Q){\n    var placed=[],i,k;\n",
+    """  /* __acad3dV165: where the words keep clear of, as it is drawn over them later in the frame: the north
+     arrow in plan, its N all round it; the view cube in 3D, with its home button; the key */
+  function bimDgKeepClear(W,H){
+    var B=[],L=A3D_DG.ly;
+    if(A3D.sheetCapture)return B;
+    if(bimCameraIsPlan())B.push([W-90,36,90,84]);
+    if(!A3D.flat)B.push([W-130,8,130,116]);
+    if(L)B.push([L.X,L.Y,L.w,L.h]);
+    return B;
+  }
+  function bimDgPlaceLabels(ctx,Q,keep){
+    var placed=(keep||[]).slice(),i,k;
+    A3D_DG.labelBoxes=[];
+""")
+rep("      q.hit.boxes.push(bx);\n",
+    "      q.hit.boxes.push(bx);A3D_DG.labelBoxes.push(bx);   /* __acad3dV165 */\n")
+rep("      if(Q.length)bimDgPlaceLabels(ctx,Q);\n",
+    "      if(over){A3D_DG.ly=bimDgLegendLayout(ctx,W,H);A3D_DG.lyCtx=ctx;A3D_DG.lyFrame=A3D.frames;}   /* __acad3dV165: the key first, for the words to keep clear of */\n"
+    "      if(Q.length)bimDgPlaceLabels(ctx,Q,bimDgKeepClear(W,H));\n")
 
 out = txt.encode('utf-8')
 SRC.write_bytes(out)

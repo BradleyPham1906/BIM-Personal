@@ -17,7 +17,7 @@ said. On that ground:
 import hashlib, pathlib, sys
 
 SRC = pathlib.Path('canvas_v10.html')
-BASE = '395f144afaafa7e321f41a47a3ba864cbede2421083dda94f7009a25c62e71a7'   # after patch_phase165a.py
+BASE = 'f84570f04947ffe3f4253741196535de1260536650b830da398debcc59f8e631'   # after patch_phase165a.py
 
 raw = SRC.read_bytes()
 sha = hashlib.sha256(raw).hexdigest()
@@ -658,6 +658,37 @@ LAND = r"""  /* ================= __acad3dV165: site analysis in the model II, l
     for(j=0;j<big.length;j++){var dx=big[j][0]-S.c[0],dz=big[j][1]-S.c[1];if(dx*dx+dz*dz<bd){bd=dx*dx+dz*dz;best=big[j];}}
     return best;
   }
+  /* each zone's label well inside it and apart from the others' and the site's, so zones that cross the
+     square together are not all labelled by the site: of the points every 5 m within 120 m of the site
+     inside the zone, those nearly as deep in as any (four fifths of the deepest, at most 6 m), and of
+     those the one farthest from the labels placed so far, out to 50 m, then the nearest the site; the
+     most hazardous zone first. A zone with no such point is labelled as before (bimLandLabelAt). */
+  function bimLandLabelSpots(zones,S){
+    var out={},taken=[[S.c[0],S.c[1]]],i,j,k,m,gx,gz,
+      order=zones.slice().sort(function(a,b){return BIM_LAND_ZORDER.indexOf(a.zc)-BIM_LAND_ZORDER.indexOf(b.zc);});
+    for(i=0;i<order.length;i++){
+      var z=order[i],R=z.rings,x0=Infinity,x1=-Infinity,z0=Infinity,z1=-Infinity,cand=[],deep=0,best=null,bs=-Infinity;
+      for(j=0;j<R.length;j++)for(k=0;k<R[j].length;k++){x0=Math.min(x0,R[j][k][0]);x1=Math.max(x1,R[j][k][0]);z0=Math.min(z0,R[j][k][1]);z1=Math.max(z1,R[j][k][1]);}
+      for(gx=-120;gx<=120;gx+=5)for(gz=-120;gz<=120;gz+=5){
+        var q=[S.c[0]+gx,S.c[1]+gz],c=Infinity;
+        if(gx*gx+gz*gz>14400||q[0]<x0||q[0]>x1||q[1]<z0||q[1]>z1||!bimLandInRings(q,R))continue;
+        for(j=0;j<R.length;j++)for(k=0,m=R[j].length-1;k<R[j].length;m=k++)c=Math.min(c,bimPointSegDist(q[0],q[1],R[j][m][0],R[j][m][1],R[j][k][0],R[j][k][1]));
+        cand.push([q,c]);if(c>deep)deep=c;
+      }
+      var need=Math.min(6,deep*0.8);
+      for(j=0;j<cand.length;j++){
+        if(cand[j][1]<need)continue;
+        var p2=cand[j][0],d=Infinity,sc;
+        for(k=0;k<taken.length;k++)d=Math.min(d,Math.sqrt((p2[0]-taken[k][0])*(p2[0]-taken[k][0])+(p2[1]-taken[k][1])*(p2[1]-taken[k][1])));
+        sc=Math.min(d,50)-0.01*Math.sqrt((p2[0]-S.c[0])*(p2[0]-S.c[0])+(p2[1]-S.c[1])*(p2[1]-S.c[1]));
+        if(sc>bs){bs=sc;best=p2;}
+      }
+      if(!best)best=bimLandLabelAt(R,S);
+      out[z.key]=best;
+      if(best)taken.push(best);
+    }
+    return out;
+  }
   /* FEMA's zones around the site, cut to the square analysed, as rings in plan; the most hazardous one
      the site's centre is in */
   function bimLandFloodZones(S){
@@ -693,9 +724,10 @@ LAND = r"""  /* ================= __acad3dV165: site analysis in the model II, l
     if(F.error&&!F.features)return {E:[],run:{note:'FEMA\'s map: '+F.error}};
     var feats=F.features||[],src='FEMA National Flood Hazard Layer ('+(F.host||'hazards.fema.gov')+'), '+F.fetched;
     function y3(q,lift){var y=D?bimLandAt(D,q[0],q[1]):null;return [bimLandR(q[0]),bimLandR((y===null?S.y:y)+lift),bimLandR(q[1])];}
+    var spots=bimLandLabelSpots(Z0.zones,S);
     Z0.zones.forEach(function(z){
       var p=z.p,zc=z.zc,Z=BIM_LAND_ZONES[zc],rings=z.rings;
-      var zn=String(p.FLD_ZONE||p.fld_zone||'').replace(/^\s+|\s+$/g,''),bfe=bimLandBfe(p),lp=bimLandLabelAt(rings,S),sub=String(p.ZONE_SUBTY||p.zone_subty||'').replace(/^\s+|\s+$/g,'');
+      var zn=String(p.FLD_ZONE||p.fld_zone||'').replace(/^\s+|\s+$/g,''),bfe=bimLandBfe(p),lp=spots[z.key],sub=String(p.ZONE_SUBTY||p.zone_subty||'').replace(/^\s+|\s+$/g,'');
       E.push({k:z.key,name:'Flood zone '+zn+(zc==='floodway'?', floodway':''),g:{kind:'line',pts:[],bands:[{lv:Z.lv,col:Z.col,rings:rings.map(function(r2){return r2.map(function(q){return y3(q,0.05);});})}]},s:{fill:Z.col,fop:0.42},
         lb:lp?[{t:'Zone '+zn+(zc==='floodway'?', floodway':(zc==='x02'?' (0.2%)':''))+(bfe?', BFE '+bfe.short:''),p:y3(lp,0.1),sz:10,col:'#d9e9ff',pri:3}]:[],
         info:{title:Z.name+': zone '+zn,rows:[['Zone',zn+(sub?' ('+sub.toLowerCase()+')':'')],['Base flood elevation',bfe?bfe.text:'not given'],['Special flood hazard area',String(p.SFHA_TF||p.sfha_tf||'').toUpperCase()==='T'?'yes':'no']],

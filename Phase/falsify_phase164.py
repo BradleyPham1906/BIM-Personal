@@ -33,9 +33,12 @@ VARIANTS = {
     'hidden_drawn': [("        if(!bimLayerShown(L[i]))continue;\n        if(over)A3D_DG.hits.push(", "        if(over)A3D_DG.hits.push(")],
     'shadows_not_drawn': [("    if(g.kind==='live'){bimDgDrawShadow(ctx,V,W,H,o,a);return;}", "    if(g.kind==='live'){return;}")],
     'context_casts': [("      if(!o||o.context)return false;", "      if(!o)return false;")],
-    'legend_ignores_off': [("    if(D.legendOff)return;\n    for(i=0;i<BIM_DG_AN.length;i++){\n      var A=BIM_DG_AN[i],R=D.runs[A.id];", "    for(i=0;i<BIM_DG_AN.length;i++){\n      var A=BIM_DG_AN[i],R=D.runs[A.id];")],
-    'legend_hidden_layer': [("      if(!bimDgDiags(A.id).some(function(o){return bimLayerShown(o);}))continue;   /* a layer off or frozen", "      if(false)continue;   /* a layer off or frozen")],
-    'legend_on_phone': [("    if(sr.w<620)return;   /* a phone's view", "    if(false)return;   /* a phone's view")],
+    # RE-ANCHORED IN V165: the key's layout is bimDgLegendLayout's, apart from its drawing
+    'legend_ignores_off': [("    if(D.legendOff)return null;\n    for(i=0;i<BIM_DG_AN.length;i++){\n      var A=BIM_DG_AN[i],R=D.runs[A.id],on=", "    for(i=0;i<BIM_DG_AN.length;i++){\n      var A=BIM_DG_AN[i],R=D.runs[A.id],on=")],
+    # RE-ANCHORED IN V165: an analysis is shown when one of its elements is
+    'legend_hidden_layer': [("on=!!R&&bimDgDiags(A.id).some(function(o){return bimLayerShown(o);});", "on=!!R;")],
+    # RE-ANCHORED IN V165: the layout says there is no key on a phone
+    'legend_on_phone': [("    if(sr.w<620)return null;   /* a phone's view", "    if(false)return null;   /* a phone's view")],
     'legend_full_names': [("          var r=b.rows[j],nm=r.short||r.name,iw=", "          var r=b.rows[j],nm=r.name,iw=")],
     'props_generic': [("    if(bimIsDiag(o)){bimRenderInto(el.propsbody,bimDgPropsHtml(o));return;}   /* __acad3dV164: a site analysis element */\n", "")],
     'width_unchecked': [("    if(f==='w'&&(!isFinite(n)||n<0.5||n>12)){a3dToast('A line width is 0.5 to 12 pixels');refreshProps();return false;}\n", "")],

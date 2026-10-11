@@ -293,6 +293,18 @@ def exits(Y, M):
     return out
 
 
+def in_rings(x, z, R):
+    """a plan point inside rings of [x, y, z] points, read even-odd"""
+    n = 0
+    for r in R:
+        j = len(r) - 1
+        for i in range(len(r)):
+            if (r[i][2] > z) != (r[j][2] > z) and x < (r[j][0] - r[i][0]) * (z - r[i][2]) / (r[j][2] - r[i][2]) + r[i][0]:
+                n += 1
+            j = i
+    return n % 2 == 1
+
+
 def seg_dist(v, a, b):
     """a point's distance in plan to a segment"""
     dx, dz = b[0] - a[0], b[2] - a[2]
@@ -633,6 +645,11 @@ async def run():
             ck(rows(FZ['zone:FIX_2']).get('Base flood elevation') == '315 ft (96.01 m), NAVD88', "the elevation in its feet, in metres, on its datum")
             inbox = all(-150.001 <= p[0] <= 150.001 and -150.001 <= p[2] <= 150.001 for o in FZ.values() for B in o['dg']['g'].get('bands', []) for R in B['rings'] for p in R)
             ck(inbox, "cut to the square analysed")
+            lp_ = {k: FZ[k]['dg']['lb'][0]['p'] for k in ('zone:FIX_1', 'zone:FIX_2', 'zone:FIX_3')}
+            pts_ = list(lp_.values()) + [[0, 0, 0]]
+            apart = min(math.hypot(a_[0] - b_[0], a_[2] - b_[2]) for i_, a_ in enumerate(pts_) for b_ in pts_[i_ + 1:])
+            own = all(in_rings(lp_[k][0], lp_[k][2], FZ[k]['dg']['g']['bands'][0]['rings']) and math.hypot(lp_[k][0], lp_[k][2]) <= 120.5 for k in lp_)
+            ck(apart >= 30 and own, "each zone labelled inside it, apart from the others and from the site, though the strips cross the square together (%.0f m at the closest)" % apart)
             ck(FZ['site']['dg']['lb'][0]['t'] == 'Site: zone X, 0.2% annual chance', "the site: zone X, the 0.2%% annual chance (%s)" % FZ['site']['dg']['lb'][0]['t'])
             zof = await safe("""()=>[{FLD_ZONE:'AE',ZONE_SUBTY:' ',SFHA_TF:'T'},{FLD_ZONE:'A'},{FLD_ZONE:'AO',SFHA_TF:'T'},{FLD_ZONE:'VE',SFHA_TF:'T'},{FLD_ZONE:'AE',ZONE_SUBTY:'FLOODWAY'},
               {FLD_ZONE:'X',ZONE_SUBTY:'0.2 PCT ANNUAL CHANCE FLOOD HAZARD'},{FLD_ZONE:'X',ZONE_SUBTY:'AREA OF MINIMAL FLOOD HAZARD'},{FLD_ZONE:'D'},{FLD_ZONE:'OPEN WATER'}].map(window.__a3dLandZoneOf)""")
@@ -883,11 +900,39 @@ async def run():
                "every analysis shown in a small view: the key drops its sources, then its last blocks, and stays in the view (%s more, sources %s)" % (LG.get('more'), LG.get('sources')))
             ck(LG.get('more', 0) > 0 and LG.get('moreText') == '+ %d more: their keys are in Analyze' % LG.get('more', 0),
                "and says how many more, and where their keys are (%s; the key's blocks %s)" % (LG.get('moreText'), [b['title'] for b in LG.get('blocks', [])]))
+            kept0 = [b['title'] for b in LG.get('blocks', [])]
+            again_ = 'Contours' if 'Contours' not in kept0 else 'Compass and distance'
+            lay_ = D['layers']['contours' if again_ == 'Contours' else 'frame']
+            await safe("(i)=>window.__a3dLayerSet(i,'visible',false)", lay_)
+            await page.wait_for_timeout(300)
+            await safe("(i)=>window.__a3dLayerSet(i,'visible',true)", lay_)
+            await page.wait_for_timeout(400)
+            tl = [b['title'] for b in ((await safe("()=>window.__a3dDgLegend()") or {}).get('blocks') or [])]
+            every = ['Compass and distance', 'Sun paths', 'Shadows', 'Winds', 'Views', 'Noise', 'Contours', 'Slope', 'Aspect', 'Water flow', 'Ponds', 'Flood zones']
+            ck(again_ in tl and tl == [t for t in every if t in tl], "an analysis turned on again keeps its key in the small view, the one shown longest ago giving way; the rest in their order (%s turned on: %s)" % (again_, tl))
             await page.set_viewport_size({'width': 1440, 'height': 900})
             await page.wait_for_timeout(300)
             L2 = await safe("()=>window.__a3dDgLegend()") or {}
             sb = [b for b in L2.get('blocks', []) if b['title'] == 'Slope']
             ck(sb and sb[0]['rows'] == ['0-5%', '5-10%', '10-15%', '15-25%', '25+%'], "slope's key in the view: its five classes, short")
+            # the words keep clear of the key and the north arrow, drawn over them later in the frame: the site,
+            # with its labels, put under each in turn
+            put = """(a)=>{window.__a3dSetPlanView();window.__a3dCamSet({tx:0,tz:0,dist:a[2]});
+              var s0=window.__a3dDgToScreen([0,0,0]),sx=window.__a3dDgToScreen([1,0,0]),sz=window.__a3dDgToScreen([0,0,1]),
+                ax=sx[0]-s0[0],ay=sx[1]-s0[1],bx=sz[0]-s0[0],by=sz[1]-s0[1],dx=a[0]-s0[0],dy=a[1]-s0[1],det=ax*by-ay*bx;
+              window.__a3dCamSet({tx:-(dx*by-dy*bx)/det,tz:-(ax*dy-ay*dx)/det,dist:a[2]});return window.__a3dDgToScreen([0,0,0]);}"""
+
+            def over(b, r):
+                return b[0] < r[0] + r[2] and r[0] < b[0] + b[2] and b[1] < r[1] + r[3] and r[1] < b[1] + b[3]
+            LGb = (await safe("()=>window.__a3dDgLegend()") or {}).get('box') or [0, 0, 0, 0]
+            W_ = await safe("()=>document.getElementById('a3d-canvas').getBoundingClientRect().width")
+            clear = []
+            for tgt, region in (((LGb[0] + LGb[2] / 2, LGb[1] + LGb[3] / 2), LGb), ((W_ - 48, 78), [W_ - 90, 36, 90, 84])):
+                at_ = await safe(put, [tgt[0], tgt[1], 160])
+                await page.wait_for_timeout(400)
+                lb_ = await safe("()=>window.__a3dDgLabelBoxes()") or []
+                clear.append((abs(at_[0] - tgt[0]) < 2 and abs(at_[1] - tgt[1]) < 2, len(lb_), sum(1 for b in lb_ if over(b, region))))
+            ck(all(c_[0] and c_[1] > 0 and c_[2] == 0 for c_ in clear), "the words keep clear of the key and of the north arrow, drawn over them (the site under each: placed, words drawn, over it: %s)" % clear)
             b4 = {o['id']: o['dg']['g'] for o in await diags()}
             r = await safe("()=>window.__a3dDgRun('flow')") or {}
             af = {o['id']: o['dg']['g'] for o in await diags('flow')}

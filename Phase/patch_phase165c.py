@@ -11,7 +11,7 @@
 import hashlib, pathlib, sys
 
 SRC = pathlib.Path('canvas_v10.html')
-BASE = 'bb1a51d422a44424f44ebe920559fd9fedc3f28069bb8f35aee0a1b689f866aa'   # after patch_phase165b.py
+BASE = '2ee11522bac342d331449042866190cc2aa646610cd06db9ecd0acdcb1292d53'   # after patch_phase165b.py
 
 raw = SRC.read_bytes()
 sha = hashlib.sha256(raw).hexdigest()
@@ -117,8 +117,9 @@ rep("  window.__acad3dV164='",
     "  window.__a3dLandBfe=function(p){return bimLandBfe(p||{});};\n"
     "  window.__a3dLandUS=function(lat,lon){return bimLandUS({lat:lat,lon:lon});};\n"
     "  window.__a3dLandWarm=function(d8,lat){return bimLandWarm(d8,lat);};\n"
+    "  window.__a3dDgLabelBoxes=function(){return (A3D_DG.labelBoxes||[]).map(function(b){return b.slice();});};\n"
     "  window.__acad3dV165='landgrid,landfetch,ownsurface,contextfallback,horn,marchingsquares,contours,hypsometric,slopeclasses,aspectwarmth,priorityflood,d8,strahler,catchments,divides,'+\n"
-    "    'upstream,exits,ponds,fema,floodzones,bfe,sitezone,bandrings,bandgroups,bandpick,lines,coverhidden,legendcompact,landstep,landfindings';\n"
+    "    'upstream,exits,ponds,fema,floodzones,bfe,sitezone,bandrings,bandgroups,bandpick,lines,coverhidden,legendcompact,legendrecent,keepclear,labelspots,landstep,landfindings';\n"
     "  window.__acad3dV164='")
 
 rep("  var BIM_APP_VERSION={v:'V164',date:'2026-10-11'};   /* __acad3dV162; __acad3dV163; __acad3dV164 */\n",

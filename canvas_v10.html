@@ -19652,8 +19652,19 @@ try{
      hours along the sun's paths. One that would cover a word already placed tries a line above or
      below, then gives way -- a diagram is read by what it says, not by how much. The selection's are
      always drawn. */
-  function bimDgPlaceLabels(ctx,Q){
-    var placed=[],i,k;
+  /* __acad3dV165: where the words keep clear of, as it is drawn over them later in the frame: the north
+     arrow in plan, its N all round it; the view cube in 3D, with its home button; the key */
+  function bimDgKeepClear(W,H){
+    var B=[],L=A3D_DG.ly;
+    if(A3D.sheetCapture)return B;
+    if(bimCameraIsPlan())B.push([W-90,36,90,84]);
+    if(!A3D.flat)B.push([W-130,8,130,116]);
+    if(L)B.push([L.X,L.Y,L.w,L.h]);
+    return B;
+  }
+  function bimDgPlaceLabels(ctx,Q,keep){
+    var placed=(keep||[]).slice(),i,k;
+    A3D_DG.labelBoxes=[];
     for(i=0;i<Q.length;i++)Q[i].n=i;
     Q.sort(function(x,y){return x.pri-y.pri||x.n-y.n;});
     function free(b){for(var j=0;j<placed.length;j++){var p=placed[j];if(b[0]<p[0]+p[2]&&p[0]<b[0]+b[2]&&b[1]<p[1]+p[3]&&p[1]<b[1]+b[3])return false;}return true;}
@@ -19667,7 +19678,7 @@ try{
       ctx.globalAlpha=q.a;ctx.textAlign=q.al;ctx.textBaseline='middle';
       var bx=bimDgDrawText(ctx,q.t,q.x,q.y+dy,q.col,sz,q.cap);
       if(q.sel){ctx.globalAlpha=1;ctx.strokeStyle='#ffd166';ctx.lineWidth=1;ctx.strokeRect(bx[0]-2,bx[1],bx[2]+4,bx[3]);}
-      q.hit.boxes.push(bx);
+      q.hit.boxes.push(bx);A3D_DG.labelBoxes.push(bx);   /* __acad3dV165 */
     }
     ctx.globalAlpha=1;
   }
@@ -19715,7 +19726,8 @@ try{
         else bimDgDrawUnder(ctx,V,W,H,L[i]);
       }
       if(bands.length)bimDgDrawBands(ctx,V,W,H,bands);
-      if(Q.length)bimDgPlaceLabels(ctx,Q);
+      if(over){A3D_DG.ly=bimDgLegendLayout(ctx,W,H);A3D_DG.lyCtx=ctx;A3D_DG.lyFrame=A3D.frames;}   /* __acad3dV165: the key first, for the words to keep clear of */
+      if(Q.length)bimDgPlaceLabels(ctx,Q,bimDgKeepClear(W,H));
     }catch(eD){
       console.warn('[BIM] The site analysis could not be drawn',eD);
       if(!A3D_DG.warned){A3D_DG.warned=true;a3dToast('The site analysis could not be drawn - see the console');}
@@ -19806,29 +19818,30 @@ try{
     while(t.length>1&&ctx.measureText(t+'\u2026').width>w)t=t.slice(0,-1);
     return t+'\u2026';
   }
-  function drawDiagramLegend(ctx,V,W,H){
-    A3D_DG.legend=null;
-    if(A3D.sheetCapture||A3D_PLOT.on)return;
-    var D=bimDgState(),blocks=[],i,sr;
-    if(D.legendOff)return;
+  /* __acad3dV165: the key's layout, apart from its drawing, so the words placed before it can keep clear
+     of its box. What does not fit a short view goes: the sources first, then whole analyses, those
+     shown longest ago first, and a line says how many; the rest keep their order. When each analysis
+     was last shown is noticed here, frame by frame, however its layer came on. */
+  function bimDgLegendLayout(ctx,W,H){
+    if(A3D.sheetCapture||A3D_PLOT.on)return null;
+    var D=bimDgState(),blocks=[],i,sr,seen=A3D_DG.seen||(A3D_DG.seen={}),at=A3D_DG.at||(A3D_DG.at={}),tick=null;
+    if(D.legendOff)return null;
     for(i=0;i<BIM_DG_AN.length;i++){
-      var A=BIM_DG_AN[i],R=D.runs[A.id];
-      if(!R)continue;
-      if(!bimDgDiags(A.id).some(function(o){return bimLayerShown(o);}))continue;   /* a layer off or frozen, its own or one above it: none of it shown */
-      blocks.push({title:A.name,rows:(R.legend||[]).slice(0,8),src:R.source||'',drawn:[]});
+      var A=BIM_DG_AN[i],R=D.runs[A.id],on=!!R&&bimDgDiags(A.id).some(function(o){return bimLayerShown(o);});   /* a layer off or frozen, its own or one above it: none of it shown */
+      if(on&&!seen[A.id]){if(tick===null)tick=A3D_DG.tick=(A3D_DG.tick||0)+1;at[A.id]=tick;}   /* shown again: the most recent */
+      seen[A.id]=on;
+      if(on)blocks.push({title:A.name,rows:(R.legend||[]).slice(0,8),src:R.source||'',drawn:[],at:at[A.id]||0,i:blocks.length});
     }
-    if(!blocks.length)return;
+    if(!blocks.length)return null;
     sr=bimSafeViewRect();   /* asked only with a key to place, as the other keys do: it warns when the chrome covers the view */
-    if(sr.w<620)return;   /* a phone's view: each analysis's row in Analyze carries its key */
+    if(sr.w<620)return null;   /* a phone's view: each analysis's row in Analyze carries its key */
     ctx.save();
     try{
       var pad=8,rowH=15,sw=12,maxW=Math.round(Math.min(300,Math.max(170,sr.w*0.3))),inner=maxW-2*pad,j,b;
-      /* the key laid out for the first nb blocks, with or without their sources; __acad3dV165: what does
-         not fit the view goes -- the sources first, then the last blocks, a line saying how many */
-      var lay=function(withSrc,nb){
+      var lay=function(withSrc,list){   /* the key for these blocks, with or without their sources */
         var ops=[],y=pad,x,w=0,k;
-        for(k=0;k<nb;k++){
-          b=blocks[k];if(k)y+=6;b.drawn=[];b.tt='';b.st='';
+        for(k=0;k<list.length;k++){
+          b=list[k];if(k)y+=6;b.drawn=[];b.tt='';b.st='';
           ctx.font='bold 11px sans-serif';
           var tt=bimDgFit(ctx,b.title,inner);ops.push({k:'t',t:tt,x:pad,y:y+rowH/2});b.tt=tt;w=Math.max(w,ctx.measureText(tt).width);y+=rowH;
           ctx.font='11px sans-serif';x=pad;
@@ -19841,15 +19854,27 @@ try{
           if(withSrc&&b.src){ctx.font='10px sans-serif';var st=bimDgFit(ctx,b.src,inner);ops.push({k:'s',t:st,x:pad,y:y+rowH/2-1});b.st=st;w=Math.max(w,ctx.measureText(st).width);y+=rowH-2;}
         }
         var mt='';
-        if(nb<blocks.length){ctx.font='10px sans-serif';mt=bimDgFit(ctx,'+ '+(blocks.length-nb)+' more: their keys are in Analyze',inner);y+=6;ops.push({k:'s',t:mt,x:pad,y:y+rowH/2-1});w=Math.max(w,ctx.measureText(mt).width);y+=rowH-2;}
-        return {ops:ops,w:Math.ceil(Math.min(maxW,w+2*pad)),h:y+pad,src:withSrc,nb:nb,mt:mt};
+        if(list.length<blocks.length){ctx.font='10px sans-serif';mt=bimDgFit(ctx,'+ '+(blocks.length-list.length)+' more: their keys are in Analyze',inner);y+=6;ops.push({k:'s',t:mt,x:pad,y:y+rowH/2-1});w=Math.max(w,ctx.measureText(mt).width);y+=rowH-2;}
+        return {ops:ops,w:Math.ceil(Math.min(maxW,w+2*pad)),h:y+pad,src:withSrc,list:list,mt:mt};
       };
       var Y=sr.y+12;
       if(sr.x+sr.w-12>W-84&&Y<108)Y=108;   /* under the north arrow */
-      var avail=sr.y+sr.h-12-Y,LY=lay(true,blocks.length);
-      if(LY.h>avail)LY=lay(false,blocks.length);
-      while(LY.h>avail&&LY.nb>1)LY=lay(false,LY.nb-1);
-      var ops=LY.ops,w=LY.w,h=LY.h,X=sr.x+sr.w-w-12;
+      var avail=sr.y+sr.h-12-Y,LY=lay(true,blocks),gone={},n=0,
+        drop=blocks.slice().sort(function(p,q){return (p.at-q.at)||(q.i-p.i);});
+      if(LY.h>avail)LY=lay(false,blocks);
+      while(LY.h>avail&&n<blocks.length-1){gone[drop[n++].i]=1;LY=lay(false,blocks.filter(function(bb){return !gone[bb.i];}));}
+      LY.X=sr.x+sr.w-LY.w-12;LY.Y=Y;LY.all=blocks.length;
+      return LY;
+    }finally{ctx.restore();}
+  }
+  function drawDiagramLegend(ctx,V,W,H){
+    A3D_DG.legend=null;
+    var LY=(A3D_DG.lyCtx===ctx&&A3D_DG.lyFrame===A3D.frames)?A3D_DG.ly:bimDgLegendLayout(ctx,W,H);   /* laid out already this frame, as the words were placed */
+    A3D_DG.lyCtx=null;
+    if(!LY)return;
+    ctx.save();
+    try{
+      var sw=12,ops=LY.ops,w=LY.w,h=LY.h,X=LY.X,Y=LY.Y,i;
       ctx.globalAlpha=1;ctx.fillStyle='rgba(22,26,32,0.9)';ctx.fillRect(X,Y,w,h);
       ctx.strokeStyle='rgba(255,255,255,0.18)';ctx.lineWidth=1;ctx.strokeRect(X+0.5,Y+0.5,w-1,h-1);
       ctx.beginPath();ctx.rect(X,Y,w,h);ctx.clip();
@@ -19864,7 +19889,7 @@ try{
         else{ctx.setLineDash(rr.kind==='dash'?[4,3]:[]);ctx.beginPath();ctx.moveTo(ox,oy);ctx.lineTo(ox+sw,oy);ctx.stroke();ctx.setLineDash([]);}
         ctx.font='11px sans-serif';ctx.fillStyle='#e8edf2';ctx.fillText(op.t,ox+sw+4,oy);
       }
-      A3D_DG.legend={box:[X,Y,w,h],blocks:blocks.slice(0,LY.nb).map(function(bb){return {title:bb.tt,rows:bb.drawn,src:bb.st||''};}),more:blocks.length-LY.nb,moreText:LY.mt,sources:LY.src};   /* what was drawn, as drawn */
+      A3D_DG.legend={box:[X,Y,w,h],blocks:LY.list.map(function(bb){return {title:bb.tt,rows:bb.drawn,src:bb.st||''};}),more:LY.all-LY.list.length,moreText:LY.mt,sources:LY.src};   /* what was drawn, as drawn */
     }catch(eL){console.warn('[BIM] The site analysis legend could not be drawn',eL);}
     ctx.restore();
   }
@@ -20985,6 +21010,37 @@ try{
     for(j=0;j<big.length;j++){var dx=big[j][0]-S.c[0],dz=big[j][1]-S.c[1];if(dx*dx+dz*dz<bd){bd=dx*dx+dz*dz;best=big[j];}}
     return best;
   }
+  /* each zone's label well inside it and apart from the others' and the site's, so zones that cross the
+     square together are not all labelled by the site: of the points every 5 m within 120 m of the site
+     inside the zone, those nearly as deep in as any (four fifths of the deepest, at most 6 m), and of
+     those the one farthest from the labels placed so far, out to 50 m, then the nearest the site; the
+     most hazardous zone first. A zone with no such point is labelled as before (bimLandLabelAt). */
+  function bimLandLabelSpots(zones,S){
+    var out={},taken=[[S.c[0],S.c[1]]],i,j,k,m,gx,gz,
+      order=zones.slice().sort(function(a,b){return BIM_LAND_ZORDER.indexOf(a.zc)-BIM_LAND_ZORDER.indexOf(b.zc);});
+    for(i=0;i<order.length;i++){
+      var z=order[i],R=z.rings,x0=Infinity,x1=-Infinity,z0=Infinity,z1=-Infinity,cand=[],deep=0,best=null,bs=-Infinity;
+      for(j=0;j<R.length;j++)for(k=0;k<R[j].length;k++){x0=Math.min(x0,R[j][k][0]);x1=Math.max(x1,R[j][k][0]);z0=Math.min(z0,R[j][k][1]);z1=Math.max(z1,R[j][k][1]);}
+      for(gx=-120;gx<=120;gx+=5)for(gz=-120;gz<=120;gz+=5){
+        var q=[S.c[0]+gx,S.c[1]+gz],c=Infinity;
+        if(gx*gx+gz*gz>14400||q[0]<x0||q[0]>x1||q[1]<z0||q[1]>z1||!bimLandInRings(q,R))continue;
+        for(j=0;j<R.length;j++)for(k=0,m=R[j].length-1;k<R[j].length;m=k++)c=Math.min(c,bimPointSegDist(q[0],q[1],R[j][m][0],R[j][m][1],R[j][k][0],R[j][k][1]));
+        cand.push([q,c]);if(c>deep)deep=c;
+      }
+      var need=Math.min(6,deep*0.8);
+      for(j=0;j<cand.length;j++){
+        if(cand[j][1]<need)continue;
+        var p2=cand[j][0],d=Infinity,sc;
+        for(k=0;k<taken.length;k++)d=Math.min(d,Math.sqrt((p2[0]-taken[k][0])*(p2[0]-taken[k][0])+(p2[1]-taken[k][1])*(p2[1]-taken[k][1])));
+        sc=Math.min(d,50)-0.01*Math.sqrt((p2[0]-S.c[0])*(p2[0]-S.c[0])+(p2[1]-S.c[1])*(p2[1]-S.c[1]));
+        if(sc>bs){bs=sc;best=p2;}
+      }
+      if(!best)best=bimLandLabelAt(R,S);
+      out[z.key]=best;
+      if(best)taken.push(best);
+    }
+    return out;
+  }
   /* FEMA's zones around the site, cut to the square analysed, as rings in plan; the most hazardous one
      the site's centre is in */
   function bimLandFloodZones(S){
@@ -21020,9 +21076,10 @@ try{
     if(F.error&&!F.features)return {E:[],run:{note:'FEMA\'s map: '+F.error}};
     var feats=F.features||[],src='FEMA National Flood Hazard Layer ('+(F.host||'hazards.fema.gov')+'), '+F.fetched;
     function y3(q,lift){var y=D?bimLandAt(D,q[0],q[1]):null;return [bimLandR(q[0]),bimLandR((y===null?S.y:y)+lift),bimLandR(q[1])];}
+    var spots=bimLandLabelSpots(Z0.zones,S);
     Z0.zones.forEach(function(z){
       var p=z.p,zc=z.zc,Z=BIM_LAND_ZONES[zc],rings=z.rings;
-      var zn=String(p.FLD_ZONE||p.fld_zone||'').replace(/^\s+|\s+$/g,''),bfe=bimLandBfe(p),lp=bimLandLabelAt(rings,S),sub=String(p.ZONE_SUBTY||p.zone_subty||'').replace(/^\s+|\s+$/g,'');
+      var zn=String(p.FLD_ZONE||p.fld_zone||'').replace(/^\s+|\s+$/g,''),bfe=bimLandBfe(p),lp=spots[z.key],sub=String(p.ZONE_SUBTY||p.zone_subty||'').replace(/^\s+|\s+$/g,'');
       E.push({k:z.key,name:'Flood zone '+zn+(zc==='floodway'?', floodway':''),g:{kind:'line',pts:[],bands:[{lv:Z.lv,col:Z.col,rings:rings.map(function(r2){return r2.map(function(q){return y3(q,0.05);});})}]},s:{fill:Z.col,fop:0.42},
         lb:lp?[{t:'Zone '+zn+(zc==='floodway'?', floodway':(zc==='x02'?' (0.2%)':''))+(bfe?', BFE '+bfe.short:''),p:y3(lp,0.1),sz:10,col:'#d9e9ff',pri:3}]:[],
         info:{title:Z.name+': zone '+zn,rows:[['Zone',zn+(sub?' ('+sub.toLowerCase()+')':'')],['Base flood elevation',bfe?bfe.text:'not given'],['Special flood hazard area',String(p.SFHA_TF||p.sfha_tf||'').toUpperCase()==='T'?'yes':'no']],
@@ -49619,8 +49676,9 @@ try{
   window.__a3dLandBfe=function(p){return bimLandBfe(p||{});};
   window.__a3dLandUS=function(lat,lon){return bimLandUS({lat:lat,lon:lon});};
   window.__a3dLandWarm=function(d8,lat){return bimLandWarm(d8,lat);};
+  window.__a3dDgLabelBoxes=function(){return (A3D_DG.labelBoxes||[]).map(function(b){return b.slice();});};
   window.__acad3dV165='landgrid,landfetch,ownsurface,contextfallback,horn,marchingsquares,contours,hypsometric,slopeclasses,aspectwarmth,priorityflood,d8,strahler,catchments,divides,'+
-    'upstream,exits,ponds,fema,floodzones,bfe,sitezone,bandrings,bandgroups,bandpick,lines,coverhidden,legendcompact,landstep,landfindings';
+    'upstream,exits,ponds,fema,floodzones,bfe,sitezone,bandrings,bandgroups,bandpick,lines,coverhidden,legendcompact,legendrecent,keepclear,labelspots,landstep,landfindings';
   window.__acad3dV164='diagobjects,live,editable,keptedits,deletedstay,newer,orphans,copies,reset,resetanalysis,layers,sublayers,legend,underover,bandsbatched,pick,transform,props,'+
     'frame,sunpaths,sunnow,shadows,winds,seasons,secmean,strongest,rose,isovist,views,noise,crtn,fhwa,dinbands,rails,timezone,'+
     'analyzesite,address,steps,onestep,radius,zoningstep,cards,command,removedstages,removeddefine,removedtyped,removedphotos,removedpins,removedchecklists';

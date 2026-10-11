@@ -23,8 +23,10 @@ VARIANTS = {
     # RE-ANCHORED FOR V159: the button carries its phone label (data-short) since V149
     'no_rail_button': [("      '<button type=\"button\" class=\"a3d-railbtn\" data-tab=\"analyze\" data-short=\"Analyze\" title=\"Analyze\" aria-label=\"Analyze\">'+   /* __acad3dV141 */\n      bimRailIcon('analyze')+'</button>'+\n", "")],
     # RE-ANCHORED FOR V159: the analyses are one of Analyze's two views
-    'panel_not_built': [("    if(shell.dataset.tab==='analyze'&&!saView&&!panel.querySelector('.a3d-analyze-wrap')){   /* __acad3dV141 */", "    if(false){")],
-    'panel_stale': [("    bimAnalyzeRefresh();   /* __acad3dV141 */\n", "")],
+    # RE-ANCHORED IN V165: the guard reads the tab and the panel only (V162)
+    'panel_not_built': [("    if(shell.dataset.tab==='analyze'&&!panel.querySelector('.a3d-analyze-wrap')){   /* __acad3dV141", "    if(false){   /* __acad3dV141")],
+    # RE-ANCHORED IN V165: the call's note names the site analysis too (V162)
+    'panel_stale': [("    bimAnalyzeRefresh();   /* __acad3dV141; __acad3dV162: the site analysis with it */\n", "")],
     'run_not_wired': [("    if(k==='structure:run')bimAnalyzeCommand();", "    if(k==='structure:run'){}")],
     'open_keeps_selection': [("      A3D.sel=null;A3D.sel2=null;A3D.selSet=[];\n      bimPropReveal(g);", "      bimPropReveal(g);")],
     'frame_run_always_enabled': [("off:fr?'':'Place columns and beams first'},\n        {act:'structure:off'", "off:''},\n        {act:'structure:off'")],
