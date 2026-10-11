@@ -14389,3 +14389,13 @@ traffic stress, catchments), acoustic analysts (CRTN, CNOSSOS-EU, DIN 18005's co
 - Shadows cast on the site by the buildings around it (the analysis draws the project's own).
 - Views from each facade, and over the terrain.
 - Wind comfort (Lawson's criteria) or any airflow around the buildings.
+
+### Full regression and state after V164
+
+121 suites, 5521 checks, 0 failures. The first full run found one failure, V120's: the legend's
+warning on every paint (under Found). Patches 164a, 164b and 164c rebuild the build byte for byte
+from `Phase/canvas_v10.html.bak_phase164_pre`. The diff is ES5-clean and ASCII.
+
+    canvas_v10.html   3041149 bytes
+    sha256            8443b9f531a762f90e397c6e8f117d63a4ebd8b7ac687020f9d31a11a831e097
+    markers           __acad3dV60 ... __acad3dV164, __acad3dV134d (and the 133d to 133f markers)
