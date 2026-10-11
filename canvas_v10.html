@@ -19725,10 +19725,10 @@ try{
     if(D.legendOff||sr.w<620)return;
     var blocks=[],i;
     for(i=0;i<BIM_DG_AN.length;i++){
-      var A=BIM_DG_AN[i],R=D.runs[A.id],ly=bimLayerById(D.layers[A.id]);
-      if(!R||!ly||!bimLayerEff(ly).on||bimLayerEff(ly).frozen)continue;
-      if(!bimDgDiags(A.id).some(function(o){return bimLayerShown(o);}))continue;
-      blocks.push({title:A.name,rows:(R.legend||[]).slice(0,8),src:R.source||''});
+      var A=BIM_DG_AN[i],R=D.runs[A.id];
+      if(!R)continue;
+      if(!bimDgDiags(A.id).some(function(o){return bimLayerShown(o);}))continue;   /* a layer off or frozen, its own or one above it: none of it shown */
+      blocks.push({title:A.name,rows:(R.legend||[]).slice(0,8),src:R.source||'',drawn:[]});
     }
     if(!blocks.length)return;
     ctx.save();
@@ -19737,15 +19737,15 @@ try{
       for(i=0;i<blocks.length;i++){
         b=blocks[i];if(i)y+=6;
         ctx.font='bold 11px sans-serif';
-        var tt=bimDgFit(ctx,b.title,inner);ops.push({k:'t',t:tt,x:pad,y:y+rowH/2});w=Math.max(w,ctx.measureText(tt).width);y+=rowH;
+        var tt=bimDgFit(ctx,b.title,inner);ops.push({k:'t',t:tt,x:pad,y:y+rowH/2});b.tt=tt;w=Math.max(w,ctx.measureText(tt).width);y+=rowH;
         ctx.font='11px sans-serif';x=pad;
         for(j=0;j<b.rows.length;j++){
           var r=b.rows[j],nm=r.short||r.name,iw=sw+4+ctx.measureText(nm).width;
           if(x>pad&&x+iw>pad+inner){x=pad;y+=rowH;}
-          ops.push({k:'r',r:r,t:nm,x:x,y:y+rowH/2});w=Math.max(w,x+iw-pad);x+=iw+10;
+          ops.push({k:'r',r:r,t:nm,x:x,y:y+rowH/2});b.drawn.push(nm);w=Math.max(w,x+iw-pad);x+=iw+10;
         }
         if(b.rows.length)y+=rowH;
-        if(b.src){ctx.font='10px sans-serif';var st=bimDgFit(ctx,b.src,inner);ops.push({k:'s',t:st,x:pad,y:y+rowH/2-1});w=Math.max(w,ctx.measureText(st).width);y+=rowH-2;}
+        if(b.src){ctx.font='10px sans-serif';var st=bimDgFit(ctx,b.src,inner);ops.push({k:'s',t:st,x:pad,y:y+rowH/2-1});b.st=st;w=Math.max(w,ctx.measureText(st).width);y+=rowH-2;}
       }
       w=Math.ceil(Math.min(maxW,w+2*pad));var h=y+pad,X=sr.x+sr.w-w-12,Y=sr.y+12;
       if(X+w>W-84&&Y<108)Y=108;   /* under the north arrow */
@@ -19763,7 +19763,7 @@ try{
         else{ctx.setLineDash(rr.kind==='dash'?[4,3]:[]);ctx.beginPath();ctx.moveTo(ox,oy);ctx.lineTo(ox+sw,oy);ctx.stroke();ctx.setLineDash([]);}
         ctx.font='11px sans-serif';ctx.fillStyle='#e8edf2';ctx.fillText(op.t,ox+sw+4,oy);
       }
-      A3D_DG.legend={box:[X,Y,w,h],blocks:blocks.map(function(bb){return {title:bb.title,rows:bb.rows.map(function(r2){return r2.short||r2.name;}),src:bb.src};})};
+      A3D_DG.legend={box:[X,Y,w,h],blocks:blocks.map(function(bb){return {title:bb.tt,rows:bb.drawn,src:bb.st||''};})};   /* what was drawn, as drawn */
     }catch(eL){console.warn('[BIM] The site analysis legend could not be drawn',eL);}
     ctx.restore();
   }

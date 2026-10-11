@@ -326,6 +326,15 @@ async def run():
             site = await safe("()=>window.__a3dDgSite()") or {}
             ck(site.get('c') == [0, 0] and abs(site.get('r', 0) - math.hypot(24, 20) / 2) < 1e-9 and site.get('Rc') == 30 and site.get('own') == 1 and site.get('top') == 24 and site.get('ctxR') == 300,
                "the site: the building's centre, its half-diagonal, a 30 m ring, its top 24 m, the context 300 m")
+            # a wing 20 m east: the two together 62 by 20 m, so the ring is past its 30 m floor
+            await safe("""()=>window.__a3dPushTestObj({id:'WING',t:'solid',name:'Wing',pos:[0,0,0],layer:'layer-0',
+              mesh:{v:[[30,0,-10],[50,0,-10],[50,0,10],[30,0,10],[30,10,-10],[50,10,-10],[50,10,10],[30,10,10]],f:[[0,3,2,1],[4,5,6,7],[0,1,5,4],[1,2,6,5],[2,3,7,6],[3,0,4,7]]}})""")
+            s2 = await safe("()=>window.__a3dDgSite()") or {}
+            r2 = math.hypot(62, 20) / 2
+            ck(s2.get('own') == 2 and abs(s2.get('r', 0) - r2) < 1e-9 and s2.get('Rc') == max(30, math.ceil(r2 * 1.7 / 5) * 5) == 60,
+               "a wing added: the ring grows to 60 m, 1.7 times the half-diagonal (%.1f m) to the next 5 m (%s)" % (r2, s2.get('Rc')))
+            await safe("()=>window.__a3dDel('WING')")
+            ck((await safe("()=>window.__a3dDgSite()") or {}).get('Rc') == 30, "and back to 30 m without it")
             ring = await by_key('ring')
             ck(ring and len(ring['dg']['g']['pts']) == 96 and max(abs(dist2(p) - 30) for p in ring['dg']['g']['pts']) < 1e-9, "the compass ring: 96 points 30 m from the centre")
             ck([k for k in ('dist:100', 'dist:200', 'dist:300', 'dist:400') if await by_key(k)] == ['dist:100', 'dist:200', 'dist:300'], "distance rings every 100 m to the context's edge")
@@ -600,6 +609,7 @@ async def run():
             ck(all(v.get('made') == 0 and v.get('updated') == v.get('total') for v in r.values()) and await safe("()=>window.__a3dUndoDepth()") == u + 1, "updated in place, nothing new; one undo step")
             e200 = await by_key('dist:200')
             await safe("(id)=>window.__a3dDgSet(id,'stroke','#ff0000')", e200['id'])
+            await safe("(id)=>window.__a3dMoveObjects([id],0,0,4)", e200['id'])
             e2 = await by_key('ring2')
             await safe("(id)=>window.__a3dMoveObjects([id],5,0,0)", e2['id'])
             etk = await by_key('ticks')
@@ -617,13 +627,14 @@ async def run():
             cp = [x for x in lst.values() if '#' in x['k']]
             ck(len(cp) == 1 and cp[0]['mine'] and cp[0]['k'].startswith('dist:100#'), "a mirror copy is yours: a key of its own, nothing to reset to")
             await safe("()=>window.__a3dDgRun('frame')")
-            ck((await by_key('dist:200'))['dg']['s']['stroke'] == '#ff0000' and (await by_key('ring2'))['pos'][0] == 5, "run again: the colour and the move are kept")
+            ck((await by_key('dist:200'))['dg']['s']['stroke'] == '#ff0000' and (await by_key('dist:200'))['pos'] == [0, 0, 4] and (await by_key('ring2'))['pos'][0] == 5, "run again: the colour and the moves are kept")
             ck((await by_key('ticks'))['dg']['g']['pts'][0] != b4[etk['id']]['dg']['g']['pts'][0] and len([x for x in await diags('frame') if '#' in x['dg']['k']]) == 1, "the turn and the copy too")
             ck(await by_key('dist:300') is None and 'dist:300' in (await state())['runs']['frame']['gone'], "what you deleted stays deleted")
             l2 = {x['k']: x for x in await safe("()=>window.__a3dDgList('frame')") or []}
             ck(not l2['dist:200']['newer'] and [x for x in l2.values() if '#' in x['k']][0]['orphan'], "nothing newer to offer; the copy, which the analysis does not draw, kept")
             await safe("(id)=>window.__a3dDgReset(id)", (await by_key('dist:200'))['id'])
-            ck((await by_key('dist:200'))['dg']['s']['stroke'] == '#9aa7b4', "Reset gives an element back its analysis's look")
+            d200 = await by_key('dist:200')
+            ck(d200['dg']['s']['stroke'] == '#9aa7b4' and d200['pos'] == [0, 0, 0], "Reset gives an element back its analysis's look and its place (%s)" % d200['pos'])
             u = await safe("()=>window.__a3dUndoDepth()")
             await safe("()=>window.__a3dDgResetAnalysis('frame')")
             fr = {o['dg']['k']: o for o in await diags('frame')}
@@ -638,6 +649,10 @@ async def run():
             ck(abs(n2['p'][0] - 36 * math.sin(math.radians(20))) < 1e-9 and abs(n2['p'][2] + 36 * math.cos(math.radians(20))) < 1e-9, "true north turned 20°: the compass follows")
             lr = {x['k']: x for x in await safe("()=>window.__a3dDgList('frame')") or []}
             ck(lr['ring']['edited'] and (await by_key('ring'))['dg']['s']['stroke'] == '#00ff00', "the restyled ring is kept as you left it")
+            ck(lr['ring']['newer'] and not lr['ring2']['newer'], "and marked: turned, the analysis would draw the ring differently now; the outer ring, redrawn, is as drawn")
+            await safe("(id)=>{window.__a3dSelectFor([id]);window.__a3dRefreshProps();}", (await by_key('ring'))['id'])
+            ck(await safe("()=>/would draw it differently now/.test(document.getElementById('a3d-propsbody').innerText)&&!document.querySelector('#a3d-propsbody [data-dgact=\"reset\"]').disabled") is True,
+               "Properties says so, and Reset is ready to take the analysis's version")
             await safe("""()=>{window.__a3dSelectFor([]);window.__a3dSetPropTab('site');window.__a3dRefreshProps();var e=document.querySelector('#a3d-propsbody input[data-propmodel="truenorth"]');e.value='0';e.dispatchEvent(new Event('change',{bubbles:true}));}""")
             await safe("()=>window.__a3dDgResetAnalysis('frame')")
             saved = await objs()
@@ -725,10 +740,11 @@ async def run():
             li = await safe("()=>[].map.call(document.querySelectorAll('[data-sasteps] li'),function(l){return l.className;})") or []
             ck(len(li) == 6 and 's-ok' in li[0] and 's-skip' in li[4], "the last run's steps stay listed")
             ck((await panel('[data-saact="analyze"]') or [''])[0] == 'Analyze site again', "the button: Analyze site again")
-            await safe("()=>{var s=document.querySelector('[data-anzsearch]');s.value='noise';s.dispatchEvent(new Event('input',{bubbles:true}));}")
+            # 'seismic' is in Environmental risk's question, nowhere in the site's own words (its steps name the noise)
+            await safe("()=>{var s=document.querySelector('[data-anzsearch]');s.value='seismic';s.dispatchEvent(new Event('input',{bubbles:true}));}")
             await page.wait_for_timeout(200)
-            ck(await safe("()=>!document.querySelector('[data-anzsec=\"site\"]').hasAttribute('hidden')&&!document.querySelector('[data-anzcard=\"dgnoise\"]').hasAttribute('hidden')") is True,
-               "a search: the site and its button stay, the noise row is found")
+            ck(await safe("()=>{var st=document.querySelector('[data-anzsec=\"site\"]');return !/seismic/i.test(st.textContent)&&!st.hasAttribute('hidden')&&!!st.querySelector('[data-saact=\"analyze\"]')&&!document.querySelector('[data-anzcard=\"dgnoise\"]').hasAttribute('hidden');}") is True,
+               "a search: the site and its button stay though none of its words match; the noise row is found in its category")
             await safe("()=>{var s=document.querySelector('[data-anzsearch]');s.value='';s.dispatchEvent(new Event('input',{bubbles:true}));}")
 
             # ---------------------------------------------------------------------------------

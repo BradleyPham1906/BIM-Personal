@@ -34,7 +34,7 @@ VARIANTS = {
     'shadows_not_drawn': [("    if(g.kind==='live'){bimDgDrawShadow(ctx,V,W,H,o,a);return;}", "    if(g.kind==='live'){return;}")],
     'context_casts': [("      if(!o||o.context)return false;", "      if(!o)return false;")],
     'legend_ignores_off': [("    if(D.legendOff||sr.w<620)return;", "    if(sr.w<620)return;")],
-    'legend_hidden_layer': [("      if(!R||!ly||!bimLayerEff(ly).on||bimLayerEff(ly).frozen)continue;\n      if(!bimDgDiags(A.id).some(", "      if(!R||!ly)continue;\n      if(!bimDgDiags(A.id).some(")],
+    'legend_hidden_layer': [("      if(!bimDgDiags(A.id).some(function(o){return bimLayerShown(o);}))continue;   /* a layer off or frozen", "      if(false)continue;   /* a layer off or frozen")],
     'legend_on_phone': [("    if(D.legendOff||sr.w<620)return;", "    if(D.legendOff)return;")],
     'legend_full_names': [("          var r=b.rows[j],nm=r.short||r.name,iw=", "          var r=b.rows[j],nm=r.name,iw=")],
     'props_generic': [("    if(bimIsDiag(o)){bimRenderInto(el.propsbody,bimDgPropsHtml(o));return;}   /* __acad3dV164: a site analysis element */\n", "")],
