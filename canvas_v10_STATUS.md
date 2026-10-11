@@ -14341,7 +14341,7 @@ traffic stress, catchments), acoustic analysts (CRTN, CNOSSOS-EU, DIN 18005's co
 - Amended, each AMENDED FOR V164: V141 and V148 (the six new rows in their categories), V158 (the
   stages, Define, findings by hand, checklists, pins and photographs gone, with their hooks; Fill
   from the model's eight context findings; the phone's field and button; every finding's number
-  counted again by category), V159 (the site and its button head the list), V162 (the list's
+  counted again by category; the data's own red flag first), V159 (the site and its button head the list), V162 (the list's
   order; the search's site and finding; a finding's title read apart from its number; the field
   being typed in is the zoning form's), V163 (a later version).
 - **Falsified by `Phase/falsify_phase164.py`:** 67 variants. The first run caught 61 (1246 s, 3
@@ -14361,7 +14361,25 @@ traffic stress, catchments), acoustic analysts (CRTN, CNOSSOS-EU, DIN 18005's co
     search that filtered the site kept it. It searches for "seismic" now, and asks that none of the
     site's words hold it.
 
-  The full run on the final suite and build: 67 of 67 (1464 s, 3 workers).
+  The full run on that suite and build: 67 of 67 (1464 s, 3 workers). Two variants came later,
+  with the earlier phases' falsifications: `typed_class_kept` (the guard on a class set by hand,
+  back) and `noted_dropped` (moved from V158's). The full run on the final suite and build: 69 of
+  69 (1569 s, 3 workers).
+- **The earlier phases' falsifications, on the final build:**
+  - `falsify_phase158.py`: 20 of 20 (102 s). Twelve variants are retired with their reasons --
+    eleven whose code went with the stages, typed findings, checklists, pins and photographs, and
+    `refill_overwrites_class` -- and `no_command` is re-anchored. The first run on V164 caught 18
+    of 21. `refill_overwrites_class` guarded a class set by hand, which V164 no longer keeps;
+    `noted_dropped` needs a note, which only a project from before V164 holds (moved to V164's
+    script, whose suite opens one); `numbered_globally` passed because the suite read only the
+    first finding's number, 1.1 either way (every number is counted again now).
+    `no_red_flags_block`, retired at first because the suite typed its red flag, is back: the data
+    raises one, a mass over the zoning's height limit, and the red flags must come first.
+  - `falsify_phase162.py`: 59 of 59 (784 s); two re-anchored, `version_old` retired. The first run
+    caught 58: `words_run_together` (a part's words read with no space between its nodes) passed
+    once Define went, whose fields were what the search read that way. The suite searches for a
+    finding's title now, which follows its number.
+  - `falsify_phase163.py`: 53 of 53 (728 s); `version_old` retired, its anchor the old version.
 
 ### Not done
 

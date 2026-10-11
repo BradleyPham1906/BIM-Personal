@@ -177,9 +177,10 @@ when it starts (V111 to V138 went to other work; V139 to V181 are in NOW).
 - Each element is the analysis's and yours: moved, turned, restyled or relabelled it is kept
   through a re-run; deleted it stays deleted; Reset gives it back. Properties says what it shows,
   how, and from where. The stages, Define, typed findings, photographs, pins and checklists are gone.
-- **Checked** against the standards and geometry worked out again in Python (CRTN, ISO 9613-2, the
-  sight lines, the wind binned again, the sun's declination), with every service answered by a
-  fixture and each one broken in turn.
+- **Checked** in 171 checks against the standards and geometry worked out again in Python (CRTN,
+  ISO 9613-2, the sight lines, the wind binned again, the sun's declination), with every service
+  answered by a fixture and each one broken in turn, and a project from before V164 opened; 69
+  falsify variants, all caught; six older suites amended.
 
 Phase 163 (V163), **SketchUp files open as the app's own objects**.
 - The owner asked for openskp's code ("they opensource sketchup like app ... make it work in our

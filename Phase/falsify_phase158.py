@@ -45,9 +45,9 @@ VARIANTS = {
     # 'pins_not_hidden': [("    if(!s||!s.pins||!Array.isArray(s.findings)||A3D.section)return;", "    if(!s||!Array.isArray(s.findings)||A3D.section)return;")],
     # RETIRED IN V164: 'photo_full_size' -- a photograph was kept at most 960 px; V164 removed photographs.
     # 'photo_full_size': [("var k=Math.min(1,BIM_SA_PHOTO_PX/Math.max(im.width,im.height))", "var k=1")],
-    # RETIRED IN V164: 'no_red_flags_block' -- the suite made its red flag by typing a finding, which V164 removed;
-    # the data's findings in its fixture hold none (V164's suite reads the list's order).
-    # 'no_red_flags_block': [("    if(R.length)h+='<div class=\"a3d-saflags\">", "    if(false)h+='<div class=\"a3d-saflags\">")],
+    # RESTORED IN V164: the suite made its red flag by typing a finding, which V164 removed; it has the data raise one now
+    # (a mass over the zoning's height limit). Re-anchored: the block carries data-anzsec since V162.
+    'no_red_flags_block': [("    if(R.length)h+='<div class=\"a3d-saflags\" data-anzsec=\"flags\">", "    if(false)h+='<div class=\"a3d-saflags\" data-anzsec=\"flags\">")],
     # RETIRED IN V164: 'panel_field_ignored' -- a finding's field typed in the panel was kept; V164 removed typing findings.
     # 'panel_field_ignored': [("      if((k=e.getAttribute('data-saff'))){var i=k.lastIndexOf(':');bimSaSet(k.slice(0,i),k.slice(i+1),e.value);return;}", "")],
     'phone_small_fields': [(".a3d-sa select,.a3d-sa input[type=text],.a3d-sa input[type=date],.a3d-sa textarea{min-height:36px;font-size:16px}", "")],

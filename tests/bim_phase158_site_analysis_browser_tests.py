@@ -243,6 +243,22 @@ async def run():
             # AMENDED FOR V162: the one list's count says the analyses on as well
             ck(re.search(r'class="a3d-anzcount">\d+ findings( \u00b7 \d+ on)?<', h) is not None, "the count says the findings (%s)" % re.findall(r'a3d-anzcount">([^<]*)<', h))
             ck('Property_1, 600 m' in h, "the boundary: the property and its area")
+            # AMENDED FOR V164: no red flag is typed now, so the data raises one -- a mass on the lot 15 m tall, the
+            # zoning's limit 10 m (V160's check of the design) -- and the red flags come first
+            await safe("(a)=>window.__a3dZnSet(a[0],a[1])", ['maxH', '10'])
+            bid = await safe("(a)=>window.__a3dAdd('box',{Length:a[0],Width:a[1],Height:a[2]}).id", [10 / 0.35, 10 / 0.35, 15 / 0.35])
+            await safe("(a)=>{var L=window.__a3dState().objs;L.forEach(function(o){if(o.id===a[0])o.pos=[a[1],a[2],a[3]];});window.__a3dTestSetObjs(L);}", [bid, 15, 7.5, 10])
+            await safe("(a)=>window.__a3dUsageAssign([a[0]],a[1])", [bid, 'use-res'])
+            await safe("()=>window.__a3dSaFill()")
+            rf = await fnd('legal.compliance')
+            fl = await safe("""()=>{var b=document.querySelector('.a3d-sa-wrap [data-anzsec="flags"]'),c=document.querySelector('.a3d-sa-wrap [data-anzsec="cats"]');
+              return b?{text:b.textContent,first:!!(b.compareDocumentPosition(c)&Node.DOCUMENT_POSITION_FOLLOWING)}:null;}""") or {}
+            ck(rf and rf['cls'] == 'redflag' and 'over the limit of 10.0 m' in rf['value'] and 'Red flags first' in fl.get('text', '') and 'Design against the zoning' in fl.get('text', '') and fl.get('first'),
+               "the data's red flag, the design over the height limit, listed first, above the categories (%s)" % (rf and rf['value']))
+            await safe("(i)=>window.__a3dDel(i)", bid)
+            await safe("(a)=>window.__a3dZnSet(a[0],a[1])", ['maxH', ''])
+            await safe("()=>window.__a3dSaFill()")
+            ck(await fnd('legal.compliance') is None and not await safe("()=>document.querySelector('.a3d-sa-wrap [data-anzsec=\"flags\"]')"), "the mass gone: the red flag with it")
             # AMENDED FOR V164: a category opens with a click; its findings are to read, not to edit
             await safe("()=>{var b=document.querySelector('.a3d-sa-wrap [data-satog=\"legal\"]');var c=b.closest('[data-sacat]');if(!c.classList.contains('open'))b.click();}")
             await page.wait_for_timeout(120)
