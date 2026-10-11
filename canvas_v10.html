@@ -1464,7 +1464,7 @@ body.a3d-tree-docked #a3d-leftpanel > .a3d-tree .a3d-palhd .a3d-palbtns{flex-wra
     ['ACCESSGET',['GETACCESS','CENSUSGET','WALKABILITYDATA'],'accessget','Get walk times to daily needs and transit, the streets the lot fronts, connectivity, and the census tract\'s people, from OpenStreetMap and the US Census (free, no key)'],   /* __acad3dV161 */
     ['WALKTIMES',['WALKSHED','ISOCHRONES','SERVICEAREA'],'walktimes','Draw the walk times (5, 10 and 15 minutes along the streets from the lot) on the plan, as a layer under Analysis'],
     ['CLIMATEGET',['GETCLIMATE','WEATHERDATA','CLIMATEDATA'],'climateget','Get the site\'s climate (ten years of ERA5), air quality (PM2.5) and earthquakes within 100 km, from free open sources'],   /* __acad3dV159 */
-    ['ANALYZESITE',['SITEANALYZE','RUNSITEANALYSIS','SAFILL','SITEANALYSISFILL','SAFROMMODEL'],'analyzesite','Analyze site: get what is around the site from free open data and draw each analysis in the model -- compass, sun paths, shadows, winds, views, noise, contours, slope, aspect, water flow, ponds, flood zones -- on Layers, Site analysis; one undo step'],   /* __acad3dV164; __acad3dV165 */
+    ['ANALYZESITE',['SITEANALYZE','RUNSITEANALYSIS','SAFILL','SITEANALYSISFILL','SAFROMMODEL'],'analyzesite','Analyze site: get what is around the site from free open data and draw each analysis in the model -- compass, sun paths, shadows, winds, views, noise, contours, slope, aspect, water flow, ponds, flood zones, street hierarchy, cycling stress, transit, walk times, daily needs, vehicle access -- on Layers, Site analysis; one undo step'],   /* __acad3dV164; __acad3dV165; __acad3dV166 */
     ['CONTEXTREMOVE',['CONTEXTCLEAR'],'contextremove','Remove the site context'],
     /* __acad3dV139: LOD and CityJSON */
     ['LODCHECK',['CHECKSOLIDS','VALIDATESOLIDS','VAL3DITY'],'lodcheck','Check every building: its LOD, and whether it is a valid solid (closed, outward, flat faces, one piece)'],
@@ -18354,7 +18354,7 @@ try{
   /* ================= __acad3dV142: the user guide, and versions =================
      The guide is in docs/ beside the app, on the same site (and in the repository, so it opens
      offline). Its command reference has a section per command, anchored by the command's id. */
-  var BIM_APP_VERSION={v:'V165',date:'2026-10-11'};   /* __acad3dV162; __acad3dV163; __acad3dV164; __acad3dV165 */
+  var BIM_APP_VERSION={v:'V166',date:'2026-10-12'};   /* __acad3dV162; __acad3dV163; __acad3dV164; __acad3dV165; __acad3dV166 */
   var BIM_DOCS_BASE='docs/';
   /* a command's anchor in the reference: cmd:LINE -> cmd-LINE, act:bim:wall -> act-bim-wall */
   function bimDocsAnchor(id){return String(id||'').replace(/[^A-Za-z0-9_-]+/g,'-');}
@@ -19049,6 +19049,9 @@ try{
   /* __acad3dV165: land and water */
   BIM_ANZ_GROUP_OF.dgcontours='landform';BIM_ANZ_GROUP_OF.dgslope='landform';BIM_ANZ_GROUP_OF.dgaspect='landform';
   BIM_ANZ_GROUP_OF.dgflow='water';BIM_ANZ_GROUP_OF.dgponds='water';BIM_ANZ_GROUP_OF.dgflood='water';
+  /* __acad3dV166: movement */
+  BIM_ANZ_GROUP_OF.dgstreets='access';BIM_ANZ_GROUP_OF.dgcycling='access';BIM_ANZ_GROUP_OF.dgtransit='access';
+  BIM_ANZ_GROUP_OF.dgwalk='access';BIM_ANZ_GROUP_OF.dgvehicles='access';BIM_ANZ_GROUP_OF.dgneeds='people';
   var BIM_ANZ_MODEL=['lens','areas','lod','stats','structure'];
   var BIM_ANZ_KEY='acad3dAnzOpen';
   var BIM_ANZ_CHEV='<svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3.5 10.5 8 6 12.5"/></svg>';
@@ -20559,29 +20562,35 @@ try{
     r.why='mixed traffic: '+kmh+', '+n+' lane'+(n===1?'':'s')+(res?(t.lane_markings==='no'?', no centre line':', a '+base+' street'):'')+' (LTS '+lv+')';
     return r;
   }
-  /* every way's level, and the crossings: where a street at LTS 2 or less meets a main street (trunk,
-     primary, secondary, tertiary) of another name with no signal or all-way stop within 20 m, the 2016
-     table by the main street's speed and lanes; past LTS 2 it bars the minor street's way through */
+  /* every way's level, and the crossings: where a way at LTS 2 or less, of any class, meets a main street
+     (trunk, primary, secondary, tertiary) of another name with no signal or all-way stop within 20 m, the
+     2016 table by the main street's speed and lanes; past LTS 2 it bars the calm way's way through */
   function bimMvStress(mv){
     var W=[],inc={},X=[],pen={},i,k;
     for(i=0;i<mv.w.length;i++){var rec=mv.w[i];W.push(bimMvLts(mv.t[rec[0]]||{}));for(k=1;k<rec.length;k++)(inc[rec[k]]||(inc[rec[k]]=[])).push(i);}
     var sig=(mv.xs||[]).filter(function(c){return /[sa]/.test(c[2]);});
     Object.keys(inc).forEach(function(key){
-      var nd=+key,L=inc[key],mains=[],minors=[];
+      var nd=+key,L=inc[key],mains=[],minors=[],seen={},cross=[],lvs={},lv=0,top=null;
       if(L.length<2)return;
-      L.forEach(function(wi){if(mains.indexOf(wi)>=0||minors.indexOf(wi)>=0)return;var t=mv.t[mv.w[wi][0]]||{};if(/^(trunk|primary|secondary|tertiary)$/.test(String(t.highway||'')))mains.push(wi);else if(W[wi].lts>=1&&W[wi].lts<=2)minors.push(wi);});
+      /* a calm way of any class may cross; a main street of another name is what it crosses */
+      L.forEach(function(wi){if(seen[wi])return;seen[wi]=1;var t=mv.t[mv.w[wi][0]]||{};if(/^(trunk|primary|secondary|tertiary)$/.test(String(t.highway||'')))mains.push(wi);if(W[wi].lts>=1&&W[wi].lts<=2)minors.push(wi);});
       if(!mains.length||!minors.length)return;
-      var mn=mains.map(function(wi){return String((mv.t[mv.w[wi][0]]||{}).name||'');});
-      minors=minors.filter(function(wi){var n=String((mv.t[mv.w[wi][0]]||{}).name||'');return !n||mn.indexOf(n)<0;});
-      if(!minors.length)return;
-      var x=mv.x[nd],z=mv.z[nd],ctl=sig.some(function(c){return (c[0]-x)*(c[0]-x)+(c[1]-z)*(c[1]-z)<=400;}),lv=0,top=null;
-      mains.forEach(function(wi){
-        var t=mv.t[mv.w[wi][0]]||{},base=String(t.highway),sp=bimMvSpeed(t,base),ln=bimMvLanes(t,base),
-          v=BIM_MV_XTAB[bimMvRow(sp.v)][ln.v<=3?0:(ln.v<=5?1:2)];
-        if(v>lv){lv=v;top={t:t,sp:sp,ln:ln};}
+      function nm(wi){return String((mv.t[mv.w[wi][0]]||{}).name||'');}
+      var x=mv.x[nd],z=mv.z[nd],ctl=sig.some(function(c){return (c[0]-x)*(c[0]-x)+(c[1]-z)*(c[1]-z)<=400;});
+      minors.forEach(function(m){
+        var best=0,bt=null;
+        mains.forEach(function(wi){
+          if(wi===m||(nm(wi)&&nm(wi)===nm(m)))return;
+          var t=mv.t[mv.w[wi][0]]||{},base=String(t.highway),sp=bimMvSpeed(t,base),ln=bimMvLanes(t,base),v=BIM_MV_XTAB[bimMvRow(sp.v)][ln.v<=3?0:(ln.v<=5?1:2)];
+          if(v>best){best=v;bt={t:t,sp:sp,ln:ln};}
+        });
+        if(!bt)return;
+        cross.push(m);lvs[m]=best;
+        if(best>lv){lv=best;top=bt;}
       });
-      X.push({n:nd,x:x,z:z,lts:ctl?1:lv,ctl:ctl,main:top,minors:minors});
-      if(!ctl&&lv>2)pen[nd]={lts:lv,minors:minors};
+      if(!cross.length)return;
+      X.push({n:nd,x:x,z:z,lts:ctl?1:lv,ctl:ctl,main:top,minors:cross});
+      if(!ctl&&lv>2)pen[nd]={lts:lv,minors:cross.filter(function(m){return lvs[m]>2;}),lv:lvs};
     });
     return {W:W,X:X,pen:pen};
   }
@@ -20611,8 +20620,8 @@ try{
       if(!(w>=1))continue;
       for(k=2;k<rec.length;k++){
         var a=rec[k-1],b=rec[k],l=bimMvSeg(mv,a,b),v=w,pa=ST.pen[a],pb=ST.pen[b];
-        if(pa&&pa.minors.indexOf(i)>=0)v=Math.max(v,pa.lts);
-        if(pb&&pb.minors.indexOf(i)>=0)v=Math.max(v,pb.lts);
+        if(pa&&pa.minors.indexOf(i)>=0)v=Math.max(v,pa.lv[i]);
+        if(pb&&pb.minors.indexOf(i)>=0)v=Math.max(v,pb.lv[i]);
         lvE[i+':'+k]=v;add(a,b,l,v);add(b,a,l,v);
       }
     }
@@ -20856,6 +20865,22 @@ try{
     }
     return o;
   }
+  /* where a driveway enters the lot: the first piece from outside it to inside it, cut at the lot line; or, where
+     it only touches it, its nearest node and the lot line's point there. With the outside end it comes from */
+  function bimMvEntryAt(mv,rec,L){
+    var k,j,best=null,bd=Infinity;
+    if(L.ring)for(k=2;k<rec.length;k++){
+      var a=rec[k-1],b=rec[k],ax=mv.x[a],az=mv.z[a],bx=mv.x[b],bz=mv.z[b],ia=bimAccLotDist(L,ax,az)===0,ib=bimAccLotDist(L,bx,bz)===0,tb=null;
+      if(ia===ib)continue;
+      for(j=0;j<L.ring.length;j++){var A=L.ring[j],B=L.ring[(j+1)%L.ring.length],t=bimAccSegX(ax,az,bx,bz,A[0],A[1],B[0],B[1]);if(t!==null&&(tb===null||(ib?t<tb:t>tb)))tb=t;}
+      if(tb!==null)return {at:[ax+tb*(bx-ax),az+tb*(bz-az)],out:ib?[ax,az]:[bx,bz]};
+    }
+    for(k=1;k<rec.length;k++){var d=bimAccLotDist(L,mv.x[rec[k]],mv.z[rec[k]]);if(d<bd){bd=d;best=k;}}
+    if(best===null)return null;
+    var at=bimMvLotPt(L,mv.x[rec[best]],mv.z[rec[best]]),nb=null,fd=-1;
+    [best-1,best+1].forEach(function(q){if(q>=1&&q<rec.length){var dq=bimAccLotDist(L,mv.x[rec[q]],mv.z[rec[q]]);if(dq>fd){fd=dq;nb=rec[q];}}});
+    return nb===null?null:{at:at,out:[mv.x[nb],mv.z[nb]]};
+  }
   /* ---- 6. vehicle access and parking ---- */
   function bimDgVehiclesRun(S){
     var A=A3D.site&&A3D.site.access,mv=bimMvOf(),E=[],y=S.y+0.1,leg=[],i,k;
@@ -20868,10 +20893,9 @@ try{
       for(k=1;k<rec.length;k++){var d=bimAccLotDist(L,mv.x[rec[k]],mv.z[rec[k]]);if(d<near){near=d;bk=k;}}
       if(near>40)continue;
       dw.push({rec:rec,t:t,d:near,k:bk});
-      if(near<=3){   /* it reaches the lot: an arrow into it where it does, from 10 m back along it */
-        var nd=rec[bk],pin=bimMvLotPt(L,mv.x[nd],mv.z[nd]),nb=bk>1?rec[bk-1]:(rec.length>bk+1?rec[bk+1]:null);
-        if(bk>1&&rec.length>bk+1&&bimAccLotDist(L,mv.x[rec[bk+1]],mv.z[rec[bk+1]])>bimAccLotDist(L,mv.x[rec[bk-1]],mv.z[rec[bk-1]]))nb=rec[bk+1];
-        if(nb!==null){var dx=mv.x[nb]-pin[0],dz=mv.z[nb]-pin[1],l=Math.sqrt(dx*dx+dz*dz)||1,f=Math.min(1,10/l);arrows.push({from:[pin[0]+dx*f,y+0.02,pin[1]+dz*f],to:[pin[0],y+0.02,pin[1]],t:t,prov:false});}
+      if(near<=3){   /* it reaches the lot: an arrow into it where it crosses the lot line, from up to 10 m back along it */
+        var hit=bimMvEntryAt(mv,rec,L);
+        if(hit){var dx=hit.out[0]-hit.at[0],dz=hit.out[1]-hit.at[1],l=Math.sqrt(dx*dx+dz*dz)||1,f=Math.min(1,10/l);arrows.push({from:[hit.at[0]+dx*f,y+0.02,hit.at[1]+dz*f],to:[hit.at[0],y+0.02,hit.at[1]],t:t,prov:false});}
       }
     }
     if(dw.length)E.push({k:'driveways',name:'Driveways and service roads at the lot',g:{kind:'lines',lines:dw.map(function(w){return bimMvPts(mv,w.rec,y);})},s:{stroke:'#aab3be',w:2,op:0.9},
@@ -21664,6 +21688,63 @@ try{
     refreshTree();refreshLayers();refreshProps();paint();saveSoon();
     return out;
   }
+  /* __acad3dV166: transit's PTAL in words, for its finding; access data from before V166 says what it said */
+  function bimMvPtalText(S){
+    var mv=S&&S.mv&&Array.isArray(S.mv.w)?S.mv:null,P;
+    if(!mv)return 'Stops and lines from OpenStreetMap; how often they run needs the operator\'s timetable (GTFS).';
+    P=bimMvPtal(S,mv);
+    if(!P.lines.length)return 'No bus stop within 8 minutes or station within 12: PTAL 0 by TfL\'s method.';
+    if(!P.have)return 'How often the '+bimSaN(P.lines.length,'line')+' within reach run is not mapped in OpenStreetMap, so no PTAL (TfL\'s method needs each line\'s headway).';
+    return 'PTAL '+(P.floor?'at least ':'')+P.band+' by TfL\'s method (index '+bimDispNum(P.ai,1)+')'+(P.floor?', from the '+P.have+' of '+P.lines.length+' lines whose headway OpenStreetMap maps':', from the headways OpenStreetMap maps')+'.';
+  }
+  /* __acad3dV166: what movement says about the site, as findings */
+  function bimMvAuto(){
+    var A=[],S=A3D.site&&A3D.site.access,mv=bimMvOf(),dt,src,i;
+    if(!S||!mv)return A;
+    dt=S.fetched;src=bimMvSrc(S);
+    try{
+      var ST=bimMvStress(mv),L=bimMvLotOf(S),R=bimMvReach(mv,ST,L),okL=0,allL=0,k,fr=[],worst=0,best=9;
+      for(i=0;i<mv.w.length;i++){
+        if(!(ST.W[i].lts>=1))continue;
+        for(k=2;k<mv.w[i].length;k++){var l=bimMvSeg(mv,mv.w[i][k-1],mv.w[i][k]);allL+=l;if(R.ok[i]&&R.ok[i][k])okL+=l;}
+      }
+      (S.streets||[]).forEach(function(f){
+        if(!f.n)return;
+        var lv=0;
+        for(i=0;i<mv.w.length;i++){var t=mv.t[mv.w[i][0]]||{};if(String(t.name||'')===f.n&&ST.W[i].lts>lv)lv=ST.W[i].lts;}
+        if(lv){fr.push(f.n+' '+BIM_MV_LTS[lv].n+' ('+BIM_MV_LTS[lv].w+')');worst=Math.max(worst,lv);best=Math.min(best,lv);}
+      });
+      var nx=ST.X.filter(function(c){return !c.ctl&&c.lts>2&&bimAccLotDist(L,c.x,c.z)<=400;}).length,share=allL?okL/allL:0;
+      A.push({auto:'access.cycling',cat:'access',title:'Cycling',
+        value:(fr.length?'The lot fronts '+fr.join(', ')+'. ':'')+'From the lot, '+bimMvKm(okL)+' of the '+bimMvKm(allL)+' of streets and paths a bicycle may use within '+(mv.cut||mv.r)+' m are reached at low stress (LTS 2 or less, a detour of 25% at most)'+
+          (nx?'; '+bimSaN(nx,'uncontrolled crossing')+' of a main street within 400 m '+(nx===1?'is':'are')+' stressful':'')+'. Levels by Mekuria, Furth and Nixon\'s criteria from the OpenStreetMap tags; speeds and lanes the class\'s where not mapped.',
+        cls:(fr.length&&best<=2&&share>=0.3)?'opportunity':((fr.length&&best>=3)||share<0.1?'constraint':'neutral'),sev:1,source:src+'; level of traffic stress (MTI report 11-19)',date:dt});
+    }catch(eC){console.warn('[BIM] The cycling finding could not be worked out',eC);}
+    var dw=0,lowest=null,pref={s:0,l:1,c:2,a:3};
+    for(i=0;i<mv.w.length;i++){
+      var t2=mv.t[mv.w[i][0]]||{},near=Infinity,k2;
+      if(t2.highway!=='service'||/^(parking_aisle|drive-through)$/.test(String(t2.service||'')))continue;
+      for(k2=1;k2<mv.w[i].length;k2++)near=Math.min(near,bimAccLotDist(bimMvLotOf(S),mv.x[mv.w[i][k2]],mv.z[mv.w[i][k2]]));
+      if(near<=3)dw++;
+    }
+    (S.streets||[]).forEach(function(f){if((f.c in pref)&&(!lowest||pref[f.c]<pref[lowest.c]))lowest=f;});
+    var cps=mv.cp||[],cap=0,nc=0,parts=[];
+    cps.forEach(function(c){if(c.cap){cap+=c.cap;nc++;}});
+    if(dw)parts.push(bimSaN(dw,'driveway')+' or service road'+(dw===1?'':'s')+' into the lot');
+    else if(lowest)parts.push('no driveway mapped into the lot: an entry from '+(lowest.n?lowest.n+' ('+bimAccStreetClass(lowest)+')':'the '+bimAccStreetClass(lowest))+', its lowest street, is marked provisional');
+    else parts.push('no driveway mapped into the lot, and no street faces it');
+    parts.push(cps.length?bimSaN(cps.length,'car park')+' within 400 m'+(nc?' ('+bimClimInt(cap)+' spaces mapped in '+nc+')':''):'no car park mapped within 400 m');
+    if(mv.pe&&mv.pe.length)parts.push(bimSaN(mv.pe.length,'garage entrance')+' within 400 m');
+    var fp=(S.streets||[]).filter(function(f){return f.n;}).map(function(f){
+      var pk=null;for(i=0;i<mv.w.length;i++){var t3=mv.t[mv.w[i][0]]||{};if(String(t3.name||'')===f.n){var q=bimMvParking(t3);if(q.l!==null||q.r!==null){pk=q;break;}}}
+      return pk?f.n+': '+bimMvParkText(pk):'';
+    }).filter(function(x){return x;});
+    if(fp.length)parts.push('parking along the frontage: '+fp.join('; '));
+    var v=parts.join('; ');
+    A.push({auto:'access.vehicles',cat:'access',title:'Vehicle access and parking',value:v.charAt(0).toUpperCase()+v.slice(1)+'.',
+      cls:(!dw&&lowest&&lowest.c==='a')?'constraint':'neutral',sev:1,source:src,date:dt});
+    return A;
+  }
   /* __acad3dV165: what the ground and its water say about the site, as findings */
   function bimLandAuto(){
     var A=[],LD=A3D.site&&A3D.site.land,today=bimSaToday(),S,D;
@@ -22088,7 +22169,7 @@ try{
     if(cnt.power)A.push({auto:'utilities.power',cat:'utilities',title:'Overhead power',value:bimSaN(cnt.power,'pylon or line','pylons and lines')+rr+': keep the clearances',cls:'constraint',sev:2,source:osm,date:od});
     var lw=[],lk;for(lk in lu)if(lu.hasOwnProperty(lk))lw.push(bimSaN(lu[lk],lk+' area'));
     if(lw.length)A.push({auto:'people.landuse',cat:'people',title:'Land use around',value:lw.join(', ')+rr,source:osm,date:od});
-    return A.concat(bimClimAuto()).concat(bimZnAuto()).concat(bimAccAuto()).concat(bimLandAuto());   /* __acad3dV159: climate and risk; __acad3dV160: zoning; __acad3dV161: access and people; __acad3dV165: land and water */
+    return A.concat(bimClimAuto()).concat(bimZnAuto()).concat(bimAccAuto()).concat(bimLandAuto()).concat(bimMvAuto());   /* __acad3dV159: climate and risk; __acad3dV160: zoning; __acad3dV161: access and people; __acad3dV165: land and water; __acad3dV166: movement */
   }
   /* Fill from the model: what it knows, as findings; refilled in place, what was said about them kept */
   function bimSaFill(quiet){   /* __acad3dV159: quiet when the climate fetch fills it */
@@ -25504,7 +25585,7 @@ try{
       tv.push(bimSaN(S.lines10,'line')+' within a 10-minute walk');
       if((nb&&nb.t<=5)||(nr&&nr.t<=10))cl='opportunity';
       else if(!(nb&&nb.t<=10)&&!(nr&&nr.t<=10)){cl='constraint';sv=2;}
-      A.push({auto:'access.transit',cat:'access',title:'Transit',value:tv.join('; ')+'. Stops and lines from OpenStreetMap; how often they run needs the operator\'s timetable (GTFS).',cls:cl,sev:sv,source:src,date:dt});
+      A.push({auto:'access.transit',cat:'access',title:'Transit',value:tv.join('; ')+'. '+bimMvPtalText(S),cls:cl,sev:sv,source:src,date:dt});
       if(S.lot.ring){
         var fs=S.streets||[];
         if(fs.length)A.push({auto:'access.frontage',cat:'access',title:'Frontage',value:'The lot fronts '+fs.map(function(f){var tx=bimAccStreetText(f);return bimAccStreetName(f)+(tx?' ('+tx+')':'')+' for '+bimClimFmt(f.len,0)+' m';}).join('; ')+'.',
@@ -48271,7 +48352,7 @@ try{
     WALKTIMES:'walk times walk shed walkshed isochrone isochrones service area network 5 10 15 minutes pedestrian catchment layer plan',
     CONTEXT:'neighbours neighbors surrounding buildings osm openstreetmap overpass roads streets water rivers parks trees terrain elevation contours ground giraffe railway railways train tram subway bridges tunnels airport runway power pylons land use infrastructure',   /* __acad3dV133; __acad3dV157 */
     CONTEXTREMOVE:'delete clear neighbours context',
-    ANALYZESITE:'site analysis analyze run one click diagrams sun path shadows wind rose views isovist noise compass distance rings layers climate context fill findings contours slope aspect terrain ground drainage flow catchment watershed ponds flood floodplain fema',   /* __acad3dV164; __acad3dV165 */
+    ANALYZESITE:'site analysis analyze run one click diagrams sun path shadows wind rose views isovist noise compass distance rings layers climate context fill findings contours slope aspect terrain ground drainage flow catchment watershed ponds flood floodplain fema street hierarchy streets roads cycling bicycle bike stress lts transit bus rail ptal walk walking times daily needs vehicle access driveway entry parking car park',   /* __acad3dV164; __acad3dV165; __acad3dV166 */
     DOCS:'help documentation manual guide tutorial learn how reference f1',   /* __acad3dV142 */
     SUNHOURS:'sun hours sunlight shadow study daylight right to light overshadowing simulation',   /* __acad3dV143 */
     SOLAR:'solar radiation irradiance energy photovoltaic pv roof potential kwh sun simulation',
@@ -50474,6 +50555,23 @@ try{
   window.__a3dLandUS=function(lat,lon){return bimLandUS({lat:lat,lon:lon});};
   window.__a3dLandWarm=function(d8,lat){return bimLandWarm(d8,lat);};
   window.__a3dDgLabelBoxes=function(){return (A3D_DG.labelBoxes||[]).map(function(b){return b.slice();});};
+  /* __acad3dV166: movement, for the tests */
+  window.__a3dMvGet=function(){var S=A3D.site&&A3D.site.access;return S&&S.mv?JSON.parse(JSON.stringify(S.mv)):null;};
+  window.__a3dMvSet=function(v){var S=A3D.site&&A3D.site.access;if(!S)return false;if(v===null)delete S.mv;else S.mv=JSON.parse(JSON.stringify(v));return true;};
+  window.__a3dMvLts=function(t){var r=bimMvLts(t||{});return {lts:r.lts,why:r.why,sp:r.sp,ln:r.ln,fac:r.fac,pk:r.pk};};
+  window.__a3dMvKmh=function(s){return bimMvKmhOf(s);};
+  window.__a3dMvRow=function(v){return bimMvRow(v);};
+  window.__a3dMvInterval=function(v){return bimMvInterval(v);};
+  window.__a3dMvParking=function(t){return bimMvParking(t||{});};
+  window.__a3dMvStress=function(){var mv=bimMvOf();if(!mv)return null;var ST=bimMvStress(mv);
+    return {W:ST.W.map(function(r){return r.lts;}),X:ST.X.map(function(c){return {n:c.n,x:c.x,z:c.z,lts:c.lts,ctl:c.ctl,minors:c.minors.slice(),main:c.main?String(c.main.t.name||c.main.t.highway):''};})};};
+  window.__a3dMvReach=function(){var S=A3D.site&&A3D.site.access,mv=bimMvOf();if(!mv)return null;var ST=bimMvStress(mv),R=bimMvReach(mv,ST,bimMvLotOf(S));
+    function f(D){return D.map(function(v){return isFinite(v)?Math.round(v*1000)/1000:null;});}
+    return {Da:f(R.Da),Dl:f(R.Dl),ok:R.ok,seeds:R.seeds};};
+  window.__a3dMvPtal=function(){var S=A3D.site&&A3D.site.access;if(!S)return null;return JSON.parse(JSON.stringify(bimMvPtal(S,bimMvOf())));};
+  window.__a3dMvPtalBand=function(ai){return bimMvPtalBand(ai);};
+  window.__acad3dV166='mvquery,mvdata,mvstreets,mvthin,mvbudget,crossings,doors,carparks,garages,intervals,routeways,paths,walklayeronrequest,'+
+    'hierarchy,lts2012,crossings2016,lowstressreach,ptal,catchments,routes,walkbands,needs,vehicleentry,provisionalentry,onstreetparking,maprgb,ptalfinding,cyclingfinding,vehiclesfinding';
   window.__acad3dV165='landgrid,landfetch,ownsurface,contextfallback,horn,marchingsquares,contours,hypsometric,slopeclasses,aspectwarmth,priorityflood,d8,strahler,catchments,divides,'+
     'upstream,exits,ponds,fema,floodzones,bfe,sitezone,bandrings,bandgroups,bandpick,lines,coverhidden,legendcompact,legendrecent,keepclear,labelspots,landstep,landfindings';
   window.__acad3dV164='diagobjects,live,editable,keptedits,deletedstay,newer,orphans,copies,reset,resetanalysis,layers,sublayers,legend,underover,bandsbatched,pick,transform,props,'+

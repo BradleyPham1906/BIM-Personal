@@ -206,29 +206,35 @@ MOVE = r"""  /* ================= __acad3dV166: site analysis in the model III, 
     r.why='mixed traffic: '+kmh+', '+n+' lane'+(n===1?'':'s')+(res?(t.lane_markings==='no'?', no centre line':', a '+base+' street'):'')+' (LTS '+lv+')';
     return r;
   }
-  /* every way's level, and the crossings: where a street at LTS 2 or less meets a main street (trunk,
-     primary, secondary, tertiary) of another name with no signal or all-way stop within 20 m, the 2016
-     table by the main street's speed and lanes; past LTS 2 it bars the minor street's way through */
+  /* every way's level, and the crossings: where a way at LTS 2 or less, of any class, meets a main street
+     (trunk, primary, secondary, tertiary) of another name with no signal or all-way stop within 20 m, the
+     2016 table by the main street's speed and lanes; past LTS 2 it bars the calm way's way through */
   function bimMvStress(mv){
     var W=[],inc={},X=[],pen={},i,k;
     for(i=0;i<mv.w.length;i++){var rec=mv.w[i];W.push(bimMvLts(mv.t[rec[0]]||{}));for(k=1;k<rec.length;k++)(inc[rec[k]]||(inc[rec[k]]=[])).push(i);}
     var sig=(mv.xs||[]).filter(function(c){return /[sa]/.test(c[2]);});
     Object.keys(inc).forEach(function(key){
-      var nd=+key,L=inc[key],mains=[],minors=[];
+      var nd=+key,L=inc[key],mains=[],minors=[],seen={},cross=[],lvs={},lv=0,top=null;
       if(L.length<2)return;
-      L.forEach(function(wi){if(mains.indexOf(wi)>=0||minors.indexOf(wi)>=0)return;var t=mv.t[mv.w[wi][0]]||{};if(/^(trunk|primary|secondary|tertiary)$/.test(String(t.highway||'')))mains.push(wi);else if(W[wi].lts>=1&&W[wi].lts<=2)minors.push(wi);});
+      /* a calm way of any class may cross; a main street of another name is what it crosses */
+      L.forEach(function(wi){if(seen[wi])return;seen[wi]=1;var t=mv.t[mv.w[wi][0]]||{};if(/^(trunk|primary|secondary|tertiary)$/.test(String(t.highway||'')))mains.push(wi);if(W[wi].lts>=1&&W[wi].lts<=2)minors.push(wi);});
       if(!mains.length||!minors.length)return;
-      var mn=mains.map(function(wi){return String((mv.t[mv.w[wi][0]]||{}).name||'');});
-      minors=minors.filter(function(wi){var n=String((mv.t[mv.w[wi][0]]||{}).name||'');return !n||mn.indexOf(n)<0;});
-      if(!minors.length)return;
-      var x=mv.x[nd],z=mv.z[nd],ctl=sig.some(function(c){return (c[0]-x)*(c[0]-x)+(c[1]-z)*(c[1]-z)<=400;}),lv=0,top=null;
-      mains.forEach(function(wi){
-        var t=mv.t[mv.w[wi][0]]||{},base=String(t.highway),sp=bimMvSpeed(t,base),ln=bimMvLanes(t,base),
-          v=BIM_MV_XTAB[bimMvRow(sp.v)][ln.v<=3?0:(ln.v<=5?1:2)];
-        if(v>lv){lv=v;top={t:t,sp:sp,ln:ln};}
+      function nm(wi){return String((mv.t[mv.w[wi][0]]||{}).name||'');}
+      var x=mv.x[nd],z=mv.z[nd],ctl=sig.some(function(c){return (c[0]-x)*(c[0]-x)+(c[1]-z)*(c[1]-z)<=400;});
+      minors.forEach(function(m){
+        var best=0,bt=null;
+        mains.forEach(function(wi){
+          if(wi===m||(nm(wi)&&nm(wi)===nm(m)))return;
+          var t=mv.t[mv.w[wi][0]]||{},base=String(t.highway),sp=bimMvSpeed(t,base),ln=bimMvLanes(t,base),v=BIM_MV_XTAB[bimMvRow(sp.v)][ln.v<=3?0:(ln.v<=5?1:2)];
+          if(v>best){best=v;bt={t:t,sp:sp,ln:ln};}
+        });
+        if(!bt)return;
+        cross.push(m);lvs[m]=best;
+        if(best>lv){lv=best;top=bt;}
       });
-      X.push({n:nd,x:x,z:z,lts:ctl?1:lv,ctl:ctl,main:top,minors:minors});
-      if(!ctl&&lv>2)pen[nd]={lts:lv,minors:minors};
+      if(!cross.length)return;
+      X.push({n:nd,x:x,z:z,lts:ctl?1:lv,ctl:ctl,main:top,minors:cross});
+      if(!ctl&&lv>2)pen[nd]={lts:lv,minors:cross.filter(function(m){return lvs[m]>2;}),lv:lvs};
     });
     return {W:W,X:X,pen:pen};
   }
@@ -258,8 +264,8 @@ MOVE = r"""  /* ================= __acad3dV166: site analysis in the model III, 
       if(!(w>=1))continue;
       for(k=2;k<rec.length;k++){
         var a=rec[k-1],b=rec[k],l=bimMvSeg(mv,a,b),v=w,pa=ST.pen[a],pb=ST.pen[b];
-        if(pa&&pa.minors.indexOf(i)>=0)v=Math.max(v,pa.lts);
-        if(pb&&pb.minors.indexOf(i)>=0)v=Math.max(v,pb.lts);
+        if(pa&&pa.minors.indexOf(i)>=0)v=Math.max(v,pa.lv[i]);
+        if(pb&&pb.minors.indexOf(i)>=0)v=Math.max(v,pb.lv[i]);
         lvE[i+':'+k]=v;add(a,b,l,v);add(b,a,l,v);
       }
     }
@@ -503,6 +509,22 @@ MOVE = r"""  /* ================= __acad3dV166: site analysis in the model III, 
     }
     return o;
   }
+  /* where a driveway enters the lot: the first piece from outside it to inside it, cut at the lot line; or, where
+     it only touches it, its nearest node and the lot line's point there. With the outside end it comes from */
+  function bimMvEntryAt(mv,rec,L){
+    var k,j,best=null,bd=Infinity;
+    if(L.ring)for(k=2;k<rec.length;k++){
+      var a=rec[k-1],b=rec[k],ax=mv.x[a],az=mv.z[a],bx=mv.x[b],bz=mv.z[b],ia=bimAccLotDist(L,ax,az)===0,ib=bimAccLotDist(L,bx,bz)===0,tb=null;
+      if(ia===ib)continue;
+      for(j=0;j<L.ring.length;j++){var A=L.ring[j],B=L.ring[(j+1)%L.ring.length],t=bimAccSegX(ax,az,bx,bz,A[0],A[1],B[0],B[1]);if(t!==null&&(tb===null||(ib?t<tb:t>tb)))tb=t;}
+      if(tb!==null)return {at:[ax+tb*(bx-ax),az+tb*(bz-az)],out:ib?[ax,az]:[bx,bz]};
+    }
+    for(k=1;k<rec.length;k++){var d=bimAccLotDist(L,mv.x[rec[k]],mv.z[rec[k]]);if(d<bd){bd=d;best=k;}}
+    if(best===null)return null;
+    var at=bimMvLotPt(L,mv.x[rec[best]],mv.z[rec[best]]),nb=null,fd=-1;
+    [best-1,best+1].forEach(function(q){if(q>=1&&q<rec.length){var dq=bimAccLotDist(L,mv.x[rec[q]],mv.z[rec[q]]);if(dq>fd){fd=dq;nb=rec[q];}}});
+    return nb===null?null:{at:at,out:[mv.x[nb],mv.z[nb]]};
+  }
   /* ---- 6. vehicle access and parking ---- */
   function bimDgVehiclesRun(S){
     var A=A3D.site&&A3D.site.access,mv=bimMvOf(),E=[],y=S.y+0.1,leg=[],i,k;
@@ -515,10 +537,9 @@ MOVE = r"""  /* ================= __acad3dV166: site analysis in the model III, 
       for(k=1;k<rec.length;k++){var d=bimAccLotDist(L,mv.x[rec[k]],mv.z[rec[k]]);if(d<near){near=d;bk=k;}}
       if(near>40)continue;
       dw.push({rec:rec,t:t,d:near,k:bk});
-      if(near<=3){   /* it reaches the lot: an arrow into it where it does, from 10 m back along it */
-        var nd=rec[bk],pin=bimMvLotPt(L,mv.x[nd],mv.z[nd]),nb=bk>1?rec[bk-1]:(rec.length>bk+1?rec[bk+1]:null);
-        if(bk>1&&rec.length>bk+1&&bimAccLotDist(L,mv.x[rec[bk+1]],mv.z[rec[bk+1]])>bimAccLotDist(L,mv.x[rec[bk-1]],mv.z[rec[bk-1]]))nb=rec[bk+1];
-        if(nb!==null){var dx=mv.x[nb]-pin[0],dz=mv.z[nb]-pin[1],l=Math.sqrt(dx*dx+dz*dz)||1,f=Math.min(1,10/l);arrows.push({from:[pin[0]+dx*f,y+0.02,pin[1]+dz*f],to:[pin[0],y+0.02,pin[1]],t:t,prov:false});}
+      if(near<=3){   /* it reaches the lot: an arrow into it where it crosses the lot line, from up to 10 m back along it */
+        var hit=bimMvEntryAt(mv,rec,L);
+        if(hit){var dx=hit.out[0]-hit.at[0],dz=hit.out[1]-hit.at[1],l=Math.sqrt(dx*dx+dz*dz)||1,f=Math.min(1,10/l);arrows.push({from:[hit.at[0]+dx*f,y+0.02,hit.at[1]+dz*f],to:[hit.at[0],y+0.02,hit.at[1]],t:t,prov:false});}
       }
     }
     if(dw.length)E.push({k:'driveways',name:'Driveways and service roads at the lot',g:{kind:'lines',lines:dw.map(function(w){return bimMvPts(mv,w.rec,y);})},s:{stroke:'#aab3be',w:2,op:0.9},
