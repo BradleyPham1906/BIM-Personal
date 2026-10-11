@@ -21,11 +21,15 @@ VARIANTS = {
                     ".a3d-anzsum{font-size:11px;color:#8a96a3;margin-top:1px}")],
     # ---- the search
     'search_substring': [("    for(i=0;i<W.length;i++)if(W[i]&&s.indexOf(' '+W[i])<0)return false;", "    for(i=0;i<W.length;i++)if(W[i]&&s.indexOf(W[i])<0)return false;")],
-    'search_no_group': [("function(e){return e.textContent;}).join(' ')+' '+(hd?hd.textContent:''));", "function(e){return e.textContent;}).join(' '));")],
-    'search_no_buttons': [("R[j].querySelectorAll('.a3d-anzttl,.a3d-anzst,.a3d-anzbtn')", "R[j].querySelectorAll('.a3d-anzttl,.a3d-anzst')")],
-    'search_lost_on_refresh': [("      if(rows&&cnt){C=bimAnzCards();bimRenderInto(rows,bimAnzRowsHtml(C));cnt.textContent=bimAnzCountText(C);}\n      else w.innerHTML=bimAnalyzeHtml();",
+    # RE-ANCHORED IN V165: a row's words, its category's name with them, are bimAnzRowText's (V162)
+    'search_no_group': [("+' '+(more||'');}", ";}")],
+    # RE-ANCHORED IN V165: the row's words are read by bimAnzTexts (V162)
+    'search_no_buttons': [("bimAnzTexts(r,'.a3d-anzttl,.a3d-anzst,.a3d-anzbtn')", "bimAnzTexts(r,'.a3d-anzttl,.a3d-anzst')")],
+    # RE-ANCHORED IN V165: the list's body is bimAnzBodyHtml's (V162)
+    'search_lost_on_refresh': [("      if(rows&&cnt){C=bimAnzCards();bimRenderInto(rows,bimAnzBodyHtml(C));cnt.textContent=bimAnzCountText(C);}\n      else w.innerHTML=bimAnalyzeHtml();",
                                 "      w.innerHTML=bimAnalyzeHtml();")],
-    'empty_not_said': [("    if(e){if(n)e.setAttribute('hidden','');else e.removeAttribute('hidden');}", "    if(e)e.setAttribute('hidden','');")],
+    # RE-ANCHORED IN V165: shown and hidden by the filter's show() (V162)
+    'empty_not_said': [("    if(e)show(e,!!q&&!n);\n", "    if(e)show(e,false);\n")],
     # RETIRED IN V148: Chromium empties a type=search field on Escape itself and fires input, so the
     # handler is unreachable in the suite's browser; it stays for the browsers that do not.
     #   [("...ev.key==='Escape'&&s.value)", "...ev.key==='Esc'&&s.value)")],
@@ -39,7 +43,8 @@ VARIANTS = {
     'roof_painted': [("a.push(s.roof[k]?'.':String(", "a.push(false?'.':String(")],
     'drawn_twice': [("      if(s&&s.show!==false&&!bimResHolds(s)){", "      if(s&&s.show!==false){")],
     'not_drawn': [("    if(!capMode)drawResultLayers(ctx,V,W,H); /* __acad3dV148: the results kept as layers, over the live ones */\n", "")],
-    'never_stale': [("  function bimResStale(R){return !!(R&&R.kind!=='terrain'&&R.key&&R.key!==bimResKey(R.kind));}", "  function bimResStale(R){return false;}")],
+    # RE-ANCHORED IN V165: walk times follow their data too (V161)
+    'never_stale': [("  function bimResStale(R){return !!(R&&R.kind!=='terrain'&&R.kind!=='walk'&&R.key&&R.key!==bimResKey(R.kind));}", "  function bimResStale(R){return false;}")],
     'stale_from_add': [("R.run=s.runId;R.key=bimResKeyFrom(s.stamp,R.kind);}", "R.run=s.runId;R.key=bimResKey(R.kind);}")],
     'update_site_date': [("    if(R.kind==='sunhours'){r=bimSunHours({date:R.data&&R.data.date});", "    if(R.kind==='sunhours'){r=bimSunHours({});")],
     'update_no_undo': [("    if(R.kind==='rain')R.src=r.terrain;\n    R.key=bimResKeyFrom(r.stamp,R.kind);R.updated=bimResNow();",
@@ -66,7 +71,8 @@ VARIANTS = {
     'empty_name_ok': [("if(!v){a3dToast('A layer needs a name');refreshLayers();return false;}}\n    else return false;\n    if(field==='visible'?", "}\n    else return false;\n    if(field==='visible'?")],
     'remove_no_undo': [("    pushUndo();\n    nm=L[i].name;L.splice(i,1);delete A3D_RES_IMG[id];", "    nm=L[i].name;L.splice(i,1);delete A3D_RES_IMG[id];")],
     'sections_in_tree': [("    return h+'</div>'+bimLySectionsHtml(f)+'</div>';", "    return h+bimLySectionsHtml(f)+'</div></div>';")],
-    'section_stays_open': [("      var open=!!f||!shut[key];", "      var open=true;")],
+    # RE-ANCHORED IN V165: the line now goes on to the section's hidden state
+    'section_stays_open': [("      var open=!!f||!shut[key],off=", "      var open=true,off=")],
     'search_misses_sections': [("    function hit(s){return !f||String(s).toLowerCase().indexOf(f)>=0;}\n    bimResLayers()", "    function hit(s){return true;}\n    bimResLayers()")],
     # ---- the data layers
     'data_eye_own': [("    var ok=bimDataSet(s.id,'visible',!T.visible);", "    T.visible=!T.visible;var ok=true;paint();")],
@@ -75,10 +81,13 @@ VARIANTS = {
     'data_add_unseen': [("    refreshProps();saveSoon();bimLayersPanelRefresh();   /* __acad3dV148 */", "    refreshProps();saveSoon();")],
     'data_settings_dead': [("    if((b=t.closest('[data-lyresset]'))){bimAnzAct('open:Data Layers');return true;}", "    if((b=t.closest('[data-lyresset]'))){return true;}")],
     # ---- saved
-    'not_saved': [("history:A3D.history||null,resultLayers:A3D.resultLayers||[]};   /* __acad3dV146, __acad3dV148 */", "history:A3D.history||null};")],
-    'not_in_file': [("history:A3D.history||null,resultLayers:A3D.resultLayers||[]}});   /* __acad3dV146, __acad3dV148 */", "history:A3D.history||null}});")],
+    # RE-ANCHORED IN V165: the presentation is saved after the result layers (V162)
+    'not_saved': [("history:A3D.history||null,resultLayers:A3D.resultLayers||[],pres:A3D.pres||null};", "history:A3D.history||null,pres:A3D.pres||null};")],
+    # RE-ANCHORED IN V165: likewise in the project file
+    'not_in_file': [("history:A3D.history||null,resultLayers:A3D.resultLayers||[],pres:A3D.pres||null}});", "history:A3D.history||null,pres:A3D.pres||null}});")],
     'not_validated': [("  function bimResValid(a){\n    if(!Array.isArray(a))return [];", "  function bimResValid(a){\n    if(Array.isArray(a))return a;\n    if(!Array.isArray(a))return [];")],
-    'not_in_undo': [("classifications:A3D.classifications,resultLayers:A3D.resultLayers||[]});   /* __acad3dV148 */", "classifications:A3D.classifications});")],
+    # RE-ANCHORED IN V165: likewise in the undo snapshot
+    'not_in_undo': [("classifications:A3D.classifications,resultLayers:A3D.resultLayers||[],pres:A3D.pres||null});", "classifications:A3D.classifications,pres:A3D.pres||null});")],
     'history_clears': [("    if(Array.isArray(st.resultLayers))A3D.resultLayers=st.resultLayers;", "    A3D.resultLayers=Array.isArray(st.resultLayers)?st.resultLayers:[];")],
     # ---- a phone, a tablet, a computer
     'tree_over_phone': [("body.a3d-tree-docked #a3d-shell:not([data-tab=\"browser\"]) #a3d-leftpanel > .a3d-tree{display:none!important}", "")],

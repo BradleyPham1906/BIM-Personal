@@ -14399,3 +14399,220 @@ from `Phase/canvas_v10.html.bak_phase164_pre`. The diff is ES5-clean and ASCII.
     canvas_v10.html   3041149 bytes
     sha256            8443b9f531a762f90e397c6e8f117d63a4ebd8b7ac687020f9d31a11a831e097
     markers           __acad3dV60 ... __acad3dV164, __acad3dV134d (and the 133d to 133f markers)
+
+## Phase 165 (V165) - Site analysis in the model II: land and water
+
+The owner's brief from V164 stands: one button runs the analysis on the data the right free services
+give, and lays it "under analysis layers, built straight in the model that i can interact with" --
+"a live analysis that is editable", worked out as "architects, GIS scientist, landscape architect,
+transportation planner, analysist" work it out and drawn as they present it. V164 planned four
+phases for that button; this is the second, the land and its water: "Contours coloured by height,
+slope in five classes (15% and 25% the decision points), aspect, flow lines and catchments, ponds,
+flood zones; each a live, editable layer of the same button".
+
+The research is section 2 of `reference/research-site-analysis-in-model.md` ("What V165 does (and
+why)"): the ground at the site's scale (the context's terrain is a point every 25 m, one point for a
+whole building), the methods (Horn's slope and aspect, marching squares, Priority-Flood and D8,
+Strahler's order) and how each is drawn (slope in a sequential yellow to dark red, aspect read for
+warmth, contours on a hypsometric ramp, FEMA's zones in the FIRM's colours).
+
+### What was built (patches 165a, 165b, 165c)
+
+- **The ground (165b, 165c).** Analyze site has a **Ground and water** step, run beside the context
+  and the climate:
+  - the AWS Terrain Tiles at zoom 15 (the free tiles the context already reads), sampled every 5 m
+    for 150 m around the site: a 61 by 61 grid kept with the project in centimetres above sea level,
+    with its zoom, the imagery under it and the date, so every analysis runs again offline;
+  - for a US site (the lower 48, Alaska, Hawaii, Puerto Rico and the Virgin Islands, Guam and the
+    Marianas, American Samoa), FEMA's National Flood Hazard Layer, layer 28, for the same square, as
+    GeoJSON. Elsewhere FEMA is not asked, and the step says FEMA maps US sites only.
+  - The step says what came ("the ground every 5 m for 150 m around, 4 flood zones from FEMA"), or
+    reads Partly with the service named. FEMA down keeps the zones an earlier run brought.
+  - The ground the analyses read: the project's own surface where it covers the site (a survey, a
+    LandXML surface); else the kept tiles, while the site is where they were fetched for (the same
+    latitude, longitude and true north); else the context's terrain, its 25 m said. The ground
+    under the site's origin is the model's 0, as the context sets it.
+- **Six analyses (165b),** each on its own layer under Site analysis, each element live and editable
+  as V164's are (kept through a run when changed, deleted stays deleted, Reset):
+  - **Contours:** the step from 0.25 to 50 m that gives at most 24 lines, at round heights above sea
+    level; each level one element of several lines, traced by marching squares between the grid's
+    points (a point at the level counts as above it, a saddle read by the middle of its cell), each
+    line ending at the edge of the ground or where it began; coloured green low to brown high; every
+    fifth an index contour, thicker and labelled with its height as a number, the key giving the
+    unit.
+  - **Slope:** Horn (1981) on each 5 m cell (a neighbour off the ground takes the cell's own
+    height), in five classes -- 0 to 5, 5 to 10, 10 to 15, 15 to 25, over 25% -- yellow to dark
+    red, each class one element of many rings, holes and islands read even-odd; the site's mean,
+    steepest (and which way it falls) and its share of each class. Off at first.
+  - **Aspect:** the way each cell falls, clockwise from true north, in eight directions and flat
+    (under 2%), coloured for warmth: facing the equator warm, facing the pole cool, east and west
+    between; turned for a site south of the equator. Off at first.
+  - **Water flow:** the ground filled by Priority-Flood (Barnes, Lehman and Mulla, 2014, with a
+    small rise each step so a flat drains), then D8 (O'Callaghan and Mark, 1984); accumulation
+    from the highest cell down; a flow line where 2,500 m2 or more drains, a line a link from a
+    source or a confluence to the next, wider by its Strahler order, with its arrowhead; the large
+    catchments (4% of the ground or more) named at their middles, the divide between two of them
+    drawn once, dashed, along the edges between their cells, its steps eased to within a cell; the
+    land draining onto the site, shaded and said; an arrow where the site's water leaves it, the most
+    first.
+  - **Ponds:** where the filled ground stands 10 cm or more over the real one, 50 m2 or more, the
+    eight largest: depth, area, volume and the level it spills at, the deepest point marked.
+  - **Flood zones:** FEMA's zones read as FEMA classes them -- the regulatory floodway by its
+    subtype (crimson), the 1% annual chance by its flag or zone (A, AE, AH, AO, AR, A99 in blue; V
+    and VE on the coast in a darker blue), shaded X or B as the 0.2% (orange), D not determined
+    (grey), unshaded X not drawn -- cut to the square, each labelled with its zone and its base
+    flood elevation (-9999 is none; feet also in metres, on FEMA's datum), each label well inside
+    its zone and apart from the others' and the site's; the zone the site's centre is in, the most
+    hazardous where two overlap.
+- **The engine (165a):**
+  - an element of several polylines (a contour level, a divide), drawn, picked by its segments,
+    turned, mirrored and scaled, and fitted to by Zoom Extents;
+  - a band of rings, read even-odd, filled in its element's fill, so a class restyled in
+    Properties is drawn restyled; each analysis's bands on a canvas of their own, laid at its own
+    opacity, so slope under the flood zones does not read as one map; where two classes meet, the
+    edge stroked in their colour so no hairline shows between them;
+  - an analysis that covers the ground starts with its layer off;
+  - an area picked by its inside, asked last on a click, after the model, the lines and words over
+    it and the grids, so it never covers what lies on it; a selected area's edge lit in the
+    selection's yellow on a dark edge;
+  - the key, when the view is too small, drops its sources, then the keys of the analyses shown
+    longest ago (noticed frame by frame, however their layers came on), with a line saying how many
+    more; the rest keep their order. Its layout is apart from its drawing, laid out before the words;
+  - the words keep clear of what is drawn over them later in the frame: the north arrow in plan, the
+    view cube in 3D, and the key.
+- **Findings (165c),** from the same ground: Landform, the site's slope (mean, steepest, how much
+  under 5% and how much 15% or more; a constraint when over a quarter is that steep, an
+  opportunity when three quarters is under 5%); Water, its drainage (which way it drains, the land
+  draining onto it, the ponds near it) and its FEMA zone with the zones within 150 m (a red flag in
+  the floodway, a constraint in a flood zone).
+- **The rows** in Analyze: Contours, Slope and Aspect in Landform; Water flow, Ponds and Flood zones
+  in Water.
+- Version V165. The guide's Site and Analysis pages; the research note's section 2 as built.
+
+### Found
+
+- **Contours that read as distances.** Labelled "100 m", the index contours read as the compass's
+  distance rings. They are labelled with a number, as a topographic map labels them; the key says
+  metres above sea level.
+- **A slope class could not be clicked.** V164 picked a band by its lines and words only, and a
+  class has neither. An area is picked by its inside now, last of all.
+- **The selection unseen.** A selected class's edge in the selection's yellow (#ffd166) vanished
+  against the 5 to 10% class (#fecc5c). It is drawn on a dark edge.
+- **Divides twice, out of step.** Each large catchment's outline was traced and simplified on its
+  own, so the divide between two came out as two dashed lines a little apart. A divide is traced
+  once now, from the edges between the cells of the two catchments.
+- **A divide in steps.** The divides were to be eased to within 0.6 of a cell, a figure worked out
+  from a staircase's middle line. Douglas and Peucker measure from the line through its outer
+  corners, which the inner ones stand 0.71 of a cell off, so every step of the cells' edges stayed:
+  24 points where 4 do. A cell eases them, and the suite asks that no one-cell step is left.
+- **Flood labels all by the site.** Each zone was labelled at the middle of its largest ring, and
+  zones that cross the square together, as a valley's strips do, have their middles together: four
+  labels stacked by the site. Each is placed now well inside its zone, apart from the labels before
+  it, the most hazardous first.
+- **The key kept the first analyses.** Short of room, it dropped the last in its order, so the land
+  and water keys went first however recently they were turned on. It drops those shown longest ago.
+- **Words under the north arrow.** "2.6 ha runs off to the north-east" ran under the north arrow,
+  which is drawn after the words. The words keep clear of it, of the view cube and of the key.
+- **A link of one point.** A confluence on the ground's edge starts a link that ends where it
+  starts: nothing to draw, and the suite counts only links of two points or more.
+- **One key, four analyses.** V164's suite looked its noise label up by the key 'site', which
+  slope, aspect and flood have now too, and found slope's. It looks within its analysis now
+  (amended).
+- **A check that could not fail.** The first V165 suite logged the key's blocks through a check
+  written `... or True`. It checks the key's "+ N more" line now, which the legend's hook reports
+  as drawn.
+- **The test ground for London.** The land fixture's function, read 5,000 km from its origin, gave
+  heights the Terrarium encoding cannot hold; far from its origin it is level ground now.
+- **Literal symbols.** The Write tool turned the escapes in patch 165b into characters; they are
+  escapes again, and the patch asserts its text is ASCII.
+- **FEMA unreachable from here.** The build environment's proxy refuses hazards.fema.gov, so the
+  zones' colours follow the FIRM's convention, not FEMA's own renderer, and the fixture is written
+  from FEMA's published field definitions.
+
+### Suites
+
+- New: `bim_phase165_land_water_browser_tests.py`, with `tests/land_fixture.py`: a made-up ground
+  (a fall to the north-east, a hill whose flanks pass 25%, a valley beside the site, a hollow that
+  ponds) served as Terrarium tiles at zoom 15, and FEMA's answer (a floodway, zone AE in two strips
+  with a base flood elevation, shaded and unshaded X). Everything drawn is worked out again in
+  Python: the ground against its function, Horn's slope and aspect cell for cell, Priority-Flood
+  with the same heap, D8, the accumulation, Strahler's order, each cell's outlet, the ponds, the
+  land upstream of the site and where it drains, the divides edge by edge, each contour point
+  between the two grid points it lies between, the hypsometric colours, FEMA's classes. On the
+  view: a class's colour and its restyle read from the pixels; one edge where two classes meet;
+  two analyses each at its own opacity; the selected class's lit edge; the clicks that pick a
+  class, the tower over it and the floodway over the slope; the key in a small view. And the run's
+  other ways: FEMA last (the drawing waits for it), FEMA down on a first and a second run, a site
+  in London, the context's terrain, a survey of the project's own, a site moved, two valleys
+  meeting, two zones over the site and the floodway, a phone and a tablet.
+- Amended, each AMENDED FOR V165: V141, V148 and V162 (the six new rows in their categories; the
+  search for "slope" finds contours, slope and aspect before the survey, terrain and grading);
+  V164 (a later version; its six rows and runs read among the land and water ones; the land and
+  water layers off while its key is read, then as they were; Ground and water a step; the site's
+  noise label looked up within its analysis); `tests/site_analysis_fixture.py` (FEMA's host, the
+  V165 ground, FEMA down or slow).
+- `tests/falsify_all.py` cleans up after itself. Every build stayed in its folder in /tmp, a page
+  each: 230 MB a full V165 run, and a stopped run's too. Each build now goes once its suite has
+  run; a variant the suite did not catch keeps its build, in the folder the report names, to be
+  looked at. Each run's folder holds its process's id, and the next run sweeps the folders of
+  runs that are gone. Tried on stand-in scripts: caught, missed, a broken build, all caught,
+  stopped with Ctrl-C, killed.
+- **Falsified by `Phase/falsify_phase165.py`:** 76 variants. The first run caught 71 (1920 s, 3
+  workers). The five it missed, and what changed:
+  - `rings_nonzero` (a band's rings filled nonzero, not even-odd): nothing looked inside a ring's
+    hole. The over-25% class rings the hill's top, and its hole is wound the same way as its
+    outside, so a nonzero fill paints the top dark red. The suite reads the top's colour now.
+  - `seam_unstroked` (no stroke over the edge where two classes meet): the hairline check read one
+    pixel a point, which falls to one side of the edge as often as on it. It reads the faintest
+    pixel round each point now, along every class's edges and away from the context's buildings:
+    138 with the stroke, 114 without.
+  - `datum_unset` (the fine ground never setting the model's 0): in every run the suite made, the
+    context's terrain set it first. A run with the context's terrain left out reaches the branch.
+  - `ponds_any_size` (a pool of any size a pond): the test ground had no pit under 50 m2. Two are
+    dug in another ground: one cell, no pond; nine cells, a pond.
+  - `rings_simplified` (the first tolerance, 0.12 of a cell, back): equivalent. On the test ground
+    and on a bowl whose classes' edges are round, it keeps exactly the points the tighter one
+    keeps: at 5 m cells only points along a straight run fall within it. It is dropped, with that
+    reason in the script, and `rings_coarse` (half a cell) takes its place, caught by the bowl's
+    shared edges and by the hill's top.
+
+  The five again, on the final suite: 5 of 5 (164 s). The divides' fix added `divides_stepped`
+  (eased to 0.6 of a cell again). The cleanup after it added five variants (`labels_bunched`,
+  `legend_drops_last`, `recency_not_noticed`, `labels_under_key`, `arrow_not_kept_clear`) and
+  re-anchored three of the key's: 8 of 8 (248 s). All 82 on the final build: 82 caught (2255 s,
+  3 workers).
+- **The amended suites' scripts.** `falsify_phase164.py`: three of the key's variants re-anchored
+  in bimDgLegendLayout, 3 of 3. `falsify_phase148.py` and `falsify_phase141.py` had gone stale:
+  nine and two variants anchored on code V161 and V162 had moved. They are re-anchored, each saying
+  where it went. Eight of V148's nine and both of V141's were caught at once. The ninth,
+  `search_no_group` (a group's name left out of its rows' words), was not: nothing searched by a
+  group's name. The V148 suite asks that 'model' find every row in the Model group now, and the
+  variant is caught.
+- **The earlier phases' falsifications, on the final build:** `falsify_phase164.py` 68 of 68
+  (1716 s), `falsify_phase162.py` 59 of 59 (780 s), `falsify_phase141.py` 21 of 21 (168 s), and
+  `falsify_phase148.py` 56 of 57 (776 s). The one it missed, `sections_in_tree` (the Analysis and
+  Data groups put inside the layer tree), had gone unseen since V158: the check that they come
+  after the tree compares their tops with the last layer row's bottom, the same in either place.
+  Inside the tree they would take a dragged layer: let go over the Analysis heading, a sub-layer
+  would be lifted to the top of the tree. The V148 suite drags a sub-layer there now (refused,
+  still under its parent) and onto the room below the rows (taken), then undoes the two layers it
+  made: 2 of 2 with `drop_refused` (40 s).
+
+### Not done
+
+- The ground finer than the tiles: USGS 3DEP's 1 m lidar where it exists (the tiles carry 10 m or
+  finer in the US, SRTM's 30 m elsewhere, so 5 m is a sampling, not a measurement).
+- Kerbs, swales, culverts and pipes; the site's own drainage design; how deep a flood would stand.
+- FEMA's own colours (its renderer could not be read from here) and its other layers (the base
+  flood elevation lines, the cross sections, the LOMRs).
+
+### Full regression and state after V165
+
+122 suites, 5633 checks, 0 failures (457 s, 5 workers). The V148 suite's drag check came after
+that run, and the suite passes alone, 117 of 117: 5635 checks in all. Patches 165a, 165b and 165c
+rebuild the build byte for byte from `Phase/canvas_v10.html.bak_phase165_pre`. The diff is
+ES5-clean and ASCII.
+
+    canvas_v10.html   3105612 bytes
+    sha256            e8ec917e636002dc97278233a4ea7770f0530d2a3d7159d54b1707863ca95cb2
+    markers           __acad3dV60 ... __acad3dV165, __acad3dV134d (and the 133d to 133f markers)

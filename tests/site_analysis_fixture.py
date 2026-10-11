@@ -12,11 +12,14 @@ answer, so the app reads it as it would them:
   Open-Meteo's archive and air quality, and USGS: climate_fixture, with the zone's UTC offset as
     Open-Meteo gives it (timezone=auto);
   TIGERweb and the Census Data API: access_fixture;
-  AWS Terrain Tiles: the V133 ground;
-  Nominatim: one place, the site.
-store['mode'] breaks a service: ctx abort|429, clim abort, acc abort, ter abort, geo none|abort.
+  AWS Terrain Tiles: the V133 ground; AMENDED FOR V165: store['ground'] = 'land', the V165 ground
+    (land_fixture);
+  Nominatim: one place, the site;
+  AMENDED FOR V165: FEMA's flood map: no zone, unless store['flood'] = 'zones' (land_fixture's).
+store['mode'] breaks a service: ctx abort|429, clim abort, acc abort, ter abort, geo none|abort, flood abort|slow
+(AMENDED FOR V165: slow answers 2.5 s late, after everything else).
 Deterministic: no randomness but the climate fixture's fixed seeds."""
-import json, pathlib, re, sys
+import asyncio, json, pathlib, re, sys
 from urllib.parse import unquote
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
@@ -93,7 +96,7 @@ HDR = {'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json'}
 OVERPASS = ('https://overpass-api.de/**', 'https://overpass.private.coffee/**', 'https://maps.mail.ru/**', 'https://overpass.kumi.systems/**')
 HOSTS = OVERPASS + ('https://archive-api.open-meteo.com/**', 'https://air-quality-api.open-meteo.com/**', 'https://earthquake.usgs.gov/**',
                     'https://tigerweb.geo.census.gov/**', 'https://api.census.gov/**', 'https://s3.amazonaws.com/**',
-                    'https://nominatim.openstreetmap.org/**')
+                    'https://nominatim.openstreetmap.org/**', 'https://hazards.fema.gov/**')   # AMENDED FOR V165: FEMA
 
 
 def route_handler(store):
@@ -137,7 +140,11 @@ def route_handler(store):
             m = re.search(r'/terrarium/(\d+)/(\d+)/(\d+)\.png$', u)
             if mode.get('ter') == 'abort' or not m:
                 await route.abort('internetdisconnected'); return
-            await route.fulfill(status=200, body=terrarium_png(int(m.group(1)), int(m.group(2)), int(m.group(3))), headers={
+            png = terrarium_png
+            if store.get('ground') == 'land':   # AMENDED FOR V165: the V165 ground
+                import land_fixture as LFX
+                png = LFX.land_png
+            await route.fulfill(status=200, body=png(int(m.group(1)), int(m.group(2)), int(m.group(3))), headers={
                 'Content-Type': 'image/png', 'Access-Control-Allow-Origin': '*',
                 'Access-Control-Expose-Headers': 'x-amz-meta-x-imagery-sources', 'x-amz-meta-x-imagery-sources': 'srtm/N39W076.tif'})
             return
@@ -147,5 +154,13 @@ def route_handler(store):
                 await route.abort('internetdisconnected'); return
             body = [] if mode.get('geo') == 'none' else [{'lat': str(LAT0), 'lon': str(LON0), 'display_name': '1 Market Street, Sample Town'}]
             await route.fulfill(status=200, body=json.dumps(body), headers=HDR); return
+        if 'hazards.fema.gov' in u:   # AMENDED FOR V165: FEMA's National Flood Hazard Layer
+            import land_fixture as LFX
+            store.setdefault('hits', []).append(('flood', u))
+            if mode.get('flood') == 'abort':
+                await route.abort('internetdisconnected'); return
+            if mode.get('flood') == 'slow':   # FEMA answering after everything else
+                await asyncio.sleep(2.5)
+            await route.fulfill(status=200, body=json.dumps(LFX.fema_body(store.get('flood', 'none'))), headers=HDR); return
         await route.abort('addressunreachable')
     return handle

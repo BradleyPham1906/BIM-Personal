@@ -160,7 +160,9 @@ async def run():
             for r in R.values():
                 G.setdefault(r['grp'], []).append(r['id'])
             # AMENDED FOR V164: the six analyses Analyze site draws, first in their categories
-            ck(G == {'location': ['dgframe'], 'landform': ['survey', 'terrain', 'grading'], 'water': ['rain'], 'climate': ['dgsun', 'dgshadow', 'dgwind', 'sun', 'sunhours', 'solar'],
+            # AMENDED FOR V165: the land and water analyses, contours, slope and aspect in Landform, flow, ponds and flood in Water
+            ck(G == {'location': ['dgframe'], 'landform': ['dgcontours', 'dgslope', 'dgaspect', 'survey', 'terrain', 'grading'], 'water': ['dgflow', 'dgponds', 'dgflood', 'rain'],
+                     'climate': ['dgsun', 'dgshadow', 'dgwind', 'sun', 'sunhours', 'solar'],
                      'risk': ['dgnoise'], 'people': ['dgviews'], 'model': ['lens', 'areas', 'lod', 'stats', 'structure']},
                "each analysis in its category, or in Model (%s)" % G)
             ck(all(not r['open'] and r['bodyH'] == 0 and r['aria'] == 'false' for r in R.values()), "every row starts closed: its body takes no room")
@@ -209,6 +211,11 @@ async def run():
             ck(s == ['dgsun', 'dgshadow', 'dgwind', 'sun', 'sunhours', 'solar', 'dgnoise'], "a category's name finds its rows (%s)" % s)
             s = await safe("(q)=>window.__a3dAnzSearch(q)", 'cut fill')
             ck(s == ['grading'], "two words, both at the start of words (%s)" % s)
+            # ADDED IN V165: a group's name finds every row in it, though few of them say it -- the variant that
+            # leaves it out of a row's words (search_no_group, re-anchored) found nothing that asked
+            s = await safe("(q)=>window.__a3dAnzSearch(q)", 'model')
+            mrows = await safe("()=>[].map.call(document.querySelectorAll('.a3d-analyze-wrap [data-anzgrp=\"model\"] [data-anzcard]'),function(r){return r.getAttribute('data-anzcard');})") or []
+            ck(len(mrows) >= 3 and all(m in s for m in mrows), "a group's name finds every row in it: 'model' (%s of %s)" % ([m for m in mrows if m in s], mrows))
             ck(await safe("(a)=>[window.__a3dAnzWordsHit(a[0],a[1]),window.__a3dAnzWordsHit(a[2],a[1])]", ['rain', 'Slope on the terrain', 'ter']) == [False, True],
                "the rule: a word asked for starts a word of the text")
             s = await safe("(q)=>window.__a3dAnzSearch(q)", 'zzzq')
@@ -229,7 +236,7 @@ async def run():
             await page.keyboard.press('Escape')
             await page.wait_for_timeout(100)
             vis = [k for k, r in (await rows()).items() if not r['hidden']]
-            ck(len(vis) == 18 and await safe("()=>document.querySelector('.a3d-analyze-wrap [data-anzsearch]').value") == '', "Escape empties it: every row again")   # AMENDED FOR V164: 18 rows
+            ck(len(vis) == 24 and await safe("()=>document.querySelector('.a3d-analyze-wrap [data-anzsearch]').value") == '', "Escape empties it: every row again")   # AMENDED FOR V164: 18 rows; AMENDED FOR V165: 24
             # the left panel is the one scroll container (V65)
             sc = await safe("()=>{var a=document.getElementById('a3d-leftpanel');window.__a3dAnzOpenAll(true);a.scrollTop=a.scrollHeight;return a.scrollTop;}")
             await safe("()=>window.__a3dColumnAt([210,200],0,1,1,3)")
@@ -292,6 +299,31 @@ async def run():
             # AMENDED FOR V158: the groups are rows of the tree, right after the last layer row (as Context is)
             after = await safe("()=>{var r=document.querySelectorAll('#a3d-leftpanel [data-lylist] .a3d-lyrow'),s=document.querySelector('#a3d-leftpanel [data-lysec=\"analysis\"]');return r[r.length-1].getBoundingClientRect().bottom<=s.getBoundingClientRect().top+1;}")
             ck(after, "after the layers, not among them")
+            # ADDED IN V165: nor among them to a drag. A sub-layer let go over the Analysis heading is
+            # refused there and stays under its parent, while the tree's room below its rows takes it.
+            # The drop is sent only where the dragover took it, as a browser does.
+            par = await safe("()=>window.__a3dLayerNew({name:'Drag parent'})")
+            kid = await safe("(p)=>window.__a3dLayerNew({name:'Drag child',parent:p})", par)
+            await page.wait_for_timeout(120)
+            if not await safe("(k)=>!!document.querySelector('#a3d-leftpanel [data-lyid=\"'+k+'\"]')", kid):
+                await page.click('#a3d-leftpanel [data-lytog="%s"]' % par)
+                await page.wait_for_timeout(120)
+            dz = await safe("""(k)=>{var out={};
+              ['[data-lysec="analysis"] .a3d-lysecttl','[data-lylist]'].forEach(function(q,i){
+                var src=document.querySelector('#a3d-leftpanel [data-lyid="'+k+'"]'),dst=document.querySelector('#a3d-leftpanel '+q),dt=new DataTransfer();
+                src.dispatchEvent(new DragEvent('dragstart',{bubbles:true,dataTransfer:dt}));
+                var ov=new DragEvent('dragover',{bubbles:true,cancelable:true,dataTransfer:dt});dst.dispatchEvent(ov);
+                if(i===0){out.took=ov.defaultPrevented;
+                  if(ov.defaultPrevented)dst.dispatchEvent(new DragEvent('drop',{bubbles:true,cancelable:true,dataTransfer:dt}));
+                  out.parent=(window.__a3dLayers().filter(function(l){return l.id===k;})[0]||{}).parent;}
+                else out.list=ov.defaultPrevented;
+                src.dispatchEvent(new DragEvent('dragend',{bubbles:true,dataTransfer:dt}));});
+              return out;}""", kid)
+            ck(par and kid and dz and dz.get('took') is False and dz.get('parent') == par and dz.get('list') is True,
+               "nor to a drag: a sub-layer let go over the Analysis heading is refused and stays under its parent; the room below the rows takes it (%s)" % dz)
+            await safe("()=>{window.__a3dUndo();window.__a3dUndo();}")
+            await page.wait_for_timeout(120)
+            ck(not [y for y in (await safe("()=>window.__a3dLayers()") or []) if y['id'] in (par, kid)], "two undos take the two layers away")
             hint = await safe("()=>(document.querySelector('#a3d-leftpanel [data-lysec=\"data\"] .a3d-lyhint')||{}).textContent")
             ck(hint and 'Data Layers' in hint, "an empty Data section says where its layers come from (%s)" % hint)
             Y = await lyrows()

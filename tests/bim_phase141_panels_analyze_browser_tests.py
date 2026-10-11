@@ -217,7 +217,9 @@ async def run():
             # AMENDED FOR V148: in four groups -- Model, Site and terrain, Structure, Environment
             # AMENDED FOR V162: one Analyze -- each analysis in the category it answers, then Model
             # AMENDED FOR V164: the analyses Analyze site draws, first in their categories
-            ck(pc and [c['id'] for c in pc] == ['dgframe', 'survey', 'terrain', 'grading', 'rain', 'dgsun', 'dgshadow', 'dgwind', 'sun', 'sunhours', 'solar', 'dgnoise', 'dgviews',
+            # AMENDED FOR V165: and the land and water ones, contours, slope and aspect in Landform, flow, ponds and flood in Water
+            ck(pc and [c['id'] for c in pc] == ['dgframe', 'dgcontours', 'dgslope', 'dgaspect', 'survey', 'terrain', 'grading', 'dgflow', 'dgponds', 'dgflood', 'rain',
+                                               'dgsun', 'dgshadow', 'dgwind', 'sun', 'sunhours', 'solar', 'dgnoise', 'dgviews',
                                                'lens', 'areas', 'lod', 'stats', 'structure'],
                "seven cards: structure, sun, colour by, areas, survey, LOD, statistics (%s)" % (pc and [c['id'] for c in pc]))
             P = {c['id']: c for c in pc or []}

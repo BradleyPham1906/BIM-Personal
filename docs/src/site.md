@@ -78,13 +78,16 @@ step as it goes:
 1. **The site:** the address found on OpenStreetMap (Nominatim), if the site is not placed yet.
 2. **Context:** the buildings, roads, water, green, trees, railways, land use and terrain, at least
    300 m around. A smaller context radius is raised to 300 m, which the noise and the views need.
-3. **Climate and time zone:** ten years of daily climate, a year of hourly wind and heat, air
+3. **Ground and water:** the ground every 5 m for 150 m around the site, from the same free AWS
+   Terrain Tiles, kept with the project in metres above sea level; and for a US site, FEMA's flood
+   zones (the National Flood Hazard Layer). FEMA maps the US and its territories only.
+4. **Climate and time zone:** ten years of daily climate, a year of hourly wind and heat, air
    quality and earthquakes. The site's UTC offset comes with them, so the sun needs no typing. An
    offset you gave is kept.
-4. **Access and people:** walk times to daily needs and transit, and the census tract (US sites).
-5. **Zoning:** read from a council layer, where one is loaded in Data Layers and the property line
+5. **Access and people:** walk times to daily needs and transit, and the census tract (US sites).
+6. **Zoning:** read from a council layer, where one is loaded in Data Layers and the property line
    is drawn.
-6. **The analyses, drawn in the model** (below).
+7. **The analyses, drawn in the model** (below).
 
 Each step reads Done, Partly (some of its sources down, each named), Failed (with the reason) or
 Skipped (with why). What fails leaves the rest standing. The whole run is **one undo step**.
@@ -103,10 +106,20 @@ analysis**:
 | Winds | an arrow for each season's prevailing wind, as wide as its share of hours (seasons from the same quarter share one); the strongest winds; the year's wind rose | a year of hourly ERA5 wind, via Open-Meteo |
 | Views | what can be seen at eye height and from the top floor (isovists); each view named by what it reaches: water, a park or woods, a landmark, open land | the context's buildings and trees, at their heights |
 | Noise | each road's noise in 5 dB classes from 55 dB, following the street and screened behind buildings; the loudest roads and the railways marked; the level at the site | an estimate from each road's class (below) |
+| Contours | a line every 0.25 to 50 m, at round heights above sea level (at most 24 lines), coloured green low to brown high; every fifth an index contour, thicker and labelled with its height | the ground every 5 m (below) |
+| Slope | the ground in five classes: 0 to 5%, 5 to 10%, 10 to 15%, 15 to 25%, over 25%; the site's mean and steepest. Off at first | Horn's method on the same ground |
+| Aspect | the way the ground faces, in eight directions and flat, coloured for warmth: facing the equator warm, facing the pole cool. Off at first | Horn's method |
+| Water flow | the flow lines, wider by their Strahler order; the divides between the large catchments; the land draining onto the site, shaded; an arrow where the site's water leaves it | Priority-Flood and D8 on the same ground |
+| Ponds | where water would stand 10 cm or more over 50 m2 or more: its depth, area and volume, its deepest point marked | the same, filled |
+| Flood zones | FEMA's floodway, 1% annual chance (A, AE, AH, AO; V and VE on the coast), 0.2% (shaded X) and undetermined (D) zones, cut to 150 m around, each labelled inside it with its base flood elevation, apart from the others' labels; the zone the site is in | FEMA's National Flood Hazard Layer (US sites) |
 
 **Live and editable.**
 - Select an element to move, turn, mirror, scale or delete it, or to change its colour, line,
-  opacity or labels in Properties.
+  opacity or labels in Properties. An area (a slope class, a pond, a flood zone) is selected by
+  clicking inside it, where nothing else is: the model and the lines and words over it come first.
+  A selected area's edge is lit.
+- Slope and Aspect cover the whole ground, so they start with their layers off: **Show** on their
+  row turns one on.
 - **Run the analysis again** (in Properties, or on its row) lays it down again from what the
   project holds now. What you have not touched is refreshed. What you changed is kept, and marked
   when the analysis would now draw it differently. What you deleted stays deleted.
@@ -116,10 +129,15 @@ analysis**:
 - Diagram elements are not building elements. Schedules, quantities, the LOD checks and the
   exports pass them by.
 - A legend at the top right keys each analysis shown, with its source. **Hide the legend** turns it
-  off. On a phone there is none over the drawing: each analysis's row in Analyze carries its key.
+  off. When the view is too small for every key, the sources go first, then the keys of the analyses
+  you turned on longest ago, with a line saying how many more. On a phone there is none over the
+  drawing: each analysis's row in Analyze carries its key.
+- The diagrams' words keep clear of the north arrow, the view cube and the legend, which are drawn
+  over them: a word that would fall under one moves, or gives way.
 - Each analysis is also a row in its category, with Show or Hide, Run again, Select, Reset and its
-  key: Compass in Location; Sun paths, Shadows and Winds in Climate; Noise in Environmental risk;
-  Views in People and place.
+  key: Compass in Location; Contours, Slope and Aspect in Landform; Water flow, Ponds and Flood
+  zones in Water; Sun paths, Shadows and Winds in Climate; Noise in Environmental risk; Views in
+  People and place.
 
 **How the noise is estimated.** Open data gives a road's class and seldom its traffic, so:
 - the traffic is the class's typical daily flow, from FHWA's functional classes (urban where the
@@ -131,6 +149,32 @@ analysis**:
 - the ground is taken as hard, and only the first building on each line counts.
 
 So it errs loud. It is a screening estimate: measure where it matters.
+
+**How the ground and its water are worked out.**
+- **The ground.** The project's own surface where it covers the site; else the ground Analyze site
+  kept, when the site is still where it was fetched for; else the context's terrain, which is a
+  point every 25 m, and says so. The ground under the site's origin is the model's 0.
+- **Slope and aspect** follow Horn (1981): each 5 m cell's fall across its eight neighbours, the
+  nearest two counted twice. Slope is rise over run, as a percentage. 15% and 25% are the decision
+  points: up to 15% building and roads are routine, 15 to 25% needs walls and engineered drainage,
+  over 25% is seldom built on. Aspect is the way the ground falls, clockwise from true north; under
+  2% it is flat.
+- **Contours** are traced by marching squares between the grid's points, so each line passes where
+  the ground is at its height. A saddle is read by the middle of its cell.
+- **Water.** Priority-Flood (Barnes, Lehman and Mulla, 2014) fills each hollow to the level its
+  water could leave by, then D8 (O'Callaghan and Mark, 1984) sends each cell's water to its steepest
+  neighbour. A flow line starts where 2,500 m2 or more drains through a cell, and its order is
+  Strahler's: two of the same order make the next. A catchment of 4% or more of the ground is
+  named, and the divide between two of them follows the edges between their cells, its steps eased
+  to within a cell. A pond is where
+  the filled ground stands 10 cm or more over the real one.
+- **FEMA's zones** are read as FEMA classes them: the floodway by its zone subtype, the 1% annual
+  chance zones by their special flood hazard flag, shaded X (or B) as the 0.2%. Unshaded X, minimal
+  hazard, is not drawn. A base flood elevation of -9999 means none was set; feet are also given in
+  metres, on FEMA's vertical datum.
+
+The ground is every 5 m, from elevation tiles: kerbs, swales, culverts and pipes are not in it. It
+is a screening of the land and its water, made before a survey and a drainage design decide.
 
 ### The ten categories and the findings
 
@@ -157,7 +201,12 @@ They cover:
 - the property line's area;
 - the data layers and flood zones;
 - the terrain's height, relief and slope;
+- the site's slope from the ground around it: its mean, its steepest, how much is under 5% and how
+  much 15% or more;
 - water and rain flow;
+- the site's drainage: which way it drains, how much land drains onto it, the ponds near it;
+- its FEMA flood zone, and the zones within 150 m: a red flag in the floodway, a constraint in a
+  flood zone;
 - the day lengths at the solstices;
 - trees and green areas;
 - streets by use, bridges and tunnels;

@@ -121,7 +121,7 @@ two cores is free speed.
 | Tool | What it does | Measured |
 |---|---|---|
 | `tests/run_all.py [build] [filter] [-jN]` | Full regression, N at a time. `-j1` is the old serial behaviour. Output is buffered per suite and printed in suite order, so a parallel run reads like a serial one. | 61 suites: **~11 min -> 117 s** at `-j6` |
-| `tests/falsify_all.py <falsify_phaseNN.py> <suite.py> [-jN]` | Builds every variant in the falsify script and proves the suite catches each. Variant names are read out of the script's own `VARIANTS` dict, never passed in. | 10 variants: **~20 min -> 34 s** at `-j5` |
+| `tests/falsify_all.py <falsify_phaseNN.py> <suite.py> [-jN]` | Builds every variant in the falsify script and proves the suite catches each. Variant names are read out of the script's own `VARIANTS` dict, never passed in. Each build is removed once its suite has run; a variant not caught keeps its build, in the folder the report names. A stopped run's folder is swept by the next run. | 10 variants: **~20 min -> 34 s** at `-j5` |
 
 Launch the parallel regression in a call of its own and poll it from separate calls:
 `setsid python3 tests/run_all.py ... > log 2>&1 < /dev/null & disown`. A background job started

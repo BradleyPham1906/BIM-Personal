@@ -159,7 +159,9 @@ async def run():
             want = {'survey': 'landform', 'terrain': 'landform', 'grading': 'landform', 'rain': 'water', 'sun': 'climate', 'sunhours': 'climate', 'solar': 'climate',
                     'lens': 'model', 'areas': 'model', 'lod': 'model', 'stats': 'model', 'structure': 'model',
                     # AMENDED FOR V164: the analyses Analyze site draws, each in its category
-                    'dgframe': 'location', 'dgsun': 'climate', 'dgshadow': 'climate', 'dgwind': 'climate', 'dgviews': 'people', 'dgnoise': 'risk'}
+                    'dgframe': 'location', 'dgsun': 'climate', 'dgshadow': 'climate', 'dgwind': 'climate', 'dgviews': 'people', 'dgnoise': 'risk',
+                    # AMENDED FOR V165: and the land and water ones
+                    'dgcontours': 'landform', 'dgslope': 'landform', 'dgaspect': 'landform', 'dgflow': 'water', 'dgponds': 'water', 'dgflood': 'water'}
             ck(W == want, "each analysis in the category it answers: landform, water, climate; the model's in Model (%s)" % W)
             cats = await safe("()=>window.__a3dAnzCats()") or []
             ck({c['id']: c['group'] for c in cats} == want, "the engine's grouping says the same")
@@ -203,7 +205,8 @@ async def run():
             ck(st1.get('qhit') and st1.get('body') == 'block' and st1.get('model') and st1.get('site') and st1.get('root'),
                "Landform is opened for it; Model steps aside, the site and its button stay (%s)" % st1)
             q2 = await search('slope')
-            ck(q2 == ['survey', 'terrain', 'grading'] and await visible_cats() == ['landform'], "'slope' is in Landform's own question: the category shows whole (%s)" % q2)
+            # AMENDED FOR V165: Landform holds contours, slope and aspect now, before the survey, terrain and grading
+            ck(q2 == ['dgcontours', 'dgslope', 'dgaspect', 'survey', 'terrain', 'grading'] and await visible_cats() == ['landform'], "'slope' is in Landform's own question: the category shows whole (%s)" % q2)
             q3 = await search('frame')
             ck(q3 == ['structure'] and await visible_cats() == [], "'frame' finds the frame analysis in Model, and no category (%s)" % q3)
             await search('boundary')
