@@ -14290,7 +14290,8 @@ traffic stress, catchments), acoustic analysts (CRTN, CNOSSOS-EU, DIN 18005's co
   Fill from the model), typed findings and their editing, photographs, pins on the plan and the
   checklists -- with their functions, their hooks, the pin tool, their CSS and their controls in
   the audit. Findings are the ones the data writes, read only, numbered by category. What a project
-  stored of the rest stays in its file, unread.
+  stored of the rest stays in its file, unread: its stage, a finding typed in, one written on. A
+  class set by hand on one of the data's findings gives way to the data's at the next fill.
 - **The cards.** Each analysis is a row in its category -- Compass in Location; Sun paths, Shadows
   and Winds in Climate; Noise in Environmental risk; Views in People and place -- with Show or
   Hide, Run again, Select, Reset, its key and its source.
@@ -14323,6 +14324,10 @@ traffic stress, catchments), acoustic analysts (CRTN, CNOSSOS-EU, DIN 18005's co
   palette, cut off. A phone's view has none now; each analysis's row in Analyze carries its key.
 - **Literal symbols in the patches.** The degree sign, the minus and the ellipsis went into three
   patches as characters, not escapes. They are escapes now; the diff is ASCII.
+- **A warning on every paint.** The full regression's V120 suite, which allows no `[BIM]` warning,
+  found one. The legend asked for the safe view rectangle before it knew it had anything to draw,
+  and the rectangle warns when the floating chrome would cover the view. It asks only with a key to
+  place now, as the app's other keys do.
 
 ### Suites
 
@@ -14335,9 +14340,10 @@ traffic stress, catchments), acoustic analysts (CRTN, CNOSSOS-EU, DIN 18005's co
   elevation from its declination, the screened classes along Market Street and the site's level.
 - Amended, each AMENDED FOR V164: V141 and V148 (the six new rows in their categories), V158 (the
   stages, Define, findings by hand, checklists, pins and photographs gone, with their hooks; Fill
-  from the model's eight context findings; the phone's field and button), V159 (the site and its
-  button head the list), V162 (the list's order; the search's site and finding; the field being
-  typed in is the zoning form's), V163 (a later version).
+  from the model's eight context findings; the phone's field and button; every finding's number
+  counted again by category), V159 (the site and its button head the list), V162 (the list's
+  order; the search's site and finding; a finding's title read apart from its number; the field
+  being typed in is the zoning form's), V163 (a later version).
 - **Falsified by `Phase/falsify_phase164.py`:** 67 variants. The first run caught 61 (1246 s, 3
   workers). The six it missed, and what changed:
   - `newer_unmarked` (a changed element never marked when the analysis would draw it otherwise):
@@ -14356,3 +14362,12 @@ traffic stress, catchments), acoustic analysts (CRTN, CNOSSOS-EU, DIN 18005's co
     site's words hold it.
 
   The full run on the final suite and build: 67 of 67 (1464 s, 3 workers).
+
+### Not done
+
+- The land and water, movement and land use layers of the same button (V165 to V167).
+- Noise as CRTN's L10,18h from road class only: no LAeq or Lden, no counted traffic, no
+  reflections or ground effect, and screening by the first building only.
+- Shadows cast on the site by the buildings around it (the analysis draws the project's own).
+- Views from each facade, and over the terrain.
+- Wind comfort (Lawson's criteria) or any airflow around the buildings.
