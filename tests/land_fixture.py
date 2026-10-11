@@ -44,6 +44,8 @@ def land_px(gx, gy):
     lon = gx / n * 360 - 180
     lat = math.degrees(math.atan(math.sinh(math.pi * (1 - 2 * gy / n))))
     x, z = g2m(lon, lat)
+    if abs(x) > 20000 or abs(z) > 20000:   # another site, far away: level ground at 20 m
+        return 20.0
     return land_height(x, z)
 
 

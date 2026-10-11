@@ -9,6 +9,8 @@ V164 engine did not hold:
   fill    a band takes its element's fill, so a class restyled in Properties is drawn restyled
   hidden  an analysis that covers the ground (slope, aspect) starts with its layer off: two
           coverages read as neither
+  pick    a band is picked by its inside, last -- after the model, the lines and words, the grids --
+          and a selected band's outline is lit: a slope class has no line of its own to click
   legend  with many analyses shown the key drops its sources, then its last blocks, naming how many
 """
 import hashlib, pathlib, sys
@@ -140,6 +142,68 @@ rep("""  /* the words, the most telling first: the compass points, then each ana
 rep("    if(g.bands)g.bands.forEach(function(B){B.pts=B.pts.map(P);});\n",
     "    if(g.bands)g.bands.forEach(function(B){if(B.pts)B.pts=B.pts.map(P);if(B.rings)B.rings=B.rings.map(function(Rg){return Rg.map(P);});});   /* __acad3dV165 */\n"
     "    if(g.lines)g.lines=g.lines.map(function(Ln){return Ln.map(P);});\n")
+# ---- a band selected: its outline lit, as a line's is ----
+rep("    if(g.marks)for(i=0;i<g.marks.length;i++){\n      sp=toScreen(bimDgW(o,g.marks[i].p),V,W,H);if(sp[2]<=0.5)continue;\n",
+    """    if(sel&&g.bands){   /* __acad3dV165: a band selected -- a slope class has no line of its own -- its outline lit,
+                           on a dark edge: the selection's yellow is near the fills' own (5 to 10% is #fecc5c) */
+      ctx.beginPath();
+      for(i=0;i<g.bands.length;i++){
+        var Rb=g.bands[i]?(g.bands[i].rings||(g.bands[i].pts?[g.bands[i].pts]:[])):[],rb,qb,Pb;
+        for(rb=0;rb<Rb.length;rb++){if(!Rb[rb]||Rb[rb].length<3)continue;Pb=[];for(qb=0;qb<Rb[rb].length;qb++)Pb.push(toScreen(bimDgW(o,Rb[rb][qb]),V,W,H));bimDgSub(ctx,Pb);}
+      }
+      ctx.setLineDash([]);ctx.globalAlpha=1;
+      ctx.strokeStyle='#1b1f24';ctx.lineWidth=5;ctx.stroke();
+      ctx.strokeStyle='#ffd166';ctx.lineWidth=2;ctx.stroke();ctx.globalAlpha=a;
+    }
+    if(g.marks)for(i=0;i<g.marks.length;i++){
+      sp=toScreen(bimDgW(o,g.marks[i].p),V,W,H);if(sp[2]<=0.5)continue;
+""")
+
+# ---- a band picked by its inside, last: only where nothing else is under the pointer ----
+rep("     model and so picked before it. A band, a fill or a shadow is picked by its lines and words only,\n     so it never covers the model it lies over. */\n",
+    "     model and so picked before it. A band, a fill or a shadow is picked here by its lines and words\n"
+    "     only, so it never covers the model it lies over; __acad3dV165: a band's inside, last of all\n"
+    "     (bimPickBand). */\n")
+rep("  /* turned, mirrored or scaled: the plan coordinates of every point, label and symbol */\n  function bimDgTransformed(dg,tp){\n",
+    """  /* __acad3dV165: a band -- a slope or aspect class, a pond, a flood zone, a road's noise -- picked by
+     its inside. The click asks it last, after the model, the lines and words over it and the grids, so
+     a band never covers what lies on it; a class with no line of its own is still a click away. The
+     top one: the analysis drawn last, then its highest class, as bimDgDrawBands lays them. */
+  function bimPickBand(x,y){
+    var L=bimDgDiags(),G={},order=[],V,W,H,i,j,k,m;
+    for(i=0;i<L.length;i++){
+      var o=L[i],gb=o.dg.g.bands;
+      if(!gb||!gb.length||!bimLayerShown(o)||!bimLayerPickable(o))continue;
+      if(!G.hasOwnProperty(o.dg.a)){G[o.dg.a]=[];order.push(o.dg.a);}
+      for(j=0;j<gb.length;j++)if(gb[j])G[o.dg.a].push({o:o,B:gb[j],n:G[o.dg.a].length});
+    }
+    if(!order.length)return null;
+    V=camVecs(A3D.cam);W=cvW();H=cvH();
+    for(i=order.length-1;i>=0;i--){
+      var T=G[order[i]].slice().sort(function(p,q){return ((q.B.lv||0)-(p.B.lv||0))||(q.n-p.n);});
+      for(j=0;j<T.length;j++){
+        var R=T[j].B.rings||(T[j].B.pts?[T[j].B.pts]:[]),inside=false;
+        for(k=0;k<R.length;k++){
+          if(!R[k]||R[k].length<3)continue;
+          var P=[],front=true;
+          for(m=0;m<R[k].length;m++){var sp=toScreen(bimDgW(T[j].o,R[k][m]),V,W,H);if(sp[2]<=0.5){front=false;break;}P.push(sp);}
+          if(front&&inPoly(x,y,P))inside=!inside;   /* even-odd, as it is filled */
+        }
+        if(inside)return T[j].o;
+      }
+    }
+    return null;
+  }
+  /* turned, mirrored or scaled: the plan coordinates of every point, label and symbol */
+  function bimDgTransformed(dg,tp){
+""")
+rep("      if(gpk)refreshLevels();\n      /* __acad3dV134: under them all, the data layers */\n      A3D_DATA.sel=(o||gpk)?null:bimDataPick(xy[0],xy[1]);\n",
+    "      if(gpk)refreshLevels();\n"
+    "      /* __acad3dV165: under the grids, a band of the site analysis, by its inside */\n"
+    "      var bpk=(o||gpk)?null:bimPickBand(xy[0],xy[1]);\n"
+    "      if(bpk){o=bpk;A3D.sel=o.id;A3D.selSet=[o.id];}\n"
+    "      /* __acad3dV134: under them all, the data layers */\n"
+    "      A3D_DATA.sel=(o||gpk)?null:bimDataPick(xy[0],xy[1]);\n")
 rep("    (g.bands||[]).forEach(function(B){(B.pts||[]).forEach(function(p){P.push(p);});});\n",
     "    (g.bands||[]).forEach(function(B){(B.pts||[]).forEach(function(p){P.push(p);});(B.rings||[]).forEach(function(Rg){Rg.forEach(function(p){P.push(p);});});});   /* __acad3dV165 */\n"
     "    (g.lines||[]).forEach(function(Ln){Ln.forEach(function(p){P.push(p);});});\n")

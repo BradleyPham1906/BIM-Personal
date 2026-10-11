@@ -11,7 +11,7 @@
 import hashlib, pathlib, sys
 
 SRC = pathlib.Path('canvas_v10.html')
-BASE = '185235476284c68d2d3e837d7121c746b14117fa117535bb5263e72a2af81903'   # after patch_phase165b.py
+BASE = '72717d768c879f4caf2f1eec24a9253e642c5c28cf2eb8b7de1c82385c0bbb33'   # after patch_phase165b.py
 
 raw = SRC.read_bytes()
 sha = hashlib.sha256(raw).hexdigest()
@@ -111,6 +111,8 @@ rep("  window.__acad3dV164='",
     "      ponds:Y.ponds.map(function(p){return {cells:p.cells.slice(),volume:p.volume,depth:p.depth,deep:p.deep,level:p.level,area:p.area};}),pondsAll:Y.pondsAll,\n"
     "      links:bimLandLinks(D,Y).map(function(l){return {from:l.from,to:l.to,order:l.order,outlet:l.outlet,n:l.nodes.length};})};};\n"
     "  window.__a3dLandMs=function(V,nx,nz,lev,pad){return bimLandMs(V,nx,nz,lev,pad);};\n"
+    "  window.__a3dLandGet=function(){var L=A3D.site&&A3D.site.land;return L?JSON.parse(JSON.stringify(L)):null;};\n"
+    "  window.__a3dLandSet=function(v){A3D.site=A3D.site||{};if(v===null)delete A3D.site.land;else A3D.site.land=JSON.parse(JSON.stringify(v));A3D_LAND.key=null;A3D_LAND.D=null;return true;};\n"
     "  window.__a3dLandZoneOf=function(p){return bimLandZoneOf(p||{});};\n"
     "  window.__a3dLandBfe=function(p){return bimLandBfe(p||{});};\n"
     "  window.__a3dLandUS=function(lat,lon){return bimLandUS({lat:lat,lon:lon});};\n"

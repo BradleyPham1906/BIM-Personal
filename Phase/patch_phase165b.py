@@ -17,7 +17,7 @@ said. On that ground:
 import hashlib, pathlib, sys
 
 SRC = pathlib.Path('canvas_v10.html')
-BASE = '718a0982e44645630fa53777da3303f5370b4410b739fe0d7650a2f2c88a5b52'   # after patch_phase165a.py
+BASE = '7efc547a0f9eb6b6a5c7608ee55f0cf11fb0d54af3303ce1cc8506478daed215'   # after patch_phase165a.py
 
 raw = SRC.read_bytes()
 sha = hashlib.sha256(raw).hexdigest()

@@ -19614,6 +19614,17 @@ try{
       for(i=0;i+1<P.length;i++)if(P[i][2]>0.5&&P[i+1][2]>0.5)hit.segs.push([P[i][0],P[i][1],P[i+1][0],P[i+1][1]]);
       if(g.closed&&P.length>2&&P[0][2]>0.5&&P[P.length-1][2]>0.5)hit.segs.push([P[P.length-1][0],P[P.length-1][1],P[0][0],P[0][1]]);
     }
+    if(sel&&g.bands){   /* __acad3dV165: a band selected -- a slope class has no line of its own -- its outline lit,
+                           on a dark edge: the selection's yellow is near the fills' own (5 to 10% is #fecc5c) */
+      ctx.beginPath();
+      for(i=0;i<g.bands.length;i++){
+        var Rb=g.bands[i]?(g.bands[i].rings||(g.bands[i].pts?[g.bands[i].pts]:[])):[],rb,qb,Pb;
+        for(rb=0;rb<Rb.length;rb++){if(!Rb[rb]||Rb[rb].length<3)continue;Pb=[];for(qb=0;qb<Rb[rb].length;qb++)Pb.push(toScreen(bimDgW(o,Rb[rb][qb]),V,W,H));bimDgSub(ctx,Pb);}
+      }
+      ctx.setLineDash([]);ctx.globalAlpha=1;
+      ctx.strokeStyle='#1b1f24';ctx.lineWidth=5;ctx.stroke();
+      ctx.strokeStyle='#ffd166';ctx.lineWidth=2;ctx.stroke();ctx.globalAlpha=a;
+    }
     if(g.marks)for(i=0;i<g.marks.length;i++){
       sp=toScreen(bimDgW(o,g.marks[i].p),V,W,H);if(sp[2]<=0.5)continue;
       ctx.globalAlpha=a;ctx.fillStyle=s.mark||'#ffd23f';ctx.beginPath();ctx.arc(sp[0],sp[1],sel?5.5:4.5,0,2*Math.PI);ctx.fill();
@@ -19721,8 +19732,9 @@ try{
     ctx.restore();
   }
   /* what is under the pointer: a line, a dot, a label or a symbol of a diagram, drawn over the
-     model and so picked before it. A band, a fill or a shadow is picked by its lines and words only,
-     so it never covers the model it lies over. */
+     model and so picked before it. A band, a fill or a shadow is picked here by its lines and words
+     only, so it never covers the model it lies over; __acad3dV165: a band's inside, last of all
+     (bimPickBand). */
   function bimPickDiag(x,y){
     var H=A3D_DG.hits,i,j,b;
     for(i=H.length-1;i>=0;i--){
@@ -19731,6 +19743,35 @@ try{
       for(j=0;j<H[i].boxes.length;j++){b=H[i].boxes[j];if(x>=b[0]-2&&x<=b[0]+b[2]+2&&y>=b[1]&&y<=b[1]+b[3])return o;}
       for(j=0;j<H[i].dots.length;j++){var dx=x-H[i].dots[j][0],dy=y-H[i].dots[j][1];if(dx*dx+dy*dy<=64)return o;}
       for(j=0;j<H[i].segs.length;j++){var s=H[i].segs[j];if(bimPointSegDist(x,y,s[0],s[1],s[2],s[3])<=5)return o;}
+    }
+    return null;
+  }
+  /* __acad3dV165: a band -- a slope or aspect class, a pond, a flood zone, a road's noise -- picked by
+     its inside. The click asks it last, after the model, the lines and words over it and the grids, so
+     a band never covers what lies on it; a class with no line of its own is still a click away. The
+     top one: the analysis drawn last, then its highest class, as bimDgDrawBands lays them. */
+  function bimPickBand(x,y){
+    var L=bimDgDiags(),G={},order=[],V,W,H,i,j,k,m;
+    for(i=0;i<L.length;i++){
+      var o=L[i],gb=o.dg.g.bands;
+      if(!gb||!gb.length||!bimLayerShown(o)||!bimLayerPickable(o))continue;
+      if(!G.hasOwnProperty(o.dg.a)){G[o.dg.a]=[];order.push(o.dg.a);}
+      for(j=0;j<gb.length;j++)if(gb[j])G[o.dg.a].push({o:o,B:gb[j],n:G[o.dg.a].length});
+    }
+    if(!order.length)return null;
+    V=camVecs(A3D.cam);W=cvW();H=cvH();
+    for(i=order.length-1;i>=0;i--){
+      var T=G[order[i]].slice().sort(function(p,q){return ((q.B.lv||0)-(p.B.lv||0))||(q.n-p.n);});
+      for(j=0;j<T.length;j++){
+        var R=T[j].B.rings||(T[j].B.pts?[T[j].B.pts]:[]),inside=false;
+        for(k=0;k<R.length;k++){
+          if(!R[k]||R[k].length<3)continue;
+          var P=[],front=true;
+          for(m=0;m<R[k].length;m++){var sp=toScreen(bimDgW(T[j].o,R[k][m]),V,W,H);if(sp[2]<=0.5){front=false;break;}P.push(sp);}
+          if(front&&inPoly(x,y,P))inside=!inside;   /* even-odd, as it is filled */
+        }
+        if(inside)return T[j].o;
+      }
     }
     return null;
   }
@@ -46229,6 +46270,9 @@ try{
       var gpk=o?null:bimPickGrid(xy[0],xy[1]);
       A3D.selGrid=gpk?gpk.id:null;
       if(gpk)refreshLevels();
+      /* __acad3dV165: under the grids, a band of the site analysis, by its inside */
+      var bpk=(o||gpk)?null:bimPickBand(xy[0],xy[1]);
+      if(bpk){o=bpk;A3D.sel=o.id;A3D.selSet=[o.id];}
       /* __acad3dV134: under them all, the data layers */
       A3D_DATA.sel=(o||gpk)?null:bimDataPick(xy[0],xy[1]);
       if(!o)refreshProps();
@@ -49539,6 +49583,8 @@ try{
       ponds:Y.ponds.map(function(p){return {cells:p.cells.slice(),volume:p.volume,depth:p.depth,deep:p.deep,level:p.level,area:p.area};}),pondsAll:Y.pondsAll,
       links:bimLandLinks(D,Y).map(function(l){return {from:l.from,to:l.to,order:l.order,outlet:l.outlet,n:l.nodes.length};})};};
   window.__a3dLandMs=function(V,nx,nz,lev,pad){return bimLandMs(V,nx,nz,lev,pad);};
+  window.__a3dLandGet=function(){var L=A3D.site&&A3D.site.land;return L?JSON.parse(JSON.stringify(L)):null;};
+  window.__a3dLandSet=function(v){A3D.site=A3D.site||{};if(v===null)delete A3D.site.land;else A3D.site.land=JSON.parse(JSON.stringify(v));A3D_LAND.key=null;A3D_LAND.D=null;return true;};
   window.__a3dLandZoneOf=function(p){return bimLandZoneOf(p||{});};
   window.__a3dLandBfe=function(p){return bimLandBfe(p||{});};
   window.__a3dLandUS=function(lat,lon){return bimLandUS({lat:lat,lon:lon});};
