@@ -11,9 +11,12 @@ VARIANTS = {
     # 'no_site_tab': [("      '<button type=\"button\" class=\"a3d-railbtn\" data-tab=\"site\" data-short=\"Site\" title=\"Site analysis\" aria-label=\"Site analysis\">'+   /* __acad3dV158 */\n      bimRailIcon('site')+'</button>'+\n", "")],
     'nine_categories': [("    {id:'people',n:'People and place',", "    {id:'people',hide:1,n:'People and place',"), ("  function bimSaCat(id){var i;", "  BIM_SA_CATS=BIM_SA_CATS.slice(0,9);\n  function bimSaCat(id){var i;")],
     'refill_doubles': [("      f=null;s.findings.forEach(function(x){if(x.auto===A[i].auto)f=x;});", "      f=null;")],
-    'refill_overwrites_class': [("        if(!f.touched){f.cls=", "        if(true){f.cls=")],
+    # RETIRED IN V164: 'refill_overwrites_class' -- a refill kept a class set by hand; V164 sets none by hand, and one set
+    # before gives way to the data's (falsify_phase164.py's typed_class_kept puts the old guard back).
+    # 'refill_overwrites_class': [("        if(!f.touched){f.cls=", "        if(true){f.cls=")],
     'stale_kept': [("      del++;return false;", "      return true;")],
-    'noted_dropped': [("      if(x.note||x.photo||x.at||x.touched){x.auto='';return true;}", "")],
+    # MOVED IN V164 to falsify_phase164.py: 'noted_dropped' -- only a project from before V164 holds a note now, and the
+    # V164 suite opens one.
     'no_source': [("source:osm,date:od});\n    }\n    var P=A3D.objs.filter(bimIsProperty);", "source:'',date:od});\n    }\n    var P=A3D.objs.filter(bimIsProperty);")],
     # RETIRED IN V164: 'no_stage_move' -- Fill from the model moved the project to the desktop stage; V164 removed the stages.
     # 'no_stage_move': [("    if(s.stage<1)s.stage=1;\n", "")],

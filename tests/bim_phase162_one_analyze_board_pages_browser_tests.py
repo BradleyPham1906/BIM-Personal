@@ -216,6 +216,9 @@ async def run():
             await safe("()=>window.__a3dAnzView('site')")
             q4 = await search('perimeter')
             ck(await visible_cats() == ['legal'], "a finding's words find its category (%s)" % await visible_cats())
+            # AMENDED FOR V164: a title is read apart from the number before it -- Access's Connectivity, a word nowhere else in it
+            await search('connectivity')
+            ck(await visible_cats() == ['access'], "a finding's title finds its category, its number read apart (%s)" % await visible_cats())
             q5 = await search('zzqx')
             emp = await safe("()=>!document.querySelector('.a3d-analyze-wrap .a3d-anzempty').hasAttribute('hidden')")
             ck(q5 == [] and await visible_cats() == [] and emp, "nothing matches: it says so")

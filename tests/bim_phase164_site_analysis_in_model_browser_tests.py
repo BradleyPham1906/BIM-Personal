@@ -25,8 +25,10 @@ declination.
  10. PROPERTIES AND PICKING: the groups; an edit, a refused edit; a click picks an element; a
      locked or hidden layer.
  11. THE CARDS AND FINDINGS: the six rows in their categories; Show, Select, Run again, Reset;
-     read-only findings; one typed before stays unread; the search.
+     read-only findings; the search.
  12. FAILURES: a source down; an address not found; busy; the place already set; ANALYZESITE.
+     A project from before V164: its stage, a finding typed in and one written on stay in the
+     file, unread; a class set by hand gives way to the data's.
  13. A RELOAD, A PHONE AND A TABLET.
 
 The harness never waits without a bound (V123).
@@ -829,6 +831,44 @@ async def run():
                "the climate down: no time zone, so the sun asks for its offset; no wind")
             ck(D5['runs']['frame']['keys'] and D5['runs']['noise']['keys'], "the compass and the noise drawn all the same")
             await c5.close()
+
+            # ---- a project from before V164: what was typed in it stays in its file, unread ----
+            c7, p7, st7, e7 = await fresh({})
+            await p7.fill('[data-saaddr]', '1 Market Street')
+            await safe("()=>document.querySelector('[data-saact=\"analyze\"]').click()", pg=p7)
+            await wait_run(pg=p7)
+            env = json.loads(await safe("()=>window.__a3dProjectEnvelope()", pg=p7) or '{}')
+            an = env.get('data', {}).get('site', {}).get('analysis', {})
+            FD = {f.get('auto'): f for f in an.get('findings', [])}
+            ck(FD.get('location.place') and FD.get('access.roads') and FD.get('location.built'), "(a run's findings, to make an old project of: %d)" % len(FD))
+            if FD.get('location.place') and FD.get('access.roads'):
+                cls0 = FD['location.place']['cls']
+                FD['location.place'].update({'cls': 'redflag', 'sev': 3, 'touched': True})          # a class set by hand in V158
+                FD['access.roads']['note'] = 'Lorries use it at night'                                 # a note written on a finding
+                an['findings'].append({'id': 'safind-typed', 'cat': 'access', 'title': 'School run', 'value': 'Parents park along Market Street at 8 and 3',
+                                       'cls': 'constraint', 'sev': 2, 'conf': 'site', 'source': 'Seen on site', 'date': '2026-05-02', 'auto': ''})   # a finding typed in
+                an['stage'] = 2                                                                         # V158's stages
+                await safe("(t)=>window.__a3dImportProject(t,'Before V164.acad3d.json')", json.dumps(env), pg=p7)
+                await safe("()=>{window.__a3dAnzView(true);window.__a3dAnalyzeRefresh(true);}", pg=p7)
+                await p7.wait_for_timeout(200)
+                shown_t = "()=>[].map.call(document.querySelectorAll('.a3d-analyze-wrap .a3d-safind .a3d-saftt'),function(e){return e.textContent;})"
+                S7 = await safe("()=>window.__a3dSa()", pg=p7) or {}
+                t7 = await safe(shown_t, pg=p7) or []
+                ck(S7.get('stage') == 2 and [f for f in S7.get('findings', []) if f['id'] == 'safind-typed'] and 'School run' not in t7 and 'Streets' in t7 and not await safe("()=>document.querySelector('[data-sastage]')", pg=p7),
+                   "an old project opens: its stage and its typed finding kept in the file, neither shown (%d shown)" % len(t7))
+                await safe("()=>window.__a3dSaFill()", pg=p7)
+                pl = [f for f in (await safe("()=>window.__a3dSa()", pg=p7) or {}).get('findings', []) if f.get('auto') == 'location.place']
+                ck(pl and pl[0]['cls'] == cls0, "a class set by hand gives way to the data's at the next fill (%s)" % (pl and pl[0]['cls']))
+                await safe("()=>window.__a3dRunCmd('contextremove')", pg=p7)
+                await safe("()=>window.__a3dSaFill()", pg=p7)
+                await safe("()=>window.__a3dAnalyzeRefresh(true)", pg=p7)
+                S8 = {f['id']: f for f in (await safe("()=>window.__a3dSa()", pg=p7) or {}).get('findings', [])}
+                rd = S8.get(FD['access.roads']['id']) or {}
+                t8 = await safe(shown_t, pg=p7) or []
+                ck(rd.get('note') == 'Lorries use it at night' and rd.get('auto') == '' and FD['location.built']['id'] not in S8 and 'safind-typed' in S8 and 'Streets' not in t8,
+                   "the context gone: its findings go, but the one written on stays in the file, unread, as does the typed one")
+            ck(not e7, "no page errors (%s)" % e7[:3])
+            await c7.close()
 
             # ---------------------------------------------------------------------------------
             print("\n-- 13. A phone and a tablet")

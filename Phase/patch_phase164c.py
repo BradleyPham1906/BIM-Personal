@@ -18,7 +18,7 @@ analysis". So:
 import hashlib, pathlib, sys
 
 SRC = pathlib.Path('canvas_v10.html')
-BASE = '1f72220208db524351ea4bd29954f97b15a33f6ef63318f91868c703285412eb'   # after patch_phase164b.py
+BASE = '42d132eb581f2868c2e6cc7030fa906afe2e3564e88e84257889a5f859703d1f'   # after patch_phase164b.py
 
 raw = SRC.read_bytes()
 sha = hashlib.sha256(raw).hexdigest()
@@ -404,6 +404,9 @@ rep("""    if(c==='add')return bimSaAdd(v);
     if(c==='dglegend'){var D=bimDgState();D.legendOff=!D.legendOff;saveSoon();paint();bimSaRefresh(true);return true;}
 """)
 rep("    if(c==='fill')return bimSaFill();\n", "")
+# the data's class: none is set by hand now, and one set before V164 gives way at the next fill
+rep("        if(!f.touched){f.cls=bimSaPair(BIM_SA_CLS,A[i].cls)?A[i].cls:'neutral';f.sev=A[i].sev||1;}\n",
+    "        f.cls=bimSaPair(BIM_SA_CLS,A[i].cls)?A[i].cls:'neutral';f.sev=A[i].sev||1;   /* __acad3dV164: the data's class; one set by hand before gives way */\n")
 cut("  /* the pins: a numbered circle in the finding's colour */\n  function drawSaPins(ctx,V,W,H){\n",
     "  /* __acad3dV73: the no-selection inspector.", "")
 rep("    if(!capMode)drawSaPins(ctx,V,W,H);   /* __acad3dV158: the site analysis findings */\n", "")

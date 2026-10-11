@@ -17,7 +17,7 @@ zone comes with it, so the sun needs no typing.
 import hashlib, pathlib, sys
 
 SRC = pathlib.Path('canvas_v10.html')
-BASE = '912de2adbd3f900e008120605bfcfca84aa3029be47a5b6a9aae2e2cf82e9d9a'   # after patch_phase164a.py
+BASE = 'eeeb58efa0187ab21289339470f3040b1c80028a3f937c6cbc4d517b3481c95b'   # after patch_phase164a.py
 
 raw = SRC.read_bytes()
 sha = hashlib.sha256(raw).hexdigest()

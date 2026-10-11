@@ -224,8 +224,17 @@ async def run():
             gone = await safe("""()=>['__a3dSaAdd','__a3dSaSet','__a3dSaDel','__a3dSaDefine','__a3dSaCheck','__a3dSaPlace','__a3dSaStartPin','__a3dSaPhotoUrl','__a3dSaPins','__a3dSaEdit']
               .filter(function(k){return typeof window[k]!=='undefined';})""")
             ck(gone == [], "no way left to type a finding, a stage, a checklist, a pin or a photograph in (%s)" % gone)
-            f0 = (await sa())['findings'][0]
-            ck(await safe("(i)=>window.__a3dSaNumber(i)", f0['id']) == '1.1', "the data's findings numbered by category, 1.1 first")
+            # AMENDED FOR V164: every finding's number counted again here, by category in the list's order
+            S = await sa()
+            exp, seen = {}, {}
+            for f in S['findings']:
+                if f.get('auto'):
+                    seen[f['cat']] = seen.get(f['cat'], 0) + 1
+                    exp[f['id']] = '%d.%d' % (CATS.index(f['cat']) + 1, seen[f['cat']])
+            got = {i: await safe("(i)=>window.__a3dSaNumber(i)", i) for i in exp}
+            lb = [f['id'] for f in S['findings'] if f.get('auto') == 'legal.boundary']
+            ck(got == exp and lb and got.get(lb[0]) == '2.1' and len(seen) > 3,
+               "the data's findings numbered by category: Location's 1.1 and 1.2, then Legal's 2.1 (%s)" % [got.get(i) for i in list(exp)[:4]])
 
             # ---------------------------------------------------------------------------------
             print("\n-- 6. the panel")

@@ -459,9 +459,8 @@ ENGINE = r"""  /* ================= __acad3dV164: site analysis drawn in the mod
   function drawDiagramLegend(ctx,V,W,H){
     A3D_DG.legend=null;
     if(A3D.sheetCapture||A3D_PLOT.on)return;
-    var D=bimDgState(),sr=bimSafeViewRect();
-    if(D.legendOff||sr.w<620)return;
-    var blocks=[],i;
+    var D=bimDgState(),blocks=[],i,sr;
+    if(D.legendOff)return;
     for(i=0;i<BIM_DG_AN.length;i++){
       var A=BIM_DG_AN[i],R=D.runs[A.id];
       if(!R)continue;
@@ -469,6 +468,8 @@ ENGINE = r"""  /* ================= __acad3dV164: site analysis drawn in the mod
       blocks.push({title:A.name,rows:(R.legend||[]).slice(0,8),src:R.source||'',drawn:[]});
     }
     if(!blocks.length)return;
+    sr=bimSafeViewRect();   /* asked only with a key to place, as the other keys do: it warns when the chrome covers the view */
+    if(sr.w<620)return;   /* a phone's view: each analysis's row in Analyze carries its key */
     ctx.save();
     try{
       var pad=8,rowH=15,sw=12,maxW=Math.round(Math.min(300,Math.max(170,sr.w*0.3))),inner=maxW-2*pad,ops=[],y=pad,x,j,b,w=0;
