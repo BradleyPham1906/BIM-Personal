@@ -14539,6 +14539,12 @@ warmth, contours on a hypsometric ramp, FEMA's zones in the FIRM's colours).
   water layers off while its key is read, then as they were; Ground and water a step; the site's
   noise label looked up within its analysis); `tests/site_analysis_fixture.py` (FEMA's host, the
   V165 ground, FEMA down or slow).
+- `tests/falsify_all.py` cleans up after itself. Every build stayed in its folder in /tmp, a page
+  each: 230 MB a full V165 run, and a stopped run's too. Each build now goes once its suite has
+  run; a variant the suite did not catch keeps its build, in the folder the report names, to be
+  looked at. Each run's folder holds its process's id, and the next run sweeps the folders of
+  runs that are gone. Tried on stand-in scripts: caught, missed, a broken build, all caught,
+  stopped with Ctrl-C, killed.
 - **Falsified by `Phase/falsify_phase165.py`:** 76 variants. The first run caught 71 (1920 s, 3
   workers). The five it missed, and what changed:
   - `rings_nonzero` (a band's rings filled nonzero, not even-odd): nothing looked inside a ring's
