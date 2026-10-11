@@ -163,7 +163,8 @@ So it errs loud. It is a screening estimate: measure where it matters.
   water could leave by, then D8 (O'Callaghan and Mark, 1984) sends each cell's water to its steepest
   neighbour. A flow line starts where 2,500 m2 or more drains through a cell, and its order is
   Strahler's: two of the same order make the next. A catchment of 4% or more of the ground is
-  named, and the divide between two of them follows the edges between their cells. A pond is where
+  named, and the divide between two of them follows the edges between their cells, its steps eased
+  to within a cell. A pond is where
   the filled ground stands 10 cm or more over the real one.
 - **FEMA's zones** are read as FEMA classes them: the floodway by its zone subtype, the 1% annual
   chance zones by their special flood hazard flag, shaded X (or B) as the 0.2%. Unshaded X, minimal

@@ -20907,7 +20907,7 @@ try{
     bimLandDivides(D,Y,big).forEach(function(dv){
       var lines=[];
       dv.lines.forEach(function(L0){
-        var L=bimLandDP(L0.map(function(g){return [D.x0+g[0]*D.cell,D.z0+g[1]*D.cell];}),D.cell*0.6,false);   /* the cells' steps eased */
+        var L=bimLandDP(L0.map(function(g){return [D.x0+g[0]*D.cell,D.z0+g[1]*D.cell];}),D.cell,false);   /* the cells' steps eased: their inner corners stand 0.71 of a cell off the line through the outer ones */
         if(L.length>=2)lines.push(L.map(function(q){var y=bimLandAt(D,q[0],q[1]);return [bimLandR(q[0]),bimLandR((y===null?0:y)+0.06),bimLandR(q[1])];}));
       });
       if(!lines.length)return;

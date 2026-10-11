@@ -14452,8 +14452,9 @@ warmth, contours on a hypsometric ramp, FEMA's zones in the FIRM's colours).
     from the highest cell down; a flow line where 2,500 m2 or more drains, a line a link from a
     source or a confluence to the next, wider by its Strahler order, with its arrowhead; the large
     catchments (4% of the ground or more) named at their middles, the divide between two of them
-    drawn once, dashed, along the edges between their cells; the land draining onto the site, shaded
-    and said; an arrow where the site's water leaves it, the most first.
+    drawn once, dashed, along the edges between their cells, its steps eased to within a cell; the
+    land draining onto the site, shaded and said; an arrow where the site's water leaves it, the most
+    first.
   - **Ponds:** where the filled ground stands 10 cm or more over the real one, 50 m2 or more, the
     eight largest: depth, area, volume and the level it spills at, the deepest point marked.
   - **Flood zones:** FEMA's zones read as FEMA classes them -- the regulatory floodway by its
@@ -14496,6 +14497,10 @@ warmth, contours on a hypsometric ramp, FEMA's zones in the FIRM's colours).
 - **Divides twice, out of step.** Each large catchment's outline was traced and simplified on its
   own, so the divide between two came out as two dashed lines a little apart. A divide is traced
   once now, from the edges between the cells of the two catchments.
+- **A divide in steps.** The divides were to be eased to within 0.6 of a cell, a figure worked out
+  from a staircase's middle line. Douglas and Peucker measure from the line through its outer
+  corners, which the inner ones stand 0.71 of a cell off, so every step of the cells' edges stayed:
+  24 points where 4 do. A cell eases them, and the suite asks that no one-cell step is left.
 - **A link of one point.** A confluence on the ground's edge starts a link that ends where it
   starts: nothing to draw, and the suite counts only links of two points or more.
 - **One key, four analyses.** V164's suite looked its noise label up by the key 'site', which

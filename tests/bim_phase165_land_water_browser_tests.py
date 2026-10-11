@@ -599,6 +599,15 @@ async def run():
             on_edges = all(DV[key]['dg']['s'].get('dash') and DV[key]['dg']['g']['kind'] == 'lines' and
                            all((round((p[0] - x0) / cell, 3), round((p[2] - z0) / cell, 3)) in ref[key] for L in DV[key]['dg']['g']['lines'] for p in L) for key in DV if key in ref)
             ck(ref and sorted(DV) == sorted(ref) and on_edges, "the divides between them dashed, each once, along the edges between their cells (%d: %s)" % (len(ref), sorted(DV)))
+            steps = 0
+            for o in DV.values():
+                for L in o['dg']['g']['lines']:
+                    for m in range(len(L) - 2):
+                        u_ = (L[m + 1][0] - L[m][0], L[m + 1][2] - L[m][2])
+                        w_ = (L[m + 2][0] - L[m + 1][0], L[m + 2][2] - L[m + 1][2])
+                        if abs(math.hypot(*u_) - cell) < 0.02 and abs(math.hypot(*w_) - cell) < 0.02 and abs(u_[0] * w_[0] + u_[1] * w_[1]) < 0.02:
+                            steps += 1
+            ck(DV and steps == 0, "each eased: no step of one cell left from the cells' edges (%d; %s points)" % (steps, [sum(len(L) for L in o['dg']['g']['lines']) for o in DV.values()]))
             nu = sum(1 for k in range(nx * nz) if U[k] and not M[k])
             uo = await el('flow', 'upstream')
             ck(uo and uo['dg']['lb'][0]['t'] == ha(nu * 25) + ' drains onto the site' and uo['dg']['g']['bands'][0]['rings'], "the land draining onto the site, %s, shaded and said" % ha(nu * 25))

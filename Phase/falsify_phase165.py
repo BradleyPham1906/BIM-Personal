@@ -66,6 +66,7 @@ VARIANTS = {
     'catchments_all': [("return Y.outCells[o]>=BIM_LAND_CATCH*tot;", "return Y.outCells[o]>=1;")],
     'divides_with_small': [("if(i+1<nx&&D.ok[k+1]&&(b=Y.lab[k+1])!==a&&big[b])", "if(i+1<nx&&D.ok[k+1]&&(b=Y.lab[k+1])!==a)")],
     'divides_undashed': [("s:{stroke:'#8fa9c4',w:1.1,dash:[6,4],op:0.85}", "s:{stroke:'#8fa9c4',w:1.1,op:0.85}")],
+    'divides_stepped': [("[D.x0+g[0]*D.cell,D.z0+g[1]*D.cell];}),D.cell,false);", "[D.x0+g[0]*D.cell,D.z0+g[1]*D.cell];}),D.cell*0.6,false);")],
     'upstream_site_only': [("    while(st.length){k=st.pop();for(u=Y.head[k];u>=0;u=Y.nxt[u])if(!U[u]){U[u]=1;st.push(u);}}\n", "")],
     'exits_unordered': [("    E.sort(function(a,b){return Y.acc[b]-Y.acc[a]||a-b;});\n", "")],
     'exit_reversed': [("dn=BIM_LAND_DIRNAME[BIM_LAND_DIRS[bimLandDir8(bimLandAz(e[0]-P[0][0],e[2]-P[0][2]))]];",
