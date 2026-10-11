@@ -2,11 +2,11 @@
 
 **Read this first in a new session.** One page. The detail lives in the docs listed at the bottom.
 
-    canvas_v10.html   2725761 bytes
-    sha256            e206ae4501c1b76d143f7df47ccbabce6a5efbf39401c5b943ffdb662fed7796
-    markers           __acad3dV60 ... __acad3dV162, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
+    canvas_v10.html   2966477 bytes
+    sha256            7fac61cb6717f63cd883c9471ada85eca6608c26e67febc3a1edf8db10161e8a
+    markers           __acad3dV60 ... __acad3dV163, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
                       __acad3dV121b
-    tests             119 suites, 5271 checks, 0 failures
+    tests             120 suites, 5386 checks, 0 failures
 
     The user guide (V142): every phase updates docs/src/, its log entry and BIM_APP_VERSION, then
     runs tools/dump_catalog.py and tools/build_docs.py. The V142 suite and the Pages workflow
@@ -173,9 +173,9 @@ when it starts (V111 to V138 went to other work; V139 to V181 are in NOW).
 - A SketchUp file opens where it was drawn: a locked solid for each placement and material, every
   face once; the tags as sub-layers in their colours, off where SketchUp had them off; glass on a
   see-through sub-layer; named components as blocks in Assets. One undo step.
-- **Checked** in 114 checks against a file written by openskp's own writer from geometry the
-  test knows (bounds, areas, a nested and a mirrored placement), and 54 falsify variants; by hand
-  on openskp's samples, SketchUp 2017 to 2025, a Portuguese file among them.
+- **Checked** in 115 checks against a file written by openskp's own writer from geometry the
+  test knows (bounds, areas, a nested and a mirrored placement), and 54 falsify variants, all
+  caught; by hand on openskp's samples, SketchUp 2017 to 2025, a Portuguese file among them.
 
 Phase 162 (V162), **one Analyze, and the boards as pages of the set**.
 - The owner: the analyses and the site analysis "should be just one", and the boards belong "on

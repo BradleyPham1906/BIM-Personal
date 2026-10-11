@@ -14184,8 +14184,8 @@ The research (`reference/research-sketchup-import.md`) covers:
   workers). `no_reader_crash` -- the reader taken on trust, without checking it has its functions
   -- passed: the suite took the reader away entirely, and a missing reader fails the plain check as
   well. The suite now also hands the import an `OpenSkp` without the reader's functions, which the
-  check must refuse before the import fails inside it. The full run on the final suite is recorded
-  in the next commit.
+  check must refuse before the import fails inside it. The full run on the final suite: 54 of 54
+  (752 s, 3 workers).
 - **By hand** on openskp's own samples, which are not copied into the repo (their origin is not
   stated): SketchUp 2025 (two ZIP files: 1 object; 43 groups on 11 tags, 18,636 triangles in about
   a second), SketchUp 2020 in Portuguese (161 objects, 53,269 triangles, one block), SketchUp 2017
@@ -14198,3 +14198,16 @@ The research (`reference/research-sketchup-import.md`) covers:
 - A face's own tag, an instance's hidden flag, SketchUp's scenes as saved views, its dimensions and
   text: the reader reads some of these, the import does not place them yet.
 - Writing `.skp` files (openskp's writer makes only the archive container).
+
+### Full regression and state after V163
+
+120 suites, 5386 checks, 0 failures. The full run found one failure, V142's: at phone width the
+release notes scrolled sideways. The owner's words quoted at the head of this entry hold a GitHub
+address, which did not wrap. The guide's text now wraps a word too long for its line
+(`overflow-wrap:break-word` on the page), so no address can do this again, and V142 passes 31 of
+31. Patches 163a and 163b rebuild the build byte for byte from
+`Phase/canvas_v10.html.bak_phase163_pre`. The diff is ES5-clean and ASCII.
+
+    canvas_v10.html   2966477 bytes
+    sha256            7fac61cb6717f63cd883c9471ada85eca6608c26e67febc3a1edf8db10161e8a
+    markers           __acad3dV60 ... __acad3dV163, __acad3dV134d (and the 133d to 133f markers)
