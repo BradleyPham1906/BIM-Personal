@@ -35,7 +35,9 @@ VARIANTS = {
     # stops and lines
     'stops_not_grouped': [("      groups.forEach(function(G2){if(!g&&G2.key===kk&&dist(G2,s)<=300)g=G2;});", "")],
     'entrances_not_joined': [("if(((rail&&(G2.ms.metro||G2.ms.light||G2.ms.rail)&&dd<=300)||dd<=40)&&dd<best)", "if((dd<=40)&&dd<best)")],
-    'lines_by_name': [("lab=String(e.tags.ref||e.tags.name||'')", "lab=String(e.tags.name||e.tags.ref||'')")],
+    # RE-ANCHORED IN V166: V166's movement data reads a line's label the same way (bimMvWork), so the anchor takes V161's next lines too
+    'lines_by_name': [("lab=String(e.tags.ref||e.tags.name||'').replace(/\\s+/g,' ').replace(/^ | $/g,'').slice(0,28);\n      if(!rm||!lab)continue;\n      nR++;",
+                       "lab=String(e.tags.name||e.tags.ref||'').replace(/\\s+/g,' ').replace(/^ | $/g,'').slice(0,28);\n      if(!rm||!lab)continue;\n      nR++;")],
     'entrance_not_rail': [("    if(tg.railway==='subway_entrance')return 'metro';", "    if(tg.railway==='subway_entrance')return 'bus';")],
     # the frontage
     'normal_flipped': [("      var nx=(sa>0?dz:-dz)/len,nz=(sa>0?-dx:dx)/len,m=Math.max(1,Math.round(len)),st=len/m;", "      var nx=(sa>0?-dz:dz)/len,nz=(sa>0?dx:-dx)/len,m=Math.max(1,Math.round(len)),st=len/m;")],
@@ -64,10 +66,12 @@ VARIANTS = {
     'transit_never_opportunity': [("      if((nb&&nb.t<=5)||(nr&&nr.t<=10))cl='opportunity';", "      if(false)cl='opportunity';")],
     'arterial_frontage_fine': [("          cls:fs.some(function(f){return f.c==='a';})?'constraint':'neutral',sev:1,source:S.src,date:dt});", "          cls:'neutral',sev:1,source:S.src,date:dt});")],
     'fetch_not_undoable': [("    if(!A&&!P){a3dToast('No access or people data: '+bad.join('; '));return {error:bad.join('; ')};}\n    pushUndo();", "    if(!A&&!P){a3dToast('No access or people data: '+bad.join('; '));return {error:bad.join('; ')};}")],
-    'findings_not_filled': [("      if(A&&!bimResLayers().some(function(R){return R.kind==='walk';}))bimResultLayerAdd('walk',{quiet:true});\n      bimSaFill(true);", "      if(A&&!bimResLayers().some(function(R){return R.kind==='walk';}))bimResultLayerAdd('walk',{quiet:true});")],
+    # RE-ANCHORED IN V166: the walk layer is no longer added after a fetch; the findings are still filled there, after V166's note
+    'findings_not_filled': [("WALKTIMES still adds V161's layer */\n      bimSaFill(true);", "WALKTIMES still adds V161's layer */\n")],
     'failure_wipes': [("    else bad=bad.concat(osm&&osm.msgs&&osm.msgs.length?osm.msgs:['no Overpass server answered']);", "    else{bad=bad.concat(osm&&osm.msgs&&osm.msgs.length?osm.msgs:['no Overpass server answered']);if(A3D.site)delete A3D.site.access;}")],
     # the layer
-    'layer_each_fetch': [("      if(A&&!bimResLayers().some(function(R){return R.kind==='walk';}))bimResultLayerAdd('walk',{quiet:true});", "      if(A)bimResultLayerAdd('walk',{quiet:true,again:true});"),
+    # RE-ANCHORED IN V166: a fetch adds no walk layer now (Analyze site draws the walk times in the model); broken, it adds one each fetch
+    'layer_each_fetch': [("      /* __acad3dV166: V161's Walk times layer is no longer added here: Analyze site draws the walk times in the\n         model, on Layers, Site analysis; WALKTIMES still adds V161's layer */\n", "      if(A)bimResultLayerAdd('walk',{quiet:true,again:true});\n"),
                          ("      if(bimResLayers().some(function(x){return x.kind==='walk';})){a3dToast(", "      if(!opts.again&&bimResLayers().some(function(x){return x.kind==='walk';})){a3dToast(")],
     'layer_not_drawn': [("    if(R.kind==='walk')return bimResGone(R)?false:bimAccDrawPlan(ctx,V,W,H,op);   /* __acad3dV161 */", "    if(R.kind==='walk')return false;")],
     'layer_has_update': [("      (R.kind!=='terrain'&&R.kind!=='walk'?'<button type=\"button\" data-lyresupd=", "      (R.kind!=='terrain'?'<button type=\"button\" data-lyresupd=")],

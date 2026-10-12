@@ -163,6 +163,7 @@ async def run():
                 if not all(inside[1:-1]):
                     far.append(rec)
             ck(not far, "every way's nodes within 800 m of the lot (and 50 more), but an end node beyond (%d)" % len(far))
+            ck(any(Lr.dist(X[r[1]], Z[r[1]]) > 850 or Lr.dist(X[r[-1]], Z[r[-1]]) > 850 for r in Wr), "a way crossing the window's edge keeps its node beyond, so its line reaches the edge")
             # the junctions: where two of the fixture's ways share a node within the window, the kept ways share one there too
             idx = {(round(X[i], 1), round(Z[i], 1)): i for i in range(len(X))}
             uses = {}
@@ -244,7 +245,8 @@ async def run():
                 ({'highway': 'residential'}, 1), ({'highway': 'unclassified'}, 1), ({'highway': 'secondary'}, 3), ({'highway': 'primary'}, 4),
                 ({'highway': 'residential', 'maxspeed': '30'}, 1), ({'highway': 'residential', 'maxspeed': '50'}, 2), ({'highway': 'residential', 'maxspeed': 'DE:urban'}, 2),
                 ({'highway': 'residential', 'zone:maxspeed': 'DE:30'}, 1), ({'highway': 'residential', 'lanes:forward': '1', 'lanes:backward': '2'}, 2),
-                ({'highway': 'trunk', 'oneway': 'yes'}, 4),
+                ({'highway': 'trunk', 'oneway': 'yes'}, 4), ({'highway': 'trunk', 'oneway': 'yes', 'maxspeed': '25 mph'}, 2),
+                ({'highway': 'tertiary', 'zone:maxspeed': 'DE:30'}, 2),
             ]
             got = await safe("(L)=>L.map(function(t){return window.__a3dMvLts(t).lts;})", [c[0] for c in CASES]) or []
             badc = [(c[0], c[1], g, MR.lts(c[0])) for c, g in zip(CASES, got) if not (g == c[1] == MR.lts(c[0]))]
@@ -340,7 +342,7 @@ async def run():
             ck(ms and ms['dg']['lb'] and ms['dg']['lb'][0]['t'] == 'Frontage: Market Street, arterial, 30 mph', "the frontage named: Market Street, arterial, 30 mph")
             ck(sorted(sum(len(L) for L in o['dg']['g']['lines']) for o in [ms]) == [sum(len(r) - 1 for r in G['ar|Market Street'])], "its line every kept node")
             nb = SE.get('street:co|North Boulevard')
-            ck(nb and nb['dg']['lb'] and nb['dg']['lb'][0]['t'] == 'North Boulevard · 40 mph' and rows(nb).get('Speed limit') == '40 mph',
+            ck(nb and nb['dg']['lb'] and nb['dg']['lb'][0]['t'] == 'North Boulevard \u00b7 40 mph' and rows(nb).get('Speed limit') == '40 mph',
                "a main street labelled with its speed; Properties says its class, limit, lanes")
             lg = {b['title']: b for b in (await safe("()=>window.__a3dDgLegend()") or {}).get('blocks', [])}
             ck(lg.get('Street hierarchy', {}).get('rows') == ['motorway', 'arterial', 'collector', 'local', 'service', 'path'], "the key: the classes in order (%s)" % lg.get('Street hierarchy', {}).get('rows'))
@@ -384,6 +386,8 @@ async def run():
             want_stops = [s['n'] for s in ACC['stops'] if s['t'] <= (12 if [m for m in s['m'] if m in ('metro', 'rail', 'light', 'tram')] else 8)]
             ck(sorted(k[5:] for k in TE if k.startswith('stop:')) == sorted(want_stops), "the stops within reach: a bus within 8 minutes, rail and tram within 12 (%s)" % want_stops)
             s0 = TE.get('stop:Market St & 5th St')
+            rail_s = [o for k, o in TE.items() if k.startswith('stop:') and [s for s in ACC['stops'] if s['n'] == k[5:] and [m for m in s['m'] if m in ('metro', 'rail', 'light', 'tram')]]]
+            ck(rail_s and all(o['dg']['sym']['col'] == ('#2a78d6' if light else '#3987e5') for o in rail_s), "a station or tram stop in blue (%s)" % [(o['name'], o['dg']['sym']['col']) for o in rail_s])
             ck(s0 and s0['dg']['lb'][0]['t'].startswith('Market St & 5th St, ') and s0['dg']['lb'][0]['t'].endswith(': 12, 42') and s0['dg']['sym']['col'] == ('#eb6834' if light else '#d95926'), "a stop: its name, its walk, its lines; a bus stop orange (%s, %s)" % (s0 and s0['dg']['lb'][0]['t'], s0 and s0['dg']['sym']['col']))
 
             def band_ok(o, t0, t1):
@@ -407,12 +411,21 @@ async def run():
                             break
                     if tm is None or tm < t0 - 1e-6 or tm > t1 + 1e-6:
                         bad += 1
+                        continue
+                    # and its ends: a piece crossing a band's edge is cut there
+                    for q in (pts[j], pts[j + 1]):
+                        uq = ((q[0] - x1) * (x2 - x1) + (q[2] - z1) * (z2 - z1)) / L2
+                        tq = a + uq * (b - a)
+                        if tq < t0 - 1e-3 or tq > t1 + 1e-3:
+                            bad += 1
+                            break
                 return bad, len(pts) // 2
             b8 = band_ok(TE['catch8'], 0, 8) if 'catch8' in TE else (1, 0)
             b12 = band_ok(TE['catch12'], 8, 12) if 'catch12' in TE else (1, 0)
             ck(b8[0] == 0 and b12[0] == 0 and b8[1] > 50 and b12[1] > 50, "the catchment along the streets: every piece within 8 minutes, or 8 to 12 (%s, %s)" % (b8, b12))
             r1 = TE.get('routes1')
-            ck(r1 and sum(len(L) for L in r1['dg']['g']['lines']) == sum(len(Wr[i]) - 1 for i in ms_w + st5), "the bus routes along their streets: Market Street and 5th Street, one line each")
+            ck(r1 and sum(len(L) for L in r1['dg']['g']['lines']) == sum(len(Wr[i]) - 1 for i in ms_w + st5) and sorted(k for k in TE if k.startswith('routes')) == ['routes1'],
+               "the bus routes along their streets: Market Street and 5th Street, one line each, so none in the heavier bands (%s)" % sorted(k for k in TE if k.startswith('routes')))
             ck(TE.get('way:bus') and TE.get('way:rail') and P2(TE['way:rail'])[0] == [mv['paths'][-1]['pts'][0], mv['paths'][-1]['pts'][1]], "the way to the nearest stop and station, from the lot")
             # walk times
             WE = {o['dg']['k']: o for o in await diags('walk')}
@@ -438,6 +451,7 @@ async def run():
             dwr = [i for i, rec in enumerate(Wr) if T[rec[0]].get('service') == 'driveway']
             ck(ent and ent['name'] == 'Vehicle entry' and P2(ent)[1] == [40, -10] and abs(math.hypot(P2(ent)[0][0] - 40, P2(ent)[0][1] + 10) - 10) < 0.01 and P2(ent)[0][1] > -10 and ent['dg']['s']['head'],
                "the driveway's entry: an arrow into the lot where it crosses the lot line, from 10 m back along it (%s)" % (ent and P2(ent)))
+            ck(sorted(k for k in VE if k.startswith('entry:')) == ['entry:0'], "one entry: the driveway into the lot, not the alley 10 m behind it (%s)" % sorted(k for k in VE if k.startswith('entry:')))
             ck(VE.get('driveways') and len(VE['driveways']['dg']['g']['lines']) == len([i for i, rec in enumerate(Wr) if T[rec[0]].get('highway') == 'service' and min(Lr.dist(X[j], Z[j]) for j in rec[1:]) <= 40]) and dwr,
                "the driveways and service roads within 40 m of the lot")
             dr = VE.get('doors')

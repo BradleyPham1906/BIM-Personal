@@ -44,7 +44,9 @@ The **Analyze** tab on the left rail is one list: every analysis and the site an
 | 5. Climate | Solar on roofs and facades | `SOLAR` | |
 | 5. Climate | Sun paths, Shadows, Winds | `ANALYZESITE` | Layers > Site analysis |
 | 7. Environmental risk | Noise | `ANALYZESITE` | Layers > Site analysis |
-| 10. People and place | Views | `ANALYZESITE` | Layers > Site analysis |
+| 8. Access and circulation | Street hierarchy, Cycling stress, Transit (with PTAL), Walk times, Vehicle access | `ANALYZESITE` | Layers > Site analysis |
+| 8. Access and circulation | Walk times to the places nearby, as a layer | `WALKTIMES` | Layers > Analysis |
+| 10. People and place | Views, Daily needs | `ANALYZESITE` | Layers > Site analysis |
 | Model | Colour by usage, level, type, layer or any property | `COLOURBY` | Properties > View |
 | Model | Areas by usage | live | Properties > Analysis |
 | Model | Buildings, LOD and solids | `LODCHECK` | each building's LOD group |

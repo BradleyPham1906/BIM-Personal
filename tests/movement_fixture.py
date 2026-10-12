@@ -8,8 +8,8 @@ parks with their outlines. Model metres (x east, z south, the site at 0,0); dete
 What is added to V161's grid:
 - tags on its streets, by name: S1 Street a bike lane beside parking at 30 mph (LTS 2); N1 Street 35 mph
   (LTS 4); Avenue 18 a cycle track (LTS 1); Avenue 14 six lanes at 25 mph (LTS 4); North Boulevard 40 mph
-  and 4 lanes (LTS 4, and its crossings LTS 4 where nothing controls them); 5th Street parking on its
-  left only;
+  and 4 lanes (LTS 4, and its crossings LTS 4 where nothing controls them), and its surface, a tag
+  movement leaves out; 5th Street parking on its left only;
 - a signal at North Boulevard and Avenue 15, an all-way stop at North Boulevard and Avenue 17, a stop on
   the approach only at North Boulevard and Avenue 19 (not a control), a marked crossing with an island at
   Market Street and Avenue 18;
@@ -35,7 +35,7 @@ TAGS = {
     'N1 Street': {'maxspeed': '35 mph'},
     'Avenue 18': {'cycleway': 'track'},
     'Avenue 14': {'lanes': '6', 'maxspeed': '25 mph'},
-    'North Boulevard': {'maxspeed': '40 mph', 'lanes': '4'},
+    'North Boulevard': {'maxspeed': '40 mph', 'lanes': '4', 'surface': 'asphalt'},   # surface: a tag movement does not keep
     '5th Street': {'parking:left': 'lane', 'parking:right': 'no'},
 }
 NODES = [   # (x, z, tags): on the grid's junctions, so the same nodes as the streets'

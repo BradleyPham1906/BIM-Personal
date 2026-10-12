@@ -307,6 +307,11 @@ async def run():
             for a in LAND:
                 if D['layers'].get(a):
                     await safe("(i)=>window.__a3dLayerSet(i,'visible',false)", D['layers'][a])
+            # AMENDED FOR V166: movement's layers too, those shown, and left off after (V166's suite reads them): each
+            # toggle is an undo step, and the history holds 50, which the run's own step is counted against below
+            for a in ('streets', 'cycling', 'transit', 'walk', 'needs', 'vehicles'):
+                if D['layers'].get(a) and (LY.get(D['layers'][a]) or {}).get('visible') is not False:
+                    await safe("(i)=>window.__a3dLayerSet(i,'visible',false)", D['layers'][a])
             await safe("()=>{window.__a3dSetPlanView();window.__a3dCamSet({tx:0,tz:0,dist:300});}")
             await page.wait_for_timeout(400)
             LG = await safe("()=>window.__a3dDgLegend()") or {}
@@ -742,6 +747,7 @@ async def run():
             ck(sorted(await safe("()=>window.__a3dState().selSet||[]") or []) == sorted(o['id'] for o in await diags('noise')) or
                sorted((await safe("()=>JSON.parse(JSON.stringify(window.__a3dSelSet?window.__a3dSelSet():[]))")) or []) == sorted(o['id'] for o in await diags('noise')),
                "Select selects the analysis's elements")
+            await safe("()=>window.__a3dTestClearUndo()")   # AMENDED FOR V166: from an empty history, as the history holds 50 and the steps before reach it
             u = await safe("()=>window.__a3dUndoDepth()")
             await safe("()=>window.__a3dSelectFor([])")
             await safe("()=>document.querySelector('[data-anzact=\"dg:run:sun\"]').click()")
@@ -768,6 +774,7 @@ async def run():
             ck(len(reg) == 1 and reg[0]['name'] == 'ANALYZESITE' and 'SAFILL' in reg[0]['aliases'], "SAFILL is typed into it now")
             n0 = len([h for h in ST['hits'] if h[0] == 'geo'])
             await safe("""()=>{window.__a3dSelectFor([]);window.__a3dSetPropTab('site');window.__a3dRefreshProps();var e=document.querySelector('#a3d-propsbody input[data-propmodel="suntz"]');e.value='-4';e.dispatchEvent(new Event('change',{bubbles:true}));}""")
+            await safe("()=>window.__a3dTestClearUndo()")   # AMENDED FOR V166: from an empty history, likewise
             u = await safe("()=>window.__a3dUndoDepth()")
             twice = await safe("""()=>{window.__a3dRunCmd('analyzesite');var b=window.__a3dSiteRunState().busy,r=window.__a3dSiteRun('');
               var t=document.getElementById('a3d-toast');return {busy:b,second:r,said:t?t.textContent:''};}""") or {}

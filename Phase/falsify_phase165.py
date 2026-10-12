@@ -97,11 +97,13 @@ VARIANTS = {
     'steep_uncounted': [("if(hn.slope[k]>=15)steep++;", "")],
     'drainage_upstream_unsaid': [("parts.push(nu?bimLandHa(nu*a2)+' around drains onto it':'nothing around drains onto it');", "parts.push('nothing around drains onto it');")],
     'floodway_not_red': [("cls:zc==='floodway'?'redflag':(zc?'constraint':'neutral')", "cls:zc?'constraint':'neutral'")],
-    'land_findings_dropped': [(".concat(bimLandAuto());", ";")],
+    # RE-ANCHORED IN V166: movement's findings follow the land's now
+    'land_findings_dropped': [(".concat(bimLandAuto()).concat(bimMvAuto());", ".concat(bimMvAuto());")],
     'land_step_missing': [("['context','Context'],['land','Ground and water'],", "['context','Context'],")],
     'drawn_before_land': [("return Promise.all([pc,pk,pl]).then(function(){", "return Promise.all([pc,pk]).then(function(){")],
     'cards_ungrouped': [("  BIM_ANZ_GROUP_OF.dgflow='water';BIM_ANZ_GROUP_OF.dgponds='water';BIM_ANZ_GROUP_OF.dgflood='water';\n", "")],
-    'version_old': [("  var BIM_APP_VERSION={v:'V165',date:'2026-10-11'};", "  var BIM_APP_VERSION={v:'V164',date:'2026-10-11'};")],
+    # RE-ANCHORED IN V166: the build says V166 now; broken, it says V164, before V165
+    'version_old': [("  var BIM_APP_VERSION={v:'V166',date:'2026-10-12'};", "  var BIM_APP_VERSION={v:'V164',date:'2026-10-12'};")],
 }
 
 name = sys.argv[1]

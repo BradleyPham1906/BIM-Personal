@@ -14616,3 +14616,146 @@ ES5-clean and ASCII.
     canvas_v10.html   3105612 bytes
     sha256            e8ec917e636002dc97278233a4ea7770f0530d2a3d7159d54b1707863ca95cb2
     markers           __acad3dV60 ... __acad3dV165, __acad3dV134d (and the 133d to 133f markers)
+
+## Phase 166 (V166) - Site analysis in the model III: movement
+
+The owner's brief from V164 stands: one button runs the analysis on the data the right free services
+give, and lays it "under analysis layers, built straight in the model that i can interact with" --
+"a live analysis that is editable", drawn as professionals present it. This is the third of the
+four phases V164 planned for that button: movement, how people and vehicles get to and from the site.
+Six layers of the same button: the street hierarchy, cycling stress, transit with PTAL, walk times,
+the way to each daily need, and vehicle access and parking, all from the OpenStreetMap answer the
+access step already asks for.
+
+The research is section 4 of `reference/research-site-analysis-in-model.md` ("What V166 does (and
+why)"): how a parameter plan and a masterplan draw movement, PTAL (TfL's method), the level of
+traffic stress (Mekuria, Furth and Nixon, 2012) with the 2016 crossing table and low-stress
+connectivity, and the tags for entries and parking. The owner's answers to the three questions it
+raised: Transitous not used ("do what is best": its terms would put the app's code under an
+open-source licence and rule out selling it); no timetable files ("i dont want to drop any
+timetable. use what's available online free"); no class set by hand ("all i want is to leverage
+open api data"), which is already so since V164.
+
+### What was built (patches 166a, 166b, 166c)
+
+- **The data (166a).** The access step's one Overpass request asks for more, and keeps it with the
+  project as the access data's `mv`, so every movement layer runs again offline:
+  - the request adds the crossings' controls within the window (`highway=traffic_signals`, `stop`,
+    `crossing`, and `crossing=*`), the doors near the lot (`entrance=*`), and the garage entrances
+    and car parks within 400 m (`amenity=parking_entrance`, `amenity=parking` with its outline);
+  - every street and path within 800 m of the lot, with only the tags movement reads (class, name,
+    speed, lanes, one-way, the bike facility, parking by side, who may use it), its nodes to the
+    decimetre, the junctions shared between the ways that meet there, thinned to 0.75 m by Douglas
+    and Peucker between the nodes that must stay, and a node beyond the window at each end so a line
+    reaches its edge; sidewalks and crossings drawn as their own ways, and parking aisles, left out;
+  - a budget of 6,000 nodes: past it the farthest ways go first, and the distance kept is said;
+  - each crossing's controls: a signal, an all-way stop, a stop on the approach only, a marking, an
+    island; the doors within 3 m of the lot line; the garage entrances and the 24 nearest car parks
+    within 400 m (kind, spaces, access, fee, area, and the walk to the nearest point of the edge);
+  - each line's headway from its route's `interval` (minutes, HH:MM or HH:MM:SS, the least over the
+    line's relations, none past 12 hours), and the streets it runs along;
+  - the way from the lot to the nearest of each daily need and to the nearest stop and station: the
+    walk's own Dijkstra again, keeping the edge each node was reached by, traced back to the lot line.
+  - V161's Walk times layer is no longer added on its own: Analyze site draws the walk times in the
+    model. `WALKTIMES` still adds V161's layer.
+- **Six analyses (166b),** each on its own layer under Site analysis, each element live and editable
+  as V164's are:
+  - **Street hierarchy:** every street and path by its class (motorway and trunk, arterial,
+    collector, local, service, path), OpenStreetMap's `highway` value read by the usual crosswalk to
+    the FHWA's functional classes; the heavier the line, the higher the class; paths dashed; one
+    element per street and class. The main streets (motorways and trunks, arterials, collectors) are
+    labelled with their names and speed limits; the lot's frontage streets are drawn heavier and
+    labelled "Frontage: Market Street, arterial, 30 mph". Properties gives the class, limit, lanes,
+    one-way, sidewalks and length.
+  - **Cycling stress:** each street's level of traffic stress by the 2012 criteria, LTS 1 to 4, named
+    as Boston's guide names them (carefree, easygoing, tense, white knuckles): separated paths and
+    cycle tracks 1; a bike lane beside parking by the lanes each way and the speed; a bike lane with
+    no parking by the lanes each way (two on a divided road's carriageway), its width and the speed;
+    mixed traffic by the speed and the lanes, the lower level on a residential street of under three
+    lanes or one with no centre line. In km/h the speed rows end at 41, 51 and 61, so 40, 50 and 60
+    km/h each fall with 25, 30 and 35 mph. Where a street maps no speed or lanes, its class's, as the
+    noise analysis assumes them, with a one-way street taking half the lanes; each street says why
+    its level, and what was mapped or assumed. No cycling where `bicycle=no`, on a motorway, on steps,
+    with no public access, or on a footway not signed for bicycles. Then:
+    - **the crossings:** where a calm way (LTS 1 or 2, of any class) meets a main street (trunk,
+      primary, secondary, tertiary) of another name with no signal or all-way stop within 20 m, the
+      2016 table by the main street's speed and lanes; past LTS 2 it bars that way's way through.
+      The stressful crossings are marked, nearest first, the three nearest named;
+    - **the low-stress reach:** two Dijkstras by distance from the lot, over every street a bicycle
+      may use and over those at LTS 2 or less with their crossings; a piece is reached when the
+      low-stress way to both its ends is at most 1.25 times the shortest. Drawn as a wide pale band
+      under the streets; the site says how much of the streets a bicycle may use is reached.
+    Off at first: it colours the same streets the hierarchy does.
+  - **Transit:** the streets within an 8-minute walk and 8 to 12 minutes, PTAL's reaches to a bus
+    and to rail; the bus and tram routes along their streets, heavier with more lines; the stops
+    within reach (a bus within 8 minutes; rail, metro, light rail and tram within 12), each with its
+    walk and lines; the way to the nearest stop and station; and **PTAL** at the site, TfL's method:
+    each line at its nearest stop, its walk, half its headway and the reliability allowance (2
+    minutes for a bus, 0.75 for rail) its access time, 30 over that its doorstep frequency, per mode
+    the best in full and the rest at half, the index banded 0 to 6b. Lines whose headway is not
+    mapped are left out and said: the band and the index, "at least" where some lines have none, "No
+    PTAL: how often the lines run is not mapped" where none do, and PTAL 0 with no stop within reach.
+  - **Walk times:** the streets and paths reached in 5, 10 and 15 minutes, along the streets, in
+    V161's ramp, each band labelled once at its farthest point. Off at first.
+  - **Daily needs:** the way along the streets to the nearest of each kind, the place marked with its
+    walk; Properties sets it against the design guides' 800 m to shops and a primary school and 400
+    m to green space.
+  - **Vehicle access:** the driveways and service roads within 40 m of the lot; an arrow where each
+    driveway that reaches the lot crosses its line, from 10 m back along it; where none does, a
+    provisional entry, dashed, on the longest frontage of the lot's lowest street, as a parameter
+    plan marks one, saying when that street is an arterial that an entry there may be refused; the
+    doors on the lot; the car parks within 400 m, filled, labelled with their kind, spaces, walk and
+    any limit on access; the garage entrances; the parking along the streets within 150 m, each side
+    drawn 4.5 m off the street's line.
+  - The colours: one hue for the hierarchy, the higher class brighter on the dark plan and darker on
+    a light map; the stress levels in the reference palette's blue, aqua, yellow and red; each set
+    for the dark plan and for a light map, checked with the dataviz validator against both, and
+    chosen by the map shown.
+- **Findings (166c).** Transit says PTAL now (or its floor, or why there is none). Two are new:
+  Cycling (the levels of the streets the lot fronts, the reach, the stressful crossings within
+  400 m) and Vehicle access and parking (the driveways into the lot or the provisional entry, the
+  car parks and their spaces, the garage entrances, the parking along the frontage).
+- **The rows** in Analyze: Street hierarchy, Cycling stress, Transit, Walk times and Vehicle access
+  in Access and circulation; Daily needs in People and place. `ANALYZESITE` names them.
+- Version V166. The guide's Site and Analysis pages; the research note's section 4 as built.
+
+### Found
+
+- **25 mph read as 30.** 5th Street's limit, 25 mph, is 40.2 km/h, and rows in km/h that ended at
+  40 put it with 30 mph. The rows end at 41, 51 and 61 now, so 40 km/h falls with 25 mph, 50 with
+  30 and 60 with 35.
+- **A calm main street that never crossed.** The crossing rule first took only a local street as
+  the calm way. 5th Street is a secondary street at LTS 2, and its crossing of North Boulevard went
+  unseen. Any calm way counts now, each with its own level at the crossing, so the reach is barred
+  only for the ways the crossing is stressful for.
+- **An entry inside the lot.** The driveway's arrow ran to its node nearest the lot, which lies
+  inside it. It is cut at the lot line now, and starts 10 m back along the driveway.
+- **"An unnamed alley (alley)".** The vehicle finding named a street with no name by its class
+  twice. It says "the alley" now.
+- **The colours of the wrong ground.** The suite expected the dark plan's colours, but the address
+  search turns the street map on, so the light map's set is drawn, rightly. The suite reads the
+  map's style and expects its set, and checks the dark set with the map off.
+- **Undo full in V164's suite.** Its "one undo step" checks counted the steps before and after a
+  run; with the movement layers, the suite's earlier steps had filled the 50-step stack, so a run
+  added none. The suite empties the stack before it counts (amended).
+- **Literal symbols again.** The Write tool turned the escapes in patch 166b into characters, as
+  it did in V165; they are escapes again, and each V166 patch asserts its text is ASCII.
+- **Gaps found by writing the variants.** Before any ran, eight of them could not have been
+  caught: nothing checked that a way crossing the window keeps a node beyond it, that a walk band's
+  pieces are cut at the band's edge (the check read only their middles), that a street with one
+  line has no heavier band, a station's colour, that only the driveway gets an entry arrow, that a
+  tag movement does not read is dropped (no street in the test had one), a zone's speed limit on a
+  street where the class's default gives the same level, or a one-way street's lanes halved. The
+  suite checks each now, and the fixture gives North Boulevard a surface.
+
+### Not done
+
+- PTAL where OpenStreetMap maps no headways: the layer and the finding say there is none. The owner
+  asked for free online data and no timetable files, and Transitous's terms were not taken up.
+- The later stress tables (Furth's 2017 and 2022 revisions) need daily traffic, which open data
+  does not carry; the 2012 criteria are used. A bike lane beside parking is rated without the lane
+  and parking widths, and a crossing's median refuge is not counted (it errs stressful): those cells
+  of the tables could not be read from here. One-way streets are ridden both ways in the reach.
+- The hierarchy is OpenStreetMap's class read by the usual crosswalk, not a council's adopted
+  street hierarchy, and carries no traffic counts (FHWA's HPMS could not be reached).
+- Parking by time and charge (the conditional tags), loading bays, kerb ramps and step-free routes.

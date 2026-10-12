@@ -311,31 +311,44 @@ how it is drawn.
     `:both`, the current scheme
     ([parking:both](https://wiki.openstreetmap.org/wiki/Key:parking:both),
     [street parking](https://wiki.openstreetmap.org/wiki/Wiki:Street_parking)).
-- **What V166 will do (and why).** V161 already fetches the network, the places, the stops and
-  their lines, and works out walk times from the lot (`research-access-people.md`). V166 draws
-  them, and what follows from them, as six live, editable layers of the same button:
+- **What V166 does (and why).** V161 already fetches the network, the places, the stops and
+  their lines, and works out walk times from the lot (`research-access-people.md`). V166 asks the
+  same request for the crossings' controls, the doors, the garage entrances and the car parks, keeps
+  every street within 800 m with the tags movement reads, and draws six live, editable layers of the
+  same button:
   1. **Street hierarchy:** every street by its role, the weight by class, names and speeds on the
-     main ones, the frontage streets outlined.
-  2. **Cycling stress:** each street in its LTS by the 2012 criteria, its assumptions said; the
-     unsignalized crossings of main streets by the 2016 table; the site's low-stress reach. Off at
-     first.
-  3. **Transit:** the stops within 8 and 12 minutes with their lines, and the catchment along the
-     streets. PTAL where OpenStreetMap maps every line's headway within reach, a floor where some
-     lines lack one; elsewhere the layer says why it gives no PTAL.
+     main ones, the lot's frontage drawn heavier and named.
+  2. **Cycling stress:** each street in its LTS by the 2012 criteria, why and what was assumed said
+     on it; the uncontrolled crossings where a calm way meets a main street of another name, by the
+     2016 table; the site's low-stress reach. Off at first.
+  3. **Transit:** the stops within 8 minutes (bus) and 12 (rail, metro, light rail, tram) with their
+     lines, the catchment along the streets, the bus and tram routes, the way to the nearest stop
+     and station. PTAL where OpenStreetMap maps the lines' headways, "at least" where some lack one;
+     elsewhere the layer says why it gives no PTAL.
   4. **Walk times:** the network in 5, 10 and 15-minute bands from the lot, as lines along the
-     streets.
-  5. **Daily needs:** the way to the nearest of each kind, in minutes; the 400 m and 800 m checks
-     of the design guides; the crossings (`highway=crossing` with `crossing=*`) where the ways
-     cross a main street.
-  6. **Vehicle access and parking:** driveways and entries at the frontage, car parks by kind,
+     streets. Off at first.
+  5. **Daily needs:** the way to the nearest of each kind, in minutes, set against the 400 m and
+     800 m checks of the design guides. The crossings on those ways are not drawn here: the cycling
+     layer marks the stressful ones.
+  6. **Vehicle access and parking:** the driveways and service roads near the lot, an arrow where a
+     driveway crosses the lot line, a provisional entry on the frontage of the lot's lowest street
+     where none does; the doors on the lot; car parks within 400 m by kind; garage entrances;
      on-street parking by side.
 
-  Findings: the streets the lot fronts and their stress; transit (PTAL, or the stops within
-  reach); the daily needs within 10 minutes; where vehicles can enter.
+  Findings: transit (PTAL, its floor, or why not); cycling (the frontage streets' levels, the reach,
+  the stressful crossings near the lot); vehicle access and parking. The daily needs within 10
+  minutes were V161's finding already.
 
-  Open before coding: the 2012 bike-lane cells and the crossing table's refuge cells, against
-  the report. Until they can be read, a bike lane is rated by the rows read so far (speed, lanes,
-  parking), its width BNA's default where none is mapped, said so on the street; a refuge is not
+  Three things changed while building. The crossing rule first took only a local street as the calm
+  way; the test's 5th Street, a secondary street at LTS 2, crosses its boulevard unseen that way, so
+  any calm way counts now, each with its own level at the crossing. The entry arrow ended at the
+  driveway's node inside the lot; it is cut at the lot line now. And the colours follow the map: a
+  set for the dark plan and one for a light map (the address search turns the street map on), each
+  checked with the validator against its ground.
+
+  Still open: the 2012 bike-lane cells and the crossing table's refuge cells, against the report.
+  Until they can be read, a bike lane is rated by the rows read so far (the lanes, parking and
+  speed), its width counted where mapped (6 ft, 1.8 m, or more LTS 1, less 2); a refuge is not
   counted, which errs stressful.
 
   The owner, on the questions this note raised: Transitous not used (above); no timetable files;
@@ -469,7 +482,8 @@ longitude already set. It does the rest:
 2. **V165, land and water:** contours by height, slope classes, aspect, flow lines and catchments,
    ponds, flood zones.
 3. **V166, movement:** the street hierarchy, cycling stress, stops and lines with their 8- and
-   12-minute catchments, walk times, the way to each daily need, and vehicle entries and parking.
+   12-minute catchments and PTAL, walk times, the way to each daily need, and vehicle entries and
+   parking.
 4. **V167, land:** land use in LBCS colours, figure-ground, green and trees, zoning.
 
 The tools-and-synthesis phase (the old SA5) and the contents pane follow, on these layers.
