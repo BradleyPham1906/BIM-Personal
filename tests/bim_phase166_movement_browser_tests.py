@@ -153,7 +153,8 @@ async def run():
             X, Z, T, Wr = mv['x'], mv['z'], mv['t'], mv['w']
             allowed = re.compile(r'^(highway|name|ref|maxspeed|maxspeed:type|zone:maxspeed|source:maxspeed|lanes|lanes:forward|lanes:backward|oneway|oneway:bicycle|junction|cycleway(:[a-z_:]+)?|parking(:[a-z_:]+)?|sidewalk(:[a-z_:]+)?|service|access|bicycle|motor_vehicle|motorcar|foot|segregated|lane_markings|bridge|tunnel|layer|bicycle_road|cyclestreet|shoulder(:[a-z_:]+)?)$')
             ck(all(allowed.match(k) for t in T for k in t), "each way keeps only the tags movement reads")
-            ck(not [t for t in T if t.get('footway') == 'sidewalk'] and all(t.get('highway') for t in T), "sidewalks drawn on their own are not kept; every way a street or a path")
+            side = [r for r in Wr if all(X[i] in (55.0, 65.0) for i in r[1:])]   # the fixture's sidewalks, 5 m either side of 5th Street
+            ck(not side and all(t.get('highway') for t in T), "sidewalks drawn on their own are not kept (%d); every way a street or a path" % len(side))
             far = []
             for rec in Wr:
                 inside = [Lr.dist(X[i], Z[i]) <= 850 for i in rec[1:]]
@@ -535,6 +536,16 @@ async def run():
                                                                                                                        any(mv3['t'][r[0]].get('name') == 'Maze Walk' for r in mv3['w'])],
                "past 6,000 nodes the farthest ways go, and the window kept is said (cut at %s m, %s dropped, %d nodes)" % (mv3.get('cut'), (mv3.get('n') or {}).get('dropped'), len(mv3.get('x') or [])))
             ns = [o for o in await diags('streets', pg=p3) if o['dg']['k'] == 'street:ar|Market Street']
+
+            def line_gap(r):   # how near the lot a kept way's line comes, along its pieces
+                P = [(mv3['x'][i], mv3['z'][i]) for i in r[1:]]
+                best = math.inf
+                for (x1, z1), (x2, z2) in zip(P, P[1:]):
+                    n = max(1, int(math.hypot(x2 - x1, z2 - z1) // 2) + 1)
+                    best = min([best] + [Lr.dist(x1 + j / n * (x2 - x1), z1 + j / n * (z2 - z1)) for j in range(n + 1)])
+                return best
+            beyond = [r for r in mv3.get('w', []) if line_gap(r) > (mv3.get('cut') or 0) + 1.5]
+            ck(ns and mv3.get('cut') and not beyond, "the nearest go last: the frontage street still drawn, no way kept that lies beyond the cut (%d)" % len(beyond))
             P3 = await safe("()=>window.__a3dMvPtal()", pg=p3) or {}
             ck(P3.get('floor') is False and P3.get('have') == len(P3.get('lines', [])), "every line's headway mapped (T1 every 8): PTAL in full, not a floor")
             pt3 = [o for o in await diags('transit', pg=p3) if o['dg']['k'] == 'ptal']

@@ -97,7 +97,8 @@ VARIANTS = {
     'ptal_full_headway': [("b.tat=b.t+0.5*b.iv+b.k;", "b.tat=b.t+b.iv+b.k;")],
     'ptal_all_full': [("for(i=1;i<E.length;i++)s+=0.5*E[i];", "for(i=1;i<E.length;i++)s+=E[i];")],
     'ptal_modes_pooled': [("if(b.iv)(modes[b.m]||(modes[b.m]=[])).push(b.edf);", "if(b.iv)(modes.all||(modes.all=[])).push(b.edf);")],
-    'ptal_first_stop': [("        else if(s.t<best[k].t){best[k].t=s.t;best[k].stop=s.n;}\n", "")],
+    # Not a variant: 'ptal_first_stop' left out the step that keeps a line's nearest stop. V161 sorts the stops by
+    # their walk (bimAccWork), so the first stop found for a line is its nearest: the step stays as the guard.
     'ptal_band_edges_open': [("if(ai<=BIM_MV_PTAL[i][0])return BIM_MV_PTAL[i][1];", "if(ai<BIM_MV_PTAL[i][0])return BIM_MV_PTAL[i][1];")],
     'ptal_floor_unsaid': [("floor:have>0&&have<L.length}", "floor:false}")],
     'ptal_missing_counted': [("b.iv=iv>0?iv:null;", "b.iv=iv>0?iv:30;")],
@@ -112,7 +113,8 @@ VARIANTS = {
     'entry_from_inside': [("out:ib?[ax,az]:[bx,bz]", "out:ib?[bx,bz]:[ax,az]")],
     'entry_short': [("f=Math.min(1,10/l)", "f=Math.min(1,5/l)")],
     'driveways_far': [("      if(near>40)continue;\n      dw.push", "      if(near>400)continue;\n      dw.push")],
-    'entry_wide': [("      if(near<=3){   /* it reaches the lot", "      if(near<=12){   /* it reaches the lot")],
+    # 12 m, first tried, is short of the alley's nearest node (14 m off the lot): the same as 3 m on the test ground
+    'entry_wide': [("      if(near<=3){   /* it reaches the lot", "      if(near<=20){   /* it reaches the lot")],
     'provisional_highest': [("var pref={s:0,l:1,c:2,a:3},best=null;", "var pref={s:3,l:2,c:1,a:0},best=null;")],
     'provisional_flip_unchecked': [("if(bimPointInPoly([mx+nx*2,mz+nz*2],L.ring)){nx=-nx;nz=-nz;}", "")],
     'provisional_undashed': [("dash:ar.prov?[5,3]:null}", "dash:null}")],

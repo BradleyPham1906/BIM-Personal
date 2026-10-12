@@ -14,6 +14,8 @@ What is added to V161's grid:
   the approach only at North Boulevard and Avenue 19 (not a control), a marked crossing with an island at
   Market Street and Avenue 18;
 - a path joining two avenues; a driveway from Market Street into the lot (left out with 'nodrive');
+- 5th Street mapped as two ways, split where N3 Street crosses it, as OpenStreetMap often splits a
+  street: a street's own pieces do not cross each other;
 - doors: one on the lot line, one inside it, one 20 m off it (not the lot's);
 - a garage entrance, a surface car park with 40 spaces, a multi-storey with none mapped, a car park
   beyond 400 m;
@@ -44,7 +46,7 @@ NODES = [   # (x, z, tags): on the grid's junctions, so the same nodes as the st
     (420, -400, {'highway': 'stop'}),
     (300, 0, {'highway': 'crossing', 'crossing': 'marked', 'crossing:island': 'yes'}),
 ]
-DOORS = [(30, -10, {'entrance': 'main', 'name': 'Main door'}), (12, -38, {'entrance': 'service'}), (30, 20, {'entrance': 'yes'})]
+DOORS = [(30, -10, {'entrance': 'main', 'name': 'Main door'}), (12, -38, {'entrance': 'service'}), (30, 10, {'entrance': 'yes'})]   # the last 20 m off the lot
 GARAGE = (100, -60, {'amenity': 'parking_entrance', 'name': 'Garage A', 'access': 'customers'})
 CARPARKS = [
     ([(100, -70), (160, -70), (160, -90), (100, -90)], {'amenity': 'parking', 'parking': 'surface', 'capacity': '40', 'access': 'yes', 'fee': 'yes', 'name': 'Lot P1'}),
@@ -92,6 +94,15 @@ def overpass_mv(modes=()):
         ms['geometry'].insert(k, _g(40, 0))
         E.append(_way(9500001, DRIVE, {'highway': 'service', 'service': 'driveway'}))
     E.append(_way(9500002, PATH, {'highway': 'path', 'name': 'Park Path'}))
+    st = by_name['5th Street'][0]   # two ways, split at N3 Street: its own pieces meet there
+    k = st['nodes'].index(NET.ids[(60, -300)])
+    st2 = dict(st, id=9500004, nodes=st['nodes'][k:], geometry=st['geometry'][k:], tags=dict(st['tags']))
+    st['nodes'], st['geometry'] = st['nodes'][:k + 1], st['geometry'][:k + 1]
+    for w in (st, st2):
+        la, lo = [g['lat'] for g in w['geometry']], [g['lon'] for g in w['geometry']]
+        w['bounds'] = {'minlat': min(la), 'minlon': min(lo), 'maxlat': max(la), 'maxlon': max(lo)}
+    E.append(st2)
+    by_name['5th Street'].append(st2)
     if 'dense' in modes:
         pts = [(600 + (i % 40), -480 + (i // 40) * 0.25 + (2 if i % 2 else 0)) for i in range(7000)]
         w = _way(9500003, pts, {'highway': 'footway', 'name': 'Maze Walk'})
