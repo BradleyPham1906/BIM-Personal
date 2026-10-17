@@ -105,6 +105,25 @@ async def run():
             await safe("()=>{window.__a3dEnter();window.__a3dTestSetObjs([]);window.__a3dRunCmd('3d');}")
             ck(await safe("()=>window.__a3dGpuWait(8000)") == 'ready', "WebGPU is ready")
 
+            # AMENDED FOR V166: the table outgrowing its slots while a chunk is not rebuilt, before the stress model
+            # grows the table past anything later scenes add. Every scene below rebuilt each chunk whenever the table
+            # grew, so bundles kept with the old bind group, which binds the destroyed table, were never drawn:
+            # falsify_phase155's stale_bindgroup passed on the V166 build. One column near and a hundred far, then six
+            # hundred more far, past the table's first 512 slots; the near chunk is not rebuilt, and its two bundles
+            # must be recorded again (the pixels agree either way here, so the count is what tells).
+            await safe("()=>{window.__a3dColumnAt([10,10],0,0.6,0.6,3);for(var i=0;i<100;i++)window.__a3dColumnAt([300+(i%10)*2,300+Math.floor(i/10)*2],0,0.3,0.3,1);}")
+            await safe("()=>{window.__a3dFlat(false);window.__a3dCamSet({tx:10,tz:10,dist:12,pitch:0.4,yaw:0.7});}")
+            st0 = await frame()
+            g0 = await safe("()=>window.__a3dGlTotals()") or {}
+            await safe("()=>{for(var i=0;i<600;i++)window.__a3dColumnAt([300+(i%20)*1.5,330+Math.floor(i/20)*1.5],0,0.3,0.3,1);}")
+            st1 = await frame()
+            g1 = await safe("()=>window.__a3dGlTotals()") or {}
+            n1 = await safe("()=>window.__a3dState().objs.length") or 0
+            ck(st0.get('mode') == 'webgpu' and st1.get('mode') == 'webgpu' and n1 == 701 and st1.get('culled', 0) >= 1 and g1.get('recorded', 0) - g0.get('recorded', 0) >= 2,
+               "the table grown past 512 by a far chunk: the near chunk, not rebuilt, records its two bundles again (%s objects, %s recorded, %s)" % (n1, g1.get('recorded', 0) - g0.get('recorded', 0), st1.get('mode')))
+            await same('the table grown, the near chunk unchanged')
+            await safe("()=>window.__a3dTestSetObjs([])")
+
             print("\n-- 1. chunks by place")
             await safe("()=>window.__a3dStressModel(20000)")
             await safe("()=>{window.__a3dFlat(false);window.__a3dCamSet({tx:106,tz:106,dist:420,pitch:0.9,yaw:0.7});}")
@@ -175,7 +194,13 @@ async def run():
             await safe("()=>window.__a3dCamSet({tx:1,tz:2,dist:33,pitch:0.5,yaw:0.3})")
             await frame()
             before = await safe("()=>({ids:window.__a3dState().objs.map(function(o){return o.id;}),cam:window.__a3dCamSet({}),undo:window.__a3dUndoDepth?window.__a3dUndoDepth():null})")
-            R = await within(page.evaluate("()=>window.__a3dBenchmark()"), 'benchmark')
+            # AMENDED FOR V166: BENCHMARK draws 132 frames (two sizes, two engines, 3 + 30 each); on this machine's
+            # software GPU that is about 44 s alone, and the full regression's parallel load, heavier with V166's
+            # suite, took it past the harness's 90 s. Its own bound fits its work; it is still a bound (V123).
+            try:
+                R = await asyncio.wait_for(page.evaluate("()=>window.__a3dBenchmark()"), 300)
+            except asyncio.TimeoutError:
+                raise Stalled('benchmark')
             rows = R.get('rows') or []
             ok = len(rows) == 2 and [r['n'] for r in rows] == [5000, 20000] and all(r.get('webgpu') and r.get('webgl') for r in rows)
             ck(ok and not R.get('running') and R.get('gpu'), "5,000 and 20,000 elements timed with WebGPU and with WebGL (%s)" % ['%d: %.0f / %.0f ms' % (r['n'], r.get('webgpu') or -1, r.get('webgl') or -1) for r in rows])

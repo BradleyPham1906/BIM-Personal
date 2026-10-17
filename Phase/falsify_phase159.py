@@ -7,9 +7,9 @@ base = SRC.read_text(encoding='utf-8')
 
 VARIANTS = {
     # Analyze holds Site analysis
-    'no_view_switch': [("      '<button type=\"button\" role=\"tab\" class=\"a3d-anzviewbtn\" data-anzview=\"site\" aria-selected=\"'+(v==='site')+'\">Site analysis</button></div>';", "      '</div>';")],
-    'view_not_remembered': [("    try{localStorage.setItem('acad3dAnzView',v);}catch(eS){}", "")],
-    'site_command_old_tab': [("    siteanalysis:function(){bimAnzView('site');},", "    siteanalysis:function(){bimShellSetTab('analyze');},")],
+    # RETIRED IN V166 (no_view_switch): V162 made Analyze one list: the switch between the analyses and the site analysis is gone.
+    # RETIRED IN V166 (view_not_remembered): V162 made Analyze one list: there is no view to remember.
+    # RETIRED IN V166 (site_command_old_tab): V162 made Analyze one list: SITEANALYSIS opens it, and there is no older tab to open instead.
     # the requests and the numbers
     'nine_years': [("var BIM_CLIM_YEARS=10,", "var BIM_CLIM_YEARS=9,")],
     'wind_in_kmh': [("wind_speed_unit:'ms',", "")],
@@ -36,9 +36,11 @@ VARIANTS = {
     'tables_never': [(".a3d-clb.tables .a3d-clb-table{display:table}", "")],
     'heat_not_merged': [("        if(d<days&&k===k0){run++;continue;}", "")],
     'no_direct_label': [("'<text class=\"lb\" x=\"'+bimClbF(x(ih))+'\" y=\"'+bimClbF(y(M[ih].tx)-9)+'\" text-anchor=\"middle\">'+bimClbNum(M[ih].tx)+'°</text>';", "'';")],
-    'esc_dead': [("  document.addEventListener('keydown',function(ev){if(A3D_CLB.open&&ev.key==='Escape'){ev.preventDefault();ev.stopPropagation();bimClbClose();}},true);", "")],
+    # RE-ANCHORED IN V166: V160 to V162 moved the board's keys into bimClbKey
+    'esc_dead': [("    if(ev.key==='Escape'){ev.preventDefault();ev.stopImmediatePropagation();bimClbClose();return true;}", "")],
     'print_shows_app': [("  body.a3d-clb-open>*:not(.a3d-clb){display:none!important}\n", "")],
-    'phone_not_narrow': [("    A3D_CLB.narrow=window.innerWidth<760;", "    A3D_CLB.narrow=false;")],
+    # RE-ANCHORED IN V166: the board measures its own width since V160
+    'phone_not_narrow': [("    A3D_CLB.narrow=w<760;", "    A3D_CLB.narrow=false;")],
 }
 
 name = sys.argv[1]

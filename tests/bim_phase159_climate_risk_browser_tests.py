@@ -267,6 +267,10 @@ async def run():
             ck(Wy and all(abs(sum(Wy['pct'][k]) - RH_['share'][k]) < 0.06 for k in range(16)), "each sector's share, as worked out here")
             ck((Hh.get('wind') or {}).get('summer', {}).get('prev') == 9 and (Hh.get('wind') or {}).get('winter', {}).get('prev') == 13,
                "summer from the SSW (the sea breeze in the fixture), winter from the WNW")
+            # AMENDED FOR V166: the calm threshold as the rose's caption states it. The first speed bin starts at the same
+            # 0.5 m/s, so the hours counted calm do not show a threshold of 0 (falsify_phase159's calm_ignored); the caption does.
+            hb = await safe("()=>window.__a3dClbHtml()") or ''
+            ck('Calm (under 0.5 m/s)' in hb, "the rose's caption says calm is under 0.5 m/s")
             cf = Hh.get('comfort') or {}
             ck(cf and abs(cf['inside'] - RH_['inside']) < 0.06 and abs(cf['cold'] - RH_['cold']) < 0.06 and abs(cf['hot'] - RH_['hot']) < 0.06,
                "comfort: %.1f%% inside, %.1f%% too cool, %.1f%% too hot or humid" % (RH_['inside'], RH_['cold'], RH_['hot']))
@@ -316,8 +320,9 @@ async def run():
             r = await safe("()=>Promise.resolve(window.__a3dClimFetch())") or {}
             ck(r.get('error') and 'busy (HTTP 429)' in r['error'] and await clim() == before, "all down: nothing changes, and each failure is named (%s)" % (r.get('error') or '')[:90])
             ST['mode'] = {}
-            await safe("()=>{window.__a3dClimFetch();}")
-            r2 = await safe("()=>window.__a3dClimFetch()")
+            # AMENDED FOR V166: both presses in one call. Pressed from two calls, the first fetch could finish between
+            # them under the full regression's load (the fixture answers at once), and the second was then not refused.
+            r2 = await safe("()=>{window.__a3dClimFetch();return window.__a3dClimFetch();}")
             ck(r2 is None and 'already on their way' in await toast(), "a second press while one runs: refused")
             for _ in range(60):
                 if not await safe("()=>window.__a3dClimBusy()"):

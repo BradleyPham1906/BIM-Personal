@@ -1,7 +1,7 @@
 {
  "version": {
-  "v": "V165",
-  "date": "2026-10-11"
+  "v": "V166",
+  "date": "2026-10-12"
  },
  "commands": [
   {
@@ -112,7 +112,7 @@
     "SITEANALYSISFILL",
     "SAFROMMODEL"
    ],
-   "desc": "Analyze site: get what is around the site from free open data and draw each analysis in the model -- compass, sun paths, shadows, winds, views, noise, contours, slope, aspect, water flow, ponds, flood zones -- on Layers, Site analysis; one undo step",
+   "desc": "Analyze site: get what is around the site from free open data and draw each analysis in the model -- compass, sun paths, shadows, winds, views, noise, contours, slope, aspect, water flow, ponds, flood zones, street hierarchy, cycling stress, transit, walk times, daily needs, vehicle access -- on Layers, Site analysis; one undo step",
    "kind": "cmd",
    "where": [],
    "keys": null,

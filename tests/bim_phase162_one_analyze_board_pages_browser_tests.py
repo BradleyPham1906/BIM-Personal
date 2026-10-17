@@ -161,7 +161,9 @@ async def run():
                     # AMENDED FOR V164: the analyses Analyze site draws, each in its category
                     'dgframe': 'location', 'dgsun': 'climate', 'dgshadow': 'climate', 'dgwind': 'climate', 'dgviews': 'people', 'dgnoise': 'risk',
                     # AMENDED FOR V165: and the land and water ones
-                    'dgcontours': 'landform', 'dgslope': 'landform', 'dgaspect': 'landform', 'dgflow': 'water', 'dgponds': 'water', 'dgflood': 'water'}
+                    'dgcontours': 'landform', 'dgslope': 'landform', 'dgaspect': 'landform', 'dgflow': 'water', 'dgponds': 'water', 'dgflood': 'water',
+                    # AMENDED FOR V166: and movement's
+                    'dgstreets': 'access', 'dgcycling': 'access', 'dgtransit': 'access', 'dgwalk': 'access', 'dgvehicles': 'access', 'dgneeds': 'people'}
             ck(W == want, "each analysis in the category it answers: landform, water, climate; the model's in Model (%s)" % W)
             cats = await safe("()=>window.__a3dAnzCats()") or []
             ck({c['id']: c['group'] for c in cats} == want, "the engine's grouping says the same")

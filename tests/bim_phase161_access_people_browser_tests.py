@@ -397,8 +397,10 @@ async def run():
             ck([f['cat'] for f in Fd] == ['access'] * 4 + ['people'] * 4, "under Access and circulation, and People and place")
             ck(Fd[0]['value'].startswith('Along the streets from the lot at 4.8 km/h: 5 minutes reach %s km' % ('%.1f' % (A['reach']['len'][0]))) and 'ODbL' in Fd[0]['source'],
                "the walk, with its reach (%s)" % Fd[0]['value'][:90])
-            ck(Fd[1]['cls'] == 'opportunity' and 'Market St & 5th St, under a minute (12, 42)' in Fd[1]['value'] and 'Central Station, 11 min (A)' in Fd[1]['value'] and 'GTFS' in Fd[1]['value'],
-               "transit: an opportunity, a stop within 5 minutes; how often, the timetable's to say")
+            # AMENDED FOR V166: how often the lines run is read from OpenStreetMap's headways now, for PTAL; none mapped here, so none
+            ck(Fd[1]['cls'] == 'opportunity' and 'Market St & 5th St, under a minute (12, 42)' in Fd[1]['value'] and 'Central Station, 11 min (A)' in Fd[1]['value'] and
+               'is not mapped in OpenStreetMap, so no PTAL' in Fd[1]['value'],
+               "transit: an opportunity, a stop within 5 minutes; how often, not mapped here, so no PTAL")
             ck(Fd[2]['cls'] == 'constraint' and Fd[2]['sev'] == 1 and Fd[2]['value'].startswith('The lot fronts Market Street (arterial, 30 mph, 4 lanes, sidewalks on both sides, cycleway lane) for 40 m; an unnamed alley for 40 m; 5th Street'),
                "the frontage: an arterial's, a constraint to plan for (%s)" % Fd[2]['value'][:120])
             ck(Fd[3]['cls'] == 'neutral' and 'LEED ND' in Fd[3]['value'] and '48 intersections within 400 m of the lot' in Fd[3]['value'], "connectivity, against LEED ND")
@@ -420,9 +422,12 @@ async def run():
 
             # ---------------------------------------------------------------------------------
             print("\n-- 8. the walk times layer")
+            # AMENDED FOR V166: a fetch no longer adds it -- Analyze site draws the walk times in the model -- WALKTIMES does
+            ck(not [x for x in (await safe("()=>window.__a3dResultLayers()") or []) if x['kind'] == 'walk'], "fetched again and again, no Walk times layer is added on its own")
+            await safe("()=>window.__a3dRunCmd('walktimes')")
             L = [x for x in (await safe("()=>window.__a3dResultLayers()") or []) if x['kind'] == 'walk']
             ck(len(L) == 1 and L[0]['name'] == 'Walk times' and L[0]['src'] == 'access' and L[0]['visible'] and not L[0]['stale'] and not L[0]['gone'],
-               "the walk times became one layer, though fetched again and again: Walk times, shown, never out of date (%s)" % L)
+               "WALKTIMES adds it, one layer: Walk times, shown, never out of date (%s)" % L)
             wid = L[0]['id'] if L else None
             ck(wid in (await safe("()=>window.__a3dResultDrawn()") or []), "drawn on the plan")
             await safe("()=>window.__a3dResultLayerAdd('walk')")

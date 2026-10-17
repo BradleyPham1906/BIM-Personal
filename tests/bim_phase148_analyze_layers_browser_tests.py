@@ -151,7 +151,7 @@ async def run():
             await tab('analyze')
             # AMENDED FOR V162: one Analyze -- the analyses in the categories they answer (opened here,
             # so their rows can be measured), Model the one group left at the end
-            await safe("()=>['location','landform','water','climate','risk','people'].forEach(function(c){window.__a3dSaGoto(c);})")   # AMENDED FOR V164: and the categories of the analyses Analyze site draws
+            await safe("()=>['location','landform','water','climate','risk','access','people'].forEach(function(c){window.__a3dSaGoto(c);})")   # AMENDED FOR V164: and the categories of the analyses Analyze site draws; AMENDED FOR V166: Access and circulation
             await page.wait_for_timeout(150)
             R = await rows()
             order = await safe("()=>[].map.call(document.querySelectorAll('.a3d-analyze-wrap .a3d-anzgrphd'),function(e){return e.textContent;})")
@@ -161,9 +161,11 @@ async def run():
                 G.setdefault(r['grp'], []).append(r['id'])
             # AMENDED FOR V164: the six analyses Analyze site draws, first in their categories
             # AMENDED FOR V165: the land and water analyses, contours, slope and aspect in Landform, flow, ponds and flood in Water
+            # AMENDED FOR V166: movement's in Access and circulation, daily needs in People and place
             ck(G == {'location': ['dgframe'], 'landform': ['dgcontours', 'dgslope', 'dgaspect', 'survey', 'terrain', 'grading'], 'water': ['dgflow', 'dgponds', 'dgflood', 'rain'],
                      'climate': ['dgsun', 'dgshadow', 'dgwind', 'sun', 'sunhours', 'solar'],
-                     'risk': ['dgnoise'], 'people': ['dgviews'], 'model': ['lens', 'areas', 'lod', 'stats', 'structure']},
+                     'risk': ['dgnoise'], 'access': ['dgstreets', 'dgcycling', 'dgtransit', 'dgwalk', 'dgvehicles'], 'people': ['dgviews', 'dgneeds'],
+                     'model': ['lens', 'areas', 'lod', 'stats', 'structure']},
                "each analysis in its category, or in Model (%s)" % G)
             ck(all(not r['open'] and r['bodyH'] == 0 and r['aria'] == 'false' for r in R.values()), "every row starts closed: its body takes no room")
             ck(all(r['tog'] == 1 for r in R.values()), "each row has one control that opens it")
@@ -236,7 +238,7 @@ async def run():
             await page.keyboard.press('Escape')
             await page.wait_for_timeout(100)
             vis = [k for k, r in (await rows()).items() if not r['hidden']]
-            ck(len(vis) == 24 and await safe("()=>document.querySelector('.a3d-analyze-wrap [data-anzsearch]').value") == '', "Escape empties it: every row again")   # AMENDED FOR V164: 18 rows; AMENDED FOR V165: 24
+            ck(len(vis) == 30 and await safe("()=>document.querySelector('.a3d-analyze-wrap [data-anzsearch]').value") == '', "Escape empties it: every row again")   # AMENDED FOR V164: 18 rows; AMENDED FOR V165: 24; AMENDED FOR V166: 30
             # the left panel is the one scroll container (V65)
             sc = await safe("()=>{var a=document.getElementById('a3d-leftpanel');window.__a3dAnzOpenAll(true);a.scrollTop=a.scrollHeight;return a.scrollTop;}")
             await safe("()=>window.__a3dColumnAt([210,200],0,1,1,3)")

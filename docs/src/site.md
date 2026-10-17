@@ -84,7 +84,10 @@ step as it goes:
 4. **Climate and time zone:** ten years of daily climate, a year of hourly wind and heat, air
    quality and earthquakes. The site's UTC offset comes with them, so the sun needs no typing. An
    offset you gave is kept.
-5. **Access and people:** walk times to daily needs and transit, and the census tract (US sites).
+5. **Access and people:** walk times to daily needs and transit; the streets within 800 m with what
+   movement reads (speed, lanes, bike lanes, parking), the crossings' signals and stops, the doors
+   on the lot, the car parks and garage entrances within 400 m, and each line's headway where it is
+   mapped; and the census tract (US sites).
 6. **Zoning:** read from a council layer, where one is loaded in Data Layers and the property line
    is drawn.
 7. **The analyses, drawn in the model** (below).
@@ -112,6 +115,12 @@ analysis**:
 | Water flow | the flow lines, wider by their Strahler order; the divides between the large catchments; the land draining onto the site, shaded; an arrow where the site's water leaves it | Priority-Flood and D8 on the same ground |
 | Ponds | where water would stand 10 cm or more over 50 m2 or more: its depth, area and volume, its deepest point marked | the same, filled |
 | Flood zones | FEMA's floodway, 1% annual chance (A, AE, AH, AO; V and VE on the coast), 0.2% (shaded X) and undetermined (D) zones, cut to 150 m around, each labelled inside it with its base flood elevation, apart from the others' labels; the zone the site is in | FEMA's National Flood Hazard Layer (US sites) |
+| Street hierarchy | every street and path within 800 m by its class (motorway and trunk, arterial, collector, local, service, path), the heavier the line the higher the class; the main streets named with their speed limits; the lot's frontage named and heavier | OpenStreetMap's street classes |
+| Cycling stress | each street's level of traffic stress, LTS 1 (carefree) to LTS 4 (white knuckles); the stressful crossings of main streets marked; the streets the lot reaches at low stress, as a wide pale band. Off at first | the 2012 criteria and the 2016 crossing table (below) |
+| Transit | the stops within 8 minutes' walk (a bus) and 12 (rail, metro, light rail, tram), each with its walk and lines; the streets within 8 and 12 minutes; the bus and tram routes along their streets; the way to the nearest stop and station; PTAL at the site | OpenStreetMap's stops and routes; TfL's PTAL (below) |
+| Walk times | the streets and paths reached on foot in 5, 10 and 15 minutes from the lot. Off at first | the walk times (Access and people) |
+| Daily needs | the way along the streets to the nearest of each kind of daily need, the place marked with its walk | the same walks, traced back |
+| Vehicle access | the driveways and service roads at the lot, with an arrow where each enters it, or a provisional entry from the lot's lowest street; the doors on the lot; the car parks (kind, spaces, walk) and garage entrances within 400 m; parking along the streets, each side drawn on its own | OpenStreetMap |
 
 **Live and editable.**
 - Select an element to move, turn, mirror, scale or delete it, or to change its colour, line,
@@ -119,7 +128,8 @@ analysis**:
   clicking inside it, where nothing else is: the model and the lines and words over it come first.
   A selected area's edge is lit.
 - Slope and Aspect cover the whole ground, so they start with their layers off: **Show** on their
-  row turns one on.
+  row turns one on. Cycling stress and Walk times colour the same streets as the Street hierarchy,
+  so they start off too.
 - **Run the analysis again** (in Properties, or on its row) lays it down again from what the
   project holds now. What you have not touched is refreshed. What you changed is kept, and marked
   when the analysis would now draw it differently. What you deleted stays deleted.
@@ -136,8 +146,9 @@ analysis**:
   over them: a word that would fall under one moves, or gives way.
 - Each analysis is also a row in its category, with Show or Hide, Run again, Select, Reset and its
   key: Compass in Location; Contours, Slope and Aspect in Landform; Water flow, Ponds and Flood
-  zones in Water; Sun paths, Shadows and Winds in Climate; Noise in Environmental risk; Views in
-  People and place.
+  zones in Water; Sun paths, Shadows and Winds in Climate; Noise in Environmental risk; Street
+  hierarchy, Cycling stress, Transit, Walk times and Vehicle access in Access and circulation;
+  Views and Daily needs in People and place.
 
 **How the noise is estimated.** Open data gives a road's class and seldom its traffic, so:
 - the traffic is the class's typical daily flow, from FHWA's functional classes (urban where the
@@ -176,6 +187,38 @@ So it errs loud. It is a screening estimate: measure where it matters.
 The ground is every 5 m, from elevation tiles: kerbs, swales, culverts and pipes are not in it. It
 is a screening of the land and its water, made before a survey and a drainage design decide.
 
+**How movement is worked out.**
+- **The streets** are kept within 800 m of the lot with the tags movement reads; past 6,000 points
+  the farthest go first, and the layer says how far it reaches. A street's class follows the usual
+  crosswalk from OpenStreetMap's to the FHWA's functional classes. On a light map the higher classes
+  are darker; on the dark plan, brighter. After changing the map, **Run again** on the row draws
+  the other set.
+- **Cycling stress** follows Mekuria, Furth and Nixon's criteria (MTI report 11-19, 2012): a cycle
+  track or path is LTS 1; a bike lane is rated by the lanes each way and the speed, beside parking or
+  not, and with no parking beside it by its width where that is mapped; mixed traffic by the speed and the lanes, a residential
+  street of under 3 lanes a level lower. A street is as stressful as its worst feature. Where a
+  street maps no speed or lanes, its class's are assumed, as the noise analysis assumes them, and
+  Properties says so. The speeds are read in rows: up to 25 mph (40 km/h), 30 mph (50 km/h), 35 mph
+  (60 km/h), and over.
+- **Crossings.** Where a calm street (LTS 2 or less) meets a main street of another name, with no
+  signal or all-way stop within 20 m, the crossing takes Furth, Mekuria and Nixon's 2016 table by
+  the main street's speed and lanes. A median refuge is not counted, which errs stressful.
+- **The low-stress reach** is the streets the lot reaches at LTS 2 or less, a stressful crossing
+  breaking the way, at most 25% further than the shortest ride. One-way streets are ridden both ways:
+  a simplification.
+- **PTAL** is TfL's method: each line at its nearest stop within reach (8 minutes for a bus, 12 for
+  rail, metro, light rail and tram), its walk, half its headway and a reliability allowance (2
+  minutes for a bus, 0.75 for rail) make its access time, and 30 over that its frequency at the door;
+  per mode the best line counts in full and the others at half. The headways are OpenStreetMap's
+  route intervals, so PTAL is given where every line within reach has one, as a floor where some do,
+  and otherwise the layer says why there is none.
+- **Daily needs and the nearest stop** are reached by the walks (Access and people), traced back
+  along the streets to the lot. The design guides' 400 m (to green space) and 800 m (to shops and a
+  primary school) are said in Properties.
+- **A vehicle entry** is drawn where a driveway or service road crosses the lot line. With none, a
+  provisional entry is marked on the lot's lowest street (an alley before a local street, an
+  arterial last), as a parameter plan marks an entry until the design decides.
+
 ### The ten categories and the findings
 
 **Ten categories, always in this order:**
@@ -207,6 +250,10 @@ They cover:
 - the site's drainage: which way it drains, how much land drains onto it, the ponds near it;
 - its FEMA flood zone, and the zones within 150 m: a red flag in the floodway, a constraint in a
   flood zone;
+- transit's PTAL, its floor, or why there is none;
+- cycling: the frontage streets' levels of stress and the low-stress reach;
+- vehicle access and parking: the driveways into the lot or a provisional entry, the car parks
+  within 400 m and their spaces, and the parking along the frontage;
 - the day lengths at the solstices;
 - trees and green areas;
 - streets by use, bridges and tunnels;
@@ -340,8 +387,8 @@ It works out:
   each lie within 5, 10, 15 and 20 minutes. A park is reached at the nearest point of its edge. The
   kinds follow the 15-minute city; this is not a Walk Score;
 - **transit:** the stops by walk time, with the lines that serve them. A stop's two sides, and a
-  station with its entrances, count as one. OpenStreetMap holds no timetables, so how often a line
-  runs needs the operator's GTFS feed;
+  station with its entrances, count as one. How often a line runs is read from its route's interval
+  where OpenStreetMap maps one, for PTAL (Site analysis, Transit);
 - **the frontage:** each street the lot faces within 30 m, with the length of lot line it fronts,
   its class (arterial, collector, local, service), speed limit, lanes, sidewalks and cycleway;
 - **connectivity:** the intersections within 400 m of the lot, counted as LEED ND counts them. A
@@ -349,8 +396,9 @@ It works out:
   density is set against LEED ND's thresholds (90 per square mile to qualify, 300 and 400 for
   points). It also works out how much longer the walks are than the straight line.
 
-The walk times appear on the plan as a **Walk times** layer, under Analysis in Layers (`WALKTIMES`
-adds it again). It follows the access data, so a refresh updates it.
+Analyze site draws the walk times in the model, on Layers, Site analysis (Walk times). The plan
+overlay of earlier versions is still there on request: `WALKTIMES` adds it as a **Walk times** layer
+under Analysis in Layers, and it follows the access data.
 
 The people's figures are for the tract, its county and its state: population and density, age,
 households, income, renting, homes empty, households without a car, and how people get to work.
