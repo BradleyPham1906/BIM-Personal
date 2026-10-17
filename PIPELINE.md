@@ -1090,6 +1090,9 @@ they ship as compiled binaries.
 
 ## Standing rules
 
+- **Research to the protocol** (the owner, 2026-10-17: "the more careful research the better"):
+  `reference/research-protocol.md`. Every fact the code uses is read in its primary source, or a
+  dependable secondary one with the gap said; search summaries are pointers, never sources.
 - Every phase ships with a browser test suite, **falsified against a deliberately broken build**
   carrying the phase marker before it's trusted.
 - Assert on the **model**, not on appearance. The V86 lesson: a palette that looked perfect and did
