@@ -1,4 +1,4 @@
-# Research: valdrada, a city simulator to build on (V169)
+# Research: valdrada, a city simulator to build on (V170)
 
 The owner, after V166: "this is a github repo that i want to clone into our and see how we can build
 our simulation on top of it: https://github.com/mkturkcan/valdrada ... this only has apply to NYC
@@ -51,11 +51,11 @@ the site context already draws its roads).
 
 ## The routes, and the choice
 
-1. **The methods inside the app (chosen).** Simulation S1 (V169): cars by IDM on V166's street graph,
+1. **The methods inside the app (chosen).** Simulation S1 (V170): cars by IDM on V166's street graph,
    the mapped signals on an assumed cycle that is said, pedestrians on the sidewalks to and from the
    lot's doors, the stops and the car parks; live in plan and 3D; results as layers (the queue at
    the lot's entry, people at each door, delay at the crossings). Rewritten to the app's rules (ES5,
-   one file, its own renderer), credited. It needs placeable people, bikes and cars first (V168).
+   one file, its own renderer), credited. It needs placeable people, bikes and cars first (V169).
 2. A fork of valdrada with a compiler from OpenStreetMap: its renderer and sensors for any site, but
    as a separate program the design would be exported to.
 3. Both: route 1, and later an export of a site and its design for photoreal footage.
@@ -68,7 +68,7 @@ simulation: a photoreal city of a million buildings streamed in tiles around the
 vehicle and pedestrian models (its photoreal walkers have 25 bodies over 249 material slots),
 animated skeletons, sky images, and screen-space ambient occlusion and other post-processing,
 each a full-screen buffer. The simulation's own state is a few numbers per car and per walker.
-So V169 is light by design:
+So V170 is light by design:
 
 - **Only the site.** The streets V166 keeps (800 m, 6,000 nodes at most); nothing is streamed or
   fetched for the simulation, and the agents live within that window.
