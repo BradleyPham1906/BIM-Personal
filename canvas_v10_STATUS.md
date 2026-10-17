@@ -14748,6 +14748,61 @@ open api data"), which is already so since V164.
   street where the class's default gives the same level, or a one-way street's lanes halved. The
   suite checks each now, and the fixture gives North Boulevard a surface.
 
+### Suites
+
+- New: `bim_phase166_movement_browser_tests.py`, 98 checks, with `tests/movement_fixture.py` and
+  `tests/movement_reference.py`. The neighbourhood is V161's street grid with a case of each rule
+  added: tags on its streets (a bike lane beside parking, a cycle track, six lanes, a boulevard at 40
+  mph with four lanes, parking on one side, a tag movement leaves out), a signal, an all-way stop, a
+  stop on the approach only and a marked crossing with an island, doors on, in and off the lot, a
+  garage entrance and three car parks, the routes' headways and ways, a driveway into the lot, a
+  path, 5th Street mapped as two ways; and, by mode, no driveway, no headways, every headway, and a
+  footway of 7,000 points past the budget. Everything is worked out again in Python, apart from the
+  app: the level of traffic stress from the published 2012 criteria (52 cases, then every street),
+  the 2016 table at every junction, the low-stress reach by two Dijkstras, PTAL by TfL's method, the
+  paths against the walk times, each layer's elements against the data, the colours for the map
+  shown and for the dark plan, and the pixels of two classes and two levels. Then the findings and
+  the rows, a project from before V166, Overpass down, a phone and a tablet.
+- Amended, each AMENDED FOR V166: V141, V148 and V162 (the six rows in their categories, and
+  V148's Escape count); V161 (Transit says there is no PTAL here; a fetch no longer adds the Walk
+  times layer, `WALKTIMES` does); V164 (the movement layers off while its key is read; the undo stack
+  emptied before its one-step checks); V165 (the six movement layers among every layer it lists).
+- **Falsified by `Phase/falsify_phase166.py`:** 118 variants. The first run caught 112 (2283 s, 3
+  workers). The six it missed, and what changed:
+  - `sidewalks_kept` (the sidewalks drawn as their own ways kept): the suite looked for their
+    `footway=sidewalk` tag, which movement does not keep, so it could never see one. It looks for
+    them where they lie, beside 5th Street.
+  - `budget_farthest_kept` (past the budget, the nearest ways dropped first): the cut fell at the
+    same distance either way. The suite asks that the frontage street is still drawn and that no
+    kept way lies beyond the cut.
+  - `doors_off_lot` (a door taken within the frontage's 30 m): the fixture's door "20 m off" stood
+    30 m off, on the frontage's own reach, where a door is not taken either. It stands 20 m off.
+  - `crosses_itself` (a street's own pieces crossing): every calm main street in the test was one
+    way. 5th Street is mapped as two now, as OpenStreetMap often splits a street, and the junction
+    where they meet must not count them.
+  - `entry_wide` (an entry for a service road within 12 m): the alley's nearest node is 14 m off the
+    lot, so 12 m is the same as 3 m there. The variant takes 20 m, and the suite's one-entry check
+    catches it.
+  - `ptal_first_stop` (a line's first stop kept, not its nearest): not a variant. V161 sorts the
+    stops by their walk, so the first is the nearest; the step stays as the guard, and the script
+    says so.
+
+  The five again, on the fixed suite: 5 of 5 (115 s). All 117 on the final suite and build: 117
+  caught (2781 s, 3 workers).
+- **The amended suites' scripts.** Five variants were anchored on code V166 moved or took away, and
+  are re-anchored, each saying where it went. In `falsify_phase161.py`: `lines_by_name` (V166 reads a
+  line's label the same way, so the anchor takes V161's next lines too), `findings_not_filled` and
+  `layer_each_fetch` (a fetch no longer adds the walk layer: the first now drops the findings' fill
+  after V166's note there, the second makes every fetch add the layer). In `falsify_phase165.py`:
+  `land_findings_dropped` (movement's findings follow the land's) and `version_old` (the build says
+  V166). On the final build: `falsify_phase141.py` 21 of 21 (170 s), `falsify_phase148.py` 57 of 57
+  (784 s), `falsify_phase161.py` 64 of 64 (1207 s), `falsify_phase162.py` 59 of 59 (785 s),
+  `falsify_phase164.py` 68 of 68 (2140 s), `falsify_phase165.py` 82 of 82 (2632 s), 3 workers each.
+- **V155 amended.** The first full regression stalled in V155's suite at BENCHMARK: 132 frames on
+  this machine's software GPU, about 44 s alone, run under the harness's 90 s bound, which the
+  regression's parallel load (heavier with V166's suite) took it past. Alone it passed, 24 of 24.
+  The benchmark has a bound of its own now, 300 s, still a bound (V123); AMENDED FOR V166.
+
 ### Not done
 
 - PTAL where OpenStreetMap maps no headways: the layer and the finding say there is none. The owner

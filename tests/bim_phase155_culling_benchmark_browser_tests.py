@@ -175,7 +175,13 @@ async def run():
             await safe("()=>window.__a3dCamSet({tx:1,tz:2,dist:33,pitch:0.5,yaw:0.3})")
             await frame()
             before = await safe("()=>({ids:window.__a3dState().objs.map(function(o){return o.id;}),cam:window.__a3dCamSet({}),undo:window.__a3dUndoDepth?window.__a3dUndoDepth():null})")
-            R = await within(page.evaluate("()=>window.__a3dBenchmark()"), 'benchmark')
+            # AMENDED FOR V166: BENCHMARK draws 132 frames (two sizes, two engines, 3 + 30 each); on this machine's
+            # software GPU that is about 44 s alone, and the full regression's parallel load, heavier with V166's
+            # suite, took it past the harness's 90 s. Its own bound fits its work; it is still a bound (V123).
+            try:
+                R = await asyncio.wait_for(page.evaluate("()=>window.__a3dBenchmark()"), 300)
+            except asyncio.TimeoutError:
+                raise Stalled('benchmark')
             rows = R.get('rows') or []
             ok = len(rows) == 2 and [r['n'] for r in rows] == [5000, 20000] and all(r.get('webgpu') and r.get('webgl') for r in rows)
             ck(ok and not R.get('running') and R.get('gpu'), "5,000 and 20,000 elements timed with WebGPU and with WebGL (%s)" % ['%d: %.0f / %.0f ms' % (r['n'], r.get('webgpu') or -1, r.get('webgl') or -1) for r in rows])
