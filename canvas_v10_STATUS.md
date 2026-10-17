@@ -14798,10 +14798,21 @@ open api data"), which is already so since V164.
   V166). On the final build: `falsify_phase141.py` 21 of 21 (170 s), `falsify_phase148.py` 57 of 57
   (784 s), `falsify_phase161.py` 64 of 64 (1207 s), `falsify_phase162.py` 59 of 59 (785 s),
   `falsify_phase164.py` 68 of 68 (2140 s), `falsify_phase165.py` 82 of 82 (2632 s), 3 workers each.
-- **V155 amended.** The first full regression stalled in V155's suite at BENCHMARK: 132 frames on
-  this machine's software GPU, about 44 s alone, run under the harness's 90 s bound, which the
-  regression's parallel load (heavier with V166's suite) took it past. Alone it passed, 24 of 24.
-  The benchmark has a bound of its own now, 300 s, still a bound (V123); AMENDED FOR V166.
+- **Two older suites, made to measure what they claim (AMENDED FOR V166).**
+  - V155: the first full regression stalled at BENCHMARK, 132 frames on this machine's software
+    GPU, about 44 s alone, under the harness's 90 s bound, which the regression's parallel load
+    (heavier with V166's suite) took it past. The benchmark has a bound of its own, 300 s, still a
+    bound (V123). Re-run on the amended suite, `falsify_phase155.py` missed `stale_bindgroup`
+    (a chunk's bundles kept with the old bind group after the table grows): every scene in the
+    suite rebuilt each chunk whenever the table grew, so the guard was never needed there. The
+    suite now grows the table past its first 512 slots from a far chunk while a near chunk stays
+    as it was, before the stress model makes the table large, and asks that the near chunk's two
+    bundles are recorded again: the real build records 2, the variant 0. The pixels agree either
+    way on this software GPU, so the count is what tells.
+  - V159: the second regression failed "a second press while one runs: refused". The suite
+    pressed from two calls, and under load the first fetch could finish between them (the fixture
+    answers at once). Both presses are one call now; the app sets its busy flag before the fetch
+    starts, so the second is refused every time. Alone 89 of 89.
 
 ### Not done
 
