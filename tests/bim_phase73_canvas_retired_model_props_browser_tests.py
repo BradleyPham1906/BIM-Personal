@@ -184,8 +184,10 @@ async def run():
         # AMENDED FOR V134: the Data Layers, after the Site Context
         # AMENDED FOR V141: the site's place and sun in their own Location group, on the Site tab
         # AMENDED FOR V146: the History group, after Statistics
-        ck(mp['groups'] == ['Identity Data', 'Location', 'Map', 'Site Context', 'Data Layers', 'View', 'Floor Loads: Level 0', 'Areas by Usage', 'Usages', 'Statistics', 'History'],
-           "eleven groups: %s" % mp['groups'])
+        # AMENDED FOR V166b: the floor loads and the areas by usage are in Analyze now (Frame analysis,
+        # Areas by usage); the Usages library stays, on Project
+        ck(mp['groups'] == ['Identity Data', 'Location', 'Map', 'Site Context', 'Data Layers', 'View', 'Usages', 'Statistics', 'History'],
+           "nine groups: %s" % mp['groups'])
         for key in ('project', 'client', 'site', 'level', 'layer', 'present'):
             ck(key in mp['editable'], "'%s' is an editable field" % key)
         ro = dict(mp['readonly'])

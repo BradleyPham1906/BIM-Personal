@@ -29,6 +29,9 @@ The **Analyze** tab on the left rail is one list: every analysis and the site an
   shown: "cut fill" shows Grading, inside Landform. It matches the start of words, so "rain" finds
   Rain on terrain and not every row that mentions terrain. **Esc** empties it.
 - A button with nothing to act on yet (no frame, no survey) is disabled and says why.
+- **Settings in the row.** Frame analysis holds its combination, self-weight, display and deflected
+  shape, its results, and the active level's floor loads. Areas by usage lists the project's areas,
+  usage by usage, with the total. A change there is the model's at once.
 
 | Where | Analysis | Run it | Settings |
 |---|---|---|---|
@@ -48,10 +51,10 @@ The **Analyze** tab on the left rail is one list: every analysis and the site an
 | 8. Access and circulation | Walk times to the places nearby, as a layer | `WALKTIMES` | Layers > Analysis |
 | 10. People and place | Views, Daily needs | `ANALYZESITE` | Layers > Site analysis |
 | Model | Colour by usage, level, type, layer or any property | `COLOURBY` | Properties > View |
-| Model | Areas by usage | live | Properties > Analysis |
+| Model | Areas by usage | live | its row; the usages in Properties > Project |
 | Model | Buildings, LOD and solids | `LODCHECK` | each building's LOD group |
 | Model | Statistics | live | Properties > Project |
-| Model | Frame analysis: the frame's forces and deflection | `ANALYZE` | Properties > Analysis |
+| Model | Frame analysis: the frame's forces and deflection | `ANALYZE` | its row |
 
 The site's data sits in its category too:
 - **1. Location** has the site context, `CONTEXT`;

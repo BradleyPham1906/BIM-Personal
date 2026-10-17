@@ -16,7 +16,8 @@ earlier answer (V104: a round trip proves consistency, not correctness).
   4. LOADS: self-weight = rho A g L; the combinations' factors; each case alone.
   5. REFUSALS: nothing holding the frame up, and a sway mechanism, are refused by name; no NaN.
   6. PROPERTIES: a column's support and a beam's end connections, loads added and removed through the
-     Structural page, one undo step each; a bad load refused; the Analysis page's settings.
+     Structural page, one undo step each; a bad load refused; the frame's settings (AMENDED FOR V166b:
+     in Analyze, in Frame analysis's row).
   7. THE DISPLAY: ANALYZE from the command line and the toolbar; the diagram drawn from the solve and
      labelled with its peak; out of date the moment the model changes; ANALYZEOFF; SUPPORT and LOAD
      open Properties at their fields.
@@ -182,6 +183,15 @@ async def run():
               var down=function(){window.__a3dSetLevel(window.__a3dLevels()[0].id);};
               var set=function(id,st){window.__a3dStructPut(id,st);};
               return (""" + js + """)();}""")
+
+        # AMENDED FOR V166b: the frame's settings and results are in Analyze, in Frame analysis's row.
+        # Left first, as a click elsewhere leaves it: Analyze is not redrawn under its own focused field (V162).
+        async def frame_row():
+            await safe("""()=>{if(document.activeElement)document.activeElement.blur();var s=document.getElementById('a3d-shell');
+              if(s.getAttribute('data-tab')!=='analyze'||s.classList.contains('collapsed'))document.querySelector('#a3d-rail [data-tab="analyze"]').click();
+              var t=document.querySelector('.a3d-analyze-wrap [data-anztog="structure"]');if(t&&t.getAttribute('aria-expanded')!=='true')t.click();
+              window.__a3dRefreshProps();}""")
+            await page.wait_for_timeout(120)
 
         # a test-only setter: through the same edit Properties uses, so it is one undo step
         await safe("""()=>{window.__a3dStructPut=function(id,st){
@@ -425,11 +435,13 @@ async def run():
             ck(st and st.get('loads') == [] and 'removed' in await toast(),
                "at 2 m it is added, and the remove button takes it off (%s)" % (st and st.get('loads')))
             # the Analysis page with nothing selected
+            # AMENDED FOR V166b: the frame's settings are in Analyze, in Frame analysis's row
             await safe("()=>{window.__a3dSelectFor([]);window.__a3dRefreshProps();}")
             await page.wait_for_timeout(250)
-            combos = await safe("""()=>{var s=document.querySelector('[data-propstr="combo"]');return s?[].map.call(s.options,function(o){return o.value;}):null;}""")
+            await frame_row()
+            combos = await safe("""()=>{var s=document.querySelector('.a3d-analyze-wrap [data-propstr="combo"]');return s?[].map.call(s.options,function(o){return o.value;}):null;}""")
             ck(combos == ['1.2D+1.6L', '1.4D', 'D+L', 'D', 'L'] and combos == await safe("()=>window.__a3dCombos()"),
-               "with nothing selected, Properties' Analysis page offers the combinations (%s)" % combos)
+               "Frame analysis, in Analyze, offers the combinations (%s)" % combos)
             ck(await safe("()=>!document.querySelector('.a3d-dlg')"), "and nothing opened a window to do any of this")
 
             # ---------------------------------------------------------------------------------
@@ -454,12 +466,12 @@ async def run():
             dr = await safe("()=>window.__a3dStructDrawn()")
             await safe("()=>{window.__a3dSelectFor([]);window.__a3dRefreshProps();}")
             await page.wait_for_timeout(200)
-            res = await safe("""()=>{var r=[].filter.call(document.querySelectorAll('.a3d-prow'),function(x){return x.textContent.indexOf('Result')===0;})[0];return r?r.textContent:null;}""")
+            await frame_row()   # AMENDED FOR V166b: Frame analysis's row in Analyze says it, not Properties
+            res = await safe("""()=>{var r=[].filter.call(document.querySelectorAll('.a3d-analyze-wrap [data-anzcard="structure"] .a3d-anzkv dt'),function(x){return x.textContent==='Result';})[0];
+              return r?r.textContent+' '+r.nextElementSibling.textContent:null;}""")
             ck(dr and dr.get('stale') and 'labels' not in dr and res and 'Out of date' in res,
-               "a changed load puts the display out of date: no result drawn, and Properties says so (%s, %r)" % (dr, res))
-            await safe("()=>{var s=document.querySelector('[data-propstr=\"display\"]');}")
-            await safe("()=>window.__a3dSetPropTab&&window.__a3dSetPropTab('analysis')")   # AMENDED FOR V141: the model's Analysis page is on Properties' Analysis tab
-            await page.select_option('[data-propstr="display"]', 'N')
+               "a changed load puts the display out of date: no result drawn, and Frame analysis says so (%s, %r)" % (dr, res))
+            await page.select_option('.a3d-analyze-wrap [data-propstr="display"]', 'N')
             await page.wait_for_timeout(300)
             await command('ANALYZE')
             dr = await safe("()=>window.__a3dStructDrawn()")

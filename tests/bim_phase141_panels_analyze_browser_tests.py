@@ -4,8 +4,9 @@
 The owner: "clean up the right side panels because it is too much as we add more stuff", and
 "adding analyze below assets".
 
-  1. TABS: with nothing selected, Properties has Project | Site | View | Analysis; each group on its
-     tab; only the shown tab's groups on screen; the site's place in its own Location group.
+  1. TABS: with nothing selected, Properties has Project | Site | View | Analysis (AMENDED FOR V166b:
+     Project | Site | View -- the Analysis tab's settings are in Analyze, the usages on Project); each
+     group on its tab; only the shown tab's groups on screen; the site's place in its own Location group.
   2. SWITCHING: a click shows a tab in place (a half-typed value survives); the tab is remembered
      through a reload; a selection shows the object, not the tabs; each tab far shorter than the
      old panel.
@@ -56,7 +57,7 @@ async def within(aw, what):
 
 
 GROUP_TAB = {'Identity Data': 'project', 'Statistics': 'project', 'Location': 'site', 'Map': 'site', 'Site Context': 'site',
-             'Data Layers': 'site', 'View': 'view', 'Floor Loads: Level 0': 'analysis', 'Areas by Usage': 'analysis', 'Usages': 'analysis',
+             'Data Layers': 'site', 'View': 'view', 'Usages': 'project',   # AMENDED FOR V166b: no Analysis tab; Usages on Project
              'History': 'project'}   # AMENDED FOR V146: the History group, on the Project tab
 
 
@@ -123,15 +124,18 @@ async def run():
             await page.wait_for_timeout(2300)
             await nosel()
             s = await shown()
-            ck([t[:2] for t in s.get('tabs', [])] == [['project', 'Project'], ['site', 'Site'], ['view', 'View'], ['analysis', 'Analysis']],
-               "with nothing selected, four tabs: Project, Site, View, Analysis (%s)" % s.get('tabs'))
+            # AMENDED FOR V166b: three tabs
+            ck([t[:2] for t in s.get('tabs', [])] == [['project', 'Project'], ['site', 'Site'], ['view', 'View']],
+               "with nothing selected, three tabs: Project, Site, View (%s)" % s.get('tabs'))
             ck(s['tabs'][0][2] and s['tabs'][0][3] == 'true' and not any(t[2] for t in s['tabs'][1:]), "Project is the first shown")
             # AMENDED FOR V146: and History, after Statistics
-            ck(s.get('groups') == ['Identity Data', 'Statistics', 'History'], "on it, only Identity Data, Statistics and History (%s)" % s.get('groups'))
+            # AMENDED FOR V166b: and the Usages, after Identity Data
+            ck(s.get('groups') == ['Identity Data', 'Usages', 'Statistics', 'History'], "on it, only Identity Data, Usages, Statistics and History (%s)" % s.get('groups'))
             all_g = await safe("()=>[].map.call(document.querySelectorAll('#a3d-propsbody [data-a3dpgrp]'),function(e){return [e.getAttribute('data-a3dpgrp'),e.closest('[data-ptab]').getAttribute('data-ptab')];})") or []
             ck(dict(all_g) == GROUP_TAB, "each group on its tab, every one still in the page (%s)" % all_g)
             tabof = await safe("()=>['Identity Data','Location','Map','Site Context','Data Layers','View','Floor Loads: Level 2','Analysis','Areas by Usage','Usages','Statistics','Constraints'].map(window.__a3dPropTabOf)")
-            ck(tabof == ['project', 'site', 'site', 'site', 'site', 'view', 'analysis', 'analysis', 'analysis', 'analysis', 'project', None],
+            # AMENDED FOR V166b: the floor loads, the frame's settings and the areas are in Analyze, on no tab
+            ck(tabof == ['project', 'site', 'site', 'site', 'site', 'view', None, None, None, 'project', 'project', None],
                "a group's tab, by name; an object's group is on none (%s)" % tabof)
             loc = await safe("""()=>{var g=document.querySelector('#a3d-propsbody [data-a3dpgrp="Location"]').nextElementSibling;
               return [].map.call(g.querySelectorAll('[data-propmodel]'),function(e){return e.getAttribute('data-propmodel');});}""")
@@ -157,17 +161,17 @@ async def run():
             await page.keyboard.press('Escape')
             await click_tab('view')
             ck((await shown()).get('groups') == ['View'], "View: the View group")
-            await click_tab('analysis')
-            s = await shown()
-            ck(s.get('groups') == ['Floor Loads: Level 0', 'Areas by Usage', 'Usages'], "Analysis: floor loads, areas by usage, usages (%s)" % s.get('groups'))
+            # AMENDED FOR V166b: there is no Analysis tab; nothing of it is left in the page
+            ck(not await safe("()=>!!document.querySelector('#a3d-propsbody [data-ptabbtn=\"analysis\"],#a3d-propsbody [data-ptab=\"analysis\"],#a3d-propsbody [data-propstr],#a3d-propsbody [data-propmodel=\"dl\"]')"),
+               "no Analysis tab, and none of its fields left in Properties")
             hs = []
-            for tb in ('project', 'site', 'view', 'analysis'):
+            for tb in ('project', 'site', 'view'):
                 await safe("(t)=>window.__a3dSetPropTab(t)", tb)
                 hs.append(await safe("()=>document.getElementById('a3d-propsbody').scrollHeight"))
             whole = await safe("""()=>{var P=document.querySelectorAll('#a3d-propsbody .a3d-ptabpane');[].forEach.call(P,function(p){p.style.display='block';});
               var h=document.getElementById('a3d-propsbody').scrollHeight;[].forEach.call(P,function(p){p.style.display='';});return h;}""")
             ck(max(hs) < 0.6 * whole and min(hs) < 0.35 * whole, "each tab far shorter than all the groups at once (%s against %s px)" % (hs, whole))
-            ck(await safe("(t)=>window.__a3dSetPropTab(t)", 'nowhere') is False and await safe("()=>window.__a3dPropTab()") == 'analysis', "a tab that is not one is refused")
+            ck(await safe("(t)=>window.__a3dSetPropTab(t)", 'nowhere') is False and await safe("()=>window.__a3dPropTab()") == 'view', "a tab that is not one is refused")   # AMENDED FOR V166b: View is the last
             await safe("(t)=>window.__a3dSetPropTab(t)", 'project')
             await click_tab('site')   # a click, as a person would
             await within(page.reload(), 'reload')
@@ -187,7 +191,7 @@ async def run():
 
             # ---------------------------------------------------------------------------------
             print("\n-- 3. commands turn to the group's tab")
-            for cmd, tb, grp in (('usages', 'analysis', 'Usages'), ('colourby', 'view', 'View'), ('datalayers', 'site', 'Data Layers')):
+            for cmd, tb, grp in (('usages', 'project', 'Usages'), ('colourby', 'view', 'View'), ('datalayers', 'site', 'Data Layers')):   # AMENDED FOR V166b: Usages on Project
                 await safe("(t)=>window.__a3dSetPropTab(t)", 'project')
                 await safe("(c)=>window.__a3dRunCmd(c)", cmd)
                 await page.wait_for_timeout(150)
@@ -243,12 +247,12 @@ async def run():
             await page.click('.a3d-analyze-wrap [data-anzact="structure:off"]')
             await page.wait_for_timeout(150)
             ck((await cards())['structure']['state'] == 'off', "Hide turns it off")
-            await page.click('.a3d-analyze-wrap [data-anzact="open:Analysis"]')
-            await page.wait_for_timeout(200)
-            s = await shown()
-            ck(await safe("()=>window.__a3dPropTab()") == 'analysis' and 'Analysis' in s.get('groups', []) and await safe("()=>window.__a3dState().sel") is None,
-               "Settings: nothing selected, Properties on Analysis, the Analysis group shown (%s)" % s.get('groups'))
+            # AMENDED FOR V166b: its settings are in its row, not behind a Settings button in Properties
+            fs = await safe("()=>[].map.call(document.querySelectorAll('.a3d-analyze-wrap [data-anzcard=\"structure\"] [data-propstr]'),function(e){return e.getAttribute('data-propstr');})")
+            ck(fs == ['combo', 'selfweight', 'display', 'deflected'] and not await safe("()=>!!document.querySelector('[data-anzact=\"open:Analysis\"]')"),
+               "Frame analysis's settings are in its row (%s)" % fs)
             # the sun
+            await nosel()   # AMENDED FOR V166b: Settings used to clear the selection on its way to Properties
             await safe("(t)=>window.__a3dSetPropTab(t)", 'site')
             for k, v in (('sunlat', '40'), ('sunlon', '-75'), ('suntz', '-4')):
                 await page.fill('#a3d-propsbody [data-propmodel="%s"]' % k, v)
@@ -290,7 +294,8 @@ async def run():
             async with page.expect_download() as dl:
                 await page.click('.a3d-analyze-wrap [data-anzact="lod:cityjson"]')
             ck((await dl.value).suggested_filename.endswith('.city.json'), "Export CityJSON exports")
-            for act, tb, grp in (('open:View', 'view', 'View'), ('open:Areas by Usage', 'analysis', 'Areas by Usage'), ('open:Usages', 'analysis', 'Usages'),
+            # AMENDED FOR V166b: the areas by usage are in their row; its Usages button opens them on Project
+            for act, tb, grp in (('open:View', 'view', 'View'), ('open:Usages', 'project', 'Usages'),
                                  ('open:Statistics', 'project', 'Statistics')):
                 await page.click('.a3d-analyze-wrap [data-anzact="%s"]' % act)
                 await page.wait_for_timeout(150)
