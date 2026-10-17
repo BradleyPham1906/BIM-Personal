@@ -2,11 +2,11 @@
 
 **Read this first in a new session.** One page. The detail lives in the docs listed at the bottom.
 
-    canvas_v10.html   3105612 bytes
-    sha256            e8ec917e636002dc97278233a4ea7770f0530d2a3d7159d54b1707863ca95cb2
-    markers           __acad3dV60 ... __acad3dV165, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
+    canvas_v10.html   3172803 bytes
+    sha256            1a7fe75e5c64d6d666c4ef9ae6a1fb0b60cd4b4714a47487e83270f6a5b33ccf
+    markers           __acad3dV60 ... __acad3dV166, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
                       __acad3dV121b
-    tests             122 suites, 5635 checks, 0 failures
+    tests             123 suites, 5737 checks, 0 failures
 
     The user guide (V142): every phase updates docs/src/, its log entry and BIM_APP_VERSION, then
     runs tools/dump_catalog.py and tools/build_docs.py. The V142 suite and the Pages workflow
@@ -171,7 +171,28 @@ when it starts (V111 to V138 went to other work; V139 to V192 are in NOW).
 | 118 | Blocks and data | ATTDEF ATTEDIT BEDIT WBLOCK DATAEXTRACTION TABLESTYLE TABLEDIT TABLEEXPORT | First phase that's about the disciplines, not drafting. BLOCK and INSERT landed in V124, as the Assets library's blocks: saved records inserted as independent copies. A block reference that follows its definition (what BEDIT edits) is not built. |
 | 119 | Sheets and plotting, rest | MVIEW (draw a viewport on the paper) PAGESETUP (plot settings beyond Sheet Setup) PUBLISH (V122's Print set prints every sheet in one job; a chosen subset and page setups remain) EXPORTPDF (vector PDF of a sheet) VPLAYER (per-viewport layer visibility) viewport lock | LAYOUT, MSPACE and PSPACE landed in V116, with layout tabs and model space through a viewport. |
 
-**Recently finished:** Phase 165 (V165), **site analysis in the model II: land and water**.
+**Recently finished:** Phase 166 (V166), **site analysis in the model III: movement**.
+- The third of the four phases the owner's one button grows by. The owner's answers to the research:
+  Transitous not used ("do what is best": its terms would open the code and rule out selling the
+  app), no timetable files ("use what's available online free"), no class set by hand.
+- **Analyze site**'s access step asks the same free Overpass request for the crossings' controls,
+  the doors, the garage entrances and the car parks, and keeps every street within 800 m with the
+  tags movement reads, so the layers run again offline.
+- Six more layers, each live and editable: the street hierarchy by class; cycling stress (each
+  street's level of traffic stress by the 2012 criteria and why, the uncontrolled crossings of main
+  streets by the 2016 table, the site's low-stress reach; off at first); transit (the 8- and
+  12-minute catchments, the routes, the stops with their lines, PTAL by TfL's method where
+  OpenStreetMap maps the headways); walk times (off at first); the way to each daily need; vehicle
+  access (an arrow where a driveway enters the lot, or a provisional entry from its lowest street;
+  doors, car parks, garage entrances, parking by side). Colours for the dark plan and a light map.
+- Transit's finding gives PTAL; Cycling and Vehicle access and parking are new findings.
+- **Checked** in 98 checks against the methods worked out again in Python (the 2012 stress criteria
+  case by case, the 2016 table at every junction, the low-stress reach by two Dijkstras, PTAL by TfL's
+  method), on V161's street grid with a case of each rule added; 117 falsify variants, all caught; six
+  older suites amended, and two more made to measure what they claim (V155's table growing past a
+  chunk that is not rebuilt; V159's second press, a race under load).
+
+Phase 165 (V165), **site analysis in the model II: land and water**.
 - The second of the four phases the owner's one button grows by ("button then the analysis run ...
   then put that under analysis layers, built straight in the model").
 - **Analyze site** now fetches the ground every 5 m for 150 m around the site (the free AWS

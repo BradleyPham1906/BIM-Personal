@@ -14812,7 +14812,13 @@ open api data"), which is already so since V164.
   - V159: the second regression failed "a second press while one runs: refused". The suite
     pressed from two calls, and under load the first fetch could finish between them (the fixture
     answers at once). Both presses are one call now; the app sets its busy flag before the fetch
-    starts, so the second is refused every time. Alone 89 of 89.
+    starts, so the second is refused every time. Alone 89 of 89. Its falsify script, re-run, had
+    gone stale since V160 to V162: three variants retired (the view switch, the remembered view and
+    the old tab, gone since Analyze became one list), two re-anchored (the board's keys and its
+    width), and `calm_ignored` not caught, as the first speed bin starts at the calm threshold: the
+    rose's caption now says it, and the suite reads it (90 checks).
+  - On the final suites: `falsify_phase155.py` 15 of 15 (809 s), `falsify_phase159.py` 26 of 26
+    (148 s).
 
 ### Not done
 
@@ -14825,3 +14831,12 @@ open api data"), which is already so since V164.
 - The hierarchy is OpenStreetMap's class read by the usual crosswalk, not a council's adopted
   street hierarchy, and carries no traffic counts (FHWA's HPMS could not be reached).
 - Parking by time and charge (the conditional tags), loading bays, kerb ramps and step-free routes.
+
+### Full regression and state after V166
+
+123 suites, 5737 checks, 0 failures (589 s, 5 workers). Patches 166a, 166b and 166c rebuild the build
+byte for byte from `Phase/canvas_v10.html.bak_phase166_pre`. The diff is ES5-clean and ASCII.
+
+    canvas_v10.html   3172803 bytes
+    sha256            1a7fe75e5c64d6d666c4ef9ae6a1fb0b60cd4b4714a47487e83270f6a5b33ccf
+    markers           __acad3dV60 ... __acad3dV166, __acad3dV134d (and the 133d to 133f markers)
