@@ -267,6 +267,10 @@ async def run():
             ck(Wy and all(abs(sum(Wy['pct'][k]) - RH_['share'][k]) < 0.06 for k in range(16)), "each sector's share, as worked out here")
             ck((Hh.get('wind') or {}).get('summer', {}).get('prev') == 9 and (Hh.get('wind') or {}).get('winter', {}).get('prev') == 13,
                "summer from the SSW (the sea breeze in the fixture), winter from the WNW")
+            # AMENDED FOR V166: the calm threshold as the rose's caption states it. The first speed bin starts at the same
+            # 0.5 m/s, so the hours counted calm do not show a threshold of 0 (falsify_phase159's calm_ignored); the caption does.
+            hb = await safe("()=>window.__a3dClbHtml()") or ''
+            ck('Calm (under 0.5 m/s)' in hb, "the rose's caption says calm is under 0.5 m/s")
             cf = Hh.get('comfort') or {}
             ck(cf and abs(cf['inside'] - RH_['inside']) < 0.06 and abs(cf['cold'] - RH_['cold']) < 0.06 and abs(cf['hot'] - RH_['hot']) < 0.06,
                "comfort: %.1f%% inside, %.1f%% too cool, %.1f%% too hot or humid" % (RH_['inside'], RH_['cold'], RH_['hot']))
