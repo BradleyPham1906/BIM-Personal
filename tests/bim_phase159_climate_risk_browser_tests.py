@@ -316,8 +316,9 @@ async def run():
             r = await safe("()=>Promise.resolve(window.__a3dClimFetch())") or {}
             ck(r.get('error') and 'busy (HTTP 429)' in r['error'] and await clim() == before, "all down: nothing changes, and each failure is named (%s)" % (r.get('error') or '')[:90])
             ST['mode'] = {}
-            await safe("()=>{window.__a3dClimFetch();}")
-            r2 = await safe("()=>window.__a3dClimFetch()")
+            # AMENDED FOR V166: both presses in one call. Pressed from two calls, the first fetch could finish between
+            # them under the full regression's load (the fixture answers at once), and the second was then not refused.
+            r2 = await safe("()=>{window.__a3dClimFetch();return window.__a3dClimFetch();}")
             ck(r2 is None and 'already on their way' in await toast(), "a second press while one runs: refused")
             for _ in range(60):
                 if not await safe("()=>window.__a3dClimBusy()"):
