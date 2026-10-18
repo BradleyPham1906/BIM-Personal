@@ -15136,7 +15136,9 @@ pattern, ARIA's separator role, WCAG 2.2's 2.5.7 and 2.5.8, and two open impleme
 Before the merge, on V166b's build: 125 suites, 5854 checks, 0 failures (573 s, 4 workers). On the
 merged build, main's V167 with patch 166h: 126 suites, 6049 checks, 0 failures (573 s, 4 workers),
 V167's 5999 and V166d's 50, with cjval built so V139 and V140 run all their checks. Every one of the
-2565 falsify variants in the 85 older scripts still anchors once on the merged build. The chain
+2565 falsify variants in the 85 older scripts still anchors once on the merged build, and the three
+this phase touches were run whole on it: `falsify_phase166d.py` 51 of 51 (731 s),
+`falsify_phase147.py` 25 of 25 (193 s), `falsify_phase166b.py` 54 of 54 (610 s), 3 workers each. The chain
 `Phase/canvas_v10.html.bak_phase167_pre`, patches 167a to 167i, then 166h, rebuilds the build byte
 for byte. The diff is ES5-clean and ASCII. BIM_APP_VERSION stays as V167 set it: V166d adds no
 analysis.
