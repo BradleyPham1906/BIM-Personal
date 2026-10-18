@@ -15133,7 +15133,7 @@ every difference first, Apply or Cancel, marked unsigned.
 
 ### Suites
 
-- **New:** `bim_phase167_standards_registry_browser_tests.py`, 193 checks, with
+- **New:** `bim_phase167_standards_registry_browser_tests.py`, 195 checks, with
   `tests/standards_reference.py`: the registry worked out again from its sources (each topic, edition,
   adoption, level and value as the source states it, with its arithmetic: 640 m and 960 m at 4.8 km/h,
   FHWA's ranges to the old traffic), the constants the analyses had before V167 read from the kept
@@ -15173,13 +15173,20 @@ every difference first, Apply or Cancel, marked unsigned.
     167f's rule for them was redundant and is gone (167h); the variant now takes the date field's,
     which is caught at 30 px.
   - `row_std_dropped` broke the script, and failed at the marker: its edit is well formed now.
-  With 167h's eleven added, all 120 on the final suite: 120 caught (1128 s, 6 workers); again after
-  the merge of main: 120 caught (1109 s, 6 workers).
+  With 167h's eleven added, all 120: 120 caught (1128 s, 6 workers); again after the merge of main:
+  120 caught (1109 s). 167i's three added, `group_on_project` (STANDARDS no longer turning to Site)
+  was not caught: the suite had opened the Site tab itself for the new check that the group starts
+  closed. It starts from Project now. All 123 on the final suite and build: 123 caught (1170 s).
 - **Amended,** each AMENDED FOR V167: V62 (the registry's sources' hosts, linked and never fetched);
   V132 (Find asks for the address's parts, `addressdetails=1`); V73, V141 and V166b (the Standards
   group on Site, after Data Layers); V161 (LEED ND's edition named as the registry names it). V132's falsify script had five
   variants stale, four of them since earlier phases: re-anchored (RE-ANCHORED IN V167), and
-  `falsify_phase132.py` 49 of 49 on the final build (344 s, 6 workers). V62 has no falsify script.
+  `falsify_phase132.py` 49 of 49 on the final build (344 s, 6 workers). V161's had two variants
+  anchored on the moved walking speed and LEED radius, re-anchored. On the final build:
+  `falsify_phase141.py` 21 of 21 (88 s), `falsify_phase161.py` 64 of 64 (675 s), `falsify_phase166b.py`
+  54 of 54 (319 s), 6 workers each. V62 and V73 have no falsify script. V114's suite passes unchanged
+  (167i made the app's classes visible to it); its falsify script has nine variants stale since
+  before V167, on the shell's tabs and Start screen, not this phase's.
 - Every other suite passes unchanged: V105's occupant loads, V125's combinations, V159's climate,
   V161's access, V164 to V166's analyses read the registry now, which is what proves the move.
 
@@ -15196,4 +15203,11 @@ every difference first, Apply or Cancel, marked unsigned.
 
 ### Full regression and state after V167
 
-(the regression follows)
+125 suites, 5999 checks, 0 failures (472 s, 5 workers): the 124 older suites' 5804 and V167's 195.
+The older suites count 5804 here, as V166b recorded; V166c's machine counted 5801 for them.
+Patches 167a to 167i rebuild the build byte for byte from `Phase/canvas_v10.html.bak_phase167_pre`
+(V166c's build, main's after its merge). The diff is ES5-clean and adds no non-ASCII character.
+
+    canvas_v10.html   3282385 bytes
+    sha256            82fabb6129b2b483b7c5730e363465e7ee8fff23b8694c44526483972f56d15c
+    markers           __acad3dV60 ... __acad3dV167, __acad3dV166b, __acad3dV166c, __acad3dV134d (and the 133d to 133f markers)

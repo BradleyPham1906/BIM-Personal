@@ -2,12 +2,12 @@
 
 **Read this first in a new session.** One page. The detail lives in the docs listed at the bottom.
 
-    canvas_v10.html   3187431 bytes
-    sha256            7fbee16e65f6ccd338df92dfb11961e65b81fed0a2763d0a78eb7139f3d5bde9
-    markers           __acad3dV60 ... __acad3dV166, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
+    canvas_v10.html   3282385 bytes
+    sha256            82fabb6129b2b483b7c5730e363465e7ee8fff23b8694c44526483972f56d15c
+    markers           __acad3dV60 ... __acad3dV167, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
                       __acad3dV121b, __acad3dV166b, __acad3dV166c
-    tests             124 suites, 5801 checks, 0 failures (V166b's build gives the same 5801 on this
-                      machine, suite for suite; it recorded 5804 -- see V166c in canvas_v10_STATUS.md)
+    tests             125 suites, 5999 checks, 0 failures (the 124 older suites give 5804 on this
+                      machine; V166c recorded 5801 -- see V166c and V167 in canvas_v10_STATUS.md)
 
     The user guide (V142): every phase updates docs/src/, its log entry and BIM_APP_VERSION, then
     runs tools/dump_catalog.py and tools/build_docs.py. The V142 suite and the Pages workflow
@@ -214,11 +214,12 @@ when it starts (V111 to V138 went to other work; V139 to V192 are in NOW).
   at once from the data kept.
 - **Packs** add editions as files, their differences, SHA-256 and publisher shown before Apply.
 - **Properties > Site > Standards** (`STANDARDS`, `CODES`), on a phone in its sheet.
-- **Checked** in 193 checks against a Python reference of every record and rule; 120 falsify
+- **Checked** in 195 checks against a Python reference of every record and rule; 123 falsify
   variants, all caught. Found while building: the compass rings stamped under the wrong name; numbers
   worked out at fetch said at today's values; findings fixed until Analyze ran again; typed fields
   lost on a redraw; seven standards' numbers left in sentences (among them WHO's 53 dB, now a record);
-  a level overstated. V62 and V132 amended.
+  a level overstated; two older suites' rules (V114's dead CSS, V141's tab heights) met by the app.
+  V62, V73, V132, V141, V161 and V166b amended. Full regression 125 suites, 5999 checks, 0 failures.
 
 V166c, **the analytical member keeps only what is read** (inside Phase 166; the version stays V166).
 - V166b's follow-up. `falsify_phase125.py`'s `column_axes_swapped` swapped a member's `hy` and `hz`
