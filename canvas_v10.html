@@ -42573,19 +42573,19 @@ try{
         }
         continue;
       }
-      var q=bimObjOffset(o),b=o.bim,p1,p2,yRef,hy,hz;
+      var q=bimObjOffset(o),b=o.bim,p1,p2,yRef;
       if(b.type==='column'){
         if(!b.center||!(b.height>0)||!(b.width>0)||!(b.depth>0)){skipped.push({id:o.id,name:o.name,why:'has no parametric size'});continue;}
         var r=b.rotation||0;
         p1=[b.center[0]+q[0],b.baseY+q[1],b.center[1]+q[2]];
         p2=[p1[0],p1[1]+b.height,p1[2]];
-        yRef=[Math.cos(r),0,Math.sin(r)];hy=b.width;hz=b.depth;
+        yRef=[Math.cos(r),0,Math.sin(r)];
       }else{
         if(!b.p1||!b.p2||!(b.width>0)||!(b.depth>0)){skipped.push({id:o.id,name:o.name,why:'has no parametric size'});continue;}
         var ty=(isFinite(b.topY)?b.topY:(b.baseY+b.depth))+q[1];
         p1=[b.p1[0]+q[0],ty,b.p1[1]+q[2]];
         p2=[b.p2[0]+q[0],ty,b.p2[1]+q[2]];
-        yRef=[0,1,0];hy=b.depth;hz=b.width;
+        yRef=[0,1,0];
       }
       var ax=bimMemberAxes(p1,p2,yRef);
       if(!ax){skipped.push({id:o.id,name:o.name,why:'has no length'});continue;}
@@ -42595,9 +42595,10 @@ try{
       var pf=bimMemberSection(o),pq=bimProfileProblem(pf);   /* __acad3dV126 */
       if(pq){skipped.push({id:o.id,name:o.name,why:'its section cannot be read: '+pq});continue;}
       var sec=bimProfileProps(pf);
-      members.push({id:o.id,name:o.name,kind:b.type,p1:p1,p2:p2,L:bimVLen(bimVSub(p2,p1)),ax:ax,
-        n1:nodeAt(p1),n2:nodeAt(p2),sec:sec,E:E,G:E/(2*(1+nu)),rho:mat&&mat.density||0,material:mat?mat.name:'',
-        hy:hy,hz:hz,els:[]});
+      /* __acad3dV166c: only what the solve, its signature and the display read. The section's sizes
+         are its profile's (bimMemberSection); the far end, p2, is read through L and ax. */
+      members.push({id:o.id,name:o.name,kind:b.type,p1:p1,L:bimVLen(bimVSub(p2,p1)),ax:ax,
+        n1:nodeAt(p1),n2:nodeAt(p2),sec:sec,E:E,G:E/(2*(1+nu)),rho:mat&&mat.density||0,els:[]});
     }
     /* a node on another member's line splits it there */
     for(i=0;i<members.length;i++){

@@ -2,11 +2,12 @@
 
 **Read this first in a new session.** One page. The detail lives in the docs listed at the bottom.
 
-    canvas_v10.html   3187339 bytes
-    sha256            b7ee1405e5248fbb833127618991763e1d0d997790b7230525e00d3d75032b7e
+    canvas_v10.html   3187431 bytes
+    sha256            7fbee16e65f6ccd338df92dfb11961e65b81fed0a2763d0a78eb7139f3d5bde9
     markers           __acad3dV60 ... __acad3dV166, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
-                      __acad3dV121b, __acad3dV166b
-    tests             124 suites, 5804 checks, 0 failures
+                      __acad3dV121b, __acad3dV166b, __acad3dV166c
+    tests             124 suites, 5801 checks, 0 failures (V166b's build gives the same 5801 on this
+                      machine, suite for suite; it recorded 5804 -- see V166c in canvas_v10_STATUS.md)
 
     The user guide (V142): every phase updates docs/src/, its log entry and BIM_APP_VERSION, then
     runs tools/dump_catalog.py and tools/build_docs.py. The V142 suite and the Pages workflow
@@ -106,6 +107,7 @@ three tiers: compact up to 720 px wide or 500 px high, medium up to 1024 px, des
 | 165 | Site analysis in the model II: land and water | **Done** (see Recently finished): a Ground and water step in Analyze site (the ground every 5 m for 150 m around from AWS Terrain Tiles, kept in metres above sea level; FEMA's flood zones for US sites); six layers -- contours at round heights coloured by height, slope in five classes and aspect read for warmth (Horn's method, off at first), flow lines by Strahler order with the divides between the large catchments and the land draining onto the site (Priority-Flood and D8), ponds, FEMA's zones with their base flood elevations; three findings; an area picked by its inside. Not yet: the ground finer than the tiles, culverts and pipes, flood depth, the site's own drainage design | `reference/research-site-analysis-in-model.md` (2). |
 | 166 | Site analysis in the model III: movement | **Done** (see Recently finished): the access step's one Overpass request also asks for the crossings' controls, the doors, the garage entrances and the car parks, and keeps every street within 800 m with the tags movement reads (a budget of 6,000 nodes, the window kept said); six layers -- the street hierarchy by class, cycling level of traffic stress by the 2012 criteria with the 2016 crossing table and the site's low-stress reach (off at first), transit with its 8- and 12-minute catchments and PTAL where OpenStreetMap maps the headways, walk times (off at first), the way to each daily need, vehicle access (driveways, an arrow at the lot line or a provisional entry from the lowest street, doors, car parks, on-street parking by side); colours for the dark plan and a light map; two findings new and Transit's with PTAL. The owner: no timetable files, only free online data; Transitous not used (its terms would open the code and rule out selling the app). Not yet: headways where OpenStreetMap has none, daily traffic, refuges and bike-lane widths beside parking, one-way streets ridden one way | `reference/research-site-analysis-in-model.md` (4). |
 | 166b | The panels | **Done** (see Recently finished): Properties' Analysis tab gone (Project, Site, View); Frame analysis's settings, results and floor loads, and the areas by usage, in their Analyze rows; the usages on Project; the left panel's edge dragged by mouse, pen or finger (242 to 560 px, the drawing keeping 320 px beside Properties, kept in this browser, a double click to reset, the keys of W3C's window splitter) and a button that widens it a step at a time (WCAG 2.2's 2.5.7); a computer's layout, a tablet on its side included | The owner: "make sure to fix the right panel also since i still see the analysis tab on it ... left panel needs to be dragable like the right panel also". `reference/research-panels.md`. |
+| 166c | The analytical member, cleaned | **Done** (see Recently finished): the four fields `bimAnalyticalModel` gave each member and nothing read -- `hy` and `hz` (dead since V126 took the section from the profile), `p2` and `material` -- no longer written; the member is derived on every solve and never stored, so no project carried them | V166b's follow-up: `falsify_phase125.py`'s retired `column_axes_swapped`. |
 | 167 | Standards registry | **Start here.** Every standard the app applies kept as data, not code: a record per edition (publisher, edition, dates, where it applies, its source to the page, its parameters and tables in our own words, the method version that implements it, what it supersedes); one reader for every analysis (no standard's value left in code, and a suite that asks it); profiles by place as a tree, international, country, region, city, the most specific edition winning and an international fallback (ISO, WHO) where a place has none, or said so; overrides per project with a reason, shown on every result; provenance on every layer and finding (the editions and a hash of the values), Out of date when they change; new editions with app versions and as standards pack files, their differences shown before they apply; methods versioned when a revision changes their structure; checks shaped as buildingSMART's IDS. V164 to V166's ~90 constants moved into records, their suites unchanged in what they expect | The owner: "building a system based on the industry standards (but flexible enough when the standards changed)"; any country, with fallbacks; overrides with a reason; app versions and pack files. `reference/research-standards-registry.md`. |
 | 168 | Site analysis in the model IV: land | Land use in LBCS's hues, adjusted to pass the colour-blindness checks (the owner); figure-ground with Spacematrix's density measures; green and trees with the 3-30-300 check; zoning around the site in the council layer's own colours. The work plan is `reference/plan-v167-v170.md` | `reference/research-site-analysis-in-model.md` (6). |
 | 169 | Assets: people, bikes, cars and trees | Placeable models that carry their dimensions as data, for scale and for the simulations: people (standing, seated, a wheelchair user; height, eye height, shoulder width, walking speed), bikes (length, stand spacing), cars and a van (a design car's size, the parking bay, the turning path), trees by kind (height, crown spread, deciduous or evergreen, so they shade the sun studies, in leaf in summer and bare in winter). Low-detail and adjustable, made in-house as the furniture is (the owner); valdrada's procedural pedestrians (MIT) and its trees and vehicles (CC BY 4.0) converted later, with credit, once glTF can be imported; its MetaHuman pedestrians not | The owner (V166): "do we have asset designed yet ... trees, building shape, human, bike, car for later simulations?" The library has nine furniture and fixture models; trees exist only as site context. |
@@ -192,7 +194,25 @@ when it starts (V111 to V138 went to other work; V139 to V192 are in NOW).
 | 118 | Blocks and data | ATTDEF ATTEDIT BEDIT WBLOCK DATAEXTRACTION TABLESTYLE TABLEDIT TABLEEXPORT | First phase that's about the disciplines, not drafting. BLOCK and INSERT landed in V124, as the Assets library's blocks: saved records inserted as independent copies. A block reference that follows its definition (what BEDIT edits) is not built. |
 | 119 | Sheets and plotting, rest | MVIEW (draw a viewport on the paper) PAGESETUP (plot settings beyond Sheet Setup) PUBLISH (V122's Print set prints every sheet in one job; a chosen subset and page setups remain) EXPORTPDF (vector PDF of a sheet) VPLAYER (per-viewport layer visibility) viewport lock | LAYOUT, MSPACE and PSPACE landed in V116, with layout tabs and model space through a viewport. |
 
-**Recently finished:** V166b, **the panels** (inside Phase 166; the version stays V166).
+**Recently finished:** V166c, **the analytical member keeps only what is read** (inside Phase 166;
+the version stays V166).
+- V166b's follow-up. `falsify_phase125.py`'s `column_axes_swapped` swapped a member's `hy` and `hz`
+  and was not caught: nothing reads them.
+- **The audit first.** They were never on the element: `bimAnalyticalModel` derives a member from
+  each column and beam on every solve, and that member is never stored (not in `bimCarryBim`, the
+  project's JSON, the history, IFC or Properties). Of its seventeen fields, thirteen are read; `hy`,
+  `hz`, `p2` and `material` are not, and were not in V125's own build either. In V125 the locals
+  `hy` and `hz` fed the section; since V126 the section is the profile's.
+- **Patch 166g** writes the thirteen and drops the two locals. Nothing a user sees changes; the
+  guide, the release notes and BIM_APP_VERSION stay as they are.
+- **Checked:** V125 50 of 50 and V126 61 of 61, their falsify scripts 35 of 35 each; every literal
+  anchor of the 84 falsify scripts unmoved; a frame saved by V166b's Save opens in V166c with the
+  same members, model and solve, and a file whose members carry `hy` and `hz` opens and analyses as
+  the plain one. No new suite: a removal of what nothing reads cannot be seen in behaviour.
+- **Full regression** 124 suites, 5801 checks, 0 failures. V166b recorded 5804; its own build gives
+  5801 here too, every suite the same count, so the three are not this phase's.
+
+V166b, **the panels** (inside Phase 166; the version stays V166).
 - The owner: "make sure to fix the right panel also since i still see the analysis tab on it (looks
   like form the old design). left panel needs to be dragable like the right panel also."
 - **Properties has three tabs** with nothing selected: Project, Site, View. The Analysis tab was
@@ -1241,3 +1261,6 @@ they ship as compiled binaries.
   `BIM_CMD_TERMS`, and a chord in `A3D_KEYS` (with `cmd`) if it has one (V128).
 - Nothing listens for a plain letter on the drawing except type-anywhere, which asks
   `__a3dTypeAnywhere` first. A new state that takes letters must make that test refuse (V128).
+- When a phase changes how a value is read, remove what still writes the old one: V126 took a
+  member's section from its profile and left its `hy` and `hz` written for nothing until V166c, found
+  only because a falsify variant that swapped them stopped being caught.
