@@ -20,7 +20,7 @@ VARIANTS = {
     'steps_past_screen': [("if(BIM_RIGHT_STEPS[i]>w&&BIM_RIGHT_STEPS[i]<=mx)return BIM_RIGHT_STEPS[i];", "if(BIM_RIGHT_STEPS[i]>w)return BIM_RIGHT_STEPS[i];")],
     'screen_ignored': [("    return Math.max(BIM_RIGHT_MIN,Math.min(BIM_RIGHT_MAX,Math.floor((window.innerWidth||0)-BIM_LEFT_RAIL-BIM_LEFT_MIN-BIM_LEFT_KEEP)));", "    return BIM_RIGHT_MAX;")],
     'drawing_not_kept': [("-BIM_LEFT_RAIL-BIM_LEFT_MIN-BIM_LEFT_KEEP)));", "-BIM_LEFT_RAIL-BIM_LEFT_MIN)));")],
-    'max_against_left_now': [("-BIM_LEFT_RAIL-BIM_LEFT_MIN-BIM_LEFT_KEEP)));", "-parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--a3d-left-w'))-BIM_LEFT_KEEP));")],
+    'max_against_left_now': [("-BIM_LEFT_RAIL-BIM_LEFT_MIN-BIM_LEFT_KEEP)));", "-parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--a3d-left-w'))-BIM_LEFT_KEEP)));")],
     'kept_forced': [("Math.min(bimRightMax(),p.w)):null;   /* __acad3dV166c", "Math.min(BIM_RIGHT_MAX,p.w)):null;   /* __acad3dV166c")],
     'set_unclamped': [("    else p.w=Math.round(Math.max(BIM_RIGHT_MIN,Math.min(bimRightMax(),w)));", "    else p.w=Math.round(Math.max(BIM_RIGHT_MIN,Math.min(BIM_RIGHT_MAX,w)));")],
     'step_not_kept': [("  function bimRightStep(){return bimRightSetWidth(bimRightNext());}", "  function bimRightStep(){var r=document.getElementById('a3d-right');r.style.width=bimRightNext()+'px';return bimRightApply();}")],

@@ -14947,3 +14947,105 @@ adds no analysis.
     canvas_v10.html   3187339 bytes
     sha256            b7ee1405e5248fbb833127618991763e1d0d997790b7230525e00d3d75032b7e
     markers           __acad3dV60 ... __acad3dV166, __acad3dV166b, __acad3dV134d (and the 133d to 133f markers)
+
+### V166c: Properties' width by one press
+
+The owner: a button in Properties' header that steps its width through fixed widths within what the
+screen allows (the drawing keeps 320 px, as V166b's left panel does), labelled with the next width,
+30 px (36 on coarse pointers), hidden where Properties is a drawer or a sheet, claimed in the shell's
+audit; the edge given the W3C window splitter's keys. V166b's "Not done". The research is
+`reference/research-panels.md` (V166c): the app's code and the browser first, then the window splitter
+pattern, ARIA's separator role, WCAG 2.2's 2.5.7 and 2.5.8, and two open implementations read as text
+(VS Code's view-size commands and sash, react-resizable-panels' separator), all primary.
+
+#### What was built (patch 166g)
+
+- **The button.** `[data-rpwidth]` in Properties' header, between its name and the minimise: 30 px,
+  36 on a touch screen. Each press goes to the next of 240, 320, 400, 480, 560 within what the screen
+  allows, to the screen's widest when no step fits, and from the widest back to 240 (V166b's rule);
+  the width is kept. Its label and tooltip say where the next press goes ("Properties width 280 px:
+  widen to 320"). Hidden while Properties is minimised, and where it is a drawer or a sheet. The
+  minimise's muted grey on both themes.
+- **Within what the screen allows** (`bimRightMax`): the window less the rail (54), the left panel at
+  its narrowest (242) and the drawing's 320. The left panel gives way to Properties (V166b) but never
+  below 242, so this one bound keeps the drawing 320 px whatever the left panel is doing, with no
+  circle between the two panels' limits. The drag, End, the button and the width applied all read it;
+  a width kept on a wider screen stays kept and comes back with the screen.
+- **The edge, a window splitter.** A focusable separator, vertical, `aria-controls` Properties, named
+  by the header's own "Properties" (`aria-labelledby`, a span the header now has), its width its
+  value, 240 to what the screen allows. Left widens Properties and Right narrows it (the arrows are
+  spatial: the splitter moves the way the arrow points), 16 px, 64 with Shift; Home and End; Enter
+  minimises Properties and puts the focus on the minimise button, whose Enter brings it back. The
+  model's key chain already leaves a focused separator alone (V166b). A focus line shows on keyboard
+  focus.
+- **Any pointer.** Pointer events with `touch-action: none` in place of `mousedown`: a mouse, a pen or
+  a finger; a 12 px edge inside the panel on a touch screen, with a line it can see; a cancelled drag
+  puts the width back; the right button does not drag. The left panel gives way during the drag, and
+  its 0.18 s easing is off while Properties is dragged, so it keeps step with the drawing's edge.
+- **Docked where the stylesheet docks it.** `bimRightDesktop` tests `BIM_RIGHT_SHEET_MQ`,
+  `(max-width:1024px),(max-height:500px)`, the query of the one rule that hides the edge and the
+  button.
+- **The shell's audit** reaches Properties' chrome (its header, edge and grab bar, not its body) and
+  counts a focusable separator as a control; it claims both edges, the button, and V147's minimise and
+  grab bar (driven by V147's suite).
+- The guide's Getting started says how to size Properties by the button and the keys.
+
+#### Found
+
+- **A finger could not drag Properties' edge (since V147).** It took `mousedown` alone; on a tablet on
+  its side, where the edge is shown, a 120 px finger drag left Properties at 280 px. Lesson: a drag
+  checked only with a mouse says nothing of a finger; the V166c suite drives it with CDP touch events.
+- **The code and the stylesheet disagreed on where Properties is docked (since V147).** The code said
+  wider than 900 px, the stylesheet over 1024 wide and over 500 high. Between them -- a 1000 x 800
+  window, a 932 x 430 phone on its side, a 1280 x 480 window -- the arrow minimised the drawer or sheet
+  to a 42 px strip with its body hidden, and a computer's kept width was forced on it. Lesson: two
+  tests of one layout question drift at the edges; the code now reads the stylesheet's own query, and
+  the suite checks they agree at eleven sizes either side of 1024 and 500.
+- **Properties ignored the screen (since V147).** It took up to 560 px on any computer, so on a window
+  narrower than 1176 px the drawing fell under 320.
+- **The shell's audit had never reached Properties.** It walks `#a3d-shell`; Properties is outside it,
+  so V147's minimise was never audited, and a claim for the new button would have read as finished
+  while checking nothing. Lesson: before claiming a control, check the audit can see it (the suite
+  injects a stray button and a stray edge into the header, and a button into the body, which is not
+  the shell's).
+- **While writing the mid-drag check:** the left panel, giving way as Properties grew, eased 0.18 s
+  behind the drawing's edge. Its easing is off during the drag, as V166b's own drag has it.
+- **V166b's suite measured an easing width after a fixed wait.** In the baseline, on V166b's own build
+  under four workers, the left panel read 257 px for 258 after Enter opened it. Its `geo()` now waits
+  for the panel's transitions to finish (`getAnimations()`), bounded at 4 s -- V84's lesson again;
+  marked AMENDED FOR V166c. The V166c suite's `geo()` does the same.
+- **The environment:** the pip Playwright (1.64) wanted a browser this container does not have; 1.56,
+  matching Chromium 1194, is pinned. `cjval` was not installed, so V139 and V140 skipped three checks
+  (5801 of PIPELINE's 5804); built with cargo, they run.
+- **Falsification:** one variant of the new script (`max_against_left_now`) was WRONG-REASON: it
+  dropped a parenthesis and the page never loaded. Fixed, it is caught: with Properties' widest taken
+  from the left panel's present width, the drawing falls to 244 px when the left panel reopens.
+- **Not this phase's:** `falsify_phase117.py`'s `observer_back` and `ws2_throws` anchor a line no
+  longer in the build; they do not build on V166b's build either.
+
+#### Suites
+
+- **New suite** `tests/bim_phase166c_properties_width_browser_tests.py`, 50 checks: the button's
+  place, size, steps, kept widths, the drawing's room px for px, labels, tooltip, the edge's value,
+  a reload, minimised, both themes; a 1100 px screen (the steps stopping at 484, a kept 560 coming
+  back at 1500, the left panel giving way mid-drag at once, the drag and End and a key past the widest,
+  the left panel shut); the edge's role, orientation, control, name, value and range, the keys and
+  their direction, Home, End, focus shown, the model's keys left alone, Enter both ways; a mouse drag,
+  a cancelled drag, a double click, the right button; a tablet on its side by CDP touch (the 12 px
+  edge, the 36 px button, a finger's drag, a tap); the media rule's query against the code's, eleven
+  sizes, and five drawer and sheet layouts by mouse and touch; the audit's reach. No page errors, no
+  [BIM] warnings.
+- **Falsification:** `Phase/falsify_phase166c.py`, 51 variants, all caught (740 s, 3 workers; the
+  fixed variant on its own). Two not variants, said in the script: End to `BIM_RIGHT_MAX`
+  (`bimRightSetWidth` keeps any width within the screen), and Enter toggling rather than setting the
+  minimise (the edge is not shown while minimised).
+- **Re-anchored** (RE-ANCHORED IN V166c): `falsify_phase147.py` (unclamped, drag_dead, drag_backwards,
+  no_reset, grip_on_touch, minimise_body_shown, minimise_button_text) and `falsify_phase166b.py`
+  (cancel_kept, shift_step_same, not_a_separator, whose lines Properties' edge now shares).
+- **Amended:** V166b's suite (the easing wait, above). V147's suite is unchanged and passes.
+
+#### Not done
+
+- The left edge's name, "Panel width", is not its pane's name, as the window splitter pattern asks.
+- `aria-valuetext` on both edges: allowed, not added; no screen reader was tested here.
+- V166b's: a dropdown focused in Analyze waits for its row's redraw.
