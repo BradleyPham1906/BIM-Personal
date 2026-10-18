@@ -12,7 +12,7 @@ Run from the repository root: python3 Phase/patch_phase167a.py
 import hashlib, pathlib, re, sys
 
 SRC = pathlib.Path('canvas_v10.html')
-BASE = 'b7ee1405e5248fbb833127618991763e1d0d997790b7230525e00d3d75032b7e'   # V166b, after patch_phase166f.py
+BASE = '7fbee16e65f6ccd338df92dfb11961e65b81fed0a2763d0a78eb7139f3d5bde9'   # V166c, after patch_phase166g.py
 
 raw = SRC.read_bytes()
 sha = hashlib.sha256(raw).hexdigest()

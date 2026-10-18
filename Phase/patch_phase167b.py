@@ -13,7 +13,7 @@ Run from the repository root: python3 Phase/patch_phase167b.py [--dry]
 import hashlib, pathlib, re, sys
 
 SRC = pathlib.Path('canvas_v10.html')
-BASE = 'a50aeb1969eacf36d976fa20882d0e0a8969d54bbbb93d33f13c4ff470f6dbdb'   # after patch_phase167a.py
+BASE = '89adf610a67941321637f8c9601aecb0ea995f85ae6da0239c04dbd171c54754'   # after patch_phase167a.py
 DRY = '--dry' in sys.argv
 
 raw = SRC.read_bytes()
