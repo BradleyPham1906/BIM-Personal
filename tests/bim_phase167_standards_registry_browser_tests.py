@@ -294,9 +294,12 @@ async def run():
             await page.wait_for_timeout(150)
             gc = await std_group()
             ck(gc.get('tab') == 'site' and gc.get('open') is False, "on the Site tab the Standards group starts closed: it is long (%s)" % {k: gc.get(k) for k in ('tab', 'open')})
+            await safe("()=>{window.__a3dSetPropTab('project');window.__a3dRefreshProps();}")
             await safe("()=>window.__a3dStdCommand()")
             await page.wait_for_timeout(200)
             g0 = await std_group()
+            on0 = await safe("()=>{var p=document.querySelector('#a3d-propsbody .a3d-ptabpane.on');return p&&p.getAttribute('data-ptab');}")
+            ck(on0 == 'site', "STANDARDS from the Project tab turns Properties to Site (%s)" % on0)
             nv = sum(len(A['eds'][0]['v']) for A in RECS.values() if not A['cat'])
             ck(got == nv and nv > 70 and await safe("()=>window.__a3dStdState()") is None and g0.get('open'),
                "every value read (%s), every edition, stamp and sentence, and the Standards group drawn: the project still holds nothing (%s)" % (got, await safe("()=>window.__a3dStdState()")))
