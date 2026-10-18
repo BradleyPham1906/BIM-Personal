@@ -697,18 +697,24 @@ body.light-theme #a3d-right{--pp-bg:#fbfbfc;--pp-line:rgba(0,0,0,.08);--pp-text:
 #a3d-right .a3d-histmore button{min-height:22px;padding:0 8px;font-size:11px}
 #a3d-right #a3d-propsbody button.warn{border-color:#e5534b;color:#ff7b72}
 #a3d-propsbody [data-brmergefrom]{flex:1 1 auto;min-width:0}
-.a3d-rgrip{position:absolute;left:-3px;top:0;bottom:0;width:7px;cursor:col-resize;z-index:6}
-.a3d-rgrip:hover,.a3d-rgrip.drag{background:linear-gradient(90deg,transparent 2px,var(--pp-acc,#4ea1ff) 2px,var(--pp-acc,#4ea1ff) 4px,transparent 4px)}
+.a3d-rgrip{position:absolute;left:-3px;top:0;bottom:0;width:7px;cursor:col-resize;z-index:6;touch-action:none;outline:0}   /* __acad3dV166d: a finger's too, and focusable */
+.a3d-rgrip:hover,.a3d-rgrip.drag,.a3d-rgrip:focus-visible{background:linear-gradient(90deg,transparent 2px,var(--pp-acc,#4ea1ff) 2px,var(--pp-acc,#4ea1ff) 4px,transparent 4px)}
+body.a3d-rpdrag,body.a3d-rpdrag *{cursor:col-resize!important;user-select:none;-webkit-user-select:none}
+body.a3d-rpdrag #a3d-leftpanel{transition:none}   /* it gives way as Properties is dragged, in step with the drawing's edge */
+/* __acad3dV166d: Properties' width, by one press, beside its minimise; a docked panel's, as its edge is */
+.a3d-rpwbtn{width:30px;height:30px;display:inline-grid;place-items:center;border:0;border-radius:6px;background:transparent;color:var(--pp-muted,#8f98a2);cursor:pointer;padding:0;flex:0 0 auto;margin:0 2px 0 auto}
+.a3d-rpwbtn:hover{background:var(--pp-hover,rgba(255,255,255,.06));color:var(--pp-text,#fff)}
+.a3d-rpwbtn svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
 .a3d-rmin{width:26px;height:26px;display:inline-grid;place-items:center;border:0;border-radius:6px;background:transparent;color:var(--pp-muted,#8f98a2);cursor:pointer;padding:0;flex:0 0 auto}
 .a3d-rmin:hover{background:var(--pp-hover,rgba(255,255,255,.06));color:var(--pp-text,#fff)}
 .a3d-rmin svg{width:15px;height:15px;transition:transform .15s ease}
 body.a3d-rmin #a3d-right{width:42px!important;min-width:42px}
-body.a3d-rmin #a3d-right #a3d-propsbody,body.a3d-rmin .a3d-rgrip{display:none}
+body.a3d-rmin #a3d-right #a3d-propsbody,body.a3d-rmin .a3d-rgrip,body.a3d-rmin .a3d-rpwbtn{display:none}
 body.a3d-rmin #a3d-right .a3d-palhd{font-size:0;justify-content:center;padding:10px 0;border-bottom:0}
 body.a3d-rmin .a3d-rmin svg{transform:rotate(180deg)}
 /* __acad3dV147: a phone, a tablet, a finger */
 .a3d-rsheetbar{display:none}
-@media(max-width:1024px),(max-height:500px){.a3d-rgrip{display:none}}
+@media(max-width:1024px),(max-height:500px){.a3d-rgrip,.a3d-rpwbtn{display:none}}   /* __acad3dV166d: BIM_RIGHT_SHEET_MQ, the code's own */
 @media(pointer:coarse){
 #a3d-right input[type=text],#a3d-right input[type=number],#a3d-right input[type=search],#a3d-right select,#a3d-right textarea{min-height:36px;font-size:13px}
 #a3d-right #a3d-propsbody button{min-height:36px;font-size:13px;padding:0 12px}
@@ -718,6 +724,10 @@ body.a3d-rmin .a3d-rmin svg{transform:rotate(180deg)}
 #a3d-right .a3d-pgcar{width:32px;height:32px}
 #a3d-right input[type=checkbox]{width:20px;height:20px}
 .a3d-rmin{width:36px;height:36px}
+.a3d-rpwbtn{width:36px;height:36px}   /* __acad3dV166d: a finger's target, and a 12 px edge it can see */
+.a3d-rgrip{left:0;width:12px;background:linear-gradient(90deg,transparent 2px,rgba(255,255,255,.16) 2px,rgba(255,255,255,.16) 4px,transparent 4px)}
+.a3d-rgrip.drag{background:linear-gradient(90deg,transparent 2px,var(--pp-acc,#4ea1ff) 2px,var(--pp-acc,#4ea1ff) 5px,transparent 5px)}
+body.light-theme .a3d-rgrip:not(.drag):not(:focus-visible){background:linear-gradient(90deg,transparent 2px,rgba(0,0,0,.14) 2px,rgba(0,0,0,.14) 4px,transparent 4px)}
 }
 @media(min-width:721px) and (max-width:1024px) and (min-height:501px){
 body.a3d-props-right #a3d-right{width:340px;max-width:85vw}
@@ -9565,20 +9575,51 @@ try{
   var BIM_RIGHT_KEY='acad3dRightPanel',BIM_RIGHT_MIN=240,BIM_RIGHT_MAX=560;
   function bimRightPrefs(){try{var v=JSON.parse(localStorage.getItem(BIM_RIGHT_KEY)||'null');return v&&typeof v==='object'?v:{};}catch(eR){return {};}}
   function bimRightSave(p){try{localStorage.setItem(BIM_RIGHT_KEY,JSON.stringify(p));}catch(eW){}}
-  function bimRightDesktop(){return (window.innerWidth||0)>900;}
+  /* __acad3dV166d: docked beside the drawing where the stylesheet docks it, over 1024 px wide and over
+     500 px high; below that Properties is a drawer or a sheet. The same query as the rule that hides
+     its edge and its width button, so the code and the stylesheet cannot disagree: V147's "wider than
+     900" let the arrow shrink a drawer, or a sheet on a phone on its side, to a 42 px strip */
+  var BIM_RIGHT_SHEET_MQ='(max-width:1024px),(max-height:500px)';
+  function bimRightDesktop(){
+    if(window.matchMedia)return !window.matchMedia(BIM_RIGHT_SHEET_MQ).matches;
+    return (window.innerWidth||0)>1024&&(window.innerHeight||0)>500;
+  }
+  /* the widest Properties may be now: the drawing keeps BIM_LEFT_KEEP px beside the left panel at its
+     narrowest, since the left panel gives way to Properties (V166b) but never below BIM_LEFT_MIN */
+  function bimRightMax(){
+    return Math.max(BIM_RIGHT_MIN,Math.min(BIM_RIGHT_MAX,Math.floor((window.innerWidth||0)-BIM_LEFT_RAIL-BIM_LEFT_MIN-BIM_LEFT_KEEP)));
+  }
+  /* the width on screen, and the next step up within what the screen allows; from the widest, back to
+     the narrowest -- V166b's rule for the left panel */
+  var BIM_RIGHT_STEPS=[BIM_RIGHT_MIN,320,400,480,BIM_RIGHT_MAX];
+  function bimRightW(){var rp=document.getElementById('a3d-right');return rp?Math.round(rp.getBoundingClientRect().width):0;}
+  function bimRightNext(){
+    var w=bimRightW(),mx=bimRightMax(),i;
+    for(i=0;i<BIM_RIGHT_STEPS.length;i++)if(BIM_RIGHT_STEPS[i]>w&&BIM_RIGHT_STEPS[i]<=mx)return BIM_RIGHT_STEPS[i];
+    return w<mx?mx:BIM_RIGHT_MIN;
+  }
+  function bimRightStep(){return bimRightSetWidth(bimRightNext());}
   function bimRightApply(){
     var rp=document.getElementById('a3d-right'),p=bimRightPrefs();
     if(!rp)return null;
     document.body.classList.toggle('a3d-rmin',!!p.min&&bimRightDesktop());   /* minimised is a computer's; a phone or tablet closes the panel */
-    var w=isFinite(p.w)?Math.max(BIM_RIGHT_MIN,Math.min(BIM_RIGHT_MAX,p.w)):null;
+    var w=isFinite(p.w)?Math.max(BIM_RIGHT_MIN,Math.min(bimRightMax(),p.w)):null;   /* __acad3dV166d: within what the screen allows now; the one kept stays */
     rp.style.width=(w&&bimRightDesktop()&&!p.min)?w+'px':'';
     var b=document.getElementById('a3d-rminbtn');
     if(b){b.setAttribute('aria-pressed',p.min?'true':'false');b.title=p.min?'Show the Properties panel':'Minimise the Properties panel';}
     bimShellDockW();   /* __acad3dV166b: the left panel keeps the drawing its room */
-    return {w:rp.getBoundingClientRect().width,min:!!p.min};
+    /* __acad3dV166d: the edge's value and range, and where the button's next press goes */
+    var cw=bimRightW(),mx=bimRightMax(),nx=bimRightNext(),g=rp.querySelector('.a3d-rgrip'),wb=rp.querySelector('[data-rpwidth]');
+    if(g){g.setAttribute('aria-valuenow',String(cw));g.setAttribute('aria-valuemin',String(BIM_RIGHT_MIN));g.setAttribute('aria-valuemax',String(mx));}
+    if(wb){wb.setAttribute('aria-label','Properties width '+cw+' px: '+(nx>cw?'widen to '+nx:'back to '+nx));wb.title=wb.getAttribute('aria-label');}
+    return {w:rp.getBoundingClientRect().width,min:!!p.min,kept:typeof p.w==='number'?p.w:null,max:mx,next:nx,docked:bimRightDesktop(),mq:BIM_RIGHT_SHEET_MQ,
+      grip:!!(g&&getComputedStyle(g).display!=='none'),button:!!(wb&&getComputedStyle(wb).display!=='none')};
   }
   function bimRightSetWidth(w){
-    var p=bimRightPrefs();p.w=Math.round(Math.max(BIM_RIGHT_MIN,Math.min(BIM_RIGHT_MAX,w)));bimRightSave(p);
+    var p=bimRightPrefs();
+    if(w===null)delete p.w;   /* __acad3dV166d: null forgets it, as the edge's double click does */
+    else p.w=Math.round(Math.max(BIM_RIGHT_MIN,Math.min(bimRightMax(),w)));
+    bimRightSave(p);
     var r=bimRightApply();try{size();paint();}catch(eS){}
     return r;
   }
@@ -9589,7 +9630,10 @@ try{
   }
   function bimRightWire(rp,sec){
     if(!rp||rp.querySelector('.a3d-rgrip'))return;
-    var g=document.createElement('div');g.className='a3d-rgrip';g.title='Drag to resize';g.setAttribute('aria-hidden','true');
+    /* __acad3dV166d: the edge is the W3C's window splitter -- a focusable separator named by the
+       header's "Properties", its width as its value */
+    var g=document.createElement('div');g.className='a3d-rgrip';g.tabIndex=0;g.title='Drag to resize; double-click to put it back';
+    g.setAttribute('role','separator');g.setAttribute('aria-orientation','vertical');g.setAttribute('aria-controls','a3d-right');g.setAttribute('aria-labelledby','a3d-rpttl');
     rp.insertBefore(g,rp.firstChild);
     /* the phone's sheet: a grab bar that raises it and lowers it */
     var sb=document.createElement('div');sb.className='a3d-rsheetbar';sb.setAttribute('role','button');sb.setAttribute('aria-label','Raise or lower Properties');sb.innerHTML='<i></i>';
@@ -9597,6 +9641,10 @@ try{
     rp.insertBefore(sb,sec||null);
     var hd=sec&&sec.querySelector('.a3d-palhd');
     if(hd&&!document.getElementById('a3d-rminbtn')){
+      var wb=document.createElement('button');wb.type='button';wb.className='a3d-rpwbtn';wb.setAttribute('data-rpwidth','1');   /* __acad3dV166d: the width, by one press */
+      wb.innerHTML='<svg viewBox="0 0 18 18" aria-hidden="true"><path d="M2.5 9h13M5.5 6 2.5 9l3 3M12.5 6l3 3-3 3"/></svg>';
+      wb.addEventListener('click',function(){bimRightStep();});
+      hd.appendChild(wb);
       var b=document.createElement('button');b.type='button';b.id='a3d-rminbtn';b.className='a3d-rmin';b.setAttribute('aria-label','Minimise the Properties panel');
       b.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 6l6 6-6 6"/></svg>';
       b.addEventListener('click',function(){
@@ -9605,20 +9653,46 @@ try{
       });
       hd.appendChild(b);
     }
-    g.addEventListener('mousedown',function(ev){
-      if(!bimRightDesktop())return;
+    /* __acad3dV166d: dragged by a mouse, a pen or a finger (pointer events: it took mousedown alone, so a
+       finger could not move it), within what the screen allows, the left panel giving way as it goes;
+       a cancelled drag puts the width back. The edge is shown only where Properties is docked. */
+    var dr=null;
+    g.addEventListener('pointerdown',function(ev){
+      if(ev.button>0)return;
       ev.preventDefault();
-      var x0=ev.clientX,w0=rp.getBoundingClientRect().width;
-      g.classList.add('drag');document.body.style.cursor='col-resize';
-      function mv(e){var w=Math.max(BIM_RIGHT_MIN,Math.min(BIM_RIGHT_MAX,w0+(x0-e.clientX)));rp.style.width=w+'px';try{size();paint();}catch(eS){}}
-      function up(e){
-        document.removeEventListener('mousemove',mv);document.removeEventListener('mouseup',up);
-        g.classList.remove('drag');document.body.style.cursor='';
-        bimRightSetWidth(rp.getBoundingClientRect().width);
-      }
-      document.addEventListener('mousemove',mv);document.addEventListener('mouseup',up);
+      dr={x:ev.clientX,w:bimRightW(),id:ev.pointerId,now:null};
+      try{g.setPointerCapture(ev.pointerId);}catch(eC){}
+      g.classList.add('drag');document.body.classList.add('a3d-rpdrag');
     });
-    g.addEventListener('dblclick',function(){var p=bimRightPrefs();delete p.w;bimRightSave(p);bimRightApply();try{size();paint();}catch(eS){}});
+    g.addEventListener('pointermove',function(ev){
+      if(!dr||ev.pointerId!==dr.id)return;
+      var w=Math.round(Math.max(BIM_RIGHT_MIN,Math.min(bimRightMax(),dr.w+dr.x-ev.clientX)));
+      if(w===dr.now)return;
+      dr.now=w;rp.style.width=w+'px';bimShellDockW();try{size();paint();}catch(eS){}
+    });
+    function end(ev,keep){
+      if(!dr||ev.pointerId!==dr.id)return;
+      var w=dr.now;dr=null;
+      g.classList.remove('drag');document.body.classList.remove('a3d-rpdrag');
+      if(keep&&w!==null)bimRightSetWidth(w);
+      else{bimRightApply();try{size();paint();}catch(eS){}}
+    }
+    g.addEventListener('pointerup',function(ev){end(ev,true);});
+    g.addEventListener('pointercancel',function(ev){end(ev,false);});
+    g.addEventListener('dblclick',function(){bimRightSetWidth(null);});
+    /* the keys: the splitter moves the way the arrow points, so Left widens Properties, which is to its
+       right; Home and End the narrowest and the widest; Enter minimises it, the focus going to the
+       minimise button, whose Enter brings it back. A focused separator keeps its keys from the model (V166b). */
+    g.addEventListener('keydown',function(ev){
+      var k=ev.key,st=ev.shiftKey?64:16;
+      if(k==='ArrowLeft'||k==='ArrowRight'){ev.preventDefault();bimRightSetWidth(bimRightW()+(k==='ArrowLeft'?st:-st));return;}
+      if(k==='Home'||k==='End'){ev.preventDefault();bimRightSetWidth(k==='Home'?BIM_RIGHT_MIN:bimRightMax());return;}
+      if(k==='Enter'){
+        ev.preventDefault();
+        bimRightToggleMin(true);
+        var mb=document.getElementById('a3d-rminbtn');if(mb)mb.focus();
+      }
+    });
     window.addEventListener('resize',function(){bimRightApply();});
     bimRightApply();
   }
@@ -40690,6 +40764,11 @@ try{
     {sel:'.a3d-paneltoggle',why:'collapses the rail'},
     {sel:'.a3d-panelcollapse',why:'collapses the rail'},
     {sel:'[data-lpwidth]',why:'widens the panel a step at a time: its edge, by one press'},   /* __acad3dV166b */
+    {sel:'#a3d-lgrip',why:'the left panel\'s edge: dragged to size it, or moved from the keyboard'},   /* __acad3dV166d: driven by the V166b suite */
+    {sel:'.a3d-rgrip',why:'Properties\' edge: dragged to size it, or moved from the keyboard'},   /* __acad3dV166d */
+    {sel:'[data-rpwidth]',why:'widens Properties a step at a time: its edge, by one press'},
+    {sel:'#a3d-rminbtn',why:'minimises Properties to a strip; on a phone or a tablet, closes its sheet or drawer'},   /* __acad3dV147, driven by its suite */
+    {sel:'.a3d-rsheetbar',why:'on a phone, raises or lowers the Properties sheet'},
     {sel:'[data-railmore]',why:'on a phone, shows the rail\'s tools over the tab bar'},   /* __acad3dV149 */
     {sel:'[data-tpact]',why:'the palette: a tool, Select, Pan or every tool'},   /* __acad3dV150 */
     {sel:'[data-tpgrip]',why:'the palette\'s grip: drag to move it'},
@@ -40751,7 +40830,12 @@ try{
   function bimShellAudit(){
     var shell=document.getElementById('a3d-shell');
     if(!shell)return {ok:false,reason:'no shell',unclaimed:[]};
-    var nodes=shell.querySelectorAll('button,[role="button"],a[href],input,select');
+    /* __acad3dV166d: an edge that takes the focus is a control too; and Properties' own chrome -- its
+       header, its edge, the phone's grab bar -- sits outside the shell. Its body (the fields of what is
+       selected) is not the shell's. */
+    var Q='button,[role="button"],[role="separator"][tabindex],a[href],input,select',rpA=document.getElementById('a3d-right');
+    var nodes=[].slice.call(shell.querySelectorAll(Q));
+    if(rpA)[].forEach.call(rpA.querySelectorAll(Q),function(e){if(!e.closest('#a3d-propsbody'))nodes.push(e);});
     var unclaimed=[],claimed=0,i,j;
     for(i=0;i<nodes.length;i++){
       var e=nodes[i];
@@ -49956,7 +50040,7 @@ try{
            would have meant two appendChild calls and two chances to leave the palette half
            split if one of them threw. */
         '<div id="a3d-propssec">'+
-          '<div class="a3d-palhd">Properties</div>'+
+          '<div class="a3d-palhd"><span id="a3d-rpttl">Properties</span></div>'+   /* __acad3dV166d: the name its edge takes */
           '<div id="a3d-propsbody" class="a3d-propsbody"></div>'+
         '</div>'+
         '<div class="a3d-palhd a3d-palhd2">Project Browser'+
@@ -51725,6 +51809,7 @@ try{
   window.__a3dStdDataChanged=function(k,only){return bimStdDataChanged(k,only||null);};
   window.__a3dSaStdText=function(auto){return bimSaStdText({auto:auto});};
   window.__acad3dV167='registry,records,reader,place,placefromaddress,date,overrides,reasons,ordered,picks,stamps,outofdate,findingstd,accessstd,contextstd,packs,sha256,packdiff,catalogue,standardsgroup,standardscommand,valuesinwords,datastamps,usedvalues,valuestamps,framestd,refill,touchsizes,drafts,sheet,packadopted,packagain,whonoise,noliterals,dm2unread,classeswhole,groupclosed';
+  window.__acad3dV166d='rightstep,rightsteplabel,rightstepscreen,rightstephidden,rightedgekeys,rightedgepointer,rightdocked,auditproperties';
   window.__acad3dV166b='noanalysistab,usagesonproject,anzframe,anzfloorloads,anzareas,anzfields,anzsearchsettings,leftresize,leftremembered,leftreset,leftkeys,leftclamp,leftdesktop,leftstep';
   window.__acad3dV166='mvquery,mvdata,mvstreets,mvthin,mvbudget,crossings,doors,carparks,garages,intervals,routeways,paths,walklayeronrequest,'+
     'hierarchy,lts2012,crossings2016,lowstressreach,ptal,catchments,routes,walkbands,needs,vehicleentry,provisionalentry,onstreetparking,maprgb,ptalfinding,cyclingfinding,vehiclesfinding';

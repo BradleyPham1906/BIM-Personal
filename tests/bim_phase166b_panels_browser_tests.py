@@ -307,6 +307,12 @@ async def run():
                 return await safe("()=>window.__a3dLeftPanel()", pg=pg) or {}
 
             async def geo(pg=None):
+                # AMENDED FOR V166d: the panel's width eases over 0.18 s; measured after it settles, not after
+                # a fixed wait, which a loaded parallel run outlasted (V84's lesson: 257 for 258 after Enter)
+                try:
+                    await (pg or page).wait_for_function("()=>{var p=document.getElementById('a3d-leftpanel');return !p||!p.getAnimations||p.getAnimations().length===0;}", timeout=4000)
+                except Exception:
+                    print('      (the panel was still moving after 4 s)')
                 return await safe("""()=>{var p=document.getElementById('a3d-leftpanel').getBoundingClientRect(),a=document.getElementById('acad3d').getBoundingClientRect(),
                   g=document.getElementById('a3d-lgrip'),gr=g.getBoundingClientRect(),c=document.querySelector('#a3d-viewport canvas')||document.querySelector('#acad3d canvas');
                   return {pl:Math.round(p.left),pr:Math.round(p.right),pw:Math.round(p.width),al:Math.round(a.left),aw:Math.round(a.width),gl:gr.left,gr:gr.right,gw:gr.width,

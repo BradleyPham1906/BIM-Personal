@@ -30,9 +30,17 @@ order: 1
   - **View:** active level and layer, colour by, appearance.
   - **Project** also holds the **History**: see [Sheets and files](sheets-files.html).
   - The analyses' settings are in **Analyze**, in each analysis's row.
-- **Sizing Properties.** Drag the panel's left edge to widen it (240 to 560 px); double-click the
-  edge to put it back. The arrow beside the word Properties minimises the panel to a strip. Both
-  are remembered.
+- **Sizing Properties.** Drag the panel's left edge, with the mouse or a finger (240 to 560 px). The
+  drawing keeps at least 320 px beside the left panel. Double-click the edge to put it back. Or press
+  the arrows button beside the word Properties: each press widens the panel a step (240, 320, 400,
+  480, 560), and from the widest it goes back to 240. From the keyboard, Tab to the edge:
+  - **Left** widens it and **Right** narrows it, 16 px, 64 px with **Shift**;
+  - **Home** and **End** make it the narrowest and the widest;
+  - **Enter** minimises it; Enter on the arrow beside Properties shows it again.
+
+  The arrow beside the word Properties minimises the panel to a strip. The width and the strip are
+  remembered. On a phone, or a tablet held upright, Properties is a sheet or a drawer, and its arrow
+  closes it.
 - **Sizing the left panel.** Drag its right edge, with the mouse or a finger (242 to 560 px). The
   drawing keeps at least 320 px beside Properties. Double-click the edge to put it back. Or press the
   arrows button beside the panel's collapse: each press widens it a step (242, 320, 400, 480, 560),

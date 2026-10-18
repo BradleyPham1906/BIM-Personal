@@ -2,12 +2,12 @@
 
 **Read this first in a new session.** One page. The detail lives in the docs listed at the bottom.
 
-    canvas_v10.html   3282385 bytes
-    sha256            82fabb6129b2b483b7c5730e363465e7ee8fff23b8694c44526483972f56d15c
+    canvas_v10.html   3289824 bytes
+    sha256            c53d8e035c1ba9f8c85a09777e50c5c0d98bf6dc1f5dd8914d0c418db83959a8
     markers           __acad3dV60 ... __acad3dV167, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
-                      __acad3dV121b, __acad3dV166b, __acad3dV166c
-    tests             125 suites, 5999 checks, 0 failures (the 124 older suites give 5804 on this
-                      machine; V166c recorded 5801 -- see V166c and V167 in canvas_v10_STATUS.md)
+                      __acad3dV121b, __acad3dV166b, __acad3dV166c, __acad3dV166d
+    tests             126 suites, 6049 checks, 0 failures (V167's 5999 and V166d's 50; with cjval
+                      built, V139 and V140 run all their checks)
 
     The user guide (V142): every phase updates docs/src/, its log entry and BIM_APP_VERSION, then
     runs tools/dump_catalog.py and tools/build_docs.py. The V142 suite and the Pages workflow
@@ -20,7 +20,10 @@
     variant is reported TIMEOUT. Every current suite is in tests/, the folder the runner reads;
     commit new and amended suites there. Patch and falsify scripts, and each phase's pre-phase
     backup, are in Phase/. The suites need Playwright's Python package and Pillow (V116's reads
-    pixels) -- in a fresh container, pip install playwright pillow before the baseline run.
+    pixels) -- in a fresh container, pip install playwright pillow before the baseline run. Pin
+    Playwright to the version of the Chromium in /opt/pw-browsers (1.56 for chromium-1194, V166c),
+    and build cjval (cargo install cjval --features build-binary): without it V139 and V140 skip
+    three checks.
 
 Start every session by verifying that hash and taking a backup. Never output the whole file; patch
 with anchored Python scripts that assert exact match counts.
@@ -108,6 +111,7 @@ three tiers: compact up to 720 px wide or 500 px high, medium up to 1024 px, des
 | 166 | Site analysis in the model III: movement | **Done** (see Recently finished): the access step's one Overpass request also asks for the crossings' controls, the doors, the garage entrances and the car parks, and keeps every street within 800 m with the tags movement reads (a budget of 6,000 nodes, the window kept said); six layers -- the street hierarchy by class, cycling level of traffic stress by the 2012 criteria with the 2016 crossing table and the site's low-stress reach (off at first), transit with its 8- and 12-minute catchments and PTAL where OpenStreetMap maps the headways, walk times (off at first), the way to each daily need, vehicle access (driveways, an arrow at the lot line or a provisional entry from the lowest street, doors, car parks, on-street parking by side); colours for the dark plan and a light map; two findings new and Transit's with PTAL. The owner: no timetable files, only free online data; Transitous not used (its terms would open the code and rule out selling the app). Not yet: headways where OpenStreetMap has none, daily traffic, refuges and bike-lane widths beside parking, one-way streets ridden one way | `reference/research-site-analysis-in-model.md` (4). |
 | 166b | The panels | **Done** (see Recently finished): Properties' Analysis tab gone (Project, Site, View); Frame analysis's settings, results and floor loads, and the areas by usage, in their Analyze rows; the usages on Project; the left panel's edge dragged by mouse, pen or finger (242 to 560 px, the drawing keeping 320 px beside Properties, kept in this browser, a double click to reset, the keys of W3C's window splitter) and a button that widens it a step at a time (WCAG 2.2's 2.5.7); a computer's layout, a tablet on its side included | The owner: "make sure to fix the right panel also since i still see the analysis tab on it ... left panel needs to be dragable like the right panel also". `reference/research-panels.md`. |
 | 166c | The analytical member, cleaned | **Done** (see Recently finished): the four fields `bimAnalyticalModel` gave each member and nothing read -- `hy` and `hz` (dead since V126 took the section from the profile), `p2` and `material` -- no longer written; the member is derived on every solve and never stored, so no project carried them | V166b's follow-up: `falsify_phase125.py`'s retired `column_axes_swapped`. |
+| 166d | Properties' width by one press | **Done** (see Recently finished): a button in Properties' header beside the minimise (30 px, 36 on a touch screen) widening it 240, 320, 400, 480, 560 within what the screen allows, then back to 240, its label saying where the next press goes (WCAG 2.2's 2.5.7 and 2.5.8); the drawing keeps 320 px beside the left panel at its narrowest; the edge a W3C window splitter (Left widens, Home, End, Enter minimises) dragged by any pointer; docked by the stylesheet's own query; the shell's audit reaches Properties' header | V166b's "Not done". `reference/research-panels.md` (V166d). |
 | 167 | Standards registry | **Done** (see Recently finished): every standard, guideline and assumption an analysis applies is a record (32 topics: 18 applied, 14 in the US catalogue), each edition with where and when it is in force, its source to the section and the level it was read at; one reader, the edition in force for the site's place (from the address search) and the project's date, the most specific winning, a method applied outside its place saying so; overrides with a reason; stamps on every run and on the data fetched once, Out of date with why; packs with their SHA-256 and every difference shown first; Properties > Site > Standards (`STANDARDS`); no standard's number left in code, which a suite scans for. Not yet: IDS-shaped checks (I2), a pack's export, the roofs, survey tolerances and usages' defaults as records | The owner: "building a system based on the industry standards (but flexible enough when the standards changed)". `reference/research-standards-registry.md` (As built). |
 | 168 | Site analysis in the model IV: land | **Start here.** Land use in LBCS's hues, adjusted to pass the colour-blindness checks (the owner); figure-ground with Spacematrix's density measures; green and trees with the 3-30-300 check; zoning around the site in the council layer's own colours. The work plan is `reference/plan-v167-v170.md` | `reference/research-site-analysis-in-model.md` (6). |
 | 169 | Assets: people, bikes, cars and trees | Placeable models that carry their dimensions as data, for scale and for the simulations: people (standing, seated, a wheelchair user; height, eye height, shoulder width, walking speed), bikes (length, stand spacing), cars and a van (a design car's size, the parking bay, the turning path), trees by kind (height, crown spread, deciduous or evergreen, so they shade the sun studies, in leaf in summer and bare in winter). Low-detail and adjustable, made in-house as the furniture is (the owner); valdrada's procedural pedestrians (MIT) and its trees and vehicles (CC BY 4.0) converted later, with credit, once glTF can be imported; its MetaHuman pedestrians not | The owner (V166): "do we have asset designed yet ... trees, building shape, human, bike, car for later simulations?" The library has nine furniture and fixture models; trees exist only as site context. |
@@ -194,7 +198,27 @@ when it starts (V111 to V138 went to other work; V139 to V192 are in NOW).
 | 118 | Blocks and data | ATTDEF ATTEDIT BEDIT WBLOCK DATAEXTRACTION TABLESTYLE TABLEDIT TABLEEXPORT | First phase that's about the disciplines, not drafting. BLOCK and INSERT landed in V124, as the Assets library's blocks: saved records inserted as independent copies. A block reference that follows its definition (what BEDIT edits) is not built. |
 | 119 | Sheets and plotting, rest | MVIEW (draw a viewport on the paper) PAGESETUP (plot settings beyond Sheet Setup) PUBLISH (V122's Print set prints every sheet in one job; a chosen subset and page setups remain) EXPORTPDF (vector PDF of a sheet) VPLAYER (per-viewport layer visibility) viewport lock | LAYOUT, MSPACE and PSPACE landed in V116, with layout tabs and model space through a viewport. |
 
-**Recently finished:** Phase 167 (V167), **the standards registry**.
+**Recently finished:** V166d, **Properties' width by one press** (inside Phase 166, built on V167; the version stays V166).
+- V166b's "Not done": Properties' edge had only the drag and the minimise. A button in its header,
+  beside the minimise, widens it a step at a time -- 240, 320, 400, 480, 560 within what the screen
+  allows, then back to 240 -- and says where the next press goes: WCAG 2.2's single-pointer way. It
+  is hidden where Properties is a drawer or a sheet, and while it is minimised.
+- **The drawing keeps 320 px** beside the left panel at its narrowest, whatever the left panel does
+  (it gives way to Properties, never below 242). The drag, End and a width kept from a wider screen
+  stop there too.
+- **The edge** follows W3C's window splitter: a focusable separator named Properties; Left widens it
+  (the splitter moves the way the arrow points), Home, End, Enter to minimise. A finger drags it now:
+  it took the mouse alone.
+- **Found:** the code docked Properties wherever the window was wider than 900 px and the stylesheet
+  only over 1024 by 500, so between them its arrow shrank a drawer or a phone's sheet to a 42 px strip;
+  the code now reads the stylesheet's own query. Properties could leave the drawing under 320 px on a
+  window narrower than 1176 px. The shell's audit had never reached Properties; it now reaches its
+  header and edge.
+- **Checked** in 50 checks on a computer, a tablet either way and a phone either way, and at eleven
+  sizes either side of 1024 and 500 px. 51 falsify variants, all caught. V147's and V166b's falsify
+  scripts re-anchored; V166b's suite now waits for the left panel's easing to settle.
+
+Phase 167 (V167), **the standards registry**.
 - The owner: "building a system based on the industry standards (but flexible enough when the
   standards changed)", any country, with fallbacks, overrides with a reason, new editions with app
   versions and as files. The owner's answers (2026-10-18): a method outside its place still runs and
