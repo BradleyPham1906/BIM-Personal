@@ -66,6 +66,7 @@ VARIANTS = {
     'button_on_drawers': [("body.a3d-tier-overlay .a3d-lpwbtn{display:none}\n", "")],
     'button_unclaimed': [("    {sel:'[data-lpwidth]',why:'widens the panel a step at a time: its edge, by one press'},   /* __acad3dV166b */\n", "")],
     'button_small': [(".a3d-lpwbtn{width:30px;height:30px;", ".a3d-lpwbtn{width:18px;height:18px;")],
+    'collapse_white_on_light': [("body.light-theme .a3d-panelcollapse{color:#6b7280}\n", "")],
     # Not a variant: the edge's pointerdown refuses a phone's and an upright tablet's layout, but the edge
     # is not displayed there (edge_on_drawers), so no pointer reaches it.
 }

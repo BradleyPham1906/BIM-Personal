@@ -420,6 +420,11 @@ async def run():
             ck(min(s[2] for s in seen) >= 24 and min(s[3] for s in seen) >= 24, "a target of 24 px or more (%s)" % seen[0][2:4])
             au = await safe("()=>window.__a3dShellAudit()") or {}
             ck(au.get('ok'), "the shell's audit knows it (%s)" % au.get('unclaimed'))
+            hc = await safe("""()=>{var f=function(){return [getComputedStyle(document.querySelector('#a3d-leftpanel [data-lpwidth]')).color,
+              getComputedStyle(document.querySelector('#a3d-leftpanel .a3d-panelcollapse')).color,getComputedStyle(document.querySelector('#a3d-leftpanel .a3d-projhead')).backgroundColor,
+              getComputedStyle(document.getElementById('a3d-leftpanel')).backgroundColor];};var d=f();document.body.classList.add('light-theme');var l=f();document.body.classList.remove('light-theme');return [d,l];}""") or [[], []]
+            ck(hc[0][:2] == ['rgb(154, 163, 173)', 'rgb(255, 255, 255)'] and hc[1][:2] == ['rgb(107, 114, 128)', 'rgb(107, 114, 128)'] and hc[1][3] == 'rgb(255, 255, 255)',
+               "the header's buttons show on both themes: grey on the light theme's white, the collapse no longer white on white (%s)" % hc)
             # the drawing keeps 320 px beside Properties
             await safe("()=>{window.__a3dSetLeftWidth(560);}")
             await page.set_viewport_size({'width': 1280, 'height': 900})

@@ -34,8 +34,9 @@ order: 1
   edge to put it back. The arrow beside the word Properties minimises the panel to a strip. Both
   are remembered.
 - **Sizing the left panel.** Drag its right edge, with the mouse or a finger (242 to 560 px). The
-  drawing keeps at least 320 px beside Properties. Double-click the edge to put it back. From the
-  keyboard, Tab to the edge:
+  drawing keeps at least 320 px beside Properties. Double-click the edge to put it back. Or press the
+  arrows button beside the panel's collapse: each press widens it a step (242, 320, 400, 480, 560),
+  and from the widest it goes back to 242. From the keyboard, Tab to the edge:
   - **Left** and **Right** move it 16 px, 64 px with **Shift**;
   - **Home** and **End** make it the narrowest and the widest;
   - **Enter** shuts the panel; Enter on the panel button opens it again.

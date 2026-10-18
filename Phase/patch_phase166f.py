@@ -5,6 +5,7 @@
   control meets 24 by 24 px. The edge is 6 px (12 px for a finger); this button, 30 px, beside the
   panel's collapse, widens the panel a step at a time -- 242, 320, 400, 480, 560 within what the
   screen allows -- and from the widest back to 242. A computer's, as the edge is.
+  The collapse beside it was white on the light theme's white header; it is the button's grey now.
 """
 import hashlib, pathlib, sys
 
@@ -47,6 +48,9 @@ rep(""".a3d-panelcollapse:hover{background:rgba(255,255,255,.08)}
 body.a3d-tier-overlay .a3d-lpwbtn{display:none}
 body.light-theme .a3d-lpwbtn{color:#6b7280}
 body.light-theme .a3d-lpwbtn:hover{background:rgba(0,0,0,.06);color:#111}
+/* and the collapse beside it, white on the light theme's white header until now */
+body.light-theme .a3d-panelcollapse{color:#6b7280}
+body.light-theme .a3d-panelcollapse:hover{background:rgba(0,0,0,.06);color:#111}
 @media(pointer:coarse){.a3d-lpwbtn{width:36px;height:36px}}
 """)
 # ---- the steps; the button says where it goes ----
