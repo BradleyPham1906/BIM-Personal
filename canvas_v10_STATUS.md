@@ -15049,3 +15049,14 @@ pattern, ARIA's separator role, WCAG 2.2's 2.5.7 and 2.5.8, and two open impleme
 - The left edge's name, "Panel width", is not its pane's name, as the window splitter pattern asks.
 - `aria-valuetext` on both edges: allowed, not added; no screen reader was tested here.
 - V166b's: a dropdown focused in Analyze waits for its row's redraw.
+
+#### Full regression and state after V166c
+
+125 suites, 5854 checks, 0 failures (573 s, 4 workers), with cjval built so V139 and V140 run all
+their checks. Patch 166g, after 166a to 166f, rebuilds the build byte for byte from
+`Phase/canvas_v10.html.bak_phase166_pre`. The diff is ES5-clean and ASCII. BIM_APP_VERSION stays V166,
+as V166b's did: V166c finishes V166's panels and adds no analysis.
+
+    canvas_v10.html   3194778 bytes
+    sha256            5613a9c8e85fe2907ef94b6cd6633b7a290c0f8dcbe1652835ff36ebe81f57f1
+    markers           __acad3dV60 ... __acad3dV166, __acad3dV166b, __acad3dV166c, __acad3dV134d (and the 133d to 133f markers)
