@@ -14,16 +14,20 @@ VARIANTS = {
     'inputs_uneven': [("border-radius:6px;min-height:26px;padding:3px 8px;font:inherit;font-size:11.5px;box-sizing:border-box;", "border-radius:6px;padding:3px 8px;font:inherit;font-size:11.5px;box-sizing:border-box;")],
     'buttons_square': [("#a3d-right #a3d-propsbody button{min-height:26px;padding:0 10px;border-radius:6px;", "#a3d-right #a3d-propsbody button{min-height:26px;padding:0 10px;border-radius:2px;")],
     'type_name_small': [("#a3d-right .a3d-ptypename{font-size:13px;", "#a3d-right .a3d-ptypename{font-size:11.5px;")],
-    'unclamped': [("var p=bimRightPrefs();p.w=Math.round(Math.max(BIM_RIGHT_MIN,Math.min(BIM_RIGHT_MAX,w)));bimRightSave(p);", "var p=bimRightPrefs();p.w=Math.round(w);bimRightSave(p);"),
-                  ("var w=isFinite(p.w)?Math.max(BIM_RIGHT_MIN,Math.min(BIM_RIGHT_MAX,p.w)):null;", "var w=isFinite(p.w)?p.w:null;")],
+    # RE-ANCHORED IN V166c (unclamped, drag_dead, drag_backwards, no_reset, grip_on_touch, minimise_body_shown,
+    # minimise_button_text): the width is kept within what the screen allows, the edge takes pointer
+    # events, its double click forgets the width through bimRightSetWidth(null), and the width button
+    # shares the minimised and narrow-screen rules
+    'unclamped': [("    else p.w=Math.round(Math.max(BIM_RIGHT_MIN,Math.min(bimRightMax(),w)));", "    else p.w=Math.round(w);"),
+                  ("var w=isFinite(p.w)?Math.max(BIM_RIGHT_MIN,Math.min(bimRightMax(),p.w)):null;", "var w=isFinite(p.w)?p.w:null;")],
     'width_not_saved': [("  function bimRightSave(p){try{localStorage.setItem(BIM_RIGHT_KEY,JSON.stringify(p));}catch(eW){}}", "  function bimRightSave(p){A3D_RIGHT_MEM=p;}\n  var A3D_RIGHT_MEM={};"),
                         ("  function bimRightPrefs(){try{var v=JSON.parse(localStorage.getItem(BIM_RIGHT_KEY)||'null');return v&&typeof v==='object'?v:{};}catch(eR){return {};}}", "  function bimRightPrefs(){return JSON.parse(JSON.stringify(A3D_RIGHT_MEM));}")],
     # RETIRED IN V147: the drawing follows the panel through bimObserveViewport's ResizeObserver,
     # so the explicit size() after a width change is belt and braces; removing it changes nothing.
     #   [("    var r=bimRightApply();try{size();paint();}catch(eS){}\n    return r; ...", "... without size()")],
-    'drag_dead': [("      function mv(e){var w=Math.max(BIM_RIGHT_MIN,Math.min(BIM_RIGHT_MAX,w0+(x0-e.clientX)));", "      function mv(e){var w=w0;")],
-    'drag_backwards': [("w0+(x0-e.clientX)", "w0-(x0-e.clientX)")],
-    'no_reset': [("    g.addEventListener('dblclick',function(){var p=bimRightPrefs();delete p.w;", "    g.addEventListener('dblclick',function(){var p=bimRightPrefs();")],
+    'drag_dead': [("      var w=Math.round(Math.max(BIM_RIGHT_MIN,Math.min(bimRightMax(),dr.w+dr.x-ev.clientX)));", "      var w=dr.w;")],
+    'drag_backwards': [("dr.w+dr.x-ev.clientX", "dr.w-dr.x+ev.clientX")],
+    'no_reset': [("    g.addEventListener('dblclick',function(){bimRightSetWidth(null);});", "    g.addEventListener('dblclick',function(){bimRightApply();});")],
     'minimise_dead': [("        bimRightToggleMin();\n      });", "      });")],
     # ---- a phone, a tablet, a finger
     'no_phone_sheet': [("body.a3d-props-right #a3d-right{position:fixed;z-index:9700;top:auto;left:0;right:0;bottom:0;width:auto;", "body.a3d-props-right #a3d-right{z-index:9700;")],
@@ -31,9 +35,9 @@ VARIANTS = {
     'no_touch_targets': [("@media(pointer:coarse){\n#a3d-right input[type=text]", "@media(pointer:none){\n#a3d-right input[type=text]")],
     'tablet_narrow': [("body.a3d-props-right #a3d-right{width:340px;max-width:85vw}", "body.a3d-props-right #a3d-right{max-width:85vw}")],
     'touch_minimises': [("        if(!bimRightDesktop()){rp.classList.remove('open');rp.classList.remove('a3d-rtall');return;}", "")],
-    'grip_on_touch': [("@media(max-width:1024px),(max-height:500px){.a3d-rgrip{display:none}}", "")],
-    'minimise_body_shown': [("body.a3d-rmin #a3d-right #a3d-propsbody,body.a3d-rmin .a3d-rgrip{display:none}", "body.a3d-rmin .a3d-rgrip{display:none}")],
-    'minimise_button_text': [("b.innerHTML='<svg viewBox=", "b.innerHTML='Hide<svg viewBox=")],
+    'grip_on_touch': [("@media(max-width:1024px),(max-height:500px){.a3d-rgrip,.a3d-rpwbtn{display:none}}", "@media(max-width:1024px),(max-height:500px){.a3d-rpwbtn{display:none}}")],
+    'minimise_body_shown': [("body.a3d-rmin #a3d-right #a3d-propsbody,body.a3d-rmin .a3d-rgrip,body.a3d-rmin .a3d-rpwbtn{display:none}", "body.a3d-rmin .a3d-rgrip,body.a3d-rmin .a3d-rpwbtn{display:none}")],
+    'minimise_button_text': [("      b.innerHTML='<svg viewBox=", "      b.innerHTML='Hide<svg viewBox=")],
     'narrow_forced': [("rp.style.width=(w&&bimRightDesktop()&&!p.min)?w+'px':'';", "rp.style.width=(w&&!p.min)?w+'px':'';")],
     'no_show_all': [("'<div class=\"a3d-histmore\"><button type=\"button\" data-histact=\"all\">Show all '+d.length+'</button></div>'", "'<div class=\"a3d-histmore\">and '+(d.length-max)+' more</div>'")],
     'show_all_dead': [("    if(k==='all'){A3D_HIST_ALL=true;refreshProps();return true;}   /* __acad3dV147 */\n", "")],
