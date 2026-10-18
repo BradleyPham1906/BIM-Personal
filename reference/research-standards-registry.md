@@ -21,8 +21,10 @@ this app does today, and a design for a registry every analysis and check reads.
 - **Codes are adopted, not just published.** A building code edition applies where a state or a
   city adopts it, often with amendments, on its own schedule. Some states skip an edition (Oklahoma
   adopted the 2024 IBC and expressly not the 2021), some leave adoption to each city (Colorado,
-  Delaware). ICC's adoption chart says it is informational only. What applies is the adopted edition
-  with its amendments, at the project's place and date, not the newest one published.
+  Delaware). ICC's adoption chart says not every jurisdiction tells ICC what it adopts, and sends the
+  reader to the jurisdiction for its amendments (read 2026-10-18, below). What applies is the
+  adopted edition with its amendments, at the project's place and date, not the newest one
+  published.
   https://www.iccsafe.org/wp-content/uploads/Master-I-Code-Adoption-Chart-FEB-22.pdf
 - **Rules as code** (OpenFisca, the French government's open platform, 2011): every parameter value
   is stored under the date it takes effect, with a reference to its source text, so a change is a new
@@ -95,3 +97,113 @@ A registry phase before the next analyses: the record format, the reader, profil
 overrides, provenance and Out of date, Properties > Standards, and V164 to V166's constants moved
 into records with their citations (the suites unchanged in what they expect, which proves the move).
 Then every later phase adds records instead of constants.
+
+## Read at the source (2026-10-18)
+
+Done to `research-protocol.md` while V166b's checks ran. Every source below was read as text from
+its own repository on GitHub (`raw.githubusercontent.com`); the published pages are refused here.
+
+| Source | What was read | Level |
+|---|---|---|
+| buildingSMART, IDS: `README.md`, `Schema/ids.xsd`, the user manual's `README`, `specifications`, `restrictions`, `ids-metadata`, and the implementers' `developer-guide` (repository `buildingSMART/IDS`, branch `development`) | The structure (below), cardinality, restrictions, metadata, the checker's duties, float precision, the limits of version 1, the licence | P |
+| OpenFisca, `legislation_parameters.md` and `40_legislation_evolutions.md` (repository `openfisca/openfisca-doc`) | The parameter tree, dated values, references and units, scales, indexed nodes, dated formulas, the licence | P |
+| Nominatim, `docs/api/Output.md` and `docs/api/Reverse.md` (repository `osm-search/Nominatim`) | `country_code` and `ISO3166-2-lvl<n>` in `addressdetails`; the reverse search's zoom levels | P |
+| Unicode CLDR, `common/validity/subdivision.xml` (repository `unicode-org/cldr`) | 5,027 regular subdivision codes, in CLDR's lower-case form (`uspa` for US-PA); Unicode-3.0 licence | P |
+| The app's own code | Every `BIM_` constant (267), classified: `research-standards-inventory.md` | P |
+
+After the owner opened the network the same day, ICC's chart was read too (below). Still not read
+at the source: IDS's adoption as a standard on 1 June 2024 and Eastman and others' four stages. The
+open network reaches buildingsmart.org and mediatum.ub.tum.de, but both answer a script with a
+"not a bot" check page instead of the document. They stay U and shape nothing in the code.
+
+### What ICC's adoption chart says (read 2026-10-18)
+
+"International Codes - Adoption by State (FEB 2022)", ICC's PDF, read as text with each cell's
+position:
+- A row per state and territory, a column per code (IBC, IRC, IFC, IMC, IPC, IPSDC, IFGC, IgCC,
+  IECC residential and commercial, IPMC, IEBC, ISPSC, ICCPC, IWUIC, IZC, ICC 700).
+- **A number** is the edition adopted as a mandatory state minimum (15 = 2015).
+- **X:** one or more state or local agencies adopted an edition, but not as the standard for all
+  buildings.
+- **Blank:** no state or local jurisdiction in the state adopted it.
+- Pennsylvania's IBC cell reads 15: the 2015 edition was its state minimum in February 2022.
+- ICC's own caveats: not all jurisdictions notify ICC, and amendments are to be had from each
+  jurisdiction.
+
+For the registry, this has three consequences:
+- An edition is a fact about a place and a date, as the design assumed.
+- An X means the state has no single answer, so the city decides: the profile tree goes down to
+  the city there.
+- The chart is a pointer, never the record. A profile's edition cites the jurisdiction's adopting
+  act, and the chart may be cited only as the place it was found (S).
+
+### What IDS is, from its schema and manual
+
+- An `.ids` file: `info` (title required; copyright, version, description, author, date, purpose,
+  milestone optional) and `specifications`.
+- A specification: a `name` and the `ifcVersion` it applies to (IFC2X3, IFC4, IFC4X3_ADD2), both
+  required; an optional identifier, description and instructions; `applicability` and optional
+  `requirements`, each made of facets: entity (IFC class and predefined type), attribute, property
+  (property set, name, value, data type), classification (system, value), material, partOf (an entity
+  and a relation).
+- Cardinality: of a specification (required: at least one match must exist; optional; prohibited)
+  and of each requirement facet (required, optional, prohibited). Only those three minOccurs and
+  maxOccurs pairs are allowed.
+- A value is a simple value or a restriction: an enumeration, a pattern (XML Schema's regular
+  expressions), bounds (inclusive or exclusive), a length. Total and fraction digits are not
+  supported.
+- **Version 1's limits, in its own words:** no geometry checks, no checks on calculated values, no
+  checks against data outside the model. "Walls 3 m from the site boundary" and "the total area of
+  offices over 300 m2" are given as examples of what it cannot check.
+- A checker must pass buildingSMART's test suite of IFC and IDS pairs
+  (`Documentation/ImplementersDocumentation/TestCases`). A float equals x if it lies strictly
+  between `x(1 - 1e-6) - 1e-6` and `x(1 + 1e-6) + 1e-6`. An author must write valid files only,
+  with no extensions of its own and nothing lost on a round trip.
+- Licence: **CC BY-ND 4.0** (attribution, no derivatives). The format can be
+  implemented; the schema and the test cases may be used as they are, credited, but not changed.
+
+### What OpenFisca's parameters are
+
+- A tree of nodes, each parameter a file or a node in one, named in lower case with underscores.
+- `values` keyed by the date each takes effect; undefined before the first; any date resolves to the
+  latest value at or before it. A value may carry its own `reference`; `expected` marks one
+  announced but not yet in force. `metadata` holds the unit and the reference.
+- Scales: brackets, each with a dated threshold and a dated rate or amount (marginal or single).
+- Indexed nodes: a node whose children share one shape can be read by a key at run time (its example
+  is a benefit by zone).
+- A structural change is a new formula dated from when it applies; the older one stays in force
+  up to that date.
+- Licence: the documentation is AGPL-3.0. Its ideas are used here, not its text or code.
+
+### Where a site is, without a key
+
+Nominatim's reverse search with `addressdetails=1` returns the country (`country_code`, lower-case
+ISO 3166-1) and the region (`ISO3166-2-lvl4`, for example `US-PA`, `GB-ENG`, `DE-BY`). At
+`zoom=10` it also names the city. One reverse request per site, inside the usage policy V132
+already keeps (one request a second, the app's own Referer), gives the whole path of the profile
+tree. The app keeps none of these today (no `country_code` in the build): V132's address search
+reads the place's latitude and longitude only. Offline, or where Nominatim answers nothing, the
+owner picks the profile. CLDR's list says which region codes exist.
+
+### What the reading changes in the design
+
+1. **Checks: IDS for what it can check, the registry for the rest.** Property and attribute
+   requirements (a door's width as an attribute, a fire rating) are written in IDS's shape and can
+   go out as IDS. Clearances, distances, slopes and areas are geometry or calculation, which IDS 1
+   cannot check: they stay the registry's own rules, with the same three outcomes.
+2. **Records take OpenFisca's shape.** A parameter's values are dated, each with its reference; a
+   band table (PTAL's bands, the noise and slope classes) is a scale; a table keyed by class (the
+   roads by class, the crossing table by speed and lanes) is an indexed node. An edition in force
+   is the value at the project's date.
+3. **Methods dated.** A method version is chosen by the date in force, as OpenFisca's formulas are:
+   the 2012 stress criteria until a profile takes a later edition.
+4. **The place path from one request.** Country, region and city from Nominatim's reverse search,
+   kept with the site, shown and changeable in Properties.
+5. **Values in words.** The analyses say their numbers in sentences too ("8 minutes to a bus, 12 to
+   rail", "4.8 km/h (80 m a minute)", "CRTN holds to 300 m"). Moving the constants alone would leave
+   those sentences wrong after an override. The registry gives each record a sentence built from
+   its values, and the "no literal left" suite looks for a record's values beside their units in the
+   strings as well as in the code.
+6. **Hidden standards.** The audit found a standard with no citation: the terrain's slope bands
+   include 8.33% (1:12, logged that way in V144), which reads as the US accessibility ramp limit. It
+   is U until its source is read, and V167 records it as such.

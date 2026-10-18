@@ -71,15 +71,21 @@ async def run():
         async def blur():
             await safe("()=>{if(document.activeElement)document.activeElement.blur();}")
 
+        # AMENDED FOR V166b: the floor loads are in Analyze, in Frame analysis's row, not in Properties.
+        # The field is left first, as a click elsewhere leaves it: Analyze is not redrawn under a field
+        # of its own that has the focus (V162).
         async def show_level(lid):
-            await safe("(i)=>{window.__a3dSetLevel(i);window.__a3dSelectFor([]);window.__a3dRefreshProps();}", lid)
+            await safe("(i)=>{if(document.activeElement)document.activeElement.blur();window.__a3dSetLevel(i);window.__a3dSelectFor([]);window.__a3dRefreshProps();}", lid)
+            await page.wait_for_timeout(80)
+            await safe("""()=>{var s=document.getElementById('a3d-shell');
+              if(s.getAttribute('data-tab')!=='analyze'||s.classList.contains('collapsed'))document.querySelector('#a3d-rail [data-tab="analyze"]').click();
+              var t=document.querySelector('.a3d-analyze-wrap [data-anztog="structure"]');if(t&&t.getAttribute('aria-expanded')!=='true')t.click();}""")
             await page.wait_for_timeout(80)
 
         async def set_load(lid, f, v):
             await show_level(lid)
-            await safe("()=>window.__a3dSetPropTab&&window.__a3dSetPropTab('analysis')")   # AMENDED FOR V141: the field is on Properties' Analysis tab
             try:
-                loc = page.locator('input[data-propmodel="%s"]' % f)
+                loc = page.locator('input[data-anzload="%s"]' % f)
                 await loc.fill(v, timeout=3000)
                 await loc.press('Enter', timeout=3000)
                 await page.wait_for_timeout(150)
@@ -88,7 +94,7 @@ async def run():
 
         async def load_val(lid, f):
             await show_level(lid)
-            return await safe("(f)=>{var e=document.querySelector('input[data-propmodel='+JSON.stringify(f)+']');return e?e.value:null;}", f)
+            return await safe("(f)=>{var e=document.querySelector('input[data-anzload='+JSON.stringify(f)+']');return e?e.value:null;}", f)
 
         async def loads():
             r = (await safe("()=>window.__a3dColumnLoads()")) or {}
@@ -125,11 +131,11 @@ async def run():
         await safe("([p,y])=>{window.__a3dBuildRoof({pts:p,roofBaseY:y},10,0,0.2);}", [[[0, 0], [12, 0], [12, 12], [0, 12]], e2])
         await blur()
 
-        print('\n-- 1. level loads typed into Properties')
+        print('\n-- 1. level loads typed into Analyze')   # AMENDED FOR V166b: were Properties
         for lid, f, v in ((L1, 'dl', '5'), (L1, 'll', '2.4'), (L2, 'dl', '4'), (L2, 'll', '1')):
             await set_load(lid, f, v)
         got = [await load_val(L1, 'dl'), await load_val(L1, 'll'), await load_val(L2, 'dl'), await load_val(L2, 'll')]
-        ck(got == ['5', '2.4', '4', '1'], 'dead and live loads typed into Properties are on the levels (%s)' % got)
+        ck(got == ['5', '2.4', '4', '1'], 'dead and live loads typed into Frame analysis are on the levels (%s)' % got)
         await set_load(L1, 'dl', '-3')
         ck((await load_val(L1, 'dl')) == '5', 'a negative load is refused and the field shows the kept value')
         await set_load(L2, 'll', '1.5')

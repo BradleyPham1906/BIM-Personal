@@ -43,7 +43,7 @@ Properties changes the type, and with it every instance.
 - **Foundations:** `FOOTING`, `WALLFOUNDATION`, `FOUNDATIONSLAB`. `FOOTINGSALL` puts a footing
   under every column.
 - **Loads:**
-  - Floor loads are set per level (**Properties > Analysis**).
+  - Floor loads are set per level (**Analyze > Frame analysis**, for the active level).
   - `TRIBAREA` shows the tributary areas.
   - `LOAD` adds a load to a member.
   - `SUPPORT` sets a column's support.

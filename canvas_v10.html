@@ -71,14 +71,38 @@ body.light-theme #a3d-rail .a3d-paneltoggle:hover{background:rgba(0,0,0,.06);col
 #a3d-rail .a3d-railbtn:hover{background:rgba(255,255,255,.08);color:#fff}
 #a3d-rail .a3d-railbtn.active{background:rgba(255,255,255,.12);color:#fff}
 .a3d-railspacer{flex:1}
-#a3d-leftpanel{width:242px;height:100%;background:#2c2c2c;border-right:1px solid rgba(255,255,255,.1);pointer-events:auto;display:flex;flex-direction:column;overflow:hidden;transition:width .18s ease,opacity .16s ease;box-shadow:12px 0 34px rgba(0,0,0,.18)}
+#a3d-leftpanel{width:var(--a3d-lp-w,242px);height:100%;background:#2c2c2c;border-right:1px solid rgba(255,255,255,.1);pointer-events:auto;display:flex;flex-direction:column;overflow:hidden;transition:width .18s ease,opacity .16s ease;box-shadow:12px 0 34px rgba(0,0,0,.18)}
 #a3d-shell.collapsed #a3d-leftpanel{width:0;opacity:0;border-right:0}
+/* __acad3dV166b: the panel's edge, dragged to size it as Properties' is; inside the panel, so the
+   drawing beside it keeps every pixel */
+.a3d-lgrip{position:absolute;top:0;bottom:0;left:calc(var(--a3d-left-w,296px) - 6px);width:6px;cursor:col-resize;z-index:4;pointer-events:auto;touch-action:none;outline:0}
+.a3d-lgrip:hover,.a3d-lgrip.drag,.a3d-lgrip:focus-visible{background:linear-gradient(90deg,transparent 2px,#4ea1ff 2px,#4ea1ff 4px,transparent 4px)}
+#a3d-shell.collapsed .a3d-lgrip,body.a3d-tier-overlay .a3d-lgrip{display:none}
+body.a3d-lpdrag #a3d-leftpanel{transition:none}
+body.a3d-lpdrag,body.a3d-lpdrag *{cursor:col-resize!important;user-select:none;-webkit-user-select:none}
+@media(pointer:coarse){
+.a3d-lgrip{width:12px;left:calc(var(--a3d-left-w,296px) - 12px);background:linear-gradient(90deg,transparent 8px,rgba(255,255,255,.16) 8px,rgba(255,255,255,.16) 10px,transparent 10px)}
+.a3d-lgrip.drag{background:linear-gradient(90deg,transparent 7px,#4ea1ff 7px,#4ea1ff 10px,transparent 10px)}
+body.light-theme .a3d-lgrip:not(.drag){background:linear-gradient(90deg,transparent 8px,rgba(0,0,0,.14) 8px,rgba(0,0,0,.14) 10px,transparent 10px)}
+}
 .a3d-projhead{height:70px;border-bottom:1px solid rgba(255,255,255,.10);padding:12px 10px 10px 16px;display:grid;grid-template-columns:1fr auto;gap:8px;align-items:start;min-width:242px}
 .a3d-projtitle{font-size:14px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px}
 .a3d-projsub{display:flex;gap:8px;align-items:center;margin-top:3px;color:#d0d0d0;font-size:12px}
 .a3d-pill{font-size:10px;font-weight:900;color:#b9d2ff;background:#244a80;border-radius:5px;padding:2px 6px}
 .a3d-panelcollapse{width:30px;height:30px;border:0;border-radius:8px;background:transparent;color:#fff;cursor:pointer}
 .a3d-panelcollapse:hover{background:rgba(255,255,255,.08)}
+/* __acad3dV166b: the panel's width, by one press; a computer's, as its edge is */
+.a3d-projbtns{display:flex;align-items:center;gap:2px}
+.a3d-lpwbtn{width:30px;height:30px;border:0;border-radius:8px;background:transparent;color:#9aa3ad;cursor:pointer;display:grid;place-items:center;padding:0}
+.a3d-lpwbtn:hover{background:rgba(255,255,255,.08);color:#fff}
+.a3d-lpwbtn svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+body.a3d-tier-overlay .a3d-lpwbtn{display:none}
+body.light-theme .a3d-lpwbtn{color:#6b7280}
+body.light-theme .a3d-lpwbtn:hover{background:rgba(0,0,0,.06);color:#111}
+/* and the collapse beside it, white on the light theme's white header until now */
+body.light-theme .a3d-panelcollapse{color:#6b7280}
+body.light-theme .a3d-panelcollapse:hover{background:rgba(0,0,0,.06);color:#111}
+@media(pointer:coarse){.a3d-lpwbtn{width:36px;height:36px}}
 .a3d-tabbody{display:flex;flex-direction:column;min-height:0;flex:1;min-width:242px}
 /* __acad3dV149: the shell on a phone and a tablet. body.a3d-tier-overlay: the panel is a drawer
    over the drawing (a tablet upright, a phone either way); body.a3d-tier-phone: and the rail is a
@@ -764,6 +788,33 @@ body.light-theme .a3d-anzbtn.pri{color:#fff}
 body.light-theme .a3d-anzbtn.lay{border-color:#4a8fe0;color:#1d63b8}
 .a3d-anzleg{display:flex;align-items:center;gap:6px;font-size:11px;color:#9aa5b0;margin:0 0 7px}
 .a3d-anzramp{display:flex;flex:1;height:8px;border-radius:3px;overflow:hidden}.a3d-anzramp i{flex:1}
+/* __acad3dV166b: a row's settings and readings, in Analyze */
+/* a label and its field side by side where the row has room, the field under its label where not */
+.a3d-anzform{display:flex;flex-direction:column;gap:6px;margin:0 0 8px}
+.a3d-anzfld{display:flex;flex-wrap:wrap;align-items:center;gap:3px 8px;min-width:0}
+.a3d-anzlab{flex:1 0 96px;font-size:11.5px;color:#8a96a3;min-width:0;overflow-wrap:anywhere}
+.a3d-anzfld>select,.a3d-anzfld>input{flex:1 1 140px;min-width:0;width:auto}
+.a3d-sa .a3d-anzform input[type=number]{box-sizing:border-box;background:#1f2327;border:1px solid #3a4048;border-radius:6px;color:#e6eaef;padding:3px 7px;min-height:26px;font:inherit;font-size:12px}
+.a3d-anzkv{display:grid;grid-template-columns:minmax(0,42fr) minmax(0,58fr);gap:3px 8px;margin:0 0 8px;font-size:11.5px;line-height:1.35}
+.a3d-anzkv dt{color:#8a96a3;margin:0;min-width:0}
+.a3d-anzkv dd{margin:0;color:#d5dae0;min-width:0;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
+.a3d-anzsub{font-size:11.5px;font-weight:600;color:#c9d1d9;border-top:1px solid rgba(255,255,255,.08);padding-top:8px;margin:2px 0 6px}
+.a3d-anzcap{font-size:11px;color:#8a96a3;line-height:1.4;margin:0 0 8px}
+.a3d-anzarea{padding:5px 0;border-bottom:1px solid rgba(255,255,255,.06);min-width:0}
+.a3d-anzarea:last-child{border-bottom:0;margin-bottom:6px}
+.a3d-anzareahd{display:flex;align-items:center;gap:0;font-size:12px;color:#d5dae0;min-width:0}
+.a3d-anzareanm{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.a3d-anzarean{flex:0 0 auto;font-size:11px;color:#8a96a3;margin-left:8px;font-variant-numeric:tabular-nums}
+.a3d-anzareav{font-size:11px;color:#9aa5b0;margin:2px 0 0 16px;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.a3d-anzareatot .a3d-anzareahd{font-weight:600}.a3d-anzareatot .a3d-anzareav{margin-left:0}
+.a3d-anzareaerr{color:#ef8a8d}
+@media(pointer:coarse){.a3d-sa .a3d-anzform input[type=number]{min-height:36px;font-size:16px}.a3d-anzlab,.a3d-anzkv{font-size:12.5px}}
+body.light-theme .a3d-sa .a3d-anzform input[type=number]{background:#fff;border-color:#c9ced4;color:#222}
+body.light-theme .a3d-anzlab,body.light-theme .a3d-anzkv dt,body.light-theme .a3d-anzcap,body.light-theme .a3d-anzarean{color:#5f6770}
+body.light-theme .a3d-anzkv dd,body.light-theme .a3d-anzsub,body.light-theme .a3d-anzareahd{color:#222}
+body.light-theme .a3d-anzareav{color:#4b535c}
+body.light-theme .a3d-anzsub,body.light-theme .a3d-anzarea{border-color:rgba(0,0,0,.09)}
+body.light-theme .a3d-anzareaerr{color:#b42318}
 .a3d-anzstate-stale{background:rgba(255,183,77,.18);color:#ffb74d}.a3d-anzstate-busy{background:rgba(110,160,255,.18);color:#8fb4ff}
 .a3d-terrbands{margin:2px 0 8px;display:flex;flex-direction:column;gap:2px}
 /* __acad3dV158: the Site analysis tab */
@@ -9494,6 +9545,7 @@ try{
     rp.style.width=(w&&bimRightDesktop()&&!p.min)?w+'px':'';
     var b=document.getElementById('a3d-rminbtn');
     if(b){b.setAttribute('aria-pressed',p.min?'true':'false');b.title=p.min?'Show the Properties panel':'Minimise the Properties panel';}
+    bimShellDockW();   /* __acad3dV166b: the left panel keeps the drawing its room */
     return {w:rp.getBoundingClientRect().width,min:!!p.min};
   }
   function bimRightSetWidth(w){
@@ -17619,7 +17671,7 @@ try{
   /* USAGES: the library, with nothing selected */
   function bimUsageLibraryCommand(quiet){
     A3D.sel=null;A3D.sel2=null;A3D.selSet=[];
-    bimPropReveal('Usages');   /* __acad3dV141: on the Analysis tab */
+    bimPropReveal('Usages');   /* __acad3dV141; __acad3dV166b: on the Project tab */
     refreshTree();refreshProps();paint();
     var g=el.propsbody&&el.propsbody.querySelector('[data-a3dpgrp="Usages"]');
     if(g){try{g.scrollIntoView({block:'start'});}catch(eS){}}
@@ -18971,12 +19023,15 @@ try{
     return n;
   }
   /* ================= __acad3dV141: Properties' tabs, with nothing selected =================
-     The model's groups, sorted into four tabs. Every tab's groups are in the page and the others
+     The model's groups, sorted into tabs. Every tab's groups are in the page and the others
      hidden, so each field keeps its handler and a command can reach it; the tab shown is the
-     viewer's, remembered in this browser. */
-  var BIM_PTABS=[{id:'project',label:'Project'},{id:'site',label:'Site'},{id:'view',label:'View'},{id:'analysis',label:'Analysis'}];
+     viewer's, remembered in this browser.
+     __acad3dV166b: three tabs. The Analysis tab was Analyze's settings, left behind when Analyze moved
+     to the left; they are in Analyze now, in the rows they set, and the usages are on Project. */
+  var BIM_PTABS=[{id:'project',label:'Project'},{id:'site',label:'Site'},{id:'view',label:'View'}];
   var BIM_PTAB_KEY='acad3dPropTab';
-  var A3D_PTAB=(function(){try{var v=localStorage.getItem(BIM_PTAB_KEY);return /^(project|site|view|analysis)$/.test(v||'')?v:'project';}catch(eT){return 'project';}})();
+  function bimPTabOk(t){return BIM_PTABS.some(function(b){return b.id===t;});}
+  var A3D_PTAB=(function(){try{var v=localStorage.getItem(BIM_PTAB_KEY);return bimPTabOk(v)?v:'project';}catch(eT){return 'project';}})();
   function bimPTab(tab,html){
     if(!html)return '';
     return '<div class="a3d-ptabpane'+(tab===A3D_PTAB?' on':'')+'" data-ptab="'+tab+'">'+html+'</div>';
@@ -18989,15 +19044,14 @@ try{
   /* the tab a model group is on; null for a group that is not tabbed */
   function bimPropTabOf(name){
     name=String(name||'');
-    if(name==='Identity Data'||name==='Statistics'||name==='History')return 'project';   /* __acad3dV146: History */
+    if(name==='Identity Data'||name==='Usages'||name==='Statistics'||name==='History')return 'project';   /* __acad3dV146: History; __acad3dV166b: Usages */
     if(name==='Location'||name==='Map'||name==='Site Context'||name==='Data Layers')return 'site';
     if(name==='View')return 'view';
-    if(name.indexOf('Floor Loads')===0||name==='Analysis'||name==='Areas by Usage'||name==='Usages')return 'analysis';
     return null;
   }
   /* show a tab, in place: no re-render, so nothing typed is lost */
   function bimSetPropTab(tab){
-    if(!/^(project|site|view|analysis)$/.test(String(tab)))return false;
+    if(!bimPTabOk(String(tab)))return false;
     A3D_PTAB=tab;
     try{localStorage.setItem(BIM_PTAB_KEY,tab);}catch(eS){}
     if(el.propsbody){
@@ -19112,8 +19166,9 @@ try{
     var fr=nC+nB;
     C.push({id:'structure',title:'Frame analysis',state:A3D_STRUCT.show?'on':'off',
       status:fr?nC+' column'+(nC===1?'':'s')+', '+nB+' beam'+(nB===1?'':'s')+(A3D_STRUCT.show?': forces and deflection shown':''):'No frame yet: place columns and beams',
+      extra:bimAnzFrameHtml(),   /* __acad3dV166b: its settings, and the floor loads, in the row */
       acts:[{act:'structure:run',label:A3D_STRUCT.show?'Run again':'Run',pri:true,off:fr?'':'Place columns and beams first'},
-        {act:'structure:off',label:'Hide',off:A3D_STRUCT.show?'':'Not shown'},{act:'open:Analysis',label:'Settings',off:fr?'':'Place columns and beams first'}]});
+        {act:'structure:off',label:'Hide',off:A3D_STRUCT.show?'':'Not shown'}]});
     var sun=bimSunNow();
     C.push({id:'sun',title:'Sun and shadows',state:A3D.showSun?'on':'off',
       status:sun.missing?'Set the site '+sun.missing.join(', ')+' (Site: Location)':(sun.settings.time+' on '+sun.settings.date+(sun.elevation>0?', the sun at '+sun.elevation.toFixed(1)+'\u00b0':', the sun below the horizon')),
@@ -19123,7 +19178,8 @@ try{
       acts:[{act:'open:View',label:'Settings',pri:true}]});
     var us=bimUsageSummary(null);
     C.push({id:'areas',title:'Areas by usage',state:null,status:us.rows.length?us.rows.length+' usage'+(us.rows.length===1?'':'s')+' on '+nU+' object'+(nU===1?'':'s')+', GBA '+bimDispNum(us.total.GBA,2)+' m\u00b2':'No usages given yet',
-      acts:[{act:'open:Areas by Usage',label:'Open',pri:true},{act:'open:Usages',label:'Usages'}]});
+      extra:bimAnzAreasHtml(),   /* __acad3dV166b: the areas, in the row; the usages are in Properties, Project */
+      acts:[{act:'open:Usages',label:'Usages'}]});
     C.push({id:'survey',title:'Survey check',state:nTer?(sv.fail?'fail':sv.warn?'warn':'on'):null,
       status:nTer?nTer+' surface'+(nTer===1?'':'s')+': '+sv.pass+' pass, '+sv.warn+' warn, '+sv.fail+' fail':'No survey surface yet: make one with SURVEY',
       acts:[{act:'survey:run',label:'Check',pri:true,off:nTer?'':'No survey surface yet'}]});
@@ -19213,7 +19269,7 @@ try{
     return s.join(' ');
   }
   function bimAnzTexts(root,sel){return [].map.call(root.querySelectorAll(sel),bimAnzText).join(' ');}
-  function bimAnzRowText(r,more){return r.getAttribute('data-anzcard')+' '+bimAnzTexts(r,'.a3d-anzttl,.a3d-anzst,.a3d-anzbtn')+' '+(more||'');}
+  function bimAnzRowText(r,more){return r.getAttribute('data-anzcard')+' '+bimAnzTexts(r,'.a3d-anzttl,.a3d-anzst,.a3d-anzbtn,.a3d-anzlab,.a3d-anzsub')+' '+(more||'');}   /* __acad3dV166b: its settings' names */
   function bimAnzFilter(w){
     var q=String(A3D_ANZ.q||'').toLowerCase().replace(/^\s+|\s+$/g,''),root=w?w.querySelector('.a3d-anz'):null,n=0,i,j,S,K,G,R,k,on,name,whole,hit,e;
     if(!root)return 0;
@@ -25767,7 +25823,7 @@ try{
     rows+=bimPropRow('Site','<input type="text" data-propmodel="site" value="'+
       bimEsc(A3D.site.name||'')+'">');
     h+=bimDataFeatureHtml();   /* __acad3dV134: the data clicked on the plan, first */
-    h+=bimPropTabsHtml();   /* __acad3dV141: Project | Site | View | Analysis */
+    h+=bimPropTabsHtml();   /* __acad3dV141: Project | Site | View */
     h+=bimPTab('project',bimPropGroup('Identity Data',rows));
     h+=bimPTab('site',bimPropGroup('Location',loc));   /* __acad3dV141 */
     h+=bimPTab('site',bimPropGroup('Map',bimMapPropsHtml()));   /* __acad3dV132 */
@@ -25816,18 +25872,10 @@ try{
     srows+=bimPropRow('Version','<span class="a3d-pstatic">'+bimVersionHtml()+'</span>');   /* __acad3dV142 */
     srows+=bimPropRow('Graphics','<span class="a3d-pstatic" data-graphics="1">'+bimEsc(bimGraphicsLabel())+'</span>');   /* __acad3dV153 */
     if(A3D_BENCH&&!A3D_BENCH.running)srows+=bimPropRow('Benchmark','<span class="a3d-pstatic" data-bench="1">'+bimEsc(bimBenchmarkText(A3D_BENCH))+'</span>');   /* __acad3dV155 */
-    /* __acad3dV106: the ACTIVE level's floor loads -- what its floors and roof put on the columns
-       under them. Here, with the model's level picker, because the Levels rows are not on screen. */
-    var lvA=null;
-    for(i=0;i<A3D.levels.length;i++)if(A3D.levels[i].id===A3D.activeLevel)lvA=A3D.levels[i];
-    if(lvA){
-      var lrows=bimPropRow('Dead (kPa)','<input type="number" step="any" min="0" data-propmodel="dl" value="'+(lvA.dl==null?'':lvA.dl)+'" placeholder="not set" title="Dead load on '+bimEsc(lvA.name)+', kPa: slab self-weight plus superimposed">');
-      lrows+=bimPropRow('Live (kPa)','<input type="number" step="any" min="0" data-propmodel="ll" value="'+(lvA.ll==null?'':lvA.ll)+'" placeholder="not set" title="Live load on '+bimEsc(lvA.name)+', kPa, unreduced">');
-      h+=bimPTab('analysis',bimPropGroup('Floor Loads: '+bimEsc(lvA.name),lrows));   /* __acad3dV141 */
-    }
-    h+=bimPTab('analysis',bimAnalysisPropsHtml());   /* __acad3dV125: the model's Analysis page, beside its floor loads */
-    h+=bimPTab('analysis',bimUsageAreasHtml(null,'Areas by Usage'));   /* __acad3dV131 */
-    h+=bimPTab('analysis',bimPropGroup('Usages',bimUsageLibraryHtml()));
+    /* __acad3dV166b: the active level's floor loads and the frame's settings are in Analyze's Frame
+       analysis, the project's areas by usage in its Areas by usage. The usages are the project's own --
+       the rooms, floors and masses take them, Colour by and the schedules read them -- so they are here. */
+    h+=bimPTab('project',bimPropGroup('Usages',bimUsageLibraryHtml()));   /* __acad3dV131 */
     h+=bimPTab('project',bimPropGroup('Statistics',srows));
     h+=bimPTab('project',bimPropGroup('History',bimHistHtml()));   /* __acad3dV146 */
     return h;
@@ -39710,6 +39758,7 @@ try{
   var A3D_SHELL_CLAIMS=[
     {sel:'.a3d-paneltoggle',why:'collapses the rail'},
     {sel:'.a3d-panelcollapse',why:'collapses the rail'},
+    {sel:'[data-lpwidth]',why:'widens the panel a step at a time: its edge, by one press'},   /* __acad3dV166b */
     {sel:'[data-railmore]',why:'on a phone, shows the rail\'s tools over the tab bar'},   /* __acad3dV149 */
     {sel:'[data-tpact]',why:'the palette: a tool, Select, Pan or every tool'},   /* __acad3dV150 */
     {sel:'[data-tpgrip]',why:'the palette\'s grip: drag to move it'},
@@ -40247,6 +40296,7 @@ try{
       /* a refresh held for a field being typed in happens when it is left */
       abox.addEventListener('focusout',function(){if(A3D_ANZ.pend)setTimeout(function(){if(A3D_ANZ.pend)bimAnalyzeRefresh();},0);});
       bimSaWire(abox);   /* __acad3dV158 */
+      bimAnzWireFields(abox);   /* __acad3dV166b */
       panel.appendChild(abox);
       did=true;
     }
@@ -40505,12 +40555,93 @@ try{
     if(m){m.classList.toggle('on',on);m.setAttribute('aria-expanded',String(on));}
     return on;
   }
+  /* __acad3dV166b: the left panel's width, remembered, and its edge -- dragged, double-clicked back,
+     or moved from the keyboard as the W3C's window splitter is (role separator, its value, the arrow
+     keys, Home and End, Enter to shut the panel). A computer's, and a tablet's on its side: a phone's
+     and an upright tablet's drawer keeps its width, as Properties' sheet and drawer do. */
+  var BIM_LEFT_KEY='acad3dLeftPanel',BIM_LEFT_MIN=242,BIM_LEFT_MAX=560,BIM_LEFT_KEEP=320,BIM_LEFT_RAIL=54;
+  function bimLeftPrefs(){try{var v=JSON.parse(localStorage.getItem(BIM_LEFT_KEY)||'null');return v&&typeof v==='object'?v:{};}catch(eL){return {};}}
+  function bimLeftSave(p){try{localStorage.setItem(BIM_LEFT_KEY,JSON.stringify(p));}catch(eW){}}
+  /* the widest it may be now: the drawing keeps BIM_LEFT_KEEP px beside Properties, where Properties
+     sits beside the drawing rather than over it */
+  function bimLeftMax(){
+    var rp=document.getElementById('a3d-right'),rw=0,cs;
+    if(rp){cs=getComputedStyle(rp);if(cs.display!=='none'&&cs.position!=='absolute'&&cs.position!=='fixed')rw=rp.getBoundingClientRect().width;}
+    return Math.max(BIM_LEFT_MIN,Math.min(BIM_LEFT_MAX,Math.floor((window.innerWidth||0)-BIM_LEFT_RAIL-rw-BIM_LEFT_KEEP)));
+  }
+  /* the width the panel gets: the one kept, within what the screen allows now; the one kept stays */
+  function bimLeftW(){var p=bimLeftPrefs();return typeof p.w==='number'&&isFinite(p.w)?Math.max(BIM_LEFT_MIN,Math.min(bimLeftMax(),Math.round(p.w))):BIM_LEFT_MIN;}
+  function bimLeftSetWidth(w){
+    var p=bimLeftPrefs();
+    if(w===null)delete p.w;
+    else{w=+w;if(!isFinite(w))return bimLeftState();p.w=Math.round(Math.max(BIM_LEFT_MIN,Math.min(bimLeftMax(),w)));}
+    bimLeftSave(p);bimShellDockW();   /* the drawing follows by its own ResizeObserver (V72) */
+    return bimLeftState();
+  }
+  /* the next width up, within what the screen allows; from the widest, back to the narrowest */
+  var BIM_LEFT_STEPS=[242,320,400,480,560];
+  function bimLeftNext(){
+    var w=bimLeftW(),mx=bimLeftMax(),i;
+    for(i=0;i<BIM_LEFT_STEPS.length;i++)if(BIM_LEFT_STEPS[i]>w&&BIM_LEFT_STEPS[i]<=mx)return BIM_LEFT_STEPS[i];
+    return w<mx?mx:BIM_LEFT_MIN;
+  }
+  function bimLeftStep(){return bimLeftSetWidth(bimLeftNext());}
+  function bimLeftState(){
+    var pn=document.getElementById('a3d-leftpanel'),g=document.getElementById('a3d-lgrip'),p=bimLeftPrefs();
+    return {w:pn?Math.round(pn.getBoundingClientRect().width):0,set:bimLeftW(),kept:typeof p.w==='number'?p.w:null,min:BIM_LEFT_MIN,max:bimLeftMax(),
+      grip:!!(g&&getComputedStyle(g).display!=='none'),next:bimLeftNext(),tier:A3D_SHELL_TIER,dock:getComputedStyle(document.documentElement).getPropertyValue('--a3d-left-w').trim()};
+  }
+  function bimLeftWire(sh){
+    if(!sh||document.getElementById('a3d-lgrip'))return;
+    var g=document.createElement('div'),dr=null,root=document.documentElement;
+    g.id='a3d-lgrip';g.className='a3d-lgrip';g.tabIndex=0;g.title='Drag to resize; double-click to put it back';
+    g.setAttribute('role','separator');g.setAttribute('aria-orientation','vertical');g.setAttribute('aria-controls','a3d-leftpanel');g.setAttribute('aria-label','Panel width');
+    sh.appendChild(g);
+    g.addEventListener('pointerdown',function(ev){
+      if(A3D_SHELL_TIER!=='desktop'||ev.button>0)return;
+      ev.preventDefault();
+      dr={x:ev.clientX,w:bimLeftW(),id:ev.pointerId,now:null};
+      try{g.setPointerCapture(ev.pointerId);}catch(eC){}
+      g.classList.add('drag');document.body.classList.add('a3d-lpdrag');
+    });
+    g.addEventListener('pointermove',function(ev){
+      if(!dr||ev.pointerId!==dr.id)return;
+      var w=Math.round(Math.max(BIM_LEFT_MIN,Math.min(bimLeftMax(),dr.w+ev.clientX-dr.x)));
+      if(w===dr.now)return;
+      dr.now=w;
+      root.style.setProperty('--a3d-lp-w',w+'px');root.style.setProperty('--a3d-left-w',(BIM_LEFT_RAIL+w)+'px');
+    });
+    function end(ev,keep){
+      if(!dr||ev.pointerId!==dr.id)return;
+      var w=dr.now;dr=null;
+      g.classList.remove('drag');document.body.classList.remove('a3d-lpdrag');
+      if(keep&&w!==null)bimLeftSetWidth(w);else bimShellDockW();   /* a cancelled drag puts it back */
+    }
+    g.addEventListener('pointerup',function(ev){end(ev,true);});
+    g.addEventListener('pointercancel',function(ev){end(ev,false);});
+    g.addEventListener('dblclick',function(){bimLeftSetWidth(null);});
+    g.addEventListener('keydown',function(ev){
+      var k=ev.key,st=ev.shiftKey?64:16;
+      if(k==='ArrowLeft'||k==='ArrowRight'){ev.preventDefault();bimLeftSetWidth(bimLeftW()+(k==='ArrowRight'?st:-st));return;}
+      if(k==='Home'||k==='End'){ev.preventDefault();bimLeftSetWidth(k==='Home'?BIM_LEFT_MIN:bimLeftMax());return;}
+      if(k==='Enter'){
+        ev.preventDefault();
+        sh.classList.add('collapsed');bimShellDockW();
+        var t=sh.querySelector('#a3d-rail .a3d-paneltoggle');if(t)t.focus();   /* Enter on it opens the panel again */
+      }
+    });
+    bimShellDockW();
+  }
   function bimShellDockW(){
     try{
-      var sh=document.getElementById('a3d-shell');
+      var sh=document.getElementById('a3d-shell'),w=bimLeftW(),g=document.getElementById('a3d-lgrip');
+      document.documentElement.style.setProperty('--a3d-lp-w',w+'px');   /* __acad3dV166b */
       document.documentElement.style.setProperty('--a3d-left-w',
         A3D_SHELL_TIER==='phone'?'0px':A3D_SHELL_TIER==='overlay'?'54px':   /* __acad3dV149: a drawer leaves the drawing where it is */
-        (sh&&sh.classList.contains('collapsed'))?'54px':'296px');
+        (sh&&sh.classList.contains('collapsed'))?'54px':(BIM_LEFT_RAIL+w)+'px');
+      if(g){g.setAttribute('aria-valuenow',String(w));g.setAttribute('aria-valuemin',String(BIM_LEFT_MIN));g.setAttribute('aria-valuemax',String(bimLeftMax()));}
+      var b=document.querySelector('#a3d-leftpanel [data-lpwidth]'),nx=bimLeftNext();
+      if(b){b.setAttribute('aria-label','Panel width '+w+' px: '+(nx>w?'widen to '+nx:'back to '+nx));b.title=b.getAttribute('aria-label');}
     }catch(eW){console.warn('[BIM] Dock width could not be set',eW);}
   }
   function bimShellSetTab(t){
@@ -40552,12 +40683,15 @@ try{
       '<section id="a3d-leftpanel">'+
       '<div class="a3d-projhead"><div><div class="a3d-projtitle">Untitled project</div>'+
       '<div class="a3d-projsub"><span>Site</span><span class="a3d-pill">BIM</span></div></div>'+
-      '<button type="button" class="a3d-panelcollapse" data-toggle title="Collapse the panel">\u2039</button></div>'+
+      '<div class="a3d-projbtns"><button type="button" class="a3d-lpwbtn" data-lpwidth="1">'+   /* __acad3dV166b: the width, by one press */
+      '<svg viewBox="0 0 18 18" aria-hidden="true"><path d="M2.5 9h13M5.5 6 2.5 9l3 3M12.5 6l3 3-3 3"/></svg></button>'+
+      '<button type="button" class="a3d-panelcollapse" data-toggle title="Collapse the panel">\u2039</button></div></div>'+
       '</section>';
     document.body.appendChild(sh);
     sh.addEventListener('click',function(ev){
       var mo=ev.target&&ev.target.closest?ev.target.closest('[data-railmore]'):null;   /* __acad3dV149 */
       if(mo){bimShellMore();return;}
+      if(ev.target&&ev.target.closest&&ev.target.closest('[data-lpwidth]')){bimLeftStep();return;}   /* __acad3dV166b */
       var tg=ev.target&&ev.target.closest?ev.target.closest('[data-toggle]'):null;
       if(tg){sh.classList.toggle('collapsed');bimShellDockW();bimShellMore(false);return;}
       var tb=ev.target&&ev.target.closest?ev.target.closest('.a3d-railbtn[data-tab]'):null;
@@ -40596,6 +40730,7 @@ try{
     });
     bimWireLayersPanel(sh.querySelector('#a3d-leftpanel'));   /* __acad3dV121 */
     bimWirePresPanel(sh.querySelector('#a3d-leftpanel'));     /* __acad3dV122 */
+    bimLeftWire(sh);   /* __acad3dV166b */
     bimShellApplyTier();   /* __acad3dV149: the layout for this screen, and the dock's width */
     try{bimTPalBuild();bimTPalPlace();}catch(eTP){console.warn('[BIM] The tool palette could not be built',eTP);}   /* __acad3dV150 */
     try{bimCleanShell();}
@@ -43115,29 +43250,74 @@ try{
     if(!f||!bimIsFrameMember(o))return;
     bimLoadDraft(o)[f]=ev.target.value;
   }
-  function bimAnalysisPropsHtml(){
-    var rows='',cur=A3D_STRUCT.show?(A3D_STRUCT.diagram||'M'):'off',nC=0,nB=0,i;
+  /* __acad3dV166b: Frame analysis's settings and results, and the active level's floor loads, in its
+     row in Analyze. They were Properties' Analysis page (V125) and its Floor Loads (V106). The fields
+     keep their keys (data-propstr), so one handler serves them; the floor loads' are data-anzload. */
+  function bimAnzField(id,label,ctl){return '<div class="a3d-anzfld"><label class="a3d-anzlab" for="a3d-anzf-'+id+'">'+bimEsc(label)+'</label>'+ctl+'</div>';}
+  function bimAnzKv(rows){return '<dl class="a3d-anzkv">'+rows.map(function(r){return '<dt>'+bimEsc(r[0])+'</dt><dd>'+bimEsc(r[1])+'</dd>';}).join('')+'</dl>';}
+  function bimAnzFrameHtml(){
+    var h='',cur=A3D_STRUCT.show?(A3D_STRUCT.diagram||'M'):'off',nC=0,nB=0,i,lvA=null,kv=[];
     for(i=0;i<A3D.objs.length;i++)if(bimIsFrameMember(A3D.objs[i])){if(A3D.objs[i].bim.type==='column')nC++;else nB++;}
-    if(!nC&&!nB)return '';
-    rows+=bimPropText('Frame',nC+' column(s), '+nB+' beam(s)');
-    rows+=bimPropText('Basis',(bimCombo(A3D_STRUCT.combo)||BIM_COMBOS[0]).why);
-    rows+=bimPropRow('Combination','<select data-propstr="combo">'+BIM_COMBOS.map(function(c){return bimOpt(c.name,c.name,A3D_STRUCT.combo);}).join('')+'</select>');
-    rows+=bimPropRow('Self-weight','<select data-propstr="selfweight">'+bimOpt('1','Included in D',A3D_STRUCT.selfWeight?'1':'0')+bimOpt('0','Not included',A3D_STRUCT.selfWeight?'1':'0')+'</select>');
-    rows+=bimPropRow('Display','<select data-propstr="display">'+bimOpt('off','Off',cur)+bimOpt('M','Bending moment',cur)+bimOpt('N','Axial force',cur)+bimOpt('V','Shear',cur)+'</select>');
-    rows+=bimPropRow('Deflected shape','<select data-propstr="deflected">'+bimOpt('1','Shown',A3D_STRUCT.deflected?'1':'0')+bimOpt('0','Hidden',A3D_STRUCT.deflected?'1':'0')+'</select>');
-    var r=A3D_STRUCT.res;
-    if(r&&r.error)rows+=bimPropText('Result',r.error);
-    else{
-      var c=bimStructCurrent();
-      if(c){
-        var hd=bimStructHeadline(c);
-        rows+=bimPropText('Largest moment',hd.moment?hd.moment.v.toFixed(1)+' kN\u00b7m, '+hd.moment.name:'none');
-        rows+=bimPropText('Largest deflection',hd.defl?(hd.defl.v*1000).toFixed(1)+' mm'+(hd.ratio?' (L/'+hd.ratio+')':'')+', '+hd.defl.name:'none');
-        rows+=bimPropText('Equilibrium',hd.balanced?'Balanced, '+hd.load.toFixed(1)+' kN':'NOT balanced: loads '+hd.load.toFixed(1)+', reactions '+hd.reaction.toFixed(1)+' kN');
-      }else rows+=bimPropText('Result',r?'Out of date: run ANALYZE':'Run ANALYZE to solve the frame');
+    if(nC||nB){
+      h+='<div class="a3d-anzform">'+
+        bimAnzField('combo','Combination','<select id="a3d-anzf-combo" data-propstr="combo">'+BIM_COMBOS.map(function(c){return bimOpt(c.name,c.name,A3D_STRUCT.combo);}).join('')+'</select>')+
+        bimAnzField('selfweight','Self-weight','<select id="a3d-anzf-selfweight" data-propstr="selfweight">'+bimOpt('1','Included in D',A3D_STRUCT.selfWeight?'1':'0')+bimOpt('0','Not included',A3D_STRUCT.selfWeight?'1':'0')+'</select>')+
+        bimAnzField('display','Display','<select id="a3d-anzf-display" data-propstr="display">'+bimOpt('off','Off',cur)+bimOpt('M','Bending moment',cur)+bimOpt('N','Axial force',cur)+bimOpt('V','Shear',cur)+'</select>')+
+        bimAnzField('deflected','Deflected shape','<select id="a3d-anzf-deflected" data-propstr="deflected">'+bimOpt('1','Shown',A3D_STRUCT.deflected?'1':'0')+bimOpt('0','Hidden',A3D_STRUCT.deflected?'1':'0')+'</select>')+
+        '</div>';
+      kv.push(['Basis',(bimCombo(A3D_STRUCT.combo)||BIM_COMBOS[0]).why]);
+      var r=A3D_STRUCT.res;
+      if(r&&r.error)kv.push(['Result',r.error]);
+      else{
+        var c=bimStructCurrent();
+        if(c){
+          var hd=bimStructHeadline(c);
+          kv.push(['Largest moment',hd.moment?hd.moment.v.toFixed(1)+' kN\u00b7m, '+hd.moment.name:'none']);
+          kv.push(['Largest deflection',hd.defl?(hd.defl.v*1000).toFixed(1)+' mm'+(hd.ratio?' (L/'+hd.ratio+')':'')+', '+hd.defl.name:'none']);
+          kv.push(['Equilibrium',hd.balanced?'Balanced, '+hd.load.toFixed(1)+' kN':'NOT balanced: loads '+hd.load.toFixed(1)+', reactions '+hd.reaction.toFixed(1)+' kN']);
+        }else kv.push(['Result',r?'Out of date: run it again':'Run it to solve the frame']);
+      }
+      kv.push(['Not included','Floor loads, wind, seismic']);
+      h+=bimAnzKv(kv);
     }
-    rows+=bimPropText('Not included','Floor loads, wind, seismic');
-    return bimPropGroup('Analysis',rows);
+    for(i=0;i<A3D.levels.length;i++)if(A3D.levels[i].id===A3D.activeLevel)lvA=A3D.levels[i];
+    if(lvA){
+      h+='<div class="a3d-anzsub">Floor loads on '+bimEsc(lvA.name)+'</div>'+
+        '<div class="a3d-anzform">'+
+        bimAnzField('dl','Dead (kPa)','<input type="number" step="any" min="0" inputmode="decimal" id="a3d-anzf-dl" data-anzload="dl" value="'+(lvA.dl==null?'':lvA.dl)+'" placeholder="not set" title="Dead load on '+bimEsc(lvA.name)+', kPa: slab self-weight plus superimposed">')+
+        bimAnzField('ll','Live (kPa)','<input type="number" step="any" min="0" inputmode="decimal" id="a3d-anzf-ll" data-anzload="ll" value="'+(lvA.ll==null?'':lvA.ll)+'" placeholder="not set" title="Live load on '+bimEsc(lvA.name)+', kPa, unreduced">')+
+        '</div><div class="a3d-anzcap">What this level\'s floors and roof put on the columns under them, in the Column Loads schedule and TRIBAREA. The active level is set in Properties, View.</div>';
+    }
+    return h;
+  }
+  /* __acad3dV166b: the project's areas by usage, in Areas by usage's row: each usage, then the total */
+  function bimAnzAreasHtml(){
+    var s=bimUsageSummary(null),h='';
+    if(!s.rows.length)return '<div class="a3d-anzcap">Give a room, a floor or a mass a usage in its Properties (USAGE).</div>';
+    s.rows.forEach(function(g){
+      var k,v=[];
+      for(k in g.values)if(g.values.hasOwnProperty(k))v.push(k+' '+bimUsageNum(g.values[k]));
+      h+='<div class="a3d-anzarea" data-anzarea="'+bimEsc(g.usage)+'"><div class="a3d-anzareahd">'+bimUsageSwatch(g.color)+'<span class="a3d-anzareanm">'+bimEsc(g.name)+'</span>'+
+        '<span class="a3d-anzarean">'+g.count+'</span></div>'+
+        '<div class="a3d-anzareav">GBA '+bimDispNum(g.GBA,2)+' \u00b7 GFA '+bimDispNum(g.GFA,2)+' \u00b7 NSA '+bimDispNum(g.NSA,2)+' m\u00b2</div>'+
+        (v.length?'<div class="a3d-anzareav">'+bimEsc(v.join(', '))+'</div>':'')+
+        (g.errors?'<div class="a3d-anzareav a3d-anzareaerr">'+g.errors+' formula error'+(g.errors===1?'':'s')+'</div>':'')+'</div>';
+    });
+    if(s.rows.length>1)h+='<div class="a3d-anzarea a3d-anzareatot"><div class="a3d-anzareahd"><span class="a3d-anzareanm">Total</span></div>'+
+      '<div class="a3d-anzareav">GBA '+bimDispNum(s.total.GBA,2)+' \u00b7 GFA '+bimDispNum(s.total.GFA,2)+' \u00b7 NSA '+bimDispNum(s.total.NSA,2)+' m\u00b2</div></div>';
+    return h;
+  }
+  /* __acad3dV166b: the settings in a row change the model at once, so the list is drawn again with the
+     field kept; a refresh held for a field (V162) is for words not yet committed */
+  function bimAnzWireFields(w){
+    w.addEventListener('change',function(ev){
+      var e=ev.target,k;
+      if(!e||!e.getAttribute)return;
+      try{
+        if(e.hasAttribute('data-propstr')){bimStructPropChange(ev);bimAnalyzeRefresh(true);return;}
+        if((k=e.getAttribute('data-anzload'))){updateLevel(A3D.activeLevel,k,e.value);bimAnalyzeRefresh(true);}
+      }catch(eF){console.warn('[BIM] Analyze setting failed',eF);a3dToast('That setting could not be changed - see the console');}
+    });
   }
   /* SUPPORT and LOAD: Properties, opened at the field they name */
   function bimStructFocus(what){
@@ -45376,6 +45556,7 @@ try{
     if(!tg)return false;
     if(tg.tagName==='INPUT'||tg.tagName==='TEXTAREA'||tg.isContentEditable)return true;
     if(tg.tagName==='SELECT')return !(ev.ctrlKey||ev.metaKey||/^F\d+$/.test(ev.key));
+    if(tg.getAttribute&&tg.getAttribute('role')==='separator'&&tg.tabIndex>=0)return !(ev.ctrlKey||ev.metaKey||/^F\d+$/.test(ev.key));   /* __acad3dV166b */
     return false;
   }
   function bimSheetKey(ev){
@@ -49565,7 +49746,6 @@ try{
         var mk=mp.getAttribute('data-propmodel'),mv=mp.value;
         if(mk==='truenorth'){bimSetTrueNorth(mv);return;}   /* __acad3dV103 */
         if(mk==='sunlat'||mk==='sunlon'||mk==='suntz'||mk==='sundate'||mk==='suntime'){bimSetSun(mk.slice(3),mv);return;}   /* __acad3dV107 */
-        if(mk==='dl'||mk==='ll'){updateLevel(A3D.activeLevel,mk,mv);return;}   /* __acad3dV106 */
         if(mk==='project'){A3D.titleBlock.project=mv;}
         else if(mk==='client'){A3D.titleBlock.client=mv;}
         else if(mk==='site'){updateSite('name',mv);}
@@ -50570,6 +50750,7 @@ try{
     return {Da:f(R.Da),Dl:f(R.Dl),ok:R.ok,seeds:R.seeds};};
   window.__a3dMvPtal=function(){var S=A3D.site&&A3D.site.access;if(!S)return null;return JSON.parse(JSON.stringify(bimMvPtal(S,bimMvOf())));};
   window.__a3dMvPtalBand=function(ai){return bimMvPtalBand(ai);};
+  window.__acad3dV166b='noanalysistab,usagesonproject,anzframe,anzfloorloads,anzareas,anzfields,anzsearchsettings,leftresize,leftremembered,leftreset,leftkeys,leftclamp,leftdesktop,leftstep';
   window.__acad3dV166='mvquery,mvdata,mvstreets,mvthin,mvbudget,crossings,doors,carparks,garages,intervals,routeways,paths,walklayeronrequest,'+
     'hierarchy,lts2012,crossings2016,lowstressreach,ptal,catchments,routes,walkbands,needs,vehicleentry,provisionalentry,onstreetparking,maprgb,ptalfinding,cyclingfinding,vehiclesfinding';
   window.__acad3dV165='landgrid,landfetch,ownsurface,contextfallback,horn,marchingsquares,contours,hypsometric,slopeclasses,aspectwarmth,priorityflood,d8,strahler,catchments,divides,'+
@@ -51692,6 +51873,8 @@ try{
   window.__a3dHash=function(s){return bimHash(String(s));};
   window.__a3dCanon=function(v){return bimCanon(v);};
   window.__a3dRightPanel=function(){var r=bimRightApply();return r;};   /* __acad3dV147 */
+  window.__a3dLeftPanel=function(){return bimLeftState();};   /* __acad3dV166b */
+  window.__a3dSetLeftWidth=function(w){return bimLeftSetWidth(w);};
   window.__a3dRightSetWidth=function(w){return bimRightSetWidth(w);};
   window.__a3dRightToggleMin=function(on){return bimRightToggleMin(on);};
   window.__a3dTerrainLegend=function(){return A3D.lastTerrainLegend||null;};

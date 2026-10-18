@@ -11,7 +11,8 @@ VARIANTS = {
     # ---- 131a: measuring
     'slice_hole_ignored': [("      area+=(d%2)?-a:a;", "      area+=a;")],
     'floors_not_stacked': [("n=Math.max(1,Math.floor(h/ftf+1e-6));", "n=1;")],
-    'floor_ftf_ignored': [("ftf=(u&&u.ftf>0)?u.ftf:3,", "ftf=3,")],
+    # RE-ANCHORED IN V166b: the text has been in the build twice since V132; this is the usages' own
+    'floor_ftf_ignored': [("var h=bb.mx[1]-bb.mn[1],ftf=(u&&u.ftf>0)?u.ftf:3,n=", "var h=bb.mx[1]-bb.mn[1],ftf=3,n=")],
     'floor_sliced_at_base': [("a=bimMeshSliceArea(o,y0+band/2);", "a=bimMeshSliceArea(o,y0+1e-4);")],
     'gfa_ratio_ignored': [("      r.GFA=r.GBA*u.gfa;r.NSA=r.GFA*u.nsa;", "      r.GFA=r.GBA;r.NSA=r.GFA*u.nsa;")],
     'nsa_ratio_ignored': [("      r.GFA=r.GBA*u.gfa;r.NSA=r.GFA*u.nsa;", "      r.GFA=r.GBA*u.gfa;r.NSA=r.GFA;")],
@@ -36,7 +37,8 @@ VARIANTS = {
                               "    if(!window.__u131)window.__u131=JSON.parse(JSON.stringify(BIM_USAGE_DEFAULTS));\n    return window.__u131;")],
     # ---- 131b: Properties and the commands
     'no_usage_page': [("    if(bimUsageTarget(o))h+=bimUsagePropsHtml(o);       /* __acad3dV131 */\n", "")],
-    'no_project_areas': [("    h+=bimUsageAreasHtml(null,'Areas by Usage');   /* __acad3dV131 */\n", "")],
+    # RE-ANCHORED IN V166b: the project's areas by usage are in Analyze's Areas by usage row
+    'no_project_areas': [("      extra:bimAnzAreasHtml(),   /* __acad3dV166b: the areas, in the row; the usages are in Properties, Project */\n", "")],
     'primary_only': [("    var ids=(A3D.selSet&&A3D.selSet.length)?A3D.selSet:(A3D.sel?[A3D.sel]:[]);\n    return ids.filter(function(id){return !!bimUsageTarget(objById(id));});",
                       "    var ids=A3D.sel?[A3D.sel]:[];\n    return ids.filter(function(id){return !!bimUsageTarget(objById(id));});")],
     'no_mixed': [("var same=tg.every(function(id){var x=objById(id);return (x.usage||'')===(o.usage||'');});", "var same=true;")],

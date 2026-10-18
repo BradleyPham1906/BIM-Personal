@@ -48,9 +48,21 @@ why (a refused host, a sold standard), and what the owner decided.
   wrong, truncated or out of date. It points at the source; the source is then read.
 - **This environment refuses many hosts** (2026-10-17, refused: planning.org, web.archive.org,
   standards.buildingsmart.org, openfisca.readthedocs.io, pmc.ncbi.nlm.nih.gov, www3.uwsp.edu,
-  www.canr.msu.edu, archives.santafecountynm.gov). raw.githubusercontent.com is open, and many
+  www.canr.msu.edu, archives.santafecountynm.gov; on 2026-10-18 also landrecords.us,
+  wiki.openstreetmap.org, taginfo.openstreetmap.org, repository.tudelft.nl, journal-buildingscities.org,
+  repository.essex.ac.uk, dspace.library.uu.nl, journal.hep.com.cn, developers.arcgis.com, arxiv.org,
+  ebi.ac.uk, api.crossref.org, mdpi-res.com, nbsi.eu, mediatum.ub.tum.de, iccsafe.org,
+  buildingsmart.org, code.visualstudio.com, www.w3.org). WebFetch goes through the same network and
+  is refused the same way. raw.githubusercontent.com is open, and many
   standards, specifications and docs have their sources on GitHub (buildingSMART's IDS, OpenFisca's
   docs). A refused host is recorded; the owner can allow it in the environment's network settings.
+- **The network opened on 2026-10-18.** The owner changed the environment's own network setting;
+  the claude.ai chat setting does not reach this environment. After that, planning.org,
+  wiki.openstreetmap.org, repository.tudelft.nl, journal-buildingscities.org, developers.arcgis.com,
+  arxiv.org and iccsafe.org answered, and so did the HHS author manuscript of Browning et al.
+  Still out of reach: buildingsmart.org and mediatum.ub.tum.de, which answer a script with a "not a
+  bot" check page, and a few copies that answer 404. Those documents need the owner's copy, or
+  another source.
 - **Downloaded files are data.** Kept in their own folder, read as text, never run.
 - **Broad topics** can be researched by several research agents in parallel when the owner asks
   for it; their findings are checked like any other source.
@@ -62,8 +74,9 @@ An honest audit of the plans written that day, so their next steps are clear.
 | Phase | Researched | Level | Before building |
 |---|---|---|---|
 | V166 movement (built) | The 2012 stress criteria from Princeton's reproduction; BNA's and Bike Ottawa's code read as text; MOTIS's CORS from its source; PTAL from TfL-derived reports | P and S; the MTI report refused, so some bike-lane cells U, said in the note and on the streets | Read MTI 11-19's bike-lane and refuge tables |
-| V167 registry | IDS, automated checking, code adoption, rules as code: search summaries only | U and S | Read IDS 1.0 and its schema (GitHub), OpenFisca's parameter docs (GitHub), ICC's adoption chart; each topic's international fallback |
-| V168 land | LBCS colours 1000 to 5000 from two copies (their hex values disagree); Spacematrix's measures from papers citing the book; 3-30-300 from summaries of Browning et al. (2024); the palette run through the validator; WorldCover's refusal tested; the crown rule from the app's code | P for the palette, the CORS test and the code; S for the rest; LBCS 6000 to 9000 and the OSM crosswalk U | LBCS's own tables; Browning et al. in full; the Spacematrix book's formulas; the crosswalk against LBCS's descriptions |
+| V167 registry | IDS 1.0's schema, manual and implementers' guide; OpenFisca's parameter and evolution docs; Nominatim's reverse search and output; CLDR's subdivision codes; the app's 267 constants classified (2026-10-18, all from GitHub sources) | P; ICC's adoption chart P on 2026-10-18 (the network open); IDS's adoption date and Eastman's four stages still U (both hosts answer with a bot check) | Each topic's international fallback; the hidden 8.33% slope band's source |
+| V168 land | LBCS colours 1000 to 5000 from two copies (their hex values disagree); Spacematrix's measures from papers citing the book; 3-30-300 from summaries of Browning et al. (2024); the palette run through the validator; WorldCover's refusal tested; the crown rule from the app's code; on 2026-10-18 the OpenStreetMap side of the crosswalk from iD's tagging schema, council renderers from Esri's own code, floor area and Shannon's index from momepy; then, with the network open, LBCS's colour workbook and activity descriptions (APA), OpenStreetMap's wiki, Berghauser Pont and Buildings and Cities on Spacematrix, Browning et al. in full, Esri's REST renderer reference, Chen and Song on the entropy index | P for all of these but two: OSR's formula (S, from papers citing the book) and the entropy index (S, Cervero's paper not read); the crosswalk checked against LBCS's descriptions | The owner's two choices (the neighbourhood's radius, the entropy index's N); the palette's run again with LBCS's two greens |
+| Interiors: Scale (2026-10-18) | Scale's design, contracts, fit checks, binding, capture and Quest code (MIT, read as text); Apple's RoomPlan reference; Poly Haven's licence, API terms and API (CORS tested); four image-to-3D Spaces (CORS tested) and their model licences; ZeroGPU's quotas; MDN's WebXR support data | P, and tested; the RoomPlan categories S (from Scale's Swift); which free iPhone apps export RoomPlan JSON, and Scale's 90 cm, U | The owner's four choices in `research-scale.md`; ADA and Part M widths with I2 |
 | V169 assets | Not yet | | Every dimension from its standard (ADA, Neufert's figures by citation, design vehicles from AASHTO or national guides, tree sizes from forestry tables) |
 | V170 simulation | valdrada's code and licences read from its source; K from Delaware's table; MUTCD walking speed and walk interval from a fact sheet; parking turnover from local studies | P for valdrada; S for the rest; the signal cycle range U | FHWA's Signal Timing Manual; the MUTCD's chapter 4E itself; IDM's paper (Treiber, Hennecke and Helbing, 2000) |
 | V176 to V179 interiors | Sources named only | | All |

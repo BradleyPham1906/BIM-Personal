@@ -22,16 +22,27 @@ order: 1
   - **Assets:** a library of models, blocks and templates. Drag one onto the drawing.
   - **Analyze:** every analysis, in four groups, with a search. See [Analysis](analysis.html).
 - **Properties,** on the right. With an object selected, its properties. With nothing selected,
-  four tabs:
-  - **Project:** project, client and site name, and the statistics, including the app's version.
+  three tabs:
+  - **Project:** project, client and site name, the usages, and the statistics, including the
+    app's version.
   - **Site:** Location (latitude, longitude, true north, the sun's date and time), Map, Site
     Context, Data Layers.
   - **View:** active level and layer, colour by, appearance.
-  - **Analysis:** floor loads, the frame's analysis, areas by usage, the usages.
   - **Project** also holds the **History**: see [Sheets and files](sheets-files.html).
+  - The analyses' settings are in **Analyze**, in each analysis's row.
 - **Sizing Properties.** Drag the panel's left edge to widen it (240 to 560 px); double-click the
   edge to put it back. The arrow beside the word Properties minimises the panel to a strip. Both
   are remembered.
+- **Sizing the left panel.** Drag its right edge, with the mouse or a finger (242 to 560 px). The
+  drawing keeps at least 320 px beside Properties. Double-click the edge to put it back. Or press the
+  arrows button beside the panel's collapse: each press widens it a step (242, 320, 400, 480, 560),
+  and from the widest it goes back to 242. From the keyboard, Tab to the edge:
+  - **Left** and **Right** move it 16 px, 64 px with **Shift**;
+  - **Home** and **End** make it the narrowest and the widest;
+  - **Enter** shuts the panel; Enter on the panel button opens it again.
+
+  The width is remembered. On a phone, or a tablet held upright, the panel is a drawer of its own
+  width.
 - **On a phone or a tablet.** The drawing gets the screen:
   - **A phone held upright:** the rail is a bar of tabs along the bottom (Layers, Present,
     Browser, Assets, Analyze). A tab opens its panel as a drawer over the drawing; tap the same

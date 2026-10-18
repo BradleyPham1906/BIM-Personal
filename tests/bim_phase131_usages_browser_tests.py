@@ -10,7 +10,7 @@ parameters and formulas -- given to a room, a floor or a mass.
      words; no JavaScript.
   3. A MASS is stacked into floors and each floor sliced: a box, a tapered cone, a tube's hole.
   4. A FLOOR is one floor of gross; a ROOM is net, measured; a wall takes no usage.
-  5. THE AREAS BY USAGE: the project's and the selection's, in Properties.
+  5. THE AREAS BY USAGE: the project's (AMENDED FOR V166b: in Analyze) and the selection's, in Properties.
   6. THE USAGE PAGE: set, with its areas and formulas; one undo; several at once; Mixed.
   7. EDITING: ratios, refusals, parameters and formulas, an unknown name, removal and its undo.
   8. THE SCHEDULE, USAGE and USAGES, a mirrored copy, and a reload.
@@ -242,11 +242,14 @@ async def run():
             ck(near(s['total']['GBA'], 96) and near(s['total']['NSA'], 30 + 73.44, 1e-6), "and the totals (%s)" % (s and s['total']))
             s2 = await safe("()=>window.__a3dUsageSummary(['RM1'])")
             ck(s2 and [g['name'] for g in s2['rows']] == ['Residential'], "the selection's areas: only what is selected")
-            await safe("()=>{window.__a3dSelectFor([]);window.__a3dRefreshProps();}")
+            # AMENDED FOR V166b: the project's areas by usage are in Analyze, in Areas by usage's row
+            await safe("""()=>{if(document.activeElement)document.activeElement.blur();window.__a3dSelectFor([]);var s=document.getElementById('a3d-shell');
+              if(s.getAttribute('data-tab')!=='analyze'||s.classList.contains('collapsed'))document.querySelector('#a3d-rail [data-tab="analyze"]').click();
+              window.__a3dRefreshProps();}""")
             await page.wait_for_timeout(200)
-            h = await props_html()
-            ck('data-a3dpgrp="Areas by Usage"' in h and 'Residential' in h and 'GBA 96' in h,
-               "with nothing selected, Properties shows the project's Areas by Usage")
+            h = await safe("()=>{var c=document.querySelector('.a3d-analyze-wrap [data-anzcard=\"areas\"]');return c?c.innerHTML:'';}") or ''
+            ck('data-anzarea="use-res"' in h and 'Residential' in h and 'GBA 96' in h,
+               "with nothing selected, Analyze's Areas by usage shows the project's areas")
 
             # ---------------------------------------------------------------------------------
             print("\n-- 6. the Usage page")

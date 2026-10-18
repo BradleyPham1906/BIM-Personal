@@ -12,7 +12,7 @@ VARIANTS = {
     'no_node_merge': [("        if(Math.abs(q[0]-p[0])<=BIM_AN_TOL&&", "        if(false&&Math.abs(q[0]-p[0])<=BIM_AN_TOL&&")],
     'no_member_split': [("        if(bimVLen(perp)<=BIM_AN_TOL)on.push({n:k,s:s});\n", "")],
     'j_polar': [("            J:a*b*b*b*(1/3-0.21*(b/a)*(1-Math.pow(b/a,4)/12))};", "            J:hy*hz*(hy*hy+hz*hz)/12};")],
-    'column_axes_swapped': [("        yRef=[Math.cos(r),0,Math.sin(r)];hy=b.width;hz=b.depth;", "        yRef=[Math.cos(r),0,Math.sin(r)];hy=b.depth;hz=b.width;")],
+    # RETIRED IN V166b (column_axes_swapped): not caught, rightly -- since V126 a member's section comes from its profile (bimMemberSection), and the hy and hz kept on each member are read nowhere, so swapping them changes nothing. The unused fields are a follow-up.
     'beam_at_centroid': [("        var ty=(isFinite(b.topY)?b.topY:(b.baseY+b.depth))+q[1];", "        var ty=(isFinite(b.topY)?b.topY:(b.baseY+b.depth))+q[1]-b.depth/2;")],
     'gpa_as_mpa': [("    return u==='gpa'?v*1e6:(u==='mpa'?v*1e3:v);", "    return u==='gpa'?v*1e3:(u==='mpa'?v*1e3:v);")],
     'g_equals_e': [("G:E/(2*(1+nu))", "G:E")],
@@ -51,7 +51,8 @@ VARIANTS = {
     'edit_no_undo': [("  function bimStructEdit(o,fn){\n    pushUndo();", "  function bimStructEdit(o,fn){")],
     'draft_not_kept': [("    if(el.propsbody){el.propsbody.addEventListener('input',bimLoadDraftInput,true);el.propsbody.addEventListener('change',bimLoadDraftInput,true);}", "")],
     'support_command_no_focus': [("    if(f){if(f.scrollIntoView)f.scrollIntoView({block:'center'});f.focus();}", "")],
-    'analysis_page_missing': [("    h+=bimAnalysisPropsHtml();   /* __acad3dV125: the model's Analysis page, beside its floor loads */\n", "")],
+    # RE-ANCHORED IN V166b: the frame's settings are in Analyze's Frame analysis row
+    'analysis_page_missing': [("      extra:bimAnzFrameHtml(),   /* __acad3dV166b: its settings, and the floor loads, in the row */\n", "")],
     'dock_button_missing': [(",'bim:truss','bim:brace','bim:analyze']},", ",'bim:truss','bim:brace']},")],
     'copy_loses_struct': [("      to[k]=(v&&typeof v==='object')?JSON.parse(JSON.stringify(v)):v;", "      if(k!=='struct')to[k]=(v&&typeof v==='object')?JSON.parse(JSON.stringify(v)):v;")],
 }
