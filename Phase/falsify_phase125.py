@@ -51,7 +51,8 @@ VARIANTS = {
     'edit_no_undo': [("  function bimStructEdit(o,fn){\n    pushUndo();", "  function bimStructEdit(o,fn){")],
     'draft_not_kept': [("    if(el.propsbody){el.propsbody.addEventListener('input',bimLoadDraftInput,true);el.propsbody.addEventListener('change',bimLoadDraftInput,true);}", "")],
     'support_command_no_focus': [("    if(f){if(f.scrollIntoView)f.scrollIntoView({block:'center'});f.focus();}", "")],
-    'analysis_page_missing': [("    h+=bimAnalysisPropsHtml();   /* __acad3dV125: the model's Analysis page, beside its floor loads */\n", "")],
+    # RE-ANCHORED IN V166b: the frame's settings are in Analyze's Frame analysis row
+    'analysis_page_missing': [("      extra:bimAnzFrameHtml(),   /* __acad3dV166b: its settings, and the floor loads, in the row */\n", "")],
     'dock_button_missing': [(",'bim:truss','bim:brace','bim:analyze']},", ",'bim:truss','bim:brace']},")],
     'copy_loses_struct': [("      to[k]=(v&&typeof v==='object')?JSON.parse(JSON.stringify(v)):v;", "      if(k!=='struct')to[k]=(v&&typeof v==='object')?JSON.parse(JSON.stringify(v)):v;")],
 }

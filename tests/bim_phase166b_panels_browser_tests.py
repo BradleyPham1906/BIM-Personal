@@ -19,6 +19,10 @@ Measured in the browser, and read back from the model:
      Left and Right (Shift, further), Home and End, Enter shuts the panel and the panel button opens
      it again; the keys are the edge's, not the model's. Not on a phone or an upright tablet, whose
      drawer keeps its width; a computer's width comes back when the screen does.
+  5. ONE PRESS: WCAG 2.2's 2.5.7 asks that what a drag does can be done without dragging, and 2.5.8
+     that a target be 24 px or have an equivalent that is. A button beside the panel's collapse widens
+     it a step at a time -- 242, 320, 400, 480, 560, within what the screen allows -- then back to
+     242, saying where the next press goes; a computer's, as the edge is.
 
 The harness never waits without a bound (V123).
 """
@@ -282,6 +286,11 @@ async def run():
             T = S.get('total', {})
             ck(tot and tot[0][3][0] == 'GBA %s \u00b7 GFA %s \u00b7 NSA %s m\u00b2' % (fmt(T.get('GBA', 0)), fmt(T.get('GFA', 0)), fmt(T.get('NSA', 0))),
                "and the total (%s)" % (tot and tot[0][3]))
+            # the fields wear Analyze's colours, dark and light
+            col = await safe("""()=>{var f=function(){var e=document.getElementById('a3d-anzf-dl'),s=getComputedStyle(e),l=getComputedStyle(document.querySelector('.a3d-anzlab'));
+              return [s.backgroundColor,s.color,l.color];};var d=f();document.body.classList.add('light-theme');var l=f();document.body.classList.remove('light-theme');return [d,l];}""") or [[], []]
+            ck(col[0] == ['rgb(31, 35, 39)', 'rgb(230, 234, 239)', 'rgb(138, 150, 163)'] and col[1] == ['rgb(255, 255, 255)', 'rgb(34, 34, 34)', 'rgb(95, 103, 112)'],
+               "the row's fields and labels in Analyze's colours, dark and light (%s)" % col)
             await safe("(i)=>window.__a3dUsageAssign([i],'use-res')", ids[1])
             await page.wait_for_timeout(120)
             c = await card('areas')
@@ -394,6 +403,23 @@ async def run():
               ev('pointerdown',0);ev('pointermove',40);ev('pointermove',100);ev('pointerup',100);}""")
             await page.wait_for_timeout(300)
             ck((await lp()).get('kept') == 358 and (await geo()).get('pw') == 358, "a finger's drag let go is kept (%s)" % (await lp()).get('kept'))
+            # one press: the edge's alternative for a pointer that cannot drag
+            await safe("()=>window.__a3dSetLeftWidth(null)")
+            await page.wait_for_timeout(300)
+            seen = []
+            for k in range(5):
+                seen.append(await safe("""()=>{var b=document.querySelector('#a3d-leftpanel [data-lpwidth]'),r=b.getBoundingClientRect();
+                  return [window.__a3dLeftPanel().set,b.getAttribute('aria-label'),Math.round(r.width),Math.round(r.height),getComputedStyle(b).display];}""") or [None, '', 0, 0, ''])
+                await page.click('#a3d-leftpanel [data-lpwidth]')
+                await page.wait_for_timeout(250)
+            last = await lp()
+            ck([s[0] for s in seen] == [242, 320, 400, 480, 560] and last.get('set') == 242 and last.get('kept') == 242 and (await geo()).get('al') == 296,
+               "the button widens it a step at a time, 242 to 560, then back to 242, kept (%s)" % [s[0] for s in seen])
+            ck(seen[0][1] == 'Panel width 242 px: widen to 320' and seen[4][1] == 'Panel width 560 px: back to 242',
+               "it says where the next press goes (%r, %r)" % (seen[0][1], seen[4][1]))
+            ck(min(s[2] for s in seen) >= 24 and min(s[3] for s in seen) >= 24, "a target of 24 px or more (%s)" % seen[0][2:4])
+            au = await safe("()=>window.__a3dShellAudit()") or {}
+            ck(au.get('ok'), "the shell's audit knows it (%s)" % au.get('unclaimed'))
             # the drawing keeps 320 px beside Properties
             await safe("()=>{window.__a3dSetLeftWidth(560);}")
             await page.set_viewport_size({'width': 1280, 'height': 900})
@@ -407,6 +433,16 @@ async def run():
             await safe("()=>window.__a3dRightSetWidth(280)")
             await page.wait_for_timeout(300)
             ck((await lp()).get('w') == 560, "Properties narrower again: the panel is back at its 560 (%s)" % (await lp()).get('w'))
+            await safe("()=>window.__a3dRightSetWidth(560)")
+            await page.wait_for_timeout(300)
+            st = []
+            for k in range(3):
+                await page.click('#a3d-leftpanel [data-lpwidth]')
+                await page.wait_for_timeout(250)
+                st.append((await lp()).get('w'))
+            ck(st == [242, 320, 346], "where the screen allows 346 at most, the button goes 242, 320, then 346 (%s)" % st)
+            await safe("()=>window.__a3dRightSetWidth(280)")
+            await page.wait_for_timeout(300)
             # an upright tablet and a phone: the drawer keeps its width
             await safe("()=>window.__a3dSetLeftWidth(450)")
             for nm, vw, vh, dw, dock in (('tablet', 820, 1180, 340, '54px'), ('phone', 390, 844, 343, '0px')):
@@ -416,8 +452,9 @@ async def run():
                 await page.wait_for_timeout(400)
                 s = await lp()
                 pw_ = await safe("()=>Math.round(document.getElementById('a3d-leftpanel').getBoundingClientRect().width)")
-                ck(s.get('grip') is False and s.get('dock') == dock and pw_ == dw and s.get('kept') == 450,
-                   "%s: the drawer opens at its own %d px, with no edge; the computer's 450 is kept (%s)" % (nm, dw, [pw_, s.get('dock'), s.get('grip')]))
+                bd = await safe("()=>getComputedStyle(document.querySelector('#a3d-leftpanel [data-lpwidth]')).display")
+                ck(s.get('grip') is False and bd == 'none' and s.get('dock') == dock and pw_ == dw and s.get('kept') == 450,
+                   "%s: the drawer opens at its own %d px, with no edge and no width button; the computer's 450 is kept (%s)" % (nm, dw, [pw_, s.get('dock'), s.get('grip'), bd]))
                 await safe("()=>{var b=document.querySelector('#a3d-rail [data-tab=\"layers\"]');b.click();}")
                 await page.wait_for_timeout(200)
             await page.set_viewport_size({'width': 1500, 'height': 950})

@@ -8,7 +8,8 @@ SRC = pathlib.Path('canvas_v10.html')
 base = SRC.read_text(encoding='utf-8')
 
 VARIANTS = {
-    'no_tab_strip': [("    h+=bimPropTabsHtml();   /* __acad3dV141: Project | Site | View | Analysis */\n", "")],
+    # RE-ANCHORED IN V166b: three tabs
+    'no_tab_strip': [("    h+=bimPropTabsHtml();   /* __acad3dV141: Project | Site | View */\n", "")],
     'all_panes_shown': [(".a3d-ptabpane{display:none}.a3d-ptabpane.on{display:block}", ".a3d-ptabpane{display:block}")],
     'map_on_project': [("    h+=bimPTab('site',bimPropGroup('Map',bimMapPropsHtml()));", "    h+=bimPTab('project',bimPropGroup('Map',bimMapPropsHtml()));")],
     'statistics_on_analysis': [("    h+=bimPTab('project',bimPropGroup('Statistics',srows));", "    h+=bimPTab('analysis',bimPropGroup('Statistics',srows));")],
@@ -16,9 +17,11 @@ VARIANTS = {
     'tab_not_remembered': [("    try{localStorage.setItem(BIM_PTAB_KEY,tab);}catch(eS){}\n    if(el.propsbody){", "    if(el.propsbody){")],
     'tab_rerenders': [("    bimSetPropTab(b.getAttribute('data-ptabbtn'));\n    return true;", "    A3D_PTAB=b.getAttribute('data-ptabbtn');refreshProps();\n    return true;")],
     'aria_not_kept': [("B[i].classList.toggle('on',on);B[i].setAttribute('aria-selected',String(on));", "B[i].classList.toggle('on',on);")],
-    'bad_tab_taken': [("    if(!/^(project|site|view|analysis)$/.test(String(tab)))return false;\n    A3D_PTAB=tab;", "    A3D_PTAB=tab;")],
+    # RE-ANCHORED IN V166b: the tabs are checked against BIM_PTABS
+    'bad_tab_taken': [("    if(!bimPTabOk(String(tab)))return false;\n    A3D_PTAB=tab;", "    A3D_PTAB=tab;")],
     'reveal_no_tab': [("    if(tb){A3D_PTAB=tb;try{localStorage.setItem(BIM_PTAB_KEY,tb);}catch(eS){}}", "")],
-    'usages_not_revealed': [("    bimPropReveal('Usages');   /* __acad3dV141: on the Analysis tab */", "    A3D_PROP_GROUPS_OPEN['Usages']=true;")],
+    # RE-ANCHORED IN V166b: the usages are on the Project tab
+    'usages_not_revealed': [("    bimPropReveal('Usages');   /* __acad3dV141; __acad3dV166b: on the Project tab */", "    A3D_PROP_GROUPS_OPEN['Usages']=true;")],
     'datalayers_not_revealed': [("    bimPropReveal('Data Layers');   /* __acad3dV141: on the Site tab */", "    A3D_PROP_GROUPS_OPEN['Data Layers']=true;")],
     # RE-ANCHORED FOR V159: the button carries its phone label (data-short) since V149
     'no_rail_button': [("      '<button type=\"button\" class=\"a3d-railbtn\" data-tab=\"analyze\" data-short=\"Analyze\" title=\"Analyze\" aria-label=\"Analyze\">'+   /* __acad3dV141 */\n      bimRailIcon('analyze')+'</button>'+\n", "")],

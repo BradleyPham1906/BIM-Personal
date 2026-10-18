@@ -91,6 +91,15 @@ body.light-theme .a3d-lgrip:not(.drag){background:linear-gradient(90deg,transpar
 .a3d-pill{font-size:10px;font-weight:900;color:#b9d2ff;background:#244a80;border-radius:5px;padding:2px 6px}
 .a3d-panelcollapse{width:30px;height:30px;border:0;border-radius:8px;background:transparent;color:#fff;cursor:pointer}
 .a3d-panelcollapse:hover{background:rgba(255,255,255,.08)}
+/* __acad3dV166b: the panel's width, by one press; a computer's, as its edge is */
+.a3d-projbtns{display:flex;align-items:center;gap:2px}
+.a3d-lpwbtn{width:30px;height:30px;border:0;border-radius:8px;background:transparent;color:#9aa3ad;cursor:pointer;display:grid;place-items:center;padding:0}
+.a3d-lpwbtn:hover{background:rgba(255,255,255,.08);color:#fff}
+.a3d-lpwbtn svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+body.a3d-tier-overlay .a3d-lpwbtn{display:none}
+body.light-theme .a3d-lpwbtn{color:#6b7280}
+body.light-theme .a3d-lpwbtn:hover{background:rgba(0,0,0,.06);color:#111}
+@media(pointer:coarse){.a3d-lpwbtn{width:36px;height:36px}}
 .a3d-tabbody{display:flex;flex-direction:column;min-height:0;flex:1;min-width:242px}
 /* __acad3dV149: the shell on a phone and a tablet. body.a3d-tier-overlay: the panel is a drawer
    over the drawing (a tablet upright, a phone either way); body.a3d-tier-phone: and the rail is a
@@ -39746,6 +39755,7 @@ try{
   var A3D_SHELL_CLAIMS=[
     {sel:'.a3d-paneltoggle',why:'collapses the rail'},
     {sel:'.a3d-panelcollapse',why:'collapses the rail'},
+    {sel:'[data-lpwidth]',why:'widens the panel a step at a time: its edge, by one press'},   /* __acad3dV166b */
     {sel:'[data-railmore]',why:'on a phone, shows the rail\'s tools over the tab bar'},   /* __acad3dV149 */
     {sel:'[data-tpact]',why:'the palette: a tool, Select, Pan or every tool'},   /* __acad3dV150 */
     {sel:'[data-tpgrip]',why:'the palette\'s grip: drag to move it'},
@@ -40566,10 +40576,18 @@ try{
     try{size();paint();}catch(eS){console.warn('[BIM] The drawing could not be resized',eS);}
     return bimLeftState();
   }
+  /* the next width up, within what the screen allows; from the widest, back to the narrowest */
+  var BIM_LEFT_STEPS=[242,320,400,480,560];
+  function bimLeftNext(){
+    var w=bimLeftW(),mx=bimLeftMax(),i;
+    for(i=0;i<BIM_LEFT_STEPS.length;i++)if(BIM_LEFT_STEPS[i]>w&&BIM_LEFT_STEPS[i]<=mx)return BIM_LEFT_STEPS[i];
+    return w<mx?mx:BIM_LEFT_MIN;
+  }
+  function bimLeftStep(){return bimLeftSetWidth(bimLeftNext());}
   function bimLeftState(){
     var pn=document.getElementById('a3d-leftpanel'),g=document.getElementById('a3d-lgrip'),p=bimLeftPrefs();
     return {w:pn?Math.round(pn.getBoundingClientRect().width):0,set:bimLeftW(),kept:typeof p.w==='number'?p.w:null,min:BIM_LEFT_MIN,max:bimLeftMax(),
-      grip:!!(g&&getComputedStyle(g).display!=='none'),tier:A3D_SHELL_TIER,dock:getComputedStyle(document.documentElement).getPropertyValue('--a3d-left-w').trim()};
+      grip:!!(g&&getComputedStyle(g).display!=='none'),next:bimLeftNext(),tier:A3D_SHELL_TIER,dock:getComputedStyle(document.documentElement).getPropertyValue('--a3d-left-w').trim()};
   }
   function bimLeftWire(sh){
     if(!sh||document.getElementById('a3d-lgrip'))return;
@@ -40621,6 +40639,8 @@ try{
         A3D_SHELL_TIER==='phone'?'0px':A3D_SHELL_TIER==='overlay'?'54px':   /* __acad3dV149: a drawer leaves the drawing where it is */
         (sh&&sh.classList.contains('collapsed'))?'54px':(BIM_LEFT_RAIL+w)+'px');
       if(g){g.setAttribute('aria-valuenow',String(w));g.setAttribute('aria-valuemin',String(BIM_LEFT_MIN));g.setAttribute('aria-valuemax',String(bimLeftMax()));}
+      var b=document.querySelector('#a3d-leftpanel [data-lpwidth]'),nx=bimLeftNext();
+      if(b){b.setAttribute('aria-label','Panel width '+w+' px: '+(nx>w?'widen to '+nx:'back to '+nx));b.title=b.getAttribute('aria-label');}
     }catch(eW){console.warn('[BIM] Dock width could not be set',eW);}
   }
   function bimShellSetTab(t){
@@ -40662,12 +40682,15 @@ try{
       '<section id="a3d-leftpanel">'+
       '<div class="a3d-projhead"><div><div class="a3d-projtitle">Untitled project</div>'+
       '<div class="a3d-projsub"><span>Site</span><span class="a3d-pill">BIM</span></div></div>'+
-      '<button type="button" class="a3d-panelcollapse" data-toggle title="Collapse the panel">\u2039</button></div>'+
+      '<div class="a3d-projbtns"><button type="button" class="a3d-lpwbtn" data-lpwidth="1">'+   /* __acad3dV166b: the width, by one press */
+      '<svg viewBox="0 0 18 18" aria-hidden="true"><path d="M2.5 9h13M5.5 6 2.5 9l3 3M12.5 6l3 3-3 3"/></svg></button>'+
+      '<button type="button" class="a3d-panelcollapse" data-toggle title="Collapse the panel">\u2039</button></div></div>'+
       '</section>';
     document.body.appendChild(sh);
     sh.addEventListener('click',function(ev){
       var mo=ev.target&&ev.target.closest?ev.target.closest('[data-railmore]'):null;   /* __acad3dV149 */
       if(mo){bimShellMore();return;}
+      if(ev.target&&ev.target.closest&&ev.target.closest('[data-lpwidth]')){bimLeftStep();return;}   /* __acad3dV166b */
       var tg=ev.target&&ev.target.closest?ev.target.closest('[data-toggle]'):null;
       if(tg){sh.classList.toggle('collapsed');bimShellDockW();bimShellMore(false);return;}
       var tb=ev.target&&ev.target.closest?ev.target.closest('.a3d-railbtn[data-tab]'):null;
@@ -50727,7 +50750,7 @@ try{
     return {Da:f(R.Da),Dl:f(R.Dl),ok:R.ok,seeds:R.seeds};};
   window.__a3dMvPtal=function(){var S=A3D.site&&A3D.site.access;if(!S)return null;return JSON.parse(JSON.stringify(bimMvPtal(S,bimMvOf())));};
   window.__a3dMvPtalBand=function(ai){return bimMvPtalBand(ai);};
-  window.__acad3dV166b='noanalysistab,usagesonproject,anzframe,anzfloorloads,anzareas,anzfields,anzsearchsettings,leftresize,leftremembered,leftreset,leftkeys,leftclamp,leftdesktop';
+  window.__acad3dV166b='noanalysistab,usagesonproject,anzframe,anzfloorloads,anzareas,anzfields,anzsearchsettings,leftresize,leftremembered,leftreset,leftkeys,leftclamp,leftdesktop,leftstep';
   window.__acad3dV166='mvquery,mvdata,mvstreets,mvthin,mvbudget,crossings,doors,carparks,garages,intervals,routeways,paths,walklayeronrequest,'+
     'hierarchy,lts2012,crossings2016,lowstressreach,ptal,catchments,routes,walkbands,needs,vehicleentry,provisionalentry,onstreetparking,maprgb,ptalfinding,cyclingfinding,vehiclesfinding';
   window.__acad3dV165='landgrid,landfetch,ownsurface,contextfallback,horn,marchingsquares,contours,hypsometric,slopeclasses,aspectwarmth,priorityflood,d8,strahler,catchments,divides,'+
