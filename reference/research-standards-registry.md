@@ -21,8 +21,10 @@ this app does today, and a design for a registry every analysis and check reads.
 - **Codes are adopted, not just published.** A building code edition applies where a state or a
   city adopts it, often with amendments, on its own schedule. Some states skip an edition (Oklahoma
   adopted the 2024 IBC and expressly not the 2021), some leave adoption to each city (Colorado,
-  Delaware). ICC's adoption chart says it is informational only. What applies is the adopted edition
-  with its amendments, at the project's place and date, not the newest one published.
+  Delaware). ICC's adoption chart says not every jurisdiction tells ICC what it adopts, and sends the
+  reader to the jurisdiction for its amendments (read 2026-10-18, below). What applies is the
+  adopted edition with its amendments, at the project's place and date, not the newest one
+  published.
   https://www.iccsafe.org/wp-content/uploads/Master-I-Code-Adoption-Chart-FEB-22.pdf
 - **Rules as code** (OpenFisca, the French government's open platform, 2011): every parameter value
   is stored under the date it takes effect, with a reference to its source text, so a change is a new
@@ -109,9 +111,31 @@ its own repository on GitHub (`raw.githubusercontent.com`); the published pages 
 | Unicode CLDR, `common/validity/subdivision.xml` (repository `unicode-org/cldr`) | 5,027 regular subdivision codes, in CLDR's lower-case form (`uspa` for US-PA); Unicode-3.0 licence | P |
 | The app's own code | Every `BIM_` constant (267), classified: `research-standards-inventory.md` | P |
 
-Still not read at the source: IDS's adoption as a standard on 1 June 2024 (buildingsmart.org
-refused), Eastman and others' four stages (mediatum.ub.tum.de refused), ICC's adoption chart
-(iccsafe.org refused). They stay U and shape nothing in the code.
+After the owner opened the network the same day, ICC's chart was read too (below). Still not read
+at the source: IDS's adoption as a standard on 1 June 2024 and Eastman and others' four stages. The
+open network reaches buildingsmart.org and mediatum.ub.tum.de, but both answer a script with a
+"not a bot" check page instead of the document. They stay U and shape nothing in the code.
+
+### What ICC's adoption chart says (read 2026-10-18)
+
+"International Codes - Adoption by State (FEB 2022)", ICC's PDF, read as text with each cell's
+position:
+- A row per state and territory, a column per code (IBC, IRC, IFC, IMC, IPC, IPSDC, IFGC, IgCC,
+  IECC residential and commercial, IPMC, IEBC, ISPSC, ICCPC, IWUIC, IZC, ICC 700).
+- **A number** is the edition adopted as a mandatory state minimum (15 = 2015).
+- **X:** one or more state or local agencies adopted an edition, but not as the standard for all
+  buildings.
+- **Blank:** no state or local jurisdiction in the state adopted it.
+- Pennsylvania's IBC cell reads 15: the 2015 edition was its state minimum in February 2022.
+- ICC's own caveats: not all jurisdictions notify ICC, and amendments are to be had from each
+  jurisdiction.
+
+For the registry, this has three consequences:
+- An edition is a fact about a place and a date, as the design assumed.
+- An X means the state has no single answer, so the city decides: the profile tree goes down to
+  the city there.
+- The chart is a pointer, never the record. A profile's edition cites the jurisdiction's adopting
+  act, and the chart may be cited only as the place it was found (S).
 
 ### What IDS is, from its schema and manual
 
