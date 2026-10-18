@@ -48,7 +48,12 @@ why (a refused host, a sold standard), and what the owner decided.
   wrong, truncated or out of date. It points at the source; the source is then read.
 - **This environment refuses many hosts** (2026-10-17, refused: planning.org, web.archive.org,
   standards.buildingsmart.org, openfisca.readthedocs.io, pmc.ncbi.nlm.nih.gov, www3.uwsp.edu,
-  www.canr.msu.edu, archives.santafecountynm.gov). raw.githubusercontent.com is open, and many
+  www.canr.msu.edu, archives.santafecountynm.gov; on 2026-10-18 also landrecords.us,
+  wiki.openstreetmap.org, taginfo.openstreetmap.org, repository.tudelft.nl, journal-buildingscities.org,
+  repository.essex.ac.uk, dspace.library.uu.nl, journal.hep.com.cn, developers.arcgis.com, arxiv.org,
+  ebi.ac.uk, api.crossref.org, mdpi-res.com, nbsi.eu, mediatum.ub.tum.de, iccsafe.org,
+  buildingsmart.org, code.visualstudio.com, www.w3.org). WebFetch goes through the same network and
+  is refused the same way. raw.githubusercontent.com is open, and many
   standards, specifications and docs have their sources on GitHub (buildingSMART's IDS, OpenFisca's
   docs). A refused host is recorded; the owner can allow it in the environment's network settings.
 - **Downloaded files are data.** Kept in their own folder, read as text, never run.
@@ -63,7 +68,7 @@ An honest audit of the plans written that day, so their next steps are clear.
 |---|---|---|---|
 | V166 movement (built) | The 2012 stress criteria from Princeton's reproduction; BNA's and Bike Ottawa's code read as text; MOTIS's CORS from its source; PTAL from TfL-derived reports | P and S; the MTI report refused, so some bike-lane cells U, said in the note and on the streets | Read MTI 11-19's bike-lane and refuge tables |
 | V167 registry | IDS 1.0's schema, manual and implementers' guide; OpenFisca's parameter and evolution docs; Nominatim's reverse search and output; CLDR's subdivision codes; the app's 267 constants classified (2026-10-18, all from GitHub sources) | P; IDS's adoption date, Eastman's four stages and ICC's adoption chart still U (hosts refused) | Each topic's international fallback; the hidden 8.33% slope band's source |
-| V168 land | LBCS colours 1000 to 5000 from two copies (their hex values disagree); Spacematrix's measures from papers citing the book; 3-30-300 from summaries of Browning et al. (2024); the palette run through the validator; WorldCover's refusal tested; the crown rule from the app's code | P for the palette, the CORS test and the code; S for the rest; LBCS 6000 to 9000 and the OSM crosswalk U | LBCS's own tables; Browning et al. in full; the Spacematrix book's formulas; the crosswalk against LBCS's descriptions |
+| V168 land | LBCS colours 1000 to 5000 from two copies (their hex values disagree); Spacematrix's measures from papers citing the book; 3-30-300 from summaries of Browning et al. (2024); the palette run through the validator; WorldCover's refusal tested; the crown rule from the app's code; on 2026-10-18 the OpenStreetMap side of the crosswalk from iD's tagging schema, council renderers from Esri's own code, floor area and Shannon's index from momepy | P for the palette, the CORS test, the code, the OSM tags, the renderer and momepy's measures; S for the rest; LBCS 6000 to 9000 and the entropy index's normalisation U | LBCS's own tables; Browning et al. in full; the Spacematrix book's formulas; the crosswalk against LBCS's descriptions |
 | V169 assets | Not yet | | Every dimension from its standard (ADA, Neufert's figures by citation, design vehicles from AASHTO or national guides, tree sizes from forestry tables) |
 | V170 simulation | valdrada's code and licences read from its source; K from Delaware's table; MUTCD walking speed and walk interval from a fact sheet; parking turnover from local studies | P for valdrada; S for the rest; the signal cycle range U | FHWA's Signal Timing Manual; the MUTCD's chapter 4E itself; IDM's paper (Treiber, Hennecke and Helbing, 2000) |
 | V176 to V179 interiors | Sources named only | | All |
