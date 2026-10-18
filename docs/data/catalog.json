@@ -1,7 +1,7 @@
 {
  "version": {
-  "v": "V166",
-  "date": "2026-10-12"
+  "v": "V167",
+  "date": "2026-10-18"
  },
  "commands": [
   {
@@ -2173,6 +2173,20 @@
    ],
    "keys": null,
    "anchor": "cmd-STAIR"
+  },
+  {
+   "id": "cmd:STANDARDS",
+   "name": "STANDARDS",
+   "aliases": [
+    "STANDARDSREGISTRY",
+    "CODES",
+    "STDS"
+   ],
+   "desc": "Standards: the editions in force for the site's place and date, their sources, overrides with a reason, the codes in force there, and standards packs, in Properties, Site",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-STANDARDS"
   },
   {
    "id": "cmd:STATION",

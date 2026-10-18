@@ -10,7 +10,8 @@ The project's model 0,0 sits at the site's **latitude and longitude** (**Propert
 Location**). To set it:
 - type the latitude and longitude there; or
 - run `FINDADDRESS` and search OpenStreetMap's Nominatim. It runs one search per press, as
-  Nominatim asks.
+  Nominatim asks. The place found is also the site's place for its standards (see
+  [Standards](#standards)), in the same undo step.
 
 `TRUENORTH` turns the model to true north.
 
@@ -435,6 +436,106 @@ allow browser access, it is named; the app never routes around it.
 Click a feature on the plan to read it. `FINDDATA` searches US city, county, state and federal
 open-data portals for layers to add. A server that does not allow browser access is named; the
 app never routes around it.
+
+## Standards
+
+Every standard, guideline and assumption an analysis applies is a record in the app's standards
+registry, never a number in its code. **Properties > Site > Standards** (`STANDARDS`, or `CODES`)
+shows them, area by area: transit and walking, roads and noise, cycling, air, flood and ground,
+buildings, structure, site context, climate.
+
+### The place and the date
+
+Which edition is in force depends on where the site is, and when:
+- **Find** (or `FINDADDRESS`, or the address Analyze site looks up) sets the site's place from
+  Nominatim's answer: the country, the region (a state, England), the district (a London borough)
+  and the city, as ISO 3166-2 gives them. **Set** gives them by hand, as codes (US, US-PA, GB-WSM);
+  **Clear** takes them away. If the site moves far from where its place was found, the group says so.
+- **In force on** is today, unless you give a date: a project held to the codes of an earlier date.
+
+The edition in force is the one adopted most specifically for the place, on that date: the city's,
+then the district's, the region's, the country's, then an international one. Where two are adopted
+for the same place, the one adopted latest; an adoption's end date is the first day it no longer
+applies.
+
+Where no edition is adopted for the place, a method the analyses need is still applied, and says
+**applied outside its place**, with where it is in force: TfL's PTAL is London's, the walking
+distances in Manual for Streets are England's and Wales's, and WHO's road noise guideline, which the
+noise layer gives for scale, is guidance for its European Region. The app's own assumptions (a storey's
+height where OpenStreetMap maps none, the slope classes) say they are the app's.
+
+### A topic, its values and its source
+
+Each topic row shows its edition, how it applies here, what uses it, and the level its source was
+read at:
+
+| Level | Means |
+|---|---|
+| **P** | Read at its source. |
+| **S** | From a dependable secondary source; the gap is said. |
+| **U** | Not yet verified. Never applied. |
+| **A** | The app's own assumption. |
+
+**Values** lists each value in words with its unit, and the source to its section, with a link.
+A topic of more than one edition can be **chosen** for the project in the list under it; **By place
+and date** goes back.
+
+### Overrides
+
+**Override** sets a number for this project. It needs a reason, which every result that uses it
+shows. The value must be a number, more than zero (a percentage may be zero, a temperature
+anything), and in order where values are ordered: a walk to a bus stop shorter than to a station, a
+slope class below the next. A table changes only with a pack. **Reset** gives the standard's value
+back. Each change is one undo step.
+
+### What a result keeps
+
+- Each analysis drawn in the model keeps the standards it used. When one changes (an edition, a
+  value, an override), its row in Analyze reads **Out of date**, says which and why, and **Run
+  again** redraws it. Every row names the standards it uses.
+- The data Analyze site fetches keeps what it was worked out with: the walking speed of the walk
+  times, the sizes given to what OpenStreetMap leaves unsized, the climate's degree-day base, calm
+  and comfort band, WHO's levels. A finding drawn from that data states those values, and says when
+  **Analyze site again** is needed to work it out with the values as they are now.
+- A change works the findings out again at once from the data kept, with no fetch: a threshold such
+  as LEED's prerequisite, or a slope class's edge, is in the finding straight away.
+- A finding names the standards behind it, and an edition applied outside its place or a value
+  overridden, with its reason.
+
+### In force here, not applied by the app yet
+
+For the place, the codes in force that the app does not apply yet, each with its source and how it
+is had (free, free to read, or sold). For a Pennsylvania site: the Uniform Construction Code and the
+2021 International Building Code it adopts, the 2010 ADA Standards, the MUTCD, PennDOT's Design
+Manual 4 and the AASHTO bridge specifications it adopts, and the FAA's airport design circular. The
+registry also lists editions not adopted for a place it knows (the 2024 IBC, ASHRAE 90.1-2025,
+ASCE/SEI 7-22, the Green Book), and, at level U with nothing claimed, those whose current edition
+could not be read (ACI 318, AISC 360, PennDOT's Design Manual 2).
+
+### Standards packs
+
+A pack is a JSON file of up to 1 MB that adds editions and topics: a newer edition, or a place's own.
+**Load a pack** reads it and, before anything changes, shows its name, publisher, date and SHA-256,
+and for each topic the edition in force before and after and the values that change. Packs are
+unsigned: their origin is the file you chose. **Apply** or **Cancel**. **Remove** takes a pack away.
+Packs are kept with the project.
+
+A pack never changes an edition already in the registry: a revision is a new edition. An edition
+of a topic the app applies must carry every value the app reads, of the same kind (a number, or a
+table).
+
+```
+{"format": "bim-standards-pack", "version": 1,
+ "publisher": "Example Planning Office", "name": "Example walking standard", "date": "2026-09-01",
+ "topics": [{"id": "walk.speed", "eds": [{
+   "id": "walk.speed.example", "name": "A slower walk (an example)", "pub": "2026-01-01",
+   "adopt": [{"at": "us-pa", "from": "2026-01-01"}],
+   "src": {"t": "Example Planning Office", "w": "section 1", "u": "https://example.org/walk", "lv": "P"},
+   "v": [{"n": "m_min", "v": 70, "u": "m/min", "say": "the walking speed"}]}]}]}
+```
+
+A place key is `*` (international), a country (`us`), a region or district (`us-pa`, `gb-wsm`), or a
+city after its region (`us-pa:philadelphia`).
 
 ## GeoJSON and KML
 

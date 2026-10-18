@@ -15,7 +15,8 @@ VARIANTS = {
     'north_flipped': [("    var E=x*c+z*s,N=x*s-z*c;", "    var E=x*c+z*s,N=x*s+z*c;")],
     'lon_not_scaled': [("return [org.lon+E/(R.N*Math.cos(org.lat*BIM_D2R))/BIM_D2R,", "return [org.lon+E/R.N/BIM_D2R,")],
     # ---- 132a: which tiles
-    'zoom_off_by_one': [("    z=Math.max(1,Math.min(maxz,z));\n    for(;;){", "    z=Math.max(1,Math.min(maxz,z+1));\n    for(;;){")],
+    # RE-ANCHORED IN V167: V137's drape repeats the clamp; the map's own is the one after its zoom's formula
+    'zoom_off_by_one': [("/Math.LN2),x0,x1,y0,y1,n;\n    z=Math.max(1,Math.min(maxz,z));", "/Math.LN2),x0,x1,y0,y1,n;\n    z=Math.max(1,Math.min(maxz,z+1));")],
     # RE-ANCHORED IN V133d: the cap is maxT, BIM_MAP_MAXT times the screen's density
     'no_tile_cap': [("      if((x1-x0+1)*(y1-y0+1)<=maxT||z<=1)break;", "      break;")],
     'no_horizon_clamp': [("        if(d>R)p=[tg[0]+dx*R/d,g,tg[2]+dz*R/d];\n", "")],
@@ -41,11 +42,14 @@ VARIANTS = {
     'setting_not_undoable': [("    if(st[field]===nv)return true;\n    pushUndo();", "    if(st[field]===nv)return true;")],
     # ---- 132b: the address
     'find_unthrottled': [("    if(A3D_MAP.lastFind&&now-A3D_MAP.lastFind<1000){a3dToast('One search a second: Nominatim asks for no more');return null;}\n", "")],
-    'find_not_undoable': [("  function bimMapPlace(lat,lon,name){\n    pushUndo();", "  function bimMapPlace(lat,lon,name){")],
+    # RE-ANCHORED IN V167: the place takes the address's parts too
+    'find_not_undoable': [("  function bimMapPlace(lat,lon,name,addr){\n    pushUndo();", "  function bimMapPlace(lat,lon,name,addr){")],
     'find_keeps_map_off': [("    if(!BIM_MAP_STYLES[A3D.site.map.style])A3D.site.map.style='street';\n", "")],
     'find_keeps_view': [("    A3D.cam.tx=0;A3D.cam.tz=0;\n", "")],
-    'enter_does_nothing': [("      if(!a||ev.key!=='Enter')return;", "      return;")],
-    'map_group_missing': [("    h+=bimPropGroup('Map',bimMapPropsHtml());   /* __acad3dV132 */\n", "")],
+    # RE-ANCHORED IN V167: Enter is read by its key code too (V149c)
+    'enter_does_nothing': [("      if(!a||(ev.key!=='Enter'&&ev.keyCode!==13))return;", "      return;")],
+    # RE-ANCHORED IN V167: the group is on the Site tab (V141)
+    'map_group_missing': [("    h+=bimPTab('site',bimPropGroup('Map',bimMapPropsHtml()));   /* __acad3dV132 */\n", "")],
     # ---- 132b: site data in
     'projected_placed': [("          if(Math.abs(pt[k][0])>180||Math.abs(pt[k][1])>90){", "          if(false){")],
     'crs_ignored': [("    if(crs&&!/(CRS84|4326)$/i.test(String(crs)))", "    if(false)")],
@@ -68,7 +72,8 @@ VARIANTS = {
     'map_cmd_no_custom': [("    do{i=(i+1)%BIM_MAP_ORDER.length;nx=BIM_MAP_ORDER[i];}while(nx==='custom'&&!st.url);", "    do{i=(i+1)%BIM_MAP_ORDER.length;nx=BIM_MAP_ORDER[i];}while(nx==='custom');")],
     'not_on_ribbon': [("{t:'Site',small:['bim:map','bim:findaddress','bim:geoimport',", "{t:'Site',small:[")],
     'no_search_terms': [("    MAP:'basemap satellite imagery aerial photo street openstreetmap osm tiles background giraffe',   /* __acad3dV132 */\n", "")],
-    'filein_no_geojson': [('accept=".dxf,.ifc,.obj,.stl,.json,.geojson,.kml"', 'accept=".dxf,.ifc,.obj,.stl,.json"')],
+    # RE-ANCHORED IN V167: the list has grown (.skp, CityJSON, LandXML)
+    'filein_no_geojson': [('accept=".dxf,.ifc,.obj,.stl,.skp,.json,.geojson,.kml,', 'accept=".dxf,.ifc,.obj,.stl,.skp,.json,')],
 }
 
 name = sys.argv[1]
