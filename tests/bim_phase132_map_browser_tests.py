@@ -736,7 +736,9 @@ async def run():
             SRV['nom'].clear()
             r = await safe("()=>window.__a3dMapFind('  Big   Ben ')")
             ck(r and r.get('found') and len(SRV['nom']) == 1, "Find asks Nominatim once (%s)" % SRV['nom'])
-            ck(SRV['nom'] and SRV['nom'][0] == 'https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q=Big%20Ben',
+            # AMENDED FOR V167: addressdetails=1 asks for the place's parts too (country_code, ISO3166-2),
+            # which set the standards' place
+            ck(SRV['nom'] and SRV['nom'][0] == 'https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&addressdetails=1&q=Big%20Ben',
                "for the first result, as JSON, the query tidied")
             s = await safe("()=>window.__a3dSunSettings()")
             ck(s and s['lat'] == 51.5007292 and s['lon'] == -0.1246254, "the place found is the site's latitude and longitude (%s)" % s)

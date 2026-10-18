@@ -254,7 +254,13 @@ def source_level_checks(path):
             # AMENDED FOR V161: the US Census Bureau's TIGERweb and Data API, asked only on ACCESSGET
             # (and never for a site outside the US), and its ACS pages, linked from the Access and
             # people board's notes, never fetched
-            "tigerweb.geo.census.gov", "api.census.gov", "www.census.gov"}
+            "tigerweb.geo.census.gov", "api.census.gov", "www.census.gov",
+            # AMENDED FOR V167: the standards registry's publishers, each record's source linked
+            # from Properties > Standards ("open"), never fetched
+            "assets.publishing.service.gov.uk", "content.tfl.gov.uk", "docs.penndot.pa.gov", "doku.datakustik.com",
+            "iris.who.int", "mutcd.fhwa.dot.gov", "store.transportation.org", "www.ada.gov", "www.aisc.org",
+            "www.asce.org", "www.ashrae.org", "www.concrete.org", "www.dot.state.pa.us", "www.ecfr.gov",
+            "www.faa.gov", "www.fhwa.dot.gov", "www.gbcbrasil.org.br", "www.iccsafe.org", "www.pacodeandbulletin.gov"}
     external = sorted(h for h in hosts if not h.endswith("w3.org") and h not in v132)
     check(not external,
           "no external host referenced anywhere in the file (found: " + (", ".join(external) or "none") + ")")

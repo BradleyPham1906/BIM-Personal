@@ -15022,3 +15022,192 @@ Patches 166a to 166g rebuild the build byte for byte from `Phase/canvas_v10.html
     canvas_v10.html   3187431 bytes
     sha256            7fbee16e65f6ccd338df92dfb11961e65b81fed0a2763d0a78eb7139f3d5bde9
     markers           __acad3dV60 ... __acad3dV166, __acad3dV166b, __acad3dV166c, __acad3dV134d (and the 133d to 133f markers)
+
+## Phase 167 (V167) - The standards registry
+
+The owner (2026-10-17): "building a system based on the industry standards (but flexible enough when
+the standards changed)", for any country, with fallbacks, overrides with a reason, and new editions
+with app versions and as pack files. The research, the design and what was built are
+`reference/research-standards-registry.md` (its "As built" section), with the constants classified in
+`reference/research-standards-inventory.md`. The owner's four answers of 2026-10-18, all the
+recommended options: a method applied outside its place still runs and says so; only the assumptions
+the analyses use become overridable now (the roofs, survey tolerances and usages' defaults later);
+the US catalogue listed, "not applied by the app yet"; packs show their SHA-256 and publisher with
+every difference first, Apply or Cancel, marked unsigned.
+
+### What was built (patches 167a to 167i)
+
+- **The registry (167a).** Every standard, guideline and assumption an analysis applies is a record:
+  a topic and its editions, each with its published date, status, adoptions (a place key, from, to),
+  its source to the section with the level it was read at (P, S, U, A) and the date read, the method
+  that implements it, and its values in our own words (a number with its unit and a phrase, or a
+  table). 32 topics: 18 the analyses apply (PTAL, the walking speed, the walking
+  distances to daily needs, LEED ND's connectivity, FHWA's classes and the app's roads, CRTN, WHO's
+  road noise, the two stress methods, WHO's air quality, FEMA's zones, the slope classes, the
+  terrain's bands, IBC's occupant loads, ASCE 7's combinations, the context's sizes, the climate's
+  settings) and 14 in the US catalogue. Place keys: `*`, a country, an ISO 3166-2 region or
+  district, a city after its region.
+- **One reader.** `bimStd(topic, name)`: the project's override, or the value of the edition in force.
+  The edition in force is the one adopted most specifically for the site's place (the city, the
+  districts, the region, the country, international) on the project's date (today, or one given), the
+  latest adopted where two are, an end date the first day it no longer applies; where none is, a
+  topic that applies anywhere takes the newest edition published by then and says "applied outside its
+  place", with where it is in force. Reading writes nothing to the project.
+- **The values moved (167b).** V105 to V166's constants (the walking speed, LEED's radius and
+  thresholds, the climate's base, calm, bins and comfort band, WHO's levels, CRTN's range, the roads,
+  the crossing table, the design guides, PTAL's walks, allowances and bands, the slope classes, the
+  terrain's bands, the occupant loads, the combinations, the context's sizes and road widths) are read
+  through accessors in the shapes their code had; the constants are gone. FHWA's ranges give the old
+  traffic to the nearest 10. Every sentence that states one of them builds it from the record: the
+  catchments ("Within a 9-minute walk"), PTAL's method and its stops' reach, the compass rings'
+  minutes, CRTN's range, WHO's year and first interim target, LEED's chart, sentence, KPI and finding,
+  the slope finding's edges, the frame's combination names (its factors).
+- **The place.** The address search asks Nominatim for the address's parts too (`addressdetails=1`):
+  the country, the region, the districts and the city become the site's place, in the same undo step
+  as the site. Properties sets it by hand or clears it, and says when the site has moved since.
+- **Overrides,** each with a reason shown on every result that uses it: a number, more than zero (a
+  percentage may be zero, a temperature anything), in order where values are ordered (the walk to a
+  bus shorter than to rail, the slope classes, the comfort band); a table only through a pack. An
+  edition can be chosen for the project. Each change is one undo step.
+- **Provenance (167c, 167f).** Each analysis drawn in the model keeps a stamp of its standards (the
+  edition, how it applies, the overrides, a hash of the values); its row in Analyze says Out of date,
+  which and why, and Run again; every row names the standards it uses. The data fetched once keep
+  their own stamps and the values they were worked out with: the access data (the walking speed and
+  LEED's radius), the site context (its sizes), the climate (its base, calm, bins and comfort band)
+  and the air quality (WHO's levels). A stamp may name one value, so a threshold applied as a result
+  is drawn does not make its data out of date. The climate's findings and board state the values the
+  data was worked out with. A finding names its standards, says an edition applied outside its place
+  and an override with its reason, and says when Analyze site is needed. A change works the findings
+  out again from the data kept, in the same undo step. Results from before V167 are taken as worked
+  out with the editions' own values.
+- **Packs.** A `bim-standards-pack` file (version 1, up to 1 MB) adds editions and topics. Looked at
+  first: its name, publisher, date and SHA-256 (the app's own, checked against Python's), each
+  topic's edition in force before and after and the values that change; unsigned; Apply or Cancel;
+  Remove. A pack never changes an edition already in the registry, and an edition of a topic the app
+  applies must carry every value the app reads, of the same kind.
+- **Properties > Site > Standards (167d, 167g).** The place, the date, the topics by area with their
+  edition, level, how they apply and what uses them; Values in words with their sources; Override,
+  Save, Reset; the edition list; the codes in force for the place that the app does not apply yet; the
+  packs. `STANDARDS` (`STANDARDSREGISTRY`, `CODES`, `STDS`) opens it, on a phone or tablet in its
+  sheet; the group's buttons are finger-sized on touch.
+- Version V167. The guide's Site page has a Standards section.
+
+### Found
+
+- **The compass rings never kept their standard.** The analyses' list named them `compass`; their
+  analysis is `frame`, so their run kept no stamp and their row named nothing (167f).
+- **Numbers worked out at fetch, said at today's values.** The degree days were summed at 18 degrees;
+  with the base overridden to 20, the finding said "base 20" beside them. The climate and air data keep
+  the values they were worked out with, their findings and board say those, and say when Analyze site
+  is needed (167f).
+- **Findings fixed at Analyze time.** A finding's text is kept with the project, so a new LEED
+  threshold or slope class reached no finding until Analyze site ran again. A change works them out
+  again from the data kept, in the same undo step (167f).
+- **What was typed, lost.** Moving from the place's country field to its region redrew Properties and
+  emptied the first, and an override's value went the same way when its reason was typed. The fields
+  keep a draft until Save or Cancel, as the address does since V149c (167g).
+- **On a phone, nowhere to be seen.** STANDARDS opened the group in a closed sheet. It opens the sheet
+  now, as COMMIT does (V151) (167g).
+- **A pack's edition called the app's assumption,** where a pack adopted it for a place; and the same
+  pack a second time was refused for its editions being in the registry, not for being applied (167g).
+- **Seven numbers left in sentences,** found by the scan the design asked for (no standard's number
+  beside its unit outside the registry): WHO's road noise guideline of 53 dB, in a V164 row with no
+  record (read at its source today and made one: guidance for the WHO European Region, applied outside
+  its place everywhere); LEED's thresholds and quarter mile in the Access board's note; the comfort
+  band twice on the climate board; "the WHO 2021 guidelines" in its notes; the relief finding's 15%
+  and its classes; SLOPEMAP's description; and the context radius, which must reach CRTN's range
+  (167h).
+- **A level overstated.** PennDOT's DM-2 rested on a search summary and said S; a summary is not a
+  source, so it is listed unread (U) with nothing claimed, as ACI 318 and AISC 360 are (167h).
+- **A rule repeated.** 167f's touch size for the group's buttons repeated V149's, which already makes
+  Properties' buttons 36 px on touch; only the date field needed one (167h). Found by its variant.
+- **What the full regression found (167i).** V114 asks that every CSS rule can match something the
+  code makes: the level badges' classes and "applied outside its place" were joined from a prefix and
+  a value, which it cannot see, so they are written whole. V141 asks that each Properties tab is far
+  shorter than all its groups at once: the Standards group made the Site tab nearly as long, so it
+  starts closed, as Graphics' Technical and Presentation do, and STANDARDS opens it.
+- **LEED's second point** was taken at 400 and over; Table 1 gives it over 400 (167b).
+- **The suite's own slips,** each fixed in the suite: a `%` in a check's message read as a format; the
+  undo stack full from the suite's earlier steps (it is emptied before a step is counted, as V164's
+  suite does); the Access board left open over the climate board the next check read.
+
+### Suites
+
+- **New:** `bim_phase167_standards_registry_browser_tests.py`, 195 checks, with
+  `tests/standards_reference.py`: the registry worked out again from its sources (each topic, edition,
+  adoption, level and value as the source states it, with its arithmetic: 640 m and 960 m at 4.8 km/h,
+  FHWA's ranges to the old traffic), the constants the analyses had before V167 read from the kept
+  build, and the rules for the edition in force, written again in Python. The suite asks the app:
+  - the records against the reference; the move against the kept build's 23 sets of values; nothing
+    U applied; a scan of the source that no moved constant and no standard's number beside its unit is
+    left outside the registry, which finds all 29 constants and 14 kinds of phrase in the build before;
+  - reading writes nothing (every value, edition, stamp and sentence read, the group drawn);
+  - the edition and how, for 10 places, 9 dates and 32 topics against the reference (2,880 asked),
+    and the edges: Westminster and Leeds, Pennsylvania on 31 December 2025 and 1 January 2026, an
+    edition chosen, two adoptions at one place, an adoption's end;
+  - the place from Nominatim's parts (Trafalgar Square's, as Nominatim gives them), from Find with
+    `addressdetails=1` and one undo step with the site, by hand and refused, cleared, moved;
+  - overrides refused for each rule, kept with their reasons, one undo step each, cleared, undone;
+  - the words: the catchments at 11 and 9 minutes ("an 11-minute walk"), PTAL's method, the stops'
+    reach, the compass rings at 60 m a minute, LEED's prerequisite in the finding and the Access
+    board's note, the slope and relief findings' edges, the frame's combination names, WHO's noise
+    guideline in the noise layer, WHO's interim targets on the air chart;
+  - Out of date: the transit, compass, views, noise and wind rows, by run and by data, with why; run
+    again; a project from before V167, its stamps taken away in its saved file, current until a value
+    is overridden;
+  - the findings' standards lines (13), outside its place said, the climate's values as worked out
+    and Analyze site again working them out at the new ones (the degree days at 20 degrees, the
+    comfort band, the context fetched as far as CRTN's range overridden to 400 m);
+  - packs: the diff before Apply, the SHA-256 against Python's (a character outside the BMP too), 12
+    refused packs and the same pack twice, Apply, the edition in force changed, Remove with its chosen edition, undo;
+  - the group: STANDARDS and its three aliases, the place set by hand, the date, the topics by area,
+    the catalogue for Pennsylvania (7 rows) and its links, Values, Override refused then saved, Reset,
+    the edition list, a pack looked at, cancelled, applied and removed, a file that is not a pack;
+  - a reload keeps it all; a phone, a tablet and a desktop: inside the panel, finger-sized on touch.
+- **Falsified by `Phase/falsify_phase167.py`:** 120 variants, one per record (each value moved wrong,
+  a place, a date, a level overstated) and per mechanism. The first run, of 109, caught 107 (946 s, 6
+  workers). The two it missed, and one caught for the wrong reason:
+  - `override_no_undo` (an override with no undo step of its own): the suite's undo checks passed on
+    an earlier step. The suite now counts the steps from an empty history.
+  - `touch_small` (the group's touch rule taken away): the buttons stayed 36 px, from V149's rule.
+    167f's rule for them was redundant and is gone (167h); the variant now takes the date field's,
+    which is caught at 30 px.
+  - `row_std_dropped` broke the script, and failed at the marker: its edit is well formed now.
+  With 167h's eleven added, all 120: 120 caught (1128 s, 6 workers); again after the merge of main:
+  120 caught (1109 s). 167i's three added, `group_on_project` (STANDARDS no longer turning to Site)
+  was not caught: the suite had opened the Site tab itself for the new check that the group starts
+  closed. It starts from Project now. All 123 on the final suite and build: 123 caught (1170 s).
+- **Amended,** each AMENDED FOR V167: V62 (the registry's sources' hosts, linked and never fetched);
+  V132 (Find asks for the address's parts, `addressdetails=1`); V73, V141 and V166b (the Standards
+  group on Site, after Data Layers); V161 (LEED ND's edition named as the registry names it). V132's falsify script had five
+  variants stale, four of them since earlier phases: re-anchored (RE-ANCHORED IN V167), and
+  `falsify_phase132.py` 49 of 49 on the final build (344 s, 6 workers). V161's had two variants
+  anchored on the moved walking speed and LEED radius, re-anchored. On the final build:
+  `falsify_phase141.py` 21 of 21 (88 s), `falsify_phase161.py` 64 of 64 (675 s), `falsify_phase166b.py`
+  54 of 54 (319 s), 6 workers each. V62 and V73 have no falsify script. V114's suite passes unchanged
+  (167i made the app's classes visible to it); its falsify script has nine variants stale since
+  before V167, on the shell's tabs and Start screen, not this phase's.
+- Every other suite passes unchanged: V105's occupant loads, V125's combinations, V159's climate,
+  V161's access, V164 to V166's analyses read the registry now, which is what proves the move.
+
+### Not done
+
+- Checks in IDS's shape: with the interiors (I2).
+- A pack's export, and signed packs.
+- The 2018 IBC's adoption window in Pennsylvania, and ASCE 7's adoption by place: not read.
+- CRTN and the stress tables at S; North Norfolk's page moved; ACI 318, AISC 360 and PennDOT's DM-2
+  not read (U, listed without values or adoption).
+- The roofs, the survey tolerances and the usages' defaults still in code (the owner's second
+  answer); AISC's shapes (V126) still in code; the Koppen-Geiger names stay in code (definitions).
+- The frame analysis's results are not stamped: they are not saved with the project.
+
+### Full regression and state after V167
+
+125 suites, 5999 checks, 0 failures (472 s, 5 workers): the 124 older suites' 5804 and V167's 195.
+The older suites count 5804 here, as V166b recorded; V166c's machine counted 5801 for them.
+Patches 167a to 167i rebuild the build byte for byte from `Phase/canvas_v10.html.bak_phase167_pre`
+(V166c's build, main's after its merge). The diff is ES5-clean and adds no non-ASCII character.
+
+    canvas_v10.html   3282385 bytes
+    sha256            82fabb6129b2b483b7c5730e363465e7ee8fff23b8694c44526483972f56d15c
+    markers           __acad3dV60 ... __acad3dV167, __acad3dV166b, __acad3dV166c, __acad3dV134d (and the 133d to 133f markers)
