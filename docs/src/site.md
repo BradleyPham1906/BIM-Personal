@@ -122,6 +122,10 @@ analysis**:
 | Walk times | the streets and paths reached on foot in 5, 10 and 15 minutes from the lot. Off at first | the walk times (Access and people) |
 | Daily needs | the way along the streets to the nearest of each kind of daily need, the place marked with its walk | the same walks, traced back |
 | Vehicle access | the driveways and service roads at the lot, with an arrow where each enters it, or a provisional entry from the lot's lowest street; the doors on the lot; the car parks (kind, spaces, walk) and garage entrances within 400 m; parking along the streets, each side drawn on its own | OpenStreetMap |
+| Land use | every land use area and the grounds of schools, car parks, pitches and the like, and the buildings with a use of their own, in their LBCS family's colour, outlined, with a texture where two colours sit close (industrial hatched one way, assembly the other, natural resources dotted) and the family's name on large areas; the 400 m square around the site, labelled with its land use mix. Off at first | OpenStreetMap's tags, by LBCS's activities (below) |
+| Figure-ground | the buildings filled dark, the open ground pale, in the 400 m square; its 100 m cells, each with its FSI; the square's GSI, FSI and storeys. Off at first | the context's buildings, by Spacematrix's measures (below) |
+| Green and trees | the trees' crowns, the woods dotted, the public green spaces (one under 0.5 ha dashed); the neighbourhood's circle with its canopy; a line to each tree seen from the site; the nearest public green space of 0.5 ha or more, with its walk; 3-30-300 at the site | the context's trees, woods and parks, the sight lines and the walks (below) |
+| Zoning around | a council layer's zoning districts in the layer's own colours, the site's district heavier and named, each district named on it; or, where no layer is loaded, that it is not. Off at first | a council's layer in Data Layers, its drawing info read once by Analyze site |
 
 **Live and editable.**
 - Select an element to move, turn, mirror, scale or delete it, or to change its colour, line,
@@ -130,7 +134,8 @@ analysis**:
   A selected area's edge is lit.
 - Slope and Aspect cover the whole ground, so they start with their layers off: **Show** on their
   row turns one on. Cycling stress and Walk times colour the same streets as the Street hierarchy,
-  so they start off too.
+  so they start off too. Land use, Figure-ground and Zoning around cover the ground as well, and
+  start off.
 - **Run the analysis again** (in Properties, or on its row) lays it down again from what the
   project holds now. What you have not touched is refreshed. What you changed is kept, and marked
   when the analysis would now draw it differently. What you deleted stays deleted.
@@ -149,7 +154,8 @@ analysis**:
   key: Compass in Location; Contours, Slope and Aspect in Landform; Water flow, Ponds and Flood
   zones in Water; Sun paths, Shadows and Winds in Climate; Noise in Environmental risk; Street
   hierarchy, Cycling stress, Transit, Walk times and Vehicle access in Access and circulation;
-  Views and Daily needs in People and place.
+  Views and Daily needs in People and place; Land use and Figure-ground in Location and context;
+  Green and trees in Ecology; Zoning around in Legal and regulatory.
 
 **How the noise is estimated.** Open data gives a road's class and seldom its traffic, so:
 - the traffic is the class's typical daily flow, from FHWA's functional classes (urban where the
@@ -219,6 +225,44 @@ is a screening of the land and its water, made before a survey and a drainage de
 - **A vehicle entry** is drawn where a driveway or service road crosses the lot line. With none, a
   provisional entry is marked on the lot's lowest street (an alley before a local street, an
   arterial last), as a parameter plan marks an entry until the design decides.
+
+**How the land is worked out.** Each setting below is a record in **Properties > Site > Standards**
+(Land and green), and can be overridden there with a reason.
+- **Land use** reads each feature's tags by a crosswalk to the American Planning Association's
+  Land-Based Classification Standards (LBCS), activity dimension, checked against LBCS's own
+  descriptions: a hotel is residential (transient living), a port is movement, construction and
+  waste are industrial, a cemetery or military land is institutional, a place of worship, a theatre
+  or a station is assembly, a park is leisure, farmland or a managed forest natural resources, a
+  wood or brownfield no activity. A building's own amenity, shop or office is read before its
+  building value; an area's port before its industrial land use.
+- **The mix** is counted on a 5 m grid over the 400 m square: each cell takes a building's own use,
+  else the smallest area over it, else grass's or a flowerbed's, which take the class of what they
+  lie in. Each family's share is of the cells that say one, 1000 to 8000; the mix is Shannon's
+  entropy over them divided by the log of the families counted (eight, the owner's choice): 1 an
+  even balance, 0 one use. What says no activity, or nothing, is left out and said.
+- **The colours** are LBCS's hues, each stepped so that any two pass the colour-blindness checks
+  (as on a map, where any two may touch), on the light map and on the dark plan; the textures, the
+  outlines, the names and the key carry what colour alone cannot.
+- **Density** follows Spacematrix (Berghauser Pont and Haupt): GSI is the ground floors over the
+  land, FSI the floor area over it, OSR (1 - GSI) / FSI, and L, FSI over GSI, the storeys on
+  average. The land is the whole square, streets and all; each footprint is cut to it, less its
+  courtyards. A building's storeys are its building:levels (less building:min_level for a part
+  standing on another), else its height over 3 m, at least one. Spacematrix's types are not named:
+  their bounds are in the book, which was not read.
+- **3-30-300** is measured as Browning et al. (2024) measure it, with what the app has:
+  - **3 trees seen**: the site's sight lines at eye height (as Views draws them), a tree counted
+    where a line meets its crown first, within 100 m; a window view's stand-in;
+  - **30% canopy**: the mapped trees' crowns (diameter_crown, else 0.6 of the height) and the woods,
+    on a 2 m grid, over a 500 m neighbourhood (the owner's choice: the rule fixes none), cut to the
+    context's square and said so; ESA's land cover map, which the experts rate best, cannot be read
+    from a page;
+  - **300 m**: the walk along the streets (Access and people) to a public green space of at least
+    0.5 ha, a park, garden, recreation ground or village green not mapped private: to a point of the
+    network inside it, or to its edge from the nearest street within 60 m.
+- **A council layer's colours** are read as Esri's own code reads a layer's drawing info: its unique
+  values (one field, or two or three joined), each value's solid fill and outline, the default for
+  the rest, the layer's transparency. A hatched fill is not drawn; a layer with no colours, or one
+  whose description cannot be read, is outlined and named in the app's.
 
 ### The ten categories and the findings
 
@@ -442,7 +486,7 @@ app never routes around it.
 Every standard, guideline and assumption an analysis applies is a record in the app's standards
 registry, never a number in its code. **Properties > Site > Standards** (`STANDARDS`, or `CODES`)
 shows them, area by area: transit and walking, roads and noise, cycling, air, flood and ground,
-buildings, structure, site context, climate.
+buildings, structure, site context, land and green, climate.
 
 ### The place and the date
 
