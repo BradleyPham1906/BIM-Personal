@@ -290,6 +290,10 @@ async def run():
             ck(await safe("()=>window.__a3dStdState()") is None, "a new project holds no standards of its own")
             got = await safe("""(T)=>{var n=0;window.__a3dStdRecords().forEach(function(r){if(r.cat)return;r.eds[0].v.forEach(function(x){window.__a3dStd(r.id,x.n);window.__a3dStdSay(r.id,x.n);n++;});
               window.__a3dStdEdition(r.id);window.__a3dStdUsed(r.id);window.__a3dStdStamp([r.id]);});return n;}""", None)
+            await safe("()=>{window.__a3dSelectFor([]);window.__a3dSetPropTab('site');window.__a3dRefreshProps();}")
+            await page.wait_for_timeout(150)
+            gc = await std_group()
+            ck(gc.get('tab') == 'site' and gc.get('open') is False, "on the Site tab the Standards group starts closed: it is long (%s)" % {k: gc.get(k) for k in ('tab', 'open')})
             await safe("()=>window.__a3dStdCommand()")
             await page.wait_for_timeout(200)
             g0 = await std_group()
@@ -752,7 +756,9 @@ async def run():
             row = await safe("()=>{var e=document.querySelector('#a3d-propsbody [data-stdtopic=\"tfl.ptal\"]');return e&&e.textContent;}") or ''
             ck('Assessing transport connectivity in London (2015)' in row and 'applied outside its place' in row and 'Used by: Transit layer' in row and row.startswith('Public Transport Accessibility Level (PTAL)'),
                "a topic: its title, the edition, its level and how it applies here, what uses it (%s)" % row[:160])
-            ck(await safe("()=>{var e=document.querySelector('#a3d-propsbody [data-stdtopic=\"tfl.ptal\"] .a3d-stdlv');return e&&[e.textContent,e.title];}") == ['P', 'read at its source'], "its level, said")
+            ck(await safe("()=>{var e=document.querySelector('#a3d-propsbody [data-stdtopic=\"tfl.ptal\"] .a3d-stdlv');return e&&[e.textContent,e.title,e.className];}") == ['P', 'read at its source', 'a3d-stdlv lv-P'] and
+               await safe("()=>{var e=document.querySelector('#a3d-propsbody [data-stdtopic=\"tfl.ptal\"] .a3d-stdhow');return e&&e.className;}") == 'a3d-stdhow h-outside',
+               "its level, said, and coloured by its class; applied outside its place, coloured too")
             await click('[data-propstdact="open:tfl.ptal"]')
             V = await safe("()=>{var e=document.querySelector('#a3d-propsbody [data-stdvals=\"tfl.ptal\"]');return e?{t:e.textContent,ov:[].map.call(e.querySelectorAll('[data-propstdact^=\"ov:\"]'),function(b){return b.getAttribute('data-propstdact');})}:null;}") or {}
             vr = await safe("""()=>[].map.call(document.querySelectorAll('#a3d-propsbody [data-stdvals="tfl.ptal"] .a3d-prow'),function(r){var l=r.querySelector('.a3d-plabel'),v=r.querySelector('[data-stdval]');

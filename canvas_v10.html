@@ -17323,7 +17323,7 @@ try{
      not read at a glance like Constraints/Dimensions. The user's toggle still persists for the
      session via bimPropGroupToggle. */
   var A3D_PROP_GROUPS_OPEN={Constraints:true,Graphics:true,Dimensions:true,'Sketch Constraints':true,'Identity Data':true,Other:true,
-    'Graphics — Technical':false,'Graphics — Presentation':false};
+    'Graphics — Technical':false,'Graphics — Presentation':false,Standards:false};   /* __acad3dV167i: long; STANDARDS opens it */
   function bimPropGroupToggle(g){
     A3D_PROP_GROUPS_OPEN[g]=!A3D_PROP_GROUPS_OPEN[g];
     refreshProps();
@@ -17676,12 +17676,13 @@ try{
   var BIM_STD_DRAFT_KEYS={cc:1,r:1,d8:1,city:1,ovv:1,ovwhy:1};
   function bimStdDraft(k,d){var D=A3D_STD_UI.draft;return D&&D.hasOwnProperty(k)?D[k]:d;}
   function bimStdDraftClear(keys){keys.forEach(function(k){delete A3D_STD_UI.draft[k];});}
+  var BIM_STD_LV_CLS={P:'lv-P',S:'lv-S',U:'lv-U',A:'lv-A'};   /* __acad3dV167i: written whole, so V114 sees them made */
   var BIM_STD_AREAS=['Transit and walking','Roads and noise','Cycling','Air','Flood and ground','Buildings','Structure','Site context','Climate'];
   function bimStdCap(t){t=String(t||'');return t.charAt(0).toUpperCase()+t.slice(1);}
   function bimStdBadge(E){
     var lv=E&&E.lv?E.lv:'U',how=E?E.how:'none';
-    return '<span class="a3d-stdlv lv-'+bimEsc(lv)+'" title="'+bimEsc(BIM_STD_LV[lv]||'')+'">'+bimEsc(lv)+'</span>'+
-      '<span class="a3d-stdhow h-'+bimEsc(how)+'">'+bimEsc((BIM_STD_HOW[how]||how)+(E&&E.at&&how==='adopted'?': '+E.at:''))+'</span>';
+    return '<span class="a3d-stdlv '+(BIM_STD_LV_CLS[lv]||'')+'" title="'+bimEsc(BIM_STD_LV[lv]||'')+'">'+bimEsc(lv)+'</span>'+
+      '<span class="a3d-stdhow'+(how==='outside'?' h-outside':'')+'">'+bimEsc((BIM_STD_HOW[how]||how)+(E&&E.at&&how==='adopted'?': '+E.at:''))+'</span>';
   }
   function bimStdSrcHtml(src){
     if(!src)return '';
@@ -51723,7 +51724,7 @@ try{
   window.__a3dDgStdChanged=function(a){return bimDgStdChanged(a);};
   window.__a3dStdDataChanged=function(k,only){return bimStdDataChanged(k,only||null);};
   window.__a3dSaStdText=function(auto){return bimSaStdText({auto:auto});};
-  window.__acad3dV167='registry,records,reader,place,placefromaddress,date,overrides,reasons,ordered,picks,stamps,outofdate,findingstd,accessstd,contextstd,packs,sha256,packdiff,catalogue,standardsgroup,standardscommand,valuesinwords,datastamps,usedvalues,valuestamps,framestd,refill,touchsizes,drafts,sheet,packadopted,packagain,whonoise,noliterals,dm2unread';
+  window.__acad3dV167='registry,records,reader,place,placefromaddress,date,overrides,reasons,ordered,picks,stamps,outofdate,findingstd,accessstd,contextstd,packs,sha256,packdiff,catalogue,standardsgroup,standardscommand,valuesinwords,datastamps,usedvalues,valuestamps,framestd,refill,touchsizes,drafts,sheet,packadopted,packagain,whonoise,noliterals,dm2unread,classeswhole,groupclosed';
   window.__acad3dV166b='noanalysistab,usagesonproject,anzframe,anzfloorloads,anzareas,anzfields,anzsearchsettings,leftresize,leftremembered,leftreset,leftkeys,leftclamp,leftdesktop,leftstep';
   window.__acad3dV166='mvquery,mvdata,mvstreets,mvthin,mvbudget,crossings,doors,carparks,garages,intervals,routeways,paths,walklayeronrequest,'+
     'hierarchy,lts2012,crossings2016,lowstressreach,ptal,catchments,routes,walkbands,needs,vehicleentry,provisionalentry,onstreetparking,maprgb,ptalfinding,cyclingfinding,vehiclesfinding';

@@ -139,7 +139,8 @@ async def run():
             ck(mp.get('tabs') == [['project', 'Project'], ['site', 'Site'], ['view', 'View']], "with nothing selected: Project, Site, View (%s)" % mp.get('tabs'))
             G = dict((g[0], g[1]) for g in mp.get('groups', []))
             ck(G == {'Identity Data': 'project', 'Usages': 'project', 'Statistics': 'project', 'History': 'project',
-                     'Location': 'site', 'Map': 'site', 'Site Context': 'site', 'Data Layers': 'site', 'View': 'view'},
+                     'Location': 'site', 'Map': 'site', 'Site Context': 'site', 'Data Layers': 'site', 'View': 'view',
+                     'Standards': 'site'},   # AMENDED FOR V167: the standards registry's group, on Site
                "every group on its tab, the usages on Project (%s)" % G)
             h = mp.get('html', '')
             ck('data-ptab="analysis"' not in h and 'data-ptabbtn="analysis"' not in h and 'Floor Loads' not in h and 'data-propstr=' not in h

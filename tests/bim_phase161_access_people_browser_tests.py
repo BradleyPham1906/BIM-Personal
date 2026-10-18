@@ -531,7 +531,8 @@ async def run():
             ck(figs[4]['t'].startswith('86 intersections per km² (222 per square mile): meets LEED ND') and figs[5]['t'].startswith('Census Tract 76: to work by transit 45% against 25% in the county; 7 of 9 measures differ'),
                "Fig. 5 against LEED ND; Fig. 6 the tract's largest difference from its county, and how many differ beyond the margins (%s)" % figs[5]['t'][:70])
             ck(B.get('secs') == ['8 · Access and circulation', '10 · People and place'] and B.get('cols') == 2, "two sections, as in Site analysis; a wide figure beside a column of two, twice")
-            ck('ODbL' in B.get('notes', '') and 'LEED ND v4' in B['notes'] and 'derived proportion' in B['notes'] and 'not a Walk Score' in B['notes'], "the notes: method and sources, credits")
+            # AMENDED FOR V167: LEED ND's edition is named as the standards registry names it
+            ck('ODbL' in B.get('notes', '') and 'LEED v4 for Neighborhood Development' in B['notes'] and 'derived proportion' in B['notes'] and 'not a Walk Score' in B['notes'], "the notes: method and sources, credits")
             M = await safe("""()=>{var s=document.querySelector('[data-accmap="walk"]');if(!s)return null;
               return {bands:[].map.call(s.querySelectorAll('path[data-band]'),function(p){return p.getAttribute('data-band')+p.getAttribute('data-cls');}),
                 crow:[].map.call(s.querySelectorAll('[data-crow]'),function(c){return c.getAttribute('data-crow');}),stops:s.querySelectorAll('[data-accstop]').length,

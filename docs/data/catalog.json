@@ -2114,7 +2114,7 @@
     "SLOPEANALYSIS",
     "GRADEANALYSIS"
    ],
-   "desc": "Colour the terrain by slope in bands (0 to 2%, 2 to 5%, 5 to 8.33% ...), with the area of each",
+   "desc": "Colour the terrain by slope, in the bands of the standards registry (Properties > Site > Standards), with the area of each",
    "kind": "cmd",
    "where": [],
    "keys": null,

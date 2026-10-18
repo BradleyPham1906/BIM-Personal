@@ -15035,7 +15035,7 @@ the analyses use become overridable now (the roofs, survey tolerances and usages
 the US catalogue listed, "not applied by the app yet"; packs show their SHA-256 and publisher with
 every difference first, Apply or Cancel, marked unsigned.
 
-### What was built (patches 167a to 167h)
+### What was built (patches 167a to 167i)
 
 - **The registry (167a).** Every standard, guideline and assumption an analysis applies is a record:
   a topic and its editions, each with its published date, status, adoptions (a place key, from, to),
@@ -15121,6 +15121,11 @@ every difference first, Apply or Cancel, marked unsigned.
   source, so it is listed unread (U) with nothing claimed, as ACI 318 and AISC 360 are (167h).
 - **A rule repeated.** 167f's touch size for the group's buttons repeated V149's, which already makes
   Properties' buttons 36 px on touch; only the date field needed one (167h). Found by its variant.
+- **What the full regression found (167i).** V114 asks that every CSS rule can match something the
+  code makes: the level badges' classes and "applied outside its place" were joined from a prefix and
+  a value, which it cannot see, so they are written whole. V141 asks that each Properties tab is far
+  shorter than all its groups at once: the Standards group made the Site tab nearly as long, so it
+  starts closed, as Graphics' Technical and Presentation do, and STANDARDS opens it.
 - **LEED's second point** was taken at 400 and over; Table 1 gives it over 400 (167b).
 - **The suite's own slips,** each fixed in the suite: a `%` in a check's message read as a format; the
   undo stack full from the suite's earlier steps (it is emptied before a step is counted, as V164's
@@ -15170,8 +15175,9 @@ every difference first, Apply or Cancel, marked unsigned.
   - `row_std_dropped` broke the script, and failed at the marker: its edit is well formed now.
   With 167h's eleven added, all 120 on the final suite: 120 caught (1128 s, 6 workers); again after
   the merge of main: 120 caught (1109 s, 6 workers).
-- **Amended,** each AMENDED FOR V167: V62 (the registry's sources' hosts, linked and never fetched)
-  and V132 (Find asks for the address's parts, `addressdetails=1`). V132's falsify script had five
+- **Amended,** each AMENDED FOR V167: V62 (the registry's sources' hosts, linked and never fetched);
+  V132 (Find asks for the address's parts, `addressdetails=1`); V73, V141 and V166b (the Standards
+  group on Site, after Data Layers); V161 (LEED ND's edition named as the registry names it). V132's falsify script had five
   variants stale, four of them since earlier phases: re-anchored (RE-ANCHORED IN V167), and
   `falsify_phase132.py` 49 of 49 on the final build (344 s, 6 workers). V62 has no falsify script.
 - Every other suite passes unchanged: V105's occupant loads, V125's combinations, V159's climate,

@@ -316,6 +316,9 @@ Classes as `research-standards-inventory.md` gives them:
   that must reach CRTN's range (167h).
 - **A level overstated.** DM-2's entry rested on a search summary and said S; it is U now, with nothing
   claimed (167h).
+- **Two of the older suites' rules (167i).** V114's, that every CSS rule can match what the code
+  makes: the badges' classes were joined from a prefix, and are written whole. V141's, that each
+  Properties tab is far shorter than all its groups: the group starts closed; STANDARDS opens it.
 - **LEED's second point** was taken at 400 and over; Table 1 gives it over 400 (167b).
 
 ### Not done
