@@ -155,6 +155,26 @@ is in `reference/research-bridge-splatting.md` (7).
 
 Project photos, models and drawings are never committed: the repo and its site are public.
 
+### LATER - Track E, field work and autonomy
+
+The owner (2026-10-18) shared DeepScenario's visual localisation without GPS, and BILT, SimLab and
+Synode, "for the phase where field and autonomous work" happens. Read at the source in
+`reference/research-field-autonomy.md`: the three companies make 3D work instructions, training and
+VR from CAD, not site simulation; DeepScenario's published method (OrthoLoC) places a drone photo on
+an orthophoto and a surface model, but its code and data are non-commercial, so the method only.
+Candidates, their order the owner's (five questions in the note):
+
+| # | Phase | Scope |
+|---|---|---|
+| E1 | glTF and GLB export | Meshes named by element ID and layer, metres, +Y up; opens in Synode, SimLab, Blender and headsets |
+| E2 | Steps | A sequence over the model: a view, elements shown, ghosted, highlighted or moved, text read aloud, tools and safety, a check; by element ID, so the steps follow the model; offline on phone, tablet and computer |
+| E3 | Field record | Checks done on site with time, who and a photo; a report; xAPI if wanted |
+| E4 | Place a photo | Guided camera solve from points matched on the photo and the map or model, each point's error; shares Track D's control-point solve (D5) |
+| E5 | A track and its video | GPX or CSV tracks and Track D's flights on the map beside a video in step; real speeds as a check on V170 |
+| E6 | Automatic matches | Optional: a light matcher (XFeat, Apache-2.0) proposing E4's points against USGS NAIP orthophotos (0.6 m, keyless, CORS open) |
+| E7 | 1:1 on site | E2's steps in WebXR (`reference/research-scale.md`, step H) |
+| E8 | Simulation out | V166's streets as ASAM OpenDRIVE 1.9.0, a V170 run as OpenSCENARIO XML 1.4.0 |
+
 ### LATER - Track A, drafting (moved behind Track B in V100)
 
 The numbers in this table are its order, not phase numbers: a phase takes the next free V number
