@@ -192,7 +192,8 @@ async def run():
             # ---------------------------------------------------------------------------------
             print("\n-- 3. commands turn to the group's tab")
             for cmd, tb, grp in (('usages', 'project', 'Usages'), ('colourby', 'view', 'View'), ('datalayers', 'site', 'Data Layers')):   # AMENDED FOR V166b: Usages on Project
-                await safe("(t)=>window.__a3dSetPropTab(t)", 'project')
+                # AMENDED FOR V166b: each starts from another tab, so the command has to turn to its own
+                await safe("(t)=>window.__a3dSetPropTab(t)", 'view' if tb != 'view' else 'project')
                 await safe("(c)=>window.__a3dRunCmd(c)", cmd)
                 await page.wait_for_timeout(150)
                 s = await shown()

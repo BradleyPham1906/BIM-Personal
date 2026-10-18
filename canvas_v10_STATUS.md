@@ -14617,7 +14617,7 @@ ES5-clean and ASCII.
     sha256            e8ec917e636002dc97278233a4ea7770f0530d2a3d7159d54b1707863ca95cb2
     markers           __acad3dV60 ... __acad3dV165, __acad3dV134d (and the 133d to 133f markers)
 
-## Phase 166 (V166) - Site analysis in the model III: movement
+## Phase 166 (V166) - Site analysis in the model III: movement; and the panels (V166b)
 
 The owner's brief from V164 stands: one button runs the analysis on the data the right free services
 give, and lays it "under analysis layers, built straight in the model that i can interact with" --
@@ -14840,3 +14840,110 @@ byte for byte from `Phase/canvas_v10.html.bak_phase166_pre`. The diff is ES5-cle
     canvas_v10.html   3172803 bytes
     sha256            1a7fe75e5c64d6d666c4ef9ae6a1fb0b60cd4b4714a47487e83270f6a5b33ccf
     markers           __acad3dV60 ... __acad3dV166, __acad3dV134d (and the 133d to 133f markers)
+
+### V166b: the panels
+
+The owner: "make sure to fix the right panel also since i still see the analysis tab on it (looks
+like form the old design). left panel needs to be dragable like the right panel also." The research
+is `reference/research-panels.md`: the app's own panels read first, then W3C's window splitter
+pattern and WCAG 2.2's 2.5.7 (Dragging Movements) and 2.5.8 (Target Size), read as text from their
+sources on GitHub (the published pages are refused here).
+
+#### What was built (patches 166d, 166e, 166f)
+
+- **Properties, three tabs (166d).** With nothing selected: Project, Site, View. The Analysis tab
+  (V141) was Analyze's settings, left behind when Analyze moved to the left:
+  - Frame analysis's row in Analyze holds the frame's combination, self-weight, display and
+    deflected shape, its results (the basis, the largest moment and deflection, the balance, what is
+    not included), and the active level's floor loads, which say what reads them (the Column Loads
+    schedule and TRIBAREA, not the frame solve). Its Settings button is gone.
+  - Areas by usage's row lists the project's areas, usage by usage, with the count, GBA, GFA, NSA,
+    the formulas' sums and the total. Its button opens the usages.
+  - The usages library is on Project: the project's own, read by the Usage field, Colour by and
+    the schedules.
+  - A tab remembered as Analysis opens on Project. A label is tied to each field; a field and its
+    label sit side by side where the row has room and stack where it has not. Analyze's search
+    finds a row by its settings' names ("combination", "floor loads").
+  - A change in a row is the model's at once, and the row is redrawn under the field, which keeps
+    the focus. V162's wait (no redraw under a field being typed in) still holds for words not yet
+    committed.
+- **The left panel's edge (166e).** Dragged by a mouse, a pen or a finger (pointer events), 242 to
+  560 px, the drawing keeping 320 px beside Properties and following Properties when it is widened
+  or minimised; a double click puts it back; a cancelled drag puts it back; kept in this browser.
+  The width is one variable (`--a3d-lp-w`), and the drawing's edge (`--a3d-left-w`) is the rail's
+  54 px plus it. A computer's layout only, a tablet on its side included; an upright tablet's and a
+  phone's drawer keeps its own width, and the computer's comes back when the screen does. The edge
+  is the W3C's window splitter: a focusable separator with its width as its value, Left and Right
+  16 px (Shift, 64), Home and End, Enter to shut the panel with the focus on the panel button. The
+  model's key chain treats a focused separator as a control: the arrows do not nudge the selection
+  and a letter opens no search.
+- **One press (166f).** A 30 px button (36 on a touch screen) beside the panel's collapse widens the
+  panel a step at a time, 242, 320, 400, 480, 560 within what the screen allows, and from the widest
+  back to 242; its label says where the next press goes. That is 2.5.7's single-pointer way, and
+  the equivalent control that excepts the 6 px edge (12 px for a finger) under 2.5.8. The shell's
+  audit knows it.
+
+#### Found
+
+- **The Write and Bash tools turn `\uXXXX` in a command into the character.** Patch 166d's first run
+  put three non-ASCII characters into the build; the ASCII check on the new lines caught it. The
+  patch files are written, then their non-ASCII characters turned back into `\u` escapes by a
+  script that computes them (`'\\u%04x' % ord(c)`).
+- **V162's wait hid two of the suite's own steps.** With the focus still in an Analyze field, an
+  undo and a new frame did not show in the rows until the field was left. In use, the Undo button
+  and a click on the drawing both leave the field first; the suite now does the same, and the
+  changes made in a row redraw it at once.
+- **The old Settings button cleared the selection on its way to Properties.** V141's suite relied
+  on that to find the sun's fields; it now clears the selection itself.
+- **`falsify_phase131.py`'s `floor_ftf_ignored` had not built since V132**, whose text appears twice
+  in the build; re-anchored to the usages' own.
+- **Falsification found two pieces of code that did nothing.** `drawing_not_resized` was not
+  caught: the drawing has sized itself by a ResizeObserver since V72, so the edge's own `size()`
+  calls were redundant; they are gone and the variant retired. V106's `properties_not_wired` was not
+  caught: with the floor loads out of Properties, its change branch for them could not run; it is
+  gone, and the variant now breaks Analyze's handler instead.
+- **Two older variants were not caught, and rightly so.** V125's `column_axes_swapped` swaps a
+  member's `hy` and `hz`. Since V126 a member's section comes from its profile
+  (`bimMemberSection`), and those two fields are read nowhere, so the swap changes nothing. The
+  variant is retired, and removing the unused fields is a follow-up. V141's `usages_not_revealed`
+  was not caught either, because its check was empty: USAGES was run with the Project tab already
+  open, so a command that did not turn to its tab still passed. The suite now starts each command
+  from another tab, and the variant is caught.
+- **The panel's collapse was white on the light theme's white header** (since the shell was built);
+  it takes the new button's grey.
+
+#### Suites
+
+- **New suite** `tests/bim_phase166b_panels_browser_tests.py`, 68 checks: the tabs and their
+  groups, a remembered Analysis tab, USAGES and an edit on Project; Frame analysis's fields, each
+  read back from the model (the level's loads, a refused load, one undo each, the settings, the
+  display drawn), the focus kept, the search; Areas by usage against `__a3dUsageSummary`; the edge
+  by a mouse, by CDP touch events on a tablet on its side and by pointer events, its clamps, the
+  320 px kept beside Properties at 1280 px, the reload, the double click, the keys, the model's keys
+  left alone, the drawers on an upright tablet and a phone; the button's steps, labels, size and the
+  audit; the fields' colours dark and light, and 36 px fields on a phone.
+- **Falsification:** `Phase/falsify_phase166b.py`, 54 variants, all caught (619 s, 3 workers), and one
+  retired (`drawing_not_resized`, below).
+- **Amended** (each marked AMENDED FOR V166b): V73 (nine groups), V106 (the floor loads typed into
+  Analyze), V125 (the frame's settings in its row), V131 (the project's areas in Analyze), V141
+  (three tabs; Usages on Project; the row's settings). Their falsify scripts, with seven variants
+  re-anchored (RE-ANCHORED IN V166b) and one retired: `falsify_phase106.py` 18 of 18
+  (112 s), `falsify_phase125.py` 35 of 35 (243 s), `falsify_phase131.py` 32 of 32 (151 s),
+  `falsify_phase141.py` 21 of 21 (168 s), 3 workers each, on the final build and suites.
+
+#### Not done
+
+- Properties' own edge (V147) has the same 2.5.7 gap: its only one-press control is minimise.
+- A dropdown focused in Analyze also waits for its row's redraw: Ctrl+Z pressed there undoes the
+  model, and the row shows it when the dropdown is left.
+
+#### Full regression and state after V166b
+
+124 suites, 5804 checks, 0 failures (490 s, 5 workers). Patches 166d, 166e and 166f, after 166a to
+166c, rebuild the build byte for byte from `Phase/canvas_v10.html.bak_phase166_pre`. The diff is
+ES5-clean and ASCII. BIM_APP_VERSION stays V166, as V134d's did: V166b finishes V166's panels and
+adds no analysis.
+
+    canvas_v10.html   3187339 bytes
+    sha256            b7ee1405e5248fbb833127618991763e1d0d997790b7230525e00d3d75032b7e
+    markers           __acad3dV60 ... __acad3dV166, __acad3dV166b, __acad3dV134d (and the 133d to 133f markers)

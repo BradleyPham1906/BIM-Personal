@@ -12,7 +12,7 @@ VARIANTS = {
     'no_node_merge': [("        if(Math.abs(q[0]-p[0])<=BIM_AN_TOL&&", "        if(false&&Math.abs(q[0]-p[0])<=BIM_AN_TOL&&")],
     'no_member_split': [("        if(bimVLen(perp)<=BIM_AN_TOL)on.push({n:k,s:s});\n", "")],
     'j_polar': [("            J:a*b*b*b*(1/3-0.21*(b/a)*(1-Math.pow(b/a,4)/12))};", "            J:hy*hz*(hy*hy+hz*hz)/12};")],
-    'column_axes_swapped': [("        yRef=[Math.cos(r),0,Math.sin(r)];hy=b.width;hz=b.depth;", "        yRef=[Math.cos(r),0,Math.sin(r)];hy=b.depth;hz=b.width;")],
+    # RETIRED IN V166b (column_axes_swapped): not caught, rightly -- since V126 a member's section comes from its profile (bimMemberSection), and the hy and hz kept on each member are read nowhere, so swapping them changes nothing. The unused fields are a follow-up.
     'beam_at_centroid': [("        var ty=(isFinite(b.topY)?b.topY:(b.baseY+b.depth))+q[1];", "        var ty=(isFinite(b.topY)?b.topY:(b.baseY+b.depth))+q[1]-b.depth/2;")],
     'gpa_as_mpa': [("    return u==='gpa'?v*1e6:(u==='mpa'?v*1e3:v);", "    return u==='gpa'?v*1e3:(u==='mpa'?v*1e3:v);")],
     'g_equals_e': [("G:E/(2*(1+nu))", "G:E")],
