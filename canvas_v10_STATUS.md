@@ -15013,9 +15013,11 @@ them, with older projects opening unchanged.
 
 #### Full regression and state after V166c
 
-124 suites, 5801 checks, 0 failures (593 s, 5 workers). V166b recorded 5804: the three checks are
-being compared suite by suite against a run of the V166b build itself, on this machine. Patches 166a
-to 166g rebuild the build byte for byte from `Phase/canvas_v10.html.bak_phase166_pre`. The diff is ES5-clean and ASCII.
+124 suites, 5801 checks, 0 failures (593 s, 5 workers). V166b recorded 5804. The V166b build, run
+from its own commit on this machine with the same suites, gives 5801 as well (589 s), and every one
+of the 124 suites counts the same checks on both builds: the three are not this phase's. Where they
+went between V166b's run and this machine's is not established; no suite says it skips a check here.
+Patches 166a to 166g rebuild the build byte for byte from `Phase/canvas_v10.html.bak_phase166_pre`. The diff is ES5-clean and ASCII.
 
     canvas_v10.html   3187431 bytes
     sha256            7fbee16e65f6ccd338df92dfb11961e65b81fed0a2763d0a78eb7139f3d5bde9

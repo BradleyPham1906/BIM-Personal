@@ -6,8 +6,8 @@
     sha256            7fbee16e65f6ccd338df92dfb11961e65b81fed0a2763d0a78eb7139f3d5bde9
     markers           __acad3dV60 ... __acad3dV166, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
                       __acad3dV121b, __acad3dV166b, __acad3dV166c
-    tests             124 suites, 5801 checks, 0 failures (V166c's run; V166b recorded 5804 -- see
-                      V166c in canvas_v10_STATUS.md)
+    tests             124 suites, 5801 checks, 0 failures (V166b's build gives the same 5801 on this
+                      machine, suite for suite; it recorded 5804 -- see V166c in canvas_v10_STATUS.md)
 
     The user guide (V142): every phase updates docs/src/, its log entry and BIM_APP_VERSION, then
     runs tools/dump_catalog.py and tools/build_docs.py. The V142 suite and the Pages workflow
@@ -189,6 +189,8 @@ the version stays V166).
   anchor of the 84 falsify scripts unmoved; a frame saved by V166b's Save opens in V166c with the
   same members, model and solve, and a file whose members carry `hy` and `hz` opens and analyses as
   the plain one. No new suite: a removal of what nothing reads cannot be seen in behaviour.
+- **Full regression** 124 suites, 5801 checks, 0 failures. V166b recorded 5804; its own build gives
+  5801 here too, every suite the same count, so the three are not this phase's.
 
 V166b, **the panels** (inside Phase 166; the version stays V166).
 - The owner: "make sure to fix the right panel also since i still see the analysis tab on it (looks
