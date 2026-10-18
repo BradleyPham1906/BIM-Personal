@@ -139,7 +139,8 @@ async def run():
             ck(mp.get('tabs') == [['project', 'Project'], ['site', 'Site'], ['view', 'View']], "with nothing selected: Project, Site, View (%s)" % mp.get('tabs'))
             G = dict((g[0], g[1]) for g in mp.get('groups', []))
             ck(G == {'Identity Data': 'project', 'Usages': 'project', 'Statistics': 'project', 'History': 'project',
-                     'Location': 'site', 'Map': 'site', 'Site Context': 'site', 'Data Layers': 'site', 'View': 'view'},
+                     'Location': 'site', 'Map': 'site', 'Site Context': 'site', 'Data Layers': 'site', 'View': 'view',
+                     'Standards': 'site'},   # AMENDED FOR V167: the standards registry's group, on Site
                "every group on its tab, the usages on Project (%s)" % G)
             h = mp.get('html', '')
             ck('data-ptab="analysis"' not in h and 'data-ptabbtn="analysis"' not in h and 'Floor Loads' not in h and 'data-propstr=' not in h
@@ -306,7 +307,7 @@ async def run():
                 return await safe("()=>window.__a3dLeftPanel()", pg=pg) or {}
 
             async def geo(pg=None):
-                # AMENDED FOR V166c: the panel's width eases over 0.18 s; measured after it settles, not after
+                # AMENDED FOR V166d: the panel's width eases over 0.18 s; measured after it settles, not after
                 # a fixed wait, which a loaded parallel run outlasted (V84's lesson: 257 for 258 after Enter)
                 try:
                     await (pg or page).wait_for_function("()=>{var p=document.getElementById('a3d-leftpanel');return !p||!p.getAnimations||p.getAnimations().length===0;}", timeout=4000)

@@ -16,7 +16,8 @@ VARIANTS = {
     'bridges_seeded': [("    W.forEach(function(w){\n      if(w.lev)return;\n      var out=[w.ns[0]],j;", "    W.forEach(function(w){\n      var out=[w.ns[0]],j;")],
     'no_frontage_cuts': [("          bimAccCuts(L,ax,az,bx,bz).forEach(function(t){out.push(N.x.length);N.x.push(ax+t*(bx-ax));N.z.push(az+t*(bz-az));N.g.push(1);});\n", "")],
     'seed_cost_zero': [("      if(d0<=BIM_ACC_FRONT){seeds.push([i,d0/v]);if(d0<near)near=d0;}", "      if(d0<=BIM_ACC_FRONT){seeds.push([i,0]);if(d0<near)near=d0;}")],
-    'no_exact_step': [("    if(net.L&&!net.W[net.E.w[sn.e]].lev){dl=bimAccLotDist(net.L,sn.x,sn.z);if(dl<=BIM_ACC_FRONT)t=Math.min(t,dl/BIM_ACC_SPEED);}\n", "")],
+    # RE-ANCHORED IN V167: the walking speed is the standards registry's (bimAccSpeed)
+    'no_exact_step': [("    if(net.L&&!net.W[net.E.w[sn.e]].lev){dl=bimAccLotDist(net.L,sn.x,sn.z);if(dl<=BIM_ACC_FRONT)t=Math.min(t,dl/bimAccSpeed());}\n", "")],
     'far_start_missing': [("    var far=!seeds.length;", "    var far=false;")],
     # the walk
     'dijkstra_no_relax': [("for(e=head[u];e>=0;e=nxt[e]){var nt=t+cost[e],w=to[e];if(nt<D[w]){D[w]=nt;push(nt,w);}}", "for(e=head[u];e>=0;e=nxt[e]){var nt=t+cost[e],w=to[e];if(nt<D[w]){D[w]=nt;}}")],
@@ -46,7 +47,8 @@ VARIANTS = {
     # connectivity
     'deadends_kept': [("    for(i=0;i<n;i++)if(deg[i]===1)Q.push(i);\n    while(Q.length){", "    while(Q.length){")],
     'prune_once': [("      deg[v]--;\n      if(deg[v]===1)Q.push(v);", "      deg[v]--;")],
-    'divided_not_merged': [("BIM_ACC_IXR=400,BIM_ACC_IXMERGE=12,", "BIM_ACC_IXR=400,BIM_ACC_IXMERGE=1,")],
+    # RE-ANCHORED IN V167: LEED's radius is the registry's; the merge distance stays the method's
+    'divided_not_merged': [("BIM_ACC_STEPS=2,BIM_ACC_IXMERGE=12,", "BIM_ACC_STEPS=2,BIM_ACC_IXMERGE=1,")],
     'service_counted': [("      var w=W[E.w[e]],on=/^[aclp]$/.test(w.c)&&w.t.area!=='yes';", "      var w=W[E.w[e]],on=/^[aclps]$/.test(w.c)&&w.t.area!=='yes';")],
     'buffer_area_no_perimeter': [("    var area=(L.ring?bimPolyArea(L.ring)+bimAccPerim(L.ring)*R:0)+Math.PI*R*R,km2=area/1e6;", "    var area=(L.ring?bimPolyArea(L.ring):0)+Math.PI*R*R,km2=area/1e6;")],
     'sqmi_factor_wrong': [("sqmi:bimAccR1(pts.length/km2*2.589988)", "sqmi:bimAccR1(pts.length/km2*1.609344)")],

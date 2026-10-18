@@ -2,11 +2,12 @@
 
 **Read this first in a new session.** One page. The detail lives in the docs listed at the bottom.
 
-    canvas_v10.html   3194778 bytes
-    sha256            5613a9c8e85fe2907ef94b6cd6633b7a290c0f8dcbe1652835ff36ebe81f57f1
-    markers           __acad3dV60 ... __acad3dV166, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
-                      __acad3dV121b, __acad3dV166b, __acad3dV166c
-    tests             125 suites, 5854 checks, 0 failures
+    canvas_v10.html   3289824 bytes
+    sha256            c53d8e035c1ba9f8c85a09777e50c5c0d98bf6dc1f5dd8914d0c418db83959a8
+    markers           __acad3dV60 ... __acad3dV167, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
+                      __acad3dV121b, __acad3dV166b, __acad3dV166c, __acad3dV166d
+    tests             126 suites: V167's 125 (5999 checks) and V166d's 50; the full regression on
+                      this build is running (V166d's suite and the V14x and V16x suites pass)
 
     The user guide (V142): every phase updates docs/src/, its log entry and BIM_APP_VERSION, then
     runs tools/dump_catalog.py and tools/build_docs.py. The V142 suite and the Pages workflow
@@ -109,9 +110,10 @@ three tiers: compact up to 720 px wide or 500 px high, medium up to 1024 px, des
 | 165 | Site analysis in the model II: land and water | **Done** (see Recently finished): a Ground and water step in Analyze site (the ground every 5 m for 150 m around from AWS Terrain Tiles, kept in metres above sea level; FEMA's flood zones for US sites); six layers -- contours at round heights coloured by height, slope in five classes and aspect read for warmth (Horn's method, off at first), flow lines by Strahler order with the divides between the large catchments and the land draining onto the site (Priority-Flood and D8), ponds, FEMA's zones with their base flood elevations; three findings; an area picked by its inside. Not yet: the ground finer than the tiles, culverts and pipes, flood depth, the site's own drainage design | `reference/research-site-analysis-in-model.md` (2). |
 | 166 | Site analysis in the model III: movement | **Done** (see Recently finished): the access step's one Overpass request also asks for the crossings' controls, the doors, the garage entrances and the car parks, and keeps every street within 800 m with the tags movement reads (a budget of 6,000 nodes, the window kept said); six layers -- the street hierarchy by class, cycling level of traffic stress by the 2012 criteria with the 2016 crossing table and the site's low-stress reach (off at first), transit with its 8- and 12-minute catchments and PTAL where OpenStreetMap maps the headways, walk times (off at first), the way to each daily need, vehicle access (driveways, an arrow at the lot line or a provisional entry from the lowest street, doors, car parks, on-street parking by side); colours for the dark plan and a light map; two findings new and Transit's with PTAL. The owner: no timetable files, only free online data; Transitous not used (its terms would open the code and rule out selling the app). Not yet: headways where OpenStreetMap has none, daily traffic, refuges and bike-lane widths beside parking, one-way streets ridden one way | `reference/research-site-analysis-in-model.md` (4). |
 | 166b | The panels | **Done** (see Recently finished): Properties' Analysis tab gone (Project, Site, View); Frame analysis's settings, results and floor loads, and the areas by usage, in their Analyze rows; the usages on Project; the left panel's edge dragged by mouse, pen or finger (242 to 560 px, the drawing keeping 320 px beside Properties, kept in this browser, a double click to reset, the keys of W3C's window splitter) and a button that widens it a step at a time (WCAG 2.2's 2.5.7); a computer's layout, a tablet on its side included | The owner: "make sure to fix the right panel also since i still see the analysis tab on it ... left panel needs to be dragable like the right panel also". `reference/research-panels.md`. |
-| 166c | Properties' width by one press | **Done** (see Recently finished): a button in Properties' header beside the minimise (30 px, 36 on a touch screen) widening it 240, 320, 400, 480, 560 within what the screen allows, then back to 240, its label saying where the next press goes (WCAG 2.2's 2.5.7 and 2.5.8); the drawing keeps 320 px beside the left panel at its narrowest; the edge a W3C window splitter (Left widens, Home, End, Enter minimises) dragged by any pointer; docked by the stylesheet's own query; the shell's audit reaches Properties' header | V166b's "Not done". `reference/research-panels.md` (V166c). |
-| 167 | Standards registry | **Start here.** Every standard the app applies kept as data, not code: a record per edition (publisher, edition, dates, where it applies, its source to the page, its parameters and tables in our own words, the method version that implements it, what it supersedes); one reader for every analysis (no standard's value left in code, and a suite that asks it); profiles by place as a tree, international, country, region, city, the most specific edition winning and an international fallback (ISO, WHO) where a place has none, or said so; overrides per project with a reason, shown on every result; provenance on every layer and finding (the editions and a hash of the values), Out of date when they change; new editions with app versions and as standards pack files, their differences shown before they apply; methods versioned when a revision changes their structure; checks shaped as buildingSMART's IDS. V164 to V166's ~90 constants moved into records, their suites unchanged in what they expect | The owner: "building a system based on the industry standards (but flexible enough when the standards changed)"; any country, with fallbacks; overrides with a reason; app versions and pack files. `reference/research-standards-registry.md`. |
-| 168 | Site analysis in the model IV: land | Land use in LBCS's hues, adjusted to pass the colour-blindness checks (the owner); figure-ground with Spacematrix's density measures; green and trees with the 3-30-300 check; zoning around the site in the council layer's own colours. The work plan is `reference/plan-v167-v170.md` | `reference/research-site-analysis-in-model.md` (6). |
+| 166c | The analytical member, cleaned | **Done** (see Recently finished): the four fields `bimAnalyticalModel` gave each member and nothing read -- `hy` and `hz` (dead since V126 took the section from the profile), `p2` and `material` -- no longer written; the member is derived on every solve and never stored, so no project carried them | V166b's follow-up: `falsify_phase125.py`'s retired `column_axes_swapped`. |
+| 166d | Properties' width by one press | **Done** (see Recently finished): a button in Properties' header beside the minimise (30 px, 36 on a touch screen) widening it 240, 320, 400, 480, 560 within what the screen allows, then back to 240, its label saying where the next press goes (WCAG 2.2's 2.5.7 and 2.5.8); the drawing keeps 320 px beside the left panel at its narrowest; the edge a W3C window splitter (Left widens, Home, End, Enter minimises) dragged by any pointer; docked by the stylesheet's own query; the shell's audit reaches Properties' header | V166b's "Not done". `reference/research-panels.md` (V166d). |
+| 167 | Standards registry | **Done** (see Recently finished): every standard, guideline and assumption an analysis applies is a record (32 topics: 18 applied, 14 in the US catalogue), each edition with where and when it is in force, its source to the section and the level it was read at; one reader, the edition in force for the site's place (from the address search) and the project's date, the most specific winning, a method applied outside its place saying so; overrides with a reason; stamps on every run and on the data fetched once, Out of date with why; packs with their SHA-256 and every difference shown first; Properties > Site > Standards (`STANDARDS`); no standard's number left in code, which a suite scans for. Not yet: IDS-shaped checks (I2), a pack's export, the roofs, survey tolerances and usages' defaults as records | The owner: "building a system based on the industry standards (but flexible enough when the standards changed)". `reference/research-standards-registry.md` (As built). |
+| 168 | Site analysis in the model IV: land | **Start here.** Land use in LBCS's hues, adjusted to pass the colour-blindness checks (the owner); figure-ground with Spacematrix's density measures; green and trees with the 3-30-300 check; zoning around the site in the council layer's own colours. The work plan is `reference/plan-v167-v170.md` | `reference/research-site-analysis-in-model.md` (6). |
 | 169 | Assets: people, bikes, cars and trees | Placeable models that carry their dimensions as data, for scale and for the simulations: people (standing, seated, a wheelchair user; height, eye height, shoulder width, walking speed), bikes (length, stand spacing), cars and a van (a design car's size, the parking bay, the turning path), trees by kind (height, crown spread, deciduous or evergreen, so they shade the sun studies, in leaf in summer and bare in winter). Low-detail and adjustable, made in-house as the furniture is (the owner); valdrada's procedural pedestrians (MIT) and its trees and vehicles (CC BY 4.0) converted later, with credit, once glTF can be imported; its MetaHuman pedestrians not | The owner (V166): "do we have asset designed yet ... trees, building shape, human, bike, car for later simulations?" The library has nine furniture and fixture models; trees exist only as site context. |
 | 170 | Simulation S1: traffic and pedestrians around the site | Cars on V166's street graph by IDM car following, with signals where OpenStreetMap maps them (a fixed two-phase cycle with amber and all-red, assumed and said), turns at junctions, lanes capped by the roadway's width; pedestrians on the sidewalks, crossing on green, to and from the lot's doors, the stops and the car parks; live in plan and 3D with V169's models; the design's own trips from its parking spaces at assumed peak-hour rates by usage, stated (the owner: free trip rates do not exist); results as layers: the queue at the lot's entry, people at each door, delay at the crossings. Not a calibrated traffic model (no counts or demand), and it says so. Light by design, for a modest computer: only the site's streets, agents as typed arrays in fixed pools, no textures or skeletons, instanced low-detail figures (dots when far), a fixed step that pauses when hidden, results tallied not recorded, Light, Normal or Detailed chosen from the device, and a memory budget the suite checks | The owner chose to build on valdrada's methods inside the app (`reference/research-valdrada.md`): MIT code rewritten to the app's rules and credited; its NYC city compiler not used, the site's streets coming from V166's movement data with their width added. |
 | 171 | Site analysis SA5: tools and synthesis, ArcGIS's way | One pane for every analysis tool (typed parameters checked as filled, Run, messages, History to rerun from, results as layers); buffer, distance, slope classes, exclusions, weighted suitability in Esri's four steps (criteria, transform, weight, locate); the constraints and opportunities map; the buildable area; sun hours on the GPU; each tool a guide page in one template (summary, usage, parameters, how it works) | `reference/research-arcgis-site-analysis.md` (1). |
@@ -119,7 +121,7 @@ three tiers: compact up to 720 px wide or 500 px high, medium up to 1024 px, des
 | 173 | Presentation P1: boards | V162 made the site analysis's boards pages of the set; this phase is boards you design. New Layout's page gallery (ANSI, Architectural, ISO, portrait and landscape); map frames with a live legend, north arrow and scale bar. A board is a sheet you design on: one layer tree (frames, groups, lock, hide, reorder), opacity and blend modes on every element (canvas compositing, the same 16 modes as Figma), masks, shapes, text, images; align, distribute, smart spacing; rows and columns that space their children (a light auto layout) | Figma's layer model. `reference/research-presentation-panels.md` (1). |
 | 174 | Presentation P2: live elements | Elements linked to their source and redrawn when the model changes: model views, schedules, legends, the V157 dashboard's charts and cards, any result layer's chart, analysis results (sun hours, cut and fill, solar), numbers (GBA, cut volume, site area), text bound to project data (autotext). An edit on the board is an override, marked, with Reset | Archicad's linked drawings and autotext; SketchUp LayOut's overrides and Reset. The data stays connected (the owner's rule). |
 | 175 | Presentation P3: styles, templates, export | The Site Analysis report: eight boards in a fixed order (location and context, zoning summary, landform and water, climate, access, risks, constraints and opportunities, buildable area and yield), filled from SA1 to SA5 in one click, every number credited. Reusable components with variants (title blocks, legend cards, callouts); shared colour and text styles (a brand kit); master boards; templates; a presenting mode, one board per slide; PDF, PNG and SVG export with blend modes, opacity and masks kept | Canva's templates and brand kits; Figma's components; Archicad's master layouts. |
-| 176-179 | Interiors (I1-I4) | I1 programme and adjacency: the rooms, their areas and counts, an adjacency matrix (next to, near, apart) and its bubble diagram, checked against the model's rooms (shared walls and doors, the walk between them). I2 ergonomics and accessibility: each furniture and fixture model with its clearance zone, and a check where a wall or another piece blocks it (the ADA Standards' 30 by 48 in clear floor space, 60 in turning circle, reach ranges and door clearances; Part M; Neufert, and Panero and Zelnik). I3 circulation and escape: the travel distance to the exits, corridor and door widths. I4 inside the rooms: daylight, the view out, sightlines (V164's isovists indoors) | The owner (V166): "what about interior? the relationship and human ergonomics?" After the site analysis tools and their presentation, as the owner chose. Each phase researches first. |
+| 176-179 | Interiors (I1-I4) | I1 programme and adjacency: the rooms, their areas and counts, an adjacency matrix (next to, near, apart) and its bubble diagram, checked against the model's rooms (shared walls and doors, the walk between them). I2 ergonomics and accessibility: each furniture and fixture model with its clearance zone, and a check where a wall or another piece blocks it (the ADA Standards' 30 by 48 in clear floor space, 60 in turning circle, reach ranges and door clearances; Part M; Neufert, and Panero and Zelnik). I3 circulation and escape: the travel distance to the exits, corridor and door widths. I4 inside the rooms: daylight, the view out, sightlines (V164's isovists indoors) | The owner (V166): "what about interior? the relationship and human ergonomics?" After the site analysis tools and their presentation, as the owner chose. Each phase researches first. The owner (2026-10-18), sharing Scale (github.com/ThomasZhang223/Scale, MIT): "this is my vision for interior design. i want to scan objects or have AI do it for me" -- the way in (glTF import, Poly Haven's CC0 furniture, RoomPlan scans, a mesh bound to a measured size, a mesh from a photo by TRELLIS.2's free Space, Scale's fit checks, a small solver, WebXR at 1:1) is researched in `reference/research-scale.md`, kept with the interiors (the owner's choice: keep the plan); imports first, a native Apple shell with RoomPlan and Object Capture when the app comes to the owner's Apple devices ("eventually this app might be on apple products (macbook and iphone and ipad)"); TRELLIS.2's Space with no key; the 1:1 view last (no headset to hand). |
 | 180-186 | Freeform (F1-F7) | NURBS curves; surfaces from curves (extrude, revolve, loft, planar, edge); sweeps, pipe, cap; surface analysis (zebra, curvature, draft) in Analyze; point editing and blends; picture planes, text objects, flow along a surface; Make2D and rendering | `reference/research-rhino-guide-gap.md`: what the owner's Rhino guide teaches that the app lacks. Placed here pending the owner's word; the LOD track follows. |
 | 187 | LOD-C: point clouds | LAS, LAZ (laz-perf, Apache-2.0) and PLY; USGS 3DEP fetched around the site (EPT or COPC); by class or height; ground to a V108 surface through V138's check | Philadelphia has city LiDAR (2015, 2018) and PA statewide QL2. |
 | 188 | LOD-D: LOD2.2 from LiDAR | Region-growing roof planes, roof partition, optimised and extruded; LOD1.3 from the same partition; per-building RMSE to the points | 3DBAG's published method (roofer is GPL-3 C++: the method, not the code). |
@@ -159,6 +161,26 @@ is in `reference/research-bridge-splatting.md` (7).
 
 Project photos, models and drawings are never committed: the repo and its site are public.
 
+### LATER - Track E, field work and autonomy
+
+The owner (2026-10-18) shared DeepScenario's visual localisation without GPS, and BILT, SimLab and
+Synode, "for the phase where field and autonomous work" happens. Read at the source in
+`reference/research-field-autonomy.md`: the three companies make 3D work instructions, training and
+VR from CAD, not site simulation; DeepScenario's published method (OrthoLoC) places a drone photo on
+an orthophoto and a surface model, but its code and data are non-commercial, so the method only.
+Candidates, their order the owner's (five questions in the note):
+
+| # | Phase | Scope |
+|---|---|---|
+| E1 | glTF and GLB export | Meshes named by element ID and layer, metres, +Y up; opens in Synode, SimLab, Blender and headsets |
+| E2 | Steps | A sequence over the model: a view, elements shown, ghosted, highlighted or moved, text read aloud, tools and safety, a check; by element ID, so the steps follow the model; offline on phone, tablet and computer |
+| E3 | Field record | Checks done on site with time, who and a photo; a report; xAPI if wanted |
+| E4 | Place a photo | Guided camera solve from points matched on the photo and the map or model, each point's error; shares Track D's control-point solve (D5) |
+| E5 | A track and its video | GPX or CSV tracks and Track D's flights on the map beside a video in step; real speeds as a check on V170 |
+| E6 | Automatic matches | Optional: a light matcher (XFeat, Apache-2.0) proposing E4's points against USGS NAIP orthophotos (0.6 m, keyless, CORS open) |
+| E7 | 1:1 on site | E2's steps in WebXR (`reference/research-scale.md`, step H) |
+| E8 | Simulation out | V166's streets as ASAM OpenDRIVE 1.9.0, a V170 run as OpenSCENARIO XML 1.4.0 |
+
 ### LATER - Track A, drafting (moved behind Track B in V100)
 
 The numbers in this table are its order, not phase numbers: a phase takes the next free V number
@@ -176,7 +198,7 @@ when it starts (V111 to V138 went to other work; V139 to V192 are in NOW).
 | 118 | Blocks and data | ATTDEF ATTEDIT BEDIT WBLOCK DATAEXTRACTION TABLESTYLE TABLEDIT TABLEEXPORT | First phase that's about the disciplines, not drafting. BLOCK and INSERT landed in V124, as the Assets library's blocks: saved records inserted as independent copies. A block reference that follows its definition (what BEDIT edits) is not built. |
 | 119 | Sheets and plotting, rest | MVIEW (draw a viewport on the paper) PAGESETUP (plot settings beyond Sheet Setup) PUBLISH (V122's Print set prints every sheet in one job; a chosen subset and page setups remain) EXPORTPDF (vector PDF of a sheet) VPLAYER (per-viewport layer visibility) viewport lock | LAYOUT, MSPACE and PSPACE landed in V116, with layout tabs and model space through a viewport. |
 
-**Recently finished:** V166c, **Properties' width by one press** (inside Phase 166; the version stays V166).
+**Recently finished:** V166d, **Properties' width by one press** (inside Phase 166, built on V167; the version stays V166).
 - V166b's "Not done": Properties' edge had only the drag and the minimise. A button in its header,
   beside the minimise, widens it a step at a time -- 240, 320, 400, 480, 560 within what the screen
   allows, then back to 240 -- and says where the next press goes: WCAG 2.2's single-pointer way. It
@@ -195,6 +217,50 @@ when it starts (V111 to V138 went to other work; V139 to V192 are in NOW).
 - **Checked** in 50 checks on a computer, a tablet either way and a phone either way, and at eleven
   sizes either side of 1024 and 500 px. 51 falsify variants, all caught. V147's and V166b's falsify
   scripts re-anchored; V166b's suite now waits for the left panel's easing to settle.
+
+Phase 167 (V167), **the standards registry**.
+- The owner: "building a system based on the industry standards (but flexible enough when the
+  standards changed)", any country, with fallbacks, overrides with a reason, new editions with app
+  versions and as files. The owner's answers (2026-10-18): a method outside its place still runs and
+  says so; only the analyses' assumptions overridable now; the US catalogue listed; packs shown by
+  their SHA-256 and publisher first, unsigned.
+- **Every standard is a record:** 32 topics (PTAL, the walking speed and distances, LEED ND, FHWA's
+  classes, CRTN, WHO's air and road noise guidelines, the stress methods, FEMA's zones, IBC's occupant
+  loads, ASCE 7's combinations, and the app's own assumptions; 14 US codes in a catalogue), each
+  edition dated, placed, cited to its section with its level (21 read at the source, 7 secondary, 4
+  the app's, 3 not read and never applied). V105 to V166's constants are gone; every sentence that
+  states a value builds it from the record.
+- **In force here:** the address search gives the site's country, region, district and city; the
+  most specific edition adopted there on the project's date applies; elsewhere a method says
+  "applied outside its place". An edition can be chosen; a value overridden with a reason.
+- **What a result keeps:** each run and the data fetched once keep the standards and values they
+  were worked out with; a row or finding says Out of date and why; the findings are worked out again
+  at once from the data kept.
+- **Packs** add editions as files, their differences, SHA-256 and publisher shown before Apply.
+- **Properties > Site > Standards** (`STANDARDS`, `CODES`), on a phone in its sheet.
+- **Checked** in 195 checks against a Python reference of every record and rule; 123 falsify
+  variants, all caught. Found while building: the compass rings stamped under the wrong name; numbers
+  worked out at fetch said at today's values; findings fixed until Analyze ran again; typed fields
+  lost on a redraw; seven standards' numbers left in sentences (among them WHO's 53 dB, now a record);
+  a level overstated; two older suites' rules (V114's dead CSS, V141's tab heights) met by the app.
+  V62, V73, V132, V141, V161 and V166b amended. Full regression 125 suites, 5999 checks, 0 failures.
+
+V166c, **the analytical member keeps only what is read** (inside Phase 166; the version stays V166).
+- V166b's follow-up. `falsify_phase125.py`'s `column_axes_swapped` swapped a member's `hy` and `hz`
+  and was not caught: nothing reads them.
+- **The audit first.** They were never on the element: `bimAnalyticalModel` derives a member from
+  each column and beam on every solve, and that member is never stored (not in `bimCarryBim`, the
+  project's JSON, the history, IFC or Properties). Of its seventeen fields, thirteen are read; `hy`,
+  `hz`, `p2` and `material` are not, and were not in V125's own build either. In V125 the locals
+  `hy` and `hz` fed the section; since V126 the section is the profile's.
+- **Patch 166g** writes the thirteen and drops the two locals. Nothing a user sees changes; the
+  guide, the release notes and BIM_APP_VERSION stay as they are.
+- **Checked:** V125 50 of 50 and V126 61 of 61, their falsify scripts 35 of 35 each; every literal
+  anchor of the 84 falsify scripts unmoved; a frame saved by V166b's Save opens in V166c with the
+  same members, model and solve, and a file whose members carry `hy` and `hz` opens and analyses as
+  the plain one. No new suite: a removal of what nothing reads cannot be seen in behaviour.
+- **Full regression** 124 suites, 5801 checks, 0 failures. V166b recorded 5804; its own build gives
+  5801 here too, every suite the same count, so the three are not this phase's.
 
 V166b, **the panels** (inside Phase 166; the version stays V166).
 - The owner: "make sure to fix the right panel also since i still see the analysis tab on it (looks
@@ -1245,3 +1311,6 @@ they ship as compiled binaries.
   `BIM_CMD_TERMS`, and a chord in `A3D_KEYS` (with `cmd`) if it has one (V128).
 - Nothing listens for a plain letter on the drawing except type-anywhere, which asks
   `__a3dTypeAnywhere` first. A new state that takes letters must make that test refuse (V128).
+- When a phase changes how a value is read, remove what still writes the old one: V126 took a
+  member's section from its profile and left its `hy` and `hz` written for nothing until V166c, found
+  only because a falsify variant that swapped them stopped being caught.

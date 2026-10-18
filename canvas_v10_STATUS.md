@@ -14948,17 +14948,95 @@ adds no analysis.
     sha256            b7ee1405e5248fbb833127618991763e1d0d997790b7230525e00d3d75032b7e
     markers           __acad3dV60 ... __acad3dV166, __acad3dV166b, __acad3dV134d (and the 133d to 133f markers)
 
-### V166c: Properties' width by one press
+### V166c: the analytical member keeps only what is read
+
+V166b left a follow-up: `falsify_phase125.py`'s `column_axes_swapped`, which swapped a member's `hy`
+and `hz`, was not caught, because nothing reads those two fields. The owner asked for the cleanup as a
+small phase: first confirm that nothing reads them (and stop if anything does), then stop writing
+them, with older projects opening unchanged.
+
+#### Found (the audit, before the patch)
+
+- **`hy` and `hz` were never on the element.** They are two of the seventeen fields
+  `bimAnalyticalModel` (V125) gives each member it derives from a column or a beam, on every solve.
+  That member is derived and never stored: it is not on `o.bim`, so it never reaches `bimCarryBim`,
+  the project's JSON, the history (V146), IFC or Properties, and `A3D_STRUCT.res`, which holds the
+  last model, is never saved. No project saved by any build has carried them.
+- **Every reader of the member, by each name it is bound to:** the split and the supports in the
+  builder; the loads and `bimFrameMemberResult` in the solve; `bimStructSig` (the id only); the
+  diagram and the deflected shape (`p1` and `ax`). The test hooks read the elements, not the members.
+  Thirteen fields are read: `id`, `name`, `kind`, `p1`, `L`, `ax`, `n1`, `n2`, `sec`, `E`, `G`,
+  `rho`, `els`. Four are not: `hy` and `hz`, and, found by the same search (law 2, the class), `p2`
+  (the far end, already in `L` and `ax`) and `material` (the material's name).
+- **None of the four was read in V125's own build either** (`Phase/canvas_v10.html.bak_phase126_pre`).
+  There the locals `hy` and `hz` fed `bimRectSection`, which is why the variant was caught then. V126
+  took the section from `bimMemberSection`, which maps a column's width and a beam's depth to the
+  section's `d` itself, and left the locals filling the record and nothing else.
+
+#### What was built (patch 166g)
+
+- The locals `hy` and `hz` and their two assignments are gone, and the record holds the thirteen
+  fields that are read, marked `__acad3dV166c`. `bimRectSection` keeps its parameter names: it is a
+  rectangle's formula, read by `bimProfileProps`.
+- Nothing on load: no file carries the fields, and a file given them by hand opens and analyses as
+  the plain one does (below).
+- BIM_APP_VERSION stays V166, as V166b's did. Nothing a user sees changes, so the guide does not
+  either: `tools/dump_catalog.py` writes the same catalogue and `tools/build_docs.py --check` finds
+  `docs/` current. As V166b, no pre-phase build is kept in `Phase/` (one would add a version to the
+  site's Versions page); the chain below rebuilds it.
+
+#### Checked
+
+- `tests/bim_phase125_structural_frame_browser_tests.py` 50 of 50 and
+  `tests/bim_phase126_section_profiles_browser_tests.py` 61 of 61. Falsification:
+  `falsify_phase125.py` 35 of 35 caught (261 s) and `falsify_phase126.py` 35 of 35 (208 s), 3
+  workers each.
+- Every literal anchor of the 84 falsify scripts (2,436) occurs as often in the new build as in the
+  old. The 33 computed variants are V105's to V120's, older than the builder.
+- **An older file, through the real Save and Open:** a frame (a column turned 30 degrees, 400 by 300,
+  a second column, a beam, lateral, line and point loads) saved by the V166b build's quick-access
+  Save and opened through the Start page in both builds. The members as loaded, the analytical model
+  and the 1.2D+1.6L solve with self-weight are identical to the last digit. The same file with
+  `hy` = 9 and `hz` = 7 written onto each member's `bim` opens in V166c and analyses exactly as the
+  plain file, and the loader keeps the two fields as it found them.
+- **No new suite.** What the phase removes cannot be seen in behaviour, which is the finding itself;
+  a check that it stays removed would have to read the source, and `hy` is a name the build uses
+  elsewhere (press-pull's face height, V123). The older-file check above was run once, by a script
+  outside the repository, because it needs the build before the phase as well as the one after.
+
+#### Lesson
+
+- **When a phase changes how a value is read, look for what still writes the old one.** V126 moved
+  the section's reader to the profile and left `hy` and `hz` written for nothing; a falsify variant
+  that had been caught until then was the only sign. The same search found two more fields on the
+  same record, unread since the day it was written.
+
+#### Full regression and state after V166c
+
+124 suites, 5801 checks, 0 failures (593 s, 5 workers). V166b recorded 5804. The V166b build, run
+from its own commit on this machine with the same suites, gives 5801 as well (589 s), and every one
+of the 124 suites counts the same checks on both builds: the three are not this phase's. Where they
+went between V166b's run and this machine's is not established; no suite says it skips a check here.
+Patches 166a to 166g rebuild the build byte for byte from `Phase/canvas_v10.html.bak_phase166_pre`. The diff is ES5-clean and ASCII.
+
+    canvas_v10.html   3187431 bytes
+    sha256            7fbee16e65f6ccd338df92dfb11961e65b81fed0a2763d0a78eb7139f3d5bde9
+    markers           __acad3dV60 ... __acad3dV166, __acad3dV166b, __acad3dV166c, __acad3dV134d (and the 133d to 133f markers)
+
+### V166d: Properties' width by one press
+
+Built in review as V166c with patch 166g; main had taken both for the analytical member (above) and
+then V167, so it is V166d, its patch 166h, applied unchanged to V167's build.
 
 The owner: a button in Properties' header that steps its width through fixed widths within what the
 screen allows (the drawing keeps 320 px, as V166b's left panel does), labelled with the next width,
 30 px (36 on coarse pointers), hidden where Properties is a drawer or a sheet, claimed in the shell's
 audit; the edge given the W3C window splitter's keys. V166b's "Not done". The research is
-`reference/research-panels.md` (V166c): the app's code and the browser first, then the window splitter
+`reference/research-panels.md` (V166d): the app's code and the browser first, then the window splitter
 pattern, ARIA's separator role, WCAG 2.2's 2.5.7 and 2.5.8, and two open implementations read as text
 (VS Code's view-size commands and sash, react-resizable-panels' separator), all primary.
 
-#### What was built (patch 166g)
+#### What was built (patch 166h)
 
 - **The button.** `[data-rpwidth]` in Properties' header, between its name and the minimise: 30 px,
   36 on a touch screen. Each press goes to the next of 240, 320, 400, 480, 560 within what the screen
@@ -14994,7 +15072,7 @@ pattern, ARIA's separator role, WCAG 2.2's 2.5.7 and 2.5.8, and two open impleme
 
 - **A finger could not drag Properties' edge (since V147).** It took `mousedown` alone; on a tablet on
   its side, where the edge is shown, a 120 px finger drag left Properties at 280 px. Lesson: a drag
-  checked only with a mouse says nothing of a finger; the V166c suite drives it with CDP touch events.
+  checked only with a mouse says nothing of a finger; the V166d suite drives it with CDP touch events.
 - **The code and the stylesheet disagreed on where Properties is docked (since V147).** The code said
   wider than 900 px, the stylesheet over 1024 wide and over 500 high. Between them -- a 1000 x 800
   window, a 932 x 430 phone on its side, a 1280 x 480 window -- the arrow minimised the drawer or sheet
@@ -15013,10 +15091,11 @@ pattern, ARIA's separator role, WCAG 2.2's 2.5.7 and 2.5.8, and two open impleme
 - **V166b's suite measured an easing width after a fixed wait.** In the baseline, on V166b's own build
   under four workers, the left panel read 257 px for 258 after Enter opened it. Its `geo()` now waits
   for the panel's transitions to finish (`getAnimations()`), bounded at 4 s -- V84's lesson again;
-  marked AMENDED FOR V166c. The V166c suite's `geo()` does the same.
+  marked AMENDED FOR V166d. The V166d suite's `geo()` does the same.
 - **The environment:** the pip Playwright (1.64) wanted a browser this container does not have; 1.56,
   matching Chromium 1194, is pinned. `cjval` was not installed, so V139 and V140 skipped three checks
-  (5801 of PIPELINE's 5804); built with cargo, they run.
+  (5801 of PIPELINE's 5804): V139 skips two and V140 one without it. That is the 5801 V166c's run
+  could not account for. Built with cargo, they run.
 - **Falsification:** one variant of the new script (`max_against_left_now`) was WRONG-REASON: it
   dropped a parenthesis and the page never loaded. Fixed, it is caught: with Properties' widest taken
   from the left panel's present width, the drawing falls to 244 px when the left panel reopens.
@@ -15039,7 +15118,7 @@ pattern, ARIA's separator role, WCAG 2.2's 2.5.7 and 2.5.8, and two open impleme
   fixed variant on its own). Two not variants, said in the script: End to `BIM_RIGHT_MAX`
   (`bimRightSetWidth` keeps any width within the screen), and Enter toggling rather than setting the
   minimise (the edge is not shown while minimised).
-- **Re-anchored** (RE-ANCHORED IN V166c): `falsify_phase147.py` (unclamped, drag_dead, drag_backwards,
+- **Re-anchored** (RE-ANCHORED IN V166d): `falsify_phase147.py` (unclamped, drag_dead, drag_backwards,
   no_reset, grip_on_touch, minimise_body_shown, minimise_button_text) and `falsify_phase166b.py`
   (cancel_kept, shift_step_same, not_a_separator, whose lines Properties' edge now shares). Both run
   whole on the final build and suites: `falsify_phase147.py` 25 of 25 (193 s), `falsify_phase166b.py`
@@ -15052,13 +15131,191 @@ pattern, ARIA's separator role, WCAG 2.2's 2.5.7 and 2.5.8, and two open impleme
 - `aria-valuetext` on both edges: allowed, not added; no screen reader was tested here.
 - V166b's: a dropdown focused in Analyze waits for its row's redraw.
 
-#### Full regression and state after V166c
+## Phase 167 (V167) - The standards registry
 
-125 suites, 5854 checks, 0 failures (573 s, 4 workers), with cjval built so V139 and V140 run all
-their checks. Patch 166g, after 166a to 166f, rebuilds the build byte for byte from
-`Phase/canvas_v10.html.bak_phase166_pre`. The diff is ES5-clean and ASCII. BIM_APP_VERSION stays V166,
-as V166b's did: V166c finishes V166's panels and adds no analysis.
+The owner (2026-10-17): "building a system based on the industry standards (but flexible enough when
+the standards changed)", for any country, with fallbacks, overrides with a reason, and new editions
+with app versions and as pack files. The research, the design and what was built are
+`reference/research-standards-registry.md` (its "As built" section), with the constants classified in
+`reference/research-standards-inventory.md`. The owner's four answers of 2026-10-18, all the
+recommended options: a method applied outside its place still runs and says so; only the assumptions
+the analyses use become overridable now (the roofs, survey tolerances and usages' defaults later);
+the US catalogue listed, "not applied by the app yet"; packs show their SHA-256 and publisher with
+every difference first, Apply or Cancel, marked unsigned.
 
-    canvas_v10.html   3194778 bytes
-    sha256            5613a9c8e85fe2907ef94b6cd6633b7a290c0f8dcbe1652835ff36ebe81f57f1
-    markers           __acad3dV60 ... __acad3dV166, __acad3dV166b, __acad3dV166c, __acad3dV134d (and the 133d to 133f markers)
+### What was built (patches 167a to 167i)
+
+- **The registry (167a).** Every standard, guideline and assumption an analysis applies is a record:
+  a topic and its editions, each with its published date, status, adoptions (a place key, from, to),
+  its source to the section with the level it was read at (P, S, U, A) and the date read, the method
+  that implements it, and its values in our own words (a number with its unit and a phrase, or a
+  table). 32 topics: 18 the analyses apply (PTAL, the walking speed, the walking
+  distances to daily needs, LEED ND's connectivity, FHWA's classes and the app's roads, CRTN, WHO's
+  road noise, the two stress methods, WHO's air quality, FEMA's zones, the slope classes, the
+  terrain's bands, IBC's occupant loads, ASCE 7's combinations, the context's sizes, the climate's
+  settings) and 14 in the US catalogue. Place keys: `*`, a country, an ISO 3166-2 region or
+  district, a city after its region.
+- **One reader.** `bimStd(topic, name)`: the project's override, or the value of the edition in force.
+  The edition in force is the one adopted most specifically for the site's place (the city, the
+  districts, the region, the country, international) on the project's date (today, or one given), the
+  latest adopted where two are, an end date the first day it no longer applies; where none is, a
+  topic that applies anywhere takes the newest edition published by then and says "applied outside its
+  place", with where it is in force. Reading writes nothing to the project.
+- **The values moved (167b).** V105 to V166's constants (the walking speed, LEED's radius and
+  thresholds, the climate's base, calm, bins and comfort band, WHO's levels, CRTN's range, the roads,
+  the crossing table, the design guides, PTAL's walks, allowances and bands, the slope classes, the
+  terrain's bands, the occupant loads, the combinations, the context's sizes and road widths) are read
+  through accessors in the shapes their code had; the constants are gone. FHWA's ranges give the old
+  traffic to the nearest 10. Every sentence that states one of them builds it from the record: the
+  catchments ("Within a 9-minute walk"), PTAL's method and its stops' reach, the compass rings'
+  minutes, CRTN's range, WHO's year and first interim target, LEED's chart, sentence, KPI and finding,
+  the slope finding's edges, the frame's combination names (its factors).
+- **The place.** The address search asks Nominatim for the address's parts too (`addressdetails=1`):
+  the country, the region, the districts and the city become the site's place, in the same undo step
+  as the site. Properties sets it by hand or clears it, and says when the site has moved since.
+- **Overrides,** each with a reason shown on every result that uses it: a number, more than zero (a
+  percentage may be zero, a temperature anything), in order where values are ordered (the walk to a
+  bus shorter than to rail, the slope classes, the comfort band); a table only through a pack. An
+  edition can be chosen for the project. Each change is one undo step.
+- **Provenance (167c, 167f).** Each analysis drawn in the model keeps a stamp of its standards (the
+  edition, how it applies, the overrides, a hash of the values); its row in Analyze says Out of date,
+  which and why, and Run again; every row names the standards it uses. The data fetched once keep
+  their own stamps and the values they were worked out with: the access data (the walking speed and
+  LEED's radius), the site context (its sizes), the climate (its base, calm, bins and comfort band)
+  and the air quality (WHO's levels). A stamp may name one value, so a threshold applied as a result
+  is drawn does not make its data out of date. The climate's findings and board state the values the
+  data was worked out with. A finding names its standards, says an edition applied outside its place
+  and an override with its reason, and says when Analyze site is needed. A change works the findings
+  out again from the data kept, in the same undo step. Results from before V167 are taken as worked
+  out with the editions' own values.
+- **Packs.** A `bim-standards-pack` file (version 1, up to 1 MB) adds editions and topics. Looked at
+  first: its name, publisher, date and SHA-256 (the app's own, checked against Python's), each
+  topic's edition in force before and after and the values that change; unsigned; Apply or Cancel;
+  Remove. A pack never changes an edition already in the registry, and an edition of a topic the app
+  applies must carry every value the app reads, of the same kind.
+- **Properties > Site > Standards (167d, 167g).** The place, the date, the topics by area with their
+  edition, level, how they apply and what uses them; Values in words with their sources; Override,
+  Save, Reset; the edition list; the codes in force for the place that the app does not apply yet; the
+  packs. `STANDARDS` (`STANDARDSREGISTRY`, `CODES`, `STDS`) opens it, on a phone or tablet in its
+  sheet; the group's buttons are finger-sized on touch.
+- Version V167. The guide's Site page has a Standards section.
+
+### Found
+
+- **The compass rings never kept their standard.** The analyses' list named them `compass`; their
+  analysis is `frame`, so their run kept no stamp and their row named nothing (167f).
+- **Numbers worked out at fetch, said at today's values.** The degree days were summed at 18 degrees;
+  with the base overridden to 20, the finding said "base 20" beside them. The climate and air data keep
+  the values they were worked out with, their findings and board say those, and say when Analyze site
+  is needed (167f).
+- **Findings fixed at Analyze time.** A finding's text is kept with the project, so a new LEED
+  threshold or slope class reached no finding until Analyze site ran again. A change works them out
+  again from the data kept, in the same undo step (167f).
+- **What was typed, lost.** Moving from the place's country field to its region redrew Properties and
+  emptied the first, and an override's value went the same way when its reason was typed. The fields
+  keep a draft until Save or Cancel, as the address does since V149c (167g).
+- **On a phone, nowhere to be seen.** STANDARDS opened the group in a closed sheet. It opens the sheet
+  now, as COMMIT does (V151) (167g).
+- **A pack's edition called the app's assumption,** where a pack adopted it for a place; and the same
+  pack a second time was refused for its editions being in the registry, not for being applied (167g).
+- **Seven numbers left in sentences,** found by the scan the design asked for (no standard's number
+  beside its unit outside the registry): WHO's road noise guideline of 53 dB, in a V164 row with no
+  record (read at its source today and made one: guidance for the WHO European Region, applied outside
+  its place everywhere); LEED's thresholds and quarter mile in the Access board's note; the comfort
+  band twice on the climate board; "the WHO 2021 guidelines" in its notes; the relief finding's 15%
+  and its classes; SLOPEMAP's description; and the context radius, which must reach CRTN's range
+  (167h).
+- **A level overstated.** PennDOT's DM-2 rested on a search summary and said S; a summary is not a
+  source, so it is listed unread (U) with nothing claimed, as ACI 318 and AISC 360 are (167h).
+- **A rule repeated.** 167f's touch size for the group's buttons repeated V149's, which already makes
+  Properties' buttons 36 px on touch; only the date field needed one (167h). Found by its variant.
+- **What the full regression found (167i).** V114 asks that every CSS rule can match something the
+  code makes: the level badges' classes and "applied outside its place" were joined from a prefix and
+  a value, which it cannot see, so they are written whole. V141 asks that each Properties tab is far
+  shorter than all its groups at once: the Standards group made the Site tab nearly as long, so it
+  starts closed, as Graphics' Technical and Presentation do, and STANDARDS opens it.
+- **LEED's second point** was taken at 400 and over; Table 1 gives it over 400 (167b).
+- **The suite's own slips,** each fixed in the suite: a `%` in a check's message read as a format; the
+  undo stack full from the suite's earlier steps (it is emptied before a step is counted, as V164's
+  suite does); the Access board left open over the climate board the next check read.
+
+### Suites
+
+- **New:** `bim_phase167_standards_registry_browser_tests.py`, 195 checks, with
+  `tests/standards_reference.py`: the registry worked out again from its sources (each topic, edition,
+  adoption, level and value as the source states it, with its arithmetic: 640 m and 960 m at 4.8 km/h,
+  FHWA's ranges to the old traffic), the constants the analyses had before V167 read from the kept
+  build, and the rules for the edition in force, written again in Python. The suite asks the app:
+  - the records against the reference; the move against the kept build's 23 sets of values; nothing
+    U applied; a scan of the source that no moved constant and no standard's number beside its unit is
+    left outside the registry, which finds all 29 constants and 14 kinds of phrase in the build before;
+  - reading writes nothing (every value, edition, stamp and sentence read, the group drawn);
+  - the edition and how, for 10 places, 9 dates and 32 topics against the reference (2,880 asked),
+    and the edges: Westminster and Leeds, Pennsylvania on 31 December 2025 and 1 January 2026, an
+    edition chosen, two adoptions at one place, an adoption's end;
+  - the place from Nominatim's parts (Trafalgar Square's, as Nominatim gives them), from Find with
+    `addressdetails=1` and one undo step with the site, by hand and refused, cleared, moved;
+  - overrides refused for each rule, kept with their reasons, one undo step each, cleared, undone;
+  - the words: the catchments at 11 and 9 minutes ("an 11-minute walk"), PTAL's method, the stops'
+    reach, the compass rings at 60 m a minute, LEED's prerequisite in the finding and the Access
+    board's note, the slope and relief findings' edges, the frame's combination names, WHO's noise
+    guideline in the noise layer, WHO's interim targets on the air chart;
+  - Out of date: the transit, compass, views, noise and wind rows, by run and by data, with why; run
+    again; a project from before V167, its stamps taken away in its saved file, current until a value
+    is overridden;
+  - the findings' standards lines (13), outside its place said, the climate's values as worked out
+    and Analyze site again working them out at the new ones (the degree days at 20 degrees, the
+    comfort band, the context fetched as far as CRTN's range overridden to 400 m);
+  - packs: the diff before Apply, the SHA-256 against Python's (a character outside the BMP too), 12
+    refused packs and the same pack twice, Apply, the edition in force changed, Remove with its chosen edition, undo;
+  - the group: STANDARDS and its three aliases, the place set by hand, the date, the topics by area,
+    the catalogue for Pennsylvania (7 rows) and its links, Values, Override refused then saved, Reset,
+    the edition list, a pack looked at, cancelled, applied and removed, a file that is not a pack;
+  - a reload keeps it all; a phone, a tablet and a desktop: inside the panel, finger-sized on touch.
+- **Falsified by `Phase/falsify_phase167.py`:** 120 variants, one per record (each value moved wrong,
+  a place, a date, a level overstated) and per mechanism. The first run, of 109, caught 107 (946 s, 6
+  workers). The two it missed, and one caught for the wrong reason:
+  - `override_no_undo` (an override with no undo step of its own): the suite's undo checks passed on
+    an earlier step. The suite now counts the steps from an empty history.
+  - `touch_small` (the group's touch rule taken away): the buttons stayed 36 px, from V149's rule.
+    167f's rule for them was redundant and is gone (167h); the variant now takes the date field's,
+    which is caught at 30 px.
+  - `row_std_dropped` broke the script, and failed at the marker: its edit is well formed now.
+  With 167h's eleven added, all 120: 120 caught (1128 s, 6 workers); again after the merge of main:
+  120 caught (1109 s). 167i's three added, `group_on_project` (STANDARDS no longer turning to Site)
+  was not caught: the suite had opened the Site tab itself for the new check that the group starts
+  closed. It starts from Project now. All 123 on the final suite and build: 123 caught (1170 s).
+- **Amended,** each AMENDED FOR V167: V62 (the registry's sources' hosts, linked and never fetched);
+  V132 (Find asks for the address's parts, `addressdetails=1`); V73, V141 and V166b (the Standards
+  group on Site, after Data Layers); V161 (LEED ND's edition named as the registry names it). V132's falsify script had five
+  variants stale, four of them since earlier phases: re-anchored (RE-ANCHORED IN V167), and
+  `falsify_phase132.py` 49 of 49 on the final build (344 s, 6 workers). V161's had two variants
+  anchored on the moved walking speed and LEED radius, re-anchored. On the final build:
+  `falsify_phase141.py` 21 of 21 (88 s), `falsify_phase161.py` 64 of 64 (675 s), `falsify_phase166b.py`
+  54 of 54 (319 s), 6 workers each. V62 and V73 have no falsify script. V114's suite passes unchanged
+  (167i made the app's classes visible to it); its falsify script has nine variants stale since
+  before V167, on the shell's tabs and Start screen, not this phase's.
+- Every other suite passes unchanged: V105's occupant loads, V125's combinations, V159's climate,
+  V161's access, V164 to V166's analyses read the registry now, which is what proves the move.
+
+### Not done
+
+- Checks in IDS's shape: with the interiors (I2).
+- A pack's export, and signed packs.
+- The 2018 IBC's adoption window in Pennsylvania, and ASCE 7's adoption by place: not read.
+- CRTN and the stress tables at S; North Norfolk's page moved; ACI 318, AISC 360 and PennDOT's DM-2
+  not read (U, listed without values or adoption).
+- The roofs, the survey tolerances and the usages' defaults still in code (the owner's second
+  answer); AISC's shapes (V126) still in code; the Koppen-Geiger names stay in code (definitions).
+- The frame analysis's results are not stamped: they are not saved with the project.
+
+### Full regression and state after V167
+
+125 suites, 5999 checks, 0 failures (472 s, 5 workers): the 124 older suites' 5804 and V167's 195.
+The older suites count 5804 here, as V166b recorded; V166c's machine counted 5801 for them.
+Patches 167a to 167i rebuild the build byte for byte from `Phase/canvas_v10.html.bak_phase167_pre`
+(V166c's build, main's after its merge). The diff is ES5-clean and adds no non-ASCII character.
+
+    canvas_v10.html   3282385 bytes
+    sha256            82fabb6129b2b483b7c5730e363465e7ee8fff23b8694c44526483972f56d15c
+    markers           __acad3dV60 ... __acad3dV167, __acad3dV166b, __acad3dV166c, __acad3dV134d (and the 133d to 133f markers)

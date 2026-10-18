@@ -55,7 +55,7 @@ Nothing at level U reached the code.
 - V162's wait covers a focused dropdown in Analyze too: Ctrl+Z pressed with one focused undoes the
   model, and the row shows it when the dropdown is left.
 
-# Research: Properties' width by one press (V166c)
+# Research: Properties' width by one press (V166d)
 
 The owner, 2026-10-18: a button in Properties' header that steps its width through fixed widths
 within what the screen allows (the drawing keeps 320 px, as V166b's left panel does), labelled with

@@ -58,7 +58,8 @@ async def within(aw, what):
 
 GROUP_TAB = {'Identity Data': 'project', 'Statistics': 'project', 'Location': 'site', 'Map': 'site', 'Site Context': 'site',
              'Data Layers': 'site', 'View': 'view', 'Usages': 'project',   # AMENDED FOR V166b: no Analysis tab; Usages on Project
-             'History': 'project'}   # AMENDED FOR V146: the History group, on the Project tab
+             'History': 'project',   # AMENDED FOR V146: the History group, on the Project tab
+             'Standards': 'site'}   # AMENDED FOR V167: the standards registry's group, on Site after Data Layers
 
 
 async def run():
@@ -153,8 +154,9 @@ async def run():
             ck(await safe("()=>document.querySelector('#a3d-propsbody [data-a3dpgrp=\"Location\"]').__v141mark===1"),
                "the tab turns in place: the groups are the same nodes")
             s = await shown()
-            ck(s.get('groups') == ['Location', 'Map', 'Site Context', 'Data Layers'] and s['tabs'][1][2] and s['tabs'][1][3] == 'true' and s['tabs'][0][3] == 'false',
-               "a click on Site shows Location, Map, Site Context and Data Layers (%s)" % s.get('groups'))
+            # AMENDED FOR V167: and Standards, after Data Layers (closed at first: STANDARDS opens it)
+            ck(s.get('groups') == ['Location', 'Map', 'Site Context', 'Data Layers', 'Standards'] and s['tabs'][1][2] and s['tabs'][1][3] == 'true' and s['tabs'][0][3] == 'false',
+               "a click on Site shows Location, Map, Site Context, Data Layers and Standards (%s)" % s.get('groups'))
             await click_tab('project')
             v = await safe("()=>document.querySelector('#a3d-propsbody [data-propmodel=\"client\"]').value")
             ck(v == 'Half typed', "and back: a half-typed field is still as typed -- the tab turns in place (%r)" % v)

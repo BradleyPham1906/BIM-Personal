@@ -43,7 +43,7 @@ VARIANTS = {
     'properties_change_unheard': [("    bimShellDockW();   /* __acad3dV166b: the left panel keeps the drawing its room */\n", "")],
     'drag_not_live': [("      root.style.setProperty('--a3d-lp-w',w+'px');root.style.setProperty('--a3d-left-w',(BIM_LEFT_RAIL+w)+'px');\n", "")],
     'dblclick_dead': [("    g.addEventListener('dblclick',function(){bimLeftSetWidth(null);});\n", "")],
-    # RE-ANCHORED IN V166c (cancel_kept, shift_step_same, not_a_separator): Properties' edge has the same lines
+    # RE-ANCHORED IN V166d (cancel_kept, shift_step_same, not_a_separator): Properties' edge has the same lines
     'cancel_kept': [("g.addEventListener('pointercancel',function(ev){end(ev,false);});\n    g.addEventListener('dblclick',function(){bimLeftSetWidth(null);});", "g.addEventListener('pointercancel',function(ev){end(ev,true);});\n    g.addEventListener('dblclick',function(){bimLeftSetWidth(null);});")],
     'touch_refused': [("if(A3D_SHELL_TIER!=='desktop'||ev.button>0)return;", "if(A3D_SHELL_TIER!=='desktop'||ev.button>0||ev.pointerType==='touch')return;")],
     'keys_to_model': [("    if(tg.getAttribute&&tg.getAttribute('role')==='separator'&&tg.tabIndex>=0)return !(ev.ctrlKey||ev.metaKey||/^F\\d+$/.test(ev.key));   /* __acad3dV166b */\n", "")],

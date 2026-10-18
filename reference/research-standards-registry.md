@@ -207,3 +207,126 @@ owner picks the profile. CLDR's list says which region codes exist.
 6. **Hidden standards.** The audit found a standard with no citation: the terrain's slope bands
    include 8.33% (1:12, logged that way in V144), which reads as the US accessibility ramp limit. It
    is U until its source is read, and V167 records it as such.
+
+## As built in V167 (2026-10-18)
+
+The owner's four answers of 2026-10-18, all the recommended options:
+1. A method applied outside its place (PTAL outside London, CRTN outside the UK, LEED ND and FHWA's
+   classes outside the US) still runs, and says "applied outside its place", with where it is in force.
+2. Only the assumptions the analyses use become overridable records now: the roads, the context's
+   sizes, the climate's base and bands, the walking speed, the slope classes, the terrain's bands.
+   The roofs, the survey tolerances and the usages' defaults move later.
+3. The US catalogue is read at its sources and listed in Properties > Site > Standards as "In force
+   here, not applied by the app yet".
+4. Packs show their SHA-256 and the publisher they name, with every difference first, then Apply or
+   Cancel. They are marked unsigned.
+
+### The records and where each was read
+
+Every value below was read in its source on 2026-10-17 or 2026-10-18, as text, from a copy in its own
+folder; nothing was run.
+
+| Topic | Edition | Read in | Level |
+|---|---|---|---|
+| `tfl.ptal` | Assessing transport connectivity in London (2015) | TfL's PDF, 2.5 and Table 2.2: 640 m and 960 m at 4.8 km/h, reliability 2 and 0.75 minutes, the bands. The tram walk is not given: rail's is taken (A). Adopted in the City and the 32 boroughs (ISO 3166-2:GB) | P |
+| `walk.speed` | The app's, TfL's figure | The same, 2.5: 4.8 km/h, 80 m a minute | P |
+| `guides.walk` | Manual for Streets (2007), with North Norfolk's guide | Manual for Streets 4.4.1 (800 m); North Norfolk's 800 m to a school and 400 m to green space from V166's reading, its page since moved | P, S |
+| `leed.nd` | LEED v4 ND (updated 2 July 2018) | USGBC's rating system, Connected and Open Community: 400 m, Cases 1 and 2 (90, 140), Table 1 (300 to 400, over 400). Read in the copy GBC Brasil hosts; USGBC's own needs a login | P |
+| `fhwa.fc` | Highway Functional Classification, 2023 Edition | Tables 3-5 and 3-6, the AADT ranges by class, rural and urban | P |
+| `crtn` | Calculation of Road Traffic Noise (1988) | Its 300 m range, as DataKustik's CadnaA documentation gives it: the memorandum could not be read here | S |
+| `lts.2012`, `lts.xing2016` | MTI 11-19 (2012); TRR 2587 (2016) | Princeton's reproduction of the tables: the reports refused | S |
+| `who.aqg` | WHO global air quality guidelines (2021) | Table 0.1: PM2.5 annual 5, 24-hour 15; interim targets 35 (annual), 75, 50, 37.5 and 25 (24-hour) | P |
+| `who.noise` | Environmental Noise Guidelines for the European Region (2018) | 3.1, road traffic: 53 dB Lden (53.3 rounded), 45 dB Lnight, both strong recommendations. Guidance for the region, adopted nowhere as a rule, so applied outside its place everywhere | P |
+| `fema.zones` | 44 CFR 64.3 | eCFR, current to 2026-10-01: the zone symbols | P |
+| `land.slope`, `terrain.slope_bands` | The app's | The slope classes are the app's working set (A). The terrain's 2%, 5% and 8.33% are the 2010 ADA Standards' 1:48, 1:20 and 1:12 (403.3, 405.2), read on ada.gov: the hidden 8.33% is P now | A, P |
+| `ibc.occupant_load` | IBC 2021 and 2018, Table 1004.5 | The table as V105 read it; 2021 adopted in Pennsylvania from 1 January 2026 by 34 Pa. Code 403.21, read in the Pennsylvania Code | S (the table), P (the adoption) |
+| `asce7.combos` | ASCE/SEI 7-22, 2.3.1 | Combinations 1 and 2 as V125 recorded them; ASCE's page names 7-22 current. Its adoption by place is not recorded | S |
+| `app.roads`, `app.context`, `app.climate` | The app's | Its own research notes (V133, V157, V159, V164) | A |
+| The catalogue | Pennsylvania's UCC (2021 I-Codes from 1 January 2026), the IBC 2021 and 2024, the 2010 ADA Standards, ICC A117.1-2026 (announced), ASHRAE 90.1-2025, the MUTCD 11th Edition with Revision 1, the Green Book's 7th Edition, AASHTO LRFD's 10th and 8th (DM-4 adopts the 8th), PennDOT's DM-4 (December 2019, with its strike-off letters), ASCE/SEI 7-22 with three supplements, FAA AC 150/5300-13B Change 1 | Each at its publisher's page or the adopting act, the date read on each record | P; the IBC 2024 as current S (inferred from ICC's note on A117.1-2026) |
+| Not read | ACI 318, AISC 360, PennDOT's DM-2 | concrete.org and aisc.org refuse scripts; PennDOT's publications host did not answer (2026-10-17 and 2026-10-18), and a search summary's "Change No. 11" is not a source | U, listed without values or adoption |
+
+### What the build does
+
+- **The record:** a topic (its title, publisher, kind, area, what uses it, whether it applies anywhere)
+  and its editions, each with its published date, status, where it is in force (place key, from, to),
+  its source (title, section, link, level, date read), the method that implements it, and its values
+  (a number with its unit and words, or a table), each with the source's own phrase and level where it
+  differs. 32 topics: 18 applied, 14 in the catalogue; 35 editions (21 read at their source, 7 from a
+  secondary source, 4 the app's, 3 not read); 81 values the analyses read (72 numbers, 9 tables).
+- **One reader,** `bimStd(topic, name)`: the project's override, or the value of the edition in force.
+  Every analysis reads through it or through an accessor in the shape its code had (V164 to V166's
+  constants are gone, and the suite asks that none is back). Reading writes nothing to the project.
+- **The place:** from the address search's own answer (`addressdetails=1` on the forward search, so no
+  second request): the country, ISO 3166-2's region and districts (lvl4, lvl6, lvl8) and the city. The
+  path is the city, the districts, the region, the country, then international. The edition in force is
+  the one adopted most specifically, on the project's date (today, or a date given), the latest adopted
+  where two are; where none is, a topic that applies anywhere takes the newest edition published by
+  then, and says "applied outside its place".
+- **Profiles** are the editions' adoptions: there is no separate profile object to keep in step.
+- **Methods** are named on the editions (`ptal.2015`, `lts.2012`, `crtn.1988`, `fc.midpoint`,
+  `fema.nfhl.1`). Each has one implementation; a second version brings the dispatch.
+- **Overrides** need a reason, a number, more than zero (a percentage may be zero, a temperature
+  anything), and the order of ordered values; a table changes only with a pack. Each is one undo step.
+- **Provenance:** a stamp is the topic, the edition, how it applies, the overrides and a hash of the
+  values. A stamp may name one value (`leed.nd|radius`), so a threshold applied as a result is drawn
+  does not make the data out of date. Runs keep a stamp; so do the access data (the walking speed,
+  LEED's radius), the site context (its sizes), the climate (its base, calm and bands, and the values
+  themselves, which its findings and board state) and the air quality (WHO's levels). Results from
+  before V167 are taken as worked out with the editions' own values. A change works the findings out
+  again from the data kept, in the same undo step; a row or finding whose data was worked out with
+  other values says so, and that Analyze site fetches it again.
+- **Packs:** `bim-standards-pack`, version 1, up to 1 MB, its SHA-256 (the app's own, checked against
+  Python's) and its publisher shown with every difference before Apply. A pack never changes an edition
+  already in the registry, and an edition of a topic the app applies must carry every value the app
+  reads, of the same kind. Packs are unsigned; no export yet.
+
+### What stays in code, and why
+
+Classes as `research-standards-inventory.md` gives them:
+- **Methods' own parameters (M):** the 2012 stress criteria and the reach's 25% detour (`lts.2012`),
+  ISO 9613-2's 20 dB cap on screening and CRTN's L10 to Lden step (the noise method), PTAL's half
+  headway, 30 over the access time, and the best line in full and the rest at half.
+- **Definitions (C):** FEMA's 1% and 0.2% annual chance, the Koppen-Geiger zones' names, the ACS's
+  90% margins of error.
+- **Display (D):** the noise bands' 5 dB steps from 55 dB, the walk bands of 5, 10 and 15 minutes, the
+  board's 400 m and 800 m circles, the car parks' 400 m search.
+- **Later (A):** the roofs' proportions, the survey tolerances and the usages' defaults (the owner's
+  answer 2); AISC's shapes (V126), which need a record per edition of the shapes database.
+
+### Found while building
+
+- **The compass rings never kept their standard.** The analyses' list named them `compass`; their
+  analysis is `frame`. Their run kept no stamp, and their row named nothing (167f).
+- **Numbers worked out at fetch, said at today's values.** The degree days were summed at 18 degrees;
+  with the base overridden to 20, the finding said "base 20". The climate and air data keep the values
+  they were worked out with, and their findings and board say those (167f).
+- **Findings fixed at Analyze time.** A finding's text is kept with the project, so a new LEED
+  threshold or slope class reached no finding until Analyze site ran again. A change works them out
+  again from the data (167f).
+- **What was typed, lost.** Moving from the country field to the region's redrew Properties and emptied
+  the first. The place's and an override's fields keep a draft until Save or Cancel (167g).
+- **On a phone, nowhere to be seen.** STANDARDS opened the group in a closed sheet; it opens the sheet
+  now, as COMMIT does (V151), and the date field is 36 px on touch, as V149 makes Properties' buttons
+  (167f, 167g, 167h: 167f's own rule for the buttons repeated V149's, and went).
+- **A pack's edition called the app's assumption,** and the same pack twice refused for the wrong
+  reason (167g).
+- **Seven numbers left in sentences,** found by the scan the design asked for: WHO's 53 dB, LEED's
+  thresholds in the Access board's note, the comfort band twice on the climate board, "the WHO 2021
+  guidelines", the relief finding's 15% and its classes, SLOPEMAP's description, and the context radius
+  that must reach CRTN's range (167h).
+- **A level overstated.** DM-2's entry rested on a search summary and said S; it is U now, with nothing
+  claimed (167h).
+- **Two of the older suites' rules (167i).** V114's, that every CSS rule can match what the code
+  makes: the badges' classes were joined from a prefix, and are written whole. V141's, that each
+  Properties tab is far shorter than all its groups: the group starts closed; STANDARDS opens it.
+- **LEED's second point** was taken at 400 and over; Table 1 gives it over 400 (167b).
+
+### Not done
+
+- Checks in IDS's shape: with the interiors (I2), where the clearances and widths are.
+- A pack's export, and signed packs.
+- The adoption window of the 2018 IBC in Pennsylvania, and ASCE 7's adoption by place: not read.
+- CRTN and the stress tables at S; North Norfolk's page moved; ACI 318, AISC 360 and DM-2 unread.
+- The roofs, the survey tolerances and the usages' defaults still in code (the owner's answer 2).
+- The frame analysis's results are not stamped: they are not saved with the project.
+- City-level records: the path reaches the city, but no record is adopted for one yet.

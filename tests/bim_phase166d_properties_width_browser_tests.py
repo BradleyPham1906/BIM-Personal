@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""bim_phase166c_properties_width_browser_tests.py -- V166c: Properties' width by one press, and its
+"""bim_phase166d_properties_width_browser_tests.py -- V166d: Properties' width by one press, and its
 edge a window splitter.
 
 V166b gave the left panel a width button beside its collapse: WCAG 2.2's 2.5.7 (Dragging Movements)
@@ -104,9 +104,9 @@ async def run():
                 print('      (evaluate failed: %s)' % str(e)[:200])
                 return None
 
-        has = await safe("()=>window.__acad3dV166c")
+        has = await safe("()=>window.__acad3dV166d")
         ck(bool(has) and 'rightstep' in has and 'rightedgekeys' in has and 'rightdocked' in has and 'auditproperties' in has,
-           "__acad3dV166c marker is present (%s)" % (has or '')[:60])
+           "__acad3dV166d marker is present (%s)" % (has or '')[:60])
         if not has:
             print("\n%d/%d checks passed\nRESULT: FAIL" % (ck.n - len(ck.bad), ck.n))
             await browser.close()

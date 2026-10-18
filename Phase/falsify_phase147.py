@@ -14,7 +14,7 @@ VARIANTS = {
     'inputs_uneven': [("border-radius:6px;min-height:26px;padding:3px 8px;font:inherit;font-size:11.5px;box-sizing:border-box;", "border-radius:6px;padding:3px 8px;font:inherit;font-size:11.5px;box-sizing:border-box;")],
     'buttons_square': [("#a3d-right #a3d-propsbody button{min-height:26px;padding:0 10px;border-radius:6px;", "#a3d-right #a3d-propsbody button{min-height:26px;padding:0 10px;border-radius:2px;")],
     'type_name_small': [("#a3d-right .a3d-ptypename{font-size:13px;", "#a3d-right .a3d-ptypename{font-size:11.5px;")],
-    # RE-ANCHORED IN V166c (unclamped, drag_dead, drag_backwards, no_reset, grip_on_touch, minimise_body_shown,
+    # RE-ANCHORED IN V166d (unclamped, drag_dead, drag_backwards, no_reset, grip_on_touch, minimise_body_shown,
     # minimise_button_text): the width is kept within what the screen allows, the edge takes pointer
     # events, its double click forgets the width through bimRightSetWidth(null), and the width button
     # shares the minimised and narrow-screen rules

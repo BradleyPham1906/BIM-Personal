@@ -1,4 +1,4 @@
-"""falsify_phase166c.py -- break the V166c build one way at a time, keeping the marker.
+"""falsify_phase166d.py -- break the V166d build one way at a time, keeping the marker.
 Variant names are lower case: the runner reads no other (V126)."""
 import pathlib, sys
 
@@ -11,7 +11,7 @@ VARIANTS = {
     'button_unwired': [("wb.addEventListener('click',function(){bimRightStep();});", "wb.addEventListener('click',function(){});")],
     'button_after_minimise': [("      hd.appendChild(wb);\n", ""), ("      hd.appendChild(b);\n", "      hd.appendChild(b);hd.appendChild(wb);\n")],
     'button_small': [(".a3d-rpwbtn{width:30px;height:30px;", ".a3d-rpwbtn{width:18px;height:18px;")],
-    'button_small_touch': [(".a3d-rpwbtn{width:36px;height:36px}   /* __acad3dV166c: a finger's target, and a 12 px edge it can see */\n", "")],
+    'button_small_touch': [(".a3d-rpwbtn{width:36px;height:36px}   /* __acad3dV166d: a finger's target, and a 12 px edge it can see */\n", "")],
     'button_white': [("cursor:pointer;padding:0;flex:0 0 auto;margin:0 2px 0 auto}", "cursor:pointer;padding:0;flex:0 0 auto;margin:0 2px 0 auto;color:#fff}")],
     'button_on_drawers': [("{.a3d-rgrip,.a3d-rpwbtn{display:none}}", "{.a3d-rgrip{display:none}}")],
     'button_while_minimised': [(",body.a3d-rmin .a3d-rpwbtn{display:none}", "{display:none}")],
@@ -21,7 +21,7 @@ VARIANTS = {
     'screen_ignored': [("    return Math.max(BIM_RIGHT_MIN,Math.min(BIM_RIGHT_MAX,Math.floor((window.innerWidth||0)-BIM_LEFT_RAIL-BIM_LEFT_MIN-BIM_LEFT_KEEP)));", "    return BIM_RIGHT_MAX;")],
     'drawing_not_kept': [("-BIM_LEFT_RAIL-BIM_LEFT_MIN-BIM_LEFT_KEEP)));", "-BIM_LEFT_RAIL-BIM_LEFT_MIN)));")],
     'max_against_left_now': [("-BIM_LEFT_RAIL-BIM_LEFT_MIN-BIM_LEFT_KEEP)));", "-parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--a3d-left-w'))-BIM_LEFT_KEEP)));")],
-    'kept_forced': [("Math.min(bimRightMax(),p.w)):null;   /* __acad3dV166c", "Math.min(BIM_RIGHT_MAX,p.w)):null;   /* __acad3dV166c")],
+    'kept_forced': [("Math.min(bimRightMax(),p.w)):null;   /* __acad3dV166d", "Math.min(BIM_RIGHT_MAX,p.w)):null;   /* __acad3dV166d")],
     'set_unclamped': [("    else p.w=Math.round(Math.max(BIM_RIGHT_MIN,Math.min(bimRightMax(),w)));", "    else p.w=Math.round(Math.max(BIM_RIGHT_MIN,Math.min(BIM_RIGHT_MAX,w)));")],
     'step_not_kept': [("  function bimRightStep(){return bimRightSetWidth(bimRightNext());}", "  function bimRightStep(){var r=document.getElementById('a3d-right');r.style.width=bimRightNext()+'px';return bimRightApply();}")],
     # ---- the label ----
@@ -53,14 +53,14 @@ VARIANTS = {
     'left_waits_for_drop': [("dr.now=w;rp.style.width=w+'px';bimShellDockW();try{", "dr.now=w;rp.style.width=w+'px';try{")],
     'left_eases_behind': [("body.a3d-rpdrag #a3d-leftpanel{transition:none}", "body.a3d-rpdrag #a3d-leftpanel{}")],
     'drag_unmarked': [("g.classList.add('drag');document.body.classList.add('a3d-rpdrag');", "g.classList.add('drag');")],
-    'reset_kept': [("    if(w===null)delete p.w;   /* __acad3dV166c", "    if(w===null)p.w=280;   /* __acad3dV166c")],
+    'reset_kept': [("    if(w===null)delete p.w;   /* __acad3dV166d", "    if(w===null)p.w=280;   /* __acad3dV166d")],
     'edge_narrow_touch': [(".a3d-rgrip{left:0;width:12px;", ".a3d-rgrip{")],
     # ---- where Properties is docked ----
     'docked_wider_than_900': [("    if(window.matchMedia)return !window.matchMedia(BIM_RIGHT_SHEET_MQ).matches;\n", "    return (window.innerWidth||0)>900;\n")],
     'docked_width_only': [("var BIM_RIGHT_SHEET_MQ='(max-width:1024px),(max-height:500px)';", "var BIM_RIGHT_SHEET_MQ='(max-width:1024px)';")],
     # ---- the shell's audit ----
     'button_unclaimed': [("    {sel:'[data-rpwidth]',why:'widens Properties a step at a time: its edge, by one press'},\n", "")],
-    'edge_unclaimed': [("    {sel:'.a3d-rgrip',why:'Properties\\' edge: dragged to size it, or moved from the keyboard'},   /* __acad3dV166c */\n", "")],
+    'edge_unclaimed': [("    {sel:'.a3d-rgrip',why:'Properties\\' edge: dragged to size it, or moved from the keyboard'},   /* __acad3dV166d */\n", "")],
     'minimise_unclaimed': [("    {sel:'#a3d-rminbtn',why:'minimises Properties to a strip; on a phone or a tablet, closes its sheet or drawer'},   /* __acad3dV147, driven by its suite */\n", "")],
     'audit_misses_properties': [("    if(rpA)[].forEach.call(rpA.querySelectorAll(Q),function(e){if(!e.closest('#a3d-propsbody'))nodes.push(e);});\n", "")],
     'audit_reads_body': [("if(!e.closest('#a3d-propsbody'))nodes.push(e);", "nodes.push(e);")],
@@ -76,5 +76,5 @@ txt = base
 for old, new in VARIANTS[name]:
     assert txt.count(old) == 1, 'variant %s anchor count %d: %r' % (name, txt.count(old), old[:70])
     txt = txt.replace(old, new, 1)
-assert '__acad3dV166c' in txt
+assert '__acad3dV166d' in txt
 out.write_text(txt, encoding='utf-8')
