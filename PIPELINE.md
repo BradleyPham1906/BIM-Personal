@@ -6,8 +6,8 @@
     sha256            c53d8e035c1ba9f8c85a09777e50c5c0d98bf6dc1f5dd8914d0c418db83959a8
     markers           __acad3dV60 ... __acad3dV167, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
                       __acad3dV121b, __acad3dV166b, __acad3dV166c, __acad3dV166d
-    tests             126 suites: V167's 125 (5999 checks) and V166d's 50; the full regression on
-                      this build is running (V166d's suite and the V14x and V16x suites pass)
+    tests             126 suites, 6049 checks, 0 failures (V167's 5999 and V166d's 50; with cjval
+                      built, V139 and V140 run all their checks)
 
     The user guide (V142): every phase updates docs/src/, its log entry and BIM_APP_VERSION, then
     runs tools/dump_catalog.py and tools/build_docs.py. The V142 suite and the Pages workflow

@@ -15131,6 +15131,20 @@ pattern, ARIA's separator role, WCAG 2.2's 2.5.7 and 2.5.8, and two open impleme
 - `aria-valuetext` on both edges: allowed, not added; no screen reader was tested here.
 - V166b's: a dropdown focused in Analyze waits for its row's redraw.
 
+#### Full regression and state after V166d
+
+Before the merge, on V166b's build: 125 suites, 5854 checks, 0 failures (573 s, 4 workers). On the
+merged build, main's V167 with patch 166h: 126 suites, 6049 checks, 0 failures (573 s, 4 workers),
+V167's 5999 and V166d's 50, with cjval built so V139 and V140 run all their checks. Every one of the
+2565 falsify variants in the 85 older scripts still anchors once on the merged build. The chain
+`Phase/canvas_v10.html.bak_phase167_pre`, patches 167a to 167i, then 166h, rebuilds the build byte
+for byte. The diff is ES5-clean and ASCII. BIM_APP_VERSION stays as V167 set it: V166d adds no
+analysis.
+
+    canvas_v10.html   3289824 bytes
+    sha256            c53d8e035c1ba9f8c85a09777e50c5c0d98bf6dc1f5dd8914d0c418db83959a8
+    markers           __acad3dV60 ... __acad3dV167, __acad3dV166b, __acad3dV166c, __acad3dV166d, __acad3dV134d (and the 133d to 133f markers)
+
 ## Phase 167 (V167) - The standards registry
 
 The owner (2026-10-17): "building a system based on the industry standards (but flexible enough when
