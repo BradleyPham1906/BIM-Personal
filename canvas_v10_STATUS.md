@@ -15335,3 +15335,103 @@ Patches 167a to 167i rebuild the build byte for byte from `Phase/canvas_v10.html
     canvas_v10.html   3282385 bytes
     sha256            82fabb6129b2b483b7c5730e363465e7ee8fff23b8694c44526483972f56d15c
     markers           __acad3dV60 ... __acad3dV167, __acad3dV166b, __acad3dV166c, __acad3dV134d (and the 133d to 133f markers)
+
+## Phase 168 (V168) - Site analysis in the model IV: land
+
+The plan is `reference/plan-v167-v170.md` (V168); the research, read at its sources on 2026-10-17 and
+18, is in that file's appendices and `reference/research-site-analysis-in-model.md` section 6 ("As
+built in V168"). The owner's choices, the defaults offered and taken with "start 168": the
+neighbourhood for 3-30-300's canopy 500 m, the smallest public green space 0.5 ha, the land use mix
+over the eight LBCS families 1000 to 8000. Each is a record of the standards registry (V167),
+overridable with a reason.
+
+### What was built (patches 168a to 168c)
+
+- **The registry (168a).** A new area, Land and green, with four topics:
+  - LBCS's activity dimension (APA): the nine families and their colours, as APA's workbook gives
+    them; adopted nowhere as a rule, so applied outside its place, and said;
+  - Spacematrix (Berghauser Pont and Haupt, 2010): a method with no values, its definitions from
+    Buildings and Cities' box;
+  - 3-30-300 (Browning et al., 2024, after Konijnendijk): 3 trees, 30%, 300 m, a green space of 0.5 ha;
+  - the app's land settings: the 500 m neighbourhood, 8 families, the 400 m square and its 100 m cells,
+    100 m for a tree seen, and the crosswalk from OpenStreetMap's tags to LBCS's activities (135
+    tags; grass and flowerbeds take the class of what they lie in).
+  Units in words: ha, trees, families.
+- **The context (168a)** asks for the land use the crosswalk reads (24 land use values more than
+  V157's six) and the grounds of amenities, leisure and tourism (a school's, a car park, a pitch, a
+  hotel's), which become land use areas. A building keeps its courtyards' outlines (`c.holes`).
+- **Four analyses (168b)**, each on its layer under Site analysis and a row in its category:
+  - **Land use** (Location; off at first): the areas and the buildings with a use of their own, in
+    LBCS's hues stepped to pass the colour-blindness checks for every pair on the light map and the
+    dark plan (the dataviz validator); every area outlined, industrial hatched at 45 degrees, assembly
+    at 135, natural resources dotted, the family's name on areas of 2000 m2 or more; the 400 m square
+    labelled with the mix. The mix on a 5 m grid: a building's own use, else the smallest area, else
+    grass's; Cervero's entropy index over the eight families.
+  - **Figure-ground** (Location; off at first): the buildings filled dark over the model (a lid at
+    each one's height), the open ground pale; Spacematrix's GSI, FSI, OSR and L for the square and for
+    each 100 m cell; the storeys from building:levels (less building:min_level for a part), else the
+    height over 3 m, at least one; the footprints cut to the box, less their courtyards; the grain.
+    Spacematrix's types not named: the book was not read.
+  - **Green and trees** (Ecology): the crowns, the woods dotted, the public green spaces (one under
+    0.5 ha dashed, a private park left out); the canopy of the neighbourhood on a 2 m grid, cut to
+    the context's square and said; the trees seen by V164's sight lines within 100 m, a tree
+    counted where a line meets its crown first, its layer hidden or not; the walk along V161's walk
+    times to the nearest public green space of 0.5 ha or more; 3-30-300 at the site.
+  - **Zoning around** (Legal; off at first): a council layer's districts in the layer's own colours,
+    the site's district heavier and named, each district's share of the zoned ground in the square.
+  The diagram engine draws a band's texture and an outline filled over the model; the key has nine
+  rows (LBCS's families), with the textures, on the view and in the rows.
+- **168c.** The findings: the land use mix and the density (Location), 3-30-300 (Ecology), the zoning
+  around (Legal), each naming its standards and working out again on an override. Analyze site reads
+  each ArcGIS data layer's description once (`?f=json`) for its drawing info, as Esri's own code
+  reads it (unique values on one to three fields, solid fills and outlines, the default, the
+  transparency; a hatch not drawn), kept with the layer; a failure named, warned and drawn in the
+  app's colours. Hooks; V168.
+
+### Found
+
+- **A crown can miss every cell.** The canopy was first counted on the land use's 5 m grid: a mapped
+  tree's crown, 4.8 m across by the context's rule, covered no cell's centre, so three trees made no
+  canopy. It is counted on a 2 m grid, where a crown 4.8 m across always covers a centre.
+- **0.49 x 10000 is a hair over 4900.** With the smallest green space overridden to 0.49 ha, a park of
+  4900 m2 did not count. Areas are compared to the square centimetre.
+- **The key had room for eight.** LBCS has nine families; the key on the view kept eight and dropped
+  No activity. It keeps nine.
+- **The fixture's own edges.** On the canopy's 2 m grid the cells' centres fall on even z: the woods'
+  edges, first at even z, split a row of 30 cells between the app (its coordinates a hair off after
+  the round trip through longitude and latitude) and the reference. The fixture's woods have odd z
+  edges now, as its note says. And Data Layers fetches a layer on adding it, so the suite reads the
+  add's result: a second fetch is refused while the first is under way.
+- **Two variants the fixture could not tell apart**, found as the variants were written with the
+  suite: an area's holes (no area had one) and 3-30-300's "at least 3" against "more than 3" (four
+  trees were seen). The fixture has homes round a hole, and the suite overrides the trees asked to as
+  many as are seen.
+- **Thirteen of the older suites' expectations** changed with V168 by design (below).
+
+### Suites
+
+- **New:** `bim_phase168_land_browser_tests.py`, 92 checks, with `tests/land_use_fixture.py` (V166's
+  streets, V164's context, and the land: a case of each rule) and `tests/land_use_reference.py`, the
+  methods worked out again from their sources and the fixture's own coordinates: the crosswalk, tag by
+  tag (281 asked); every 5 m cell's family and the mix; Spacematrix for the square and its 16 cells;
+  the storeys' rules; the canopy's 2 m cells; the trees seen by 180 sight lines; the walks along the
+  streets; the zoning's shares; a council renderer's colours with their transparency.
+- **Falsified by `Phase/falsify_phase168.py`:** FALSIFY_RESULT
+- **Amended,** each AMENDED FOR V168:
+  - V62: the registry's two new hosts, www.planning.org and doi.org, linked and never fetched;
+  - V133: a car park's ground is land use now, and the context has one more object;
+  - V141, V148, V162: the four new rows and their categories; Legal and Ecology hold analyses now;
+  - V157: the land use query, farmland brought as land use (a basin not), the counts and surfaces;
+  - V158: the land's three findings, farmland in the land use around, eleven going with the context;
+  - V164, V165: green and trees shown, and the land's analyses in the key's order;
+  - V167 and its reference: the four topics, Land and green before Climate, 22 applied, the hosts.
+  AMENDED_FALSIFY
+
+### Not done
+
+- Spacematrix's types, until the book is read; Cervero (1989) itself.
+- A land cover map for the canopy: ESA WorldCover cannot be read from a page; a file the owner gives
+  would be the next source.
+- The canopy beyond the context's square: Analyze site's radius is 300 m beyond the property; the
+  neighbourhood is 500 m. Said with the finding and on the layer.
+- A council layer's class-breaks and hatched renderers: named, not drawn.

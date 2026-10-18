@@ -99,6 +99,17 @@ TOPICS = {
         dict(id='app.context.1', pub='', st='current', lv='A', adopt=[('*', None, None)], v=None)]),
     'app.climate': dict(kind='assumption', anywhere=True, cat=False, eds=[
         dict(id='app.climate.1', pub='', st='current', lv='A', adopt=[('*', None, None)], v=None)]),
+    # AMENDED FOR V168: land and green -- LBCS (adopted nowhere as a rule), Spacematrix, 3-30-300 and the app's land
+    # settings; their values are held to their sources by tests/land_use_reference.py in V168's suite
+    'lbcs.activity': dict(kind='classification', anywhere=True, cat=False, eds=[
+        dict(id='lbcs.activity.apa', pub='', st='current', lv='P', adopt=[], v=None)]),
+    'spacematrix': dict(kind='method', anywhere=True, cat=False, eds=[
+        dict(id='spacematrix.2010', pub='2010', st='current', lv='P', adopt=[('*', '2010', None)], v={})]),
+    'green.33300': dict(kind='guideline', anywhere=True, cat=False, eds=[
+        dict(id='green.33300.2024', pub='2024', st='current', lv='P', adopt=[('*', '2024', None)],
+             v={'trees': (3, 'trees'), 'canopy': (30, '%'), 'walk': (300, 'm'), 'green_min': (0.5, 'ha')})]),
+    'app.land': dict(kind='assumption', anywhere=True, cat=False, eds=[
+        dict(id='app.land.1', pub='', st='current', lv='A', adopt=[('*', None, None)], v=None)]),
     # the catalogue: in force where they are adopted, not applied by the app yet
     'pa.ucc': dict(kind='code', anywhere=False, cat=True, eds=[dict(id='pa.ucc.2026', pub='2025-11-07', st='current', lv='P', adopt=[('us-pa', '2026-01-01', None)], v={})]),
     'ibc': dict(kind='code', anywhere=False, cat=True, eds=[dict(id='ibc.2021', pub='2020-10', st='current', lv='P', adopt=[('us-pa', '2026-01-01', None)], v={}),
@@ -121,7 +132,8 @@ TOPICS = {
 # the hosts the sources are linked on
 SOURCE_HOSTS = {'content.tfl.gov.uk', 'assets.publishing.service.gov.uk', 'www.gbcbrasil.org.br', 'www.fhwa.dot.gov', 'doku.datakustik.com', 'iris.who.int',
                 'www.ecfr.gov', 'www.ada.gov', 'www.pacodeandbulletin.gov', 'www.asce.org', 'www.iccsafe.org', 'www.ashrae.org', 'mutcd.fhwa.dot.gov',
-                'store.transportation.org', 'www.dot.state.pa.us', 'docs.penndot.pa.gov', 'www.concrete.org', 'www.aisc.org', 'www.faa.gov'}
+                'store.transportation.org', 'www.dot.state.pa.us', 'docs.penndot.pa.gov', 'www.concrete.org', 'www.aisc.org', 'www.faa.gov',
+                'www.planning.org', 'doi.org'}   # AMENDED FOR V168: APA's LBCS; the DOIs of Buildings and Cities and of Browning et al.
 
 
 # ---- the constants before V167, from the kept build ----

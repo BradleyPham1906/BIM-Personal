@@ -96,7 +96,7 @@ VARIANTS = {
     'climate_used_dropped': [("      if(D)D.used={base:bimClimBase()};\n", "")],
     'climate_finding_current': [("  function bimClimUsedBase(){var N=A3D.site&&A3D.site.climate&&A3D.site.climate.normals;return N&&N.used&&typeof N.used.base==='number'?N.used.base:bimStdOwn('app.climate','base');}",
                                  "  function bimClimUsedBase(){return bimClimBase();}")],
-    'views_not_context': [("needs:'access',views:'context',noise:'context',wind:'climate'};", "needs:'access',noise:'context',wind:'climate'};")],
+    'views_not_context': [("needs:'access',views:'context',noise:'context',", "needs:'access',noise:'context',")],   # RE-ANCHORED IN V168: the land's follow
     'refill_off': [("    try{bimStdRefill();}catch(e0){", "    try{}catch(e0){")],
     'stale_unshown': [("state:!R?null:(stale?'stale':", "state:!R?null:(false?'stale':")],
     'run_std_unsaid': [("      if(stale)st+='. Out of date: '+", "      if(false)st+='. Out of date: '+")],
@@ -147,7 +147,7 @@ VARIANTS = {
     'group_open_at_start': [("'Graphics \u2014 Presentation':false,Standards:false};", "'Graphics \u2014 Presentation':false};")],
     'badge_class_lost': [("  var BIM_STD_LV_CLS={P:'lv-P',S:'lv-S',U:'lv-U',A:'lv-A'};", "  var BIM_STD_LV_CLS={};")],
     'outside_unmarked': [("'<span class=\"a3d-stdhow'+(how==='outside'?' h-outside':'')+'\">'", "'<span class=\"a3d-stdhow\">'")],
-    'version_old': [("var BIM_APP_VERSION={v:'V167',date:'2026-10-18'};", "var BIM_APP_VERSION={v:'V166',date:'2026-10-12'};")],
+    'version_old': [("var BIM_APP_VERSION={v:'V168',date:'2026-10-18'};", "var BIM_APP_VERSION={v:'V166',date:'2026-10-12'};")],   # RE-ANCHORED IN V168
 }
 
 name = sys.argv[1]

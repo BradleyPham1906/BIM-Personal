@@ -909,7 +909,8 @@ async def run():
             await page.wait_for_timeout(400)
             tl = [b['title'] for b in ((await safe("()=>window.__a3dDgLegend()") or {}).get('blocks') or [])]
             every = ['Compass and distance', 'Sun paths', 'Shadows', 'Winds', 'Views', 'Noise', 'Contours', 'Slope', 'Aspect', 'Water flow', 'Ponds', 'Flood zones',
-                     'Street hierarchy', 'Cycling stress', 'Transit', 'Walk times', 'Daily needs', 'Vehicle access']   # AMENDED FOR V166: and movement's, after them
+                     'Street hierarchy', 'Cycling stress', 'Transit', 'Walk times', 'Daily needs', 'Vehicle access',   # AMENDED FOR V166: and movement's, after them
+                     'Land use', 'Figure-ground', 'Green and trees', 'Zoning around']   # AMENDED FOR V168: and the land's
             ck(again_ in tl and tl == [t for t in every if t in tl], "an analysis turned on again keeps its key in the small view, the one shown longest ago giving way; the rest in their order (%s turned on: %s)" % (again_, tl))
             await page.set_viewport_size({'width': 1440, 'height': 900})
             await page.wait_for_timeout(300)

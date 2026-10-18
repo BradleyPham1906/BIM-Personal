@@ -151,7 +151,7 @@ async def run():
             await tab('analyze')
             # AMENDED FOR V162: one Analyze -- the analyses in the categories they answer (opened here,
             # so their rows can be measured), Model the one group left at the end
-            await safe("()=>['location','landform','water','climate','risk','access','people'].forEach(function(c){window.__a3dSaGoto(c);})")   # AMENDED FOR V164: and the categories of the analyses Analyze site draws; AMENDED FOR V166: Access and circulation
+            await safe("()=>['location','legal','landform','water','climate','ecology','risk','access','people'].forEach(function(c){window.__a3dSaGoto(c);})")   # AMENDED FOR V168: and Legal and Ecology, which hold analyses now   # AMENDED FOR V164: and the categories of the analyses Analyze site draws; AMENDED FOR V166: Access and circulation
             await page.wait_for_timeout(150)
             R = await rows()
             order = await safe("()=>[].map.call(document.querySelectorAll('.a3d-analyze-wrap .a3d-anzgrphd'),function(e){return e.textContent;})")
@@ -162,8 +162,9 @@ async def run():
             # AMENDED FOR V164: the six analyses Analyze site draws, first in their categories
             # AMENDED FOR V165: the land and water analyses, contours, slope and aspect in Landform, flow, ponds and flood in Water
             # AMENDED FOR V166: movement's in Access and circulation, daily needs in People and place
-            ck(G == {'location': ['dgframe'], 'landform': ['dgcontours', 'dgslope', 'dgaspect', 'survey', 'terrain', 'grading'], 'water': ['dgflow', 'dgponds', 'dgflood', 'rain'],
-                     'climate': ['dgsun', 'dgshadow', 'dgwind', 'sun', 'sunhours', 'solar'],
+            # AMENDED FOR V168: the land's, land use and figure-ground in Location, zoning around in Legal, green and trees in Ecology
+            ck(G == {'location': ['dgframe', 'dglanduse', 'dgfigure'], 'legal': ['dgzoning'], 'landform': ['dgcontours', 'dgslope', 'dgaspect', 'survey', 'terrain', 'grading'], 'water': ['dgflow', 'dgponds', 'dgflood', 'rain'],
+                     'climate': ['dgsun', 'dgshadow', 'dgwind', 'sun', 'sunhours', 'solar'], 'ecology': ['dggreen'],
                      'risk': ['dgnoise'], 'access': ['dgstreets', 'dgcycling', 'dgtransit', 'dgwalk', 'dgvehicles'], 'people': ['dgviews', 'dgneeds'],
                      'model': ['lens', 'areas', 'lod', 'stats', 'structure']},
                "each analysis in its category, or in Model (%s)" % G)
@@ -238,7 +239,7 @@ async def run():
             await page.keyboard.press('Escape')
             await page.wait_for_timeout(100)
             vis = [k for k, r in (await rows()).items() if not r['hidden']]
-            ck(len(vis) == 30 and await safe("()=>document.querySelector('.a3d-analyze-wrap [data-anzsearch]').value") == '', "Escape empties it: every row again")   # AMENDED FOR V164: 18 rows; AMENDED FOR V165: 24; AMENDED FOR V166: 30
+            ck(len(vis) == 34 and await safe("()=>document.querySelector('.a3d-analyze-wrap [data-anzsearch]').value") == '', "Escape empties it: every row again")   # AMENDED FOR V164: 18 rows; AMENDED FOR V165: 24; AMENDED FOR V166: 30; AMENDED FOR V168: 34
             # the left panel is the one scroll container (V65)
             sc = await safe("()=>{var a=document.getElementById('a3d-leftpanel');window.__a3dAnzOpenAll(true);a.scrollTop=a.scrollHeight;return a.scrollTop;}")
             await safe("()=>window.__a3dColumnAt([210,200],0,1,1,3)")

@@ -21,7 +21,8 @@ VARIANTS = {
     # RETIRED IN V164: 'no_stage_move' -- Fill from the model moved the project to the desktop stage; V164 removed the stages.
     # 'no_stage_move': [("    if(s.stage<1)s.stage=1;\n", "")],
     'no_property': [("    var P=A3D.objs.filter(bimIsProperty);\n    if(P.length){", "    var P=[];\n    if(P.length){")],
-    'slope_unweighted': [("      area+=A;sum+=g*A;if(g>mx)mx=g;if(g>0.15)steep+=A;", "      area+=1;sum+=g;if(g>mx)mx=g;if(g>0.15)steep+=1;")],
+    # RE-ANCHORED IN V168: the steep share's edge is the registry's since V167
+    'slope_unweighted': [("      area+=A;sum+=g*A;if(g>mx)mx=g;if(g>sb3)steep+=A;", "      area+=1;sum+=g;if(g>mx)mx=g;if(g>sb3)steep+=1;")],
     'datum_ignored': [("        var off=dat!==null&&dat!==undefined?dat:0,", "        var off=0,")],
     'day_length_wrong': [("var m=Math.round(r.sunset-r.sunrise);", "var m=Math.round(r.sunset-r.noon);")],
     'airport_not_constraint': [("aircraft noise and height limits are likely',cls:'constraint',sev:2", "aircraft noise and height limits are likely',cls:'neutral',sev:1")],

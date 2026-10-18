@@ -22,7 +22,8 @@ VARIANTS = {
     'overpass_setting_ignored': [("    var pOsm=q?bimCtxOverpass(q,st.overpass):Promise.resolve(null);", "    var pOsm=q?bimCtxOverpass(q,BIM_OVERPASS_URL):Promise.resolve(null);")],
     # ---- 133a: reading OSM
     'feet_as_metres': [("      if(m[2]&&/^(ft|feet|')$/i.test(m[2]))v*=0.3048;\n", "")],
-    'levels_ignored': [("    if(isFinite(L)&&L>0&&L<300)return {h:L*BIM_CTX_LEVEL_H,from:'levels'};\n", "")],
+    # RE-ANCHORED IN V168: a storey's height is the registry's since V167
+    'levels_ignored': [("    if(isFinite(L)&&L>0&&L<300)return {h:L*bimCtxLevelH(),from:'levels'};\n", "")],
     'zero_height_kept': [("      if(v>0&&v<1000)return {h:v,from:'height'};", "      return {h:v,from:'height'};")],
     'rings_not_joined': [("      while(!same(r[0],r[r.length-1])&&grew){", "      while(false){")],
     'open_chain_kept': [("      if(r.length>=4&&same(r[0],r[r.length-1]))rings.push(r);", "      if(r.length>=2)rings.push(r);")],
@@ -43,13 +44,15 @@ VARIANTS = {
     'no_replace': [("      A3D.objs=A3D.objs.filter(function(x){return !(x.context&&repl[x.context.kind]);});\n", "")],
     # RE-ANCHORED FOR V157: the loop runs over every kind but the terrain
     'replace_all_kinds': [("    if(feats)for(i=0;i<BIM_CTX_KINDS.length;i++)if(BIM_CTX_KINDS[i]!=='terrain'&&k[BIM_CTX_KINDS[i]])repl[BIM_CTX_KINDS[i]]=1;", "    if(feats)for(i=0;i<BIM_CTX_KINDS.length;i++)repl[BIM_CTX_KINDS[i]]=1;")],
-    'fetch_not_undoable': [("    var selWas=A3D.sel,setWas=(A3D.selSet||[]).slice();\n    pushUndo();", "    var selWas=A3D.sel,setWas=(A3D.selSet||[]).slice();")],
+    # RE-ANCHORED IN V168: the parts' and roofs' lines (V139, V140) stand between them now
+    'fetch_not_undoable': [("    var nRoofs={},nNoRoof={};   /* __acad3dV140 */\n    pushUndo();\n    undoSuspend=true;", "    var nRoofs={},nNoRoof={};   /* __acad3dV140 */\n    undoSuspend=true;")],
     'not_pinned': [("x.col=BIM_CTX_COL[kind];x.locked=true;n[kind]++;", "x.col=BIM_CTX_COL[kind];n[kind]++;")],
     'layers_flat': [("ly=bimLayerByName('Context '+k)||bimLayerNew({name:'Context '+k,color:BIM_CTX_COL[k],parent:par.id});",
                      "ly=bimLayerByName('Context '+k)||bimLayerNew({name:'Context '+k,color:BIM_CTX_COL[k]});")],
     'selection_left': [("    A3D.sel=objById(selWas)?selWas:null;A3D.sel2=null;\n", "")],
     'ground_not_recorded': [("            c.ground=ground([cx/Pp.length,cz/Pp.length]);\n", "")],
-    'courtyards_uncounted': [("            if(f.inner.length){c.courtyards=f.inner.length;yards+=f.inner.length;}\n", "")],
+    # RE-ANCHORED IN V168: the line keeps the courtyards' outlines too
+    'courtyards_uncounted': [("            if(f.inner.length){c.courtyards=f.inner.length;yards+=f.inner.length;c.holes=", "            if(false){c.courtyards=f.inner.length;yards+=f.inner.length;c.holes=")],
     'assumed_unsaid': [("            if(hh.from==='assumed')assumed++;\n", "")],
     # ---- 133a: failures
     # RE-ANCHORED IN V134d: each Overpass instance tried is named
@@ -71,9 +74,11 @@ VARIANTS = {
     'overpass_unchecked': [("      if(!/^https?:\\/\\/[^\\s\\/]+\\/\\S*$/i.test(nv)){a3dToast('An Overpass server is a web address", "      if(false){a3dToast('An Overpass server is a web address")],
     'remove_not_undoable': [("    if(!n){a3dToast('There is no site context to remove');return 0;}\n    pushUndo();", "    if(!n){a3dToast('There is no site context to remove');return 0;}")],
     # ---- 133b
-    'no_site_context_group': [("    h+=bimPropGroup('Site Context',bimCtxModelHtml());   /* __acad3dV133 */\n", "")],
+    # RE-ANCHORED IN V168: the group is on the Site tab (V141)
+    'no_site_context_group': [("    h+=bimPTab('site',bimPropGroup('Site Context',bimCtxModelHtml()));   /* __acad3dV133 */\n", "")],
     'no_context_page': [("    if(o.context)h+=bimCtxPropsHtml(o);                 /* __acad3dV133 */\n", "")],
-    'checkbox_value': [("    bimCtxSet(k,k.indexOf('kind:')===0?f.checked:f.value);", "    bimCtxSet(k,f.value);")],
+    # RE-ANCHORED IN V168: on the ground is a box too (V137)
+    'checkbox_value': [("    bimCtxSet(k,(k.indexOf('kind:')===0||k==='onGround')?f.checked:f.value);", "    bimCtxSet(k,f.value);")],
     'context_not_on_ribbon': [("'bim:map','bim:findaddress','bim:geoimport','bim:context',", "'bim:map','bim:findaddress','bim:geoimport',")],
     # RE-ANCHORED FOR V157: the words now name railways, bridges, airports and the rest
     'no_context_terms': [("    CONTEXT:'neighbours neighbors surrounding buildings osm openstreetmap overpass roads streets water rivers parks trees terrain elevation contours ground giraffe railway railways train tram subway bridges tunnels airport runway power pylons land use infrastructure',   /* __acad3dV133; __acad3dV157 */\n", "")],

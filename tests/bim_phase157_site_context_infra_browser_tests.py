@@ -211,7 +211,7 @@ async def run():
                             ('way["aeroway"~"^(runway|taxiway|apron|aerodrome|helipad)$"]', 'runways, taxiways, aprons, aerodromes'),
                             ('relation["aeroway"="aerodrome"]', 'an aerodrome as a relation'),
                             ('way["power"="line"]', 'power lines'), ('node["power"="tower"]', 'pylons'),
-                            ('way["landuse"~"^(residential|commercial|retail|industrial|railway|construction)$"]', 'land use')):
+                            ('way["landuse"~"^(residential|commercial|retail|industrial|railway|construction|education|institutional|civic_admin|religious|churchyard|cemetery|military|garages|landfill|brownfield|greenfield|farmland|field|farmyard|orchard|vineyard|allotments|plant_nursery|greenhouse_horticulture|aquaculture|quarry|port|school|flowerbed)$"]', 'land use')):   # AMENDED FOR V168: what LBCS's crosswalk reads
                 ck(w in q, "the query asks for %s" % what)
             for k in NEW:
                 await safe("(k)=>window.__a3dCtxSet('kind:'+k,false)", k)
@@ -228,7 +228,7 @@ async def run():
                              (('way', {'aeroway': 'gate'}), ''), (('node', {'power': 'tower'}), 'power'),
                              (('way', {'power': 'line'}), 'power'), (('way', {'power': 'cable'}), ''),
                              (('way', {'natural': 'tree_row'}), 'trees'), (('way', {'landuse': 'industrial'}), 'landuse'),
-                             (('way', {'landuse': 'farmland'}), ''), (('way', {'landuse': 'grass'}), 'green'),
+                             (('way', {'landuse': 'farmland'}), 'landuse'), (('way', {'landuse': 'basin'}), ''), (('way', {'landuse': 'grass'}), 'green'),   # AMENDED FOR V168: farmland is land use; a basin is not
                              (('way', {'highway': 'primary', 'bridge': 'yes'}), 'roads')):
                 got = await safe("(e)=>window.__a3dOsmKind({type:e[0],tags:e[1]})", list(el))
                 ck(got == want, "%s %s: %r (%r)" % (el[0], el[1], want, got))
@@ -262,13 +262,13 @@ async def run():
             print("\n-- 3. one press")
             await safe("()=>window.__a3dTestSetObjs([])")
             r = await fetch() or {}
-            want = {'buildings': 0, 'roads': 6, 'water': 0, 'green': 0, 'trees': 7, 'rail': 3, 'airports': 4, 'power': 3, 'landuse': 1, 'terrain': 1}
+            want = {'buildings': 0, 'roads': 6, 'water': 0, 'green': 0, 'trees': 7, 'rail': 3, 'airports': 4, 'power': 3, 'landuse': 2, 'terrain': 1}   # AMENDED FOR V168: and the farmland
             ck(r.get('counts') == want and not r.get('errors'),
-               "6 roads, 7 trees (one and a row of six), 3 railways, 4 airport parts, 3 power, 1 land use, the terrain (%s)" % r.get('counts'))
-            ck(r.get('bridges') == 1 and r.get('tunnels') == 1 and r.get('surfaces') == 12,
-               "1 bridge, 1 tunnel, 12 surfaces (%s, %s, %s)" % (r.get('bridges'), r.get('tunnels'), r.get('surfaces')))
+               "6 roads, 7 trees (one and a row of six), 3 railways, 4 airport parts, 3 power, 2 land use, the terrain (%s)" % r.get('counts'))
+            ck(r.get('bridges') == 1 and r.get('tunnels') == 1 and r.get('surfaces') == 13,
+               "1 bridge, 1 tunnel, 13 surfaces, the farmland's tint one (%s, %s, %s)" % (r.get('bridges'), r.get('tunnels'), r.get('surfaces')))   # AMENDED FOR V168
             tt = await toast()
-            ck('3 railways' in tt and '4 airports' in tt and '3 power' in tt and '1 land use' in tt and '7 trees' in tt,
+            ck('3 railways' in tt and '4 airports' in tt and '3 power' in tt and '2 land use' in tt and '7 trees' in tt,   # AMENDED FOR V168
                "the message counts each kind (%r)" % tt)
             ck('1 bridge raised' in tt and '1 tunnel below ground' in tt, "and says a bridge was raised and a tunnel is below ground")
             ck(await safe("()=>window.__a3dCtxDatum()") == BASE, "the datum: the ground at model 0,0 (120 m)")
@@ -280,7 +280,7 @@ async def run():
             co = await ctx_objs()
             ck(co and all(byid.get(o['layer'], {}).get('name') == 'Context ' + o['context']['kind'] for o in co) and all(o.get('locked') for o in co),
                "every object on its kind's layer, pinned")
-            ck(await by_osm(2004) is None and await by_osm(6002) is None, "an abandoned railway and farmland are not brought")
+            ck(await by_osm(2004) is None and await by_osm(6002) is not None, "an abandoned railway is not brought; farmland is, land use since V168")   # AMENDED FOR V168
 
             # ---------------------------------------------------------------------------------
             print("\n-- 4. the surfaces")

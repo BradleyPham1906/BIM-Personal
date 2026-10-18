@@ -559,7 +559,8 @@ async def run():
             await safe("()=>document.querySelector('[data-saact=\"analyze\"]')&&0", pg=p3)
             line = await safe("()=>{var o={};[].forEach.call(document.querySelectorAll('[data-safstd]'),function(e){o[e.getAttribute('data-safstd')]=e.textContent;});return o;}", pg=p3) or {}
             ck(sorted(line) == sorted(['access.cycling', 'access.transit', 'access.walk', 'access.connectivity', 'people.daily', 'climate.comfort', 'climate.degreedays', 'climate.wind', 'risk.air',
-                                       'landform.slope', 'landform.terrain', 'water.fema', 'location.built']), "each finding drawn from a standard names it: 13 (%s)" % sorted(line))
+                                       'landform.slope', 'landform.terrain', 'water.fema', 'location.built',
+                                       'location.landuse', 'location.density', 'ecology.33300']), "each finding drawn from a standard names it: 16 (%s)" % sorted(line))   # AMENDED FOR V168: the land's three
             ck(line.get('water.fema') == "Standards: Flood zones: 44 CFR 64.3, the flood insurance rate map's zone symbols" and
                line.get('risk.air') == 'Standards: WHO air quality guidelines: fine particulate matter (PM2.5): WHO global air quality guidelines (2021)', "an edition in force for the place, by name")
             ck('applied outside its place (Greater London; no edition is recorded in force for Philadelphia, Pennsylvania, United States on %s)' % TODAY in line.get('access.transit', ''),
@@ -719,10 +720,11 @@ async def run():
             G = await std_group()
             ck(G.get('tab') == 'site' and G.get('open') and G.get('prev') == 'Data Layers', "STANDARDS: Properties, Site, the Standards group open after Data Layers (%s, %s)" % (G.get('tab'), G.get('prev')))
             ck("no place set, so each is applied as the app's default and says so" in await toast(), "and says where it is (%s)" % await toast())
-            want_t = [t for a_ in ['Transit and walking', 'Roads and noise', 'Cycling', 'Air', 'Flood and ground', 'Buildings', 'Structure', 'Site context', 'Climate']
+            # AMENDED FOR V168: Land and green, before Climate, and its four topics
+            want_t = [t for a_ in ['Transit and walking', 'Roads and noise', 'Cycling', 'Air', 'Flood and ground', 'Buildings', 'Structure', 'Site context', 'Land and green', 'Climate']
                       for t in R.TOPICS if not R.TOPICS[t]['cat'] and RECS[t]['area'] == a_]
-            ck(G.get('topics') == want_t and len(want_t) == 18, "the 18 topics the app applies, by area (%s)" % G.get('topics'))
-            ck(G.get('areas', [])[:9] == ['Transit and walking', 'Roads and noise', 'Cycling', 'Air', 'Flood and ground', 'Buildings', 'Structure', 'Site context', 'Climate'] and
+            ck(G.get('topics') == want_t and len(want_t) == 22, "the 22 topics the app applies, by area (%s)" % G.get('topics'))
+            ck(G.get('areas', [])[:10] == ['Transit and walking', 'Roads and noise', 'Cycling', 'Air', 'Flood and ground', 'Buildings', 'Structure', 'Site context', 'Land and green', 'Climate'] and
                'In force here, not applied by the app yet' in G.get('areas', []) and 'Standards packs' in G.get('areas', []), "under their areas, the catalogue and the packs (%s)" % G.get('areas'))
             ck("Not set: each standard is applied as the app's default, and says so" in G.get('text', '') and 'Set the place to list the codes in force there' in G.get('text', ''), "no place: said, and no catalogue")
             for cmd in ('STANDARDS', 'STANDARDSREGISTRY', 'CODES', 'STDS'):

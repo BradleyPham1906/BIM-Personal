@@ -7,7 +7,8 @@ base = SRC.read_text(encoding='utf-8')
 
 VARIANTS = {
     # ---- the engine: rings, groups, lines, the pick, the key ----
-    'rings_nonzero': [("c2.fill(T[i].eo?'evenodd':'nonzero');", "c2.fill('nonzero');")],
+    # RE-ANCHORED IN V168: the texture's fill follows it now
+    'rings_nonzero': [("c2.fillStyle=T[i].col;c2.fill(T[i].eo?'evenodd':'nonzero');", "c2.fillStyle=T[i].col;c2.fill('nonzero');")],
     'bands_one_group': [("    for(i=0;i<order.length;i++)bimDgDrawBandGroup(ctx,V,W,H,G[order[i]]);\n", "    bimDgDrawBandGroup(ctx,V,W,H,L);\n")],
     'fill_not_followed': [("col:(B.rings&&s.fill)?s.fill:B.col", "col:B.col")],
     'seam_unstroked': [("if(T[i].eo){c2.strokeStyle=T[i].col;", "if(false){c2.strokeStyle=T[i].col;")],
@@ -94,16 +95,16 @@ VARIANTS = {
     'zone_label_no_bfe': [("+(bfe?', BFE '+bfe.short:''),p:y3(lp,0.1)", "+'',p:y3(lp,0.1)")],
     'shaded_x_unsaid': [("(zc==='x02'?' (0.2%)':'')", "''")],
     # ---- findings, the step, Analyze ----
-    'steep_uncounted': [("if(hn.slope[k]>=15)steep++;", "")],
+    'steep_uncounted': [("if(hn.slope[k]>=sb3)steep++;", "")],   # RE-ANCHORED IN V168: the registry's edge since V167
     'drainage_upstream_unsaid': [("parts.push(nu?bimLandHa(nu*a2)+' around drains onto it':'nothing around drains onto it');", "parts.push('nothing around drains onto it');")],
     'floodway_not_red': [("cls:zc==='floodway'?'redflag':(zc?'constraint':'neutral')", "cls:zc?'constraint':'neutral'")],
     # RE-ANCHORED IN V166: movement's findings follow the land's now
-    'land_findings_dropped': [(".concat(bimLandAuto()).concat(bimMvAuto());", ".concat(bimMvAuto());")],
+    'land_findings_dropped': [(".concat(bimLandAuto()).concat(bimMvAuto()).concat(bimLdAuto());", ".concat(bimMvAuto()).concat(bimLdAuto());")],   # RE-ANCHORED IN V168: the land's follow
     'land_step_missing': [("['context','Context'],['land','Ground and water'],", "['context','Context'],")],
     'drawn_before_land': [("return Promise.all([pc,pk,pl]).then(function(){", "return Promise.all([pc,pk]).then(function(){")],
     'cards_ungrouped': [("  BIM_ANZ_GROUP_OF.dgflow='water';BIM_ANZ_GROUP_OF.dgponds='water';BIM_ANZ_GROUP_OF.dgflood='water';\n", "")],
     # RE-ANCHORED IN V166: the build says V166 now; broken, it says V164, before V165
-    'version_old': [("  var BIM_APP_VERSION={v:'V166',date:'2026-10-12'};", "  var BIM_APP_VERSION={v:'V164',date:'2026-10-12'};")],
+    'version_old': [("  var BIM_APP_VERSION={v:'V168',date:'2026-10-18'};", "  var BIM_APP_VERSION={v:'V164',date:'2026-10-12'};")],   # RE-ANCHORED IN V168
 }
 
 name = sys.argv[1]
