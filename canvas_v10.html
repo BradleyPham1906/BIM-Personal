@@ -40575,8 +40575,7 @@ try{
     var p=bimLeftPrefs();
     if(w===null)delete p.w;
     else{w=+w;if(!isFinite(w))return bimLeftState();p.w=Math.round(Math.max(BIM_LEFT_MIN,Math.min(bimLeftMax(),w)));}
-    bimLeftSave(p);bimShellDockW();
-    try{size();paint();}catch(eS){console.warn('[BIM] The drawing could not be resized',eS);}
+    bimLeftSave(p);bimShellDockW();   /* the drawing follows by its own ResizeObserver (V72) */
     return bimLeftState();
   }
   /* the next width up, within what the screen allows; from the widest, back to the narrowest */
@@ -40611,7 +40610,6 @@ try{
       if(w===dr.now)return;
       dr.now=w;
       root.style.setProperty('--a3d-lp-w',w+'px');root.style.setProperty('--a3d-left-w',(BIM_LEFT_RAIL+w)+'px');
-      try{size();paint();}catch(eS){}
     });
     function end(ev,keep){
       if(!dr||ev.pointerId!==dr.id)return;
@@ -49748,7 +49746,6 @@ try{
         var mk=mp.getAttribute('data-propmodel'),mv=mp.value;
         if(mk==='truenorth'){bimSetTrueNorth(mv);return;}   /* __acad3dV103 */
         if(mk==='sunlat'||mk==='sunlon'||mk==='suntz'||mk==='sundate'||mk==='suntime'){bimSetSun(mk.slice(3),mv);return;}   /* __acad3dV107 */
-        if(mk==='dl'||mk==='ll'){updateLevel(A3D.activeLevel,mk,mv);return;}   /* __acad3dV106 */
         if(mk==='project'){A3D.titleBlock.project=mv;}
         else if(mk==='client'){A3D.titleBlock.client=mv;}
         else if(mk==='site'){updateSite('name',mv);}

@@ -10,7 +10,7 @@
 import hashlib, pathlib, sys
 
 SRC = pathlib.Path('canvas_v10.html')
-BASE = 'a1441cdee986ad30d000b44f68657540689f57d8b16aafbae51dfa3677c77106'   # after patch_phase166d.py
+BASE = '079aaec6dfd2a7c31b8548e3900d9c0355edf3941b03a743cc5bde30a6e18561'   # after patch_phase166d.py
 
 raw = SRC.read_bytes()
 sha = hashlib.sha256(raw).hexdigest()
@@ -74,8 +74,7 @@ rep("""  function bimShellDockW(){
     var p=bimLeftPrefs();
     if(w===null)delete p.w;
     else{w=+w;if(!isFinite(w))return bimLeftState();p.w=Math.round(Math.max(BIM_LEFT_MIN,Math.min(bimLeftMax(),w)));}
-    bimLeftSave(p);bimShellDockW();
-    try{size();paint();}catch(eS){console.warn('[BIM] The drawing could not be resized',eS);}
+    bimLeftSave(p);bimShellDockW();   /* the drawing follows by its own ResizeObserver (V72) */
     return bimLeftState();
   }
   function bimLeftState(){
@@ -102,7 +101,6 @@ rep("""  function bimShellDockW(){
       if(w===dr.now)return;
       dr.now=w;
       root.style.setProperty('--a3d-lp-w',w+'px');root.style.setProperty('--a3d-left-w',(BIM_LEFT_RAIL+w)+'px');
-      try{size();paint();}catch(eS){}
     });
     function end(ev,keep){
       if(!dr||ev.pointerId!==dr.id)return;

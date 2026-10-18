@@ -35,7 +35,7 @@ VARIANTS = {
     # ---- the left panel's edge ----
     'width_fixed': [("#a3d-leftpanel{width:var(--a3d-lp-w,242px);", "#a3d-leftpanel{width:242px;")],
     'dock_fixed': [("(sh&&sh.classList.contains('collapsed'))?'54px':(BIM_LEFT_RAIL+w)+'px');", "(sh&&sh.classList.contains('collapsed'))?'54px':'296px');")],
-    'width_not_kept': [("    bimLeftSave(p);bimShellDockW();\n", "    bimShellDockW();\n")],
+    'width_not_kept': [("    bimLeftSave(p);bimShellDockW();   /*", "    bimShellDockW();   /*")],
     'kept_unread': [("return typeof p.w==='number'&&isFinite(p.w)?Math.max(BIM_LEFT_MIN,Math.min(bimLeftMax(),Math.round(p.w))):BIM_LEFT_MIN;", "return BIM_LEFT_MIN;")],
     'min_lower': [("BIM_LEFT_MIN=242,", "BIM_LEFT_MIN=160,")],
     'max_higher': [("BIM_LEFT_MAX=560,", "BIM_LEFT_MAX=900,")],
@@ -55,7 +55,7 @@ VARIANTS = {
     'finger_edge_thin': [(".a3d-lgrip{width:12px;left:calc(var(--a3d-left-w,296px) - 12px);", ".a3d-lgrip{width:6px;left:calc(var(--a3d-left-w,296px) - 6px);")],
     'not_a_separator': [("g.setAttribute('role','separator');", "")],
     'value_stale': [("if(g){g.setAttribute('aria-valuenow',String(w));", "if(g){")],
-    'drawing_not_resized': [("    try{size();paint();}catch(eS){console.warn('[BIM] The drawing could not be resized',eS);}\n", "    try{paint();}catch(eS){console.warn('[BIM] The drawing could not be resized',eS);}\n")],
+    # RETIRED IN V166b (drawing_not_resized): not caught, rightly -- the drawing has sized itself by a ResizeObserver since V72, so the edge's own size() did nothing; it is gone.
     'phone_fields_small': [("@media(pointer:coarse){.a3d-sa .a3d-anzform input[type=number]{min-height:36px;font-size:16px}", "@media(pointer:coarse){.a3d-sa .a3d-anzform input[type=number]{}")],
     # ---- the width by one press (166f) ----
     'step_button_dead': [("      if(ev.target&&ev.target.closest&&ev.target.closest('[data-lpwidth]')){bimLeftStep();return;}   /* __acad3dV166b */\n", "")],

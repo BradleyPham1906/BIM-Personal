@@ -18,7 +18,8 @@ VARIANTS = {
     'roof_ignored': [("pts=o.bim.type==='floor'?o.bim.profile:(o.bim.type==='roof'?o.bim.footprint:null);", "pts=o.bim.type==='floor'?o.bim.profile:null;")],
     'negative_load_accepted': [("      if(ls!==''&&(!isFinite(lq)||lq<0)){", "      if(ls!==''&&!isFinite(lq)){")],
     'load_not_undoable': [("      pushUndo();\n      if(ls==='')delete lvl[field];else lvl[field]=lq;", "      if(ls==='')delete lvl[field];else lvl[field]=lq;")],
-    'properties_not_wired': [("        if(mk==='dl'||mk==='ll'){updateLevel(A3D.activeLevel,mk,mv);return;}   /* __acad3dV106 */\n", "")],
+    # RE-ANCHORED IN V166b: the floor loads are typed into Analyze's Frame analysis row; Properties' branch, unreachable, is gone
+    'properties_not_wired': [("if((k=e.getAttribute('data-anzload'))){updateLevel(A3D.activeLevel,k,e.value);bimAnalyzeRefresh(true);}", "if((k=e.getAttribute('data-anzload'))){bimAnalyzeRefresh(true);}")],
     'unsupported_hidden': [("columns:sup.length,unsupported:Math.max(0,slabArea-onCols)});", "columns:sup.length,unsupported:0});")],
     'stacks_ignore_position': [("||Math.abs(u.x-c.x)>BIM_TRIB_TOL||Math.abs(u.z-c.z)>BIM_TRIB_TOL)continue;", ")continue;")],
     'overlay_wrong_level': [("        if(r.supportsId!==lv.id)continue;", "        if(r.supportsId===lv.id)continue;")],

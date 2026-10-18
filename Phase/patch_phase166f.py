@@ -10,7 +10,7 @@
 import hashlib, pathlib, sys
 
 SRC = pathlib.Path('canvas_v10.html')
-BASE = '0d4eef927fd6d35ae7e2a1c92c76b13c545ba2ccec95adeb29e8e65f85590c4d'   # after patch_phase166e.py
+BASE = 'c0b681cdf42b9e137bd75d60e9ff7fd2225168929315b30dfce974080c9373a0'   # after patch_phase166e.py
 
 raw = SRC.read_bytes()
 sha = hashlib.sha256(raw).hexdigest()

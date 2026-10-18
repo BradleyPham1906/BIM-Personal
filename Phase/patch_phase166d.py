@@ -79,6 +79,9 @@ rep("""    /* __acad3dV106: the ACTIVE level's floor loads -- what its floors an
 rep("""    bimPropReveal('Usages');   /* __acad3dV141: on the Analysis tab */
 """, """    bimPropReveal('Usages');   /* __acad3dV141; __acad3dV166b: on the Project tab */
 """)
+# Properties' handler for the floor loads it no longer shows
+rep("""        if(mk==='dl'||mk==='ll'){updateLevel(A3D.activeLevel,mk,mv);return;}   /* __acad3dV106 */
+""", "")
 
 # ---- the frame's settings, and the floor loads, as Analyze shows them ----
 rep("""  function bimAnalysisPropsHtml(){
