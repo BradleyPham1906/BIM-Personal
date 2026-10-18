@@ -14947,3 +14947,76 @@ adds no analysis.
     canvas_v10.html   3187339 bytes
     sha256            b7ee1405e5248fbb833127618991763e1d0d997790b7230525e00d3d75032b7e
     markers           __acad3dV60 ... __acad3dV166, __acad3dV166b, __acad3dV134d (and the 133d to 133f markers)
+
+### V166c: the analytical member keeps only what is read
+
+V166b left a follow-up: `falsify_phase125.py`'s `column_axes_swapped`, which swapped a member's `hy`
+and `hz`, was not caught, because nothing reads those two fields. The owner asked for the cleanup as a
+small phase: first confirm that nothing reads them (and stop if anything does), then stop writing
+them, with older projects opening unchanged.
+
+#### Found (the audit, before the patch)
+
+- **`hy` and `hz` were never on the element.** They are two of the seventeen fields
+  `bimAnalyticalModel` (V125) gives each member it derives from a column or a beam, on every solve.
+  That member is derived and never stored: it is not on `o.bim`, so it never reaches `bimCarryBim`,
+  the project's JSON, the history (V146), IFC or Properties, and `A3D_STRUCT.res`, which holds the
+  last model, is never saved. No project saved by any build has carried them.
+- **Every reader of the member, by each name it is bound to:** the split and the supports in the
+  builder; the loads and `bimFrameMemberResult` in the solve; `bimStructSig` (the id only); the
+  diagram and the deflected shape (`p1` and `ax`). The test hooks read the elements, not the members.
+  Thirteen fields are read: `id`, `name`, `kind`, `p1`, `L`, `ax`, `n1`, `n2`, `sec`, `E`, `G`,
+  `rho`, `els`. Four are not: `hy` and `hz`, and, found by the same search (law 2, the class), `p2`
+  (the far end, already in `L` and `ax`) and `material` (the material's name).
+- **None of the four was read in V125's own build either** (`Phase/canvas_v10.html.bak_phase126_pre`).
+  There the locals `hy` and `hz` fed `bimRectSection`, which is why the variant was caught then. V126
+  took the section from `bimMemberSection`, which maps a column's width and a beam's depth to the
+  section's `d` itself, and left the locals filling the record and nothing else.
+
+#### What was built (patch 166g)
+
+- The locals `hy` and `hz` and their two assignments are gone, and the record holds the thirteen
+  fields that are read, marked `__acad3dV166c`. `bimRectSection` keeps its parameter names: it is a
+  rectangle's formula, read by `bimProfileProps`.
+- Nothing on load: no file carries the fields, and a file given them by hand opens and analyses as
+  the plain one does (below).
+- BIM_APP_VERSION stays V166, as V166b's did. Nothing a user sees changes, so the guide does not
+  either: `tools/dump_catalog.py` writes the same catalogue and `tools/build_docs.py --check` finds
+  `docs/` current. As V166b, no pre-phase build is kept in `Phase/` (one would add a version to the
+  site's Versions page); the chain below rebuilds it.
+
+#### Checked
+
+- `tests/bim_phase125_structural_frame_browser_tests.py` 50 of 50 and
+  `tests/bim_phase126_section_profiles_browser_tests.py` 61 of 61. Falsification:
+  `falsify_phase125.py` 35 of 35 caught (261 s) and `falsify_phase126.py` 35 of 35 (208 s), 3
+  workers each.
+- Every literal anchor of the 84 falsify scripts (2,436) occurs as often in the new build as in the
+  old. The 33 computed variants are V105's to V120's, older than the builder.
+- **An older file, through the real Save and Open:** a frame (a column turned 30 degrees, 400 by 300,
+  a second column, a beam, lateral, line and point loads) saved by the V166b build's quick-access
+  Save and opened through the Start page in both builds. The members as loaded, the analytical model
+  and the 1.2D+1.6L solve with self-weight are identical to the last digit. The same file with
+  `hy` = 9 and `hz` = 7 written onto each member's `bim` opens in V166c and analyses exactly as the
+  plain file, and the loader keeps the two fields as it found them.
+- **No new suite.** What the phase removes cannot be seen in behaviour, which is the finding itself;
+  a check that it stays removed would have to read the source, and `hy` is a name the build uses
+  elsewhere (press-pull's face height, V123). The older-file check above was run once, by a script
+  outside the repository, because it needs the build before the phase as well as the one after.
+
+#### Lesson
+
+- **When a phase changes how a value is read, look for what still writes the old one.** V126 moved
+  the section's reader to the profile and left `hy` and `hz` written for nothing; a falsify variant
+  that had been caught until then was the only sign. The same search found two more fields on the
+  same record, unread since the day it was written.
+
+#### Full regression and state after V166c
+
+124 suites, 5801 checks, 0 failures (593 s, 5 workers). V166b recorded 5804: the three checks are
+being compared suite by suite against a run of the V166b build itself, on this machine. Patches 166a
+to 166g rebuild the build byte for byte from `Phase/canvas_v10.html.bak_phase166_pre`. The diff is ES5-clean and ASCII.
+
+    canvas_v10.html   3187431 bytes
+    sha256            7fbee16e65f6ccd338df92dfb11961e65b81fed0a2763d0a78eb7139f3d5bde9
+    markers           __acad3dV60 ... __acad3dV166, __acad3dV166b, __acad3dV166c, __acad3dV134d (and the 133d to 133f markers)
