@@ -229,14 +229,27 @@ the headset. A possible order:
 | G | Arrange: the app's own small solver, honest when a room is too full | F |
 | H | 1:1: WebXR on the Quest (immersive-vr) and Android (immersive-ar, hit test) | The WebGL engine |
 
-## The owner's choices (asked together, 2026-10-18)
+## The owner's choices (2026-10-18)
 
-1. **When:** build this track now, before V167 and V168, or keep it with the interiors after the
-   site analysis tools and their presentation.
-2. **The iPhone scan:** build Scale's own iPhone app as a companion (it needs a Mac with Xcode),
-   rely on other apps' exports, or both.
-3. **A mesh from a photo:** use TRELLIS.2's public Space with no key (2 GPU minutes a day each).
-4. **The headset:** whether a Meta Quest is to hand, which decides whether step H comes early.
+1. **When: keep the plan.** This track stays with the interiors (V176 onward), after the site
+   analysis tools and their presentation. Its steps A to H fold into I1 to I4 when they are
+   researched in full.
+2. **The iPhone scan.** The owner wrote: "i think eventually this app might be on apple products
+   (macbook and iphone and ipad) since thats my tech stack." This note reads it in two parts:
+   - Apple's devices are the main ones. Every step must work in Safari on a Mac, an iPhone and an
+     iPad.
+   - The scan comes in by import first (step C, from files written by Apple's frameworks and the
+     apps that use them). The native capture follows when the app itself comes to Apple's
+     platforms: a native shell that hosts the app and adds RoomPlan and Object Capture, with
+     Scale's Swift modules (MIT) as the reference.
+
+   Object Capture writes USDZ, so on Apple's stack a USDZ import matters more than it did. How to
+   read USDZ in the app is still open.
+3. **A mesh from a photo: TRELLIS.2's public Space, no key.** About 2 GPU minutes a day per person,
+   the Space named and changeable, the result bound to the measured size (step D).
+4. **The headset: neither a Quest nor an Android phone.** Step H stays last. On the owner's
+   devices, Safari has no WebXR, so the 1:1 view there would be AR Quick Look on an iPhone or iPad
+   (a USDZ file), or Safari on Apple Vision Pro, whose WebXR support is not yet read (U).
 
 ## Still open
 
@@ -245,4 +258,6 @@ the headset. A possible order:
   `confidence` (Scale's sample is hand-made).
 - The ADA Standards' and Part M's clear widths, read at the source (with I2 and V167).
 - Shopify storefront JSON's browser access (CORS), if product links are ever wanted.
-- A USDZ path for iPhone AR Quick Look.
+- A USDZ path, both ways: reading Object Capture's USDZ (its binary USDC layer), and writing one
+  for AR Quick Look on an iPhone or iPad.
+- WebXR in Safari on Apple Vision Pro (visionOS), at the source.
