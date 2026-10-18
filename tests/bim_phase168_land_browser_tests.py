@@ -296,7 +296,7 @@ async def run():
             got_seen = sorted(x['name'] for x in (L.get('seen') or {}).get('list', []))
             want_seen = sorted('Tree %d' % (k + 1) for k in R.seen(B, T))
             ck(got_seen == want_seen and 'Tree 5' not in got_seen and 'Tree 6' not in got_seen and 'Tree 4' in got_seen,
-               "the trees seen: %s; the one behind East Hall and the one 172 m off not" % got_seen)
+               "the trees seen: %s; the one behind East Hall and the one 150 m off, on a clear line, not" % got_seen)
             G = {g['name']: g for g in L.get('greens', [])}
             ck(set(G) == {'Mill Park', 'Small Garden'} and G['Mill Park']['big'] is True and G['Small Garden']['big'] is False,
                "the public green spaces: Mill Park (0.63 ha); Small Garden under 0.5 ha; the private park left out")
@@ -352,7 +352,8 @@ async def run():
                "C4 with no outline of its own takes the app's; M1's hatch is not drawn: the app's neutral fill, its own outline")
             ck(ZR.get('site', {}).get('dg', {}).get('lb', [{}])[0].get('t') == 'Site: R6', "the site labelled with its district")
             await safe("()=>window.__a3dDgRun('zoning')")
-            ck(len([h for h in ST.get('hits', []) if h[0] == 'zn' and 'f=json' in h[1]]) == 1, "the colours kept with the layer: run again, not asked again")
+            await analyze()
+            ck(len([h for h in ST.get('hits', []) if h[0] == 'zn' and 'f=json' in h[1]]) == 1, "the colours kept with the layer: the layer run again and Analyze site again, not asked again")
             P = await safe("""()=>{var R=window.__a3dZnDrawing,S=window.__a3dZnStyleOf,
               a=R({drawingInfo:{renderer:{type:'uniqueValue',field1:'ZONE',field2:'OVL',fieldDelimiter:'/',uniqueValueInfos:[{value:'R6/C1',label:'R6 with C1',symbol:{type:'esriSFS',style:'esriSFSSolid',color:[1,2,3,255]}}]}}}),
               b=R({drawingInfo:{renderer:{type:'classBreaks',field:'FAR'}}}),c=R({drawingInfo:{renderer:{type:'simple',symbol:{type:'esriSFS',color:[9,9,9,128]}}}}),d=R({name:'x'}),

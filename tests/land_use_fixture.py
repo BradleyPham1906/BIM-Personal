@@ -21,12 +21,14 @@ What is added to V164's context (site_analysis_fixture.py):
   tall (one storey, not none); a building of two parts, one standing on the other at 6 m with
   building:min_level 2 (its floors count, its ground does not); apartments round a courtyard (the
   courtyard is not built on);
-- trees: one with diameter_crown 12; one behind East Hall (not seen); one 172 m off (beyond 100 m);
+- trees: one with diameter_crown 12; one behind East Hall (not seen); one 150 m due west on a clear
+  line (beyond 100 m);
 - woods and a forest, outside the square but in the neighbourhood (canopy);
 - parks: a garden of 0.49 ha nearer than Mill Park (under 0.5 ha); a private park of 0.51 ha (not
   public);
 - a council's zoning layer (ArcGIS): R6 west of x 40, C4 to x 150, M1 east of it, with a unique value
-  renderer on ZONE and 20% transparency. store['zn'] 'nodraw' answers its description without a
+  renderer on ZONE and 20% transparency, C4's outline a null line with a colour, as Esri's often
+  are, M1's fill a hatch. store['zn'] 'nodraw' answers its description without a
   renderer, 'fail' answers it 500."""
 import json, pathlib, sys
 from urllib.parse import unquote
@@ -84,7 +86,7 @@ COURT = (8401, {'type': 'multipolygon', 'building': 'apartments', 'building:leve
 TREES = [
     (8501, {'natural': 'tree', 'height': '10', 'diameter_crown': '12'}, -40, 20),
     (8502, {'natural': 'tree', 'height': '8'}, 95, 0),        # behind East Hall from the site
-    (8503, {'natural': 'tree', 'height': '8'}, -120, 60),     # 172 m off
+    (8503, {'natural': 'tree', 'height': '8'}, -120, -25),    # 150 m due west, on a clear line
 ]
 
 # the council's zoning layer
@@ -96,7 +98,7 @@ RENDERER = {'type': 'uniqueValue', 'field1': 'ZONE', 'fieldDelimiter': ', ',
             'defaultLabel': 'Other',
             'uniqueValueInfos': [
                 {'value': 'R6', 'label': 'Residence R6', 'symbol': {'type': 'esriSFS', 'style': 'esriSFSSolid', 'color': [255, 255, 0, 255], 'outline': {'type': 'esriSLS', 'style': 'esriSLSSolid', 'color': [120, 120, 0, 255], 'width': 0.4}}},
-                {'value': 'C4', 'label': 'Commercial C4', 'symbol': {'type': 'esriSFS', 'style': 'esriSFSSolid', 'color': [255, 0, 0, 204], 'outline': {'type': 'esriSLS', 'style': 'esriSLSNull'}}},
+                {'value': 'C4', 'label': 'Commercial C4', 'symbol': {'type': 'esriSFS', 'style': 'esriSFSSolid', 'color': [255, 0, 0, 204], 'outline': {'type': 'esriSLS', 'style': 'esriSLSNull', 'color': [0, 0, 0, 255], 'width': 0}}},
                 {'value': 'M1', 'label': 'Manufacturing M1', 'symbol': {'type': 'esriSFS', 'style': 'esriSFSDiagonalCross', 'color': [160, 32, 240, 255], 'outline': {'type': 'esriSLS', 'style': 'esriSLSSolid', 'color': [80, 16, 120, 255], 'width': 0.4}}}]}
 TRANSPARENCY = 20
 
