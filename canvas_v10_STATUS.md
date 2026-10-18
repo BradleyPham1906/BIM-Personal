@@ -15041,7 +15041,9 @@ pattern, ARIA's separator role, WCAG 2.2's 2.5.7 and 2.5.8, and two open impleme
   minimise (the edge is not shown while minimised).
 - **Re-anchored** (RE-ANCHORED IN V166c): `falsify_phase147.py` (unclamped, drag_dead, drag_backwards,
   no_reset, grip_on_touch, minimise_body_shown, minimise_button_text) and `falsify_phase166b.py`
-  (cancel_kept, shift_step_same, not_a_separator, whose lines Properties' edge now shares).
+  (cancel_kept, shift_step_same, not_a_separator, whose lines Properties' edge now shares). Both run
+  whole on the final build and suites: `falsify_phase147.py` 25 of 25 (193 s), `falsify_phase166b.py`
+  54 of 54 (608 s), 3 workers each.
 - **Amended:** V166b's suite (the easing wait, above). V147's suite is unchanged and passes.
 
 #### Not done
