@@ -28,6 +28,15 @@ must catch, and the full regression.
 - the owner's decisions asked together at the end of research;
 - the note records each source, what was read, the date and its level, and what is still open.
 
+## Notion (the owner, 2026-10-19)
+
+The owner follows the project in Notion, on **World BIM Platform** (a Project in their G/P/R DB): every phase is
+a task in the Internal Task DB, every research note and document a page in the Documentation DB, each pull
+request a line on its phase's task. Keep it current as the work goes, through the Notion connector, at each step
+of a phase (research started, the owner's decisions, PR opened, PR merged): `reference/notion-sync.md` has the
+ids, the relations, the fields and the steps. The repository stays the source of truth; Notion mirrors it,
+summarised and linked, never the full text.
+
 ## Standing choices of the owner
 
 - Free, keyless data only, credited; a server without CORS is named, not proxied.
