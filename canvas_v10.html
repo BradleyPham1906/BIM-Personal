@@ -19904,11 +19904,26 @@ try{
       eds:[{id:'etccdi.gsl.27',name:'The 27 core climate indices: GSL, growing season length',pub:'',st:'current',where:'A method, used anywhere',adopt:[{at:'*'}],
         src:{t:'ETCCDI, the definitions of the 27 core indices',w:'GSL: from the first span of at least 6 days with a daily mean above 5 C to the first span after 1 July (1 January in the Southern Hemisphere) of 6 days below 5 C',u:'https://etccdi.pacificclimate.org/list_27_indices.shtml',lv:'P',read:'2026-10-19'},
         v:[{n:'t',v:5,u:'C',say:'the daily mean the season is counted above'},{n:'days',v:6,u:'days',say:'the span that starts and ends it'}]}]},
+    {id:'aashto.vehicles',title:'Design vehicles',pub:'AASHTO',kind:'standard',area:'Assets',use:'The car, the delivery truck and the city bus, and their turning paths',anywhere:true,
+      eds:[{id:'aashto.vehicles.7',name:'A Policy on Geometric Design of Highways and Streets, 7th Edition (2018), Tables 2-4b and 2-5b',pub:'2018',st:'current',where:'United States: 23 CFR 625.4 incorporates the 7th Edition for the National Highway System',adopt:[{at:'us'}],
+        src:{t:'AASHTO, A Policy on Geometric Design of Highways and Streets (the Green Book), 7th Edition (2018), the owner\'s copy',w:'Table 2-4b: the design vehicles\' dimensions in metres (2-4a in feet); Table 2-5b: their minimum turning radii (2-5a in feet); 2.8.2: the turning path bounded by the outer trace of the front overhang and the path of the inner rear wheel',u:'https://store.transportation.org/',lv:'P',read:'2026-10-19'},
+        v:[{n:'P_l',v:5.79,u:'m',say:'the passenger car\'s length',src:'19.0 ft'},{n:'P_w',v:2.13,u:'m',say:'its width',src:'7.0 ft'},{n:'P_h',v:1.3,u:'m',say:'its height',src:'4.3 ft'},
+          {n:'P_of',v:0.91,u:'m',say:'its front overhang',src:'3.0 ft'},{n:'P_or',v:1.52,u:'m',say:'its rear overhang',src:'5.0 ft'},{n:'P_wb',v:3.35,u:'m',say:'its wheelbase',src:'11.0 ft'},
+          {n:'P_r',v:7.26,u:'m',say:'its minimum design turning radius',src:'23.8 ft'},{n:'P_ctr',v:6.4,u:'m',say:'its centreline turning radius',src:'21.0 ft',gt:'P_wb',lt:'P_r'},{n:'P_rin',v:4.39,u:'m',say:'its minimum inside radius',src:'14.4 ft',lt:'P_ctr'},
+          {n:'SU_l',v:9.14,u:'m',say:'the single-unit truck\'s (SU-30) length',src:'30.0 ft'},{n:'SU_w',v:2.44,u:'m',say:'its width',src:'8.0 ft'},{n:'SU_h',v:4.11,u:'m',say:'its height, the largest',src:'13.5 ft'},
+          {n:'SU_hlo',v:3.35,u:'m',say:'its height, the smallest',src:'11.0 ft',lt:'SU_h'},{n:'SU_of',v:1.22,u:'m',say:'its front overhang',src:'4.0 ft'},{n:'SU_or',v:1.83,u:'m',say:'its rear overhang',src:'6.0 ft'},
+          {n:'SU_wb',v:6.1,u:'m',say:'its wheelbase',src:'20.0 ft'},{n:'SU_r',v:12.73,u:'m',say:'its minimum design turning radius',src:'41.8 ft'},{n:'SU_ctr',v:11.58,u:'m',say:'its centreline turning radius',src:'38.0 ft',gt:'SU_wb',lt:'SU_r'},
+          {n:'SU_rin',v:8.64,u:'m',say:'its minimum inside radius',src:'28.4 ft',lt:'SU_ctr'},
+          {n:'BUS_l',v:12.19,u:'m',say:'the city transit bus\'s length',src:'40.0 ft'},{n:'BUS_w',v:2.59,u:'m',say:'its width',src:'8.5 ft'},{n:'BUS_h',v:3.2,u:'m',say:'its height',src:'10.5 ft'},
+          {n:'BUS_of',v:2.13,u:'m',say:'its front overhang',src:'7.0 ft'},{n:'BUS_or',v:2.44,u:'m',say:'its rear overhang',src:'8.0 ft'},{n:'BUS_wb',v:7.62,u:'m',say:'its wheelbase',src:'25.0 ft'},
+          {n:'BUS_r',v:12.8,u:'m',say:'its minimum design turning radius (Table 2-5b; Table 2-5a gives 41.6 ft, 12.68 m)',src:'12.80 m'},{n:'BUS_ctr',v:11.52,u:'m',say:'its centreline turning radius',src:'37.8 ft',gt:'BUS_wb',lt:'BUS_r'},
+          {n:'BUS_rin',v:7.45,u:'m',say:'its minimum inside radius',src:'24.5 ft',lt:'BUS_ctr'}]}]},
     {id:'app.assets',title:'The assets\' own shapes',pub:'This app',kind:'assumption',area:'Assets',use:'The models\' shapes where no source sizes them',anywhere:true,
       eds:[{id:'app.assets.1',name:'The app\'s asset settings (V169)',pub:'',st:'current',where:'Anywhere',adopt:[{at:'*'}],
-        src:{t:'This app: the seat a seated person sits on, a cycle\'s height, a Sheffield stand\'s size, a bay\'s painted line, and the crown of a mapped tree whose leaf type is not mapped (the context\'s rule since V157)',w:'research-assets.md',lv:'A'},
+        src:{t:'This app: the seat a seated person sits on, a cycle\'s height, a Sheffield stand\'s size, a bay\'s painted line, a vehicle\'s wheels, and the crown of a mapped tree whose leaf type is not mapped (the context\'s rule since V157)',w:'research-assets.md',lv:'A'},
         v:[{n:'seat',v:0.45,u:'m',say:'the seat a seated person sits on'},{n:'bike_h',v:1.05,u:'m',say:'a cycle\'s height to its handlebars'},
           {n:'stand_w',v:0.75,u:'m',say:'a Sheffield stand\'s length'},{n:'stand_h',v:0.75,u:'m',say:'a Sheffield stand\'s height'},{n:'line',v:0.1,u:'m',say:'a bay\'s painted line, across'},
+          {n:'wheel_p',v:0.65,u:'m',say:'a car\'s wheel, across'},{n:'wheel_hv',v:1,u:'m',say:'a truck\'s or a bus\'s wheel, across'},
           {n:'crown',v:0.6,u:'x',say:'a mapped tree\'s crown across, of its height, where its leaf type is not mapped'}]}]},
     {id:'app.climate',title:'Climate readings',pub:'This app',kind:'assumption',area:'Climate',use:'The climate board, the wind rose and its finding',anywhere:true,
       eds:[{id:'app.climate.1',name:'The app\'s climate settings (V159)',pub:'',st:'current',where:'Anywhere',adopt:[{at:'*'}],
@@ -20193,6 +20208,7 @@ try{
   }
   function bimStdDone(){
     try{bimStdRefill();}catch(e0){console.warn('[BIM] The findings could not be worked out again after a standards change',e0);}
+    try{if(typeof bimEntRefit==='function')bimEntRefit();}catch(e3){console.warn('[BIM] The assets could not be built again after a standards change',e3);a3dToast('The assets could not be resized to the standards - see the console');}
     try{refreshProps();}catch(e1){console.warn('[BIM] Properties could not be drawn after a standards change',e1);}
     try{bimAnalyzeRefresh(true);}catch(e2){console.warn('[BIM] Analyze could not be refreshed after a standards change',e2);}
     paint();saveSoon();
@@ -41647,13 +41663,13 @@ try{
     }
     if(!q&&!models.length)body='<div class="a3d-asempty">No models yet.</div>';
     h+=grp('families','Models',models.length+' item(s)',body,true);
-    /* __acad3dV169: people, cycles, parking and trees, sized from the registry */
+    /* __acad3dV169: people, cycles, vehicles, parking and trees, sized from the registry */
     body='';
     for(i=0;i<BIM_ENT.length;i++){
       if(!bimAssetMatch(q,[BIM_ENT[i].name,BIM_ENT[i].cat,'asset','people','scale','entourage']))continue;
       body+=tile('asset:'+BIM_ENT[i].k,bimEntLib(BIM_ENT[i]),BIM_ENT[i].cat,true,'');
     }
-    h+=grp('entourage','People, cycles, parking and trees',BIM_ENT.length+' item(s)',body,true);
+    h+=grp('entourage','People, cycles, vehicles, parking and trees',BIM_ENT.length+' item(s)',body,true);
     // Blocks
     var blocks=bimLibEntries('block');body='';
     for(i=0;i<blocks.length;i++){
@@ -45389,6 +45405,9 @@ try{
     {k:'bike',name:'Cycle',cat:'Cycles',kind:'bike',p:{}},
     {k:'stand',name:'Cycle stand',cat:'Cycles',kind:'stand',p:{}},
     {k:'bay',name:'Parking bay',cat:'Parking',kind:'bay',p:{}},
+    {k:'car',name:'Car',cat:'Vehicles',kind:'vehicle',p:{v:'P',turn:false,side:'L'}},
+    {k:'truck',name:'Delivery truck',cat:'Vehicles',kind:'vehicle',p:{v:'SU',turn:false,side:'L'}},
+    {k:'bus',name:'City bus',cat:'Vehicles',kind:'vehicle',p:{v:'BUS',turn:false,side:'L'}},
     {k:'broadleaf',name:'Broadleaf tree',cat:'Trees',kind:'tree',p:{leaf:'B',cyc:'D',size:'M'}},
     {k:'conifer',name:'Conifer',cat:'Trees',kind:'tree',p:{leaf:'C',cyc:'E',size:'M'}}];
   var BIM_ENT_COL={People:'#c99a6e',Cycles:'#5f7f9e',Parking:'#e8e2c6',Trees:'#5b8a4c',Vehicles:'#7f8fa6'};
@@ -45501,6 +45520,32 @@ try{
     var L=bimEntLeafOf(t),T=L.type?bimEntTreeType({leaf:L.type,cyc:L.cyc||(L.type==='C'?'E':'D'),size:'M'}):null;
     return T?T.r:bimStd('app.assets','crown');
   }
+  /* a design vehicle (169d): AASHTO's length, width, height, overhangs, wheelbase and turning radii; the body's shape
+     and the wheels the app's. At its sharpest turn the centre lies on the rear axle's line, the front axle's middle on
+     the centreline turning radius, so the rear axle's middle is sqrt(CTR^2 - WB^2) from it; the front overhang's outer
+     corner, which bounds the path with the inner rear wheel (2.8.2), is worked out from that. */
+  var BIM_ENT_VEH={P:['Passenger car','P'],SU:['Single-unit truck','SU-30'],BUS:['City transit bus','CITY-BUS']};
+  function bimEntVeh(p){
+    var c=p&&BIM_ENT_VEH.hasOwnProperty(p.v)?p.v:'P',g=function(n){return bimStd('aashto.vehicles',c+'_'+n);},
+      V={c:c,name:BIM_ENT_VEH[c][0],sym:BIM_ENT_VEH[c][1],l:g('l'),w:g('w'),h:g('h'),of:g('of'),or:g('or'),wb:g('wb'),r:g('r'),ctr:g('ctr'),rin:g('rin'),
+        d:bimStd('app.assets',c==='P'?'wheel_p':'wheel_hv')};
+    if(c==='SU')V.hlo=g('hlo');
+    V.rr=Math.sqrt(Math.max(0,V.ctr*V.ctr-V.wb*V.wb));
+    V.rov=Math.sqrt(Math.pow(V.rr+V.w/2,2)+Math.pow(V.wb+V.of,2));
+    return V;
+  }
+  function bimEntVehMesh(V){
+    var L=V.l,W=V.w,H=V.h,r=V.d/2,zf=L/2-V.of,zr=-L/2+V.or,tw=Math.min(0.3,W*0.12),xw=W/2-tw/2,y0=r*0.5,P=[];
+    P.push(bimEntDisc([-xw,r,zf],r,tw),bimEntDisc([xw,r,zf],r,tw),bimEntDisc([-xw,r,zr],r,tw),bimEntDisc([xw,r,zr],r,tw));
+    if(V.c==='P'){
+      var yb=H*0.6;
+      P.push(bimEntBox([0,(y0+yb)/2,0],[W,yb-y0,L]),bimEntBox([0,(yb+H)/2,(zf+zr)/2-L*0.04],[W*0.86,H-yb,L*0.48]));
+    }else if(V.c==='SU'){
+      var cl=V.of+V.wb*0.3,gap=L*0.02,yc=H*0.72,yf=r*1.1;
+      P.push(bimEntBox([0,(y0+yc)/2,L/2-cl/2],[W,yc-y0,cl]),bimEntBox([0,(yf+H)/2,-(cl+gap)/2],[W,H-yf,L-cl-gap]),bimEntBox([0,(y0+yf)/2,-cl/2],[W*0.5,yf-y0,L-cl]));
+    }else P.push(bimEntBox([0,(y0+H)/2,0],[W,H-y0,L]));
+    return bimEntMarked(P,-L/2,L/2);
+  }
   /* the mesh, local, front +Z, base on the ground; and where a tree's crown starts */
   function bimEntBuild(a){
     var p=a.p||{},m=null,cf=-1,i,k;
@@ -45510,6 +45555,7 @@ try{
       else if(a.k==='bike')m=bimEntBikeMesh();
       else if(a.k==='stand')m=bimEntStandMesh();
       else if(a.k==='bay')m=bimEntBayMesh();
+      else if(a.k==='vehicle')m=bimEntVehMesh(bimEntVeh(p));
       else if(a.k==='tree'){var S=bimEntTreeSize(p),T=bimEntTreeMesh(0,0,0,S.h,S.cd,p.leaf==='C');m=bimEntMarked([T.mesh],-S.cd/2,S.cd/2);cf=T.cf;}
     }catch(e){console.warn('[BIM] An asset could not be built',e);a3dToast('That asset could not be built - see the console');return null;}
     if(!m||!m.v||!m.v.length)return null;
@@ -45551,6 +45597,13 @@ try{
     o.asset.cf=b.cf;
     return true;
   }
+  /* every placed asset built again after a standards change (169d), from its own parameters and the registry's sizes */
+  function bimEntRefit(){
+    var n=0,i,o;
+    for(i=0;i<A3D.objs.length;i++){o=A3D.objs[i];if(o.asset&&o.asset.k&&o.mesh&&bimEntRebuild(o))n++;}
+    A3D.lastRefit=n;
+    return n;
+  }
   /* ---- the leaves: the site's growing season (169a), from its climate ---- */
   function bimEntDoy(date,sh){
     var m=/^(\d{4})-(\d{2})-(\d{2})/.exec(String(date||''));
@@ -45584,6 +45637,10 @@ try{
       if(!a||!a.p||!a.p.turn||!o.mesh||!bimLayerShown(o))continue;
       F=bimEntFrame(o);q=bimObjOffset(o);
       if(a.k==='wheelchair')out.push({id:o.id,c:[F.c[0]+q[0],F.c[1]+q[2]],y:q[1]+F.y,r:[bimStd('ada.space','turn')/2],what:'the turning space'});
+      else if(a.k==='vehicle'){
+        var V=bimEntVeh(a.p),fx=Math.sin(F.a),fz=Math.cos(F.a),sd=a.p.side==='R'?-1:1,zr=-V.l/2+V.or,ax=F.c[0]+fx*zr,az=F.c[1]+fz*zr;
+        out.push({id:o.id,c:[ax+q[0]+sd*fz*V.rr,az+q[2]-sd*fx*V.rr],y:q[1]+F.y,r:[V.rin,V.r,V.rov],what:'its turning path',side:sd>0?'L':'R'});
+      }
     }
     return out;
   }
@@ -45593,15 +45650,21 @@ try{
     if(!T.length)return;
     ctx.save();ctx.lineWidth=1.5;if(ctx.setLineDash)ctx.setLineDash([6,4]);
     ctx.strokeStyle='rgba(56,189,248,0.95)';ctx.fillStyle='rgba(56,189,248,0.12)';
-    for(i=0;i<T.length;i++)for(j=0;j<T[i].r.length;j++){
-      ctx.beginPath();on=false;
+    function ring(t,rad){
+      on=false;
       for(k=0;k<=48;k++){
         var an=k/48*Math.PI*2;
-        s2=toScreen([T[i].c[0]+T[i].r[j]*Math.cos(an),T[i].y+0.02,T[i].c[1]+T[i].r[j]*Math.sin(an)],V,W,H);
+        s2=toScreen([t.c[0]+rad*Math.cos(an),t.y+0.02,t.c[1]+rad*Math.sin(an)],V,W,H);
         if(!s2)continue;
         if(on)ctx.lineTo(s2[0],s2[1]);else{ctx.moveTo(s2[0],s2[1]);on=true;}
       }
-      ctx.closePath();ctx.fill();ctx.stroke();
+      ctx.closePath();
+    }
+    /* one radius fills its disc; several fill the ring between the smallest and the largest, the path swept */
+    for(i=0;i<T.length;i++){
+      var R=T[i].r,lo=Math.min.apply(null,R),hi=Math.max.apply(null,R);
+      ctx.beginPath();ring(T[i],hi);if(R.length>1)ring(T[i],lo);ctx.fill(R.length>1?'evenodd':'nonzero');
+      for(j=0;j<R.length;j++){ctx.beginPath();ring(T[i],R[j]);ctx.stroke();}
     }
     ctx.restore();
   }
@@ -45623,10 +45686,11 @@ try{
       if(B.out)r+=bimPropText('Proportions','outside the adults NASA\'s tables span: extrapolated, an estimate');
       L=['body.us','body.hidh','walk.speed'].concat(B.seated?['app.assets']:[]);
     }else if(a.k==='wheelchair'){
-      r+=bimPropLenText('Height',bimStd('wheel.awmp','height'))+bimPropLenText('Seat height',bimStd('wheel.awmp','seat'))+bimPropLenText('Eye height',bimStd('wheel.awmp','eye'));
-      r+=bimEntBy('Clear floor space',bimStd('ada.space','clear_w'),bimStd('ada.space','clear_l'))+bimEntBy('Space for 95% of users',bimStd('wheel.awmp','space_w'),bimStd('wheel.awmp','space_l'));
-      r+=bimPropLenText('Turning space, across',bimStd('ada.space','turn'));
-      r+=bimPropRow('Show it on the plan','<input type="checkbox" data-propf="asset:turn"'+(p.turn?' checked':'')+'>');
+      r+=bimPropLenText('Height',bimStd('wheel.awmp','height'))+bimPropLenText('Seat',bimStd('wheel.awmp','seat'))+bimPropLenText('Eye height',bimStd('wheel.awmp','eye'));
+      r+=bimPropText(bimLenLabel('Space'),bimDispLen(bimStd('ada.space','clear_w'))+' by '+bimDispLen(bimStd('ada.space','clear_l'))+': the clear floor space; '+
+        bimDispLen(bimStd('wheel.awmp','space_w'))+' by '+bimDispLen(bimStd('wheel.awmp','space_l'))+' holds 95% of manual chair users');
+      r+=bimPropText(bimLenLabel('Turning'),bimDispLen(bimStd('ada.space','turn'))+' across: the turning space');
+      r+=bimPropRow('On the plan','<input type="checkbox" data-propf="asset:turn"'+(p.turn?' checked':'')+'> its turning space');
       r+=bimPropText('Speed',bimStdFmt(bimStd('mutcd.walk','slow'),'m/s'));
       L=['wheel.awmp','ada.space','mutcd.walk'];
     }else if(a.k==='bike'){
@@ -45640,8 +45704,20 @@ try{
       L=['ltn.cycle','app.assets'];
     }else if(a.k==='bay'){
       r+=bimEntBy('Bay',bimStd('parking.bay','width'),bimStd('parking.bay','length'));
-      r+=bimPropText(bimLenLabel('Aisle to reach it'),bimDispLen(bimStd('parking.bay','aisle90'))+' at 90 degrees, '+bimDispLen(bimStd('parking.bay','aisle60'))+' at 60, '+bimDispLen(bimStd('parking.bay','aisle45'))+' at 45');
+      r+=bimPropText(bimLenLabel('Aisle'),bimDispLen(bimStd('parking.bay','aisle90'))+' at 90 degrees, '+bimDispLen(bimStd('parking.bay','aisle60'))+' at 60, '+bimDispLen(bimStd('parking.bay','aisle45'))+' at 45');
       L=['parking.bay','app.assets'];
+    }else if(a.k==='vehicle'){
+      var V=bimEntVeh(p);
+      r+=bimPropText('Design vehicle',V.name+' (AASHTO '+V.sym+')');
+      r+=bimEntBy('Size',V.l,V.w)+(V.c==='SU'?bimPropText(bimLenLabel('Height'),bimDispLen(V.hlo)+' to '+bimDispLen(V.h)+', drawn at '+bimDispLen(V.h)):bimPropLenText('Height',V.h));
+      r+=bimPropLenText('Wheelbase',V.wb)+bimPropText(bimLenLabel('Overhangs'),bimDispLen(V.of)+' in front, '+bimDispLen(V.or)+' behind');
+      r+=bimPropText(bimLenLabel('Radius'),bimDispLen(V.r)+' at the least: the minimum design turning radius');
+      r+=bimPropText(bimLenLabel('CTR'),bimDispLen(V.ctr)+': the centreline turning radius');
+      r+=bimPropText(bimLenLabel('Inside'),bimDispLen(V.rin)+' at the least: the minimum inside radius');
+      r+=bimPropText(bimLenLabel('Corner'),bimDispLen(V.rov)+': the front overhang\'s outer corner from the turn\'s centre, worked out from the sizes above');
+      r+=bimPropRow('On the plan','<input type="checkbox" data-propf="asset:turn"'+(p.turn?' checked':'')+'> its turning path');
+      r+=bimPropRow('Turning',bimEntSel('side',[['L','To the left'],['R','To the right']],p.side==='R'?'R':'L'));
+      L=['aashto.vehicles','app.assets'];
     }else if(a.k==='tree'){
       var S=bimEntTreeSize(p);
       r+=bimPropRow('Leaf',bimEntSel('leaf',[['B','Broadleaf'],['C','Conifer']],p.leaf==='C'?'C':'B'));
@@ -45656,10 +45732,11 @@ try{
   function bimEntPropSet(o,key,val,chk){
     var a=o.asset,p=a.p,v=null;
     if(key==='h'||key==='cd'){v=parseFloat(val);if(!isFinite(v)||v<=0){a3dToast('Must be a positive number');refreshProps();return false;}}
-    else if(key!=='turn'&&!/^(who|pose|leaf|cyc|size)$/.test(key))return false;
+    else if(key!=='turn'&&!/^(who|pose|leaf|cyc|size|side)$/.test(key))return false;
     pushUndo();
     if(key==='turn')p.turn=!!chk;
     else if(v!==null)p[key]=v;
+    else if(key==='side')p.side=val==='R'?'R':'L';
     else{p[key]=String(val);if(key!=='pose')delete p.h;if(key!=='pose'&&key!=='who')delete p.cd;}
     if(!bimEntRebuild(o)){refreshProps();return false;}
     refreshProps();paint();saveSoon();
@@ -52835,7 +52912,7 @@ try{
   window.__a3dSaStdText=function(auto){return bimSaStdText({auto:auto});};
   window.__acad3dV167='registry,records,reader,place,placefromaddress,date,overrides,reasons,ordered,picks,stamps,outofdate,findingstd,accessstd,contextstd,packs,sha256,packdiff,catalogue,standardsgroup,standardscommand,valuesinwords,datastamps,usedvalues,valuestamps,framestd,refill,touchsizes,drafts,sheet,packadopted,packagain,whonoise,noliterals,dm2unread,classeswhole,groupclosed';
   window.__acad3dV168='lbcs,crosswalk,landuse,mix,entropy,figureground,spacematrix,cells,grain,courtyards,green,canopy,treesseen,greenwalk,33300,zoningaround,drawinginfo,textures,lids,findings,registry';
-  window.__acad3dV169='assets,people,wheelchair,cycles,stands,bay,trees,leaf,gsl,shadows,turning,contexttrees,registry';
+  window.__acad3dV169='assets,people,wheelchair,cycles,stands,bay,trees,leaf,gsl,shadows,turning,contexttrees,registry,vehicles,turningpaths,refit';
   window.__a3dEntKinds=function(){return BIM_ENT.map(function(e){return {k:e.k,name:e.name,cat:e.cat,kind:e.kind,p:JSON.parse(JSON.stringify(e.p))};});};
   window.__a3dEntPlace=function(key,x,z,p){var o=bimEntPlace(key,[x,z],p||null);return o?o.id:null;};
   /* an asset as placed: its parameters, its frame, and its size in its own frame (the markers left out) */
@@ -52849,13 +52926,15 @@ try{
     }
     return {k:o.asset.k,key:o.asset.key,p:JSON.parse(JSON.stringify(o.asset.p||{})),cf:o.asset.cf,heading:F.a,centre:[F.c[0]+q[0],F.c[1]+q[2]],base:q[1]+F.y,
       min:mn,max:mx,size:[mx[0]-mn[0],mx[1],mx[2]-mn[2]],faces:o.mesh.f.length,verts:v.length,name:o.name,col:o.col,layer:o.layer,
-      body:o.asset.k==='person'?bimEntBody(o.asset.p||{}):null,tree:o.asset.k==='tree'?bimEntTreeSize(o.asset.p||{}):null};
+      body:o.asset.k==='person'?bimEntBody(o.asset.p||{}):null,tree:o.asset.k==='tree'?bimEntTreeSize(o.asset.p||{}):null,
+      veh:o.asset.k==='vehicle'?bimEntVeh(o.asset.p||{}):null};
   };
   window.__a3dEntSet=function(id,key,val){var o=objById(id);return o&&o.asset?bimEntPropSet(o,key,val,val===true):false;};
   window.__a3dEntInLeaf=function(date){return bimEntInLeaf(date);};
   window.__a3dEntSeason=function(){var G=bimEntSeason();return G?JSON.parse(JSON.stringify(G)):null;};
   window.__a3dClimGsl=function(js,lat){var G=bimClimGsl(js,lat);return G?{s:G.s,e:G.e,years:G.years,sh:G.sh}:null;};
   window.__a3dEntTurns=function(){return {turns:bimEntTurns(),drawn:A3D.lastTurns||0};};
+  window.__a3dEntRefit=function(){return {n:bimEntRefit(),last:A3D.lastRefit};};
   window.__a3dEntCrown=function(tags){return {ratio:bimEntCrownRatio(tags||{}),leaf:bimEntLeafOf(tags||{})};};
   /* the faces each solid casts a shadow with, on a date */
   window.__a3dShadowFaces=function(date){var L=bimShadowCasters(bimShadowGround(),date),o={};L.forEach(function(it){o[it.id]=it.f.length;});return o;};
