@@ -17751,7 +17751,7 @@ try{
   function bimStdDraft(k,d){var D=A3D_STD_UI.draft;return D&&D.hasOwnProperty(k)?D[k]:d;}
   function bimStdDraftClear(keys){keys.forEach(function(k){delete A3D_STD_UI.draft[k];});}
   var BIM_STD_LV_CLS={P:'lv-P',S:'lv-S',U:'lv-U',A:'lv-A'};   /* __acad3dV167i: written whole, so V114 sees them made */
-  var BIM_STD_AREAS=['Transit and walking','Roads and noise','Cycling','Air','Flood and ground','Buildings','Structure','Site context','Land and green','Climate'];   /* __acad3dV168: Land and green */
+  var BIM_STD_AREAS=['Transit and walking','Roads and noise','Cycling','Air','Flood and ground','Buildings','Structure','Site context','Land and green','Assets','Climate'];   /* __acad3dV168: Land and green; __acad3dV169: Assets */
   function bimStdCap(t){t=String(t||'');return t.charAt(0).toUpperCase()+t.slice(1);}
   function bimStdBadge(E){
     var lv=E&&E.lv?E.lv:'U',how=E?E.how:'none';
@@ -18390,6 +18390,7 @@ try{
     if(c.width)r+=bimPropText('Width',bimDispNum(c.width,2)+' m');
     if(c.bridge)r+=bimPropText('Bridge','its deck '+bimDispNum(c.deck,2)+' m above the ground, on piers every '+bimCtxPier()+' m');
     if(c.tunnel)r+=bimPropText('Tunnel','below ground: its centre line only');
+    if(c.kind==='trees'&&c.leaf&&(c.leaf.type||c.leaf.cyc))r+=bimPropText('Leaf',(c.leaf.type==='C'?'needle-leaved':(c.leaf.type==='B'?'broadleaved':'its leaf type not mapped'))+', '+(c.leaf.cyc==='E'?'evergreen':(c.leaf.cyc==='D'?'deciduous':'its leaf cycle not mapped')));   /* __acad3dV169 */
     if((c.kind==='trees'||c.kind==='power')&&c.height)r+=bimPropText('Height',bimDispNum(c.height,2)+' m'+(c.crown?', crown '+bimDispNum(c.crown,2)+' m across':''));
     if(c.row)r+=bimPropText('Planted','in a row, a tree every '+BIM_CTX_TREE_STEP+' m');
     if(c.kind==='terrain'){
@@ -18650,7 +18651,7 @@ try{
   /* ================= __acad3dV142: the user guide, and versions =================
      The guide is in docs/ beside the app, on the same site (and in the repository, so it opens
      offline). Its command reference has a section per command, anchored by the command's id. */
-  var BIM_APP_VERSION={v:'V168',date:'2026-10-18'};   /* __acad3dV162; __acad3dV163; __acad3dV164; __acad3dV165; __acad3dV166; __acad3dV167; __acad3dV168 */
+  var BIM_APP_VERSION={v:'V169',date:'2026-10-19'};   /* __acad3dV162; __acad3dV163; __acad3dV164; __acad3dV165; __acad3dV166; __acad3dV167; __acad3dV168 */
   var BIM_DOCS_BASE='docs/';
   /* a command's anchor in the reference: cmd:LINE -> cmd-LINE, act:bim:wall -> act-bim-wall */
   function bimDocsAnchor(id){return String(id||'').replace(/[^A-Za-z0-9_-]+/g,'-');}
@@ -18695,7 +18696,7 @@ try{
     o=o||{};
     var st=bimSunSettings(),miss=bimSunNow().missing;
     if(miss)return {error:'Set the site '+miss.join(', ')+' first (Properties > Site > Location)'};
-    var date=o.date||st.date,step=o.step||15,g=bimShadowGround(),list=bimShadowCasters(g),i,j,k;
+    var date=o.date||st.date,step=o.step||15,g=bimShadowGround(),list=bimShadowCasters(g,date),i,j,k;
     var steps=bimSimDaySteps(date,step);
     if(!steps)return {error:'The site has no place yet'};
     /* the area: the solids' plan, with room for their shadows */
@@ -19857,6 +19858,58 @@ try{
             'leisure=park':7000,'leisure=playground':7000,'leisure=pitch':7000,'leisure=sports_centre':7000,'leisure=golf_course':7000,'leisure=garden':7000,'leisure=track':7000,'leisure=marina':7000,'landuse=recreation_ground':7000,'landuse=village_green':7000,'tourism=theme_park':7000,'tourism=camp_site':7000,
             'landuse=farmland':8000,'landuse=field':8000,'landuse=farmyard':8000,'landuse=orchard':8000,'landuse=vineyard':8000,'landuse=allotments':8000,'landuse=plant_nursery':8000,'landuse=greenhouse_horticulture':8000,'landuse=aquaculture':8000,'landuse=meadow':8000,'landuse=forest':8000,'landuse=quarry':8000,
             'natural=wood':9000,'natural=scrub':9000,'natural=grassland':9000,'landuse=brownfield':9000,'landuse=greenfield':9000,'landuse=grass':9000,'landuse=flowerbed':9000}}}]}]},
+    /* __acad3dV169: the assets' sizes -- people, a wheelchair user, cycles and stands, parking, trees -- each from its source */
+    {id:'body.us',title:'Body size: height',pub:'U.S. National Center for Health Statistics',kind:'data',area:'Assets',use:'People: their heights',anywhere:true,
+      eds:[{id:'body.us.2018',name:'Anthropometric reference data, United States, 2015-2018 (NCHS, 2021)',pub:'2021-01',st:'current',where:'United States',adopt:[{at:'us',from:'2021-01'}],
+        src:{t:'Fryar, Carroll, Gu, Afful and Ogden, Anthropometric reference data for children and adults: United States, 2015-2018, NCHS Vital and Health Statistics 3(46), January 2021',w:'Tables 7, 9 and 11: the mean height of men and of women aged 20 and over, and of boys aged 8',u:'https://www.cdc.gov/nchs/data/series/sr_03/sr03-046-508.pdf',lv:'P',read:'2026-10-19'},
+        v:[{n:'man',v:1.753,u:'m',say:'the mean height of a man (20 and over)',src:'175.3 cm'},{n:'woman',v:1.613,u:'m',say:'the mean height of a woman (20 and over)',src:'161.3 cm'},
+          {n:'child',v:1.321,u:'m',say:'the mean height of a boy of 8',src:'132.1 cm'}]}]},
+    {id:'body.hidh',title:'Body proportions by height',pub:'NASA',kind:'method',area:'Assets',use:'People: their eye height and shoulder width from their height',anywhere:true,
+      eds:[{id:'body.hidh.rev1',name:'Human Integration Design Handbook, Revision 1 (2014), Appendix B',pub:'2014-06-05',st:'current',where:'A method, used anywhere',adopt:[{at:'*',from:'2014'}],
+        src:{t:'NASA, Human Integration Design Handbook, NASA/SP-2010-3407/REV1 (2014)',w:'Appendix B, Tables 1a and 1b: stature, sitting height, eye height sitting and bideltoid breadth for the smallest (1st percentile female) and the largest (99th percentile male); 4.2.2: linear regressions on stature from the 1988 ANSUR survey, a military population, projected to 2015',u:'https://www.nasa.gov/sites/default/files/atoms/files/human_integration_design_handbook_revision_1.pdf',lv:'P',read:'2026-10-19'},
+        v:[{n:'st_lo',v:1.486,u:'m',say:'the smallest stature',lt:'st_hi'},{n:'st_hi',v:1.946,u:'m',say:'the largest stature',gt:'st_lo'},
+          {n:'sit_lo',v:0.777,u:'m',say:'the smallest sitting height'},{n:'sit_hi',v:1.013,u:'m',say:'the largest sitting height'},
+          {n:'eye_lo',v:0.665,u:'m',say:'the smallest eye height, sitting'},{n:'eye_hi',v:0.889,u:'m',say:'the largest eye height, sitting'},
+          {n:'sh_lo',v:0.378,u:'m',say:'the narrowest shoulders (bideltoid breadth)'},{n:'sh_hi',v:0.561,u:'m',say:'the widest shoulders (bideltoid breadth)'}]}]},
+    {id:'wheel.awmp',title:'Wheelchair users: size',pub:'IDeA Center, University at Buffalo, for the U.S. Access Board',kind:'data',area:'Assets',use:'The wheelchair user',anywhere:true,
+      eds:[{id:'wheel.awmp.2010',name:'Anthropometry of Wheeled Mobility Project, final report (2010)',pub:'2010-12-31',st:'current',where:'A measured sample, used anywhere',adopt:[{at:'*',from:'2010'}],
+        src:{t:'Steinfeld, Paquet, D\'Souza, Joseph and Maisel, Anthropometry of Wheeled Mobility Project, final report for the U.S. Access Board, IDeA Center, University at Buffalo (2010)',w:'Appendix Two, Tables 1 and 2, and pages 86 and 87: manual chair users\' occupied height and seat height, the space that holds 95% of them; the eye height of all device users (the manual chair row is not legible in the text)',u:'https://idea.ap.buffalo.edu/wp-content/uploads/sites/110/2020/01/AnthropometryofWheeledMobilityProject_FinalReport.pdf',lv:'P',read:'2026-10-19'},
+        v:[{n:'height',v:1.249,u:'m',say:'a manual chair user\'s occupied height (mean)'},{n:'seat',v:0.495,u:'m',say:'the occupied seat height (mean)'},
+          {n:'eye',v:1.152,u:'m',say:'the eye height (mean, all device users)'},{n:'space_w',v:0.82,u:'m',say:'the width that holds 95% of manual chair users'},{n:'space_l',v:1.42,u:'m',say:'the length that holds 95% of them'}]}]},
+    {id:'ada.space',title:'Wheelchair space',pub:'U.S. Department of Justice',kind:'code',area:'Assets',use:'The wheelchair user\'s clear floor space and turning space',anywhere:true,
+      eds:[{id:'ada.space.2010',name:'2010 ADA Standards for Accessible Design, 304.3.1 and 305.3',pub:'2010-09-15',st:'current',where:'United States',adopt:[{at:'us',from:'2012-03-15'}],
+        src:{t:'U.S. Department of Justice, 2010 ADA Standards for Accessible Design',w:'304.3.1: a turning space 60 inches (1525 mm) across; 305.3: a clear floor space 30 inches (760 mm) by 48 inches (1220 mm) at least',u:'https://www.ada.gov/assets/pdfs/2010-design-standards.pdf',lv:'P',read:'2026-10-19'},
+        v:[{n:'clear_w',v:0.76,u:'m',say:'the clear floor space\'s width'},{n:'clear_l',v:1.22,u:'m',say:'its length'},{n:'turn',v:1.525,u:'m',say:'the turning space, across'}]}]},
+    {id:'mutcd.walk',title:'Walking speeds at signals',pub:'Federal Highway Administration',kind:'standard',area:'Assets',use:'The wheelchair user\'s speed',anywhere:true,
+      eds:[{id:'mutcd.walk.11r1',name:'MUTCD 11th Edition with Revision 1 (December 2025), 4I.06',pub:'2025-12',st:'current',where:'United States',adopt:[{at:'us',from:'2025-12'}],
+        src:{t:'FHWA, Manual on Uniform Traffic Control Devices, 11th Edition with Revision 1',w:'4I.06 paragraph 07: the clearance at 3.5 feet per second; paragraph 14: the walk and the clearance at 3 feet per second; paragraph 10: slower where people who use wheelchairs routinely cross',u:'https://mutcd.fhwa.dot.gov/kno_11th_Editionr1.htm',lv:'P',read:'2026-10-19'},
+        v:[{n:'clear',v:1.067,u:'m/s',say:'the walking speed for the clearance time',src:'3.5 ft/s'},{n:'slow',v:0.914,u:'m/s',say:'the slower walking speed',src:'3 ft/s',lt:'clear'}]}]},
+    {id:'ltn.cycle',title:'Cycles and cycle parking',pub:'UK Department for Transport',kind:'guideline',area:'Assets',use:'The cycle and the cycle stand',anywhere:true,
+      eds:[{id:'ltn.cycle.2020',name:'Cycle Infrastructure Design, LTN 1/20 (July 2020)',pub:'2020-07',st:'current',where:'England',adopt:[{at:'gb-eng',from:'2020-07'}],
+        src:{t:'Department for Transport, Cycle Infrastructure Design, Local Transport Note 1/20',w:'Table 5-1: the solo upright cycle; 11.4.6 and Table 11-2: banks of Sheffield stands',u:'https://assets.publishing.service.gov.uk/media/5ffa1f96d3bf7f65d9e35825/cycle-infrastructure-design-ltn-1-20.pdf',lv:'P',read:'2026-10-19'},
+        v:[{n:'length',v:1.8,u:'m',say:'a solo upright cycle\'s length'},{n:'width',v:0.65,u:'m',say:'its width'},{n:'wheel',v:0.7,u:'m',say:'a typical wheel\'s diameter'},
+          {n:'turn_out',v:1.65,u:'m',say:'its smallest turning circle, outer radius'},{n:'turn_in',v:0.85,u:'m',say:'and inner radius',lt:'turn_out'},
+          {n:'gap',v:1.2,u:'m',say:'the spacing between stands, recommended'},{n:'gap_min',v:1,u:'m',say:'the spacing between stands, at least',lt:'gap'},{n:'bay',v:2,u:'m',say:'the length of a cycle parked on a stand'},
+          {n:'aisle',v:3,u:'m',say:'the access aisle\'s width'},{n:'wall',v:0.6,u:'m',say:'a stand\'s clearance to a wall'},{n:'front',v:1,u:'m',say:'the clear space in front of a stand'}]}]},
+    {id:'parking.bay',title:'Parking bays',pub:'UK Department for Transport',kind:'guideline',area:'Assets',use:'The parking bay',anywhere:true,
+      eds:[{id:'parking.bay.mfs2007',name:'Manual for Streets (2007), 8.3',pub:'2007',st:'current',where:'England and Wales; elsewhere where no rule is recorded (the owner, 2026-10-19)',adopt:[{at:'gb-eng',from:'2007'},{at:'gb-wls',from:'2007'}],
+        src:{t:'Department for Transport, Manual for Streets (2007)',w:'8.3.58: an off-street bay at least 4.8 m long by 2.4 m wide; 8.3.51: the width to reach a 2.4 m bay, by its angle',u:'https://assets.publishing.service.gov.uk/media/5a7e0035ed915d74e6223743/pdfmanforstreets.pdf',lv:'P',read:'2026-10-19'},
+        v:[{n:'width',v:2.4,u:'m',say:'a bay\'s width'},{n:'length',v:4.8,u:'m',say:'a bay\'s length'},{n:'aisle90',v:6,u:'m',say:'the aisle to reach it at 90 degrees'},{n:'aisle60',v:4.2,u:'m',say:'the aisle at 60 degrees'},{n:'aisle45',v:3.6,u:'m',say:'the aisle at 45 degrees'}]}]},
+    {id:'utd.trees',title:'Tree sizes',pub:'USDA Forest Service',kind:'data',area:'Assets',use:'Trees: their height and crown by type',anywhere:true,
+      eds:[{id:'utd.trees.2016',name:'Urban Tree Database (McPherson, van Doorn and Peper, 2016), its measured trees',pub:'2016',st:'current',where:'A measured US sample, used anywhere',adopt:[{at:'*',from:'2016'}],
+        src:{t:'McPherson, van Doorn and Peper, Urban Tree Database, Forest Service Research Data Archive RDS-2016-0005',w:'TS3_Raw_tree_data.csv: 14,487 street and park trees in 17 US cities; the medians of the trees at or above their type\'s median trunk diameter, worked out here (research-assets.md, 4)',u:'https://www.fs.usda.gov/rds/archive/catalog/RDS-2016-0005',lv:'P',read:'2026-10-19'},
+        v:[{n:'types',t:1,lv:'S',say:'by type (broadleaf B or conifer C; deciduous D or evergreen E; small, medium or large): the height and the crown across, in m, and the crown over the height',
+          v:[['BDS',8.2,8.7,1.07],['BDM',14,11.9,0.85],['BDL',20,15.9,0.81],['BES',8.5,8,0.96],['BEM',11.5,11.3,0.98],['BEL',16,15.1,0.98],['CES',7,6,0.87],['CEM',12.5,8.5,0.74],['CEL',20,10.7,0.57]]}]}]},
+    {id:'etccdi.gsl',title:'Growing season',pub:'ETCCDI, the Expert Team on Climate Change Detection and Indices',kind:'method',area:'Assets',use:'When a deciduous tree is in leaf',anywhere:true,
+      eds:[{id:'etccdi.gsl.27',name:'The 27 core climate indices: GSL, growing season length',pub:'',st:'current',where:'A method, used anywhere',adopt:[{at:'*'}],
+        src:{t:'ETCCDI, the definitions of the 27 core indices',w:'GSL: from the first span of at least 6 days with a daily mean above 5 C to the first span after 1 July (1 January in the Southern Hemisphere) of 6 days below 5 C',u:'https://etccdi.pacificclimate.org/list_27_indices.shtml',lv:'P',read:'2026-10-19'},
+        v:[{n:'t',v:5,u:'C',say:'the daily mean the season is counted above'},{n:'days',v:6,u:'days',say:'the span that starts and ends it'}]}]},
+    {id:'app.assets',title:'The assets\' own shapes',pub:'This app',kind:'assumption',area:'Assets',use:'The models\' shapes where no source sizes them',anywhere:true,
+      eds:[{id:'app.assets.1',name:'The app\'s asset settings (V169)',pub:'',st:'current',where:'Anywhere',adopt:[{at:'*'}],
+        src:{t:'This app: the seat a seated person sits on, a cycle\'s height, a Sheffield stand\'s size, a bay\'s painted line, and the crown of a mapped tree whose leaf type is not mapped (the context\'s rule since V157)',w:'research-assets.md',lv:'A'},
+        v:[{n:'seat',v:0.45,u:'m',say:'the seat a seated person sits on'},{n:'bike_h',v:1.05,u:'m',say:'a cycle\'s height to its handlebars'},
+          {n:'stand_w',v:0.75,u:'m',say:'a Sheffield stand\'s length'},{n:'stand_h',v:0.75,u:'m',say:'a Sheffield stand\'s height'},{n:'line',v:0.1,u:'m',say:'a bay\'s painted line, across'},
+          {n:'crown',v:0.6,u:'x',say:'a mapped tree\'s crown across, of its height, where its leaf type is not mapped'}]}]},
     {id:'app.climate',title:'Climate readings',pub:'This app',kind:'assumption',area:'Climate',use:'The climate board, the wind rose and its finding',anywhere:true,
       eds:[{id:'app.climate.1',name:'The app\'s climate settings (V159)',pub:'',st:'current',where:'Anywhere',adopt:[{at:'*'}],
         src:{t:'This app: a degree-day base, a calm threshold and the rose\'s speed bins, and a comfort band',w:'research-climate-risk-presentation.md',lv:'A'},
@@ -19915,7 +19968,7 @@ try{
   var BIM_STD_LV={P:'read at its source',S:'from a dependable secondary source, the gap said',U:'not yet verified',A:'the app\'s own assumption'};
   var BIM_STD_HOW={adopted:'in force here',international:'international',chosen:'chosen for this project',outside:'applied outside its place',assumption:'the app\'s assumption',none:'none in force'};
   var BIM_STD_UNIT={min:[' minute',' minutes'],m:[' m',' m'],'m/min':[' m a minute',' m a minute'],'km/h':[' km/h',' km/h'],'%':['%','%'],'ug/m3':[' \u00b5g/m\u00b3',' \u00b5g/m\u00b3'],
-    'per sq mi':[' per sq mi',' per sq mi'],dB:[' dB',' dB'],ha:[' ha',' ha'],trees:[' tree',' trees'],families:[' family',' families'],C:['\u00b0C','\u00b0C'],'m/s':[' m/s',' m/s'],lanes:[' lane',' lanes'],x:['\u00d7','\u00d7'],'sq ft':[' sq ft',' sq ft']};
+    'per sq mi':[' per sq mi',' per sq mi'],dB:[' dB',' dB'],ha:[' ha',' ha'],trees:[' tree',' trees'],families:[' family',' families'],C:['\u00b0C','\u00b0C'],'m/s':[' m/s',' m/s'],lanes:[' lane',' lanes'],days:[' day',' days'],x:['\u00d7','\u00d7'],'sq ft':[' sq ft',' sq ft']};
   var BIM_STD_EMPTY={place:null,date:'',ov:{},pick:{},packs:[]};
   var A3D_STD={obj:null,rev:-1,sig:'',at:0,cache:{},recs:null,by:{},memo:{},warned:{},gen:0};
   /* what the project holds: A3D.site.std, or nothing changed yet */
@@ -20802,8 +20855,8 @@ try{
     return (r&&r.elevation>0)?r:null;
   }
   /* the project's own solids near the site: the context's buildings are what the site is set in */
-  function bimDgCasters(gr,c,r){
-    return bimShadowCasters(gr).filter(function(it){
+  function bimDgCasters(gr,c,r,date){
+    return bimShadowCasters(gr,date).filter(function(it){
       var o=objById(it.id),k;
       if(!o||o.context)return false;
       for(k=0;k<it.w.length;k+=Math.max(1,Math.floor(it.w.length/8))){var dx=it.w[k][0]-c[0],dz=it.w[k][2]-c[1];if(dx*dx+dz*dz<=r*r)return true;}
@@ -20813,7 +20866,7 @@ try{
   function bimDgDrawShadow(ctx,V,W,H,o,a){
     var L=o.dg.g.live,sun=L?bimDgSun(L.date,L.time):null;
     if(!sun)return;
-    var sv=bimSunVector(sun),gr=bimShadowGround(),list=bimDgCasters(gr,L.c||[0,0],L.r||200);
+    var sv=bimSunVector(sun),gr=bimShadowGround(),list=bimDgCasters(gr,L.c||[0,0],L.r||200,L.date);
     if(!list.length)return;
     var c2=bimDgOff(ctx,'shadowCv');
     c2.globalCompositeOperation='source-over';c2.fillStyle=(o.dg.s&&o.dg.s.fill)||'#5b6c8a';
@@ -23936,6 +23989,36 @@ try{
     return s[lo]+(s[hi]-s[lo])*(r-lo);
   }
   function bimClimR(v,d){var k=Math.pow(10,d||1);return Math.round(v*k)/k;}
+  /* __acad3dV169: the thermal growing season, ETCCDI's GSL, year by year from the daily means: from the first span of
+     days above the registry's mean to the first span below it after mid-year; the median start and end kept, in days
+     from 1 January (1 July in the Southern Hemisphere), for when a deciduous tree is in leaf */
+  function bimClimGsl(js,lat){
+    var d=js&&js.daily,T=bimStd('etccdi.gsl','t'),N=bimStd('etccdi.gsl','days'),sh=lat<0,S={},i,k,y;
+    if(!d||!Array.isArray(d.time)||typeof T!=='number'||!(N>=1))return null;
+    for(i=0;i<d.time.length;i++){
+      var m=/^(\d{4})-(\d{2})-(\d{2})/.exec(String(d.time[i]));if(!m)continue;
+      var tm=(d.temperature_2m_mean||[])[i],tx=(d.temperature_2m_max||[])[i],tn=(d.temperature_2m_min||[])[i];
+      if(!bimClimNum(tm)&&bimClimNum(tx)&&bimClimNum(tn))tm=(tx+tn)/2;
+      var Y=+m[1],M=+m[2],sy=(sh&&M<7)?Y-1:Y,di=Math.round((Date.UTC(Y,M-1,+m[3])-Date.UTC(sy,sh?6:0,1))/864e5);
+      (S[sy]=S[sy]||[])[di]=bimClimNum(tm)?tm:null;
+    }
+    var st=[],en=[],ys=0;
+    for(y in S){
+      if(!S.hasOwnProperty(y))continue;
+      var a=S[y],y0=Date.UTC(+y,sh?6:0,1),len=Math.round((Date.UTC(+y+1,sh?6:0,1)-y0)/864e5),mid=Math.round((Date.UTC(sh?+y+1:+y,sh?0:6,1)-y0)/864e5),full=true,s0=-1,e0=len,run=0;
+      for(k=0;k<len;k++)if(a[k]===undefined||a[k]===null){full=false;break;}
+      if(!full)continue;
+      ys++;
+      for(k=0;k<len;k++){run=a[k]>T?run+1:0;if(run>=N){s0=k-N+1;break;}}
+      if(s0<0){st.push(len);en.push(len);continue;}   /* no season that year */
+      run=0;
+      for(k=Math.max(mid,s0+N);k<len;k++){run=a[k]<T?run+1:0;if(run>=N){e0=k-N+1;break;}}
+      st.push(s0);en.push(e0);
+    }
+    if(!ys)return null;
+    function med(L){L=L.slice().sort(function(p,q){return p-q;});var n=L.length;return n%2?L[(n-1)/2]:Math.round((L[n/2-1]+L[n/2])/2);}
+    return {s:med(st),e:med(en),years:ys,sh:sh,std:bimStdStamp(['etccdi.gsl'])};
+  }
   /* ten years of days, to the twelve months' normals */
   function bimClimDaily(js){
     var d=js&&js.daily;
@@ -24118,6 +24201,7 @@ try{
       C.lat=lat;C.lon=lon;C.fetched=today;C.errors=bad.slice();
       if(D){C.normals=D;C.period=[y[0],y[1]];C.koppen=bimKoppen(D.months.map(function(m){return m.tm;}),D.months.map(function(m){return m.p;}),lat);
         C.src='ERA5 reanalysis (ECMWF), via Open-Meteo';}
+      if(R[0].ok){var G0=bimClimGsl(R[0].js,lat);if(G0)C.gsl=G0;else delete C.gsl;}   /* __acad3dV169: the growing season, for the trees */
       if(Hh)C.hourly=Hh;
       /* __acad3dV167: the values they were worked out with, and their stamp */
       if(D)D.used={base:bimClimBase()};
@@ -27687,6 +27771,7 @@ try{
     }
     if(o.bim&&o.bim.baseY!==undefined)cons+=bimPropLenText('Base Elevation',o.bim.baseY);
     h+=bimPropGroup('Constraints',cons);
+    if(o.asset&&o.asset.k)h+=bimEntPropsHtml(o);   /* __acad3dV169: the asset's sizes and their standards */
 
     // ---- Graphics ----
     var gfx='';
@@ -31031,19 +31116,6 @@ try{
     }
     return {v:v,f:f};
   }
-  /* a tree: a hexagonal trunk and a crown of 20 faces */
-  function bimTreeMesh(x,z,y,h,cd){
-    var v=[],f=[],i,r=Math.max(0.08,h*0.025),cr=Math.max(0.6,cd/2),cy=y+Math.max(h-cr,h*0.45),th=Math.max(0.5,cy-y);
-    for(i=0;i<6;i++){var a=i*Math.PI/3;v.push([x+r*Math.cos(a),y,z+r*Math.sin(a)]);}
-    for(i=0;i<6;i++){var a2=i*Math.PI/3;v.push([x+r*Math.cos(a2),y+th,z+r*Math.sin(a2)]);}
-    for(i=0;i<6;i++){var j=(i+1)%6;f.push([i,j,j+6,i+6]);}
-    var p=(1+Math.sqrt(5))/2,s=cr/Math.sqrt(1+p*p),b=v.length,
-      ico=[[-1,p,0],[1,p,0],[-1,-p,0],[1,-p,0],[0,-1,p],[0,1,p],[0,-1,-p],[0,1,-p],[p,0,-1],[p,0,1],[-p,0,-1],[-p,0,1]],
-      tri=[[0,11,5],[0,5,1],[0,1,7],[0,7,10],[0,10,11],[1,5,9],[5,11,4],[11,10,2],[10,7,6],[7,1,8],[3,9,4],[3,4,2],[3,2,6],[3,6,8],[3,8,9],[4,9,5],[2,4,11],[6,2,10],[8,6,7],[9,8,1]];
-    for(i=0;i<12;i++)v.push([x+ico[i][0]*s,cy+ico[i][1]*s,z+ico[i][2]*s]);
-    for(i=0;i<20;i++)f.push([b+tri[i][0],b+tri[i][1],b+tri[i][2]]);
-    return {v:v,f:f};
-  }
   /* a pylon: a tapering four-sided tower */
   function bimTowerMesh(x,z,y,h){
     var v=[],f=[],a=2,b=0.5;
@@ -31209,14 +31281,14 @@ try{
             if(hh.from==='assumed')assumed++;
           }
         }else if(f.kind==='trees'&&(f.point||f.line)){   /* __acad3dV157: a tree, or a tree every 8 m along a row */
-          var tp=f.point?[f.point]:bimCtxAlong(f.line.pts,BIM_CTX_TREE_STEP),th2=bimTagMetres(f.tags.height)||bimCtxTreeH(),cd2=bimTagMetres(f.tags.diameter_crown)||th2*0.6;
+          var tp=f.point?[f.point]:bimCtxAlong(f.line.pts,BIM_CTX_TREE_STEP),th2=bimTagMetres(f.tags.height)||bimCtxTreeH(),cd2=bimTagMetres(f.tags.diameter_crown)||th2*bimEntCrownRatio(f.tags),lf2=bimEntLeafOf(f.tags);   /* __acad3dV169: the crown by leaf type */
           for(j=0;j<tp.length&&n.trees<BIM_CTX_TREES_MAX;j++){
             var gy=y0+(hAt(tp[j][0],tp[j][1]));
             o=bimAddPoint(tp[j][0],tp[j][1],gy,L.trees);
             o.name=String(f.tags.species||f.tags.genus||'Tree')+' '+(n.trees+1);o.context=rec('trees',f);
-            o.context.height=th2;o.context.crown=Math.round(cd2*100)/100;
+            o.context.height=th2;o.context.crown=Math.round(cd2*100)/100;o.context.leaf=lf2;
             if(!f.point)o.context.row=true;
-            o.mesh=bimTreeMesh(tp[j][0],tp[j][1],gy,th2,cd2);o.col=BIM_CTX_COL.trees;
+            o.mesh=bimEntTreeMesh(tp[j][0],tp[j][1],gy,th2,cd2,lf2.type==='C').mesh;o.col=BIM_CTX_COL.trees;   /* __acad3dV169: a conifer a cone */
             place(o,'trees');
           }
         }else if(f.kind==='power'&&f.point){   /* __acad3dV157: a pylon */
@@ -32884,6 +32956,7 @@ try{
     drawTerrain(ctx,V,W,H);                  /* __acad3dV108: the ground, under everything */
     if(!capMode)drawSunShadows(ctx,V,W,H);   /* __acad3dV107: first, so everything else draws over it */
     if(!capMode)drawSimOverlays(ctx,V,W,H);  /* __acad3dV143: sun hours, ponds and flow lines */
+    if(!capMode)bimEntDrawTurns(ctx,V,W,H);  /* __acad3dV169: the turning spaces of placed assets */
     if(!capMode)drawResultLayers(ctx,V,W,H); /* __acad3dV148: the results kept as layers, over the live ones */
     drawDiagrams(ctx,V,W,H,'under');         /* __acad3dV164: the site analysis's bands, fills and shadows */
     var presentRooms=bimPresentGraphics();   /* __acad3dV122 */
@@ -41574,6 +41647,13 @@ try{
     }
     if(!q&&!models.length)body='<div class="a3d-asempty">No models yet.</div>';
     h+=grp('families','Models',models.length+' item(s)',body,true);
+    /* __acad3dV169: people, cycles, parking and trees, sized from the registry */
+    body='';
+    for(i=0;i<BIM_ENT.length;i++){
+      if(!bimAssetMatch(q,[BIM_ENT[i].name,BIM_ENT[i].cat,'asset','people','scale','entourage']))continue;
+      body+=tile('asset:'+BIM_ENT[i].k,bimEntLib(BIM_ENT[i]),BIM_ENT[i].cat,true,'');
+    }
+    h+=grp('entourage','People, cycles, parking and trees',BIM_ENT.length+' item(s)',body,true);
     // Blocks
     var blocks=bimLibEntries('block');body='';
     for(i=0;i<blocks.length;i++){
@@ -41664,6 +41744,7 @@ try{
       if(key==='image')return bimPlaceImageNote(at);
       return !!bimPlaceNoteAtViewCentre(key,null,at);
     }
+    if(kind==='asset')return !!bimEntPlace(key,at||bimViewCentrePlan());   /* __acad3dV169 */
     if(kind==='family'){
       var fam=bimFamilyLibraryGet(key);
       if(!fam){a3dToast('That model is no longer in the library');return false;}
@@ -41873,7 +41954,7 @@ try{
       pt=[sn[0],sn[1]];
     }
     if(kind==='material'||kind==='pattern'||kind==='walltype'||kind==='section')obj=pick(cx,cy)||null;
-    if(!pt&&(kind==='family'||kind==='block'||kind==='note')){
+    if(!pt&&(kind==='family'||kind==='block'||kind==='note'||kind==='asset')){
       a3dToast('That point is not on the level: drop it where the drawing is');
       return false;
     }
@@ -43908,7 +43989,7 @@ try{
     for(i=0;i<A3D.levels.length;i++)if(g===null||(A3D.levels[i].elev||0)<g)g=A3D.levels[i].elev||0;
     return g===null?0:g;
   }
-  function bimShadowCasters(g){
+  function bimShadowCasters(g,date){   /* __acad3dV169: the date, for the trees' leaves */
     var out=[],i,k,o,q,v,w,top;
     for(i=0;i<A3D.objs.length;i++){
       o=A3D.objs[i];
@@ -43917,7 +43998,7 @@ try{
       q=bimObjOffset(o);v=o.mesh.v;w=[];top=-Infinity;
       for(k=0;k<v.length;k++){w.push([v[k][0]+q[0],v[k][1]+q[1],v[k][2]+q[2]]);if(w[k][1]>top)top=w[k][1];}
       if(o.bim&&o.bim.type==='floor'&&top<=g+0.5)continue;
-      out.push({id:o.id,w:w,f:o.mesh.f});
+      out.push({id:o.id,w:w,f:bimEntBare(o,date)?o.mesh.f.slice(0,o.asset.cf):o.mesh.f});
     }
     return out;
   }
@@ -45293,6 +45374,302 @@ try{
     return {id:'builtin:'+s.k,kind:'model',builtin:true,name:s.name,category:s.cat,manufacturer:'',
       mesh:bimNormalizeMeshForFamily(bimAsmMesh(s.parts)),thumb:''};
   });
+
+  /* ================= __acad3dV169: assets for scale and the simulations =================
+     People, a wheelchair user, a cycle and its stand, a parking bay and trees, each a solid whose mesh is built from
+     its parameters and the registry's sizes (research-assets.md). Its first two vertices mark its back and its front
+     at the ground and no face uses them, so its heading and centre come through every move, turn and mirror; a
+     tree's trunk faces come before its crown's (asset.cf), so a bare deciduous tree casts its trunk's shadow only. */
+  var BIM_ENT=[
+    {k:'man',name:'Man',cat:'People',kind:'person',p:{who:'man',pose:'standing'}},
+    {k:'woman',name:'Woman',cat:'People',kind:'person',p:{who:'woman',pose:'standing'}},
+    {k:'child',name:'Child',cat:'People',kind:'person',p:{who:'child',pose:'standing'}},
+    {k:'seated',name:'Seated person',cat:'People',kind:'person',p:{who:'woman',pose:'seated'}},
+    {k:'wheelchair',name:'Wheelchair user',cat:'People',kind:'wheelchair',p:{turn:true}},
+    {k:'bike',name:'Cycle',cat:'Cycles',kind:'bike',p:{}},
+    {k:'stand',name:'Cycle stand',cat:'Cycles',kind:'stand',p:{}},
+    {k:'bay',name:'Parking bay',cat:'Parking',kind:'bay',p:{}},
+    {k:'broadleaf',name:'Broadleaf tree',cat:'Trees',kind:'tree',p:{leaf:'B',cyc:'D',size:'M'}},
+    {k:'conifer',name:'Conifer',cat:'Trees',kind:'tree',p:{leaf:'C',cyc:'E',size:'M'}}];
+  var BIM_ENT_COL={People:'#c99a6e',Cycles:'#5f7f9e',Parking:'#e8e2c6',Trees:'#5b8a4c',Vehicles:'#7f8fa6'};
+  function bimEntSpec(key){var i;for(i=0;i<BIM_ENT.length;i++)if(BIM_ENT[i].k===key)return BIM_ENT[i];return null;}
+  function bimEntLerp(a,b,t){return a+(b-a)*t;}
+  /* a person: the height (the registry's mean for who they are, or their own), then the eye height and the shoulders,
+     each linear in stature between NASA's smallest and largest, as NASA's tables are built; the eyes are the head's
+     top-to-eye distance (sitting height less eye height sitting) below the top, standing or seated */
+  function bimEntBody(p){
+    var st=p.h>0?p.h:bimStd('body.us',p.who==='child'?'child':(p.who==='man'?'man':'woman')),
+      lo=bimStd('body.hidh','st_lo'),hi=bimStd('body.hidh','st_hi'),t=(st-lo)/((hi-lo)||1),
+      sit=bimEntLerp(bimStd('body.hidh','sit_lo'),bimStd('body.hidh','sit_hi'),t),
+      es=bimEntLerp(bimStd('body.hidh','eye_lo'),bimStd('body.hidh','eye_hi'),t),
+      sh=bimEntLerp(bimStd('body.hidh','sh_lo'),bimStd('body.hidh','sh_hi'),t),seated=p.pose==='seated',seat=bimStd('app.assets','seat');
+    return {st:st,t:t,sit:sit,head:sit-es,sh:sh,seated:seated,seat:seated?seat:0,eye:seated?seat+es:st-(sit-es),top:seated?seat+sit:st,
+      out:t<0||t>1,speed:bimStd('walk.speed','m_min')/60};
+  }
+  /* a box from its middle and its sizes; a disc turned onto its side, its axis along x; the parts with their markers */
+  function bimEntBox(c,z){var m=mkBoxP(z[0],z[1],z[2]);return {v:m.v.map(function(p){return [p[0]+c[0],p[1]+c[1],p[2]+c[2]];}),f:m.f};}
+  function bimEntDisc(c,r,t){var m=mkCylP(r,t,360,16);return {v:m.v.map(function(p){return [c[0]+p[1],c[1]-p[0],c[2]+p[2]];}),f:m.f};}
+  function bimEntMarked(parts,back,front){
+    var m=bimMergeMeshes(parts);
+    return {v:[[0,0,back],[0,0,front]].concat(m.v),f:m.f.map(function(fc){return fc.map(function(i){return i+2;});})};
+  }
+  function bimEntPersonMesh(B){
+    var st=B.st,sh=B.sh,hh=Math.max(0.12,2*B.head),hw=Math.min(sh*0.42,hh*0.8),tw=sh*0.7,aw=(sh-tw)/2,d=Math.max(0.12,st*0.12),P=[],
+      top=B.top,ys=top-hh-st*0.03,lw=tw*0.42;   /* the shoulders, under the neck; the eyes at the head's middle */
+    P.push(bimEntBox([0,top-hh/2,0],[hw,hh,hh*0.85]));
+    if(!B.seated){
+      var yh=st*0.52;
+      P.push(bimEntBox([0,(yh+ys)/2,0],[tw,ys-yh,d]));
+      P.push(bimEntBox([-(tw/2+aw/2),ys-st*0.18,0],[aw,st*0.36,aw]),bimEntBox([tw/2+aw/2,ys-st*0.18,0],[aw,st*0.36,aw]));
+      P.push(bimEntBox([-(tw/2-lw/2),yh/2,0],[lw,yh,d*0.85]),bimEntBox([tw/2-lw/2,yh/2,0],[lw,yh,d*0.85]));
+    }else{
+      var s2=B.seat,th=0.14,zb=-0.12;
+      P.push(bimEntBox([0,s2/2,zb],[tw+0.06,s2,0.42]));
+      P.push(bimEntBox([0,(s2+th+ys)/2,zb],[tw,ys-s2-th,d]));
+      P.push(bimEntBox([-(tw/2+aw/2),ys-st*0.16,zb+0.05],[aw,st*0.32,aw]),bimEntBox([tw/2+aw/2,ys-st*0.16,zb+0.05],[aw,st*0.32,aw]));
+      P.push(bimEntBox([-(tw/2-lw/2),s2+th/2,0.08],[lw,th,0.46]),bimEntBox([tw/2-lw/2,s2+th/2,0.08],[lw,th,0.46]));
+      P.push(bimEntBox([-(tw/2-lw/2),s2/2,0.27],[lw*0.9,s2,0.1]),bimEntBox([tw/2-lw/2,s2/2,0.27],[lw*0.9,s2,0.1]));
+    }
+    return bimEntMarked(P,-0.3,0.3);
+  }
+  /* the wheelchair fills ADA's clear floor space less a margin; the person in it to the Access Board's study */
+  function bimEntChairMesh(){
+    var W=bimStd('ada.space','clear_w')*0.85,L=bimStd('ada.space','clear_l')*0.85,s2=bimStd('wheel.awmp','seat'),top=bimStd('wheel.awmp','height'),
+      eye=bimStd('wheel.awmp','eye'),R=Math.min(0.31,s2*0.62),hh=Math.max(0.16,2*(top-eye)),tw=W*0.55,zb=-L/2+R+0.01,P=[];
+    P.push(bimEntDisc([-W/2+0.02,R,zb],R,0.04),bimEntDisc([W/2-0.02,R,zb],R,0.04));
+    P.push(bimEntDisc([-W/2+0.08,0.06,L/2-0.08],0.06,0.03),bimEntDisc([W/2-0.08,0.06,L/2-0.08],0.06,0.03));
+    P.push(bimEntBox([0,s2-0.03,zb+0.12],[W-0.12,0.06,0.44]),bimEntBox([0,s2+0.22,zb-0.1],[W-0.12,0.44,0.04]));
+    P.push(bimEntBox([0,(s2+top-hh-0.05)/2,zb+0.02],[tw,top-hh-0.05-s2,0.22]),bimEntBox([0,top-hh/2,zb+0.04],[hh*0.75,hh,hh*0.85]));
+    P.push(bimEntBox([0,s2+0.06,zb+0.38],[tw,0.12,0.42]),bimEntBox([0,(s2+0.1)/2,zb+0.6],[tw,s2-0.1,0.1]));
+    return bimEntMarked(P,-L/2,L/2);
+  }
+  function bimEntBikeMesh(){
+    var L=bimStd('ltn.cycle','length'),W=bimStd('ltn.cycle','width'),D=bimStd('ltn.cycle','wheel'),H=bimStd('app.assets','bike_h'),r=D/2,zf=L/2-r,zr=-(L/2-r),P=[];
+    P.push(bimEntDisc([0,r,zr],r,0.04),bimEntDisc([0,r,zf],r,0.04));
+    P.push(bimEntBox([0,r+0.18,(zr+zf)/2],[0.04,0.04,zf-zr-0.2]),bimEntBox([0,(r+H*0.92)/2,zr+0.35],[0.04,H*0.92-r,0.04]));
+    P.push(bimEntBox([0,H*0.9,zr+0.33],[0.12,0.04,0.24]),bimEntBox([0,(r+H)/2,zf-0.08],[0.04,H-r,0.04]),bimEntBox([0,H-0.02,zf-0.08],[W,0.04,0.04]));
+    return bimEntMarked(P,-L/2,L/2);
+  }
+  function bimEntStandMesh(){
+    var w=bimStd('app.assets','stand_w'),h=bimStd('app.assets','stand_h'),t=0.05;
+    return bimEntMarked([bimEntBox([0,h/2,-w/2+t/2],[t,h,t]),bimEntBox([0,h/2,w/2-t/2],[t,h,t]),bimEntBox([0,h-t/2,0],[t,t,w])],-w/2,w/2);
+  }
+  /* a bay's lines on the ground, its back and sides, open at the front */
+  function bimEntBayMesh(){
+    var W=bimStd('parking.bay','width'),L=bimStd('parking.bay','length'),lw=bimStd('app.assets','line'),y=0.005;
+    return bimEntMarked([bimEntBox([-(W/2-lw/2),y,0],[lw,0.01,L]),bimEntBox([W/2-lw/2,y,0],[lw,0.01,L]),bimEntBox([0,y,-L/2+lw/2],[W-2*lw,0.01,lw])],-L/2,L/2);
+  }
+  /* a tree's sizes: its type's in the Urban Tree Database (leaf, cycle, size), or its own */
+  function bimEntTreeType(p){
+    var T=bimStd('utd.trees','types')||[],lf=p.leaf==='C'?'C':'B',sz=/^[SML]$/.test(p.size||'')?p.size:'M',keys=[lf+(p.cyc==='E'?'E':'D')+sz,lf+'E'+sz,lf+'D'+sz],i,j;
+    for(j=0;j<keys.length;j++)for(i=0;i<T.length;i++)if(T[i][0]===keys[j])return {key:keys[j],h:T[i][1],cd:T[i][2],r:T[i][3]};
+    return null;
+  }
+  function bimEntTreeSize(p){
+    var T=bimEntTreeType(p)||{h:bimCtxTreeH(),cd:bimCtxTreeH()*bimStd('app.assets','crown'),key:''};
+    return {h:p.h>0?p.h:T.h,cd:p.cd>0?p.cd:T.cd,key:T.key};
+  }
+  /* the trunk first, then the crown: for a broadleaf V157's twenty faces, sized now to the crown's spread and the tree's
+     height (V157's were 0.85 of both, its icosahedron sized by its corners); for a conifer a cone of eight sides */
+  function bimEntTreeMesh(x,z,y,h,cd,con){
+    var v=[],f=[],i,r=Math.max(0.08,h*0.025),cr=Math.max(con?0.4:0.6,cd/2),rv=Math.min(cr,h*0.45),cb=con?y+Math.max(0.5,h*0.2):y+h-rv,b;
+    for(i=0;i<6;i++){var a=i*Math.PI/3;v.push([x+r*Math.cos(a),y,z+r*Math.sin(a)]);}
+    for(i=0;i<6;i++){var a2=i*Math.PI/3;v.push([x+r*Math.cos(a2),cb,z+r*Math.sin(a2)]);}
+    for(i=0;i<6;i++){var j=(i+1)%6;f.push([i,j,j+6,i+6]);}
+    b=v.length;
+    if(!con){
+      var g=(1+Math.sqrt(5))/2,ico=[[-1,g,0],[1,g,0],[-1,-g,0],[1,-g,0],[0,-1,g],[0,1,g],[0,-1,-g],[0,1,-g],[g,0,-1],[g,0,1],[-g,0,-1],[-g,0,1]],
+        tri=[[0,11,5],[0,5,1],[0,1,7],[0,7,10],[0,10,11],[1,5,9],[5,11,4],[11,10,2],[10,7,6],[7,1,8],[3,9,4],[3,4,2],[3,2,6],[3,6,8],[3,8,9],[4,9,5],[2,4,11],[6,2,10],[8,6,7],[9,8,1]];
+      for(i=0;i<12;i++)v.push([x+ico[i][0]/g*cr,cb+ico[i][1]/g*rv,z+ico[i][2]/g*cr]);
+      for(i=0;i<20;i++)f.push([b+tri[i][0],b+tri[i][1],b+tri[i][2]]);
+      return {mesh:{v:v,f:f},cf:6};
+    }
+    for(i=0;i<8;i++){var a3=i*Math.PI/4;v.push([x+cr*Math.cos(a3),cb,z+cr*Math.sin(a3)]);}
+    v.push([x,y+h,z]);
+    for(i=0;i<8;i++)f.push([b+i,b+8,b+(i+1)%8]);
+    f.push([b+7,b+6,b+5,b+4,b+3,b+2,b+1,b]);
+    return {mesh:{v:v,f:f},cf:6};
+  }
+  /* a mapped tree's leaf, from OpenStreetMap's tags; what is not mapped stays unsaid */
+  function bimEntLeafOf(t){
+    t=t||{};var lt=String(t.leaf_type||''),lc=String(t.leaf_cycle||'');
+    return {type:lt==='needleleaved'?'C':(lt==='broadleaved'?'B':''),cyc:/^(semi_)?deciduous$/.test(lc)?'D':(/^(semi_)?evergreen$/.test(lc)?'E':'')};
+  }
+  /* its crown across, of its height: the Urban Tree Database's medium tree of its kind; the app's rule where its leaf
+     type is not mapped */
+  function bimEntCrownRatio(t){
+    var L=bimEntLeafOf(t),T=L.type?bimEntTreeType({leaf:L.type,cyc:L.cyc||(L.type==='C'?'E':'D'),size:'M'}):null;
+    return T?T.r:bimStd('app.assets','crown');
+  }
+  /* the mesh, local, front +Z, base on the ground; and where a tree's crown starts */
+  function bimEntBuild(a){
+    var p=a.p||{},m=null,cf=-1,i,k;
+    try{
+      if(a.k==='person')m=bimEntPersonMesh(bimEntBody(p));
+      else if(a.k==='wheelchair')m=bimEntChairMesh();
+      else if(a.k==='bike')m=bimEntBikeMesh();
+      else if(a.k==='stand')m=bimEntStandMesh();
+      else if(a.k==='bay')m=bimEntBayMesh();
+      else if(a.k==='tree'){var S=bimEntTreeSize(p),T=bimEntTreeMesh(0,0,0,S.h,S.cd,p.leaf==='C');m=bimEntMarked([T.mesh],-S.cd/2,S.cd/2);cf=T.cf;}
+    }catch(e){console.warn('[BIM] An asset could not be built',e);a3dToast('That asset could not be built - see the console');return null;}
+    if(!m||!m.v||!m.v.length)return null;
+    for(i=0;i<m.v.length;i++)for(k=0;k<3;k++)if(!isFinite(m.v[i][k])){
+      console.warn('[BIM] An asset\'s size is missing from the standards registry: '+(a.k||''));a3dToast('That asset could not be sized - see the console');return null;}
+    return {mesh:m,cf:cf};
+  }
+  /* its heading (0 facing +Z) and its centre, local, from the markers */
+  function bimEntFrame(o){
+    var v=o&&o.mesh&&o.mesh.v;
+    if(!v||v.length<2)return {a:0,c:[0,0],y:0};
+    return {a:Math.atan2(v[1][0]-v[0][0],v[1][2]-v[0][2]),c:[(v[0][0]+v[1][0])/2,(v[0][2]+v[1][2])/2],y:v[0][1]};
+  }
+  function bimEntPlace(key,posXZ,p0){
+    var sp=bimEntSpec(key),k;
+    if(!sp)return null;
+    var a={k:sp.kind,key:key,p:JSON.parse(JSON.stringify(sp.p))};
+    if(p0)for(k in p0)if(p0.hasOwnProperty(k))a.p[k]=p0[k];
+    var b=bimEntBuild(a);
+    if(!b)return null;
+    a.cf=b.cf;
+    pushUndo();
+    A3D.counts.asset=(A3D.counts.asset||0)+1;
+    var lvl=bimGetActiveLevel(),o={id:'a3d-'+Date.now().toString(36)+'-'+(A3D.seq++),t:'solid',name:sp.name+' '+A3D.counts.asset,
+      pos:[posXZ[0],lvl.elev,posXZ[1]],mesh:b.mesh,col:BIM_ENT_COL[sp.cat],layer:A3D.activeLayer,asset:a,
+      bim:{type:'familyInstance',familyId:'asset:'+key,familyName:sp.name,category:sp.cat,levelId:A3D.activeLevel}};
+    A3D.objs.push(o);
+    A3D.sel=o.id;A3D.sel2=null;A3D.selSet=[o.id];
+    refreshTree();refreshHud();paint();saveSoon();
+    a3dToast(o.name+' placed');
+    return o;
+  }
+  /* built again from its parameters, where it stands and facing the way it faced */
+  function bimEntRebuild(o){
+    var b=bimEntBuild(o.asset);
+    if(!b)return false;
+    var F=bimEntFrame(o),ca=Math.cos(F.a),sa=Math.sin(F.a);
+    o.mesh={v:b.mesh.v.map(function(p){return [F.c[0]+p[0]*ca+p[2]*sa,F.y+p[1],F.c[1]-p[0]*sa+p[2]*ca];}),f:b.mesh.f};
+    o.asset.cf=b.cf;
+    return true;
+  }
+  /* ---- the leaves: the site's growing season (169a), from its climate ---- */
+  function bimEntDoy(date,sh){
+    var m=/^(\d{4})-(\d{2})-(\d{2})/.exec(String(date||''));
+    if(!m)return null;
+    var Y=+m[1],M=+m[2],sy=(sh&&M<7)?Y-1:Y;
+    return Math.round((Date.UTC(Y,M-1,+m[3])-Date.UTC(sy,sh?6:0,1))/864e5);
+  }
+  function bimEntSeason(){var C=A3D.site&&A3D.site.climate;return C&&C.gsl&&typeof C.gsl.s==='number'?C.gsl:null;}
+  function bimEntInLeaf(date){var G=bimEntSeason(),d;if(!G)return true;d=bimEntDoy(date,G.sh);return d===null?true:(d>=G.s&&d<G.e);}
+  function bimEntBare(o,date){
+    var a=o&&o.asset;
+    return !!(a&&a.k==='tree'&&a.p&&a.p.cyc!=='E'&&a.cf>0&&!bimEntInLeaf(date||bimSunSettings().date));
+  }
+  function bimEntDayName(d,sh){
+    var t=new Date(Date.UTC(2025,sh?6:0,1)+d*864e5);
+    return t.getUTCDate()+' '+['January','February','March','April','May','June','July','August','September','October','November','December'][t.getUTCMonth()];
+  }
+  function bimEntSeasonText(p){
+    if(p.cyc==='E')return 'all year: evergreen';
+    var G=bimEntSeason(),date=bimSunSettings().date;
+    if(!G)return 'all year, taken so: the site\'s climate is not fetched (Analyze site), so its growing season is not known';
+    if(G.s>=G.e)return 'never: the site\'s climate has no growing season (ETCCDI\'s GSL, '+G.years+' years)';
+    return 'from '+bimEntDayName(G.s,G.sh)+' to '+bimEntDayName(G.e-1,G.sh)+', the site\'s growing season (ETCCDI\'s GSL, the median of '+G.years+' years); '+
+      'the leaves come out some weeks after it starts. On the sun study\'s date, '+date+': '+(bimEntInLeaf(date)?'in leaf':'bare, its trunk alone casting a shadow');
+  }
+  /* ---- the turning spaces shown on the plan ---- */
+  function bimEntTurns(){
+    var out=[],i,o,a,F,q;
+    for(i=0;i<A3D.objs.length;i++){
+      o=A3D.objs[i];a=o.asset;
+      if(!a||!a.p||!a.p.turn||!o.mesh||!bimLayerShown(o))continue;
+      F=bimEntFrame(o);q=bimObjOffset(o);
+      if(a.k==='wheelchair')out.push({id:o.id,c:[F.c[0]+q[0],F.c[1]+q[2]],y:q[1]+F.y,r:[bimStd('ada.space','turn')/2],what:'the turning space'});
+    }
+    return out;
+  }
+  function bimEntDrawTurns(ctx,V,W,H){
+    var T=bimEntTurns(),i,j,k,s2,on;
+    A3D.lastTurns=T.length;
+    if(!T.length)return;
+    ctx.save();ctx.lineWidth=1.5;if(ctx.setLineDash)ctx.setLineDash([6,4]);
+    ctx.strokeStyle='rgba(56,189,248,0.95)';ctx.fillStyle='rgba(56,189,248,0.12)';
+    for(i=0;i<T.length;i++)for(j=0;j<T[i].r.length;j++){
+      ctx.beginPath();on=false;
+      for(k=0;k<=48;k++){
+        var an=k/48*Math.PI*2;
+        s2=toScreen([T[i].c[0]+T[i].r[j]*Math.cos(an),T[i].y+0.02,T[i].c[1]+T[i].r[j]*Math.sin(an)],V,W,H);
+        if(!s2)continue;
+        if(on)ctx.lineTo(s2[0],s2[1]);else{ctx.moveTo(s2[0],s2[1]);on=true;}
+      }
+      ctx.closePath();ctx.fill();ctx.stroke();
+    }
+    ctx.restore();
+  }
+  /* ---- Properties: the Asset group ---- */
+  function bimEntSel(key,opts,cur){
+    return '<select data-propf="asset:'+key+'">'+opts.map(function(x){return '<option value="'+x[0]+'"'+(x[0]===cur?' selected':'')+'>'+bimEsc(x[1])+'</option>';}).join('')+'</select>';
+  }
+  function bimEntStdHtml(L){return L.map(function(t){var s2=bimStdUsedText(t);return s2?'<div class="a3d-stdsrc">Standards: '+bimEsc(s2)+'</div>':'';}).join('');}
+  function bimEntBy(label,a,b){return bimPropText(bimLenLabel(label),bimDispLen(a)+' by '+bimDispLen(b));}
+  function bimEntPropsHtml(o){
+    var a=o.asset,p=a.p||{},r='',L=[];
+    if(a.k==='person'){
+      var B=bimEntBody(p);
+      r+=bimPropRow('Who',bimEntSel('who',[['man','A man'],['woman','A woman'],['child','A child of 8']],p.who));
+      r+=bimPropRow('Pose',bimEntSel('pose',[['standing','Standing'],['seated','Seated']],p.pose));
+      r+=bimPropLen('Height',B.st,'asset:h',0.3);
+      if(B.seated)r+=bimPropLenText('Height, seated',B.top);
+      r+=bimPropLenText('Eye height',B.eye)+bimPropLenText('Shoulder width',B.sh)+bimPropText('Walking speed',bimStdFmt(Math.round(B.speed*100)/100,'m/s'));
+      if(B.out)r+=bimPropText('Proportions','outside the adults NASA\'s tables span: extrapolated, an estimate');
+      L=['body.us','body.hidh','walk.speed'].concat(B.seated?['app.assets']:[]);
+    }else if(a.k==='wheelchair'){
+      r+=bimPropLenText('Height',bimStd('wheel.awmp','height'))+bimPropLenText('Seat height',bimStd('wheel.awmp','seat'))+bimPropLenText('Eye height',bimStd('wheel.awmp','eye'));
+      r+=bimEntBy('Clear floor space',bimStd('ada.space','clear_w'),bimStd('ada.space','clear_l'))+bimEntBy('Space for 95% of users',bimStd('wheel.awmp','space_w'),bimStd('wheel.awmp','space_l'));
+      r+=bimPropLenText('Turning space, across',bimStd('ada.space','turn'));
+      r+=bimPropRow('Show it on the plan','<input type="checkbox" data-propf="asset:turn"'+(p.turn?' checked':'')+'>');
+      r+=bimPropText('Speed',bimStdFmt(bimStd('mutcd.walk','slow'),'m/s'));
+      L=['wheel.awmp','ada.space','mutcd.walk'];
+    }else if(a.k==='bike'){
+      r+=bimEntBy('Size',bimStd('ltn.cycle','length'),bimStd('ltn.cycle','width'))+bimPropLenText('Wheel',bimStd('ltn.cycle','wheel'));
+      r+=bimPropText(bimLenLabel('Turning circle'),'outer radius '+bimDispLen(bimStd('ltn.cycle','turn_out'))+', inner '+bimDispLen(bimStd('ltn.cycle','turn_in')));
+      L=['ltn.cycle','app.assets'];
+    }else if(a.k==='stand'){
+      r+=bimPropText(bimLenLabel('Spacing'),bimDispLen(bimStd('ltn.cycle','gap'))+' recommended, '+bimDispLen(bimStd('ltn.cycle','gap_min'))+' at least; two cycles a stand');
+      r+=bimPropLenText('Bay length',bimStd('ltn.cycle','bay'))+bimPropLenText('Access aisle',bimStd('ltn.cycle','aisle'));
+      r+=bimPropText(bimLenLabel('Clearance'),bimDispLen(bimStd('ltn.cycle','wall'))+' to a wall, '+bimDispLen(bimStd('ltn.cycle','front'))+' clear in front');
+      L=['ltn.cycle','app.assets'];
+    }else if(a.k==='bay'){
+      r+=bimEntBy('Bay',bimStd('parking.bay','width'),bimStd('parking.bay','length'));
+      r+=bimPropText(bimLenLabel('Aisle to reach it'),bimDispLen(bimStd('parking.bay','aisle90'))+' at 90 degrees, '+bimDispLen(bimStd('parking.bay','aisle60'))+' at 60, '+bimDispLen(bimStd('parking.bay','aisle45'))+' at 45');
+      L=['parking.bay','app.assets'];
+    }else if(a.k==='tree'){
+      var S=bimEntTreeSize(p);
+      r+=bimPropRow('Leaf',bimEntSel('leaf',[['B','Broadleaf'],['C','Conifer']],p.leaf==='C'?'C':'B'));
+      r+=bimPropRow('Leaves',bimEntSel('cyc',[['D','Deciduous'],['E','Evergreen']],p.cyc==='E'?'E':'D'));
+      r+=bimPropRow('Size',bimEntSel('size',[['S','Small'],['M','Medium'],['L','Large']],p.size||'M'));
+      r+=bimPropLen('Height',S.h,'asset:h',0.5)+bimPropLen('Crown across',S.cd,'asset:cd',0.3);
+      r+=bimPropText('In leaf',bimEntSeasonText(p));
+      L=['utd.trees','etccdi.gsl'];
+    }
+    return bimPropGroup('Asset',r+bimEntStdHtml(L));
+  }
+  function bimEntPropSet(o,key,val,chk){
+    var a=o.asset,p=a.p,v=null;
+    if(key==='h'||key==='cd'){v=parseFloat(val);if(!isFinite(v)||v<=0){a3dToast('Must be a positive number');refreshProps();return false;}}
+    else if(key!=='turn'&&!/^(who|pose|leaf|cyc|size)$/.test(key))return false;
+    pushUndo();
+    if(key==='turn')p.turn=!!chk;
+    else if(v!==null)p[key]=v;
+    else{p[key]=String(val);if(key!=='pose')delete p.h;if(key!=='pose'&&key!=='who')delete p.cd;}
+    if(!bimEntRebuild(o)){refreshProps();return false;}
+    refreshProps();paint();saveSoon();
+    return true;
+  }
+  /* the library's tiles: each kind built once with the registry's sizes, for its thumbnail */
+  function bimEntLib(es){
+    if(!es.lib){var b=bimEntBuild({k:es.kind,p:JSON.parse(JSON.stringify(es.p))});es.lib={id:'asset:'+es.k,kind:'model',builtin:true,name:es.name,category:es.cat,mesh:b?b.mesh:{v:[],f:[]},thumb:''};}
+    return es.lib;
+  }
   /* A mesh drawn from above one corner, flat-shaded, back faces first: what the thing looks like.
      No face is culled, so a mesh whose faces run either way round still draws whole. */
   function bimMeshThumb(mesh,w,h){
@@ -51101,6 +51478,7 @@ try{
         }
         inp={value:String(lenM),checked:inp.checked};
       }
+      if(f.indexOf('asset:')===0&&o.asset){bimEntPropSet(o,f.slice(6),inp.value,inp.checked);return;}   /* __acad3dV169 */
       if(f==='name'){
         pushUndo();
         o.name=String(inp.value||'').slice(0,60)||o.name;
@@ -52457,6 +52835,30 @@ try{
   window.__a3dSaStdText=function(auto){return bimSaStdText({auto:auto});};
   window.__acad3dV167='registry,records,reader,place,placefromaddress,date,overrides,reasons,ordered,picks,stamps,outofdate,findingstd,accessstd,contextstd,packs,sha256,packdiff,catalogue,standardsgroup,standardscommand,valuesinwords,datastamps,usedvalues,valuestamps,framestd,refill,touchsizes,drafts,sheet,packadopted,packagain,whonoise,noliterals,dm2unread,classeswhole,groupclosed';
   window.__acad3dV168='lbcs,crosswalk,landuse,mix,entropy,figureground,spacematrix,cells,grain,courtyards,green,canopy,treesseen,greenwalk,33300,zoningaround,drawinginfo,textures,lids,findings,registry';
+  window.__acad3dV169='assets,people,wheelchair,cycles,stands,bay,trees,leaf,gsl,shadows,turning,contexttrees,registry';
+  window.__a3dEntKinds=function(){return BIM_ENT.map(function(e){return {k:e.k,name:e.name,cat:e.cat,kind:e.kind,p:JSON.parse(JSON.stringify(e.p))};});};
+  window.__a3dEntPlace=function(key,x,z,p){var o=bimEntPlace(key,[x,z],p||null);return o?o.id:null;};
+  /* an asset as placed: its parameters, its frame, and its size in its own frame (the markers left out) */
+  window.__a3dEntInfo=function(id){
+    var o=objById(id);
+    if(!o||!o.asset||!o.mesh)return null;
+    var F=bimEntFrame(o),q=bimObjOffset(o),v=o.mesh.v,ca=Math.cos(F.a),sa=Math.sin(F.a),mn=[1e9,1e9,1e9],mx=[-1e9,-1e9,-1e9],i,k;
+    for(i=2;i<v.length;i++){
+      var dx=v[i][0]-F.c[0],dz=v[i][2]-F.c[1],L=[dx*ca-dz*sa,v[i][1]-F.y,dx*sa+dz*ca];
+      for(k=0;k<3;k++){if(L[k]<mn[k])mn[k]=L[k];if(L[k]>mx[k])mx[k]=L[k];}
+    }
+    return {k:o.asset.k,key:o.asset.key,p:JSON.parse(JSON.stringify(o.asset.p||{})),cf:o.asset.cf,heading:F.a,centre:[F.c[0]+q[0],F.c[1]+q[2]],base:q[1]+F.y,
+      min:mn,max:mx,size:[mx[0]-mn[0],mx[1],mx[2]-mn[2]],faces:o.mesh.f.length,verts:v.length,name:o.name,col:o.col,layer:o.layer,
+      body:o.asset.k==='person'?bimEntBody(o.asset.p||{}):null,tree:o.asset.k==='tree'?bimEntTreeSize(o.asset.p||{}):null};
+  };
+  window.__a3dEntSet=function(id,key,val){var o=objById(id);return o&&o.asset?bimEntPropSet(o,key,val,val===true):false;};
+  window.__a3dEntInLeaf=function(date){return bimEntInLeaf(date);};
+  window.__a3dEntSeason=function(){var G=bimEntSeason();return G?JSON.parse(JSON.stringify(G)):null;};
+  window.__a3dClimGsl=function(js,lat){var G=bimClimGsl(js,lat);return G?{s:G.s,e:G.e,years:G.years,sh:G.sh}:null;};
+  window.__a3dEntTurns=function(){return {turns:bimEntTurns(),drawn:A3D.lastTurns||0};};
+  window.__a3dEntCrown=function(tags){return {ratio:bimEntCrownRatio(tags||{}),leaf:bimEntLeafOf(tags||{})};};
+  /* the faces each solid casts a shadow with, on a date */
+  window.__a3dShadowFaces=function(date){var L=bimShadowCasters(bimShadowGround(),date),o={};L.forEach(function(it){o[it.id]=it.f.length;});return o;};
   window.__a3dLand=function(){
     try{
       var S=bimDgSite(),Ar=bimLdAreas(),B=bimLdBuildings(),W=bimLdWin(S),Q=bimLd33300(S),Z=bimLdZnAround(S);
