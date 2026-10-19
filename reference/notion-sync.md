@@ -66,6 +66,8 @@ Search Notion before creating anything, so nothing is made twice.
 | `reference/research-access-people.md` | `3fecbfcc3a3881598684fed1479bb711` |
 | `reference/research-alignment.md` | `3fecbfcc3a3881e881cdd2408e75b9a5` |
 | `reference/research-arcgis-site-analysis.md` | `3fecbfcc3a388106bad2c9be7ba8111c` |
+| `reference/research-archidiagram.md` | `3fecbfcc3a388195adb9e5492391d6e2` |
+| `reference/research-assets.md` | `3fecbfcc3a38811a8256d14749e71ebd` |
 | `reference/research-bim-hub.md` | `3fecbfcc3a3881bea10cea15da11cf25` |
 | `reference/research-bridge-splatting.md` | `3fecbfcc3a3881498a60ca0023b27baf` |
 | `reference/research-climate-risk-presentation.md` | `3fecbfcc3a388187a1d4ecefbe1cae25` |
@@ -139,20 +141,21 @@ Search Notion before creating anything, so nothing is made twice.
 | V167 | `3fecbfcc3a388132921aee72ead0c1cf` |
 | V168 | `3fecbfcc3a38819ea14fec6546a55a73` |
 | V169 | `3fecbfcc3a38813098bfc7c8d9a46ab0` |
-| V170 | `3fecbfcc3a388111b74dd9bad2a315d9` |
-| V171 | `3fecbfcc3a3881f799a3d2f2e1114a23` |
-| V172 | `3fecbfcc3a388141a93be73520d09591` |
-| V173 | `3fecbfcc3a3881fa9594ef43af9d6616` |
-| V174 | `3fecbfcc3a3881488c3ae42826615c67` |
-| V175 | `3fecbfcc3a38811e932ed521acc186e9` |
-| V176-V179 | `3fecbfcc3a388109b937fdf301083454` |
-| V180-V186 | `3fecbfcc3a38811e8e25f016056867ea` |
-| V187 | `3fecbfcc3a38812691a7f52601578c42` |
-| V188 | `3fecbfcc3a3881baa390c40baabde95e` |
-| V189 | `3fecbfcc3a38810ab991c79844dc90a6` |
-| V190 | `3fecbfcc3a38810dbe2ef80dc00f4720` |
-| V191 | `3fecbfcc3a3881129f8ae5f8b618ce71` |
-| V192 | `3fecbfcc3a3881829582fb0df50b56d1` |
+| V170 | `3fecbfcc3a3881aeb276e581b5d92a82` |
+| V171 | `3fecbfcc3a388111b74dd9bad2a315d9` |
+| V172 | `3fecbfcc3a3881f799a3d2f2e1114a23` |
+| V173 | `3fecbfcc3a388141a93be73520d09591` |
+| V174 | `3fecbfcc3a3881fa9594ef43af9d6616` |
+| V175 | `3fecbfcc3a3881488c3ae42826615c67` |
+| V176 | `3fecbfcc3a38811e932ed521acc186e9` |
+| V177-V180 | `3fecbfcc3a388109b937fdf301083454` |
+| V181-V187 | `3fecbfcc3a38811e8e25f016056867ea` |
+| V188 | `3fecbfcc3a38812691a7f52601578c42` |
+| V189 | `3fecbfcc3a3881baa390c40baabde95e` |
+| V190 | `3fecbfcc3a38810ab991c79844dc90a6` |
+| V191 | `3fecbfcc3a38810dbe2ef80dc00f4720` |
+| V192 | `3fecbfcc3a3881129f8ae5f8b618ce71` |
+| V193 | `3fecbfcc3a3881829582fb0df50b56d1` |
 | Later: Model import (glTF, valdrada's models) | `3fecbfcc3a3881a8aac2ccef7bcee713` |
 | Later: Hub H3, full IFC | `3fecbfcc3a3881f38adaf9da8b70bf26` |
 | Later: Hub H4, share and sync | `3fecbfcc3a3881a0ae89deed1c5dab5c` |
@@ -176,3 +179,5 @@ Search Notion before creating anything, so nothing is made twice.
   What is left is wind by lattice Boltzmann; its task says so.
 - The old Notion page **CAD/ BIM** (Tools / Application DB) describes the build of 2026-09-09 (Phase 55). It was left
   as it is; World BIM Platform is the project now.
+- 2026-10-19: Archi Diagram's animated analysis became a new V170 (the owner); the phases from the old V170 on moved
+  one number later, their tasks renamed and the table above with them.
