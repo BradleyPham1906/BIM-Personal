@@ -52,7 +52,7 @@ carries a surface:
 | Tunnels | The centre line only, named "Tunnel: ...". Nothing is drawn on the ground. |
 | Railways | Rail, light rail, subway and narrow gauge 3.2 m wide; tram 2.6 m. A platform stands 1 m high. |
 | Airports | Runways 45 m wide and taxiways 18 m, or as tagged. Aprons and helipads are paved. The aerodrome is its boundary. |
-| Trees | A trunk and a crown, as tall as the `height` tag, else 8 m. A tree row puts a tree about every 8 m, from end to end. |
+| Trees | A trunk and a crown, as tall as the `height` tag, else 8 m. The crown is `diameter_crown` across, else a share of the height by the `leaf_type` and `leaf_cycle` tags (the Urban Tree Database's medium tree of that kind; 0.6 where the leaf type is not mapped). A needle-leaved tree is a cone. A tree row puts a tree about every 8 m, from end to end. |
 | Power | Pylons 25 m tall, or as tagged. The line is drawn 20 m up. |
 | Land use | Residential, commercial, retail, industrial, railway and construction land, as a tint on the ground. |
 
@@ -581,6 +581,34 @@ table).
 A place key is `*` (international), a country (`us`), a region or district (`us-pa`, `gb-wsm`), or a
 city after its region (`us-pa:philadelphia`).
 
+## People, vehicles and trees
+
+**Assets** has a group of models for scale and for the simulations: people (a man, a woman, a
+child of 8, a seated person, a wheelchair user), a cycle and a cycle stand, a parking bay, three
+vehicles (a car, a delivery truck, a city bus) and two trees (a broadleaf and a conifer). Click one
+to place it in the middle of the view, or drag it where you want it. Each is sized to a source the
+standards registry names (**Properties > Site > Standards**, area **Assets**):
+
+| Model | Sized to |
+|---|---|
+| People | the mean height of US adults and of a boy of 8 (NCHS, 2015 to 2018); eyes and shoulders scaled from the height as NASA's Human Integration Design Handbook does |
+| Wheelchair user | the Access Board's measured manual chair users (IDeA Center, 2010), within the 2010 ADA Standards' clear floor space; its turning space, 1525 mm across, shown on the plan if ticked |
+| Cycle, stand | the UK's LTN 1/20: a solo cycle 1.8 m by 0.65 m, Sheffield stands 1.2 m apart |
+| Parking bay | Manual for Streets: 2.4 m by 4.8 m, used where no other rule is recorded |
+| Car, delivery truck, city bus | AASHTO's design vehicles P, SU-30 and CITY-BUS (the Green Book, 7th Edition, 2018); each can show its turning path on the plan, from the inner rear wheel out to the front corner, to the left or the right |
+| Trees | the Urban Tree Database: broadleaf or conifer, deciduous or evergreen, small, medium or large |
+
+**Properties** shows a model's sizes and where they come from. A person's height can be their
+own; a tree's height and crown too. Choosing someone or something else (a child, a large tree)
+takes that one's sizes. When a standard is overridden, every placed model is rebuilt to it, except
+a size set by hand.
+
+**Trees in leaf.** A deciduous tree is in leaf over the site's growing season: from the first six
+days in a row above 5 C to the first six days below 5 C after midsummer (ETCCDI's GSL), the median
+of the years of the site's climate (**Analyze site**, or **Properties > Site > Climate**). Out of its
+season the tree is bare, and only its trunk casts a shadow. Until the climate is fetched, a tree is
+in leaf all year, and its page says so.
+
 ## GeoJSON and KML
 
 - `GEOIMPORT` brings in GeoJSON or KML as site data, placed by longitude and latitude.
@@ -589,7 +617,8 @@ city after its region (`us-pa:philadelphia`).
 ## Sun and shadows
 
 `SUNSTUDY` shows the shadows and the sun path for the site's date and time. They are set in
-**Properties > Site > Location**. The sun's position follows NOAA's equations.
+**Properties > Site > Location**. The sun's position follows NOAA's equations. A deciduous tree from
+**Assets** casts its trunk's shadow only on a date outside its growing season.
 
 ## Alignments
 

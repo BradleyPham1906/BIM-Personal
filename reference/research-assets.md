@@ -56,8 +56,13 @@ population a military one, the gap stated on the model).
 
 | Fact | Source | Read | Level |
 |---|---|---|---|
-| Minimum design turning radius, centre-line turning radius, minimum inside radius: P 23.8, 21.0, 14.4 ft; SU-30 41.8, 38.0, 28.4 ft; CITY-BUS 41.6, 37.8, 24.5 ft | Texas DOT, Roadway Design Manual, 4.3.3 Table 4-1, reproducing AASHTO's Green Book, https://www.txdot.gov/manuals/des/rdw/chapter-4--basic-design-criteria/4-3-traffic-characteristics/4-3-3-control-vehicles.html | the table | S |
-| The design vehicles' body dimensions (length, width, height, wheelbase, overhangs) | AASHTO, A Policy on Geometric Design of Highways and Streets, 7th Edition (2018), Table 2-1 | the owner has the book and shares the table (2026-10-19) | to read |
+| The design vehicles' dimensions in metres (height, width, length, front and rear overhang, wheelbase): P 1.30, 2.13, 5.79, 0.91, 1.52, 3.35; SU-9 (SU-30) 3.35 to 4.11, 2.44, 9.14, 1.22, 1.83, 6.10; CITY-BUS 3.20, 2.59, 12.19, 2.13, 2.44, 7.62; the same in feet in Table 2-4a | AASHTO, A Policy on Geometric Design of Highways and Streets, 7th Edition (2018), Table 2-4b and 2-4a; the owner's copy, from the owner's Notion (Documentation DB), kept in the session's scratch folder | the tables, and the page image of 2-5b | P |
+| Minimum design turning radius, centreline turning radius (CTR), minimum inside radius, in metres: P 7.26, 6.40, 4.39; SU-9 12.73, 11.58, 8.64; CITY-BUS 12.80, 11.52, 7.45 | the same, Table 2-5b | the table | P |
+| **The book's two tables differ for the city bus:** Table 2-5a gives its minimum design turning radius as 41.6 ft (12.68 m), Table 2-5b as 12.80 m; every other value of the three agrees within rounding. The app uses 2-5b, as it works in metres, and says so | Tables 2-5a and 2-5b, compared here | | P (both read) |
+| The turning path: the speed below 10 mph, the outer front wheel on the arc the steering allows; the path bounded by the outer trace of the front overhang and the path of the inner rear wheel; the CTR roughly the minimum design turning radius less half the front width | the same, 2.8.2 and Table 2-5's note | the text | P |
+| The same turning radii in feet, as Table 2-5a | Texas DOT, Roadway Design Manual, 4.3.3 Table 4-1, https://www.txdot.gov/manuals/des/rdw/chapter-4--basic-design-criteria/4-3-traffic-characteristics/4-3-3-control-vehicles.html | the table | S (agrees) |
+| The same body dimensions, from an earlier edition (P 4.25 ft high) | Indiana DOT, 2013 Design Manual, Chapter 40, Figure 40-4A, https://www.in.gov/dot/div/contracts/design/Part%203/Chapter%2040%20-%20Basic%20Design%20Controls.pdf | the figure | S (agrees) |
+| 23 CFR 625.4(d)(1)(i) incorporates AASHTO GDHS-7, the 7th Edition (2018), for the National Highway System; 625.4 last amended at 87 FR 41 (3 January 2022) | eCFR, Title 23 Part 625, current to 2026-10-15, https://www.ecfr.gov/current/title-23/chapter-I/subchapter-G/part-625 | the section | P |
 | The free update of the design vehicles needs a login to download; its online pages are images | National Academies, Highway and Street Design Vehicles: An Update (2023), doi:10.17226/27236 | the pages | refused |
 | Off-street parking bay at least 4.8 m long by 2.4 m wide, 8.3.58; aisle for a 2.4 m bay 6.0 m at 90 degrees, 4.2 m at 60, 3.6 m at 45, 8.3.51 | Department for Transport, Manual for Streets (2007), https://assets.publishing.service.gov.uk/media/5a7e0035ed915d74e6223743/pdfmanforstreets.pdf | 8.3 | P |
 | The largest refuse vehicle about 11.6 m long, turning circle 20.3 m (after BS 5906:2005) | the same, 6.8.7 | the paragraph | S |
@@ -71,6 +76,16 @@ population a military one, the gap stated on the model).
 | Medians of the trees at or above their type's median dbh: broadleaf deciduous medium 14.0 m high, crown 11.9 m (crown/height 0.85); large 20.0 m, 15.9 m (0.81); conifer evergreen medium 12.5 m, 8.5 m (0.74); large 20.0 m, 10.7 m (0.57) | worked out here from that file, the script in the session's scratch folder | | S (our median of P data, the method said) |
 | GSL, growing season length: from the first span of at least 6 days with daily mean temperature above 5 C to the first span after 1 July (1 January in the Southern Hemisphere) of 6 days below 5 C | ETCCDI, the 27 core climate indices, http://etccdi.pacificclimate.org/list_27_indices.shtml | the definition | P |
 | The site's daily mean temperatures, ten years | the app's climate step (V159: Open-Meteo's ERA5 archive) | the code | P |
+
+**The vehicles, worked out.** At the sharpest turn the turn's centre lies on the rear axle's line, and the
+front axle's middle on the CTR, so the rear axle's middle is the square root of CTR squared less the wheelbase
+squared from the centre (P 5.45 m, SU-30 9.84 m, CITY-BUS 8.64 m); the front overhang's outer corner is then
+sqrt((that + half the width)^2 + (wheelbase + front overhang)^2) from it (7.79, 13.27 and 13.92 m). Checked against
+the book: that distance less half the width gives the minimum inside radius within 0.02 m for P and SU-30
+(4.39 and 8.62 against 4.39 and 8.64); the bus's wheels sit inside its body (7.35 against 7.45). The plan shows
+the ring from the minimum inside radius out to the overhang's corner, with the minimum design turning radius
+between. The wheels' sizes (0.65 m for the car, 1.0 m for the truck and bus) and the bodies' shapes are the
+app's (`app.assets`).
 
 **Leaf.** A deciduous tree is in leaf over the site's thermal growing season, worked out with ETCCDI's
 rule from the climate the app already fetches, year by year, the median start and end kept. A tree's
@@ -92,7 +107,8 @@ is treated as in leaf all year, and that is said too (no rule by latitude is inv
 
 ## 6. The owner's decisions (2026-10-19)
 
-1. **Vehicles:** sized to AASHTO's design vehicles; the owner has the Green Book and shares its tables.
+1. **Vehicles:** sized to AASHTO's design vehicles; the owner shared the Green Book (their Notion, 2026-10-19),
+   read here for Tables 2-4 and 2-5 and 2.8.2; the book stays out of the repository, only its numbers are used, cited.
 2. **The van:** AASHTO's SU-30 single-unit (delivery) truck, named as such.
 3. **The context's trees:** the same tree model, by OpenStreetMap's `leaf_type` and `leaf_cycle`; the crown
    ratio from the Urban Tree Database by leaf type (broadleaf 0.85, conifer 0.74), 0.6 kept where untagged.
@@ -101,7 +117,9 @@ is treated as in leaf all year, and that is said too (no rule by latitude is inv
 
 ## 7. Still open
 
-- The Green Book's Table 2-1 (body dimensions) until the owner's copy is read.
+- The city bus's minimum design turning radius: 12.80 m (2-5b) against 41.6 ft (2-5a); kept as 2-5b, overridable.
+- The Green Book's turning templates (Figures 2-10 to 2-18) are not drawn: the app shows the ring of the sharpest
+  turn, not a path through a given angle (the traffic simulation, V171).
 - The manual chair users' eye height row (Table 2 of the IDeA report) did not come through in the text;
   the all-users mean is used and said.
 - A child's proportions: extrapolated from adults, an estimate.
