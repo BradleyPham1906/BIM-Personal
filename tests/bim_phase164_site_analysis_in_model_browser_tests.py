@@ -309,7 +309,7 @@ async def run():
                     await safe("(i)=>window.__a3dLayerSet(i,'visible',false)", D['layers'][a])
             # AMENDED FOR V166: movement's layers too, those shown, and left off after (V166's suite reads them): each
             # toggle is an undo step, and the history holds 50, which the run's own step is counted against below
-            for a in ('streets', 'cycling', 'transit', 'walk', 'needs', 'vehicles'):
+            for a in ('streets', 'cycling', 'transit', 'walk', 'needs', 'vehicles', 'green'):   # AMENDED FOR V168: and green and trees, the land's one shown
                 if D['layers'].get(a) and (LY.get(D['layers'][a]) or {}).get('visible') is not False:
                     await safe("(i)=>window.__a3dLayerSet(i,'visible',false)", D['layers'][a])
             await safe("()=>{window.__a3dSetPlanView();window.__a3dCamSet({tx:0,tz:0,dist:300});}")

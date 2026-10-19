@@ -28,9 +28,10 @@ VARIANTS = {
     'aerodrome_paved': [("(k==='airports'&&/^(apron|helipad)$/.test(t.aeroway||''))", "(k==='airports')")],
     'runway_as_road': [("if(kind==='airports')return t.aeroway==='runway'?45:(t.aeroway==='taxiway'?18:10);", "")],
     'tree_no_mesh': [("            o.mesh=bimTreeMesh(tp[j][0],tp[j][1],gy,th2,cd2);o.col=BIM_CTX_COL.trees;", "            o.col=BIM_CTX_COL.trees;")],
-    'tree_height_ignored': [("th2=bimTagMetres(f.tags.height)||BIM_CTX_TREE_H", "th2=BIM_CTX_TREE_H")],
+    # RE-ANCHORED IN V168: the sizes are the registry's since V167
+    'tree_height_ignored': [("th2=bimTagMetres(f.tags.height)||bimCtxTreeH()", "th2=bimCtxTreeH()")],
     'row_end_dropped': [("n=Math.max(1,Math.round(tot/step));d=tot/n;", "n=Math.max(1,Math.floor(tot/step));d=step;")],
-    'line_not_hung': [("f.kind==='power'?y0+BIM_CTX_LINE_H:y0", "y0")],
+    'line_not_hung': [("f.kind==='power'?y0+bimCtxLineH():y0", "y0")],   # RE-ANCHORED IN V168
     'no_bridge_message': [("(nb3.bridges?'; '+nb3.bridges+' bridge'", "(false?'; '+nb3.bridges+' bridge'")],
     'no_deck_props': [("    if(c.bridge)r+=bimPropText('Bridge',", "    if(false)r+=bimPropText('Bridge',")],
     'new_kinds_not_replaced': [("if(BIM_CTX_KINDS[i]!=='terrain'&&k[BIM_CTX_KINDS[i]])repl[BIM_CTX_KINDS[i]]=1;",

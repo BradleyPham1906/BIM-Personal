@@ -429,6 +429,67 @@ how it is drawn.
 - **Figure-ground.** The buildings solid, the open space empty (after Nolli's plan of Rome, 1748).
   It shows grain, enclosure and the gaps between buildings.
 
+### The sources read for V168, and their levels
+
+The research is in reference/plan-v167-v170.md, its appendices "V168 (land) research so far" to
+"V168's second round at the source", each source with what was read, the date and its level:
+- LBCS: APA's colour workbook and the activity dimension with its descriptions (P, 2026-10-18).
+  The table above is from secondary copies; the workbook's hex values are the ones the app records
+  (1000 FFFF00, 2000 FF0000, 3000 A020F0, 4000 0000FF, 5000 BEBEBE, 6000 2F4F4F, 7000 90EE90,
+  8000 228B22, 9000 FFFFFF). The workbook's own Green and Blue columns are swapped; its hex and RGB
+  strings agree, and those are read.
+- OpenStreetMap's side of the crosswalk: iD's tagging schema and OpenStreetMap's wiki (P for
+  OpenStreetMap's meanings).
+- Spacematrix: Buildings and Cities' box of definitions, CC BY (P); Berghauser Pont on which
+  measures are main (P); OSR's formula from papers citing the book (S); the book not read, so its
+  types are not named.
+- 3-30-300: Browning et al. (2024), the author manuscript in full (P).
+- The entropy index: Chen and Song quoting Cervero (S; Cervero's paper not read).
+- A council layer's colours: Esri's REST renderer reference and esri-leaflet-renderers' code (P).
+- Floor area from height, and Shannon's index: momepy's code (P for momepy's definitions).
+
+### As built in V168
+
+The owner's choices (2026-10-18, the defaults offered, taken with "start 168"): the neighbourhood for
+the canopy 500 m; the smallest public green space 0.5 ha; the mix over the eight families 1000 to
+8000. Each is a record in the standards registry (V167), overridable with a reason.
+
+- **The registry.** A new area, Land and green: LBCS's activity dimension (its nine families and
+  colours; adopted nowhere as a rule, so applied outside its place), Spacematrix (a method, no
+  values), 3-30-300 (3 trees, 30%, 300 m, 0.5 ha), and the app's land settings (the 500 m
+  neighbourhood, 8 families, the 400 m square, its 100 m cells, 100 m for a tree seen, and the
+  crosswalk: 135 tags, grass and flowerbeds the two that take the class of what they lie in).
+- **The context** asks for the land use the crosswalk reads (24 more land use values) and the grounds
+  of amenities, leisure and tourism; a building keeps its courtyards' outlines.
+- **Land use**: the areas and the buildings with a use of their own, in LBCS's hues stepped to pass
+  the colour-blindness checks, every pair, as a map needs (the dataviz validator, OKLab x 100):
+  - light map (#f2efe9): #eda100, #e34948, #7a3fb0, #3b8ee8, #62c27a, #008300; normal vision 18.5 at
+    worst, protan or deutan 7.2 (the 6 to 8 band that needs a second cue); the yellow, blue and
+    light green under 3:1 against the map, so every area is outlined;
+  - dark plan (#1d2024): #d19a00, #e66767, #8e5cc8, #4a9af0, #6fd08a, #008300; normal vision 16.3,
+    protan or deutan 8.6, all at 3:1 or more; three of them lighter than the validator's band for a
+    dark surface, the price of keeping every pair apart, laid at 55% over the plan;
+  - grey, slate and white LBCS's own neutrals; industrial hatched at 45 degrees, assembly at 135,
+    natural resources dotted; the family's name on areas of 2000 m2 or more; the key; Properties.
+- **The mix**: a 5 m grid over the square, a building's own use first, the smallest area next, grass
+  last; Cervero's entropy over 8 families.
+- **Figure-ground and density**: Spacematrix's GSI, FSI, OSR and L for the square and each 100 m cell;
+  the storeys from building:levels or the height at 3 m, at least one; the grain.
+- **Green and trees**: the canopy on a 2 m grid (a crown 4.8 m across always covers a centre), cut to
+  the context's square and said; the trees seen by V164's sight lines; the walk to a public green
+  space of 0.5 ha or more along V161's walk times.
+- **Zoning around**: a council layer's districts in its own colours, read once from its description
+  as Esri's code reads it.
+
+### Still open after V168
+
+- Spacematrix's types: the book's bounds, to read before the app names a type.
+- Cervero (1989) itself, and Hajna's entropy paper (its copy answered 404).
+- A land cover map for the canopy: ESA WorldCover cannot be read from a page (no CORS); a canopy
+  file the owner provides would be the next source.
+- The neighbourhood beyond the context: the canopy is counted to the context's square (300 m beyond
+  the property at Analyze site's radius), and says so.
+
 ## 7. What this means for the app
 
 ### The button

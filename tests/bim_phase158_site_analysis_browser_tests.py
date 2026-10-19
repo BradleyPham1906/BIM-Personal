@@ -163,8 +163,9 @@ async def run():
             S = await sa()
             keys = sorted(f.get('auto') for f in S.get('findings', []))
             want = sorted(['location.place', 'location.built', 'legal.boundary', 'landform.terrain', 'climate.sun', 'ecology.green',
-                           'access.roads', 'access.rail', 'access.airport', 'utilities.power', 'people.landuse'])
-            ck(keys == want and r.get('added') == 11, "eleven findings from what the model knows (%s)" % keys)
+                           'access.roads', 'access.rail', 'access.airport', 'utilities.power', 'people.landuse',
+                           'location.landuse', 'location.density', 'ecology.33300'])   # AMENDED FOR V168: the land's three
+            ck(keys == want and r.get('added') == 14, "fourteen findings from what the model knows (%s)" % keys)
             ck(all(f['source'] and re.match(r'^\d{4}-\d{2}-\d{2}$', f['date']) and f['conf'] == 'desktop' for f in S['findings']),
                "every one with a source, a date, and Desktop as its confidence")
             ck('stage' not in S, "no stage to move on")   # AMENDED FOR V164: no stages
@@ -197,7 +198,7 @@ async def run():
             f = await fnd('utilities.power')
             ck(f and f['cls'] == 'constraint' and f['cat'] == 'utilities' and f['value'].startswith('3 pylons and lines'), "overhead power: a constraint (%s)" % (f and f['value']))
             f = await fnd('people.landuse')
-            ck(f and f['value'] == '1 residential area within 150 m', "the land use around (%s)" % (f and f['value']))
+            ck(f and f['value'] == '1 residential area, 1 farmland area within 150 m', "the land use around (%s)" % (f and f['value']))   # AMENDED FOR V168: farmland is land use
             f = await fnd('ecology.green')
             ck(f and f['value'].startswith('7 trees, 0 green areas') and f['cls'] == 'opportunity', "trees and green")
             ck(not await fnd('water.bodies'), "no water in the fixture, no water finding")
@@ -209,8 +210,8 @@ async def run():
             r = await safe("()=>window.__a3dSaFill()") or {}
             S = await sa()
             keys2 = sorted(f.get('auto') for f in S['findings'])
-            ck(r.get('removed') == 8 and 'access.roads' not in keys2 and 'location.place' in keys2 and 'legal.boundary' in keys2,
-               "the context removed and refilled: its eight findings go (%s gone), the rest stay" % r.get('removed'))
+            ck(r.get('removed') == 11 and 'access.roads' not in keys2 and 'location.place' in keys2 and 'legal.boundary' in keys2,   # AMENDED FOR V168: the land's three go with it
+               "the context removed and refilled: its eleven findings go (%s gone), the rest stay" % r.get('removed'))
             ck(all(f.get('auto') for f in S['findings']), "every finding left is one the data wrote")
             await safe("()=>window.__a3dUndo()")
             await safe("()=>window.__a3dUndo()")

@@ -163,7 +163,9 @@ async def run():
                     # AMENDED FOR V165: and the land and water ones
                     'dgcontours': 'landform', 'dgslope': 'landform', 'dgaspect': 'landform', 'dgflow': 'water', 'dgponds': 'water', 'dgflood': 'water',
                     # AMENDED FOR V166: and movement's
-                    'dgstreets': 'access', 'dgcycling': 'access', 'dgtransit': 'access', 'dgwalk': 'access', 'dgvehicles': 'access', 'dgneeds': 'people'}
+                    'dgstreets': 'access', 'dgcycling': 'access', 'dgtransit': 'access', 'dgwalk': 'access', 'dgvehicles': 'access', 'dgneeds': 'people',
+                    # AMENDED FOR V168: and the land's
+                    'dglanduse': 'location', 'dgfigure': 'location', 'dgzoning': 'legal', 'dggreen': 'ecology'}
             ck(W == want, "each analysis in the category it answers: landform, water, climate; the model's in Model (%s)" % W)
             cats = await safe("()=>window.__a3dAnzCats()") or []
             ck({c['id']: c['group'] for c in cats} == want, "the engine's grouping says the same")
@@ -221,6 +223,11 @@ async def run():
             await safe("()=>window.__a3dAnzView('site')")
             q4 = await search('perimeter')
             ck(await visible_cats() == ['legal'], "a finding's words find its category (%s)" % await visible_cats())
+            # AMENDED FOR V168: a finding's class sits in the text node right after its title, so only the space read between
+            # them finds it (words_run_together had gone uncaught: no other search needed that space)
+            await search('fact')
+            vf = await visible_cats()
+            ck('legal' in vf, "a finding's class, read apart from its title, finds its category: Legal by the property line's Fact, among those whose words say it (%s)" % vf)
             # AMENDED FOR V164: a title is read apart from the number before it -- Access's Connectivity, a word nowhere else in it
             await search('connectivity')
             ck(await visible_cats() == ['access'], "a finding's title finds its category, its number read apart (%s)" % await visible_cats())
@@ -285,6 +292,12 @@ async def run():
             await safe("()=>window.__a3dRunCmd('siteanalysis')")
             await page.wait_for_timeout(150)
             ck(await safe("()=>document.getElementById('a3d-shell').dataset.tab") == 'analyze', "SITEANALYSIS opens Analyze")
+            # AMENDED FOR V168: Legal holds an analysis now (Zoning around), so opening all opened it and it stayed open: it is
+            # shut first, so that it is ZONING that opens it (zoning_not_in_legal had gone uncaught)
+            await safe("()=>{var b=document.querySelector('.a3d-analyze-wrap [data-satog=\"legal\"]');if(b&&b.getAttribute('aria-expanded')==='true')b.click();}")
+            await page.wait_for_timeout(150)
+            shut = await safe("()=>!document.querySelector('.a3d-analyze-wrap [data-sacat=\"legal\"]').classList.contains('open')")
+            ck(shut is True, "(Legal shut before ZONING)")
             await safe("()=>window.__a3dRunCmd('zoning')")
             await page.wait_for_timeout(300)
             zn = await safe("()=>{var c=document.querySelector('.a3d-analyze-wrap [data-sacat=\"legal\"]');return {open:c.classList.contains('open'),form:!!c.querySelector('.a3d-znf')};}") or {}

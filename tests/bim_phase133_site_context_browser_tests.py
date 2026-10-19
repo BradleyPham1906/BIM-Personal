@@ -391,8 +391,8 @@ async def run():
             SRV['ter'].clear()
             before = len(await objs())
             r = await fetch()
-            ck(r and r.get('counts') == {'buildings': 5, 'roads': 2, 'water': 4, 'green': 1, 'trees': 3, 'rail': 0, 'airports': 0, 'power': 0, 'landuse': 0, 'terrain': 1} and not r.get('errors'),   # AMENDED FOR V157: the new kinds, none in this fixture
-               "one press: 5 buildings, 2 roads, 4 water (a pond, a stream, a lake and its island), a park, 3 trees, the terrain (%s)" % (r and r.get('counts')))
+            ck(r and r.get('counts') == {'buildings': 5, 'roads': 2, 'water': 4, 'green': 1, 'trees': 3, 'rail': 0, 'airports': 0, 'power': 0, 'landuse': 1, 'terrain': 1} and not r.get('errors'),   # AMENDED FOR V157: the new kinds; AMENDED FOR V168: the car park's ground is land use
+               "one press: 5 buildings, 2 roads, 4 water (a pond, a stream, a lake and its island), a park, 3 trees, a car park's ground, the terrain (%s)" % (r and r.get('counts')))
             tt = await toast()
             ck(r and r.get('assumed') == 1 and r.get('courtyards') == 1 and '1 building height assumed (6 m)' in tt and '1 courtyard filled' in tt,
                "it says how many heights it assumed and courtyards it filled (%r)" % tt)
@@ -452,7 +452,9 @@ async def run():
             tr = await ctx_objs('trees')
             ck(len(tr) == 3 and all(o.get('kind') == 'point' for o in tr) and tr[0]['context']['tags'] == {'natural': 'tree', 'species': 'Quercus'},
                "trees are points, with their tags")
-            ck(not [o for o in await objs() if o.get('context') and o['context'].get('id') == 601], "a car park is none of the six: left out")
+            # AMENDED FOR V168: a car park's ground is land use now (LBCS 5210), which the land use analysis reads
+            cp = [o for o in await objs() if o.get('context') and o['context'].get('id') == 601]
+            ck(len(cp) == 1 and cp[0]['context']['kind'] == 'landuse' and cp[0]['closed'], "a car park's ground is land use (V168)")
             ck(await safe("()=>window.__a3dState().sel") is None, "nothing is selected after it: the surface it made is not left selected")
             # the terrain
             te = (await ctx_objs('terrain') or [{}])[0]
@@ -500,7 +502,7 @@ async def run():
             await nosel()
             ck('Last Fetch' in await props_html() and '5 buildings' in await props_html(), "the Site Context group says what the last fetch brought")
             await safe("()=>{window.__a3dUndo();window.__a3dUndo();}")   # the credit check's two map steps
-            ck((await safe("()=>window.__a3dMapSettings()"))['style'] == 'off' and len(await ctx_objs()) == 16, "(the credit check's two map steps undone)")
+            ck((await safe("()=>window.__a3dMapSettings()"))['style'] == 'off' and len(await ctx_objs()) == 17, "(the credit check's two map steps undone)")   # AMENDED FOR V168: and the car park
             await safe("()=>window.__a3dUndo()")
             await page.wait_for_timeout(100)
             nob, nco, dtm = len(await objs()), len(await ctx_objs()), await safe("()=>window.__a3dCtxDatum()")
@@ -509,7 +511,7 @@ async def run():
             await page.wait_for_timeout(100)
             if not await ctx_objs():
                 await fetch()
-            ck(len(await ctx_objs()) == 16, "and redo brings it back (16 objects)")
+            ck(len(await ctx_objs()) == 17, "and redo brings it back (17 objects)")   # AMENDED FOR V168: and the car park
 
             # ---------------------------------------------------------------------------------
             print("\n-- 5. again")
@@ -636,7 +638,7 @@ async def run():
                 if len(SRV['ovp']) > n_ovp and not await safe("()=>window.__a3dCtxBusy()"):
                     break
                 await page.wait_for_timeout(100)
-            ck(len(SRV['ovp']) == n_ovp + 1 and len(await ctx_objs()) == 16, "CONTEXT runs as a command")
+            ck(len(SRV['ovp']) == n_ovp + 1 and len(await ctx_objs()) == 17, "CONTEXT runs as a command")   # AMENDED FOR V168: and the car park
             # a reload keeps it
             nb = len(await ctx_objs())
             await page.wait_for_timeout(600)

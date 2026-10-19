@@ -61,7 +61,8 @@ VARIANTS = {
     'landmark_always_seen': [("if(t<free+0.5)add('lm:'", "if(t<=free+0.5)add('lm:'")],
     'views_crowded': [("for(var j=0;j<chosen.length;j++){var dd=Math.abs(chosen[j].az-o.az);if(Math.min(dd,360-dd)<15)return;}", "")],
     'noise_unscreened': [("    return z>0?Math.min(20,10*Math.log(3+20*z/BIM_DG_LAMBDA)/Math.LN10):0;", "    return 0;")],
-    'noise_unlimited': [("    return d>0?Math.min(BIM_DG_CRTN_MAX,d+half):0;", "    return d>0?d+half:0;")],
+    # RE-ANCHORED IN V168: CRTN's range is the registry's since V167
+    'noise_unlimited': [("    return d>0?Math.min(bimDgCrtnMax(),d+half):0;", "    return d>0?d+half:0;")],
     'noise_always_rural': [("    var urban=nb>=40,y=S.y+0.02;", "    var urban=false,y=S.y+0.02;")],
     'noise_limit_ignored': [("      w.V=bimDgKmh(t.maxspeed)||rc.v;", "      w.V=rc.v;")],
     'noise_tunnel_kept': [("var rc=bimDgRoadClass(c.tags.highway);if(!rc||c.tunnel||c.tags.tunnel==='yes')continue;", "var rc=bimDgRoadClass(c.tags.highway);if(!rc)continue;")],
@@ -70,7 +71,8 @@ VARIANTS = {
     # ---- Analyze site ----
     'tz_not_taken': [("        if(!bimSunNum(A3D.site.sun.tz)){A3D.site.sun.tz=C.tz;tzSet=true;}", "")],
     'tz_overwritten': [("        if(!bimSunNum(A3D.site.sun.tz)){A3D.site.sun.tz=C.tz;tzSet=true;}", "        A3D.site.sun.tz=C.tz;tzSet=true;")],
-    'radius_unraised': [("      if(cs.radius<BIM_SITERUN_RADIUS){A3D.site.context=A3D.site.context||{};A3D.site.context.radius=BIM_SITERUN_RADIUS;", "      if(false){A3D.site.context=A3D.site.context||{};A3D.site.context.radius=BIM_SITERUN_RADIUS;")],
+    # RE-ANCHORED IN V168: the radius reaches CRTN's since V167h
+    'radius_unraised': [("      if(cs.radius<bimSiteRunRadius()){A3D.site.context=A3D.site.context||{};", "      if(false){A3D.site.context=A3D.site.context||{};")],
     'access_alongside': [("      }).then(function(){\n        bimSiteStep('access','busy',", "      });(function(){\n        bimSiteStep('access','busy',"),
                           ("          return [bimSiteState(got.length,r.errors),got.join(', ')+(r.errors&&r.errors.length?'. Not available: '+r.errors.join('; '):'')];\n        });\n      });",
                            "          return [bimSiteState(got.length,r.errors),got.join(', ')+(r.errors&&r.errors.length?'. Not available: '+r.errors.join('; '):'')];\n        });\n      })();")],

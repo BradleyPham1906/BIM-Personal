@@ -24,7 +24,8 @@ VARIANTS = {
     # RE-ANCHORED IN V165: a row's words, its category's name with them, are bimAnzRowText's (V162)
     'search_no_group': [("+' '+(more||'');}", ";}")],
     # RE-ANCHORED IN V165: the row's words are read by bimAnzTexts (V162)
-    'search_no_buttons': [("bimAnzTexts(r,'.a3d-anzttl,.a3d-anzst,.a3d-anzbtn')", "bimAnzTexts(r,'.a3d-anzttl,.a3d-anzst')")],
+    # RE-ANCHORED IN V168: a row's settings' names are searched too (V166b)
+    'search_no_buttons': [("bimAnzTexts(r,'.a3d-anzttl,.a3d-anzst,.a3d-anzbtn,.a3d-anzlab,.a3d-anzsub')", "bimAnzTexts(r,'.a3d-anzttl,.a3d-anzst,.a3d-anzlab,.a3d-anzsub')")],
     # RE-ANCHORED IN V165: the list's body is bimAnzBodyHtml's (V162)
     'search_lost_on_refresh': [("      if(rows&&cnt){C=bimAnzCards();bimRenderInto(rows,bimAnzBodyHtml(C));cnt.textContent=bimAnzCountText(C);}\n      else w.innerHTML=bimAnalyzeHtml();",
                                 "      w.innerHTML=bimAnalyzeHtml();")],
