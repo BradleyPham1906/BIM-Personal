@@ -222,7 +222,12 @@ async def run():
             await frame()
             ck(st2 == 'ready' and (await gpu()).get('engine') == 'webgpu', "started again, WebGPU draws (%s)" % st2)
             ck(await safe("()=>window.__a3dGpuLose()"), "the device lost, as a driver reset would")
-            await page.wait_for_timeout(500)
+            # AMENDED FOR V168: the loss is told by a promise; under a loaded regression 500 ms was not
+            # always enough (V161's regression saw it too), so the state is waited for, 5 s at most
+            for _ in range(20):
+                await page.wait_for_timeout(250)
+                if (await gpu()).get('state') == 'failed':
+                    break
             await frame()
             G = await gpu()
             ck(G.get('state') == 'failed' and 'lost' in G.get('why', '') and G.get('engine') == 'webgl' and (await safe("()=>window.__a3dGlStats().mode")) == 'batched',

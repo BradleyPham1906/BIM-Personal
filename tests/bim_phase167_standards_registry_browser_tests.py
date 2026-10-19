@@ -48,7 +48,8 @@ CK = Checks()
 BLOCKERS = ('https://server.arcgisonline.com/**', 'https://tile.openstreetmap.org/**', 'https://*.tile.openstreetmap.org/**')
 LOT = [list(p) for p in AFX.LOT]
 HDR = {'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json'}
-TODAY = '2026-10-18'
+TODAY = ''   # AMENDED FOR V168: the page's own date (the app's is UTC's), read once the page is up; it was
+             # 2026-10-18 written in, and the suite failed the day after
 
 
 def near(a, b, tol=1e-9):
@@ -76,6 +77,7 @@ def pack(eds_walk=None, extra=None, **kw):
 
 
 async def run():
+    global TODAY
     ck = CK
     async with async_playwright() as pw:
         browser = await pw.chromium.launch()
@@ -118,6 +120,7 @@ async def run():
 
         ST = {}
         ctx, page, errs, warns = await fresh(ST, lot=False)
+        TODAY = await page.evaluate("()=>new Date().toISOString().slice(0,10)")   # AMENDED FOR V168
 
         async def safe(js, arg=None, pg=None):
             pg = pg or page
