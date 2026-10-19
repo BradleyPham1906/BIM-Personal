@@ -123,3 +123,13 @@ is treated as in leaf all year, and that is said too (no rule by latitude is inv
 - The manual chair users' eye height row (Table 2 of the IDeA report) did not come through in the text;
   the all-users mean is used and said.
 - A child's proportions: extrapolated from adults, an estimate.
+
+## 8. As built in V169 (2026-10-19)
+
+Patches 169a to 169d; the log's Phase 169. Every value above that the app uses is a record of the standards
+registry (area Assets, eleven topics), its source, section, level and the date it was read: body.us,
+body.hidh, wheel.awmp, ada.space, mutcd.walk, ltn.cycle, parking.bay, utd.trees, etccdi.gsl,
+aashto.vehicles and app.assets (the app's own shapes: the seat, a cycle's height, the stand, a bay's line,
+the wheels, the crown of an untagged mapped tree). `tests/assets_reference.py` holds each to its source
+in the unit the source prints, and works out again a body's proportions, the trees' types, the growing
+season and the vehicles' turn. A standards change rebuilds every placed model; a size set by hand stays.
