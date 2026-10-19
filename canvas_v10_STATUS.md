@@ -15416,7 +15416,17 @@ overridable with a reason.
   tag (281 asked); every 5 m cell's family and the mix; Spacematrix for the square and its 16 cells;
   the storeys' rules; the canopy's 2 m cells; the trees seen by 180 sight lines; the walks along the
   streets; the zoning's shares; a council renderer's colours with their transparency.
-- **Falsified by `Phase/falsify_phase168.py`:** FALSIFY_RESULT
+- **Falsified by `Phase/falsify_phase168.py`:** 84 variants, one per rule (a family, a tag of the
+  crosswalk, a grid, a threshold, a storeys' rule, a sight line, a walk, a renderer's reading) and per
+  mechanism (a layer, a row, a finding, an override, a stamp, the fetch). The first run caught 81 (976 s,
+  5 workers). The three it missed:
+  - `seen_far` (the trees seen out to 400 m): the tree meant to be beyond 100 m stood behind another
+    from the site, so no sight line reached it at any range. It stands 150 m due west, on a clear line.
+  - `zn_null_outline` (Esri's null outline drawn): the fixture's null outline had no colour, so
+    drawing it drew nothing. It carries one, as Esri's often do.
+  - `zn_asked_each_run` (the drawing info asked for on every run): the suite ran the zoning layer
+    again but not Analyze site; it runs both again and counts the description asked for once.
+  On the final suite and build: 84 caught (1093 s, 5 workers).
 - **Amended,** each AMENDED FOR V168:
   - V62: the registry's two new hosts, www.planning.org and doi.org, linked and never fetched;
   - V133: a car park's ground is land use now, and the context has one more object;
@@ -15425,7 +15435,19 @@ overridable with a reason.
   - V158: the land's three findings, farmland in the land use around, eleven going with the context;
   - V164, V165: green and trees shown, and the land's analyses in the key's order;
   - V167 and its reference: the four topics, Land and green before Climate, 22 applied, the hosts.
-  AMENDED_FALSIFY
+  V153 and V167 amended for the regression (below). The amended suites' falsify scripts on the
+  final build, 5 workers each: V133 51 of 51 (166 s), V141 21 of 21 (94 s), V148 57 of 57 (461 s),
+  V157 25 of 25 (43 s), V158 20 of 20 (59 s), V164 68 of 68 (1399 s), V165 82 of 82 (1684 s); with
+  4 workers, V153 20 of 20 (61 s) (the regression's amendment), V167 123 of 123 (1685 s) and V142 12 of 12 (29 s).
+  V162 caught 57 of 59 at first (469 s):
+  - `zoning_not_in_legal`: Legal holds an analysis now, so the suite's opening of every category
+    left it open and ZONING's own opening could not be seen. The suite shuts Legal first.
+  - `words_run_together`, uncaught before V168 too (on V166d's build): no search needed the space
+    between two pieces of a row's text. A finding's class follows its title, so a search for Fact
+    finds Legal only with the space.
+  Then 59 of 59 (466 s). Eighteen variants of the falsify scripts of V133 (5), V142, V148, V157 (2),
+  V158, V164 (2), V165 (4) and V167 (2) were anchored on code V167 and V168 moved, some since earlier
+  phases: re-anchored, each RE-ANCHORED IN V168. V62 has no falsify script.
 
 ### Not done
 
@@ -15435,3 +15457,21 @@ overridable with a reason.
 - The canopy beyond the context's square: Analyze site's radius is 300 m beyond the property; the
   neighbourhood is 500 m. Said with the finding and on the layer.
 - A council layer's class-breaks and hatched renderers: named, not drawn.
+
+### Full regression and state after V168
+
+127 suites, 6144 checks, 0 failures (608 s, 4 workers): the 126 older suites' 6052 and V168's 92.
+The first full run found two failures, neither of V168's code:
+- **V167's suite wrote its date in.** It checked an override's date, a pack's and the place's against
+  2026-10-18, the day it was written; the day after, four checks failed. The app's date is UTC's
+  (`toISOString`); the suite reads it from the page now (AMENDED FOR V168).
+- **V153 under load.** A lost device is told by a promise, and the suite gave it 500 ms; on a loaded
+  machine that was not always enough (V161's regression saw it once too). The suite waits for the
+  state, 5 s at most (AMENDED FOR V168); five runs at once pass.
+Patches 168a to 168c rebuild the build byte for byte from `Phase/canvas_v10.html.bak_phase168_pre`
+(V166d's build, main's). The diff is ES5-clean and adds no non-ASCII character.
+
+    canvas_v10.html   3350878 bytes
+    sha256            57db924464fdb7604f679c7f3c2ce3c75a7bcd8e3d496c80bcefb4baee42639a
+    markers           __acad3dV60 ... __acad3dV168, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
+                      __acad3dV121b, __acad3dV166b, __acad3dV166c, __acad3dV166d

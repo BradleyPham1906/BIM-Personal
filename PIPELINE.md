@@ -6,7 +6,7 @@
     sha256            57db924464fdb7604f679c7f3c2ce3c75a7bcd8e3d496c80bcefb4baee42639a
     markers           __acad3dV60 ... __acad3dV168, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
                       __acad3dV121b, __acad3dV166b, __acad3dV166c, __acad3dV166d
-    tests             126 suites, 6049 checks, 0 failures (V167's 5999 and V166d's 50; with cjval
+    tests             127 suites, 6144 checks, 0 failures (the 126 older suites' 6052 and V168's 92; with cjval
                       built, V139 and V140 run all their checks)
 
     The user guide (V142): every phase updates docs/src/, its log entry and BIM_APP_VERSION, then
@@ -212,10 +212,12 @@ when it starts (V111 to V138 went to other work; V139 to V192 are in NOW).
   more); **zoning around** in a council layer's own colours, read once from its drawing info.
 - Four findings; LBCS, Spacematrix, 3-30-300 and the app's land settings as records in a new area,
   Land and green; the context asks for 24 more land use values and the grounds of amenities.
-- **Checked** in 92 checks against a Python reference of every method; FALSIFY_PIPE. Found while
-  building: a crown missing every 5 m cell (the canopy is counted on 2 m), 0.49 x 10000 a hair over
-  4900, the key keeping eight of nine families. V62, V133, V141, V148, V157, V158, V162, V164, V165
-  and V167 amended; 18 falsify anchors moved by V167, V168 and earlier re-anchored. REGRESSION_PIPE
+- **Checked** in 92 checks against a Python reference of every method; 84 variants, all caught (three
+  told apart by the fixture first). Found while building: a crown missing every 5 m cell (the canopy
+  is counted on 2 m), 0.49 x 10000 a hair over 4900, the key keeping eight of nine families. V62,
+  V133, V141, V148, V157, V158, V162, V164, V165 and V167 amended; 18 falsify anchors moved by V167,
+  V168 and earlier re-anchored. V153 (a lost device under load) and V167 (its date written in) made
+  robust. 127 suites, 6144 checks, 0 failures.
 
 V166d, **Properties' width by one press** (inside Phase 166, built on V167; the version stays V166).
 - V166b's "Not done": Properties' edge had only the drag and the minimise. A button in its header,
