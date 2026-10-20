@@ -22,6 +22,8 @@ Immediate execution scope is discovery and an architecture proposal. Implementat
 
 ## 2. SolidCraft research and reuse decision
 
+Follow `reference/reuse-first-integration.md`. First deliverable: a verified `reference/solidcraft-integration-map.md` with pinned source paths, documentation, reuse candidates, adapters, blockers and decisions. Keep source/docs in a local checkout, not in Notion. Prefer unchanged upstream modules and narrow adapters; do not rewrite merely because upstream is Rust. Inspect the existing browser/WASM route before recommending ports. Upstream execution requires explicit approval and isolation under the research protocol; after approval, demonstrate the pinned upstream unchanged before adapting it.
+
 - Inspect relevant upstream source as text: solver, parameter/expression records, feature history, dependency/rebuild logic, persistence and tests.
 - Record specific source paths and candidate algorithms; check the license at the source revision actually reviewed and preserve applicable notices for any reused code. Private personal use is the target, not a reason to skip license review.
 - Compare extending existing JavaScript, porting a small isolated algorithm and proving a Rust/WASM boundary. SolidCraft's Rust application is not assumed directly compatible with the browser app.
