@@ -1,6 +1,6 @@
 # Parametric Design Foundation — SolidCraft-inspired modeling
 
-Status: planned / preparing. Phase number, dates and effort: TBD.
+Status: planned / preparing. Parent: Freeform F1-F7 (Notion V181-V187). Internal sequence, dates and effort: TBD.
 Tracking issue: [#44](https://github.com/BradleyPham1906/BIM-Personal/issues/44).
 
 ## Intent
@@ -9,7 +9,9 @@ Add dependable parametric modeling to BIM-Personal, not full SolidCraft feature 
 
 ## Placement and authorization
 
-The owner requested a tracked project phase. Keep this as an unnumbered backlog item until the repository and Notion phase sequences are reconciled. At planning time the repository lists V169 Assets and V170 traffic/pedestrians; Notion lists V169 Assets, V170 animated site analysis/video and V171 traffic/pedestrians. Do not renumber or interrupt existing work as part of this planning change.
+Owner decision: place Parametric Design Foundation within the Freeform F1-F7 group, under the Notion task V181-V187 Freeform (F1-F7), not as a separate later phase. Discovery determines the internal sequence and dependencies. The repository currently labels the same group V180-V186; reconcile that numbering mismatch separately without shifting adjacent phases. Dates and effort remain TBD. The existing Notion parent allowance predates this scope addition; decompose and re-estimate the expanded group before scheduling.
+
+Notion parent: https://app.notion.com/p/3fecbfcc3a38811e8e25f016056867ea
 
 Immediate execution scope is discovery and an architecture proposal. Implementation, new dependencies and build-contract changes require an explicit owner decision. Adding or merging this planning document is not approval to implement features, and must not close issue #44.
 
@@ -36,7 +38,7 @@ Ask the owner together:
 1. Preserve the current delivery contract, or accept a Rust/WASM build if research proves a concrete need?
 2. Limit v1 to the existing sketch/Pad/Pocket system, or expand solver capabilities where a demonstrated gap prevents the slice?
 3. Confirm project-file feature storage and downstream failure behavior, with the last valid result preserved and stale geometry clearly identified.
-4. Confirm phase placement, effort and dates after reconciling the existing sequences.
+4. Confirm the internal F1-F7 sequence, dependencies, effort and dates; reconcile the repository/Notion numbering mismatch without silently shifting adjacent work.
 
 ## 4. One vertical slice — after approval
 
