@@ -1,0 +1,189 @@
+{
+  "upstream": "Ocean-Industries-Concept-Lab/openbridge-webcomponents",
+  "commit": "eb2013003cbb323ded47674576e5b273df0a2566",
+  "version": "2.0.0-next.9",
+  "review_date": "2026-10-22",
+  "license": "Apache-2.0",
+  "license_url": "https://github.com/Ocean-Industries-Concept-Lab/openbridge-webcomponents/blob/eb2013003cbb323ded47674576e5b273df0a2566/LICENSE.TXT",
+  "license_sha256": "976424ea6a95b762c3b5aa2d8fd90bb3a116edd6e71e0bcb1b6ed4d47664cbc4",
+  "production_integrated": false,
+  "icons": [
+    {
+      "name": "aircraft-drone-small",
+      "upstream_path": "packages/openbridge-webcomponents/src/icons/icon-aircraft-drone-small.ts",
+      "source_url": "https://github.com/Ocean-Industries-Concept-Lab/openbridge-webcomponents/blob/eb2013003cbb323ded47674576e5b273df0a2566/packages/openbridge-webcomponents/src/icons/icon-aircraft-drone-small.ts",
+      "source_blob_sha1": "f109f4084e48c0334c6a3d00d3afa3219e24119c",
+      "source_sha256": "8b845294481119218d9cfa08160cb41954becc0a7c6884b7bf26edfca1f34300",
+      "svg_sha256": "4584bd90286bb8031795779887cce54d0b0d33b7da749318cfb0093b49bb800e",
+      "modification": "Extracted first static private icon SVG; Lit wrapper and CSS-color variant omitted; SVG geometry unchanged."
+    },
+    {
+      "name": "alert-list",
+      "upstream_path": "packages/openbridge-webcomponents/src/icons/icon-alert-list.ts",
+      "source_url": "https://github.com/Ocean-Industries-Concept-Lab/openbridge-webcomponents/blob/eb2013003cbb323ded47674576e5b273df0a2566/packages/openbridge-webcomponents/src/icons/icon-alert-list.ts",
+      "source_blob_sha1": "8b1106628e737c909f1359179f8ac05c49ac6c72",
+      "source_sha256": "6ff088c246aa0d35f8958b363d8f12a841d862029c5e5eb4af18c2f3ab05e735",
+      "svg_sha256": "d5dc2cd991ccee911d3b3635d50d70e0e49b6d6c9ded8a4d373208f00705f28e",
+      "modification": "Extracted first static private icon SVG; Lit wrapper and CSS-color variant omitted; SVG geometry unchanged."
+    },
+    {
+      "name": "camera",
+      "upstream_path": "packages/openbridge-webcomponents/src/icons/icon-camera.ts",
+      "source_url": "https://github.com/Ocean-Industries-Concept-Lab/openbridge-webcomponents/blob/eb2013003cbb323ded47674576e5b273df0a2566/packages/openbridge-webcomponents/src/icons/icon-camera.ts",
+      "source_blob_sha1": "2aed709592b4737e0a865385982ef6d09cb120aa",
+      "source_sha256": "06008c2dbd61455af60614b6166c978aaf1c23fef7dd228c8d0e1abcd7bea0bc",
+      "svg_sha256": "af2f29541899f880336b790e0e01feadcb8e96e3b956a2c0550f4e0753b1c3db",
+      "modification": "Extracted first static private icon SVG; Lit wrapper and CSS-color variant omitted; SVG geometry unchanged."
+    },
+    {
+      "name": "chart-layers",
+      "upstream_path": "packages/openbridge-webcomponents/src/icons/icon-chart-layers.ts",
+      "source_url": "https://github.com/Ocean-Industries-Concept-Lab/openbridge-webcomponents/blob/eb2013003cbb323ded47674576e5b273df0a2566/packages/openbridge-webcomponents/src/icons/icon-chart-layers.ts",
+      "source_blob_sha1": "e4446ecf41748d0ac35c46986ff5c63ffdabe6f1",
+      "source_sha256": "6ccb580082eb3bd595a6b10beaf001758b9f63ffa7ee3507b7f5f99c6fc7241b",
+      "svg_sha256": "6f592dfe494f1bcdfc26b8c7387584d5bfe42fa7ce317d91993a5b503a95ac41",
+      "modification": "Extracted first static private icon SVG; Lit wrapper and CSS-color variant omitted; SVG geometry unchanged."
+    },
+    {
+      "name": "chart-search",
+      "upstream_path": "packages/openbridge-webcomponents/src/icons/icon-chart-search.ts",
+      "source_url": "https://github.com/Ocean-Industries-Concept-Lab/openbridge-webcomponents/blob/eb2013003cbb323ded47674576e5b273df0a2566/packages/openbridge-webcomponents/src/icons/icon-chart-search.ts",
+      "source_blob_sha1": "b8b92e1f3338702fff27e0488fdb3a5d035e2537",
+      "source_sha256": "453d1641546e40566848aab717705f3f5d4f23167813f4607aa2f97eb5ff6ff0",
+      "svg_sha256": "98e6d838a48bb7aea3e435c883bf4bac67b4e05ec50f6d1f4b184ae5077067a8",
+      "modification": "Extracted first static private icon SVG; Lit wrapper and CSS-color variant omitted; SVG geometry unchanged."
+    },
+    {
+      "name": "chart-settings",
+      "upstream_path": "packages/openbridge-webcomponents/src/icons/icon-chart-settings.ts",
+      "source_url": "https://github.com/Ocean-Industries-Concept-Lab/openbridge-webcomponents/blob/eb2013003cbb323ded47674576e5b273df0a2566/packages/openbridge-webcomponents/src/icons/icon-chart-settings.ts",
+      "source_blob_sha1": "6876f8b71e35418a8570b385456adcc37ed0137e",
+      "source_sha256": "1a1be6f1f9e2ad3358ac8f28635457d8a1f88380778ab23877e3194e42b63172",
+      "svg_sha256": "fe8096d34fe700060970080045dedf05100c20339c3b1b33cde330a40cbeece5",
+      "modification": "Extracted first static private icon SVG; Lit wrapper and CSS-color variant omitted; SVG geometry unchanged."
+    },
+    {
+      "name": "check-google",
+      "upstream_path": "packages/openbridge-webcomponents/src/icons/icon-check-google.ts",
+      "source_url": "https://github.com/Ocean-Industries-Concept-Lab/openbridge-webcomponents/blob/eb2013003cbb323ded47674576e5b273df0a2566/packages/openbridge-webcomponents/src/icons/icon-check-google.ts",
+      "source_blob_sha1": "d269f31df3536591975bf5b360ada1d684922916",
+      "source_sha256": "dfab402c9fc520220be1c7ec5d4f27afa0003c6ec1128891b1fd52bba614a8b1",
+      "svg_sha256": "60d929c93b8381b93b3299d5efeeb2142347ae22816c6b9df5930c40a9bbe490",
+      "modification": "Extracted first static private icon SVG; Lit wrapper and CSS-color variant omitted; SVG geometry unchanged."
+    },
+    {
+      "name": "chevron-down-google",
+      "upstream_path": "packages/openbridge-webcomponents/src/icons/icon-chevron-down-google.ts",
+      "source_url": "https://github.com/Ocean-Industries-Concept-Lab/openbridge-webcomponents/blob/eb2013003cbb323ded47674576e5b273df0a2566/packages/openbridge-webcomponents/src/icons/icon-chevron-down-google.ts",
+      "source_blob_sha1": "ac64e648bf85b75edbd68bcceccd52fec17ca4ac",
+      "source_sha256": "f7aa97f288794e77e2e3e7c9b43900f336f5c4e0dc8db879b62c43abecd39364",
+      "svg_sha256": "186775fc460e902e449ef73ee4393182b258734b06cf279f002c798f3ddc217b",
+      "modification": "Extracted first static private icon SVG; Lit wrapper and CSS-color variant omitted; SVG geometry unchanged."
+    },
+    {
+      "name": "close-google",
+      "upstream_path": "packages/openbridge-webcomponents/src/icons/icon-close-google.ts",
+      "source_url": "https://github.com/Ocean-Industries-Concept-Lab/openbridge-webcomponents/blob/eb2013003cbb323ded47674576e5b273df0a2566/packages/openbridge-webcomponents/src/icons/icon-close-google.ts",
+      "source_blob_sha1": "012b8ccd7af71e29556aab968b5ca84d897a08b6",
+      "source_sha256": "399267cc48121732481c46b4693569f77793837f6dae31d0a5f7d4aeaf83c48c",
+      "svg_sha256": "801c62a7eb906907021bbad9521ff0ef7bd9a38f7e523459ae8d3d3415f3104c",
+      "modification": "Extracted first static private icon SVG; Lit wrapper and CSS-color variant omitted; SVG geometry unchanged."
+    },
+    {
+      "name": "edit-google",
+      "upstream_path": "packages/openbridge-webcomponents/src/icons/icon-edit-google.ts",
+      "source_url": "https://github.com/Ocean-Industries-Concept-Lab/openbridge-webcomponents/blob/eb2013003cbb323ded47674576e5b273df0a2566/packages/openbridge-webcomponents/src/icons/icon-edit-google.ts",
+      "source_blob_sha1": "855f3c4709d8a689922b6d146020c58552eac853",
+      "source_sha256": "49292493c439a33849ece1cccb1261fdff7a45eec46b8bbb0998815ff643d066",
+      "svg_sha256": "4582599f32672bb8d91083dcd52b482944a30d7b6b8bfad32de331034ad11606",
+      "modification": "Extracted first static private icon SVG; Lit wrapper and CSS-color variant omitted; SVG geometry unchanged."
+    },
+    {
+      "name": "expand",
+      "upstream_path": "packages/openbridge-webcomponents/src/icons/icon-expand.ts",
+      "source_url": "https://github.com/Ocean-Industries-Concept-Lab/openbridge-webcomponents/blob/eb2013003cbb323ded47674576e5b273df0a2566/packages/openbridge-webcomponents/src/icons/icon-expand.ts",
+      "source_blob_sha1": "c1278b06a9014d7a4614e95fc7262d22d998303a",
+      "source_sha256": "038e9e69c6d64e794a7aaff63e08398a4aed0795eb9024ee87f8ce6cf8afd7d5",
+      "svg_sha256": "579389dcbabd54122e3de6b275b35cc93ca37cde2c0d139059093077c3a6f34b",
+      "modification": "Extracted first static private icon SVG; Lit wrapper and CSS-color variant omitted; SVG geometry unchanged."
+    },
+    {
+      "name": "file-download-google",
+      "upstream_path": "packages/openbridge-webcomponents/src/icons/icon-file-download-google.ts",
+      "source_url": "https://github.com/Ocean-Industries-Concept-Lab/openbridge-webcomponents/blob/eb2013003cbb323ded47674576e5b273df0a2566/packages/openbridge-webcomponents/src/icons/icon-file-download-google.ts",
+      "source_blob_sha1": "73134f58049fded96b263308e5e8262b6a25d64e",
+      "source_sha256": "cacd3b9ac93a421a45884003e0cea6e3e5f00b385cf825806f485b652b0259d8",
+      "svg_sha256": "f451fdf4261af6b032a8feaa8a9913e9ae94b7c00bb554346a815422542dae73",
+      "modification": "Extracted first static private icon SVG; Lit wrapper and CSS-color variant omitted; SVG geometry unchanged."
+    },
+    {
+      "name": "file-upload-google",
+      "upstream_path": "packages/openbridge-webcomponents/src/icons/icon-file-upload-google.ts",
+      "source_url": "https://github.com/Ocean-Industries-Concept-Lab/openbridge-webcomponents/blob/eb2013003cbb323ded47674576e5b273df0a2566/packages/openbridge-webcomponents/src/icons/icon-file-upload-google.ts",
+      "source_blob_sha1": "525f33ef8963bcadae5aea88852a7dc49c993866",
+      "source_sha256": "a8cde50233638d48fdc70002d2c1d3d4f17c6456c8104f4d65be9ce88b06e07e",
+      "svg_sha256": "304b58f3f8248583486c56162b9778c9bde66c4d81b93de9071ab6f0164b80c1",
+      "modification": "Extracted first static private icon SVG; Lit wrapper and CSS-color variant omitted; SVG geometry unchanged."
+    },
+    {
+      "name": "filter",
+      "upstream_path": "packages/openbridge-webcomponents/src/icons/icon-filter.ts",
+      "source_url": "https://github.com/Ocean-Industries-Concept-Lab/openbridge-webcomponents/blob/eb2013003cbb323ded47674576e5b273df0a2566/packages/openbridge-webcomponents/src/icons/icon-filter.ts",
+      "source_blob_sha1": "10475c07fe3a79eec3fc81bad1cffa908321d3eb",
+      "source_sha256": "0edfe1581f1b82bb4dd67d5760dbf6b55ccf44b7b6ef46f21ad2f14febdd0902",
+      "svg_sha256": "db4d90936afc10fde38cdb0e348afd7e0970bfc4bc17943b4322a24865bbe721",
+      "modification": "Extracted first static private icon SVG; Lit wrapper and CSS-color variant omitted; SVG geometry unchanged."
+    },
+    {
+      "name": "help",
+      "upstream_path": "packages/openbridge-webcomponents/src/icons/icon-help.ts",
+      "source_url": "https://github.com/Ocean-Industries-Concept-Lab/openbridge-webcomponents/blob/eb2013003cbb323ded47674576e5b273df0a2566/packages/openbridge-webcomponents/src/icons/icon-help.ts",
+      "source_blob_sha1": "4d947db98ff8557516ac8b4d0e50ee9bbd4e49c5",
+      "source_sha256": "73f79f801349484b28e7e7e3c22f4efac37cdd971755cff637fc5ecbc538956d",
+      "svg_sha256": "54b89f6fae6c7a24d62113ff8561518a06d5ecc9ad04fb1d46963edde8961ae1",
+      "modification": "Extracted first static private icon SVG; Lit wrapper and CSS-color variant omitted; SVG geometry unchanged."
+    },
+    {
+      "name": "history-google",
+      "upstream_path": "packages/openbridge-webcomponents/src/icons/icon-history-google.ts",
+      "source_url": "https://github.com/Ocean-Industries-Concept-Lab/openbridge-webcomponents/blob/eb2013003cbb323ded47674576e5b273df0a2566/packages/openbridge-webcomponents/src/icons/icon-history-google.ts",
+      "source_blob_sha1": "25ce738574bbdbd81338c4f33d9f1ef9f24f7c29",
+      "source_sha256": "d2adab276229c2230674148d02e06e5379ae5a94ee2453efe4cc57085b609b38",
+      "svg_sha256": "3ca2d12909ad901d371826511c914c1cf76af7e9fd5b9ea25b8f5fc6fe83855a",
+      "modification": "Extracted first static private icon SVG; Lit wrapper and CSS-color variant omitted; SVG geometry unchanged."
+    },
+    {
+      "name": "home",
+      "upstream_path": "packages/openbridge-webcomponents/src/icons/icon-home.ts",
+      "source_url": "https://github.com/Ocean-Industries-Concept-Lab/openbridge-webcomponents/blob/eb2013003cbb323ded47674576e5b273df0a2566/packages/openbridge-webcomponents/src/icons/icon-home.ts",
+      "source_blob_sha1": "ad47f41e42a24cbe7914fc210f1748ee81fb23de",
+      "source_sha256": "ce19e5fa5787b6768e919a9c99618f68cf5b575cec96dfb02e24bbc9e2c9040b",
+      "svg_sha256": "7f0c1a72e635813b3fa397214189c30d5e6fa60c68a361a02bcdf5a80533cb1e",
+      "modification": "Extracted first static private icon SVG; Lit wrapper and CSS-color variant omitted; SVG geometry unchanged."
+    }
+  ],
+  "palette": {
+    "path": "packages/openbridge-webcomponents/src/palettes/variables.css",
+    "source_url": "https://github.com/Ocean-Industries-Concept-Lab/openbridge-webcomponents/blob/eb2013003cbb323ded47674576e5b273df0a2566/packages/openbridge-webcomponents/src/palettes/variables.css",
+    "source_sha256": "3b54d7295258b46387831e4b69690bc2b0cb8f21c606b16bb277bb7d7edbf7ec",
+    "source_bytes": 662349,
+    "scoped_css_sha256": "70333c636b5441e051f7d0d9153a376ace4a257819bc02aca3dc8de7c96054d1",
+    "selected_color_tokens_per_theme": 28,
+    "themes": [
+      "day",
+      "dusk",
+      "night",
+      "bright"
+    ],
+    "sizing_tokens_per_size": 3,
+    "sizes": [
+      "regular",
+      "medium",
+      "large",
+      "xl"
+    ],
+    "modification": "Full source CSS preserved as reference only. Selected literal values extracted, selectors scoped to .bim-ob-preview; no global CSS applied."
+  },
+  "helper_sha256": "735a586cd7be32be680dcad705cfdc52880a262650182a42c7ee2a5928f94ae1",
+  "catalog_coverage": "17 curated static icons, not the complete Figma or GitHub catalog; upstream directory result was capped at 1000 entries."
+}
