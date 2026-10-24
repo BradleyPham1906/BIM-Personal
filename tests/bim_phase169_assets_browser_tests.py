@@ -453,13 +453,13 @@ async def run():
                 cars[k] = await place(k, 40 * i, 50, {'turn': True})
             ct = await place('car', 0, 120, {'turn': True, 'side': 'R'})
             T = {x['id']: x for x in ((await safe("()=>window.__a3dEntTurns()") or {}).get('turns') or [])}
-            ck(wc1 in T and near(T[wc1]['r'][0], R.v('ada.space', 'turn') / 2, 1e-12) and near(T[wc1]['c'][0], 5, 1e-9) and near(T[wc1]['c'][1], 5, 1e-9),
+            ck(wc1 in T and len(T[wc1]['r']) == 1 and near(T[wc1]['r'][0], R.v('ada.space', 'turn') / 2, 1e-12) and near(T[wc1]['c'][0], 5, 1e-9) and near(T[wc1]['c'][1], 5, 1e-9),
                "the wheelchair user's turning space: ADA's 1.525 m across, round the user")
             for i, (k, c) in enumerate(R.VEH.items()):
                 V = R.vehicle(c)
                 x = T.get(cars[k]) or {'r': [0, 0, 0], 'c': [0, 0]}
                 cc = R.turn_centre(c, 40 * i, 50)
-                ck(all(near(a, b, 1e-9) for a, b in zip(x['r'], [V['rin'], V['r'], V['rov']])) and near(x['c'][0], cc[0], 1e-9) and near(x['c'][1], cc[1], 1e-9),
+                ck(len(x['r']) == 3 and all(near(a, b, 1e-9) for a, b in zip(x['r'], [V['rin'], V['r'], V['rov']])) and near(x['c'][0], cc[0], 1e-9) and near(x['c'][1], cc[1], 1e-9),
                    "%s: its path from the inside radius %.2f out to the overhang's corner %.3f, round a centre %.2f m off its rear axle, to its left" % (k, V['rin'], V['rov'], V['rr']))
             x = T.get(ct) or {'c': [0, 0]}
             cc = R.turn_centre('P', 0, 120, 0, 'R')
