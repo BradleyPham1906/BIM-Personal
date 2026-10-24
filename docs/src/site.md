@@ -264,6 +264,36 @@ is a screening of the land and its water, made before a survey and a drainage de
   the rest, the layer's transparency. A hatched fill is not drawn; a layer with no colours, or one
   whose description cannot be read, is outlined and named in the app's.
 
+### The analyses in motion
+
+The analyses are still until you press **Play** in the status bar, beside the view's own buttons.
+**Pause** keeps the moment; **Play** again goes on from it; **Stop** gives the still drawing back.
+The buttons show only when something can move. On a phone they come first in the bar, as icons.
+`PLAY` (also `ANIMATE`, `PAUSE`, `MOTION`) does the same as the button.
+
+- **Marching dashes** run along the water's flow lines and where the site drains, the view lines, the
+  vehicle entries, the walk-time streets, the ways to daily needs, the bus and tram routes, the ways
+  to the stops and the streets within a walk of them. A dashed line's own dashes move; a solid line
+  gets lighter dashes moving over it. Lines with an arrowhead, and the routes, run the way they are
+  drawn; the rest run away from the site.
+- **The winds** are drawn on along their direction, tail to tip, then held, then faded, one after
+  another.
+- **The distance rings** grow outward from the site's centre, one wave leaving each ring as it
+  passes it.
+- **The layers come in one after another**, in Analyze's order, each time you press Play from
+  still.
+- **The sun** moves along its path from sunrise to sunset of the study's day (Properties > Site >
+  Location), with its time beside it, and the model's shadow follows it, one shadow on that day. The
+  sun study in plan (`SUNSTUDY`) follows the same clock. The project's own date and time do not
+  change.
+
+Each element's motion is a setting of its own: select it and choose **Motion** in Properties:
+**Default** (its analysis's), **Still**, or another its shape can take. Like any change of style,
+the analysis keeps it when it runs again.
+
+The clock stops while the page is hidden. The app always opens still, and if the device asks for
+reduced motion while the analyses play, they pause. Sheets, prints and exports are drawn still.
+
 ### The ten categories and the findings
 
 **Ten categories, always in this order:**
@@ -618,7 +648,8 @@ in leaf all year, and its page says so.
 
 `SUNSTUDY` shows the shadows and the sun path for the site's date and time. They are set in
 **Properties > Site > Location**. The sun's position follows NOAA's equations. A deciduous tree from
-**Assets** casts its trunk's shadow only on a date outside its growing season.
+**Assets** casts its trunk's shadow only on a date outside its growing season. **Play** in the status bar
+moves the sun through the study's day (see The analyses in motion).
 
 ## Alignments
 
