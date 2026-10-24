@@ -25,9 +25,10 @@ folder; nothing downloaded was run.
 | VideoEncoder: a config of codec, width, height, bitrate, framerate, latency mode; `isConfigSupported`; `encodeQueueSize` for back-pressure; frames' timestamps in microseconds; a frame encoded as a key frame on request | W3C WebCodecs, editor's draft, https://github.com/w3c/webcodecs (index.src.html) | the IDL and the algorithms | P |
 | H.264 ("avc1." codec strings): in `avc` format each chunk is an access unit with length-prefixed NAL units and the decoder config's `description` is the AVCDecoderConfigurationRecord (ISO/IEC 14496-15, 5.3.3.1), which goes into the MP4 as the `avcC` box as it is | W3C, AVC (H.264) WebCodecs Registration, the same repository | the registration | P |
 | VP9 in MP4: the `vp09` sample entry with a `vpcC` FullBox, version 1: profile, level, bit depth, chroma subsampling, full-range flag, colour primaries, transfer, matrix, and (empty for VP9) codec initialisation data; the codec string `vp09.PP.LL.DD...` | WebM Project, VP Codec ISO Media File Format Binding, https://www.webmproject.org/vp9/mp4/ | the box and its semantics | P |
-| AV1 in MP4: the `av01` sample entry and `av1C` | AOMedia, AV1 Codec ISO Media File Format Binding, https://github.com/AOMediaCodec/av1-isobmff (index.bs) | downloaded, not yet read through | to read |
+| AV1 in MP4: the `av01` sample entry and `av1C` (marker, version 1, profile, level, tier, bit depth, chroma, then the configOBUs: at most one Sequence Header OBU, first); WebCodecs gives no description for AV1, so the app would parse the sequence header from the first key frame: AV1 is left out of V170, said | AOMedia, AV1 Codec ISO Media File Format Binding, https://github.com/AOMediaCodec/av1-isobmff (index.bs); W3C, AV1 WebCodecs Registration ("description is not used for this codec") | the record and the registration | P |
+| H.264's levels: a level caps the frame size in macroblocks (MaxFS) and the macroblocks a second (MaxMBPS): 3.1 is 3,600 and 108,000 (1280 by 720 at 30 a second, exactly), 4 is 8,192 and 245,760 (1920 by 1080 at 30: 8,160 and 244,800), 5.1 is 36,864 and 983,040 (3840 by 2160 at 30); level_idc is ten times the level number; profile_idc 66 Baseline, 77 Main, 100 High | ITU-T H.264 (V15, 08/2024), Annex A, Table A-1 and A.2, https://www.itu.int/rec/T-REC-H.264 (free) | the table, pages 296 to 298 | P |
 | The MP4 container: ISO/IEC 14496-12 (the ISO base media file format) | ISO; sold. ISO's list of publicly available standards loads by script and was not read; two guessed links to free copies answered with an HTML page | | not read (the box layout from two implementations, below) |
-| MediaRecorder: records a stream (a canvas's `captureStream(fps)`) to a container the browser chooses by `isTypeSupported` | W3C MediaStream Recording, https://github.com/w3c/mediacapture-record (MediaRecorder.bs) | downloaded | to read |
+| MediaRecorder: records a stream (a canvas's `captureStream(fps)`) in real time; `isTypeSupported(type)` asks for a container and codec; `start(timeslice)` hands the data over in Blobs through `dataavailable` | W3C MediaStream Recording, https://github.com/w3c/mediacapture-record (MediaRecorder.bs) | the IDL and the start algorithm | P |
 
 ## 3. Browser support
 
@@ -55,8 +56,9 @@ are checked by the browser playing them and by a reader of our own in the suite.
 
 ## 5. Edges
 
-- **H.264 wants even sizes**, and its level caps the frame size (Baseline 3.1 is 1280 by 720 at 30 a second): the
-  codec string's level is chosen from the frame size (ITU-T H.264 Annex A, free from the ITU: to read).
+- **H.264 wants even sizes**, and its level caps the frame size: 1280 by 720 is level 3.1's limit exactly, 1080p
+  needs level 4, 4K level 5.1 (Table A-1); the codec string's level is chosen from the frame size and the frame
+  rate, a size between rounded up to whole macroblocks (16 pixels).
 - **WebCodecs needs a secure context**: the app opened from `file://` has it; a plain `http://` host would not.
 - **The WebGL canvas keeps no buffer** (`preserveDrawingBuffer` is not set): a frame is copied from it in the same
   task it was drawn in, then the 2D overlay over it. The same holds for WebGPU's canvas until it is presented.
@@ -85,8 +87,6 @@ are checked by the browser playing them and by a reader of our own in the suite.
 ## 7. Still open
 
 - ISO/IEC 14496-12 itself (sold; the free list not read).
-- ITU-T H.264 Annex A's level table, for the codec string.
-- The AV1 binding and MediaRecorder's text, downloaded, to read.
 - Whether Safari plays VP9 in MP4 (it encodes H.264, so it should not need to).
 - The owner's questions (below), asked together when the research ends.
 
