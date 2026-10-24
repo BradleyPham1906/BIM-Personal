@@ -17,8 +17,19 @@ was run. **In progress:** the sections below say what is read so far and what is
 | The enhanced IDM's paper repeats the model (equations 2.1, 2.2) with its own Table 1: a car at 120 km/h, delta 4, T 1.5 s, s0 2.0 m, a 1.4 m/s^2, b 2.0 m/s^2; a truck at 85 km/h, T 2.0 s, s0 4.0 m, a 0.7 m/s^2, b 2.0 m/s^2 (freeway simulations); it calls the IDM fit "for all velocities in freeway traffic as well as city traffic" | Kesting, Treiber and Helbing, "Enhanced intelligent driver model to access the impact of driving strategies on traffic capacity", Phil. Trans. R. Soc. A 368 (2010); arXiv 0912.3613 v1, https://arxiv.org/abs/0912.3613 | section 2(a), Table 1 | P (the authors' version) |
 | SUMO's vehicle classes' defaults: a passenger car 5 m by 1.8 m, minimum gap 2.5 m, accel 2.6 m/s^2, decel 4.5 m/s^2; a delivery van 6.5 m; a truck 7.1 m, accel 1.3, decel 4; a city bus 12 m, accel 1.2, decel 4; a pedestrian 5 km/h desired, 0.215 by 0.478 m; a cycle 20 km/h desired. SUMO says these accel and decel are "convenient" values for its default (Krauss) model and should be revisited for another; its IDM takes delta 4 and a 0.25 s internal step | Eclipse SUMO's documentation, `docs/web/docs/Vehicle_Type_Parameter_Defaults.md` and `Definition_of_Vehicles, Vehicle Types, and Routes.md`, https://github.com/eclipse-sumo/sumo | the tables, as text | S (an implementation's documented defaults, each footnoted to its own source, not read); EPL-2.0 |
 
+| A red light, in the IDM's authors' simulator, is a standing "vehicle" placed across every lane at the light's position, so the car-following model alone brings the cars to a stop behind it; green removes it | movsim/traffic-simulation-de, `js/road.js`, `road.prototype.changeTrafficLight` | the function, as text | S (an implementation's method); GPL-3.0, the method only |
+| On amber, SUMO's cars "start to decelerate if far away from the junction, otherwise they pass" | SUMO's `Traffic_Lights.md`, the signal states' table | the row for y | S (an implementation's behaviour) |
+
+| Lane changes, MOBIL: a change is safe if the new follower's acceleration after it stays above -b_safe, and worth it if the driver's own gain plus p times the gains (or losses) of the new and old followers exceeds a threshold; p the politeness (0 to 1). With the IDM: threshold 0.1 m/s^2, b_safe 4 m/s^2 (well below the about 9 m/s^2 a car can brake on a dry road), a keep-right bias 0.3 m/s^2 for European rules; the values depend on the car-following model | Kesting, Treiber and Helbing, "MOBIL: General Lane-Changing Model for Car-Following Models", the authors' manuscript for the Transportation Research Board, https://mtreiber.de/publications/MOBIL_TRB.pdf | sections 2.1, 2.2, Table 1 | P (the authors' manuscript) |
+
 My memory of a "city" parameter set in the 2010 paper was wrong: it has none. Nothing remembered goes in
 without its source.
+
+Searched for a city calibration (2026-10-24): the 2025 review of the IDM (Zhou, Zheng, Tian, Jiang and Zhang,
+"Twenty-Five Years of the Intelligent Driver Model", arXiv 2506.05909, read as text) surveys calibration methods
+but gives no table of city values; the freeway calibrations it cites (Kurtc and Treiber, NGSIM I-80) are a freeway's.
+A Shanghai study of naturalistic driving reports urban drivers keeping slightly longer time gaps than on freeways;
+only its summary page was seen (U, not used).
 
 **Open:** values for city streets (the papers' are a freeway's), from a calibration read at its source; and how
 the IDM approaches a red signal or a stop line (a standing "vehicle" at the line is the usual way; to read in a
@@ -31,6 +42,7 @@ documented implementation).
 | The yellow change interval's and the red clearance interval's durations are set by engineering practice; a yellow should last 3 to 6 s, the longer at higher speeds; a red clearance should not exceed 6 s (but at a one-lane two-way facility or an exceptionally wide intersection); neither varies cycle by cycle within a timing plan | FHWA, Manual on Uniform Traffic Control Devices, 11th Edition (December 2023), Section 4F.17, https://mutcd.fhwa.dot.gov/ | Part 4's PDF, the section's text (page 708), kept from V169's reading | P |
 | The change period (yellow plus red clearance) by Kell and Fullerton: CP = [t + 1.47 v / (2 (a + 32.2 g))] + [(W + Lv) / (1.47 v)], v in mph, W the intersection's width and Lv a vehicle's length in feet; t 1.0 s, a 10 ft/s^2 and Lv 20 ft "often cited"; under the restrictive yellow rule the yellow may be the whole of it, under the permissive rule the first term, at least 3.0 s, with any red clearance from the second | FHWA, Traffic Signal Timing Manual (FHWA-HOP-08-024, 2008), chapter 5, https://ops.fhwa.dot.gov/publications/fhwahop08024/chapter5.htm | section 5.3, Equation 5-2 and its text | P, in the 2008 edition |
 | Typical minimum greens for driver expectancy (Table 5-3): a major arterial through phase 10 to 15 s (over 40 mph) or 7 to 15 s; a minor arterial 4 to 10 s; collector, local or driveway 2 to 10 s; a left turn 2 to 5 s. Pedestrian clearance time = crossing distance / walking speed | the same | Tables 5-3 and 5-9 | P, in the 2008 edition |
+| SUMO's generated signal programs: a fixed cycle of 90 s, the green split equally between the main phases (31 s each at a plain four-arm junction), every green followed by a yellow computed from the approaches' top speed, no all-red unless asked; below 70 km/h a left turn runs with the oncoming through traffic and yields; actuated programs vary each green from 5 to 50 s | Eclipse SUMO's documentation, `docs/web/docs/Simulation/Traffic_Lights.md`, "Automatically Generated TLS-Programs" | the section, as text | S (an implementation's defaults); EPL-2.0 |
 | The manual's second edition (NCHRP Report 812, 2015) | The National Academies Press, https://nap.nationalacademies.org/catalog/22097 | its page answered; the PDF behind its download page did not come through | not read: the 2008 edition's values are used and its edition said |
 
 **Open:** the second edition's changes to these; cycle length's range for a fixed-time plan; the walk interval
@@ -67,7 +79,12 @@ of turns at a junction (no free source yet); the lot's own trips (no free trip-g
   `highway=stop` or `highway=crossing`, or any `crossing`, within the movement window, read into flags: signals
   (`traffic_signals` on the node or its crossing, or `crossing:signals=yes`), an all-way stop (`stop=all`) or a stop
   on one approach, a marked crossing, an island. The request is part of V166's one Overpass query (`bimMvQuery`).
-- **The streets (V166):** lanes, speeds, one-way and parking by side, the walk network (V161).
+- **The streets (V166, `bimMvOf`):** kept with the site as arrays: the nodes' plan coordinates (`x`, `z`), each way
+  as its tag set's index then its node indices (`w`), the tag sets (`t`); each way's speed and lanes read by
+  `bimMvSpeed` and `bimMvLanes` (OpenStreetMap's maxspeed and lanes, else the registry's class defaults,
+  `app.roads`), one-way and parking by side; the walk network (V161).
+- **Data test (2026-10-24):** Overpass refused twice at 20:46 UTC (the tunnel closed mid-exchange, a transient
+  network failure, and the mirror timed out); to retry, for the signals mapped near a test site and their tags.
 - **The clock (V170):** one animation clock, Play, Pause and Stop, still on paper; a fixed simulation step
   (the plan's 0.2 s) runs inside it.
 
