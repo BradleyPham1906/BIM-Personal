@@ -318,6 +318,38 @@ async def run():
                         wrong.append(('line', dg['a'], dg['k']))
             ck(not wrong and n_out >= 8 and n_path >= 8,
                "each march runs its way: %d away from the site, each line, pair and polyline turned as the reference turns it; %d as drawn (%s)" % (n_out, n_path, wrong[:4]))
+            # the fixture's routes all have an arrowhead, and none of its polylines marches by its analysis (falsify's second run)
+            fl = next((o for o in DG if o['dg']['a'] == 'flow' and o['dg']['k'].startswith('flow:') and (o['dg'].get('s') or {}).get('head')), None)
+            nh = json.loads(json.dumps(fl or {'dg': {'s': {}}}))
+            nh['id'] = 'T170-NOHEAD'
+            nh['dg']['s'].pop('head', None)
+            out_nh = await safe("""(o)=>{window.__a3dPushTestObj(o);var r=window.__a3dAnimOf(o.id);window.__a3dDel(o.id);
+              return r?r.out:'none';}""", nh)
+            ck(fl is not None and R.goes_out(nh['dg']) is False and out_nh is False,
+               "a route without its arrowhead still marches as drawn: its analysis says so (%s)" % out_nh)
+            wrong_l, n_l, n_turned, n_kept = [], 0, 0, 0
+            for o in DG:
+                dg, g = o['dg'], o['dg']['g']
+                if g['kind'] != 'lines' or g.get('closed') or R.auto(dg['a'], dg['k']) or (dg.get('s') or {}).get('head'):
+                    continue
+                q = o.get('pos') or [0, 0, 0]
+
+                def far(p):
+                    return (p[0] + q[0] - c[0]) ** 2 + (p[2] + q[2] - c[1]) ** 2
+                exp = [list(range(len(L)))[::-1] if far(L[0]) > far(L[-1]) else list(range(len(L))) for L in g['lines']]
+                ok_set = await safe("(id)=>window.__a3dDgSet(id,'anim','march')", o['id'])
+                info = await safe("(id)=>window.__a3dAnimOf(id)", o['id']) or {}
+                way = await safe("(id)=>window.__a3dAnimWay(id)", o['id'])
+                await safe("(id)=>window.__a3dDgSet(id,'anim','')", o['id'])
+                if not (ok_set is True and info.get('motion') == 'march' and info.get('out') is True and way == exp):
+                    wrong_l.append((dg['a'], dg['k'], ok_set, info.get('out')))
+                n_l += 1
+                n_turned += sum(1 for e in exp if len(e) > 1 and e[0] > e[-1])
+                n_kept += sum(1 for e in exp if len(e) > 1 and e[0] < e[-1])
+                if n_l >= 4 and n_turned >= 3 and n_kept >= 3:
+                    break
+            ck(not wrong_l and n_turned >= 3 and n_kept >= 3,
+               "polylines set to march go away from the site, each line turned or kept on its own: %d elements, %d lines turned, %d kept (%s)" % (n_l, n_turned, n_kept, wrong_l[:3]))
             cols = ['#3b8fd9', '#f2f5f8', '#8fd694', '#d95926', '#000000', '#ffffff', '#9fb7d4', 'red']
             tt = [await safe("(h)=>window.__a3dAnimTint(h)", h) for h in cols]
             ck(tt == [R.tint(h) for h in cols], "a solid line's moving dashes: lighter on a dark line, darker on a pale one (%s)" % tt)
