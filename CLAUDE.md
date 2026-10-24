@@ -37,6 +37,25 @@ of a phase (research started, the owner's decisions, PR opened, PR merged): `ref
 ids, the relations, the fields and the steps. The repository stays the source of truth; Notion mirrors it,
 summarised and linked, never the full text.
 
+## Reuse first; keep source out of Notion (the owner, 2026-10-20)
+
+Before integrating an open-source project, read `reference/reuse-first-integration.md`.
+Prefer existing upstream modules plus narrow adapters over recreating working functionality.
+A different language alone is not a reason to rewrite: evaluate the existing browser/WASM path.
+Record concrete incompatibilities before proposing a port or replacement. Do not silently
+change the app's delivery contract to achieve reuse; request approval with the evidence.
+
+For SolidCraft, use `reference/plan-parametric-design.md` and issue #44. The first deliverable
+is a verified `reference/solidcraft-integration-map.md`: pinned upstream revision, exact source
+and documentation paths, reuse candidates, adapters, blockers and decisions. Create it from
+actual inspection, not guessed module names. Keep a pinned local clone outside tracked project
+files; inspect relevant source on demand, not the entire repository in model context. Upstream
+build/execution remains gated by the research protocol and explicit owner approval.
+
+GitHub/local files hold source, technical records and tests. Notion holds task scope, approvals,
+progress summaries and links, not duplicate source trees or full upstream documentation. Do
+not assume Claude Code can read Notion unless its connector is configured and works.
+
 ## Standing choices of the owner
 
 - Free, keyless data only, credited; a server without CORS is named, not proxied.
