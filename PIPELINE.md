@@ -230,8 +230,8 @@ when it starts (V111 to V138 went to other work; V139 to V193 are in NOW).
   a deciduous tree is bare and casts its trunk's shadow only. The context's mapped trees take their
   crown from their leaf tags; needle-leaved ones are cones.
 - **A standards change rebuilds** every placed asset, a size set by hand kept.
-- **Checked** in 183 checks against a Python reference of every source and method; broken 100 ways (the first
-  run missed one, and the suite was fixed; on the final suite, 61 caught so far, none missed, the rest running). Found while building: a
+- **Checked** in 183 checks against a Python reference of every source and method; broken 100 ways, all 100
+  caught on the final suite (the first run missed one, and the suite was fixed). Found while building: a
   cycle 1.782 m long (its wheels' sides), V157's crowns 0.85 of their size, the Green Book's two tables
   differing for the city bus (12.80 m, 41.6 ft), an override not resizing what was placed, labels cut off.
   The full regression: 128 suites, 6327 checks, the failures of three older suites explained in the log

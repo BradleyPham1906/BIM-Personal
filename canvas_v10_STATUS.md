@@ -15560,8 +15560,7 @@ overridable with a reason.
   The first run caught 99: `turn_two_radii` (a vehicle's ring stopping at the design radius, the overhang's
   corner dropped) passed, because the suite paired the radii drawn with the three it expected by zip, which
   stops at the shorter list. The suite now counts them first (three for a vehicle, one for the wheelchair
-  user). Run again on the final suite (after the container restarted, from where its log stopped): 61 of the 100
-  caught so far, none missed; the rest still running at this writing.
+  user). Run again on the final suite (resumed from its log after the container restarted): 100 of 100 caught.
 - **Amended,** each AMENDED FOR V169: V62 (the hosts the app may name: the assets' five sources, NCHS, NASA's
   handbook, the IDeA Center, the Forest Service's archive and ETCCDI, linked from Properties > Standards and
   never fetched), V167 (Assets among the areas, before Climate, and its eleven topics), V168 (Assets between
