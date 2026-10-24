@@ -17,7 +17,7 @@ VARIANTS = {
     'rec_land_level': [("w:'research-site-analysis-in-model.md, section 6',lv:'A'},\n        v:[{n:'hood'", "w:'research-site-analysis-in-model.md, section 6',lv:'P'},\n        v:[{n:'hood'")],   # the app's own assumption (A)
     'xw_hotel': [("'tourism=hotel':1000,", "'tourism=hotel':2000,")],   # the crosswalk in the registry; the hotel's cell
     'xw_port': [("'industrial=port':5000,", "'industrial=port':3000,")],   # the port's cell
-    'area_missing': [("'Site context','Land and green','Climate'];", "'Site context','Climate'];")],   # Properties, Site, Standards
+    'area_missing': [("'Site context','Land and green','Assets','Climate'];", "'Site context','Assets','Climate'];")],   # Properties, Site, Standards; RE-ANCHORED IN V169
     'unit_ha': [("ha:[' ha',' ha'],trees:", "ha:[' hectare',' hectares'],trees:")],   # the new units in words
     # ---- 2. the context ----
     'query_no_amenity': [("'way[\"amenity\"~\"^('+BIM_CTX_LAND_AREAS.amenity+')$\"]'+b+';',", "")],   # the grounds of amenities
@@ -101,7 +101,7 @@ VARIANTS = {
     'run_unstamped': [("green:['green.33300','app.land'],zoning:['app.land']};", "zoning:['app.land']};")],   # the green layer out of date
     'row_misplaced': [("BIM_ANZ_GROUP_OF.dggreen='ecology';", "BIM_ANZ_GROUP_OF.dggreen='location';")],   # the rows in their categories
     'landuse_shown': [("    {id:'landuse',name:'Land use',col:'#eda100',hidden:true},", "    {id:'landuse',name:'Land use',col:'#eda100'},")],   # start hidden
-    'version_old': [("var BIM_APP_VERSION={v:'V168',date:'2026-10-18'};", "var BIM_APP_VERSION={v:'V167',date:'2026-10-18'};")],   # V168 or later
+    'version_old': [("var BIM_APP_VERSION={v:'V169',date:'2026-10-19'};", "var BIM_APP_VERSION={v:'V167',date:'2026-10-18'};")],   # V168 or later; RE-ANCHORED IN V169
 }
 
 name = sys.argv[1]

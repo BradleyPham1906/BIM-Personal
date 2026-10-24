@@ -27,7 +27,8 @@ VARIANTS = {
     'platform_flat': [("else if(k==='rail'&&t.railway==='platform'){h=1;lift=0;}", "else if(k==='rail'&&t.railway==='platform'){lift=0;}")],
     'aerodrome_paved': [("(k==='airports'&&/^(apron|helipad)$/.test(t.aeroway||''))", "(k==='airports')")],
     'runway_as_road': [("if(kind==='airports')return t.aeroway==='runway'?45:(t.aeroway==='taxiway'?18:10);", "")],
-    'tree_no_mesh': [("            o.mesh=bimTreeMesh(tp[j][0],tp[j][1],gy,th2,cd2);o.col=BIM_CTX_COL.trees;", "            o.col=BIM_CTX_COL.trees;")],
+    # RE-ANCHORED IN V169: the context's trees use the assets' tree model (V169), a conifer a cone
+    'tree_no_mesh': [("            o.mesh=bimEntTreeMesh(tp[j][0],tp[j][1],gy,th2,cd2,lf2.type==='C').mesh;o.col=BIM_CTX_COL.trees;", "            o.col=BIM_CTX_COL.trees;")],
     # RE-ANCHORED IN V168: the sizes are the registry's since V167
     'tree_height_ignored': [("th2=bimTagMetres(f.tags.height)||bimCtxTreeH()", "th2=bimCtxTreeH()")],
     'row_end_dropped': [("n=Math.max(1,Math.round(tot/step));d=tot/n;", "n=Math.max(1,Math.floor(tot/step));d=step;")],

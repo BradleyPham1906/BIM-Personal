@@ -104,7 +104,7 @@ VARIANTS = {
     'drawn_before_land': [("return Promise.all([pc,pk,pl]).then(function(){", "return Promise.all([pc,pk]).then(function(){")],
     'cards_ungrouped': [("  BIM_ANZ_GROUP_OF.dgflow='water';BIM_ANZ_GROUP_OF.dgponds='water';BIM_ANZ_GROUP_OF.dgflood='water';\n", "")],
     # RE-ANCHORED IN V166: the build says V166 now; broken, it says V164, before V165
-    'version_old': [("  var BIM_APP_VERSION={v:'V168',date:'2026-10-18'};", "  var BIM_APP_VERSION={v:'V164',date:'2026-10-12'};")],   # RE-ANCHORED IN V168
+    'version_old': [("  var BIM_APP_VERSION={v:'V169',date:'2026-10-19'};", "  var BIM_APP_VERSION={v:'V164',date:'2026-10-12'};")],   # RE-ANCHORED IN V169
 }
 
 name = sys.argv[1]
