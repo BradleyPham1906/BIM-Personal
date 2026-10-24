@@ -25,6 +25,7 @@ the design; what reaches the screen is read back from the canvas's own pixels.
      CPU drawing.
   9. STILL ON PAPER: a sheet drawn the same whatever the clock.
  10. A PHONE, A TABLET, A COMPUTER.
+ 11. A RELOAD: a project with its analyses, left playing, opens still.
 
 The harness never waits without a bound (V123).
 """
@@ -657,6 +658,19 @@ async def run():
                     ck(lay.get('left', -1) >= 0 and lay.get('right', 1e9) <= vw and lay.get('span') != 'none', "%s: PLAY in the bar, on the screen, with its word (%s)" % (name, lay))
 
             # ---------------------------------------------------------------------------------
+            # ---------------------------------------------------------------------------------
+            print("\n-- 11. A reload")
+            await safe("()=>window.__a3dAnimPlay(true)")
+            await page.wait_for_timeout(300)
+            await within(page.reload(), 'reload')
+            await page.wait_for_timeout(2500)
+            await safe("()=>window.__a3dEnter&&window.__a3dEnter()")
+            await page.wait_for_timeout(500)
+            rl = await anim()
+            nd = len(await diags())
+            ck(nd == len(DG) and rl.get('on') is False and rl.get('paused') is False and rl.get('live') is False and rl.get('t') == 0 and (await btn()).get('text') == 'PLAY',
+               "the project reloaded with its %d analysis elements, left playing: it opens still, PLAY ready (%s)" % (nd, {k: rl.get(k) for k in ('on', 'paused', 'live', 't')}))
+
             # ---------------------------------------------------------------------------------
             print("")
             ck(not errs, "zero uncaught page errors (%s)" % (errs[:3] or 'none'))
