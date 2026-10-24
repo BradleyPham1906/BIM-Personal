@@ -66,6 +66,7 @@ Search Notion before creating anything, so nothing is made twice.
 | `reference/research-access-people.md` | `3fecbfcc3a3881598684fed1479bb711` |
 | `reference/research-alignment.md` | `3fecbfcc3a3881e881cdd2408e75b9a5` |
 | `reference/research-animation.md` | `403cbfcc3a388101837ec19cf0e0a894` |
+| `reference/research-traffic.md` | `403cbfcc3a388128b93be79356396b92` |
 | `reference/research-arcgis-site-analysis.md` | `3fecbfcc3a388106bad2c9be7ba8111c` |
 | `reference/research-archidiagram.md` | `3fecbfcc3a388195adb9e5492391d6e2` |
 | `reference/research-assets.md` | `3fecbfcc3a38811a8256d14749e71ebd` |
