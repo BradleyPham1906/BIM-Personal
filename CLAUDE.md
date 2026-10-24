@@ -56,6 +56,14 @@ GitHub/local files hold source, technical records and tests. Notion holds task s
 progress summaries and links, not duplicate source trees or full upstream documentation. Do
 not assume Claude Code can read Notion unless its connector is configured and works.
 
+## Never idle on long checks (the owner, 2026-10-24)
+
+"i cant just wait till the falsification and full regression finish. we can build code ahead and plan while waiting."
+Falsification and the full regression run against a frozen copy of the tested build: a git worktree at the tested
+commit (`git worktree add <dir> <commit>`), started there, so nothing done meanwhile can change what they test. The
+next phase is researched, designed and built in the main working copy at the same time, its patches based on the
+tested build. Only the records' numbers wait for the checks; when a check finds a fault, the fix goes into both.
+
 ## Standing choices of the owner
 
 - Free, keyless data only, credited; a server without CORS is named, not proxied.
