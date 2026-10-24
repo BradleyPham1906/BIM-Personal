@@ -54,6 +54,7 @@ and pedestrian clearance from the 11th Edition's Chapter 4I (V169 read 4I.06's w
 |---|---|---|---|
 | The social force model: a pedestrian accelerates toward a desired velocity within a relaxation time and is pushed by exponential repulsions from others and from walls. Its simulations take the desired speeds as Gaussian, mean 1.34 m/s, standard deviation 0.26 m/s (citing Henderson's measurements), capped at 1.3 times each one's own; relaxation time 0.5 s; V0 2.1 m^2/s^2, sigma 0.3 m; walls U0 10 m^2/s^2, R 0.2 m; a 200 degree field of view | Helbing and Molnar, "Social force model for pedestrian dynamics", Phys. Rev. E 51, 4282 (1995); arXiv cond-mat/9805244 v1, https://arxiv.org/abs/cond-mat/9805244 | section III, the simulations' values (pages 7 and 8) | P (the authors' version); the 1.34 m/s mean is S, cited to Henderson, not read |
 | The MUTCD's walking speeds for the pedestrian clearance time (4I.06) | V169's registry record `mutcd.walk`, read at the MUTCD 11th Edition with Revision 1 | (V169) | P |
+| The pedestrian intervals: WALK while pedestrians may leave the curb, at least 7 s (as short as 4 s where volumes allow); then the flashing DON'T WALK change interval, then a steady DON'T WALK buffer of at least 2 s before any conflicting vehicles go; change plus buffer at least the clearance time, the crossing at 3.5 ft/s to the far side (up to 4 ft/s with an extended push button; slower where slower walkers routinely cross); WALK plus clearance enough to cross from 6 ft behind the curb at 3 ft/s; conflicting vehicles held on red throughout | FHWA, MUTCD 11th Edition (December 2023), Section 4I.06, paragraphs 1 to 14 | Part 4's text, pages 722 to 724 | P |
 
 **Open:** whether sidewalk pedestrians need forces at all at the site's scale (they mostly walk single file along
 V166's sidewalks) or only a desired speed, a gap and a wait at the crossing; Henderson's measurements themselves.
@@ -83,8 +84,9 @@ of turns at a junction (no free source yet); the lot's own trips (no free trip-g
   as its tag set's index then its node indices (`w`), the tag sets (`t`); each way's speed and lanes read by
   `bimMvSpeed` and `bimMvLanes` (OpenStreetMap's maxspeed and lanes, else the registry's class defaults,
   `app.roads`), one-way and parking by side; the walk network (V161).
-- **Data test (2026-10-24):** Overpass refused twice at 20:46 UTC (the tunnel closed mid-exchange, a transient
-  network failure, and the mirror timed out); to retry, for the signals mapped near a test site and their tags.
+- **Data test (2026-10-24):** Overpass refused three times between 20:46 and 20:49 UTC (the tunnel to the egress
+  proxy closed mid-exchange; the kumi.systems mirror timed out), where earlier phases reached it from here; to retry,
+  for the signals mapped near a test site and their tags.
 - **The clock (V170):** one animation clock, Play, Pause and Stop, still on paper; a fixed simulation step
   (the plan's 0.2 s) runs inside it.
 
