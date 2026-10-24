@@ -4,7 +4,7 @@ The plan's V171 (`plan-v167-v170.md`): cars on V166's street graph by IDM car fo
 OpenStreetMap maps them, pedestrians on the sidewalks crossing on green, drawn with V170's clock. Researched
 to `research-protocol.md` from 2026-10-24, while V169's and V170's checks ran (the owner: never idle on long
 checks). Every source was read as text in a folder of its own in the session's scratch; nothing downloaded
-was run. **In progress:** the sections below say what is read so far and what is still open.
+was run. Research done 2026-10-24; the owner's decisions are in section 6.
 
 ## 1. Car following: the Intelligent Driver Model
 
@@ -19,6 +19,10 @@ was run. **In progress:** the sections below say what is read so far and what is
 
 | A red light, in the IDM's authors' simulator, is a standing "vehicle" placed across every lane at the light's position, so the car-following model alone brings the cars to a stop behind it; green removes it | movsim/traffic-simulation-de, `js/road.js`, `road.prototype.changeTrafficLight` | the function, as text | S (an implementation's method); GPL-3.0, the method only |
 | On amber, SUMO's cars "start to decelerate if far away from the junction, otherwise they pass" | SUMO's `Traffic_Lights.md`, the signal states' table | the row for y | S (an implementation's behaviour) |
+| Unsignalled junctions in SUMO: a junction's type says who yields (priority: the minor road waits for the major; priority_stop: the minor road always stops first; allway_stop; right_before_left). Right of way by default goes to the two incoming edges ranked highest by priority, then speed, then lanes; every other approach is minor. A car without right of way slows until a visibility distance, then looks for higher-priority traffic and brakes or goes; it keeps a time gap of at least 1 s to a priority car not yet in the junction (`jmTimegapMinor`); it waits 1 m before a signal's stop line, at the line on a minor road; a stop sign is at least one step's stop (`jmStopSignWait`); it keeps 10 m from a pedestrian walking toward its path (`jmCrossingGap`) | SUMO's documentation, `Simulation/Intersections.md`, `Networks/PlainXML.md` (node types, Right-of-way) and the junction model parameters' table in `Definition_of_Vehicles, Vehicle Types, and Routes.md` | the sections and the table, as text | S (an implementation's rules and defaults); EPL-2.0, the rules only |
+
+| City traffic: three drivers' radar trajectories in Stuttgart (1995, an afternoon peak hour, a fairly straight one-lane road, standstills at traffic lights; 250, 400 and 300 s), the IDM fitted to each by a genetic algorithm. With the mixed error measure: T 1.12, 1.43 and 1.30 s; s0 2.33, 2.82 and 1.52 m; a 1.23, 0.977 and 1.56 m/s^2; b 3.20, 0.994 and 0.633 m/s^2; v0 only bounded from below (58 km/h for the third, the most it reached; the others never drove free); errors 11 to 29%. Intra-driver variability accounts for much of the error | Kesting and Treiber, "Calibrating car-following models using trajectory data: methodological study", Transportation Research Record 2088 (2008); arXiv 0803.4063 v1, https://arxiv.org/abs/0803.4063 | the data's description (page 2), Table 1 and its discussion (page 7) | P (the authors' version) |
+| The authors' own guidance: for city traffic adapt the desired speed and leave the others essentially unchanged; realistic T from 0.8 to 2 s (German driving schools teach 1.8 s), a 0.8 to 2.5 m/s^2, b around 2 m/s^2; s0 kept at standstill, in queues at red lights too. A red light or a stop sign is a standing virtual vehicle of length zero at the stop line, removed on green; a free road is a gap of 1000 m. The ballistic update (speed by a dt, position by v dt + a dt^2 / 2); any step below 0.5 s gives essentially the same result; a car that would go below zero speed within a step stops where it would and stays, and a gap a little under s0 is kept, not driven backwards from | Treiber, "The Intelligent-Driver Model and its Variants", https://traffic-simulation.de/info/info_IDM.html | the page, as text (2026-10-24) | P (the model's author on his model) |
 
 | Lane changes, MOBIL: a change is safe if the new follower's acceleration after it stays above -b_safe, and worth it if the driver's own gain plus p times the gains (or losses) of the new and old followers exceeds a threshold; p the politeness (0 to 1). With the IDM: threshold 0.1 m/s^2, b_safe 4 m/s^2 (well below the about 9 m/s^2 a car can brake on a dry road), a keep-right bias 0.3 m/s^2 for European rules; the values depend on the car-following model | Kesting, Treiber and Helbing, "MOBIL: General Lane-Changing Model for Car-Following Models", the authors' manuscript for the Transportation Research Board, https://mtreiber.de/publications/MOBIL_TRB.pdf | sections 2.1, 2.2, Table 1 | P (the authors' manuscript) |
 
@@ -31,9 +35,9 @@ but gives no table of city values; the freeway calibrations it cites (Kurtc and 
 A Shanghai study of naturalistic driving reports urban drivers keeping slightly longer time gaps than on freeways;
 only its summary page was seen (U, not used).
 
-**Open:** values for city streets (the papers' are a freeway's), from a calibration read at its source; and how
-the IDM approaches a red signal or a stop line (a standing "vehicle" at the line is the usual way; to read in a
-documented implementation).
+City values, then: the calibration's ranges agree with the author's advice (T about 1.1 to 1.4 s, s0 1.5 to 3 m, a
+about 1 to 1.6 m/s^2, b spread widely by driver), and v0 is the street's speed. A red light and a stop line are a
+standing car at the line, by the model's author. **Closed** (2026-10-24).
 
 ## 2. Signals
 
@@ -43,10 +47,14 @@ documented implementation).
 | The change period (yellow plus red clearance) by Kell and Fullerton: CP = [t + 1.47 v / (2 (a + 32.2 g))] + [(W + Lv) / (1.47 v)], v in mph, W the intersection's width and Lv a vehicle's length in feet; t 1.0 s, a 10 ft/s^2 and Lv 20 ft "often cited"; under the restrictive yellow rule the yellow may be the whole of it, under the permissive rule the first term, at least 3.0 s, with any red clearance from the second | FHWA, Traffic Signal Timing Manual (FHWA-HOP-08-024, 2008), chapter 5, https://ops.fhwa.dot.gov/publications/fhwahop08024/chapter5.htm | section 5.3, Equation 5-2 and its text | P, in the 2008 edition |
 | Typical minimum greens for driver expectancy (Table 5-3): a major arterial through phase 10 to 15 s (over 40 mph) or 7 to 15 s; a minor arterial 4 to 10 s; collector, local or driveway 2 to 10 s; a left turn 2 to 5 s. Pedestrian clearance time = crossing distance / walking speed | the same | Tables 5-3 and 5-9 | P, in the 2008 edition |
 | SUMO's generated signal programs: a fixed cycle of 90 s, the green split equally between the main phases (31 s each at a plain four-arm junction), every green followed by a yellow computed from the approaches' top speed, no all-red unless asked; below 70 km/h a left turn runs with the oncoming through traffic and yields; actuated programs vary each green from 5 to 50 s | Eclipse SUMO's documentation, `docs/web/docs/Simulation/Traffic_Lights.md`, "Automatically Generated TLS-Programs" | the section, as text | S (an implementation's defaults); EPL-2.0 |
+| The WALK interval by setting (Table 5-8): 10 to 15 s where pedestrians are many (a school, a central business district, a stadium); 7 to 10 s with typical volumes and a longer cycle; 7 s with a shorter cycle; 4 s where there are almost none; where older pedestrians are present, the distance to the road's centre at 3.0 ft/s | the same | Table 5-8 | P, in the 2008 edition |
+| Cycle length: Webster's optimum for an isolated junction, C = (1.5 L + 5) / (1.0 - Y), C in seconds, L the time lost per cycle, Y the critical lane volumes over the saturation flow summed over the phases (Equation 6-1, read as its image); the HCM's estimate C = L / (1 - min(CS, RS) / RS) (Equation 6-2), CS the critical sum, RS the reference sum; the cycle grows toward a maximum the jurisdiction sets ("such as 150 seconds"), the least suggested 60 s; the plotted ranges run from 30 s at light demand to 180 s near capacity. An agency's harmonic cycles by street (Table 6-1, Harris County, Texas): a minor arterial 60, 70, 80 or 90 s with a major arterial at 90, 105, 120 or 135 s | FHWA, Traffic Signal Timing Manual (2008), chapter 6, https://ops.fhwa.dot.gov/publications/fhwahop08024/chapter6.htm | section 6.4's cycle length methods, Equations 6-1 and 6-2 (images), Figures 6-19 and 6-20's descriptions, Table 6-1 | P, in the 2008 edition |
 | The manual's second edition (NCHRP Report 812, 2015) | The National Academies Press, https://nap.nationalacademies.org/catalog/22097 | its page answered; the PDF behind its download page did not come through | not read: the 2008 edition's values are used and its edition said |
 
-**Open:** the second edition's changes to these; cycle length's range for a fixed-time plan; the walk interval
-and pedestrian clearance from the 11th Edition's Chapter 4I (V169 read 4I.06's walking speeds).
+A fixed-time plan, then: a cycle of at least 60 s, its greens split to the approaches' volumes by Webster's
+logic or set evenly as SUMO does, each green at least the manual's minimum and long enough for WALK plus the
+pedestrian clearance at 3.5 ft/s, each change interval by Kell and Fullerton's period. **Open:** the second
+edition's changes to these (not read).
 
 ## 3. Pedestrians
 
@@ -56,8 +64,11 @@ and pedestrian clearance from the 11th Edition's Chapter 4I (V169 read 4I.06's w
 | The MUTCD's walking speeds for the pedestrian clearance time (4I.06) | V169's registry record `mutcd.walk`, read at the MUTCD 11th Edition with Revision 1 | (V169) | P |
 | The pedestrian intervals: WALK while pedestrians may leave the curb, at least 7 s (as short as 4 s where volumes allow); then the flashing DON'T WALK change interval, then a steady DON'T WALK buffer of at least 2 s before any conflicting vehicles go; change plus buffer at least the clearance time, the crossing at 3.5 ft/s to the far side (up to 4 ft/s with an extended push button; slower where slower walkers routinely cross); WALK plus clearance enough to cross from 6 ft behind the curb at 3 ft/s; conflicting vehicles held on red throughout | FHWA, MUTCD 11th Edition (December 2023), Section 4I.06, paragraphs 1 to 14 | Part 4's text, pages 722 to 724 | P |
 
-**Open:** whether sidewalk pedestrians need forces at all at the site's scale (they mostly walk single file along
-V166's sidewalks) or only a desired speed, a gap and a wait at the crossing; Henderson's measurements themselves.
+| SUMO's default pedestrian model ("striping"): each sidewalk, crossing and walking area divided across its width into stripes of 0.65 m; a walker advances as fast as it can without coming too close to the one ahead in its stripe, moving sideways to another stripe when it must (oncoming walkers evade to the right), its speed cut by a random fraction up to 0.2 of its maximum (dawdling); walkers wait at a crossing in a wide queue; on crossings and walking areas a third of the width is kept for those coming the other way; a walker stuck 300 s (10 s on a crossing) moves on through the others at a quarter speed | SUMO's documentation, `Simulation/Pedestrians.md`, "Model striping" and "Jamming" | the sections, as text | S (an implementation's model); EPL-2.0, the method only |
+
+So a pedestrian at the site's scale need not feel forces: a desired speed, a lateral stripe on the sidewalk, a gap
+to the one ahead and a wait at the crossing is the established simple model, with the social force model kept for
+crowds. Which to build is the owner's (below). **Open:** Henderson's measurements themselves.
 
 ## 4. Demand
 
@@ -71,8 +82,16 @@ Two states read: Delaware's design hour (the 30th-highest) runs from 9.3 to 14.3
 9.0% on urban arterials. A weekday peak hour near a site is the one the simulation wants, so Florida's 9% is the
 closer reading for a city street; the choice is the owner's (below).
 
-**Open:** the share
-of turns at a junction (no free source yet); the lot's own trips (no free trip-generation table: ITE's is sold).
+| Turns at a junction from link volumes: an initial estimate of the turning shares, then the turning matrix balanced alternately by rows (inflows) and columns (outflows) to the links' volumes, six to ten iterations (Furness's method, modified for intersections by Mekky). The shares to start from come from counts, similar junctions or the land use around; none are given. A sketch method for two-way volumes takes each approach's volume as the stand-in for what lies beyond it, the turns following the approaches' weights; its example assumes at most 20% of the inflow turns, "on the basis of conditions at similar intersections" | Pedersen and Samdahl (JHK and Associates), NCHRP Report 255, Highway Traffic Data for Urbanized Area Project Planning and Design (TRB, December 1982), Chapter 8, https://onlinepubs.trb.org/Onlinepubs/nchrp/nchrp_rpt_255.pdf | Chapter 8, pages 110 to 118, as text | P (1982; its successor, NCHRP Report 765 of 2014, is behind a download form, not read) |
+
+So no free table of turning shares exists for a junction without counts; the method is a matrix balanced to the
+streets' volumes from a first guess. The streets' volumes here are the registry's typical AADT by class (`fhwa.fc`).
+
+| A site's own vehicle trips, from counts at every driveway of four to seven sites of a use, up to seven days (Table 1, driveway rates, with the AM and PM peak hours' shares of the day and their in:out splits): apartments 8 trips a dwelling a day under 20 dwellings an acre, 6 over it, AM 8% (2:8), PM 10% or 9% (7:3); single family, urbanized, 9 a dwelling, 8% (2:8) and 10% (7:3); a commercial office Ln(T) = 0.756 Ln(x) + 3.95 (T trips a day, x thousand sq ft), AM 13% (9:1), PM 14% (2:8); a single-tenant office 10 a thousand sq ft, 15% (9:1) and 15% (1:9); a neighbourhood shopping centre 120 a thousand sq ft, 4% (6:4) and 11% (5:5); strip retail 40, 3% (6:4) and 9% (5:5); a supermarket 150, 4% (7:3) and 10% (5:5). Downtown (Centre City, Table 5) the rates are lower, for transit, density, walking and parking's cost: apartments 5 (under 20 an acre) and 4 a dwelling, a commercial office 0.85 (under 100,000 sq ft) or 0.81 times the formula's trips, strip retail 18, a supermarket 60. The rates come from the city's, SANDAG's and ITE's studies, local data where possible | City of San Diego, Trip Generation Manual (revised May 2003), https://www.sandiego.gov/sites/default/files/legacy/planning/documents/pdf/trans/tripmanual.pdf | the introduction, Table 1 (residential, office, retail rows and notes) and Table 5, as text | P, for San Diego (2003), its sources cited (SANDAG's Traffic Generators, ITE's 5th and 6th editions) |
+
+A free table of a site's trips exists, then, in a city's own manual: San Diego's, of 2003, with peak shares and
+directions. It is one region's and old; the owner chooses whether the lot's trips come from it (by V131's usages and
+their areas), from a number they give, or not at all (below).
 
 ## 5. What the app has (read 2026-10-24)
 
@@ -84,20 +103,56 @@ of turns at a junction (no free source yet); the lot's own trips (no free trip-g
   as its tag set's index then its node indices (`w`), the tag sets (`t`); each way's speed and lanes read by
   `bimMvSpeed` and `bimMvLanes` (OpenStreetMap's maxspeed and lanes, else the registry's class defaults,
   `app.roads`), one-way and parking by side; the walk network (V161).
-- **Data test (2026-10-24):** Overpass refused three times between 20:46 and 20:49 UTC (the tunnel to the egress
-  proxy closed mid-exchange; the kumi.systems mirror timed out), where earlier phases reached it from here; to retry,
-  for the signals mapped near a test site and their tags.
+- **Data test (2026-10-24):** overpass-api.de refused again at 23:13 UTC (the tunnel to the egress proxy closed
+  mid-exchange), private.coffee timed out, mail.ru's mirror answered 504; overpass.osm.ch (Switzerland only) answered.
+  Within 400 m of Paradeplatz, Zurich: 27 `highway=traffic_signals` nodes and 37 crossings tagged
+  `crossing=traffic_signals`, 19 signals with `traffic_signals:direction` (forward or backward, the approach they
+  control), 4 `highway=stop` and 6 `highway=give_way`; 135 crossings, 56 of them zebras; 244 sidewalks drawn as their
+  own ways (`footway=sidewalk`, 46 streets `sidewalk=separate`); lanes on 89 ways, `turn:lanes` on 26; maxspeed 30 on
+  67 ways and 50 on 54. No timing anywhere: OpenStreetMap maps where a signal is and which way it faces, never its
+  plan, so every cycle the simulation runs is assumed and said.
+- **What V166 keeps of these:** the crossings' flags (signals, stop, all-way stop, marked, island), the streets' lanes,
+  one-way, speeds and sidewalks (`BIM_MV_KEYS`); the walk network walks the sidewalks without drawing them. Not kept:
+  `highway=give_way`, a signal's direction, `turn:lanes`.
 - **The clock (V170):** one animation clock, Play, Pause and Stop, still on paper; a fixed simulation step
   (the plan's 0.2 s) runs inside it.
+- **Drawing many moving things (V152, V153, read 2026-10-24):** the scene is chunks of merged triangles, each vertex
+  tagged with its object's slot, and a table of eight floats a slot (`bimGbPut`): the object's position, its
+  transparency (or hidden), its colour and its selection; only the rows that change are sent to the GPU, in both
+  WebGL and WebGPU. A car can therefore move by its row alone, with no chunk rebuilt; it cannot turn, the table
+  having no heading, so a car that turns needs a heading added to the table and both engines' shaders, or is drawn
+  on the overlay as V170's motions are. V169's vehicles (P, SU-30, CITY-BUS) are meshes built from their
+  parameters.
 
-## 6. Still to research
+## 6. What the research supports, and what is the owner's
 
-- City IDM values; the stop line and the signal in the car-following model; lane changes (MOBIL, the same
-  authors) or none.
-- Turning at junctions; the demand (the plan's K factor on FHWA's AADT ranges, V164's registry); the lot's own
-  trips (no free trip-generation table).
-- Pedestrians: walking speeds (V169's MUTCD 4I.06 record), crossing on WALK, the sidewalks from V166.
-- OpenStreetMap's signal tags as V166 keeps them, and what is mapped near a test site.
-- Open implementations read as text: SUMO's car-following and junction documentation (EPL-2.0).
-- The app: V166's street graph, V152's instanced drawing, V170's clock.
-- The owner's decisions, asked together at the end.
+Already the owner's (`research-valdrada.md`, 2026-10-19): valdrada's methods rewritten inside the app (MIT,
+credited), only the site's streets, agents as typed arrays, light by design. With what is read above:
+
+- **Cars** by the IDM on V166's street graph, its values a standards record with its source and edition, the
+  desired speed the street's own (`bimMvSpeed`); a fixed step under 0.5 s inside V170's clock, by the ballistic
+  update and the author's rule for stopping; a red light or a stop line a standing car at the line; a minor road
+  yields to a major by SUMO's ranking (priority, then speed, then lanes), keeping a gap of 1 s.
+- **Lane changes** by MOBIL where a direction has two lanes or more (its values from its paper), none on one lane.
+- **Pedestrians** by a desired speed on the sidewalks, a stripe across their width, a gap to the one ahead and a
+  wait at the crossing (SUMO's striping model), not by social forces: the owner's light-by-design choice.
+- **Signals** only where OpenStreetMap maps them, on the side `traffic_signals:direction` gives where it is
+  mapped; every timing assumed and said, OpenStreetMap having none.
+- **Drawing**: the table of V152 gains a heading, so a car turns in 3D on both engines; in plan, rectangles and
+  dots on the overlay.
+
+**The owner's decisions** (asked together, 2026-10-24):
+1. The signal plan: valdrada's one 40 s cycle everywhere (15 s green, 3 s amber, 2 s all red), or the timing
+   manual's practice, each junction's own: a cycle of at least 60 s split by Webster's logic to the approaches'
+   volumes, amber by Kell and Fullerton, and each green long enough for WALK (7 s) and the crossing at 3.5 ft/s
+   (MUTCD 4I.06). WALK and the crossing of a 15 m street take 21 s (7 + 14), more than valdrada's 20 s of
+   green, amber and all red together.
+2. The cars' values: the city calibration's middle values (Stuttgart, 2008: T 1.30 s, s0 2.33 m, a 1.23 m/s^2,
+   b 0.994 m/s^2), valdrada's (T 1.15 s, s0 2.2 m, a 1.9, b 2.6), or the authors' standard car with the street's
+   speed (T 1.5 s, s0 2 m, a 1.4, b 2.0, Kesting 2010).
+3. The streets' traffic: each street's typical AADT by class (`fhwa.fc`) at Florida's standard K (9%, the weekday
+   peak hour in urban areas), or at Delaware's design hour (9.3 to 14.3%); turns at each junction by NCHRP 255's
+   balancing, from the exits' volumes, or split evenly.
+4. The lot's own trips: San Diego's rates by V131's usages and areas (free, read; one region's, 2003), from the
+   parking spaces at an assumed rate (the earlier plan, when no free table was known), a number the owner gives,
+   or none.
