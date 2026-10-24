@@ -1,4 +1,4 @@
-# Research: animated site analysis and video (V170)
+# Research: animated site analysis (V170)
 
 The owner (2026-10-19), after Archi Diagram: "it allows the analysis layer to be animated"; their choices
 that day: a phase of its own, V170, before the traffic simulation (V171, which draws with the same clock
@@ -88,14 +88,14 @@ are checked by the browser playing them and by a reader of our own in the suite.
 
 - ISO/IEC 14496-12 itself (sold; the free list not read).
 - Whether Safari plays VP9 in MP4 (it encodes H.264, so it should not need to).
-- The owner's questions (below), asked together when the research ends.
 
-## 8. Questions for the owner (to ask together)
+## 8. The owner's decisions (2026-10-24)
 
-1. **When things move:** still by default, a Play and Pause for the view (WCAG 2.2.2), the reduced-motion
-   setting starting it paused; or moving whenever an analysis is shown.
-2. **Which motions first:** marching dashes on flows, walks and transit; winds drawn on; walk-time rings
-   growing; the sun and shadows through a day; the layers revealed one after another.
-3. **Video:** 1080p at 30 frames a second by default, with 720p, square and vertical presets; H.264 where the
-   browser has it, VP9 in MP4 where it does not, MediaRecorder last.
-4. **Stills:** a numbered PNG sequence as one ZIP the app writes (no dependency), or one image at a time.
+1. **When things move:** still until Play, with Pause always there (WCAG 2.2.2); paused at first where the device asks
+   for reduced motion.
+2. **Which motions:** all four: marching dashes on flows, walks and transit; winds drawn on; walk-time rings growing and
+   the layers revealed in turn; the sun and shadows through a day.
+3. **Video:** none: "i dont need export motion. just on the app for visual". The MP4 writer chosen on 2026-10-19 is
+   dropped; sections 2 to 5 keep what was read about it, should it be wanted later.
+4. **Stills:** "just image at the moment it captured no video export": Save image takes the view at that moment, the 3D
+   model included (section 5).
