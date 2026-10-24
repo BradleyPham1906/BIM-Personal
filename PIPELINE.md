@@ -1,5 +1,20 @@
 # canvas_v10 — the pipeline
 
+## OpenBridge UI enrichment (cross-cutting intake, 2026-10-22)
+
+Research and task annotations were recorded in Notion before repository changes.
+See `reference/research-openbridge.md` and `vendor/openbridge/README.md`: 17 curated
+SVG icons, 124 scoped token values, exact Apache-2.0 snapshot, source copies,
+checksums, offline workbench and intake tests. Production HTML and phase
+completion remain unchanged. Open `wip/openbridge-ui-preview.html` from the repo tree.
+
+This is supplemental UI work, not a numbered phase or a substitute for V169
+3D assets. The research records the existing Notion/main-pipeline numbering
+discrepancy for animation/traffic/Contents; no adjacent rows are renumbered,
+rescheduled or marked complete by this intake. Further production integration
+requires command mapping, full app regressions and owner review.
+
+
 **Read this first in a new session.** One page. The detail lives in the docs listed at the bottom.
 
     canvas_v10.html   3350878 bytes

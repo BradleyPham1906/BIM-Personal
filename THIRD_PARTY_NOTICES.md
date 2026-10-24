@@ -108,3 +108,23 @@ https://github.com/mapbox/earcut.
     OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
     TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
     THIS SOFTWARE.
+
+
+## OpenBridge UI asset intake (not yet integrated into canvas_v10.html)
+
+OpenBridge webcomponents, Ocean Industries Concept Lab (OICL).
+Pinned commit: `eb2013003cbb323ded47674576e5b273df0a2566` (`2.0.0-next.9`).
+Source: https://github.com/Ocean-Industries-Concept-Lab/openbridge-webcomponents/blob/eb2013003cbb323ded47674576e5b273df0a2566/LICENSE.TXT
+
+The pinned LICENSE.TXT and package metadata directly license this snapshot under
+Apache-2.0. The original license (including its copyright appendix) is preserved
+verbatim at `vendor/openbridge/LICENSE.TXT`. Do not substitute a newer upstream
+revision without reviewing its license: the reviewed newer revision starts under
+AGPL-3.0-only and offers Apache-2.0 after a per-version 180-day delay.
+
+Modifications: extracted 17 static SVGs from TypeScript wrappers (geometry unchanged);
+added an ES5 lookup/accessibility adapter; selected and scoped theme/sizing tokens.
+Original wrappers and palette CSS are preserved as source references only, never executed
+or loaded by the production app. Per-file provenance and checksums: `vendor/openbridge/manifest.json`.
+Some upstream names identify Google-derived icons; preserve these names and source attribution.
+No Figma files, fonts, logos or maritime certification claims are included.

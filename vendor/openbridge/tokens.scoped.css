@@ -1,0 +1,151 @@
+/* OpenBridge Apache-2.0; derivative: selected tokens scoped to .bim-ob-preview.
+
+ * Source eb2013003cbb323ded47674576e5b273df0a2566; see LICENSE.TXT and manifest.json. Not auto-loaded by the BIM app. */
+
+.bim-ob-preview[data-obc-theme="day"] {
+  --element-active-color: rgb(31, 31, 31);
+  --element-neutral-color: rgb(83, 83, 83);
+  --element-inactive-color: rgb(112, 112, 112);
+  --container-global-color: rgb(252, 252, 252);
+  --container-background-color: rgb(247, 247, 247);
+  --container-section-color: rgb(240, 240, 240);
+  --container-backdrop-color: rgb(224, 224, 224);
+  --border-outline-color: rgb(221, 221, 221);
+  --border-divider-color: rgb(221, 221, 221);
+  --normal-enabled-background-color: rgb(255, 255, 255);
+  --normal-enabled-border-color: rgb(190, 190, 190);
+  --normal-hover-background-color: rgb(240, 240, 240);
+  --normal-focused-border-color: rgb(66, 113, 179);
+  --raised-enabled-background-color: rgb(29, 60, 103);
+  --raised-enabled-border-color: rgb(21, 47, 83);
+  --raised-hover-background-color: rgb(21, 47, 83);
+  --on-raised-active-color: rgb(228, 238, 253);
+  --alert-alarm-color: rgb(227, 0, 25);
+  --alert-warning-color: rgb(254, 148, 19);
+  --alert-caution-color: rgb(255, 219, 66);
+  --on-alarm-color: rgb(255, 255, 255);
+  --on-warning-color: rgb(26, 26, 26);
+  --on-caution-color: rgb(61, 61, 61);
+  --alert-running-color: rgb(0, 131, 0);
+  --data-categorical-qualitative-01: rgb(93, 143, 213);
+  --data-categorical-qualitative-02: rgb(196, 126, 60);
+  --data-categorical-qualitative-03: rgb(29, 157, 161);
+  --data-categorical-qualitative-04: rgb(118, 101, 178);
+}
+
+.bim-ob-preview[data-obc-theme="dusk"] {
+  --element-active-color: rgb(233, 233, 233);
+  --element-neutral-color: rgb(176, 176, 176);
+  --element-inactive-color: rgb(140, 140, 140);
+  --container-global-color: rgb(46, 46, 46);
+  --container-background-color: rgb(31, 31, 31);
+  --container-section-color: rgb(38, 38, 38);
+  --container-backdrop-color: rgb(15, 15, 15);
+  --border-outline-color: rgb(55, 55, 55);
+  --border-divider-color: rgb(67, 67, 67);
+  --normal-enabled-background-color: rgb(67, 67, 67);
+  --normal-enabled-border-color: rgb(80, 80, 80);
+  --normal-hover-background-color: rgb(80, 80, 80);
+  --normal-focused-border-color: rgb(94, 94, 94);
+  --raised-enabled-background-color: rgb(150, 196, 254);
+  --raised-enabled-border-color: rgb(177, 214, 255);
+  --raised-hover-background-color: rgb(150, 196, 254);
+  --on-raised-active-color: rgb(35, 46, 60);
+  --alert-alarm-color: rgb(225, 0, 14);
+  --alert-warning-color: rgb(250, 125, 0);
+  --alert-caution-color: rgb(255, 204, 22);
+  --on-alarm-color: rgb(255, 255, 255);
+  --on-warning-color: rgb(0, 0, 0);
+  --on-caution-color: rgb(37, 37, 37);
+  --alert-running-color: rgb(25, 129, 0);
+  --data-categorical-qualitative-01: rgb(103, 143, 195);
+  --data-categorical-qualitative-02: rgb(179, 131, 80);
+  --data-categorical-qualitative-03: rgb(55, 154, 154);
+  --data-categorical-qualitative-04: rgb(147, 132, 192);
+}
+
+.bim-ob-preview[data-obc-theme="night"] {
+  --element-active-color: rgb(234, 167, 94);
+  --element-neutral-color: rgb(199, 136, 66);
+  --element-inactive-color: rgb(156, 106, 52);
+  --container-global-color: rgb(0, 0, 0);
+  --container-background-color: rgb(0, 0, 0);
+  --container-section-color: rgb(0, 0, 0);
+  --container-backdrop-color: rgb(0, 0, 0);
+  --border-outline-color: rgb(39, 27, 16);
+  --border-divider-color: rgb(39, 27, 16);
+  --normal-enabled-background-color: rgb(0, 0, 0);
+  --normal-enabled-border-color: rgb(72, 52, 31);
+  --normal-hover-background-color: rgb(0, 0, 0);
+  --normal-focused-border-color: rgb(72, 52, 31);
+  --raised-enabled-background-color: rgb(39, 27, 16);
+  --raised-enabled-border-color: rgb(72, 52, 31);
+  --raised-hover-background-color: rgb(39, 27, 16);
+  --on-raised-active-color: rgb(234, 167, 94);
+  --alert-alarm-color: rgb(233, 15, 32);
+  --alert-warning-color: rgb(186, 90, 0);
+  --alert-caution-color: rgb(137, 115, 0);
+  --on-alarm-color: rgb(0, 0, 0);
+  --on-warning-color: rgb(0, 0, 0);
+  --on-caution-color: rgb(0, 0, 0);
+  --alert-running-color: rgb(0, 136, 0);
+  --data-categorical-qualitative-01: rgb(66, 92, 130);
+  --data-categorical-qualitative-02: rgb(120, 83, 44);
+  --data-categorical-qualitative-03: rgb(20, 101, 102);
+  --data-categorical-qualitative-04: rgb(89, 86, 130);
+}
+
+.bim-ob-preview[data-obc-theme="bright"] {
+  --element-active-color: rgb(26, 26, 26);
+  --element-neutral-color: rgb(61, 61, 61);
+  --element-inactive-color: rgb(83, 83, 83);
+  --container-global-color: rgb(252, 252, 252);
+  --container-background-color: rgb(252, 252, 252);
+  --container-section-color: rgb(252, 252, 252);
+  --container-backdrop-color: rgb(252, 252, 252);
+  --border-outline-color: rgb(190, 190, 190);
+  --border-divider-color: rgb(142, 142, 142);
+  --normal-enabled-background-color: rgb(252, 252, 252);
+  --normal-enabled-border-color: rgb(142, 142, 142);
+  --normal-hover-background-color: rgb(240, 240, 240);
+  --normal-focused-border-color: rgb(29, 60, 103);
+  --raised-enabled-background-color: rgb(61, 61, 61);
+  --raised-enabled-border-color: rgb(61, 61, 61);
+  --raised-hover-background-color: rgb(83, 83, 83);
+  --on-raised-active-color: rgb(255, 255, 255);
+  --alert-alarm-color: rgb(235, 0, 20);
+  --alert-warning-color: rgb(254, 148, 19);
+  --alert-caution-color: rgb(255, 219, 66);
+  --on-alarm-color: rgb(255, 255, 255);
+  --on-warning-color: rgb(26, 26, 26);
+  --on-caution-color: rgb(26, 26, 26);
+  --alert-running-color: rgb(6, 131, 6);
+  --data-categorical-qualitative-01: rgb(45, 84, 139);
+  --data-categorical-qualitative-02: rgb(124, 70, 6);
+  --data-categorical-qualitative-03: rgb(0, 93, 97);
+  --data-categorical-qualitative-04: rgb(88, 73, 137);
+}
+
+.bim-ob-preview.obc-component-size-regular {
+  --global-size-spacing-touch-target-min: 48px;
+  --global-size-spacing-visual-target-min: 32px;
+  --global-size-spacing-icon-icon-size-regular: 24px;
+}
+
+.bim-ob-preview.obc-component-size-medium {
+  --global-size-spacing-touch-target-min: 56px;
+  --global-size-spacing-visual-target-min: 40px;
+  --global-size-spacing-icon-icon-size-regular: 32px;
+}
+
+.bim-ob-preview.obc-component-size-large {
+  --global-size-spacing-touch-target-min: 72px;
+  --global-size-spacing-visual-target-min: 56px;
+  --global-size-spacing-icon-icon-size-regular: 40px;
+}
+
+.bim-ob-preview.obc-component-size-xl {
+  --global-size-spacing-touch-target-min: 96px;
+  --global-size-spacing-visual-target-min: 72px;
+  --global-size-spacing-icon-icon-size-regular: 48px;
+}
