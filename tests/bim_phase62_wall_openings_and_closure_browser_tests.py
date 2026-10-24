@@ -262,7 +262,10 @@ def source_level_checks(path):
             "www.asce.org", "www.ashrae.org", "www.concrete.org", "www.dot.state.pa.us", "www.ecfr.gov",
             "www.faa.gov", "www.fhwa.dot.gov", "www.gbcbrasil.org.br", "www.iccsafe.org", "www.pacodeandbulletin.gov",
             # AMENDED FOR V168: APA's LBCS, and the DOIs of Buildings and Cities and of Browning et al., linked, never fetched
-            "www.planning.org", "doi.org"}
+            "www.planning.org", "doi.org",
+            # AMENDED FOR V169: the assets' sources -- NCHS, NASA's handbook, the IDeA Center, the Forest
+            # Service's archive, ETCCDI -- linked from Properties > Standards, never fetched
+            "www.cdc.gov", "www.nasa.gov", "idea.ap.buffalo.edu", "www.fs.usda.gov", "etccdi.pacificclimate.org"}
     external = sorted(h for h in hosts if not h.endswith("w3.org") and h not in v132)
     check(not external,
           "no external host referenced anywhere in the file (found: " + (", ".join(external) or "none") + ")")

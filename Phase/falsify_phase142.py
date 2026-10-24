@@ -8,8 +8,8 @@ SRC = pathlib.Path('canvas_v10.html')
 base = SRC.read_text(encoding='utf-8')
 
 VARIANTS = {
-    # RE-ANCHORED IN V168: the version is V168's
-    'version_stale': [("  var BIM_APP_VERSION={v:'V168',", "  var BIM_APP_VERSION={v:'V167',")],
+    # RE-ANCHORED IN V169: the version is V169's
+    'version_stale': [("  var BIM_APP_VERSION={v:'V169',", "  var BIM_APP_VERSION={v:'V167',")],
     'no_version_row': [("    srows+=bimPropRow('Version','<span class=\"a3d-pstatic\">'+bimVersionHtml()+'</span>');   /* __acad3dV142 */\n", "")],
     'notes_link_no_anchor': [("bimDocsUrl('changelog.html',BIM_APP_VERSION.v.toLowerCase()))+'\" target=\"_blank\" rel=\"noopener\" data-docslink=\"notes\">'",
                               "bimDocsUrl('changelog.html'))+'\" target=\"_blank\" rel=\"noopener\" data-docslink=\"notes\">'")],

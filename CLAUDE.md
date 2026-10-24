@@ -1,7 +1,7 @@
 # BIM-Personal: start here
 
 A single-file, zero-dependency browser CAD/BIM app, `canvas_v10.html`, built phase by phase (V1 to
-V168 so far), each phase verified by its own browser suite, deliberately broken builds its suite
+V169 so far), each phase verified by its own browser suite, deliberately broken builds its suite
 must catch, and the full regression.
 
 ## In a new session

@@ -110,6 +110,30 @@ TOPICS = {
              v={'trees': (3, 'trees'), 'canopy': (30, '%'), 'walk': (300, 'm'), 'green_min': (0.5, 'ha')})]),
     'app.land': dict(kind='assumption', anywhere=True, cat=False, eds=[
         dict(id='app.land.1', pub='', st='current', lv='A', adopt=[('*', None, None)], v=None)]),
+    # AMENDED FOR V169: the assets' sizes -- people, the wheelchair user, cycles, parking, design vehicles, trees, the
+    # growing season and the app's own shapes; their values are held to their sources by tests/assets_reference.py
+    'body.us': dict(kind='data', anywhere=True, cat=False, eds=[
+        dict(id='body.us.2018', pub='2021-01', st='current', lv='P', adopt=[('us', '2021-01', None)], v=None)]),
+    'body.hidh': dict(kind='method', anywhere=True, cat=False, eds=[
+        dict(id='body.hidh.rev1', pub='2014-06-05', st='current', lv='P', adopt=[('*', '2014', None)], v=None)]),
+    'wheel.awmp': dict(kind='data', anywhere=True, cat=False, eds=[
+        dict(id='wheel.awmp.2010', pub='2010-12-31', st='current', lv='P', adopt=[('*', '2010', None)], v=None)]),
+    'ada.space': dict(kind='code', anywhere=True, cat=False, eds=[
+        dict(id='ada.space.2010', pub='2010-09-15', st='current', lv='P', adopt=[('us', '2012-03-15', None)], v=None)]),
+    'mutcd.walk': dict(kind='standard', anywhere=True, cat=False, eds=[
+        dict(id='mutcd.walk.11r1', pub='2025-12', st='current', lv='P', adopt=[('us', '2025-12', None)], v=None)]),
+    'ltn.cycle': dict(kind='guideline', anywhere=True, cat=False, eds=[
+        dict(id='ltn.cycle.2020', pub='2020-07', st='current', lv='P', adopt=[('gb-eng', '2020-07', None)], v=None)]),
+    'parking.bay': dict(kind='guideline', anywhere=True, cat=False, eds=[
+        dict(id='parking.bay.mfs2007', pub='2007', st='current', lv='P', adopt=[('gb-eng', '2007', None), ('gb-wls', '2007', None)], v=None)]),
+    'utd.trees': dict(kind='data', anywhere=True, cat=False, eds=[
+        dict(id='utd.trees.2016', pub='2016', st='current', lv='P', adopt=[('*', '2016', None)], v=None)]),
+    'etccdi.gsl': dict(kind='method', anywhere=True, cat=False, eds=[
+        dict(id='etccdi.gsl.27', pub='', st='current', lv='P', adopt=[('*', None, None)], v=None)]),
+    'aashto.vehicles': dict(kind='standard', anywhere=True, cat=False, eds=[
+        dict(id='aashto.vehicles.7', pub='2018', st='current', lv='P', adopt=[('us', None, None)], v=None)]),
+    'app.assets': dict(kind='assumption', anywhere=True, cat=False, eds=[
+        dict(id='app.assets.1', pub='', st='current', lv='A', adopt=[('*', None, None)], v=None)]),
     # the catalogue: in force where they are adopted, not applied by the app yet
     'pa.ucc': dict(kind='code', anywhere=False, cat=True, eds=[dict(id='pa.ucc.2026', pub='2025-11-07', st='current', lv='P', adopt=[('us-pa', '2026-01-01', None)], v={})]),
     'ibc': dict(kind='code', anywhere=False, cat=True, eds=[dict(id='ibc.2021', pub='2020-10', st='current', lv='P', adopt=[('us-pa', '2026-01-01', None)], v={}),
@@ -133,7 +157,8 @@ TOPICS = {
 SOURCE_HOSTS = {'content.tfl.gov.uk', 'assets.publishing.service.gov.uk', 'www.gbcbrasil.org.br', 'www.fhwa.dot.gov', 'doku.datakustik.com', 'iris.who.int',
                 'www.ecfr.gov', 'www.ada.gov', 'www.pacodeandbulletin.gov', 'www.asce.org', 'www.iccsafe.org', 'www.ashrae.org', 'mutcd.fhwa.dot.gov',
                 'store.transportation.org', 'www.dot.state.pa.us', 'docs.penndot.pa.gov', 'www.concrete.org', 'www.aisc.org', 'www.faa.gov',
-                'www.planning.org', 'doi.org'}   # AMENDED FOR V168: APA's LBCS; the DOIs of Buildings and Cities and of Browning et al.
+                'www.planning.org', 'doi.org',   # AMENDED FOR V168: APA's LBCS; the DOIs of Buildings and Cities and of Browning et al.
+                'www.cdc.gov', 'www.nasa.gov', 'idea.ap.buffalo.edu', 'www.fs.usda.gov', 'etccdi.pacificclimate.org'}   # AMENDED FOR V169: the assets' sources
 
 
 # ---- the constants before V167, from the kept build ----

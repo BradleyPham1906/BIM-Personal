@@ -166,7 +166,8 @@ async def run():
             SG = await safe("""()=>{var b=document.getElementById('a3d-propsbody'),g=b&&b.querySelector('[data-a3dpgrp="Standards"]'),body=g&&g.nextElementSibling;
               return body?{areas:[].map.call(body.querySelectorAll('.a3d-stdarea'),function(e){return e.textContent;}),topics:[].map.call(body.querySelectorAll('[data-stdtopic]'),function(e){return e.getAttribute('data-stdtopic');})}:null;}""") or {}
             ar = SG.get('areas') or []
-            ck('Land and green' in ar and ar.index('Land and green') + 1 < len(ar) and ar[ar.index('Land and green') + 1] == 'Climate' and all(t in (SG.get('topics') or []) for t in ('lbcs.activity', 'spacematrix', 'green.33300', 'app.land')),
+            # AMENDED FOR V169: Assets (V169) comes between Land and green and Climate
+            ck('Land and green' in ar and 'Climate' in ar and ar.index('Land and green') < ar.index('Climate') and all(t in (SG.get('topics') or []) for t in ('lbcs.activity', 'spacematrix', 'green.33300', 'app.land')),
                "Properties, Site, Standards: Land and green before Climate, its four topics listed (%s)" % ar)
 
             # ---------------------------------------------------------------------------------

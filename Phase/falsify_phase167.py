@@ -147,7 +147,7 @@ VARIANTS = {
     'group_open_at_start': [("'Graphics \u2014 Presentation':false,Standards:false};", "'Graphics \u2014 Presentation':false};")],
     'badge_class_lost': [("  var BIM_STD_LV_CLS={P:'lv-P',S:'lv-S',U:'lv-U',A:'lv-A'};", "  var BIM_STD_LV_CLS={};")],
     'outside_unmarked': [("'<span class=\"a3d-stdhow'+(how==='outside'?' h-outside':'')+'\">'", "'<span class=\"a3d-stdhow\">'")],
-    'version_old': [("var BIM_APP_VERSION={v:'V168',date:'2026-10-18'};", "var BIM_APP_VERSION={v:'V166',date:'2026-10-12'};")],   # RE-ANCHORED IN V168
+    'version_old': [("var BIM_APP_VERSION={v:'V169',date:'2026-10-19'};", "var BIM_APP_VERSION={v:'V166',date:'2026-10-12'};")],   # RE-ANCHORED IN V169
 }
 
 name = sys.argv[1]
