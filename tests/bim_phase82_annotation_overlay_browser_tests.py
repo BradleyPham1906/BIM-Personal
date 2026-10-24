@@ -281,7 +281,8 @@ async def run():
         # AMENDED FOR V124: the tab is the owner's library now -- models, blocks and templates first,
         # which is what it is for. Annotation still comes before everything that is APPLIED to the
         # model (materials, wall types, patterns), which is the order this check protected.
-        placed = [s for s in specs if s.split(':')[0] not in ('family', 'block', 'template')]
+        # AMENDED FOR V169: the assets (people, cycles, vehicles, parking and trees) are the library's own models too
+        placed = [s for s in specs if s.split(':')[0] not in ('family', 'block', 'template', 'asset')]
         ck(placed and placed[0].startswith('note:'),
            "after the library's own tiles, the first rows are Annotation (%s) -- it is what a user "
            "reaches for while drafting" % placed[:3])

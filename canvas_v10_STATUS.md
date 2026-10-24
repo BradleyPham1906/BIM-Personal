@@ -15475,3 +15475,127 @@ Patches 168a to 168c rebuild the build byte for byte from `Phase/canvas_v10.html
     sha256            57db924464fdb7604f679c7f3c2ce3c75a7bcd8e3d496c80bcefb4baee42639a
     markers           __acad3dV60 ... __acad3dV168, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
                       __acad3dV121b, __acad3dV166b, __acad3dV166c, __acad3dV166d
+
+## Phase 169 (V169) - Assets: people, cycles, vehicles, parking and trees
+
+The owner (V166): "do we have asset designed yet ... trees, building shape, human, bike, car for later
+simulations?" The plan is `reference/plan-v167-v170.md` (V169); the research, read at its sources on
+2026-10-19, is `reference/research-assets.md`. The owner's choices (2026-10-19): vehicles sized to
+AASHTO's design vehicles, the owner sharing the Green Book (from their Notion, the 7th Edition, read
+here for Tables 2-4 and 2-5 and 2.8.2, kept out of the repository); the van as AASHTO's SU-30; the
+context's trees by OpenStreetMap's leaf tags with the Urban Tree Database's crowns; Manual for Streets'
+2.4 by 4.8 m bay where no rule is recorded. Each size is a record of the standards registry (V167),
+overridable with a reason.
+
+### What was built (patches 169a to 169d)
+
+- **The registry (169a, 169d).** A new area, Assets, before Climate, with eleven topics: body.us
+  (NCHS 2021: the mean height of men, women and a boy of 8), body.hidh (NASA's HIDH Rev. 1: stature,
+  sitting height, eye height sitting and shoulder breadth at its smallest and largest), wheel.awmp
+  (the IDeA Center's manual chair users for the Access Board), ada.space (the 2010 ADA Standards'
+  clear floor space and turning space), mutcd.walk (MUTCD 11th with Revision 1, 4I.06's speeds),
+  ltn.cycle (LTN 1/20's cycle and Sheffield stands), parking.bay (Manual for Streets 8.3), utd.trees
+  (the Urban Tree Database: our medians by type, S), etccdi.gsl (ETCCDI's growing season), aashto.vehicles
+  (the Green Book's 7th Edition, Tables 2-4b and 2-5b, each value with its figure in feet, the radii kept
+  in order) and app.assets (the app's own shapes). A unit in words: days.
+- **The growing season (169a).** The climate step (V159) works out ETCCDI's GSL from each full year's
+  daily means (the middle of the highest and lowest where a mean is missing), and keeps the median
+  start and end with the site, stamped with the standard it used; the Southern Hemisphere's year from
+  1 July.
+- **The assets (169b, 169d).** Thirteen kinds in Assets' new group, People, cycles, vehicles, parking
+  and trees, each a family instance built from its parameters and the registry, its first two vertices
+  marking its back and front so its heading and centre survive a move, a turn or a mirror:
+  - people: height, then the eyes and shoulders linear in stature between NASA's two ends; the head's
+    top to the eyes is sitting height less eye height sitting; a child extrapolated and said; seated on
+    the app's 0.45 m seat; the walking speed the registry's;
+  - the wheelchair user: within ADA's clear floor space less 15%, the Access Board's heights; the
+    turning space on the plan if ticked;
+  - the cycle, the stand and the bay at LTN 1/20's and Manual for Streets' sizes;
+  - the car (P), the delivery truck (SU-30) and the city bus (CITY-BUS) at AASHTO's length, width,
+    height, overhangs and wheelbase; the truck drawn at the largest of its height range; each can show
+    its turning path: the turn's centre on the rear axle's line, sqrt(CTR^2 - WB^2) from the axle's
+    middle, the ring from the minimum inside radius out to the front overhang's corner (worked out),
+    the minimum design turning radius between; to the left or the right;
+  - trees: a trunk of six faces, then a crown of twenty (broadleaf) or a cone of nine (conifer), sized
+    to the database's type or to the tree's own height and crown.
+- **Leaf and shadow (169b).** A deciduous tree out of its season is bare: the shadows (V143's sun hours,
+  V164's shadows) take its trunk's faces only, on each date asked. With no climate it is in leaf all
+  year, and said.
+- **The context's trees (169b).** V157's trees use the same model: the crown by OpenStreetMap's
+  `leaf_type` and `leaf_cycle` (the database's medium tree of that kind), a needle-leaved tree a cone,
+  0.6 of the height where the leaf type is not mapped; their pages name the leaf.
+- **Properties (169b, 169d).** An Asset group for each kind: its sizes and the standards they come
+  from; who, pose and height; a tree's leaf, leaves, size, height and crown, and when it is in leaf; a
+  vehicle's turning and its side. A standards change (an override, a pick, a pack, the place, the date)
+  rebuilds every placed asset; a size set by hand stays. Hooks; V169.
+
+### Found
+
+- **A wheel's sixteen sides.** The cycle was 1.782 m long, not 1.8: its wheels had fourteen sides, and
+  none reached the wheel's front or back. Sixteen do.
+- **V157's crowns were 0.85 of their size.** Its icosahedron was sized by its corners, so a crown said
+  7.2 m across measured 6.1 m. The crown is scaled on each axis to its stated spread and height; V157's
+  own mesh is gone, its suite's counts (24 vertices, 26 faces) unchanged.
+- **The Green Book's two tables differ.** The city bus's minimum design turning radius is 41.6 ft in
+  Table 2-5a (12.68 m) and 12.80 m in 2-5b; every other value of the three vehicles agrees within 0.02 m.
+  The app keeps 2-5b and says so in the value.
+- **An override did not resize what was placed.** The standards' refresh (V167) worked the findings out
+  again but left placed assets as built: it rebuilds them now (169d).
+- **Long labels were cut off** in Properties' label column ("Minimum desig..."): short labels, the words
+  in the value.
+- **A thousand trees** cost 1.6 KB each in the project; placing one takes about 35 ms with a thousand
+  there (the undo snapshot grows with the model), rebuilding all of them 14 ms.
+
+### Suites
+
+- **New:** `bim_phase169_assets_browser_tests.py`, 183 checks, with `tests/assets_reference.py`: the
+  sources' values, each in the unit its source prints (cm, mm, ft/s, the Green Book's feet); a body's
+  proportions by NASA's method; the trees' types; ETCCDI's GSL year by year; AASHTO's geometry of the
+  sharpest turn. The suite places each kind and measures it, edits each in Properties, overrides the
+  standards, works the season out from the climate fixture and from made-up years at each threshold,
+  casts shadows on dates in and out of season, draws the turning paths, fetches mapped trees with each
+  leaf tag, places a thousand trees, reloads, and runs on a phone and a tablet; it scans the assets'
+  code for any source's value written in.
+- **Falsified by `Phase/falsify_phase169.py`:** 100 variants, each named for the check that should catch it.
+  The first run caught 99: `turn_two_radii` (a vehicle's ring stopping at the design radius, the overhang's
+  corner dropped) passed, because the suite paired the radii drawn with the three it expected by zip, which
+  stops at the shorter list. The suite now counts them first (three for a vehicle, one for the wheelchair
+  user). Run again on the final suite (resumed from its log after the container restarted): 100 of 100 caught.
+- **Amended,** each AMENDED FOR V169: V62 (the hosts the app may name: the assets' five sources, NCHS, NASA's
+  handbook, the IDeA Center, the Forest Service's archive and ETCCDI, linked from Properties > Standards and
+  never fetched), V167 (Assets among the areas, before Climate, and its eleven topics), V168 (Assets between
+  Land and green and Climate), `tests/standards_reference.py` (the eleven topics and the five hosts), and, for
+  the regression, V82 (below). Six falsify variants anchored on the version string, the Standards areas or
+  V157's tree mesh were re-anchored, each RE-ANCHORED IN V169, in the scripts of V142, V157, V165, V167 and
+  V168. Run again with V169: all of V168's 84 variants and V167's 123, and each re-anchored one, caught.
+
+### Not done
+
+- The Green Book's turning templates through a given angle (Figures 2-10 to 2-18): the plan shows the
+  sharpest turn's ring. The traffic simulation (V171) drives paths.
+- The manual chair users' eye height: the IDeA report's row did not come through in the text; the
+  all-users mean is used and said.
+- A child's proportions are extrapolated from adults, an estimate, said.
+- The context's trees cast no shadow (as before): they are points with a mesh.
+- glTF models (valdrada's credited pedestrians, trees and vehicles) when glTF can be imported.
+
+### Full regression and state after V169
+
+128 suites, 6327 checks (the 127 older suites' 6144 and V169's 183): 6319 passed in 812 s with 4 workers, on a
+machine loaded beyond them (V170's falsification ran beside it, against a frozen copy, the owner's rule of
+2026-10-24). The eight failures:
+- **V142's four**, the log and the guide: the newest version in this log was V168's until this entry, and the
+  release notes are built from it. This entry and the guide built again (`tools/build_docs.py`) bring them up to
+  date: V142 31 of 31.
+- **V82's one, by design.** Its check that Annotation comes first after the library's own tiles counted the
+  families, blocks and templates as the library's; V169's assets are its own models too (AMENDED FOR V169):
+  31 of 31.
+- **V132's three, under load.** Nominatim is asked once a second at most, and with the machine loaded the second
+  Find's refusal, the undo after it and the nothing-found case ran late; alone, 157 of 157.
+Patches 169a to 169d rebuild the build byte for byte from `Phase/canvas_v10.html.bak_phase169_pre` (V168's build,
+main's). The diff is ES5-clean and adds no non-ASCII character.
+
+    canvas_v10.html   3394770 bytes
+    sha256            55f7b5464bd58fbbe6286cb4d4e2ace62f86c173cce0c67dfcd96ec42fc4c7c3
+    markers           __acad3dV60 ... __acad3dV169, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
+                      __acad3dV121b, __acad3dV166b, __acad3dV166c, __acad3dV166d
