@@ -17,7 +17,7 @@
     for(i=0;i<N.edges.length;i++){
       var e=N.edges[i];
       if(!e.car&&!bimTrFootWay(e.t))continue;
-      if(e.car&&!e.sw.l&&!e.sw.r&&!e.lot)continue;
+      if(e.car&&(!e.sw.l&&!e.sw.r&&!e.lot||!bimTrStreetWalk(e.t)))continue;
       for(q=1;q<e.P.length;q++){
         var ax=e.P[q-1][0],az=e.P[q-1][1],dx=e.P[q][0]-ax,dz=e.P[q][1]-az,l2=dx*dx+dz*dz,u=l2>1e-12?((x-ax)*dx+(z-az)*dz)/l2:0;u=Math.max(0,Math.min(1,u));
         var px=ax+u*dx,pz=az+u*dz,d2=(px-x)*(px-x)+(pz-z)*(pz-z);
@@ -72,7 +72,7 @@
     N.J.forEach(function(j){j.cb=nc;nc+=Math.max(2,j.arms.length);});
     for(i=0;i<nc;i++)adj.push([]);
     N.edges.forEach(function(e,ei){
-      if(!e.car&&!bimTrFootWay(e.t))return;
+      if(e.car?!bimTrStreetWalk(e.t):!bimTrFootWay(e.t))return;
       [1,-1].forEach(function(sd){
         var f=e.car&&!(sd>0?e.sw.r:e.sw.l)?3:1,ca=bimTrEndCorner(N,ei,0,sd),cb=bimTrEndCorner(N,ei,1,sd);
         adj[ca].push([cb,e.len*f,{e:ei,sd:sd,fw:true}]);adj[cb].push([ca,e.len*f,{e:ei,sd:sd,fw:false}]);

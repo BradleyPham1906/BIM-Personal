@@ -16,6 +16,12 @@
     if(/^(no|private)$/.test(String(t.access||''))&&!nearLot)return false;
     return true;
   }
+  /* a street a walker may walk along (its sidewalks or its edge): not a motorway, a road for motor vehicles only, or one
+     that refuses people on foot */
+  function bimTrStreetWalk(t){
+    if(/^(motorway|motorway_link)$/.test(bimTrHw(t))||t.motorroad==='yes')return false;
+    return !/^(no)$/.test(String(t.foot||''));
+  }
   /* a walker may use it: a car's street (its sidewalks) or a way for people on foot */
   function bimTrFootWay(t){
     var hw=bimTrHw(t);
@@ -126,7 +132,7 @@
         if(!(lanes>0))return -1;
         var P=fw?e.P:e.P.slice().reverse(),li=N.links.length;
         N.links.push({i:li,e:ei,a:fw?e.a:e.b,b:fw?e.b:e.a,P:P,C:bimTrPolyLen(P),len:e.len,lanes:lanes,v0:Math.max(2,sp.v/3.6),vsrc:sp.src,w:w.v,ow:Ln.ow,
-          rank:BIM_MV_CLASSES.length-BIM_MV_CLASSES.indexOf(cls),hw:bimTrHw(e.t),base:bimTrBase(e.t),name:String(e.t.name||e.t.ref||''),q:0,rev:-1,lot:!!e.lot});
+          rank:BIM_MV_CLASSES.length-BIM_MV_CLASSES.indexOf(cls)-(/_link$/.test(bimTrHw(e.t))?0.5:0),hw:bimTrHw(e.t),base:bimTrBase(e.t),name:String(e.t.name||e.t.ref||''),q:0,rev:-1,lot:!!e.lot});
         return li;
       };
       var f=mk(true,Ln.f),b=mk(false,Ln.b);
@@ -222,14 +228,23 @@
       best.arms.forEach(function(a){if(a.lin<0)return;var Lk=N.links[a.lin],P=Lk.P,dmin=Infinity;for(var q=1;q<P.length;q++)dmin=Math.min(dmin,bimPointSegDist(x[0],x[1],P[q-1][0],P[q-1][1],P[q][0],P[q][1]));if(dmin<bad){bad=dmin;ba=a;}});
       if(ba)best.stop[ba.lin]=1;
     });
-    /* right of way where nothing signals it: the two approaches ranked highest by class, then speed, then lanes (SUMO's
-       ranking), from different arms, are major; ties keep the order the arms are in, and that is said */
+    /* right of way where nothing signals it, as SUMO decides it from the ways in: where two or more share the highest
+       class (a ramp a step below its road), the best two of them by speed, then lanes, from different arms, are major,
+       and a tie between them is said; where one alone has it, it is major, with the way in most nearly opposite it
+       (within 45 degrees) where there is one: a ramp merging, or a street meeting a road from its side, gives way */
     N.J.forEach(function(j){
       if(j.kind!=='yield')return;
-      var L=j.ins.map(function(li){return N.links[li];}).sort(function(p,q){return (q.rank-p.rank)||(q.v0-p.v0)||(q.lanes-p.lanes)||(p.arm-q.arm);});
-      if(L.length)j.major[L[0].i]=1;
-      for(k=1;k<L.length;k++)if(L[k].arm!==L[0].arm){j.major[L[k].i]=1;break;}
-      if(L.length>2&&L[1].rank===L[2].rank&&L[1].v0===L[2].v0&&L[1].lanes===L[2].lanes)j.tie=true;
+      var L=j.ins.map(function(li){return N.links[li];}),top=-Infinity;
+      L.forEach(function(Lk){if(Lk.rank>top)top=Lk.rank;});
+      var T=L.filter(function(Lk){return Lk.rank===top;}).sort(function(p,q){return (q.v0-p.v0)||(q.lanes-p.lanes)||(p.arm-q.arm);});
+      j.major[T[0].i]=1;
+      if(T.length>1){
+        for(k=1;k<T.length;k++)if(T[k].arm!==T[0].arm){j.major[T[k].i]=1;if(k+1<T.length&&T[k+1].arm!==T[0].arm&&T[k+1].v0===T[k].v0&&T[k+1].lanes===T[k].lanes)j.tie=true;break;}
+      }else{
+        var b0=j.arms[T[0].arm].bear,best=null,bd=45;
+        L.forEach(function(Lk){if(Lk.arm===T[0].arm)return;var dd=Math.abs(Math.abs(((j.arms[Lk.arm].bear-b0)%360+360)%360-180));if(dd<=bd){bd=dd;best=Lk;}});
+        if(best)j.major[best.i]=1;
+      }
       Object.keys(j.stop).forEach(function(li){delete j.major[li];});
     });
     /* the turns: every exit but back the way it came, which is taken only where nothing else is (a dead end) */
