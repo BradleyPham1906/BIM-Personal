@@ -64,6 +64,7 @@ Search Notion before creating anything, so nothing is made twice.
 | `docs/src/` | `3fecbfcc3a38817784eccd9b91488ee9` |
 | `reference/plan-v167-v170.md` | `3fecbfcc3a3881de90ecc1541d3685ea` |
 | `reference/research-access-people.md` | `3fecbfcc3a3881598684fed1479bb711` |
+| `reference/research-analysis-workspace.md` | `404cbfcc3a3881aaa157c4d99f450c3d` |
 | `reference/research-alignment.md` | `3fecbfcc3a3881e881cdd2408e75b9a5` |
 | `reference/research-animation.md` | `403cbfcc3a388101837ec19cf0e0a894` |
 | `reference/research-traffic.md` | `403cbfcc3a388128b93be79356396b92` |
@@ -145,6 +146,7 @@ Search Notion before creating anything, so nothing is made twice.
 | V169 | `3fecbfcc3a38813098bfc7c8d9a46ab0` |
 | V170 | `3fecbfcc3a3881aeb276e581b5d92a82` |
 | V171 | `3fecbfcc3a388111b74dd9bad2a315d9` |
+| V171b | `404cbfcc3a388112900bf36f1efc99d9` |
 | V172 | `3fecbfcc3a3881f799a3d2f2e1114a23` |
 | V173 | `3fecbfcc3a388141a93be73520d09591` |
 | V174 | `3fecbfcc3a3881fa9594ef43af9d6616` |
