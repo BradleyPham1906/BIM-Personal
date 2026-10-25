@@ -15696,3 +15696,107 @@ frozen copy of the final build, suites and guide. Patches 170a to 170e rebuild t
     sha256            993d632ab2273093d57432af765193d86a03d9c63603b8d73214893fec189029
     markers           __acad3dV60 ... __acad3dV170, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
                       __acad3dV121b, __acad3dV166b, __acad3dV166c, __acad3dV166d
+
+## Phase 171 (V171) - Traffic and people around the site
+
+The owner (2026-10-19, `reference/research-valdrada.md`): build the simulation on valdrada's methods inside the app,
+for the site's streets only, light enough for a modest computer. The research is `reference/research-traffic.md`
+(2026-10-24 and 25): the IDM, MOBIL, the timing manual's practice, Florida's K, NCHRP 255, San Diego's rates,
+Helbing and Molnar, SUMO's rules, each read at its source. The owner's four decisions at the start of V171's session
+(2026-10-25), each as the research proposed: each junction's own signal plan; the authors' standard car at the
+street's speed; Florida's 9% on the typical traffic by class, turns balanced by NCHRP 255; the lot's trips by San
+Diego's rates from its usages. The owner then asked for the work to go on without stopping for questions or
+approvals, and it did. The first V171 phase built in `src/` after the split (the owner, 2026-10-25).
+
+### What was built (patches 171a to 171c, and the simulation's own files)
+
+- **The records (171a, 171c).** Ten topics in a new area, Traffic: `idm.car`, `mobil`, `stm.signal`,
+  `mutcd.signal`, `fdot.k`, `nchrp255`, `sd.trips`, `hm.walk`, `sumo.rules` and `app.traffic` (the app's own: the
+  reach, the step, the warm-up, the tallies, the sidewalks' and crossings' places, how far a car sees, what a
+  crossing costs a walker, a left turn, the usages read as San Diego's uses). Units s, m/s2, pc/h/ln, du/acre, deg.
+- **The network (`simulation/traffic-network.js`).** V166's streets within 300 m of the lot, cut there, split at
+  their junctions into links, one each way a car may drive; lanes capped by a mapped width (V171 keeps `width`);
+  each junction's arms, turns (back only at a dead end), its kind (a signal within 30 m, an all-way stop, a stop
+  on the approach nearest the sign, or the larger road's way as SUMO decides it from the ways in); the lot's
+  driveway, else a provisional entry on its lowest street as V166 marks it; its doors.
+- **The demand (`traffic-demand.js`).** Each direction half its class's typical daily traffic at Florida's 9%; a
+  ramp what the busiest street at its quieter end carries; each junction's turns by NCHRP 255's balancing, no exit
+  drawn above the junction's busiest way in; the design's own trips by San Diego's rates from its usages; the
+  quickest way to the lot and away from it.
+- **The signals (`traffic-signals.js`).** Two phases by axis; Webster's cycle from the critical lane volumes, held
+  between 60 and 120 s; Kell and Fullerton's yellow and red clearance within the MUTCD's limits; the greens shared by
+  demand, none under the timing manual's least for its class nor WALK with its crossing at 3.5 ft/s; grown to hold
+  them where they do not fit, and said.
+- **The run (`traffic-sim.js`).** The IDM's car at a fixed 0.2 s step, the ballistic update with the author's stop
+  rule; MOBIL where a direction has two lanes; cars entering where there is room at the speed it allows, seeing the
+  next link's line, taking an amber only when they reach their line in it, keeping a signal clear, turning left
+  inside the junction after the oncoming, claiming the lane they go into; walkers at Helbing and Molnar's speeds in
+  SUMO's stripes, crossing at a signal only while their green leaves time to finish, elsewhere when no car is near,
+  cars giving way on their half; the lot's trips in and out by car, on foot and by transit at the census tract's
+  shares. Pools of typed arrays allocated once a run (Light 200 cars and 300 walkers, Normal 600 and 1,000,
+  Detailed 1,500 and 3,000), the quality from the device and lowered when frames run long; a 300 s warm-up;
+  tallies binned every 10 s.
+- **The walkers' ways (`traffic-walkers.js`).** Over the junctions' corners: each side of a street a way between
+  the corners at its ends, a crossing between the two corners of an arm, only where a crossing is (a signal, a
+  junction of three streets or more, a service road anywhere), a signal's wait and each lane crossed weighed; no
+  walking along a motorway. A walker ends on its door's side.
+- **On V170's clock and drawn (`traffic-draw.js`, 171b).** Play from still builds and warms the run; each tick steps
+  it; Pause keeps the moment; Stop gives it up. In plan a car is a rectangle of the design car's size turned to its
+  heading, a walker a dot; in 3D V169's design car without its wheels, a walker a figure; the stop lines in their
+  signal's colour; on the analysis's layer, never on a sheet.
+- **The analysis (`traffic-ui.js`, 171b).** Traffic and people in Analyze's Access: its row (Simulate, the peak hour,
+  the quality, the speed, what the run assumes and finds); Run lays each signal's plan, the lot's entry with its
+  queue, each door's people and each junction's delay on Layers > Site analysis - Traffic and people. `TRAFFIC`
+  (`TRAFFICSIM`, `SIMULATETRAFFIC`, `PEDESTRIANS`, `TRAFFICON`), `TRAFFICOFF`.
+- **Hooks (`testing/hooks-traffic.js`); V171.**
+
+### Found
+
+The first runs on a signalled neighbourhood (`tests/traffic_fixture.py`) were watched link by link (flows against
+demand, standing cars, each hold's reason, each red crossing's last steps) until an hour of the PM peak ran with no
+car through a red, no walker starting late and no two cars in one place:
+
+- **Cars ran reds** where a 20 m link led to a signal: a car saw only its own link's line. It now sees the next
+  link's within 100 m.
+- **A car that took the amber** and then slowed behind traffic crept over its line as the red came: the decision
+  assumed a steady speed. It now uses the car's braking, and gives the amber up while it can still stop.
+- **Queues backed up through signals,** catching cars in the junction on the red: a signal is now kept clear.
+- **Walkers crossed four-lane Market Street at the driveway's mouth,** holding its cars 15% of the time, and a door
+  across a street was reached straight across it, unrecorded. Their ways now go over the junctions' corners,
+  crossing only where a crossing is and weighing a signal's wait against the lanes crossed.
+- **Turning cars waited at their stop line** for any walker anywhere on the crossing they turned into, and blocked
+  their lane: they now wait in the junction for walkers on their half.
+- **NCHRP 255's balancing sent 76% of a junction's traffic onto a motorway** beginning there (its typical volume is
+  ten times a street's), and a ramp would have carried the main line's 3,690 cars an hour. No exit is now balanced
+  above the junction's busiest way in, and a ramp carries its quieter end's.
+- **Eastbound left-turners and westbound right-turners entered the motorway together**, braking as hard as they
+  could: left turns now wait for the oncoming, inside the junction, a standing oncoming car counting only once it
+  sets off (counting it from the start locked both ways into a gridlock).
+- **Right of way ranked approaches alone,** so a ramp merging into a motorway was major: it is now SUMO's, from the
+  ways in.
+- **Two cars from two ways entered one lane together,** up to a car's length apart: a car past its line now claims
+  the lane it goes into, and a lane's last car is known at once.
+- **A collector crossing a four-lane arterial with no signal is over capacity** at typical volumes (about 100 cars an
+  hour by the gap acceptance, as the HCM's two-way stop gives): a finding, the queue reaching the edge counted.
+- **The first full regression** found the new analysis in the older suites' lists and Analyze site drawing its
+  not-yet-simulated elements and key by default; the layer now starts hidden, as a coverage's does.
+
+### Suites
+
+- **New:** `bim_phase171_traffic_browser_tests.py`, 108 checks, with `tests/traffic_fixture.py` (V166's
+  neighbourhood with two signals, an all-way stop, a stop on one approach, a mapped width and an on-ramp near the lot)
+  and `tests/traffic_reference.py` (the IDM, the steady gap, the plans, NCHRP 255, San Diego's trips and the streets'
+  traffic, worked from the sources). It checks the records against the sources; the IDM at 108 points and a follower
+  settling at the steady gap; five plans; four balancings; seven trip cases; the network (cut at the reach, the
+  lanes and the width, each junction's kind and right of way, the turns, the entry and the doors); each street's
+  traffic and each junction's turns; each signal's plan and lights in the run; twenty minutes of the peak (no red, no
+  late walker, no two cars in one place, every car accounted for, the pools allocated once, the memory settling); the
+  clock, Pause, the speed, Stop, undo, the quality and a frame's budget at Light; the drawing in plan and 3D on the
+  canvas; Run's elements and the row; a lot with no driveway and no signal; a phone, a tablet and a computer; the
+  quality each device suggests; a reload.
+- **Falsified by `Phase/falsify_phase171.py`:** FALSIFY
+- **Amended:** V167 (Traffic, before Climate, its ten topics, 43 applied, and their seven publishers), V62 (the
+  seven hosts, linked and never fetched), V141, V148 and V162 (the new row in Access), V165 (its key after
+  movement's), and V142, whose site check had compared the site's index.html with the one file since the source
+  split: it now compares the one file with the build and the separate files with what src/ makes.
+- **The full regression:** REGRESSION
