@@ -397,17 +397,22 @@ async def run():
             tip = P[len(P) // 2]
             near_tip = [tail[k] + (tip[k] - tail[k]) * 0.85 for k in range(3)]
             near_tail = [tail[k] + (tip[k] - tail[k]) * 0.12 for k in range(3)]
-            st_tip, st_tail = await scr(near_tip), await scr(near_tail)
+            mid = [tail[k] + (tip[k] - tail[k]) * 0.5 for k in range(3)]
+            st_tip, st_tail, st_mid = await scr(near_tip), await scr(near_tail), await scr(mid)
             i0 = (await anim()).get('fr', {}).get('idx', {}).get(w0['id']) or 0
             T = lambda p: p + i0 * R.SETTINGS['draw']['stagger']
+            B = R.SETTINGS['draw']
             await at(T(0.6), -10)
-            g_tip, g_tail = await ink(st_tip[0], st_tip[1], 2), await ink(st_tail[0], st_tail[1], 2)
+            g_tip, g_tail, g_mid = await ink(st_tip[0], st_tip[1], 2), await ink(st_tail[0], st_tail[1], 2), await ink(st_mid[0], st_mid[1], 2)
             await at(T(2.5), -10)
-            h_tip = await ink(st_tip[0], st_tip[1], 2)
-            await at(T(4.6), -10)
-            r_tip, r_tail = await ink(st_tip[0], st_tip[1], 2), await ink(st_tail[0], st_tail[1], 2)
+            h_tip, h_mid = await ink(st_tip[0], st_tip[1], 2), await ink(st_mid[0], st_mid[1], 2)
+            # at rest, inside its cycle: 4.6 s, the moment first used, is the next cycle's start (falsify's final run)
+            await at(T(B['grow'] + B['hold'] + B['fade'] + B['rest'] / 2), -10)
+            r_tip, r_tail, r_mid = await ink(st_tip[0], st_tip[1], 2), await ink(st_tail[0], st_tail[1], 2), await ink(st_mid[0], st_mid[1], 2)
             ck(g_tail is not None and r_tail is not None and g_tail > r_tail + 60 and g_tip == r_tip and h_tip > r_tip + 60,
                "on the canvas, against the moment it rests: growing, its tail drawn and its tip not yet; held, the tip there (tail %s/%s, tip %s/%s/%s)" % (g_tail, r_tail, g_tip, h_tip, r_tip))
+            ck(g_mid is not None and g_mid == r_mid and h_mid > r_mid + 60,
+               "its fill drawn on with it: growing, nothing yet halfway along; held, filled there (%s/%s/%s)" % (g_mid, h_mid, r_mid))
             await at(T(0.6), -10)
             lb_g = await safe("()=>window.__a3dDgLabelBoxes().length")
             await at(T(2.5), -10)
