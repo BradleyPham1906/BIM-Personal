@@ -7,8 +7,8 @@ Builds the site into a temporary folder, serves it over http (as Pages does, not
 index.html (the page, app/app.css and the three scripts) and canvas_v10.html (one file) at a
 desktop and a phone size. Each must load every file it asks for, with no page error and no engine
 error (__a3dErr), and the two must agree on every phase marker (window.__acad3dV*), the version,
-the globals, the elements the engine built, and the pixels of the first screen. Needs Playwright's Python package and Pillow, as the
-suites do."""
+the globals, the elements the engine built, and the pixels of the first screen. Needs Playwright's
+Python package and Pillow, as the suites do."""
 import asyncio, functools, http.server, io, pathlib, sys, tempfile, threading
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent

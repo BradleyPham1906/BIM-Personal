@@ -56,6 +56,10 @@ suite, every falsification script, `Phase/`'s backups and the guide's tools read
 - **A change made to `canvas_v10.html` itself** (a branch from before the split, merged): run
   `python3 tools/split_app.py`, which cuts it into `src/` by `app_layout.py` and refuses to finish
   unless `src/` joins back to it byte for byte. A row whose first line changed is fixed there first.
+- **Playwright:** pin the Python package to the Chromium in `/opt/pw-browsers`, whatever
+  `PIPELINE.md` last recorded: `ls /opt/pw-browsers`, then the release that drives that build
+  (1.63.0 for chromium-1243, 2026-10-25; 1.56 for chromium-1194). A wrong pin fails at launch with
+  "Executable doesn't exist" and names the build it wanted.
 - **Pages:** `tools/build_site.py` serves `index.html` with `app/app.css`, `app/shell.js`,
   `app/openskp.js` and `app/engine.js` (each address carries its hash, so no browser runs an old
   copy), and `canvas_v10.html`, the same app as one file, for offline use from `file://`.
