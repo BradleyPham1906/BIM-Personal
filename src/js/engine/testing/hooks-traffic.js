@@ -12,13 +12,23 @@
       lot:R.N.lot,notes:R.N.notes,sigOff:R.N.sigOff,lanesCapped:R.N.lanesCapped,sw:R.N.sw,srcs:R.srcs.map(function(s){return {l:s.l,q:s.q,pend:s.pend};}),sinks:R.sinks.map(function(s){return {l:s.l,q:s.q};}),
       park:R.park.map(function(p){return {n:p.n,x:p.x,z:p.z,name:p.name,lot:!!p.lot};}),routes:R.routes.length,allocs:A3D_TR.allocs,acres:R.acres,uses:R.uses,
       stops:R.stops,edgeW:R.edgeW,lotQ:(R.lotQ||[]).length,
-      res:{t0:res.t0,spawned:res.spawned,exited:res.exited,lotIn:res.lotIn,lotOut:res.lotOut,blocked:res.blocked,red:res.red,walkBad:res.walkBad,lc:res.lc,carsCap:res.carsCap,walkCap:res.walkCap,
+      res:{t0:res.t0,spawned:res.spawned,exited:res.exited,lotIn:res.lotIn,lotOut:res.lotOut,blocked:res.blocked,red:res.red,redAt:res.redAt,walkBad:res.walkBad,lc:res.lc,carsCap:res.carsCap,walkCap:res.walkCap,
         doors:res.doors,q:res.q,del:bimTrArr(res.del),cw:bimTrArr(res.cw)}};
   }
   window.__a3dTrStart=function(){bimTrStop();var R=bimTrStart();return R?bimTrSummary(R):{err:'not started'};};
   window.__a3dTrStop=function(){bimTrStop();return true;};
   window.__a3dTrSteps=function(n){var R=A3D_TR.run,i;if(!R)return null;for(i=0;i<n;i++)bimTrStep(R);return bimTrSummary(R);};
   window.__a3dTrSummary=function(){return bimTrSummary(A3D_TR.run);};
+  /* n steps, watched: each step, the walkers on each junction's crossings and the cars standing on each link, summed */
+  window.__a3dTrWatch=function(n){
+    var R=A3D_TR.run,i,c,k;if(!R)return null;
+    var occ=new Float64Array(R.nArms),st=new Float64Array(R.N.links.length),C=R.c;
+    for(i=0;i<n;i++){bimTrStep(R);for(k=0;k<R.nArms;k++)if(R.occ[k]>0)occ[k]++;for(c=0;c<C.n;c++)if(C.L[c]>=0&&C.v[c]<0.5)st[C.L[c]]++;}
+    var o={occ:{},st:{}};
+    R.N.J.forEach(function(j){j.arms.forEach(function(a,ai){var v=occ[j.armBase+ai];if(v)o.occ[j.i+':'+ai]=v*R.step;});});
+    for(k=0;k<st.length;k++)if(st[k])o.st[k]=st[k]*R.step/(n*R.step);
+    return o;
+  };
   window.__a3dTrNet=function(){
     var N=A3D_TR.run?A3D_TR.run.N:null;
     if(!N){N=bimTrNet();if(N.err)return {err:N.err};bimTrDemand(N);}
@@ -32,6 +42,13 @@
   window.__a3dTrCars=function(){var R=A3D_TR.run,C,o=[],c;if(!R)return [];C=R.c;for(c=0;c<C.n;c++)if(C.L[c]>=0)o.push([c,C.L[c],C.ln[c],C.s[c],C.v[c],C.k[c],C.tg[c],C.x[c],C.z[c],C.hx[c],C.hz[c],C.nx[c]]);return o;};
   window.__a3dTrWalkers=function(){var R=A3D_TR.run,W,o=[],i;if(!R)return [];W=R.w;for(i=0;i<W.n;i++)if(W.R[i]>=0)o.push([i,W.R[i],W.p[i],W.v[i],W.x[i],W.z[i],W.cr[i],W.wait[i]]);return o;};
   window.__a3dTrRoutes=function(){var R=A3D_TR.run;if(!R)return [];return R.routes.map(function(r){return {kind:r.kind,door:r.door,extra:r.extra,len:r.len,P:r.P,cr:r.cr};});};
+  /* the cars on a link, front first, and what holds each: [car, lane, s, v, a, leader, next link, hold] */
+  window.__a3dTrOnLink=function(l){
+    var R=A3D_TR.run,C,o=[],c;if(!R)return [];C=R.c;
+    for(c=0;c<C.n;c++)if(C.L[c]===l)o.push([c,C.ln[c],C.s[c],C.v[c],C.a[c],C.lead[c],C.nx[c],bimTrHold(R,c)]);
+    o.sort(function(p,q){return q[2]-p[2];});
+    return o;
+  };
   window.__a3dTrIdm=function(v,v0,s,dv){return bimTrIdm(v,v0,s,dv,bimTrIdmP());};
   window.__a3dTrFurness=function(qi,qo,ok,n){return bimTrFurness(qi,qo,ok,n);};
   window.__a3dTrTrips=function(rows,acres,peak){return bimTrTripsOf(rows,acres,peak);};
@@ -47,7 +64,7 @@
   window.__a3dTrPools=function(){
     var R=A3D_TR.run,b=0;if(!R)return {allocs:A3D_TR.allocs,bytes:0};
     [R.c,R.w].forEach(function(o){Object.keys(o).forEach(function(k){if(o[k]&&o[k].BYTES_PER_ELEMENT)b+=o[k].byteLength;});});
-    b+=R.occ.byteLength+R.busy.byteLength;
+    b+=R.occ.byteLength+R.occH.byteLength+R.busy.byteLength;
     return {allocs:A3D_TR.allocs,bytes:b,cars:R.c.n,walkers:R.w.n};
   };
   /* a leader held at a speed and a follower behind it on a straight one-lane road, run by the simulation's own step

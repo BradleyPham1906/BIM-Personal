@@ -39,7 +39,7 @@
     bimTrDemand(N);
     var set=bimTrSettings(),qk=bimTrQuality(),Q=BIM_TR_Q[qk],RUN={N:N,set:set,qk:qk,Q:Q,cap:Q,rng:bimTrRng(set.seed),P:bimTrIdmP(),t:0,acc:0,step:Math.min(bimStd('app.traffic','step'),bimStd('idm.car','step_max')),
       plans:{},targets:[],tgOf:{},routes:[],srcs:[],slow:0,steps:0,frameMs:[],warm:false,y:bimDgSite().y||0};
-    N.J.forEach(function(j){if(j.kind==='signal'){var P=bimTrPlan(N,j);if(P)RUN.plans[j.i]=P;else j.kind='yield';}});
+    N.J.forEach(function(j){if(j.kind==='signal'){var P=bimTrPlan(N,j);if(P)RUN.plans[j.i]=P;else j.kind='yield';}j.majors=j.ins.filter(function(m){return j.major[m];});});
     /* the lanes' slots, and each junction's arms' crossings */
     var nl=0;N.links.forEach(function(Lk){Lk.slot=nl;nl+=Lk.lanes;});RUN.nSlots=nl;
     var na=0;N.J.forEach(function(j){j.armBase=na;na+=j.arms.length;});RUN.nArms=na;
@@ -105,14 +105,15 @@
     var nc=RUN.Q.cars,nw=RUN.Q.walk,i;
     A3D_TR.allocs++;
     RUN.c={n:nc,L:new Int32Array(nc),ln:new Int8Array(nc),s:new Float32Array(nc),v:new Float32Array(nc),a:new Float32Array(nc),len:new Float32Array(nc),
-      k:new Uint8Array(nc),tg:new Int16Array(nc),nx:new Int32Array(nc),t0:new Float32Array(nc),ta:new Float32Array(nc),st:new Uint8Array(nc),lc:new Float32Array(nc),
+      k:new Uint8Array(nc),tg:new Int16Array(nc),nx:new Int32Array(nc),t0:new Float32Array(nc),ta:new Float32Array(nc),st:new Uint8Array(nc),go:new Uint8Array(nc),lc:new Float32Array(nc),
       x:new Float32Array(nc),z:new Float32Array(nc),hx:new Float32Array(nc),hz:new Float32Array(nc),px:new Float32Array(nc),pz:new Float32Array(nc),
       free:new Int32Array(nc),nf:nc,ord:new Int32Array(nc),key:new Int32Array(nc),cnt:new Int32Array(RUN.nSlots+1),lead:new Int32Array(nc),fol:new Int32Array(nc),
-      front:new Int32Array(RUN.N.links.length),last:new Int32Array(RUN.nSlots),na:0};
-    RUN.w={n:nw,R:new Int32Array(nw),p:new Float32Array(nw),v:new Float32Array(nw),v0:new Float32Array(nw),st:new Uint8Array(nw),cr:new Int16Array(nw),
+      front:new Int32Array(RUN.N.links.length),last:new Int32Array(RUN.nSlots),head:new Int32Array(RUN.nSlots),na:0};
+    RUN.w={n:nw,R:new Int32Array(nw),p:new Float32Array(nw),v:new Float32Array(nw),v0:new Float32Array(nw),st:new Uint8Array(nw),cr:new Int16Array(nw),hb:new Uint8Array(nw),
       wait:new Float32Array(nw),x:new Float32Array(nw),z:new Float32Array(nw),px:new Float32Array(nw),pz:new Float32Array(nw),
       free:new Int32Array(nw),nf:nw,ord:new Int32Array(nw),key:new Int32Array(nw),cnt:new Int32Array(RUN.routes.length*4+1),na:0};
     RUN.occ=new Int16Array(RUN.nArms);   /* walkers on each arm's crossing */
+    RUN.occH=new Int16Array(RUN.nArms*2);   /* and on each half of it: the half outbound cars pass (clockwise of the arm, looking out), then the inbound */
     for(i=0;i<nc;i++){RUN.c.L[i]=-1;RUN.c.free[i]=nc-1-i;}
     for(i=0;i<nw;i++){RUN.w.R[i]=-1;RUN.w.free[i]=nw-1-i;}
     RUN.jq={};RUN.busy=new Float32Array(RUN.N.J.length);
@@ -120,21 +121,35 @@
   }
   function bimTrResetTallies(RUN){
     var N=RUN.N;
-    RUN.res={t0:RUN.t,spawned:0,exited:0,lotIn:0,lotOut:0,lotWalk:0,blocked:0,red:0,walkBad:0,lc:0,carsCap:0,walkCap:0,
+    RUN.res={t0:RUN.t,na0:RUN.c?RUN.c.na:0,spawned:0,exited:0,lotIn:0,lotOut:0,lotWalk:0,blocked:0,red:0,redAt:[],walkBad:0,lc:0,carsCap:0,walkCap:0,
       del:new Float64Array(N.links.length*2),cw:new Float64Array(N.J.length*2),doors:N.doors.map(function(){return {i:0,o:0};}),
       q:{n:0,out:0,outMax:0,st:0,stMax:0},bin:RUN.t,last:null};
   }
   /* ---- spawning ---- */
+  /* a car into a link: in the lane with the most room before the car ahead (on this link or, where the link is short
+     and empty, the last on the next), at the most speed that room allows without braking harder than comfortably
+     (SUMO's departSpeed "max", by the IDM); none where the room is under the standstill gap */
   function bimTrCarNew(RUN,l,s,v,kind,tg){
-    var C=RUN.c,N=RUN.N,Lk=N.links[l],best=-1,room=-Infinity,ln,i,c;
+    var C=RUN.c,N=RUN.N,Lk=N.links[l],P=RUN.P,best=-1,room=-Infinity,vl=0,ln,k,c;
     if(!C.nf||C.na>=RUN.cap.cars){RUN.res.carsCap++;return -1;}
-    for(ln=0;ln<Lk.lanes;ln++){var lc=C.last[Lk.slot+ln],r=lc>=0?C.s[lc]-C.len[lc]:Infinity;if(r>room){room=r;best=ln;}}
-    var len=bimStd('aashto.vehicles','P_l');
-    if(room<len+RUN.P.s0)return -1;
+    var nx=bimTrNextOf(RUN,tg,l);
+    for(ln=0;ln<Lk.lanes;ln++){
+      var lc=C.last[Lk.slot+ln],r=Infinity,rv=0;
+      if(lc>=0){r=C.s[lc]-C.len[lc]-s;rv=C.v[lc];}
+      else if(nx>=0){var Ln=N.links[nx],lk=C.last[Ln.slot+Math.min(ln,Ln.lanes-1)];if(lk>=0){r=Lk.len-s+C.s[lk]-C.len[lk];rv=C.v[lk];}}
+      if(r>room){room=r;best=ln;vl=rv;}
+    }
+    if(room<P.s0)return -1;
+    v=Math.min(v,Lk.v0);
+    if(room<P.free&&bimTrIdm(v,Lk.v0,room,v-vl,P)<-P.b){
+      var lo=0,hi=v;
+      for(k=0;k<12;k++){var m=(lo+hi)/2;if(bimTrIdm(m,Lk.v0,room,m-vl,P)>=-P.b)lo=m;else hi=m;}
+      v=lo;
+    }
     c=C.free[--C.nf];C.na++;
-    C.L[c]=l;C.ln[c]=best;C.s[c]=s;C.v[c]=Math.min(v,Lk.v0);C.a[c]=0;C.len[c]=len;C.k[c]=kind;C.tg[c]=tg;C.t0[c]=RUN.t;C.ta[c]=RUN.t;C.st[c]=0;C.lc[c]=-99;
+    C.L[c]=l;C.ln[c]=best;C.s[c]=s;C.v[c]=v;C.a[c]=0;C.len[c]=bimStd('aashto.vehicles','P_l');C.k[c]=kind;C.tg[c]=tg;C.t0[c]=RUN.t;C.ta[c]=RUN.t;C.st[c]=0;C.go[c]=0;C.lc[c]=-99;
     C.last[Lk.slot+best]=c;   /* the lane's last until the next sort */
-    C.nx[c]=bimTrNext(RUN,c,l);
+    C.nx[c]=nx;
     bimTrPlace(RUN,c);C.px[c]=C.x[c];C.pz[c]=C.z[c];
     RUN.res.spawned++;
     return c;
@@ -142,8 +157,9 @@
   function bimTrCarFree(RUN,c){var C=RUN.c;C.L[c]=-1;C.free[C.nf++]=c;C.na--;}
   /* the link a car takes after this one: its way to its target, or a turn drawn by the junction's shares; -1 when this
      link takes it out (a boundary) or to its target */
-  function bimTrNext(RUN,c,l){
-    var N=RUN.N,C=RUN.c,Lk=N.links[l],j=N.J[Lk.jb],tg=C.tg[c];
+  function bimTrNext(RUN,c,l){return bimTrNextOf(RUN,RUN.c.tg[c],l);}
+  function bimTrNextOf(RUN,tg,l){
+    var N=RUN.N,Lk=N.links[l],j=N.J[Lk.jb];
     if(!j)return -1;
     if(tg>=0){var nx=RUN.targets[tg].nx[l];return nx>=0?nx:-1;}
     if(j.bnd)return -1;
@@ -167,7 +183,7 @@
     i=W.free[--W.nf];W.na++;
     if((R.kind==='out'||R.kind==='tout'||R.kind==='wout')&&RUN.res.t0<=RUN.t)RUN.res.doors[R.door].o++;   /* out of a door: counted as it leaves */
     var sp=bimStd('hm.walk','mean')+bimStd('hm.walk','sd')*bimTrGauss(RUN.rng),k=bimStd('hm.walk','cap');
-    W.R[i]=r;W.p[i]=0;W.v0[i]=Math.max(0.5,Math.min(sp,bimStd('hm.walk','mean')*k));W.v[i]=W.v0[i];W.st[i]=Math.floor(RUN.rng()*2);W.cr[i]=-1;W.wait[i]=-1;
+    W.R[i]=r;W.p[i]=0;W.v0[i]=Math.max(0.5,Math.min(sp,bimStd('hm.walk','mean')*k));W.v[i]=W.v0[i];W.st[i]=Math.floor(RUN.rng()*2);W.cr[i]=-1;W.hb[i]=0;W.wait[i]=-1;
     bimTrWalkPlace(RUN,i);W.px[i]=W.x[i];W.pz[i]=W.z[i];
     return i;
   }
@@ -205,8 +221,8 @@
   function bimTrStopLine(N,Lk){var j=N.J[Lk.jb];if(!j)return Lk.len;var d=j.cw+1;return Math.max(Lk.len*0.5,Lk.len-d);}
   /* a car crossing its stop line: through a red is counted (none should) */
   function bimTrAtLine(RUN,c,Lk){
-    var j=RUN.N.J[Lk.jb],P=j?RUN.plans[j.i]:null,o={};
-    if(P&&P.of.hasOwnProperty(Lk.i)){bimTrSig(P,P.of[Lk.i],RUN.t,o);if(o.s==='r')RUN.res.red++;}
+    var j=RUN.N.J[Lk.jb],P=j?RUN.plans[j.i]:null,o={},C=RUN.c;
+    if(P&&P.of.hasOwnProperty(Lk.i)){bimTrSig(P,P.of[Lk.i],RUN.t,o);if(o.s==='r'){RUN.res.red++;if(RUN.res.redAt.length<10)RUN.res.redAt.push([RUN.t,Lk.i,C.v[c],C.a[c],C.go[c],C.k[c],RUN.c.lead[c]]);}}
   }
   /* a car past its link's end: out at a boundary, into the lot (or a car park), or on to its next link */
   function bimTrCross(RUN,c){
@@ -225,13 +241,13 @@
     C.s[c]-=Lk.len;C.L[c]=nx;
     var Ln=N.links[nx];
     if(C.ln[c]>=Ln.lanes)C.ln[c]=Ln.lanes-1;
-    C.ta[c]=RUN.t;C.st[c]=0;
+    C.ta[c]=RUN.t;C.st[c]=0;C.go[c]=0;
     C.nx[c]=bimTrNext(RUN,c,nx);
     if(j&&j.kind==='allstop'){RUN.busy[j.i]=RUN.t+bimTrClear(RUN,j,c,0);var q=RUN.jq[j.i];if(q){var k=q.indexOf(c);if(k>=0)q.splice(k,1);}}
   }
   /* the time a car needs to clear a junction from its line: across its widest street and its own length */
   function bimTrClear(RUN,j,c,d){
-    var C=RUN.c,P=RUN.P,v=C.v[c],x=d+2*j.cw+C.len[c],t;
+    var C=RUN.c,P=RUN.P,v=C.v[c],x=Math.max(C.len[c],d+2*j.cw+C.len[c]),t;
     t=(-v+Math.sqrt(v*v+2*P.a*x))/P.a;
     return t;
   }
@@ -247,7 +263,7 @@
     for(k=0;k<ns;k++){
       var st=k?C.cnt[k-1]:0,en=C.cnt[k];
       for(i=st+1;i<en;i++){var x=C.ord[i],sx=C.s[x],q=i-1;while(q>=st&&C.s[C.ord[q]]>sx){C.ord[q+1]=C.ord[q];q--;}C.ord[q+1]=x;}
-      C.last[k]=en>st?C.ord[st]:-1;
+      C.last[k]=en>st?C.ord[st]:-1;C.head[k]=en>st?C.ord[en-1]:-1;
       for(i=st;i<en;i++){c=C.ord[i];C.lead[c]=i+1<en?C.ord[i+1]:-1;C.fol[c]=i>st?C.ord[i-1]:-1;}
     }
     for(k=0;k<N.links.length;k++)C.front[k]=-1;
@@ -275,53 +291,108 @@
     for(i=st;i<en;i++){var x=C.ord[i];if(x!==c&&C.s[x]<=s)f=x;}
     return f;
   }
-  /* what holds a car at its line: a red, an amber it can stop for, a stop not yet made, its turn at an all-way stop, a
+  /* what holds a car at its line: no room past a signal, a red, an amber it would not reach its line in (a car
+     that goes on an amber keeps going), a stop not yet made, its turn at an all-way stop, a
      major road's car too near, a walker on a crossing it is about to cross. Returns the distance to the line, or
      Infinity when nothing holds it */
   var BIM_TR_SIG={};
   function bimTrHold(RUN,c){
-    var C=RUN.c,N=RUN.N,l=C.L[c],Lk=N.links[l],j=N.J[Lk.jb],sl,d;
-    if(!j||j.bnd)return Infinity;
-    if(C.nx[c]<0&&C.tg[c]>=0)return Infinity;   /* into the lot or its car park */
-    sl=bimTrStopLine(N,Lk);d=sl-C.s[c];
-    if(d<-0.5)return Infinity;                  /* past its line: it goes on */
-    var P=RUN.plans[j.i];
-    if(P&&P.of.hasOwnProperty(l)){
+    var C=RUN.c,N=RUN.N,l=C.L[c],Lk=N.links[l],h=bimTrHoldAt(RUN,c,l,C.s[c],C.nx[c],false),nx=C.nx[c],tg=C.tg[c];
+    /* and the next link's line, where it is near: a short link before a signal is no surprise */
+    if(h===Infinity&&nx>=0&&Lk.len-C.s[c]<bimStd('app.traffic','look'))h=bimTrHoldAt(RUN,c,nx,C.s[c]-Lk.len,tg>=0?RUN.targets[tg].nx[nx]:-3,true);
+    return h;
+  }
+  /* the hold of link l's line for car c at s along it, its next link nx (-1 the lot or out, -3 not drawn yet); look: the
+     line ahead, seen from the link before, where the car has made no stop and taken no amber yet */
+  function bimTrHoldAt(RUN,c,l,s,nx,look){
+    var C=RUN.c,N=RUN.N,Lk=N.links[l],j=N.J[Lk.jb],sl,d,h=Infinity;
+    /* a walker on the crossing at this link's start, which the car has not reached: it waits short of it, in the
+       junction it has entered */
+    var ja=look?null:N.J[Lk.ja];
+    if(ja&&!ja.bnd&&bimTrOccOn(RUN,ja,Lk.armOut,false)&&s<ja.cw-1)h=ja.cw-1-s;
+    if(!j||j.bnd)return h;
+    if(nx===-1&&C.tg[c]>=0)return h;            /* into the lot or its car park */
+    sl=bimTrStopLine(N,Lk);d=sl-s;
+    /* a walker on the crossing of the arm it turns into: it goes past its line and waits short of that crossing */
+    if(nx>=0&&N.links[nx].ja===j.i&&bimTrOccOn(RUN,j,N.links[nx].armOut,false))h=Math.min(h,Lk.len-s+Math.max(0,j.cw-1));
+    /* a left turn waits for the oncoming in the junction, past its line, as a permissive left does: the amber's gap is
+       its */
+    var P=RUN.plans[j.i],sg=!!(P&&P.of.hasOwnProperty(l)),opp=sg?P.ph[P.of[l]].ins:(j.kind==='yield'&&j.major[l]?j.majors:null);
+    if(opp&&s<Lk.len-0.5&&!(!look&&C.go[c]&&d>-0.5)&&bimTrLeftWait(RUN,c,j,l,nx,d,opp))h=Math.min(h,Lk.len-s);   /* one gone on the amber reaches its line first */
+    if(d<-0.5)return h;                         /* past its line: it goes on */
+    /* no room past a signal for it: it does not enter (the junction kept clear, and none caught in it by the red) */
+    if(j.kind==='signal'&&nx>=0){var Ln=N.links[nx],lk=C.last[Ln.slot+Math.min(C.ln[c],Ln.lanes-1)];if(lk>=0&&lk!==c&&C.v[lk]<bimStd('app.traffic','queue_v')&&C.s[lk]-C.len[lk]<C.len[c]+RUN.P.s0)return Math.min(h,d);}
+    var st=look?0:C.st[c];
+    if(sg){
       bimTrSig(P,P.of[l],RUN.t,BIM_TR_SIG);
-      if(BIM_TR_SIG.s==='r')return d;
-      if(BIM_TR_SIG.s==='y'&&d>C.v[c]*BIM_TR_SIG.left)return d;   /* SUMO's amber, near goes and far stops: it goes only if it reaches its line before the amber ends */
+      if(BIM_TR_SIG.s==='r')return Math.min(h,d);
+      if(BIM_TR_SIG.s==='y'){
+        /* near goes and far stops: it goes only if it reaches its line before the amber ends, braking as it is; one gone
+           that would no longer make it stops, where it still can without braking hard */
+        var far=d>bimTrReach(C.v[c],C.a[c],BIM_TR_SIG.left);
+        if(look||!C.go[c]){if(far)return Math.min(h,d);if(!look)C.go[c]=1;}
+        else if(far&&d>=C.v[c]*C.v[c]/(2*RUN.P.b)){C.go[c]=0;return Math.min(h,d);}
+      }
     }else if(j.kind==='allstop'){
-      if(!C.st[c])return d;
+      if(!st)return Math.min(h,d);
       var q=RUN.jq[j.i]||(RUN.jq[j.i]=[]);if(q.indexOf(c)<0)q.push(c);
-      if(q[0]!==c||RUN.t<RUN.busy[j.i])return d;
+      if(q[0]!==c||RUN.t<RUN.busy[j.i])return Math.min(h,d);
     }else if(j.kind==='yield'){
-      if(j.stop[l]&&!C.st[c])return d;
+      if(j.stop[l]&&!st)return Math.min(h,d);
       if(!j.major[l]){
         var need=bimTrClear(RUN,j,c,Math.max(0,d))+bimStd('sumo.rules','gap'),k;
         for(k=0;k<j.ins.length;k++){
           var m=j.ins[k];if(m===l||!j.major[m])continue;
           var f=C.front[m];if(f<0)continue;
           var Lm=N.links[m],tau=(Lm.len-C.s[f])/Math.max(C.v[f],0.5);
-          if(tau<need&&C.v[f]>0.3)return d;
+          if(tau<need&&C.v[f]>0.3)return Math.min(h,d);
         }
       }
     }
-    /* a walker on the crossing of its own arm or of the arm it turns into */
-    var nx=C.nx[c];
-    if(RUN.occ[j.armBase+Lk.arm]>0)return d;
-    if(nx>=0&&N.links[nx].ja===j.i&&RUN.occ[j.armBase+N.links[nx].armOut]>0)return d;
-    return Infinity;
+    /* a walker on the crossing of its own arm, just past its line */
+    if(bimTrOccOn(RUN,j,Lk.arm,true))return Math.min(h,d);
+    return h;
   }
+  /* a car turning left waits for the oncoming: the front car of each other approach that has the way with it (its
+     phase, or the other major road), unless that one turns left too (they pass in front of each other), while it would
+     reach the junction before this one has cleared it; a standing car only once it sets off (one held in a queue is
+     not coming, and waiting for it would lock both ways). The front car of each lane of each */
+  function bimTrLeftWait(RUN,c,j,l,nx,d,cands){
+    var C=RUN.c,N=RUN.N,lim=-bimStd('app.traffic','left'),k,ln;
+    if(nx<0||bimTrTurnOf(j,l,nx)>lim)return false;
+    var need=bimTrClear(RUN,j,c,d)+bimStd('sumo.rules','gap'),a=RUN.P.a;
+    for(k=0;k<cands.length;k++){
+      var m=cands[k],Lm=N.links[m];if(m===l)continue;
+      for(ln=0;ln<Lm.lanes;ln++){
+        var f=C.head[Lm.slot+ln];if(f<0)continue;
+        if(C.nx[f]>=0&&bimTrTurnOf(j,m,C.nx[f])<=lim)continue;
+        var x=Math.max(0,Lm.len-C.s[f]),v=C.v[f];
+        if(v<0.3&&C.a[f]<=0.05)continue;
+        if((-v+Math.sqrt(v*v+2*a*x))/a<need)return true;
+      }
+    }
+    return false;
+  }
+  /* how far a car goes in t at its speed, braking as it is (never counting on speeding up) */
+  function bimTrReach(v,a,t){if(a>=0)return v*t;var ts=v/-a;return ts<t?v*v/(2*-a):v*t+a*t*t/2;}
+  function bimTrTurnOf(j,l,o){var T=j.tr[l]||[],i;for(i=0;i<T.length;i++)if(T[i].o===o)return T[i].ang;return 0;}
+  /* a walker on the half of arm k's crossing a car passes: an inbound car the half beside the inbound lanes (on the
+     right as it comes in), an outbound car the other, each with a walker within a step of the middle; the whole
+     crossing on a one-way street */
+  function bimTrOccOn(RUN,j,k,inb){
+    var a=j.armBase+k,A=j.arms[k];
+    if(A.lin<0||A.lout<0)return RUN.occ[a]>0;
+    return RUN.occH[a*2+(inb?1:0)]>0;
+  }
+  function bimTrOcc(RUN,a,b,d){if(a<0)return;RUN.occ[a]+=d;if(b&1)RUN.occH[a*2]+=d;if(b&2)RUN.occH[a*2+1]+=d;}
   var BIM_TR_AH={s:0,v:0};
   function bimTrAccOf(RUN,c,ln){
     var C=RUN.c,N=RUN.N,Lk=N.links[C.L[c]],P=RUN.P,v=C.v[c];
     if(ln===undefined)ln=C.ln[c];
     bimTrAhead(RUN,c,ln,BIM_TR_AH);
     var a=bimTrIdm(v,Lk.v0,BIM_TR_AH.s,v-BIM_TR_AH.v,P);
-    if(ln===C.ln[c]&&C.lead[c]<0||ln!==C.ln[c]&&bimTrLeaderIn(RUN,c,ln)<0){
-      var h=bimTrHold(RUN,c);
-      if(h<Infinity){var ah=bimTrIdm(v,Lk.v0,Math.max(0.01,h),v,P);if(ah<a)a=ah;}
-    }
+    var h=bimTrHold(RUN,c);   /* the line holds every car before it, not only the first: the one ahead may be past it */
+    if(h<Infinity){var ah=bimTrIdm(v,Lk.v0,Math.max(0.01,h),v,P);if(ah<a)a=ah;}
     return Math.max(-9,a);
   }
   /* MOBIL, symmetric, where a direction has two lanes or more: each car every other step */
@@ -384,14 +455,17 @@
         break;
       }
     }
-    /* on a crossing or off it: the arm's count of walkers on it */
-    var was=W.cr[i],now=-1;
-    for(k=0;k<r.cr.length;k++){var c2=r.cr[k];if(np>=c2.s0&&np<c2.s1){now=RUN.N.J[c2.j].armBase+c2.k;break;}}
-    if(was!==now){if(was>=0)RUN.occ[was]--;if(now>=0)RUN.occ[now]++;W.cr[i]=now;}
+    /* on a crossing or off it: the arm's count of walkers on it, and on each half (within a step of the middle, both) */
+    var was=W.cr[i],wb=W.hb[i],now=-1,nb=0;
+    for(k=0;k<r.cr.length;k++){
+      var c2=r.cr[k];
+      if(np>=c2.s0&&np<c2.s1){var u=(np-c2.s0)/c2.len,mg=bimStd('sumo.rules','stripe')/c2.len;now=RUN.N.J[c2.j].armBase+c2.k;nb=(u<0.5+mg?(c2.from>0?1:2):0)|(u>0.5-mg?(c2.from>0?2:1):0);break;}
+    }
+    if(was!==now||wb!==nb){bimTrOcc(RUN,was,wb,-1);bimTrOcc(RUN,now,nb,1);W.cr[i]=now;W.hb[i]=nb;}
     W.p[i]=np;W.v[i]=np-p0>0?(np-p0)/dt:0;
     W.px[i]=W.x[i];W.pz[i]=W.z[i];
     if(np>=r.len){
-      if(W.cr[i]>=0){RUN.occ[W.cr[i]]--;W.cr[i]=-1;}
+      bimTrOcc(RUN,W.cr[i],W.hb[i],-1);W.cr[i]=-1;W.hb[i]=0;
       bimTrWalkArrive(RUN,i,r);bimTrWalkFree(RUN,i);return;
     }
     bimTrWalkPlace(RUN,i);
@@ -436,12 +510,12 @@
   /* ---- the demand, each step: background cars at the boundaries, the lot's trips, the walkers' trips ---- */
   function bimTrSpawn(RUN,dt){
     var N=RUN.N,T=RUN.t,rng=RUN.rng,i;
-    RUN.lotQ=RUN.lotQ||[];
+    RUN.lotQ=RUN.lotQ||[];RUN.lotPend=RUN.lotPend||[];
     for(i=0;i<RUN.srcs.length;i++){
       var S=RUN.srcs[i],h=3600/S.q;
       if(!S.next)S.next=T+h*rng();
       while(S.next<=T){S.pend++;S.next+=h*(0.5+rng());}
-      if(S.pend>0){if(bimTrCarNew(RUN,S.l,0,N.links[S.l].v0,0,-1)>=0)S.pend--;else RUN.res.blocked++;}
+      if(S.pend>0){if(bimTrCarNew(RUN,S.l,0,N.links[S.l].v0,0,-1)>=0){S.pend--;S.held=false;}else if(!S.held){S.held=true;RUN.res.blocked++;}}   /* a car held at the edge, counted once */
     }
     if(!RUN.lotOk)return;
     var TR=RUN.trips,dIn=TR.tin*dt/3600,dOut=TR.tout*dt/3600;
@@ -452,16 +526,17 @@
       var r=rng()*RUN.srcQ,acc=0,S2=RUN.srcs[0];
       for(i=0;i<RUN.srcs.length;i++){acc+=RUN.srcs[i].q;if(r<acc){S2=RUN.srcs[i];break;}}
       var pk=RUN.park[Math.floor(rng()*RUN.park.length)];
-      if(pk&&RUN.targets[pk.tg].nx[S2.l]!==-2)RUN.lotPend=(RUN.lotPend||[]).concat([{l:S2.l,tg:pk.tg}]);
+      if(pk&&RUN.targets[pk.tg].nx[S2.l]!==-2)RUN.lotPend.push({l:S2.l,tg:pk.tg,held:false});
     }
-    (RUN.lotPend||[]).slice().forEach(function(x,k){if(bimTrCarNew(RUN,x.l,0,N.links[x.l].v0,1,x.tg)>=0)RUN.lotPend.splice(RUN.lotPend.indexOf(x),1);});
+    for(i=0;i<RUN.lotPend.length;){
+      var x=RUN.lotPend[i];
+      if(bimTrCarNew(RUN,x.l,0,N.links[x.l].v0,1,x.tg)>=0)RUN.lotPend.splice(i,1);
+      else{if(!x.held){x.held=true;RUN.res.blocked++;}i++;}
+    }
     /* out: the driver walks from a door to the car; the car then waits to leave (the lot's queue) */
     RUN.accOut=(RUN.accOut||0)+dOut;
     while(RUN.accOut>=1&&RUN.rOut.length){RUN.accOut-=1;bimTrWalkNew(RUN,RUN.rOut[Math.floor(rng()*RUN.rOut.length)]);}
-    for(i=RUN.lotQ.length-1;i>=0;i--){
-      var x2=RUN.lotQ[0];
-      if(bimTrCarNew(RUN,x2.l,0,0,2,x2.tg)>=0){RUN.lotQ.shift();RUN.res.lotOut++;}else break;
-    }
+    while(RUN.lotQ.length&&bimTrCarNew(RUN,RUN.lotQ[0].l,0,0,2,RUN.lotQ[0].tg)>=0){RUN.lotQ.shift();RUN.res.lotOut++;}
     /* by transit and on foot, at the tract's shares of the lot's trips */
     if(RUN.share){
       RUN.accT=(RUN.accT||0)+(TR.tin+TR.tout)*RUN.share.t*dt/3600;

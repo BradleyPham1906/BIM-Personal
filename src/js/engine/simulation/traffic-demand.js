@@ -3,12 +3,13 @@
      from its class's typical daily traffic (fhwa.fc) and Florida's K; the turns at each junction balanced to the
      streets' volumes by NCHRP 255's method; the design's own trips from San Diego's rates by its usages; and the
      quickest ways to the lot and away from it. Pure where it can be, so the suite works each out again. */
-  /* a link's volume in the peak hour: the middle of its class's urban AADT range times K, half each way on a two-way
-     street (the peak direction's share is not applied); a service road and a street of no class carry none */
+  /* a link's volume in the peak hour: the middle of its class's urban AADT range times K, half of it each way (a one-way
+     way taken as one carriageway of its road; the peak direction's share is not applied); a service road and a street
+     of no class carry none */
   function bimTrLinkVolume(Lk){
     var rc=bimDgRoads()[Lk.base];
     if(!rc||!(rc.u>0))return 0;
-    return rc.u*bimStd('fdot.k','k')/100*(Lk.ow?1:0.5);
+    return rc.u*bimStd('fdot.k','k')/100*0.5;
   }
   /* NCHRP 255's balancing: a first guess of each approach's turns in proportion to the exits' volumes, then the
      matrix scaled to the approaches' volumes (its rows) and to the exits' (its columns, scaled to the same total), in
@@ -38,15 +39,29 @@
     }
     return P;
   }
-  /* every link's volume, and each junction's turns */
+  /* every link's volume, and each junction's turns. A ramp (a _link way) carries what the busiest street at its quieter
+     end carries: no class gives a ramp's own traffic, and its road's would be the main line's. At a junction no exit
+     is balanced to more than its busiest approach brings in: a motorway beginning at a street's junction would take
+     nearly all of it */
   function bimTrDemand(N){
-    var it=bimStd('nchrp255','iter');
-    N.links.forEach(function(Lk){Lk.q=bimTrLinkVolume(Lk);});
+    var it=bimStd('nchrp255','iter'),ramp=/_link$/;
+    N.links.forEach(function(Lk){Lk.q=ramp.test(Lk.hw)?-1:bimTrLinkVolume(Lk);});
+    N.links.forEach(function(Lk){
+      if(Lk.q>=0)return;
+      var m=Infinity;
+      [N.J[Lk.ja],N.J[Lk.jb]].forEach(function(j){
+        if(!j)return;
+        var b=-1;j.ins.concat(j.outs).forEach(function(li){var o=N.links[li];if(!ramp.test(o.hw)&&o.q>b)b=o.q;});
+        if(b>=0&&b<m)m=b;
+      });
+      Lk.q=m<Infinity?m:bimTrLinkVolume(Lk);
+    });
     N.J.forEach(function(j){
       var ins=j.ins,outs=j.outs;
       if(!ins.length)return;
       var ok=ins.map(function(li){var T=j.tr[li];return outs.map(function(lo){return T.some(function(t){return t.o===lo;});});});
-      var P=bimTrFurness(ins.map(function(li){return Math.max(N.links[li].q,1e-6);}),outs.map(function(lo){return N.links[lo].q;}),ok,it);
+      var qi=ins.map(function(li){return Math.max(N.links[li].q,1e-6);}),qmax=Math.max.apply(null,qi);
+      var P=bimTrFurness(qi,outs.map(function(lo){return Math.min(N.links[lo].q,qmax);}),ok,it);
       ins.forEach(function(li,a){j.tr[li].forEach(function(t){var b=outs.indexOf(t.o);t.p=t.u?1:(b>=0?P[a][b]:0);});});
     });
     /* the boundaries: where background traffic comes in and goes out */

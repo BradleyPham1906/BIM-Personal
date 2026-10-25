@@ -350,13 +350,17 @@
         v:[{n:'gap',v:1,u:'s',say:'the time gap a minor road keeps to a priority car'},{n:'stripe',v:0.65,u:'m',say:'a walker\'s stripe across a sidewalk'}]}]},
     {id:'app.traffic',title:'The traffic simulation\'s own settings',pub:'This app',kind:'assumption',area:'Traffic',use:'Traffic and people: what no source gives',anywhere:true,
       eds:[{id:'app.traffic.1',name:'The app\'s traffic settings (V171)',pub:'',st:'current',where:'Anywhere',adopt:[{at:'*'}],
-        src:{t:'This app: the reach of the simulation, a lane\'s width as the site context draws it, how near a signal is to its junction, the step, the warm-up and the tallies, the sidewalks\' and crossings\' places, the queue\'s and the crossings\' tests, a car\'s people, and the usages read as San Diego\'s uses',w:'research-traffic.md, section 8',lv:'A'},
+        src:{t:'This app: the reach of the simulation, a lane\'s width as the site context draws it, how near a signal is to its junction, the step, the warm-up and the tallies, how far ahead a car sees, what a crossing costs a walker choosing a way, a left turn, the sidewalks\' and crossings\' places, the queue\'s and the crossings\' tests, a car\'s people, and the usages read as San Diego\'s uses',w:'research-traffic.md, section 8',lv:'A'},
         v:[{n:'radius',v:300,u:'m',say:'the streets simulated, from the lot'},{n:'lane_w',v:3.3,u:'m',say:'a lane\'s width'},
           {n:'sig_r',v:30,u:'m',say:'how near a mapped signal is to the junction it controls'},{n:'step',v:0.2,u:'s',say:'the simulation\'s step'},
           {n:'warm',v:300,u:'s',say:'the warm-up before the tallies start'},{n:'bin',v:10,u:'s',say:'the tallies\' bins'},
           {n:'sw_off',v:1.5,u:'m',say:'a sidewalk\'s line beyond the roadway\'s edge'},{n:'cw',v:2,u:'m',say:'a crossing behind the corner'},
           {n:'y_max',v:0.95,u:'',say:'the junction\'s demand over its capacity at which the cycle is the longest'},
           {n:'walk_gap',v:2,u:'s',say:'the time a car must be away for a walker to cross where no signal is'},
+          {n:'look',v:100,u:'m',say:'how far ahead a car sees the next street\'s stop line'},
+          {n:'x_sig',v:30,u:'s',say:'a signalled crossing\'s wait, as a walker weighs it choosing a way: half the shortest cycle'},
+          {n:'x_lane',v:10,u:'s',say:'each lane crossed where nothing signals it, as a walker weighs it choosing a way'},
+          {n:'left',v:30,u:'deg',say:'a turn this sharp to the left or sharper waits for the oncoming'},
           {n:'queue_v',v:2,u:'m/s',say:'a car slower than this is standing in a queue'},{n:'queue_r',v:100,u:'m',say:'the street before the lot\'s entry counted for its queue'},
           {n:'occ',v:1,u:'',say:'the people a car brings'},
           {n:'uses',t:1,v:{'use-res':'mdu','use-off':'office','use-ret':'retail','use-hot':'hotel'},say:'the usages read as San Diego\'s uses: Residential as multiple dwelling units, Office as commercial office, Retail as strip commercial, Hotel as hotel'}]}]},
@@ -419,7 +423,7 @@
   var BIM_STD_HOW={adopted:'in force here',international:'international',chosen:'chosen for this project',outside:'applied outside its place',assumption:'the app\'s assumption',none:'none in force'};
   var BIM_STD_UNIT={min:[' minute',' minutes'],m:[' m',' m'],'m/min':[' m a minute',' m a minute'],'km/h':[' km/h',' km/h'],'%':['%','%'],'ug/m3':[' \u00b5g/m\u00b3',' \u00b5g/m\u00b3'],
     'per sq mi':[' per sq mi',' per sq mi'],dB:[' dB',' dB'],ha:[' ha',' ha'],trees:[' tree',' trees'],families:[' family',' families'],C:['\u00b0C','\u00b0C'],'m/s':[' m/s',' m/s'],lanes:[' lane',' lanes'],days:[' day',' days'],x:['\u00d7','\u00d7'],'sq ft':[' sq ft',' sq ft'],
-    s:[' s',' s'],'m/s2':[' m/s\u00b2',' m/s\u00b2'],'pc/h/ln':[' an hour a lane',' an hour a lane'],'du/acre':[' an acre',' an acre']};   /* __acad3dV171 */
+    s:[' s',' s'],'m/s2':[' m/s\u00b2',' m/s\u00b2'],'pc/h/ln':[' an hour a lane',' an hour a lane'],'du/acre':[' an acre',' an acre'],deg:['\u00b0','\u00b0']};   /* __acad3dV171 */
   var BIM_STD_EMPTY={place:null,date:'',ov:{},pick:{},packs:[]};
   var A3D_STD={obj:null,rev:-1,sig:'',at:0,cache:{},recs:null,by:{},memo:{},warned:{},gen:0};
   /* what the project holds: A3D.site.std, or nothing changed yet */
