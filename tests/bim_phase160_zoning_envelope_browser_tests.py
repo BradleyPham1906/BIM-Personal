@@ -586,9 +586,9 @@ async def run():
 
             # ---------------------------------------------------------------------------------
             print("\n-- 6. the panel")
-            await safe("()=>{window.__a3dZnEdit(false);window.__a3dAnzView('site');}")
+            await safe("()=>{window.__a3dZnEdit(false);window.__a3dAnzView('site');window.__a3dSaGoto('legal');}")   # AMENDED FOR V171c: 2. Legal picked, its data on the right
             await page.wait_for_timeout(200)
-            sec = await safe("()=>{var s=document.querySelector('.a3d-sa-wrap [data-znsec]');return s?{t:s.textContent,btn:[].map.call(s.querySelectorAll('[data-saact]'),function(b){return b.getAttribute('data-saact');})}:null;}") or {}
+            sec = await safe("()=>{var s=document.querySelector('#a3d-propsbody [data-znsec]');return s?{t:s.textContent,btn:[].map.call(s.querySelectorAll('[data-saact]'),function(b){return b.getAttribute('data-saact');})}:null;}") or {}
             ck('Zoning and yield' in sec.get('t', '') and 'achievable (FAR governs)' in sec['t'] and sec.get('btn') == ['znedit', 'znbuild', 'znboard'], "Site analysis has Zoning and yield: its summary, Edit, Rebuild, the board (%s)" % sec.get('btn'))
             await safe("()=>document.querySelector('[data-znsec] [data-saact=\"znedit\"]').click()")
             await page.wait_for_timeout(150)

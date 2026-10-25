@@ -243,11 +243,13 @@ async def run():
             s2 = await safe("()=>window.__a3dUsageSummary(['RM1'])")
             ck(s2 and [g['name'] for g in s2['rows']] == ['Residential'], "the selection's areas: only what is selected")
             # AMENDED FOR V166b: the project's areas by usage are in Analyze, in Areas by usage's row
+            # AMENDED FOR V171c: Areas by usage picked in Analyze's list, its areas in its panel on the right
             await safe("""()=>{if(document.activeElement)document.activeElement.blur();window.__a3dSelectFor([]);var s=document.getElementById('a3d-shell');
               if(s.getAttribute('data-tab')!=='analyze'||s.classList.contains('collapsed'))document.querySelector('#a3d-rail [data-tab="analyze"]').click();
+              document.querySelector('.a3d-analyze-wrap [data-anzact="aw:card:areas"]').click();
               window.__a3dRefreshProps();}""")
             await page.wait_for_timeout(200)
-            h = await safe("()=>{var c=document.querySelector('.a3d-analyze-wrap [data-anzcard=\"areas\"]');return c?c.innerHTML:'';}") or ''
+            h = await safe("()=>{var c=document.querySelector('#a3d-propsbody [data-awpanel=\"card:areas\"]');return c?c.innerHTML:'';}") or ''
             ck('data-anzarea="use-res"' in h and 'Residential' in h and 'GBA 96' in h,
                "with nothing selected, Analyze's Areas by usage shows the project's areas")
 

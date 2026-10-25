@@ -411,17 +411,16 @@ async def run():
             await page.wait_for_timeout(250)
             # AMENDED FOR V148: a row's other buttons are inside it, so the row is opened first
             # AMENDED FOR V162: and the row is inside 3. Landform, which is opened first
-            await safe("()=>window.__a3dSaGoto('landform')")
-            await page.wait_for_timeout(100)
-            await page.click('.a3d-analyze-wrap [data-anztog="terrain"]')
+            # AMENDED FOR V171c: the row picked in Analyze's list (in 3. Landform); its buttons in its panel on the right
+            await page.click('.a3d-analyze-wrap [data-anzact="aw:card:terrain"]')
             await page.wait_for_timeout(100)
             cards = await safe("()=>window.__a3dAnalyzeCards()") or []
             C = {c['id']: c for c in cards}
             ck('terrain' in C and C['terrain']['state'] == 'on' and 'coloured by slope' in C['terrain']['status'], "an Analyze card says the terrain is coloured by slope (%s)" % C.get('terrain', {}).get('status'))
-            await page.click('.a3d-analyze-wrap [data-anzact="terrain:aspect"]')
+            await page.click('#a3d-propsbody [data-anzact="terrain:aspect"]')
             await page.wait_for_timeout(200)
             ck((await obj(gid)).get('tview') == 'aspect' and 'Facing W' in await toast(), "its Aspect button colours it by aspect (%s)" % await toast())
-            await page.click('.a3d-analyze-wrap [data-anzact="terrain:off"]')
+            await page.click('#a3d-propsbody [data-anzact="terrain:off"]')
             await page.wait_for_timeout(200)
             ck(not any(x.get('tview') for x in (await safe("()=>window.__a3dState().objs")) or []), "Off takes the colours off every surface")
             await page.click('#a3d-rail [data-tab="analyze"]')

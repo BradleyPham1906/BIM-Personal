@@ -742,37 +742,17 @@ body.a3d-props-right #a3d-right .a3d-palhd{padding-top:4px}
 }
 #a3d-shell .a3d-projhead{flex-shrink:0}   /* __acad3dV162: a tab's long list scrolls under the project's name in every tab, not over it (Presentation's squashed it) */
 #a3d-shell[data-tab="analyze"] .a3d-analyze-wrap{flex:1 1 auto;min-height:0}
-/* __acad3dV148: Analyze, a list of rows in four groups */
+/* __acad3dV148: Analyze, a list of rows; __acad3dV171c: the workspace's, in site-analysis/workspace.css */
 .a3d-anz{display:flex;flex-direction:column;min-height:0;flex:1;overflow:auto;padding:8px 10px 18px}
 .a3d-anz [hidden]{display:none!important}
-.a3d-anzhead{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin:2px 2px 8px}
-.a3d-anzttl0{font-weight:650;font-size:13px}
 .a3d-anzcount{color:#8a96a3;font-size:11.5px;white-space:nowrap}
 .a3d-anzsearch{display:block;width:100%;box-sizing:border-box;margin:0 0 4px;background:#1f2327;border:1px solid #3a4048;border-radius:6px;color:#e6eaef;padding:4px 8px;min-height:28px;font:inherit;font-size:12px}
 .a3d-anzsearch:focus{border-color:#4ea1ff;outline:0}
-.a3d-anzgrphd{font-size:11px;font-weight:600;color:#8a96a3;padding:12px 4px 4px}
-.a3d-anzlist{display:flex;flex-direction:column;gap:1px}
-.a3d-anzcard{border-radius:7px;min-width:0}
-.a3d-anzcard.open{background:rgba(255,255,255,.035)}
-.a3d-anzhd{display:flex;align-items:center;gap:6px;min-height:36px;padding:0 4px 0 0;border-radius:7px;min-width:0}
-.a3d-anzhd:hover{background:rgba(255,255,255,.045)}
-.a3d-anztog{flex:1 1 auto;min-width:0;display:flex;align-items:center;gap:4px;background:transparent;border:0;padding:4px 0 4px 2px;margin:0;color:inherit;font:inherit;text-align:left;cursor:pointer}
-.a3d-anztog:focus-visible{outline:2px solid #4ea1ff;outline-offset:-2px;border-radius:6px}
-.a3d-anzchev{flex:0 0 16px;width:16px;height:16px;display:grid;place-items:center;color:#8b949e;transition:transform .12s}
-.a3d-anzcard.open>.a3d-anzhd .a3d-anzchev{transform:rotate(90deg)}   /* __acad3dV162: its own, not a row inside it */
-.a3d-anzname{display:flex;flex-direction:column;min-width:0;flex:1 1 auto}
-.a3d-anzttl{font-weight:500;font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.a3d-anzsum{font-size:11px;color:#8a96a3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
-.a3d-anzcard.open>.a3d-anzhd .a3d-anzsum{display:none}
 .a3d-anzstate{flex:0 0 auto;font-size:10.5px;padding:1px 6px;border-radius:9px;background:rgba(255,255,255,.08);color:#9aa3ad;white-space:nowrap}
 .a3d-anzstate-off{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}   /* said, not shown */
 .a3d-anzstate-on{background:rgba(76,175,80,.18);color:#81c784}
 .a3d-anzstate-warn{background:rgba(255,183,77,.18);color:#ffb74d}
 .a3d-anzstate-fail{background:rgba(239,83,80,.18);color:#ef9a9a}
-.a3d-anzbody{display:none;padding:0 8px 10px 22px}
-.a3d-anzcard.open>.a3d-anzbody{display:block}
-.a3d-anzst{color:#aab4bf;font-size:12px;margin:0 0 8px;line-height:1.4}
-.a3d-anzacts{display:flex;flex-wrap:wrap;gap:5px}
 .a3d-anzbtn{flex:0 0 auto;border:1px solid rgba(255,255,255,.14);border-radius:6px;padding:0 9px;min-height:24px;background:transparent;color:#dfe5ea;font:inherit;font-size:11.5px;cursor:pointer;white-space:nowrap}
 .a3d-anzbtn:hover{background:rgba(255,255,255,.08)}
 .a3d-anzbtn.pri{background:#2f6fd6;border-color:#2f6fd6;color:#fff}
@@ -781,19 +761,11 @@ body.a3d-props-right #a3d-right .a3d-palhd{padding-top:4px}
 .a3d-anzbtn:disabled{opacity:.45;cursor:default}
 .a3d-anzempty{padding:14px 6px;color:#8a96a3;font-size:12px}
 @media(pointer:coarse){
-.a3d-anzhd{min-height:46px}
-.a3d-anztog{padding:6px 0 6px 2px}
-.a3d-anzttl{font-size:13.5px}
-.a3d-anzsum{font-size:12px}
 .a3d-anzbtn{min-height:34px;padding:0 12px;font-size:12.5px}
 .a3d-anzsearch{min-height:36px;font-size:13px}
-.a3d-anzchev{flex-basis:22px;width:22px}
 }
-body.light-theme .a3d-anzcard.open{background:rgba(0,0,0,.035)}
-body.light-theme .a3d-anzhd:hover{background:rgba(0,0,0,.04)}
 body.light-theme .a3d-anzsearch{background:#fff;border-color:#c9ced4;color:#222}
-body.light-theme .a3d-anzst{color:#555}
-body.light-theme .a3d-anzsum,body.light-theme .a3d-anzgrphd,body.light-theme .a3d-anzcount{color:#6b737c}
+body.light-theme .a3d-anzcount{color:#6b737c}
 body.light-theme .a3d-anzbtn{border-color:rgba(0,0,0,.15);color:#222}
 body.light-theme .a3d-anzbtn.pri{color:#fff}
 body.light-theme .a3d-anzbtn.lay{border-color:#4a8fe0;color:#1d63b8}
@@ -1003,58 +975,18 @@ body.a3d-clb-open #a3d-dock,body.a3d-clb-open .a3d-tpal{display:none!important}
   .a3d-clb-card,.a3d-clb-kpi,.a3d-clb-notes{break-inside:avoid;page-break-inside:avoid}
   @page{size:A3 landscape;margin:10mm}
 }
-/* __acad3dV164: Analyze site, what each source brought, and the analyses' legends */
-.a3d-sarun{border-top:0;padding-top:2px}
-.a3d-sarun .a3d-sago{min-height:30px;padding:0 14px;font-size:12.5px;font-weight:600}
-.a3d-sarun .a3d-saval .a3d-anzbtn{margin:2px 4px 2px 0}
-.a3d-sasteps{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-direction:column;gap:5px}
-.a3d-sastep{display:grid;grid-template-columns:10px minmax(0,1fr) auto;column-gap:7px;align-items:center;font-size:12px;line-height:1.35;color:#d5dae0}
-.a3d-sastepic{width:8px;height:8px;border-radius:50%;box-sizing:border-box;border:1px solid #6b7785}
-.a3d-sastep.s-ok .a3d-sastepic{background:#30a46c;border-color:#30a46c}
-.a3d-sastep.s-fail .a3d-sastepic{background:#e5484d;border-color:#e5484d}
-.a3d-sastep.s-busy .a3d-sastepic{background:#f5a524;border-color:#f5a524;animation:a3d-sapulse .8s ease-in-out infinite alternate}
-.a3d-sastep.s-part .a3d-sastepic{background:#f5a524;border-color:#f5a524}
-.a3d-sastep.s-skip .a3d-sastepic{background:#6b7785}
-.a3d-sastepst{font-size:10.5px;color:#8a96a3;white-space:nowrap}
-.a3d-sastep.s-fail .a3d-sastepst{color:#ef8a8d}
-.a3d-sastep.s-part .a3d-sastepst{color:#f5b54a}
-.a3d-sastept{grid-column:2/4;font-size:11px;color:#8a96a3;overflow-wrap:anywhere}
-@keyframes a3d-sapulse{from{opacity:.35}to{opacity:1}}
-@media (prefers-reduced-motion:reduce){.a3d-sastep.s-busy .a3d-sastepic{animation:none}}
-.a3d-dgleg{display:flex;flex-wrap:wrap;gap:4px 10px;margin:4px 0 4px;font-size:11px;color:#c9d1d9}
-.a3d-dglegi{display:inline-flex;align-items:center;gap:5px}
-.a3d-dglegi i{display:inline-block;width:12px;height:8px;border-radius:2px;flex:none}
-.a3d-dglegi i.k-line,.a3d-dglegi i.k-dash{height:0;border-radius:0;border-top:2px solid currentColor}
-.a3d-dglegi i.k-dash{border-top-style:dashed}
-.a3d-dglegi i.k-dot{width:8px;height:8px;border-radius:50%}
-.a3d-sasec{border-top:1px solid rgba(255,255,255,.08);padding:8px 2px 10px}
+/* __acad3dV164: a category's data. __acad3dV171c: Analyze site's steps are in the overview, each analysis's key in its panel */
 .a3d-sasechd{font-size:11px;font-weight:600;color:#8a96a3;margin:0 0 6px}
-.a3d-sarow{display:flex;align-items:center;gap:8px;margin:0 0 6px;font-size:12px}
-.a3d-sarow>label,.a3d-sarow>.a3d-salab{flex:0 0 74px;color:#8a96a3;font-size:11.5px}
-.a3d-sarow>select,.a3d-sarow>input,.a3d-sarow>textarea,.a3d-sarow>.a3d-saval{flex:1 1 auto;min-width:0}
 .a3d-sa select,.a3d-sa input[type=text],.a3d-sa input[type=date],.a3d-sa textarea{box-sizing:border-box;background:#1f2327;border:1px solid #3a4048;border-radius:6px;color:#e6eaef;padding:3px 7px;min-height:26px;font:inherit;font-size:12px}
 .a3d-sa textarea{resize:vertical;min-height:44px;line-height:1.35}
 .a3d-sa select:focus,.a3d-sa input:focus,.a3d-sa textarea:focus{border-color:#4ea1ff;outline:0}
-.a3d-saval{color:#d5dae0;font-size:12px;line-height:1.35}
-.a3d-saflags{margin:0 0 6px;padding:7px 9px;border-radius:7px;background:rgba(229,72,77,.12);border:1px solid rgba(229,72,77,.35)}
-.a3d-saflags .a3d-sasechd{color:#ef9a9a;margin-bottom:4px}
-.a3d-saflag{font-size:12px;color:#f3c4c4;margin:2px 0}
-.a3d-sacat>.a3d-anzbody{padding-left:20px}
-/* __acad3dV162: a category holds its analyses, its data and its findings; a search opens what it finds */
-.a3d-anz.q .a3d-sacat.qhit>.a3d-anzbody{display:block}
-.a3d-anz.q .a3d-sacat.qhit>.a3d-anzhd .a3d-anzchev{transform:rotate(90deg)}
-.a3d-anz.q .a3d-sacat.qhit>.a3d-anzhd .a3d-anzsum{display:none}
-.a3d-satools{margin:0 -4px 4px;padding:2px 0;border-radius:7px}
-.a3d-satools .a3d-anzbody{padding-left:22px}
 .a3d-salink{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;font-size:11.5px;color:#aab4bf;line-height:1.4;margin:2px 0 8px}
 .a3d-sacap{font-size:11.5px;color:#8a96a3;margin:-2px 2px 6px;line-height:1.4}
 /* the panel scrolls, not the list in it: the search stays at its top while the list goes under it */
 .a3d-analyze-wrap>.a3d-anz{overflow:visible}
-.a3d-sacat{scroll-margin-top:44px}
 .a3d-anz>.a3d-anzsearch{position:sticky;top:0;z-index:2;box-shadow:0 0 0 6px #2c2c2c}
 body.light-theme .a3d-anz>.a3d-anzsearch{box-shadow:0 0 0 6px #fff}
 body.light-theme .a3d-salink,body.light-theme .a3d-sacap{color:#555}
-.a3d-saq{color:#8a96a3;font-size:11.5px;margin:0 0 8px;line-height:1.4}
 .a3d-safind{border-left:3px solid #8b949e;padding:4px 0 6px 8px;margin:0 0 6px}
 .a3d-safind.c-constraint{border-left-color:#f5a524}.a3d-safind.c-opportunity{border-left-color:#30a46c}.a3d-safind.c-redflag{border-left-color:#e5484d}
 .a3d-safhd{display:flex;align-items:baseline;gap:6px;font-size:12.5px}
@@ -1092,19 +1024,13 @@ body.light-theme .a3d-salink,body.light-theme .a3d-sacap{color:#555}
   .a3d-safm{font-size:10.5px;color:#8a96a3;line-height:1.4}
 .a3d-safm b{font-weight:600}
 .a3d-safm .k-constraint{color:#f5b54a}.a3d-safm .k-opportunity{color:#5cc48d}.a3d-safm .k-redflag{color:#ef8a8d}
-.a3d-sachkhd{font-size:11px;color:#8a96a3;margin:8px 0 4px}
 .a3d-saacts{display:flex;flex-wrap:wrap;gap:5px;margin:6px 0 0}
-.a3d-sanote{font-size:11.5px;color:#8a96a3;margin:0 0 6px;line-height:1.4}
 @media(pointer:coarse){
-.a3d-sarun .a3d-sago{min-height:40px}
 .a3d-sa select,.a3d-sa input[type=text],.a3d-sa input[type=date],.a3d-sa textarea{min-height:36px;font-size:16px}
 }
-body.light-theme .a3d-sasec{border-top-color:rgba(0,0,0,.08)}
 body.light-theme .a3d-sa select,body.light-theme .a3d-sa input[type=text],body.light-theme .a3d-sa input[type=date],body.light-theme .a3d-sa textarea{background:#fff;border-color:#c9ced4;color:#222}
-body.light-theme .a3d-saval,body.light-theme .a3d-safv,body.light-theme .a3d-sastep,body.light-theme .a3d-dgleg{color:#333}
-body.light-theme .a3d-sastept,body.light-theme .a3d-sastepst,body.light-theme .a3d-saq,body.light-theme .a3d-safm,body.light-theme .a3d-sanote,body.light-theme .a3d-sasechd,body.light-theme .a3d-sachkhd,body.light-theme .a3d-sarow>label,body.light-theme .a3d-sarow>.a3d-salab{color:#6b737c}
-body.light-theme .a3d-saflags{background:rgba(229,72,77,.08)}
-body.light-theme .a3d-saflag{color:#9b1c20}
+body.light-theme .a3d-safv{color:#333}
+body.light-theme .a3d-safm,body.light-theme .a3d-sasechd{color:#6b737c}
 .a3d-terrband{display:flex;align-items:center;gap:7px;font-size:11px;color:#c9d1d9}
 .a3d-terrband i{width:12px;height:10px;border-radius:2px;flex:none}.a3d-terrbl{flex:1}.a3d-terrba{color:#9aa5b0}
 .a3d-terrband-0{opacity:.45}
@@ -1384,7 +1310,7 @@ body.a3d-aw #a3d-dock,body.a3d-aw .a3d-tpal{display:none!important}
 .a3d-awbar-x,.a3d-awbar-d{flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;min-width:28px;height:28px;border:0;border-radius:7px;
   background:transparent;color:inherit;cursor:pointer;font:inherit;font-size:12px}
 .a3d-awbar-x:hover,.a3d-awbar-d:hover{background:rgba(255,255,255,.1)}
-.a3d-awbar-x:focus-visible,.a3d-awbar-d:focus-visible,.a3d-awchip:focus-visible,.a3d-awl-nm:focus-visible,.a3d-awl-back:focus-visible{outline:2px solid #4ea1ff;outline-offset:1px}
+.a3d-awbar-x:focus-visible,.a3d-awbar-d:focus-visible,.a3d-awchip:focus-visible,.a3d-awl-nm:focus-visible,.a3d-awl-cat:focus-visible,.a3d-awl-lk:focus-visible,.a3d-awp-cat:focus-visible,.a3d-awp-an:focus-visible,.a3d-awp-flag:focus-visible{outline:2px solid #4ea1ff;outline-offset:1px}
 .a3d-awbar-d{display:none;padding:0 10px;border:1px solid rgba(255,255,255,.16)}
 .a3d-awchips{display:none;pointer-events:auto;gap:6px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:2px}
 .a3d-awchips::-webkit-scrollbar{display:none}
@@ -1405,40 +1331,54 @@ body.light-theme .a3d-awbar-x:hover,body.light-theme .a3d-awbar-d:hover{backgrou
 body.light-theme .a3d-awbar-d{border-color:rgba(0,0,0,.14)}
 body.light-theme .a3d-awchip.on{background:#1f2328;color:#fff;border-color:#1f2328}
 body.light-theme .a3d-awchip.add{border-color:rgba(0,0,0,.4)}
-/* the left: the analyses */
-.a3d-awl{display:flex;flex-direction:column;padding:4px 2px 16px;font-size:12.5px}
-.a3d-awl-hd{display:flex;align-items:center;gap:8px;margin:0 0 4px}
-.a3d-awl-back{display:inline-flex;align-items:center;gap:3px;border:0;background:transparent;color:#9aa7b4;font:inherit;font-size:11.5px;padding:4px 6px 4px 2px;border-radius:6px;cursor:pointer}
-.a3d-awl-back:hover{color:#e8edf2;background:rgba(255,255,255,.06)}
-.a3d-awl-ttl{font-weight:650;font-size:14px;margin-left:auto;margin-right:4px}
-.a3d-awl-site{font-size:11.5px;color:#8a96a3;line-height:1.4;margin:0 4px 10px}
-.a3d-awl-again{border:0;background:transparent;color:#4ea1ff;font:inherit;font-size:11.5px;padding:0 2px;cursor:pointer}
-.a3d-awl-again:hover{text-decoration:underline}
-.a3d-awl-again:disabled{color:inherit;opacity:.6;cursor:default;text-decoration:none}
-body.light-theme .a3d-awl-again{color:#1f5fa8}
-.a3d-awl-grp{margin-top:10px}
-.a3d-awl-grphd{font-size:10.5px;font-weight:650;letter-spacing:.07em;text-transform:uppercase;color:#8a96a3;margin:0 6px 3px}
-.a3d-awl-row{display:flex;align-items:center;gap:8px;min-height:30px;padding:0 6px;border-radius:7px;position:relative}
-.a3d-awl-row:hover{background:rgba(255,255,255,.045)}
+/* the left: __acad3dV171c, Analyze's one list: the site, Overview, the ten categories with their analyses, the model's */
+.a3d-awl{padding:6px 8px 18px;font-size:12.5px}
+.a3d-awl-hd{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin:2px 2px 8px}
+.a3d-awl-ttl{font-weight:650;font-size:14px}
+.a3d-awl-site{display:flex;flex-direction:column;gap:6px;margin:8px 0 8px;padding:10px;border-radius:9px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08)}
+.a3d-awl-place{font-size:12px;font-weight:500;line-height:1.35;overflow-wrap:anywhere}
+.a3d-awl-addr{display:block;width:100%;box-sizing:border-box;background:#1f2327;border:1px solid #3a4048;border-radius:6px;color:#e6eaef;padding:4px 8px;min-height:30px;font:inherit;font-size:12.5px}
+.a3d-awl-addr:focus{border-color:#4ea1ff;outline:0}
+.a3d-awl-bd,.a3d-awl-run{font-size:11.5px;color:#8a96a3;line-height:1.4}
+.a3d-awl-lk{border:0;background:transparent;color:#4ea1ff;font:inherit;padding:0;cursor:pointer}
+.a3d-awl-lk:hover{text-decoration:underline}
+.a3d-awl .a3d-awl-go{min-height:32px;font-size:12.5px;font-weight:600}
+.a3d-awl-grp{margin-top:4px}
+.a3d-awl-grp,.a3d-awl-row{scroll-margin-top:44px}
+.a3d-awl-grphd{font-size:10.5px;font-weight:650;letter-spacing:.07em;text-transform:uppercase;color:#8a96a3;margin:12px 6px 3px}
+.a3d-awl-cat{display:flex;align-items:center;gap:8px;width:100%;min-height:34px;padding:0 8px 0 4px;border:0;border-radius:7px;background:transparent;color:inherit;
+  font:inherit;font-weight:600;text-align:left;cursor:pointer}
+.a3d-awl-cat:hover,.a3d-awl-row:hover{background:rgba(255,255,255,.045)}
+.a3d-awl-no{flex:0 0 20px;font-size:11px;color:#8a96a3;text-align:center;font-variant-numeric:tabular-nums}
+.a3d-awl-cn{flex:1 1 auto;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.a3d-awl-fn{flex:0 0 auto;font-size:11px;font-weight:500;color:#8a96a3;font-variant-numeric:tabular-nums}
+.a3d-awl-rf{flex:0 0 auto;min-width:16px;height:16px;padding:0 4px;box-sizing:border-box;border-radius:8px;background:#e5484d;color:#fff;font-size:10.5px;font-weight:650;line-height:16px;text-align:center}
+.a3d-awl-row{display:flex;align-items:center;gap:8px;min-height:30px;padding:0 8px 0 32px;border-radius:7px}
 .a3d-awl-tick{flex:0 0 auto;margin:0;width:14px;height:14px;accent-color:#4ea1ff;cursor:pointer}
 .a3d-awl-sw{flex:0 0 auto;width:10px;height:10px;border-radius:3px}
+.a3d-awl-dot{flex:0 0 auto;width:8px;height:8px;margin:0 21px 0 3px;box-sizing:border-box;border-radius:50%;border:1.5px solid #6b7280}
 .a3d-awl-nm{flex:1 1 auto;min-width:0;border:0;background:transparent;color:inherit;font:inherit;text-align:left;padding:6px 0;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .a3d-awl-st{flex:0 0 auto;font-size:10.5px;color:#8a96a3;white-space:nowrap}
 button.a3d-awl-row{width:100%;border:0;background:transparent;color:inherit;font:inherit;cursor:pointer;text-align:left;justify-content:space-between}
-.a3d-awl-ov .a3d-awl-nm{flex:0 0 auto;padding:6px 0}
-.a3d-awl-row.focus{background:#e8edf2;color:#111418}
-.a3d-awl-row.focus .a3d-awl-st{color:#4b5563}
-.a3d-awl-row.add .a3d-awl-nm{font-weight:600}
+.a3d-awl-ov{padding-left:8px;font-weight:600}
+.a3d-awl-ov .a3d-awl-nm{flex:0 0 auto}
+.a3d-awl-ov .a3d-awl-st{min-width:0;overflow:hidden;text-overflow:ellipsis}
+.a3d-awl-row.pick,.a3d-awl-cat.pick,.a3d-awl-row.pick:hover,.a3d-awl-cat.pick:hover{background:#e8edf2;color:#111418}
+.a3d-awl-row.pick .a3d-awl-st,.a3d-awl-cat.pick .a3d-awl-no,.a3d-awl-cat.pick .a3d-awl-fn{color:#4b5563}
+.a3d-awl-row.focus .a3d-awl-nm,.a3d-awl-row.add .a3d-awl-nm{font-weight:600}
+.a3d-awl-row.focus:not(.pick){box-shadow:inset 3px 0 0 #4ea1ff}
 .a3d-awl-row.none .a3d-awl-nm,.a3d-awl-row.none .a3d-awl-sw{opacity:.45}
 .a3d-awl-row.stale .a3d-awl-st{color:#e0a43a}
-.a3d-awl-empty{margin:12px 6px;font-size:12px;color:#8a96a3;line-height:1.45}
+@media(pointer:coarse){.a3d-awl-cat,.a3d-awl-row{min-height:44px}.a3d-awl-addr{min-height:38px;font-size:16px}.a3d-awl .a3d-awl-go{min-height:40px}}
 body.light-theme .a3d-awl,body.light-theme .a3d-awp{color:#1f2328}
-body.light-theme .a3d-awl-back{color:#6b7280}
-body.light-theme .a3d-awl-back:hover{color:#1f2328;background:rgba(0,0,0,.05)}
-body.light-theme .a3d-awl-site,body.light-theme .a3d-awl-grphd,body.light-theme .a3d-awl-st,body.light-theme .a3d-awl-empty{color:#6b7280}
-body.light-theme .a3d-awl-row:hover{background:rgba(0,0,0,.04)}
-body.light-theme .a3d-awl-row.focus{background:#1f2328;color:#fff}
-body.light-theme .a3d-awl-row.focus .a3d-awl-st{color:#c9ced4}
+body.light-theme .a3d-awl-site{background:rgba(0,0,0,.03);border-color:rgba(0,0,0,.08)}
+body.light-theme .a3d-awl-addr{background:#fff;border-color:#c9ced4;color:#222}
+body.light-theme .a3d-awl-bd,body.light-theme .a3d-awl-run,body.light-theme .a3d-awl-grphd,body.light-theme .a3d-awl-no,body.light-theme .a3d-awl-fn,body.light-theme .a3d-awl-st{color:#6b7280}
+body.light-theme .a3d-awl-lk{color:#1f5fa8}
+body.light-theme .a3d-awl-cat:hover,body.light-theme .a3d-awl-row:hover{background:rgba(0,0,0,.04)}
+body.light-theme .a3d-awl-row.pick,body.light-theme .a3d-awl-cat.pick,body.light-theme .a3d-awl-row.pick:hover,body.light-theme .a3d-awl-cat.pick:hover{background:#1f2328;color:#fff}
+body.light-theme .a3d-awl-row.pick .a3d-awl-st,body.light-theme .a3d-awl-cat.pick .a3d-awl-no,body.light-theme .a3d-awl-cat.pick .a3d-awl-fn{color:#c9ced4}
+body.light-theme .a3d-awl-row.focus:not(.pick){box-shadow:inset 3px 0 0 #1f5fa8}
 body.light-theme .a3d-awl-row.stale .a3d-awl-st{color:#9a5b00}
 /* the right: the one analysis */
 .a3d-awp{padding:2px 2px 18px;font-size:12.5px;line-height:1.45}
@@ -1490,8 +1430,36 @@ body.light-theme .a3d-awp-about{color:#374151}
 body.light-theme .a3d-awp-note{color:#4b5563}
 body.light-theme .a3d-awp-chart{--surf:#ffffff;--ink:#0b0b0b;--ink2:#52514e;--muted:#6b7280;--grid:#e1e0d9;--base:#c3c2b7;--band:rgba(11,11,11,.07);
   --w1:#86b6ef;--w2:#5598e7;--w3:#2a78d6;--w4:#1c5cab;--w5:#104281;--hn:#e7e5df}
-/* an analysis's row in Analyze: its name keeps room beside a long first button (Traffic's "Stop the simulation") */
-.a3d-anzhd>.a3d-anzbtn{flex:0 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis}
+/* __acad3dV171c: what is picked: a category's number, the red flags, the categories, a category's analyses, the way back */
+.a3d-awp-no{flex:0 0 auto;min-width:26px;height:26px;padding:0 6px;box-sizing:border-box;border-radius:7px;background:rgba(255,255,255,.08);font-weight:650;font-size:13px;line-height:26px;text-align:center}
+.a3d-awp-flags,.a3d-awp-cats,.a3d-awp-ans{display:flex;flex-direction:column;gap:2px}
+.a3d-awp-flag{display:flex;gap:6px;align-items:baseline;text-align:left;border:0;border-left:3px solid #e5484d;background:rgba(229,72,77,.1);color:inherit;font:inherit;font-size:12px;
+  line-height:1.4;padding:6px 8px;border-radius:0 7px 7px 0;cursor:pointer}
+.a3d-awp-cat{display:grid;grid-template-columns:22px 1fr;column-gap:4px;text-align:left;border:0;background:transparent;color:inherit;font:inherit;padding:5px 6px;border-radius:7px;cursor:pointer}
+.a3d-awp-catno{grid-row:1 / 3;font-size:11px;color:#8a96a3;font-variant-numeric:tabular-nums;padding-top:2px}
+.a3d-awp-catn{font-weight:500}
+.a3d-awp-catf{font-size:11px;color:#8a96a3}
+.a3d-awp-catf.rf{color:#ef8a8d}
+.a3d-awp-an{display:flex;align-items:center;gap:8px;min-width:0;text-align:left;border:0;background:transparent;color:inherit;font:inherit;padding:6px;border-radius:7px;cursor:pointer}
+.a3d-awp-an i{flex:0 0 auto;width:10px;height:10px;border-radius:3px}
+.a3d-awp-an i.o{width:8px;height:8px;box-sizing:border-box;border-radius:50%;border:1.5px solid #6b7280;margin:0 1px}
+.a3d-awp-ann{flex:1 1 auto;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.a3d-awp-anst{flex:0 0 auto;font-size:11px;color:#8a96a3}
+.a3d-awp-an:disabled{opacity:.5;cursor:default}
+.a3d-awp-cat:hover,.a3d-awp-an:hover{background:rgba(255,255,255,.05)}
+.a3d-awp-an:disabled:hover{background:transparent}
+.a3d-awp-in{margin:14px 0 0;font-size:11.5px;color:#8a96a3}
+.a3d-awp .a3d-awp-stale{color:#e0a43a}
+body.light-theme .a3d-awp .a3d-awp-stale{color:#9a5b00}
+.a3d-awp-backrow{margin:2px 0 10px}
+.a3d-awp .a3d-safind{margin-bottom:8px}
+.a3d-awp .a3d-clsec{margin-top:16px}
+.a3d-awp .a3d-salink{margin-top:12px}
+body.light-theme .a3d-awp-no{background:rgba(0,0,0,.06)}
+body.light-theme .a3d-awp-flag{background:rgba(229,72,77,.08)}
+body.light-theme .a3d-awp-catno,body.light-theme .a3d-awp-catf,body.light-theme .a3d-awp-anst,body.light-theme .a3d-awp-in{color:#6b7280}
+body.light-theme .a3d-awp-catf.rf{color:#b42318}
+body.light-theme .a3d-awp-cat:hover,body.light-theme .a3d-awp-an:hover{background:rgba(0,0,0,.04)}
 </style>
 </head>
 <body>
@@ -19447,6 +19415,7 @@ try{
   function bimPropReveal(name){
     var tb=bimPropTabOf(name);
     A3D_PROP_GROUPS_OPEN[name]=true;
+    if(A3D_AW.on)A3D_AW.props=true;   /* __acad3dV171c: in Analyze, the model's Properties, and a way back to the analysis above them */
     if(tb){A3D_PTAB=tb;try{localStorage.setItem(BIM_PTAB_KEY,tb);}catch(eS){}}
     return tb;
   }
@@ -19457,7 +19426,7 @@ try{
     return true;
   }
   /* ================= __acad3dV141: the Analyze tab ================= */
-  var A3D_ANZ={lod:null,open:bimAnzOpenLoad(),q:'',pend:false};   /* __acad3dV148: the rows open, and the search; __acad3dV162: a refresh held while a field is typed in */
+  var A3D_ANZ={lod:null,q:'',pend:false};   /* __acad3dV148: the search; __acad3dV162: a refresh held while a field is typed in */
   /* __acad3dV162: one Analyze. The analyses and the site analysis were two views behind a switch;
      they are one list now. Opening it to either is opening it. */
   function bimAnzView(){
@@ -19465,20 +19434,16 @@ try{
     var p=document.getElementById('a3d-leftpanel');
     return !!(p&&p.querySelector('.a3d-analyze-wrap'));
   }
-  /* a category opened, and brought into view; a search that hides it is cleared */
+  /* a category, on the right, its row in the list in view; a search that hides it is cleared. __acad3dV171c: picked,
+     where it was opened in the list */
   function bimSaGoto(id){
     if(!bimSaCat(id))return false;
-    bimAnzView();
-    var w=document.querySelector('.a3d-analyze-wrap'),s=w?w.querySelector('[data-anzsearch]'):null,c;
-    if(A3D_ANZ.q){A3D_ANZ.q='';if(s)s.value='';if(w)bimAnzFilter(w);}
-    bimSaToggle(id,true);
-    c=w?w.querySelector('[data-sacat="'+id+'"]'):null;
-    if(c){try{c.scrollIntoView({block:'start',behavior:'smooth'});}catch(eS){c.scrollIntoView();}}
-    return !!c;
+    A3D_ANZ.q='';
+    bimAwPick('cat',id);
+    return !!document.querySelector('.a3d-analyze-wrap [data-sacat="'+id+'"]');
   }
-  /* __acad3dV148: a row, not a card. Its name, what it shows, its state and its first action on one
-     line; the whole status, the legend and every other action a click away. A row is opened by the
-     viewer, and stays open, in this browser. */
+  /* __acad3dV148: a row, not a card. __acad3dV171c: a row of the list, its name and its state; what it says,
+     its settings and its buttons on the right when it is picked */
   /* __acad3dV162: an analysis sits in the category it answers; what reads the model itself is Model */
   var BIM_ANZ_GROUP_OF={survey:'landform',terrain:'landform',grading:'landform',rain:'water',sun:'climate',sunhours:'climate',solar:'climate',
     dgframe:'location',dgsun:'climate',dgshadow:'climate',dgwind:'climate',dgviews:'people',dgnoise:'risk'};   /* __acad3dV164: the analyses in the model */
@@ -19492,10 +19457,6 @@ try{
   /* __acad3dV168: land */
   BIM_ANZ_GROUP_OF.dglanduse='location';BIM_ANZ_GROUP_OF.dgfigure='location';BIM_ANZ_GROUP_OF.dggreen='ecology';BIM_ANZ_GROUP_OF.dgzoning='legal';
   var BIM_ANZ_MODEL=['lens','areas','lod','stats','structure'];
-  var BIM_ANZ_KEY='acad3dAnzOpen';
-  var BIM_ANZ_CHEV='<svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3.5 10.5 8 6 12.5"/></svg>';
-  /* the key written out: A3D_ANZ is made before BIM_ANZ_KEY is set */
-  function bimAnzOpenLoad(){try{var v=JSON.parse(localStorage.getItem('acad3dAnzOpen')||'{}');return v&&typeof v==='object'&&!Array.isArray(v)?v:{};}catch(eO){return {};}}
   function bimAnzStateText(s){return s==='on'?'On':s==='warn'?'Check':s==='fail'?'Problems':s==='stale'?'Out of date':s==='busy'?'Running':'Off';}
   function bimAnzBtn(a){
     return '<button type="button" class="a3d-anzbtn'+(a.pri?' pri':'')+(a.lay?' lay':'')+'" data-anzact="'+a.act+'"'+(a.off?' disabled title="'+bimEsc(a.off)+'"':(a.tip?' title="'+bimEsc(a.tip)+'"':''))+'>'+bimEsc(a.label)+'</button>';
@@ -19515,28 +19476,6 @@ try{
       return {act:'layer:cutfill',label:'Add as layer',lay:true,tip:tip,off:!o?'Grade first':bimResLayers().some(function(R){return R.kind==='terrain'&&R.mode==='cutfill'&&R.src===o.id;})?'Its cut and fill is a layer already':''};
     }
     return null;
-  }
-  function bimAnzCard(c){
-    var open=!!A3D_ANZ.open[c.id],a0=c.acts[0],rest=c.acts.slice(1),ly=bimAnzLayerAct(c.id);
-    if(ly)rest.push(ly);
-    return '<div class="a3d-anzcard'+(open?' open':'')+'" data-anzcard="'+c.id+'">'+
-      '<div class="a3d-anzhd"><button type="button" class="a3d-anztog" data-anztog="'+c.id+'" aria-expanded="'+open+'">'+
-      '<span class="a3d-anzchev">'+BIM_ANZ_CHEV+'</span><span class="a3d-anzname"><span class="a3d-anzttl">'+bimEsc(c.title)+'</span>'+
-      '<span class="a3d-anzsum">'+bimEsc(c.status)+'</span></span></button>'+
-      (c.state?'<span class="a3d-anzstate a3d-anzstate-'+c.state+'">'+bimAnzStateText(c.state)+'</span>':'')+(a0?bimAnzBtn(a0):'')+'</div>'+
-      '<div class="a3d-anzbody"><div class="a3d-anzst">'+bimEsc(c.status)+'</div>'+(c.extra||'')+
-      (rest.length?'<div class="a3d-anzacts">'+rest.map(bimAnzBtn).join('')+'</div>':'')+'</div></div>';
-  }
-  /* a row opened or closed, in place */
-  function bimAnzToggle(id,on){
-    id=String(id||'');
-    if(!/^[a-z]+$/.test(id))return false;
-    var v=on===undefined?!A3D_ANZ.open[id]:!!on;
-    if(v)A3D_ANZ.open[id]=true;else delete A3D_ANZ.open[id];
-    try{localStorage.setItem(BIM_ANZ_KEY,JSON.stringify(A3D_ANZ.open));}catch(eS){}
-    var w=document.querySelector('.a3d-analyze-wrap'),c=w?w.querySelector('[data-anzcard="'+id+'"]'):null,b;
-    if(c){c.classList.toggle('open',v);b=c.querySelector('[data-anztog]');if(b)b.setAttribute('aria-expanded',String(v));}
-    return v;
   }
   /* each analysis: what it shows now, and its buttons */
   function bimAnzCards(){
@@ -19620,88 +19559,45 @@ try{
     F.forEach(function(f){if(f.cls==='redflag')r++;});
     return bimSaN(F.length,'finding')+(r?', '+bimSaN(r,'red flag'):'')+(n?' · '+n+' on':'');
   }
-  /* __acad3dV162: under the search, in the order the work goes. __acad3dV164: the site and Analyze
-     site first, where the stages and Define were; then the red flags, the ten categories with their
-     analyses, data and findings, and the model */
-  function bimAnzBodyHtml(C){
-    var F=bimSaShown(),R=F.filter(function(f){return f.cls==='redflag';}),h=bimSiteRunHtml();
-    if(R.length)h+='<div class="a3d-saflags" data-anzsec="flags"><div class="a3d-sasechd">Red flags first</div>'+R.map(function(f){return '<div class="a3d-saflag">'+bimSaNumber(f)+' '+bimEsc(f.title)+(f.value?': '+bimEsc(f.value):'')+'</div>';}).join('')+'</div>';
-    h+='<div class="a3d-sasec" data-anzsec="cats"><div class="a3d-sasechd">The ten categories</div><div class="a3d-anzlist">'+BIM_SA_CATS.map(function(c,i){return bimSaCatHtml(c,i,C);}).join('')+'</div></div>';
-    var M=BIM_ANZ_MODEL.map(function(id){return C.filter(function(c){return c.id===id;})[0];}).filter(function(c){return !!c;});
-    h+='<div class="a3d-sasec a3d-anzgrp" data-anzgrp="model"><div class="a3d-sasechd a3d-anzgrphd">Model</div><div class="a3d-sacap">What the model itself shows; no site data needed.</div>'+
-      '<div class="a3d-anzlist">'+M.map(bimAnzCard).join('')+'</div></div>';
-    return h+'<div class="a3d-anzempty" hidden>Nothing matches</div>';
-  }
-  function bimAnalyzeHtml(){
-    if(A3D_AW.on)return bimAwListHtml();   /* __acad3dV171b: the workspace's analyses */
-    var C=bimAnzCards();
-    return '<div class="a3d-anz a3d-sa"><div class="a3d-anzhead"><span class="a3d-anzttl0">Analyze</span><span class="a3d-anzcount">'+bimAnzCountText(C)+'</span></div>'+
-      '<input type="search" class="a3d-anzsearch" data-anzsearch="1" placeholder="Search analyses, data and findings" aria-label="Search Analyze" autocomplete="off" value="'+bimEsc(A3D_ANZ.q||'')+'">'+
-      '<div class="a3d-anzrows">'+bimAnzBodyHtml(C)+'</div></div>';
-  }
   /* every word asked for starts a word of the text: rain is not in terrain */
   function bimAnzWordsHit(q,text){
     var s=' '+String(text).toLowerCase().replace(/[^a-z0-9\u00c0-\u024f]+/g,' ')+' ',W=String(q).toLowerCase().split(/[^a-z0-9\u00c0-\u024f]+/),i;
     for(i=0;i<W.length;i++)if(W[i]&&s.indexOf(' '+W[i])<0)return false;
     return true;
   }
-  /* __acad3dV162: the search, over everything, in place. A category asked for by its own words --
-     its name, its question, its data, its findings -- shows whole and opened; otherwise
-     the analyses in it that match, by their name, what they say and their buttons. */
-  /* an element's words, each text apart: its textContent runs "Place" and "Boundary" into one */
-  function bimAnzText(el){
-    var w=document.createTreeWalker(el,NodeFilter.SHOW_TEXT,null,false),s=[],n;
-    while((n=w.nextNode()))s.push(n.nodeValue);
-    return s.join(' ');
-  }
-  function bimAnzTexts(root,sel){return [].map.call(root.querySelectorAll(sel),bimAnzText).join(' ');}
-  function bimAnzRowText(r,more){return r.getAttribute('data-anzcard')+' '+bimAnzTexts(r,'.a3d-anzttl,.a3d-anzst,.a3d-anzbtn,.a3d-anzlab,.a3d-anzsub')+' '+(more||'');}   /* __acad3dV166b: its settings' names */
+  /* __acad3dV162: the search, in place. __acad3dV171c: over the list. A category asked for by its own words -- its
+     name, its question, where its data is, what was found -- shows whole; otherwise the analyses in it that match,
+     by their name, what they show, what they report and their buttons */
   function bimAnzFilter(w){
-    var q=String(A3D_ANZ.q||'').toLowerCase().replace(/^\s+|\s+$/g,''),root=w?w.querySelector('.a3d-anz'):null,n=0,i,j,S,K,G,R,k,on,name,whole,hit,e;
+    var q=String(A3D_ANZ.q||'').toLowerCase().replace(/^\s+|\s+$/g,''),root=w?w.querySelector('.a3d-awl'):null,n=0,C={},K,i,j,R,k,c,nm,whole,hit,e,ov;
     if(!root)return 0;
     function show(x,v){if(v)x.removeAttribute('hidden');else x.setAttribute('hidden','');}
     root.classList.toggle('q',!!q);
-    S=root.querySelectorAll('[data-anzsec="flags"]');
-    for(i=0;i<S.length;i++){
-      on=!q||bimAnzWordsHit(q,bimAnzText(S[i]));
-      show(S[i],on);if(q&&on)n++;
-    }
-    K=root.querySelectorAll('[data-sacat]');
+    if(q)bimAnzCards().forEach(function(x){C[x.id]=x;});
+    ov=root.querySelector('.a3d-awl-ov');
+    if(ov)show(ov,!q);
+    K=root.querySelectorAll('[data-sacat],[data-anzgrp]');
     for(i=0;i<K.length;i++){
-      name=(K[i].querySelector('.a3d-anzttl')||{textContent:''}).textContent;
-      whole=!q||bimAnzWordsHit(q,name+' '+bimAnzTexts(K[i],'.a3d-saq,.a3d-clsec,.a3d-salink,.a3d-safind'));
+      c=bimSaCat(K[i].getAttribute('data-sacat'));nm=c?c.n:'Model';
+      whole=!q||(!!c&&bimAnzWordsHit(q,c.n+' '+c.q+' '+(BIM_SA_SEE[c.id]?BIM_SA_SEE[c.id][1]:'')+' '+bimSaOf(c.id).map(function(f){return f.title+' '+f.value+' '+bimSaPair(BIM_SA_CLS,f.cls)+' '+f.source;}).join(' ')));
       R=K[i].querySelectorAll('[data-anzcard]');k=0;
-      for(j=0;j<R.length;j++){hit=whole||bimAnzWordsHit(q,bimAnzRowText(R[j],name));show(R[j],hit);if(hit)k++;}
-      on=whole||k>0;
-      show(K[i],on);K[i].classList.toggle('qhit',!!q&&on);
-      if(on)n+=1+k;
-    }
-    G=root.querySelectorAll('[data-anzgrp]');
-    for(i=0;i<G.length;i++){
-      name=(G[i].querySelector('.a3d-anzgrphd')||{textContent:''}).textContent;
-      R=G[i].querySelectorAll('[data-anzcard]');k=0;
-      for(j=0;j<R.length;j++){hit=!q||bimAnzWordsHit(q,bimAnzRowText(R[j],name));show(R[j],hit);if(hit)k++;}
-      show(G[i],k>0);
-      n+=k;
+      for(j=0;j<R.length;j++){hit=whole||bimAnzWordsHit(q,bimAwRowWords(C[R[j].getAttribute('data-anzcard')],nm));show(R[j],hit);if(hit)k++;}
+      show(K[i],whole||k>0);
+      if(q)n+=k+(whole&&c?1:0);
     }
     e=root.querySelector('.a3d-anzempty');
     if(e)show(e,!!q&&!n);
     return n;
   }
-  /* the panel again, when it is open: the list only, so the search, its focus and the scroll stay.
+  /* the list again, when Analyze is open: the search, its focus and the scroll stay.
      __acad3dV162: not under a field being typed in, whose words would go -- then when it is left. */
   function bimAnalyzeRefresh(force){
     var sh=document.getElementById('a3d-shell'),w=sh&&sh.dataset.tab==='analyze'?sh.querySelector('.a3d-analyze-wrap'):null,a=document.activeElement;
     if(!w)return false;
     if(!force&&a&&w.contains(a)&&/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)&&!a.hasAttribute('data-anzsearch')&&a.type!=='checkbox'&&a.type!=='file'){A3D_ANZ.pend=true;return false;}
     A3D_ANZ.pend=false;
-    try{
-      if(A3D_AW.on){bimRenderInto(w,bimAwListHtml());return true;}   /* __acad3dV171b */
-      var rows=w.querySelector('.a3d-anzrows'),cnt=w.querySelector('.a3d-anzcount'),C;
-      if(rows&&cnt){C=bimAnzCards();bimRenderInto(rows,bimAnzBodyHtml(C));cnt.textContent=bimAnzCountText(C);}
-      else w.innerHTML=bimAnalyzeHtml();
-      bimAnzFilter(w);
-    }catch(eA){console.warn('[BIM] Analyze panel',eA);}
+    try{bimRenderInto(w,bimAwListHtml());bimAnzFilter(w);}   /* __acad3dV171c: one list, the workspace's */
+    catch(eA){console.warn('[BIM] Analyze panel',eA);}
     return true;
   }
   /* a button: run it, or open its settings in Properties */
@@ -22101,7 +21997,9 @@ try{
     if(S.mv&&S.mv.error)return 'The movement data could not be worked out: '+String(S.mv.error).slice(0,160);
     return 'The access data is from before V166: Analyze site again for the streets\' details';
   }
-  function bimMvLight(){var L=bimAwLook();if(L)return L.light;var s=bimMapSettings().style;return s==='street'||s==='custom';}   /* __acad3dV171b: the workspace's ground is the mode's */
+  /* __acad3dV171c: the colours an analysis is drawn in are kept with its elements: those for the map under them outside
+     Analyze, now that every run is inside it; what moves is drawn live, on Analyze's ground in its mode (bimTrLight) */
+  function bimMvLight(){var s=bimMapSettings().style;return s==='street'||s==='custom';}
   function bimMvCol(o){return bimMvLight()?o.lt:o.dk;}
   function bimMvClassOf(hw){var i;hw=String(hw||'');for(i=0;i<BIM_MV_CLASSES.length;i++)if(BIM_MV_CLASSES[i].re.test(hw))return BIM_MV_CLASSES[i];return null;}
   function bimMvPts(mv,rec,y){var L=[],k;for(k=1;k<rec.length;k++)L.push([mv.x[rec[k]],y,mv.z[rec[k]]]);return L;}
@@ -24102,7 +24000,7 @@ try{
   function bimSiteStep(id,state,text){
     var s=A3D_SITERUN.steps,i;
     for(i=0;i<s.length;i++)if(s[i].id===id){s[i].state=state;s[i].text=String(text==null?'':text).slice(0,400);}
-    bimAnalyzeRefresh(true);
+    bimSaRefresh(true);   /* __acad3dV171c: the list's line and the overview's steps */
   }
   /* why a fetch would not start: it says so in the message it shows */
   function bimSiteToastText(){var t=document.getElementById('a3d-toast'),L=t?String(t.textContent||'').split('\n'):[];return L.length?L[L.length-1]:'';}
@@ -24245,57 +24143,30 @@ try{
     try{bimZnFromLayer(true);}catch(eZ2){console.warn('[BIM] Analyze site: zoning',eZ2);bimSiteStep('zoning','fail','It could not be read - see the console');return;}
     bimSiteStep('zoning','ok',bimZnFoundText(f)+' (from '+(f.district||f.far||f.height).layer+')');
   }
-  /* the top of Analyze: where the site is, the button, and what the last run brought */
-  function bimSiteRunHtml(){
-    var st=bimSunSettings(),placed=bimSunNum(st.lat)&&bimSunNum(st.lon),D=bimDgState(),R=A3D_SITERUN,P=A3D.objs.filter(bimIsProperty),bd,h,steps;
-    if(P.length){var g=bimPropertyGeometry(P[0]);bd=bimEsc(P[0].name)+', '+bimDispNum(g.area,1)+' m\u00b2';}
-    else bd='None yet <button type="button" class="a3d-anzbtn" data-saact="cmd:propertyshape">From a shape</button> <button type="button" class="a3d-anzbtn" data-saact="cmd:propertyline">From bearings</button>';
-    h='<div class="a3d-sasec a3d-sarun" data-anzsec="site"><div class="a3d-sasechd">Site</div>'+
-      '<div class="a3d-sarow"><span class="a3d-salab">Place</span><span class="a3d-saval">'+(placed?bimEsc(bimSitePlaceText()):'Not placed yet')+'</span></div>';
-    if(!placed)h+='<div class="a3d-sarow"><label for="a3d-saaddr">Address</label><input type="text" id="a3d-saaddr" data-saaddr="1" maxlength="200" enterkeyhint="search" autocomplete="off" placeholder="A street address or a place"></div>';
-    h+='<div class="a3d-sarow"><span class="a3d-salab">Boundary</span><span class="a3d-saval">'+bd+'</span></div>'+
-      '<div class="a3d-saacts"><button type="button" class="a3d-anzbtn pri a3d-sago" data-saact="analyze"'+(R.busy?' disabled':'')+'>'+(R.busy?'Analyzing ...':(D.last?'Analyze site again':'Analyze site'))+'</button>'+
-      (D.last?'<button type="button" class="a3d-anzbtn" data-anzact="aw:open:" title="The analyses one at a time, each with its key and its panel">Open the site analysis</button>':'')+   /* __acad3dV171b */
-      (D.last?'<button type="button" class="a3d-anzbtn" data-saact="dglegend" aria-pressed="'+(!D.legendOff)+'">'+(D.legendOff?'Show the legend':'Hide the legend')+'</button>':'')+'</div>'+
-      '<div class="a3d-sacap">'+(D.last&&!R.busy?bimEsc('Last run '+D.last.date+'. Each analysis is on Layers, Site analysis: select an element to move, restyle or relabel it; what you change is kept when it runs again.'):
-        'Gets what is around the site from free open data -- buildings, roads, terrain, climate, access, zoning -- and draws each analysis in the model, on Layers, Site analysis. One undo step.')+'</div>';
-    steps=R.steps.length?R.steps:((D.last&&D.last.steps)||[]);
-    if(steps.length)h+='<ol class="a3d-sasteps" data-sasteps="1">'+steps.map(function(s){
-      return '<li class="a3d-sastep '+(BIM_SITERUN_CLS[s.state]||'s-wait')+'" data-sastep="'+bimEsc(s.id)+'"><span class="a3d-sastepic" aria-hidden="true"></span><span class="a3d-sastepn">'+bimEsc(s.name)+'</span>'+
-        '<span class="a3d-sastepst">'+bimEsc(BIM_SITERUN_WORD[s.state]||s.state)+'</span>'+(s.text?'<span class="a3d-sastept">'+bimEsc(s.text)+'</span>':'')+'</li>';}).join('')+'</ol>';
-    return h+'</div>';
-  }
   /* ---- each analysis drawn in the model, a row in its category ---- */
   var BIM_DG_KEYCLS={fill:'k-fill',line:'k-line',dash:'k-dash',dot:'k-dot'};
-  function bimDgLegendHtml(rows){
-    if(!rows||!rows.length)return '';
-    return '<div class="a3d-dgleg">'+rows.map(function(r){
-      var st=(r.kind==='line'||r.kind==='dash')?'color:'+r.col:'background:'+r.col;
-      if(r.tex)st+=';'+bimDgTexCss(r.tex,r.ink);   /* __acad3dV168 */
-      return '<span class="a3d-dglegi"><i class="'+(BIM_DG_KEYCLS[r.kind]||'k-fill')+'" style="'+bimEsc(st)+'"></i>'+bimEsc(r.name)+'</span>';}).join('')+'</div>';
+  /* __acad3dV171c: a row of the list, with its state; its key, its note, its source and its buttons are its panel's
+     (bimAwAnHtml) */
+  /* __acad3dV167: what changed since an analysis ran, and what brings it up to date; __acad3dV171c: its row and its panel say it */
+  function bimDgStaleText(SC){
+    return 'Out of date: '+(SC.run.length?bimStdChangedText(SC.run)+' since it ran: Run again':'')+(SC.run.length&&SC.data.length?'; ':'')+
+      (SC.data.length?bimStdChangedText(SC.data)+' since '+BIM_STD_DATA[SC.kind].name+' was fetched: Analyze site again':'');
   }
   function bimDgCards(){
     var D=bimDgState();
     return BIM_DG_AN.map(function(A){
-      var R=D.runs[A.id],L=bimDgDiags(A.id),ly=bimLayerById(D.layers[A.id]),on=!!(ly&&bimLayerEff(ly).on),ed=L.filter(bimDgEdited).length;
+      var R=D.runs[A.id],L=bimDgDiags(A.id),on=bimAwShown(A.id),ed=L.filter(bimDgEdited).length;
       var st=!R?'Not run yet: Analyze site draws it':(L.length?bimSaN(L.length,'element')+' on Site analysis - '+A.name+(ed?', '+ed+' changed by you':'')+', '+R.date:(R.note||'Nothing to draw'));
       /* __acad3dV167: Out of date when a standard it used changed: an edition, a value, an override */
-      var SC=R?bimDgStdChanged(A.id):{run:[],data:[]},stale=!!(SC.run.length||SC.data.length),sx=bimDgStdText(A.id);
-      if(stale)st+='. Out of date: '+(SC.run.length?bimStdChangedText(SC.run)+' since it ran: Run again':'')+(SC.run.length&&SC.data.length?'; ':'')+(SC.data.length?bimStdChangedText(SC.data)+' since '+BIM_STD_DATA[SC.kind].name+' was fetched: Analyze site again':'');
-      var card={id:'dg'+A.id,title:A.name,state:!R?null:(stale?'stale':(L.length?(on?'on':'off'):'warn')),status:st,
-        extra:R?bimDgLegendHtml(R.legend)+(R.note&&L.length?'<div class="a3d-sacap">'+bimEsc(R.note)+'</div>':'')+(R.source?'<div class="a3d-sacap">Source: '+bimEsc(R.source)+'</div>':'')+
-          (sx?'<div class="a3d-sacap a3d-sastd" data-dgstd="'+A.id+'">'+bimEsc(sx)+'</div>':''):'',
-        acts:[{act:'dg:show:'+A.id,label:on?'Hide':'Show',pri:!on&&L.length>0,off:L.length?'':'Nothing drawn yet'},
-          {act:'aw:open:'+A.id,label:'Open',tip:'In the site analysis: drawn alone, with its key and its panel',off:R?'':'Not run yet'},   /* __acad3dV171b */
-          {act:'dg:run:'+A.id,label:R?'Run again':'Run',tip:'From what the project holds now; Analyze site fetches the data again'},
-          {act:'dg:select:'+A.id,label:'Select',off:L.length?'':'Nothing drawn yet'},
-          {act:'dg:reset:'+A.id,label:'Reset',off:R?'':'Not run yet',tip:'As the analysis draws it: what you changed, copied or deleted on it goes back'}]};
+      var SC=R?bimDgStdChanged(A.id):{run:[],data:[]},stale=!!(SC.run.length||SC.data.length);
+      if(stale)st+='. '+bimDgStaleText(SC);
+      var card={id:'dg'+A.id,title:A.name,state:!R?null:(stale?'stale':(L.length?(on?'on':'off'):'warn')),status:st};
       return A.id==='traffic'?bimTrCard(card):card;   /* __acad3dV171: the simulation's own part */
     });
   }
   function bimDgAct(v){
     v=String(v||'');
-    var i=v.indexOf(':'),c=v.slice(0,i),a=v.slice(i+1),D=bimDgState(),L,ly;
+    var i=v.indexOf(':'),c=v.slice(0,i),a=v.slice(i+1),L;
     if(i<0||!bimDgAn(a))return false;
     if(c==='run')return !!bimDgRunAll(a);
     if(c==='reset')return !!bimDgResetAnalysis(a);
@@ -24304,14 +24175,6 @@ try{
       if(!L.length)return false;
       A3D.selSet=L.map(function(o){return o.id;});A3D.sel=A3D.selSet[0];A3D.sel2=null;
       refreshTree();refreshProps();paint();
-      return true;
-    }
-    if(c==='show'){
-      ly=bimLayerById(D.layers[a]);
-      if(!ly)return false;
-      if(bimLayerEff(ly).on)bimLayerSet(ly.id,'visible',false);
-      else bimLayerChain(ly).forEach(function(x){if(x.visible===false)bimLayerSet(x.id,'visible',true);});   /* the layer and those above it */
-      paint();
       return true;
     }
     return false;
@@ -24336,7 +24199,6 @@ try{
   var BIM_SA_CLS=[['neutral','Fact'],['opportunity','Opportunity'],['constraint','Constraint'],['redflag','Red flag']];
   var BIM_SA_CONF=[['desktop','Desktop'],['site','Seen on site'],['surveyed','Surveyed']];
   var BIM_SA_SEV=[['1','Low'],['2','Medium'],['3','High']];
-  var A3D_SA={open:(function(){try{var v=JSON.parse(localStorage.getItem('acad3dSaOpen')||'{}');return v&&typeof v==='object'&&!Array.isArray(v)?v:{};}catch(eO){return {};}})()};
   function bimSaPair(L,k){var i;for(i=0;i<L.length;i++)if(L[i][0]===k)return L[i][1];return '';}
   function bimSaCat(id){var i;for(i=0;i<BIM_SA_CATS.length;i++)if(BIM_SA_CATS[i].id===id)return BIM_SA_CATS[i];return null;}
   function bimSaToday(){return new Date().toISOString().slice(0,10);}
@@ -27984,25 +27846,6 @@ try{
      Climate and Access fetch, and say where it is. */
   var BIM_SA_DATA={location:function(){return bimSaCtxHtml();},legal:function(){return bimZnSaHtml();},climate:function(){return bimClbSaHtml();},access:function(){return bimAccSaHtml();}};
   var BIM_SA_SEE={risk:['climate','Air quality and earthquakes come with the climate data'],people:['access','The census and the daily needs within a walk come with the access data']};
-  function bimSaCatHtml(c,i,C){
-    var F=bimSaOf(c.id),open=!!A3D_SA.open[c.id],nc=0,no=0,nr=0,dat=BIM_SA_DATA[c.id],see=BIM_SA_SEE[c.id],k;
-    var T=(C||[]).filter(function(x){return x.group===c.id;}),on=T.filter(function(x){return x.state==='on'||x.state==='stale'||x.state==='busy';});
-    F.forEach(function(f){if(f.cls==='constraint')nc++;else if(f.cls==='opportunity')no++;else if(f.cls==='redflag')nr++;});
-    var sum=F.length?bimSaN(F.length,'finding')+(nr?', '+bimSaN(nr,'red flag'):'')+(nc?', '+bimSaN(nc,'constraint'):'')+(no?', '+bimSaN(no,'opportunity','opportunities'):''):'No findings yet';
-    if(on.length)sum+=' \u00b7 '+on.map(function(x){return x.title;}).join(', ')+' on';
-    var h='<div class="a3d-anzcard a3d-sacat'+(open?' open':'')+'" data-sacat="'+c.id+'">'+
-      '<div class="a3d-anzhd"><button type="button" class="a3d-anztog" data-satog="'+c.id+'" aria-expanded="'+open+'">'+
-      '<span class="a3d-anzchev">'+BIM_ANZ_CHEV+'</span><span class="a3d-anzname"><span class="a3d-anzttl">'+(i+1)+'. '+bimEsc(c.n)+'</span>'+
-      '<span class="a3d-anzsum">'+bimEsc(sum)+'</span></span></button></div>'+
-      '<div class="a3d-anzbody"><div class="a3d-saq">'+bimEsc(c.q)+'</div>';
-    if(T.length)h+='<div class="a3d-sachkhd">Analyses</div><div class="a3d-anzlist a3d-satools">'+T.map(bimAnzCard).join('')+'</div>';
-    if(dat)h+=dat();
-    if(see){for(k=0;k<BIM_SA_CATS.length;k++)if(BIM_SA_CATS[k].id===see[0])break;
-      h+='<div class="a3d-salink">'+bimEsc(see[1])+'<button type="button" class="a3d-anzbtn" data-saact="goto:'+see[0]+'">'+(k+1)+'. '+bimEsc(BIM_SA_CATS[k].n)+'</button></div>';}
-    h+='<div class="a3d-sachkhd">Findings</div>'+(F.length?F.map(bimSaFindingHtml).join(''):'<div class="a3d-sanote">None yet: Analyze site writes them from the data.</div>')+
-      '</div></div>';
-    return h;
-  }
   /* __acad3dV162: Location's data: where the site is, and its context (V133) */
   function bimSaCtxHtml(){
     var c=A3D.site&&A3D.site.context&&A3D.site.context.last,st=bimSunSettings(),at='';
@@ -28013,18 +27856,13 @@ try{
       '<div class="a3d-saacts"><button type="button" class="a3d-anzbtn'+(c?'':' pri')+'" data-saact="cmd:context">'+(c?'Get the context again':'Get the context')+'</button>'+
       '<button type="button" class="a3d-anzbtn" data-anzact="open:Location">Location</button></div></div>';
   }
+  /* the site's part of Analyze's list: its buttons, and Enter in the address runs it. __acad3dV171c: a category's
+     buttons and the zoning's fields are on the right (bimAwWire) */
   function bimSaWire(w){
     w.addEventListener('click',function(ev){
-      var t=ev.target&&ev.target.closest?ev.target:null,b;
-      if(!t)return;
-      b=t.closest('[data-satog]');if(b){bimSaToggle(b.getAttribute('data-satog'));return;}
-      b=t.closest('[data-saact]');if(!b||b.disabled)return;
+      var b=ev.target&&ev.target.closest?ev.target.closest('[data-saact]'):null;
+      if(!b||b.disabled)return;
       try{bimSaAct(b.getAttribute('data-saact'));}catch(eS){console.warn('[BIM] Site analysis',eS);a3dToast('That did not work - see the console');}
-    });
-    w.addEventListener('change',function(ev){
-      var e=ev.target,k;
-      if(!e||!e.getAttribute)return;
-      if((k=e.getAttribute('data-znf'))){bimZnSet(k,e.value);return;}   /* __acad3dV160 */
     });
     /* __acad3dV164: Enter in the address runs it */
     w.addEventListener('keydown',function(ev){
@@ -28033,15 +27871,6 @@ try{
       ev.preventDefault();
       try{bimSaAct('analyze');}catch(eS){console.warn('[BIM] Site analysis',eS);a3dToast('That did not work - see the console');}
     });
-  }
-  function bimSaToggle(id,on){
-    if(!bimSaCat(id))return false;
-    var v=on===undefined?!A3D_SA.open[id]:!!on;
-    if(v)A3D_SA.open[id]=true;else delete A3D_SA.open[id];
-    try{localStorage.setItem('acad3dSaOpen',JSON.stringify(A3D_SA.open));}catch(eS){}
-    var c=document.querySelector('.a3d-sa-wrap [data-sacat="'+id+'"]'),b;
-    if(c){c.classList.toggle('open',v);b=c.querySelector('[data-satog]');if(b)b.setAttribute('aria-expanded',String(v));}
-    return v;
   }
   function bimSaAct(a){
     var k=String(a||''),i=k.indexOf(':'),v=i<0?'':k.slice(i+1),c=i<0?k:k.slice(0,i);
@@ -28066,8 +27895,9 @@ try{
     if(c==='cmd'&&/^(propertyshape|propertyline|context)$/.test(v))return window.__a3dRunCmd(v);
     return false;
   }
-  /* __acad3dV162: the site analysis is in Analyze's one list; its refresh is that list's */
-  function bimSaRefresh(force){return bimAnalyzeRefresh(force);}
+  /* __acad3dV162: the site analysis is in Analyze's one list; its refresh is that list's. __acad3dV171c: and the right's,
+     which shows a category's data as it arrives, and the run's steps */
+  function bimSaRefresh(force){var r=bimAnalyzeRefresh(force);if(A3D_AW.on)refreshProps();return r;}
   /* __acad3dV73: the no-selection inspector. Project and Site are editable and write to the
      title block and site record that the sheet title block already prints. Level, Layer and
      Appearance are the three switches that change what the drawing shows, and each one already
@@ -28264,6 +28094,7 @@ try{
     bimAnalyzeRefresh();   /* __acad3dV141; __acad3dV162: the site analysis with it */
     bimAwTitleSync();   /* __acad3dV171b */
     if(!el.propsbody)return;
+    if(bimAwOwns()){bimAwRender();return;}   /* __acad3dV171b: the one analysis; __acad3dV171c: or what was picked */
     var o=objById(A3D.sel);
     var gP=o?null:bimSelectedGrid();   /* __acad3dV98 */
     if(gP){bimRenderInto(el.propsbody,bimGridPropsHtml(gP));return;}   /* __acad3dV118 */
@@ -28272,7 +28103,6 @@ try{
          reference tool does. "No object selected" wastes the panel exactly when a user is
          orienting themselves. Every field below is backed by state that already exists and is
          already persisted -- no new settings were invented to fill the space. */
-      if(A3D_AW.on){bimRenderInto(el.propsbody,bimAwPanelHtml());return;}   /* __acad3dV171b: the one analysis */
       bimRenderInto(el.propsbody,bimModelPropsHtml());   /* __acad3dV118 */
       return;
     }
@@ -29945,11 +29775,13 @@ try{
     var D=bimDgState(),ly=bimLayerById(D.layers.traffic);
     return !ly||bimLayerEff(ly).on;
   }
+  /* __acad3dV171b: the cars and walkers on Analyze's ground take its mode's colours, elsewhere the map's */
+  function bimTrLight(){var L=bimAwLook();return L?L.light:bimMvLight();}
   function bimTrDraw(ctx,V,W,H){
     var R=A3D_TR.run,dw=A3D_TRD.drawn;
     dw.cars=0;dw.walkers=0;dw.dots=0;dw.lines=0;dw.faces=0;
     if(!R||!bimAnimLive()||!bimTrShown())return;
-    var K=bimMvLight()?BIM_TR_COL.lt:BIM_TR_COL.dk,f=Math.max(0,Math.min(1,R.acc/R.step)),y=R.y||0;
+    var K=bimTrLight()?BIM_TR_COL.lt:BIM_TR_COL.dk,f=Math.max(0,Math.min(1,R.acc/R.step)),y=R.y||0;
     ctx.save();
     try{
       bimTrDrawSignals(ctx,V,W,H,R,y);
@@ -30113,13 +29945,11 @@ try{
     h+='<div class="a3d-sacap">'+bimEsc('Not a calibrated model: no counts, each street at its class\'s typical traffic. Signal plans assumed: OpenStreetMap maps where a signal is, never its timing. In 3D the cars and walkers are drawn over the model.')+'</div>';
     return h;
   }
-  /* the card V164 makes for the analysis, with the simulation's own part */
+  /* the row V164 makes for the analysis, with the simulation's state; its settings are in its panel (V171c) */
   function bimTrCard(card){
-    var s=bimTrSettings(),mv=bimMvOf();
+    var s=bimTrSettings();
     card.status=(s.on?(A3D_TR.run?'Playing: ':'On: Play to run it. '):'')+card.status;
     if(s.on&&card.state!=='stale')card.state=A3D_TR.run?'on':(card.state||'on');
-    card.extra=(card.extra||'')+bimTrCardHtml();
-    card.acts.unshift({act:'tr:sim:'+(s.on?'off':'on'),label:s.on?'Stop the simulation':'Simulate',pri:!s.on,off:mv?'':bimMvWhyNot(),tip:'Cars and walkers around the site, on the clock: Play, Pause and Stop in the status bar'});
     return card;
   }
   /* ---- Run: the elements, from the plan and the run so far ---- */
@@ -30175,14 +30005,12 @@ try{
      the one analysis: what it shows, its settings, its chart, its key, what the run said and its source. The view
      goes quiet in the app's mode, light or dark: its ground, the map greyed and faded, the context in the mode's
      greys, so only the data keeps its colour. The focus and the ticks are the layers' visibility, one undo step
-     each, so Layers and the sheets agree; they are the project's, kept with it. */
-  var BIM_AW_GROUPS=[
-    {id:'site',name:'Site',an:['frame']},
-    {id:'sun',name:'Sun and wind',an:['sun','shadow','wind']},
-    {id:'see',name:'Views and noise',an:['views','noise']},
-    {id:'ground',name:'Land and water',an:['contours','slope','aspect','flow','ponds','flood']},
-    {id:'move',name:'Movement',an:['streets','cycling','transit','walk','needs','vehicles','traffic']},
-    {id:'land',name:'Land',an:['landuse','figure','green','zoning']}];
+     each, so Layers and the sheets agree; they are the project's, kept with it.
+     __acad3dV171c: one Analyze. The owner: "The analyze should be combined with the site analysis. It should not be
+     two separate hubs." The workspace is Analyze itself, opened with its tab and left with it. On the left, the site
+     and Analyze site, Overview, the ten categories with the analyses that answer each under it, and the model's
+     own. On the right, what was picked: the overview, a category with its findings and its data, an analysis in the
+     model with what it found, or one of the model's analyses with its settings and its buttons. */
   var BIM_AW_ABOUT={
     frame:'True north and rings every 100 m from the site: the bearing and the scale of everything else.',
     sun:'The sun\'s path over the site on the solstices and the equinoxes, with its hours, and where it is now.',
@@ -30207,6 +30035,13 @@ try{
     figure:'The buildings in black on white: the grain of the place.',
     green:'The trees, the green spaces, and the green that can be seen.',
     zoning:'The zoning districts around the site.'};
+  /* __acad3dV171c: the findings the data wrote that each analysis in the model draws; one with none says where its
+     category's are */
+  var BIM_AW_FINDS={frame:['location.place'],sun:['climate.sun'],shadow:['climate.sun'],wind:['climate.wind','climate.comfort'],
+    contours:['landform.terrain'],slope:['landform.slope','landform.terrain'],flow:['water.drainage'],ponds:['water.rain'],flood:['water.flood','water.fema'],
+    streets:['access.roads','access.frontage','access.connectivity'],cycling:['access.cycling'],transit:['access.transit','access.rail'],walk:['access.walk'],
+    needs:['people.daily'],vehicles:['access.vehicles'],landuse:['location.landuse','people.landuse'],figure:['location.built','location.density'],
+    green:['ecology.green','ecology.33300'],zoning:['legal.zoningaround']};
   /* the view's quiet tones in each mode; only the data keeps its colour */
   var BIM_AW_LOOK={
     light:{light:true,bg:'#f2f2ef',fade:0.35,grey:1,grid:'#e2e2de',ink:'#2a2e33',halo:'rgba(255,255,255,0.92)',
@@ -30215,7 +30050,10 @@ try{
     dark:{light:false,bg:'#17191c',fade:0.3,grey:1,grid:'#24282d',ink:'#e8edf2',halo:'rgba(10,12,15,0.86)',
       ctx:{buildings:'#4c525b',roads:'#363b42',water:'#22384d',green:'#25372a',trees:'#2f5236',rail:'#3d3a35',airports:'#2c3035',power:'#3a3e44',landuse:'#25282d',terrain:'#25292e'},
       key:{bg:'rgba(22,26,32,0.92)',line:'rgba(255,255,255,0.16)',ink:'#e8edf2',sub:'#9aa7b4'}}};
-  var A3D_AW={on:false,wired:false};
+  /* __acad3dV171c: pick, what the right shows besides the focus ({k:'cat'|'card', id}); props, the model's
+     Properties opened from a button; prev, the tab Analyze was opened from; over, the selection a pick was made over;
+     pend, the panel's refresh held while one of its fields is typed in */
+  var A3D_AW={on:false,wired:false,pick:null,props:false,prev:'browser',over:null,pend:false};
   function bimAwState(){
     var D=bimDgState(),S=D.aw;
     if(!S||typeof S!=='object')S=D.aw={focus:null,add:[]};
@@ -30272,6 +30110,8 @@ try{
     refreshProps();
     paint();
   }
+  /* the right panel read from its top when what it shows changes */
+  function bimAwTop(){var b=el.propsbody;while(b&&b!==document.body){b.scrollTop=0;b=b.parentNode;if(b&&b.id==='a3d-right')break;}}
   function bimAwFocus(a){
     a=a?String(a):null;
     if(a&&!bimDgAn(a))return false;
@@ -30283,8 +30123,12 @@ try{
       try{bimAwApply(false);}finally{bimUndoHold=held;}
       saveSoon();
     }
+    bimAwBlur();
+    A3D_AW.pick=null;A3D_AW.props=false;A3D_AW.over=bimAwSelKey();   /* __acad3dV171c: the right follows the focus */
     if(!A3D_AW.on)bimAwOpen();
     bimAwRefresh();
+    bimAwTop();
+    bimAwFold(false);   /* a drawer layout: the view, with the key on it */
     return true;
   }
   /* a tick: drawn under the focus, or no longer; the focus unticked is no longer in focus */
@@ -30300,14 +30144,58 @@ try{
     bimAwRefresh();
     return true;
   }
-  /* ---- in and out ---- */
-  /* the surface, the focus as it is */
+  /* __acad3dV171c: a category, or one of the model's analyses, on the right; its row in the list in view */
+  function bimAwCard(id){return bimAnzCards().filter(function(c){return c.id===id&&c.id.indexOf('dg')!==0;})[0]||null;}
+  function bimAwPick(k,id){
+    id=String(id||'');
+    if(k==='cat'?!bimSaCat(id):!(k==='card'&&bimAwCard(id)))return false;
+    bimAwBlur();
+    A3D_AW.pick={k:k,id:id};A3D_AW.props=false;A3D_AW.over=bimAwSelKey();
+    if(!A3D_AW.on)bimAwOpen();
+    bimAwRefresh();
+    bimAwTop();
+    bimAwFold(true);   /* a drawer layout: the panel, to read */
+    var r=document.querySelector('.a3d-analyze-wrap '+(k==='cat'?'[data-sacat="'+id+'"]':'[data-anzcard="'+id+'"]')),lp=document.getElementById('a3d-leftpanel'),a,b;
+    if(r&&lp&&r.scrollIntoView){   /* its row in view, when it is not: a category at the top, its rows under it */
+      a=r.getBoundingClientRect();b=lp.getBoundingClientRect();
+      if(a.height&&(a.top<b.top+44||a.bottom>b.bottom)){try{r.scrollIntoView({block:k==='cat'?'start':'nearest'});}catch(eS){}}
+    }
+    return true;
+  }
+  /* the panel's field in use left before the panel changes, its words committed as a click elsewhere commits them */
+  function bimAwBlur(){var a=document.activeElement;if(a&&a!==document.body&&el.propsbody&&el.propsbody.contains(a)&&a.blur)a.blur();}
+  /* the selection, as a key: a pick shows its panel over what is selected, which stays selected for the buttons that
+     act on it (Solar, the terrain's colours), until the selection changes */
+  function bimAwSelKey(){var g=bimSelectedGrid();return String(A3D.sel||'')+'|'+(A3D.selSet||[]).join(',')+'|'+(g?g.id:'');}
+  /* Properties is Analyze's panel: nothing selected, or a pick made since the selection */
+  function bimAwOwns(){
+    var none=!objById(A3D.sel)&&!bimSelectedGrid();
+    if(none)A3D_AW.over=null;
+    return A3D_AW.on&&(none||A3D_AW.over===bimAwSelKey());
+  }
+  /* a drawer layout (a phone, a tablet upright): the drawer shut so the view shows, and the panel open when what
+     was picked is to be read */
+  function bimAwFold(panel){
+    if(!bimShellOverlay())return false;
+    var sh=document.getElementById('a3d-shell'),rp=document.getElementById('a3d-right');
+    if(sh&&!sh.classList.contains('collapsed'))bimShellDrawer(false);
+    if(rp)rp.classList.toggle('open',!!panel);
+    return true;
+  }
+  /* ---- in and out: Analyze's tab ---- */
   function bimAwOpen(){
     A3D_AW.on=true;
     document.body.classList.add('a3d-aw');
-    bimShellSetTab('analyze');
-    if(bimShellTier()==='phone'){var sh=document.getElementById('a3d-shell');if(sh)sh.classList.add('collapsed');}   /* a phone: the view, not the drawer */
+    var sh=document.getElementById('a3d-shell');
+    if(sh&&sh.getAttribute('data-tab')!=='analyze')bimShellSetTab('analyze');
     bimAwWire();
+  }
+  /* __acad3dV171c: the tab opened opens it; another tab leaves it */
+  function bimAwTab(t,was){
+    if(t==='analyze'){
+      if(was&&was!=='analyze')A3D_AW.prev=was;
+      if(!A3D_AW.on){bimAwOpen();bimAwRefresh();}
+    }else if(A3D_AW.on)bimAwLeave();
   }
   function bimAwEnter(focus){
     if(focus!==undefined)return bimAwFocus(focus);
@@ -30315,32 +30203,42 @@ try{
     bimAwRefresh();
     return true;
   }
+  /* out of it, to the tab it was opened from, the drawer as it was; what was drawn stays drawn */
   function bimAwLeave(){
     if(!A3D_AW.on)return false;
-    A3D_AW.on=false;
+    A3D_AW.on=false;A3D_AW.props=false;
     document.body.classList.remove('a3d-aw');
+    var sh=document.getElementById('a3d-shell'),shut;
+    if(sh&&sh.getAttribute('data-tab')==='analyze'){
+      shut=sh.classList.contains('collapsed');
+      bimShellSetTab(A3D_AW.prev&&A3D_AW.prev!=='analyze'?A3D_AW.prev:'browser');
+      if(shut){sh.classList.add('collapsed');bimShellDockW();}
+    }
     bimAwBar();
-    refreshProps();   /* Properties again, and Analyze's rows: the list in their place has none to refresh, so they are drawn whole */
+    refreshProps();
     paint();
     return true;
   }
-  /* Analyze site, as it ends, inside its one undo step: the first time the site and its context, and the list; again,
-     what was in focus and ticked, drawn again */
+  /* Analyze site, as it ends, inside its one undo step: the first time the site and its context, and the overview;
+     again, what was in focus and ticked, drawn again */
   function bimAwAfterRun(){
     var S=bimAwState(),held=bimUndoHold;
-    if(!bimDgState().last){S.focus=null;S.add=[];}
+    if(!bimDgState().last){S.focus=null;S.add=[];A3D_AW.pick=null;}
     bimUndoHold=true;
     try{bimAwApply(false);}finally{bimUndoHold=held;}
     bimAwOpen();
+    bimAwFold(false);
     bimAwBar();
   }
   /* TRAFFIC: in focus, inside the step the command took */
   function bimAwTraffic(){
     var S=bimAwState(),held=bimUndoHold;
     S.focus='traffic';S.add=S.add.filter(function(x){return x!=='traffic';});
+    A3D_AW.pick=null;A3D_AW.props=false;
     bimUndoHold=true;
     try{bimAwApply(false);}finally{bimUndoHold=held;}
     bimAwOpen();
+    bimAwFold(false);
     bimAwRefresh();
   }
   /* ---- the bar over the view, and a phone's row of analyses under it ---- */
@@ -30362,18 +30260,18 @@ try{
       ch+='<button type="button" class="a3d-awchip'+(X.id===f?' on':(bimAwShown(X.id)?' add':''))+'" data-awact="focus:'+X.id+'" aria-pressed="'+(X.id===f)+'">'+
         '<i style="background:'+bimEsc(X.col)+'"></i>'+bimEsc(X.name)+'</button>';
     });
-    bimRenderInto(b,'<div class="a3d-awbar-row"><span class="a3d-awbar-k">Site analysis</span><span class="a3d-awbar-sep" aria-hidden="true"></span>'+
+    bimRenderInto(b,'<div class="a3d-awbar-row"><span class="a3d-awbar-k">Analyze</span><span class="a3d-awbar-sep" aria-hidden="true"></span>'+
       '<span class="a3d-awbar-t" data-awbart="1">'+bimEsc(A?A.name:'Overview')+'</span>'+
       (S.add.filter(bimAwShown).length?'<span class="a3d-awbar-n">+ '+S.add.filter(bimAwShown).length+'</span>':'')+
-      '<button type="button" class="a3d-awbar-d" data-awact="panel" title="The analysis\'s panel" aria-label="The analysis\'s panel">Details</button>'+
-      '<button type="button" class="a3d-awbar-x" data-awact="leave" title="Leave the site analysis" aria-label="Leave the site analysis">'+
+      '<button type="button" class="a3d-awbar-d" data-awact="panel" title="What is picked, to read" aria-label="What is picked, to read">Details</button>'+
+      '<button type="button" class="a3d-awbar-x" data-awact="leave" title="Leave Analyze" aria-label="Leave Analyze">'+
       '<svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8"/></svg></button></div>'+
       (ch?'<div class="a3d-awchips" role="group" aria-label="The analyses">'+ch+'</div>':''));
     var on=b.querySelector('.a3d-awchip.on'),row=b.querySelector('.a3d-awchips');   /* a phone's row: the one in focus in sight */
     if(on&&row&&row.clientWidth&&(on.offsetLeft<row.scrollLeft||on.offsetLeft+on.offsetWidth>row.scrollLeft+row.clientWidth))row.scrollLeft=Math.max(0,on.offsetLeft-12);
     return b;
   }
-  /* ---- the left: the analyses in their groups ---- */
+  /* ---- the left: the site, Overview, the ten categories with their analyses, the model's ---- */
   function bimAwRowState(a){
     var D=bimDgState(),R=D.runs[a],n=R?bimDgDiags(a).length:0;
     if(!R)return {cls:' none',st:'Not run'};
@@ -30382,33 +30280,78 @@ try{
     if(!n&&a!=='traffic')return {cls:' none',st:'Nothing'};
     return {cls:'',st:''};
   }
-  function bimAwListHtml(){
-    var f=bimAwFocusNow(),D=bimDgState(),h,P=A3D.objs.filter(bimIsProperty),st=bimSunSettings(),placed=bimSunNum(st.lat)&&bimSunNum(st.lon);
-    h='<div class="a3d-awl" data-awlist="1">'+
-      '<div class="a3d-awl-hd"><button type="button" class="a3d-awl-back" data-anzact="aw:leave" title="Back to Analyze: leave the site analysis">'+
-      '<svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 3.5 5.5 8 10 12.5"/></svg>Analyze</button>'+
-      '<span class="a3d-awl-ttl">Site analysis</span></div>'+
-      '<div class="a3d-awl-site">'+bimEsc(placed?bimSitePlaceText():'Not placed yet')+(P.length?'<br>'+bimEsc(P[0].name):'')+(D.last?' &middot; '+bimEsc(D.last.date):'')+
-      (D.last&&placed?' <button type="button" class="a3d-awl-again" data-anzact="aw:analyze"'+(A3D_SITERUN.busy?' disabled':'')+'>'+(A3D_SITERUN.busy?'Analyzing ...':'Analyze again')+'</button>':'')+'</div>'+
-      '<button type="button" class="a3d-awl-row a3d-awl-ov'+(f?'':' focus')+'" data-anzact="aw:focus:" aria-pressed="'+(!f)+'"><span class="a3d-awl-nm">Overview</span><span class="a3d-awl-st">The site and its context</span></button>';
-    BIM_AW_GROUPS.forEach(function(G){
-      h+='<div class="a3d-awl-grp" data-awgrp="'+G.id+'"><div class="a3d-awl-grphd">'+bimEsc(G.name)+'</div>';
-      G.an.forEach(function(a){
-        var A=bimDgAn(a),on=bimAwShown(a),rs=bimAwRowState(a),run=!!D.runs[a];
-        h+='<div class="a3d-awl-row'+(a===f?' focus':'')+(on&&a!==f?' add':'')+rs.cls+'" data-awrow="'+a+'">'+
-          '<input type="checkbox" class="a3d-awl-tick" data-anzact="aw:tick:'+a+'"'+(on?' checked':'')+(run?'':' disabled')+' aria-label="'+bimEsc((on?'Hide ':'Draw ')+A.name+(on?'':' with the one in focus'))+'">'+
-          '<i class="a3d-awl-sw" style="background:'+bimEsc(A.col)+'" aria-hidden="true"></i>'+
-          '<button type="button" class="a3d-awl-nm" data-anzact="aw:focus:'+a+'"'+(run?'':' disabled')+' aria-pressed="'+(a===f)+'">'+bimEsc(A.name)+'</button>'+
-          (rs.st?'<span class="a3d-awl-st">'+bimEsc(rs.st)+'</span>':'')+'</div>';
-      });
-      h+='</div>';
-    });
-    if(!D.last)h+='<div class="a3d-awl-empty">Nothing analysed yet: Analyze site, in Analyze, draws every analysis.</div>';
-    return h+'</div>';
+  function bimAwCatCounts(id){var F=bimSaOf(id),r=0;F.forEach(function(f){if(f.cls==='redflag')r++;});return {n:F.length,r:r};}
+  function bimAwCatSub(k){return k.n?bimSaN(k.n,'finding')+(k.r?', '+bimSaN(k.r,'red flag'):''):'No findings yet';}
+  /* where Analyze site starts: the site's place (or its address), its boundary, the button and how the run goes */
+  function bimAwSiteHtml(){
+    var st=bimSunSettings(),placed=bimSunNum(st.lat)&&bimSunNum(st.lon),D=bimDgState(),R=A3D_SITERUN,P=A3D.objs.filter(bimIsProperty),h,dn,now;
+    h='<div class="a3d-awl-site" data-anzsec="site"><div class="a3d-awl-place">'+bimEsc(placed?bimSitePlaceText():'Not placed yet')+'</div>';
+    if(!placed)h+='<input type="text" id="a3d-saaddr" class="a3d-awl-addr" data-saaddr="1" maxlength="200" enterkeyhint="search" autocomplete="off" placeholder="A street address or a place" aria-label="The site\'s address">';
+    h+='<div class="a3d-awl-bd">'+(P.length?bimEsc(P[0].name+', '+bimDispNum(bimPropertyGeometry(P[0]).area,1)+' m\u00b2'):
+      'No boundary yet: <button type="button" class="a3d-awl-lk" data-saact="cmd:propertyshape">from a shape</button> or <button type="button" class="a3d-awl-lk" data-saact="cmd:propertyline">from bearings</button>')+'</div>';
+    dn=R.steps.filter(function(s){return s.state!=='wait'&&s.state!=='busy';}).length;
+    now=R.steps.filter(function(s){return s.state==='busy';}).map(function(s){return s.name;});
+    h+='<button type="button" class="a3d-anzbtn pri a3d-awl-go" data-saact="analyze"'+(R.busy?' disabled':'')+'>'+(R.busy?'Analyzing ...':(D.last?'Analyze site again':'Analyze site'))+'</button>'+
+      '<div class="a3d-awl-run">'+bimEsc(R.busy?dn+' of '+R.steps.length+' done'+(now.length?': '+now.join(', ')+' ...':''):
+        (D.last?'Last run '+D.last.date+'. One undo step.':'Free open data around the site, every analysis drawn in the model. One undo step.'))+'</div></div>';
+    return h;
   }
-  /* ---- the right: the one analysis ---- */
+  /* a row: an analysis in the model (a tick, its colour, its name), or one of the others (its name, its state) */
+  function bimAwRowHtml(c,f,pk){
+    if(c.id.indexOf('dg')===0){
+      var a=c.id.slice(2),A=bimDgAn(a),on=bimAwShown(a),rs=bimAwRowState(a),run=!!bimDgState().runs[a];
+      return '<div class="a3d-awl-row'+(a===f?' focus':'')+(on&&a!==f?' add':'')+(!pk&&a===f?' pick':'')+rs.cls+'" data-awrow="'+a+'" data-anzcard="'+c.id+'">'+
+        '<input type="checkbox" class="a3d-awl-tick" data-anzact="aw:tick:'+a+'"'+(on?' checked':'')+(run?'':' disabled')+' aria-label="'+bimEsc((on?'Hide ':'Draw ')+A.name+(on?'':' with the one in focus'))+'">'+
+        '<i class="a3d-awl-sw" style="background:'+bimEsc(A.col)+'" aria-hidden="true"></i>'+
+        '<button type="button" class="a3d-awl-nm" data-anzact="aw:focus:'+a+'"'+(run?'':' disabled')+' aria-pressed="'+(a===f)+'">'+bimEsc(A.name)+'</button>'+
+        (rs.st?'<span class="a3d-awl-st">'+bimEsc(rs.st)+'</span>':'')+'</div>';
+    }
+    var p=!!(pk&&pk.k==='card'&&pk.id===c.id);
+    return '<div class="a3d-awl-row a3d-awl-tool'+(p?' pick':'')+'" data-anzcard="'+c.id+'">'+
+      '<i class="a3d-awl-dot" aria-hidden="true"></i>'+
+      '<button type="button" class="a3d-awl-nm" data-anzact="aw:card:'+c.id+'" aria-pressed="'+p+'">'+bimEsc(c.title)+'</button>'+
+      (c.state?'<span class="a3d-anzstate a3d-anzstate-'+c.state+'">'+bimAnzStateText(c.state)+'</span>':'')+'</div>';
+  }
+  function bimAwListHtml(){
+    var f=bimAwFocusNow(),pk=A3D_AW.pick,C=bimAnzCards(),h,M;
+    h='<div class="a3d-anz a3d-awl" data-awlist="1">'+
+      '<div class="a3d-awl-hd"><span class="a3d-awl-ttl">Analyze</span><span class="a3d-anzcount">'+bimEsc(bimAnzCountText(C))+'</span></div>'+
+      '<input type="search" class="a3d-anzsearch" data-anzsearch="1" placeholder="Search analyses and findings" aria-label="Search Analyze" autocomplete="off" value="'+bimEsc(A3D_ANZ.q||'')+'">'+
+      bimAwSiteHtml()+
+      '<button type="button" class="a3d-awl-row a3d-awl-ov'+(!pk&&!f?' pick':'')+'" data-anzact="aw:focus:" aria-pressed="'+(!pk&&!f)+'"><span class="a3d-awl-nm">Overview</span><span class="a3d-awl-st">The site and what was found</span></button>';
+    BIM_SA_CATS.forEach(function(c,i){
+      var T=C.filter(function(x){return x.group===c.id;}),k=bimAwCatCounts(c.id),p=!!(pk&&pk.k==='cat'&&pk.id===c.id);
+      h+='<div class="a3d-awl-grp" data-sacat="'+c.id+'">'+
+        '<button type="button" class="a3d-awl-cat'+(p?' pick':'')+'" data-anzact="aw:cat:'+c.id+'" aria-pressed="'+p+'" title="'+bimEsc(c.q)+'">'+
+        '<span class="a3d-awl-no">'+(i+1)+'</span><span class="a3d-awl-cn">'+bimEsc(c.n)+'</span>'+
+        (k.r?'<span class="a3d-awl-rf" title="'+bimEsc(bimSaN(k.r,'red flag'))+'">'+k.r+'</span>':'')+
+        '<span class="a3d-awl-fn" title="'+bimEsc(bimAwCatSub(k))+'">'+(k.n||'')+'</span></button>'+
+        T.map(function(x){return bimAwRowHtml(x,f,pk);}).join('')+'</div>';
+    });
+    M=BIM_ANZ_MODEL.map(function(id){return C.filter(function(c){return c.id===id;})[0];}).filter(function(c){return !!c;});
+    h+='<div class="a3d-awl-grp" data-anzgrp="model"><div class="a3d-awl-grphd">Model</div>'+M.map(function(x){return bimAwRowHtml(x,f,pk);}).join('')+'</div>';
+    return h+'<div class="a3d-anzempty" hidden>Nothing matches</div></div>';
+  }
+  /* a row's words for the search: its name, what it says it shows, what it reports now, its settings, its buttons */
+  function bimAwRowWords(x,grp){
+    if(!x)return '';
+    var a=x.id.indexOf('dg')===0?x.id.slice(2):'';
+    return x.title+' '+x.status+' '+(a?(BIM_AW_ABOUT[a]||''):'')+' '+String(x.extra||'').replace(/<[^>]*>/g,' ')+' '+
+      (x.acts||[]).map(function(b){return b.label;}).join(' ')+' '+grp;
+  }
+  /* ---- the right: what is picked ---- */
   function bimAwSec(t){return '<div class="a3d-awp-sec">'+bimEsc(t)+'</div>';}
   function bimAwBtn(act,label,pri,off){return '<button type="button" class="a3d-anzbtn'+(pri?' pri':'')+'" data-awact="'+bimEsc(act)+'"'+(off?' disabled title="'+bimEsc(off)+'"':'')+'>'+bimEsc(label)+'</button>';}
+  function bimAwHd(sw,no,ttl,sub){
+    return '<div class="a3d-awp-hd">'+(no?'<span class="a3d-awp-no" aria-hidden="true">'+no+'</span>':(sw?'<i class="a3d-awp-sw" style="background:'+bimEsc(sw)+'" aria-hidden="true"></i>':''))+
+      '<div><div class="a3d-awp-ttl">'+bimEsc(ttl)+'</div><div class="a3d-awp-sub">'+bimEsc(sub)+'</div></div></div>';
+  }
+  /* the category an analysis answers, a link to it */
+  function bimAwInHtml(cardId){
+    var g=BIM_ANZ_GROUP_OF[cardId],i=-1,k;
+    for(k=0;k<BIM_SA_CATS.length;k++)if(BIM_SA_CATS[k].id===g)i=k;
+    return i<0?'':'<p class="a3d-awp-in">Answers <button type="button" class="a3d-awl-lk" data-awact="cat:'+g+'">'+(i+1)+'. '+bimEsc(BIM_SA_CATS[i].n)+'</button></p>';
+  }
   function bimAwKeyHtml(rows){
     if(!rows||!rows.length)return '';
     return '<div class="a3d-awp-key">'+rows.map(function(r){
@@ -30441,28 +30384,60 @@ try{
       bimAwBtn('anim:play',A3D_ANIM.on?'Pause':(A3D_ANIM.paused?'Go on':'Play'),!A3D_ANIM.on)+
       bimAwBtn('anim:stop','Stop',false,A3D_ANIM.on||A3D_ANIM.paused?'':'Not playing')+'</div>';
   }
+  /* the overview: the site, the red flags first, every category's findings counted, what the run fetched */
   function bimAwOverviewHtml(){
-    var D=bimDgState(),R=A3D_SITERUN,st=bimSunSettings(),placed=bimSunNum(st.lat)&&bimSunNum(st.lon),P=A3D.objs.filter(bimIsProperty),h,steps,n=0;
+    var D=bimDgState(),R=A3D_SITERUN,st=bimSunSettings(),placed=bimSunNum(st.lat)&&bimSunNum(st.lon),P=A3D.objs.filter(bimIsProperty),h,steps,n=0,
+      F=bimSaShown(),RF=F.filter(function(f){return f.cls==='redflag';});
     BIM_DG_AN.forEach(function(A){if(D.runs[A.id])n++;});
-    h='<div class="a3d-awp" data-awpanel="overview"><div class="a3d-awp-hd"><div><div class="a3d-awp-ttl">Overview</div><div class="a3d-awp-sub">Site analysis</div></div></div>'+
-      '<p class="a3d-awp-about">'+bimEsc(D.last?'The site and its context. Pick an analysis on the left: it is drawn alone, with its key; tick others to draw them under it.':
-        'Analyze site gets what is around the site from free open data and draws each analysis in the model.')+'</p>'+
+    h='<div class="a3d-awp a3d-sa" data-awpanel="overview">'+bimAwHd(null,0,'Overview','Analyze')+
+      '<p class="a3d-awp-about">'+bimEsc(D.last?'What Analyze site found around the site, by category. Pick a category on the left to read its findings, or an analysis to draw it alone with its key; tick others to draw them under it.':
+        'Analyze site gets what is around the site from free open data, draws each analysis in the model and writes what it finds, by category.')+'</p>'+
       '<div class="a3d-awp-rows"><div class="a3d-awp-r"><span>Place</span><b>'+bimEsc(placed?bimSitePlaceText():'Not placed yet')+'</b></div>'+
       '<div class="a3d-awp-r"><span>Boundary</span><b>'+(P.length?bimEsc(P[0].name+', '+bimDispNum(bimPropertyGeometry(P[0]).area,1)+' m\u00b2'):'None yet')+'</b></div>'+
-      (D.last?'<div class="a3d-awp-r"><span>Analysed</span><b>'+bimEsc(D.last.date)+'</b></div><div class="a3d-awp-r"><span>Analyses</span><b>'+n+' of '+BIM_DG_AN.length+'</b></div>':'')+'</div>';
+      (D.last?'<div class="a3d-awp-r"><span>Analysed</span><b>'+bimEsc(D.last.date)+'</b></div><div class="a3d-awp-r"><span>Analyses</span><b>'+n+' of '+BIM_DG_AN.length+'</b></div>':'')+
+      '<div class="a3d-awp-r"><span>Findings</span><b>'+bimEsc(F.length?bimSaN(F.length,'finding')+(RF.length?', '+bimSaN(RF.length,'red flag'):''):'None yet')+'</b></div></div>';
+    if(RF.length)h+=bimAwSec('Red flags')+'<div class="a3d-awp-flags">'+RF.map(function(f){
+      return '<button type="button" class="a3d-awp-flag" data-awact="cat:'+bimEsc(f.cat)+'"><span class="a3d-safno">'+bimSaNumber(f)+'</span><span>'+bimEsc(f.title)+(f.value?': '+bimEsc(f.value):'')+'</span></button>';}).join('')+'</div>';
+    h+=bimAwSec('The ten categories')+'<div class="a3d-awp-cats">'+BIM_SA_CATS.map(function(c,i){
+      var k=bimAwCatCounts(c.id);
+      return '<button type="button" class="a3d-awp-cat" data-awact="cat:'+c.id+'"><span class="a3d-awp-catno">'+(i+1)+'</span><span class="a3d-awp-catn">'+bimEsc(c.n)+'</span>'+
+        '<span class="a3d-awp-catf'+(k.r?' rf':'')+'">'+bimEsc(bimAwCatSub(k))+'</span></button>';}).join('')+'</div>';
     steps=R.steps.length?R.steps:((D.last&&D.last.steps)||[]);
-    if(steps.length)h+=bimAwSec('What it fetched')+'<ol class="a3d-awp-steps">'+steps.map(function(s){
-      return '<li class="'+(BIM_SITERUN_CLS[s.state]||'s-wait')+'"><span class="a3d-awp-dot" aria-hidden="true"></span><span class="a3d-awp-stn">'+bimEsc(s.name)+'</span><span class="a3d-awp-sts">'+bimEsc(BIM_SITERUN_WORD[s.state]||s.state)+'</span>'+
+    if(steps.length)h+=bimAwSec('What it fetched')+'<ol class="a3d-awp-steps" data-sasteps="1">'+steps.map(function(s){
+      return '<li class="'+(BIM_SITERUN_CLS[s.state]||'s-wait')+'" data-sastep="'+bimEsc(s.id)+'"><span class="a3d-awp-dot" aria-hidden="true"></span><span class="a3d-awp-stn">'+bimEsc(s.name)+'</span><span class="a3d-awp-sts">'+bimEsc(BIM_SITERUN_WORD[s.state]||s.state)+'</span>'+
         (s.text?'<span class="a3d-awp-stt">'+bimEsc(s.text)+'</span>':'')+'</li>';}).join('')+'</ol>';
-    h+='<div class="a3d-awp-acts">'+bimAwBtn('analyze',R.busy?'Analyzing ...':(D.last?'Analyze site again':'Analyze site'),true,R.busy?'Running':(placed?'':'Place the site first: Analyze, Site, Address'))+'</div>';
+    h+='<div class="a3d-awp-acts"><button type="button" class="a3d-anzbtn pri" data-saact="analyze"'+(R.busy?' disabled':'')+'>'+(R.busy?'Analyzing ...':(D.last?'Analyze site again':'Analyze site'))+'</button>'+
+      (D.last?'<button type="button" class="a3d-anzbtn" data-saact="dglegend" aria-pressed="'+(!D.legendOff)+'">'+(D.legendOff?'Show the key on the view':'Hide the key on the view')+'</button>':'')+'</div>';
     return h+'</div>';
   }
-  function bimAwPanelHtml(){
-    var f=bimAwFocusNow();
-    if(!f)return bimAwOverviewHtml();
-    var A=bimDgAn(f),D=bimDgState(),R=D.runs[f],L=bimDgDiags(f),G=BIM_AW_GROUPS.filter(function(g){return g.an.indexOf(f)>=0;})[0],ed=L.filter(bimDgEdited).length,h,sx=R?bimDgStdText(f):'';
-    h='<div class="a3d-awp" data-awpanel="'+f+'"><div class="a3d-awp-hd"><i class="a3d-awp-sw" style="background:'+bimEsc(A.col)+'" aria-hidden="true"></i>'+
-      '<div><div class="a3d-awp-ttl">'+bimEsc(A.name)+'</div><div class="a3d-awp-sub">'+bimEsc((G?G.name:'Site analysis')+(R?' \u00b7 '+R.date:''))+'</div></div></div>'+
+  /* a category: its question, what was found, the analyses that answer it, its data */
+  function bimAwCatHtml(id){
+    var c=bimSaCat(id),i=BIM_SA_CATS.indexOf(c),F=bimSaOf(id),T=bimAnzCards().filter(function(x){return x.group===id;}),D=bimDgState(),dat=BIM_SA_DATA[id],see=BIM_SA_SEE[id],h,j;
+    h='<div class="a3d-awp a3d-sa" data-awpanel="cat:'+id+'">'+bimAwHd(null,i+1,c.n,bimAwCatSub(bimAwCatCounts(id)))+
+      '<p class="a3d-awp-about">'+bimEsc(c.q)+'</p>';
+    h+=bimAwSec('What was found')+(F.length?F.map(bimSaFindingHtml).join(''):'<p class="a3d-awp-note">None yet: Analyze site writes them from the data.</p>');
+    if(T.length)h+=bimAwSec('Analyses')+'<div class="a3d-awp-ans">'+T.map(function(x){
+      var dg=x.id.indexOf('dg')===0,a=dg?x.id.slice(2):'',A=dg?bimDgAn(a):null,st=dg?(bimAwRowState(a).st||bimSaN(bimDgDiags(a).length,'element')):bimAnzStateText(x.state);
+      return '<button type="button" class="a3d-awp-an" data-awact="'+(dg?'focus:'+a:'card:'+x.id)+'"'+(dg&&!D.runs[a]?' disabled title="Not run yet: Analyze site draws it"':'')+'>'+
+        '<i'+(A?' style="background:'+bimEsc(A.col)+'"':' class="o"')+' aria-hidden="true"></i><span class="a3d-awp-ann">'+bimEsc(x.title)+'</span><span class="a3d-awp-anst">'+bimEsc(st)+'</span></button>';}).join('')+'</div>';
+    if(dat)h+=dat();
+    if(see){for(j=0;j<BIM_SA_CATS.length;j++)if(BIM_SA_CATS[j].id===see[0])break;
+      h+='<div class="a3d-salink">'+bimEsc(see[1])+' <button type="button" class="a3d-anzbtn" data-saact="goto:'+see[0]+'">'+(j+1)+'. '+bimEsc(BIM_SA_CATS[j].n)+'</button></div>';}
+    return h+'</div>';
+  }
+  /* one of the model's analyses, or one Analyze site does not draw: its state, its settings, its buttons */
+  function bimAwCardHtml(c){
+    var acts=c.acts.slice(),ly=bimAnzLayerAct(c.id),g=bimSaCat(c.group);
+    if(ly)acts.push(ly);
+    return '<div class="a3d-awp a3d-sa" data-awpanel="card:'+c.id+'">'+bimAwHd(null,0,c.title,(g?g.n:'Model')+(c.state?' \u00b7 '+bimAnzStateText(c.state):''))+
+      '<p class="a3d-awp-about">'+bimEsc(c.status)+'</p>'+(c.extra||'')+
+      (acts.length?'<div class="a3d-awp-acts">'+acts.map(bimAnzBtn).join('')+'</div>':'')+bimAwInHtml(c.id)+'</div>';
+  }
+  /* an analysis in the model: V171b's panel, and what it found */
+  function bimAwAnHtml(f){
+    var A=bimDgAn(f),D=bimDgState(),R=D.runs[f],L=bimDgDiags(f),g=bimSaCat(BIM_ANZ_GROUP_OF['dg'+f]),ed=L.filter(bimDgEdited).length,h,sx=R?bimDgStdText(f):'',
+      FK=BIM_AW_FINDS[f]||[],FF=bimSaShown().filter(function(x){return FK.indexOf(x.auto)>=0;});
+    h='<div class="a3d-awp a3d-sa" data-awpanel="'+f+'">'+bimAwHd(A.col,0,A.name,(g?g.n:'Analyze')+(R?' \u00b7 '+R.date:''))+
       '<p class="a3d-awp-about">'+bimEsc(BIM_AW_ABOUT[f]||'')+'</p>';
     if(f==='traffic'){
       var s=bimTrSettings(),mv=bimMvOf();
@@ -30472,13 +30447,34 @@ try{
     h+=bimAwClockHtml(f);
     h+=bimAwChart(f);
     if(R&&R.legend&&R.legend.length)h+=bimAwSec('Key')+bimAwKeyHtml(R.legend);
+    h+=bimAwSec('What it found')+(FF.length?FF.map(bimSaFindingHtml).join(''):
+      '<p class="a3d-awp-note">'+bimEsc(R?'It writes no finding of its own; its category\'s are under '+(g?g.n:'its category')+'.':'Nothing yet: Analyze site writes the findings.')+'</p>');
     h+=bimAwSec('What it shows')+'<div class="a3d-awp-rows"><div class="a3d-awp-r"><span>Drawn</span><b>'+bimEsc(R?bimSaN(L.length,'element')+(ed?', '+ed+' changed by you':''):'Not run yet')+'</b></div></div>';
+    var SC=R?bimDgStdChanged(f):null;   /* __acad3dV167: a standard it used changed since */
+    if(SC&&(SC.run.length||SC.data.length))h+='<p class="a3d-awp-note a3d-awp-stale">'+bimEsc(bimDgStaleText(SC))+'</p>';
     if(R&&R.note)h+='<p class="a3d-awp-note">'+bimEsc(R.note)+'</p>';
     if(R&&R.source)h+=bimAwSec('Source')+'<p class="a3d-awp-note">'+bimEsc(R.source)+'</p>';
-    if(sx)h+='<p class="a3d-awp-note a3d-awp-std">'+bimEsc(sx)+'</p>';
+    if(sx)h+='<p class="a3d-awp-note a3d-awp-std" data-dgstd="'+f+'">'+bimEsc(sx)+'</p>';
     h+='<div class="a3d-awp-acts">'+bimAwBtn('dg:run:'+f,R?'Run again':'Run',false)+bimAwBtn('dg:select:'+f,'Select',false,L.length?'':'Nothing drawn yet')+
-      bimAwBtn('dg:reset:'+f,'Reset',false,R?'':'Not run yet')+'</div>';
+      bimAwBtn('dg:reset:'+f,'Reset',false,R?'':'Not run yet')+'</div>'+bimAwInHtml('dg'+f);
     return h+'</div>';
+  }
+  /* the panel again; not under one of its fields being typed in, whose words would go -- then when it is left
+     (V162's rule for Analyze's list, kept for its panel) */
+  function bimAwRender(force){
+    var a=document.activeElement,b=el.propsbody;
+    if(!force&&a&&b.contains(a)&&a.closest&&a.closest('.a3d-awp')&&(a.tagName==='TEXTAREA'||(a.tagName==='INPUT'&&!/^(checkbox|radio|file|range|color|button)$/.test(a.type)))){A3D_AW.pend=true;return false;}
+    A3D_AW.pend=false;
+    bimRenderInto(b,bimAwPanelHtml());
+    return true;
+  }
+  function bimAwPanelHtml(){
+    if(A3D_AW.props)return '<div class="a3d-awp-backrow"><button type="button" class="a3d-awl-lk" data-awact="back">Back to the analysis</button></div>'+bimModelPropsHtml();
+    var pk=A3D_AW.pick,c,f;
+    if(pk&&pk.k==='cat'&&bimSaCat(pk.id))return bimAwCatHtml(pk.id);
+    if(pk&&pk.k==='card'&&(c=bimAwCard(pk.id)))return bimAwCardHtml(c);
+    f=bimAwFocusNow();
+    return f?bimAwAnHtml(f):bimAwOverviewHtml();
   }
   /* ---- what a press does, on the bar, the list or the panel ---- */
   function bimAwAct(v){
@@ -30486,11 +30482,11 @@ try{
     var i=v.indexOf(':'),c=i<0?v:v.slice(0,i),a=i<0?'':v.slice(i+1),r=false;
     try{
       if(c==='leave')r=bimAwLeave();
-      else if(c==='open')r=a?bimAwEnter(a):bimAwEnter();
       else if(c==='panel'){var rp=document.getElementById('a3d-right');if(rp){rp.classList.toggle('open');refreshProps();}r=!!rp;}
       else if(c==='focus')r=bimAwFocus(a||null);
       else if(c==='tick')r=bimAwTick(a);
-      else if(c==='analyze'){bimSiteAnalyze('');r=true;}
+      else if(c==='cat'||c==='card')r=bimAwPick(c,a);
+      else if(c==='back'){bimAwBlur();A3D_AW.props=false;bimAwRefresh();bimAwTop();r=true;}
       else if(c==='dg'){r=bimDgAct(a);bimAwRefresh();}
       else if(c==='tr'){r=bimTrAct(a);bimAwRefresh();}
       else if(c==='anim'){
@@ -30498,20 +30494,33 @@ try{
         else if(a==='stop'){r=bimAnimStop();}
         bimAwRefresh();
       }
-    }catch(eA){console.warn('[BIM] The site analysis',eA);a3dToast('That did not work - see the console');}
+    }catch(eA){console.warn('[BIM] Analyze',eA);a3dToast('That did not work - see the console');}
     return r;
   }
-  /* Properties' body answers the panel's buttons; wired once */
+  /* Properties' body answers the panel's buttons and fields; wired once */
   function bimAwWire(){
     if(A3D_AW.wired||!el.propsbody)return;
     A3D_AW.wired=true;
     el.propsbody.addEventListener('click',function(ev){
       if(!A3D_AW.on)return;
-      var t=ev.target&&ev.target.closest?ev.target.closest('[data-awact],[data-anzact]'):null;
-      if(!t||t.disabled||!el.propsbody.contains(t))return;
-      if(t.hasAttribute('data-awact'))bimAwAct(t.getAttribute('data-awact'));
-      else if(/^tr:/.test(t.getAttribute('data-anzact')))bimAwAct(t.getAttribute('data-anzact'));
+      var t=ev.target&&ev.target.closest?ev.target.closest('[data-awact],[data-anzact],[data-saact]'):null,k;
+      if(!t||t.disabled||!el.propsbody.contains(t)||!t.closest('.a3d-awp,.a3d-awp-backrow'))return;
+      try{
+        if(t.hasAttribute('data-awact'))bimAwAct(t.getAttribute('data-awact'));
+        else if(t.hasAttribute('data-anzact')){k=t.getAttribute('data-anzact');if(/^tr:/.test(k))bimAwAct(k);else{bimAnzAct(k);bimAwRefresh();}}
+        else{bimSaAct(t.getAttribute('data-saact'));bimAwRefresh();}
+      }catch(eW){console.warn('[BIM] Analyze',eW);a3dToast('That did not work - see the console');}
     });
+    el.propsbody.addEventListener('change',function(ev){
+      var e=ev.target,k;
+      if(!A3D_AW.on||!e||!e.getAttribute||!e.closest||!e.closest('.a3d-awp'))return;
+      try{
+        /* a field's change is its words committed, taken or refused: the panel shows the model again at once */
+        if((k=e.getAttribute('data-znf'))){bimZnSet(k,e.value);if(bimAwOwns())bimAwRender(true);}   /* __acad3dV160: the zoning, in Legal */
+        else if((k=e.getAttribute('data-anzload'))){updateLevel(A3D.activeLevel,k,e.value);if(bimAwOwns())bimAwRender(true);}   /* __acad3dV166b: the floor loads, in Frame analysis */
+      }catch(eF){console.warn('[BIM] Analyze setting failed',eF);a3dToast('That setting could not be changed - see the console');}
+    },true);   /* in the capture: V118's refresh after every change, the panel's last handler, would put the model's value back first */
+    el.propsbody.addEventListener('focusout',function(){if(A3D_AW.pend)setTimeout(function(){if(A3D_AW.pend)refreshProps();},0);});   /* the refresh held for a field, as it is left */
   }
   /* WebGPU's clear, in the view's background */
   function bimAwClear(){var b=bimAwBg();return {r:b[0],g:b[1],b:b[2],a:1};}
@@ -30520,8 +30529,7 @@ try{
     var t=document.getElementById('a3d-rpttl');
     if(A3D_AW.on||document.getElementById('a3d-awbar'))bimAwBar();
     if(!t)return;
-    var on=A3D_AW.on&&!objById(A3D.sel)&&!bimSelectedGrid();
-    t.textContent=on?'Analysis':'Properties';
+    t.textContent=bimAwOwns()&&!A3D_AW.props?'Analysis':'Properties';
   }
   // ---- DXF (AutoCAD ASCII exchange format) ----
   var DXF_ACI={1:'#ff5555',2:'#e8d24a',3:'#5ac25a',4:'#4ac6c6',5:'#5a7fe0',6:'#c85ac0',7:'#d8d8d8',8:'#8a8a8a',9:'#bcbcbc'};
@@ -44419,14 +44427,12 @@ try{
       var stale=panel.querySelector('.a3d-assets-wrap');
       if(stale){stale.parentNode.removeChild(stale);did=true;}
     }
-    if(shell.dataset.tab==='analyze'&&!panel.querySelector('.a3d-analyze-wrap')){   /* __acad3dV141; __acad3dV162: the site analysis in it, one list */
+    if(shell.dataset.tab==='analyze'&&!panel.querySelector('.a3d-analyze-wrap')){   /* __acad3dV141; __acad3dV162: the site analysis in it, one list; __acad3dV171c: the workspace's */
       var abox=document.createElement('div');
       abox.className='a3d-tabbody a3d-analyze-wrap a3d-sa-wrap';
-      abox.innerHTML=bimAnalyzeHtml();
+      abox.innerHTML=bimAwListHtml();
       bimAnzFilter(abox);   /* __acad3dV148: the search kept from before */
       abox.addEventListener('click',function(ev){
-        var tg=ev.target&&ev.target.closest?ev.target.closest('[data-anztog]'):null;   /* __acad3dV148: a row opens and closes */
-        if(tg){bimAnzToggle(tg.getAttribute('data-anztog'));return;}
         var b=ev.target&&ev.target.closest?ev.target.closest('[data-anzact]'):null;
         if(!b||b.disabled)return;
         try{bimAnzAct(b.getAttribute('data-anzact'));}catch(eZ){console.warn('[BIM] Analyze',eZ);a3dToast('That did not work - see the console');}
@@ -44442,7 +44448,6 @@ try{
       /* a refresh held for a field being typed in happens when it is left */
       abox.addEventListener('focusout',function(){if(A3D_ANZ.pend)setTimeout(function(){if(A3D_ANZ.pend)bimAnalyzeRefresh();},0);});
       bimSaWire(abox);   /* __acad3dV158 */
-      bimAnzWireFields(abox);   /* __acad3dV166b */
       panel.appendChild(abox);
       did=true;
     }
@@ -44791,8 +44796,9 @@ try{
     }catch(eW){console.warn('[BIM] Dock width could not be set',eW);}
   }
   function bimShellSetTab(t){
-    var sh=document.getElementById('a3d-shell');
+    var sh=document.getElementById('a3d-shell'),was;
     if(!sh)return false;
+    was=sh.getAttribute('data-tab');
     sh.classList.remove('collapsed');
     sh.setAttribute('data-tab',t);
     var btns=sh.querySelectorAll('#a3d-rail .a3d-railbtn[data-tab]'),i;
@@ -44801,6 +44807,7 @@ try{
     bimShellDockW();
     try{bimCleanShell();}
     catch(eT){console.warn('[BIM] Shell tab render failed',eT);a3dToast('That panel could not be drawn');}
+    bimAwTab(t,was);   /* __acad3dV171c: Analyze is the workspace, opened and left with its tab */
     return true;
   }
   function bimBuildShell(){
@@ -47449,18 +47456,6 @@ try{
     if(s.rows.length>1)h+='<div class="a3d-anzarea a3d-anzareatot"><div class="a3d-anzareahd"><span class="a3d-anzareanm">Total</span></div>'+
       '<div class="a3d-anzareav">GBA '+bimDispNum(s.total.GBA,2)+' \u00b7 GFA '+bimDispNum(s.total.GFA,2)+' \u00b7 NSA '+bimDispNum(s.total.NSA,2)+' m\u00b2</div></div>';
     return h;
-  }
-  /* __acad3dV166b: the settings in a row change the model at once, so the list is drawn again with the
-     field kept; a refresh held for a field (V162) is for words not yet committed */
-  function bimAnzWireFields(w){
-    w.addEventListener('change',function(ev){
-      var e=ev.target,k;
-      if(!e||!e.getAttribute)return;
-      try{
-        if(e.hasAttribute('data-propstr')){bimStructPropChange(ev);bimAnalyzeRefresh(true);return;}
-        if((k=e.getAttribute('data-anzload'))){updateLevel(A3D.activeLevel,k,e.value);bimAnalyzeRefresh(true);}
-      }catch(eF){console.warn('[BIM] Analyze setting failed',eF);a3dToast('That setting could not be changed - see the console');}
-    });
   }
   /* SUPPORT and LOAD: Properties, opened at the field they name */
   function bimStructFocus(what){
@@ -54892,7 +54887,7 @@ try{
     siteworkspace:function(){bimAwEnter();},                     /* __acad3dV171b: the analysis workspace */
     analyzesite:function(){bimAnzView();bimSiteAnalyze('');},   /* __acad3dV164 */
     animplay:function(){bimAnimPlay();},   /* __acad3dV170 */
-    traffic:function(){if(bimTrCommand(true))bimAwTraffic();else{bimAnzView();bimSaGoto('access');}},   /* __acad3dV171; __acad3dV171b: in focus in the workspace */
+    traffic:function(){if(bimTrCommand(true))bimAwTraffic();else bimSaGoto('access');},   /* __acad3dV171; __acad3dV171b: in focus in the workspace */
     trafficoff:function(){bimTrCommand(false);},
     climate:function(){bimBoardShow('climate');},                     /* __acad3dV162: the board's page in the set */
     zoning:function(){A3D_ZN.edit=true;bimSaGoto('legal');bimSaRefresh(true);},   /* __acad3dV160; __acad3dV162: in Legal */
@@ -55098,8 +55093,6 @@ try{
   window.__a3dDocsOpened=function(){return A3D_GUIDE.opened.slice();};
   window.__a3dDocsAnchor=function(id){return bimDocsAnchor(id);};
   /* __acad3dV148: Analyze as a list; results as layers */
-  window.__a3dAnzToggle=function(id,on){return bimAnzToggle(id,on);};
-  window.__a3dAnzOpenAll=function(on){bimAnzCards().forEach(function(c){bimAnzToggle(c.id,on!==false);if(on!==false&&c.group!=='model')bimSaToggle(c.group,true);});return Object.keys(A3D_ANZ.open).sort();};   /* __acad3dV162: and the categories they sit in, so every row shows */
   window.__a3dAnzSearch=function(q){
     A3D_ANZ.q=String(q==null?'':q);
     var w=document.querySelector('.a3d-analyze-wrap'),s=w?w.querySelector('[data-anzsearch]'):null;
@@ -57346,8 +57339,10 @@ try{
   };
   /* __acad3dV171b: the analysis workspace, for the suite */
   window.__acad3dV171b='workspace,enter,leave,focus,ticks,layers,undo,kept,afterrun,traffic,bar,list,panel,overview,chart,key,look,lightdark,ground,ctxtones,mapgrey,words,legendplace,dockhidden,toasttop,phone,chips,details,command,open,rowfit';
-  window.__a3dAw=function(){var S=bimAwState(),L=bimAwLook();
+  window.__acad3dV171c='oneanalyze,tab,tableave,prevtab,list,categories,rows,findcount,redflag,overview,category,findings,analyses,catdata,seealso,analysis,itfound,answers,card,cardacts,props,back,search,phone,fold,noanztog,noshow';
+  window.__a3dAw=function(){var S=bimAwState(),L=bimAwLook(),pk=A3D_AW.pick,sh=document.getElementById('a3d-shell'),pn=el.propsbody?el.propsbody.querySelector('[data-awpanel]'):null;
     return {on:!!A3D_AW.on,focus:S.focus,add:S.add.slice(),now:bimAwFocusNow(),look:L?(L.light?'light':'dark'):null,bg:bimAwBgHex(),
+      pick:pk?pk.k+':'+pk.id:null,props:!!A3D_AW.props,prev:A3D_AW.prev,tab:sh?sh.getAttribute('data-tab'):null,panel:pn?pn.getAttribute('data-awpanel'):null,pend:!!A3D_AW.pend,
       shown:BIM_DG_AN.filter(function(A){return bimAwShown(A.id);}).map(function(A){return A.id;}),
       run:BIM_DG_AN.filter(function(A){return !!bimDgState().runs[A.id];}).map(function(A){return A.id;})};};
   window.__a3dAwEnter=function(f){return f===undefined?bimAwEnter():bimAwEnter(f);};
@@ -57357,14 +57352,16 @@ try{
   window.__a3dAwCtxCol=function(id){var o=objById(id);return o?bimAwCtxCol(o):null;};
   window.__a3dAwInk=function(c){return bimAwInk(c);};
   window.__a3dAwSel=function(){return (A3D.selSet||[]).slice();};
-  window.__a3dAwMvLight=function(){return bimMvLight();};
-  window.__a3dAwGroups=function(){return BIM_AW_GROUPS.map(function(G){return {id:G.id,name:G.name,an:G.an.slice()};});};
+  window.__a3dAwMvLight=function(){return bimTrLight();};
+  window.__a3dAwPick=function(k,id){return bimAwPick(k,id);};   /* __acad3dV171c */
+  window.__a3dAwFinds=function(a){return (BIM_AW_FINDS[a]||[]).slice();};
   /* the older suites' view of a run: out of the workspace, each analysis shown as a run showed it before V171b */
   window.__a3dAwClassic=function(){
     if(A3D_AW.on)bimAwLeave();
     var D=bimDgState(),n=0;
     BIM_DG_AN.forEach(function(A){var ly=bimLayerById(D.layers[A.id]);if(ly&&D.runs[A.id]&&(ly.visible!==false)!==!A.hidden){ly.visible=!A.hidden;n++;}});
-    var S=bimAwState();S.focus=null;S.add=[];
+    var S=bimAwState();S.focus=null;   /* __acad3dV171c: the ticks as the layers show them, so a tick hides one */
+    S.add=BIM_DG_AN.filter(function(A){return !!bimLayerById(D.layers[A.id])&&!!D.runs[A.id]&&!A.hidden;}).map(function(A){return A.id;});
     if(n)bimLayerChanged();
     return n;
   };

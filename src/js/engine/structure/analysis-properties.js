@@ -117,18 +117,6 @@
       '<div class="a3d-anzareav">GBA '+bimDispNum(s.total.GBA,2)+' \u00b7 GFA '+bimDispNum(s.total.GFA,2)+' \u00b7 NSA '+bimDispNum(s.total.NSA,2)+' m\u00b2</div></div>';
     return h;
   }
-  /* __acad3dV166b: the settings in a row change the model at once, so the list is drawn again with the
-     field kept; a refresh held for a field (V162) is for words not yet committed */
-  function bimAnzWireFields(w){
-    w.addEventListener('change',function(ev){
-      var e=ev.target,k;
-      if(!e||!e.getAttribute)return;
-      try{
-        if(e.hasAttribute('data-propstr')){bimStructPropChange(ev);bimAnalyzeRefresh(true);return;}
-        if((k=e.getAttribute('data-anzload'))){updateLevel(A3D.activeLevel,k,e.value);bimAnalyzeRefresh(true);}
-      }catch(eF){console.warn('[BIM] Analyze setting failed',eF);a3dToast('That setting could not be changed - see the console');}
-    });
-  }
   /* SUPPORT and LOAD: Properties, opened at the field they name */
   function bimStructFocus(what){
     var o=objById(A3D.sel);

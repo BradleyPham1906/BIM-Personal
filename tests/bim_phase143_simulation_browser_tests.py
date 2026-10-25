@@ -159,11 +159,21 @@ async def run():
               o.mesh.v.forEach(function(v){for(var k=0;k<3;k++){b[k]=Math.min(b[k],v[k]+q[k]);b[k+3]=Math.max(b[k+3],v[k]+q[k]);}});return b;}""", i)
             return tuple(b)
 
+        # AMENDED FOR V171c: a row of Analyze's list holds its name and its state; what it says, its legend and its
+        # buttons are in its panel on the right, picked from the list
         async def cards():
             return await safe("""()=>{var w=document.querySelector('.a3d-analyze-wrap');if(!w)return null;
-              return [].map.call(w.querySelectorAll('[data-anzcard]'),function(c){return {id:c.getAttribute('data-anzcard'),st:(c.querySelector('.a3d-anzst')||{}).textContent,
-                state:(c.querySelector('.a3d-anzstate')||{textContent:''}).textContent,leg:!!c.querySelector('.a3d-anzleg'),
-                btns:[].map.call(c.querySelectorAll('[data-anzact]'),function(b){return [b.getAttribute('data-anzact'),b.disabled];})};});}""") or []
+              return [].map.call(w.querySelectorAll('[data-anzcard]'),function(c){return c.getAttribute('data-anzcard');}).map(function(id){
+                var row=w.querySelector('[data-anzcard="'+id+'"]'),p=null;
+                if(id.indexOf('dg')!==0){window.__a3dAwPick('card',id);p=document.querySelector('#a3d-propsbody [data-awpanel="card:'+id+'"]');}
+                return {id:id,st:p?(p.querySelector('.a3d-awp-about')||{}).textContent:null,state:(row.querySelector('.a3d-anzstate')||{textContent:''}).textContent,
+                  leg:!!(p&&p.querySelector('.a3d-anzleg')),btns:p?[].map.call(p.querySelectorAll('[data-anzact]'),function(b){return [b.getAttribute('data-anzact'),b.disabled];}):[]};});}""") or []
+
+        async def act(card, a):
+            """AMENDED FOR V171c: the row picked in Analyze's list, then its button in its panel"""
+            await safe("(c)=>window.__a3dAwPick('card',c)", card)
+            await page.wait_for_timeout(60)
+            await page.click('#a3d-propsbody [data-anzact="%s"]' % a)
 
         try:
             # ---------------------------------------------------------------------------------
@@ -336,10 +346,9 @@ async def run():
             await page.wait_for_timeout(250)
             # AMENDED FOR V148: the cards are rows that open, every one opened so each button can be
             # clicked; the simulations are in the groups they belong to, not a section of their own
-            await safe("()=>window.__a3dAnzOpenAll(true)")
-            await page.wait_for_timeout(100)
+            # AMENDED FOR V171c: nothing to open; each row's panel is picked (cards); Model the one group with a heading
             C = {c['id']: c for c in await cards()}
-            hd = await safe("()=>[].map.call(document.querySelectorAll('.a3d-analyze-wrap .a3d-anzgrphd'),function(e){return e.textContent;})")
+            hd = await safe("()=>[].map.call(document.querySelectorAll('.a3d-analyze-wrap .a3d-awl-grphd'),function(e){return e.textContent;})")
             # AMENDED FOR V162: one Analyze -- the simulations in the categories they answer (Climate,
             # Water); Model is the one group left at the end
             cat = await safe("()=>{var o={};['sunhours','solar','rain'].forEach(function(k){var r=document.querySelector('.a3d-analyze-wrap [data-anzcard=\"'+k+'\"]'),c=r&&r.closest('[data-sacat]');o[k]=c?c.getAttribute('data-sacat'):null;});return o;}") or {}
@@ -353,7 +362,7 @@ async def run():
                all(b[1] for b in C['sunhours']['btns'] if b[0].startswith('sim:clear')), "SIMCLEAR clears all three; Clear is disabled with nothing to clear")
             px0 = await safe("""()=>{var c=document.querySelector('#a3d-viewport canvas, canvas');var r=c.getBoundingClientRect();return [r.left+r.width*0.55,r.top+r.height*0.25];}""")
             shot0 = await page.screenshot(clip={'x': px0[0], 'y': px0[1], 'width': 6, 'height': 6})
-            await page.click('.a3d-analyze-wrap [data-anzact="sunhours:run"]')
+            await act('sunhours', 'sunhours:run')
             await page.wait_for_timeout(300)
             C = {c['id']: c for c in await cards()}
             shot1 = await page.screenshot(clip={'x': px0[0], 'y': px0[1], 'width': 6, 'height': 6})
@@ -364,7 +373,7 @@ async def run():
             await page.wait_for_timeout(100)
             C = {c['id']: c for c in await cards()}
             ck(C['sunhours']['state'] == 'Out of date' and 'changed since' in C['sunhours']['st'], "a new building: the card says the result is out of date")
-            await page.click('.a3d-analyze-wrap [data-anzact="solar:run"]')
+            await act('solar', 'solar:run')
             for _ in range(60):
                 if not (await safe("()=>window.__a3dSimState().busy")):
                     break
@@ -372,11 +381,11 @@ async def run():
             await page.wait_for_timeout(150)
             C = {c['id']: c for c in await cards()}
             ck(C['solar']['state'] == 'On' and 'kWh/m' in C['solar']['st'] and 'clear sky' in C['solar']['st'], "Run on Solar: the roofs' average, clear sky (%s; %s)" % (C['solar']['st'], await toast()))
-            await page.click('.a3d-analyze-wrap [data-anzact="solar:colour"]')
+            await act('solar', 'solar:colour')
             await page.wait_for_timeout(150)
             ls = await safe("()=>window.__a3dLens()")
             ck(ls and ls.get('by') == 'prop' and ls.get('prop') == 'Solar on roof (kWh/m2 a year)', "Colour By colours the buildings by their roofs' solar (%s)" % ls)
-            await page.click('.a3d-analyze-wrap [data-anzact="sim:clear:solar"]')
+            await act('solar', 'sim:clear:solar')
             await page.wait_for_timeout(150)
             ck(not await safe("()=>window.__a3dState().objs.some(function(o){return !!o.solar;})"), "Clear takes the solar results off the buildings")
             await safe("(i)=>{window.__a3dSelectFor([i]);window.__a3dRefreshProps();}", vid)

@@ -13,25 +13,6 @@
      Climate and Access fetch, and say where it is. */
   var BIM_SA_DATA={location:function(){return bimSaCtxHtml();},legal:function(){return bimZnSaHtml();},climate:function(){return bimClbSaHtml();},access:function(){return bimAccSaHtml();}};
   var BIM_SA_SEE={risk:['climate','Air quality and earthquakes come with the climate data'],people:['access','The census and the daily needs within a walk come with the access data']};
-  function bimSaCatHtml(c,i,C){
-    var F=bimSaOf(c.id),open=!!A3D_SA.open[c.id],nc=0,no=0,nr=0,dat=BIM_SA_DATA[c.id],see=BIM_SA_SEE[c.id],k;
-    var T=(C||[]).filter(function(x){return x.group===c.id;}),on=T.filter(function(x){return x.state==='on'||x.state==='stale'||x.state==='busy';});
-    F.forEach(function(f){if(f.cls==='constraint')nc++;else if(f.cls==='opportunity')no++;else if(f.cls==='redflag')nr++;});
-    var sum=F.length?bimSaN(F.length,'finding')+(nr?', '+bimSaN(nr,'red flag'):'')+(nc?', '+bimSaN(nc,'constraint'):'')+(no?', '+bimSaN(no,'opportunity','opportunities'):''):'No findings yet';
-    if(on.length)sum+=' \u00b7 '+on.map(function(x){return x.title;}).join(', ')+' on';
-    var h='<div class="a3d-anzcard a3d-sacat'+(open?' open':'')+'" data-sacat="'+c.id+'">'+
-      '<div class="a3d-anzhd"><button type="button" class="a3d-anztog" data-satog="'+c.id+'" aria-expanded="'+open+'">'+
-      '<span class="a3d-anzchev">'+BIM_ANZ_CHEV+'</span><span class="a3d-anzname"><span class="a3d-anzttl">'+(i+1)+'. '+bimEsc(c.n)+'</span>'+
-      '<span class="a3d-anzsum">'+bimEsc(sum)+'</span></span></button></div>'+
-      '<div class="a3d-anzbody"><div class="a3d-saq">'+bimEsc(c.q)+'</div>';
-    if(T.length)h+='<div class="a3d-sachkhd">Analyses</div><div class="a3d-anzlist a3d-satools">'+T.map(bimAnzCard).join('')+'</div>';
-    if(dat)h+=dat();
-    if(see){for(k=0;k<BIM_SA_CATS.length;k++)if(BIM_SA_CATS[k].id===see[0])break;
-      h+='<div class="a3d-salink">'+bimEsc(see[1])+'<button type="button" class="a3d-anzbtn" data-saact="goto:'+see[0]+'">'+(k+1)+'. '+bimEsc(BIM_SA_CATS[k].n)+'</button></div>';}
-    h+='<div class="a3d-sachkhd">Findings</div>'+(F.length?F.map(bimSaFindingHtml).join(''):'<div class="a3d-sanote">None yet: Analyze site writes them from the data.</div>')+
-      '</div></div>';
-    return h;
-  }
   /* __acad3dV162: Location's data: where the site is, and its context (V133) */
   function bimSaCtxHtml(){
     var c=A3D.site&&A3D.site.context&&A3D.site.context.last,st=bimSunSettings(),at='';
@@ -42,18 +23,13 @@
       '<div class="a3d-saacts"><button type="button" class="a3d-anzbtn'+(c?'':' pri')+'" data-saact="cmd:context">'+(c?'Get the context again':'Get the context')+'</button>'+
       '<button type="button" class="a3d-anzbtn" data-anzact="open:Location">Location</button></div></div>';
   }
+  /* the site's part of Analyze's list: its buttons, and Enter in the address runs it. __acad3dV171c: a category's
+     buttons and the zoning's fields are on the right (bimAwWire) */
   function bimSaWire(w){
     w.addEventListener('click',function(ev){
-      var t=ev.target&&ev.target.closest?ev.target:null,b;
-      if(!t)return;
-      b=t.closest('[data-satog]');if(b){bimSaToggle(b.getAttribute('data-satog'));return;}
-      b=t.closest('[data-saact]');if(!b||b.disabled)return;
+      var b=ev.target&&ev.target.closest?ev.target.closest('[data-saact]'):null;
+      if(!b||b.disabled)return;
       try{bimSaAct(b.getAttribute('data-saact'));}catch(eS){console.warn('[BIM] Site analysis',eS);a3dToast('That did not work - see the console');}
-    });
-    w.addEventListener('change',function(ev){
-      var e=ev.target,k;
-      if(!e||!e.getAttribute)return;
-      if((k=e.getAttribute('data-znf'))){bimZnSet(k,e.value);return;}   /* __acad3dV160 */
     });
     /* __acad3dV164: Enter in the address runs it */
     w.addEventListener('keydown',function(ev){
@@ -62,15 +38,6 @@
       ev.preventDefault();
       try{bimSaAct('analyze');}catch(eS){console.warn('[BIM] Site analysis',eS);a3dToast('That did not work - see the console');}
     });
-  }
-  function bimSaToggle(id,on){
-    if(!bimSaCat(id))return false;
-    var v=on===undefined?!A3D_SA.open[id]:!!on;
-    if(v)A3D_SA.open[id]=true;else delete A3D_SA.open[id];
-    try{localStorage.setItem('acad3dSaOpen',JSON.stringify(A3D_SA.open));}catch(eS){}
-    var c=document.querySelector('.a3d-sa-wrap [data-sacat="'+id+'"]'),b;
-    if(c){c.classList.toggle('open',v);b=c.querySelector('[data-satog]');if(b)b.setAttribute('aria-expanded',String(v));}
-    return v;
   }
   function bimSaAct(a){
     var k=String(a||''),i=k.indexOf(':'),v=i<0?'':k.slice(i+1),c=i<0?k:k.slice(0,i);
@@ -95,8 +62,9 @@
     if(c==='cmd'&&/^(propertyshape|propertyline|context)$/.test(v))return window.__a3dRunCmd(v);
     return false;
   }
-  /* __acad3dV162: the site analysis is in Analyze's one list; its refresh is that list's */
-  function bimSaRefresh(force){return bimAnalyzeRefresh(force);}
+  /* __acad3dV162: the site analysis is in Analyze's one list; its refresh is that list's. __acad3dV171c: and the right's,
+     which shows a category's data as it arrives, and the run's steps */
+  function bimSaRefresh(force){var r=bimAnalyzeRefresh(force);if(A3D_AW.on)refreshProps();return r;}
   /* __acad3dV73: the no-selection inspector. Project and Site are editable and write to the
      title block and site record that the sheet title block already prints. Level, Layer and
      Appearance are the three switches that change what the drawing shows, and each one already
@@ -293,6 +261,7 @@
     bimAnalyzeRefresh();   /* __acad3dV141; __acad3dV162: the site analysis with it */
     bimAwTitleSync();   /* __acad3dV171b */
     if(!el.propsbody)return;
+    if(bimAwOwns()){bimAwRender();return;}   /* __acad3dV171b: the one analysis; __acad3dV171c: or what was picked */
     var o=objById(A3D.sel);
     var gP=o?null:bimSelectedGrid();   /* __acad3dV98 */
     if(gP){bimRenderInto(el.propsbody,bimGridPropsHtml(gP));return;}   /* __acad3dV118 */
@@ -301,7 +270,6 @@
          reference tool does. "No object selected" wastes the panel exactly when a user is
          orienting themselves. Every field below is backed by state that already exists and is
          already persisted -- no new settings were invented to fill the space. */
-      if(A3D_AW.on){bimRenderInto(el.propsbody,bimAwPanelHtml());return;}   /* __acad3dV171b: the one analysis */
       bimRenderInto(el.propsbody,bimModelPropsHtml());   /* __acad3dV118 */
       return;
     }

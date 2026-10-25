@@ -135,17 +135,20 @@ async def run():
               if(!x)return null;
               function ids(sel,at){return [].map.call(x.querySelectorAll(sel),function(e){return e.getAttribute(at);});}
               var where={};[].forEach.call(x.querySelectorAll('[data-anzcard]'),function(r){var c=r.closest('[data-sacat]'),g=r.closest('[data-anzgrp]');where[r.getAttribute('data-anzcard')]=c?c.getAttribute('data-sacat'):(g?g.getAttribute('data-anzgrp'):null);});
-              return {n:W.length,ns:S.length,same:W[0]===S[0],sw:document.querySelectorAll('[data-anzview]').length,title:(x.querySelector('.a3d-anzttl0')||{}).textContent,
+              /* AMENDED FOR V171c: one list -- the site, the ten categories, Model; a category's data and its links are on the
+                 right when it is picked */
+              function pick(c,sel){window.__a3dSaGoto(c);return document.querySelector('#a3d-propsbody [data-awpanel="cat:'+c+'"] '+sel);}
+              return {n:W.length,ns:S.length,same:W[0]===S[0],sw:document.querySelectorAll('[data-anzview]').length,title:(x.querySelector('.a3d-awl-ttl')||{}).textContent,
                 search:x.querySelectorAll('[data-anzsearch]').length,ph:(x.querySelector('[data-anzsearch]')||{}).placeholder,
-                order:[].map.call(x.querySelectorAll('.a3d-anzrows>[data-anzsec],.a3d-anzrows>[data-anzgrp]'),function(e){return e.getAttribute('data-anzsec')||e.getAttribute('data-anzgrp');}),
-                cats:ids('[data-anzsec="cats"] [data-sacat]','data-sacat'),model:ids('[data-anzgrp="model"] [data-anzcard]','data-anzcard'),where:where,
-                names:[].map.call(x.querySelectorAll('[data-sacat]>.a3d-anzhd .a3d-anzttl'),function(e){return e.textContent;}),
-                data:{location:!!x.querySelector('[data-sacat="location"] [data-ctxsec]'),legal:!!x.querySelector('[data-sacat="legal"] [data-znsec]'),
-                  climate:((x.querySelector('[data-sacat="climate"] .a3d-clsec .a3d-sasechd')||{}).textContent||''),access:!!x.querySelector('[data-sacat="access"] [data-accsec]')},
-                links:{risk:(x.querySelector('[data-sacat="risk"] [data-saact^="goto:"]')||{getAttribute:function(){return null;}}).getAttribute('data-saact'),
-                  people:(x.querySelector('[data-sacat="people"] [data-saact^="goto:"]')||{getAttribute:function(){return null;}}).getAttribute('data-saact')},
+                order:[].map.call(x.querySelectorAll('.a3d-awl>[data-anzsec],.a3d-awl>[data-sacat],.a3d-awl>[data-anzgrp]'),function(e){var s=e.getAttribute('data-anzsec')||e.getAttribute('data-anzgrp');return s||'cats';}).filter(function(s,i,L){return L.indexOf(s)===i;}),
+                cats:ids('.a3d-awl>[data-sacat]','data-sacat'),model:ids('[data-anzgrp="model"] [data-anzcard]','data-anzcard'),where:where,
+                names:[].map.call(x.querySelectorAll('[data-sacat]>.a3d-awl-cat'),function(e){return e.querySelector('.a3d-awl-no').textContent+'. '+e.querySelector('.a3d-awl-cn').textContent;}),
+                data:{location:!!pick('location','[data-ctxsec]'),legal:!!pick('legal','[data-znsec]'),
+                  climate:((pick('climate','.a3d-clsec .a3d-sasechd')||{}).textContent||''),access:!!pick('access','[data-accsec]')},
+                links:{risk:(pick('risk','[data-saact^="goto:"]')||{getAttribute:function(){return null;}}).getAttribute('data-saact'),
+                  people:(pick('people','[data-saact^="goto:"]')||{getAttribute:function(){return null;}}).getAttribute('data-saact')},
                 defineData:x.querySelectorAll('[data-anzsec="define"] .a3d-clsec').length,defineCtx:x.querySelectorAll('[data-anzsec="define"] [data-saact="cmd:context"]').length,
-                locCtx:x.querySelectorAll('[data-sacat="location"] [data-saact="cmd:context"]').length,defineFill:x.querySelectorAll('[data-anzsec="define"] [data-saact="fill"]').length,
+                locCtx:(window.__a3dSaGoto('location'),document.querySelectorAll('#a3d-propsbody [data-saact="cmd:context"]').length),defineFill:x.querySelectorAll('[data-anzsec="define"] [data-saact="fill"]').length,
                 count:(x.querySelector('.a3d-anzcount')||{}).textContent};}""") or {}
             ck(A.get('n') == 1 and A.get('ns') == 1 and A.get('same'), "one tab body, carrying both of the old classes (%s, %s)" % (A.get('n'), A.get('ns')))
             ck(A.get('sw') == 0, "no Analyses | Site analysis switch")
@@ -182,41 +185,40 @@ async def run():
 
             # ---------------------------------------------------------------------------------
             print("\n-- 2. a row inside a category")
-            await safe("()=>{window.__a3dSaGoto('climate');}")
-            await page.wait_for_timeout(250)
-            disp = "(id)=>{var r=document.querySelector('.a3d-analyze-wrap [data-anzcard=\"'+id+'\"]');return r?{body:getComputedStyle(r.querySelector('.a3d-anzbody')).display,sum:getComputedStyle(r.querySelector('.a3d-anzsum')).display,open:r.classList.contains('open')}:null;}"
-            s0 = await safe(disp, 'sun') or {}
-            ck(s0.get('body') == 'none' and s0.get('sum') != 'none', "the category open, its rows stay shut, their summary shown (%s)" % s0)
-            if s0.get('open'):
-                await safe("()=>window.__a3dAnzToggle('sun',false)")
-            await page.click('.a3d-analyze-wrap [data-anzcard="sun"] [data-anztog]')
-            s1 = await safe(disp, 'sun') or {}
-            s2 = await safe(disp, 'sunhours') or {}
-            ck(s1.get('open') and s1.get('body') == 'block' and s2.get('body') == 'none', "a row opens on its own: Sun and shadows open, Sun hours shut (%s, %s)" % (s1, s2))
-            await page.click('.a3d-analyze-wrap [data-satog="climate"]')
-            hid = await safe("()=>getComputedStyle(document.querySelector('.a3d-analyze-wrap [data-sacat=\"climate\"]>.a3d-anzbody')).display")
-            ck(hid == 'none', "the category shut hides its rows with it")
-            await page.click('.a3d-analyze-wrap [data-satog="climate"]')
-            s3 = await safe(disp, 'sun') or {}
-            ck(s3.get('open') and s3.get('body') == 'block', "opened again, the row is as it was left")
-            await safe("()=>window.__a3dAnzToggle('sun',false)")
+            # AMENDED FOR V171c: no row and no category opens in place; a click picks it and the right shows it, the list as it was
+            await page.click('.a3d-analyze-wrap [data-anzact="aw:cat:climate"]')
+            await page.wait_for_timeout(150)
+            vis = "()=>[].filter.call(document.querySelectorAll('.a3d-analyze-wrap [data-sacat=\"climate\"] [data-anzcard]'),function(r){return r.getBoundingClientRect().height>0;}).map(function(r){return r.getAttribute('data-anzcard');})"
+            s0 = await safe(vis) or []
+            ck(await safe("()=>window.__a3dAw().panel") == 'cat:climate' and s0 == ['dgsun', 'dgshadow', 'dgwind', 'sun', 'sunhours', 'solar'],
+               "the category picked: on the right; its rows in the list under it (%s)" % s0)
+            await page.click('.a3d-analyze-wrap [data-anzact="aw:card:sun"]')
+            p1 = await safe("()=>window.__a3dAw().panel")
+            await page.click('.a3d-analyze-wrap [data-anzact="aw:card:sunhours"]')
+            p2 = await safe("()=>window.__a3dAw().panel")
+            ck(p1 == 'card:sun' and p2 == 'card:sunhours', "a row picked on its own: Sun and shadows, then Sun hours, on the right (%s, %s)" % (p1, p2))
+            ck(await safe(vis) == s0, "the list stays as it was")
+            await page.click('.a3d-analyze-wrap [data-anzact="aw:cat:climate"]')
+            ck(await safe("()=>window.__a3dAw().panel") == 'cat:climate', "picked again, the category is on the right again")
 
             # ---------------------------------------------------------------------------------
             print("\n-- 3. one search")
             q1 = await search('cut fill')
-            st1 = await safe("""()=>{var x=document.querySelector('.a3d-analyze-wrap'),c=x.querySelector('[data-sacat="landform"]');
-              return {qhit:c.classList.contains('qhit'),body:getComputedStyle(c.querySelector(':scope>.a3d-anzbody')).display,model:!!x.querySelector('[data-anzgrp="model"]').hasAttribute('hidden'),
+            st1 = await safe("""()=>{var x=document.querySelector('.a3d-analyze-wrap');
+              return {model:!!x.querySelector('[data-anzgrp="model"]').hasAttribute('hidden'),ov:x.querySelector('.a3d-awl-ov').hasAttribute('hidden'),
                 site:!x.querySelector('[data-anzsec="site"]').hasAttribute('hidden'),root:x.querySelector('.a3d-anz').classList.contains('q')};}""") or {}   # AMENDED FOR V164: the site stays
             ck(q1 == ['grading'] and await visible_cats() == ['landform'], "'cut fill' finds Grading alone, in Landform (%s)" % q1)
-            ck(st1.get('qhit') and st1.get('body') == 'block' and st1.get('model') and st1.get('site') and st1.get('root'),
-               "Landform is opened for it; Model steps aside, the site and its button stay (%s)" % st1)
+            # AMENDED FOR V171c: nothing to open; Overview steps aside with Model
+            ck(st1.get('model') and st1.get('ov') and st1.get('site') and st1.get('root'),
+               "Landform shows with it; Model and Overview step aside, the site and its button stay (%s)" % st1)
             q2 = await search('slope')
             # AMENDED FOR V165: Landform holds contours, slope and aspect now, before the survey, terrain and grading
             ck(q2 == ['dgcontours', 'dgslope', 'dgaspect', 'survey', 'terrain', 'grading'] and await visible_cats() == ['landform'], "'slope' is in Landform's own question: the category shows whole (%s)" % q2)
             q3 = await search('frame')
             ck(q3 == ['structure'] and await visible_cats() == [], "'frame' finds the frame analysis in Model, and no category (%s)" % q3)
             await search('boundary')
-            bd = await safe("()=>/Boundary/.test(document.querySelector('.a3d-analyze-wrap [data-anzsec=\"site\"]').textContent)&&!document.querySelector('.a3d-analyze-wrap [data-anzsec=\"site\"]').hasAttribute('hidden')")
+            # AMENDED FOR V171c: the site's part names its boundary, the property, or that there is none yet
+            bd = await safe("()=>/Property_|No boundary yet/.test(document.querySelector('.a3d-analyze-wrap [data-anzsec=\"site\"]').textContent)&&!document.querySelector('.a3d-analyze-wrap [data-anzsec=\"site\"]').hasAttribute('hidden')")
             vc = await visible_cats()
             # AMENDED FOR V164: Legal found 'boundary' in its checklist ("Find the boundary markers"), which is gone; the
             # boundary is the site's, at the top, in view
@@ -243,50 +245,47 @@ async def run():
             await page.focus('.a3d-analyze-wrap [data-anzsearch]')
             await page.keyboard.press('Escape')
             await page.wait_for_timeout(100)
-            esc = await safe("()=>({v:document.querySelector('.a3d-analyze-wrap [data-anzsearch]').value,q:document.querySelector('.a3d-analyze-wrap .a3d-anz').classList.contains('q'),n:document.querySelectorAll('.a3d-analyze-wrap [data-sacat].qhit').length,cats:document.querySelectorAll('.a3d-analyze-wrap [data-sacat]:not([hidden])').length})") or {}
-            ck(esc.get('v') == '' and not esc.get('q') and esc.get('n') == 0 and esc.get('cats') == 10, "Esc clears it: all ten back, none opened by it (%s)" % esc)
+            esc = await safe("()=>({v:document.querySelector('.a3d-analyze-wrap [data-anzsearch]').value,q:document.querySelector('.a3d-analyze-wrap .a3d-anz').classList.contains('q'),ov:!document.querySelector('.a3d-analyze-wrap .a3d-awl-ov').hasAttribute('hidden'),cats:document.querySelectorAll('.a3d-analyze-wrap [data-sacat]:not([hidden])').length})") or {}
+            ck(esc.get('v') == '' and not esc.get('q') and esc.get('ov') and esc.get('cats') == 10, "Esc clears it: all ten back, and Overview (%s)" % esc)   # AMENDED FOR V171c
             sticky = await safe("()=>getComputedStyle(document.querySelector('.a3d-analyze-wrap [data-anzsearch]')).position")
             ck(sticky == 'sticky', "the search stays at the top while the list scrolls under it")
 
             # ---------------------------------------------------------------------------------
             print("\n-- 4. a field being typed in")
             # AMENDED FOR V164: no finding to type in: the zoning form's fields, in Legal, are the panel's fields now
+            # AMENDED FOR V171c: the zoning form is Legal's, on the right; its refresh waits for a field typed in, as the list's did
             await safe("()=>{window.__a3dZnEdit(true);window.__a3dSaGoto('legal');}")
             await page.wait_for_timeout(250)
-            sel = '.a3d-analyze-wrap [data-znf="district"]'
+            sel = '#a3d-propsbody [data-znf="district"]'
             await page.click(sel)
             await page.keyboard.press('End')
             await page.keyboard.type('R6 by the oak')
-            held = await safe("()=>window.__a3dAnalyzeRefresh()")
+            await safe("()=>window.__a3dRefreshProps()")
             v1 = await safe("(s)=>document.querySelector(s).value", sel)
-            ck(held is False and await safe("()=>window.__a3dAnzPending()") is True and v1.endswith('R6 by the oak'),
+            ck(await safe("()=>window.__a3dAw().pend") is True and v1.endswith('R6 by the oak'),
                "a refresh while a field is typed in waits: the words stay (%s)" % v1)
             await safe("()=>window.__a3dRefreshProps()")
             ck((await safe("(s)=>document.querySelector(s).value", sel) or '').endswith('R6 by the oak'), "and every refresh after it waits too")
-            await page.click('.a3d-analyze-wrap .a3d-anzhead')
+            await page.click('.a3d-analyze-wrap .a3d-awl-hd')
             await page.wait_for_timeout(200)
             ttl = (await safe("()=>window.__a3dZn()") or {}).get('district', '')
-            ck(ttl.endswith('R6 by the oak') and await safe("()=>window.__a3dAnzPending()") is False, "left, the field is kept and the refresh happens (%s)" % ttl)
+            ck(ttl.endswith('R6 by the oak') and await safe("()=>window.__a3dAw().pend") is False, "left, the field is kept and the refresh happens (%s)" % ttl)
             # a field left as it was: no change to force a redraw, so the held one must happen on leaving it
-            await page.click('.a3d-analyze-wrap [data-znf="uses"]')
-            st0 = await safe("()=>document.querySelector('.a3d-analyze-wrap [data-anzcard=\"stats\"] .a3d-anzsum').textContent")
+            await page.click('#a3d-propsbody [data-znf="uses"]')
+            await safe("()=>{document.querySelector('#a3d-propsbody [data-awpanel]').setAttribute('data-v162','1');}")
             await safe("""()=>{var o=window.__a3dState().objs;o.push({id:'EXTRA1',t:'sketch',name:'Extra',col:'#888',pos:[0,0,0],pts:[[90,90],[95,90],[95,95]],y:0,closed:true,layer:'layer-0'});window.__a3dTestSetObjs(o);window.__a3dRefreshProps();}""")
-            st1 = await safe("()=>document.querySelector('.a3d-analyze-wrap [data-anzcard=\"stats\"] .a3d-anzsum').textContent")
-            pend = await safe("()=>window.__a3dAnzPending()")
-            await page.click('.a3d-analyze-wrap .a3d-anzhead')
+            st1 = await safe("()=>document.querySelector('#a3d-propsbody [data-awpanel]').getAttribute('data-v162')")
+            pend = await safe("()=>window.__a3dAw().pend")
+            await page.click('.a3d-analyze-wrap .a3d-awl-hd')
             await page.wait_for_timeout(200)
-            st2 = await safe("()=>document.querySelector('.a3d-analyze-wrap [data-anzcard=\"stats\"] .a3d-anzsum').textContent")
-            ck(st1 == st0 and pend is True and st2 != st0 and await safe("()=>window.__a3dAnzPending()") is False,
-               "a field left unchanged: the held refresh happens as it is left (%s -> %s)" % (st0, st2))
+            st2 = await safe("()=>document.querySelector('#a3d-propsbody [data-awpanel]').getAttribute('data-v162')")
+            ck(st1 == '1' and pend is True and st2 is None and await safe("()=>window.__a3dAw().pend") is False,
+               "a field left unchanged: the held refresh happens as it is left (%s -> %s)" % (st1, st2))
             await safe("()=>{window.__a3dTestSetObjs(window.__a3dState().objs.filter(function(o){return o.id!=='EXTRA1';}));window.__a3dRefreshProps();}")
             await safe("()=>window.__a3dZnEdit(false)")
-            # every row opened, with the categories it is in, so each shows (the hook the older suites use)
-            await safe("()=>{[].forEach.call(document.querySelectorAll('.a3d-analyze-wrap [data-sacat].open>.a3d-anzhd [data-satog]'),function(b){b.click();});}")
-            await safe("()=>window.__a3dAnzOpenAll(true)")
-            await page.wait_for_timeout(150)
-            oa = await safe("()=>[].filter.call(document.querySelectorAll('.a3d-analyze-wrap [data-anzcard]'),function(r){return r.querySelector('.a3d-anzhd').getBoundingClientRect().height===0;}).map(function(r){return r.getAttribute('data-anzcard');})")
-            ck(oa == [], "open all: every row shows, its category opened with it (%s hidden)" % oa)
-            await safe("()=>window.__a3dAnzOpenAll(false)")
+            # AMENDED FOR V171c: nothing to open: every row of the list shows
+            oa = await safe("()=>[].filter.call(document.querySelectorAll('.a3d-analyze-wrap [data-anzcard]'),function(r){return r.getBoundingClientRect().height===0;}).map(function(r){return r.getAttribute('data-anzcard');})")
+            ck(oa == [], "every row of the list shows (%s hidden)" % oa)
 
             # ---------------------------------------------------------------------------------
             print("\n-- 5. commands and hooks")
@@ -296,22 +295,21 @@ async def run():
             ck(await safe("()=>document.getElementById('a3d-shell').dataset.tab") == 'analyze', "SITEANALYSIS opens Analyze")
             # AMENDED FOR V168: Legal holds an analysis now (Zoning around), so opening all opened it and it stayed open: it is
             # shut first, so that it is ZONING that opens it (zoning_not_in_legal had gone uncaught)
-            await safe("()=>{var b=document.querySelector('.a3d-analyze-wrap [data-satog=\"legal\"]');if(b&&b.getAttribute('aria-expanded')==='true')b.click();}")
+            # AMENDED FOR V171c: the overview first, so that it is ZONING that puts Legal on the right
+            await page.click('.a3d-analyze-wrap .a3d-awl-ov')
             await page.wait_for_timeout(150)
-            shut = await safe("()=>!document.querySelector('.a3d-analyze-wrap [data-sacat=\"legal\"]').classList.contains('open')")
-            ck(shut is True, "(Legal shut before ZONING)")
+            ck(await safe("()=>window.__a3dAw().panel") == 'overview', "(the overview before ZONING)")
             await safe("()=>window.__a3dRunCmd('zoning')")
             await page.wait_for_timeout(300)
-            zn = await safe("()=>{var c=document.querySelector('.a3d-analyze-wrap [data-sacat=\"legal\"]');return {open:c.classList.contains('open'),form:!!c.querySelector('.a3d-znf')};}") or {}
-            ck(zn.get('open') and zn.get('form'), "ZONING opens Legal with the zoning form in it (%s)" % zn)
+            zn = await safe("()=>({panel:window.__a3dAw().panel,form:!!document.querySelector('#a3d-propsbody [data-awpanel=\"cat:legal\"] .a3d-znf')})") or {}
+            ck(zn.get('panel') == 'cat:legal' and zn.get('form'), "ZONING opens Legal with the zoning form in it (%s)" % zn)
             await safe("()=>window.__a3dZnEdit(false)")
-            await safe("()=>window.__a3dSaToggle&&window.__a3dSaToggle('climate',false)")
-            # AMENDED FOR V164: Risk holds a row now (Noise), so open-all left it open: open it if it is shut
-            await safe("()=>{var c=document.querySelector('.a3d-analyze-wrap [data-sacat=\"risk\"]');if(!c.classList.contains('open'))c.querySelector('[data-satog]').click();}")
-            await page.click('.a3d-analyze-wrap [data-sacat="risk"] [data-saact="goto:climate"]')
+            # AMENDED FOR V171c: Risk picked, its link on the right; the list scrolled to the end first, so Climate is out of view
+            await safe("()=>{window.__a3dSaGoto('risk');var a=document.getElementById('a3d-leftpanel');a.scrollTop=a.scrollHeight;}")
+            await page.click('#a3d-propsbody [data-saact="goto:climate"]')
             await page.wait_for_timeout(700)
             gl = await safe("""()=>{var c=document.querySelector('.a3d-analyze-wrap [data-sacat="climate"]'),p=document.getElementById('a3d-leftpanel').getBoundingClientRect(),r=c.getBoundingClientRect();
-              return {open:c.classList.contains('open'),top:Math.round(r.top-p.top),h:Math.round(p.height)};}""") or {}
+              return {open:window.__a3dAw().panel==='cat:climate',top:Math.round(r.top-p.top),h:Math.round(p.height)};}""") or {}
             ck(gl.get('open') and 0 <= gl.get('top', -1) < gl.get('h', 0) / 2, "Risk's link opens Climate and brings it into view (%s)" % gl)
             ck(await safe("()=>window.__a3dAnzView('site')") is True and await safe("()=>window.__a3dAnzView()") == 'analyze', "the old view hook opens the one Analyze")
 
@@ -347,9 +345,9 @@ async def run():
             await tab('analyze')
             await safe("()=>window.__a3dSaGoto('access')")
             await page.wait_for_timeout(200)
-            labels = await safe("()=>({open:[].filter.call(document.querySelectorAll('.a3d-analyze-wrap button'),function(b){return /Open the board/.test(b.textContent);}).length,show:[].map.call(document.querySelectorAll('.a3d-analyze-wrap [data-saact$=\"board\"]'),function(b){return b.textContent;})})") or {}
+            labels = await safe("()=>({open:[].filter.call(document.querySelectorAll('.a3d-analyze-wrap button,#a3d-propsbody button'),function(b){return /Open the board/.test(b.textContent);}).length,show:[].map.call(document.querySelectorAll('#a3d-propsbody [data-saact$=\"board\"]'),function(b){return b.textContent;})})") or {}   # AMENDED FOR V171c: Access's data on the right
             ck(labels.get('open') == 0 and labels.get('show') and all(x == 'Show in Presentation' for x in labels['show']), "Analyze no longer opens a board itself: Show in Presentation (%s)" % labels)
-            await page.click('.a3d-analyze-wrap [data-sacat="access"] [data-saact="accboard"]')
+            await page.click('#a3d-propsbody [data-awpanel="cat:access"] [data-saact="accboard"]')   # AMENDED FOR V171c
             await page.wait_for_timeout(500)
             c1 = await clb()
             ck(await safe("()=>document.getElementById('a3d-shell').dataset.tab") == 'presentation' and c1.get('open') and c1.get('kind') == 'access' and c1.get('board') == 'board-access' and c1.get('inView'),

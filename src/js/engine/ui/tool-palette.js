@@ -265,8 +265,9 @@
     }catch(eW){console.warn('[BIM] Dock width could not be set',eW);}
   }
   function bimShellSetTab(t){
-    var sh=document.getElementById('a3d-shell');
+    var sh=document.getElementById('a3d-shell'),was;
     if(!sh)return false;
+    was=sh.getAttribute('data-tab');
     sh.classList.remove('collapsed');
     sh.setAttribute('data-tab',t);
     var btns=sh.querySelectorAll('#a3d-rail .a3d-railbtn[data-tab]'),i;
@@ -275,6 +276,7 @@
     bimShellDockW();
     try{bimCleanShell();}
     catch(eT){console.warn('[BIM] Shell tab render failed',eT);a3dToast('That panel could not be drawn');}
+    bimAwTab(t,was);   /* __acad3dV171c: Analyze is the workspace, opened and left with its tab */
     return true;
   }
   function bimBuildShell(){

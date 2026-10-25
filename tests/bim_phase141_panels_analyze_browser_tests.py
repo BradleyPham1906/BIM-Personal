@@ -110,12 +110,21 @@ async def run():
         async def cards():
             return {c['id']: c for c in (await safe("()=>window.__a3dAnalyzeCards()") or [])}
 
+        # AMENDED FOR V171c: a row of Analyze's list holds its name and its state; what it says and its buttons are in
+        # its panel on the right, picked from the list (an analysis in the model has its own panel, read by V171c's suite)
         async def panel_cards():
             return await safe("""()=>{var w=document.querySelector('.a3d-analyze-wrap');if(!w)return null;
-              return [].map.call(w.querySelectorAll('[data-anzcard]'),function(c){
-                return {id:c.getAttribute('data-anzcard'),st:(c.querySelector('.a3d-anzst')||{}).textContent,
-                  state:(c.querySelector('.a3d-anzstate')||{textContent:''}).textContent,
-                  btns:[].map.call(c.querySelectorAll('[data-anzact]'),function(b){return [b.getAttribute('data-anzact'),b.textContent,b.disabled,b.title];})};});}""")
+              return [].map.call(w.querySelectorAll('[data-anzcard]'),function(c){return c.getAttribute('data-anzcard');}).map(function(id){
+                var row=w.querySelector('[data-anzcard="'+id+'"]'),p=null;
+                if(id.indexOf('dg')!==0){window.__a3dAwPick('card',id);p=document.querySelector('#a3d-propsbody [data-awpanel="card:'+id+'"]');}
+                return {id:id,st:p?(p.querySelector('.a3d-awp-about')||{}).textContent:null,state:(row.querySelector('.a3d-anzstate')||{textContent:''}).textContent,
+                  btns:p?[].map.call(p.querySelectorAll('[data-anzact]'),function(b){return [b.getAttribute('data-anzact'),b.textContent,b.disabled,b.title];}):[]};});}""")
+
+        async def act(card, a):
+            """AMENDED FOR V171c: the row picked in Analyze's list, then its button in its panel"""
+            await safe("(c)=>window.__a3dAwPick('card',c)", card)
+            await page.wait_for_timeout(60)
+            await page.click('#a3d-propsbody [data-anzact="%s"]' % a)
 
         try:
             # ---------------------------------------------------------------------------------
@@ -215,8 +224,7 @@ async def run():
             await page.click('#a3d-rail [data-tab="analyze"]')
             await page.wait_for_timeout(250)
             # AMENDED FOR V148: the cards are rows that open; every one opened, so each button can be clicked
-            await safe("()=>window.__a3dAnzOpenAll(true)")
-            await page.wait_for_timeout(100)
+            # AMENDED FOR V171c: nothing to open; each row's panel is picked (panel_cards)
             pc = await panel_cards()
             # AMENDED FOR V143: the Simulation section's three cards follow the seven
             # AMENDED FOR V144: the terrain card follows the survey's
@@ -244,20 +252,22 @@ async def run():
             await page.wait_for_timeout(150)
             P = {c['id']: c for c in await panel_cards() or []}
             ck(P.get('structure', {}).get('st') == '2 columns, 1 beam' and not P['structure']['btns'][0][2], "the panel follows the model: 2 columns, 1 beam, Run enabled")
-            await page.click('.a3d-analyze-wrap [data-anzact="structure:run"]')
+            await act('structure', 'structure:run')
             await page.wait_for_timeout(250)
             P = {c['id']: c for c in await panel_cards() or []}
             ck(P['structure']['state'] == 'On' and 'forces and deflection shown' in P['structure']['st'] and 'Largest moment' in await toast(),
                "Run solves the frame: On, and the toast gives the result")
-            await page.click('.a3d-analyze-wrap [data-anzact="structure:off"]')
+            await act('structure', 'structure:off')
             await page.wait_for_timeout(150)
             ck((await cards())['structure']['state'] == 'off', "Hide turns it off")
             # AMENDED FOR V166b: its settings are in its row, not behind a Settings button in Properties
-            fs = await safe("()=>[].map.call(document.querySelectorAll('.a3d-analyze-wrap [data-anzcard=\"structure\"] [data-propstr]'),function(e){return e.getAttribute('data-propstr');})")
+            await safe("()=>window.__a3dAwPick('card','structure')")   # AMENDED FOR V171c: in its panel
+            fs = await safe("()=>[].map.call(document.querySelectorAll('#a3d-propsbody [data-awpanel=\"card:structure\"] [data-propstr]'),function(e){return e.getAttribute('data-propstr');})")
             ck(fs == ['combo', 'selfweight', 'display', 'deflected'] and not await safe("()=>!!document.querySelector('[data-anzact=\"open:Analysis\"]')"),
                "Frame analysis's settings are in its row (%s)" % fs)
             # the sun
             await nosel()   # AMENDED FOR V166b: Settings used to clear the selection on its way to Properties
+            await act('sun', 'open:Location')   # AMENDED FOR V171c: in Analyze the panel is the analysis; the sun's Settings open Location in Properties
             await safe("(t)=>window.__a3dSetPropTab(t)", 'site')
             for k, v in (('sunlat', '40'), ('sunlon', '-75'), ('suntz', '-4')):
                 await page.fill('#a3d-propsbody [data-propmodel="%s"]' % k, v)
@@ -265,14 +275,14 @@ async def run():
                 await page.wait_for_timeout(100)
             P = {c['id']: c for c in await panel_cards() or []}
             ck(P['sun']['st'].startswith('12:00 on ') and 'the sun at' in P['sun']['st'], "once placed, the sun card gives the time and the sun's height (%s)" % P['sun']['st'])
-            await page.click('.a3d-analyze-wrap [data-anzact="sun:toggle"]')
+            await act('sun', 'sun:toggle')
             await page.wait_for_timeout(150)
             ck((await cards())['sun']['state'] == 'on' and 'Sun study' in await toast(), "Show turns the sun study on")
-            await page.click('.a3d-analyze-wrap [data-anzact="sun:toggle"]')
+            await act('sun', 'sun:toggle')
             await page.wait_for_timeout(150)
             ck((await cards())['sun']['state'] == 'off', "and Hide off")
             # AMENDED FOR V162: the sun card's own Settings -- Location's data block has a Location button too
-            await page.click('.a3d-analyze-wrap [data-anzcard="sun"] [data-anzact="open:Location"]')
+            await act('sun', 'open:Location')
             await page.wait_for_timeout(200)
             ck(await safe("()=>window.__a3dPropTab()") == 'site' and (await shown()).get('groups', [None])[0] == 'Location', "its Settings open Location, on Site")
             # a survey
@@ -282,7 +292,7 @@ async def run():
             P = {c['id']: c for c in await panel_cards() or []}
             ck(r and r.get('id') and P['survey']['st'].startswith('1 surface: ') and not P['survey']['btns'][0][2], "a survey: the card counts it (%s)" % P['survey']['st'])
             await nosel()
-            await page.click('.a3d-analyze-wrap [data-anzact="survey:run"]')
+            await act('survey', 'survey:run')
             await page.wait_for_timeout(250)
             ck(await safe("()=>window.__a3dState().sel") == r.get('id') and 'Survey' in (await safe("()=>document.getElementById('a3d-propsbody').innerHTML") or ''),
                "Check runs SURVEYCHECK: the surface selected, its Survey Check shown")
@@ -292,19 +302,19 @@ async def run():
             await page.wait_for_timeout(150)
             P = {c['id']: c for c in await panel_cards() or []}
             ck(P['lod']['st'].startswith('3 buildings and city objects (1 LOD1, 1 LOD1.2, 1 LOD2.2)'), "the buildings and city objects counted by LOD (%s)" % P['lod']['st'])
-            await page.click('.a3d-analyze-wrap [data-anzact="lod:run"]')
+            await act('lod', 'lod:run')
             await page.wait_for_timeout(250)
             P = {c['id']: c for c in await panel_cards() or []}
             ck('last check: 2 valid, 1 with problems' in P['lod']['st'] and P['lod']['state'] == 'Problems', "Check runs LODCHECK; the card keeps its result (%s)" % P['lod']['st'])
             async with page.expect_download() as dl:
-                await page.click('.a3d-analyze-wrap [data-anzact="lod:cityjson"]')
+                await act('lod', 'lod:cityjson')
             ck((await dl.value).suggested_filename.endswith('.city.json'), "Export CityJSON exports")
             # AMENDED FOR V166b: the areas by usage are in their row; its Usages button opens them on Project
-            for act, tb, grp in (('open:View', 'view', 'View'), ('open:Usages', 'project', 'Usages'),
-                                 ('open:Statistics', 'project', 'Statistics')):
-                await page.click('.a3d-analyze-wrap [data-anzact="%s"]' % act)
+            for crd, a, tb, grp in (('lens', 'open:View', 'view', 'View'), ('areas', 'open:Usages', 'project', 'Usages'),
+                                    ('stats', 'open:Statistics', 'project', 'Statistics')):
+                await act(crd, a)
                 await page.wait_for_timeout(150)
-                ck(await safe("()=>window.__a3dPropTab()") == tb and grp in (await shown()).get('groups', []), "%s opens %s, on %s" % (act, grp, tb))
+                ck(await safe("()=>window.__a3dPropTab()") == tb and grp in (await shown()).get('groups', []), "%s opens %s, on %s" % (a, grp, tb))
 
             # ---------------------------------------------------------------------------------
             print("\n-- 6. the command, the audit")

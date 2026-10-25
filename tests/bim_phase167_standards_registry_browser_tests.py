@@ -152,9 +152,12 @@ async def run():
             await safe("()=>document.querySelector('[data-saact=\"analyze\"]').click()", pg=pg)
             return await wait_run(pg=pg)
 
+        # AMENDED FOR V171c: an analysis's row says Out of date on its line in Analyze's list; what changed, and its standards,
+        # are in its panel, the analysis in focus
         async def card(cid, pg=None):
-            return await safe("""(k)=>{var c=document.querySelector('[data-anzcard="'+k+'"]');if(!c)return null;
-              return {st:(c.querySelector('.a3d-anzst')||{textContent:''}).textContent,state:(c.querySelector('.a3d-anzstate')||{textContent:''}).textContent,
+            return await safe("""(k)=>{window.__a3dAnzView(true);var row=document.querySelector('.a3d-analyze-wrap [data-anzcard="'+k+'"]');if(!row)return null;
+              window.__a3dAwFocus(k.slice(2));var c=document.querySelector('#a3d-propsbody [data-awpanel="'+k.slice(2)+'"]');if(!c)return null;
+              return {st:(c.querySelector('.a3d-awp-stale')||{textContent:''}).textContent,state:(row.querySelector('.a3d-awl-st')||{textContent:''}).textContent,
                 std:(c.querySelector('[data-dgstd]')||{textContent:''}).textContent};}""", cid, pg=pg) or {}
 
         async def finding(auto, pg=None):
@@ -561,7 +564,8 @@ async def run():
             # ---------------------------------------------------------------------------------
             print("\n-- 8. Findings")
             await safe("()=>document.querySelector('[data-saact=\"analyze\"]')&&0", pg=p3)
-            line = await safe("()=>{var o={};[].forEach.call(document.querySelectorAll('[data-safstd]'),function(e){o[e.getAttribute('data-safstd')]=e.textContent;});return o;}", pg=p3) or {}
+            # AMENDED FOR V171c: the findings are each category's, on the right
+            line = await safe("()=>{var o={};window.__a3dAnzView(true);['location','legal','landform','water','climate','ecology','risk','access','utilities','people'].forEach(function(c){window.__a3dSaGoto(c);[].forEach.call(document.querySelectorAll('#a3d-propsbody [data-safstd]'),function(e){o[e.getAttribute('data-safstd')]=e.textContent;});});return o;}", pg=p3) or {}
             ck(sorted(line) == sorted(['access.cycling', 'access.transit', 'access.walk', 'access.connectivity', 'people.daily', 'climate.comfort', 'climate.degreedays', 'climate.wind', 'risk.air',
                                        'landform.slope', 'landform.terrain', 'water.fema', 'location.built',
                                        'location.landuse', 'location.density', 'ecology.33300']), "each finding drawn from a standard names it: 16 (%s)" % sorted(line))   # AMENDED FOR V168: the land's three

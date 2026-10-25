@@ -103,12 +103,16 @@ async def run():
         async def anz_open(ids):
             await safe("()=>{var b=document.querySelector('#a3d-rail [data-tab=\"analyze\"]');var s=document.getElementById('a3d-shell');if(s.getAttribute('data-tab')!=='analyze'||s.classList.contains('collapsed'))b.click();}")
             await page.wait_for_timeout(150)
-            for i in ids:
-                await safe("(k)=>{var t=document.querySelector('.a3d-analyze-wrap [data-anztog=\"'+k+'\"]');if(t&&t.getAttribute('aria-expanded')!=='true')t.click();}", i)
+            for i in ids:   # AMENDED FOR V171c: each picked in the list; card() picks the one it reads
+                await safe("(k)=>{var b=document.querySelector('.a3d-analyze-wrap [data-anzact=\"aw:card:'+k+'\"]');if(b)b.click();}", i)
             await page.wait_for_timeout(80)
 
         async def card(cid):
-            return await safe("""(k)=>{var c=document.querySelector('.a3d-analyze-wrap [data-anzcard="'+k+'"]');if(!c)return null;
+            # AMENDED FOR V171c: a row's fields, readings and buttons are in its panel on the right, the row picked; its state on its
+            # line in the list, and the search shows or hides the line
+            return await safe("""(k)=>{var row=document.querySelector('.a3d-analyze-wrap [data-anzcard="'+k+'"]');if(!row)return null;
+              if(!document.querySelector('#a3d-propsbody [data-awpanel="card:'+k+'"]'))window.__a3dAwPick('card',k);
+              var c=document.querySelector('#a3d-propsbody [data-awpanel="card:'+k+'"]');if(!c)return null;
               var f=function(s){return [].map.call(c.querySelectorAll(s),function(e){return e;});};
               return {acts:f('[data-anzact]').map(function(e){return e.getAttribute('data-anzact');}),
                 fields:f('select,input').map(function(e){var l=e.id?c.querySelector('label[for="'+e.id+'"]'):null;
@@ -119,8 +123,8 @@ async def run():
                 areas:f('.a3d-anzarea').map(function(e){return [e.getAttribute('data-anzarea'),e.querySelector('.a3d-anzareanm').textContent,
                   (e.querySelector('.a3d-anzarean')||{textContent:''}).textContent,[].map.call(e.querySelectorAll('.a3d-anzareav'),function(v){return v.textContent;})];}),
                 cap:f('.a3d-anzcap').map(function(e){return e.textContent;}).join(' '),
-                state:(c.querySelector('.a3d-anzstate')||{textContent:''}).textContent,st:(c.querySelector('.a3d-anzst')||{textContent:''}).textContent,
-                open:c.classList.contains('open'),shown:!c.hasAttribute('hidden')&&c.getBoundingClientRect().height>0};}""", cid) or {}
+                state:(row.querySelector('.a3d-anzstate')||{textContent:''}).textContent,st:(c.querySelector('.a3d-awp-about')||{textContent:''}).textContent,
+                open:true,shown:!row.closest('[hidden]')&&row.getBoundingClientRect().height>0};}""", cid) or {}
 
         async def change(sel, val):
             # as a person does it: the field focused, its value set, its change fired
@@ -288,15 +292,17 @@ async def run():
             ck(tot and tot[0][3][0] == 'GBA %s \u00b7 GFA %s \u00b7 NSA %s m\u00b2' % (fmt(T.get('GBA', 0)), fmt(T.get('GFA', 0)), fmt(T.get('NSA', 0))),
                "and the total (%s)" % (tot and tot[0][3]))
             # the fields wear Analyze's colours, dark and light
-            col = await safe("""()=>{var f=function(){var e=document.getElementById('a3d-anzf-dl'),s=getComputedStyle(e),l=getComputedStyle(document.querySelector('.a3d-anzlab'));
+            col = await safe("""()=>{window.__a3dAwPick('card','structure');var f=function(){var e=document.getElementById('a3d-anzf-dl'),s=getComputedStyle(e),l=getComputedStyle(document.querySelector('.a3d-anzlab'));
               return [s.backgroundColor,s.color,l.color];};var d=f();document.body.classList.add('light-theme');var l=f();document.body.classList.remove('light-theme');return [d,l];}""") or [[], []]
-            ck(col[0] == ['rgb(31, 35, 39)', 'rgb(230, 234, 239)', 'rgb(138, 150, 163)'] and col[1] == ['rgb(255, 255, 255)', 'rgb(34, 34, 34)', 'rgb(95, 103, 112)'],
+            # AMENDED FOR V171c: in Analyze's panel on the right, the fields wear Properties' colours, as every field there does
+            ck(col[0] == ['rgb(22, 25, 28)', 'rgb(230, 234, 239)', 'rgb(138, 150, 163)'] and col[1] == ['rgb(255, 255, 255)', 'rgb(31, 35, 40)', 'rgb(95, 103, 112)'],
                "the row's fields and labels in Analyze's colours, dark and light (%s)" % col)
             await safe("(i)=>window.__a3dUsageAssign([i],'use-res')", ids[1])
             await page.wait_for_timeout(120)
             c = await card('areas')
             ck([a[1] for a in c.get('areas', [])] == ['Residential'] and c['areas'][0][2] == '2', "it follows the model: both boxes Residential now, one row (%s)" % c.get('areas'))
-            await safe("()=>document.querySelector('.a3d-analyze-wrap [data-anzcard=\"areas\"] [data-anzact=\"open:Usages\"]').click()")
+            await card('areas')   # AMENDED FOR V171c: picked, its Usages button in its panel
+            await safe("()=>document.querySelector('#a3d-propsbody [data-awpanel=\"card:areas\"] [data-anzact=\"open:Usages\"]').click()")
             await page.wait_for_timeout(200)
             u = await safe("""()=>{var g=document.querySelector('#a3d-propsbody [data-a3dpgrp="Usages"]');return g?[window.__a3dPropTab(),g.getBoundingClientRect().height>0,window.__a3dState().sel]:null;}""")
             ck(u == ['project', True, None], "its Usages button opens the usages on Project (%s)" % u)
@@ -509,12 +515,13 @@ async def run():
             await p3.evaluate("()=>{window.__a3dColumnAt([0,0],0,0.4,0.3,3);window.__a3dColumnAt([6,0],0,0.4,0.3,3);window.__a3dBeam([0,0],[6,0],0.3,0.5);window.__a3dSelectFor([]);}")
             await p3.evaluate("()=>document.querySelector('#a3d-rail [data-tab=\"analyze\"]').click()")
             await p3.wait_for_timeout(300)
-            await p3.evaluate("()=>{var t=document.querySelector('[data-anztog=\"structure\"]');if(t.getAttribute('aria-expanded')!=='true')t.click();}")
-            await p3.wait_for_timeout(100)
-            ff = await p3.evaluate("""()=>[].map.call(document.querySelectorAll('[data-anzcard="structure"] select,[data-anzcard="structure"] input'),function(e){var r=e.getBoundingClientRect(),
-              d=document.getElementById('a3d-leftpanel').getBoundingClientRect();return [Math.round(r.height),getComputedStyle(e).fontSize,r.right<=d.right+0.5,r.left>=d.left-0.5];})""")
+            # AMENDED FOR V171c: picked in the list, Frame analysis opens on the right as a sheet
+            await p3.evaluate("()=>document.querySelector('.a3d-analyze-wrap [data-anzact=\"aw:card:structure\"]').click()")
+            await p3.wait_for_timeout(300)
+            ff = await p3.evaluate("""()=>[].map.call(document.querySelectorAll('#a3d-propsbody [data-awpanel="card:structure"] select,#a3d-propsbody [data-awpanel="card:structure"] input'),function(e){var r=e.getBoundingClientRect(),
+              d=document.getElementById('a3d-right').getBoundingClientRect();return [Math.round(r.height),getComputedStyle(e).fontSize,r.right<=d.right+0.5,r.left>=d.left-0.5];})""")
             ck(len(ff) == 6 and all(f[0] >= 36 and f[1] == '16px' and f[2] and f[3] for f in ff),
-               "phone: every field in the row is a finger's 36 px, 16 px text so the page does not zoom, inside the drawer (%s)" % ff[:2])
+               "phone: every field in the row is a finger's 36 px, 16 px text so the page does not zoom, inside the sheet (%s)" % ff[:2])
             await c3.close()
             ck(not errs, "no page errors (%s)" % errs[:3])
             ck(not warns, "nothing went wrong quietly: no [BIM] warnings (%s)" % warns[:3])

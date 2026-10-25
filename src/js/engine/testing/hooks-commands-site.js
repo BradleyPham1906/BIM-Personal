@@ -138,8 +138,6 @@
   window.__a3dDocsOpened=function(){return A3D_GUIDE.opened.slice();};
   window.__a3dDocsAnchor=function(id){return bimDocsAnchor(id);};
   /* __acad3dV148: Analyze as a list; results as layers */
-  window.__a3dAnzToggle=function(id,on){return bimAnzToggle(id,on);};
-  window.__a3dAnzOpenAll=function(on){bimAnzCards().forEach(function(c){bimAnzToggle(c.id,on!==false);if(on!==false&&c.group!=='model')bimSaToggle(c.group,true);});return Object.keys(A3D_ANZ.open).sort();};   /* __acad3dV162: and the categories they sit in, so every row shows */
   window.__a3dAnzSearch=function(q){
     A3D_ANZ.q=String(q==null?'':q);
     var w=document.querySelector('.a3d-analyze-wrap'),s=w?w.querySelector('[data-anzsearch]'):null;
