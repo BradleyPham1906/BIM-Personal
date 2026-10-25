@@ -95,7 +95,7 @@
         var id=rec[k],inR=bimAccLotDist(L,mv.x[id],mv.z[id])<=R;
         if(k>1){
           var pid=rec[k-1],pin=bimAccLotDist(L,mv.x[pid],mv.z[pid])<=R;
-          if(pin&&!inR){var c1=bimTrCut(L,mv.x[pid],mv.z[pid],mv.x[id],mv.z[id],R),n1=node(c1[0],c1[1]);N.bnd[n1]=1;cur.push(n1);cur=null;}
+          if(pin&&!inR){var c1=bimTrCut(L,mv.x[pid],mv.z[pid],mv.x[id],mv.z[id],R),n1=node(c1[0],c1[1]);N.bnd[n1]=1;cur.ids.push(n1);cur=null;}
           else if(!pin&&inR){var c2=bimTrCut(L,mv.x[id],mv.z[id],mv.x[pid],mv.z[pid],R),n2=node(c2[0],c2[1]);N.bnd[n2]=1;cur={t:t,car:car,way:i,ids:[n2]};runs.push(cur);}
         }
         if(inR){if(!cur){cur={t:t,car:car,way:i,ids:[]};runs.push(cur);}cur.ids.push(id);}

@@ -102,6 +102,13 @@ ENGINE = [
     ('site-analysis/access-data.js', '  /* ================= __acad3dV161: Site analysis SA4, access and people: the data ======'),
     ('site-analysis/movement-data.js', '  /* ================= __acad3dV166: site analysis in the model III, movement: the data =='),
     ('site-analysis/panel.js', '  /* ---- the panel ---- */'),
+    ('simulation/traffic-network.js', '  /* ================= __acad3dV171: traffic and people around the site: the network ====='),
+    ('simulation/traffic-demand.js', '  /* ================= __acad3dV171: traffic and people around the site: the demand ======'),
+    ('simulation/traffic-signals.js', '  /* ================= __acad3dV171: traffic and people around the site: the signals ====='),
+    ('simulation/traffic-walkers.js', "  /* ================= __acad3dV171: traffic and people around the site: the walkers' ways"),
+    ('simulation/traffic-sim.js', '  /* ================= __acad3dV171: traffic and people around the site: the run ========='),
+    ('simulation/traffic-draw.js', '  /* ================= __acad3dV171: traffic and people around the site: drawn ==========='),
+    ('simulation/traffic-ui.js', '  /* ================= __acad3dV171: traffic and people around the site: the analysis ===='),
     ('io/import-dxf.js', '  // ---- DXF (AutoCAD ASCII exchange format) ----'),
     ('io/import-obj-stl.js', "  // ---- OBJ (Wavefront, Y-up - matches this engine's convention directly) ----"),
     ('io/import-ifc.js', '  // ---- IFC (STEP-text BIM format): subset covering IfcBuildingStorey + vertically-extru'),
@@ -192,6 +199,7 @@ ENGINE = [
     ('testing/hooks-view-gizmo.js', '  /* __acad3dV75: the world-offset invariant, exposed so a suite can assert it directly ra'),
     ('testing/hooks-assets-structure.js', '  /* __acad3dV124: the library, read and driven */'),
     ('testing/hooks-legacy.js', '  /* __acad3dV51: opening-propagation surface for the Phase 55b tests. */'),
+    ('testing/hooks-traffic.js', '  /* __acad3dV171: traffic and people around the site, for the suite: the run driven step '),
     ('_end.js', '}catch(e){'),
 ]
 

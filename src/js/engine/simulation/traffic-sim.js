@@ -38,7 +38,7 @@
     if(!N.links.length)return {err:'No street a car may use within '+bimStdSay('app.traffic','radius')+' of the lot'};
     bimTrDemand(N);
     var set=bimTrSettings(),qk=bimTrQuality(),Q=BIM_TR_Q[qk],RUN={N:N,set:set,qk:qk,Q:Q,cap:Q,rng:bimTrRng(set.seed),P:bimTrIdmP(),t:0,acc:0,step:Math.min(bimStd('app.traffic','step'),bimStd('idm.car','step_max')),
-      plans:{},targets:[],tgOf:{},routes:[],srcs:[],slow:0,steps:0,frameMs:[],warm:false,started:Date.now()};
+      plans:{},targets:[],tgOf:{},routes:[],srcs:[],slow:0,steps:0,frameMs:[],warm:false,y:bimDgSite().y||0};
     N.J.forEach(function(j){if(j.kind==='signal'){var P=bimTrPlan(N,j);if(P)RUN.plans[j.i]=P;else j.kind='yield';}});
     /* the lanes' slots, and each junction's arms' crossings */
     var nl=0;N.links.forEach(function(Lk){Lk.slot=nl;nl+=Lk.lanes;});RUN.nSlots=nl;
@@ -178,28 +178,29 @@
   }
   /* ---- one step ---- */
   function bimTrStep(RUN){
-    var dt=RUN.step,N=RUN.N,C=RUN.c,W=RUN.w,T=RUN.t,i,c;
+    var dt=RUN.step,C=RUN.c,i,c;
     bimTrSpawn(RUN,dt);
     bimTrSortCars(RUN);
     /* the accelerations, all from the same moment */
     for(i=0;i<C.n;i++){if(C.L[i]>=0)C.a[i]=bimTrAccOf(RUN,i);}
     bimTrLaneChanges(RUN);
-    /* the moves: the ballistic update, a car stopping where it would rather than going back */
-    for(c=0;c<C.n;c++){
-      var l=C.L[c];if(l<0)continue;
-      C.px[c]=C.x[c];C.pz[c]=C.z[c];
-      var v=C.v[c],a=C.a[c],nv=v+a*dt,ds;
-      if(nv<0){ds=a<0?-v*v/(2*a):0;nv=0;}else ds=v*dt+a*dt*dt/2;
-      var Lk=N.links[l],sl=bimTrStopLine(N,Lk),s0=C.s[c];
-      C.s[c]=s0+ds;C.v[c]=nv;
-      if(s0<sl&&C.s[c]>=sl)bimTrAtLine(RUN,c,Lk);
-      if(nv<0.1&&C.s[c]>sl-3&&C.s[c]<=sl+0.5)C.st[c]=1;   /* stopped at its line: a stop sign is obeyed */
-      while(C.L[c]>=0&&C.s[c]>=N.links[C.L[c]].len)bimTrCross(RUN,c);
-      if(C.L[c]>=0)bimTrPlace(RUN,c);
-    }
+    for(c=0;c<C.n;c++)if(C.L[c]>=0)bimTrMove(RUN,c,dt);
     bimTrWalkStep(RUN,dt);
     RUN.t+=dt;RUN.steps++;
     if(RUN.t-RUN.res.bin>=bimStd('app.traffic','bin'))bimTrSample(RUN);
+  }
+  /* a car's move: the ballistic update, a car stopping where it would rather than going back (the IDM's author) */
+  function bimTrMove(RUN,c,dt){
+    var C=RUN.c,N=RUN.N,l=C.L[c];
+    C.px[c]=C.x[c];C.pz[c]=C.z[c];
+    var v=C.v[c],a=C.a[c],nv=v+a*dt,ds;
+    if(nv<0){ds=a<0?-v*v/(2*a):0;nv=0;}else ds=v*dt+a*dt*dt/2;
+    var Lk=N.links[l],sl=bimTrStopLine(N,Lk),s0=C.s[c];
+    C.s[c]=s0+ds;C.v[c]=nv;
+    if(s0<sl&&C.s[c]>=sl)bimTrAtLine(RUN,c,Lk);
+    if(nv<0.1&&C.s[c]>sl-3&&C.s[c]<=sl+0.5)C.st[c]=1;   /* stopped at its line: a stop sign is obeyed */
+    while(C.L[c]>=0&&C.s[c]>=N.links[C.L[c]].len)bimTrCross(RUN,c);
+    if(C.L[c]>=0)bimTrPlace(RUN,c);
   }
   function bimTrStopLine(N,Lk){var j=N.J[Lk.jb];if(!j)return Lk.len;var d=j.cw+1;return Math.max(Lk.len*0.5,Lk.len-d);}
   /* a car crossing its stop line: through a red is counted (none should) */
@@ -482,6 +483,7 @@
     Q.n++;Q.out+=out;Q.outMax=Math.max(Q.outMax,out);Q.st+=st;Q.stMax=Math.max(Q.stMax,st);
   }
   /* ---- the run on the clock ---- */
+  function bimTrFps(){return A3D_TR.run?Math.min(BIM_ANIM.fps,A3D_TR.run.cap.fps):BIM_ANIM.fps;}   /* the frames a second: fewer at Light */
   function bimTrStart(){
     var R;
     try{R=bimTrBuild();}catch(eB){console.warn('[BIM] The traffic simulation could not be built',eB);a3dToast('The traffic simulation could not be built - see the console');return null;}

@@ -523,7 +523,8 @@
   var BIM_DG_RUN={frame:bimDgFrameRun,sun:bimDgSunRun,shadow:bimDgShadowRun,wind:bimDgWindRun,views:bimDgViewsRun,noise:bimDgNoiseRun,
     contours:bimDgContoursRun,slope:bimDgSlopeRun,aspect:bimDgAspectRun,flow:bimDgFlowRun,ponds:bimDgPondsRun,flood:bimDgFloodRun,   /* __acad3dV165 */
     streets:bimDgStreetsRun,cycling:bimDgCyclingRun,transit:bimDgTransitRun,walk:bimDgWalkRun,needs:bimDgNeedsRun,vehicles:bimDgVehiclesRun,   /* __acad3dV166 */
-    landuse:bimDgLanduseRun,figure:bimDgFigureRun,green:bimDgGreenRun,zoning:bimDgZoningRun};   /* __acad3dV168 */
+    landuse:bimDgLanduseRun,figure:bimDgFigureRun,green:bimDgGreenRun,zoning:bimDgZoningRun,   /* __acad3dV168 */
+    traffic:bimDgTrafficRun};   /* __acad3dV171 */
   /* every analysis, or one, laid down from what the project holds now; one undo step */
   function bimDgRunAll(only){
     var S=bimDgSite(),out={},held=bimUndoHold,i;

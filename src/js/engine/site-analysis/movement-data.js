@@ -3,7 +3,7 @@
      movement analyses run again offline. Coordinates in model metres to the decimetre. */
   var BIM_MV_R=800,BIM_MV_DOOR=3,BIM_MV_CAR=400,BIM_MV_NODES=6000,BIM_MV_TOL=0.75,BIM_MV_CARS=24;
   /* the tags movement reads; the rest of a way's tags stay in OpenStreetMap */
-  var BIM_MV_KEYS=/^(highway|name|ref|maxspeed|maxspeed:type|zone:maxspeed|source:maxspeed|lanes|lanes:forward|lanes:backward|oneway|oneway:bicycle|junction|cycleway(:[a-z_:]+)?|parking(:[a-z_:]+)?|sidewalk(:[a-z_:]+)?|service|access|bicycle|motor_vehicle|motorcar|foot|segregated|lane_markings|bridge|tunnel|layer|bicycle_road|cyclestreet|shoulder(:[a-z_:]+)?)$/;
+  var BIM_MV_KEYS=/^(highway|name|ref|maxspeed|maxspeed:type|zone:maxspeed|source:maxspeed|lanes|lanes:forward|lanes:backward|oneway|oneway:bicycle|junction|cycleway(:[a-z_:]+)?|parking(:[a-z_:]+)?|sidewalk(:[a-z_:]+)?|service|access|bicycle|motor_vehicle|motorcar|foot|segregated|lane_markings|bridge|tunnel|layer|bicycle_road|cyclestreet|shoulder(:[a-z_:]+)?|width)$/;   /* __acad3dV171: width, which caps a street's lanes */
   var BIM_MV_HW=/^((motorway|trunk|primary|secondary|tertiary)(_link)?|unclassified|residential|living_street|road|service|pedestrian|track|footway|path|cycleway|bridleway|steps)$/;
   function bimMvR1(v){return Math.round(v*10)/10;}
   function bimMvTags(t){var o={},k,n=0;for(k in t)if(t.hasOwnProperty(k)&&n<40&&BIM_MV_KEYS.test(k)){o[k]=String(t[k]).slice(0,120);n++;}return o;}

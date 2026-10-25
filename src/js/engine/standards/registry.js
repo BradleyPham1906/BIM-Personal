@@ -877,10 +877,11 @@
   function bimCtxLineH(){return bimStd('app.context','line');}
   function bimRoadW(){return bimStd('app.context','road_w')||{};}
   /* __acad3dV167: the standards each analysis drawn in the model uses, and the data it is drawn from */
-  var BIM_DG_STD={frame:['walk.speed'],noise:['fhwa.fc','app.roads','crtn','who.noise'],slope:['land.slope'],flood:['fema.zones'],streets:['fhwa.fc','app.roads'],
+  var BIM_DG_STD={traffic:['idm.car','mobil','stm.signal','mutcd.signal','mutcd.walk','fdot.k','nchrp255','sd.trips','hm.walk','sumo.rules','app.traffic','fhwa.fc','app.roads','aashto.vehicles'],   /* __acad3dV171 */
+    frame:['walk.speed'],noise:['fhwa.fc','app.roads','crtn','who.noise'],slope:['land.slope'],flood:['fema.zones'],streets:['fhwa.fc','app.roads'],
     cycling:['lts.2012','lts.xing2016','app.roads'],transit:['tfl.ptal'],needs:['guides.walk'],
     landuse:['lbcs.activity','app.land'],figure:['spacematrix','app.land','app.context'],green:['green.33300','app.land'],zoning:['app.land']};   /* __acad3dV168 */
-  var BIM_DG_STD_DATA={transit:'access',walk:'access',needs:'access',views:'context',noise:'context',wind:'climate',landuse:'context',figure:'context',green:'context'};
+  var BIM_DG_STD_DATA={traffic:'access',transit:'access',walk:'access',needs:'access',views:'context',noise:'context',wind:'climate',landuse:'context',figure:'context',green:'context'};
   /* the data fetched once and drawn from many times: the standards each is worked out with, the topics a
      row names for it, and its stamp */
   var BIM_STD_DATA={
@@ -946,6 +947,7 @@
     {id:'walk',name:'Walk times',col:'#5598e7',hidden:true},
     {id:'needs',name:'Daily needs',col:'#199e70'},
     {id:'vehicles',name:'Vehicle access',col:'#aab3be'},
+    {id:'traffic',name:'Traffic and people',col:'#ffb454'},   /* __acad3dV171: the simulation's results */
     /* __acad3dV168: land; land use, the figure-ground and the zoning cover the ground, so they start hidden */
     {id:'landuse',name:'Land use',col:'#eda100',hidden:true},
     {id:'figure',name:'Figure-ground',col:'#6b7280',hidden:true},

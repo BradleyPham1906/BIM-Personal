@@ -141,9 +141,9 @@
     V.rov=Math.sqrt(Math.pow(V.rr+V.w/2,2)+Math.pow(V.wb+V.of,2));
     return V;
   }
-  function bimEntVehMesh(V){
+  function bimEntVehMesh(V,bare){   /* __acad3dV171: bare, without its wheels (the simulation's cars) */
     var L=V.l,W=V.w,H=V.h,r=V.d/2,zf=L/2-V.of,zr=-L/2+V.or,tw=Math.min(0.3,W*0.12),xw=W/2-tw/2,y0=r*0.5,P=[];
-    P.push(bimEntDisc([-xw,r,zf],r,tw),bimEntDisc([xw,r,zf],r,tw),bimEntDisc([-xw,r,zr],r,tw),bimEntDisc([xw,r,zr],r,tw));
+    if(!bare)P.push(bimEntDisc([-xw,r,zf],r,tw),bimEntDisc([xw,r,zf],r,tw),bimEntDisc([-xw,r,zr],r,tw),bimEntDisc([xw,r,zr],r,tw));
     if(V.c==='P'){
       var yb=H*0.6;
       P.push(bimEntBox([0,(y0+yb)/2,0],[W,yb-y0,L]),bimEntBox([0,(yb+H)/2,(zf+zr)/2-L*0.04],[W*0.86,H-yb,L*0.48]));
