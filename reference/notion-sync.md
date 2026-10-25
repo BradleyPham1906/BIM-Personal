@@ -158,6 +158,7 @@ Search Notion before creating anything, so nothing is made twice.
 | V191 | `3fecbfcc3a38810dbe2ef80dc00f4720` |
 | V192 | `3fecbfcc3a3881129f8ae5f8b618ce71` |
 | V193 | `3fecbfcc3a3881829582fb0df50b56d1` |
+| Source split: the app in src/, by feature (PR #49) | `404cbfcc3a38811dbbc9d382d02a9c81` |
 | Later: Model import (glTF, valdrada's models) | `3fecbfcc3a3881a8aac2ccef7bcee713` |
 | Later: Hub H3, full IFC | `3fecbfcc3a3881f38adaf9da8b70bf26` |
 | Later: Hub H4, share and sync | `3fecbfcc3a3881a0ae89deed1c5dab5c` |

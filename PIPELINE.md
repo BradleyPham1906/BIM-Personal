@@ -36,12 +36,19 @@ requires command mapping, full app regressions and owner review.
     commit new and amended suites there. Patch and falsify scripts, and each phase's pre-phase
     backup, are in Phase/. The suites need Playwright's Python package and Pillow (V116's reads
     pixels) -- in a fresh container, pip install playwright pillow before the baseline run. Pin
-    Playwright to the version of the Chromium in /opt/pw-browsers (1.56 for chromium-1194, V166c),
+    Playwright to the version of the Chromium in /opt/pw-browsers (1.56 for chromium-1194, V166c;
+    1.63.0 for chromium-1243, 2026-10-25),
     and build cjval (cargo install cjval --features build-binary): without it V139 and V140 skip
     three checks.
 
-Start every session by verifying that hash and taking a backup. Never output the whole file; patch
-with anchored Python scripts that assert exact match counts.
+    The source is src/, by feature (2026-10-25, CLAUDE.md "The source"): the page, 11 CSS files and
+    the engine's 164 files in feature folders. tools/build_app.py joins it into canvas_v10.html, the
+    build above, byte for byte; --check fails when they differ. Pages serves the same app as
+    separate files (tools/check_site.py proves they run alike).
+
+Start every session by verifying that hash (tools/build_app.py --check) and taking a backup. Never
+read or output canvas_v10.html whole and never edit it by hand: patch the files under src/ with
+anchored Python scripts that assert exact match counts, then run tools/build_app.py.
 
 ---
 

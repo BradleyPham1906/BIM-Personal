@@ -1,0 +1,135 @@
+/* ---- the left shell: the rail, and the panel it opens ---- */
+#a3d-leftpanel .a3d-tabbody{display:flex;flex-direction:column;min-height:0;flex:1;min-width:242px}
+:root{--a3d-left-w:296px}
+#a3d-shell{position:fixed;left:0;top:0;bottom:0;z-index:90;display:flex;font-family:Inter,Work Sans,Arial,sans-serif;color:#fff;pointer-events:none}
+#a3d-rail{width:54px;height:100%;background:#262626;border-right:1px solid rgba(255,255,255,.1);display:flex;flex-direction:column;align-items:center;gap:8px;padding:10px 6px;pointer-events:auto}
+#a3d-rail button{color:#fff}
+#a3d-rail .a3d-paneltoggle{width:34px;height:34px;border:0;border-radius:9px;background:transparent;display:grid;place-items:center;cursor:pointer;margin-bottom:4px}
+#a3d-rail .a3d-paneltoggle{color:#9aa3ad}
+#a3d-rail .a3d-paneltoggle svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.6}
+#a3d-rail .a3d-paneltoggle:hover{background:rgba(255,255,255,.08);color:#fff}
+body.light-theme #a3d-rail .a3d-paneltoggle{color:#6b7280}
+body.light-theme #a3d-rail .a3d-paneltoggle:hover{background:rgba(0,0,0,.06);color:#111}
+/* __acad3dV119: icon-only rail buttons in one quiet grey; the name is on hover */
+#a3d-rail .a3d-railbtn{width:36px;height:36px;border:0;border-radius:8px;background:transparent;display:grid;place-items:center;cursor:pointer;color:#9aa3ad}
+#a3d-rail .a3d-railbtn svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.6}
+#a3d-rail .a3d-railbtn:hover{background:rgba(255,255,255,.08);color:#fff}
+#a3d-rail .a3d-railbtn.active{background:rgba(255,255,255,.12);color:#fff}
+.a3d-railspacer{flex:1}
+#a3d-leftpanel{width:var(--a3d-lp-w,242px);height:100%;background:#2c2c2c;border-right:1px solid rgba(255,255,255,.1);pointer-events:auto;display:flex;flex-direction:column;overflow:hidden;transition:width .18s ease,opacity .16s ease;box-shadow:12px 0 34px rgba(0,0,0,.18)}
+#a3d-shell.collapsed #a3d-leftpanel{width:0;opacity:0;border-right:0}
+/* __acad3dV166b: the panel's edge, dragged to size it as Properties' is; inside the panel, so the
+   drawing beside it keeps every pixel */
+.a3d-lgrip{position:absolute;top:0;bottom:0;left:calc(var(--a3d-left-w,296px) - 6px);width:6px;cursor:col-resize;z-index:4;pointer-events:auto;touch-action:none;outline:0}
+.a3d-lgrip:hover,.a3d-lgrip.drag,.a3d-lgrip:focus-visible{background:linear-gradient(90deg,transparent 2px,#4ea1ff 2px,#4ea1ff 4px,transparent 4px)}
+#a3d-shell.collapsed .a3d-lgrip,body.a3d-tier-overlay .a3d-lgrip{display:none}
+body.a3d-lpdrag #a3d-leftpanel{transition:none}
+body.a3d-lpdrag,body.a3d-lpdrag *{cursor:col-resize!important;user-select:none;-webkit-user-select:none}
+@media(pointer:coarse){
+.a3d-lgrip{width:12px;left:calc(var(--a3d-left-w,296px) - 12px);background:linear-gradient(90deg,transparent 8px,rgba(255,255,255,.16) 8px,rgba(255,255,255,.16) 10px,transparent 10px)}
+.a3d-lgrip.drag{background:linear-gradient(90deg,transparent 7px,#4ea1ff 7px,#4ea1ff 10px,transparent 10px)}
+body.light-theme .a3d-lgrip:not(.drag){background:linear-gradient(90deg,transparent 8px,rgba(0,0,0,.14) 8px,rgba(0,0,0,.14) 10px,transparent 10px)}
+}
+.a3d-projhead{height:70px;border-bottom:1px solid rgba(255,255,255,.10);padding:12px 10px 10px 16px;display:grid;grid-template-columns:1fr auto;gap:8px;align-items:start;min-width:242px}
+.a3d-projtitle{font-size:14px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px}
+.a3d-projsub{display:flex;gap:8px;align-items:center;margin-top:3px;color:#d0d0d0;font-size:12px}
+.a3d-pill{font-size:10px;font-weight:900;color:#b9d2ff;background:#244a80;border-radius:5px;padding:2px 6px}
+.a3d-panelcollapse{width:30px;height:30px;border:0;border-radius:8px;background:transparent;color:#fff;cursor:pointer}
+.a3d-panelcollapse:hover{background:rgba(255,255,255,.08)}
+/* __acad3dV166b: the panel's width, by one press; a computer's, as its edge is */
+.a3d-projbtns{display:flex;align-items:center;gap:2px}
+.a3d-lpwbtn{width:30px;height:30px;border:0;border-radius:8px;background:transparent;color:#9aa3ad;cursor:pointer;display:grid;place-items:center;padding:0}
+.a3d-lpwbtn:hover{background:rgba(255,255,255,.08);color:#fff}
+.a3d-lpwbtn svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+body.a3d-tier-overlay .a3d-lpwbtn{display:none}
+body.light-theme .a3d-lpwbtn{color:#6b7280}
+body.light-theme .a3d-lpwbtn:hover{background:rgba(0,0,0,.06);color:#111}
+/* and the collapse beside it, white on the light theme's white header until now */
+body.light-theme .a3d-panelcollapse{color:#6b7280}
+body.light-theme .a3d-panelcollapse:hover{background:rgba(0,0,0,.06);color:#111}
+@media(pointer:coarse){.a3d-lpwbtn{width:36px;height:36px}}
+.a3d-tabbody{display:flex;flex-direction:column;min-height:0;flex:1;min-width:242px}
+/* __acad3dV149: the shell on a phone and a tablet. body.a3d-tier-overlay: the panel is a drawer
+   over the drawing (a tablet upright, a phone either way); body.a3d-tier-phone: and the rail is a
+   tab bar along the bottom (a phone upright). */
+#a3d-shellscrim{display:none}
+.a3d-railmore{display:none}
+body.a3d-tier-overlay #a3d-shell{z-index:9640}
+body.a3d-tier-overlay #a3d-rail{position:relative;z-index:2}
+body.a3d-tier-overlay #a3d-leftpanel{position:fixed;z-index:3;top:var(--a3d-top-h);bottom:0;left:54px;width:min(340px,calc(100vw - 54px - 24px));height:auto;box-shadow:14px 0 40px rgba(0,0,0,.45);transition:transform .18s ease,opacity .16s ease}
+body.a3d-tier-overlay #a3d-shell.collapsed #a3d-leftpanel{width:min(340px,calc(100vw - 54px - 24px));transform:translateX(-104%);opacity:0;visibility:hidden;pointer-events:none}
+body.a3d-tier-overlay #a3d-shell:not(.collapsed) #a3d-shellscrim{display:block;position:fixed;inset:0;z-index:1;background:rgba(0,0,0,.38);pointer-events:auto}
+body.a3d-tier-phone{--a3d-top-h:calc(44px + env(safe-area-inset-top,0px))}
+body.a3d-tier-phone #acad-shell{padding-top:env(safe-area-inset-top,0px);padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px)}
+body.a3d-tier-phone #acad3d{bottom:calc(58px + env(safe-area-inset-bottom,0px))}
+body.a3d-tier-phone #a3d-rail{position:fixed;left:0;right:0;bottom:0;top:auto;width:auto;height:calc(58px + env(safe-area-inset-bottom,0px));flex-direction:row;align-items:flex-start;justify-content:space-around;gap:0;padding:4px max(6px,env(safe-area-inset-right,0px)) env(safe-area-inset-bottom,0px) max(6px,env(safe-area-inset-left,0px));border-right:0;border-top:1px solid rgba(255,255,255,.1);box-sizing:border-box}
+body.a3d-tier-phone #a3d-rail .a3d-paneltoggle,body.a3d-tier-phone #a3d-rail .a3d-railspacer{display:none}
+body.a3d-tier-phone #a3d-rail .a3d-railbtn,body.a3d-tier-phone #a3d-rail .a3d-railmore{flex:1 1 0;max-width:76px;width:auto;height:50px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border:0;border-radius:10px;background:transparent;color:#9aa3ad;cursor:pointer;padding:0}
+body.a3d-tier-phone #a3d-rail .a3d-railbtn::after,body.a3d-tier-phone #a3d-rail .a3d-railmore::after{content:attr(data-short);font:500 10.5px/1 Inter,system-ui,sans-serif;letter-spacing:0}
+body.a3d-tier-phone #a3d-rail .a3d-railbtn svg,body.a3d-tier-phone #a3d-rail .a3d-railmore svg{width:21px;height:21px;stroke:currentColor;fill:none;stroke-width:1.6}
+body.a3d-tier-phone #a3d-rail .a3d-railbtn.active,body.a3d-tier-phone #a3d-rail .a3d-railmore.on{color:#fff;background:rgba(255,255,255,.08)}
+body.a3d-tier-phone #a3d-shell.collapsed #a3d-rail .a3d-railbtn.active{color:#9aa3ad;background:transparent}   /* shut: no tab is the one showing */
+body.a3d-tier-phone #a3d-railutil{display:none}
+body.a3d-tier-phone.a3d-railutil-open #a3d-railutil{display:flex;flex-direction:column;gap:4px;position:fixed;right:max(8px,env(safe-area-inset-right,0px));bottom:calc(66px + env(safe-area-inset-bottom,0px));padding:6px;background:#262626;border:1px solid rgba(255,255,255,.12);border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.5)}
+body.a3d-tier-phone.a3d-railutil-open #a3d-railutil .a3d-ru{width:44px;height:44px}
+body.a3d-tier-phone #a3d-leftpanel{left:0;width:min(360px,88vw);border-radius:0 14px 0 0}
+body.a3d-tier-phone #a3d-shell.collapsed #a3d-leftpanel{width:min(360px,88vw)}
+body.a3d-tier-phone .a3d-drawerbtn{display:none!important}
+body.a3d-tier-phone #a3d-toast{bottom:calc(74px + env(safe-area-inset-bottom,0px))!important}
+body.light-theme.a3d-tier-phone #a3d-railutil{background:#f6f6f4;border-color:rgba(0,0,0,.12)}
+body.light-theme.a3d-tier-phone #a3d-rail .a3d-railbtn.active,body.light-theme.a3d-tier-phone #a3d-rail .a3d-railmore.on{color:#111;background:rgba(0,0,0,.07)}
+@media(pointer:coarse){body.a3d-tier-overlay #a3d-rail .a3d-railbtn,body.a3d-tier-overlay #a3d-rail .a3d-paneltoggle{min-width:44px;min-height:44px}}
+/* __acad3dV150: the tool palette (phone and tablet) */
+.a3d-tpal{position:fixed;z-index:9600;display:none;align-items:center;gap:2px;padding:5px;border-radius:24px;background:rgba(38,40,44,.74);
+  -webkit-backdrop-filter:saturate(180%) blur(22px);backdrop-filter:saturate(180%) blur(22px);border:.5px solid rgba(255,255,255,.16);
+  box-shadow:0 10px 32px rgba(0,0,0,.38),inset 0 .5px 0 rgba(255,255,255,.08);touch-action:none;user-select:none;-webkit-user-select:none;box-sizing:border-box;font-family:Inter,system-ui,-apple-system,sans-serif}
+body.a3d-tier-overlay.a3d-mode .a3d-tpal{display:flex}
+body.a3d-tier-overlay #a3d-dock{display:none!important}
+body.a3d-tier-overlay.a3d-mode:has(#a3d-right.open) .a3d-tpal{display:none}
+.a3d-tpal[data-orient="v"]{flex-direction:column}
+.a3d-tptools{display:flex;align-items:center;gap:2px;overflow:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;touch-action:pan-x;max-width:calc(100vw - 104px)}
+.a3d-tptools::-webkit-scrollbar{display:none}
+.a3d-tpal[data-orient="v"] .a3d-tptools{flex-direction:column;touch-action:pan-y;max-width:none;max-height:calc(100vh - var(--a3d-top-h,44px) - 170px)}
+.a3d-tpb,.a3d-tpcur,.a3d-tptoggle{border:0;background:transparent;color:#e9ebee;display:grid;place-items:center;padding:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.a3d-tpb{width:42px;height:42px;flex:0 0 42px;border-radius:14px;transition:background .12s,color .12s}
+.a3d-tpb:active{background:rgba(255,255,255,.12)}
+.a3d-tpb.on{background:#0a84ff;color:#fff}
+.a3d-tpb svg,.a3d-tpcur svg,.a3d-tptoggle svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.a3d-tpsep{flex:0 0 1px;width:1px;height:24px;margin:0 4px;background:rgba(255,255,255,.16)}
+.a3d-tpal[data-orient="v"] .a3d-tpsep{width:24px;height:1px;margin:4px 0}
+.a3d-tpgrip{flex:0 0 16px;width:16px;height:42px;display:grid;place-items:center;cursor:grab;color:rgba(255,255,255,.42);border:0;background:transparent;padding:0;touch-action:none}
+.a3d-tpgrip svg{width:6px;height:16px;fill:currentColor}
+.a3d-tpal[data-orient="v"] .a3d-tpgrip{width:42px;height:16px}
+.a3d-tpal[data-orient="v"] .a3d-tpgrip svg{transform:rotate(90deg)}
+.a3d-tptoggle{width:30px;height:42px;flex:0 0 30px;color:rgba(255,255,255,.6);border-radius:12px}
+.a3d-tpal[data-orient="v"] .a3d-tptoggle{width:42px;height:30px}
+.a3d-tptoggle svg{transform:rotate(-90deg)}
+.a3d-tpal[data-side="r"] .a3d-tptoggle svg{transform:rotate(180deg)}
+.a3d-tpal[data-side="l"] .a3d-tptoggle svg{transform:none}
+.a3d-tpcur{display:none;width:50px;height:50px;border-radius:50%;background:#0a84ff;color:#fff;touch-action:none}
+.a3d-tpal.min{padding:4px;border-radius:50%}
+.a3d-tpal.min .a3d-tptools,.a3d-tpal.min .a3d-tpgrip,.a3d-tpal.min .a3d-tptoggle{display:none}
+.a3d-tpal.min .a3d-tpcur{display:grid}
+.a3d-tpal.drag{box-shadow:0 18px 44px rgba(0,0,0,.5);transform:scale(1.03)}
+body.a3d-tier-overlay:not(.a3d-tier-phone) #a3d-toast{bottom:146px!important}
+body.a3d-tier-overlay .a3d-touchlen{bottom:80px}
+body.light-theme .a3d-tpal{background:rgba(250,250,252,.8);border-color:rgba(0,0,0,.1);box-shadow:0 10px 30px rgba(0,0,0,.18)}
+body.light-theme .a3d-tpb,body.light-theme .a3d-tptoggle{color:#1c1c1e}
+body.light-theme .a3d-tpb.on{color:#fff}
+body.light-theme .a3d-tpsep{background:rgba(0,0,0,.12)}
+body.light-theme .a3d-tpgrip{color:rgba(0,0,0,.35)}
+/* __acad3dV149b: iOS zooms the page in on a field under 16 px when it takes the focus, and stays
+   zoomed. On a touch screen every field is 16 px. */
+@media(pointer:coarse){input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=color]):not([type=file]),select,textarea{font-size:16px!important}}
+/* __acad3dV149b: the on-screen keyboard (--a3d-kb, its height) lifts what is fixed to the bottom */
+body.a3d-tier-phone #a3d-leftpanel{bottom:calc(58px + env(safe-area-inset-bottom,0px) + var(--a3d-kb,0px))}
+body.a3d-kb-up.a3d-tier-phone #a3d-leftpanel{bottom:var(--a3d-kb,0px)}
+body.a3d-kb-up.a3d-props-right #a3d-right{bottom:var(--a3d-kb,0px)!important;max-height:calc(100% - var(--a3d-kb,0px) - var(--a3d-top-h,44px))}
+body.light-theme #a3d-rail{background:#f6f6f4;border-color:rgba(0,0,0,.1)}
+body.light-theme #a3d-rail button{color:#222}
+body.light-theme #a3d-rail .a3d-railbtn{color:#6b7280}
+body.light-theme #a3d-rail .a3d-railbtn:hover{background:rgba(0,0,0,.06);color:#111}
+body.light-theme #a3d-rail .a3d-railbtn.active{background:rgba(0,0,0,.09);color:#111}
+body.light-theme #a3d-leftpanel{background:#fff;color:#222;border-color:rgba(0,0,0,.1)}
+body.light-theme .a3d-projhead{border-color:rgba(0,0,0,.1)}
+body.light-theme .a3d-projsub{color:#777}

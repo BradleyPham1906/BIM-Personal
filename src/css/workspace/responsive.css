@@ -1,0 +1,56 @@
+@media(max-width:720px),(max-height:500px){
+.a3d-drawerbtn{display:inline-block}
+.a3d-tb{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.a3d-tb .a3d-hud{display:none}
+.a3d-btn{padding:8px 11px;font-size:13px;flex:0 0 auto}
+.a3d-tree{display:none;position:absolute;top:0;left:0;bottom:0;width:78vw;max-width:290px;z-index:9650;box-shadow:4px 0 18px rgba(0,0,0,0.45)}
+.a3d-tree.open{display:flex}
+/* The inspector gets the same drawer treatment the navigator already had, opened by its
+         own toolbar button. A 280px pane pinned open beside a 296px dock on a 700px screen
+         would leave 124px of drawing, which is not a layout, it is a joke. */
+#a3d-right{position:absolute;top:0;right:0;bottom:0;width:78vw;max-width:290px;z-index:9650;display:none;box-shadow:-4px 0 18px rgba(0,0,0,0.45)}
+#a3d-right.open{display:flex}
+.a3d-rdrawerbtn{display:inline-block}
+.a3d-row{padding:9px 10px}
+.a3d-treetab{padding:10px 4px}
+/* The dock spans the viewport and scrolls sideways rather than centring and overflowing
+         off both edges; its rows keep full-size hit targets for a finger. */
+#a3d-dock{left:8px;right:8px;bottom:10px;align-items:stretch}
+.a3d-dockbody{max-width:none}
+.a3d-dockrow{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.a3d-dbtn{width:34px;height:34px}
+/* On the compact tier the bar is the ONLY snap surface, so its buttons have to be
+         thumb-sized like the pills they replaced, and everything else in the bar gives way for
+         them. The hint goes first. The COORDINATE read-out goes too, and not only for space:
+         it is driven by hover, and a touch device has no hover -- it would sit at an em dash
+         until the user dragged, which is a control that looks broken rather than one that is
+         honestly absent. The level selector stays because it is the one field you set rather
+         than read, and it is what decides where a wall drawn with a finger lands. */
+.a3d-status{height:40px;gap:6px;padding:0 8px}
+.a3d-sthint,.a3d-stcoords{display:none}
+.a3d-stbtn{padding:9px 11px;font-size:12px}
+.a3d-stlvl{font-size:11px}
+.a3d-stlvl select{font-size:13px;max-width:108px}
+/* __acad3dV67: the docked tree must not inherit the phone DRAWER rules. The compact tier
+         turns .a3d-tree into an absolutely-positioned, display:none drawer opened by the burger
+         button -- correct while the tree is a child of the shell, but since V65 it is a section
+         inside the left panel, which is itself the drawer. Without this the panel rendered as an
+         empty 296px column on a 700px screen: header, then nothing. */
+body.a3d-tree-docked #a3d-leftpanel > .a3d-tree{
+display:flex!important;position:static;width:100%;max-width:none;box-shadow:none}
+.a3d-touchlen{bottom:64px}
+.a3d-dlg{width:min(280px,88vw);max-height:88vh;overflow:auto}.a3d-dlgrow input{font-size:13px}
+}
+/* the tablet tier: between the compact rules above and desktop sizing, the model tree narrows
+   rather than collapsing into a drawer */
+@media(min-width:721px) and (max-width:1024px) and (min-height:501px){
+.a3d-tree{width:224px}
+/* __acad3dV70: the inspector is a DRAWER on the tablet tier too, not just on phones.
+         Pinned open it cost 236px beside the 296px navigator, which at 760px left 184px of
+         drawing -- narrower than either panel. The same Props button that serves the
+         compact tier opens it here. */
+#a3d-right{position:absolute;top:0;right:0;bottom:0;width:300px;max-width:70vw;z-index:9650;display:none;box-shadow:-4px 0 18px rgba(0,0,0,0.45)}
+#a3d-right.open{display:flex}
+.a3d-rdrawerbtn{display:inline-block}
+}
+

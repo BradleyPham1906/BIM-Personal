@@ -3,7 +3,9 @@
 
   python3 tools/build_site.py [_site]
 
-- index.html and canvas_v10.html: the newest app;
+- index.html and app/: the newest app as separate files -- the page, its stylesheet and its scripts,
+  joined from src/ by tools/build_app.py --site;
+- canvas_v10.html: the same app as one file, to download and open offline;
 - docs/: the user guide (built HTML, committed; tools/build_docs.py --check proves it current);
 - v/<version>/index.html: every older build kept in Phase/ before a phase, named as on the guide's
   Versions page, so an older version stays reachable at a fixed address."""
@@ -12,6 +14,7 @@ import pathlib, shutil, sys
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / 'tools'))
 import build_docs  # noqa: E402
+import build_app  # noqa: E402
 
 OUT = pathlib.Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / '_site'
 
@@ -20,7 +23,7 @@ def main():
     if OUT.exists():
         shutil.rmtree(OUT)
     (OUT / 'docs').mkdir(parents=True)
-    shutil.copy(ROOT / 'canvas_v10.html', OUT / 'index.html')
+    build_app.write_site(OUT)
     shutil.copy(ROOT / 'canvas_v10.html', OUT / 'canvas_v10.html')
     for p in (ROOT / 'docs').glob('*.html'):
         shutil.copy(p, OUT / 'docs' / p.name)

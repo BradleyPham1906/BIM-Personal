@@ -1,0 +1,36 @@
+/* ---- the command palette (Ctrl+K) ---- */
+#a3d-cmdpal{position:fixed;left:50%;top:88px;transform:translateX(-50%) translateY(-10px);width:min(680px,calc(100vw - 32px));z-index:150;background:rgba(20,24,31,.96);color:#fff;border:1px solid rgba(196,211,237,.2);border-radius:18px;box-shadow:0 24px 90px rgba(0,0,0,.44);padding:10px;opacity:0;pointer-events:none;transition:opacity .14s,transform .14s;font-family:Inter,Work Sans,system-ui,sans-serif}
+#a3d-cmdpal.show{opacity:1;pointer-events:auto;transform:translateX(-50%) translateY(0)}
+#a3d-cmdpal .a3d-cmdinput{display:flex;align-items:center;gap:9px;background:rgba(255,255,255,.06);border:1px solid rgba(196,211,237,.15);border-radius:12px;padding:9px 11px;margin-bottom:8px}
+#a3d-cmdpal input{all:unset;flex:1;font-size:14px;color:#fff}
+#a3d-cmdpal .a3d-cmdrow{display:flex;align-items:center;justify-content:space-between;padding:9px 10px;border-radius:11px;color:#C4D3ED;cursor:pointer;font-size:13px;font-weight:750}
+#a3d-cmdpal .a3d-cmdrow:hover,#a3d-cmdpal .a3d-cmdrow.active{background:rgba(86,255,166,.14);color:#fff}
+#a3d-cmdpal .a3d-cmdkey{font-size:11px;color:rgba(196,211,237,.55);font-weight:800}
+body.light-theme #a3d-cmdpal{background:rgba(255,255,255,.94);color:#202124;border-color:rgba(0,0,0,.1);box-shadow:0 18px 60px rgba(0,0,0,.16)}
+body.light-theme #a3d-cmdpal{color:#202124}
+body.light-theme #a3d-cmdpal .a3d-cmdinput{background:rgba(0,0,0,.04);border-color:rgba(0,0,0,.08)}
+body.light-theme #a3d-cmdpal input{color:#202124}
+body.light-theme #a3d-cmdpal .a3d-cmdrow{color:#30343b}
+/* __acad3dV128: the command search's rows -- name, what it does, where it is, its alias and keys */
+#a3d-cmdpal .a3d-cmdresults{max-height:min(52vh,480px);overflow-y:auto;overscroll-behavior:contain}
+#a3d-cmdpal .a3d-cmdrow{gap:12px;padding:7px 10px}
+#a3d-cmdpal .a3d-cmdmain{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#a3d-cmdpal .a3d-cmddesc{opacity:.5;font-weight:500}
+#a3d-cmdpal .a3d-cmdhl{color:#56ffa6;font-weight:850}
+#a3d-cmdpal .a3d-cmdmeta{display:flex;align-items:center;gap:8px;flex:0 0 auto;font-weight:600}
+#a3d-cmdpal .a3d-cmdwhere{font-size:10.5px;color:rgba(196,211,237,.5);max-width:190px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#a3d-cmdpal .a3d-cmdoff{font-size:10.5px;color:#e8a87c}
+#a3d-cmdpal .a3d-cmdrowoff .a3d-cmdname{opacity:.6}
+#a3d-cmdpal kbd{font:inherit;font-size:10.5px;font-weight:700;padding:1px 5px;border-radius:4px;border:1px solid rgba(196,211,237,.28);color:rgba(196,211,237,.85);background:rgba(255,255,255,.04)}
+#a3d-cmdpal .a3d-cmdkbd i{font-style:normal;opacity:.5;margin:0 2px;font-size:10px}
+#a3d-cmdpal .a3d-cmdhd{font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:rgba(196,211,237,.45);padding:8px 10px 3px;font-weight:800}
+#a3d-cmdpal .a3d-cmdnone{cursor:default;font-weight:600}
+#a3d-cmdpal .a3d-cmdfoot{display:flex;gap:14px;flex-wrap:wrap;align-items:center;padding:8px 6px 2px;border-top:1px solid rgba(196,211,237,.1);margin-top:6px;font-size:10.5px;color:rgba(196,211,237,.5)}
+#a3d-cmdpal .a3d-cmdfoot kbd{margin-right:2px}
+#a3d-cmdpal .a3d-cmdcount{margin-left:auto}
+body.light-theme #a3d-cmdpal .a3d-cmdhl{color:#0f8a4c}
+body.light-theme #a3d-cmdpal .a3d-cmdwhere,body.light-theme #a3d-cmdpal .a3d-cmdhd,body.light-theme #a3d-cmdpal .a3d-cmdfoot{color:rgba(32,33,36,.55)}
+body.light-theme #a3d-cmdpal kbd{color:#30343b;border-color:rgba(0,0,0,.18);background:rgba(0,0,0,.03)}
+body.light-theme #a3d-cmdpal .a3d-cmdoff{color:#b45a1c}
+body.light-theme #a3d-cmdpal .a3d-cmdfoot{border-top-color:rgba(0,0,0,.08)}
+
