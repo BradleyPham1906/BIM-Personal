@@ -150,10 +150,7 @@
     A3D_AW.on=false;
     document.body.classList.remove('a3d-aw');
     bimAwBar();
-    var w=document.querySelector('.a3d-analyze-wrap');
-    if(w)w.innerHTML=bimAnalyzeHtml();
-    bimAnalyzeRefresh(true);
-    refreshProps();
+    refreshProps();   /* Properties again, and Analyze's rows: the list in their place has none to refresh, so they are drawn whole */
     paint();
     return true;
   }

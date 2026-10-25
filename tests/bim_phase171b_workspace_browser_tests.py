@@ -296,6 +296,9 @@ async def run():
             ck(near(road_in, (0xdc, 0xdc, 0xd8), 4), "light mode, in plan: Market Street's line in the road tone (%s)" % road_in)
             mp = await safe("()=>window.__a3dToScreen([0,-100])")
             map_in = await px(mp[0], mp[1])
+            bc = await safe("""()=>{var o=window.__a3dState().objs.filter(function(x){return x.context&&x.context.kind==='buildings'&&x.mesh&&x.mesh.v;})[0],v=o.mesh.v,x=0,z=0;
+              v.forEach(function(p){x+=p[0];z+=p[2];});return window.__a3dToScreen([o.pos[0]+x/v.length,o.pos[2]+z/v.length],60);}""")
+            b_in = await px(bc[0], bc[1])
             # the map: one red square everywhere, greyed and faded in the workspace
             await safe("()=>window.__a3dCamSet({tx:20,tz:-10,dist:3000})")
             await page.wait_for_timeout(1500)
@@ -312,6 +315,9 @@ async def run():
             await page.wait_for_timeout(800)
             road_out = await px(rp[0], rp[1])
             map_out = await px(mp[0], mp[1])
+            b_out = await px(bc[0], bc[1])
+            ck(b_in and b_out and sum(b_in[:3]) >= sum(b_out[:3]) + 45 and min(b_in[:3]) >= 200,
+               "a context building drawn in the light mode's tone in the workspace, the app's own out of it (%s, %s)" % (b_in, b_out))
             ck(road_out and not near(road_out, (0xdc, 0xdc, 0xd8), 30) and map_in and map_out and map_out[0] > map_out[1] + 60 and abs(map_in[0] - map_in[1]) <= 4,
                "out of it the road's line and the map near the site as they were (%s, %s; in it %s)" % (road_out, map_out, map_in))
             await safe("()=>window.__a3dSet3DView()")
@@ -392,7 +398,12 @@ async def run():
             await page.wait_for_timeout(150)
             ck(await text('#a3d-rpttl') == 'Analysis' and await safe("()=>!!document.querySelector('#a3d-propsbody [data-awpanel=\"noise\"]')"), "nothing selected: the analysis again")
             await safe("()=>window.__a3dAwTick('streets')")
-            await analyse()
+            ck(await click('.a3d-awl [data-anzact="aw:analyze"]') and (await safe("()=>window.__a3dSiteRunState()") or {}).get('busy') is True,
+               "the list's Analyze again runs it")
+            for _ in range(240):
+                if not (await safe("()=>window.__a3dSiteRunState()") or {}).get('busy'):
+                    break
+                await page.wait_for_timeout(250)
             a10 = await aw()
             ck(a10.get('now') == 'noise' and set(a10.get('shown', [])) == {'noise', 'green', 'streets'}, "Analyze site again, from the list, keeps the focus and the ticks (%s)" % a10.get('shown'))
 

@@ -14,7 +14,7 @@ VARIANTS = {
     'groups_order': [("{id:'see',name:'Views and noise',an:['views','noise']},", "{id:'see',name:'Views and noise',an:['noise','views']},")],   # in Analyze's order
     # ---- 2. before a run ----
     'cross_stays': [("      if(c==='leave')r=bimAwLeave();\n", "      if(c==='leave')r=false;\n")],   # the bar's cross leaves
-    'leave_list_kept': [("    if(w)w.innerHTML=bimAnalyzeHtml();\n", "")],   # out of it: Analyze's rows back
+    'leave_list_kept': [("    bimAwBar();\n    refreshProps();   /* Properties again, and Analyze's rows", "    bimAwBar();\n    0&&refreshProps();   /* Properties again, and Analyze's rows")],   # out of it: Analyze's rows back
     # ---- 3. Analyze site ends in it ----
     'run_no_workspace': [("        bimAwAfterRun();   /* __acad3dV171b", "        0&&bimAwAfterRun();   /* __acad3dV171b")],   # Analyze site ends in the workspace
     'run_all_shown': [("    if(!bimDgState().last){S.focus=null;S.add=[];}\n    bimUndoHold=true;\n    try{bimAwApply(false);}finally{bimUndoHold=held;}\n    bimAwOpen();",
@@ -68,7 +68,7 @@ VARIANTS = {
     'details_dead': [("      else if(c==='panel'){var rp=document.getElementById('a3d-right');if(rp){rp.classList.toggle('open');refreshProps();}r=!!rp;}\n", "")],   # Details opens the panel
     'phone_no_key': [("    if(sr.w<(bimAwLook()?280:620))return null;", "    if(sr.w<620)return null;")],   # the key of the one in focus on a phone's view
     # ---- 11. a row that fits ----
-    'row_squeezed': [(".a3d-anzhd>.a3d-anztog{min-width:96px}", ".a3d-anzhd>.a3d-anztog{min-width:0}")],   # Traffic's row keeps its name in sight
+    'row_squeezed': [(".a3d-anzhd>.a3d-anzbtn{flex:0 1 auto;min-width:0;", ".a3d-anzhd>.a3d-anzbtn{flex:0 0 auto;min-width:0;")],   # Traffic's row keeps its name in sight
 }
 
 name = sys.argv[1]

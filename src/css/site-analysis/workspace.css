@@ -120,5 +120,4 @@ body.light-theme .a3d-awp-note{color:#4b5563}
 body.light-theme .a3d-awp-chart{--surf:#ffffff;--ink:#0b0b0b;--ink2:#52514e;--muted:#6b7280;--grid:#e1e0d9;--base:#c3c2b7;--band:rgba(11,11,11,.07);
   --w1:#86b6ef;--w2:#5598e7;--w3:#2a78d6;--w4:#1c5cab;--w5:#104281;--hn:#e7e5df}
 /* an analysis's row in Analyze: its name keeps room beside a long first button (Traffic's "Stop the simulation") */
-.a3d-anzhd>.a3d-anztog{min-width:96px}
 .a3d-anzhd>.a3d-anzbtn{flex:0 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis}
