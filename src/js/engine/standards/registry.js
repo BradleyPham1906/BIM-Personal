@@ -951,7 +951,7 @@
     {id:'walk',name:'Walk times',col:'#5598e7',hidden:true},
     {id:'needs',name:'Daily needs',col:'#199e70'},
     {id:'vehicles',name:'Vehicle access',col:'#aab3be'},
-    {id:'traffic',name:'Traffic and people',col:'#ffb454'},   /* __acad3dV171: the simulation's results */
+    {id:'traffic',name:'Traffic and people',col:'#ffb454',hidden:true},   /* __acad3dV171: the simulation's results */
     /* __acad3dV168: land; land use, the figure-ground and the zoning cover the ground, so they start hidden */
     {id:'landuse',name:'Land use',col:'#eda100',hidden:true},
     {id:'figure',name:'Figure-ground',col:'#6b7280',hidden:true},

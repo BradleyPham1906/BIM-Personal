@@ -425,19 +425,22 @@ async def run():
             await safe("()=>window.__a3dTrStop()")
             await safe("()=>{window.__a3dAnzView(false);window.__a3dSelectFor([]);window.__a3dSetPlanView();window.__a3dCamSet({tx:20,tz:-10,dist:200});}")
             u0 = await safe("()=>window.__a3dUndoDepth()")
+            lyv = "()=>{var L=window.__a3dLayers(),id=window.__a3dDgState().layers.traffic,i;for(i=0;i<L.length;i++)if(L[i].id===id)return L[i].visible!==false;return null;}"
+            hid = await safe(lyv)
             ok = await safe("()=>window.__a3dRunCmd('traffic')")
             await page.wait_for_timeout(200)
             a1 = await anim()
             s1 = await summary() or {}
             ck(ok and a1.get('on') is True and s1.get('warm') is True and (await safe("()=>window.__a3dTrSettings()") or {}).get('on') is True,
                "TRAFFIC turns it on and plays it: the run built and warmed up, the clock running (%s)" % {k: a1.get(k) for k in ('on', 'live')})
-            ck(await safe("()=>window.__a3dUndoDepth()") == (u0 or 0) + 1, "turning it on is one undo step")
-            t0 = await safe("()=>performance.now()")
+            ck(hid is False and await safe(lyv) is True, "its layer starts hidden, as a coverage's does, and turning it on shows it")
+            ck(await safe("()=>window.__a3dUndoDepth()") == (u0 or 0) + 1, "turning it on, and its layer, is one undo step")
+            tt = "()=>[window.__a3dTrSummary().t,performance.now()]"   # the run's time and the page's, read together
+            r1 = await safe(tt) or [0, 0]
             await page.wait_for_timeout(2000)
-            el = ((await safe("()=>performance.now()")) - t0) / 1000
-            s2 = await summary() or {}
-            adv = s2.get('t', 0) - s1.get('t', 0)
-            ck(0.4 * el <= adv <= el + 0.2, "it runs with the clock: %.2f s of traffic in %.2f s" % (adv, el))
+            r2 = await safe(tt) or [0, 0]
+            adv, el = r2[0] - r1[0], (r2[1] - r1[1]) / 1000
+            ck(0.4 * el <= adv <= el + 0.1 + R.STEP + 0.05, "it runs with the clock: %.2f s of traffic in %.2f s (a frame catches up a tenth of a second at most, a step carried)" % (adv, el))
             await safe("()=>document.getElementById('a3d-animplay').click()")
             p1 = await summary() or {}
             await page.wait_for_timeout(600)

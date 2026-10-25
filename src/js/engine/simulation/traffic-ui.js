@@ -20,8 +20,11 @@
   function bimTrCommand(on){
     if(on===undefined||on===null)on=!bimTrSettings().on;
     if(on&&!bimMvOf()){a3dToast('Traffic and people: '+bimMvWhyNot());return false;}
-    bimTrSetSettings('on',!!on);
+    var pushed=bimTrSetSettings('on',!!on);
     if(on){
+      /* its layer shown, in the same step: it starts hidden, as a coverage does, until there is something to show */
+      var ly=bimLayerById(bimDgState().layers.traffic);
+      if(ly&&ly.visible===false){if(!pushed)pushUndo();ly.visible=true;bimLayerChanged();}
       if(A3D_ANIM.on||A3D_ANIM.paused)bimAnimStop();
       bimAnimPlay(true);
       a3dToast('Traffic and people: '+(A3D_TR.run?'playing. Pause keeps the moment, Stop gives the drawing back':'could not start'));

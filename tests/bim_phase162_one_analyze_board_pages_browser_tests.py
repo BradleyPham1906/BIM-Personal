@@ -165,7 +165,9 @@ async def run():
                     # AMENDED FOR V166: and movement's
                     'dgstreets': 'access', 'dgcycling': 'access', 'dgtransit': 'access', 'dgwalk': 'access', 'dgvehicles': 'access', 'dgneeds': 'people',
                     # AMENDED FOR V168: and the land's
-                    'dglanduse': 'location', 'dgfigure': 'location', 'dgzoning': 'legal', 'dggreen': 'ecology'}
+                    'dglanduse': 'location', 'dgfigure': 'location', 'dgzoning': 'legal', 'dggreen': 'ecology',
+                    # AMENDED FOR V171: and Traffic and people
+                    'dgtraffic': 'access'}
             ck(W == want, "each analysis in the category it answers: landform, water, climate; the model's in Model (%s)" % W)
             cats = await safe("()=>window.__a3dAnzCats()") or []
             ck({c['id']: c['group'] for c in cats} == want, "the engine's grouping says the same")
