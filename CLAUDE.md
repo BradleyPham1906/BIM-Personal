@@ -1,20 +1,64 @@
 # BIM-Personal: start here
 
-A single-file, zero-dependency browser CAD/BIM app, `canvas_v10.html`, built phase by phase (V1 to
-V169 so far), each phase verified by its own browser suite, deliberately broken builds its suite
-must catch, and the full regression.
+A zero-dependency browser CAD/BIM app, built phase by phase (V1 to V169 so far), each phase verified
+by its own browser suite, deliberately broken builds its suite must catch, and the full regression.
+Its source is `src/`, split by feature; `tools/build_app.py` joins it into `canvas_v10.html`, the
+one-file build every suite tests, and Pages serves it as separate files (see "The source" below).
 
 ## In a new session
 
 1. Read `PIPELINE.md` first, in full: the build's hash and size, the test counts, and the ordered
    path, with the phase marked **Start here**.
-2. Then `CLAUDE_INSTRUCTIONS.md`: the build contract (ES5, one file, no dependencies, phase markers,
+2. Then `CLAUDE_INSTRUCTIONS.md`: the build contract (ES5, no dependencies, phase markers,
    failures warned and toasted), the patch protocol (anchored Python scripts asserting exact counts
    and the base hash), the test protocol and the standing laws. Its paths under `claude/` and on a
    Mac are from an older setup: the files are at the repository's root, `Phase/`, `tests/` and
-   `reference/`.
+   `reference/`. Where it says the app is edited as one file, "The source" below replaces it.
 3. The current work plan is `reference/plan-v167-v170.md`; each phase's research note is in
    `reference/`; the engineering log is `canvas_v10_STATUS.md` (search it, never read it whole).
+
+## The source: src/, by feature (the owner, 2026-10-25)
+
+"having a one html with all the code cost me so many token and i want the app structure to be like a
+profesisonal app where there are multi folders and files." The app is edited in `src/`; never edit
+`canvas_v10.html` by hand, and never read it whole: it is a build output, committed because every
+suite, every falsification script, `Phase/`'s backups and the guide's tools read it.
+
+    src/index.html            the page: its head and body, and for each block the files it is made of,
+                              in order (<!-- @bundle -->, <!-- @include -->, <!-- @end -->)
+    src/css/                  the stylesheet, 11 files: shell/, panels/, workspace/, sheets/, site-analysis/
+    src/js/shell/shell.js     the top bar, the command palette, the project tabs, the boot
+    src/js/vendor/openskp.js  the SketchUp reader (third-party, bundled; never edited by hand)
+    src/js/engine/            the BIM engine, 162 files in 24 folders: core/ (state, storage, meshes,
+                              save), drawing/, editing/, gizmo/, bim/, structure/, annotation/,
+                              layers/, properties/, views/, sheets/, assets/, io/, render/, map/,
+                              terrain/, survey/, site/, site-analysis/, standards/, analysis/,
+                              history/, ui/, commands/, testing/ (the window.__a3d* surface the
+                              suites drive); _begin.js and _end.js open and close it
+
+- **The engine is one closure.** `_begin.js` opens `(function(){ try{`, `_end.js` closes it, and every
+  file between is a slice of that one function: they share its private variables and are joined into
+  one script, in the order `src/index.html` lists them. A file is never loaded on its own, and a
+  function a file uses may be defined in another. Each file is a whole list of statements: cut only
+  between top-level statements (`new Function(text)` parses every file but `_begin.js`/`_end.js`).
+- **Finding code:** `grep -rn 'name' src/` gives the file and line; read that file, or its range.
+  `tools/app_layout.py` lists every file in order with the line it starts at.
+- **Building:** `python3 tools/build_app.py` writes `canvas_v10.html` and prints its bytes and sha256;
+  `--check` fails when `canvas_v10.html` is not what `src/` builds (the Pages workflow runs it);
+  `--site DIR` writes the multi-file app. `tools/check_site.py` serves that app over http and proves
+  it loads and runs exactly as the one file does (markers, globals, elements, pixels, desktop and phone).
+- **Patching:** a phase's anchored scripts patch files under `src/`, then run `build_app.py`. The base
+  hash they assert, and the hash `PIPELINE.md` records, is still `canvas_v10.html`'s, the built file's.
+  Suites and falsification scripts read the built `canvas_v10.html`, as before; a pre-phase backup in
+  `Phase/` is still that one file.
+- **A new file:** create it in its folder, add its `<!-- @include -->` line to `src/index.html` where
+  its code belongs in the order, and add its row (path, first line) to `tools/app_layout.py`.
+- **A change made to `canvas_v10.html` itself** (a branch from before the split, merged): run
+  `python3 tools/split_app.py`, which cuts it into `src/` by `app_layout.py` and refuses to finish
+  unless `src/` joins back to it byte for byte. A row whose first line changed is fixed there first.
+- **Pages:** `tools/build_site.py` serves `index.html` with `app/app.css`, `app/shell.js`,
+  `app/openskp.js` and `app/engine.js` (each address carries its hash, so no browser runs an old
+  copy), and `canvas_v10.html`, the same app as one file, for offline use from `file://`.
 
 ## Research depth (the owner, 2026-10-17)
 

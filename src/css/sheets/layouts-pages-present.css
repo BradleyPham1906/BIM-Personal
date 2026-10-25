@@ -1,0 +1,67 @@
+/* __acad3dV116: the layout tabs, the space button, and the menus they open */
+.a3d-laytabs{display:flex;align-items:stretch;align-self:stretch;flex:0 1 auto;min-width:0;overflow:hidden;margin-left:-10px;border-right:1px solid #101214}
+.a3d-lt{flex:0 1 auto;min-width:0;max-width:180px;background:transparent;border:0;border-right:1px solid #101214;color:#a9abae;padding:0 12px;font:inherit;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.a3d-lt:hover{background:#2a2e33;color:#e6e8ea}
+.a3d-lt.on{background:#2e3339;color:#fff;box-shadow:inset 0 2px 0 #4ea1ff}
+.a3d-lt.a3d-ltplus{flex:0 0 auto;padding:0 10px;font-size:13px}
+.a3d-ltin{width:140px;background:#15171a;border:1px solid #4ea1ff;color:#fff;font:inherit;padding:1px 4px;margin:3px 6px;border-radius:3px}
+.a3d-stspace{display:none;font-weight:700;letter-spacing:.4px}
+.a3d-stspace.show{display:inline-flex}
+.a3d-ltmenu{position:fixed;z-index:9990;min-width:176px;background:#22262b;border:1px solid #3a4048;border-radius:5px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,.45);font:12px/1.2 "Segoe UI",Inter,system-ui,sans-serif}
+.a3d-ltmenu button{display:block;width:100%;text-align:left;background:transparent;border:0;color:#dfe4ea;padding:6px 10px;border-radius:3px;font:inherit;cursor:pointer}
+.a3d-ltmenu button:hover{background:#2f3540}
+.a3d-ltmenu button.a3d-ltdanger{color:#ffb4b4}
+.a3d-ltmenu hr{border:0;border-top:1px solid #353b44;margin:4px 2px}
+.a3d-sheettb{flex:0 0 auto;display:flex;align-items:center;gap:6px;padding:6px 10px;background:#1c2024;border-bottom:1px solid #30353c}
+.a3d-sheetnum{color:#dfe4ea;font-weight:600;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:220px}
+.a3d-sheetsp{flex:1 1 auto}
+.a3d-sheetwrap{flex:1 1 auto;overflow:auto;display:flex;align-items:flex-start;justify-content:center;padding:18px}
+/* __acad3dV122: the Pages display -- every sheet in one scroll, the way a PDF reader shows a document */
+.a3d-sheettb{flex-wrap:wrap;row-gap:6px}   /* a narrow window gives the bar a second row, not two-line buttons */
+.a3d-sheettb .a3d-btn{white-space:nowrap}
+.a3d-shdisp{display:inline-flex;flex:0 0 auto;margin-right:4px}
+.a3d-shdisp .a3d-btn{border-radius:0}
+.a3d-shdisp .a3d-btn:first-child{border-radius:4px 0 0 4px}
+.a3d-shdisp .a3d-btn:last-child{border-radius:0 4px 4px 0;margin-left:-1px}
+.a3d-shdisp .a3d-btn.on{background:#2f5d8a;border-color:#3f75a8;color:#fff}
+.a3d-sheetview .a3d-pgonly{display:none}
+.a3d-sheetview.a3d-pagesmode .a3d-pgonly{display:inline-flex}
+.a3d-sheetview.a3d-pagesmode select.a3d-pgonly{display:inline-block}
+.a3d-sheetview.a3d-pagesmode .a3d-lyonly{display:none}
+.a3d-sheetview.a3d-pagesmode .a3d-sheetwrap{display:none}
+.a3d-pgnav{align-items:center;gap:4px}
+.a3d-pgnav .a3d-btn{padding:3px 9px}
+.a3d-pgnav .a3d-btn:disabled{opacity:.35;cursor:default}
+.a3d-pgnum{width:38px;background:#15171a;border:1px solid #3a4048;border-radius:4px;color:#e6e8ea;font:inherit;font-size:12px;text-align:center;padding:3px 2px}
+.a3d-pgof{color:#a9abae;font-size:12px;white-space:nowrap;margin-right:2px}
+.a3d-pgzoom{background:#2a2f35;border:1px solid #3a4048;color:#c8ced6;border-radius:4px;font-size:12px;padding:3px 4px}
+.a3d-pageswrap{display:none;position:relative;flex:1 1 auto;overflow-x:auto;overflow-y:scroll;padding:18px}
+.a3d-sheetview.a3d-pagesmode .a3d-pageswrap{display:block}
+.a3d-page{margin:0 auto 18px;background:#fff;box-shadow:0 6px 24px rgba(0,0,0,.5);cursor:default}
+.a3d-page:last-child{margin-bottom:0}
+.a3d-page canvas{display:block;width:100%;height:100%}
+/* __acad3dV122: Present */
+.a3d-slideshow{position:fixed;inset:0;z-index:100000;background:#000;display:none;align-items:center;justify-content:center;user-select:none;-webkit-user-select:none}
+.a3d-slideshow.open{display:flex}
+.a3d-slideshow.idle{cursor:none}
+.a3d-sscv{display:block;background:#fff}
+.a3d-ssbar{position:absolute;left:50%;bottom:22px;transform:translateX(-50%);display:flex;align-items:center;gap:4px;padding:5px 7px;border-radius:10px;background:rgba(28,31,36,.92);color:#e6e8ea;font:13px/1 system-ui,sans-serif;transition:opacity .25s}
+.a3d-ssbar button{background:transparent;border:0;color:#e6e8ea;font:inherit;padding:7px 11px;border-radius:6px;cursor:pointer}
+.a3d-ssbar button:hover{background:rgba(255,255,255,.12)}
+.a3d-ssbar button:disabled{opacity:.3;cursor:default;background:transparent}
+.a3d-sspos{min-width:58px;text-align:center;font-variant-numeric:tabular-nums}
+.a3d-sshint{position:absolute;left:50%;top:16px;transform:translateX(-50%);max-width:90vw;text-align:center;color:rgba(255,255,255,.72);font:12px/1.4 system-ui,sans-serif;transition:opacity .4s}
+.a3d-slideshow.idle .a3d-ssbar,.a3d-slideshow.idle .a3d-sshint{opacity:0;pointer-events:none}
+.a3d-sheetview.open~#a3d-dock{display:none}/* __acad3dV116: the model's tools, not the paper's */
+#a3d-statusbar.a3d-onsheet .a3d-stlvl,#a3d-statusbar.a3d-onsheet #a3d-stcoords,#a3d-statusbar.a3d-onsheet #a3d-snapgrp,#a3d-statusbar.a3d-onsheet #a3d-navgrp{display:none}
+#a3d-sheetcanvas{background:#fff;box-shadow:0 6px 24px rgba(0,0,0,0.5);max-width:100%;height:auto;cursor:default;touch-action:none}
+.a3d-ptypehd{display:flex;align-items:center;gap:7px;padding:6px 7px;background:#272c32;border-bottom:1px solid #3a4048;margin:-5px -8px 6px}
+.a3d-ptypeic{width:26px;height:26px;flex:0 0 auto;display:flex;align-items:center;justify-content:center;background:#1c2024;border:1px solid #3a4048;border-radius:3px;color:#c3cad2}
+.a3d-ptypeic svg{width:16px;height:16px}
+.a3d-ptypetx{flex:1 1 auto;min-width:0}
+.a3d-ptypename{font-size:11.5px;color:#e6eaef;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.a3d-ptypesub{font-size:9.5px;color:#8a939d;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.a3d-pedit{flex:0 0 auto;background:#2f353c;border:1px solid #3a4048;color:#c3cad2;border-radius:3px;font-size:9.5px;padding:3px 6px;cursor:pointer;font-family:inherit}
+.a3d-pedit:hover{background:#3a424a;color:#fff}
+.a3d-pgrp{display:flex;align-items:center;justify-content:space-between;background:#262b31;border-radius:5px;padding:6px 9px;margin:10px 0 0;font-size:10.5px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;color:#aeb8c2;cursor:pointer;user-select:none;transition:background .1s ease}
+.a3d-pgrp:hover{background:#2e343b;color:#dfe4ea}

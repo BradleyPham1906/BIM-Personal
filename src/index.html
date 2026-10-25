@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>CAD/BIM workspace</title>
+<!-- @bundle app.css -->
+<style>
+<!-- @include css/shell/page.css -->
+<!-- @include css/shell/command-palette.css -->
+<!-- @include css/shell/left-shell.css -->
+<!-- @include css/panels/layers-presentation.css -->
+<!-- @include css/workspace/engine-chrome.css -->
+<!-- @include css/sheets/layouts-pages-present.css -->
+<!-- @include css/panels/properties-analyze.css -->
+<!-- @include css/site-analysis/boards.css -->
+<!-- @include css/workspace/components.css -->
+<!-- @include css/workspace/responsive.css -->
+<!-- @include css/shell/top-bar-start.css -->
+</style>
+<!-- @end -->
+</head>
+<body>
+
+<!-- @bundle shell.js -->
+<script>
+<!-- @include js/shell/shell.js -->
+</script>
+<!-- @end -->
+
+<!-- @bundle openskp.js -->
+<script>
+<!-- @include js/vendor/openskp.js -->
+</script>
+<!-- @end -->
+
+<!-- @bundle engine.js -->
+<script>
+<!-- @include js/engine/_begin.js -->
+<!-- @include js/engine/core/state.js -->
+<!-- @include js/engine/core/storage-theme.js -->
+<!-- @include js/engine/core/mesh-primitives.js -->
+<!-- @include js/engine/drawing/plan-mode-sketch.js -->
+<!-- @include js/engine/drawing/command-ending.js -->
+<!-- @include js/engine/drawing/drawing-input.js -->
+<!-- @include js/engine/drawing/point-node.js -->
+<!-- @include js/engine/bim/levels-walls-floors.js -->
+<!-- @include js/engine/bim/level-datum.js -->
+<!-- @include js/engine/bim/building-site-hierarchy.js -->
+<!-- @include js/engine/bim/classification.js -->
+<!-- @include js/engine/bim/structural-grids.js -->
+<!-- @include js/engine/site/sun-position.js -->
+<!-- @include js/engine/terrain/terrain-tin.js -->
+<!-- @include js/engine/terrain/breaklines.js -->
+<!-- @include js/engine/terrain/grading.js -->
+<!-- @include js/engine/history/element-history.js -->
+<!-- @include js/engine/history/branches-merge.js -->
+<!-- @include js/engine/survey/survey-check.js -->
+<!-- @include js/engine/survey/survey-arithmetic.js -->
+<!-- @include js/engine/site/property.js -->
+<!-- @include js/engine/site/alignment-profile.js -->
+<!-- @include js/engine/bim/grid-editing.js -->
+<!-- @include js/engine/bim/section-profiles.js -->
+<!-- @include js/engine/bim/wall-corners.js -->
+<!-- @include js/engine/bim/footings.js -->
+<!-- @include js/engine/bim/import-compliance.js -->
+<!-- @include js/engine/bim/type-instance-params.js -->
+<!-- @include js/engine/bim/rooms.js -->
+<!-- @include js/engine/bim/room-data-occupancy.js -->
+<!-- @include js/engine/bim/room-colour-fill.js -->
+<!-- @include js/engine/bim/room-tags.js -->
+<!-- @include js/engine/annotation/dimensions.js -->
+<!-- @include js/engine/annotation/annotation-pick.js -->
+<!-- @include js/engine/io/project-file.js -->
+<!-- @include js/engine/bim/columns-openings.js -->
+<!-- @include js/engine/io/dxf-export.js -->
+<!-- @include js/engine/io/export-mappings.js -->
+<!-- @include js/engine/layers/plot-by-layers.js -->
+<!-- @include js/engine/bim/ceiling-floor-profile.js -->
+<!-- @include js/engine/bim/roofs.js -->
+<!-- @include js/engine/bim/stairs.js -->
+<!-- @include js/engine/layers/layer-rules.js -->
+<!-- @include js/engine/layers/select-change.js -->
+<!-- @include js/engine/layers/layers-panel.js -->
+<!-- @include js/engine/layers/analysis-data-rows.js -->
+<!-- @include js/engine/layers/layer-manager.js -->
+<!-- @include js/engine/properties/palette.js -->
+<!-- @include js/engine/properties/usages.js -->
+<!-- @include js/engine/properties/site-standards.js -->
+<!-- @include js/engine/properties/map-address-site-data.js -->
+<!-- @include js/engine/properties/context-lod-data.js -->
+<!-- @include js/engine/ui/guide-versions.js -->
+<!-- @include js/engine/analysis/simulation.js -->
+<!-- @include js/engine/analysis/results-layers.js -->
+<!-- @include js/engine/analysis/analyze-tab.js -->
+<!-- @include js/engine/standards/registry.js -->
+<!-- @include js/engine/site-analysis/model-layers.js -->
+<!-- @include js/engine/site-analysis/movement-analyses.js -->
+<!-- @include js/engine/site-analysis/land-water.js -->
+<!-- @include js/engine/site-analysis/land-use.js -->
+<!-- @include js/engine/site-analysis/analyze-site.js -->
+<!-- @include js/engine/site-analysis/workspace.js -->
+<!-- @include js/engine/site-analysis/climate-data.js -->
+<!-- @include js/engine/site-analysis/climate-board.js -->
+<!-- @include js/engine/site-analysis/access-board.js -->
+<!-- @include js/engine/site-analysis/zoning-envelope.js -->
+<!-- @include js/engine/site-analysis/access-data.js -->
+<!-- @include js/engine/site-analysis/movement-data.js -->
+<!-- @include js/engine/site-analysis/panel.js -->
+<!-- @include js/engine/io/import-dxf.js -->
+<!-- @include js/engine/io/import-obj-stl.js -->
+<!-- @include js/engine/io/import-ifc.js -->
+<!-- @include js/engine/io/sketchup-import.js -->
+<!-- @include js/engine/io/import-entry.js -->
+<!-- @include js/engine/render/webgl.js -->
+<!-- @include js/engine/render/gpu-batches.js -->
+<!-- @include js/engine/render/gpu-pick.js -->
+<!-- @include js/engine/render/webgpu.js -->
+<!-- @include js/engine/map/colour-lens.js -->
+<!-- @include js/engine/map/map-tiles.js -->
+<!-- @include js/engine/map/site-context.js -->
+<!-- @include js/engine/map/surroundings-3d.js -->
+<!-- @include js/engine/map/lod-solids.js -->
+<!-- @include js/engine/map/lod2-roofs.js -->
+<!-- @include js/engine/map/cityjson.js -->
+<!-- @include js/engine/map/data-layers.js -->
+<!-- @include js/engine/map/find-open-data.js -->
+<!-- @include js/engine/map/terrain-3d.js -->
+<!-- @include js/engine/render/viewcube.js -->
+<!-- @include js/engine/annotation/annotation-grips.js -->
+<!-- @include js/engine/gizmo/transform-gizmo.js -->
+<!-- @include js/engine/annotation/annotation-overlay.js -->
+<!-- @include js/engine/ui/rail-utility-stack.js -->
+<!-- @include js/engine/ui/shortcuts.js -->
+<!-- @include js/engine/ui/zoom-window-save-image.js -->
+<!-- @include js/engine/gizmo/gizmo-handles.js -->
+<!-- @include js/engine/editing/faces-push-pull.js -->
+<!-- @include js/engine/editing/push-pull.js -->
+<!-- @include js/engine/drawing/add-vertex.js -->
+<!-- @include js/engine/drawing/sketch-constraints.js -->
+<!-- @include js/engine/editing/selection-tools.js -->
+<!-- @include js/engine/editing/precision-editing.js -->
+<!-- @include js/engine/bim/dependency-graph.js -->
+<!-- @include js/engine/bim/source-contract.js -->
+<!-- @include js/engine/bim/region-dependents.js -->
+<!-- @include js/engine/editing/offset-align-trim.js -->
+<!-- @include js/engine/drawing/arc-storage.js -->
+<!-- @include js/engine/drawing/hatch.js -->
+<!-- @include js/engine/drawing/construction-lines.js -->
+<!-- @include js/engine/drawing/planar-arrangement.js -->
+<!-- @include js/engine/drawing/curve-walking.js -->
+<!-- @include js/engine/drawing/curve-extend.js -->
+<!-- @include js/engine/drawing/curve-break.js -->
+<!-- @include js/engine/drawing/curve-offset.js -->
+<!-- @include js/engine/editing/modify-toolbox.js -->
+<!-- @include js/engine/ui/chrome-framing.js -->
+<!-- @include js/engine/ui/left-shell.js -->
+<!-- @include js/engine/assets/library.js -->
+<!-- @include js/engine/assets/library-drag.js -->
+<!-- @include js/engine/ui/tool-palette.js -->
+<!-- @include js/engine/views/section-tool.js -->
+<!-- @include js/engine/core/objects-save.js -->
+<!-- @include js/engine/ui/project-tabs.js -->
+<!-- @include js/engine/assets/templates.js -->
+<!-- @include js/engine/bim/region-regenerate.js -->
+<!-- @include js/engine/views/schedules.js -->
+<!-- @include js/engine/bim/usages-live-areas.js -->
+<!-- @include js/engine/structure/tributary-loads.js -->
+<!-- @include js/engine/site/shadows.js -->
+<!-- @include js/engine/structure/analytical-model.js -->
+<!-- @include js/engine/structure/frame-solve.js -->
+<!-- @include js/engine/structure/analysis-display.js -->
+<!-- @include js/engine/structure/analysis-properties.js -->
+<!-- @include js/engine/assets/family-library.js -->
+<!-- @include js/engine/assets/scale-assets.js -->
+<!-- @include js/engine/assets/blocks.js -->
+<!-- @include js/engine/views/saved-views.js -->
+<!-- @include js/engine/sheets/sheets.js -->
+<!-- @include js/engine/sheets/pages-display.js -->
+<!-- @include js/engine/sheets/present.js -->
+<!-- @include js/engine/sheets/viewports.js -->
+<!-- @include js/engine/ui/project-browser.js -->
+<!-- @include js/engine/sheets/layout-tabs.js -->
+<!-- @include js/engine/sheets/boards.js -->
+<!-- @include js/engine/sheets/presentation-panel.js -->
+<!-- @include js/engine/ui/touch-input.js -->
+<!-- @include js/engine/bim/csg-booleans.js -->
+<!-- @include js/engine/ui/discipline-tabs.js -->
+<!-- @include js/engine/commands/command-catalogue.js -->
+<!-- @include js/engine/ui/dock-tooltips.js -->
+<!-- @include js/engine/ui/build-ui.js -->
+<!-- @include js/engine/ui/canvas-size.js -->
+<!-- @include js/engine/commands/command-map.js -->
+<!-- @include js/engine/testing/hooks-commands-site.js -->
+<!-- @include js/engine/testing/hooks-drawing.js -->
+<!-- @include js/engine/testing/hooks-layers-sheets.js -->
+<!-- @include js/engine/testing/hooks-view-gizmo.js -->
+<!-- @include js/engine/testing/hooks-assets-structure.js -->
+<!-- @include js/engine/testing/hooks-legacy.js -->
+<!-- @include js/engine/_end.js -->
+</script>
+<!-- @end -->
+
+</body>
+</html>

@@ -1,0 +1,204 @@
+/* ---- the BIM engine (__acad3dV120: until V120 a string that buildUI() injected at run time) ---- */
+#acad3d{display:none;position:fixed;top:var(--a3d-top-h);left:var(--a3d-left-w,0px);right:0;bottom:0;z-index:9500;background:#1a1d21;color:#c8ced6;font-family:-apple-system,"Segoe UI",Arial,sans-serif;font-size:12px;flex-direction:column;color-scheme:dark}
+body.light-theme #acad3d{color-scheme:light}
+#acad3d.on{display:flex}
+.a3d-tb{display:flex;align-items:center;gap:8px;padding:4px 10px;background:#1f2328;border-bottom:1px solid #30353c;flex:0 0 auto;min-height:26px;position:relative;z-index:5}
+.a3d-btn{background:#2a2f35;border:1px solid #3a4048;color:#c8ced6;border-radius:4px;padding:4px 10px;cursor:pointer;font-size:12px}
+.a3d-btn:hover{background:#343a41}
+.a3d-btn-pri{background:#2f5d8a;border-color:#3f75a8;color:#e6eef6}
+.a3d-hud{margin-left:auto;white-space:nowrap;display:flex;gap:14px;color:#9aa3ad}
+.a3d-body{display:flex;flex:1 1 auto;min-height:0}
+/* __acad3dV68: Rayon's actual split, which V65-V67 got wrong. Rayon keeps a thin icon rail
+       on the left that opens NAVIGATION panels (layers, pages, materials, tables, comments)
+       and pins the INSPECTOR to the right edge -- Selection, Modify, Annotations / Block
+       instance, Custom properties. V65 stacked Properties and Project Browser together in one
+       LEFT column, which is not Rayon's arrangement: it put "what exists" and "what
+       is selected" in the same scroll, so the two fought for height (the whole of V66) and
+       the right half of the window carried nothing at all.
+       Splitting them by question -- left answers "what is in this model", right answers "what
+       is this thing" -- is what makes both fit without a cap, and it is the layout that was
+       asked for. */
+#a3d-right{width:280px;flex:0 0 auto;min-width:0;background:#202428;border-left:1px solid #30353c;display:flex;flex-direction:column;overflow:hidden}
+#a3d-right:empty{display:none}
+#a3d-propssec{display:flex;flex-direction:column;flex:1 1 auto;min-height:0}
+#a3d-right #a3d-propsbody{flex:1 1 auto;min-height:0;max-height:none;overflow:auto}
+.a3d-rdrawerbtn{display:none;font-size:11px;padding:4px 9px}
+/* __acad3dV70: the floating tool dock. Two rows of icon buttons grouped by subject with a
+       caret per group, over the drawing rather than above it -- the shape the reference tool
+       uses, and the reason the ribbon's 130px of permanent chrome can go. */
+/* The dock is a full-width, TRANSFORM-FREE positioner with the chrome on an inner body.
+       It was originally one box centred with transform:translateX(-50%), and that silently
+       broke every caret popover: a position:fixed element inside a TRANSFORMED ancestor is
+       positioned against that ancestor, not the viewport, so the first build placed them
+       hundreds of pixels below the window. Centring with flex instead of a transform is the
+       fix; it is also why the popovers can stay inside the dock's own subtree. */
+#a3d-dock{position:absolute;left:0;right:0;bottom:14px;z-index:9600;display:flex;flex-direction:column;align-items:center;pointer-events:none}
+.a3d-dockbody{display:flex;flex-direction:column;gap:3px;background:#22262b;border:1px solid #3a4048;border-radius:10px;padding:5px;box-shadow:0 6px 22px rgba(0,0,0,0.45);max-width:calc(100% - 28px);pointer-events:auto}
+.a3d-dockrow{display:flex;align-items:center;gap:2px;min-width:0}
+.a3d-dockgrp{display:flex;flex-direction:column;align-items:center;gap:2px;flex:0 0 auto}
+#a3d-dock.a3d-docklabels .a3d-dockgrp{gap:1px}
+#a3d-dock.a3d-docklabels .a3d-dbtn{width:60px;height:38px;flex-direction:column;gap:2px}
+#a3d-dock.a3d-docklabels .a3d-dbtn svg{width:16px;height:16px}
+.a3d-dblbl{font-size:10px;line-height:1.1;color:#aab2bd;max-width:58px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.a3d-dbtn:hover .a3d-dblbl,.a3d-dall:hover .a3d-dblbl{color:#fff}
+.a3d-dsearchpill{display:flex;align-items:center;gap:7px;flex:1 1 auto;min-width:210px;height:24px;padding:0 9px;background:#1c2024;border:1px solid #3a4048;border-radius:6px;color:#8b949e;font:inherit;font-size:11.5px;cursor:pointer;text-align:left}
+.a3d-dsearchpill:hover{border-color:#4ea1ff;color:#dfe4ea}
+.a3d-dsearchpill svg{width:14px;height:14px;flex:0 0 auto}
+.a3d-dsearchpill span{flex:1 1 auto}
+.a3d-dsearchpill kbd{font:600 10px/1 Inter,system-ui,sans-serif;padding:2px 5px;border:1px solid #4a525c;border-radius:4px;color:#c7ced6}
+.a3d-dbtn:focus-visible,.a3d-dsearchpill:focus-visible{outline:2px solid #4ea1ff;outline-offset:1px}
+#a3d-tip{position:fixed;z-index:10050;display:none;max-width:260px;background:#0f1114;border:1px solid #3f4650;border-radius:8px;padding:8px 10px;box-shadow:0 8px 22px rgba(0,0,0,.5);font:12px/1.4 Inter,system-ui,sans-serif;color:#aab2bd;pointer-events:none}
+#a3d-tip.show{display:block}
+.a3d-tiphd{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.a3d-tiphd strong{font-size:13px;color:#fff;font-weight:600}
+.a3d-tipkeys{display:flex;align-items:center;gap:3px}.a3d-tipkeys i{font-style:normal;color:#6e7781;font-size:10px}
+.a3d-tipkeys kbd{font:600 10.5px/1 Inter,system-ui,sans-serif;padding:2px 5px;border:1px solid #56606b;border-radius:4px;color:#e6eaef}
+.a3d-tiptype{margin-top:4px}.a3d-tiptype b{font-family:ui-monospace,Menlo,monospace;color:#8fb8ff;font-weight:600}
+.a3d-tipdesc{margin-top:2px}.a3d-tipdesc.off{color:#e8a87c}
+.a3d-tipwhere{margin-top:3px;font-size:11px;color:#7d8590}
+body.light-theme #a3d-tip{background:#fff;border-color:#c9ced4;color:#40464d;box-shadow:0 8px 22px rgba(0,0,0,.15)}
+body.light-theme #a3d-tip strong{color:#202124}body.light-theme .a3d-tiptype b{color:#1f5fbf}
+.a3d-dsep{width:1px;align-self:stretch;margin:3px 4px;background:#3a4048;flex:0 0 auto}
+.a3d-dbtn{width:34px;height:32px;display:flex;align-items:center;justify-content:center;background:transparent;border:1px solid transparent;border-radius:5px;color:#c3cad2;cursor:pointer;padding:0;flex:0 0 auto}
+.a3d-dbtn:hover{background:#2f353c;color:#fff}
+.a3d-dbtn svg{width:18px;height:18px}
+/* __acad3dV73: the caret was a 13x28 sliver -- a 13px-wide target is below every hit-size
+       guideline there is, and it is the control a user reaches for most, because it is the way
+       into the rest of a group's tools. Widened to 22px with a visible hover plate so it reads
+       as a button rather than as decoration on the one beside it. */
+.a3d-discsel{background:#1c2024;border:1px solid #3a4048;color:#dfe4ea;border-radius:5px;font-size:11px;padding:3px 6px;font-family:inherit;max-width:150px}
+#a3d-dock.a3d-hide-panel{display:none}
+/* __acad3dV67: the BIM status bar -- a 26px strip carrying the workspace's own state. It is the
+       third flex child of #acad3d (toolbar / body / status), so it spans the work area exactly. */
+.a3d-status{display:flex;align-items:center;gap:8px;padding:0 10px;height:26px;flex:0 0 auto;background:#1d2022;border-top:1px solid #101214;font:11px/1 "Segoe UI",Inter,system-ui,sans-serif;color:#a9abae;user-select:none}
+.a3d-stspring{flex:1 1 auto}
+.a3d-sthint{color:#9ec1ff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.a3d-stcoords{font-variant-numeric:tabular-nums;color:#c8ced6;white-space:nowrap;min-width:150px;text-align:right}
+.a3d-stlvl{display:flex;align-items:center;gap:5px;white-space:nowrap}
+.a3d-stlvl select{background:#24282c;border:1px solid #3a4048;color:#dfe4ea;border-radius:3px;font-size:11px;padding:1px 4px;font-family:inherit;max-width:140px}
+#a3d-snapgrp{display:flex;gap:4px}
+.a3d-stbtn{display:inline-flex;align-items:center;gap:5px;background:transparent;border:1px solid transparent;color:#8d9196;border-radius:3px;font-size:10.5px;letter-spacing:.04em;padding:3px 7px;cursor:pointer;font-family:inherit}
+.a3d-stbtn svg{width:12px;height:12px;flex:0 0 auto}
+.a3d-stbtn:hover{background:#2b3138;color:#dfe4ea}
+.a3d-stbtn.on{background:#2f5d8a;border-color:#3f75a8;color:#e6eef6}
+.a3d-tree{width:210px;flex:0 0 auto;background:#202428;border-right:1px solid #30353c;display:flex;flex-direction:column}
+#a3d-rows{overflow:auto;flex:1 1 auto}
+.a3d-row{display:flex;align-items:center;gap:7px;padding:5px 10px;cursor:pointer;border-bottom:1px solid #24282d}
+.a3d-row:hover{background:#262b31}
+.a3d-row.sel{background:#2b3d52}
+.a3d-row.sel2{background:#4a3a22}
+#a3d-schedcat{flex:1 1 auto;background:#1c2024;border:1px solid #3a4048;color:#dfe4ea;border-radius:4px;padding:4px 6px;font-size:11px}
+#a3d-schedcsv{font-size:10px;padding:4px 8px}
+.a3d-schedbody{overflow:auto;flex:1 1 auto;padding:6px}
+.a3d-schedtbl{width:100%;border-collapse:collapse;font-size:10.5px}
+.a3d-schedtbl th{text-align:left;color:#8a939d;font-weight:600;padding:5px 6px;border-bottom:1px solid #3a4048;position:sticky;top:0;background:#1c2024}
+.a3d-schedtbl td{padding:5px 6px;border-bottom:1px solid #262b31;color:#dfe4ea}
+.a3d-schedtbl tr:hover td{background:#262b31}
+.a3d-astools{display:flex;flex-direction:column;gap:6px;margin-bottom:6px}
+.a3d-assearch{width:100%;box-sizing:border-box;background:#1b1f24;border:1px solid #333a42;border-radius:6px;color:#dfe4ea;padding:6px 8px;font:inherit}
+.a3d-assearch:focus{outline:none;border-color:#4d86c0}
+.a3d-asacts{display:grid;grid-template-columns:repeat(4,1fr);gap:4px}
+.a3d-asact{background:#262b31;border:1px solid #333a42;border-radius:5px;color:#d5dae0;padding:5px 2px;font:inherit;font-size:10.5px;cursor:pointer}
+.a3d-asact:hover{background:#2f353c;border-color:#46505a}
+.a3d-asact:disabled{opacity:.45;cursor:default}
+.a3d-asgrp{cursor:pointer;user-select:none}
+.a3d-asgrp>span:first-child::before{content:'\25be';display:inline-block;width:12px;color:#7d8590}
+.a3d-asgrp.shut>span:first-child::before{content:'\25b8'}
+.a3d-asbody.shut{display:none}
+.a3d-astiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+.a3d-ascell{position:relative;min-width:0}
+.a3d-astile{display:flex;flex-direction:column;align-items:stretch;width:100%;background:#22262b;border:1px solid #2f353c;border-radius:7px;padding:5px;color:#d5dae0;cursor:grab;font:inherit;text-align:left;touch-action:none}
+.a3d-astile:hover{border-color:#4d86c0;background:#262b31}
+.a3d-astile.off{opacity:.45;cursor:default}
+.a3d-astile .a3d-asnm{margin-top:4px;font-size:11px}
+.a3d-astile .a3d-asmeta{font-size:9.5px}
+.a3d-asimg{display:block;height:64px;border-radius:5px;background:#1b1f24;overflow:hidden}
+.a3d-asimg img{display:block;width:100%;height:100%;object-fit:contain;pointer-events:none}
+.a3d-asdel{position:absolute;top:3px;right:3px;width:20px;height:20px;padding:0;border-radius:4px;border:1px solid #3a4048;background:rgba(27,31,36,.85);color:#9aa3ad;font-size:12px;line-height:1;cursor:pointer}
+.a3d-asdel:hover{color:#e08080;border-color:#e08080}
+.a3d-astile,.a3d-asrow{user-select:none;-webkit-user-select:none}
+.a3d-asghost{position:fixed;z-index:100000;pointer-events:none;display:flex;align-items:center;gap:6px;padding:4px 8px 4px 4px;background:rgba(34,38,43,.94);border:1px solid #46505a;border-radius:7px;color:#dfe4ea;font:11px/1.3 Inter,system-ui,sans-serif;box-shadow:0 6px 18px rgba(0,0,0,.35);opacity:.7}
+.a3d-asghost.ok{border-color:#4d86c0;opacity:1}
+.a3d-asghost img{width:40px;height:30px;object-fit:contain;background:#1b1f24;border-radius:4px}
+.a3d-impprev{display:flex;align-items:center;gap:10px;margin:6px 0}
+.a3d-impprev img{width:120px;height:90px;background:#1b1f24;border:1px solid #2f353c;border-radius:6px;flex:0 0 auto}
+.a3d-impsize{font-size:11.5px;color:#dfe4ea;line-height:1.45}
+.a3d-famrow{display:flex;align-items:center;gap:6px;padding:6px 8px;border-bottom:1px solid #262b31}
+.a3d-famrow:hover{background:#262b31}
+.a3d-famcat{font-size:9px;color:#8a939d;background:#2b3138;border-radius:3px;padding:2px 5px;flex:0 0 auto}
+.a3d-famname{flex:1 1 auto;font-size:11.5px;color:#dfe4ea;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.a3d-famplace{font-size:10px;padding:4px 8px;background:#2f5d8a;border:1px solid #3f75a8;color:#e6eef6;border-radius:4px;cursor:pointer;flex:0 0 auto}
+.a3d-famdel{font-size:12px;padding:3px 7px;background:transparent;border:1px solid #3a4048;color:#9aa3ad;border-radius:4px;cursor:pointer;flex:0 0 auto}
+.a3d-famdel:hover{color:#e08080;border-color:#e08080}
+.a3d-famrow.sel{background:#2b3d52}
+.a3d-lvlfilter{display:flex;align-items:center;gap:7px;padding:7px 9px;font-size:11px;color:#aeb6bf;border-bottom:1px solid #2c3138;cursor:pointer}
+.a3d-treetabs{display:flex;flex:0 0 auto;border-bottom:1px solid #30353c}
+.a3d-treetab{flex:1 1 auto;background:transparent;border:none;color:#8a939d;padding:7px 4px;font-size:10.5px;font-weight:600;cursor:pointer;border-bottom:2px solid transparent}
+.a3d-treetab:hover{color:#c8ced6}
+.a3d-treetab.on{color:#dfe4ea;border-bottom-color:#3f75a8}
+.a3d-pane{display:none;flex-direction:column;flex:1 1 auto;min-height:0;overflow:hidden}
+.a3d-pane.on{display:flex}
+#a3d-lvlrows{overflow:auto;flex:1 1 auto}
+.a3d-lvlrow{display:flex;align-items:center;gap:4px;padding:4px 8px;border-bottom:1px solid #24282d;cursor:pointer}
+.a3d-lvlrow:hover{background:#262b31}
+.a3d-lvlrow.active{background:#2b3d52}
+.a3d-lvlnm{flex:1 1 auto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:11px;color:#dfe4ea}
+.a3d-lvlrow input{width:42px;background:#1c2024;border:1px solid #3a4048;color:#dfe4ea;border-radius:3px;padding:2px 3px;font-size:10px}
+.a3d-lvldel{background:transparent;border:none;color:#7d8590;cursor:pointer;font-size:13px;padding:0 3px;line-height:1}
+.a3d-lvldel:hover{color:#e08080}
+.a3d-siterow input,.a3d-bldnm{width:auto!important;flex:1 1 auto}
+.a3d-bldrow{background:#23272d}
+.a3d-bldrow.active{background:#2b3d52}
+.a3d-bldnm{background:#1c2024;border:1px solid #3a4048;color:#dfe4ea;border-radius:3px;padding:2px 5px;font-size:11px;font-weight:600}
+.a3d-lvlsub{padding-left:20px}
+.a3d-propsbody{overflow:auto;flex:1 1 auto;padding:10px}
+.a3d-propempty{color:#7d8590;font-size:11px;padding:8px 2px;line-height:1.5}
+.a3d-propnote{color:#7d8590;font-size:10.5px;margin-top:6px;line-height:1.4}
+#a3d-navgrp{display:flex;gap:4px;margin-left:6px;padding-left:8px;border-left:1px solid #3a4048}/* __acad3dV109 */
+.a3d-stview{min-width:30px;justify-content:center}
+#acad3d.flat [data-a3dnav="orbit"]{opacity:.35;pointer-events:none}
+.a3d-dot{width:9px;height:9px;border-radius:2px;flex:0 0 auto}
+.a3d-nm{flex:1 1 auto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.a3d-ty{color:#7d8590;font-size:10px}
+.a3d-lockicon{font-size:10px;opacity:0.8;margin-right:2px}
+.a3d-vp{position:relative;flex:1 1 auto;min-width:0}
+#a3d-canvas{position:absolute;inset:0;display:block}
+.a3d-dlg{position:absolute;top:60px;left:50%;transform:translateX(-50%);width:250px;background:#23272c;border:1px solid #3a4048;border-radius:6px;box-shadow:0 10px 30px rgba(0,0,0,0.45);z-index:9700}
+.a3d-dlghd{padding:8px 12px;font-weight:600;color:#dfe4ea;border-bottom:1px solid #30353c}
+.a3d-dlgbody{padding:8px 12px}
+.a3d-dlgrow{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:5px 0}
+.a3d-dlgrow label{color:#aeb6bf}
+.a3d-dlgrow input,.a3d-dlgrow select{width:110px;background:#1c2024;border:1px solid #3a4048;color:#dfe4ea;border-radius:4px;padding:3px 6px}
+#a3d-dlgerr{color:#e08080;min-height:14px;margin-top:4px;font-size:11px}
+.a3d-dlgft{display:flex;justify-content:flex-end;gap:8px;padding:8px 12px;border-top:1px solid #30353c}
+#a3d-glcanvas,#a3d-gpucanvas{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:0}
+#a3d-gpucanvas{visibility:hidden}
+#a3d-canvas{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:1}
+.a3d-vp{position:relative}
+.a3d-tree{width:268px}
+.a3d-palhd{padding:9px 12px;font-weight:700;font-size:11.5px;letter-spacing:.02em;color:#dfe4ea;background:#262b31;border-bottom:1px solid #30353c;display:flex;align-items:center;justify-content:space-between;flex:0 0 auto}
+.a3d-palhd2{border-top:1px solid #30353c}
+.a3d-palbtns{display:flex;gap:3px}
+.a3d-palbtn{background:#2f353c;border:1px solid #3a4048;color:#aeb6bf;border-radius:4px;font-size:11px;padding:4px 8px;cursor:pointer;font-family:inherit}
+.a3d-palbtn:hover{background:#3a4149;color:#fff}
+.a3d-palbtn:hover{background:#3a424a;color:#fff}
+.a3d-propsbody{flex:0 1 auto;max-height:46%;min-height:120px;overflow:auto;padding:9px 12px}
+.a3d-browser{flex:1 1 auto;overflow:auto;padding:3px 0;font-size:11.5px}
+.a3d-bgrp{display:flex;align-items:center;gap:5px;padding:4px 6px;cursor:pointer;color:#c3cad2;font-weight:600;user-select:none}
+.a3d-bgrp:hover{background:#262b31}
+.a3d-bcar{width:9px;color:#7d8590;font-size:9px}
+.a3d-blabel{flex:1 1 auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.a3d-bcount{color:#6e7781;font-size:9.5px}
+.a3d-bsub{color:#7d8590;font-size:9.5px;padding:3px 6px;text-transform:uppercase;letter-spacing:0.4px}
+.a3d-bempty{color:#5d666f;font-size:10px;padding:3px 6px;font-style:italic}
+.a3d-bleaf{display:flex;align-items:center;gap:5px;padding:3px 6px;cursor:pointer;color:#dfe4ea}
+.a3d-bleaf:hover{background:#262b31}
+.a3d-bleaf.sel{background:#2b3d52}
+.a3d-bico{width:11px;flex:0 0 auto;color:#8a939d;font-size:10px;display:flex;align-items:center}
+.a3d-bname{flex:1 1 auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.a3d-bdel{background:transparent;border:0;color:#5d666f;cursor:pointer;font-size:12px;padding:0 3px;flex:0 0 auto;line-height:1}
+.a3d-bdel:hover{color:#e08080}
+.a3d-schedwrap{display:none;flex:0 0 auto;max-height:240px;flex-direction:column}
+.a3d-schedwrap.open{display:flex}
+.a3d-sheetview{display:none;position:absolute;inset:0;z-index:500;background:#15171a;flex-direction:column}
+.a3d-sheetview.open{display:flex}

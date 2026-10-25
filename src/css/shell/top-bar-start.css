@@ -1,0 +1,80 @@
+/* ---- the top bar: the quick-access buttons and the project tabs. --a3d-top-h is its height,
+   which every surface below it is positioned against: 28 + 24 px, and 22 + 22 in the compact
+   tier. ---- */
+:root{--a3d-top-h:52px}
+#acad-shell{position:fixed;top:0;left:0;right:0;z-index:9600;font:12px/1.2 "Segoe UI",Inter,system-ui,sans-serif;user-select:none;color:#d5d7da}
+#acad-qat{display:flex;align-items:center;height:28px;background:#171a1c;padding:0 6px;gap:2px}
+.acad-logo{width:26px;height:22px;background:#c22026;color:#fff;font-weight:900;display:flex;align-items:center;justify-content:center;border-radius:3px;font-size:13px;letter-spacing:-1px;margin-right:4px}
+.acad-qbtn{width:25px;height:24px;background:transparent;border:0;color:#c9cbce;border-radius:3px;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0}
+.acad-qbtn:hover{background:#3a3d40;color:#fff}
+.acad-qbtn svg{width:15px;height:15px}
+.acad-qsep{width:1px;height:16px;background:#33363a;margin:0 3px}
+#acad-qat .acad-spring{flex:1}
+#acad-doctabs{display:flex;align-items:flex-end;height:24px;background:#1d2022;padding:0 6px;gap:2px}
+.acad-doctab{height:21px;padding:0 16px;font-size:11px;background:#26282b;color:#a9abae;border:0;border-radius:4px 4px 0 0;cursor:pointer;font-family:inherit}
+.acad-doctab.active{background:#33363a;color:#fff}
+.acad-doctab.acad-plus{padding:0 9px;font-weight:700}
+/* __acad3dV115: one tab per open project, each with its own close button */
+.acad-doctab.dt-doc{display:inline-flex;align-items:center;gap:8px;max-width:230px;padding:0 6px 0 14px}
+.acad-doctab .dt-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.acad-doctab .dt-x{flex:0 0 auto;width:16px;height:16px;line-height:16px;text-align:center;border-radius:3px;color:#7c8187;font-size:13px}
+.acad-doctab .dt-x:hover{background:#4a4e54;color:#fff}
+/* the left shell starts below the top bar */
+body.acad-on #a3d-shell{top:var(--a3d-top-h) !important}
+body.light-theme #acad-shell{filter:none}
+/* the compact tier: a phone, or a short landscape window */
+@media(max-width:720px),(max-height:500px){
+  :root{--a3d-top-h:44px}
+  #acad-qat{height:22px}
+  #acad-doctabs{height:22px}
+}
+/* the command palette opens below the top bar */
+body.acad-on #a3d-cmdpal{top:210px!important;z-index:9700!important}
+
+/* ---- the Start page ---- */
+#acad-start{position:fixed;left:0;right:0;top:var(--a3d-top-h);bottom:0;background:#20232a;z-index:9550;display:none;overflow-y:auto;font-family:Inter,system-ui,sans-serif}
+#acad-start.show{display:block}
+#acad-start .st-wrap{max-width:860px;margin:44px auto;padding:0 32px}
+#acad-start h1{color:#fff;font-size:26px;margin:0 0 4px}
+#acad-start .st-sub{color:#8b9096;font-size:13px;margin-bottom:26px}
+#acad-start .st-cols{display:flex;gap:36px;align-items:flex-start}
+#acad-start .st-left{flex:0 0 200px;display:flex;flex-direction:column;gap:10px}
+#acad-start .st-left button{background:#2f6fed;color:#fff;border:0;border-radius:7px;padding:11px 0;font-size:13.5px;font-weight:600;cursor:pointer;font-family:inherit}
+#acad-start .st-left button.st-sec{background:#2b2f36;color:#c9cdd2;border:1px solid #383d45}
+#acad-start .st-right{flex:1}
+#acad-start .st-sect{color:#9aa0a6;font-size:11px;letter-spacing:.8px;text-transform:uppercase;margin-bottom:10px}
+#acad-start .st-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px}
+#acad-start .st-card{background:#282c33;border:1px solid #343943;border-radius:9px;padding:14px;cursor:pointer;transition:border-color .12s}
+#acad-start .st-card:hover{border-color:#4ea1ff}
+#acad-start .st-card .st-name{color:#e8eaed;font-size:13.5px;font-weight:650;margin-bottom:3px}
+#acad-start .st-card .st-meta{color:#7f858c;font-size:11.5px}
+/* __acad3dV115: a closed project can be deleted from here */
+#acad-start .st-card.st-has-del{position:relative;padding-right:74px}
+#acad-start .st-del{position:absolute;top:12px;right:12px;background:transparent;border:1px solid #3a3f47;color:#9aa0a6;border-radius:5px;font:inherit;font-size:11px;padding:3px 9px;cursor:pointer}
+#acad-start .st-del:hover{border-color:#e06c6c;color:#ffb4b4}
+#acad-start .st-empty{color:#7f858c;font-size:12.5px}
+
+/* ---- the left panel in the BIM workspace. Its header names the project and the site (V80). ---- */
+body.a3d-mode #a3d-leftpanel .a3d-projhead > div:first-child{display:block;min-width:0}
+body.a3d-mode #a3d-leftpanel .a3d-projtitle{font-size:12px;font-weight:700;max-width:100%}
+body.a3d-mode #a3d-leftpanel .a3d-projsub{font-size:10px;margin-top:1px;gap:6px}
+body.a3d-mode #a3d-leftpanel .a3d-projsub .a3d-pill{font-size:9px;padding:1px 5px}
+body.a3d-mode #a3d-leftpanel .a3d-projhead{justify-content:space-between;align-items:center;padding:5px 8px;min-height:0;height:auto;border-bottom:1px solid rgba(255,255,255,.06)}
+/* __acad3dV65: the Project Browser nested in the panel is a section of it, not a panel of its
+   own, and the panel is the one scroll container */
+body.a3d-tree-docked #a3d-leftpanel{overflow-y:auto;overflow-x:hidden}
+body.a3d-tree-docked #a3d-leftpanel > .a3d-tabbody{flex:0 0 auto;min-height:0}
+/* the rail picks which section the panel shows: the Project Browser, or the Assets library */
+body.a3d-tree-docked #a3d-shell[data-tab="browser"] #a3d-leftpanel > .a3d-tabbody{display:none}
+/* __acad3dV121: the tree is the Project Browser tab's alone */
+body.a3d-tree-docked #a3d-shell:not([data-tab="browser"]) #a3d-leftpanel > .a3d-tree{display:none}
+body.a3d-tree-docked #a3d-leftpanel > .a3d-tree{width:100%!important;flex:1 1 auto;min-height:0;border-right:0;background:transparent;border-top:1px solid rgba(255,255,255,.08);margin-top:2px;}
+/* __acad3dV66: the Project Browser keeps its own scroll regions, so a large selection cannot
+   push it off screen */
+body.a3d-tree-docked #a3d-shell[data-tab="browser"] #a3d-leftpanel{overflow:hidden}
+body.a3d-tree-docked #a3d-leftpanel > .a3d-tree > #a3d-browser{flex:1 1 auto;min-height:120px;overflow:auto;}
+/* __acad3dV66: section headers take the panel's quiet, inset treatment, and wrap, so every
+   action button stays reachable at any panel width */
+body.a3d-tree-docked #a3d-leftpanel > .a3d-tree .a3d-palhd{background:transparent;padding:11px 12px 7px;font-size:12px;font-weight:900;letter-spacing:.01em;}
+body.a3d-tree-docked #a3d-leftpanel > .a3d-tree .a3d-palhd{flex-wrap:wrap;row-gap:5px}
+body.a3d-tree-docked #a3d-leftpanel > .a3d-tree .a3d-palhd .a3d-palbtns{flex-wrap:wrap;flex:1 1 100%;justify-content:flex-start;}

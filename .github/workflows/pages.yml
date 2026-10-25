@@ -1,5 +1,5 @@
 # Publishes the app to GitHub Pages on every push to main.
-# The app (canvas_v10.html, also served as index.html so the site's address opens it), the user
+# The app (index.html and app/, joined from src/; canvas_v10.html, the same app as one file), the user
 # guide (docs/, V142) and every older version kept in Phase/ (v/<version>/). Served from https, the app sends a real origin and Referer,
 # which tile, geocoding and Overpass servers expect from a browser.
 name: Publish app to Pages
@@ -26,6 +26,8 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
+      - name: Check canvas_v10.html is what src/ builds
+        run: python3 tools/build_app.py --check
       - name: Check the user guide is current
         run: python3 tools/build_docs.py --check
       - name: Build site
