@@ -469,6 +469,9 @@ async def run():
             sl = await summary() or {}
             ck(sl.get('qk') == 'light' and sl.get('cap') == 'Light' and (await safe("()=>window.__a3dTrPools()") or {}).get('cars') == 200,
                "Light chosen by hand: the next Play from still runs 200 cars and 300 walkers (%s)" % sl.get('cap'))
+            ms = await safe("()=>{var t=performance.now();window.__a3dTrSteps(500);return (performance.now()-t)/500;}") or 1e9
+            per = math.ceil(16 * 0.1 / R.STEP) + 1   # the most steps a frame takes at 16 times the clock
+            ck(ms * per < 1000 / 20 * 0.6, "a frame within its budget at Light (20 a second): %.2f ms a step, %d steps at 16 times %.1f ms of a 50 ms frame" % (ms, per, ms * per))
             ck(await safe("()=>window.__a3dTrAct('sim:off')") is True and await summary() is None and (await safe("()=>window.__a3dTrSettings()") or {}).get('on') is False,
                "the row's Stop the simulation turns it off")
             await safe("()=>window.__a3dTrAct('q:auto')")

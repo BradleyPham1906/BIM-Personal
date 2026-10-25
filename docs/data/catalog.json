@@ -1,7 +1,7 @@
 {
  "version": {
-  "v": "V170",
-  "date": "2026-10-24"
+  "v": "V171",
+  "date": "2026-10-25"
  },
  "commands": [
   {
@@ -2380,6 +2380,33 @@
    ],
    "keys": null,
    "anchor": "act-torus"
+  },
+  {
+   "id": "cmd:TRAFFIC",
+   "name": "TRAFFIC",
+   "aliases": [
+    "TRAFFICSIM",
+    "SIMULATETRAFFIC",
+    "PEDESTRIANS",
+    "TRAFFICON"
+   ],
+   "desc": "Simulate traffic and people around the site: cars on the streets by the IDM with each junction's own assumed signal plan, walkers on the sidewalks crossing on green, and the design's own trips; it plays on the clock (Play, Pause and Stop)",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-TRAFFIC"
+  },
+  {
+   "id": "cmd:TRAFFICOFF",
+   "name": "TRAFFICOFF",
+   "aliases": [
+    "TRAFFICSTOP"
+   ],
+   "desc": "Stop simulating traffic and people",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-TRAFFICOFF"
   },
   {
    "id": "cmd:TRIBAREA",

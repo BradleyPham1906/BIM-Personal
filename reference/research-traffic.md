@@ -210,8 +210,8 @@ offsets: each junction alone, said.
 
 **The cars** (decision 2). The IDM with the authors' standard car (T 1.5 s, s0 2 m, a 1.4, b 2.0, delta 4), the desired
 speed the street's; the ballistic update with the author's stop rule, a fixed step of 0.2 s inside V170's clock. The
-car ahead is on its lane of its link, then on the link it will take next; a red light, an amber it can stop for (SUMO's
-rule), a stop line not yet cleared, a yielding approach with a major car too near, or a walker on the crossing it is
+car ahead is on its lane of its link, then on the link it will take next; a red light, an amber it would not clear its
+line in (section 9), a stop line not yet cleared, a yielding approach with a major car too near, or a walker on the crossing it is
 about to cross is a standing car of length zero at the line. Lane changes by MOBIL where a direction has two lanes or
 more (symmetric, p 1, threshold 0.1, safe braking 4). Lengths from V169's design car (AASHTO P).
 
@@ -262,3 +262,67 @@ The suite checks the pools are allocated once and the page's memory settles.
 **Not done, and said:** calibration (no counts), the peak direction's share, offsets between signals, turn lanes and
 lane use at junctions (a car turns from any lane), signals away from junctions, buses, cycles and trucks, occlusion of
 agents by the model in 3D.
+
+## 9. As built (V171, 2026-10-25)
+
+Section 8 held; what the first runs on a signalled neighbourhood (`tests/traffic_fixture.py`) showed, and how the
+build answers it. Each is the app's own rule unless a source is named, kept as `app.traffic`'s values where it has a
+number.
+
+**Cars**
+- **Entering** at a boundary: in the lane with the most room before the car ahead, on its link or, where the link is
+  short and empty, the last on the next; at the most speed that room allows without braking harder than b (SUMO's
+  departSpeed "max", by the IDM); none where the room is under s0. A car held at the edge is counted once (`blocked`).
+- **The line ahead:** a car sees the next link's stop line within 100 m (`look`): a short link before a signal is no
+  surprise.
+- **Amber:** a car goes only if it reaches its line before the amber ends at its present braking; one that has gone and
+  would no longer make it stops where it still can at b. With Kell and Fullerton's yellow, no car crossed on red in an
+  hour of the fixture's peak.
+- **Signals kept clear:** a car does not pass a signal's line with no room beyond it, as drivers are told not to block a
+  junction; without it, a queue backed up from the next signal caught cars in the junction on the red.
+- **Left turns** wait for the oncoming inside the junction, past their line, as a permissive left does (the amber's gap
+  is theirs): the front car of each lane of each approach with the way (the same phase, or the other major road), unless
+  that one turns left too; a standing car only once it sets off (one held in a queue is not coming, and waiting for it
+  locked both ways). A turn of 30 degrees or sharper to the left (`left`).
+- **Right of way** as SUMO's netconvert decides it, from the ways in: the two sharing the highest class (a ramp a step
+  below its road) are major, the best two by speed and lanes, a tie said; where one alone has it, the way in most nearly
+  opposite it (within 45 degrees) is the other. Ranking approaches alone made a merging ramp major.
+- **Lanes claimed:** a car passing its line claims the lane it goes into, and a car from another way waits its turn until
+  that one is its standing gap into it; one that still meets another takes a lane with room or waits at its link's end.
+  A lane's last car is known at once when a car enters it or changes to it. No two cars were in one place in twenty
+  minutes (the smallest gap 0.95 m).
+
+**Walkers**
+- **The corners:** a walker's way is found over the junctions' corners: each side of a street is a way between the
+  corners at its ends; a crossing joins the two corners of an arm. A walker changes sides only by a crossing and ends on
+  the side its door is on (before, a door across the street was reached straight across it, unrecorded).
+- **Where a crossing is:** at a signal; where three or more streets that are not service roads meet; across a service
+  road anywhere; never a street at a driveway's mouth, a bend or the edge of the reach. A walker weighs a signal's wait
+  at 30 s (`x_sig`, half the shortest cycle) and each lane crossed where nothing signals it at 10 s (`x_lane`), so it
+  takes the signal beside the lot rather than four lanes uncontrolled.
+- **No walking along a motorway**, a road for motor vehicles only, or one tagged `foot=no`; its mouth may be crossed at
+  a junction.
+- **Cars give way to walkers on their half** of a crossing (the half its lanes are on, with a walker within a stripe of
+  the middle on both), the whole crossing of a one-way street; a turning car goes past its line and waits short of the
+  crossing it turns across, as drivers do.
+
+**Demand**
+- **Half each way, every link:** a one-way way is one carriageway of its road (FHWA's ranges are a road's), so a divided
+  road's two ways carry its AADT between them. Under-counted where a one-way street is a road of its own, and said.
+- **A ramp** (a `_link` way) carries what the busiest street at its quieter end carries: no class gives a ramp's own
+  traffic, and its road's would be the main line's (3,690 an hour each way for a motorway).
+- **No exit is balanced to more than its junction's busiest way in brings:** a motorway beginning at a street's junction
+  otherwise drew three quarters of everything (NCHRP 255 balances to the exits' volumes, and the motorway's dwarfs the
+  streets').
+- **The provisional entry** is on the lot's lowest street, the one V166 marks (the alley in the fixture), named as V166
+  names it.
+
+**Found:** at typical volumes a collector crossing a four-lane arterial with no signal is over capacity (the gap
+acceptance gives about 100 an hour, as the HCM's two-way stop does), and its queue reaches the edge; that is the
+finding, not a fault: the run counts the cars held there. A signal's approach with half its cars turning left
+permissively against 765 an hour is over capacity too.
+
+**Not done, and said** (adding to section 8's): right-hand traffic only; protected left phases and turn lanes; crossings
+between junctions; conflicts inside a junction beyond the yields, the left turns and the claims; the frame time's
+quality step is not forced in the suite (the device's suggestion is).
+
