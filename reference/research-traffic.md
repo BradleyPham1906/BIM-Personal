@@ -156,3 +156,15 @@ credited), only the site's streets, agents as typed arrays, light by design. Wit
 4. The lot's own trips: San Diego's rates by V131's usages and areas (free, read; one region's, 2003), from the
    parking spaces at an assumed rate (the earlier plan, when no free table was known), a number the owner gives,
    or none.
+
+**The owner's answers** (2026-10-25, the start of V171's session), each as the research proposed:
+1. **Each junction's own signal plan:** a cycle of at least 60 s split by Webster's logic to the approaches'
+   volumes, amber by Kell and Fullerton, each green long enough for WALK (7 s) and the crossing at 3.5 ft/s
+   (MUTCD 4I.06); not valdrada's one 40 s cycle.
+2. **The authors' standard car** (Kesting, Treiber and Helbing 2010: T 1.5 s, s0 2 m, a 1.4 m/s^2, b 2.0 m/s^2,
+   delta 4) with the street's own speed, as the model's author advises for city traffic.
+3. **The streets' traffic** at each street's typical AADT by class (`fhwa.fc`) times Florida's standard K, 9%
+   (the weekday peak hour in urban areas); turns at each junction by NCHRP 255's balancing to the exits'
+   volumes.
+4. **The lot's own trips** by San Diego's Trip Generation Manual (2003), from V131's usages and their areas,
+   with the table's peak shares and in:out splits; said on the layer as one region's rates of 2003.
