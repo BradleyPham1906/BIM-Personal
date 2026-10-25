@@ -122,7 +122,7 @@
   }
   function bimTrResetTallies(RUN){
     var N=RUN.N;
-    RUN.res={t0:RUN.t,na0:RUN.c?RUN.c.na:0,spawned:0,exited:0,lotIn:0,lotOut:0,lotWalk:0,blocked:0,red:0,redAt:[],walkBad:0,lc:0,carsCap:0,walkCap:0,
+    RUN.res={t0:RUN.t,na0:RUN.c?RUN.c.na:0,spawned:0,exited:0,lotIn:0,lotOut:0,blocked:0,red:0,redAt:[],walkBad:0,lc:0,carsCap:0,walkCap:0,
       del:new Float64Array(N.links.length*2),cw:new Float64Array(N.J.length*2),doors:N.doors.map(function(){return {i:0,o:0};}),
       q:{n:0,out:0,outMax:0,st:0,stMax:0},bin:RUN.t,last:null};
   }
