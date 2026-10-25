@@ -98,6 +98,7 @@
         bimSaFill(true);
         bimSiteStep('draw',n?'ok':'fail',(n?bimSaN(n,'element')+' on Layers, Site analysis: '+said.join(', '):'Nothing to draw')+(notes.length?'. '+notes.join('. '):''));
         bad=R.steps.filter(function(s){return s.state==='fail';}).map(function(s){return s.name;});
+        bimAwAfterRun();   /* __acad3dV171b: the site and its context, and the list, in the run's one step */
         var res=finish(true);
         a3dToast('Analyze site: '+(n?bimSaN(n,'element')+' drawn in the model, on Layers, Site analysis':'nothing could be drawn')+'; one undo step'+(bad.length?'. Not available: '+bad.join(', '):''));
         return res;
@@ -171,6 +172,7 @@
     if(!placed)h+='<div class="a3d-sarow"><label for="a3d-saaddr">Address</label><input type="text" id="a3d-saaddr" data-saaddr="1" maxlength="200" enterkeyhint="search" autocomplete="off" placeholder="A street address or a place"></div>';
     h+='<div class="a3d-sarow"><span class="a3d-salab">Boundary</span><span class="a3d-saval">'+bd+'</span></div>'+
       '<div class="a3d-saacts"><button type="button" class="a3d-anzbtn pri a3d-sago" data-saact="analyze"'+(R.busy?' disabled':'')+'>'+(R.busy?'Analyzing ...':(D.last?'Analyze site again':'Analyze site'))+'</button>'+
+      (D.last?'<button type="button" class="a3d-anzbtn" data-anzact="aw:open:" title="The analyses one at a time, each with its key and its panel">Open the site analysis</button>':'')+   /* __acad3dV171b */
       (D.last?'<button type="button" class="a3d-anzbtn" data-saact="dglegend" aria-pressed="'+(!D.legendOff)+'">'+(D.legendOff?'Show the legend':'Hide the legend')+'</button>':'')+'</div>'+
       '<div class="a3d-sacap">'+(D.last&&!R.busy?bimEsc('Last run '+D.last.date+'. Each analysis is on Layers, Site analysis: select an element to move, restyle or relabel it; what you change is kept when it runs again.'):
         'Gets what is around the site from free open data -- buildings, roads, terrain, climate, access, zoning -- and draws each analysis in the model, on Layers, Site analysis. One undo step.')+'</div>';
@@ -201,6 +203,7 @@
         extra:R?bimDgLegendHtml(R.legend)+(R.note&&L.length?'<div class="a3d-sacap">'+bimEsc(R.note)+'</div>':'')+(R.source?'<div class="a3d-sacap">Source: '+bimEsc(R.source)+'</div>':'')+
           (sx?'<div class="a3d-sacap a3d-sastd" data-dgstd="'+A.id+'">'+bimEsc(sx)+'</div>':''):'',
         acts:[{act:'dg:show:'+A.id,label:on?'Hide':'Show',pri:!on&&L.length>0,off:L.length?'':'Nothing drawn yet'},
+          {act:'aw:open:'+A.id,label:'Open',tip:'In the site analysis: drawn alone, with its key and its panel',off:R?'':'Not run yet'},   /* __acad3dV171b */
           {act:'dg:run:'+A.id,label:R?'Run again':'Run',tip:'From what the project holds now; Analyze site fetches the data again'},
           {act:'dg:select:'+A.id,label:'Select',off:L.length?'':'Nothing drawn yet'},
           {act:'dg:reset:'+A.id,label:'Reset',off:R?'':'Not run yet',tip:'As the analysis draws it: what you changed, copied or deleted on it goes back'}]};

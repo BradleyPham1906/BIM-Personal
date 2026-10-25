@@ -2096,6 +2096,20 @@
    "anchor": "cmd-SITEANALYSIS"
   },
   {
+   "id": "cmd:SITEWORKSPACE",
+   "name": "SITEWORKSPACE",
+   "aliases": [
+    "ANALYSISWORKSPACE",
+    "SAWORKSPACE",
+    "SITEWS"
+   ],
+   "desc": "The site analysis as a workspace: the analyses on the left, one in focus and others ticked under it; its panel on the right with what it shows, its settings, its chart, its key and its source; the view quiet in the app's light or dark mode",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-SITEWORKSPACE"
+  },
+  {
    "id": "cmd:SKPIN",
    "name": "SKPIN",
    "aliases": [

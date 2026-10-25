@@ -26,14 +26,15 @@ suite, every falsification script, `Phase/`'s backups and the guide's tools read
 
     src/index.html            the page: its head and body, and for each block the files it is made of,
                               in order (<!-- @bundle -->, <!-- @include -->, <!-- @end -->)
-    src/css/                  the stylesheet, 11 files: shell/, panels/, workspace/, sheets/, site-analysis/
+    src/css/                  the stylesheet, 12 files: shell/, panels/, workspace/, sheets/, site-analysis/
     src/js/shell/shell.js     the top bar, the command palette, the project tabs, the boot
     src/js/vendor/openskp.js  the SketchUp reader (third-party, bundled; never edited by hand)
-    src/js/engine/            the BIM engine, 172 files in 26 folders: core/ (state, storage, meshes,
+    src/js/engine/            the BIM engine, 174 files in 26 folders: core/ (state, storage, meshes,
                               save), drawing/, editing/, gizmo/, bim/, structure/, annotation/,
                               layers/, properties/, views/, sheets/, assets/, io/, render/, map/,
-                              terrain/, survey/, site/, site-analysis/, simulation/ (V171's traffic
-                              and people), standards/, analysis/, history/, ui/, commands/,
+                              terrain/, survey/, site/, site-analysis/ (with V171b's analysis
+                              workspace), simulation/ (V171's traffic and people), standards/,
+                              analysis/, history/, ui/, commands/,
                               testing/ (the window.__a3d* surface the suites drive); _begin.js and
                               _end.js open and close it
 

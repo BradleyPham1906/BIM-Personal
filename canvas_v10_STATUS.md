@@ -15697,7 +15697,7 @@ frozen copy of the final build, suites and guide. Patches 170a to 170e rebuild t
     markers           __acad3dV60 ... __acad3dV170, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
                       __acad3dV121b, __acad3dV166b, __acad3dV166c, __acad3dV166d
 
-## Phase 171 (V171) - Traffic and people around the site
+## Phase 171 (V171) - Traffic and people around the site; and the analysis workspace (V171b)
 
 The owner (2026-10-19, `reference/research-valdrada.md`): build the simulation on valdrada's methods inside the app,
 for the site's streets only, light enough for a modest computer. The research is `reference/research-traffic.md`
@@ -15831,3 +15831,86 @@ to the build.
     sha256            c77eb5aa6d0bca806ff31b4a7b8bb68b8f1dd5b4846ecbd35968e186a3ba92ab
     markers           __acad3dV60 ... __acad3dV171, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
                       __acad3dV121b, __acad3dV166b, __acad3dV166c, __acad3dV166d
+
+### V171b: the analysis workspace (2026-10-25)
+
+The owner, after V171 merged, with a 32-second video of MassLabs' archiMap and a picture of Autodesk Forma's
+microclimate analysis: "their layout looks clean and professional thats what i want. ours current right now is a mess
+when doing simulation and site analysis". Screenshots of the app showed why: after Analyze site 14 of the 23 analyses
+drawn at once (202 elements in V171's neighbourhood), their words over each other in 3D; one key of fourteen blocks
+covering a quarter of the view; the run's steps, the categories and the cards in one long left panel; the project's
+identity and usages in Properties while analysing; the view dark with the satellite map in light mode as in dark; the
+drawing dock on screen and messages over it; on a phone, Analyze covering the whole screen. The research is
+`reference/research-analysis-workspace.md`. The owner's two decisions: the look follows the app's light or dark mode;
+one analysis at a time, others ticked under it.
+
+**What was built** (`site-analysis/analysis-workspace.js`, `css/site-analysis/workspace.css`,
+`testing/hooks-workspace.js`; patches `Phase/patch_v171b_a.py` to `_e.py`):
+- **The workspace**, entered when Analyze site ends (the first run with none in focus, inside its one undo step; a
+  second keeps the focus and the ticks), with Open on an analysis's row or under the site in Analyze, `SITEWORKSPACE`
+  (`ANALYSISWORKSPACE`, `SAWORKSPACE`, `SITEWS`) and `TRAFFIC` (Traffic and people in focus, inside the command's
+  step); left by the bar's cross or the list's back button, what was drawn staying drawn.
+- **The bar** over the view: SITE ANALYSIS, the analysis in focus, how many are ticked under it, the cross.
+- **The left:** the 23 analyses in six groups (Site; Sun and wind; Views and noise; Land and water; Movement; Land),
+  each a tick, its colour and its name, Overview above them and Analyze again beside the site's name. A name puts its
+  analysis in focus, drawn alone; a tick draws another under it. The focus and the ticks are the layers' visibility
+  (one undo step each, kept with the project), so Layers and the sheets agree.
+- **The right**, where Properties is while nothing is selected (its title Analysis): the analysis's sentence, its
+  settings (the simulation's), Play and Stop for what moves, the chart the app has (the winds' rose, the sun's paths
+  looking up), its key in full, the run's note, the source, the standards, Run again, Select and Reset; the overview
+  with the site, the boundary and what the run fetched. An element selected shows its properties, as anywhere.
+- **The view quiet in the mode:** the ground in the mode's colour (WebGL's and WebGPU's clear, the canvas's fill),
+  the map greyed and faded (both renderers' map shaders, the canvas's filter), the context's buildings, roads, rail,
+  water, green, land use and terrain in the mode's tones (the colour lens, the sketches, the terrain's renderers, the
+  terrain drawn plain), the analyses' words and the key in the mode's colours, the key at the bottom left; the streets'
+  analyses and the cars in the mode's colours; the drawing dock put away.
+- **A phone:** the drawer closed so the view shows; the analyses as chips under the bar, the one in focus scrolled
+  into sight; Details opens the panel; the key of the one in focus on the view.
+- **Analyze's own row** keeps its name in sight beside a long first button (Traffic's "Stop the simulation").
+
+**Found:**
+- The context's roads, rail and water are sketches, drawn in their layer's colour, not through the colour lens the
+  solids take: they kept their greys on the paper until `drawSketches` asked for the tone (patch b).
+- The context's terrain is drawn by renderers of its own, each reading its colour: the first light view kept a brown
+  ground (patch c). It also drapes the map with shaders that neither grey nor fade it, so in the workspace it is drawn
+  plain, and the faded grey map lies around it (patch e).
+- The streets' analyses and the cars chose their light or dark colours by the map's style: dark cars on the dark
+  ground. In the workspace they follow the mode (patch d).
+- An undo did not give the focus back: its step was taken after the focus changed. It is taken first now, and the bar
+  and Properties' title follow every refresh of Properties, an undo's included.
+- The version first read V171b; every suite reads the number as digits, as V142's changelog does, so a sub-phase
+  keeps its phase's number (V166b said V166), and the log keeps V171b inside V171's entry.
+- The first falsification run caught 43 of 47: two variants removed code that did nothing (Analyze's rows came back
+  through Properties' refresh anyway; a row's name kept its room through the button giving way), and the dead code
+  went; two reached nothing the suite read (a context building's colour, the list's Analyze again), and the suite
+  now reads both.
+
+**Suites:**
+- **New:** `tests/bim_phase171b_workspace_browser_tests.py`, 88 checks on V171's neighbourhood with the satellite
+  map's tiles answered by one red square, so what the workspace does to the map is read back from the pixels: the
+  records; the workspace before a run; Analyze site ending in it in one step; the focus, its undo and redo; the ticks
+  and the key at the bottom left; dark and light read from the view's pixels (the ground, the terrain, a context
+  building, a road's line, the map near and far) and from the panel's and the bar's styles; the panel's key, chart,
+  caption, source and Select; TRAFFIC in focus in one step, Pause, Stop and the speed from the panel; leaving, Open,
+  a selection, a second run; a phone's drawer, chips, Details and key; Traffic's row.
+- **Falsification:** `Phase/falsify_phase171b.py`, 47 variants. The first run caught 43 (above); on the final build all 47 were caught.
+- **Amended:** V164, V165, V166, V167, V168, V170 and V171 read each analysis as a run drew it before: they leave the
+  workspace when a run ends and show each analysis as before (`__a3dAwClassic`); V171's also leaves it before reading
+  Traffic's row in Analyze and before Analyze site again.
+
+**Not done:** archiMap's style card (pattern, fill, line, shadow per layer) and its Ratios tab, Forma's compare and
+history of runs, a legend that filters to a range, and an inspect tool for a point's value: V172's tool pane and
+V173's Contents pane are where they go. The workspace is not reopened by a reload (its focus and ticks are kept).
+
+**State after V171b:**
+
+131 suites, 6625 checks (the 130 older suites' 6537 and V171b's 88): all 6625 passed in 854 s with 4 workers, from a
+frozen worktree of the final build, suites and guide; the falsification, from the same worktree, caught all 47. The
+first full regression, before the older suites were amended, found what V171b changed for them: every suite's version
+check (the V171b number); V120's check that every function is used (one was not); and, besides the version, 32 checks
+in V164, 18 in V167 and V170, 14 in V165, 13 in V168, 9 in V171 and 7 in V166 reading a run's analyses drawn.
+
+    canvas_v10.html   3575862 bytes
+    sha256            bb5bd5879e9a580e7178e274a83b2ec0421f24c4238cc9b6e5bef2bb8abcae13
+    markers           __acad3dV60 ... __acad3dV171, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
+                      __acad3dV121b, __acad3dV166b, __acad3dV166c, __acad3dV166d, __acad3dV171b

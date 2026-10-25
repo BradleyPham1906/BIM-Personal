@@ -105,7 +105,7 @@
   }
   function bimLensCol(o){
     var c=bimLensCurrent();
-    return c.by?(c.col[o.id]||null):null;
+    return c.by?(c.col[o.id]||null):bimAwCtxCol(o);   /* __acad3dV171b: in the workspace the context's quiet tones */
   }
   function bimLensTitle(st){
     if(!st.by)return '';

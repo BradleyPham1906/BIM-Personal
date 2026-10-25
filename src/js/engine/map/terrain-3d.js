@@ -129,7 +129,7 @@
       rec=bimTerrainGlMesh(G,T,o,org);
       if(!rec)continue;
       sel=(o.id===A3D.sel||(A3D.selSet&&A3D.selSet.indexOf(o.id)>=0));
-      col=bimHexToRgb(sel?'#4ea1ff':(o.col||'#b08559'));
+      col=bimHexToRgb(sel?'#4ea1ff':(bimAwCtxCol(o)||o.col||'#b08559'));   /* __acad3dV171b */
       gl.uniform3f(T.color,col[0],col[1],col[2]);
       gl.bindBuffer(gl.ARRAY_BUFFER,rec.pos);gl.vertexAttribPointer(T.pos,3,gl.FLOAT,false,0,0);
       gl.bindBuffer(gl.ARRAY_BUFFER,rec.nor);gl.vertexAttribPointer(T.norm,3,gl.FLOAT,false,0,0);
@@ -138,7 +138,7 @@
       gl.drawArrays(gl.TRIANGLES,0,rec.count);
       c={id:o.id,triangles:rec.count/3,tiles:[],drawn:0,z:null};
       /* the map draped over it: each tile drawn over the whole surface, nothing outside the tile */
-      if(plan.tiles.length&&rec.ext){
+      if(plan.tiles.length&&rec.ext&&!bimAwLook()){   /* __acad3dV171b: in the workspace, plain */
         tiles=bimDrapeTiles(rec.ext,plan.z,BIM_MAP_STYLES[plan.style].maxz);
         c.z=tiles.length?tiles[0].z:null;
         gl.uniform1f(T.mode,1);gl.uniform1f(T.alpha,plan.opacity);
@@ -171,7 +171,7 @@
       for(k=0;k<3;k++){w.push([tin.P[tr[k]][0],tin.H[tr[k]],tin.P[tr[k]][1]]);sp=toScreen(w[k],V,W,H);if(!sp)break;pts.push(sp);zs+=sp[2];}
       if(pts.length<3)continue;
       var n=faceNormal(w);if(n[1]<0)n=[-n[0],-n[1],-n[2]];
-      polys.push({o:o,pts:pts,z:zs/3,n:n,col:o.col||'#b08559',lock:!bimLayerPickable(o),la:bimLayerAlpha(o),terrain:true});
+      polys.push({o:o,pts:pts,z:zs/3,n:n,col:bimAwCtxCol(o)||o.col||'#b08559',lock:!bimLayerPickable(o),la:bimLayerAlpha(o),terrain:true});
     }
   }
   function bimGlRender(V,W,H){
@@ -184,7 +184,7 @@
     gl.viewport(0,0,wDev,hDev);
     gl.enable(gl.DEPTH_TEST);
     gl.depthFunc(gl.LEQUAL);
-    gl.clearColor(0.114,0.125,0.141,1);
+    var awB=bimAwBg();gl.clearColor(awB[0],awB[1],awB[2],1);   /* __acad3dV171b: the workspace's ground */
     gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
     bimMapDrawGl(G,V,W,H);   /* __acad3dV132: the basemap, under everything */
     bimTerrainDrawGl(G,V,W,H);   /* __acad3dV137: the terrain in 3D, the map draped on it */
@@ -303,11 +303,11 @@
     var glOn=(capMode||A3D.presentMode||bimPresentGraphics())?false:bimRender3D(V,W,H);   /* __acad3dV122; __acad3dV153: WebGPU or WebGL */
     if(capMode){ctx.fillStyle='#ffffff';ctx.fillRect(0,0,W,H);}
     else if(glOn){ctx.clearRect(0,0,W,H);}
-    else{ctx.fillStyle='#1d2024';ctx.fillRect(0,0,W,H);}
+    else{ctx.fillStyle=bimAwBgHex();ctx.fillRect(0,0,W,H);}   /* __acad3dV171b */
     if(!capMode){
       if(!glOn)bimMapDraw2D(ctx,V,W,H);   /* __acad3dV132: the basemap; with WebGL on it is drawn there */
       bimMapFooterSync();
-      ctx.strokeStyle='#282c31';ctx.lineWidth=1;ctx.beginPath();
+      ctx.strokeStyle=bimAwLook()?bimAwLook().grid:'#282c31';ctx.lineWidth=1;ctx.beginPath();   /* __acad3dV171b */
       for(i=-12;i<=12;i+=2){
         var g1=toScreen([i,0,-12],V,W,H),g2=toScreen([i,0,12],V,W,H);
         ctx.moveTo(g1[0],g1[1]);ctx.lineTo(g2[0],g2[1]);

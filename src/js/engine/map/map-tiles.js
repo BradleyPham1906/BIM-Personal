@@ -126,7 +126,7 @@
     var cx=bimLonToTileX((lo0+lo1)/2,z),cy=bimLatToTileY((la0+la1)/2,z),T=[],x,y;
     for(y=y0;y<=y1;y++)for(x=x0;x<=x1;x++)T.push({x:x,y:y,z:z,k:(x+0.5-cx)*(x+0.5-cx)+(y+0.5-cy)*(y+0.5-cy)});
     T.sort(function(a,b){return a.k-b.k;});
-    r.z=z;r.tiles=T;r.tpl=tpl;r.org=org;r.ground=g;r.opacity=st.opacity;r.extent=[lo0,la0,lo1,la1];r.mpp=mpp;
+    r.z=z;r.tiles=T;r.tpl=tpl;r.org=org;r.ground=g;r.opacity=st.opacity*(bimAwLook()?bimAwLook().fade:1);r.extent=[lo0,la0,lo1,la1];r.mpp=mpp;
     return r;
   }
   /* a tile's four corners on the model, at elevation y */
@@ -205,15 +205,15 @@
     var vs=bimGlCompile(gl,gl.VERTEX_SHADER,'attribute vec3 aPos;attribute vec2 aUV;uniform mat4 uView;uniform mat4 uProj;varying vec2 vUV;'+
       'void main(){vUV=aUV;gl_Position=uProj*uView*vec4(aPos,1.0);}');
     /* the opacity mixes the tile toward the background, so no blending state is needed */
-    var fs=bimGlCompile(gl,gl.FRAGMENT_SHADER,'precision mediump float;uniform sampler2D uTex;uniform float uAlpha;varying vec2 vUV;'+
-      'void main(){vec3 c=texture2D(uTex,vUV).rgb;gl_FragColor=vec4(mix(vec3(0.114,0.125,0.141),c,uAlpha),1.0);}');
+    var fs=bimGlCompile(gl,gl.FRAGMENT_SHADER,'precision mediump float;uniform sampler2D uTex;uniform float uAlpha;uniform vec3 uBg;uniform float uGrey;varying vec2 vUV;'+
+      'void main(){vec3 c=texture2D(uTex,vUV).rgb;c=mix(c,vec3(dot(c,vec3(0.299,0.587,0.114))),uGrey);gl_FragColor=vec4(mix(uBg,c,uAlpha),1.0);}');   /* __acad3dV171b: the ground, and grey */
     if(!vs||!fs)return null;
     var p=gl.createProgram();
     gl.attachShader(p,vs);gl.attachShader(p,fs);gl.linkProgram(p);
     if(!gl.getProgramParameter(p,gl.LINK_STATUS)){console.warn('[BIM] map shader link failed: '+gl.getProgramInfoLog(p));return null;}
     G.map={prog:p,buf:gl.createBuffer(),pos:gl.getAttribLocation(p,'aPos'),uv:gl.getAttribLocation(p,'aUV'),
       view:gl.getUniformLocation(p,'uView'),proj:gl.getUniformLocation(p,'uProj'),
-      tex:gl.getUniformLocation(p,'uTex'),alpha:gl.getUniformLocation(p,'uAlpha')};
+      tex:gl.getUniformLocation(p,'uTex'),alpha:gl.getUniformLocation(p,'uAlpha'),bg:gl.getUniformLocation(p,'uBg'),grey:gl.getUniformLocation(p,'uGrey')};
     return G.map;
   }
   function bimMapTex(gl,e){
@@ -252,6 +252,7 @@
       gl.uniformMatrix4fv(P.view,false,bimGlViewMatrix(V));
       gl.uniformMatrix4fv(P.proj,false,bimGlProjMatrix(W,H,A3D.flat,A3D.cam.dist));
       gl.uniform1f(P.alpha,plan.opacity);
+      var awM=bimAwBg(),awL=bimAwLook();gl.uniform3f(P.bg,awM[0],awM[1],awM[2]);gl.uniform1f(P.grey,awL?awL.grey:0);   /* __acad3dV171b */
       gl.activeTexture(gl.TEXTURE0);gl.uniform1i(P.tex,0);
       gl.depthMask(false);
       gl.bindBuffer(gl.ARRAY_BUFFER,P.buf);
@@ -288,6 +289,7 @@
     if(plan.tiles.length){
       ctx.save();
       ctx.globalAlpha=plan.opacity;
+      if(bimAwLook())ctx.filter='grayscale(1)';   /* __acad3dV171b */
       for(i=0;i<plan.tiles.length;i++){
         var s=bimMapSource(plan.tiles[i],plan.tpl);
         srcs.push(s);

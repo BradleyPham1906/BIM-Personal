@@ -1369,6 +1369,129 @@ body.a3d-tree-docked #a3d-leftpanel > .a3d-tree > #a3d-browser{flex:1 1 auto;min
 body.a3d-tree-docked #a3d-leftpanel > .a3d-tree .a3d-palhd{background:transparent;padding:11px 12px 7px;font-size:12px;font-weight:900;letter-spacing:.01em;}
 body.a3d-tree-docked #a3d-leftpanel > .a3d-tree .a3d-palhd{flex-wrap:wrap;row-gap:5px}
 body.a3d-tree-docked #a3d-leftpanel > .a3d-tree .a3d-palhd .a3d-palbtns{flex-wrap:wrap;flex:1 1 100%;justify-content:flex-start;}
+/* __acad3dV171b: the analysis workspace. Its bar over the view, the analyses on the left, the one analysis on the
+   right; dark with the app, light with body.light-theme. While it is open nothing to draw with is on screen, so the
+   app's messages have the bottom to themselves. */
+body.a3d-aw #a3d-dock,body.a3d-aw .a3d-tpal{display:none!important}
+.a3d-awbar{position:absolute;top:10px;left:10px;z-index:650;max-width:calc(100% - 150px);display:flex;flex-direction:column;gap:6px;pointer-events:none;
+  font:12px/1.3 Inter,system-ui,-apple-system,"Segoe UI",sans-serif}
+.a3d-awbar-row{pointer-events:auto;display:flex;align-items:center;gap:8px;min-height:34px;padding:0 4px 0 12px;border-radius:9px;
+  background:rgba(22,26,32,.92);border:1px solid rgba(255,255,255,.12);color:#e8edf2;box-shadow:0 4px 16px rgba(0,0,0,.28);min-width:0}
+.a3d-awbar-k{font-size:10.5px;font-weight:650;letter-spacing:.08em;text-transform:uppercase;color:#9aa7b4;white-space:nowrap}
+.a3d-awbar-sep{width:1px;height:14px;background:rgba(255,255,255,.18);flex:0 0 auto}
+.a3d-awbar-t{font-weight:600;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.a3d-awbar-n{font-size:11px;color:#9aa7b4;white-space:nowrap}
+.a3d-awbar-x,.a3d-awbar-d{flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;min-width:28px;height:28px;border:0;border-radius:7px;
+  background:transparent;color:inherit;cursor:pointer;font:inherit;font-size:12px}
+.a3d-awbar-x:hover,.a3d-awbar-d:hover{background:rgba(255,255,255,.1)}
+.a3d-awbar-x:focus-visible,.a3d-awbar-d:focus-visible,.a3d-awchip:focus-visible,.a3d-awl-nm:focus-visible,.a3d-awl-back:focus-visible{outline:2px solid #4ea1ff;outline-offset:1px}
+.a3d-awbar-d{display:none;padding:0 10px;border:1px solid rgba(255,255,255,.16)}
+.a3d-awchips{display:none;pointer-events:auto;gap:6px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:2px}
+.a3d-awchips::-webkit-scrollbar{display:none}
+.a3d-awchip{flex:0 0 auto;display:inline-flex;align-items:center;gap:6px;min-height:34px;padding:0 12px;border-radius:17px;border:1px solid rgba(255,255,255,.14);
+  background:rgba(22,26,32,.9);color:#e8edf2;font:inherit;font-size:12.5px;cursor:pointer;white-space:nowrap}
+.a3d-awchip i{width:9px;height:9px;border-radius:50%;flex:0 0 auto}
+.a3d-awchip.on{background:#e8edf2;color:#111418;border-color:#e8edf2}
+.a3d-awchip.add{border-color:rgba(255,255,255,.4)}
+body.a3d-tier-phone .a3d-awbar,body.a3d-tier-overlay .a3d-awbar{right:10px;max-width:none}
+body.a3d-tier-phone .a3d-awchips,body.a3d-tier-overlay .a3d-awchips{display:flex}
+body.a3d-tier-phone .a3d-awbar-d,body.a3d-tier-overlay .a3d-awbar-d{display:inline-flex}
+body.a3d-tier-phone .a3d-awbar-k{display:none}
+body.a3d-tier-phone .a3d-awbar-sep{display:none}
+body.light-theme .a3d-awbar-row,body.light-theme .a3d-awchip{background:rgba(255,255,255,.96);border-color:rgba(0,0,0,.1);color:#1f2328;box-shadow:0 4px 16px rgba(0,0,0,.08)}
+body.light-theme .a3d-awbar-k,body.light-theme .a3d-awbar-n{color:#6b7280}
+body.light-theme .a3d-awbar-sep{background:rgba(0,0,0,.14)}
+body.light-theme .a3d-awbar-x:hover,body.light-theme .a3d-awbar-d:hover{background:rgba(0,0,0,.06)}
+body.light-theme .a3d-awbar-d{border-color:rgba(0,0,0,.14)}
+body.light-theme .a3d-awchip.on{background:#1f2328;color:#fff;border-color:#1f2328}
+body.light-theme .a3d-awchip.add{border-color:rgba(0,0,0,.4)}
+/* the left: the analyses */
+.a3d-awl{display:flex;flex-direction:column;padding:4px 2px 16px;font-size:12.5px}
+.a3d-awl-hd{display:flex;align-items:center;gap:8px;margin:0 0 4px}
+.a3d-awl-back{display:inline-flex;align-items:center;gap:3px;border:0;background:transparent;color:#9aa7b4;font:inherit;font-size:11.5px;padding:4px 6px 4px 2px;border-radius:6px;cursor:pointer}
+.a3d-awl-back:hover{color:#e8edf2;background:rgba(255,255,255,.06)}
+.a3d-awl-ttl{font-weight:650;font-size:14px;margin-left:auto;margin-right:4px}
+.a3d-awl-site{font-size:11.5px;color:#8a96a3;line-height:1.4;margin:0 4px 10px}
+.a3d-awl-again{border:0;background:transparent;color:#4ea1ff;font:inherit;font-size:11.5px;padding:0 2px;cursor:pointer}
+.a3d-awl-again:hover{text-decoration:underline}
+.a3d-awl-again:disabled{color:inherit;opacity:.6;cursor:default;text-decoration:none}
+body.light-theme .a3d-awl-again{color:#1f5fa8}
+.a3d-awl-grp{margin-top:10px}
+.a3d-awl-grphd{font-size:10.5px;font-weight:650;letter-spacing:.07em;text-transform:uppercase;color:#8a96a3;margin:0 6px 3px}
+.a3d-awl-row{display:flex;align-items:center;gap:8px;min-height:30px;padding:0 6px;border-radius:7px;position:relative}
+.a3d-awl-row:hover{background:rgba(255,255,255,.045)}
+.a3d-awl-tick{flex:0 0 auto;margin:0;width:14px;height:14px;accent-color:#4ea1ff;cursor:pointer}
+.a3d-awl-sw{flex:0 0 auto;width:10px;height:10px;border-radius:3px}
+.a3d-awl-nm{flex:1 1 auto;min-width:0;border:0;background:transparent;color:inherit;font:inherit;text-align:left;padding:6px 0;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.a3d-awl-st{flex:0 0 auto;font-size:10.5px;color:#8a96a3;white-space:nowrap}
+button.a3d-awl-row{width:100%;border:0;background:transparent;color:inherit;font:inherit;cursor:pointer;text-align:left;justify-content:space-between}
+.a3d-awl-ov .a3d-awl-nm{flex:0 0 auto;padding:6px 0}
+.a3d-awl-row.focus{background:#e8edf2;color:#111418}
+.a3d-awl-row.focus .a3d-awl-st{color:#4b5563}
+.a3d-awl-row.add .a3d-awl-nm{font-weight:600}
+.a3d-awl-row.none .a3d-awl-nm,.a3d-awl-row.none .a3d-awl-sw{opacity:.45}
+.a3d-awl-row.stale .a3d-awl-st{color:#e0a43a}
+.a3d-awl-empty{margin:12px 6px;font-size:12px;color:#8a96a3;line-height:1.45}
+body.light-theme .a3d-awl,body.light-theme .a3d-awp{color:#1f2328}
+body.light-theme .a3d-awl-back{color:#6b7280}
+body.light-theme .a3d-awl-back:hover{color:#1f2328;background:rgba(0,0,0,.05)}
+body.light-theme .a3d-awl-site,body.light-theme .a3d-awl-grphd,body.light-theme .a3d-awl-st,body.light-theme .a3d-awl-empty{color:#6b7280}
+body.light-theme .a3d-awl-row:hover{background:rgba(0,0,0,.04)}
+body.light-theme .a3d-awl-row.focus{background:#1f2328;color:#fff}
+body.light-theme .a3d-awl-row.focus .a3d-awl-st{color:#c9ced4}
+body.light-theme .a3d-awl-row.stale .a3d-awl-st{color:#9a5b00}
+/* the right: the one analysis */
+.a3d-awp{padding:2px 2px 18px;font-size:12.5px;line-height:1.45}
+.a3d-awp-hd{display:flex;align-items:flex-start;gap:10px;margin:2px 0 8px}
+.a3d-awp-sw{flex:0 0 auto;width:12px;height:12px;border-radius:50%;margin-top:4px}
+.a3d-awp-ttl{font-weight:650;font-size:15px;line-height:1.3}
+.a3d-awp-sub{font-size:11.5px;color:#8a96a3}
+.a3d-awp-about{margin:0 0 6px;color:#c9d1d9}
+.a3d-awp-sec{font-size:10.5px;font-weight:650;letter-spacing:.07em;text-transform:uppercase;color:#8a96a3;margin:16px 0 6px}
+.a3d-awp-rows{display:flex;flex-direction:column;gap:3px}
+.a3d-awp-r{display:flex;gap:10px;justify-content:space-between}
+.a3d-awp-r span{color:#8a96a3;flex:0 0 auto}
+.a3d-awp-r b{font-weight:500;text-align:right;min-width:0}
+.a3d-awp-note{margin:6px 0 0;font-size:12px;color:#aeb7c1}
+.a3d-awp-std{font-size:11.5px;color:#8a96a3}
+.a3d-awp-key{display:flex;flex-wrap:wrap;gap:4px 12px}
+.a3d-awp-keyi{display:inline-flex;align-items:center;gap:6px;font-size:12px}
+.a3d-awp-keyi i{flex:0 0 auto;width:14px;height:10px;border-radius:2px}
+.a3d-awp-keyi i.k-line,.a3d-awp-keyi i.k-dash{height:0;border-radius:0;background:none;border-top:2px solid currentColor}
+.a3d-awp-keyi i.k-dash{border-top-style:dashed}
+.a3d-awp-keyi i.k-dot{width:9px;height:9px;border-radius:50%}
+.a3d-awp-acts{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.a3d-awp-tr{margin-top:8px}
+.a3d-awp-tr .a3d-trset{display:flex;flex-wrap:wrap;align-items:center;gap:4px;margin:4px 0}
+.a3d-awp-steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.a3d-awp-steps li{display:grid;grid-template-columns:10px 1fr auto;column-gap:8px;align-items:baseline}
+.a3d-awp-dot{width:7px;height:7px;border-radius:50%;background:#8a96a3;align-self:center}
+.a3d-awp-steps li.s-ok .a3d-awp-dot{background:#3fb950}
+.a3d-awp-steps li.s-part .a3d-awp-dot{background:#e0a43a}
+.a3d-awp-steps li.s-fail .a3d-awp-dot{background:#e5484d}
+.a3d-awp-steps li.s-skip .a3d-awp-dot{background:#6b7280}
+.a3d-awp-stn{font-weight:500}
+.a3d-awp-sts{font-size:11px;color:#8a96a3}
+.a3d-awp-stt{grid-column:2 / 4;font-size:11.5px;color:#8a96a3;line-height:1.4}
+.a3d-awp-chart{--surf:#1a1d21;--ink:#e8edf2;--ink2:#c3c2b7;--muted:#8a96a3;--grid:#30353b;--base:#3a3f46;--band:rgba(255,255,255,.08);
+  --s1:#3987e5;--s2:#d95926;--s3:#199e70;--s4:#c98500;--w1:#1c5cab;--w2:#2a78d6;--w3:#5598e7;--w4:#86b6ef;--w5:#cde2fb;--hn:#77766f;margin:8px 0 2px}
+.a3d-awp-chart svg{display:block;width:100%;max-width:230px;height:auto;margin:0 auto}
+.a3d-awp-chart svg text{font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif}
+.a3d-awp-chart .tk{fill:var(--muted);font-size:11px}
+.a3d-awp-chart .tl2{fill:var(--ink2);font-size:11px}
+.a3d-awp-chart .lb{fill:var(--ink);font-size:11.5px;font-weight:600}
+.a3d-awp-chart .gd{stroke:var(--grid);stroke-width:1;fill:none}
+.a3d-awp-chart .bs{stroke:var(--base);stroke-width:1;fill:none}
+.a3d-awp-chart .hit{fill:transparent}
+.a3d-awp-cap{font-size:11.5px;color:#8a96a3;text-align:center}
+body.light-theme .a3d-awp-sub,body.light-theme .a3d-awp-sec,body.light-theme .a3d-awp-r span,body.light-theme .a3d-awp-std,body.light-theme .a3d-awp-sts,
+body.light-theme .a3d-awp-stt,body.light-theme .a3d-awp-cap{color:#6b7280}
+body.light-theme .a3d-awp-about{color:#374151}
+body.light-theme .a3d-awp-note{color:#4b5563}
+body.light-theme .a3d-awp-chart{--surf:#ffffff;--ink:#0b0b0b;--ink2:#52514e;--muted:#6b7280;--grid:#e1e0d9;--base:#c3c2b7;--band:rgba(11,11,11,.07);
+  --w1:#86b6ef;--w2:#5598e7;--w3:#2a78d6;--w4:#1c5cab;--w5:#104281;--hn:#e7e5df}
+/* an analysis's row in Analyze: its name keeps room beside a long first button (Traffic's "Stop the simulation") */
+.a3d-anzhd>.a3d-anzbtn{flex:0 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis}
 </style>
 </head>
 <body>
@@ -1562,6 +1685,7 @@ body.a3d-tree-docked #a3d-leftpanel > .a3d-tree .a3d-palhd .a3d-palbtns{flex-wra
     ['CLIMATEGET',['GETCLIMATE','WEATHERDATA','CLIMATEDATA'],'climateget','Get the site\'s climate (ten years of ERA5), air quality (PM2.5) and earthquakes within 100 km, from free open sources'],   /* __acad3dV159 */
     ['ANALYZESITE',['SITEANALYZE','RUNSITEANALYSIS','SAFILL','SITEANALYSISFILL','SAFROMMODEL'],'analyzesite','Analyze site: get what is around the site from free open data and draw each analysis in the model -- compass, sun paths, shadows, winds, views, noise, contours, slope, aspect, water flow, ponds, flood zones, street hierarchy, cycling stress, transit, walk times, daily needs, vehicle access -- on Layers, Site analysis; one undo step'],   /* __acad3dV164; __acad3dV165; __acad3dV166 */
     ['PLAY',['ANIMATE','PAUSE','MOTION','PLAYANALYSIS'],'animplay','Play or pause the site analysis in motion: marching dashes along flows, walks and transit, winds drawn on, the distance rings growing, the layers in turn, the sun and the shadows through the day; Stop in the status bar gives the still drawing back'],   /* __acad3dV170 */
+    ['SITEWORKSPACE',['ANALYSISWORKSPACE','SAWORKSPACE','SITEWS'],'siteworkspace','The site analysis as a workspace: the analyses on the left, one in focus and others ticked under it; its panel on the right with what it shows, its settings, its chart, its key and its source; the view quiet in the app\'s light or dark mode'],   /* __acad3dV171b */
     ['TRAFFIC',['TRAFFICSIM','SIMULATETRAFFIC','PEDESTRIANS','TRAFFICON'],'traffic','Simulate traffic and people around the site: cars on the streets by the IDM with each junction\'s own assumed signal plan, walkers on the sidewalks crossing on green, and the design\'s own trips; it plays on the clock (Play, Pause and Stop)'],   /* __acad3dV171 */
     ['TRAFFICOFF',['TRAFFICSTOP'],'trafficoff','Stop simulating traffic and people'],
     ['CONTEXTREMOVE',['CONTEXTCLEAR'],'contextremove','Remove the site context'],
@@ -6829,7 +6953,7 @@ try{
           drawSketchPath(ctx,V,W,H,pmSeg[pmK],o.y,(o.id===A3D.sel)?'#4ea1ff':lk.color,false,false,pmQ,null,lk);
         continue;
       }
-      drawSketchPath(ctx,V,W,H,o.pts,o.y,(o.id===A3D.sel)?'#4ea1ff':lk.color,(o.closed!==false),false,bimObjOffset(o),o.bulges,lk);
+      drawSketchPath(ctx,V,W,H,o.pts,o.y,(o.id===A3D.sel)?'#4ea1ff':(bimAwCtxCol(o)||lk.color),(o.closed!==false),false,bimObjOffset(o),o.bulges,lk);   /* __acad3dV171b */
     }
     /* __acad3dV90: preview the CURVE, not the chords. A rubber band that draws straight and
        commits curved is the interface disagreeing with the model. */
@@ -19509,6 +19633,7 @@ try{
     return h+'<div class="a3d-anzempty" hidden>Nothing matches</div>';
   }
   function bimAnalyzeHtml(){
+    if(A3D_AW.on)return bimAwListHtml();   /* __acad3dV171b: the workspace's analyses */
     var C=bimAnzCards();
     return '<div class="a3d-anz a3d-sa"><div class="a3d-anzhead"><span class="a3d-anzttl0">Analyze</span><span class="a3d-anzcount">'+bimAnzCountText(C)+'</span></div>'+
       '<input type="search" class="a3d-anzsearch" data-anzsearch="1" placeholder="Search analyses, data and findings" aria-label="Search Analyze" autocomplete="off" value="'+bimEsc(A3D_ANZ.q||'')+'">'+
@@ -19571,6 +19696,7 @@ try{
     if(!force&&a&&w.contains(a)&&/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)&&!a.hasAttribute('data-anzsearch')&&a.type!=='checkbox'&&a.type!=='file'){A3D_ANZ.pend=true;return false;}
     A3D_ANZ.pend=false;
     try{
+      if(A3D_AW.on){bimRenderInto(w,bimAwListHtml());return true;}   /* __acad3dV171b */
       var rows=w.querySelector('.a3d-anzrows'),cnt=w.querySelector('.a3d-anzcount'),C;
       if(rows&&cnt){C=bimAnzCards();bimRenderInto(rows,bimAnzBodyHtml(C));cnt.textContent=bimAnzCountText(C);}
       else w.innerHTML=bimAnalyzeHtml();
@@ -19581,6 +19707,7 @@ try{
   /* a button: run it, or open its settings in Properties */
   function bimAnzAct(a){
     var k=String(a||''),g;
+    if(k.indexOf('aw:')===0)return bimAwAct(k.slice(3));   /* __acad3dV171b: the workspace */
     if(k.indexOf('open:')===0){
       g=k.slice(5);
       A3D.sel=null;A3D.sel2=null;A3D.selSet=[];
@@ -20728,9 +20855,10 @@ try{
   /* ---- drawing, in plan and in 3D ---- */
   function bimDgDrawText(ctx,t,x,y,col,sz,cap){
     ctx.font=(sz||11)+'px sans-serif';
-    ctx.lineWidth=3;ctx.strokeStyle=cap?'rgba(255,255,255,0.9)':'rgba(15,18,22,0.85)';ctx.lineJoin='round';
+    var awL=bimAwLook();   /* __acad3dV171b: the workspace's halo and ink */
+    ctx.lineWidth=3;ctx.strokeStyle=cap?'rgba(255,255,255,0.9)':(awL?awL.halo:'rgba(15,18,22,0.85)');ctx.lineJoin='round';
     ctx.strokeText(t,x,y);
-    ctx.fillStyle=cap?'#1d2329':(col||'#e8edf2');
+    ctx.fillStyle=cap?'#1d2329':(awL?bimAwInk(col):(col||'#e8edf2'));
     ctx.fillText(t,x,y);
     var w=ctx.measureText(t).width;
     return [x-(ctx.textAlign==='center'?w/2:(ctx.textAlign==='right'?w:0)),y-(sz||11)/2-2,w,(sz||11)+4];
@@ -21395,7 +21523,7 @@ try{
     }
     if(!blocks.length)return null;
     sr=bimSafeViewRect();   /* asked only with a key to place, as the other keys do: it warns when the chrome covers the view */
-    if(sr.w<620)return null;   /* a phone's view: each analysis's row in Analyze carries its key */
+    if(sr.w<(bimAwLook()?280:620))return null;   /* a phone's view: each analysis's row in Analyze carries its key; __acad3dV171b: in the workspace, the one in focus's on the view */
     ctx.save();
     try{
       var pad=8,rowH=15,sw=12,maxW=Math.round(Math.min(300,Math.max(170,sr.w*0.3))),inner=maxW-2*pad,j,b;
@@ -21425,6 +21553,7 @@ try{
       if(LY.h>avail)LY=lay(false,blocks);
       while(LY.h>avail&&n<blocks.length-1){gone[drop[n++].i]=1;LY=lay(false,blocks.filter(function(bb){return !gone[bb.i];}));}
       LY.X=sr.x+sr.w-LY.w-12;LY.Y=Y;LY.all=blocks.length;
+      if(bimAwLook()){LY.X=sr.x+12;LY.Y=Math.max(sr.y+12,sr.y+sr.h-LY.h-12);}   /* __acad3dV171b: the workspace's, at the bottom left */
       return LY;
     }finally{ctx.restore();}
   }
@@ -21436,19 +21565,20 @@ try{
     ctx.save();
     try{
       var sw=12,ops=LY.ops,w=LY.w,h=LY.h,X=LY.X,Y=LY.Y,i;
-      ctx.globalAlpha=1;ctx.fillStyle='rgba(22,26,32,0.9)';ctx.fillRect(X,Y,w,h);
-      ctx.strokeStyle='rgba(255,255,255,0.18)';ctx.lineWidth=1;ctx.strokeRect(X+0.5,Y+0.5,w-1,h-1);
+      var awK=bimAwLook();awK=awK?awK.key:null;   /* __acad3dV171b: in the mode's colours */
+      ctx.globalAlpha=1;ctx.fillStyle=awK?awK.bg:'rgba(22,26,32,0.9)';ctx.fillRect(X,Y,w,h);
+      ctx.strokeStyle=awK?awK.line:'rgba(255,255,255,0.18)';ctx.lineWidth=1;ctx.strokeRect(X+0.5,Y+0.5,w-1,h-1);
       ctx.beginPath();ctx.rect(X,Y,w,h);ctx.clip();
       ctx.textBaseline='middle';ctx.textAlign='left';
       for(i=0;i<ops.length;i++){
         var op=ops[i],ox=X+op.x,oy=Y+op.y;
-        if(op.k==='t'){ctx.font='bold 11px sans-serif';ctx.fillStyle='#e8edf2';ctx.fillText(op.t,ox,oy);continue;}
-        if(op.k==='s'){ctx.font='10px sans-serif';ctx.fillStyle='#9aa7b4';ctx.fillText(op.t,ox,oy);continue;}
+        if(op.k==='t'){ctx.font='bold 11px sans-serif';ctx.fillStyle=awK?awK.ink:'#e8edf2';ctx.fillText(op.t,ox,oy);continue;}
+        if(op.k==='s'){ctx.font='10px sans-serif';ctx.fillStyle=awK?awK.sub:'#9aa7b4';ctx.fillText(op.t,ox,oy);continue;}
         var rr=op.r;ctx.strokeStyle=rr.col;ctx.fillStyle=rr.col;ctx.lineWidth=2;
         if(rr.kind==='fill'){ctx.globalAlpha=0.75;ctx.fillRect(ox,oy-5,sw,10);ctx.globalAlpha=1;if(rr.tex){var tk=bimDgTex(ctx,rr.tex,rr.ink);if(tk){ctx.fillStyle=tk;ctx.fillRect(ox,oy-5,sw,10);ctx.fillStyle=rr.col;}}}   /* __acad3dV168: tex */
         else if(rr.kind==='dot'){ctx.beginPath();ctx.arc(ox+sw/2,oy,4,0,2*Math.PI);ctx.fill();}
         else{ctx.setLineDash(rr.kind==='dash'?[4,3]:[]);ctx.beginPath();ctx.moveTo(ox,oy);ctx.lineTo(ox+sw,oy);ctx.stroke();ctx.setLineDash([]);}
-        ctx.font='11px sans-serif';ctx.fillStyle='#e8edf2';ctx.fillText(op.t,ox+sw+4,oy);
+        ctx.font='11px sans-serif';ctx.fillStyle=awK?awK.ink:'#e8edf2';ctx.fillText(op.t,ox+sw+4,oy);
       }
       A3D_DG.legend={box:[X,Y,w,h],blocks:LY.list.map(function(bb){return {title:bb.tt,rows:bb.drawn,src:bb.st||''};}),more:LY.all-LY.list.length,moreText:LY.mt,sources:LY.src};   /* what was drawn, as drawn */
     }catch(eL){console.warn('[BIM] The site analysis legend could not be drawn',eL);}
@@ -21971,7 +22101,7 @@ try{
     if(S.mv&&S.mv.error)return 'The movement data could not be worked out: '+String(S.mv.error).slice(0,160);
     return 'The access data is from before V166: Analyze site again for the streets\' details';
   }
-  function bimMvLight(){var s=bimMapSettings().style;return s==='street'||s==='custom';}
+  function bimMvLight(){var L=bimAwLook();if(L)return L.light;var s=bimMapSettings().style;return s==='street'||s==='custom';}   /* __acad3dV171b: the workspace's ground is the mode's */
   function bimMvCol(o){return bimMvLight()?o.lt:o.dk;}
   function bimMvClassOf(hw){var i;hw=String(hw||'');for(i=0;i<BIM_MV_CLASSES.length;i++)if(BIM_MV_CLASSES[i].re.test(hw))return BIM_MV_CLASSES[i];return null;}
   function bimMvPts(mv,rec,y){var L=[],k;for(k=1;k<rec.length;k++)L.push([mv.x[rec[k]],y,mv.z[rec[k]]]);return L;}
@@ -24051,6 +24181,7 @@ try{
         bimSaFill(true);
         bimSiteStep('draw',n?'ok':'fail',(n?bimSaN(n,'element')+' on Layers, Site analysis: '+said.join(', '):'Nothing to draw')+(notes.length?'. '+notes.join('. '):''));
         bad=R.steps.filter(function(s){return s.state==='fail';}).map(function(s){return s.name;});
+        bimAwAfterRun();   /* __acad3dV171b: the site and its context, and the list, in the run's one step */
         var res=finish(true);
         a3dToast('Analyze site: '+(n?bimSaN(n,'element')+' drawn in the model, on Layers, Site analysis':'nothing could be drawn')+'; one undo step'+(bad.length?'. Not available: '+bad.join(', '):''));
         return res;
@@ -24124,6 +24255,7 @@ try{
     if(!placed)h+='<div class="a3d-sarow"><label for="a3d-saaddr">Address</label><input type="text" id="a3d-saaddr" data-saaddr="1" maxlength="200" enterkeyhint="search" autocomplete="off" placeholder="A street address or a place"></div>';
     h+='<div class="a3d-sarow"><span class="a3d-salab">Boundary</span><span class="a3d-saval">'+bd+'</span></div>'+
       '<div class="a3d-saacts"><button type="button" class="a3d-anzbtn pri a3d-sago" data-saact="analyze"'+(R.busy?' disabled':'')+'>'+(R.busy?'Analyzing ...':(D.last?'Analyze site again':'Analyze site'))+'</button>'+
+      (D.last?'<button type="button" class="a3d-anzbtn" data-anzact="aw:open:" title="The analyses one at a time, each with its key and its panel">Open the site analysis</button>':'')+   /* __acad3dV171b */
       (D.last?'<button type="button" class="a3d-anzbtn" data-saact="dglegend" aria-pressed="'+(!D.legendOff)+'">'+(D.legendOff?'Show the legend':'Hide the legend')+'</button>':'')+'</div>'+
       '<div class="a3d-sacap">'+(D.last&&!R.busy?bimEsc('Last run '+D.last.date+'. Each analysis is on Layers, Site analysis: select an element to move, restyle or relabel it; what you change is kept when it runs again.'):
         'Gets what is around the site from free open data -- buildings, roads, terrain, climate, access, zoning -- and draws each analysis in the model, on Layers, Site analysis. One undo step.')+'</div>';
@@ -24154,6 +24286,7 @@ try{
         extra:R?bimDgLegendHtml(R.legend)+(R.note&&L.length?'<div class="a3d-sacap">'+bimEsc(R.note)+'</div>':'')+(R.source?'<div class="a3d-sacap">Source: '+bimEsc(R.source)+'</div>':'')+
           (sx?'<div class="a3d-sacap a3d-sastd" data-dgstd="'+A.id+'">'+bimEsc(sx)+'</div>':''):'',
         acts:[{act:'dg:show:'+A.id,label:on?'Hide':'Show',pri:!on&&L.length>0,off:L.length?'':'Nothing drawn yet'},
+          {act:'aw:open:'+A.id,label:'Open',tip:'In the site analysis: drawn alone, with its key and its panel',off:R?'':'Not run yet'},   /* __acad3dV171b */
           {act:'dg:run:'+A.id,label:R?'Run again':'Run',tip:'From what the project holds now; Analyze site fetches the data again'},
           {act:'dg:select:'+A.id,label:'Select',off:L.length?'':'Nothing drawn yet'},
           {act:'dg:reset:'+A.id,label:'Reset',off:R?'':'Not run yet',tip:'As the analysis draws it: what you changed, copied or deleted on it goes back'}]};
@@ -28129,6 +28262,7 @@ try{
        refreshTree only would leave the bar naming an object that is no longer selected. */
     bimSyncStatusHint();
     bimAnalyzeRefresh();   /* __acad3dV141; __acad3dV162: the site analysis with it */
+    bimAwTitleSync();   /* __acad3dV171b */
     if(!el.propsbody)return;
     var o=objById(A3D.sel);
     var gP=o?null:bimSelectedGrid();   /* __acad3dV98 */
@@ -28138,6 +28272,7 @@ try{
          reference tool does. "No object selected" wastes the panel exactly when a user is
          orienting themselves. Every field below is backed by state that already exists and is
          already persisted -- no new settings were invented to fill the space. */
+      if(A3D_AW.on){bimRenderInto(el.propsbody,bimAwPanelHtml());return;}   /* __acad3dV171b: the one analysis */
       bimRenderInto(el.propsbody,bimModelPropsHtml());   /* __acad3dV118 */
       return;
     }
@@ -30033,6 +30168,361 @@ try{
     var note=res?'':'Simulate, then Run again for the queue, the people at the doors and the delays';
     return {E:E,run:{legend:leg,source:'Traffic and people: assumed signal plans and the run so far',note:note}};
   }
+  /* ================= __acad3dV171b: the analysis workspace =================
+     reference/research-analysis-workspace.md. The site analysis is a place one goes into and leaves, as archiMap's
+     and Forma's are: a bar over the view with the analysis in focus and a cross; on the left the analyses in their
+     groups, one in focus and others ticked under it; on the right, where Properties is while nothing is selected,
+     the one analysis: what it shows, its settings, its chart, its key, what the run said and its source. The view
+     goes quiet in the app's mode, light or dark: its ground, the map greyed and faded, the context in the mode's
+     greys, so only the data keeps its colour. The focus and the ticks are the layers' visibility, one undo step
+     each, so Layers and the sheets agree; they are the project's, kept with it. */
+  var BIM_AW_GROUPS=[
+    {id:'site',name:'Site',an:['frame']},
+    {id:'sun',name:'Sun and wind',an:['sun','shadow','wind']},
+    {id:'see',name:'Views and noise',an:['views','noise']},
+    {id:'ground',name:'Land and water',an:['contours','slope','aspect','flow','ponds','flood']},
+    {id:'move',name:'Movement',an:['streets','cycling','transit','walk','needs','vehicles','traffic']},
+    {id:'land',name:'Land',an:['landuse','figure','green','zoning']}];
+  var BIM_AW_ABOUT={
+    frame:'True north and rings every 100 m from the site: the bearing and the scale of everything else.',
+    sun:'The sun\'s path over the site on the solstices and the equinoxes, with its hours, and where it is now.',
+    shadow:'Where the buildings cast their shadows at 9, 12 and 15 on the solstices and the equinox.',
+    wind:'The winds by season from a year of hourly data, and the direction of the strongest.',
+    views:'What can be seen from the site, at eye level and from the top floor.',
+    noise:'The road and rail noise reaching the site, in bands of 5 dB.',
+    contours:'The ground\'s height in lines, from the terrain around the site.',
+    slope:'How steep the ground is, in classes.',
+    aspect:'Which way the ground faces.',
+    flow:'Where rain runs over the ground, where the divides are, and where it drains.',
+    ponds:'Where water would gather in the hollows.',
+    flood:'The flood zones mapped around the site.',
+    streets:'The streets by class, from motorway to path, and their speeds.',
+    cycling:'How stressful each street is to ride a bicycle on.',
+    transit:'The bus and rail stops within reach, their lines, and the walk to them.',
+    walk:'How long it takes to walk from the site along the streets.',
+    needs:'The daily needs within a walk: food, health, learning, parks, eating out and services.',
+    vehicles:'How cars reach the site: the driveway, its entry, the doors, the car parks and parking on the street.',
+    traffic:'Cars and walkers on the streets around the site in the peak hour, played on the clock.',
+    landuse:'What the land around the site is used for, in the planners\' colours.',
+    figure:'The buildings in black on white: the grain of the place.',
+    green:'The trees, the green spaces, and the green that can be seen.',
+    zoning:'The zoning districts around the site.'};
+  /* the view's quiet tones in each mode; only the data keeps its colour */
+  var BIM_AW_LOOK={
+    light:{light:true,bg:'#f2f2ef',fade:0.35,grey:1,grid:'#e2e2de',ink:'#2a2e33',halo:'rgba(255,255,255,0.92)',
+      ctx:{buildings:'#fbfbfa',roads:'#dcdcd8',water:'#bdd5ea',green:'#d4e7cd',trees:'#a9cd9f',rail:'#cbc6bf',airports:'#e4e4e0',power:'#d6d6d2',landuse:'#ebeae5',terrain:'#e9e8e3'},
+      key:{bg:'rgba(255,255,255,0.95)',line:'rgba(0,0,0,0.12)',ink:'#1f2328',sub:'#6b7280'}},
+    dark:{light:false,bg:'#17191c',fade:0.3,grey:1,grid:'#24282d',ink:'#e8edf2',halo:'rgba(10,12,15,0.86)',
+      ctx:{buildings:'#4c525b',roads:'#363b42',water:'#22384d',green:'#25372a',trees:'#2f5236',rail:'#3d3a35',airports:'#2c3035',power:'#3a3e44',landuse:'#25282d',terrain:'#25292e'},
+      key:{bg:'rgba(22,26,32,0.92)',line:'rgba(255,255,255,0.16)',ink:'#e8edf2',sub:'#9aa7b4'}}};
+  var A3D_AW={on:false,wired:false};
+  function bimAwState(){
+    var D=bimDgState(),S=D.aw;
+    if(!S||typeof S!=='object')S=D.aw={focus:null,add:[]};
+    if(S.focus!==null&&!bimDgAn(S.focus))S.focus=null;
+    if(!Array.isArray(S.add))S.add=[];
+    S.add=S.add.filter(function(a,i,L){return !!bimDgAn(a)&&a!==S.focus&&L.indexOf(a)===i;});
+    return S;
+  }
+  /* an analysis drawn now: its layer, and those above it, on */
+  function bimAwShown(a){var ly=bimLayerById(bimDgState().layers[a]);return !!(ly&&bimLayerEff(ly).on);}
+  /* the focus as the view shows it: an undo can hide a layer the focus names */
+  function bimAwFocusNow(){var S=bimAwState();return S.focus&&bimAwShown(S.focus)?S.focus:null;}
+  function bimAwLook(){
+    if(!A3D_AW.on||A3D.sheetCapture||A3D_PLOT.on)return null;
+    return document.body.classList.contains('light-theme')?BIM_AW_LOOK.light:BIM_AW_LOOK.dark;
+  }
+  function bimAwRgb(hex){var n=parseInt(String(hex).slice(1),16);return [((n>>16)&255)/255,((n>>8)&255)/255,(n&255)/255];}
+  /* the view's background, for WebGL, WebGPU and the canvas */
+  function bimAwBg(){var L=bimAwLook();return L?bimAwRgb(L.bg):[0.114,0.125,0.141];}
+  function bimAwBgHex(){var L=bimAwLook();return L?L.bg:'#1d2024';}
+  /* a context object's quiet tone, by the kind Site Context recorded on it */
+  function bimAwCtxCol(o){
+    var L=bimAwLook(),k=o&&o.context&&o.context.kind;
+    return L&&k&&L.ctx.hasOwnProperty(k)?L.ctx[k]:null;
+  }
+  /* a word's colour on the quiet ground: on paper a light colour is darkened to be read */
+  function bimAwInk(col){
+    var L=bimAwLook();
+    if(!L)return col;
+    if(!col)return L.ink;
+    if(!L.light)return col;
+    var c=bimAwRgb(col),y=0.299*c[0]+0.587*c[1]+0.114*c[2];
+    return y>0.55?shade(col,0.55/y):col;
+  }
+  /* ---- the focus and the ticks, as the layers' visibility; one undo step, none inside a run's ---- */
+  function bimAwApply(push){
+    var D=bimDgState(),S=bimAwState(),ch=[],i,A,ly,v,root=bimLayerById(D.layers.root);
+    for(i=0;i<BIM_DG_AN.length;i++){
+      A=BIM_DG_AN[i];ly=bimLayerById(D.layers[A.id]);
+      if(!ly)continue;
+      v=A.id===S.focus||S.add.indexOf(A.id)>=0;
+      if((ly.visible!==false)!==v)ch.push([ly,v]);
+    }
+    if(root&&root.visible===false&&(S.focus||S.add.length))ch.push([root,true]);
+    if(!ch.length)return 0;
+    if(push)pushUndo();
+    ch.forEach(function(c){c[0].visible=c[1];});
+    bimLayerChanged();
+    return ch.length;
+  }
+  function bimAwRefresh(){
+    bimAwBar();
+    bimAnalyzeRefresh(true);
+    refreshProps();
+    paint();
+  }
+  function bimAwFocus(a){
+    a=a?String(a):null;
+    if(a&&!bimDgAn(a))return false;
+    var S=bimAwState(),add=S.add.filter(function(x){return x!==a;});
+    if(S.focus!==a||add.length!==S.add.length||bimAwFocusNow()!==a){
+      pushUndo();   /* the step taken before the change, so undoing it gives the focus back with the layers */
+      S.focus=a;S.add=add;
+      var held=bimUndoHold;bimUndoHold=true;
+      try{bimAwApply(false);}finally{bimUndoHold=held;}
+      saveSoon();
+    }
+    if(!A3D_AW.on)bimAwOpen();
+    bimAwRefresh();
+    return true;
+  }
+  /* a tick: drawn under the focus, or no longer; the focus unticked is no longer in focus */
+  function bimAwTick(a){
+    if(!bimDgAn(a))return false;
+    var S=bimAwState(),on=bimAwShown(a);
+    pushUndo();
+    if(on){if(S.focus===a)S.focus=null;S.add=S.add.filter(function(x){return x!==a;});}
+    else if(S.add.indexOf(a)<0)S.add.push(a);
+    var held=bimUndoHold;bimUndoHold=true;
+    try{bimAwApply(false);}finally{bimUndoHold=held;}
+    saveSoon();
+    bimAwRefresh();
+    return true;
+  }
+  /* ---- in and out ---- */
+  /* the surface, the focus as it is */
+  function bimAwOpen(){
+    A3D_AW.on=true;
+    document.body.classList.add('a3d-aw');
+    bimShellSetTab('analyze');
+    if(bimShellTier()==='phone'){var sh=document.getElementById('a3d-shell');if(sh)sh.classList.add('collapsed');}   /* a phone: the view, not the drawer */
+    bimAwWire();
+  }
+  function bimAwEnter(focus){
+    if(focus!==undefined)return bimAwFocus(focus);
+    bimAwOpen();
+    bimAwRefresh();
+    return true;
+  }
+  function bimAwLeave(){
+    if(!A3D_AW.on)return false;
+    A3D_AW.on=false;
+    document.body.classList.remove('a3d-aw');
+    bimAwBar();
+    refreshProps();   /* Properties again, and Analyze's rows: the list in their place has none to refresh, so they are drawn whole */
+    paint();
+    return true;
+  }
+  /* Analyze site, as it ends, inside its one undo step: the first time the site and its context, and the list; again,
+     what was in focus and ticked, drawn again */
+  function bimAwAfterRun(){
+    var S=bimAwState(),held=bimUndoHold;
+    if(!bimDgState().last){S.focus=null;S.add=[];}
+    bimUndoHold=true;
+    try{bimAwApply(false);}finally{bimUndoHold=held;}
+    bimAwOpen();
+    bimAwBar();
+  }
+  /* TRAFFIC: in focus, inside the step the command took */
+  function bimAwTraffic(){
+    var S=bimAwState(),held=bimUndoHold;
+    S.focus='traffic';S.add=S.add.filter(function(x){return x!=='traffic';});
+    bimUndoHold=true;
+    try{bimAwApply(false);}finally{bimUndoHold=held;}
+    bimAwOpen();
+    bimAwRefresh();
+  }
+  /* ---- the bar over the view, and a phone's row of analyses under it ---- */
+  function bimAwBar(){
+    var vp=el.cv?el.cv.parentNode:null,b=document.getElementById('a3d-awbar');
+    if(!A3D_AW.on){if(b)b.parentNode.removeChild(b);return null;}
+    if(!vp)return null;
+    if(!b){
+      b=document.createElement('div');b.id='a3d-awbar';b.className='a3d-awbar';
+      b.addEventListener('click',function(ev){
+        var t=ev.target&&ev.target.closest?ev.target.closest('[data-awact]'):null;
+        if(t)bimAwAct(t.getAttribute('data-awact'));
+      });
+      vp.appendChild(b);
+    }
+    var f=bimAwFocusNow(),A=f?bimDgAn(f):null,S=bimAwState(),D=bimDgState(),ch='';
+    BIM_DG_AN.forEach(function(X){
+      if(!D.runs[X.id])return;
+      ch+='<button type="button" class="a3d-awchip'+(X.id===f?' on':(bimAwShown(X.id)?' add':''))+'" data-awact="focus:'+X.id+'" aria-pressed="'+(X.id===f)+'">'+
+        '<i style="background:'+bimEsc(X.col)+'"></i>'+bimEsc(X.name)+'</button>';
+    });
+    bimRenderInto(b,'<div class="a3d-awbar-row"><span class="a3d-awbar-k">Site analysis</span><span class="a3d-awbar-sep" aria-hidden="true"></span>'+
+      '<span class="a3d-awbar-t" data-awbart="1">'+bimEsc(A?A.name:'Overview')+'</span>'+
+      (S.add.filter(bimAwShown).length?'<span class="a3d-awbar-n">+ '+S.add.filter(bimAwShown).length+'</span>':'')+
+      '<button type="button" class="a3d-awbar-d" data-awact="panel" title="The analysis\'s panel" aria-label="The analysis\'s panel">Details</button>'+
+      '<button type="button" class="a3d-awbar-x" data-awact="leave" title="Leave the site analysis" aria-label="Leave the site analysis">'+
+      '<svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8"/></svg></button></div>'+
+      (ch?'<div class="a3d-awchips" role="group" aria-label="The analyses">'+ch+'</div>':''));
+    var on=b.querySelector('.a3d-awchip.on'),row=b.querySelector('.a3d-awchips');   /* a phone's row: the one in focus in sight */
+    if(on&&row&&row.clientWidth&&(on.offsetLeft<row.scrollLeft||on.offsetLeft+on.offsetWidth>row.scrollLeft+row.clientWidth))row.scrollLeft=Math.max(0,on.offsetLeft-12);
+    return b;
+  }
+  /* ---- the left: the analyses in their groups ---- */
+  function bimAwRowState(a){
+    var D=bimDgState(),R=D.runs[a],n=R?bimDgDiags(a).length:0;
+    if(!R)return {cls:' none',st:'Not run'};
+    var SC=bimDgStdChanged(a);
+    if(SC.run.length||SC.data.length)return {cls:' stale',st:'Out of date'};
+    if(!n&&a!=='traffic')return {cls:' none',st:'Nothing'};
+    return {cls:'',st:''};
+  }
+  function bimAwListHtml(){
+    var f=bimAwFocusNow(),D=bimDgState(),h,P=A3D.objs.filter(bimIsProperty),st=bimSunSettings(),placed=bimSunNum(st.lat)&&bimSunNum(st.lon);
+    h='<div class="a3d-awl" data-awlist="1">'+
+      '<div class="a3d-awl-hd"><button type="button" class="a3d-awl-back" data-anzact="aw:leave" title="Back to Analyze: leave the site analysis">'+
+      '<svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 3.5 5.5 8 10 12.5"/></svg>Analyze</button>'+
+      '<span class="a3d-awl-ttl">Site analysis</span></div>'+
+      '<div class="a3d-awl-site">'+bimEsc(placed?bimSitePlaceText():'Not placed yet')+(P.length?'<br>'+bimEsc(P[0].name):'')+(D.last?' &middot; '+bimEsc(D.last.date):'')+
+      (D.last&&placed?' <button type="button" class="a3d-awl-again" data-anzact="aw:analyze"'+(A3D_SITERUN.busy?' disabled':'')+'>'+(A3D_SITERUN.busy?'Analyzing ...':'Analyze again')+'</button>':'')+'</div>'+
+      '<button type="button" class="a3d-awl-row a3d-awl-ov'+(f?'':' focus')+'" data-anzact="aw:focus:" aria-pressed="'+(!f)+'"><span class="a3d-awl-nm">Overview</span><span class="a3d-awl-st">The site and its context</span></button>';
+    BIM_AW_GROUPS.forEach(function(G){
+      h+='<div class="a3d-awl-grp" data-awgrp="'+G.id+'"><div class="a3d-awl-grphd">'+bimEsc(G.name)+'</div>';
+      G.an.forEach(function(a){
+        var A=bimDgAn(a),on=bimAwShown(a),rs=bimAwRowState(a),run=!!D.runs[a];
+        h+='<div class="a3d-awl-row'+(a===f?' focus':'')+(on&&a!==f?' add':'')+rs.cls+'" data-awrow="'+a+'">'+
+          '<input type="checkbox" class="a3d-awl-tick" data-anzact="aw:tick:'+a+'"'+(on?' checked':'')+(run?'':' disabled')+' aria-label="'+bimEsc((on?'Hide ':'Draw ')+A.name+(on?'':' with the one in focus'))+'">'+
+          '<i class="a3d-awl-sw" style="background:'+bimEsc(A.col)+'" aria-hidden="true"></i>'+
+          '<button type="button" class="a3d-awl-nm" data-anzact="aw:focus:'+a+'"'+(run?'':' disabled')+' aria-pressed="'+(a===f)+'">'+bimEsc(A.name)+'</button>'+
+          (rs.st?'<span class="a3d-awl-st">'+bimEsc(rs.st)+'</span>':'')+'</div>';
+      });
+      h+='</div>';
+    });
+    if(!D.last)h+='<div class="a3d-awl-empty">Nothing analysed yet: Analyze site, in Analyze, draws every analysis.</div>';
+    return h+'</div>';
+  }
+  /* ---- the right: the one analysis ---- */
+  function bimAwSec(t){return '<div class="a3d-awp-sec">'+bimEsc(t)+'</div>';}
+  function bimAwBtn(act,label,pri,off){return '<button type="button" class="a3d-anzbtn'+(pri?' pri':'')+'" data-awact="'+bimEsc(act)+'"'+(off?' disabled title="'+bimEsc(off)+'"':'')+'>'+bimEsc(label)+'</button>';}
+  function bimAwKeyHtml(rows){
+    if(!rows||!rows.length)return '';
+    return '<div class="a3d-awp-key">'+rows.map(function(r){
+      var stl=(r.kind==='line'||r.kind==='dash')?'color:'+r.col:'background:'+r.col;
+      if(r.tex)stl+=';'+bimDgTexCss(r.tex,r.ink);
+      return '<span class="a3d-awp-keyi"><i class="'+(BIM_DG_KEYCLS[r.kind]||'k-fill')+'" style="'+bimEsc(stl)+'"></i>'+bimEsc(r.name)+'</span>';}).join('')+'</div>';
+  }
+  /* a chart where the app has one: the winds' rose, the sun's paths */
+  function bimAwChart(a){
+    var C=A3D.site&&A3D.site.climate,Hh=C&&C.hourly,st=bimSunSettings();
+    try{
+      if(a==='wind'&&Hh&&Hh.wind&&Hh.wind.year&&Hh.wind.year.n){
+        var Wy=Hh.wind.year;
+        return '<div class="a3d-awp-chart">'+bimClbRoseSvg(Wy,true,'Wind rose, '+Hh.year)+'</div>'+
+          '<div class="a3d-awp-cap">'+bimEsc('From the '+BIM_CLIM_DIRS[Wy.prev]+' most often, '+bimClimFmt(Wy.mean,1)+' m/s on average; '+Hh.year+'\'s hours by direction and speed')+'</div>';
+      }
+      if((a==='sun'||a==='shadow')&&bimSunNum(st.lat)&&bimSunNum(st.lon)){
+        var sn=bimClbSunSvg(st.lat,st.lon,bimSunNum(st.tz)?st.tz:Math.round(st.lon/15));
+        return '<div class="a3d-awp-chart">'+sn.svg+'</div>'+
+          '<div class="a3d-awp-cap">'+bimEsc('Looking up: the centre overhead, the rim the horizon; the sun at '+bimClimFmt(sn.days[0].alt,0)+'\u00b0 at midsummer noon and '+bimClimFmt(sn.days[2].alt,0)+'\u00b0 at midwinter')+'</div>';
+      }
+    }catch(eC){console.warn('[BIM] The analysis chart could not be drawn',eC);}
+    return '';
+  }
+  /* the clock, for what moves */
+  function bimAwClockHtml(a){
+    var can=a==='traffic'?bimTrCanPlay():bimAnimFrame().any;
+    if(!can)return '';
+    return bimAwSec('Play')+'<div class="a3d-awp-acts">'+
+      bimAwBtn('anim:play',A3D_ANIM.on?'Pause':(A3D_ANIM.paused?'Go on':'Play'),!A3D_ANIM.on)+
+      bimAwBtn('anim:stop','Stop',false,A3D_ANIM.on||A3D_ANIM.paused?'':'Not playing')+'</div>';
+  }
+  function bimAwOverviewHtml(){
+    var D=bimDgState(),R=A3D_SITERUN,st=bimSunSettings(),placed=bimSunNum(st.lat)&&bimSunNum(st.lon),P=A3D.objs.filter(bimIsProperty),h,steps,n=0;
+    BIM_DG_AN.forEach(function(A){if(D.runs[A.id])n++;});
+    h='<div class="a3d-awp" data-awpanel="overview"><div class="a3d-awp-hd"><div><div class="a3d-awp-ttl">Overview</div><div class="a3d-awp-sub">Site analysis</div></div></div>'+
+      '<p class="a3d-awp-about">'+bimEsc(D.last?'The site and its context. Pick an analysis on the left: it is drawn alone, with its key; tick others to draw them under it.':
+        'Analyze site gets what is around the site from free open data and draws each analysis in the model.')+'</p>'+
+      '<div class="a3d-awp-rows"><div class="a3d-awp-r"><span>Place</span><b>'+bimEsc(placed?bimSitePlaceText():'Not placed yet')+'</b></div>'+
+      '<div class="a3d-awp-r"><span>Boundary</span><b>'+(P.length?bimEsc(P[0].name+', '+bimDispNum(bimPropertyGeometry(P[0]).area,1)+' m\u00b2'):'None yet')+'</b></div>'+
+      (D.last?'<div class="a3d-awp-r"><span>Analysed</span><b>'+bimEsc(D.last.date)+'</b></div><div class="a3d-awp-r"><span>Analyses</span><b>'+n+' of '+BIM_DG_AN.length+'</b></div>':'')+'</div>';
+    steps=R.steps.length?R.steps:((D.last&&D.last.steps)||[]);
+    if(steps.length)h+=bimAwSec('What it fetched')+'<ol class="a3d-awp-steps">'+steps.map(function(s){
+      return '<li class="'+(BIM_SITERUN_CLS[s.state]||'s-wait')+'"><span class="a3d-awp-dot" aria-hidden="true"></span><span class="a3d-awp-stn">'+bimEsc(s.name)+'</span><span class="a3d-awp-sts">'+bimEsc(BIM_SITERUN_WORD[s.state]||s.state)+'</span>'+
+        (s.text?'<span class="a3d-awp-stt">'+bimEsc(s.text)+'</span>':'')+'</li>';}).join('')+'</ol>';
+    h+='<div class="a3d-awp-acts">'+bimAwBtn('analyze',R.busy?'Analyzing ...':(D.last?'Analyze site again':'Analyze site'),true,R.busy?'Running':(placed?'':'Place the site first: Analyze, Site, Address'))+'</div>';
+    return h+'</div>';
+  }
+  function bimAwPanelHtml(){
+    var f=bimAwFocusNow();
+    if(!f)return bimAwOverviewHtml();
+    var A=bimDgAn(f),D=bimDgState(),R=D.runs[f],L=bimDgDiags(f),G=BIM_AW_GROUPS.filter(function(g){return g.an.indexOf(f)>=0;})[0],ed=L.filter(bimDgEdited).length,h,sx=R?bimDgStdText(f):'';
+    h='<div class="a3d-awp" data-awpanel="'+f+'"><div class="a3d-awp-hd"><i class="a3d-awp-sw" style="background:'+bimEsc(A.col)+'" aria-hidden="true"></i>'+
+      '<div><div class="a3d-awp-ttl">'+bimEsc(A.name)+'</div><div class="a3d-awp-sub">'+bimEsc((G?G.name:'Site analysis')+(R?' \u00b7 '+R.date:''))+'</div></div></div>'+
+      '<p class="a3d-awp-about">'+bimEsc(BIM_AW_ABOUT[f]||'')+'</p>';
+    if(f==='traffic'){
+      var s=bimTrSettings(),mv=bimMvOf();
+      h+=bimAwSec('Simulation')+'<div class="a3d-awp-acts">'+bimAwBtn('tr:sim:'+(s.on?'off':'on'),s.on?'Stop the simulation':'Simulate',!s.on,mv?'':bimMvWhyNot())+'</div>'+
+        '<div class="a3d-awp-tr">'+bimTrCardHtml()+'</div>';
+    }
+    h+=bimAwClockHtml(f);
+    h+=bimAwChart(f);
+    if(R&&R.legend&&R.legend.length)h+=bimAwSec('Key')+bimAwKeyHtml(R.legend);
+    h+=bimAwSec('What it shows')+'<div class="a3d-awp-rows"><div class="a3d-awp-r"><span>Drawn</span><b>'+bimEsc(R?bimSaN(L.length,'element')+(ed?', '+ed+' changed by you':''):'Not run yet')+'</b></div></div>';
+    if(R&&R.note)h+='<p class="a3d-awp-note">'+bimEsc(R.note)+'</p>';
+    if(R&&R.source)h+=bimAwSec('Source')+'<p class="a3d-awp-note">'+bimEsc(R.source)+'</p>';
+    if(sx)h+='<p class="a3d-awp-note a3d-awp-std">'+bimEsc(sx)+'</p>';
+    h+='<div class="a3d-awp-acts">'+bimAwBtn('dg:run:'+f,R?'Run again':'Run',false)+bimAwBtn('dg:select:'+f,'Select',false,L.length?'':'Nothing drawn yet')+
+      bimAwBtn('dg:reset:'+f,'Reset',false,R?'':'Not run yet')+'</div>';
+    return h+'</div>';
+  }
+  /* ---- what a press does, on the bar, the list or the panel ---- */
+  function bimAwAct(v){
+    v=String(v||'');
+    var i=v.indexOf(':'),c=i<0?v:v.slice(0,i),a=i<0?'':v.slice(i+1),r=false;
+    try{
+      if(c==='leave')r=bimAwLeave();
+      else if(c==='open')r=a?bimAwEnter(a):bimAwEnter();
+      else if(c==='panel'){var rp=document.getElementById('a3d-right');if(rp){rp.classList.toggle('open');refreshProps();}r=!!rp;}
+      else if(c==='focus')r=bimAwFocus(a||null);
+      else if(c==='tick')r=bimAwTick(a);
+      else if(c==='analyze'){bimSiteAnalyze('');r=true;}
+      else if(c==='dg'){r=bimDgAct(a);bimAwRefresh();}
+      else if(c==='tr'){r=bimTrAct(a);bimAwRefresh();}
+      else if(c==='anim'){
+        if(a==='play')r=bimAnimPlay(!A3D_ANIM.on);
+        else if(a==='stop'){r=bimAnimStop();}
+        bimAwRefresh();
+      }
+    }catch(eA){console.warn('[BIM] The site analysis',eA);a3dToast('That did not work - see the console');}
+    return r;
+  }
+  /* Properties' body answers the panel's buttons; wired once */
+  function bimAwWire(){
+    if(A3D_AW.wired||!el.propsbody)return;
+    A3D_AW.wired=true;
+    el.propsbody.addEventListener('click',function(ev){
+      if(!A3D_AW.on)return;
+      var t=ev.target&&ev.target.closest?ev.target.closest('[data-awact],[data-anzact]'):null;
+      if(!t||t.disabled||!el.propsbody.contains(t))return;
+      if(t.hasAttribute('data-awact'))bimAwAct(t.getAttribute('data-awact'));
+      else if(/^tr:/.test(t.getAttribute('data-anzact')))bimAwAct(t.getAttribute('data-anzact'));
+    });
+  }
+  /* WebGPU's clear, in the view's background */
+  function bimAwClear(){var b=bimAwBg();return {r:b[0],g:b[1],b:b[2],a:1};}
+  /* Properties' title, the analysis's while it is the panel; and the bar, as an undo or a selection leaves things */
+  function bimAwTitleSync(){
+    var t=document.getElementById('a3d-rpttl');
+    if(A3D_AW.on||document.getElementById('a3d-awbar'))bimAwBar();
+    if(!t)return;
+    var on=A3D_AW.on&&!objById(A3D.sel)&&!bimSelectedGrid();
+    t.textContent=on?'Analysis':'Properties';
+  }
   // ---- DXF (AutoCAD ASCII exchange format) ----
   var DXF_ACI={1:'#ff5555',2:'#e8d24a',3:'#5ac25a',4:'#4ac6c6',5:'#5a7fe0',6:'#c85ac0',7:'#d8d8d8',8:'#8a8a8a',9:'#bcbcbc'};
   var DXF_UNIT_SCALE={1:0.0254,2:0.3048,4:0.001,5:0.01,6:1,10:0.9144};
@@ -31618,7 +32108,7 @@ try{
     'fn clip(p:vec4f)->vec4f{var q=p;q.z=(q.z+q.w)*0.5;return q;}\n'+
     'struct MO{@builtin(position) p:vec4f,@location(0) uv:vec2f};\n'+
     '@vertex fn vsMap(@location(0) pos:vec3f,@location(1) uv:vec2f)->MO{var o:MO;o.p=clip(u.proj*u.view*vec4f(pos,1.0));o.uv=uv;return o;}\n'+
-    '@fragment fn fsMap(i:MO)->@location(0) vec4f{let c=textureSample(tx,smp,i.uv).rgb;return vec4f(mix(vec3f(0.114,0.125,0.141),c,m.color.a),1.0);}\n'+
+    '@fragment fn fsMap(i:MO)->@location(0) vec4f{let c=textureSample(tx,smp,i.uv).rgb;let g=mix(c,vec3f(dot(c,vec3f(0.299,0.587,0.114))),m.tile.w);return vec4f(mix(m.color.rgb,g,m.color.a),1.0);}\n'+   /* __acad3dV171b: color.rgb the ground, tile.w grey */
     'struct TO{@builtin(position) p:vec4f,@location(0) uv:vec2f,@location(1) k:f32};\n'+
     '@vertex fn vsTer(@location(0) pos:vec3f,@location(1) n:vec3f,@location(2) mc:vec2f)->TO{var o:TO;\n'+
     ' o.uv=(mc-m.tile.xy)*m.tile.z;o.k=0.5+0.5*abs(dot(normalize(n),u.light.xyz));o.p=clip(u.proj*u.view*vec4f(pos,1.0));return o;}\n'+
@@ -31697,7 +32187,7 @@ try{
       A3D_MAP.frame++;
       plan=bimMapPlan(V,W,H);
       if(plan.tiles.length){
-        out.mapPrm=put([0,0,0],plan.opacity,[0,0,1,1],[0,0,1,0]);
+        out.mapPrm=put(bimAwBg(),plan.opacity,[0,0,1,1],[0,0,1,bimAwLook()?bimAwLook().grey:0]);   /* __acad3dV171b */
         for(i=0;i<plan.tiles.length;i++){
           s=bimMapSource(plan.tiles[i],plan.tpl);tex=s?bimGpuTileTex(P,s.e):null;
           srcs.push(tex?s:null);
@@ -31729,10 +32219,10 @@ try{
             rec=P.terBufs[o.id]={key:D.key,vb:bimGpuBuf(dev,iv,GPUBufferUsage.VERTEX)};
           }
           sel=(o.id===A3D.sel||(A3D.selSet&&A3D.selSet.indexOf(o.id)>=0));
-          col=bimHexToRgb(sel?'#4ea1ff':(o.col||'#b08559'));
+          col=bimHexToRgb(sel?'#4ea1ff':(bimAwCtxCol(o)||o.col||'#b08559'));   /* __acad3dV171b */
           out.ter.push({vb:rec.vb,count:D.count,prm:put(col,1,[0,0,1,1],[0,0,1,0]),bg:S.dummyBg,drape:false});
           c={id:o.id,triangles:D.count/3,tiles:[],drawn:0,z:null};
-          if(plan.tiles.length&&D.ext){
+          if(plan.tiles.length&&D.ext&&!bimAwLook()){   /* __acad3dV171b: in the workspace, plain */
             tiles=bimDrapeTiles(D.ext,plan.z,BIM_MAP_STYLES[plan.style].maxz);
             c.z=tiles.length?tiles[0].z:null;
             for(j=0;j<tiles.length;j++){
@@ -31934,7 +32424,7 @@ try{
     }else dst=P.ctx.getCurrentTexture();
     var enc=dev.createCommandEncoder();
     var pass=enc.beginRenderPass({
-      colorAttachments:[{view:P.msaa.createView(),resolveTarget:dst.createView(),clearValue:{r:0.114,g:0.125,b:0.141,a:1},loadOp:'clear',storeOp:'discard'}],
+      colorAttachments:[{view:P.msaa.createView(),resolveTarget:dst.createView(),clearValue:bimAwClear(),loadOp:'clear',storeOp:'discard'}],
       depthStencilAttachment:{view:P.depth.createView(),depthClearValue:1,depthLoadOp:'clear',depthStoreOp:'discard'}});
     bimGpuSiteEncode(P,pass,site);
     pass.executeBundles(ALL);
@@ -32209,7 +32699,7 @@ try{
   }
   function bimLensCol(o){
     var c=bimLensCurrent();
-    return c.by?(c.col[o.id]||null):null;
+    return c.by?(c.col[o.id]||null):bimAwCtxCol(o);   /* __acad3dV171b: in the workspace the context's quiet tones */
   }
   function bimLensTitle(st){
     if(!st.by)return '';
@@ -32471,7 +32961,7 @@ try{
     var cx=bimLonToTileX((lo0+lo1)/2,z),cy=bimLatToTileY((la0+la1)/2,z),T=[],x,y;
     for(y=y0;y<=y1;y++)for(x=x0;x<=x1;x++)T.push({x:x,y:y,z:z,k:(x+0.5-cx)*(x+0.5-cx)+(y+0.5-cy)*(y+0.5-cy)});
     T.sort(function(a,b){return a.k-b.k;});
-    r.z=z;r.tiles=T;r.tpl=tpl;r.org=org;r.ground=g;r.opacity=st.opacity;r.extent=[lo0,la0,lo1,la1];r.mpp=mpp;
+    r.z=z;r.tiles=T;r.tpl=tpl;r.org=org;r.ground=g;r.opacity=st.opacity*(bimAwLook()?bimAwLook().fade:1);r.extent=[lo0,la0,lo1,la1];r.mpp=mpp;
     return r;
   }
   /* a tile's four corners on the model, at elevation y */
@@ -32550,15 +33040,15 @@ try{
     var vs=bimGlCompile(gl,gl.VERTEX_SHADER,'attribute vec3 aPos;attribute vec2 aUV;uniform mat4 uView;uniform mat4 uProj;varying vec2 vUV;'+
       'void main(){vUV=aUV;gl_Position=uProj*uView*vec4(aPos,1.0);}');
     /* the opacity mixes the tile toward the background, so no blending state is needed */
-    var fs=bimGlCompile(gl,gl.FRAGMENT_SHADER,'precision mediump float;uniform sampler2D uTex;uniform float uAlpha;varying vec2 vUV;'+
-      'void main(){vec3 c=texture2D(uTex,vUV).rgb;gl_FragColor=vec4(mix(vec3(0.114,0.125,0.141),c,uAlpha),1.0);}');
+    var fs=bimGlCompile(gl,gl.FRAGMENT_SHADER,'precision mediump float;uniform sampler2D uTex;uniform float uAlpha;uniform vec3 uBg;uniform float uGrey;varying vec2 vUV;'+
+      'void main(){vec3 c=texture2D(uTex,vUV).rgb;c=mix(c,vec3(dot(c,vec3(0.299,0.587,0.114))),uGrey);gl_FragColor=vec4(mix(uBg,c,uAlpha),1.0);}');   /* __acad3dV171b: the ground, and grey */
     if(!vs||!fs)return null;
     var p=gl.createProgram();
     gl.attachShader(p,vs);gl.attachShader(p,fs);gl.linkProgram(p);
     if(!gl.getProgramParameter(p,gl.LINK_STATUS)){console.warn('[BIM] map shader link failed: '+gl.getProgramInfoLog(p));return null;}
     G.map={prog:p,buf:gl.createBuffer(),pos:gl.getAttribLocation(p,'aPos'),uv:gl.getAttribLocation(p,'aUV'),
       view:gl.getUniformLocation(p,'uView'),proj:gl.getUniformLocation(p,'uProj'),
-      tex:gl.getUniformLocation(p,'uTex'),alpha:gl.getUniformLocation(p,'uAlpha')};
+      tex:gl.getUniformLocation(p,'uTex'),alpha:gl.getUniformLocation(p,'uAlpha'),bg:gl.getUniformLocation(p,'uBg'),grey:gl.getUniformLocation(p,'uGrey')};
     return G.map;
   }
   function bimMapTex(gl,e){
@@ -32597,6 +33087,7 @@ try{
       gl.uniformMatrix4fv(P.view,false,bimGlViewMatrix(V));
       gl.uniformMatrix4fv(P.proj,false,bimGlProjMatrix(W,H,A3D.flat,A3D.cam.dist));
       gl.uniform1f(P.alpha,plan.opacity);
+      var awM=bimAwBg(),awL=bimAwLook();gl.uniform3f(P.bg,awM[0],awM[1],awM[2]);gl.uniform1f(P.grey,awL?awL.grey:0);   /* __acad3dV171b */
       gl.activeTexture(gl.TEXTURE0);gl.uniform1i(P.tex,0);
       gl.depthMask(false);
       gl.bindBuffer(gl.ARRAY_BUFFER,P.buf);
@@ -32633,6 +33124,7 @@ try{
     if(plan.tiles.length){
       ctx.save();
       ctx.globalAlpha=plan.opacity;
+      if(bimAwLook())ctx.filter='grayscale(1)';   /* __acad3dV171b */
       for(i=0;i<plan.tiles.length;i++){
         var s=bimMapSource(plan.tiles[i],plan.tpl);
         srcs.push(s);
@@ -34644,7 +35136,7 @@ try{
       rec=bimTerrainGlMesh(G,T,o,org);
       if(!rec)continue;
       sel=(o.id===A3D.sel||(A3D.selSet&&A3D.selSet.indexOf(o.id)>=0));
-      col=bimHexToRgb(sel?'#4ea1ff':(o.col||'#b08559'));
+      col=bimHexToRgb(sel?'#4ea1ff':(bimAwCtxCol(o)||o.col||'#b08559'));   /* __acad3dV171b */
       gl.uniform3f(T.color,col[0],col[1],col[2]);
       gl.bindBuffer(gl.ARRAY_BUFFER,rec.pos);gl.vertexAttribPointer(T.pos,3,gl.FLOAT,false,0,0);
       gl.bindBuffer(gl.ARRAY_BUFFER,rec.nor);gl.vertexAttribPointer(T.norm,3,gl.FLOAT,false,0,0);
@@ -34653,7 +35145,7 @@ try{
       gl.drawArrays(gl.TRIANGLES,0,rec.count);
       c={id:o.id,triangles:rec.count/3,tiles:[],drawn:0,z:null};
       /* the map draped over it: each tile drawn over the whole surface, nothing outside the tile */
-      if(plan.tiles.length&&rec.ext){
+      if(plan.tiles.length&&rec.ext&&!bimAwLook()){   /* __acad3dV171b: in the workspace, plain */
         tiles=bimDrapeTiles(rec.ext,plan.z,BIM_MAP_STYLES[plan.style].maxz);
         c.z=tiles.length?tiles[0].z:null;
         gl.uniform1f(T.mode,1);gl.uniform1f(T.alpha,plan.opacity);
@@ -34686,7 +35178,7 @@ try{
       for(k=0;k<3;k++){w.push([tin.P[tr[k]][0],tin.H[tr[k]],tin.P[tr[k]][1]]);sp=toScreen(w[k],V,W,H);if(!sp)break;pts.push(sp);zs+=sp[2];}
       if(pts.length<3)continue;
       var n=faceNormal(w);if(n[1]<0)n=[-n[0],-n[1],-n[2]];
-      polys.push({o:o,pts:pts,z:zs/3,n:n,col:o.col||'#b08559',lock:!bimLayerPickable(o),la:bimLayerAlpha(o),terrain:true});
+      polys.push({o:o,pts:pts,z:zs/3,n:n,col:bimAwCtxCol(o)||o.col||'#b08559',lock:!bimLayerPickable(o),la:bimLayerAlpha(o),terrain:true});
     }
   }
   function bimGlRender(V,W,H){
@@ -34699,7 +35191,7 @@ try{
     gl.viewport(0,0,wDev,hDev);
     gl.enable(gl.DEPTH_TEST);
     gl.depthFunc(gl.LEQUAL);
-    gl.clearColor(0.114,0.125,0.141,1);
+    var awB=bimAwBg();gl.clearColor(awB[0],awB[1],awB[2],1);   /* __acad3dV171b: the workspace's ground */
     gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
     bimMapDrawGl(G,V,W,H);   /* __acad3dV132: the basemap, under everything */
     bimTerrainDrawGl(G,V,W,H);   /* __acad3dV137: the terrain in 3D, the map draped on it */
@@ -34818,11 +35310,11 @@ try{
     var glOn=(capMode||A3D.presentMode||bimPresentGraphics())?false:bimRender3D(V,W,H);   /* __acad3dV122; __acad3dV153: WebGPU or WebGL */
     if(capMode){ctx.fillStyle='#ffffff';ctx.fillRect(0,0,W,H);}
     else if(glOn){ctx.clearRect(0,0,W,H);}
-    else{ctx.fillStyle='#1d2024';ctx.fillRect(0,0,W,H);}
+    else{ctx.fillStyle=bimAwBgHex();ctx.fillRect(0,0,W,H);}   /* __acad3dV171b */
     if(!capMode){
       if(!glOn)bimMapDraw2D(ctx,V,W,H);   /* __acad3dV132: the basemap; with WebGL on it is drawn there */
       bimMapFooterSync();
-      ctx.strokeStyle='#282c31';ctx.lineWidth=1;ctx.beginPath();
+      ctx.strokeStyle=bimAwLook()?bimAwLook().grid:'#282c31';ctx.lineWidth=1;ctx.beginPath();   /* __acad3dV171b */
       for(i=-12;i<=12;i+=2){
         var g1=toScreen([i,0,-12],V,W,H),g2=toScreen([i,0,12],V,W,H);
         ctx.moveTo(g1[0],g1[1]);ctx.lineTo(g2[0],g2[1]);
@@ -52518,7 +53010,7 @@ try{
     'm:exportpng':'Export the view as a PNG image','m:exportpdf':'Export the plan as a PDF',
     'm:exportdxf':'Export the drawing as a DXF file','m:exportsvg':'Export the drawing as an SVG file'};
   /* AutoCAD's synonyms: the words a person might search for a command by, beyond its name */
-  var BIM_CMD_TERMS={TRAFFIC:'cars pedestrians walkers simulation signals queue junction delay',FILLET:'round rounded corner radius',CHAMFER:'bevel corner',ERASE:'delete remove',COPY:'duplicate clone',
+  var BIM_CMD_TERMS={SITEWORKSPACE:'analyses focus legend key workspace archimap forma diagram',TRAFFIC:'cars pedestrians walkers simulation signals queue junction delay',FILLET:'round rounded corner radius',CHAMFER:'bevel corner',ERASE:'delete remove',COPY:'duplicate clone',
     OFFSET:'parallel',TRIM:'cut clip shorten',EXTEND:'stretch longer',MIRROR:'flip reflect',ARRAYRECT:'grid pattern repeat rows columns',
     ARRAYPOLAR:'circular radial repeat',DIST:'distance length measure',DIMLINEAR:'dimension measure',MTEXT:'label note annotation words',
     TEXT:'label note annotation words',HATCH:'fill pattern poche',LAYER:'layers visibility',ZOOM:'fit extents all',UNDO:'back revert',
@@ -54397,9 +54889,10 @@ try{
     geoexport:function(){bimGeoExport();},
     context:function(){bimCtxFetch();},                          /* __acad3dV133 */
     siteanalysis:function(){bimAnzView();},                      /* __acad3dV158; __acad3dV162: Analyze is one list */
+    siteworkspace:function(){bimAwEnter();},                     /* __acad3dV171b: the analysis workspace */
     analyzesite:function(){bimAnzView();bimSiteAnalyze('');},   /* __acad3dV164 */
     animplay:function(){bimAnimPlay();},   /* __acad3dV170 */
-    traffic:function(){bimAnzView();bimSaGoto('access');bimTrCommand(true);},   /* __acad3dV171 */
+    traffic:function(){if(bimTrCommand(true))bimAwTraffic();else{bimAnzView();bimSaGoto('access');}},   /* __acad3dV171; __acad3dV171b: in focus in the workspace */
     trafficoff:function(){bimTrCommand(false);},
     climate:function(){bimBoardShow('climate');},                     /* __acad3dV162: the board's page in the set */
     zoning:function(){A3D_ZN.edit=true;bimSaGoto('legal');bimSaRefresh(true);},   /* __acad3dV160; __acad3dV162: in Legal */
@@ -56850,6 +57343,30 @@ try{
       if((i+1)%per===0)out.push([R.t,C.s[L]-C.len[L]-C.s[F],C.v[F]]);
     }
     return out;
+  };
+  /* __acad3dV171b: the analysis workspace, for the suite */
+  window.__acad3dV171b='workspace,enter,leave,focus,ticks,layers,undo,kept,afterrun,traffic,bar,list,panel,overview,chart,key,look,lightdark,ground,ctxtones,mapgrey,words,legendplace,dockhidden,toasttop,phone,chips,details,command,open,rowfit';
+  window.__a3dAw=function(){var S=bimAwState(),L=bimAwLook();
+    return {on:!!A3D_AW.on,focus:S.focus,add:S.add.slice(),now:bimAwFocusNow(),look:L?(L.light?'light':'dark'):null,bg:bimAwBgHex(),
+      shown:BIM_DG_AN.filter(function(A){return bimAwShown(A.id);}).map(function(A){return A.id;}),
+      run:BIM_DG_AN.filter(function(A){return !!bimDgState().runs[A.id];}).map(function(A){return A.id;})};};
+  window.__a3dAwEnter=function(f){return f===undefined?bimAwEnter():bimAwEnter(f);};
+  window.__a3dAwLeave=function(){return bimAwLeave();};
+  window.__a3dAwFocus=function(a){return bimAwFocus(a);};
+  window.__a3dAwTick=function(a){return bimAwTick(a);};
+  window.__a3dAwCtxCol=function(id){var o=objById(id);return o?bimAwCtxCol(o):null;};
+  window.__a3dAwInk=function(c){return bimAwInk(c);};
+  window.__a3dAwSel=function(){return (A3D.selSet||[]).slice();};
+  window.__a3dAwMvLight=function(){return bimMvLight();};
+  window.__a3dAwGroups=function(){return BIM_AW_GROUPS.map(function(G){return {id:G.id,name:G.name,an:G.an.slice()};});};
+  /* the older suites' view of a run: out of the workspace, each analysis shown as a run showed it before V171b */
+  window.__a3dAwClassic=function(){
+    if(A3D_AW.on)bimAwLeave();
+    var D=bimDgState(),n=0;
+    BIM_DG_AN.forEach(function(A){var ly=bimLayerById(D.layers[A.id]);if(ly&&D.runs[A.id]&&(ly.visible!==false)!==!A.hidden){ly.visible=!A.hidden;n++;}});
+    var S=bimAwState();S.focus=null;S.add=[];
+    if(n)bimLayerChanged();
+    return n;
   };
 }catch(e){
   window.__a3dErr=String(e&&e.message||e);

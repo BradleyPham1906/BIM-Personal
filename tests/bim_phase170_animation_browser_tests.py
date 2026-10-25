@@ -128,6 +128,7 @@ async def run():
             for _ in range(240):
                 s = await safe("()=>window.__a3dSiteRunState()", pg=pg) or {}
                 if not s.get('busy'):
+                    await safe("()=>window.__a3dAwClassic&&window.__a3dAwClassic()", pg=pg)   # V171b: a run ends in the analysis workspace with none shown; this suite reads each analysis as a run drew it before
                     return s
                 await pg.wait_for_timeout(250)
             raise Stalled('the run did not end')

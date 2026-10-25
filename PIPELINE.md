@@ -17,11 +17,11 @@ requires command mapping, full app regressions and owner review.
 
 **Read this first in a new session.** One page. The detail lives in the docs listed at the bottom.
 
-    canvas_v10.html   3538478 bytes
-    sha256            c77eb5aa6d0bca806ff31b4a7b8bb68b8f1dd5b4846ecbd35968e186a3ba92ab
+    canvas_v10.html   3575862 bytes
+    sha256            bb5bd5879e9a580e7178e274a83b2ec0421f24c4238cc9b6e5bef2bb8abcae13
     markers           __acad3dV60 ... __acad3dV171, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
-                      __acad3dV121b, __acad3dV166b, __acad3dV166c, __acad3dV166d
-    tests             130 suites, 6537 checks, 0 failures (the 129 older suites' 6428 and V171's 109; with cjval
+                      __acad3dV121b, __acad3dV166b, __acad3dV166c, __acad3dV166d, __acad3dV171b
+    tests             131 suites, 6625 checks, 0 failures (the 130 older suites' 6537 and V171b's 88; with cjval
                       built, V139 and V140 run their three more)
 
     The user guide (V142): every phase updates docs/src/, its log entry and BIM_APP_VERSION, then
@@ -42,7 +42,7 @@ requires command mapping, full app regressions and owner review.
     three checks.
 
     The source is src/, by feature (2026-10-25, CLAUDE.md "The source"): the page, 11 CSS files and
-    the engine's 172 files in feature folders. tools/build_app.py joins it into canvas_v10.html, the
+    the engine's 174 files in feature folders. tools/build_app.py joins it into canvas_v10.html, the
     build above, byte for byte; --check fails when they differ. Pages serves the same app as
     separate files (tools/check_site.py proves they run alike).
 
@@ -139,6 +139,7 @@ three tiers: compact up to 720 px wide or 500 px high, medium up to 1024 px, des
 | 169 | Assets: people, cycles, vehicles, parking and trees | **Done** (see Recently finished): thirteen models in Assets for scale and the simulations, each built from its parameters and the standards registry (a new area, Assets, eleven topics): a man, a woman, a child of 8 and a seated person at NCHS's mean heights with NASA's proportions (eyes, shoulders), a wheelchair user at the Access Board's measured sizes within ADA's clear floor space, its turning space on the plan; LTN 1/20's cycle and Sheffield stand; Manual for Streets' bay; AASHTO's P, SU-30 and CITY-BUS from the Green Book's 7th Edition (the owner's copy), each with its turning path on the plan, left or right; broadleaf and conifer trees by the Urban Tree Database's types; a deciduous tree bare out of the site's growing season (ETCCDI's GSL from the climate), its trunk alone casting a shadow; the context's mapped trees by their leaf tags, needle-leaved ones cones; a standards change rebuilding every placed asset. Not yet: turning templates through an angle, glTF models | The owner (V166): "do we have asset designed yet ... trees, building shape, human, bike, car for later simulations?" `reference/research-assets.md`. |
 | 170 | Animated site analysis | **Done** (see Recently finished): one clock for every analysis, still until Play; Pause keeps the moment, Stop gives the still drawing back; the app opens still, and pauses where the device asks for reduced motion while it plays; the clock waits while the page is hidden. Marching dashes along the water's flows, the views, the vehicle entries and the routes (as drawn) and along the walks, the ways to daily needs and the stops (away from the site); the winds drawn on, tail to tip; the 100 m rings growing outward as one ripple; the layers coming in one after another at each Play; the sun along its path from sunrise to sunset of the study's day, with one shadow at its moment, the sun study in plan on the same clock, the project's time unchanged. Motion a style of each element (Properties, Motion), kept when the analysis runs again. Play, Pause and Stop in the status bar, first and as icons on a phone or tablet; PLAY. Save image with the 3D model (it had the overlay only). No video and no batch stills (the owner) | `reference/research-animation.md` (9, as built). V171's traffic and pedestrians draw with the same clock. |
 | 171 | Simulation S1: traffic and pedestrians around the site | **Done** (see Recently finished): Traffic and people in Analyze's Access, on V170's clock (`TRAFFIC`): V166's streets within 300 m, lanes capped by a mapped width; cars by the IDM (the authors' standard car at the street's speed) and MOBIL, entering where there is room, seeing the next line, taking an amber only when they reach their line in it, keeping a signal clear, turning left after the oncoming inside the junction, claiming the lane they go into; each mapped signal's own assumed plan (Webster's cycle held between 60 and 120 s, Kell and Fullerton's yellow and red clearance, every green at least WALK and the crossing at 3.5 ft/s), all-way stops, stops on one approach, right of way as SUMO gives it; each street's typical traffic by class at Florida's 9%, half each way, turns by NCHRP 255 with no exit drawing more than its junction's busiest way in, a ramp its quieter end's; the design's trips by San Diego's rates from its usages; walkers at Helbing and Molnar's speeds over the junctions' corners, crossing only where a crossing is, on green at a signal, cars giving way on their half; typed-array pools by quality (Light, Normal, Detailed, from the device); drawn in plan and 3D; Run lays the plans, the entry's queue, the doors' people and the junctions' delays. Not a calibrated model, and said. Not yet: protected lefts and turn lanes, crossings between junctions, left-hand traffic, offsets between signals | The owner chose to build on valdrada's methods inside the app (`reference/research-valdrada.md`), credited; none of its code is in the build. `reference/research-traffic.md` (8, 9). |
+| 171b | The analysis workspace | **Done** (see Recently finished): the site analysis as a place one goes into and leaves, as archiMap and Forma show theirs; Analyze site ends in it; a bar over the view names the analysis in focus; the 23 analyses on the left in six groups, one in focus drawn alone, others ticked under it (the layers' visibility, one undo step); the one analysis on the right where Properties is (its sentence, settings, Play, chart, key, source, standards, Run again, Select, Reset); the view quiet in the app's light or dark mode (ground, map greyed and faded, context in the mode's tones, words and key); the drawing tools put away; a phone's chips and Details; `SITEWORKSPACE` | `reference/research-analysis-workspace.md`; the owner, 2026-10-25: the look follows the mode, one analysis at a time. |
 | 172 | Site analysis SA5: tools and synthesis, ArcGIS's way | **Start here.** One pane for every analysis tool (typed parameters checked as filled, Run, messages, History to rerun from, results as layers); buffer, distance, slope classes, exclusions, weighted suitability in Esri's four steps (criteria, transform, weight, locate); the constraints and opportunities map; the buildable area; sun hours on the GPU; each tool a guide page in one template (summary, usage, parameters, how it works) | `reference/research-arcgis-site-analysis.md` (1). |
 | 173 | Site analysis SA6: the Contents pane | The layer stack by drawing order, by source and by selection, a legend patch under each layer; symbology (by category, graduated, stretch), labels and a filter (definition query); the stack exploded in 3D as McHarg's layer cake | ArcGIS Pro's Contents pane. |
 | 174 | Presentation P1: boards | V162 made the site analysis's boards pages of the set; this phase is boards you design. New Layout's page gallery (ANSI, Architectural, ISO, portrait and landscape); map frames with a live legend, north arrow and scale bar. A board is a sheet you design on: one layer tree (frames, groups, lock, hide, reorder), opacity and blend modes on every element (canvas compositing, the same 16 modes as Figma), masks, shapes, text, images; align, distribute, smart spacing; rows and columns that space their children (a light auto layout) | Figma's layer model. `reference/research-presentation-panels.md` (1). |
@@ -221,7 +222,22 @@ when it starts (V111 to V138 went to other work; V139 to V193 are in NOW).
 | 118 | Blocks and data | ATTDEF ATTEDIT BEDIT WBLOCK DATAEXTRACTION TABLESTYLE TABLEDIT TABLEEXPORT | First phase that's about the disciplines, not drafting. BLOCK and INSERT landed in V124, as the Assets library's blocks: saved records inserted as independent copies. A block reference that follows its definition (what BEDIT edits) is not built. |
 | 119 | Sheets and plotting, rest | MVIEW (draw a viewport on the paper) PAGESETUP (plot settings beyond Sheet Setup) PUBLISH (V122's Print set prints every sheet in one job; a chosen subset and page setups remain) EXPORTPDF (vector PDF of a sheet) VPLAYER (per-viewport layer visibility) viewport lock | LAYOUT, MSPACE and PSPACE landed in V116, with layout tabs and model space through a viewport. |
 
-**Recently finished:** Phase 171 (V171), **traffic and people around the site**.
+**Recently finished:** V171b, **the analysis workspace** (2026-10-25, after V171 merged).
+- The owner, with archiMap's video and Forma's microclimate analysis: their layout clean and professional, ours a
+  mess when analysing and simulating. The owner's two decisions: the look follows the app's light or dark mode; one
+  analysis at a time, others ticked under it. Research: `reference/research-analysis-workspace.md`.
+- **The workspace:** Analyze site ends in it; Open, `SITEWORKSPACE` and `TRAFFIC` open it; a bar over the view names
+  the analysis in focus, its cross leaves. The 23 analyses on the left in six groups, one in focus drawn alone, others
+  ticked under it (the layers' visibility, one undo step); the one analysis on the right where Properties is (its
+  sentence, settings, Play, chart, key, source, standards, Run again, Select, Reset).
+- **The view quiet in the mode:** the ground, the map greyed and faded, the context in the mode's tones, the words and
+  the key in its colours, the key at the bottom left; the drawing tools put away. A phone: the view in sight, chips,
+  Details.
+- **Checked** in 88 checks, the look read back from the view's pixels; broken 47 ways, all 47 caught on the final
+  build (the first run missed four: two dead pieces removed, two checks added). The older suites that read a run's
+  analyses leave the workspace when a run ends. The full regression: 131 suites, 6625 checks, all passed.
+
+**Before it:** Phase 171 (V171), **traffic and people around the site**.
 - The owner's choices (2026-10-25), each as the research proposed: each junction's own signal plan; the authors'
   standard car at the street's speed; Florida's 9% on the typical traffic by class, turns by NCHRP 255; the lot's
   trips by San Diego's rates from its usages. Then: go on without stopping for questions. The first phase built in

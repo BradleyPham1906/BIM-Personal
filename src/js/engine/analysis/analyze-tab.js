@@ -227,6 +227,7 @@
     return h+'<div class="a3d-anzempty" hidden>Nothing matches</div>';
   }
   function bimAnalyzeHtml(){
+    if(A3D_AW.on)return bimAwListHtml();   /* __acad3dV171b: the workspace's analyses */
     var C=bimAnzCards();
     return '<div class="a3d-anz a3d-sa"><div class="a3d-anzhead"><span class="a3d-anzttl0">Analyze</span><span class="a3d-anzcount">'+bimAnzCountText(C)+'</span></div>'+
       '<input type="search" class="a3d-anzsearch" data-anzsearch="1" placeholder="Search analyses, data and findings" aria-label="Search Analyze" autocomplete="off" value="'+bimEsc(A3D_ANZ.q||'')+'">'+
@@ -289,6 +290,7 @@
     if(!force&&a&&w.contains(a)&&/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)&&!a.hasAttribute('data-anzsearch')&&a.type!=='checkbox'&&a.type!=='file'){A3D_ANZ.pend=true;return false;}
     A3D_ANZ.pend=false;
     try{
+      if(A3D_AW.on){bimRenderInto(w,bimAwListHtml());return true;}   /* __acad3dV171b */
       var rows=w.querySelector('.a3d-anzrows'),cnt=w.querySelector('.a3d-anzcount'),C;
       if(rows&&cnt){C=bimAnzCards();bimRenderInto(rows,bimAnzBodyHtml(C));cnt.textContent=bimAnzCountText(C);}
       else w.innerHTML=bimAnalyzeHtml();
@@ -299,6 +301,7 @@
   /* a button: run it, or open its settings in Properties */
   function bimAnzAct(a){
     var k=String(a||''),g;
+    if(k.indexOf('aw:')===0)return bimAwAct(k.slice(3));   /* __acad3dV171b: the workspace */
     if(k.indexOf('open:')===0){
       g=k.slice(5);
       A3D.sel=null;A3D.sel2=null;A3D.selSet=[];
