@@ -15783,7 +15783,7 @@ car through a red, no walker starting late and no two cars in one place:
 
 ### Suites
 
-- **New:** `bim_phase171_traffic_browser_tests.py`, 108 checks, with `tests/traffic_fixture.py` (V166's
+- **New:** `bim_phase171_traffic_browser_tests.py`, 109 checks, with `tests/traffic_fixture.py` (V166's
   neighbourhood with two signals, an all-way stop, a stop on one approach, a mapped width and an on-ramp near the lot)
   and `tests/traffic_reference.py` (the IDM, the steady gap, the plans, NCHRP 255, San Diego's trips and the streets'
   traffic, worked from the sources). It checks the records against the sources; the IDM at 108 points and a follower
@@ -15800,11 +15800,13 @@ car through a red, no walker starting late and no two cars in one place:
     (V166's doors are the lot's); the variant is now `doors_unnamed`. `driveway_missed` (a driveway's end within
     0.5 m rather than 3 m) passed because the fixture's driveway ends inside the lot; the fixture's `shortdrive`
     ends it 2 m short of the lot line, and a check holds it the lot's entry. 109 checks.
+  - Run again on the final suite and build: 62 of 62 caught.
 - **Amended:** V167 (Traffic, before Climate, its ten topics, 43 applied, and their seven publishers), V62 (the
   seven hosts, linked and never fetched), V141, V148 and V162 (the new row in Access), V165 (its key after
   movement's), and V142, whose site check had compared the site's index.html with the one file since the source
   split: it now compares the one file with the build and the separate files with what src/ makes.
-- **The full regression:** REGRESSION
+- **The full regression:** the first, on the build before the layer started hidden, found the amendments above;
+  the last is below.
 
 ### Not done
 
@@ -15815,3 +15817,17 @@ car through a red, no walker starting late and no two cars in one place:
   checked.
 - Agents drawn with the model's depth in 3D: they are drawn over it, and said.
 - Calibration: no counts, each street its class's typical traffic, and said.
+
+### Full regression and state after V171
+
+130 suites, 6537 checks (the 129 older suites' 6428 and V171's 109; cjval is not built here, so V139 and V140 skip
+their three): 6536 passed in 466 s with 6 workers, from a frozen copy of the final build, suites and guide. The one
+failure, V166d's tap on Properties' width button, came under the load of six workers and passed alone, 50 of 50,
+on the same build. Patches 171a to 171c record, each asserting its base, the changes to the files V171 did not
+write; the simulation's seven files and its hooks are new in `src/`. The diff is ES5 and adds no non-ASCII character
+to the build.
+
+    canvas_v10.html   3538478 bytes
+    sha256            c77eb5aa6d0bca806ff31b4a7b8bb68b8f1dd5b4846ecbd35968e186a3ba92ab
+    markers           __acad3dV60 ... __acad3dV171, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
+                      __acad3dV121b, __acad3dV166b, __acad3dV166c, __acad3dV166d

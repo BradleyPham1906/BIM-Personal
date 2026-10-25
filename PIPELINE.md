@@ -17,12 +17,12 @@ requires command mapping, full app regressions and owner review.
 
 **Read this first in a new session.** One page. The detail lives in the docs listed at the bottom.
 
-    canvas_v10.html   3419691 bytes
-    sha256            993d632ab2273093d57432af765193d86a03d9c63603b8d73214893fec189029
-    markers           __acad3dV60 ... __acad3dV170, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
+    canvas_v10.html   3538478 bytes
+    sha256            c77eb5aa6d0bca806ff31b4a7b8bb68b8f1dd5b4846ecbd35968e186a3ba92ab
+    markers           __acad3dV60 ... __acad3dV171, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
                       __acad3dV121b, __acad3dV166b, __acad3dV166c, __acad3dV166d
-    tests             129 suites, 6431 checks, 0 failures (the 128 older suites' 6327 and V170's 104; with cjval
-                      built, V139 and V140 run all their checks)
+    tests             130 suites, 6537 checks, 0 failures (the 129 older suites' 6428 and V171's 109; with cjval
+                      built, V139 and V140 run their three more)
 
     The user guide (V142): every phase updates docs/src/, its log entry and BIM_APP_VERSION, then
     runs tools/dump_catalog.py and tools/build_docs.py. The V142 suite and the Pages workflow
@@ -221,7 +221,32 @@ when it starts (V111 to V138 went to other work; V139 to V193 are in NOW).
 | 118 | Blocks and data | ATTDEF ATTEDIT BEDIT WBLOCK DATAEXTRACTION TABLESTYLE TABLEDIT TABLEEXPORT | First phase that's about the disciplines, not drafting. BLOCK and INSERT landed in V124, as the Assets library's blocks: saved records inserted as independent copies. A block reference that follows its definition (what BEDIT edits) is not built. |
 | 119 | Sheets and plotting, rest | MVIEW (draw a viewport on the paper) PAGESETUP (plot settings beyond Sheet Setup) PUBLISH (V122's Print set prints every sheet in one job; a chosen subset and page setups remain) EXPORTPDF (vector PDF of a sheet) VPLAYER (per-viewport layer visibility) viewport lock | LAYOUT, MSPACE and PSPACE landed in V116, with layout tabs and model space through a viewport. |
 
-**Recently finished:** Phase 170 (V170), **the site analysis in motion**.
+**Recently finished:** Phase 171 (V171), **traffic and people around the site**.
+- The owner's choices (2026-10-25), each as the research proposed: each junction's own signal plan; the authors'
+  standard car at the street's speed; Florida's 9% on the typical traffic by class, turns by NCHRP 255; the lot's
+  trips by San Diego's rates from its usages. Then: go on without stopping for questions. The first phase built in
+  `src/` after the split; the simulation is its own folder, `src/js/engine/simulation/` (seven files).
+- **Cars** by the IDM and MOBIL on V166's streets within 300 m, entering where there is room, seeing the next line,
+  taking an amber only when they reach their line in it, keeping a signal clear, turning left inside the junction
+  after the oncoming, claiming the lane they go into; **signals** where mapped, each junction's assumed plan (Webster,
+  Kell and Fullerton, the least greens, WALK and the crossing), all-way stops, stops on one approach, right of way as
+  SUMO gives it; **demand** by class at Florida's K, turns by NCHRP 255 (no exit above its junction's busiest way in;
+  a ramp its quieter end's), the design's trips by San Diego's rates.
+- **Walkers** over the junctions' corners, crossing only where a crossing is, on green at a signal; cars give way on
+  their half.
+- **Light:** typed-array pools allocated once (Light 200 cars and 300 walkers, Normal 600 and 1,000, Detailed 1,500
+  and 3,000), the quality from the device; 0.14 ms a step at Light here.
+- **Traffic and people** in Analyze's Access (its row: Simulate, the peak hour, the quality, the speed), on V170's
+  clock; drawn in plan and 3D; Run lays the signals' plans, the entry's queue, the doors' people, the junctions' delays.
+  `TRAFFIC`, `TRAFFICOFF`. Ten standards topics in a new area, Traffic.
+- **Checked** in 109 checks against a Python reference worked from the sources; broken 62 ways, all 62 caught on the final suite (the first run missed
+  two, a dead filter and a tolerance the fixture never reached, each fixed). Found while building:
+  red runs at short links, an amber taken then lost, walkers across four lanes at a driveway, a motorway drawing 76%
+  of a junction, two cars in one place, a merging ramp with the way; each fixed (`research-traffic.md`, 9). The full
+  regression: 130 suites, 6537 checks, all passed (V166d's tap after a run alone);
+  V62, V141, V142, V148, V162, V165 and V167 amended.
+
+Phase 170 (V170), **the site analysis in motion**.
 - The owner's choices (2026-10-24): still until Play, with Pause; all four motions; no video and no
   batch of stills ("just image at the moment it captured"). Built while V169's checks ran, from a
   frozen copy (the owner: never idle on long checks).

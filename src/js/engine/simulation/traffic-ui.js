@@ -56,7 +56,7 @@
     var s=bimTrSettings(),R=A3D_TR.run,dq=bimTrDeviceQ(),h='',res=R?bimTrResults(R):A3D_TR.last;
     h+=bimTrSegBtns('Peak hour','peak',[['am','AM'],['pm','PM']],s.peak);
     h+=bimTrSegBtns('Quality','q',[['auto','Auto ('+BIM_TR_Q[dq].name+')'],['light','Light'],['normal','Normal'],['detailed','Detailed']],s.q);
-    h+=bimTrSegBtns('Speed','speed',[[1,'1×'],[4,'4×'],[16,'16×']],s.speed);
+    h+=bimTrSegBtns('Speed','speed',[[1,'1\u00d7'],[4,'4\u00d7'],[16,'16\u00d7']],s.speed);
     if(R){
       var C=R.c,W=R.w,TR=R.trips;
       h+='<div class="a3d-sacap" data-trlive="1">'+bimEsc(bimDispNum(Math.max(0,R.t-R.res.t0)/60,1)+' minutes of the '+(s.peak==='am'?'morning':'evening')+' peak after a '+bimStdSay('app.traffic','warm')+' warm-up: '+
