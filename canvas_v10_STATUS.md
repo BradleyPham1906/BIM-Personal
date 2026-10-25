@@ -15821,9 +15821,9 @@ car through a red, no walker starting late and no two cars in one place:
 ### Full regression and state after V171
 
 130 suites, 6537 checks (the 129 older suites' 6428 and V171's 109; cjval is not built here, so V139 and V140 skip
-their three): 6536 passed in 466 s with 6 workers, from a frozen copy of the final build, suites and guide. The one
-failure, V166d's tap on Properties' width button, came under the load of six workers and passed alone, 50 of 50,
-on the same build. Patches 171a to 171c record, each asserting its base, the changes to the files V171 did not
+their three): all 6537 passed in 633 s with 4 workers, from a frozen copy of the final build, suites and guide. (The
+run before it, on the build before the speed buttons' sign was escaped, passed 6536: V166d's tap on Properties' width
+button failed under the load of six workers and passed alone, 50 of 50.) Patches 171a to 171c record, each asserting its base, the changes to the files V171 did not
 write; the simulation's seven files and its hooks are new in `src/`. The diff is ES5 and adds no non-ASCII character
 to the build.
 

@@ -243,7 +243,7 @@ when it starts (V111 to V138 went to other work; V139 to V193 are in NOW).
   two, a dead filter and a tolerance the fixture never reached, each fixed). Found while building:
   red runs at short links, an amber taken then lost, walkers across four lanes at a driveway, a motorway drawing 76%
   of a junction, two cars in one place, a merging ramp with the way; each fixed (`research-traffic.md`, 9). The full
-  regression: 130 suites, 6537 checks, all passed (V166d's tap after a run alone);
+  regression: 130 suites, 6537 checks, all passed;
   V62, V141, V142, V148, V162, V165 and V167 amended.
 
 Phase 170 (V170), **the site analysis in motion**.
