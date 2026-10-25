@@ -238,6 +238,11 @@ async def run():
             await safe("()=>{Object.defineProperty(document,'hidden',{configurable:true,get:function(){return false;}});document.dispatchEvent(new Event('visibilitychange'));}")
             await page.wait_for_timeout(400)
             h3 = await anim()
+            for _ in range(26):   # a loaded machine may not draw two frames in 400 ms; bounded (V123)
+                if h3.get('t', 0) > h2.get('t', 0):
+                    break
+                await page.wait_for_timeout(100)
+                h3 = await anim()
             ck(h3.get('raf') is True and h3.get('frames', 0) > h2.get('frames', 0) and 0 < h3.get('t', 0) - h2.get('t', 0) <= 0.55,
                "shown again: it goes on from where it waited, no jump (%.3f s on)" % (h3.get('t', 0) - h2.get('t', 0)))
             await page.emulate_media(reduced_motion='reduce')
@@ -452,6 +457,18 @@ async def run():
             await at(0.33, -10)
             lb_b = [b for b in (await safe("()=>window.__a3dDgLabelBoxes()") or [])]
             ck(len(lb_b) < len(lb_a), "a ring's words wait until it is whole (%d words, then %d)" % (len(lb_b), len(lb_a)))
+            # each ring's own words, against the reference: none while it grows (falsify's final run)
+            bad, n_words = [], 0
+            for t in (0.33, 1.0, 1.7, 2.5):
+                await at(t, -10)
+                H_ = {h['id']: h for h in (await safe("()=>window.__a3dDgHits()") or [])}
+                for o, r in zip(RG, radii):
+                    k, nb = R.ring_k(t, r, rings), len((H_.get(o['id']) or {}).get('boxes') or [])
+                    if k < 1 and nb:
+                        bad.append((t, r, k, nb))
+                    if k >= 1:
+                        n_words += nb
+            ck(not bad and n_words > 0, "each ring's words only once it is whole, at four moments (%d words on whole rings; %s)" % (n_words, bad[:3]))
             await only([a for a in R.ANALYZE_ORDER if a != 'noise'])
             await page.wait_for_timeout(100)
             shown = [a for a in R.ANALYZE_ORDER if a != 'noise' and any(o['dg']['a'] == a for o in DG)]
@@ -477,6 +494,15 @@ async def run():
             await at(3.9, 0)
             z1 = await ink(s_full[0], s_full[1], 4)
             ck(z1 > z0 + 30, "on the canvas: the 100 m ring not there at the first moment, there once the compass is in (%s, %s)" % (z0, z1))
+            # lines that do not grow: nothing drawn at Play's first moment, all of it once revealed (falsify's final run)
+            await only(['needs'])
+            NE = [o['id'] for o in DG if o['dg']['a'] == 'needs']
+            await at(0.0, 0)
+            h0 = [h for h in (await safe("()=>window.__a3dDgHits()") or []) if h['id'] in NE]
+            await at(1.5, 0)
+            h1 = [h for h in (await safe("()=>window.__a3dDgHits()") or []) if h['id'] in NE]
+            ck(len(NE) >= 4 and len(h0) == len(NE) and all(h['segs'] == 0 and h['dots'] == 0 and not h['boxes'] for h in h0) and len(h1) == len(NE) and all(h['segs'] > 0 for h in h1),
+               "the ways to daily needs revealed in turn: none of their lines drawn at the first moment, every one once in (%d lines; %s then %s)" % (len(NE), sum(h['segs'] for h in h0), sum(h['segs'] for h in h1)))
             await only(R.ANALYZE_ORDER)
             pa = await safe("()=>{window.__a3dAnimAt(7,3);window.__a3dAnimStop();window.__a3dAnimPlay(true);var a=window.__a3dAnim();window.__a3dAnimPlay(false);return [a.t,a.playAt];}")
             ck(pa == [0, 0], "Play from still starts the clock and the reveal again at nothing (%s)" % pa)

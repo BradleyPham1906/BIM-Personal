@@ -157,5 +157,5 @@ same task, then lays the overlay over it, so the image has the model, the drawin
 Headless Chromium here has no WebGPU; the copy is the same from its canvas (`drawImage` of a WebGPU canvas before
 it is presented), checked on WebGL here.
 
-**Checked by** `tests/bim_phase170_animation_browser_tests.py` (102 checks) against `tests/animation_reference.py`,
+**Checked by** `tests/bim_phase170_animation_browser_tests.py` (104 checks) against `tests/animation_reference.py`,
 the design written out again in Python, and the canvas's own pixels; broken 83 ways by `Phase/falsify_phase170.py`.
