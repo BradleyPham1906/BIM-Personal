@@ -695,7 +695,7 @@
           drawSketchPath(ctx,V,W,H,pmSeg[pmK],o.y,(o.id===A3D.sel)?'#4ea1ff':lk.color,false,false,pmQ,null,lk);
         continue;
       }
-      drawSketchPath(ctx,V,W,H,o.pts,o.y,(o.id===A3D.sel)?'#4ea1ff':lk.color,(o.closed!==false),false,bimObjOffset(o),o.bulges,lk);
+      drawSketchPath(ctx,V,W,H,o.pts,o.y,(o.id===A3D.sel)?'#4ea1ff':(bimAwCtxCol(o)||lk.color),(o.closed!==false),false,bimObjOffset(o),o.bulges,lk);   /* __acad3dV171b */
     }
     /* __acad3dV90: preview the CURVE, not the chords. A rubber band that draws straight and
        commits curved is the interface disagreeing with the model. */

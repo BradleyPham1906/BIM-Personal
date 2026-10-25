@@ -50,7 +50,7 @@
     'm:exportpng':'Export the view as a PNG image','m:exportpdf':'Export the plan as a PDF',
     'm:exportdxf':'Export the drawing as a DXF file','m:exportsvg':'Export the drawing as an SVG file'};
   /* AutoCAD's synonyms: the words a person might search for a command by, beyond its name */
-  var BIM_CMD_TERMS={TRAFFIC:'cars pedestrians walkers simulation signals queue junction delay',FILLET:'round rounded corner radius',CHAMFER:'bevel corner',ERASE:'delete remove',COPY:'duplicate clone',
+  var BIM_CMD_TERMS={SITEWORKSPACE:'analyses focus legend key workspace archimap forma diagram',TRAFFIC:'cars pedestrians walkers simulation signals queue junction delay',FILLET:'round rounded corner radius',CHAMFER:'bevel corner',ERASE:'delete remove',COPY:'duplicate clone',
     OFFSET:'parallel',TRIM:'cut clip shorten',EXTEND:'stretch longer',MIRROR:'flip reflect',ARRAYRECT:'grid pattern repeat rows columns',
     ARRAYPOLAR:'circular radial repeat',DIST:'distance length measure',DIMLINEAR:'dimension measure',MTEXT:'label note annotation words',
     TEXT:'label note annotation words',HATCH:'fill pattern poche',LAYER:'layers visibility',ZOOM:'fit extents all',UNDO:'back revert',

@@ -23,7 +23,7 @@
     }
     if(!blocks.length)return null;
     sr=bimSafeViewRect();   /* asked only with a key to place, as the other keys do: it warns when the chrome covers the view */
-    if(sr.w<620)return null;   /* a phone's view: each analysis's row in Analyze carries its key */
+    if(sr.w<(bimAwLook()?280:620))return null;   /* a phone's view: each analysis's row in Analyze carries its key; __acad3dV171b: in the workspace, the one in focus's on the view */
     ctx.save();
     try{
       var pad=8,rowH=15,sw=12,maxW=Math.round(Math.min(300,Math.max(170,sr.w*0.3))),inner=maxW-2*pad,j,b;
@@ -53,6 +53,7 @@
       if(LY.h>avail)LY=lay(false,blocks);
       while(LY.h>avail&&n<blocks.length-1){gone[drop[n++].i]=1;LY=lay(false,blocks.filter(function(bb){return !gone[bb.i];}));}
       LY.X=sr.x+sr.w-LY.w-12;LY.Y=Y;LY.all=blocks.length;
+      if(bimAwLook()){LY.X=sr.x+12;LY.Y=Math.max(sr.y+12,sr.y+sr.h-LY.h-12);}   /* __acad3dV171b: the workspace's, at the bottom left */
       return LY;
     }finally{ctx.restore();}
   }
@@ -64,19 +65,20 @@
     ctx.save();
     try{
       var sw=12,ops=LY.ops,w=LY.w,h=LY.h,X=LY.X,Y=LY.Y,i;
-      ctx.globalAlpha=1;ctx.fillStyle='rgba(22,26,32,0.9)';ctx.fillRect(X,Y,w,h);
-      ctx.strokeStyle='rgba(255,255,255,0.18)';ctx.lineWidth=1;ctx.strokeRect(X+0.5,Y+0.5,w-1,h-1);
+      var awK=bimAwLook();awK=awK?awK.key:null;   /* __acad3dV171b: in the mode's colours */
+      ctx.globalAlpha=1;ctx.fillStyle=awK?awK.bg:'rgba(22,26,32,0.9)';ctx.fillRect(X,Y,w,h);
+      ctx.strokeStyle=awK?awK.line:'rgba(255,255,255,0.18)';ctx.lineWidth=1;ctx.strokeRect(X+0.5,Y+0.5,w-1,h-1);
       ctx.beginPath();ctx.rect(X,Y,w,h);ctx.clip();
       ctx.textBaseline='middle';ctx.textAlign='left';
       for(i=0;i<ops.length;i++){
         var op=ops[i],ox=X+op.x,oy=Y+op.y;
-        if(op.k==='t'){ctx.font='bold 11px sans-serif';ctx.fillStyle='#e8edf2';ctx.fillText(op.t,ox,oy);continue;}
-        if(op.k==='s'){ctx.font='10px sans-serif';ctx.fillStyle='#9aa7b4';ctx.fillText(op.t,ox,oy);continue;}
+        if(op.k==='t'){ctx.font='bold 11px sans-serif';ctx.fillStyle=awK?awK.ink:'#e8edf2';ctx.fillText(op.t,ox,oy);continue;}
+        if(op.k==='s'){ctx.font='10px sans-serif';ctx.fillStyle=awK?awK.sub:'#9aa7b4';ctx.fillText(op.t,ox,oy);continue;}
         var rr=op.r;ctx.strokeStyle=rr.col;ctx.fillStyle=rr.col;ctx.lineWidth=2;
         if(rr.kind==='fill'){ctx.globalAlpha=0.75;ctx.fillRect(ox,oy-5,sw,10);ctx.globalAlpha=1;if(rr.tex){var tk=bimDgTex(ctx,rr.tex,rr.ink);if(tk){ctx.fillStyle=tk;ctx.fillRect(ox,oy-5,sw,10);ctx.fillStyle=rr.col;}}}   /* __acad3dV168: tex */
         else if(rr.kind==='dot'){ctx.beginPath();ctx.arc(ox+sw/2,oy,4,0,2*Math.PI);ctx.fill();}
         else{ctx.setLineDash(rr.kind==='dash'?[4,3]:[]);ctx.beginPath();ctx.moveTo(ox,oy);ctx.lineTo(ox+sw,oy);ctx.stroke();ctx.setLineDash([]);}
-        ctx.font='11px sans-serif';ctx.fillStyle='#e8edf2';ctx.fillText(op.t,ox+sw+4,oy);
+        ctx.font='11px sans-serif';ctx.fillStyle=awK?awK.ink:'#e8edf2';ctx.fillText(op.t,ox+sw+4,oy);
       }
       A3D_DG.legend={box:[X,Y,w,h],blocks:LY.list.map(function(bb){return {title:bb.tt,rows:bb.drawn,src:bb.st||''};}),more:LY.all-LY.list.length,moreText:LY.mt,sources:LY.src};   /* what was drawn, as drawn */
     }catch(eL){console.warn('[BIM] The site analysis legend could not be drawn',eL);}

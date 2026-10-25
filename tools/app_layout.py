@@ -26,6 +26,7 @@ CSS = [
     ('workspace/components.css', '/* the panel scrolls, not the list in it: the search stays at its top while the list goes '),
     ('workspace/responsive.css', '@media(max-width:720px),(max-height:500px){\n.a3d-drawerbtn{display:inline-block}'),
     ('shell/top-bar-start.css', '/* ---- the top bar: the quick-access buttons and the project tabs. --a3d-top-h is its hei'),
+    ('site-analysis/workspace.css', '/* __acad3dV171b: the analysis workspace. Its bar over the view, the analyses on the left,'),
 ]
 
 ENGINE = [
@@ -109,6 +110,7 @@ ENGINE = [
     ('simulation/traffic-sim.js', '  /* ================= __acad3dV171: traffic and people around the site: the run ========='),
     ('simulation/traffic-draw.js', '  /* ================= __acad3dV171: traffic and people around the site: drawn ==========='),
     ('simulation/traffic-ui.js', '  /* ================= __acad3dV171: traffic and people around the site: the analysis ===='),
+    ('site-analysis/analysis-workspace.js', '  /* ================= __acad3dV171b: the analysis workspace ================='),
     ('io/import-dxf.js', '  // ---- DXF (AutoCAD ASCII exchange format) ----'),
     ('io/import-obj-stl.js', "  // ---- OBJ (Wavefront, Y-up - matches this engine's convention directly) ----"),
     ('io/import-ifc.js', '  // ---- IFC (STEP-text BIM format): subset covering IfcBuildingStorey + vertically-extru'),
@@ -200,6 +202,7 @@ ENGINE = [
     ('testing/hooks-assets-structure.js', '  /* __acad3dV124: the library, read and driven */'),
     ('testing/hooks-legacy.js', '  /* __acad3dV51: opening-propagation surface for the Phase 55b tests. */'),
     ('testing/hooks-traffic.js', '  /* __acad3dV171: traffic and people around the site, for the suite: the run driven step '),
+    ('testing/hooks-workspace.js', '  /* __acad3dV171b: the analysis workspace, for the suite */'),
     ('_end.js', '}catch(e){'),
 ]
 

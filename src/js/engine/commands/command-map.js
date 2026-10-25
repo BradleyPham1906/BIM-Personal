@@ -114,9 +114,10 @@
     geoexport:function(){bimGeoExport();},
     context:function(){bimCtxFetch();},                          /* __acad3dV133 */
     siteanalysis:function(){bimAnzView();},                      /* __acad3dV158; __acad3dV162: Analyze is one list */
+    siteworkspace:function(){bimAwEnter();},                     /* __acad3dV171b: the analysis workspace */
     analyzesite:function(){bimAnzView();bimSiteAnalyze('');},   /* __acad3dV164 */
     animplay:function(){bimAnimPlay();},   /* __acad3dV170 */
-    traffic:function(){bimAnzView();bimSaGoto('access');bimTrCommand(true);},   /* __acad3dV171 */
+    traffic:function(){if(bimTrCommand(true))bimAwTraffic();else{bimAnzView();bimSaGoto('access');}},   /* __acad3dV171; __acad3dV171b: in focus in the workspace */
     trafficoff:function(){bimTrCommand(false);},
     climate:function(){bimBoardShow('climate');},                     /* __acad3dV162: the board's page in the set */
     zoning:function(){A3D_ZN.edit=true;bimSaGoto('legal');bimSaRefresh(true);},   /* __acad3dV160; __acad3dV162: in Legal */

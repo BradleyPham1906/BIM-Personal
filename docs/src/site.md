@@ -69,7 +69,8 @@ height in Properties.
 
 ## Site analysis
 
-**Site analysis** is in the **Analyze** tab (`SITEANALYSIS` opens it). It starts with one button.
+**Site analysis** is in the **Analyze** tab (`SITEANALYSIS` opens it). It starts with one button, and its analyses are read
+in the analysis workspace.
 
 ### Analyze site
 
@@ -96,6 +97,33 @@ step as it goes:
 Each step reads Done, Partly (some of its sources down, each named), Failed (with the reason) or
 Skipped (with why). What fails leaves the rest standing. The whole run is **one undo step**.
 **Analyze site again** fetches everything again, and keeps what you changed in the diagrams.
+
+The run ends in the analysis workspace (below), with the site and its context and none of the analyses drawn yet.
+
+### The analysis workspace
+
+The analyses are read one at a time, in a workspace of their own, as archiMap and Forma show theirs. It opens when
+**Analyze site** ends, with **Open** on an analysis's row in Analyze or **Open the site analysis** under the site,
+and with `SITEWORKSPACE` (also `ANALYSISWORKSPACE`).
+
+- **The bar** over the view names the analysis in focus, with how many others are drawn under it; its cross
+  leaves the workspace, as **Analyze** at the top of the list does. What was drawn stays drawn when you leave.
+- **On the left, the analyses** in six groups: Site; Sun and wind; Views and noise; Land and water; Movement; Land.
+  Press a name and that analysis is drawn alone, with its key. Tick others to draw them under it; untick to take
+  them away. **Overview** draws none: the site and its context. **Analyze again** is beside the site's name.
+- **On the right, the analysis**, where Properties is while nothing is selected: what it shows, its settings
+  (Traffic and people's simulation), **Play** and **Stop** for what moves, its chart where there is one (the winds'
+  rose, the sun's paths looking up), its key in full, what the run said, the source and its date, the standards it
+  used, and **Run again**, **Select** and **Reset**. Select an element and Properties shows it, as anywhere.
+- **The view goes quiet** in the app's own mode, light or dark (the rail's **Appearance**): the ground in the
+  mode's colour, the map greyed and faded, the context's buildings, roads, water, green and terrain in the mode's
+  greys, so only the analysis keeps its colours. Its words and its key take the mode's colours, the key at the
+  view's bottom left. The drawing tools are put away until you leave.
+- **The focus and the ticks are the layers' visibility** under Layers > Site analysis, so Layers and the sheets
+  show the same. Each change is one undo step, and they are kept with the project. **Analyze site again** keeps
+  them.
+- **On a phone** the panel closes so the view stays in sight; the analyses are a row of chips under the bar, and
+  **Details** opens the analysis's panel.
 
 ### The analyses in the model
 
@@ -297,8 +325,9 @@ reduced motion while the analyses play, they pause. Sheets, prints and exports a
 ### Traffic and people
 
 **Traffic and people** (Analyze, Access) simulates cars and people on the streets within 300 m of the lot. Press
-**Simulate** in its row, or type `TRAFFIC` (also `TRAFFICSIM`, `PEDESTRIANS`): it plays on the same clock as the
-analyses in motion, so **Pause** keeps the moment and **Stop** gives the drawing back. `TRAFFICOFF` turns it off.
+**Simulate** in its row, or type `TRAFFIC` (also `TRAFFICSIM`, `PEDESTRIANS`), which opens it in the analysis
+workspace, in focus: it plays on the same clock as the analyses in motion, so **Pause** keeps the moment and
+**Stop** gives the drawing back, in its panel as in the status bar. `TRAFFICOFF` turns it off.
 It needs **Analyze site** to have fetched the streets (Access and people).
 
 - **The streets** are the ones Access and people found, cut where they leave the 300 m. Each has its lanes (a

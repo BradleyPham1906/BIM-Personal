@@ -102,9 +102,10 @@
   /* ---- drawing, in plan and in 3D ---- */
   function bimDgDrawText(ctx,t,x,y,col,sz,cap){
     ctx.font=(sz||11)+'px sans-serif';
-    ctx.lineWidth=3;ctx.strokeStyle=cap?'rgba(255,255,255,0.9)':'rgba(15,18,22,0.85)';ctx.lineJoin='round';
+    var awL=bimAwLook();   /* __acad3dV171b: the workspace's halo and ink */
+    ctx.lineWidth=3;ctx.strokeStyle=cap?'rgba(255,255,255,0.9)':(awL?awL.halo:'rgba(15,18,22,0.85)');ctx.lineJoin='round';
     ctx.strokeText(t,x,y);
-    ctx.fillStyle=cap?'#1d2329':(col||'#e8edf2');
+    ctx.fillStyle=cap?'#1d2329':(awL?bimAwInk(col):(col||'#e8edf2'));
     ctx.fillText(t,x,y);
     var w=ctx.measureText(t).width;
     return [x-(ctx.textAlign==='center'?w/2:(ctx.textAlign==='right'?w:0)),y-(sz||11)/2-2,w,(sz||11)+4];

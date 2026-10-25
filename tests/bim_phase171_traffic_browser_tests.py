@@ -115,6 +115,7 @@ async def run():
             """the lot and its design, then the site analysed with the fixture's neighbourhood"""
             pg = pg or page
             await safe("()=>window.__a3dEnter()", pg=pg)
+            await safe("()=>window.__a3dAwLeave&&window.__a3dAwLeave()", pg=pg)   # V171b: Analyze site again is Analyze's button
             await safe("""(a)=>{var o=window.__a3dState().objs.filter(function(x){return x.t!=='property'&&x.id!=='LOT'&&x.t!=='box';});
               o.push({id:'LOT',t:'sketch',name:'Lot',col:'#5ec4b8',pos:[0,0,0],pts:a,y:0,closed:true,layer:'layer-0'});
               window.__a3dTestSetObjs(o);window.__a3dPropertyFromSketch('LOT');}""", LOT, pg=pg)
@@ -132,6 +133,7 @@ async def run():
             for _ in range(240):
                 s = await safe("()=>window.__a3dSiteRunState()", pg=pg) or {}
                 if not s.get('busy'):
+                    await safe("()=>window.__a3dAwClassic&&window.__a3dAwClassic()", pg=pg)   # V171b: a run ends in the analysis workspace with none shown; this suite reads each analysis as a run drew it before
                     return s
                 await pg.wait_for_timeout(250)
             raise Stalled('the run did not end')
@@ -524,6 +526,7 @@ async def run():
             mt = ((obj.get('g') or {}).get('marks') or [{}])[0].get('t', '')
             P5 = ref_plan(net, jat(60, 0))
             ck(re.match(r'^Signal: \d+ s cycle', mt) and str(int(round(P5['C']))) in mt, "a signal's mark says its cycle (%s)" % mt)
+            await safe("()=>window.__a3dAwLeave&&window.__a3dAwLeave()")   # V171b: TRAFFIC opens the analysis workspace; its row is Analyze's
             await safe("()=>window.__a3dAnzView(true)")
             await safe("()=>window.__a3dAnzOpenAll(true)")
             await page.wait_for_timeout(400)

@@ -40,7 +40,7 @@
     'fn clip(p:vec4f)->vec4f{var q=p;q.z=(q.z+q.w)*0.5;return q;}\n'+
     'struct MO{@builtin(position) p:vec4f,@location(0) uv:vec2f};\n'+
     '@vertex fn vsMap(@location(0) pos:vec3f,@location(1) uv:vec2f)->MO{var o:MO;o.p=clip(u.proj*u.view*vec4f(pos,1.0));o.uv=uv;return o;}\n'+
-    '@fragment fn fsMap(i:MO)->@location(0) vec4f{let c=textureSample(tx,smp,i.uv).rgb;return vec4f(mix(vec3f(0.114,0.125,0.141),c,m.color.a),1.0);}\n'+
+    '@fragment fn fsMap(i:MO)->@location(0) vec4f{let c=textureSample(tx,smp,i.uv).rgb;let g=mix(c,vec3f(dot(c,vec3f(0.299,0.587,0.114))),m.tile.w);return vec4f(mix(m.color.rgb,g,m.color.a),1.0);}\n'+   /* __acad3dV171b: color.rgb the ground, tile.w grey */
     'struct TO{@builtin(position) p:vec4f,@location(0) uv:vec2f,@location(1) k:f32};\n'+
     '@vertex fn vsTer(@location(0) pos:vec3f,@location(1) n:vec3f,@location(2) mc:vec2f)->TO{var o:TO;\n'+
     ' o.uv=(mc-m.tile.xy)*m.tile.z;o.k=0.5+0.5*abs(dot(normalize(n),u.light.xyz));o.p=clip(u.proj*u.view*vec4f(pos,1.0));return o;}\n'+
@@ -119,7 +119,7 @@
       A3D_MAP.frame++;
       plan=bimMapPlan(V,W,H);
       if(plan.tiles.length){
-        out.mapPrm=put([0,0,0],plan.opacity,[0,0,1,1],[0,0,1,0]);
+        out.mapPrm=put(bimAwBg(),plan.opacity,[0,0,1,1],[0,0,1,bimAwLook()?bimAwLook().grey:0]);   /* __acad3dV171b */
         for(i=0;i<plan.tiles.length;i++){
           s=bimMapSource(plan.tiles[i],plan.tpl);tex=s?bimGpuTileTex(P,s.e):null;
           srcs.push(tex?s:null);
@@ -151,10 +151,10 @@
             rec=P.terBufs[o.id]={key:D.key,vb:bimGpuBuf(dev,iv,GPUBufferUsage.VERTEX)};
           }
           sel=(o.id===A3D.sel||(A3D.selSet&&A3D.selSet.indexOf(o.id)>=0));
-          col=bimHexToRgb(sel?'#4ea1ff':(o.col||'#b08559'));
+          col=bimHexToRgb(sel?'#4ea1ff':(bimAwCtxCol(o)||o.col||'#b08559'));   /* __acad3dV171b */
           out.ter.push({vb:rec.vb,count:D.count,prm:put(col,1,[0,0,1,1],[0,0,1,0]),bg:S.dummyBg,drape:false});
           c={id:o.id,triangles:D.count/3,tiles:[],drawn:0,z:null};
-          if(plan.tiles.length&&D.ext){
+          if(plan.tiles.length&&D.ext&&!bimAwLook()){   /* __acad3dV171b: in the workspace, plain */
             tiles=bimDrapeTiles(D.ext,plan.z,BIM_MAP_STYLES[plan.style].maxz);
             c.z=tiles.length?tiles[0].z:null;
             for(j=0;j<tiles.length;j++){
@@ -356,7 +356,7 @@
     }else dst=P.ctx.getCurrentTexture();
     var enc=dev.createCommandEncoder();
     var pass=enc.beginRenderPass({
-      colorAttachments:[{view:P.msaa.createView(),resolveTarget:dst.createView(),clearValue:{r:0.114,g:0.125,b:0.141,a:1},loadOp:'clear',storeOp:'discard'}],
+      colorAttachments:[{view:P.msaa.createView(),resolveTarget:dst.createView(),clearValue:bimAwClear(),loadOp:'clear',storeOp:'discard'}],
       depthStencilAttachment:{view:P.depth.createView(),depthClearValue:1,depthLoadOp:'clear',depthStoreOp:'discard'}});
     bimGpuSiteEncode(P,pass,site);
     pass.executeBundles(ALL);

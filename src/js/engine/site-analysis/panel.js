@@ -291,6 +291,7 @@
        refreshTree only would leave the bar naming an object that is no longer selected. */
     bimSyncStatusHint();
     bimAnalyzeRefresh();   /* __acad3dV141; __acad3dV162: the site analysis with it */
+    bimAwTitleSync();   /* __acad3dV171b */
     if(!el.propsbody)return;
     var o=objById(A3D.sel);
     var gP=o?null:bimSelectedGrid();   /* __acad3dV98 */
@@ -300,6 +301,7 @@
          reference tool does. "No object selected" wastes the panel exactly when a user is
          orienting themselves. Every field below is backed by state that already exists and is
          already persisted -- no new settings were invented to fill the space. */
+      if(A3D_AW.on){bimRenderInto(el.propsbody,bimAwPanelHtml());return;}   /* __acad3dV171b: the one analysis */
       bimRenderInto(el.propsbody,bimModelPropsHtml());   /* __acad3dV118 */
       return;
     }
