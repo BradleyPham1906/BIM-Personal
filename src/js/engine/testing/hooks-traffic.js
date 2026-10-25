@@ -12,7 +12,7 @@
       lot:R.N.lot,notes:R.N.notes,sigOff:R.N.sigOff,lanesCapped:R.N.lanesCapped,sw:R.N.sw,srcs:R.srcs.map(function(s){return {l:s.l,q:s.q,pend:s.pend};}),sinks:R.sinks.map(function(s){return {l:s.l,q:s.q};}),
       park:R.park.map(function(p){return {n:p.n,x:p.x,z:p.z,name:p.name,lot:!!p.lot};}),routes:R.routes.length,allocs:A3D_TR.allocs,acres:R.acres,uses:R.uses,
       stops:R.stops,edgeW:R.edgeW,lotQ:(R.lotQ||[]).length,
-      res:{t0:res.t0,spawned:res.spawned,exited:res.exited,lotIn:res.lotIn,lotOut:res.lotOut,blocked:res.blocked,red:res.red,redAt:res.redAt,walkBad:res.walkBad,lc:res.lc,carsCap:res.carsCap,walkCap:res.walkCap,
+      res:{t0:res.t0,na0:res.na0,spawned:res.spawned,exited:res.exited,lotIn:res.lotIn,lotOut:res.lotOut,blocked:res.blocked,red:res.red,redAt:res.redAt,walkBad:res.walkBad,lc:res.lc,carsCap:res.carsCap,walkCap:res.walkCap,
         doors:res.doors,q:res.q,del:bimTrArr(res.del),cw:bimTrArr(res.cw)}};
   }
   window.__a3dTrStart=function(){bimTrStop();var R=bimTrStart();return R?bimTrSummary(R):{err:'not started'};};
@@ -34,13 +34,13 @@
     if(!N){N=bimTrNet();if(N.err)return {err:N.err};bimTrDemand(N);}
     return {R:N.R,lot:N.lot,doors:N.doors,notes:N.notes,sigOff:N.sigOff,lanesCapped:N.lanesCapped,sw:N.sw,x:N.x,z:N.z,
       edges:N.edges.map(function(e){return {a:e.a,b:e.b,len:e.len,car:e.car,hw:bimTrHw(e.t),name:String(e.t.name||''),w:e.w,lanes:e.lanes,sw:e.sw,lot:!!e.lot,way:e.way,P:e.P};}),
-      links:N.links.map(function(l){return {i:l.i,e:l.e,a:l.a,b:l.b,len:l.len,lanes:l.lanes,v0:l.v0,w:l.w,ow:l.ow,q:l.q,base:l.base,name:l.name,rank:l.rank,rev:l.rev,jb:l.jb,ja:l.ja,arm:l.arm,armOut:l.armOut,lot:l.lot};}),
+      links:N.links.map(function(l){return {i:l.i,e:l.e,a:l.a,b:l.b,len:l.len,lanes:l.lanes,v0:l.v0,hw:l.hw,w:l.w,ow:l.ow,q:l.q,base:l.base,name:l.name,rank:l.rank,rev:l.rev,jb:l.jb,ja:l.ja,arm:l.arm,armOut:l.armOut,lot:l.lot};}),
       J:N.J.map(function(j){var tr={};Object.keys(j.tr).forEach(function(k){tr[k]=j.tr[k].map(function(t){return [t.o,t.p,t.ang,!!t.u];});});
         return {i:j.i,n:j.n,x:j.x,z:j.z,kind:j.kind,sig:j.sig,ins:j.ins,outs:j.outs,major:Object.keys(j.major).map(Number),stop:Object.keys(j.stop).map(Number),tie:!!j.tie,tr:tr,bnd:j.bnd,lot:j.lot,cw:j.cw,
           arms:j.arms.map(function(a){return {k:a.k,e:a.e,bear:a.bear,w:a.w,car:a.car,lin:a.lin,lout:a.lout,end:a.end};})};})};
   };
   window.__a3dTrCars=function(){var R=A3D_TR.run,C,o=[],c;if(!R)return [];C=R.c;for(c=0;c<C.n;c++)if(C.L[c]>=0)o.push([c,C.L[c],C.ln[c],C.s[c],C.v[c],C.k[c],C.tg[c],C.x[c],C.z[c],C.hx[c],C.hz[c],C.nx[c]]);return o;};
-  window.__a3dTrWalkers=function(){var R=A3D_TR.run,W,o=[],i;if(!R)return [];W=R.w;for(i=0;i<W.n;i++)if(W.R[i]>=0)o.push([i,W.R[i],W.p[i],W.v[i],W.x[i],W.z[i],W.cr[i],W.wait[i]]);return o;};
+  window.__a3dTrWalkers=function(){var R=A3D_TR.run,W,o=[],i;if(!R)return [];W=R.w;for(i=0;i<W.n;i++)if(W.R[i]>=0)o.push([i,W.R[i],W.p[i],W.v[i],W.x[i],W.z[i],W.cr[i],W.wait[i],W.v0[i]]);return o;};
   window.__a3dTrRoutes=function(){var R=A3D_TR.run;if(!R)return [];return R.routes.map(function(r){return {kind:r.kind,door:r.door,extra:r.extra,len:r.len,P:r.P,cr:r.cr};});};
   /* the cars on a link, front first, and what holds each: [car, lane, s, v, a, leader, next link, hold] */
   window.__a3dTrOnLink=function(l){
