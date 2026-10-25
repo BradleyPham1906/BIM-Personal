@@ -15599,3 +15599,100 @@ main's). The diff is ES5-clean and adds no non-ASCII character.
     sha256            55f7b5464bd58fbbe6286cb4d4e2ace62f86c173cce0c67dfcd96ec42fc4c7c3
     markers           __acad3dV60 ... __acad3dV169, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
                       __acad3dV121b, __acad3dV166b, __acad3dV166c, __acad3dV166d
+
+
+## Phase 170 (V170) - The site analysis in motion
+
+The owner (2026-10-19), after Archi Diagram: "it allows the analysis layer to be animated"; a phase of its
+own, before the traffic simulation, which will draw with the same clock. The research is
+`reference/research-animation.md` (2026-10-24), its section 9 the design as built. The owner's choices at its
+end (2026-10-24): still until Play, with Pause; all four motions; no video ("i dont need export motion. just on
+the app for visual") and no batch of stills ("just image at the moment it captured"). Built while V169's
+falsification and regression ran, from a frozen copy (the owner, 2026-10-24: never idle on long checks).
+
+### What was built (patches 170a to 170e)
+
+- **The clock (170a, 170b).** One clock for every animated element, run by requestAnimationFrame while playing
+  (so it waits while the page is hidden), at most 30 frames a second, its time the frames' own timestamps, a
+  slow frame moving it a tenth of a second at most. Still until Play; Pause keeps the moment; Play goes on from
+  it; Stop gives the still drawing back. The app opens still; the device asking for reduced motion while it
+  plays pauses it. Nothing it does is saved or undone. Sheets, prints and exports are drawn still.
+- **The four motions (170a).** On the diagram engine's elements (V164 to V168):
+  - marching dashes along the water's flow lines and exits, the view lines, the vehicle entries and the bus and
+    tram routes, as drawn, and along the walk-time streets, the ways to daily needs and to the stops and the
+    streets within a walk of them, away from the site, each line, pair of segments and polyline turned; a dashed
+    line's own dashes move, a solid line gets lighter (on a pale line darker) dashes over it;
+  - the winds drawn on, tail to tip, held, faded, one after another, their words when whole;
+  - the 100 m rings growing outward as one ripple, each ring left as the front passes it;
+  - at each Play from still, the shown analyses coming in one after another, in Analyze's order;
+  - the sun along its path on the sun paths' dome (now kept with the run) from sunrise to sunset of the study's
+    day, with its time, standing in for the sun now; one shadow, the model's, at its moment; the V107 sun study
+    in plan on the same clock. The project's date and time do not change; Properties shows them.
+- **Motion is a style (170b).** Each element's own, `s.anim`, in Properties as Motion: Default (its analysis's),
+  Still, or another its shape can take; one undo step; kept when the analysis runs again.
+- **Play, Pause, Stop (170b, 170d).** In the status bar after the view's buttons, shown when something can move;
+  first and as icons on a phone or a tablet, the level's caption giving them its room. `PLAY` (`ANIMATE`, `PAUSE`,
+  `MOTION`).
+- **Save image with the model (170c).** The view drawn and the 3D canvas (WebGPU or WebGL) copied in the same
+  task, the overlay over it: the model, the drawing and the motion as it stands. Before, the image had the overlay
+  only.
+- **Hooks (170c, 170e); V170.**
+
+### Found
+
+- **Save image lost the model** whenever the GPU drew it: the image was the overlay, clear where the model is
+  (found in the research, with a truck in a 3D view).
+- **The status bar ran past the screen** on a tablet held upright (768 px) and a tablet on its side (1024 by 768)
+  before V170; Play at its end would have been off the screen at 820 px too. On a phone and a tablet it comes
+  first, as an icon.
+- **The machine here draws about 16 frames a second** (software WebGL), under the 30 cap: the cap is checked by
+  feeding the clock exact frame times, not by watching it.
+
+### Suites
+
+- **New:** `bim_phase170_animation_browser_tests.py`, 104 checks, with `tests/animation_reference.py` (the design
+  written out again: each analysis's motion and way, the wind's cycle, the ripple, the reveal, the sun's sweep,
+  the dashes' colour, the dome). The suite runs V164's fixture analysis and checks each element's motion and way,
+  the clock in real time and fed exact frames, Pause, Stop pixel for pixel, a hidden page, reduced motion, the
+  canvas's own pixels for the dashes, the winds, the rings, the reveal and the shadow on each side of the sun,
+  the sun on its dome, Motion in Properties, Save image's file holding the model, a sheet drawn still, and a
+  phone, a tablet and a computer.
+- **Falsified by `Phase/falsify_phase170.py`:** 83 variants, each named for the check that should catch it.
+  - The first run was stopped at its 25th variant, five of them missed. `opens_playing` (the app opening paused)
+    passed because nothing in the suite reloaded a project; it now reloads one left playing. The other four
+    (`pause_keeps_running`, `resume_restarts`, `resume_reveals_again`, `hidden_runs`) passed because the suite
+    read the clock a task after it set it, by which time a frame had come and gone; it now sets and reads in the
+    same task.
+  - The second run caught 37 of its first 39, and two passed: `march_path_out` (a route marching away from the
+    site) and `march_lines_unturned` (each polyline left as drawn). The fixture's routes all have an arrowhead,
+    and none of its polylines marches by its analysis, so neither rule was reached. The suite now takes a route's
+    arrowhead off, and sets contour lines to march (each line turned or kept on its own).
+  - The third run caught 45 of its first 46, and `draw_under_unclipped` (a wind's fill no longer drawn on with it)
+    passed. The check's resting moment, 4.6 s, lay past the cycle's 4.5 s, at the next cycle's start, so the
+    unclipped fill showed at both moments compared. It now rests inside the cycle, and a second check looks halfway
+    along the arrow: nothing there while it grows, filled when held. 102 checks.
+  - The fourth run caught 81 of 83, and two passed: `ring_words_early` (a ring's words before it is whole) and
+    `reveal_over_off` (the lines not brought in at Play). The words check compared two counts that grow either way,
+    and the reveal check read a ring its own growth hides at the first moment. Each ring's words are now checked
+    against the reference, and the reveal on the ways to daily needs, which do not grow. The check that the clock
+    goes on when the page is shown again waited a fixed 400 ms, too short on a loaded machine; it now waits for the
+    clock, up to 3 s. 104 checks.
+  - Run again on the final suite: 83 of 83 caught.
+- **Amended:** none. Every older suite passed with V170 as it was.
+
+### Not done
+
+- WebGPU's copy is not tested here: headless Chromium has none. The copy is the same call on its canvas.
+- No video and no batch of stills: the owner's choice. What was read about MP4 and WebCodecs stays in the note.
+- The traffic simulation (V171) will draw with this clock.
+
+### Full regression and state after V170
+
+129 suites, 6431 checks (the 128 older suites' 6327 and V170's 104): 6431 passed in 798 s with 4 workers, from a
+frozen copy of the final build, suites and guide. Patches 170a to 170e rebuild the build byte for byte from
+`Phase/canvas_v10.html.bak_phase170_pre` (V169's build). The diff is ES5-clean and adds no non-ASCII character.
+
+    canvas_v10.html   3419691 bytes
+    sha256            993d632ab2273093d57432af765193d86a03d9c63603b8d73214893fec189029
+    markers           __acad3dV60 ... __acad3dV170, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
+                      __acad3dV121b, __acad3dV166b, __acad3dV166c, __acad3dV166d
