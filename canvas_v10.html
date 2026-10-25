@@ -19995,7 +19995,7 @@ try{
         v:[{n:'mean',v:1.34,u:'m/s',say:'the mean desired walking speed'},{n:'sd',v:0.26,u:'m/s',say:'its spread (standard deviation)'},{n:'cap',v:1.3,u:'x',say:'the most a walker goes, of its own speed'}]}]},
     {id:'sumo.rules',title:'Junctions and walkers in a simulation',pub:'Eclipse SUMO',kind:'method',area:'Traffic',use:'Traffic and people: giving way, and the walkers\' stripes',anywhere:true,
       eds:[{id:'sumo.rules.docs',name:'Eclipse SUMO\'s documentation (read October 2026)',pub:'',st:'current',where:'A simulator\'s rules, used anywhere',adopt:[{at:'*'}],
-        src:{t:'Eclipse SUMO\'s documentation: Simulation/Intersections, Networks/PlainXML (right of way), the junction model parameters, Simulation/Pedestrians (striping)',w:'a minor road keeps a time gap of at least 1 s to a priority car not yet in the junction (jmTimegapMinor); right of way to the two approaches ranked highest by priority, speed and lanes; on amber a car far away slows and one near goes; walkers in stripes of 0.65 m',u:'https://github.com/eclipse-sumo/sumo',lv:'S',read:'2026-10-24'},
+        src:{t:'Eclipse SUMO\'s documentation: Simulation/Intersections, Networks/PlainXML (right of way), the junction model parameters, Simulation/Pedestrians (striping)',w:'a minor road keeps a time gap of at least 1 s to a priority car not yet in the junction (jmTimegapMinor); right of way from the ways in: the two sharing the highest priority (then speed and lanes), or the one alone with the way in most nearly opposite it; on amber a car far away slows and one near goes; walkers in stripes of 0.65 m',u:'https://github.com/eclipse-sumo/sumo',lv:'S',read:'2026-10-24'},
         v:[{n:'gap',v:1,u:'s',say:'the time gap a minor road keeps to a priority car'},{n:'stripe',v:0.65,u:'m',say:'a walker\'s stripe across a sidewalk'}]}]},
     {id:'app.traffic',title:'The traffic simulation\'s own settings',pub:'This app',kind:'assumption',area:'Traffic',use:'Traffic and people: what no source gives',anywhere:true,
       eds:[{id:'app.traffic.1',name:'The app\'s traffic settings (V171)',pub:'',st:'current',where:'Anywhere',adopt:[{at:'*'}],
@@ -28709,7 +28709,7 @@ try{
     bf.pcs.forEach(function(q){var ql=Math.sqrt((q[2]-q[0])*(q[2]-q[0])+(q[3]-q[1])*(q[3]-q[1]));if(ql>bl){bl=ql;pc=q;}});
     var mx=(pc[0]+pc[2])/2,mz=(pc[1]+pc[3])/2,eb=-1,es=0,ed=Infinity,ek=0;
     for(i=0;i<N.edges.length;i++){
-      var g=N.edges[i];if(!g.car||bimTrHw(g.t)==='service')continue;
+      var g=N.edges[i];if(!g.car||g.lot)continue;   /* the frontage's own street, a service road too (V166 marks an alley's) */
       for(var q=1;q<g.P.length;q++){
         var ax=g.P[q-1][0],az=g.P[q-1][1],dx=g.P[q][0]-ax,dz=g.P[q][1]-az,l2=dx*dx+dz*dz,u=l2>1e-12?((mx-ax)*dx+(mz-az)*dz)/l2:0;u=Math.max(0,Math.min(1,u));
         var px=ax+u*dx,pz=az+u*dz,d2=(px-mx)*(px-mx)+(pz-mz)*(pz-mz);
@@ -28733,7 +28733,7 @@ try{
     var ln=N.x.length;N.x.push(lp[0]);N.z.push(lp[1]);
     var PD=[[at[0],at[1]],[lp[0],lp[1]]];
     N.edges.push({a:mid,b:ln,ids:[mid,ln],P:PD,C:bimTrPolyLen(PD),len:dl,t:{highway:'service',service:'driveway',oneway:'no',lanes:'2',sidewalk:'no'},car:true,way:-1,lot:true,prov:true});
-    N.lot={n:ln,prov:true,name:'Provisional entry from '+(bf.n||'the lot\'s street'),at:mid};
+    N.lot={n:ln,prov:true,name:'Provisional entry from '+(bf.n||'the '+bimAccStreetClass(bf)),at:mid};
   }
   /* ---- the junctions: arms, turns, right of way, stops and signals ---- */
   function bimTrJunctions(N,mv){

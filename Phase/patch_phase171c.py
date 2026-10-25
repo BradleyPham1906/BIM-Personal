@@ -2,7 +2,8 @@
 """V171c: what the first runs showed, in the files V171 did not write. The app's traffic settings gain how far ahead a
 car sees the next link's stop line (a short link before a signal is no surprise to it), and what a crossing costs a
 walker choosing its way: a signal's wait, and each lane crossed where nothing signals it; and the turn that is a left
-turn, which waits for the oncoming.
+turn, which waits for the oncoming. SUMO's record says right of way as it is built: from the ways in, the
+two sharing the highest class, or the one alone with the way in most nearly opposite it.
 
 Run from the repository root: python3 Phase/patch_phase171c.py
 """
@@ -10,7 +11,7 @@ import pathlib, sys
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 from p171 import begin, rep, done   # noqa: E402
 
-begin('6f0acd3e02810f2d6d07f7e0aba36f97af0b4c222ef3fe7e26efb452e1ef3fb4')   # after 171b and the simulation's own fixes
+begin('bf52714f0330d367999bc5ae21c57b7891b76947933966f874ac577ef0153208')   # after 171b and the simulation's own fixes
 
 rep('js/engine/standards/registry.js',
     "{n:'queue_v',v:2,u:'m/s',say:'a car slower than this is standing in a queue'},",
@@ -25,4 +26,7 @@ rep('js/engine/standards/registry.js',
 rep('js/engine/standards/registry.js',
     "'du/acre':[' an acre',' an acre']};   /* __acad3dV171 */",
     "'du/acre':[' an acre',' an acre'],deg:['\\u00b0','\\u00b0']};   /* __acad3dV171 */")
+rep('js/engine/standards/registry.js',
+    "right of way to the two approaches ranked highest by priority, speed and lanes;",
+    "right of way from the ways in: the two sharing the highest priority (then speed and lanes), or the one alone with the way in most nearly opposite it;")
 done()

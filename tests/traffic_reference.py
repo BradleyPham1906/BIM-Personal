@@ -49,7 +49,7 @@ KF_T, KF_A, KF_LV = 1.0, 10 * FT, 20 * FT   # Equation 5-2: t 1 s, a 10 ft/s2, a
 YELLOW = (3, 6)        # MUTCD 4F.17
 RED_MAX = 6            # MUTCD 4F.17
 WALK = 7               # MUTCD 4I.06
-CLEAR = 3.5 * FT       # MUTCD 4I.06, 3.5 ft/s
+CLEAR = 1.067          # MUTCD 4I.06, 3.5 ft/s (1.0668 m/s), as V161's record keeps it, to the mm a second
 MIN_GREEN = {'fast': 10, 'major': 7, 'minor': 4, 'local': 2}   # Table 5-3's lower values
 FAST = 40 * MPH        # km/h: a major arterial over 40 mph
 

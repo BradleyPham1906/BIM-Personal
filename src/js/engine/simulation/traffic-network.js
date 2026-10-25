@@ -163,7 +163,7 @@
     bf.pcs.forEach(function(q){var ql=Math.sqrt((q[2]-q[0])*(q[2]-q[0])+(q[3]-q[1])*(q[3]-q[1]));if(ql>bl){bl=ql;pc=q;}});
     var mx=(pc[0]+pc[2])/2,mz=(pc[1]+pc[3])/2,eb=-1,es=0,ed=Infinity,ek=0;
     for(i=0;i<N.edges.length;i++){
-      var g=N.edges[i];if(!g.car||bimTrHw(g.t)==='service')continue;
+      var g=N.edges[i];if(!g.car||g.lot)continue;   /* the frontage's own street, a service road too (V166 marks an alley's) */
       for(var q=1;q<g.P.length;q++){
         var ax=g.P[q-1][0],az=g.P[q-1][1],dx=g.P[q][0]-ax,dz=g.P[q][1]-az,l2=dx*dx+dz*dz,u=l2>1e-12?((mx-ax)*dx+(mz-az)*dz)/l2:0;u=Math.max(0,Math.min(1,u));
         var px=ax+u*dx,pz=az+u*dz,d2=(px-mx)*(px-mx)+(pz-mz)*(pz-mz);
@@ -187,7 +187,7 @@
     var ln=N.x.length;N.x.push(lp[0]);N.z.push(lp[1]);
     var PD=[[at[0],at[1]],[lp[0],lp[1]]];
     N.edges.push({a:mid,b:ln,ids:[mid,ln],P:PD,C:bimTrPolyLen(PD),len:dl,t:{highway:'service',service:'driveway',oneway:'no',lanes:'2',sidewalk:'no'},car:true,way:-1,lot:true,prov:true});
-    N.lot={n:ln,prov:true,name:'Provisional entry from '+(bf.n||'the lot\'s street'),at:mid};
+    N.lot={n:ln,prov:true,name:'Provisional entry from '+(bf.n||'the '+bimAccStreetClass(bf)),at:mid};
   }
   /* ---- the junctions: arms, turns, right of way, stops and signals ---- */
   function bimTrJunctions(N,mv){
