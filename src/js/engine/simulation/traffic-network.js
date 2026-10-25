@@ -148,7 +148,7 @@
     var L=N.L,i,best=null,bd=Infinity,cx=0,cz=0;
     if(L.ring){L.ring.forEach(function(p){cx+=p[0];cz+=p[1];});cx/=L.ring.length;cz/=L.ring.length;}else{cx=L.pt[0];cz=L.pt[1];}
     N.lotC=[cx,cz];
-    (mv.en||[]).forEach(function(d,q){if(bimAccLotDist(L,d[0],d[1])<=(L.ring?3:30))N.doors.push({i:N.doors.length,x:d[0],z:d[1],name:(d[3]||'')||('Entrance'+(d[2]&&d[2]!=='yes'?' ('+d[2]+')':'')),mapped:true});});
+    (mv.en||[]).forEach(function(d){N.doors.push({i:N.doors.length,x:d[0],z:d[1],name:(d[3]||'')||('Entrance'+(d[2]&&d[2]!=='yes'?' ('+d[2]+')':'')),mapped:true});});   /* the lot's doors, as V166 keeps them */
     if(!N.doors.length)N.doors.push({i:0,x:cx,z:cz,name:L.ring?'The lot':'The site',mapped:false});
     for(i=0;i<N.edges.length;i++){
       var e=N.edges[i];

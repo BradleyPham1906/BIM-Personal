@@ -42,8 +42,8 @@ VARIANTS = {
     'major_one_way': [("j.major[T[k].i]=1;", "j.tie=j.tie;")],   # Market Street's two ways in have the way
     'ramp_has_way': [("if(dd<=bd)", "if(dd<=180)")],   # where the ramp merges, the ramp gives way
     'uturn_anywhere': [("if(!T.length&&Lk.rev>=0&&!j.bnd&&!j.lot)", "if(Lk.rev>=0&&!j.bnd&&!j.lot)")],   # a car turns back only at a dead end
-    'driveway_missed': [("if(d<=3&&d<bd)", "if(d<=0.5&&d<bd)")],   # the lot's entry is its mapped driveway
-    'doors_far': [("(L.ring?3:30)", "(L.ring?30:30)")],   # the lot's two mapped doors
+    'driveway_missed': [("if(d<=3&&d<bd)", "if(d<=0.5&&d<bd)")],   # a driveway stopping 2 m short of the lot line is still the lot's entry
+    'doors_unnamed': [("name:(d[3]||'')||('Entrance'+(d[2]&&d[2]!=='yes'?' ('+d[2]+')':''))", "name:'Entrance'")],   # the lot's two mapped doors
     # ---- 4. the demand ----
     'volume_both_ways': [("return rc.u*bimStd('fdot.k','k')/100*0.5;", "return rc.u*bimStd('fdot.k','k')/100;")],   # each street's traffic, half each way
     'ramp_mainline': [("Lk.q=ramp.test(Lk.hw)?-1:bimTrLinkVolume(Lk);", "Lk.q=bimTrLinkVolume(Lk);")],   # the ramp carries its quieter end's

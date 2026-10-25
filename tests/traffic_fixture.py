@@ -11,7 +11,8 @@ within the reach (model metres, x east, z south, the lot at x 10..50, z -40..-10
 - an on-ramp from Market Street at x 120 up to the Expressway at (120, -60): a ramp's traffic is its quieter end's,
   and where it merges the main line has the way.
 
-Modes, besides V166's (nodrive, noiv, alliv, dense): 'nosig' leaves the signals out, 'nostop' the stops."""
+Modes, besides V166's (nodrive, noiv, alliv, dense): 'nosig' leaves the signals out, 'nostop' the stops,
+'shortdrive' ends the driveway 2 m short of the lot line (within the 3 m a driveway is the lot's)."""
 import json, pathlib, sys
 from urllib.parse import unquote
 
@@ -57,6 +58,10 @@ def overpass_tr(modes=()):
             e['nodes'].insert(k, RAMP_IDS[(float(x), float(z))])
             e['geometry'].insert(k, _g(x, z))
     E.append(MFX._way(9500101, RAMP, {'highway': 'motorway_link', 'oneway': 'yes'}))
+    if 'shortdrive' in modes:
+        for e in E:
+            if e['type'] == 'way' and e['id'] == 9500001:
+                e['geometry'][-1] = _g(40, -8)
     if 'nosig' not in modes:
         for x, z in SIGNALS:
             E.append(_node(x, z, {'highway': 'traffic_signals'}))

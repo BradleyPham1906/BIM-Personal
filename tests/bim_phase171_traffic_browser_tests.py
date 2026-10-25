@@ -541,6 +541,12 @@ async def run():
 
             # ---------------------------------------------------------------------------------
             print("\n-- 9. Without a driveway, without signals")
+            ST['tr'] = ('shortdrive',)
+            await setup()
+            n1 = await safe("()=>window.__a3dTrNet()") or {}
+            l1 = n1.get('lot') or {}
+            ck(l1.get('prov') is False and l1.get('name') == 'Driveway' and abs(n1['z'][l1['n']] + 8) < 0.6,
+               "a driveway stopping 2 m short of the lot line is still the lot's entry (within 3 m, as V166 reads it) (%s)" % l1)
             ST['tr'] = ('nodrive', 'nosig')
             await setup()
             n2 = await safe("()=>window.__a3dTrNet()") or {}

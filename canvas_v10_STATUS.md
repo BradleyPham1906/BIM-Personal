@@ -15794,9 +15794,24 @@ car through a red, no walker starting late and no two cars in one place:
   clock, Pause, the speed, Stop, undo, the quality and a frame's budget at Light; the drawing in plan and 3D on the
   canvas; Run's elements and the row; a lot with no driveway and no signal; a phone, a tablet and a computer; the
   quality each device suggests; a reload.
-- **Falsified by `Phase/falsify_phase171.py`:** FALSIFY
+- **Falsified by `Phase/falsify_phase171.py`:** 62 variants, each named for the check that should catch it.
+  - The first run caught 60 of 62. `doors_far` (a door 30 m off the lot counted as the lot's) passed because V166
+    already keeps only doors within 3 m of the lot: the simulation's own distance filter was dead code, and is gone
+    (V166's doors are the lot's); the variant is now `doors_unnamed`. `driveway_missed` (a driveway's end within
+    0.5 m rather than 3 m) passed because the fixture's driveway ends inside the lot; the fixture's `shortdrive`
+    ends it 2 m short of the lot line, and a check holds it the lot's entry. 109 checks.
 - **Amended:** V167 (Traffic, before Climate, its ten topics, 43 applied, and their seven publishers), V62 (the
   seven hosts, linked and never fetched), V141, V148 and V162 (the new row in Access), V165 (its key after
   movement's), and V142, whose site check had compared the site's index.html with the one file since the source
   split: it now compares the one file with the build and the separate files with what src/ makes.
 - **The full regression:** REGRESSION
+
+### Not done
+
+- Protected left phases and turn lanes: a left turn waits permissively, and a car turns from any lane.
+- Right-hand traffic only; crossings between junctions; offsets between signals; buses, cycles and trucks.
+- Conflicts inside a junction beyond the yields, the left turns and the lane claims.
+- The quality lowered when frames run long is in the build, not forced in the suite; the device's suggestion is
+  checked.
+- Agents drawn with the model's depth in 3D: they are drawn over it, and said.
+- Calibration: no counts, each street its class's typical traffic, and said.
