@@ -17,11 +17,11 @@ requires command mapping, full app regressions and owner review.
 
 **Read this first in a new session.** One page. The detail lives in the docs listed at the bottom.
 
-    canvas_v10.html   3538478 bytes
-    sha256            c77eb5aa6d0bca806ff31b4a7b8bb68b8f1dd5b4846ecbd35968e186a3ba92ab
+    canvas_v10.html   3575862 bytes
+    sha256            bb5bd5879e9a580e7178e274a83b2ec0421f24c4238cc9b6e5bef2bb8abcae13
     markers           __acad3dV60 ... __acad3dV171, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
-                      __acad3dV121b, __acad3dV166b, __acad3dV166c, __acad3dV166d
-    tests             130 suites, 6537 checks, 0 failures (the 129 older suites' 6428 and V171's 109; with cjval
+                      __acad3dV121b, __acad3dV166b, __acad3dV166c, __acad3dV166d, __acad3dV171b
+    tests             131 suites, 6625 checks, 0 failures (the 130 older suites' 6537 and V171b's 88; with cjval
                       built, V139 and V140 run their three more)
 
     The user guide (V142): every phase updates docs/src/, its log entry and BIM_APP_VERSION, then
@@ -222,7 +222,22 @@ when it starts (V111 to V138 went to other work; V139 to V193 are in NOW).
 | 118 | Blocks and data | ATTDEF ATTEDIT BEDIT WBLOCK DATAEXTRACTION TABLESTYLE TABLEDIT TABLEEXPORT | First phase that's about the disciplines, not drafting. BLOCK and INSERT landed in V124, as the Assets library's blocks: saved records inserted as independent copies. A block reference that follows its definition (what BEDIT edits) is not built. |
 | 119 | Sheets and plotting, rest | MVIEW (draw a viewport on the paper) PAGESETUP (plot settings beyond Sheet Setup) PUBLISH (V122's Print set prints every sheet in one job; a chosen subset and page setups remain) EXPORTPDF (vector PDF of a sheet) VPLAYER (per-viewport layer visibility) viewport lock | LAYOUT, MSPACE and PSPACE landed in V116, with layout tabs and model space through a viewport. |
 
-**Recently finished:** Phase 171 (V171), **traffic and people around the site**.
+**Recently finished:** V171b, **the analysis workspace** (2026-10-25, after V171 merged).
+- The owner, with archiMap's video and Forma's microclimate analysis: their layout clean and professional, ours a
+  mess when analysing and simulating. The owner's two decisions: the look follows the app's light or dark mode; one
+  analysis at a time, others ticked under it. Research: `reference/research-analysis-workspace.md`.
+- **The workspace:** Analyze site ends in it; Open, `SITEWORKSPACE` and `TRAFFIC` open it; a bar over the view names
+  the analysis in focus, its cross leaves. The 23 analyses on the left in six groups, one in focus drawn alone, others
+  ticked under it (the layers' visibility, one undo step); the one analysis on the right where Properties is (its
+  sentence, settings, Play, chart, key, source, standards, Run again, Select, Reset).
+- **The view quiet in the mode:** the ground, the map greyed and faded, the context in the mode's tones, the words and
+  the key in its colours, the key at the bottom left; the drawing tools put away. A phone: the view in sight, chips,
+  Details.
+- **Checked** in 88 checks, the look read back from the view's pixels; broken 47 ways, all 47 caught on the final
+  build (the first run missed four: two dead pieces removed, two checks added). The older suites that read a run's
+  analyses leave the workspace when a run ends. The full regression: 131 suites, 6625 checks, all passed.
+
+**Before it:** Phase 171 (V171), **traffic and people around the site**.
 - The owner's choices (2026-10-25), each as the research proposed: each junction's own signal plan; the authors'
   standard car at the street's speed; Florida's 9% on the typical traffic by class, turns by NCHRP 255; the lot's
   trips by San Diego's rates from its usages. Then: go on without stopping for questions. The first phase built in
