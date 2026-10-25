@@ -431,6 +431,7 @@
     drawRoomTags(ctx,V,W,H);       /* __acad3dV101 */
     drawTribAreas(ctx,V,W,H);          /* __acad3dV106 */
     drawStructResults(ctx,V,W,H);      /* __acad3dV125: the analysis display */
+    if(!capMode)bimTrDraw(ctx,V,W,H);  /* __acad3dV171: the cars and walkers, while the clock plays or holds a moment */
     drawDiagrams(ctx,V,W,H,'over');    /* __acad3dV164: the site analysis's lines, symbols and words */
     drawAreaPlan(ctx,V,W,H);           /* __acad3dV105b */
     drawSunPath(ctx,V,W,H);            /* __acad3dV107 */

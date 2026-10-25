@@ -163,9 +163,10 @@ async def run():
             # AMENDED FOR V165: the land and water analyses, contours, slope and aspect in Landform, flow, ponds and flood in Water
             # AMENDED FOR V166: movement's in Access and circulation, daily needs in People and place
             # AMENDED FOR V168: the land's, land use and figure-ground in Location, zoning around in Legal, green and trees in Ecology
+            # AMENDED FOR V171: Traffic and people in Access and circulation
             ck(G == {'location': ['dgframe', 'dglanduse', 'dgfigure'], 'legal': ['dgzoning'], 'landform': ['dgcontours', 'dgslope', 'dgaspect', 'survey', 'terrain', 'grading'], 'water': ['dgflow', 'dgponds', 'dgflood', 'rain'],
                      'climate': ['dgsun', 'dgshadow', 'dgwind', 'sun', 'sunhours', 'solar'], 'ecology': ['dggreen'],
-                     'risk': ['dgnoise'], 'access': ['dgstreets', 'dgcycling', 'dgtransit', 'dgwalk', 'dgvehicles'], 'people': ['dgviews', 'dgneeds'],
+                     'risk': ['dgnoise'], 'access': ['dgstreets', 'dgcycling', 'dgtransit', 'dgwalk', 'dgvehicles', 'dgtraffic'], 'people': ['dgviews', 'dgneeds'],
                      'model': ['lens', 'areas', 'lod', 'stats', 'structure']},
                "each analysis in its category, or in Model (%s)" % G)
             ck(all(not r['open'] and r['bodyH'] == 0 and r['aria'] == 'false' for r in R.values()), "every row starts closed: its body takes no room")
@@ -239,7 +240,7 @@ async def run():
             await page.keyboard.press('Escape')
             await page.wait_for_timeout(100)
             vis = [k for k, r in (await rows()).items() if not r['hidden']]
-            ck(len(vis) == 34 and await safe("()=>document.querySelector('.a3d-analyze-wrap [data-anzsearch]').value") == '', "Escape empties it: every row again")   # AMENDED FOR V164: 18 rows; AMENDED FOR V165: 24; AMENDED FOR V166: 30; AMENDED FOR V168: 34
+            ck(len(vis) == 35 and await safe("()=>document.querySelector('.a3d-analyze-wrap [data-anzsearch]').value") == '', "Escape empties it: every row again")   # AMENDED FOR V164: 18 rows; AMENDED FOR V165: 24; AMENDED FOR V166: 30; AMENDED FOR V168: 34; AMENDED FOR V171: 35
             # the left panel is the one scroll container (V65)
             sc = await safe("()=>{var a=document.getElementById('a3d-leftpanel');window.__a3dAnzOpenAll(true);a.scrollTop=a.scrollHeight;return a.scrollTop;}")
             await safe("()=>window.__a3dColumnAt([210,200],0,1,1,3)")

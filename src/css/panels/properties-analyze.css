@@ -177,6 +177,10 @@ body.light-theme .a3d-anzbtn.pri{color:#fff}
 body.light-theme .a3d-anzbtn.lay{border-color:#4a8fe0;color:#1d63b8}
 .a3d-anzleg{display:flex;align-items:center;gap:6px;font-size:11px;color:#9aa5b0;margin:0 0 7px}
 .a3d-anzramp{display:flex;flex:1;height:8px;border-radius:3px;overflow:hidden}.a3d-anzramp i{flex:1}
+/* __acad3dV171: the simulation's settings, as rows of buttons */
+.a3d-trset{display:flex;flex-wrap:wrap;align-items:center;gap:5px;margin:0 0 7px}
+.a3d-trlab{flex:0 0 74px;font-size:11.5px;color:#9aa5b0}
+body.light-theme .a3d-trlab{color:#555}
 /* __acad3dV166b: a row's settings and readings, in Analyze */
 /* a label and its field side by side where the row has room, the field under its label where not */
 .a3d-anzform{display:flex;flex-direction:column;gap:6px;margin:0 0 8px}

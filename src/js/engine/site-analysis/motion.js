@@ -195,7 +195,7 @@
   }
   /* Play from still starts the clock at nothing, the layers coming in one after another; Play after Pause goes on
      from the moment kept */
-  function bimAnimCan(){A3D_ANIM.fr=null;return bimAnimFrame().any||!!(A3D.showSun&&bimCameraIsPlan()&&bimAnimSunOk());}
+  function bimAnimCan(){A3D_ANIM.fr=null;return bimAnimFrame().any||!!(A3D.showSun&&bimCameraIsPlan()&&bimAnimSunOk())||bimTrCanPlay();}   /* __acad3dV171: the simulation */
   function bimAnimPlay(on){
     if(on===undefined||on===null)on=!A3D_ANIM.on;
     on=!!on;
@@ -204,6 +204,7 @@
     A3D_ANIM.on=on;
     if(on){
       if(!A3D_ANIM.paused){A3D_ANIM.t=0;A3D_ANIM.playAt=0;}
+      if(bimTrCanPlay()&&!A3D_TR.run)bimTrStart();   /* __acad3dV171: Play from still starts the run, warmed up */
       A3D_ANIM.paused=false;A3D_ANIM.c=null;A3D_ANIM.dome=null;A3D_ANIM.sunTime=bimAnimSunTime();
       bimAnimWire();A3D_ANIM.last=0;A3D_ANIM.painted=0;bimAnimRun();
     }else{A3D_ANIM.paused=true;bimAnimHalt();}
@@ -214,6 +215,7 @@
     var was=A3D_ANIM.on||A3D_ANIM.paused;
     A3D_ANIM.on=false;A3D_ANIM.paused=false;A3D_ANIM.t=0;A3D_ANIM.playAt=0;A3D_ANIM.sunTime=null;
     bimAnimHalt();
+    bimTrStop();   /* __acad3dV171: Stop gives the run up */
     if(was)paint();
     return was;
   }
@@ -222,9 +224,9 @@
   function bimAnimTick(ts){
     A3D_ANIM.raf=0;
     if(!A3D_ANIM.on||!A3D.on)return;
-    if(A3D_ANIM.last)A3D_ANIM.t+=Math.min(0.1,Math.max(0,(ts-A3D_ANIM.last)/1000));   /* a slow frame moves it a tenth of a second at most, never a jump */
+    if(A3D_ANIM.last){var dtc=Math.min(0.1,Math.max(0,(ts-A3D_ANIM.last)/1000));A3D_ANIM.t+=dtc;bimTrAdvance(dtc);}   /* a slow frame moves it a tenth of a second at most, never a jump; __acad3dV171: the run's steps */
     A3D_ANIM.last=ts;
-    if(!A3D_ANIM.painted||ts-A3D_ANIM.painted>=1000/BIM_ANIM.fps-2){
+    if(!A3D_ANIM.painted||ts-A3D_ANIM.painted>=1000/bimTrFps()-2){   /* __acad3dV171: fewer frames at Light */
       A3D_ANIM.painted=ts;A3D_ANIM.sunTime=bimAnimSunTime();
       try{paint();A3D_ANIM.frames++;}
       catch(eA){console.warn('[BIM] A frame of the motion could not be drawn',eA);bimAnimPlay(false);a3dToast('The motion was paused: a frame could not be drawn - see the console');return;}
@@ -247,9 +249,9 @@
   }
   /* Play and Pause shown whenever something can move, Stop while it is not still; nothing left to move, still */
   function bimAnimSync(){
-    var F=bimAnimFrame(),can=F.any||!!(A3D.showSun&&bimCameraIsPlan()&&bimAnimSunOk()),moving=A3D_ANIM.on||A3D_ANIM.paused,g,b,x,key;
+    var F=bimAnimFrame(),can=F.any||!!(A3D.showSun&&bimCameraIsPlan()&&bimAnimSunOk())||bimTrCanPlay(),moving=A3D_ANIM.on||A3D_ANIM.paused,g,b,x,key;   /* __acad3dV171 */
     A3D_ANIM.can=can;
-    if(!can&&moving){A3D_ANIM.on=false;A3D_ANIM.paused=false;A3D_ANIM.t=0;A3D_ANIM.playAt=0;A3D_ANIM.sunTime=null;bimAnimHalt();moving=false;}
+    if(!can&&moving){A3D_ANIM.on=false;A3D_ANIM.paused=false;A3D_ANIM.t=0;A3D_ANIM.playAt=0;A3D_ANIM.sunTime=null;bimAnimHalt();bimTrStop();moving=false;}
     g=document.getElementById('a3d-animgrp');b=document.getElementById('a3d-animplay');x=document.getElementById('a3d-animstop');
     if(!g||!b)return;
     key=(can?1:0)+':'+(A3D_ANIM.on?1:0)+':'+(moving?1:0);

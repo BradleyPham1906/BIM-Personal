@@ -265,7 +265,11 @@ def source_level_checks(path):
             "www.planning.org", "doi.org",
             # AMENDED FOR V169: the assets' sources -- NCHS, NASA's handbook, the IDeA Center, the Forest
             # Service's archive, ETCCDI -- linked from Properties > Standards, never fetched
-            "www.cdc.gov", "www.nasa.gov", "idea.ap.buffalo.edu", "www.fs.usda.gov", "etccdi.pacificclimate.org"}
+            "www.cdc.gov", "www.nasa.gov", "idea.ap.buffalo.edu", "www.fs.usda.gov", "etccdi.pacificclimate.org",
+            # AMENDED FOR V171: traffic's sources -- the IDM's and Helbing and Molnar's papers on arXiv, MOBIL's
+            # manuscript, the Signal Timing Manual, FDOT's handbook, NCHRP 255, San Diego's manual, SUMO's
+            # repository -- linked from Properties > Standards, never fetched
+            "arxiv.org", "mtreiber.de", "ops.fhwa.dot.gov", "www.fdot.gov", "onlinepubs.trb.org", "www.sandiego.gov", "github.com"}
     external = sorted(h for h in hosts if not h.endswith("w3.org") and h not in v132)
     check(not external,
           "no external host referenced anywhere in the file (found: " + (", ".join(external) or "none") + ")")

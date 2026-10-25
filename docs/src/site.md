@@ -294,6 +294,38 @@ the analysis keeps it when it runs again.
 The clock stops while the page is hidden. The app always opens still, and if the device asks for
 reduced motion while the analyses play, they pause. Sheets, prints and exports are drawn still.
 
+### Traffic and people
+
+**Traffic and people** (Analyze, Access) simulates cars and people on the streets within 300 m of the lot. Press
+**Simulate** in its row, or type `TRAFFIC` (also `TRAFFICSIM`, `PEDESTRIANS`): it plays on the same clock as the
+analyses in motion, so **Pause** keeps the moment and **Stop** gives the drawing back. `TRAFFICOFF` turns it off.
+It needs **Analyze site** to have fetched the streets (Access and people).
+
+- **The streets** are the ones Access and people found, cut where they leave the 300 m. Each has its lanes (a
+  mapped width caps them at 3.3 m a lane) and its speed.
+- **The cars** follow the one ahead by the Intelligent Driver Model, with the model's own standard car, and change
+  lanes by MOBIL where there are two lanes or more. Each street brings the typical traffic of its class in the peak
+  hour (FHWA's ranges at Florida's 9%), half each way, and each junction's turns are balanced to its streets'
+  traffic (NCHRP 255).
+- **Signals** are simulated where OpenStreetMap maps them. Their timing is assumed, junction by junction: Webster's
+  cycle from its traffic, held between 60 and 120 s, the yellow and the red clearance from the approach speed, and
+  every green long enough for WALK and the crossing at 3.5 ft/s. Elsewhere the larger road has the way, a mapped
+  stop stops its approach, and an all-way stop takes cars in the order they came.
+- **The design's own trips** come from its usages (Residential by its units, Office and Retail by their floor area,
+  Hotel by its keys) at San Diego's rates (2003), in and out through the lot's driveway, or a provisional entry on
+  its lowest street when none is mapped.
+- **People** walk between the cars and the lot's doors, and, at the census tract's shares, from the nearest stops
+  and along the sidewalks from the edge. They cross only at junctions, at a signal while their green leaves time to
+  finish, and cars wait for them.
+- **The row** sets the peak hour (AM or PM), the quality (Light, Normal or Detailed: how many cars and people at
+  most; Auto reads the device) and the speed (1, 4 or 16 times). It says what the run assumes and what it has found.
+- **Run** lays the results on **Layers > Site analysis - Traffic and people**: each signal's assumed plan, the lot's
+  entry with its queue, each door with its people an hour, and each junction's delay.
+
+It is not a calibrated model: there are no counts, and each street carries its class's typical traffic. The
+signal plans are assumed: OpenStreetMap maps where a signal is, never its timing. In 3D the cars and people are
+drawn over the model.
+
 ### The ten categories and the findings
 
 **Ten categories, always in this order:**

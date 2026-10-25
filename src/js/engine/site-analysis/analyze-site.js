@@ -197,13 +197,14 @@
       /* __acad3dV167: Out of date when a standard it used changed: an edition, a value, an override */
       var SC=R?bimDgStdChanged(A.id):{run:[],data:[]},stale=!!(SC.run.length||SC.data.length),sx=bimDgStdText(A.id);
       if(stale)st+='. Out of date: '+(SC.run.length?bimStdChangedText(SC.run)+' since it ran: Run again':'')+(SC.run.length&&SC.data.length?'; ':'')+(SC.data.length?bimStdChangedText(SC.data)+' since '+BIM_STD_DATA[SC.kind].name+' was fetched: Analyze site again':'');
-      return {id:'dg'+A.id,title:A.name,state:!R?null:(stale?'stale':(L.length?(on?'on':'off'):'warn')),status:st,
+      var card={id:'dg'+A.id,title:A.name,state:!R?null:(stale?'stale':(L.length?(on?'on':'off'):'warn')),status:st,
         extra:R?bimDgLegendHtml(R.legend)+(R.note&&L.length?'<div class="a3d-sacap">'+bimEsc(R.note)+'</div>':'')+(R.source?'<div class="a3d-sacap">Source: '+bimEsc(R.source)+'</div>':'')+
           (sx?'<div class="a3d-sacap a3d-sastd" data-dgstd="'+A.id+'">'+bimEsc(sx)+'</div>':''):'',
         acts:[{act:'dg:show:'+A.id,label:on?'Hide':'Show',pri:!on&&L.length>0,off:L.length?'':'Nothing drawn yet'},
           {act:'dg:run:'+A.id,label:R?'Run again':'Run',tip:'From what the project holds now; Analyze site fetches the data again'},
           {act:'dg:select:'+A.id,label:'Select',off:L.length?'':'Nothing drawn yet'},
           {act:'dg:reset:'+A.id,label:'Reset',off:R?'':'Not run yet',tip:'As the analysis draws it: what you changed, copied or deleted on it goes back'}]};
+      return A.id==='traffic'?bimTrCard(card):card;   /* __acad3dV171: the simulation's own part */
     });
   }
   function bimDgAct(v){

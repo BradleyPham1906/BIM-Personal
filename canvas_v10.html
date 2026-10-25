@@ -799,6 +799,10 @@ body.light-theme .a3d-anzbtn.pri{color:#fff}
 body.light-theme .a3d-anzbtn.lay{border-color:#4a8fe0;color:#1d63b8}
 .a3d-anzleg{display:flex;align-items:center;gap:6px;font-size:11px;color:#9aa5b0;margin:0 0 7px}
 .a3d-anzramp{display:flex;flex:1;height:8px;border-radius:3px;overflow:hidden}.a3d-anzramp i{flex:1}
+/* __acad3dV171: the simulation's settings, as rows of buttons */
+.a3d-trset{display:flex;flex-wrap:wrap;align-items:center;gap:5px;margin:0 0 7px}
+.a3d-trlab{flex:0 0 74px;font-size:11.5px;color:#9aa5b0}
+body.light-theme .a3d-trlab{color:#555}
 /* __acad3dV166b: a row's settings and readings, in Analyze */
 /* a label and its field side by side where the row has room, the field under its label where not */
 .a3d-anzform{display:flex;flex-direction:column;gap:6px;margin:0 0 8px}
@@ -1558,6 +1562,8 @@ body.a3d-tree-docked #a3d-leftpanel > .a3d-tree .a3d-palhd .a3d-palbtns{flex-wra
     ['CLIMATEGET',['GETCLIMATE','WEATHERDATA','CLIMATEDATA'],'climateget','Get the site\'s climate (ten years of ERA5), air quality (PM2.5) and earthquakes within 100 km, from free open sources'],   /* __acad3dV159 */
     ['ANALYZESITE',['SITEANALYZE','RUNSITEANALYSIS','SAFILL','SITEANALYSISFILL','SAFROMMODEL'],'analyzesite','Analyze site: get what is around the site from free open data and draw each analysis in the model -- compass, sun paths, shadows, winds, views, noise, contours, slope, aspect, water flow, ponds, flood zones, street hierarchy, cycling stress, transit, walk times, daily needs, vehicle access -- on Layers, Site analysis; one undo step'],   /* __acad3dV164; __acad3dV165; __acad3dV166 */
     ['PLAY',['ANIMATE','PAUSE','MOTION','PLAYANALYSIS'],'animplay','Play or pause the site analysis in motion: marching dashes along flows, walks and transit, winds drawn on, the distance rings growing, the layers in turn, the sun and the shadows through the day; Stop in the status bar gives the still drawing back'],   /* __acad3dV170 */
+    ['TRAFFIC',['TRAFFICSIM','SIMULATETRAFFIC','PEDESTRIANS','TRAFFICON'],'traffic','Simulate traffic and people around the site: cars on the streets by the IDM with each junction\'s own assumed signal plan, walkers on the sidewalks crossing on green, and the design\'s own trips; it plays on the clock (Play, Pause and Stop)'],   /* __acad3dV171 */
+    ['TRAFFICOFF',['TRAFFICSTOP'],'trafficoff','Stop simulating traffic and people'],
     ['CONTEXTREMOVE',['CONTEXTCLEAR'],'contextremove','Remove the site context'],
     /* __acad3dV139: LOD and CityJSON */
     ['LODCHECK',['CHECKSOLIDS','VALIDATESOLIDS','VAL3DITY'],'lodcheck','Check every building: its LOD, and whether it is a valid solid (closed, outward, flat faces, one piece)'],
@@ -17758,7 +17764,7 @@ try{
   function bimStdDraft(k,d){var D=A3D_STD_UI.draft;return D&&D.hasOwnProperty(k)?D[k]:d;}
   function bimStdDraftClear(keys){keys.forEach(function(k){delete A3D_STD_UI.draft[k];});}
   var BIM_STD_LV_CLS={P:'lv-P',S:'lv-S',U:'lv-U',A:'lv-A'};   /* __acad3dV167i: written whole, so V114 sees them made */
-  var BIM_STD_AREAS=['Transit and walking','Roads and noise','Cycling','Air','Flood and ground','Buildings','Structure','Site context','Land and green','Assets','Climate'];   /* __acad3dV168: Land and green; __acad3dV169: Assets */
+  var BIM_STD_AREAS=['Transit and walking','Roads and noise','Cycling','Air','Flood and ground','Buildings','Structure','Site context','Land and green','Assets','Traffic','Climate'];   /* __acad3dV171: Traffic; __acad3dV168: Land and green; __acad3dV169: Assets */
   function bimStdCap(t){t=String(t||'');return t.charAt(0).toUpperCase()+t.slice(1);}
   function bimStdBadge(E){
     var lv=E&&E.lv?E.lv:'U',how=E?E.how:'none';
@@ -18658,7 +18664,7 @@ try{
   /* ================= __acad3dV142: the user guide, and versions =================
      The guide is in docs/ beside the app, on the same site (and in the repository, so it opens
      offline). Its command reference has a section per command, anchored by the command's id. */
-  var BIM_APP_VERSION={v:'V170',date:'2026-10-24'};   /* __acad3dV162; __acad3dV163; __acad3dV164; __acad3dV165; __acad3dV166; __acad3dV167; __acad3dV168; __acad3dV170 */
+  var BIM_APP_VERSION={v:'V171',date:'2026-10-25'};   /* __acad3dV162; __acad3dV163; __acad3dV164; __acad3dV165; __acad3dV166; __acad3dV167; __acad3dV168; __acad3dV170; __acad3dV171 */
   var BIM_DOCS_BASE='docs/';
   /* a command's anchor in the reference: cmd:LINE -> cmd-LINE, act:bim:wall -> act-bim-wall */
   function bimDocsAnchor(id){return String(id||'').replace(/[^A-Za-z0-9_-]+/g,'-');}
@@ -19358,6 +19364,7 @@ try{
   /* __acad3dV166: movement */
   BIM_ANZ_GROUP_OF.dgstreets='access';BIM_ANZ_GROUP_OF.dgcycling='access';BIM_ANZ_GROUP_OF.dgtransit='access';
   BIM_ANZ_GROUP_OF.dgwalk='access';BIM_ANZ_GROUP_OF.dgvehicles='access';BIM_ANZ_GROUP_OF.dgneeds='people';
+  BIM_ANZ_GROUP_OF.dgtraffic='access';   /* __acad3dV171 */
   /* __acad3dV168: land */
   BIM_ANZ_GROUP_OF.dglanduse='location';BIM_ANZ_GROUP_OF.dgfigure='location';BIM_ANZ_GROUP_OF.dggreen='ecology';BIM_ANZ_GROUP_OF.dgzoning='legal';
   var BIM_ANZ_MODEL=['lens','areas','lod','stats','structure'];
@@ -19603,6 +19610,7 @@ try{
     else if(k.indexOf('sim:clear:')===0)bimSimClear(k.slice(10));
     else if(k.indexOf('layer:')===0)bimResultLayerAdd(k.slice(6));   /* __acad3dV148 */
     else if(k.indexOf('dg:')===0)bimDgAct(k.slice(3));   /* __acad3dV164 */
+    else if(k.indexOf('tr:')===0)bimTrAct(k.slice(3));   /* __acad3dV171 */
     else return false;
     bimAnalyzeRefresh();
     return true;
@@ -19932,6 +19940,79 @@ try{
           {n:'stand_w',v:0.75,u:'m',say:'a Sheffield stand\'s length'},{n:'stand_h',v:0.75,u:'m',say:'a Sheffield stand\'s height'},{n:'line',v:0.1,u:'m',say:'a bay\'s painted line, across'},
           {n:'wheel_p',v:0.65,u:'m',say:'a car\'s wheel, across'},{n:'wheel_hv',v:1,u:'m',say:'a truck\'s or a bus\'s wheel, across'},
           {n:'crown',v:0.6,u:'x',say:'a mapped tree\'s crown across, of its height, where its leaf type is not mapped'}]}]},
+    /* ---- __acad3dV171: traffic and people around the site (research-traffic.md) ---- */
+    {id:'idm.car',title:'Car following: the Intelligent Driver Model',pub:'Kesting, Treiber and Helbing',kind:'method',area:'Traffic',use:'Traffic and people: how each car follows the one ahead',anywhere:true,
+      eds:[{id:'idm.car.2010',name:'The enhanced IDM\'s paper (2010), Table 1: a car',pub:'2010',st:'current',where:'A model, used anywhere',adopt:[{at:'*',from:'2010'}],
+        src:{t:'Kesting, Treiber and Helbing, Enhanced intelligent driver model to access the impact of driving strategies on traffic capacity, Phil. Trans. R. Soc. A 368 (2010); the authors\' version, arXiv 0912.3613',w:'section 2(a), equations 2.1 and 2.2, and Table 1: a car; Treiber, The Intelligent-Driver Model and its Variants (traffic-simulation.de): the free road and the step',u:'https://arxiv.org/abs/0912.3613',lv:'P',read:'2026-10-24'},
+        v:[{n:'T',v:1.5,u:'s',say:'the time gap a driver keeps'},{n:'s0',v:2,u:'m',say:'the gap kept standing'},{n:'a',v:1.4,u:'m/s2',say:'the acceleration'},
+          {n:'b',v:2,u:'m/s2',say:'the comfortable deceleration'},{n:'delta',v:4,u:'',say:'the acceleration exponent'},
+          {n:'free',v:1000,u:'m',say:'the gap ahead of a car with nothing ahead',src:'Treiber: a free road is a gap of 1000 m'},
+          {n:'step_max',v:0.5,u:'s',say:'the longest step giving the same result',src:'Treiber: any step below 0.5 s gives essentially the same'}]}]},
+    {id:'mobil',title:'Lane changes: MOBIL',pub:'Kesting, Treiber and Helbing',kind:'method',area:'Traffic',use:'Traffic and people: a car changing lanes on a street with two or more each way',anywhere:true,
+      eds:[{id:'mobil.2007',name:'MOBIL: General Lane-Changing Model for Car-Following Models (2007)',pub:'2007',st:'current',where:'A model, used anywhere',adopt:[{at:'*',from:'2007'}],
+        src:{t:'Kesting, Treiber and Helbing, MOBIL: General Lane-Changing Model for Car-Following Models, Transportation Research Record 1999 (2007); the authors\' manuscript',w:'sections 2.1 and 2.2, the symmetric incentive (equation 3), and Table 1',u:'https://mtreiber.de/publications/MOBIL_TRB.pdf',lv:'P',read:'2026-10-25'},
+        v:[{n:'p',v:1,u:'',say:'the politeness factor',src:'Table 1: 0 to 1; at 1 the ideal MOBIL, with no free parameter'},
+          {n:'thr',v:0.1,u:'m/s2',say:'the changing threshold'},{n:'bsafe',v:4,u:'m/s2',say:'the most a new follower may have to brake'}]}]},
+    {id:'stm.signal',title:'Signal timing',pub:'Federal Highway Administration',kind:'guideline',area:'Traffic',use:'Traffic and people: each signal\'s cycle, greens and change intervals',anywhere:true,
+      eds:[{id:'stm.signal.2008',name:'Traffic Signal Timing Manual (FHWA-HOP-08-024, 2008)',pub:'2008-06',st:'current',where:'Guidance for the United States',adopt:[{at:'us',from:'2008-06'}],
+        src:{t:'FHWA, Traffic Signal Timing Manual (FHWA-HOP-08-024, June 2008)',w:'3.3: the saturation flow and lost time; 5.3: Equation 5-2 (Kell and Fullerton) and Table 5-3; 6.4: Equation 6-1 (Webster), the least and the preferred most cycle',u:'https://ops.fhwa.dot.gov/publications/fhwahop08024/',lv:'P',read:'2026-10-25'},
+        v:[{n:'sat',v:1900,u:'pc/h/ln',say:'the ideal saturation flow',src:'3.3.2: typically assumed 1,900 passenger cars an hour a lane'},
+          {n:'lost',v:4,u:'s',say:'the lost time a phase',src:'3.3.3: the HCM\'s default, start-up and clearance lost time'},
+          {n:'webster',t:1,v:[1.5,5],say:'Webster\'s optimum cycle, (1.5 L + 5) / (1 - Y)',src:'Equation 6-1'},
+          {n:'cycle_min',v:60,u:'s',say:'the least cycle',src:'6.4: the minimum suggested for use',lt:'cycle_max'},
+          {n:'cycle_max',v:120,u:'s',say:'the longest cycle, for a four-legged junction',src:'6.4: preferred not to exceed 120 seconds',gt:'cycle_min'},
+          {n:'kf_t',v:1,u:'s',say:'the driver\'s reaction to the yellow',src:'Equation 5-2\'s t, 1.0 s often cited'},
+          {n:'kf_a',v:3.048,u:'m/s2',say:'the deceleration at the yellow',src:'10 ft/s2'},
+          {n:'kf_lv',v:6.096,u:'m',say:'a vehicle\'s length, for the red clearance',src:'20 ft'},
+          {n:'min_green',t:1,u:'s',v:{fast:10,major:7,minor:4,local:2},say:'the least green by the approach\'s class: a major arterial over 40 mph, a major arterial, a minor arterial, a collector or local street',src:'Table 5-3\'s lower values'},
+          {n:'fast',v:64.37,u:'km/h',say:'a major arterial\'s speed above which its least green is the longer one',src:'40 mph'}]}]},
+    {id:'mutcd.signal',title:'Signal intervals',pub:'Federal Highway Administration',kind:'standard',area:'Traffic',use:'Traffic and people: the yellow, the red clearance and WALK',anywhere:true,
+      eds:[{id:'mutcd.signal.11',name:'MUTCD 11th Edition (December 2023), 4F.17 and 4I.06',pub:'2023-12',st:'current',where:'United States',adopt:[{at:'us',from:'2023-12'}],
+        src:{t:'FHWA, Manual on Uniform Traffic Control Devices, 11th Edition (December 2023)',w:'4F.17: a yellow of 3 to 6 s, a red clearance of at most 6 s; 4I.06: WALK at least 7 s, the clearance at 3.5 ft/s (mutcd.walk)',u:'https://mutcd.fhwa.dot.gov/',lv:'P',read:'2026-10-24'},
+        v:[{n:'yel_min',v:3,u:'s',say:'the shortest yellow',lt:'yel_max'},{n:'yel_max',v:6,u:'s',say:'the longest yellow',gt:'yel_min'},
+          {n:'red_max',v:6,u:'s',say:'the longest red clearance'},{n:'walk',v:7,u:'s',say:'WALK, at least'}]}]},
+    {id:'fdot.k',title:'The peak hour\'s share of the day\'s traffic (K)',pub:'Florida Department of Transportation',kind:'data',area:'Traffic',use:'Traffic and people: each street\'s traffic in the peak hour',anywhere:true,
+      eds:[{id:'fdot.k.2014',name:'Project Traffic Forecasting Handbook (January 2014), Figure 2.4',pub:'2014-01',st:'current',where:'Florida',adopt:[{at:'us-fl',from:'2014-01'}],
+        src:{t:'Florida Department of Transportation, Project Traffic Forecasting Handbook (January 2014)',w:'2.6.2.1 and Figure 2.4: the standard K factors',u:'https://www.fdot.gov/docs/default-source/statistics/trafficdata/PTF.pdf',lv:'P',read:'2026-10-24'},
+        v:[{n:'k',v:9,u:'%',say:'the share of the day\'s traffic in the weekday peak hour, on urban arterials',src:'Figure 2.4: arterials and highways, urbanized and urban areas, 9.0%'}]}]},
+    {id:'nchrp255',title:'Turns at a junction from the streets\' traffic',pub:'Transportation Research Board',kind:'method',area:'Traffic',use:'Traffic and people: which way a car turns',anywhere:true,
+      eds:[{id:'nchrp255.1982',name:'NCHRP Report 255 (1982), chapter 8',pub:'1982-12',st:'current',where:'A method, used anywhere',adopt:[{at:'*',from:'1982-12'}],
+        src:{t:'Pedersen and Samdahl, NCHRP Report 255, Highway Traffic Data for Urbanized Area Project Planning and Design (TRB, December 1982)',w:'chapter 8, pages 110 to 118: a first guess of the turns, the matrix balanced by rows and columns to the streets\' volumes',u:'https://onlinepubs.trb.org/Onlinepubs/nchrp/nchrp_rpt_255.pdf',lv:'P',read:'2026-10-24'},
+        v:[{n:'iter',v:10,u:'',say:'the balancing\'s rounds',src:'six to ten: the most'}]}]},
+    {id:'sd.trips',title:'Trips a site makes',pub:'City of San Diego',kind:'data',area:'Traffic',use:'Traffic and people: the design\'s own trips in the peak hour',anywhere:true,
+      eds:[{id:'sd.trips.2003',name:'Trip Generation Manual (revised May 2003), Table 1',pub:'2003-05',st:'current',where:'San Diego',adopt:[{at:'us-ca:san diego',from:'2003-05'}],
+        src:{t:'City of San Diego, Trip Generation Manual (revised May 2003)',w:'Table 1, the driveway vehicle trip rates with the AM and PM peak hours\' shares and in:out splits: the residential, office, retail and lodging rows',u:'https://www.sandiego.gov/sites/default/files/legacy/planning/documents/pdf/trans/tripmanual.pdf',lv:'P',read:'2026-10-25'},
+        v:[{n:'table',t:1,say:'a weekday\'s trips by use, and the peak hours\' shares (percent) with their in:out',
+            v:{mdu_lo:{name:'Multiple dwelling units, under 20 an acre',rate:8,per:'du',am:[8,2,8],pm:[10,7,3]},
+              mdu_hi:{name:'Multiple dwelling units, over 20 an acre',rate:6,per:'du',am:[8,2,8],pm:[9,7,3]},
+              office:{name:'Commercial office',ln:[0.756,3.95],per:'ksf',am:[13,9,1],pm:[14,2,8]},
+              retail:{name:'Specialty retail centre or strip commercial',rate:40,per:'ksf',am:[3,6,4],pm:[9,5,5]},
+              hotel:{name:'Hotel',rate:10,per:'room',am:[6,6,4],pm:[8,6,4]}}},
+          {n:'dense',v:20,u:'du/acre',say:'the density above which a dwelling makes fewer trips'}]}]},
+    {id:'hm.walk',title:'Walking speeds of a crowd',pub:'Helbing and Molnar',kind:'data',area:'Traffic',use:'Traffic and people: each walker\'s own speed',anywhere:true,
+      eds:[{id:'hm.walk.1995',name:'Social force model for pedestrian dynamics (1995), the simulations\' values',pub:'1995',st:'current',where:'A measured sample, used anywhere',adopt:[{at:'*',from:'1995'}],
+        src:{t:'Helbing and Molnar, Social force model for pedestrian dynamics, Phys. Rev. E 51, 4282 (1995); the authors\' version, arXiv cond-mat/9805244',w:'section III: desired speeds Gaussian, mean 1.34 m/s and spread 0.26 m/s (citing Henderson\'s measurements, not read), each capped at 1.3 times its own',u:'https://arxiv.org/abs/cond-mat/9805244',lv:'S',read:'2026-10-24'},
+        v:[{n:'mean',v:1.34,u:'m/s',say:'the mean desired walking speed'},{n:'sd',v:0.26,u:'m/s',say:'its spread (standard deviation)'},{n:'cap',v:1.3,u:'x',say:'the most a walker goes, of its own speed'}]}]},
+    {id:'sumo.rules',title:'Junctions and walkers in a simulation',pub:'Eclipse SUMO',kind:'method',area:'Traffic',use:'Traffic and people: giving way, and the walkers\' stripes',anywhere:true,
+      eds:[{id:'sumo.rules.docs',name:'Eclipse SUMO\'s documentation (read October 2026)',pub:'',st:'current',where:'A simulator\'s rules, used anywhere',adopt:[{at:'*'}],
+        src:{t:'Eclipse SUMO\'s documentation: Simulation/Intersections, Networks/PlainXML (right of way), the junction model parameters, Simulation/Pedestrians (striping)',w:'a minor road keeps a time gap of at least 1 s to a priority car not yet in the junction (jmTimegapMinor); right of way from the ways in: the two sharing the highest priority (then speed and lanes), or the one alone with the way in most nearly opposite it; on amber a car far away slows and one near goes; walkers in stripes of 0.65 m',u:'https://github.com/eclipse-sumo/sumo',lv:'S',read:'2026-10-24'},
+        v:[{n:'gap',v:1,u:'s',say:'the time gap a minor road keeps to a priority car'},{n:'stripe',v:0.65,u:'m',say:'a walker\'s stripe across a sidewalk'}]}]},
+    {id:'app.traffic',title:'The traffic simulation\'s own settings',pub:'This app',kind:'assumption',area:'Traffic',use:'Traffic and people: what no source gives',anywhere:true,
+      eds:[{id:'app.traffic.1',name:'The app\'s traffic settings (V171)',pub:'',st:'current',where:'Anywhere',adopt:[{at:'*'}],
+        src:{t:'This app: the reach of the simulation, a lane\'s width as the site context draws it, how near a signal is to its junction, the step, the warm-up and the tallies, how far ahead a car sees, what a crossing costs a walker choosing a way, a left turn, the sidewalks\' and crossings\' places, the queue\'s and the crossings\' tests, a car\'s people, and the usages read as San Diego\'s uses',w:'research-traffic.md, section 8',lv:'A'},
+        v:[{n:'radius',v:300,u:'m',say:'the streets simulated, from the lot'},{n:'lane_w',v:3.3,u:'m',say:'a lane\'s width'},
+          {n:'sig_r',v:30,u:'m',say:'how near a mapped signal is to the junction it controls'},{n:'step',v:0.2,u:'s',say:'the simulation\'s step'},
+          {n:'warm',v:300,u:'s',say:'the warm-up before the tallies start'},{n:'bin',v:10,u:'s',say:'the tallies\' bins'},
+          {n:'sw_off',v:1.5,u:'m',say:'a sidewalk\'s line beyond the roadway\'s edge'},{n:'cw',v:2,u:'m',say:'a crossing behind the corner'},
+          {n:'y_max',v:0.95,u:'',say:'the junction\'s demand over its capacity at which the cycle is the longest'},
+          {n:'walk_gap',v:2,u:'s',say:'the time a car must be away for a walker to cross where no signal is'},
+          {n:'look',v:100,u:'m',say:'how far ahead a car sees the next street\'s stop line'},
+          {n:'x_sig',v:30,u:'s',say:'a signalled crossing\'s wait, as a walker weighs it choosing a way: half the shortest cycle'},
+          {n:'x_lane',v:10,u:'s',say:'each lane crossed where nothing signals it, as a walker weighs it choosing a way'},
+          {n:'left',v:30,u:'deg',say:'a turn this sharp to the left or sharper waits for the oncoming'},
+          {n:'queue_v',v:2,u:'m/s',say:'a car slower than this is standing in a queue'},{n:'queue_r',v:100,u:'m',say:'the street before the lot\'s entry counted for its queue'},
+          {n:'occ',v:1,u:'',say:'the people a car brings'},
+          {n:'uses',t:1,v:{'use-res':'mdu','use-off':'office','use-ret':'retail','use-hot':'hotel'},say:'the usages read as San Diego\'s uses: Residential as multiple dwelling units, Office as commercial office, Retail as strip commercial, Hotel as hotel'}]}]},
     {id:'app.climate',title:'Climate readings',pub:'This app',kind:'assumption',area:'Climate',use:'The climate board, the wind rose and its finding',anywhere:true,
       eds:[{id:'app.climate.1',name:'The app\'s climate settings (V159)',pub:'',st:'current',where:'Anywhere',adopt:[{at:'*'}],
         src:{t:'This app: a degree-day base, a calm threshold and the rose\'s speed bins, and a comfort band',w:'research-climate-risk-presentation.md',lv:'A'},
@@ -19990,7 +20071,8 @@ try{
   var BIM_STD_LV={P:'read at its source',S:'from a dependable secondary source, the gap said',U:'not yet verified',A:'the app\'s own assumption'};
   var BIM_STD_HOW={adopted:'in force here',international:'international',chosen:'chosen for this project',outside:'applied outside its place',assumption:'the app\'s assumption',none:'none in force'};
   var BIM_STD_UNIT={min:[' minute',' minutes'],m:[' m',' m'],'m/min':[' m a minute',' m a minute'],'km/h':[' km/h',' km/h'],'%':['%','%'],'ug/m3':[' \u00b5g/m\u00b3',' \u00b5g/m\u00b3'],
-    'per sq mi':[' per sq mi',' per sq mi'],dB:[' dB',' dB'],ha:[' ha',' ha'],trees:[' tree',' trees'],families:[' family',' families'],C:['\u00b0C','\u00b0C'],'m/s':[' m/s',' m/s'],lanes:[' lane',' lanes'],days:[' day',' days'],x:['\u00d7','\u00d7'],'sq ft':[' sq ft',' sq ft']};
+    'per sq mi':[' per sq mi',' per sq mi'],dB:[' dB',' dB'],ha:[' ha',' ha'],trees:[' tree',' trees'],families:[' family',' families'],C:['\u00b0C','\u00b0C'],'m/s':[' m/s',' m/s'],lanes:[' lane',' lanes'],days:[' day',' days'],x:['\u00d7','\u00d7'],'sq ft':[' sq ft',' sq ft'],
+    s:[' s',' s'],'m/s2':[' m/s\u00b2',' m/s\u00b2'],'pc/h/ln':[' an hour a lane',' an hour a lane'],'du/acre':[' an acre',' an acre'],deg:['\u00b0','\u00b0']};   /* __acad3dV171 */
   var BIM_STD_EMPTY={place:null,date:'',ov:{},pick:{},packs:[]};
   var A3D_STD={obj:null,rev:-1,sig:'',at:0,cache:{},recs:null,by:{},memo:{},warned:{},gen:0};
   /* what the project holds: A3D.site.std, or nothing changed yet */
@@ -20448,10 +20530,11 @@ try{
   function bimCtxLineH(){return bimStd('app.context','line');}
   function bimRoadW(){return bimStd('app.context','road_w')||{};}
   /* __acad3dV167: the standards each analysis drawn in the model uses, and the data it is drawn from */
-  var BIM_DG_STD={frame:['walk.speed'],noise:['fhwa.fc','app.roads','crtn','who.noise'],slope:['land.slope'],flood:['fema.zones'],streets:['fhwa.fc','app.roads'],
+  var BIM_DG_STD={traffic:['idm.car','mobil','stm.signal','mutcd.signal','mutcd.walk','fdot.k','nchrp255','sd.trips','hm.walk','sumo.rules','app.traffic','fhwa.fc','app.roads','aashto.vehicles'],   /* __acad3dV171 */
+    frame:['walk.speed'],noise:['fhwa.fc','app.roads','crtn','who.noise'],slope:['land.slope'],flood:['fema.zones'],streets:['fhwa.fc','app.roads'],
     cycling:['lts.2012','lts.xing2016','app.roads'],transit:['tfl.ptal'],needs:['guides.walk'],
     landuse:['lbcs.activity','app.land'],figure:['spacematrix','app.land','app.context'],green:['green.33300','app.land'],zoning:['app.land']};   /* __acad3dV168 */
-  var BIM_DG_STD_DATA={transit:'access',walk:'access',needs:'access',views:'context',noise:'context',wind:'climate',landuse:'context',figure:'context',green:'context'};
+  var BIM_DG_STD_DATA={traffic:'access',transit:'access',walk:'access',needs:'access',views:'context',noise:'context',wind:'climate',landuse:'context',figure:'context',green:'context'};
   /* the data fetched once and drawn from many times: the standards each is worked out with, the topics a
      row names for it, and its stamp */
   var BIM_STD_DATA={
@@ -20517,6 +20600,7 @@ try{
     {id:'walk',name:'Walk times',col:'#5598e7',hidden:true},
     {id:'needs',name:'Daily needs',col:'#199e70'},
     {id:'vehicles',name:'Vehicle access',col:'#aab3be'},
+    {id:'traffic',name:'Traffic and people',col:'#ffb454',hidden:true},   /* __acad3dV171: the simulation's results */
     /* __acad3dV168: land; land use, the figure-ground and the zoning cover the ground, so they start hidden */
     {id:'landuse',name:'Land use',col:'#eda100',hidden:true},
     {id:'figure',name:'Figure-ground',col:'#6b7280',hidden:true},
@@ -21137,7 +21221,7 @@ try{
   }
   /* Play from still starts the clock at nothing, the layers coming in one after another; Play after Pause goes on
      from the moment kept */
-  function bimAnimCan(){A3D_ANIM.fr=null;return bimAnimFrame().any||!!(A3D.showSun&&bimCameraIsPlan()&&bimAnimSunOk());}
+  function bimAnimCan(){A3D_ANIM.fr=null;return bimAnimFrame().any||!!(A3D.showSun&&bimCameraIsPlan()&&bimAnimSunOk())||bimTrCanPlay();}   /* __acad3dV171: the simulation */
   function bimAnimPlay(on){
     if(on===undefined||on===null)on=!A3D_ANIM.on;
     on=!!on;
@@ -21146,6 +21230,7 @@ try{
     A3D_ANIM.on=on;
     if(on){
       if(!A3D_ANIM.paused){A3D_ANIM.t=0;A3D_ANIM.playAt=0;}
+      if(bimTrCanPlay()&&!A3D_TR.run)bimTrStart();   /* __acad3dV171: Play from still starts the run, warmed up */
       A3D_ANIM.paused=false;A3D_ANIM.c=null;A3D_ANIM.dome=null;A3D_ANIM.sunTime=bimAnimSunTime();
       bimAnimWire();A3D_ANIM.last=0;A3D_ANIM.painted=0;bimAnimRun();
     }else{A3D_ANIM.paused=true;bimAnimHalt();}
@@ -21156,6 +21241,7 @@ try{
     var was=A3D_ANIM.on||A3D_ANIM.paused;
     A3D_ANIM.on=false;A3D_ANIM.paused=false;A3D_ANIM.t=0;A3D_ANIM.playAt=0;A3D_ANIM.sunTime=null;
     bimAnimHalt();
+    bimTrStop();   /* __acad3dV171: Stop gives the run up */
     if(was)paint();
     return was;
   }
@@ -21164,9 +21250,9 @@ try{
   function bimAnimTick(ts){
     A3D_ANIM.raf=0;
     if(!A3D_ANIM.on||!A3D.on)return;
-    if(A3D_ANIM.last)A3D_ANIM.t+=Math.min(0.1,Math.max(0,(ts-A3D_ANIM.last)/1000));   /* a slow frame moves it a tenth of a second at most, never a jump */
+    if(A3D_ANIM.last){var dtc=Math.min(0.1,Math.max(0,(ts-A3D_ANIM.last)/1000));A3D_ANIM.t+=dtc;bimTrAdvance(dtc);}   /* a slow frame moves it a tenth of a second at most, never a jump; __acad3dV171: the run's steps */
     A3D_ANIM.last=ts;
-    if(!A3D_ANIM.painted||ts-A3D_ANIM.painted>=1000/BIM_ANIM.fps-2){
+    if(!A3D_ANIM.painted||ts-A3D_ANIM.painted>=1000/bimTrFps()-2){   /* __acad3dV171: fewer frames at Light */
       A3D_ANIM.painted=ts;A3D_ANIM.sunTime=bimAnimSunTime();
       try{paint();A3D_ANIM.frames++;}
       catch(eA){console.warn('[BIM] A frame of the motion could not be drawn',eA);bimAnimPlay(false);a3dToast('The motion was paused: a frame could not be drawn - see the console');return;}
@@ -21189,9 +21275,9 @@ try{
   }
   /* Play and Pause shown whenever something can move, Stop while it is not still; nothing left to move, still */
   function bimAnimSync(){
-    var F=bimAnimFrame(),can=F.any||!!(A3D.showSun&&bimCameraIsPlan()&&bimAnimSunOk()),moving=A3D_ANIM.on||A3D_ANIM.paused,g,b,x,key;
+    var F=bimAnimFrame(),can=F.any||!!(A3D.showSun&&bimCameraIsPlan()&&bimAnimSunOk())||bimTrCanPlay(),moving=A3D_ANIM.on||A3D_ANIM.paused,g,b,x,key;   /* __acad3dV171 */
     A3D_ANIM.can=can;
-    if(!can&&moving){A3D_ANIM.on=false;A3D_ANIM.paused=false;A3D_ANIM.t=0;A3D_ANIM.playAt=0;A3D_ANIM.sunTime=null;bimAnimHalt();moving=false;}
+    if(!can&&moving){A3D_ANIM.on=false;A3D_ANIM.paused=false;A3D_ANIM.t=0;A3D_ANIM.playAt=0;A3D_ANIM.sunTime=null;bimAnimHalt();bimTrStop();moving=false;}
     g=document.getElementById('a3d-animgrp');b=document.getElementById('a3d-animplay');x=document.getElementById('a3d-animstop');
     if(!g||!b)return;
     key=(can?1:0)+':'+(A3D_ANIM.on?1:0)+':'+(moving?1:0);
@@ -23646,7 +23732,8 @@ try{
   var BIM_DG_RUN={frame:bimDgFrameRun,sun:bimDgSunRun,shadow:bimDgShadowRun,wind:bimDgWindRun,views:bimDgViewsRun,noise:bimDgNoiseRun,
     contours:bimDgContoursRun,slope:bimDgSlopeRun,aspect:bimDgAspectRun,flow:bimDgFlowRun,ponds:bimDgPondsRun,flood:bimDgFloodRun,   /* __acad3dV165 */
     streets:bimDgStreetsRun,cycling:bimDgCyclingRun,transit:bimDgTransitRun,walk:bimDgWalkRun,needs:bimDgNeedsRun,vehicles:bimDgVehiclesRun,   /* __acad3dV166 */
-    landuse:bimDgLanduseRun,figure:bimDgFigureRun,green:bimDgGreenRun,zoning:bimDgZoningRun};   /* __acad3dV168 */
+    landuse:bimDgLanduseRun,figure:bimDgFigureRun,green:bimDgGreenRun,zoning:bimDgZoningRun,   /* __acad3dV168 */
+    traffic:bimDgTrafficRun};   /* __acad3dV171 */
   /* every analysis, or one, laid down from what the project holds now; one undo step */
   function bimDgRunAll(only){
     var S=bimDgSite(),out={},held=bimUndoHold,i;
@@ -24063,13 +24150,14 @@ try{
       /* __acad3dV167: Out of date when a standard it used changed: an edition, a value, an override */
       var SC=R?bimDgStdChanged(A.id):{run:[],data:[]},stale=!!(SC.run.length||SC.data.length),sx=bimDgStdText(A.id);
       if(stale)st+='. Out of date: '+(SC.run.length?bimStdChangedText(SC.run)+' since it ran: Run again':'')+(SC.run.length&&SC.data.length?'; ':'')+(SC.data.length?bimStdChangedText(SC.data)+' since '+BIM_STD_DATA[SC.kind].name+' was fetched: Analyze site again':'');
-      return {id:'dg'+A.id,title:A.name,state:!R?null:(stale?'stale':(L.length?(on?'on':'off'):'warn')),status:st,
+      var card={id:'dg'+A.id,title:A.name,state:!R?null:(stale?'stale':(L.length?(on?'on':'off'):'warn')),status:st,
         extra:R?bimDgLegendHtml(R.legend)+(R.note&&L.length?'<div class="a3d-sacap">'+bimEsc(R.note)+'</div>':'')+(R.source?'<div class="a3d-sacap">Source: '+bimEsc(R.source)+'</div>':'')+
           (sx?'<div class="a3d-sacap a3d-sastd" data-dgstd="'+A.id+'">'+bimEsc(sx)+'</div>':''):'',
         acts:[{act:'dg:show:'+A.id,label:on?'Hide':'Show',pri:!on&&L.length>0,off:L.length?'':'Nothing drawn yet'},
           {act:'dg:run:'+A.id,label:R?'Run again':'Run',tip:'From what the project holds now; Analyze site fetches the data again'},
           {act:'dg:select:'+A.id,label:'Select',off:L.length?'':'Nothing drawn yet'},
           {act:'dg:reset:'+A.id,label:'Reset',off:R?'':'Not run yet',tip:'As the analysis draws it: what you changed, copied or deleted on it goes back'}]};
+      return A.id==='traffic'?bimTrCard(card):card;   /* __acad3dV171: the simulation's own part */
     });
   }
   function bimDgAct(v){
@@ -27383,7 +27471,7 @@ try{
      movement analyses run again offline. Coordinates in model metres to the decimetre. */
   var BIM_MV_R=800,BIM_MV_DOOR=3,BIM_MV_CAR=400,BIM_MV_NODES=6000,BIM_MV_TOL=0.75,BIM_MV_CARS=24;
   /* the tags movement reads; the rest of a way's tags stay in OpenStreetMap */
-  var BIM_MV_KEYS=/^(highway|name|ref|maxspeed|maxspeed:type|zone:maxspeed|source:maxspeed|lanes|lanes:forward|lanes:backward|oneway|oneway:bicycle|junction|cycleway(:[a-z_:]+)?|parking(:[a-z_:]+)?|sidewalk(:[a-z_:]+)?|service|access|bicycle|motor_vehicle|motorcar|foot|segregated|lane_markings|bridge|tunnel|layer|bicycle_road|cyclestreet|shoulder(:[a-z_:]+)?)$/;
+  var BIM_MV_KEYS=/^(highway|name|ref|maxspeed|maxspeed:type|zone:maxspeed|source:maxspeed|lanes|lanes:forward|lanes:backward|oneway|oneway:bicycle|junction|cycleway(:[a-z_:]+)?|parking(:[a-z_:]+)?|sidewalk(:[a-z_:]+)?|service|access|bicycle|motor_vehicle|motorcar|foot|segregated|lane_markings|bridge|tunnel|layer|bicycle_road|cyclestreet|shoulder(:[a-z_:]+)?|width)$/;   /* __acad3dV171: width, which caps a street's lanes */
   var BIM_MV_HW=/^((motorway|trunk|primary|secondary|tertiary)(_link)?|unclassified|residential|living_street|road|service|pedestrian|track|footway|path|cycleway|bridleway|steps)$/;
   function bimMvR1(v){return Math.round(v*10)/10;}
   function bimMvTags(t){var o={},k,n=0;for(k in t)if(t.hasOwnProperty(k)&&n<40&&BIM_MV_KEYS.test(k)){o[k]=String(t[k]).slice(0,120);n++;}return o;}
@@ -28456,6 +28544,1495 @@ try{
     return s;
   }
 
+  /* ================= __acad3dV171: traffic and people around the site: the network =================
+     reference/research-traffic.md, sections 5 and 8. The streets V166 keeps (mv), within the simulation's reach of the
+     lot: every way a car may use, cut at the reach and split at its junctions into edges, each edge a link for each way
+     it may be driven, with its lanes, speed and width; the junctions with their arms, turns, right of way, stops and
+     signals; the lot's entry and doors; the footways and the sidewalks walkers use. Built at the start of a run from what
+     the project holds, never saved. Plan coordinates [x, z], x east and z south. */
+  var BIM_TR_FOOT=/^(footway|path|pedestrian|steps|track|living_street)$/;
+  function bimTrHw(t){return String(t&&t.highway||'');}
+  function bimTrBase(t){return bimTrHw(t).replace(/_link$/,'');}
+  /* a car may use it: a street from a motorway to a service road, not where motor vehicles are refused; a private one
+     only where it reaches the lot (its driveway) */
+  function bimTrCarWay(t,nearLot){
+    var hw=bimTrHw(t),cls=bimMvClassOf(hw);
+    if(!cls||cls.id==='pa'||hw==='living_street'&&t.motor_vehicle==='no')return false;
+    if(/^(no)$/.test(String(t.motor_vehicle||''))||/^(no)$/.test(String(t.motorcar||'')))return false;
+    if(/^(no|private)$/.test(String(t.access||''))&&!nearLot)return false;
+    return true;
+  }
+  /* a street a walker may walk along (its sidewalks or its edge): not a motorway, a road for motor vehicles only, or one
+     that refuses people on foot */
+  function bimTrStreetWalk(t){
+    if(/^(motorway|motorway_link)$/.test(bimTrHw(t))||t.motorroad==='yes')return false;
+    return !/^(no)$/.test(String(t.foot||''));
+  }
+  /* a walker may use it: a car's street (its sidewalks) or a way for people on foot */
+  function bimTrFootWay(t){
+    var hw=bimTrHw(t);
+    if(/^(no)$/.test(String(t.foot||'')))return false;
+    if(BIM_TR_FOOT.test(hw))return !/^(no|private)$/.test(String(t.access||''))||/^(yes|designated|permissive)$/.test(String(t.foot||''));
+    if(hw==='cycleway'||hw==='bridleway')return /^(yes|designated|permissive)$/.test(String(t.foot||''));
+    return false;
+  }
+  function bimTrBearing(dx,dz){var b=Math.atan2(dx,-dz)*180/Math.PI;return b<0?b+360:b;}   /* clockwise from the plan's north (-z) */
+  function bimTrTurnAng(bin,bout){return ((bout-bin)%360+540)%360-180;}                    /* positive: a right turn */
+  /* the roadway's width: mapped, else its lanes at a lane's width, else its class's (as the context draws it) */
+  function bimTrWidth(t,lanes){
+    var w=String(t.width||'').replace(/^\s+|\s+$/g,''),m=/^(\d+(?:\.\d+)?)\s*(m)?$/.exec(w);
+    if(m&&parseFloat(m[1])>0&&parseFloat(m[1])<80)return {v:parseFloat(m[1]),src:'mapped'};
+    if(lanes>0)return {v:lanes*bimStd('app.traffic','lane_w'),src:'lanes'};
+    return {v:bimRoadW()[bimTrHw(t)]||bimStd('app.traffic','lane_w')*2,src:'class'};
+  }
+  /* the lanes each way: per direction where mapped, else half of them each way (the odd one forward); capped by a mapped
+     width at a lane's width, never under one each way */
+  function bimTrLanes(t){
+    var base=bimTrBase(t),ow=bimMvOneway(t),rev=String(t.oneway||'')==='-1',n=bimMvLanes(t,base).v,f=parseInt(t['lanes:forward'],10),b=parseInt(t['lanes:backward'],10),cap,wm;
+    if(!(n>0))n=ow?1:2;
+    if(ow){f=n;b=0;}
+    else if(f>0||b>0){f=f>0?f:Math.max(1,n-(b>0?b:0));b=b>0?b:Math.max(1,n-f);}
+    else{f=Math.ceil(n/2);b=Math.max(1,n-f);}
+    wm=bimTrWidth(t,0);
+    if(wm.src==='mapped'){
+      cap=Math.max(1,Math.round(wm.v/bimStd('app.traffic','lane_w')));
+      if(f+b>cap){if(ow)f=cap;else{var f2=Math.max(1,Math.round(f*cap/(f+b)));b=Math.max(1,cap-f2);f=f2;}}
+    }
+    f=Math.min(4,f);b=Math.min(4,b);
+    if(rev){var x=f;f=b;b=x;}
+    return {f:f,b:b,ow:ow,rev:rev,cap:wm.src==='mapped'};
+  }
+  /* the sidewalks of a street, each side of its drawn direction: mapped, or both where not (said) */
+  function bimTrSidewalk(t){
+    var s=String(t.sidewalk||t['sidewalk:both']||''),l=t['sidewalk:left'],r=t['sidewalk:right'];
+    if(/^(no|none)$/.test(s))return {l:false,r:false,src:'mapped'};
+    if(s==='left')return {l:true,r:false,src:'mapped'};
+    if(s==='right')return {l:false,r:true,src:'mapped'};
+    if(/^(both|yes|separate)$/.test(s))return {l:true,r:true,src:'mapped'};
+    if(l!==undefined||r!==undefined)return {l:!/^(no|none)$/.test(String(l||'yes')),r:!/^(no|none)$/.test(String(r||'yes')),src:'mapped'};
+    return {l:true,r:true,src:'assumed'};
+  }
+  /* the point where a segment from inside the reach to outside it crosses it */
+  function bimTrCut(L,ax,az,bx,bz,R){
+    var lo=0,hi=1,k;
+    for(k=0;k<30;k++){var m=(lo+hi)/2;if(bimAccLotDist(L,ax+(bx-ax)*m,az+(bz-az)*m)<=R)lo=m;else hi=m;}
+    return [ax+(bx-ax)*lo,az+(bz-az)*lo];
+  }
+  function bimTrPolyLen(P){var c=[0],i;for(i=1;i<P.length;i++)c.push(c[i-1]+Math.sqrt((P[i][0]-P[i-1][0])*(P[i][0]-P[i-1][0])+(P[i][1]-P[i-1][1])*(P[i][1]-P[i-1][1])));return c;}
+  /* the point at s along a polyline with its cumulative lengths, and its direction */
+  function bimTrAt(P,C,s,out){
+    var n=P.length,lo=0,hi=n-1,i;
+    if(s<=0){i=0;}else if(s>=C[n-1]){i=n-2;}
+    else{while(hi-lo>1){var m=(lo+hi)>>1;if(C[m]<=s)lo=m;else hi=m;}i=lo;}
+    if(i<0)i=0;
+    var a=P[i],b=P[i+1]||P[i],sl=C[i+1]-C[i],f=sl>1e-9?Math.max(0,Math.min(1,(s-C[i])/sl)):0,dx=b[0]-a[0],dz=b[1]-a[1],l=Math.sqrt(dx*dx+dz*dz)||1;
+    out[0]=a[0]+dx*f;out[1]=a[1]+dz*f;out[2]=dx/l;out[3]=dz/l;
+    return out;
+  }
+  /* ---- the network ---- */
+  function bimTrNet(){
+    var mv=bimMvOf(),A=A3D.site&&A3D.site.access,L=bimAccLot(),R=bimStd('app.traffic','radius'),N,i,j,k;
+    if(!mv)return {err:bimMvWhyNot()};
+    N={L:L,R:R,x:mv.x.slice(),z:mv.z.slice(),bnd:{},edges:[],links:[],J:[],jAt:{},lot:null,doors:[],notes:[],sigOff:0,sw:{assumed:0,mapped:0},lanesCapped:0,src:bimMvSrc(A)};
+    function node(x,z){N.x.push(x);N.z.push(z);return N.x.length-1;}
+    /* the runs of each way within the reach, cut at it */
+    var runs=[],use={};
+    for(i=0;i<mv.w.length;i++){
+      var rec=mv.w[i],t=mv.t[rec[0]]||{},near=Infinity;
+      for(k=1;k<rec.length;k++)near=Math.min(near,bimAccLotDist(L,mv.x[rec[k]],mv.z[rec[k]]));
+      var car=bimTrCarWay(t,near<=3),foot=!car&&bimTrFootWay(t);
+      if(!car&&!foot)continue;
+      var cur=null;
+      for(k=1;k<rec.length;k++){
+        var id=rec[k],inR=bimAccLotDist(L,mv.x[id],mv.z[id])<=R;
+        if(k>1){
+          var pid=rec[k-1],pin=bimAccLotDist(L,mv.x[pid],mv.z[pid])<=R;
+          if(pin&&!inR){var c1=bimTrCut(L,mv.x[pid],mv.z[pid],mv.x[id],mv.z[id],R),n1=node(c1[0],c1[1]);N.bnd[n1]=1;cur.ids.push(n1);cur=null;}
+          else if(!pin&&inR){var c2=bimTrCut(L,mv.x[id],mv.z[id],mv.x[pid],mv.z[pid],R),n2=node(c2[0],c2[1]);N.bnd[n2]=1;cur={t:t,car:car,way:i,ids:[n2]};runs.push(cur);}
+        }
+        if(inR){if(!cur){cur={t:t,car:car,way:i,ids:[]};runs.push(cur);}cur.ids.push(id);}
+      }
+    }
+    runs=runs.filter(function(r){return r.ids.length>=2;});
+    runs.forEach(function(r){r.ids.forEach(function(id,q){use[id]=(use[id]||0)+(q===0||q===r.ids.length-1?1:2);});});
+    /* split where runs meet, and at their ends */
+    function split(id,q,r){return q===0||q===r.ids.length-1||use[id]>2;}
+    runs.forEach(function(r){
+      var a=0;
+      for(var q=1;q<r.ids.length;q++){
+        if(!split(r.ids[q],q,r))continue;
+        var ids=r.ids.slice(a,q+1),P=ids.map(function(id){return [N.x[id],N.z[id]];}),C=bimTrPolyLen(P);
+        if(C[C.length-1]>0.5)N.edges.push({a:ids[0],b:ids[ids.length-1],ids:ids,P:P,C:C,len:C[C.length-1],t:r.t,car:r.car,way:r.way});
+        a=q;
+      }
+    });
+    bimTrLot(N,mv,A);
+    /* the links, each way a car may drive an edge */
+    N.edges.forEach(function(e,ei){
+      if(!e.car)return;
+      var Ln=bimTrLanes(e.t),sp=bimMvSpeed(e.t,bimTrBase(e.t)),w=bimTrWidth(e.t,Ln.f+Ln.b),cls=bimMvClassOf(bimTrHw(e.t));
+      if(Ln.cap)N.lanesCapped++;
+      e.w=w.v;e.lanes=Ln;e.sw=bimTrSidewalk(e.t);
+      if(e.sw.src==='assumed')N.sw.assumed++;else N.sw.mapped++;
+      var mk=function(fw,lanes){
+        if(!(lanes>0))return -1;
+        var P=fw?e.P:e.P.slice().reverse(),li=N.links.length;
+        N.links.push({i:li,e:ei,a:fw?e.a:e.b,b:fw?e.b:e.a,P:P,C:bimTrPolyLen(P),len:e.len,lanes:lanes,v0:Math.max(2,sp.v/3.6),vsrc:sp.src,w:w.v,ow:Ln.ow,
+          rank:BIM_MV_CLASSES.length-BIM_MV_CLASSES.indexOf(cls)-(/_link$/.test(bimTrHw(e.t))?0.5:0),hw:bimTrHw(e.t),base:bimTrBase(e.t),name:String(e.t.name||e.t.ref||''),q:0,rev:-1,lot:!!e.lot});
+        return li;
+      };
+      var f=mk(true,Ln.f),b=mk(false,Ln.b);
+      if(f>=0&&b>=0){N.links[f].rev=b;N.links[b].rev=f;}
+      e.lf=f;e.lb=b;
+    });
+    bimTrJunctions(N,mv);
+    return N;
+  }
+  /* the lot's entry: the driveway that reaches it (a service way within 3 m), else a provisional entry on the lot's
+     lowest street at its longest frontage, as V166 marks one; its doors, or its middle where none is mapped */
+  function bimTrLot(N,mv,A){
+    var L=N.L,i,best=null,bd=Infinity,cx=0,cz=0;
+    if(L.ring){L.ring.forEach(function(p){cx+=p[0];cz+=p[1];});cx/=L.ring.length;cz/=L.ring.length;}else{cx=L.pt[0];cz=L.pt[1];}
+    N.lotC=[cx,cz];
+    (mv.en||[]).forEach(function(d){N.doors.push({i:N.doors.length,x:d[0],z:d[1],name:(d[3]||'')||('Entrance'+(d[2]&&d[2]!=='yes'?' ('+d[2]+')':'')),mapped:true});});   /* the lot's doors, as V166 keeps them */
+    if(!N.doors.length)N.doors.push({i:0,x:cx,z:cz,name:L.ring?'The lot':'The site',mapped:false});
+    for(i=0;i<N.edges.length;i++){
+      var e=N.edges[i];
+      if(!e.car||bimTrHw(e.t)!=='service')continue;
+      [e.a,e.b].forEach(function(n){var d=bimAccLotDist(L,N.x[n],N.z[n]);if(d<=3&&d<bd){bd=d;best={n:n,e:i};}});
+    }
+    if(best){var de=N.edges[best.e];de.lot=true;N.lot={n:best.n,prov:false,name:'Driveway',at:de.a===best.n?de.b:de.a};return;}   /* at: where it meets the street */
+    var fs=(A&&A.streets)||[],pref={s:0,l:1,c:2,a:3},bf=null;
+    fs.forEach(function(f){if(!(f.c in pref)||!f.pcs||!f.pcs.length)return;if(!bf||pref[f.c]<pref[bf.c]||(pref[f.c]===pref[bf.c]&&f.len>bf.len))bf=f;});
+    if(!bf||!L.ring){N.notes.push('No driveway reaches the lot and no street fronts it: the design\'s own trips are not simulated');return;}
+    var pc=bf.pcs[0],bl=0;
+    bf.pcs.forEach(function(q){var ql=Math.sqrt((q[2]-q[0])*(q[2]-q[0])+(q[3]-q[1])*(q[3]-q[1]));if(ql>bl){bl=ql;pc=q;}});
+    var mx=(pc[0]+pc[2])/2,mz=(pc[1]+pc[3])/2,eb=-1,es=0,ed=Infinity,ek=0;
+    for(i=0;i<N.edges.length;i++){
+      var g=N.edges[i];if(!g.car||g.lot)continue;   /* the frontage's own street, a service road too (V166 marks an alley's) */
+      for(var q=1;q<g.P.length;q++){
+        var ax=g.P[q-1][0],az=g.P[q-1][1],dx=g.P[q][0]-ax,dz=g.P[q][1]-az,l2=dx*dx+dz*dz,u=l2>1e-12?((mx-ax)*dx+(mz-az)*dz)/l2:0;u=Math.max(0,Math.min(1,u));
+        var px=ax+u*dx,pz=az+u*dz,d2=(px-mx)*(px-mx)+(pz-mz)*(pz-mz);
+        if(d2<ed){ed=d2;eb=i;ek=q;es=g.C[q-1]+u*Math.sqrt(l2);}
+      }
+    }
+    if(eb<0||Math.sqrt(ed)>40){N.notes.push('The lot\'s street is beyond the simulated streets: the design\'s own trips are not simulated');return;}
+    /* the edge split where the entry meets it, and a driveway from there to the lot line */
+    var E=N.edges[eb],at=[0,0,0,0];bimTrAt(E.P,E.C,es,at);
+    var mid=N.x.length;N.x.push(at[0]);N.z.push(at[1]);
+    var P1=[],P2=[],ids1=[],ids2=[];
+    for(var k=0;k<E.P.length;k++){if(E.C[k]<es-0.01){P1.push(E.P[k]);ids1.push(E.ids[k]);}}
+    P1.push([at[0],at[1]]);ids1.push(mid);P2.push([at[0],at[1]]);ids2.push(mid);
+    for(k=0;k<E.P.length;k++){if(E.C[k]>es+0.01){P2.push(E.P[k]);ids2.push(E.ids[k]);}}
+    if(P1.length<2||P2.length<2){N.notes.push('The provisional entry falls at a junction: the design\'s own trips are not simulated');return;}
+    var e1={a:E.a,b:mid,ids:ids1,P:P1,C:bimTrPolyLen(P1),t:E.t,car:true,way:E.way},e2={a:mid,b:E.b,ids:ids2,P:P2,C:bimTrPolyLen(P2),t:E.t,car:true,way:E.way};
+    e1.len=e1.C[e1.C.length-1];e2.len=e2.C[e2.C.length-1];
+    N.edges[eb]=e1;N.edges.push(e2);
+    var lp=bimMvLotPt(L,at[0],at[1]),dl=Math.sqrt((lp[0]-at[0])*(lp[0]-at[0])+(lp[1]-at[1])*(lp[1]-at[1]));
+    if(dl<3){var dd=Math.sqrt((cx-at[0])*(cx-at[0])+(cz-at[1])*(cz-at[1]))||1;lp=[at[0]+(cx-at[0])/dd*3,at[1]+(cz-at[1])/dd*3];dl=3;}   /* the driveway at least 3 m long, toward the lot's middle */
+    var ln=N.x.length;N.x.push(lp[0]);N.z.push(lp[1]);
+    var PD=[[at[0],at[1]],[lp[0],lp[1]]];
+    N.edges.push({a:mid,b:ln,ids:[mid,ln],P:PD,C:bimTrPolyLen(PD),len:dl,t:{highway:'service',service:'driveway',oneway:'no',lanes:'2',sidewalk:'no'},car:true,way:-1,lot:true,prov:true});
+    N.lot={n:ln,prov:true,name:'Provisional entry from '+(bf.n||'the '+bimAccStreetClass(bf)),at:mid};
+  }
+  /* ---- the junctions: arms, turns, right of way, stops and signals ---- */
+  function bimTrJunctions(N,mv){
+    var at={},i,k,sr=bimStd('app.traffic','sig_r');
+    function J(n){
+      if(!at.hasOwnProperty(n)){at[n]=N.J.length;N.J.push({i:N.J.length,n:n,x:N.x[n],z:N.z[n],arms:[],ins:[],outs:[],kind:'pass',sig:false,stop:{},major:{},tr:{},bnd:!!N.bnd[n],lot:!!(N.lot&&N.lot.n===n),cw:0});}
+      return N.J[at[n]];
+    }
+    N.edges.forEach(function(e,ei){
+      [0,1].forEach(function(end){
+        var n=end?e.b:e.a,P=end?e.P.slice().reverse():e.P,q=1;
+        while(q<P.length-1&&Math.abs(P[q][0]-P[0][0])+Math.abs(P[q][1]-P[0][1])<1)q++;
+        var j=J(n);
+        j.arms.push({e:ei,bear:bimTrBearing(P[q][0]-P[0][0],P[q][1]-P[0][1]),w:e.car?e.w:0,car:e.car,
+          lin:e.car?(end?e.lf:e.lb):-1,lout:e.car?(end?e.lb:e.lf):-1,end:end});
+      });
+    });
+    N.J.forEach(function(j){
+      j.arms.sort(function(p,q){return p.bear-q.bear;});
+      j.arms.forEach(function(a,ai){a.k=ai;if(a.lin>=0){j.ins.push(a.lin);N.links[a.lin].jb=j.i;N.links[a.lin].arm=ai;}if(a.lout>=0){j.outs.push(a.lout);N.links[a.lout].ja=j.i;N.links[a.lout].armOut=ai;}});
+      var wmax=0;j.arms.forEach(function(a){if(a.w>wmax)wmax=a.w;});
+      j.cw=wmax/2+bimStd('app.traffic','cw');   /* the crossings, this far from the junction's middle */
+      var carArms=j.arms.filter(function(a){return a.car;}).length;
+      if(j.ins.length&&carArms>=3)j.kind='yield';
+    });
+    N.jAt=at;
+    /* the stops and signals V166 kept, each to the junction it stands at */
+    (mv.xs||[]).forEach(function(x){
+      var f=String(x[2]||''),best=null,bd=Infinity;
+      if(!/[sap]/.test(f))return;
+      N.J.forEach(function(j){if(j.kind==='pass'&&!/[a]/.test(f))return;var d=Math.sqrt((j.x-x[0])*(j.x-x[0])+(j.z-x[1])*(j.z-x[1]));if(d<bd){bd=d;best=j;}});
+      if(!best||bd>sr||best.kind==='pass'){if(f.indexOf('s')>=0)N.sigOff++;return;}
+      if(f.indexOf('s')>=0){best.sig=true;best.kind='signal';return;}
+      if(f.indexOf('a')>=0){if(best.kind!=='signal')best.kind='allstop';return;}
+      if(best.kind==='signal'||best.kind==='allstop')return;
+      /* a stop on one approach: the arm whose line passes nearest the sign */
+      var ba=null,bad=Infinity;
+      best.arms.forEach(function(a){if(a.lin<0)return;var Lk=N.links[a.lin],P=Lk.P,dmin=Infinity;for(var q=1;q<P.length;q++)dmin=Math.min(dmin,bimPointSegDist(x[0],x[1],P[q-1][0],P[q-1][1],P[q][0],P[q][1]));if(dmin<bad){bad=dmin;ba=a;}});
+      if(ba)best.stop[ba.lin]=1;
+    });
+    /* right of way where nothing signals it, as SUMO decides it from the ways in: where two or more share the highest
+       class (a ramp a step below its road), the best two of them by speed, then lanes, from different arms, are major,
+       and a tie between them is said; where one alone has it, it is major, with the way in most nearly opposite it
+       (within 45 degrees) where there is one: a ramp merging, or a street meeting a road from its side, gives way */
+    N.J.forEach(function(j){
+      if(j.kind!=='yield')return;
+      var L=j.ins.map(function(li){return N.links[li];}),top=-Infinity;
+      L.forEach(function(Lk){if(Lk.rank>top)top=Lk.rank;});
+      var T=L.filter(function(Lk){return Lk.rank===top;}).sort(function(p,q){return (q.v0-p.v0)||(q.lanes-p.lanes)||(p.arm-q.arm);});
+      j.major[T[0].i]=1;
+      if(T.length>1){
+        for(k=1;k<T.length;k++)if(T[k].arm!==T[0].arm){j.major[T[k].i]=1;if(k+1<T.length&&T[k+1].arm!==T[0].arm&&T[k+1].v0===T[k].v0&&T[k+1].lanes===T[k].lanes)j.tie=true;break;}
+      }else{
+        var b0=j.arms[T[0].arm].bear,best=null,bd=45;
+        L.forEach(function(Lk){if(Lk.arm===T[0].arm)return;var dd=Math.abs(Math.abs(((j.arms[Lk.arm].bear-b0)%360+360)%360-180));if(dd<=bd){bd=dd;best=Lk;}});
+        if(best)j.major[best.i]=1;
+      }
+      Object.keys(j.stop).forEach(function(li){delete j.major[li];});
+    });
+    /* the turns: every exit but back the way it came, which is taken only where nothing else is (a dead end) */
+    N.J.forEach(function(j){
+      j.ins.forEach(function(li){
+        var Lk=N.links[li],ain=j.arms[Lk.arm],bin=(ain.bear+180)%360,T=[];
+        j.outs.forEach(function(lo){if(lo!==Lk.rev)T.push({o:lo,ang:bimTrTurnAng(bin,j.arms[N.links[lo].armOut].bear),p:0});});
+        if(!T.length&&Lk.rev>=0&&!j.bnd&&!j.lot)T.push({o:Lk.rev,ang:180,p:1,u:true});
+        j.tr[li]=T;
+      });
+    });
+  }
+  /* ================= __acad3dV171: traffic and people around the site: the demand =================
+     reference/research-traffic.md, section 8 (the owner's decisions 3 and 4). Each street's traffic in the peak hour
+     from its class's typical daily traffic (fhwa.fc) and Florida's K; the turns at each junction balanced to the
+     streets' volumes by NCHRP 255's method; the design's own trips from San Diego's rates by its usages; and the
+     quickest ways to the lot and away from it. Pure where it can be, so the suite works each out again. */
+  /* a link's volume in the peak hour: the middle of its class's urban AADT range times K, half of it each way (a one-way
+     way taken as one carriageway of its road; the peak direction's share is not applied); a service road and a street
+     of no class carry none */
+  function bimTrLinkVolume(Lk){
+    var rc=bimDgRoads()[Lk.base];
+    if(!rc||!(rc.u>0))return 0;
+    return rc.u*bimStd('fdot.k','k')/100*0.5;
+  }
+  /* NCHRP 255's balancing: a first guess of each approach's turns in proportion to the exits' volumes, then the
+     matrix scaled to the approaches' volumes (its rows) and to the exits' (its columns, scaled to the same total), in
+     turn, n times. qi: the approaches' volumes; qo: the exits'; ok[i][j]: the turn is allowed. Returns the shares,
+     each row summing to 1 (an approach with no allowed exit has none) */
+  function bimTrFurness(qi,qo,ok,n){
+    var I=qi.length,Jn=qo.length,T=[],i,j,r,ti=0,to=0;
+    for(i=0;i<I;i++)ti+=qi[i];
+    for(j=0;j<Jn;j++)to+=qo[j];
+    var sc=to>0?ti/to:0,tq=qo.map(function(v){return v*sc;});
+    for(i=0;i<I;i++){
+      var row=[],s=0;
+      for(j=0;j<Jn;j++){var g=ok[i][j]?(qo[j]>0?qo[j]:0):0;row.push(g);s+=g;}
+      for(j=0;j<Jn;j++)row[j]=s>0?row[j]/s*qi[i]:0;
+      T.push(row);
+    }
+    if(ti>0&&to>0)for(r=0;r<n;r++){
+      for(j=0;j<Jn;j++){var cs=0;for(i=0;i<I;i++)cs+=T[i][j];if(cs>0)for(i=0;i<I;i++)T[i][j]*=tq[j]/cs;}
+      for(i=0;i<I;i++){var rs=0;for(j=0;j<Jn;j++)rs+=T[i][j];if(rs>0)for(j=0;j<Jn;j++)T[i][j]*=qi[i]/rs;}
+    }
+    var P=[];
+    for(i=0;i<I;i++){
+      var tot=0,row2=[];for(j=0;j<Jn;j++)tot+=T[i][j];
+      if(tot>0)for(j=0;j<Jn;j++)row2.push(T[i][j]/tot);
+      else{var m=0;for(j=0;j<Jn;j++)if(ok[i][j])m++;for(j=0;j<Jn;j++)row2.push(m?(ok[i][j]?1/m:0):0);}   /* no volume to share by: the allowed exits evenly */
+      P.push(row2);
+    }
+    return P;
+  }
+  /* every link's volume, and each junction's turns. A ramp (a _link way) carries what the busiest street at its quieter
+     end carries: no class gives a ramp's own traffic, and its road's would be the main line's. At a junction no exit
+     is balanced to more than its busiest approach brings in: a motorway beginning at a street's junction would take
+     nearly all of it */
+  function bimTrDemand(N){
+    var it=bimStd('nchrp255','iter'),ramp=/_link$/;
+    N.links.forEach(function(Lk){Lk.q=ramp.test(Lk.hw)?-1:bimTrLinkVolume(Lk);});
+    N.links.forEach(function(Lk){
+      if(Lk.q>=0)return;
+      var m=Infinity;
+      [N.J[Lk.ja],N.J[Lk.jb]].forEach(function(j){
+        if(!j)return;
+        var b=-1;j.ins.concat(j.outs).forEach(function(li){var o=N.links[li];if(!ramp.test(o.hw)&&o.q>b)b=o.q;});
+        if(b>=0&&b<m)m=b;
+      });
+      Lk.q=m<Infinity?m:bimTrLinkVolume(Lk);
+    });
+    N.J.forEach(function(j){
+      var ins=j.ins,outs=j.outs;
+      if(!ins.length)return;
+      var ok=ins.map(function(li){var T=j.tr[li];return outs.map(function(lo){return T.some(function(t){return t.o===lo;});});});
+      var qi=ins.map(function(li){return Math.max(N.links[li].q,1e-6);}),qmax=Math.max.apply(null,qi);
+      var P=bimTrFurness(qi,outs.map(function(lo){return Math.min(N.links[lo].q,qmax);}),ok,it);
+      ins.forEach(function(li,a){j.tr[li].forEach(function(t){var b=outs.indexOf(t.o);t.p=t.u?1:(b>=0?P[a][b]:0);});});
+    });
+    /* the boundaries: where background traffic comes in and goes out */
+    N.src=[];N.sink=[];
+    N.J.forEach(function(j){if(!j.bnd)return;j.outs.forEach(function(lo){N.src.push({j:j.i,l:lo,q:N.links[lo].q});});j.ins.forEach(function(li){N.sink.push({j:j.i,l:li,q:N.links[li].q});});});
+  }
+  /* ---- the design's own trips (San Diego's Trip Generation Manual, Table 1) ----
+     rows: [{use, n}] -- the usage's San Diego use and its measure (dwelling units, thousand sq ft, rooms); acres: the
+     lot's area (null where there is no lot); peak 'am' or 'pm'. Returns the trips in and out in the peak hour, by row */
+  function bimTrTripsOf(rows,acres,peak){
+    var T=bimStd('sd.trips','table')||{},dense=bimStd('sd.trips','dense'),out={rows:[],tin:0,tout:0,day:0},du=0,i;
+    for(i=0;i<rows.length;i++)if(rows[i].use==='mdu')du+=rows[i].n;
+    for(i=0;i<rows.length;i++){
+      var r=rows[i],key=r.use,day=0,R;
+      if(key==='mdu')key=(acres>0&&du/acres>dense)?'mdu_hi':'mdu_lo';
+      R=T[key];
+      if(!R||!(r.n>0)){out.rows.push({use:r.use,key:key,n:r.n,day:0,pin:0,pout:0,name:R?R.name:''});continue;}
+      if(R.ln)day=Math.exp(R.ln[0]*Math.log(r.n)+R.ln[1]);else day=R.rate*r.n;
+      var pk=peak==='am'?R.am:R.pm,ph=day*pk[0]/100,s=pk[1]+pk[2];
+      var o={use:r.use,key:key,n:r.n,day:day,share:pk[0],pin:ph*pk[1]/s,pout:ph*pk[2]/s,name:R.name,per:R.per};
+      out.rows.push(o);out.tin+=o.pin;out.tout+=o.pout;out.day+=day;
+    }
+    return out;
+  }
+  /* the design's usages as San Diego's uses, with their measures: a dwelling by the usage's units, a hotel by its keys,
+     an office and retail by their gross floor area in thousand square feet (m2 to sq ft by the foot's definition) */
+  function bimTrUses(){
+    var U=bimStd('app.traffic','uses')||{},S=bimUsageSummary(null),rows=[],skip=[];
+    S.rows.forEach(function(g){
+      var use=U[g.usage],n=0;
+      if(!use){if(g.usage!=='use-car')skip.push(g.name);return;}
+      if(use==='mdu')n=g.values.units||0;
+      else if(use==='hotel')n=g.values.keys||0;
+      else n=g.GFA/(0.3048*0.3048)/1000;
+      rows.push({use:use,n:n,usage:g.usage,name:g.name,GFA:g.GFA,measured:use==='mdu'?'units':(use==='hotel'?'keys':'GFA')});
+    });
+    var parking=S.rows.some(function(g){return g.usage==='use-car'&&(g.values.bays||0)>0;});
+    return {rows:rows,skip:skip,parking:parking};
+  }
+  function bimTrLotAcres(L){return L.ring?Math.abs(bimPolyArea(L.ring))/4046.8564224:null;}   /* the international acre, 4046.8564224 m2 */
+  /* ---- the quickest ways: for a target node, the link to take after each link to reach it (by free-flow time) ---- */
+  function bimTrToward(N,target){
+    var nL=N.links.length,D=new Float64Array(nL),nx=new Int32Array(nL),hk=[],hv=[],i;
+    for(i=0;i<nL;i++){D[i]=Infinity;nx[i]=-2;}
+    function push(k,v){var q=hk.length;hk.push(k);hv.push(v);while(q>0){var p=(q-1)>>1;if(hk[p]<=k)break;hk[q]=hk[p];hv[q]=hv[p];q=p;}hk[q]=k;hv[q]=v;}
+    function pop(){var lk=hk.pop(),lv=hv.pop(),m=hk.length,q=0;if(!m)return;for(;;){var l=2*q+1,r=l+1,s=-1,sk=lk;if(l<m&&hk[l]<sk){s=l;sk=hk[l];}if(r<m&&hk[r]<sk){s=r;sk=hk[r];}if(s<0)break;hk[q]=hk[s];hv[q]=hv[s];q=s;}hk[q]=lk;hv[q]=lv;}
+    for(i=0;i<nL;i++)if(N.links[i].b===target){D[i]=N.links[i].len/N.links[i].v0;nx[i]=-1;push(D[i],i);}   /* -1: this link ends there */
+    var into={};N.links.forEach(function(Lk,li){(into[Lk.b]||(into[Lk.b]=[])).push(li);});
+    while(hk.length){
+      var t=hk[0],l=hv[0];pop();
+      if(t>D[l])continue;
+      (into[N.links[l].a]||[]).forEach(function(p){
+        var J=N.J[N.links[p].jb];if(!J||!(J.tr[p]||[]).some(function(x){return x.o===l;}))return;   /* only the turns a car may make (a U-turn at a dead end) */
+        var nt=t+N.links[p].len/N.links[p].v0;
+        if(nt<D[p]){D[p]=nt;nx[p]=l;push(nt,p);}
+      });
+    }
+    return {D:D,nx:nx};
+  }
+  /* ================= __acad3dV171: traffic and people around the site: the signals =================
+     reference/research-traffic.md, sections 2, 7 and 8 (the owner's decision 1): each signalled junction's own fixed
+     plan, assumed and said, OpenStreetMap mapping where a signal is and never its timing. Two phases by axis; Webster's
+     cycle from the critical lane volumes, held between the timing manual's least and its preferred most; the yellow and
+     the red clearance by Kell and Fullerton within the MUTCD's limits; the greens shared by demand, each at least the
+     manual's least for its class and WALK with the crossing of the street it parallels. No offsets: each junction alone. */
+  /* an approach's class for its least green: the FHWA class its street is read as (app.roads), a major arterial over
+     the speed set as fast */
+  function bimTrGreenClass(Lk){
+    var fc=(bimStd('app.roads','classes')||{})[Lk.base];
+    if(fc==='interstate'||fc==='freeway'||fc==='opa')return Lk.v0*3.6>bimStd('stm.signal','fast')?'fast':'major';
+    if(fc==='minor_art')return 'minor';
+    return 'local';
+  }
+  function bimTrAxisOff(b,axis){var d=((b-axis)%180+180)%180;return d<45||d>135;}   /* within 45 degrees of the axis, either way */
+  /* the plan, from what is pure: the approaches [{arm, bear, q, lanes, v, cls}] and the car arms [{k, bear, w}] */
+  function bimTrPlanOf(ap,arms){
+    var sat=bimStd('stm.signal','sat'),lost=bimStd('stm.signal','lost'),wb=bimStd('stm.signal','webster')||[1.5,5],cmin=bimStd('stm.signal','cycle_min'),cmax=bimStd('stm.signal','cycle_max'),
+      kt=bimStd('stm.signal','kf_t'),ka=bimStd('stm.signal','kf_a'),klv=bimStd('stm.signal','kf_lv'),mg=bimStd('stm.signal','min_green')||{},
+      y0=bimStd('mutcd.signal','yel_min'),y1=bimStd('mutcd.signal','yel_max'),rmax=bimStd('mutcd.signal','red_max'),walk=bimStd('mutcd.signal','walk'),
+      clr=bimStd('mutcd.walk','clear'),ymax=bimStd('app.traffic','y_max'),i,k;
+    if(!ap.length)return null;
+    var crit=ap[0];
+    for(i=1;i<ap.length;i++)if(ap[i].q/ap[i].lanes>crit.q/crit.lanes)crit=ap[i];
+    var axis=crit.bear%180,ph=[{arms:[],ap:[]},{arms:[],ap:[]}];
+    arms.forEach(function(a){ph[bimTrAxisOff(a.bear,axis)?0:1].arms.push(a.k);});
+    ap.forEach(function(a){ph[bimTrAxisOff(a.bear,axis)?0:1].ap.push(a);});
+    function wOf(p){var w=0;arms.forEach(function(a){if(ph[p].arms.indexOf(a.k)>=0&&a.w>w)w=a.w;});return w;}
+    var Y=0,sumCh=0,P=[];
+    for(k=0;k<2;k++){
+      var A=ph[k].ap,vc=0,v=0,gd=0,o={arms:ph[k].arms,ins:A.map(function(a){return a.li;}),y:0,Y:0,AR:0,G:0};
+      A.forEach(function(a){vc=Math.max(vc,a.q/a.lanes);v=Math.max(v,a.v);gd=Math.max(gd,mg[a.cls]||0);});
+      o.y=vc/sat;Y+=o.y;
+      if(A.length){
+        o.Y=Math.min(y1,Math.max(y0,kt+v/(2*ka)));                      /* Kell and Fullerton's first term, flat */
+        o.AR=Math.min(rmax,(wOf(1-k)+klv)/Math.max(v,0.1));             /* its second: across the other phase's widest street */
+      }
+      o.gdrv=gd;
+      o.gped=walk+wOf(1-k)/clr;                                         /* WALK and the crossing of the street it parallels */
+      o.gmin=Math.max(o.gdrv,o.gped);
+      sumCh+=o.Y+o.AR;
+      P.push(o);
+    }
+    var L=lost*2,C0=Y<ymax?(wb[0]*L+wb[1])/(1-Y):Infinity,C=Math.min(cmax,Math.max(cmin,C0)),grown=false;
+    /* the greens: what the change intervals leave, by each phase's y, none under its least */
+    var av=C-sumCh,fix=[false,false],guard=0;
+    for(;;){
+      var rest=av,yf=0;
+      for(k=0;k<2;k++){if(fix[k])rest-=P[k].gmin;else yf+=P[k].y;}
+      var any=false;
+      for(k=0;k<2;k++)if(!fix[k]){P[k].G=yf>0?rest*P[k].y/yf:rest/(fix[0]||fix[1]?1:2);if(P[k].G<P[k].gmin-1e-9){fix[k]=true;any=true;}}
+      for(k=0;k<2;k++)if(fix[k])P[k].G=P[k].gmin;
+      if(!any||++guard>3)break;
+    }
+    if(P[0].G+P[1].G+sumCh>C+1e-9){C=P[0].G+P[1].G+sumCh;grown=true;}   /* the least greens do not fit: the cycle grows to hold them */
+    var t=0;
+    P.forEach(function(o){o.t0=t;t+=o.G+o.Y+o.AR;});
+    return {C:C,C0:C0,Y:Y,L:L,ph:P,grown:grown,axis:axis};
+  }
+  /* a signalled junction's plan, from the network */
+  function bimTrPlan(N,j){
+    var ap=j.ins.map(function(li){var Lk=N.links[li],a=j.arms[Lk.arm];return {li:li,arm:a.k,bear:a.bear,q:Lk.q,lanes:Lk.lanes,v:Lk.v0,cls:bimTrGreenClass(Lk)};});
+    var arms=j.arms.filter(function(a){return a.car;}).map(function(a){return {k:a.k,bear:a.bear,w:a.w};});
+    var P=bimTrPlanOf(ap,arms);
+    if(!P)return null;
+    P.of={};P.armPh={};
+    P.ph.forEach(function(o,k){o.ins.forEach(function(li){P.of[li]=k;});o.arms.forEach(function(a){P.armPh[a]=k;});});
+    return P;
+  }
+  /* a phase's state at time t: 'g' with the green left, 'y', or 'r' */
+  function bimTrSig(P,k,t,out){
+    var tc=((t%P.C)+P.C)%P.C,o=P.ph[k],x=tc-o.t0;
+    if(x<0)x+=P.C;
+    if(x<o.G){out.s='g';out.left=o.G-x;}
+    else if(x<o.G+o.Y){out.s='y';out.left=o.G+o.Y-x;}
+    else{out.s='r';out.left=0;}
+    return out;
+  }
+  /* ================= __acad3dV171: traffic and people around the site: the walkers' ways =================
+     reference/research-traffic.md, section 8. Walkers keep to the sidewalks of the streets they follow, each side a
+     line beyond the roadway's edge, and to footways and paths along their line. At a junction they cross what lies
+     between their way in and their way out, the short way round: each arm of the junction has a crossing this far from
+     its middle (the junction's crossings), its two ends on the arm's two sidewalks. A way is a polyline, with the
+     crossings marked on it; the ways are worked out once a run, between where people come from and the doors, over the
+     junctions' corners: a walker changes sides only where a crossing is, and ends on the side its door is on. */
+  /* a point of an arm: its crossing's end on one side (sg +1 the side clockwise of it, -1 the other) */
+  function bimTrArmPt(N,j,a,sg,out){
+    var r=a.bear*Math.PI/180,dx=Math.sin(r),dz=-Math.cos(r),off=a.car?a.w/2+bimStd('app.traffic','sw_off'):0;
+    out[0]=j.x+dx*j.cw+(-dz)*sg*off;out[1]=j.z+dz*j.cw+dx*sg*off;
+    return out;
+  }
+  /* the nearest point of the walkable edges to a point: the edge, the distance along it, the point */
+  function bimTrSnap(N,x,z){
+    var best=null,bd=Infinity,i,q;
+    for(i=0;i<N.edges.length;i++){
+      var e=N.edges[i];
+      if(!e.car&&!bimTrFootWay(e.t))continue;
+      if(e.car&&(!e.sw.l&&!e.sw.r&&!e.lot||!bimTrStreetWalk(e.t)))continue;
+      for(q=1;q<e.P.length;q++){
+        var ax=e.P[q-1][0],az=e.P[q-1][1],dx=e.P[q][0]-ax,dz=e.P[q][1]-az,l2=dx*dx+dz*dz,u=l2>1e-12?((x-ax)*dx+(z-az)*dz)/l2:0;u=Math.max(0,Math.min(1,u));
+        var px=ax+u*dx,pz=az+u*dz,d2=(px-x)*(px-x)+(pz-z)*(pz-z);
+        if(d2<bd){bd=d2;best={e:i,s:e.C[q-1]+u*Math.sqrt(l2),x:px,z:pz,d:0};}
+      }
+    }
+    if(best)best.d=Math.sqrt(bd);
+    return best;
+  }
+  /* a leg's line, on its side (+1 right of the way walked), trimmed at each end that is a junction's crossing */
+  function bimTrLegLine(N,g,side,trim0,trim1,out){
+    var e=N.edges[g.e],fw=g.s1>=g.s0,lo=Math.min(g.s0,g.s1),hi=Math.max(g.s0,g.s1),off=e.car?side*(e.w/2+bimStd('app.traffic','sw_off')):0,P=[],k,a=[0,0,0,0];
+    if(fw){lo+=trim0;hi-=trim1;}else{lo+=trim1;hi-=trim0;}
+    if(hi<lo){var m=(lo+hi)/2;lo=m;hi=m;}
+    bimTrAt(e.P,e.C,lo,a);P.push([a[0],a[1],a[2],a[3]]);
+    for(k=1;k<e.P.length-1;k++)if(e.C[k]>lo&&e.C[k]<hi){var dxa=e.P[k+1][0]-e.P[k-1][0],dza=e.P[k+1][1]-e.P[k-1][1],la=Math.sqrt(dxa*dxa+dza*dza)||1;P.push([e.P[k][0],e.P[k][1],dxa/la,dza/la]);}
+    bimTrAt(e.P,e.C,hi,a);P.push([a[0],a[1],a[2],a[3]]);
+    if(!fw)P.reverse();
+    P.forEach(function(p){var dx=fw?p[2]:-p[2],dz=fw?p[3]:-p[3];out.push([p[0]+(-dz)*off,p[1]+dx*off]);});   /* right of the way walked: (-dz, dx) */
+  }
+  /* which side of an edge a point is on: +1 right of it as drawn (a to b), -1 left */
+  function bimTrSideOf(N,sn,x,z){
+    var e=N.edges[sn.e],a=[0,0,0,0];
+    bimTrAt(e.P,e.C,sn.s,a);
+    return a[2]*(z-a[1])-a[3]*(x-a[0])>=0?1:-1;
+  }
+  /* the corners: each junction's, between each arm and the next clockwise (a dead end's two, one each side of its arm,
+     so that going round it is a crossing); a walker at a corner is on the sidewalks that meet there */
+  function bimTrCornerOf(j,k,sg){var n=j.arms.length;if(n===1)return j.cb+(sg>0?0:1);return j.cb+(sg>0?k:(k-1+n)%n);}
+  function bimTrArmOf(j,e,end){for(var k=0;k<j.arms.length;k++)if(j.arms[k].e===e&&j.arms[k].end===end)return k;return -1;}
+  /* an edge end's corner on side sd of the edge (+1 right of a to b): at a, the arm points along the edge, so its
+     right is clockwise of it; at b, it points back */
+  function bimTrEndCorner(N,e,end,sd){var E=N.edges[e],j=N.J[N.jAt[end?E.b:E.a]];return bimTrCornerOf(j,bimTrArmOf(j,e,end),end?-sd:sd);}
+  /* where a walker may cross an arm, and what it costs in metres walked (-1: not there): a footway's arm at no cost; a
+     street where it makes a junction, a signal's wait or each lane crossed where nothing signals it; never a street at
+     a driveway's mouth, a bend or the edge of the reach, where no crossing is */
+  function bimTrCrossCost(N,j,a){
+    if(!a.car)return 0;
+    if(j.bnd)return -1;
+    var E=N.edges[a.e],sv=bimTrHw(E.t)==='service'||!!E.lot,v=bimStd('hm.walk','mean'),n=0,ln=0;
+    j.arms.forEach(function(b){if(b.car&&bimTrHw(N.edges[b.e].t)!=='service'&&!N.edges[b.e].lot)n++;});
+    if(j.kind==='signal')return a.w+bimStd('app.traffic','x_sig')*v;
+    if(!sv&&n<3&&j.arms.length>1)return -1;
+    if(a.lin>=0)ln+=N.links[a.lin].lanes;
+    if(a.lout>=0)ln+=N.links[a.lout].lanes;
+    return a.w+ln*bimStd('app.traffic','x_lane')*v;
+  }
+  /* the corners joined: each side of each walkable edge (a street's side with no sidewalk three times its length,
+     walked at its edge), and each crossing; once a network */
+  function bimTrCorners(N){
+    var nc=0,adj=[],i;
+    N.J.forEach(function(j){j.cb=nc;nc+=Math.max(2,j.arms.length);});
+    for(i=0;i<nc;i++)adj.push([]);
+    N.edges.forEach(function(e,ei){
+      if(e.car?!bimTrStreetWalk(e.t):!bimTrFootWay(e.t))return;
+      [1,-1].forEach(function(sd){
+        var f=e.car&&!(sd>0?e.sw.r:e.sw.l)?3:1,ca=bimTrEndCorner(N,ei,0,sd),cb=bimTrEndCorner(N,ei,1,sd);
+        adj[ca].push([cb,e.len*f,{e:ei,sd:sd,fw:true}]);adj[cb].push([ca,e.len*f,{e:ei,sd:sd,fw:false}]);
+      });
+    });
+    N.J.forEach(function(j){
+      j.arms.forEach(function(a,k){
+        var c=bimTrCrossCost(N,j,a),p=bimTrCornerOf(j,k,1),q=bimTrCornerOf(j,k,-1);
+        if(c<0||p===q)return;
+        adj[p].push([q,c,{j:j.i,k:k,from:1}]);adj[q].push([p,c,{j:j.i,k:k,from:-1}]);
+      });
+    });
+    N.cadj=adj;N.nc=nc;
+  }
+  /* a way between two points: [x, z] pairs, the distance along it, and its crossings {i (the point it starts at), j,
+     k (the arm), len, sig, from (the side of the arm it starts on)}. Dijkstra over the corners, from the side of the street the start is on to the side the end
+     is on: each point snapped to its nearest walkable edge, the first and last legs part of their edges */
+  function bimTrWalkRoute(N,O,Dp){
+    var so=bimTrSnap(N,O[0],O[1]),sn=bimTrSnap(N,Dp[0],Dp[1]),i;
+    if(!so||!sn)return null;
+    if(!N.cadj)bimTrCorners(N);
+    var eo=N.edges[so.e],ed=N.edges[sn.e];
+    /* each end's sides: its own, or both on a footway (one line) */
+    var sdo=eo.car?[bimTrSideOf(N,so,O[0],O[1])]:[1,-1],sdd=ed.car?[bimTrSideOf(N,sn,Dp[0],Dp[1])]:[1,-1];
+    function fOf(e,sd){return e.car&&!(sd>0?e.sw.r:e.sw.l)?3:1;}
+    var D=new Float64Array(N.nc),Pv=[],hk=[],hv=[];
+    for(i=0;i<N.nc;i++){D[i]=Infinity;Pv.push(null);}
+    function push(k,v){var q=hk.length;hk.push(k);hv.push(v);while(q>0){var p=(q-1)>>1;if(hk[p]<=k)break;hk[q]=hk[p];hv[q]=hv[p];q=p;}hk[q]=k;hv[q]=v;}
+    function pop(){var lk=hk.pop(),lv=hv.pop(),m=hk.length,q=0;if(!m)return;for(;;){var l=2*q+1,r=l+1,x=-1,sk=lk;if(l<m&&hk[l]<sk){x=l;sk=hk[l];}if(r<m&&hk[r]<sk){x=r;sk=hk[r];}if(x<0)break;hk[q]=hk[x];hv[q]=hv[x];q=x;}hk[q]=lk;hv[q]=lv;}
+    sdo.forEach(function(sd){
+      [0,1].forEach(function(end){
+        var c=bimTrEndCorner(N,so.e,end,sd),t=(end?eo.len-so.s:so.s)*fOf(eo,sd);
+        if(t<D[c]){D[c]=t;Pv[c]={start:true,end:end,sd:sd};push(t,c);}
+      });
+    });
+    while(hk.length){
+      var t=hk[0],u=hv[0];pop();
+      if(t>D[u])continue;
+      N.cadj[u].forEach(function(x){var nt=t+x[1];if(nt<D[x[0]]){D[x[0]]=nt;Pv[x[0]]={from:u,m:x[2]};push(nt,x[0]);}});
+    }
+    /* the end: from a corner of its edge on its side, or straight along the start's edge where both are on its side */
+    var best=Infinity,bc=-1,bend=0,bsd=sdd[0],direct=null;
+    sdd.forEach(function(sd){
+      [0,1].forEach(function(end){
+        var c=bimTrEndCorner(N,sn.e,end,sd),t=D[c]+(end?ed.len-sn.s:sn.s)*fOf(ed,sd);
+        if(t<best){best=t;bc=c;bend=end;bsd=sd;}
+      });
+      if(so.e===sn.e&&sdo.indexOf(sd)>=0){var td=Math.abs(sn.s-so.s)*fOf(eo,sd);if(td<=best){best=td;direct=sd;}}
+    });
+    if(best===Infinity)return null;
+    var pts=[[O[0],O[1]]],cr=[],tmp=[0,0];
+    function cwAt(e,end){var E=N.edges[e];return N.J[N.jAt[end?E.b:E.a]].cw;}
+    function leg(e,s0,s1,sd,tr0,tr1){bimTrLegLine(N,{e:e,s0:s0,s1:s1},s1>=s0?sd:-sd,tr0,tr1,pts);}
+    if(direct!==null)leg(so.e,so.s,sn.s,direct,0,0);
+    else{
+      var mv=[],c=bc;
+      while(c>=0&&Pv[c]&&!Pv[c].start){mv.push(Pv[c].m);c=Pv[c].from;}
+      var st=Pv[c];
+      mv.reverse();
+      leg(so.e,so.s,st.end?eo.len:0,st.sd,0,cwAt(so.e,st.end));
+      mv.forEach(function(m){
+        if(m.e!==undefined){var E=N.edges[m.e];leg(m.e,m.fw?0:E.len,m.fw?E.len:0,m.sd,cwAt(m.e,m.fw?0:1),cwAt(m.e,m.fw?1:0));return;}
+        var j=N.J[m.j],a=j.arms[m.k];
+        bimTrArmPt(N,j,a,m.from,tmp);pts.push([tmp[0],tmp[1]]);
+        if(a.car)cr.push({i:pts.length-1,j:j.i,k:m.k,sig:j.kind==='signal',from:m.from});
+        bimTrArmPt(N,j,a,-m.from,tmp);pts.push([tmp[0],tmp[1]]);
+      });
+      leg(sn.e,bend?ed.len:0,sn.s,bsd,cwAt(sn.e,bend),0);
+    }
+    pts.push([Dp[0],Dp[1]]);
+    /* the points, and the distance along them; repeated points dropped, the crossings kept on theirs */
+    var P=[pts[0]],map=[0];
+    for(i=1;i<pts.length;i++){var q=P[P.length-1];if(Math.abs(pts[i][0]-q[0])+Math.abs(pts[i][1]-q[1])>1e-3)P.push(pts[i]);map.push(P.length-1);}
+    var C=bimTrPolyLen(P);
+    cr.forEach(function(x){x.i=map[x.i];x.s0=C[x.i];x.s1=C[Math.min(C.length-1,x.i+1)];x.len=x.s1-x.s0;});
+    return {P:P,C:C,len:C[C.length-1],cost:best,cr:cr.filter(function(x){return x.len>0.1;})};
+  }
+  /* ================= __acad3dV171: traffic and people around the site: the run =================
+     reference/research-traffic.md, sections 1 to 3 and 8. One run at a time, on V170's clock: built when it starts
+     (the network, the plans, the demand, the walkers' ways), warmed up, then stepped at a fixed step while the clock
+     plays and drawn between steps; Stop gives it up. Cars and walkers live in fixed pools of typed arrays allocated
+     once a run: nothing piles up while it runs. What it finds is tallied as it goes, never recorded step by step.
+     Nothing of it is saved or undone: the settings are the project's (A3D.site.traffic), the results the elements
+     Run lays down. */
+  var BIM_TR_Q={light:{cars:200,walk:300,fps:20,detail:0,name:'Light'},normal:{cars:600,walk:1000,fps:30,detail:1,name:'Normal'},detailed:{cars:1500,walk:3000,fps:30,detail:2,name:'Detailed'}};
+  var BIM_TR_QORDER=['light','normal','detailed'];
+  var A3D_TR={run:null,allocs:0,last:null};
+  function bimTrSettings(){
+    var s=A3D.site&&A3D.site.traffic,o={on:false,peak:'pm',q:'auto',speed:1,seed:1};
+    if(s&&typeof s==='object'){if(s.on===true)o.on=true;if(s.peak==='am')o.peak='am';if(BIM_TR_Q[s.q])o.q=s.q;if(s.speed===4||s.speed===16)o.speed=s.speed;if(s.seed>0&&s.seed<1e9)o.seed=Math.floor(s.seed);}
+    return o;
+  }
+  /* the quality the device suggests, where the browser says its memory and cores */
+  function bimTrDeviceQ(){
+    var m=navigator.deviceMemory,c=navigator.hardwareConcurrency;
+    if((m&&m<=2)||(c&&c<=2))return 'light';
+    if(m>=8&&c>=8)return 'detailed';
+    return 'normal';
+  }
+  function bimTrQuality(){var s=bimTrSettings();return s.q==='auto'?bimTrDeviceQ():s.q;}
+  /* the run's random numbers, seeded so a run can be run again (mulberry32) */
+  function bimTrRng(seed){var a=seed>>>0;return function(){a=(a+0x6D2B79F5)>>>0;var t=a;t=Math.imul(t^(t>>>15),t|1);t^=t+Math.imul(t^(t>>>7),t|61);return ((t^(t>>>14))>>>0)/4294967296;};}
+  function bimTrGauss(rng){var u=Math.max(1e-12,rng()),v=rng();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
+  /* the IDM's acceleration (Kesting 2010's car): v, the desired speed, the gap to the one ahead, the approach rate */
+  function bimTrIdm(v,v0,s,dv,P){
+    if(s<=0.01)return -9;
+    var ss=P.s0+Math.max(0,v*P.T+v*dv/(2*Math.sqrt(P.a*P.b)));
+    return P.a*(1-Math.pow(Math.max(0,v)/v0,P.d)-(ss/s)*(ss/s));
+  }
+  function bimTrIdmP(){return {T:bimStd('idm.car','T'),s0:bimStd('idm.car','s0'),a:bimStd('idm.car','a'),b:bimStd('idm.car','b'),d:bimStd('idm.car','delta'),free:bimStd('idm.car','free')};}
+  /* ---- the run built: everything it reads, worked out once ---- */
+  function bimTrBuild(){
+    var N=bimTrNet();
+    if(N.err)return {err:N.err};
+    if(!N.links.length)return {err:'No street a car may use within '+bimStdSay('app.traffic','radius')+' of the lot'};
+    bimTrDemand(N);
+    var set=bimTrSettings(),qk=bimTrQuality(),Q=BIM_TR_Q[qk],RUN={N:N,set:set,qk:qk,Q:Q,cap:Q,rng:bimTrRng(set.seed),P:bimTrIdmP(),t:0,acc:0,step:Math.min(bimStd('app.traffic','step'),bimStd('idm.car','step_max')),
+      plans:{},targets:[],tgOf:{},routes:[],srcs:[],slow:0,steps:0,frameMs:[],warm:false,y:bimDgSite().y||0};
+    N.J.forEach(function(j){if(j.kind==='signal'){var P=bimTrPlan(N,j);if(P)RUN.plans[j.i]=P;else j.kind='yield';}j.majors=j.ins.filter(function(m){return j.major[m];});});
+    /* the lanes' slots, and each junction's arms' crossings */
+    var nl=0;N.links.forEach(function(Lk){Lk.slot=nl;nl+=Lk.lanes;});RUN.nSlots=nl;
+    var na=0;N.J.forEach(function(j){j.armBase=na;na+=j.arms.length;});RUN.nArms=na;
+    /* the design's own trips */
+    var U=bimTrUses(),acres=bimTrLotAcres(N.L);
+    RUN.uses=U;RUN.trips=bimTrTripsOf(U.rows,acres,set.peak);RUN.acres=acres;
+    RUN.lotOk=!!N.lot;
+    /* where the lot's drivers leave their cars: the lot, or (with no parking of its own) the car parks nearby */
+    var mv=bimMvOf(),cp=[];
+    if(RUN.lotOk&&!U.parking&&N.lot.prov&&mv&&mv.cp&&mv.cp.length){
+      mv.cp.slice(0,3).forEach(function(c){
+        var cx=0,cz=0,n=0;for(var q=0;q+1<c.ring.length;q+=2){cx+=c.ring[q];cz+=c.ring[q+1];n++;}
+        if(!n)return;cx/=n;cz/=n;
+        var bj=null,bd=Infinity;N.J.forEach(function(j){if(!j.ins.length||j.bnd)return;var d=Math.sqrt((j.x-cx)*(j.x-cx)+(j.z-cz)*(j.z-cz));if(d<bd){bd=d;bj=j;}});
+        if(bj&&bd<=150)cp.push({n:bj.n,x:cx,z:cz,name:c.n||'Car park',j:bj.i});
+      });
+    }
+    RUN.park=cp.length?cp:(RUN.lotOk?[{n:N.lot.n,x:N.x[N.lot.n],z:N.z[N.lot.n],name:N.lot.name,lot:true}]:[]);
+    function target(n){if(!RUN.tgOf.hasOwnProperty(n)){RUN.tgOf[n]=RUN.targets.length;RUN.targets.push(bimTrToward(N,n));}return RUN.tgOf[n];}
+    RUN.park.forEach(function(p){p.tg=target(p.n);});
+    /* background traffic's entries, and the lot's: its cars out start at the park's link out */
+    var qsum=0;N.src.forEach(function(s){qsum+=s.q;});
+    N.src.forEach(function(s){if(s.q>0)RUN.srcs.push({l:s.l,q:s.q,next:0,pend:0});});
+    RUN.sinks=N.sink.filter(function(s){return s.q>0||N.sink.length<4;});
+    RUN.sinks.forEach(function(s){s.tg=target(N.links[s.l].b);});
+    RUN.srcQ=qsum;
+    /* the walkers: drivers between their cars and the doors; and, at the census tract's shares, people coming by
+       transit (from the nearest stops) and on foot (from the edge); none where the census does not reach */
+    var A=A3D.site&&A3D.site.access,Pp=A3D.site&&A3D.site.people,tr=Pp&&!Pp.outside&&Pp.v&&Pp.v.tract,share=null;
+    if(tr){
+      var e=function(x){return x&&typeof x[0]==='number'?x[0]:0;},car=e(tr.drv)+e(tr.cpl),tn=e(tr.trn),wk=e(tr.wlk);
+      if(car>0)share={t:tn/car,w:wk/car,src:'the census tract\'s commuters (ACS 5-year)'};
+    }
+    RUN.share=share;
+    var stops=[];
+    if(share&&A&&Array.isArray(A.stops))A.stops.filter(function(s){return s.t<=10;}).sort(function(p,q){return p.t-q.t;}).slice(0,3).forEach(function(s){stops.push({x:s.x,z:s.z,name:s.n});});
+    var edgeW=[];
+    if(share){
+      var bs=N.J.filter(function(j){return j.bnd&&j.arms.some(function(a){return a.car&&(N.edges[a.e].sw.l||N.edges[a.e].sw.r);});});
+      bs.sort(function(p,q){var pa=0,qa=0;p.ins.forEach(function(l){pa+=N.links[l].q;});q.ins.forEach(function(l){qa+=N.links[l].q;});return qa-pa;});
+      bs.slice(0,4).forEach(function(j){edgeW.push({x:j.x,z:j.z,name:'the edge'});});
+    }
+    RUN.stops=stops;RUN.edgeW=edgeW;
+    function route(a,b,kind,door,extra){
+      var r=bimTrWalkRoute(N,[a.x,a.z],[b.x,b.z]);
+      if(!r)return -1;
+      r.kind=kind;r.door=door;r.extra=extra;r.i=RUN.routes.length;
+      RUN.routes.push(r);
+      return r.i;
+    }
+    RUN.rIn=[];RUN.rOut=[];RUN.rTin=[];RUN.rTout=[];RUN.rWin=[];RUN.rWout=[];
+    N.doors.forEach(function(d,di){
+      RUN.park.forEach(function(p,pi){RUN.rIn.push(route(p,d,'in',di,pi));RUN.rOut.push(route(d,p,'out',di,pi));});
+      stops.forEach(function(s,si){RUN.rTin.push(route(s,d,'tin',di,si));RUN.rTout.push(route(d,s,'tout',di,si));});
+      edgeW.forEach(function(s,si){RUN.rWin.push(route(s,d,'win',di,si));RUN.rWout.push(route(d,s,'wout',di,si));});
+    });
+    ['rIn','rOut','rTin','rTout','rWin','rWout'].forEach(function(k){RUN[k]=RUN[k].filter(function(x){return x>=0;});});
+    bimTrAlloc(RUN);
+    return RUN;
+  }
+  /* the pools, once a run */
+  function bimTrAlloc(RUN){
+    var nc=RUN.Q.cars,nw=RUN.Q.walk,i;
+    A3D_TR.allocs++;
+    RUN.c={n:nc,L:new Int32Array(nc),ln:new Int8Array(nc),s:new Float32Array(nc),v:new Float32Array(nc),a:new Float32Array(nc),len:new Float32Array(nc),
+      k:new Uint8Array(nc),tg:new Int16Array(nc),nx:new Int32Array(nc),t0:new Float32Array(nc),ta:new Float32Array(nc),st:new Uint8Array(nc),go:new Uint8Array(nc),lc:new Float32Array(nc),
+      x:new Float32Array(nc),z:new Float32Array(nc),hx:new Float32Array(nc),hz:new Float32Array(nc),px:new Float32Array(nc),pz:new Float32Array(nc),
+      free:new Int32Array(nc),nf:nc,ord:new Int32Array(nc),key:new Int32Array(nc),cnt:new Int32Array(RUN.nSlots+1),lead:new Int32Array(nc),fol:new Int32Array(nc),
+      front:new Int32Array(RUN.N.links.length),last:new Int32Array(RUN.nSlots),head:new Int32Array(RUN.nSlots),claim:new Int32Array(RUN.nSlots),na:0};
+    RUN.w={n:nw,R:new Int32Array(nw),p:new Float32Array(nw),v:new Float32Array(nw),v0:new Float32Array(nw),st:new Uint8Array(nw),cr:new Int16Array(nw),hb:new Uint8Array(nw),
+      wait:new Float32Array(nw),x:new Float32Array(nw),z:new Float32Array(nw),px:new Float32Array(nw),pz:new Float32Array(nw),
+      free:new Int32Array(nw),nf:nw,ord:new Int32Array(nw),key:new Int32Array(nw),cnt:new Int32Array(RUN.routes.length*4+1),na:0};
+    RUN.occ=new Int16Array(RUN.nArms);   /* walkers on each arm's crossing */
+    RUN.occH=new Int16Array(RUN.nArms*2);   /* and on each half of it: the half outbound cars pass (clockwise of the arm, looking out), then the inbound */
+    for(i=0;i<nc;i++){RUN.c.L[i]=-1;RUN.c.free[i]=nc-1-i;}
+    for(i=0;i<RUN.nSlots;i++)RUN.c.claim[i]=-1;
+    for(i=0;i<nw;i++){RUN.w.R[i]=-1;RUN.w.free[i]=nw-1-i;}
+    RUN.jq={};RUN.busy=new Float32Array(RUN.N.J.length);
+    bimTrResetTallies(RUN);
+  }
+  function bimTrResetTallies(RUN){
+    var N=RUN.N;
+    RUN.res={t0:RUN.t,na0:RUN.c?RUN.c.na:0,spawned:0,exited:0,lotIn:0,lotOut:0,blocked:0,red:0,redAt:[],walkBad:0,lc:0,carsCap:0,walkCap:0,
+      del:new Float64Array(N.links.length*2),cw:new Float64Array(N.J.length*2),doors:N.doors.map(function(){return {i:0,o:0};}),
+      q:{n:0,out:0,outMax:0,st:0,stMax:0},bin:RUN.t,last:null};
+  }
+  /* ---- spawning ---- */
+  /* a car into a link: in the lane with the most room before the car ahead (on this link or, where the link is short
+     and empty, the last on the next), at the most speed that room allows without braking harder than comfortably
+     (SUMO's departSpeed "max", by the IDM); none where the room is under the standstill gap */
+  function bimTrCarNew(RUN,l,s,v,kind,tg){
+    var C=RUN.c,N=RUN.N,Lk=N.links[l],P=RUN.P,best=-1,room=-Infinity,vl=0,ln,k,c;
+    if(!C.nf||C.na>=RUN.cap.cars){RUN.res.carsCap++;return -1;}
+    var nx=bimTrNextOf(RUN,tg,l);
+    for(ln=0;ln<Lk.lanes;ln++){
+      var lc=C.last[Lk.slot+ln],r=Infinity,rv=0;
+      if(lc>=0){r=C.s[lc]-C.len[lc]-s;rv=C.v[lc];}
+      else if(nx>=0){var Ln=N.links[nx],lk=C.last[Ln.slot+Math.min(ln,Ln.lanes-1)];if(lk>=0){r=Lk.len-s+C.s[lk]-C.len[lk];rv=C.v[lk];}}
+      if(r>room){room=r;best=ln;vl=rv;}
+    }
+    if(room<P.s0)return -1;
+    v=Math.min(v,Lk.v0);
+    if(room<P.free&&bimTrIdm(v,Lk.v0,room,v-vl,P)<-P.b){
+      var lo=0,hi=v;
+      for(k=0;k<12;k++){var m=(lo+hi)/2;if(bimTrIdm(m,Lk.v0,room,m-vl,P)>=-P.b)lo=m;else hi=m;}
+      v=lo;
+    }
+    c=C.free[--C.nf];C.na++;
+    C.L[c]=l;C.ln[c]=best;C.s[c]=s;C.v[c]=v;C.a[c]=0;C.len[c]=bimStd('aashto.vehicles','P_l');C.k[c]=kind;C.tg[c]=tg;C.t0[c]=RUN.t;C.ta[c]=RUN.t;C.st[c]=0;C.go[c]=0;C.lc[c]=-99;
+    C.last[Lk.slot+best]=c;   /* the lane's last until the next sort */
+    C.nx[c]=nx;
+    bimTrPlace(RUN,c);C.px[c]=C.x[c];C.pz[c]=C.z[c];
+    RUN.res.spawned++;
+    return c;
+  }
+  function bimTrCarFree(RUN,c){var C=RUN.c;C.L[c]=-1;C.free[C.nf++]=c;C.na--;}
+  /* the link a car takes after this one: its way to its target, or a turn drawn by the junction's shares; -1 when this
+     link takes it out (a boundary) or to its target */
+  function bimTrNext(RUN,c,l){return bimTrNextOf(RUN,RUN.c.tg[c],l);}
+  function bimTrNextOf(RUN,tg,l){
+    var N=RUN.N,Lk=N.links[l],j=N.J[Lk.jb];
+    if(!j)return -1;
+    if(tg>=0){var nx=RUN.targets[tg].nx[l];return nx>=0?nx:-1;}
+    if(j.bnd)return -1;
+    var T=j.tr[l]||[],r=RUN.rng(),acc=0,i;
+    for(i=0;i<T.length;i++){acc+=T[i].p;if(r<acc)return T[i].o;}
+    return T.length?T[T.length-1].o:-1;
+  }
+  /* where a car is in plan: its link's line at its distance, moved across to its lane, and its heading */
+  var BIM_TR_AT=[0,0,0,0];
+  function bimTrPlace(RUN,c){
+    /* lane 0 at the kerb: its middle that far right of the street's line (the whole width one way, its right half
+       two ways); right of the way driven is (-dz, dx) on the plan */
+    var C=RUN.c,Lk=RUN.N.links[C.L[c]],a=bimTrAt(Lk.P,Lk.C,Math.max(0,Math.min(Lk.len,C.s[c]-C.len[c]/2)),BIM_TR_AT),lw=(Lk.ow?Lk.w:Lk.w/2)/Lk.lanes,
+      off=Lk.w/2-(C.ln[c]+0.5)*lw;
+    C.x[c]=a[0]+(-a[3])*off;C.z[c]=a[1]+a[2]*off;C.hx[c]=a[2];C.hz[c]=a[3];
+  }
+  function bimTrWalkNew(RUN,r){
+    var W=RUN.w,i,R=RUN.routes[r];
+    if(!R)return -1;
+    if(!W.nf||W.na>=RUN.cap.walk){RUN.res.walkCap++;return -1;}
+    i=W.free[--W.nf];W.na++;
+    if((R.kind==='out'||R.kind==='tout'||R.kind==='wout')&&RUN.res.t0<=RUN.t)RUN.res.doors[R.door].o++;   /* out of a door: counted as it leaves */
+    var sp=bimStd('hm.walk','mean')+bimStd('hm.walk','sd')*bimTrGauss(RUN.rng),k=bimStd('hm.walk','cap');
+    W.R[i]=r;W.p[i]=0;W.v0[i]=Math.max(0.5,Math.min(sp,bimStd('hm.walk','mean')*k));W.v[i]=W.v0[i];W.st[i]=Math.floor(RUN.rng()*2);W.cr[i]=-1;W.hb[i]=0;W.wait[i]=-1;
+    bimTrWalkPlace(RUN,i);W.px[i]=W.x[i];W.pz[i]=W.z[i];
+    return i;
+  }
+  function bimTrWalkFree(RUN,i){var W=RUN.w;W.R[i]=-1;W.free[W.nf++]=i;W.na--;}
+  function bimTrWalkPlace(RUN,i){
+    var W=RUN.w,r=RUN.routes[W.R[i]],a=bimTrAt(r.P,r.C,W.p[i],BIM_TR_AT),off=(W.st[i]-0.5)*bimStd('sumo.rules','stripe');
+    W.x[i]=a[0]+(-a[3])*off;W.z[i]=a[1]+a[2]*off;
+  }
+  /* ---- one step ---- */
+  function bimTrStep(RUN){
+    var dt=RUN.step,C=RUN.c,i,c;
+    bimTrSpawn(RUN,dt);
+    bimTrSortCars(RUN);
+    /* the accelerations, all from the same moment */
+    for(i=0;i<C.n;i++){if(C.L[i]>=0)C.a[i]=bimTrAccOf(RUN,i);}
+    bimTrLaneChanges(RUN);
+    for(c=0;c<C.n;c++)if(C.L[c]>=0)bimTrMove(RUN,c,dt);
+    bimTrWalkStep(RUN,dt);
+    RUN.t+=dt;RUN.steps++;
+    if(RUN.t-RUN.res.bin>=bimStd('app.traffic','bin'))bimTrSample(RUN);
+  }
+  /* a car's move: the ballistic update, a car stopping where it would rather than going back (the IDM's author) */
+  function bimTrMove(RUN,c,dt){
+    var C=RUN.c,N=RUN.N,l=C.L[c];
+    C.px[c]=C.x[c];C.pz[c]=C.z[c];
+    var v=C.v[c],a=C.a[c],nv=v+a*dt,ds;
+    if(nv<0){ds=a<0?-v*v/(2*a):0;nv=0;}else ds=v*dt+a*dt*dt/2;
+    var Lk=N.links[l],sl=bimTrStopLine(N,Lk),s0=C.s[c];
+    C.s[c]=s0+ds;C.v[c]=nv;
+    if(s0<sl&&C.s[c]>=sl)bimTrAtLine(RUN,c,Lk);
+    if(nv<0.1&&C.s[c]>sl-3&&C.s[c]<=sl+0.5)C.st[c]=1;   /* stopped at its line: a stop sign is obeyed */
+    while(C.L[c]>=0&&C.s[c]>=N.links[C.L[c]].len)bimTrCross(RUN,c);
+    if(C.L[c]>=0)bimTrPlace(RUN,c);
+  }
+  function bimTrStopLine(N,Lk){var j=N.J[Lk.jb];if(!j)return Lk.len;var d=j.cw+1;return Math.max(Lk.len*0.5,Lk.len-d);}
+  /* a car crossing its stop line: through a red is counted (none should); it claims the lane it goes into */
+  function bimTrAtLine(RUN,c,Lk){
+    var j=RUN.N.J[Lk.jb],P=j?RUN.plans[j.i]:null,o={},C=RUN.c,nx=C.nx[c];
+    if(nx>=0){var Ln=RUN.N.links[nx];C.claim[Ln.slot+Math.min(C.ln[c],Ln.lanes-1)]=c;}
+    if(P&&P.of.hasOwnProperty(Lk.i)){bimTrSig(P,P.of[Lk.i],RUN.t,o);if(o.s==='r'){RUN.res.red++;if(RUN.res.redAt.length<10)RUN.res.redAt.push([RUN.t,Lk.i,C.v[c],C.a[c],C.go[c],C.k[c],RUN.c.lead[c]]);}}
+  }
+  /* a car past its link's end: out at a boundary, into the lot (or a car park), or on to its next link */
+  function bimTrCross(RUN,c){
+    var N=RUN.N,C=RUN.c,l=C.L[c],Lk=N.links[l],j=N.J[Lk.jb],nx=C.nx[c],o;
+    if(nx<0){
+      bimTrDelay(RUN,c,Lk,j);
+      if(C.tg[c]>=0&&C.k[c]===1){
+        /* at the lot or its car park: the driver walks to a door */
+        RUN.res.lotIn++;
+        var pk=-1;RUN.park.forEach(function(p,pi){if(p.n===Lk.b)pk=pi;});
+        var rs=RUN.rIn.filter(function(r){return RUN.routes[r].extra===pk;});
+        if(rs.length)bimTrWalkNew(RUN,rs[Math.floor(RUN.rng()*rs.length)]);
+      }else RUN.res.exited++;
+      bimTrCarFree(RUN,c);return;
+    }
+    var Ln=N.links[nx],sn=C.s[c]-Lk.len,ln=Math.min(C.ln[c],Ln.lanes-1),k;
+    /* no room in its lane there (cars from two ways at once): another lane with room, or it waits at its link's end */
+    if(!bimTrRoomAt(RUN,Ln,ln,sn)){
+      var alt=-1;for(k=0;k<Ln.lanes;k++)if(k!==ln&&bimTrRoomAt(RUN,Ln,k,sn)){alt=k;break;}
+      if(alt<0){C.s[c]=Lk.len-0.01;var lk=C.last[Ln.slot+ln];C.v[c]=lk>=0?Math.min(C.v[c],C.v[lk]):0;return;}
+      ln=alt;
+    }
+    bimTrDelay(RUN,c,Lk,j);
+    C.s[c]=sn;C.L[c]=nx;C.ln[c]=ln;
+    if(C.last[Ln.slot+ln]<0||C.s[C.last[Ln.slot+ln]]>sn)C.last[Ln.slot+ln]=c;   /* the lane's last at once, for the next to come in this step */
+    C.ta[c]=RUN.t;C.st[c]=0;C.go[c]=0;
+    C.nx[c]=bimTrNext(RUN,c,nx);
+    if(j&&j.kind==='allstop'){RUN.busy[j.i]=RUN.t+bimTrClear(RUN,j,c,0);var q=RUN.jq[j.i];if(q){var k=q.indexOf(c);if(k>=0)q.splice(k,1);}}
+  }
+  /* a car's time on its link less its free-flow time, tallied for the junction it leaves by */
+  function bimTrDelay(RUN,c,Lk,j){if(j&&RUN.res.t0<=RUN.t){var dl=Math.max(0,RUN.t-RUN.c.ta[c]-Lk.len/Lk.v0);RUN.res.del[Lk.i*2]+=dl;RUN.res.del[Lk.i*2+1]+=1;}}
+  /* room on a lane for a car's front at s: the lane's last car's rear beyond it */
+  function bimTrRoomAt(RUN,Ln,ln,s){var C=RUN.c,lk=C.last[Ln.slot+ln];return lk<0||C.s[lk]-C.len[lk]>=s;}
+  /* the time a car needs to clear a junction from its line: across its widest street and its own length */
+  function bimTrClear(RUN,j,c,d){
+    var C=RUN.c,P=RUN.P,v=C.v[c],x=Math.max(C.len[c],d+2*j.cw+C.len[c]),t;
+    t=(-v+Math.sqrt(v*v+2*P.a*x))/P.a;
+    return t;
+  }
+  /* the lanes sorted: each car's leader and follower in its lane, each lane's last car, each link's front car */
+  function bimTrSortCars(RUN){
+    var C=RUN.c,N=RUN.N,n=C.n,ns=RUN.nSlots,i,k,c;
+    for(k=0;k<=ns;k++)C.cnt[k]=0;
+    for(c=0;c<n;c++){if(C.L[c]<0)continue;var sl=N.links[C.L[c]].slot+C.ln[c];C.key[c]=sl;C.cnt[sl+1]++;}
+    for(k=0;k<ns;k++)C.cnt[k+1]+=C.cnt[k];
+    var m=0;
+    for(c=0;c<n;c++){if(C.L[c]<0)continue;C.ord[C.cnt[C.key[c]]++]=c;m++;}
+    /* cnt[k] is now each slot's end; its start is the slot before's end */
+    for(k=0;k<ns;k++){
+      var st=k?C.cnt[k-1]:0,en=C.cnt[k];
+      for(i=st+1;i<en;i++){var x=C.ord[i],sx=C.s[x],q=i-1;while(q>=st&&C.s[C.ord[q]]>sx){C.ord[q+1]=C.ord[q];q--;}C.ord[q+1]=x;}
+      C.last[k]=en>st?C.ord[st]:-1;C.head[k]=en>st?C.ord[en-1]:-1;
+      for(i=st;i<en;i++){c=C.ord[i];C.lead[c]=i+1<en?C.ord[i+1]:-1;C.fol[c]=i>st?C.ord[i-1]:-1;}
+    }
+    for(k=0;k<N.links.length;k++)C.front[k]=-1;
+    for(i=0;i<m;i++){c=C.ord[i];var l=C.L[c],f=C.front[l];if(f<0||C.s[c]>C.s[f])C.front[l]=c;}
+  }
+  /* the gap and approach to what is ahead of a car in its lane: the car ahead, or the last car on its next link */
+  function bimTrAhead(RUN,c,ln,out){
+    var C=RUN.c,N=RUN.N,l=C.L[c],Lk=N.links[l],ld=bimTrLeaderIn(RUN,c,ln);
+    if(ld>=0){out.s=C.s[ld]-C.len[ld]-C.s[c];out.v=C.v[ld];return out;}
+    var nx=C.nx[c];
+    if(nx>=0){var Ln=N.links[nx],lk=C.last[Ln.slot+Math.min(ln,Ln.lanes-1)];if(lk>=0){out.s=Lk.len-C.s[c]+C.s[lk]-C.len[lk];out.v=C.v[lk];return out;}}
+    out.s=RUN.P.free;out.v=C.v[c];
+    return out;
+  }
+  /* the car ahead in a lane (its own, or another for a lane change) */
+  function bimTrLeaderIn(RUN,c,ln){
+    var C=RUN.c,N=RUN.N,l=C.L[c];
+    if(ln===C.ln[c])return C.lead[c];
+    var k=N.links[l].slot+ln,st=k?C.cnt[k-1]:0,en=C.cnt[k],s=C.s[c],i;
+    for(i=st;i<en;i++){var x=C.ord[i];if(x!==c&&C.s[x]>s)return x;}
+    return -1;
+  }
+  function bimTrFollowerIn(RUN,c,ln){
+    var C=RUN.c,N=RUN.N,l=C.L[c],k=N.links[l].slot+ln,st=k?C.cnt[k-1]:0,en=C.cnt[k],s=C.s[c],i,f=-1;
+    for(i=st;i<en;i++){var x=C.ord[i];if(x!==c&&C.s[x]<=s)f=x;}
+    return f;
+  }
+  /* what holds a car at its line: no room past a signal, a red, an amber it would not reach its line in (a car
+     that goes on an amber keeps going), a stop not yet made, its turn at an all-way stop, a
+     major road's car too near, a walker on a crossing it is about to cross. Returns the distance to the line, or
+     Infinity when nothing holds it */
+  var BIM_TR_SIG={};
+  function bimTrHold(RUN,c){
+    var C=RUN.c,N=RUN.N,l=C.L[c],Lk=N.links[l],h=bimTrHoldAt(RUN,c,l,C.s[c],C.nx[c],false),nx=C.nx[c],tg=C.tg[c];
+    /* and the next link's line, where it is near: a short link before a signal is no surprise */
+    if(h===Infinity&&nx>=0&&Lk.len-C.s[c]<bimStd('app.traffic','look'))h=bimTrHoldAt(RUN,c,nx,C.s[c]-Lk.len,tg>=0?RUN.targets[tg].nx[nx]:-3,true);
+    return h;
+  }
+  /* the hold of link l's line for car c at s along it, its next link nx (-1 the lot or out, -3 not drawn yet); look: the
+     line ahead, seen from the link before, where the car has made no stop and taken no amber yet */
+  function bimTrHoldAt(RUN,c,l,s,nx,look){
+    var C=RUN.c,N=RUN.N,Lk=N.links[l],j=N.J[Lk.jb],sl,d,h=Infinity;
+    /* a walker on the crossing at this link's start, which the car has not reached: it waits short of it, in the
+       junction it has entered */
+    var ja=look?null:N.J[Lk.ja];
+    if(ja&&!ja.bnd&&bimTrOccOn(RUN,ja,Lk.armOut,false)&&s<ja.cw-1)h=ja.cw-1-s;
+    if(!j||j.bnd)return h;
+    if(nx===-1&&C.tg[c]>=0)return h;            /* into the lot or its car park */
+    sl=bimTrStopLine(N,Lk);d=sl-s;
+    /* a walker on the crossing of the arm it turns into: it goes past its line and waits short of that crossing */
+    if(nx>=0&&N.links[nx].ja===j.i&&bimTrOccOn(RUN,j,N.links[nx].armOut,false))h=Math.min(h,Lk.len-s+Math.max(0,j.cw-1));
+    /* a left turn waits for the oncoming in the junction, past its line, as a permissive left does: the amber's gap is
+       its */
+    var P=RUN.plans[j.i],sg=!!(P&&P.of.hasOwnProperty(l)),opp=sg?P.ph[P.of[l]].ins:(j.kind==='yield'&&j.major[l]?j.majors:null);
+    if(opp&&s<Lk.len-0.5&&!(!look&&C.go[c]&&d>-0.5)&&bimTrLeftWait(RUN,c,j,l,nx,d,opp))h=Math.min(h,Lk.len-s);   /* one gone on the amber reaches its line first */
+    if(d<-0.5)return h;                         /* past its line: it goes on */
+    /* the lane it goes into claimed by a car from another way, not yet clear of it: it waits its turn */
+    if(nx>=0&&bimTrClaimed(RUN,c,l,nx))return Math.min(h,d);
+    /* no room past a signal for it: it does not enter (the junction kept clear, and none caught in it by the red) */
+    if(j.kind==='signal'&&nx>=0){var Ln=N.links[nx],lk=C.last[Ln.slot+Math.min(C.ln[c],Ln.lanes-1)];if(lk>=0&&lk!==c&&C.v[lk]<bimStd('app.traffic','queue_v')&&C.s[lk]-C.len[lk]<C.len[c]+RUN.P.s0)return Math.min(h,d);}
+    var st=look?0:C.st[c];
+    if(sg){
+      bimTrSig(P,P.of[l],RUN.t,BIM_TR_SIG);
+      if(BIM_TR_SIG.s==='r')return Math.min(h,d);
+      if(BIM_TR_SIG.s==='y'){
+        /* near goes and far stops: it goes only if it reaches its line before the amber ends, braking as it is; one gone
+           that would no longer make it stops, where it still can without braking hard */
+        var far=d>bimTrReach(C.v[c],C.a[c],BIM_TR_SIG.left);
+        if(look||!C.go[c]){if(far)return Math.min(h,d);if(!look)C.go[c]=1;}
+        else if(far&&d>=C.v[c]*C.v[c]/(2*RUN.P.b)){C.go[c]=0;return Math.min(h,d);}
+      }
+    }else if(j.kind==='allstop'){
+      if(!st)return Math.min(h,d);
+      var q=RUN.jq[j.i]||(RUN.jq[j.i]=[]);if(q.indexOf(c)<0)q.push(c);
+      if(q[0]!==c||RUN.t<RUN.busy[j.i])return Math.min(h,d);
+    }else if(j.kind==='yield'){
+      if(j.stop[l]&&!st)return Math.min(h,d);
+      if(!j.major[l]){
+        var need=bimTrClear(RUN,j,c,Math.max(0,d))+bimStd('sumo.rules','gap'),k;
+        for(k=0;k<j.ins.length;k++){
+          var m=j.ins[k];if(m===l||!j.major[m])continue;
+          var f=C.front[m];if(f<0)continue;
+          var Lm=N.links[m],tau=(Lm.len-C.s[f])/Math.max(C.v[f],0.5);
+          if(tau<need&&C.v[f]>0.3)return Math.min(h,d);
+        }
+      }
+    }
+    /* a walker on the crossing of its own arm, just past its line */
+    if(bimTrOccOn(RUN,j,Lk.arm,true))return Math.min(h,d);
+    return h;
+  }
+  /* a car turning left waits for the oncoming: the front car of each other approach that has the way with it (its
+     phase, or the other major road), unless that one turns left too (they pass in front of each other), while it would
+     reach the junction before this one has cleared it; a standing car only once it sets off (one held in a queue is
+     not coming, and waiting for it would lock both ways). The front car of each lane of each */
+  function bimTrLeftWait(RUN,c,j,l,nx,d,cands){
+    var C=RUN.c,N=RUN.N,lim=-bimStd('app.traffic','left'),k,ln;
+    if(nx<0||bimTrTurnOf(j,l,nx)>lim)return false;
+    var need=bimTrClear(RUN,j,c,d)+bimStd('sumo.rules','gap'),a=RUN.P.a;
+    for(k=0;k<cands.length;k++){
+      var m=cands[k],Lm=N.links[m];if(m===l)continue;
+      for(ln=0;ln<Lm.lanes;ln++){
+        var f=C.head[Lm.slot+ln];if(f<0)continue;
+        if(C.nx[f]>=0&&bimTrTurnOf(j,m,C.nx[f])<=lim)continue;
+        var x=Math.max(0,Lm.len-C.s[f]),v=C.v[f];
+        if(v<0.3&&C.a[f]<=0.05)continue;
+        if((-v+Math.sqrt(v*v+2*a*x))/a<need)return true;
+      }
+    }
+    return false;
+  }
+  /* a lane claimed: by a car from another link still in the junction, or on the lane and not yet its standing gap in */
+  function bimTrClaimed(RUN,c,l,nx){
+    var C=RUN.c,N=RUN.N,Ln=N.links[nx],k=Ln.slot+Math.min(C.ln[c],Ln.lanes-1),o=C.claim[k];
+    if(o<0||o===c)return false;
+    if(C.L[o]===nx){if(C.s[o]-C.len[o]>=RUN.P.s0){C.claim[k]=-1;return false;}return true;}
+    if(C.L[o]<0||C.nx[o]!==nx||C.L[o]===l||C.s[o]<bimTrStopLine(N,N.links[C.L[o]])-0.5){if(C.L[o]!==l)C.claim[k]=-1;return false;}
+    return true;
+  }
+  /* how far a car goes in t at its speed, braking as it is (never counting on speeding up) */
+  function bimTrReach(v,a,t){if(a>=0)return v*t;var ts=v/-a;return ts<t?v*v/(2*-a):v*t+a*t*t/2;}
+  function bimTrTurnOf(j,l,o){var T=j.tr[l]||[],i;for(i=0;i<T.length;i++)if(T[i].o===o)return T[i].ang;return 0;}
+  /* a walker on the half of arm k's crossing a car passes: an inbound car the half beside the inbound lanes (on the
+     right as it comes in), an outbound car the other, each with a walker within a step of the middle; the whole
+     crossing on a one-way street */
+  function bimTrOccOn(RUN,j,k,inb){
+    var a=j.armBase+k,A=j.arms[k];
+    if(A.lin<0||A.lout<0)return RUN.occ[a]>0;
+    return RUN.occH[a*2+(inb?1:0)]>0;
+  }
+  function bimTrOcc(RUN,a,b,d){if(a<0)return;RUN.occ[a]+=d;if(b&1)RUN.occH[a*2]+=d;if(b&2)RUN.occH[a*2+1]+=d;}
+  var BIM_TR_AH={s:0,v:0};
+  function bimTrAccOf(RUN,c,ln){
+    var C=RUN.c,N=RUN.N,Lk=N.links[C.L[c]],P=RUN.P,v=C.v[c];
+    if(ln===undefined)ln=C.ln[c];
+    bimTrAhead(RUN,c,ln,BIM_TR_AH);
+    var a=bimTrIdm(v,Lk.v0,BIM_TR_AH.s,v-BIM_TR_AH.v,P);
+    var h=bimTrHold(RUN,c);   /* the line holds every car before it, not only the first: the one ahead may be past it */
+    if(h<Infinity){var ah=bimTrIdm(v,Lk.v0,Math.max(0.01,h),v,P);if(ah<a)a=ah;}
+    return Math.max(-9,a);
+  }
+  /* MOBIL, symmetric, where a direction has two lanes or more: each car every other step */
+  function bimTrLaneChanges(RUN){
+    var C=RUN.c,N=RUN.N,P=RUN.P,p=bimStd('mobil','p'),thr=bimStd('mobil','thr'),bs=bimStd('mobil','bsafe'),c,par=RUN.steps&1;
+    for(c=par;c<C.n;c+=2){
+      var l=C.L[c];if(l<0)continue;
+      var Lk=N.links[l];if(Lk.lanes<2||RUN.t-C.lc[c]<3||C.s[c]>bimTrStopLine(N,Lk)-5||C.s[c]<C.len[c])continue;
+      var best=-1,bg=thr,cur=C.a[c],ln=C.ln[c],d;
+      for(d=-1;d<=1;d+=2){
+        var nl=ln+d;if(nl<0||nl>=Lk.lanes)continue;
+        var nf=bimTrFollowerIn(RUN,c,nl),nld=bimTrLeaderIn(RUN,c,nl);
+        if(nf>=0&&C.s[c]-C.len[c]-C.s[nf]<P.s0)continue;
+        if(nld>=0&&C.s[nld]-C.len[nld]-C.s[c]<P.s0)continue;
+        var an=bimTrAccOf(RUN,c,nl),gain=an-cur;
+        if(nf>=0){
+          var nfa=C.a[nf],gapn=C.s[c]-C.len[c]-C.s[nf],nfa2=bimTrIdm(C.v[nf],N.links[C.L[nf]].v0,gapn,C.v[nf]-C.v[c],P);
+          if(nfa2<-bs)continue;                                  /* safe: the new follower brakes no harder than b_safe */
+          gain+=p*(nfa2-nfa);
+        }
+        var of=C.fol[c];
+        if(of>=0){
+          var ofa=C.a[of],ld0=C.lead[c],ofa2;
+          if(ld0>=0)ofa2=bimTrIdm(C.v[of],Lk.v0,C.s[ld0]-C.len[ld0]-C.s[of],C.v[of]-C.v[ld0],P);else ofa2=bimTrIdm(C.v[of],Lk.v0,P.free,0,P);
+          gain+=p*(ofa2-ofa);
+        }
+        if(gain>bg){bg=gain;best=nl;}
+      }
+      if(best>=0){
+        C.ln[c]=best;C.lc[c]=RUN.t;C.a[c]=bimTrAccOf(RUN,c,best);RUN.res.lc++;
+        var ks=Lk.slot+best;if(C.last[ks]<0||C.s[C.last[ks]]>C.s[c])C.last[ks]=c;   /* the lane's last at once, for a car coming in this step */
+      }
+    }
+  }
+  /* ---- the walkers ---- */
+  function bimTrWalkStep(RUN,dt){
+    var W=RUN.w,i,k,n=W.n,nr=RUN.routes.length;
+    for(k=0;k<=nr*2;k++)W.cnt[k]=0;
+    for(i=0;i<n;i++){if(W.R[i]<0)continue;W.key[i]=W.R[i]*2+W.st[i];W.cnt[W.key[i]+1]++;}
+    for(k=0;k<nr*2;k++)W.cnt[k+1]+=W.cnt[k];
+    for(i=0;i<n;i++){if(W.R[i]<0)continue;W.ord[W.cnt[W.key[i]]++]=i;}
+    for(k=0;k<nr*2;k++){
+      var st=k?W.cnt[k-1]:0,en=W.cnt[k],q;
+      for(q=st+1;q<en;q++){var x=W.ord[q],px=W.p[x],r=q-1;while(r>=st&&W.p[W.ord[r]]>px){W.ord[r+1]=W.ord[r];r--;}W.ord[r+1]=x;}
+      for(q=en-1;q>=st;q--)bimTrWalkOne(RUN,W.ord[q],q+1<en?W.ord[q+1]:-1,dt);
+    }
+  }
+  function bimTrWalkOne(RUN,i,ahead,dt){
+    var W=RUN.w,r=RUN.routes[W.R[i]],v=W.v0[i],k,p0=W.p[i];
+    if(ahead>=0&&W.R[ahead]>=0){var gap=W.p[ahead]-W.p[i];if(gap<2)v=Math.max(0,Math.min(v,W.v0[i]*(gap-0.5)/1.5));}
+    var np=p0+v*dt;
+    /* a crossing ahead: wait at its start until it may be crossed */
+    for(k=0;k<r.cr.length;k++){
+      var cr=r.cr[k];
+      if(p0<cr.s0-1e-6&&np>=cr.s0-1e-6){
+        if(!bimTrMayCross(RUN,cr)){np=cr.s0-1e-6;if(W.wait[i]<0)W.wait[i]=RUN.t;}
+        else{
+          if(!bimTrMayCrossStrict(RUN,cr))RUN.res.walkBad++;
+          if(W.wait[i]>=0&&RUN.res.t0<=RUN.t){RUN.res.cw[cr.j*2]+=RUN.t-W.wait[i];}
+          if(RUN.res.t0<=RUN.t)RUN.res.cw[cr.j*2+1]+=1;
+          W.wait[i]=-1;
+        }
+        break;
+      }
+    }
+    /* on a crossing or off it: the arm's count of walkers on it, and on each half (within a step of the middle, both) */
+    var was=W.cr[i],wb=W.hb[i],now=-1,nb=0;
+    for(k=0;k<r.cr.length;k++){
+      var c2=r.cr[k];
+      if(np>=c2.s0&&np<c2.s1){var u=(np-c2.s0)/c2.len,mg=bimStd('sumo.rules','stripe')/c2.len;now=RUN.N.J[c2.j].armBase+c2.k;nb=(u<0.5+mg?(c2.from>0?1:2):0)|(u>0.5-mg?(c2.from>0?2:1):0);break;}
+    }
+    if(was!==now||wb!==nb){bimTrOcc(RUN,was,wb,-1);bimTrOcc(RUN,now,nb,1);W.cr[i]=now;W.hb[i]=nb;}
+    W.p[i]=np;W.v[i]=np-p0>0?(np-p0)/dt:0;
+    W.px[i]=W.x[i];W.pz[i]=W.z[i];
+    if(np>=r.len){
+      bimTrOcc(RUN,W.cr[i],W.hb[i],-1);W.cr[i]=-1;W.hb[i]=0;
+      bimTrWalkArrive(RUN,i,r);bimTrWalkFree(RUN,i);return;
+    }
+    bimTrWalkPlace(RUN,i);
+  }
+  /* a crossing may be started: at a signal while the green parallel to it leaves time to cross at the clearance
+     speed (the owner's rule); elsewhere when no car is within the walk gap of it, nor on it */
+  var BIM_TR_SIGW={};
+  function bimTrMayCross(RUN,cr){
+    var N=RUN.N,j=N.J[cr.j],a=j.arms[cr.k],P=RUN.plans[j.i];
+    if(P){
+      var pk=P.armPh.hasOwnProperty(cr.k)?1-P.armPh[cr.k]:0;
+      bimTrSig(P,pk,RUN.t,BIM_TR_SIGW);
+      return BIM_TR_SIGW.s==='g'&&BIM_TR_SIGW.left>=cr.len/bimStd('mutcd.walk','clear');
+    }
+    var C=RUN.c,g=bimStd('app.traffic','walk_gap'),l,f;
+    if(a.lin>=0){l=N.links[a.lin];f=C.front[a.lin];
+      if(f>=0){var dcw=l.len-j.cw-C.s[f];if(dcw>-3&&(dcw<0||dcw/Math.max(C.v[f],0.1)<g)&&C.v[f]>0.5||dcw>-3&&dcw<1)return false;}}
+    if(a.lout>=0){var lo=N.links[a.lout],k,c;
+      for(k=0;k<lo.lanes;k++){c=C.last[lo.slot+k];if(c>=0&&C.s[c]-C.len[c]<j.cw+3)return false;}
+      for(k=0;k<j.ins.length;k++){var m=j.ins[k],fm=C.front[m];if(fm>=0&&C.nx[fm]===a.lout){var Lm=N.links[m];if((Lm.len-C.s[fm])/Math.max(C.v[fm],0.1)<g&&C.v[fm]>0.5)return false;}}
+    }
+    return true;
+  }
+  /* the check the suite's count rests on: a walker starting across a signalled crossing with the parallel green too
+     short to finish is counted (none should be) */
+  function bimTrMayCrossStrict(RUN,cr){
+    var j=RUN.N.J[cr.j],P=RUN.plans[j.i];
+    if(!P)return true;
+    var pk=P.armPh.hasOwnProperty(cr.k)?1-P.armPh[cr.k]:0,o={};
+    bimTrSig(P,pk,RUN.t,o);
+    return o.s==='g'&&o.left+1e-6>=cr.len/bimStd('mutcd.walk','clear');
+  }
+  /* at the end of a way: at a door, counted; at the car, a car out; at a stop or the edge, gone */
+  function bimTrWalkArrive(RUN,i,r){
+    if(r.kind==='in'||r.kind==='tin'||r.kind==='win'){if(RUN.res.t0<=RUN.t)RUN.res.doors[r.door].i++;return;}
+    if(r.kind==='out'){
+      var p=RUN.park[r.extra],l=-1;
+      RUN.N.links.forEach(function(Lk){if(l<0&&Lk.a===p.n&&RUN.N.J[Lk.jb]&&!RUN.N.J[Lk.jb].lot)l=Lk.i;});
+      if(l>=0){var sk=RUN.sinks.length?RUN.sinks[Math.floor(RUN.rng()*RUN.sinks.length)]:null;RUN.lotQ.push({l:l,tg:sk?sk.tg:-1});}
+    }
+  }
+  /* ---- the demand, each step: background cars at the boundaries, the lot's trips, the walkers' trips ---- */
+  function bimTrSpawn(RUN,dt){
+    var N=RUN.N,T=RUN.t,rng=RUN.rng,i;
+    RUN.lotQ=RUN.lotQ||[];RUN.lotPend=RUN.lotPend||[];
+    for(i=0;i<RUN.srcs.length;i++){
+      var S=RUN.srcs[i],h=3600/S.q;
+      if(!S.next)S.next=T+h*rng();
+      while(S.next<=T){S.pend++;S.next+=h*(0.5+rng());}
+      if(S.pend>0){if(bimTrCarNew(RUN,S.l,0,N.links[S.l].v0,0,-1)>=0){S.pend--;S.held=false;}else if(!S.held){S.held=true;RUN.res.blocked++;}}   /* a car held at the edge, counted once */
+    }
+    if(!RUN.lotOk)return;
+    var TR=RUN.trips,dIn=TR.tin*dt/3600,dOut=TR.tout*dt/3600;
+    /* in: a car from a boundary chosen by the boundaries' volumes, to the lot (or its car park) */
+    RUN.accIn=(RUN.accIn||0)+dIn;
+    while(RUN.accIn>=1&&RUN.srcs.length){
+      RUN.accIn-=1;
+      var r=rng()*RUN.srcQ,acc=0,S2=RUN.srcs[0];
+      for(i=0;i<RUN.srcs.length;i++){acc+=RUN.srcs[i].q;if(r<acc){S2=RUN.srcs[i];break;}}
+      var pk=RUN.park[Math.floor(rng()*RUN.park.length)];
+      if(pk&&RUN.targets[pk.tg].nx[S2.l]!==-2)RUN.lotPend.push({l:S2.l,tg:pk.tg,held:false});
+    }
+    for(i=0;i<RUN.lotPend.length;){
+      var x=RUN.lotPend[i];
+      if(bimTrCarNew(RUN,x.l,0,N.links[x.l].v0,1,x.tg)>=0)RUN.lotPend.splice(i,1);
+      else{if(!x.held){x.held=true;RUN.res.blocked++;}i++;}
+    }
+    /* out: the driver walks from a door to the car; the car then waits to leave (the lot's queue) */
+    RUN.accOut=(RUN.accOut||0)+dOut;
+    while(RUN.accOut>=1&&RUN.rOut.length){RUN.accOut-=1;bimTrWalkNew(RUN,RUN.rOut[Math.floor(rng()*RUN.rOut.length)]);}
+    while(RUN.lotQ.length&&bimTrCarNew(RUN,RUN.lotQ[0].l,0,0,2,RUN.lotQ[0].tg)>=0){RUN.lotQ.shift();RUN.res.lotOut++;}
+    /* by transit and on foot, at the tract's shares of the lot's trips */
+    if(RUN.share){
+      RUN.accT=(RUN.accT||0)+(TR.tin+TR.tout)*RUN.share.t*dt/3600;
+      RUN.accW=(RUN.accW||0)+(TR.tin+TR.tout)*RUN.share.w*dt/3600;
+      var fin=TR.tin+TR.tout>0?TR.tin/(TR.tin+TR.tout):0.5;
+      while(RUN.accT>=1){RUN.accT-=1;var L1=rng()<fin?RUN.rTin:RUN.rTout;if(L1.length)bimTrWalkNew(RUN,L1[Math.floor(rng()*L1.length)]);}
+      while(RUN.accW>=1){RUN.accW-=1;var L2=rng()<fin?RUN.rWin:RUN.rWout;if(L2.length)bimTrWalkNew(RUN,L2[Math.floor(rng()*L2.length)]);}
+    }
+  }
+  /* every bin: the lot's queue sampled -- the cars waiting to leave it, and the most cars standing in a row on the
+     street before its entry */
+  function bimTrSample(RUN){
+    var N=RUN.N,C=RUN.c,Q=RUN.res.q,vq=bimStd('app.traffic','queue_v'),qr=bimStd('app.traffic','queue_r');
+    RUN.res.bin=RUN.t;
+    if(!RUN.lotOk||RUN.res.t0>RUN.t)return;
+    var out=RUN.lotQ.length,st=0,c;
+    var ent=N.lot.at;
+    N.links.forEach(function(Lk){if(Lk.b!==ent)return;var n=0;for(c=0;c<C.n;c++)if(C.L[c]===Lk.i&&C.v[c]<vq&&Lk.len-C.s[c]<=qr)n++;if(Lk.lot)out+=n;else st=Math.max(st,n);});
+    Q.n++;Q.out+=out;Q.outMax=Math.max(Q.outMax,out);Q.st+=st;Q.stMax=Math.max(Q.stMax,st);
+  }
+  /* ---- the run on the clock ---- */
+  function bimTrFps(){return A3D_TR.run?Math.min(BIM_ANIM.fps,A3D_TR.run.cap.fps):BIM_ANIM.fps;}   /* the frames a second: fewer at Light */
+  function bimTrStart(){
+    var R;
+    try{R=bimTrBuild();}catch(eB){console.warn('[BIM] The traffic simulation could not be built',eB);a3dToast('The traffic simulation could not be built - see the console');return null;}
+    if(R.err){a3dToast('Traffic and people: '+R.err);A3D_TR.run=null;return null;}
+    A3D_TR.run=R;
+    /* the warm-up: the streets filled before anything is tallied */
+    var n=Math.round(bimStd('app.traffic','warm')/R.step),t0=performance.now(),i;
+    try{for(i=0;i<n;i++)bimTrStep(R);}catch(eW){console.warn('[BIM] The traffic warm-up failed',eW);a3dToast('The traffic simulation stopped in its warm-up - see the console');A3D_TR.run=null;return null;}
+    R.warmMs=performance.now()-t0;R.warm=true;
+    bimTrResetTallies(R);
+    return R;
+  }
+  function bimTrStop(){if(A3D_TR.run){A3D_TR.last=bimTrResults(A3D_TR.run);}A3D_TR.run=null;}
+  /* the clock's seconds, at the run's speed, in fixed steps; a long frame lowers the quality a step */
+  function bimTrAdvance(sec){
+    var R=A3D_TR.run;
+    if(!R||!(sec>0))return;
+    R.acc+=sec*R.set.speed;
+    var n=Math.floor(R.acc/R.step),max=Math.ceil(R.set.speed*0.1/R.step)+1,t0=performance.now(),i;
+    if(n>max){n=max;R.acc=0;}else R.acc-=n*R.step;
+    try{for(i=0;i<n;i++)bimTrStep(R);}catch(eS){console.warn('[BIM] A step of the traffic simulation failed',eS);bimTrStop();a3dToast('The traffic simulation stopped: a step failed - see the console');return;}
+    var ms=performance.now()-t0;
+    R.frameMs.push(ms);if(R.frameMs.length>30)R.frameMs.shift();
+    var mean=0;R.frameMs.forEach(function(x){mean+=x;});mean/=R.frameMs.length;
+    if(R.frameMs.length>=30&&mean>1000/R.cap.fps*0.6){
+      var qi=BIM_TR_QORDER.indexOf(R.qk);
+      if(qi>0){R.qk=BIM_TR_QORDER[qi-1];R.cap=BIM_TR_Q[R.qk];R.frameMs=[];R.slow++;a3dToast('Traffic and people: frames ran long, so the quality is '+R.cap.name+' now');}
+    }
+  }
+  /* ---- what the run found, in the tallies' terms ---- */
+  function bimTrResults(R){
+    var N=R.N,res=R.res,span=Math.max(1e-9,R.t-res.t0),out={t:span,spawned:res.spawned,exited:res.exited,lotIn:res.lotIn,lotOut:res.lotOut,red:res.red,walkBad:res.walkBad,lc:res.lc,
+      carsCap:res.carsCap,walkCap:res.walkCap,blocked:res.blocked,doors:[],j:[],q:null,trips:R.trips,qk:R.qk};
+    N.doors.forEach(function(d,i){out.doors.push({name:d.name,x:d.x,z:d.z,inH:res.doors[i].i*3600/span,outH:res.doors[i].o*3600/span,n:res.doors[i].i+res.doors[i].o});});
+    N.J.forEach(function(j){
+      if(j.kind==='pass'||j.bnd)return;
+      var sd=0,nd=0;j.ins.forEach(function(l){sd+=res.del[l*2];nd+=res.del[l*2+1];});
+      var wn=res.cw[j.i*2+1];
+      out.j.push({i:j.i,x:j.x,z:j.z,kind:j.kind,carDelay:nd?sd/nd:null,cars:nd,walkWait:wn?res.cw[j.i*2]/wn:null,walkers:wn});
+    });
+    if(R.lotOk&&res.q.n)out.q={outMean:res.q.out/res.q.n,outMax:res.q.outMax,stMean:res.q.st/res.q.n,stMax:res.q.stMax,n:res.q.n};
+    return out;
+  }
+  /* ================= __acad3dV171: traffic and people around the site: drawn =================
+     On the drawing's overlay while V170's clock plays or holds a moment, in plan and 3D, with the analysis's layer;
+     between two steps each car and walker drawn where it is between them. In plan a car is a rectangle of the design
+     car's size turned to its heading, a walker a dot, the lot's own in their own colour; anything too small to read
+     is a dot. In 3D a car is V169's design car without its wheels (at Light, its box), a walker a column with a head,
+     sorted by depth; drawn over the model, so a car behind a building shows through it (said). The stop lines show
+     their signal. Never on a sheet, a print or an export. */
+  var BIM_TR_COL={dk:{car:'#d6dde6',lot:'#ffb454',walk:'#7fd3e6',edge:'rgba(12,14,17,0.7)'},lt:{car:'#3b4450',lot:'#c25e00',walk:'#0b6e8a',edge:'rgba(255,255,255,0.85)'},
+    g:'#2fbf71',y:'#f5c542',r:'#e5484d'};
+  var A3D_TRD={mesh:null,box:null,body:null,drawn:{cars:0,walkers:0,dots:0,lines:0,faces:0}};
+  /* the design car as V169 builds it, without its wheels; and its plain box for Light */
+  function bimTrCarMesh(){
+    if(!A3D_TRD.mesh){
+      var V=bimEntVeh({v:'P'}),m=bimEntVehMesh(V,true);
+      A3D_TRD.mesh={v:m.v.slice(2),f:m.f.map(function(fc){return fc.map(function(i){return i-2;});})};
+      var b=mkBoxP(V.w,V.h,V.l);A3D_TRD.box={v:b.v.map(function(p){return [p[0],p[1]+V.h/2,p[2]];}),f:b.f};
+      A3D_TRD.body=bimEntBody({who:'man',pose:'standing'});
+    }
+    return A3D_TRD;
+  }
+  function bimTrShown(){
+    var D=bimDgState(),ly=bimLayerById(D.layers.traffic);
+    return !ly||bimLayerEff(ly).on;
+  }
+  function bimTrDraw(ctx,V,W,H){
+    var R=A3D_TR.run,dw=A3D_TRD.drawn;
+    dw.cars=0;dw.walkers=0;dw.dots=0;dw.lines=0;dw.faces=0;
+    if(!R||!bimAnimLive()||!bimTrShown())return;
+    var K=bimMvLight()?BIM_TR_COL.lt:BIM_TR_COL.dk,f=Math.max(0,Math.min(1,R.acc/R.step)),y=R.y||0;
+    ctx.save();
+    try{
+      bimTrDrawSignals(ctx,V,W,H,R,y);
+      if(bimCameraIsPlan())bimTrDrawPlan(ctx,V,W,H,R,K,f,y);
+      else bimTrDraw3D(ctx,V,W,H,R,K,f,y);
+    }finally{ctx.restore();}
+  }
+  /* the stop lines of each signalled approach, across its lanes, in its signal's colour */
+  function bimTrDrawSignals(ctx,V,W,H,R,y){
+    var N=R.N,o={},a=[0,0,0,0];
+    ctx.lineWidth=3;ctx.lineCap='butt';
+    Object.keys(R.plans).forEach(function(ji){
+      var P=R.plans[ji],j=N.J[ji];
+      j.ins.forEach(function(l){
+        var Lk=N.links[l];if(!P.of.hasOwnProperty(l))return;
+        bimTrSig(P,P.of[l],R.t,o);
+        bimTrAt(Lk.P,Lk.C,bimTrStopLine(N,Lk),a);
+        var w=Lk.ow?Lk.w:Lk.w/2,x0=a[0],z0=a[1],rx=-a[3],rz=a[2],e0=Lk.ow?-Lk.w/2:0;
+        var p=toScreen([x0+rx*e0,y+0.05,z0+rz*e0],V,W,H),q=toScreen([x0+rx*(e0+w),y+0.05,z0+rz*(e0+w)],V,W,H);
+        if(p[2]<=0.5||q[2]<=0.5)return;
+        ctx.strokeStyle=BIM_TR_COL[o.s];ctx.beginPath();ctx.moveTo(p[0],p[1]);ctx.lineTo(q[0],q[1]);ctx.stroke();
+        A3D_TRD.drawn.lines++;
+      });
+    });
+  }
+  function bimTrDrawPlan(ctx,V,W,H,R,K,f,y){
+    var C=R.c,Wk=R.w,dw=A3D_TRD.drawn,L=bimStd('aashto.vehicles','P_l'),Wc=bimStd('aashto.vehicles','P_w'),c,i;
+    var p0=toScreen([0,y,0],V,W,H),p1=toScreen([1,y,0],V,W,H),k=Math.sqrt((p1[0]-p0[0])*(p1[0]-p0[0])+(p1[1]-p0[1])*(p1[1]-p0[1]));   /* pixels a metre */
+    ctx.lineWidth=1;ctx.strokeStyle=K.edge;
+    for(c=0;c<C.n;c++){
+      if(C.L[c]<0)continue;
+      var x=C.px[c]+(C.x[c]-C.px[c])*f,z=C.pz[c]+(C.z[c]-C.pz[c])*f,s=toScreen([x,y+0.1,z],V,W,H);
+      ctx.fillStyle=C.k[c]?K.lot:K.car;
+      if(L*k<3){ctx.beginPath();ctx.arc(s[0],s[1],1.5,0,Math.PI*2);ctx.fill();dw.dots++;dw.cars++;continue;}
+      var hx=C.hx[c],hz=C.hz[c],rx=-hz,rz=hx,P=[[L/2,Wc/2],[L/2,-Wc/2],[-L/2,-Wc/2],[-L/2,Wc/2]];
+      ctx.beginPath();
+      for(i=0;i<4;i++){var q=toScreen([x+hx*P[i][0]+rx*P[i][1],y+0.1,z+hz*P[i][0]+rz*P[i][1]],V,W,H);if(i)ctx.lineTo(q[0],q[1]);else ctx.moveTo(q[0],q[1]);}
+      ctx.closePath();ctx.fill();ctx.stroke();dw.cars++;
+    }
+    var rw=Math.max(1.6,0.3*k);
+    ctx.fillStyle=K.walk;
+    for(i=0;i<Wk.n;i++){
+      if(Wk.R[i]<0)continue;
+      var wx=Wk.px[i]+(Wk.x[i]-Wk.px[i])*f,wz=Wk.pz[i]+(Wk.z[i]-Wk.pz[i])*f,ws=toScreen([wx,y+0.1,wz],V,W,H);
+      ctx.beginPath();ctx.arc(ws[0],ws[1],rw,0,Math.PI*2);ctx.fill();dw.walkers++;if(rw<=1.6)dw.dots++;
+    }
+  }
+  /* 3D: every car's faces and every walker, far to near */
+  function bimTrDraw3D(ctx,V,W,H,R,K,f,y){
+    var C=R.c,Wk=R.w,dw=A3D_TRD.drawn,M=bimTrCarMesh(),det=R.cap.detail,items=[],c,i,k;
+    for(c=0;c<C.n;c++){
+      if(C.L[c]<0)continue;
+      var x=C.px[c]+(C.x[c]-C.px[c])*f,z=C.pz[c]+(C.z[c]-C.pz[c])*f,s=toScreen([x,y,z],V,W,H);
+      if(s[2]<=0.5||s[0]<-50||s[0]>W+50||s[1]<-50||s[1]>H+50)continue;
+      items.push({t:0,i:c,x:x,z:z,d:s[2],s:s});
+    }
+    for(i=0;i<Wk.n;i++){
+      if(Wk.R[i]<0)continue;
+      var wx=Wk.px[i]+(Wk.x[i]-Wk.px[i])*f,wz=Wk.pz[i]+(Wk.z[i]-Wk.pz[i])*f,ws=toScreen([wx,y,wz],V,W,H);
+      if(ws[2]<=0.5||ws[0]<-20||ws[0]>W+20||ws[1]<-20||ws[1]>H+20)continue;
+      items.push({t:1,i:i,x:wx,z:wz,d:ws[2],s:ws});
+    }
+    items.sort(function(p,q){return q.d-p.d;});
+    var hgt=M.body.st;
+    items.forEach(function(it){
+      if(it.t===1){
+        var top=toScreen([it.x,y+hgt,it.z],V,W,H),hp=Math.abs(top[1]-it.s[1]);
+        ctx.fillStyle=K.walk;ctx.strokeStyle=K.walk;
+        if(hp<6){ctx.beginPath();ctx.arc(it.s[0],it.s[1],1.6,0,Math.PI*2);ctx.fill();dw.dots++;dw.walkers++;return;}
+        ctx.lineWidth=Math.max(1.5,hp*0.16);ctx.lineCap='round';
+        ctx.beginPath();ctx.moveTo(it.s[0],it.s[1]);ctx.lineTo(top[0],top[1]+hp*0.16);ctx.stroke();
+        ctx.beginPath();ctx.arc(top[0],top[1]+hp*0.08,Math.max(1.5,hp*0.09),0,Math.PI*2);ctx.fill();
+        dw.walkers++;return;
+      }
+      var cc=it.i,hx=C.hx[cc],hz=C.hz[cc],rx=-hz,rz=hx,col=C.k[cc]?K.lot:K.car;
+      var sz=toScreen([it.x+hx*2.9,y,it.z+hz*2.9],V,W,H),pl=Math.abs(sz[0]-it.s[0])+Math.abs(sz[1]-it.s[1]);
+      if(pl<3){ctx.fillStyle=col;ctx.beginPath();ctx.arc(it.s[0],it.s[1],1.6,0,Math.PI*2);ctx.fill();dw.dots++;dw.cars++;return;}
+      var m=det?M.mesh:M.box,P=[],Wp=[];
+      for(k=0;k<m.v.length;k++){var v=m.v[k],wp=[it.x+rx*v[0]+hx*v[2],y+v[1],it.z+rz*v[0]+hz*v[2]];Wp.push(wp);P.push(toScreen(wp,V,W,H));}
+      var F=[];
+      m.f.forEach(function(fc){
+        var a=Wp[fc[0]],b=Wp[fc[1]],c2=Wp[fc[2]],n=vnorm(vcross(vsub(b,a),vsub(c2,a))),zz=0;   /* every face, far to near: a box needs no culling */
+        fc.forEach(function(q){zz+=P[q][2];});F.push({fc:fc,z:zz/fc.length,n:n});
+      });
+      F.sort(function(p,q){return q.z-p.z;});
+      ctx.lineWidth=0.6;ctx.strokeStyle='rgba(0,0,0,0.35)';
+      F.forEach(function(o){
+        ctx.beginPath();o.fc.forEach(function(q,j){if(j)ctx.lineTo(P[q][0],P[q][1]);else ctx.moveTo(P[q][0],P[q][1]);});ctx.closePath();
+        ctx.fillStyle=shade(col,0.45+0.55*Math.abs(vdot(o.n,LIGHT)));ctx.fill();ctx.stroke();dw.faces++;
+      });
+      dw.cars++;
+    });
+  }
+  /* ================= __acad3dV171: traffic and people around the site: the analysis =================
+     Traffic and people is an analysis of Analyze's Access category, as the movement layers are: its row turns the
+     simulation on (it then plays on V170's clock, Play, Pause and Stop in the status bar), sets the peak hour, the
+     quality and the speed, and says what the run assumes and finds. Run lays its elements down on Layers > Site
+     analysis - Traffic and people, live and editable as every analysis's are: each signal's plan, the lot's entry with
+     its queue, each door with its people, each junction with its delays, from the plan and the run so far. */
+  function bimTrSetSettings(k,v){
+    var s=bimTrSettings(),o={on:s.on,peak:s.peak,q:s.q,speed:s.speed,seed:s.seed};
+    if(o[k]===v)return false;
+    pushUndo();
+    o[k]=v;
+    if(!A3D.site)A3D.site={};
+    A3D.site.traffic=o;
+    if(k==='speed'&&A3D_TR.run)A3D_TR.run.set.speed=v;   /* the speed at once; the hour, the quality and the seed at the next Play from still */
+    saveSoon();
+    return true;
+  }
+  function bimTrCanPlay(){return bimTrSettings().on&&!!bimMvOf();}
+  /* the simulation on: it plays at once; off: it stops, and its run is given up */
+  function bimTrCommand(on){
+    if(on===undefined||on===null)on=!bimTrSettings().on;
+    if(on&&!bimMvOf()){a3dToast('Traffic and people: '+bimMvWhyNot());return false;}
+    var pushed=bimTrSetSettings('on',!!on);
+    if(on){
+      /* its layer shown, in the same step: it starts hidden, as a coverage does, until there is something to show */
+      var ly=bimLayerById(bimDgState().layers.traffic);
+      if(ly&&ly.visible===false){if(!pushed)pushUndo();ly.visible=true;bimLayerChanged();}
+      if(A3D_ANIM.on||A3D_ANIM.paused)bimAnimStop();
+      bimAnimPlay(true);
+      a3dToast('Traffic and people: '+(A3D_TR.run?'playing. Pause keeps the moment, Stop gives the drawing back':'could not start'));
+    }else{
+      bimTrStop();
+      if(!bimAnimFrame().any)bimAnimStop();
+      paint();
+      a3dToast('Traffic and people: off');
+    }
+    bimAnalyzeRefresh();
+    return true;
+  }
+  function bimTrAct(v){
+    v=String(v||'');
+    var p=v.split(':');
+    if(p[0]==='sim')return bimTrCommand(p[1]==='on');
+    if(p[0]==='peak'&&(p[1]==='am'||p[1]==='pm'))return bimTrSetSettings('peak',p[1]);
+    if(p[0]==='q'&&(p[1]==='auto'||BIM_TR_Q[p[1]]))return bimTrSetSettings('q',p[1]);
+    if(p[0]==='speed'&&(p[1]==='1'||p[1]==='4'||p[1]==='16'))return bimTrSetSettings('speed',parseInt(p[1],10));
+    return false;
+  }
+  function bimTrSegBtns(lab,key,opts,cur){
+    return '<div class="a3d-trset"><span class="a3d-trlab">'+bimEsc(lab)+'</span>'+opts.map(function(o){
+      return '<button type="button" class="a3d-anzbtn'+(String(o[0])===String(cur)?' pri':'')+'" data-anzact="tr:'+key+':'+o[0]+'" aria-pressed="'+(String(o[0])===String(cur))+'">'+bimEsc(o[1])+'</button>';}).join('')+'</div>';
+  }
+  function bimTrMin(v){return v===null||v===undefined?'none yet':bimDispNum(v,v<10?1:0)+' s';}
+  /* the row's own part: the settings, what the run assumes, and what it has found so far */
+  function bimTrCardHtml(){
+    var s=bimTrSettings(),R=A3D_TR.run,dq=bimTrDeviceQ(),h='',res=R?bimTrResults(R):A3D_TR.last;
+    h+=bimTrSegBtns('Peak hour','peak',[['am','AM'],['pm','PM']],s.peak);
+    h+=bimTrSegBtns('Quality','q',[['auto','Auto ('+BIM_TR_Q[dq].name+')'],['light','Light'],['normal','Normal'],['detailed','Detailed']],s.q);
+    h+=bimTrSegBtns('Speed','speed',[[1,'1\u00d7'],[4,'4\u00d7'],[16,'16\u00d7']],s.speed);
+    if(R){
+      var C=R.c,W=R.w,TR=R.trips;
+      h+='<div class="a3d-sacap" data-trlive="1">'+bimEsc(bimDispNum(Math.max(0,R.t-R.res.t0)/60,1)+' minutes of the '+(s.peak==='am'?'morning':'evening')+' peak after a '+bimStdSay('app.traffic','warm')+' warm-up: '+
+        C.na+' cars and '+W.na+' walkers now, '+R.N.links.length+' links, '+Object.keys(R.plans).length+' signals ('+R.cap.name+')')+'</div>';
+      h+='<div class="a3d-sacap">'+bimEsc('The design\'s own trips: '+bimDispNum(TR.tin,0)+' in and '+bimDispNum(TR.tout,0)+' out in the peak hour by San Diego\'s rates (2003)'+
+        (R.uses.skip.length?'; not counted: '+R.uses.skip.join(', '):'')+(R.lotOk?'':'; '+R.N.notes.join('; ')))+'</div>';
+    }
+    if(res&&res.q)h+='<div class="a3d-sacap">'+bimEsc('The lot\'s entry: '+bimDispNum(res.q.outMean,1)+' cars waiting to leave on average, '+res.q.outMax+' at most; '+res.q.stMax+' standing on the street before it at most')+'</div>';
+    h+='<div class="a3d-sacap">'+bimEsc('Not a calibrated model: no counts, each street at its class\'s typical traffic. Signal plans assumed: OpenStreetMap maps where a signal is, never its timing. In 3D the cars and walkers are drawn over the model.')+'</div>';
+    return h;
+  }
+  /* the card V164 makes for the analysis, with the simulation's own part */
+  function bimTrCard(card){
+    var s=bimTrSettings(),mv=bimMvOf();
+    card.status=(s.on?(A3D_TR.run?'Playing: ':'On: Play to run it. '):'')+card.status;
+    if(s.on&&card.state!=='stale')card.state=A3D_TR.run?'on':(card.state||'on');
+    card.extra=(card.extra||'')+bimTrCardHtml();
+    card.acts.unshift({act:'tr:sim:'+(s.on?'off':'on'),label:s.on?'Stop the simulation':'Simulate',pri:!s.on,off:mv?'':bimMvWhyNot(),tip:'Cars and walkers around the site, on the clock: Play, Pause and Stop in the status bar'});
+    return card;
+  }
+  /* ---- Run: the elements, from the plan and the run so far ---- */
+  function bimDgTrafficRun(S){
+    var A=A3D.site&&A3D.site.access,R=A3D_TR.run,N,plans={},E=[],leg=[],y=S.y+0.15,res=R?bimTrResults(R):A3D_TR.last;
+    if(!bimMvOf())return {E:[],run:{note:bimMvWhyNot()}};
+    if(R){N=R.N;plans=R.plans;}
+    else{
+      N=bimTrNet();
+      if(N.err)return {E:[],run:{note:N.err}};
+      bimTrDemand(N);
+      N.J.forEach(function(j){if(j.kind==='signal'){var P=bimTrPlan(N,j);if(P)plans[j.i]=P;}});
+    }
+    var src='Signal plans assumed (FHWA Signal Timing Manual, 2008; MUTCD 11th Edition); traffic by FHWA\'s classes at Florida\'s K; '+bimMvSrc(A);
+    /* each signal's plan */
+    Object.keys(plans).forEach(function(ji){
+      var P=plans[ji],j=N.J[ji],ph=P.ph.map(function(o,k){return 'phase '+(k+1)+': green '+bimDispNum(o.G,0)+' s, yellow '+bimDispNum(o.Y,1)+' s, all red '+bimDispNum(o.AR,1)+' s';});
+      E.push({k:'sig:'+j.n,name:'Signal plan',g:{kind:'line',pts:[],marks:[{p:[j.x,y,j.z],t:'Signal: '+bimDispNum(P.C,0)+' s cycle'+(P.grown?' (grown to hold its least greens)':'')}]},s:{mark:'#2fbf71',markText:'#cfeedd'},
+        info:{title:'An assumed signal plan: a '+bimDispNum(P.C,0)+' s cycle',rows:[['Phases',ph.join('; ')],['Webster\'s cycle',isFinite(P.C0)?bimDispNum(P.C0,0)+' s, held between '+bimStdSay('stm.signal','cycle_min')+' and '+bimStdSay('stm.signal','cycle_max'):'the junction is at capacity: the longest'],
+          ['Least greens','WALK ('+bimStdSay('mutcd.signal','walk')+') and the crossing at '+bimStdSay('mutcd.walk','clear')+'; '+P.ph.map(function(o){return bimDispNum(o.gmin,0)+' s';}).join(' and ')]],
+          method:'Two phases by axis; Webster\'s cycle from the critical lane volumes over '+bimStdSay('stm.signal','sat')+'; Kell and Fullerton\'s yellow and red clearance within the MUTCD\'s limits; no offsets',source:src}});
+    });
+    if(Object.keys(plans).length)leg.push({name:'Signal, its assumed plan',short:'signal',col:'#2fbf71',kind:'dot'});
+    /* the lot's entry and its queue */
+    if(N.lot){
+      var at=N.lot.at,qt=res&&res.q?'Entry: '+bimDispNum(res.q.outMean,1)+' waiting to leave (most '+res.q.outMax+'), '+res.q.stMax+' standing on the street at most':'Entry: not simulated yet';
+      E.push({k:'entry',name:'The lot\'s entry and its queue',g:{kind:'line',pts:[],marks:[{p:[N.x[at],y,N.z[at]],t:qt}]},s:{mark:'#ffb454',markText:'#ffe0b0'},
+        info:{title:N.lot.name,rows:[['Queue',qt],['Trips',R?bimDispNum(R.trips.tin,0)+' in and '+bimDispNum(R.trips.tout,0)+' out in the peak hour':'when it runs']],method:'Sampled every '+bimStdSay('app.traffic','bin')+': the cars waiting to leave, and the most standing within '+bimStdSay('app.traffic','queue_r')+' of the entry',source:'San Diego\'s Trip Generation Manual (2003) by the design\'s usages'}});
+      leg.push({name:'The lot\'s entry',short:'entry',col:'#ffb454',kind:'dot'});
+    }
+    /* each door and its people */
+    N.doors.forEach(function(d,i){
+      var r=res&&res.doors[i],t=r?d.name+': '+bimDispNum(r.inH,0)+' in and '+bimDispNum(r.outH,0)+' out an hour':d.name+': not simulated yet';
+      E.push({k:'door:'+i,name:'People at '+d.name,g:{kind:'line',pts:[],marks:[{p:[d.x,y,d.z],t:t}]},s:{mark:'#7fd3e6',markText:'#cdeff6'},
+        info:{title:'People at '+d.name,rows:[['People',t],['Door',d.mapped?'mapped in OpenStreetMap':'none mapped: the lot\'s middle']],method:'Counted as each walker arrives at the door or leaves it, over the run',source:'The run'}});
+    });
+    if(N.doors.length)leg.push({name:'A door, its people',short:'door',col:'#7fd3e6',kind:'dot'});
+    /* each junction's delays, where the run has them */
+    if(res)res.j.forEach(function(x){
+      if(x.carDelay===null&&x.walkWait===null)return;
+      var t='Delay '+bimTrMin(x.carDelay)+' a car'+(x.walkWait!==null?', '+bimTrMin(x.walkWait)+' a walker\'s wait':'');
+      E.push({k:'xing:'+N.J[x.i].n,name:'Delay at a junction',g:{kind:'line',pts:[],marks:[{p:[x.x,y,x.z],t:t}]},s:{mark:'#e5484d',markText:'#f6c9ca'},
+        info:{title:'Delay at a '+({signal:'signalled junction',yield:'junction',allstop:'junction with stops on every approach'}[x.kind]||'junction'),rows:[['Cars',t],['Counted',x.cars+' cars, '+x.walkers+' walkers']],method:'A car\'s time on its approach less its free-flow time; a walker\'s wait at the crossings',source:'The run'}});
+    });
+    if(res&&res.j.length)leg.push({name:'A junction\'s delay',short:'delay',col:'#e5484d',kind:'dot'});
+    var note=res?'':'Simulate, then Run again for the queue, the people at the doors and the delays';
+    return {E:E,run:{legend:leg,source:'Traffic and people: assumed signal plans and the run so far',note:note}};
+  }
   // ---- DXF (AutoCAD ASCII exchange format) ----
   var DXF_ACI={1:'#ff5555',2:'#e8d24a',3:'#5ac25a',4:'#4ac6c6',5:'#5a7fe0',6:'#c85ac0',7:'#d8d8d8',8:'#8a8a8a',9:'#bcbcbc'};
   var DXF_UNIT_SCALE={1:0.0254,2:0.3048,4:0.001,5:0.01,6:1,10:0.9144};
@@ -33369,6 +34946,7 @@ try{
     drawRoomTags(ctx,V,W,H);       /* __acad3dV101 */
     drawTribAreas(ctx,V,W,H);          /* __acad3dV106 */
     drawStructResults(ctx,V,W,H);      /* __acad3dV125: the analysis display */
+    if(!capMode)bimTrDraw(ctx,V,W,H);  /* __acad3dV171: the cars and walkers, while the clock plays or holds a moment */
     drawDiagrams(ctx,V,W,H,'over');    /* __acad3dV164: the site analysis's lines, symbols and words */
     drawAreaPlan(ctx,V,W,H);           /* __acad3dV105b */
     drawSunPath(ctx,V,W,H);            /* __acad3dV107 */
@@ -45852,9 +47430,9 @@ try{
     V.rov=Math.sqrt(Math.pow(V.rr+V.w/2,2)+Math.pow(V.wb+V.of,2));
     return V;
   }
-  function bimEntVehMesh(V){
+  function bimEntVehMesh(V,bare){   /* __acad3dV171: bare, without its wheels (the simulation's cars) */
     var L=V.l,W=V.w,H=V.h,r=V.d/2,zf=L/2-V.of,zr=-L/2+V.or,tw=Math.min(0.3,W*0.12),xw=W/2-tw/2,y0=r*0.5,P=[];
-    P.push(bimEntDisc([-xw,r,zf],r,tw),bimEntDisc([xw,r,zf],r,tw),bimEntDisc([-xw,r,zr],r,tw),bimEntDisc([xw,r,zr],r,tw));
+    if(!bare)P.push(bimEntDisc([-xw,r,zf],r,tw),bimEntDisc([xw,r,zf],r,tw),bimEntDisc([-xw,r,zr],r,tw),bimEntDisc([xw,r,zr],r,tw));
     if(V.c==='P'){
       var yb=H*0.6;
       P.push(bimEntBox([0,(y0+yb)/2,0],[W,yb-y0,L]),bimEntBox([0,(yb+H)/2,(zf+zr)/2-L*0.04],[W*0.86,H-yb,L*0.48]));
@@ -50940,7 +52518,7 @@ try{
     'm:exportpng':'Export the view as a PNG image','m:exportpdf':'Export the plan as a PDF',
     'm:exportdxf':'Export the drawing as a DXF file','m:exportsvg':'Export the drawing as an SVG file'};
   /* AutoCAD's synonyms: the words a person might search for a command by, beyond its name */
-  var BIM_CMD_TERMS={FILLET:'round rounded corner radius',CHAMFER:'bevel corner',ERASE:'delete remove',COPY:'duplicate clone',
+  var BIM_CMD_TERMS={TRAFFIC:'cars pedestrians walkers simulation signals queue junction delay',FILLET:'round rounded corner radius',CHAMFER:'bevel corner',ERASE:'delete remove',COPY:'duplicate clone',
     OFFSET:'parallel',TRIM:'cut clip shorten',EXTEND:'stretch longer',MIRROR:'flip reflect',ARRAYRECT:'grid pattern repeat rows columns',
     ARRAYPOLAR:'circular radial repeat',DIST:'distance length measure',DIMLINEAR:'dimension measure',MTEXT:'label note annotation words',
     TEXT:'label note annotation words',HATCH:'fill pattern poche',LAYER:'layers visibility',ZOOM:'fit extents all',UNDO:'back revert',
@@ -52821,6 +54399,8 @@ try{
     siteanalysis:function(){bimAnzView();},                      /* __acad3dV158; __acad3dV162: Analyze is one list */
     analyzesite:function(){bimAnzView();bimSiteAnalyze('');},   /* __acad3dV164 */
     animplay:function(){bimAnimPlay();},   /* __acad3dV170 */
+    traffic:function(){bimAnzView();bimSaGoto('access');bimTrCommand(true);},   /* __acad3dV171 */
+    trafficoff:function(){bimTrCommand(false);},
     climate:function(){bimBoardShow('climate');},                     /* __acad3dV162: the board's page in the set */
     zoning:function(){A3D_ZN.edit=true;bimSaGoto('legal');bimSaRefresh(true);},   /* __acad3dV160; __acad3dV162: in Legal */
     envelope:function(){bimZnBuild();},
@@ -55181,6 +56761,96 @@ try{
   window.__a3dTerrainShown=function(){return A3D.lastTerrainDrawn||null;};
   window.__acad3dV108='delaunay,surveyimport,terrain,contours,earthworkprism,buildingpads';
   window.__acad3dV60='presentationrendertoggle,livecanvaspoche,lineweighthierarchy,dropshadow,roomfillpresentation,offbydefaultnorenderchange,patterndeferredtophase53';
+  /* __acad3dV171: traffic and people around the site, for the suite: the run driven step by step, read as data */
+  window.__acad3dV171='trafficrecords,network,lanes,widthkept,junctions,priority,stops,signals,webster,kellfullerton,leastgreens,demand,fdotk,furness,sandiego,'+
+    'lotentry,doors,carparks,walkers,sidewalks,crossings,idm,mobil,amber,allstop,yield,walkcross,pools,warmup,tallies,draw2d,draw3d,stoplines,analysis,card,command,results,quality';
+  function bimTrArr(a){return Array.prototype.slice.call(a);}
+  function bimTrSummary(R){
+    if(!R)return null;
+    var plans={};
+    Object.keys(R.plans).forEach(function(k){var P=R.plans[k];plans[k]={C:P.C,C0:isFinite(P.C0)?P.C0:null,Y:P.Y,L:P.L,grown:P.grown,axis:P.axis,of:P.of,armPh:P.armPh,
+      ph:P.ph.map(function(o){return {G:o.G,Y:o.Y,AR:o.AR,y:o.y,gmin:o.gmin,gped:o.gped,gdrv:o.gdrv,arms:o.arms,ins:o.ins,t0:o.t0};})};});
+    var res=R.res;
+    return {t:R.t,steps:R.steps,warm:R.warm,warmMs:R.warmMs,qk:R.qk,cap:R.cap.name,step:R.step,cars:R.c.na,walkers:R.w.na,plans:plans,trips:R.trips,share:R.share,lotOk:R.lotOk,
+      lot:R.N.lot,notes:R.N.notes,sigOff:R.N.sigOff,lanesCapped:R.N.lanesCapped,sw:R.N.sw,srcs:R.srcs.map(function(s){return {l:s.l,q:s.q,pend:s.pend};}),sinks:R.sinks.map(function(s){return {l:s.l,q:s.q};}),
+      park:R.park.map(function(p){return {n:p.n,x:p.x,z:p.z,name:p.name,lot:!!p.lot};}),routes:R.routes.length,allocs:A3D_TR.allocs,acres:R.acres,uses:R.uses,
+      stops:R.stops,edgeW:R.edgeW,lotQ:(R.lotQ||[]).length,
+      res:{t0:res.t0,na0:res.na0,spawned:res.spawned,exited:res.exited,lotIn:res.lotIn,lotOut:res.lotOut,blocked:res.blocked,red:res.red,redAt:res.redAt,walkBad:res.walkBad,lc:res.lc,carsCap:res.carsCap,walkCap:res.walkCap,
+        doors:res.doors,q:res.q,del:bimTrArr(res.del),cw:bimTrArr(res.cw)}};
+  }
+  window.__a3dTrStart=function(){bimTrStop();var R=bimTrStart();return R?bimTrSummary(R):{err:'not started'};};
+  window.__a3dTrStop=function(){bimTrStop();return true;};
+  window.__a3dTrSteps=function(n){var R=A3D_TR.run,i;if(!R)return null;for(i=0;i<n;i++)bimTrStep(R);return bimTrSummary(R);};
+  window.__a3dTrSummary=function(){return bimTrSummary(A3D_TR.run);};
+  /* n steps, watched: each step, the walkers on each junction's crossings and the cars standing on each link, summed */
+  window.__a3dTrWatch=function(n){
+    var R=A3D_TR.run,i,c,k;if(!R)return null;
+    var occ=new Float64Array(R.nArms),st=new Float64Array(R.N.links.length),C=R.c;
+    for(i=0;i<n;i++){bimTrStep(R);for(k=0;k<R.nArms;k++)if(R.occ[k]>0)occ[k]++;for(c=0;c<C.n;c++)if(C.L[c]>=0&&C.v[c]<0.5)st[C.L[c]]++;}
+    var o={occ:{},st:{}};
+    R.N.J.forEach(function(j){j.arms.forEach(function(a,ai){var v=occ[j.armBase+ai];if(v)o.occ[j.i+':'+ai]=v*R.step;});});
+    for(k=0;k<st.length;k++)if(st[k])o.st[k]=st[k]*R.step/(n*R.step);
+    return o;
+  };
+  window.__a3dTrNet=function(){
+    var N=A3D_TR.run?A3D_TR.run.N:null;
+    if(!N){N=bimTrNet();if(N.err)return {err:N.err};bimTrDemand(N);}
+    return {R:N.R,lot:N.lot,doors:N.doors,notes:N.notes,sigOff:N.sigOff,lanesCapped:N.lanesCapped,sw:N.sw,x:N.x,z:N.z,
+      edges:N.edges.map(function(e){return {a:e.a,b:e.b,len:e.len,car:e.car,hw:bimTrHw(e.t),name:String(e.t.name||''),w:e.w,lanes:e.lanes,sw:e.sw,lot:!!e.lot,way:e.way,P:e.P};}),
+      links:N.links.map(function(l){return {i:l.i,e:l.e,a:l.a,b:l.b,len:l.len,lanes:l.lanes,v0:l.v0,hw:l.hw,w:l.w,ow:l.ow,q:l.q,base:l.base,name:l.name,rank:l.rank,rev:l.rev,jb:l.jb,ja:l.ja,arm:l.arm,armOut:l.armOut,lot:l.lot};}),
+      J:N.J.map(function(j){var tr={};Object.keys(j.tr).forEach(function(k){tr[k]=j.tr[k].map(function(t){return [t.o,t.p,t.ang,!!t.u];});});
+        return {i:j.i,n:j.n,x:j.x,z:j.z,kind:j.kind,sig:j.sig,ins:j.ins,outs:j.outs,major:Object.keys(j.major).map(Number),stop:Object.keys(j.stop).map(Number),tie:!!j.tie,tr:tr,bnd:j.bnd,lot:j.lot,cw:j.cw,
+          arms:j.arms.map(function(a){return {k:a.k,e:a.e,bear:a.bear,w:a.w,car:a.car,lin:a.lin,lout:a.lout,end:a.end};})};})};
+  };
+  window.__a3dTrCars=function(){var R=A3D_TR.run,C,o=[],c;if(!R)return [];C=R.c;for(c=0;c<C.n;c++)if(C.L[c]>=0)o.push([c,C.L[c],C.ln[c],C.s[c],C.v[c],C.k[c],C.tg[c],C.x[c],C.z[c],C.hx[c],C.hz[c],C.nx[c]]);return o;};
+  window.__a3dTrWalkers=function(){var R=A3D_TR.run,W,o=[],i;if(!R)return [];W=R.w;for(i=0;i<W.n;i++)if(W.R[i]>=0)o.push([i,W.R[i],W.p[i],W.v[i],W.x[i],W.z[i],W.cr[i],W.wait[i],W.v0[i]]);return o;};
+  window.__a3dTrRoutes=function(){var R=A3D_TR.run;if(!R)return [];return R.routes.map(function(r){return {kind:r.kind,door:r.door,extra:r.extra,len:r.len,P:r.P,cr:r.cr};});};
+  /* the cars on a link, front first, and what holds each: [car, lane, s, v, a, leader, next link, hold] */
+  window.__a3dTrOnLink=function(l){
+    var R=A3D_TR.run,C,o=[],c;if(!R)return [];C=R.c;
+    for(c=0;c<C.n;c++)if(C.L[c]===l)o.push([c,C.ln[c],C.s[c],C.v[c],C.a[c],C.lead[c],C.nx[c],bimTrHold(R,c)]);
+    o.sort(function(p,q){return q[2]-p[2];});
+    return o;
+  };
+  window.__a3dTrIdm=function(v,v0,s,dv){return bimTrIdm(v,v0,s,dv,bimTrIdmP());};
+  window.__a3dTrFurness=function(qi,qo,ok,n){return bimTrFurness(qi,qo,ok,n);};
+  window.__a3dTrTrips=function(rows,acres,peak){return bimTrTripsOf(rows,acres,peak);};
+  window.__a3dTrUses=function(){return bimTrUses();};
+  window.__a3dTrPlanOf=function(ap,arms){var P=bimTrPlanOf(ap,arms);if(P&&!isFinite(P.C0))P.C0=null;return P;};
+  window.__a3dTrSigAt=function(ji,t){var R=A3D_TR.run,P=R&&R.plans[ji],o={};if(!P)return null;return P.ph.map(function(x,k){bimTrSig(P,k,t,o);return [o.s,o.left];});};
+  window.__a3dTrResults=function(){return A3D_TR.run?bimTrResults(A3D_TR.run):A3D_TR.last;};
+  window.__a3dTrDrawn=function(){return JSON.parse(JSON.stringify(A3D_TRD.drawn));};
+  window.__a3dTrSettings=function(){return bimTrSettings();};
+  window.__a3dTrAct=function(v){return bimTrAct(v);};
+  window.__a3dTrDeviceQ=function(){return bimTrDeviceQ();};
+  /* the pools' bytes, and how many times they were allocated */
+  window.__a3dTrPools=function(){
+    var R=A3D_TR.run,b=0;if(!R)return {allocs:A3D_TR.allocs,bytes:0};
+    [R.c,R.w].forEach(function(o){Object.keys(o).forEach(function(k){if(o[k]&&o[k].BYTES_PER_ELEMENT)b+=o[k].byteLength;});});
+    b+=R.occ.byteLength+R.occH.byteLength+R.busy.byteLength;
+    return {allocs:A3D_TR.allocs,bytes:b,cars:R.c.n,walkers:R.w.n};
+  };
+  /* a leader held at a speed and a follower behind it on a straight one-lane road, run by the simulation's own step
+     functions (the sort, the IDM's acceleration, the move): the follower's gap and speed each second */
+  window.__a3dTrPlatoon=function(o){
+    var len=50000,v0=o.v0,P=[[0,0],[len,0]],al=A3D_TR.allocs;
+    var N={L:{ring:null,pt:[0,0]},x:[0,len],z:[0,0],edges:[],doors:[],lot:null,notes:[],
+      links:[{i:0,e:0,a:0,b:1,P:P,C:[0,len],len:len,lanes:1,v0:v0,w:3.3,ow:true,rank:1,hw:'residential',base:'residential',q:0,rev:-1,jb:1,ja:0,arm:0,armOut:0,slot:0}],
+      J:[{i:0,n:0,arms:[{k:0}],ins:[],outs:[0],bnd:true,kind:'pass',tr:{},armBase:0,cw:0,x:0,z:0,stop:{},major:{}},{i:1,n:1,arms:[{k:0}],ins:[0],outs:[],bnd:true,kind:'pass',tr:{0:[]},armBase:1,cw:0,x:len,z:0,stop:{},major:{}}]};
+    var R={N:N,set:{speed:1},Q:{cars:4,walk:1},cap:{cars:4,walk:1},rng:bimTrRng(1),P:bimTrIdmP(),t:0,acc:0,step:o.step||bimStd('app.traffic','step'),plans:{},targets:[],routes:[],srcs:[],sinks:[],
+      nSlots:1,nArms:2,lotOk:false,park:[],rIn:[],rOut:[],rTin:[],rTout:[],rWin:[],rWout:[],steps:0,y:0};
+    bimTrAlloc(R);A3D_TR.allocs=al;
+    var C=R.c,mk=function(s,v){var c=C.free[--C.nf];C.na++;C.L[c]=0;C.ln[c]=0;C.s[c]=s;C.v[c]=v;C.len[c]=bimStd('aashto.vehicles','P_l');C.k[c]=0;C.tg[c]=-1;C.nx[c]=-1;C.t0[c]=0;C.ta[c]=0;C.st[c]=0;C.lc[c]=-99;bimTrPlace(R,c);return c;};
+    var L=mk(o.s0+o.gap+bimStd('aashto.vehicles','P_l'),o.vl),F=mk(o.s0,o.vf),out=[],n=Math.round(o.secs/R.step),i,per=Math.max(1,Math.round(1/R.step));
+    for(i=0;i<n;i++){
+      bimTrSortCars(R);
+      C.a[F]=bimTrAccOf(R,F);C.a[L]=0;
+      bimTrMove(R,F,R.step);bimTrMove(R,L,R.step);
+      R.t+=R.step;
+      if((i+1)%per===0)out.push([R.t,C.s[L]-C.len[L]-C.s[F],C.v[F]]);
+    }
+    return out;
+  };
 }catch(e){
   window.__a3dErr=String(e&&e.message||e);
   console.warn('[BIM] The engine failed to load.',e);   /* __acad3dV120 */

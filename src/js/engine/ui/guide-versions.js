@@ -1,7 +1,7 @@
   /* ================= __acad3dV142: the user guide, and versions =================
      The guide is in docs/ beside the app, on the same site (and in the repository, so it opens
      offline). Its command reference has a section per command, anchored by the command's id. */
-  var BIM_APP_VERSION={v:'V170',date:'2026-10-24'};   /* __acad3dV162; __acad3dV163; __acad3dV164; __acad3dV165; __acad3dV166; __acad3dV167; __acad3dV168; __acad3dV170 */
+  var BIM_APP_VERSION={v:'V171',date:'2026-10-25'};   /* __acad3dV162; __acad3dV163; __acad3dV164; __acad3dV165; __acad3dV166; __acad3dV167; __acad3dV168; __acad3dV170; __acad3dV171 */
   var BIM_DOCS_BASE='docs/';
   /* a command's anchor in the reference: cmd:LINE -> cmd-LINE, act:bim:wall -> act-bim-wall */
   function bimDocsAnchor(id){return String(id||'').replace(/[^A-Za-z0-9_-]+/g,'-');}

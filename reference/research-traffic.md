@@ -156,3 +156,173 @@ credited), only the site's streets, agents as typed arrays, light by design. Wit
 4. The lot's own trips: San Diego's rates by V131's usages and areas (free, read; one region's, 2003), from the
    parking spaces at an assumed rate (the earlier plan, when no free table was known), a number the owner gives,
    or none.
+
+**The owner's answers** (2026-10-25, the start of V171's session), each as the research proposed:
+1. **Each junction's own signal plan:** a cycle of at least 60 s split by Webster's logic to the approaches'
+   volumes, amber by Kell and Fullerton, each green long enough for WALK (7 s) and the crossing at 3.5 ft/s
+   (MUTCD 4I.06); not valdrada's one 40 s cycle.
+2. **The authors' standard car** (Kesting, Treiber and Helbing 2010: T 1.5 s, s0 2 m, a 1.4 m/s^2, b 2.0 m/s^2,
+   delta 4) with the street's own speed, as the model's author advises for city traffic.
+3. **The streets' traffic** at each street's typical AADT by class (`fhwa.fc`) times Florida's standard K, 9%
+   (the weekday peak hour in urban areas); turns at each junction by NCHRP 255's balancing to the exits'
+   volumes.
+4. **The lot's own trips** by San Diego's Trip Generation Manual (2003), from V131's usages and their areas,
+   with the table's peak shares and in:out splits; said on the layer as one region's rates of 2003.
+
+## 7. Read at the start of V171 (2026-10-25)
+
+The design needed four facts the research had not read; each was read at its source, as text, in the session's
+scratch.
+
+| Fact | Source | Read | Level |
+|---|---|---|---|
+| The saturation flow is 3600 over the queue's discharge headway; the ideal saturation flow "is typically assumed to be 1,900 passenger cars per hour per lane", not always reached. The start-up lost time is about 2 s; the HCM's default total lost time is 4 s per phase (start-up plus clearance lost time); effective green is the cycle less the critical movements' lost times | FHWA, Traffic Signal Timing Manual (2008), chapter 3, https://ops.fhwa.dot.gov/publications/fhwahop08024/chapter3.htm | sections 3.3.1 to 3.3.3, as text | P, in the 2008 edition (the HCM's values as the manual gives them) |
+| "In general, it is preferred that the cycle lengths for conventional, four-legged intersections not exceed 120 seconds, although larger intersections may require longer cycle lengths" | the same, chapter 6 | section 6.4, as text | P |
+| MOBIL's Table 1: the politeness factor p from 0 to 1, the changing threshold 0.1 m/s^2, the maximum safe deceleration 4 m/s^2 (the bias 0.3 m/s^2 for keep-right rules only); with p = 1 a change is made only when it raises the sum of the accelerations of all involved, the "ideal" MOBIL with no free parameter; the symmetric incentive (equation 3) for rules that allow passing on either side | Kesting, Treiber and Helbing, MOBIL, the authors' manuscript, https://mtreiber.de/publications/MOBIL_TRB.pdf | sections 2.1 and 2.2, Table 1 | P |
+| San Diego's driveway rates read again for the four usages: multiple dwelling units 8 trips a unit under 20 units an acre, 6 over it, AM 8% (2:8), PM 10% (7:3) under and 9% (7:3) over; commercial office Ln(T) = 0.756 Ln(x) + 3.95, x thousand sq ft, AM 13% (9:1), PM 14% (2:8); specialty retail centre or strip commercial 40 a thousand sq ft, AM 3% (6:4), PM 9% (5:5); hotel (with convention facilities and restaurant) 10 trips a room, AM 6% (6:4), PM 8% (6:4) | City of San Diego, Trip Generation Manual (May 2003), Table 1 | the residential, office, retail and lodging rows | P |
+
+## 8. The design (V171)
+
+**The network.** From V166's streets (`mv`), within `app.traffic`'s radius of the lot (300 m, the app's, as Analyze site's
+own reach): every way a car may use (motorway to service; not where motor vehicles or all access are refused, a
+driveway into the lot excepted), split at its junctions into links, one for each way it may be driven. A way leaving
+the radius is cut there: its end is a boundary, where background traffic comes in and goes out. A link's lanes are the
+mapped ones (per direction where mapped, else half each way, the odd one forward), capped by the roadway's width where
+`width` is mapped (V171 adds it to the kept tags) at `app.traffic`'s lane width; its speed is `bimMvSpeed`'s.
+
+**Junctions.** Where three or more link ends meet. Turns are told by the change of bearing (right turns positive, the
+plan's north up); a U-turn only at a dead end. Right of way at an unsignalled junction by SUMO's ranking (the road's
+class, then speed, then lanes): the two highest-ranked approaches are major, the rest minor and yield, keeping SUMO's
+1 s gap to a major car not yet in the junction; ties broken by order, said. A stop on an approach (V166's 'p') stops a
+car there first; an all-way stop ('a') stops every approach, the first to arrive going first. A signal (V166's 's')
+within `app.traffic`'s 30 m of a junction signals that junction; one away from any junction is not simulated, and said.
+
+**Signals, each junction's own** (the owner's decision 1). Two phases by axis: the approach with the most traffic a
+lane sets the first axis; approaches within 45 degrees of it either way are its phase, the rest the second. Each
+phase's y is its critical lane volume over the saturation flow (1,900 an hour a lane, STM chapter 3); L is 4 s a phase
+(the HCM's default, STM chapter 3); Webster's cycle (1.5 L + 5) / (1 - Y) held between 60 s (the least suggested) and
+120 s (the preferred most for a four-legged junction), and the most when Y reaches 0.95. Each phase's amber is Kell and
+Fullerton's first term (t 1.0 s, a 10 ft/s^2, flat) held to the MUTCD's 3 to 6 s, its all-red the second ((W + Lv) / v,
+W the crossed street's width, Lv 20 ft) at most 6 s. The greens share what is left by y, each at least the timing
+manual's minimum for its class (Table 5-3's lower value) and WALK (7 s) plus the crossing of the street it parallels at
+3.5 ft/s (MUTCD 4I.06, the owner's rule); where the minimums do not fit, the cycle grows to hold them, and says so. No
+offsets: each junction alone, said.
+
+**The cars** (decision 2). The IDM with the authors' standard car (T 1.5 s, s0 2 m, a 1.4, b 2.0, delta 4), the desired
+speed the street's; the ballistic update with the author's stop rule, a fixed step of 0.2 s inside V170's clock. The
+car ahead is on its lane of its link, then on the link it will take next; a red light, an amber it would not clear its
+line in (section 9), a stop line not yet cleared, a yielding approach with a major car too near, or a walker on the crossing it is
+about to cross is a standing car of length zero at the line. Lane changes by MOBIL where a direction has two lanes or
+more (symmetric, p 1, threshold 0.1, safe braking 4). Lengths from V169's design car (AASHTO P).
+
+**Demand** (decision 3). Each link's volume an hour: its class's typical AADT (`fhwa.fc`, urban, the middle of the range,
+as the noise analysis takes it) times Florida's 9%, half each way on a two-way street (the peak direction's share is
+not applied, and said). A service road carries none of its own. Cars come in at the boundaries at their links' volumes,
+one every 3600 / q seconds jittered by the run's seeded random numbers. At a junction each car takes an exit by NCHRP
+255's balancing: a first guess of each approach's turns in proportion to the exits' volumes, then the matrix scaled to
+the approaches' volumes (rows) and the exits' (columns, scaled to the same total) by turns, ten times (six to ten,
+NCHRP 255).
+
+**The lot's own trips** (decision 4). San Diego's driveway rates by V131's usages (Residential: multiple dwelling units,
+by its units and the lot's units an acre; Office: commercial office, by its GFA; Retail: strip commercial, by its GFA;
+Hotel: hotel, by its keys; Parking and the owner's own usages: none, said), at the chosen peak hour's share (PM unless
+AM is chosen) and its in:out split. A car coming in enters at a boundary chosen by the boundaries' volumes and drives
+the quickest way to the lot's entry; one going out leaves from the entry by the quickest way to a boundary. The entry:
+the driveway that reaches the lot (V166), else the provisional entry on the lot's lowest street. With no parking of its
+own (no Parking usage and no driveway), the lot's drivers park in the car parks V166 found within 400 m, nearest first.
+
+**The walkers.** Each driver walks between where the car is left and a door (the doors V166 found on the lot; the lot's
+middle where none is mapped); the lot's people who come by transit or on foot, at the census tract's shares of commuters
+who did (V161), walk from and to the nearest stops or come along the sidewalks from the edge; none where the census does
+not reach, and said. They walk the sidewalks of the streets they follow (both sides where not mapped, said; a street
+mapped without one avoided), at a desired speed drawn from Helbing and Molnar's (mean 1.34 m/s, 0.26 m/s spread, capped
+at 1.3 times), a gap to the one ahead in their stripe (SUMO's 0.65 m stripes). At a junction they cross what lies
+between their way in and their way out the short way round: at a signal only while the parallel phase's green leaves
+time to finish at 3.5 ft/s; elsewhere when no car is within 2 s of the crossing; cars give way to a walker on it.
+
+**Drawn.** On the drawing's overlay while it plays (V170's clock), plan and 3D: in plan a car is a rectangle of its size
+turned to its heading, a walker a dot, the lot's own in their own colours, a car shorter than 3 pixels a dot; in 3D a car
+is V169's design car without its wheels and a walker a low figure (a short column and a head; a dot when far), sorted by
+depth. Drawn over the model: a car behind a building shows through it in 3D, and that is said (the GPU table has no
+heading; drawing them with the model's depth is left for later). The stop lines show their signal's colour.
+
+**Results as layers.** The analysis Traffic and people (Analyze, Access): its elements on Layers > Site analysis -
+Traffic and people: each signal's plan (cycle, greens, amber, all-red), the lot's entry with its queue (cars waiting to
+leave and the longest standing queue on the street within 100 m, mean and most), each door with its people an hour in
+and out, each crossing with its delay a car and its wait a walker. Run draws them from the plan and the run so far; the
+run's tallies are binned every 10 s, so a long run does not grow.
+
+**Light.** One simulation, only the radius's streets; cars and walkers in fixed pools of typed arrays allocated once at
+the start (Light 200 cars and 300 walkers, Normal 600 and 1000, Detailed 1500 and 3000); no textures or skeletons; a fixed
+step that waits with the clock while the page is hidden; drawn at most 30 times a second (20 at Light). The quality is
+read from the device (navigator.deviceMemory and hardwareConcurrency where the browser says: 2 GB or 2 cores or fewer
+Light, 8 GB and 8 cores or more Detailed, else Normal) and lowered a step when frames run long; chosen by hand in the row.
+The suite checks the pools are allocated once and the page's memory settles.
+
+**Not done, and said:** calibration (no counts), the peak direction's share, offsets between signals, turn lanes and
+lane use at junctions (a car turns from any lane), signals away from junctions, buses, cycles and trucks, occlusion of
+agents by the model in 3D.
+
+## 9. As built (V171, 2026-10-25)
+
+Section 8 held; what the first runs on a signalled neighbourhood (`tests/traffic_fixture.py`) showed, and how the
+build answers it. Each is the app's own rule unless a source is named, kept as `app.traffic`'s values where it has a
+number.
+
+**Cars**
+- **Entering** at a boundary: in the lane with the most room before the car ahead, on its link or, where the link is
+  short and empty, the last on the next; at the most speed that room allows without braking harder than b (SUMO's
+  departSpeed "max", by the IDM); none where the room is under s0. A car held at the edge is counted once (`blocked`).
+- **The line ahead:** a car sees the next link's stop line within 100 m (`look`): a short link before a signal is no
+  surprise.
+- **Amber:** a car goes only if it reaches its line before the amber ends at its present braking; one that has gone and
+  would no longer make it stops where it still can at b. With Kell and Fullerton's yellow, no car crossed on red in an
+  hour of the fixture's peak.
+- **Signals kept clear:** a car does not pass a signal's line with no room beyond it, as drivers are told not to block a
+  junction; without it, a queue backed up from the next signal caught cars in the junction on the red.
+- **Left turns** wait for the oncoming inside the junction, past their line, as a permissive left does (the amber's gap
+  is theirs): the front car of each lane of each approach with the way (the same phase, or the other major road), unless
+  that one turns left too; a standing car only once it sets off (one held in a queue is not coming, and waiting for it
+  locked both ways). A turn of 30 degrees or sharper to the left (`left`).
+- **Right of way** as SUMO's netconvert decides it, from the ways in: the two sharing the highest class (a ramp a step
+  below its road) are major, the best two by speed and lanes, a tie said; where one alone has it, the way in most nearly
+  opposite it (within 45 degrees) is the other. Ranking approaches alone made a merging ramp major.
+- **Lanes claimed:** a car passing its line claims the lane it goes into, and a car from another way waits its turn until
+  that one is its standing gap into it; one that still meets another takes a lane with room or waits at its link's end.
+  A lane's last car is known at once when a car enters it or changes to it. No two cars were in one place in twenty
+  minutes (the smallest gap 0.95 m).
+
+**Walkers**
+- **The corners:** a walker's way is found over the junctions' corners: each side of a street is a way between the
+  corners at its ends; a crossing joins the two corners of an arm. A walker changes sides only by a crossing and ends on
+  the side its door is on (before, a door across the street was reached straight across it, unrecorded).
+- **Where a crossing is:** at a signal; where three or more streets that are not service roads meet; across a service
+  road anywhere; never a street at a driveway's mouth, a bend or the edge of the reach. A walker weighs a signal's wait
+  at 30 s (`x_sig`, half the shortest cycle) and each lane crossed where nothing signals it at 10 s (`x_lane`), so it
+  takes the signal beside the lot rather than four lanes uncontrolled.
+- **No walking along a motorway**, a road for motor vehicles only, or one tagged `foot=no`; its mouth may be crossed at
+  a junction.
+- **Cars give way to walkers on their half** of a crossing (the half its lanes are on, with a walker within a stripe of
+  the middle on both), the whole crossing of a one-way street; a turning car goes past its line and waits short of the
+  crossing it turns across, as drivers do.
+
+**Demand**
+- **Half each way, every link:** a one-way way is one carriageway of its road (FHWA's ranges are a road's), so a divided
+  road's two ways carry its AADT between them. Under-counted where a one-way street is a road of its own, and said.
+- **A ramp** (a `_link` way) carries what the busiest street at its quieter end carries: no class gives a ramp's own
+  traffic, and its road's would be the main line's (3,690 an hour each way for a motorway).
+- **No exit is balanced to more than its junction's busiest way in brings:** a motorway beginning at a street's junction
+  otherwise drew three quarters of everything (NCHRP 255 balances to the exits' volumes, and the motorway's dwarfs the
+  streets').
+- **The provisional entry** is on the lot's lowest street, the one V166 marks (the alley in the fixture), named as V166
+  names it.
+
+**Found:** at typical volumes a collector crossing a four-lane arterial with no signal is over capacity (the gap
+acceptance gives about 100 an hour, as the HCM's two-way stop does), and its queue reaches the edge; that is the
+finding, not a fault: the run counts the cars held there. A signal's approach with half its cars turning left
+permissively against 765 an hour is over capacity too.
+
+**Not done, and said** (adding to section 8's): right-hand traffic only; protected left phases and turn lanes; crossings
+between junctions; conflicts inside a junction beyond the yields, the left turns and the claims; the frame time's
+quality step is not forced in the suite (the device's suggestion is).
+

@@ -223,8 +223,17 @@ async def run():
             tmp = pathlib.Path(tempfile.mkdtemp()) / '_site'
             pr = subprocess.run([sys.executable, str(ROOT / 'tools' / 'build_site.py'), str(tmp)], capture_output=True, text=True, timeout=300)
             ck(pr.returncode == 0, "tools/build_site.py builds the site (%s)" % pr.stdout.strip())
-            ck(filecmp.cmp(tmp / 'index.html', ROOT / 'canvas_v10.html', shallow=False) and filecmp.cmp(tmp / 'canvas_v10.html', ROOT / 'canvas_v10.html', shallow=False),
-               "the site opens the newest app")
+            # AMENDED FOR V171: since the source split (2026-10-25) the site's index.html is the app as separate files,
+            # its page, stylesheet and scripts as tools/build_app.py --site writes them from src/; canvas_v10.html is the
+            # same app as one file, the build
+            sys.path.insert(0, str(ROOT / 'tools'))
+            import build_app as BA
+            ref = pathlib.Path(tempfile.mkdtemp()) / '_app'
+            BA.write_site(ref)
+            ck(filecmp.cmp(tmp / 'canvas_v10.html', ROOT / 'canvas_v10.html', shallow=False) and BA.one_file().encode('utf-8') == (ROOT / 'canvas_v10.html').read_bytes() and
+               filecmp.cmp(tmp / 'index.html', ref / 'index.html', shallow=False) and sorted(q.name for q in (tmp / 'app').iterdir()) == sorted(q.name for q in (ref / 'app').iterdir()) and
+               all(filecmp.cmp(tmp / 'app' / q.name, q, shallow=False) for q in (ref / 'app').iterdir()),
+               "the site opens the newest app: the build as one file, and as the separate files src/ makes")
             ck(sorted(p.name for p in (tmp / 'docs').glob('*.html')) == sorted(pages) and (tmp / '.nojekyll').exists(), "with every guide page")
             okv = all(filecmp.cmp(tmp / 'v' / lab.lower() / 'index.html', p, shallow=False) for lab, p in kept)
             ck(okv and len(list((tmp / 'v').iterdir())) == len(kept), "and every older build at v/<version>/, as it was")

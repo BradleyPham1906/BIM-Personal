@@ -134,6 +134,29 @@ TOPICS = {
         dict(id='aashto.vehicles.7', pub='2018', st='current', lv='P', adopt=[('us', None, None)], v=None)]),
     'app.assets': dict(kind='assumption', anywhere=True, cat=False, eds=[
         dict(id='app.assets.1', pub='', st='current', lv='A', adopt=[('*', None, None)], v=None)]),
+    # AMENDED FOR V171: traffic and people -- the IDM, MOBIL, the timing manual, the MUTCD's intervals, Florida's K,
+    # NCHRP 255, San Diego's rates, Helbing and Molnar's walkers, SUMO's rules and the app's traffic settings; their
+    # values are held to their sources by tests/traffic_reference.py in V171's suite
+    'idm.car': dict(kind='method', anywhere=True, cat=False, eds=[
+        dict(id='idm.car.2010', pub='2010', st='current', lv='P', adopt=[('*', '2010', None)], v=None)]),
+    'mobil': dict(kind='method', anywhere=True, cat=False, eds=[
+        dict(id='mobil.2007', pub='2007', st='current', lv='P', adopt=[('*', '2007', None)], v=None)]),
+    'stm.signal': dict(kind='guideline', anywhere=True, cat=False, eds=[
+        dict(id='stm.signal.2008', pub='2008-06', st='current', lv='P', adopt=[('us', '2008-06', None)], v=None)]),
+    'mutcd.signal': dict(kind='standard', anywhere=True, cat=False, eds=[
+        dict(id='mutcd.signal.11', pub='2023-12', st='current', lv='P', adopt=[('us', '2023-12', None)], v=None)]),
+    'fdot.k': dict(kind='data', anywhere=True, cat=False, eds=[
+        dict(id='fdot.k.2014', pub='2014-01', st='current', lv='P', adopt=[('us-fl', '2014-01', None)], v=None)]),
+    'nchrp255': dict(kind='method', anywhere=True, cat=False, eds=[
+        dict(id='nchrp255.1982', pub='1982-12', st='current', lv='P', adopt=[('*', '1982-12', None)], v=None)]),
+    'sd.trips': dict(kind='data', anywhere=True, cat=False, eds=[
+        dict(id='sd.trips.2003', pub='2003-05', st='current', lv='P', adopt=[('us-ca:san diego', '2003-05', None)], v=None)]),
+    'hm.walk': dict(kind='data', anywhere=True, cat=False, eds=[
+        dict(id='hm.walk.1995', pub='1995', st='current', lv='S', adopt=[('*', '1995', None)], v=None)]),
+    'sumo.rules': dict(kind='method', anywhere=True, cat=False, eds=[
+        dict(id='sumo.rules.docs', pub='', st='current', lv='S', adopt=[('*', None, None)], v=None)]),
+    'app.traffic': dict(kind='assumption', anywhere=True, cat=False, eds=[
+        dict(id='app.traffic.1', pub='', st='current', lv='A', adopt=[('*', None, None)], v=None)]),
     # the catalogue: in force where they are adopted, not applied by the app yet
     'pa.ucc': dict(kind='code', anywhere=False, cat=True, eds=[dict(id='pa.ucc.2026', pub='2025-11-07', st='current', lv='P', adopt=[('us-pa', '2026-01-01', None)], v={})]),
     'ibc': dict(kind='code', anywhere=False, cat=True, eds=[dict(id='ibc.2021', pub='2020-10', st='current', lv='P', adopt=[('us-pa', '2026-01-01', None)], v={}),
@@ -158,7 +181,8 @@ SOURCE_HOSTS = {'content.tfl.gov.uk', 'assets.publishing.service.gov.uk', 'www.g
                 'www.ecfr.gov', 'www.ada.gov', 'www.pacodeandbulletin.gov', 'www.asce.org', 'www.iccsafe.org', 'www.ashrae.org', 'mutcd.fhwa.dot.gov',
                 'store.transportation.org', 'www.dot.state.pa.us', 'docs.penndot.pa.gov', 'www.concrete.org', 'www.aisc.org', 'www.faa.gov',
                 'www.planning.org', 'doi.org',   # AMENDED FOR V168: APA's LBCS; the DOIs of Buildings and Cities and of Browning et al.
-                'www.cdc.gov', 'www.nasa.gov', 'idea.ap.buffalo.edu', 'www.fs.usda.gov', 'etccdi.pacificclimate.org'}   # AMENDED FOR V169: the assets' sources
+                'www.cdc.gov', 'www.nasa.gov', 'idea.ap.buffalo.edu', 'www.fs.usda.gov', 'etccdi.pacificclimate.org',   # AMENDED FOR V169: the assets' sources
+                'arxiv.org', 'mtreiber.de', 'ops.fhwa.dot.gov', 'www.fdot.gov', 'onlinepubs.trb.org', 'www.sandiego.gov', 'github.com'}   # AMENDED FOR V171: traffic's sources
 
 
 # ---- the constants before V167, from the kept build ----

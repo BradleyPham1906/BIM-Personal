@@ -5,7 +5,7 @@
   function bimStdDraft(k,d){var D=A3D_STD_UI.draft;return D&&D.hasOwnProperty(k)?D[k]:d;}
   function bimStdDraftClear(keys){keys.forEach(function(k){delete A3D_STD_UI.draft[k];});}
   var BIM_STD_LV_CLS={P:'lv-P',S:'lv-S',U:'lv-U',A:'lv-A'};   /* __acad3dV167i: written whole, so V114 sees them made */
-  var BIM_STD_AREAS=['Transit and walking','Roads and noise','Cycling','Air','Flood and ground','Buildings','Structure','Site context','Land and green','Assets','Climate'];   /* __acad3dV168: Land and green; __acad3dV169: Assets */
+  var BIM_STD_AREAS=['Transit and walking','Roads and noise','Cycling','Air','Flood and ground','Buildings','Structure','Site context','Land and green','Assets','Traffic','Climate'];   /* __acad3dV171: Traffic; __acad3dV168: Land and green; __acad3dV169: Assets */
   function bimStdCap(t){t=String(t||'');return t.charAt(0).toUpperCase()+t.slice(1);}
   function bimStdBadge(E){
     var lv=E&&E.lv?E.lv:'U',how=E?E.how:'none';

@@ -75,7 +75,8 @@ order: 1
     the drawer sit on top of it, with the field you tapped in view. Two fingers pinch to zoom and
     drag to pan.
 - **The status bar.** Level, snaps, ortho, grid; pan, orbit, 2D and 3D; and, when a site analysis
-  is shown, Play, Pause and Stop (Site and context, The analyses in motion).
+  is shown or the traffic is simulated, Play, Pause and Stop (Site and context, The analyses in motion,
+  Traffic and people).
 - **Save image** (at the foot of the rail, or under More on a phone) saves the view as a PNG as it is
   at that moment: the model, the drawing over it, and the analyses as they stand if they are playing
   or paused.

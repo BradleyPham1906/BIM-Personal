@@ -82,6 +82,7 @@
   /* __acad3dV166: movement */
   BIM_ANZ_GROUP_OF.dgstreets='access';BIM_ANZ_GROUP_OF.dgcycling='access';BIM_ANZ_GROUP_OF.dgtransit='access';
   BIM_ANZ_GROUP_OF.dgwalk='access';BIM_ANZ_GROUP_OF.dgvehicles='access';BIM_ANZ_GROUP_OF.dgneeds='people';
+  BIM_ANZ_GROUP_OF.dgtraffic='access';   /* __acad3dV171 */
   /* __acad3dV168: land */
   BIM_ANZ_GROUP_OF.dglanduse='location';BIM_ANZ_GROUP_OF.dgfigure='location';BIM_ANZ_GROUP_OF.dggreen='ecology';BIM_ANZ_GROUP_OF.dgzoning='legal';
   var BIM_ANZ_MODEL=['lens','areas','lod','stats','structure'];
@@ -327,6 +328,7 @@
     else if(k.indexOf('sim:clear:')===0)bimSimClear(k.slice(10));
     else if(k.indexOf('layer:')===0)bimResultLayerAdd(k.slice(6));   /* __acad3dV148 */
     else if(k.indexOf('dg:')===0)bimDgAct(k.slice(3));   /* __acad3dV164 */
+    else if(k.indexOf('tr:')===0)bimTrAct(k.slice(3));   /* __acad3dV171 */
     else return false;
     bimAnalyzeRefresh();
     return true;
