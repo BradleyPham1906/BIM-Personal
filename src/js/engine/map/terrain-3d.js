@@ -451,6 +451,7 @@
       else{A3D.cubePolys=[];A3D.homeRect=null;}   /* __acad3dV119: not drawn, not clickable */
       bimSyncTouchLenInput();
     }
+    if(!capMode)bimAnimSync();   /* __acad3dV170: Play and Pause, shown when something can move */
     A3D.frames++;
   }
 

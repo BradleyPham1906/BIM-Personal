@@ -115,6 +115,7 @@
     context:function(){bimCtxFetch();},                          /* __acad3dV133 */
     siteanalysis:function(){bimAnzView();},                      /* __acad3dV158; __acad3dV162: Analyze is one list */
     analyzesite:function(){bimAnzView();bimSiteAnalyze('');},   /* __acad3dV164 */
+    animplay:function(){bimAnimPlay();},   /* __acad3dV170 */
     climate:function(){bimBoardShow('climate');},                     /* __acad3dV162: the board's page in the set */
     zoning:function(){A3D_ZN.edit=true;bimSaGoto('legal');bimSaRefresh(true);},   /* __acad3dV160; __acad3dV162: in Legal */
     envelope:function(){bimZnBuild();},

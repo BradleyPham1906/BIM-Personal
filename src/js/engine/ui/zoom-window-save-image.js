@@ -57,11 +57,24 @@
     ctx.restore();
   }
   /* ---- Save image ----
-     The viewport canvas itself, downloaded. Local-first: no server, no upload. */
+     The viewport canvas itself, downloaded. Local-first: no server, no upload.
+     __acad3dV170: the view as it is this moment, the model included. The model is on a canvas of its own under the
+     overlay (WebGPU or WebGL), which keeps no picture once its frame is shown, so the view is drawn and that canvas
+     copied in the same task, the overlay laid over it; a motion playing or paused is taken as it stands. */
+  function bimViewportCanvas(){
+    var cv=el.cv,out=document.createElement('canvas'),c,src=null,eng,id;
+    out.width=cv.width;out.height=cv.height;c=out.getContext('2d');
+    paint();
+    eng=A3D_GPU.engine;id=eng==='webgpu'?'a3d-gpucanvas':(eng==='webgl'?'a3d-glcanvas':'');
+    if(id&&!A3D.presentMode&&!bimPresentGraphics()){src=document.getElementById(id);if(src&&(src.style.visibility==='hidden'||!(src.width>0)||!(src.height>0)))src=null;}
+    if(src)c.drawImage(src,0,0,out.width,out.height);
+    c.drawImage(cv,0,0);
+    return {cv:out,engine:src?eng:'2d'};
+  }
   function bimSaveViewportPng(){
     if(!el.cv){a3dToast('No viewport to capture');return false;}
     try{
-      var url=el.cv.toDataURL('image/png');
+      var url=bimViewportCanvas().cv.toDataURL('image/png');
       var a=document.createElement('a');
       a.href=url;
       a.download=bimFileStem()+'-'+String(A3D.view||'view').replace(/[^\w\-]+/g,'_')+'.png';   /* __acad3dV115 */

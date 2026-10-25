@@ -155,6 +155,7 @@ body.light-theme #a3d-tip strong{color:#202124}body.light-theme .a3d-tiptype b{c
 .a3d-propempty{color:#7d8590;font-size:11px;padding:8px 2px;line-height:1.5}
 .a3d-propnote{color:#7d8590;font-size:10.5px;margin-top:6px;line-height:1.4}
 #a3d-navgrp{display:flex;gap:4px;margin-left:6px;padding-left:8px;border-left:1px solid #3a4048}/* __acad3dV109 */
+#a3d-animgrp{display:flex;gap:4px;margin-left:6px;padding-left:8px;border-left:1px solid #3a4048}#a3d-animgrp[hidden],#a3d-animgrp [hidden]{display:none}#a3d-animgrp .a3d-stbtn *{pointer-events:none}/* __acad3dV170 */
 .a3d-stview{min-width:30px;justify-content:center}
 #acad3d.flat [data-a3dnav="orbit"]{opacity:.35;pointer-events:none}
 .a3d-dot{width:9px;height:9px;border-radius:2px;flex:0 0 auto}

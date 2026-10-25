@@ -162,6 +162,10 @@
         '<button class="a3d-stbtn a3d-stview" id="a3d-flip" data-a3dnav="flip" title="Go to 2D (Shift + &gt;)">2D</button>'+
         '<button class="a3d-stbtn a3d-stview" id="a3d-present" data-a3dnav="present" title="Toggle Presentation appearance (graphic overrides from Phase 51)">Tech</button>'+
       '</span>'+
+      '<span id="a3d-animgrp" hidden>'+   /* __acad3dV170: the site analysis in motion */
+        '<button class="a3d-stbtn" id="a3d-animplay" data-a3danim="play" aria-pressed="false" aria-label="Play" title="Play the site analysis in motion">'+PILL_PLAY+'<span>PLAY</span></button>'+
+        '<button class="a3d-stbtn" id="a3d-animstop" data-a3danim="stop" aria-label="Stop" title="Stop: the still drawing" hidden>'+PILL_STOP+'<span>STOP</span></button>'+
+      '</span>'+
     '</div>';
     document.body.appendChild(root);
     el.root=root;
@@ -897,6 +901,12 @@
       if(a==='flip')toggleFlat();
       else if(a==='present'){A3D.presentMode=!A3D.presentMode;bimSyncPresentPill();paint();}
       else setNav(a);
+    });
+    var animGrp=root.querySelector('#a3d-animgrp');   /* __acad3dV170: Play, Pause and Stop */
+    if(animGrp)animGrp.addEventListener('click',function(ev){
+      var b=ev.target&&ev.target.closest?ev.target.closest('[data-a3danim]'):null;
+      if(!b)return;
+      if(b.getAttribute('data-a3danim')==='stop')bimAnimStop();else bimAnimPlay();
     });
     /* __acad3dV116: the layout tabs and the space button */
     var ltBox=root.querySelector('#a3d-laytabs');

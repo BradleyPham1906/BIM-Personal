@@ -688,6 +688,12 @@
     if(s.fill!==undefined||live)r+=bimPropRow('Fill Colour','<input type="color" data-dgf="fill" value="'+bimEsc(/^#[0-9a-f]{6}$/i.test(s.fill||'')?s.fill:'#5b6c8a')+'">');
     if(!live)r+=bimPropRow('Line Width (px)','<input type="number" min="0.5" max="12" step="0.5" data-dgf="w" value="'+(s.w||1.5)+'">');
     if(!live)r+=bimPropRow('Dashed','<input type="checkbox" data-dgf="dash"'+(s.dash&&s.dash.length?' checked':'')+'>');
+    var mk=bimAnimKinds(o),au=bimAnimAuto(o),am=au?(au[2]==='sun'||mk.indexOf(au[2])>=0?au[2]:null):null;   /* __acad3dV170 */
+    if(mk.length||am){
+      var mc=s.anim&&BIM_ANIM_NAMES[s.anim]?s.anim:'',mo='<option value=""'+(mc?'':' selected')+'>Default ('+bimEsc((am?BIM_ANIM_NAMES[am]:'Still').toLowerCase())+')</option>';
+      ['none'].concat(mk).forEach(function(m){mo+='<option value="'+m+'"'+(mc===m?' selected':'')+'>'+bimEsc(BIM_ANIM_NAMES[m])+'</option>';});
+      r+=bimPropRow('Motion','<select data-dgf="anim">'+mo+'</select>');
+    }
     r+=bimPropRow('Opacity (%)','<input type="number" min="10" max="100" step="5" data-dgf="op" value="'+Math.round((s.op===undefined?1:s.op)*100)+'">');
     for(i=0;i<(dg.lb||[]).length;i++)if(dg.lb[i]&&dg.lb[i].t!==undefined)r+=bimPropRow(i?'Label '+(i+1):'Label','<input type="text" maxlength="120" data-dgf="lb:'+i+'" value="'+bimEsc(dg.lb[i].t)+'">');
     r+=bimPropRow('Layer','<select data-propf="layer">'+bimLayerOptionsHtml(o.layer||A3D.activeLayer)+'</select>');
@@ -707,12 +713,15 @@
     if(f==='w'&&(!isFinite(n)||n<0.5||n>12)){a3dToast('A line width is 0.5 to 12 pixels');refreshProps();return false;}
     if(f==='op'&&(!isFinite(n)||n<10||n>100)){a3dToast('Opacity is 10 to 100%');refreshProps();return false;}
     if(li>=0&&!(o.dg.lb&&o.dg.lb[li]))return false;
-    if(!(f==='stroke'||f==='fill'||f==='w'||f==='dash'||f==='op'||li>=0))return false;
+    if(f==='anim'&&!(v===''||v==='none'||bimAnimKinds(o).indexOf(String(v))>=0))return false;   /* __acad3dV170 */
+    if(f==='anim'&&String(v)===String(s.anim||''))return true;
+    if(!(f==='stroke'||f==='fill'||f==='w'||f==='dash'||f==='op'||f==='anim'||li>=0))return false;
     pushUndo();
     if(f==='stroke'||f==='fill')s[f]=String(v).toLowerCase();
     else if(f==='w')s.w=n;
     else if(f==='dash')s.dash=v?[6,4]:null;
     else if(f==='op')s.op=Math.round(n)/100;
+    else if(f==='anim'){if(v==='')delete s.anim;else s.anim=String(v);}
     else o.dg.lb[li].t=String(v).slice(0,120);
     refreshProps();paint();saveSoon();
     return true;

@@ -185,6 +185,7 @@
     ['WALKTIMES',['WALKSHED','ISOCHRONES','SERVICEAREA'],'walktimes','Draw the walk times (5, 10 and 15 minutes along the streets from the lot) on the plan, as a layer under Analysis'],
     ['CLIMATEGET',['GETCLIMATE','WEATHERDATA','CLIMATEDATA'],'climateget','Get the site\'s climate (ten years of ERA5), air quality (PM2.5) and earthquakes within 100 km, from free open sources'],   /* __acad3dV159 */
     ['ANALYZESITE',['SITEANALYZE','RUNSITEANALYSIS','SAFILL','SITEANALYSISFILL','SAFROMMODEL'],'analyzesite','Analyze site: get what is around the site from free open data and draw each analysis in the model -- compass, sun paths, shadows, winds, views, noise, contours, slope, aspect, water flow, ponds, flood zones, street hierarchy, cycling stress, transit, walk times, daily needs, vehicle access -- on Layers, Site analysis; one undo step'],   /* __acad3dV164; __acad3dV165; __acad3dV166 */
+    ['PLAY',['ANIMATE','PAUSE','MOTION','PLAYANALYSIS'],'animplay','Play or pause the site analysis in motion: marching dashes along flows, walks and transit, winds drawn on, the distance rings growing, the layers in turn, the sun and the shadows through the day; Stop in the status bar gives the still drawing back'],   /* __acad3dV170 */
     ['CONTEXTREMOVE',['CONTEXTCLEAR'],'contextremove','Remove the site context'],
     /* __acad3dV139: LOD and CityJSON */
     ['LODCHECK',['CHECKSOLIDS','VALIDATESOLIDS','VAL3DITY'],'lodcheck','Check every building: its LOD, and whether it is a valid solid (closed, outward, flat faces, one piece)'],

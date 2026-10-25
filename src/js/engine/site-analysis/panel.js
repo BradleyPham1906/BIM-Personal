@@ -118,7 +118,7 @@
     loc+=bimPropRow('UTC Offset (h)','<input type="number" step="any" min="-12" max="14" data-propmodel="suntz" value="'+(bimSunNum(sunS.tz)?sunS.tz:'')+'" placeholder="not set" title="Hours from UTC in force on the date: -5 EST, -4 EDT">');
     loc+=bimPropRow('Sun Date','<input type="date" data-propmodel="sundate" value="'+bimEsc(sunS.date)+'">');
     loc+=bimPropRow('Sun Time','<input type="time" data-propmodel="suntime" value="'+bimEsc(sunS.time)+'">');
-    loc+=bimPropText('Sun',bimSunText(bimSunNow()));
+    loc+=bimPropText('Sun',bimSunText(bimSunNow(true)));
     rows+=bimPropRow('Site','<input type="text" data-propmodel="site" value="'+
       bimEsc(A3D.site.name||'')+'">');
     h+=bimDataFeatureHtml();   /* __acad3dV134: the data clicked on the plan, first */

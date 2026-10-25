@@ -49,8 +49,9 @@
     var s=(A3D.site&&A3D.site.sun)||{};
     return {lat:s.lat,lon:s.lon,tz:s.tz,date:s.date||(new Date().getFullYear()+'-06-21'),time:s.time||'12:00'};
   }
-  function bimSunNow(){
+  function bimSunNow(saved){
     var st=bimSunSettings(),miss=[],r;
+    if(!saved&&A3D_ANIM.sunTime&&bimAnimLive())st.time=A3D_ANIM.sunTime;   /* __acad3dV170: the sun while it plays; the project's time stays */
     if(!bimSunNum(st.lat))miss.push('latitude');
     if(!bimSunNum(st.lon))miss.push('longitude');
     if(!bimSunNum(st.tz))miss.push('UTC offset');
@@ -92,6 +93,6 @@
     A3D.site.sun=A3D.site.sun||{};
     if(nv===null)delete A3D.site.sun[field];else A3D.site.sun[field]=nv;
     refreshProps();paint();saveSoon();
-    a3dToast('Sun: '+bimSunText(bimSunNow()));
+    a3dToast('Sun: '+bimSunText(bimSunNow(true)));
     return true;
   }

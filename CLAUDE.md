@@ -1,6 +1,6 @@
 # BIM-Personal: start here
 
-A zero-dependency browser CAD/BIM app, built phase by phase (V1 to V169 so far), each phase verified
+A zero-dependency browser CAD/BIM app, built phase by phase (V1 to V170 so far), each phase verified
 by its own browser suite, deliberately broken builds its suite must catch, and the full regression.
 Its source is `src/`, split by feature; `tools/build_app.py` joins it into `canvas_v10.html`, the
 one-file build every suite tests, and Pages serves it as separate files (see "The source" below).
@@ -29,7 +29,7 @@ suite, every falsification script, `Phase/`'s backups and the guide's tools read
     src/css/                  the stylesheet, 11 files: shell/, panels/, workspace/, sheets/, site-analysis/
     src/js/shell/shell.js     the top bar, the command palette, the project tabs, the boot
     src/js/vendor/openskp.js  the SketchUp reader (third-party, bundled; never edited by hand)
-    src/js/engine/            the BIM engine, 162 files in 24 folders: core/ (state, storage, meshes,
+    src/js/engine/            the BIM engine, 164 files in 24 folders: core/ (state, storage, meshes,
                               save), drawing/, editing/, gizmo/, bim/, structure/, annotation/,
                               layers/, properties/, views/, sheets/, assets/, io/, render/, map/,
                               terrain/, survey/, site/, site-analysis/, standards/, analysis/,

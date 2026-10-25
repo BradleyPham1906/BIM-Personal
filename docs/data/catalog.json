@@ -1,7 +1,7 @@
 {
  "version": {
-  "v": "V169",
-  "date": "2026-10-19"
+  "v": "V170",
+  "date": "2026-10-24"
  },
  "commands": [
   {
@@ -1651,6 +1651,21 @@
    ],
    "keys": null,
    "anchor": "act-p-pad"
+  },
+  {
+   "id": "cmd:PLAY",
+   "name": "PLAY",
+   "aliases": [
+    "ANIMATE",
+    "PAUSE",
+    "MOTION",
+    "PLAYANALYSIS"
+   ],
+   "desc": "Play or pause the site analysis in motion: marching dashes along flows, walks and transit, winds drawn on, the distance rings growing, the layers in turn, the sun and the shadows through the day; Stop in the status bar gives the still drawing back",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-PLAY"
   },
   {
    "id": "cmd:PLINE",

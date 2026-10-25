@@ -95,6 +95,7 @@ body.light-theme .a3d-mapattr{background:rgba(255,255,255,.85);color:#24292f}
 body.light-theme .a3d-mapattr a{color:#0b5cad}
 body.light-theme .a3d-mapwarn{color:#9a5b00}
 @media(max-width:720px),(max-height:500px){.a3d-mapattr{top:4px;bottom:auto;left:6px;right:auto;max-width:70%}}
+@media(max-width:1024px),(max-height:500px){#a3d-animgrp{order:-1;margin-left:0;padding-left:0;border-left:0;padding-right:6px;border-right:1px solid #3a4048}#a3d-animgrp .a3d-stbtn span{display:none}#a3d-statusbar.a3d-hasanim .a3d-stlvl{font-size:0;gap:0}}/* __acad3dV170: first, as icons, on a phone or a tablet, where the bar runs past the screen */
 .a3d-rkbar{display:flex;align-items:center;gap:14px;padding:8px 16px;border-bottom:1px solid #343a41;flex:0 0 auto;font-size:12px;color:#9aa3ad}
 .a3d-rkkinds{display:flex;background:#1c2024;border:1px solid #3a4048;border-radius:7px;padding:2px}
 .a3d-rkkind{border:0;background:transparent;color:#c3cad2;font:inherit;font-size:12px;padding:4px 12px;border-radius:5px;cursor:pointer}

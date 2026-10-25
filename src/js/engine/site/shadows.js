@@ -133,6 +133,7 @@
         ctx.beginPath();ctx.arc(q[0],q[1],4.5,0,2*Math.PI);ctx.fillStyle='#ffe066';ctx.fill();
         ctx.strokeStyle='rgba(0,0,0,0.8)';ctx.lineWidth=1.2;ctx.stroke();
       }
+      if(bimAnimLive()&&A3D_ANIM.sunTime&&sunPt){ctx.textAlign='left';ctx.fillStyle='#ffe066';ctx.fillText(A3D_ANIM.sunTime,box[0]+6,box[1]+box[3]-9);}   /* __acad3dV170: the time, while it plays */
       A3D.lastSunPath={north:[nx,ny],east:[ex,ey],center:[cx,cy],radius:R,box:box,paths:paths,sun:sunPt};
     }catch(e){
       console.warn('[BIM] sun path',e);

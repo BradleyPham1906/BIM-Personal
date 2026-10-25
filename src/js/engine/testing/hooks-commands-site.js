@@ -355,6 +355,30 @@
   window.__acad3dV167='registry,records,reader,place,placefromaddress,date,overrides,reasons,ordered,picks,stamps,outofdate,findingstd,accessstd,contextstd,packs,sha256,packdiff,catalogue,standardsgroup,standardscommand,valuesinwords,datastamps,usedvalues,valuestamps,framestd,refill,touchsizes,drafts,sheet,packadopted,packagain,whonoise,noliterals,dm2unread,classeswhole,groupclosed';
   window.__acad3dV168='lbcs,crosswalk,landuse,mix,entropy,figureground,spacematrix,cells,grain,courtyards,green,canopy,treesseen,greenwalk,33300,zoningaround,drawinginfo,textures,lids,findings,registry';
   window.__acad3dV169='assets,people,wheelchair,cycles,stands,bay,trees,leaf,gsl,shadows,turning,contexttrees,registry,vehicles,turningpaths,refit';
+  window.__acad3dV170='clock,play,pause,stop,march,drawon,rings,reveal,sun,shadowday,motionstyle,reducedmotion,hidden,saveimage3d,command';
+  /* __acad3dV170: the analyses in motion */
+  window.__a3dAnim=function(){var F=A3D_ANIM.fr||bimAnimFrame();return JSON.parse(JSON.stringify({on:A3D_ANIM.on,paused:A3D_ANIM.paused,t:A3D_ANIM.t,playAt:A3D_ANIM.playAt,sunTime:A3D_ANIM.sunTime,can:A3D_ANIM.can,frames:A3D_ANIM.frames,live:bimAnimLive(),
+    raf:!!A3D_ANIM.raf,north:bimTrueNorthDeg(),fr:{order:F.order,idx:F.idx,rings:F.rings,Rmax:F.Rmax,any:F.any,sun:F.sun,sunAt:F.sunAt||null,shadowDone:F.shadowDone}}));};
+  window.__a3dAnimPlay=function(on){return bimAnimPlay(on);};
+  window.__a3dAnimStop=function(){return bimAnimStop();};
+  /* the clock set by hand, paused there: the frame at t seconds, the last Play at playAt */
+  window.__a3dAnimAt=function(t,playAt){bimAnimHalt();A3D_ANIM.on=false;A3D_ANIM.paused=true;A3D_ANIM.t=+t||0;A3D_ANIM.playAt=+playAt||0;A3D_ANIM.c=null;A3D_ANIM.dome=null;A3D_ANIM.sunTime=bimAnimSunTime();paint();return window.__a3dAnim();};
+  window.__a3dAnimOf=function(id){var o=objById(id);if(!bimIsDiag(o))return null;var R=bimAnimRingOf(o);
+    return {motion:bimAnimMotion(o),kinds:bimAnimKinds(o),auto:bimAnimAuto(o),out:bimAnimOut(o),ring:R,k:bimAnimLive()&&bimAnimMotion(o)==='ring'?bimAnimRingK(o):null,draw:bimAnimLive()&&bimAnimMotion(o)==='draw'?bimAnimDrawOf(o):null,reveal:bimAnimReveal(o.dg.a)};};
+  window.__a3dAnimSettings=function(){return JSON.parse(JSON.stringify({anim:BIM_ANIM,names:BIM_ANIM_NAMES,auto:BIM_ANIM_AUTO}));};
+  window.__a3dAnimTint=function(h){return bimAnimTint(h);};
+  /* a march's way: the points' order after the turn -- a line's, each pair's of segments, each polyline's */
+  window.__a3dAnimWay=function(id){var o=objById(id),g,I;if(!bimIsDiag(o))return null;g=o.dg.g;A3D_ANIM.c=null;
+    function idx(n){var P=[],i;for(i=0;i<n;i++)P.push([i,0,1]);return P;}
+    if(g.kind==='lines')return (g.lines||[]).map(function(Wl){return bimAnimOrientLine(o,Wl,idx(Wl.length)).map(function(p){return p[0];});});
+    I=bimAnimOrient(o,idx((g.pts||[]).length));return I.map(function(p){return p[0];});};
+  window.__a3dAnimCentre=function(){A3D_ANIM.c=null;return bimAnimCentre();};
+  /* the clock fed these frame times (ms), as requestAnimationFrame would: the frames drawn and the time gone on */
+  window.__a3dAnimTicks=function(ts){var f0=A3D_ANIM.frames,t0=A3D_ANIM.t,i;bimAnimHalt();A3D_ANIM.on=true;A3D_ANIM.paused=false;A3D_ANIM.last=0;A3D_ANIM.painted=0;
+    for(i=0;i<ts.length;i++){bimAnimTick(ts[i]);if(A3D_ANIM.raf){cancelAnimationFrame(A3D_ANIM.raf);A3D_ANIM.raf=0;}}
+    A3D_ANIM.on=false;A3D_ANIM.paused=true;return {frames:A3D_ANIM.frames-f0,dt:A3D_ANIM.t-t0};};
+  window.__a3dAnimSunTime=function(t){var k=A3D_ANIM.t;A3D_ANIM.t=+t||0;var r=bimAnimSunTime();A3D_ANIM.t=k;return r;};
+  window.__a3dViewportImage=function(){var r=bimViewportCanvas();return {url:r.cv.toDataURL('image/png'),engine:r.engine,w:r.cv.width,h:r.cv.height};};
   window.__a3dEntKinds=function(){return BIM_ENT.map(function(e){return {k:e.k,name:e.name,cat:e.cat,kind:e.kind,p:JSON.parse(JSON.stringify(e.p))};});};
   window.__a3dEntPlace=function(key,x,z,p){var o=bimEntPlace(key,[x,z],p||null);return o?o.id:null;};
   /* an asset as placed: its parameters, its frame, and its size in its own frame (the markers left out) */

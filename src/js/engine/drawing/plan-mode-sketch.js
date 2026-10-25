@@ -311,6 +311,9 @@
   var PILL_ORBIT='<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="3.4"/><ellipse cx="12" cy="12" rx="9.5" ry="4.2" transform="rotate(-25 12 12)"/></svg>';
   var PILL_SNAP='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 3v7a4 4 0 0 0 8 0V3"/><path d="M8 3H5v7a7 7 0 0 0 14 0V3h-3"/></svg>';
   var PILL_ORTHO='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 4v15h15"/><rect x="5" y="14" width="5" height="5"/></svg>';
+  var PILL_PLAY='<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15l12.5-7.5z"/></svg>';   /* __acad3dV170 */
+  var PILL_PAUSE='<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4.5" width="4.2" height="15" rx="0.8"/><rect x="13.8" y="4.5" width="4.2" height="15" rx="0.8"/></svg>';
+  var PILL_STOP='<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><rect x="5.5" y="5.5" width="13" height="13" rx="1.2"/></svg>';
   var PILL_GRID='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="1"/><path d="M9 3v18M15 3v18M3 9h18M3 15h18"/></svg>';
   var PILL_UNDO='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 10h9a5 5 0 0 1 0 10h-2"/><path d="M8 5 4 10l4 5"/></svg>';
   var PILL_REDO='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 10h-9a5 5 0 0 0 0 10h2"/><path d="M16 5l4 5-4 5"/></svg>';

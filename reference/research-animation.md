@@ -99,3 +99,63 @@ are checked by the browser playing them and by a reader of our own in the suite.
    dropped; sections 2 to 5 keep what was read about it, should it be wanted later.
 4. **Stills:** "just image at the moment it captured no video export": Save image takes the view at that moment, the 3D
    model included (section 5).
+
+## 9. As built (V170, 2026-10-24)
+
+The design follows the decisions above; where they left a choice open, the app's own conventions decided it,
+and each such choice is named here for the owner to overrule.
+
+**The clock.** One clock, `A3D_ANIM`, for every animated element. It runs by `requestAnimationFrame` while
+playing, so it stops by itself while the page is hidden; a frame is painted at most 30 times a second; the time
+it keeps is the frames' own timestamps, a slow frame moving it a tenth of a second at most, never a jump.
+- **Play** from still starts the clock at nothing; **Pause** keeps the moment drawn (Save image takes it);
+  **Play** again goes on from it; **Stop** gives the still drawing back, pixel for pixel. Pause keeping the moment
+  and a Stop beside it is the app's choice: a pause that snapped back to the still drawing would lose the moment.
+- The app always opens still. A device asking for reduced motion while it plays pauses it (WCAG 2.3.3); Play
+  pressed then plays, being asked for.
+- Nothing the clock does is saved or undone. While the sun plays, its time stands in for the study's in the sun's
+  one reader (`bimSunNow`); the project's date and time do not change, and Properties shows the study's own.
+- Sheets, prints and exports are drawn still.
+
+**Where the buttons are.** Play, Pause and Stop sit in the status bar after the view's own buttons (V109: nothing
+floats over the drawing), shown only when something can move: an analysis shown, or the sun study on in plan. On a
+phone or a tablet (up to 1024 px, where V169's bar already ran past the screen) they come first, as icons named
+for screen readers, the level's caption giving them its room. `PLAY` (`ANIMATE`, `PAUSE`, `MOTION`) toggles.
+
+**Motion is a style.** Each element carries `s.anim`: unset, its analysis's own; `none`, still; or another its
+shape can take (a line or a polyline can march; a line or a closed shape can be drawn on; a closed shape can grow
+as a ring). Properties offers them as **Motion**; a change is one undo step and, like any change of style, is
+kept when the analysis runs again. Each analysis's own:
+
+| Analysis, elements | Motion | Way |
+|---|---|---|
+| Water flow: the flow lines and where the site drains; Views: the view lines; Vehicle access: the entries | marching dashes | as drawn (they carry arrowheads) |
+| Transit: the bus and tram routes | marching dashes | as drawn |
+| Walk times; Daily needs; Transit: the ways to the stops and the streets within a walk of them | marching dashes | away from the site's centre, each line, pair of segments and polyline turned |
+| Winds: the prevailing winds | drawn on, tail to tip, held, faded, one after another | |
+| Compass and distance: the 100 m rings | growing outward | |
+| Sun paths: the sun now; Shadows: each shadow | through the day | |
+
+The owner named flows, walks and transit; the view lines and the vehicle entries are counted as flows (of sight,
+of vehicles), the app's reading.
+
+**The numbers** (`BIM_ANIM`, read by the suite's reference): a march moves 28 px a second; a solid line's moving
+dashes are 6 px plus twice its width, with 14 px plus twice its width between, in its colour 60% toward white (50%
+toward black on a pale line); a dashed line's own dashes move. A wind grows over 1.6 s (smoothstep), holds 1.8 s,
+fades over 0.6 s and rests 0.5 s, the next one 0.35 s behind. The ripple moves out 150 m a second of play, each ring
+left as the front passes it, the front drawn by the smallest ring not yet reached, held 2.2 s at the outermost; a
+ring's words wait until it is whole. At each Play from still, the shown analyses come in in Analyze's order, 0.45 s
+apart, each over 0.5 s. The sun sweeps from sunrise to sunset of the study's day (all day under the midnight sun;
+not at all in the polar night or without the site's place) in 24 s, held 1.2 s at sunset; it moves on the sun
+paths' dome, now kept with the run, with its time beside it, and stands in for the sun now. The shadows through the
+day are one shadow, the model's, at the sun's moment on the study's day, in the shadows' colour; the V107 sun study
+in plan follows the same clock.
+
+**Save image.** The model is on a canvas of its own under the overlay (WebGPU or WebGL), which keeps no picture
+once its frame is shown (`preserveDrawingBuffer` unset). Save image draws the view and copies that canvas in the
+same task, then lays the overlay over it, so the image has the model, the drawing and the motion as it stands.
+Headless Chromium here has no WebGPU; the copy is the same from its canvas (`drawImage` of a WebGPU canvas before
+it is presented), checked on WebGL here.
+
+**Checked by** `tests/bim_phase170_animation_browser_tests.py` (104 checks) against `tests/animation_reference.py`,
+the design written out again in Python, and the canvas's own pixels; broken 83 ways by `Phase/falsify_phase170.py`.

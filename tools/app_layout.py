@@ -88,6 +88,8 @@ ENGINE = [
     ('analysis/analyze-tab.js', "  /* ================= __acad3dV141: Properties' tabs, with nothing selected ============="),
     ('standards/registry.js', '  /* ================= __acad3dV167: the standards registry ================='),
     ('site-analysis/model-layers.js', '  /* ---- the layers: Site analysis, and one under it for each analysis ---- */'),
+    ('site-analysis/motion.js', '  /* ================= __acad3dV170: the analyses in motion ================='),
+    ('site-analysis/model-analyses.js', '  /* ---- the legend, on the view: each analysis shown, its key and its source ----'),
     ('site-analysis/movement-analyses.js', '  /* ================= __acad3dV166: site analysis in the model III, movement: the six ana'),
     ('site-analysis/land-water.js', '  /* ================= __acad3dV165: site analysis in the model II, land and water ======='),
     ('site-analysis/land-use.js', '  /* ================= __acad3dV168: Site analysis IV, land ================='),
