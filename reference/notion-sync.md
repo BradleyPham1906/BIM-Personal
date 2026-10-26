@@ -99,6 +99,7 @@ Search Notion before creating anything, so nothing is made twice.
 | `reference/research-standards-inventory.md` | `3fecbfcc3a3881acab9be7601d152b90` |
 | `reference/research-standards-registry.md` | `3fecbfcc3a38810cab96f27728e46d6e` |
 | `reference/research-structural-ui.md` | `3fecbfcc3a38818d8c70d61677ab9d5e` |
+| `reference/research-sun-path.md` | `405cbfcc3a3881db83a8f135f145ff25` |
 | `reference/research-survey-check.md` | `3fecbfcc3a3881628cfcc1c30a343b34` |
 | `reference/research-tools-panel.md` | `3fecbfcc3a3881a48a6ce529e29f7876` |
 | `reference/research-usages.md` | `3fecbfcc3a3881ac8050e475f67cc902` |
@@ -148,6 +149,7 @@ Search Notion before creating anything, so nothing is made twice.
 | V171 | `3fecbfcc3a388111b74dd9bad2a315d9` |
 | V171b | `404cbfcc3a388112900bf36f1efc99d9` |
 | V171c | `405cbfcc3a388106babfe51e3b485846` |
+| V171d | `405cbfcc3a38816e9af6e3e28f85e055` |
 | V172 | `3fecbfcc3a3881f799a3d2f2e1114a23` |
 | V173 | `3fecbfcc3a388141a93be73520d09591` |
 | V174 | `3fecbfcc3a3881fa9594ef43af9d6616` |
