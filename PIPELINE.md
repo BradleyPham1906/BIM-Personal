@@ -17,11 +17,12 @@ requires command mapping, full app regressions and owner review.
 
 **Read this first in a new session.** One page. The detail lives in the docs listed at the bottom.
 
-    canvas_v10.html   3577475 bytes
-    sha256            4ac4e715e6b200b684d7dffc5659b0d8a77e0286a17ec8d24596235bfb73be98
+    canvas_v10.html   3626459 bytes
+    sha256            88f3938bdfb5af67d2645b822dd4e5f27f23fedab28160e19179879ee4557a43
     markers           __acad3dV60 ... __acad3dV171, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
-                      __acad3dV121b, __acad3dV166b, __acad3dV166c, __acad3dV166d, __acad3dV171b, __acad3dV171c
-    tests             132 suites, 6724 checks, 0 failures (the 131 older suites' 6624 and V171c's 100; with cjval
+                      __acad3dV121b, __acad3dV166b, __acad3dV166c, __acad3dV166d, __acad3dV171b, __acad3dV171c,
+                      __acad3dV171d
+    tests             133 suites, 6786 checks, 0 failures (the 132 older suites' 6724 and V171d's 62; with cjval
                       built, V139 and V140 run their three more)
 
     The user guide (V142): every phase updates docs/src/, its log entry and BIM_APP_VERSION, then
@@ -141,6 +142,7 @@ three tiers: compact up to 720 px wide or 500 px high, medium up to 1024 px, des
 | 171 | Simulation S1: traffic and pedestrians around the site | **Done** (see Recently finished): Traffic and people in Analyze's Access, on V170's clock (`TRAFFIC`): V166's streets within 300 m, lanes capped by a mapped width; cars by the IDM (the authors' standard car at the street's speed) and MOBIL, entering where there is room, seeing the next line, taking an amber only when they reach their line in it, keeping a signal clear, turning left after the oncoming inside the junction, claiming the lane they go into; each mapped signal's own assumed plan (Webster's cycle held between 60 and 120 s, Kell and Fullerton's yellow and red clearance, every green at least WALK and the crossing at 3.5 ft/s), all-way stops, stops on one approach, right of way as SUMO gives it; each street's typical traffic by class at Florida's 9%, half each way, turns by NCHRP 255 with no exit drawing more than its junction's busiest way in, a ramp its quieter end's; the design's trips by San Diego's rates from its usages; walkers at Helbing and Molnar's speeds over the junctions' corners, crossing only where a crossing is, on green at a signal, cars giving way on their half; typed-array pools by quality (Light, Normal, Detailed, from the device); drawn in plan and 3D; Run lays the plans, the entry's queue, the doors' people and the junctions' delays. Not a calibrated model, and said. Not yet: protected lefts and turn lanes, crossings between junctions, left-hand traffic, offsets between signals | The owner chose to build on valdrada's methods inside the app (`reference/research-valdrada.md`), credited; none of its code is in the build. `reference/research-traffic.md` (8, 9). |
 | 171b | The analysis workspace | **Done** (see Recently finished): the site analysis as a place one goes into and leaves, as archiMap and Forma show theirs; Analyze site ends in it; a bar over the view names the analysis in focus; the 23 analyses on the left in six groups, one in focus drawn alone, others ticked under it (the layers' visibility, one undo step); the one analysis on the right where Properties is (its sentence, settings, Play, chart, key, source, standards, Run again, Select, Reset); the view quiet in the app's light or dark mode (ground, map greyed and faded, context in the mode's tones, words and key); the drawing tools put away; a phone's chips and Details; `SITEWORKSPACE` | `reference/research-analysis-workspace.md`; the owner, 2026-10-25: the look follows the mode, one analysis at a time. |
 | 171c | One Analyze | **Done** (see Recently finished): Analyze is the workspace, opened and left with its tab; the left one list (the site and Analyze site, Overview, the ten categories with the analyses that answer each, Model), nothing opening in place; the right what is picked (the overview with the red flags first and the run's steps, a category's question, findings, analyses and data, an analysis's panel with what it found, a model's analysis with its settings and buttons); a pick over a selection keeps it; a phone's sheet | The owner: Analyze and the site analysis "should not be two separate hubs", the words on the right. `reference/research-analysis-workspace.md` (V171c). |
+| 171d | The sun path, one clock | **Done** (see Recently finished): the sun's math held to NREL's SPA (0.003 deg), the dome already the owner's formula; the sun's elements follow the place, the time zone, the date and the time without a run; the day studied, the sun now with its altitude and azimuth drawn, the analemma, the temperature on the sun's band of the sky by hour and month; Play through the day or the year, the shadows following; the zone kept with the site and its standard time (Open-Meteo's offset is the request day's), daylight saving Off or Auto; hours beside their dots, path names on their paths; the panel: the sun now, sliders, the turning points by hemisphere, two diagrams | The owner: the sun path, its animation and the shadows should agree through the hours and the dates; sliders; a temperature mesh; the solstices broken down. `reference/research-sun-path.md`. |
 | 172 | Site analysis SA5: tools and synthesis, ArcGIS's way | **Start here.** One pane for every analysis tool (typed parameters checked as filled, Run, messages, History to rerun from, results as layers); buffer, distance, slope classes, exclusions, weighted suitability in Esri's four steps (criteria, transform, weight, locate); the constraints and opportunities map; the buildable area; sun hours on the GPU; each tool a guide page in one template (summary, usage, parameters, how it works) | `reference/research-arcgis-site-analysis.md` (1). |
 | 173 | Site analysis SA6: the Contents pane | The layer stack by drawing order, by source and by selection, a legend patch under each layer; symbology (by category, graduated, stretch), labels and a filter (definition query); the stack exploded in 3D as McHarg's layer cake | ArcGIS Pro's Contents pane. |
 | 174 | Presentation P1: boards | V162 made the site analysis's boards pages of the set; this phase is boards you design. New Layout's page gallery (ANSI, Architectural, ISO, portrait and landscape); map frames with a live legend, north arrow and scale bar. A board is a sheet you design on: one layer tree (frames, groups, lock, hide, reorder), opacity and blend modes on every element (canvas compositing, the same 16 modes as Figma), masks, shapes, text, images; align, distribute, smart spacing; rows and columns that space their children (a light auto layout) | Figma's layer model. `reference/research-presentation-panels.md` (1). |
@@ -223,7 +225,27 @@ when it starts (V111 to V138 went to other work; V139 to V193 are in NOW).
 | 118 | Blocks and data | ATTDEF ATTEDIT BEDIT WBLOCK DATAEXTRACTION TABLESTYLE TABLEDIT TABLEEXPORT | First phase that's about the disciplines, not drafting. BLOCK and INSERT landed in V124, as the Assets library's blocks: saved records inserted as independent copies. A block reference that follows its definition (what BEDIT edits) is not built. |
 | 119 | Sheets and plotting, rest | MVIEW (draw a viewport on the paper) PAGESETUP (plot settings beyond Sheet Setup) PUBLISH (V122's Print set prints every sheet in one job; a chosen subset and page setups remain) EXPORTPDF (vector PDF of a sheet) VPLAYER (per-viewport layer visibility) viewport lock | LAYOUT, MSPACE and PSPACE landed in V116, with layout tabs and model space through a viewport. |
 
-**Recently finished:** V171c, **one Analyze** (2026-10-25 to 26, after V171b merged).
+**Recently finished:** V171d, **the sun path, one clock** (2026-10-26, with V171c in its PR).
+- The owner: the sun path, its animation and the shadows should agree through the hours and the dates; the math
+  checked against NOAA, the dome by X = R cos(alt) sin(az), Y = R sin(alt), Z = R cos(alt) cos(az); sliders; a
+  temperature mesh on the dome; the solstices and equinoxes on the right with diagrams. Research:
+  `reference/research-sun-path.md`; decisions taken under the owner's standing choice (daylight saving Off by default,
+  a tried place never saved, the mesh by half-year, the year in 36 s).
+- **The math** matches NREL SPA's example within 0.003 deg; the dome was already the owner's formula, north on -Z.
+- **The zone:** Open-Meteo returns the request day's offset for the whole year; the site keeps its zone and its standard
+  time; daylight saving Off or Auto (Properties, the panel).
+- **One clock:** the sun's elements follow the place, the zone, the date and the time without a run, each keeping the
+  inputs it was drawn from; the day studied, the sun now and its angles, the analemma, the temperature mesh; Play
+  through the day or the year, the shadows following.
+- **The words:** hours beside their own dots (the floating "13h" the owner saw), path names along their paths.
+- **The panel:** the sun now with its point on the dome, sliders (a tried place never saved; the study's date and
+  time, one undo step), Play's two ways, the turning points by hemisphere, two diagrams, the temperature's bands.
+- **Checked** in 62 checks against `tests/sun_reference.py` (NOAA in Python, Python's own time zones); broken 47 ways,
+  all caught on the final build (the first run missed two: a dead timer removed, a check made to see the panel's
+  morphing redraw). Found while building: a run left the sync's inputs stale; a function named twice. The full
+  regression: 133 suites, 6786 checks, all passed; V170 and V171b amended.
+
+**Before it:** V171c, **one Analyze** (2026-10-25 to 26, after V171b merged).
 - The owner: Analyze and the site analysis "should not be two separate hubs", the words and conclusions on the right.
   Research and as built: `reference/research-analysis-workspace.md`, V171c.
 - **Analyze is the workspace**, opened and left with its tab. **The left, one list:** the site and Analyze site,
@@ -237,7 +259,7 @@ when it starts (V111 to V138 went to other work; V139 to V193 are in NOW).
   and Legal's count too loosely, now strict). The full regression: 132 suites, 6724 checks, all passed; 20 older suites
   amended where the hub's markup changed.
 
-**Before it:** V171b, **the analysis workspace** (2026-10-25, after V171 merged).
+V171b, **the analysis workspace** (2026-10-25, after V171 merged).
 - The owner, with archiMap's video and Forma's microclimate analysis: their layout clean and professional, ours a
   mess when analysing and simulating. The owner's two decisions: the look follows the app's light or dark mode; one
   analysis at a time, others ticked under it. Research: `reference/research-analysis-workspace.md`.

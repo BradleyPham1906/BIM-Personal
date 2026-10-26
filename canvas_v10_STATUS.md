@@ -15697,7 +15697,7 @@ frozen copy of the final build, suites and guide. Patches 170a to 170e rebuild t
     markers           __acad3dV60 ... __acad3dV170, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
                       __acad3dV121b, __acad3dV166b, __acad3dV166c, __acad3dV166d
 
-## Phase 171 (V171) - Traffic and people around the site; the analysis workspace (V171b); one Analyze (V171c)
+## Phase 171 (V171) - Traffic and people around the site; the analysis workspace (V171b); one Analyze (V171c); the sun path, one clock (V171d)
 
 The owner (2026-10-19, `reference/research-valdrada.md`): build the simulation on valdrada's methods inside the app,
 for the site's streets only, light enough for a modest computer. The research is `reference/research-traffic.md`
@@ -15977,3 +15977,90 @@ worktree, as above.
     sha256            4ac4e715e6b200b684d7dffc5659b0d8a77e0286a17ec8d24596235bfb73be98
     markers           __acad3dV60 ... __acad3dV171, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
                       __acad3dV121b, __acad3dV166b, __acad3dV166c, __acad3dV166d, __acad3dV171b, __acad3dV171c
+
+### V171d: the sun path, one clock (2026-10-26)
+
+The owner, with a screenshot of the sun paths in 3D and one of archiMap's sun diagram: the sun path and its animation
+do not agree, nor with the shadows through the dates; the math to be checked against NOAA's algorithm, the dome from
+the altitude and azimuth by X = R cos(alt) sin(az), Y = R sin(alt), Z = R cos(alt) cos(az); sliders for latitude,
+longitude, date and time with the altitude and azimuth live; a mesh on the dome coloured by the temperature through
+the hours and dates; the right panel broken down by the solstices and equinoxes, with a diagram. The research is
+`reference/research-sun-path.md`; the decisions were taken under the owner's standing choice to go on without
+stopping (daylight saving Off by default; a place tried never saved; the mesh by the half-year of the clock's date;
+the year in 36 seconds).
+
+**The math:** `bimSunCalc` (V107) is NOAA's spreadsheet formula for formula; against NREL SPA's worked example (through
+pvlib's tests; nrel.gov unreachable from here) 0.00003 deg in altitude without refraction, 0.003 with it, 0.0023 in
+azimuth. `bimDgDome` (V164) was already the owner's formula in the app's axes (north on -Z, turned by true north), as
+Ladybug's sun vector is.
+
+**What was built** (`site-analysis/sun-path.js`, `site-analysis/sun-panel.js`, `testing/hooks-sun.js`; patches
+`Phase/patch_v171d_a.py` to `_l.py`):
+- **The zone:** kept with the site from the climate; the UTC offset its standard time (the lower of mid-January's and
+  mid-July's, by the browser's time zone database), not Open-Meteo's offset of the day it was asked; an offset typed
+  stays the owner's; **Daylight Saving** Off (standard time all year) or Auto (each date's own offset), in Properties
+  and the panel.
+- **One clock:** the sun's elements follow the place, the zone, the date and the time as a run would draw them, with
+  no run and no undo step, each keeping the inputs it was drawn from; a colour the owner gave is kept, a shape or a
+  move the owner made is theirs. New elements: the day studied (not drawn within three days of a solstice or an
+  equinox, whose path stands for it), the sun now with its ray, its angles (north, the bearing, the drop, the azimuth's
+  arc, the altitude's, named), the analemma at the study's time, and the temperature: the band of the sky between the
+  winter and the summer path, by the hour (every 20 minutes) and the 21st of each month, each cell its hour's mean
+  over its days from the climate's own hours, in the climate board's eleven bands, the half-year of the clock's date.
+- **Play through the year:** a day a step from 1 January, 36 s for the year, at the study's time; the sun on the
+  analemma, the day's path, the shadows and the mesh's half-year following. Through the day as V170.
+- **The words:** a labelled dot no word covers; an hour's word beside its dot (right, left, above, below) or left out;
+  a path's name along it between two hours, above, below or on the line, the nearest noon first.
+- **The panel:** the sun now (the place, the day, the time with its offset and zone, daylight saving, the altitude and
+  azimuth, the point on the dome by the formula, sunrise and sunset with their bearings, the temperature typical of the
+  hour); sliders for latitude and longitude (a place tried, its clock by the longitude, never saved, ended by Back or
+  by leaving Analyze) and for the date and time (the study's, the view following as they move, one undo step when let
+  go, the slider kept in the hand); Play through the day or the year; the year's turning points by hemisphere
+  (sunrise, sunset and their bearings, noon, the day's length, a 10 m building's noon shadow); the sky dome in plan and
+  the sun's height through the day; the temperature's bands. Its numbers, sliders and diagrams follow the clock without
+  the panel being drawn again.
+
+**Found:**
+- Open-Meteo's `utc_offset_seconds` is the request day's offset applied to the whole series (its documentation, and a
+  test across New York's March change): V164 stored UTC-4 all year for a New York site analysed in summer.
+- The floating "13h", "14h", "15h" in the owner's screenshot: a path's name sat on its noon-most dot, raised R x 0.05
+  (no move at all in plan), and the label placer moved an hour's word a whole line away from its dot.
+- A run, or Reset, drew the elements again while the sync still took them for current (an offset typed, Analyze site
+  again, the offset set back): each element keeps the inputs it was drawn from, and a run clears them.
+- The places along a path for its name were worked out by a function named as V164's noise analysis already has
+  (`bimDgAlong`): the later in the closure won and the names had no place. A scan of every file's top-level functions
+  finds no other name declared twice.
+- The sun now, a dot and its ray, was offered a line's motions in Properties: it moves with the clock, or is still.
+- A slider let go was put back in the hand by a timer that did nothing: the panel's redraw keeps the field in focus.
+
+**Suites:**
+- **New:** `tests/bim_phase171d_sun_path_browser_tests.py`, 62 checks with `tests/sun_reference.py` (NOAA's
+  spreadsheet in Python, the SPA example, the dome, Python's own time zone database, the year's play, the bands), on
+  V164's neighbourhood with the climate fetched on a summer day: the records; the math at 192 moments and the SPA
+  example; fifteen zone offsets either side of New York's changes and standard time; the climate's offset; the dome
+  point for point; daylight saving on and off and undone; a place tried; one clock (a date changed, a colour kept, the
+  year's play with the shadow measured on the canvas, the day's play, Stop); the words in 3D and in plan; the panel
+  (rows, formula, sliders moving and let go, the south's seasons, daylight saving, Play's two ways, the diagrams, the
+  clock followed); the mesh cell for cell; a phone.
+- **Falsification:** `Phase/falsify_phase171d.py`, 47 variants: the first run caught 45. A timer that put a slider back in
+  the hand did nothing (the panel's redraw keeps the focused field) and went; the check that a moving slider does not
+  redraw the panel looked too soon to see the panel's morphing redraw, and now marks the panel. On the final build
+  all 46 were caught.
+- **Amended:** V170 (the sun now is the moving sun, back at the study's moment with Stop) and V171b (Sun paths'
+  diagram caption).
+
+**Not done:** sun hours and radiation on the dome (V172's tools); a zone typed for a site without the climate; the zone
+of a place tried; the report of NREL's SPA read in the original.
+
+**State after V171d:**
+
+133 suites, 6786 checks (the 132 older suites' 6724 and V171d's 62): all passed from a frozen worktree of the final
+build, 6784 in 1411 s with 2 workers and V142's two once the guide was built again; the falsification, from the same
+worktree, as above. The first full regression found what V171d changed for the older suites: V170's sun now that gave
+way to a moving sun, V170's motions of every multi-line element (the angles take them), V171b's chart caption.
+
+    canvas_v10.html   3626459 bytes
+    sha256            88f3938bdfb5af67d2645b822dd4e5f27f23fedab28160e19179879ee4557a43
+    markers           __acad3dV60 ... __acad3dV171, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
+                      __acad3dV121b, __acad3dV166b, __acad3dV166c, __acad3dV166d, __acad3dV171b, __acad3dV171c,
+                      __acad3dV171d
