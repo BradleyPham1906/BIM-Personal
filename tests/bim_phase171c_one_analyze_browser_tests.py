@@ -201,7 +201,17 @@ async def run():
             runs = [w.get('run') or '' for w in W]
             ck(any(re.search(r'\d of 7 done', r) for r in runs), "while it runs, the list says how far it is (%s)" % (runs[:1]))
             sts = [w.get('steps') or [] for w in W]
-            ck(any(len(s) == 7 and any('s-busy' in c for c in s) for s in sts), "and the overview's steps follow it as they come")
+            seen, lag = set(), []
+            for w in W:
+                m = re.match(r'(\d+) of 7 done', w.get('run') or '')
+                s = w.get('steps') or []
+                if m and len(s) == 7:
+                    dn = len([c for c in s if 's-wait' not in c and 's-busy' not in c])
+                    seen.add(dn)
+                    if dn != int(m.group(1)):
+                        lag.append((m.group(1), dn))
+            ck(any(len(s) == 7 and any('s-busy' in c for c in s) for s in sts) and len(seen) >= 2 and not lag,
+               "and the overview's steps follow it as they come, step for step with the list (%s done seen; behind: %s)" % (sorted(seen), lag[:3]))
             ck(await safe("()=>window.__a3dUndoDepth()") == (u0 or 0) + 1, "one undo step")
             a2 = await aw()
             ck(a2.get('on') is True and a2.get('panel') == 'overview' and a2.get('shown') == [] and len(a2.get('run', [])) == 23, "it ends on the overview, none drawn, all 23 run")
@@ -229,6 +239,10 @@ async def run():
             ck(rf and fl.get('n') == len(rf) and fl.get('first') and 'Design against the zoning' in fl.get('t', ''), "a red flag: listed first in the overview, above the categories (%s)" % fl)
             ck(await text('.a3d-awl [data-sacat="legal"] .a3d-awl-rf') == str(len([f for f in rf if f['cat'] == 'legal'])) and not await safe("()=>!!document.querySelector('.a3d-awl [data-sacat=\"climate\"] .a3d-awl-rf')"),
                "and counted on its category's line in red, only there")
+            nlg = len([f for f in rf if f['cat'] == 'legal'])
+            lg = await safe("""()=>{var b=document.querySelector('[data-awpanel="overview"] .a3d-awp-cat[data-awact="cat:legal"] .a3d-awp-catf'),f=document.querySelector('.a3d-awl [data-sacat="legal"] .a3d-awl-fn');
+              return [b?b.textContent:'',f?(f.getAttribute('title')||''):''];}""") or ['', '']
+            ck(nlg and ('%d red flag' % nlg) in lg[0] and lg[0] == lg[1], "with a red flag, the count says it: Legal's, in the overview and on its line (%s)" % lg)
             await click('[data-awpanel="overview"] .a3d-awp-flag')
             await page.wait_for_timeout(150)
             ck((await aw()).get('panel') == 'cat:legal', "a red flag pressed: its category")
