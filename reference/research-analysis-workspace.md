@@ -114,3 +114,58 @@ to `_e.py` reach into the files it touches. As designed, with these found while 
 The older suites that read each analysis as a run drew it (V164, V165, V166, V167, V168, V170, V171) leave the
 workspace when a run ends and show each analysis as a run did before (`__a3dAwClassic`); V171's also leaves it before
 reading Traffic's row in Analyze and before Analyze site again.
+
+## V171c: one Analyze (2026-10-25, after V171b merged)
+
+The owner: "The analyze should be combined with the site analysis. It should not be two separate hubs. We need to
+integrate these two systems into one. And also, like, the wordings and the conclusions of each site analysis panels,
+I think they should be on the right panel when you open the site analysis and hit a certain analysis on the right
+panel, it will show an overview. So this is where the current system is kind of like collided right now."
+
+**What collided.** After V171b there were two lists of the same analyses. Analyze (V162's one list) held the site and
+Analyze site, the red flags, the ten categories each opening in place on its question, its data, its analyses' rows
+(each opening on its status, key and buttons) and its findings, and then Model. The workspace held its own list of the
+23 analyses in six groups of its own, entered from Analyze and left back to it, its right panel the one analysis. The
+words -- the findings, a category's data, a row's status -- were on the left, in the hub, while the workspace's right
+showed only the analysis in focus. archiMap and Forma, the products the owner pointed to in V171b, keep the list on the
+left short and put what is picked, with its words, on the right.
+
+**The design, as built.**
+- **Analyze is the workspace.** Its tab opens it and any other tab leaves it; the bar's cross goes back to the tab
+  Analyze was opened from, the drawer as it was. `SITEANALYSIS`, `SITEWORKSPACE` and `TRAFFIC` open it.
+- **The left is one list:** the site's part (its place or an address, its boundary or how to draw one, Analyze site and
+  how far a run has gone), Overview, the ten categories in the standard's order -- each a line with its number, its
+  name, its findings counted and its red flags in red -- with the analyses that answer each under it (an analysis in
+  the model with its tick, its colour and its name; another with its state), and Model last. Nothing opens in place
+  and no line carries a button; the search keeps V162's rules.
+- **The right shows what is picked**, where Properties is while nothing is selected: the overview (the site, the
+  analyses run, the findings, the red flags first, the ten categories counted, what the run fetched, Analyze site);
+  a category (its question, what was found, the analyses that answer it, its data -- the context, the zoning, the
+  climate and risk, the access and people -- and where Risk's and People's data is); an analysis in the model (V171b's
+  panel, what changed since it ran, what it found -- the findings its data draws -- and the category it answers); one
+  of the model's analyses (its state, its settings, its buttons, Add as layer, the category it answers). A button that
+  opens the model's Properties (Settings, Usages, USAGES) shows them with a way back to the analysis above them.
+- **A pick over a selection:** a line picked while something is selected shows its panel and keeps the selection, for
+  the buttons that act on it (Solar, the terrain's colours); a new selection shows its properties again.
+- **A phone or an upright tablet:** a category or a model's analysis picked opens as the sheet, the drawer shut; an
+  analysis put in focus shows the view, Details its panel.
+
+**Found while building.**
+- **V118's last change handler** on Properties refreshes the panel after every change, before a handler added later
+  runs: the floor load typed was gone before the panel's own handler read it. The panel's fields are handled in the
+  capture, before it.
+- **V162's rule** that a refresh waits while a field is typed in held for Analyze's list; the zoning's form and the
+  floor loads are on the right now, so the panel keeps the rule, the refresh done as the field is left, and at once
+  when its change is committed (taken or refused).
+- **A fetch that finished** refreshed only the list: the category on the right kept "Get climate and risk". A data
+  refresh and Analyze site's steps refresh the panel too.
+- **The colours an analysis is drawn in are kept with its elements** (V166's streets, V168's land use). V171b made
+  that choice follow the workspace's mode; every run is inside Analyze now, so it would always follow the mode. It
+  follows the map again, as V166 and V168 designed; the cars and walkers, drawn live, follow Analyze's ground.
+- **A command's pick while a field had the focus** left the old panel until the field was left; a pick leaves the
+  field first, committing it as a click elsewhere would.
+- **What changed since an analysis ran** (V167) was in its row's status in the hub; its panel says it now, from the
+  same words.
+
+**Still open.** As V171b's: archiMap's style card and its Ratios tab, Forma's compare and history, a legend that filters,
+an inspect tool. V172's tool pane and V173's Contents pane are where they go.

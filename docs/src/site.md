@@ -69,8 +69,8 @@ height in Properties.
 
 ## Site analysis
 
-**Site analysis** is in the **Analyze** tab (`SITEANALYSIS` opens it). It starts with one button, and its analyses are read
-in the analysis workspace.
+**Site analysis** is the **Analyze** tab (`SITEANALYSIS` opens it): one place, the analysis workspace, where the site
+is analysed, its analyses are read and the model's own analyses are run. It starts with one button.
 
 ### Analyze site
 
@@ -98,23 +98,36 @@ Each step reads Done, Partly (some of its sources down, each named), Failed (wit
 Skipped (with why). What fails leaves the rest standing. The whole run is **one undo step**.
 **Analyze site again** fetches everything again, and keeps what you changed in the diagrams.
 
-The run ends in the analysis workspace (below), with the site and its context and none of the analyses drawn yet.
+The run ends on the overview (below), with the site and its context and none of the analyses drawn yet.
 
 ### The analysis workspace
 
-The analyses are read one at a time, in a workspace of their own, as archiMap and Forma show theirs. It opens when
-**Analyze site** ends, with **Open** on an analysis's row in Analyze or **Open the site analysis** under the site,
-and with `SITEWORKSPACE` (also `ANALYSISWORKSPACE`).
+The analyses are read one at a time, as archiMap and Forma show theirs. The **Analyze** tab is the workspace: its
+tab opens it, any other tab leaves it, and so do `SITEWORKSPACE` (also `ANALYSISWORKSPACE`) and `TRAFFIC`.
 
 - **The bar** over the view names the analysis in focus, with how many others are drawn under it; its cross
-  leaves the workspace, as **Analyze** at the top of the list does. What was drawn stays drawn when you leave.
-- **On the left, the analyses** in six groups: Site; Sun and wind; Views and noise; Land and water; Movement; Land.
-  Press a name and that analysis is drawn alone, with its key. Tick others to draw them under it; untick to take
-  them away. **Overview** draws none: the site and its context. **Analyze again** is beside the site's name.
-- **On the right, the analysis**, where Properties is while nothing is selected: what it shows, its settings
-  (Traffic and people's simulation), **Play** and **Stop** for what moves, its chart where there is one (the winds'
-  rose, the sun's paths looking up), its key in full, what the run said, the source and its date, the standards it
-  used, and **Run again**, **Select** and **Reset**. Select an element and Properties shows it, as anywhere.
+  leaves, back to the tab Analyze was opened from. What was drawn stays drawn when you leave.
+- **On the left, one list:** the site (its place, or a box for an address; its boundary, or how to draw one;
+  **Analyze site** and how far a run has gone); **Overview**; the ten categories in the standard's order, each with
+  its number, its findings counted and its red flags in red, and under it the analyses that answer it; **Model**
+  last. Press an analysis in the model and it is drawn alone, with its key; tick others to draw them under it.
+  Nothing opens in place: what you press is shown on the right. The search finds a category by its name, its
+  question, its findings and the words of its analyses, their buttons and their settings.
+- **On the right, what you picked**, where Properties is while nothing is selected:
+  - **Overview:** the site, the analyses run, the findings, the red flags first, the ten categories counted (each a
+    link), what Analyze site fetched step by step, and **Analyze site**;
+  - **a category:** its question, what was found, the analyses that answer it, its data (the context, the zoning,
+    the climate and risk, the access and people);
+  - **an analysis in the model:** what it shows, its settings (Traffic and people's simulation), **Play** and
+    **Stop** for what moves, its chart where there is one, its key in full, what changed since it ran, what it found,
+    the category it answers, the source and its date, the standards it used, and **Run again**, **Select** and
+    **Reset**;
+  - **one of the model's analyses** (colour by, areas, buildings, statistics, frame analysis, the survey, terrain,
+    grading, rain, solar): its state, its settings and its buttons. **Settings** or **Usages** there opens the
+    model's Properties, with a way back to the analysis above them.
+
+  Select an element and Properties shows it, as anywhere; a line picked while something is selected shows its panel
+  and keeps the selection, for the buttons that act on it.
 - **The view goes quiet** in the app's own mode, light or dark (the rail's **Appearance**): the ground in the
   mode's colour, the map greyed and faded, the context's buildings, roads, water, green and terrain in the mode's
   greys, so only the analysis keeps its colours. Its words and its key take the mode's colours, the key at the
@@ -123,7 +136,8 @@ and with `SITEWORKSPACE` (also `ANALYSISWORKSPACE`).
   show the same. Each change is one undo step, and they are kept with the project. **Analyze site again** keeps
   them.
 - **On a phone** the panel closes so the view stays in sight; the analyses are a row of chips under the bar, and
-  **Details** opens the analysis's panel.
+  **Details** opens what is picked. A category or one of the model's analyses picked in the list opens as the
+  sheet, the list's drawer shut; an analysis put in focus shows the view.
 
 ### The analyses in the model
 

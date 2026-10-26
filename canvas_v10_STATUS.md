@@ -15697,7 +15697,7 @@ frozen copy of the final build, suites and guide. Patches 170a to 170e rebuild t
     markers           __acad3dV60 ... __acad3dV170, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
                       __acad3dV121b, __acad3dV166b, __acad3dV166c, __acad3dV166d
 
-## Phase 171 (V171) - Traffic and people around the site; and the analysis workspace (V171b)
+## Phase 171 (V171) - Traffic and people around the site; the analysis workspace (V171b); one Analyze (V171c)
 
 The owner (2026-10-19, `reference/research-valdrada.md`): build the simulation on valdrada's methods inside the app,
 for the site's streets only, light enough for a modest computer. The research is `reference/research-traffic.md`
@@ -15914,3 +15914,66 @@ in V164, 18 in V167 and V170, 14 in V165, 13 in V168, 9 in V171 and 7 in V166 re
     sha256            bb5bd5879e9a580e7178e274a83b2ec0421f24c4238cc9b6e5bef2bb8abcae13
     markers           __acad3dV60 ... __acad3dV171, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
                       __acad3dV121b, __acad3dV166b, __acad3dV166c, __acad3dV166d, __acad3dV171b
+
+### V171c: one Analyze (2026-10-25 to 2026-10-26)
+
+The owner, after V171b merged: "The analyze should be combined with the site analysis. It should not be two separate
+hubs. We need to integrate these two systems into one. And also, like, the wordings and the conclusions of each site
+analysis panels, I think they should be on the right panel when you open the site analysis and hit a certain analysis
+on the right panel, it will show an overview." After V171b there were two lists of the same analyses: Analyze's (V162's
+categories, each opening in place on its data, rows and findings) and the workspace's own six groups, entered from
+Analyze. The research and the design as built: `reference/research-analysis-workspace.md`, V171c.
+
+**What was built** (`Phase/patch_v171c_a.py`; `site-analysis/analysis-workspace.js` written again):
+- **Analyze is the workspace:** its tab opens it, any other tab leaves it; the bar's cross goes back to the tab Analyze
+  was opened from, the drawer as it was. `SITEANALYSIS`, `SITEWORKSPACE` and `TRAFFIC` open it.
+- **The left, one list:** the site (its place or an address, its boundary or how to draw one, Analyze site and how far
+  a run has gone), Overview, the ten categories in the standard's order (number, name, findings counted, red flags in
+  red) with the analyses that answer each under it (a tick, a colour and a name for one in the model; a state for the
+  others), Model last. Nothing opens in place; no line carries a button; the search keeps V162's rules and reads the
+  rows' words, buttons and settings too.
+- **The right, what is picked:** the overview (the site, the analyses run, the findings, the red flags first, the ten
+  categories counted, what the run fetched step by step, Analyze site); a category (its question, what was found, the
+  analyses that answer it, its data); an analysis in the model (V171b's panel, what changed since it ran, what it found,
+  the category it answers); one of the model's (its state, settings and buttons). Settings, Usages and USAGES show the
+  model's Properties under a way back.
+- **A pick over a selection** keeps the selection for the buttons that act on it; **a phone or an upright tablet** opens
+  a category or a model's analysis as the sheet.
+- **Removed:** the hub's rows opening in place, its category bodies, the workspace's own list, `__a3dAnzToggle` and
+  `__a3dAnzOpenAll`; 72 CSS rules that styled them.
+
+**Found:**
+- V118's last change handler refreshes Properties after every change, before a handler added later runs: the floor load
+  typed was gone before the panel read it. The panel's fields are handled in the capture.
+- V162's rule that a refresh waits while a field is typed in moved with the fields to the panel; the refresh is done as
+  the field is left, and at once when its change is committed.
+- A fetch that finished refreshed only the list (the category kept "Get climate and risk"); Analyze site's steps and a
+  data refresh refresh the panel too.
+- V171b made the colours a run bakes into V166's streets and V168's land use follow the workspace's mode; every run is
+  inside Analyze now, so they follow the map again, as designed; the cars and walkers, drawn live, follow the ground.
+- A command's pick while a field had the focus left the old panel; a pick leaves the field first.
+- The first falsification run caught 61 of 64: two checks read the overview's steps and Legal's count too loosely; the
+  suite now compares the overview's steps with the list's line at every moment of a run, and reads the red flag in the
+  count. The three were caught after.
+
+**Suites:**
+- **New:** `tests/bim_phase171c_one_analyze_browser_tests.py`, 100 checks in 13 sections: the records; the tab; the
+  list; Analyze site (the steps step for step, one undo step, the overview, the red flags); a category; an analysis; a
+  model's analysis; the model's Properties and back; a pick over a selection; the search; the look; out and in; a phone.
+- **Falsification:** `Phase/falsify_phase171c.py`, 64 variants; the first run caught 61 (above), the three caught after.
+- **Amended** (the hub's markup, never its behaviour): V106, V125, V131, V141, V143, V144, V148, V158, V159, V160, V161,
+  V162, V164, V165, V166, V166b, V167, V168, V171 and V171b.
+
+**Not done:** as V171b's (archiMap's style card and Ratios, Forma's compare and history, a legend that filters, an
+inspect tool).
+
+**State after V171c:**
+
+132 suites, 6724 checks (the 131 older suites' 6624 and V171c's 100): all passed from a frozen worktree of the final
+build, 6722 in 834 s with 3 workers and V142's two once the guide was built again; the falsification, from the same
+worktree, as above.
+
+    canvas_v10.html   3577475 bytes
+    sha256            4ac4e715e6b200b684d7dffc5659b0d8a77e0286a17ec8d24596235bfb73be98
+    markers           __acad3dV60 ... __acad3dV171, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
+                      __acad3dV121b, __acad3dV166b, __acad3dV166c, __acad3dV166d, __acad3dV171b, __acad3dV171c
