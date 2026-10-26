@@ -142,7 +142,7 @@ async def run():
             ck(s0.get('findings') == [] and 'stage' not in s0 and 'pins' not in s0, "a new project: no findings, no stage")
             h = await panel() or ''
             ck(h.count('data-sacat=') == 10 and 'data-sastage=' not in h, "the panel: ten categories, no stage buttons")
-            ck('From a shape' in h and 'Analyze site' in h, "no boundary yet: it offers to make one, and Analyze site")
+            ck('from a shape' in h.lower() and 'Analyze site' in h, "no boundary yet: it offers to make one, and Analyze site")   # AMENDED FOR V171c: in a sentence
 
             # ---------------------------------------------------------------------------------
             print("\n-- 2. fill from the model")
@@ -152,6 +152,8 @@ async def run():
             await safe("()=>window.__a3dUndo()")
             await safe("()=>window.__a3dRunCmd('3d')")
             await safe("()=>window.__a3dRunCmd('2d')")
+            # AMENDED FOR V171c: in Analyze, Properties is the analysis's; the site is placed outside it
+            await safe("()=>document.querySelector('#a3d-rail .a3d-railbtn[data-tab=\"browser\"]').click()")
             await safe("()=>{window.__a3dSelectFor([]);window.__a3dRefreshProps();}")
             await set_field('[data-propmodel="sunlat"]', repr(LAT0))
             await set_field('[data-propmodel="sunlon"]', repr(LON0))
@@ -239,6 +241,8 @@ async def run():
 
             # ---------------------------------------------------------------------------------
             print("\n-- 6. the panel")
+            await safe("()=>document.querySelector('#a3d-rail .a3d-railbtn[data-tab=\"analyze\"]').click()")   # AMENDED FOR V171c: back in Analyze
+            await page.wait_for_timeout(150)
             h = await panel() or ''
             # AMENDED FOR V164: no red flags typed by hand: the count is the data's findings
             # AMENDED FOR V162: the one list's count says the analyses on as well
@@ -252,19 +256,23 @@ async def run():
             await safe("(a)=>window.__a3dUsageAssign([a[0]],a[1])", [bid, 'use-res'])
             await safe("()=>window.__a3dSaFill()")
             rf = await fnd('legal.compliance')
-            fl = await safe("""()=>{var b=document.querySelector('.a3d-sa-wrap [data-anzsec="flags"]'),c=document.querySelector('.a3d-sa-wrap [data-anzsec="cats"]');
-              return b?{text:b.textContent,first:!!(b.compareDocumentPosition(c)&Node.DOCUMENT_POSITION_FOLLOWING)}:null;}""") or {}
-            ck(rf and rf['cls'] == 'redflag' and 'over the limit of 10.0 m' in rf['value'] and 'Red flags first' in fl.get('text', '') and 'Design against the zoning' in fl.get('text', '') and fl.get('first'),
+            # AMENDED FOR V171c: the red flags are the overview's, on the right, above the ten categories
+            await safe("()=>document.querySelector('.a3d-analyze-wrap .a3d-awl-ov').click()")
+            await page.wait_for_timeout(120)
+            fl = await safe("""()=>{var b=document.querySelector('#a3d-propsbody .a3d-awp-flags'),c=document.querySelector('#a3d-propsbody .a3d-awp-cats');
+              return b?{text:b.previousElementSibling.textContent+' '+b.textContent,first:!!(b.compareDocumentPosition(c)&Node.DOCUMENT_POSITION_FOLLOWING)}:null;}""") or {}
+            ck(rf and rf['cls'] == 'redflag' and 'over the limit of 10.0 m' in rf['value'] and 'Red flags' in fl.get('text', '') and 'Design against the zoning' in fl.get('text', '') and fl.get('first'),
                "the data's red flag, the design over the height limit, listed first, above the categories (%s)" % (rf and rf['value']))
             await safe("(i)=>window.__a3dDel(i)", bid)
             await safe("(a)=>window.__a3dZnSet(a[0],a[1])", ['maxH', ''])
             await safe("()=>window.__a3dSaFill()")
-            ck(await fnd('legal.compliance') is None and not await safe("()=>document.querySelector('.a3d-sa-wrap [data-anzsec=\"flags\"]')"), "the mass gone: the red flag with it")
+            ck(await fnd('legal.compliance') is None and not await safe("()=>document.querySelector('#a3d-propsbody .a3d-awp-flags')"), "the mass gone: the red flag with it")
             # AMENDED FOR V164: a category opens with a click; its findings are to read, not to edit
-            await safe("()=>{var b=document.querySelector('.a3d-sa-wrap [data-satog=\"legal\"]');var c=b.closest('[data-sacat]');if(!c.classList.contains('open'))b.click();}")
+            # AMENDED FOR V171c: picked in the list, the category on the right with its findings
+            await safe("()=>document.querySelector('.a3d-sa-wrap [data-anzact=\"aw:cat:legal\"]').click()")
             await page.wait_for_timeout(120)
-            ck(await safe("()=>document.querySelector('.a3d-sa-wrap [data-sacat=\"legal\"]').classList.contains('open')"), "a category opens with a click")
-            ck(await safe("()=>{var c=document.querySelector('.a3d-sa-wrap [data-sacat=\"legal\"]');return !!c.querySelector('.a3d-safind')&&!c.querySelector('.a3d-safind input,.a3d-safind select,.a3d-safind textarea,.a3d-safind button,[data-sachk]')&&!/Add finding|At the desk|On site/.test(c.textContent);}") is True,
+            ck(await safe("()=>window.__a3dAw().panel") == 'cat:legal', "a category opens with a click: on the right")
+            ck(await safe("()=>{var c=document.querySelector('#a3d-propsbody [data-awpanel=\"cat:legal\"]');return !!c.querySelector('.a3d-safind')&&!c.querySelector('.a3d-safind input,.a3d-safind select,.a3d-safind textarea,.a3d-safind button,[data-sachk]')&&!/Add finding|At the desk|On site/.test(c.textContent);}") is True,
                "its findings read only: no field, no Add finding, no checklist")
             # a reload
             before = await sa()
@@ -328,10 +336,11 @@ async def run():
             # AMENDED FOR V162: no view to choose: the site analysis is in Analyze's one list
             await p2.wait_for_timeout(300)
             # AMENDED FOR V164: the button is Analyze site, the field the site's address
-            g = await within(p2.evaluate("""()=>{var w=document.querySelector('.a3d-sa');if(!w)return null;var r=w.getBoundingClientRect(),
-              b=document.querySelector('.a3d-sa [data-saact="analyze"]').getBoundingClientRect(),s=document.querySelector('.a3d-sa [data-saaddr]').getBoundingClientRect();
+            # AMENDED FOR V171c: Analyze's one list
+            g = await within(p2.evaluate("""()=>{var w=document.querySelector('.a3d-awl');if(!w)return null;var r=w.getBoundingClientRect(),
+              b=document.querySelector('.a3d-awl [data-saact="analyze"]').getBoundingClientRect(),s=document.querySelector('.a3d-awl [data-saaddr]').getBoundingClientRect();
               return {w:r.width,left:r.left,right:r.right,sw:w.scrollWidth,cw:w.clientWidth,bh:b.height,sh:s.height,
-                fs:parseFloat(getComputedStyle(document.querySelector('.a3d-sa [data-saaddr]')).fontSize),vw:innerWidth};}"""), 'geom')
+                fs:parseFloat(getComputedStyle(document.querySelector('.a3d-awl [data-saaddr]')).fontSize),vw:innerWidth};}"""), 'geom')
             ck(g and g['right'] <= g['vw'] + 0.5 and g['sw'] <= g['cw'] + 1, "on a phone: the panel fits the screen, nothing scrolls sideways (%s)" % g)
             ck(g and g['bh'] >= 34 and g['sh'] >= 36 and g['fs'] >= 16, "touch-sized buttons and fields, 16 px text so the phone does not zoom")
             await ctx2.close()

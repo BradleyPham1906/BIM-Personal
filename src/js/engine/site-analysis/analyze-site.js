@@ -19,7 +19,7 @@
   function bimSiteStep(id,state,text){
     var s=A3D_SITERUN.steps,i;
     for(i=0;i<s.length;i++)if(s[i].id===id){s[i].state=state;s[i].text=String(text==null?'':text).slice(0,400);}
-    bimAnalyzeRefresh(true);
+    bimSaRefresh(true);   /* __acad3dV171c: the list's line and the overview's steps */
   }
   /* why a fetch would not start: it says so in the message it shows */
   function bimSiteToastText(){var t=document.getElementById('a3d-toast'),L=t?String(t.textContent||'').split('\n'):[];return L.length?L[L.length-1]:'';}
@@ -162,57 +162,30 @@
     try{bimZnFromLayer(true);}catch(eZ2){console.warn('[BIM] Analyze site: zoning',eZ2);bimSiteStep('zoning','fail','It could not be read - see the console');return;}
     bimSiteStep('zoning','ok',bimZnFoundText(f)+' (from '+(f.district||f.far||f.height).layer+')');
   }
-  /* the top of Analyze: where the site is, the button, and what the last run brought */
-  function bimSiteRunHtml(){
-    var st=bimSunSettings(),placed=bimSunNum(st.lat)&&bimSunNum(st.lon),D=bimDgState(),R=A3D_SITERUN,P=A3D.objs.filter(bimIsProperty),bd,h,steps;
-    if(P.length){var g=bimPropertyGeometry(P[0]);bd=bimEsc(P[0].name)+', '+bimDispNum(g.area,1)+' m\u00b2';}
-    else bd='None yet <button type="button" class="a3d-anzbtn" data-saact="cmd:propertyshape">From a shape</button> <button type="button" class="a3d-anzbtn" data-saact="cmd:propertyline">From bearings</button>';
-    h='<div class="a3d-sasec a3d-sarun" data-anzsec="site"><div class="a3d-sasechd">Site</div>'+
-      '<div class="a3d-sarow"><span class="a3d-salab">Place</span><span class="a3d-saval">'+(placed?bimEsc(bimSitePlaceText()):'Not placed yet')+'</span></div>';
-    if(!placed)h+='<div class="a3d-sarow"><label for="a3d-saaddr">Address</label><input type="text" id="a3d-saaddr" data-saaddr="1" maxlength="200" enterkeyhint="search" autocomplete="off" placeholder="A street address or a place"></div>';
-    h+='<div class="a3d-sarow"><span class="a3d-salab">Boundary</span><span class="a3d-saval">'+bd+'</span></div>'+
-      '<div class="a3d-saacts"><button type="button" class="a3d-anzbtn pri a3d-sago" data-saact="analyze"'+(R.busy?' disabled':'')+'>'+(R.busy?'Analyzing ...':(D.last?'Analyze site again':'Analyze site'))+'</button>'+
-      (D.last?'<button type="button" class="a3d-anzbtn" data-anzact="aw:open:" title="The analyses one at a time, each with its key and its panel">Open the site analysis</button>':'')+   /* __acad3dV171b */
-      (D.last?'<button type="button" class="a3d-anzbtn" data-saact="dglegend" aria-pressed="'+(!D.legendOff)+'">'+(D.legendOff?'Show the legend':'Hide the legend')+'</button>':'')+'</div>'+
-      '<div class="a3d-sacap">'+(D.last&&!R.busy?bimEsc('Last run '+D.last.date+'. Each analysis is on Layers, Site analysis: select an element to move, restyle or relabel it; what you change is kept when it runs again.'):
-        'Gets what is around the site from free open data -- buildings, roads, terrain, climate, access, zoning -- and draws each analysis in the model, on Layers, Site analysis. One undo step.')+'</div>';
-    steps=R.steps.length?R.steps:((D.last&&D.last.steps)||[]);
-    if(steps.length)h+='<ol class="a3d-sasteps" data-sasteps="1">'+steps.map(function(s){
-      return '<li class="a3d-sastep '+(BIM_SITERUN_CLS[s.state]||'s-wait')+'" data-sastep="'+bimEsc(s.id)+'"><span class="a3d-sastepic" aria-hidden="true"></span><span class="a3d-sastepn">'+bimEsc(s.name)+'</span>'+
-        '<span class="a3d-sastepst">'+bimEsc(BIM_SITERUN_WORD[s.state]||s.state)+'</span>'+(s.text?'<span class="a3d-sastept">'+bimEsc(s.text)+'</span>':'')+'</li>';}).join('')+'</ol>';
-    return h+'</div>';
-  }
   /* ---- each analysis drawn in the model, a row in its category ---- */
   var BIM_DG_KEYCLS={fill:'k-fill',line:'k-line',dash:'k-dash',dot:'k-dot'};
-  function bimDgLegendHtml(rows){
-    if(!rows||!rows.length)return '';
-    return '<div class="a3d-dgleg">'+rows.map(function(r){
-      var st=(r.kind==='line'||r.kind==='dash')?'color:'+r.col:'background:'+r.col;
-      if(r.tex)st+=';'+bimDgTexCss(r.tex,r.ink);   /* __acad3dV168 */
-      return '<span class="a3d-dglegi"><i class="'+(BIM_DG_KEYCLS[r.kind]||'k-fill')+'" style="'+bimEsc(st)+'"></i>'+bimEsc(r.name)+'</span>';}).join('')+'</div>';
+  /* __acad3dV171c: a row of the list, with its state; its key, its note, its source and its buttons are its panel's
+     (bimAwAnHtml) */
+  /* __acad3dV167: what changed since an analysis ran, and what brings it up to date; __acad3dV171c: its row and its panel say it */
+  function bimDgStaleText(SC){
+    return 'Out of date: '+(SC.run.length?bimStdChangedText(SC.run)+' since it ran: Run again':'')+(SC.run.length&&SC.data.length?'; ':'')+
+      (SC.data.length?bimStdChangedText(SC.data)+' since '+BIM_STD_DATA[SC.kind].name+' was fetched: Analyze site again':'');
   }
   function bimDgCards(){
     var D=bimDgState();
     return BIM_DG_AN.map(function(A){
-      var R=D.runs[A.id],L=bimDgDiags(A.id),ly=bimLayerById(D.layers[A.id]),on=!!(ly&&bimLayerEff(ly).on),ed=L.filter(bimDgEdited).length;
+      var R=D.runs[A.id],L=bimDgDiags(A.id),on=bimAwShown(A.id),ed=L.filter(bimDgEdited).length;
       var st=!R?'Not run yet: Analyze site draws it':(L.length?bimSaN(L.length,'element')+' on Site analysis - '+A.name+(ed?', '+ed+' changed by you':'')+', '+R.date:(R.note||'Nothing to draw'));
       /* __acad3dV167: Out of date when a standard it used changed: an edition, a value, an override */
-      var SC=R?bimDgStdChanged(A.id):{run:[],data:[]},stale=!!(SC.run.length||SC.data.length),sx=bimDgStdText(A.id);
-      if(stale)st+='. Out of date: '+(SC.run.length?bimStdChangedText(SC.run)+' since it ran: Run again':'')+(SC.run.length&&SC.data.length?'; ':'')+(SC.data.length?bimStdChangedText(SC.data)+' since '+BIM_STD_DATA[SC.kind].name+' was fetched: Analyze site again':'');
-      var card={id:'dg'+A.id,title:A.name,state:!R?null:(stale?'stale':(L.length?(on?'on':'off'):'warn')),status:st,
-        extra:R?bimDgLegendHtml(R.legend)+(R.note&&L.length?'<div class="a3d-sacap">'+bimEsc(R.note)+'</div>':'')+(R.source?'<div class="a3d-sacap">Source: '+bimEsc(R.source)+'</div>':'')+
-          (sx?'<div class="a3d-sacap a3d-sastd" data-dgstd="'+A.id+'">'+bimEsc(sx)+'</div>':''):'',
-        acts:[{act:'dg:show:'+A.id,label:on?'Hide':'Show',pri:!on&&L.length>0,off:L.length?'':'Nothing drawn yet'},
-          {act:'aw:open:'+A.id,label:'Open',tip:'In the site analysis: drawn alone, with its key and its panel',off:R?'':'Not run yet'},   /* __acad3dV171b */
-          {act:'dg:run:'+A.id,label:R?'Run again':'Run',tip:'From what the project holds now; Analyze site fetches the data again'},
-          {act:'dg:select:'+A.id,label:'Select',off:L.length?'':'Nothing drawn yet'},
-          {act:'dg:reset:'+A.id,label:'Reset',off:R?'':'Not run yet',tip:'As the analysis draws it: what you changed, copied or deleted on it goes back'}]};
+      var SC=R?bimDgStdChanged(A.id):{run:[],data:[]},stale=!!(SC.run.length||SC.data.length);
+      if(stale)st+='. '+bimDgStaleText(SC);
+      var card={id:'dg'+A.id,title:A.name,state:!R?null:(stale?'stale':(L.length?(on?'on':'off'):'warn')),status:st};
       return A.id==='traffic'?bimTrCard(card):card;   /* __acad3dV171: the simulation's own part */
     });
   }
   function bimDgAct(v){
     v=String(v||'');
-    var i=v.indexOf(':'),c=v.slice(0,i),a=v.slice(i+1),D=bimDgState(),L,ly;
+    var i=v.indexOf(':'),c=v.slice(0,i),a=v.slice(i+1),L;
     if(i<0||!bimDgAn(a))return false;
     if(c==='run')return !!bimDgRunAll(a);
     if(c==='reset')return !!bimDgResetAnalysis(a);
@@ -221,14 +194,6 @@
       if(!L.length)return false;
       A3D.selSet=L.map(function(o){return o.id;});A3D.sel=A3D.selSet[0];A3D.sel2=null;
       refreshTree();refreshProps();paint();
-      return true;
-    }
-    if(c==='show'){
-      ly=bimLayerById(D.layers[a]);
-      if(!ly)return false;
-      if(bimLayerEff(ly).on)bimLayerSet(ly.id,'visible',false);
-      else bimLayerChain(ly).forEach(function(x){if(x.visible===false)bimLayerSet(x.id,'visible',true);});   /* the layer and those above it */
-      paint();
       return true;
     }
     return false;

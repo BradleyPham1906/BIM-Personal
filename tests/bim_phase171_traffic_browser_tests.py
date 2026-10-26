@@ -526,17 +526,16 @@ async def run():
             mt = ((obj.get('g') or {}).get('marks') or [{}])[0].get('t', '')
             P5 = ref_plan(net, jat(60, 0))
             ck(re.match(r'^Signal: \d+ s cycle', mt) and str(int(round(P5['C']))) in mt, "a signal's mark says its cycle (%s)" % mt)
-            await safe("()=>window.__a3dAwLeave&&window.__a3dAwLeave()")   # V171b: TRAFFIC opens the analysis workspace; its row is Analyze's
-            await safe("()=>window.__a3dAnzView(true)")
-            await safe("()=>window.__a3dAnzOpenAll(true)")
+            # AMENDED FOR V171c: TRAFFIC puts Traffic and people in focus in Analyze; its simulation is in its panel on the right
+            await safe("()=>window.__a3dAwFocus('traffic')")
             await page.wait_for_timeout(400)
-            card = await safe("""()=>{var c=document.querySelector('[data-anzcard="dgtraffic"]');if(!c)return null;
-              return {acts:Array.prototype.map.call(c.querySelectorAll('[data-anzact]'),function(b){return b.getAttribute('data-anzact');}),text:c.textContent,
+            card = await safe("""()=>{var c=document.querySelector('#a3d-propsbody [data-awpanel="traffic"]');if(!c)return null;
+              return {acts:Array.prototype.map.call(c.querySelectorAll('[data-anzact],[data-awact]'),function(b){return b.getAttribute('data-anzact')||b.getAttribute('data-awact');}),text:c.textContent,
                 pressed:Array.prototype.filter.call(c.querySelectorAll('[aria-pressed="true"]'),function(){return true;}).length};}""") or {}
             ck(set(['tr:sim:off', 'tr:peak:am', 'tr:peak:pm', 'tr:q:auto', 'tr:q:light', 'tr:q:normal', 'tr:q:detailed', 'tr:speed:1', 'tr:speed:4', 'tr:speed:16']).issubset(set(card.get('acts', []))) and card.get('pressed') == 3,
                "its row: Stop the simulation, the peak hour, the quality and the speed, the chosen one pressed in each (%s)" % card.get('acts'))
             ck('San Diego' in card.get('text', '') and 'Not a calibrated model' in card.get('text', ''), "and what the run assumes, in words")
-            await safe("""()=>{var b=document.querySelector('[data-anzcard="dgtraffic"] [data-anzact="tr:peak:am"]');if(b)b.click();}""")
+            await safe("""()=>{var b=document.querySelector('#a3d-propsbody [data-awpanel="traffic"] [data-anzact="tr:peak:am"]');if(b)b.click();}""")
             await page.wait_for_timeout(300)
             ck((await safe("()=>window.__a3dTrSettings()") or {}).get('peak') == 'am', "its AM button sets the peak hour")
             await safe("()=>window.__a3dTrAct('peak:pm')")
@@ -567,14 +566,14 @@ async def run():
 
             # ---------------------------------------------------------------------------------
             print("\n-- 10. A phone, a tablet, a computer")
-            await safe("()=>window.__a3dAnzView(true)")
-            await safe("()=>window.__a3dAnzOpenAll(true)")
+            # AMENDED FOR V171c: the simulation's buttons are in Traffic and people's panel, on the right (a phone's and an upright
+            # tablet's opened by Details, as a sheet)
             for (vw, vh, name) in ((390, 844, 'a phone'), (820, 1180, 'a tablet held upright'), (1440, 900, 'a computer')):
                 await page.set_viewport_size({'width': vw, 'height': vh})
                 await page.wait_for_timeout(500)
-                await safe("()=>{window.__a3dAnzView(true);window.__a3dAnzOpenAll(true);}")   # a narrow screen closes the panel: Analyze opened again
+                await safe("()=>{window.__a3dAwFocus('traffic');var r=document.getElementById('a3d-right');if(r&&!r.classList.contains('open'))document.querySelector('#a3d-awbar [data-awact=\"panel\"]').click();}")
                 await page.wait_for_timeout(400)
-                lay = await safe("""()=>{var c=document.querySelector('[data-anzcard="dgtraffic"]'),w=document.querySelector('.a3d-analyze-wrap');if(!c||!w)return null;
+                lay = await safe("""()=>{var c=document.querySelector('#a3d-propsbody [data-awpanel="traffic"]'),w=document.getElementById('a3d-propsbody');if(!c||!w)return null;
                   var B=c.querySelectorAll('.a3d-trset button'),o=[],i,wr=w.getBoundingClientRect(),cr=c.getBoundingClientRect();
                   for(i=0;i<B.length;i++){var r=B[i].getBoundingClientRect();o.push([r.left,r.right,r.width]);}
                   return {b:o,card:[cr.left,cr.right],wrap:[wr.left,wr.right],sw:w.scrollWidth,cw:w.clientWidth,vw:window.innerWidth,doc:document.documentElement.scrollWidth};}""") or {}

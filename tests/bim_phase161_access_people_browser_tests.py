@@ -77,6 +77,8 @@ async def run():
             return await safe("()=>{var t=document.getElementById('a3d-toast');return t?t.textContent:'';}", pg=pg) or ''
 
         async def set_site(lat, lon, pg=None):
+            # AMENDED FOR V171c: in Analyze, Properties is the analysis's; the site is placed outside it
+            await safe("()=>{var s=document.getElementById('a3d-shell');if(s&&s.getAttribute('data-tab')==='analyze')document.querySelector('#a3d-rail [data-tab=browser]').click();}", pg=pg)
             await safe("()=>{window.__a3dSelectFor([]);window.__a3dSetPropTab('site');window.__a3dRefreshProps();}", pg=pg)
             for k, v in (('sunlat', lat), ('sunlon', lon)):
                 await safe("""(a)=>{var L=document.querySelectorAll('#a3d-propsbody input'),e=null,i;for(i=0;i<L.length;i++)if(L[i].getAttribute('data-propmodel')===a[0])e=L[i];
@@ -128,17 +130,19 @@ async def run():
                             ('transit stops', 'ACCESS'), ('demographics', 'ACCESS'), ('walk shed', 'WALKTIMES')):
                 nm = [x['name'] for x in (await safe("(q)=>window.__a3dCommandSearch(q,6)", q) or [])]
                 ck(want in nm[:3], "searching %r finds %s (%s)" % (q, want, nm[:4]))
-            await safe("()=>window.__a3dAnzView('site')")
+            await safe("()=>{window.__a3dAnzView('site');window.__a3dSaGoto('access');}")   # AMENDED FOR V171c: 8. Access picked, its data on the right
             await page.wait_for_timeout(150)
-            sec = await safe("""()=>{var s=document.querySelector('.a3d-sa-wrap [data-accsec]');if(!s)return null;
+            sec = await safe("""()=>{var s=document.querySelector('#a3d-propsbody [data-accsec]');if(!s)return null;
               return {hd:s.querySelector('.a3d-sasechd').textContent,acts:[].map.call(s.querySelectorAll('[data-saact]'),function(b){return [b.getAttribute('data-saact'),b.textContent];})};}""") or {}
             # AMENDED FOR V162: the board is a page of the set: Analyze links to it, Show in Presentation
             ck(sec.get('hd') == 'Access and people' and sec.get('acts') == [['accget', 'Get access and people'], ['accboard', 'Show in Presentation']],
                "Site analysis has an Access and people section: Get access and people, Show in Presentation (%s)" % sec)
             # AMENDED FOR V162: each category holds its own data, in the categories' order -- Location's
             # context, Legal's zoning, Climate's climate and risk, Access's access and people
-            order = await safe("()=>[].map.call(document.querySelectorAll('.a3d-sa-wrap .a3d-clsec .a3d-sasechd'),function(h){return h.textContent;})")
-            inacc = await safe("()=>!!document.querySelector('.a3d-sa-wrap [data-sacat=\"access\"] [data-accsec]')")
+            # AMENDED FOR V171c: each category picked shows its own data on the right
+            order = await safe("""()=>['location','legal','climate','access'].map(function(c){window.__a3dSaGoto(c);
+              return [].map.call(document.querySelectorAll('#a3d-propsbody .a3d-clsec .a3d-sasechd'),function(h){return h.textContent;}).join('|');})""")
+            inacc = await safe("()=>!!document.querySelector('#a3d-propsbody [data-awpanel=\"cat:access\"] [data-accsec]')")
             ck(order == ['Site context', 'Zoning and yield', 'Climate and risk', 'Access and people'] and inacc, "in 8. Access, after the data of Location, Legal and Climate (%s)" % order)
 
             # ---------------------------------------------------------------------------------
@@ -492,12 +496,12 @@ async def run():
 
             # ---------------------------------------------------------------------------------
             print("\n-- 10. the board")
-            await safe("()=>window.__a3dAnzView('site')")
+            await safe("()=>{window.__a3dAnzView('site');window.__a3dSaGoto('access');}")   # AMENDED FOR V171c: 8. Access picked, its data on the right
             await page.wait_for_timeout(150)
-            sec = await safe("""()=>{var s=document.querySelector('.a3d-sa-wrap [data-accsec]');return s?{txt:s.querySelector('.a3d-clsum').textContent,acts:[].map.call(s.querySelectorAll('[data-saact]'),function(b){return [b.getAttribute('data-saact'),b.disabled];})}:null;}""") or {}
+            sec = await safe("""()=>{var s=document.querySelector('#a3d-propsbody [data-accsec]');return s?{txt:s.querySelector('.a3d-clsum').textContent,acts:[].map.call(s.querySelectorAll('[data-saact]'),function(b){return [b.getAttribute('data-saact'),b.disabled];})}:null;}""") or {}
             ck(sec.get('txt', '').startswith('6 of 7 daily needs within 10 min · bus under a minute · rail 11 min · 86 intersections per km² · Census Tract 76: 4,512 people. Data of ') and
                sec.get('acts') == [['accboard', False], ['acclayer', True], ['accget', False]], "the section says what is known; the layer button off while the layer is there (%s)" % sec)
-            await safe("()=>document.querySelector('.a3d-sa-wrap [data-saact=\"accboard\"]').click()")
+            await safe("()=>document.querySelector('#a3d-propsbody [data-saact=\"accboard\"]').click()")
             await page.wait_for_timeout(300)
             B = await safe("""()=>{var b=document.querySelector('.a3d-clb');if(!b)return null;
               return {h1:b.querySelector('.a3d-clb-h1').textContent,sub:b.querySelector('.a3d-clb-sub').textContent,kick:b.querySelector('.a3d-clb-kicker').textContent,label:b.getAttribute('aria-label'),
@@ -598,9 +602,9 @@ async def run():
             ck(await safe("()=>document.querySelector('.a3d-clb').getAttribute('aria-label')") == 'Access and people board', "ACCESS opens it")
             await safe("()=>window.__a3dClbClose()")
             await lot([[12, -40], [50, -40], [50, -10], [12, -10]])
-            await safe("()=>window.__a3dAnzView('site')")
+            await safe("()=>{window.__a3dAnzView('site');window.__a3dSaGoto('access');}")   # AMENDED FOR V171c: 8. Access picked, its data on the right
             await page.wait_for_timeout(100)
-            ck('The lot has changed since: refresh to walk from it.' in (await safe("()=>document.querySelector('.a3d-sa-wrap [data-accsec] .a3d-clsum').textContent") or ''),
+            ck('The lot has changed since: refresh to walk from it.' in (await safe("()=>document.querySelector('#a3d-propsbody [data-accsec] .a3d-clsum').textContent") or ''),
                "the lot changed: the section says to refresh")
             await safe("()=>window.__a3dClbOpen('access')")
             ck('The lot has changed since' in (await safe("()=>(document.querySelector('.a3d-acc-warn')||{}).textContent") or ''), "and so does the board")

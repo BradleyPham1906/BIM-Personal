@@ -78,6 +78,7 @@
     };
     if(bimIsDiag(o)){   /* __acad3dV164 */
       if(o.dg.g.kind==='live')return {error:'A live shadow follows the sun and the model: it cannot be turned, mirrored or scaled'};
+      if(o.dg.g.kind==='mesh')return {error:'The temperature on the dome follows the sun: it cannot be turned, mirrored or scaled'};   /* __acad3dV171d */
       return bimDgTransformed(o.dg,transformPt);
     }
     if(o.t==='sketch')return {kind:'sketch',pts:o.pts.map(transformPt),y:o.y};

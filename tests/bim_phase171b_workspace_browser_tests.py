@@ -39,10 +39,10 @@ CK = Checks()
 SC = 0.35
 LOT = [list(p) for p in FX.LOT]
 MASSES = [(20, -25, 18, 28, 31, 'use-res'), (40, -25, 18, 28, 18, 'use-off'), (30, -15, 38, 8, 4.5, 'use-ret'), (30, -35, 38, 8, 16, 'use-hot')]
-GROUPS = [('site', ['frame']), ('sun', ['sun', 'shadow', 'wind']), ('see', ['views', 'noise']),
-          ('ground', ['contours', 'slope', 'aspect', 'flow', 'ponds', 'flood']),
-          ('move', ['streets', 'cycling', 'transit', 'walk', 'needs', 'vehicles', 'traffic']),
-          ('land', ['landuse', 'figure', 'green', 'zoning'])]
+# AMENDED FOR V171c: Analyze is one list, the analyses under the ten categories they answer, not in six groups of their own
+GROUPS = [('location', ['frame', 'landuse', 'figure']), ('legal', ['zoning']), ('landform', ['contours', 'slope', 'aspect']), ('water', ['flow', 'ponds', 'flood']),
+          ('climate', ['sun', 'shadow', 'wind']), ('ecology', ['green']), ('risk', ['noise']),
+          ('access', ['streets', 'cycling', 'transit', 'walk', 'vehicles', 'traffic']), ('utilities', []), ('people', ['views', 'needs'])]
 LIGHT = {'bg': (0xf2, 0xf2, 0xef), 'building': '#fbfbfa', 'terrain': '#e9e8e3', 'road': '#dcdcd8'}
 DARK = {'bg': (0x17, 0x19, 0x1c), 'building': '#4c525b', 'terrain': '#25292e', 'road': '#363b42'}
 
@@ -156,8 +156,9 @@ async def run():
             ck(len(cat) == 1 and 'ANALYSISWORKSPACE' in (cat[0].get('aliases') or []), "SITEWORKSPACE is a command, ANALYSISWORKSPACE its alias (%s)" % cat[:1])
             found = [x['name'] for x in (await safe("()=>window.__a3dCommandSearch('archimap',5)") or [])]
             ck('SITEWORKSPACE' in found[:3], "searching 'archimap' finds it (%s)" % found[:3])
-            gr = await safe("()=>window.__a3dAwGroups()") or []
-            ck([(g['id'], g['an']) for g in gr] == GROUPS, "the analyses in six groups, each of the 23 once, in Analyze's order (%s)" % [g['id'] for g in gr])
+            gr = await safe("""()=>{window.__a3dAnzView(true);return [].map.call(document.querySelectorAll('.a3d-awl [data-sacat]'),function(g){
+              return {id:g.getAttribute('data-sacat'),an:[].map.call(g.querySelectorAll('[data-awrow]'),function(r){return r.getAttribute('data-awrow');})};});}""") or []
+            ck([(g['id'], g['an']) for g in gr] == GROUPS, "the analyses in the ten categories, each of the 23 once, in Analyze's order (%s)" % [g['id'] for g in gr])
             alln = await safe("()=>window.__a3dAw().run.length+0")
             ck(sum(len(a) for _, a in GROUPS) == 23 and alln == 0, "23 analyses; none run yet (%s)" % alln)
 
@@ -167,15 +168,16 @@ async def run():
             await page.wait_for_timeout(300)
             a0 = await aw()
             ck(a0.get('on') is True and a0.get('now') is None, "SITEWORKSPACE opens it, nothing in focus (%s)" % {k: a0.get(k) for k in ('on', 'now')})
-            ck(await safe("()=>!!document.querySelector('.a3d-analyze-wrap .a3d-awl')&&!document.querySelector('.a3d-analyze-wrap [data-anzcard]')"),
-               "the left panel is the workspace's list, not Analyze's rows")
-            emp = await text('.a3d-awl-empty')
-            ck(emp and 'Analyze site' in emp, "with nothing analysed the list says how to start (%s)" % emp)
+            ck(await safe("()=>!!document.querySelector('.a3d-analyze-wrap .a3d-awl')&&!document.querySelector('.a3d-analyze-wrap [data-anztog],.a3d-analyze-wrap .a3d-anzbody')"),
+               "the left panel is the workspace's list, not Analyze's rows")   # AMENDED FOR V171c: one list, no row that opens in place
+            emp = (await text('.a3d-awl-run') or '') + ' ' + (await text('.a3d-awl [data-saact="analyze"]') or '')
+            ck('every analysis drawn' in emp and 'Analyze site' in emp, "with nothing analysed the list says how to start (%s)" % emp)   # AMENDED FOR V171c: the site's part
             ov = await text('[data-awpanel="overview"] .a3d-awp-ttl')
             ck(ov == 'Overview' and await text('#a3d-rpttl') == 'Analysis', "the panel is the overview, and Properties' title says Analysis (%s)" % ov)
             ck(await text('#a3d-awbar [data-awbart]') == 'Overview', "the bar names it")
             ck(await click('#a3d-awbar [data-awact="leave"]') and (await aw()).get('on') is False, "the bar's cross leaves")
-            ck(await safe("()=>!document.getElementById('a3d-awbar')&&!!document.querySelector('.a3d-analyze-wrap [data-anzcard]')") and await text('#a3d-rpttl') == 'Properties',
+            # AMENDED FOR V171c: out of Analyze itself, to the tab it was opened from
+            ck(await safe("()=>!document.getElementById('a3d-awbar')&&!document.querySelector('.a3d-analyze-wrap')&&document.getElementById('a3d-shell').getAttribute('data-tab')==='browser'") and await text('#a3d-rpttl') == 'Properties',
                "out of it: the bar gone, Analyze's rows back, Properties' title back")
 
             # ---------------------------------------------------------------------------------
@@ -192,8 +194,8 @@ async def run():
             root = next((l for l in lys if l['id'] == D.get('layers', {}).get('root')), None)
             ck(root and root.get('visible') is not False, "the Site analysis layer stays on: its analyses' own are off")
             nrow = await safe("()=>document.querySelectorAll('.a3d-awl [data-awrow]').length")
-            ngrp = await safe("()=>[].map.call(document.querySelectorAll('.a3d-awl [data-awgrp]'),function(g){return g.getAttribute('data-awgrp');})")
-            ck(nrow == 23 and ngrp == [g for g, _ in GROUPS], "the list: 23 rows in the six groups (%s, %s)" % (nrow, ngrp))
+            ngrp = await safe("()=>[].map.call(document.querySelectorAll('.a3d-awl [data-sacat]'),function(g){return g.getAttribute('data-sacat');})")
+            ck(nrow == 23 and ngrp == [g for g, _ in GROUPS], "the list: 23 rows in the ten categories (%s, %s)" % (nrow, ngrp))
             ck(await safe("()=>[].every.call(document.querySelectorAll('.a3d-awl .a3d-awl-tick'),function(t){return !t.checked;})"), "none ticked")
             stp = await safe("()=>document.querySelectorAll('[data-awpanel=\"overview\"] .a3d-awp-steps li').length")
             ck(stp and stp >= 6, "the overview lists what the run fetched (%s steps)" % stp)
@@ -344,8 +346,9 @@ async def run():
             ck('From the' in (src or '') and 'm/s' in (src or ''), "the rose's caption: the prevailing direction and the mean speed")
             await safe("()=>window.__a3dAwFocus('sun')")
             await page.wait_for_timeout(150)
-            ck(await safe("()=>!!document.querySelector('[data-awpanel=\"sun\"] .a3d-awp-chart svg')") and 'midsummer' in (await text('[data-awpanel="sun"] .a3d-awp-cap') or ''),
-               "the sun's paths drawn looking up, and their caption")
+            # AMENDED FOR V171d: Sun paths' diagrams are its own now, the sky dome in plan first (reference/research-sun-path.md, 7)
+            ck(await safe("()=>!!document.querySelector('[data-awpanel=\"sun\"] .a3d-awp-chart svg')") and 'The sky dome in plan' in (await text('[data-awpanel="sun"] .a3d-awp-cap') or ''),
+               "the sun's paths drawn on the sky dome in plan, and their caption")
             ab = await text('[data-awpanel="sun"] .a3d-awp-about')
             ck(ab and 'solstices' in ab, "what it shows, in a sentence (%s)" % ab)
             n0 = await safe("()=>window.__a3dDgDiagsCount?window.__a3dDgDiagsCount('sun'):window.__a3dState().objs.filter(function(o){return o.t==='diag'&&o.dg.a==='sun';}).length")
@@ -380,11 +383,14 @@ async def run():
             print("\n-- 9. In and out")
             await safe("()=>window.__a3dAwFocus('views')")
             await safe("()=>window.__a3dAwTick('green')")
-            await click('.a3d-awl-back')
+            # AMENDED FOR V171c: another tab leaves Analyze; Analyze's tab opens it again; a row's name puts its analysis in focus
+            await click('#a3d-rail [data-tab="layers"]')
             await page.wait_for_timeout(200)
             ck((await aw()).get('on') is False and await shown_layers() == {'views', 'green'}, "the list's back button leaves; what was shown stays shown")
-            ck(await safe("()=>!!document.querySelector('.a3d-analyze-wrap [data-anzact=\"aw:open:\"]')"), "Analyze's site part offers Open the site analysis")
-            ck(await safe("()=>{var b=document.querySelector('[data-anzcard=\"dgnoise\"] [data-anzact=\"aw:open:noise\"]');if(!b)return false;b.click();return true;}"), "a row's Open pressed")
+            await click('#a3d-rail [data-tab="analyze"]')
+            await page.wait_for_timeout(200)
+            ck((await aw()).get('on') is True and (await aw()).get('now') == 'views', "Analyze's site part offers Open the site analysis")
+            ck(await click('.a3d-awl [data-anzact="aw:focus:noise"]'), "a row's Open pressed")
             await page.wait_for_timeout(200)
             a9 = await aw()
             ck(a9.get('on') is True and a9.get('now') == 'noise', "Open: the workspace, that analysis in focus (%s)" % a9.get('now'))
@@ -398,8 +404,8 @@ async def run():
             await page.wait_for_timeout(150)
             ck(await text('#a3d-rpttl') == 'Analysis' and await safe("()=>!!document.querySelector('#a3d-propsbody [data-awpanel=\"noise\"]')"), "nothing selected: the analysis again")
             await safe("()=>window.__a3dAwTick('streets')")
-            ck(await click('.a3d-awl [data-anzact="aw:analyze"]') and (await safe("()=>window.__a3dSiteRunState()") or {}).get('busy') is True,
-               "the list's Analyze again runs it")
+            ck(await click('.a3d-awl [data-saact="analyze"]') and (await safe("()=>window.__a3dSiteRunState()") or {}).get('busy') is True,
+               "the list's Analyze again runs it")   # AMENDED FOR V171c: the site's part of the list
             for _ in range(240):
                 if not (await safe("()=>window.__a3dSiteRunState()") or {}).get('busy'):
                     break
@@ -444,8 +450,9 @@ async def run():
             await safe("()=>window.__a3dAnzView(true)")
             await safe("()=>window.__a3dSaGoto('access')")
             await page.wait_for_timeout(300)
-            wt = await safe("()=>{var t=document.querySelector('[data-anzcard=\"dgtraffic\"] .a3d-anzttl'),b=document.querySelector('[data-anzcard=\"dgtraffic\"] .a3d-anzhd>.a3d-anzbtn');return t&&b?[t.getBoundingClientRect().width,b.textContent]:null;}")
-            ck(wt and wt[0] >= 60 and 'Stop' in wt[1], "Traffic's row keeps its name in sight beside \"%s\" (%s px)" % (wt and wt[1], wt and round(wt[0])))
+            # AMENDED FOR V171c: a row has no button on it now: Stop the simulation is in its panel; the name is in sight, whole
+            wt = await safe("()=>{var t=document.querySelector('.a3d-awl [data-awrow=\"traffic\"] .a3d-awl-nm'),r=t&&t.closest('[data-awrow]');return t?[t.getBoundingClientRect().width,t.scrollWidth<=t.clientWidth+1,r.querySelectorAll('.a3d-anzbtn').length]:null;}")
+            ck(wt and wt[0] >= 60 and wt[1] and wt[2] == 0, "Traffic's row keeps its name in sight beside \"%s\" (%s px)" % ('no button', wt and round(wt[0])))
             await safe("()=>window.__a3dRunCmd('trafficoff')")
 
             print("")

@@ -186,10 +186,11 @@ async def run():
 
         # AMENDED FOR V166b: the frame's settings and results are in Analyze, in Frame analysis's row.
         # Left first, as a click elsewhere leaves it: Analyze is not redrawn under its own focused field (V162).
+        # AMENDED FOR V171c: Frame analysis picked in Analyze's list; its settings and results in its panel on the right.
         async def frame_row():
             await safe("""()=>{if(document.activeElement)document.activeElement.blur();var s=document.getElementById('a3d-shell');
               if(s.getAttribute('data-tab')!=='analyze'||s.classList.contains('collapsed'))document.querySelector('#a3d-rail [data-tab="analyze"]').click();
-              var t=document.querySelector('.a3d-analyze-wrap [data-anztog="structure"]');if(t&&t.getAttribute('aria-expanded')!=='true')t.click();
+              var b=document.querySelector('.a3d-analyze-wrap [data-anzact="aw:card:structure"]');if(b&&b.getAttribute('aria-pressed')!=='true')b.click();
               window.__a3dRefreshProps();}""")
             await page.wait_for_timeout(120)
 
@@ -439,7 +440,7 @@ async def run():
             await safe("()=>{window.__a3dSelectFor([]);window.__a3dRefreshProps();}")
             await page.wait_for_timeout(250)
             await frame_row()
-            combos = await safe("""()=>{var s=document.querySelector('.a3d-analyze-wrap [data-propstr="combo"]');return s?[].map.call(s.options,function(o){return o.value;}):null;}""")
+            combos = await safe("""()=>{var s=document.querySelector('#a3d-propsbody [data-propstr="combo"]');return s?[].map.call(s.options,function(o){return o.value;}):null;}""")
             ck(combos == ['1.2D+1.6L', '1.4D', 'D+L', 'D', 'L'] and combos == await safe("()=>window.__a3dCombos()"),
                "Frame analysis, in Analyze, offers the combinations (%s)" % combos)
             ck(await safe("()=>!document.querySelector('.a3d-dlg')"), "and nothing opened a window to do any of this")
@@ -467,11 +468,11 @@ async def run():
             await safe("()=>{window.__a3dSelectFor([]);window.__a3dRefreshProps();}")
             await page.wait_for_timeout(200)
             await frame_row()   # AMENDED FOR V166b: Frame analysis's row in Analyze says it, not Properties
-            res = await safe("""()=>{var r=[].filter.call(document.querySelectorAll('.a3d-analyze-wrap [data-anzcard="structure"] .a3d-anzkv dt'),function(x){return x.textContent==='Result';})[0];
+            res = await safe("""()=>{var r=[].filter.call(document.querySelectorAll('#a3d-propsbody [data-awpanel="card:structure"] .a3d-anzkv dt'),function(x){return x.textContent==='Result';})[0];
               return r?r.textContent+' '+r.nextElementSibling.textContent:null;}""")
             ck(dr and dr.get('stale') and 'labels' not in dr and res and 'Out of date' in res,
                "a changed load puts the display out of date: no result drawn, and Frame analysis says so (%s, %r)" % (dr, res))
-            await page.select_option('.a3d-analyze-wrap [data-propstr="display"]', 'N')
+            await page.select_option('#a3d-propsbody [data-propstr="display"]', 'N')   # AMENDED FOR V171c: in Frame analysis's panel
             await page.wait_for_timeout(300)
             await command('ANALYZE')
             dr = await safe("()=>window.__a3dStructDrawn()")

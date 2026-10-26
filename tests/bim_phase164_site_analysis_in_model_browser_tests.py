@@ -234,7 +234,7 @@ async def run():
             ck(cards == [{'id': 'dgframe', 'group': 'location'}, {'id': 'dgsun', 'group': 'climate'}, {'id': 'dgshadow', 'group': 'climate'},
                          {'id': 'dgwind', 'group': 'climate'}, {'id': 'dgviews', 'group': 'people'}, {'id': 'dgnoise', 'group': 'risk'}],
                "six analysis rows, each in the category it answers (%s)" % cards)
-            ck(all('Not run yet' in (t or '') for t in (await panel('[data-anzcard^="dg"] .a3d-anzsum') or ['x'])), "each says it has not run yet")
+            ck(all('Not run' in (t or '') for t in (await panel('[data-anzcard^="dg"] .a3d-awl-st') or ['x'])), "each says it has not run yet")   # AMENDED FOR V171c: on its line in the list
             n0 = len(ST.get('hits', []))
             await safe("()=>document.querySelector('[data-saact=\"analyze\"]').click()")
             await page.wait_for_timeout(200)
@@ -264,7 +264,7 @@ async def run():
             ck('walk times' in S['access']['text'] and 'census tract' in S['access']['text'], "the access step")
             ck('Needs the property line' in S['zoning']['text'], "zoning skipped, saying why")
             ck(isinstance((await state()).get('last', {}).get('date'), str), "the last run kept with the project")
-            site_tz = await safe("""()=>{window.__a3dSelectFor([]);window.__a3dSetPropTab('site');window.__a3dRefreshProps();
+            site_tz = await safe("""()=>{if(window.__a3dAw().on)window.__a3dAwLeave();window.__a3dSelectFor([]);window.__a3dSetPropTab('site');window.__a3dRefreshProps();
               var e=document.querySelector('#a3d-propsbody input[data-propmodel="suntz"]');return e?e.value:null;}""")
             ck(site_tz == '-5', "the UTC offset is -5, from Open-Meteo's answer: the sun needs no typing (%s)" % site_tz)
             u1 = await safe("()=>window.__a3dUndoDepth()")
@@ -276,7 +276,7 @@ async def run():
             await page.wait_for_timeout(200)
             ob = await objs()
             ck(not [o for o in ob if o.get('t') == 'diag'] and not [o for o in ob if o.get('context')], "undo takes it all away: the elements and the context")
-            ck(await safe("""()=>{window.__a3dSelectFor([]);window.__a3dSetPropTab('site');window.__a3dRefreshProps();var e=document.querySelector('#a3d-propsbody input[data-propmodel="sunlat"]');return e?e.value:null;}""") == '',
+            ck(await safe("""()=>{if(window.__a3dAw().on)window.__a3dAwLeave();window.__a3dSelectFor([]);window.__a3dSetPropTab('site');window.__a3dRefreshProps();var e=document.querySelector('#a3d-propsbody input[data-propmodel="sunlat"]');return e?e.value:null;}""") == '',
                "and the site's place with it: one step back")
             await safe("()=>window.__a3dRedo()")
             await page.wait_for_timeout(200)
@@ -327,7 +327,7 @@ async def run():
             await safe("()=>document.querySelector('[data-saact=\"dglegend\"]').click()")
             await page.wait_for_timeout(150)
             ck(await safe("()=>window.__a3dDgLegend()") is None and (await state()).get('legendOff') is True, "Hide the legend hides it, and the project remembers")
-            ck((await panel('[data-saact="dglegend"]') or [''])[0] == 'Show the legend', "the button says Show the legend")
+            ck(await safe("()=>(document.querySelector('#a3d-propsbody [data-saact=\"dglegend\"]')||{}).textContent") == 'Show the key on the view', "the button says Show the legend")   # AMENDED FOR V171c: in the overview, on the right
             await safe("()=>document.querySelector('[data-saact=\"dglegend\"]').click()")
             await page.wait_for_timeout(150)
             ck(await safe("()=>window.__a3dDgLegend()") is not None, "and shows it again")
@@ -661,7 +661,7 @@ async def run():
                "Reset of the analysis: the deleted back, the copy gone, the moved and turned as drawn")
             ck(await safe("()=>window.__a3dUndoDepth()") == u + 1 and not (await state())['runs']['frame']['gone'], "one undo step, and nothing deleted any longer")
             await safe("(id)=>window.__a3dDgSet(id,'stroke','#00ff00')", fr['ring']['id'])
-            await safe("""()=>{window.__a3dSelectFor([]);window.__a3dSetPropTab('site');window.__a3dRefreshProps();var e=document.querySelector('#a3d-propsbody input[data-propmodel="truenorth"]');e.value='20';e.dispatchEvent(new Event('change',{bubbles:true}));}""")
+            await safe("""()=>{if(window.__a3dAw().on)window.__a3dAwLeave();window.__a3dSelectFor([]);window.__a3dSetPropTab('site');window.__a3dRefreshProps();var e=document.querySelector('#a3d-propsbody input[data-propmodel="truenorth"]');e.value='20';e.dispatchEvent(new Event('change',{bubbles:true}));}""")
             await safe("()=>window.__a3dDgRun('frame')")
             tk2 = await by_key('ticks')
             n2 = [l for l in tk2['dg']['lb'] if l['t'] == 'N'][0]
@@ -672,7 +672,7 @@ async def run():
             await safe("(id)=>{window.__a3dSelectFor([id]);window.__a3dRefreshProps();}", (await by_key('ring'))['id'])
             ck(await safe("()=>/would draw it differently now/.test(document.getElementById('a3d-propsbody').innerText)&&!document.querySelector('#a3d-propsbody [data-dgact=\"reset\"]').disabled") is True,
                "Properties says so, and Reset is ready to take the analysis's version")
-            await safe("""()=>{window.__a3dSelectFor([]);window.__a3dSetPropTab('site');window.__a3dRefreshProps();var e=document.querySelector('#a3d-propsbody input[data-propmodel="truenorth"]');e.value='0';e.dispatchEvent(new Event('change',{bubbles:true}));}""")
+            await safe("""()=>{if(window.__a3dAw().on)window.__a3dAwLeave();window.__a3dSelectFor([]);window.__a3dSetPropTab('site');window.__a3dRefreshProps();var e=document.querySelector('#a3d-propsbody input[data-propmodel="truenorth"]');e.value='0';e.dispatchEvent(new Event('change',{bubbles:true}));}""")
             await safe("()=>window.__a3dDgResetAnalysis('frame')")
             saved = await objs()
             esrc = [o for o in await diags('noise') if o['name'] == 'Noise source, Elm Street'][0]
@@ -735,32 +735,44 @@ async def run():
             await safe("()=>{window.__a3dSelectFor([]);window.__a3dAnzView(true);window.__a3dAnalyzeRefresh(true);}")
             await page.wait_for_timeout(200)
             # AMENDED FOR V165: V164's six rows; the land and water rows are V165's to read
-            sums = await safe("()=>[].map.call(document.querySelectorAll('[data-anzcard=\"dgframe\"],[data-anzcard=\"dgsun\"],[data-anzcard=\"dgshadow\"],[data-anzcard=\"dgwind\"],[data-anzcard=\"dgviews\"],[data-anzcard=\"dgnoise\"]'),function(r){return r.querySelector('.a3d-anzsum').textContent;})") or []
+            # AMENDED FOR V171c: a category picked lists its analyses with their counts, on the right
+            sums = await safe("""()=>{var o={};['location','climate','people','risk'].forEach(function(c){window.__a3dSaGoto(c);
+              [].forEach.call(document.querySelectorAll('#a3d-propsbody .a3d-awp-an'),function(b){o[(b.getAttribute('data-awact')||'').replace('focus:','')]=b.querySelector('.a3d-awp-anst').textContent;});});
+              return ['frame','sun','shadow','wind','views','noise'].map(function(a){return o[a]||'';});}""") or []
             ck(len(sums) == 6 and all('element' in t for t in sums), "each row counts its elements on its layer (%s)" % sums[:2])
-            await safe("()=>document.querySelector('[data-anzact=\"dg:show:frame\"]').click()")
+            # AMENDED FOR V171c: a row's tick hides and shows its layer, where Hide and Show were
+            await safe("()=>document.querySelector('.a3d-analyze-wrap [data-anzact=\"aw:tick:frame\"]').click()")
             await page.wait_for_timeout(150)
             vis = {l['id']: l for l in await safe("()=>window.__a3dLayers()")}
-            ck(vis[D['layers']['frame']].get('visible') is False and (await panel('[data-anzact="dg:show:frame"]') or [''])[0] == 'Show', "Hide turns its layer off, and the button says Show")
-            await safe("()=>document.querySelector('[data-anzact=\"dg:show:frame\"]').click()")
+            ck(vis[D['layers']['frame']].get('visible') is False and await safe("()=>document.querySelector('.a3d-analyze-wrap [data-anzact=\"aw:tick:frame\"]').checked") is False, "Hide turns its layer off, and the button says Show")
+            await safe("()=>document.querySelector('.a3d-analyze-wrap [data-anzact=\"aw:tick:frame\"]').click()")
             vis = {l['id']: l for l in await safe("()=>window.__a3dLayers()")}
             ck(vis[D['layers']['frame']].get('visible') is not False, "and Show turns it on")
-            await safe("()=>document.querySelector('[data-anzcard=\"dgnoise\"] [data-anzact=\"dg:select:noise\"]').click()")
+            # AMENDED FOR V171c: Select, Run again and the key are in an analysis's panel, the analysis in focus
+            await safe("()=>window.__a3dAwFocus('noise')")
+            await safe("()=>document.querySelector('#a3d-propsbody [data-awact=\"dg:select:noise\"]').click()")
             ck(sorted(await safe("()=>window.__a3dState().selSet||[]") or []) == sorted(o['id'] for o in await diags('noise')) or
                sorted((await safe("()=>JSON.parse(JSON.stringify(window.__a3dSelSet?window.__a3dSelSet():[]))")) or []) == sorted(o['id'] for o in await diags('noise')),
                "Select selects the analysis's elements")
             await safe("()=>window.__a3dTestClearUndo()")   # AMENDED FOR V166: from an empty history, as the history holds 50 and the steps before reach it
+            await safe("()=>{window.__a3dSelectFor([]);window.__a3dAwFocus('sun');}")
             u = await safe("()=>window.__a3dUndoDepth()")
-            await safe("()=>window.__a3dSelectFor([])")
-            await safe("()=>document.querySelector('[data-anzact=\"dg:run:sun\"]').click()")
+            await safe("()=>document.querySelector('#a3d-propsbody [data-awact=\"dg:run:sun\"]').click()")
             ck(await safe("()=>window.__a3dUndoDepth()") == u + 1, "Run again: one undo step")
-            ck(await safe("()=>document.querySelectorAll('[data-anzcard=\"dgnoise\"] .a3d-dglegi').length") == 6, "each row carries its key")
+            await safe("()=>window.__a3dAwFocus('noise')")
+            ck(await safe("()=>document.querySelectorAll('#a3d-propsbody [data-awpanel=\"noise\"] .a3d-awp-keyi').length") == 6, "each row carries its key")
             F = (await safe("()=>window.__a3dSa()") or {}).get('findings', [])
-            shown = await safe("()=>document.querySelectorAll('.a3d-analyze-wrap .a3d-safind').length")
+            # AMENDED FOR V171c: the findings are each category's, on the right
+            fs = await safe("""()=>{var n=0,ed=0;['location','legal','landform','water','climate','ecology','risk','access','utilities','people'].forEach(function(c){window.__a3dSaGoto(c);
+              n+=document.querySelectorAll('#a3d-propsbody .a3d-safind').length;ed+=document.querySelectorAll('#a3d-propsbody .a3d-safind button,#a3d-propsbody .a3d-safind input,#a3d-propsbody .a3d-safind textarea').length;});return [n,ed];}""") or [0, 1]
+            shown = fs[0]
             ck(shown == len([f for f in F if f.get('auto')]) and shown > 0, "the findings shown are those the data wrote (%d)" % shown)
-            ck(await safe("()=>!document.querySelector('.a3d-analyze-wrap .a3d-safind button,.a3d-analyze-wrap .a3d-safind input,.a3d-analyze-wrap .a3d-safind textarea')") is True, "read only: nothing to edit in them")
+            ck(fs[1] == 0, "read only: nothing to edit in them")
+            await safe("()=>document.querySelector('.a3d-analyze-wrap .a3d-awl-ov').click()")   # AMENDED FOR V171c: the run's steps are the overview's
             li = await safe("()=>[].map.call(document.querySelectorAll('[data-sasteps] li'),function(l){return l.className;})") or []
             ck(len(li) == 7 and 's-ok' in li[0] and 's-skip' in li[5], "the last run's steps stay listed")   # AMENDED FOR V165: Ground and water is a step
             ck((await panel('[data-saact="analyze"]') or [''])[0] == 'Analyze site again', "the button: Analyze site again")
+            await safe("()=>{window.__a3dAwClassic();window.__a3dAnzView(true);}")   # AMENDED FOR V171c: each analysis as the run drew it, for what follows
             # 'seismic' is in Environmental risk's question, nowhere in the site's own words (its steps name the noise)
             await safe("()=>{var s=document.querySelector('[data-anzsearch]');s.value='seismic';s.dispatchEvent(new Event('input',{bubbles:true}));}")
             await page.wait_for_timeout(200)
@@ -774,7 +786,7 @@ async def run():
             reg = [c for c in await safe("()=>window.__wsRegistry") if c['name'] in ('ANALYZESITE', 'SAFILL')]
             ck(len(reg) == 1 and reg[0]['name'] == 'ANALYZESITE' and 'SAFILL' in reg[0]['aliases'], "SAFILL is typed into it now")
             n0 = len([h for h in ST['hits'] if h[0] == 'geo'])
-            await safe("""()=>{window.__a3dSelectFor([]);window.__a3dSetPropTab('site');window.__a3dRefreshProps();var e=document.querySelector('#a3d-propsbody input[data-propmodel="suntz"]');e.value='-4';e.dispatchEvent(new Event('change',{bubbles:true}));}""")
+            await safe("""()=>{if(window.__a3dAw().on)window.__a3dAwLeave();window.__a3dSelectFor([]);window.__a3dSetPropTab('site');window.__a3dRefreshProps();var e=document.querySelector('#a3d-propsbody input[data-propmodel="suntz"]');e.value='-4';e.dispatchEvent(new Event('change',{bubbles:true}));}""")
             await safe("()=>window.__a3dTestClearUndo()")   # AMENDED FOR V166: from an empty history, likewise
             u = await safe("()=>window.__a3dUndoDepth()")
             twice = await safe("""()=>{window.__a3dRunCmd('analyzesite');var b=window.__a3dSiteRunState().busy,r=window.__a3dSiteRun('');
@@ -783,7 +795,7 @@ async def run():
             fin = await wait_run()
             ck(len([h for h in ST['hits'] if h[0] == 'geo']) == n0 and {s['id']: s['state'] for s in fin['steps']}['place'] == 'ok', "with the site placed, no address is looked up")
             ck(await safe("()=>window.__a3dUndoDepth()") == u + 1, "and the run is one undo step")
-            tz2 = await safe("""()=>{window.__a3dSelectFor([]);window.__a3dSetPropTab('site');window.__a3dRefreshProps();var e=document.querySelector('#a3d-propsbody input[data-propmodel="suntz"]');return e?e.value:null;}""")
+            tz2 = await safe("""()=>{if(window.__a3dAw().on)window.__a3dAwLeave();window.__a3dSelectFor([]);window.__a3dSetPropTab('site');window.__a3dRefreshProps();var e=document.querySelector('#a3d-propsbody input[data-propmodel="suntz"]');return e?e.value:null;}""")
             ck(tz2 == '-4' and 'the offset already given is kept' in {s['id']: s for s in fin['steps']}['climate']['text'], "an offset you gave is yours: kept, and the step says so")
             ck(not errs, "no page errors (%s)" % errs[:3])
             await page.wait_for_timeout(700)
@@ -825,7 +837,7 @@ async def run():
             ck(s3['place']['state'] == 'fail' and 'Nothing found for Nowhere Lane' in s3['place']['text'] and all(s3[k]['state'] == 'wait' for k in ('context', 'climate', 'access', 'draw')),
                "an address not found: the site step says so, nothing else is asked")
             ck([h[0] for h in st3.get('hits', [])] == ['geo'] and await safe("()=>window.__a3dUndoDepth()", pg=p3) == u, "one request, and no undo step left behind")
-            ck(await safe("()=>!document.querySelector('[data-saact=\"analyze\"]').disabled", pg=p3) is True, "and the button is ready again")
+            ck(await safe("()=>{window.__a3dAnzView(true);return !document.querySelector('.a3d-analyze-wrap [data-saact=\"analyze\"]').disabled;}", pg=p3) is True, "and the button is ready again")   # AMENDED FOR V171c: in Analyze's list
             await c3.close()
 
             c4, p4, st4, e4 = await fresh({'ctx': 'abort'})
@@ -872,7 +884,8 @@ async def run():
                 await safe("(t)=>window.__a3dImportProject(t,'Before V164.acad3d.json')", json.dumps(env), pg=p7)
                 await safe("()=>{window.__a3dAnzView(true);window.__a3dAnalyzeRefresh(true);}", pg=p7)
                 await p7.wait_for_timeout(200)
-                shown_t = "()=>[].map.call(document.querySelectorAll('.a3d-analyze-wrap .a3d-safind .a3d-saftt'),function(e){return e.textContent;})"
+                # AMENDED FOR V171c: the findings are each category's, on the right
+                shown_t = "()=>{var t=[];['location','legal','landform','water','climate','ecology','risk','access','utilities','people'].forEach(function(c){window.__a3dSaGoto(c);[].forEach.call(document.querySelectorAll('#a3d-propsbody .a3d-safind .a3d-saftt'),function(e){t.push(e.textContent);});});return t;}"
                 S7 = await safe("()=>window.__a3dSa()", pg=p7) or {}
                 t7 = await safe(shown_t, pg=p7) or []
                 ck(S7.get('stage') == 2 and [f for f in S7.get('findings', []) if f['id'] == 'safind-typed'] and 'School run' not in t7 and 'Streets' in t7 and not await safe("()=>document.querySelector('[data-sastage]')", pg=p7),
@@ -900,11 +913,11 @@ async def run():
                 await wait_run(pg=p6)
                 await safe("()=>window.__a3dAnzView(true)", pg=p6)
                 await p6.wait_for_timeout(300)
-                g6 = await safe("""()=>{var w=document.querySelector('.a3d-analyze-wrap'),b=document.querySelector('[data-saact="analyze"]'),r=b.getBoundingClientRect(),s=document.querySelector('[data-sasteps]');
+                g6 = await safe("""()=>{var w=document.querySelector('.a3d-analyze-wrap'),b=w.querySelector('[data-saact="analyze"]'),r=b.getBoundingClientRect(),s=document.querySelector('[data-sasteps]');
                   return {bw:r.width,bh:r.height,right:r.right,vw:window.innerWidth,sw:w.scrollWidth,cw:w.clientWidth,ssw:s?s.scrollWidth:0,scw:s?s.clientWidth:0,doc:document.documentElement.scrollWidth};}""", pg=p6) or {}
                 ck(g6.get('right', 999) <= g6.get('vw', 0) and g6.get('bh', 0) >= 30, "%s: the button within the screen, %d px tall to touch" % (label, g6.get('bh', 0)))
                 ck(g6.get('sw', 9) <= g6.get('cw', 0) + 1 and g6.get('ssw', 9) <= g6.get('scw', 0) + 1 and g6.get('doc', 9999) <= vw[0] + 1, "%s: nothing spills across the panel or the page" % label)
-                await safe("()=>{window.__a3dShellSetTab?window.__a3dShellSetTab('model'):0;window.__a3dSetPlanView();window.__a3dCamSet({tx:0,tz:0,dist:300});}", pg=p6)
+                await safe("()=>{window.__a3dAwLeave();window.__a3dSetPlanView();window.__a3dCamSet({tx:0,tz:0,dist:300});}", pg=p6)   # AMENDED FOR V171c: out of Analyze, the view as it was
                 await p6.wait_for_timeout(400)
                 lg6 = await safe("()=>window.__a3dDgLegend()", pg=p6)
                 sr6 = await safe("()=>window.__a3dSafeViewRect()", pg=p6) or {}

@@ -167,6 +167,8 @@ async def run():
             return await safe("()=>{var t=document.getElementById('a3d-toast');return t?t.textContent:'';}") or ''
 
         async def set_site(lat, lon, tz='-5', pg=None):
+            # AMENDED FOR V171c: in Analyze, Properties is the analysis's; the site is placed outside it
+            await safe("()=>{var s=document.getElementById('a3d-shell');if(s&&s.getAttribute('data-tab')==='analyze')document.querySelector('#a3d-rail [data-tab=browser]').click();}", pg=pg)
             await safe("()=>{window.__a3dSelectFor([]);window.__a3dSetPropTab('site');window.__a3dRefreshProps();}", pg=pg)
             for k, v in (('sunlat', lat), ('sunlon', lon), ('suntz', tz)):
                 await safe("""(a)=>{var L=document.querySelectorAll('#a3d-propsbody input'),e=null,i;for(i=0;i<L.length;i++)if(L[i].getAttribute('data-propmodel')===a[0])e=L[i];
@@ -209,7 +211,8 @@ async def run():
             await safe("()=>window.__a3dRunCmd('siteanalysis')")
             await page.wait_for_timeout(150)
             ck(await safe("()=>window.__a3dAnzView()") == 'analyze' and await safe("()=>!!document.querySelector('.a3d-sa-wrap')"), "SITEANALYSIS opens Analyze")
-            ck('Get climate and risk' in (await safe("()=>document.querySelector('.a3d-sa-wrap').innerHTML") or ''), "where Climate and risk waits to be fetched")
+            await safe("()=>window.__a3dSaGoto('climate')")   # AMENDED FOR V171c: the category's data on the right, Climate picked
+            ck('Get climate and risk' in (await safe("()=>document.getElementById('a3d-propsbody').innerHTML") or ''), "where Climate and risk waits to be fetched")
             for q, want in (('climate', 'CLIMATE'), ('wind rose', 'CLIMATE'), ('weather data', 'CLIMATEGET'), ('earthquake', 'CLIMATE')):
                 nm = [x['name'] for x in (await safe("(q)=>window.__a3dCommandSearch(q,6)", q) or [])]
                 ck(want in nm[:3], "searching %r finds %s (%s)" % (q, want, nm[:4]))
@@ -331,9 +334,9 @@ async def run():
 
             # ---------------------------------------------------------------------------------
             print("\n-- 6. the board")
-            await safe("()=>window.__a3dAnzView('site')")
+            await safe("()=>{window.__a3dAnzView('site');window.__a3dSaGoto('climate');}")   # AMENDED FOR V171c: Climate picked, its data on the right
             await page.wait_for_timeout(150)
-            await safe("()=>document.querySelector('.a3d-sa-wrap [data-saact=\"climboard\"]').click()")
+            await safe("()=>document.querySelector('#a3d-propsbody [data-saact=\"climboard\"]').click()")
             await page.wait_for_timeout(300)
             B = await safe("""()=>{var b=document.querySelector('.a3d-clb');if(!b)return null;
               return {h1:b.querySelector('.a3d-clb-h1').textContent,sub:b.querySelector('.a3d-clb-sub').textContent,

@@ -85,7 +85,7 @@
   function drawSunPath(ctx,V,W,H){
     A3D.lastSunPath=null;
     if(!A3D.showSun||!bimCameraIsPlan()||A3D.sheetCapture)return;   /* __acad3dV119 */
-    var st=bimSunSettings();
+    var st=bimSunStudy();   /* __acad3dV171d: a place tried; each date's own offset below */
     if(!bimSunNum(st.lat)||!bimSunNum(st.lon)||!bimSunNum(st.tz))return;
     ctx.save();
     try{
@@ -113,7 +113,7 @@
         pts=[];top=-90;first=true;
         ctx.strokeStyle=days[k][1];ctx.fillStyle=days[k][1];ctx.lineWidth=1.4;ctx.beginPath();
         for(i=0;i<1440;i+=10){
-          sp=bimSunCalc(st.lat,st.lon,st.tz,days[k][0],bimPad2(i/60)+':'+bimPad2(i%60));
+          sp=bimSunCalc(st.lat,st.lon,bimSunTzAt(st,days[k][0],'12:00'),days[k][0],bimPad2(i/60)+':'+bimPad2(i%60));
           if(!sp||!(sp.elevation>0)){first=true;continue;}
           pts.push([sp.azimuth,sp.elevation]);
           if(sp.elevation>top)top=sp.elevation;
@@ -122,7 +122,7 @@
         }
         ctx.stroke();
         for(i=0;i<1440;i+=60){
-          sp=bimSunCalc(st.lat,st.lon,st.tz,days[k][0],bimPad2(i/60)+':00');
+          sp=bimSunCalc(st.lat,st.lon,bimSunTzAt(st,days[k][0],'12:00'),days[k][0],bimPad2(i/60)+':00');
           if(sp&&sp.elevation>0){q=at(sp.azimuth,sp.elevation);ctx.beginPath();ctx.arc(q[0],q[1],1.8,0,2*Math.PI);ctx.fill();}
         }
         paths.push({date:days[k][0],pts:pts,max:pts.length?top:null});
@@ -133,7 +133,7 @@
         ctx.beginPath();ctx.arc(q[0],q[1],4.5,0,2*Math.PI);ctx.fillStyle='#ffe066';ctx.fill();
         ctx.strokeStyle='rgba(0,0,0,0.8)';ctx.lineWidth=1.2;ctx.stroke();
       }
-      if(bimAnimLive()&&A3D_ANIM.sunTime&&sunPt){ctx.textAlign='left';ctx.fillStyle='#ffe066';ctx.fillText(A3D_ANIM.sunTime,box[0]+6,box[1]+box[3]-9);}   /* __acad3dV170: the time, while it plays */
+      if(bimAnimLive()&&A3D_ANIM.sunTime&&sunPt){ctx.textAlign='left';ctx.fillStyle='#ffe066';ctx.fillText((A3D_ANIM.sunDate?bimSunDayText(A3D_ANIM.sunDate,true)+' ':'')+A3D_ANIM.sunTime,box[0]+6,box[1]+box[3]-9);}   /* __acad3dV170: the time, while it plays; __acad3dV171d: the date through the year */
       A3D.lastSunPath={north:[nx,ny],east:[ex,ey],center:[cx,cy],radius:R,box:box,paths:paths,sun:sunPt};
     }catch(e){
       console.warn('[BIM] sun path',e);

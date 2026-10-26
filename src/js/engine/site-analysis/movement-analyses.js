@@ -31,7 +31,9 @@
     if(S.mv&&S.mv.error)return 'The movement data could not be worked out: '+String(S.mv.error).slice(0,160);
     return 'The access data is from before V166: Analyze site again for the streets\' details';
   }
-  function bimMvLight(){var L=bimAwLook();if(L)return L.light;var s=bimMapSettings().style;return s==='street'||s==='custom';}   /* __acad3dV171b: the workspace's ground is the mode's */
+  /* __acad3dV171c: the colours an analysis is drawn in are kept with its elements: those for the map under them outside
+     Analyze, now that every run is inside it; what moves is drawn live, on Analyze's ground in its mode (bimTrLight) */
+  function bimMvLight(){var s=bimMapSettings().style;return s==='street'||s==='custom';}
   function bimMvCol(o){return bimMvLight()?o.lt:o.dk;}
   function bimMvClassOf(hw){var i;hw=String(hw||'');for(i=0;i<BIM_MV_CLASSES.length;i++)if(BIM_MV_CLASSES[i].re.test(hw))return BIM_MV_CLASSES[i];return null;}
   function bimMvPts(mv,rec,y){var L=[],k;for(k=1;k<rec.length;k++)L.push([mv.x[rec[k]],y,mv.z[rec[k]]]);return L;}

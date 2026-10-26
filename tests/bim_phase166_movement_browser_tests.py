@@ -509,6 +509,7 @@ async def run():
             vh = F.get('access.vehicles', {})
             ck(vh.get('value', '').startswith('1 driveway or service road into the lot; 2 car parks within 400 m (40 spaces mapped in 1); 1 garage entrance within 400 m') and '5th Street: left: parking; right: none' in vh.get('value', ''),
                "Vehicle access: the driveway, the car parks and their spaces, the garage, the frontage's parking (%s)" % vh.get('value', '')[:240])
+            await safe("()=>window.__a3dAnzView(true)")   # AMENDED FOR V171c: Analyze again: its list, which the run's end (read as before) left
             grp = await safe("()=>['dgstreets','dgcycling','dgtransit','dgwalk','dgneeds','dgvehicles'].map(function(i){var r=document.querySelector('[data-anzcard=\"'+i+'\"]'),c=r&&r.closest('[data-sacat]');return c?c.getAttribute('data-sacat'):null;})")
             ck(grp == ['access', 'access', 'access', 'access', 'people', 'access'], "the rows in Access and circulation, daily needs in People and place (%s)" % grp)
             s1 = await safe("(q)=>window.__a3dAnzSearch(q)", 'cycling')

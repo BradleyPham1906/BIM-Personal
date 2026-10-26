@@ -74,12 +74,14 @@ async def run():
         # AMENDED FOR V166b: the floor loads are in Analyze, in Frame analysis's row, not in Properties.
         # The field is left first, as a click elsewhere leaves it: Analyze is not redrawn under a field
         # of its own that has the focus (V162).
+        # AMENDED FOR V171c: Frame analysis's row is picked in Analyze's list, and its floor loads are in its
+        # panel on the right.
         async def show_level(lid):
             await safe("(i)=>{if(document.activeElement)document.activeElement.blur();window.__a3dSetLevel(i);window.__a3dSelectFor([]);window.__a3dRefreshProps();}", lid)
             await page.wait_for_timeout(80)
             await safe("""()=>{var s=document.getElementById('a3d-shell');
               if(s.getAttribute('data-tab')!=='analyze'||s.classList.contains('collapsed'))document.querySelector('#a3d-rail [data-tab="analyze"]').click();
-              var t=document.querySelector('.a3d-analyze-wrap [data-anztog="structure"]');if(t&&t.getAttribute('aria-expanded')!=='true')t.click();}""")
+              var b=document.querySelector('.a3d-analyze-wrap [data-anzact="aw:card:structure"]');if(b&&b.getAttribute('aria-pressed')!=='true')b.click();}""")
             await page.wait_for_timeout(80)
 
         async def set_load(lid, f, v):

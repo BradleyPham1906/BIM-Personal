@@ -275,7 +275,11 @@
       if(tzs!==null){
         C.tz=Math.round(tzs/36)/100;C.tzName=tzn;
         A3D.site.sun=A3D.site.sun||{};
-        if(!bimSunNum(A3D.site.sun.tz)){A3D.site.sun.tz=C.tz;tzSet=true;}
+        /* __acad3dV171d: the zone kept with the site, and its standard time, not the offset of the day it was asked;
+           an offset the owner typed is theirs */
+        var zstd=tzn?bimSunZoneStd(tzn,new Date().getFullYear()):null;
+        if(tzn)A3D.site.sun.zone=tzn;
+        if(!bimSunNum(A3D.site.sun.tz)||(A3D.site.sun.tzAuto&&zstd!==null&&A3D.site.sun.tz!==zstd)){A3D.site.sun.tz=zstd!==null?zstd:C.tz;A3D.site.sun.tzAuto=true;tzSet=true;}
       }
       A3D.site.climate=C;
       var K=A3D.site.risk&&A3D.site.risk.lat===lat&&A3D.site.risk.lon===lon?A3D.site.risk:{};

@@ -554,7 +554,9 @@ async def run():
             hh = [h for h in (await safe("()=>window.__a3dDgHits()") or []) if h['id'] == nw['id']]
             await safe("()=>window.__a3dAnimStop()")
             hs = [h for h in (await safe("()=>window.__a3dDgHits()") or []) if h['id'] == nw['id']]
-            ck(hh and not hh[0]['boxes'] and hs and hs[0]['boxes'], "the sun now gives way to it, and comes back with Stop")
+            # AMENDED FOR V171d: the sun now is the clock's own (reference/research-sun-path.md, 4): it moves while it plays and is
+            # back at the study's moment with Stop, instead of giving way to a moving sun drawn apart
+            ck(hh and hh[0]['boxes'] and hs and hs[0]['boxes'], "the sun now is the moving sun, and is back at the study's moment with Stop")
             ok_sides = []
             for hm in (8 * 60 + 30, 16 * 60):
                 tt = (hm - math.ceil(day['sunrise'])) / (math.floor(day['sunset']) - math.ceil(day['sunrise'])) * R.SETTINGS['sun']['secs']

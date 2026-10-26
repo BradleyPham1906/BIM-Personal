@@ -69,8 +69,8 @@ height in Properties.
 
 ## Site analysis
 
-**Site analysis** is in the **Analyze** tab (`SITEANALYSIS` opens it). It starts with one button, and its analyses are read
-in the analysis workspace.
+**Site analysis** is the **Analyze** tab (`SITEANALYSIS` opens it): one place, the analysis workspace, where the site
+is analysed, its analyses are read and the model's own analyses are run. It starts with one button.
 
 ### Analyze site
 
@@ -84,8 +84,9 @@ step as it goes:
    Terrain Tiles, kept with the project in metres above sea level; and for a US site, FEMA's flood
    zones (the National Flood Hazard Layer). FEMA maps the US and its territories only.
 4. **Climate and time zone:** ten years of daily climate, a year of hourly wind and heat, air
-   quality and earthquakes. The site's UTC offset comes with them, so the sun needs no typing. An
-   offset you gave is kept.
+   quality and earthquakes. The site's time zone comes with them, so the sun needs no typing: its
+   name (America/New_York) and its standard time's UTC offset, whatever the season the climate was
+   fetched in. An offset you gave is kept.
 5. **Access and people:** walk times to daily needs and transit; the streets within 800 m with what
    movement reads (speed, lanes, bike lanes, parking), the crossings' signals and stops, the doors
    on the lot, the car parks and garage entrances within 400 m, and each line's headway where it is
@@ -98,23 +99,36 @@ Each step reads Done, Partly (some of its sources down, each named), Failed (wit
 Skipped (with why). What fails leaves the rest standing. The whole run is **one undo step**.
 **Analyze site again** fetches everything again, and keeps what you changed in the diagrams.
 
-The run ends in the analysis workspace (below), with the site and its context and none of the analyses drawn yet.
+The run ends on the overview (below), with the site and its context and none of the analyses drawn yet.
 
 ### The analysis workspace
 
-The analyses are read one at a time, in a workspace of their own, as archiMap and Forma show theirs. It opens when
-**Analyze site** ends, with **Open** on an analysis's row in Analyze or **Open the site analysis** under the site,
-and with `SITEWORKSPACE` (also `ANALYSISWORKSPACE`).
+The analyses are read one at a time, as archiMap and Forma show theirs. The **Analyze** tab is the workspace: its
+tab opens it, any other tab leaves it, and so do `SITEWORKSPACE` (also `ANALYSISWORKSPACE`) and `TRAFFIC`.
 
 - **The bar** over the view names the analysis in focus, with how many others are drawn under it; its cross
-  leaves the workspace, as **Analyze** at the top of the list does. What was drawn stays drawn when you leave.
-- **On the left, the analyses** in six groups: Site; Sun and wind; Views and noise; Land and water; Movement; Land.
-  Press a name and that analysis is drawn alone, with its key. Tick others to draw them under it; untick to take
-  them away. **Overview** draws none: the site and its context. **Analyze again** is beside the site's name.
-- **On the right, the analysis**, where Properties is while nothing is selected: what it shows, its settings
-  (Traffic and people's simulation), **Play** and **Stop** for what moves, its chart where there is one (the winds'
-  rose, the sun's paths looking up), its key in full, what the run said, the source and its date, the standards it
-  used, and **Run again**, **Select** and **Reset**. Select an element and Properties shows it, as anywhere.
+  leaves, back to the tab Analyze was opened from. What was drawn stays drawn when you leave.
+- **On the left, one list:** the site (its place, or a box for an address; its boundary, or how to draw one;
+  **Analyze site** and how far a run has gone); **Overview**; the ten categories in the standard's order, each with
+  its number, its findings counted and its red flags in red, and under it the analyses that answer it; **Model**
+  last. Press an analysis in the model and it is drawn alone, with its key; tick others to draw them under it.
+  Nothing opens in place: what you press is shown on the right. The search finds a category by its name, its
+  question, its findings and the words of its analyses, their buttons and their settings.
+- **On the right, what you picked**, where Properties is while nothing is selected:
+  - **Overview:** the site, the analyses run, the findings, the red flags first, the ten categories counted (each a
+    link), what Analyze site fetched step by step, and **Analyze site**;
+  - **a category:** its question, what was found, the analyses that answer it, its data (the context, the zoning,
+    the climate and risk, the access and people);
+  - **an analysis in the model:** what it shows, its settings (Traffic and people's simulation), **Play** and
+    **Stop** for what moves, its chart where there is one, its key in full, what changed since it ran, what it found,
+    the category it answers, the source and its date, the standards it used, and **Run again**, **Select** and
+    **Reset**;
+  - **one of the model's analyses** (colour by, areas, buildings, statistics, frame analysis, the survey, terrain,
+    grading, rain, solar): its state, its settings and its buttons. **Settings** or **Usages** there opens the
+    model's Properties, with a way back to the analysis above them.
+
+  Select an element and Properties shows it, as anywhere; a line picked while something is selected shows its panel
+  and keeps the selection, for the buttons that act on it.
 - **The view goes quiet** in the app's own mode, light or dark (the rail's **Appearance**): the ground in the
   mode's colour, the map greyed and faded, the context's buildings, roads, water, green and terrain in the mode's
   greys, so only the analysis keeps its colours. Its words and its key take the mode's colours, the key at the
@@ -123,7 +137,8 @@ and with `SITEWORKSPACE` (also `ANALYSISWORKSPACE`).
   show the same. Each change is one undo step, and they are kept with the project. **Analyze site again** keeps
   them.
 - **On a phone** the panel closes so the view stays in sight; the analyses are a row of chips under the bar, and
-  **Details** opens the analysis's panel.
+  **Details** opens what is picked. A category or one of the model's analyses picked in the list opens as the
+  sheet, the list's drawer shut; an analysis put in focus shows the view.
 
 ### The analyses in the model
 
@@ -133,7 +148,7 @@ analysis**:
 | Analysis | What it draws | Worked out from |
 |---|---|---|
 | Compass and distance | the compass ring on true north, its sixteen points, and a ring every 100 m out to the context's edge | the site's true north |
-| Sun paths | the sun's path on 21 June, on 20 March and 22 September, and on 21 December, on a dome over the site; a dot an hour; the sun now | NOAA's solar position equations |
+| Sun paths | the sun's path on 21 June, on 20 March and 22 September, and on 21 December, on a dome over the site, a dot an hour; the day studied; the sun now with its altitude and azimuth drawn; the sun at the study's time all year (the analemma); the temperature on the band of the sky the sun crosses. They follow the site's place, the date and the time without running again (see The sun path) | NOAA's solar position equations; the climate's year of hours |
 | Shadows | the model's own shadows at 9, 12 and 15 on those dates. 20 March is shown; the solstices are on layers of their own, off | the sun and the model, drawn again whenever the model changes |
 | Winds | an arrow for each season's prevailing wind, as wide as its share of hours (seasons from the same quarter share one); the strongest winds; the year's wind rose | a year of hourly ERA5 wind, via Open-Meteo |
 | Views | what can be seen at eye height and from the top floor (isovists); each view named by what it reaches: water, a park or woods, a landmark, open land | the context's buildings and trees, at their heights |
@@ -311,9 +326,11 @@ The buttons show only when something can move. On a phone they come first in the
 - **The layers come in one after another**, in Analyze's order, each time you press Play from
   still.
 - **The sun** moves along its path from sunrise to sunset of the study's day (Properties > Site >
-  Location), with its time beside it, and the model's shadow follows it, one shadow on that day. The
-  sun study in plan (`SUNSTUDY`) follows the same clock. The project's own date and time do not
-  change.
+  Location), with its time beside it, and the model's shadow follows it, one shadow on that day. Or,
+  chosen in the Sun paths' panel, **through the year**: the date steps a day at a time from 1 January
+  to 31 December in 36 seconds at the study's time, the sun tracing the analemma, the day's own path,
+  the shadow and the temperature's half-year following it. The sun study in plan (`SUNSTUDY`) follows
+  the same clock. The project's own date and time do not change.
 
 Each element's motion is a setting of its own: select it and choose **Motion** in Properties:
 **Default** (its analysis's), **Still**, or another its shape can take. Like any change of style,
@@ -710,7 +727,45 @@ in leaf all year, and its page says so.
 `SUNSTUDY` shows the shadows and the sun path for the site's date and time. They are set in
 **Properties > Site > Location**. The sun's position follows NOAA's equations. A deciduous tree from
 **Assets** casts its trunk's shadow only on a date outside its growing season. **Play** in the status bar
-moves the sun through the study's day (see The analyses in motion).
+moves the sun through the study's day, or through the year (see The analyses in motion and The sun path).
+
+## The sun path
+
+Sun paths, in focus in Analyze, draws the sky over the site as a dome of the compass ring's radius. A sun at
+altitude α and azimuth A (clockwise from true north) is the point X = R cos α sin A, Y = R sin α,
+Z = R cos α cos A from the site's centre, Y up and Z to true north, by NOAA's solar position equations (held
+to NREL's Solar Position Algorithm within 0.003°).
+
+- **On the dome:** the paths of 21 June, of 20 March and 22 September, and of 21 December, a dot an hour;
+  the day studied, unless it is within three days of one of them; the sun now, its ray from the centre, the
+  drop to the ground, its azimuth's arc on the ground from true north and its altitude's arc, named; the sun
+  at the study's time every second day of the year; and the temperature where the sun passes: the band
+  between the winter and summer paths by the hour and by the month, each cell the mean temperature at its
+  hour over its days, in the climate board's colours. The band shows the half-year holding the date:
+  21 December to 21 June, or 21 June to 21 December (each place in it is passed twice a year, in
+  different weather).
+- **They follow** the place, the time zone, the date and the time as you change them, with no run and no
+  undo step of their own. One you coloured keeps its colour; one you moved stays where you put it.
+- **The words:** each hour beside its own dot; no word over a dot; a path's name on its path between two
+  hours, where there is room.
+
+**The panel** (Analyze, Sun paths):
+- **The sun now:** the place, the day, the time with its UTC offset and time zone, daylight saving, the
+  altitude and azimuth, its point on the dome by the formula, the day's sunrise and sunset with their
+  bearings and length, and the temperature typical of that hour.
+- **Try it:** sliders for the latitude and the longitude try another place, never saved (its clock by the
+  longitude; **Back to the site's place** ends it, as leaving Analyze does); the date and the time are the
+  study's own, the view following as they move and one undo step when let go.
+- **Play:** through the day or through the year.
+- **The year's turning points:** the summer solstice, the equinoxes and the winter solstice for the site's
+  hemisphere, each with sunrise and sunset and their bearings, the noon altitude, the day's length and the
+  shadow a 10 m building casts at noon.
+- **Diagrams:** the sky dome in plan, and the sun's height through the day, each with the sun now; and the
+  temperature's eleven bands.
+
+**Daylight saving** (Properties > Site > Location, or the panel): **Off**, standard time all year (the
+default, as Ladybug draws); **Auto**, each date's own offset from the time zone, so June's hours are by
+daylight saving time where the site keeps it.
 
 ## Alignments
 

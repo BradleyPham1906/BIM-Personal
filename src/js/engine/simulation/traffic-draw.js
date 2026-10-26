@@ -22,11 +22,13 @@
     var D=bimDgState(),ly=bimLayerById(D.layers.traffic);
     return !ly||bimLayerEff(ly).on;
   }
+  /* __acad3dV171b: the cars and walkers on Analyze's ground take its mode's colours, elsewhere the map's */
+  function bimTrLight(){var L=bimAwLook();return L?L.light:bimMvLight();}
   function bimTrDraw(ctx,V,W,H){
     var R=A3D_TR.run,dw=A3D_TRD.drawn;
     dw.cars=0;dw.walkers=0;dw.dots=0;dw.lines=0;dw.faces=0;
     if(!R||!bimAnimLive()||!bimTrShown())return;
-    var K=bimMvLight()?BIM_TR_COL.lt:BIM_TR_COL.dk,f=Math.max(0,Math.min(1,R.acc/R.step)),y=R.y||0;
+    var K=bimTrLight()?BIM_TR_COL.lt:BIM_TR_COL.dk,f=Math.max(0,Math.min(1,R.acc/R.step)),y=R.y||0;
     ctx.save();
     try{
       bimTrDrawSignals(ctx,V,W,H,R,y);

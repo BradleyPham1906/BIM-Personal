@@ -141,14 +141,12 @@
       var stale=panel.querySelector('.a3d-assets-wrap');
       if(stale){stale.parentNode.removeChild(stale);did=true;}
     }
-    if(shell.dataset.tab==='analyze'&&!panel.querySelector('.a3d-analyze-wrap')){   /* __acad3dV141; __acad3dV162: the site analysis in it, one list */
+    if(shell.dataset.tab==='analyze'&&!panel.querySelector('.a3d-analyze-wrap')){   /* __acad3dV141; __acad3dV162: the site analysis in it, one list; __acad3dV171c: the workspace's */
       var abox=document.createElement('div');
       abox.className='a3d-tabbody a3d-analyze-wrap a3d-sa-wrap';
-      abox.innerHTML=bimAnalyzeHtml();
+      abox.innerHTML=bimAwListHtml();
       bimAnzFilter(abox);   /* __acad3dV148: the search kept from before */
       abox.addEventListener('click',function(ev){
-        var tg=ev.target&&ev.target.closest?ev.target.closest('[data-anztog]'):null;   /* __acad3dV148: a row opens and closes */
-        if(tg){bimAnzToggle(tg.getAttribute('data-anztog'));return;}
         var b=ev.target&&ev.target.closest?ev.target.closest('[data-anzact]'):null;
         if(!b||b.disabled)return;
         try{bimAnzAct(b.getAttribute('data-anzact'));}catch(eZ){console.warn('[BIM] Analyze',eZ);a3dToast('That did not work - see the console');}
@@ -164,7 +162,6 @@
       /* a refresh held for a field being typed in happens when it is left */
       abox.addEventListener('focusout',function(){if(A3D_ANZ.pend)setTimeout(function(){if(A3D_ANZ.pend)bimAnalyzeRefresh();},0);});
       bimSaWire(abox);   /* __acad3dV158 */
-      bimAnzWireFields(abox);   /* __acad3dV166b */
       panel.appendChild(abox);
       did=true;
     }

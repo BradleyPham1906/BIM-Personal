@@ -18,7 +18,6 @@
   var BIM_SA_CLS=[['neutral','Fact'],['opportunity','Opportunity'],['constraint','Constraint'],['redflag','Red flag']];
   var BIM_SA_CONF=[['desktop','Desktop'],['site','Seen on site'],['surveyed','Surveyed']];
   var BIM_SA_SEV=[['1','Low'],['2','Medium'],['3','High']];
-  var A3D_SA={open:(function(){try{var v=JSON.parse(localStorage.getItem('acad3dSaOpen')||'{}');return v&&typeof v==='object'&&!Array.isArray(v)?v:{};}catch(eO){return {};}})()};
   function bimSaPair(L,k){var i;for(i=0;i<L.length;i++)if(L[i][0]===k)return L[i][1];return '';}
   function bimSaCat(id){var i;for(i=0;i<BIM_SA_CATS.length;i++)if(BIM_SA_CATS[i].id===id)return BIM_SA_CATS[i];return null;}
   function bimSaToday(){return new Date().toISOString().slice(0,10);}

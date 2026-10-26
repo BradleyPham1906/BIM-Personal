@@ -1,10 +1,8 @@
 /* the panel scrolls, not the list in it: the search stays at its top while the list goes under it */
 .a3d-analyze-wrap>.a3d-anz{overflow:visible}
-.a3d-sacat{scroll-margin-top:44px}
 .a3d-anz>.a3d-anzsearch{position:sticky;top:0;z-index:2;box-shadow:0 0 0 6px #2c2c2c}
 body.light-theme .a3d-anz>.a3d-anzsearch{box-shadow:0 0 0 6px #fff}
 body.light-theme .a3d-salink,body.light-theme .a3d-sacap{color:#555}
-.a3d-saq{color:#8a96a3;font-size:11.5px;margin:0 0 8px;line-height:1.4}
 .a3d-safind{border-left:3px solid #8b949e;padding:4px 0 6px 8px;margin:0 0 6px}
 .a3d-safind.c-constraint{border-left-color:#f5a524}.a3d-safind.c-opportunity{border-left-color:#30a46c}.a3d-safind.c-redflag{border-left-color:#e5484d}
 .a3d-safhd{display:flex;align-items:baseline;gap:6px;font-size:12.5px}
@@ -42,19 +40,13 @@ body.light-theme .a3d-salink,body.light-theme .a3d-sacap{color:#555}
   .a3d-safm{font-size:10.5px;color:#8a96a3;line-height:1.4}
 .a3d-safm b{font-weight:600}
 .a3d-safm .k-constraint{color:#f5b54a}.a3d-safm .k-opportunity{color:#5cc48d}.a3d-safm .k-redflag{color:#ef8a8d}
-.a3d-sachkhd{font-size:11px;color:#8a96a3;margin:8px 0 4px}
 .a3d-saacts{display:flex;flex-wrap:wrap;gap:5px;margin:6px 0 0}
-.a3d-sanote{font-size:11.5px;color:#8a96a3;margin:0 0 6px;line-height:1.4}
 @media(pointer:coarse){
-.a3d-sarun .a3d-sago{min-height:40px}
 .a3d-sa select,.a3d-sa input[type=text],.a3d-sa input[type=date],.a3d-sa textarea{min-height:36px;font-size:16px}
 }
-body.light-theme .a3d-sasec{border-top-color:rgba(0,0,0,.08)}
 body.light-theme .a3d-sa select,body.light-theme .a3d-sa input[type=text],body.light-theme .a3d-sa input[type=date],body.light-theme .a3d-sa textarea{background:#fff;border-color:#c9ced4;color:#222}
-body.light-theme .a3d-saval,body.light-theme .a3d-safv,body.light-theme .a3d-sastep,body.light-theme .a3d-dgleg{color:#333}
-body.light-theme .a3d-sastept,body.light-theme .a3d-sastepst,body.light-theme .a3d-saq,body.light-theme .a3d-safm,body.light-theme .a3d-sanote,body.light-theme .a3d-sasechd,body.light-theme .a3d-sachkhd,body.light-theme .a3d-sarow>label,body.light-theme .a3d-sarow>.a3d-salab{color:#6b737c}
-body.light-theme .a3d-saflags{background:rgba(229,72,77,.08)}
-body.light-theme .a3d-saflag{color:#9b1c20}
+body.light-theme .a3d-safv{color:#333}
+body.light-theme .a3d-safm,body.light-theme .a3d-sasechd{color:#6b737c}
 .a3d-terrband{display:flex;align-items:center;gap:7px;font-size:11px;color:#c9d1d9}
 .a3d-terrband i{width:12px;height:10px;border-radius:2px;flex:none}.a3d-terrbl{flex:1}.a3d-terrba{color:#9aa5b0}
 .a3d-terrband-0{opacity:.45}

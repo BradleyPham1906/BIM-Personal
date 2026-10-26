@@ -1,0 +1,22 @@
+  /* __acad3dV171d: the sun path, one clock, for the suite */
+  window.__acad3dV171d='spa,dome,zone,dst,standard,trial,preview,study,yearplay,sync,today,angles,analemma,heat,labels,panel,sliders,turning,charts';
+  window.__a3dSunZoneOff=function(z,d,t){return bimSunZoneOff(z,d,t);};
+  window.__a3dSunZoneStd=function(z,y){return bimSunZoneStd(z,y);};
+  window.__a3dSunZone=function(){return bimSunZone();};
+  window.__a3dSunTzAt=function(d,t){return bimSunTzAt(bimSunSettings(),d,t);};
+  window.__a3dSunStudy=function(noClock){return bimSunStudy(!!noClock);};
+  window.__a3dSunMode=function(m){if(m==='year'||m==='day')A3D_ANIM.sunMode=m;return A3D_ANIM.sunMode;};
+  window.__a3dAnimSunDate=function(t){var k=A3D_ANIM.t;A3D_ANIM.t=+t||0;var r=bimAnimSunDate();A3D_ANIM.t=k;return r;};
+  window.__a3dSunSync=function(force){return bimDgSunSync(!!force);};
+  window.__a3dSunHeatAt=function(d,t){var st=bimSunStudy();return bimSunHeatAt(st,d||st.date,t||st.time);};
+  window.__a3dSunTry=function(lat,lon){return bimSunTry(lat,lon);};
+  window.__a3dSunBack=function(){return bimSunBack();};
+  window.__a3dSunSlide=function(k,v,commit){return bimSunSlide(k,v,!!commit);};
+  window.__a3dSunModeSet=function(m){return bimSunMode(m);};
+  window.__a3dSunVals=function(){var v=bimSunNowVals();delete v.st;return JSON.parse(JSON.stringify(v));};
+  window.__a3dSunX=function(){return JSON.parse(JSON.stringify(A3D_SUNX));};
+  window.__a3dSetSun=function(f,v){return bimSetSun(f,v);};
+  window.__a3dUndo=function(){doUndo();return true;};
+  window.__a3dSunWords=function(){return JSON.parse(JSON.stringify(A3D_DG.labelWords||[]));};
+  window.__a3dSunDots=function(){var o={};A3D_DG.hits.forEach(function(h){o[h.id]=h.dots.map(function(d){return d.slice();});});return o;};
+  window.__a3dSunLabels=function(){return JSON.parse(JSON.stringify({boxes:A3D_DG.labelBoxes||[],dots:A3D_DG.dotKeep||[]}));};

@@ -97,6 +97,7 @@ async def run():
 
         async def analyze(pg=None):
             pg = pg or page
+            await safe("()=>window.__a3dAnzView(true)", pg=pg)   # AMENDED FOR V171c: in Analyze, which a run's end (read as before) left
             if await pg.query_selector('[data-saaddr]'):
                 await pg.fill('[data-saaddr]', '1 Market Street')
             await safe("()=>document.querySelector('[data-saact=\"analyze\"]').click()", pg=pg)
@@ -426,9 +427,11 @@ async def run():
             ck(lum is not None and lum < 150, "the figure-ground: Office Five filled dark over the model (%s)" % lum)
             css = await safe("()=>window.__a3dDgTexCss('45','rgba(1,2,3,0.5)')") or ''
             ck('repeating-linear-gradient(45deg,rgba(1,2,3,0.5) 0 1px' in css, "the key's texture in Analyze's rows, as CSS")
-            await safe("()=>{window.__a3dAnzView(true);window.__a3dAnzOpenAll(true);}")
+            # AMENDED FOR V171c: an analysis's key is in its panel, the analysis in focus; then each as the run drew it again
+            await safe("()=>{window.__a3dAnzView(true);window.__a3dAwFocus('landuse');}")
             await page.wait_for_timeout(300)
-            html = await safe("()=>{var e=document.querySelector('[data-anzcard=\"dglanduse\"]');return e?e.outerHTML:'';}") or ''
+            html = await safe("()=>{var e=document.querySelector('#a3d-propsbody [data-awpanel=\"landuse\"]');return e?e.outerHTML:'';}") or ''
+            await safe("()=>window.__a3dAwClassic()")
             ck('repeating-linear-gradient(45deg' in html and 'radial-gradient(' in html, "the land use row's key shows the industrial hatch and the natural resources' dots")
             ck(not errs, "no page errors (%s)" % errs[:2])
 

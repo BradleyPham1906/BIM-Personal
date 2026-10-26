@@ -69,15 +69,19 @@ def mk_safe(page):
     return safe
 
 
+# AMENDED FOR V171c: a row is a line of Analyze's list -- its name and its state; it opens nothing in place. Picked,
+# its panel on the right says what it shows and holds its buttons (PANEL).
 ROWS = """()=>{var w=document.querySelector('.a3d-analyze-wrap');if(!w)return null;
-  return [].map.call(w.querySelectorAll('[data-anzcard]'),function(c){var hd=c.querySelector('.a3d-anzhd'),b=c.querySelector('.a3d-anzbody'),st=c.querySelector('.a3d-anzstate');
+  return [].map.call(w.querySelectorAll('[data-anzcard]'),function(c){var st=c.querySelector('.a3d-anzstate'),nm=c.querySelector('.a3d-awl-nm');
     var k=c.closest('[data-sacat]'),g=c.closest('[data-anzgrp]');   /* AMENDED FOR V162: a row sits in a category, or in Model */
-    return {id:c.getAttribute('data-anzcard'),grp:k?k.getAttribute('data-sacat'):g.getAttribute('data-anzgrp'),open:c.classList.contains('open'),
-      hidden:!!c.closest('[hidden]'),h:Math.round(hd.getBoundingClientRect().height),bodyH:Math.round(b.getBoundingClientRect().height),
-      tog:hd.querySelectorAll('[data-anztog]').length,first:(hd.querySelector('[data-anzact]')||{getAttribute:function(){return null;}}).getAttribute('data-anzact'),
-      state:st?st.textContent:null,stateW:st?Math.round(st.getBoundingClientRect().width):null,sum:(c.querySelector('.a3d-anzsum')||{}).textContent,
-      st:(c.querySelector('.a3d-anzst')||{}).textContent,aria:(hd.querySelector('[data-anztog]')||{getAttribute:function(){return null;}}).getAttribute('aria-expanded'),
-      acts:[].map.call(c.querySelectorAll('[data-anzact]'),function(x){return [x.getAttribute('data-anzact'),x.textContent,x.disabled,x.title];})};});}"""
+    return {id:c.getAttribute('data-anzcard'),grp:k?k.getAttribute('data-sacat'):g.getAttribute('data-anzgrp'),
+      hidden:!!c.closest('[hidden]'),h:Math.round(c.getBoundingClientRect().height),body:!!c.querySelector('.a3d-anzbody,[data-anztog]'),
+      names:c.querySelectorAll('.a3d-awl-nm').length,pressed:nm?nm.getAttribute('aria-pressed'):null,btns:c.querySelectorAll('.a3d-anzbtn').length,
+      state:st?st.textContent:null,stateW:st?Math.round(st.getBoundingClientRect().width):null};});}"""
+
+PANEL = """(id)=>{window.__a3dAwPick('card',id);var p=document.querySelector('#a3d-propsbody [data-awpanel="card:'+id+'"]');if(!p)return null;
+  return {st:(p.querySelector('.a3d-awp-about')||{}).textContent,
+    acts:[].map.call(p.querySelectorAll('[data-anzact]'),function(x){return [x.getAttribute('data-anzact'),x.textContent,x.disabled,x.title];})};}"""
 
 LYROWS = """()=>[].map.call(document.querySelectorAll('#a3d-leftpanel [data-lyres]'),function(e){var b=e.querySelector('.a3d-lybadge'),r=e.getBoundingClientRect();
   return {key:e.getAttribute('data-lyres'),name:(e.querySelector('.a3d-lynm')||{}).textContent,badge:b?b.textContent:null,sel:e.classList.contains('sel'),dim:e.classList.contains('dim'),h:Math.round(r.height),
@@ -129,6 +133,8 @@ async def run():
             await page.wait_for_timeout(250)
 
         async def set_site(date=DATE):
+            # AMENDED FOR V171c: in Analyze, Properties is the analysis's; the site is set outside it
+            await safe("()=>{var s=document.getElementById('a3d-shell');if(s.getAttribute('data-tab')==='analyze')document.querySelector('#a3d-rail [data-tab=\"browser\"]').click();}")
             await safe("()=>{window.__a3dSelectFor([]);window.__a3dSetPropTab('site');window.__a3dRefreshProps();}")
             for k, v in (('sunlat', repr(LAT)), ('sunlon', repr(LON)), ('suntz', repr(TZ)), ('sundate', date)):
                 await page.fill('#a3d-propsbody [data-propmodel="%s"]' % k, v)
@@ -154,7 +160,7 @@ async def run():
             await safe("()=>['location','legal','landform','water','climate','ecology','risk','access','people'].forEach(function(c){window.__a3dSaGoto(c);})")   # AMENDED FOR V168: and Legal and Ecology, which hold analyses now   # AMENDED FOR V164: and the categories of the analyses Analyze site draws; AMENDED FOR V166: Access and circulation
             await page.wait_for_timeout(150)
             R = await rows()
-            order = await safe("()=>[].map.call(document.querySelectorAll('.a3d-analyze-wrap .a3d-anzgrphd'),function(e){return e.textContent;})")
+            order = await safe("()=>[].map.call(document.querySelectorAll('.a3d-analyze-wrap .a3d-awl-grphd'),function(e){return e.textContent;})")
             ck(order == ['Model'], "one group left of the four, Model, at the end (%s)" % order)
             G = {}
             for r in R.values():
@@ -169,44 +175,46 @@ async def run():
                      'risk': ['dgnoise'], 'access': ['dgstreets', 'dgcycling', 'dgtransit', 'dgwalk', 'dgvehicles', 'dgtraffic'], 'people': ['dgviews', 'dgneeds'],
                      'model': ['lens', 'areas', 'lod', 'stats', 'structure']},
                "each analysis in its category, or in Model (%s)" % G)
-            ck(all(not r['open'] and r['bodyH'] == 0 and r['aria'] == 'false' for r in R.values()), "every row starts closed: its body takes no room")
-            ck(all(r['tog'] == 1 for r in R.values()), "each row has one control that opens it")
+            # AMENDED FOR V171c: a row opens nothing in place; picked, its panel on the right holds what it says and its buttons
+            ck(all(not r['body'] and r['btns'] == 0 for r in R.values()), "no row opens in place: no body, no button on its line")
+            ck(all(r['names'] == 1 for r in R.values()), "each row has one control, its name, that picks it")
             cards = {c['id']: c for c in await safe("()=>window.__a3dAnalyzeCards()") or []}
-            ck(all(R[k]['first'] == cards[k]['acts'][0]['act'] for k in cards), "its first action is on its line, without opening it")
-            ck(all(R[k]['sum'] == cards[k]['status'] and R[k]['st'] == cards[k]['status'] for k in cards), "and what it shows: one line on the row, whole when it opens")
-            ck(all(36 <= r['h'] <= 52 for r in R.values()), "a row is one line of a list, 36 to 52 px, not a card (%s)" % sorted(set(r['h'] for r in R.values())))
+            PN = {}
+            for k in cards:
+                if not k.startswith('dg'):
+                    PN[k] = await safe(PANEL, k) or {}
+            ck(PN and all(PN[k].get('acts') and PN[k]['acts'][0][0] == cards[k]['acts'][0]['act'] for k in PN), "picked, its panel holds its buttons, its first action first")
+            ck(PN and all(PN[k].get('st') == cards[k]['status'] for k in PN), "and says what it shows, whole")
+            ck(all(28 <= r['h'] <= 46 for r in R.values()), "a row is one line of a list, 28 to 46 px, not a card (%s)" % sorted(set(r['h'] for r in R.values())))
             off = [r for r in R.values() if r['state'] == 'Off']
             ck(off and all(r['stateW'] <= 1 for r in off), "an analysis that is off says so to a screen reader, and shows no chip (%d rows)" % len(off))
             titles = [c['title'] for c in cards.values()]
             ck(all(t[0].isupper() and t[1:] == t[1:].replace(' On', ' on') and not re.search(r' [A-Z][a-z]', t.replace('LOD', '')) for t in titles),
                "names in sentence case, as the rest of the panels (%s)" % titles)
-            await page.click('.a3d-analyze-wrap [data-anztog="sunhours"]')
-            await page.wait_for_timeout(120)
             await safe("()=>{document.querySelector('.a3d-analyze-wrap [data-anzcard=\"sunhours\"]').__v148=1;}")
-            R = await rows()
-            ck(R['sunhours']['open'] and R['sunhours']['bodyH'] > 20 and R['sunhours']['aria'] == 'true', "a click opens a row: its whole status and its other actions (%d px)" % R['sunhours']['bodyH'])
-            ck([a[0] for a in R['sunhours']['acts']] == ['sunhours:run', 'sim:clear:sun', 'open:Location', 'layer:sunhours'], "Run, then Clear, Date and Add as layer (%s)" % R['sunhours']['acts'])
-            await page.click('.a3d-analyze-wrap [data-anztog="sunhours"]')
+            await page.click('.a3d-analyze-wrap [data-anzact="aw:card:sunhours"]')
             await page.wait_for_timeout(120)
             R = await rows()
-            ck(not R['sunhours']['open'] and R['sunhours']['bodyH'] == 0, "and a second click closes it")
+            pn = await safe("()=>window.__a3dAw().panel")
+            acts = await safe("()=>[].map.call(document.querySelectorAll('#a3d-propsbody [data-anzact]'),function(x){return x.getAttribute('data-anzact');})")
+            ck(pn == 'card:sunhours' and R['sunhours']['pressed'] == 'true', "a click picks a row: its panel on the right, the row pressed (%s)" % pn)
+            ck(acts == ['sunhours:run', 'sim:clear:sun', 'open:Location', 'layer:sunhours'], "Run, then Clear, Date and Add as layer (%s)" % acts)
             ck(await safe("()=>document.querySelector('.a3d-analyze-wrap [data-anzcard=\"sunhours\"]').__v148===1"), "in place: the row is the same node")
-            await page.click('.a3d-analyze-wrap [data-anztog="rain"]')
-            await page.wait_for_timeout(1300)
+            await page.click('.a3d-analyze-wrap [data-anzact="aw:card:rain"]')
+            await page.wait_for_timeout(300)
             await within(page.reload(), 'reload')
             await page.wait_for_timeout(2300)
             await safe("()=>{window.__a3dEnter();window.__a3dSetPlanView&&window.__a3dSetPlanView();}")
             await tab('analyze')
-            R = await rows()
-            ck(R['rain']['open'] and not R['sunhours']['open'], "the rows opened stay open through a reload, in this browser")
-            await safe("()=>window.__a3dAnzToggle('rain',false)")
+            ck(await safe("()=>window.__a3dAw().panel") == 'overview', "what was picked is this session's: a reload opens Analyze on its overview")
 
             # ---------------------------------------------------------------------------------
             print("\n-- 2. the search")
             s = await safe("(q)=>window.__a3dAnzSearch(q)", 'rain')
             # AMENDED FOR V162: a category whose own words say rain shows whole -- Climate's question
             # names rain -- and still no row that only says terrain
-            ck(s == ['rain', 'dgsun', 'dgshadow', 'dgwind', 'sun', 'sunhours', 'solar'], "'rain' finds Rain on terrain and the Climate category, not every row that says terrain (%s)" % s)   # AMENDED FOR V164: Climate's rows include Analyze site's
+            # AMENDED FOR V171c: a row's words are what it shows too: Water flow's says where rain runs
+            ck(s == ['dgflow', 'rain', 'dgsun', 'dgshadow', 'dgwind', 'sun', 'sunhours', 'solar'], "'rain' finds Rain on terrain and the Climate category, not every row that says terrain (%s)" % s)   # AMENDED FOR V164: Climate's rows include Analyze site's
             s = await safe("(q)=>window.__a3dAnzSearch(q)", 'arrows')
             ck(s == ['grading'], "'arrows' finds the row whose button is Slope arrows: the buttons are searched too (%s)" % s)
             # AMENDED FOR V162: a category's name finds its rows; two words that only a row has find the row
@@ -242,33 +250,34 @@ async def run():
             vis = [k for k, r in (await rows()).items() if not r['hidden']]
             ck(len(vis) == 35 and await safe("()=>document.querySelector('.a3d-analyze-wrap [data-anzsearch]').value") == '', "Escape empties it: every row again")   # AMENDED FOR V164: 18 rows; AMENDED FOR V165: 24; AMENDED FOR V166: 30; AMENDED FOR V168: 34; AMENDED FOR V171: 35
             # the left panel is the one scroll container (V65)
-            sc = await safe("()=>{var a=document.getElementById('a3d-leftpanel');window.__a3dAnzOpenAll(true);a.scrollTop=a.scrollHeight;return a.scrollTop;}")
+            sc = await safe("()=>{var a=document.getElementById('a3d-leftpanel');a.scrollTop=a.scrollHeight;return a.scrollTop;}")   # AMENDED FOR V171c: no rows to open
             await safe("()=>window.__a3dColumnAt([210,200],0,1,1,3)")
             await safe("()=>window.__a3dRefreshProps()")
             await page.wait_for_timeout(150)
             sc2 = await safe("()=>document.getElementById('a3d-leftpanel').scrollTop")
             ck(sc and sc > 50 and abs(sc2 - sc) <= 2, "and the list keeps its scroll (%s -> %s)" % (sc, sc2))
-            await safe("()=>{window.__a3dAnzOpenAll(false);window.__a3dTestSetObjs([]);}")
+            await safe("()=>{window.__a3dTestSetObjs([]);}")
 
             # ---------------------------------------------------------------------------------
             print("\n-- 3. Add as layer: sun hours")
             await set_site()
             await safe("()=>window.__a3dCamSet({tx:0,tz:0,dist:90})")
             await tab('analyze')
-            await safe("()=>window.__a3dAnzToggle('sunhours',true)")
-            R = await rows()
-            la = [a for a in R['sunhours']['acts'] if a[0] == 'layer:sunhours'][0]
+            P = await safe(PANEL, 'sunhours') or {}   # AMENDED FOR V171c: picked; its buttons in its panel
+            la = [a for a in P.get('acts', []) if a[0] == 'layer:sunhours'][0]
             ck(la[2] and la[3] == 'Run it first', "Add as layer waits for a run (%s)" % la)
             col = await safe("()=>window.__a3dColumnAt([0,0],0,6,6,15)")
             await page.wait_for_timeout(150)
+            await tab('layers')   # AMENDED FOR V171c: the ground before the run read outside Analyze, whose view is quiet (V171b), as it is read with the layer hidden
             px_bg = await pixel(12, 9)
+            await tab('analyze')
             sh = await safe("()=>window.__a3dSunHours({margin:25,cell:1})") or {}
             await page.wait_for_timeout(150)
             px_live = await pixel(12, 9)
-            R = await rows()
-            la = [a for a in R['sunhours']['acts'] if a[0] == 'layer:sunhours'][0]
+            P = await safe(PANEL, 'sunhours') or {}
+            la = [a for a in P.get('acts', []) if a[0] == 'layer:sunhours'][0]
             ck(not la[2] and la[1] == 'Add as layer', "after a run, Add as layer is there (%s)" % la)
-            await page.click('.a3d-analyze-wrap [data-anzact="layer:sunhours"]')
+            await page.click('#a3d-propsbody [data-anzact="layer:sunhours"]')
             await page.wait_for_timeout(200)
             L = await layers()
             ck(len(L) == 1 and L[0]['kind'] == 'sunhours' and L[0]['name'] == 'Sun hours, ' + DATE and L[0]['visible'] and L[0]['opacity'] == 0.6 and not L[0]['stale'],
@@ -291,8 +300,8 @@ async def run():
                "it is drawn as the layer, and the live overlay steps aside: drawn once")
             px_layer = await pixel(12, 9)
             ck(px_layer != px_live, "at 60% rather than the live 55%: the plan shows the layer")
-            R = await rows()
-            la = [a for a in R['sunhours']['acts'] if a[0] == 'layer:sunhours'][0]
+            P = await safe(PANEL, 'sunhours') or {}
+            la = [a for a in P.get('acts', []) if a[0] == 'layer:sunhours'][0]
             ck(la[2] and 'already' in la[3], "the same run cannot be added twice (%s)" % la[3])
 
             # ---------------------------------------------------------------------------------
@@ -432,8 +441,8 @@ async def run():
             tid = await safe("(p)=>window.__a3dMakeTerrain(p)", TWO)
             rr = await safe("(a)=>window.__a3dRainFlow(a,{cell:1})", tid) or {}
             await tab('analyze')
-            await safe("()=>window.__a3dAnzToggle('rain',true)")
-            await page.click('.a3d-analyze-wrap [data-anzact="layer:rain"]')
+            await safe("()=>window.__a3dAwPick('card','rain')")   # AMENDED FOR V171c: picked; its buttons in its panel
+            await page.click('#a3d-propsbody [data-anzact="layer:rain"]')
             await page.wait_for_timeout(200)
             L = await layers()
             rid = L[0]['id']
@@ -443,14 +452,13 @@ async def run():
                "rain kept: its %d pond cells, its %d flow lines, its two ponds" % (ponds, rr.get('segs', 0)))
             ck(await safe("()=>window.__a3dSimHolds().rain"), "the live ponds step aside for it")
             await safe("(i)=>{window.__a3dSelectFor([i]);window.__a3dRefreshProps();}", tid)
-            await safe("()=>window.__a3dAnzToggle('terrain',true)")
+            P = await safe(PANEL, 'terrain') or {}   # AMENDED FOR V171c: picked over the selection; its buttons in its panel
             await page.wait_for_timeout(100)
-            R = await rows()
-            la = [a for a in R['terrain']['acts'] if a[0] == 'layer:terrain'][0]
+            la = [a for a in P.get('acts', []) if a[0] == 'layer:terrain'][0]
             ck(la[2] and 'Show slope' in la[3], "the terrain's Add as layer waits for slope, elevation or aspect (%s)" % la[3])
-            await page.click('.a3d-analyze-wrap [data-anzact="terrain:slope"]')
+            await page.click('#a3d-propsbody [data-anzact="terrain:slope"]')
             await page.wait_for_timeout(150)
-            await page.click('.a3d-analyze-wrap [data-anzact="layer:terrain"]')
+            await page.click('#a3d-propsbody [data-anzact="layer:terrain"]')
             await page.wait_for_timeout(200)
             L = await layers()
             tl = L[0]
@@ -486,9 +494,8 @@ async def run():
             L = await layers()
             ck(cf and L[0]['mode'] == 'cutfill' and L[0]['src'] == g.get('id'), "a graded pad's cut and fill, as a layer (%s)" % L[0])
             await tab('analyze')
-            await safe("()=>window.__a3dAnzToggle('grading',true)")
-            R = await rows()
-            la = [a for a in R['grading']['acts'] if a[0] == 'layer:cutfill'][0]
+            P = await safe(PANEL, 'grading') or {}   # AMENDED FOR V171c: picked; its buttons in its panel
+            la = [a for a in P.get('acts', []) if a[0] == 'layer:cutfill'][0]
             ck(la[2] and 'already' in la[3], "and not twice (%s)" % la[3])
             ck(await safe("()=>window.__a3dResultLayerAdd('terrain',{id:'nope',mode:'slope'})") is None and
                await safe("(i)=>window.__a3dResultLayerAdd('terrain',{id:i,mode:'cutfill'})", ex) is None and
@@ -630,10 +637,9 @@ async def run():
             au = await safe("()=>window.__a3dShellAudit()") or {}
             ck(au.get('ok'), "the shell audit is clean with the Layers sections open (%s)" % au.get('unclaimed'))
             await tab('analyze')
-            await safe("()=>window.__a3dAnzOpenAll(true)")
+            await safe("()=>window.__a3dAwPick('card','sunhours')")   # AMENDED FOR V171c: no rows to open; one picked
             au = await safe("()=>window.__a3dShellAudit()") or {}
-            ck(au.get('ok'), "and with every Analyze row open (%s)" % au.get('unclaimed'))
-            await safe("()=>window.__a3dAnzOpenAll(false)")
+            ck(au.get('ok'), "and with Analyze open, a row picked (%s)" % au.get('unclaimed'))
             ck(not errs, "no page errors (%s)" % errs[:3])
         except Stalled as s:
             ck(False, "the harness stalled at %s" % s)
@@ -657,19 +663,26 @@ async def run():
                 await sf("()=>{window.__a3dEnter();window.__a3dSetPlanView&&window.__a3dSetPlanView();window.__a3dTestSetObjs([]);}")
                 await p.click('#a3d-rail [data-tab="analyze"]')
                 await p.wait_for_timeout(300)
-                await sf("()=>{window.__a3dSaGoto('climate');window.__a3dAnzToggle('sunhours',true);}")   # AMENDED FOR V162: Sun hours is in 5. Climate
+                # AMENDED FOR V171c: the list's rows and categories, then a row picked: its buttons in its panel on the right
+                # (a phone's and an upright tablet's open as a sheet)
                 m = await sf("""()=>{var w=document.querySelector('.a3d-analyze-wrap'),a=w.querySelector('.a3d-anz'),lp=document.getElementById('a3d-leftpanel').getBoundingClientRect();
-                  var hd=[].map.call(w.querySelectorAll('.a3d-anzhd'),function(e){return e.getBoundingClientRect().height;}).filter(function(h){return h>0;});   /* AMENDED FOR V162: the rows on screen; a shut category's are not */
-                  var bt=[].map.call(w.querySelectorAll('.a3d-anzbtn'),function(e){return e.getBoundingClientRect();}).filter(function(r){return r.height>0;});
+                  var hd=[].map.call(w.querySelectorAll('.a3d-awl-row,.a3d-awl-cat'),function(e){return e.getBoundingClientRect().height;}).filter(function(h){return h>0;});
+                  var lb=[].map.call(w.querySelectorAll('button'),function(e){return e.getBoundingClientRect();}).filter(function(r){return r.height>0;});
                   var tree=document.querySelector('#a3d-leftpanel > .a3d-tree');
-                  return {hd:Math.min.apply(0,hd),hdMax:Math.max.apply(0,hd),bt:Math.min.apply(0,bt.map(function(r){return r.height;})),over:a.scrollWidth-a.clientWidth,
-                    out:bt.filter(function(r){return r.right>lp.right+0.5;}).length,tree:tree?getComputedStyle(tree).display:'none',
+                  return {hd:Math.min.apply(0,hd),hdMax:Math.max.apply(0,hd),over:a.scrollWidth-a.clientWidth,
+                    out:lb.filter(function(r){return r.right>lp.right+0.5;}).length,tree:tree?getComputedStyle(tree).display:'none',
                     search:w.querySelector('[data-anzsearch]').getBoundingClientRect().height};}""") or {}
+                await sf("()=>window.__a3dAwPick('card','sunhours')")
+                await p.wait_for_timeout(200)
+                m['bt'] = await sf("""()=>{var b=[].map.call(document.querySelectorAll('#a3d-propsbody [data-awpanel] .a3d-anzbtn'),function(e){return e.getBoundingClientRect().height;}).filter(function(h){return h>0;});
+                  return b.length?Math.min.apply(0,b):0;}""") or 0
+                await sf("()=>{window.__a3dAwFocus(null);document.querySelector('#a3d-rail [data-tab=\"analyze\"]').click();}")
+                await p.wait_for_timeout(200)
                 if touch:
                     ck(m.get('hd', 0) >= 44 and m.get('bt', 0) >= 34 and m.get('search', 0) >= 36,
                        "%s: rows %d px, buttons %d px, the search %d px: for a finger" % (name, m.get('hd', 0), m.get('bt', 0), m.get('search', 0)))
                 else:
-                    ck(36 <= m.get('hd', 0) and m.get('hdMax', 99) <= 46 and m.get('bt', 0) <= 26, "%s: rows %d px and buttons %d px: a list, for a mouse" % (name, m.get('hd', 0), m.get('bt', 0)))
+                    ck(28 <= m.get('hd', 0) and m.get('hdMax', 99) <= 46 and 0 < m.get('bt', 0) <= 26, "%s: rows %d px and buttons %d px: a list, for a mouse" % (name, m.get('hd', 0), m.get('bt', 0)))   # AMENDED FOR V171c: 28, the list's rows
                 ck(m.get('over', 1) == 0 and m.get('out', 1) == 0, "%s: nothing wider than the panel, no button past its edge (%s)" % (name, m))
                 ck(m.get('tree') == 'none', "%s: the Project Browser's tree does not lie over Analyze (%s)" % (name, m.get('tree')))
                 await p.click('#a3d-rail [data-tab="layers"]')

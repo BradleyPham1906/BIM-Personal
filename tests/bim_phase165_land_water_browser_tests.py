@@ -689,21 +689,23 @@ async def run():
             ck(FD.get('water.drainage', {}).get('value') == wd and FD['water.drainage']['cat'] == 'water', "its drainage: %s" % FD.get('water.drainage', {}).get('value'))
             ck(FD.get('water.fema', {}).get('value') == 'The site is in zone X, 0.2% annual chance; within 150 m: floodway, 1%' and FD['water.fema']['cls'] == 'constraint',
                "its FEMA zone, and those near it, a constraint")
-            F = await safe("()=>[].map.call(document.querySelectorAll('.a3d-analyze-wrap [data-sacat=\"water\"] .a3d-saftt'),function(e){return e.textContent;})") or []
+            F = await safe("()=>{window.__a3dSaGoto('water');return [].map.call(document.querySelectorAll('#a3d-propsbody [data-awpanel=\"cat:water\"] .a3d-saftt'),function(e){return e.textContent;});}") or []   # AMENDED FOR V171c: Water's findings, on the right
             ck('Drainage' in F and 'Flood zone (FEMA)' in F, "both read in Water (%s)" % F)
 
             # ---------------------------------------------------------------------------------
             print("\n-- 9. The engine")
             await safe("()=>window.__a3dAnzView(true)")
             await page.wait_for_timeout(150)
-            rowtxt = await safe("()=>(document.querySelector('[data-anzcard=\"dgslope\"] [data-anzact=\"dg:show:slope\"]')||{}).textContent")
+            # AMENDED FOR V171c: a row's tick, where Show was
+            rowtxt = await safe("()=>{var t=document.querySelector('.a3d-analyze-wrap [data-anzact=\"aw:tick:slope\"]');return t?(t.checked?'Hide':'Show'):null;}")
             ck(rowtxt == 'Show', "Slope's row offers Show, its layer being off")
-            await safe("()=>document.querySelector('[data-anzcard=\"dgslope\"] [data-anzact=\"dg:show:slope\"]').click()")
+            await safe("()=>document.querySelector('.a3d-analyze-wrap [data-anzact=\"aw:tick:slope\"]').click()")
             await page.wait_for_timeout(150)
             LY = {l['id']: l for l in (await safe("()=>window.__a3dLayers()") or [])}
             ck(LY[D['layers']['slope']].get('visible') is not False, "and Show turns it on")
             grp = await safe("()=>['dgcontours','dgslope','dgaspect','dgflow','dgponds','dgflood'].map(function(i){var r=document.querySelector('[data-anzcard=\"'+i+'\"]'),c=r&&r.closest('[data-sacat]');return c?c.getAttribute('data-sacat'):null;})")
             ck(grp == ['landform', 'landform', 'landform', 'water', 'water', 'water'], "their rows in Analyze: contours, slope and aspect in Landform; flow, ponds and flood zones in Water (%s)" % grp)
+            await safe("()=>window.__a3dAwLeave()")   # AMENDED FOR V171c: out of Analyze, the view as it was, for the pixels that follow
             for a in [x for x in D['layers'] if x not in ('root', 'slope') and not x.startswith('shadow:')]:
                 await safe("(i)=>window.__a3dLayerSet(i,'visible',false)", D['layers'][a])
             # a class-0 point inside its region: all eight neighbours of the class too, away from the site
@@ -1050,7 +1052,7 @@ async def run():
 
             S3 = {'ground': 'land', 'flood': 'zones'}
             c3, p3, e3 = await fresh(S3)
-            await p3.evaluate("()=>{window.__a3dSelectFor([]);window.__a3dSetPropTab('site');window.__a3dRefreshProps();}")
+            await p3.evaluate("()=>{window.__a3dAwLeave();window.__a3dSelectFor([]);window.__a3dSetPropTab('site');window.__a3dRefreshProps();}")   # AMENDED FOR V171c: the site placed outside Analyze
             for k_, v_ in (('sunlat', '51.5'), ('sunlon', '-0.12')):
                 await p3.evaluate("""(a)=>{var e=document.querySelector('#a3d-propsbody input[data-propmodel="'+a[0]+'"]');e.value=a[1];e.dispatchEvent(new Event('change',{bubbles:true}));}""", [k_, v_])
                 await p3.wait_for_timeout(80)

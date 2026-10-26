@@ -68,13 +68,11 @@
     h+='<div class="a3d-sacap">'+bimEsc('Not a calibrated model: no counts, each street at its class\'s typical traffic. Signal plans assumed: OpenStreetMap maps where a signal is, never its timing. In 3D the cars and walkers are drawn over the model.')+'</div>';
     return h;
   }
-  /* the card V164 makes for the analysis, with the simulation's own part */
+  /* the row V164 makes for the analysis, with the simulation's state; its settings are in its panel (V171c) */
   function bimTrCard(card){
-    var s=bimTrSettings(),mv=bimMvOf();
+    var s=bimTrSettings();
     card.status=(s.on?(A3D_TR.run?'Playing: ':'On: Play to run it. '):'')+card.status;
     if(s.on&&card.state!=='stale')card.state=A3D_TR.run?'on':(card.state||'on');
-    card.extra=(card.extra||'')+bimTrCardHtml();
-    card.acts.unshift({act:'tr:sim:'+(s.on?'off':'on'),label:s.on?'Stop the simulation':'Simulate',pri:!s.on,off:mv?'':bimMvWhyNot(),tip:'Cars and walkers around the site, on the clock: Play, Pause and Stop in the status bar'});
     return card;
   }
   /* ---- Run: the elements, from the plan and the run so far ---- */
