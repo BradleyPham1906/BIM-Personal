@@ -120,13 +120,19 @@ Made on 2026-10-26:
 1. The AGPL accepted; their code used as is (section 2).
 2. Pyodide, running their Python unchanged, over translating it (the exception in section 5).
 
-Still to decide (asked together, in the chat of 2026-10-26):
-3. Where it goes in the path: before V172 (ArcGIS-style tools), which is marked Start here, or after.
-4. What comes first: (a) weather and comfort (EPW input, UTCI and PMV, the psychrometric chart, wind rose,
-   design days) on the climate board and in the workspace; (b) sun and radiation on the model; (c) Honeybee
-   export (HBJSON and IDF); or an order of all three.
-5. Pyodide and the wheels served with the site (about 10 MB more on Pages, no third-party host at run time) or
-   from jsDelivr and PyPI.
+Made on 2026-10-26, in answer to the three questions:
+3. **After V172.** Two phases, numbered as V171b was, after the phase they follow, so no later phase is
+   renumbered: **V172b, weather and comfort** (EPW input, UTCI and PMV, the psychrometric chart, the wind rose,
+   design days), then **V172c, sun-hours and radiation on the model**.
+4. **No Honeybee export.** "dont go for this path". Honeybee, Butterfly and Dragonfly are left out; only
+   ladybug, ladybug-geometry and ladybug-comfort (and numpy for V172c, if its sky needs it) are loaded.
+5. **Hosted with the app, the owner asking which is the better experience.** Served from the Pages site:
+   - nothing at run time depends on PyPI or jsDelivr being up, or on their versions staying where they are;
+   - the versions are the ones the suites tested, byte for byte, kept by their SHA-256;
+   - one origin, so no CORS, and a later service worker can keep them for offline use;
+   - kept once, at a fixed path (`runtime/pyodide/0.29.5/`, `runtime/wheels/`), not inside each of the
+     guide's older versions at `v/<version>/`, so the site grows about 10 MB once, not per version.
+   The `file://` copy loads them from the Pages site's address, so it needs the network for these analyses only.
 
 ## 7. Still open
 
