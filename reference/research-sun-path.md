@@ -166,6 +166,19 @@ The owner's standing choice is to go on without stopping for questions; these ar
 - Sun hours on the dome (how long each part of the sky is lit), and radiation on the dome: V172's tools.
 - A typed zone for a site without the climate; the zone of a place tried.
 
+## 10. As built (2026-10-26)
+
+As designed, with these found while building (the log, V171d, has them in full):
+- **The sync's memory** was one record for the session: a run made with other inputs, or a project opened, left the
+  elements as they came while the sync took them for current. Each element keeps the inputs it was drawn from, and a
+  run or Reset clears them.
+- **A name declared twice:** the places along a path for its name were first worked out by a function named as V164's
+  noise analysis already has; the later in the closure won. Renamed, and a scan of every file's top-level functions
+  finds no other.
+- **The words' places:** a path's name 12 px off its line still met the hours' dots; 15 px.
+- **Motion:** the sun now, now a dot and its ray, was offered a line's motions in Properties; it is Default (with the
+  clock) or Still, as V170 designed.
+
 ## Sources
 
 | Source | What was read | Date | Level |
