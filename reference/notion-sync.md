@@ -80,6 +80,7 @@ Search Notion before creating anything, so nothing is made twice.
 | `reference/research-direct-manipulation.md` | `3fecbfcc3a3881eb8b12d278112ac615` |
 | `reference/research-field-autonomy.md` | `3fecbfcc3a38819990fed43c7289488e` |
 | `reference/research-giraffe.md` | `3fecbfcc3a3881e5a131fafce16dcc73` |
+| `reference/research-ladybug-tools.md` | `405cbfcc3a38819dbbdce4dc211a6b8f` |
 | `reference/research-lod-reconstruction.md` | `3fecbfcc3a38812abfbcd3f4172e02bd` |
 | `reference/research-map.md` | `3fecbfcc3a3881b3a039fa3dba8ea81b` |
 | `reference/research-mep-runs.md` | `3fecbfcc3a3881708aacf7e7009c4487` |
@@ -151,6 +152,8 @@ Search Notion before creating anything, so nothing is made twice.
 | V171c | `405cbfcc3a388106babfe51e3b485846` |
 | V171d | `405cbfcc3a38816e9af6e3e28f85e055` |
 | V172 | `3fecbfcc3a3881f799a3d2f2e1114a23` |
+| V172b | `405cbfcc3a388180b6f3ee08305e8361` |
+| V172c | `405cbfcc3a3881789cb1c86e67d77b62` |
 | V173 | `3fecbfcc3a388141a93be73520d09591` |
 | V174 | `3fecbfcc3a3881fa9594ef43af9d6616` |
 | V175 | `3fecbfcc3a3881488c3ae42826615c67` |

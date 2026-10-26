@@ -1,0 +1,35 @@
+<!doctype html><meta charset="utf-8"><title>poc</title><body><script>
+window.LOG=[];function log(s){LOG.push((performance.now()/1000).toFixed(2)+'s '+s);}
+window.run=async function(epwText){
+  log('start');
+  var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/pyodide/v0.29.5/full/pyodide.js';
+  await new Promise(function(r,j){s.onload=r;s.onerror=j;document.head.appendChild(s);});
+  log('pyodide.js loaded');
+  var py=await loadPyodide();log('pyodide ready '+py.version);
+  await py.loadPackage('micropip');log('micropip');
+  var mp=py.pyimport('micropip');await mp.install(['ladybug-core==0.44.62','ladybug-comfort==0.19.12']);log('ladybug installed');try{await mp.install(['honeybee-energy==1.126.6'].concat([]));log('honeybee-energy installed');window.HB=py.runPython('import json\nfrom honeybee.room import Room\nfrom honeybee.model import Model\nimport honeybee_energy\nr=Room.from_box("Office",10,8,3.2)\nr.properties.energy.program_type\nm=Model("Test",[r])\nidf=m.to.idf(m)\nhb=json.dumps(m.to_dict())\njson.dumps({"idf_chars":len(idf),"hbjson_chars":len(hb),"faces":len(r.faces)})');log('honeybee model -> IDF + HBJSON')}catch(e){window.HB='ERR '+String(e).slice(0,600)}
+  py.FS.writeFile('/tmp/site.epw',epwText);
+  var out=py.runPython([
+'import json,time',
+'t=time.time()',
+'from ladybug.epw import EPW',
+'from ladybug.sunpath import Sunpath',
+'from ladybug.psychchart import PsychrometricChart',
+'from ladybug.windrose import WindRose',
+'from ladybug_comfort.collection.utci import UTCI',
+'epw=EPW("/tmp/site.epw")',
+'loc=epw.location',
+'utci=UTCI(epw.dry_bulb_temperature,epw.relative_humidity,epw.dry_bulb_temperature,epw.wind_speed)',
+'sp=Sunpath.from_location(loc)',
+'sun=sp.calculate_sun(6,21,12)',
+'pc=PsychrometricChart(epw.dry_bulb_temperature,epw.relative_humidity)',
+'wr=WindRose(epw.wind_direction,epw.wind_speed,16)',
+'json.dumps({"city":loc.city,"lat":loc.latitude,"lon":loc.longitude,"tz":loc.time_zone,',
+' "db_mean":epw.dry_bulb_temperature.average,"utci_comfort_pct":utci.percent_neutral,',
+' "utci_heat_pct":utci.percent_hot,"utci_cold_pct":utci.percent_cold,',
+' "sun_alt_jun21_noon":sun.altitude,"sun_az":sun.azimuth,',
+' "psych_cells":len(pc.colored_mesh.faces),"wind_calm_pct":wr.zero_count/87.60,',
+' "secs":time.time()-t})'].join('\n'));
+  log('analysis done');return out;
+};
+</script>
