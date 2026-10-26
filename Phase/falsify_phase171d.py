@@ -52,7 +52,6 @@ VARIANTS = {
     'time_slider_coarse': [("bimSunSliderHtml('time','Time',0,1435,5,", "bimSunSliderHtml('time','Time',0,1435,15,")],   # four sliders
     'input_commits': [("      try{bimSunSlide(k,e.value,false);}catch(eS)", "      try{bimSunSlide(k,e.value,true);}catch(eS)")],   # the time slider moving: ... no undo step
     'input_redraws': [("    paint();bimSunPanelLive();\n    return true;\n  }\n  /* Play's two ways", "    paint();bimAwRefresh();\n    return true;\n  }\n  /* Play's two ways")],   # the panel not drawn again
-    'focus_lost': [("          setTimeout(function(){var s=el.propsbody.querySelector('[data-sunsl=\"'+k+'\"]');if(s&&document.activeElement!==s)s.focus();},0);\n", "")],   # the slider still in the hand
     'north_always': [("N=st.lat>=0,nm=", "N=true,nm=")],   # 33.9 deg south tried: the summer solstice is December's
     'shadow_times_height': [("sh=f&&f.noonAlt>0?10/Math.tan(f.noonAlt*Math.PI/180):null;", "sh=f&&f.noonAlt>0?10*Math.tan(f.noonAlt*Math.PI/180):null;")],   # a 10 m building's shadow
     'rise_bearing_wrong': [("f.riseAz=bimSunCalc(st.lat,st.lon,tz,dd,bimHHMM(r.sunrise)).azimuth;", "f.riseAz=bimSunCalc(st.lat,st.lon,tz,dd,bimHHMM(r.sunset)).azimuth;")],   # each with sunrise and its bearing

@@ -31124,10 +31124,7 @@ try{
         /* a field's change is its words committed, taken or refused: the panel shows the model again at once */
         if((k=e.getAttribute('data-znf'))){bimZnSet(k,e.value);if(bimAwOwns())bimAwRender(true);}   /* __acad3dV160: the zoning, in Legal */
         else if((k=e.getAttribute('data-anzload'))){updateLevel(A3D.activeLevel,k,e.value);if(bimAwOwns())bimAwRender(true);}   /* __acad3dV166b: the floor loads, in Frame analysis */
-        else if((k=e.getAttribute('data-sunsl'))){   /* __acad3dV171d: a slider let go; the same slider in the hand again */
-          bimSunSlide(k,e.value,true);
-          setTimeout(function(){var s=el.propsbody.querySelector('[data-sunsl="'+k+'"]');if(s&&document.activeElement!==s)s.focus();},0);
-        }
+        else if((k=e.getAttribute('data-sunsl')))bimSunSlide(k,e.value,true);   /* __acad3dV171d: a slider let go; the redraw keeps it in the hand */
       }catch(eF){console.warn('[BIM] Analyze setting failed',eF);a3dToast('That setting could not be changed - see the console');}
     },true);   /* in the capture: V118's refresh after every change, the panel's last handler, would put the model's value back first */
     el.propsbody.addEventListener('focusout',function(){if(A3D_AW.pend)setTimeout(function(){if(A3D_AW.pend)refreshProps();},0);});   /* the refresh held for a field, as it is left */

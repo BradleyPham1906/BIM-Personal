@@ -479,9 +479,12 @@ async def run():
             ck([s[0] for s in sl] == ['lat', 'lon', 'date', 'time'] and sl[0][1:4] == ['-89.9', '89.9', '0.1'] and sl[3][1:] == ['0', '1435', '5', str(mins(st['time']))],
                "four sliders: latitude, longitude, date and time (%s)" % sl)
             u4 = await undo_depth()
-            mv = await safe("""()=>{var s=document.querySelector('[data-sunsl="time"]');s.__k=1;s.value='840';s.dispatchEvent(new Event('input',{bubbles:true}));
-              var t=document.querySelector('[data-sunsl="time"]');return {same:t.__k===1,out:document.querySelector('[data-sunout="time"]').textContent,row:document.querySelector('[data-sunv="time"]').textContent};}""") or {}
-            await page.wait_for_timeout(100)
+            mv = await safe("""()=>{var s=document.querySelector('[data-sunsl="time"]');document.querySelector('[data-sunpanel]').setAttribute('data-t171d','1');
+              s.value='840';s.dispatchEvent(new Event('input',{bubbles:true}));return 1;}""")
+            await page.wait_for_timeout(250)
+            # a redraw (the panel's morph) would drop the mark it does not write
+            mv = await safe("""()=>({same:document.querySelector('[data-sunpanel]').getAttribute('data-t171d')==='1',out:document.querySelector('[data-sunout="time"]').textContent,
+              row:document.querySelector('[data-sunv="time"]').textContent})""") or {}
             ck(mv.get('same') and mv.get('out') == '14:00' and mv.get('row', '').startswith('14:00') and (await safe("()=>window.__a3dSunStudy()") or {}).get('time') == '14:00'
                and (await settings()).get('time') == st['time'] and await undo_depth() == u4, "the time slider moving: the sun and the numbers follow, the panel not drawn again, no undo step (%s)" % mv)
             await safe("""()=>{var s=document.querySelector('[data-sunsl="time"]');s.focus();s.dispatchEvent(new Event('change',{bubbles:true}));}""")
