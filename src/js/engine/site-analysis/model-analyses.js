@@ -133,47 +133,12 @@
         info:{title:d+' m from the centre of the site',rows:[['On foot','about '+Math.max(1,Math.round(d/bimAccSpeed()))+' min, at '+bimDispNum(bimAccSpeed(),1)+' m a minute, as the crow flies']],method:'A circle about the site\'s centre'}});
     return {E:E,run:{legend:[{name:'Compass, on true north',short:'True north',col:'#c9d3dd',kind:'line'},{name:'Every 100 m',short:'100 m rings',col:'#9aa7b4',kind:'dash'}],source:'True north from the site\'s settings'}};
   }
-  /* the sun's paths for the solstices and the equinoxes, on a dome over the site, with their hours */
-  var BIM_DG_SUNDAYS=[['06-21','21 June','#ffb347'],['03-20','20 March and 22 September','#e8d36a'],['12-21','21 December','#8ab4f8']];
+  /* the sun's paths for the solstices and the equinoxes, on a dome over the site, with their hours;
+     __acad3dV171d: each with its name as the view writes it, and drawn by sun-path.js */
+  var BIM_DG_SUNDAYS=[['06-21','21 June','#ffb347','21 June'],['03-20','20 March and 22 September','#e8d36a','20 Mar, 22 Sep'],['12-21','21 December','#8ab4f8','21 December']];
   function bimDgDome(S,R,sp){
     var a=(sp.azimuth+bimTrueNorthDeg())*Math.PI/180,e=sp.elevation*Math.PI/180;
     return [S.c[0]+R*Math.cos(e)*Math.sin(a),S.y+R*Math.sin(e),S.c[1]-R*Math.cos(e)*Math.cos(a)];
-  }
-  function bimDgSunRun(S){
-    var st=bimSunSettings(),E=[],k,m;
-    if(bimDgNoPlace())return {E:[],run:{note:'The site\'s latitude, longitude and UTC offset are needed: Analyze site gets the offset with the climate'}};
-    var yr=bimDgYear(),R=S.Rc,tzt='UTC'+(st.tz>=0?'+':'\u2212')+bimDispNum(Math.abs(st.tz),2);
-    for(k=0;k<BIM_DG_SUNDAYS.length;k++){
-      var dd=yr+'-'+BIM_DG_SUNDAYS[k][0],pts=[],marks=[],noon=null;
-      for(m=0;m<1440;m+=10){
-        var sp=bimSunCalc(st.lat,st.lon,st.tz,dd,bimPad2(m/60)+':'+bimPad2(m%60));
-        if(!sp||!(sp.elevation>0))continue;
-        var p=bimDgDome(S,R,sp);pts.push(p);
-        if(m%60===0)marks.push({p:p,t:(m/60)+'h'});
-        if(!noon||sp.elevation>noon.e)noon={e:sp.elevation,p:p,az:sp.azimuth};
-      }
-      if(pts.length<2)continue;
-      var day=bimSunCalc(st.lat,st.lon,st.tz,dd,'12:00');
-      E.push({k:'path:'+BIM_DG_SUNDAYS[k][0],name:'Sun path, '+BIM_DG_SUNDAYS[k][1],g:{kind:'marks',pts:pts,marks:marks},
-        s:{stroke:BIM_DG_SUNDAYS[k][2],w:1.6,dash:[6,4],mark:'#ffd23f'},
-        lb:[{t:BIM_DG_SUNDAYS[k][1],p:[noon.p[0],noon.p[1]+R*0.05,noon.p[2]],col:BIM_DG_SUNDAYS[k][2]}],
-        info:{title:'The sun on '+BIM_DG_SUNDAYS[k][1],rows:[['Highest',bimDispNum(noon.e,1)+'\u00b0 up, at '+bimDispNum(noon.az,0)+'\u00b0 from north'],
-          ['Sunrise',day&&day.sunrise!==null?bimHHMM(day.sunrise):'-'],['Sunset',day&&day.sunset!==null?bimHHMM(day.sunset):'-'],
-          ['Daylight',day&&day.sunrise!==null?bimDispNum((day.sunset-day.sunrise)/60,1)+' h':(day&&day.polar==='day'?'the sun does not set':'the sun does not rise')],
-          ['Clock',tzt+(A3D.site.climate&&A3D.site.climate.tzName?' ('+A3D.site.climate.tzName+')':'')]],
-          method:'NOAA\'s solar position equations every 10 minutes, on a dome '+R+' m from the site\'s centre; a dot an hour, by the clock at the site\'s UTC offset',
-          source:'Sun position (NOAA)',date:dd}});
-    }
-    var now=bimSunNow();
-    if(now&&!now.missing&&now.elevation>0){
-      var q=bimDgDome(S,R,now);
-      E.push({k:'now',name:'The sun now',g:{kind:'line',pts:[]},sym:{type:'dot',p:q,r:6,col:'#e5484d'},
-        lb:[{t:'Now',p:[q[0],q[1]+R*0.06,q[2]],col:'#ff8a8f'}],
-        info:{title:'The sun at '+now.settings.time+' on '+now.settings.date,rows:[['Position',bimDispNum(now.elevation,1)+'\u00b0 up, at '+bimDispNum(now.azimuth,0)+'\u00b0 from north']],
-          method:'The date and time in Properties, Site, Location',source:'Sun position (NOAA)'}});
-    }
-    return {E:E,run:{legend:[{name:'21 June',short:'June',col:'#ffb347',kind:'dash'},{name:'20 March, 22 September',short:'March, September',col:'#e8d36a',kind:'dash'},{name:'21 December',short:'December',col:'#8ab4f8',kind:'dash'},
-      {name:'An hour',short:'hour',col:'#ffd23f',kind:'dot'},{name:'The sun now',short:'now',col:'#e5484d',kind:'dot'}],source:'NOAA solar position equations',dome:{c:S.c,y:S.y,R:R}}};   /* __acad3dV170: the dome */
   }
   /* the model's shadows at 9, 12 and 15 on the equinox and both solstices: drawn from the model each
      time, so they follow it; each date a layer, the equinox shown */

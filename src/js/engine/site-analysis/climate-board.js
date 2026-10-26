@@ -157,7 +157,7 @@
   function bimClbWindBand(j){var b=bimClimUsedBins();return j<b.length-1?b[j]+'–'+b[j+1]+' m/s':'≥ '+b[j]+' m/s';}
   /* Fig. 5: the sun path, stereographic, the centre overhead and the rim the horizon */
   function bimClbSunSvg(lat,lon,tz){
-    var S=380,cx=190,cy=190,R=150,y=new Date().getFullYear(),s,k;
+    var S=380,cx=190,cy=190,R=150,y=new Date().getFullYear(),s,k,tzf=typeof tz==='function'?tz:function(){return tz;};   /* __acad3dV171d: an offset for each date */
     function rad(alt){return R*Math.tan((90-Math.max(0,alt))*Math.PI/360);}
     function pt(alt,az){var t=az*Math.PI/180,r=rad(alt);return [cx+r*Math.sin(t),cy-r*Math.cos(t)];}
     s='<svg viewBox="0 0 '+S+' '+S+'" role="img" aria-label="Sun path">';
@@ -170,14 +170,14 @@
     var D=[['06-21','var(--s2)','21 June'],['03-20','var(--s3)','Equinox'],['12-21','var(--s1)','21 December']],out=[];
     D.forEach(function(dd){
       var P=[],hp=[],mx=0,m,r;
-      for(m=0;m<=1440;m+=6){r=bimSunCalc(lat,lon,tz,y+'-'+dd[0],bimHHMM(m));if(r&&r.elevation>0){P.push(pt(r.elevation,r.azimuth));if(r.elevation>mx)mx=r.elevation;}}
-      for(m=0;m<1440;m+=60){r=bimSunCalc(lat,lon,tz,y+'-'+dd[0],bimHHMM(m));if(r&&r.elevation>0)hp.push({h:m/60,p:pt(r.elevation,r.azimuth),alt:r.elevation,az:r.azimuth});}
+      for(m=0;m<=1440;m+=6){r=bimSunCalc(lat,lon,tzf(y+'-'+dd[0]),y+'-'+dd[0],bimHHMM(m));if(r&&r.elevation>0){P.push(pt(r.elevation,r.azimuth));if(r.elevation>mx)mx=r.elevation;}}
+      for(m=0;m<1440;m+=60){r=bimSunCalc(lat,lon,tzf(y+'-'+dd[0]),y+'-'+dd[0],bimHHMM(m));if(r&&r.elevation>0)hp.push({h:m/60,p:pt(r.elevation,r.azimuth),alt:r.elevation,az:r.azimuth});}
       if(P.length>1)s+='<polyline points="'+P.map(function(q){return bimClbF(q[0])+','+bimClbF(q[1]);}).join(' ')+'" fill="none" stroke="'+dd[1]+'" stroke-width="2" stroke-linecap="round"/>';
       hp.forEach(function(q){s+='<circle class="mk" cx="'+bimClbF(q.p[0])+'" cy="'+bimClbF(q.p[1])+'" r="4" fill="'+dd[1]+'" stroke="var(--surf)" stroke-width="2"'+
         bimClbTip(dd[2]+', '+(q.h<10?'0':'')+q.h+':00|Altitude '+bimClbNum(q.alt,0)+'°|Azimuth '+bimClbNum(q.az,0)+'°')+'/>';});
       if(dd[0]==='06-21')hp.forEach(function(q){if(q.h%3===0){var vx=q.p[0]-cx,vy=q.p[1]-cy,l=Math.sqrt(vx*vx+vy*vy)||1;
         s+='<text class="tl2" x="'+bimClbF(q.p[0]+vx/l*13)+'" y="'+bimClbF(q.p[1]+vy/l*13+4)+'" text-anchor="middle">'+q.h+'h</text>';}});
-      var r0=bimSunCalc(lat,lon,tz,y+'-'+dd[0],'12:00'),len=r0&&r0.sunrise!==null&&r0.sunset!==null?Math.round(r0.sunset-r0.sunrise):(r0&&r0.polar==='day'?1440:0);
+      var r0=bimSunCalc(lat,lon,tzf(y+'-'+dd[0]),y+'-'+dd[0],'12:00'),len=r0&&r0.sunrise!==null&&r0.sunset!==null?Math.round(r0.sunset-r0.sunrise):(r0&&r0.polar==='day'?1440:0);
       out.push({label:dd[2],col:dd[1],alt:mx,len:len});
     });
     return {svg:s+'<circle cx="'+cx+'" cy="'+cy+'" r="2.5" fill="var(--ink2)"/></svg>',days:out};
@@ -356,7 +356,7 @@
         bimClbTable(['Band','Hours','Share'],BIM_HEAT_NAMES.map(function(n,j){var c=0;Hh.heat.forEach(function(v){if(v!==null&&bimClbHeatClass(v)===j)c++;});return [n,c,bimClbNum(100*c/Math.max(1,nh))+'%'];})),
         C.src+', '+Hh.year+' hourly'));
     }
-    var sun=bimClbSunSvg(lat,lon,bimSunNum(st.tz)?st.tz:Math.round(lon/15));
+    var sun=bimClbSunSvg(lat,lon,bimSunNum(st.tz)?function(d){return bimSunTzAt(st,d,'12:00');}:Math.round(lon/15));
     fig++;
     cards.push(bimClbCard('s4',fig,'The sun climbs to '+bimClbNum(sun.days[0].alt,0)+'° at midsummer and '+bimClbNum(sun.days[2].alt,0)+'° at midwinter',
       'Sun path, looking up: the centre overhead, the rim the horizon, rings every 15° of altitude; dots every hour'+(bimSunNum(st.tz)?' (UTC'+(st.tz>=0?'+':'')+st.tz+')':' (approximate local time)')+'.',

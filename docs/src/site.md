@@ -84,8 +84,9 @@ step as it goes:
    Terrain Tiles, kept with the project in metres above sea level; and for a US site, FEMA's flood
    zones (the National Flood Hazard Layer). FEMA maps the US and its territories only.
 4. **Climate and time zone:** ten years of daily climate, a year of hourly wind and heat, air
-   quality and earthquakes. The site's UTC offset comes with them, so the sun needs no typing. An
-   offset you gave is kept.
+   quality and earthquakes. The site's time zone comes with them, so the sun needs no typing: its
+   name (America/New_York) and its standard time's UTC offset, whatever the season the climate was
+   fetched in. An offset you gave is kept.
 5. **Access and people:** walk times to daily needs and transit; the streets within 800 m with what
    movement reads (speed, lanes, bike lanes, parking), the crossings' signals and stops, the doors
    on the lot, the car parks and garage entrances within 400 m, and each line's headway where it is
@@ -147,7 +148,7 @@ analysis**:
 | Analysis | What it draws | Worked out from |
 |---|---|---|
 | Compass and distance | the compass ring on true north, its sixteen points, and a ring every 100 m out to the context's edge | the site's true north |
-| Sun paths | the sun's path on 21 June, on 20 March and 22 September, and on 21 December, on a dome over the site; a dot an hour; the sun now | NOAA's solar position equations |
+| Sun paths | the sun's path on 21 June, on 20 March and 22 September, and on 21 December, on a dome over the site, a dot an hour; the day studied; the sun now with its altitude and azimuth drawn; the sun at the study's time all year (the analemma); the temperature on the band of the sky the sun crosses. They follow the site's place, the date and the time without running again (see The sun path) | NOAA's solar position equations; the climate's year of hours |
 | Shadows | the model's own shadows at 9, 12 and 15 on those dates. 20 March is shown; the solstices are on layers of their own, off | the sun and the model, drawn again whenever the model changes |
 | Winds | an arrow for each season's prevailing wind, as wide as its share of hours (seasons from the same quarter share one); the strongest winds; the year's wind rose | a year of hourly ERA5 wind, via Open-Meteo |
 | Views | what can be seen at eye height and from the top floor (isovists); each view named by what it reaches: water, a park or woods, a landmark, open land | the context's buildings and trees, at their heights |
@@ -325,9 +326,11 @@ The buttons show only when something can move. On a phone they come first in the
 - **The layers come in one after another**, in Analyze's order, each time you press Play from
   still.
 - **The sun** moves along its path from sunrise to sunset of the study's day (Properties > Site >
-  Location), with its time beside it, and the model's shadow follows it, one shadow on that day. The
-  sun study in plan (`SUNSTUDY`) follows the same clock. The project's own date and time do not
-  change.
+  Location), with its time beside it, and the model's shadow follows it, one shadow on that day. Or,
+  chosen in the Sun paths' panel, **through the year**: the date steps a day at a time from 1 January
+  to 31 December in 36 seconds at the study's time, the sun tracing the analemma, the day's own path,
+  the shadow and the temperature's half-year following it. The sun study in plan (`SUNSTUDY`) follows
+  the same clock. The project's own date and time do not change.
 
 Each element's motion is a setting of its own: select it and choose **Motion** in Properties:
 **Default** (its analysis's), **Still**, or another its shape can take. Like any change of style,
@@ -724,7 +727,45 @@ in leaf all year, and its page says so.
 `SUNSTUDY` shows the shadows and the sun path for the site's date and time. They are set in
 **Properties > Site > Location**. The sun's position follows NOAA's equations. A deciduous tree from
 **Assets** casts its trunk's shadow only on a date outside its growing season. **Play** in the status bar
-moves the sun through the study's day (see The analyses in motion).
+moves the sun through the study's day, or through the year (see The analyses in motion and The sun path).
+
+## The sun path
+
+Sun paths, in focus in Analyze, draws the sky over the site as a dome of the compass ring's radius. A sun at
+altitude α and azimuth A (clockwise from true north) is the point X = R cos α sin A, Y = R sin α,
+Z = R cos α cos A from the site's centre, Y up and Z to true north, by NOAA's solar position equations (held
+to NREL's Solar Position Algorithm within 0.003°).
+
+- **On the dome:** the paths of 21 June, of 20 March and 22 September, and of 21 December, a dot an hour;
+  the day studied, unless it is within three days of one of them; the sun now, its ray from the centre, the
+  drop to the ground, its azimuth's arc on the ground from true north and its altitude's arc, named; the sun
+  at the study's time every second day of the year; and the temperature where the sun passes: the band
+  between the winter and summer paths by the hour and by the month, each cell the mean temperature at its
+  hour over its days, in the climate board's colours. The band shows the half-year holding the date:
+  21 December to 21 June, or 21 June to 21 December (each place in it is passed twice a year, in
+  different weather).
+- **They follow** the place, the time zone, the date and the time as you change them, with no run and no
+  undo step of their own. One you coloured keeps its colour; one you moved stays where you put it.
+- **The words:** each hour beside its own dot; no word over a dot; a path's name on its path between two
+  hours, where there is room.
+
+**The panel** (Analyze, Sun paths):
+- **The sun now:** the place, the day, the time with its UTC offset and time zone, daylight saving, the
+  altitude and azimuth, its point on the dome by the formula, the day's sunrise and sunset with their
+  bearings and length, and the temperature typical of that hour.
+- **Try it:** sliders for the latitude and the longitude try another place, never saved (its clock by the
+  longitude; **Back to the site's place** ends it, as leaving Analyze does); the date and the time are the
+  study's own, the view following as they move and one undo step when let go.
+- **Play:** through the day or through the year.
+- **The year's turning points:** the summer solstice, the equinoxes and the winter solstice for the site's
+  hemisphere, each with sunrise and sunset and their bearings, the noon altitude, the day's length and the
+  shadow a 10 m building casts at noon.
+- **Diagrams:** the sky dome in plan, and the sun's height through the day, each with the sun now; and the
+  temperature's eleven bands.
+
+**Daylight saving** (Properties > Site > Location, or the panel): **Off**, standard time all year (the
+default, as Ladybug draws); **Auto**, each date's own offset from the time zone, so June's hours are by
+daylight saving time where the site keeps it.
 
 ## Alignments
 

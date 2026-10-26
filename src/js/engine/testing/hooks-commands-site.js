@@ -360,7 +360,7 @@
   window.__a3dAnimPlay=function(on){return bimAnimPlay(on);};
   window.__a3dAnimStop=function(){return bimAnimStop();};
   /* the clock set by hand, paused there: the frame at t seconds, the last Play at playAt */
-  window.__a3dAnimAt=function(t,playAt){bimAnimHalt();A3D_ANIM.on=false;A3D_ANIM.paused=true;A3D_ANIM.t=+t||0;A3D_ANIM.playAt=+playAt||0;A3D_ANIM.c=null;A3D_ANIM.dome=null;A3D_ANIM.sunTime=bimAnimSunTime();paint();return window.__a3dAnim();};
+  window.__a3dAnimAt=function(t,playAt){bimAnimHalt();A3D_ANIM.on=false;A3D_ANIM.paused=true;A3D_ANIM.t=+t||0;A3D_ANIM.playAt=+playAt||0;A3D_ANIM.c=null;A3D_ANIM.dome=null;A3D_ANIM.sunTime=bimAnimSunTime();A3D_ANIM.sunDate=bimAnimSunDate();paint();return window.__a3dAnim();};
   window.__a3dAnimOf=function(id){var o=objById(id);if(!bimIsDiag(o))return null;var R=bimAnimRingOf(o);
     return {motion:bimAnimMotion(o),kinds:bimAnimKinds(o),auto:bimAnimAuto(o),out:bimAnimOut(o),ring:R,k:bimAnimLive()&&bimAnimMotion(o)==='ring'?bimAnimRingK(o):null,draw:bimAnimLive()&&bimAnimMotion(o)==='draw'?bimAnimDrawOf(o):null,reveal:bimAnimReveal(o.dg.a)};};
   window.__a3dAnimSettings=function(){return JSON.parse(JSON.stringify({anim:BIM_ANIM,names:BIM_ANIM_NAMES,auto:BIM_ANIM_AUTO}));};

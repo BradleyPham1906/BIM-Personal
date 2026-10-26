@@ -51,7 +51,7 @@
           if(x.dg.gen!==gen)x.dg.newer=true;
           x.dg.gen=gen;x.dg.info=e.info||{};delete x.dg.orphan;kept++;
         }else{
-          x.dg.g=core.g;x.dg.s=core.s;x.dg.lb=core.lb;x.dg.sym=core.sym;x.dg.gen=gen;x.dg.info=e.info||{};
+          x.dg.g=core.g;x.dg.s=core.s;x.dg.lb=core.lb;x.dg.sym=core.sym;x.dg.gen=gen;x.dg.info=e.info||{};delete x.dg.sk;   /* __acad3dV171d: drawn again, its sync's inputs gone */
           delete x.dg.newer;delete x.dg.orphan;x.name=String(e.name||x.name).slice(0,80);x.layer=lay(e.layer)||x.layer;upd++;
         }
         delete have[e.k];
@@ -80,7 +80,7 @@
     if(!bimDgEdited(o)&&!o.dg.newer){a3dToast(o.name+' is as the analysis drew it');return false;}
     pushUndo();
     var c=JSON.parse(o.dg.gen);
-    o.dg.g=c.g;o.dg.s=c.s;o.dg.lb=c.lb;o.dg.sym=c.sym;o.pos=[0,0,0];delete o.dg.newer;
+    o.dg.g=c.g;o.dg.s=c.s;o.dg.lb=c.lb;o.dg.sym=c.sym;o.pos=[0,0,0];delete o.dg.newer;delete o.dg.sk;   /* __acad3dV171d */
     refreshProps();paint();saveSoon();
     a3dToast(o.name+' is as the analysis drew it again');
     return true;
@@ -164,6 +164,7 @@
     var dg=o.dg,g=dg.g,s=dg.s||{},a=bimLayerAlpha(o)*(s.op===undefined?1:s.op)*bimAnimAlpha(o),mo=bimAnimLive()?bimAnimMotion(o):null,P,k,an;   /* __acad3dV170 */
     if(!(a>0))return;
     if(g.kind==='live'){bimDgDrawShadow(ctx,V,W,H,o,a,mo==='sun');return;}
+    if(g.kind==='mesh'){bimSunDrawMesh(ctx,V,W,H,o,a);return;}   /* __acad3dV171d: the temperature on the dome */
     if(g.kind==='segs'||!g.pts||g.pts.length<3||!s.fill||!g.closed)return;
     if(mo==='ring'){k=bimAnimRingK(o);if(!(k>0))return;P=k<1?bimAnimScreen(o,V,W,H,k):bimDgScreen(o,V,W,H);}else P=bimDgScreen(o,V,W,H);
     ctx.save();
@@ -234,7 +235,7 @@
        a march's dashes moved, away from the site or as drawn; the sun now gives way to the sun moving */
     var mo=bimAnimLive()?bimAnimMotion(o):null,rk=1,an=null,clip=false,lbOk=true,mOff=null;
     if(bimAnimLive())a*=bimAnimReveal(dg.a);
-    if(!(a>0)||(mo==='sun'&&A3D_ANIM.sunTime&&bimAnimFrame().sun))return hit;
+    if(!(a>0))return hit;   /* __acad3dV171d: the sun now is the clock's own, moving or still */
     if(mo==='ring'){rk=bimAnimRingK(o);if(!(rk>0))return hit;lbOk=rk>=1;}
     P=rk<1?bimAnimScreen(o,V,W,H,rk):bimDgScreen(o,V,W,H);
     if(mo==='march'){mOff=bimAnimMarchOff();if(bimAnimOut(o))P=bimAnimOrient(o,P);}
@@ -288,7 +289,10 @@
       sp=toScreen(bimDgW(o,g.marks[i].p),V,W,H);if(sp[2]<=0.5)continue;
       ctx.globalAlpha=a;ctx.fillStyle=s.mark||'#ffd23f';ctx.beginPath();ctx.arc(sp[0],sp[1],sel?5.5:4.5,0,2*Math.PI);ctx.fill();
       hit.dots.push([sp[0],sp[1]]);
-      if(g.marks[i].t&&lbOk)Q.push({hit:hit,t:g.marks[i].t,x:sp[0]+8,y:sp[1],col:s.markText||'#f4f1e3',sz:10,al:'left',pri:sel?0:4,a:a,sel:sel,cap:cap});
+      if(g.marks[i].t){   /* __acad3dV171d: a labelled dot no word covers; its word beside it or left out */
+        A3D_DG.dotKeep.push([sp[0]-5,sp[1]-5,10,10]);
+        if(lbOk)Q.push({hit:hit,t:g.marks[i].t,x:sp[0]+8,y:sp[1],col:s.markText||'#f4f1e3',sz:10,al:'left',pri:sel?0:4,a:a,sel:sel,cap:cap,cands:bimDgBeside(sp)});
+      }
     }
     if(dg.sym&&dg.sym.p){
       sp=toScreen(bimDgW(o,dg.sym.p),V,W,H);
@@ -298,12 +302,14 @@
         ctx.globalAlpha=a;var rr=bimDgSym(ctx,sp,sy,dg.sym.col||s.stroke||'#e8edf2',a);
         if(sel){ctx.globalAlpha=1;ctx.strokeStyle='#ffd166';ctx.lineWidth=2;ctx.beginPath();ctx.arc(sp[0],sp[1],rr+3,0,2*Math.PI);ctx.stroke();}
         hit.boxes.push([sp[0]-rr,sp[1]-rr,2*rr,2*rr]);
+        if(dg.a==='sun'){A3D_DG.dotKeep.push([sp[0]-rr,sp[1]-rr,2*rr,2*rr]);if(dg.k==='now'&&bimAnimLive())bimAnimFrame().sunAt=[sp[0],sp[1]];}   /* __acad3dV171d: the sun, kept clear; where it is while it plays */
       }
     }
     for(i=0;i<(dg.lb||[]).length;i++){
       var L=dg.lb[i];if(!L||!L.t||!L.p||!lbOk)continue;
       sp=toScreen(bimDgW(o,L.p),V,W,H);if(sp[2]<=0.5)continue;
-      Q.push({hit:hit,t:L.t,x:sp[0]+(L.al==='left'?14:0),y:sp[1],col:L.col||s.stroke,sz:L.sz||11,al:L.al||'center',pri:sel?0:(L.pri||2),a:a,sel:sel,cap:cap});
+      Q.push({hit:hit,t:L.t,x:sp[0]+(L.al==='left'?14:0),y:sp[1],col:L.col||s.stroke,sz:L.sz||11,al:L.al||'center',pri:sel?0:(L.pri||2),a:a,sel:sel,cap:cap,
+        cands:L.near?bimDgBeside(sp):(L.alt?bimDgAlongPath(o,L,sp,V,W,H):null)});   /* __acad3dV171d: beside its point, or along its path */
     }
     if(clip)ctx.restore();
     ctx.globalAlpha=1;
@@ -323,9 +329,18 @@
     if(L)B.push([L.X,L.Y,L.w,L.h]);
     return B;
   }
+  /* __acad3dV171d: the places a word may take: beside its dot (right, left, above, below), or along its path at
+     each point given, the first the nearest noon */
+  function bimDgBeside(sp){return [[sp[0]+8,sp[1],'left'],[sp[0]-8,sp[1],'right'],[sp[0],sp[1]-13,'center'],[sp[0],sp[1]+13,'center']];}
+  function bimDgAlongPath(o,L,sp,V,W,H){
+    var P=[[sp[0],sp[1]]],C=[],i,q;
+    for(i=0;i<L.alt.length;i++){q=toScreen(bimDgW(o,L.alt[i]),V,W,H);if(q[2]>0.5)P.push([q[0],q[1]]);}
+    for(i=0;i<P.length;i++)C.push([P[i][0],P[i][1]-15,'center'],[P[i][0],P[i][1]+15,'center'],[P[i][0],P[i][1],'center']);   /* above the line, below it, on it */
+    return C;
+  }
   function bimDgPlaceLabels(ctx,Q,keep){
     var placed=(keep||[]).slice(),i,k;
-    A3D_DG.labelBoxes=[];
+    A3D_DG.labelBoxes=[];A3D_DG.labelWords=[];   /* __acad3dV171d: each word with its element */
     for(i=0;i<Q.length;i++)Q[i].n=i;
     Q.sort(function(x,y){return x.pri-y.pri||x.n-y.n;});
     function free(b){for(var j=0;j<placed.length;j++){var p=placed[j];if(b[0]<p[0]+p[2]&&p[0]<b[0]+b[2]&&b[1]<p[1]+p[3]&&p[1]<b[1]+b[3])return false;}return true;}
@@ -333,21 +348,26 @@
       var q=Q[i],sz=q.sz||11,h=sz+4,w,x0,dy=null,tries=q.pri===0?[0]:[0,-h,h,-2*h,2*h];
       ctx.font=sz+'px sans-serif';w=ctx.measureText(q.t).width;
       x0=q.al==='left'?q.x:(q.al==='right'?q.x-w:q.x-w/2);
-      for(k=0;k<tries.length;k++)if(q.pri===0||free([x0-2,q.y-h/2+tries[k],w+4,h])){dy=tries[k];break;}
+      if(q.cands){   /* __acad3dV171d: at one of its own places, never a line away */
+        for(k=0;k<q.cands.length;k++){
+          var cq=q.cands[k],cx0=cq[2]==='left'?cq[0]:(cq[2]==='right'?cq[0]-w:cq[0]-w/2);
+          if(q.pri===0||free([cx0-2,cq[1]-h/2,w+4,h])){q.x=cq[0];q.y=cq[1];q.al=cq[2];x0=cx0;dy=0;break;}
+        }
+      }else for(k=0;k<tries.length;k++)if(q.pri===0||free([x0-2,q.y-h/2+tries[k],w+4,h])){dy=tries[k];break;}
       if(dy===null)continue;
       placed.push([x0-2,q.y-h/2+dy,w+4,h]);
       ctx.globalAlpha=q.a;ctx.textAlign=q.al;ctx.textBaseline='middle';
       var bx=bimDgDrawText(ctx,q.t,q.x,q.y+dy,q.col,sz,q.cap);
       if(q.sel){ctx.globalAlpha=1;ctx.strokeStyle='#ffd166';ctx.lineWidth=1;ctx.strokeRect(bx[0]-2,bx[1],bx[2]+4,bx[3]);}
-      q.hit.boxes.push(bx);A3D_DG.labelBoxes.push(bx);   /* __acad3dV165 */
+      q.hit.boxes.push(bx);A3D_DG.labelBoxes.push(bx);A3D_DG.labelWords.push({t:q.t,b:bx,id:q.hit.id});   /* __acad3dV165 */
     }
     ctx.globalAlpha=1;
   }
   /* a shadow at its date and time, drawn from the model as it is now */
   function bimDgSun(date,time){
-    var st=bimSunSettings();
+    var st=bimSunStudy();   /* __acad3dV171d: a place tried; the zone's offset on the date */
     if(!bimSunNum(st.lat)||!bimSunNum(st.lon)||!bimSunNum(st.tz))return null;
-    var r=bimSunCalc(st.lat,st.lon,st.tz,date,time);
+    var r=bimSunCalc(st.lat,st.lon,bimSunTzAt(st,date,time),date,time);
     return (r&&r.elevation>0)?r:null;
   }
   /* the project's own solids near the site: the context's buildings are what the site is set in */
@@ -360,7 +380,7 @@
     });
   }
   function bimDgDrawShadow(ctx,V,W,H,o,a,day){
-    var L=o.dg.g.live,mv=!!(day&&L&&A3D_ANIM.sunTime),dt=mv?bimSunSettings().date:(L&&L.date),sun;
+    var L=o.dg.g.live,mv=!!(day&&L&&A3D_ANIM.sunTime),dt=mv?bimSunStudy().date:(L&&L.date),sun;   /* __acad3dV171d: the clock's date through the year */
     /* __acad3dV170: through the day, one shadow, at the sun's moment on the study's day */
     if(mv){var F=bimAnimFrame();if(F.shadowDone)return;F.shadowDone=true;}
     sun=L?(mv?bimDgSun(dt,A3D_ANIM.sunTime):bimDgSun(L.date,L.time)):null;
@@ -378,8 +398,9 @@
   /* pass 'under' before the model, 'over' after it */
   function drawDiagrams(ctx,V,W,H,pass){
     var over=pass!=='under',L=bimDgDiags(),cap=!!A3D.sheetCapture,sel={},bands=[],Q=[],i;
-    if(over)A3D_DG.hits=[];
+    if(over){A3D_DG.hits=[];A3D_DG.dotKeep=[];}
     if(!L.length)return;
+    if(!over){try{bimDgSunSync();}catch(eS){console.warn('[BIM] The sun\'s elements could not follow the clock',eS);}}   /* __acad3dV171d */
     (A3D.selSet||[]).forEach(function(id){sel[id]=1;});if(A3D.sel)sel[A3D.sel]=1;
     ctx.save();
     try{
@@ -390,9 +411,9 @@
         else bimDgDrawUnder(ctx,V,W,H,L[i]);
       }
       if(bands.length)bimDgDrawBands(ctx,V,W,H,bands);
-      if(over&&bimAnimLive())bimAnimDrawSun(ctx,V,W,H,Q);   /* __acad3dV170 */
       if(over){A3D_DG.ly=bimDgLegendLayout(ctx,W,H);A3D_DG.lyCtx=ctx;A3D_DG.lyFrame=A3D.frames;}   /* __acad3dV165: the key first, for the words to keep clear of */
-      if(Q.length)bimDgPlaceLabels(ctx,Q,bimDgKeepClear(W,H));
+      if(Q.length)bimDgPlaceLabels(ctx,Q,bimDgKeepClear(W,H).concat(A3D_DG.dotKeep||[]));   /* __acad3dV171d: the labelled dots kept clear */
+      if(over&&A3D_AW.on&&!cap)bimSunPanelLive();   /* __acad3dV171d: the sun's panel follows the clock */
     }catch(eD){
       console.warn('[BIM] The site analysis could not be drawn',eD);
       if(!A3D_DG.warned){A3D_DG.warned=true;a3dToast('The site analysis could not be drawn - see the console');}

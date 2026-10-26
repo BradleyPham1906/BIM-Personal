@@ -19,7 +19,9 @@
     ['flow','flow:','march','path'],['flow','exit:','march','path'],['views','view:','march','path'],['vehicles','entry:','march','path'],
     ['walk','w','march'],['needs','need:','march'],['transit','routes','march','path'],['transit','way:','march'],['transit','catch','march'],
     ['sun','now','sun'],['shadow','sh:','sun']];
-  var A3D_ANIM={on:false,paused:false,t:0,last:0,painted:0,raf:0,playAt:0,sunTime:null,fr:null,can:false,c:null,dome:null,wired:false,key:'',frames:0};
+  var A3D_ANIM={on:false,paused:false,t:0,last:0,painted:0,raf:0,playAt:0,sunTime:null,fr:null,can:false,c:null,dome:null,wired:false,key:'',frames:0,
+    sunMode:'day',sunDate:null};   /* __acad3dV171d: the sun through the day or through the year, and the year's date */
+  var BIM_ANIM_YEAR={secs:36,hold:1.2};   /* __acad3dV171d: 1 January to 31 December, a day a step, held at the end */
   function bimAnimMod(t,p){return p>0?((t%p)+p)%p:0;}
   /* moving or paused: the moment drawn; never on a sheet, a print or an export */
   function bimAnimLive(){return (A3D_ANIM.on||A3D_ANIM.paused)&&!A3D.sheetCapture&&!A3D_PLOT.on;}
@@ -27,6 +29,7 @@
   function bimAnimKinds(o){
     var g=o.dg.g,k=g.kind,n=(g.pts||[]).length,L=[];
     if(k==='live'||g.bands)return L;
+    if(o.dg.a==='sun'&&o.dg.k==='now')return L;   /* __acad3dV171d: the sun now moves with the clock, or is still */
     if(k==='lines'?(g.lines||[]).length>0:n>=2)L.push('march');
     if(k!=='segs'&&k!=='lines'&&n>=2)L.push('draw');
     if(k!=='segs'&&k!=='lines'&&g.closed&&n>=3)L.push('ring');
@@ -168,30 +171,26 @@
      held a moment at sunset; none without the site's place or in the polar night */
   function bimAnimSunOk(){var st=bimSunSettings();return bimSunNum(st.lat)&&bimSunNum(st.lon)&&bimSunNum(st.tz);}
   function bimAnimSunTime(){
-    var st=bimSunSettings(),B=BIM_ANIM.sun,r,a,b,p;
+    var st=bimSunStudy(true),B=BIM_ANIM.sun,r,a,b,p;   /* __acad3dV171d: a place tried, a moment previewed */
     if(!bimAnimSunOk())return null;
-    r=bimSunCalc(st.lat,st.lon,st.tz,st.date,'12:00');
+    if(A3D_ANIM.sunMode==='year')return st.time;   /* __acad3dV171d: through the year, at the study's time */
+    r=bimSunCalc(st.lat,st.lon,bimSunTzAt(st,st.date,'12:00'),st.date,'12:00');
     if(!r||r.polar==='night')return null;
     if(r.polar==='day'){a=0;b=1439;}else{a=Math.ceil(r.sunrise);b=Math.floor(r.sunset);}
     if(!(b>a))return null;
     p=bimAnimMod(A3D_ANIM.t,B.secs+B.hold);
     return bimHHMM(Math.floor(a+(b-a)*Math.min(1,p/B.secs)));
   }
-  /* the sun moving along its path on the sun paths' dome, with its time; it stands in for "the sun now" */
-  function bimAnimDrawSun(ctx,V,W,H,Q){
-    var F=bimAnimFrame(),sun,D,S,sp,a;
-    if(!F.sun||!A3D_ANIM.sunTime)return;
-    sun=bimSunNow();
-    if(!sun||sun.missing||!(sun.elevation>0))return;
-    D=(bimDgState().runs.sun||{}).dome;
-    if(D&&D.c&&D.R>0)S={c:D.c,y:D.y||0};
-    else{S=A3D_ANIM.dome||(A3D_ANIM.dome=bimDgSite());D={R:S.Rc};}
-    sp=toScreen(bimDgDome(S,D.R,sun),V,W,H);
-    a=bimAnimReveal('sun');
-    if(sp[2]<=0.5||!(a>0))return;
-    ctx.save();ctx.globalAlpha=a;bimDgSym(ctx,sp,{type:'dot',r:6},'#e5484d',a);ctx.restore();
-    Q.push({hit:{boxes:[]},t:A3D_ANIM.sunTime,x:sp[0],y:sp[1]-16,col:'#ff8a8f',sz:11,al:'center',pri:1,a:a,sel:false,cap:false});
-    F.sunAt=[sp[0],sp[1]];
+  /* __acad3dV171d: through the year: the date a day a step from 1 January, at the study's time, held at 31 December */
+  function bimAnimSunDate(){
+    var st,y,n,p,d,D;
+    if(A3D_ANIM.sunMode!=='year'||!bimAnimSunOk())return null;
+    st=bimSunStudy(true);y=+String(st.date).slice(0,4)||new Date().getFullYear();
+    n=((y%4===0&&y%100!==0)||y%400===0)?366:365;
+    p=bimAnimMod(A3D_ANIM.t,BIM_ANIM_YEAR.secs+BIM_ANIM_YEAR.hold);
+    d=Math.min(n-1,Math.floor(n*Math.min(1,p/BIM_ANIM_YEAR.secs)));
+    D=new Date(Date.UTC(y,0,1)+d*864e5);
+    return D.getUTCFullYear()+'-'+bimPad2(D.getUTCMonth()+1)+'-'+bimPad2(D.getUTCDate());
   }
   /* Play from still starts the clock at nothing, the layers coming in one after another; Play after Pause goes on
      from the moment kept */
@@ -205,7 +204,7 @@
     if(on){
       if(!A3D_ANIM.paused){A3D_ANIM.t=0;A3D_ANIM.playAt=0;}
       if(bimTrCanPlay()&&!A3D_TR.run)bimTrStart();   /* __acad3dV171: Play from still starts the run, warmed up */
-      A3D_ANIM.paused=false;A3D_ANIM.c=null;A3D_ANIM.dome=null;A3D_ANIM.sunTime=bimAnimSunTime();
+      A3D_ANIM.paused=false;A3D_ANIM.c=null;A3D_ANIM.dome=null;A3D_ANIM.sunTime=bimAnimSunTime();A3D_ANIM.sunDate=bimAnimSunDate();
       bimAnimWire();A3D_ANIM.last=0;A3D_ANIM.painted=0;bimAnimRun();
     }else{A3D_ANIM.paused=true;bimAnimHalt();}
     paint();
@@ -213,7 +212,7 @@
   }
   function bimAnimStop(){
     var was=A3D_ANIM.on||A3D_ANIM.paused;
-    A3D_ANIM.on=false;A3D_ANIM.paused=false;A3D_ANIM.t=0;A3D_ANIM.playAt=0;A3D_ANIM.sunTime=null;
+    A3D_ANIM.on=false;A3D_ANIM.paused=false;A3D_ANIM.t=0;A3D_ANIM.playAt=0;A3D_ANIM.sunTime=null;A3D_ANIM.sunDate=null;
     bimAnimHalt();
     bimTrStop();   /* __acad3dV171: Stop gives the run up */
     if(was)paint();
@@ -227,7 +226,7 @@
     if(A3D_ANIM.last){var dtc=Math.min(0.1,Math.max(0,(ts-A3D_ANIM.last)/1000));A3D_ANIM.t+=dtc;bimTrAdvance(dtc);}   /* a slow frame moves it a tenth of a second at most, never a jump; __acad3dV171: the run's steps */
     A3D_ANIM.last=ts;
     if(!A3D_ANIM.painted||ts-A3D_ANIM.painted>=1000/bimTrFps()-2){   /* __acad3dV171: fewer frames at Light */
-      A3D_ANIM.painted=ts;A3D_ANIM.sunTime=bimAnimSunTime();
+      A3D_ANIM.painted=ts;A3D_ANIM.sunTime=bimAnimSunTime();A3D_ANIM.sunDate=bimAnimSunDate();
       try{paint();A3D_ANIM.frames++;}
       catch(eA){console.warn('[BIM] A frame of the motion could not be drawn',eA);bimAnimPlay(false);a3dToast('The motion was paused: a frame could not be drawn - see the console');return;}
       if(!A3D_ANIM.on)return;
@@ -251,7 +250,7 @@
   function bimAnimSync(){
     var F=bimAnimFrame(),can=F.any||!!(A3D.showSun&&bimCameraIsPlan()&&bimAnimSunOk())||bimTrCanPlay(),moving=A3D_ANIM.on||A3D_ANIM.paused,g,b,x,key;   /* __acad3dV171 */
     A3D_ANIM.can=can;
-    if(!can&&moving){A3D_ANIM.on=false;A3D_ANIM.paused=false;A3D_ANIM.t=0;A3D_ANIM.playAt=0;A3D_ANIM.sunTime=null;bimAnimHalt();bimTrStop();moving=false;}
+    if(!can&&moving){A3D_ANIM.on=false;A3D_ANIM.paused=false;A3D_ANIM.t=0;A3D_ANIM.playAt=0;A3D_ANIM.sunTime=null;A3D_ANIM.sunDate=null;bimAnimHalt();bimTrStop();moving=false;}
     g=document.getElementById('a3d-animgrp');b=document.getElementById('a3d-animplay');x=document.getElementById('a3d-animstop');
     if(!g||!b)return;
     key=(can?1:0)+':'+(A3D_ANIM.on?1:0)+':'+(moving?1:0);
@@ -265,7 +264,7 @@
       b.classList.toggle('on',!!A3D_ANIM.on);
       if(x)x.hidden=!moving;
     }
-    var tt=A3D_ANIM.on?'Pause, keeping this moment'+(A3D_ANIM.sunTime?' (the sun at '+A3D_ANIM.sunTime+')':''):
+    var tt=A3D_ANIM.on?'Pause, keeping this moment'+(A3D_ANIM.sunTime?' (the sun at '+A3D_ANIM.sunTime+(A3D_ANIM.sunDate?' on '+bimSunDayText(A3D_ANIM.sunDate):'')+')':''):
       (A3D_ANIM.paused?'Play on from this moment':'Play the site analysis in motion: marching dashes, winds drawn on, rings growing, the layers in turn, the sun through the day');
     if(b.title!==tt)b.title=tt;
   }
@@ -321,7 +320,7 @@
     if(g.marks)g.marks.forEach(function(m){m.p=P(m.p);});
     if(g.bands)g.bands.forEach(function(B){if(B.pts)B.pts=B.pts.map(P);if(B.rings)B.rings=B.rings.map(function(Rg){return Rg.map(P);});});   /* __acad3dV165 */
     if(g.lines)g.lines=g.lines.map(function(Ln){return Ln.map(P);});
-    lb.forEach(function(L){if(L.p)L.p=P(L.p);});
+    lb.forEach(function(L){if(L.p)L.p=P(L.p);if(L.alt)L.alt=L.alt.map(P);});   /* __acad3dV171d: a word's places along its path */
     if(sym&&sym.p)sym.p=P(sym.p);
     if(sym&&sym.toward)sym.toward=P(sym.toward);
     return {kind:'diag',g:g,lb:lb,sym:sym};
@@ -339,6 +338,7 @@
     (g.marks||[]).forEach(function(m){P.push(m.p);});
     (g.bands||[]).forEach(function(B){(B.pts||[]).forEach(function(p){P.push(p);});(B.rings||[]).forEach(function(Rg){Rg.forEach(function(p){P.push(p);});});});   /* __acad3dV165 */
     (g.lines||[]).forEach(function(Ln){Ln.forEach(function(p){P.push(p);});});
+    (g.quads||[]).forEach(function(q){q.p.forEach(function(p){P.push(p);});});   /* __acad3dV171d: the temperature on the dome */
     (o.dg.lb||[]).forEach(function(L){if(L.p)P.push(L.p);});
     if(o.dg.sym&&o.dg.sym.p)P.push(o.dg.sym.p);
     for(i=0;i<P.length;i++)P[i]=bimDgW(o,P[i]);

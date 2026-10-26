@@ -346,8 +346,9 @@ async def run():
             ck('From the' in (src or '') and 'm/s' in (src or ''), "the rose's caption: the prevailing direction and the mean speed")
             await safe("()=>window.__a3dAwFocus('sun')")
             await page.wait_for_timeout(150)
-            ck(await safe("()=>!!document.querySelector('[data-awpanel=\"sun\"] .a3d-awp-chart svg')") and 'midsummer' in (await text('[data-awpanel="sun"] .a3d-awp-cap') or ''),
-               "the sun's paths drawn looking up, and their caption")
+            # AMENDED FOR V171d: Sun paths' diagrams are its own now, the sky dome in plan first (reference/research-sun-path.md, 7)
+            ck(await safe("()=>!!document.querySelector('[data-awpanel=\"sun\"] .a3d-awp-chart svg')") and 'The sky dome in plan' in (await text('[data-awpanel="sun"] .a3d-awp-cap') or ''),
+               "the sun's paths drawn on the sky dome in plan, and their caption")
             ab = await text('[data-awpanel="sun"] .a3d-awp-about')
             ck(ab and 'solstices' in ab, "what it shows, in a sentence (%s)" % ab)
             n0 = await safe("()=>window.__a3dDgDiagsCount?window.__a3dDgDiagsCount('sun'):window.__a3dState().objs.filter(function(o){return o.t==='diag'&&o.dg.a==='sun';}).length")

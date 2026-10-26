@@ -13,7 +13,7 @@
      model with what it found, or one of the model's analyses with its settings and its buttons. */
   var BIM_AW_ABOUT={
     frame:'True north and rings every 100 m from the site: the bearing and the scale of everything else.',
-    sun:'The sun\'s path over the site on the solstices and the equinoxes, with its hours, and where it is now.',
+    sun:'The sun\'s path over the site on the solstices and the equinoxes and on the day studied, with its hours; where it is now, its altitude and azimuth; and the temperature where it passes. They follow the place, the date and the time.',
     shadow:'Where the buildings cast their shadows at 9, 12 and 15 on the solstices and the equinox.',
     wind:'The winds by season from a year of hourly data, and the direction of the strongest.',
     views:'What can be seen from the site, at eye level and from the top floor.',
@@ -207,6 +207,7 @@
   function bimAwLeave(){
     if(!A3D_AW.on)return false;
     A3D_AW.on=false;A3D_AW.props=false;
+    A3D_SUNX.lat=null;A3D_SUNX.lon=null;A3D_SUNX.date=null;A3D_SUNX.time=null;   /* __acad3dV171d: a place tried ends with Analyze */
     document.body.classList.remove('a3d-aw');
     var sh=document.getElementById('a3d-shell'),shut;
     if(sh&&sh.getAttribute('data-tab')==='analyze'){
@@ -363,6 +364,7 @@
   function bimAwChart(a){
     var C=A3D.site&&A3D.site.climate,Hh=C&&C.hourly,st=bimSunSettings();
     try{
+      if(a==='sun')return bimSunChartsHtml();   /* __acad3dV171d: the turning points, the two diagrams, the temperature */
       if(a==='wind'&&Hh&&Hh.wind&&Hh.wind.year&&Hh.wind.year.n){
         var Wy=Hh.wind.year;
         return '<div class="a3d-awp-chart">'+bimClbRoseSvg(Wy,true,'Wind rose, '+Hh.year)+'</div>'+
@@ -382,7 +384,8 @@
     if(!can)return '';
     return bimAwSec('Play')+'<div class="a3d-awp-acts">'+
       bimAwBtn('anim:play',A3D_ANIM.on?'Pause':(A3D_ANIM.paused?'Go on':'Play'),!A3D_ANIM.on)+
-      bimAwBtn('anim:stop','Stop',false,A3D_ANIM.on||A3D_ANIM.paused?'':'Not playing')+'</div>';
+      bimAwBtn('anim:stop','Stop',false,A3D_ANIM.on||A3D_ANIM.paused?'':'Not playing')+'</div>'+
+      (a==='sun'||a==='shadow'?bimSunModeHtml():'');   /* __acad3dV171d: through the day or the year */
   }
   /* the overview: the site, the red flags first, every category's findings counted, what the run fetched */
   function bimAwOverviewHtml(){
@@ -439,6 +442,7 @@
       FK=BIM_AW_FINDS[f]||[],FF=bimSaShown().filter(function(x){return FK.indexOf(x.auto)>=0;});
     h='<div class="a3d-awp a3d-sa" data-awpanel="'+f+'">'+bimAwHd(A.col,0,A.name,(g?g.n:'Analyze')+(R?' \u00b7 '+R.date:''))+
       '<p class="a3d-awp-about">'+bimEsc(BIM_AW_ABOUT[f]||'')+'</p>';
+    if(f==='sun')h+=bimSunPanelHtml();   /* __acad3dV171d: the sun now, and the sliders */
     if(f==='traffic'){
       var s=bimTrSettings(),mv=bimMvOf();
       h+=bimAwSec('Simulation')+'<div class="a3d-awp-acts">'+bimAwBtn('tr:sim:'+(s.on?'off':'on'),s.on?'Stop the simulation':'Simulate',!s.on,mv?'':bimMvWhyNot())+'</div>'+
@@ -489,6 +493,7 @@
       else if(c==='back'){bimAwBlur();A3D_AW.props=false;bimAwRefresh();bimAwTop();r=true;}
       else if(c==='dg'){r=bimDgAct(a);bimAwRefresh();}
       else if(c==='tr'){r=bimTrAct(a);bimAwRefresh();}
+      else if(c==='sun')r=bimSunAct(a);   /* __acad3dV171d */
       else if(c==='anim'){
         if(a==='play')r=bimAnimPlay(!A3D_ANIM.on);
         else if(a==='stop'){r=bimAnimStop();}
@@ -518,9 +523,18 @@
         /* a field's change is its words committed, taken or refused: the panel shows the model again at once */
         if((k=e.getAttribute('data-znf'))){bimZnSet(k,e.value);if(bimAwOwns())bimAwRender(true);}   /* __acad3dV160: the zoning, in Legal */
         else if((k=e.getAttribute('data-anzload'))){updateLevel(A3D.activeLevel,k,e.value);if(bimAwOwns())bimAwRender(true);}   /* __acad3dV166b: the floor loads, in Frame analysis */
+        else if((k=e.getAttribute('data-sunsl'))){   /* __acad3dV171d: a slider let go; the same slider in the hand again */
+          bimSunSlide(k,e.value,true);
+          setTimeout(function(){var s=el.propsbody.querySelector('[data-sunsl="'+k+'"]');if(s&&document.activeElement!==s)s.focus();},0);
+        }
       }catch(eF){console.warn('[BIM] Analyze setting failed',eF);a3dToast('That setting could not be changed - see the console');}
     },true);   /* in the capture: V118's refresh after every change, the panel's last handler, would put the model's value back first */
     el.propsbody.addEventListener('focusout',function(){if(A3D_AW.pend)setTimeout(function(){if(A3D_AW.pend)refreshProps();},0);});   /* the refresh held for a field, as it is left */
+    el.propsbody.addEventListener('input',function(ev){   /* __acad3dV171d: a slider moving: the view and the numbers follow it */
+      var e=ev.target,k;
+      if(!A3D_AW.on||!e||!e.getAttribute||!(k=e.getAttribute('data-sunsl')))return;
+      try{bimSunSlide(k,e.value,false);}catch(eS){console.warn('[BIM] The sun\'s slider',eS);}
+    });
   }
   /* WebGPU's clear, in the view's background */
   function bimAwClear(){var b=bimAwBg();return {r:b[0],g:b[1],b:b[2],a:1};}

@@ -1460,6 +1460,28 @@ body.light-theme .a3d-awp-flag{background:rgba(229,72,77,.08)}
 body.light-theme .a3d-awp-catno,body.light-theme .a3d-awp-catf,body.light-theme .a3d-awp-anst,body.light-theme .a3d-awp-in{color:#6b7280}
 body.light-theme .a3d-awp-catf.rf{color:#b42318}
 body.light-theme .a3d-awp-cat:hover,body.light-theme .a3d-awp-an:hover{background:rgba(0,0,0,.04)}
+/* __acad3dV171d: the sun's panel: the sun now, the sliders, Play's two ways, the turning points, the diagrams */
+.a3d-sun-now b{font-variant-numeric:tabular-nums}
+.a3d-sun-f{font-size:11.5px}
+.a3d-sun-trial{padding:6px 8px;border-radius:6px;background:rgba(229,72,77,.12);color:#ffb3b5}
+.a3d-sun-sl{display:flex;flex-direction:column;gap:8px}
+.a3d-sun-slr{display:grid;grid-template-columns:1fr auto;gap:2px 8px;align-items:center;font-size:12px}
+.a3d-sun-sll{color:#8a96a3}
+.a3d-sun-slr output{font-variant-numeric:tabular-nums;text-align:right}
+.a3d-sun-slr input[type=range]{grid-column:1/-1;width:100%;margin:0;min-height:24px;accent-color:#ff8a8f;cursor:pointer}
+@media(pointer:coarse){.a3d-sun-slr input[type=range]{min-height:36px}}
+.a3d-sun-mode{margin-top:6px}
+.a3d-awp .a3d-sun-mode .a3d-anzbtn.on{border-color:#ff8a8f;color:#ffd0d2;background:rgba(255,138,143,.12)}
+.a3d-sun-tp{display:flex;flex-direction:column;gap:8px}
+.a3d-sun-card{border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:8px 10px}
+.a3d-sun-cardh{display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.a3d-sun-cardh i{width:10px;height:10px;border-radius:50%;flex:0 0 auto}
+.a3d-sun-cardh span{margin-left:auto;color:#8a96a3;font-size:11.5px;text-align:right}
+.a3d-sun-chart svg{max-width:260px}
+body.light-theme .a3d-sun-card{border-color:rgba(11,11,11,.12)}
+body.light-theme .a3d-sun-trial{background:rgba(229,72,77,.1);color:#9f1d22}
+body.light-theme .a3d-sun-sll,body.light-theme .a3d-sun-cardh span{color:#6b7280}
+body.light-theme .a3d-awp .a3d-sun-mode .a3d-anzbtn.on{border-color:#d63b41;color:#9f1d22;background:rgba(214,59,65,.08)}
 </style>
 </head>
 <body>
@@ -8026,26 +8048,109 @@ try{
       noon:noon,sunrise:W===null?null:noon-4*W,sunset:W===null?null:noon+4*W,
       polar:W!==null?'':(hc>1?'night':'day')};
   }
+  /* ================= __acad3dV171d: the sun's clock =================
+     reference/research-sun-path.md (5). The site's time zone, a name from the time zone database the climate brings
+     (Open-Meteo's timezone=auto), and daylight saving: Off, the UTC offset all year, the zone's standard time; Auto,
+     each date's own offset, from the browser's time zone database. Open-Meteo's offset is the one in force on the day
+     it was asked, so the zone's standard time is worked out here: the lower of mid-January's and mid-July's. */
+  var BIM_SUN_FMT={},BIM_SUN_MEMO={},BIM_SUN_MEMON=0;
+  function bimSunZoneOff(zone,dateStr,timeStr){
+    var dm=/^(\d{4})-(\d{2})-(\d{2})$/.exec(String(dateStr||'')),tm=/^(\d{1,2}):(\d{2})/.exec(String(timeStr||'12:00')),key,f,t0,o=0,k,P,t;
+    if(!zone||!dm||!tm)return null;
+    key=zone+'|'+dm[0]+'|'+tm[0];
+    if(BIM_SUN_MEMO.hasOwnProperty(key))return BIM_SUN_MEMO[key];
+    f=BIM_SUN_FMT[zone];
+    if(f===false)return null;
+    try{
+      if(!f)f=BIM_SUN_FMT[zone]=new Intl.DateTimeFormat('en-US',{timeZone:zone,hour12:false,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit'});
+      t0=Date.UTC(+dm[1],+dm[2]-1,+dm[3],+tm[1],+tm[2]);
+      for(k=0;k<3;k++){   /* the instant whose local time it is: three rounds settle it, a change of the clock included */
+        t=t0-o*60000;P={};
+        f.formatToParts(new Date(t)).forEach(function(x){P[x.type]=+x.value;});
+        o=Math.round((Date.UTC(P.year,P.month-1,P.day,P.hour%24,P.minute,P.second||0)-t)/60000);
+      }
+      o=isFinite(o)?o/60:null;
+    }catch(eZ){if(!f)BIM_SUN_FMT[zone]=false;return null;}
+    if(++BIM_SUN_MEMON>4000){BIM_SUN_MEMO={};BIM_SUN_MEMON=0;}
+    BIM_SUN_MEMO[key]=o;
+    return o;
+  }
+  function bimSunZoneStd(zone,yr){
+    var a=bimSunZoneOff(zone,yr+'-01-15','12:00'),b=bimSunZoneOff(zone,yr+'-07-15','12:00');
+    return a===null||b===null?null:Math.min(a,b);
+  }
+  /* the site's zone, where the browser knows it, and whether daylight saving follows it */
+  function bimSunZone(){
+    var s=(A3D.site&&A3D.site.sun)||{},C=A3D.site&&A3D.site.climate,z=s.zone||(C&&C.tzName)||null;
+    if(z&&bimSunZoneOff(z,new Date().getFullYear()+'-01-15','12:00')===null)z=null;
+    return {zone:z,dst:s.dst==='auto'&&!!z};
+  }
+  /* the UTC offset on a date: the zone's own with daylight saving Auto, else the site's; a place tried has its own */
+  function bimSunTzAt(st,dateStr,timeStr){
+    var z,o;
+    if(!st||st.trial)return st?st.tz:null;
+    z=bimSunZone();
+    if(z.dst){o=bimSunZoneOff(z.zone,dateStr,timeStr||'12:00');if(o!==null)return o;}
+    return st.tz;
+  }
+  function bimSunOffText(h){var m=Math.round(Math.abs(h)*60);return (h<0?'\u2212':'+')+Math.floor(m/60)+(m%60?':'+bimPad2(m%60):'');}
+  /* the clock in words: UTC-5, and the zone, and whether it is daylight saving time */
+  function bimSunClockText(st,dateStr,timeStr){
+    var tz=bimSunTzAt(st,dateStr,timeStr),z=bimSunZone(),std;
+    if(!bimSunNum(tz))return 'no UTC offset';
+    if(st.trial)return 'UTC'+bimSunOffText(tz)+', by the longitude';
+    if(!z.zone)return 'UTC'+bimSunOffText(tz);
+    std=bimSunZoneStd(z.zone,String(dateStr).slice(0,4));
+    return 'UTC'+bimSunOffText(tz)+', '+z.zone+(z.dst?(std!==null&&tz>std?', daylight saving time':', standard time'):'');
+  }
+  /* Properties > Site > Location: the zone, and daylight saving */
+  function bimSunZoneRows(){
+    var z=bimSunZone();
+    if(!z.zone)return '';
+    return bimPropText('Time Zone',z.zone)+
+      bimPropRow('Daylight Saving','<select data-propmodel="sundst" title="Off: the UTC offset all year, standard time. Auto: each date\'s own offset, by the time zone">'+
+        '<option value=""'+(z.dst?'':' selected')+'>Off: standard time all year</option><option value="auto"'+(z.dst?' selected':'')+'>Auto: by the time zone</option></select>');
+  }
+  /* a place tried and a moment previewed from the sun's panel: never saved, never undone */
+  var A3D_SUNX={lat:null,lon:null,date:null,time:null};
+  function bimSunTrying(){return bimSunNum(A3D_SUNX.lat)&&bimSunNum(A3D_SUNX.lon);}
+  /* the sun studied: the site's settings, a place tried (its offset by the longitude), a moment previewed, and the
+     clock's moment while it plays (noClock: without it) */
+  function bimSunStudy(noClock){
+    var st=bimSunSettings();
+    if(bimSunTrying()){st.lat=A3D_SUNX.lat;st.lon=A3D_SUNX.lon;st.tz=Math.round(A3D_SUNX.lon/15);st.trial=true;}
+    if(A3D_SUNX.date)st.date=A3D_SUNX.date;
+    if(A3D_SUNX.time)st.time=A3D_SUNX.time;
+    if(!noClock&&bimAnimLive()){if(A3D_ANIM.sunDate)st.date=A3D_ANIM.sunDate;if(A3D_ANIM.sunTime)st.time=A3D_ANIM.sunTime;}
+    return st;
+  }
   /* __acad3dV107: the site's place on the earth and the moment studied. No invented location: the
      latitude, longitude and UTC offset stay unset until the owner gives them, and everything that
      needs them says so. Date and time default to noon on June 21 of this year. */
   function bimSunNum(v){return typeof v==='number'&&isFinite(v);}
   function bimPad2(n){n=Math.floor(n);return (n<10?'0':'')+n;}
   function bimHHMM(m){m=((Math.round(m)%1440)+1440)%1440;return bimPad2(m/60)+':'+bimPad2(m%60);}
+  /* __acad3dV171d: a date in words, 21 June 2026 (short: 21 Jun) */
+  var BIM_SUN_MON=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  function bimSunDayText(d,short){
+    var m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(String(d||''));
+    if(!m)return String(d||'');
+    return (+m[3])+' '+(short?BIM_SUN_MON[+m[2]-1].slice(0,3):BIM_SUN_MON[+m[2]-1]+' '+m[1]);
+  }
   function bimSunSettings(){
     var s=(A3D.site&&A3D.site.sun)||{};
     return {lat:s.lat,lon:s.lon,tz:s.tz,date:s.date||(new Date().getFullYear()+'-06-21'),time:s.time||'12:00'};
   }
   function bimSunNow(saved){
-    var st=bimSunSettings(),miss=[],r;
-    if(!saved&&A3D_ANIM.sunTime&&bimAnimLive())st.time=A3D_ANIM.sunTime;   /* __acad3dV170: the sun while it plays; the project's time stays */
+    var st=saved?bimSunSettings():bimSunStudy(),miss=[],r,tz;   /* __acad3dV170: the sun while it plays; __acad3dV171d: a place tried, a moment previewed */
     if(!bimSunNum(st.lat))miss.push('latitude');
     if(!bimSunNum(st.lon))miss.push('longitude');
     if(!bimSunNum(st.tz))miss.push('UTC offset');
     if(miss.length)return {missing:miss,settings:st};
-    r=bimSunCalc(st.lat,st.lon,st.tz,st.date,st.time);
+    tz=bimSunTzAt(st,st.date,st.time);   /* __acad3dV171d: the zone's own offset on the date, with daylight saving Auto */
+    r=bimSunCalc(st.lat,st.lon,tz,st.date,st.time);
     if(!r)return {missing:['a valid date and time'],settings:st};
-    r.settings=st;
+    r.settings=st;r.tzUsed=tz;
     return r;
   }
   function bimSunText(sun){
@@ -8073,12 +8178,16 @@ try{
       m=/^(\d{1,2}):(\d{2})(?::\d{2})?$/.exec(v);
       if(v!==''&&(!m||+m[1]>23||+m[2]>59)){a3dToast('The sun time must be HH:MM, from 00:00 to 23:59');refreshProps();return false;}
       nv=v===''?null:(bimPad2(+m[1])+':'+m[2]);
+    }else if(field==='dst'){   /* __acad3dV171d: daylight saving, Off or Auto */
+      nv=v==='auto'?'auto':null;
+      if(nv&&!bimSunZone().zone){a3dToast('Daylight saving needs the site\'s time zone: Analyze site gets it with the climate');refreshProps();return false;}
     }else return false;
     cur=A3D.site.sun||{};
     if((cur[field]==null?null:cur[field])===nv)return true;
     pushUndo();
     A3D.site.sun=A3D.site.sun||{};
     if(nv===null)delete A3D.site.sun[field];else A3D.site.sun[field]=nv;
+    if(field==='tz')delete A3D.site.sun.tzAuto;   /* __acad3dV171d: the owner's own offset, which the climate keeps */
     refreshProps();paint();saveSoon();
     a3dToast('Sun: '+bimSunText(bimSunNow(true)));
     return true;
@@ -20700,7 +20809,7 @@ try{
           if(x.dg.gen!==gen)x.dg.newer=true;
           x.dg.gen=gen;x.dg.info=e.info||{};delete x.dg.orphan;kept++;
         }else{
-          x.dg.g=core.g;x.dg.s=core.s;x.dg.lb=core.lb;x.dg.sym=core.sym;x.dg.gen=gen;x.dg.info=e.info||{};
+          x.dg.g=core.g;x.dg.s=core.s;x.dg.lb=core.lb;x.dg.sym=core.sym;x.dg.gen=gen;x.dg.info=e.info||{};delete x.dg.sk;   /* __acad3dV171d: drawn again, its sync's inputs gone */
           delete x.dg.newer;delete x.dg.orphan;x.name=String(e.name||x.name).slice(0,80);x.layer=lay(e.layer)||x.layer;upd++;
         }
         delete have[e.k];
@@ -20729,7 +20838,7 @@ try{
     if(!bimDgEdited(o)&&!o.dg.newer){a3dToast(o.name+' is as the analysis drew it');return false;}
     pushUndo();
     var c=JSON.parse(o.dg.gen);
-    o.dg.g=c.g;o.dg.s=c.s;o.dg.lb=c.lb;o.dg.sym=c.sym;o.pos=[0,0,0];delete o.dg.newer;
+    o.dg.g=c.g;o.dg.s=c.s;o.dg.lb=c.lb;o.dg.sym=c.sym;o.pos=[0,0,0];delete o.dg.newer;delete o.dg.sk;   /* __acad3dV171d */
     refreshProps();paint();saveSoon();
     a3dToast(o.name+' is as the analysis drew it again');
     return true;
@@ -20813,6 +20922,7 @@ try{
     var dg=o.dg,g=dg.g,s=dg.s||{},a=bimLayerAlpha(o)*(s.op===undefined?1:s.op)*bimAnimAlpha(o),mo=bimAnimLive()?bimAnimMotion(o):null,P,k,an;   /* __acad3dV170 */
     if(!(a>0))return;
     if(g.kind==='live'){bimDgDrawShadow(ctx,V,W,H,o,a,mo==='sun');return;}
+    if(g.kind==='mesh'){bimSunDrawMesh(ctx,V,W,H,o,a);return;}   /* __acad3dV171d: the temperature on the dome */
     if(g.kind==='segs'||!g.pts||g.pts.length<3||!s.fill||!g.closed)return;
     if(mo==='ring'){k=bimAnimRingK(o);if(!(k>0))return;P=k<1?bimAnimScreen(o,V,W,H,k):bimDgScreen(o,V,W,H);}else P=bimDgScreen(o,V,W,H);
     ctx.save();
@@ -20883,7 +20993,7 @@ try{
        a march's dashes moved, away from the site or as drawn; the sun now gives way to the sun moving */
     var mo=bimAnimLive()?bimAnimMotion(o):null,rk=1,an=null,clip=false,lbOk=true,mOff=null;
     if(bimAnimLive())a*=bimAnimReveal(dg.a);
-    if(!(a>0)||(mo==='sun'&&A3D_ANIM.sunTime&&bimAnimFrame().sun))return hit;
+    if(!(a>0))return hit;   /* __acad3dV171d: the sun now is the clock's own, moving or still */
     if(mo==='ring'){rk=bimAnimRingK(o);if(!(rk>0))return hit;lbOk=rk>=1;}
     P=rk<1?bimAnimScreen(o,V,W,H,rk):bimDgScreen(o,V,W,H);
     if(mo==='march'){mOff=bimAnimMarchOff();if(bimAnimOut(o))P=bimAnimOrient(o,P);}
@@ -20937,7 +21047,10 @@ try{
       sp=toScreen(bimDgW(o,g.marks[i].p),V,W,H);if(sp[2]<=0.5)continue;
       ctx.globalAlpha=a;ctx.fillStyle=s.mark||'#ffd23f';ctx.beginPath();ctx.arc(sp[0],sp[1],sel?5.5:4.5,0,2*Math.PI);ctx.fill();
       hit.dots.push([sp[0],sp[1]]);
-      if(g.marks[i].t&&lbOk)Q.push({hit:hit,t:g.marks[i].t,x:sp[0]+8,y:sp[1],col:s.markText||'#f4f1e3',sz:10,al:'left',pri:sel?0:4,a:a,sel:sel,cap:cap});
+      if(g.marks[i].t){   /* __acad3dV171d: a labelled dot no word covers; its word beside it or left out */
+        A3D_DG.dotKeep.push([sp[0]-5,sp[1]-5,10,10]);
+        if(lbOk)Q.push({hit:hit,t:g.marks[i].t,x:sp[0]+8,y:sp[1],col:s.markText||'#f4f1e3',sz:10,al:'left',pri:sel?0:4,a:a,sel:sel,cap:cap,cands:bimDgBeside(sp)});
+      }
     }
     if(dg.sym&&dg.sym.p){
       sp=toScreen(bimDgW(o,dg.sym.p),V,W,H);
@@ -20947,12 +21060,14 @@ try{
         ctx.globalAlpha=a;var rr=bimDgSym(ctx,sp,sy,dg.sym.col||s.stroke||'#e8edf2',a);
         if(sel){ctx.globalAlpha=1;ctx.strokeStyle='#ffd166';ctx.lineWidth=2;ctx.beginPath();ctx.arc(sp[0],sp[1],rr+3,0,2*Math.PI);ctx.stroke();}
         hit.boxes.push([sp[0]-rr,sp[1]-rr,2*rr,2*rr]);
+        if(dg.a==='sun'){A3D_DG.dotKeep.push([sp[0]-rr,sp[1]-rr,2*rr,2*rr]);if(dg.k==='now'&&bimAnimLive())bimAnimFrame().sunAt=[sp[0],sp[1]];}   /* __acad3dV171d: the sun, kept clear; where it is while it plays */
       }
     }
     for(i=0;i<(dg.lb||[]).length;i++){
       var L=dg.lb[i];if(!L||!L.t||!L.p||!lbOk)continue;
       sp=toScreen(bimDgW(o,L.p),V,W,H);if(sp[2]<=0.5)continue;
-      Q.push({hit:hit,t:L.t,x:sp[0]+(L.al==='left'?14:0),y:sp[1],col:L.col||s.stroke,sz:L.sz||11,al:L.al||'center',pri:sel?0:(L.pri||2),a:a,sel:sel,cap:cap});
+      Q.push({hit:hit,t:L.t,x:sp[0]+(L.al==='left'?14:0),y:sp[1],col:L.col||s.stroke,sz:L.sz||11,al:L.al||'center',pri:sel?0:(L.pri||2),a:a,sel:sel,cap:cap,
+        cands:L.near?bimDgBeside(sp):(L.alt?bimDgAlongPath(o,L,sp,V,W,H):null)});   /* __acad3dV171d: beside its point, or along its path */
     }
     if(clip)ctx.restore();
     ctx.globalAlpha=1;
@@ -20972,9 +21087,18 @@ try{
     if(L)B.push([L.X,L.Y,L.w,L.h]);
     return B;
   }
+  /* __acad3dV171d: the places a word may take: beside its dot (right, left, above, below), or along its path at
+     each point given, the first the nearest noon */
+  function bimDgBeside(sp){return [[sp[0]+8,sp[1],'left'],[sp[0]-8,sp[1],'right'],[sp[0],sp[1]-13,'center'],[sp[0],sp[1]+13,'center']];}
+  function bimDgAlongPath(o,L,sp,V,W,H){
+    var P=[[sp[0],sp[1]]],C=[],i,q;
+    for(i=0;i<L.alt.length;i++){q=toScreen(bimDgW(o,L.alt[i]),V,W,H);if(q[2]>0.5)P.push([q[0],q[1]]);}
+    for(i=0;i<P.length;i++)C.push([P[i][0],P[i][1]-15,'center'],[P[i][0],P[i][1]+15,'center'],[P[i][0],P[i][1],'center']);   /* above the line, below it, on it */
+    return C;
+  }
   function bimDgPlaceLabels(ctx,Q,keep){
     var placed=(keep||[]).slice(),i,k;
-    A3D_DG.labelBoxes=[];
+    A3D_DG.labelBoxes=[];A3D_DG.labelWords=[];   /* __acad3dV171d: each word with its element */
     for(i=0;i<Q.length;i++)Q[i].n=i;
     Q.sort(function(x,y){return x.pri-y.pri||x.n-y.n;});
     function free(b){for(var j=0;j<placed.length;j++){var p=placed[j];if(b[0]<p[0]+p[2]&&p[0]<b[0]+b[2]&&b[1]<p[1]+p[3]&&p[1]<b[1]+b[3])return false;}return true;}
@@ -20982,21 +21106,26 @@ try{
       var q=Q[i],sz=q.sz||11,h=sz+4,w,x0,dy=null,tries=q.pri===0?[0]:[0,-h,h,-2*h,2*h];
       ctx.font=sz+'px sans-serif';w=ctx.measureText(q.t).width;
       x0=q.al==='left'?q.x:(q.al==='right'?q.x-w:q.x-w/2);
-      for(k=0;k<tries.length;k++)if(q.pri===0||free([x0-2,q.y-h/2+tries[k],w+4,h])){dy=tries[k];break;}
+      if(q.cands){   /* __acad3dV171d: at one of its own places, never a line away */
+        for(k=0;k<q.cands.length;k++){
+          var cq=q.cands[k],cx0=cq[2]==='left'?cq[0]:(cq[2]==='right'?cq[0]-w:cq[0]-w/2);
+          if(q.pri===0||free([cx0-2,cq[1]-h/2,w+4,h])){q.x=cq[0];q.y=cq[1];q.al=cq[2];x0=cx0;dy=0;break;}
+        }
+      }else for(k=0;k<tries.length;k++)if(q.pri===0||free([x0-2,q.y-h/2+tries[k],w+4,h])){dy=tries[k];break;}
       if(dy===null)continue;
       placed.push([x0-2,q.y-h/2+dy,w+4,h]);
       ctx.globalAlpha=q.a;ctx.textAlign=q.al;ctx.textBaseline='middle';
       var bx=bimDgDrawText(ctx,q.t,q.x,q.y+dy,q.col,sz,q.cap);
       if(q.sel){ctx.globalAlpha=1;ctx.strokeStyle='#ffd166';ctx.lineWidth=1;ctx.strokeRect(bx[0]-2,bx[1],bx[2]+4,bx[3]);}
-      q.hit.boxes.push(bx);A3D_DG.labelBoxes.push(bx);   /* __acad3dV165 */
+      q.hit.boxes.push(bx);A3D_DG.labelBoxes.push(bx);A3D_DG.labelWords.push({t:q.t,b:bx,id:q.hit.id});   /* __acad3dV165 */
     }
     ctx.globalAlpha=1;
   }
   /* a shadow at its date and time, drawn from the model as it is now */
   function bimDgSun(date,time){
-    var st=bimSunSettings();
+    var st=bimSunStudy();   /* __acad3dV171d: a place tried; the zone's offset on the date */
     if(!bimSunNum(st.lat)||!bimSunNum(st.lon)||!bimSunNum(st.tz))return null;
-    var r=bimSunCalc(st.lat,st.lon,st.tz,date,time);
+    var r=bimSunCalc(st.lat,st.lon,bimSunTzAt(st,date,time),date,time);
     return (r&&r.elevation>0)?r:null;
   }
   /* the project's own solids near the site: the context's buildings are what the site is set in */
@@ -21009,7 +21138,7 @@ try{
     });
   }
   function bimDgDrawShadow(ctx,V,W,H,o,a,day){
-    var L=o.dg.g.live,mv=!!(day&&L&&A3D_ANIM.sunTime),dt=mv?bimSunSettings().date:(L&&L.date),sun;
+    var L=o.dg.g.live,mv=!!(day&&L&&A3D_ANIM.sunTime),dt=mv?bimSunStudy().date:(L&&L.date),sun;   /* __acad3dV171d: the clock's date through the year */
     /* __acad3dV170: through the day, one shadow, at the sun's moment on the study's day */
     if(mv){var F=bimAnimFrame();if(F.shadowDone)return;F.shadowDone=true;}
     sun=L?(mv?bimDgSun(dt,A3D_ANIM.sunTime):bimDgSun(L.date,L.time)):null;
@@ -21027,8 +21156,9 @@ try{
   /* pass 'under' before the model, 'over' after it */
   function drawDiagrams(ctx,V,W,H,pass){
     var over=pass!=='under',L=bimDgDiags(),cap=!!A3D.sheetCapture,sel={},bands=[],Q=[],i;
-    if(over)A3D_DG.hits=[];
+    if(over){A3D_DG.hits=[];A3D_DG.dotKeep=[];}
     if(!L.length)return;
+    if(!over){try{bimDgSunSync();}catch(eS){console.warn('[BIM] The sun\'s elements could not follow the clock',eS);}}   /* __acad3dV171d */
     (A3D.selSet||[]).forEach(function(id){sel[id]=1;});if(A3D.sel)sel[A3D.sel]=1;
     ctx.save();
     try{
@@ -21039,9 +21169,9 @@ try{
         else bimDgDrawUnder(ctx,V,W,H,L[i]);
       }
       if(bands.length)bimDgDrawBands(ctx,V,W,H,bands);
-      if(over&&bimAnimLive())bimAnimDrawSun(ctx,V,W,H,Q);   /* __acad3dV170 */
       if(over){A3D_DG.ly=bimDgLegendLayout(ctx,W,H);A3D_DG.lyCtx=ctx;A3D_DG.lyFrame=A3D.frames;}   /* __acad3dV165: the key first, for the words to keep clear of */
-      if(Q.length)bimDgPlaceLabels(ctx,Q,bimDgKeepClear(W,H));
+      if(Q.length)bimDgPlaceLabels(ctx,Q,bimDgKeepClear(W,H).concat(A3D_DG.dotKeep||[]));   /* __acad3dV171d: the labelled dots kept clear */
+      if(over&&A3D_AW.on&&!cap)bimSunPanelLive();   /* __acad3dV171d: the sun's panel follows the clock */
     }catch(eD){
       console.warn('[BIM] The site analysis could not be drawn',eD);
       if(!A3D_DG.warned){A3D_DG.warned=true;a3dToast('The site analysis could not be drawn - see the console');}
@@ -21069,7 +21199,9 @@ try{
     ['flow','flow:','march','path'],['flow','exit:','march','path'],['views','view:','march','path'],['vehicles','entry:','march','path'],
     ['walk','w','march'],['needs','need:','march'],['transit','routes','march','path'],['transit','way:','march'],['transit','catch','march'],
     ['sun','now','sun'],['shadow','sh:','sun']];
-  var A3D_ANIM={on:false,paused:false,t:0,last:0,painted:0,raf:0,playAt:0,sunTime:null,fr:null,can:false,c:null,dome:null,wired:false,key:'',frames:0};
+  var A3D_ANIM={on:false,paused:false,t:0,last:0,painted:0,raf:0,playAt:0,sunTime:null,fr:null,can:false,c:null,dome:null,wired:false,key:'',frames:0,
+    sunMode:'day',sunDate:null};   /* __acad3dV171d: the sun through the day or through the year, and the year's date */
+  var BIM_ANIM_YEAR={secs:36,hold:1.2};   /* __acad3dV171d: 1 January to 31 December, a day a step, held at the end */
   function bimAnimMod(t,p){return p>0?((t%p)+p)%p:0;}
   /* moving or paused: the moment drawn; never on a sheet, a print or an export */
   function bimAnimLive(){return (A3D_ANIM.on||A3D_ANIM.paused)&&!A3D.sheetCapture&&!A3D_PLOT.on;}
@@ -21077,6 +21209,7 @@ try{
   function bimAnimKinds(o){
     var g=o.dg.g,k=g.kind,n=(g.pts||[]).length,L=[];
     if(k==='live'||g.bands)return L;
+    if(o.dg.a==='sun'&&o.dg.k==='now')return L;   /* __acad3dV171d: the sun now moves with the clock, or is still */
     if(k==='lines'?(g.lines||[]).length>0:n>=2)L.push('march');
     if(k!=='segs'&&k!=='lines'&&n>=2)L.push('draw');
     if(k!=='segs'&&k!=='lines'&&g.closed&&n>=3)L.push('ring');
@@ -21218,30 +21351,26 @@ try{
      held a moment at sunset; none without the site's place or in the polar night */
   function bimAnimSunOk(){var st=bimSunSettings();return bimSunNum(st.lat)&&bimSunNum(st.lon)&&bimSunNum(st.tz);}
   function bimAnimSunTime(){
-    var st=bimSunSettings(),B=BIM_ANIM.sun,r,a,b,p;
+    var st=bimSunStudy(true),B=BIM_ANIM.sun,r,a,b,p;   /* __acad3dV171d: a place tried, a moment previewed */
     if(!bimAnimSunOk())return null;
-    r=bimSunCalc(st.lat,st.lon,st.tz,st.date,'12:00');
+    if(A3D_ANIM.sunMode==='year')return st.time;   /* __acad3dV171d: through the year, at the study's time */
+    r=bimSunCalc(st.lat,st.lon,bimSunTzAt(st,st.date,'12:00'),st.date,'12:00');
     if(!r||r.polar==='night')return null;
     if(r.polar==='day'){a=0;b=1439;}else{a=Math.ceil(r.sunrise);b=Math.floor(r.sunset);}
     if(!(b>a))return null;
     p=bimAnimMod(A3D_ANIM.t,B.secs+B.hold);
     return bimHHMM(Math.floor(a+(b-a)*Math.min(1,p/B.secs)));
   }
-  /* the sun moving along its path on the sun paths' dome, with its time; it stands in for "the sun now" */
-  function bimAnimDrawSun(ctx,V,W,H,Q){
-    var F=bimAnimFrame(),sun,D,S,sp,a;
-    if(!F.sun||!A3D_ANIM.sunTime)return;
-    sun=bimSunNow();
-    if(!sun||sun.missing||!(sun.elevation>0))return;
-    D=(bimDgState().runs.sun||{}).dome;
-    if(D&&D.c&&D.R>0)S={c:D.c,y:D.y||0};
-    else{S=A3D_ANIM.dome||(A3D_ANIM.dome=bimDgSite());D={R:S.Rc};}
-    sp=toScreen(bimDgDome(S,D.R,sun),V,W,H);
-    a=bimAnimReveal('sun');
-    if(sp[2]<=0.5||!(a>0))return;
-    ctx.save();ctx.globalAlpha=a;bimDgSym(ctx,sp,{type:'dot',r:6},'#e5484d',a);ctx.restore();
-    Q.push({hit:{boxes:[]},t:A3D_ANIM.sunTime,x:sp[0],y:sp[1]-16,col:'#ff8a8f',sz:11,al:'center',pri:1,a:a,sel:false,cap:false});
-    F.sunAt=[sp[0],sp[1]];
+  /* __acad3dV171d: through the year: the date a day a step from 1 January, at the study's time, held at 31 December */
+  function bimAnimSunDate(){
+    var st,y,n,p,d,D;
+    if(A3D_ANIM.sunMode!=='year'||!bimAnimSunOk())return null;
+    st=bimSunStudy(true);y=+String(st.date).slice(0,4)||new Date().getFullYear();
+    n=((y%4===0&&y%100!==0)||y%400===0)?366:365;
+    p=bimAnimMod(A3D_ANIM.t,BIM_ANIM_YEAR.secs+BIM_ANIM_YEAR.hold);
+    d=Math.min(n-1,Math.floor(n*Math.min(1,p/BIM_ANIM_YEAR.secs)));
+    D=new Date(Date.UTC(y,0,1)+d*864e5);
+    return D.getUTCFullYear()+'-'+bimPad2(D.getUTCMonth()+1)+'-'+bimPad2(D.getUTCDate());
   }
   /* Play from still starts the clock at nothing, the layers coming in one after another; Play after Pause goes on
      from the moment kept */
@@ -21255,7 +21384,7 @@ try{
     if(on){
       if(!A3D_ANIM.paused){A3D_ANIM.t=0;A3D_ANIM.playAt=0;}
       if(bimTrCanPlay()&&!A3D_TR.run)bimTrStart();   /* __acad3dV171: Play from still starts the run, warmed up */
-      A3D_ANIM.paused=false;A3D_ANIM.c=null;A3D_ANIM.dome=null;A3D_ANIM.sunTime=bimAnimSunTime();
+      A3D_ANIM.paused=false;A3D_ANIM.c=null;A3D_ANIM.dome=null;A3D_ANIM.sunTime=bimAnimSunTime();A3D_ANIM.sunDate=bimAnimSunDate();
       bimAnimWire();A3D_ANIM.last=0;A3D_ANIM.painted=0;bimAnimRun();
     }else{A3D_ANIM.paused=true;bimAnimHalt();}
     paint();
@@ -21263,7 +21392,7 @@ try{
   }
   function bimAnimStop(){
     var was=A3D_ANIM.on||A3D_ANIM.paused;
-    A3D_ANIM.on=false;A3D_ANIM.paused=false;A3D_ANIM.t=0;A3D_ANIM.playAt=0;A3D_ANIM.sunTime=null;
+    A3D_ANIM.on=false;A3D_ANIM.paused=false;A3D_ANIM.t=0;A3D_ANIM.playAt=0;A3D_ANIM.sunTime=null;A3D_ANIM.sunDate=null;
     bimAnimHalt();
     bimTrStop();   /* __acad3dV171: Stop gives the run up */
     if(was)paint();
@@ -21277,7 +21406,7 @@ try{
     if(A3D_ANIM.last){var dtc=Math.min(0.1,Math.max(0,(ts-A3D_ANIM.last)/1000));A3D_ANIM.t+=dtc;bimTrAdvance(dtc);}   /* a slow frame moves it a tenth of a second at most, never a jump; __acad3dV171: the run's steps */
     A3D_ANIM.last=ts;
     if(!A3D_ANIM.painted||ts-A3D_ANIM.painted>=1000/bimTrFps()-2){   /* __acad3dV171: fewer frames at Light */
-      A3D_ANIM.painted=ts;A3D_ANIM.sunTime=bimAnimSunTime();
+      A3D_ANIM.painted=ts;A3D_ANIM.sunTime=bimAnimSunTime();A3D_ANIM.sunDate=bimAnimSunDate();
       try{paint();A3D_ANIM.frames++;}
       catch(eA){console.warn('[BIM] A frame of the motion could not be drawn',eA);bimAnimPlay(false);a3dToast('The motion was paused: a frame could not be drawn - see the console');return;}
       if(!A3D_ANIM.on)return;
@@ -21301,7 +21430,7 @@ try{
   function bimAnimSync(){
     var F=bimAnimFrame(),can=F.any||!!(A3D.showSun&&bimCameraIsPlan()&&bimAnimSunOk())||bimTrCanPlay(),moving=A3D_ANIM.on||A3D_ANIM.paused,g,b,x,key;   /* __acad3dV171 */
     A3D_ANIM.can=can;
-    if(!can&&moving){A3D_ANIM.on=false;A3D_ANIM.paused=false;A3D_ANIM.t=0;A3D_ANIM.playAt=0;A3D_ANIM.sunTime=null;bimAnimHalt();bimTrStop();moving=false;}
+    if(!can&&moving){A3D_ANIM.on=false;A3D_ANIM.paused=false;A3D_ANIM.t=0;A3D_ANIM.playAt=0;A3D_ANIM.sunTime=null;A3D_ANIM.sunDate=null;bimAnimHalt();bimTrStop();moving=false;}
     g=document.getElementById('a3d-animgrp');b=document.getElementById('a3d-animplay');x=document.getElementById('a3d-animstop');
     if(!g||!b)return;
     key=(can?1:0)+':'+(A3D_ANIM.on?1:0)+':'+(moving?1:0);
@@ -21315,7 +21444,7 @@ try{
       b.classList.toggle('on',!!A3D_ANIM.on);
       if(x)x.hidden=!moving;
     }
-    var tt=A3D_ANIM.on?'Pause, keeping this moment'+(A3D_ANIM.sunTime?' (the sun at '+A3D_ANIM.sunTime+')':''):
+    var tt=A3D_ANIM.on?'Pause, keeping this moment'+(A3D_ANIM.sunTime?' (the sun at '+A3D_ANIM.sunTime+(A3D_ANIM.sunDate?' on '+bimSunDayText(A3D_ANIM.sunDate):'')+')':''):
       (A3D_ANIM.paused?'Play on from this moment':'Play the site analysis in motion: marching dashes, winds drawn on, rings growing, the layers in turn, the sun through the day');
     if(b.title!==tt)b.title=tt;
   }
@@ -21371,7 +21500,7 @@ try{
     if(g.marks)g.marks.forEach(function(m){m.p=P(m.p);});
     if(g.bands)g.bands.forEach(function(B){if(B.pts)B.pts=B.pts.map(P);if(B.rings)B.rings=B.rings.map(function(Rg){return Rg.map(P);});});   /* __acad3dV165 */
     if(g.lines)g.lines=g.lines.map(function(Ln){return Ln.map(P);});
-    lb.forEach(function(L){if(L.p)L.p=P(L.p);});
+    lb.forEach(function(L){if(L.p)L.p=P(L.p);if(L.alt)L.alt=L.alt.map(P);});   /* __acad3dV171d: a word's places along its path */
     if(sym&&sym.p)sym.p=P(sym.p);
     if(sym&&sym.toward)sym.toward=P(sym.toward);
     return {kind:'diag',g:g,lb:lb,sym:sym};
@@ -21389,6 +21518,7 @@ try{
     (g.marks||[]).forEach(function(m){P.push(m.p);});
     (g.bands||[]).forEach(function(B){(B.pts||[]).forEach(function(p){P.push(p);});(B.rings||[]).forEach(function(Rg){Rg.forEach(function(p){P.push(p);});});});   /* __acad3dV165 */
     (g.lines||[]).forEach(function(Ln){Ln.forEach(function(p){P.push(p);});});
+    (g.quads||[]).forEach(function(q){q.p.forEach(function(p){P.push(p);});});   /* __acad3dV171d: the temperature on the dome */
     (o.dg.lb||[]).forEach(function(L){if(L.p)P.push(L.p);});
     if(o.dg.sym&&o.dg.sym.p)P.push(o.dg.sym.p);
     for(i=0;i<P.length;i++)P[i]=bimDgW(o,P[i]);
@@ -21529,47 +21659,12 @@ try{
         info:{title:d+' m from the centre of the site',rows:[['On foot','about '+Math.max(1,Math.round(d/bimAccSpeed()))+' min, at '+bimDispNum(bimAccSpeed(),1)+' m a minute, as the crow flies']],method:'A circle about the site\'s centre'}});
     return {E:E,run:{legend:[{name:'Compass, on true north',short:'True north',col:'#c9d3dd',kind:'line'},{name:'Every 100 m',short:'100 m rings',col:'#9aa7b4',kind:'dash'}],source:'True north from the site\'s settings'}};
   }
-  /* the sun's paths for the solstices and the equinoxes, on a dome over the site, with their hours */
-  var BIM_DG_SUNDAYS=[['06-21','21 June','#ffb347'],['03-20','20 March and 22 September','#e8d36a'],['12-21','21 December','#8ab4f8']];
+  /* the sun's paths for the solstices and the equinoxes, on a dome over the site, with their hours;
+     __acad3dV171d: each with its name as the view writes it, and drawn by sun-path.js */
+  var BIM_DG_SUNDAYS=[['06-21','21 June','#ffb347','21 June'],['03-20','20 March and 22 September','#e8d36a','20 Mar, 22 Sep'],['12-21','21 December','#8ab4f8','21 December']];
   function bimDgDome(S,R,sp){
     var a=(sp.azimuth+bimTrueNorthDeg())*Math.PI/180,e=sp.elevation*Math.PI/180;
     return [S.c[0]+R*Math.cos(e)*Math.sin(a),S.y+R*Math.sin(e),S.c[1]-R*Math.cos(e)*Math.cos(a)];
-  }
-  function bimDgSunRun(S){
-    var st=bimSunSettings(),E=[],k,m;
-    if(bimDgNoPlace())return {E:[],run:{note:'The site\'s latitude, longitude and UTC offset are needed: Analyze site gets the offset with the climate'}};
-    var yr=bimDgYear(),R=S.Rc,tzt='UTC'+(st.tz>=0?'+':'\u2212')+bimDispNum(Math.abs(st.tz),2);
-    for(k=0;k<BIM_DG_SUNDAYS.length;k++){
-      var dd=yr+'-'+BIM_DG_SUNDAYS[k][0],pts=[],marks=[],noon=null;
-      for(m=0;m<1440;m+=10){
-        var sp=bimSunCalc(st.lat,st.lon,st.tz,dd,bimPad2(m/60)+':'+bimPad2(m%60));
-        if(!sp||!(sp.elevation>0))continue;
-        var p=bimDgDome(S,R,sp);pts.push(p);
-        if(m%60===0)marks.push({p:p,t:(m/60)+'h'});
-        if(!noon||sp.elevation>noon.e)noon={e:sp.elevation,p:p,az:sp.azimuth};
-      }
-      if(pts.length<2)continue;
-      var day=bimSunCalc(st.lat,st.lon,st.tz,dd,'12:00');
-      E.push({k:'path:'+BIM_DG_SUNDAYS[k][0],name:'Sun path, '+BIM_DG_SUNDAYS[k][1],g:{kind:'marks',pts:pts,marks:marks},
-        s:{stroke:BIM_DG_SUNDAYS[k][2],w:1.6,dash:[6,4],mark:'#ffd23f'},
-        lb:[{t:BIM_DG_SUNDAYS[k][1],p:[noon.p[0],noon.p[1]+R*0.05,noon.p[2]],col:BIM_DG_SUNDAYS[k][2]}],
-        info:{title:'The sun on '+BIM_DG_SUNDAYS[k][1],rows:[['Highest',bimDispNum(noon.e,1)+'\u00b0 up, at '+bimDispNum(noon.az,0)+'\u00b0 from north'],
-          ['Sunrise',day&&day.sunrise!==null?bimHHMM(day.sunrise):'-'],['Sunset',day&&day.sunset!==null?bimHHMM(day.sunset):'-'],
-          ['Daylight',day&&day.sunrise!==null?bimDispNum((day.sunset-day.sunrise)/60,1)+' h':(day&&day.polar==='day'?'the sun does not set':'the sun does not rise')],
-          ['Clock',tzt+(A3D.site.climate&&A3D.site.climate.tzName?' ('+A3D.site.climate.tzName+')':'')]],
-          method:'NOAA\'s solar position equations every 10 minutes, on a dome '+R+' m from the site\'s centre; a dot an hour, by the clock at the site\'s UTC offset',
-          source:'Sun position (NOAA)',date:dd}});
-    }
-    var now=bimSunNow();
-    if(now&&!now.missing&&now.elevation>0){
-      var q=bimDgDome(S,R,now);
-      E.push({k:'now',name:'The sun now',g:{kind:'line',pts:[]},sym:{type:'dot',p:q,r:6,col:'#e5484d'},
-        lb:[{t:'Now',p:[q[0],q[1]+R*0.06,q[2]],col:'#ff8a8f'}],
-        info:{title:'The sun at '+now.settings.time+' on '+now.settings.date,rows:[['Position',bimDispNum(now.elevation,1)+'\u00b0 up, at '+bimDispNum(now.azimuth,0)+'\u00b0 from north']],
-          method:'The date and time in Properties, Site, Location',source:'Sun position (NOAA)'}});
-    }
-    return {E:E,run:{legend:[{name:'21 June',short:'June',col:'#ffb347',kind:'dash'},{name:'20 March, 22 September',short:'March, September',col:'#e8d36a',kind:'dash'},{name:'21 December',short:'December',col:'#8ab4f8',kind:'dash'},
-      {name:'An hour',short:'hour',col:'#ffd23f',kind:'dot'},{name:'The sun now',short:'now',col:'#e5484d',kind:'dot'}],source:'NOAA solar position equations',dome:{c:S.c,y:S.y,R:R}}};   /* __acad3dV170: the dome */
   }
   /* the model's shadows at 9, 12 and 15 on the equinox and both solstices: drawn from the model each
      time, so they follow it; each date a layer, the equinox shown */
@@ -21963,6 +22058,507 @@ try{
     }
     return {E:E,run:{legend:BIM_DG_NOISE_BANDS.map(function(b){return {name:b[2],short:b[3],col:b[1],kind:'fill'};}).concat([{name:'A noise source',short:'source',col:'#f0a04b',kind:'dot'}]),
       source:'L10,18h estimated from road class (CRTN, FHWA), screened (ISO 9613-2)'}};
+  }
+  /* ================= __acad3dV171d: the sun path, one clock =================
+     reference/research-sun-path.md. The sun's elements follow what they are drawn from -- the place, the zone, the
+     year and the moment -- as a run would draw them: the paths of the solstices and the equinoxes with their hours,
+     the clock's own day, the sun now with its angles, the sun at the clock's time all year (the analemma), and the
+     temperature on the band of the sky the sun crosses. A point on the dome about the site's centre is
+     X = R cos(alt) sin(az), Y = R sin(alt), Z = -R cos(alt) cos(az), the azimuth turned by true north (bimDgDome). */
+  var BIM_SUN_DAYC='#ff8a8f',BIM_SUN_RED='#e5484d',BIM_SUN_ALLYR='#ffd23f';
+  var BIM_SUN_ROWS={dj:['12-21','01-21','02-21','03-21','04-21','05-21','06-21'],jd:['06-21','07-21','08-21','09-21','10-21','11-21','12-21']};
+  var BIM_SUN_MOMENT=['today','now','angles','analemma'];   /* what moves with the clock; the rest with the place */
+  var A3D_SUNSYNC={hk:'',hb:null};   /* the temperature's bands, worked out once for the half-year */
+  /* the half-year holding a date: 21 December to 21 June, the days lengthening, or 21 June to 21 December */
+  function bimSunHalf(d){var md=String(d||'').slice(5);return md>='06-21'&&md<'12-21'?'jd':'dj';}
+  function bimSunHalfText(h){return h==='jd'?'21 June to 21 December, the days shortening':'21 December to 21 June, the days lengthening';}
+  function bimSunMd(md){return bimSunDayText('2000-'+md).replace(/ 2000$/,'');}
+  /* a day within three days of a solstice or an equinox lies on its path: the drawn one stands for it */
+  function bimSunNearDrawn(d){
+    var m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(String(d||'')),t,k,u;
+    if(!m)return false;
+    t=Date.UTC(+m[1],+m[2]-1,+m[3]);
+    for(k=0;k<BIM_DG_SUNDAYS.length;k++){u=Date.UTC(+m[1],+BIM_DG_SUNDAYS[k][0].slice(0,2)-1,+BIM_DG_SUNDAYS[k][0].slice(3,5));if(Math.abs(t-u)<=3*864e5)return true;}
+    return false;
+  }
+  /* a day's path on the dome: every 10 minutes the sun is up, a mark on each hour, the highest point */
+  function bimSunDayPath(S,R,st,dd){
+    var tz=bimSunTzAt(st,dd,'12:00'),pts=[],marks=[],mi=[],noon=null,m,sp,p;
+    if(!bimSunNum(tz))return null;
+    for(m=0;m<1440;m+=10){
+      sp=bimSunCalc(st.lat,st.lon,tz,dd,bimPad2(m/60)+':'+bimPad2(m%60));
+      if(!sp||!(sp.elevation>0))continue;
+      p=bimDgDome(S,R,sp);pts.push(p);
+      if(m%60===0){marks.push({p:p,t:(m/60)+'h'});mi.push(pts.length-1);}
+      if(!noon||sp.elevation>noon.e)noon={e:sp.elevation,az:sp.azimuth,i:pts.length-1};
+    }
+    return {pts:pts,marks:marks,mi:mi,noon:noon,tz:tz};
+  }
+  /* where a path's name may go: along it, half way between two hours, the nearest noon first */
+  function bimSunAlong(D){
+    var c=[],k;
+    if(!D||!D.pts.length)return [];
+    for(k=0;k+1<D.mi.length;k++)c.push(Math.round((D.mi[k]+D.mi[k+1])/2));
+    if(!c.length)c.push(D.noon.i);
+    c.sort(function(a,b){return Math.abs(a-D.noon.i)-Math.abs(b-D.noon.i);});
+    return c.map(function(i){return D.pts[i];});
+  }
+  /* a day's numbers: sunrise and sunset with their bearings, the noon altitude, the day's length */
+  function bimSunDayFacts(st,dd){
+    var tz=bimSunTzAt(st,dd,'12:00'),r=bimSunCalc(st.lat,st.lon,tz,dd,'12:00'),hi,f={};
+    if(!r)return null;
+    hi=bimSunCalc(st.lat,st.lon,tz,dd,bimHHMM(r.noon));   /* solar noon, the day's highest */
+    f.tz=tz;f.polar=r.polar;f.noonAlt=hi?hi.elevation:null;f.noonAz=hi?hi.azimuth:null;f.noonAt=r.noon;
+    if(r.sunrise!==null&&r.sunset!==null){
+      f.rise=r.sunrise;f.set=r.sunset;f.len=r.sunset-r.sunrise;
+      f.riseAz=bimSunCalc(st.lat,st.lon,tz,dd,bimHHMM(r.sunrise)).azimuth;f.setAz=bimSunCalc(st.lat,st.lon,tz,dd,bimHHMM(r.sunset)).azimuth;
+    }else f.len=r.polar==='day'?1440:0;
+    return f;
+  }
+  function bimSunLen(m){m=Math.round(m);return Math.floor(m/60)+' h '+bimPad2(m%60)+' min';}
+  /* the paths, the day studied, the sun now and its angles, the analemma, the temperature: E as bimDgPlace takes it;
+     only 'moment', the four that move with the clock */
+  function bimDgSunRun(S,only){
+    var st=bimSunStudy(),E=[],R=S.Rc,k,yr,mom=only==='moment';
+    if(!bimSunNum(st.lat)||!bimSunNum(st.lon)||!bimSunNum(st.tz))return {E:[],run:{note:'The site\'s latitude, longitude and UTC offset are needed: Analyze site gets the offset with the climate'}};
+    yr=String(st.date).slice(0,4);
+    if(!mom)for(k=0;k<BIM_DG_SUNDAYS.length;k++){
+      var B=BIM_DG_SUNDAYS[k],dd=yr+'-'+B[0],D=bimSunDayPath(S,R,st,dd),f=bimSunDayFacts(st,dd),al=bimSunAlong(D);
+      E.push({k:'path:'+B[0],name:'Sun path, '+B[1],g:{kind:'marks',pts:D?D.pts:[],marks:D?D.marks:[]},
+        s:{stroke:B[2],w:1.6,dash:[6,4],mark:'#ffd23f'},
+        lb:al.length?[{t:B[3],p:al[0],alt:al.slice(1,8),col:B[2]}]:[],
+        info:{title:'The sun on '+B[1],rows:bimSunFactRows(f,st,dd),
+          method:'NOAA\'s solar position equations every 10 minutes, on a dome '+R+' m from the site\'s centre: X = R cos(altitude) sin(azimuth), Y = R sin(altitude), Z = R cos(altitude) cos(azimuth) to the north; a dot an hour, by the clock',
+          source:'Sun position (NOAA)',date:dd}});
+    }
+    var td=st.date,same=bimSunNearDrawn(td),Dt=same?null:bimSunDayPath(S,R,st,td),ft=bimSunDayFacts(st,td),at=bimSunAlong(Dt);
+    E.push({k:'today',name:'Sun path, the day studied',g:{kind:'marks',pts:Dt?Dt.pts:[],marks:Dt?Dt.marks:[]},
+      s:{stroke:BIM_SUN_DAYC,w:1.8,dash:[2,4],mark:BIM_SUN_DAYC},
+      lb:at.length?[{t:bimSunMd(String(td).slice(5)),p:at[0],alt:at.slice(1,8),col:BIM_SUN_DAYC}]:[],
+      info:{title:'The sun on '+bimSunDayText(td)+(same?', drawn with the solstices and equinoxes':''),rows:bimSunFactRows(ft,st,td),
+        method:'The day the clock is on: the study\'s date, or the year\'s while it plays through the year',source:'Sun position (NOAA)',date:td}});
+    var tz=bimSunTzAt(st,td,st.time),now=bimSunCalc(st.lat,st.lon,tz,td,st.time),up=!!(now&&now.elevation>0),q=up?bimDgDome(S,R,now):null,c0=[S.c[0],S.y,S.c[1]];
+    E.push({k:'now',name:'The sun now',g:{kind:'line',pts:up?[c0,q]:[]},s:{stroke:BIM_SUN_RED,w:1.4},sym:up?{type:'dot',p:q,r:6,col:BIM_SUN_RED}:null,
+      lb:up?[{t:st.time,p:q,near:1,col:'#ff8a8f',pri:1}]:[],
+      info:{title:'The sun at '+st.time+' on '+bimSunDayText(td),rows:up?bimSunNowRows(now,st,td,R):[['The sun','below the horizon']],
+        method:'NOAA\'s solar position equations at the clock\'s moment; its ray from the centre of the site',source:'Sun position (NOAA)',date:td}});
+    var AN=up?bimSunAngles(S,R,now):null;
+    E.push({k:'angles',name:'The sun now, its angles',g:{kind:'lines',lines:AN?AN.lines:[]},s:{stroke:'#ff8a8f',w:1.1,dash:[4,3]},lb:AN?AN.lb:[],
+      info:{title:'The sun\'s altitude and azimuth at '+st.time,rows:up?[['Altitude',bimDispNum(now.elevation,1)+'\u00b0, from the ground up to the sun'],['Azimuth',bimDispNum(now.azimuth,1)+'\u00b0, clockwise from true north']]:[['The sun','below the horizon']],
+        method:'The altitude in the sun\'s vertical plane, from the ground up; the azimuth on the ground, clockwise from true north'}});
+    var Al=bimSunAnalemma(S,R,st);
+    E.push({k:'analemma',name:'The sun at '+st.time+' all year',g:{kind:'lines',lines:Al.lines},s:{stroke:BIM_SUN_ALLYR,w:1,dash:[1,3],op:0.85},
+      lb:Al.top?[{t:st.time+' all year',p:Al.top,near:1,col:BIM_SUN_ALLYR,pri:5}]:[],
+      info:{title:'The sun at '+st.time+' through '+yr,rows:[['Points','every second day, '+Al.n+' above the horizon'],['Clock',bimSunClockText(st,td,st.time)]],
+        method:'The figure of eight the sun traces at one time of day through the year (the analemma): the declination and the equation of time',source:'Sun position (NOAA)'}});
+    if(!mom){
+      var M=bimSunHeatMesh(S,R,st);
+      E.push({k:'heat',name:'Temperature where the sun is',g:{kind:'mesh',quads:M.quads},s:{fop:0.55},
+        info:{title:'The temperature on the sun\'s band of the sky, '+bimSunHalfText(M.half),rows:M.rows,
+          method:'The band between the winter and the summer path, by the hour and by the 21st of each month; each cell the mean temperature at its hour over its days, at the sun\'s place then, in the climate board\'s eleven bands',
+          source:M.src}});
+    }
+    return {E:E,run:{legend:[{name:'21 June',short:'June',col:'#ffb347',kind:'dash'},{name:'20 March, 22 September',short:'March, September',col:'#e8d36a',kind:'dash'},{name:'21 December',short:'December',col:'#8ab4f8',kind:'dash'},
+      {name:'The day studied',short:'day',col:BIM_SUN_DAYC,kind:'dash'},{name:'An hour',short:'hour',col:'#ffd23f',kind:'dot'},{name:'The sun now, its angles',short:'now',col:BIM_SUN_RED,kind:'dot'},
+      {name:'The sun at this time all year',short:'all year',col:BIM_SUN_ALLYR,kind:'dash'},{name:'Temperature where the sun is',short:'temperature',col:'#ec8f86',kind:'fill'}],
+      source:'NOAA solar position equations',dome:{c:S.c,y:S.y,R:R}}};   /* __acad3dV170: the dome */
+  }
+  function bimSunFactRows(f,st,dd){
+    if(!f)return [];
+    var L=[['Highest',f.noonAlt!==null?bimDispNum(f.noonAlt,1)+'\u00b0 up, at '+bimDispNum(f.noonAz,0)+'\u00b0 from north, '+bimHHMM(f.noonAt):'-']];
+    if(f.rise!==undefined){L.push(['Sunrise',bimHHMM(f.rise)+', at '+bimDispNum(f.riseAz,0)+'\u00b0']);L.push(['Sunset',bimHHMM(f.set)+', at '+bimDispNum(f.setAz,0)+'\u00b0']);}
+    L.push(['Daylight',f.rise!==undefined?bimSunLen(f.len):(f.polar==='day'?'the sun does not set':'the sun does not rise')]);
+    L.push(['Clock',bimSunClockText(st,dd,'12:00')]);
+    return L;
+  }
+  /* the sun's point on the dome, in the app's axes and in the owner's (Y up, Z to the north) */
+  function bimSunXyz(sp,R){
+    var a=sp.azimuth*Math.PI/180,e=sp.elevation*Math.PI/180;
+    return [R*Math.cos(e)*Math.sin(a),R*Math.sin(e),R*Math.cos(e)*Math.cos(a)];
+  }
+  function bimSunNowRows(now,st,td,R){
+    var X=bimSunXyz(now,R);
+    return [['Altitude',bimDispNum(now.elevation,2)+'\u00b0'],['Azimuth',bimDispNum(now.azimuth,2)+'\u00b0 from true north'],
+      ['On the dome','X '+bimDispNum(X[0],2)+', Y '+bimDispNum(X[1],2)+', Z '+bimDispNum(X[2],2)+' m (R '+R+' m)'],['Clock',bimSunClockText(st,td,st.time)]];
+  }
+  /* the sun now's construction: true north, the bearing to its foot, the drop from the sun, the azimuth's arc on the
+     ground, the altitude's arc in its vertical plane */
+  function bimSunAngles(S,R,now){
+    var ra=R*0.3,c0=[S.c[0],S.y,S.c[1]],q=bimDgDome(S,R,now),foot=[q[0],S.y,q[2]],az=[],alt=[],n,i;
+    n=Math.max(2,Math.ceil(now.azimuth/5));
+    for(i=0;i<=n;i++)az.push(bimDgAt(S,now.azimuth*i/n,ra,S.y+0.02));
+    n=Math.max(2,Math.ceil(now.elevation/5));
+    for(i=0;i<=n;i++)alt.push(bimDgDome(S,ra*1.15,{azimuth:now.azimuth,elevation:now.elevation*i/n}));
+    return {lines:[[c0,bimDgAt(S,0,ra*1.3,S.y+0.02)],[c0,foot],[q,foot],az,alt],
+      lb:[{t:'A '+bimDispNum(now.azimuth,1)+'\u00b0',p:az[Math.floor(az.length/2)],near:1,col:'#ff8a8f',pri:2},
+        {t:'\u03b1 '+bimDispNum(now.elevation,1)+'\u00b0',p:alt[Math.floor(alt.length/2)],near:1,col:'#ff8a8f',pri:2}]};
+  }
+  /* the sun at the study's time every second day of the year: a line broken below the horizon and where the clock
+     changes (daylight saving Auto) */
+  function bimSunAnalemma(S,R,st){
+    var yr=+String(st.date).slice(0,4),L=[],cur=null,ltz=null,top=null,n=0,d,D,dd,tz,sp,p;
+    for(d=0;d<366;d+=2){
+      D=new Date(Date.UTC(yr,0,1)+d*864e5);
+      if(D.getUTCFullYear()!==yr)break;
+      dd=yr+'-'+bimPad2(D.getUTCMonth()+1)+'-'+bimPad2(D.getUTCDate());
+      tz=bimSunTzAt(st,dd,st.time);sp=bimSunCalc(st.lat,st.lon,tz,dd,st.time);
+      if(!sp||!(sp.elevation>0)||tz!==ltz){if(cur&&cur.length>1)L.push(cur);cur=null;}
+      ltz=tz;
+      if(!sp||!(sp.elevation>0))continue;
+      p=bimDgDome(S,R,sp);n++;
+      if(!cur)cur=[];
+      cur.push(p);
+      if(!top||p[1]>top[1])top=p;
+    }
+    if(cur&&cur.length>1)L.push(cur);
+    return {lines:L,top:top,n:n};
+  }
+  /* ---- the temperature on the dome ---- */
+  function bimSunHeatCol(v){var c=BIM_HEAT_COL[bimClbHeatClass(v)];return c.indexOf('var(')===0?'#c2c0b8':c;}
+  function bimSunR3(p){return [Math.round(p[0]*1000)/1000,Math.round(p[1]*1000)/1000,Math.round(p[2]*1000)/1000];}
+  /* the climate's year of hours by the half-year's bands: the mean at each of its hours over each band's days */
+  function bimSunHeatBands(Hh,rows){
+    var Y=+String(Hh.start).slice(0,4),n=Math.floor(Hh.heat.length/24),out=[],j,h,d;
+    function dayOf(md){return Math.round((Date.UTC(Y,+md.slice(0,2)-1,+md.slice(3,5))-Date.UTC(Y,0,1))/864e5);}
+    for(j=0;j+1<rows.length;j++){
+      var a=dayOf(rows[j]),b=dayOf(rows[j+1]),days=[],mean=[];
+      if(b>a){for(d=a;d<b&&d<n;d++)days.push(d);}else{for(d=a;d<n;d++)days.push(d);for(d=0;d<b&&d<n;d++)days.push(d);}
+      for(h=0;h<24;h++){var s=0,c=0;days.forEach(function(x){var v=Hh.heat[x*24+h];if(typeof v==='number'&&isFinite(v)){s+=v;c++;}});mean.push(c?s/c:null);}
+      out.push(mean);
+    }
+    return out;
+  }
+  function bimSunHeatMesh(S,R,st){
+    var C=A3D.site&&A3D.site.climate,Hh=C&&C.hourly,half=bimSunHalf(st.date),rows=BIM_SUN_ROWS[half],yr=String(st.date).slice(0,4),Q=[],V=[],band,j,c,m,sp;
+    if(st.trial)return {quads:[],half:half,rows:[['Not drawn','the climate is the site\'s: back to the site\'s place to see it']],src:''};
+    if(!Hh||!Hh.heat||Hh.heat.length<24*28||!Hh.start||!bimSunNum(C.tz))return {quads:[],half:half,rows:[['Not drawn','no year of hours yet: Analyze site gets it with the climate']],src:''};
+    band=bimSunHeatBands(Hh,rows);
+    for(j=0;j<rows.length;j++){
+      V.push([]);
+      for(c=0;c<=72;c++){   /* every 20 minutes of the climate's own clock, the offset its hours came in */
+        m=c*20;sp=bimSunCalc(st.lat,st.lon,C.tz,yr+'-'+rows[j],bimPad2(Math.floor(m/60))+':'+bimPad2(m%60));
+        V[j].push(sp&&sp.elevation>0?bimSunR3(bimDgDome(S,R,sp)):null);
+      }
+    }
+    for(j=0;j+1<rows.length;j++)for(c=0;c<72;c++){
+      var v=band[j][Math.floor(c/3)];
+      if(!V[j][c]||!V[j][c+1]||!V[j+1][c+1]||!V[j+1][c]||v===null)continue;
+      Q.push({p:[V[j][c],V[j][c+1],V[j+1][c+1],V[j+1][c]],c:bimSunHeatCol(v),v:Math.round(v*10)/10,r:j,h:Math.floor(c/3),k:c%3});
+    }
+    var lo=null,hi=null;Q.forEach(function(x){if(lo===null||x.v<lo)lo=x.v;if(hi===null||x.v>hi)hi=x.v;});
+    return {quads:Q,half:half,src:'ERA5 reanalysis (ECMWF), via Open-Meteo',
+      rows:[['Half-year',bimSunHalfText(half)],['Cells',Q.length+' of 20 minutes by a month, the sun up'],['Coolest, warmest',lo===null?'-':bimDispNum(lo,1)+' to '+bimDispNum(hi,1)+' \u00b0C'],
+        ['Data','temperature at 2 m, '+Hh.year+', hour by hour'],['Hours','the climate\'s own, UTC'+bimSunOffText(C.tz)]]};
+  }
+  /* the typical temperature where the sun is at a moment: its band's mean at that hour of the climate's clock */
+  function bimSunHeatAt(st,dd,tm){
+    var C=A3D.site&&A3D.site.climate,Hh=C&&C.hourly,half=bimSunHalf(dd),rows=BIM_SUN_ROWS[half],md=String(dd).slice(5),j,band,tz,u,h,k;
+    if(st.trial||!Hh||!Hh.heat||!Hh.start||!bimSunNum(C.tz))return null;
+    j=-1;
+    for(k=0;k+1<rows.length;k++){var a=rows[k],b=rows[k+1];if(a<b?(md>=a&&md<b):(md>=a||md<b)){j=k;break;}}
+    if(md===rows[rows.length-1])j=rows.length-2;
+    if(j<0)return null;
+    tz=bimSunTzAt(st,dd,tm);
+    var dm=/^(\d{4})-(\d{2})-(\d{2})$/.exec(String(dd)),tt=/^(\d{1,2}):(\d{2})/.exec(String(tm));
+    if(!dm||!tt)return null;
+    u=Date.UTC(+dm[1],+dm[2]-1,+dm[3],+tt[1],+tt[2])-tz*3600000+C.tz*3600000;
+    h=new Date(u).getUTCHours();
+    var hk=half+'|'+Hh.start+'|'+Hh.heat.length+'|'+Hh.year+'|'+(C.fetched||'');   /* the bands worked out once */
+    if(A3D_SUNSYNC.hk!==hk){A3D_SUNSYNC.hk=hk;A3D_SUNSYNC.hb=bimSunHeatBands(Hh,rows);}
+    band=A3D_SUNSYNC.hb[j];
+    return band[h]===null?null:{v:band[h],h:h,from:rows[j],to:rows[j+1],half:half};
+  }
+  /* drawn under the model's words: far cells first, each a quad of its band's colour, the hours and the months
+     drawn over them, laid on the view at one opacity */
+  function bimSunDrawMesh(ctx,V,W,H,o,a){
+    var Q=o.dg.g.quads||[],s=o.dg.s||{},T=[],i,j,P,z,sp,c2;
+    for(i=0;i<Q.length;i++){
+      P=[];z=0;
+      for(j=0;j<4;j++){sp=toScreen(bimDgW(o,Q[i].p[j]),V,W,H);if(sp[2]<=0.5){P=null;break;}P.push(sp);z+=sp[2];}
+      if(P)T.push({P:P,z:z,q:Q[i]});
+    }
+    if(!T.length)return;
+    T.sort(function(x,y){return y.z-x.z;});
+    c2=bimDgOff(ctx,'meshCv');
+    c2.lineJoin='round';
+    for(i=0;i<T.length;i++){
+      P=T[i].P;
+      c2.beginPath();c2.moveTo(P[0][0],P[0][1]);c2.lineTo(P[1][0],P[1][1]);c2.lineTo(P[2][0],P[2][1]);c2.lineTo(P[3][0],P[3][1]);c2.closePath();
+      c2.fillStyle=T[i].q.c;c2.fill();c2.strokeStyle=T[i].q.c;c2.lineWidth=0.8;c2.stroke();
+      c2.beginPath();c2.moveTo(P[3][0],P[3][1]);c2.lineTo(P[2][0],P[2][1]);   /* the month's edge */
+      if(T[i].q.k===0){c2.moveTo(P[0][0],P[0][1]);c2.lineTo(P[3][0],P[3][1]);}   /* the hour's */
+      c2.strokeStyle='rgba(255,255,255,0.45)';c2.lineWidth=0.7;c2.stroke();
+    }
+    bimDgBlit(ctx,c2,a*(s.fop===undefined?0.55:s.fop));
+  }
+  /* ---- the sun's elements, following what they are drawn from ---- */
+  function bimSunDomeOf(R){
+    var dm=R&&R.dome,S0;
+    if(dm&&dm.c&&dm.R>0)return {c:dm.c,y:dm.y||0,Rc:dm.R};
+    S0=bimDgSite();return {c:S0.c,y:S0.y,Rc:S0.Rc};
+  }
+  function bimSunSyncKeys(st){
+    var z=bimSunZone(),C=A3D.site&&A3D.site.climate,Hh=C&&C.hourly,
+      place=[st.lat,st.lon,st.tz,st.trial?1:0,z.zone,z.dst?1:0,bimTrueNorthDeg(),String(st.date).slice(0,4),bimSunHalf(st.date),
+        Hh?(Hh.year+':'+Hh.start+':'+(Hh.heat||[]).length):'',C?C.tz:''].join('|');
+    return {place:place,moment:place+'|'+st.date+'|'+st.time};
+  }
+  /* as a run would draw them, no undo step: a cache of what the place and the clock give, each element keeping the
+     inputs it was drawn from (dg.sk). An element moved, or whose shape the owner changed, is theirs (marked newer, as
+     a run marks it); a colour changed keeps its colour and follows the sun */
+  function bimDgSunSync(force){
+    var D=bimDgState(),R=D.runs.sun,L,st,K,grp=null,E,by={},n=0;
+    if(!R)return 0;
+    L=bimDgDiags('sun');
+    if(!L.length||(!force&&!L.some(bimLayerShown)))return 0;
+    st=bimSunStudy();
+    if(!bimSunNum(st.lat)||!bimSunNum(st.lon)||!bimSunNum(st.tz))return 0;
+    K=bimSunSyncKeys(st);
+    L.forEach(function(x){var m=BIM_SUN_MOMENT.indexOf(x.dg.k)>=0;if(x.dg.sk!==(m?K.moment:K.place))grp=(!m||grp==='all')?'all':'moment';});
+    if(!grp)return 0;
+    E=bimDgSunRun(bimSunDomeOf(R),grp==='all'?null:'moment').E;
+    E.forEach(function(e){by[e.k]=e;});
+    L.forEach(function(x){
+      var e=by[x.dg.k],old=null,q=x.pos||[0,0,0],gen;
+      if(!e)return;
+      gen=bimDgCore({g:e.g,s:e.s||{},lb:e.lb||[],sym:e.sym||null});
+      try{old=JSON.parse(x.dg.gen||'null');}catch(eG){old=null;}
+      if(!(q[0]||q[1]||q[2])&&old&&JSON.stringify([old.g,old.lb,old.sym])===JSON.stringify([x.dg.g,x.dg.lb||[],x.dg.sym||null])){
+        if(JSON.stringify(old.s)===JSON.stringify(x.dg.s||{}))x.dg.s=e.s||{};
+        x.dg.g=e.g;x.dg.lb=e.lb||[];x.dg.sym=e.sym||null;x.name=String(e.name||x.name).slice(0,80);n++;
+      }else if(x.dg.gen!==gen)x.dg.newer=true;
+      x.dg.gen=gen;x.dg.info=e.info||{};x.dg.sk=BIM_SUN_MOMENT.indexOf(x.dg.k)>=0?K.moment:K.place;
+    });
+    return n;
+  }
+  /* ================= __acad3dV171d: the sun's panel =================
+     reference/research-sun-path.md (7). In Analyze, the Sun paths' panel: the sun now in numbers, its point on the
+     dome by the formula; sliders for a place tried (never saved) and for the study's date and time (one undo step when
+     let go); Play through the day or through the year; the year's turning points by hemisphere; the sky looking up and
+     the sun's height through the day; the temperature's key. Its numbers follow the clock and the sliders without the
+     panel being drawn again. */
+  var A3D_SUNP={key:'',dkey:''};
+  function bimSunLatText(v){return bimDispNum(Math.abs(v),2)+'\u00b0 '+(v<0?'S':'N');}
+  function bimSunLonText(v){return bimDispNum(Math.abs(v),2)+'\u00b0 '+(v<0?'W':'E');}
+  function bimSunYearDays(y){return ((y%4===0&&y%100!==0)||y%400===0)?366:365;}
+  function bimSunDoy(d){var m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(String(d||''));return m?Math.round((Date.UTC(+m[1],+m[2]-1,+m[3])-Date.UTC(+m[1],0,1))/864e5)+1:1;}
+  function bimSunDateOf(y,doy){var D=new Date(Date.UTC(y,0,1)+(doy-1)*864e5);return D.getUTCFullYear()+'-'+bimPad2(D.getUTCMonth()+1)+'-'+bimPad2(D.getUTCDate());}
+  function bimSunMin(t){var m=/^(\d{1,2}):(\d{2})/.exec(String(t||''));return m?(+m[1])*60+(+m[2]):720;}
+  function bimSunF(v){return String(Math.round(v*10)/10);}
+  /* the sun now in words: the panel's rows, as drawn and as they follow the clock */
+  function bimSunNowVals(){
+    var st=bimSunStudy(),R=bimSunDomeOf(bimDgState().runs.sun).Rc,v={st:st,R:R},tz,now,f,X,h;
+    v.place=bimSunLatText(st.lat)+', '+bimSunLonText(st.lon)+(st.trial?', tried':'');
+    v.day=bimSunDayText(st.date);
+    v.time=st.time+' ('+bimSunClockText(st,st.date,st.time)+')';
+    tz=bimSunTzAt(st,st.date,st.time);
+    now=bimSunCalc(st.lat,st.lon,tz,st.date,st.time);
+    v.now=now;v.up=!!(now&&now.elevation>0);
+    v.alt=now?bimDispNum(now.elevation,2)+'\u00b0'+(v.up?'':', below the horizon'):'-';
+    v.az=now?bimDispNum(now.azimuth,2)+'\u00b0 from true north':'-';
+    X=now&&v.up?bimSunXyz(now,R):null;
+    v.xyz=X?'X '+bimDispNum(X[0],2)+', Y '+bimDispNum(X[1],2)+', Z '+bimDispNum(X[2],2)+' m':'below the horizon';
+    f=bimSunDayFacts(st,st.date);
+    v.dayf=!f?'-':(f.rise!==undefined?'sunrise '+bimHHMM(f.rise)+' at '+bimDispNum(f.riseAz,0)+'\u00b0, sunset '+bimHHMM(f.set)+' at '+bimDispNum(f.setAz,0)+'\u00b0, '+bimSunLen(f.len):
+      (f.polar==='day'?'the sun does not set':'the sun does not rise'));
+    h=v.up?bimSunHeatAt(st,st.date,st.time):null;
+    v.heat=h?bimDispNum(h.v,1)+' \u00b0C typical at this hour, '+bimSunMd(h.from)+' to '+bimSunMd(h.to):
+      (!v.up?'the sun is down':(st.trial?'the climate is the site\'s':'no year of hours yet: Analyze site gets it'));
+    return v;
+  }
+  function bimSunRow(label,k,val){return '<div class="a3d-awp-r"><span>'+bimEsc(label)+'</span><b data-sunv="'+k+'">'+bimEsc(val)+'</b></div>';}
+  function bimSunSliderHtml(k,label,min,max,step,val,out){
+    return '<label class="a3d-sun-slr"><span class="a3d-sun-sll">'+bimEsc(label)+'</span><output data-sunout="'+k+'">'+bimEsc(out)+'</output>'+
+      '<input type="range" min="'+min+'" max="'+max+'" step="'+step+'" value="'+val+'" data-sunsl="'+k+'" aria-label="'+bimEsc(label)+'"></label>';
+  }
+  /* the top of the panel: the sun now, and the sliders */
+  function bimSunPanelHtml(){
+    var v,st,y,z,h='';
+    if(bimDgNoPlace()&&!bimSunTrying())return '';
+    try{
+      v=bimSunNowVals();st=v.st;y=+String(st.date).slice(0,4);z=bimSunZone();
+      A3D_SUNP.key='';A3D_SUNP.dkey=[st.lat,st.lon,st.date].join('|');
+      h='<div class="a3d-sunp" data-sunpanel="1">';
+      if(st.trial)h+='<p class="a3d-awp-note a3d-sun-trial">Trying '+bimEsc(bimSunLatText(st.lat)+', '+bimSunLonText(st.lon))+': not saved, its clock by the longitude. '+
+        '<button type="button" class="a3d-awl-lk" data-awact="sun:back">Back to the site\'s place</button></p>';
+      h+=bimAwSec('The sun now')+'<div class="a3d-awp-rows a3d-sun-now">'+bimSunRow('Place','place',v.place)+bimSunRow('Day','day',v.day)+bimSunRow('Time','time',v.time)+
+        (z.zone&&!st.trial?'<div class="a3d-awp-r"><span>Daylight saving</span><b><button type="button" class="a3d-awl-lk" data-awact="sun:dst" aria-pressed="'+z.dst+'" '+
+          'title="Off: standard time all year. Auto: each date\'s own offset, by the time zone">'+(z.dst?'Auto, by the time zone':'Off, standard time all year')+'</button></b></div>':'')+
+        bimSunRow('Altitude \u03b1','alt',v.alt)+bimSunRow('Azimuth A','az',v.az)+bimSunRow('On the dome','xyz',v.xyz)+bimSunRow('The day','dayf',v.dayf)+bimSunRow('Temperature','heat',v.heat)+'</div>'+
+        '<p class="a3d-awp-note a3d-sun-f">X = R cos \u03b1 sin A, Y = R sin \u03b1, Z = R cos \u03b1 cos A, with the dome\'s R of '+v.R+' m, Y up and Z to true north; the sun by NOAA\'s solar position equations.</p>';
+      h+=bimAwSec('Try it')+'<div class="a3d-sun-sl">'+
+        bimSunSliderHtml('lat','Latitude',-89.9,89.9,0.1,st.lat,bimSunLatText(st.lat))+
+        bimSunSliderHtml('lon','Longitude',-180,180,0.1,st.lon,bimSunLonText(st.lon))+
+        bimSunSliderHtml('date','Date',1,bimSunYearDays(y),1,bimSunDoy(st.date),bimSunDayText(st.date))+
+        bimSunSliderHtml('time','Time',0,1435,5,bimSunMin(st.time),st.time)+'</div>'+
+        '<p class="a3d-awp-note">The latitude and the longitude try another place, never saved; the date and the time are the study\'s own, one undo step when let go.</p>';
+      h+='</div>';
+    }catch(eP){console.warn('[BIM] The sun\'s panel could not be drawn',eP);h='';}
+    return h;
+  }
+  /* the bottom: the turning points, the two diagrams, the temperature's key */
+  function bimSunChartsHtml(){
+    var st=bimSunStudy(),h;
+    if(!bimSunNum(st.lat)||!bimSunNum(st.lon)||!bimSunNum(st.tz))return '';
+    try{
+      h='<div class="a3d-sunp2" data-sunpanel2="1">'+bimSunTurnHtml(st)+bimAwSec('Diagrams')+
+        '<div class="a3d-awp-chart a3d-sun-chart" data-sunchart="polar">'+bimSunPolarSvg(st)+'</div><div class="a3d-awp-cap">The sky dome in plan, north up: the centre overhead, the rim the horizon; the solstices, the equinoxes, the day studied and the sun now</div>'+
+        '<div class="a3d-awp-chart a3d-sun-chart" data-sunchart="height">'+bimSunHeightSvg(st)+'</div><div class="a3d-awp-cap">The sun\'s height through the day, by the clock</div>'+
+        bimSunHeatKeyHtml(st)+'</div>';
+    }catch(eC){console.warn('[BIM] The sun\'s diagrams could not be drawn',eC);h='';}
+    return h;
+  }
+  /* the summer solstice, the equinoxes, the winter solstice: the seasons by the hemisphere */
+  function bimSunTurnHtml(st){
+    var y=String(st.date).slice(0,4),N=st.lat>=0,nm={'06-21':N?'Summer solstice':'Winter solstice','03-20':'Equinoxes','12-21':N?'Winter solstice':'Summer solstice'},
+      order=N?[0,1,2]:[2,1,0],h=bimAwSec('The year\'s turning points')+'<div class="a3d-sun-tp">';
+    function r(a,b){return '<div class="a3d-awp-r"><span>'+bimEsc(a)+'</span><b>'+bimEsc(b)+'</b></div>';}
+    order.forEach(function(i){
+      var B=BIM_DG_SUNDAYS[i],f=bimSunDayFacts(st,y+'-'+B[0]),up=f&&f.rise!==undefined,sh=f&&f.noonAlt>0?10/Math.tan(f.noonAlt*Math.PI/180):null;
+      h+='<div class="a3d-sun-card" data-sunturn="'+B[0]+'"><div class="a3d-sun-cardh"><i style="background:'+B[2]+'" aria-hidden="true"></i><b>'+bimEsc(nm[B[0]])+'</b><span>'+bimEsc(B[1])+'</span></div><div class="a3d-awp-rows">'+
+        r('Sunrise',up?bimHHMM(f.rise)+' at '+bimDispNum(f.riseAz,0)+'\u00b0':'-')+r('Sunset',up?bimHHMM(f.set)+' at '+bimDispNum(f.setAz,0)+'\u00b0':'-')+
+        r('Noon',f&&f.noonAlt!==null?bimDispNum(f.noonAlt,1)+'\u00b0 up at '+bimHHMM(f.noonAt):'-')+
+        r('Daylight',up?bimSunLen(f.len):(f&&f.polar==='day'?'the sun does not set':'the sun does not rise'))+
+        r('A 10 m building',sh!==null?'casts '+bimDispNum(sh,1)+' m at noon':'no sun at noon')+'</div></div>';
+    });
+    return h+'</div>';
+  }
+  /* the days a diagram draws: the solstices, the equinoxes, and the day studied when it is none of them */
+  function bimSunChartDays(st){
+    var y=String(st.date).slice(0,4),D=BIM_DG_SUNDAYS.map(function(B){return {d:y+'-'+B[0],c:B[2],t:0};});
+    if(!bimSunNearDrawn(st.date))D.push({d:st.date,c:BIM_SUN_DAYC,t:1});
+    return D;
+  }
+  /* looking up, stereographic: the centre overhead, the rim the horizon */
+  function bimSunPolarPt(a,az){var t=az*Math.PI/180,r=116*Math.tan((90-Math.max(0,a))*Math.PI/360);return [150+r*Math.sin(t),150-r*Math.cos(t)];}
+  function bimSunHX(m){return 34+258*m/1440;}
+  function bimSunHY(a){return 146-136*Math.max(0,a)/90;}
+  function bimSunVis(e,up){if(up)e.removeAttribute('visibility');else e.setAttribute('visibility','hidden');}
+  function bimSunPolarSvg(st){
+    var S=300,cx=150,cy=150,R=116,s,k,tz,now;
+    function rad(a){return R*Math.tan((90-Math.max(0,a))*Math.PI/360);}
+    var pt=bimSunPolarPt;
+    s='<svg viewBox="0 0 '+S+' '+S+'" role="img" aria-label="The sun\'s paths on the sky dome, in plan" data-sunpolar="1">';
+    [15,30,45,60,75].forEach(function(a){s+='<circle class="gd" cx="'+cx+'" cy="'+cy+'" r="'+bimSunF(rad(a))+'"/>';});
+    s+='<circle class="bs" cx="'+cx+'" cy="'+cy+'" r="'+R+'"/>';
+    for(k=0;k<24;k++){var t=k*15*Math.PI/180,o=k%6===0?9:4;
+      s+='<line class="bs" x1="'+bimSunF(cx+R*Math.sin(t))+'" y1="'+bimSunF(cy-R*Math.cos(t))+'" x2="'+bimSunF(cx+(R+o)*Math.sin(t))+'" y2="'+bimSunF(cy-(R+o)*Math.cos(t))+'"/>';}
+    ['N','E','S','W'].forEach(function(n,i){var t=i*Math.PI/2;s+='<text class="lb" x="'+bimSunF(cx+(R+20)*Math.sin(t))+'" y="'+bimSunF(cy-(R+20)*Math.cos(t)+4)+'" text-anchor="middle">'+n+'</text>';});
+    [30,60].forEach(function(a){var p=pt(a,0);s+='<text class="tk" x="'+bimSunF(p[0]+3)+'" y="'+bimSunF(p[1]-3)+'">'+a+'\u00b0</text>';});
+    bimSunChartDays(st).forEach(function(D){
+      var tzd=bimSunTzAt(st,D.d,'12:00'),P=[],H=[],m,r;
+      for(m=0;m<=1440;m+=6){r=bimSunCalc(st.lat,st.lon,tzd,D.d,bimPad2(Math.floor(m/60))+':'+bimPad2(m%60));if(r&&r.elevation>0){P.push(pt(r.elevation,r.azimuth));if(m%60===0)H.push(P[P.length-1]);}}
+      if(P.length>1)s+='<polyline points="'+P.map(function(q){return bimSunF(q[0])+','+bimSunF(q[1]);}).join(' ')+'" fill="none" stroke="'+D.c+'" stroke-width="2"'+(D.t?' stroke-dasharray="3 3"':'')+' data-sunday="'+D.d+'"/>';
+      H.forEach(function(q){s+='<circle cx="'+bimSunF(q[0])+'" cy="'+bimSunF(q[1])+'" r="2.4" fill="'+D.c+'"/>';});
+    });
+    tz=bimSunTzAt(st,st.date,st.time);now=bimSunCalc(st.lat,st.lon,tz,st.date,st.time);
+    var q=now&&now.elevation>0?pt(now.elevation,now.azimuth):[cx,cy];
+    return s+'<circle cx="'+bimSunF(q[0])+'" cy="'+bimSunF(q[1])+'" r="5" fill="'+BIM_SUN_RED+'" stroke="var(--surf)" stroke-width="1.5" data-sunnow="polar"'+(now&&now.elevation>0?'':' visibility="hidden"')+'/></svg>';
+  }
+  /* the sun's height through the day: the clock across, the altitude up */
+  function bimSunHeightSvg(st){
+    var W=300,H=170,L=34,Rr=W-8,T=10,B=H-24,s,tz,now,mn,x=bimSunHX,yy=bimSunHY;
+    s='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="The sun\'s height through the day" data-sunheight="1">';
+    [0,30,60,90].forEach(function(a){s+='<line class="'+(a?'gd':'bs')+'" x1="'+L+'" x2="'+Rr+'" y1="'+bimSunF(yy(a))+'" y2="'+bimSunF(yy(a))+'"/><text class="tk" x="'+(L-5)+'" y="'+bimSunF(yy(a)+3.5)+'" text-anchor="end">'+a+'\u00b0</text>';});
+    [0,6,12,18,24].forEach(function(hh){s+='<line class="gd" x1="'+bimSunF(x(hh*60))+'" x2="'+bimSunF(x(hh*60))+'" y1="'+T+'" y2="'+B+'"/><text class="tk" x="'+bimSunF(x(hh*60))+'" y="'+(H-8)+'" text-anchor="middle">'+hh+'h</text>';});
+    bimSunChartDays(st).forEach(function(D){
+      var tzd=bimSunTzAt(st,D.d,'12:00'),P=[],m,r;
+      for(m=0;m<=1440;m+=10){r=bimSunCalc(st.lat,st.lon,tzd,D.d,bimPad2(Math.floor(m/60))+':'+bimPad2(m%60));if(r&&r.elevation>0)P.push([x(m),yy(r.elevation)]);
+        else if(P.length>1){s+=bimSunPoly(P,D);P=[];}else P=[];}
+      if(P.length>1)s+=bimSunPoly(P,D);
+    });
+    tz=bimSunTzAt(st,st.date,st.time);now=bimSunCalc(st.lat,st.lon,tz,st.date,st.time);mn=bimSunMin(st.time);
+    return s+'<circle cx="'+bimSunF(x(mn))+'" cy="'+bimSunF(yy(now?now.elevation:0))+'" r="4.5" fill="'+BIM_SUN_RED+'" stroke="var(--surf)" stroke-width="1.5" data-sunnow="height"'+(now&&now.elevation>0?'':' visibility="hidden"')+'/></svg>';
+  }
+  function bimSunPoly(P,D){return '<polyline points="'+P.map(function(q){return bimSunF(q[0])+','+bimSunF(q[1]);}).join(' ')+'" fill="none" stroke="'+D.c+'" stroke-width="2"'+(D.t?' stroke-dasharray="3 3"':'')+'/>';}
+  function bimSunHeatKeyHtml(st){
+    var C=A3D.site&&A3D.site.climate,Hh=C&&C.hourly,h=bimAwSec('Temperature on the dome');
+    if(st.trial)return h+'<p class="a3d-awp-note">The climate is the site\'s: back to the site\'s place to see it on the dome.</p>';
+    if(!Hh||!Hh.heat)return h+'<p class="a3d-awp-note">No year of hours yet: Analyze site gets it with the climate.</p>';
+    return h+'<p class="a3d-awp-note">'+bimEsc(bimSunHalfText(bimSunHalf(st.date)))+': each cell the mean temperature at its hour over its month, at the sun\'s place then; '+Hh.year+', ERA5 via Open-Meteo.</p>'+
+      '<div class="a3d-awp-key a3d-sun-heat">'+BIM_HEAT_SHORT.map(function(n,j){var c=BIM_HEAT_COL[j];return '<span class="a3d-awp-keyi"><i class="k-fill" style="background:'+(c.indexOf('var(')===0?'#c2c0b8':c)+'"></i>'+bimEsc(n)+' \u00b0C</span>';}).join('')+'</div>';
+  }
+  /* the panel's numbers, the sliders and the diagrams' sun, as the clock or a slider moves */
+  function bimSunPanelLive(){
+    var P=el.propsbody&&el.propsbody.querySelector('[data-sunpanel]'),st,key,dkey,v,a=document.activeElement,C,k,e,now,tz;
+    if(!P)return false;
+    st=bimSunStudy();
+    key=[st.lat,st.lon,st.date,st.time,st.trial?1:0,bimSunZone().dst?1:0].join('|');
+    if(key===A3D_SUNP.key)return false;
+    A3D_SUNP.key=key;
+    v=bimSunNowVals();
+    ['place','day','time','alt','az','xyz','dayf','heat'].forEach(function(k){var e=P.querySelector('[data-sunv="'+k+'"]');if(e&&e.textContent!==v[k])e.textContent=v[k];});
+    C={lat:[st.lat,bimSunLatText(st.lat)],lon:[st.lon,bimSunLonText(st.lon)],date:[bimSunDoy(st.date),bimSunDayText(st.date)],time:[bimSunMin(st.time),st.time]};
+    for(k in C)if(C.hasOwnProperty(k)){
+      e=P.querySelector('[data-sunout="'+k+'"]');if(e&&e.textContent!==C[k][1])e.textContent=C[k][1];
+      e=P.querySelector('[data-sunsl="'+k+'"]');if(e&&e!==a&&String(e.value)!==String(C[k][0]))e.value=C[k][0];
+    }
+    dkey=[st.lat,st.lon,st.date].join('|');
+    if(dkey!==A3D_SUNP.dkey){   /* another day or place: the turning points, the diagrams and the temperature's half-year drawn again */
+      A3D_SUNP.dkey=dkey;
+      e=el.propsbody.querySelector('[data-sunpanel2]');if(e)e.outerHTML=bimSunChartsHtml();
+    }else{   /* the same day: the sun moved along it */
+      tz=bimSunTzAt(st,st.date,st.time);now=bimSunCalc(st.lat,st.lon,tz,st.date,st.time);
+      var up=!!(now&&now.elevation>0),q=up?bimSunPolarPt(now.elevation,now.azimuth):[150,150];
+      e=el.propsbody.querySelector('[data-sunnow="polar"]');
+      if(e){e.setAttribute('cx',bimSunF(q[0]));e.setAttribute('cy',bimSunF(q[1]));bimSunVis(e,up);}
+      e=el.propsbody.querySelector('[data-sunnow="height"]');
+      if(e){e.setAttribute('cx',bimSunF(bimSunHX(bimSunMin(st.time))));e.setAttribute('cy',bimSunF(bimSunHY(now?now.elevation:0)));bimSunVis(e,up);}
+    }
+    return true;
+  }
+  /* ---- what the panel's controls do ---- */
+  function bimSunTry(lat,lon){
+    if(lat===null||lon===null||lat===undefined||lon===undefined){A3D_SUNX.lat=null;A3D_SUNX.lon=null;}
+    else{lat=+lat;lon=+lon;if(!isFinite(lat)||!isFinite(lon)||lat<-90||lat>90||lon<-180||lon>180)return false;A3D_SUNX.lat=lat;A3D_SUNX.lon=lon;}
+    paint();if(A3D_AW.on)bimAwRefresh();
+    return true;
+  }
+  function bimSunBack(){A3D_SUNX.lat=null;A3D_SUNX.lon=null;A3D_SUNX.date=null;A3D_SUNX.time=null;paint();if(A3D_AW.on)bimAwRefresh();return true;}
+  /* a slider moved (commit: let go): the clock stops, the moment is the slider's */
+  function bimSunSlide(k,val,commit){
+    var n=parseFloat(val),cur,y,d;
+    if(!isFinite(n))return false;
+    if(A3D_ANIM.on||A3D_ANIM.paused)bimAnimStop();
+    if(k==='lat'||k==='lon'){
+      cur=bimSunStudy(true);
+      if(!bimSunNum(cur.lat)||!bimSunNum(cur.lon))return false;
+      A3D_SUNX.lat=Math.max(-89.9,Math.min(89.9,k==='lat'?n:cur.lat));A3D_SUNX.lon=Math.max(-180,Math.min(180,k==='lon'?n:cur.lon));
+      paint();
+      if(commit&&A3D_AW.on)bimAwRefresh();else bimSunPanelLive();
+      return true;
+    }
+    if(k==='date'){
+      y=+String(bimSunStudy(true).date).slice(0,4)||new Date().getFullYear();
+      A3D_SUNX.date=bimSunDateOf(y,Math.max(1,Math.min(bimSunYearDays(y),Math.round(n))));
+      if(commit){d=A3D_SUNX.date;A3D_SUNX.date=null;return bimSetSun('date',d);}
+    }else if(k==='time'){
+      n=Math.max(0,Math.min(1439,Math.round(n)));A3D_SUNX.time=bimPad2(n/60)+':'+bimPad2(n%60);
+      if(commit){d=A3D_SUNX.time;A3D_SUNX.time=null;return bimSetSun('time',d);}
+    }else return false;
+    paint();bimSunPanelLive();
+    return true;
+  }
+  /* Play's two ways: through the day (V170's) or through the year */
+  function bimSunMode(m){
+    if(m!=='day'&&m!=='year')return false;
+    A3D_ANIM.sunMode=m;
+    if(A3D_ANIM.on||A3D_ANIM.paused){A3D_ANIM.sunTime=bimAnimSunTime();A3D_ANIM.sunDate=bimAnimSunDate();}
+    paint();if(A3D_AW.on)bimAwRefresh();
+    return true;
+  }
+  function bimSunModeHtml(){
+    var y=A3D_ANIM.sunMode==='year';
+    return '<div class="a3d-awp-acts a3d-sun-mode" role="group" aria-label="Play the sun">'+
+      '<button type="button" class="a3d-anzbtn'+(y?'':' on')+'" data-awact="sun:mode:day" aria-pressed="'+(!y)+'">Through the day</button>'+
+      '<button type="button" class="a3d-anzbtn'+(y?' on':'')+'" data-awact="sun:mode:year" aria-pressed="'+y+'">Through the year</button></div>';
+  }
+  function bimSunAct(a){
+    var z;
+    if(a==='back')return bimSunBack();
+    if(a==='mode:day'||a==='mode:year')return bimSunMode(a.slice(5));
+    if(a==='dst'){z=bimSunZone();return bimSetSun('dst',z.dst?'':'auto');}
+    return false;
   }
   /* ================= __acad3dV166: site analysis in the model III, movement: the six analyses =================
      reference/research-site-analysis-in-model.md, section 4. Each reads A3D.site.access: V161's walk times,
@@ -24615,7 +25211,11 @@ try{
       if(tzs!==null){
         C.tz=Math.round(tzs/36)/100;C.tzName=tzn;
         A3D.site.sun=A3D.site.sun||{};
-        if(!bimSunNum(A3D.site.sun.tz)){A3D.site.sun.tz=C.tz;tzSet=true;}
+        /* __acad3dV171d: the zone kept with the site, and its standard time, not the offset of the day it was asked;
+           an offset the owner typed is theirs */
+        var zstd=tzn?bimSunZoneStd(tzn,new Date().getFullYear()):null;
+        if(tzn)A3D.site.sun.zone=tzn;
+        if(!bimSunNum(A3D.site.sun.tz)||(A3D.site.sun.tzAuto&&zstd!==null&&A3D.site.sun.tz!==zstd)){A3D.site.sun.tz=zstd!==null?zstd:C.tz;A3D.site.sun.tzAuto=true;tzSet=true;}
       }
       A3D.site.climate=C;
       var K=A3D.site.risk&&A3D.site.risk.lat===lat&&A3D.site.risk.lon===lon?A3D.site.risk:{};
@@ -24846,7 +25446,7 @@ try{
   function bimClbWindBand(j){var b=bimClimUsedBins();return j<b.length-1?b[j]+'–'+b[j+1]+' m/s':'≥ '+b[j]+' m/s';}
   /* Fig. 5: the sun path, stereographic, the centre overhead and the rim the horizon */
   function bimClbSunSvg(lat,lon,tz){
-    var S=380,cx=190,cy=190,R=150,y=new Date().getFullYear(),s,k;
+    var S=380,cx=190,cy=190,R=150,y=new Date().getFullYear(),s,k,tzf=typeof tz==='function'?tz:function(){return tz;};   /* __acad3dV171d: an offset for each date */
     function rad(alt){return R*Math.tan((90-Math.max(0,alt))*Math.PI/360);}
     function pt(alt,az){var t=az*Math.PI/180,r=rad(alt);return [cx+r*Math.sin(t),cy-r*Math.cos(t)];}
     s='<svg viewBox="0 0 '+S+' '+S+'" role="img" aria-label="Sun path">';
@@ -24859,14 +25459,14 @@ try{
     var D=[['06-21','var(--s2)','21 June'],['03-20','var(--s3)','Equinox'],['12-21','var(--s1)','21 December']],out=[];
     D.forEach(function(dd){
       var P=[],hp=[],mx=0,m,r;
-      for(m=0;m<=1440;m+=6){r=bimSunCalc(lat,lon,tz,y+'-'+dd[0],bimHHMM(m));if(r&&r.elevation>0){P.push(pt(r.elevation,r.azimuth));if(r.elevation>mx)mx=r.elevation;}}
-      for(m=0;m<1440;m+=60){r=bimSunCalc(lat,lon,tz,y+'-'+dd[0],bimHHMM(m));if(r&&r.elevation>0)hp.push({h:m/60,p:pt(r.elevation,r.azimuth),alt:r.elevation,az:r.azimuth});}
+      for(m=0;m<=1440;m+=6){r=bimSunCalc(lat,lon,tzf(y+'-'+dd[0]),y+'-'+dd[0],bimHHMM(m));if(r&&r.elevation>0){P.push(pt(r.elevation,r.azimuth));if(r.elevation>mx)mx=r.elevation;}}
+      for(m=0;m<1440;m+=60){r=bimSunCalc(lat,lon,tzf(y+'-'+dd[0]),y+'-'+dd[0],bimHHMM(m));if(r&&r.elevation>0)hp.push({h:m/60,p:pt(r.elevation,r.azimuth),alt:r.elevation,az:r.azimuth});}
       if(P.length>1)s+='<polyline points="'+P.map(function(q){return bimClbF(q[0])+','+bimClbF(q[1]);}).join(' ')+'" fill="none" stroke="'+dd[1]+'" stroke-width="2" stroke-linecap="round"/>';
       hp.forEach(function(q){s+='<circle class="mk" cx="'+bimClbF(q.p[0])+'" cy="'+bimClbF(q.p[1])+'" r="4" fill="'+dd[1]+'" stroke="var(--surf)" stroke-width="2"'+
         bimClbTip(dd[2]+', '+(q.h<10?'0':'')+q.h+':00|Altitude '+bimClbNum(q.alt,0)+'°|Azimuth '+bimClbNum(q.az,0)+'°')+'/>';});
       if(dd[0]==='06-21')hp.forEach(function(q){if(q.h%3===0){var vx=q.p[0]-cx,vy=q.p[1]-cy,l=Math.sqrt(vx*vx+vy*vy)||1;
         s+='<text class="tl2" x="'+bimClbF(q.p[0]+vx/l*13)+'" y="'+bimClbF(q.p[1]+vy/l*13+4)+'" text-anchor="middle">'+q.h+'h</text>';}});
-      var r0=bimSunCalc(lat,lon,tz,y+'-'+dd[0],'12:00'),len=r0&&r0.sunrise!==null&&r0.sunset!==null?Math.round(r0.sunset-r0.sunrise):(r0&&r0.polar==='day'?1440:0);
+      var r0=bimSunCalc(lat,lon,tzf(y+'-'+dd[0]),y+'-'+dd[0],'12:00'),len=r0&&r0.sunrise!==null&&r0.sunset!==null?Math.round(r0.sunset-r0.sunrise):(r0&&r0.polar==='day'?1440:0);
       out.push({label:dd[2],col:dd[1],alt:mx,len:len});
     });
     return {svg:s+'<circle cx="'+cx+'" cy="'+cy+'" r="2.5" fill="var(--ink2)"/></svg>',days:out};
@@ -25045,7 +25645,7 @@ try{
         bimClbTable(['Band','Hours','Share'],BIM_HEAT_NAMES.map(function(n,j){var c=0;Hh.heat.forEach(function(v){if(v!==null&&bimClbHeatClass(v)===j)c++;});return [n,c,bimClbNum(100*c/Math.max(1,nh))+'%'];})),
         C.src+', '+Hh.year+' hourly'));
     }
-    var sun=bimClbSunSvg(lat,lon,bimSunNum(st.tz)?st.tz:Math.round(lon/15));
+    var sun=bimClbSunSvg(lat,lon,bimSunNum(st.tz)?function(d){return bimSunTzAt(st,d,'12:00');}:Math.round(lon/15));
     fig++;
     cards.push(bimClbCard('s4',fig,'The sun climbs to '+bimClbNum(sun.days[0].alt,0)+'° at midsummer and '+bimClbNum(sun.days[2].alt,0)+'° at midwinter',
       'Sun path, looking up: the centre overhead, the rim the horizon, rings every 15° of altitude; dots every hour'+(bimSunNum(st.tz)?' (UTC'+(st.tz>=0?'+':'')+st.tz+')':' (approximate local time)')+'.',
@@ -27916,7 +28516,8 @@ try{
     var sunS=bimSunSettings();   /* __acad3dV107: where the site is, and the moment studied */
     loc+=bimPropRow('Latitude (deg N)','<input type="number" step="any" min="-90" max="90" data-propmodel="sunlat" value="'+(bimSunNum(sunS.lat)?sunS.lat:'')+'" placeholder="not set" title="Site latitude in degrees, north positive">');
     loc+=bimPropRow('Longitude (deg E)','<input type="number" step="any" min="-180" max="180" data-propmodel="sunlon" value="'+(bimSunNum(sunS.lon)?sunS.lon:'')+'" placeholder="not set" title="Site longitude in degrees, east positive: west is negative">');
-    loc+=bimPropRow('UTC Offset (h)','<input type="number" step="any" min="-12" max="14" data-propmodel="suntz" value="'+(bimSunNum(sunS.tz)?sunS.tz:'')+'" placeholder="not set" title="Hours from UTC in force on the date: -5 EST, -4 EDT">');
+    loc+=bimPropRow('UTC Offset (h)','<input type="number" step="any" min="-12" max="14" data-propmodel="suntz" value="'+(bimSunNum(sunS.tz)?sunS.tz:'')+'" placeholder="not set" title="Standard time\'s hours from UTC: -5 for New York">');
+    loc+=bimSunZoneRows();   /* __acad3dV171d: the zone, and daylight saving */
     loc+=bimPropRow('Sun Date','<input type="date" data-propmodel="sundate" value="'+bimEsc(sunS.date)+'">');
     loc+=bimPropRow('Sun Time','<input type="time" data-propmodel="suntime" value="'+bimEsc(sunS.time)+'">');
     loc+=bimPropText('Sun',bimSunText(bimSunNow(true)));
@@ -30013,7 +30614,7 @@ try{
      model with what it found, or one of the model's analyses with its settings and its buttons. */
   var BIM_AW_ABOUT={
     frame:'True north and rings every 100 m from the site: the bearing and the scale of everything else.',
-    sun:'The sun\'s path over the site on the solstices and the equinoxes, with its hours, and where it is now.',
+    sun:'The sun\'s path over the site on the solstices and the equinoxes and on the day studied, with its hours; where it is now, its altitude and azimuth; and the temperature where it passes. They follow the place, the date and the time.',
     shadow:'Where the buildings cast their shadows at 9, 12 and 15 on the solstices and the equinox.',
     wind:'The winds by season from a year of hourly data, and the direction of the strongest.',
     views:'What can be seen from the site, at eye level and from the top floor.',
@@ -30207,6 +30808,7 @@ try{
   function bimAwLeave(){
     if(!A3D_AW.on)return false;
     A3D_AW.on=false;A3D_AW.props=false;
+    A3D_SUNX.lat=null;A3D_SUNX.lon=null;A3D_SUNX.date=null;A3D_SUNX.time=null;   /* __acad3dV171d: a place tried ends with Analyze */
     document.body.classList.remove('a3d-aw');
     var sh=document.getElementById('a3d-shell'),shut;
     if(sh&&sh.getAttribute('data-tab')==='analyze'){
@@ -30363,6 +30965,7 @@ try{
   function bimAwChart(a){
     var C=A3D.site&&A3D.site.climate,Hh=C&&C.hourly,st=bimSunSettings();
     try{
+      if(a==='sun')return bimSunChartsHtml();   /* __acad3dV171d: the turning points, the two diagrams, the temperature */
       if(a==='wind'&&Hh&&Hh.wind&&Hh.wind.year&&Hh.wind.year.n){
         var Wy=Hh.wind.year;
         return '<div class="a3d-awp-chart">'+bimClbRoseSvg(Wy,true,'Wind rose, '+Hh.year)+'</div>'+
@@ -30382,7 +30985,8 @@ try{
     if(!can)return '';
     return bimAwSec('Play')+'<div class="a3d-awp-acts">'+
       bimAwBtn('anim:play',A3D_ANIM.on?'Pause':(A3D_ANIM.paused?'Go on':'Play'),!A3D_ANIM.on)+
-      bimAwBtn('anim:stop','Stop',false,A3D_ANIM.on||A3D_ANIM.paused?'':'Not playing')+'</div>';
+      bimAwBtn('anim:stop','Stop',false,A3D_ANIM.on||A3D_ANIM.paused?'':'Not playing')+'</div>'+
+      (a==='sun'||a==='shadow'?bimSunModeHtml():'');   /* __acad3dV171d: through the day or the year */
   }
   /* the overview: the site, the red flags first, every category's findings counted, what the run fetched */
   function bimAwOverviewHtml(){
@@ -30439,6 +31043,7 @@ try{
       FK=BIM_AW_FINDS[f]||[],FF=bimSaShown().filter(function(x){return FK.indexOf(x.auto)>=0;});
     h='<div class="a3d-awp a3d-sa" data-awpanel="'+f+'">'+bimAwHd(A.col,0,A.name,(g?g.n:'Analyze')+(R?' \u00b7 '+R.date:''))+
       '<p class="a3d-awp-about">'+bimEsc(BIM_AW_ABOUT[f]||'')+'</p>';
+    if(f==='sun')h+=bimSunPanelHtml();   /* __acad3dV171d: the sun now, and the sliders */
     if(f==='traffic'){
       var s=bimTrSettings(),mv=bimMvOf();
       h+=bimAwSec('Simulation')+'<div class="a3d-awp-acts">'+bimAwBtn('tr:sim:'+(s.on?'off':'on'),s.on?'Stop the simulation':'Simulate',!s.on,mv?'':bimMvWhyNot())+'</div>'+
@@ -30489,6 +31094,7 @@ try{
       else if(c==='back'){bimAwBlur();A3D_AW.props=false;bimAwRefresh();bimAwTop();r=true;}
       else if(c==='dg'){r=bimDgAct(a);bimAwRefresh();}
       else if(c==='tr'){r=bimTrAct(a);bimAwRefresh();}
+      else if(c==='sun')r=bimSunAct(a);   /* __acad3dV171d */
       else if(c==='anim'){
         if(a==='play')r=bimAnimPlay(!A3D_ANIM.on);
         else if(a==='stop'){r=bimAnimStop();}
@@ -30518,9 +31124,18 @@ try{
         /* a field's change is its words committed, taken or refused: the panel shows the model again at once */
         if((k=e.getAttribute('data-znf'))){bimZnSet(k,e.value);if(bimAwOwns())bimAwRender(true);}   /* __acad3dV160: the zoning, in Legal */
         else if((k=e.getAttribute('data-anzload'))){updateLevel(A3D.activeLevel,k,e.value);if(bimAwOwns())bimAwRender(true);}   /* __acad3dV166b: the floor loads, in Frame analysis */
+        else if((k=e.getAttribute('data-sunsl'))){   /* __acad3dV171d: a slider let go; the same slider in the hand again */
+          bimSunSlide(k,e.value,true);
+          setTimeout(function(){var s=el.propsbody.querySelector('[data-sunsl="'+k+'"]');if(s&&document.activeElement!==s)s.focus();},0);
+        }
       }catch(eF){console.warn('[BIM] Analyze setting failed',eF);a3dToast('That setting could not be changed - see the console');}
     },true);   /* in the capture: V118's refresh after every change, the panel's last handler, would put the model's value back first */
     el.propsbody.addEventListener('focusout',function(){if(A3D_AW.pend)setTimeout(function(){if(A3D_AW.pend)refreshProps();},0);});   /* the refresh held for a field, as it is left */
+    el.propsbody.addEventListener('input',function(ev){   /* __acad3dV171d: a slider moving: the view and the numbers follow it */
+      var e=ev.target,k;
+      if(!A3D_AW.on||!e||!e.getAttribute||!(k=e.getAttribute('data-sunsl')))return;
+      try{bimSunSlide(k,e.value,false);}catch(eS){console.warn('[BIM] The sun\'s slider',eS);}
+    });
   }
   /* WebGPU's clear, in the view's background */
   function bimAwClear(){var b=bimAwBg();return {r:b[0],g:b[1],b:b[2],a:1};}
@@ -40374,6 +40989,7 @@ try{
     };
     if(bimIsDiag(o)){   /* __acad3dV164 */
       if(o.dg.g.kind==='live')return {error:'A live shadow follows the sun and the model: it cannot be turned, mirrored or scaled'};
+      if(o.dg.g.kind==='mesh')return {error:'The temperature on the dome follows the sun: it cannot be turned, mirrored or scaled'};   /* __acad3dV171d */
       return bimDgTransformed(o.dg,transformPt);
     }
     if(o.t==='sketch')return {kind:'sketch',pts:o.pts.map(transformPt),y:o.y};
@@ -46471,7 +47087,7 @@ try{
   function drawSunPath(ctx,V,W,H){
     A3D.lastSunPath=null;
     if(!A3D.showSun||!bimCameraIsPlan()||A3D.sheetCapture)return;   /* __acad3dV119 */
-    var st=bimSunSettings();
+    var st=bimSunStudy();   /* __acad3dV171d: a place tried; each date's own offset below */
     if(!bimSunNum(st.lat)||!bimSunNum(st.lon)||!bimSunNum(st.tz))return;
     ctx.save();
     try{
@@ -46499,7 +47115,7 @@ try{
         pts=[];top=-90;first=true;
         ctx.strokeStyle=days[k][1];ctx.fillStyle=days[k][1];ctx.lineWidth=1.4;ctx.beginPath();
         for(i=0;i<1440;i+=10){
-          sp=bimSunCalc(st.lat,st.lon,st.tz,days[k][0],bimPad2(i/60)+':'+bimPad2(i%60));
+          sp=bimSunCalc(st.lat,st.lon,bimSunTzAt(st,days[k][0],'12:00'),days[k][0],bimPad2(i/60)+':'+bimPad2(i%60));
           if(!sp||!(sp.elevation>0)){first=true;continue;}
           pts.push([sp.azimuth,sp.elevation]);
           if(sp.elevation>top)top=sp.elevation;
@@ -46508,7 +47124,7 @@ try{
         }
         ctx.stroke();
         for(i=0;i<1440;i+=60){
-          sp=bimSunCalc(st.lat,st.lon,st.tz,days[k][0],bimPad2(i/60)+':00');
+          sp=bimSunCalc(st.lat,st.lon,bimSunTzAt(st,days[k][0],'12:00'),days[k][0],bimPad2(i/60)+':00');
           if(sp&&sp.elevation>0){q=at(sp.azimuth,sp.elevation);ctx.beginPath();ctx.arc(q[0],q[1],1.8,0,2*Math.PI);ctx.fill();}
         }
         paths.push({date:days[k][0],pts:pts,max:pts.length?top:null});
@@ -46519,7 +47135,7 @@ try{
         ctx.beginPath();ctx.arc(q[0],q[1],4.5,0,2*Math.PI);ctx.fillStyle='#ffe066';ctx.fill();
         ctx.strokeStyle='rgba(0,0,0,0.8)';ctx.lineWidth=1.2;ctx.stroke();
       }
-      if(bimAnimLive()&&A3D_ANIM.sunTime&&sunPt){ctx.textAlign='left';ctx.fillStyle='#ffe066';ctx.fillText(A3D_ANIM.sunTime,box[0]+6,box[1]+box[3]-9);}   /* __acad3dV170: the time, while it plays */
+      if(bimAnimLive()&&A3D_ANIM.sunTime&&sunPt){ctx.textAlign='left';ctx.fillStyle='#ffe066';ctx.fillText((A3D_ANIM.sunDate?bimSunDayText(A3D_ANIM.sunDate,true)+' ':'')+A3D_ANIM.sunTime,box[0]+6,box[1]+box[3]-9);}   /* __acad3dV170: the time, while it plays; __acad3dV171d: the date through the year */
       A3D.lastSunPath={north:[nx,ny],east:[ex,ey],center:[cx,cy],radius:R,box:box,paths:paths,sun:sunPt};
     }catch(e){
       console.warn('[BIM] sun path',e);
@@ -54263,7 +54879,7 @@ try{
       if(mp){
         var mk=mp.getAttribute('data-propmodel'),mv=mp.value;
         if(mk==='truenorth'){bimSetTrueNorth(mv);return;}   /* __acad3dV103 */
-        if(mk==='sunlat'||mk==='sunlon'||mk==='suntz'||mk==='sundate'||mk==='suntime'){bimSetSun(mk.slice(3),mv);return;}   /* __acad3dV107 */
+        if(mk==='sunlat'||mk==='sunlon'||mk==='suntz'||mk==='sundate'||mk==='suntime'||mk==='sundst'){bimSetSun(mk.slice(3),mv);return;}   /* __acad3dV107; __acad3dV171d: sundst */
         if(mk==='project'){A3D.titleBlock.project=mv;}
         else if(mk==='client'){A3D.titleBlock.client=mv;}
         else if(mk==='site'){updateSite('name',mv);}
@@ -55315,7 +55931,7 @@ try{
   window.__a3dAnimPlay=function(on){return bimAnimPlay(on);};
   window.__a3dAnimStop=function(){return bimAnimStop();};
   /* the clock set by hand, paused there: the frame at t seconds, the last Play at playAt */
-  window.__a3dAnimAt=function(t,playAt){bimAnimHalt();A3D_ANIM.on=false;A3D_ANIM.paused=true;A3D_ANIM.t=+t||0;A3D_ANIM.playAt=+playAt||0;A3D_ANIM.c=null;A3D_ANIM.dome=null;A3D_ANIM.sunTime=bimAnimSunTime();paint();return window.__a3dAnim();};
+  window.__a3dAnimAt=function(t,playAt){bimAnimHalt();A3D_ANIM.on=false;A3D_ANIM.paused=true;A3D_ANIM.t=+t||0;A3D_ANIM.playAt=+playAt||0;A3D_ANIM.c=null;A3D_ANIM.dome=null;A3D_ANIM.sunTime=bimAnimSunTime();A3D_ANIM.sunDate=bimAnimSunDate();paint();return window.__a3dAnim();};
   window.__a3dAnimOf=function(id){var o=objById(id);if(!bimIsDiag(o))return null;var R=bimAnimRingOf(o);
     return {motion:bimAnimMotion(o),kinds:bimAnimKinds(o),auto:bimAnimAuto(o),out:bimAnimOut(o),ring:R,k:bimAnimLive()&&bimAnimMotion(o)==='ring'?bimAnimRingK(o):null,draw:bimAnimLive()&&bimAnimMotion(o)==='draw'?bimAnimDrawOf(o):null,reveal:bimAnimReveal(o.dg.a)};};
   window.__a3dAnimSettings=function(){return JSON.parse(JSON.stringify({anim:BIM_ANIM,names:BIM_ANIM_NAMES,auto:BIM_ANIM_AUTO}));};
@@ -57365,6 +57981,28 @@ try{
     if(n)bimLayerChanged();
     return n;
   };
+  /* __acad3dV171d: the sun path, one clock, for the suite */
+  window.__acad3dV171d='spa,dome,zone,dst,standard,trial,preview,study,yearplay,sync,today,angles,analemma,heat,labels,panel,sliders,turning,charts';
+  window.__a3dSunZoneOff=function(z,d,t){return bimSunZoneOff(z,d,t);};
+  window.__a3dSunZoneStd=function(z,y){return bimSunZoneStd(z,y);};
+  window.__a3dSunZone=function(){return bimSunZone();};
+  window.__a3dSunTzAt=function(d,t){return bimSunTzAt(bimSunSettings(),d,t);};
+  window.__a3dSunStudy=function(noClock){return bimSunStudy(!!noClock);};
+  window.__a3dSunMode=function(m){if(m==='year'||m==='day')A3D_ANIM.sunMode=m;return A3D_ANIM.sunMode;};
+  window.__a3dAnimSunDate=function(t){var k=A3D_ANIM.t;A3D_ANIM.t=+t||0;var r=bimAnimSunDate();A3D_ANIM.t=k;return r;};
+  window.__a3dSunSync=function(force){return bimDgSunSync(!!force);};
+  window.__a3dSunHeatAt=function(d,t){var st=bimSunStudy();return bimSunHeatAt(st,d||st.date,t||st.time);};
+  window.__a3dSunTry=function(lat,lon){return bimSunTry(lat,lon);};
+  window.__a3dSunBack=function(){return bimSunBack();};
+  window.__a3dSunSlide=function(k,v,commit){return bimSunSlide(k,v,!!commit);};
+  window.__a3dSunModeSet=function(m){return bimSunMode(m);};
+  window.__a3dSunVals=function(){var v=bimSunNowVals();delete v.st;return JSON.parse(JSON.stringify(v));};
+  window.__a3dSunX=function(){return JSON.parse(JSON.stringify(A3D_SUNX));};
+  window.__a3dSetSun=function(f,v){return bimSetSun(f,v);};
+  window.__a3dUndo=function(){doUndo();return true;};
+  window.__a3dSunWords=function(){return JSON.parse(JSON.stringify(A3D_DG.labelWords||[]));};
+  window.__a3dSunDots=function(){var o={};A3D_DG.hits.forEach(function(h){o[h.id]=h.dots.map(function(d){return d.slice();});});return o;};
+  window.__a3dSunLabels=function(){return JSON.parse(JSON.stringify({boxes:A3D_DG.labelBoxes||[],dots:A3D_DG.dotKeep||[]}));};
 }catch(e){
   window.__a3dErr=String(e&&e.message||e);
   console.warn('[BIM] The engine failed to load.',e);   /* __acad3dV120 */

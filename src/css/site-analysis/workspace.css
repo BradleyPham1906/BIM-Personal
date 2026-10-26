@@ -163,3 +163,25 @@ body.light-theme .a3d-awp-flag{background:rgba(229,72,77,.08)}
 body.light-theme .a3d-awp-catno,body.light-theme .a3d-awp-catf,body.light-theme .a3d-awp-anst,body.light-theme .a3d-awp-in{color:#6b7280}
 body.light-theme .a3d-awp-catf.rf{color:#b42318}
 body.light-theme .a3d-awp-cat:hover,body.light-theme .a3d-awp-an:hover{background:rgba(0,0,0,.04)}
+/* __acad3dV171d: the sun's panel: the sun now, the sliders, Play's two ways, the turning points, the diagrams */
+.a3d-sun-now b{font-variant-numeric:tabular-nums}
+.a3d-sun-f{font-size:11.5px}
+.a3d-sun-trial{padding:6px 8px;border-radius:6px;background:rgba(229,72,77,.12);color:#ffb3b5}
+.a3d-sun-sl{display:flex;flex-direction:column;gap:8px}
+.a3d-sun-slr{display:grid;grid-template-columns:1fr auto;gap:2px 8px;align-items:center;font-size:12px}
+.a3d-sun-sll{color:#8a96a3}
+.a3d-sun-slr output{font-variant-numeric:tabular-nums;text-align:right}
+.a3d-sun-slr input[type=range]{grid-column:1/-1;width:100%;margin:0;min-height:24px;accent-color:#ff8a8f;cursor:pointer}
+@media(pointer:coarse){.a3d-sun-slr input[type=range]{min-height:36px}}
+.a3d-sun-mode{margin-top:6px}
+.a3d-awp .a3d-sun-mode .a3d-anzbtn.on{border-color:#ff8a8f;color:#ffd0d2;background:rgba(255,138,143,.12)}
+.a3d-sun-tp{display:flex;flex-direction:column;gap:8px}
+.a3d-sun-card{border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:8px 10px}
+.a3d-sun-cardh{display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.a3d-sun-cardh i{width:10px;height:10px;border-radius:50%;flex:0 0 auto}
+.a3d-sun-cardh span{margin-left:auto;color:#8a96a3;font-size:11.5px;text-align:right}
+.a3d-sun-chart svg{max-width:260px}
+body.light-theme .a3d-sun-card{border-color:rgba(11,11,11,.12)}
+body.light-theme .a3d-sun-trial{background:rgba(229,72,77,.1);color:#9f1d22}
+body.light-theme .a3d-sun-sll,body.light-theme .a3d-sun-cardh span{color:#6b7280}
+body.light-theme .a3d-awp .a3d-sun-mode .a3d-anzbtn.on{border-color:#d63b41;color:#9f1d22;background:rgba(214,59,65,.08)}

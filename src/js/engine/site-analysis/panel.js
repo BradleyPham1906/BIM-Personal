@@ -83,7 +83,8 @@
     var sunS=bimSunSettings();   /* __acad3dV107: where the site is, and the moment studied */
     loc+=bimPropRow('Latitude (deg N)','<input type="number" step="any" min="-90" max="90" data-propmodel="sunlat" value="'+(bimSunNum(sunS.lat)?sunS.lat:'')+'" placeholder="not set" title="Site latitude in degrees, north positive">');
     loc+=bimPropRow('Longitude (deg E)','<input type="number" step="any" min="-180" max="180" data-propmodel="sunlon" value="'+(bimSunNum(sunS.lon)?sunS.lon:'')+'" placeholder="not set" title="Site longitude in degrees, east positive: west is negative">');
-    loc+=bimPropRow('UTC Offset (h)','<input type="number" step="any" min="-12" max="14" data-propmodel="suntz" value="'+(bimSunNum(sunS.tz)?sunS.tz:'')+'" placeholder="not set" title="Hours from UTC in force on the date: -5 EST, -4 EDT">');
+    loc+=bimPropRow('UTC Offset (h)','<input type="number" step="any" min="-12" max="14" data-propmodel="suntz" value="'+(bimSunNum(sunS.tz)?sunS.tz:'')+'" placeholder="not set" title="Standard time\'s hours from UTC: -5 for New York">');
+    loc+=bimSunZoneRows();   /* __acad3dV171d: the zone, and daylight saving */
     loc+=bimPropRow('Sun Date','<input type="date" data-propmodel="sundate" value="'+bimEsc(sunS.date)+'">');
     loc+=bimPropRow('Sun Time','<input type="time" data-propmodel="suntime" value="'+bimEsc(sunS.time)+'">');
     loc+=bimPropText('Sun',bimSunText(bimSunNow(true)));

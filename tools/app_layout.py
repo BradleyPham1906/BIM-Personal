@@ -91,6 +91,8 @@ ENGINE = [
     ('site-analysis/model-layers.js', '  /* ---- the layers: Site analysis, and one under it for each analysis ---- */'),
     ('site-analysis/motion.js', '  /* ================= __acad3dV170: the analyses in motion ================='),
     ('site-analysis/model-analyses.js', '  /* ---- the legend, on the view: each analysis shown, its key and its source ----'),
+    ('site-analysis/sun-path.js', '  /* ================= __acad3dV171d: the sun path, one clock ================='),
+    ('site-analysis/sun-panel.js', '  /* ================= __acad3dV171d: the sun\'s panel ================='),
     ('site-analysis/movement-analyses.js', '  /* ================= __acad3dV166: site analysis in the model III, movement: the six ana'),
     ('site-analysis/land-water.js', '  /* ================= __acad3dV165: site analysis in the model II, land and water ======='),
     ('site-analysis/land-use.js', '  /* ================= __acad3dV168: Site analysis IV, land ================='),
@@ -203,6 +205,7 @@ ENGINE = [
     ('testing/hooks-legacy.js', '  /* __acad3dV51: opening-propagation surface for the Phase 55b tests. */'),
     ('testing/hooks-traffic.js', '  /* __acad3dV171: traffic and people around the site, for the suite: the run driven step '),
     ('testing/hooks-workspace.js', '  /* __acad3dV171b: the analysis workspace, for the suite */'),
+    ('testing/hooks-sun.js', '  /* __acad3dV171d: the sun path, one clock, for the suite */'),
     ('_end.js', '}catch(e){'),
 ]
 
