@@ -126,14 +126,15 @@ and how much".
 - Restricted beside NoData: a cell outside the ground grid is NoData, not restricted, and is said so.
 - A buffer of 0, a negative buffer (inward, from a polygon), and dissolve with overlapping buffers.
 
-## 7. Questions for the owner (asked together, 2026-10-27)
+## 7. The owner's decisions (2026-10-27)
 
-1. Where the tools live: in the analysis workspace as a Tools group (proposed), or a separate geoprocessing pane.
-2. The buildable area: Pennsylvania's site capacity calculation with Chalfont's ratios as the first record
-   (proposed), or every constraint removed in full.
-3. Sun hours on the GPU: in V172, or left to V172c (Ladybug's sun-hours and radiation) so the app has one sun
-   tool.
-4. Locate: the simplified best region (proposed), or left out.
+Each as proposed:
+1. **The tools live in the analysis workspace**, a Tools group in its left list, each opening on the right.
+2. **The buildable area is Pennsylvania's site capacity calculation**, Chalfont's ratios the first record in the
+   registry, editable, with the zoning setbacks for where to build.
+3. **Sun hours stay with V172c** (Ladybug): one sun tool for the app. V172 reads the existing sun hours as a
+   suitability criterion; sun hours on the GPU leaves V172's scope.
+4. **A simple Locate**: the best connected region of a given area inside the lot, by its mean suitability.
 
 ## 8. Still open
 
