@@ -95,6 +95,7 @@ Search Notion before creating anything, so nothing is made twice.
 | `reference/research-shortcuts-ui.md` | `3fecbfcc3a38817da2f7e01e671abde6` |
 | `reference/research-site-analysis-in-model.md` | `3fecbfcc3a388110af17e44a1e218379` |
 | `reference/research-site-analysis-process.md` | `3fecbfcc3a388173ac14ca668847413c` |
+| `reference/research-site-analysis-tools.md` | `406cbfcc3a388114a854d7a89cdd935e` |
 | `reference/research-site-context.md` | `3fecbfcc3a3881d694bac9967c6cd6a7` |
 | `reference/research-sketchup-import.md` | `3fecbfcc3a3881be999bf09d57837e20` |
 | `reference/research-standards-inventory.md` | `3fecbfcc3a3881acab9be7601d152b90` |
