@@ -17,12 +17,12 @@ requires command mapping, full app regressions and owner review.
 
 **Read this first in a new session.** One page. The detail lives in the docs listed at the bottom.
 
-    canvas_v10.html   3728812 bytes
-    sha256            9e07f24ce34c52a45225b03e5e2457e501fa130f86b92aa74d3e1510924b1f64
+    canvas_v10.html   3729520 bytes
+    sha256            1dd1646f3e6b36424a41a7bab53c9a270c621ed0ae75c89d5c31d6240bd29e3f
     markers           __acad3dV60 ... __acad3dV172, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
-                      __acad3dV121b, __acad3dV166b, __acad3dV166c, __acad3dV166d, __acad3dV171b, __acad3dV171c,
-                      __acad3dV171d
-    tests             134 suites, 6879 checks, 0 failures (the 133 older suites' 6786 and V172's 93; with cjval
+                      __acad3dV121b, __acad3dV124b, __acad3dV166b, __acad3dV166c, __acad3dV166d, __acad3dV171b,
+                      __acad3dV171c, __acad3dV171d
+    tests             135 suites, 6899 checks, 0 failures (the 134 older suites' 6879 and V124b's 20; with cjval
                       built, V139 and V140 run their three more)
 
     The user guide (V142): every phase updates docs/src/, its log entry and BIM_APP_VERSION, then
@@ -227,7 +227,15 @@ when it starts (V111 to V138 went to other work; V139 to V193 are in NOW).
 | 118 | Blocks and data | ATTDEF ATTEDIT BEDIT WBLOCK DATAEXTRACTION TABLESTYLE TABLEDIT TABLEEXPORT | First phase that's about the disciplines, not drafting. BLOCK and INSERT landed in V124, as the Assets library's blocks: saved records inserted as independent copies. A block reference that follows its definition (what BEDIT edits) is not built. |
 | 119 | Sheets and plotting, rest | MVIEW (draw a viewport on the paper) PAGESETUP (plot settings beyond Sheet Setup) PUBLISH (V122's Print set prints every sheet in one job; a chosen subset and page setups remain) EXPORTPDF (vector PDF of a sheet) VPLAYER (per-viewport layer visibility) viewport lock | LAYOUT, MSPACE and PSPACE landed in V116, with layout tabs and model space through a viewport. |
 
-**Recently finished:** V172, **the site analysis tools, ArcGIS's way** (2026-10-27 to 31).
+**Recently finished:** V124b, **the Assets library's save, warned and toasted** (2026-10-31; built on V172, the version
+stays V172). The owner's decision D8 of `reference/research-local-storage.md`: when browser storage refused the library,
+`bimSaveFamilyLibrary` only warned to the console, so an asset added to a full store was gone at the next reload without
+a word. It now toasts once per run of failures (what is lost and what to do), says so when a save works again, and
+returns whether it stored. Suite 20 checks; 7 variants, all caught; the build kept before it is
+`Phase/canvas_v10.html.bak_phase172_v124b_pre`, named for the version it holds (V142's rule, as 149c). Next: the local
+storage phases A, B and C (the same note's part 11).
+
+V172, **the site analysis tools, ArcGIS's way** (2026-10-27 to 31).
 - The owner's four decisions (2026-10-27): the tools in the analysis workspace; the buildable area by Pennsylvania's site
   capacity calculation; sun hours left to V172c (Ladybug); a simple Locate. Research: `reference/research-site-analysis-tools.md`.
 - **Eight tools** in the workspace's Tools group, in the shape of Esri's geoprocessing pane: typed parameters checked as
