@@ -88,6 +88,12 @@ TOPICS = {
         dict(id='fema.zones.cfr', pub='1976-10-26', st='current', lv='P', adopt=[('us', '1976-10-26', None)], v=None)]),
     'land.slope': dict(kind='assumption', anywhere=True, cat=False, eds=[
         dict(id='land.slope.1', pub='', st='current', lv='A', adopt=[('*', None, None)], v={'b1': (5, '%'), 'b2': (10, '%'), 'b3': (15, '%'), 'b4': (25, '%')})]),
+    # AMENDED FOR V172: the site analysis tools -- Pennsylvania's site capacity calculation, Chalfont's section 440-17 as
+    # read (Zoneomics' copy, a secondary source, so S), and the app's working set for constraints and opportunities
+    'land.site_capacity': dict(kind='code', anywhere=True, cat=False, eds=[
+        dict(id='land.site_capacity.chalfont', pub='', st='current', lv='S', adopt=[('us-pa:chalfont', None, None)],
+             v={'floodplain': (1, 'ratio'), 'slope_lo': (15, '%'), 'slope_hi': (25, '%'), 'slope_a': (0.7, 'ratio'), 'slope_b': (0.85, 'ratio'),
+                'forest': (0.5, 'ratio'), 'forest_with': (0.8, 'ratio'), 'pond': (1, 'ratio'), 'waters': (1, 'ratio'), 'wetland': (1, 'ratio')})]),
     'terrain.slope_bands': dict(kind='assumption', anywhere=True, cat=False, eds=[
         dict(id='terrain.slope_bands.1', pub='', st='current', lv='P', adopt=[('*', None, None)], v={'bands': ([0, 2, 5, 8.33, 15, 25, 50], '%')})]),
     'ibc.occupant_load': dict(kind='code', anywhere=True, cat=False, eds=[
@@ -108,6 +114,9 @@ TOPICS = {
     'green.33300': dict(kind='guideline', anywhere=True, cat=False, eds=[
         dict(id='green.33300.2024', pub='2024', st='current', lv='P', adopt=[('*', '2024', None)],
              v={'trees': (3, 'trees'), 'canopy': (30, '%'), 'walk': (300, 'm'), 'green_min': (0.5, 'ha')})]),
+    # AMENDED FOR V172: the app's working set for constraints and opportunities, before app.land as the registry has it
+    'app.synthesis': dict(kind='assumption', anywhere=True, cat=False, eds=[
+        dict(id='app.synthesis.1', pub='', st='current', lv='A', adopt=[('*', None, None)], v=None)]),
     'app.land': dict(kind='assumption', anywhere=True, cat=False, eds=[
         dict(id='app.land.1', pub='', st='current', lv='A', adopt=[('*', None, None)], v=None)]),
     # AMENDED FOR V169: the assets' sizes -- people, the wheelchair user, cycles, parking, design vehicles, trees, the
@@ -182,7 +191,8 @@ SOURCE_HOSTS = {'content.tfl.gov.uk', 'assets.publishing.service.gov.uk', 'www.g
                 'store.transportation.org', 'www.dot.state.pa.us', 'docs.penndot.pa.gov', 'www.concrete.org', 'www.aisc.org', 'www.faa.gov',
                 'www.planning.org', 'doi.org',   # AMENDED FOR V168: APA's LBCS; the DOIs of Buildings and Cities and of Browning et al.
                 'www.cdc.gov', 'www.nasa.gov', 'idea.ap.buffalo.edu', 'www.fs.usda.gov', 'etccdi.pacificclimate.org',   # AMENDED FOR V169: the assets' sources
-                'arxiv.org', 'mtreiber.de', 'ops.fhwa.dot.gov', 'www.fdot.gov', 'onlinepubs.trb.org', 'www.sandiego.gov', 'github.com'}   # AMENDED FOR V171: traffic's sources
+                'arxiv.org', 'mtreiber.de', 'ops.fhwa.dot.gov', 'www.fdot.gov', 'onlinepubs.trb.org', 'www.sandiego.gov', 'github.com',   # AMENDED FOR V171: traffic's sources
+                'www.zoneomics.com'}   # AMENDED FOR V172: Chalfont's site capacity calculation, in Zoneomics' copy of the code
 
 
 # ---- the constants before V167, from the kept build ----

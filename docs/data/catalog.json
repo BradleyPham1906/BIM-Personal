@@ -1,7 +1,7 @@
 {
  "version": {
-  "v": "V171",
-  "date": "2026-10-25"
+  "v": "V172",
+  "date": "2026-10-31"
  },
  "commands": [
   {
@@ -324,6 +324,33 @@
    "anchor": "cmd-BREAKLINE"
   },
   {
+   "id": "cmd:BUFFER",
+   "name": "BUFFER",
+   "aliases": [
+    "SABUFFER",
+    "BUFFERZONE"
+   ],
+   "desc": "Buffer: the area within a distance of the streets, the lot line, the trees, the flood zones or another layer",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-BUFFER"
+  },
+  {
+   "id": "cmd:BUILDABLE",
+   "name": "BUILDABLE",
+   "aliases": [
+    "SITECAPACITY",
+    "NETBUILDABLE",
+    "BUILDABLEAREA"
+   ],
+   "desc": "Buildable area: Pennsylvania's site capacity calculation -- the net buildable site area, and where to build within the setbacks",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-BUILDABLE"
+  },
+  {
    "id": "cmd:CEILING",
    "name": "CEILING",
    "aliases": [
@@ -558,6 +585,20 @@
    "anchor": "act-cone"
   },
   {
+   "id": "cmd:CONSTRAINTSMAP",
+   "name": "CONSTRAINTSMAP",
+   "aliases": [
+    "OPPORTUNITIES",
+    "CONSTRAINTSOPPORTUNITIES",
+    "SASYNTH"
+   ],
+   "desc": "Constraints and opportunities: what limits the site and what it offers, on one plan",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-CONSTRAINTSMAP"
+  },
+  {
    "id": "cmd:CONTEXT",
    "name": "CONTEXT",
    "aliases": [
@@ -746,6 +787,19 @@
    "anchor": "cmd-DIST"
   },
   {
+   "id": "cmd:DISTANCEFROM",
+   "name": "DISTANCEFROM",
+   "aliases": [
+    "EUCLIDEANDISTANCE",
+    "SADISTANCE"
+   ],
+   "desc": "Distance: the straight-line distance from every cell to the nearest of a layer's features",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-DISTANCEFROM"
+  },
+  {
    "id": "cmd:DIVIDE",
    "name": "DIVIDE",
    "aliases": [
@@ -840,6 +894,19 @@
     "Delete"
    ],
    "anchor": "cmd-ERASE"
+  },
+  {
+   "id": "cmd:EXCLUSIONS",
+   "name": "EXCLUSIONS",
+   "aliases": [
+    "RESTRICTED",
+    "SAEXCLUDE"
+   ],
+   "desc": "Exclusions: where building is restricted -- outside the lot, the setbacks, flood zones, wetlands, steep slopes, buildings, a buffer",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-EXCLUSIONS"
   },
   {
    "id": "act:m:exportdxf",
@@ -1471,6 +1538,19 @@
    "anchor": "cmd-LOAD"
   },
   {
+   "id": "cmd:LOCATE",
+   "name": "LOCATE",
+   "aliases": [
+    "LOCATEREGIONS",
+    "BESTSITE"
+   ],
+   "desc": "Locate: the best connected region of a given area in a suitability map",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-LOCATE"
+  },
+  {
    "id": "cmd:LODCHECK",
    "name": "LODCHECK",
    "aliases": [
@@ -2096,6 +2176,20 @@
    "anchor": "cmd-SITEANALYSIS"
   },
   {
+   "id": "cmd:SITETOOLS",
+   "name": "SITETOOLS",
+   "aliases": [
+    "GEOPROCESSING",
+    "TOOLHISTORY",
+    "GPHISTORY"
+   ],
+   "desc": "The site analysis tools and their History: buffer, distance, slope classes, exclusions, suitability, locate, constraints and opportunities, buildable area",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-SITETOOLS"
+  },
+  {
    "id": "cmd:SITEWORKSPACE",
    "name": "SITEWORKSPACE",
    "aliases": [
@@ -2134,6 +2228,19 @@
    "where": [],
    "keys": null,
    "anchor": "cmd-SLOPEARROWS"
+  },
+  {
+   "id": "cmd:SLOPECLASSES",
+   "name": "SLOPECLASSES",
+   "aliases": [
+    "SLOPECLASS",
+    "SASLOPE"
+   ],
+   "desc": "Slope classes: the ground's slope in the standards registry's classes for development",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-SLOPECLASSES"
   },
   {
    "id": "cmd:SLOPEMAP",
@@ -2241,6 +2348,20 @@
    ],
    "keys": null,
    "anchor": "act-b-cut"
+  },
+  {
+   "id": "cmd:SUITABILITY",
+   "name": "SUITABILITY",
+   "aliases": [
+    "WEIGHTEDOVERLAY",
+    "SUITABILITYMODEL",
+    "SASUIT"
+   ],
+   "desc": "Suitability: the criteria turned to a common scale, weighted and added, the restricted cells left out, as Esri's Suitability Modeler",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-SUITABILITY"
   },
   {
    "id": "cmd:SUNHOURS",

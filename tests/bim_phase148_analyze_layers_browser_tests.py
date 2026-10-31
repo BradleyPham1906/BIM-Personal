@@ -161,7 +161,7 @@ async def run():
             await page.wait_for_timeout(150)
             R = await rows()
             order = await safe("()=>[].map.call(document.querySelectorAll('.a3d-analyze-wrap .a3d-awl-grphd'),function(e){return e.textContent;})")
-            ck(order == ['Model'], "one group left of the four, Model, at the end (%s)" % order)
+            ck(order == ['Tools', 'Model'], "one group left of the four, Model, at the end (%s)" % order)   # AMENDED FOR V172: after the site analysis tools, a group of their own
             G = {}
             for r in R.values():
                 G.setdefault(r['grp'], []).append(r['id'])
@@ -170,9 +170,11 @@ async def run():
             # AMENDED FOR V166: movement's in Access and circulation, daily needs in People and place
             # AMENDED FOR V168: the land's, land use and figure-ground in Location, zoning around in Legal, green and trees in Ecology
             # AMENDED FOR V171: Traffic and people in Access and circulation
+            # AMENDED FOR V172: the site analysis tools and their History in Tools, before Model
             ck(G == {'location': ['dgframe', 'dglanduse', 'dgfigure'], 'legal': ['dgzoning'], 'landform': ['dgcontours', 'dgslope', 'dgaspect', 'survey', 'terrain', 'grading'], 'water': ['dgflow', 'dgponds', 'dgflood', 'rain'],
                      'climate': ['dgsun', 'dgshadow', 'dgwind', 'sun', 'sunhours', 'solar'], 'ecology': ['dggreen'],
                      'risk': ['dgnoise'], 'access': ['dgstreets', 'dgcycling', 'dgtransit', 'dgwalk', 'dgvehicles', 'dgtraffic'], 'people': ['dgviews', 'dgneeds'],
+                     'tools': ['tlbuffer', 'tldistance', 'tlslopecls', 'tlexclude', 'tlsuit', 'tllocate', 'tlsynth', 'tlcapacity', 'tlhistory'],
                      'model': ['lens', 'areas', 'lod', 'stats', 'structure']},
                "each analysis in its category, or in Model (%s)" % G)
             # AMENDED FOR V171c: a row opens nothing in place; picked, its panel on the right holds what it says and its buttons
@@ -248,7 +250,7 @@ async def run():
             await page.keyboard.press('Escape')
             await page.wait_for_timeout(100)
             vis = [k for k, r in (await rows()).items() if not r['hidden']]
-            ck(len(vis) == 35 and await safe("()=>document.querySelector('.a3d-analyze-wrap [data-anzsearch]').value") == '', "Escape empties it: every row again")   # AMENDED FOR V164: 18 rows; AMENDED FOR V165: 24; AMENDED FOR V166: 30; AMENDED FOR V168: 34; AMENDED FOR V171: 35
+            ck(len(vis) == 44 and await safe("()=>document.querySelector('.a3d-analyze-wrap [data-anzsearch]').value") == '', "Escape empties it: every row again")   # AMENDED FOR V164: 18 rows; AMENDED FOR V165: 24; AMENDED FOR V166: 30; AMENDED FOR V168: 34; AMENDED FOR V171: 35; AMENDED FOR V172: 44, the eight tools and History
             # the left panel is the one scroll container (V65)
             sc = await safe("()=>{var a=document.getElementById('a3d-leftpanel');a.scrollTop=a.scrollHeight;return a.scrollTop;}")   # AMENDED FOR V171c: no rows to open
             await safe("()=>window.__a3dColumnAt([210,200],0,1,1,3)")

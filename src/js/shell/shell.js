@@ -189,6 +189,16 @@
     ['SITEWORKSPACE',['ANALYSISWORKSPACE','SAWORKSPACE','SITEWS'],'siteworkspace','The site analysis as a workspace: the analyses on the left, one in focus and others ticked under it; its panel on the right with what it shows, its settings, its chart, its key and its source; the view quiet in the app\'s light or dark mode'],   /* __acad3dV171b */
     ['TRAFFIC',['TRAFFICSIM','SIMULATETRAFFIC','PEDESTRIANS','TRAFFICON'],'traffic','Simulate traffic and people around the site: cars on the streets by the IDM with each junction\'s own assumed signal plan, walkers on the sidewalks crossing on green, and the design\'s own trips; it plays on the clock (Play, Pause and Stop)'],   /* __acad3dV171 */
     ['TRAFFICOFF',['TRAFFICSTOP'],'trafficoff','Stop simulating traffic and people'],
+    /* __acad3dV172: the site analysis tools, in the analysis workspace */
+    ['SITETOOLS',['GEOPROCESSING','TOOLHISTORY','GPHISTORY'],'sitetools','The site analysis tools and their History: buffer, distance, slope classes, exclusions, suitability, locate, constraints and opportunities, buildable area'],
+    ['BUFFER',['SABUFFER','BUFFERZONE'],'tlbuffer','Buffer: the area within a distance of the streets, the lot line, the trees, the flood zones or another layer'],
+    ['DISTANCEFROM',['EUCLIDEANDISTANCE','SADISTANCE'],'tldistance','Distance: the straight-line distance from every cell to the nearest of a layer\'s features'],
+    ['SLOPECLASSES',['SLOPECLASS','SASLOPE'],'tlslope','Slope classes: the ground\'s slope in the standards registry\'s classes for development'],
+    ['EXCLUSIONS',['RESTRICTED','SAEXCLUDE'],'tlexclude','Exclusions: where building is restricted -- outside the lot, the setbacks, flood zones, wetlands, steep slopes, buildings, a buffer'],
+    ['SUITABILITY',['WEIGHTEDOVERLAY','SUITABILITYMODEL','SASUIT'],'tlsuit','Suitability: the criteria turned to a common scale, weighted and added, the restricted cells left out, as Esri\'s Suitability Modeler'],
+    ['LOCATE',['LOCATEREGIONS','BESTSITE'],'tllocate','Locate: the best connected region of a given area in a suitability map'],
+    ['CONSTRAINTSMAP',['OPPORTUNITIES','CONSTRAINTSOPPORTUNITIES','SASYNTH'],'tlsynth','Constraints and opportunities: what limits the site and what it offers, on one plan'],
+    ['BUILDABLE',['SITECAPACITY','NETBUILDABLE','BUILDABLEAREA'],'tlcapacity','Buildable area: Pennsylvania\'s site capacity calculation -- the net buildable site area, and where to build within the setbacks'],
     ['CONTEXTREMOVE',['CONTEXTCLEAR'],'contextremove','Remove the site context'],
     /* __acad3dV139: LOD and CityJSON */
     ['LODCHECK',['CHECKSOLIDS','VALIDATESOLIDS','VAL3DITY'],'lodcheck','Check every building: its LOD, and whether it is a valid solid (closed, outward, flat faces, one piece)'],

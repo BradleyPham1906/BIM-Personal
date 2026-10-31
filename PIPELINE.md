@@ -17,12 +17,12 @@ requires command mapping, full app regressions and owner review.
 
 **Read this first in a new session.** One page. The detail lives in the docs listed at the bottom.
 
-    canvas_v10.html   3626459 bytes
-    sha256            88f3938bdfb5af67d2645b822dd4e5f27f23fedab28160e19179879ee4557a43
-    markers           __acad3dV60 ... __acad3dV171, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
+    canvas_v10.html   3728812 bytes
+    sha256            9e07f24ce34c52a45225b03e5e2457e501fa130f86b92aa74d3e1510924b1f64
+    markers           __acad3dV60 ... __acad3dV172, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
                       __acad3dV121b, __acad3dV166b, __acad3dV166c, __acad3dV166d, __acad3dV171b, __acad3dV171c,
                       __acad3dV171d
-    tests             133 suites, 6786 checks, 0 failures (the 132 older suites' 6724 and V171d's 62; with cjval
+    tests             134 suites, 6879 checks, 0 failures (the 133 older suites' 6786 and V172's 93; with cjval
                       built, V139 and V140 run their three more)
 
     The user guide (V142): every phase updates docs/src/, its log entry and BIM_APP_VERSION, then
@@ -143,8 +143,8 @@ three tiers: compact up to 720 px wide or 500 px high, medium up to 1024 px, des
 | 171b | The analysis workspace | **Done** (see Recently finished): the site analysis as a place one goes into and leaves, as archiMap and Forma show theirs; Analyze site ends in it; a bar over the view names the analysis in focus; the 23 analyses on the left in six groups, one in focus drawn alone, others ticked under it (the layers' visibility, one undo step); the one analysis on the right where Properties is (its sentence, settings, Play, chart, key, source, standards, Run again, Select, Reset); the view quiet in the app's light or dark mode (ground, map greyed and faded, context in the mode's tones, words and key); the drawing tools put away; a phone's chips and Details; `SITEWORKSPACE` | `reference/research-analysis-workspace.md`; the owner, 2026-10-25: the look follows the mode, one analysis at a time. |
 | 171c | One Analyze | **Done** (see Recently finished): Analyze is the workspace, opened and left with its tab; the left one list (the site and Analyze site, Overview, the ten categories with the analyses that answer each, Model), nothing opening in place; the right what is picked (the overview with the red flags first and the run's steps, a category's question, findings, analyses and data, an analysis's panel with what it found, a model's analysis with its settings and buttons); a pick over a selection keeps it; a phone's sheet | The owner: Analyze and the site analysis "should not be two separate hubs", the words on the right. `reference/research-analysis-workspace.md` (V171c). |
 | 171d | The sun path, one clock | **Done** (see Recently finished): the sun's math held to NREL's SPA (0.003 deg), the dome already the owner's formula; the sun's elements follow the place, the time zone, the date and the time without a run; the day studied, the sun now with its altitude and azimuth drawn, the analemma, the temperature on the sun's band of the sky by hour and month; Play through the day or the year, the shadows following; the zone kept with the site and its standard time (Open-Meteo's offset is the request day's), daylight saving Off or Auto; hours beside their dots, path names on their paths; the panel: the sun now, sliders, the turning points by hemisphere, two diagrams | The owner: the sun path, its animation and the shadows should agree through the hours and the dates; sliders; a temperature mesh; the solstices broken down. `reference/research-sun-path.md`. |
-| 172 | Site analysis SA5: tools and synthesis, ArcGIS's way | **Start here.** One pane for every analysis tool (typed parameters checked as filled, Run, messages, History to rerun from, results as layers); buffer, distance, slope classes, exclusions, weighted suitability in Esri's four steps (criteria, transform, weight, locate); the constraints and opportunities map; the buildable area; sun hours on the GPU; each tool a guide page in one template (summary, usage, parameters, how it works) | `reference/research-arcgis-site-analysis.md` (1). |
-| 172b | Ladybug L1: weather and comfort | Ladybug Tools' own Python (AGPL-3.0, the owner's choice), unchanged, run by Pyodide loaded on first use in a Web Worker, served with the site at a fixed path: EPW opened from a file, or the Open-Meteo hours already fetched; UTCI and PMV over the year, the psychrometric chart with its comfort polygons, the wind rose, design days, on the climate board and in the analysis workspace, Ladybug credited as the method. The app's zero-dependency contract gets one written exception: these analyses, on demand | `reference/research-ladybug-tools.md` (the experiment, the owner's decisions of 2026-10-26). No Honeybee export (the owner). |
+| 172 | Site analysis SA5: tools and synthesis, ArcGIS's way | **Done** (see Recently finished): one pane for every analysis tool (typed parameters checked as filled, Run, messages, History to rerun from, results as layers); buffer, distance, slope classes, exclusions, weighted suitability in Esri's four steps (criteria, transform, weight, locate); the constraints and opportunities map; the buildable area (Pennsylvania's site capacity calculation, the owner); sun hours left to V172c (the owner, 2026-10-27); each tool a guide page in one template (summary, usage, parameters, how it works) | `reference/research-arcgis-site-analysis.md` (1); `reference/research-site-analysis-tools.md` (the research and the owner's four decisions). |
+| 172b | Ladybug L1: weather and comfort | **Start here.** Ladybug Tools' own Python (AGPL-3.0, the owner's choice), unchanged, run by Pyodide loaded on first use in a Web Worker, served with the site at a fixed path: EPW opened from a file, or the Open-Meteo hours already fetched; UTCI and PMV over the year, the psychrometric chart with its comfort polygons, the wind rose, design days, on the climate board and in the analysis workspace, Ladybug credited as the method. The app's zero-dependency contract gets one written exception: these analyses, on demand | `reference/research-ladybug-tools.md` (the experiment, the owner's decisions of 2026-10-26). No Honeybee export (the owner). |
 | 172c | Ladybug L2: sun-hours and radiation on the model | Ladybug's sun path and sky over the model's faces, as result layers; the sky without Radiance's `gendaymtx`, its choice read first | `reference/research-ladybug-tools.md` (7). |
 | 173 | Site analysis SA6: the Contents pane | The layer stack by drawing order, by source and by selection, a legend patch under each layer; symbology (by category, graduated, stretch), labels and a filter (definition query); the stack exploded in 3D as McHarg's layer cake | ArcGIS Pro's Contents pane. |
 | 174 | Presentation P1: boards | V162 made the site analysis's boards pages of the set; this phase is boards you design. New Layout's page gallery (ANSI, Architectural, ISO, portrait and landscape); map frames with a live legend, north arrow and scale bar. A board is a sheet you design on: one layer tree (frames, groups, lock, hide, reorder), opacity and blend modes on every element (canvas compositing, the same 16 modes as Figma), masks, shapes, text, images; align, distribute, smart spacing; rows and columns that space their children (a light auto layout) | Figma's layer model. `reference/research-presentation-panels.md` (1). |
@@ -227,7 +227,28 @@ when it starts (V111 to V138 went to other work; V139 to V193 are in NOW).
 | 118 | Blocks and data | ATTDEF ATTEDIT BEDIT WBLOCK DATAEXTRACTION TABLESTYLE TABLEDIT TABLEEXPORT | First phase that's about the disciplines, not drafting. BLOCK and INSERT landed in V124, as the Assets library's blocks: saved records inserted as independent copies. A block reference that follows its definition (what BEDIT edits) is not built. |
 | 119 | Sheets and plotting, rest | MVIEW (draw a viewport on the paper) PAGESETUP (plot settings beyond Sheet Setup) PUBLISH (V122's Print set prints every sheet in one job; a chosen subset and page setups remain) EXPORTPDF (vector PDF of a sheet) VPLAYER (per-viewport layer visibility) viewport lock | LAYOUT, MSPACE and PSPACE landed in V116, with layout tabs and model space through a viewport. |
 
-**Recently finished:** V171d, **the sun path, one clock** (2026-10-26, with V171c in its PR).
+**Recently finished:** V172, **the site analysis tools, ArcGIS's way** (2026-10-27 to 31).
+- The owner's four decisions (2026-10-27): the tools in the analysis workspace; the buildable area by Pennsylvania's site
+  capacity calculation; sun hours left to V172c (Ladybug); a simple Locate. Research: `reference/research-site-analysis-tools.md`.
+- **Eight tools** in the workspace's Tools group, in the shape of Esri's geoprocessing pane: typed parameters checked as
+  they are left (a message beside the field, Run held with why), Run, status and messages, the output a result layer
+  shown alone, every run in History (Open, Run again, Remove), kept with the project. `SITETOOLS` and a command each.
+- **Buffer, Distance** (Felzenszwalb and Huttenlocher's exact transform), **Slope classes** (the registry's),
+  **Exclusions** (restricted kept apart from no value), **Suitability** (Esri's transform and weight: Linear, Small, Large,
+  Near from QGIS's formulas, classes, categories; Multiplier or Percent), **Locate** (the best connected region of an
+  area), **Constraints and opportunities** (the registry's working set), **Buildable area** (Chalfont's section 440-17 as a
+  registry record: overlaps at the highest ratio, the net buildable site area, units not rounded up, where to build).
+- **The grid:** the lot and 100 m around it in 1 m cells, coarser past 250,000; the wetlands from the National Wetlands
+  Inventory (CORS open).
+- **Checked** in 93 checks against `tests/site_tools_reference.py` (the grid, the distance by brute force, QGIS's
+  formulas, Esri's rescale, Locate's growth, Chalfont's form, in numpy); broken 84 ways, all caught (the first run
+  missed four: three checks made exact, a rule that did nothing replaced by the tick rows' height). Found while
+  building: Locate could not read Suitability's output (the levels' alphabet one short); Get wetlands threw; the
+  setbacks waited on the envelope's height limit; float noise added a row of cells; a function nothing called (V120's
+  check); a test hook's `TypedArray.from` (the ES5 contract). The full regression: 134 suites, 6879 checks, all passed; V62, V141, V143, V148, V162, V167, V171c and
+  V171d amended.
+
+**Before it:** V171d, **the sun path, one clock** (2026-10-26, with V171c in its PR).
 - The owner: the sun path, its animation and the shadows should agree through the hours and the dates; the math
   checked against NOAA, the dome by X = R cos(alt) sin(az), Y = R sin(alt), Z = R cos(alt) cos(az); sliders; a
   temperature mesh on the dome; the solstices and equinoxes on the right with diagrams. Research:
@@ -247,7 +268,7 @@ when it starts (V111 to V138 went to other work; V139 to V193 are in NOW).
   morphing redraw). Found while building: a run left the sync's inputs stale; a function named twice. The full
   regression: 133 suites, 6786 checks, all passed; V170 and V171b amended.
 
-**Before it:** V171c, **one Analyze** (2026-10-25 to 26, after V171b merged).
+V171c, **one Analyze** (2026-10-25 to 26, after V171b merged).
 - The owner: Analyze and the site analysis "should not be two separate hubs", the words and conclusions on the right.
   Research and as built: `reference/research-analysis-workspace.md`, V171c.
 - **Analyze is the workspace**, opened and left with its tab. **The left, one list:** the site and Analyze site,

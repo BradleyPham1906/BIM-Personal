@@ -154,7 +154,8 @@ async def run():
             ck(A.get('sw') == 0, "no Analyses | Site analysis switch")
             ck(A.get('title') == 'Analyze' and A.get('search') == 1 and 'findings' in (A.get('ph') or ''), "titled Analyze, one search, over analyses, data and findings (%s)" % A.get('ph'))
             # AMENDED FOR V164: the site and Analyze site where the stages and Define were
-            ck(A.get('order') == ['site', 'cats', 'model'], "the site, the ten categories, then Model (%s)" % A.get('order'))
+            # AMENDED FOR V172: the site analysis tools, a group of their own, between the categories and Model
+            ck(A.get('order') == ['site', 'cats', 'tools', 'model'], "the site, the ten categories, then Model (%s)" % A.get('order'))
             ck(A.get('cats') == CATS, "the ten categories, in the standard's order (%s)" % A.get('cats'))
             ck((A.get('names') or [''])[0] == '1. Location and context' and (A.get('names') or [''] * 10)[9] == '10. People and place', "numbered 1 to 10 (%s)" % (A.get('names') or [])[:2])
             ck(A.get('model') == ['lens', 'areas', 'lod', 'stats', 'structure'], "Model: colour by, areas by usage, buildings LOD, statistics, frame analysis (%s)" % A.get('model'))
@@ -171,7 +172,9 @@ async def run():
                     'dglanduse': 'location', 'dgfigure': 'location', 'dgzoning': 'legal', 'dggreen': 'ecology',
                     # AMENDED FOR V171: and Traffic and people
                     'dgtraffic': 'access'}
-            ck(W == want, "each analysis in the category it answers: landform, water, climate; the model's in Model (%s)" % W)
+            # AMENDED FOR V172: and the site analysis tools and their History in Tools (not a category of the engine's: its grouping below is the analyses')
+            tools = {k: 'tools' for k in ('tlbuffer', 'tldistance', 'tlslopecls', 'tlexclude', 'tlsuit', 'tllocate', 'tlsynth', 'tlcapacity', 'tlhistory')}
+            ck(W == dict(want, **tools), "each analysis in the category it answers: landform, water, climate; the model's in Model (%s)" % W)
             cats = await safe("()=>window.__a3dAnzCats()") or []
             ck({c['id']: c['group'] for c in cats} == want, "the engine's grouping says the same")
             D = A.get('data') or {}
@@ -213,7 +216,8 @@ async def run():
                "Landform shows with it; Model and Overview step aside, the site and its button stay (%s)" % st1)
             q2 = await search('slope')
             # AMENDED FOR V165: Landform holds contours, slope and aspect now, before the survey, terrain and grading
-            ck(q2 == ['dgcontours', 'dgslope', 'dgaspect', 'survey', 'terrain', 'grading'] and await visible_cats() == ['landform'], "'slope' is in Landform's own question: the category shows whole (%s)" % q2)
+            # AMENDED FOR V172: and the tools that read the slope by their own words: Slope classes, Exclusions, Constraints and opportunities, Buildable area
+            ck(q2 == ['dgcontours', 'dgslope', 'dgaspect', 'survey', 'terrain', 'grading', 'tlslopecls', 'tlexclude', 'tlsynth', 'tlcapacity'] and await visible_cats() == ['landform'], "'slope' is in Landform's own question: the category shows whole (%s)" % q2)
             q3 = await search('frame')
             ck(q3 == ['structure'] and await visible_cats() == [], "'frame' finds the frame analysis in Model, and no category (%s)" % q3)
             await search('boundary')
