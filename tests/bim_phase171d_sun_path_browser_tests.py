@@ -211,7 +211,8 @@ async def run():
             ck(all(w in mk for w in ('spa', 'dome', 'zone', 'dst', 'trial', 'yearplay', 'sync', 'heat', 'labels', 'panel', 'sliders', 'turning')), "the V171d marker (%s)" % mk)
             ck(bool(await safe("()=>window.__acad3dV171c")) and bool(await safe("()=>window.__acad3dV170")), "V171c's and V170's markers kept")
             mv = re.search(r"var BIM_APP_VERSION=\{v:'V(\d+)'", HTML.read_text(encoding='utf-8'))
-            ck(mv and mv.group(1) == '171', "the version stays V171, a sub-phase's (V171b's rule)")
+            # AMENDED FOR V172: the next phase's number, as V171b's and V171c's suites already allow
+            ck(mv and int(mv.group(1)) >= 171, "the version stays V171, a sub-phase's (V171b's rule), or a later phase's (%s)" % (mv and mv.group(1)))
             ck(await safe("()=>['__a3dSunZoneOff','__a3dSunTzAt','__a3dSunStudy','__a3dSunSlide','__a3dSunVals','__a3dSunWords','__a3dAnimSunDate'].every(function(k){return typeof window[k]==='function';})"),
                "the suite's hooks")
 

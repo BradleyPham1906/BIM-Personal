@@ -269,7 +269,11 @@ def source_level_checks(path):
             # AMENDED FOR V171: traffic's sources -- the IDM's and Helbing and Molnar's papers on arXiv, MOBIL's
             # manuscript, the Signal Timing Manual, FDOT's handbook, NCHRP 255, San Diego's manual, SUMO's
             # repository -- linked from Properties > Standards, never fetched
-            "arxiv.org", "mtreiber.de", "ops.fhwa.dot.gov", "www.fdot.gov", "onlinepubs.trb.org", "www.sandiego.gov", "github.com"}
+            "arxiv.org", "mtreiber.de", "ops.fhwa.dot.gov", "www.fdot.gov", "onlinepubs.trb.org", "www.sandiego.gov", "github.com",
+            # AMENDED FOR V172: the site analysis tools -- the National Wetlands Inventory's map service, asked only on Get
+            # wetlands, and Chalfont's site capacity calculation in Zoneomics' copy of the code, linked from Properties >
+            # Standards, never fetched
+            "fwspublicservices.wim.usgs.gov", "www.zoneomics.com"}
     external = sorted(h for h in hosts if not h.endswith("w3.org") and h not in v132)
     check(not external,
           "no external host referenced anywhere in the file (found: " + (", ".join(external) or "none") + ")")

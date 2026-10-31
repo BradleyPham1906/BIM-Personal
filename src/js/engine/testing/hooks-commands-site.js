@@ -148,7 +148,8 @@
   window.__a3dAnzWordsHit=function(q,s){return bimAnzWordsHit(q,s);};
   window.__a3dResultLayers=function(){return bimResLayers().map(function(R){
     return {id:R.id,name:R.name,kind:R.kind,mode:R.mode||null,src:R.src||null,visible:R.visible!==false,opacity:bimResOpacity(R),stale:bimResStale(R),gone:bimResGone(R),
-      created:R.created||null,run:R.run||null,cells:R.data?R.data.cells.length:0,date:R.data&&R.data.date||null,segs:R.data&&R.data.segs?R.data.segs.length:0};});};
+      created:R.created||null,run:R.run||null,cells:R.data&&typeof R.data.cells==='string'?R.data.cells.length:(R.kind==='tool'&&R.data?R.data.nx*R.data.nz:0),   /* __acad3dV172: a tool's output keeps runs */
+      date:R.data&&R.data.date||null,segs:R.data&&R.data.segs?R.data.segs.length:0};});};
   window.__a3dResultLayerData=function(id){var R=bimResById(id);return R&&R.data?JSON.parse(JSON.stringify(R.data)):null;};
   window.__a3dResultLayerAdd=function(k,o){var R=bimResultLayerAdd(k,o||{});return R?R.id:null;};
   window.__a3dResultLayerSet=function(id,f,v){return bimResultLayerSet(id,f,v);};

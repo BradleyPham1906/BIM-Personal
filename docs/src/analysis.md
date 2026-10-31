@@ -11,7 +11,10 @@ The **Analyze** tab on the left rail is one list: every analysis and the site an
 2. **Red flags** first, when there are any.
 3. **The ten categories.** Each holds its data, its analyses (those Analyze site draws first) and
    its findings.
-4. **Model:** what reads the model itself, with no site data needed.
+4. **Tools:** the site analysis tools and their History -- buffer, distance, slope classes,
+   exclusions, suitability, locate, constraints and opportunities, buildable area (see
+   [Site analysis tools](site-tools.html)).
+5. **Model:** what reads the model itself, with no site data needed.
 
 - **One line each.** A row has the analysis's name, what it shows now, its state (On, Out of
   date, Problems), and its main button (Run, Check, Show, Open). A category's line says how many

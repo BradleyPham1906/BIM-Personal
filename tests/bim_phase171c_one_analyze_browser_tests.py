@@ -185,7 +185,8 @@ async def run():
                "the ten categories in the standard's order, numbered 1 to 10 (%s)" % [x['id'] for x in L])
             ck([x['dg'] for x in L] == [c[2] for c in CATS], "each analysis in the model under the category it answers")
             ck([x['cards'] for x in L] == [c[3] for c in CATS], "the others too: the survey, terrain and grading in Landform, rain in Water, the sun's in Climate")
-            ck(await texts('.a3d-awl-grphd') == ['Model'] and await safe("()=>[].map.call(document.querySelectorAll('[data-anzgrp=\"model\"] [data-anzcard]'),function(r){return r.getAttribute('data-anzcard');})") == MODEL,
+            # AMENDED FOR V172: the site analysis tools are a group of their own, before Model
+            ck(await texts('.a3d-awl-grphd') == ['Tools', 'Model'] and await safe("()=>[].map.call(document.querySelectorAll('[data-anzgrp=\"model\"] [data-anzcard]'),function(r){return r.getAttribute('data-anzcard');})") == MODEL,
                "Model last: colour by, areas, buildings, statistics, frame analysis")
             ck(await safe("()=>!document.querySelector('.a3d-awl [data-anztog],.a3d-awl .a3d-anzbody,.a3d-awl-row .a3d-anzbtn,.a3d-awl-cat .a3d-anzbtn')"), "no row opens in place, and none carries a button")
             ck(await safe("()=>[].every.call(document.querySelectorAll('.a3d-awl [data-awrow] .a3d-awl-nm'),function(b){return b.disabled;})") and

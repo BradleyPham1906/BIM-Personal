@@ -4,6 +4,7 @@
   function bimLyKey(k){k=String(k||'');var i=k.indexOf(':');return {t:i>0?k.slice(0,i):'',id:i>0?k.slice(i+1):''};}
   function bimLyTarget(k){var s=bimLyKey(k);return s.t==='res'?bimResById(s.id):s.t==='data'?bimDataById(s.id):null;}
   function bimResSwatch(R){
+    if(R.kind==='tool'){var K=(R.data&&R.data.keys)||[];return K.length>1?'linear-gradient(90deg,'+K.map(function(k){return k.col;}).join(',')+')':(K.length?K[0].col:'#888');}   /* __acad3dV172 */
     if(R.kind==='walk')return 'linear-gradient(90deg,#cde2fb,#5598e7,#1c5cab)';   /* __acad3dV161 */
     var c=R.kind==='sunhours'?BIM_SIM_RAMP:R.kind==='rain'?['#7fb6f0','#2f7fe0','#1565c0']:R.mode==='slope'?BIM_SLOPE_COLS:R.mode==='elevation'?BIM_ELEV_COLS:
       R.mode==='cutfill'?BIM_CUTFILL_COLS:BIM_ASPECT.map(function(a){return a.c;});
@@ -15,6 +16,7 @@
     if(R.kind==='rain')return '<div class="a3d-lyleg"><span><i style="background:#2f7fe0"></i>Ponds</span><span><i class="ln" style="background:#1565c0"></i>Flow lines</span></div>';
     if(R.kind==='walk')return bimResGone(R)?'':'<div class="a3d-lyleg">'+['5 min or less','5 to 10 min','10 to 15 min'].map(function(n,j){return '<span><i class="ln" style="background:'+['#cde2fb','#5598e7','#1c5cab'][j]+'"></i>'+n+'</span>';}).join('')+
       '<span><i style="background:#fff;border:1.5px solid #111;border-radius:1px"></i>Bus or tram stop</span><span><i style="background:#fff;border:1.5px solid #111;border-radius:50%"></i>Rail or metro</span></div>';   /* __acad3dV161 */
+    if(R.kind==='tool')return d&&d.keys&&d.keys.length?'<div class="a3d-lyleg">'+d.keys.map(function(k){return '<span><i style="background:'+bimEsc(k.col)+'"></i>'+bimEsc(k.name)+'</span>';}).join('')+'</div>':'';   /* __acad3dV172 */
     if(R.kind!=='terrain'||bimResGone(R))return '';
     o=objById(R.src);
     try{b=bimBandsOf(o,R.mode);}catch(eB){b=null;}
@@ -28,7 +30,9 @@
     else if(R.kind==='walk'){var S=A3D.site&&A3D.site.access;s=bimResGone(R)?'The access data it showed is gone: Get access and people in Site analysis brings it back.':
       'Walk times from the '+(S.lot&&S.lot.ring?'lot':'site point')+' along the streets at '+S.speed+' m a minute, from OpenStreetMap data of '+S.fetched+': 5, 10 and 15 minutes. It follows the access data, so a refresh in Site analysis updates it.';}   /* __acad3dV161 */
     else if(R.kind==='terrain')s=bimResGone(R)?'The surface it showed is gone, or is no longer a proposed one.':BIM_TVIEW_LABEL[R.mode]+' of '+o.name+'. It follows the surface, so it is never out of date.';
-    if(R.kind!=='terrain'&&R.kind!=='walk'&&bimResStale(R))s+=' The model has changed since: Update runs it again'+(R.kind==='sunhours'?' for '+(d&&d.date):'')+'.';
+    else if(R.kind==='tool'){var th=bimTlRunById(R.run),tt=bimTlTool(R.tool);s=(tt?tt.name:'A tool')+'\'s output'+(th?', from the run of '+th.at+(th.sum?': '+th.sum:''):'')+'. Update runs it again with the same parameters.';   /* __acad3dV172 */
+      if(bimTlStale(R))s+=' The lot has changed since: Update runs it on the lot as it is now.';}
+    if(R.kind!=='terrain'&&R.kind!=='walk'&&R.kind!=='tool'&&bimResStale(R))s+=' The model has changed since: Update runs it again'+(R.kind==='sunhours'?' for '+(d&&d.date):'')+'.';
     return s+(R.created?' Added '+R.created+(R.updated?', updated '+R.updated:'')+'.':'');
   }
   function bimLyNameHtml(key,name){

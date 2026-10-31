@@ -28,7 +28,8 @@
     return stamp.slice(0,i)+':'+stamp.slice(i+1,j)+':'+[st.lat,st.lon,st.tz].join(',');
   }
   function bimResKey(kind){return bimResKeyFrom(bimSimStamp(),kind);}
-  function bimResStale(R){return !!(R&&R.kind!=='terrain'&&R.kind!=='walk'&&R.key&&R.key!==bimResKey(R.kind));}   /* __acad3dV161: walk times follow their data */
+  function bimResStale(R){if(R&&R.kind==='tool')return bimTlStale(R);   /* __acad3dV172: a tool's output, when the lot has changed */
+    return !!(R&&R.kind!=='terrain'&&R.kind!=='walk'&&R.key&&R.key!==bimResKey(R.kind));}   /* __acad3dV161: walk times follow their data */
   /* a terrain layer whose surface is gone, or no longer proposed */
   function bimResGone(R){
     if(!R)return true;
@@ -90,6 +91,7 @@
     if(!R)return false;
     if(R.kind==='terrain'){a3dToast(R.name+' follows its surface: it is up to date');return true;}
     if(R.kind==='walk'){a3dToast(R.name+' follows the access data: it is up to date');return true;}   /* __acad3dV161 */
+    if(R.kind==='tool')return bimTlLayerRerun(R);   /* __acad3dV172: its run again, with the same parameters */
     if(R.kind==='sunhours'){r=bimSunHours({date:R.data&&R.data.date});if(r.error){a3dToast('Sun hours: '+r.error);return false;}}
     else{r=bimRainFlow(objById(R.src)?R.src:null);if(r.error){a3dToast('Rain flow: '+r.error);return false;}}
     pushUndo();
@@ -142,7 +144,8 @@
     return a.filter(function(R){
       if(!R||typeof R.id!=='string'||typeof R.name!=='string')return false;
       if(R.kind==='terrain')return typeof R.src==='string'&&/^(slope|elevation|aspect|cutfill)$/.test(R.mode);
-      if(R.kind==='walk')return R.src==='access';   /* __acad3dV161 */   /* a regex: this runs at start-up, before the table above is set */
+      if(R.kind==='walk')return R.src==='access';   /* __acad3dV161 */
+      if(R.kind==='tool')return bimTlDataOk(R.data);   /* __acad3dV172 */   /* a regex: this runs at start-up, before the table above is set */
       return (R.kind==='sunhours'||R.kind==='rain')&&!!R.data&&typeof R.data.cells==='string'&&R.data.cells.length===R.data.nx*R.data.nz&&
         isFinite(R.data.x0)&&isFinite(R.data.z0)&&R.data.cell>0;
     });
@@ -180,6 +183,7 @@
   }
   function bimResDraw(ctx,V,W,H,R){
     var op=bimResOpacity(R),d=R.data,o,tin,tb;
+    if(R.kind==='tool'){var im=bimTlDataOk(d)?bimTlImage(R):null;if(!im)return false;bimSimDrawGrid(ctx,V,W,H,d,im,d.y||0,op);return true;}   /* __acad3dV172 */
     if(R.kind==='sunhours'||R.kind==='rain'){
       if(!d||typeof d.cells!=='string')return false;
       bimSimDrawGrid(ctx,V,W,H,d,bimResImage(R),R.kind==='sunhours'?(d.ground||0):0,op);
