@@ -16064,3 +16064,120 @@ way to a moving sun, V170's motions of every multi-line element (the angles take
     markers           __acad3dV60 ... __acad3dV171, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
                       __acad3dV121b, __acad3dV166b, __acad3dV166c, __acad3dV166d, __acad3dV171b, __acad3dV171c,
                       __acad3dV171d
+
+## Phase 172 (V172) - Site analysis tools and synthesis, ArcGIS's way
+
+Eight site analysis tools in the analysis workspace, in the shape of ArcGIS's geoprocessing pane: Buffer, Distance,
+Slope classes, Exclusions, Suitability (Esri's transform and weight, by multiplier or percent), Locate, Constraints and
+opportunities, and Buildable area (Pennsylvania's site capacity calculation, Chalfont's open space ratios a registry
+record). Each checks its parameters as they are filled in, runs, says how it went, keeps its output as a result layer
+and its run in History, to open or run again. The owner's four decisions (2026-10-27): the tools in the workspace; the
+buildable area by site capacity; sun hours left to V172c (Ladybug); a simple Locate.
+
+The research is `reference/research-site-analysis-tools.md`: Esri's geoprocessing pane, history and Suitability
+Modeler read at doc.esri.com (transform, weight, locate; Restricted kept apart from NoData); the transformation
+formulas from QGIS's `qgsalgorithmfuzzifyraster.cpp`, read as text; what Penrith's and North Sydney's councils ask a site
+analysis plan to show; Chalfont Borough's section 440-17 (a secondary copy, said so); the National Wetlands Inventory's
+map service tested (CORS open to the Pages origin); Felzenszwalb and Huttenlocher's distance transform read in Theory of
+Computing.
+
+**What was built** (`src/js/engine/site-tools/`: `grid.js`, `sources.js`, `tools.js`, `basic.js`, `suitability.js`,
+`capacity.js`, `panel.js`; `testing/hooks-tools.js`; patches `Phase/patch_v172_a.py` to `_f.py`):
+- **The grid:** the tools' processing extent, the lot and 100 m around it in 1 m cells (100 m around the site's centre
+  with no lot), doubled while over 250,000 cells; an area by its cells' centres (even-odd), a line or a point by the
+  cells within half a cell; distance by Felzenszwalb and Huttenlocher's exact transform, rows then columns; outputs kept
+  as levels, run-length coded in 92 characters (91 levels and restricted).
+- **What the tools read:** the lot and its line, the streets (V161) and the arterials, the buildings, trees, woods and
+  water around (V157, V168), FEMA's 1% zones (V165), the wetlands (fetched here), the ground's slope between the 5 m
+  grid's points (V165), the last sun hours run (V143); each says why it is empty when it is.
+- **The pane:** parameters typed (a layer, a number with its unit, a choice, a tick, a run from History), the required
+  marked, each checked as it is left, with its message beside it and Run held with why; Run; the status, the time, the
+  messages, the results, the layer on the plan with Hide; Reset parameters; a tool's own runs; History (Open, Run again,
+  Remove), kept with the project, the last 40.
+- **The tools:** Buffer (around, outside or inside an area); Distance (with a maximum); Slope classes (the registry's);
+  Exclusions (outside the lot, the zoning setbacks at the ground, flood zones, wetlands, steep slopes, buildings, a
+  buffer from History, each cell its first reason); Suitability (six criteria, Linear, Small, Large, Near, Range of
+  Classes and Unique Categories, the thresholds the data's by default; Multiplier or Percent, which must add to 100 and
+  is rescaled to the scale; a cell with no value has none, a restricted cell is grey); Locate (24 seeds, each grown by
+  its best neighbour sharing a side, the highest mean kept); Constraints and opportunities (each cell its first
+  constraint, else its first opportunity, the distances and hours the app's working set in the registry); Buildable
+  area (the base site area, each resource's land at its open space ratio, overlaps at the highest, forest with another
+  resource at its own; the net buildable site area, the units not rounded up, the impervious surface; where to build
+  within the setbacks and clear of every resource).
+- **The registry:** two records -- `land.site_capacity` (Chalfont's section 440-17, its place `us-pa:chalfont`, applied
+  elsewhere as outside its place) and `app.synthesis` (the app's assumption); a unit for a ratio and one for hours.
+- **Results as layers** (V148): a tool's output is a result layer, replaced by a run with the same parameters, out of
+  date when the property line changes, run again by Update, its swatch, key and words in Layers.
+- **Commands:** `SITETOOLS`, `BUFFER`, `DISTANCEFROM`, `SLOPECLASSES`, `EXCLUSIONS`, `SUITABILITY`, `LOCATE`,
+  `CONSTRAINTSMAP`, `BUILDABLE`; the guide's page "Site analysis tools", every tool in one template (summary, usage,
+  parameters, how it works).
+
+**Found:**
+- Locate could not read Suitability's output: the level alphabet had 91 characters, one short for 91 levels and
+  restricted. It has 92 now (no quote, no backslash), and coding a level beyond it throws instead of dropping the run.
+- The suite's view of the result layers read every layer's cells as a string, as sun hours and rain keep them; it threw
+  for a tool's output, which keeps runs.
+- Get wetlands called the US check without the site's origin and threw before it asked the service.
+- The setbacks waited on the whole zoning envelope, which refuses without a height limit; the plate at the ground needs
+  only the lot's sides and their rules, as V160's own calculation starts.
+- A lot too large for 1 m cells came out a row of cells taller than its extent: the property line's corners carry float
+  noise (250.00000000000003). The extent ignores a millionth of a cell now.
+- A criterion's tick, name and unit ran together ("Slope%"): its label was not a flex row.
+- The harness: a script's click on Run leaves the focus in the field typed, and the workspace holds its refresh while a
+  field is typed in (V162's rule); a person's click moves the focus, so the suite clicks as one.
+- The first falsification run caught 80 of 84. Steep slopes counted from 5% higher went unseen: the fixture's only
+  slopes that steep lie outside the lot, where Outside the lot takes the cell first; the suite now runs Exclusions
+  with steep slopes alone. A region grown by a corner neighbour too came out the same on the fixture's map; the growth
+  is now checked on a small grid made by hand, where a corner neighbour is the best (a hook runs the app's growth on
+  it). Undo was checked by the run being gone; it must now put back the history and each layer's visibility exactly
+  as they were. A rule giving the pane's fields 36 px on a touch screen did nothing: two older rules already give
+  every field in the right-hand panel 36 px; it went (`Phase/patch_v172_d.py`), and the tick rows, which no rule
+  covered, have 36 px, a check and a variant.
+- The plan with every tool's output at once was a tangle of colours: a run's layer is shown alone, the other tools'
+  hidden, as V171b keeps one analysis at a time.
+- The full regression found a function the tools declared and never called, by V120's derivation of dead code: it
+  went (`Phase/patch_v172_e.py`).
+- Read against the build contract, the hook that runs Locate's growth on the suite's own grid made its typed arrays
+  with `Float64Array.from`, the engine's only `TypedArray.from`; they are made by their constructors now, as
+  everywhere else (`Phase/patch_v172_f.py`).
+
+**Suites:**
+- **New:** `tests/bim_phase172_site_tools_browser_tests.py`, 93 checks with `tests/site_tools_reference.py` (the grid,
+  a ring's cells by even-odd, a line's by distance, the distance by brute force, the slope resampled, QGIS's
+  transformation formulas, Esri's rescale and weights, Locate's seeds and growth, Chalfont's site capacity form, all
+  in numpy, apart from the app), on V171's neighbourhood with the ground and FEMA's zones from V165's fixture and a
+  wetland served for the National Wetlands Inventory: the records; the grid (an extent, a concave ring, a large lot at
+  2 m); the one-dimensional transform and the grid's against brute force; Buffer, Distance, Slope classes, Exclusions
+  (each reason, steep slopes alone, a buffer from History), Suitability (each transform, multiplier and percent, no
+  value and restricted, its checks), Locate (the reference's region, from an unrestricted map, the growth on a grid
+  made by hand), Buildable area (the overlaps, forest with another resource, the wetlands fetched, an override),
+  Constraints and opportunities; the pane (a field checked, Run, Open, Run again, Remove, Reset, undo exact); the
+  layers (one shown at a time, Hide, Update, out of date); the search and the commands; kept over a reload; a phone.
+- **Falsification:** `Phase/falsify_phase172.py`, 84 variants: the first run caught 80 (above); on the final suite,
+  from a frozen worktree, all 84 were caught, none by a page that failed to load, in 3147 s with 2 workers (on build
+  ea2d5113: patches e and f, after it, touch no variant's code).
+- **Amended:** V167 (the registry's 45 topics, Zoneomics' host for Chalfont's code, `tests/standards_reference.py`'s
+  two topics); V141, V143, V148, V162 and V171c (Analyze's Tools group, between the categories and Model, its nine
+  rows, a search for slope finding the four tools that read it); V62 (the wetlands service's host and Zoneomics');
+  V171d (the version a later phase's).
+
+**Not done:** Esri's Locate Regions' shape and spacing; ModelBuilder's chains (a tool reading another's output from
+History is the start of one); the Suitability Modeler's Evaluate tab; the road noise analysis as a criterion; pond
+shores and wetland margins (their widths are defined elsewhere in Chalfont's code, not read); sun hours and radiation
+on the dome (V172c, Ladybug). A tool layer keeps one character a cell, run-length coded: from 0.5 KB (a class map) to
+71 KB (Distance, a value a cell) in the fixture's project, beside its 814 KB; the browser's storage, about 5 MB, is
+said to be full by V115's toast when it is.
+
+**State after V172:**
+
+134 suites, 6879 checks (the 133 older suites' 6786 and V172's 93): all passed from a frozen worktree of the final
+build, in 1638 s with 2 workers; the falsification, from a frozen worktree, as above; `tools/check_site.py`, the
+multi-file app against the one file on a desktop and a phone, no failure. The first full regression, on build
+ea2d5113, passed 6868 of 6879: what V172 changed for the older suites (Analyze's Tools group in V141, V143, V148 and
+V162, V62's hosts, V171d's version) and the function nothing called that V120 found.
+
+    canvas_v10.html   3728812 bytes
+    sha256            9e07f24ce34c52a45225b03e5e2457e501fa130f86b92aa74d3e1510924b1f64
+    markers           __acad3dV60 ... __acad3dV172, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
+                      __acad3dV121b, __acad3dV166b, __acad3dV166c, __acad3dV166d, __acad3dV171b, __acad3dV171c,
+                      __acad3dV171d

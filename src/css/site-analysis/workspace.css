@@ -185,3 +185,43 @@ body.light-theme .a3d-sun-card{border-color:rgba(11,11,11,.12)}
 body.light-theme .a3d-sun-trial{background:rgba(229,72,77,.1);color:#9f1d22}
 body.light-theme .a3d-sun-sll,body.light-theme .a3d-sun-cardh span{color:#6b7280}
 body.light-theme .a3d-awp .a3d-sun-mode .a3d-anzbtn.on{border-color:#d63b41;color:#9f1d22;background:rgba(214,59,65,.08)}
+/* __acad3dV172: the site analysis tools, in the geoprocessing pane's shape */
+.a3d-tl-form{display:flex;flex-direction:column;gap:8px}
+.a3d-tl-f{display:flex;flex-direction:column;gap:3px;font-size:12px;min-width:0}
+.a3d-tl-l{color:#c9d1d9}
+.a3d-tl-req{font-style:normal;color:#ff6b6b;margin-left:3px}
+.a3d-tl-in{display:flex;align-items:center;gap:6px}
+.a3d-tl input[type=text],.a3d-tl select{box-sizing:border-box;width:100%;min-width:0;background:#1f2327;border:1px solid #3a4048;border-radius:6px;color:#e6eaef;padding:3px 7px;min-height:28px;font:inherit;font-size:12px}
+.a3d-tl input[aria-invalid=true],.a3d-tl select[aria-invalid=true]{border-color:#e5484d}
+.a3d-tl-u{flex:0 0 auto;color:#8a96a3;font-size:11.5px}
+.a3d-tl-help{font-size:11px;color:#8a96a3}
+.a3d-tl-b{display:flex;flex-direction:row;align-items:center;gap:8px;flex-wrap:wrap}
+.a3d-tl-b input[type=checkbox]{width:16px;height:16px;margin:0}
+.a3d-tl-msg{display:block;font-size:11.5px;line-height:1.35}
+.a3d-tl-msg.err{color:#ff8b8b}.a3d-tl-msg.warn{color:#f0b35a}
+.a3d-tl-crits{display:flex;flex-direction:column;gap:6px}
+.a3d-tl-crit{border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:6px 8px}
+.a3d-tl-crit .a3d-tl-cn{font-weight:550}
+.a3d-tl-cf{display:grid;grid-template-columns:1fr 1fr;gap:6px 8px;margin-top:6px}
+.a3d-tl-cf label{display:flex;flex-direction:column;gap:2px;font-size:11px;color:#8a96a3;min-width:0}
+.a3d-tl-cf label.w{grid-column:1/-1}
+.a3d-tl-st{border-radius:8px;padding:6px 9px;font-weight:600;font-size:12.5px;background:rgba(46,160,67,.14);color:#7ee2a0}
+.a3d-tl-st span{font-weight:400;color:#aeb7c1;margin-left:4px}
+.a3d-tl-st.warn{background:rgba(210,153,34,.16);color:#f0b35a}.a3d-tl-st.fail{background:rgba(229,72,77,.16);color:#ff8b8b}
+.a3d-tl-msgs{margin:6px 0 4px;padding-left:18px;font-size:11.5px;color:#aeb7c1}
+.a3d-tl-m.warn{color:#f0b35a}.a3d-tl-m.err{color:#ff8b8b}
+.a3d-tl-stats{margin:6px 0}
+.a3d-tl-lay{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:6px 0;font-size:12px}
+.a3d-tl-hist{display:flex;flex-direction:column;gap:4px}
+.a3d-tl-h{display:flex;flex-direction:column;gap:4px;border-left:3px solid #2ea043;padding:3px 0 3px 8px}
+.a3d-tl-h.warn{border-left-color:#d29922}.a3d-tl-h.fail{border-left-color:#e5484d}
+.a3d-tl-hn{display:flex;flex-direction:column}.a3d-tl-hn span{font-size:11.5px;color:#8a96a3}
+.a3d-tl-ha{display:flex;gap:6px;flex-wrap:wrap}
+@media(pointer:coarse){.a3d-tl-b{min-height:36px}.a3d-tl-b input[type=checkbox]{width:22px;height:22px}}   /* the fields' 36 px are the panel's own (#a3d-right, .a3d-sa) */
+body.light-theme .a3d-tl-l{color:#2a2e33}
+body.light-theme .a3d-tl input[type=text],body.light-theme .a3d-tl select{background:#fff;border-color:#c9ced4;color:#1f2328}
+body.light-theme .a3d-tl-crit{border-color:rgba(0,0,0,.12)}
+body.light-theme .a3d-tl-msg.err,body.light-theme .a3d-tl-m.err{color:#b42318}body.light-theme .a3d-tl-msg.warn,body.light-theme .a3d-tl-m.warn{color:#9a5b00}
+body.light-theme .a3d-tl-st{background:rgba(46,160,67,.12);color:#1a7f37}body.light-theme .a3d-tl-st span{color:#57606a}
+body.light-theme .a3d-tl-st.warn{background:rgba(210,153,34,.14);color:#9a5b00}body.light-theme .a3d-tl-st.fail{background:rgba(229,72,77,.12);color:#b42318}
+body.light-theme .a3d-tl-msgs,body.light-theme .a3d-tl-hn span,body.light-theme .a3d-tl-help,body.light-theme .a3d-tl-u{color:#57606a}

@@ -733,7 +733,8 @@ async def run():
             # AMENDED FOR V171: Traffic, before Climate, and its ten topics
             AREAS = ['Transit and walking', 'Roads and noise', 'Cycling', 'Air', 'Flood and ground', 'Buildings', 'Structure', 'Site context', 'Land and green', 'Assets', 'Traffic', 'Climate']
             want_t = [t for a_ in AREAS for t in R.TOPICS if not R.TOPICS[t]['cat'] and RECS[t]['area'] == a_]
-            ck(G.get('topics') == want_t and len(want_t) == 43, "the 43 topics the app applies, by area (%s)" % G.get('topics'))
+            # AMENDED FOR V172: the site capacity calculation in Flood and ground, the constraints map's working set in Land and green
+            ck(G.get('topics') == want_t and len(want_t) == 45, "the 45 topics the app applies, by area (%s)" % G.get('topics'))
             ck(G.get('areas', [])[:12] == AREAS and
                'In force here, not applied by the app yet' in G.get('areas', []) and 'Standards packs' in G.get('areas', []), "under their areas, the catalogue and the packs (%s)" % G.get('areas'))
             ck("Not set: each standard is applied as the app's default, and says so" in G.get('text', '') and 'Set the place to list the codes in force there' in G.get('text', ''), "no place: said, and no catalogue")

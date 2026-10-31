@@ -26,6 +26,7 @@ to (a map, an address, the site's context, a data layer).
 | bring in a survey, and trust it | [Survey and terrain](survey-terrain.html) |
 | model neighbouring buildings from LOD1 to LOD2, and exchange CityJSON | [Buildings and LOD](buildings-lod.html) |
 | run the analyses | [Analysis](analysis.html) |
+| buffer, measure distance, exclude, find the best place to build, and work out the buildable area | [Site analysis tools](site-tools.html) |
 | make sheets, and import and export files | [Sheets and files](sheets-files.html) |
 | look up one command | [Command reference](commands.html) |
 | see what changed | [Release notes](changelog.html), [Versions](versions.html) |
