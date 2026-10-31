@@ -16082,7 +16082,7 @@ map service tested (CORS open to the Pages origin); Felzenszwalb and Huttenloche
 Computing.
 
 **What was built** (`src/js/engine/site-tools/`: `grid.js`, `sources.js`, `tools.js`, `basic.js`, `suitability.js`,
-`capacity.js`, `panel.js`; `testing/hooks-tools.js`; patches `Phase/patch_v172_a.py` to `_d.py`):
+`capacity.js`, `panel.js`; `testing/hooks-tools.js`; patches `Phase/patch_v172_a.py` to `_f.py`):
 - **The grid:** the tools' processing extent, the lot and 100 m around it in 1 m cells (100 m around the site's centre
   with no lot), doubled while over 250,000 cells; an area by its cells' centres (even-odd), a line or a point by the
   cells within half a cell; distance by Felzenszwalb and Huttenlocher's exact transform, rows then columns; outputs kept
@@ -16137,6 +16137,9 @@ Computing.
   hidden, as V171b keeps one analysis at a time.
 - The full regression found a function the tools declared and never called, by V120's derivation of dead code: it
   went (`Phase/patch_v172_e.py`).
+- Read against the build contract, the hook that runs Locate's growth on the suite's own grid made its typed arrays
+  with `Float64Array.from`, the engine's only `TypedArray.from`; they are made by their constructors now, as
+  everywhere else (`Phase/patch_v172_f.py`).
 
 **Suites:**
 - **New:** `tests/bim_phase172_site_tools_browser_tests.py`, 93 checks with `tests/site_tools_reference.py` (the grid,
