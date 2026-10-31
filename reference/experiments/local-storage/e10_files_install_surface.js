@@ -189,8 +189,12 @@ function main() {
           function (e) { results.file.blobDownload8MiB = 'failed: ' + e.message; });
     }).then(function () { return ctx.close(); });
   }).then(function () {
-    // ---- http://localhost (a secure context)
-    return browser.newContext({ acceptDownloads: true });
+    // ---- http://localhost (a secure context). A persistent (on-disk) profile: in an
+    // off-the-record context (browser.newContext), reading a FileSystemFileHandle back out of
+    // IndexedDB closed the whole browser in chromium-1243 (headless shell and full Chromium
+    // alike, 2026-10-31); in a persistent profile the same steps pass. Recorded in the note.
+    results.http.profile = 'persistent (launchPersistentContext)';
+    return pw.chromium.launchPersistentContext(L.tmpDir('e10ud-'), { headless: true, acceptDownloads: true });
   }).then(function (ctx) {
     var base = srv.origin + '/app/index.html';
     return ctx.newPage().then(function (page) {
