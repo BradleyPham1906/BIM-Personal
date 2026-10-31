@@ -280,13 +280,7 @@ async def run():
 
             # ---------------------------------------------------------------------------------
             print("\n-- 6. Slope classes")
-            Ld = await safe("()=>window.__a3dLandGet()") or {}
-            dem = Ld.get('dem') or {}
             hn_ = await safe("()=>window.__a3dLandHorn()") or {}
-            Dg = await safe("()=>{var D=window.__a3dLandDem?window.__a3dLandDem():null;return D;}")
-            land = await safe("()=>{var r=window.__a3dTlLandGrid?window.__a3dTlLandGrid():null;return r;}")
-            if not land:
-                land = await safe("""()=>{var S=window.__a3dTlGrid();return null;}""")
             sv = grid2(G, (await source('slope')).get('v') or [])
             grd = await safe("()=>window.__a3dTlGroundGrid()") or {}
             ref = R.resample(RG, grd, hn_.get('slope') or []) if grd else None
@@ -309,7 +303,7 @@ async def run():
             flood_ref = np.abs(dv) <= 18
             fl = mask2(G, (await source('flood')).get('m') or [])
             fedge = (np.abs(np.abs(dv) - 18) < 1e-3) | (np.abs(np.abs(dv) - 6) < 1e-3)
-            ck(np.array_equal(fl[~fedge], flood_ref[~fedge]) and (fl & lot).sum() > 0, "FEMA's 1% zones (the floodway and AE) on the grid, as the fixture draws them (%d cells, %d on the lot)" % (fl.sum(), (fl & lot).sum()))
+            ck(np.array_equal(fl[~fedge], flood_ref[~fedge]) and (fl & lot).sum() > 0, "FEMA's 1%% zones (the floodway and AE) on the grid, as the fixture draws them (%d cells, %d on the lot)" % (fl.sum(), (fl & lot).sum()))
             c = await check('exclude')
             ck('Not fetched yet' in ((c.get('W') or {}).get('wetlands') or '') and not c.get('err'), "the wetlands not fetched: a warning, not an error")
             h = await runt('exclude')
@@ -454,8 +448,10 @@ async def run():
             cat, rr = R.capacity(lot, fl, wl, water, sv, fo, 1)
             lv = np.array([-1 if v is None else v for v in L.get('lv') or []]).reshape(RG['nz'], RG['nx'])
             ck(np.array_equal(np.where(lv < 7, lv, -1)[lot], cat[lot]), "each lot cell's resource: the highest ratio of those there (the floodplain over a steep slope)")
-            ck(int(((cat == 0) & st_).sum()) > 0 and int((cat == 5).sum()) > 0 and int((cat == 6).sum()) > 0,
-               "overlaps counted once: %d floodplain cells on steep ground; forest with another resource %d cells at its own ratio, forest alone %d" % (int(((cat == 0) & st_).sum()), int((cat == 5).sum()), int((cat == 6).sum())))
+            band = np.isfinite(sv) & (sv >= R.CHALFONT['slope_lo']) & (sv < R.CHALFONT['slope_hi'])
+            ov = int(((cat == 0) & band & lot).sum())
+            ck(ov > 0 and int(((cat == 4) & lot).sum()) > 0 and int((cat == 5).sum()) > 0 and int((cat == 6).sum()) > 0 and np.array_equal(np.where(lv < 7, lv, -1)[lot & band & fl], np.zeros(int((lot & band & fl).sum()), dtype=int)),
+               "overlaps counted once: %d floodplain cells on the lower steep class counted at the floodplain's ratio; forest with another resource %d cells at its own ratio, forest alone %d" % (ov, int((cat == 5).sum()), int((cat == 6).sum())))
             N = R.capacity_numbers(cat, rr, 1200, 50, 1, density=12, imperv=60)
             hc = h.get('capacity') or {}
             ck(abs(hc.get('total', 0) - 1200) < 1e-6 and abs(hc.get('base', 0) - N['base']) < 1e-6 and abs(hc.get('prot', 0) - N['prot']) < 1e-6 and abs(hc.get('net', 0) - N['net']) < 1e-6,
@@ -519,14 +515,15 @@ async def run():
             ck((await safe("()=>window.__a3dTlParams('buffer')") or {}).get('dist') == 12 and not await text('#a3d-propsbody [data-tlp="dist"] .a3d-tl-msg.err'),
                "a good value is kept as the tool's parameter, its message gone")
             n0 = len(await safe("()=>window.__a3dTlHistory()") or [])
-            await click('#a3d-propsbody [data-awact="tl:run:buffer"]')
-            await page.wait_for_timeout(250)
+            await page.click('#a3d-propsbody [data-awact="tl:run:buffer"]')   # a real click: the field is left, its held refresh done
+            await page.wait_for_timeout(300)
             H = await safe("()=>window.__a3dTlHistory()") or []
             ck(len(H) == n0 + 1 and H[0]['tool'] == 'buffer' and H[0]['params']['dist'] == 12, "Run runs it: one more run in History, its parameters kept")
             st_txt = await text('#a3d-propsbody [data-tlst]')
+            lay_txt = await text('#a3d-propsbody .a3d-tl-lay')
             ck(st_txt and st_txt.startswith('Succeeded') and await safe("()=>!!document.querySelector('#a3d-propsbody .a3d-tl-stats')") and
-               'On the plan: Buffer: Streets and paths, 12 m' in (await text('#a3d-propsbody .a3d-tl-lay') or ''),
-               "the last run: its status, its results and its layer on the plan (%s)" % st_txt)
+               'On the plan: Buffer: Streets and paths, 12 m' in (lay_txt or ''),
+               "the last run: its status, its results and its layer on the plan (%s; %s)" % (st_txt, lay_txt))
             lid = H[0].get('layer')
             await click('#a3d-propsbody [data-awact="tl:run:buffer"]')
             await page.wait_for_timeout(250)
@@ -561,7 +558,7 @@ async def run():
             await safe("()=>window.__a3dSetPlanView()")
             await safe("()=>window.__a3dCamSet({tx:30,tz:-25,dist:200})")
             await page.wait_for_timeout(500)
-            capL = cap_h.get('layer')
+            capL = [x for x in await safe("()=>window.__a3dTlHistory()") or [] if x['tool'] == 'capacity'][0].get('layer')
             ck(capL in (await safe("()=>window.__a3dResultDrawn()") or []), "drawn on the plan")
             await click('[data-anzact="aw:tool:capacity"]')
             await page.wait_for_timeout(150)
@@ -570,18 +567,17 @@ async def run():
             ck((await layer(capL)).get('visible') is False and capL not in (await safe("()=>window.__a3dResultDrawn()") or []), "Hide in the panel hides it")
             await click('#a3d-propsbody [data-awact="tl:show:%s"]' % capL)
             await page.wait_for_timeout(200)
-            sw = await safe("(i)=>{var L=window.__a3dLayerTreeHtml?window.__a3dLayerTreeHtml():null;return L;}", capL)
             nH = len(await safe("()=>window.__a3dTlHistory()") or [])
             await safe("(i)=>window.__a3dResultLayerUpdate(i)", capL)
             ck(len(await safe("()=>window.__a3dTlHistory()") or []) == nH + 1 and (await safe("()=>window.__a3dTlHistory()"))[0]['tool'] == 'capacity',
                "Update in Layers runs its tool again with the same parameters")
-            await safe("""()=>{var L=window.__a3dState().objs;L.forEach(function(o){if(o.id==='LOT')o.pts=o.pts.map(function(p){return [p[0]+2,p[1]];});});
-              window.__a3dTestSetObjs(L);window.__a3dPropertyFromSketch('LOT');window.__a3dTlForgetGrid();}""")
+            await safe("""()=>{var L=window.__a3dState().objs.filter(function(o){return o.t!=='property';});L.forEach(function(o){if(o.id==='LOT')o.pts=o.pts.map(function(p){return [p[0]+2,p[1]];});});
+              window.__a3dTestSetObjs(L);window.__a3dPropertyFromSketch('LOT');}""")
             ck((await layer(capL)).get('stale') is True, "the lot moved: the layer is out of date")
             await safe("(i)=>window.__a3dResultLayerUpdate(i)", capL)
             ck((await layer(capL)).get('stale') is False, "Update runs it on the lot as it is now")
-            await safe("""()=>{var L=window.__a3dState().objs;L.forEach(function(o){if(o.id==='LOT')o.pts=o.pts.map(function(p){return [p[0]-2,p[1]];});});
-              window.__a3dTestSetObjs(L);window.__a3dPropertyFromSketch('LOT');window.__a3dTlForgetGrid();}""")
+            await safe("""()=>{var L=window.__a3dState().objs.filter(function(o){return o.t!=='property';});L.forEach(function(o){if(o.id==='LOT')o.pts=o.pts.map(function(p){return [p[0]-2,p[1]];});});
+              window.__a3dTestSetObjs(L);window.__a3dPropertyFromSketch('LOT');}""")
             await safe("(i)=>window.__a3dResultLayerUpdate(i)", capL)
 
             # ---------------------------------------------------------------------------------
@@ -629,6 +625,7 @@ async def run():
             await p6.wait_for_timeout(2300)
             await safe("()=>window.__a3dEnter()", pg=p6)
             await design(p6)
+            await safe("()=>{window.__a3dTlSet('suit|crit|slope|on',true);window.__a3dTlSet('suit|crit|slope|how','small');}", pg=p6)
             await safe("()=>window.__a3dRunCmd('tlsuit')", pg=p6)
             await p6.wait_for_timeout(400)
             ph = await safe("""()=>{var p=document.querySelector('#a3d-propsbody [data-awpanel]');if(!p)return null;

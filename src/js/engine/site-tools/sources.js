@@ -145,7 +145,7 @@
     if(!org){a3dToast('Place the site on the map first (Site, Location)');if(done)done(false);return false;}
     c=[[G.x0,G.z0],[G.x0+G.nx*G.cell,G.z0],[G.x0,G.z0+G.nz*G.cell],[G.x0+G.nx*G.cell,G.z0+G.nz*G.cell]];
     c.forEach(function(p){ll=bimModelToGeo(p[0],p[1]);lo0=Math.min(lo0,ll[0]);lo1=Math.max(lo1,ll[0]);la0=Math.min(la0,ll[1]);la1=Math.max(la1,ll[1]);});
-    if(bimLandUS&&!bimLandUS()){T.wetlands={outside:true,fetched:bimSaToday()};saveSoon();if(done)done(true);return true;}
+    if(!bimLandUS(org)){T.wetlands={outside:true,fetched:bimSaToday()};saveSoon();if(done)done(true);return true;}   /* the inventory maps the US only */
     url=BIM_TL_NWI+'?'+bimClimQs({where:'1=1',geometry:[lo0,la0,lo1,la1].map(function(x){return x.toFixed(6);}).join(','),geometryType:'esriGeometryEnvelope',
       inSR:4326,outSR:4326,spatialRel:'esriSpatialRelIntersects',outFields:'WETLAND_TYPE,ATTRIBUTE',returnGeometry:'true',geometryPrecision:6,f:'json'});
     fetch(url).then(function(r){if(!r.ok)throw new Error('the service answered '+r.status);return r.json();}).then(function(js){

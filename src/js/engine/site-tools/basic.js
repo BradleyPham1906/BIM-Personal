@@ -24,7 +24,10 @@
     var z=A3D.site&&A3D.site.zoning,C,pl,m,k,inPlate;
     if(!G.lot){W.push('No lot: no setbacks');return null;}
     if(!z||!(z.front>0||z.side>0||z.rear>0||(z.frontSteps||[]).length||(z.sideSteps||[]).length||(z.rearSteps||[]).length)){W.push('No setbacks are recorded in the zoning (Legal): none is excluded');return null;}
-    try{C=bimZnCalc();}catch(eZ){C={error:String(eZ&&eZ.message||eZ)};}
+    /* the plate at the ground needs only the lot's sides and their rules, not the envelope's height (V160's own start) */
+    try{var P=bimZnProperty(),zz=bimZn(),L=P?bimZnLegs(P,zz.frontLeg,zz.legRoles):null;
+      C=L?{legs:L,zoning:zz,rules:bimZnRules(zz),convex:bimZnConvex(L.ring),split:null}:{error:'No property line yet'};}
+    catch(eZ){C={error:String(eZ&&eZ.message||eZ)};}
     if(!C||C.error){W.push('The setbacks could not be worked out: '+(C&&C.error||'no zoning'));return null;}
     pl=bimZnPlate(C,0,-1);
     if(pl===null){W.push('The setbacks could not be drawn for this lot\'s shape');return null;}

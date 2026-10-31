@@ -8,7 +8,7 @@
   window.__a3dTlFill=function(ring){var G=bimTlGrid(),m=new Uint8Array(G.n);bimTlFillPoly(G,ring,m,1);return bimTlArr(m);};
   window.__a3dTlStroke=function(a,b){var G=bimTlGrid(),m=new Uint8Array(G.n);bimTlStroke(G,a,b,m,1);return bimTlArr(m);};
   window.__a3dTlCode=function(lv){var e=bimTlEncode(lv),d={rc:e.rc,rn:e.rn,nx:lv.length,nz:1},back=bimTlDecode(d);return {rc:e.rc,rn:e.rn,back:bimTlArr(back),alph:BIM_TL_ALPH};};
-  window.__a3dTlTools=function(){return BIM_TL_TOOLS.map(function(t){return {id:t.id,name:t.name,cmd:t.cmd,sum:t.sum,how:t.how,params:t.params.map(function(p){return {id:p.id,label:p.label,t:p.t,req:!!p.req,unit:p.unit||'',of:p.of||null};})};});};
+  window.__a3dTlTools=function(){return bimTlOrder().map(function(t){return {id:t.id,name:t.name,cmd:t.cmd,sum:t.sum,how:t.how,params:t.params.map(function(p){return {id:p.id,label:p.label,t:p.t,req:!!p.req,unit:p.unit||'',of:p.of||null};})};});};
   window.__a3dTlParams=function(id,over){var t=bimTlTool(id);return t?JSON.parse(JSON.stringify(bimTlParams(t,over||undefined))):null;};
   window.__a3dTlCheck=function(id,over){var t=bimTlTool(id),G=bimTlGrid(),P=bimTlParams(t,over||undefined),C=bimTlCheck(t,P,G);return JSON.parse(JSON.stringify({E:C.E,W:C.W,err:C.err,first:C.first}));};
   window.__a3dTlSet=function(key,v){return bimTlSetField(key,v);};
@@ -33,3 +33,4 @@
   };
   window.__a3dTlWetlands=function(){return new Promise(function(res){bimTlWetlandsFetch(function(ok){res({ok:ok,w:JSON.parse(JSON.stringify(bimTlState().wetlands||null))});});});};
   window.__a3dTlForgetGrid=function(){A3D_TL.grid=null;A3D_TL.gkey=null;A3D_TL.memo=null;return true;};
+  window.__a3dTlGroundGrid=function(){var D=bimLandGround(bimDgSite());return D?{x0:D.x0,z0:D.z0,cell:D.cell,nx:D.nx,nz:D.nz}:null;};
