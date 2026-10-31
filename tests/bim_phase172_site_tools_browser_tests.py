@@ -338,6 +338,10 @@ async def run():
             ck(h.get('st') == 'warn' and np.array_equal(lv, want), "outside the lot, then the flood zones, then slopes from %s%%, each cell its first reason (%s)" % (steepAt, h.get('st')))
             ck(h.get('stats', [[None]])[0] == ['Restricted on the lot', area_text((fl & lot).sum()) + ' of 1200 m²'] and ['Left to use', area_text(1200 - (fl & lot).sum())] in h.get('stats', []),
                "what is restricted on the lot, and what is left (%s)" % h.get('stats'))
+            hs_ = await runt('exclude', {'outside': False, 'setbacks': False, 'flood': False, 'wetlands': False, 'steep': True, 'steepAt': steepAt, 'buildings': False, 'buffer': ''})
+            lvs = np.array([-1 if v is None else v for v in (await layer(hs_.get('layer'))).get('lv') or []]).reshape(RG['nz'], RG['nx'])
+            band30 = st_ & (sv < steepAt + 5)
+            ck(np.array_equal(lvs == 4, st_) and int(band30.sum()) > 0, "steep slopes alone: every cell from %s%% (%d cells, %d of them under %s%%)" % (steepAt, int(st_.sum()), int(band30.sum()), steepAt + 5))
             hb = await runt('buffer', {'src': 'streets', 'dist': 4, 'side': 'full'})
             h2 = await runt('exclude', {'outside': False, 'setbacks': False, 'flood': True, 'wetlands': False, 'steep': False, 'buildings': True, 'buffer': hb.get('id')})
             lv2 = np.array([-1 if v is None else v for v in (await layer(h2.get('layer'))).get('lv') or []]).reshape(RG['nz'], RG['nx'])
