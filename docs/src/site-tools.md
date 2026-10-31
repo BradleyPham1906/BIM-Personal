@@ -47,6 +47,8 @@ cells of 2 m, 4 m and so on, so there are never more than 250,000 cells.
 
 **Outputs are layers.** Every run's output is a layer in **Layers**, under Analysis, with its
 key.
+- A run's output is shown alone: the other tools' layers are hidden, as the workspace shows one
+  analysis at a time. **Show** in the tool, or the eye in Layers, brings any of them back.
 - A run with the same parameters as an earlier one replaces that layer, as ArcGIS overwrites a
   tool's output.
 - When the property line changes, the layer is marked **Out of date**. **Update** runs it again on

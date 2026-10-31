@@ -98,6 +98,7 @@ VARIANTS = {
     'run_no_undo': [("    pushUndo();\n    T=bimTlState();\n    h={id:'tlh-'", "    T=bimTlState();\n    h={id:'tlh-'")],   # undo takes the run and its layer back: one step
     'history_unlisted': [("(H.length?'<div class=\"a3d-tl-hist\">'+H.map(function(x){return bimTlHistRow(x,true);}).join('')+'</div>'", "(H.length?'<div class=\"a3d-tl-hist\">'+H.slice(0,3).map(function(x){return bimTlHistRow(x,true);}).join('')+'</div>'")],   # History lists every run
     # ---- 13. layers ----
+    'others_stay_shown': [("      bimResLayers().forEach(function(L){if(L.kind==='tool')L.visible=L.id===R.id;});\n", "")],   # a run's output is shown alone
     'layer_not_drawn': [("    if(R.kind==='tool'){var im=bimTlDataOk(d)?bimTlImage(R):null;if(!im)return false;", "    if(R.kind==='tool'){return false;")],   # drawn on the plan
     'layer_dropped_on_load': [("      if(R.kind==='tool')return bimTlDataOk(R.data);   /* __acad3dV172 */", "      if(R.kind==='tool')return false;")],   # a reload keeps ... the layers
     'stale_never': [("  function bimTlStale(R){return !!(R&&R.kind==='tool'&&R.data&&R.data.gkey!==bimTlGrid().key);}", "  function bimTlStale(R){return false;}")],   # the lot moved: the layer is out of date

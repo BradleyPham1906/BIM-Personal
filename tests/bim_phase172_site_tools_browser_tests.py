@@ -593,6 +593,9 @@ async def run():
 
             # ---------------------------------------------------------------------------------
             print("\n-- 13. Layers")
+            hc3 = await runt('capacity', {'less': 50})
+            shown = [x['id'] for x in await safe("()=>window.__a3dResultLayers()") or [] if x['kind'] == 'tool' and x['visible']]
+            ck(shown == [hc3.get('layer')], "a run's output is shown alone, the other tools' hidden, as the workspace shows one analysis at a time (%d shown)" % len(shown))
             RLs = [x for x in await safe("()=>window.__a3dResultLayers()") or [] if x['kind'] == 'tool']
             ck(len(RLs) >= 8 and all(x['cells'] == RG['nx'] * RG['nz'] for x in RLs), "each tool's output is a result layer (%d)" % len(RLs))
             await safe("()=>window.__a3dSetPlanView()")

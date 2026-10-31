@@ -197,7 +197,12 @@
     h={id:'tlh-'+Date.now().toString(36)+'-'+(A3D.seq++),tool:t.id,params:bimTlCopy(P),at:bimResNow(),ms:Date.now()-t0,st:st,msgs:M,
       stats:out.error?[]:(out.stats||[]),sum:out.error?'':(out.sum||''),label:out.error?'':(out.label||''),gkey:G.key,
       std:!out.error&&out.std&&out.std.length?bimStdStamp(out.std):null};
-    if(!out.error&&out.layer){var R=bimTlLayerPut(t,h,out.layer,G);h.layer=R.id;}
+    if(!out.error&&out.layer){
+      var R=bimTlLayerPut(t,h,out.layer,G);h.layer=R.id;
+      /* one at a time, as the workspace shows its analyses (the owner, V171b): the run's output shown, the other tools'
+         hidden, kept in Layers to show again */
+      bimResLayers().forEach(function(L){if(L.kind==='tool')L.visible=L.id===R.id;});
+    }
     T.history.unshift(h);
     if(T.history.length>BIM_TL_HMAX)T.history.length=BIM_TL_HMAX;
     if(out.keep)out.keep(T,h);
