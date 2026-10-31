@@ -16181,3 +16181,27 @@ V162, V62's hosts, V171d's version) and the function nothing called that V120 fo
     markers           __acad3dV60 ... __acad3dV172, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
                       __acad3dV121b, __acad3dV166b, __acad3dV166c, __acad3dV166d, __acad3dV171b, __acad3dV171c,
                       __acad3dV171d
+
+## Phase 124b (V124b) - The Assets library's save, warned and toasted
+
+Built on V172 on 2026-10-31; the version stays V172. The owner's decision D8 of `reference/research-local-storage.md`,
+found by that research's audit of the app's storage: `bimSaveFamilyLibrary` (`src/js/engine/assets/family-library.js`)
+caught a refused `localStorage.setItem` and only warned to the console, against the build contract's "failures warned
+and toasted". A SketchUp import, a block, a template or a scanned asset added to a full store stayed on screen and was
+gone at the next reload. It now works as `save3d` does for the project: the warning, a toast once per run of failures
+("The Assets library could not be saved: browser storage is full. New assets will be lost when the page reloads; remove
+assets you no longer need."), "Saving the Assets library works again" at the first save that works after it, and a
+return of true or false. The first working save writes the whole library, so assets added during the failures are kept.
+
+Patch `Phase/patch_v124b.py` (base 9e07f24c). Suite `tests/bim_phase124b_library_save_toast_browser_tests.py`, 20
+checks: storage made to refuse the library's key alone by replacing `Storage.prototype.setItem` from the page after
+start (V115's way; no init script touches storage). Falsification `Phase/falsify_phase124b.py`: 7 variants, 7 caught.
+The build kept before it is `Phase/canvas_v10.html.bak_phase172_v124b_pre`: first named `bak_phase124b_pre`, which
+V142's rule refused (a kept build is never newer than the phase in its name); the guide's versions page rebuilt.
+
+**State after V124b:** 135 suites, 6899 checks (the 134 older suites' 6879 and V124b's 20): the full regression from a
+frozen worktree of commit 2265357 passed 6897 of 6899 in 678 s with 4 workers; the two failures were V142's, the backup's
+name and the versions page, both fixed as above, and V142 then passed 31 of 31.
+
+    canvas_v10.html   3729520 bytes
+    sha256            1dd1646f3e6b36424a41a7bab53c9a270c621ed0ae75c89d5c31d6240bd29e3f

@@ -147,6 +147,7 @@
     'loadcases,selfweight,lineload,pointload,lateralload,combinations,directstiffness,rcmband,cholesky,'+
     'unstablerefused,equilibrium,memberforces,shearzero,deflection,analysisdisplay,stale,analyzeoff,'+
     'structuralprops,analysisprops,supportcommand,loadcommand,analyzebutton,memberforceschedule,reactionschedule';
+  window.__acad3dV124b='libsavetoast,libtoastonce,libsaveworksagain,libsavereturns';
   window.__acad3dV124='librarykinds,starterset,thumbnails,importunit,importupaxis,blocks,blocklinks,blocklevel,'+
     'selectionmodel,templates,librarypanel,librarysearch,folds,removeasks,clickatviewcentre,dragdrop,dropsnap,'+
     'droponobject,blockcommand,insertcommand,assetscommand,componentopenslibrary';
