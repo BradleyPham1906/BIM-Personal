@@ -530,7 +530,20 @@ To confirm before any of it reaches the code; none of it is used in the plan.
 
 ## 11. The owner's decisions
 
-Each with the evidence and a recommended answer. **Answers pending.**
+Each with the evidence and a recommended answer.
+
+**Asked on 2026-10-31; the owner's answers:**
+
+- **D1:** three phases, A (IndexedDB), B (files), C (installable and offline), as recommended.
+- **D1, the old keys:** yes, the app may retire the localStorage project keys after it has copied them into IndexedDB
+  and confirmed the copy; it still reads them if it finds them later. This amends the build contract's "existing
+  localStorage keys must survive every change" for these keys only.
+- **D2:** a marker on every project with changes not saved to a file, a quiet reminder after 30 minutes of such work,
+  and one at the first save in Safari or a private window.
+- **D8:** fix the family library's silent failure now, as a small separate patch with its own falsified check, before
+  phase A.
+
+D3 to D7, D9 and D10 were not asked separately; they stand as recommended below until the owner says otherwise.
 
 **D1. Scope and phases.** The evidence separates three problems: the size wall (localStorage's 5,242,880 units,
 already reached by a 125,000-triangle import), safety (eviction and the 7-day rule hit IndexedDB as much as
