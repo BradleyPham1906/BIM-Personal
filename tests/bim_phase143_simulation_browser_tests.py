@@ -352,7 +352,8 @@ async def run():
             # AMENDED FOR V162: one Analyze -- the simulations in the categories they answer (Climate,
             # Water); Model is the one group left at the end
             cat = await safe("()=>{var o={};['sunhours','solar','rain'].forEach(function(k){var r=document.querySelector('.a3d-analyze-wrap [data-anzcard=\"'+k+'\"]'),c=r&&r.closest('[data-sacat]');o[k]=c?c.getAttribute('data-sacat'):null;});return o;}") or {}
-            ck(hd == ['Model'] and all(k in C for k in ('sunhours', 'solar', 'rain')) and cat == {'sunhours': 'climate', 'solar': 'climate', 'rain': 'water'},
+            # AMENDED FOR V172: the site analysis tools a group with its heading before Model
+            ck(hd == ['Tools', 'Model'] and all(k in C for k in ('sunhours', 'solar', 'rain')) and cat == {'sunhours': 'climate', 'solar': 'climate', 'rain': 'water'},
                "the simulations among the categories: Sun hours and Solar in Climate, Rain on terrain in Water (%s, %s)" % (hd, cat))
             ck(C['rain']['state'] == 'On' and 'no pond' not in C['rain']['st'] and 'flow lines where' in C['rain']['st'], "the rain card says what it shows (%s)" % C['rain']['st'])
             await safe("()=>window.__a3dSimClear()")

@@ -31758,7 +31758,6 @@ try{
   /* ---- shared by the tools ---- */
   /* the lot's cells, or every cell when there is no lot */
   function bimTlInLot(G){if(G.lot)return G.lot;var m=new Uint8Array(G.n);m.fill(1);return m;}
-  function bimTlCountIn(G,m,w){var n=0,k;for(k=0;k<G.n;k++)if(m[k]&&(!w||w[k]))n++;return n;}
   /* the extent's words, for the messages */
   function bimTlExtentText(G){return (G.ring?'the lot and '+BIM_TL_MARGIN+' m around it':'100 m around the site')+', '+G.nx+' by '+G.nz+' cells of '+bimDispNum(G.cell,2)+' m';}
   function bimTlInfo(M,s){M.push({t:'info',s:s});}

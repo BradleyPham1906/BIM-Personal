@@ -16135,6 +16135,8 @@ Computing.
   covered, have 36 px, a check and a variant.
 - The plan with every tool's output at once was a tangle of colours: a run's layer is shown alone, the other tools'
   hidden, as V171b keeps one analysis at a time.
+- The full regression found a function the tools declared and never called, by V120's derivation of dead code: it
+  went (`Phase/patch_v172_e.py`).
 
 **Suites:**
 - **New:** `tests/bim_phase172_site_tools_browser_tests.py`, 93 checks with `tests/site_tools_reference.py` (the grid,
@@ -16150,7 +16152,9 @@ Computing.
   layers (one shown at a time, Hide, Update, out of date); the search and the commands; kept over a reload; a phone.
 - **Falsification:** `Phase/falsify_phase172.py`, 84 variants: the first run caught 80 (above).
 - **Amended:** V167 (the registry's 45 topics, Zoneomics' host for Chalfont's code, `tests/standards_reference.py`'s
-  two topics) and V171c (Analyze's groups: Tools before Model).
+  two topics); V141, V143, V148, V162 and V171c (Analyze's Tools group, between the categories and Model, its nine
+  rows, a search for slope finding the four tools that read it); V62 (the wetlands service's host and Zoneomics');
+  V171d (the version a later phase's).
 
 **Not done:** Esri's Locate Regions' shape and spacing; ModelBuilder's chains (a tool reading another's output from
 History is the start of one); the Suitability Modeler's Evaluate tab; the road noise analysis as a criterion; pond
