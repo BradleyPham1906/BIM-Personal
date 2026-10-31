@@ -1,2 +1,5 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# V172b: the Ladybug runtime is pinned by SHA-256 (runtime/MANIFEST.json); git must never touch its bytes
+runtime/** -text

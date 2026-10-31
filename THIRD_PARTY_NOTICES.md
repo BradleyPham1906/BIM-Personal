@@ -110,6 +110,23 @@ https://github.com/mapbox/earcut.
     THIS SOFTWARE.
 
 
+## Ladybug Tools and Pyodide (V172b, served beside the app in runtime/)
+
+The weather and comfort analyses run Ladybug Tools' own Python, unchanged, in the browser through Pyodide, loaded
+only when one is run. The files are committed under `runtime/`, each pinned by its SHA-256 in
+`runtime/MANIFEST.json` (`tools/check_runtime.py` checks them), and Pages serves them at `runtime/`. They are not
+part of `canvas_v10.html`. Their licences travel with them:
+
+- **Pyodide 0.29.5**, https://github.com/pyodide/pyodide, the npm package `pyodide@0.29.5`: Mozilla Public License
+  2.0, `runtime/pyodide/0.29.5/LICENSE`. It carries CPython 3.13.2 and its standard library, under the Python
+  Software Foundation licence, `runtime/pyodide/0.29.5/CPython-LICENSE`.
+- **ladybug-core 0.44.63, ladybug-geometry 1.35.7, ladybug-comfort 0.19.13**, https://github.com/ladybug-tools, from
+  PyPI: GNU Affero General Public License 3.0, each wheel's `dist-info/licenses/LICENSE`. The owner accepted the
+  AGPL for the app on 2026-10-26 (`reference/research-ladybug-tools.md`, 2); their source is the wheels themselves
+  and their repositories, and this app's is this repository.
+- **click 8.3.3**, https://github.com/pallets/click, from PyPI (ladybug-core requires it): BSD-3-Clause, its
+  wheel's `dist-info/licenses/LICENSE.txt`.
+
 ## valdrada (credited; no code copied)
 
 V171's traffic and people simulation (`src/js/engine/simulation/`) follows the approach of valdrada, a city traffic
