@@ -1,4 +1,4 @@
-// e10_files_install_surface.js -- files-and-install hypotheses (2026-10-31).
+// e12_files_install_surface.js -- files-and-install hypotheses (2026-10-31).
 // Tests, in this Chromium (chromium-1243 headless shell, Playwright 1.63.0), what the note
 // reference/research-local-storage/files-and-install.md claims from the documents:
 //   H-F1  the File System Access pickers exist on http://localhost but are refused on file://
@@ -14,7 +14,7 @@
 //   H-F5  CompressionStream('gzip') exists on file:// and http, and shrinks a BIM-like JSON.
 //   H-F6  <a download> with a blob: URL saves a 64 MiB file, on localhost and on file://.
 // Method: fresh browser context per origin; timings 3 runs; results saved by _lib.save.
-// Run: node e10_files_install_surface.js  (nothing installed; page code is ES5).
+// Run: node e12_files_install_surface.js  (nothing installed; page code is ES5).
 'use strict';
 var pw = require('playwright');
 var fs = require('fs');
@@ -247,7 +247,7 @@ function main() {
         });
     }).then(function () { return ctx.close(); });
   }).then(function () {
-    L.save('e10_files_install_surface', results);
+    L.save('e12_files_install_surface', results);
     console.log(JSON.stringify(results, null, 2));
   }).catch(function (e) {
     console.error('FAILED', e && e.message);

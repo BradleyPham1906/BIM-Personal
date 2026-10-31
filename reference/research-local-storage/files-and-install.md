@@ -11,7 +11,7 @@ Evidence levels follow `reference/research-protocol.md`: **P** read in the prima
 specification text, the vendor's own document or release note, MDN's browser-compat-data JSON, a
 browser's own bug tracker, or measured here); **S** a dependable secondary (gap stated); **U** a
 search-engine summary only (planning only, never code). All pages read 2026-10-31 unless stated.
-Measurements: `reference/experiments/local-storage/e10_files_install_surface.js`, run in
+Measurements: `reference/experiments/local-storage/e12_files_install_surface.js`, run in
 Chromium 153.0.8010.12 (Playwright 1.63.0, build chromium-1243, headless), results JSON in the
 session scratch directory (`LS_EXP_SCRATCH`), numbers copied below.
 
