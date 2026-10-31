@@ -33,4 +33,6 @@
   };
   window.__a3dTlWetlands=function(){return new Promise(function(res){bimTlWetlandsFetch(function(ok){res({ok:ok,w:JSON.parse(JSON.stringify(bimTlState().wetlands||null))});});});};
   window.__a3dTlForgetGrid=function(){A3D_TL.grid=null;A3D_TL.gkey=null;A3D_TL.memo=null;return true;};
+  window.__a3dTlGrow=function(V,ok,nx,nz,seed,need){var G={nx:nx,nz:nz,n:nx*nz},r=bimTlGrow(G,Float64Array.from(V),Uint8Array.from(ok),seed,need);
+    return r?{cells:r.cells.slice().sort(function(a,b){return a-b;}),order:r.cells.slice(),mean:r.mean}:null;};
   window.__a3dTlGroundGrid=function(){var D=bimLandGround(bimDgSite());return D?{x0:D.x0,z0:D.z0,cell:D.cell,nx:D.nx,nz:D.nz}:null;};

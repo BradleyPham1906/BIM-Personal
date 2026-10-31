@@ -108,7 +108,7 @@ VARIANTS = {
     'search_tools_unread': [("bimTlCards().forEach(function(x){C[x.id]=x;});}   /* __acad3dV172: the tools' rows */", "}   /* __acad3dV172: the tools' rows */")],   # the search finds Suitability
     'command_wrong_tool': [("tlsuit:function(){bimTlCommand('suit');}", "tlsuit:function(){bimTlCommand('locate');}")],   # each command opens its tool
     # ---- 16. a phone ----
-    'phone_fields_small': [("@media(pointer:coarse){.a3d-tl input[type=text],.a3d-tl select{min-height:36px;font-size:16px}", "@media(pointer:coarse){.a3d-tl input[type=text],.a3d-tl select{min-height:26px;font-size:16px}")],   # its fields a finger's height
+    'phone_ticks_small': [("@media(pointer:coarse){.a3d-tl-b{min-height:36px}", "@media(pointer:coarse){.a3d-tl-b{min-height:20px}")],   # its fields and its ticks a finger's height
 }
 
 name = sys.argv[1]

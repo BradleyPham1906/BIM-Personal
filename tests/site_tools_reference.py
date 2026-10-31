@@ -235,21 +235,25 @@ def locate(V, ok, nx, nz, need):
             seeds.append(a)
     best = None
     for s in seeds:
-        q, H, got, tot = {s}, [(-V[s], s)], [], 0.0
-        while H and len(got) < need:
-            _, k = heapq.heappop(H)
-            got.append(k)
-            tot += V[k]
-            i, j = k % nx, k // nx
-            for nb in ((k - 1) if i > 0 else -1, (k + 1) if i < nx - 1 else -1, (k - nx) if j > 0 else -1, (k + nx) if j < nz - 1 else -1):
-                if nb >= 0 and nb not in q and ok[nb]:
-                    q.add(nb)
-                    heapq.heappush(H, (-V[nb], nb))
-        if len(got) >= need:
-            m = tot / len(got)
-            if best is None or m > best[1] + 1e-12:
-                best = (sorted(got), m)
+        g = grow(V, ok, nx, nz, s, need)
+        if g and (best is None or g[1] > best[1] + 1e-12):
+            best = g
     return (best[0], best[1], len(seeds)) if best else (None, None, len(seeds))
+
+
+def grow(V, ok, nx, nz, seed, need):
+    """from a seed, the best neighbour sharing a side each time (the lower index among equals); (sorted cells, mean) or None"""
+    q, H, got, tot = {seed}, [(-V[seed], seed)], [], 0.0
+    while H and len(got) < need:
+        _, k = heapq.heappop(H)
+        got.append(k)
+        tot += V[k]
+        i, j = k % nx, k // nx
+        for nb in ((k - 1) if i > 0 else -1, (k + 1) if i < nx - 1 else -1, (k - nx) if j > 0 else -1, (k + nx) if j < nz - 1 else -1):
+            if nb >= 0 and nb not in q and ok[nb]:
+                q.add(nb)
+                heapq.heappush(H, (-V[nb], nb))
+    return (sorted(got), tot / len(got)) if len(got) >= need else None
 
 
 def connected(cells, nx):

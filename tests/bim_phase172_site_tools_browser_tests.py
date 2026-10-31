@@ -467,6 +467,19 @@ async def run():
             gb = [k for k, v in enumerate((await layer(ha.get('layer'))).get('lv') or []) if v == 0]
             ck(len(ga) == 400 and all(lot.ravel()[k] for k in ga) and len(gb) == 400 and not all(lot.ravel()[k] for k in gb),
                "from a map with nothing restricted: within the lot, the region stays on it; over the whole extent, it need not")
+            # a grid made to tell the rules apart: the seed's diagonal is the best cell, its sides poor; a wall of
+            # cells that cannot be used; equal values taken by the lower index
+            V5 = [0.0] * 25
+            V5[0], V5[6], V5[1], V5[5] = 10.0, 9.0, 1.0, 1.0
+            ok5 = [1] * 25
+            g1 = await safe("(a)=>window.__a3dTlGrow(a[0],a[1],5,5,0,2)", [V5, ok5]) or {}
+            g2 = await safe("(a)=>window.__a3dTlGrow(a[0],a[1],5,5,0,4)", [V5, ok5]) or {}
+            okw = [0 if k % 5 == 2 else 1 for k in range(25)]
+            g3 = await safe("(a)=>window.__a3dTlGrow(a[0],a[1],5,5,0,11)", [[1.0] * 25, okw])
+            g4 = await safe("(a)=>window.__a3dTlGrow(a[0],a[1],5,5,0,10)", [[1.0] * 25, okw]) or {}
+            ck(g1.get('cells') == R.grow(V5, ok5, 5, 5, 0, 2)[0] == [0, 1] and g2.get('cells') == R.grow(V5, ok5, 5, 5, 0, 4)[0] and 6 in g2.get('cells', []) and
+               g3 is None and R.grow([1.0] * 25, okw, 5, 5, 0, 11) is None and g4.get('cells') == R.grow([1.0] * 25, okw, 5, 5, 0, 10)[0],
+               "the growth by sides only (the diagonal best cell waits for a side to reach it), the lower index among equals, never across cells that cannot be used (%s, %s)" % (g1.get('cells'), g2.get('cells')))
             usable = sum(okm)
             c = await check('locate', {'from': suit_h.get('id'), 'area': usable + 1, 'within': 'lot'})
             ck((c.get('E') or {}).get('area') == 'Only %s can be used there' % area_text(usable), "an area larger than can be used: refused (%s)" % c.get('first'))
@@ -585,11 +598,13 @@ async def run():
             H3 = await safe("()=>window.__a3dTlHistory()") or []
             ck(len(H3) == n0 + 1 and not any(x['id'] == H2[1]['id'] for x in H3) and bool(await layer(lid)), "Remove takes a run from History; its layer stays")
             n1 = len(await safe("()=>window.__a3dResultLayers()") or [])
+            pre = await safe("()=>({h:window.__a3dTlHistory().map(function(x){return x.id;}),l:window.__a3dResultLayers().map(function(r){return r.id+':'+r.visible;})})")
             hz = await runt('buffer', {'src': 'trees', 'dist': 3})
             ck(len(await safe("()=>window.__a3dResultLayers()") or []) == n1 + 1, "a run with new parameters adds its own layer")
             await safe("()=>window.__a3dUndo()")
-            ck(len(await safe("()=>window.__a3dResultLayers()") or []) == n1 and not any(x['id'] == hz.get('id') for x in await safe("()=>window.__a3dTlHistory()") or []),
-               "undo takes the run and its layer back: one step")
+            post = await safe("()=>({h:window.__a3dTlHistory().map(function(x){return x.id;}),l:window.__a3dResultLayers().map(function(r){return r.id+':'+r.visible;})})")
+            ck(pre and post == pre and not any(x == hz.get('id') for x in post.get('h', [])),
+               "undo lands exactly on the state before the run: the same runs, the same layers shown and hidden (one step)")
             await click('[data-anzact="aw:tool:history"]')
             await page.wait_for_timeout(150)
             ck(await safe("()=>document.querySelectorAll('#a3d-propsbody [data-tlh]').length") == len(await safe("()=>window.__a3dTlHistory()") or []),
@@ -678,10 +693,12 @@ async def run():
             await p6.wait_for_timeout(400)
             ph = await safe("""()=>{var p=document.querySelector('#a3d-propsbody [data-awpanel]');if(!p)return null;
               var f=[].map.call(p.querySelectorAll('input[type=text],select'),function(e){return Math.round(e.getBoundingClientRect().height);});
+              var t=[].map.call(p.querySelectorAll('label.a3d-tl-b'),function(e){return Math.round(e.getBoundingClientRect().height);});
               var b=document.getElementById('a3d-propsbody');return {panel:p.getAttribute('data-awpanel'),min:Math.min.apply(null,f.concat([99])),n:f.length,
-              spill:b.scrollWidth>b.clientWidth+1,w:document.documentElement.scrollWidth};}""", pg=p6) or {}
-            ck(ph.get('panel') == 'tool:suit' and ph.get('n', 0) >= 6 and ph.get('min', 0) >= 36 and not ph.get('spill') and ph.get('w', 999) <= 390,
-               "on a phone the tool is in the sheet, its fields a finger's height, nothing spilling (%s)" % ph)
+              tick:Math.min.apply(null,t.concat([99])),nt:t.length,spill:b.scrollWidth>b.clientWidth+1,w:document.documentElement.scrollWidth};}""", pg=p6) or {}
+            ck(ph.get('panel') == 'tool:suit' and ph.get('n', 0) >= 6 and ph.get('min', 0) >= 36 and ph.get('nt', 0) >= 6 and ph.get('tick', 0) >= 36 and
+               not ph.get('spill') and ph.get('w', 999) <= 390,
+               "on a phone the tool is in the sheet, its fields and its ticks a finger's height, nothing spilling (%s)" % ph)
             ck(not p6.errs, "no page errors on the phone (%s)" % p6.errs[:3])
             await c6.close()
 
