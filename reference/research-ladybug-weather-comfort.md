@@ -222,16 +222,67 @@ pythermalcomfort returns none: the app says when an hour lies outside the range.
 
 ## 10. The owner's decisions
 
-Asked together on 2026-10-31; the answers are recorded below once given.
+Asked together on 2026-10-31, and answered the same day:
 
-1. How the runtime reaches the site: committed to the repository (about 13 MB of binaries, kept forever in its
-   history), or a lock file with the files' SHA-256, the files fetched from npm and PyPI when the site is built and
-   when the suites run.
-2. Where the results show: Ladybug's figures replacing the board's own psychrometric chart, wind rose and outdoor
-   comfort once run (the app's own staying as the offline fallback); added beside them; or a board of their own.
-3. UTCI: Clima's four conditions (sun or shade, wind or still), or one.
-4. The psychrometric chart: ASHRAE 55's two clothing levels merged (0.5 and 1.0 clo at 1.1 met) with Ladybug's
-   five strategies, or Ladybug's single default (0.7 clo) without strategies.
+1. **How the runtime reaches the site.** Asked: committed to the repository, or a lock file with the files'
+   SHA-256 and the files fetched from npm and PyPI when the site is built and the suites run. The owner: "which one
+   is more reliable and smooth?" Committing is: nothing outside GitHub is needed to deploy or to test, and what
+   Pages serves is byte for byte what the suites ran; for the person using the app the two are the same. So the
+   runtime is committed, the deliberate vendoring `reuse-first-integration.md` asks the owner for: exactly the nine
+   files under `runtime/`, each pinned by its SHA-256 in a manifest, their licences in `THIRD_PARTY_NOTICES.md`.
+2. **Where the results show.** The owner: "these boards should be interactive and each analysis can be add in. not
+   a static board. like a generate table or chart in excel ya know? ... in our current 3 boards they are really good
+   but those components in the board are not editable and can be rearrange drag or whatever." So the boards become
+   editable: each analysis a component added from a list, dragged into place, resized, its options set as a chart's
+   are in Excel, removed; kept with the project and undone. Researched in section 13 before it is designed.
+3. **UTCI:** Clima's four conditions (sun or shade, wind or still air).
+4. **The psychrometric chart:** two clothing levels merged (0.5 and 1.0 clo at 1.1 met) with Ladybug's five
+   passive strategies and its default parameters.
+
+## 13. Editable boards (the owner's answer 2, researched 2026-10-31)
+
+**Practice (P, each product's own documentation):**
+- **ArcGIS Dashboards** ("Dashboard layouts", doc.arcgis.com): a dashboard is elements filling the screen, laid out
+  as rows and columns in a layout tree; an element is moved by its drag handle onto an indicator ("Dock as a
+  column"), resized by dragging its border (the share of the row is shown), stacked onto another as tabs, or grouped;
+  "Distribute width evenly"; a separate mobile view.
+- **Grafana** ("Create dashboards", grafana.com): an Edit mode; "Add new element" adds a panel; two layouts, Custom
+  (a panel dragged by its title and resized by its lower-right corner) and Auto grid ("panels resize and fit
+  automatically", with a minimum column width, up to 10 columns and a row height); each panel's Settings, Edit
+  visualization, Copy, Duplicate, Delete; panels grouped into rows or tabs; Save.
+- **Power BI** ("Use gridlines and snap-to-grid", learn.microsoft.com): a free canvas, visuals snapped to a grid,
+  smart guides, Align and Distribute; each visual's axes and gridlines set in its Format pane.
+- **Excel** ("Create a chart from start to finish", support.microsoft.com): data selected, Insert, Recommended Charts
+  with a preview, or All Charts; then chart elements (title, legend, axes, gridlines) shown or hidden, quick layouts
+  and styles.
+
+**The app (P, its code):** the three boards (`climate-board.js`, `zoning-envelope.js`, `access-board.js`) build their
+figures with one card function, `bimClbCard`, on a 12-column grid (`boards.css`: spans of 4, 5, 6, 7 and 12; every
+card half width on a medium screen, full on a phone; kept whole when printed). Since V162 a board is a page of the
+set (`sheets/boards.js`): `A3D.pres` keeps one board of each kind and the set's order, for the Presentation panel,
+Present and Print set. Nothing about a board's figures is kept: they are written fresh each time.
+
+**The design proposed:** a board keeps its figures as a list in its record (`A3D.pres`): each figure's kind, its
+width (a third, a half, two thirds or full) and its options; a board without a list shows today's figures in
+today's order, so every project opens as it does now. An **Edit** button on the board's bar: each figure gets a
+handle to drag it (mouse, pen or finger), its width, its options, Duplicate and Remove; **Add a figure** opens a
+catalogue of every analysis that has data, grouped by category, each with a preview, as Excel's Recommended Charts;
+Reset gives the default back; each change is one undo step and is kept with the project; the keyboard moves a
+focused figure. A figure's options are those that make sense for it, as a chart's are in Excel: what it shows, how
+(chart or table), the period, a condition (UTCI's four), its title. On a phone the board is one column and a figure
+moves by its handle or by Up and Down. Present and Print set show the board as arranged.
+
+**The questions it left, answered 2026-10-31:**
+- **The layout.** The owner: "it should act based on the config i already have (snap, grid, ortho). do not invent new
+  stuff". The app's Snaps panel (`ui/shortcuts.js`, `A3D_SNAP`) holds Point snap, Grid snap, Ortho and the grid
+  size, toggled by F8, F9 and the status pill, and applied today to drawing, the gizmo and push-pull. So a figure on
+  a board in Edit moves and is sized freely, as a viewport on a sheet is (`sheets/viewports.js`: dragged by its
+  body, sized by its corner), and those same settings govern it: Grid snap snaps its edges to the board's own grid
+  (its 12 columns across, `boards.css`, and the same step down), Ortho keeps a drag straight across or straight
+  down, Point snap catches its edges on other figures' edges within the same 12 px (`pxThreshold`). No new setting.
+  On a phone the board flows into one column in reading order, as boards do today.
+- **The catalogue:** any analysis on any board, and boards of one's own; the three boards are the first.
+- **When:** within V172b; Ladybug's figures are the first made this way, and the three boards become editable.
 
 ## 11. Sources (read 2026-10-31 unless said)
 
@@ -252,6 +303,10 @@ Asked together on 2026-10-31; the answers are recorded below once given.
 | Philadelphia Intl AP TMYx 2009-2023 | climate.onebuilding.org (2026-10-26) | the EPW and DDY, for the experiment; never committed | P |
 | Open-Meteo archive | archive-api.open-meteo.com | three requests (time zones; the daily limit) | P |
 | GitHub Pages | bradleypham1906.github.io/BIM-Personal/ | response headers | P |
+| ArcGIS Dashboards | doc.arcgis.com/en/dashboards/latest/get-started/dashboard-layout.htm | the whole page (layouts, move, resize, stack, group) | P |
+| Grafana | grafana.com/docs/grafana/latest/dashboards/build-dashboards/create-dashboard/ | create, layouts (custom, auto grid), move, resize, panel actions, groupings | P |
+| Power BI | learn.microsoft.com/en-us/power-bi/create-reports/desktop-gridlines-snap-to-grid | gridlines, snap to grid, smart guides, align | P |
+| Excel | support.microsoft.com/en-us/office/create-a-chart-from-start-to-finish-0baf399e-dd61-4e18-8a73-b3fd5d5680c2 | creating a chart, recommended charts, chart elements | P |
 
 ## 12. Still open
 
