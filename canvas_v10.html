@@ -47247,8 +47247,12 @@ try{
       if(n)bimSpillSave(n.id,n.s,n.rec);
     });
   }
-  /* a parked project too large for its own key: into the database, its pointer in the key */
+  /* a parked project too large for its own key: its pointer in the key, then the record into the database. The
+     pointer may go first: while it is written, acad3dV1 still holds this project, and boot drops a parked copy of
+     the project acad3dV1 names (V115), so a crash between the two loses nothing. */
   function bimParkInIdb(id,s,rec,key){
+    try{localStorage.setItem(key,bimIdbPointer(id,rec));}
+    catch(eK){console.warn('[BIM] The pointer to a parked project could not be stored: '+id,eK);return false;}
     /* a queued save of this project is older than what is parked now, and would be written after it */
     if(A3D_SPILL.next&&A3D_SPILL.next.id===id)A3D_SPILL.next=null;
     bimIdbPut(id,{rec:s,saved:Date.now(),v:1},function(err){
@@ -47257,8 +47261,7 @@ try{
         a3dToast('"'+bimNameOf(rec&&rec.titleBlock)+'" could not be stored: browser storage is full. Open it and use Save to keep a copy as a file.');
       }
     });
-    try{localStorage.setItem(key,bimIdbPointer(id,rec));return true;}
-    catch(eK){console.warn('[BIM] The pointer to a parked project could not be stored: '+id,eK);return false;}
+    return true;
   }
   /* boot: the project on screen is in the database; nothing saves until it is read, so the fresh project the
      page started with never takes its place */

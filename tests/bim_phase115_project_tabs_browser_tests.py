@@ -366,13 +366,18 @@ async def drive(ck):
         await safe("()=>{Storage.prototype.setItem=window.__realSet;}")
         ck('not enough browser storage' in tt and (await active_id()) == p1 and (await objs()) == 2 and len(await docs()) == n_docs,
            'a full store during a switch says so, and nothing moves: same project, same list (%r)' % tt)
+        # AMENDED FOR V172d: a record localStorage refuses goes to the browser's database, so a save that fails is
+        # one both refuse; the database is made to refuse too (open and transaction), and both are put back
         await safe("""()=>{Storage.prototype.setItem=function(k,v){if(k==='acad3dV1'){var e=new Error('full');e.name='QuotaExceededError';throw e;}
-              return window.__realSet.call(this,k,v);};}""")
+              return window.__realSet.call(this,k,v);};
+            window.__realIdbOpen=IDBFactory.prototype.open;window.__realIdbTx=IDBDatabase.prototype.transaction;
+            IDBFactory.prototype.open=function(){var e=new Error('full');e.name='QuotaExceededError';throw e;};
+            IDBDatabase.prototype.transaction=function(){var e=new Error('full');e.name='QuotaExceededError';throw e;};}""")
         await clear_toast()
         await safe("()=>{window.__a3dWall([[0,6],[3,6]],0.2,null,'center',false);}")
         await page.wait_for_timeout(600)
         tt = await toast()
-        await safe("()=>{Storage.prototype.setItem=window.__realSet;}")
+        await safe("()=>{Storage.prototype.setItem=window.__realSet;IDBFactory.prototype.open=window.__realIdbOpen;IDBDatabase.prototype.transaction=window.__realIdbTx;}")
         ck('could not be saved' in tt,
            'an autosave that fails says so -- it went into an empty catch before (%r)' % tt)
         await clear_toast()
