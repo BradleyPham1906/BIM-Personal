@@ -38,6 +38,14 @@ guide), `Reference` (third-party notices); Description; URL, the file on GitHub'
 serves; Status `Active`; Authors/ Creators `Brad Pham, with Claude Code`; Projects. The page: the source link, a summary,
 the file's sections, and the line that GitHub is the source of truth. Never the file's full text.
 
+**A research note's page** (the owner, 2026-10-31: the pages were "not very extensive research at all") carries the
+research itself, not only its outline, so the owner can judge it in Notion: the abstract; the question and each
+hypothesis with its outcome; the method (how many sources of each kind, the searches, the experiments, the
+independent check); the findings, each with its evidence, level and confidence; the alternatives table and the
+recommendation; the experiments' numbers; the risks; what is still open; the owner's decisions; and the full list of
+references with links. What stays out: code, scripts and copies of upstream documents, which live in the repository.
+A note's page is rewritten when its note changes, so the two never disagree.
+
 ## At each step of a phase
 
 1. **Research starts:** the phase's task to `In Progress`. A new research note gets a Documentation DB page (Projects, and

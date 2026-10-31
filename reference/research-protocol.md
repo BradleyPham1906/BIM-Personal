@@ -36,11 +36,64 @@ with the choice and its reason.
 7. **What the app already has.** A read of the code it will build on, so the plan fits the codebase.
 8. **Questions.** The owner's decisions, asked together at the end of research, with the evidence.
 
+## Research as a scientist does it (the owner, 2026-10-31)
+
+"use the research skills like a true researcher or scientist. i took a look at what u documented on
+notion and it is not very extensive research at all and i dont like that." The steps above say what
+to read; these say how hard to look, how to test, and how to show it. Every phase from 2026-10-31.
+
+1. **The question first.** Before searching, the note states the research question, what a good
+   answer must decide, and the hypotheses: each a claim that evidence could prove wrong ("IndexedDB
+   keeps a 50 MB project in every supported browser"). The findings say which held, which failed,
+   and on what evidence.
+2. **A search log.** Every search is recorded: where (the web, GitHub, a specification's repository,
+   MDN's compatibility data, papers, bug trackers, vendors' engineering blogs), the query, what came
+   back, and what was kept or set aside and why. Someone else can repeat it.
+3. **Breadth.** Each topic has at least three independent sources, of different kinds where they
+   exist: the specification or standard, the vendors' own documents, an open implementation read as
+   text, and a practitioner's or researcher's account. Every fact the code uses has two sources
+   agreeing, or one primary source and the reason no second exists.
+4. **Look for what would prove it wrong.** For each finding, a deliberate search for the opposite:
+   open bugs, known limits, issues filed against the implementations, browsers that behave
+   differently. What is found is recorded, even when it changes nothing.
+5. **Measure what can be measured.** A claim about behaviour that can be tested from here is tested,
+   not taken from a document: a script kept in `reference/experiments/` (data, never a suite), the
+   environment (the browser and its build), the raw numbers, how many runs. What cannot be tested
+   here (another browser, a phone, another operating system) is said, with the source relied on
+   instead.
+6. **The alternatives, compared.** The main options, at least three where there are three, in one
+   table against criteria stated before the comparison: what the app needs, what it costs, what it
+   breaks. The recommendation follows from the table, and the note says what would change it.
+7. **Prior art.** How comparable apps and professional tools solve it, from their own documents or
+   code, so the plan is held against practice and not only against the specification.
+8. **Confidence and its limits.** Each finding is rated high, medium or low, with the reason; the
+   threats to it (an old source, one browser tested, a vendor's claim not checked) are listed.
+9. **An independent check.** Before the note is done, a second reader (a separate research agent)
+   re-reads the sources behind every fact the code will use and records each as confirmed or not.
+   A fact that fails the check goes back to U.
+10. **Several researchers for a broad question.** A question with independent sides (the standard,
+    the browsers, the practice, the app's code, the experiments) is researched by parallel research
+    agents, one for each side; their notes are kept with the phase's research, and the note is
+    written from them and checked like any other source.
+
 ## The note
 
-Each phase's research note in `reference/` holds, per source: what it is, its URL, what was
-actually read (the page, the table, the file), the date, and the level. Then what remains U and
-why (a refused host, a sold standard), and what the owner decided.
+Each phase's research note in `reference/` has these parts, in this order:
+
+1. **Abstract:** the question, the answer, and the recommendation, in a paragraph.
+2. **The question and the hypotheses,** and the outcome of each.
+3. **Method:** the search log (or a link to it beside the note), the sources by kind, the experiments
+   run and where their scripts are, the independent check and its result.
+4. **Findings, by topic:** each with its evidence, its level (P, S, U) and its confidence.
+5. **The alternatives compared,** the table and the recommendation.
+6. **The experiments:** what was measured, how, the raw numbers, and what they show.
+7. **Edges:** the cases where the answer changes.
+8. **What the app already has:** the code it builds on, by file and line.
+9. **Risks and threats to validity.**
+10. **What is still open (U),** and why: a refused host, a sold standard, a browser not available here.
+11. **The owner's decisions:** the questions, with the evidence, and the answers once given.
+12. **References:** every source: what it is, its URL, what was read (the section, the table, the
+    file), the date, and the level.
 
 ## Working here
 
