@@ -20,10 +20,11 @@
       for(i=0;i<ring.length;i++){x0=Math.min(x0,ring[i][0]);x1=Math.max(x1,ring[i][0]);z0=Math.min(z0,ring[i][1]);z1=Math.max(z1,ring[i][1]);}
       x0-=BIM_TL_MARGIN;x1+=BIM_TL_MARGIN;z0-=BIM_TL_MARGIN;z1+=BIM_TL_MARGIN;}
     else{x0=S.c[0]-BIM_TL_MARGIN;x1=S.c[0]+BIM_TL_MARGIN;z0=S.c[1]-BIM_TL_MARGIN;z1=S.c[1]+BIM_TL_MARGIN;}
+    /* the property's corners carry float noise (250.00000000000003): a millionth of a cell is not a cell */
     cell=1;
-    while(Math.ceil((x1-x0)/cell)*Math.ceil((z1-z0)/cell)>BIM_TL_MAXCELLS)cell*=2;
-    x0=Math.floor(x0/cell)*cell;z0=Math.floor(z0/cell)*cell;
-    nx=Math.ceil((x1-x0)/cell);nz=Math.ceil((z1-z0)/cell);
+    while(Math.ceil((x1-x0)/cell-1e-6)*Math.ceil((z1-z0)/cell-1e-6)>BIM_TL_MAXCELLS)cell*=2;
+    x0=Math.floor(x0/cell+1e-6)*cell;z0=Math.floor(z0/cell+1e-6)*cell;
+    nx=Math.ceil((x1-x0)/cell-1e-6);nz=Math.ceil((z1-z0)/cell-1e-6);
     key=[x0,z0,cell,nx,nz,ring?ring.map(function(p){return Math.round(p[0]*1000)+','+Math.round(p[1]*1000);}).join(';'):'none'].join('|');
     if(A3D_TL.gkey===key&&A3D_TL.grid)return A3D_TL.grid;
     var G={x0:x0,z0:z0,cell:cell,nx:nx,nz:nz,n:nx*nz,ring:ring,site:S,key:key,lot:null,lotArea:0};

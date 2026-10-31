@@ -133,6 +133,11 @@ async def run():
               o.push({id:'LOT',t:'sketch',name:'Lot',col:'#5ec4b8',pos:[0,0,0],pts:a,y:0,closed:true,layer:'layer-0'});
               window.__a3dTestSetObjs(o);window.__a3dPropertyFromSketch('LOT');}""", LOT, pg=pg)
 
+        async def design_ring(ring, pg=None):
+            await safe("""(a)=>{var o=window.__a3dState().objs.filter(function(x){return x.t!=='property'&&x.id!=='LOT';});
+              o.push({id:'LOT',t:'sketch',name:'Lot',col:'#5ec4b8',pos:[0,0,0],pts:a,y:0,closed:true,layer:'layer-0'});
+              window.__a3dTestSetObjs(o);window.__a3dPropertyFromSketch('LOT');}""", ring, pg=pg)
+
         async def analyse(pg=None):
             pg = pg or page
             await safe("()=>window.__a3dAnzView(true)", pg=pg)
@@ -204,6 +209,22 @@ async def run():
             got = mask2(G, await safe("(r)=>window.__a3dTlFill(r)", tri) or [])
             ref, edge = R.inside(RG, tri), R.near_edge(RG, tri)
             ck(got.shape == ref.shape and np.array_equal(got[~edge], ref[~edge]) and got.sum() > 1000, "a ring's cells, even-odd by the centres (%d cells)" % got.sum())
+            cup = [[-30.25, -70.25], [60.25, -70.25], [60.25, 20.25], [30.25, 20.25], [30.25, -40.25], [0.25, -40.25], [0.25, 20.25], [-30.25, 20.25]]
+            got = mask2(G, await safe("(r)=>window.__a3dTlFill(r)", cup) or [])
+            Xc, Zc = R.centres(RG)
+            notch = (Xc > 0.25) & (Xc < 30.25) & (Zc > -40.25) & (Zc < 20.25)
+            ck(np.array_equal(got, R.inside(RG, cup)) and not got[notch].any() and got.sum() == 90 * 90 - 30 * 60, "a concave ring: its notch left out, row by row (%d cells)" % got.sum())
+            BIG_LOT = [[-250, -200], [350, -200], [350, 250], [-250, 250]]
+            await design_ring(BIG_LOT)
+            Gb = await safe("()=>{var g=window.__a3dTlGrid();delete g.lot;return g;}") or {}
+            RGb = R.grid(BIG_LOT)
+            one = np.zeros((RGb['nz'], RGb['nx']), dtype=bool)
+            one[123, 77] = True
+            Db = await safe("(m)=>window.__a3dTlDistance(m)", [int(v) for v in one.ravel()]) or []
+            ck(Gb.get('cell') == 2 and RGb['cell'] == 2 and all(Gb.get(k) == RGb[k] for k in ('x0', 'z0', 'nx', 'nz')) and
+               len(Db) == RGb['nx'] * RGb['nz'] and np.nanmax(np.abs(grid2(Gb, Db) - R.edt(RGb, one))) < 1e-9,
+               "a lot too large for 250,000 cells of 1 m: cells of 2 m, distances still in metres (%sx%s cells of %s m)" % (Gb.get('nx'), Gb.get('nz'), Gb.get('cell')))
+            await design()
             seg = [[-7.3, -55.2], [64.8, 12.9]]
             got = mask2(G, await safe("(a)=>window.__a3dTlStroke(a[0],a[1])", seg) or [])
             ck(np.array_equal(got, R.stroke(RG, [seg])), "a line's cells: within half a cell of it (%d cells)" % got.sum())
@@ -409,6 +430,18 @@ async def run():
                'more than 0' in ((c3.get('E') or {}).get('crit.slope') or '') and 'upper threshold' in ((c4.get('E') or {}).get('crit.slope') or '') and
                'Sun hours: Run Sun hours first' in (E5.get('crit.sunhours') or ''),
                "a criterion's checks: breaks that fall, too few values, a midpoint of 0, thresholds the wrong way, its layer missing")
+            await safe("()=>window.__a3dRunCmd('sunhours')")
+            sun = grid2(G, (await source('sunhours')).get('v') or [])
+            critS = {'slope': {'on': True, 'how': 'linear', 'dir': 'down', 'w': 1}, 'streets': {'on': False}, 'arterials': {'on': False},
+                     'sunhours': {'on': True, 'how': 'linear', 'dir': 'up', 'w': 1}, 'trees': {'on': False}, 'slopecls': {'on': False}}
+            h = await runt('suit', {'scale': '10', 'weightBy': 'mult', 'restrict': '', 'crit': critS})
+            V = grid2(G, (await layer(h.get('layer'))).get('vals') or [])
+            t_sun = R.transform({'how': 'linear', 'dir': 'up'}, sun.ravel(), (1, 10)).reshape(sun.shape)
+            S2 = R.weigh([t_sl, t_sun], [1, 1], 'mult')
+            ck(sun.shape == V.shape and np.isnan(sun).sum() > 0 and (~np.isnan(sun)).sum() > 0 and np.array_equal(np.isnan(V), np.isnan(sun) | np.isnan(sv)) and
+               np.nanmax(np.abs(V - S2)) <= (np.nanmax(S2) - np.nanmin(S2)) / 180 + 1e-9,
+               "a cell where a criterion has no value (beyond the sun hours run) has none in the result; the rest scored (%d without)" % np.isnan(V).sum())
+            await safe("()=>window.__a3dSimClear?window.__a3dSimClear('sun'):null")
             suit_h = await runt('suit', {'scale': '10', 'weightBy': 'mult', 'restrict': excl.get('id'), 'crit': crit})
 
             # ---------------------------------------------------------------------------------
@@ -423,6 +456,13 @@ async def run():
             ck(R.connected(got, RG['nx']) and len(got) == 300 and all(okm[k] for k in got) and abs(h.get('region', {}).get('mean', 0) - mean) < 1e-9 and
                h.get('region', {}).get('n') == 300 and ['Seeds compared', str(nseeds)] in h.get('stats', []),
                "one connected region, 300 m², on the lot, none of it restricted, its mean the best of %d seeds (%.3f)" % (nseeds, mean or 0))
+            free = await runt('suit', {'scale': '10', 'weightBy': 'mult', 'restrict': '', 'crit': crit})
+            hl = await runt('locate', {'from': free.get('id'), 'area': 400, 'within': 'lot'})
+            ga = [k for k, v in enumerate((await layer(hl.get('layer'))).get('lv') or []) if v == 0]
+            ha = await runt('locate', {'from': free.get('id'), 'area': 400, 'within': 'all'})
+            gb = [k for k, v in enumerate((await layer(ha.get('layer'))).get('lv') or []) if v == 0]
+            ck(len(ga) == 400 and all(lot.ravel()[k] for k in ga) and len(gb) == 400 and not all(lot.ravel()[k] for k in gb),
+               "from a map with nothing restricted: within the lot, the region stays on it; over the whole extent, it need not")
             usable = sum(okm)
             c = await check('locate', {'from': suit_h.get('id'), 'area': usable + 1, 'within': 'lot'})
             ck((c.get('E') or {}).get('area') == 'Only %s can be used there' % area_text(usable), "an area larger than can be used: refused (%s)" % c.get('first'))
@@ -443,7 +483,7 @@ async def run():
             fo = mask2(G, (await source('forest')).get('m') or [])
             tr = await safe("()=>window.__a3dState().objs.filter(function(o){return o.id.indexOf('TREE172-')===0;}).map(function(o){return o.context;})") or []
             water = mask2(G, (await source('water')).get('m') or [0] * (RG['nx'] * RG['nz'])) if not (await source('water')).get('why') else np.zeros(lot.shape, dtype=bool)
-            h = await runt('capacity', {'less': 50, 'density': 12, 'imperv': 60})
+            h = await runt('capacity', {'less': 50, 'density': 13, 'imperv': 60})
             L = await layer(h.get('layer'))
             cat, rr = R.capacity(lot, fl, wl, water, sv, fo, 1)
             lv = np.array([-1 if v is None else v for v in L.get('lv') or []]).reshape(RG['nz'], RG['nx'])
@@ -452,25 +492,25 @@ async def run():
             ov = int(((cat == 0) & band & lot).sum())
             ck(ov > 0 and int(((cat == 4) & lot).sum()) > 0 and int((cat == 5).sum()) > 0 and int((cat == 6).sum()) > 0 and np.array_equal(np.where(lv < 7, lv, -1)[lot & band & fl], np.zeros(int((lot & band & fl).sum()), dtype=int)),
                "overlaps counted once: %d floodplain cells on the lower steep class counted at the floodplain's ratio; forest with another resource %d cells at its own ratio, forest alone %d" % (ov, int((cat == 5).sum()), int((cat == 6).sum())))
-            N = R.capacity_numbers(cat, rr, 1200, 50, 1, density=12, imperv=60)
+            N = R.capacity_numbers(cat, rr, 1200, 50, 1, density=13, imperv=60)
             hc = h.get('capacity') or {}
             ck(abs(hc.get('total', 0) - 1200) < 1e-6 and abs(hc.get('base', 0) - N['base']) < 1e-6 and abs(hc.get('prot', 0) - N['prot']) < 1e-6 and abs(hc.get('net', 0) - N['net']) < 1e-6,
                "Chalfont's form: base %s, resource protection land %s, net buildable %s m²" % (N['base'], round(N['prot'], 2), round(N['net'], 2)))
             rows = dict((r[0], r[1]) for r in h.get('stats', []))
-            ck(rows.get('Dwelling units allowed', '').startswith(str(N['units']) + ' at 12 an acre') and rows.get('Impervious surface allowed', '').startswith(area_text(N['imperv'])) and
+            ck(rows.get('Dwelling units allowed', '').startswith(str(N['units']) + ' at 13 an acre') and abs(hc.get('net', 0) / R.ACRE * 13 % 1) >= 0.5 and rows.get('Impervious surface allowed', '').startswith(area_text(N['imperv'])) and
                rows.get('Net buildable site area') == area_text(N['net']) + ' (' + disp(N['net'] / R.ACRE, 2) + ' acres)',
-               "units at 12 an acre not rounded up (%d), impervious at 60%%, the net in acres (%s)" % (N['units'], rows.get('Dwelling units allowed')))
+               "units at 13 an acre not rounded up (%d of %.2f), impervious at 60%%, the net in acres (%s)" % (N['units'], hc.get('net', 0) / R.ACRE * 13, rows.get('Dwelling units allowed')))
             ck(any('Chalfont' in m.get('s', '') for m in h.get('msgs', [])) and (h.get('std') or {}).get('list', [{}])[0].get('t') == 'land.site_capacity',
                "the run says the registry's edition, and keeps its stamp")
             await safe("()=>window.__a3dStdOverride('land.site_capacity','floodplain',0.9,'The municipality counts 90%')")
-            h2 = await runt('capacity', {'less': 50, 'density': 12, 'imperv': 60})
+            h2 = await runt('capacity', {'less': 50, 'density': 13, 'imperv': 60})
             R2 = dict(R.CHALFONT, floodplain=0.9)
             cat2, rr2 = R.capacity(lot, fl, wl, water, sv, fo, 1, R2)
             N2 = R.capacity_numbers(cat2, rr2, 1200, 50, 1)
             ck(abs((h2.get('capacity') or {}).get('prot', 0) - N2['prot']) < 1e-6 and any('overridden' in m.get('s', '') for m in h2.get('msgs', [])),
                "an override of the floodplain's ratio (0.9) changes the calculation, and the run says so")
             await safe("()=>window.__a3dStdClear('land.site_capacity','floodplain')")
-            cap_h = await runt('capacity', {'less': 50, 'density': 12, 'imperv': 60})
+            cap_h = await runt('capacity', {'less': 50, 'density': 13, 'imperv': 60})
 
             # ---------------------------------------------------------------------------------
             print("\n-- 11. Constraints and opportunities")
