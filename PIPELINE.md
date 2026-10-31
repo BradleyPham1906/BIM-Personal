@@ -17,12 +17,12 @@ requires command mapping, full app regressions and owner review.
 
 **Read this first in a new session.** One page. The detail lives in the docs listed at the bottom.
 
-    canvas_v10.html   3626459 bytes
-    sha256            88f3938bdfb5af67d2645b822dd4e5f27f23fedab28160e19179879ee4557a43
-    markers           __acad3dV60 ... __acad3dV171, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
+    canvas_v10.html   3728812 bytes
+    sha256            9e07f24ce34c52a45225b03e5e2457e501fa130f86b92aa74d3e1510924b1f64
+    markers           __acad3dV60 ... __acad3dV172, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
                       __acad3dV121b, __acad3dV166b, __acad3dV166c, __acad3dV166d, __acad3dV171b, __acad3dV171c,
                       __acad3dV171d
-    tests             133 suites, 6786 checks, 0 failures (the 132 older suites' 6724 and V171d's 62; with cjval
+    tests             134 suites, 6879 checks, 0 failures (the 133 older suites' 6786 and V172's 93; with cjval
                       built, V139 and V140 run their three more)
 
     The user guide (V142): every phase updates docs/src/, its log entry and BIM_APP_VERSION, then
@@ -240,6 +240,13 @@ when it starts (V111 to V138 went to other work; V139 to V193 are in NOW).
   registry record: overlaps at the highest ratio, the net buildable site area, units not rounded up, where to build).
 - **The grid:** the lot and 100 m around it in 1 m cells, coarser past 250,000; the wetlands from the National Wetlands
   Inventory (CORS open).
+- **Checked** in 93 checks against `tests/site_tools_reference.py` (the grid, the distance by brute force, QGIS's
+  formulas, Esri's rescale, Locate's growth, Chalfont's form, in numpy); broken 84 ways, all caught (the first run
+  missed four: three checks made exact, a rule that did nothing replaced by the tick rows' height). Found while
+  building: Locate could not read Suitability's output (the levels' alphabet one short); Get wetlands threw; the
+  setbacks waited on the envelope's height limit; float noise added a row of cells; a function nothing called (V120's
+  check); a test hook's `TypedArray.from` (the ES5 contract). The full regression: 134 suites, 6879 checks, all passed; V62, V141, V143, V148, V162, V167, V171c and
+  V171d amended.
 
 **Before it:** V171d, **the sun path, one clock** (2026-10-26, with V171c in its PR).
 - The owner: the sun path, its animation and the shadows should agree through the hours and the dates; the math

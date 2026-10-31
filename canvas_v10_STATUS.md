@@ -16153,7 +16153,9 @@ Computing.
   made by hand), Buildable area (the overlaps, forest with another resource, the wetlands fetched, an override),
   Constraints and opportunities; the pane (a field checked, Run, Open, Run again, Remove, Reset, undo exact); the
   layers (one shown at a time, Hide, Update, out of date); the search and the commands; kept over a reload; a phone.
-- **Falsification:** `Phase/falsify_phase172.py`, 84 variants: the first run caught 80 (above).
+- **Falsification:** `Phase/falsify_phase172.py`, 84 variants: the first run caught 80 (above); on the final suite,
+  from a frozen worktree, all 84 were caught, none by a page that failed to load, in 3147 s with 2 workers (on build
+  ea2d5113: patches e and f, after it, touch no variant's code).
 - **Amended:** V167 (the registry's 45 topics, Zoneomics' host for Chalfont's code, `tests/standards_reference.py`'s
   two topics); V141, V143, V148, V162 and V171c (Analyze's Tools group, between the categories and Model, its nine
   rows, a search for slope finding the four tools that read it); V62 (the wetlands service's host and Zoneomics');
@@ -16165,3 +16167,17 @@ shores and wetland margins (their widths are defined elsewhere in Chalfont's cod
 on the dome (V172c, Ladybug). A tool layer keeps one character a cell, run-length coded: from 0.5 KB (a class map) to
 71 KB (Distance, a value a cell) in the fixture's project, beside its 814 KB; the browser's storage, about 5 MB, is
 said to be full by V115's toast when it is.
+
+**State after V172:**
+
+134 suites, 6879 checks (the 133 older suites' 6786 and V172's 93): all passed from a frozen worktree of the final
+build, in 1638 s with 2 workers; the falsification, from a frozen worktree, as above; `tools/check_site.py`, the
+multi-file app against the one file on a desktop and a phone, no failure. The first full regression, on build
+ea2d5113, passed 6868 of 6879: what V172 changed for the older suites (Analyze's Tools group in V141, V143, V148 and
+V162, V62's hosts, V171d's version) and the function nothing called that V120 found.
+
+    canvas_v10.html   3728812 bytes
+    sha256            9e07f24ce34c52a45225b03e5e2457e501fa130f86b92aa74d3e1510924b1f64
+    markers           __acad3dV60 ... __acad3dV172, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
+                      __acad3dV121b, __acad3dV166b, __acad3dV166c, __acad3dV166d, __acad3dV171b, __acad3dV171c,
+                      __acad3dV171d
