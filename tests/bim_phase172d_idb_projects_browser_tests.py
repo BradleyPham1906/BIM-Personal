@@ -117,8 +117,10 @@ async def drive(ck):
         ev = page.evaluate
 
         async def safe(js, arg=None):
+            # bounded: page.evaluate waits on a promise without a limit, and a database request that never
+            # answers would hang the suite (falsification, park_fails)
             try:
-                return await (ev(js, arg) if arg is not None else ev(js))
+                return await asyncio.wait_for(ev(js, arg) if arg is not None else ev(js), 12)
             except Exception as e:
                 print('      (evaluate failed: %s)' % str(e)[:200])
                 return None
@@ -225,6 +227,16 @@ async def drive(ck):
         ck(ent and ent[0]['objs'] >= 23, 'the list counts the parked project (%s)' % (ent[0]['objs'] if ent else None))
         bw = await walls(1, 400)
         await page.wait_for_timeout(600)
+        # the list lost: boot rebuilds it from the stored keys, and names and counts the parked project from its pointer
+        await page.goto('file://' + str(BLANK))
+        await safe("()=>localStorage.removeItem('acad3dDocsV1')")
+        await open_app()
+        lst = await safe("()=>window.__a3dDocs.list()") or []
+        ent = [d for d in lst if d['id'] == a_id]
+        ck(ent and ent[0]['objs'] >= 23, 'a list rebuilt from the stored keys counts it from its pointer (%s)' % (ent[0]['objs'] if ent else None))
+        ck(await active() == b_id, 'and the small project is still the one on screen')
+        await safe(REFUSE, LIMIT)
+        await clear_toasts()
         ok = await safe("(id)=>window.__a3dDocs.activate(id)", a_id)
         for _ in range(40):
             if await active() == a_id and len(await obj_ids()) >= 23:
@@ -237,6 +249,16 @@ async def drive(ck):
         ck(await ls(PREFIX + a_id) is None, 'its parked pointer is gone from its key')
         ptr3 = await ls_json(LSK)
         ck(ptr3 and ptr3.get('idb') == 1 and ptr3.get('docId') == a_id, 'acad3dV1 points to it again, still too large')
+        await safe("(id)=>window.__a3dDocs.activate(id)", b_id)
+        await page.wait_for_timeout(1200)
+        await safe("(id)=>window.__a3dDocs.activate(id)", a_id)
+        for _ in range(40):
+            if await active() == a_id and len(await obj_ids()) >= 23:
+                break
+            await page.wait_for_timeout(100)
+        await page.wait_for_timeout(800)
+        ck(await active() == a_id and len(await toasts_with(SPILLED)) == 1,
+           'opened a second time, it is not announced again (%d toasts)' % len(await toasts_with(SPILLED)))
 
         print('\n-- 5. deleting a parked project deletes its database copy')
         await safe("(id)=>window.__a3dDocs.activate(id)", b_id)
