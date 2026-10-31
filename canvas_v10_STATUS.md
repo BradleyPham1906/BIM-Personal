@@ -16082,7 +16082,7 @@ map service tested (CORS open to the Pages origin); Felzenszwalb and Huttenloche
 Computing.
 
 **What was built** (`src/js/engine/site-tools/`: `grid.js`, `sources.js`, `tools.js`, `basic.js`, `suitability.js`,
-`capacity.js`, `panel.js`; `testing/hooks-tools.js`; patches `Phase/patch_v172_a.py` to `_c.py`):
+`capacity.js`, `panel.js`; `testing/hooks-tools.js`; patches `Phase/patch_v172_a.py` to `_d.py`):
 - **The grid:** the tools' processing extent, the lot and 100 m around it in 1 m cells (100 m around the site's centre
   with no lot), doubled while over 250,000 cells; an area by its cells' centres (even-odd), a line or a point by the
   cells within half a cell; distance by Felzenszwalb and Huttenlocher's exact transform, rows then columns; outputs kept
@@ -16125,3 +16125,36 @@ Computing.
 - A criterion's tick, name and unit ran together ("Slope%"): its label was not a flex row.
 - The harness: a script's click on Run leaves the focus in the field typed, and the workspace holds its refresh while a
   field is typed in (V162's rule); a person's click moves the focus, so the suite clicks as one.
+- The first falsification run caught 80 of 84. Steep slopes counted from 5% higher went unseen: the fixture's only
+  slopes that steep lie outside the lot, where Outside the lot takes the cell first; the suite now runs Exclusions
+  with steep slopes alone. A region grown by a corner neighbour too came out the same on the fixture's map; the growth
+  is now checked on a small grid made by hand, where a corner neighbour is the best (a hook runs the app's growth on
+  it). Undo was checked by the run being gone; it must now put back the history and each layer's visibility exactly
+  as they were. A rule giving the pane's fields 36 px on a touch screen did nothing: two older rules already give
+  every field in the right-hand panel 36 px; it went (`Phase/patch_v172_d.py`), and the tick rows, which no rule
+  covered, have 36 px, a check and a variant.
+- The plan with every tool's output at once was a tangle of colours: a run's layer is shown alone, the other tools'
+  hidden, as V171b keeps one analysis at a time.
+
+**Suites:**
+- **New:** `tests/bim_phase172_site_tools_browser_tests.py`, 93 checks with `tests/site_tools_reference.py` (the grid,
+  a ring's cells by even-odd, a line's by distance, the distance by brute force, the slope resampled, QGIS's
+  transformation formulas, Esri's rescale and weights, Locate's seeds and growth, Chalfont's site capacity form, all
+  in numpy, apart from the app), on V171's neighbourhood with the ground and FEMA's zones from V165's fixture and a
+  wetland served for the National Wetlands Inventory: the records; the grid (an extent, a concave ring, a large lot at
+  2 m); the one-dimensional transform and the grid's against brute force; Buffer, Distance, Slope classes, Exclusions
+  (each reason, steep slopes alone, a buffer from History), Suitability (each transform, multiplier and percent, no
+  value and restricted, its checks), Locate (the reference's region, from an unrestricted map, the growth on a grid
+  made by hand), Buildable area (the overlaps, forest with another resource, the wetlands fetched, an override),
+  Constraints and opportunities; the pane (a field checked, Run, Open, Run again, Remove, Reset, undo exact); the
+  layers (one shown at a time, Hide, Update, out of date); the search and the commands; kept over a reload; a phone.
+- **Falsification:** `Phase/falsify_phase172.py`, 84 variants: the first run caught 80 (above).
+- **Amended:** V167 (the registry's 45 topics, Zoneomics' host for Chalfont's code, `tests/standards_reference.py`'s
+  two topics) and V171c (Analyze's groups: Tools before Model).
+
+**Not done:** Esri's Locate Regions' shape and spacing; ModelBuilder's chains (a tool reading another's output from
+History is the start of one); the Suitability Modeler's Evaluate tab; the road noise analysis as a criterion; pond
+shores and wetland margins (their widths are defined elsewhere in Chalfont's code, not read); sun hours and radiation
+on the dome (V172c, Ladybug). A tool layer keeps one character a cell, run-length coded: from 0.5 KB (a class map) to
+71 KB (Distance, a value a cell) in the fixture's project, beside its 814 KB; the browser's storage, about 5 MB, is
+said to be full by V115's toast when it is.
