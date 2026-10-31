@@ -141,3 +141,35 @@ Each as proposed:
 - The Auckland Design Manual's page (refused) and a third practitioner source on the constraints map.
 - Chalfont's code read from the borough's own publisher, to raise section 4 from S to P.
 - NWI's disclaimer and use limitations.
+
+## 9. As built (2026-10-31)
+
+As designed in section 5, with these settled while building:
+- **The extent** is the lot and 100 m around it (not 40 m): a street or a stream 60 m from the lot is then on the grid,
+  and Buffer's distance goes up to the margin. Features beyond it are not counted, as in Esri's processing extent, and
+  the messages say so. A lot too large for 250,000 cells of 1 m gets 2 m, then 4 m.
+- **Buffer and Distance** are rasters on that grid, not polygons: the buffer is the cells within the distance of a
+  feature's cells, centre to centre, by the same exact transform as Distance, and its area is counted on the cells.
+  Overlapping buffers are one area (Esri's Dissolve All).
+- **The sources** are ten: the lot, its line, streets and paths, arterial roads, buildings around, trees, woods and
+  tree crowns, ponds and water, FEMA's 1% zones, wetlands, plus the ground's slope and the last sun hours run.
+- **Suitability's defaults:** Linear for every criterion, its thresholds the data's least and greatest; Small and Large
+  with a spread of 5 (the examples of Esri's and QGIS's pages); Near with the spread that halves it at the thresholds'
+  mean distance from the midpoint; Unique Categories spread over the scale when no values are given, the flattest best.
+- **Restricted** cells are kept as their own level and drawn grey at half opacity; a cell with no value is left
+  transparent. Weighted Overlay's "scale's minimum less one" is not used: the Suitability Modeler's way is.
+- **Locate** takes the 24 best cells as seeds, at least half the region's side apart; rook's case; the earlier seed
+  among equal means.
+- **Buildable area:** the total is the property line's own area; the resources are counted on the grid. Forest is the
+  mapped trees' crowns and the woods. Ponds and waters of the Commonwealth are one class (both 1.00). Pond shores and
+  wetland margins are not counted (their widths are defined elsewhere in the ordinance, not read), and the run says so.
+  Density and the impervious surface ratio are typed from the district's regulations: the app's zoning record has
+  neither (its coverage is the building's, not the impervious surface's).
+- **The setbacks** at the ground come from the lot's sides and the zoning's rules alone, as V160's calculation starts;
+  the envelope's height limit is not needed for them.
+- **Constraints and opportunities:** seven constraints before four opportunities, each cell its first; the distances
+  and hours (30 m, 10 m, 6 h, 2 h, 15 m) are a registry record of the app's own (lv A), not a standard.
+
+Not done: Esri's Locate Regions' shape and spacing; ModelBuilder's chains (a tool reads another's output from History,
+which is the start of one); the Suitability Modeler's Evaluate tab; GTFS-free noise from the road noise analysis as a
+criterion; pond shores and wetland margins.

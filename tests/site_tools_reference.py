@@ -102,19 +102,21 @@ def dt1_brute(f):
     return [min((q - p) ** 2 + f[p] for p in range(n)) for q in range(n)]
 
 
-def edt(G, src):
-    """metres from each cell centre to the nearest source cell centre, brute force; None with no source"""
+def edt(G, src, where=None):
+    """metres from each cell centre to the nearest source cell centre, brute force; None with no source.
+    where: only those cells are measured (nan elsewhere), for a check that needs no more"""
     X, Z = centres(G)
     S = np.argwhere(src)
     if not len(S):
         return None
     sx, sz = X[S[:, 0], S[:, 1]], Z[S[:, 0], S[:, 1]]
-    px, pz = X.ravel(), Z.ravel()
-    out = np.empty(px.shape)
+    sel = np.flatnonzero(where.ravel()) if where is not None else np.arange(X.size)
+    px, pz = X.ravel()[sel], Z.ravel()[sel]
+    out = np.full(X.size, np.nan)
     step = max(1, 4000000 // max(1, len(sx)))
     for i in range(0, len(px), step):
         d2 = (px[i:i + step, None] - sx[None, :]) ** 2 + (pz[i:i + step, None] - sz[None, :]) ** 2
-        out[i:i + step] = np.sqrt(d2.min(axis=1))
+        out[sel[i:i + step]] = np.sqrt(d2.min(axis=1))
     return out.reshape(X.shape)
 
 

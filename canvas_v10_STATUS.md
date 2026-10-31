@@ -16064,3 +16064,64 @@ way to a moving sun, V170's motions of every multi-line element (the angles take
     markers           __acad3dV60 ... __acad3dV171, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
                       __acad3dV121b, __acad3dV166b, __acad3dV166c, __acad3dV166d, __acad3dV171b, __acad3dV171c,
                       __acad3dV171d
+
+## Phase 172 (V172) - Site analysis tools and synthesis, ArcGIS's way
+
+Eight site analysis tools in the analysis workspace, in the shape of ArcGIS's geoprocessing pane: Buffer, Distance,
+Slope classes, Exclusions, Suitability (Esri's transform and weight, by multiplier or percent), Locate, Constraints and
+opportunities, and Buildable area (Pennsylvania's site capacity calculation, Chalfont's open space ratios a registry
+record). Each checks its parameters as they are filled in, runs, says how it went, keeps its output as a result layer
+and its run in History, to open or run again. The owner's four decisions (2026-10-27): the tools in the workspace; the
+buildable area by site capacity; sun hours left to V172c (Ladybug); a simple Locate.
+
+The research is `reference/research-site-analysis-tools.md`: Esri's geoprocessing pane, history and Suitability
+Modeler read at doc.esri.com (transform, weight, locate; Restricted kept apart from NoData); the transformation
+formulas from QGIS's `qgsalgorithmfuzzifyraster.cpp`, read as text; what Penrith's and North Sydney's councils ask a site
+analysis plan to show; Chalfont Borough's section 440-17 (a secondary copy, said so); the National Wetlands Inventory's
+map service tested (CORS open to the Pages origin); Felzenszwalb and Huttenlocher's distance transform read in Theory of
+Computing.
+
+**What was built** (`src/js/engine/site-tools/`: `grid.js`, `sources.js`, `tools.js`, `basic.js`, `suitability.js`,
+`capacity.js`, `panel.js`; `testing/hooks-tools.js`; patches `Phase/patch_v172_a.py` to `_c.py`):
+- **The grid:** the tools' processing extent, the lot and 100 m around it in 1 m cells (100 m around the site's centre
+  with no lot), doubled while over 250,000 cells; an area by its cells' centres (even-odd), a line or a point by the
+  cells within half a cell; distance by Felzenszwalb and Huttenlocher's exact transform, rows then columns; outputs kept
+  as levels, run-length coded in 92 characters (91 levels and restricted).
+- **What the tools read:** the lot and its line, the streets (V161) and the arterials, the buildings, trees, woods and
+  water around (V157, V168), FEMA's 1% zones (V165), the wetlands (fetched here), the ground's slope between the 5 m
+  grid's points (V165), the last sun hours run (V143); each says why it is empty when it is.
+- **The pane:** parameters typed (a layer, a number with its unit, a choice, a tick, a run from History), the required
+  marked, each checked as it is left, with its message beside it and Run held with why; Run; the status, the time, the
+  messages, the results, the layer on the plan with Hide; Reset parameters; a tool's own runs; History (Open, Run again,
+  Remove), kept with the project, the last 40.
+- **The tools:** Buffer (around, outside or inside an area); Distance (with a maximum); Slope classes (the registry's);
+  Exclusions (outside the lot, the zoning setbacks at the ground, flood zones, wetlands, steep slopes, buildings, a
+  buffer from History, each cell its first reason); Suitability (six criteria, Linear, Small, Large, Near, Range of
+  Classes and Unique Categories, the thresholds the data's by default; Multiplier or Percent, which must add to 100 and
+  is rescaled to the scale; a cell with no value has none, a restricted cell is grey); Locate (24 seeds, each grown by
+  its best neighbour sharing a side, the highest mean kept); Constraints and opportunities (each cell its first
+  constraint, else its first opportunity, the distances and hours the app's working set in the registry); Buildable
+  area (the base site area, each resource's land at its open space ratio, overlaps at the highest, forest with another
+  resource at its own; the net buildable site area, the units not rounded up, the impervious surface; where to build
+  within the setbacks and clear of every resource).
+- **The registry:** two records -- `land.site_capacity` (Chalfont's section 440-17, its place `us-pa:chalfont`, applied
+  elsewhere as outside its place) and `app.synthesis` (the app's assumption); a unit for a ratio and one for hours.
+- **Results as layers** (V148): a tool's output is a result layer, replaced by a run with the same parameters, out of
+  date when the property line changes, run again by Update, its swatch, key and words in Layers.
+- **Commands:** `SITETOOLS`, `BUFFER`, `DISTANCEFROM`, `SLOPECLASSES`, `EXCLUSIONS`, `SUITABILITY`, `LOCATE`,
+  `CONSTRAINTSMAP`, `BUILDABLE`; the guide's page "Site analysis tools", every tool in one template (summary, usage,
+  parameters, how it works).
+
+**Found:**
+- Locate could not read Suitability's output: the level alphabet had 91 characters, one short for 91 levels and
+  restricted. It has 92 now (no quote, no backslash), and coding a level beyond it throws instead of dropping the run.
+- The suite's view of the result layers read every layer's cells as a string, as sun hours and rain keep them; it threw
+  for a tool's output, which keeps runs.
+- Get wetlands called the US check without the site's origin and threw before it asked the service.
+- The setbacks waited on the whole zoning envelope, which refuses without a height limit; the plate at the ground needs
+  only the lot's sides and their rules, as V160's own calculation starts.
+- A lot too large for 1 m cells came out a row of cells taller than its extent: the property line's corners carry float
+  noise (250.00000000000003). The extent ignores a millionth of a cell now.
+- A criterion's tick, name and unit ran together ("Slope%"): its label was not a flex row.
+- The harness: a script's click on Run leaves the focus in the field typed, and the workspace holds its refresh while a
+  field is typed in (V162's rule); a person's click moves the focus, so the suite clicks as one.

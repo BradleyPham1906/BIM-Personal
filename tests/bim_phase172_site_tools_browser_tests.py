@@ -268,7 +268,7 @@ async def run():
             h = await runt('buffer', {'src': 'lot', 'dist': 3, 'side': 'inside'})
             L = await layer(h.get('layer'))
             got = mask2(G, [v is not None and v >= 0 for v in (L.get('lv') or [])])
-            ck(np.array_equal(got, lot & (R.edt(RG, ~lot) <= 3 + 1e-9)), "Inside an area: the band along the lot's edge, within it (%d cells)" % got.sum())
+            ck(np.array_equal(got, lot & (np.nan_to_num(R.edt(RG, ~lot, where=lot), nan=1e9) <= 3 + 1e-9)), "Inside an area: the band along the lot's edge, within it (%d cells)" % got.sum())
             c1 = await check('buffer', {'src': 'streets', 'dist': 5, 'side': 'outside'})
             c2 = await check('buffer', {'src': 'streets', 'dist': 0})
             c3 = await check('buffer', {'src': 'streets', 'dist': 100.5})
@@ -643,7 +643,8 @@ async def run():
                     print('      %s opened %s' % (nm, p))
                     okc = False
             ck(okc, "each command opens its tool in the workspace")
-            cat_json = json.loads((HTML.parent / 'docs' / 'data' / 'catalog.json').read_text(encoding='utf-8')) if (HTML.parent / 'docs' / 'data' / 'catalog.json').exists() else None
+            CAT = pathlib.Path(__file__).resolve().parent.parent / 'docs' / 'data' / 'catalog.json'   # the repository's, whatever build is tested
+            cat_json = json.loads(CAT.read_text(encoding='utf-8')) if CAT.exists() else None
             names = json.dumps(cat_json) if cat_json else ''
             ck(all(nm in names for nm, _ in CMDS.values()) and 'SITETOOLS' in names, "the guide's command catalogue has the tools' commands")
 
@@ -684,10 +685,14 @@ async def run():
             traceback.print_exc()
             ck(False, "the suite ran to its end")
         await browser.close()
-    print('\nRESULT: %d/%d passed' % (CK.n - len(CK.bad), CK.n))
-    for b in CK.bad:
-        print('  FAILED: ' + b)
-    return 0 if not CK.bad else 1
+    print("\n%d/%d checks passed" % (CK.n - len(CK.bad), CK.n))
+    if CK.bad:
+        print("RESULT: FAIL")
+        for m in CK.bad:
+            print("   - " + m)
+        return 1
+    print("RESULT: PASS")
+    return 0
 
 
 if __name__ == '__main__':
