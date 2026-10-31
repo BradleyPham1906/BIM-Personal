@@ -97,6 +97,14 @@
       eds:[{id:'land.slope.1',name:'The app\'s working set (V165)',pub:'',st:'current',where:'Anywhere',adopt:[{at:'*'}],
         src:{t:'This app: a working set from planning practice, 15% and 25% the decision points; the bands vary by place',w:'research-site-analysis-in-model.md, section 2',lv:'A'},
         v:[{n:'b1',v:5,u:'%',say:'flat to gentle, up to',lt:'b2'},{n:'b2',v:10,u:'%',say:'moderate, up to',gt:'b1',lt:'b3'},{n:'b3',v:15,u:'%',say:'moderately steep, up to',gt:'b2',lt:'b4'},{n:'b4',v:25,u:'%',say:'steep, up to',gt:'b3'}]}]},
+    /* __acad3dV172: Buildable area, Pennsylvania's site capacity calculation, the owner's choice (2026-10-27) */
+    {id:'land.site_capacity',title:'Site capacity: the open space ratios of resource protection land',pub:'Chalfont Borough, Pennsylvania',kind:'code',area:'Flood and ground',use:'Buildable area (the site analysis tools)',anywhere:true,
+      eds:[{id:'land.site_capacity.chalfont',name:'Chalfont Borough Zoning, section 440-17, site capacity calculations',pub:'',st:'current',where:'Chalfont, Pennsylvania',adopt:[{at:'us-pa:chalfont'}],
+        src:{t:'Chalfont Borough Code, Chapter 440 Zoning, section 440-17 Site capacity calculations, B, the resources and their open space ratios; read in Zoneomics\' copy of the code, not the borough\'s own',w:'section 440-17 B',u:'https://www.zoneomics.com/code/chalfont-PA/chapter_5',lv:'S',read:'2026-10-27'},
+        v:[{n:'floodplain',v:1,u:'ratio',say:'floodplains'},{n:'slope_lo',v:15,u:'%',say:'the lower class of steep slopes from',lt:'slope_hi'},{n:'slope_hi',v:25,u:'%',say:'the upper class of steep slopes from',gt:'slope_lo'},
+          {n:'slope_a',v:0.7,u:'ratio',say:'steep slopes of the lower class'},{n:'slope_b',v:0.85,u:'ratio',say:'steep slopes of the upper class'},
+          {n:'forest',v:0.5,u:'ratio',say:'forested areas with no other resource'},{n:'forest_with',v:0.8,u:'ratio',say:'forested areas with another resource'},
+          {n:'pond',v:1,u:'ratio',say:'ponds'},{n:'waters',v:1,u:'ratio',say:'waters of the Commonwealth'},{n:'wetland',v:1,u:'ratio',say:'wetlands'}]}]},
     {id:'terrain.slope_bands',title:'Slope bands on terrain',pub:'This app',kind:'assumption',area:'Flood and ground',use:'Terrain coloured by slope (V144)',anywhere:true,
       eds:[{id:'terrain.slope_bands.1',name:'The app\'s bands (V144), three at the 2010 ADA Standards\' limits',pub:'',st:'current',where:'Anywhere',adopt:[{at:'*'}],
         src:{t:'This app; 5% and 8.33% are the 2010 ADA Standards\' 1:20 walking slope and 1:12 ramp slope, 2% their 1:48 cross slope rounded',w:'ADA Standards 403.3 and 405.2',u:'https://www.ada.gov/law-and-regs/design-standards/2010-stds/',lv:'P',read:'2026-10-18'},
@@ -208,6 +216,12 @@
         src:{t:'Browning et al., Measuring the 3-30-300 rule to help cities meet nature access thresholds, Science of the Total Environment 907, 167739 (2024), the author manuscript in full',w:'the rule as the paper states it, the green space public and at least 0.5 ha, within 300 m by the network; no radius given for the neighbourhood',u:'https://doi.org/10.1016/j.scitotenv.2023.167739',lv:'P',read:'2026-10-18'},
         v:[{n:'trees',v:3,u:'trees',say:'the trees seen from home, work or school, at least'},{n:'canopy',v:30,u:'%',say:'the tree canopy of the neighbourhood, at least'},
           {n:'walk',v:300,u:'m',say:'the walk to the nearest public green space, at most'},{n:'green_min',v:0.5,u:'ha',say:'the smallest public green space counted'}]}]},
+    /* __acad3dV172: Constraints and opportunities, the app's working set */
+    {id:'app.synthesis',title:'Constraints and opportunities: the distances and hours',pub:'This app',kind:'assumption',area:'Land and green',use:'Constraints and opportunities (the site analysis tools)',anywhere:true,
+      eds:[{id:'app.synthesis.1',name:'The app\'s working set (V172)',pub:'',st:'current',where:'Anywhere',adopt:[{at:'*'}],
+        src:{t:'This app: a working set for the summary plan, not a standard; set each to the place\'s own rule where it has one',w:'research-site-analysis-tools.md, sections 3 and 5',lv:'A'},
+        v:[{n:'near_art',v:30,u:'m',say:'near an arterial road, within'},{n:'front',v:10,u:'m',say:'street frontage, within'},
+          {n:'sunny',v:6,u:'h',say:'sunny, from'},{n:'shade',v:2,u:'h',say:'overshadowed, under'},{n:'green',v:15,u:'m',say:'near trees and woods, within'}]}]},
     {id:'app.land',title:'Land use, form and green around the site',pub:'This app',kind:'assumption',area:'Land and green',use:'Land use, figure-ground and green layers and their findings',anywhere:true,
       eds:[{id:'app.land.1',name:'The app\'s land settings (V168), with the owner\'s choices of 2026-10-18',pub:'',st:'current',where:'Anywhere',adopt:[{at:'*'}],
         src:{t:'This app: the neighbourhood for the canopy (neither Konijnendijk nor Browning et al. fix one), the families the mix is counted over, the square and its cells, how far a tree seen counts, and the crosswalk from OpenStreetMap\'s tags to LBCS\'s activities, checked against LBCS\'s descriptions',w:'research-site-analysis-in-model.md, section 6',lv:'A'},
@@ -423,7 +437,7 @@
   var BIM_STD_HOW={adopted:'in force here',international:'international',chosen:'chosen for this project',outside:'applied outside its place',assumption:'the app\'s assumption',none:'none in force'};
   var BIM_STD_UNIT={min:[' minute',' minutes'],m:[' m',' m'],'m/min':[' m a minute',' m a minute'],'km/h':[' km/h',' km/h'],'%':['%','%'],'ug/m3':[' \u00b5g/m\u00b3',' \u00b5g/m\u00b3'],
     'per sq mi':[' per sq mi',' per sq mi'],dB:[' dB',' dB'],ha:[' ha',' ha'],trees:[' tree',' trees'],families:[' family',' families'],C:['\u00b0C','\u00b0C'],'m/s':[' m/s',' m/s'],lanes:[' lane',' lanes'],days:[' day',' days'],x:['\u00d7','\u00d7'],'sq ft':[' sq ft',' sq ft'],
-    s:[' s',' s'],'m/s2':[' m/s\u00b2',' m/s\u00b2'],'pc/h/ln':[' an hour a lane',' an hour a lane'],'du/acre':[' an acre',' an acre'],deg:['\u00b0','\u00b0']};   /* __acad3dV171 */
+    s:[' s',' s'],'m/s2':[' m/s\u00b2',' m/s\u00b2'],'pc/h/ln':[' an hour a lane',' an hour a lane'],'du/acre':[' an acre',' an acre'],deg:['\u00b0','\u00b0'],ratio:['',''],h:[' h',' h']};   /* __acad3dV172: a ratio, hours */   /* __acad3dV171 */
   var BIM_STD_EMPTY={place:null,date:'',ov:{},pick:{},packs:[]};
   var A3D_STD={obj:null,rev:-1,sig:'',at:0,cache:{},recs:null,by:{},memo:{},warned:{},gen:0};
   /* what the project holds: A3D.site.std, or nothing changed yet */

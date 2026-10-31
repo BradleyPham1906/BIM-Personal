@@ -113,6 +113,13 @@ ENGINE = [
     ('simulation/traffic-draw.js', '  /* ================= __acad3dV171: traffic and people around the site: drawn ==========='),
     ('simulation/traffic-ui.js', '  /* ================= __acad3dV171: traffic and people around the site: the analysis ===='),
     ('site-analysis/analysis-workspace.js', '  /* ================= __acad3dV171b: the analysis workspace ================='),
+    ('site-tools/grid.js', '  /* ================= __acad3dV172: the site analysis tools: the grid ================='),
+    ('site-tools/sources.js', '  /* ================= __acad3dV172: the site analysis tools: what they read ================='),
+    ('site-tools/tools.js', '  /* ================= __acad3dV172: the site analysis tools: the tools, their parameters, their runs ================='),
+    ('site-tools/basic.js', '  /* ================= __acad3dV172: the site analysis tools: Buffer, Distance, Slope classes, Exclusions ================='),
+    ('site-tools/suitability.js', '  /* ================= __acad3dV172: the site analysis tools: Suitability and Locate ================='),
+    ('site-tools/capacity.js', '  /* ================= __acad3dV172: the site analysis tools: Buildable area and Constraints and opportunities ================='),
+    ('site-tools/panel.js', '  /* ================= __acad3dV172: the site analysis tools in the analysis workspace ================='),
     ('io/import-dxf.js', '  // ---- DXF (AutoCAD ASCII exchange format) ----'),
     ('io/import-obj-stl.js', "  // ---- OBJ (Wavefront, Y-up - matches this engine's convention directly) ----"),
     ('io/import-ifc.js', '  // ---- IFC (STEP-text BIM format): subset covering IfcBuildingStorey + vertically-extru'),
@@ -206,6 +213,7 @@ ENGINE = [
     ('testing/hooks-traffic.js', '  /* __acad3dV171: traffic and people around the site, for the suite: the run driven step '),
     ('testing/hooks-workspace.js', '  /* __acad3dV171b: the analysis workspace, for the suite */'),
     ('testing/hooks-sun.js', '  /* __acad3dV171d: the sun path, one clock, for the suite */'),
+    ('testing/hooks-tools.js', '  /* __acad3dV172: the site analysis tools, for the suite */'),
     ('_end.js', '}catch(e){'),
 ]
 

@@ -199,12 +199,12 @@
     if(!root)return 0;
     function show(x,v){if(v)x.removeAttribute('hidden');else x.setAttribute('hidden','');}
     root.classList.toggle('q',!!q);
-    if(q)bimAnzCards().forEach(function(x){C[x.id]=x;});
+    if(q){bimAnzCards().forEach(function(x){C[x.id]=x;});bimTlCards().forEach(function(x){C[x.id]=x;});}   /* __acad3dV172: the tools' rows */
     ov=root.querySelector('.a3d-awl-ov');
     if(ov)show(ov,!q);
     K=root.querySelectorAll('[data-sacat],[data-anzgrp]');
     for(i=0;i<K.length;i++){
-      c=bimSaCat(K[i].getAttribute('data-sacat'));nm=c?c.n:'Model';
+      c=bimSaCat(K[i].getAttribute('data-sacat'));nm=c?c.n:(K[i].getAttribute('data-anzgrp')==='tools'?'Tools':'Model');
       whole=!q||(!!c&&bimAnzWordsHit(q,c.n+' '+c.q+' '+(BIM_SA_SEE[c.id]?BIM_SA_SEE[c.id][1]:'')+' '+bimSaOf(c.id).map(function(f){return f.title+' '+f.value+' '+bimSaPair(BIM_SA_CLS,f.cls)+' '+f.source;}).join(' ')));
       R=K[i].querySelectorAll('[data-anzcard]');k=0;
       for(j=0;j<R.length;j++){hit=whole||bimAnzWordsHit(q,bimAwRowWords(C[R[j].getAttribute('data-anzcard')],nm));show(R[j],hit);if(hit)k++;}

@@ -148,14 +148,14 @@
   function bimAwCard(id){return bimAnzCards().filter(function(c){return c.id===id&&c.id.indexOf('dg')!==0;})[0]||null;}
   function bimAwPick(k,id){
     id=String(id||'');
-    if(k==='cat'?!bimSaCat(id):!(k==='card'&&bimAwCard(id)))return false;
+    if(k==='cat'?!bimSaCat(id):k==='tool'?!(bimTlTool(id)||id==='history'):!(k==='card'&&bimAwCard(id)))return false;   /* __acad3dV172: a tool, or History */
     bimAwBlur();
     A3D_AW.pick={k:k,id:id};A3D_AW.props=false;A3D_AW.over=bimAwSelKey();
     if(!A3D_AW.on)bimAwOpen();
     bimAwRefresh();
     bimAwTop();
     bimAwFold(true);   /* a drawer layout: the panel, to read */
-    var r=document.querySelector('.a3d-analyze-wrap '+(k==='cat'?'[data-sacat="'+id+'"]':'[data-anzcard="'+id+'"]')),lp=document.getElementById('a3d-leftpanel'),a,b;
+    var r=document.querySelector('.a3d-analyze-wrap '+(k==='cat'?'[data-sacat="'+id+'"]':k==='tool'?'[data-tlrow="'+id+'"]':'[data-anzcard="'+id+'"]')),lp=document.getElementById('a3d-leftpanel'),a,b;
     if(r&&lp&&r.scrollIntoView){   /* its row in view, when it is not: a category at the top, its rows under it */
       a=r.getBoundingClientRect();b=lp.getBoundingClientRect();
       if(a.height&&(a.top<b.top+44||a.bottom>b.bottom)){try{r.scrollIntoView({block:k==='cat'?'start':'nearest'});}catch(eS){}}
@@ -329,6 +329,7 @@
         '<span class="a3d-awl-fn" title="'+bimEsc(bimAwCatSub(k))+'">'+(k.n||'')+'</span></button>'+
         T.map(function(x){return bimAwRowHtml(x,f,pk);}).join('')+'</div>';
     });
+    h+=bimTlListHtml(pk);   /* __acad3dV172: the tools */
     M=BIM_ANZ_MODEL.map(function(id){return C.filter(function(c){return c.id===id;})[0];}).filter(function(c){return !!c;});
     h+='<div class="a3d-awl-grp" data-anzgrp="model"><div class="a3d-awl-grphd">Model</div>'+M.map(function(x){return bimAwRowHtml(x,f,pk);}).join('')+'</div>';
     return h+'<div class="a3d-anzempty" hidden>Nothing matches</div></div>';
@@ -477,6 +478,7 @@
     var pk=A3D_AW.pick,c,f;
     if(pk&&pk.k==='cat'&&bimSaCat(pk.id))return bimAwCatHtml(pk.id);
     if(pk&&pk.k==='card'&&(c=bimAwCard(pk.id)))return bimAwCardHtml(c);
+    if(pk&&pk.k==='tool'&&(bimTlTool(pk.id)||pk.id==='history'))return bimTlPanelHtml(pk.id);   /* __acad3dV172 */
     f=bimAwFocusNow();
     return f?bimAwAnHtml(f):bimAwOverviewHtml();
   }
@@ -490,6 +492,8 @@
       else if(c==='focus')r=bimAwFocus(a||null);
       else if(c==='tick')r=bimAwTick(a);
       else if(c==='cat'||c==='card')r=bimAwPick(c,a);
+      else if(c==='tool')r=bimAwPick('tool',a);   /* __acad3dV172: a tool, and its buttons */
+      else if(c==='tl'){r=bimTlAct(a);bimAwRefresh();}
       else if(c==='back'){bimAwBlur();A3D_AW.props=false;bimAwRefresh();bimAwTop();r=true;}
       else if(c==='dg'){r=bimDgAct(a);bimAwRefresh();}
       else if(c==='tr'){r=bimTrAct(a);bimAwRefresh();}
@@ -524,6 +528,7 @@
         if((k=e.getAttribute('data-znf'))){bimZnSet(k,e.value);if(bimAwOwns())bimAwRender(true);}   /* __acad3dV160: the zoning, in Legal */
         else if((k=e.getAttribute('data-anzload'))){updateLevel(A3D.activeLevel,k,e.value);if(bimAwOwns())bimAwRender(true);}   /* __acad3dV166b: the floor loads, in Frame analysis */
         else if((k=e.getAttribute('data-sunsl')))bimSunSlide(k,e.value,true);   /* __acad3dV171d: a slider let go; the redraw keeps it in the hand */
+        else if((k=e.getAttribute('data-tlf'))){bimTlSetField(k,e.type==='checkbox'?e.checked:e.value);if(bimAwOwns())bimAwRender(true);}   /* __acad3dV172: a tool's field, checked again */
       }catch(eF){console.warn('[BIM] Analyze setting failed',eF);a3dToast('That setting could not be changed - see the console');}
     },true);   /* in the capture: V118's refresh after every change, the panel's last handler, would put the model's value back first */
     el.propsbody.addEventListener('focusout',function(){if(A3D_AW.pend)setTimeout(function(){if(A3D_AW.pend)refreshProps();},0);});   /* the refresh held for a field, as it is left */
