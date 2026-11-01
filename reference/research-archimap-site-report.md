@@ -80,7 +80,8 @@ archiMap credits for its sections); parcels and zoning (city open data where it 
 stations and walking times (V161's and V166's sources). Each to be tested from here, its licence read, as the
 protocol asks.
 
-## 6. The decision for the owner
+## 6. The owner's decision (2026-11-01)
 
-Where this sits in the plan: after V172b (whose editable boards are the report's pages and whose comfort is its
-climate figure), as the next phase; or now, pausing V172b; or where the plan has it, in V176 after V173 to V175.
+Asked where it sits: after V172b, now (pausing V172b), or where the plan has it. The owner: **keep the plan.** The
+one-click report stays V176 (Presentation P3), after the Contents pane (V173), designed boards (V174) and live elements
+(V175), and grows there to archiMap's pages; V176's row in PIPELINE names this note. V172b goes on as decided.
