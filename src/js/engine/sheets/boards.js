@@ -13,7 +13,8 @@
     var out={boards:[],order:[]},seen={};
     if(p&&typeof p==='object'){
       if(Array.isArray(p.boards))p.boards.forEach(function(b){
-        if(b&&typeof b==='object'&&bimBoardName(b.kind)&&!seen[b.kind]){seen[b.kind]=1;out.boards.push({id:'board-'+b.kind,kind:b.kind});}
+        if(b&&typeof b==='object'&&bimBoardName(b.kind)&&!seen[b.kind]){seen[b.kind]=1;out.boards.push(bimBrdKeep({id:'board-'+b.kind,kind:b.kind},b));}   /* __acad3dV172b: its list, if it has one */
+        else if(b&&typeof b==='object'&&b.kind==='custom'&&typeof b.id==='string'&&/^board-c\d{1,6}$/.test(b.id)&&!seen[b.id]){seen[b.id]=1;out.boards.push(bimBrdKeep({id:b.id,kind:'custom'},b));}   /* a board of one's own */
       });
       if(Array.isArray(p.order))out.order=p.order.filter(function(x){return typeof x==='string';});
     }
@@ -94,9 +95,9 @@
     P=bimPresData();
     P.order=bimPresSeq().map(function(e){return e.id;}).filter(function(x){return x!==id;});
     P.boards=P.boards.filter(function(x){return x.id!==id;});
-    if(A3D_CLB.open&&A3D_CLB.kind===b.kind)bimClbClose();
+    if(A3D_CLB.open&&(b.kind==='custom'?A3D_CLB.cid===b.id:A3D_CLB.kind===b.kind))bimClbClose();   /* __acad3dV172b */
     saveSoon();bimPresPanelRefresh();
-    a3dToast(bimBoardName(b.kind)+' is out of the set; its data stays in Analyze');
+    a3dToast(b.kind==='custom'?bimBoardLabel(b)+' is deleted; Ctrl+Z brings it back':bimBoardName(b.kind)+' is out of the set; its data stays in Analyze');
     return true;
   }
   /* a board's page in the main view, the panels beside it; on a phone or a tablet the drawer makes
@@ -104,7 +105,7 @@
   function bimPresOpenBoard(id){
     var b=bimBoardById(id);
     if(!b){a3dToast('That board is no longer in the set');return false;}
-    bimClbOpen(b.kind);
+    bimClbOpen(bimBoardKey(b));   /* __acad3dV172b */
     if(bimShellOverlay())bimShellDrawer(false);
     return true;
   }
@@ -121,15 +122,16 @@
   }
   function bimBoardMenu(btn){
     var r=btn.getBoundingClientRect();
-    bimLtMenuOpen(r.left,r.bottom+4,bimBoards().map(function(x){return [x[1]+(bimBoardById('board-'+x[0])?' (in the set)':''),x[0]];}),function(k){bimBoardShow(k);});
+    bimLtMenuOpen(r.left,r.bottom+4,bimBoards().map(function(x){return [x[1]+(bimBoardById('board-'+x[0])?' (in the set)':''),x[0]];}).concat(['-',['New board','new']]),   /* __acad3dV172b: a board of one's own */
+      function(k){if(k==='new')bimBrdNewUi();else bimBoardShow(k);});
     return true;
   }
   function bimBoardMenuItems(id){
-    var i=bimPresIndex(id),n=bimPresSeq().length,it=[['Present from this page','present'],'-',['Open','open'],['Print…','print']];
+    var i=bimPresIndex(id),n=bimPresSeq().length,b=bimBoardById(id),c=!!(b&&b.kind==='custom'),it=[['Present from this page','present'],'-',['Open','open'],['Edit','edit'],['Print…','print']];   /* __acad3dV172b: Edit, Duplicate */
     if(i>0||i<n-1)it.push('-');
     if(i>0)it.push(['Move up','earlier']);
     if(i>=0&&i<n-1)it.push(['Move down','later']);
-    it.push('-',['Remove from the set','remove',true]);
+    it.push('-',[c?'Duplicate':'Duplicate as a new board','dup'],'-',[c?'Delete the board':'Remove from the set','remove',true]);
     return it;
   }
   function bimBoardMenuDo(a,id){
@@ -137,16 +139,19 @@
     if(!b)return false;
     if(a==='present')return bimSlideshowStart(id);
     if(a==='open')return bimPresOpenBoard(id);
-    if(a==='print')return bimClbPrint(b.kind);
+    if(a==='edit')return bimPresOpenBoard(id)&&bimBrdEdit(true);   /* __acad3dV172b */
+    if(a==='dup')return !!bimBrdDupBoard(id);
+    if(a==='print')return bimClbPrint(bimBoardKey(b));
     if(a==='earlier'||a==='later')return bimPresStep(id,a==='earlier'?-1:1);
     if(a==='remove')return bimBoardRemove(id);
     return false;
   }
   /* a board's markup for a kind, drawn for a phone or not, whatever is open */
   function bimBoardHtmlFor(kind,narrow){
-    var k=A3D_CLB.kind,n=A3D_CLB.narrow,h;
-    A3D_CLB.kind=kind;A3D_CLB.narrow=!!narrow;
-    try{h=bimClbHtml();}finally{A3D_CLB.kind=k;A3D_CLB.narrow=n;}
+    var k=A3D_CLB.kind,n=A3D_CLB.narrow,c=A3D_CLB.cid,o=A3D_CLB.other,B=bimBoardById(kind),h;   /* __acad3dV172b: a board of one's own by its id; nothing of Edit */
+    if(B&&B.kind==='custom'){A3D_CLB.kind='custom';A3D_CLB.cid=B.id;}else A3D_CLB.kind=kind;
+    A3D_CLB.narrow=!!narrow;A3D_CLB.other=true;
+    try{h=bimClbHtml();}finally{A3D_CLB.kind=k;A3D_CLB.narrow=n;A3D_CLB.cid=c;A3D_CLB.other=o;}
     return h;
   }
   /* as it prints: wide, on paper */
@@ -174,16 +179,16 @@
   }
   /* a board alone, in a print window: A3 landscape, as Print set prints it */
   function bimClbPrint(kind){
-    if(!bimBoardName(kind))kind=A3D_CLB.kind;
+    if(!bimBoardName(kind)&&!bimBoardById(kind))kind=bimClbWhich();   /* __acad3dV172b */
     var w=window.open('','_blank');
     if(!w){a3dToast('The print window was blocked -- allow pop-ups for this page and try again');return false;}
     try{
-      w.document.write('<html><head><title>'+bimEsc(bimProjectLabel()+' - '+bimBoardName(kind))+'</title><style>'+bimClbCss()+
+      w.document.write('<html><head><title>'+bimEsc(bimProjectLabel()+' - '+bimBoardKeyLabel(kind))+'</title><style>'+bimClbCss()+
         '@page{size:420mm 297mm;margin:10mm}body{margin:0;background:#fff}</style></head><body>'+bimBoardPrintHtml(kind)+
         '<script>window.onload=function(){window.focus();window.print();};<\/script></body></html>');
       w.document.close();
     }catch(eW){console.warn('[BIM] The board could not be put in the print window',eW);a3dToast('The board could not be printed -- see the console');return false;}
-    a3dToast('Printing '+bimBoardName(kind)+' -- Save as PDF in the print dialog makes a PDF');
+    a3dToast('Printing '+bimBoardKeyLabel(kind)+' -- Save as PDF in the print dialog makes a PDF');
     return true;
   }
   /* a board's thumbnail: the board as it prints, written into its frame when the model has moved
@@ -191,16 +196,16 @@
   function bimPresBoardThumb(b,doc,key){
     try{
       var T=A3D_PRP.bthumbs[b.id];
-      if(!T||T.key!==key)T=A3D_PRP.bthumbs[b.id]={key:key,html:bimBoardPrintHtml(b.kind)};
+      if(!T||T.key!==key)T=A3D_PRP.bthumbs[b.id]={key:key,html:bimBoardPrintHtml(bimBoardKey(b))};
       if(doc.__prpHtml!==T.html){
         doc.open();
         doc.write('<!doctype html><html><head><meta charset="utf-8"><style>'+bimClbCss()+
-          'html,body{margin:0;overflow:hidden;background:#fff}.a3d-clb.prt .a3d-clb-page{padding:28px 32px}</style></head><body>'+T.html+'</body></html>');
+          'html,body{margin:0;overflow:hidden;background:#fff}.a3d-clb.prt .a3d-clb-page{padding:28px 32px}.a3d-clb.prt .a3d-clb-arr{zoom:.86364}</style></head><body>'+T.html+'</body></html>');
         doc.close();
         doc.__prpHtml=T.html;
       }
     }catch(eT){
-      console.warn('[BIM] The thumbnail of the '+bimBoardName(b.kind)+' board could not be drawn',eT);
+      console.warn('[BIM] The thumbnail of the '+bimBoardLabel(b)+' board could not be drawn',eT);
       a3dToast('A board thumbnail could not be drawn -- see the console');
     }
     doc.__prpKey=key;   /* drawn or failed, not tried again until the model moves */

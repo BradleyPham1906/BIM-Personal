@@ -808,11 +808,11 @@
       e=Q[i];
       if(e.t==='board'){   /* __acad3dV162: a board on A3 landscape pages of its own, as it prints alone */
         if(!brd){brd=true;css+='@page a3dbrd{size:420mm 297mm;margin:10mm}';}
-        try{body+='<div class="a3dbrd" data-page="'+bimEsc(e.id)+'" style="page:a3dbrd">'+bimBoardPrintHtml(e.b.kind)+'</div>';}
+        try{body+='<div class="a3dbrd" data-page="'+bimEsc(e.id)+'" style="page:a3dbrd">'+bimBoardPrintHtml(bimBoardKey(e.b))+'</div>';}
         catch(eB){
-          console.warn('[BIM] Page '+(i+1)+', the '+bimBoardName(e.b.kind)+' board, could not be put together',eB);
+          console.warn('[BIM] Page '+(i+1)+', the '+bimBoardLabel(e.b)+' board, could not be put together',eB);
           lost.push(i+1);
-          body+='<div class="a3dbrd" data-page="'+bimEsc(e.id)+'"><div class="a3dpgerr">Page '+(i+1)+' ('+bimEsc(bimBoardName(e.b.kind))+') could not be drawn</div></div>';
+          body+='<div class="a3dbrd" data-page="'+bimEsc(e.id)+'"><div class="a3dpgerr">Page '+(i+1)+' ('+bimEsc(bimBoardLabel(e.b))+') could not be drawn</div></div>';
         }
         continue;
       }

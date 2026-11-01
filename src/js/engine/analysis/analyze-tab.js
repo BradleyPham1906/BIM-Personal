@@ -177,6 +177,7 @@
         (ter?'Where rain runs and ponds on '+ter.name:'No terrain yet: make one with SURVEY, or get the site context'),
       acts:[{act:'rain:run',label:ra?'Run again':'Run',pri:true,off:ter?'':'No terrain yet'},{act:'sim:clear:rain',label:'Clear',off:ra?'':'Not run'}]});
     C=bimDgCards().concat(C);   /* __acad3dV164: what Analyze site draws, first in its category */
+    bimLbCards().forEach(function(c){C.push(c);});   /* __acad3dV172b: Ladybug's rows, in Climate */
     C.forEach(function(c){c.group=BIM_ANZ_GROUP_OF[c.id]||'model';});   /* __acad3dV148 */
     return C;
   }
@@ -260,6 +261,7 @@
     else if(k.indexOf('layer:')===0)bimResultLayerAdd(k.slice(6));   /* __acad3dV148 */
     else if(k.indexOf('dg:')===0)bimDgAct(k.slice(3));   /* __acad3dV164 */
     else if(k.indexOf('tr:')===0)bimTrAct(k.slice(3));   /* __acad3dV171 */
+    else if(k.indexOf('lb:')===0)return bimLbAct(k.slice(3));   /* __acad3dV172b: Ladybug's rows refresh as their work ends */
     else return false;
     bimAnalyzeRefresh();
     return true;

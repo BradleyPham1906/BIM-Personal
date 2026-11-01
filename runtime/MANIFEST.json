@@ -1,0 +1,84 @@
+{
+ "what": "The runtime of the Ladybug analyses (V172b): Pyodide 0.29.5's core files and the four pinned wheels, committed so the site and the suites never depend on npm or PyPI (the owner, 2026-10-31). reference/research-ladybug-weather-comfort.md. tools/check_runtime.py checks every file against this.",
+ "pyodide": "0.29.5",
+ "npm_tarball_sha256": "6749b10ee515a1458ecea36d860c8ce2a48366e85b3f92d749ad1840e4aff181",
+ "files": [
+  {
+   "path": "pyodide/0.29.5/CPython-LICENSE",
+   "bytes": 13809,
+   "sha256": "78b12c3a81360b357002334f0e70ea0e92eebf7a9b358805c03c48484945f3bb",
+   "from": "https://raw.githubusercontent.com/python/cpython/v3.13.2/LICENSE",
+   "licence": "MPL-2.0 (Pyodide); the Python it carries under the PSF licence (CPython-LICENSE)"
+  },
+  {
+   "path": "pyodide/0.29.5/LICENSE",
+   "bytes": 16725,
+   "sha256": "1f256ecad192880510e84ad60474eab7589218784b9a50bc7ceee34c2b91f1d5",
+   "from": "https://raw.githubusercontent.com/pyodide/pyodide/0.29.5/LICENSE",
+   "licence": "MPL-2.0 (Pyodide); the Python it carries under the PSF licence (CPython-LICENSE)"
+  },
+  {
+   "path": "pyodide/0.29.5/pyodide-lock.json",
+   "bytes": 122027,
+   "sha256": "14d2c2dba101277999e17135e653d8f15389ad1437f53eae213bf0c3cdff723d",
+   "from": "https://registry.npmjs.org/pyodide/-/pyodide-0.29.5.tgz (package/pyodide-lock.json)",
+   "licence": "MPL-2.0 (Pyodide); the Python it carries under the PSF licence (CPython-LICENSE)"
+  },
+  {
+   "path": "pyodide/0.29.5/pyodide.asm.js",
+   "bytes": 1074322,
+   "sha256": "356c42f69e1695397e9d8670bd3c2e678248cde76e18bdae1731e848537b47d7",
+   "from": "https://registry.npmjs.org/pyodide/-/pyodide-0.29.5.tgz (package/pyodide.asm.js)",
+   "licence": "MPL-2.0 (Pyodide); the Python it carries under the PSF licence (CPython-LICENSE)"
+  },
+  {
+   "path": "pyodide/0.29.5/pyodide.asm.wasm",
+   "bytes": 8647684,
+   "sha256": "54309a5a2cfd757b1f0fdbc9093c92503f7b341500110329d932487183912718",
+   "from": "https://registry.npmjs.org/pyodide/-/pyodide-0.29.5.tgz (package/pyodide.asm.wasm)",
+   "licence": "MPL-2.0 (Pyodide); the Python it carries under the PSF licence (CPython-LICENSE)"
+  },
+  {
+   "path": "pyodide/0.29.5/pyodide.js",
+   "bytes": 18597,
+   "sha256": "7f832a350240263d9946a9c3c877f7bcdab6c37d6dc65f72cd3be5905dca62dd",
+   "from": "https://registry.npmjs.org/pyodide/-/pyodide-0.29.5.tgz (package/pyodide.js)",
+   "licence": "MPL-2.0 (Pyodide); the Python it carries under the PSF licence (CPython-LICENSE)"
+  },
+  {
+   "path": "pyodide/0.29.5/python_stdlib.zip",
+   "bytes": 2424003,
+   "sha256": "831fd1e535084b972f87c6a35275de3d236efd5166f5e77ce89497710635e73c",
+   "from": "https://registry.npmjs.org/pyodide/-/pyodide-0.29.5.tgz (package/python_stdlib.zip)",
+   "licence": "MPL-2.0 (Pyodide); the Python it carries under the PSF licence (CPython-LICENSE)"
+  },
+  {
+   "path": "wheels/click-8.3.3-py3-none-any.whl",
+   "bytes": 110502,
+   "sha256": "a2bf429bb3033c89fa4936ffb35d5cb471e3719e1f3c8a7c3fff0b8314305613",
+   "from": "https://pypi.org/project/click/8.3.3/",
+   "licence": "BSD-3-Clause (its dist-info/licenses/LICENSE.txt)"
+  },
+  {
+   "path": "wheels/ladybug_comfort-0.19.13-py3-none-any.whl",
+   "bytes": 177721,
+   "sha256": "227e246d0689cb6a7c25fd34169c84c154bcf7f244042b508bf86de35abb62e8",
+   "from": "https://pypi.org/project/ladybug-comfort/0.19.13/",
+   "licence": "AGPL-3.0 (its dist-info/licenses/LICENSE)"
+  },
+  {
+   "path": "wheels/ladybug_core-0.44.63-py3-none-any.whl",
+   "bytes": 275212,
+   "sha256": "21d67827869f5f8d6dc726f452aa9186689f448d87bb7c83aae466d7905e9556",
+   "from": "https://pypi.org/project/ladybug-core/0.44.63/",
+   "licence": "AGPL-3.0 (its dist-info/licenses/LICENSE)"
+  },
+  {
+   "path": "wheels/ladybug_geometry-1.35.7-py3-none-any.whl",
+   "bytes": 205631,
+   "sha256": "fd73bddbf611f6d523677dd855db0184191b882aba06c353e7032bf245c89139",
+   "from": "https://pypi.org/project/ladybug-geometry/1.35.7/",
+   "licence": "AGPL-3.0 (its dist-info/licenses/LICENSE)"
+  }
+ ]
+}

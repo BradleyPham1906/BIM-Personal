@@ -81,6 +81,7 @@
   }
   function syncSnapPill(){
     bimSyncStatusHint();
+    bimBrdSnapSync();   /* __acad3dV172b: a board's Edit shows the same three */
     if(!el.snappill)return;
     var btns=el.snappill.querySelectorAll('[data-a3dsnap]'),i;
     for(i=0;i<btns.length;i++){
@@ -292,6 +293,7 @@
     bimSyncActiveGlobal();
     refreshTree();refreshHud();refreshLevels();refreshLayers();refreshViews();bimSheetViewRefresh();paint();
     bimPresPanelRefresh();   /* __acad3dV162 */
+    bimBrdRestored();   /* __acad3dV172b: the open board, as the record now is */
     undoSuspend=false;
     return true;
   }

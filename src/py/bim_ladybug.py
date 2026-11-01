@@ -1,0 +1,487 @@
+# coding=utf-8
+"""bim_ladybug: the app's adapter to Ladybug Tools (__acad3dV172b).
+
+reference/research-ladybug-weather-comfort.md. This module is the app's own, and narrow: it reads a weather source into
+Ladybug's objects, calls Ladybug's own classes, unchanged, and hands the results back as plain numbers and 2D geometry
+for the app to draw. It runs in Pyodide in a worker (src/js/engine/ladybug/), written into site-packages beside the
+pinned wheels, and natively in the suites' reference. Every value that counts comes from Ladybug; what is ours is
+which data it is given, and how the answer is packed.
+
+The sources (one at a time, kept in S):
+- an EPW, or the station's ZIP (EPW, DDY, STAT) from climate.onebuilding.org, opened from a file;
+- a year of Open-Meteo hours (ERA5), asked for by the app in the site's standard time.
+
+The analyses: UTCI in CBE Clima's four conditions; the psychrometric chart with the PMV comfort polygons of the
+chosen clothing and Ladybug's passive strategies, as Ladybug's own "LB PMV Polygon" component combines them; the
+wind rose; the design days.
+"""
+from __future__ import division
+
+import io
+import json
+import math
+import traceback
+import zipfile
+
+from ladybug.ddy import DDY
+from ladybug.epw import EPW
+from ladybug.location import Location
+from ladybug.psychchart import PsychrometricChart
+from ladybug.skymodel import calc_horizontal_infrared
+from ladybug.wea import Wea
+from ladybug.windrose import WindRose
+from ladybug_comfort.chart.polygonpmv import PolygonPMV
+from ladybug_comfort.collection.solarcal import OutdoorSolarCal
+from ladybug_comfort.collection.utci import UTCI
+from ladybug_comfort.parameter.pmv import PMVParameter
+from ladybug_comfort.utci import saturated_vapor_pressure_hpa
+
+S = {'epw': None, 'ddy': None, 'src': None}
+
+# UTCI's validity, from the official program's ReadMe (UTCI_a002, Broede 2009): air -50 to +50 C, the radiant
+# temperature 30 C below to 70 C above the air, wind at 10 m 0.5 to 17 m/s, vapour pressure under 50 hPa. The app
+# passes the standards registry's values (topic 'utci'); these are what a call without them uses.
+UTCI_TA = (-50.0, 50.0)
+UTCI_DTR = (-30.0, 70.0)
+UTCI_VA = (0.5, 17.0)
+UTCI_PA = 50.0
+# CBE Clima's four conditions: sun or shade, wind or still air (0.5 m/s, UTCI's floor)
+CONDITIONS = ('sun_wind', 'shade_wind', 'sun_still', 'shade_still')
+# the strategies' names as Ladybug's component spells them, and its defaults (LB PMV Polygon / LB Passive Strategy
+# Parameters): 12 C above comfort by day, 3 C below by night, fans at 1.0 m/s, balance 12.8 C, 50 W/m2 a degree, 8 h
+STRATEGIES = ('Evaporative Cooling', 'Mass + Night Vent', 'Occupant Use of Fans', 'Capture Internal Heat',
+              'Passive Solar Heating')
+STRATEGY_PAR = (12.0, 3.0, 1.0, 12.8, 50.0, 8)
+# each parameter's range, as "LB Passive Strategy Parameters" checks it: a value outside goes back to the default, said
+STRATEGY_RANGE = ((0.0, 30.0), (0.0, 15.0), (0.1, 10.0), (5.0, 20.0), (1.0, 1000.0), (1, 48))
+STRATEGY_NAMES = ('day above comfort', 'night below comfort', 'fan air speed', 'balance temperature',
+                  'solar heat capacity', 'time constant')
+
+
+def _strategy_par(par):
+    """The strategy parameters, each in its range or back to Ladybug's default, with what was put back."""
+    out, notes = [], []
+    par = list(par) if par else list(STRATEGY_PAR)
+    for i, d in enumerate(STRATEGY_PAR):
+        v = par[i] if i < len(par) else None
+        lo, hi = STRATEGY_RANGE[i]
+        if v is None or not isinstance(v, (int, float)) or v != v or v < lo or v > hi:
+            if v is not None:
+                notes.append('%s must be between %s and %s, not %s: %s used' % (STRATEGY_NAMES[i], lo, hi, v, d))
+            v = d
+        out.append(v)
+    return out, notes
+
+
+def versions():
+    """The versions running, for the record kept with each result."""
+    out = {}
+    try:
+        from importlib import metadata
+        for n in ('ladybug-core', 'ladybug-comfort', 'ladybug-geometry'):
+            try:
+                out[n] = metadata.version(n)
+            except Exception:
+                out[n] = None
+    except Exception:
+        pass
+    return json.dumps(out)
+
+
+def _r(v, d=2):
+    return None if v is None or (isinstance(v, float) and (math.isnan(v) or math.isinf(v))) else round(v, d)
+
+
+def _summary():
+    epw, ddy, src = S['epw'], S['ddy'], S['src'] or {}
+    loc = epw.location
+    out = {'kind': src.get('kind'), 'name': src.get('name', ''), 'city': loc.city, 'state': loc.state,
+           'country': loc.country, 'station': loc.station_id, 'source': loc.source, 'lat': _r(loc.latitude, 4),
+           'lon': _r(loc.longitude, 4), 'tz': loc.time_zone, 'elev': _r(loc.elevation, 1),
+           'hours': len(epw.dry_bulb_temperature.values), 'leap': bool(epw.is_leap_year),
+           'ddy': ddy is not None, 'ddy_days': len(ddy.design_days) if ddy is not None else 0,
+           'filled': src.get('filled', 0), 'year': src.get('year')}
+    head = src.get('design_head')
+    if head:
+        out['design_head'] = head
+        out['design_read'] = bool(epw.heating_design_condition_dictionary)
+    return out
+
+
+def _decode(b):
+    try:
+        return b.decode('utf-8')
+    except UnicodeDecodeError:
+        return b.decode('latin-1')
+
+
+def open_file(path, name=''):
+    """An EPW, or a ZIP holding one (and its DDY), from the worker's file system."""
+    data = open(path, 'rb').read()
+    epw_text, ddy_text = None, None
+    if data[:2] == b'PK':
+        z = zipfile.ZipFile(io.BytesIO(data))
+        names = z.namelist()
+        epws = [n for n in names if n.lower().endswith('.epw')]
+        if not epws:
+            return {'error': 'The ZIP holds no EPW file'}
+        epw_text = _decode(z.read(epws[0]))
+        stem = epws[0][:-4].lower()
+        ddys = [n for n in names if n.lower().endswith('.ddy')]
+        same = [n for n in ddys if n[:-4].lower() == stem]
+        if same or ddys:
+            ddy_text = _decode(z.read((same or ddys)[0]))
+        name = name or epws[0].split('/')[-1]
+    else:
+        epw_text = _decode(data)
+    if not epw_text.startswith('LOCATION'):
+        return {'error': 'This is not an EPW weather file: its first line is not LOCATION'}
+    epw = EPW.from_file_string(epw_text)
+    ddy = None
+    if ddy_text:
+        with open('/tmp/bim_site.ddy', 'w') as f:
+            f.write(ddy_text)
+        ddy = DDY.from_ddy_file('/tmp/bim_site.ddy')
+    lines = epw_text.split('\n', 2)
+    dc = lines[1].split(',') if len(lines) > 1 else []
+    S['epw'], S['ddy'] = epw, ddy
+    S['src'] = {'kind': 'file', 'name': name, 'design_head': dc[2].strip() if len(dc) > 3 and dc[1].strip() == '1' else None}
+    return _summary()
+
+
+def _fill(vals):
+    """Missing hours (None) filled along the line between their neighbours; how many."""
+    n, filled = len(vals), 0
+    out = list(vals)
+    good = [i for i, v in enumerate(out) if v is not None]
+    if not good:
+        return None, n
+    for i in range(n):
+        if out[i] is None:
+            filled += 1
+            lo = max([g for g in good if g < i], default=None)
+            hi = min([g for g in good if g > i], default=None)
+            if lo is None:
+                out[i] = out[hi]
+            elif hi is None:
+                out[i] = out[lo]
+            else:
+                out[i] = out[lo] + (out[hi] - out[lo]) * (i - lo) / (hi - lo)
+    return out, filled
+
+
+def open_hours(path):
+    """A year of Open-Meteo hours (the JSON the app fetched, written to path), as Ladybug holds an EPW's.
+
+    The hours come in the site's standard time, one more than the year (to 1 January 00:00 of the next year). Ladybug
+    reads an EPW's rows (row 1 is hour 1, 00:01 to 01:00) as they are for the fields over an hour -- pressure and the
+    three radiations: its 00:00 is the hour to 01:00 -- and moves the last row to the front for the fields at an
+    instant -- temperature, dew point, humidity, wind, sky cover, the sky's infrared: its 00:00 is the value at 00:00
+    (ladybug/epw.py, "if the first value is at 1 AM, move last item to start position"). So an instant's variable takes
+    Open-Meteo's value of the same hour, and pressure and radiation its value of the hour after (Open-Meteo's radiation
+    is the mean of the preceding hour)."""
+    H = json.load(open(path))
+    h = H['hourly']
+    year = int(H['year'])
+    leap = (year % 4 == 0 and year % 100 != 0) or year % 400 == 0
+    n = 8784 if leap else 8760
+    if len(h['time']) < n + 1:
+        return {'error': 'Open-Meteo gave %d hours for %d; %d are needed' % (len(h['time']), year, n + 1)}
+    epw = EPW.from_missing_values(is_leap_year=leap)
+    epw.location = Location(H.get('name') or 'Site', '', '', H['lat'], H['lon'], H['tz'], H.get('elev') or 0,
+                            '', 'Open-Meteo ERA5 %d' % year)
+    filled = 0
+
+    def col(key, scale=1.0, after=0):
+        vals, f = _fill([None if v is None else v * scale for v in h[key][after:n + after]])
+        return vals, f
+
+    db, f1 = col('temperature_2m')
+    dp, f2 = col('dew_point_2m')
+    rh, f3 = col('relative_humidity_2m')
+    pr, f4 = col('surface_pressure', 100.0, 1)
+    ws, f5 = col('wind_speed_10m')
+    wd, f6 = col('wind_direction_10m')
+    dn, f7 = col('direct_normal_irradiance', 1.0, 1)
+    df, f8 = col('diffuse_radiation', 1.0, 1)
+    gh, f9 = col('shortwave_radiation', 1.0, 1)
+    cc, f10 = col('cloud_cover', 0.1)
+    if None in (db, dp, rh, pr, ws, wd, dn, df, gh, cc):
+        return {'error': 'Open-Meteo gave no values for a variable the analyses need'}
+    filled = max(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10)
+    epw.dry_bulb_temperature.values = db
+    epw.dew_point_temperature.values = dp
+    epw.relative_humidity.values = [min(100.0, max(0.0, v)) for v in rh]
+    epw.atmospheric_station_pressure.values = pr
+    epw.wind_speed.values = [max(0.0, v) for v in ws]
+    epw.wind_direction.values = [v % 360.0 for v in wd]
+    epw.direct_normal_radiation.values = [max(0.0, v) for v in dn]
+    epw.diffuse_horizontal_radiation.values = [max(0.0, v) for v in df]
+    epw.global_horizontal_radiation.values = [max(0.0, v) for v in gh]
+    tenths = [min(10.0, max(0.0, v)) for v in cc]
+    epw.total_sky_cover.values = [int(round(v)) for v in tenths]
+    epw.opaque_sky_cover.values = [int(round(v)) for v in tenths]
+    epw.horizontal_infrared_radiation_intensity.values = [
+        calc_horizontal_infrared(c, t, d) for c, t, d in zip(tenths, db, dp)]
+    S['epw'], S['ddy'] = epw, None
+    S['src'] = {'kind': 'openmeteo', 'name': 'Open-Meteo ERA5, %d' % year, 'filled': filled, 'year': year}
+    return _summary()
+
+
+def _need():
+    if S['epw'] is None:
+        raise ValueError('No weather is open: open an EPW or get the year from Open-Meteo first')
+    return S['epw']
+
+
+def _rle(vals):
+    """Runs of one-digit classes, '3:120,4:7,...', small enough to keep with a project."""
+    out, prev, run = [], None, 0
+    for v in vals:
+        if v == prev:
+            run += 1
+            continue
+        if prev is not None:
+            out.append('%d:%d' % (prev, run))
+        prev, run = v, 1
+    if prev is not None:
+        out.append('%d:%d' % (prev, run))
+    return ','.join(out)
+
+
+def utci(conditions=None, fract_body_exp=1.0, sky_exposure=1.0, ground_ref=0.25, limits=None, still=None):
+    """UTCI over the year in each condition: in the sun the radiant temperature is SolarCal's (ASHRAE 55, Ladybug's
+    OutdoorSolarCal: an open area by default); in the shade it is the air's; with wind the weather's at 10 m, still
+    air UTCI's floor of 0.5 m/s (CBE Clima's four conditions), or the speed given. The official ten-band scale
+    (original_utci_category). limits: the formula's range, {ta, dtr, va: [low, high], pa: high}, for the hours outside."""
+    epw = _need()
+    conditions = conditions or list(CONDITIONS)
+    db, rh, ws = epw.dry_bulb_temperature, epw.relative_humidity, epw.wind_speed
+    lim = limits or {}
+    lta, ldtr, lva = lim.get('ta') or UTCI_TA, lim.get('dtr') or UTCI_DTR, lim.get('va') or UTCI_VA
+    lpa = lim.get('pa') if lim.get('pa') is not None else UTCI_PA
+    still_v = 0.5 if still is None else float(still)
+    still_ws = None if still is None else ws.get_aligned_collection(still_v)
+    months = [dt.month - 1 for dt in db.datetimes]
+    hours = [dt.hour for dt in db.datetimes]
+    sun_mrt = None
+    out = {'conditions': {}, 'months': None, 'still': still_v,
+           'limits': {'ta': list(lta), 'dtr': list(ldtr), 'va': list(lva), 'pa': lpa}}
+    for c in conditions:
+        if c not in CONDITIONS:
+            raise ValueError('Not a condition: %s' % c)
+        sun, wind = c.startswith('sun'), c.endswith('wind')
+        if sun and sun_mrt is None:
+            sun_mrt = OutdoorSolarCal(epw.location, epw.direct_normal_radiation, epw.diffuse_horizontal_radiation,
+                                      epw.horizontal_infrared_radiation_intensity, db, fract_body_exp,
+                                      sky_exposure, ground_ref).mean_radiant_temperature
+        mrt = sun_mrt if sun else None
+        u = UTCI(db, rh, mrt, ws if wind else still_ws)
+        vals = list(u.universal_thermal_climate_index.values)
+        cats = [int(v) for v in u.original_utci_category.values]
+        tr = list(mrt.values) if mrt is not None else list(db.values)
+        va = list(ws.values) if wind else [still_v] * len(vals)
+        outside = 0
+        for t, r, v, h in zip(db.values, tr, va, rh.values):
+            pa = saturated_vapor_pressure_hpa(t) * h / 100.0
+            if t < lta[0] or t > lta[1] or r - t < ldtr[0] or r - t > ldtr[1] or \
+                    v < lva[0] or v > lva[1] or pa > lpa:
+                outside += 1
+        counts = [0] * 10
+        monthly = [[0] * 10 for _ in range(12)]
+        by_hour = [[0] * 10 for _ in range(24)]
+        for k, m, hr in zip(cats, months, hours):
+            counts[k] += 1
+            monthly[m][k] += 1
+            by_hour[hr][k] += 1
+        n = len(vals)
+        out['conditions'][c] = {
+            'counts': counts, 'monthly': monthly, 'by_hour': by_hour, 'classes': _rle(cats),
+            'comfort': _r(100.0 * counts[5] / n, 1), 'heat': _r(100.0 * sum(counts[6:]) / n, 1),
+            'cold': _r(100.0 * sum(counts[:5]) / n, 1), 'min': _r(min(vals), 1), 'max': _r(max(vals), 1),
+            'mean': _r(sum(vals) / n, 2), 'outside': outside, 'hours': n,
+            'utci_sample': [_r(v, 2) for v in vals[:: max(1, n // 365)]]}
+    out['first'] = str(db.datetimes[0])
+    return out
+
+
+def _line(seg):
+    vs = seg.vertices if hasattr(seg, 'vertices') else (seg.p1, seg.p2)
+    return [[_r(p.x, 3), _r(p.y, 3)] for p in vs]
+
+
+def _polygon(poly):
+    """A comfort or strategy polygon: Ladybug's polylines and segments joined into one ring of points."""
+    pts = []
+    for seg in poly:
+        for p in _line(seg):
+            if not pts or abs(pts[-1][0] - p[0]) > 1e-6 or abs(pts[-1][1] - p[1]) > 1e-6:
+                pts.append(p)
+    return pts
+
+
+def _window_irradiance(epw, azimuth):
+    """The irradiance on a vertical window facing azimuth (180 south), by Ladybug's Wea, W/m2 an hour."""
+    wea = Wea.from_annual_values(epw.location, epw.direct_normal_radiation.values,
+                                 epw.diffuse_horizontal_radiation.values, 1, epw.is_leap_year)
+    total = wea.directional_irradiance(0, azimuth)[0]
+    return total
+
+
+def psych(clo=None, met=None, strategies=None, strategy_par=None, merge=True, ppd=None, still=None):
+    """The psychrometric chart of the year's hours, with the PMV comfort polygons and the passive strategies as
+    Ladybug's "LB PMV Polygon" component draws and counts them (its logic followed, its defaults kept). ppd and still:
+    the comfort zone's PPD limit and still air (Ladybug's PMVParameter; its defaults, ASHRAE 55's, without them)."""
+    epw = _need()
+    clo = clo or [0.5, 1.0]
+    met = met or [1.1] * len(clo)
+    strategies = list(STRATEGIES) if strategies is None else strategies
+    (day_above, night_below, fan_spd, bal_temp, solar_cap, tim_c), notes = _strategy_par(strategy_par)
+    par = PMVParameter(ppd, None, None, still)
+    press = epw.atmospheric_station_pressure.average
+    press = 101325 if press is None or press >= 999999 else press
+    pc = PsychrometricChart(epw.dry_bulb_temperature, epw.relative_humidity, average_pressure=press)
+    poly = PolygonPMV(pc, met_rate=met, clo_value=clo, comfort_parameter=par)
+    names, data, shapes = [], [], []
+    if merge:
+        names.append('Comfort')
+        data.append(list(poly.merged_comfort_values))
+        shapes.append(_polygon(poly.merged_comfort_polygon))
+    else:
+        for i, p in enumerate(poly.comfort_polygons):
+            names.append('Comfort %d' % (i + 1))
+            data.append(list(poly.comfort_values[i]))
+            shapes.append(_polygon(p))
+    missing = []
+
+    def add(name, pg, vals):
+        if pg is None:
+            missing.append(name)
+            return
+        names.append(name)
+        shapes.append(_polygon(pg))
+        data.append(list(vals))
+
+    if 'Evaporative Cooling' in strategies:
+        pg = poly.evaporative_cooling_polygon()
+        add('Evaporative Cooling', pg, poly.evaluate_polygon(pg, 0.01) if pg else None)
+    if 'Mass + Night Vent' in strategies:
+        pg = poly.night_flush_polygon(day_above)
+        add('Mass + Night Vent', pg, poly.evaluate_night_flush_polygon(
+            pg, epw.dry_bulb_temperature, night_below, tim_c, 0.01) if pg else None)
+    if 'Occupant Use of Fans' in strategies:
+        pg = poly.fan_use_polygon(fan_spd)
+        add('Occupant Use of Fans', pg, poly.evaluate_polygon(pg, 0.01) if pg else None)
+    if 'Capture Internal Heat' in strategies:
+        pg = poly.internal_heat_polygon(bal_temp)
+        add('Capture Internal Heat', pg, poly.evaluate_polygon(pg, 0.01) if pg else None)
+    window = None
+    if 'Passive Solar Heating' in strategies:
+        window = 180 if epw.location.latitude >= 0 else 0
+        sol = _window_irradiance(epw, window)
+        bal_t = bal_temp if 'Capture Internal Heat' in strategies else None
+        dat, delta = poly.evaluate_passive_solar(sol, solar_cap, tim_c, bal_t)
+        pg = poly.passive_solar_polygon(delta, bal_t)
+        add('Passive Solar Heating', pg, dat if pg else None)
+    flat = []
+    for d in data:
+        flat.append([int(v) for v in (d.values if hasattr(d, 'values') else d)])
+    total = [1 if any(col) else 0 for col in zip(*flat)] if flat else []
+    n = len(total) or 1
+    mesh = pc.colored_mesh
+    out = {
+        'press': _r(press, 0), 'clo': clo, 'met': met, 'strategies': strategies,
+        'strategy_par': [day_above, night_below, fan_spd, bal_temp, solar_cap, tim_c], 'window': window, 'notes': notes,
+        'ppd': par.ppd_comfort_thresh, 'still': par.still_air_threshold,
+        'names': names, 'pct': [_r(100.0 * sum(f) / n, 1) for f in flat], 'total': _r(100.0 * sum(total) / n, 1),
+        'missing': missing, 'polygons': shapes,
+        'chart': {
+            'x_dim': pc.x_dim, 'y_dim': pc.y_dim, 'min_t': pc.min_temperature, 'max_t': pc.max_temperature,
+            'max_hr': pc.max_humidity_ratio,
+            'saturation': _line(pc.saturation_line), 'border': _line(pc.chart_border),
+            'temperature': [_line(s) for s in pc.temperature_lines], 't_labels': list(pc.temperature_labels),
+            't_label_points': [[_r(p.x, 3), _r(p.y, 3)] for p in pc.temperature_label_points],
+            'rh': [_line(s) for s in pc.rh_lines], 'rh_labels': list(pc.rh_labels),
+            'hr': [_line(s) for s in pc.hr_lines], 'hr_labels': list(pc.hr_labels),
+            'hr_label_points': [[_r(p.x, 3), _r(p.y, 3)] for p in pc.hr_label_points],
+            'mesh_vertices': [[_r(p.x, 3), _r(p.y, 3)] for p in mesh.vertices],
+            'mesh_faces': [list(f) for f in mesh.faces], 'mesh_hours': list(pc.hour_values)},
+        'hours': len(total)}
+    return out
+
+
+def windrose(directions=16, bins=None):
+    """Ladybug's wind rose of the year: its sectors (centred on the compass points) and its calm (a speed of exactly
+    0); each sector's hours counted in the app's speed bands."""
+    epw = _need()
+    wr = WindRose(epw.wind_direction, epw.wind_speed, directions)
+    bins = bins or [0.5, 2, 4, 6, 8]
+    sectors = []
+    for speeds in wr.histogram_data:
+        c = [0] * len(bins)
+        for v in speeds:
+            k = 0
+            for j in range(len(bins)):
+                if v >= bins[j]:
+                    k = j
+            c[k] += 1
+        sectors.append(c)
+    n = len(epw.wind_speed.values)
+    return {'directions': directions, 'bins': bins, 'sectors': sectors, 'calm': wr.zero_count,
+            'calm_pct': _r(100.0 * wr.zero_count / n, 1), 'prevailing': list(wr.prevailing_direction),
+            'mean': _r(epw.wind_speed.average, 2), 'hours': n}
+
+
+def _dd(d, how):
+    db = list(d.hourly_dry_bulb.values)
+    return {'name': d.name, 'type': d.day_type, 'how': how, 'db': _r(d.dry_bulb_condition.dry_bulb_max, 1),
+            'range': _r(d.dry_bulb_condition.dry_bulb_range, 1), 'hum_type': d.humidity_condition.humidity_type,
+            'hum': _r(d.humidity_condition.humidity_value, 1), 'wind': _r(d.wind_condition.wind_speed, 1),
+            'month': d.analysis_period.st_month, 'day': d.analysis_period.st_day, 'hourly': [_r(v, 1) for v in db]}
+
+
+def design_days():
+    """The heating 99.6% and 99% and the cooling 0.4%, 1% and 2% design days: from the station's DDY when it came
+    with the file, else from the EPW's design conditions when Ladybug reads them, else approximated from the one year
+    (Ladybug's approximate_design_day, which it says is less accurate than a multi-year record)."""
+    epw = _need()
+    ddy = S['ddy']
+    want = [('heating', 'Ann Htg 99.6% Condns DB'), ('heating99', 'Ann Htg 99% Condns DB'),
+            ('cooling', 'Ann Clg .4% Condns DB=>MWB'), ('cooling1', 'Ann Clg 1% Condns DB=>MWB'),
+            ('cooling2', 'Ann Clg 2% Condns DB=>MWB')]
+    out = {}
+    if ddy is not None:
+        for key, tail in want:
+            for d in ddy.design_days:
+                if d.name.endswith(tail):
+                    out[key] = _dd(d, 'ddy')
+                    break
+    if 'heating' not in out and epw.heating_design_condition_dictionary:
+        out['heating'] = _dd(epw.annual_heating_design_day_996, 'epw')
+        out['heating99'] = _dd(epw.annual_heating_design_day_990, 'epw')
+    if 'cooling' not in out and epw.cooling_design_condition_dictionary:
+        out['cooling'] = _dd(epw.annual_cooling_design_day_004, 'epw')
+        out['cooling1'] = _dd(epw.annual_cooling_design_day_010, 'epw')
+    if 'heating' not in out:
+        out['heating'] = _dd(epw.approximate_design_day('WinterDesignDay', 0.4), 'approx')
+        out['heating99'] = _dd(epw.approximate_design_day('WinterDesignDay', 1.0), 'approx')
+    if 'cooling' not in out:
+        out['cooling'] = _dd(epw.approximate_design_day('SummerDesignDay', 0.4), 'approx')
+        out['cooling1'] = _dd(epw.approximate_design_day('SummerDesignDay', 1.0), 'approx')
+    return out
+
+
+FUNCS = {'open_file': open_file, 'open_hours': open_hours, 'utci': utci, 'psych': psych, 'windrose': windrose,
+         'design_days': design_days}
+
+
+def handle(req):
+    """One request from the app: {"fn": name, "args": {...}}; the answer as JSON, or the error and its trace."""
+    try:
+        r = json.loads(req)
+        fn = FUNCS.get(r.get('fn'))
+        if fn is None:
+            return json.dumps({'error': 'No such analysis: %s' % r.get('fn')})
+        return json.dumps(fn(**(r.get('args') or {})))
+    except Exception as e:
+        return json.dumps({'error': '%s: %s' % (type(e).__name__, e), 'trace': traceback.format_exc()[-1500:]})

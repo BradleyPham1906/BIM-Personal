@@ -171,7 +171,9 @@ async def run():
                     # AMENDED FOR V168: and the land's
                     'dglanduse': 'location', 'dgfigure': 'location', 'dgzoning': 'legal', 'dggreen': 'ecology',
                     # AMENDED FOR V171: and Traffic and people
-                    'dgtraffic': 'access'}
+                    'dgtraffic': 'access',
+                    # AMENDED FOR V172b: and Ladybug's, in Climate: the weather it reads, then its four analyses
+                    'lbweather': 'climate', 'lbutci': 'climate', 'lbpsych': 'climate', 'lbwind': 'climate', 'lbdd': 'climate'}
             # AMENDED FOR V172: and the site analysis tools and their History in Tools (not a category of the engine's: its grouping below is the analyses')
             tools = {k: 'tools' for k in ('tlbuffer', 'tldistance', 'tlslopecls', 'tlexclude', 'tlsuit', 'tllocate', 'tlsynth', 'tlcapacity', 'tlhistory')}
             ck(W == dict(want, **tools), "each analysis in the category it answers: landform, water, climate; the model's in Model (%s)" % W)
@@ -193,7 +195,8 @@ async def run():
             await page.wait_for_timeout(150)
             vis = "()=>[].filter.call(document.querySelectorAll('.a3d-analyze-wrap [data-sacat=\"climate\"] [data-anzcard]'),function(r){return r.getBoundingClientRect().height>0;}).map(function(r){return r.getAttribute('data-anzcard');})"
             s0 = await safe(vis) or []
-            ck(await safe("()=>window.__a3dAw().panel") == 'cat:climate' and s0 == ['dgsun', 'dgshadow', 'dgwind', 'sun', 'sunhours', 'solar'],
+            # AMENDED FOR V172b: Ladybug's five rows after the sun's
+            ck(await safe("()=>window.__a3dAw().panel") == 'cat:climate' and s0 == ['dgsun', 'dgshadow', 'dgwind', 'sun', 'sunhours', 'solar', 'lbweather', 'lbutci', 'lbpsych', 'lbwind', 'lbdd'],
                "the category picked: on the right; its rows in the list under it (%s)" % s0)
             await page.click('.a3d-analyze-wrap [data-anzact="aw:card:sun"]')
             p1 = await safe("()=>window.__a3dAw().panel")
@@ -327,7 +330,8 @@ async def run():
             await page.click('#a3d-leftpanel [data-prpact="board"]')
             await page.wait_for_timeout(150)
             menu = await safe("()=>[].map.call(document.querySelectorAll('#a3d-ltmenu [data-ltm]'),function(b){return [b.textContent,b.getAttribute('data-ltm')];})")
-            ck(menu == [['Climate and risk', 'climate'], ['Zoning and yield', 'zoning'], ['Access and people', 'access']], "+ Board offers the three boards (%s)" % menu)
+            # AMENDED FOR V172b: after the three boards, New board (a board of one's own)
+            ck(menu == [['Climate and risk', 'climate'], ['Zoning and yield', 'zoning'], ['Access and people', 'access'], ['New board', 'new']], "+ Board offers the three boards, then a new one (%s)" % menu)
             await page.click('#a3d-ltmenu [data-ltm="access"]')
             await page.wait_for_timeout(500)
             Q = await seq()
@@ -457,7 +461,8 @@ async def run():
             ck(await seq() == [s2, 'board-access', s1, 'board-climate'] and [s['id'] for s in await safe("()=>window.__a3dSheets()")] == [s2, s1] and tabs == [s2, s1],
                "a sheet dragged past a board: the sheets, and their tabs, take the new order (%s, tabs %s)" % (await seq(), tabs))
             mi = await safe("()=>window.__a3dBoardMenuItems('board-access')")
-            ck(mi == ['Present from this page', '-', 'Open', 'Print…', '-', 'Move up', 'Move down', '-', 'Remove from the set'], "a board's own menu (%s)" % mi)
+            # AMENDED FOR V172b: Edit, and Duplicate as a new board, join the board's menu
+            ck(mi == ['Present from this page', '-', 'Open', 'Edit', 'Print…', '-', 'Move up', 'Move down', '-', 'Duplicate as a new board', '-', 'Remove from the set'], "a board's own menu (%s)" % mi)
             await safe("()=>window.__a3dBoardMenuDo('earlier','board-access')")
             ck(await seq() == ['board-access', s2, s1, 'board-climate'], "Move up")
             smi = await safe("(id)=>window.__a3dSheetMenuItems(id,'pages')", s2)

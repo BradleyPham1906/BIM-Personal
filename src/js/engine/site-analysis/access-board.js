@@ -368,6 +368,7 @@
       kq.push(bimClbKpi('Renting',rent?bimClimFmt(rent[0]*100,0):'—','%',(rent&&rent[1]!==null?'± '+bimClimFmt(rent[1]*100,0)+' · ':'')+bimClimInt(V.ten[0]||0)+' occupied homes'));
       kq.push(bimClbKpi('No car',nv?bimClimFmt(nv[0]*100,0):'—','%',(nv&&nv[1]!==null?'± '+bimClimFmt(nv[1]*100,0)+' · ':'')+'of households'+(Cv&&bimCenShare(Cv.vh0,Cv.vht)?'; county '+bimClimFmt(bimCenShare(Cv.vh0,Cv.vht)[0]*100,0)+'%':'')));
     }
+    bimFigCapKpis('acc.kpis',ka);bimFigCapKpis('ppl.kpis',kq);   /* __acad3dV172b */
     if(ka.length)h+='<div class="a3d-acc-kh">Access and circulation</div><section class="a3d-clb-kpis" aria-label="Access indicators" style="--n:'+ka.length+'">'+ka.join('')+'</section>';
     if(kq.length)h+='<div class="a3d-acc-kh">People and place · '+bimClbE(P.geo.tract.name)+'</div><section class="a3d-clb-kpis" aria-label="People indicators" style="--n:'+kq.length+'">'+kq.join('')+'</section>';
     h+='<section class="a3d-clb-grid">';
@@ -376,7 +377,7 @@
       var miss=S.places.filter(function(p){return !p.near.length;}).map(function(p){return bimAccKind(p.k).name.toLowerCase();});
       var inBand=function(t,j){return j===0?t<=5:(j===1?t>5&&t<=10:(j===2?t>10&&t<=15:t>15&&t<=20));};
       cards.push('<h2 class="a3d-acc-sec">8 · Access and circulation</h2>');
-      f1=bimClbCard('s7',++fig,'A 10-minute walk reaches '+bimAccKm(k10)+' of streets and '+w10+' of '+S.places.length+' daily needs',
+      f1=bimClbCard(['s7','@acc.walk'],++fig,'A 10-minute walk reaches '+bimAccKm(k10)+' of streets and '+w10+' of '+S.places.length+' daily needs',
         'Along the streets from the '+(S.lot.ring?'lot':'site point')+' at '+S.speed+' m a minute, as rings of 5, 10 and 15 minutes; 15 to 20 minutes in grey. Dashed circles: 400 and 800 m as the crow flies. Letters: the nearest of each daily need.',
         '<div class="a3d-clb-chart">'+bimAccWalkMapSvg(S)+'</div>'+
         bimClbLeg([['var(--w5)','5 min or less','ln'],['var(--w3)','5 to 10 min','ln'],['var(--w1)','10 to 15 min','ln'],['var(--grid)','15 to 20 min','ln']])+
@@ -386,7 +387,7 @@
           var np=0;S.places.forEach(function(p){p.near.forEach(function(q){if(inBand(q.t,j))np++;});});
           return [lbl,bimClimFmt(R[j],2),np,S.stops.filter(function(x){return inBand(x.t,j);}).length];})),src);
       var nearest=S.places.filter(function(p){return p.near.length;}).sort(function(a,b){return a.near[0].t-b.near[0].t;});
-      f2=bimClbCard('s5',++fig,w10+' of '+S.places.length+' daily needs within a 10-minute walk'+(miss.length?'; no '+miss.join(' or ')+' within '+S.maxT+' minutes':(nearest.length?'; the farthest, '+bimAccKind(nearest[nearest.length-1].k).name.toLowerCase()+', '+bimAccMinShort(nearest[nearest.length-1].near[0].t):'')),
+      f2=bimClbCard(['s5','@acc.needs'],++fig,w10+' of '+S.places.length+' daily needs within a 10-minute walk'+(miss.length?'; no '+miss.join(' or ')+' within '+S.maxT+' minutes':(nearest.length?'; the farthest, '+bimAccKind(nearest[nearest.length-1].k).name.toLowerCase()+', '+bimAccMinShort(nearest[nearest.length-1].near[0].t):'')),
         'The nearest of each kind (solid, with its minutes) and the next ones (open), along the streets; at right, how many within 5, 10 and 15 minutes. The kinds follow the 15-minute city\'s functions; this is not a Walk Score.',
         '<div class="a3d-clb-chart">'+bimAccNeedsSvg(S)+'</div>'+bimClbLeg([['var(--w5)','5 min or less'],['var(--w3)','5 to 10'],['var(--w1)','10 to 15']])+
         '<table class="a3d-acc-nt" data-accnearest="1"><tbody>'+S.places.map(function(p){var K=bimAccKind(p.k),q=p.near[0];
@@ -394,20 +395,20 @@
         bimClbTable(['Kind','Nearest','Place','Minutes','Metres','In 5','In 10','In 15','In 20'],S.places.map(function(p){var K=bimAccKind(p.k),q=p.near[0];
           return [K.name,q?(q.n||'Unnamed'):'None within '+S.maxT+' min',q?K.sub[q.sub]:'',q?bimClimFmt(q.t,1):'',q?q.d:'',p.n[0],p.n[1],p.n[2],p.n[3]];})),src);
       var fs=S.streets||[];
-      f3=bimClbCard('s7',++fig,!S.lot.ring?'The streets within '+S.conn.r+' m of the site: draw the property line for its frontage':
+      f3=bimClbCard(['s7','@acc.streets'],++fig,!S.lot.ring?'The streets within '+S.conn.r+' m of the site: draw the property line for its frontage':
         (fs.length?'The lot fronts '+bimAccFrontPhrase(fs):'No street faces the lot line within '+S.front+' m'),
         'Within '+S.conn.r+' m of the lot: streets by functional class (OpenStreetMap\'s highway tags crosswalked to the FHWA classes, approximately), the heaviest the arterials; paths dashed; the frontage in amber; the intersections counted for connectivity as dots.',
         '<div class="a3d-clb-chart">'+bimAccStreetsSvg(S)+'</div>'+
         bimClbLeg([['var(--ink2)','Arterial, collector, local (by weight)','ln'],['var(--muted)','Service road or path','ln'],['var(--s4)','Frontage'],['var(--s1)','Intersection counted']])+bimAccFrontTable(S)+
         bimClbTable(['Class','Within 5 min (km)','5 to 10','10 to 15','15 to 20'],['a','c','l','s','p'].filter(function(c){return S.reach.cls[c];}).map(function(c){return [BIM_ACC_CLASS_NAME[c]].concat(S.reach.cls[c].map(function(v){return bimClimFmt(v,2);}));})),src);
       var nb2=S.bus>=0?S.stops[S.bus]:null,nr2=S.rail>=0?S.stops[S.rail]:null;
-      f4=bimClbCard('s5',++fig,(nb2?'The nearest bus or tram stop is '+(nb2.t<0.5?'under a minute':bimAccMin(nb2.t))+' away':'No bus or tram stop within a '+S.maxT+'-minute walk')+'; '+bimSaN(S.lines10,'line')+' within 10 minutes',
+      f4=bimClbCard(['s5','@acc.stops'],++fig,(nb2?'The nearest bus or tram stop is '+(nb2.t<0.5?'under a minute':bimAccMin(nb2.t))+' away':'No bus or tram stop within a '+S.maxT+'-minute walk')+'; '+bimSaN(S.lines10,'line')+' within 10 minutes',
         (nr2?'The nearest rail or metro station, '+nr2.n+', is '+bimAccMin(nr2.t)+' away. ':'No rail or metro station within '+S.maxT+' minutes. ')+'Stops by walk time; a stop\'s sides and a station\'s entrances count as one. OpenStreetMap holds the stops and lines, not timetables: how often each runs needs the operator\'s GTFS feed.',
         '<div class="a3d-clb-chart">'+bimAccStopsSvg(S)+'</div>'+
         '<div class="a3d-clb-legend"><span><i class="a3d-acc-mk" style="border-radius:1px"></i>Bus or tram</span><span><i class="a3d-acc-mk rl"></i>Rail or metro</span></div>'+
         bimClbTable(['Stop','Modes','Lines','Minutes','Metres'],S.stops.map(function(x){return [x.n,bimAccModesText(x),bimAccLinesText(x)||'—',bimClimFmt(x.t,1),x.d];})),src);
       var C2=S.conn,L1=bimStd('leed.nd','case1'),lv=C2.sqmi>bimStd('leed.nd','pt2')?'above LEED ND\'s top threshold':(C2.sqmi>=bimStd('leed.nd','pt1')?'earns LEED ND\'s connectivity point':(C2.sqmi>=L1?'meets LEED ND\'s prerequisite':'below LEED ND\'s prerequisite of '+L1+' per square mile'));
-      f5=bimClbCard('s5',++fig,bimClimFmt(C2.dens,0)+' intersections per km² ('+bimClimFmt(C2.sqmi,0)+' per square mile): '+lv,
+      f5=bimClbCard(['s5','@acc.conn'],++fig,bimClimFmt(C2.dens,0)+' intersections per km² ('+bimClimFmt(C2.sqmi,0)+' per square mile): '+lv,
         'Intersections of streets and paths within '+C2.r+' m of the lot, as LEED ND v4 counts them: junctions that lead only to dead ends left out, a divided road\'s crossing counted once. Below: the walk over the straight line for each place and stop 150 m or more away.',
         '<div class="a3d-clb-chart">'+bimAccConnSvg(S)+'</div>'+
         bimClbTable(['Measure','Value'],[['Intersections within '+C2.r+' m',C2.ix],['The area (the lot and '+C2.r+' m around), km²',bimClimFmt(C2.area,3)],['Per km²',bimClimFmt(C2.dens,1)],['Per square mile',bimClimFmt(C2.sqmi,1)]].concat(
@@ -420,7 +421,7 @@
       else{
         var rows=bimAccCmpRows(P),G=P.geo,psrc=P.src+'; geography and land area from TIGERweb',diff=rows.filter(function(r){return r.vs==='higher'||r.vs==='lower';}),tested=rows.filter(function(r){return r.vs;}).length,big=null,bd=0,f6,col='';
         diff.forEach(function(r){var a=r.v[0][0],b=r.v[1][0],q=Math.abs(a-b)/Math.max(Math.abs(b),1e-9);if(q>bd){bd=q;big=r;}});
-        f6=bimClbCard('s7',++fig,big?G.tract.name+': '+big.name.toLowerCase()+' '+bimAccFmtV(big.v[0][0],big.fmt)+' against '+bimAccFmtV(big.v[1][0],big.fmt)+' in the county; '+diff.length+' of '+tested+' measures differ beyond the margins of error':
+        f6=bimClbCard(['s7','@ppl.compare'],++fig,big?G.tract.name+': '+big.name.toLowerCase()+' '+bimAccFmtV(big.v[0][0],big.fmt)+' against '+bimAccFmtV(big.v[1][0],big.fmt)+' in the county; '+diff.length+' of '+tested+' measures differ beyond the margins of error':
           G.tract.name+': no measure differs from the county beyond the margins of error',
           'Each measure on its own scale: the tract (dot) with its 90% margin of error (bar), its county (diamond) and its state (square). A difference counts only where it is larger than the two margins together (the Census Bureau\'s test at 90%).',
           '<div class="a3d-clb-chart">'+bimAccCompareSvg(rows,P)+'</div>'+
@@ -431,7 +432,7 @@
         if(cs){
           cs.forEach(function(S2,j){if(!S2)return;var d=cc&&cc[j]?Math.abs(S2[0]-cc[j][0]):S2[0];if(d>bv){bv=d;bj=j;}});
           var sv=P.v.state?bimAccCommuteShares(P.v.state):null;
-          col+=bimClbCard('s5',++fig,BIM_ACC_COMMUTE[bj][0]+': '+Math.round(cs[bj][0]*100)+'% of the tract\'s workers'+(cc&&cc[bj]?', against '+Math.round(cc[bj][0]*100)+'% in the county'+(sv&&sv[bj]?' and '+Math.round(sv[bj][0]*100)+'% in the state':''):''),
+          col+=bimClbCard(['s5','@ppl.commute'],++fig,BIM_ACC_COMMUTE[bj][0]+': '+Math.round(cs[bj][0]*100)+'% of the tract\'s workers'+(cc&&cc[bj]?', against '+Math.round(cc[bj][0]*100)+'% in the county'+(sv&&sv[bj]?' and '+Math.round(sv[bj][0]*100)+'% in the state':''):''),
             'How workers 16 and over get to work (ACS table B08301), the share of each means, the tract against its county and state. Other: taxi, motorcycle and other means.',
             '<div class="a3d-clb-chart">'+bimAccCommuteSvg(P)+'</div>'+bimClbLeg(BIM_ACC_COMMUTE.map(function(c,j){return [BIM_ACC_SLOT[j],c[0]];}))+
             bimClbTable(['Means','Tract','County','State'],BIM_ACC_COMMUTE.map(function(c,j){
@@ -443,7 +444,7 @@
           var grp=[['under 20',0,3],['20 to 34',4,6],['35 to 64',7,12],['65 and over',13,17]],gi=0,gd=-1;
           var gs=function(Q,g){var v=0;for(var j=g[1];j<=g[2];j++)v+=Q.m[j]+Q.f[j];return v;};
           grp.forEach(function(g,j){var d=PC?Math.abs(gs(PT,g)-gs(PC,g)):0;if(d>gd){gd=d;gi=j;}});
-          col+=bimClbCard('s5',++fig,bimClimFmt(gs(PT,grp[gi]),0)+'% of the tract\'s people are '+grp[gi][0]+(PC?', against '+bimClimFmt(gs(PC,grp[gi]),0)+'% in the county':'')+'; median age '+bimCenFmt(P.v.tract.age[0],1),
+          col+=bimClbCard(['s5','@ppl.pyramid'],++fig,bimClimFmt(gs(PT,grp[gi]),0)+'% of the tract\'s people are '+grp[gi][0]+(PC?', against '+bimClimFmt(gs(PC,grp[gi]),0)+'% in the county':'')+'; median age '+bimCenFmt(P.v.tract.age[0],1),
             'Men to the left, women to the right, in five-year bands, each as a share of everyone in the tract; the line is the county, for comparison. Single bands carry large margins of error at this scale: read the shape, not one bar.',
             '<div class="a3d-clb-chart">'+bimAccPyramidSvg(P)+'</div>'+bimClbLeg([['var(--s1)','Men, the tract'],['var(--s2)','Women, the tract']].concat(PC?[['var(--ink)','The county','ln']]:[]))+
             bimClbTable(['Age','Men %','Women %','County men %','County women %'],BIM_CEN_BAND_NAMES.map(function(nm,j){return [nm,bimClimFmt(PT.m[j],1),bimClimFmt(PT.f[j],1),PC?bimClimFmt(PC.m[j],1):'—',PC?bimClimFmt(PC.f[j],1):'—'];})),psrc+', table B01001');

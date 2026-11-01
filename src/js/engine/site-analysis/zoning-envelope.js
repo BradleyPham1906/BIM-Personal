@@ -75,7 +75,7 @@
     if(!L||!(i>=0&&i<L.length))return false;
     return bimZnEdit(function(){L.splice(i,1);});
   }
-  function bimZnDone(){refreshTree();refreshLayers();refreshProps();paint();saveSoon();bimSaRefresh(true);if(A3D_CLB.open&&A3D_CLB.kind==='zoning')bimClbOpen('zoning');bimPresThumbsQueue();}
+  function bimZnDone(){refreshTree();refreshLayers();refreshProps();paint();saveSoon();bimSaRefresh(true);if(A3D_CLB.open&&A3D_CLB.kind==='zoning')bimClbOpen('zoning');else if(A3D_CLB.open&&bimBrdRec()&&bimBrdRec().figs)bimClbOpen();bimPresThumbsQueue();}
   /* the property's sides: each one's inward normal, and whether it is a front, a side or a rear --
      picked by hand, else the chosen front, the rear facing it, the sides between */
   function bimZnLegs(P,front,roles){
@@ -858,10 +858,11 @@
     kp.push(bimClbKpi('Units',String(C.units),'',bimClimInt(C.nsa)+' m² net at '+bimClbNum(z.eff,0)+'%; '+bimClbNum(z.unit,0)+' m² each'));
     kp.push(bimClbKpi('Parking',String(C.parking),'spaces',bimClbNum(z.park,2)+' a unit'+(z.parkNon&&z.res<100?', '+bimClbNum(z.parkNon,1)+' per 100 m² other':'')));
     kp.push(bimClbKpi('The design',has?(bad.length?bad.length+' issue'+(bad.length===1?'':'s'):'Complies'):'None yet','',has?(bad.length?bad.map(function(r){return r.item;}).join(', '):'Every control checked'):'Model the massing with usages',has?(bad.length?'critical':'good'):''));
+    bimFigCapKpis('zn.kpis',kp);   /* __acad3dV172b */
     var h=bar+head+'<section class="a3d-clb-kpis" aria-label="Indicators" style="--n:'+kp.length+'">'+kp.join('')+'</section><section class="a3d-clb-grid">';
     var src=(z.source||'Entered by hand')+'; worked out in the app';
     fig++;
-    cards.push(bimClbCard(['s7','wide'],fig,!has?'The zoning analysis: '+T.filter(function(r){return r.item;}).length+' controls; the design is checked once it has massing':
+    cards.push(bimClbCard(['s7','wide','@zn.table'],fig,!has?'The zoning analysis: '+T.filter(function(r){return r.item;}).length+' controls; the design is checked once it has massing':
       (bad.length?'The design exceeds '+bad.length+' control'+(bad.length===1?'':'s')+': '+bad.map(function(r){return r.item.toLowerCase();}).join(', '):
         'The design complies with all '+T.filter(function(r){return r.ok===true;}).length+' controls the model can check'),
       'Each control of the district, what it permits or requires, what the model proposes, and whether it complies. Controls the model cannot check are marked so.',
@@ -871,28 +872,28 @@
     if(anyPlane)why.push('angular planes');
     if(C.maxH!==null&&C.top>=C.maxH-1e-6)why.push('the '+bimZnM(C.maxH)+' height limit');
     fig++;
-    cards.push(bimClbCard('s5',fig,'The envelope rises to '+bimZnM(C.top)+(why.length?': '+why.join(', then '):''),
+    cards.push(bimClbCard(['s5','@zn.secA'],fig,'The envelope rises to '+bimZnM(C.top)+(why.length?': '+why.join(', then '):''),
       'Section from the front to the rear, square to the front lot line, at true scale: the most the rules allow at each distance behind the street. Floor lines every '+bimZnM(z.f2f)+'.',
       '<div class="a3d-clb-chart">'+bimZnSectionSvg(C,'A')+'</div>'+bimClbLeg([['var(--s4)','Zoning envelope'],['var(--ink2)','Height limit','dsh']].concat(bimZnPlaneLeg(C)).concat(pr.height!==null?[['var(--s1)','Proposed height','ln']]:[]))+
       bimZnSectionTable(C,'A'),src));
     var Sb=bimZnSection(C,'B');
     fig++;
-    cards.push(bimClbCard('s4',fig,Sb.lot&&Sb.L.length?'Side to side the envelope is '+bimZnM(Sb.R[0][0]-Sb.L[0][0])+' wide at the ground, '+bimZnM(Sb.R[Sb.R.length-1][0]-Sb.L[Sb.L.length-1][0])+' at the top':'Side to side',
+    cards.push(bimClbCard(['s4','@zn.secB'],fig,Sb.lot&&Sb.L.length?'Side to side the envelope is '+bimZnM(Sb.R[0][0]-Sb.L[0][0])+' wide at the ground, '+bimZnM(Sb.R[Sb.R.length-1][0]-Sb.L[Sb.L.length-1][0])+' at the top':'Side to side',
       'Section across the lot, along the front, through the middle of the buildable area, at true scale.',
       '<div class="a3d-clb-chart">'+bimZnSectionSvg(C,'B')+'</div>'+bimZnSectionTable(C,'B'),src));
     fig++;
     var roles=bimZnRoles(C);
-    cards.push(bimClbCard('s4',fig,'Each side\'s rule: '+roles.map(function(r){var P=bimZnRulePts(C,r);return r+' '+bimZnM(P[0][0])+(P[P.length-1][0]>P[0][0]+1e-9?' to '+bimZnM(P[P.length-1][0]):'');}).join(', '),
+    cards.push(bimClbCard(['s4','@zn.rules'],fig,'Each side\'s rule: '+roles.map(function(r){var P=bimZnRulePts(C,r);return r+' '+bimZnM(P[0][0])+(P[P.length-1][0]>P[0][0]+1e-9?' to '+bimZnM(P[P.length-1][0]):'');}).join(', '),
       'The setback each kind of side needs at each height: across, the distance from the lot line; up, the height. A step is a jump back; an angular plane, a slope.',
       '<div class="a3d-clb-chart">'+bimZnRulesSvg(C)+'</div>'+bimClbLeg(roles.map(function(r){return [BIM_ZN_ROLECOL[r],BIM_ZN_ROLENAME[r],'ln'];}).concat(C.maxH!==null?[['transparent','Height limit','dsh']]:[]))+
       bimClbTable(['Side','At the ground','Steps','Angular plane'],roles.map(function(r){var o=C.rules[r];return [BIM_ZN_ROLENAME[r],bimZnM(o.base),o.steps.map(function(x){return bimZnM(x[1])+' above '+bimZnM(x[0]);}).join('; ')||'—',o.plane?bimClbNum(o.plane[1],1)+':1 from '+bimZnM(o.plane[0]):'—'];})),src));
     fig++;
-    cards.push(bimClbCard('s4',fig,bimClimInt(C.fpArea)+' m² buildable at the ground, '+bimClbNum(100*C.fpArea/C.lot,0)+'% of the lot',
+    cards.push(bimClbCard(['s4','@zn.plan'],fig,bimClimInt(C.fpArea)+' m² buildable at the ground, '+bimClbNum(100*C.fpArea/C.lot,0)+'% of the lot',
       'The lot, turned so the street is at the bottom: each side\'s length outside, its role and setback inside; the buildable area dashed, the plate above each step dotted.',
       '<div class="a3d-clb-chart">'+bimZnPlanSvg(C)+'</div>'+
       bimClbTable(['Side','Length','Role','Setback at the ground'],C.legs.legs.map(function(l,i){return ['Side '+(i+1),bimZnM(l.len,2),l.role+(l.auto?'':' (picked)'),bimZnM(C.rules[l.role].base,2)];})),src));
     fig++;
-    cards.push(bimClbCard('s6',fig,C.plates.length+' storeys fit under the envelope; the '+C.governs+' lets '+C.storeysUsed+' of them be used',
+    cards.push(bimClbCard(['s6','@zn.plates'],fig,C.plates.length+' storeys fit under the envelope; the '+C.governs+' lets '+C.storeysUsed+' of them be used',
       'Floor plate by storey: the area under the envelope at each floor\'s ceiling'+(z.cover!==null?', at most the coverage limit':'')+'. Blue: used by the achievable area; grey: beyond it.',
       '<div class="a3d-clb-chart">'+bimZnPlatesSvg(C)+'</div>'+bimClbLeg([['var(--s1)','Used by the achievable area'],['var(--hn)','Beyond it']].concat(z.cover!==null?[['transparent','Coverage limit','dsh']]:[]))+
       bimClbTable(['Storey','From','To','Plate m²'],C.plates.map(function(p,i){return [i+1,bimZnM(i*z.f2f),bimZnM((i+1)*z.f2f),bimClimInt(p)];})),src));
@@ -905,7 +906,7 @@
       '<tr><td class="op">÷</td><td>Average unit, net</td><td class="n">'+bimClbNum(z.unit,0)+' m²</td></tr>'+
       '<tr class="tot"><td class="op">=</td><td>Units (whole)</td><td class="n">'+C.units+'</td></tr>'+
       '<tr class="tot"><td class="op"></td><td>Parking: '+C.units+' × '+bimClbNum(z.park,2)+(z.res<100&&z.parkNon?' + '+bimClimInt(C.nonRes)+' m² ÷ 100 × '+bimClbNum(z.parkNon,1):'')+'</td><td class="n">'+C.parking+' spaces</td></tr></tbody></table>';
-    cards.push(bimClbCard(['s6','wide'],fig,'The '+C.governs+' governs: '+bimClimInt(C.achievable)+' m² GFA, '+bimClimInt(C.nsa)+' m² net, '+C.units+' unit'+(C.units===1?'':'s'),
+    cards.push(bimClbCard(['s6','wide','@zn.yield'],fig,'The '+C.governs+' governs: '+bimClimInt(C.achievable)+' m² GFA, '+bimClimInt(C.nsa)+' m² net, '+C.units+' unit'+(C.units===1?'':'s'),
       'Gross floor area on one scale from zero: what the FAR permits, what the envelope can hold, the lesser of the two, and the design. Then from gross to units and parking.',
       '<div class="a3d-clb-chart">'+bimZnYieldSvg(C)+'</div>'+chain,'Assumptions in the zoning record'));
     h+=cards.join('')+'</section>';

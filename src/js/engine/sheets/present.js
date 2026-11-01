@@ -144,12 +144,13 @@
     w=ov.clientWidth||window.innerWidth;
     bd.className='a3d-clb a3d-ssboard'+bimClbWidthCls(w);
     bd.setAttribute('data-sspage',e.id);
-    bd.setAttribute('aria-label',bimBoardName(e.b.kind)+' board');
-    sig=e.b.kind+'|'+A3D_REV+'|'+(w<760);
+    bd.setAttribute('aria-label',bimBoardLabel(e.b)+' board');
+    sig=e.b.id+'|'+A3D_REV+'|'+(w<760);   /* __acad3dV172b: a board of one's own by its id */
     if(bd.getAttribute('data-sssig')!==sig){
-      bd.innerHTML=bimBoardHtmlFor(e.b.kind,w<760)+'<div class="a3d-clb-tip" role="tooltip" hidden></div>';
+      bd.innerHTML=bimBoardHtmlFor(bimBoardKey(e.b),w<760)+'<div class="a3d-clb-tip" role="tooltip" hidden></div>';
       bd.setAttribute('data-sssig',sig);bd.scrollTop=0;
     }
+    bimBrdZoom(bd);   /* __acad3dV172b */
     A3D_SLIDESHOW.scale=0;
   }
   function bimSlideshowAhead(i){
@@ -208,7 +209,7 @@
       catch(eX){console.warn('[BIM] Full screen could not be left',eX);a3dToast('Full screen could not be left -- press Esc');}
     }
     A3D_SLIDESHOW.fs=false;
-    if(e&&e.t==='board'){bimClbOpen(e.b.kind);return true;}   /* __acad3dV162: back on the board last shown */
+    if(e&&e.t==='board'){bimClbOpen(bimBoardKey(e.b));return true;}   /* __acad3dV162: back on the board last shown */
     if(s&&from.board){bimActivateView('sheet',s.id);return true;}   /* started on a board: to the sheet last shown */
     if(s&&from.kind==='sheet'&&bimSheetOnScreen()){
       if(A3D_PAGES.display==='pages'){if(s.id!==A3D.activeSheetId)bimPagesSetCurrent(s.id);bimPagesScrollTo(s.id);}
