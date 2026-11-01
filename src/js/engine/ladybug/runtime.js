@@ -112,7 +112,8 @@
         }
         PY.runPython('import bim_ladybug\nbim_ladybug.S["mtx"]=None');
         delete pre.vectors;
-        say({t:'done',id:m.id,r:JSON.stringify({pre:pre,values:vals,dirs:V.length,ms:{first:t1-t0,rays:rays,all:Date.now()-t0}})});
+        say({t:'done',id:m.id,r:JSON.stringify({pre:pre,values:vals,dirs:V.length,ms:{first:t1-t0,rays:rays,all:Date.now()-t0},
+          versions:String(PY.runPython('import bim_ladybug\nbim_ladybug.versions()'))})});
       }).then(null,function(x){say({t:'err',id:m.id,s:String(x&&x.message||x),trace:x&&x.trace?String(x.trace):''});});
     }
     self.onmessage=function(e){var m=e.data||{};if(m.t==='boot')boot(m);else if(m.t==='run'&&PY)run(m);else if(m.t==='study'&&PY)study(m);};

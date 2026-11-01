@@ -102,7 +102,8 @@
     var p=k==='rad'?bimLbEnsureSource().then(function(s){src=s;}):Promise.resolve();
     return p.then(function(){return bimLbStudyCall(req,[req.tris.buffer,req.sens.buffer]);}).then(function(ans){
       if(!ans||!Array.isArray(ans.values)||ans.values.length!==G.faces)throw new Error('The study answered '+(ans&&ans.values?ans.values.length:0)+' values for '+G.faces+' faces');
-      var D=bimLbData(),r=bimLbsPack(G,ans.values);
+      var D=bimLbData(),r=bimLbsPack(G,ans.values),ver;
+      if(ans.versions){try{ver=JSON.parse(ans.versions);if(ver&&typeof ver==='object')A3D_LB.versions=ver;}catch(eV){console.warn('[BIM] Ladybug versions',eV);}}
       r.pre=ans.pre;r.dirs=ans.dirs;r.ms=ans.ms;r.solids=G.solids;r.all=G.all;
       pushUndo();
       D[k]={r:r,params:{dense:o.dense,span:o.span,date:bimSunSettings().date,ids:ids?ids.slice():null},at:bimSaToday(),
@@ -159,7 +160,7 @@
         if(f.v)nf++;
       }
       /* the legend: Ladybug's colours, the study's own range */
-      var lw=196,lh=72,lx=W-lw-14,ly=H-lh-14,g=ctx.createLinearGradient(lx+10,0,lx+lw-10,0),C=BIM_LBS_RAMP[k];
+      var sr=bimSafeViewRect(),lw=196,lh=72,lx=Math.max(sr.x+12,sr.x+sr.w-lw-12),ly=Math.max(sr.y+12,sr.y+sr.h-lh-12),g=ctx.createLinearGradient(lx+10,0,lx+lw-10,0),C=BIM_LBS_RAMP[k];
       for(i=0;i<C.length;i++)g.addColorStop(i/(C.length-1),C[i]);
       ctx.fillStyle='rgba(22,26,32,0.9)';ctx.fillRect(lx,ly,lw,lh);
       ctx.strokeStyle='rgba(255,255,255,0.18)';ctx.lineWidth=1;ctx.strokeRect(lx+0.5,ly+0.5,lw-1,lh-1);
