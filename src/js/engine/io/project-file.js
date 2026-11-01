@@ -27,7 +27,23 @@
       var json=bimBuildProjectEnvelope();
       bimTriggerDownload(json,bimFileStem()+'.acad3d.json','application/json');
       a3dToast('Project saved as '+bimFileStem()+'.acad3d.json ('+A3D.objs.length+' object(s))');
+      bimAskPersist();   /* __acad3dV172e */
     }catch(eS){console.warn('[BIM] Project export failed: ',eS);a3dToast('Project export failed: '+(eS&&eS.message?eS.message:eS));}
+  }
+  /* __acad3dV172e: decision D3. The browser keeps best-effort storage only while it has room; persist() asks it to
+     keep this app's. Asked once, at the first Save -- a gesture, never on load (web.dev); Firefox shows a prompt,
+     Chrome and Safari answer silently, and false is the usual answer in a Safari tab, so it is not an error. */
+  var A3D_PERSIST={asked:false,granted:null};
+  function bimAskPersist(){
+    if(A3D_PERSIST.asked)return;
+    A3D_PERSIST.asked=true;
+    try{
+      if(!navigator.storage||typeof navigator.storage.persist!=='function')return;
+      navigator.storage.persisted().then(function(p){
+        if(p){A3D_PERSIST.granted=true;return null;}
+        return navigator.storage.persist().then(function(g){A3D_PERSIST.granted=!!g;});
+      })['catch'](function(eQ){console.warn('[BIM] The browser could not be asked to keep this app\'s storage.',eQ);});
+    }catch(eP){console.warn('[BIM] The browser could not be asked to keep this app\'s storage.',eP);}
   }
   /* __acad3dV115: a project file opens in a tab of its own, the way OPEN works in AutoCAD and in
      Revit. It used to replace the model on screen behind a confirm(), so the only way to look at a

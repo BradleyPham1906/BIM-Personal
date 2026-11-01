@@ -43,12 +43,13 @@
       a3dToast('Close the other tabs of this app so it can update its storage');
     };
   }
-  /* one transaction on the projects store; done(err, value) once it has committed or failed */
+  /* one transaction on the projects store; done(err, value) once it has committed or failed -- always after the
+     call has returned (__acad3dV172e: a refusal at once answered inside the call) */
   function bimIdbTx(mode,work,done,again){
     bimIdbOpen(function(err,db){
-      if(err){done(err);return;}
+      if(err){setTimeout(function(){done(err);},0);return;}
       var tx,out={},ended=false;
-      function end(e,v){if(ended)return;ended=true;done(e,v);}
+      function end(e,v){if(ended)return;ended=true;setTimeout(function(){done(e,v);},0);}
       try{tx=db.transaction(A3D_IDB_PROJECTS,mode);}
       catch(eT){
         A3D_IDB.db=null;

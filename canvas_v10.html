@@ -14217,7 +14217,23 @@ try{
       var json=bimBuildProjectEnvelope();
       bimTriggerDownload(json,bimFileStem()+'.acad3d.json','application/json');
       a3dToast('Project saved as '+bimFileStem()+'.acad3d.json ('+A3D.objs.length+' object(s))');
+      bimAskPersist();   /* __acad3dV172e */
     }catch(eS){console.warn('[BIM] Project export failed: ',eS);a3dToast('Project export failed: '+(eS&&eS.message?eS.message:eS));}
+  }
+  /* __acad3dV172e: decision D3. The browser keeps best-effort storage only while it has room; persist() asks it to
+     keep this app's. Asked once, at the first Save -- a gesture, never on load (web.dev); Firefox shows a prompt,
+     Chrome and Safari answer silently, and false is the usual answer in a Safari tab, so it is not an error. */
+  var A3D_PERSIST={asked:false,granted:null};
+  function bimAskPersist(){
+    if(A3D_PERSIST.asked)return;
+    A3D_PERSIST.asked=true;
+    try{
+      if(!navigator.storage||typeof navigator.storage.persist!=='function')return;
+      navigator.storage.persisted().then(function(p){
+        if(p){A3D_PERSIST.granted=true;return null;}
+        return navigator.storage.persist().then(function(g){A3D_PERSIST.granted=!!g;});
+      })['catch'](function(eQ){console.warn('[BIM] The browser could not be asked to keep this app\'s storage.',eQ);});
+    }catch(eP){console.warn('[BIM] The browser could not be asked to keep this app\'s storage.',eP);}
   }
   /* __acad3dV115: a project file opens in a tab of its own, the way OPEN works in AutoCAD and in
      Revit. It used to replace the model on screen behind a confirm(), so the only way to look at a
@@ -47189,12 +47205,13 @@ try{
       a3dToast('Close the other tabs of this app so it can update its storage');
     };
   }
-  /* one transaction on the projects store; done(err, value) once it has committed or failed */
+  /* one transaction on the projects store; done(err, value) once it has committed or failed -- always after the
+     call has returned (__acad3dV172e: a refusal at once answered inside the call) */
   function bimIdbTx(mode,work,done,again){
     bimIdbOpen(function(err,db){
-      if(err){done(err);return;}
+      if(err){setTimeout(function(){done(err);},0);return;}
       var tx,out={},ended=false;
-      function end(e,v){if(ended)return;ended=true;done(e,v);}
+      function end(e,v){if(ended)return;ended=true;setTimeout(function(){done(e,v);},0);}
       try{tx=db.transaction(A3D_IDB_PROJECTS,mode);}
       catch(eT){
         A3D_IDB.db=null;
@@ -47581,11 +47598,13 @@ try{
     var rec=JSON.parse(JSON.stringify(bimProjectRecord()));
     delete rec.docId;
     var id='tpl-'+Date.now().toString(36)+'-'+Math.floor(Math.random()*1e6);
-    try{localStorage.setItem(A3D_TEMPLATE_PREFIX+id,JSON.stringify(rec));}
+    /* __acad3dV172e: a template localStorage refuses is kept in the browser's database; the entry goes again if the
+       database refuses it too */
+    var s=JSON.stringify(rec),inIdb=false;
+    try{localStorage.setItem(A3D_TEMPLATE_PREFIX+id,s);}
     catch(eS){
-      console.warn('[BIM] The template could not be stored.',eS);
-      a3dToast('The template could not be saved: browser storage is full');
-      return null;
+      console.warn('[BIM] The template does not fit in browser storage; it goes to the browser\'s database.',eS);
+      inIdb=true;
     }
     var entry={id:id,kind:'template',name:name,category:'Templates',manufacturer:'',
       count:Array.isArray(rec.objs)?rec.objs.length:0,
@@ -47593,6 +47612,17 @@ try{
       sheets:Array.isArray(rec.sheets)?rec.sheets.length:0,
       createdAt:new Date().toISOString()};
     entry.thumb=bimRecsThumb(rec.objs||[]);
+    if(inIdb){
+      entry.idb=1;
+      bimIdbPut('tpl:'+id,{rec:s,saved:Date.now(),v:1},function(err){
+        if(!err)return;
+        console.warn('[BIM] The template could not be stored.',err);
+        var i;for(i=A3D_FAMLIB.length-1;i>=0;i--)if(A3D_FAMLIB[i].id===id)A3D_FAMLIB.splice(i,1);
+        bimSaveFamilyLibrary();
+        try{refreshFamilyPanel();}catch(eR){console.warn('[BIM] The Assets panel could not be refreshed.',eR);}
+        a3dToast('The template could not be saved: browser storage is full');
+      });
+    }
     A3D_FAMLIB.push(entry);
     bimSaveFamilyLibrary();
     return entry;
@@ -47600,12 +47630,29 @@ try{
   /* A new project tab that starts as a copy of the template. Returns the new project's id. */
   function bimTemplateUse(entry){
     if(!entry||bimAssetKind(entry)!=='template')return null;
+    /* __acad3dV172e: a template kept in the browser's database is read first; the project follows */
+    if(entry.idb){
+      bimIdbGet('tpl:'+entry.id,function(err,v){
+        var r=null;
+        if(!err&&v&&typeof v.rec==='string'){try{r=JSON.parse(v.rec);}catch(eJ){r=null;}}
+        if(!r||typeof r!=='object'){
+          if(err)console.warn('[BIM] The browser\'s database could not be read.',err);
+          a3dToast('"'+entry.name+'" could not be used: its stored project could not be read');
+          return;
+        }
+        bimTemplateStart(entry,r);
+      });
+      return true;
+    }
     var raw=null,rec=null;
     try{raw=localStorage.getItem(A3D_TEMPLATE_PREFIX+entry.id);}
     catch(eG){console.warn('[BIM] Browser storage could not be read.',eG);}
     if(raw==null){a3dToast('The project stored for "'+entry.name+'" is no longer in this browser\'s storage');return null;}
     try{rec=JSON.parse(raw);}catch(eP){console.warn('[BIM] A stored template is not valid JSON: '+entry.id,eP);rec=null;}
     if(!rec||typeof rec!=='object'){a3dToast('"'+entry.name+'" could not be used: its stored project is damaged');return null;}
+    return bimTemplateStart(entry,rec);
+  }
+  function bimTemplateStart(entry,rec){
     if(!rec.titleBlock||typeof rec.titleBlock!=='object')rec.titleBlock={project:'',client:'',drawnBy:'',checkedBy:''};
     rec.titleBlock.project=bimNextProjectName();
     var id=bimDocsAdd(rec,'create');
@@ -49733,6 +49780,9 @@ try{
   var FAMILY_LIB_KEY='acad3dFamilyLibrary';
   var A3D_FAMLIB_SAVE_FAILED=false;   /* __acad3dV124b: a run of failed saves is toasted once */
   var FAMILY_CATEGORIES=['Doors','Windows','Furniture','Fixtures','Structural','Other'];
+  /* __acad3dV172e: the library kept in the browser's database ('lib:family'), its pointer in its key; while it is
+     read, saves wait and are made with it */
+  var A3D_FAMLIB_IDB=false,A3D_FAMLIB_LOADING=false,A3D_FAMLIB_DIRTY=false;
   var A3D_FAMLIB=bimLoadFamilyLibrary();
   function bimMeshBounds(mesh){
     var mn=[Infinity,Infinity,Infinity],mx=[-Infinity,-Infinity,-Infinity],i,k;
@@ -49765,24 +49815,62 @@ try{
   function bimLoadFamilyLibrary(){
     try{
       var raw=localStorage.getItem(FAMILY_LIB_KEY);
-      if(raw){var parsed=JSON.parse(raw);if(Array.isArray(parsed))return parsed;}
+      if(raw){
+        var parsed=JSON.parse(raw);
+        if(Array.isArray(parsed))return parsed;
+        if(parsed&&parsed.idb===1){A3D_FAMLIB_IDB=true;A3D_FAMLIB_LOADING=true;return [];}   /* __acad3dV172e */
+      }
     }catch(eL){console.warn('[BIM] Corrupted family library, starting empty.',eL);}
     return [];
   }
   /* __acad3dV124b: a library the browser refuses is warned and toasted, as the project is (save3d) */
+  /* __acad3dV172e: a library localStorage refuses goes to the browser's database, its pointer written once the
+     copy has committed; a failure of both is the toast. Returns true when stored, null when the database's
+     answer is still to come (or the library is still being read), false when it failed. */
   function bimSaveFamilyLibrary(){
-    try{
-      localStorage.setItem(FAMILY_LIB_KEY,JSON.stringify(A3D_FAMLIB));
-      if(A3D_FAMLIB_SAVE_FAILED){A3D_FAMLIB_SAVE_FAILED=false;a3dToast('Saving the Assets library works again');}
-      return true;
-    }catch(eS){
+    if(A3D_FAMLIB_LOADING){A3D_FAMLIB_DIRTY=true;return null;}
+    var s=JSON.stringify(A3D_FAMLIB),n=A3D_FAMLIB.length;
+    function failed(eS){
       console.warn('[BIM] Could not persist family library: ',eS);
       if(!A3D_FAMLIB_SAVE_FAILED){
         A3D_FAMLIB_SAVE_FAILED=true;
         a3dToast('The Assets library could not be saved: browser storage is full. New assets will be lost when the page reloads; remove assets you no longer need.');
       }
-      return false;
     }
+    function worked(){if(A3D_FAMLIB_SAVE_FAILED){A3D_FAMLIB_SAVE_FAILED=false;a3dToast('Saving the Assets library works again');}}
+    if(!A3D_FAMLIB_IDB){
+      try{localStorage.setItem(FAMILY_LIB_KEY,s);worked();return true;}
+      catch(eL){console.warn('[BIM] The Assets library does not fit in browser storage; it goes to the browser\'s database.',eL);}
+    }
+    if(typeof bimIdbPut!=='function'){failed(new Error('no browser database'));return false;}
+    bimIdbPut('lib:family',{rec:s,saved:Date.now(),v:1},function(err){
+      if(err){failed(err);return;}
+      if(!A3D_FAMLIB_IDB){
+        try{localStorage.setItem(FAMILY_LIB_KEY,JSON.stringify({idb:1,key:'lib:family',count:n}));A3D_FAMLIB_IDB=true;}
+        catch(eP){failed(eP);return;}
+      }
+      worked();
+    });
+    return null;
+  }
+  /* __acad3dV172e: the library in the database, read after start; anything added meanwhile is kept after it */
+  function bimLibBootLoad(){
+    bimIdbGet('lib:family',function(err,v){
+      var arr=null;
+      if(!err&&v&&typeof v.rec==='string'){
+        try{arr=JSON.parse(v.rec);}catch(eJ){console.warn('[BIM] The Assets library in the browser\'s database is not valid JSON.',eJ);}
+      }
+      if(!Array.isArray(arr)){
+        if(err)console.warn('[BIM] The browser\'s database could not be read.',err);
+        a3dToast('The Assets library is kept in the browser\'s database, which could not be read: nothing is saved over it.');
+        return;
+      }
+      var added=A3D_FAMLIB.splice(0,A3D_FAMLIB.length);
+      Array.prototype.push.apply(A3D_FAMLIB,arr.concat(added));
+      A3D_FAMLIB_LOADING=false;
+      if(A3D_FAMLIB_DIRTY||added.length){A3D_FAMLIB_DIRTY=false;bimSaveFamilyLibrary();}
+      try{refreshFamilyPanel();}catch(eR){console.warn('[BIM] The Assets panel could not be refreshed.',eR);}
+    });
   }
   function bimFamilyLibraryAdd(fam){
     var entry={
@@ -49807,6 +49895,7 @@ try{
     if(bimAssetKind(A3D_FAMLIB[idx])==='template'){
       try{localStorage.removeItem(A3D_TEMPLATE_PREFIX+id);}
       catch(eR){console.warn('[BIM] A template\'s stored project could not be removed.',eR);}
+      if(A3D_FAMLIB[idx].idb)bimIdbDel('tpl:'+id,function(eD){if(eD)console.warn('[BIM] A template\'s copy in the browser\'s database could not be removed: '+id,eD);});   /* __acad3dV172e */
     }
     A3D_FAMLIB.splice(idx,1);
     bimSaveFamilyLibrary();
@@ -49820,6 +49909,7 @@ try{
     for(i=0;i<A3D_ASSET_BUILTINS.length;i++)if(A3D_ASSET_BUILTINS[i].id===id)return A3D_ASSET_BUILTINS[i];
     return null;
   }
+  if(A3D_FAMLIB_LOADING)setTimeout(bimLibBootLoad,0);   /* __acad3dV172e */
   /* ================= __acad3dV124: the Assets library =================
      One store, three kinds: a MODEL is a mesh placed as an independent instance (every entry
      written before V124 is one), a BLOCK is a set of object records inserted as independent copies,
@@ -58131,6 +58221,9 @@ try{
   };
   /* __acad3dV172d: where the project on screen is kept */
   window.__acad3dV172d='idbstore,spill,pointer,bootload,bootguard,parkidb,activateidb,removeidb,hiddenflush,listcount';
+  window.__acad3dV172e='libidb,libpointer,libbootload,libmerge,tplidb,tpluse,tplremove,persistonsave';
+  window.__a3dLibStore=function(){return {idb:A3D_FAMLIB_IDB,loading:A3D_FAMLIB_LOADING,dirty:A3D_FAMLIB_DIRTY};};
+  window.__a3dPersist=function(){return {asked:A3D_PERSIST.asked,granted:A3D_PERSIST.granted};};
   window.__a3dSpill=function(){return {on:A3D_SPILL.on,loading:A3D_SPILL.loading,busy:A3D_SPILL.busy,next:!!A3D_SPILL.next};};
   window.__a3dTitleBlockSet=function(tb){A3D.titleBlock=tb;bimSheetViewRefresh();saveSoon();};
   window.__a3dSheetPointerDown=bimSheetPointerDown;
