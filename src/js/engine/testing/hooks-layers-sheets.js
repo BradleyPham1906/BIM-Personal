@@ -178,6 +178,9 @@
     remove:bimDocsRemove,
     undoDepth:function(){return {undo:UNDO_STACK.length,redo:REDO_STACK.length};}
   };
+  /* __acad3dV172d: where the project on screen is kept */
+  window.__acad3dV172d='idbstore,spill,pointer,bootload,bootguard,parkidb,activateidb,removeidb,hiddenflush,listcount';
+  window.__a3dSpill=function(){return {on:A3D_SPILL.on,loading:A3D_SPILL.loading,busy:A3D_SPILL.busy,next:!!A3D_SPILL.next};};
   window.__a3dTitleBlockSet=function(tb){A3D.titleBlock=tb;bimSheetViewRefresh();saveSoon();};
   window.__a3dSheetPointerDown=bimSheetPointerDown;
   window.__a3dSheetPointerMove=bimSheetPointerMove;

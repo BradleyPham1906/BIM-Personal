@@ -5376,6 +5376,7 @@ try{
      because opening a project is the same act as booting into it. */
   var A3D_PROJECT_DEFAULTS=JSON.stringify(bimProjectRecord());
   var A3D_BOOT_DOC=null;
+  var A3D_BOOT_IDB=null;   /* __acad3dV172d: the project on screen is in the browser's database (core/idb-store.js) */
   function bimApplyStoredState(st){
       if(st&&st.objs&&st.objs.length){A3D.objs=st.objs;}
       if(st&&st.cam&&typeof st.cam.dist==='number'){A3D.cam=st.cam;}
@@ -5447,7 +5448,11 @@ try{
     var raw=localStorage.getItem(LSK);
     if(raw){
       var st=JSON.parse(raw);
-      bimApplyStoredState(st);
+      /* __acad3dV172d: a pointer in place of the record: its name now, the record once the database is read */
+      if(st&&st.idb===1&&typeof st.docId==='string'&&!Array.isArray(st.objs)){
+        A3D_BOOT_IDB=st.docId;
+        if(st.titleBlock&&typeof st.titleBlock.project==='string')A3D.titleBlock.project=st.titleBlock.project;
+      }else bimApplyStoredState(st);
       if(st&&typeof st.docId==='string'&&st.docId)A3D_BOOT_DOC=st.docId;   /* __acad3dV115 */
     }
   }catch(e0){
@@ -47121,20 +47126,176 @@ try{
   /* __acad3dV115: a save that failed went into an empty catch, so a full browser store lost every
      later edit without a word. It says so now -- once per run of failures, not once per edit. */
   var A3D_SAVE_FAILED=false;
+  /* __acad3dV172d: a record localStorage refuses goes to the browser's database (core/idb-store.js), and stays
+     there while it is the project on screen; nothing saves while that record is still being read */
   function save3d(){
+    if(A3D_SPILL&&A3D_SPILL.loading)return;
     var rec=bimProjectRecord();
     rec.docId=A3D_DOCS.active;
-    try{
-      localStorage.setItem(LSK,JSON.stringify(rec));
-      if(A3D_SAVE_FAILED){A3D_SAVE_FAILED=false;a3dToast('Saving to browser storage works again');}
-    }catch(e1){
-      if(!A3D_SAVE_FAILED){
-        A3D_SAVE_FAILED=true;
-        console.warn('[BIM] The project could not be saved to browser storage.',e1);
-        a3dToast('This project could not be saved: browser storage is full. Use Save to keep a copy as a file.');
+    var s=JSON.stringify(rec);
+    if(!(A3D_SPILL&&A3D_SPILL.on)){
+      try{
+        localStorage.setItem(LSK,s);
+        if(A3D_SAVE_FAILED){A3D_SAVE_FAILED=false;a3dToast('Saving to browser storage works again');}
+        return;
+      }catch(e1){
+        console.warn('[BIM] The project does not fit in browser storage; it goes to the browser\'s database.',e1);
       }
     }
+    bimSpillSave(rec.docId,s,rec);
   }
+  /* ================= __acad3dV172d: the browser's database, for a project too large for localStorage =================
+     reference/research-local-storage.md, phase A1. localStorage holds about 5.2 million characters for the whole
+     origin (measured in Chromium, 2026-10-31), so an imported model of about 165,000 triangles could not be saved,
+     and a project over half of it could not be switched away from. IndexedDB holds a share of the disk. A project
+     record localStorage refuses goes to IndexedDB, and localStorage keeps a pointer in its place -- the record's id,
+     name and count -- so the synchronous boot still knows which project it is and the list still names it. What
+     fits stays where it was: a small project boots and switches exactly as before.
+     One database named for the app (decision D10: every Pages project on the account shares the origin). ES5 and
+     callbacks: the data API is events. A connection another tab's upgrade asks to close is closed (H10, measured);
+     a connection the browser dropped is opened again once (idb-keyval, localForage). */
+  var A3D_IDB_NAME='BIM-Personal',A3D_IDB_VERSION=1,A3D_IDB_PROJECTS='projects';
+  var A3D_IDB={db:null,waiting:null};
+  function bimIdbOpen(cb){
+    if(A3D_IDB.db){cb(null,A3D_IDB.db);return;}
+    if(A3D_IDB.waiting){A3D_IDB.waiting.push(cb);return;}
+    var waiting=A3D_IDB.waiting=[cb],req;
+    function finish(err,db){
+      A3D_IDB.waiting=null;
+      for(var i=0;i<waiting.length;i++){
+        try{waiting[i](err,db);}catch(eC){console.warn('[BIM] A browser database callback failed.',eC);}
+      }
+    }
+    try{req=window.indexedDB.open(A3D_IDB_NAME,A3D_IDB_VERSION);}
+    catch(eO){finish(eO||new Error('IndexedDB is not available'),null);return;}
+    req.onupgradeneeded=function(){
+      var db=req.result;
+      if(!db.objectStoreNames.contains(A3D_IDB_PROJECTS))db.createObjectStore(A3D_IDB_PROJECTS);
+    };
+    req.onsuccess=function(){
+      var db=req.result;
+      db.onversionchange=function(){
+        db.close();
+        if(A3D_IDB.db===db)A3D_IDB.db=null;
+        a3dToast('A newer version of the app has updated its storage in another tab: reload this page');
+      };
+      db.onclose=function(){if(A3D_IDB.db===db)A3D_IDB.db=null;};
+      A3D_IDB.db=db;
+      finish(null,db);
+    };
+    req.onerror=function(){finish(req.error||new Error('The browser database could not be opened'),null);};
+    req.onblocked=function(){
+      console.warn('[BIM] The browser database is held open by another tab of the app.');
+      a3dToast('Close the other tabs of this app so it can update its storage');
+    };
+  }
+  /* one transaction on the projects store; done(err, value) once it has committed or failed */
+  function bimIdbTx(mode,work,done,again){
+    bimIdbOpen(function(err,db){
+      if(err){done(err);return;}
+      var tx,out={},ended=false;
+      function end(e,v){if(ended)return;ended=true;done(e,v);}
+      try{tx=db.transaction(A3D_IDB_PROJECTS,mode);}
+      catch(eT){
+        A3D_IDB.db=null;
+        if(!again){bimIdbTx(mode,work,done,true);return;}
+        end(eT);return;
+      }
+      tx.oncomplete=function(){end(null,out.v);};
+      tx.onabort=function(){end(tx.error||new Error('The browser database refused the change'));};
+      try{work(tx.objectStore(A3D_IDB_PROJECTS),out);}
+      catch(eW){try{tx.abort();}catch(eA){}end(eW);}
+    });
+  }
+  function bimIdbPut(key,val,done){bimIdbTx('readwrite',function(s){s.put(val,key);},done);}
+  function bimIdbGet(key,done){bimIdbTx('readonly',function(s,out){var r=s.get(key);r.onsuccess=function(){out.v=r.result;};},done);}
+  function bimIdbDel(key,done){bimIdbTx('readwrite',function(s){s['delete'](key);},done);}
+  /* the pointer localStorage keeps in a record's place */
+  function bimIsIdbPointer(st){return !!(st&&typeof st==='object'&&st.idb===1&&typeof st.docId==='string'&&!Array.isArray(st.objs));}
+  function bimIdbPointer(id,rec){
+    return JSON.stringify({idb:1,docId:id,titleBlock:{project:bimNameOf(rec&&rec.titleBlock)},
+      count:rec&&Array.isArray(rec.objs)?rec.objs.length:0,saved:Date.now()});
+  }
+  /* the active project's database copy: the newest record wins, one write at a time */
+  var A3D_SPILL={on:!!A3D_BOOT_IDB,loading:!!A3D_BOOT_IDB,busy:false,next:null,told:false};
+  function bimSpillToast(){
+    if(A3D_SPILL.told)return;
+    A3D_SPILL.told=true;
+    a3dToast('This project is too large for quick browser storage: it is kept in the browser\'s database. Use Save to keep a copy as a file.');
+  }
+  function bimSpillSave(id,s,rec){
+    if(A3D_SPILL.busy){A3D_SPILL.next={id:id,s:s,rec:rec};return;}
+    A3D_SPILL.busy=true;
+    bimIdbPut(id,{rec:s,saved:Date.now(),v:1},function(err){
+      A3D_SPILL.busy=false;
+      if(err){
+        if(!A3D_SAVE_FAILED){
+          A3D_SAVE_FAILED=true;
+          console.warn('[BIM] The project could not be saved to browser storage or to the browser\'s database.',err);
+          a3dToast('This project could not be saved: browser storage is full. Use Save to keep a copy as a file.');
+        }
+      }else{
+        /* the pointer goes in only once the record it points to has committed */
+        if(A3D_DOCS.active===id){
+          try{localStorage.setItem(LSK,bimIdbPointer(id,rec));}
+          catch(eP){console.warn('[BIM] The pointer to the project in the browser\'s database could not be stored.',eP);}
+          if(!A3D_SPILL.on){A3D_SPILL.on=true;bimSpillToast();}
+          if(A3D_SAVE_FAILED){A3D_SAVE_FAILED=false;a3dToast('Saving to browser storage works again');}
+        }
+      }
+      var n=A3D_SPILL.next;A3D_SPILL.next=null;
+      if(n)bimSpillSave(n.id,n.s,n.rec);
+    });
+  }
+  /* a parked project too large for its own key: its pointer in the key, then the record into the database. The
+     pointer may go first: while it is written, acad3dV1 still holds this project, and boot drops a parked copy of
+     the project acad3dV1 names (V115), so a crash between the two loses nothing. */
+  function bimParkInIdb(id,s,rec,key){
+    try{localStorage.setItem(key,bimIdbPointer(id,rec));}
+    catch(eK){console.warn('[BIM] The pointer to a parked project could not be stored: '+id,eK);return false;}
+    /* a queued save of this project is older than what is parked now, and would be written after it */
+    if(A3D_SPILL.next&&A3D_SPILL.next.id===id)A3D_SPILL.next=null;
+    bimIdbPut(id,{rec:s,saved:Date.now(),v:1},function(err){
+      if(err){
+        console.warn('[BIM] A parked project could not be written to the browser\'s database: '+id,err);
+        a3dToast('"'+bimNameOf(rec&&rec.titleBlock)+'" could not be stored: browser storage is full. Open it and use Save to keep a copy as a file.');
+      }
+    });
+    return true;
+  }
+  /* boot: the project on screen is in the database; nothing saves until it is read, so the fresh project the
+     page started with never takes its place */
+  function bimSpillBootLoad(){
+    var id=A3D_BOOT_IDB;
+    bimIdbGet(id,function(err,v){
+      var st=null;
+      if(!err&&v&&typeof v.rec==='string'){
+        try{st=JSON.parse(v.rec);}catch(eJ){console.warn('[BIM] The project in the browser\'s database is not valid JSON: '+id,eJ);}
+      }
+      if(!st||typeof st!=='object'||A3D_DOCS.active!==id){
+        if(err)console.warn('[BIM] The browser\'s database could not be read.',err);
+        a3dToast('This project is kept in the browser\'s database, which could not be read: nothing is saved over it. Open a saved file or start a new project.');
+        return;
+      }
+      try{
+        bimLoadProjectRecord(st);
+        A3D_SPILL.loading=false;
+        var ent=bimDocEntry(id);
+        if(ent){ent.name=bimProjectLabel();ent.objs=A3D.objs.length;}
+        paint();
+        bimDocsNotify('activate',id);
+      }catch(eL){
+        console.warn('[BIM] The project from the browser\'s database could not be loaded.',eL);
+        a3dToast('This project is kept in the browser\'s database and could not be loaded: nothing is saved over it.');
+      }
+    });
+  }
+  if(A3D_BOOT_IDB)setTimeout(bimSpillBootLoad,0);
+  /* decision D9: an autosave still waiting when the page is hidden is written then, while it can finish;
+     pagehide cannot wait for the database */
+  document.addEventListener('visibilitychange',function(){
+    if(document.hidden&&saveT){clearTimeout(saveT);saveT=null;save3d();}
+  });
   /* ================= __acad3dV115: projects side by side =================
      AutoCAD's file tabs and Revit's open projects: several projects open at once, each its own
      model with its own undo history, one on screen. What is on screen is always the project in
@@ -47170,7 +47331,7 @@ try{
       var st=JSON.parse(localStorage.getItem(A3D_DOC_PREFIX+id)||'null');
       if(st&&typeof st==='object'){
         meta.name=bimNameOf(st.titleBlock);
-        meta.objs=Array.isArray(st.objs)?st.objs.length:0;
+        meta.objs=Array.isArray(st.objs)?st.objs.length:(isFinite(st.count)?+st.count:0);   /* __acad3dV172d: a pointer's count */
       }
     }catch(eM){console.warn('[BIM] A stored project could not be read: '+id,eM);}
     return meta;
@@ -47290,18 +47451,24 @@ try{
     }
     var recA=bimProjectRecord();recA.docId=cur;
     var sA=JSON.stringify(recA);
+    /* __acad3dV172d: a project still being read from the database is parked as its pointer, never as the
+       fresh project the page started with */
+    if(A3D_SPILL.loading){try{sA=localStorage.getItem(LSK)||sA;}catch(eG){console.warn('[BIM] The pointer of the project on screen could not be read.',eG);}}
     stB.docId=toId;
     var sB=JSON.stringify(stB);
     var full='There is not enough browser storage to switch projects. Use Save to keep this project as a file, then delete projects you no longer need from Start.';
     try{localStorage.setItem(A3D_DOC_PREFIX+cur,sA);}
-    catch(e1){console.warn('[BIM] The current project could not be parked in its own key.',e1);a3dToast(full);return false;}
+    catch(e1){
+      /* __acad3dV172d: too large for its own key: the database, its pointer in the key */
+      console.warn('[BIM] The current project does not fit in its own key; it is parked in the browser\'s database.',e1);
+      if(!bimParkInIdb(cur,sA,recA,A3D_DOC_PREFIX+cur)){a3dToast(full);return false;}
+    }
+    var spillB=false;
     try{localStorage.setItem(LSK,sB);}
     catch(e2){
-      try{localStorage.removeItem(A3D_DOC_PREFIX+cur);}
-      catch(e3){console.warn('[BIM] A parked copy could not be removed after a failed switch.',e3);}
-      console.warn('[BIM] The next project could not be written to the active slot.',e2);
-      a3dToast(full);
-      return false;
+      /* __acad3dV172d: the next project does not fit the active slot: it is kept in the database */
+      console.warn('[BIM] The next project does not fit in browser storage; it is kept in the browser\'s database.',e2);
+      spillB=true;
     }
     var stash={undo:UNDO_STACK,redo:REDO_STACK,view:{kind:A3D_VIEW.kind,id:A3D_VIEW.id},lastModel:A3D_LAST_MODEL_VIEW,   /* __acad3dV116 */
       cam:{yaw:A3D.cam.yaw,pitch:A3D.cam.pitch,dist:A3D.cam.dist,tx:A3D.cam.tx,ty:A3D.cam.ty,tz:A3D.cam.tz}};
@@ -47331,6 +47498,8 @@ try{
     if(entA){entA.name=nameA;entA.objs=countA;entA.saved=Date.now();}
     A3D_DOC_RT[cur]=stash;
     A3D_DOCS.active=toId;
+    A3D_SPILL.on=spillB;A3D_SPILL.loading=false;   /* __acad3dV172d */
+    if(spillB){bimSpillSave(toId,sB,stB);bimSpillToast();}
     var shown=false;
     if(rt&&rt.view){
       shown=bimActivateView(rt.view.kind,rt.view.id,{anim:false});
@@ -47352,12 +47521,33 @@ try{
       try{st=JSON.parse(raw);}
       catch(eP){console.warn('[BIM] A stored project is not valid JSON: '+id,eP);st=null;}
       if(!st||typeof st!=='object'){a3dToast('"'+nm+'" could not be opened: its stored data is damaged');return false;}
+      if(bimIsIdbPointer(st)){bimDocsActivateIdb(id,nm);return true;}   /* __acad3dV172d */
       if(!bimDocsSwap(id,st,A3D_DOC_PREFIX+id))return false;
     }
     if(A3D_DOCS.open.indexOf(id)<0)A3D_DOCS.open.push(id);
     bimDocsSave();
     bimDocsNotify('activate',id);
     return true;
+  }
+  /* __acad3dV172d: a parked project kept in the database is read first; the switch follows when it arrives. Once
+     it is on screen in localStorage, the database's copy is no longer needed. */
+  function bimDocsActivateIdb(id,nm){
+    bimIdbGet(id,function(err,v){
+      var st=null;
+      if(!err&&v&&typeof v.rec==='string'){
+        try{st=JSON.parse(v.rec);}catch(eJ){console.warn('[BIM] A project in the browser\'s database is not valid JSON: '+id,eJ);}
+      }
+      if(!st||typeof st!=='object'){
+        if(err)console.warn('[BIM] The browser\'s database could not be read.',err);
+        a3dToast('"'+nm+'" could not be opened: the browser\'s database could not be read');
+        return;
+      }
+      if(!bimDocsSwap(id,st,A3D_DOC_PREFIX+id))return;
+      if(!A3D_SPILL.on)bimIdbDel(id,function(eD){if(eD)console.warn('[BIM] A project\'s copy in the browser\'s database could not be removed: '+id,eD);});
+      if(A3D_DOCS.open.indexOf(id)<0)A3D_DOCS.open.push(id);
+      bimDocsSave();
+      bimDocsNotify('activate',id);
+    });
   }
   function bimNextProjectName(){
     var used={},i,n;
@@ -47487,6 +47677,7 @@ try{
     if(id===A3D_DOCS.active){a3dToast('Open another project before deleting "'+bimDocName(id)+'"');return false;}
     try{localStorage.removeItem(A3D_DOC_PREFIX+id);}
     catch(eX){console.warn('[BIM] A stored project could not be deleted.',eX);a3dToast('The project could not be deleted');return false;}
+    bimIdbDel(id,function(eD){if(eD)console.warn('[BIM] A project\'s copy in the browser\'s database could not be removed: '+id,eD);});   /* __acad3dV172d */
     A3D_DOCS.docs=A3D_DOCS.docs.filter(function(e){return e.id!==id;});
     delete A3D_DOC_RT[id];
     bimDocsSave();
@@ -57938,6 +58129,9 @@ try{
     remove:bimDocsRemove,
     undoDepth:function(){return {undo:UNDO_STACK.length,redo:REDO_STACK.length};}
   };
+  /* __acad3dV172d: where the project on screen is kept */
+  window.__acad3dV172d='idbstore,spill,pointer,bootload,bootguard,parkidb,activateidb,removeidb,hiddenflush,listcount';
+  window.__a3dSpill=function(){return {on:A3D_SPILL.on,loading:A3D_SPILL.loading,busy:A3D_SPILL.busy,next:!!A3D_SPILL.next};};
   window.__a3dTitleBlockSet=function(tb){A3D.titleBlock=tb;bimSheetViewRefresh();saveSoon();};
   window.__a3dSheetPointerDown=bimSheetPointerDown;
   window.__a3dSheetPointerMove=bimSheetPointerMove;

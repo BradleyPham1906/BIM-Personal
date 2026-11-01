@@ -173,6 +173,7 @@ ENGINE = [
     ('ui/tool-palette.js', '  /* ================= __acad3dV150: the tool palette, on a phone and a tablet ==========='),
     ('views/section-tool.js', '  // ---- __acad3dV15/16: Section tool. Non-destructive: cuts are computed fresh into a pe'),
     ('core/objects-save.js', '  function add3d(t,prm){'),
+    ('core/idb-store.js', '  /* ================= __acad3dV172d: the browser\'s database, for a project too large for localStorage'),
     ('ui/project-tabs.js', '  /* ================= __acad3dV115: projects side by side ================='),
     ('assets/templates.js', '  /* ================= __acad3dV124: templates -- a starting project ================='),
     ('bim/region-regenerate.js', '  /* ================= __acad3dV99: regenerate regions whose plane changed ==============='),

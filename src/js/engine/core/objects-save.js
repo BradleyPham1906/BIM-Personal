@@ -45,17 +45,21 @@
   /* __acad3dV115: a save that failed went into an empty catch, so a full browser store lost every
      later edit without a word. It says so now -- once per run of failures, not once per edit. */
   var A3D_SAVE_FAILED=false;
+  /* __acad3dV172d: a record localStorage refuses goes to the browser's database (core/idb-store.js), and stays
+     there while it is the project on screen; nothing saves while that record is still being read */
   function save3d(){
+    if(A3D_SPILL&&A3D_SPILL.loading)return;
     var rec=bimProjectRecord();
     rec.docId=A3D_DOCS.active;
-    try{
-      localStorage.setItem(LSK,JSON.stringify(rec));
-      if(A3D_SAVE_FAILED){A3D_SAVE_FAILED=false;a3dToast('Saving to browser storage works again');}
-    }catch(e1){
-      if(!A3D_SAVE_FAILED){
-        A3D_SAVE_FAILED=true;
-        console.warn('[BIM] The project could not be saved to browser storage.',e1);
-        a3dToast('This project could not be saved: browser storage is full. Use Save to keep a copy as a file.');
+    var s=JSON.stringify(rec);
+    if(!(A3D_SPILL&&A3D_SPILL.on)){
+      try{
+        localStorage.setItem(LSK,s);
+        if(A3D_SAVE_FAILED){A3D_SAVE_FAILED=false;a3dToast('Saving to browser storage works again');}
+        return;
+      }catch(e1){
+        console.warn('[BIM] The project does not fit in browser storage; it goes to the browser\'s database.',e1);
       }
     }
+    bimSpillSave(rec.docId,s,rec);
   }

@@ -17,12 +17,12 @@ requires command mapping, full app regressions and owner review.
 
 **Read this first in a new session.** One page. The detail lives in the docs listed at the bottom.
 
-    canvas_v10.html   3729520 bytes
-    sha256            1dd1646f3e6b36424a41a7bab53c9a270c621ed0ae75c89d5c31d6240bd29e3f
+    canvas_v10.html   3740818 bytes
+    sha256            4d8ba4c09774e5eeb455711cb940d5096608b9a0049f5e7d867f5f9bf861c0d9
     markers           __acad3dV60 ... __acad3dV172, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
                       __acad3dV121b, __acad3dV124b, __acad3dV166b, __acad3dV166c, __acad3dV166d, __acad3dV171b,
-                      __acad3dV171c, __acad3dV171d
-    tests             135 suites, 6899 checks, 0 failures (the 134 older suites' 6879 and V124b's 20; with cjval
+                      __acad3dV171c, __acad3dV171d, __acad3dV172d
+    tests             136 suites, 6939 checks, 0 failures (the 135 older suites' 6899 and V172d's 40; with cjval
                       built, V139 and V140 run their three more)
 
     The user guide (V142): every phase updates docs/src/, its log entry and BIM_APP_VERSION, then
@@ -146,6 +146,10 @@ three tiers: compact up to 720 px wide or 500 px high, medium up to 1024 px, des
 | 172 | Site analysis SA5: tools and synthesis, ArcGIS's way | **Done** (see Recently finished): one pane for every analysis tool (typed parameters checked as filled, Run, messages, History to rerun from, results as layers); buffer, distance, slope classes, exclusions, weighted suitability in Esri's four steps (criteria, transform, weight, locate); the constraints and opportunities map; the buildable area (Pennsylvania's site capacity calculation, the owner); sun hours left to V172c (the owner, 2026-10-27); each tool a guide page in one template (summary, usage, parameters, how it works) | `reference/research-arcgis-site-analysis.md` (1); `reference/research-site-analysis-tools.md` (the research and the owner's four decisions). |
 | 172b | Ladybug L1: weather and comfort | **Start here.** Ladybug Tools' own Python (AGPL-3.0, the owner's choice), unchanged, run by Pyodide loaded on first use in a Web Worker, served with the site at a fixed path: EPW opened from a file, or the Open-Meteo hours already fetched; UTCI and PMV over the year, the psychrometric chart with its comfort polygons, the wind rose, design days, on the climate board and in the analysis workspace, Ladybug credited as the method. The app's zero-dependency contract gets one written exception: these analyses, on demand | `reference/research-ladybug-tools.md` (the experiment, the owner's decisions of 2026-10-26). No Honeybee export (the owner). |
 | 172c | Ladybug L2: sun-hours and radiation on the model | Ladybug's sun path and sky over the model's faces, as result layers; the sky without Radiance's `gendaymtx`, its choice read first | `reference/research-ladybug-tools.md` (7). |
+| 172d | Storage A1: large projects in IndexedDB | **Done** (see Recently finished): a project record localStorage refuses goes to IndexedDB (`BIM-Personal`, store `projects`), a pointer in its place written once the record has committed; boot reads it back and saves nothing until then; switching parks and reopens it; deleting removes it; a waiting autosave written when the page is hidden. What fits stays where it was | `reference/research-local-storage.md` (D1, D9, D10; the owner, 2026-10-31). |
+| 172e | Storage A2: everything in IndexedDB | Templates and the Assets library in the database; every project record there, localStorage keeping pointers and the small preferences; the old keys copied, checked and retired (the owner's approval, 2026-10-31); a schema version, old `v/` builds kept from overwriting; a second tab opens a project read-only (D7); `persist()` asked on the first Save (D3) | Same note, D1, D3, D7, D10. |
+| 172f | Storage B: files as the real save | A "not saved to a file" marker on each project, a reminder after 30 minutes and at the first save in Safari or a private window (D2); Save and Open through the File System Access pickers in Chrome and Edge, download and a file input elsewhere; the envelope version 2 with the view; an optional `.acad3d.json.gz` known by its first bytes (D4); the `file://` build told when storage is refused (D5) | Same note, D2, D4, D5. |
+| 172g | Storage C: installable and offline | A manifest (`/BIM-Personal/`, standalone, 192 and 512 px icons) and an ES5 service worker at `/BIM-Personal/sw.js`: hashed `app/` files cache-first, `index.html` network-first, `v/` left alone, no update while there is unsaved work (D6) | Same note, D6. |
 | 173 | Site analysis SA6: the Contents pane | The layer stack by drawing order, by source and by selection, a legend patch under each layer; symbology (by category, graduated, stretch), labels and a filter (definition query); the stack exploded in 3D as McHarg's layer cake | ArcGIS Pro's Contents pane. |
 | 174 | Presentation P1: boards | V162 made the site analysis's boards pages of the set; this phase is boards you design. New Layout's page gallery (ANSI, Architectural, ISO, portrait and landscape); map frames with a live legend, north arrow and scale bar. A board is a sheet you design on: one layer tree (frames, groups, lock, hide, reorder), opacity and blend modes on every element (canvas compositing, the same 16 modes as Figma), masks, shapes, text, images; align, distribute, smart spacing; rows and columns that space their children (a light auto layout) | Figma's layer model. `reference/research-presentation-panels.md` (1). |
 | 175 | Presentation P2: live elements | Elements linked to their source and redrawn when the model changes: model views, schedules, legends, the V157 dashboard's charts and cards, any result layer's chart, analysis results (sun hours, cut and fill, solar), numbers (GBA, cut volume, site area), text bound to project data (autotext). An edit on the board is an override, marked, with Reset | Archicad's linked drawings and autotext; SketchUp LayOut's overrides and Reset. The data stays connected (the owner's rule). |
@@ -227,7 +231,19 @@ when it starts (V111 to V138 went to other work; V139 to V193 are in NOW).
 | 118 | Blocks and data | ATTDEF ATTEDIT BEDIT WBLOCK DATAEXTRACTION TABLESTYLE TABLEDIT TABLEEXPORT | First phase that's about the disciplines, not drafting. BLOCK and INSERT landed in V124, as the Assets library's blocks: saved records inserted as independent copies. A block reference that follows its definition (what BEDIT edits) is not built. |
 | 119 | Sheets and plotting, rest | MVIEW (draw a viewport on the paper) PAGESETUP (plot settings beyond Sheet Setup) PUBLISH (V122's Print set prints every sheet in one job; a chosen subset and page setups remain) EXPORTPDF (vector PDF of a sheet) VPLAYER (per-viewport layer visibility) viewport lock | LAYOUT, MSPACE and PSPACE landed in V116, with layout tabs and model space through a viewport. |
 
-**Recently finished:** V124b, **the Assets library's save, warned and toasted** (2026-10-31; built on V172, the version
+**Recently finished:** V172d, **storage A1: large projects in IndexedDB** (2026-10-31 to 11-01; the version stays V172).
+- The owner's decision D1 of `reference/research-local-storage.md`: phase A, the IndexedDB project store; A1 is its first
+  half. `src/js/engine/core/idb-store.js`, ES5 and callbacks: one database `BIM-Personal` (D10), store `projects`.
+- **A record localStorage refuses** goes to the database under the project's id; `acad3dV1` keeps a pointer (id, name,
+  count), written once the record has committed. One toast says where the project is kept. What fits stays where it was.
+- **Boot** names the project from the pointer and reads the record after start; nothing saves until it arrives, and a
+  record that cannot be read is said so and never saved over. **Switching** parks a record too large for its key in the
+  database (the pointer first, safe because `acad3dV1` still holds it), and opening it reads it back; the list counts
+  it. **Deleting** removes its database copy. An autosave waiting when the page is hidden is written then (D9).
+- Found while building: an orphan record when a parked key refused even its pointer (patch b). V115's full-store check
+  amended: the database is made to refuse too.
+
+V124b, **the Assets library's save, warned and toasted** (2026-10-31; built on V172, the version
 stays V172). The owner's decision D8 of `reference/research-local-storage.md`: when browser storage refused the library,
 `bimSaveFamilyLibrary` only warned to the console, so an asset added to a full store was gone at the next reload without
 a word. It now toasts once per run of failures (what is lost and what to do), says so when a save works again, and
