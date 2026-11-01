@@ -17,6 +17,88 @@ one-file build every suite tests, and Pages serves it as separate files (see "Th
 3. The current work plan is `reference/plan-v167-v170.md`; each phase's research note is in
    `reference/`; the engineering log is `canvas_v10_STATUS.md` (search it, never read it whole).
 
+## Rule #1: do not test unless the table says so (the owner, 2026-11-01)
+
+This overrides every other testing rule in this repository: `CLAUDE_INSTRUCTIONS.md` section 4,
+"Never idle on long checks" below, and any phase plan. The default after an edit: make the change,
+say what changed, stop. No tests, browser, screenshots, falsification or regression unless the table
+calls for it or the owner asks.
+
+| Change | What to run |
+|---|---|
+| Text, style, markup, comments, or a few lines of JS | Nothing. |
+| JS logic in one file | Syntax check of that file only. |
+| Shared state, the order in `src/index.html`, or 3+ files | Syntax check of the changed files, then the build. Then ask the owner whether to run a browser check. |
+| The owner says "full regression" | Full regression. This is the only trigger. |
+
+If a bigger check seems needed, ask in one sentence; don't run it.
+
+- **Syntax check** (cheap): `node --check src/js/<path>.js` (every file but `_begin.js`/`_end.js`,
+  which only open and close the engine's closure).
+- **Build** (cheap): `python3 tools/build_app.py`, which proves `src/` still joins into
+  `canvas_v10.html`. A change under `src/` is not done until `canvas_v10.html` is rebuilt and committed:
+  the Pages workflow runs `--check` and fails otherwise.
+- **Browser check** (expensive, only when the owner approves): load the build, report console errors only.
+- **Full regression / a phase's suite and falsification** (only when the owner asks): `tests/` and the
+  test protocol in `CLAUDE_INSTRUCTIONS.md` section 4, which says how, not when.
+- When a check fails, show only the failing lines. Stop after 2 failed fix attempts and say what is wrong.
+- If a hook, script or instruction makes tests run automatically, tell the owner instead of following it.
+  (2026-11-01: there is no `.claude/settings.json` and no git hook; CI runs only the build checks.)
+
+## How to work in this repo (the owner, 2026-11-01)
+
+- Read the module map below first. Open only the files the task touches; find code with
+  `grep -rn 'name' src/`, then read that file or its range.
+- Don't read the whole codebase to "understand the app". Ask before reading files outside the task.
+- Edit with small targeted changes. Never rewrite a whole file for a small change.
+- Keep files under about 400 lines. If one grows past that, suggest a split; don't do it unasked.
+  (Already over, 2026-11-01: `vendor/openskp.js` 3239, third-party; `engine/gizmo/gizmo-handles.js` 1280;
+  `engine/standards/registry.js` 1024; `engine/ui/build-ui.js` 993; `engine/site-analysis/zoning-envelope.js` 970.)
+
+## Module map
+
+<!-- Claude: keep this current. One line per folder: path, what it owns. Every file, in order, with
+its first line: tools/app_layout.py. -->
+
+    src/index.html                      the page; the order every css/js file is joined in
+    src/css/shell/                      top bar, command palette, left shell, page base
+    src/css/panels/                     layers, presentation, properties and Analyze panels
+    src/css/workspace/                  components, engine chrome, responsive (phone/tablet)
+    src/css/sheets/                     layouts, pages, present mode
+    src/css/site-analysis/              Analyze workspace and its boards
+    src/js/shell/shell.js               top bar, command palette, project tabs, boot
+    src/js/vendor/openskp.js            SketchUp reader (third-party, never edited by hand)
+    src/js/engine/_begin.js, _end.js    open and close the engine's one closure
+    src/js/engine/core/                 state, IndexedDB store, storage/theme, mesh primitives, save
+    src/js/engine/render/               WebGL/WebGPU, GPU batches and picking, view cube
+    src/js/engine/drawing/              drawing tools: lines, arcs, curves, construction lines, endings
+    src/js/engine/editing/              selection, push/pull, offset/align/trim, precision, modify toolbox
+    src/js/engine/gizmo/                transform gizmo and its handles
+    src/js/engine/bim/                  BIM elements: walls, columns, openings, slabs, footings, grids, CSG, site hierarchy
+    src/js/engine/structure/            analytical model, frame solve, tributary loads, results display
+    src/js/engine/annotation/           dimensions, annotation overlay, picking, grips
+    src/js/engine/layers/               layer manager, rules, panel, plot-by-layer
+    src/js/engine/properties/           properties palette, usages, site data and standards fields
+    src/js/engine/views/                saved views, sections, schedules
+    src/js/engine/sheets/               sheets, layouts, pages, presentation, editable boards
+    src/js/engine/assets/               library, families, blocks, templates, drag-in
+    src/js/engine/io/                   project file; import DXF/IFC/OBJ/STL/SketchUp; DXF export
+    src/js/engine/map/                  map tiles, open-data layers, CityJSON, LOD solids and roofs
+    src/js/engine/terrain/              terrain TIN, breaklines, grading
+    src/js/engine/survey/               survey arithmetic and checks
+    src/js/engine/site/                 property, alignment/profile, sun position, shadows
+    src/js/engine/site-analysis/        Analyze workspace, site boards (climate, access, land use, zoning), sun path
+    src/js/engine/site-tools/           V172 site tools: grid, capacity, suitability, panel
+    src/js/engine/simulation/           traffic network, demand, signals, sim, walkers, UI
+    src/js/engine/ladybug/              Pyodide runtime, weather sources, analyses, figures, panel, Python adapter
+    src/js/engine/analysis/             Analyze tab, result layers, simulation glue
+    src/js/engine/standards/registry.js industry standards as data, with editions (V167)
+    src/js/engine/history/              element history, branches and merge
+    src/js/engine/ui/                   UI build, chrome, tabs, docks/tooltips, project browser, guide
+    src/js/engine/commands/             command catalogue and map
+    src/js/engine/testing/              window.__a3d* hooks the suites drive
+    src/py/bim_ladybug.py               Ladybug adapter (Python), embedded by tools/embed_py.py
+
 ## The source: src/, by feature (the owner, 2026-10-25)
 
 "having a one html with all the code cost me so many token and i want the app structure to be like a
@@ -123,6 +205,8 @@ progress summaries and links, not duplicate source trees or full upstream docume
 not assume Claude Code can read Notion unless its connector is configured and works.
 
 ## Never idle on long checks (the owner, 2026-10-24)
+
+(Since 2026-11-01 these checks run only when the owner asks; see Rule #1. When they do run, this applies.)
 
 "i cant just wait till the falsification and full regression finish. we can build code ahead and plan while waiting."
 Falsification and the full regression run against a frozen copy of the tested build: a git worktree at the tested
