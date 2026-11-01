@@ -12,14 +12,21 @@ set -euo pipefail
 HERE="$(cd "$(dirname "$0")" && pwd)"
 source "$EMSDK_ENV" >/dev/null 2>&1
 mkdir -p "$E02_OUT/obj"
-CXXFLAGS="-O3 -std=c++17 -fexceptions -DSM_NO_DEBUG_CODE -DSM_NO_GFX_OUTPUT_CODE -DNDEBUG -w \
- -I$E02_SRC/source/SMLib/inc -I$E02_SRC/source/SM_API/inc"
+BASEFLAGS="-O3 -std=c++17 -fexceptions -DSM_NO_DEBUG_CODE -DSM_NO_GFX_OUTPUT_CODE -DNDEBUG -w"
+# Both trees have a StdAfx.h: kernel files take SMLib's first, API files (and the driver) SM_API's,
+# as IFClite's CMakeLists.txt does with "BEFORE PRIVATE" for smlib_api.
+KFLAGS="$BASEFLAGS -I$E02_SRC/source/SMLib/inc -I$E02_SRC/source/SM_API/inc"
+AFLAGS="$BASEFLAGS -I$E02_SRC/source/SM_API/inc -I$E02_SRC/source/SMLib/inc"
 echo "revision $(git -C "$E02_SRC" rev-parse HEAD)" > "$E02_OUT/build.log"
 em++ --version | head -1 >> "$E02_OUT/build.log"
 start=$(date +%s)
 ls "$E02_SRC"/source/SMLib/src/*.cpp "$E02_SRC"/source/SM_API/src/*.cpp "$HERE/e02_driver.cpp" > "$E02_OUT/sources.txt"
 echo "sources $(wc -l < "$E02_OUT/sources.txt")" >> "$E02_OUT/build.log"
-xargs -P "$(nproc)" -I{} sh -c 'f="{}"; o="'"$E02_OUT"'/obj/$(echo "$f" | md5sum | cut -c1-12).o"; [ -f "$o" ] || em++ '"$CXXFLAGS"' -c "$f" -o "$o" || { echo "FAILED $f"; exit 255; }' < "$E02_OUT/sources.txt"
+compile() { # $1 = flags, stdin = source list
+  xargs -P "$(nproc)" -I{} sh -c 'f="{}"; o="'"$E02_OUT"'/obj/$(echo "$f" | md5sum | cut -c1-12).o"; [ -f "$o" ] || em++ '"$1"' -c "$f" -o "$o" || { echo "FAILED $f"; exit 255; }'
+}
+grep '/source/SMLib/src/' "$E02_OUT/sources.txt" | compile "$KFLAGS"
+grep -v '/source/SMLib/src/' "$E02_OUT/sources.txt" | compile "$AFLAGS"
 echo "compile_seconds $(( $(date +%s) - start ))" >> "$E02_OUT/build.log"
 EXPORTS="['_e02_init','_e02_box_minus_cylinder','_e02_plate16','_e02_wall_join_union','_e02_fillet_box_edge','_e02_tessellate_plate']"
 LINK="-O3 -fexceptions -sALLOW_MEMORY_GROWTH=1 -sSTACK_SIZE=8388608 -sMODULARIZE=1 --no-entry -sEXPORTED_FUNCTIONS=$EXPORTS"
