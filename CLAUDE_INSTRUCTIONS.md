@@ -102,6 +102,10 @@ right shape. A single large script that does eight things will half-apply.
 
 ## 4. Test protocol
 
+> **When** to run any of this is set by "Rule #1" in `CLAUDE.md` (the owner, 2026-11-01): a
+> phase's suite, its falsification and the full regression run only when the owner asks. This
+> section says how.
+
 Every phase ships a browser suite in `tests/`. Non-negotiable:
 
 - **Falsify the suite.** Build a deliberately broken copy carrying the phase marker, run the
