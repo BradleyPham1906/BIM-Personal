@@ -178,6 +178,7 @@
       acts:[{act:'rain:run',label:ra?'Run again':'Run',pri:true,off:ter?'':'No terrain yet'},{act:'sim:clear:rain',label:'Clear',off:ra?'':'Not run'}]});
     C=bimDgCards().concat(C);   /* __acad3dV164: what Analyze site draws, first in its category */
     bimLbCards().forEach(function(c){C.push(c);});   /* __acad3dV172b: Ladybug's rows, in Climate */
+    bimLbsCards().forEach(function(c){C.push(c);});   /* __acad3dV172c: and its studies on the model */
     C.forEach(function(c){c.group=BIM_ANZ_GROUP_OF[c.id]||'model';});   /* __acad3dV148 */
     return C;
   }

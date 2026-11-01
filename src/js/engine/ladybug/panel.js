@@ -122,6 +122,7 @@
     var i=a.indexOf(':'),c=i<0?a:a.slice(0,i),k=i<0?'':a.slice(i+1);
     function fail(what){return function(e){console.warn('[BIM] Ladybug: '+what,e);a3dToast(what+': '+(e&&e.message||e));bimLbRefresh();};}
     if(c==='open'){bimLbPickFile();return true;}
+    if(c==='study')return bimLbsAct(k);   /* __acad3dV172c: the studies on the model */
     if(c==='year'){
       a3dToast('Getting a year of hours from Open-Meteo, then Ladybug reads them ...');
       bimLbFetchYear().then(function(s){a3dToast('Weather: '+bimLbSrcWords(s));},fail('The year of hours could not be had'));

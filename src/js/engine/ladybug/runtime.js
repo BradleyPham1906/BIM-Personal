@@ -9,12 +9,15 @@
      by ES5 code. */
   var BIM_LB_PYODIDE='0.29.5';
   var BIM_LB_PAGES='https://bradleypham1906.github.io/BIM-Personal/runtime/';
-  /* the four wheels, as runtime/MANIFEST.json pins them */
+  /* the wheels, as runtime/MANIFEST.json pins them; __acad3dV172c: ladybug-radiance, for the studies on the model */
   var BIM_LB_WHEELS=[
     {f:'ladybug_geometry-1.35.7-py3-none-any.whl',h:'fd73bddbf611f6d523677dd855db0184191b882aba06c353e7032bf245c89139'},
     {f:'ladybug_core-0.44.63-py3-none-any.whl',h:'21d67827869f5f8d6dc726f452aa9186689f448d87bb7c83aae466d7905e9556'},
     {f:'ladybug_comfort-0.19.13-py3-none-any.whl',h:'227e246d0689cb6a7c25fd34169c84c154bcf7f244042b508bf86de35abb62e8'},
-    {f:'click-8.3.3-py3-none-any.whl',h:'a2bf429bb3033c89fa4936ffb35d5cb471e3719e1f3c8a7c3fff0b8314305613'}];
+    {f:'click-8.3.3-py3-none-any.whl',h:'a2bf429bb3033c89fa4936ffb35d5cb471e3719e1f3c8a7c3fff0b8314305613'},
+    {f:'ladybug_radiance-0.2.12-py3-none-any.whl',h:'66d57a562c3e896e9ae55e685a4f45e0a0ada28a8948b749966defa028a9e629'}];
+  /* __acad3dV172c: Radiance's gendaymtx (the release rad6R0P1a) as WebAssembly, fetched on the first study only */
+  var BIM_LB_RAD={f:'radiance/gendaymtx.wasm',h:'45726aea4f019ca39dd2c6ba1cdfe42554f523010b7ac6ed6b25504d70ef05e5'};
   var BIM_LB_BOOT_MS=180000,BIM_LB_RUN_MS=180000;
   var A3D_LB={w:null,st:'idle',err:'',seq:0,pend:{},boot:null,versions:null,pyodide:null,base:null,ms:null,src:null};
   /* where the runtime is: the page's own folder over http(s); the Pages address from a file:// copy or an older
@@ -28,11 +31,12 @@
   }
   /* the worker's whole program: it is made from this function's own text, so it reads nothing of the engine's */
   function bimLbWorkerMain(){
-    var PY=null;
+    var PY=null,BASE='',RAD=null,GDM=null,NP=false;   /* __acad3dV172c */
     function hex(buf){var a=new Uint8Array(buf),s='',i;for(i=0;i<a.length;i++)s+=('0'+a[i].toString(16)).slice(-2);return s;}
     function say(m){self.postMessage(m);}
     function boot(m){
       var t0=Date.now(),B=m.base;
+      BASE=B;RAD=m.rad||null;   /* __acad3dV172c */
       if(!(self.crypto&&self.crypto.subtle)){say({t:'fail',s:'This page cannot check the runtime\'s files (no secure context)'});return;}
       try{importScripts(B+m.dir+'pyodide.js');}catch(x){say({t:'fail',s:'The runtime could not be loaded from '+B+' ('+(x&&x.message||x)+')'});return;}
       if(typeof self.loadPyodide!=='function'){say({t:'fail',s:'The runtime at '+B+' did not start'});return;}
@@ -59,7 +63,59 @@
         say({t:'done',id:m.id,r:String(PY.runPython('import bim_ladybug\nbim_ladybug.handle(_bim_req)'))});
       }catch(x){say({t:'err',id:m.id,s:String(x&&x.message||x)});}
     }
-    self.onmessage=function(e){var m=e.data||{};if(m.t==='boot')boot(m);else if(m.t==='run'&&PY)run(m);};
+    /* __acad3dV172c: what a study needs beyond the weather's analyses, the first time: numpy (Pyodide's own, from
+       the runtime, checked against its lock file) and gendaymtx, checked by its SHA-256, given to Python as
+       bimGendaymtx(args, wea text) -> the program's stdout */
+    function ensure(){
+      var p=Promise.resolve();
+      if(!NP)p=p.then(function(){return PY.loadPackage('numpy').then(function(){NP=true;});});
+      if(!GDM)p=p.then(function(){
+        if(!RAD)throw new Error('The runtime has no gendaymtx');
+        return fetch(BASE+RAD.f).then(function(r){if(!r.ok)throw new Error(RAD.f+': HTTP '+r.status);return r.arrayBuffer();})
+          .then(function(buf){return self.crypto.subtle.digest('SHA-256',buf).then(function(h){
+            if(hex(h)!==RAD.h)throw new Error(RAD.f+' does not match its SHA-256');
+            return WebAssembly.compile(buf);});})
+          .then(function(mod){
+            GDM=mod;
+            self.bimGendaymtx=function(args,wea){
+              var a=args&&args.toJs?args.toJs():args,r=bimLbWasiRun(GDM,['gendaymtx'].concat(a),new TextEncoder().encode(String(wea)));
+              if(r.code)throw new Error('gendaymtx stopped ('+r.code+'): '+new TextDecoder().decode(r.stderr).slice(0,300));
+              return r.stdout;
+            };
+          });
+      });
+      return p;
+    }
+    function call(fn,args){
+      PY.globals.set('_bim_req',JSON.stringify({fn:fn,args:args||{}}));
+      var r=JSON.parse(String(PY.runPython('import bim_ladybug\nbim_ladybug.handle(_bim_req)'))),e;
+      if(r&&r.error){e=new Error(r.error);e.trace=r.trace;throw e;}
+      return r;
+    }
+    /* a study: Ladybug's first call (the sky, or the sun's steps), the rays over the model, then Ladybug's sum, by
+       chunks of rows so the matrix stays small */
+    function study(m){
+      ensure().then(function(){
+        var t0=Date.now(),pre=call(m.pre.fn,m.pre.args),V=bimLbStudyVecs(pre.vectors||[],m.tn||0,m.kind==='rad'),t1=Date.now();
+        var H=bimLbBvhBuild(m.tris),n=m.sens.length/6,vals=[],a,b,M,r,t,rays=0,args,step=Math.max(1,Math.floor(400000/Math.max(1,V.length)));
+        for(a=0;a<n;a=b){
+          b=Math.min(n,a+step);t=Date.now();
+          M=bimLbStudyRows(H,m.sens,V,a,b,m.kind==='rad');rays+=Date.now()-t;
+          if(!V.length){r={values:[]};for(t=a;t<b;t++)r.values.push(0);}
+          else{
+            PY.globals.set('_bim_mtx',M);
+            PY.runPython('import bim_ladybug\nbim_ladybug.S["mtx"]=_bim_mtx.to_py()');
+            args=JSON.parse(JSON.stringify(m.post.args||{}));args.rows=b-a;
+            r=call(m.post.fn,args);
+          }
+          vals=vals.concat(r.values);
+        }
+        PY.runPython('import bim_ladybug\nbim_ladybug.S["mtx"]=None');
+        delete pre.vectors;
+        say({t:'done',id:m.id,r:JSON.stringify({pre:pre,values:vals,dirs:V.length,ms:{first:t1-t0,rays:rays,all:Date.now()-t0}})});
+      }).then(null,function(x){say({t:'err',id:m.id,s:String(x&&x.message||x),trace:x&&x.trace?String(x.trace):''});});
+    }
+    self.onmessage=function(e){var m=e.data||{};if(m.t==='boot')boot(m);else if(m.t==='run'&&PY)run(m);else if(m.t==='study'&&PY)study(m);};
   }
   function bimLbFail(s){
     A3D_LB.st='failed';A3D_LB.err=s;
@@ -79,6 +135,7 @@
     var m=e.data||{},p=A3D_LB.pend[m.id];
     if(!p)return;
     clearTimeout(p.timer);delete A3D_LB.pend[m.id];
+    if(m.trace)console.warn('[BIM] Ladybug:\n'+m.trace);   /* __acad3dV172c */
     if(m.t==='done')p.res(m.r);else p.rej(new Error(m.s||'The analysis failed'));
   }
   /* the runtime, started once; a promise of it */
@@ -88,7 +145,10 @@
       return bimLbFail('This browser cannot run the Ladybug analyses: it has no Web Workers');
     if(typeof WebAssembly!=='object')return bimLbFail('This browser cannot run the Ladybug analyses: it has no WebAssembly');
     var w;
-    try{w=new Worker(URL.createObjectURL(new Blob(['('+bimLbWorkerMain.toString()+')();'],{type:'text/javascript'})));}
+    /* __acad3dV172c: the worker's text is rays.js's functions, then its own */
+    var txt=[bimLbWasiRun,bimLbBvhBuild,bimLbBvhBlocked,bimLbStudyVecs,bimLbStudyRows].map(function(f){return f.toString();}).join('\n')+
+      '\n('+bimLbWorkerMain.toString()+')();';
+    try{w=new Worker(URL.createObjectURL(new Blob([txt],{type:'text/javascript'})));}
     catch(eW){return bimLbFail('The Ladybug worker could not be made ('+eW+')');}
     A3D_LB.w=w;A3D_LB.st='loading';A3D_LB.err='';
     A3D_LB.boot=new Promise(function(res,rej){
@@ -104,7 +164,7 @@
         }else if(m.t==='fail'){clearTimeout(timer);bimLbStop(String(m.s||'The Ladybug runtime failed'));rej(new Error(A3D_LB.err));}
       };
       w.onerror=function(e){clearTimeout(timer);var s='The Ladybug worker failed ('+(e&&e.message||'no message')+')';bimLbStop(s);rej(new Error(s));};
-      w.postMessage({t:'boot',base:bimLbBase(),dir:'pyodide/'+BIM_LB_PYODIDE+'/',wheels:BIM_LB_WHEELS,py:BIM_LB_PY});
+      w.postMessage({t:'boot',base:bimLbBase(),dir:'pyodide/'+BIM_LB_PYODIDE+'/',wheels:BIM_LB_WHEELS,py:BIM_LB_PY,rad:BIM_LB_RAD});
     });
     return A3D_LB.boot;
   }
@@ -123,6 +183,20 @@
       try{r=JSON.parse(txt);}catch(eP){throw new Error('The Ladybug '+fn+' answered something unreadable');}
       if(r&&r.error){if(r.trace)console.warn('[BIM] Ladybug '+fn+':\n'+r.trace);throw new Error(r.error);}
       return r;
+    });
+  }
+  /* __acad3dV172c: one study in the worker: msg {kind, tn, tris, sens, pre, post}, its two arrays handed over */
+  function bimLbStudyCall(msg,transfer){
+    return bimLbStart().then(function(){
+      return new Promise(function(res,rej){
+        var id=++A3D_LB.seq;
+        msg.t='study';msg.id=id;
+        A3D_LB.pend[id]={res:res,rej:rej,timer:setTimeout(function(){
+          delete A3D_LB.pend[id];rej(new Error('The Ladybug study did not finish in '+Math.round(BIM_LB_STUDY_MS/1000)+' s'));},BIM_LB_STUDY_MS)};
+        A3D_LB.w.postMessage(msg,transfer||[]);
+      });
+    }).then(function(txt){
+      try{return JSON.parse(txt);}catch(eP){throw new Error('The Ladybug study answered something unreadable');}
     });
   }
   /* the runtime's state in words, for a panel */

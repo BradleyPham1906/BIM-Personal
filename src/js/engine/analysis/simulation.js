@@ -100,7 +100,7 @@
         cx+=a[0];cy+=a[1];cz+=a[2];
       }
       L=Math.sqrt(nx*nx+ny*ny+nz*nz);if(L<1e-9)continue;
-      out.push({c:[cx/f.length+q[0],cy/f.length+q[1],cz/f.length+q[2]],n:[nx/L,ny/L,nz/L],area:L/2});
+      out.push({c:[cx/f.length+q[0],cy/f.length+q[1],cz/f.length+q[2]],n:[nx/L,ny/L,nz/L],area:L/2,i:i});   /* __acad3dV172c: i, the face */
     }
     return out;
   }
