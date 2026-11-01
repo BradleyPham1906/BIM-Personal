@@ -125,14 +125,48 @@ the owner keeps it beside). GPU rays are not needed at these sizes.
    1.4 s with a difference of 0 from native; 20,000 faces 0.4 s to build the tree, 3.0 s of rays, 0.1 s for
    Ladybug's own numpy sum.
 
-**Still to run:** direct-sun hours (the same rays, the sun's hours in place of the patches); a real model; Safari
-and a phone.
+7. Direct-sun hours (`reference/experiments/v172c-rays/sunhours.js`): Ladybug's `Sunpath` against the app's
+   `bimSunCalc` (V171d, held to NREL's SPA) at 218 moments with the sun up (21 March, June, December, Philadelphia,
+   every 10 minutes): within 0.028 degrees; the frame mapping, the app's (x, y, z) = Ladybug's (x, z, -y) (Y up,
+   north at -Z against Z up, north at +Y), within 4.3e-4 per component. Ladybug's own `DirectSunStudy.compute()` with
+   the BVH's matrix on a canyon floor (three points, three days, quarter-hours): every value equals the exact hours
+   (2.75, 2.75, 2.75; 3.75, 3.50, 3.75; 2.00, 1.75, 1.75).
+
+**Still to run:** a real model; Safari and a phone.
 
 ## 7. Edges
 
 The sun below the horizon but DHI above zero (dawn); DNI with the sun under 5 degrees (Perez's `gendaymtx` clamps);
 a polar day and night; leap years (V172b's `leap`); half-hour time zones (V172b gives UTC hours); faces facing down;
 a sensor on a face that touches another (the offset); north rotated (`SkyMatrix.north`).
+
+## 7b. Prior art (P, read 2026-11-01)
+
+**Ladybug's own Grasshopper components** (ladybug-grasshopper at `4dde2331`, `ladybug_grasshopper/src/`: `LB Incident
+Radiation.py`, `LB Direct Sun Hours.py`, `LB Cumulative Sky Matrix.py`, read as text):
+- **They do not use Radiance for the rays either**: both import `intersect_mesh_rays` from `ladybug_rhino.intersect`
+  ("this component uses the CAD environment's ray intersection methods, which can be fast for geometries with low
+  complexity but does not scale well"). Radiance is used for the sky (`SkyMatrix`) only. The app doing its own rays
+  is Ladybug's own design, not a departure from it.
+- **Sensors**: Breps are cut into a grid by a required `_grid_size`; "if a Mesh is input, radiation analysis will be
+  performed for each face of this mesh instead". Points moved off the surface by `_offset_dist_`, 10 cm by default.
+- **The sky's defaults**: `high_density_` False, so **Tregenza** (145 patches); `_ground_ref_` 0.2; no reflections
+  ("NO REFLECTIONS OF SOLAR ENERGY ARE INCLUDED"), the ground a crude emissive hemisphere that ground geometry blocks.
+- **Outputs**: per point kWh/m2 (or average W/m2 with `irradiance_`), the total kWh over the geometry, a coloured mesh
+  with a legend and title, and the intersection matrix (0 to 1, "1 indicates that the patch hits the surface ... head
+  on"). Direct sun: hours "out of the total number of connected _vectors", the sun vectors from LB SunPath (hours
+  chosen by the user), `_timestep_`, and `geo_block_` (the studied geometry blocks the sun, by default).
+
+**Andrew Marsh's 3D Sun-Path** (andrewmarsh.com/apps/staging/sunpath3d.html, its page text, 2026-11-01; the owner
+pointed to it): a sun-path and shadow viewer (3D path, model shadows from OBJ, STL or PLY, map, animation of time,
+date, latitude, longitude, four 2D projections, twilight, day length, solar tables). It is V171d's ground, not this
+phase's: no cumulative sky, no radiation or sun-hours on surfaces in that app.
+
+**What this changes:** the sky's default. My first proposal (2026-11-01, after the courtyard check) was Reinhart by
+default; Ladybug's own default is Tregenza, and results comparable with what Ladybug's users get matter for a
+"Ladybug" study. Proposed now: **Tregenza by default, as Ladybug; Reinhart as the finer choice**, the panel saying
+that the coarse sky overstates a deep courtyard by about 4% (part 6, 5). One value per face stays the default (the
+app's solids are meshes, as Ladybug treats a mesh), with a grid later if asked.
 
 ## 8. What the app already has
 
