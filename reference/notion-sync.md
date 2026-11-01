@@ -116,6 +116,7 @@ Search Notion before creating anything, so nothing is made twice.
 | `reference/research-survey-check.md` | `3fecbfcc3a3881628cfcc1c30a343b34` |
 | `reference/research-tools-panel.md` | `3fecbfcc3a3881a48a6ce529e29f7876` |
 | `reference/research-usages.md` | `3fecbfcc3a3881ac8050e475f67cc902` |
+| `reference/research-usd-brep.md` | `40bcbfcc3a3881aa8002e692ab9c6765` |
 | `reference/research-valdrada.md` | `3fecbfcc3a3881b1a8b7edb323f75420` |
 | `reference/research-zoning-envelope-yield.md` | `3fecbfcc3a388107b391f35fd6a8f7d4` |
 
