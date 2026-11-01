@@ -1,5 +1,5 @@
   /* __acad3dV172b: the Ladybug analyses, for the suite */
-  window.__acad3dV172b='runtime,manifest,worker,sha256,adapter,epw,ddy,openmeteo,standardtime,utci4,psych,pmv2clo,strategies5,windrose,designdays,kept,figids,arranged,bands,zoom,edit,snaps,keys,catalogue,options,custom,duplicate';
+  window.__acad3dV172b='runtime,manifest,worker,sha256,adapter,epw,ddy,openmeteo,standardtime,utci4,psych,pmv2clo,strategies5,windrose,designdays,kept,figids,arranged,bands,zoom,edit,snaps,keys,catalogue,options,custom,duplicate,registry,stdstamp,analyze';
   function bimLbErr(e){return {error:String(e&&e.message||e)};}
   /* where the runtime is loaded from; a suite points it at its own server */
   window.__a3dLbBase=function(u){if(u!==undefined)A3D_LB.base=u||null;return bimLbBase();};
@@ -24,3 +24,9 @@
   window.__a3dLbResult=function(kind){return bimLbResult(kind);};
   window.__a3dLbOmUrl=function(lat,lon,year,zone){return bimLbOmUrl(lat,lon,year,zone);};
   window.__a3dLbOmZone=function(off){return bimLbOmZone(off);};
+  window.__a3dLbParams=function(kind){return bimLbParams(kind);};
+  window.__a3dLbStdChanged=function(kind){return bimLbStdChanged(kind);};
+  window.__a3dLbCards=function(){return JSON.parse(JSON.stringify(bimLbCards()));};
+  window.__a3dLbAct=function(a){return bimLbAct(a);};
+  window.__a3dLbAddTo=function(kind,id){return bimLbAddTo(kind,id);};
+  window.__a3dLbUtciRange=function(){return bimLbUtciRange();};

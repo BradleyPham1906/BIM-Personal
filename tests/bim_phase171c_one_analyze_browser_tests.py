@@ -40,7 +40,8 @@ LOT = [list(p) for p in FX.LOT]
 MASSES = [(20, -25, 18, 28, 31, 'use-res'), (40, -25, 18, 28, 18, 'use-off'), (30, -15, 38, 8, 4.5, 'use-ret'), (30, -35, 38, 8, 16, 'use-hot')]
 CATS = [('location', 'Location and context', ['frame', 'landuse', 'figure'], []), ('legal', 'Legal and regulatory', ['zoning'], []),
         ('landform', 'Landform', ['contours', 'slope', 'aspect'], ['survey', 'terrain', 'grading']), ('water', 'Water', ['flow', 'ponds', 'flood'], ['rain']),
-        ('climate', 'Climate', ['sun', 'shadow', 'wind'], ['sun', 'sunhours', 'solar']), ('ecology', 'Ecology', ['green'], []),
+        # AMENDED FOR V172b: Ladybug's rows in Climate, after the sun's -- the weather it reads, then its four analyses
+        ('climate', 'Climate', ['sun', 'shadow', 'wind'], ['sun', 'sunhours', 'solar', 'lbweather', 'lbutci', 'lbpsych', 'lbwind', 'lbdd']), ('ecology', 'Ecology', ['green'], []),
         ('risk', 'Environmental risk', ['noise'], []), ('access', 'Access and circulation', ['streets', 'cycling', 'transit', 'walk', 'vehicles', 'traffic'], []),
         ('utilities', 'Utilities', [], []), ('people', 'People and place', ['views', 'needs'], [])]
 MODEL = ['lens', 'areas', 'lod', 'stats', 'structure']

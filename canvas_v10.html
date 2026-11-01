@@ -19810,6 +19810,7 @@ try{
         (ter?'Where rain runs and ponds on '+ter.name:'No terrain yet: make one with SURVEY, or get the site context'),
       acts:[{act:'rain:run',label:ra?'Run again':'Run',pri:true,off:ter?'':'No terrain yet'},{act:'sim:clear:rain',label:'Clear',off:ra?'':'Not run'}]});
     C=bimDgCards().concat(C);   /* __acad3dV164: what Analyze site draws, first in its category */
+    bimLbCards().forEach(function(c){C.push(c);});   /* __acad3dV172b: Ladybug's rows, in Climate */
     C.forEach(function(c){c.group=BIM_ANZ_GROUP_OF[c.id]||'model';});   /* __acad3dV148 */
     return C;
   }
@@ -19893,6 +19894,7 @@ try{
     else if(k.indexOf('layer:')===0)bimResultLayerAdd(k.slice(6));   /* __acad3dV148 */
     else if(k.indexOf('dg:')===0)bimDgAct(k.slice(3));   /* __acad3dV164 */
     else if(k.indexOf('tr:')===0)bimTrAct(k.slice(3));   /* __acad3dV171 */
+    else if(k.indexOf('lb:')===0)return bimLbAct(k.slice(3));   /* __acad3dV172b: Ladybug's rows refresh as their work ends */
     else return false;
     bimAnalyzeRefresh();
     return true;
@@ -20316,6 +20318,39 @@ try{
           {n:'wind_bins',t:1,u:'m/s',v:[2,4,6,8],say:'the wind rose\'s speed bins above calm'},
           {n:'comfort_t0',v:20,u:'C',say:'the comfort band\'s lowest temperature',lt:'comfort_t1'},{n:'comfort_t1',v:27,u:'C',say:'the comfort band\'s highest temperature',gt:'comfort_t0'},
           {n:'comfort_rh0',v:20,u:'%',say:'the comfort band\'s lowest humidity',lt:'comfort_rh1'},{n:'comfort_rh1',v:80,u:'%',say:'the comfort band\'s highest humidity',gt:'comfort_rh0'}]}]},
+    /* ---- __acad3dV172b: comfort and design days, for Ladybug's analyses ---- */
+    {id:'utci',title:'Universal Thermal Climate Index (UTCI): its stress scale and range',pub:'ISB Commission 6 and COST Action 730',kind:'method',area:'Climate',use:'Ladybug\'s outdoor comfort (UTCI): its figure and its row in Analyze',anywhere:true,
+      eds:[{id:'utci.a002',name:'UTCI_a002 (Br\u00f6de, October 2009), its ten stress categories',pub:'2009-10',st:'current',where:'International',adopt:[{at:'*',from:'2009'}],
+        src:{t:'utci.org: the UTCI program code (UTCI_a002, its ReadMe and Fortran) and the poster Calculating UTCI Equivalent Temperatures (2009)',w:'the ReadMe\'s range of validity; the poster\'s assessment scale',u:'https://www.utci.org/',lv:'P',read:'2026-10-31'},
+        v:[{n:'bands',t:1,u:'C',v:[-40,-27,-13,0,9,26,32,38,46],say:'the bounds of the ten stress categories, from extreme cold stress below the first to extreme heat stress above the last'},
+          {n:'ta_lo',v:-50,u:'C',say:'the coldest air in the formula\'s range',lt:'ta_hi'},{n:'ta_hi',v:50,u:'C',say:'the warmest air in its range',gt:'ta_lo'},
+          {n:'dtr_lo',v:-30,u:'C',say:'the radiant temperature, at most this far below the air\'s',lt:'dtr_hi'},{n:'dtr_hi',v:70,u:'C',say:'the radiant temperature, at most this far above the air\'s',gt:'dtr_lo'},
+          {n:'va_lo',v:0.5,u:'m/s',say:'the lowest wind at 10 m in its range: still air is taken as this',lt:'va_hi'},{n:'va_hi',v:17,u:'m/s',say:'the strongest wind at 10 m in its range',gt:'va_lo'},
+          {n:'pa_hi',v:50,u:'hPa',say:'the most water vapour pressure in its range'}]}]},
+    {id:'ashrae.55',title:'Thermal environmental conditions for human occupancy: PMV comfort',pub:'ASHRAE',kind:'standard',area:'Climate',use:'Ladybug\'s psychrometric chart: its comfort zone',anywhere:true,
+      eds:[{id:'ashrae.55.2023',name:'ANSI/ASHRAE Standard 55-2023',pub:'2023',st:'current',where:'International practice',adopt:[{at:'*',from:'2023'}],
+        src:{t:'ASHRAE 55-2023 (sold, and its publisher refuses scripts), as Ladybug\'s PMVParameter and pythermalcomfort 4.8.0 apply it',w:'the PMV method: PMV within plus or minus 0.5, at most 10% dissatisfied; the cooling effect of moving air above still air',u:'https://github.com/ladybug-tools/ladybug-comfort',lv:'S',read:'2026-10-31'},
+        v:[{n:'ppd',v:10,u:'%',say:'the most people dissatisfied in the comfort zone (PMV within plus or minus 0.5)'},
+          {n:'still',v:0.1,u:'m/s',say:'still air: at or below it the air\'s speed cools no one'}]}]},
+    {id:'app.comfort',title:'Comfort assumptions',pub:'This app',kind:'assumption',area:'Climate',use:'Ladybug\'s psychrometric chart and its passive strategies, and UTCI in the sun',anywhere:true,
+      eds:[{id:'app.comfort.1',name:'The app\'s comfort assumptions (V172b): Ladybug\'s own defaults',pub:'',st:'current',where:'Anywhere',adopt:[{at:'*'}],
+        src:{t:'This app (the owner\'s choices of 2026-10-31), taking the defaults of Ladybug Tools\' LB PMV Polygon, LB Passive Strategy Parameters and LB Outdoor Solar MRT',w:'research-ladybug-weather-comfort.md, sections 4 and 10',u:'https://github.com/ladybug-tools/ladybug-grasshopper',lv:'A'},
+        v:[{n:'clo',t:1,u:'clo',v:[0.5,1.0],say:'the clothing whose comfort zones are merged: summer and winter'},
+          {n:'met',v:1.1,u:'met',say:'the activity: seated, light office work'},
+          {n:'day_above',v:12,u:'C',say:'mass and night ventilation: the warmest day above the comfort zone it can still cool'},
+          {n:'night_below',v:3,u:'C',say:'mass and night ventilation: how far below the comfort zone\'s warmest the night must fall'},
+          {n:'fan',v:1,u:'m/s',say:'occupant fans: the air speed they make'},
+          {n:'balance',v:12.8,u:'C',say:'capture internal heat: the building\'s balance temperature'},
+          {n:'solar_cap',v:50,u:'W/m2',say:'passive solar heating: the sun on the window that warms the building by one degree'},
+          {n:'time_const',v:8,u:'h',say:'the hours a building holds its coolness, or its sun\'s heat'},
+          {n:'body_exp',v:1,u:'ratio',say:'UTCI in the sun: the share of the body in the sun'},
+          {n:'sky_exp',v:1,u:'ratio',say:'UTCI in the sun: the share of the sky in view'},
+          {n:'ground_ref',v:0.25,u:'ratio',say:'UTCI in the sun: the ground\'s reflectance'}]}]},
+    {id:'ashrae.dd',title:'Climatic design conditions',pub:'ASHRAE',kind:'data',area:'Climate',use:'Ladybug\'s design days',anywhere:true,
+      eds:[{id:'ashrae.dd.2025',name:'ASHRAE Handbook -- Fundamentals 2025, chapter 14',pub:'2025',st:'current',where:'International',adopt:[{at:'*',from:'2025'}],
+        src:{t:'ASHRAE Handbook -- Fundamentals 2025, chapter 14, Climatic Design Information (sold): the values a station\'s DDY and EPW carry, as Ladybug reads them',w:'the design days: heating at 99.6% and 99% of the year\'s hours, cooling at 0.4%, 1% and 2%',u:'https://www.ashrae.org/',lv:'S',read:'2026-10-31'},
+        v:[{n:'heating',t:1,u:'%',v:[99.6,99],say:'the heating design conditions: the share of the year\'s hours warmer than each'},
+          {n:'cooling',t:1,u:'%',v:[0.4,1,2],say:'the cooling design conditions: the share of the year\'s hours warmer than each'}]}]},
     /* ---- the catalogue for a US and Pennsylvania site: in force there, not applied by the app yet ---- */
     {id:'pa.ucc',title:'Pennsylvania Uniform Construction Code',pub:'Pennsylvania Department of Labor and Industry',kind:'code',area:'Buildings',cat:true,access:'free to read',
       eds:[{id:'pa.ucc.2026',name:'The 2021 I-Codes (IBC, IRC, IECC, IMC, IFGC, IEBC; the IFC as they reference it), with Pennsylvania\'s changes',pub:'2025-11-07',st:'current',where:'Pennsylvania',adopt:[{at:'us-pa',from:'2026-01-01'}],
@@ -20368,7 +20403,7 @@ try{
   var BIM_STD_HOW={adopted:'in force here',international:'international',chosen:'chosen for this project',outside:'applied outside its place',assumption:'the app\'s assumption',none:'none in force'};
   var BIM_STD_UNIT={min:[' minute',' minutes'],m:[' m',' m'],'m/min':[' m a minute',' m a minute'],'km/h':[' km/h',' km/h'],'%':['%','%'],'ug/m3':[' \u00b5g/m\u00b3',' \u00b5g/m\u00b3'],
     'per sq mi':[' per sq mi',' per sq mi'],dB:[' dB',' dB'],ha:[' ha',' ha'],trees:[' tree',' trees'],families:[' family',' families'],C:['\u00b0C','\u00b0C'],'m/s':[' m/s',' m/s'],lanes:[' lane',' lanes'],days:[' day',' days'],x:['\u00d7','\u00d7'],'sq ft':[' sq ft',' sq ft'],
-    s:[' s',' s'],'m/s2':[' m/s\u00b2',' m/s\u00b2'],'pc/h/ln':[' an hour a lane',' an hour a lane'],'du/acre':[' an acre',' an acre'],deg:['\u00b0','\u00b0'],ratio:['',''],h:[' h',' h']};   /* __acad3dV172: a ratio, hours */   /* __acad3dV171 */
+    s:[' s',' s'],'m/s2':[' m/s\u00b2',' m/s\u00b2'],'pc/h/ln':[' an hour a lane',' an hour a lane'],'du/acre':[' an acre',' an acre'],deg:['\u00b0','\u00b0'],ratio:['',''],h:[' h',' h'],hPa:[' hPa',' hPa'],'W/m2':[' W/m\u00b2',' W/m\u00b2'],clo:[' clo',' clo'],met:[' met',' met']};   /* __acad3dV172b */   /* __acad3dV172: a ratio, hours */   /* __acad3dV171 */
   var BIM_STD_EMPTY={place:null,date:'',ov:{},pick:{},packs:[]};
   var A3D_STD={obj:null,rev:-1,sig:'',at:0,cache:{},recs:null,by:{},memo:{},warned:{},gen:0};
   /* what the project holds: A3D.site.std, or nothing changed yet */
@@ -32574,12 +32609,14 @@ try{
     "from ladybug_comfort.chart.polygonpmv import PolygonPMV",
     "from ladybug_comfort.collection.solarcal import OutdoorSolarCal",
     "from ladybug_comfort.collection.utci import UTCI",
+    "from ladybug_comfort.parameter.pmv import PMVParameter",
     "from ladybug_comfort.utci import saturated_vapor_pressure_hpa",
     "",
     "S = {'epw': None, 'ddy': None, 'src': None}",
     "",
     "# UTCI's validity, from the official program's ReadMe (UTCI_a002, Broede 2009): air -50 to +50 C, the radiant",
-    "# temperature 30 C below to 70 C above the air, wind at 10 m 0.5 to 17 m/s, vapour pressure under 50 hPa",
+    "# temperature 30 C below to 70 C above the air, wind at 10 m 0.5 to 17 m/s, vapour pressure under 50 hPa. The app",
+    "# passes the standards registry's values (topic 'utci'); these are what a call without them uses.",
     "UTCI_TA = (-50.0, 50.0)",
     "UTCI_DTR = (-30.0, 70.0)",
     "UTCI_VA = (0.5, 17.0)",
@@ -32591,6 +32628,25 @@ try{
     "STRATEGIES = ('Evaporative Cooling', 'Mass + Night Vent', 'Occupant Use of Fans', 'Capture Internal Heat',",
     "              'Passive Solar Heating')",
     "STRATEGY_PAR = (12.0, 3.0, 1.0, 12.8, 50.0, 8)",
+    "# each parameter's range, as \"LB Passive Strategy Parameters\" checks it: a value outside goes back to the default, said",
+    "STRATEGY_RANGE = ((0.0, 30.0), (0.0, 15.0), (0.1, 10.0), (5.0, 20.0), (1.0, 1000.0), (1, 48))",
+    "STRATEGY_NAMES = ('day above comfort', 'night below comfort', 'fan air speed', 'balance temperature',",
+    "                  'solar heat capacity', 'time constant')",
+    "",
+    "",
+    "def _strategy_par(par):",
+    "    \"\"\"The strategy parameters, each in its range or back to Ladybug's default, with what was put back.\"\"\"",
+    "    out, notes = [], []",
+    "    par = list(par) if par else list(STRATEGY_PAR)",
+    "    for i, d in enumerate(STRATEGY_PAR):",
+    "        v = par[i] if i < len(par) else None",
+    "        lo, hi = STRATEGY_RANGE[i]",
+    "        if v is None or not isinstance(v, (int, float)) or v != v or v < lo or v > hi:",
+    "            if v is not None:",
+    "                notes.append('%s must be between %s and %s, not %s: %s used' % (STRATEGY_NAMES[i], lo, hi, v, d))",
+    "            v = d",
+    "        out.append(v)",
+    "    return out, notes",
     "",
     "",
     "def versions():",
@@ -32766,17 +32822,24 @@ try{
     "    return ','.join(out)",
     "",
     "",
-    "def utci(conditions=None, fract_body_exp=1.0, sky_exposure=1.0, ground_ref=0.25):",
+    "def utci(conditions=None, fract_body_exp=1.0, sky_exposure=1.0, ground_ref=0.25, limits=None, still=None):",
     "    \"\"\"UTCI over the year in each condition: in the sun the radiant temperature is SolarCal's (ASHRAE 55, Ladybug's",
     "    OutdoorSolarCal: an open area by default); in the shade it is the air's; with wind the weather's at 10 m, still",
-    "    air UTCI's floor of 0.5 m/s (CBE Clima's four conditions). The official ten-band scale (original_utci_category).\"\"\"",
+    "    air UTCI's floor of 0.5 m/s (CBE Clima's four conditions), or the speed given. The official ten-band scale",
+    "    (original_utci_category). limits: the formula's range, {ta, dtr, va: [low, high], pa: high}, for the hours outside.\"\"\"",
     "    epw = _need()",
     "    conditions = conditions or list(CONDITIONS)",
     "    db, rh, ws = epw.dry_bulb_temperature, epw.relative_humidity, epw.wind_speed",
+    "    lim = limits or {}",
+    "    lta, ldtr, lva = lim.get('ta') or UTCI_TA, lim.get('dtr') or UTCI_DTR, lim.get('va') or UTCI_VA",
+    "    lpa = lim.get('pa') if lim.get('pa') is not None else UTCI_PA",
+    "    still_v = 0.5 if still is None else float(still)",
+    "    still_ws = None if still is None else ws.get_aligned_collection(still_v)",
     "    months = [dt.month - 1 for dt in db.datetimes]",
     "    hours = [dt.hour for dt in db.datetimes]",
     "    sun_mrt = None",
-    "    out = {'conditions': {}, 'months': None}",
+    "    out = {'conditions': {}, 'months': None, 'still': still_v,",
+    "           'limits': {'ta': list(lta), 'dtr': list(ldtr), 'va': list(lva), 'pa': lpa}}",
     "    for c in conditions:",
     "        if c not in CONDITIONS:",
     "            raise ValueError('Not a condition: %s' % c)",
@@ -32786,16 +32849,16 @@ try{
     "                                      epw.horizontal_infrared_radiation_intensity, db, fract_body_exp,",
     "                                      sky_exposure, ground_ref).mean_radiant_temperature",
     "        mrt = sun_mrt if sun else None",
-    "        u = UTCI(db, rh, mrt, ws if wind else None)",
+    "        u = UTCI(db, rh, mrt, ws if wind else still_ws)",
     "        vals = list(u.universal_thermal_climate_index.values)",
     "        cats = [int(v) for v in u.original_utci_category.values]",
     "        tr = list(mrt.values) if mrt is not None else list(db.values)",
-    "        va = list(ws.values) if wind else [0.5] * len(vals)",
+    "        va = list(ws.values) if wind else [still_v] * len(vals)",
     "        outside = 0",
     "        for t, r, v, h in zip(db.values, tr, va, rh.values):",
     "            pa = saturated_vapor_pressure_hpa(t) * h / 100.0",
-    "            if t < UTCI_TA[0] or t > UTCI_TA[1] or r - t < UTCI_DTR[0] or r - t > UTCI_DTR[1] or \\",
-    "                    v < UTCI_VA[0] or v > UTCI_VA[1] or pa > UTCI_PA:",
+    "            if t < lta[0] or t > lta[1] or r - t < ldtr[0] or r - t > ldtr[1] or \\",
+    "                    v < lva[0] or v > lva[1] or pa > lpa:",
     "                outside += 1",
     "        counts = [0] * 10",
     "        monthly = [[0] * 10 for _ in range(12)]",
@@ -32838,18 +32901,20 @@ try{
     "    return total",
     "",
     "",
-    "def psych(clo=None, met=None, strategies=None, strategy_par=None, merge=True):",
+    "def psych(clo=None, met=None, strategies=None, strategy_par=None, merge=True, ppd=None, still=None):",
     "    \"\"\"The psychrometric chart of the year's hours, with the PMV comfort polygons and the passive strategies as",
-    "    Ladybug's \"LB PMV Polygon\" component draws and counts them (its logic followed, its defaults kept).\"\"\"",
+    "    Ladybug's \"LB PMV Polygon\" component draws and counts them (its logic followed, its defaults kept). ppd and still:",
+    "    the comfort zone's PPD limit and still air (Ladybug's PMVParameter; its defaults, ASHRAE 55's, without them).\"\"\"",
     "    epw = _need()",
     "    clo = clo or [0.5, 1.0]",
     "    met = met or [1.1] * len(clo)",
     "    strategies = list(STRATEGIES) if strategies is None else strategies",
-    "    day_above, night_below, fan_spd, bal_temp, solar_cap, tim_c = strategy_par or STRATEGY_PAR",
+    "    (day_above, night_below, fan_spd, bal_temp, solar_cap, tim_c), notes = _strategy_par(strategy_par)",
+    "    par = PMVParameter(ppd, None, None, still)",
     "    press = epw.atmospheric_station_pressure.average",
     "    press = 101325 if press is None or press >= 999999 else press",
     "    pc = PsychrometricChart(epw.dry_bulb_temperature, epw.relative_humidity, average_pressure=press)",
-    "    poly = PolygonPMV(pc, met_rate=met, clo_value=clo)",
+    "    poly = PolygonPMV(pc, met_rate=met, clo_value=clo, comfort_parameter=par)",
     "    names, data, shapes = [], [], []",
     "    if merge:",
     "        names.append('Comfort')",
@@ -32899,7 +32964,8 @@ try{
     "    mesh = pc.colored_mesh",
     "    out = {",
     "        'press': _r(press, 0), 'clo': clo, 'met': met, 'strategies': strategies,",
-    "        'strategy_par': [day_above, night_below, fan_spd, bal_temp, solar_cap, tim_c], 'window': window,",
+    "        'strategy_par': [day_above, night_below, fan_spd, bal_temp, solar_cap, tim_c], 'window': window, 'notes': notes,",
+    "        'ppd': par.ppd_comfort_thresh, 'still': par.still_air_threshold,",
     "        'names': names, 'pct': [_r(100.0 * sum(f) / n, 1) for f in flat], 'total': _r(100.0 * sum(total) / n, 1),",
     "        'missing': missing, 'polygons': shapes,",
     "        'chart': {",
@@ -33239,6 +33305,8 @@ try{
   var BIM_LB_NAMES={utci:'Outdoor comfort (UTCI)',psych:'Psychrometric chart and comfort',wind:'Wind rose',dd:'Design days'};
   var BIM_LB_FN={utci:'utci',psych:'psych',wind:'windrose',dd:'design_days'};
   var A3D_LBRUN={busy:null};
+  /* the standards each applies (the registry, V167): kept with its result, and out of date when they change */
+  var BIM_LB_STD={utci:['utci','app.comfort'],psych:['ashrae.55','app.comfort'],wind:['app.climate'],dd:['ashrae.dd']};
   /* the worker has the project's source, or gets it: Open-Meteo's year again; a file must be opened again */
   function bimLbEnsureSource(){
     var s=bimLbSrcKept();
@@ -33249,8 +33317,13 @@ try{
   }
   /* the parameters a run uses, from its kind */
   function bimLbParams(kind){
-    if(kind==='utci')return {conditions:['sun_wind','shade_wind','sun_still','shade_still']};
-    if(kind==='psych')return {clo:[0.5,1.0],met:[1.1,1.1],merge:true};
+    function c(n){return bimStd('app.comfort',n);}
+    function u(n){return bimStd('utci',n);}
+    if(kind==='utci')return {conditions:['sun_wind','shade_wind','sun_still','shade_still'],fract_body_exp:c('body_exp'),sky_exposure:c('sky_exp'),ground_ref:c('ground_ref'),
+      limits:{ta:[u('ta_lo'),u('ta_hi')],dtr:[u('dtr_lo'),u('dtr_hi')],va:[u('va_lo'),u('va_hi')],pa:u('pa_hi')},still:u('va_lo')};
+    if(kind==='psych'){var clo=(c('clo')||[]).slice(),met=c('met');
+      return {clo:clo,met:clo.map(function(){return met;}),merge:true,strategy_par:[c('day_above'),c('night_below'),c('fan'),c('balance'),c('solar_cap'),c('time_const')],
+        ppd:bimStd('ashrae.55','ppd'),still:bimStd('ashrae.55','still')};}
     if(kind==='wind')return {directions:16,bins:bimClimWindBins()};
     return {};
   }
@@ -33264,7 +33337,7 @@ try{
       return bimLbCall(BIM_LB_FN[kind],P).then(function(r){
         var D=bimLbData();
         pushUndo();
-        D[kind]={r:r,params:P,at:bimSaToday(),src:src.key,ms:Date.now()-t0,
+        D[kind]={r:r,params:P,at:bimSaToday(),src:src.key,ms:Date.now()-t0,std:bimStdStamp(BIM_LB_STD[kind]||[]),
           v:{pyodide:A3D_LB.pyodide,ladybug:A3D_LB.versions||{}}};
         return D[kind];
       });
@@ -33295,6 +33368,8 @@ try{
     }
     return next();
   }
+  /* the standards a kept result used that are not what they are now */
+  function bimLbStdChanged(kind){var L=A3D.site&&A3D.site.ladybug,R=L&&L[kind];return R&&R.std?bimStdChanged(R.std):[];}
   /* a kept result, if it is one and of the source the project names */
   function bimLbResult(kind){
     var L=A3D.site&&A3D.site.ladybug,R=L&&L[kind],s=bimLbSrcKept();
@@ -33307,7 +33382,16 @@ try{
      what it means in its title. Nothing is computed here that Ladybug did not give. */
   var BIM_UTCI_NAMES=['Extreme cold stress','Very strong cold stress','Strong cold stress','Moderate cold stress','Slight cold stress',
     'No thermal stress','Moderate heat stress','Strong heat stress','Very strong heat stress','Extreme heat stress'];
-  var BIM_UTCI_RANGE=['below −40 °C','−40 to −27 °C','−27 to −13 °C','−13 to 0 °C','0 to 9 °C','9 to 26 °C','26 to 32 °C','32 to 38 °C','38 to 46 °C','above 46 °C'];
+  /* the ten categories' ranges, from the registry's scale (topic 'utci') */
+  function bimLbUtciRange(){
+    var b=bimStd('utci','bands')||[],out=[],i;
+    function f(v){return (v<0?'\u2212':'')+Math.abs(v);}
+    if(b.length!==9)return [];
+    out.push('below '+f(b[0])+' \u00b0C');
+    for(i=1;i<9;i++)out.push(f(b[i-1])+' to '+f(b[i])+' \u00b0C');
+    out.push('above '+f(b[8])+' \u00b0C');
+    return out;
+  }
   var BIM_UTCI_COL=['#104281','#1c5cab','#2a78d6','#6da7ec','#b7d3f6','var(--hn)','#ec8f86','#e34948','#b8302f','#7d1f1f'];
   var BIM_LB_COND={sun_wind:'In the sun, in the wind',shade_wind:'In the shade, in the wind',sun_still:'In the sun, in still air',shade_still:'In the shade, in still air'};
   var BIM_LB_STRAT_COL=['var(--s2)','#8e6bbf','#2f9e8f','#d08a1c','#c2463c'];
@@ -33380,10 +33464,10 @@ try{
       (U.outside?' '+U.outside+' hours lie outside the formula\'s range and are its extrapolation.':'');
     var body=(cls?'<div class="a3d-clb-chart a3d-clb-heat">'+bimLbUtciHeatSvg(cls,!!(src&&src.leap))+'</div>':'')+
       '<div class="a3d-clb-chart" style="margin-top:6px">'+bimLbUtciMonthSvg(U.monthly)+'</div>'+
-      bimClbLeg(BIM_UTCI_NAMES.map(function(n,k){return [BIM_UTCI_COL[k],n+' ('+BIM_UTCI_RANGE[k]+')'];}))+
+      bimClbLeg(BIM_UTCI_NAMES.map(function(n,k){var rg=bimLbUtciRange();return [BIM_UTCI_COL[k],n+(rg[k]?' ('+rg[k]+')':'')];}))+
       bimClbTable(['Condition','No stress %','Heat stress %','Cold stress %','Lowest °C','Highest °C'],keys.filter(function(c){return C[c];}).map(function(c){
         return [BIM_LB_COND[c],bimClbNum(C[c].comfort),bimClbNum(C[c].heat),bimClbNum(C[c].cold),bimClbNum(C[c].min),bimClbNum(C[c].max)];}));
-    return bimClbCard(['s12','wide','@lb.utci'],no,title,dek,body,bimLbSrcLine(R)+'; UTCI by Bröde et al. (UTCI_a002, 2009); the sun by SolarCal (ASHRAE 55); still air is UTCI\'s 0.5 m/s');
+    return bimClbCard(['s12','wide','@lb.utci'],no,title,dek,body,bimLbSrcLine(R)+'; UTCI by '+((bimStdEdition('utci')||{}).name||'UTCI_a002')+'; the sun by SolarCal (ASHRAE 55); still air at '+bimStdFmt(R.r.still!==undefined?R.r.still:bimStd('utci','va_lo'),'m/s'));
   }
   /* the psychrometric chart, drawn from Ladybug's own geometry */
   function bimLbPsySvg(P){
@@ -33415,13 +33499,13 @@ try{
     var P=R.r,i,strat=[];
     for(i=1;i<P.names.length;i++)strat.push(P.names[i]+' '+bimClbNum(P.pct[i],0)+'%');
     var title=bimClbNum(P.pct[0],0)+'% of hours are comfortable indoors as the weather is; '+bimClbNum(P.total,0)+'% with the '+(P.names.length-1)+' passive strategies';
-    var dek='Every hour of the year on the psychrometric chart, darker where more fall; the PMV comfort zone for '+P.clo.join(' and ')+' clo at '+P.met[0]+' met (PPD 10% or less), and the zones each strategy adds: '+strat.join(', ')+'.'+
+    var dek='Every hour of the year on the psychrometric chart, darker where more fall; the PMV comfort zone for '+P.clo.join(' and ')+' clo at '+P.met[0]+' met (PPD '+bimStdFmt(P.ppd!==undefined?P.ppd:bimStd('ashrae.55','ppd'),'%')+' or less), and the zones each strategy adds: '+strat.join(', ')+'.'+
       (P.missing&&P.missing.length?' Not drawn, off the chart: '+P.missing.join(', ')+'.':'');
     var body='<div class="a3d-clb-chart">'+bimLbPsySvg(P)+'</div>'+
       bimClbLeg([['var(--w1)','1–4 hours'],['var(--w2)','5–14'],['var(--w3)','15–39'],['var(--w4)','40–99'],['var(--w5)','100 or more']].concat(
         P.names.map(function(n,k){return [k===0?'var(--ink)':BIM_LB_STRAT_COL[(k-1)%BIM_LB_STRAT_COL.length],n+': '+bimClbNum(P.pct[k])+'%','ln'];})))+
       bimClbTable(['Zone','Hours %'],P.names.map(function(n,k){return [n,bimClbNum(P.pct[k])];}).concat([['Comfortable or made comfortable',bimClbNum(P.total)]]));
-    return bimClbCard(['s7','@lb.psych'],no,title,dek,body,bimLbSrcLine(R)+'; PMV by Fanger (ASHRAE 55), the strategies as Ladybug\'s PMV Polygon draws them, its defaults; passive solar on a '+(P.window===180?'south':'north')+'-facing window; mean station pressure '+bimClimInt(P.press)+' Pa');
+    return bimClbCard(['s7','@lb.psych'],no,title,dek,body,bimLbSrcLine(R)+'; PMV by Fanger ('+((bimStdEdition('ashrae.55')||{}).name||'ASHRAE 55')+'), the strategies as Ladybug\'s PMV Polygon draws them, its defaults; passive solar on a '+(P.window===180?'south':'north')+'-facing window; mean station pressure '+bimClimInt(P.press)+' Pa');
   }
   function bimLbWindCard(opt,no){
     var R=bimLbResult('wind');if(!R)return null;
@@ -33455,14 +33539,15 @@ try{
     var R=bimLbResult('dd');if(!R)return null;
     var D=R.r,h=D.heating,c=D.cooling;if(!h||!c)return null;
     var how={ddy:'the station\'s DDY (ASHRAE)',epw:'the EPW\'s design conditions (ASHRAE)',approx:'this one year, approximated (less accurate than ASHRAE\'s multi-year values)'};
-    var title='Design days: '+bimClbNum(h.db)+' °C for heating (99.6%), '+bimClbNum(c.db)+' °C for cooling (0.4%) with '+bimClbNum(c.hum)+' °C '+(c.hum_type==='Wetbulb'?'wet bulb':c.hum_type.toLowerCase());
+    var hp=(bimStd('ashrae.dd','heating')||[])[0],cp=(bimStd('ashrae.dd','cooling')||[])[0];   /* __acad3dV172b: the registry's percentiles */
+    var title='Design days: '+bimClbNum(h.db)+' °C for heating ('+hp+'%), '+bimClbNum(c.db)+' °C for cooling ('+cp+'%) with '+bimClbNum(c.hum)+' °C '+(c.hum_type==='Wetbulb'?'wet bulb':c.hum_type.toLowerCase());
     var rows=['heating','heating99','cooling','cooling1','cooling2'].filter(function(k){return D[k];}).map(function(k){var d=D[k];
       return [d.name,bimClbNum(d.db),bimClbNum(d.range),d.hum_type+' '+bimClbNum(d.hum),bimClbNum(d.wind),BIM_CLIM_MONTHS[(d.month||1)-1]+' '+d.day,how[d.how]||d.how];});
-    var body='<div class="a3d-clb-chart">'+bimLbDdSvg(D)+'</div>'+bimClbLeg([['var(--s1)','Heating 99.6%','ln'],['var(--s2)','Cooling 0.4%','ln']])+
+    var body='<div class="a3d-clb-chart">'+bimLbDdSvg(D)+'</div>'+bimClbLeg([['var(--s1)','Heating '+hp+'%','ln'],['var(--s2)','Cooling '+cp+'%','ln']])+
       '<table class="a3d-clb-eqt"><thead><tr><th style="text-align:left">Design day</th><th>°C</th><th>Range</th><th>Humidity</th><th>m/s</th></tr></thead><tbody>'+
       rows.map(function(r){return '<tr><td class="pl">'+bimClbE(r[0])+'</td><td>'+r[1]+'</td><td>'+r[2]+'</td><td>'+bimClbE(r[3])+'</td><td>'+r[4]+'</td></tr>';}).join('')+'</tbody></table>';
     return bimClbCard(['s5','@lb.dd'],no,title,'The conditions a building\'s heating and cooling are sized for, from '+(how[h.how]||h.how)+'; the design day\'s temperature hour by hour.',body,
-      bimLbSrcLine(R)+'; ASHRAE Handbook, Fundamentals, chapter 14 (climatic design information)');
+      bimLbSrcLine(R)+'; '+((bimStdEdition('ashrae.dd')||{}).name||'ASHRAE Handbook -- Fundamentals')+' (climatic design information)');
   }
   /* the four, in the climate board's order */
   var BIM_LB_FIGS=[['lb.utci',bimLbUtciCard],['lb.psych',bimLbPsyCard],['lb.wind',bimLbWindCard],['lb.dd',bimLbDdCard]];
@@ -33472,6 +33557,151 @@ try{
     BIM_LB_FIGS.forEach(function(F){var c=null;try{c=F[1](null,fig+1);}catch(eLb){console.warn('[BIM] Ladybug figure '+F[0],eLb);}
       if(c){fig++;cards.push(c);}});
     return cards.length?'<section class="a3d-clb-grid" style="margin-top:14px">'+cards.join('')+'</section>':'';
+  }
+  /* ================= __acad3dV172b: Ladybug in the analysis workspace =================
+     Climate's rows, as V171b's cards are: the weather Ladybug reads, then its four analyses. A row's panel says what it
+     is and what it found, in numbers, with its buttons: open a weather file or get a year of hours, Run (or Run all
+     four), Show on the board, and Add to a board -- any board in the set, or a new one (V172b's editable boards). */
+  BIM_ANZ_GROUP_OF.lbweather='climate';BIM_ANZ_GROUP_OF.lbutci='climate';BIM_ANZ_GROUP_OF.lbpsych='climate';
+  BIM_ANZ_GROUP_OF.lbwind='climate';BIM_ANZ_GROUP_OF.lbdd='climate';
+  var BIM_LB_ROW={utci:'Outdoor comfort, UTCI (Ladybug)',psych:'Psychrometric chart and strategies (Ladybug)',wind:'Wind rose, weather file (Ladybug)',dd:'Design days (Ladybug)'};
+  var BIM_LB_FIG={utci:'lb.utci',psych:'lb.psych',wind:'lb.wind',dd:'lb.dd'};
+  function bimLbRows(R){return '<div class="a3d-awp-rows">'+R.map(function(r){return '<div class="a3d-awp-r"><span>'+bimEsc(r[0])+'</span><b>'+bimEsc(r[1])+'</b></div>';}).join('')+'</div>';}
+  function bimLbNote(t,cls){return '<p class="a3d-awp-note'+(cls?' '+cls:'')+'">'+bimEsc(t)+'</p>';}
+  /* the prevailing direction of a wind result: the fullest of its sectors */
+  function bimLbWindPrev(Wr){
+    var best=-1,k=0,i,j,t;
+    for(i=0;i<(Wr.sectors||[]).length;i++){t=0;for(j=0;j<Wr.sectors[i].length;j++)t+=Wr.sectors[i][j];if(t>best){best=t;k=i;}}
+    return BIM_CLIM_DIRS[k]||'';
+  }
+  /* a result in one line: a row's status */
+  function bimLbSummary(k,R){
+    var r=R.r,C,h,c;
+    if(k==='utci'){C=r.conditions||{};return ['sun_wind','shade_wind'].filter(function(x){return C[x];}).map(function(x,i){return bimClimFmt(C[x].comfort,0)+'%'+(i?'':' of hours without thermal stress')+' '+BIM_LB_COND[x].toLowerCase();}).join('; ');}
+    if(k==='psych')return bimClimFmt(r.pct[0],0)+'% of hours comfortable indoors as the weather is; '+bimClimFmt(r.total,0)+'% with the '+(r.names.length-1)+' passive strategies';
+    if(k==='wind')return 'From the '+bimLbWindPrev(r)+' most often, '+bimClimFmt(r.mean,1)+' m/s on average; calm '+bimClimFmt(r.calm_pct,0)+'% of hours';
+    h=r.heating;c=r.cooling;
+    return (h?'Heating '+bimClimFmt(h.db,1)+' °C':'')+(h&&c?'; ':'')+(c?'cooling '+bimClimFmt(c.db,1)+' °C with '+bimClimFmt(c.hum,1)+' °C '+(c.hum_type==='Wetbulb'?'wet bulb':String(c.hum_type).toLowerCase()):'');
+  }
+  /* the weather's panel: where the hours come from, and the runtime */
+  function bimLbWeatherHtml(s){
+    var r=[],L=A3D_LB,v=L.versions||{};
+    if(s){
+      r.push(['Source',s.kind==='openmeteo'?'Open-Meteo ERA5, '+s.year+(s.half?' (in UTC: a half-hour time zone)':''):s.name]);
+      r.push(['Place',(s.city||s.name||'')+(s.station?' ('+s.station+')':'')+', '+bimClimFmt(s.lat,4)+', '+bimClimFmt(s.lon,4)]);
+      if(typeof s.elev==='number')r.push(['Elevation',bimClimFmt(s.elev,0)+' m']);
+      r.push(['Hours',bimClimInt(s.hours||0)+(s.leap?', a leap year':'')+(s.filled?'; '+s.filled+' filled between their neighbours':'')]);
+      r.push(['Design days',s.ddy?'From the station\'s DDY (ASHRAE)':(s.design_read?'From the file\'s design conditions':'Approximated from this one year')]);
+      r.push(['Opened',s.at||'']);
+    }
+    r.push(['Ladybug',L.st==='ready'?'ladybug-core '+(v['ladybug-core']||'')+', ladybug-comfort '+(v['ladybug-comfort']||'')+', in Pyodide '+L.pyodide:(L.st==='loading'?'Loading (about 13 MB, once)':(L.st==='failed'?'Could not start: '+L.err:'Loads when an analysis first runs (about 13 MB, once)'))]);
+    return bimLbRows(r)+
+      bimLbNote((s&&s.kind==='file'?'A weather file is read in this browser and not uploaded; it is not kept with the project, so after a reload Run asks for it again. ':'')+
+        'Ladybug Tools\' own code (AGPL-3.0), unchanged, runs here through Pyodide; a station\'s weather files are at climate.onebuilding.org (its ZIP holds the EPW and the DDY).');
+  }
+  /* a result's panel: its numbers, the standards it used, and whether it is out of date */
+  function bimLbResultHtml(k,R,ch){
+    if(!R)return '';
+    var r=R.r,P=R.params||{},h='',rows=[],C,x;
+    if(k==='utci'){
+      C=r.conditions||{};
+      ['sun_wind','shade_wind','sun_still','shade_still'].forEach(function(c){
+        if(C[c])rows.push([BIM_LB_COND[c],bimClimFmt(C[c].comfort,0)+'% no stress, '+bimClimFmt(C[c].heat,0)+'% heat, '+bimClimFmt(C[c].cold,0)+'% cold']);});
+      x=C.sun_wind||C.shade_wind;
+      if(x&&x.outside)rows.push(['Outside the formula\'s range',bimClimInt(x.outside)+' hours, its extrapolation']);
+      h=bimLbRows(rows)+bimLbNote('Still air: '+bimStdFmt(r.still!==undefined?r.still:P.still,'m/s')+'. '+bimStdUsedText('utci')+'.','a3d-awp-std');
+    }else if(k==='psych'){
+      r.names.forEach(function(n,i){rows.push([n,bimClimFmt(r.pct[i],1)+'%']);});
+      rows.push(['With any of them',bimClimFmt(r.total,1)+'%']);
+      h=bimLbRows(rows)+bimLbNote('Clothing '+r.clo.join(' and ')+' clo at '+r.met[0]+' met; PPD '+bimStdFmt(r.ppd!==undefined?r.ppd:bimStd('ashrae.55','ppd'),'%')+' or less; still air '+bimStdFmt(r.still!==undefined?r.still:bimStd('ashrae.55','still'),'m/s')+'. '+
+        bimStdUsedText('ashrae.55')+'; '+bimStdUsedText('app.comfort')+'.','a3d-awp-std')+((r.notes&&r.notes.length)?bimLbNote(r.notes.join('; ')+'.'):'');
+    }else if(k==='wind'){
+      rows.push(['Prevailing',bimLbWindPrev(r)],['Mean speed',bimClimFmt(r.mean,1)+' m/s'],['Calm (a speed of 0)',bimClimFmt(r.calm_pct,1)+'% of hours'],['Hours',bimClimInt(r.hours)]);
+      h=bimLbRows(rows)+bimLbNote(bimStdUsedText('app.climate')+'.','a3d-awp-std');
+    }else{
+      ['heating','heating99','cooling','cooling1','cooling2'].forEach(function(q){var d=r[q];if(d)rows.push([d.name.replace(/^.*?Ann /,''),bimClimFmt(d.db,1)+' °C'+(q.indexOf('cooling')===0?', '+d.hum_type+' '+bimClimFmt(d.hum,1):'')]);});
+      h=bimLbRows(rows)+bimLbNote(bimStdUsedText('ashrae.dd')+'.','a3d-awp-std');
+    }
+    if(R.stale)h+=bimLbNote('Worked out from other weather than the project names now: Run again.','a3d-awp-stale');
+    if(ch&&ch.length)h+=bimLbNote(bimStdChangedText(ch)+' since it was run: Run again.','a3d-awp-stale');
+    return h+bimLbNote('Run '+R.at+(R.ms?', in '+bimClimFmt(R.ms/1000,1)+' s':'')+'.');
+  }
+  /* the rows: Climate's, after its own */
+  function bimLbCards(){
+    var C=[],src=bimLbSrcKept(),busy=A3D_LBRUN.busy,off=src?(busy?'Running: '+BIM_LB_NAMES[busy]:''):'Choose the weather first: open a weather file, or get a year of hours';
+    C.push({id:'lbweather',title:'Weather for Ladybug',state:A3D_LB.st==='loading'?'busy':(src?'on':null),
+      status:src?'Weather: '+bimLbSrcWords(src)+'.':'No weather yet: open an EPW, or a station\'s ZIP with its design days, or get a year of hours from Open-Meteo.',
+      extra:bimLbWeatherHtml(src),
+      acts:[{act:'lb:open',label:'Open a weather file',pri:!src,tip:'An EPW, or the station\'s ZIP from climate.onebuilding.org'},
+        {act:'lb:year',label:'Get a year of hours',tip:'Open-Meteo ERA5, the last full year, at the site, in its standard time'},
+        {act:'lb:runall',label:'Run all four',pri:!!src,off:off}]});
+    BIM_LB_KINDS.forEach(function(k){
+      var R=bimLbResult(k),ch=R?bimLbStdChanged(k):[];
+      C.push({id:'lb'+k,title:BIM_LB_ROW[k],state:busy===k?'busy':(R?((R.stale||ch.length)?'stale':'on'):'off'),
+        status:R?bimLbSummary(k,R):(src?'Not run yet: Run works it out from '+bimLbSrcWords(src)+'.':'Choose the weather first, in Weather for Ladybug.'),
+        extra:bimLbResultHtml(k,R,ch),
+        acts:[{act:'lb:run:'+k,label:R?'Run again':'Run',pri:!R,off:off},
+          {act:'lb:show:'+k,label:'Show on the board',off:R?'':'Run it first'},
+          {act:'lb:to:'+k,label:'Add to a board',off:R?'':'Run it first'}]});
+    });
+    return C;
+  }
+  /* Analyze and the open board, after the weather or a result changed */
+  function bimLbRefresh(){
+    try{if(A3D_AW.on)bimAwRefresh();else bimAnalyzeRefresh();}catch(eA){console.warn('[BIM] Analyze could not show Ladybug\'s rows again',eA);}
+    if(A3D_CLB.open){try{bimClbRefresh();}catch(eB){console.warn('[BIM] The board could not be drawn again',eB);}}
+  }
+  /* a Ladybug figure onto a board: one in the set, or a new one with it */
+  function bimLbAddTo(k,id){
+    var f=BIM_LB_FIG[k],B,ctx,P,F;
+    if(!f||!bimLbResult(k)){a3dToast('Run it first');return false;}
+    if(id==='new'){
+      ctx={edit:false,narrow:false,caps:{},no:0};P=bimFigSrc(ctx,f,null);
+      F={k:'',f:f,x:0,y:0,w:bimFigSpan(P),h:1};F.h=bimBrdNatH(F,F.w);
+      return !!bimBrdNewUi(BIM_LB_NAMES[k],[F]);
+    }
+    B=bimBoardById(id);
+    if(!B&&id==='board-climate'){bimBoardShow('climate');return true;}
+    if(!B){a3dToast('That board is no longer in the set');return false;}
+    bimShellSetTab('presentation');
+    if(!bimPresOpenBoard(id))return false;
+    if(B.kind==='climate'&&!B.figs){a3dToast(BIM_LB_NAMES[k]+' is on this board already, after its own figures');return true;}
+    if(B.figs&&B.figs.some(function(x){return x.f===f;})){a3dToast(BIM_LB_NAMES[k]+' is on this board already');return true;}
+    return !!bimBrdAddFig(f);
+  }
+  function bimLbToBoard(k){
+    var b=document.querySelector('.a3d-awp [data-anzact="lb:to:'+k+'"]')||document.querySelector('[data-anzact="lb:to:'+k+'"]'),r=b?b.getBoundingClientRect():{left:80,bottom:80};
+    var it=bimPresData().boards.map(function(B){return [bimBoardLabel(B),B.id];});
+    if(!bimBoardById('board-climate'))it.unshift([bimBoardName('climate')+', into the set','board-climate']);
+    it.push('-',['A new board','new']);
+    bimLtMenuOpen(r.left,r.bottom+4,it,function(id){bimLbAddTo(k,id);});
+    return true;
+  }
+  /* the rows' buttons (bimAnzAct): lb:open, lb:year, lb:runall, lb:run:<kind>, lb:show:<kind>, lb:to:<kind> */
+  function bimLbAct(a){
+    var i=a.indexOf(':'),c=i<0?a:a.slice(0,i),k=i<0?'':a.slice(i+1);
+    function fail(what){return function(e){console.warn('[BIM] Ladybug: '+what,e);a3dToast(what+': '+(e&&e.message||e));bimLbRefresh();};}
+    if(c==='open'){bimLbPickFile();return true;}
+    if(c==='year'){
+      a3dToast('Getting a year of hours from Open-Meteo, then Ladybug reads them ...');
+      bimLbFetchYear().then(function(s){a3dToast('Weather: '+bimLbSrcWords(s));},fail('The year of hours could not be had'));
+      return true;
+    }
+    if(c==='runall'){a3dToast('Running Ladybug\'s four analyses ...');bimLbRunAll();return true;}
+    if(BIM_LB_KINDS.indexOf(k)<0)return false;
+    if(c==='run'){
+      a3dToast('Running '+BIM_LB_NAMES[k]+' ...');
+      bimLbRun(k).then(function(){a3dToast(BIM_LB_NAMES[k]+': done. Show on the board draws it');},fail(BIM_LB_NAMES[k]+' did not run'));
+      return true;
+    }
+    if(c==='show'){
+      if(!bimBoardShow('climate'))return false;
+      var B=bimBoardById('board-climate');
+      if(B&&B.figs&&!B.figs.some(function(x){return x.f===BIM_LB_FIG[k];})&&(B.off||[]).indexOf(BIM_LB_FIG[k])>=0)a3dToast('It was taken off this arranged board: Add to a board puts it back');
+      return true;
+    }
+    if(c==='to')return bimLbToBoard(k);
+    return false;
   }
   // ---- DXF (AutoCAD ASCII exchange format) ----
   var DXF_ACI={1:'#ff5555',2:'#e8d24a',3:'#5ac25a',4:'#4ac6c6',5:'#5a7fe0',6:'#c85ac0',7:'#d8d8d8',8:'#8a8a8a',9:'#bcbcbc'};
@@ -61225,7 +61455,7 @@ try{
     return r?{cells:r.cells.slice().sort(function(a,b){return a-b;}),order:r.cells.slice(),mean:r.mean}:null;};
   window.__a3dTlGroundGrid=function(){var D=bimLandGround(bimDgSite());return D?{x0:D.x0,z0:D.z0,cell:D.cell,nx:D.nx,nz:D.nz}:null;};
   /* __acad3dV172b: the Ladybug analyses, for the suite */
-  window.__acad3dV172b='runtime,manifest,worker,sha256,adapter,epw,ddy,openmeteo,standardtime,utci4,psych,pmv2clo,strategies5,windrose,designdays,kept,figids,arranged,bands,zoom,edit,snaps,keys,catalogue,options,custom,duplicate';
+  window.__acad3dV172b='runtime,manifest,worker,sha256,adapter,epw,ddy,openmeteo,standardtime,utci4,psych,pmv2clo,strategies5,windrose,designdays,kept,figids,arranged,bands,zoom,edit,snaps,keys,catalogue,options,custom,duplicate,registry,stdstamp,analyze';
   function bimLbErr(e){return {error:String(e&&e.message||e)};}
   /* where the runtime is loaded from; a suite points it at its own server */
   window.__a3dLbBase=function(u){if(u!==undefined)A3D_LB.base=u||null;return bimLbBase();};
@@ -61250,6 +61480,12 @@ try{
   window.__a3dLbResult=function(kind){return bimLbResult(kind);};
   window.__a3dLbOmUrl=function(lat,lon,year,zone){return bimLbOmUrl(lat,lon,year,zone);};
   window.__a3dLbOmZone=function(off){return bimLbOmZone(off);};
+  window.__a3dLbParams=function(kind){return bimLbParams(kind);};
+  window.__a3dLbStdChanged=function(kind){return bimLbStdChanged(kind);};
+  window.__a3dLbCards=function(){return JSON.parse(JSON.stringify(bimLbCards()));};
+  window.__a3dLbAct=function(a){return bimLbAct(a);};
+  window.__a3dLbAddTo=function(kind,id){return bimLbAddTo(kind,id);};
+  window.__a3dLbUtciRange=function(){return bimLbUtciRange();};
   /* __acad3dV172b: a board's figures and Edit, for the suite */
   function bimBrdHookErr(e){return {error:String(e&&e.message||e)};}
   window.__a3dBrdCat=function(){

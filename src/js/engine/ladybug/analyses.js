@@ -11,6 +11,8 @@
   var BIM_LB_NAMES={utci:'Outdoor comfort (UTCI)',psych:'Psychrometric chart and comfort',wind:'Wind rose',dd:'Design days'};
   var BIM_LB_FN={utci:'utci',psych:'psych',wind:'windrose',dd:'design_days'};
   var A3D_LBRUN={busy:null};
+  /* the standards each applies (the registry, V167): kept with its result, and out of date when they change */
+  var BIM_LB_STD={utci:['utci','app.comfort'],psych:['ashrae.55','app.comfort'],wind:['app.climate'],dd:['ashrae.dd']};
   /* the worker has the project's source, or gets it: Open-Meteo's year again; a file must be opened again */
   function bimLbEnsureSource(){
     var s=bimLbSrcKept();
@@ -21,8 +23,13 @@
   }
   /* the parameters a run uses, from its kind */
   function bimLbParams(kind){
-    if(kind==='utci')return {conditions:['sun_wind','shade_wind','sun_still','shade_still']};
-    if(kind==='psych')return {clo:[0.5,1.0],met:[1.1,1.1],merge:true};
+    function c(n){return bimStd('app.comfort',n);}
+    function u(n){return bimStd('utci',n);}
+    if(kind==='utci')return {conditions:['sun_wind','shade_wind','sun_still','shade_still'],fract_body_exp:c('body_exp'),sky_exposure:c('sky_exp'),ground_ref:c('ground_ref'),
+      limits:{ta:[u('ta_lo'),u('ta_hi')],dtr:[u('dtr_lo'),u('dtr_hi')],va:[u('va_lo'),u('va_hi')],pa:u('pa_hi')},still:u('va_lo')};
+    if(kind==='psych'){var clo=(c('clo')||[]).slice(),met=c('met');
+      return {clo:clo,met:clo.map(function(){return met;}),merge:true,strategy_par:[c('day_above'),c('night_below'),c('fan'),c('balance'),c('solar_cap'),c('time_const')],
+        ppd:bimStd('ashrae.55','ppd'),still:bimStd('ashrae.55','still')};}
     if(kind==='wind')return {directions:16,bins:bimClimWindBins()};
     return {};
   }
@@ -36,7 +43,7 @@
       return bimLbCall(BIM_LB_FN[kind],P).then(function(r){
         var D=bimLbData();
         pushUndo();
-        D[kind]={r:r,params:P,at:bimSaToday(),src:src.key,ms:Date.now()-t0,
+        D[kind]={r:r,params:P,at:bimSaToday(),src:src.key,ms:Date.now()-t0,std:bimStdStamp(BIM_LB_STD[kind]||[]),
           v:{pyodide:A3D_LB.pyodide,ladybug:A3D_LB.versions||{}}};
         return D[kind];
       });
@@ -67,6 +74,8 @@
     }
     return next();
   }
+  /* the standards a kept result used that are not what they are now */
+  function bimLbStdChanged(kind){var L=A3D.site&&A3D.site.ladybug,R=L&&L[kind];return R&&R.std?bimStdChanged(R.std):[];}
   /* a kept result, if it is one and of the source the project names */
   function bimLbResult(kind){
     var L=A3D.site&&A3D.site.ladybug,R=L&&L[kind],s=bimLbSrcKept();

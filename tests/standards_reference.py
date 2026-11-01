@@ -105,6 +105,21 @@ TOPICS = {
         dict(id='app.context.1', pub='', st='current', lv='A', adopt=[('*', None, None)], v=None)]),
     'app.climate': dict(kind='assumption', anywhere=True, cat=False, eds=[
         dict(id='app.climate.1', pub='', st='current', lv='A', adopt=[('*', None, None)], v=None)]),
+    # AMENDED FOR V172b: comfort and design days for Ladybug -- UTCI's scale and range, as utci.org's program (UTCI_a002,
+    # its ReadMe: air -50 to +50 C, the radiant temperature 30 C below to 70 C above it, wind at 10 m 0.5 to 17 m/s,
+    # vapour pressure under 50 hPa) and its poster's ten categories give them; ASHRAE 55-2023's PMV limits as Ladybug and
+    # pythermalcomfort apply them (PPD at most 10%, still air 0.1 m/s; the standard is sold, so S); the app's comfort
+    # assumptions; ASHRAE's design conditions (2025 Handbook, chapter 14, as a station's DDY carries them)
+    'utci': dict(kind='method', anywhere=True, cat=False, eds=[
+        dict(id='utci.a002', pub='2009-10', st='current', lv='P', adopt=[('*', '2009', None)],
+             v={'bands': ([-40, -27, -13, 0, 9, 26, 32, 38, 46], 'C'), 'ta_lo': (-50, 'C'), 'ta_hi': (50, 'C'), 'dtr_lo': (-30, 'C'),
+                'dtr_hi': (70, 'C'), 'va_lo': (0.5, 'm/s'), 'va_hi': (17, 'm/s'), 'pa_hi': (50, 'hPa')})]),
+    'ashrae.55': dict(kind='standard', anywhere=True, cat=False, eds=[
+        dict(id='ashrae.55.2023', pub='2023', st='current', lv='S', adopt=[('*', '2023', None)], v={'ppd': (10, '%'), 'still': (0.1, 'm/s')})]),
+    'app.comfort': dict(kind='assumption', anywhere=True, cat=False, eds=[
+        dict(id='app.comfort.1', pub='', st='current', lv='A', adopt=[('*', None, None)], v=None)]),
+    'ashrae.dd': dict(kind='data', anywhere=True, cat=False, eds=[
+        dict(id='ashrae.dd.2025', pub='2025', st='current', lv='S', adopt=[('*', '2025', None)], v={'heating': ([99.6, 99], '%'), 'cooling': ([0.4, 1, 2], '%')})]),
     # AMENDED FOR V168: land and green -- LBCS (adopted nowhere as a rule), Spacematrix, 3-30-300 and the app's land
     # settings; their values are held to their sources by tests/land_use_reference.py in V168's suite
     'lbcs.activity': dict(kind='classification', anywhere=True, cat=False, eds=[
@@ -192,7 +207,8 @@ SOURCE_HOSTS = {'content.tfl.gov.uk', 'assets.publishing.service.gov.uk', 'www.g
                 'www.planning.org', 'doi.org',   # AMENDED FOR V168: APA's LBCS; the DOIs of Buildings and Cities and of Browning et al.
                 'www.cdc.gov', 'www.nasa.gov', 'idea.ap.buffalo.edu', 'www.fs.usda.gov', 'etccdi.pacificclimate.org',   # AMENDED FOR V169: the assets' sources
                 'arxiv.org', 'mtreiber.de', 'ops.fhwa.dot.gov', 'www.fdot.gov', 'onlinepubs.trb.org', 'www.sandiego.gov', 'github.com',   # AMENDED FOR V171: traffic's sources
-                'www.zoneomics.com'}   # AMENDED FOR V172: Chalfont's site capacity calculation, in Zoneomics' copy of the code
+                'www.zoneomics.com',   # AMENDED FOR V172: Chalfont's site capacity calculation, in Zoneomics' copy of the code
+                'www.utci.org'}   # AMENDED FOR V172b: UTCI's program and poster
 
 
 # ---- the constants before V167, from the kept build ----

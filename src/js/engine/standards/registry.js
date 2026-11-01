@@ -385,6 +385,39 @@
           {n:'wind_bins',t:1,u:'m/s',v:[2,4,6,8],say:'the wind rose\'s speed bins above calm'},
           {n:'comfort_t0',v:20,u:'C',say:'the comfort band\'s lowest temperature',lt:'comfort_t1'},{n:'comfort_t1',v:27,u:'C',say:'the comfort band\'s highest temperature',gt:'comfort_t0'},
           {n:'comfort_rh0',v:20,u:'%',say:'the comfort band\'s lowest humidity',lt:'comfort_rh1'},{n:'comfort_rh1',v:80,u:'%',say:'the comfort band\'s highest humidity',gt:'comfort_rh0'}]}]},
+    /* ---- __acad3dV172b: comfort and design days, for Ladybug's analyses ---- */
+    {id:'utci',title:'Universal Thermal Climate Index (UTCI): its stress scale and range',pub:'ISB Commission 6 and COST Action 730',kind:'method',area:'Climate',use:'Ladybug\'s outdoor comfort (UTCI): its figure and its row in Analyze',anywhere:true,
+      eds:[{id:'utci.a002',name:'UTCI_a002 (Br\u00f6de, October 2009), its ten stress categories',pub:'2009-10',st:'current',where:'International',adopt:[{at:'*',from:'2009'}],
+        src:{t:'utci.org: the UTCI program code (UTCI_a002, its ReadMe and Fortran) and the poster Calculating UTCI Equivalent Temperatures (2009)',w:'the ReadMe\'s range of validity; the poster\'s assessment scale',u:'https://www.utci.org/',lv:'P',read:'2026-10-31'},
+        v:[{n:'bands',t:1,u:'C',v:[-40,-27,-13,0,9,26,32,38,46],say:'the bounds of the ten stress categories, from extreme cold stress below the first to extreme heat stress above the last'},
+          {n:'ta_lo',v:-50,u:'C',say:'the coldest air in the formula\'s range',lt:'ta_hi'},{n:'ta_hi',v:50,u:'C',say:'the warmest air in its range',gt:'ta_lo'},
+          {n:'dtr_lo',v:-30,u:'C',say:'the radiant temperature, at most this far below the air\'s',lt:'dtr_hi'},{n:'dtr_hi',v:70,u:'C',say:'the radiant temperature, at most this far above the air\'s',gt:'dtr_lo'},
+          {n:'va_lo',v:0.5,u:'m/s',say:'the lowest wind at 10 m in its range: still air is taken as this',lt:'va_hi'},{n:'va_hi',v:17,u:'m/s',say:'the strongest wind at 10 m in its range',gt:'va_lo'},
+          {n:'pa_hi',v:50,u:'hPa',say:'the most water vapour pressure in its range'}]}]},
+    {id:'ashrae.55',title:'Thermal environmental conditions for human occupancy: PMV comfort',pub:'ASHRAE',kind:'standard',area:'Climate',use:'Ladybug\'s psychrometric chart: its comfort zone',anywhere:true,
+      eds:[{id:'ashrae.55.2023',name:'ANSI/ASHRAE Standard 55-2023',pub:'2023',st:'current',where:'International practice',adopt:[{at:'*',from:'2023'}],
+        src:{t:'ASHRAE 55-2023 (sold, and its publisher refuses scripts), as Ladybug\'s PMVParameter and pythermalcomfort 4.8.0 apply it',w:'the PMV method: PMV within plus or minus 0.5, at most 10% dissatisfied; the cooling effect of moving air above still air',u:'https://github.com/ladybug-tools/ladybug-comfort',lv:'S',read:'2026-10-31'},
+        v:[{n:'ppd',v:10,u:'%',say:'the most people dissatisfied in the comfort zone (PMV within plus or minus 0.5)'},
+          {n:'still',v:0.1,u:'m/s',say:'still air: at or below it the air\'s speed cools no one'}]}]},
+    {id:'app.comfort',title:'Comfort assumptions',pub:'This app',kind:'assumption',area:'Climate',use:'Ladybug\'s psychrometric chart and its passive strategies, and UTCI in the sun',anywhere:true,
+      eds:[{id:'app.comfort.1',name:'The app\'s comfort assumptions (V172b): Ladybug\'s own defaults',pub:'',st:'current',where:'Anywhere',adopt:[{at:'*'}],
+        src:{t:'This app (the owner\'s choices of 2026-10-31), taking the defaults of Ladybug Tools\' LB PMV Polygon, LB Passive Strategy Parameters and LB Outdoor Solar MRT',w:'research-ladybug-weather-comfort.md, sections 4 and 10',u:'https://github.com/ladybug-tools/ladybug-grasshopper',lv:'A'},
+        v:[{n:'clo',t:1,u:'clo',v:[0.5,1.0],say:'the clothing whose comfort zones are merged: summer and winter'},
+          {n:'met',v:1.1,u:'met',say:'the activity: seated, light office work'},
+          {n:'day_above',v:12,u:'C',say:'mass and night ventilation: the warmest day above the comfort zone it can still cool'},
+          {n:'night_below',v:3,u:'C',say:'mass and night ventilation: how far below the comfort zone\'s warmest the night must fall'},
+          {n:'fan',v:1,u:'m/s',say:'occupant fans: the air speed they make'},
+          {n:'balance',v:12.8,u:'C',say:'capture internal heat: the building\'s balance temperature'},
+          {n:'solar_cap',v:50,u:'W/m2',say:'passive solar heating: the sun on the window that warms the building by one degree'},
+          {n:'time_const',v:8,u:'h',say:'the hours a building holds its coolness, or its sun\'s heat'},
+          {n:'body_exp',v:1,u:'ratio',say:'UTCI in the sun: the share of the body in the sun'},
+          {n:'sky_exp',v:1,u:'ratio',say:'UTCI in the sun: the share of the sky in view'},
+          {n:'ground_ref',v:0.25,u:'ratio',say:'UTCI in the sun: the ground\'s reflectance'}]}]},
+    {id:'ashrae.dd',title:'Climatic design conditions',pub:'ASHRAE',kind:'data',area:'Climate',use:'Ladybug\'s design days',anywhere:true,
+      eds:[{id:'ashrae.dd.2025',name:'ASHRAE Handbook -- Fundamentals 2025, chapter 14',pub:'2025',st:'current',where:'International',adopt:[{at:'*',from:'2025'}],
+        src:{t:'ASHRAE Handbook -- Fundamentals 2025, chapter 14, Climatic Design Information (sold): the values a station\'s DDY and EPW carry, as Ladybug reads them',w:'the design days: heating at 99.6% and 99% of the year\'s hours, cooling at 0.4%, 1% and 2%',u:'https://www.ashrae.org/',lv:'S',read:'2026-10-31'},
+        v:[{n:'heating',t:1,u:'%',v:[99.6,99],say:'the heating design conditions: the share of the year\'s hours warmer than each'},
+          {n:'cooling',t:1,u:'%',v:[0.4,1,2],say:'the cooling design conditions: the share of the year\'s hours warmer than each'}]}]},
     /* ---- the catalogue for a US and Pennsylvania site: in force there, not applied by the app yet ---- */
     {id:'pa.ucc',title:'Pennsylvania Uniform Construction Code',pub:'Pennsylvania Department of Labor and Industry',kind:'code',area:'Buildings',cat:true,access:'free to read',
       eds:[{id:'pa.ucc.2026',name:'The 2021 I-Codes (IBC, IRC, IECC, IMC, IFGC, IEBC; the IFC as they reference it), with Pennsylvania\'s changes',pub:'2025-11-07',st:'current',where:'Pennsylvania',adopt:[{at:'us-pa',from:'2026-01-01'}],
@@ -437,7 +470,7 @@
   var BIM_STD_HOW={adopted:'in force here',international:'international',chosen:'chosen for this project',outside:'applied outside its place',assumption:'the app\'s assumption',none:'none in force'};
   var BIM_STD_UNIT={min:[' minute',' minutes'],m:[' m',' m'],'m/min':[' m a minute',' m a minute'],'km/h':[' km/h',' km/h'],'%':['%','%'],'ug/m3':[' \u00b5g/m\u00b3',' \u00b5g/m\u00b3'],
     'per sq mi':[' per sq mi',' per sq mi'],dB:[' dB',' dB'],ha:[' ha',' ha'],trees:[' tree',' trees'],families:[' family',' families'],C:['\u00b0C','\u00b0C'],'m/s':[' m/s',' m/s'],lanes:[' lane',' lanes'],days:[' day',' days'],x:['\u00d7','\u00d7'],'sq ft':[' sq ft',' sq ft'],
-    s:[' s',' s'],'m/s2':[' m/s\u00b2',' m/s\u00b2'],'pc/h/ln':[' an hour a lane',' an hour a lane'],'du/acre':[' an acre',' an acre'],deg:['\u00b0','\u00b0'],ratio:['',''],h:[' h',' h']};   /* __acad3dV172: a ratio, hours */   /* __acad3dV171 */
+    s:[' s',' s'],'m/s2':[' m/s\u00b2',' m/s\u00b2'],'pc/h/ln':[' an hour a lane',' an hour a lane'],'du/acre':[' an acre',' an acre'],deg:['\u00b0','\u00b0'],ratio:['',''],h:[' h',' h'],hPa:[' hPa',' hPa'],'W/m2':[' W/m\u00b2',' W/m\u00b2'],clo:[' clo',' clo'],met:[' met',' met']};   /* __acad3dV172b */   /* __acad3dV172: a ratio, hours */   /* __acad3dV171 */
   var BIM_STD_EMPTY={place:null,date:'',ov:{},pick:{},packs:[]};
   var A3D_STD={obj:null,rev:-1,sig:'',at:0,cache:{},recs:null,by:{},memo:{},warned:{},gen:0};
   /* what the project holds: A3D.site.std, or nothing changed yet */

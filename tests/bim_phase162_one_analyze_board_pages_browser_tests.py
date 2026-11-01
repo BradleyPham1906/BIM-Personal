@@ -327,7 +327,8 @@ async def run():
             await page.click('#a3d-leftpanel [data-prpact="board"]')
             await page.wait_for_timeout(150)
             menu = await safe("()=>[].map.call(document.querySelectorAll('#a3d-ltmenu [data-ltm]'),function(b){return [b.textContent,b.getAttribute('data-ltm')];})")
-            ck(menu == [['Climate and risk', 'climate'], ['Zoning and yield', 'zoning'], ['Access and people', 'access']], "+ Board offers the three boards (%s)" % menu)
+            # AMENDED FOR V172b: after the three boards, New board (a board of one's own)
+            ck(menu == [['Climate and risk', 'climate'], ['Zoning and yield', 'zoning'], ['Access and people', 'access'], ['New board', 'new']], "+ Board offers the three boards, then a new one (%s)" % menu)
             await page.click('#a3d-ltmenu [data-ltm="access"]')
             await page.wait_for_timeout(500)
             Q = await seq()
@@ -457,7 +458,8 @@ async def run():
             ck(await seq() == [s2, 'board-access', s1, 'board-climate'] and [s['id'] for s in await safe("()=>window.__a3dSheets()")] == [s2, s1] and tabs == [s2, s1],
                "a sheet dragged past a board: the sheets, and their tabs, take the new order (%s, tabs %s)" % (await seq(), tabs))
             mi = await safe("()=>window.__a3dBoardMenuItems('board-access')")
-            ck(mi == ['Present from this page', '-', 'Open', 'Print…', '-', 'Move up', 'Move down', '-', 'Remove from the set'], "a board's own menu (%s)" % mi)
+            # AMENDED FOR V172b: Edit, and Duplicate as a new board, join the board's menu
+            ck(mi == ['Present from this page', '-', 'Open', 'Edit', 'Print…', '-', 'Move up', 'Move down', '-', 'Duplicate as a new board', '-', 'Remove from the set'], "a board's own menu (%s)" % mi)
             await safe("()=>window.__a3dBoardMenuDo('earlier','board-access')")
             ck(await seq() == ['board-access', s2, s1, 'board-climate'], "Move up")
             smi = await safe("(id)=>window.__a3dSheetMenuItems(id,'pages')", s2)

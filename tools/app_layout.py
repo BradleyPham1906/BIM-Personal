@@ -126,6 +126,7 @@ ENGINE = [
     ('ladybug/sources.js', '  /* ================= __acad3dV172b: the weather Ladybug reads ================='),
     ('ladybug/analyses.js', '  /* ================= __acad3dV172b: the analyses, run and kept ================='),
     ('ladybug/figures.js', '  /* ================= __acad3dV172b: the Ladybug analyses as board figures ================='),
+    ('ladybug/panel.js', '  /* ================= __acad3dV172b: Ladybug in the analysis workspace ================='),
     ('io/import-dxf.js', '  // ---- DXF (AutoCAD ASCII exchange format) ----'),
     ('io/import-obj-stl.js', "  // ---- OBJ (Wavefront, Y-up - matches this engine's convention directly) ----"),
     ('io/import-ifc.js', '  // ---- IFC (STEP-text BIM format): subset covering IfcBuildingStorey + vertically-extru'),
