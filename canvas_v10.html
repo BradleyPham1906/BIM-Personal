@@ -32425,6 +32425,773 @@ try{
   }
   /* a command: Analyze open with the tool on the right */
   function bimTlCommand(id){bimAwEnter();return bimAwPick('tool',id);}
+  /* ================= __acad3dV172b: the Ladybug adapter's Python, as text =================
+     Written by tools/embed_py.py from src/py/bim_ladybug.py: edit the .py, then run the tool (--check proves the two
+     agree). The worker writes it into Pyodide's site-packages beside the pinned wheels; Ladybug's own code runs
+     unchanged beneath it (reference/research-ladybug-weather-comfort.md). */
+  var BIM_LB_PY=[
+    "# coding=utf-8",
+    "\"\"\"bim_ladybug: the app's adapter to Ladybug Tools (__acad3dV172b).",
+    "",
+    "reference/research-ladybug-weather-comfort.md. This module is the app's own, and narrow: it reads a weather source into",
+    "Ladybug's objects, calls Ladybug's own classes, unchanged, and hands the results back as plain numbers and 2D geometry",
+    "for the app to draw. It runs in Pyodide in a worker (src/js/engine/ladybug/), written into site-packages beside the",
+    "pinned wheels, and natively in the suites' reference. Every value that counts comes from Ladybug; what is ours is",
+    "which data it is given, and how the answer is packed.",
+    "",
+    "The sources (one at a time, kept in S):",
+    "- an EPW, or the station's ZIP (EPW, DDY, STAT) from climate.onebuilding.org, opened from a file;",
+    "- a year of Open-Meteo hours (ERA5), asked for by the app in the site's standard time.",
+    "",
+    "The analyses: UTCI in CBE Clima's four conditions; the psychrometric chart with the PMV comfort polygons of the",
+    "chosen clothing and Ladybug's passive strategies, as Ladybug's own \"LB PMV Polygon\" component combines them; the",
+    "wind rose; the design days.",
+    "\"\"\"",
+    "from __future__ import division",
+    "",
+    "import io",
+    "import json",
+    "import math",
+    "import traceback",
+    "import zipfile",
+    "",
+    "from ladybug.ddy import DDY",
+    "from ladybug.epw import EPW",
+    "from ladybug.location import Location",
+    "from ladybug.psychchart import PsychrometricChart",
+    "from ladybug.skymodel import calc_horizontal_infrared",
+    "from ladybug.wea import Wea",
+    "from ladybug.windrose import WindRose",
+    "from ladybug_comfort.chart.polygonpmv import PolygonPMV",
+    "from ladybug_comfort.collection.solarcal import OutdoorSolarCal",
+    "from ladybug_comfort.collection.utci import UTCI",
+    "from ladybug_comfort.utci import saturated_vapor_pressure_hpa",
+    "",
+    "S = {'epw': None, 'ddy': None, 'src': None}",
+    "",
+    "# UTCI's validity, from the official program's ReadMe (UTCI_a002, Broede 2009): air -50 to +50 C, the radiant",
+    "# temperature 30 C below to 70 C above the air, wind at 10 m 0.5 to 17 m/s, vapour pressure under 50 hPa",
+    "UTCI_TA = (-50.0, 50.0)",
+    "UTCI_DTR = (-30.0, 70.0)",
+    "UTCI_VA = (0.5, 17.0)",
+    "UTCI_PA = 50.0",
+    "# CBE Clima's four conditions: sun or shade, wind or still air (0.5 m/s, UTCI's floor)",
+    "CONDITIONS = ('sun_wind', 'shade_wind', 'sun_still', 'shade_still')",
+    "# the strategies' names as Ladybug's component spells them, and its defaults (LB PMV Polygon / LB Passive Strategy",
+    "# Parameters): 12 C above comfort by day, 3 C below by night, fans at 1.0 m/s, balance 12.8 C, 50 W/m2 a degree, 8 h",
+    "STRATEGIES = ('Evaporative Cooling', 'Mass + Night Vent', 'Occupant Use of Fans', 'Capture Internal Heat',",
+    "              'Passive Solar Heating')",
+    "STRATEGY_PAR = (12.0, 3.0, 1.0, 12.8, 50.0, 8)",
+    "",
+    "",
+    "def versions():",
+    "    \"\"\"The versions running, for the record kept with each result.\"\"\"",
+    "    out = {}",
+    "    try:",
+    "        from importlib import metadata",
+    "        for n in ('ladybug-core', 'ladybug-comfort', 'ladybug-geometry'):",
+    "            try:",
+    "                out[n] = metadata.version(n)",
+    "            except Exception:",
+    "                out[n] = None",
+    "    except Exception:",
+    "        pass",
+    "    return json.dumps(out)",
+    "",
+    "",
+    "def _r(v, d=2):",
+    "    return None if v is None or (isinstance(v, float) and (math.isnan(v) or math.isinf(v))) else round(v, d)",
+    "",
+    "",
+    "def _summary():",
+    "    epw, ddy, src = S['epw'], S['ddy'], S['src'] or {}",
+    "    loc = epw.location",
+    "    out = {'kind': src.get('kind'), 'name': src.get('name', ''), 'city': loc.city, 'state': loc.state,",
+    "           'country': loc.country, 'station': loc.station_id, 'source': loc.source, 'lat': _r(loc.latitude, 4),",
+    "           'lon': _r(loc.longitude, 4), 'tz': loc.time_zone, 'elev': _r(loc.elevation, 1),",
+    "           'hours': len(epw.dry_bulb_temperature.values), 'leap': bool(epw.is_leap_year),",
+    "           'ddy': ddy is not None, 'ddy_days': len(ddy.design_days) if ddy is not None else 0,",
+    "           'filled': src.get('filled', 0), 'year': src.get('year')}",
+    "    head = src.get('design_head')",
+    "    if head:",
+    "        out['design_head'] = head",
+    "        out['design_read'] = bool(epw.heating_design_condition_dictionary)",
+    "    return out",
+    "",
+    "",
+    "def _decode(b):",
+    "    try:",
+    "        return b.decode('utf-8')",
+    "    except UnicodeDecodeError:",
+    "        return b.decode('latin-1')",
+    "",
+    "",
+    "def open_file(path, name=''):",
+    "    \"\"\"An EPW, or a ZIP holding one (and its DDY), from the worker's file system.\"\"\"",
+    "    data = open(path, 'rb').read()",
+    "    epw_text, ddy_text = None, None",
+    "    if data[:2] == b'PK':",
+    "        z = zipfile.ZipFile(io.BytesIO(data))",
+    "        names = z.namelist()",
+    "        epws = [n for n in names if n.lower().endswith('.epw')]",
+    "        if not epws:",
+    "            return {'error': 'The ZIP holds no EPW file'}",
+    "        epw_text = _decode(z.read(epws[0]))",
+    "        stem = epws[0][:-4].lower()",
+    "        ddys = [n for n in names if n.lower().endswith('.ddy')]",
+    "        same = [n for n in ddys if n[:-4].lower() == stem]",
+    "        if same or ddys:",
+    "            ddy_text = _decode(z.read((same or ddys)[0]))",
+    "        name = name or epws[0].split('/')[-1]",
+    "    else:",
+    "        epw_text = _decode(data)",
+    "    if not epw_text.startswith('LOCATION'):",
+    "        return {'error': 'This is not an EPW weather file: its first line is not LOCATION'}",
+    "    epw = EPW.from_file_string(epw_text)",
+    "    ddy = None",
+    "    if ddy_text:",
+    "        with open('/tmp/bim_site.ddy', 'w') as f:",
+    "            f.write(ddy_text)",
+    "        ddy = DDY.from_ddy_file('/tmp/bim_site.ddy')",
+    "    lines = epw_text.split('\\n', 2)",
+    "    dc = lines[1].split(',') if len(lines) > 1 else []",
+    "    S['epw'], S['ddy'] = epw, ddy",
+    "    S['src'] = {'kind': 'file', 'name': name, 'design_head': dc[2].strip() if len(dc) > 3 and dc[1].strip() == '1' else None}",
+    "    return _summary()",
+    "",
+    "",
+    "def _fill(vals):",
+    "    \"\"\"Missing hours (None) filled along the line between their neighbours; how many.\"\"\"",
+    "    n, filled = len(vals), 0",
+    "    out = list(vals)",
+    "    good = [i for i, v in enumerate(out) if v is not None]",
+    "    if not good:",
+    "        return None, n",
+    "    for i in range(n):",
+    "        if out[i] is None:",
+    "            filled += 1",
+    "            lo = max([g for g in good if g < i], default=None)",
+    "            hi = min([g for g in good if g > i], default=None)",
+    "            if lo is None:",
+    "                out[i] = out[hi]",
+    "            elif hi is None:",
+    "                out[i] = out[lo]",
+    "            else:",
+    "                out[i] = out[lo] + (out[hi] - out[lo]) * (i - lo) / (hi - lo)",
+    "    return out, filled",
+    "",
+    "",
+    "def open_hours(path):",
+    "    \"\"\"A year of Open-Meteo hours (the JSON the app fetched, written to path), as an EPW is read by Ladybug.",
+    "",
+    "    The hours come in the site's standard time, one more than the year (to 1 January 00:00 of the next year). Ladybug",
+    "    reads an EPW's row \"hour 1\" (00:01 to 01:00: temperature at 01:00, radiation over the hour) into its 00:00, so",
+    "    each of its hours takes Open-Meteo's values of the hour after: temperature at the hour's end, radiation the mean of",
+    "    the hour (Open-Meteo's radiation is the mean of the preceding hour).\"\"\"",
+    "    H = json.load(open(path))",
+    "    h = H['hourly']",
+    "    year = int(H['year'])",
+    "    leap = (year % 4 == 0 and year % 100 != 0) or year % 400 == 0",
+    "    n = 8784 if leap else 8760",
+    "    if len(h['time']) < n + 1:",
+    "        return {'error': 'Open-Meteo gave %d hours for %d; %d are needed' % (len(h['time']), year, n + 1)}",
+    "    epw = EPW.from_missing_values(is_leap_year=leap)",
+    "    epw.location = Location(H.get('name') or 'Site', '', '', H['lat'], H['lon'], H['tz'], H.get('elev') or 0,",
+    "                            '', 'Open-Meteo ERA5 %d' % year)",
+    "    filled = 0",
+    "",
+    "    def col(key, scale=1.0):",
+    "        vals, f = _fill([None if v is None else v * scale for v in h[key][1:n + 1]])",
+    "        return vals, f",
+    "",
+    "    db, f1 = col('temperature_2m')",
+    "    dp, f2 = col('dew_point_2m')",
+    "    rh, f3 = col('relative_humidity_2m')",
+    "    pr, f4 = col('surface_pressure', 100.0)",
+    "    ws, f5 = col('wind_speed_10m')",
+    "    wd, f6 = col('wind_direction_10m')",
+    "    dn, f7 = col('direct_normal_irradiance')",
+    "    df, f8 = col('diffuse_radiation')",
+    "    gh, f9 = col('shortwave_radiation')",
+    "    cc, f10 = col('cloud_cover', 0.1)",
+    "    if None in (db, dp, rh, pr, ws, wd, dn, df, gh, cc):",
+    "        return {'error': 'Open-Meteo gave no values for a variable the analyses need'}",
+    "    filled = max(f1, f2, f3, f4, f5, f6, f7, f8, f9, f10)",
+    "    epw.dry_bulb_temperature.values = db",
+    "    epw.dew_point_temperature.values = dp",
+    "    epw.relative_humidity.values = [min(100.0, max(0.0, v)) for v in rh]",
+    "    epw.atmospheric_station_pressure.values = pr",
+    "    epw.wind_speed.values = [max(0.0, v) for v in ws]",
+    "    epw.wind_direction.values = [v % 360.0 for v in wd]",
+    "    epw.direct_normal_radiation.values = [max(0.0, v) for v in dn]",
+    "    epw.diffuse_horizontal_radiation.values = [max(0.0, v) for v in df]",
+    "    epw.global_horizontal_radiation.values = [max(0.0, v) for v in gh]",
+    "    tenths = [min(10.0, max(0.0, v)) for v in cc]",
+    "    epw.total_sky_cover.values = [int(round(v)) for v in tenths]",
+    "    epw.opaque_sky_cover.values = [int(round(v)) for v in tenths]",
+    "    epw.horizontal_infrared_radiation_intensity.values = [",
+    "        calc_horizontal_infrared(c, t, d) for c, t, d in zip(tenths, db, dp)]",
+    "    S['epw'], S['ddy'] = epw, None",
+    "    S['src'] = {'kind': 'openmeteo', 'name': 'Open-Meteo ERA5, %d' % year, 'filled': filled, 'year': year}",
+    "    return _summary()",
+    "",
+    "",
+    "def _need():",
+    "    if S['epw'] is None:",
+    "        raise ValueError('No weather is open: open an EPW or get the year from Open-Meteo first')",
+    "    return S['epw']",
+    "",
+    "",
+    "def _rle(vals):",
+    "    \"\"\"Runs of one-digit classes, '3:120,4:7,...', small enough to keep with a project.\"\"\"",
+    "    out, prev, run = [], None, 0",
+    "    for v in vals:",
+    "        if v == prev:",
+    "            run += 1",
+    "            continue",
+    "        if prev is not None:",
+    "            out.append('%d:%d' % (prev, run))",
+    "        prev, run = v, 1",
+    "    if prev is not None:",
+    "        out.append('%d:%d' % (prev, run))",
+    "    return ','.join(out)",
+    "",
+    "",
+    "def utci(conditions=None, fract_body_exp=1.0, sky_exposure=1.0, ground_ref=0.25):",
+    "    \"\"\"UTCI over the year in each condition: in the sun the radiant temperature is SolarCal's (ASHRAE 55, Ladybug's",
+    "    OutdoorSolarCal: an open area by default); in the shade it is the air's; with wind the weather's at 10 m, still",
+    "    air UTCI's floor of 0.5 m/s (CBE Clima's four conditions). The official ten-band scale (original_utci_category).\"\"\"",
+    "    epw = _need()",
+    "    conditions = conditions or list(CONDITIONS)",
+    "    db, rh, ws = epw.dry_bulb_temperature, epw.relative_humidity, epw.wind_speed",
+    "    months = [dt.month - 1 for dt in db.datetimes]",
+    "    hours = [dt.hour for dt in db.datetimes]",
+    "    sun_mrt = None",
+    "    out = {'conditions': {}, 'months': None}",
+    "    for c in conditions:",
+    "        if c not in CONDITIONS:",
+    "            raise ValueError('Not a condition: %s' % c)",
+    "        sun, wind = c.startswith('sun'), c.endswith('wind')",
+    "        if sun and sun_mrt is None:",
+    "            sun_mrt = OutdoorSolarCal(epw.location, epw.direct_normal_radiation, epw.diffuse_horizontal_radiation,",
+    "                                      epw.horizontal_infrared_radiation_intensity, db, fract_body_exp,",
+    "                                      sky_exposure, ground_ref).mean_radiant_temperature",
+    "        mrt = sun_mrt if sun else None",
+    "        u = UTCI(db, rh, mrt, ws if wind else None)",
+    "        vals = list(u.universal_thermal_climate_index.values)",
+    "        cats = [int(v) for v in u.original_utci_category.values]",
+    "        tr = list(mrt.values) if mrt is not None else list(db.values)",
+    "        va = list(ws.values) if wind else [0.5] * len(vals)",
+    "        outside = 0",
+    "        for t, r, v, h in zip(db.values, tr, va, rh.values):",
+    "            pa = saturated_vapor_pressure_hpa(t) * h / 100.0",
+    "            if t < UTCI_TA[0] or t > UTCI_TA[1] or r - t < UTCI_DTR[0] or r - t > UTCI_DTR[1] or \\",
+    "                    v < UTCI_VA[0] or v > UTCI_VA[1] or pa > UTCI_PA:",
+    "                outside += 1",
+    "        counts = [0] * 10",
+    "        monthly = [[0] * 10 for _ in range(12)]",
+    "        by_hour = [[0] * 10 for _ in range(24)]",
+    "        for k, m, hr in zip(cats, months, hours):",
+    "            counts[k] += 1",
+    "            monthly[m][k] += 1",
+    "            by_hour[hr][k] += 1",
+    "        n = len(vals)",
+    "        out['conditions'][c] = {",
+    "            'counts': counts, 'monthly': monthly, 'by_hour': by_hour, 'classes': _rle(cats),",
+    "            'comfort': _r(100.0 * counts[5] / n, 1), 'heat': _r(100.0 * sum(counts[6:]) / n, 1),",
+    "            'cold': _r(100.0 * sum(counts[:5]) / n, 1), 'min': _r(min(vals), 1), 'max': _r(max(vals), 1),",
+    "            'mean': _r(sum(vals) / n, 2), 'outside': outside, 'hours': n,",
+    "            'utci_sample': [_r(v, 2) for v in vals[:: max(1, n // 365)]]}",
+    "    out['first'] = str(db.datetimes[0])",
+    "    return out",
+    "",
+    "",
+    "def _line(seg):",
+    "    vs = seg.vertices if hasattr(seg, 'vertices') else (seg.p1, seg.p2)",
+    "    return [[_r(p.x, 3), _r(p.y, 3)] for p in vs]",
+    "",
+    "",
+    "def _polygon(poly):",
+    "    \"\"\"A comfort or strategy polygon: Ladybug's polylines and segments joined into one ring of points.\"\"\"",
+    "    pts = []",
+    "    for seg in poly:",
+    "        for p in _line(seg):",
+    "            if not pts or abs(pts[-1][0] - p[0]) > 1e-6 or abs(pts[-1][1] - p[1]) > 1e-6:",
+    "                pts.append(p)",
+    "    return pts",
+    "",
+    "",
+    "def _window_irradiance(epw, azimuth):",
+    "    \"\"\"The irradiance on a vertical window facing azimuth (180 south), by Ladybug's Wea, W/m2 an hour.\"\"\"",
+    "    wea = Wea.from_annual_values(epw.location, epw.direct_normal_radiation.values,",
+    "                                 epw.diffuse_horizontal_radiation.values, 1, epw.is_leap_year)",
+    "    total = wea.directional_irradiance(0, azimuth)[0]",
+    "    return total",
+    "",
+    "",
+    "def psych(clo=None, met=None, strategies=None, strategy_par=None, merge=True):",
+    "    \"\"\"The psychrometric chart of the year's hours, with the PMV comfort polygons and the passive strategies as",
+    "    Ladybug's \"LB PMV Polygon\" component draws and counts them (its logic followed, its defaults kept).\"\"\"",
+    "    epw = _need()",
+    "    clo = clo or [0.5, 1.0]",
+    "    met = met or [1.1] * len(clo)",
+    "    strategies = list(STRATEGIES) if strategies is None else strategies",
+    "    day_above, night_below, fan_spd, bal_temp, solar_cap, tim_c = strategy_par or STRATEGY_PAR",
+    "    press = epw.atmospheric_station_pressure.average",
+    "    press = 101325 if press is None or press >= 999999 else press",
+    "    pc = PsychrometricChart(epw.dry_bulb_temperature, epw.relative_humidity, average_pressure=press)",
+    "    poly = PolygonPMV(pc, met_rate=met, clo_value=clo)",
+    "    names, data, shapes = [], [], []",
+    "    if merge:",
+    "        names.append('Comfort')",
+    "        data.append(list(poly.merged_comfort_values))",
+    "        shapes.append(_polygon(poly.merged_comfort_polygon))",
+    "    else:",
+    "        for i, p in enumerate(poly.comfort_polygons):",
+    "            names.append('Comfort %d' % (i + 1))",
+    "            data.append(list(poly.comfort_values[i]))",
+    "            shapes.append(_polygon(p))",
+    "    missing = []",
+    "",
+    "    def add(name, pg, vals):",
+    "        if pg is None:",
+    "            missing.append(name)",
+    "            return",
+    "        names.append(name)",
+    "        shapes.append(_polygon(pg))",
+    "        data.append(list(vals))",
+    "",
+    "    if 'Evaporative Cooling' in strategies:",
+    "        pg = poly.evaporative_cooling_polygon()",
+    "        add('Evaporative Cooling', pg, poly.evaluate_polygon(pg, 0.01) if pg else None)",
+    "    if 'Mass + Night Vent' in strategies:",
+    "        pg = poly.night_flush_polygon(day_above)",
+    "        add('Mass + Night Vent', pg, poly.evaluate_night_flush_polygon(",
+    "            pg, epw.dry_bulb_temperature, night_below, tim_c, 0.01) if pg else None)",
+    "    if 'Occupant Use of Fans' in strategies:",
+    "        pg = poly.fan_use_polygon(fan_spd)",
+    "        add('Occupant Use of Fans', pg, poly.evaluate_polygon(pg, 0.01) if pg else None)",
+    "    if 'Capture Internal Heat' in strategies:",
+    "        pg = poly.internal_heat_polygon(bal_temp)",
+    "        add('Capture Internal Heat', pg, poly.evaluate_polygon(pg, 0.01) if pg else None)",
+    "    window = None",
+    "    if 'Passive Solar Heating' in strategies:",
+    "        window = 180 if epw.location.latitude >= 0 else 0",
+    "        sol = _window_irradiance(epw, window)",
+    "        bal_t = bal_temp if 'Capture Internal Heat' in strategies else None",
+    "        dat, delta = poly.evaluate_passive_solar(sol, solar_cap, tim_c, bal_t)",
+    "        pg = poly.passive_solar_polygon(delta, bal_t)",
+    "        add('Passive Solar Heating', pg, dat if pg else None)",
+    "    flat = []",
+    "    for d in data:",
+    "        flat.append([int(v) for v in (d.values if hasattr(d, 'values') else d)])",
+    "    total = [1 if any(col) else 0 for col in zip(*flat)] if flat else []",
+    "    n = len(total) or 1",
+    "    mesh = pc.colored_mesh",
+    "    out = {",
+    "        'press': _r(press, 0), 'clo': clo, 'met': met, 'strategies': strategies,",
+    "        'strategy_par': [day_above, night_below, fan_spd, bal_temp, solar_cap, tim_c], 'window': window,",
+    "        'names': names, 'pct': [_r(100.0 * sum(f) / n, 1) for f in flat], 'total': _r(100.0 * sum(total) / n, 1),",
+    "        'missing': missing, 'polygons': shapes,",
+    "        'chart': {",
+    "            'x_dim': pc.x_dim, 'y_dim': pc.y_dim, 'min_t': pc.min_temperature, 'max_t': pc.max_temperature,",
+    "            'max_hr': pc.max_humidity_ratio,",
+    "            'saturation': _line(pc.saturation_line), 'border': _line(pc.chart_border),",
+    "            'temperature': [_line(s) for s in pc.temperature_lines], 't_labels': list(pc.temperature_labels),",
+    "            't_label_points': [[_r(p.x, 3), _r(p.y, 3)] for p in pc.temperature_label_points],",
+    "            'rh': [_line(s) for s in pc.rh_lines], 'rh_labels': list(pc.rh_labels),",
+    "            'hr': [_line(s) for s in pc.hr_lines], 'hr_labels': list(pc.hr_labels),",
+    "            'hr_label_points': [[_r(p.x, 3), _r(p.y, 3)] for p in pc.hr_label_points],",
+    "            'mesh_vertices': [[_r(p.x, 3), _r(p.y, 3)] for p in mesh.vertices],",
+    "            'mesh_faces': [list(f) for f in mesh.faces], 'mesh_hours': list(pc.hour_values)},",
+    "        'hours': len(total)}",
+    "    return out",
+    "",
+    "",
+    "def windrose(directions=16, bins=None):",
+    "    \"\"\"Ladybug's wind rose of the year: its sectors (centred on the compass points) and its calm (a speed of exactly",
+    "    0); each sector's hours counted in the app's speed bands.\"\"\"",
+    "    epw = _need()",
+    "    wr = WindRose(epw.wind_direction, epw.wind_speed, directions)",
+    "    bins = bins or [0.5, 2, 4, 6, 8]",
+    "    sectors = []",
+    "    for speeds in wr.histogram_data:",
+    "        c = [0] * len(bins)",
+    "        for v in speeds:",
+    "            k = 0",
+    "            for j in range(len(bins)):",
+    "                if v >= bins[j]:",
+    "                    k = j",
+    "            c[k] += 1",
+    "        sectors.append(c)",
+    "    n = len(epw.wind_speed.values)",
+    "    return {'directions': directions, 'bins': bins, 'sectors': sectors, 'calm': wr.zero_count,",
+    "            'calm_pct': _r(100.0 * wr.zero_count / n, 1), 'prevailing': list(wr.prevailing_direction),",
+    "            'mean': _r(epw.wind_speed.average, 2), 'hours': n}",
+    "",
+    "",
+    "def _dd(d, how):",
+    "    db = list(d.hourly_dry_bulb.values)",
+    "    return {'name': d.name, 'type': d.day_type, 'how': how, 'db': _r(d.dry_bulb_condition.dry_bulb_max, 1),",
+    "            'range': _r(d.dry_bulb_condition.dry_bulb_range, 1), 'hum_type': d.humidity_condition.humidity_type,",
+    "            'hum': _r(d.humidity_condition.humidity_value, 1), 'wind': _r(d.wind_condition.wind_speed, 1),",
+    "            'month': d.analysis_period.st_month, 'day': d.analysis_period.st_day, 'hourly': [_r(v, 1) for v in db]}",
+    "",
+    "",
+    "def design_days():",
+    "    \"\"\"The heating 99.6% and 99% and the cooling 0.4%, 1% and 2% design days: from the station's DDY when it came",
+    "    with the file, else from the EPW's design conditions when Ladybug reads them, else approximated from the one year",
+    "    (Ladybug's approximate_design_day, which it says is less accurate than a multi-year record).\"\"\"",
+    "    epw = _need()",
+    "    ddy = S['ddy']",
+    "    want = [('heating', 'Ann Htg 99.6% Condns DB'), ('heating99', 'Ann Htg 99% Condns DB'),",
+    "            ('cooling', 'Ann Clg .4% Condns DB=>MWB'), ('cooling1', 'Ann Clg 1% Condns DB=>MWB'),",
+    "            ('cooling2', 'Ann Clg 2% Condns DB=>MWB')]",
+    "    out = {}",
+    "    if ddy is not None:",
+    "        for key, tail in want:",
+    "            for d in ddy.design_days:",
+    "                if d.name.endswith(tail):",
+    "                    out[key] = _dd(d, 'ddy')",
+    "                    break",
+    "    if 'heating' not in out and epw.heating_design_condition_dictionary:",
+    "        out['heating'] = _dd(epw.annual_heating_design_day_996, 'epw')",
+    "        out['heating99'] = _dd(epw.annual_heating_design_day_990, 'epw')",
+    "    if 'cooling' not in out and epw.cooling_design_condition_dictionary:",
+    "        out['cooling'] = _dd(epw.annual_cooling_design_day_004, 'epw')",
+    "        out['cooling1'] = _dd(epw.annual_cooling_design_day_010, 'epw')",
+    "    if 'heating' not in out:",
+    "        out['heating'] = _dd(epw.approximate_design_day('WinterDesignDay', 0.4), 'approx')",
+    "        out['heating99'] = _dd(epw.approximate_design_day('WinterDesignDay', 1.0), 'approx')",
+    "    if 'cooling' not in out:",
+    "        out['cooling'] = _dd(epw.approximate_design_day('SummerDesignDay', 0.4), 'approx')",
+    "        out['cooling1'] = _dd(epw.approximate_design_day('SummerDesignDay', 1.0), 'approx')",
+    "    return out",
+    "",
+    "",
+    "FUNCS = {'open_file': open_file, 'open_hours': open_hours, 'utci': utci, 'psych': psych, 'windrose': windrose,",
+    "         'design_days': design_days}",
+    "",
+    "",
+    "def handle(req):",
+    "    \"\"\"One request from the app: {\"fn\": name, \"args\": {...}}; the answer as JSON, or the error and its trace.\"\"\"",
+    "    try:",
+    "        r = json.loads(req)",
+    "        fn = FUNCS.get(r.get('fn'))",
+    "        if fn is None:",
+    "            return json.dumps({'error': 'No such analysis: %s' % r.get('fn')})",
+    "        return json.dumps(fn(**(r.get('args') or {})))",
+    "    except Exception as e:",
+    "        return json.dumps({'error': '%s: %s' % (type(e).__name__, e), 'trace': traceback.format_exc()[-1500:]})"
+  ].join('\n')+'\n';
+  /* ================= __acad3dV172b: Ladybug Tools in a worker =================
+     reference/research-ladybug-weather-comfort.md. Ladybug Tools' own Python, unchanged, run by Pyodide 0.29.5
+     (MPL-2.0) in a Web Worker made on first use: the app opens as fast as before and the drawing never waits on a
+     calculation. The runtime is committed under runtime/ (runtime/MANIFEST.json) and served with the site: the
+     multi-file app loads it from its own address, the one-file copy and the older versions kept under v/ from the
+     Pages address. The worker checks each wheel's SHA-256 before unpacking it, then writes the app's adapter
+     (bim_ladybug, src/py/) beside them. The zero-dependency contract's one written exception: these analyses, on
+     demand. Pyodide 0.29.5, not 314: 314's loader refuses a classic worker, and only a classic worker can be driven
+     by ES5 code. */
+  var BIM_LB_PYODIDE='0.29.5';
+  var BIM_LB_PAGES='https://bradleypham1906.github.io/BIM-Personal/runtime/';
+  /* the four wheels, as runtime/MANIFEST.json pins them */
+  var BIM_LB_WHEELS=[
+    {f:'ladybug_geometry-1.35.7-py3-none-any.whl',h:'fd73bddbf611f6d523677dd855db0184191b882aba06c353e7032bf245c89139'},
+    {f:'ladybug_core-0.44.63-py3-none-any.whl',h:'21d67827869f5f8d6dc726f452aa9186689f448d87bb7c83aae466d7905e9556'},
+    {f:'ladybug_comfort-0.19.13-py3-none-any.whl',h:'227e246d0689cb6a7c25fd34169c84c154bcf7f244042b508bf86de35abb62e8'},
+    {f:'click-8.3.3-py3-none-any.whl',h:'a2bf429bb3033c89fa4936ffb35d5cb471e3719e1f3c8a7c3fff0b8314305613'}];
+  var BIM_LB_BOOT_MS=180000,BIM_LB_RUN_MS=180000;
+  var A3D_LB={w:null,st:'idle',err:'',seq:0,pend:{},boot:null,versions:null,pyodide:null,base:null,ms:null,src:null};
+  /* where the runtime is: the page's own folder over http(s); the Pages address from a file:// copy or an older
+     version kept under v/ */
+  function bimLbBase(){
+    if(A3D_LB.base)return A3D_LB.base;
+    var L=window.location,p=String(L&&L.protocol||''),path=String(L&&L.pathname||'');
+    if(p!=='http:'&&p!=='https:')return BIM_LB_PAGES;
+    if(/\/v\/[^\/]+\/[^\/]*$/.test(path))return BIM_LB_PAGES;
+    return String(L.href).replace(/[?#].*$/,'').replace(/[^\/]*$/,'')+'runtime/';
+  }
+  /* the worker's whole program: it is made from this function's own text, so it reads nothing of the engine's */
+  function bimLbWorkerMain(){
+    var PY=null;
+    function hex(buf){var a=new Uint8Array(buf),s='',i;for(i=0;i<a.length;i++)s+=('0'+a[i].toString(16)).slice(-2);return s;}
+    function say(m){self.postMessage(m);}
+    function boot(m){
+      var t0=Date.now(),B=m.base;
+      if(!(self.crypto&&self.crypto.subtle)){say({t:'fail',s:'This page cannot check the runtime\'s files (no secure context)'});return;}
+      try{importScripts(B+m.dir+'pyodide.js');}catch(x){say({t:'fail',s:'The runtime could not be loaded from '+B+' ('+(x&&x.message||x)+')'});return;}
+      if(typeof self.loadPyodide!=='function'){say({t:'fail',s:'The runtime at '+B+' did not start'});return;}
+      self.loadPyodide({indexURL:B+m.dir}).then(function(py){
+        PY=py;
+        var sp=py.runPython('import site\nsite.getsitepackages()[0]');
+        return Promise.all(m.wheels.map(function(w){
+          return fetch(B+'wheels/'+w.f).then(function(r){if(!r.ok)throw new Error(w.f+': HTTP '+r.status);return r.arrayBuffer();})
+            .then(function(buf){return self.crypto.subtle.digest('SHA-256',buf).then(function(h){
+              if(hex(h)!==w.h)throw new Error(w.f+' does not match its SHA-256');
+              return buf;});});
+        })).then(function(bufs){
+          bufs.forEach(function(buf){py.unpackArchive(buf,'wheel',{extractDir:sp});});
+          py.FS.writeFile(sp+'/bim_ladybug.py',m.py);
+          var v=py.runPython('import bim_ladybug\nbim_ladybug.versions()');
+          say({t:'ready',ms:Date.now()-t0,versions:String(v),pyodide:py.version});
+        });
+      }).then(null,function(x){say({t:'fail',s:String(x&&x.message||x)});});
+    }
+    function run(m){
+      try{
+        (m.files||[]).forEach(function(f){PY.FS.writeFile(f.path,f.data);});
+        PY.globals.set('_bim_req',m.req);
+        say({t:'done',id:m.id,r:String(PY.runPython('import bim_ladybug\nbim_ladybug.handle(_bim_req)'))});
+      }catch(x){say({t:'err',id:m.id,s:String(x&&x.message||x)});}
+    }
+    self.onmessage=function(e){var m=e.data||{};if(m.t==='boot')boot(m);else if(m.t==='run'&&PY)run(m);};
+  }
+  function bimLbFail(s){
+    A3D_LB.st='failed';A3D_LB.err=s;
+    console.warn('[BIM] Ladybug: '+s);
+    return Promise.reject(new Error(s));
+  }
+  /* the worker ended, and every call waiting on it told why; the next call starts a fresh one */
+  function bimLbStop(s){
+    var k,P=A3D_LB.pend;
+    try{if(A3D_LB.w)A3D_LB.w.terminate();}catch(eT){}
+    A3D_LB.w=null;A3D_LB.boot=null;A3D_LB.src=null;A3D_LB.pend={};
+    for(k in P)if(P.hasOwnProperty(k)){clearTimeout(P[k].timer);P[k].rej(new Error(s));}
+    A3D_LB.st='failed';A3D_LB.err=s;
+    console.warn('[BIM] Ladybug: '+s);
+  }
+  function bimLbOnMessage(e){
+    var m=e.data||{},p=A3D_LB.pend[m.id];
+    if(!p)return;
+    clearTimeout(p.timer);delete A3D_LB.pend[m.id];
+    if(m.t==='done')p.res(m.r);else p.rej(new Error(m.s||'The analysis failed'));
+  }
+  /* the runtime, started once; a promise of it */
+  function bimLbStart(){
+    if(A3D_LB.boot)return A3D_LB.boot;
+    if(typeof Worker!=='function'||typeof Blob!=='function'||!window.URL||!URL.createObjectURL)
+      return bimLbFail('This browser cannot run the Ladybug analyses: it has no Web Workers');
+    if(typeof WebAssembly!=='object')return bimLbFail('This browser cannot run the Ladybug analyses: it has no WebAssembly');
+    var w;
+    try{w=new Worker(URL.createObjectURL(new Blob(['('+bimLbWorkerMain.toString()+')();'],{type:'text/javascript'})));}
+    catch(eW){return bimLbFail('The Ladybug worker could not be made ('+eW+')');}
+    A3D_LB.w=w;A3D_LB.st='loading';A3D_LB.err='';
+    A3D_LB.boot=new Promise(function(res,rej){
+      var timer=setTimeout(function(){var s='The Ladybug runtime did not load in '+Math.round(BIM_LB_BOOT_MS/1000)+' s from '+bimLbBase();bimLbStop(s);rej(new Error(s));},BIM_LB_BOOT_MS);
+      w.onmessage=function(e){
+        var m=e.data||{};
+        if(m.t==='ready'){
+          clearTimeout(timer);
+          var v={};try{v=JSON.parse(m.versions)||{};}catch(eV){}
+          A3D_LB.st='ready';A3D_LB.versions=v;A3D_LB.pyodide=String(m.pyodide||'');A3D_LB.ms=m.ms;
+          w.onmessage=bimLbOnMessage;
+          res(true);
+        }else if(m.t==='fail'){clearTimeout(timer);bimLbStop(String(m.s||'The Ladybug runtime failed'));rej(new Error(A3D_LB.err));}
+      };
+      w.onerror=function(e){clearTimeout(timer);var s='The Ladybug worker failed ('+(e&&e.message||'no message')+')';bimLbStop(s);rej(new Error(s));};
+      w.postMessage({t:'boot',base:bimLbBase(),dir:'pyodide/'+BIM_LB_PYODIDE+'/',wheels:BIM_LB_WHEELS,py:BIM_LB_PY});
+    });
+    return A3D_LB.boot;
+  }
+  /* one call into the adapter: fn and its arguments, and files written into the worker first ({path, data});
+     the answer's object, or a rejection with its cause */
+  function bimLbCall(fn,args,files){
+    return bimLbStart().then(function(){
+      return new Promise(function(res,rej){
+        var id=++A3D_LB.seq;
+        A3D_LB.pend[id]={res:res,rej:rej,timer:setTimeout(function(){
+          delete A3D_LB.pend[id];rej(new Error('The Ladybug '+fn+' did not finish in '+Math.round(BIM_LB_RUN_MS/1000)+' s'));},BIM_LB_RUN_MS)};
+        A3D_LB.w.postMessage({t:'run',id:id,req:JSON.stringify({fn:fn,args:args||{}}),files:files||[]});
+      });
+    }).then(function(txt){
+      var r;
+      try{r=JSON.parse(txt);}catch(eP){throw new Error('The Ladybug '+fn+' answered something unreadable');}
+      if(r&&r.error){if(r.trace)console.warn('[BIM] Ladybug '+fn+':\n'+r.trace);throw new Error(r.error);}
+      return r;
+    });
+  }
+  /* the runtime's state in words, for a panel */
+  function bimLbStateText(){
+    if(A3D_LB.st==='ready')return 'Ladybug Tools ready (Pyodide '+A3D_LB.pyodide+', ladybug-core '+((A3D_LB.versions||{})['ladybug-core']||'')+')';
+    if(A3D_LB.st==='loading')return 'Loading Ladybug Tools (about 13 MB, once)';
+    if(A3D_LB.st==='failed')return 'Ladybug Tools could not start: '+A3D_LB.err;
+    return 'Ladybug Tools loads when an analysis is first run (about 13 MB, once)';
+  }
+  /* ================= __acad3dV172b: the weather Ladybug reads =================
+     reference/research-ladybug-weather-comfort.md, 7 and 8. One source at a time, held in the worker:
+     - an EPW, or the station's ZIP (EPW, DDY, STAT) from climate.onebuilding.org, opened from a file: that server
+       sends no CORS header, so the browser cannot fetch it (named, not proxied); the ZIP's DDY gives ASHRAE's design
+       days, which Ladybug 0.44.63 cannot read from a 2025 EPW header;
+     - a year of Open-Meteo hours (ERA5, V159's source, CORS open), the last full year, asked for in the site's
+       standard time as an EPW is (Etc/GMT zones are whole hours, their sign reversed); a site in a half-hour zone
+       gets its hours in UTC, said so, since hourly data cannot follow it.
+     What is kept with the project is where the hours came from (A3D.site.ladybug.src), not the hours: a year of ten
+     variables would add half a megabyte, and a weather file is the owner's to open again. */
+  var BIM_LB_OM='https://archive-api.open-meteo.com/v1/archive';
+  var BIM_LB_OM_VARS=['temperature_2m','dew_point_2m','relative_humidity_2m','surface_pressure','wind_speed_10m',
+    'wind_direction_10m','direct_normal_irradiance','diffuse_radiation','shortwave_radiation','cloud_cover'];
+  function bimLbData(){
+    A3D.site=A3D.site||{};
+    if(!A3D.site.ladybug||typeof A3D.site.ladybug!=='object'||Array.isArray(A3D.site.ladybug))A3D.site.ladybug={};
+    return A3D.site.ladybug;
+  }
+  /* the source the project names, if it is one */
+  function bimLbSrcKept(){
+    var L=A3D.site&&A3D.site.ladybug,s=L&&L.src;
+    return s&&typeof s==='object'&&(s.kind==='file'||s.kind==='openmeteo')&&typeof s.key==='string'?s:null;
+  }
+  /* the Open-Meteo zone for a standard offset in hours; null for a half hour, which no Etc zone has */
+  function bimLbOmZone(off){
+    if(typeof off!=='number'||!isFinite(off)||off!==Math.round(off)||Math.abs(off)>14)return null;
+    return off===0?'GMT':'Etc/GMT'+(off<0?'+':'-')+Math.abs(off);
+  }
+  /* the worker's source, and the project's record of it: one undo step */
+  function bimLbSourceSet(S,extra){
+    var k,s={},keep=['kind','name','city','state','country','station','source','lat','lon','tz','elev','hours','leap','ddy',
+      'ddy_days','filled','year','design_head','design_read'];
+    for(k=0;k<keep.length;k++)if(S&&S.hasOwnProperty(keep[k]))s[keep[k]]=S[keep[k]];
+    if(extra)for(k in extra)if(extra.hasOwnProperty(k))s[k]=extra[k];
+    s.at=bimSaToday();
+    s.key=[s.kind,s.kind==='file'?s.name:'',s.station||'',s.lat,s.lon,s.year||'',s.hours].join('|');
+    A3D_LB.src=s;
+    var kept=bimLbSrcKept();
+    if(kept&&kept.key===s.key)return kept;   /* the same weather opened again: the project already names it */
+    pushUndo();
+    bimLbData().src=s;
+    saveSoon();
+    if(typeof bimLbRefresh==='function')bimLbRefresh();
+    return s;
+  }
+  /* a File (or its bytes): an EPW, or a ZIP with one */
+  function bimLbOpenBytes(name,bytes){
+    if(!bytes||!bytes.length)return Promise.reject(new Error('The file is empty'));
+    return bimLbCall('open_file',{path:'/tmp/bim_src',name:String(name||'')},[{path:'/tmp/bim_src',data:bytes}]).then(function(S){
+      return bimLbSourceSet(S,{name:String(name||S.name||'')});
+    });
+  }
+  function bimLbOpenFile(file){
+    return new Promise(function(res,rej){
+      var fr=new FileReader();
+      fr.onload=function(){res(new Uint8Array(fr.result));};
+      fr.onerror=function(){rej(new Error('The file could not be read'));};
+      fr.readAsArrayBuffer(file);
+    }).then(function(bytes){return bimLbOpenBytes(file.name,bytes);});
+  }
+  /* the file chooser, from a button */
+  function bimLbPickFile(){
+    var inp=document.createElement('input');
+    inp.type='file';inp.accept='.epw,.zip';
+    inp.onchange=function(){
+      var f=inp.files&&inp.files[0];
+      if(!f)return;
+      a3dToast('Opening '+f.name+' for Ladybug ...');
+      bimLbOpenFile(f).then(function(s){a3dToast('Weather: '+bimLbSrcWords(s));},
+        function(e){a3dToast('The weather file could not be opened: '+(e&&e.message||e));});
+    };
+    inp.click();
+  }
+  /* the last full year from Open-Meteo, at the site's place and in its standard time */
+  function bimLbOmUrl(lat,lon,year,zone){
+    return BIM_LB_OM+'?'+bimClimQs({latitude:lat.toFixed(4),longitude:lon.toFixed(4),start_date:year+'-01-01',
+      end_date:(year+1)+'-01-01',hourly:BIM_LB_OM_VARS.join(','),wind_speed_unit:'ms',timezone:zone});
+  }
+  function bimLbFetchYear(){
+    var st=bimSunSettings();
+    if(!bimSunNum(st.lat)||!bimSunNum(st.lon))return Promise.reject(new Error('Set the site latitude and longitude first (Properties, Site, Location)'));
+    if(typeof fetch!=='function')return Promise.reject(new Error('This browser cannot fetch the weather'));
+    var year=bimClimYears()[1],off=bimSunNum(st.tz)?st.tz:Math.round(st.lon/15),zone=bimLbOmZone(off),tz=zone?off:0,url;
+    url=bimLbOmUrl(st.lat,st.lon,year,zone||'GMT');
+    return fetch(url).then(function(r){if(!r.ok)throw new Error('archive-api.open-meteo.com answered '+r.status);return r.json();}).then(function(js){
+      var h=js&&js.hourly,H,i;
+      if(!h||!Array.isArray(h.time))throw new Error('Open-Meteo gave no hours');
+      for(i=0;i<BIM_LB_OM_VARS.length;i++)if(!Array.isArray(h[BIM_LB_OM_VARS[i]]))throw new Error('Open-Meteo gave no '+BIM_LB_OM_VARS[i]);
+      H={year:year,lat:st.lat,lon:st.lon,tz:tz,elev:bimSunNum(js.elevation)?js.elevation:0,
+        name:(A3D.site&&A3D.site.name&&A3D.site.name!=='Site')?A3D.site.name:'Site',hourly:h};
+      return bimLbCall('open_hours',{path:'/tmp/bim_hours.json'},[{path:'/tmp/bim_hours.json',data:JSON.stringify(H)}]);
+    }).then(function(S){return bimLbSourceSet(S,{zone:zone||'UTC',half:!zone,url:url});});
+  }
+  /* the source in words */
+  function bimLbSrcWords(s){
+    if(!s)return 'none yet';
+    if(s.kind==='openmeteo')return 'Open-Meteo ERA5, '+s.year+(s.half?', in UTC':'')+(s.filled?' ('+s.filled+' hours filled)':'');
+    return (s.city||s.name)+(s.station?' ('+s.station+')':'')+', '+s.name+(s.ddy?', with its design days':'');
+  }
+  /* ================= __acad3dV172b: the analyses, run and kept =================
+     reference/research-ladybug-weather-comfort.md, 9 and 10. Each run calls the adapter in the worker, and its answer
+     is kept with the project with the source it read and the versions that made it (A3D.site.ladybug):
+     - utci: UTCI over the year in CBE Clima's four conditions (the owner, 2026-10-31), the official scale;
+     - psych: the psychrometric chart, the merged PMV comfort polygon at 0.5 and 1.0 clo and 1.1 met, and Ladybug's
+       five passive strategies with its defaults (the owner, 2026-10-31);
+     - wind: Ladybug's wind rose, in the app's speed bands;
+     - dd: the design days, the DDY's first, said where they are approximated from one year.
+     A run is one undo step; a failure is warned and toasted with its cause and keeps what was there. */
+  var BIM_LB_KINDS=['utci','psych','wind','dd'];
+  var BIM_LB_NAMES={utci:'Outdoor comfort (UTCI)',psych:'Psychrometric chart and comfort',wind:'Wind rose',dd:'Design days'};
+  var BIM_LB_FN={utci:'utci',psych:'psych',wind:'windrose',dd:'design_days'};
+  var A3D_LBRUN={busy:null};
+  /* the worker has the project's source, or gets it: Open-Meteo's year again; a file must be opened again */
+  function bimLbEnsureSource(){
+    var s=bimLbSrcKept();
+    if(A3D_LB.src&&s&&A3D_LB.src.key===s.key)return Promise.resolve(A3D_LB.src);
+    if(s&&s.kind==='openmeteo')return bimLbFetchYear();
+    if(s&&s.kind==='file')return Promise.reject(new Error('Open '+s.name+' again: a weather file is not kept with the project'));
+    return Promise.reject(new Error('Choose the weather first: open an EPW (or its ZIP), or get the year from Open-Meteo'));
+  }
+  /* the parameters a run uses, from its kind */
+  function bimLbParams(kind){
+    if(kind==='utci')return {conditions:['sun_wind','shade_wind','sun_still','shade_still']};
+    if(kind==='psych')return {clo:[0.5,1.0],met:[1.1,1.1],merge:true};
+    if(kind==='wind')return {directions:16,bins:bimClimWindBins()};
+    return {};
+  }
+  function bimLbRun(kind,params){
+    if(BIM_LB_KINDS.indexOf(kind)<0)return Promise.reject(new Error('Not a Ladybug analysis: '+kind));
+    if(A3D_LBRUN.busy)return Promise.reject(new Error(BIM_LB_NAMES[A3D_LBRUN.busy]+' is still running'));
+    var P=params||bimLbParams(kind),t0=Date.now();
+    A3D_LBRUN.busy=kind;
+    if(typeof bimLbRefresh==='function')bimLbRefresh();
+    return bimLbEnsureSource().then(function(src){
+      return bimLbCall(BIM_LB_FN[kind],P).then(function(r){
+        var D=bimLbData();
+        pushUndo();
+        D[kind]={r:r,params:P,at:bimSaToday(),src:src.key,ms:Date.now()-t0,
+          v:{pyodide:A3D_LB.pyodide,ladybug:A3D_LB.versions||{}}};
+        return D[kind];
+      });
+    }).then(function(rec){
+      A3D_LBRUN.busy=null;saveSoon();
+      if(typeof bimLbRefresh==='function')bimLbRefresh();
+      return rec;
+    },function(e){
+      A3D_LBRUN.busy=null;
+      if(typeof bimLbRefresh==='function')bimLbRefresh();
+      throw e;
+    });
+  }
+  /* every analysis in turn, from a button: what failed is said, the rest kept */
+  function bimLbRunAll(){
+    var done=[],bad=[],i=0;
+    function next(){
+      if(i>=BIM_LB_KINDS.length){
+        a3dToast(done.length?'Ladybug: '+done.join(', ')+(bad.length?'. Not done: '+bad.join('; '):''):'Ladybug: nothing was run. '+bad.join('; '));
+        return {done:done,bad:bad};
+      }
+      var k=BIM_LB_KINDS[i++];
+      return bimLbRun(k).then(function(){done.push(BIM_LB_NAMES[k]);return next();},function(e){
+        console.warn('[BIM] Ladybug '+k,e);bad.push(BIM_LB_NAMES[k]+': '+(e&&e.message||e));
+        if(/Choose the weather|Open .* again|could not start|did not load|cannot run/.test(String(e&&e.message)))i=BIM_LB_KINDS.length;
+        return next();
+      });
+    }
+    return next();
+  }
+  /* a kept result, if it is one and of the source the project names */
+  function bimLbResult(kind){
+    var L=A3D.site&&A3D.site.ladybug,R=L&&L[kind],s=bimLbSrcKept();
+    if(!R||typeof R!=='object'||!R.r||typeof R.r!=='object')return null;
+    return {r:R.r,params:R.params,at:R.at,ms:R.ms,v:R.v,stale:!s||R.src!==s.key};
+  }
   // ---- DXF (AutoCAD ASCII exchange format) ----
   var DXF_ACI={1:'#ff5555',2:'#e8d24a',3:'#5ac25a',4:'#4ac6c6',5:'#5a7fe0',6:'#c85ac0',7:'#d8d8d8',8:'#8a8a8a',9:'#bcbcbc'};
   var DXF_UNIT_SCALE={1:0.0254,2:0.3048,4:0.001,5:0.01,6:1,10:0.9144};
@@ -59328,6 +60095,32 @@ try{
   window.__a3dTlGrow=function(V,ok,nx,nz,seed,need){var G={nx:nx,nz:nz,n:nx*nz},r=bimTlGrow(G,new Float64Array(V),new Uint8Array(ok),seed,need);
     return r?{cells:r.cells.slice().sort(function(a,b){return a-b;}),order:r.cells.slice(),mean:r.mean}:null;};
   window.__a3dTlGroundGrid=function(){var D=bimLandGround(bimDgSite());return D?{x0:D.x0,z0:D.z0,cell:D.cell,nx:D.nx,nz:D.nz}:null;};
+  /* __acad3dV172b: the Ladybug analyses, for the suite */
+  window.__acad3dV172b='runtime,manifest,worker,sha256,adapter,epw,ddy,openmeteo,standardtime,utci4,psych,pmv2clo,strategies5,windrose,designdays,kept';
+  function bimLbErr(e){return {error:String(e&&e.message||e)};}
+  /* where the runtime is loaded from; a suite points it at its own server */
+  window.__a3dLbBase=function(u){if(u!==undefined)A3D_LB.base=u||null;return bimLbBase();};
+  window.__a3dLbState=function(){
+    return {st:A3D_LB.st,err:A3D_LB.err,versions:A3D_LB.versions,pyodide:A3D_LB.pyodide,ms:A3D_LB.ms,src:A3D_LB.src,
+      busy:A3D_LBRUN.busy,base:bimLbBase(),pages:BIM_LB_PAGES,dir:'pyodide/'+BIM_LB_PYODIDE+'/',wheels:BIM_LB_WHEELS,
+      pyLength:BIM_LB_PY.length,words:bimLbStateText()};
+  };
+  window.__a3dLbStart=function(){return bimLbStart().then(function(){return window.__a3dLbState();},bimLbErr);};
+  window.__a3dLbStop=function(){bimLbStop('stopped by the suite');return window.__a3dLbState();};
+  window.__a3dLbCall=function(fn,args){return bimLbCall(fn,args).then(function(r){return r;},bimLbErr);};
+  /* a weather file's bytes, as base64 (a file chooser cannot be driven) */
+  window.__a3dLbOpenB64=function(name,b64){
+    var s=atob(b64),a=new Uint8Array(s.length),i;
+    for(i=0;i<s.length;i++)a[i]=s.charCodeAt(i);
+    return bimLbOpenBytes(name,a).then(function(r){return r;},bimLbErr);
+  };
+  window.__a3dLbFetchYear=function(){return bimLbFetchYear().then(function(r){return r;},bimLbErr);};
+  window.__a3dLbRun=function(kind,params){return bimLbRun(kind,params).then(function(r){return r;},bimLbErr);};
+  window.__a3dLbRunAll=function(){return bimLbRunAll();};
+  window.__a3dLbData=function(){return JSON.parse(JSON.stringify((A3D.site&&A3D.site.ladybug)||null));};
+  window.__a3dLbResult=function(kind){return bimLbResult(kind);};
+  window.__a3dLbOmUrl=function(lat,lon,year,zone){return bimLbOmUrl(lat,lon,year,zone);};
+  window.__a3dLbOmZone=function(off){return bimLbOmZone(off);};
 }catch(e){
   window.__a3dErr=String(e&&e.message||e);
   console.warn('[BIM] The engine failed to load.',e);   /* __acad3dV120 */
