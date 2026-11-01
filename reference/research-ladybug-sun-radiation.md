@@ -105,6 +105,35 @@ port's risk (transcribing Perez's coefficients) is gone. For the rays, the app's
 Moller-Trumbore test over a bounding-volume hierarchy, in the worker (V143's SOLAR keeps its own rays, unchanged, as
 the owner keeps it beside). GPU rays are not needed at these sizes.
 
+## 5b. The design proposed (from the findings; to be reviewed before it is built)
+
+What V172c adds, in the files the module map gives (`src/js/engine/ladybug/`, `src/py/bim_ladybug.py`):
+
+1. **The runtime** (`runtime.js`): ladybug-radiance's wheel joins the pinned wheels; the worker fetches
+   `radiance/gendaymtx.wasm`, checks its SHA-256 as it does the wheels', compiles it once, and exposes one function
+   to Python (`bimGendaymtx(args, wea_text)`) through the WASI runner (stdin in, stdout out, no files; ES5, part of
+   the worker's own program text); numpy by `loadPackage` on the first sky. The weather and comfort analyses do not
+   wait for any of this.
+2. **The sky** (`bim_ladybug.py`): `SkyMatrix(Wea(location, DNI, DHI))` from the open source (an EPW or Open-Meteo's
+   year, V172b's `S['epw']`), with `_run_gendaymtx` replaced by the call above and nothing else of Ladybug changed;
+   Tregenza by default, Reinhart as the finer choice; the whole year by default, a period (months, hours) as
+   Ladybug's `_hoys_`; north from the site's true north.
+3. **The rays** (a new `rays.js` in the worker's program): the solids shown (V143's set) as triangles in Ladybug's
+   frame, app (x, y, z) -> (x, -z, y); a bounding-volume hierarchy; per face of the studied solids (the selection,
+   else every solid; floors' undersides left out as V143 does) one sensor at its centre moved 0.1 m along its normal
+   (Ladybug's default); the cosine matrix for radiation (sky + reversed ground), the boolean matrix for sun hours.
+4. **The sums: Ladybug's own** `RadiationStudy.compute()` (kWh/m2 and W/m2, and the total kWh) and
+   `DirectSunStudy.compute()` (hours, from `Sunpath` vectors on the chosen dates and hours and the timestep).
+5. **The results**: as V148's result layers, two new kinds beside "Sun hours" and "Solar" (kept, the owner):
+   "Incident radiation (Ladybug)" and "Direct sun hours (Ladybug)", each face coloured on the model with a legend,
+   kept with the project with the source, the sky, the versions and the standards stamp (as V172b's runs are), out of
+   date when the model, the weather or a setting changes; one undo step a run.
+6. **The registry** (V167): the numbers are records, none in code (the suite's scan): ground reflectance 0.2, the
+   sensor offset 0.1 m, the sky's density, as `app.solar` (Ladybug's defaults, level P from part 7b).
+7. **The UI**: two rows in Analyze's Climate group, their panel (weather, sky, period, Run, the legend, the totals),
+   on a phone as a bottom sheet, a tablet a drawer, a computer docked, as V147 and V172b's panels are.
+8. **The guide**: a page for each in the tool template; the log, `BIM_APP_VERSION`, the catalogue.
+
 ## 6. The experiments
 
 **Run (2026-11-01; scripts, raw numbers and environment in `reference/experiments/v172c-sky/`):**
