@@ -41,7 +41,8 @@ MASSES = [(20, -25, 18, 28, 31, 'use-res'), (40, -25, 18, 28, 18, 'use-off'), (3
 CATS = [('location', 'Location and context', ['frame', 'landuse', 'figure'], []), ('legal', 'Legal and regulatory', ['zoning'], []),
         ('landform', 'Landform', ['contours', 'slope', 'aspect'], ['survey', 'terrain', 'grading']), ('water', 'Water', ['flow', 'ponds', 'flood'], ['rain']),
         # AMENDED FOR V172b: Ladybug's rows in Climate, after the sun's -- the weather it reads, then its four analyses
-        ('climate', 'Climate', ['sun', 'shadow', 'wind'], ['sun', 'sunhours', 'solar', 'lbweather', 'lbutci', 'lbpsych', 'lbwind', 'lbdd']), ('ecology', 'Ecology', ['green'], []),
+        # AMENDED FOR V172c: then its two studies on the model
+        ('climate', 'Climate', ['sun', 'shadow', 'wind'], ['sun', 'sunhours', 'solar', 'lbweather', 'lbutci', 'lbpsych', 'lbwind', 'lbdd', 'lbrad', 'lbsun']), ('ecology', 'Ecology', ['green'], []),
         ('risk', 'Environmental risk', ['noise'], []), ('access', 'Access and circulation', ['streets', 'cycling', 'transit', 'walk', 'vehicles', 'traffic'], []),
         ('utilities', 'Utilities', [], []), ('people', 'People and place', ['views', 'needs'], [])]
 MODEL = ['lens', 'areas', 'lod', 'stats', 'structure']
@@ -267,7 +268,8 @@ async def run():
             ck(await safe("()=>!document.querySelector('[data-awpanel=\"cat:climate\"] .a3d-safind input,[data-awpanel=\"cat:climate\"] .a3d-safind button')"), "read only")
             an = await safe("()=>[].map.call(document.querySelectorAll('[data-awpanel=\"cat:climate\"] .a3d-awp-an'),function(b){return b.getAttribute('data-awact');})")
             # AMENDED FOR V172b: and Ladybug's five, after the sun's
-            ck(an == ['focus:sun', 'focus:shadow', 'focus:wind', 'card:sun', 'card:sunhours', 'card:solar', 'card:lbweather', 'card:lbutci', 'card:lbpsych', 'card:lbwind', 'card:lbdd'],
+            # AMENDED FOR V172c: then its two studies on the model
+            ck(an == ['focus:sun', 'focus:shadow', 'focus:wind', 'card:sun', 'card:sunhours', 'card:solar', 'card:lbweather', 'card:lbutci', 'card:lbpsych', 'card:lbwind', 'card:lbdd', 'card:lbrad', 'card:lbsun'],
                "the analyses that answer it (%s)" % an)
             ck(await text('[data-awpanel="cat:climate"] .a3d-clsec .a3d-sasechd') == 'Climate and risk' and await safe("()=>!!document.querySelector('[data-awpanel=\"cat:climate\"] [data-saact=\"climboard\"]')"),
                "its data: the climate and risk, with its board")

@@ -232,13 +232,15 @@ async def run():
             ck(re.match(r'^V\d+', ver) and int(re.match(r'^V(\d+)', ver).group(1)) >= 172, "the app says V172 or later (%s)" % ver)
             man = json.loads((RUNTIME / 'MANIFEST.json').read_text(encoding='utf-8'))
             badm = [f['path'] for f in man['files'] if hashlib.sha256((RUNTIME / f['path']).read_bytes()).hexdigest() != f['sha256'] or (RUNTIME / f['path']).stat().st_size != f['bytes']]
-            ck(len(man['files']) == 11 and not badm, "the runtime's 11 files are what MANIFEST.json pins, by size and SHA-256 (%s)" % badm)
+            # AMENDED FOR V172c: and V172c's four: Radiance's gendaymtx and its licence, ladybug-radiance's wheel, Pyodide's numpy
+            ck(len(man['files']) == 15 and not badm, "the runtime's 15 files are what MANIFEST.json pins, by size and SHA-256 (%s)" % badm)
             cr = subprocess.run([sys.executable, str(ROOT / 'tools' / 'check_runtime.py')], capture_output=True, text=True)
             ck(cr.returncode == 0, "tools/check_runtime.py agrees (%s)" % cr.stdout.strip()[-120:])
             S0 = await safe("()=>window.__a3dLbState()") or {}
             W0 = {w['f']: w['h'] for w in S0.get('wheels', [])}
             MW = {pathlib.Path(f['path']).name: f['sha256'] for f in man['files'] if f['path'].startswith('wheels/')}
-            ck(W0 == MW and len(W0) == 4, "the app pins the same four wheels by SHA-256 (%s)" % sorted(W0))
+            # AMENDED FOR V172c: five, with ladybug-radiance's (unpacked with the others; numpy and gendaymtx wait for a study)
+            ck(W0 == MW and len(W0) == 5, "the app pins the same five wheels by SHA-256 (%s)" % sorted(W0))
             ck(S0.get('base') == PAGES and S0.get('dir') == 'pyodide/0.29.5/' and S0.get('st') in (None, 'idle', '') and not ST['rt'],
                "from file:// it asks the Pages site; Pyodide 0.29.5; nothing loaded, nothing asked, until a run (%s, %d asked)" % ({k: S0.get(k) for k in ('base', 'dir', 'st')}, len(ST['rt'])))
             REC = {r['id']: r for r in await safe("()=>window.__a3dStdRecords()") or []}
@@ -279,7 +281,7 @@ async def run():
                (s.get('versions') or {}).get('ladybug-comfort') == '0.19.13', "then ready: Pyodide 0.29.5, ladybug-core 0.44.63, ladybug-comfort 0.19.13 (%s)" % {k: (s or {}).get(k) for k in ('st', 'pyodide', 'versions')})
             got = sorted(set(ST['rt'][n_rt:]))
             ck(all(x in got for x in ('pyodide/0.29.5/pyodide.js', 'pyodide/0.29.5/pyodide.asm.wasm', 'pyodide/0.29.5/python_stdlib.zip')) and
-               len([x for x in got if x.startswith('wheels/')]) == 4, "from the site's runtime/: Pyodide's files and the four wheels (%s)" % got)
+               len([x for x in got if x.startswith('wheels/')]) == 5, "from the site's runtime/: Pyodide's files and the five wheels (AMENDED FOR V172c) (%s)" % got)
             ck(NAT['versions'].get('ladybug-core') == '0.44.63' and NAT['versions'].get('ladybug-comfort') == '0.19.13', "the native run is the same Ladybug (%s)" % NAT['versions'])
 
             # ---------------------------------------------------------------------------------
@@ -441,7 +443,8 @@ async def run():
             await safe("()=>window.__a3dAwEnter()")
             await page.wait_for_timeout(300)
             rows = await safe("()=>[].map.call(document.querySelectorAll('[data-sacat=\"climate\"] [data-anzcard]'),function(r){return r.getAttribute('data-anzcard');})") or []
-            ck(rows[-5:] == ['lbweather', 'lbutci', 'lbpsych', 'lbwind', 'lbdd'], "Climate's rows: Ladybug's five after the sun's (%s)" % rows)
+            # AMENDED FOR V172c: then its two studies on the model
+            ck(rows[-7:] == ['lbweather', 'lbutci', 'lbpsych', 'lbwind', 'lbdd', 'lbrad', 'lbsun'], "Climate's rows: Ladybug's five after the sun's, then its two studies (%s)" % rows)
             await safe("()=>window.__a3dAwPick('card','lbutci')")
             await page.wait_for_timeout(200)
             pt = await safe("()=>{var p=document.querySelector('[data-awpanel=\"card:lbutci\"]');return p?p.innerText:'';}") or ''

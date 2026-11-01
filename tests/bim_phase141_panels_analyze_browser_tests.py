@@ -239,8 +239,9 @@ async def run():
             # AMENDED FOR V172: the site analysis tools and their History, a group of their own before Model
             # AMENDED FOR V172b: Ladybug's five in Climate, after the sun's: its weather, then UTCI, the psychrometric chart,
             # the wind rose and the design days
+            # AMENDED FOR V172c: and its two studies on the model, incident radiation and direct sun hours
             ck(pc and [c['id'] for c in pc] == ['dgframe', 'dglanduse', 'dgfigure', 'dgzoning', 'dgcontours', 'dgslope', 'dgaspect', 'survey', 'terrain', 'grading', 'dgflow', 'dgponds', 'dgflood', 'rain',
-                                               'dgsun', 'dgshadow', 'dgwind', 'sun', 'sunhours', 'solar', 'lbweather', 'lbutci', 'lbpsych', 'lbwind', 'lbdd', 'dggreen', 'dgnoise',
+                                               'dgsun', 'dgshadow', 'dgwind', 'sun', 'sunhours', 'solar', 'lbweather', 'lbutci', 'lbpsych', 'lbwind', 'lbdd', 'lbrad', 'lbsun', 'dggreen', 'dgnoise',
                                                'dgstreets', 'dgcycling', 'dgtransit', 'dgwalk', 'dgvehicles', 'dgtraffic', 'dgviews', 'dgneeds',
                                                'tlbuffer', 'tldistance', 'tlslopecls', 'tlexclude', 'tlsuit', 'tllocate', 'tlsynth', 'tlcapacity', 'tlhistory',
                                                'lens', 'areas', 'lod', 'stats', 'structure'],
