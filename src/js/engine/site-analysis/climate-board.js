@@ -299,7 +299,7 @@
       return bar+'<div class="a3d-clb-page"><div class="a3d-clb-kicker">Site analysis · Climate · Environmental risk</div><h1 class="a3d-clb-h1">'+bimClbE(site)+': climate and risk</h1>'+
         '<div class="a3d-clb-empty">No climate or risk data yet. They come from ERA5 (via Open-Meteo), CAMS air quality and the USGS earthquake catalogue: free, no account.'+
         (bimSunNum(st.lat)&&bimSunNum(st.lon)?'':' Set the site latitude and longitude first (Properties, Site, Location).')+
-        '<div style="margin-top:12px"><button type="button" class="a3d-clb-btn pri" data-clb="refresh">Get climate and risk</button></div></div></div>';
+        '<div style="margin-top:12px"><button type="button" class="a3d-clb-btn pri" data-clb="refresh">Get climate and risk</button></div></div>'+bimLbOnlyFigs()+'</div>';   /* __acad3dV172b: Ladybug's figures, an EPW's, with no Open-Meteo climate */
     }
     var lat=C?C.lat:K.lat,lon=C?C.lon:K.lon;
     var sub=Math.abs(lat).toFixed(4)+'° '+(lat<0?'S':'N')+', '+Math.abs(lon).toFixed(4)+'° '+(lon<0?'W':'E');
@@ -403,12 +403,16 @@
         '<div class="a3d-clb-chart">'+bimClbAirSvg(Q)+'</div>'+bimClbLeg([['var(--s1)','Within the guideline'],['var(--serious)','Above the guideline'],['transparent','WHO guideline and interim targets','dsh']])+
         bimClbTable(['Day','PM2.5 µg/m³'],Q.days.map(function(d){return [d.d,bimClbNum(d.v)];})),K.airSrc+' (model analysis, about 10 to 40 km)'));
     }
+    /* __acad3dV172b: Ladybug's figures, once it has run, after the board's own */
+    var lbAny=false;
+    BIM_LB_FIGS.forEach(function(F){var c=null;try{c=F[1](null,fig+1);}catch(eLb){console.warn('[BIM] Ladybug figure '+F[0],eLb);}if(c){fig++;lbAny=true;cards.push(c.replace('<figure class="a3d-clb-card','<figure data-figid="'+F[0]+'" class="a3d-clb-card'));}});
     h+=cards.join('')+'</section>';
     h+='<footer class="a3d-clb-notes"><h3>Method and sources</h3><ul>'+
       '<li>Climate: ERA5 reanalysis (ECMWF Copernicus), about 25 km cells, '+(C&&C.period?C.period[0]+' to '+C.period[1]+' daily and '+(Hh?Hh.year:'')+' hourly':'')+', via <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a> (CC BY 4.0). A reanalysis is a model of the weather, not a station record: a city\'s heat island, a valley\'s frost or a coast\'s breeze can differ; confirm with a local station where it matters.</li>'+
       '<li>Degree days on the daily mean, (high + low) / 2, against '+bimClimUsedBase()+' °C. Climate zone: Köppen–Geiger by the rules of Beck et al. 2018, from the monthly means and totals.</li>'+
       '<li>Comfort zone: '+bimClimUsedComfort().t0+'–'+bimClimUsedComfort().t1+' °C dry-bulb at '+bimClimUsedComfort().rh0+'–'+bimClimUsedComfort().rh1+'% relative humidity, a simple outdoor zone in still air and shade; sun, wind and clothing move it.</li>'+
       '<li>Air quality: CAMS (Copernicus Atmosphere Monitoring Service) via Open-Meteo, against the <a href="'+bimEsc(((bimStdEdition('who.aqg')||{}).src||{}).u||'')+'" target="_blank" rel="noopener">'+bimEsc((bimStdEdition('who.aqg')||{}).name||'WHO air quality guidelines')+'</a>.</li>'+
+      (lbAny?'<li>Comfort, design days and the Ladybug wind rose: <a href="https://www.ladybug.tools/" target="_blank" rel="noopener">Ladybug Tools</a>\' own code (AGPL-3.0), unchanged, run in the browser by Pyodide, on '+bimClbE(bimLbSrcWords(bimLbSrcKept()))+'.</li>':'')+
       '<li>Earthquakes: the <a href="https://earthquake.usgs.gov/" target="_blank" rel="noopener">USGS</a> catalogue, M'+BIM_CLIM_EQ_MIN+' and above within '+BIM_CLIM_EQ_KM+' km since '+BIM_CLIM_EQ_SINCE.slice(0,4)+'.</li>'+
       ((C&&C.errors&&C.errors.length)?'<li>Not available at the last fetch: '+bimClbE(C.errors.join('; '))+'.</li>':'')+
       '</ul></footer></div>';
