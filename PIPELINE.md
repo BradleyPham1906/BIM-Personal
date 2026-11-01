@@ -17,12 +17,12 @@ requires command mapping, full app regressions and owner review.
 
 **Read this first in a new session.** One page. The detail lives in the docs listed at the bottom.
 
-    canvas_v10.html   3729520 bytes
-    sha256            1dd1646f3e6b36424a41a7bab53c9a270c621ed0ae75c89d5c31d6240bd29e3f
+    canvas_v10.html   3740818 bytes
+    sha256            4d8ba4c09774e5eeb455711cb940d5096608b9a0049f5e7d867f5f9bf861c0d9
     markers           __acad3dV60 ... __acad3dV172, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
                       __acad3dV121b, __acad3dV124b, __acad3dV166b, __acad3dV166c, __acad3dV166d, __acad3dV171b,
-                      __acad3dV171c, __acad3dV171d
-    tests             135 suites, 6899 checks, 0 failures (the 134 older suites' 6879 and V124b's 20; with cjval
+                      __acad3dV171c, __acad3dV171d, __acad3dV172d
+    tests             136 suites, 6939 checks, 0 failures (the 135 older suites' 6899 and V172d's 40; with cjval
                       built, V139 and V140 run their three more)
 
     The user guide (V142): every phase updates docs/src/, its log entry and BIM_APP_VERSION, then
@@ -231,7 +231,19 @@ when it starts (V111 to V138 went to other work; V139 to V193 are in NOW).
 | 118 | Blocks and data | ATTDEF ATTEDIT BEDIT WBLOCK DATAEXTRACTION TABLESTYLE TABLEDIT TABLEEXPORT | First phase that's about the disciplines, not drafting. BLOCK and INSERT landed in V124, as the Assets library's blocks: saved records inserted as independent copies. A block reference that follows its definition (what BEDIT edits) is not built. |
 | 119 | Sheets and plotting, rest | MVIEW (draw a viewport on the paper) PAGESETUP (plot settings beyond Sheet Setup) PUBLISH (V122's Print set prints every sheet in one job; a chosen subset and page setups remain) EXPORTPDF (vector PDF of a sheet) VPLAYER (per-viewport layer visibility) viewport lock | LAYOUT, MSPACE and PSPACE landed in V116, with layout tabs and model space through a viewport. |
 
-**Recently finished:** V124b, **the Assets library's save, warned and toasted** (2026-10-31; built on V172, the version
+**Recently finished:** V172d, **storage A1: large projects in IndexedDB** (2026-10-31 to 11-01; the version stays V172).
+- The owner's decision D1 of `reference/research-local-storage.md`: phase A, the IndexedDB project store; A1 is its first
+  half. `src/js/engine/core/idb-store.js`, ES5 and callbacks: one database `BIM-Personal` (D10), store `projects`.
+- **A record localStorage refuses** goes to the database under the project's id; `acad3dV1` keeps a pointer (id, name,
+  count), written once the record has committed. One toast says where the project is kept. What fits stays where it was.
+- **Boot** names the project from the pointer and reads the record after start; nothing saves until it arrives, and a
+  record that cannot be read is said so and never saved over. **Switching** parks a record too large for its key in the
+  database (the pointer first, safe because `acad3dV1` still holds it), and opening it reads it back; the list counts
+  it. **Deleting** removes its database copy. An autosave waiting when the page is hidden is written then (D9).
+- Found while building: an orphan record when a parked key refused even its pointer (patch b). V115's full-store check
+  amended: the database is made to refuse too.
+
+V124b, **the Assets library's save, warned and toasted** (2026-10-31; built on V172, the version
 stays V172). The owner's decision D8 of `reference/research-local-storage.md`: when browser storage refused the library,
 `bimSaveFamilyLibrary` only warned to the console, so an asset added to a full store was gone at the next reload without
 a word. It now toasts once per run of failures (what is lost and what to do), says so when a save works again, and

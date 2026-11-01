@@ -16065,7 +16065,7 @@ way to a moving sun, V170's motions of every multi-line element (the angles take
                       __acad3dV121b, __acad3dV166b, __acad3dV166c, __acad3dV166d, __acad3dV171b, __acad3dV171c,
                       __acad3dV171d
 
-## Phase 172 (V172) - Site analysis tools and synthesis, ArcGIS's way
+## Phase 172 (V172) - Site analysis tools and synthesis, ArcGIS's way; storage A1, large projects in IndexedDB (V172d)
 
 Eight site analysis tools in the analysis workspace, in the shape of ArcGIS's geoprocessing pane: Buffer, Distance,
 Slope classes, Exclusions, Suitability (Esri's transform and weight, by multiplier or percent), Locate, Constraints and
@@ -16205,3 +16205,53 @@ name and the versions page, both fixed as above, and V142 then passed 31 of 31.
 
     canvas_v10.html   3729520 bytes
     sha256            1dd1646f3e6b36424a41a7bab53c9a270c621ed0ae75c89d5c31d6240bd29e3f
+
+### Storage A1 (V172d, inside Phase 172): a project too large for localStorage, kept in IndexedDB
+
+Built on V124b on 2026-10-31 and 11-01; the version stays V172. The owner's decision D1 of
+`reference/research-local-storage.md` (phase A, the IndexedDB project store, in three phases); A1 is the first half of
+A. localStorage holds 5,242,880 UTF-16 units for the whole origin (measured, e01), so an imported model of about
+165,000 triangles could not be saved and a project over half of it could not be switched away from.
+
+- `src/js/engine/core/idb-store.js` (new, between `core/objects-save.js` and `ui/project-tabs.js`): an ES5 wrapper,
+  callbacks only. One database `BIM-Personal` (D10), version 1, store `projects`, out-of-line keys (the project id),
+  values `{rec: the JSON string, saved, v:1}`. One cached connection; closed on `versionchange` with a toast to reload
+  (H10, e09); reopened once when the browser dropped it (idb-keyval, localForage); `blocked` toasted.
+- `save3d`: localStorage while the record fits; when it refuses, `bimSpillSave` writes the database (one write at a
+  time, the newest queued) and only in its callback, once committed, the pointer `{idb:1, docId, titleBlock:{project},
+  count, saved}` into `acad3dV1`. One toast per session says where the project is kept; the "could not be saved" toast
+  is for a failure of both. While the project is kept there, saves go straight to the database.
+- Boot (`core/state.js`): a pointer names the project (`A3D_BOOT_IDB`); `bimSpillBootLoad` reads the record after
+  start and loads it as a switch does. `save3d` writes nothing while it is being read, so the fresh project the page
+  started with never replaces the pointer; a record that cannot be read is toasted and never saved over.
+- Switching (`ui/project-tabs.js`): a project too large for its key is parked by `bimParkInIdb`, its pointer in the
+  key first -- safe because `acad3dV1` still holds the project, and boot drops a parked copy of the project `acad3dV1`
+  names (V115) -- then the record; a queued save of it older than the park is dropped. The next project goes to the
+  database when the active slot refuses it. Opening a parked pointer reads the record, then switches; its database
+  copy is removed once it is on screen in localStorage. A project still being read is parked as its pointer.
+- The list counts a parked project from its pointer when boot rebuilds it from the keys. Deleting a project
+  (`assets/templates.js`) deletes its database copy. An autosave waiting when the page is hidden is written then (D9):
+  `pagehide` cannot wait for the database.
+
+Patches `Phase/patch_v172d.py` (base 1dd1646f; the new file from `Phase/v172d_idb_store.js`) and
+`Phase/patch_v172d_b.py`, found reading V115's full-store check: a parked key that refused even the pointer left the
+record already sent to the database with nothing pointing to it; the pointer goes first now. Suite
+`tests/bim_phase172d_idb_projects_browser_tests.py`, 40 checks, "too large" made by replacing
+`Storage.prototype.setItem` from the page after start for acad3d records over 36,000 characters (the V115 way).
+Falsification `Phase/falsify_phase172d.py`, 16 variants: the first run caught 13 -- `park_fails` hung the suite
+(`page.evaluate` waits on a promise without a limit; every wait is bounded at 12 s now), and `toast_each_save` and
+`list_count_lost` changed code the suite never reached (a project opened a second time; a list rebuilt from the keys).
+With the suite amended, 16 of 16 caught, from a frozen worktree of b57dd6e.
+
+V115 amended (AMENDED FOR V172d): its "an autosave that fails says so" made localStorage refuse `acad3dV1`, which now
+spills to the database; the database is made to refuse too (`IDBFactory.prototype.open`, `IDBDatabase.prototype.transaction`)
+and both are put back. The first regression, on 3a990a8, failed V115's four checks that followed from it.
+
+**State after V172d:** 136 suites, 6939 checks (the 135 older suites' 6899 and V172d's 40): from a frozen worktree of
+b57dd6e, 6938 of 6939 in 1255 s with 2 workers. The one failure was V171c's "the overview's steps follow it as they
+come" ([4] done seen), run beside the falsification on four vCPUs; run again alone on the same build, V171c passed 100
+of 100. V172d touches nothing V171c drives, and its projects stay small enough for localStorage. Recorded, not
+explained: a step list watched by a MutationObserver under load.
+
+    canvas_v10.html   3740818 bytes
+    sha256            4d8ba4c09774e5eeb455711cb940d5096608b9a0049f5e7d867f5f9bf861c0d9
