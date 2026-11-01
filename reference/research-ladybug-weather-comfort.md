@@ -91,7 +91,11 @@ when built. Runtime and wheels together: 13,055,699 bytes.
   whose collections are filled by `.values =`, its docstring listing what a usable file needs (dry bulb, dew point,
   humidity, station pressure, direct normal and diffuse radiation, wind direction and speed, total sky cover, opaque
   sky cover or horizontal infrared). The first record of the year is Ladybug's 00:00 (the EPW's hour 1, 00:01 to
-  01:00).
+  01:00) for the fields over an hour (station pressure and the three radiations); for the fields at an instant
+  (temperature, dew point, humidity, wind, sky cover, the sky's infrared: their data types' `point_in_time`) it
+  moves the file's last row to the front, "if the first value is at 1 AM, move last item to start position", so
+  their 00:00 is the value at 00:00. (Corrected 2026-11-01: the suite's hour-by-hour check found the first reading
+  incomplete; see section 14.)
 - **UTCI** (`ladybug_comfort/utci.py`, `collection/utci.py`, `parameter/utci.py`): "a Python version of the original
   UTCI_approx application written in Fortran, Version a 0.002, October 2009". Wind is clamped to 0.5 to 17 m/s at 10
   m; air temperature and the radiant difference are not checked. The collection takes air temperature, humidity,
@@ -177,9 +181,11 @@ pythermalcomfort returns none: the app says when an hour lies outside the range.
 
 - **Leap years:** Open-Meteo's 2024 has 8,784 hours; `AnalysisPeriod(is_leap_year=True)` takes them; an EPW is
   usually 8,760.
-- **Hours:** Ladybug's index 0 is 00:00 and the EPW's hour 1 (00:01 to 01:00); Open-Meteo's radiation is the mean of
-  the preceding hour, its temperature the value at the hour. An hour's alignment does not change a year's shares; it
-  does move the sun against the radiation in UTCI's sun case, so the adapter follows the EPW's convention.
+- **Hours:** for the fields over an hour (pressure, radiation) Ladybug's index 0 is the EPW's hour 1 (00:01 to 01:00);
+  for the fields at an instant its index 0 is the value at 00:00 (section 4). Open-Meteo's radiation is the mean of
+  the preceding hour, its temperature the value at the hour. So an Open-Meteo year gives each instant's variable its
+  own hour, and pressure and radiation the hour after. An hour's alignment does not change a year's shares; it does
+  move each hour on the heat map and the sun against the temperature in UTCI's sun case.
 - **Time zones:** `Etc/GMT` names are whole hours with the sign reversed (`Etc/GMT+5` is UTC-5). A half-hour zone
   (India, Newfoundland, central Australia) has none: the hours are asked for in UTC and moved by the whole hours of
   the offset, and the remaining half hour is said. Not yet tried against the service (its daily limit), U.
@@ -315,3 +321,50 @@ moves by its handle or by Up and Down. Present and Print set show the board as a
 - Half-hour time zones against Open-Meteo: to try when its daily limit allows.
 - Ladybug's reading of the 2025 header: worked around by the DDY; an issue upstream is the owner's to open or not.
 - Sun-hours and radiation on the model: V172c.
+
+## 14. As built (2026-10-31 to 2026-11-01)
+
+**The engine** (patches `Phase/patch_v172b_a.py` to `_e.py`; the files in `src/js/engine/ladybug/`, `src/py/bim_ladybug.py`
+embedded by `tools/embed_py.py`): the runtime committed under `runtime/` and pinned by `runtime/MANIFEST.json`
+(`tools/check_runtime.py`, run by the Pages workflow and by `tools/build_site.py`); one classic worker made from a Blob,
+loading Pyodide 0.29.5 and checking each wheel's SHA-256 before unpacking it; the adapter; the two sources (a file, or
+Open-Meteo's year); the four analyses, kept with the weather they read, the versions that made them and the standards
+they used.
+
+**The registry:** four topics in Climate -- `utci` (UTCI_a002's scale and range, P), `ashrae.55` (PPD 10%, still air
+0.1 m/s, S), `app.comfort` (Ladybug's defaults: 0.5 and 1.0 clo at 1.1 met, the strategy parameters, SolarCal's
+exposure, A), `ashrae.dd` (the design conditions' percentiles, S). `bimLbParams` passes them to the adapter; the adapter
+checks the strategy parameters against the ranges Ladybug's own component enforces, a value outside going back to the
+default, said. A result keeps `bimStdStamp` of what it used; a change marks only the results that used it.
+
+**Analyze:** Climate's rows (`ladybug/panel.js`): Weather for Ladybug (open a file, get a year of hours, Run all four),
+then UTCI, the psychrometric chart, the wind rose and the design days, each with its numbers, the standards it used,
+Run, Show on the board and Add to a board (any board in the set, or a new one).
+
+**The boards made editable** (section 13; `sheets/board-figures.js`, `sheets/board-edit.js`,
+`css/site-analysis/boards-arranged.css`): every card of the three boards and Ladybug's is named (`'@clim.temp'` among
+its classes); a board is read for its cards by drawing it once (`A3D_FIGCAP`), so each figure is drawn by its own
+board's code wherever it is placed. A list of figures is kept in the board's record (`figs`, and `off` for its own
+figures taken off); a board without one is drawn exactly as before (the suite compares the kept build's HTML). The list
+is laid out at the board's full width, 1408 px, its 12 columns and rows of the same step, and zoomed to a narrower main
+view (`zoom`), so the arrangement is the same on any screen and on paper; in bands of figures whose rows overlap, which
+print without being split; on a phone its figures flow in reading order. Edit measures a board without a list where
+its grid puts the figures (within 0.1 px) and keeps nothing until the first change. The drawing's own Snap, Grid and
+Ortho govern a drag, in that order, as they govern a point being drawn.
+
+**Found while building:**
+- Open-Meteo's instants were an hour late: the adapter gave every variable the hour after, as an EPW's hour 1 is read
+  for the fields over an hour; Ladybug moves a file's last row to the front for the fields at an instant (section 4,
+  corrected). The suite's hour-by-hour check against the official UTCI polynomial found it (patch e).
+- The catalogue's previews sat outside a board's element, so the board's chart rules (`.a3d-clb .hit`, its ticks and
+  grids) did not apply and the charts' hit areas painted black: Edit's dialogs now carry the board's own class and
+  are excluded from `bimClbEl`.
+- A file:// page is read by its name's extension: the kept build (`.bak_phase172b_pre`) is opened from a copy named
+  `.html` for the suite's comparison.
+
+**Sources added 2026-11-01:** utci.org's `UTCI Program Code.zip` again (SHA-256
+`83ea34dc2428093c8b0f4e299bfb0a24752ff49ec1e11741927a75dafae283f1`): its polynomial's 210 terms read out of
+`UTCI_a002.f90` by a script into `tests/ladybug_reference.py` (coefficients and powers only), P; Tartarini's validation
+tables v1.1.0 (`ts_pmv_ppd.json` SHA-256 `182f8f8c6c6f9798424e6a95a1373b37bce70367e56aa24fb46215aff84a1025`, `ts_utci.json`
+`671094bb22fb69b4be71f060719c6ac1a40d25ff2f40dd09db4015ca73dac03d`, MIT): ISO 7730's 12 cases and UTCI's 8 in-range values,
+S. The suite's weather is made up (`tests/ladybug_fixture.py`): no station's file is committed.

@@ -127,6 +127,14 @@ part of `canvas_v10.html`. Their licences travel with them:
 - **click 8.3.3**, https://github.com/pallets/click, from PyPI (ladybug-core requires it): BSD-3-Clause, its
   wheel's `dist-info/licenses/LICENSE.txt`.
 
+V172b's suite checks these analyses against values read from two more sources; neither is in the build:
+
+- **UTCI_a002** (Peter Bröde, October 2009, released for public use after COST Action 730), utci.org's
+  `UTCI Program Code.zip`: the 210 coefficients of its polynomial, with their powers, and its saturation vapour
+  pressure's eight constants, in `tests/ladybug_reference.py`. The program's text is not copied.
+- **validation-data-comfort-models v1.1.0** (Federico Tartarini, https://github.com/FedericoTartarini/validation-data-comfort-models,
+  MIT): ISO 7730:2005's 12 PMV cases and UTCI's 8 in-range values, as numbers, in `tests/ladybug_reference.py`.
+
 ## valdrada (credited; no code copied)
 
 V171's traffic and people simulation (`src/js/engine/simulation/`) follows the approach of valdrada, a city traffic
