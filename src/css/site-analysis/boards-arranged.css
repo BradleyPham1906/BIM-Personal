@@ -1,0 +1,90 @@
+/* ================= __acad3dV172b: a board's figures, arranged; Edit =================
+   The arranged figures are laid out 1408 px across, the board's full width, and zoomed (--z, set by the
+   board) to a narrower main view; in print they are at their full width. On a phone they flow in one column,
+   in reading order. Every rule names a3d-clb, so the print window and the thumbnails take it (bimClbCss). */
+.a3d-clb-arr{position:relative;width:1408px;zoom:var(--z,1)}
+.a3d-clb-band{position:relative;break-inside:avoid;page-break-inside:avoid}
+.a3d-clb-fig{position:absolute;box-sizing:border-box}
+.a3d-clb-fig>.a3d-clb-card{position:absolute;inset:0;margin:0;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+.a3d-clb-fig>.a3d-clb-card>*{flex:0 0 auto;min-width:0}
+.a3d-clb-fig>.a3d-clb-card>.a3d-clb-chart{flex:0 1 auto;min-height:48px}
+.a3d-clb-fig>.a3d-clb-card>.a3d-clb-chart>svg{height:100%}
+.a3d-clb-fig .a3d-clb-kpis{grid-template-columns:repeat(auto-fit,minmax(150px,1fr))!important;margin:6px 0 0}
+.a3d-clb-kcard .a3d-clb-kpi{background:var(--page)}
+.a3d-clb-tcard{position:absolute;inset:0;display:flex;align-items:flex-end}
+.a3d-clb-texth{flex:1 1 auto;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink2);font-weight:650;margin:0;padding:8px 0 4px;border-top:1px solid var(--ring)}
+.a3d-clb-ecard .a3d-clb-empty{padding:10px 0;font-size:12.5px}
+/* a figure's options: its numbers as a table, or both */
+.a3d-clb-fig.o-table .a3d-clb-chart,.a3d-clb-fig.o-table .a3d-clb-legend,.a3d-clb-fig.o-table .a3d-clb-row{display:none}
+.a3d-clb-fig.o-table .a3d-clb-table,.a3d-clb-fig.o-both .a3d-clb-table{display:table}
+/* the figures that came after a board was arranged, as the board lays them out */
+.a3d-clb-extra{margin-top:12px}
+.a3d-clb-xfig{grid-column:span 12;display:flex;flex-direction:column;gap:6px;min-width:0}
+.a3d-clb-place{align-self:flex-start}
+/* measured off screen: a figure at its own height */
+.a3d-clb-fig.a3d-clb-nat{position:relative;left:auto;top:auto;width:auto;height:auto}
+.a3d-clb-fig.a3d-clb-nat>.a3d-clb-card{position:static;display:block;overflow:visible}
+.a3d-clb-fig.a3d-clb-nat.t{min-height:30px}
+.a3d-clb-fig.a3d-clb-nat>.a3d-clb-tcard{position:static}
+/* Edit: the board's columns, and rows of the same step when Grid is on */
+.a3d-clb-arrgrid{position:absolute;left:0;top:0;width:100%;pointer-events:none;
+  background-image:repeating-linear-gradient(to right,rgba(128,128,128,.07) 0 106.333px,transparent 106.333px 118.333px)}
+.a3d-clb-arrgrid.on{background-image:repeating-linear-gradient(to right,rgba(128,128,128,.07) 0 106.333px,transparent 106.333px 118.333px),
+  repeating-linear-gradient(to bottom,var(--ring) 0 1px,transparent 1px 118.333px)}
+.a3d-clb-arr.edit .a3d-clb-fig{outline:1px dashed var(--muted);outline-offset:3px;cursor:move;touch-action:pan-y}
+.a3d-clb-arr.edit .a3d-clb-fig:focus{outline:2px solid var(--s1);outline-offset:3px}
+.a3d-clb-arr.edit .a3d-clb-fig.over{outline:2px dashed var(--serious)}
+.a3d-clb-arr.edit .a3d-clb-fig.t{background:var(--band);border-radius:6px}
+.a3d-clb-fig.drag{z-index:6;opacity:.94;box-shadow:0 12px 32px rgba(0,0,0,.32)}
+.a3d-clb-fctl{position:absolute;top:6px;right:6px;display:flex;gap:4px;z-index:3}
+.a3d-clb-fctl button{width:30px;height:30px;box-sizing:border-box;border-radius:7px;border:1px solid var(--ring);background:var(--surf);color:var(--ink);
+  display:inline-flex;align-items:center;justify-content:center;padding:0;cursor:pointer}
+.a3d-clb-fctl button:focus-visible{outline:2px solid var(--s1);outline-offset:1px}
+.a3d-clb-fctl svg{width:15px;height:15px;fill:currentColor}
+.a3d-clb-grip{cursor:grab!important;touch-action:none}
+.a3d-clb-rsz{position:absolute;right:-7px;bottom:-7px;width:22px;height:22px;cursor:nwse-resize;touch-action:none;z-index:3;border-radius:4px;
+  background:linear-gradient(135deg,transparent 46%,var(--s1) 46%,var(--s1) 58%,transparent 58%,transparent 70%,var(--s1) 70%,var(--s1) 82%,transparent 82%)}
+.a3d-clb-guide{position:absolute;z-index:7;pointer-events:none;background:var(--s5)}
+.a3d-clb-guide.x{top:0;bottom:0;width:1.5px;margin-left:-.75px}
+.a3d-clb-guide.y{left:0;right:0;height:1.5px;margin-top:-.75px}
+@media(pointer:coarse){.a3d-clb-fctl button{width:42px;height:42px}.a3d-clb-rsz{width:34px;height:34px;right:-12px;bottom:-12px}}
+.a3d-clb-ebar{flex-wrap:wrap;row-gap:6px}
+.a3d-clb-snaps{display:inline-flex;gap:4px;align-items:center}
+.a3d-clb-name{flex:0 1 200px;min-width:90px;font:inherit;font-size:12.5px;color:var(--ink);background:var(--surf);border:1px solid var(--ring);border-radius:7px;min-height:30px;padding:0 8px;box-sizing:border-box}
+.a3d-clb-ehint{margin:0 0 12px;font-size:12px;color:var(--ink2)}
+.a3d-clb-ehint b{color:var(--serious)}
+/* a phone: the figures in one column, in reading order */
+.a3d-clb.w-s .a3d-clb-arr{width:auto;zoom:1}
+.a3d-clb.w-s .a3d-clb-band{height:auto!important;margin-top:12px!important;display:flex;flex-direction:column;gap:12px}
+.a3d-clb.w-s .a3d-clb-band.first{margin-top:0!important}
+.a3d-clb.w-s .a3d-clb-fig{position:relative;left:auto!important;top:auto!important;width:auto!important;height:auto!important}
+.a3d-clb.w-s .a3d-clb-fig>.a3d-clb-card{position:static;display:block;overflow:visible}
+.a3d-clb.w-s .a3d-clb-tcard{position:static}
+.a3d-clb.w-s .a3d-clb-fig.t{min-height:30px}
+.a3d-clb.w-s .a3d-clb-grip,.a3d-clb.w-s .a3d-clb-rsz,.a3d-clb.w-s .a3d-clb-arrgrid{display:none}
+.a3d-clb.w-s .a3d-clb-arr.edit{padding-bottom:0!important}
+.a3d-clb.w-s .a3d-clb-name{flex-basis:100%}
+/* in print and in a thumbnail: the figures at their full width, nothing of Edit */
+.a3d-clb.prt .a3d-clb-arr{zoom:1}
+.a3d-clb.prt .a3d-clb-fctl,.a3d-clb.prt .a3d-clb-rsz,.a3d-clb.prt .a3d-clb-arrgrid,.a3d-clb.prt .a3d-clb-place{display:none!important}
+@media print{.a3d-clb-fctl,.a3d-clb-rsz,.a3d-clb-arrgrid,.a3d-clb-place,.a3d-clb-ehint{display:none!important}.a3d-clb-arr{zoom:1}}
+/* Edit's dialogs, over the app: boards too (a3d-clb: the board's colours, its charts' rules), on a scrim */
+.a3d-clb.a3d-clb-dlg{z-index:20005;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;padding:16px;box-sizing:border-box;overflow:hidden}
+.a3d-clb-dlgin{background:var(--surf);color:var(--ink);border:1px solid var(--ring);border-radius:12px;box-shadow:0 18px 50px rgba(0,0,0,.4);
+  width:min(460px,100%);max-height:calc(100vh - 32px);overflow:auto;padding:16px 18px;box-sizing:border-box}
+.a3d-clb-dlgin.wide{width:min(1020px,100%)}
+.a3d-clb-dlgf label{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--ink2);margin:12px 0 0}
+.a3d-clb-dlgf input,.a3d-clb-dlgf select{font:inherit;font-size:13px;color:var(--ink);background:var(--page);border:1px solid var(--ring);border-radius:7px;min-height:34px;padding:0 8px;box-sizing:border-box}
+.a3d-clb-dlgb{display:flex;justify-content:flex-end;gap:8px;margin-top:16px}
+.a3d-clb-dlghd .a3d-clb-dek{margin-bottom:0}
+.a3d-clb-catg{font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:16px 0 8px;font-weight:650}
+.a3d-clb-catgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
+.a3d-clb-cat{display:flex;flex-direction:column;gap:6px;text-align:left;background:var(--page);border:1px solid var(--ring);border-radius:10px;padding:8px;color:var(--ink);font:inherit;cursor:pointer;min-width:0}
+.a3d-clb-cat:hover:not([disabled]),.a3d-clb-cat:focus-visible{border-color:var(--s1);outline:none}
+.a3d-clb-cat[disabled]{cursor:default;opacity:.62}
+.a3d-clb-catpv{height:140px;overflow:hidden;border-radius:6px;background:var(--surf);position:relative;pointer-events:none}
+.a3d-clb-catpv.t{display:flex;align-items:flex-end;padding:0 10px 14px;box-sizing:border-box}
+.a3d-clb-catin{width:560px;transform:scale(.38);transform-origin:0 0}
+.a3d-clb-catn{font-size:12.5px;font-weight:600}
+.a3d-clb-cath{font-size:11.5px;color:var(--ink2)}
+.a3d-clb-notes h4{font-size:12px;color:var(--ink);margin:8px 0 4px;font-weight:620}

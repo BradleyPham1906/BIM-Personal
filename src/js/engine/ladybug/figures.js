@@ -80,7 +80,7 @@
       bimClbLeg(BIM_UTCI_NAMES.map(function(n,k){return [BIM_UTCI_COL[k],n+' ('+BIM_UTCI_RANGE[k]+')'];}))+
       bimClbTable(['Condition','No stress %','Heat stress %','Cold stress %','Lowest °C','Highest °C'],keys.filter(function(c){return C[c];}).map(function(c){
         return [BIM_LB_COND[c],bimClbNum(C[c].comfort),bimClbNum(C[c].heat),bimClbNum(C[c].cold),bimClbNum(C[c].min),bimClbNum(C[c].max)];}));
-    return bimClbCard(['s12','wide'],no,title,dek,body,bimLbSrcLine(R)+'; UTCI by Bröde et al. (UTCI_a002, 2009); the sun by SolarCal (ASHRAE 55); still air is UTCI\'s 0.5 m/s');
+    return bimClbCard(['s12','wide','@lb.utci'],no,title,dek,body,bimLbSrcLine(R)+'; UTCI by Bröde et al. (UTCI_a002, 2009); the sun by SolarCal (ASHRAE 55); still air is UTCI\'s 0.5 m/s');
   }
   /* the psychrometric chart, drawn from Ladybug's own geometry */
   function bimLbPsySvg(P){
@@ -118,7 +118,7 @@
       bimClbLeg([['var(--w1)','1–4 hours'],['var(--w2)','5–14'],['var(--w3)','15–39'],['var(--w4)','40–99'],['var(--w5)','100 or more']].concat(
         P.names.map(function(n,k){return [k===0?'var(--ink)':BIM_LB_STRAT_COL[(k-1)%BIM_LB_STRAT_COL.length],n+': '+bimClbNum(P.pct[k])+'%','ln'];})))+
       bimClbTable(['Zone','Hours %'],P.names.map(function(n,k){return [n,bimClbNum(P.pct[k])];}).concat([['Comfortable or made comfortable',bimClbNum(P.total)]]));
-    return bimClbCard('s7',no,title,dek,body,bimLbSrcLine(R)+'; PMV by Fanger (ASHRAE 55), the strategies as Ladybug\'s PMV Polygon draws them, its defaults; passive solar on a '+(P.window===180?'south':'north')+'-facing window; mean station pressure '+bimClimInt(P.press)+' Pa');
+    return bimClbCard(['s7','@lb.psych'],no,title,dek,body,bimLbSrcLine(R)+'; PMV by Fanger (ASHRAE 55), the strategies as Ladybug\'s PMV Polygon draws them, its defaults; passive solar on a '+(P.window===180?'south':'north')+'-facing window; mean station pressure '+bimClimInt(P.press)+' Pa');
   }
   function bimLbWindCard(opt,no){
     var R=bimLbResult('wind');if(!R)return null;
@@ -133,7 +133,7 @@
     var body='<div class="a3d-clb-chart">'+bimClbRoseSvg(Wd,false,'Wind rose (Ladybug)')+'</div>'+
       bimClbLeg(Wr.bins.map(function(b,j){return ['var(--w'+(j+1)+')',j<Wr.bins.length-1?b+'–'+Wr.bins[j+1]+' m/s':'≥ '+b+' m/s'];}))+
       bimClbTable(['From'].concat(Wr.bins.map(function(b,j){return j<Wr.bins.length-1?b+'–'+Wr.bins[j+1]+' m/s':'≥ '+b+' m/s';})),pct.map(function(r,k){return [BIM_CLIM_DIRS[k]].concat(r.map(function(v){return bimClbNum(v);}));}));
-    return bimClbCard('s5',no,title,'Share of the hours from each direction, by speed at 10 m; calm is a speed of 0, as weather files record it, shown at the centre.',body,bimLbSrcLine(R));
+    return bimClbCard(['s5','@lb.wind'],no,title,'Share of the hours from each direction, by speed at 10 m; calm is a speed of 0, as weather files record it, shown at the centre.',body,bimLbSrcLine(R));
   }
   /* the design days: their numbers, and the day's temperature hour by hour */
   function bimLbDdSvg(D){
@@ -158,7 +158,7 @@
     var body='<div class="a3d-clb-chart">'+bimLbDdSvg(D)+'</div>'+bimClbLeg([['var(--s1)','Heating 99.6%','ln'],['var(--s2)','Cooling 0.4%','ln']])+
       '<table class="a3d-clb-eqt"><thead><tr><th style="text-align:left">Design day</th><th>°C</th><th>Range</th><th>Humidity</th><th>m/s</th></tr></thead><tbody>'+
       rows.map(function(r){return '<tr><td class="pl">'+bimClbE(r[0])+'</td><td>'+r[1]+'</td><td>'+r[2]+'</td><td>'+bimClbE(r[3])+'</td><td>'+r[4]+'</td></tr>';}).join('')+'</tbody></table>';
-    return bimClbCard('s5',no,title,'The conditions a building\'s heating and cooling are sized for, from '+(how[h.how]||h.how)+'; the design day\'s temperature hour by hour.',body,
+    return bimClbCard(['s5','@lb.dd'],no,title,'The conditions a building\'s heating and cooling are sized for, from '+(how[h.how]||h.how)+'; the design day\'s temperature hour by hour.',body,
       bimLbSrcLine(R)+'; ASHRAE Handbook, Fundamentals, chapter 14 (climatic design information)');
   }
   /* the four, in the climate board's order */
@@ -167,6 +167,6 @@
   function bimLbOnlyFigs(){
     var cards=[],fig=0;
     BIM_LB_FIGS.forEach(function(F){var c=null;try{c=F[1](null,fig+1);}catch(eLb){console.warn('[BIM] Ladybug figure '+F[0],eLb);}
-      if(c){fig++;cards.push(c.replace('<figure class="a3d-clb-card','<figure data-figid="'+F[0]+'" class="a3d-clb-card'));}});
+      if(c){fig++;cards.push(c);}});
     return cards.length?'<section class="a3d-clb-grid" style="margin-top:14px">'+cards.join('')+'</section>':'';
   }

@@ -17,15 +17,15 @@
      key handler asks this first; this listener is for when that one is not listening. */
   function bimClbKey(ev){
     if(!A3D_CLB.open)return false;
-    var a=document.activeElement,b=bimClbEl();
-    if(a&&a!==document.body&&!(b&&b.contains(a))&&(/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)||a.isContentEditable))return false;
-    if(ev.key==='Escape'){ev.preventDefault();ev.stopImmediatePropagation();bimClbClose();return true;}
+    var a=document.activeElement,b=bimClbEl(),dl=A3D_BRD.dlg;   /* __acad3dV172b: Edit's dialogs are the board's */
+    if(a&&a!==document.body&&!(b&&b.contains(a))&&!(dl&&dl.contains(a))&&(/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)||a.isContentEditable))return false;
+    if(ev.key==='Escape'){ev.preventDefault();ev.stopImmediatePropagation();if(!bimBrdEsc())bimClbClose();return true;}   /* __acad3dV172b: a dialog, then Edit, then the board */
     if(ev.ctrlKey||ev.metaKey||ev.altKey||/^F\d+$/.test(ev.key))return false;
     return true;
   }
   document.addEventListener('keydown',function(ev){if(ev.key==='Escape')bimClbKey(ev);},true);
   /* the main board, not Present's */
-  function bimClbEl(){return document.querySelector('.a3d-clb:not(.a3d-ssboard)');}
+  function bimClbEl(){return document.querySelector('.a3d-clb:not(.a3d-ssboard):not(.a3d-clb-dlg)');}   /* __acad3dV172b: not Edit's dialog */
   /* the width it lays out by: the main view's */
   function bimClbW(b){var p=b&&b.parentNode;return Math.round(p&&p!==document.body?(p.clientWidth||window.innerWidth):window.innerWidth);}
   function bimClbWidthCls(w){return (w>=1240?' w-l':'')+(w<1100?' w-m':'')+(w<760?' w-s':'');}
@@ -35,6 +35,7 @@
     if((w<760)!==A3D_CLB.narrow){bimClbOpen();return;}   /* the figures are drawn for a phone, or not */
     cls='a3d-clb'+(A3D_CLB.tables?' tables':'')+bimClbWidthCls(w);
     if(b.className!==cls)b.className=cls;
+    bimBrdZoom(b);   /* __acad3dV172b: an arranged board zoomed to the main view */
   }
   function bimClbE(s){return bimEsc(String(s==null?'':s));}
   function bimClbTip(t){return ' data-tip="'+bimClbE(t)+'" tabindex="0"';}
@@ -63,7 +64,10 @@
       rows.map(function(r){return '<tr>'+r.map(function(c){return '<td>'+bimClbE(c)+'</td>';}).join('')+'</tr>';}).join('')+'</tbody></table></div>';
   }
   function bimClbCard(cls,no,title,dek,body,src){
-    return '<figure class="a3d-clb-card '+(Array.isArray(cls)?cls.join(' '):cls)+'" data-fig="'+no+'"><figcaption><div class="a3d-clb-fno">Fig. '+no+'</div><h2 class="a3d-clb-h2">'+bimClbE(title)+'</h2>'+
+    var C=Array.isArray(cls)?cls.slice():[cls],id='',i;   /* __acad3dV172b: '@name' among the classes names the figure */
+    for(i=C.length-1;i>=0;i--)if(String(C[i]).charAt(0)==='@'){id=String(C[i]).slice(1);C.splice(i,1);}
+    if(id)bimFigCapCard(id,C,title,dek,body,src);
+    return '<figure class="a3d-clb-card '+C.join(' ')+'" data-fig="'+no+'"'+(id?' data-figid="'+id+'"':'')+'><figcaption><div class="a3d-clb-fno">Fig. '+no+'</div><h2 class="a3d-clb-h2">'+bimClbE(title)+'</h2>'+
       (dek?'<p class="a3d-clb-dek">'+bimClbE(dek)+'</p>':'')+'</figcaption>'+body+(src?'<p class="a3d-clb-src">Source: '+bimClbE(src)+'</p>':'')+'</figure>';
   }
   function bimClbIdx(M,k,f){var b=0,i;for(i=1;i<M.length;i++)if(f==='min'?M[i][k]<M[b][k]:M[i][k]>M[b][k])b=i;return b;}
@@ -286,6 +290,7 @@
   function bimClbLeg(items){return '<div class="a3d-clb-legend">'+items.map(function(it){return '<span><i class="'+(it[2]||'')+'" style="background:'+it[0]+'"></i>'+bimClbE(it[1])+'</span>';}).join('')+'</div>';}
   /* the whole board */
   function bimClbHtml(){
+    if(!A3D_CLB.raw)return bimBrdHtml();   /* __acad3dV172b: a board's own list, a board of one's own, Edit; then each board as ever */
     if(A3D_CLB.kind==='zoning')return bimZnBoardHtml();   /* __acad3dV160 */
     if(A3D_CLB.kind==='access')return bimAccBoardHtml();   /* __acad3dV161 */
     var C=A3D.site&&A3D.site.climate,K=A3D.site&&A3D.site.risk,st=bimSunSettings(),N=C&&C.normals,Hh=C&&C.hourly,h,cards=[],kp=[],src,i;
@@ -321,6 +326,7 @@
     if(Hh&&Hh.comfort)kp.push(bimClbKpi('Outdoor comfort',bimClbNum(Hh.comfort.inside,0),'%','Of the year\'s hours, '+bimClimUsedComfort().t0+'–'+bimClimUsedComfort().t1+' °C and '+bimClimUsedComfort().rh0+'–'+bimClimUsedComfort().rh1+'% RH'));
     if(K&&K.air)kp.push(bimClbKpi('PM2.5',bimClbNum(K.air.mean),'µg/m³',K.air.days.length+'-day mean; '+K.air.over+' days above WHO '+bimClimUsedWho24(),K.air.status));
     if(K&&K.quakes)kp.push(bimClbKpi('Earthquakes',String(K.quakes.count),'','M'+K.quakes.minmag+'+ within '+K.quakes.radius+' km since '+K.quakes.since.slice(0,4)+(K.quakes.max?'; largest M'+K.quakes.max.m.toFixed(1):''),K.quakes.status));
+    bimFigCapKpis('clim.kpis',kp);   /* __acad3dV172b */
     h+='<section class="a3d-clb-kpis" aria-label="Indicators" style="--n:'+kp.length+'">'+kp.join('')+'</section><section class="a3d-clb-grid">';
     var fig=0;
     if(N){
@@ -328,7 +334,7 @@
       iw=bimClbIdx(M,'tx','max');ic=bimClbIdx(M,'tn','min');ip=bimClbIdx(M,'p','max');
       var title=(C.koppen?C.koppen.name+': ':'')+BIM_CLIM_MONTH_NAMES[iw]+' highs average '+bimClbNum(M[iw].tx)+' °C, '+BIM_CLIM_MONTH_NAMES[ic]+' lows '+bimClbNum(M[ic].tn)+' °C';
       fig++;
-      cards.push(bimClbCard(['s7','wide'],fig,title,'Monthly mean of the daily high and low; the band holds 80% of real days (10th to 90th percentile). Below: rainfall, '+bimClimInt(a.p)+' mm a year, most in '+BIM_CLIM_MONTH_NAMES[ip]+'.',
+      cards.push(bimClbCard(['s7','wide','@clim.temp'],fig,title,'Monthly mean of the daily high and low; the band holds 80% of real days (10th to 90th percentile). Below: rainfall, '+bimClimInt(a.p)+' mm a year, most in '+BIM_CLIM_MONTH_NAMES[ip]+'.',
         '<div class="a3d-clb-chart">'+bimClbTempSvg(M)+'</div>'+bimClbLeg([['var(--s2)','Mean daily high','ln'],['var(--s1)','Mean daily low','ln'],['var(--band)','10th to 90th percentile of days']])+
         '<div class="a3d-clb-chart" style="margin-top:6px">'+bimClbRainSvg(M)+'</div>'+
         bimClbTable(['Month','High °C','Low °C','Mean °C','90th high','10th low','Rain mm','Wet days'],M.map(function(m,j){return [BIM_CLIM_MONTHS[j],bimClbNum(m.tx),bimClbNum(m.tn),bimClbNum(m.tm),bimClbNum(m.tx90),bimClbNum(m.tn10),Math.round(m.p),bimClbNum(m.wet,0)];})),src));
@@ -336,7 +342,7 @@
     if(Hh&&Hh.wind&&Hh.wind.year.n){
       var Wy=Hh.wind.year,sw=lat>=0?['Winter (Dec–Feb)','Summer (Jun–Aug)']:['Winter (Jun–Aug)','Summer (Dec–Feb)'];
       fig++;
-      cards.push(bimClbCard('s5',fig,'Prevailing wind from the '+BIM_CLIM_DIRS[Wy.prev]+', '+bimClbNum(Wy.mean)+' m/s on average',
+      cards.push(bimClbCard(['s5','@clim.wind'],fig,'Prevailing wind from the '+BIM_CLIM_DIRS[Wy.prev]+', '+bimClbNum(Wy.mean)+' m/s on average',
         'Share of '+Hh.year+'\'s hours from each direction, by speed at 10 m. Calm (under '+bimClimUsedCalm()+' m/s) '+bimClbNum(Wy.calm,0)+'%, shown at the centre.',
         '<div class="a3d-clb-chart">'+bimClbRoseSvg(Wy,false,'Wind rose, '+Hh.year)+'</div>'+
         bimClbLeg(Hh.wind.bins.map(function(b,j){return ['var(--w'+(j+1)+')',bimClbWindBand(j)];}))+
@@ -350,7 +356,7 @@
       Hh.heat.forEach(function(v,j){if(v===null)return;nh++;if(v>=20&&v<24)nc++;if(v>hx){hx=v;hxi=j;}});
       var hd=new Date(Date.parse(Hh.start+'T00:00:00Z')+Math.floor(hxi/24)*864e5);
       fig++;
-      cards.push(bimClbCard(['s12','wide'],fig,'In '+Hh.year+' the air was 20–24 °C for '+bimClbNum(100*nc/Math.max(1,nh),0)+'% of hours; the hottest hour reached '+hx+' °C on '+hd.getUTCDate()+' '+BIM_CLIM_MONTHS[hd.getUTCMonth()],
+      cards.push(bimClbCard(['s12','wide','@clim.heat'],fig,'In '+Hh.year+' the air was 20–24 °C for '+bimClbNum(100*nc/Math.max(1,nh),0)+'% of hours; the hottest hour reached '+hx+' °C on '+hd.getUTCDate()+' '+BIM_CLIM_MONTHS[hd.getUTCMonth()],
         'Every hour of '+Hh.year+': the day across, the hour of the day down (local time), in named temperature bands.'+(A3D_CLB.narrow?' Swipe across for the year.':''),
         '<div class="a3d-clb-chart a3d-clb-heat">'+bimClbHeatSvg(Hh)+'</div>'+bimClbLeg(BIM_HEAT_SHORT.map(function(n,j){return [BIM_HEAT_COL[j],n+' °C'];}))+
         bimClbTable(['Band','Hours','Share'],BIM_HEAT_NAMES.map(function(n,j){var c=0;Hh.heat.forEach(function(v){if(v!==null&&bimClbHeatClass(v)===j)c++;});return [n,c,bimClbNum(100*c/Math.max(1,nh))+'%'];})),
@@ -358,27 +364,27 @@
     }
     var sun=bimClbSunSvg(lat,lon,bimSunNum(st.tz)?function(d){return bimSunTzAt(st,d,'12:00');}:Math.round(lon/15));
     fig++;
-    cards.push(bimClbCard('s4',fig,'The sun climbs to '+bimClbNum(sun.days[0].alt,0)+'° at midsummer and '+bimClbNum(sun.days[2].alt,0)+'° at midwinter',
+    cards.push(bimClbCard(['s4','@clim.sun'],fig,'The sun climbs to '+bimClbNum(sun.days[0].alt,0)+'° at midsummer and '+bimClbNum(sun.days[2].alt,0)+'° at midwinter',
       'Sun path, looking up: the centre overhead, the rim the horizon, rings every 15° of altitude; dots every hour'+(bimSunNum(st.tz)?' (UTC'+(st.tz>=0?'+':'')+st.tz+')':' (approximate local time)')+'.',
       '<div class="a3d-clb-chart">'+sun.svg+'</div>'+bimClbLeg(sun.days.map(function(d){return [d.col,d.label+': '+bimClbNum(d.alt,0)+'°, '+Math.floor(d.len/60)+' h '+bimPad2(d.len%60)+' of daylight','ln'];}))+
       bimClbTable(['Day','Highest altitude','Daylight'],sun.days.map(function(d){return [d.label,bimClbNum(d.alt,1)+'°',Math.floor(d.len/60)+' h '+bimPad2(d.len%60)];})),
       'Sun position, NOAA equations (in this app)'));
     if(N){
       fig++;
-      cards.push(bimClbCard('s4',fig,(a.hdd>2*a.cdd?'Heating dominates':(a.cdd>2*a.hdd?'Cooling dominates':'Both heating and cooling matter'))+': '+bimClimInt(a.hdd)+' heating, '+bimClimInt(a.cdd)+' cooling degree days',
+      cards.push(bimClbCard(['s4','@clim.dd'],fig,(a.hdd>2*a.cdd?'Heating dominates':(a.cdd>2*a.hdd?'Cooling dominates':'Both heating and cooling matter'))+': '+bimClimInt(a.hdd)+' heating, '+bimClimInt(a.cdd)+' cooling degree days',
         'Degree days a month, base '+bimClimUsedBase()+' °C on the daily mean ((high + low) / 2): cooling up, heating down.',
         '<div class="a3d-clb-chart">'+bimClbDdSvg(M)+'</div>'+bimClbLeg([['var(--s2)','Cooling degree days'],['var(--s1)','Heating degree days']])+
         bimClbTable(['Month','Heating','Cooling'],M.map(function(m,j){return [BIM_CLIM_MONTHS[j],Math.round(m.hdd||0),Math.round(m.cdd||0)];})),src));
       fig++;
       var im=bimClbIdx(M,'sw','max'),imn=bimClbIdx(M,'sw','min');
-      cards.push(bimClbCard('s4',fig,bimClimInt(a.sw)+' kWh/m² of sun a year on open ground',
+      cards.push(bimClbCard(['s4','@clim.solar'],fig,bimClimInt(a.sw)+' kWh/m² of sun a year on open ground',
         'Daily global horizontal irradiation by month, kWh/m²: '+bimClbNum(M[im].sw)+' in '+BIM_CLIM_MONTH_NAMES[im]+', '+bimClbNum(M[imn].sw)+' in '+BIM_CLIM_MONTH_NAMES[imn]+'.',
         '<div class="a3d-clb-chart">'+bimClbSolarSvg(M)+'</div>'+
         bimClbTable(['Month','kWh/m² a day'],M.map(function(m,j){return [BIM_CLIM_MONTHS[j],bimClbNum(m.sw,2)];})),src));
     }
     if(Hh&&Hh.comfort&&Hh.psy){
       fig++;
-      cards.push(bimClbCard('s6',fig,bimClbNum(Hh.comfort.inside,0)+'% of hours are comfortable outdoors; '+bimClbNum(Hh.comfort.cold,0)+'% too cool, '+bimClbNum(Hh.comfort.hot,0)+'% too hot or humid',
+      cards.push(bimClbCard(['s6','@clim.psy'],fig,bimClbNum(Hh.comfort.inside,0)+'% of hours are comfortable outdoors; '+bimClbNum(Hh.comfort.cold,0)+'% too cool, '+bimClbNum(Hh.comfort.hot,0)+'% too hot or humid',
         'Psychrometric chart of '+Hh.year+'\'s hours: dry-bulb temperature across, humidity ratio up, curves of relative humidity. Darker cells hold more hours.',
         '<div class="a3d-clb-chart">'+bimClbPsySvg(Hh)+'</div>'+bimClbLeg([['var(--w1)','1–4 hours'],['var(--w2)','5–14'],['var(--w3)','15–39'],['var(--w4)','40–99'],['var(--w5)','100 or more'],['transparent','Comfort zone: '+bimClimUsedComfort().t0+'–'+bimClimUsedComfort().t1+' °C, '+bimClimUsedComfort().rh0+'–'+bimClimUsedComfort().rh1+'% RH']])+
         bimClbTable(['Hours','Share'],[['Comfortable',bimClbNum(Hh.comfort.inside)+'%'],['Too cool',bimClbNum(Hh.comfort.cold)+'%'],['Too hot or humid',bimClbNum(Hh.comfort.hot)+'%'],['Hours read',Hh.comfort.hours]]),
@@ -387,7 +393,7 @@
     if(K&&K.quakes){
       var E=K.quakes,b=E.max;
       fig++;
-      cards.push(bimClbCard('s6',fig,E.count?(E.count+' earthquake'+(E.count===1?'':'s')+' of M'+E.minmag+'+ within '+E.radius+' km since '+E.since.slice(0,4)+'; the largest M'+b.m.toFixed(1)+' in '+b.t.slice(0,4)+', '+bimClbNum(b.km,0)+' km '+bimClimDir(b.az)):
+      cards.push(bimClbCard(['s6','@risk.quake'],fig,E.count?(E.count+' earthquake'+(E.count===1?'':'s')+' of M'+E.minmag+'+ within '+E.radius+' km since '+E.since.slice(0,4)+'; the largest M'+b.m.toFixed(1)+' in '+b.t.slice(0,4)+', '+bimClbNum(b.km,0)+' km '+bimClimDir(b.az)):
         'No earthquake of M'+E.minmag+' or more recorded within '+E.radius+' km since '+E.since.slice(0,4),
         'By distance and direction from the site; the circle grows with magnitude. History, not a hazard model: for design, use the national seismic hazard map and code.',
         '<div class="a3d-clb-row"><div style="flex:1 1 300px"><div class="a3d-clb-chart">'+bimClbQuakeSvg(E)+'</div></div>'+
@@ -398,14 +404,14 @@
     if(K&&K.air){
       var Q=K.air;
       fig++;
-      cards.push(bimClbCard(['s12','wide'],fig,'PM2.5 averaged '+bimClbNum(Q.mean)+' µg/m³; '+Q.over+' of '+Q.days.length+' days exceeded the WHO guideline',
+      cards.push(bimClbCard(['s12','wide','@risk.air'],fig,'PM2.5 averaged '+bimClbNum(Q.mean)+' µg/m³; '+Q.over+' of '+Q.days.length+' days exceeded the WHO guideline',
         'Daily mean fine particulate matter (PM2.5), '+Q.from+' to '+Q.to+', against the WHO '+bimStdYear('who.aqg')+' 24-hour guideline of '+bimClimUsedWho24()+' µg/m³ (annual: '+bimClimWhoYear()+').',
         '<div class="a3d-clb-chart">'+bimClbAirSvg(Q)+'</div>'+bimClbLeg([['var(--s1)','Within the guideline'],['var(--serious)','Above the guideline'],['transparent','WHO guideline and interim targets','dsh']])+
         bimClbTable(['Day','PM2.5 µg/m³'],Q.days.map(function(d){return [d.d,bimClbNum(d.v)];})),K.airSrc+' (model analysis, about 10 to 40 km)'));
     }
     /* __acad3dV172b: Ladybug's figures, once it has run, after the board's own */
     var lbAny=false;
-    BIM_LB_FIGS.forEach(function(F){var c=null;try{c=F[1](null,fig+1);}catch(eLb){console.warn('[BIM] Ladybug figure '+F[0],eLb);}if(c){fig++;lbAny=true;cards.push(c.replace('<figure class="a3d-clb-card','<figure data-figid="'+F[0]+'" class="a3d-clb-card'));}});
+    BIM_LB_FIGS.forEach(function(F){var c=null;try{c=F[1](null,fig+1);}catch(eLb){console.warn('[BIM] Ladybug figure '+F[0],eLb);}if(c){fig++;lbAny=true;cards.push(c);}});
     h+=cards.join('')+'</section>';
     h+='<footer class="a3d-clb-notes"><h3>Method and sources</h3><ul>'+
       '<li>Climate: ERA5 reanalysis (ECMWF Copernicus), about 25 km cells, '+(C&&C.period?C.period[0]+' to '+C.period[1]+' daily and '+(Hh?Hh.year:'')+' hourly':'')+', via <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a> (CC BY 4.0). A reanalysis is a model of the weather, not a station record: a city\'s heat island, a valley\'s frost or a coast\'s breeze can differ; confirm with a local station where it matters.</li>'+
@@ -420,8 +426,10 @@
   }
   /* open, refresh, close; the tooltip; Esc. __acad3dV162: in the main view, the panels beside it */
   function bimClbOpen(kind){
-    var was=A3D_CLB.open?A3D_CLB.kind:null;
-    if(kind==='climate'||kind==='zoning'||kind==='access')A3D_CLB.kind=kind;   /* __acad3dV160; __acad3dV161 */
+    var was=A3D_CLB.open?bimClbWhich():null;   /* __acad3dV172b: a board of one's own is opened by its id */
+    if(kind==='climate'||kind==='zoning'||kind==='access'){A3D_CLB.kind=kind;A3D_CLB.cid=null;}   /* __acad3dV160; __acad3dV161 */
+    else if(kind&&bimBoardById(kind)&&bimBoardById(kind).kind==='custom'){A3D_CLB.kind='custom';A3D_CLB.cid=kind;}
+    if(was!==bimClbWhich()){A3D_CLB.edit=false;bimBrdDlgClose();}
     var host=document.querySelector('.a3d-vp')||document.body,b=bimClbEl(),w;
     if(!b){
       b=document.createElement('div');
@@ -435,12 +443,13 @@
     }
     w=bimClbW(b);
     A3D_CLB.narrow=w<760;
-    A3D_CLB.board=bimBoardById('board-'+A3D_CLB.kind)?'board-'+A3D_CLB.kind:null;
+    A3D_CLB.board=A3D_CLB.kind==='custom'?(bimBoardById(A3D_CLB.cid)?A3D_CLB.cid:null):(bimBoardById('board-'+A3D_CLB.kind)?'board-'+A3D_CLB.kind:null);   /* __acad3dV172b */
     b.className='a3d-clb'+(A3D_CLB.tables?' tables':'')+bimClbWidthCls(w);
-    b.setAttribute('aria-label',bimBoardName(A3D_CLB.kind)+' board');
+    b.setAttribute('aria-label',bimClbLabel()+' board');   /* __acad3dV172b */
     b.innerHTML=bimClbHtml()+'<div class="a3d-clb-tip" role="tooltip" hidden></div>';
+    bimBrdZoom(b);
     A3D_CLB.open=true;document.body.classList.add('a3d-clb-open');
-    if(was!==A3D_CLB.kind){   /* a board opened, not one redrawn: the focus and the top go to it */
+    if(was!==bimClbWhich()){   /* a board opened, not one redrawn: the focus and the top go to it */
       b.scrollTop=0;
       var c=b.querySelector('[data-clb="close"]');if(c)try{c.focus({preventScroll:true});}catch(eF){}
     }
@@ -451,6 +460,7 @@
     var b=bimClbEl(),was=A3D_CLB.open;
     if(b){if(b.__clbRO){try{b.__clbRO.disconnect();}catch(eD){}}if(b.parentNode)b.parentNode.removeChild(b);}
     A3D_CLB.open=false;A3D_CLB.board=null;document.body.classList.remove('a3d-clb-open');
+    A3D_CLB.edit=false;A3D_BRD.drag=null;bimBrdDlgClose();   /* __acad3dV172b */
     if(was)bimPresPanelRefresh();
     return true;
   }
@@ -495,7 +505,7 @@
       var k=ev.target&&ev.target.closest?ev.target.closest('[data-clb]'):null;if(!k)return;
       var a=k.getAttribute('data-clb');
       if(a==='close')bimClbClose();
-      else if(a==='print')bimClbPrint(A3D_CLB.kind);   /* __acad3dV162: alone, in a print window, as Print set prints it */
+      else if(a==='print')bimClbPrint(bimClbWhich());   /* __acad3dV162: alone, in a print window, as Print set prints it */
       else if(a==='refresh'){if(A3D_CLB.kind==='access')bimAccFetch();else bimClimFetch();}   /* __acad3dV161 */
       else if(a==='envelope')bimZnBuild();   /* __acad3dV160 */
       else if(a==='tables'){A3D_CLB.tables=!A3D_CLB.tables;b.classList.toggle('tables',A3D_CLB.tables);k.setAttribute('aria-pressed',String(A3D_CLB.tables));}
@@ -509,6 +519,7 @@
     b.addEventListener('pointerleave',function(){bimClbTipHide(b);});
     b.addEventListener('focusin',function(ev){var e=ev.target;if(e&&e.getAttribute&&e.getAttribute('data-tip')){var r=e.getBoundingClientRect();bimClbTipShow(b,r.left+r.width/2,r.top,e.getAttribute('data-tip'));}});
     b.addEventListener('focusout',function(){bimClbTipHide(b);});
+    bimBrdWire(b);   /* __acad3dV172b: Edit */
 
   }
 

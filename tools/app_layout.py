@@ -23,6 +23,7 @@ CSS = [
     ('sheets/layouts-pages-present.css', '/* __acad3dV116: the layout tabs, the space button, and the menus they open */'),
     ('panels/properties-analyze.css', '/* __acad3dV73: the property-group caret. 9px is unreadable and its parent header row was'),
     ('site-analysis/boards.css', '/* __acad3dV158: the Site analysis tab */'),
+    ('site-analysis/boards-arranged.css', "/* ================= __acad3dV172b: a board's figures, arranged; Edit ================="),
     ('workspace/components.css', '/* the panel scrolls, not the list in it: the search stays at its top while the list goes '),
     ('workspace/responsive.css', '@media(max-width:720px),(max-height:500px){\n.a3d-drawerbtn{display:inline-block}'),
     ('shell/top-bar-start.css', '/* ---- the top bar: the quick-access buttons and the project tabs. --a3d-top-h is its hei'),
@@ -200,6 +201,8 @@ ENGINE = [
     ('ui/project-browser.js', '  // ---- __acad3dV28: Revit-style Project Browser. The previous sidebar crammed 7 tabs in'),
     ('sheets/layout-tabs.js', '  /* ================= __acad3dV116: Model and layout tabs ================='),
     ('sheets/boards.js', '  /* ================= __acad3dV162: the boards are pages of the set ================='),
+    ('sheets/board-figures.js', "  /* ================= __acad3dV172b: a board's figures, arranged ================="),
+    ('sheets/board-edit.js', '  /* ================= __acad3dV172b: Edit, on a board ================='),
     ('sheets/presentation-panel.js', '  /* ================= __acad3dV122: the Presentation panel ================='),
     ('ui/touch-input.js', '  // ---- __acad3dV8: Touch input (single-finger nav/select/move, long-press marquee, two-'),
     ('bim/csg-booleans.js', '  // ---- __acad3dV3: CSG solid booleans + pair selection + drag-move ----'),
@@ -220,6 +223,7 @@ ENGINE = [
     ('testing/hooks-sun.js', '  /* __acad3dV171d: the sun path, one clock, for the suite */'),
     ('testing/hooks-tools.js', '  /* __acad3dV172: the site analysis tools, for the suite */'),
     ('testing/hooks-ladybug.js', '  /* __acad3dV172b: the Ladybug analyses, for the suite */'),
+    ('testing/hooks-boards.js', "  /* __acad3dV172b: a board's figures and Edit, for the suite */"),
     ('_end.js', '}catch(e){'),
 ]
 

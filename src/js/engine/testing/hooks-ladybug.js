@@ -1,5 +1,5 @@
   /* __acad3dV172b: the Ladybug analyses, for the suite */
-  window.__acad3dV172b='runtime,manifest,worker,sha256,adapter,epw,ddy,openmeteo,standardtime,utci4,psych,pmv2clo,strategies5,windrose,designdays,kept';
+  window.__acad3dV172b='runtime,manifest,worker,sha256,adapter,epw,ddy,openmeteo,standardtime,utci4,psych,pmv2clo,strategies5,windrose,designdays,kept,figids,arranged,bands,zoom,edit,snaps,keys,catalogue,options,custom,duplicate';
   function bimLbErr(e){return {error:String(e&&e.message||e)};}
   /* where the runtime is loaded from; a suite points it at its own server */
   window.__a3dLbBase=function(u){if(u!==undefined)A3D_LB.base=u||null;return bimLbBase();};
