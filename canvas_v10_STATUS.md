@@ -16065,7 +16065,7 @@ way to a moving sun, V170's motions of every multi-line element (the angles take
                       __acad3dV121b, __acad3dV166b, __acad3dV166c, __acad3dV166d, __acad3dV171b, __acad3dV171c,
                       __acad3dV171d
 
-## Phase 172 (V172) - Site analysis tools and synthesis, ArcGIS's way
+## Phase 172 (V172) - Site analysis tools and synthesis, ArcGIS's way; Ladybug's weather and comfort, the boards made editable (V172b)
 
 Eight site analysis tools in the analysis workspace, in the shape of ArcGIS's geoprocessing pane: Buffer, Distance,
 Slope classes, Exclusions, Suitability (Esri's transform and weight, by multiplier or percent), Locate, Constraints and

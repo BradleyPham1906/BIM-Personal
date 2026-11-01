@@ -273,7 +273,11 @@ def source_level_checks(path):
             # AMENDED FOR V172: the site analysis tools -- the National Wetlands Inventory's map service, asked only on Get
             # wetlands, and Chalfont's site capacity calculation in Zoneomics' copy of the code, linked from Properties >
             # Standards, never fetched
-            "fwspublicservices.wim.usgs.gov", "www.zoneomics.com"}
+            "fwspublicservices.wim.usgs.gov", "www.zoneomics.com",
+            # AMENDED FOR V172b: Ladybug -- the app's own Pages site, which the one-file app asks for Ladybug's runtime
+            # only when a Ladybug analysis is run (V172b's suite proves nothing is asked before), and Ladybug Tools' and
+            # utci.org's pages, linked from the climate board's notes and Properties > Standards, never fetched
+            "bradleypham1906.github.io", "www.ladybug.tools", "www.utci.org"}
     external = sorted(h for h in hosts if not h.endswith("w3.org") and h not in v132)
     check(not external,
           "no external host referenced anywhere in the file (found: " + (", ".join(external) or "none") + ")")

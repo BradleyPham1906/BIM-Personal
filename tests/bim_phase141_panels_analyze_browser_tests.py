@@ -237,8 +237,10 @@ async def run():
             # AMENDED FOR V168: and the land's: land use and figure-ground in Location, zoning around in Legal, green and trees in Ecology
             # AMENDED FOR V171: and Traffic and people, in Access and circulation after vehicle access
             # AMENDED FOR V172: the site analysis tools and their History, a group of their own before Model
+            # AMENDED FOR V172b: Ladybug's five in Climate, after the sun's: its weather, then UTCI, the psychrometric chart,
+            # the wind rose and the design days
             ck(pc and [c['id'] for c in pc] == ['dgframe', 'dglanduse', 'dgfigure', 'dgzoning', 'dgcontours', 'dgslope', 'dgaspect', 'survey', 'terrain', 'grading', 'dgflow', 'dgponds', 'dgflood', 'rain',
-                                               'dgsun', 'dgshadow', 'dgwind', 'sun', 'sunhours', 'solar', 'dggreen', 'dgnoise',
+                                               'dgsun', 'dgshadow', 'dgwind', 'sun', 'sunhours', 'solar', 'lbweather', 'lbutci', 'lbpsych', 'lbwind', 'lbdd', 'dggreen', 'dgnoise',
                                                'dgstreets', 'dgcycling', 'dgtransit', 'dgwalk', 'dgvehicles', 'dgtraffic', 'dgviews', 'dgneeds',
                                                'tlbuffer', 'tldistance', 'tlslopecls', 'tlexclude', 'tlsuit', 'tllocate', 'tlsynth', 'tlcapacity', 'tlhistory',
                                                'lens', 'areas', 'lod', 'stats', 'structure'],

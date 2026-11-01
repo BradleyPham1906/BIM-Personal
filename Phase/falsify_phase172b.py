@@ -58,7 +58,7 @@ VARIANTS = {
     'figid_attr_lost': [("+'\" data-fig=\"'+no+'\"'+(id?' data-figid=\"'+id+'\"':'')+'><figcaption>", "+'\" data-fig=\"'+no+'\"'+'><figcaption>")],   # Edit: the figures arranged as laid out, 13
     'edit_btn_lost': [("data-brd=\"edit\" aria-pressed=\"false\"", "data-brd=\"edyt\" aria-pressed=\"false\"")],   # the board's bar: Edit
     'edit_keeps_at_once': [("    A3D_CLB.edit=!!on;\n    bimBrdDlgClose();", "    A3D_CLB.edit=!!on;\n    if(on){var B0=bimBrdRec();if(B0&&!B0.figs)B0.figs=bimBrdWorking(B0);}\n    bimBrdDlgClose();")],   # Edit: ... nothing kept, no undo step yet
-    'zoom_off': [("z=w>0?Math.min(1,w/BIM_BRD_W0):1;", "z=1;")],   # laid out 1408 px across and zoomed to the main view
+    'zoom_off': [("z=w>0?Math.min(1,w/BIM_BRD_W0):1;", "z=1;")],   # laid out 1408 px across and zoomed to the main view: ... px across of its ...
     'width_off': [("var BIM_BRD_W0=1408,", "var BIM_BRD_W0=1400,")],   # at a wide view, unzoomed, each figure where the board's grid put it
     'grid_ignored': [("if(A3D_SNAP.grid){if(!sx&&lx)nx=Math.round(nx);if(!sy&&ly)ny=Math.round(ny);}", "")],   # Grid: a drag puts the figure on whole steps
     'snap_resize_off': [("if(lx){best=near([r],xs);if(best){r+=best[0];ex=true;R.guides.push(['x',best[1],true]);}}", "")],   # Snap: a corner dragged within 12 px ... caught
@@ -67,7 +67,7 @@ VARIANTS = {
     'key_step': [("st=A3D_SNAP.grid?1:0.1;", "st=A3D_SNAP.grid?1:0.2;")],   # the keys: down a tenth of a step
     'shift_moves': [("bimBrdNudge(k,dx*st,dy*st,ev.shiftKey);", "bimBrdNudge(k,dx*st,dy*st,false);")],   # the keys: ... Shift, a tenth narrower
     'menu_no_fit': [("it=[[F.f==='text'?'The heading…':'Options…','opts'],['Fit the height to its content','fit'],['Duplicate','dup']];", "it=[[F.f==='text'?'The heading…':'Options…','opts'],['Duplicate','dup']];")],   # a figure's menu
-    'show_class_lost': [("var cls='a3d-clb-fig'+(o.show?' o-'+o.show:'')", "var cls='a3d-clb-fig'")],   # Options: ... its numbers as a table
+    'show_class_lost': [("var cls='a3d-clb-fig'+(o.show==='table'?' o-table':o.show==='both'?' o-both':'')", "var cls='a3d-clb-fig'")],   # Options: ... its numbers as a table
     'title_ignored': [("return bimClbCard(P.cls.concat(['@'+F.f]),no,o.t||P.title,P.dek,P.body,P.src);", "return bimClbCard(P.cls.concat(['@'+F.f]),no,P.title,P.dek,P.body,P.src);")],   # Options: its title
     'utci_cond_ignored': [("cond=(opt&&BIM_LB_COND[opt.cond])?opt.cond:'sun_wind'", "cond='sun_wind'")],   # Add: UTCI in the shade and still air
     'add_at_top': [("F={k:bimBrdNewK(L),f:f,x:0,y:bimBrdBottom(L),", "F={k:bimBrdNewK(L),f:f,x:0,y:0,")],   # Add: ... below the others
@@ -92,8 +92,8 @@ VARIANTS = {
     'delete_label': [("[c?'Delete the board':'Remove from the set','remove',true]", "['Remove from the set','remove',true]")],   # its menu: ... Delete the board
     'rename_dead': [("    B.name=name;\n    saveSoon();bimBrdRedraw();bimPresPanelRefresh();", "    saveSoon();bimBrdRedraw();bimPresPanelRefresh();")],   # its name
     # ---- 15. Present, Print set, the thumbnail ----
-    'present_edit_chrome': [("function bimBrdEditing(){return A3D_CLB.edit&&!A3D_CLB.other;}", "function bimBrdEditing(){return A3D_CLB.edit;}")],   # Present: the board as arranged, nothing of Edit
-    'band_break_lost': [(".a3d-clb-band{position:relative;break-inside:avoid;page-break-inside:avoid}", ".a3d-clb-band{position:relative}")],   # their rules go with them: a band is not split
+    'present_edit_chrome': [("function bimBrdEditing(){return A3D_CLB.edit&&!A3D_CLB.other;}", "function bimBrdEditing(){return A3D_CLB.edit;}")],   # while Edit is on, the board's page for print and for its thumbnail: ... nothing of Edit
+    'band_break_lost': [(".a3d-clb-band{position:relative;break-inside:avoid;page-break-inside:avoid}", ".a3d-clb-band{position:relative}")],   # their rules go with them: on the printed page no band is split
     'thumb_zoom_lost': [(".a3d-clb.prt .a3d-clb-arr{zoom:.86364}", "")],   # the thumbnail: the arranged board zoomed to its page
     # ---- 16. a phone ----
     'phone_flow_lost': [(".a3d-clb.w-s .a3d-clb-fig{position:relative;left:auto!important;top:auto!important;width:auto!important;height:auto!important}", "")],   # on a phone ... one column

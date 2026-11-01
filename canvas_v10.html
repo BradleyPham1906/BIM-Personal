@@ -54565,7 +54565,7 @@ try{
     var P=BIM_BRD_P0,G=BIM_BRD_G,o=F.o||{},src=F.f==='text'?null:bimFigSrc(ctx,F.f,o),no=0,E=bimFigEntry(F.f),lab;
     if(src&&!src.kpis){ctx.no++;no=ctx.no;}
     lab=no?'Fig. '+no:(F.f==='text'?'Heading':(E?E.name:'Figure'));
-    var cls='a3d-clb-fig'+(o.show?' o-'+o.show:'')+(over?' over':'')+(F.f==='text'?' t':'');
+    var cls='a3d-clb-fig'+(o.show==='table'?' o-table':o.show==='both'?' o-both':'')+(over?' over':'')+(F.f==='text'?' t':'');
     var s='<div class="'+cls+'" data-brdk="'+F.k+'" data-brdf="'+bimClbE(F.f)+'" style="left:'+bimBrdPx(F.x*P)+'px;top:'+bimBrdPx((F.y-top)*P)+'px;width:'+bimBrdPx(F.w*P-G)+'px;height:'+bimBrdPx(F.h*P-G)+'px"'+
       (ctx.edit?' tabindex="0" role="group" aria-label="'+bimClbE(lab)+': arrow keys move it, Shift and the arrow keys size it, Delete removes it"':'')+'>'+bimFigCardHtml(F,src,no);
     if(ctx.edit)s+='<div class="a3d-clb-fctl"><button type="button" class="a3d-clb-grip" data-brdgrip="1" aria-label="Move '+bimClbE(lab)+'" title="Drag to move">'+BIM_BRD_GRIP+'</button>'+
@@ -54742,7 +54742,7 @@ try{
   function bimBrdNatH(F,w){
     var ctx={edit:false,narrow:false,caps:{},no:0},m=bimBrdMeasurer(Math.max(40,w*BIM_BRD_P0-BIM_BRD_G)),h=1,o=F.o||{},c;
     try{
-      m.innerHTML='<div class="a3d-clb-fig a3d-clb-nat'+(o.show?' o-'+o.show:'')+(F.f==='text'?' t':'')+'">'+bimFigCardHtml(F,F.f==='text'?null:bimFigSrc(ctx,F.f,o),1)+'</div>';
+      m.innerHTML='<div class="a3d-clb-fig a3d-clb-nat'+(o.show==='table'?' o-table':o.show==='both'?' o-both':'')+(F.f==='text'?' t':'')+'">'+bimFigCardHtml(F,F.f==='text'?null:bimFigSrc(ctx,F.f,o),1)+'</div>';
       c=m.firstChild;
       h=(c.getBoundingClientRect().height+BIM_BRD_G)/BIM_BRD_P0;
     }finally{if(m.parentNode)m.parentNode.removeChild(m);}

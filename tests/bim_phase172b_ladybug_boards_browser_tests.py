@@ -34,7 +34,7 @@ numbers must be CPython's.
 
 The harness never waits without a bound (V123).
 """
-import asyncio, base64, datetime, hashlib, io, json, math, pathlib, re, subprocess, sys, tempfile, traceback, zipfile
+import asyncio, base64, datetime, hashlib, io, json, math, pathlib, re, shutil, subprocess, sys, tempfile, traceback, zipfile
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 from bim_phase133_site_context_browser_tests import Checks, Stalled, within   # noqa: E402
@@ -58,12 +58,19 @@ CONDS = ['sun_wind', 'shade_wind', 'sun_still', 'shade_still']
 FIGS_CLIMATE = ['clim.temp', 'clim.wind', 'clim.heat', 'clim.sun', 'clim.dd', 'clim.solar', 'clim.psy', 'risk.quake', 'risk.air']
 FIGS_LB = ['lb.utci', 'lb.psych', 'lb.wind', 'lb.dd']
 FIGS_ZONING = ['zn.table', 'zn.secA', 'zn.secB', 'zn.rules', 'zn.plan', 'zn.plates', 'zn.yield']
+TMP = []   # the run's own folders (the wheels unpacked, the kept build), taken away at its end
+
+
+def tmpdir(prefix):
+    d = pathlib.Path(tempfile.mkdtemp(prefix=prefix))
+    TMP.append(d)
+    return d
 
 
 # ---------------- native: the same adapter on the same wheels ----------------
 def native():
     """the committed wheels unpacked, the adapter imported, the fixture's ZIP and EPW run; the answers"""
-    d = pathlib.Path(tempfile.mkdtemp(prefix='bim172b_'))
+    d = tmpdir('bim172b_')
     for w in sorted((RUNTIME / 'wheels').glob('*.whl')):
         with zipfile.ZipFile(str(w)) as z:
             z.extractall(str(d / 'site'))
@@ -206,7 +213,6 @@ async def run():
             return got
 
         async def snaps(point, grid, ortho, pg=None):
-            await safe("(a)=>{A3D_SNAP_X=1;}" if False else "(a)=>true", [point, grid, ortho], pg=pg)
             for k, v in (('point', point), ('grid', grid), ('ortho', ortho)):
                 on = await safe("(k)=>{var b=document.querySelector('[data-brdsnap=\"'+k+'\"]');return b?b.getAttribute('aria-pressed')==='true':null;}", k, pg=pg)
                 if on is not None and on != v:
@@ -233,7 +239,8 @@ async def run():
             W0 = {w['f']: w['h'] for w in S0.get('wheels', [])}
             MW = {pathlib.Path(f['path']).name: f['sha256'] for f in man['files'] if f['path'].startswith('wheels/')}
             ck(W0 == MW and len(W0) == 4, "the app pins the same four wheels by SHA-256 (%s)" % sorted(W0))
-            ck(S0.get('base') == PAGES and S0.get('dir') == 'pyodide/0.29.5/' and S0.get('st') in (None, 'idle', ''), "from file:// it asks the Pages site; Pyodide 0.29.5; nothing loaded yet (%s)" % {k: S0.get(k) for k in ('base', 'dir', 'st')})
+            ck(S0.get('base') == PAGES and S0.get('dir') == 'pyodide/0.29.5/' and S0.get('st') in (None, 'idle', '') and not ST['rt'],
+               "from file:// it asks the Pages site; Pyodide 0.29.5; nothing loaded, nothing asked, until a run (%s, %d asked)" % ({k: S0.get(k) for k in ('base', 'dir', 'st')}, len(ST['rt'])))
             REC = {r['id']: r for r in await safe("()=>window.__a3dStdRecords()") or []}
             vals = {}
             for t, n in (('utci', 'bands'), ('utci', 'va_lo'), ('utci', 'va_hi'), ('utci', 'ta_lo'), ('utci', 'ta_hi'), ('utci', 'dtr_lo'), ('utci', 'dtr_hi'), ('utci', 'pa_hi'),
@@ -473,7 +480,7 @@ async def run():
             for h in ('https://archive-api.open-meteo.com/**', 'https://air-quality-api.open-meteo.com/**', 'https://earthquake.usgs.gov/**'):
                 await c2.route(h, clim_route)
             p2 = await c2.new_page()
-            kept_html = pathlib.Path(tempfile.mkdtemp(prefix='bim172b_kept_')) / 'kept.html'   # a file:// page is read by its name's extension
+            kept_html = tmpdir('bim172b_kept_') / 'kept.html'   # a file:// page is read by its name's extension
             kept_html.write_bytes(KEPT.read_bytes())
             await within(p2.goto('file://' + str(kept_html)), 'goto kept')
             await p2.wait_for_timeout(2300)
@@ -518,8 +525,12 @@ async def run():
             ck(s.get('edit') and s.get('arranged') and s.get('editBar') and len(s.get('figs', [])) == 13 and s.get('rec') == {'id': 'board-climate', 'kind': 'climate'} and
                await safe("()=>window.__a3dUndoDepth()") == u0, "Edit: the figures arranged as laid out, 13; nothing kept, no undo step yet")
             z = s.get('z') or 1
-            ck(0.4 < z <= 1 and s.get('zoomed') == ('%.5f' % z).rstrip('0').rstrip('.') or abs(float(s.get('zoomed') or 0) - z) < 1e-4,
-               "laid out 1408 px across and zoomed to the main view (%.3f)" % z)
+            # the main view is narrower than the board's 1408 px here: the arrangement zoomed to it, exactly, and nothing wider
+            zc = await safe("""()=>{var A=document.querySelector('.a3d-clb:not(.a3d-ssboard) .a3d-clb-arr'),p=A&&A.parentNode,cs;if(!p)return null;cs=getComputedStyle(p);
+              return {w:p.clientWidth-(parseFloat(cs.paddingLeft)||0)-(parseFloat(cs.paddingRight)||0),aw:A.getBoundingClientRect().width};}""") or {}
+            zw = zc.get('w') or 0
+            ck(zw and 0.4 < z < 1 and abs(z - min(1, zw / 1408.0)) < 1e-4 and abs(float(s.get('zoomed') or 0) - z) < 1e-4 and abs((zc.get('aw') or 0) - zw) <= 1,
+               "laid out 1408 px across and zoomed to the main view: %.3f, %.0f px across of its %.0f" % (z, zc.get('aw') or 0, zw))
             # the arrangement where the board's own grid puts them, at a wide view
             await page.set_viewport_size({'width': 2400, 'height': 1300})
             await page.wait_for_timeout(700)
@@ -709,6 +720,19 @@ async def run():
             print("\n-- 15. Present, Print set, the thumbnail")
             await safe("(i)=>window.__a3dBrdOpen(i)", cid)
             await safe("()=>window.__a3dBrdEdit(true)")
+            await page.wait_for_timeout(300)
+            # while Edit is on: the board as its page for print and its thumbnail draw it -- arranged, nothing of Edit
+            def chrome(h):
+                """Edit's controls among a page's elements, its style rules (which name them) set aside"""
+                h = re.sub(r'<style\b.*?</style>', '', h, flags=re.S)
+                cls = set(c for v in re.findall(r'class="([^"]*)"', h) for c in v.split())
+                got = sorted(cls & {'a3d-clb-fctl', 'a3d-clb-rsz', 'a3d-clb-ebar', 'a3d-clb-arrgrid', 'a3d-clb-grip', 'a3d-clb-fmenu'})
+                got += ['a3d-clb-arr edit'] if 'class="a3d-clb-arr edit"' in h else []
+                return got + [a for a in ('data-brd="addnew"', 'data-brd="edit"', 'data-brdgrip', 'data-brdrsz', 'data-brdmenu') if a in h]
+            eh = await safe("(i)=>window.__a3dBoardPrintHtml(i)", cid) or ''
+            esh = (await safe("()=>window.__a3dPrintSetHtml()") or {}).get('html', '')
+            ck((await st()).get('edit') and 'class="a3d-clb-arr"' in eh and 'class="a3d-clb-arr"' in esh and not chrome(eh) and not chrome(esh),
+               "while Edit is on, the board's page for print and for its thumbnail: as arranged, nothing of Edit (%s, %s)" % (chrome(eh), chrome(esh)))
             await safe("(i)=>window.__a3dSlideshowStart(i)", cid)
             await page.wait_for_timeout(700)
             pv = await safe("""()=>{var b=document.querySelector('.a3d-ssboard'),a=b&&b.querySelector('.a3d-clb-arr');return b?{arr:!!a,figs:b.querySelectorAll('.a3d-clb-fig').length,
@@ -721,8 +745,15 @@ async def run():
             ph = (await safe("()=>window.__a3dPrintSetHtml()") or {}).get('html', '')
             ck(ph.count('class="a3d-clb-arr"') >= 2 and 'class="a3d-clb-fctl"' not in ph and 'class="a3d-clb-rsz"' not in ph and 'class="a3d-clb-band' in ph and 'page:a3dbrd' in ph,
                "Print set: the arranged boards on their A3 pages, nothing of Edit (%d arranged)" % ph.count('class="a3d-clb-arr"'))
-            css = await safe("()=>window.__a3dClbCss()") or ''
-            ck('.a3d-clb-band' in css and 'break-inside: avoid' in css and '.a3d-clb.prt .a3d-clb-arr' in css, "their rules go with them: a band is not split across pages")
+            # the print set's own page, as printed: each band of figures kept whole across a page break
+            pp = await ctx.new_page()
+            try:
+                await within(pp.set_content(re.sub(r'<script>.*?</script>', '', ph, flags=re.S)), 'print page')
+                await pp.emulate_media(media='print')
+                bk = await within(pp.evaluate("""()=>[].map.call(document.querySelectorAll('.a3dbrd .a3d-clb-band'),function(b){var s=getComputedStyle(b);return s.breakInside+'|'+s.position;})"""), 'print bands')
+            finally:
+                await pp.close()
+            ck(len(bk) >= 2 and all(b == 'avoid|relative' for b in bk), "their rules go with them: on the printed page no band is split across a page break (%d bands: %s)" % (len(bk), sorted(set(bk))))
             await page.wait_for_timeout(1500)
             th = await safe("""(i)=>{var f=document.querySelector('iframe[data-prpbframe="'+i+'"]');if(!f||!f.contentDocument)return null;var a=f.contentDocument.querySelector('.a3d-clb-arr');
               return a?{zoom:f.contentDocument.defaultView.getComputedStyle(a).zoom,w:Math.round(a.getBoundingClientRect().width)}:'none';}""", cid)
@@ -793,4 +824,8 @@ async def run():
 
 
 if __name__ == '__main__':
-    sys.exit(asyncio.run(run()))
+    try:
+        sys.exit(asyncio.run(run()))
+    finally:
+        for d in TMP:
+            shutil.rmtree(str(d), ignore_errors=True)
