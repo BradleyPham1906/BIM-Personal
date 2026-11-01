@@ -3,8 +3,8 @@
 Started 2026-11-01 ("start v172c"). Follows `reference/research-protocol.md` and
 `reference/reuse-first-integration.md`. The frame is the owner's decisions of 2026-10-26
 (`reference/research-ladybug-tools.md`, 6): Ladybug's own Python, unchanged, in Pyodide; AGPL accepted;
-no Honeybee; numpy only "if its sky needs it". **Status: first pass; the owner's decisions asked (part 11)
-before the experiments and the independent check.**
+no Honeybee; numpy only "if its sky needs it". **Status: the owner answered on 2026-11-01 (part 11); the sky is
+settled and measured (part 6); the rays, numpy and the independent check are still to do.**
 
 ## 1. Abstract
 
@@ -14,10 +14,12 @@ cannot run in Pyodide as it is, because **both** of its expensive steps call Rad
 `subprocess`: the sky matrix (`gendaymtx`) and the ray intersection (`oconv`, `rcontrib`). Its other parts are
 plain Python over numpy and can run: the Tregenza and Reinhart patch vectors (in ladybug-core), the radiation
 sum (`intersection_matrix . (sky + ground)`), the direct-sun count, and the studies' result objects.
-So two pieces must come from somewhere else: the sky per patch, and the rays. The recommendation, to be confirmed
-by the experiments in part 6: the Perez all-weather sky computed per patch in Python, a port of `gendaymtx`'s method
-(Radiance's licence is BSD-style), fed into ladybug-radiance's own `SkyMatrix` and `RadiationStudy`; the rays cast
-by the app's own JS (V143's Moller-Trumbore with boxes, in a worker), handed to the study as its intersection matrix.
+So two pieces must come from somewhere else: the sky per patch, and the rays. **The sky, settled (the owner's
+choice, measured):** Radiance's own `gendaymtx`, its C compiled unchanged to WebAssembly (115 KB,
+`runtime/radiance/gendaymtx.wasm`), run by the Ladybug worker where Ladybug would start the program: Ladybug's
+`SkyMatrix` then gives the same numbers as with native Radiance, to the last digit (part 6). **The rays, proposed:**
+the app's own JS (V143's Moller-Trumbore with boxes, in a worker), handed to Ladybug's study as its intersection
+matrix; to be measured.
 
 ## 2. The question and the hypotheses
 
@@ -29,7 +31,8 @@ the year of weather V172b already holds, in a browser, at a speed a designer acc
 | H1 | ladybug-radiance runs in Pyodide unchanged | **Failed** (P): `skymatrix.py` 541-566 runs `gendaymtx`; `intersection.py` 77-180 runs `oconv`, `obj2mesh`, `rcontrib`; both `assert` a Radiance install first. Pyodide has no `subprocess` programs. |
 | H2 | ladybug-core has a sky model that gives per-patch radiation | **Failed** (P): `ladybug/skymodel.py` (0.44.63) has ASHRAE clear sky (2009, revised), Zhang-Huang, DIRINT, DISC, illuminance from irradiance, sky temperature; none distributes radiation over sky patches. `ladybug/viewsphere.py` has the patches (Tregenza 145, Reinhart 577) and their solid angles, not the radiance. |
 | H3 | ladybug-radiance's sums run once given a sky and an intersection matrix | Held on reading (P): `RadiationStudy.compute()` (radiation.py 249-277) uses only `sky_matrix.data` and `_intersection_matrix`; `SkyMatrix.data` reads `_direct_values` and `_diffuse_values`. Not yet run. |
-| H4 | A Python port of `gendaymtx`'s Perez sky agrees with `gendaymtx` within 1% per patch, annual total | Open: needs `gendaymtx` built here as the reference (part 11, question 2). |
+| H4 | A Python port of `gendaymtx`'s Perez sky agrees with `gendaymtx` within 1% per patch, annual total | Set aside: the owner chose `gendaymtx` itself (part 11). Replaced by H4b. |
+| H4b | `gendaymtx` built to WebAssembly gives the native program's output byte for byte, and Ladybug's `SkyMatrix` in Pyodide with it gives the native values | **Held** (P, measured): identical bytes in all four calls; a difference of 0 over 290 + 1154 values (part 6). |
 | H5 | The app's JS rays give the same intersection matrix as Radiance's `rcontrib` for a test scene, every patch | Open: same reference needed; a geometric check (a box, a canyon) can be computed by hand meanwhile. |
 | H6 | A typical model (5,000 faces, 145 + 145 patches) runs in under 30 s in a worker | Open: to be measured. |
 
@@ -51,7 +54,9 @@ Search log, 2026-11-01:
 | ladybug-core wheel (runtime) | `skymodel.py` functions; `viewsphere.py` patch tables | part 4.3 |
 | raw.githubusercontent.com, LBNL-ETA/Radiance | `src/gen/gendaymtx.c` (1,329 lines), `License.txt` (Radiance Software License 2.0, BSD-3 style) | part 4.4 |
 | git clone LBNL-ETA/Radiance | the default branch `cvsimport` holds only a README; the code is on `master` | the branch noted |
-| local build of `gendaymtx` | refused by this session's sandbox (running code from outside) | asked of the owner, part 11 |
+| local build of `gendaymtx` | refused by this session's sandbox at first; allowed by the owner (2026-11-01, part 11) | built natively (gcc) as the reference, then to WebAssembly (clang 18, wasm32-wasi) |
+| github.com/WebAssembly/wasi-sdk, release wasi-sdk-22 | `wasi-sysroot-22.0.tar.gz` (SHA-256 `23881870...1faf1bb8`), `libclang_rt.builtins-wasm32-wasi-22.0.tar.gz` (`9c2f54ff...b46fdf6`); the releases API refused this session, the download URLs answered | the C library and builtins for wasm32 |
+| climate.onebuilding.org | Philadelphia Intl. AP TMYx 2009-2023 (EPW and its Wea) | the test weather, not committed |
 | `pyodide-lock.json` 0.29.5 | numpy 2.2.5, `numpy-2.2.5-cp313-cp313-pyemscripten_2025_0_wasm32.whl`, SHA-256 `800c98ed...7f05c` | not yet in `runtime/` |
 
 ## 4. Findings
@@ -91,19 +96,29 @@ agrees with Radiance; speed; size added to `runtime/`; licence.
 | | Sky per patch | Rays | Ladybug's method | Size | Risk |
 |---|---|---|---|---|---|
 | A | Perez port in Python (from `gendaymtx`) | app's JS, in a worker | Ladybug's studies and sums, the sky ported | numpy about 3 MB, or none (H3's plain-float path) | the port's agreement (H4) |
-| B | `gendaymtx` compiled to WebAssembly | app's JS | the same program as Ladybug desktop | a new toolchain (Emscripten), a binary in `runtime/` | a build the app has never had |
+| B | `gendaymtx` compiled to WebAssembly | app's JS | the same program as Ladybug desktop | 115 KB in `runtime/` (clang 18 and wasi-sdk's sysroot, no Emscripten) | a build the app has never had: made reproducible by `tools/gendaymtx/build_wasm.py` |
 | C | Isotropic sky + the sun from each hour's DNI | app's JS | the studies' sums only | none | differs from Ladybug on facades (anisotropy), by an amount to measure |
 | D | Perez port | numpy Moller-Trumbore in Pyodide | as A | numpy | slower than JS for large models, to measure |
 
-Recommendation for now: **A**, with C kept as the check it should beat. What would change it: H4 failing by more
-than a few percent (then B), or H6 failing (then rays on the GPU).
+First recommendation: A. **Chosen by the owner: B** (2026-11-01), and measured: it is exact, small and quick, so the
+port's risk (transcribing Perez's coefficients) is gone. For the rays, A's choice (the app's JS) stands until H5 and
+H6 are measured; GPU rays if H6 fails.
 
-## 6. The experiments (planned, not run)
+## 6. The experiments
 
-1. `reference/experiments/v172c_sky.py`: the Perez port and `gendaymtx` on the same EPW (two climates), per patch and
-   annual, needing question 2.
-2. `v172c_rays`: a box, an urban canyon and a courtyard: the JS matrix against the closed-form view factors.
-3. Speed: 500, 5,000 and 20,000 faces, in Chromium 1243.
+**Run (2026-11-01; scripts, raw numbers and environment in `reference/experiments/v172c-sky/`):**
+1. The reference: Ladybug's own `SkyMatrix` with `gendaymtx` built natively from Radiance `5b2a2154`. On a
+   horizontal plane its diffuse is within 0.6% of the EPW's DHI, its total 97.6% (Tregenza) and 98.5% (Reinhart)
+   of GHI, the gap being the sun binned to patch centres.
+2. `gendaymtx.wasm` against native, through a 60-line ES5 WASI shim (stdin in, stdout out, no files): identical
+   bytes in Ladybug's four calls; 48 to 215 ms each.
+3. The whole path in the committed Pyodide 0.29.5, `SkyMatrix._run_gendaymtx` replaced by a call to the module:
+   a difference of 0 from the reference over every value; 0.71 s (Tregenza) and 0.81 s (Reinhart).
+4. The build twice: the same SHA-256, `240b1997...fbab711`.
+
+**Still to run:**
+5. The rays: a box, an urban canyon and a courtyard, the JS matrix against closed-form view factors.
+6. Speed: 500, 5,000 and 20,000 faces, in Chromium 1243's worker (the sky's run in Chromium with them).
 
 ## 7. Edges
 
@@ -117,8 +132,9 @@ Part 4.5, by file and line.
 
 ## 9. Risks and threats to validity
 
-Only the code was read so far, nothing run. The Perez coefficients' transcription is the main risk of a port; the
-reference run is what removes it. Safari and phones: Pyodide's limits from V172b still apply.
+The sky was measured in Node's V8, not yet in Chromium's worker; one climate only (Philadelphia), though the
+program is the same C whatever the climate. A WebAssembly build the app maintains: pinned to one Radiance commit,
+rebuilt only on purpose, its hash in the manifest. Safari and phones: Pyodide's limits from V172b still apply.
 
 ## 10. Still open (U)
 
@@ -133,7 +149,14 @@ which faces are sensors (the model's faces as they are, or a grid on each, as La
 3. numpy added to `runtime/` (about 3 MB, pinned by SHA-256), or the plain-float path ladybug-radiance also has.
 4. What replaces V143's clear-sky SOLAR and V148's ground sun hours: kept beside the Ladybug studies, or replaced.
 
-Answers: (awaited)
+Answers (the owner, 2026-11-01): "The current [sun] path study in sun hours is already verified with a research
+paper ready, so I wouldn't replace it, but rather I would like to keep them alongside with new ladybug studies.
+Yes, you should compile and run gendaymtx here. And add it to the runtime."
+- 4: **kept beside** the Ladybug studies.
+- 2: **yes**; done (part 6).
+- 1: **B**, `gendaymtx` in `runtime/` (read as "it" = `gendaymtx`); done: `runtime/radiance/gendaymtx.wasm` with
+  Radiance's licence, ladybug-radiance 0.2.12's wheel beside the others, both pinned in `runtime/MANIFEST.json`.
+- 3: not answered; asked again.
 
 ## 12. References
 
@@ -144,3 +167,6 @@ Answers: (awaited)
 | Radiance `gendaymtx.c`, `License.txt` | https://github.com/LBNL-ETA/Radiance (master, 5b2a2154) | the header, function list, licence | 2026-11-01 | P |
 | Pyodide 0.29.5 `pyodide-lock.json` | `runtime/pyodide/0.29.5/` | numpy's entry | 2026-11-01 | P |
 | The app | `src/js/engine/analysis/simulation.js`, `src/js/engine/ladybug/` | as cited | 2026-11-01 | P |
+| Radiance at `5b2a2154`, built | https://github.com/LBNL-ETA/Radiance | `src/gen/gendaymtx.c`, `sun.c`, `loadEPW.c`, `src/common/` (five files), compiled and run | 2026-11-01 | P, measured |
+| wasi-sdk 22 | https://github.com/WebAssembly/wasi-sdk/releases/tag/wasi-sdk-22 | the sysroot and builtins, by SHA-256 | 2026-11-01 | P |
+| Philadelphia TMYx 2009-2023 | https://climate.onebuilding.org (PA, Philadelphia Intl. AP 724080) | the EPW and Wea, as test data | 2026-11-01 | P |
