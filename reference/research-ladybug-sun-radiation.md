@@ -33,8 +33,8 @@ the year of weather V172b already holds, in a browser, at a speed a designer acc
 | H3 | ladybug-radiance's sums run once given a sky and an intersection matrix | Held on reading (P): `RadiationStudy.compute()` (radiation.py 249-277) uses only `sky_matrix.data` and `_intersection_matrix`; `SkyMatrix.data` reads `_direct_values` and `_diffuse_values`. Not yet run. |
 | H4 | A Python port of `gendaymtx`'s Perez sky agrees with `gendaymtx` within 1% per patch, annual total | Set aside: the owner chose `gendaymtx` itself (part 11). Replaced by H4b. |
 | H4b | `gendaymtx` built to WebAssembly gives the native program's output byte for byte, and Ladybug's `SkyMatrix` in Pyodide with it gives the native values | **Held** (P, measured): identical bytes in all four calls; a difference of 0 over 290 + 1154 values (part 6). |
-| H5 | The app's JS rays give the same intersection matrix as Radiance's `rcontrib` for a test scene, every patch | Open: same reference needed; a geometric check (a box, a canyon) can be computed by hand meanwhile. |
-| H6 | A typical model (5,000 faces, 145 + 145 patches) runs in under 30 s in a worker | Open: to be measured. |
+| H5 | The app's JS rays give the same intersection matrix as Ladybug's (`rcontrib`: the cosine when seen, else 0) | **Held** (P, measured): every entry equals the exact answer in an open field, a canyon (floor and wall) and a courtyard, on both skies; the courtyard's view factor 0.4642 on Reinhart, as the closed form (`reference/experiments/v172c-rays/`). `rcontrib` itself not run: the comparison is with exact geometry. |
+| H6 | A typical model (5,000 faces, 145 + 145 patches) runs in under 30 s in a worker | **Failed with the app's rays, held with a BVH** (measured): the app's rays test every solid's box for every ray (2,000 faces: 48 s, 20,000 would take hours); the same test over a bounding-volume hierarchy gives the same answer for all 362,440 rays compared, and in Chromium's worker 5,000 faces in 1.0 s, 20,000 in 3.5 s, after a first start of about 5 s. |
 
 ## 3. Method
 
@@ -101,8 +101,9 @@ agrees with Radiance; speed; size added to `runtime/`; licence.
 | D | Perez port | numpy Moller-Trumbore in Pyodide | as A | numpy | slower than JS for large models, to measure |
 
 First recommendation: A. **Chosen by the owner: B** (2026-11-01), and measured: it is exact, small and quick, so the
-port's risk (transcribing Perez's coefficients) is gone. For the rays, A's choice (the app's JS) stands until H5 and
-H6 are measured; GPU rays if H6 fails.
+port's risk (transcribing Perez's coefficients) is gone. For the rays, the app's JS, with the change H6 found: the same
+Moller-Trumbore test over a bounding-volume hierarchy, in the worker (V143's SOLAR keeps its own rays, unchanged, as
+the owner keeps it beside). GPU rays are not needed at these sizes.
 
 ## 6. The experiments
 
@@ -116,9 +117,16 @@ H6 are measured; GPU rays if H6 fails.
    a difference of 0 from the reference over every value; 0.71 s (Tregenza) and 0.81 s (Reinhart).
 4. The build twice: the same SHA-256, `240b1997...fbab711`.
 
-**Still to run:**
-5. The rays: a box, an urban canyon and a courtyard, the JS matrix against closed-form view factors.
-6. Speed: 500, 5,000 and 20,000 faces, in Chromium 1243's worker (the sky's run in Chromium with them).
+5. The rays (`reference/experiments/v172c-rays/`): the app's own ray functions, read from `simulation.js` at run
+   time, against exact geometry: every entry right, on both skies; the courtyard's view factor 0.4642 on Reinhart
+   against 0.4642 closed form, 0.4821 on Tregenza (the coarser sky 3.9% high).
+6. Speed: the app's rays 83,000 rays/s at 100 faces falling to 5,800 at 2,000; a BVH 1.1 to 1.3 million rays/s at
+   every size, identical answers. In Chromium 153's worker (the owner allowed the browser run, 2026-11-01): the sky
+   1.4 s with a difference of 0 from native; 20,000 faces 0.4 s to build the tree, 3.0 s of rays, 0.1 s for
+   Ladybug's own numpy sum.
+
+**Still to run:** direct-sun hours (the same rays, the sun's hours in place of the patches); a real model; Safari
+and a phone.
 
 ## 7. Edges
 
@@ -138,8 +146,11 @@ rebuilt only on purpose, its hash in the manifest. Safari and phones: Pyodide's 
 
 ## 10. Still open (U)
 
-The Perez papers themselves; Radiance's `gendaymtx` manual page; prior art; the measured speed; the independent check;
-which faces are sensors (the model's faces as they are, or a grid on each, as Ladybug's `study_mesh` is).
+Radiance's `gendaymtx` manual page (the options Ladybug passes, read so far only in Ladybug's code); prior art; the
+independent check; which faces are sensors (the model's faces as they are, or a grid on each, as Ladybug's
+`study_mesh` is); the default sky density (Tregenza is 3.9% high in a courtyard, Reinhart four times the rays); the
+closed form for the courtyard cited to a view-factor catalogue (used here as a check only). The Perez papers are no
+longer needed by the code: `gendaymtx` is used as it is.
 
 ## 11. The owner's decisions (asked 2026-11-01)
 
