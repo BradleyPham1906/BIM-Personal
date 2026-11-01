@@ -1,4 +1,6 @@
-// V172c experiment: numpy from the committed runtime, by Pyodide's own loadPackage (it checks the lock's SHA-256).
+// V172c experiment: numpy from the committed runtime, by Pyodide's own loadPackage. Under Node the lock's SHA-256 is
+// not checked (the second reader, v172c-check.md 10b); in a browser loadPackage fetches with the lock's hash as its
+// Subresource Integrity.
 var R=process.argv[2];
 (async function(){
   var py=await require(R+'/pyodide/0.29.5/pyodide.js').loadPyodide({indexURL:R+'/pyodide/0.29.5/'});

@@ -49,14 +49,17 @@ as the model grows.
 | 1,000 | 5,000 | 12,000 | 36 | 697,000 | 588 | 1,185,374 | not compared (the app's rays would take minutes) |
 | 4,000 | 20,000 | 48,000 | 148 | 2,788,000 | 2,526 | 1,103,721 | not compared |
 
-**Chromium's worker** (`chromium_run.js`): Pyodide 2,962 ms to start; the wheels 123 ms; numpy 660 ms;
-`gendaymtx.wasm` compiled in 6 ms; Ladybug's sky 1,356 ms, **its largest difference from the native reference 0**.
+**Chromium's worker** (`chromium_run.js`), run again with the release build of `gendaymtx.wasm` (rad6R0P1a; see
+`../v172c-sky/README.md` for why): Pyodide 2,604 ms to start; numpy 591 ms; `gendaymtx.wasm` compiled in 6 ms;
+Ladybug's sky 1,374 ms, **its largest difference from the native reference (the same release) 0**.
 
-| Faces | BVH ms | Rays ms | Ladybug's sum ms | Total kWh (sum over faces of kWh/m2) |
-|---|---|---|---|---|
-| 500 | 9 | 57 | 394 (numpy's first call) | 320,557.7 |
-| 5,000 | 142 | 825 | 68 | 3,057,240.3 |
-| 20,000 | 396 | 2,963 | 99 | 12,105,029.0 |
+| Faces | BVH ms | Rays ms | Ladybug's sum ms | Total kWh (sum over faces of kWh/m2) | With the first, misaligned build |
+|---|---|---|---|---|---|
+| 500 | 12 | 59 | 478 (numpy's first call) | 319,338.8 | 320,557.7 |
+| 5,000 | 165 | 692 | 57 | 3,043,671.5 | 3,057,240.3 |
+| 20,000 | 186 | 2,921 | 64 | 12,046,376.9 | 12,105,029.0 |
+
+(The misaligned sky changed the totals by about 0.4%; on single facades by more, as the sun moved one patch.)
 
 So a 20,000-face model takes about 3.5 s after a first start of about 5 s, on the Tregenza sky; the Reinhart sky
 casts four times the rays.

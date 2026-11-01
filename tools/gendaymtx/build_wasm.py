@@ -6,8 +6,11 @@
 Ladybug's SkyMatrix (ladybug-radiance) runs Radiance's gendaymtx as a program; Pyodide cannot start one, so the app
 runs the same C, compiled to WebAssembly, from the Ladybug worker (the owner, 2026-11-01:
 reference/research-ladybug-sun-radiation.md). This builds it from:
-- RADIANCE_DIR: a checkout of https://github.com/LBNL-ETA/Radiance at the commit RADIANCE_COMMIT (branch master; the
-  default branch, cvsimport, holds only a README). Its eight files below are compiled unchanged.
+- RADIANCE_DIR: a checkout of https://github.com/LBNL-ETA/Radiance at RADIANCE_COMMIT, the release rad6R0P1a
+  (the default branch, cvsimport, holds only a README). Its eight files below are compiled unchanged. Not a later
+  commit: from 2025-12-19 (2559a9be, in rad6R0P2) gendaymtx -A writes a NAVERAGED= header line, and
+  ladybug-radiance 0.2.12 skips a fixed 9 lines (skymatrix.py, data_lines[9:-1]), which then keeps the ground and
+  drops the zenith, every sky patch one off (reference/experiments/v172c-sky/alignment.py; v172c-check.md, 1c).
 - WASI_DIR: wasi-sdk 22's wasi-sysroot-22.0.tar.gz and libclang_rt.builtins-wasm32-wasi-22.0.tar.gz, unpacked there
   (github.com/WebAssembly/wasi-sdk/releases/tag/wasi-sdk-22), each checked against the SHA-256 below.
 - clang 18 with the wasm32 target, and wasm-ld 18.
@@ -15,7 +18,7 @@ It prints the module's size and SHA-256, which runtime/MANIFEST.json pins. The m
 stdin and writes the matrix on stdout; it opens no files. Nothing here is run by the app or the suites."""
 import hashlib, pathlib, subprocess, sys
 
-RADIANCE_COMMIT = '5b2a2154cc7d97a997d3d9a3929567b75d78174a'
+RADIANCE_COMMIT = '7abde14fc49872c39defa610d7b67bf45530e780'  # the release rad6R0P1a (2025-08-23)
 SOURCES = ['src/gen/gendaymtx.c', 'src/gen/sun.c', 'src/gen/loadEPW.c', 'src/common/fixargv0.c',
            'src/common/header.c', 'src/common/portio.c', 'src/common/tcos.c', 'src/common/fputword.c']
 WASI_TARS = {'wasi-sysroot-22.0.tar.gz': '23881870d5a9c94df0529bc3e9b13682b7bbb07e5167555132fdc14e1faf1bb8',

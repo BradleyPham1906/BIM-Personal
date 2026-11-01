@@ -63,14 +63,14 @@
    "path": "radiance/LICENSE",
    "bytes": 2456,
    "sha256": "1ce85220aa44606999b89105acefb879be6dcf285887251a51d56274295e93c6",
-   "from": "https://github.com/LBNL-ETA/Radiance/blob/5b2a2154cc7d97a997d3d9a3929567b75d78174a/License.txt",
+   "from": "https://github.com/LBNL-ETA/Radiance/blob/7abde14fc49872c39defa610d7b67bf45530e780 (the release rad6R0P1a)/License.txt",
    "licence": "Radiance Software License 2.0, BSD-3 style (radiance/LICENSE)"
   },
   {
    "path": "radiance/gendaymtx.wasm",
-   "bytes": 114785,
-   "sha256": "240b199758b1ebc8c4e512d01f478c3b4f01105c66747a2ee12960afbbfab711",
-   "from": "tools/gendaymtx/build_wasm.py: Radiance 5b2a2154 (src/gen/gendaymtx.c and seven files), clang 18, wasi-sdk 22 sysroot (V172c)",
+   "bytes": 114742,
+   "sha256": "45726aea4f019ca39dd2c6ba1cdfe42554f523010b7ac6ed6b25504d70ef05e5",
+   "from": "tools/gendaymtx/build_wasm.py: Radiance rad6R0P1a (7abde14f) (src/gen/gendaymtx.c and seven files), clang 18, wasi-sdk 22 sysroot (V172c)",
    "licence": "Radiance Software License 2.0, BSD-3 style (radiance/LICENSE)"
   },
   {
