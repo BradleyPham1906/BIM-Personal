@@ -126,6 +126,9 @@ part of `canvas_v10.html`. Their licences travel with them:
   and their repositories, and this app's is this repository.
 - **click 8.3.3**, https://github.com/pallets/click, from PyPI (ladybug-core requires it): BSD-3-Clause, its
   wheel's `dist-info/licenses/LICENSE.txt`.
+- **numpy 2.2.5** (V172c), https://numpy.org, Pyodide 0.29.5's own build
+  (`runtime/pyodide/0.29.5/numpy-2.2.5-cp313-cp313-pyemscripten_2025_0_wasm32.whl`, its SHA-256 as Pyodide's lock
+  file pins it): BSD-3-Clause, its wheel's `dist-info/LICENSE.txt`, with its bundled parts' licences in `numpy/`.
 - **ladybug-radiance 0.2.12** (V172c), https://github.com/ladybug-tools/ladybug-radiance, from PyPI: AGPL-3.0, its
   wheel's `dist-info/licenses/LICENSE`, as the other Ladybug packages above.
 - **Radiance's gendaymtx** (V172c), https://github.com/LBNL-ETA/Radiance at `5b2a2154`, written by Ian Ashdown and

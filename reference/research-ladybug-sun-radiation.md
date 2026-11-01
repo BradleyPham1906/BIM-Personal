@@ -156,7 +156,11 @@ Yes, you should compile and run gendaymtx here. And add it to the runtime."
 - 2: **yes**; done (part 6).
 - 1: **B**, `gendaymtx` in `runtime/` (read as "it" = `gendaymtx`); done: `runtime/radiance/gendaymtx.wasm` with
   Radiance's licence, ladybug-radiance 0.2.12's wheel beside the others, both pinned in `runtime/MANIFEST.json`.
-- 3: not answered; asked again.
+- 3 (the owner, 2026-11-01, "add pyodide", read as Pyodide's numpy): **numpy added**: Pyodide 0.29.5's own build,
+  `numpy-2.2.5-cp313-cp313-pyemscripten_2025_0_wasm32.whl`, 2,823,762 bytes, SHA-256 `800c98ed...4b42b84eae1f8cb19d35b3634e7f05c`
+  (the value `pyodide-lock.json` pins), beside Pyodide's core so that `loadPackage('numpy')` finds and checks it;
+  loaded from the committed runtime in 777 ms (`reference/experiments/v172c-sky/np_load.js`). ladybug-radiance's sums
+  then take their numpy path (`np.dot`).
 
 ## 12. References
 
