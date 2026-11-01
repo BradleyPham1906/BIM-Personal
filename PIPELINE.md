@@ -17,12 +17,12 @@ requires command mapping, full app regressions and owner review.
 
 **Read this first in a new session.** One page. The detail lives in the docs listed at the bottom.
 
-    canvas_v10.html   3740818 bytes
-    sha256            4d8ba4c09774e5eeb455711cb940d5096608b9a0049f5e7d867f5f9bf861c0d9
+    canvas_v10.html   3746363 bytes
+    sha256            cf6291ac9dd7ea684344e8fce5a48b0a3f0530c4f7444fe34fc6eb562ed95592
     markers           __acad3dV60 ... __acad3dV172, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
                       __acad3dV121b, __acad3dV124b, __acad3dV166b, __acad3dV166c, __acad3dV166d, __acad3dV171b,
-                      __acad3dV171c, __acad3dV171d, __acad3dV172d
-    tests             136 suites, 6939 checks, 0 failures (the 135 older suites' 6899 and V172d's 40; with cjval
+                      __acad3dV171c, __acad3dV171d, __acad3dV172d, __acad3dV172e
+    tests             137 suites, 6966 checks, 0 failures (the 136 older suites' 6939 and V172e's 27; with cjval
                       built, V139 and V140 run their three more)
 
     The user guide (V142): every phase updates docs/src/, its log entry and BIM_APP_VERSION, then
@@ -232,7 +232,16 @@ when it starts (V111 to V138 went to other work; V139 to V193 are in NOW).
 | 118 | Blocks and data | ATTDEF ATTEDIT BEDIT WBLOCK DATAEXTRACTION TABLESTYLE TABLEDIT TABLEEXPORT | First phase that's about the disciplines, not drafting. BLOCK and INSERT landed in V124, as the Assets library's blocks: saved records inserted as independent copies. A block reference that follows its definition (what BEDIT edits) is not built. |
 | 119 | Sheets and plotting, rest | MVIEW (draw a viewport on the paper) PAGESETUP (plot settings beyond Sheet Setup) PUBLISH (V122's Print set prints every sheet in one job; a chosen subset and page setups remain) EXPORTPDF (vector PDF of a sheet) VPLAYER (per-viewport layer visibility) viewport lock | LAYOUT, MSPACE and PSPACE landed in V116, with layout tabs and model space through a viewport. |
 
-**Recently finished:** V172d, **storage A1: large projects in IndexedDB** (2026-10-31 to 11-01; the version stays V172).
+**Recently finished:** V172e, **storage A2: the library and templates in IndexedDB** (2026-11-01; the version stays V172).
+- The owner's decisions D1 and D3 of `reference/research-local-storage.md`. The Assets library localStorage refuses goes
+  to the database (`lib:family`), its pointer written once committed; read back after start, anything added meanwhile
+  kept after it, nothing saved over it until then. A template localStorage refuses is kept under `tpl:<id>`, its entry
+  marked; using it reads it back, removing it removes it; one both refuse is said so and its entry goes.
+- **D3:** the browser asked to keep the app's storage once, at the first Save, never on load; "no" is normal.
+- Found by the suite: a database refusing at once answered inside the call, before the template's entry existed;
+  every database answer comes after the call returns now (patch b). Suite 27 checks; 15 variants, all caught.
+
+V172d, **storage A1: large projects in IndexedDB** (2026-10-31 to 11-01; the version stays V172).
 - The owner's decision D1 of `reference/research-local-storage.md`: phase A, the IndexedDB project store; A1 is its first
   half. `src/js/engine/core/idb-store.js`, ES5 and callbacks: one database `BIM-Personal` (D10), store `projects`.
 - **A record localStorage refuses** goes to the database under the project's id; `acad3dV1` keeps a pointer (id, name,
