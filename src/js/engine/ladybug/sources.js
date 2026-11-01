@@ -82,7 +82,8 @@
     if(typeof fetch!=='function')return Promise.reject(new Error('This browser cannot fetch the weather'));
     var year=bimClimYears()[1],off=bimSunNum(st.tz)?st.tz:Math.round(st.lon/15),zone=bimLbOmZone(off),tz=zone?off:0,url;
     url=bimLbOmUrl(st.lat,st.lon,year,zone||'GMT');
-    return fetch(url).then(function(r){if(!r.ok)throw new Error('archive-api.open-meteo.com answered '+r.status);return r.json();}).then(function(js){
+    return fetch(url).then(function(r){if(!r.ok)throw new Error('archive-api.open-meteo.com answered '+r.status);return r.json();},
+      function(e){throw new Error('archive-api.open-meteo.com could not be reached ('+(e&&e.message||e)+'): the hours need the network');}).then(function(js){
       var h=js&&js.hourly,H,i;
       if(!h||!Array.isArray(h.time))throw new Error('Open-Meteo gave no hours');
       for(i=0;i<BIM_LB_OM_VARS.length;i++)if(!Array.isArray(h[BIM_LB_OM_VARS[i]]))throw new Error('Open-Meteo gave no '+BIM_LB_OM_VARS[i]);
