@@ -29,9 +29,14 @@ grep '/source/SMLib/src/' "$E02_OUT/sources.txt" | compile "$KFLAGS"
 grep -v '/source/SMLib/src/' "$E02_OUT/sources.txt" | compile "$AFLAGS"
 echo "compile_seconds $(( $(date +%s) - start ))" >> "$E02_OUT/build.log"
 EXPORTS="['_e02_init','_e02_box_minus_cylinder','_e02_plate16','_e02_wall_join_union','_e02_fillet_box_edge','_e02_tessellate_plate']"
-LINK="-O3 -fexceptions -sALLOW_MEMORY_GROWTH=1 -sSTACK_SIZE=8388608 -sMODULARIZE=1 --no-entry -sEXPORTED_FUNCTIONS=$EXPORTS"
+LINK="-O3 -fexceptions -sALLOW_MEMORY_GROWTH=1 -sSTACK_SIZE=8388608 -sMODULARIZE=1 --no-entry -sEXPORTED_FUNCTIONS=$EXPORTS -sEXPORTED_RUNTIME_METHODS=['HEAPU8']"
 em++ "$E02_OUT"/obj/*.o $LINK -sEXPORT_ES6=1 -sENVIRONMENT=web,worker,node -o "$E02_OUT/smlib.mjs"
 em++ "$E02_OUT"/obj/*.o $LINK -sSINGLE_FILE=1 -sEXPORT_NAME=SmlibModule -sENVIRONMENT=web,worker,node -o "$E02_OUT/smlib_single.js"
+# Upper bound: the whole kernel kept (no dead-code removal), for the size a full API binding would approach.
+em++ "$E02_OUT"/obj/*.o -O3 -fexceptions -sALLOW_MEMORY_GROWTH=1 -sSTACK_SIZE=8388608 -sMODULARIZE=1 --no-entry \
+  -sEXPORT_ES6=1 -sENVIRONMENT=web,worker,node -Wl,--no-gc-sections \
+  "-sEXPORTED_FUNCTIONS=['_e02_init','_e02_box_minus_cylinder']" -o "$E02_OUT/smlib_full.mjs"
+echo "full_wasm $(stat -c %s "$E02_OUT/smlib_full.wasm") gzip9 $(gzip -9c "$E02_OUT/smlib_full.wasm" | wc -c)" >> "$E02_OUT/build.log"
 echo "total_seconds $(( $(date +%s) - start ))" >> "$E02_OUT/build.log"
 ls -l "$E02_OUT"/smlib.wasm "$E02_OUT"/smlib.mjs "$E02_OUT"/smlib_single.js >> "$E02_OUT/build.log"
 echo "wasm_gzip9 $(gzip -9c "$E02_OUT/smlib.wasm" | wc -c)" >> "$E02_OUT/build.log"

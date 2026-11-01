@@ -1,0 +1,378 @@
+{
+ "date": "2026-11-01T13:42:13.406Z",
+ "files": {
+  "smlib.wasm": 5756945,
+  "smlib.mjs": 111031,
+  "smlib_single.js": 7787278,
+  "e02_page.html": 7788525
+ },
+ "node": {
+  "box_minus_cylinder": {
+   "value": 262.30088816552296,
+   "check": "ok"
+  },
+  "plate16": {
+   "value": 173.58849916868843,
+   "check": "ok"
+  },
+  "wall_join_union": {
+   "value": 4.68,
+   "check": "ok"
+  },
+  "fillet_box_edge": {
+   "value": 997.8539816503691,
+   "check": "ok"
+  },
+  "tessellate_plate": {
+   "value": 1,
+   "check": "ok"
+  }
+ },
+ "runs": [
+  {
+   "instantiateMs": 180.20000000018626,
+   "cases": {
+    "box_minus_cylinder": {
+     "first": 262.30088816552296,
+     "firstMs": 155.19999999995343,
+     "second": 262.30088816552296,
+     "secondMs": 40.9000000001397
+    },
+    "plate16": {
+     "first": 173.58849916868843,
+     "firstMs": 485.5999999998603,
+     "second": 173.58849916868843,
+     "secondMs": 479.20000000018626
+    },
+    "wall_join_union": {
+     "first": 4.68,
+     "firstMs": 42.9000000001397,
+     "second": 4.68,
+     "secondMs": 23.199999999953434
+    },
+    "fillet_box_edge": {
+     "first": 997.8539816503691,
+     "firstMs": 65.89999999990687,
+     "second": 997.8539816503691,
+     "secondMs": 26.5
+    },
+    "tessellate_plate": {
+     "first": 1,
+     "firstMs": 375.5,
+     "second": 1,
+     "secondMs": 400.0999999998603
+    }
+   },
+   "heapBytes": 25427968,
+   "sab": "undefined",
+   "workerTotalMs": 2416.9000000001397,
+   "origin": "file:",
+   "loadToDoneMs": 2597,
+   "browserVersion": "153.0.8010.12"
+  },
+  {
+   "instantiateMs": 182.30000000004657,
+   "cases": {
+    "box_minus_cylinder": {
+     "first": 262.30088816552296,
+     "firstMs": 151.30000000004657,
+     "second": 262.30088816552296,
+     "secondMs": 36.0999999998603
+    },
+    "plate16": {
+     "first": 173.58849916868843,
+     "firstMs": 535.3000000000466,
+     "second": 173.58849916868843,
+     "secondMs": 427.5
+    },
+    "wall_join_union": {
+     "first": 4.68,
+     "firstMs": 25.5,
+     "second": 4.68,
+     "secondMs": 16.9000000001397
+    },
+    "fillet_box_edge": {
+     "first": 997.8539816503691,
+     "firstMs": 49.700000000186265,
+     "second": 997.8539816503691,
+     "secondMs": 30.299999999813735
+    },
+    "tessellate_plate": {
+     "first": 1,
+     "firstMs": 402.69999999995343,
+     "second": 1,
+     "secondMs": 283.10000000009313
+    }
+   },
+   "heapBytes": 25427968,
+   "sab": "undefined",
+   "workerTotalMs": 2269.899999999907,
+   "origin": "file:",
+   "loadToDoneMs": 2507,
+   "browserVersion": "153.0.8010.12"
+  },
+  {
+   "instantiateMs": 223.69999999995343,
+   "cases": {
+    "box_minus_cylinder": {
+     "first": 262.30088816552296,
+     "firstMs": 175.5999999998603,
+     "second": 262.30088816552296,
+     "secondMs": 46.60000000009313
+    },
+    "plate16": {
+     "first": 173.58849916868843,
+     "firstMs": 617.6999999999534,
+     "second": 173.58849916868843,
+     "secondMs": 434.39999999990687
+    },
+    "wall_join_union": {
+     "first": 4.68,
+     "firstMs": 35.800000000046566,
+     "second": 4.68,
+     "secondMs": 18.699999999953434
+    },
+    "fillet_box_edge": {
+     "first": 997.8539816503691,
+     "firstMs": 52.5999999998603,
+     "second": 997.8539816503691,
+     "secondMs": 23.300000000046566
+    },
+    "tessellate_plate": {
+     "first": 1,
+     "firstMs": 396.30000000004657,
+     "second": 1,
+     "secondMs": 291.60000000009313
+    }
+   },
+   "heapBytes": 25427968,
+   "sab": "undefined",
+   "workerTotalMs": 2460.1999999999534,
+   "origin": "file:",
+   "loadToDoneMs": 2638,
+   "browserVersion": "153.0.8010.12"
+  },
+  {
+   "instantiateMs": 151.80000000004657,
+   "cases": {
+    "box_minus_cylinder": {
+     "first": 262.30088816552296,
+     "firstMs": 190.69999999995343,
+     "second": 262.30088816552296,
+     "secondMs": 57.800000000046566
+    },
+    "plate16": {
+     "first": 173.58849916868843,
+     "firstMs": 459.19999999995343,
+     "second": 173.58849916868843,
+     "secondMs": 344.5
+    },
+    "wall_join_union": {
+     "first": 4.68,
+     "firstMs": 32.10000000009313,
+     "second": 4.68,
+     "secondMs": 22.399999999906868
+    },
+    "fillet_box_edge": {
+     "first": 997.8539816503691,
+     "firstMs": 65.9000000001397,
+     "second": 997.8539816503691,
+     "secondMs": 30.5999999998603
+    },
+    "tessellate_plate": {
+     "first": 1,
+     "firstMs": 449.9000000001397,
+     "second": 1,
+     "secondMs": 308.89999999990687
+    }
+   },
+   "heapBytes": 25427968,
+   "sab": "undefined",
+   "workerTotalMs": 2240.399999999907,
+   "origin": "file:",
+   "loadToDoneMs": 2441,
+   "browserVersion": "153.0.8010.12"
+  },
+  {
+   "instantiateMs": 152.0999999998603,
+   "cases": {
+    "box_minus_cylinder": {
+     "first": 262.30088816552296,
+     "firstMs": 147,
+     "second": 262.30088816552296,
+     "secondMs": 41.0999999998603
+    },
+    "plate16": {
+     "first": 173.58849916868843,
+     "firstMs": 502.19999999995343,
+     "second": 173.58849916868843,
+     "secondMs": 347.70000000018626
+    },
+    "wall_join_union": {
+     "first": 4.68,
+     "firstMs": 28.199999999953434,
+     "second": 4.68,
+     "secondMs": 16.700000000186265
+    },
+    "fillet_box_edge": {
+     "first": 997.8539816503691,
+     "firstMs": 55.299999999813735,
+     "second": 997.8539816503691,
+     "secondMs": 35
+    },
+    "tessellate_plate": {
+     "first": 1,
+     "firstMs": 409.30000000004657,
+     "second": 1,
+     "secondMs": 265.80000000004657
+    }
+   },
+   "heapBytes": 25427968,
+   "sab": "undefined",
+   "workerTotalMs": 2130.2000000001863,
+   "origin": "file:",
+   "loadToDoneMs": 2343,
+   "browserVersion": "153.0.8010.12"
+  }
+ ],
+ "summary": {
+  "instantiateMs": {
+   "n": 5,
+   "mean": 178,
+   "min": 151.8,
+   "max": 223.7,
+   "sd": 29.4
+  },
+  "loadToDoneMs": {
+   "n": 5,
+   "mean": 2505.2,
+   "min": 2343,
+   "max": 2638,
+   "sd": 118.8
+  },
+  "heapBytes": {
+   "n": 5,
+   "mean": 25427968,
+   "min": 25427968,
+   "max": 25427968,
+   "sd": 0
+  },
+  "cases": {
+   "box_minus_cylinder": {
+    "check": [
+     "ok",
+     "ok",
+     "ok",
+     "ok",
+     "ok"
+    ],
+    "firstMs": {
+     "n": 5,
+     "mean": 164,
+     "min": 147,
+     "max": 190.7,
+     "sd": 18.5
+    },
+    "secondMs": {
+     "n": 5,
+     "mean": 44.5,
+     "min": 36.1,
+     "max": 57.8,
+     "sd": 8.3
+    }
+   },
+   "plate16": {
+    "check": [
+     "ok",
+     "ok",
+     "ok",
+     "ok",
+     "ok"
+    ],
+    "firstMs": {
+     "n": 5,
+     "mean": 520,
+     "min": 459.2,
+     "max": 617.7,
+     "sd": 61.2
+    },
+    "secondMs": {
+     "n": 5,
+     "mean": 406.7,
+     "min": 344.5,
+     "max": 479.2,
+     "sd": 58.7
+    }
+   },
+   "wall_join_union": {
+    "check": [
+     "ok",
+     "ok",
+     "ok",
+     "ok",
+     "ok"
+    ],
+    "firstMs": {
+     "n": 5,
+     "mean": 32.9,
+     "min": 25.5,
+     "max": 42.9,
+     "sd": 6.8
+    },
+    "secondMs": {
+     "n": 5,
+     "mean": 19.6,
+     "min": 16.7,
+     "max": 23.2,
+     "sd": 3.1
+    }
+   },
+   "fillet_box_edge": {
+    "check": [
+     "ok",
+     "ok",
+     "ok",
+     "ok",
+     "ok"
+    ],
+    "firstMs": {
+     "n": 5,
+     "mean": 57.9,
+     "min": 49.7,
+     "max": 65.9,
+     "sd": 7.6
+    },
+    "secondMs": {
+     "n": 5,
+     "mean": 29.1,
+     "min": 23.3,
+     "max": 35,
+     "sd": 4.4
+    }
+   },
+   "tessellate_plate": {
+    "check": [
+     "ok",
+     "ok",
+     "ok",
+     "ok",
+     "ok"
+    ],
+    "firstMs": {
+     "n": 5,
+     "mean": 406.7,
+     "min": 375.5,
+     "max": 449.9,
+     "sd": 27.3
+    },
+    "secondMs": {
+     "n": 5,
+     "mean": 309.9,
+     "min": 265.8,
+     "max": 400.1,
+     "sd": 52.8
+    }
+   }
+  }
+ }
+}
