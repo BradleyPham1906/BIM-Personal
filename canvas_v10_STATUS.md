@@ -16396,3 +16396,8 @@ ca9fcf7, 6964 of 6966 in 1033 s with 3 workers. The two failures were V142's: th
 
     canvas_v10.html   3746363 bytes
     sha256            cf6291ac9dd7ea684344e8fce5a48b0a3f0530c4f7444fe34fc6eb562ed95592
+
+**Merged with main (V172b), 2026-11-01:** V172e's branch took main's V172b by a merge; `src/` merged without a
+conflict, the records were joined by hand and the guide rebuilt. The merged build, 3893256 bytes, sha256
+2d40105de276cd2ff0c1bdf8ce811bdbf0e321b6642b2917d73c05f019ecb7b0: 138 suites, 7082 checks (V172b's 7055 and V172e's
+27), all passed from a frozen worktree of 1a27767 in 1019 s with 3 workers; `tools/check_runtime.py` passed.
