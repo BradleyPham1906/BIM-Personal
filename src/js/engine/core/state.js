@@ -40,6 +40,7 @@
      because opening a project is the same act as booting into it. */
   var A3D_PROJECT_DEFAULTS=JSON.stringify(bimProjectRecord());
   var A3D_BOOT_DOC=null;
+  var A3D_BOOT_IDB=null;   /* __acad3dV172d: the project on screen is in the browser's database (core/idb-store.js) */
   function bimApplyStoredState(st){
       if(st&&st.objs&&st.objs.length){A3D.objs=st.objs;}
       if(st&&st.cam&&typeof st.cam.dist==='number'){A3D.cam=st.cam;}
@@ -111,7 +112,11 @@
     var raw=localStorage.getItem(LSK);
     if(raw){
       var st=JSON.parse(raw);
-      bimApplyStoredState(st);
+      /* __acad3dV172d: a pointer in place of the record: its name now, the record once the database is read */
+      if(st&&st.idb===1&&typeof st.docId==='string'&&!Array.isArray(st.objs)){
+        A3D_BOOT_IDB=st.docId;
+        if(st.titleBlock&&typeof st.titleBlock.project==='string')A3D.titleBlock.project=st.titleBlock.project;
+      }else bimApplyStoredState(st);
       if(st&&typeof st.docId==='string'&&st.docId)A3D_BOOT_DOC=st.docId;   /* __acad3dV115 */
     }
   }catch(e0){

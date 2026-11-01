@@ -29,7 +29,7 @@ suite, every falsification script, `Phase/`'s backups and the guide's tools read
     src/css/                  the stylesheet, 13 files: shell/, panels/, workspace/, sheets/, site-analysis/
     src/js/shell/shell.js     the top bar, the command palette, the project tabs, the boot
     src/js/vendor/openskp.js  the SketchUp reader (third-party, bundled; never edited by hand)
-    src/js/engine/            the BIM engine, 195 files in 28 folders: core/ (state, storage, meshes,
+    src/js/engine/            the BIM engine, 196 files in 28 folders: core/ (state, storage, meshes,
                               save), drawing/, editing/, gizmo/, bim/, structure/, annotation/,
                               layers/, properties/, views/, sheets/ (with V172b's editable boards),
                               assets/, io/, render/, map/, terrain/, survey/, site/, site-analysis/
@@ -83,7 +83,14 @@ suite, every falsification script, `Phase/`'s backups and the guide's tools read
 - practice, the standard and its edition, where it applies, the free data tested from here, open
   implementations read as text, the edges of the rules, and the app's own code, for each topic;
 - the owner's decisions asked together at the end of research;
-- the note records each source, what was read, the date and its level, and what is still open.
+- the note records each source, what was read, the date and its level, and what is still open;
+- since 2026-10-31, as a scientist would ("use the research skills like a true researcher or
+  scientist"): the question and falsifiable hypotheses first, a search log, three or more independent
+  sources per topic, a deliberate search for counter-evidence, experiments run here wherever a claim
+  can be measured (scripts in `reference/experiments/`), the alternatives compared in a table,
+  prior art, a confidence for each finding, an independent second reader re-checking every fact the
+  code uses, and parallel research agents for a broad question. The note's twelve parts are in the
+  protocol.
 
 ## Notion (the owner, 2026-10-19)
 
@@ -92,7 +99,9 @@ a task in the Internal Task DB, every research note and document a page in the D
 request a line on its phase's task. Keep it current as the work goes, through the Notion connector, at each step
 of a phase (research started, the owner's decisions, PR opened, PR merged): `reference/notion-sync.md` has the
 ids, the relations, the fields and the steps. The repository stays the source of truth; Notion mirrors it,
-summarised and linked, never the full text.
+summarised and linked, never the full text of code or upstream documents. A research note's page carries the
+research itself (the owner, 2026-10-31): its findings, evidence, comparisons, experiments, risks, decisions and
+references, as `notion-sync.md` lists.
 
 ## Reuse first; keep source out of Notion (the owner, 2026-10-20)
 

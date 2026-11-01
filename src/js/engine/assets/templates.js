@@ -100,6 +100,7 @@
     if(id===A3D_DOCS.active){a3dToast('Open another project before deleting "'+bimDocName(id)+'"');return false;}
     try{localStorage.removeItem(A3D_DOC_PREFIX+id);}
     catch(eX){console.warn('[BIM] A stored project could not be deleted.',eX);a3dToast('The project could not be deleted');return false;}
+    bimIdbDel(id,function(eD){if(eD)console.warn('[BIM] A project\'s copy in the browser\'s database could not be removed: '+id,eD);});   /* __acad3dV172d */
     A3D_DOCS.docs=A3D_DOCS.docs.filter(function(e){return e.id!==id;});
     delete A3D_DOC_RT[id];
     bimDocsSave();

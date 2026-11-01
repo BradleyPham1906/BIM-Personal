@@ -4,6 +4,7 @@
   // file. Placed instances are deliberately INDEPENDENT copies (per explicit product decision) --
   // editing a library entry later never retroactively changes anything already placed. ----
   var FAMILY_LIB_KEY='acad3dFamilyLibrary';
+  var A3D_FAMLIB_SAVE_FAILED=false;   /* __acad3dV124b: a run of failed saves is toasted once */
   var FAMILY_CATEGORIES=['Doors','Windows','Furniture','Fixtures','Structural','Other'];
   var A3D_FAMLIB=bimLoadFamilyLibrary();
   function bimMeshBounds(mesh){
@@ -41,8 +42,20 @@
     }catch(eL){console.warn('[BIM] Corrupted family library, starting empty.',eL);}
     return [];
   }
+  /* __acad3dV124b: a library the browser refuses is warned and toasted, as the project is (save3d) */
   function bimSaveFamilyLibrary(){
-    try{localStorage.setItem(FAMILY_LIB_KEY,JSON.stringify(A3D_FAMLIB));}catch(eS){console.warn('[BIM] Could not persist family library: ',eS);}
+    try{
+      localStorage.setItem(FAMILY_LIB_KEY,JSON.stringify(A3D_FAMLIB));
+      if(A3D_FAMLIB_SAVE_FAILED){A3D_FAMLIB_SAVE_FAILED=false;a3dToast('Saving the Assets library works again');}
+      return true;
+    }catch(eS){
+      console.warn('[BIM] Could not persist family library: ',eS);
+      if(!A3D_FAMLIB_SAVE_FAILED){
+        A3D_FAMLIB_SAVE_FAILED=true;
+        a3dToast('The Assets library could not be saved: browser storage is full. New assets will be lost when the page reloads; remove assets you no longer need.');
+      }
+      return false;
+    }
   }
   function bimFamilyLibraryAdd(fam){
     var entry={
