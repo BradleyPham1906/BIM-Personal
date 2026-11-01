@@ -73,6 +73,7 @@ Search Notion before creating anything, so nothing is made twice.
 | `reference/plan-v167-v170.md` | `3fecbfcc3a3881de90ecc1541d3685ea` |
 | `reference/research-access-people.md` | `3fecbfcc3a3881598684fed1479bb711` |
 | `reference/research-analysis-workspace.md` | `404cbfcc3a3881aaa157c4d99f450c3d` |
+| `reference/research-archimap-site-report.md` | `40bcbfcc3a3881d5985acef03d120b1b` |
 | `reference/research-alignment.md` | `3fecbfcc3a3881e881cdd2408e75b9a5` |
 | `reference/research-animation.md` | `403cbfcc3a388101837ec19cf0e0a894` |
 | `reference/research-traffic.md` | `403cbfcc3a388128b93be79356396b92` |
@@ -89,6 +90,7 @@ Search Notion before creating anything, so nothing is made twice.
 | `reference/research-field-autonomy.md` | `3fecbfcc3a38819990fed43c7289488e` |
 | `reference/research-giraffe.md` | `3fecbfcc3a3881e5a131fafce16dcc73` |
 | `reference/research-ladybug-tools.md` | `405cbfcc3a38819dbbdce4dc211a6b8f` |
+| `reference/research-ladybug-weather-comfort.md` | `40acbfcc3a388171a683cf330197d199` |
 | `reference/research-lod-reconstruction.md` | `3fecbfcc3a38812abfbcd3f4172e02bd` |
 | `reference/research-map.md` | `3fecbfcc3a3881b3a039fa3dba8ea81b` |
 | `reference/research-local-storage.md` | `40acbfcc3a3881c6a32fcdb69d6cc78a` |
@@ -114,6 +116,7 @@ Search Notion before creating anything, so nothing is made twice.
 | `reference/research-survey-check.md` | `3fecbfcc3a3881628cfcc1c30a343b34` |
 | `reference/research-tools-panel.md` | `3fecbfcc3a3881a48a6ce529e29f7876` |
 | `reference/research-usages.md` | `3fecbfcc3a3881ac8050e475f67cc902` |
+| `reference/research-usd-brep.md` | `40bcbfcc3a3881aa8002e692ab9c6765` |
 | `reference/research-valdrada.md` | `3fecbfcc3a3881b1a8b7edb323f75420` |
 | `reference/research-zoning-envelope-yield.md` | `3fecbfcc3a388107b391f35fd6a8f7d4` |
 

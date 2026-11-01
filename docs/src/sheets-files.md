@@ -21,6 +21,30 @@ order: 8
     page. **Print set** prints it on A3 landscape pages of its own, in its place in the set.
 - **Printing one sheet:** `PLOT`.
 
+## Arranging a board
+
+A board's **Edit**, on its bar, arranges its figures, as a sheet's viewports are arranged:
+- Drag a figure by its handle or its body; size it by its corner. **Snap**, **Grid** and **Ortho**
+  are the drawing's own (F3, F9, F8) and govern it: Snap catches an edge on another figure's or the
+  board's, Grid puts the edges on the board's 12 columns and on rows of the same step, Ortho keeps a
+  drag straight across or straight down.
+- The arrow keys move the figure in focus; Shift and the arrow keys size it; Delete removes it.
+- A figure's menu (its button, or a right-click): **Options** (its title; the chart, its numbers as a
+  table, or both; UTCI's condition), **Fit the height to its content**, **Duplicate**, earlier or
+  later in reading order, **Remove**.
+- **Add a figure** lists every analysis the project has, from any board, each with its preview; it
+  goes below the others at its own width.
+- **Reset** gives one of the three boards its own figures in their own places again.
+
+Each change is one undo step and is kept with the project. A board not yet arranged keeps its own
+layout. Once it is arranged, figures of its own that come later, with new data, wait below the others
+until placed. Present, Print set and the thumbnail show a board as arranged. On a phone its figures
+are in reading order, and each one's menu moves it earlier or later.
+
+**+ Board**, then **New board**, makes a board of your own: name it in Edit, then add any analysis to
+it. A board's menu in Presentation duplicates it as a new board, and deletes a board of your own
+(Ctrl+Z brings it back).
+
 ## Exporting
 
 | Format | Command |

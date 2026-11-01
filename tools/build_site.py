@@ -8,18 +8,25 @@
 - canvas_v10.html: the same app as one file, to download and open offline;
 - docs/: the user guide (built HTML, committed; tools/build_docs.py --check proves it current);
 - v/<version>/index.html: every older build kept in Phase/ before a phase, named as on the guide's
-  Versions page, so an older version stays reachable at a fixed address."""
+  Versions page, so an older version stays reachable at a fixed address;
+- runtime/: the Ladybug analyses' Pyodide and wheels (V172b), at the fixed address the app and every
+  one-file copy load them from, checked against runtime/MANIFEST.json first (tools/check_runtime.py)."""
 import pathlib, shutil, sys
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / 'tools'))
 import build_docs  # noqa: E402
 import build_app  # noqa: E402
+import check_runtime  # noqa: E402
 
 OUT = pathlib.Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / '_site'
 
 
 def main():
+    faults, nrt, _ = check_runtime.check()
+    if faults:
+        print('\n'.join(faults))
+        sys.exit('the runtime does not match its manifest: nothing built')
     if OUT.exists():
         shutil.rmtree(OUT)
     (OUT / 'docs').mkdir(parents=True)
@@ -33,8 +40,9 @@ def main():
         d.mkdir(parents=True)
         shutil.copy(src, d / 'index.html')
         n += 1
+    shutil.copytree(ROOT / 'runtime', OUT / 'runtime')   # V172b: the Ladybug analyses' runtime, at its fixed address
     (OUT / '.nojekyll').touch()
-    print('%s: the app, %d guide pages, %d older versions' % (OUT, len(list((OUT / 'docs').glob('*.html'))), n))
+    print('%s: the app, %d guide pages, %d older versions, the runtime (%d files)' % (OUT, len(list((OUT / 'docs').glob('*.html'))), n, nrt))
 
 
 if __name__ == '__main__':

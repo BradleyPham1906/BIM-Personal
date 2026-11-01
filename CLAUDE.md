@@ -26,18 +26,24 @@ suite, every falsification script, `Phase/`'s backups and the guide's tools read
 
     src/index.html            the page: its head and body, and for each block the files it is made of,
                               in order (<!-- @bundle -->, <!-- @include -->, <!-- @end -->)
-    src/css/                  the stylesheet, 12 files: shell/, panels/, workspace/, sheets/, site-analysis/
+    src/css/                  the stylesheet, 13 files: shell/, panels/, workspace/, sheets/, site-analysis/
     src/js/shell/shell.js     the top bar, the command palette, the project tabs, the boot
     src/js/vendor/openskp.js  the SketchUp reader (third-party, bundled; never edited by hand)
-    src/js/engine/            the BIM engine, 177 files in 26 folders: core/ (state, storage, meshes,
+    src/js/engine/            the BIM engine, 196 files in 28 folders: core/ (state, storage, meshes,
                               save), drawing/, editing/, gizmo/, bim/, structure/, annotation/,
-                              layers/, properties/, views/, sheets/, assets/, io/, render/, map/,
-                              terrain/, survey/, site/, site-analysis/ (with Analyze's workspace,
-                              V171b and V171c, and V171d's sun path and its panel), simulation/
-                              (V171's traffic and people), standards/,
-                              analysis/, history/, ui/, commands/,
-                              testing/ (the window.__a3d* surface the suites drive); _begin.js and
-                              _end.js open and close it
+                              layers/, properties/, views/, sheets/ (with V172b's editable boards),
+                              assets/, io/, render/, map/, terrain/, survey/, site/, site-analysis/
+                              (with Analyze's workspace, V171b and V171c, and V171d's sun path and
+                              its panel), simulation/ (V171's traffic and people), site-tools/
+                              (V172's), ladybug/ (V172b's: the runtime, the weather, the analyses,
+                              the figures, the panel), standards/, analysis/, history/, ui/,
+                              commands/, testing/ (the window.__a3d* surface the suites drive);
+                              _begin.js and _end.js open and close it
+    src/py/bim_ladybug.py     the app's adapter to Ladybug's Python (ours): tools/embed_py.py writes it
+                              into js/engine/ladybug/adapter-py.js, which a patch runs before the build
+    runtime/                  Pyodide 0.29.5 and Ladybug's four wheels, committed and pinned by size and
+                              SHA-256 in MANIFEST.json (tools/check_runtime.py): V172b's one written
+                              exception to "no dependencies", loaded only when a Ladybug analysis runs
 
 - **The engine is one closure.** `_begin.js` opens `(function(){ try{`, `_end.js` closes it, and every
   file between is a slice of that one function: they share its private variables and are joined into

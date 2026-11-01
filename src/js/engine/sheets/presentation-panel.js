@@ -23,7 +23,7 @@
     for(i=0;i<n;i++){
       e=Q[i];
       if(e.t==='board'){
-        lab=bimBoardName(e.b.kind);
+        lab=bimBoardLabel(e.b);   /* __acad3dV172b */
         h+='<div class="a3d-prpitem a3d-prpbrd'+(e.id===cur?' cur':'')+'" data-prpitem="'+bimEsc(e.id)+'" draggable="true" title="Page '+(i+1)+': the '+bimEsc(lab)+
           ' board -- click to open it, drag to move it, right-click for more">'+
           '<div class="a3d-prpthumb a3d-prpbthumb"><iframe data-prpbframe="'+bimEsc(e.id)+'" tabindex="-1" aria-hidden="true" title=""></iframe></div>'+

@@ -462,6 +462,34 @@ The climate is modelled at about 25 km, so a city's heat island or a valley's fr
 Confirm with a local station where it matters. Earthquakes are history, not a hazard model: for
 design, use the national seismic hazard map and code.
 
+### Weather and comfort (Ladybug)
+
+Under 5. Climate, after the sun's rows, **Weather for Ladybug** and four analyses run Ladybug Tools'
+own code (AGPL-3.0), unchanged, in the browser. The first run loads its runtime, about 13 MB once,
+from the site; each of its files is checked against the SHA-256 the app pins before it is used.
+
+The weather, one source at a time:
+- **Open a weather file:** an EPW, or a station's ZIP from climate.onebuilding.org, which holds its
+  EPW and its DDY (ASHRAE's design days). The file is read in the browser and not uploaded. The
+  project keeps where the hours came from, not the hours: after a reload, Run asks for the file again.
+- **Get a year of hours:** the last full year from Open-Meteo (ERA5) at the site, in its standard
+  time. A site in a half-hour time zone gets its hours in UTC, and says so.
+
+The analyses, each a row with **Run**, **Show on the board** and **Add to a board**:
+- **Outdoor comfort (UTCI):** every hour in UTCI's ten stress categories, in four conditions: in the
+  sun or the shade, in the wind or in still air. The hours outside the formula's range are counted.
+- **Psychrometric chart and strategies:** every hour on the chart; the PMV comfort zone for summer
+  and winter clothing; the hours each of Ladybug's five passive strategies adds (evaporative
+  cooling, mass and night ventilation, occupant fans, capturing internal heat, passive solar heating).
+- **Wind rose:** the weather file's winds in 16 sectors, in the app's speed bands; calm is a speed of 0.
+- **Design days:** heating at 99.6% and 99%, cooling at 0.4%, 1% and 2%, from the station's DDY, or
+  approximated from the one year, and said so.
+
+**Run all four** runs them in turn. Their figures follow the Climate and risk board's own. The values
+they use (UTCI's scale and range, ASHRAE 55's comfort limit and still air, the clothing and the
+strategies' parameters, the design conditions) are in Standards, under Climate, with their sources;
+change one and each result that used it says it is out of date.
+
 ## Zoning and yield
 
 In Analyze, under 2. Legal, **Enter zoning** (`ZONING`) opens the district's controls:
