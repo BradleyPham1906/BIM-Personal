@@ -16065,7 +16065,7 @@ way to a moving sun, V170's motions of every multi-line element (the angles take
                       __acad3dV121b, __acad3dV166b, __acad3dV166c, __acad3dV166d, __acad3dV171b, __acad3dV171c,
                       __acad3dV171d
 
-## Phase 172 (V172) - Site analysis tools and synthesis, ArcGIS's way; Ladybug's weather and comfort, the boards made editable (V172b); storage A1, large projects in IndexedDB (V172d)
+## Phase 172 (V172) - Site analysis tools and synthesis, ArcGIS's way; Ladybug's weather and comfort, the boards made editable (V172b); storage A1, large projects in IndexedDB (V172d); storage A2, the library and templates (V172e)
 
 Eight site analysis tools in the analysis workspace, in the shape of ArcGIS's geoprocessing pane: Buffer, Distance,
 Slope classes, Exclusions, Suitability (Esri's transform and weight, by multiplier or percent), Locate, Constraints and
@@ -16359,3 +16359,45 @@ for V142, built again) and V169's thousand trees stalled under six workers (183 
     markers           __acad3dV60 ... __acad3dV172, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
                       __acad3dV121b, __acad3dV124b, __acad3dV166b, __acad3dV166c, __acad3dV166d, __acad3dV171b,
                       __acad3dV171c, __acad3dV171d, __acad3dV172b, __acad3dV172d
+
+### Storage A2 (V172e, inside Phase 172): the Assets library and templates in IndexedDB; persist() at the first Save
+
+Built on V172d on 2026-11-01; the version stays V172. The owner's decisions D1 and D3 of
+`reference/research-local-storage.md`. V172d kept a project too large for localStorage in the database; the Assets
+library (`acad3dFamilyLibrary`, rewritten whole on every change, SketchUp blocks up to 1.5 M characters each) and the
+templates (`acad3dTemplateV1:<id>`, a whole project each) still met the 5.2-million-character wall.
+
+- **The library** (`assets/family-library.js`): `bimSaveFamilyLibrary` writes localStorage while it fits; when it
+  refuses, the database under `lib:family` (the same store as projects, whose ids start `doc-`, so the database stays
+  at version 1 and no other tab is asked to close), and only once that has committed the pointer `{idb:1, key, count}`
+  in the library's key. A failure of both is V124b's toast, once per run of failures. It returns true when stored,
+  null when the answer is still to come, false when it failed. Boot reads a pointer as an empty library being read
+  (`A3D_FAMLIB_LOADING`); `bimLibBootLoad` reads the copy after start and puts what was added meanwhile after it;
+  saves wait (`A3D_FAMLIB_DIRTY`) and are made with it.
+- **Templates** (`assets/templates.js`): a project localStorage refuses goes to `tpl:<id>`, its entry marked `idb`;
+  if the database refuses too, the entry is taken out again and the old toast shown. `bimTemplateUse` reads a marked
+  template first and returns true while it does; the rest is `bimTemplateStart`. Removing a marked template removes its
+  copy.
+- **D3** (`io/project-file.js`): `bimAskPersist` at the first Save to file, once: `persisted()`, then `persist()`;
+  false is normal (Safari tabs; headless Chromium measured false, e04).
+- **Patch b**, found by the suite's refused template: `bimIdbTx` answered synchronously when the database refused at
+  once (open throwing, a transaction refused before it started), so the template's entry, pushed after the call, was
+  never taken out. Every answer is delivered by `setTimeout` now, after the call returns, as an IndexedDB request's is.
+
+Patches `Phase/patch_v172e.py` (base 4d8ba4c0) and `Phase/patch_v172e_b.py`. Suite
+`tests/bim_phase172e_idb_library_templates_browser_tests.py`, 27 checks. Falsification `Phase/falsify_phase172e.py`:
+15 variants, 15 caught, from a frozen worktree of ca9fcf7. V124b's and V124's full-store checks pass unchanged (V124b
+refuses the library's key for every write, its pointer too, so it holds the failure of both).
+
+**State after V172e:** 137 suites, 6966 checks (the 136 older suites' 6939 and V172e's 27): from a frozen worktree of
+ca9fcf7, 6964 of 6966 in 1033 s with 3 workers. The two failures were V142's: the build kept before V172e,
+`Phase/canvas_v10.html.bak_phase172e_pre` (holding V172d), was not yet on the versions page; the guide was rebuilt
+(nothing in `src/` changed) and V142 passed 31 of 31.
+
+    canvas_v10.html   3746363 bytes
+    sha256            cf6291ac9dd7ea684344e8fce5a48b0a3f0530c4f7444fe34fc6eb562ed95592
+
+**Merged with main (V172b), 2026-11-01:** V172e's branch took main's V172b by a merge; `src/` merged without a
+conflict, the records were joined by hand and the guide rebuilt. The merged build, 3893256 bytes, sha256
+2d40105de276cd2ff0c1bdf8ce811bdbf0e321b6642b2917d73c05f019ecb7b0: 138 suites, 7082 checks (V172b's 7055 and V172e's
+27), all passed from a frozen worktree of 1a27767 in 1019 s with 3 workers; `tools/check_runtime.py` passed.

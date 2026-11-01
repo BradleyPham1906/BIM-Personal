@@ -6,6 +6,9 @@
   var FAMILY_LIB_KEY='acad3dFamilyLibrary';
   var A3D_FAMLIB_SAVE_FAILED=false;   /* __acad3dV124b: a run of failed saves is toasted once */
   var FAMILY_CATEGORIES=['Doors','Windows','Furniture','Fixtures','Structural','Other'];
+  /* __acad3dV172e: the library kept in the browser's database ('lib:family'), its pointer in its key; while it is
+     read, saves wait and are made with it */
+  var A3D_FAMLIB_IDB=false,A3D_FAMLIB_LOADING=false,A3D_FAMLIB_DIRTY=false;
   var A3D_FAMLIB=bimLoadFamilyLibrary();
   function bimMeshBounds(mesh){
     var mn=[Infinity,Infinity,Infinity],mx=[-Infinity,-Infinity,-Infinity],i,k;
@@ -38,24 +41,62 @@
   function bimLoadFamilyLibrary(){
     try{
       var raw=localStorage.getItem(FAMILY_LIB_KEY);
-      if(raw){var parsed=JSON.parse(raw);if(Array.isArray(parsed))return parsed;}
+      if(raw){
+        var parsed=JSON.parse(raw);
+        if(Array.isArray(parsed))return parsed;
+        if(parsed&&parsed.idb===1){A3D_FAMLIB_IDB=true;A3D_FAMLIB_LOADING=true;return [];}   /* __acad3dV172e */
+      }
     }catch(eL){console.warn('[BIM] Corrupted family library, starting empty.',eL);}
     return [];
   }
   /* __acad3dV124b: a library the browser refuses is warned and toasted, as the project is (save3d) */
+  /* __acad3dV172e: a library localStorage refuses goes to the browser's database, its pointer written once the
+     copy has committed; a failure of both is the toast. Returns true when stored, null when the database's
+     answer is still to come (or the library is still being read), false when it failed. */
   function bimSaveFamilyLibrary(){
-    try{
-      localStorage.setItem(FAMILY_LIB_KEY,JSON.stringify(A3D_FAMLIB));
-      if(A3D_FAMLIB_SAVE_FAILED){A3D_FAMLIB_SAVE_FAILED=false;a3dToast('Saving the Assets library works again');}
-      return true;
-    }catch(eS){
+    if(A3D_FAMLIB_LOADING){A3D_FAMLIB_DIRTY=true;return null;}
+    var s=JSON.stringify(A3D_FAMLIB),n=A3D_FAMLIB.length;
+    function failed(eS){
       console.warn('[BIM] Could not persist family library: ',eS);
       if(!A3D_FAMLIB_SAVE_FAILED){
         A3D_FAMLIB_SAVE_FAILED=true;
         a3dToast('The Assets library could not be saved: browser storage is full. New assets will be lost when the page reloads; remove assets you no longer need.');
       }
-      return false;
     }
+    function worked(){if(A3D_FAMLIB_SAVE_FAILED){A3D_FAMLIB_SAVE_FAILED=false;a3dToast('Saving the Assets library works again');}}
+    if(!A3D_FAMLIB_IDB){
+      try{localStorage.setItem(FAMILY_LIB_KEY,s);worked();return true;}
+      catch(eL){console.warn('[BIM] The Assets library does not fit in browser storage; it goes to the browser\'s database.',eL);}
+    }
+    if(typeof bimIdbPut!=='function'){failed(new Error('no browser database'));return false;}
+    bimIdbPut('lib:family',{rec:s,saved:Date.now(),v:1},function(err){
+      if(err){failed(err);return;}
+      if(!A3D_FAMLIB_IDB){
+        try{localStorage.setItem(FAMILY_LIB_KEY,JSON.stringify({idb:1,key:'lib:family',count:n}));A3D_FAMLIB_IDB=true;}
+        catch(eP){failed(eP);return;}
+      }
+      worked();
+    });
+    return null;
+  }
+  /* __acad3dV172e: the library in the database, read after start; anything added meanwhile is kept after it */
+  function bimLibBootLoad(){
+    bimIdbGet('lib:family',function(err,v){
+      var arr=null;
+      if(!err&&v&&typeof v.rec==='string'){
+        try{arr=JSON.parse(v.rec);}catch(eJ){console.warn('[BIM] The Assets library in the browser\'s database is not valid JSON.',eJ);}
+      }
+      if(!Array.isArray(arr)){
+        if(err)console.warn('[BIM] The browser\'s database could not be read.',err);
+        a3dToast('The Assets library is kept in the browser\'s database, which could not be read: nothing is saved over it.');
+        return;
+      }
+      var added=A3D_FAMLIB.splice(0,A3D_FAMLIB.length);
+      Array.prototype.push.apply(A3D_FAMLIB,arr.concat(added));
+      A3D_FAMLIB_LOADING=false;
+      if(A3D_FAMLIB_DIRTY||added.length){A3D_FAMLIB_DIRTY=false;bimSaveFamilyLibrary();}
+      try{refreshFamilyPanel();}catch(eR){console.warn('[BIM] The Assets panel could not be refreshed.',eR);}
+    });
   }
   function bimFamilyLibraryAdd(fam){
     var entry={
@@ -80,6 +121,7 @@
     if(bimAssetKind(A3D_FAMLIB[idx])==='template'){
       try{localStorage.removeItem(A3D_TEMPLATE_PREFIX+id);}
       catch(eR){console.warn('[BIM] A template\'s stored project could not be removed.',eR);}
+      if(A3D_FAMLIB[idx].idb)bimIdbDel('tpl:'+id,function(eD){if(eD)console.warn('[BIM] A template\'s copy in the browser\'s database could not be removed: '+id,eD);});   /* __acad3dV172e */
     }
     A3D_FAMLIB.splice(idx,1);
     bimSaveFamilyLibrary();
@@ -93,6 +135,7 @@
     for(i=0;i<A3D_ASSET_BUILTINS.length;i++)if(A3D_ASSET_BUILTINS[i].id===id)return A3D_ASSET_BUILTINS[i];
     return null;
   }
+  if(A3D_FAMLIB_LOADING)setTimeout(bimLibBootLoad,0);   /* __acad3dV172e */
   /* ================= __acad3dV124: the Assets library =================
      One store, three kinds: a MODEL is a mesh placed as an independent instance (every entry
      written before V124 is one), a BLOCK is a set of object records inserted as independent copies,

@@ -17,14 +17,14 @@ requires command mapping, full app regressions and owner review.
 
 **Read this first in a new session.** One page. The detail lives in the docs listed at the bottom.
 
-    canvas_v10.html   3887711 bytes
-    sha256            fc802948b69f38190d9ec6e83c9af226f106d4c1a68d6874c1e1b2ba6dd470fd
+    canvas_v10.html   3893256 bytes
+    sha256            2d40105de276cd2ff0c1bdf8ce811bdbf0e321b6642b2917d73c05f019ecb7b0
     markers           __acad3dV60 ... __acad3dV172, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
                       __acad3dV121b, __acad3dV124b, __acad3dV166b, __acad3dV166c, __acad3dV166d, __acad3dV171b,
-                      __acad3dV171c, __acad3dV171d, __acad3dV172b, __acad3dV172d
+                      __acad3dV171c, __acad3dV171d, __acad3dV172b, __acad3dV172d, __acad3dV172e
     runtime           runtime/: Pyodide 0.29.5 and Ladybug's four wheels, each pinned in runtime/MANIFEST.json
                       (tools/check_runtime.py); asked only when a Ladybug analysis runs (V172b)
-    tests             137 suites, 7055 checks, 0 failures (the 136 older suites' 6939 and V172b's 116; with cjval
+    tests             138 suites, 7082 checks, 0 failures (the 137 suites' 7055 after V172b and V172e's 27; with cjval
                       built, V139 and V140 run their three more)
 
     The user guide (V142): every phase updates docs/src/, its log entry and BIM_APP_VERSION, then
@@ -150,9 +150,10 @@ three tiers: compact up to 720 px wide or 500 px high, medium up to 1024 px, des
 | 172b | Ladybug L1: weather and comfort | **Done** (see Recently finished): Ladybug Tools' own Python (AGPL-3.0, the owner's choice), unchanged, run by Pyodide in a Web Worker made on the first run, its runtime committed with the site and pinned by SHA-256 (`runtime/`, the zero-dependency contract's one written exception): an EPW or a station's ZIP opened from a file, or Open-Meteo's last full year; UTCI in CBE Clima's four conditions, the psychrometric chart with the PMV zone at 0.5 and 1.0 clo and Ladybug's five strategies, the wind rose, the design days, on the climate board and in Analyze's Climate, Ladybug credited; and the boards made editable (the owner, 2026-10-31): Edit under the drawing's Snap, Grid and Ortho, any analysis on any board, boards of one's own | `reference/research-ladybug-tools.md` (the experiment, the owner's decisions of 2026-10-26); `reference/research-ladybug-weather-comfort.md` (the phase's research, 2026-10-31). No Honeybee export (the owner). |
 | 172c | Ladybug L2: sun-hours and radiation on the model | **Start here.** Ladybug's sun path and sky over the model's faces, as result layers, on V172b's runtime and weather; the sky without Radiance's `gendaymtx`, its choice read first | `reference/research-ladybug-tools.md` (7). |
 | 172d | Storage A1: large projects in IndexedDB | **Done** (see Recently finished): a project record localStorage refuses goes to IndexedDB (`BIM-Personal`, store `projects`), a pointer in its place written once the record has committed; boot reads it back and saves nothing until then; switching parks and reopens it; deleting removes it; a waiting autosave written when the page is hidden. What fits stays where it was | `reference/research-local-storage.md` (D1, D9, D10; the owner, 2026-10-31). |
-| 172e | Storage A2: everything in IndexedDB | Templates and the Assets library in the database; every project record there, localStorage keeping pointers and the small preferences; the old keys copied, checked and retired (the owner's approval, 2026-10-31); a schema version, old `v/` builds kept from overwriting; a second tab opens a project read-only (D7); `persist()` asked on the first Save (D3) | Same note, D1, D3, D7, D10. |
-| 172f | Storage B: files as the real save | A "not saved to a file" marker on each project, a reminder after 30 minutes and at the first save in Safari or a private window (D2); Save and Open through the File System Access pickers in Chrome and Edge, download and a file input elsewhere; the envelope version 2 with the view; an optional `.acad3d.json.gz` known by its first bytes (D4); the `file://` build told when storage is refused (D5) | Same note, D2, D4, D5. |
-| 172g | Storage C: installable and offline | A manifest (`/BIM-Personal/`, standalone, 192 and 512 px icons) and an ES5 service worker at `/BIM-Personal/sw.js`: hashed `app/` files cache-first, `index.html` network-first, `v/` left alone, no update while there is unsaved work (D6) | Same note, D6. |
+| 172e | Storage A2: the library and templates in IndexedDB | **Done** (see Recently finished): the Assets library and templates localStorage refuses kept in the database (`lib:family`, `tpl:<id>`), pointers written once committed, the library read back after start with anything added meanwhile kept; the browser asked to keep the app's storage at the first Save (D3) | `reference/research-local-storage.md` (D1, D3). |
+| 172f | Storage A3: every project in IndexedDB, the old keys retired | Every project record in the database, localStorage keeping pointers and the small preferences; the old keys copied, checked and retired (the owner's approval, 2026-10-31); a schema version, old `v/` builds kept from overwriting; a second tab opens a project read-only (D7) | Same note, D1, D7, D10. |
+| 172g | Storage B: files as the real save | A "not saved to a file" marker on each project, a reminder after 30 minutes and at the first save in Safari or a private window (D2); Save and Open through the File System Access pickers in Chrome and Edge, download and a file input elsewhere; the envelope version 2 with the view; an optional `.acad3d.json.gz` known by its first bytes (D4); the `file://` build told when storage is refused (D5) | Same note, D2, D4, D5. |
+| 172h | Storage C: installable and offline | A manifest (`/BIM-Personal/`, standalone, 192 and 512 px icons) and an ES5 service worker at `/BIM-Personal/sw.js`: hashed `app/` files cache-first, `index.html` network-first, `v/` left alone, no update while there is unsaved work (D6) | Same note, D6. |
 | 173 | Site analysis SA6: the Contents pane | The layer stack by drawing order, by source and by selection, a legend patch under each layer; symbology (by category, graduated, stretch), labels and a filter (definition query); the stack exploded in 3D as McHarg's layer cake | ArcGIS Pro's Contents pane. |
 | 174 | Presentation P1: boards | V162 made the site analysis's boards pages of the set, and V172b their figures editable (arranged, added, sized under Snap, Grid and Ortho; boards of one's own); this phase is boards you design. New Layout's page gallery (ANSI, Architectural, ISO, portrait and landscape); map frames with a live legend, north arrow and scale bar. A board is a sheet you design on: one layer tree (frames, groups, lock, hide, reorder), opacity and blend modes on every element (canvas compositing, the same 16 modes as Figma), masks, shapes, text, images; align, distribute, smart spacing; rows and columns that space their children (a light auto layout) | Figma's layer model. `reference/research-presentation-panels.md` (1). |
 | 175 | Presentation P2: live elements | Elements linked to their source and redrawn when the model changes: model views, schedules, legends, the V157 dashboard's charts and cards, any result layer's chart, analysis results (sun hours, cut and fill, solar), numbers (GBA, cut volume, site area), text bound to project data (autotext). An edit on the board is an override, marked, with Reset | Archicad's linked drawings and autotext; SketchUp LayOut's overrides and Reset. The data stays connected (the owner's rule). |
@@ -234,7 +235,16 @@ when it starts (V111 to V138 went to other work; V139 to V193 are in NOW).
 | 118 | Blocks and data | ATTDEF ATTEDIT BEDIT WBLOCK DATAEXTRACTION TABLESTYLE TABLEDIT TABLEEXPORT | First phase that's about the disciplines, not drafting. BLOCK and INSERT landed in V124, as the Assets library's blocks: saved records inserted as independent copies. A block reference that follows its definition (what BEDIT edits) is not built. |
 | 119 | Sheets and plotting, rest | MVIEW (draw a viewport on the paper) PAGESETUP (plot settings beyond Sheet Setup) PUBLISH (V122's Print set prints every sheet in one job; a chosen subset and page setups remain) EXPORTPDF (vector PDF of a sheet) VPLAYER (per-viewport layer visibility) viewport lock | LAYOUT, MSPACE and PSPACE landed in V116, with layout tabs and model space through a viewport. |
 
-**Recently finished:** V172b, **Ladybug's weather and comfort; the boards made editable** (2026-10-31 to 11-01).
+**Recently finished:** V172e, **storage A2: the library and templates in IndexedDB** (2026-11-01; the version stays V172).
+- The owner's decisions D1 and D3 of `reference/research-local-storage.md`. The Assets library localStorage refuses goes
+  to the database (`lib:family`), its pointer written once committed; read back after start, anything added meanwhile
+  kept after it, nothing saved over it until then. A template localStorage refuses is kept under `tpl:<id>`, its entry
+  marked; using it reads it back, removing it removes it; one both refuse is said so and its entry goes.
+- **D3:** the browser asked to keep the app's storage once, at the first Save, never on load; "no" is normal.
+- Found by the suite: a database refusing at once answered inside the call, before the template's entry existed;
+  every database answer comes after the call returns now (patch b). Suite 27 checks; 15 variants, all caught.
+
+V172b, **Ladybug's weather and comfort; the boards made editable** (2026-10-31 to 11-01).
 - The owner's decisions (2026-10-31): Ladybug's runtime committed with the site (the more reliable of the two); UTCI in
   CBE Clima's four conditions; the psychrometric chart at 0.5 and 1.0 clo with Ladybug's five strategies; and the boards
   editable, "like a generate table or chart in excel", under "the config i already have (snap, grid, ortho)", any

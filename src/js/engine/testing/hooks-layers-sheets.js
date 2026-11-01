@@ -180,6 +180,9 @@
   };
   /* __acad3dV172d: where the project on screen is kept */
   window.__acad3dV172d='idbstore,spill,pointer,bootload,bootguard,parkidb,activateidb,removeidb,hiddenflush,listcount';
+  window.__acad3dV172e='libidb,libpointer,libbootload,libmerge,tplidb,tpluse,tplremove,persistonsave';
+  window.__a3dLibStore=function(){return {idb:A3D_FAMLIB_IDB,loading:A3D_FAMLIB_LOADING,dirty:A3D_FAMLIB_DIRTY};};
+  window.__a3dPersist=function(){return {asked:A3D_PERSIST.asked,granted:A3D_PERSIST.granted};};
   window.__a3dSpill=function(){return {on:A3D_SPILL.on,loading:A3D_SPILL.loading,busy:A3D_SPILL.busy,next:!!A3D_SPILL.next};};
   window.__a3dTitleBlockSet=function(tb){A3D.titleBlock=tb;bimSheetViewRefresh();saveSoon();};
   window.__a3dSheetPointerDown=bimSheetPointerDown;
