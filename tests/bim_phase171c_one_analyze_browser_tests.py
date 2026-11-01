@@ -266,7 +266,9 @@ async def run():
             ck(ft == [f['title'] for f in cf] and len(ft) >= 5, "what was found: each finding, its title (%s)" % ft[:3])
             ck(await safe("()=>!document.querySelector('[data-awpanel=\"cat:climate\"] .a3d-safind input,[data-awpanel=\"cat:climate\"] .a3d-safind button')"), "read only")
             an = await safe("()=>[].map.call(document.querySelectorAll('[data-awpanel=\"cat:climate\"] .a3d-awp-an'),function(b){return b.getAttribute('data-awact');})")
-            ck(an == ['focus:sun', 'focus:shadow', 'focus:wind', 'card:sun', 'card:sunhours', 'card:solar'], "the analyses that answer it (%s)" % an)
+            # AMENDED FOR V172b: and Ladybug's five, after the sun's
+            ck(an == ['focus:sun', 'focus:shadow', 'focus:wind', 'card:sun', 'card:sunhours', 'card:solar', 'card:lbweather', 'card:lbutci', 'card:lbpsych', 'card:lbwind', 'card:lbdd'],
+               "the analyses that answer it (%s)" % an)
             ck(await text('[data-awpanel="cat:climate"] .a3d-clsec .a3d-sasechd') == 'Climate and risk' and await safe("()=>!!document.querySelector('[data-awpanel=\"cat:climate\"] [data-saact=\"climboard\"]')"),
                "its data: the climate and risk, with its board")
             await click('[data-awpanel="cat:climate"] [data-awact="focus:wind"]')

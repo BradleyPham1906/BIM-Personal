@@ -171,7 +171,9 @@ async def run():
                     # AMENDED FOR V168: and the land's
                     'dglanduse': 'location', 'dgfigure': 'location', 'dgzoning': 'legal', 'dggreen': 'ecology',
                     # AMENDED FOR V171: and Traffic and people
-                    'dgtraffic': 'access'}
+                    'dgtraffic': 'access',
+                    # AMENDED FOR V172b: and Ladybug's, in Climate: the weather it reads, then its four analyses
+                    'lbweather': 'climate', 'lbutci': 'climate', 'lbpsych': 'climate', 'lbwind': 'climate', 'lbdd': 'climate'}
             # AMENDED FOR V172: and the site analysis tools and their History in Tools (not a category of the engine's: its grouping below is the analyses')
             tools = {k: 'tools' for k in ('tlbuffer', 'tldistance', 'tlslopecls', 'tlexclude', 'tlsuit', 'tllocate', 'tlsynth', 'tlcapacity', 'tlhistory')}
             ck(W == dict(want, **tools), "each analysis in the category it answers: landform, water, climate; the model's in Model (%s)" % W)
@@ -193,7 +195,8 @@ async def run():
             await page.wait_for_timeout(150)
             vis = "()=>[].filter.call(document.querySelectorAll('.a3d-analyze-wrap [data-sacat=\"climate\"] [data-anzcard]'),function(r){return r.getBoundingClientRect().height>0;}).map(function(r){return r.getAttribute('data-anzcard');})"
             s0 = await safe(vis) or []
-            ck(await safe("()=>window.__a3dAw().panel") == 'cat:climate' and s0 == ['dgsun', 'dgshadow', 'dgwind', 'sun', 'sunhours', 'solar'],
+            # AMENDED FOR V172b: Ladybug's five rows after the sun's
+            ck(await safe("()=>window.__a3dAw().panel") == 'cat:climate' and s0 == ['dgsun', 'dgshadow', 'dgwind', 'sun', 'sunhours', 'solar', 'lbweather', 'lbutci', 'lbpsych', 'lbwind', 'lbdd'],
                "the category picked: on the right; its rows in the list under it (%s)" % s0)
             await page.click('.a3d-analyze-wrap [data-anzact="aw:card:sun"]')
             p1 = await safe("()=>window.__a3dAw().panel")
