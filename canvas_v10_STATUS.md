@@ -16255,3 +16255,107 @@ explained: a step list watched by a MutationObserver under load.
 
     canvas_v10.html   3740818 bytes
     sha256            4d8ba4c09774e5eeb455711cb940d5096608b9a0049f5e7d867f5f9bf861c0d9
+
+### V172b: Ladybug L1, weather and comfort; the boards made editable (2026-10-31 to 2026-11-01)
+
+"ok start" (2026-10-31). Ladybug Tools' own Python, unchanged, run by Pyodide in a Web Worker, its runtime committed and
+served with the site; UTCI and PMV over the year, the psychrometric chart with comfort polygons, the wind rose and the
+design days, on the climate board and in Analyze. The owner's answers of 2026-10-31: the runtime committed (the more
+reliable of the two, as asked); UTCI in CBE Clima's four conditions; the psychrometric chart at 0.5 and 1.0 clo with
+Ladybug's five strategies; and the boards made editable -- "not a static board ... like a generate table or chart in
+excel" -- under "the config i already have (snap, grid, ortho). do not invent new stuff", any analysis on any board and
+boards of one's own, within V172b. The research is `reference/research-ladybug-weather-comfort.md` (its sections 1 to
+13, and As built in 14); the owner's video of archiMap's one-click report went to
+`reference/research-archimap-site-report.md`, kept for V176 (the owner).
+
+**What was built** (patches `Phase/patch_v172b_a.py` to `_f.py`; `src/js/engine/ladybug/`, `src/py/bim_ladybug.py`,
+`src/js/engine/sheets/board-figures.js` and `board-edit.js`, `src/css/site-analysis/boards-arranged.css`,
+`testing/hooks-ladybug.js` and `hooks-boards.js`; `runtime/`, `tools/check_runtime.py`, `tools/embed_py.py`):
+- **The runtime:** Pyodide 0.29.5's five files and the four wheels (ladybug-core 0.44.63, ladybug-geometry 1.35.7,
+  ladybug-comfort 0.19.13, click 8.3.3) committed under `runtime/`, each pinned by size and SHA-256 in
+  `runtime/MANIFEST.json`; `tools/check_runtime.py` refuses anything else, and `tools/build_site.py` and the Pages
+  workflow run it. The one-file app reads them from the Pages address, the multi-file app from its own `runtime/`.
+- **The worker:** made from a Blob on the first run (the app opens as fast as before, and asks for nothing until then);
+  `importScripts` and `loadPyodide`; each wheel's SHA-256 checked before it is unpacked, a changed one refused by name;
+  the adapter, ours, written beside them. A failure is warned and said with its cause.
+- **The weather:** an EPW, or a station's ZIP (its DDY gives ASHRAE's design days: Ladybug 0.44.63 cannot read a 2025
+  EPW header's), opened from a file and read in the browser; or the last full year from Open-Meteo, in the site's
+  standard time (`Etc/GMT+5`), a half-hour zone in UTC, said. The project keeps where the hours came from, not the hours.
+- **The analyses:** UTCI in four conditions (the sun's radiant temperature by SolarCal), the official ten categories,
+  the hours outside the formula's range counted; the psychrometric chart drawn from Ladybug's own geometry, the merged
+  PMV zone and the five strategies as Ladybug's "LB PMV Polygon" combines them; Ladybug's wind rose in the app's
+  bands; the design days, the DDY's first. Each kept with its weather, the versions that made it and the standards it
+  used (the four together 95 KB in the project); on the Climate and risk board after its own figures.
+- **The registry:** `utci`, `ashrae.55`, `app.comfort` and `ashrae.dd` in Climate, passed to the adapter; a strategy
+  parameter outside the range Ladybug's component allows goes back to its default, said; a changed standard marks
+  only the results that used it.
+- **Analyze:** Climate's rows: Weather for Ladybug, then the four, each with its numbers, Run, Show on the board and
+  Add to a board.
+- **The boards made editable:** every card named (`'@clim.temp'` among its classes); a board read for its cards by
+  drawing it once, so each figure is drawn by its own board's code wherever it goes; a board's list of figures kept in
+  the set's record. Edit, on a board's bar: drag by the handle or the body, size by the corner, under Snap (an edge
+  caught within `pxThreshold`), Grid (the 12 columns, rows of the same step) and Ortho, in drawing's order; the arrow
+  keys; a figure's menu (Options: title, chart or table or both, UTCI's condition; Fit; Duplicate; earlier or later;
+  Remove); Add a figure, every analysis with its preview; Reset; New board and Duplicate in Presentation's menus. Laid
+  out 1408 px across and zoomed to a narrower main view; in bands that print unsplit; on a phone in reading order. Each
+  change one undo step, kept with the project; Present, Print set and the thumbnail as arranged.
+
+**Found:**
+- Open-Meteo's instants were an hour late. The adapter gave every variable the hour after, as an EPW's hour 1 is read
+  for the fields over an hour; Ladybug moves an EPW's last row to the front for the fields at an instant (temperature,
+  dew point, humidity, wind, sky cover; its `epw.py`), so those take Open-Meteo's own hour now, and pressure and the
+  radiations the hour after (patch e). The suite's check of every hour against the official UTCI polynomial found it;
+  the shares of a year, the same either way, could not.
+- The catalogue's previews sat outside a board's element: the board's chart rules (`.a3d-clb .hit`, its ticks) did not
+  reach them and the hit areas painted black. Edit's dialogs carry the board's own class now, and `bimClbEl` passes
+  them by.
+- Open-Meteo out of reach said "Failed to fetch", the browser's words: it says what failed and that the hours need the
+  network (patch e).
+- The full regression: V114 holds every rule of the stylesheet to a class some code writes, reading the code for the
+  names; a figure's `o-table` and `o-both` were put together from `' o-'` and the option, which it cannot read. They
+  are written out whole (patch f); the option is one of the two or none, so nothing draws differently.
+- The suite: a `file://` page is read by its name's extension, so the kept build is compared from a copy named
+  `.html`; two pages of one context share a project through storage, so the comparison has contexts of its own. It
+  left the wheels it unpacked, 6.5 MB a run, in the temporary folder; it takes its folders away now.
+
+**Suites:**
+- **New:** `tests/bim_phase172b_ladybug_boards_browser_tests.py`, 116 checks, with `tests/ladybug_fixture.py` (a made-up
+  station year: an EPW, a DDY, their ZIP and Open-Meteo's answer; nothing of a real station is committed) and
+  `tests/ladybug_reference.py` (UTCI by the official UTCI_a002 polynomial, its 210 terms read out of the Fortran by a
+  script; Fanger's PMV held to ISO 7730's 12 cases; the wind's sectors; the DDY read as text; a board's bands), while
+  the same adapter on the committed wheels runs natively, so the browser's numbers must be CPython's: the records; the
+  runtime (nothing asked before a run, a changed wheel refused, no network said); a weather file; UTCI hour by hour;
+  the chart against PMV and native; wind; design days; Open-Meteo hour by hour; kept and out of date; Analyze; the
+  boards' figures and the kept build's HTML; Edit on real drags; bands; boards of one's own; Present, Print set (Edit
+  on and off), the printed page's bands, the thumbnail; a phone; a reload.
+- **Falsification:** `Phase/falsify_phase172b.py`, 77 variants: the first run, on build bb3a061, caught 74. The zoom
+  check took a zoom of 1 for an answer: it measures the main view's width now, and the arrangement's in it. The band
+  rule was looked for as text the stylesheet's other rules also hold: it is each band's own break on the printed page
+  now, in print media. Edit's guard for print and the thumbnail was never asked while Edit was on: the board's page for
+  print is drawn in Edit now; that check first looked in the page's style rules too, which name every control, and reads
+  the elements now. On the final suite, from a frozen worktree of the build merged with main, all 77 were caught, none
+  by a page that failed to load, in 1980 s with 4 workers.
+- **Amended:** V62 (the app's Pages site, asked for the runtime only on a run, and ladybug.tools' and utci.org's
+  pages, linked), V141 and V148 (Ladybug's five rows in Climate; Ladybug, a name, keeps its capital), V162 (+ Board's
+  New board, a board's Edit and Duplicate; Ladybug's rows in Climate), V167 (the 49 topics, utci.org's host,
+  `tests/standards_reference.py`'s four), V171c (Climate's rows).
+
+**Not done:** sun hours and radiation on the model (V172c); a station's file found for the site (climate.onebuilding.org
+sends no CORS header: named, not proxied); Safari, iOS and Firefox not run (Chromium only here); whether Pages
+compresses `.wasm`; half-hour time zones against Open-Meteo; Ladybug's reading of the 2025 header (worked around by
+the DDY; an issue upstream is the owner's to open or not); a figure's own period or chart type beyond chart or table.
+
+**State after V172b:**
+
+137 suites, 7055 checks (the 136 older suites' 6939 and V172b's 116): all passed from a frozen worktree of the build
+merged with main (V124b and V172d), in 955 s with 4 workers; the falsification, from the same worktree, as above;
+`tools/check_site.py`, the multi-file app against the one file on a desktop and a phone, no failure. The first full
+regression, on build bb3a061 before patch f and the merge, passed 6973 of 6984: what V172b changed for the older
+suites (V62's hosts, V141's and V148's rows in Climate, V114's stylesheet rule, which patch f answered, the guide
+for V142, built again) and V169's thousand trees stalled under six workers (183 of 183 alone).
+
+    canvas_v10.html   3887711 bytes
+    sha256            fc802948b69f38190d9ec6e83c9af226f106d4c1a68d6874c1e1b2ba6dd470fd
+    markers           __acad3dV60 ... __acad3dV172, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
+                      __acad3dV121b, __acad3dV124b, __acad3dV166b, __acad3dV166c, __acad3dV166d, __acad3dV171b,
+                      __acad3dV171c, __acad3dV171d, __acad3dV172b, __acad3dV172d

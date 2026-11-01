@@ -324,7 +324,7 @@ moves by its handle or by Up and Down. Present and Print set show the board as a
 
 ## 14. As built (2026-10-31 to 2026-11-01)
 
-**The engine** (patches `Phase/patch_v172b_a.py` to `_e.py`; the files in `src/js/engine/ladybug/`, `src/py/bim_ladybug.py`
+**The engine** (patches `Phase/patch_v172b_a.py` to `_f.py`; the files in `src/js/engine/ladybug/`, `src/py/bim_ladybug.py`
 embedded by `tools/embed_py.py`): the runtime committed under `runtime/` and pinned by `runtime/MANIFEST.json`
 (`tools/check_runtime.py`, run by the Pages workflow and by `tools/build_site.py`); one classic worker made from a Blob,
 loading Pyodide 0.29.5 and checking each wheel's SHA-256 before unpacking it; the adapter; the two sources (a file, or
@@ -361,6 +361,17 @@ Ortho govern a drag, in that order, as they govern a point being drawn.
   are excluded from `bimClbEl`.
 - A file:// page is read by its name's extension: the kept build (`.bak_phase172b_pre`) is opened from a copy named
   `.html` for the suite's comparison.
+- The full regression: V114 holds every rule of the stylesheet to a class some code writes, and reads the code for the
+  names; a figure's `o-table` and `o-both` were put together from `' o-'` and its option, which it cannot read. They
+  are written out whole (patch f); the option is one of the two or none, so nothing draws differently.
+
+**Checked** (`tests/bim_phase172b_ladybug_boards_browser_tests.py`, 116 checks, against `tests/ladybug_reference.py` and
+the same adapter run natively on the committed wheels): UTCI by the official polynomial, every hour of the year in the
+same category as the app's (0 of 8,760 differ, in the shade with wind and in the shade in still air); the four
+conditions' every hour as native CPython's; comfort by Fanger's PMV for 0.5 and 1.0 clo, 17.9% of the hours by the
+reference and 18.1% in the app, the difference 211 hours at the polygon's edge; each strategy's share as native
+CPython's; Open-Meteo's hours, after patch e, as Ladybug holds a file's (0 differ). The falsification (77 ways to break
+the build) and the full regression are in the log, `canvas_v10_STATUS.md`, V172b.
 
 **Sources added 2026-11-01:** utci.org's `UTCI Program Code.zip` again (SHA-256
 `83ea34dc2428093c8b0f4e299bfb0a24752ff49ec1e11741927a75dafae283f1`): its polynomial's 210 terms read out of
