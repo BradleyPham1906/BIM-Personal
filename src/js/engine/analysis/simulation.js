@@ -6,7 +6,10 @@
   function bimSimStamp(){
     var s=A3D.objs.length+':',i,o,m;
     for(i=0;i<A3D.objs.length;i++){o=A3D.objs[i];m=o.mesh;s+=(m&&m.v?m.v.length:0)+(o.pos?','+o.pos.join(','):'')+(o.survey?'s'+o.survey.length+'r'+(o.rev||0):'')+';';}
-    var h=0;for(i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))|0;
+    var h=0,j,k;for(i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))|0;
+    /* __acad3dV172c: where the vertices are, not only how many: a mesh reshaped with the same count changed nothing above */
+    for(i=0;i<A3D.objs.length;i++){m=A3D.objs[i].mesh;if(!m||!m.v)continue;
+      for(j=0;j<m.v.length;j++)for(k=0;k<3;k++)h=(h*31+Math.round((m.v[j][k]||0)*1000))|0;}
     return h+':'+(bimTrueNorthDeg())+':'+JSON.stringify(bimSunSettings());
   }
   function bimSimStale(r){return !!(r&&r.stamp!==bimSimStamp());}

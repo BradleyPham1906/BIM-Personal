@@ -37,7 +37,8 @@
   function bimLbsStale(k,R){
     var why=[],s;
     if(!R)return why;
-    if(R.stamp!==bimSimStamp())why.push('the model, its north or the site\'s place has changed');
+    if(R.stamp!==bimResKeyFrom(bimSimStamp(),'sunhours'))why.push('the model, its north or the site\'s place has changed');
+    if(k==='sun'&&R.params&&R.params.span!=='year'&&R.params.date!==bimSunSettings().date)why.push('the day studied has changed');
     if(k==='rad'){s=bimLbSrcKept();if(!s||R.src!==s.key)why.push('the weather is not what it read');}
     if(R.std&&bimStdChanged(R.std).length)why.push(bimStdChangedText(bimStdChanged(R.std)));
     return why;
@@ -96,7 +97,7 @@
     if(miss)return Promise.reject(new Error('Set the site '+miss.join(', ')+' first (Properties > Site > Location)'));
     var ids=opts.ids||(A3D.selSet&&A3D.selSet.length?A3D.selSet:null),G=bimLbsGeometry(ids);
     if(!G.faces)return Promise.reject(new Error('There are no solids to study: draw or bring in buildings first'));
-    var stamp=bimSimStamp(),t0=Date.now(),req=bimLbsRequest(k,G),src=null,o=bimLbsOpts();
+    var stamp=bimResKeyFrom(bimSimStamp(),'sunhours'),t0=Date.now(),req=bimLbsRequest(k,G),src=null,o=bimLbsOpts();
     A3D_LBS.busy=k;
     bimLbRefresh();
     var p=k==='rad'?bimLbEnsureSource().then(function(s){src=s;}):Promise.resolve();

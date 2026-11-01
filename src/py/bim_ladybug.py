@@ -522,6 +522,16 @@ def sky(density=0, ground_ref=0.2, months=None):
             'months': [int(months[0]), int(months[1])] if months else [1, 12]}
 
 
+def sky_values():
+    """The kept sky's patches as Ladybug holds them (kWh/m2 each, direct and diffuse), and its ground reflectance:
+    for the suite's own sum."""
+    m = S.get('sky')
+    if m is None:
+        raise ValueError('No sky: run the sky first')
+    return {'direct': [_r(v, 6) for v in m.direct_values], 'diffuse': [_r(v, 6) for v in m.diffuse_values],
+            'ground_ref': m.ground_reflectance, 'density': 'reinhart' if m.high_density else 'tregenza'}
+
+
 def radiation(rows):
     """Ladybug's RadiationStudy.compute() over the matrix the worker put in S['mtx'] (rows x the sky's and the
     ground's patches, each the cosine where the patch is seen), with the kept sky: kWh/m2 per row."""
@@ -569,7 +579,7 @@ def sun_hours(rows, timestep=4):
 
 FUNCS = {'open_file': open_file, 'open_hours': open_hours, 'utci': utci, 'psych': psych, 'windrose': windrose,
          'design_days': design_days, 'sky': sky, 'radiation': radiation, 'sun_vectors': sun_vectors,
-         'sun_hours': sun_hours}
+         'sun_hours': sun_hours, 'sky_values': sky_values}
 
 
 def handle(req):

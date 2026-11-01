@@ -19058,7 +19058,10 @@ try{
   function bimSimStamp(){
     var s=A3D.objs.length+':',i,o,m;
     for(i=0;i<A3D.objs.length;i++){o=A3D.objs[i];m=o.mesh;s+=(m&&m.v?m.v.length:0)+(o.pos?','+o.pos.join(','):'')+(o.survey?'s'+o.survey.length+'r'+(o.rev||0):'')+';';}
-    var h=0;for(i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))|0;
+    var h=0,j,k;for(i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))|0;
+    /* __acad3dV172c: where the vertices are, not only how many: a mesh reshaped with the same count changed nothing above */
+    for(i=0;i<A3D.objs.length;i++){m=A3D.objs[i].mesh;if(!m||!m.v)continue;
+      for(j=0;j<m.v.length;j++)for(k=0;k<3;k++)h=(h*31+Math.round((m.v[j][k]||0)*1000))|0;}
     return h+':'+(bimTrueNorthDeg())+':'+JSON.stringify(bimSunSettings());
   }
   function bimSimStale(r){return !!(r&&r.stamp!==bimSimStamp());}
@@ -33128,6 +33131,16 @@ try{
     "            'months': [int(months[0]), int(months[1])] if months else [1, 12]}",
     "",
     "",
+    "def sky_values():",
+    "    \"\"\"The kept sky's patches as Ladybug holds them (kWh/m2 each, direct and diffuse), and its ground reflectance:",
+    "    for the suite's own sum.\"\"\"",
+    "    m = S.get('sky')",
+    "    if m is None:",
+    "        raise ValueError('No sky: run the sky first')",
+    "    return {'direct': [_r(v, 6) for v in m.direct_values], 'diffuse': [_r(v, 6) for v in m.diffuse_values],",
+    "            'ground_ref': m.ground_reflectance, 'density': 'reinhart' if m.high_density else 'tregenza'}",
+    "",
+    "",
     "def radiation(rows):",
     "    \"\"\"Ladybug's RadiationStudy.compute() over the matrix the worker put in S['mtx'] (rows x the sky's and the",
     "    ground's patches, each the cosine where the patch is seen), with the kept sky: kWh/m2 per row.\"\"\"",
@@ -33175,7 +33188,7 @@ try{
     "",
     "FUNCS = {'open_file': open_file, 'open_hours': open_hours, 'utci': utci, 'psych': psych, 'windrose': windrose,",
     "         'design_days': design_days, 'sky': sky, 'radiation': radiation, 'sun_vectors': sun_vectors,",
-    "         'sun_hours': sun_hours}",
+    "         'sun_hours': sun_hours, 'sky_values': sky_values}",
     "",
     "",
     "def handle(req):",
@@ -34079,7 +34092,8 @@ try{
   function bimLbsStale(k,R){
     var why=[],s;
     if(!R)return why;
-    if(R.stamp!==bimSimStamp())why.push('the model, its north or the site\'s place has changed');
+    if(R.stamp!==bimResKeyFrom(bimSimStamp(),'sunhours'))why.push('the model, its north or the site\'s place has changed');
+    if(k==='sun'&&R.params&&R.params.span!=='year'&&R.params.date!==bimSunSettings().date)why.push('the day studied has changed');
     if(k==='rad'){s=bimLbSrcKept();if(!s||R.src!==s.key)why.push('the weather is not what it read');}
     if(R.std&&bimStdChanged(R.std).length)why.push(bimStdChangedText(bimStdChanged(R.std)));
     return why;
@@ -34138,7 +34152,7 @@ try{
     if(miss)return Promise.reject(new Error('Set the site '+miss.join(', ')+' first (Properties > Site > Location)'));
     var ids=opts.ids||(A3D.selSet&&A3D.selSet.length?A3D.selSet:null),G=bimLbsGeometry(ids);
     if(!G.faces)return Promise.reject(new Error('There are no solids to study: draw or bring in buildings first'));
-    var stamp=bimSimStamp(),t0=Date.now(),req=bimLbsRequest(k,G),src=null,o=bimLbsOpts();
+    var stamp=bimResKeyFrom(bimSimStamp(),'sunhours'),t0=Date.now(),req=bimLbsRequest(k,G),src=null,o=bimLbsOpts();
     A3D_LBS.busy=k;
     bimLbRefresh();
     var p=k==='rad'?bimLbEnsureSource().then(function(s){src=s;}):Promise.resolve();
