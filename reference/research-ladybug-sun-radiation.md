@@ -272,3 +272,37 @@ Yes, you should compile and run gendaymtx here. And add it to the runtime."
 | The second reader's check | `reference/experiments/v172c-check.md` | every fact the code uses | 2026-11-01 | P |
 | wasi-sdk 22 | https://github.com/WebAssembly/wasi-sdk/releases/tag/wasi-sdk-22 | the sysroot and builtins, by SHA-256 | 2026-11-01 | P |
 | Philadelphia TMYx 2009-2023 | https://climate.onebuilding.org (PA, Philadelphia Intl. AP 724080) | the EPW and Wea, as test data | 2026-11-01 | P |
+
+## 13. As built (2026-11-01)
+
+The design of part 5b, built in `Phase/patch_v172c_a.py` to `_f.py`, with what building it changed:
+- **The runtime:** ladybug-radiance 0.2.12's wheel unpacked with the others; numpy (Pyodide's) and `gendaymtx.wasm`
+  (Radiance rad6R0P1a, checked by its SHA-256) loaded at the first study only.
+- **The worker** (`src/js/engine/ladybug/runtime.js`, `rays.js`): a study message runs Ladybug's first call (the sky,
+  or the sun's steps), the rays over a bounding-volume hierarchy, then Ladybug's own sum (`RadiationStudy.compute`,
+  `DirectSunStudy.compute`) by chunks of rows. Its text is `rays.js`'s functions and its own.
+- **The adapter** (`src/py/bim_ladybug.py`): `sky` (`SkyMatrix.from_components` with the EPW's radiation, as
+  `from_epw` and LB Cumulative Sky Matrix do; `_run_gendaymtx` replaced by the worker's run), `radiation`,
+  `sun_vectors` (`Sunpath`, the sun up, `sun_vector_reversed`), `sun_hours`, and `sky_values` for the suite.
+- **The studies** (`src/js/engine/ladybug/studies.js`): the faces of the selection's solids or every solid, one point a
+  face moved 0.1 m off it; every solid shown casting shade; kept with the project (one undo step) with the weather
+  read, the versions, the registry's stamp and the model's; drawn over the solids in Ladybug's legend colours
+  (Colorset.original, ecotect), the other solids grey, the legend in the view's safe area; two rows in Analyze's
+  Climate group.
+- **The registry:** `app.solar` (ground reflectance 0.2, the 0.1 m offset, four sun steps an hour for a day, one for
+  the year).
+
+**Found while building:**
+- The browser check (`reference/experiments/v172c-app/`): the legend under the floating dock; numpy's version kept as
+  none (the versions read before the first study loads it). Patch c.
+- The phase's suite: V143's `bimSimStamp` hashed each mesh's vertex count and position, not its coordinates, so a box
+  raised from 10 to 12 m kept its stamp and Solar, Sun hours and these studies all said they were current. It hashes
+  the coordinates now (patch e: the class, not only the symptom). And a study kept the whole stamp, which holds the
+  site's date, so a new date marked radiation out of date; a study now keeps V148's key (the model, north, the place),
+  and direct sun on the day studied says when that day changed (patch f).
+
+**Verified:** the phase's suite, `tests/bim_phase172c_ladybug_studies_browser_tests.py`, 51 checks, each number held to
+the suite's own reckoning in CPython from Ladybug's wheels (a lone box's five faces on both skies and with true north
+turned; a canyon floor's direct sun on two days and over the year, exactly); `Phase/falsify_phase172c.py`, 22 variants,
+all caught (184 s, 4 workers, from a frozen worktree of `737ebbd`). The full regression: part of the records
+(`canvas_v10_STATUS.md`, PIPELINE).
