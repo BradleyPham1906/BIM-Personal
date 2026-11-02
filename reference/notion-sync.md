@@ -91,6 +91,7 @@ Search Notion before creating anything, so nothing is made twice.
 | `reference/research-giraffe.md` | `3fecbfcc3a3881e5a131fafce16dcc73` |
 | `reference/research-ladybug-tools.md` | `405cbfcc3a38819dbbdce4dc211a6b8f` |
 | `reference/research-ladybug-weather-comfort.md` | `40acbfcc3a388171a683cf330197d199` |
+| `reference/research-ladybug-sun-radiation.md` | `40bcbfcc3a3881ec9351cd2a8a19e78c` |
 | `reference/research-lod-reconstruction.md` | `3fecbfcc3a38812abfbcd3f4172e02bd` |
 | `reference/research-map.md` | `3fecbfcc3a3881b3a039fa3dba8ea81b` |
 | `reference/research-local-storage.md` | `40acbfcc3a3881c6a32fcdb69d6cc78a` |

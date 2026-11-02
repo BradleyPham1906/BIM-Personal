@@ -118,6 +118,12 @@ TOPICS = {
         dict(id='ashrae.55.2023', pub='2023', st='current', lv='S', adopt=[('*', '2023', None)], v={'ppd': (10, '%'), 'still': (0.1, 'm/s')})]),
     'app.comfort': dict(kind='assumption', anywhere=True, cat=False, eds=[
         dict(id='app.comfort.1', pub='', st='current', lv='A', adopt=[('*', None, None)], v=None)]),
+    # AMENDED FOR V172c: Ladybug's study settings -- its components' defaults (LB Cumulative Sky Matrix's ground
+    # reflectance 0.2, LB Incident Radiation's and LB Direct Sun Hours' 10 cm offset: ladybug-grasshopper, read as text),
+    # and the sun's steps an hour (V148's quarter hours for a day; Ladybug's default, one, for the year)
+    'app.solar': dict(kind='assumption', anywhere=True, cat=False, eds=[
+        dict(id='app.solar.1', pub='', st='current', lv='A', adopt=[('*', None, None)],
+             v={'ground_ref': (0.2, 'ratio'), 'offset': (0.1, 'm'), 'step_day': (4, 'steps/h'), 'step_year': (1, 'steps/h')})]),
     'ashrae.dd': dict(kind='data', anywhere=True, cat=False, eds=[
         dict(id='ashrae.dd.2025', pub='2025', st='current', lv='S', adopt=[('*', '2025', None)], v={'heating': ([99.6, 99], '%'), 'cooling': ([0.4, 1, 2], '%')})]),
     # AMENDED FOR V168: land and green -- LBCS (adopted nowhere as a rule), Spacematrix, 3-30-300 and the app's land

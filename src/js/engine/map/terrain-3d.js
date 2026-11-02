@@ -417,6 +417,7 @@
     }
     A3D.lastPolys=polys;
     }
+    if(!capMode)bimLbsDraw(ctx,V,W,H);       /* __acad3dV172c: a Ladybug study on the model, over the solids */
     drawGrids(ctx,V,W,H);
     drawDataLayers(ctx,V,W,H);     /* __acad3dV134: the public record, under the property lines */
     drawProperties(ctx,V,W,H);     /* __acad3dV103: under the model, like grids */

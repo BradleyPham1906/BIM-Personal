@@ -1,5 +1,5 @@
 {
- "what": "The runtime of the Ladybug analyses (V172b): Pyodide 0.29.5's core files and the four pinned wheels, committed so the site and the suites never depend on npm or PyPI (the owner, 2026-10-31). reference/research-ladybug-weather-comfort.md. tools/check_runtime.py checks every file against this.",
+ "what": "The runtime of the Ladybug analyses (V172b): Pyodide 0.29.5's core files and the pinned wheels and, since V172c, Radiance's gendaymtx as WebAssembly, committed so the site and the suites never depend on npm or PyPI (the owner, 2026-10-31). reference/research-ladybug-weather-comfort.md. tools/check_runtime.py checks every file against this.",
  "pyodide": "0.29.5",
  "npm_tarball_sha256": "6749b10ee515a1458ecea36d860c8ce2a48366e85b3f92d749ad1840e4aff181",
  "files": [
@@ -16,6 +16,13 @@
    "sha256": "1f256ecad192880510e84ad60474eab7589218784b9a50bc7ceee34c2b91f1d5",
    "from": "https://raw.githubusercontent.com/pyodide/pyodide/0.29.5/LICENSE",
    "licence": "MPL-2.0 (Pyodide); the Python it carries under the PSF licence (CPython-LICENSE)"
+  },
+  {
+   "path": "pyodide/0.29.5/numpy-2.2.5-cp313-cp313-pyemscripten_2025_0_wasm32.whl",
+   "bytes": 2823762,
+   "sha256": "800c98edc0c864dfa49f07005680c699b4b42b84eae1f8cb19d35b3634e7f05c",
+   "from": "https://cdn.jsdelivr.net/pyodide/v0.29.5/full/numpy-2.2.5-cp313-cp313-pyemscripten_2025_0_wasm32.whl (its SHA-256 as pyodide-lock.json pins it; loaded by Pyodide's loadPackage, V172c)",
+   "licence": "BSD-3-Clause (its dist-info/LICENSE.txt, with the bundled parts' licences in numpy/)"
   },
   {
    "path": "pyodide/0.29.5/pyodide-lock.json",
@@ -53,6 +60,20 @@
    "licence": "MPL-2.0 (Pyodide); the Python it carries under the PSF licence (CPython-LICENSE)"
   },
   {
+   "path": "radiance/LICENSE",
+   "bytes": 2456,
+   "sha256": "1ce85220aa44606999b89105acefb879be6dcf285887251a51d56274295e93c6",
+   "from": "https://github.com/LBNL-ETA/Radiance/blob/7abde14fc49872c39defa610d7b67bf45530e780 (the release rad6R0P1a)/License.txt",
+   "licence": "Radiance Software License 2.0, BSD-3 style (radiance/LICENSE)"
+  },
+  {
+   "path": "radiance/gendaymtx.wasm",
+   "bytes": 114742,
+   "sha256": "45726aea4f019ca39dd2c6ba1cdfe42554f523010b7ac6ed6b25504d70ef05e5",
+   "from": "tools/gendaymtx/build_wasm.py: Radiance rad6R0P1a (7abde14f) (src/gen/gendaymtx.c and seven files), clang 18, wasi-sdk 22 sysroot (V172c)",
+   "licence": "Radiance Software License 2.0, BSD-3 style (radiance/LICENSE)"
+  },
+  {
    "path": "wheels/click-8.3.3-py3-none-any.whl",
    "bytes": 110502,
    "sha256": "a2bf429bb3033c89fa4936ffb35d5cb471e3719e1f3c8a7c3fff0b8314305613",
@@ -78,6 +99,13 @@
    "bytes": 205631,
    "sha256": "fd73bddbf611f6d523677dd855db0184191b882aba06c353e7032bf245c89139",
    "from": "https://pypi.org/project/ladybug-geometry/1.35.7/",
+   "licence": "AGPL-3.0 (its dist-info/licenses/LICENSE)"
+  },
+  {
+   "path": "wheels/ladybug_radiance-0.2.12-py3-none-any.whl",
+   "bytes": 51148,
+   "sha256": "66d57a562c3e896e9ae55e685a4f45e0a0ada28a8948b749966defa028a9e629",
+   "from": "https://pypi.org/project/ladybug-radiance/0.2.12/",
    "licence": "AGPL-3.0 (its dist-info/licenses/LICENSE)"
   }
  ]

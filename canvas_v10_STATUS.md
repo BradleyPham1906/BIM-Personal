@@ -16065,7 +16065,7 @@ way to a moving sun, V170's motions of every multi-line element (the angles take
                       __acad3dV121b, __acad3dV166b, __acad3dV166c, __acad3dV166d, __acad3dV171b, __acad3dV171c,
                       __acad3dV171d
 
-## Phase 172 (V172) - Site analysis tools and synthesis, ArcGIS's way; Ladybug's weather and comfort, the boards made editable (V172b); storage A1, large projects in IndexedDB (V172d); storage A2, the library and templates (V172e)
+## Phase 172 (V172) - Site analysis tools and synthesis, ArcGIS's way; Ladybug's weather and comfort, the boards made editable (V172b); sun-hours and radiation on the model (V172c); storage A1, large projects in IndexedDB (V172d); storage A2, the library and templates (V172e)
 
 Eight site analysis tools in the analysis workspace, in the shape of ArcGIS's geoprocessing pane: Buffer, Distance,
 Slope classes, Exclusions, Suitability (Esri's transform and weight, by multiplier or percent), Locate, Constraints and
@@ -16401,3 +16401,75 @@ ca9fcf7, 6964 of 6966 in 1033 s with 3 workers. The two failures were V142's: th
 conflict, the records were joined by hand and the guide rebuilt. The merged build, 3893256 bytes, sha256
 2d40105de276cd2ff0c1bdf8ce811bdbf0e321b6642b2917d73c05f019ecb7b0: 138 suites, 7082 checks (V172b's 7055 and V172e's
 27), all passed from a frozen worktree of 1a27767 in 1019 s with 3 workers; `tools/check_runtime.py` passed.
+
+### V172c: Ladybug L2, sun-hours and radiation on the model (2026-11-01)
+
+"start v172c" (2026-11-01). Ladybug's incident radiation and direct sun hours on the model's faces, beside V143's Solar
+and V148's Sun hours, which stay (the owner: "already verified with a research paper ready, so I wouldn't replace
+it"). The research is `reference/research-ladybug-sun-radiation.md` (its parts 1 to 12, and As built in 13), the
+experiments in `reference/experiments/v172c-sky/`, `v172c-rays/` and `v172c-app/`, the second reader's check in
+`v172c-check.md`. The owner's answers of 2026-11-01: `gendaymtx` compiled and run here as the reference, then added to
+the runtime (option B, over a Python port of its sky); numpy added ("add pyodide"); Solar and Sun hours kept beside.
+
+**What the research found:** ladybug-radiance 0.2.12 runs Radiance for both of its expensive steps (the sky,
+`gendaymtx`; the rays, `oconv` and `rcontrib`), so neither runs in Pyodide; its sums and objects do. Ladybug's own
+Grasshopper components use the CAD's own rays and Radiance only for the sky: the app doing its own rays is Ladybug's
+design. `gendaymtx`'s eight C files built unchanged with clang 18 and wasi-sdk 22's sysroot give the native program's
+bytes exactly (115 KB, reproducible, `tools/gendaymtx/build_wasm.py`), and Ladybug's `SkyMatrix` with it gives native
+Radiance's values to the last digit, in Node and in Chromium's worker. The app's own rays (V143's Moller-Trumbore) are
+exact against closed-form geometry but test every solid for every ray (2,000 faces 48 s); over a bounding-volume
+hierarchy, the same answers for 362,440 rays and 20,000 faces in about 3.5 s.
+
+**What was built** (patches `Phase/patch_v172c_a.py` to `_f.py`; `src/js/engine/ladybug/rays.js` and `studies.js`,
+`runtime.js`, `src/py/bim_ladybug.py`; `runtime/radiance/`, ladybug-radiance's wheel and Pyodide's numpy in
+`runtime/`):
+- **The worker:** ladybug-radiance's wheel with the others; numpy and `gendaymtx.wasm` (checked by its SHA-256) at the
+  first study only; a study message: Ladybug's sky or sun steps, the rays, Ladybug's own sum by chunks of rows.
+- **The studies:** incident radiation (kWh/m2 over the weather's year; Tregenza's sky, Ladybug's default, or
+  Reinhart's) and direct sun hours (the day studied every quarter hour, or the year every hour; no weather needed);
+  the faces of the selection's solids or every solid, one point a face 0.1 m off it, every solid shown casting shade;
+  kept with the project, one undo step, out of date when the model, north, the place, the weather, a standard or (for
+  a day's sun) the day changes, and why; drawn over the solids in Ladybug's legend colours with its legend; two rows in
+  Analyze's Climate group.
+- **The registry:** `app.solar` (Ladybug's ground reflectance 0.2 and 10 cm offset; four sun steps an hour for a day,
+  one for the year). **The guide:** Sun and radiation on the model (Ladybug).
+
+**Found:**
+- **Radiance's `master` misplaces every sky patch under Ladybug** (the second reader): from 2025-12-19 (`2559a9be`, in
+  rad6R0P2) `gendaymtx -A` writes a `NAVERAGED=` header line; ladybug-radiance skips a fixed 9 lines, so it kept the
+  ground, dropped the zenith and put every patch one off (93 to 569 misplaced, measured). Built from the release
+  rad6R0P1a instead, whose header fits; `alignment.py` tests it. The first experiments could not see it: they compared
+  Ladybug's parse with itself, and horizontal totals move under 1%. *Lesson: compare with a parse of one's own, never
+  the code under test with itself; a total can hide a misplacement.*
+- **The legend under the floating dock**, and **numpy's version kept as none** (read before the first study loads it):
+  the browser check (patch c).
+- **V143's `bimSimStamp` counted vertices, not where they are:** a box raised from 10 to 12 m kept its stamp, so
+  Solar, Sun hours and the new studies all said they were current. It hashes the coordinates now (patch e). *Lesson: a
+  stamp that says "unchanged" must read what the result depends on, not a proxy for it.*
+- **A study kept the whole stamp**, which holds the site's date: a new date marked radiation out of date. A study keeps
+  V148's key now, and a day's direct sun says when its day changed (patch f).
+
+**Suites:**
+- **V172c:** `tests/bim_phase172c_ladybug_studies_browser_tests.py`, 51 checks, every number held to the suite's own
+  reckoning in CPython from Ladybug's wheels: a lone box's five faces on both skies and with true north turned; a canyon
+  floor's direct sun on two days and over the year, exactly; the registry; the rows; kept, undo, out of date and why;
+  the selection; the drawing; a tampered `gendaymtx` refused; a phone.
+- **Falsification:** `Phase/falsify_phase172c.py`, 22 variants, all caught (184 s, 4 workers, a frozen worktree of
+  `737ebbd`).
+- **Amended:** V141, V148, V162, V171c (Climate's two new rows), V167 (`app.solar`, in `tests/standards_reference.py`),
+  V172b (the runtime's 15 files and five wheels, Climate's last rows). The first full regression (build 234e52fe)
+  passed 7066 of 7082: those lists, nothing else.
+
+**Not done:** a grid of points on each face (one value a face, as Ladybug studies a mesh); a period of months for the
+radiation (the adapter takes one, the panel offers the year); the results on the boards; Safari and a phone's own
+browser not run (Chromium only); Ladybug upstream still skips a fixed 9 lines with Radiance 6.0P2 or later (not reported
+there).
+
+**State after V172c:** 139 suites, 7133 checks (the 138 older suites' 7082 and V172c's 51): all passed from a frozen
+worktree of `737ebbd`, in 547 s with 6 workers; the falsification as above; `tools/check_runtime.py`, 15 files.
+
+    canvas_v10.html   3931722 bytes
+    sha256            ec6b82ead8e2072e7e5031e18f5e7dc6364d9f1fbab2e4ad26579f071f65084a
+    markers           __acad3dV60 ... __acad3dV172, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
+                      __acad3dV121b, __acad3dV124b, __acad3dV166b, __acad3dV166c, __acad3dV166d, __acad3dV171b,
+                      __acad3dV171c, __acad3dV171d, __acad3dV172b, __acad3dV172c, __acad3dV172d, __acad3dV172e

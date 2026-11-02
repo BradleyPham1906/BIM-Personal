@@ -1,6 +1,14 @@
   /* __acad3dV172b: the Ladybug analyses, for the suite */
   window.__acad3dV172b='runtime,manifest,worker,sha256,adapter,epw,ddy,openmeteo,standardtime,utci4,psych,pmv2clo,strategies5,windrose,designdays,kept,figids,arranged,bands,zoom,edit,snaps,keys,catalogue,options,custom,duplicate,registry,stdstamp,analyze';
   function bimLbErr(e){return {error:String(e&&e.message||e)};}
+  window.__acad3dV172c='gendaymtx,wasm,sha256,numpy,bvh,rays,sky,tregenza,reinhart,radiation,sunpath,directsun,faces,kept,stale,draw,legend,rows,registry';
+  window.__a3dLbStudy=function(k,o){return bimLbsRun(k,o).then(function(r){return JSON.parse(JSON.stringify(r));},bimLbErr);};
+  window.__a3dLbStudyGeo=function(ids){var G=bimLbsGeometry(ids);return {tris:G.tris.length/9,faces:G.faces,solids:G.solids,all:G.all,map:G.map};};
+  window.__a3dLbStudyCards=function(){return JSON.parse(JSON.stringify(bimLbsCards()));};
+  window.__a3dLbStudyStale=function(k){return bimLbsStale(k,bimLbsKept(k));};
+  window.__a3dLbStudyDrawn=function(){return A3D.lastLbsDrawn||null;};
+  window.__a3dLbStudyCol=function(k,v,lo,hi){return bimLbsCol(k,v,lo,hi);};
+  window.__a3dLbStudyPeriod=function(span,date){return bimLbsPeriod(span,date);};
   /* where the runtime is loaded from; a suite points it at its own server */
   window.__a3dLbBase=function(u){if(u!==undefined)A3D_LB.base=u||null;return bimLbBase();};
   window.__a3dLbState=function(){

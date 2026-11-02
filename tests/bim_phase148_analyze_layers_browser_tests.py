@@ -172,8 +172,9 @@ async def run():
             # AMENDED FOR V171: Traffic and people in Access and circulation
             # AMENDED FOR V172: the site analysis tools and their History in Tools, before Model
             # AMENDED FOR V172b: Ladybug's five in Climate, after the sun's
+            # AMENDED FOR V172c: and its two studies on the model
             ck(G == {'location': ['dgframe', 'dglanduse', 'dgfigure'], 'legal': ['dgzoning'], 'landform': ['dgcontours', 'dgslope', 'dgaspect', 'survey', 'terrain', 'grading'], 'water': ['dgflow', 'dgponds', 'dgflood', 'rain'],
-                     'climate': ['dgsun', 'dgshadow', 'dgwind', 'sun', 'sunhours', 'solar', 'lbweather', 'lbutci', 'lbpsych', 'lbwind', 'lbdd'], 'ecology': ['dggreen'],
+                     'climate': ['dgsun', 'dgshadow', 'dgwind', 'sun', 'sunhours', 'solar', 'lbweather', 'lbutci', 'lbpsych', 'lbwind', 'lbdd', 'lbrad', 'lbsun'], 'ecology': ['dggreen'],
                      'risk': ['dgnoise'], 'access': ['dgstreets', 'dgcycling', 'dgtransit', 'dgwalk', 'dgvehicles', 'dgtraffic'], 'people': ['dgviews', 'dgneeds'],
                      'tools': ['tlbuffer', 'tldistance', 'tlslopecls', 'tlexclude', 'tlsuit', 'tllocate', 'tlsynth', 'tlcapacity', 'tlhistory'],
                      'model': ['lens', 'areas', 'lod', 'stats', 'structure']},
@@ -219,14 +220,16 @@ async def run():
             # names rain -- and still no row that only says terrain
             # AMENDED FOR V171c: a row's words are what it shows too: Water flow's says where rain runs
             # AMENDED FOR V172b: Climate's rows include Ladybug's five
-            ck(s == ['dgflow', 'rain', 'dgsun', 'dgshadow', 'dgwind', 'sun', 'sunhours', 'solar', 'lbweather', 'lbutci', 'lbpsych', 'lbwind', 'lbdd'], "'rain' finds Rain on terrain and the Climate category, not every row that says terrain (%s)" % s)   # AMENDED FOR V164: Climate's rows include Analyze site's
+            # AMENDED FOR V172c: and its two studies
+            ck(s == ['dgflow', 'rain', 'dgsun', 'dgshadow', 'dgwind', 'sun', 'sunhours', 'solar', 'lbweather', 'lbutci', 'lbpsych', 'lbwind', 'lbdd', 'lbrad', 'lbsun'], "'rain' finds Rain on terrain and the Climate category, not every row that says terrain (%s)" % s)   # AMENDED FOR V164: Climate's rows include Analyze site's
             s = await safe("(q)=>window.__a3dAnzSearch(q)", 'arrows')
             ck(s == ['grading'], "'arrows' finds the row whose button is Slope arrows: the buttons are searched too (%s)" % s)
             # AMENDED FOR V162: a category's name finds its rows; two words that only a row has find the row
             s = await safe("(q)=>window.__a3dAnzSearch(q)", 'climate')
             # AMENDED FOR V164: Climate's rows include Analyze site's; Risk, whose link names the climate, shows Noise
             # AMENDED FOR V172b: and Ladybug's five
-            ck(s == ['dgsun', 'dgshadow', 'dgwind', 'sun', 'sunhours', 'solar', 'lbweather', 'lbutci', 'lbpsych', 'lbwind', 'lbdd', 'dgnoise'], "a category's name finds its rows (%s)" % s)
+            # AMENDED FOR V172c: and its two studies
+            ck(s == ['dgsun', 'dgshadow', 'dgwind', 'sun', 'sunhours', 'solar', 'lbweather', 'lbutci', 'lbpsych', 'lbwind', 'lbdd', 'lbrad', 'lbsun', 'dgnoise'], "a category's name finds its rows (%s)" % s)
             s = await safe("(q)=>window.__a3dAnzSearch(q)", 'cut fill')
             ck(s == ['grading'], "two words, both at the start of words (%s)" % s)
             # ADDED IN V165: a group's name finds every row in it, though few of them say it -- the variant that
@@ -254,7 +257,7 @@ async def run():
             await page.keyboard.press('Escape')
             await page.wait_for_timeout(100)
             vis = [k for k, r in (await rows()).items() if not r['hidden']]
-            ck(len(vis) == 49 and await safe("()=>document.querySelector('.a3d-analyze-wrap [data-anzsearch]').value") == '', "Escape empties it: every row again")   # AMENDED FOR V164: 18 rows; AMENDED FOR V165: 24; AMENDED FOR V166: 30; AMENDED FOR V168: 34; AMENDED FOR V171: 35; AMENDED FOR V172: 44, the eight tools and History; AMENDED FOR V172b: 49, Ladybug's five
+            ck(len(vis) == 51 and await safe("()=>document.querySelector('.a3d-analyze-wrap [data-anzsearch]').value") == '', "Escape empties it: every row again")   # AMENDED FOR V164: 18 rows; AMENDED FOR V165: 24; AMENDED FOR V166: 30; AMENDED FOR V168: 34; AMENDED FOR V171: 35; AMENDED FOR V172: 44, the eight tools and History; AMENDED FOR V172b: 49, Ladybug's five; AMENDED FOR V172c: 51, its two studies
             # the left panel is the one scroll container (V65)
             sc = await safe("()=>{var a=document.getElementById('a3d-leftpanel');a.scrollTop=a.scrollHeight;return a.scrollTop;}")   # AMENDED FOR V171c: no rows to open
             await safe("()=>window.__a3dColumnAt([210,200],0,1,1,3)")
