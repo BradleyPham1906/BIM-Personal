@@ -558,6 +558,21 @@ body.light-theme #a3d-tip strong{color:#202124}body.light-theme .a3d-tiptype b{c
 #a3d-ro-bar button{min-height:30px;padding:0 12px;border-radius:6px;border:1px solid var(--border,rgba(255,255,255,.16));background:var(--accent,#8f7aff);color:#fff;font:inherit;cursor:pointer;white-space:nowrap}
 @media(pointer:coarse){#a3d-ro-bar button{min-height:36px}}
 body.a3d-tier-phone #a3d-ro-bar{left:12px;right:12px;transform:none;max-width:none}
+/* __acad3dV172g: in a file or not (D2). The status bar's line runs Save; amber while the work is not in a file. */
+.a3d-stfile{max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;letter-spacing:0;font-size:11px}
+.a3d-stfile[data-state="unsaved"],.a3d-stfile[data-state="changed"]{color:#e3a64a;border-color:#5a4524}
+.a3d-stfile[data-state="saved"]{color:#8d9196}
+body.light-theme .a3d-stfile[data-state="unsaved"],body.light-theme .a3d-stfile[data-state="changed"]{color:#8a5a0f;border-color:#d9b77a}
+/* __acad3dV172g: a small question (Save as's type, a file changed elsewhere), centred over the page */
+.a3d-filedlg{position:fixed;inset:0;z-index:99980;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.35);padding:16px}
+.a3d-filedlg-box{width:min(420px,100%);background:#23272c;border:1px solid #3a4048;border-radius:8px;box-shadow:0 10px 30px rgba(0,0,0,.45);padding:16px;color:#dfe4ea;font:13px/1.45 "Segoe UI",Inter,system-ui,sans-serif}
+.a3d-filedlg-t{font-weight:600;font-size:14px;margin-bottom:6px}
+.a3d-filedlg-x{color:#b9c0c8;margin-bottom:14px}
+.a3d-filedlg-ft{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end}
+.a3d-filedlg-ft .a3d-btn{min-height:32px}
+@media (pointer:coarse){.a3d-filedlg-ft .a3d-btn{min-height:36px}}
+body.light-theme .a3d-filedlg-box{background:#ffffff;border-color:#c9ced4;color:#202124}
+body.light-theme .a3d-filedlg-x{color:#4a4f55}
 /* __acad3dV116: the layout tabs, the space button, and the menus they open */
 .a3d-laytabs{display:flex;align-items:stretch;align-self:stretch;flex:0 1 auto;min-width:0;overflow:hidden;margin-left:-10px;border-right:1px solid #101214}
 .a3d-lt{flex:0 1 auto;min-width:0;max-width:180px;background:transparent;border:0;border-right:1px solid #101214;color:#a9abae;padding:0 12px;font:inherit;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -1284,6 +1299,7 @@ body.light-theme .a3d-rktitle{color:#202124}body.light-theme .a3d-rkcat{color:#3
          than read, and it is what decides where a wall drawn with a finger lands. */
 .a3d-status{height:40px;gap:6px;padding:0 8px}
 .a3d-sthint,.a3d-stcoords{display:none}
+.a3d-stfile{max-width:40vw}   /* __acad3dV172g */
 .a3d-stbtn{padding:9px 11px;font-size:12px}
 .a3d-stlvl{font-size:11px}
 .a3d-stlvl select{font-size:13px;max-width:108px}
@@ -1390,6 +1406,8 @@ body.a3d-tree-docked #a3d-leftpanel > .a3d-tree > #a3d-browser{flex:1 1 auto;min
 body.a3d-tree-docked #a3d-leftpanel > .a3d-tree .a3d-palhd{background:transparent;padding:11px 12px 7px;font-size:12px;font-weight:900;letter-spacing:.01em;}
 body.a3d-tree-docked #a3d-leftpanel > .a3d-tree .a3d-palhd{flex-wrap:wrap;row-gap:5px}
 body.a3d-tree-docked #a3d-leftpanel > .a3d-tree .a3d-palhd .a3d-palbtns{flex-wrap:wrap;flex:1 1 100%;justify-content:flex-start;}
+/* __acad3dV172g: a tab whose project has work not in a file (D2) */
+.acad-doctab .dt-dot{flex:0 0 auto;width:7px;height:7px;border-radius:50%;background:#e3a64a;margin-left:2px}
 /* __acad3dV171b: the analysis workspace. Its bar over the view, the analyses on the left, the one analysis on the
    right; dark with the app, light with body.light-theme. While it is open nothing to draw with is on screen, so the
    app's messages have the bottom to themselves. */
@@ -1762,7 +1780,8 @@ body.light-theme .a3d-tl-msgs,body.light-theme .a3d-tl-hn span,body.light-theme 
     ['NEW',['QNEW'],'newProject','Start a new project in a tab of its own'],
     ['OPEN',[],'openJson','Open a project file in a tab of its own'],
     ['CLOSE',[],'closeProject','Close this project\'s tab'],
-    ['SAVE',['QSAVE','SAVEAS'],'saveJson','Save this project as a file'],
+    ['SAVE',['QSAVE'],'saveJson','Save this project to its file'],
+    ['SAVEAS',[],'saveJsonAs','Save this project to a new file, plain or compressed'],   /* __acad3dV172g */
     ['PLOT',['PRINT'],'print','Plot the open sheet, or model space to PDF'],
     ['UNDO',['U'],'undo','Undo the last change'],
     ['REDO',[],'redo','Redo what was undone'],
@@ -2038,6 +2057,7 @@ body.light-theme .a3d-tl-msgs,body.light-theme .a3d-tl-hn span,body.light-theme 
       d=byId[open[i]]; if(!d) continue;
       html+='<button class="acad-doctab dt-doc'+(!onStart&&d.id===act?' active':'')+'" data-dt="doc" data-doc="'+escHtml(d.id)+'" title="'+escHtml(d.name)+' \u2014 '+docCount(d.objs)+'">'+
         '<span class="dt-name">'+escHtml(d.name)+'</span>'+
+        (d.file&&(d.file.kind==='unsaved'||d.file.kind==='changed')?'<span class="dt-dot" title="'+escHtml(d.file.text)+'" aria-label="'+escHtml(d.file.text)+'"></span>':'')+   /* __acad3dV172g */
         '<span class="dt-x" data-dtx="'+escHtml(d.id)+'" title="Close '+escHtml(d.name)+'">\u00d7</span></button>';
     }
     html+='<button class="acad-doctab acad-plus" data-dt="new" title="New project">+</button>';
@@ -5430,6 +5450,13 @@ return OpenSkp;
 (function(){
 try{
   var LSK='acad3dV1';
+  /* __acad3dV172g: D5. WebKit refuses storage to a page opened from a file: reading window.localStorage throws
+     SecurityError and so does indexedDB.open (part 4.4). Known once, first, so the app says one true thing -- the project
+     lives only in its file -- instead of the messages each storage path would give (part 14, e19). */
+  var A3D_NO_STORAGE=(function(){
+    try{var ls=window.localStorage;if(!ls)return true;ls.getItem(LSK);return false;}
+    catch(eS){return !!(eS&&eS.name==='SecurityError');}
+  })();
   /* __acad3dV172f: every project in the browser's database (docs/research/research-local-storage.md, part 13). The index
      -- which projects there are, which is on screen, which are open -- is kept under a key of its own, which no older
      build reads, so none can misread or overwrite it (an older build replaced V172d's pointer in acad3dV1 at start,
@@ -5589,6 +5616,7 @@ try{
     'acadLayoutsV1','acadBlocksV1','acadDockV1','canvas-grid'];
   function bimClearCanvasStorage(){
     var gone=[],i,k;
+    if(A3D_NO_STORAGE)return gone;   /* __acad3dV172g: nothing is kept here, so nothing to remove */
     for(i=0;i<A3D_CANVAS_KEYS.length;i++){
       k=A3D_CANVAS_KEYS[i];
       try{
@@ -14321,9 +14349,13 @@ try{
   // existing, already-tested undo/redo machinery) rather than a parallel serialization system --
   // a project file is just that same snapshot wrapped in a versioned envelope so a random or
   // foreign JSON file can be confidently rejected instead of silently corrupting the model. ----
+  /* __acad3dV172g: envelope version 2 (D4). Its data is bimProjectRecord() itself -- the one list of what a project is,
+     with the view (cam) and the id counter (seq) that version 1 left out -- and the app's version; the record's docId
+     belongs to this browser and is not written. V172f and older read a version-2 file with their "newer version" warning
+     and take every field they know (part 14.7). */
   function bimBuildProjectEnvelope(){
-    return JSON.stringify({app:'acad3d-project',formatVersion:1,savedAt:new Date().toISOString(),
-      data:{objs:A3D.objs,levels:A3D.levels,grids:A3D.grids,layers:A3D.layers,counts:A3D.counts,activeLevel:A3D.activeLevel,activeLayer:A3D.activeLayer,views:A3D.views,activeViewId:A3D.activeViewId,levelFilter:A3D.levelFilter,types:A3D.types,activeWallType:A3D.activeWallType,sheets:A3D.sheets,titleBlock:A3D.titleBlock,buildings:A3D.buildings,activeBuilding:A3D.activeBuilding,site:A3D.site,roomScheme:A3D.roomScheme||'',classifications:A3D.classifications,dataFeatures:A3D.dataFeatures||{},history:A3D.history||null,resultLayers:A3D.resultLayers||[],pres:A3D.pres||null}});   /* __acad3dV146, __acad3dV148 */
+    return JSON.stringify({app:'acad3d-project',formatVersion:2,savedAt:new Date().toISOString(),appVersion:BIM_APP_VERSION.v,
+      data:bimProjectRecord()});
   }
   function bimParseProjectEnvelope(text){
     var parsed;
@@ -14331,7 +14363,8 @@ try{
     if(!parsed||typeof parsed!=='object')return {error:'not a recognized project file'};
     if(parsed.app!=='acad3d-project'||!parsed.data)return {error:'not a recognized project file'};
     var warn=null;
-    if(parsed.formatVersion>1)warn='this project file is from a newer version, some data may not load correctly';
+    if(parsed.formatVersion>2)warn=   /* __acad3dV172g: version 2 is this build's */
+      'this project file is from a newer version, some data may not load correctly';
     return {data:parsed.data,warn:warn};
   }
   /* __acad3dV115: with several projects open, "project.acad3d.json" and "plan.pdf" no longer say
@@ -14341,13 +14374,11 @@ try{
     var s=bimProjectLabel().replace(/[\\\/:*?"<>|\u0000-\u001f]+/g,'_').replace(/^[\s.]+|[\s.]+$/g,'');
     return s.slice(0,80)||'project';
   }
+  /* __acad3dV172g: a download of the plain file, whatever the browser (the test hooks' export); Save itself is
+     bimFileSave in io/file-save.js */
   function bimExportProjectFile(){
-    try{
-      var json=bimBuildProjectEnvelope();
-      bimTriggerDownload(json,bimFileStem()+'.acad3d.json','application/json');
-      a3dToast('Project saved as '+bimFileStem()+'.acad3d.json ('+A3D.objs.length+' object(s))');
-      bimAskPersist();   /* __acad3dV172e */
-    }catch(eS){console.warn('[BIM] Project export failed: ',eS);a3dToast('Project export failed: '+(eS&&eS.message?eS.message:eS));}
+    try{bimFileDownload(A3D_DOCS.active,'json');}
+    catch(eS){console.warn('[BIM] Project export failed: ',eS);a3dToast('Project export failed: '+(eS&&eS.message?eS.message:eS));}
   }
   /* __acad3dV172e: decision D3. The browser keeps best-effort storage only while it has room; persist() asks it to
      keep this app's. Asked once, at the first Save -- a gesture, never on load (web.dev); Firefox shows a prompt,
@@ -14373,27 +14404,22 @@ try{
     var res=bimParseProjectEnvelope(text);
     if(res.error){a3dToast(filename+': '+res.error);return false;}
     var id=bimDocsOpenData(res.data,filename);
-    if(!id)return false;
+    if(!id)return false;   /* __acad3dV172g: the new project's id, for its file */
     fitScene();
     var msg='Opened '+filename+' in a new tab: '+(res.data.objs?res.data.objs.length:0)+' object(s)';
     if(res.warn)msg+=' \u2014 '+res.warn;
     a3dToast(msg);
-    return true;
+    return id;
   }
+  /* __acad3dV172g: .json and .gz (D4); the bytes decide, in bimFileRead */
   function bimOpenProjectFileObj(file){
     if(!file)return;
     var name=file.name||'project.json',ext=(name.split('.').pop()||'').toLowerCase();
-    if(ext!=='json'){
-      a3dToast(name+' is not a project file. Open takes .json project files; use Import for DXF, IFC, OBJ or STL.');
+    if(ext!=='json'&&ext!=='gz'){
+      a3dToast(name+' is not a project file. Open takes .acad3d.json and .acad3d.json.gz project files; use Import for DXF, IFC, OBJ or STL.');
       return;
     }
-    var reader=new FileReader();
-    reader.onerror=function(){console.warn('[BIM] A project file could not be read: '+name);a3dToast('Failed to read '+name);};
-    reader.onload=function(ev){
-      try{bimImportProjectFile(ev.target.result,name);}
-      catch(eI){console.warn('[BIM] Opening a project file crashed:',eI);a3dToast('Opening '+name+' failed: '+(eI&&eI.message?eI.message:eI));}
-    };
-    reader.readAsText(file);
+    bimFileRead(file,null);
   }
   function bimOpenProjectPicker(){
     var fi=document.getElementById('a3d-projin');
@@ -14405,6 +14431,389 @@ try{
     fi.value='';fi.click();
     return true;
   }
+
+  /* ================= __acad3dV172g: files as the real save =================
+     docs/research/research-local-storage.md, part 14 (D2, D4, D5; the owner's G1-G5, 2026-11-07). The browser keeps a
+     working copy; the file is the save. Each project's entry in the index says whether it is in a file: the file's name,
+     how it got there (saved, opened, downloaded), its type, when, the file's own time where the browser tells it, and
+     whether the project has changed since. Every edit passes saveSoon(), which tells bimFileTouch().
+     Save, in Chrome and Edge (the File System Access pickers), writes to the project's own file again: permission asked
+     within the click, the writable opened first (draw.io's order: the click's activation lasts 5 s), the file's time
+     checked against the last save (a change made elsewhere is asked about, G4), the envelope written, and the project
+     counted as saved only when close() resolves -- until then the file on disk is the old one (the standard; Chromium's
+     .crswap). Elsewhere, a download. Save as offers the plain file first and the compressed one second (G3); the
+     compressed file is made in a worker (G2: 2-13 ms of stall against 108-566 ms on the main thread, e17). */
+  var A3D_FILE={busy:false,last:{},quietUntil:0,persisted:null,worker:null,workerFailed:false,jobs:{},job:0};
+  var A3D_FILE_REMIND_MS=30*60*1000;   /* D2: the owner's 30 minutes of work not in a file */
+  var A3D_FILE_GAP_MS=2*60*1000;       /* a pause longer than this between edits is not counted as work */
+  var A3D_FILE_PICKER_ID='acad3d-projects';   /* the pickers remember this folder (letters, digits, - and _, at most 32) */
+  /* picker types: each extension at most 16 characters with its dot (e16, the WICG report 84-90) */
+  var A3D_FILE_TYPE_JSON={description:'Project file',accept:{'application/json':['.acad3d.json']}};
+  var A3D_FILE_TYPE_GZ={description:'Compressed project file',accept:{'application/gzip':['.acad3d.json.gz']}};
+  var A3D_FILE_HANDLE_PREFIX='lib:file:';   /* in the projects store; keys under lib: are not projects to V172f's reconcile either */
+
+  function bimFilePickers(){
+    return typeof window.showSaveFilePicker==='function'&&typeof window.showOpenFilePicker==='function';
+  }
+  function bimFileTypeOf(name){return /\.gz$/i.test(String(name||''))?'gz':'json';}
+  function bimFileEntryNow(){return bimDocEntry(A3D_DOCS.active);}
+
+  /* ---- the marker ---- */
+  /* a project is "in a file" when its entry names one and it has not changed since; a project never saved to a file is
+     marked once it holds anything */
+  function bimFileState(e,objs){
+    if(!e)return {kind:'none',text:''};
+    if(e.fileName){
+      if(e.unsaved)return {kind:'changed',text:'Changes not saved to '+e.fileName};
+      var t=e.fileAt?new Date(e.fileAt):null,hm=t?(' at '+('0'+t.getHours()).slice(-2)+':'+('0'+t.getMinutes()).slice(-2)):'';
+      return {kind:'saved',text:(e.fileVia==='opened'?'Opened from ':e.fileVia==='downloaded'?'Downloaded as ':'Saved to ')+e.fileName+hm};
+    }
+    if(e.unsaved||objs>0)return {kind:'unsaved',text:'Not saved to a file'};
+    return {kind:'none',text:''};
+  }
+  function bimFileStatus(){
+    var b=document.getElementById('a3d-stfile');
+    if(!b||!A3D_FILE)return;
+    var e=bimFileEntryNow(),s=bimFileState(e,A3D.objs.length);
+    if(A3D_NO_STORAGE&&s.kind==='none'&&e)s={kind:'unsaved',text:'Not saved to a file'};
+    b.hidden=(s.kind==='none');
+    b.textContent=s.text;
+    b.setAttribute('data-state',s.kind);
+    b.title=s.kind==='saved'?'Save again (Ctrl+S)':'Save this project to a file (Ctrl+S)';
+  }
+  /* every edit: the project changed since its file; 30 minutes of such work, a reminder, then again after 30 more (D2);
+     at the first edit of a project never saved to a file, where the browser has not agreed to keep the app's storage,
+     one reminder (G1). The index is written only when the state changes, not at every edit. */
+  function bimFileTouch(){
+    if(!A3D_FILE)return;   /* an edit made while the engine is still starting, before this file's own code has run */
+    var e=bimFileEntryNow(),now=Date.now(),id=A3D_DOCS.active,changed=false;
+    if(!e||now<A3D_FILE.quietUntil)return;
+    if(!e.unsaved){e.unsaved=1;e.work=0;e.told=0;changed=true;}
+    var last=A3D_FILE.last[id]||0;
+    if(last&&now-last<A3D_FILE_GAP_MS)e.work=(e.work||0)+(now-last);
+    A3D_FILE.last[id]=now;
+    if((e.work||0)-(e.told||0)>=A3D_FILE_REMIND_MS){
+      e.told=e.work;changed=true;
+      a3dToast('"'+bimDocName(id)+'" has 30 minutes of work not saved to a file. Use Save (Ctrl+S) to keep it.');
+    }
+    if(changed)bimDocsSave();
+    if(!e.fileName&&!e.warned)bimFileFirstSave(id);
+    bimFileStatus();
+  }
+  function bimFilePersisted(cb){
+    if(A3D_PERSIST.granted===true)A3D_FILE.persisted=true;
+    if(A3D_FILE.persisted!==null){cb(A3D_FILE.persisted);return;}
+    try{
+      if(!navigator.storage||typeof navigator.storage.persisted!=='function'){A3D_FILE.persisted=false;cb(false);return;}
+      navigator.storage.persisted().then(function(p){A3D_FILE.persisted=!!p;cb(!!p);},function(err){
+        console.warn('[BIM] The browser could not say whether it keeps this app\'s storage.',err);
+        A3D_FILE.persisted=false;cb(false);
+      });
+    }catch(eP){console.warn('[BIM] The browser could not say whether it keeps this app\'s storage.',eP);A3D_FILE.persisted=false;cb(false);}
+  }
+  /* G1: Safari tabs and every private window never have persisted storage, so this covers both without guessing the
+     browser (a private window cannot be told dependably: part 14, H37) */
+  function bimFileFirstSave(id){
+    if(A3D_NO_STORAGE)return;   /* that state has its own message (D5) */
+    bimFilePersisted(function(p){
+      var e=bimDocEntry(id);
+      if(p||!e||e.warned||e.fileName)return;
+      e.warned=1;bimDocsSave();
+      a3dToast('This browser may clear its copy of your projects. Use Save (Ctrl+S) to keep "'+bimDocName(id)+'" as a file.');
+    });
+  }
+  function bimFileMark(id,name,via,type,mod,rev){
+    var e=bimDocEntry(id);
+    if(!e)return;
+    e.fileName=name;e.fileVia=via;e.fileType=type;e.fileAt=Date.now();
+    if(typeof mod==='number')e.fileMod=mod;else delete e.fileMod;
+    /* an edit made while the file was being written is not in it */
+    if(rev===null||id!==A3D_DOCS.active||rev===A3D_REV){e.unsaved=0;e.work=0;e.told=0;A3D_FILE.last[id]=0;}
+    bimDocsSave();
+    bimFileStatus();
+  }
+
+  /* ---- the handles, kept beside the projects in the browser's database ---- */
+  function bimFileHandleGet(id,cb){
+    if(A3D_STORE.mode!=='idb'){cb(null);return;}
+    bimIdbGet(A3D_FILE_HANDLE_PREFIX+id,function(err,v){
+      if(err){console.warn('[BIM] The project\'s file could not be looked up.',err);cb(null);return;}
+      cb(v&&typeof v.createWritable==='function'?v:null);
+    });
+  }
+  function bimFileHandlePut(id,h){
+    if(A3D_STORE.mode!=='idb')return;
+    bimIdbPut(A3D_FILE_HANDLE_PREFIX+id,h,function(err){
+      if(err){
+        console.warn('[BIM] The project\'s file could not be remembered.',err);
+        a3dToast('The browser could not remember this project\'s file: Save will ask where to save next time');
+      }
+    });
+  }
+  function bimFileHandleDrop(id){
+    if(A3D_STORE.mode!=='idb')return;
+    bimIdbDel(A3D_FILE_HANDLE_PREFIX+id,function(err){if(err)console.warn('[BIM] A project\'s file link could not be removed.',err);});
+  }
+
+  /* ---- the file's bytes ---- */
+  var A3D_GZ_WORKER_SRC='self.onmessage=function(e){var d=e.data;function bad(x){self.postMessage({id:d.id,error:String(x&&x.message||x)});}'+
+    'try{new Response(new Blob([new TextEncoder().encode(d.text)]).stream().pipeThrough(new CompressionStream("gzip"))).arrayBuffer()'+
+    '.then(function(b){self.postMessage({id:d.id,buf:b},[b]);},bad);}catch(x){bad(x);}};';
+  function bimGzipMain(text){
+    return new Response(new Blob([new TextEncoder().encode(text)]).stream().pipeThrough(new CompressionStream('gzip')))
+      .arrayBuffer().then(function(b){return new Uint8Array(b);});
+  }
+  function bimGzipWorker(){
+    if(A3D_FILE.worker||A3D_FILE.workerFailed)return A3D_FILE.worker;
+    try{
+      var w=new Worker(URL.createObjectURL(new Blob([A3D_GZ_WORKER_SRC],{type:'text/javascript'})));
+      w.onmessage=function(ev){
+        var d=ev.data,j=A3D_FILE.jobs[d.id];
+        if(!j)return;
+        delete A3D_FILE.jobs[d.id];
+        if(d.error)j.no(new Error(d.error));else j.ok(new Uint8Array(d.buf));
+      };
+      w.onerror=function(ev){
+        console.warn('[BIM] The compression worker stopped; files are compressed on the page instead.',ev&&ev.message);
+        A3D_FILE.workerFailed=true;A3D_FILE.worker=null;
+        var k,jobs=A3D_FILE.jobs;A3D_FILE.jobs={};
+        for(k in jobs)if(jobs.hasOwnProperty(k))bimGzipMain(jobs[k].text).then(jobs[k].ok,jobs[k].no);
+      };
+      A3D_FILE.worker=w;
+    }catch(eW){
+      console.warn('[BIM] A compression worker could not be made; files are compressed on the page instead.',eW);
+      A3D_FILE.workerFailed=true;
+    }
+    return A3D_FILE.worker;
+  }
+  /* G2: in a worker, the page's own thread only where a worker cannot be made */
+  function bimGzip(text){
+    if(typeof CompressionStream!=='function')return Promise.reject(new Error('this browser cannot write compressed files; save as .acad3d.json'));
+    var w=bimGzipWorker();
+    if(!w)return bimGzipMain(text);
+    return new Promise(function(ok,no){
+      var id=++A3D_FILE.job;
+      A3D_FILE.jobs[id]={ok:ok,no:no,text:text};
+      w.postMessage({id:id,text:text});
+    });
+  }
+  /* a damaged file is refused whole: truncation, trailing bytes and a second member are errors (part 14, H35) */
+  function bimGunzip(u8){
+    if(typeof DecompressionStream!=='function')return Promise.reject(new Error('this browser cannot read compressed files'));
+    return new Response(new Blob([u8]).stream().pipeThrough(new DecompressionStream('gzip'))).text();
+  }
+  function bimFileBytes(type){
+    var json=bimBuildProjectEnvelope();
+    if(type!=='gz')return Promise.resolve(new Blob([json],{type:'application/json'}));
+    return bimGzip(json).then(function(u8){return new Blob([u8],{type:'application/gzip'});});
+  }
+  function bimFileName(type){return bimFileStem()+(type==='gz'?'.acad3d.json.gz':'.acad3d.json');}
+
+  /* ---- a small question: the buttons it offers, the answer to cb ('cancel' on Escape or outside) ---- */
+  function bimFileAsk(title,text,buttons,cb){
+    var old=document.getElementById('a3d-filedlg');
+    if(old&&old.parentNode)old.parentNode.removeChild(old);
+    var d=document.createElement('div'),h='',i;
+    d.id='a3d-filedlg';d.className='a3d-filedlg';
+    d.setAttribute('role','dialog');d.setAttribute('aria-modal','true');d.setAttribute('aria-labelledby','a3d-filedlg-t');
+    for(i=0;i<buttons.length;i++)h+='<button class="a3d-btn'+(buttons[i].pri?' a3d-btn-pri':'')+'" data-a3dfd="'+buttons[i].k+'">'+buttons[i].label+'</button>';
+    d.innerHTML='<div class="a3d-filedlg-box"><div class="a3d-filedlg-t" id="a3d-filedlg-t"></div><div class="a3d-filedlg-x"></div>'+
+      '<div class="a3d-filedlg-ft">'+h+'</div></div>';
+    d.querySelector('.a3d-filedlg-t').textContent=title;
+    d.querySelector('.a3d-filedlg-x').textContent=text;
+    var done=false;
+    function end(k){
+      if(done)return;done=true;
+      document.removeEventListener('keydown',key,true);
+      if(d.parentNode)d.parentNode.removeChild(d);
+      cb(k);
+    }
+    function key(ev){if(ev.key==='Escape'){ev.preventDefault();ev.stopPropagation();end('cancel');}}
+    d.addEventListener('click',function(ev){
+      var b=ev.target.closest&&ev.target.closest('[data-a3dfd]');
+      if(b){end(b.getAttribute('data-a3dfd'));return;}
+      if(ev.target===d)end('cancel');
+    });
+    document.addEventListener('keydown',key,true);
+    document.body.appendChild(d);
+    var first=d.querySelector('.a3d-btn-pri')||d.querySelector('button');
+    if(first)first.focus();
+  }
+
+  /* ---- Save and Save as ---- */
+  function bimFileSave(asNew){
+    if(A3D_FILE.busy){a3dToast('A save to a file is already under way');return false;}
+    var e=bimFileEntryNow();
+    if(!e){a3dToast('Open a project to save it');return false;}
+    if(bimFilePickers()){bimFileSavePicked(A3D_DOCS.active,!!asNew);return true;}
+    if(asNew){
+      bimFileAsk('Save as','Save "'+bimDocName(A3D_DOCS.active)+'" as a plain project file, or compressed to about a third of the size.',
+        [{k:'json',label:'Project file (.acad3d.json)',pri:true},{k:'gz',label:'Compressed (.acad3d.json.gz)'},{k:'cancel',label:'Cancel'}],
+        function(k){if(k==='json'||k==='gz')bimFileDownload(A3D_DOCS.active,k);});
+      return true;
+    }
+    bimFileDownload(A3D_DOCS.active,e.fileType||'json');
+    return true;
+  }
+  /* where there is no save picker: a download, as before V172g; a browser cannot say where it went */
+  function bimFileDownload(id,type){
+    var rev=A3D_REV,name=bimFileName(type);
+    A3D_FILE.busy=true;
+    bimFileBytes(type).then(function(blob){
+      A3D_FILE.busy=false;
+      bimTriggerDownload(blob,name,type==='gz'?'application/gzip':'application/json');
+      bimFileMark(id,name,'downloaded',type,null,rev);
+      a3dToast('Project saved as '+name+' ('+A3D.objs.length+' object(s))');
+      bimAskPersist();
+    },function(err){
+      A3D_FILE.busy=false;
+      console.warn('[BIM] The project file could not be made.',err);
+      a3dToast('The project file could not be made: '+(err&&err.message?err.message:err));
+    });
+  }
+  function bimFileSavePicked(id,asNew){
+    A3D_FILE.busy=true;
+    function free(){A3D_FILE.busy=false;}
+    function failed(what,err){
+      free();
+      console.warn('[BIM] '+what,err);
+      a3dToast(what+': '+(err&&err.message?err.message:err));
+    }
+    function pick(){
+      var t=(bimDocEntry(id)||{}).fileType==='gz'?'gz':'json';
+      try{
+        window.showSaveFilePicker({id:A3D_FILE_PICKER_ID,suggestedName:bimFileName(t),types:[A3D_FILE_TYPE_JSON,A3D_FILE_TYPE_GZ]})
+          .then(function(h){write(h,true);},function(err){
+            if(err&&err.name==='AbortError'){free();return;}
+            if(err&&err.name==='SecurityError'){free();a3dToast('The browser asked for a fresh click: use Save as again');return;}
+            failed('The save dialog could not be opened',err);
+          });
+      }catch(eS){failed('The save dialog could not be opened',eS);}
+    }
+    function write(h,isNew){
+      var type=bimFileTypeOf(h.name),rev=A3D_REV,w=null;
+      h.createWritable().then(function(ws){w=ws;rev=A3D_REV;return bimFileBytes(type);})
+        .then(function(blob){return w.write(blob);})
+        .then(function(){return w.close();})
+        .then(function(){w=null;return h.getFile();})
+        .then(function(f){
+          free();
+          if(isNew)bimFileHandlePut(id,h);
+          bimFileMark(id,h.name,'saved',type,f.lastModified,rev);
+          a3dToast('Saved to '+h.name+' ('+A3D.objs.length+' object(s))');
+          bimAskPersist();
+        },function(err){
+          if(w){try{w.abort()['catch'](function(){});}catch(eA){console.warn('[BIM] An unfinished write could not be abandoned.',eA);}}
+          free();
+          console.warn('[BIM] The project could not be saved to '+h.name,err);
+          a3dToast('Not saved to '+h.name+': '+(err&&err.message?err.message:err)+'. The file on disk is as it was.');
+        });
+    }
+    function check(h){
+      var e=bimDocEntry(id);
+      h.getFile().then(function(f){
+        if(e&&typeof e.fileMod==='number'&&f.lastModified!==e.fileMod){
+          free();
+          /* G4: the file was changed elsewhere since this project was last saved to it */
+          bimFileAsk('The file has changed',h.name+' was changed outside this app after it was last saved here. Saving now replaces those changes.',
+            [{k:'over',label:'Overwrite',pri:true},{k:'as',label:'Save as…'},{k:'cancel',label:'Cancel'}],
+            function(k){
+              if(k==='over'){A3D_FILE.busy=true;write(h,false);}
+              else if(k==='as'){A3D_FILE.busy=true;pick();}
+            });
+          return;
+        }
+        write(h,false);
+      },function(err){
+        console.warn('[BIM] The project\'s file can no longer be found.',err);
+        bimFileHandleDrop(id);
+        a3dToast(h.name+' can no longer be found: choose where to save');
+        pick();
+      });
+    }
+    if(asNew){pick();return;}
+    bimFileHandleGet(id,function(h){
+      if(!h){pick();return;}
+      var q;
+      try{q=h.queryPermission({mode:'readwrite'});}catch(eQ){q=Promise.resolve('prompt');}
+      q.then(function(s){return s==='granted'?s:h.requestPermission({mode:'readwrite'});})
+        .then(function(s){
+          if(s==='granted'){check(h);return;}
+          a3dToast('Permission to write '+h.name+' was not given: choose where to save');
+          pick();
+        },function(err){
+          console.warn('[BIM] Permission to write the project\'s file could not be asked.',err);
+          pick();
+        });
+    });
+  }
+
+  /* ---- Open ---- */
+  function bimFileOpen(){
+    if(!bimFilePickers())return bimOpenProjectPicker();
+    try{
+      window.showOpenFilePicker({id:A3D_FILE_PICKER_ID,multiple:true,
+        types:[{description:'Project file',accept:{'application/json':['.json'],'application/gzip':['.gz']}}]})
+        .then(function(hs){
+          hs.forEach(function(h){
+            h.getFile().then(function(f){bimFileRead(f,h);},function(err){
+              console.warn('[BIM] A project file could not be read: '+h.name,err);
+              a3dToast('Failed to read '+h.name);
+            });
+          });
+        },function(err){
+          if(err&&err.name==='AbortError')return;
+          console.warn('[BIM] The open dialog could not be shown; the file input is used instead.',err);
+          bimOpenProjectPicker();
+        });
+    }catch(eO){
+      console.warn('[BIM] The open dialog could not be shown; the file input is used instead.',eO);
+      bimOpenProjectPicker();
+    }
+    return true;
+  }
+  /* a file is compressed when its first two bytes are 1F 8B (RFC 1952), whatever its name (D4) */
+  function bimFileRead(file,handle){
+    var name=file.name||'project.acad3d.json';
+    var reader=new FileReader();
+    reader.onerror=function(){console.warn('[BIM] A project file could not be read: '+name,reader.error);a3dToast('Failed to read '+name);};
+    reader.onload=function(){
+      var u8=new Uint8Array(reader.result),gz=u8.length>1&&u8[0]===0x1f&&u8[1]===0x8b;
+      var text=gz?bimGunzip(u8):Promise.resolve(new TextDecoder('utf-8').decode(u8));
+      text.then(function(t){
+        var id=bimImportProjectFile(t,name);
+        if(!id)return;
+        A3D_FILE.quietUntil=Date.now()+600;
+        if(handle)bimFileHandlePut(id,handle);
+        bimFileMark(id,name,'opened',gz?'gz':'json',handle?file.lastModified:null,null);
+      },function(err){
+        console.warn('[BIM] A compressed project file could not be read: '+name,err);
+        a3dToast(name+' is damaged or incomplete and was not opened: '+(err&&err.message?err.message:err));
+      })['catch'](function(eI){
+        console.warn('[BIM] Opening a project file crashed:',eI);
+        a3dToast('Opening '+name+' failed: '+(eI&&eI.message?eI.message:eI));
+      });
+    };
+    reader.readAsArrayBuffer(file);
+  }
+
+  /* opening, creating or switching a project is not an edit to it */
+  window.addEventListener('a3ddocs',function(ev){
+    var k=ev&&ev.detail?ev.detail.kind:'';
+    if(k==='activate'||k==='open'||k==='create')A3D_FILE.quietUntil=Date.now()+600;
+    if(k==='remove'&&ev.detail.id)bimFileHandleDrop(ev.detail.id);
+    setTimeout(bimFileStatus,0);
+  });
+  /* the line is shown once the status bar is built */
+  (function bimFileStatusBoot(n){
+    if(document.getElementById('a3d-stfile')){bimFileStatus();return;}
+    if(n<80)setTimeout(function(){bimFileStatusBoot(n+1);},250);
+  })(0);
+  /* the status bar's line runs Save, as draw.io's "Unsaved changes. Click here to save." does */
+  document.addEventListener('click',function(ev){
+    var b=ev.target.closest&&ev.target.closest('#a3d-stfile');
+    if(b){ev.preventDefault();bimFileSave(false);}
+  });
   function bimGetFloorProfile(){
     var o=objById(A3D.sel);
     if(!o)return null;
@@ -35329,7 +35738,7 @@ try{
       bimGeoImportFile(file);
     }else if(ext==='cityjson'||(ext==='json'&&/\.city\.json$/i.test(name))){   /* __acad3dV139 */
       bimCityJsonFile(file);
-    }else if(ext==='json'){
+    }else if(ext==='json'||ext==='gz'){   /* __acad3dV172g: a compressed project file too */
       bimOpenProjectFileObj(file);   /* __acad3dV115: the one project-file reader */
     }else if(ext==='dwg'||ext==='step'||ext==='stp'||ext==='iges'||ext==='igs'){
       a3dToast('.'+ext.toUpperCase()+' is not supported (proprietary binary / full B-rep format). Export as DXF (CAD) or IFC (BIM) instead.');
@@ -40496,7 +40905,8 @@ try{
       {keys:['Delete'],k:null,label:'Delete the selection',cmd:'ERASE'}
     ]},
     {grp:'Project',rows:[
-      {keys:[A3D_MODKEY,'S'],k:null,label:'Export the project file',cmd:'SAVE'},
+      {keys:[A3D_MODKEY,'S'],k:null,label:'Save the project to its file',cmd:'SAVE'},   /* __acad3dV172g */
+      {keys:[A3D_MODKEY,'Shift','S'],k:null,label:'Save the project to a new file',cmd:'SAVEAS'},
       {keys:[A3D_MODKEY,'O'],k:null,label:'Open a project file',cmd:'OPEN'},   /* __acad3dV128: bound since V115, never listed */
       {keys:[A3D_MODKEY,'K'],k:null,label:'Command search, or just start typing a command'},
       {keys:['?'],k:null,label:'This panel: the keyboard shortcuts'}   /* __acad3dV129 */
@@ -49050,7 +49460,7 @@ try{
      saved while the record on screen is still being read or copied (the edit is saved once it is), while this tab
      shows a project another tab holds (D7), or when the database cannot be opened by this copy. */
   function save3d(){
-    if(A3D_STORE.mode==='refused')return;
+    if(A3D_STORE.mode==='refused'||A3D_NO_STORAGE)return;   /* __acad3dV172g: D5, the file is the only save there */
     if((A3D_SPILL&&A3D_SPILL.loading)||A3D_STORE.mode==='migrating'||(A3D_STORE.mode==='boot'&&A3D_STORE.v2)){A3D_SPILL.dirty=true;return;}
     if(A3D_TAB.readOnly){bimTabReadOnlyEdit();return;}
     var rec=bimProjectRecord();
@@ -49339,7 +49749,7 @@ try{
   /* __acad3dV172f: the list goes under the index's key once the projects are in the database, and nowhere while the
      database that holds them cannot be opened (nothing written over what cannot be read) */
   function bimDocsSave(){
-    if(A3D_STORE.mode==='refused')return false;
+    if(A3D_STORE.mode==='refused'||A3D_NO_STORAGE)return false;   /* __acad3dV172g: nowhere to write it (D5) */
     var v2=A3D_STORE.v2,key=v2?A3D_INDEX_KEY:A3D_DOCS_KEY;
     try{
       localStorage.setItem(key,JSON.stringify({v:v2?2:1,active:A3D_DOCS.active,open:A3D_DOCS.open,docs:A3D_DOCS.docs}));
@@ -49378,6 +49788,8 @@ try{
       bimSyncStatusBar();
     }finally{setUndoSuspend(false);}
   }
+  /* __acad3dV172g: where the browser keeps nothing (D5), a project left for another tab is parked here */
+  var A3D_DOC_MEM={};
   function bimDocsSwap(toId,stB,fromKey){
     var cur=A3D_DOCS.active;
     if(toId===cur)return true;
@@ -49403,6 +49815,8 @@ try{
     var inIdb=A3D_STORE.mode==='idb';
     if(inIdb){
       if(!A3D_SPILL.loading&&!A3D_TAB.readOnly)bimSpillSave(cur,sA,recA);
+    }else if(A3D_NO_STORAGE){
+      A3D_DOC_MEM[cur]=sA;   /* __acad3dV172g: parked in this page's memory, the only place there is (D5) */
     }else{
       try{localStorage.setItem(A3D_DOC_PREFIX+cur,sA);}
       catch(e1){console.warn('[BIM] The current project does not fit in its own key.',e1);a3dToast(full);return false;}
@@ -49422,7 +49836,8 @@ try{
       bimLoadProjectRecord(stB);
     }catch(eL){
       console.warn('[BIM] The project could not be loaded; the previous one is put back.',eL);
-      if(!inIdb)try{
+      if(A3D_NO_STORAGE)delete A3D_DOC_MEM[cur];
+      else if(!inIdb)try{
         localStorage.setItem(LSK,sA);
         localStorage.removeItem(A3D_DOC_PREFIX+cur);
       }catch(eP){console.warn('[BIM] Browser storage could not be put back after a failed switch.',eP);}
@@ -49432,7 +49847,8 @@ try{
       a3dToast('"'+bimDocName(toId)+'" could not be opened: its stored data is damaged');
       return false;
     }
-    if(fromKey&&!inIdb){
+    if(A3D_NO_STORAGE)delete A3D_DOC_MEM[toId];
+    else if(fromKey&&!inIdb){
       try{localStorage.removeItem(fromKey);}
       catch(e4){console.warn('[BIM] The opened project\'s parked copy could not be removed.',e4);}
     }
@@ -49461,7 +49877,8 @@ try{
     if(id!==A3D_DOCS.active&&A3D_STORE.mode==='idb'){bimDocsActivateStore(id,ent.name||'Untitled project');return true;}   /* __acad3dV172f */
     if(id!==A3D_DOCS.active){
       var nm=ent.name||'Untitled project',raw=null,st=null;
-      try{raw=localStorage.getItem(A3D_DOC_PREFIX+id);}
+      if(A3D_NO_STORAGE)raw=A3D_DOC_MEM[id]||null;   /* __acad3dV172g */
+      else try{raw=localStorage.getItem(A3D_DOC_PREFIX+id);}
       catch(eG){console.warn('[BIM] Browser storage could not be read.',eG);}
       if(raw==null){a3dToast('"'+nm+'" is no longer in this browser\'s storage');return false;}
       try{st=JSON.parse(raw);}
@@ -49776,6 +50193,7 @@ try{
     bimSweepFootingHosts(); /* __acad3dV102 */
     bimRegenerateRegions();
     setA3D_REV(A3D_REV+1);   /* __acad3dV122 */
+    bimFileTouch();   /* __acad3dV172g: changed since its file (D2) */
     bimPagesStale();
     if(saveT)clearTimeout(saveT);
     setSaveT(setTimeout(save3d,300));
@@ -52284,7 +52702,9 @@ try{
           bimStoreToast('This project is kept in the browser\'s database, which could not be read: nothing is saved over it. Open a saved file or start a new project.');
           return;
         }
-        bimStoreToast('This browser does not allow its database here: projects stay in its smaller storage (about 5 MB in all). Use Save to keep copies as files.');
+        /* __acad3dV172g: D5, where the browser keeps nothing at all */
+        bimStoreToast(A3D_NO_STORAGE?'This browser keeps nothing for a page opened from a file: your project lives only in the file you save. Use Save (Ctrl+S) to keep it.':
+          'This browser does not allow its database here: projects stay in its smaller storage (about 5 MB in all). Use Save to keep copies as files.');
         A3D_SPILL.loading=false;
         bimStoreFlushDirty();
         return;
@@ -57658,10 +58078,10 @@ try{
       duplicateSelection();ev.preventDefault();ev.stopImmediatePropagation();return;
     }
     if((ev.ctrlKey||ev.metaKey)&&(ev.key==='s'||ev.key==='S')){
-      bimExportProjectFile();ev.preventDefault();ev.stopImmediatePropagation();return;
+      bimFileSave(!!ev.shiftKey);ev.preventDefault();ev.stopImmediatePropagation();return;   /* __acad3dV172g: Save, Shift for Save as */
     }
     if((ev.ctrlKey||ev.metaKey)&&!ev.shiftKey&&(ev.key==='o'||ev.key==='O')){   /* __acad3dV115: OPEN */
-      bimOpenProjectPicker();ev.preventDefault();ev.stopImmediatePropagation();return;
+      bimFileOpen();ev.preventDefault();ev.stopImmediatePropagation();return;   /* __acad3dV172g */
     }
     if(ev.key==='Escape'){
       /* __acad3dV83: the rail's own transient layers come FIRST in this chain.
@@ -58519,7 +58939,8 @@ try{
     OFFSET:'parallel',TRIM:'cut clip shorten',EXTEND:'stretch longer',MIRROR:'flip reflect',ARRAYRECT:'grid pattern repeat rows columns',
     ARRAYPOLAR:'circular radial repeat',DIST:'distance length measure',DIMLINEAR:'dimension measure',MTEXT:'label note annotation words',
     TEXT:'label note annotation words',HATCH:'fill pattern poche',LAYER:'layers visibility',ZOOM:'fit extents all',UNDO:'back revert',
-    REDO:'again forward',ROTATE:'turn spin angle',SCALE:'resize size bigger smaller',PLOT:'print pdf paper',SAVE:'export file download',
+    REDO:'again forward',ROTATE:'turn spin angle',SCALE:'resize size bigger smaller',PLOT:'print pdf paper',SAVE:'export file download',SAVEAS:'save as new file copy compressed gzip',   /* __acad3dV172g */
+    
     OPEN:'load file import project',NEW:'project file blank',RECTANG:'box square',CIRCLE:'round',PLINE:'polyline path lines',
     LINE:'segment',SELECTALL:'everything select',CLEAR:'deselect none',ANALYZE:'structural frame solve stiffness forces moments deflection',
     USAGE:'program use department gross floor area gfa gba nsa net saleable lettable yield efficiency residential office retail',   /* __acad3dV131 */
@@ -58944,8 +59365,8 @@ try{
     if(act==='m:exportpdf'){bimExportPDF();return;}
     if(act==='m:exportdxf'){bimExportDXF();return;}
     if(act==='m:exportsvg'){bimExportSVG();return;}
-    if(act==='m:saveproj'){bimExportProjectFile();return;}
-    if(act==='m:openproj'){bimOpenProjectPicker();return;}   /* __acad3dV115: opens in a tab of its own */
+    if(act==='m:saveproj'){bimFileSave(false);return;}   /* __acad3dV172g */
+    if(act==='m:openproj'){bimFileOpen();return;}   /* __acad3dV115: opens in a tab of its own; __acad3dV172g */   /* __acad3dV115: opens in a tab of its own */
     if(act==='m:exitsection'){bimExitSection();return;}
     if(act==='m:flipsection'){bimFlipSection();return;}
     if(act==='bim:mirror'){startMirrorTool();return;}
@@ -59016,7 +59437,7 @@ try{
       '<button class="a3d-btn a3d-drawerbtn" data-a3d="drawer" title="Show panel">\u2630</button>'+
       '<button class="a3d-btn a3d-rdrawerbtn" data-a3d="rdrawer" title="Show properties">Props</button>'+
       '<input type="file" id="a3d-filein" accept=".dxf,.ifc,.obj,.stl,.skp,.json,.geojson,.kml,.cityjson,.xml,.landxml" style="display:none">'+
-      '<input type="file" id="a3d-projin" accept=".json" style="display:none">'+   /* __acad3dV115 */
+      '<input type="file" id="a3d-projin" accept=".json,.gz,application/json,application/gzip" style="display:none">'+   /* __acad3dV115 */
       '<span class="a3d-hud">View: <b id="a3d-view">Home</b><span id="a3d-count">0 objects</span></span>'+
       '<span class="a3d-uiwrap">'+
         '<div id="a3d-uimenu" class="a3d-uimenu">'+
@@ -59113,6 +59534,7 @@ try{
     '<div class="a3d-status" id="a3d-statusbar">'+
       '<span id="a3d-laytabs" class="a3d-laytabs"></span>'+   /* __acad3dV116: Model and layout tabs */
       '<span id="a3d-sthint" class="a3d-sthint"></span>'+
+      '<button class="a3d-stbtn a3d-stfile" id="a3d-stfile" data-state="none" hidden></button>'+   /* __acad3dV172g: in a file or not (D2) */
       '<span class="a3d-stspring"></span>'+
       '<button class="a3d-stbtn a3d-stspace" id="a3d-stspace" title="Paper space or model space on this sheet (MSPACE / PSPACE)">PAPER</button>'+
       '<label class="a3d-stlvl" title="Active level -- new walls, floors and sketches are placed here">'+
@@ -60290,7 +60712,7 @@ try{
   }
   /* __acad3dV115: the only commands that make sense with no project current */
   var BIM_START_CMDS={newProject:1,openJson:1};
-  var BIM_SHEET_CMDS={saveJson:1,openJson:1,newProject:1,closeProject:1,undo:1,redo:1,print:1,   /* __acad3dV116 */
+  var BIM_SHEET_CMDS={saveJson:1,saveJsonAs:1,openJson:1,newProject:1,closeProject:1,undo:1,redo:1,print:1,   /* __acad3dV116 */
     newSheet:1,modelTab:1,mspace:1,pspace:1,shortcuts:1,layers:1};   /* __acad3dV121: LAYER works on a sheet, as AutoCAD's does */
   var BIM_SHEET_ACTS={'bim:sheet':1,'bim:titleblock':1,'bim:projinfo':1,'bim:uipanels':1,'m:saveproj':1,'m:openproj':1};
   var BIM_CMD_MAP={
@@ -60448,12 +60870,13 @@ try{
       a3dToast('Grid snap '+(A3D_SNAP.grid?'on':'off'));},
     /* __acad3dV115: the document commands, which the quick-access bar's Save, Open, Undo, Redo and
        Plot run. */
-    saveJson:function(){bimExportProjectFile();},
+    saveJson:function(){bimFileSave(false);},   /* __acad3dV172g: to its file where the browser can (D2) */
+    saveJsonAs:function(){bimFileSave(true);},   /* __acad3dV172g: SAVEAS, plain or compressed (G3) */
     newSheet:function(){bimLayoutNew();},          /* __acad3dV116: LAYOUT */
     modelTab:function(){bimShowModel();},          /* __acad3dV116: MODEL */
     mspace:function(){bimSetModelSpace(null);},    /* __acad3dV116: MSPACE */
     pspace:function(){if(!bimSetPaperSpace()&&!bimSheetOnScreen())a3dToast('PSPACE works on a sheet: open one from the layout tabs');},   /* __acad3dV116 */
-    openJson:function(){bimOpenProjectPicker();},
+    openJson:function(){bimFileOpen();},   /* __acad3dV172g */
     newProject:function(){bimDocsCreate();},
     closeProject:function(){bimDocsClose(A3D_DOCS.active);},
     undo:function(){doUndo();},
@@ -61525,7 +61948,8 @@ try{
       return A3D_DOCS.docs.map(function(d){
         var loaded=(d.id===A3D_DOCS.active);
         return {id:d.id,name:bimDocName(d.id),objs:loaded?A3D.objs.length:(d.objs||0),saved:loaded?0:(d.saved||0),
-                open:A3D_DOCS.open.indexOf(d.id)>=0,loaded:loaded};
+                open:A3D_DOCS.open.indexOf(d.id)>=0,loaded:loaded,
+                file:bimFileState(d,loaded?A3D.objs.length:(d.objs||0))};   /* __acad3dV172g: in a file or not */
       });
     },
     open:function(){return A3D_DOCS.open.slice();},
@@ -61546,6 +61970,13 @@ try{
   window.__a3dStore=function(){return {mode:A3D_STORE.mode,v2:A3D_STORE.v2,newer:A3D_STORE.newer,dirty:A3D_SPILL.dirty,inflight:!!A3D_SPILL.inflight};};
   window.__a3dTab=function(){return {id:A3D_TAB.id,held:!!A3D_TAB.release,readOnly:A3D_TAB.readOnly,why:A3D_TAB.why};};
   window.__a3dTakeOver=bimTabTakeOver;
+  /* __acad3dV172g: files as the real save */
+  window.__acad3dV172g='envelope2,gzipworker,gunzip,magic,marker,remind30,firstsave,pickersave,handle,permission,conflict,saveas,openpicker,nostorage,mempark';
+  window.__a3dFileState=function(){var e=bimDocEntry(A3D_DOCS.active);return {state:bimFileState(e,A3D.objs.length),entry:e?JSON.parse(JSON.stringify(e)):null,noStorage:A3D_NO_STORAGE,pickers:bimFilePickers()};};
+  window.__a3dFileSave=bimFileSave;
+  window.__a3dFileOpen=bimFileOpen;
+  window.__a3dFileRead=bimFileRead;
+  window.__a3dGzip=function(text){return bimGzip(text).then(function(u8){return Array.prototype.slice.call(u8,0,2).concat([u8.length]);});};
   window.__a3dJournalWrite=bimJournalWrite;
   window.__a3dStoredKeys=function(){return new Promise(function(res){bimIdbKeys(function(e,k){res(e?null:(k||[]));});});};
   window.__a3dStoredPut=function(k,s){return new Promise(function(res){bimIdbPut(k,{rec:s,saved:Date.now(),v:1},function(e){res(!e);});});};

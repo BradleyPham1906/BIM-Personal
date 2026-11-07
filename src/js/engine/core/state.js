@@ -6,6 +6,13 @@ import { bimAdoptLayers } from '../bim/region-regenerate.js';
 import { bimPresValid } from '../sheets/boards.js';
 
   var LSK='acad3dV1';
+  /* __acad3dV172g: D5. WebKit refuses storage to a page opened from a file: reading window.localStorage throws
+     SecurityError and so does indexedDB.open (part 4.4). Known once, first, so the app says one true thing -- the project
+     lives only in its file -- instead of the messages each storage path would give (part 14, e19). */
+  var A3D_NO_STORAGE=(function(){
+    try{var ls=window.localStorage;if(!ls)return true;ls.getItem(LSK);return false;}
+    catch(eS){return !!(eS&&eS.name==='SecurityError');}
+  })();
   /* __acad3dV172f: every project in the browser's database (docs/research/research-local-storage.md, part 13). The index
      -- which projects there are, which is on screen, which are open -- is kept under a key of its own, which no older
      build reads, so none can misread or overwrite it (an older build replaced V172d's pointer in acad3dV1 at start,
@@ -156,6 +163,6 @@ import { bimPresValid } from '../sheets/boards.js';
   var A3D_DOC_RT={};
 export {
   A3D, A3D_BOOT_DOC, A3D_BOOT_IDB, A3D_BOOT_V2, A3D_DOCS, A3D_DOCS_KEY, A3D_DOC_PREFIX, A3D_DOC_RT,
-  A3D_INDEX_KEY, A3D_JOURNAL_PREFIX, A3D_MATERIAL_LIBRARY, A3D_PROJECT_DEFAULTS, DEFCAM, LSK, SCALE,
-  bimApplyStoredState, el
+  A3D_INDEX_KEY, A3D_JOURNAL_PREFIX, A3D_MATERIAL_LIBRARY, A3D_NO_STORAGE, A3D_PROJECT_DEFAULTS, DEFCAM, LSK,
+  SCALE, bimApplyStoredState, el
 };

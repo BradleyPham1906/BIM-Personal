@@ -1316,6 +1316,10 @@ code uses and re-ran e17: 13 confirmed, 1 corrected (e17's stall ranges, wider o
 it added the version detail for H37 and three smaller precisions, all applied above. Its table:
 [research-local-storage/independent-check-v172g.md](research-local-storage/independent-check-v172g.md).
 
+**As built (2026-11-07).** As recommended in 14.4 with G1 to G5: `io/file-save.js` (new), `io/project-file.js`, and
+`A3D_NO_STORAGE` in `core/state.js`; the handle is kept under `lib:file:<id>` in the projects store, which V172f's reconcile
+passes by; the log's entry "Storage B (V172g)" has the detail. The browser suites have not yet been run (Rule #1).
+
 ### 14.11 References (V172g)
 
 | # | What | URL | What was read | Level |

@@ -1,7 +1,10 @@
-import { A3D, A3D_DOCS, el } from '../core/state.js';
+import { A3D, A3D_DOCS, A3D_NO_STORAGE, el } from '../core/state.js';
 import { A3D_CANVAS_CLEARED, A3D_CANVAS_KEYS, A3D_THEME_AT_START } from '../core/storage-theme.js';
 import { REDO_STACK, UNDO_STACK, bimStatusHintText } from '../drawing/plan-mode-sketch.js';
 import { A3D_PERSIST } from '../io/project-file.js';
+import {
+  bimFileOpen, bimFilePickers, bimFileRead, bimFileSave, bimFileState, bimGzip
+} from '../io/file-save.js';
 import {
   bimLayerAlpha, bimLayerOf, bimLayerPickable, bimLayerSelectable, bimLayerShown, bimObjLayerState
 } from '../layers/layer-rules.js';
@@ -21,7 +24,7 @@ import {
 } from '../drawing/sketch-constraints.js';
 import { A3D_REV } from '../core/objects-save.js';
 import { A3D_SPILL, A3D_STORE, bimIdbGet, bimIdbKeys, bimIdbPut } from '../core/idb-store.js';
-import { bimDocName, bimDocsActivate, bimDocsCreate } from '../ui/project-tabs.js';
+import { bimDocEntry, bimDocName, bimDocsActivate, bimDocsCreate } from '../ui/project-tabs.js';
 import { bimDocsClose, bimDocsRemove } from '../assets/templates.js';
 import { saveSoon } from '../bim/region-regenerate.js';
 import { A3D_FAMLIB_DIRTY, A3D_FAMLIB_IDB, A3D_FAMLIB_LOADING } from '../assets/family-library.js';
@@ -221,7 +224,8 @@ import { a3drIcon, a3drLabel } from '../ui/discipline-tabs.js';
       return A3D_DOCS.docs.map(function(d){
         var loaded=(d.id===A3D_DOCS.active);
         return {id:d.id,name:bimDocName(d.id),objs:loaded?A3D.objs.length:(d.objs||0),saved:loaded?0:(d.saved||0),
-                open:A3D_DOCS.open.indexOf(d.id)>=0,loaded:loaded};
+                open:A3D_DOCS.open.indexOf(d.id)>=0,loaded:loaded,
+                file:bimFileState(d,loaded?A3D.objs.length:(d.objs||0))};   /* __acad3dV172g: in a file or not */
       });
     },
     open:function(){return A3D_DOCS.open.slice();},
@@ -242,6 +246,13 @@ import { a3drIcon, a3drLabel } from '../ui/discipline-tabs.js';
   window.__a3dStore=function(){return {mode:A3D_STORE.mode,v2:A3D_STORE.v2,newer:A3D_STORE.newer,dirty:A3D_SPILL.dirty,inflight:!!A3D_SPILL.inflight};};
   window.__a3dTab=function(){return {id:A3D_TAB.id,held:!!A3D_TAB.release,readOnly:A3D_TAB.readOnly,why:A3D_TAB.why};};
   window.__a3dTakeOver=bimTabTakeOver;
+  /* __acad3dV172g: files as the real save */
+  window.__acad3dV172g='envelope2,gzipworker,gunzip,magic,marker,remind30,firstsave,pickersave,handle,permission,conflict,saveas,openpicker,nostorage,mempark';
+  window.__a3dFileState=function(){var e=bimDocEntry(A3D_DOCS.active);return {state:bimFileState(e,A3D.objs.length),entry:e?JSON.parse(JSON.stringify(e)):null,noStorage:A3D_NO_STORAGE,pickers:bimFilePickers()};};
+  window.__a3dFileSave=bimFileSave;
+  window.__a3dFileOpen=bimFileOpen;
+  window.__a3dFileRead=bimFileRead;
+  window.__a3dGzip=function(text){return bimGzip(text).then(function(u8){return Array.prototype.slice.call(u8,0,2).concat([u8.length]);});};
   window.__a3dJournalWrite=bimJournalWrite;
   window.__a3dStoredKeys=function(){return new Promise(function(res){bimIdbKeys(function(e,k){res(e?null:(k||[]));});});};
   window.__a3dStoredPut=function(k,s){return new Promise(function(res){bimIdbPut(k,{rec:s,saved:Date.now(),v:1},function(e){res(!e);});});};

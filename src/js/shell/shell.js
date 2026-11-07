@@ -138,7 +138,8 @@
     ['NEW',['QNEW'],'newProject','Start a new project in a tab of its own'],
     ['OPEN',[],'openJson','Open a project file in a tab of its own'],
     ['CLOSE',[],'closeProject','Close this project\'s tab'],
-    ['SAVE',['QSAVE','SAVEAS'],'saveJson','Save this project as a file'],
+    ['SAVE',['QSAVE'],'saveJson','Save this project to its file'],
+    ['SAVEAS',[],'saveJsonAs','Save this project to a new file, plain or compressed'],   /* __acad3dV172g */
     ['PLOT',['PRINT'],'print','Plot the open sheet, or model space to PDF'],
     ['UNDO',['U'],'undo','Undo the last change'],
     ['REDO',[],'redo','Redo what was undone'],
@@ -414,6 +415,7 @@
       d=byId[open[i]]; if(!d) continue;
       html+='<button class="acad-doctab dt-doc'+(!onStart&&d.id===act?' active':'')+'" data-dt="doc" data-doc="'+escHtml(d.id)+'" title="'+escHtml(d.name)+' \u2014 '+docCount(d.objs)+'">'+
         '<span class="dt-name">'+escHtml(d.name)+'</span>'+
+        (d.file&&(d.file.kind==='unsaved'||d.file.kind==='changed')?'<span class="dt-dot" title="'+escHtml(d.file.text)+'" aria-label="'+escHtml(d.file.text)+'"></span>':'')+   /* __acad3dV172g */
         '<span class="dt-x" data-dtx="'+escHtml(d.id)+'" title="Close '+escHtml(d.name)+'">\u00d7</span></button>';
     }
     html+='<button class="acad-doctab acad-plus" data-dt="new" title="New project">+</button>';

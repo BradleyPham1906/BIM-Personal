@@ -26,7 +26,7 @@ import { bimCycleRoomScheme } from '../bim/room-colour-fill.js';
 import { bimTagAllRooms, startRoomTagTool, startRoomTool } from '../bim/room-tags.js';
 import { startDimTool, startLeaderTool, startTextTool } from '../annotation/dimensions.js';
 import { bimExportPDF } from '../annotation/annotation-pick.js';
-import { bimExportProjectFile, bimOpenProjectPicker } from '../io/project-file.js';
+import { bimFileOpen, bimFileSave } from '../io/file-save.js';
 import { startColumnTool, startDoorTool, startFloorTool, startWindowTool } from '../bim/columns-openings.js';
 import { startCeilingTool } from '../bim/ceiling-floor-profile.js';
 import { startRoofTool } from '../bim/roofs.js';
@@ -102,7 +102,7 @@ import { bimOpenToolsPanel } from '../ui/discipline-tabs.js';
   }
   /* __acad3dV115: the only commands that make sense with no project current */
   var BIM_START_CMDS={newProject:1,openJson:1};
-  var BIM_SHEET_CMDS={saveJson:1,openJson:1,newProject:1,closeProject:1,undo:1,redo:1,print:1,   /* __acad3dV116 */
+  var BIM_SHEET_CMDS={saveJson:1,saveJsonAs:1,openJson:1,newProject:1,closeProject:1,undo:1,redo:1,print:1,   /* __acad3dV116 */
     newSheet:1,modelTab:1,mspace:1,pspace:1,shortcuts:1,layers:1};   /* __acad3dV121: LAYER works on a sheet, as AutoCAD's does */
   var BIM_SHEET_ACTS={'bim:sheet':1,'bim:titleblock':1,'bim:projinfo':1,'bim:uipanels':1,'m:saveproj':1,'m:openproj':1};
   var BIM_CMD_MAP={
@@ -260,12 +260,13 @@ import { bimOpenToolsPanel } from '../ui/discipline-tabs.js';
       a3dToast('Grid snap '+(A3D_SNAP.grid?'on':'off'));},
     /* __acad3dV115: the document commands, which the quick-access bar's Save, Open, Undo, Redo and
        Plot run. */
-    saveJson:function(){bimExportProjectFile();},
+    saveJson:function(){bimFileSave(false);},   /* __acad3dV172g: to its file where the browser can (D2) */
+    saveJsonAs:function(){bimFileSave(true);},   /* __acad3dV172g: SAVEAS, plain or compressed (G3) */
     newSheet:function(){bimLayoutNew();},          /* __acad3dV116: LAYOUT */
     modelTab:function(){bimShowModel();},          /* __acad3dV116: MODEL */
     mspace:function(){bimSetModelSpace(null);},    /* __acad3dV116: MSPACE */
     pspace:function(){if(!bimSetPaperSpace()&&!bimSheetOnScreen())a3dToast('PSPACE works on a sheet: open one from the layout tabs');},   /* __acad3dV116 */
-    openJson:function(){bimOpenProjectPicker();},
+    openJson:function(){bimFileOpen();},   /* __acad3dV172g */
     newProject:function(){bimDocsCreate();},
     closeProject:function(){bimDocsClose(A3D_DOCS.active);},
     undo:function(){doUndo();},

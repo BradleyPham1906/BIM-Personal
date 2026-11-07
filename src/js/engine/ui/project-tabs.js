@@ -1,6 +1,6 @@
 import {
   A3D, A3D_BOOT_DOC, A3D_BOOT_V2, A3D_DOCS, A3D_DOCS_KEY, A3D_DOC_PREFIX, A3D_DOC_RT, A3D_INDEX_KEY,
-  A3D_PROJECT_DEFAULTS, LSK, bimApplyStoredState
+  A3D_NO_STORAGE, A3D_PROJECT_DEFAULTS, LSK, bimApplyStoredState
 } from '../core/state.js';
 import {
   A3D_TYPING, REDO_STACK, UNDO_STACK, bimSyncStatusBar, setREDO_STACK, setUNDO_STACK, setUndoSuspend
@@ -158,7 +158,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
   /* __acad3dV172f: the list goes under the index's key once the projects are in the database, and nowhere while the
      database that holds them cannot be opened (nothing written over what cannot be read) */
   function bimDocsSave(){
-    if(A3D_STORE.mode==='refused')return false;
+    if(A3D_STORE.mode==='refused'||A3D_NO_STORAGE)return false;   /* __acad3dV172g: nowhere to write it (D5) */
     var v2=A3D_STORE.v2,key=v2?A3D_INDEX_KEY:A3D_DOCS_KEY;
     try{
       localStorage.setItem(key,JSON.stringify({v:v2?2:1,active:A3D_DOCS.active,open:A3D_DOCS.open,docs:A3D_DOCS.docs}));
@@ -197,6 +197,8 @@ import { a3dToast } from '../bim/csg-booleans.js';
       bimSyncStatusBar();
     }finally{setUndoSuspend(false);}
   }
+  /* __acad3dV172g: where the browser keeps nothing (D5), a project left for another tab is parked here */
+  var A3D_DOC_MEM={};
   function bimDocsSwap(toId,stB,fromKey){
     var cur=A3D_DOCS.active;
     if(toId===cur)return true;
@@ -222,6 +224,8 @@ import { a3dToast } from '../bim/csg-booleans.js';
     var inIdb=A3D_STORE.mode==='idb';
     if(inIdb){
       if(!A3D_SPILL.loading&&!A3D_TAB.readOnly)bimSpillSave(cur,sA,recA);
+    }else if(A3D_NO_STORAGE){
+      A3D_DOC_MEM[cur]=sA;   /* __acad3dV172g: parked in this page's memory, the only place there is (D5) */
     }else{
       try{localStorage.setItem(A3D_DOC_PREFIX+cur,sA);}
       catch(e1){console.warn('[BIM] The current project does not fit in its own key.',e1);a3dToast(full);return false;}
@@ -241,7 +245,8 @@ import { a3dToast } from '../bim/csg-booleans.js';
       bimLoadProjectRecord(stB);
     }catch(eL){
       console.warn('[BIM] The project could not be loaded; the previous one is put back.',eL);
-      if(!inIdb)try{
+      if(A3D_NO_STORAGE)delete A3D_DOC_MEM[cur];
+      else if(!inIdb)try{
         localStorage.setItem(LSK,sA);
         localStorage.removeItem(A3D_DOC_PREFIX+cur);
       }catch(eP){console.warn('[BIM] Browser storage could not be put back after a failed switch.',eP);}
@@ -251,7 +256,8 @@ import { a3dToast } from '../bim/csg-booleans.js';
       a3dToast('"'+bimDocName(toId)+'" could not be opened: its stored data is damaged');
       return false;
     }
-    if(fromKey&&!inIdb){
+    if(A3D_NO_STORAGE)delete A3D_DOC_MEM[toId];
+    else if(fromKey&&!inIdb){
       try{localStorage.removeItem(fromKey);}
       catch(e4){console.warn('[BIM] The opened project\'s parked copy could not be removed.',e4);}
     }
@@ -280,7 +286,8 @@ import { a3dToast } from '../bim/csg-booleans.js';
     if(id!==A3D_DOCS.active&&A3D_STORE.mode==='idb'){bimDocsActivateStore(id,ent.name||'Untitled project');return true;}   /* __acad3dV172f */
     if(id!==A3D_DOCS.active){
       var nm=ent.name||'Untitled project',raw=null,st=null;
-      try{raw=localStorage.getItem(A3D_DOC_PREFIX+id);}
+      if(A3D_NO_STORAGE)raw=A3D_DOC_MEM[id]||null;   /* __acad3dV172g */
+      else try{raw=localStorage.getItem(A3D_DOC_PREFIX+id);}
       catch(eG){console.warn('[BIM] Browser storage could not be read.',eG);}
       if(raw==null){a3dToast('"'+nm+'" is no longer in this browser\'s storage');return false;}
       try{st=JSON.parse(raw);}

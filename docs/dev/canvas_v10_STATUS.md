@@ -16512,3 +16512,36 @@ The full regression has not been run.
 
     canvas_v10.html   3970486 bytes
     sha256            45903347786951bf2d6ab9642dbe36bb827bc02cbdbd84dd733a41dcf6acf57d
+
+### Storage B (V172g, inside Phase 172): files as the real save
+
+Built 2026-11-07 on the research branch (PR #69); the version stays V172. Research: `docs/research/research-local-storage.md`,
+part 14, with experiments e16 to e19 and an independent check (13 of 14 facts confirmed, 1 corrected); the owner's G1 to G5,
+all as recommended.
+
+- `io/file-save.js` (new): each project's entry in the index says whether it is in a file (`fileName`, `fileVia` saved,
+  opened or downloaded, `fileType`, `fileAt`, `fileMod` where the browser gives the file's time, `unsaved`); every edit
+  (`saveSoon`) tells `bimFileTouch`, which writes the index only when that state changes. A line in the status bar ("Not
+  saved to a file", "Changes not saved to House.acad3d.json", "Saved to House.acad3d.json at 14:05") runs Save; an amber dot
+  on the project's tab. A reminder after 30 minutes of work not in a file (pauses over 2 minutes not counted), then after
+  30 more (D2); at the first edit of a project never saved to a file, where `persisted()` is false, one reminder (G1).
+- Save in Chrome and Edge: the project's file handle, kept in the projects store under `lib:file:<id>` (V172f's reconcile
+  passes `lib:` keys by, so an older tab does not list it as a project); permission asked within the click; the writable
+  opened before the envelope is built (the click's activation lasts 5 s); the file's time checked against the last save,
+  and a change made elsewhere asked about: Overwrite, Save as, Cancel (G4); saved only when `close()` resolves, the old file
+  kept otherwise. Save as: the save picker, plain first, compressed second (G3). Without the pickers: a download, and Save
+  as asks which type. Open: the open picker in Chrome and Edge (its handle kept), the file input elsewhere, now taking
+  `.json` and `.gz`; Ctrl+Shift+S and SAVEAS.
+- `io/project-file.js`: envelope version 2, `data` = `bimProjectRecord()` (the view and the id counter included), the app's
+  version; a version-1 file read as before; a file is gzip when it starts 1F 8B, made in a worker from a Blob URL (G2), the
+  page's own thread where no worker can be made; a damaged gzip refused with a message.
+- D5: `A3D_NO_STORAGE` (the `localStorage` getter throwing SecurityError, as WebKit does on `file://`) known first in
+  `core/state.js`; there one true message ("your project lives only in the file you save"), the three untrue ones e19 saw
+  silenced, the marker on, and projects switched between tabs parked in the page's memory.
+
+Checked: `npm run check`, `npm test` 22 of 22 (4 new in `tests/unit/file-save.test.mjs`). Amended, not run: V115's Save
+check hides the pickers first (headless Chromium cannot show the save dialog), so Save takes the download path it reads.
+The browser suites have not been run (Rule #1).
+
+    canvas_v10.html   3995247 bytes
+    sha256            930f4560c951c2f606a9865ef92f3fb3b92a519bd077b672c02b16ca0411d2ce

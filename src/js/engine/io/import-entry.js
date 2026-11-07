@@ -40,7 +40,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
       bimGeoImportFile(file);
     }else if(ext==='cityjson'||(ext==='json'&&/\.city\.json$/i.test(name))){   /* __acad3dV139 */
       bimCityJsonFile(file);
-    }else if(ext==='json'){
+    }else if(ext==='json'||ext==='gz'){   /* __acad3dV172g: a compressed project file too */
       bimOpenProjectFileObj(file);   /* __acad3dV115: the one project-file reader */
     }else if(ext==='dwg'||ext==='step'||ext==='stp'||ext==='iges'||ext==='igs'){
       a3dToast('.'+ext.toUpperCase()+' is not supported (proprietary binary / full B-rep format). Export as DXF (CAD) or IFC (BIM) instead.');

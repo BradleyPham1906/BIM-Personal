@@ -1,4 +1,4 @@
-import { A3D, A3D_DOCS, LSK } from './state.js';
+import { A3D, A3D_DOCS, A3D_NO_STORAGE, LSK } from './state.js';
 import { TYPES, mergePrm, meshMinY, meshOf, validatePrm } from './mesh-primitives.js';
 import { pushUndo } from '../drawing/plan-mode-sketch.js';
 import { paint } from '../map/terrain-3d.js';
@@ -60,7 +60,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
      saved while the record on screen is still being read or copied (the edit is saved once it is), while this tab
      shows a project another tab holds (D7), or when the database cannot be opened by this copy. */
   function save3d(){
-    if(A3D_STORE.mode==='refused')return;
+    if(A3D_STORE.mode==='refused'||A3D_NO_STORAGE)return;   /* __acad3dV172g: D5, the file is the only save there */
     if((A3D_SPILL&&A3D_SPILL.loading)||A3D_STORE.mode==='migrating'||(A3D_STORE.mode==='boot'&&A3D_STORE.v2)){A3D_SPILL.dirty=true;return;}
     if(A3D_TAB.readOnly){bimTabReadOnlyEdit();return;}
     var rec=bimProjectRecord();
