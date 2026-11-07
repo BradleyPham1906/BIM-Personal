@@ -1013,7 +1013,7 @@ not yet been run (Rule #1).
 
 ## 14. V172h: installable and offline (research, started 2026-11-07)
 
-**Status: in progress.** Parts 1 to 12 decided that the app should be installable and work offline on Pages (D6),
+**Status: findings in; independent check and the owner's decisions to come.** Parts 1 to 12 decided that the app should be installable and work offline on Pages (D6),
 and what that takes in outline: a manifest, icons, and an ES5 service worker at `/BIM-Personal/sw.js`. This part
 answers what the code depends on that those parts left open or did not ask.
 
@@ -1039,19 +1039,19 @@ others); `tools/build_site.py` keeps no `v/` builds since 2026-11-07.
 
 | # | Hypothesis (falsifiable) | Outcome | Evidence | Level |
 |---|---|---|---|---|
-| H29 | A worker at `/BIM-Personal/sw.js` controls `/BIM-Personal/` and every path under it, and no other Pages project of the account | open | | |
-| H30 | Pages cannot send `Service-Worker-Allowed` or any custom header, and serves `sw.js` with a JavaScript MIME type | open | | |
-| H31 | The `?v=` query names are usable as cache keys: the Cache API matches the full URL with its query by default, so a build's four files can be precached by the exact URLs the page asks for, and an old build's entries found and deleted | open | | |
-| H32 | After one online visit, the app opens offline (Chromium's offline emulation), reads its projects from IndexedDB and saves, with no page error but the third-party fetches' own | open | | |
-| H33 | A new worker left waiting (no `skipWaiting()`) is not activated by reloading one tab while another tab of the app is open, and is activated when every tab has closed | open | | |
-| H34 | A page can hold a waiting worker back while it has unsaved work and let it in after, by messaging it, without a second reload loop | open | | |
-| H35 | The browser checks `sw.js` for an update on every navigation and at most every 24 hours, ignoring Pages' `max-age=600` (`updateViaCache` "imports" by default) | open | | |
-| H36 | Fetches made by a dedicated Web Worker the page created (Pyodide's) go through the page's service worker, so the runtime can be served from a cache offline | open | | |
-| H37 | The worker's caches are counted in the same origin quota as IndexedDB and are evicted with it (one storage bucket), so caching the app adds no eviction case of its own | open | | |
-| H38 | Chrome's automatic install prompt (`beforeinstallprompt`) still needs a fetch handler in current Chromium (left open by part 10) | open | | |
-| H39 | iOS and iPadOS take the Home Screen icon from `apple-touch-icon` before the manifest's `icons`, and Safari ignores `purpose: maskable` | open | | |
-| H40 | The app's shell (V149's safe areas, V147's panels, V150's palette) needs no change in `display: standalone`; only `display-mode` media queries would tell it apart | open | | |
-| H41 | Caching OpenStreetMap's tiles or other third-party data for offline use is not allowed by their terms, so the worker must leave cross-origin requests to the network | open | | |
+| H29 | A worker at `/BIM-Personal/sw.js` controls `/BIM-Personal/` and every path under it, and no other Pages project of the account | **Held**: controls `/BIM-Personal/`, `docs/`, `v/x/`, not `/Other/` or `/BIM-Personalx/`; `scope:"/"` refused (SecurityError), 3 of 3 | SW spec Update algorithm; e01 | P |
+| H30 | Pages cannot send `Service-Worker-Allowed` or any custom header, and serves `sw.js` with a JavaScript MIME type | **Held**: no way to set headers on Pages; `.js` served as JavaScript, `.webmanifest` as `application/manifest+json`; no `Service-Worker-Allowed` | GitHub Docs @8cd1075; live headers | P |
+| H31 | The `?v=` query names are usable as cache keys: the Cache API matches the full URL with its query by default, so a build's four files can be precached by the exact URLs the page asks for, and an old build's entries found and deleted | **Held**: exact `?v=` URLs cached; a match without the query or with another hash misses; the old build's cache deleted on activate, 3 of 3 | Cache API spec; e02 | P |
+| H32 | After one online visit, the app opens offline (Chromium's offline emulation), reads its projects from IndexedDB and saves, with no page error but the third-party fetches' own | **Held**: opened offline (emulated and with the server stopped), project read back, an edit saved, 0 errors, 5 of 5; boot makes no third-party request. Without a worker it fails once the 600 s HTTP cache is gone | e03 | P |
+| H33 | A new worker left waiting (no `skipWaiting()`) is not activated by reloading one tab while another tab of the app is open, and is activated when every tab has closed | **Held, stronger**: no reload activates the waiting worker, even with one tab; it activates when the last tab of the old build closes or leaves; `updatefound` about 1.55 s after navigation, 5 of 5 | SW spec; e04 | P |
+| H34 | A page can hold a waiting worker back while it has unsaved work and let it in after, by messaging it, without a second reload loop | **Partly**: hold-while-unsaved, one reload and no loop work in the asking tab; but `skipWaiting()` switches every tab, another tab with unsaved work included, and the old cache is deleted under it, 5 of 5 | e04 | P |
+| H35 | The browser checks `sw.js` for an update on every navigation and at most every 24 hours, ignoring Pages' `max-age=600` (`updateViaCache` "imports" by default) | **Held, restated**: `sw.js` is revalidated on every in-scope navigation (25 of 25, past `max-age=600`); the 24 h rule only adds checks; `updateViaCache:"all"` gave 0 of 25 | SW spec; e04 | P |
+| H36 | Fetches made by a dedicated Web Worker the page created (Pyodide's) go through the page's service worker, so the runtime can be served from a cache offline | **Held**: fetches from a script worker and a `blob:` worker both go through the service worker, 3 of 3; the real Ladybug runtime started offline in about 2.5 s; spec and WPT agree for Chrome, Edge, Firefox, Safari desktop; iOS not tested | SW spec; WPT results; e05 | P (desktop) / U (iOS) |
+| H37 | The worker's caches are counted in the same origin quota as IndexedDB and are evicted with it (one storage bucket), so caching the app adds no eviction case of its own | **Held for counting** (usage 32 KB to 8.8 MB after the precache, 25 MB with the runtime); one bucket cleared together per the Storage Standard; eviction not testable here | Storage Standard; e02 | P |
+| H38 | Chrome's automatic install prompt (`beforeinstallprompt`) still needs a fetch handler in current Chromium (left open by part 10) | **Failed**: current Chromium's installability code has no service-worker or fetch-handler check; `beforeinstallprompt` fired with a manifest and no worker (full binary, profile on disk; not in the headless shell) | Chromium @dd4d83c; e06 | P |
+| H39 | iOS and iPadOS take the Home Screen icon from `apple-touch-icon` before the manifest's `icons`, and Safari ignores `purpose: maskable` | **Held**: `apple-touch-icon` wins on iOS; manifest icons used only with purpose `any` or none | WebKit posts (15.4, 16.4); BCD | P |
+| H40 | The app's shell (V149's safe areas, V147's panels, V150's palette) needs no change in `display: standalone`; only `display-mode` media queries would tell it apart | open: the specifications give only the `display-mode` media query; needs a look on devices | standards note 3.x | U |
+| H41 | Caching OpenStreetMap's tiles or other third-party data for offline use is not allowed by their terms, so the worker must leave cross-origin requests to the network | **Held for tiles, failed for data**: OSM's and Esri's terms forbid offline tile prefetch; Open-Meteo's data is CC BY 4.0 and may be stored; Nominatim asks for its results to be cached | the hosts' policies | P |
 
 ### 14.2 Method (planned)
 
