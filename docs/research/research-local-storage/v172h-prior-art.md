@@ -228,12 +228,12 @@ The page side is `src/main/webapp/js/diagramly/App.js`. Line numbers below are o
 | 52 precache entries (the app's minified JS, `index.html`, `open.html`, `images/manifest.json` and others), 60-odd language files in a separate `LAZY_MANIFEST` "cached on first use instead of at install time", and dev sources network-first only on development hosts | `:34-92, 93-156, 162+`; header `:11-15` | P | High |
 | **`self.skipWaiting()` at the top of the script**, unconditionally; no `clients.claim()` | `:32` (and no `claim` anywhere in the file) | P | High |
 | All query parameters are ignored on lookup (`ignoreURLParametersMatching: [/.*/]`), plus Workbox's `index.html` and `.html` variations | `:340-341, 545-600` | P | High |
-| Fetch: non-GET ignored; a precached URL is answered **cache-first on the current revision**, then the network, then the newest previous revision; a lazy URL cache-first, then network (filling the cache), then a stale revision, then the English resources; **anything else, cross-origin included, is not handled** ("Not precached - fall back to the network (browser default handling)") | `:1001-1045` (`respondPrecache`), `1046-1081` (`respondLazy`), `1176-1199` (fetch handler) | P | High |
-| `index.html` is precached and served cache-first, like the scripts | manifest entry for `index.html`; fetch handler `:1185-1190` | P | High |
-| Install is all or nothing, but checks each entry: a status of 400 or more, or **an HTML body for a non-HTML entry ("an error page with a 200 status: caching it would poison the shell until the next release")**, fails it; redirected responses are copied; entries already cached under the same revision with intact bytes (SHA integrity) are not fetched again | `:782-880`, `1001-1010` (`isUsable`), `636-653`, `687-730` | P | High |
-| A recorded fault and its fix: "Installs that keep failing on a client (a file its network blocks or rewrites, a full storage quota) kept it on an old release for months (30.0.3, May 2026): the old worker serves its old files until an install of a new one completes". Since then, after 7 days and 3 failed attempts an install keeps what it stored, activates, takes the rest from the network or the previous revision, and reports once to `/log` | `:360-377, 381-479, 870-880` | P | High |
-| Activate deletes every key whose revision changed or that left the manifest, except the newest previous revision of an entry whose current revision is not yet stored (the offline fallback) | `:882-950` | P | High |
-| Messages: `warmLazy` (cache one language file, answering on a `MessagePort`) and `warmDev`; only URLs in the worker's own lists are ever fetched | `:1200-1293` | P | High |
+| Fetch: non-GET ignored; a precached URL is answered **cache-first on the current revision**, then the network, then the newest previous revision; a lazy URL cache-first, then network (filling the cache), then a stale revision, then the English resources; **anything else, cross-origin included, is not handled** ("Not precached - fall back to the network (browser default handling)") | `:1001-1071` (`isUsable`, `respondPrecache`), `1072-1120` (`respondLazy`), `1199-1231` (fetch handler) | P | High |
+| `index.html` is precached and served cache-first, like the scripts | manifest entry for `index.html`; fetch handler `:1199-1215` | P | High |
+| Install is all or nothing, but checks each entry: a status of 400 or more, or **an HTML body for a non-HTML entry ("an error page with a 200 status: caching it would poison the shell until the next release")**, fails it; redirected responses are copied; entries already cached under the same revision with intact bytes (SHA integrity) are not fetched again | `:782-899`, `1001-1017` (`isUsable`), `636-653`, `687-730` | P | High |
+| A recorded fault and its fix: "Installs that keep failing on a client (a file its network blocks or rewrites, a full storage quota) kept it on an old release for months (30.0.3, May 2026): the old worker serves its old files until an install of a new one completes". Since then, after 7 days and 3 failed attempts an install keeps what it stored, activates, takes the rest from the network or the previous revision, and reports once to `/log` | `:360-377, 381-479, 880-896` | P | High |
+| Activate deletes every key whose revision changed or that left the manifest, except the newest previous revision of an entry whose current revision is not yet stored (the offline fallback) | `:901-965` | P | High |
+| Messages: `warmLazy` (cache one language file, answering on a `MessagePort`) and `warmDev`; only URLs in the worker's own lists are ever fetched | `:1241-1293` | P | High |
 | The worker is enabled only on draw.io's own hosts or with `?offline=1` / `?enableSW=1`, and not with `?pwa=0` | `js/diagramly/Editor.js:210-214` | P | High |
 | **It is not installed on a new user's first load**: registration is skipped unless a worker already exists, a release channel is pinned, settings are not new, or `enableSW=1` ("Skipping service worker (first load)") | `App.js:1116-1135` | P | High |
 | On later loads the page calls `reg.update()` when a worker exists, and counts failures by day; after 14 days of failures on the "stable" channel it falls back to the default channel ("Frozen-but-working must not become permanent") | `App.js:1078-1113` | P | High |
@@ -271,3 +271,176 @@ from tldraw, Inc. It was read as text for its method only; nothing is taken.
 only installability. Its repository does not record why (shallow clone, no history read); that is open. Together
 with Excalidraw's `public/service-worker.js`, it shows that the way back from a worker is a "self-destroying"
 worker served at the same address, which every app that ships a worker should be ready to publish.
+
+---
+
+## 6. The comparison
+
+| | Workbox defaults and recipe | Squoosh | Excalidraw (vite-plugin-pwa) | draw.io | tldraw |
+|---|---|---|---|---|---|
+| **Worker** | Library (ES modules, built by a bundler) | Hand-written, ~90 lines TS | Generated by Workbox `generateSW` | Hand-written ES5-style, generated lists, no Workbox runtime | Self-destroying only |
+| **Precache** | The build's list, on install, "as a dependency"; unchanged keys not re-fetched | Shell on install; codecs after first use | Every built file except fonts, locales, lazy chunks, Firebase, Mermaid; none over 2.3 MB | 52 files incl. `index.html`; unchanged revisions not re-fetched, bytes checked | None |
+| **Page (HTML)** | Recipe pages: network-first with preload, or precached shell | Cache-first (`/` precached) | Cache-first (`navigateFallback: index.html`) | Cache-first (precached, revision changes per release) | Network |
+| **App files** | CacheFirst / precache | Cache-first, `ignoreSearch: true` | Precache; lazy chunks CacheFirst 90 days | Cache-first on current revision, then network, then previous revision | Network |
+| **Cache naming** | One `workbox-precache-v2-<scope>`; revision in the key | `static-<sha1 of all assets>` + `dynamic` | Workbox's | Workbox's name and keys, adopted in place | n/a |
+| **Old caches** | Activate deletes keys not in the list | Activate deletes other cache names | `cleanupOutdatedCaches: true` + Workbox's | Activate deletes, keeping the newest previous revision as fallback | n/a |
+| **Update detection** | Browser's byte check; `waiting` event (also `wasWaitingBeforeRegister`, `isExternal`); `update()` | `updatefound`/`statechange` to `installed` | Workbox's `activated` | `reg.update()` on each load; failures counted | n/a |
+| **Update UX** | "Reload?" prompt, then `SKIP_WAITING`, then reload on `controlling` | Snackbar "Update available": reload / dismiss; "Ready to work offline" on first install | None: every tab reloads itself | None for releases; reload only when switching channel and only if no unsaved file; a dialog when a peer runs a newer version | n/a |
+| **skipWaiting** | Off by default; on message | On message only | On install (forced by `autoUpdate`) | On script start, always | On install (to remove itself) |
+| **clients.claim** | Optional, off by default | Yes | Yes (forced) | No | No |
+| **Unsaved work** | The sample says "you may want to auto-save ... before triggering the reload" | Not an issue (no documents) | Relies on continuous autosave | Never reloads a modified file | n/a |
+| **Several tabs** | Waiting worker reported to each tab; `isExternal` for another tab's install | Each tab shows the snackbar; any tab's "reload" activates for all, others reload on `controllerchange` | All tabs reload | Tabs keep running old code until reopened; channel switch reloads clean tabs only | n/a |
+| **Cross-origin** | Not cached by `CacheFirst` unless asked; cached (status 0) by `NetworkFirst`/`StaleWhileRevalidate` | Ignored (not handled) | Fonts from a CDN cached opaque, 90 days | Not handled | n/a |
+| **Large optional assets** | Cookbook: "on install, not as a dependency", or on use | Codecs cached after first use, chosen by feature detection | Mermaid chunks fetched for the cache when the dialog opens; 2.3 MB precache cap | Languages cached on first use (`warmLazy`) | n/a |
+| **Manifest icons** | n/a | 1024 px any + 1024 px maskable | 192, 180, 32, 16 px; no 512, no maskable | 192 + 512 any, 192 + 512 maskable, `.ico` | 192 + 512 `any`, 192 + 512 `any maskable` |
+| **apple-touch-icon** | n/a | Yes (500 px image) | Yes, 180 px | Yes | Yes, 4 sizes |
+| **Other members** | n/a | `share_target`, `screenshots`, `categories` | `id`, `file_handlers`, `share_target`, `screenshots` | `display: fullscreen`, `file_handlers` | `scope`, `orientation` |
+| **Way back** | n/a | A leftover old-name worker calling `skipWaiting()` | `public/service-worker.js` self-destroys | `clear.html`, `?offline=0&enableSW=1` unregister | The whole worker self-destroys |
+
+**Where practice agrees.** A precache of the build's files keyed by a content revision, fetched on install, with
+unchanged files not fetched again and stale keys deleted on activate; cross-origin requests left to the network
+unless a specific host is chosen; large optional parts cached on first use, not on install; non-GET ignored; a
+manifest with 192 and 512 px icons plus maskable ones and a separate `apple-touch-icon`; a way to remove the worker.
+
+**Where it disagrees.** (1) The page itself: draw.io, Squoosh and Excalidraw serve `index.html` cache-first from the
+precache, which keeps HTML and scripts of one build together offline and online; Workbox's documents also show
+network-first navigations, and warn that this, with lazily loaded versioned assets, needs a reload prompt. (2) Taking
+over: Excalidraw and draw.io call `skipWaiting()` at once (Excalidraw then reloads every tab; draw.io never reloads),
+Squoosh and Workbox's default wait and ask. (3) `clients.claim()`: Squoosh and Excalidraw use it, draw.io and Workbox's
+default do not. (4) Query strings: Squoosh and draw.io ignore them all on lookup; Workbox keeps them unless told.
+
+---
+
+## 7. Counter-evidence: faults filed against the approach
+
+| Finding | Evidence | Level | Confidence |
+|---|---|---|---|
+| draw.io's own record: failing installs (a blocked or rewritten file, a full quota) "kept it on an old release for months (30.0.3, May 2026)", because the old worker serves until a new install completes | draw.io `service-worker.js:360-375` | P | High |
+| draw.io's own record: an HTML error page with status 200 cached for a script "would poison the shell until the next release" | draw.io `service-worker.js:857-866` | P | High |
+| Excalidraw's own record: users of its old worker "were not able to migrate ... unless browser is hard refreshed", so it had to publish a self-destroying worker at the old address; Squoosh shipped a worker under a wrong name and had to keep a stub there; tldraw.com removed its worker the same way | Excalidraw `public/service-worker.js:1-5`; Squoosh `src/copy/sw.js:1-4`; tldraw `public/sw.js:1-3` | P | High |
+| vite-plugin-pwa's own guide on `autoUpdate`: "the user can lose data in any browser windows/tabs in which the application is open and is filling in a form ... If your application has forms, we recommend you to change the behavior to use default `prompt` option" | vite-pwa-org.netlify.app/guide/auto-update.html (read 2026-11-07, no date shown) | P | High |
+| Create React App made its default worker opt-in (react-scripts 2.0, 2018) after issue #2398 ("Service workers are intentionally super sticky"; "if it causes more pain than it solves then it should be opt-in, not opt-out") | github.com/facebook/create-react-app/issues/2398, comments of 2018-01-08, 2018-01-19, 2018-10-02 | P | High |
+| draw.io's FAQ tells self-hosters whose changes "do not show up" to open `clear.html` or load `?offline=0&enableSW=1` to unregister the worker | github.com/jgraph/drawio/wiki/FAQ (edited 2026-10-07) | P | High |
+| `skipWaiting()` with lazily loaded hashed chunks: an old page asks for a chunk the new worker no longer holds (reports of "Unexpected token '<'" when the HTML fallback answers for the JS) | Stack Overflow answers seen only in search summaries; consistent with Workbox's own warning (P) on the update page | U (the reports) / P (Workbox's warning) | Medium |
+| Network-first pages wait for a failing network on a slow or flaky connection ("lie-fi"); Workbox's `networkTimeoutSeconds` exists for this | Offline cookbook, "Network falling back to cache"; `NetworkFirst.ts:161-191` | P | High |
+
+---
+
+## 8. Hypotheses: the outcome
+
+| # | Outcome | Evidence |
+|---|---|---|
+| PA1 | **Held.** Workbox uses a URL with no revision as its own cache key, query included; only revisioned entries get `__WB_REVISION__` | `createCacheKey.ts:35-58`; precaching page |
+| PA2 | **Failed.** Excalidraw (`autoUpdate`) and draw.io call `skipWaiting()` unconditionally; both edit documents. They protect work differently: Excalidraw by continuous autosave and a reload of every tab, draw.io by never reloading the page | `options.ts:136-139`; draw.io `service-worker.js:32`, `App.js:2776-2779` |
+| PA3 | **Held** for Workbox's recipe, vite-plugin-pwa's `prompt` mode and Squoosh; not used by Excalidraw or draw.io | Sections 1 to 4 |
+| PA4 | **Held** in all three: Squoosh's codecs, Excalidraw's Mermaid chunks (and a 2.3 MB cap), draw.io's language files | Sections 2 to 4 |
+| PA5 | **Held with an exception.** Squoosh and draw.io do not handle other origins; Workbox's `CacheFirst` will not cache opaque responses unless told; but `NetworkFirst` and `StaleWhileRevalidate` do cache them by default, and Excalidraw caches a CDN's fonts on purpose | `cacheOkAndOpaquePlugin.ts`; `vite.config.mts:334-348` |
+| PA6 | **Held, and it is the minority choice.** Network-first pages exist in Workbox's examples with a timeout option and navigation preload; the cookbook names the slow-network fault; the three apps read all serve their HTML cache-first | Sections 1 to 4 |
+
+---
+
+## 9. What this suggests for V172h's worker and update UX (inferences, for the design and the owner)
+
+These are inferences from the evidence above, not findings; the experiments side must test the ones marked.
+
+1. **Precache the four bundles by their exact `?v=` URLs, on install, as a dependency.** Our URLs already carry a
+   content hash, which is Workbox's "versioned URL" case (PA1): the URL is the key, no extra revision. Do not use
+   `ignoreSearch` (Squoosh, draw.io): with fixed names, ignoring the query would serve one build's file for another's.
+   Skip a key already cached (Workbox, draw.io), so an unchanged `openskp.js` is not downloaded again. Test (H31).
+2. **Refuse to cache a bad answer.** Status 400 or more, or `text/html` for a `.js` or `.css` URL, fails the install
+   (draw.io's "poison" guard; GitHub Pages answers a missing file with an HTML 404 page, and a captive portal may
+   answer 200 with HTML).
+3. **`index.html`: the evidence splits.** Cache-first (all three apps) keeps page and bundles of one build together
+   and opens instantly; network-first (the plan) gets a new build to users sooner but must have a timeout (Workbox's
+   `networkTimeoutSeconds`, a few seconds) or offline-on-flaky-network users wait, and a page fetched from the network
+   under an old worker asks for bundles the old precache lacks (fine online: cache miss goes to the network, and they
+   should then be cached; offline it cannot happen). A middle way seen in draw.io: precache `index.html` itself with
+   the build's revision so the worker's own update brings the new page. This is a decision for the owner, with the
+   experiment measuring both (H32, H35).
+4. **No `skipWaiting()` on install; skip waiting only on the page's message, and only when no tab has unsaved work.**
+   Workbox's default, Squoosh, and vite-plugin-pwa's `prompt` mode agree; the plugin's own guide warns `autoUpdate`
+   loses form data, and our app holds projects. draw.io's rule, "never reload a modified file", is the standard to
+   meet. Because `skipWaiting()` changes the worker for every tab at once, the page that asks must know that no other
+   tab has unsaved work: V172f's tab locks and V172g's unsaved marker are where that answer comes from (H33, H34).
+5. **The update UX:** "Ready to work offline" once on the first install (Squoosh); "A new version is ready" with
+   Reload and Later when a worker is waiting (Workbox, Squoosh), shown on every tab (`wasWaitingBeforeRegister`,
+   `isExternal`); reload on `controllerchange` only in a tab that asked or that is clean; never a forced reload
+   (draw.io). Call `registration.update()` on start and on an interval for long sessions (web.dev lifecycle:
+   "hourly").
+6. **No `clients.claim()`** needed (draw.io; Archibald: "rarely"); the first visit runs from the network and the
+   worker takes over on the next one. If used, it only affects the first visit.
+7. **Cross-origin: not handled** (Squoosh, draw.io): the worker returns without `respondWith` for other origins,
+   which also keeps tile and open-data terms (H41) out of its scope.
+8. **The 16 MB runtime: not precached on install.** Every app read caches large optional parts on first use (PA4);
+   the cookbook says such caching may not finish. Cache it when an analysis first runs, under its own cache name and
+   version (it is pinned by `runtime/MANIFEST.json`), and test whether Pyodide's dedicated worker's fetches pass
+   through the service worker at all (H36).
+9. **Cache names include the scope** (Workbox's suffix is `registration.scope`; draw.io too), because the
+   `bradleypham1906.github.io` origin is shared by every Pages project of the account and "caches are shared across
+   the whole origin" (cookbook). Activate deletes only this app's old caches, by an exact prefix.
+10. **Plan the way back before shipping:** a self-destroying `sw.js` ready to publish at the same address (Excalidraw,
+    tldraw, vite-plugin-pwa's `selfDestroying`), and a failure counter so an install that never completes does not
+    keep users on an old build for months (draw.io).
+11. **Manifest and icons:** 192 and 512 px `any` and 192 and 512 px `maskable` as separate entries (draw.io; tldraw's
+    combined `"any maskable"` is discouraged by Chrome's guidance, to confirm on the standards side), plus a 180 px
+    `apple-touch-icon` (Excalidraw, tldraw), `theme-color`, `id`, `start_url` and `scope` under `/BIM-Personal/`.
+
+**Workbox as a dependency?** Not worth asking for. Workbox is ES2017+ modules meant for a bundler, and the app's
+contract is ES5 with no dependencies; draw.io, a large ES5 editor, removed the Workbox runtime and reproduced the
+parts it needed in one file. What V172h needs from Workbox is a few hundred lines of method: the cache-key rule, the
+install that skips present keys and refuses bad answers, activate's clean-up, `NetworkFirst`'s timeout, and
+`workbox-window`'s waiting detection. Those methods are taken, credited. Code could be taken under the licences
+(Workbox MIT, Squoosh and draw.io Apache-2.0 with their notices), but none of it is ES5 except draw.io's, and draw.io's
+is shaped by its release channels; writing ours from the methods is shorter than adapting it. tldraw's code cannot be
+taken.
+
+---
+
+## 10. What is open
+
+| # | Open item | Why open | How to close |
+|---|---|---|---|
+| O1 | Why tldraw.com removed its worker | Shallow clone, no history; no document found | Read the history of `apps/dotcom/client/public/sw.js` on GitHub, or tldraw's issues |
+| O2 | Excalidraw users' reports about `autoUpdate` reloads | Its issue tracker not read directly (API refused; search found none) | Open its issues in a browser; until then the plugin's own warning stands for it |
+| O3 | Figma's and Photopea's documents on updates of an installed or offline app | Not re-read for this question | Read on the standards side if time allows; not needed for the code |
+| O4 | Whether `purpose: "any maskable"` is still discouraged | Standards side (manifest spec, Chrome's documents) | `v172h-standards-and-browsers.md` |
+| O5 | The Stack Overflow reports on `skipWaiting()` and missing chunks | U, seen in summaries only | Not needed: Workbox's own warning (P) carries the point |
+
+---
+
+## 11. References
+
+Code (pinned commits in "Pinned sources"; read 2026-11-07):
+
+- Workbox: `packages/workbox-strategies/src/{CacheFirst,NetworkFirst,StaleWhileRevalidate,StrategyHandler}.ts`,
+  `plugins/cacheOkAndOpaquePlugin.ts`; `packages/workbox-precaching/src/{PrecacheController,PrecacheStrategy,PrecacheRoute,cleanupOutdatedCaches}.ts`,
+  `utils/{createCacheKey,deleteOutdatedCaches,generateURLVariations,removeIgnoredSearchParams}.ts`;
+  `packages/workbox-core/src/_private/cacheNames.ts`, `_version.ts`; `packages/workbox-window/src/Workbox.ts`;
+  `packages/workbox-navigation-preload/src/enable.ts`. https://github.com/GoogleChrome/workbox/tree/4ea3138a120fd2c87389b54130e25f47e0fd7089
+- Squoosh: `src/sw/{index,util,to-cache}.ts`, `src/client/lazy-app/sw-bridge/index.ts`, `src/copy/sw.js`,
+  `lib/sw-plugin.js`, `src/static-build/index.tsx`, `src/static-build/pages/index/index.tsx`, the icon PNGs.
+  https://github.com/GoogleChromeLabs/squoosh/tree/e8d35e0fb66eb16eff6fe8fc773eabcbb7128de3
+- Excalidraw: `excalidraw-app/vite.config.mts`, `excalidraw-app/index.tsx`, `excalidraw-app/index.html`,
+  `excalidraw-app/data/cacheMermaidChunks.ts`, `public/service-worker.js`, `public/_headers`.
+  https://github.com/excalidraw/excalidraw/tree/701b901a0f1ba3d0b390d9cdf63d112e25abac4b
+- vite-plugin-pwa: `src/options.ts`, `src/types.ts`, `src/client/build/register.ts`.
+  https://github.com/vite-pwa/vite-plugin-pwa/tree/355cf3dd283ca50da3ac4759501e9c3312a3da91
+- draw.io: `src/main/webapp/service-worker.js`, `js/diagramly/App.js`, `js/diagramly/Editor.js`,
+  `js/diagramly/DrawioFile.js`, `images/manifest.json`, `index.html`, `resources/dia.txt`.
+  https://github.com/jgraph/drawio/tree/c72c9a98b7a6ce392556ed04c05e0ff19f43f5c3
+- tldraw: `LICENSE.md`, `apps/dotcom/client/public/sw.js`, `apps/dotcom/client/public/manifest.webmanifest`,
+  `apps/dotcom/client/index.html`, `apps/dotcom/client/vite.config.ts`.
+  https://github.com/tldraw/tldraw/tree/9cc8223e2a945ea4e22868536c70f19c8d40516d
+
+Documents (read 2026-11-07):
+
+- Chrome for Developers, "Handling service worker updates with immediacy", https://developer.chrome.com/docs/workbox/handling-service-worker-updates (2021-12-07). P.
+- Chrome for Developers, "workbox-precaching", https://developer.chrome.com/docs/workbox/modules/workbox-precaching. P.
+- Chrome for Developers, "workbox-window", https://developer.chrome.com/docs/workbox/modules/workbox-window. P.
+- Chrome for Developers, "Navigation preload", https://developer.chrome.com/docs/workbox/navigation-preload (2021-11-04). P.
+- Chrome for Developers, "The service worker lifecycle", https://developer.chrome.com/docs/workbox/service-worker-lifecycle (2021-09-24). P.
+- J. Archibald, "The offline cookbook", https://web.dev/articles/offline-cookbook. P (practitioner).
+- J. Archibald, "The service worker lifecycle", https://web.dev/articles/service-worker-lifecycle (2016-09-29). P (practitioner, spec editor).
+- vite-plugin-pwa, "Automatic reload", https://vite-pwa-org.netlify.app/guide/auto-update.html. P.
+- create-react-app issue #2398, https://github.com/facebook/create-react-app/issues/2398 (2017-05-28 to 2018-10-02). P.
+- draw.io wiki, FAQ, https://github.com/jgraph/drawio/wiki/FAQ (edited 2026-10-07). P.
