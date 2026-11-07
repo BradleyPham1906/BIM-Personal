@@ -24,7 +24,7 @@ From this folder, one script at a time (they start their own server and browser)
     node e03_offline_app.js      # H32            ~2 min (RUNS=5)
     node e04_update.js           # H33, H34, H35  ~6 min (RUNS=5)
     node e05_worker_fetch.js     # H36            ~2 min
-    node e06_install_prompt.js   # H38            ~5 min
+    node e06_install_prompt.js   # H38            ~7 min (ONLY=<launch label part> runs one launch kind)
     node e07_load_cost.js        # load cost      ~2 min (RUNS=7)
 
 - `RUNS=<n>` changes the number of runs.
@@ -32,7 +32,8 @@ From this folder, one script at a time (they start their own server and browser)
   (`V172H_SCRATCH`, by default this session's scratchpad `.../scratchpad/v172h-exp/`): `siteA/` is the build,
   `siteB/` a copy with one comment appended to `app/engine.js` and its `?v=` recomputed (the "new deploy").
   `V172H_REBUILD=1` rebuilds A; delete `siteB/` to remake B. Nothing is written into the repository.
-- Raw results: `<scratch>/results/<script>.json`. Temporary browser profiles: `<scratch>/profiles/`, deleted
+- Raw results: `<scratch>/results/<script>.json` (e06 run with `ONLY=` writes `e06_install_prompt-<label>.json`; the 2026-11-07
+  results are in `e06_install_prompt.json` for launches 1-3, `-persistent` and `-no_bypass` for the profile-on-disk runs). Temporary browser profiles: `<scratch>/profiles/`, deleted
   after each run.
 - `node _server.js <siteDir> [port]` serves a build by hand at `http://localhost:<port>/BIM-Personal/`.
 

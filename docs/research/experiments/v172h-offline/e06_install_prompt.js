@@ -7,7 +7,8 @@
 // For each: whether beforeinstallprompt fired within 8 s (listener added in <head>, before anything else), and
 // what CDP says: Page.getInstallabilityErrors and Page.getAppManifest. Run with the default launch and with
 // --bypass-app-banner-engagement-checks (Chromium's switch to skip the engagement heuristic), and once with the
-// full Chromium binary in its new headless mode (channel 'chromium'). RUNS runs each (default 3).
+// full Chromium binary in its new headless mode (channel 'chromium'): in a fresh context (incognito there) and in a
+// persistent profile. ONLY=<label part> runs one launch kind. RUNS runs each (default 3).
 'use strict';
 var C = require('./_common.js');
 var pw = require('playwright');
@@ -52,17 +53,27 @@ var HEAD = '<script>window.__bip=null;window.addEventListener("beforeinstallprom
   var launches = [
     { label: 'headless-shell', opts: {} },
     { label: 'headless-shell + bypass-engagement', opts: { args: ['--bypass-app-banner-engagement-checks'] } },
-    { label: 'chromium new headless + bypass-engagement', opts: { channel: 'chromium', args: ['--bypass-app-banner-engagement-checks'] } }
+    { label: 'chromium new headless + bypass-engagement', opts: { channel: 'chromium', args: ['--bypass-app-banner-engagement-checks'] } },
+    { label: 'chromium new headless, persistent profile + bypass-engagement', persistent: true,
+      opts: { channel: 'chromium', args: ['--bypass-app-banner-engagement-checks'] } },
+    { label: 'chromium new headless, persistent profile, no bypass', persistent: true, opts: { channel: 'chromium' } }
   ];
+  if (process.env.ONLY) launches = launches.filter(function (l) { return l.label.indexOf(process.env.ONLY) >= 0; });
+  var fs = require('fs'), path = require('path');
   var out = { runs: [] };
   for (var li = 0; li < launches.length; li++) {
-    var browser = await pw.chromium.launch(launches[li].opts);
-    var ver = browser.version();
+    var L = launches[li], browser = null, ver = null;
+    if (!L.persistent) { browser = await pw.chromium.launch(L.opts); ver = browser.version(); }
     for (var r = 0; r < RUNS; r++) {
       var row = { launch: launches[li].label, version: ver, run: r + 1, variants: {} };
       var keys = Object.keys(variants);
       for (var i = 0; i < keys.length; i++) {
-        var ctx = await browser.newContext();
+        var dir = null, ctx;
+        if (L.persistent) {   // a profile on disk: not incognito, which the full binary's contexts are
+          fs.mkdirSync(path.join(C.SCRATCH, 'profiles'), { recursive: true });
+          dir = fs.mkdtempSync(path.join(C.SCRATCH, 'profiles', 'e06-'));
+          ctx = await pw.chromium.launchPersistentContext(dir, L.opts);
+        } else ctx = await browser.newContext();
         var p = await ctx.newPage();
         await p.goto(S.origin + '/BIM-Personal/i/' + keys[i] + '.html');
         if (variants[keys[i]].sw) {
@@ -82,12 +93,13 @@ var HEAD = '<script>window.__bip=null;window.addEventListener("beforeinstallprom
           manifestUrl: am.url || null
         };
         await ctx.close();
+        if (dir) fs.rmSync(dir, { recursive: true, force: true });
       }
       out.runs.push(row);
       console.log(JSON.stringify(row));
     }
-    await browser.close();
+    if (browser) await browser.close();
   }
   await S.stop();
-  C.save('e06_install_prompt', out);
+  C.save('e06_install_prompt' + (process.env.ONLY ? '-' + process.env.ONLY.replace(/\W+/g, '_') : ''), out);
 })().catch(function (e) { console.error(e); process.exit(1); });
