@@ -117,7 +117,9 @@ async def drive(ck):
         wall = await safe("()=>window.__a3dWall([[0,0],[6,0]],0.3,3,'center',false)")
         await page.wait_for_timeout(900)
         s0 = await store()
-        ck(wall and 'acad3dV1' in s0 and wall in s0.get('acad3dV1', ''), 'the wall is saved in acad3dV1 (%s)' % sorted(s0))
+        # AMENDED FOR V172f: every project is kept in the browser's database; localStorage holds its index
+        rec = await safe("()=>window.__a3dStoredGet(window.__a3dDocs.active())") or {}
+        ck(wall and 'acad3dProjectsV2' in s0 and wall in (rec.get('rec') or ''), 'the wall is saved, its project listed in the index (%s)' % sorted(s0))
         app_before = {k: v for k, v in s0.items() if k.startswith('acad3d')}
 
         print('\n-- 2. with the app closed, the old canvas\'s entries are put back, beside another page\'s')

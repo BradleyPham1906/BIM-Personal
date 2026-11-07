@@ -36,14 +36,14 @@ NOSAVE = 'could not be saved'
 UNREAD = 'could not be read'
 
 IDB_GET = """(id)=>new Promise(function(res){
-  var r;try{r=indexedDB.open('BIM-Personal',1);}catch(e){res({err:String(e)});return;}
+  var r;try{r=indexedDB.open('BIM-Personal');}catch(e){res({err:String(e)});return;}
   r.onupgradeneeded=function(){r.result.createObjectStore('projects');};
   r.onsuccess=function(){var db=r.result;try{var t=db.transaction('projects','readonly'),g=t.objectStore('projects').get(id);
     g.onsuccess=function(){db.close();res({rec:g.result?g.result.rec:null});};g.onerror=function(){db.close();res({err:'get'});};}
     catch(e){db.close();res({err:String(e)});}};
   r.onerror=function(){res({err:'open'});};})"""
 IDB_DEL = """(id)=>new Promise(function(res){
-  var r=indexedDB.open('BIM-Personal',1);
+  var r=indexedDB.open('BIM-Personal');
   r.onupgradeneeded=function(){r.result.createObjectStore('projects');};
   r.onsuccess=function(){var db=r.result,t=db.transaction('projects','readwrite');t.objectStore('projects')['delete'](id);
     t.oncomplete=function(){db.close();res(true);};t.onabort=function(){db.close();res(false);};};
@@ -74,12 +74,13 @@ def static_checks(ck, t):
     m = re.search(r"function bimSpillSave\(id,s,rec\)\{(.*?)\n  \}\n", code, flags=re.S)
     body = m.group(1) if m else ''
     put = body.find('bimIdbPut(')
-    ptr = body.find('localStorage.setItem(LSK,bimIdbPointer(')
-    ck(put >= 0 and ptr > put and 'if(err){' in body[put:ptr],
-       'the pointer is written in the callback, after the record has committed, and not on an error')
+    # AMENDED FOR V172f: the pointer in acad3dV1 is gone; the index is touched once the record has committed
+    idx = body.find('bimIndexTouch(')
+    ck(put >= 0 and idx > put and 'if(err){' in body[put:idx],
+       'the index is updated in the callback, after the record has committed, and not on an error')
     m2 = re.search(r"function save3d\(\)\{(.*?)\n  \}\n", code, flags=re.S)
-    ck(m2 is not None and m2.group(1).lstrip().startswith('if(A3D_SPILL&&A3D_SPILL.loading)return;'),
-       'save3d writes nothing while the record on screen is still being read')
+    ck(m2 is not None and 'if((A3D_SPILL&&A3D_SPILL.loading)' in m2.group(1) and 'A3D_SPILL.dirty=true;return;' in m2.group(1),
+       'save3d writes nothing while the record on screen is still being read, and saves it after')
     ck("document.addEventListener('visibilitychange'" in code and 'if(document.hidden&&saveT)' in code,
        'a waiting autosave is written when the page is hidden (D9)')
 
@@ -165,7 +166,9 @@ async def drive(ck):
             return r.get('rec')
 
         # ------------------------------------------------------------------------------------------
-        print('\n-- 1. what fits stays where it was')
+        # AMENDED FOR V172f: every project is kept in the database, small or large; the checks that a small one stayed
+        # in acad3dV1 and a large one left a pointer there assert what V172f lifted, and became the checks below
+        print('\n-- 1. a small project is kept in the database')
         await page.goto('file://' + str(BLANK))
         await safe("()=>localStorage.clear()")
         await safe(IDB_WIPE)
@@ -173,24 +176,23 @@ async def drive(ck):
         a_id = await active()
         w1 = await walls(2)
         await page.wait_for_timeout(900)
-        rec = await ls_json(LSK)
-        ck(rec and isinstance(rec.get('objs'), list) and w1 and w1[0] in json.dumps(rec), 'a small project is saved whole in acad3dV1')
-        ck(await idb_rec(a_id) is None, 'and the database has no copy of it')
-        sp = await safe("()=>window.__a3dSpill()") or {}
-        ck(sp.get('on') is False, 'the project is not marked as kept in the database (%s)' % sp)
+        r0 = await idb_rec(a_id)
+        ck(r0 and w1 and w1[0] in r0, 'a small project is saved whole in the database, under its id')
+        ck(await ls(LSK) is None, 'and acad3dV1 holds nothing')
+        ix = await ls_json('acad3dProjectsV2') or {}
+        ck(ix.get('active') == a_id and any(d.get('id') == a_id for d in ix.get('docs', [])), 'the index lists it, on screen (%s)' % str(ix)[:100])
 
-        print('\n-- 2. what does not fit goes to the database, its pointer in acad3dV1')
+        print('\n-- 2. a large project is kept the same way')
         await safe(REFUSE, LIMIT)
         await clear_toasts()
         w2 = await walls(20, 20)
         await page.wait_for_timeout(1500)
-        ptr = await ls_json(LSK)
-        ck(ptr and ptr.get('idb') == 1 and ptr.get('docId') == a_id and 'objs' not in ptr,
-           'acad3dV1 holds a pointer to the project (%s)' % (str(ptr)[:120]))
-        ck(ptr and isinstance(ptr.get('count'), int) and ptr['count'] >= 22, 'the pointer counts its objects (%s)' % (ptr or {}).get('count'))
+        ix = await ls_json('acad3dProjectsV2') or {}
+        ent = [d for d in ix.get('docs', []) if d.get('id') == a_id]
+        ck(ent and ent[0].get('objs', 0) >= 22, 'the index counts its objects (%s)' % (ent[0].get('objs') if ent else None))
         r = await idb_rec(a_id)
         ck(r and len(r) > LIMIT and all(w in r for w in w1 + w2), 'the database holds the whole record under the project\'s id (%s chars)' % (len(r) if r else None))
-        ck(len(await toasts_with(SPILLED)) == 1, 'one toast says where it is kept (%s)' % (await safe("()=>window.__v172dToasts")))
+        ck(not await toasts_with(SPILLED), 'no toast about where it is kept: every project is kept there')
         ck(not await toasts_with(NOSAVE), 'and none says it could not be saved')
         ck((await safe("()=>window.__a3dSpill().on")) is True, 'the project is marked as kept in the database')
         await clear_toasts()
@@ -199,7 +201,7 @@ async def drive(ck):
         r = await idb_rec(a_id)
         ptr2 = await ls_json(LSK)
         ck(r and w3 and w3[0] in r, 'a later edit updates the database\'s record')
-        ck(ptr2 and ptr2.get('idb') == 1, 'and the pointer stays')
+        ck(ptr2 is None, 'and acad3dV1 stays empty')
         ck(not await toasts_with(SPILLED), 'without a second toast')
 
         print('\n-- 3. a reload brings it back from the database')
@@ -216,25 +218,25 @@ async def drive(ck):
         await page.wait_for_timeout(1200)
         parked = await ls_json(PREFIX + a_id)
         ck(b_id and await active() == b_id, 'a new project opens (%s)' % b_id)
-        ck(parked and parked.get('idb') == 1 and parked.get('docId') == a_id, 'the large project is parked as a pointer in its key')
+        ck(parked is None, 'no parked key is written for the project left')
         r = await idb_rec(a_id)
-        ck(r and all(w in r for w in w1 + w2 + w3), 'and its record is in the database')
-        main_rec = await ls_json(LSK)
-        ck(main_rec and isinstance(main_rec.get('objs'), list), 'the new, small project is saved whole in acad3dV1')
-        ck((await safe("()=>window.__a3dSpill().on")) is False, 'and is not marked as kept in the database')
+        ck(r and all(w in r for w in w1 + w2 + w3), 'its record is in the database')
+        ck(await idb_rec(b_id) is not None, 'and so is the new project\'s')
+        ck(await ls(LSK) is None, 'acad3dV1 stays empty')
         lst = await safe("()=>window.__a3dDocs.list()") or []
         ent = [d for d in lst if d['id'] == a_id]
         ck(ent and ent[0]['objs'] >= 23, 'the list counts the parked project (%s)' % (ent[0]['objs'] if ent else None))
         bw = await walls(1, 400)
         await page.wait_for_timeout(600)
-        # the list lost: boot rebuilds it from the stored keys, and names and counts the parked project from its pointer
+        # the index lost: the database's keys list the projects again, named and counted from their records
         await page.goto('file://' + str(BLANK))
-        await safe("()=>localStorage.removeItem('acad3dDocsV1')")
+        await safe("()=>localStorage.removeItem('acad3dProjectsV2')")
         await open_app()
+        await page.wait_for_timeout(800)
         lst = await safe("()=>window.__a3dDocs.list()") or []
         ent = [d for d in lst if d['id'] == a_id]
-        ck(ent and ent[0]['objs'] >= 23, 'a list rebuilt from the stored keys counts it from its pointer (%s)' % (ent[0]['objs'] if ent else None))
-        ck(await active() == b_id, 'and the small project is still the one on screen')
+        ck(ent and ent[0]['objs'] >= 23, 'a list rebuilt from the database\'s keys counts it from its record (%s)' % (ent[0]['objs'] if ent else None))
+        ck(any(d['id'] == b_id for d in lst), 'and lists the other project too')
         await safe(REFUSE, LIMIT)
         await clear_toasts()
         ok = await safe("(id)=>window.__a3dDocs.activate(id)", a_id)
@@ -246,9 +248,7 @@ async def drive(ck):
         ids = await obj_ids()
         ck(ok and await active() == a_id and all(w in ids for w in w1 + w2 + w3), 'opening it again reads the parked model back (%d objects)' % len(ids))
         ck(bw and bw[0] not in ids, 'and none of the other project\'s')
-        ck(await ls(PREFIX + a_id) is None, 'its parked pointer is gone from its key')
-        ptr3 = await ls_json(LSK)
-        ck(ptr3 and ptr3.get('idb') == 1 and ptr3.get('docId') == a_id, 'acad3dV1 points to it again, still too large')
+        ck(await ls(PREFIX + a_id) is None and await ls(LSK) is None, 'no older key is written for either')
         await safe("(id)=>window.__a3dDocs.activate(id)", b_id)
         await page.wait_for_timeout(1200)
         await safe("(id)=>window.__a3dDocs.activate(id)", a_id)
@@ -257,8 +257,7 @@ async def drive(ck):
                 break
             await page.wait_for_timeout(100)
         await page.wait_for_timeout(800)
-        ck(await active() == a_id and len(await toasts_with(SPILLED)) == 1,
-           'opened a second time, it is not announced again (%d toasts)' % len(await toasts_with(SPILLED)))
+        ck(await active() == a_id and len(await obj_ids()) >= 23, 'opened a second time, it is read back again')
 
         print('\n-- 5. deleting a parked project deletes its database copy')
         await safe("(id)=>window.__a3dDocs.activate(id)", b_id)
@@ -273,8 +272,7 @@ async def drive(ck):
         await safe(REFUSE, LIMIT)
         await walls(22, 600)
         await page.wait_for_timeout(1500)
-        ptr4 = await ls_json(LSK)
-        ck(ptr4 and ptr4.get('idb') == 1 and ptr4.get('docId') == b_id, 'the second project is now kept in the database too')
+        ck(await idb_rec(b_id) is not None and await active() == b_id, 'the second project is on screen, kept in the database')
         await page.goto('file://' + str(BLANK))
         await safe(IDB_DEL, b_id)
         await clear_toasts()
@@ -283,8 +281,9 @@ async def drive(ck):
         ck(len(await toasts_with(UNREAD)) == 1, 'the app says the record could not be read (%s)' % (await safe("()=>window.__v172dToasts")))
         await walls(1, 900)
         await page.wait_for_timeout(1200)
-        ptr5 = await ls_json(LSK)
-        ck(ptr5 and ptr5.get('idb') == 1 and ptr5.get('docId') == b_id, 'an edit made then leaves the pointer in place (%s)' % (str(ptr5)[:80]))
+        ix5 = await ls_json('acad3dProjectsV2') or {}
+        ck(ix5.get('active') == b_id and await idb_rec(b_id) is None,
+           'an edit made then writes nothing over it: the index still names it, and no empty record replaces it (%s)' % str(ix5)[:80])
         ck(errs == [], 'no page errors (%s)' % errs[:3])
         await browser.close()
 

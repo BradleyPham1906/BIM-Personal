@@ -16497,9 +16497,18 @@ part 13, with experiments e13, e13b, e14 and e15 and an independent check (16 of
   the first lock. An index naming an active project its list lacked would have left saving off; the fresh project's
   record is written instead.
 
-Checked: `npm run check`, `npm test` 18 of 18 (4 new in `tests/unit/project-store.test.mjs`). Not yet run (Rule #1): a
-browser check and the e2e suites. To amend: V115, V121b, V124, V124b, V163, V172d, V172e (they read `acad3dV1`, the parked
-keys, templates or the library in localStorage, or open database version 1).
+Checked: `npm run check`, `npm test` 18 of 18 (4 new in `tests/unit/project-store.test.mjs`); the browser check clean;
+the new suite `tests/e2e/bim_phase172f_idb_every_project_browser_tests.py` 26 of 26 (the first start's move from every
+older key, the journal, older keys found later, a newer database refused, a second tab read-only with Take over).
+Amended (AMENDED FOR V172f), all passing: V115 49/49 (storage now one record per project in the database; a full
+database during a switch; boot's repairs), V121b 21/21, V124 67/67, V124b 20/20 (the refusal from the database), V163
+115/115, V172d 38/38 (its two pointer checks removed: V172f retires the pointer), V172e 27/27 (the database's own
+version). Found by the suites and fixed: a reload with every tab closed reopened a tab (the index's boot forced the
+project on screen into the open tabs); a journal stamped ahead of the clock stayed after it was confirmed; the read-only
+bar sat under the engine's toolbar (z-index 9600 over #acad3d's 9500); a save refused during a switch lost the project's
+last state (refused records are kept in the tab, read first and journaled); a lost index left the database's projects
+unlisted until a second start, and empty orphan records were listed (the migration reconciles; empty ones are removed).
+The full regression has not been run.
 
-    canvas_v10.html   3968832 bytes
-    sha256            3170fa5f446a03a77140f41538ff6399a46718db1f5a6cb49dd0bfe7135a8e5b
+    canvas_v10.html   3970486 bytes
+    sha256            45903347786951bf2d6ab9642dbe36bb827bc02cbdbd84dd733a41dcf6acf57d

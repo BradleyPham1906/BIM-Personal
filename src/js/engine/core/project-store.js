@@ -4,7 +4,7 @@ import {
 import { paint } from '../map/terrain-3d.js';
 import { bimProjectRecord, save3d } from './objects-save.js';
 import {
-  A3D_SPILL, A3D_STORE, bimIdbGet, bimIdbGetMany, bimIdbKeys, bimIdbOpen, bimIdbPut, bimIdbPutMany,
+  A3D_SPILL, A3D_STORE, bimIdbDel, bimIdbGet, bimIdbGetMany, bimIdbKeys, bimIdbOpen, bimIdbPut, bimIdbPutMany,
   bimIsIdbPointer
 } from './idb-store.js';
 import {
@@ -52,7 +52,8 @@ import { a3dToast } from '../bim/csg-booleans.js';
   function bimJournalWrite(){
     if(A3D_STORE.mode!=='idb')return 0;
     var n=0;
-    [A3D_SPILL.inflight,A3D_SPILL.next].forEach(function(x){
+    var fl=Object.keys(A3D_SPILL.failed).map(function(k){return A3D_SPILL.failed[k];});
+    [A3D_SPILL.inflight,A3D_SPILL.next].concat(fl).forEach(function(x){
       if(!x||!x.id)return;
       try{localStorage.setItem(A3D_JOURNAL_PREFIX+x.id,JSON.stringify({id:x.id,saved:x.saved||Date.now(),rec:x.s}));n++;}
       catch(eW){console.warn('[BIM] The last change of a project could not be journaled as the page closed: '+x.id,eW);}
@@ -62,6 +63,11 @@ import { a3dToast } from '../bim/csg-booleans.js';
 
   /* ---- one project's record: the database's, or its journal when newer ---- */
   function bimProjectRead(id,cb){
+    var f=A3D_SPILL.failed[id];
+    if(f){
+      var sf=null;try{sf=JSON.parse(f.s);}catch(eF){sf=null;}
+      if(sf){setTimeout(function(){cb(null,sf,true);},0);return;}
+    }
     bimIdbGet(id,function(err,v){
       var j=bimJournalRead(id),useJ=bimJournalNewer(v,j),s=null,st=null;
       if(useJ)s=j.rec;
@@ -190,15 +196,17 @@ import { a3dToast } from '../bim/csg-booleans.js';
       changed=true;return false;
     });
     A3D_DOCS.open=A3D_DOCS.open.filter(function(id){return have[id];});
+    /* a record with anything in it is listed again; an empty one (a fresh project never worked on) is removed */
     proj.forEach(function(k){
       if(have[k])return;
-      console.warn('[BIM] A stored project was missing from the project list and is listed again: '+k);
-      var e={id:k,name:'Recovered project',objs:0,saved:0};
-      A3D_DOCS.docs.push(e);changed=true;
       bimIdbGet(k,function(eG,v){
         var r=null;
         try{r=v&&typeof v.rec==='string'?JSON.parse(v.rec):null;}catch(eJ){r=null;}
-        if(r){e.name=bimNameOf(r.titleBlock);e.objs=Array.isArray(r.objs)?r.objs.length:0;e.saved=+v.saved||0;bimDocsSave();bimDocsNotify('list',null);}
+        if(eG||bimDocEntry(k))return;
+        if(r&&bimRecordEmpty(r)){bimIdbDel(k,function(eD){if(eD)console.warn('[BIM] An empty stored project could not be removed: '+k,eD);});return;}
+        console.warn('[BIM] A stored project was missing from the project list and is listed again: '+k);
+        A3D_DOCS.docs.push({id:k,name:r?bimNameOf(r.titleBlock):'Recovered project',objs:r&&Array.isArray(r.objs)?r.objs.length:0,saved:v&&+v.saved||0});
+        bimDocsSave();bimDocsNotify('list',null);
       });
     });
     if(changed)bimDocsSave();
@@ -333,7 +341,8 @@ import { a3dToast } from '../bim/csg-booleans.js';
         bimStoreLoadActive(function(){
           bimStoreFlushDirty();
           bimTabClaim(A3D_DOCS.active);
-          bimDocsNotify('list',null);
+          /* projects the database already held (an index lost, or a store an older copy filled) are listed again */
+          bimIdbKeys(function(eK,ks){if(!eK&&ks)bimStoreReconcile(ks);bimDocsNotify('list',null);});
         });
       });
     });

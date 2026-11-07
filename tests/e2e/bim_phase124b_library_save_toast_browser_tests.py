@@ -114,26 +114,29 @@ async def drive(ck):
             return await safe("(n)=>{var e=window.__a3dFamilyAdd({name:n,category:'Site',mesh:" + MESH + "});return e?e.id:null;}", name)
 
         async def stored_ids():
-            return await safe("(k)=>{try{return JSON.parse(localStorage.getItem(k)||'[]').map(function(e){return e.id;});}catch(e){return null;}}", KEY) or []
+            # AMENDED FOR V172f: the library is kept in the browser's database ('lib:family')
+            return await safe("()=>window.__a3dStoredGet('lib:family').then(function(v){try{return JSON.parse(v?v.rec:'[]').map(function(e){return e.id;});}catch(e){return null;}})") or []
 
         print('\n-- 1. a fresh start: storage works, an ordinary add is stored without a library toast')
         await page.goto('file://' + str(BLANK))
         await safe("()=>localStorage.clear()")
+        await safe("()=>new Promise(function(res){var r=indexedDB.deleteDatabase('BIM-Personal');r.onsuccess=r.onerror=r.onblocked=function(){res(true);};})")
         await open_app()
         await clear_toasts()
         a = await add('V124b first')
-        await page.wait_for_timeout(300)
+        await page.wait_for_timeout(500)
         ck(a and a in await stored_ids(), 'the first asset is in the stored library (%s)' % a)
         ck(not await toasts_with(FAILED) and not await toasts_with(AGAIN), 'and no library toast was raised')
 
         print('\n-- 2. storage refuses the library: warned and toasted')
-        await safe("""(k)=>{window.__v124bRealSet=Storage.prototype.setItem;
-            Storage.prototype.setItem=function(key,v){if(key===k){var e=new Error('full');e.name='QuotaExceededError';throw e;}
-              return window.__v124bRealSet.call(this,key,v);};}""", KEY)
+        # AMENDED FOR V172f: the refusal comes from the database
+        await safe("""()=>{window.__v124bRealPut=IDBObjectStore.prototype.put;
+            IDBObjectStore.prototype.put=function(v,key){if(key==='lib:family'){var e=new Error('full');e.name='QuotaExceededError';throw e;}
+              return window.__v124bRealPut.call(this,v,key);};}""")
         nwarn = len(warns)
         await clear_toasts()
         b = await add('V124b second')
-        await page.wait_for_timeout(300)
+        await page.wait_for_timeout(500)
         failed = await toasts_with(FAILED)
         ck(b is not None, 'the asset is still added to the library on screen (%s)' % b)
         ck(len(failed) >= 1, 'the toast says the Assets library could not be saved (%s)' % (await safe("()=>window.__v124bToasts")))
@@ -145,20 +148,20 @@ async def drive(ck):
         print('\n-- 3. a second refused save in the same run: no second toast')
         await clear_toasts()
         c = await add('V124b third')
-        await page.wait_for_timeout(300)
+        await page.wait_for_timeout(500)
         ck(c is not None and not await toasts_with(FAILED), 'no toast for the second failure (%s)' % (await safe("()=>window.__v124bToasts")))
 
         print('\n-- 4. storage works again: said once, and the library stored holds everything')
-        await safe("()=>{Storage.prototype.setItem=window.__v124bRealSet;}")
+        await safe("()=>{IDBObjectStore.prototype.put=window.__v124bRealPut;}")
         await clear_toasts()
         d = await add('V124b fourth')
-        await page.wait_for_timeout(300)
+        await page.wait_for_timeout(500)
         ck(len(await toasts_with(AGAIN)) == 1, 'the toast says saving the library works again')
         ids = await stored_ids()
         ck(all(x in ids for x in (a, b, c, d)), 'the stored library holds the four assets, those of the failures too')
         await clear_toasts()
         e = await add('V124b fifth')
-        await page.wait_for_timeout(300)
+        await page.wait_for_timeout(500)
         ck(not await toasts_with(AGAIN) and not await toasts_with(FAILED), 'the next working save raises no toast')
 
         print('\n-- 5. a reload brings them back')

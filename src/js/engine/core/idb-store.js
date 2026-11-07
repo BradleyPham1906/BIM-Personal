@@ -101,7 +101,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
   function bimIsIdbPointer(st){return !!(st&&typeof st==='object'&&st.idb===1&&typeof st.docId==='string'&&!Array.isArray(st.objs));}
   /* the projects' database copies: one write at a time, the newest of each waiting; the record in flight and the one
      waiting are what the pagehide journal keeps (core/project-store.js) */
-  var A3D_SPILL={on:false,loading:!!A3D_BOOT_IDB,busy:false,next:null,inflight:null,dirty:false,idle:[]};
+  var A3D_SPILL={on:false,loading:!!A3D_BOOT_IDB,busy:false,next:null,inflight:null,dirty:false,idle:[],failed:{}};
   function bimSpillSave(id,s,rec){
     if(A3D_SPILL.busy){
       /* a waiting write of another project is written first, so no project's last state is dropped */
@@ -114,6 +114,9 @@ import { a3dToast } from '../bim/csg-booleans.js';
     A3D_SPILL.inflight={id:id,s:s,saved:saved};
     bimIdbPut(id,{rec:s,saved:saved,v:1},function(err){
       A3D_SPILL.busy=false;A3D_SPILL.inflight=null;
+      /* a record the database refused stays here for the session: reopening the project reads it first, the journal
+         keeps it at pagehide, and the next save of the project tries again */
+      if(err)A3D_SPILL.failed[id]={id:id,s:s,saved:saved};else delete A3D_SPILL.failed[id];
       if(err){
         if(!A3D_SAVE_FAILED){
           setA3D_SAVE_FAILED(true);
@@ -121,7 +124,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
           a3dToast('This project could not be saved: browser storage is full. Use Save to keep a copy as a file.');
         }
       }else{
-        bimJournalDrop(id,saved);
+        bimJournalDrop(id,Infinity);   /* only the tab holding the project writes its journal: confirmed, it goes */
         bimIndexTouch(id,rec,saved);
         if(A3D_SAVE_FAILED){setA3D_SAVE_FAILED(false);a3dToast('Saving to browser storage works again');}
       }

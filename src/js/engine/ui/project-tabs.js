@@ -82,7 +82,9 @@ import { a3dToast } from '../bim/csg-booleans.js';
     if(typeof ix.active==='string'&&seen[ix.active])act=ix.active;
     else{act=bimNewDocId();docs.push({id:act,name:bimProjectLabel(),objs:A3D.objs.length,saved:Date.now()});seen[act]=1;}
     if(Array.isArray(ix.open))for(i=0;i<ix.open.length;i++)if(seen[ix.open[i]]&&open.indexOf(ix.open[i])<0)open.push(ix.open[i]);
-    if(open.indexOf(act)<0)open.push(act);
+    /* as V115: with any tab open, the project on screen is one of them; with none, Start */
+    if(!Array.isArray(ix.open)||!seen[ix.active])open=[act];
+    else if(open.length&&open.indexOf(act)<0)open.push(act);
     return {v:2,active:act,open:open,docs:docs};
   }
   function bimDocsBoot(){

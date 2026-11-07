@@ -26,8 +26,8 @@ requires command mapping, full app regressions and owner review.
 
 **Read this first in a new session.** One page. The detail lives in the docs listed at the bottom.
 
-    canvas_v10.html   3968832 bytes
-    sha256            3170fa5f446a03a77140f41538ff6399a46718db1f5a6cb49dd0bfe7135a8e5b
+    canvas_v10.html   3970486 bytes
+    sha256            45903347786951bf2d6ab9642dbe36bb827bc02cbdbd84dd733a41dcf6acf57d
     markers           __acad3dV60 ... __acad3dV172, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
                       __acad3dV121b, __acad3dV124b, __acad3dV166b, __acad3dV166c, __acad3dV166d, __acad3dV171b,
                       __acad3dV171c, __acad3dV171d, __acad3dV172b, __acad3dV172c, __acad3dV172d, __acad3dV172e,
@@ -162,7 +162,7 @@ three tiers: compact up to 720 px wide or 500 px high, medium up to 1024 px, des
 | 172c | Ladybug L2: sun-hours and radiation on the model | **Done** (see Recently finished): Ladybug's incident radiation (its SkyMatrix, Radiance's own `gendaymtx` built to WebAssembly from the release rad6R0P1a, Tregenza's or Reinhart's sky) and direct sun hours (its Sunpath, the day studied or the year) on each face of the model's solids, the app's rays over a bounding-volume hierarchy, Ladybug's own sums; kept, out of date and why, drawn in Ladybug's legend colours, two rows in Analyze's Climate; beside V143's Solar and V148's Sun hours (kept, the owner) | `docs/research/research-ladybug-sun-radiation.md` (with As built, 13). |
 | 172d | Storage A1: large projects in IndexedDB | **Done** (see Recently finished): a project record localStorage refuses goes to IndexedDB (`BIM-Personal`, store `projects`), a pointer in its place written once the record has committed; boot reads it back and saves nothing until then; switching parks and reopens it; deleting removes it; a waiting autosave written when the page is hidden. What fits stays where it was | `docs/research/research-local-storage.md` (D1, D9, D10; the owner, 2026-10-31). |
 | 172e | Storage A2: the library and templates in IndexedDB | **Done** (see Recently finished): the Assets library and templates localStorage refuses kept in the database (`lib:family`, `tpl:<id>`), pointers written once committed, the library read back after start with anything added meanwhile kept; the browser asked to keep the app's storage at the first Save (D3) | `docs/research/research-local-storage.md` (D1, D3). |
-| 172f | Storage A3: every project in IndexedDB, the old keys retired | **Done** (see Recently finished; browser suite not yet run, Rule #1): every project, template and the Assets library in the database (`BIM-Personal` version 2, the schema version), the list under `acad3dProjectsV2`; the older keys copied in one transaction, read back, compared, then removed if unchanged; older keys found later kept when they hold anything; every write committed explicitly and a `pagehide` journal; a project open in another tab read-only here, with Take over (Web Locks) | Same note, part 13 (D1, D7, D9, D10; the owner's F1, F2). |
+| 172f | Storage A3: every project in IndexedDB, the old keys retired | **Done** (see Recently finished): every project, template and the Assets library in the database (`BIM-Personal` version 2, the schema version), the list under `acad3dProjectsV2`; the older keys copied in one transaction, read back, compared, then removed if unchanged; older keys found later kept when they hold anything; every write committed explicitly and a `pagehide` journal; a project open in another tab read-only here, with Take over (Web Locks) | Same note, part 13 (D1, D7, D9, D10; the owner's F1, F2). |
 | 172g | Storage B: files as the real save | **Start here.** A "not saved to a file" marker on each project, a reminder after 30 minutes and at the first save in Safari or a private window (D2); Save and Open through the File System Access pickers in Chrome and Edge, download and a file input elsewhere; the envelope version 2 with the view; an optional `.acad3d.json.gz` known by its first bytes (D4); the `file://` build told when storage is refused (D5) | Same note, D2, D4, D5. |
 | 172h | Storage C: installable and offline | A manifest (`/BIM-Personal/`, standalone, 192 and 512 px icons) and an ES5 service worker at `/BIM-Personal/sw.js`: hashed `app/` files cache-first, `index.html` network-first, `v/` left alone, no update while there is unsaved work (D6) | Same note, D6. |
 | 173 | Site analysis SA6: the Contents pane | The layer stack by drawing order, by source and by selection, a legend patch under each layer; symbology (by category, graduated, stretch), labels and a filter (definition query); the stack exploded in 3D as McHarg's layer cake | ArcGIS Pro's Contents pane. |
@@ -255,8 +255,13 @@ version stays V172).
 - `core/idb-store.js`: version 2, `commit()` on every write, the store's mode; `core/project-store.js` (new): the start, the
   migration (copy, check, retire), older keys found later (empty ones dropped), the journal; `core/tab-lock.js` (new): a lock
   per project, the read-only bar, Take over; `save3d`, switching, deleting, templates and the library follow the mode.
-- Checked: modules, the build, `npm test` 18 of 18 (4 new). **Not yet run:** a browser check and the e2e suites; V115, V121b,
-  V124, V124b, V163, V172d and V172e read the old keys or database version 1 and will need amending.
+- Checked: modules, the build, `npm test` 18 of 18 (4 new); the browser check clean; the new suite
+  `tests/e2e/bim_phase172f_idb_every_project_browser_tests.py` 26 of 26; seven suites amended for the database and all
+  passing: V115 49/49, V121b 21/21, V124 67/67, V124b 20/20, V163 115/115, V172d 38/38 (two pointer checks removed, the
+  pointer retired), V172e 27/27. Found by the suites: a reload with every tab closed reopened a tab (fixed); a confirmed
+  journal stamped ahead of the clock stayed (fixed); the read-only bar under the engine's toolbar (fixed); a refused save
+  during a switch lost the project's last state (now kept in the tab and journaled); empty orphan records listed (now
+  removed). The full regression has not been run.
 
 V172c, **Ladybug L2: sun-hours and radiation on the model** (2026-11-01; the version stays V172).
 - The owner's answers: `gendaymtx` compiled and run here, then added to the runtime (over a Python port of its sky);
