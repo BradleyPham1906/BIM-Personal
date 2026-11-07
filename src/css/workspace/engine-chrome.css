@@ -203,3 +203,8 @@ body.light-theme #a3d-tip strong{color:#202124}body.light-theme .a3d-tiptype b{c
 .a3d-schedwrap.open{display:flex}
 .a3d-sheetview{display:none;position:absolute;inset:0;z-index:500;background:#15171a;flex-direction:column}
 .a3d-sheetview.open{display:flex}
+/* __acad3dV172f: a project another tab holds, shown read-only here (core/tab-lock.js) */
+#a3d-ro-bar{position:fixed;top:calc(52px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);z-index:60;display:flex;align-items:center;gap:12px;max-width:calc(100vw - 24px);box-sizing:border-box;padding:6px 6px 6px 14px;border-radius:8px;background:var(--raised,#2b2b29);color:var(--text,#fff);border:1px solid var(--border,rgba(255,255,255,.16));font-size:13px;box-shadow:0 4px 16px rgba(0,0,0,.35)}
+#a3d-ro-bar button{min-height:30px;padding:0 12px;border-radius:6px;border:1px solid var(--border,rgba(255,255,255,.16));background:var(--accent,#8f7aff);color:#fff;font:inherit;cursor:pointer;white-space:nowrap}
+@media(pointer:coarse){#a3d-ro-bar button{min-height:36px}}
+body.a3d-tier-phone #a3d-ro-bar{left:12px;right:12px;transform:none;max-width:none}

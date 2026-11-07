@@ -16473,3 +16473,33 @@ worktree of `737ebbd`, in 547 s with 6 workers; the falsification as above; `too
     markers           __acad3dV60 ... __acad3dV172, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
                       __acad3dV121b, __acad3dV124b, __acad3dV166b, __acad3dV166c, __acad3dV166d, __acad3dV171b,
                       __acad3dV171c, __acad3dV171d, __acad3dV172b, __acad3dV172c, __acad3dV172d, __acad3dV172e
+
+
+### Storage A3 (V172f, inside Phase 172): every project in IndexedDB, the old keys retired; a second tab read-only
+
+Built on main after PR #65 (2026-11-07); the version stays V172. Research: `docs/research/research-local-storage.md`,
+part 13, with experiments e13, e13b, e14 and e15 and an independent check (16 of 16 facts confirmed).
+
+- `core/idb-store.js`: database version 2 (the schema version: V172d and V172e copies get VersionError and save nothing
+  over what they cannot read, e15 C); every readwrite transaction calls `commit()` (a write started as the page goes away
+  was lost at 10 reloads in 10 without it, e13); `durability: 'strict'` for the migration; the store's mode (boot, idb,
+  migrating, legacy, refused); the save queue keeps the record in flight and the one waiting, and runs steps once idle.
+- `core/project-store.js` (new): at start, the index (`acad3dProjectsV2`) reconciled with the database's keys; older keys
+  found later kept when they hold anything (an older build writes an empty project at every start, e15 B, and that one
+  is dropped), under their own id or a new one; on a first start, every project, template and the library copied in one
+  transaction, read back and compared, the index written, each older key removed only if unchanged. The journal: what
+  the database has not confirmed is written to `acad3dJournalV2:<id>` at `pagehide` and wins at the next read when newer.
+- `core/tab-lock.js` (new): a Web Lock per project; another tab opens it read-only (a bar, Take over: a polite release
+  over BroadcastChannel, `steal` after 1.5 s); a project is not deleted while another tab holds it.
+- `save3d`, switching (read from the database, then swapped), deleting, templates and the library follow the mode.
+- New key names because a pre-V172d build replaced V172d's pointer in `acad3dV1` at start, without an edit (e15 A).
+- Found while building: Node 22's real BroadcastChannel kept the unit tests' process alive; the channel now opens with
+  the first lock. An index naming an active project its list lacked would have left saving off; the fresh project's
+  record is written instead.
+
+Checked: `npm run check`, `npm test` 18 of 18 (4 new in `tests/unit/project-store.test.mjs`). Not yet run (Rule #1): a
+browser check and the e2e suites. To amend: V115, V121b, V124, V124b, V163, V172d, V172e (they read `acad3dV1`, the parked
+keys, templates or the library in localStorage, or open database version 1).
+
+    canvas_v10.html   3968832 bytes
+    sha256            3170fa5f446a03a77140f41538ff6399a46718db1f5a6cb49dd0bfe7135a8e5b

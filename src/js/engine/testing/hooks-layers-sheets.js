@@ -20,11 +20,13 @@ import {
   bimSketchConstraintDesc, bimSolveSketchConstraints, startConstraintTool
 } from '../drawing/sketch-constraints.js';
 import { A3D_REV } from '../core/objects-save.js';
-import { A3D_SPILL } from '../core/idb-store.js';
+import { A3D_SPILL, A3D_STORE } from '../core/idb-store.js';
 import { bimDocName, bimDocsActivate, bimDocsCreate } from '../ui/project-tabs.js';
 import { bimDocsClose, bimDocsRemove } from '../assets/templates.js';
 import { saveSoon } from '../bim/region-regenerate.js';
 import { A3D_FAMLIB_DIRTY, A3D_FAMLIB_IDB, A3D_FAMLIB_LOADING } from '../assets/family-library.js';
+import { bimJournalNewer, bimJournalWrite, bimLegacyScan, bimRecordEmpty } from '../core/project-store.js';
+import { A3D_TAB, bimTabTakeOver } from '../core/tab-lock.js';
 import { A3D_VIEW, bimActivateView } from '../views/saved-views.js';
 import {
   SHEET_EXPORT_PXMM, SHEET_PREVIEW_PXMM, bimAddSheet, bimDeleteSheet, bimNewViewport, bimRenderSheet,
@@ -235,6 +237,13 @@ import { a3drIcon, a3drLabel } from '../ui/discipline-tabs.js';
   window.__acad3dV172e='libidb,libpointer,libbootload,libmerge,tplidb,tpluse,tplremove,persistonsave';
   window.__a3dLibStore=function(){return {idb:A3D_FAMLIB_IDB,loading:A3D_FAMLIB_LOADING,dirty:A3D_FAMLIB_DIRTY};};
   window.__a3dPersist=function(){return {asked:A3D_PERSIST.asked,granted:A3D_PERSIST.granted};};
+  /* __acad3dV172f: every project in the database, the older keys retired; a second tab read-only */
+  window.__acad3dV172f='store2,commit,journal,migrate,checkcopy,retire,foundlater,emptydrop,reconcile,versionerror,tablock,readonly,takeover';
+  window.__a3dStore=function(){return {mode:A3D_STORE.mode,v2:A3D_STORE.v2,newer:A3D_STORE.newer,dirty:A3D_SPILL.dirty,inflight:!!A3D_SPILL.inflight};};
+  window.__a3dTab=function(){return {id:A3D_TAB.id,held:!!A3D_TAB.release,readOnly:A3D_TAB.readOnly,why:A3D_TAB.why};};
+  window.__a3dTakeOver=bimTabTakeOver;
+  window.__a3dJournalWrite=bimJournalWrite;
+  window.__a3dStoreLogic={recordEmpty:bimRecordEmpty,journalNewer:bimJournalNewer,legacyScan:bimLegacyScan};
   window.__a3dSpill=function(){return {on:A3D_SPILL.on,loading:A3D_SPILL.loading,busy:A3D_SPILL.busy,next:!!A3D_SPILL.next};};
   window.__a3dTitleBlockSet=function(tb){A3D.titleBlock=tb;bimSheetViewRefresh();saveSoon();};
   window.__a3dSheetPointerDown=bimSheetPointerDown;

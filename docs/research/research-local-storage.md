@@ -990,6 +990,10 @@ Save to a file still works.
 
 **After PR #65 (2026-11-07).** The repository was reorganised the same day: `Phase/` was removed and the site no longer publishes older builds (`build_docs.kept_versions()` returns none), so F1's guard has no page to apply to and is not built in V172f; it stands as the answer should older versions be published again. The older builds that can still meet the new storage are tabs left open across the upgrade and copies of `canvas_v10.html` opened from `file://`; the new key names and the database at version 2 cover both (13.3 c).
 
+**As built (2026-11-07).** As recommended in 13.4, with F1 not built (13.10): `core/idb-store.js`,
+`core/project-store.js`, `core/tab-lock.js`; the log's entry "Storage A3 (V172f)" has the detail. The browser suites have
+not yet been run (Rule #1).
+
 ### 13.11 References (V172f)
 
 | # | What | URL | What was read | Level |
