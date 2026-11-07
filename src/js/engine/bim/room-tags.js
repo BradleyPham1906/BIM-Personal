@@ -1,3 +1,20 @@
+import { A3D } from '../core/state.js';
+import {
+  bimEnterDraftingMode, bimObjOffset, bimSyncStatusHint, pushUndo
+} from '../drawing/plan-mode-sketch.js';
+import { bimGetActiveLevel } from './levels-walls-floors.js';
+import { bimPointInPoly } from './rooms.js';
+import { bimAnnotDrawable, bimMeasureLabel } from '../annotation/annotation-pick.js';
+import { bimLayerAlpha, bimLayerShown } from '../layers/layer-rules.js';
+import { toScreen } from '../io/import-entry.js';
+import { paint } from '../map/terrain-3d.js';
+import { bimInteriorPoint } from './region-dependents.js';
+import { saveSoon } from './region-regenerate.js';
+import { bimObjectLevelId } from '../views/saved-views.js';
+import { refreshTree } from '../sheets/presentation-panel.js';
+import { closeDlg } from '../ui/touch-input.js';
+import { a3dToast, objById } from './csg-booleans.js';
+
   /* ================= __acad3dV101: room tags ================= */
   /* A room's own label, for every place that writes one (plan exports). LOCAL coordinates, like
      the room's points, so an exporter treats it exactly as it treats them. */
@@ -156,3 +173,7 @@
     a3dToast('Room: click inside an enclosed wall loop or closed sketch on '+lvl.name);
     paint();
   }
+export {
+  bimRoomLabelPoint, bimRoomLabelText, bimRoomTagLayout, bimRoomTagText, bimRoomTagged, bimSweepOrphanTags,
+  bimTagAllRooms, bimTagRoomAt, drawRoomTags, startRoomTagTool, startRoomTool
+};

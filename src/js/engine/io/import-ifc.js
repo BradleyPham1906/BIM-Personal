@@ -1,3 +1,17 @@
+import { A3D } from '../core/state.js';
+import { pushUndo, setUndoSuspend } from '../drawing/plan-mode-sketch.js';
+import { padMesh, sketchCCW } from '../drawing/drawing-input.js';
+import { clampLevelElev } from '../bim/levels-walls-floors.js';
+import { refreshLevels } from '../bim/classification.js';
+import { bimTryRecoverWallFromRectProfile } from '../bim/import-compliance.js';
+import { addLayer } from '../layers/select-change.js';
+import { refreshLayers } from '../layers/analysis-data-rows.js';
+import { paint } from '../map/terrain-3d.js';
+import { fitScene } from '../ui/tool-palette.js';
+import { saveSoon } from '../bim/region-regenerate.js';
+import { refreshTree } from '../sheets/presentation-panel.js';
+import { a3dToast } from '../bim/csg-booleans.js';
+
   // ---- IFC (STEP-text BIM format): subset covering IfcBuildingStorey + vertically-extruded IfcWall/IfcSlab ----
   function ifcSplitTop(s){
     var out=[],depth=0,cur='',inStr=false,i;
@@ -195,7 +209,7 @@
     var ids=Object.keys(byId);
     if(!ids.length){a3dToast('IFC import: no entities found in '+filename);return;}
     pushUndo();
-    undoSuspend=true;
+    setUndoSuspend(true);
     var scale,levelsAdded=0,wallsAdded=0,slabsAdded=0,skipped=0,recoveredWalls=0,i;
     try{
       scale=ifcFindLengthScale(byId);
@@ -245,10 +259,11 @@
         if(isSlab)slabsAdded++;else wallsAdded++;
       }
     }finally{
-      undoSuspend=false;
+      setUndoSuspend(false);
     }
     refreshTree();refreshLevels();refreshLayers();fitScene();paint();saveSoon();
     a3dToast('IFC import: '+levelsAdded+' level(s), '+wallsAdded+' wall(s) ('+recoveredWalls+' fully editable), '+slabsAdded+' slab(s), locked by default'+
       (skipped?'; '+skipped+' element(s) skipped (unsupported/non-vertical geometry)':''));
   }
 
+export { bimImportIFC };

@@ -1,3 +1,8 @@
+import { bimObjOffset } from '../drawing/plan-mode-sketch.js';
+import { bimTinBuild } from './breaklines.js';
+import { bimPolyArea } from '../bim/rooms.js';
+import { bimClipHalfPlane } from '../structure/tributary-loads.js';
+
   /* ================= __acad3dV108: terrain -- TIN, contours, earthwork =================
      A surface is its survey points and nothing else: the triangles are derived from them whenever
      they are needed (Delaunay, Bowyer-Watson), never stored beside them. Each triangle is a plane,
@@ -171,3 +176,7 @@
       return [dE*ct+dN*st,dE*st-dN*ct,(r.z-base.z)*u,r.p||'',r.d||''];
     });
   }
+export {
+  BIM_SURVEY_UNITS, BIM_TIN_CACHE, bimClipToTri, bimContours, bimCutFill, bimDelaunay, bimEarthCentroid,
+  bimParseSurvey, bimSurveyToModel, bimTerrainInterval, bimTerrainRange, bimTerrainTin
+};

@@ -1,3 +1,55 @@
+import { A3D, A3D_DOCS, el } from '../core/state.js';
+import { A3D_CANVAS_CLEARED, A3D_CANVAS_KEYS, A3D_THEME_AT_START } from '../core/storage-theme.js';
+import { REDO_STACK, UNDO_STACK, bimStatusHintText } from '../drawing/plan-mode-sketch.js';
+import { A3D_PERSIST } from '../io/project-file.js';
+import {
+  bimLayerAlpha, bimLayerOf, bimLayerPickable, bimLayerSelectable, bimLayerShown, bimObjLayerState
+} from '../layers/layer-rules.js';
+import {
+  BIM_LINETYPES, BIM_LINEWEIGHTS, addLayer, bimLayerDelete, bimLayerMakeCurrent, bimLayerNew, bimLayerSet,
+  bimObjSetLayer, setActiveLayer
+} from '../layers/select-change.js';
+import { bimLayerTree } from '../layers/layers-panel.js';
+import { A3D_CLB, bimClbEl, bimClbW } from '../site-analysis/climate-board.js';
+import { bimImportDXF } from '../io/import-dxf.js';
+import { bimImportOBJ, bimImportSTL } from '../io/import-obj-stl.js';
+import { bimImportIFC } from '../io/import-ifc.js';
+import { paint } from '../map/terrain-3d.js';
+import {
+  bimAddSketchConstraint, bimDeleteSketchConstraint, bimEstimateSketchDOF, bimResolveSketch,
+  bimSketchConstraintDesc, bimSolveSketchConstraints, startConstraintTool
+} from '../drawing/sketch-constraints.js';
+import { A3D_REV } from '../core/objects-save.js';
+import { A3D_SPILL } from '../core/idb-store.js';
+import { bimDocName, bimDocsActivate, bimDocsCreate } from '../ui/project-tabs.js';
+import { bimDocsClose, bimDocsRemove } from '../assets/templates.js';
+import { saveSoon } from '../bim/region-regenerate.js';
+import { A3D_FAMLIB_DIRTY, A3D_FAMLIB_IDB, A3D_FAMLIB_LOADING } from '../assets/family-library.js';
+import { A3D_VIEW, bimActivateView } from '../views/saved-views.js';
+import {
+  SHEET_EXPORT_PXMM, SHEET_PREVIEW_PXMM, bimAddSheet, bimDeleteSheet, bimNewViewport, bimRenderSheet,
+  bimResolveViewportSource, bimSheetById, bimSheetLabel, bimSheetSolveCamera, bimSheetSourceOptions,
+  bimSheetViewRefresh
+} from '../sheets/sheets.js';
+import {
+  A3D_PAGES, A3D_PAGEVIEW_KEYS, A3D_PAGE_ZOOMS, bimPageKey, bimPageSig, bimPagesGo, bimPagesIndex, bimPagesOn,
+  bimPagesSetDisplay, bimPagesZoom
+} from '../sheets/pages-display.js';
+import {
+  A3D_SHOW_KEYS, A3D_SLIDESHOW, bimSheetOnScreen, bimShowModel, bimSlideshowEnd, bimSlideshowStart
+} from '../sheets/present.js';
+import {
+  bimPrintSetHtml, bimSheetPointerDown, bimSheetPointerMove, bimSheetPointerUp, bimSheetVp
+} from '../sheets/viewports.js';
+import { bimSheetMenuItems, bimSheetMove } from '../sheets/layout-tabs.js';
+import {
+  bimBoardAdd, bimBoardById, bimBoardMenuDo, bimBoardMenuItems, bimBoardPrintHtml, bimBoardRemove,
+  bimBoardShow, bimClbCss, bimPresData, bimPresMoveNear, bimPresSeq, bimPresStep
+} from '../sheets/boards.js';
+import { A3D_PRP, bimPresHost, bimPresOpenPage } from '../sheets/presentation-panel.js';
+import { a3dToast, objById } from '../bim/csg-booleans.js';
+import { a3drIcon, a3drLabel } from '../ui/discipline-tabs.js';
+
   /* __acad3dV121b: what this start removed, and the names it removes */
   window.__a3dCanvasCleared=function(){return {removed:A3D_CANVAS_CLEARED.slice(),names:A3D_CANVAS_KEYS.slice()};};
   window.__a3dThemeAtStart=function(){return A3D_THEME_AT_START;};   /* __acad3dV121b */

@@ -1,3 +1,13 @@
+import { A3D } from '../core/state.js';
+import { LIGHT, TYPES, faceNormal, meshOf } from '../core/mesh-primitives.js';
+import { bimLayerAlpha, bimLayerShown } from '../layers/layer-rules.js';
+import {
+  A3D_GL, BIM_EDGE_PULL, GL_EDGE_FACE_LIMIT, bimGlCompile, bimGlProjMatrix, bimGlViewMatrix, bimHexToRgb
+} from './webgl.js';
+import { A3D_GPU } from './webgpu.js';
+import { bimLensCol } from '../map/colour-lens.js';
+import { bimObjectVisibleOnLevel } from '../views/saved-views.js';
+
   /* ================= __acad3dV152: the scene in GPU-friendly batches =================
      One description of the scene, read by both engines (__acad3dV153: WebGL and WebGPU):
      chunks of merged triangles and edges, each vertex tagged with its object's slot, and a table
@@ -282,3 +292,10 @@
     A3D.glFaces=F.totalFaces;
     return true;
   }
+  /* setters: other files assign these through them (an ES module cannot assign to an import) */
+  function setA3D_CULL(v){A3D_CULL=v;return v;}
+  function setA3D_GL_BATCH(v){A3D_GL_BATCH=v;return v;}
+export {
+  A3D_CULL, A3D_GL_BATCH, A3D_SCENE, BIM_GB_TEXW, bimGbInit, bimGbPrepare, bimGbRender, bimSceneCull,
+  bimSceneDirty, bimSceneFrameDone, bimSceneRelease, bimSceneSync, setA3D_CULL, setA3D_GL_BATCH
+};

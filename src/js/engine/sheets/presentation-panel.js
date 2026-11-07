@@ -1,3 +1,67 @@
+import { A3D, el } from '../core/state.js';
+import { TYPES, camVecs } from '../core/mesh-primitives.js';
+import { bimObjOffset, bimSnapPoint, bimSyncStatusHint, pushUndo } from '../drawing/plan-mode-sketch.js';
+import { skClick } from '../drawing/drawing-input.js';
+import { bimGetActiveLevel } from '../bim/levels-walls-floors.js';
+import { bimClassificationInUseCount, refreshLevels } from '../bim/classification.js';
+import { bimGridById, bimPickGrid, bimSelectedGrid } from '../bim/grid-editing.js';
+import { bimIsLocked } from '../bim/import-compliance.js';
+import { BIM_LOCK_ON } from '../layers/select-change.js';
+import { bimLayersPanelRefresh } from '../layers/analysis-data-rows.js';
+import { bimEsc } from '../layers/layer-manager.js';
+import { bimPickBand } from '../site-analysis/motion.js';
+import { A3D_CLB, bimClbClose } from '../site-analysis/climate-board.js';
+import { bimRenderInto, refreshProps } from '../site-analysis/panel.js';
+import { A3D_DATA } from '../map/data-layers.js';
+import { bimDataPick } from '../map/find-open-data.js';
+import { paint } from '../map/terrain-3d.js';
+import { bimDragAnnotPoint } from '../annotation/annotation-grips.js';
+import { A3D_GIZ, bimBodyDragStart } from '../gizmo/transform-gizmo.js';
+import { bimApplyZoomWindow, bimCancelZoomWindow } from '../ui/zoom-window-save-image.js';
+import {
+  bimCloseGizmoMenu, bimGizmoApply, bimGizmoApplyRotate, bimGizmoBegin, bimGizmoClickValue, bimGizmoEndDrag,
+  bimGizmoStartMoving, bimOpenGizmoMenu, bimPickGizmo
+} from '../gizmo/gizmo-handles.js';
+import {
+  bimFaceCurrent, bimFaceEnter, bimFaceExit, bimFaceHitAt, bimFacePickAt
+} from '../editing/faces-push-pull.js';
+import {
+  bimFaceClickValue, bimPickGrip, bimPushApply, bimPushBegin, bimPushEnd, bimPushPress
+} from '../editing/push-pull.js';
+import {
+  bimDragSketchPoint, bimDragWallPoint, bimInsertSketchVertex, bimSketchSegMid
+} from '../drawing/add-vertex.js';
+import {
+  bimFinishConstraintPick, bimResolveSketch, bimSketchConstraintLabel, pick
+} from '../drawing/sketch-constraints.js';
+import { bimApplyMarquee } from '../editing/selection-tools.js';
+import { setA3D_MATERIALIZED } from '../editing/precision-editing.js';
+import { bimPropagateFrom } from '../bim/region-dependents.js';
+import { VIEWS, cubeHit, inRect, setView } from '../editing/modify-toolbox.js';
+import { bimCleanShell } from '../assets/library-drag.js';
+import { A3D_REV } from '../core/objects-save.js';
+import { refreshHud, saveSoon } from '../bim/region-regenerate.js';
+import { SCHEDULE_DEFS, bimScheduleKeys, refreshSchedule } from '../structure/analysis-properties.js';
+import { bimLibEntries } from '../assets/family-library.js';
+import { A3D_VIEW, bimActivateView } from '../views/saved-views.js';
+import { SHEET_PREVIEW_PXMM, bimRenderSheet, bimSheetById, bimSheetLabel } from './sheets.js';
+import {
+  A3D_PAGES, bimPageSig, bimPagesScrollTo, bimPagesSetCurrent, bimPagesSetDisplay
+} from './pages-display.js';
+import { bimSheetOnScreen, bimSlideshowStart } from './present.js';
+import { bimPrintSet } from './viewports.js';
+import { A3D_BROWSER_OPEN, bimBrowserGroup, bimBrowserLeaf } from '../ui/project-browser.js';
+import {
+  bimLayoutNew, bimLtMenuOpen, bimRenderLayoutTabs, bimSheetMenu, bimSheetRename
+} from './layout-tabs.js';
+import {
+  bimBoardById, bimBoardMenu, bimBoardMenuDo, bimBoardMenuItems, bimPresBoardThumb, bimPresMoveNear,
+  bimPresOpenBoard, bimPresSeq
+} from './boards.js';
+import { bimBoardLabel } from './board-figures.js';
+import { a3dToast, groundPoint, objById } from '../bim/csg-booleans.js';
+import { bimDevicePixelRatio } from '../ui/canvas-size.js';
+
   /* ================= __acad3dV122: the Presentation panel =================
      The presentation's pages, the thumbnail column of a PDF reader. A thumbnail is the page as it
      plots, drawn by the renderer the pages and Present use, at twice its pixels and reduced. */
@@ -469,7 +533,7 @@
       var gcopy=gz&&(gz.kind==='axis'||gz.kind==='plane'||gz.kind==='centre')&&!ev.altKey;
       if(gz&&(!gctrl||gcopy)){
         bimCloseGizmoMenu();
-        A3D_MATERIALIZED=[];
+        setA3D_MATERIALIZED([]);
         var gd=bimGizmoBegin(gz,xy,ev);
         if(gd){
           /* __acad3dV123: nothing happens on the press. The undo step and, with Ctrl, the copies are
@@ -745,3 +809,10 @@
     bimZoomAbout(Math.pow(1.0015,ev.deltaY),xy[0],xy[1]);
     ev.preventDefault();paint();saveSoon();
   }
+  /* setters: other files assign these through them (an ES module cannot assign to an import) */
+  function setDrag(v){drag=v;return v;}
+export {
+  A3D_PRP, BIM_ZOOM_MAX, BIM_ZOOM_MIN, bimPresHost, bimPresOpenPage, bimPresPanelHtml, bimPresPanelRefresh,
+  bimPresRename, bimPresThumbsQueue, bimWirePresPanel, bimZoomAbout, bimZoomClamp, cvXY, drag, onDown, onMove,
+  onUp, onWheel, refreshBrowser, refreshTree, setDrag
+};

@@ -1,3 +1,8 @@
+import { A3D } from '../core/state.js';
+import { bimObjBounds2D } from '../editing/offset-align-trim.js';
+import { BIM_BULGE_EPS, bimBulgeArc, bimBulgeAt } from './arc-storage.js';
+import { bimPointOnSweptArc } from './curve-walking.js';
+
   /* ================= __acad3dV94: construction lines =================
 
      XLINE is infinite in both directions, RAY in one. Neither can be stored as two points, so
@@ -156,3 +161,8 @@
     if(Math.sqrt(dx*dx+dz*dz)<1e-9)return null;
     return [dx,dz];
   }
+export {
+  BIM_CLINE_MODES, BIM_CLINE_MODE_ORDER, bimClineArcIntersect, bimClineCrossings, bimClineDir,
+  bimClineModeForKey, bimClineModeLabels, bimClineSegIntersect, bimClineVisibleSeg, bimClipInfinite,
+  bimDrawingExtent2D, bimIsCline
+};

@@ -1,3 +1,14 @@
+import { A3D, el } from '../core/state.js';
+import { bimEnterDraftingMode, pushUndo } from '../drawing/plan-mode-sketch.js';
+import { earClip } from '../drawing/drawing-input.js';
+import { bimGetActiveLevel } from './levels-walls-floors.js';
+import { paint } from '../map/terrain-3d.js';
+import { refreshHud, saveSoon } from './region-regenerate.js';
+import { bimRectSection } from '../structure/analytical-model.js';
+import { refreshTree } from '../sheets/presentation-panel.js';
+import { closeDlg } from '../ui/touch-input.js';
+import { a3dToast } from './csg-booleans.js';
+
   /* ================= __acad3dV126: section profiles ================= */
   var BIM_PROFILE_SHAPES={rect:'Rectangle',circle:'Round',hss:'Rectangular hollow (HSS)',pipe:'Pipe',ibeam:'I (W, IPE)',channel:'Channel'};
   var BIM_ROUND_N=32;
@@ -222,3 +233,7 @@
     }
     return out;
   }
+export {
+  BIM_PROFILE_SHAPES, bimBuildBeamGeometry, bimMeshSignedVolume, bimOffsetRing, bimProfileLoops,
+  bimProfileProblem, bimProfileProps, bimSegNormal, bimSweepMesh, buildBeamSolid, openBeamDlg, startBeamTool
+};

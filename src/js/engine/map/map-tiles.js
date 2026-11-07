@@ -1,3 +1,22 @@
+import { A3D, el } from '../core/state.js';
+import { pushUndo } from '../drawing/plan-mode-sketch.js';
+import { bimSunNum, bimSunSettings } from '../site/sun-position.js';
+import { bimTrueNorthDeg } from '../survey/survey-arithmetic.js';
+import { A3D_PLOT } from '../layers/layer-rules.js';
+import { bimEsc } from '../layers/layer-manager.js';
+import { refreshProps } from '../site-analysis/panel.js';
+import { bimAwBg, bimAwLook } from '../site-analysis/analysis-workspace.js';
+import { toScreen } from '../io/import-entry.js';
+import { bimGlCompile, bimGlProjMatrix, bimGlViewMatrix } from '../render/webgl.js';
+import { A3D_GPU } from '../render/webgpu.js';
+import { bimCtxCreditHtml } from './surroundings-3d.js';
+import { bimDataCreditHtml } from './find-open-data.js';
+import { paint } from './terrain-3d.js';
+import { saveSoon } from '../bim/region-regenerate.js';
+import { bimShadowGround } from '../site/shadows.js';
+import { a3dToast, groundPoint } from '../bim/csg-booleans.js';
+import { cvScale } from '../ui/canvas-size.js';
+
   /* ================= __acad3dV132: the map =================
      A basemap under the plan and the 3D ground: OpenStreetMap's street map, Esri's imagery, or the
      owner's own tiles. It is off until someone turns it on, so the app asks the network for nothing
@@ -359,3 +378,10 @@
     refreshProps();paint();saveSoon();
     return true;
   }
+export {
+  A3D_MAP, BIM_D2R, BIM_MAP_ORDER, BIM_MAP_STYLES, BIM_WGS84_A, bimGeoToModel, bimLatToTileY, bimLonToTileX,
+  bimMapCredit, bimMapDpr, bimMapDraw2D, bimMapDrawGl, bimMapDrop, bimMapEvict, bimMapFooterHtml,
+  bimMapFooterSync, bimMapForgetFailures, bimMapHost, bimMapOrigin, bimMapPlan, bimMapRecord, bimMapSet,
+  bimMapSettings, bimMapSource, bimMapTemplate, bimMapTex, bimMapTileCorners, bimMapTileUrl, bimModelToGeo,
+  bimSinh
+};

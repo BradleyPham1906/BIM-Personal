@@ -1,3 +1,14 @@
+import { A3D, el } from '../core/state.js';
+import { bimLayerById } from '../layers/layer-rules.js';
+import { bimLayerChanged } from '../layers/select-change.js';
+import { BIM_DG_AN, bimDgState } from '../standards/registry.js';
+import { bimTrLight } from '../simulation/traffic-draw.js';
+import {
+  A3D_AW, BIM_AW_FINDS, bimAwBgHex, bimAwCtxCol, bimAwEnter, bimAwFocus, bimAwFocusNow, bimAwInk, bimAwLeave,
+  bimAwLook, bimAwPick, bimAwShown, bimAwState, bimAwTick
+} from '../site-analysis/analysis-workspace.js';
+import { objById } from '../bim/csg-booleans.js';
+
   /* __acad3dV171b: the analysis workspace, for the suite */
   window.__acad3dV171b='workspace,enter,leave,focus,ticks,layers,undo,kept,afterrun,traffic,bar,list,panel,overview,chart,key,look,lightdark,ground,ctxtones,mapgrey,words,legendplace,dockhidden,toasttop,phone,chips,details,command,open,rowfit';
   window.__acad3dV171c='oneanalyze,tab,tableave,prevtab,list,categories,rows,findcount,redflag,overview,category,findings,analyses,catdata,seealso,analysis,itfound,answers,card,cardacts,props,back,search,phone,fold,noanztog,noshow';

@@ -1,3 +1,19 @@
+import { A3D } from '../core/state.js';
+import { camVecs, faceNormal, vdot } from '../core/mesh-primitives.js';
+import { bimWorldPt } from '../drawing/plan-mode-sketch.js';
+import { bimIsPoint } from '../drawing/point-node.js';
+import { bimPickProperty } from '../site/property.js';
+import { bimPickAlignment } from '../site/alignment-profile.js';
+import { bimPointInPoly, bimPolyArea } from '../bim/rooms.js';
+import { bimLayerPickable } from '../layers/layer-rules.js';
+import { toScreen } from '../io/import-entry.js';
+import { CFACES, CORN } from '../map/terrain-3d.js';
+import { bimAnnotGripPoints } from '../annotation/annotation-grips.js';
+import { bimFlattenSketch } from '../drawing/arc-storage.js';
+import { bimHatchOutline, bimIsHatch } from '../drawing/hatch.js';
+import { bimClineVisibleSeg, bimDrawingExtent2D, bimIsCline } from '../drawing/construction-lines.js';
+import { cvH, cvW } from '../ui/canvas-size.js';
+
   // ---- __acad3dV37: ViewCube restyled to match Revit's. Revit's cube is a LIGHT solid cube with
   // dark uppercase face labels, a compass ring beneath it carrying N/E/S/W that rotates with the
   // camera, and a small house icon for Home rather than a text button. The previous version was
@@ -209,3 +225,4 @@
     if(ap)return {pts:ap,y:o.y||0,kind:'annot'};
     return null;
   }
+export { bimGetEditablePoints, bimPickSketch, bimPointSegDist, drawCube, inPoly };

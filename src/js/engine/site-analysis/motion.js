@@ -1,5 +1,24 @@
+import { A3D } from '../core/state.js';
+import { camVecs } from '../core/mesh-primitives.js';
+import { PILL_PAUSE, PILL_PLAY } from '../drawing/plan-mode-sketch.js';
+import {
+  bimHHMM, bimPad2, bimSunCalc, bimSunDayText, bimSunNum, bimSunSettings, bimSunStudy, bimSunTzAt
+} from '../site/sun-position.js';
+import { A3D_PLOT, bimLayerPickable, bimLayerShown } from '../layers/layer-rules.js';
+import { A3D_DG, BIM_DG_AN, bimDgDiags, bimDgW } from '../standards/registry.js';
+import { bimDgScreen } from './model-layers.js';
+import { bimDgSite } from './model-analyses.js';
+import { A3D_TR, bimTrAdvance, bimTrFps, bimTrStart, bimTrStop } from '../simulation/traffic-sim.js';
+import { bimTrCanPlay } from '../simulation/traffic-ui.js';
+import { toScreen } from '../io/import-entry.js';
+import { paint } from '../map/terrain-3d.js';
+import { bimPointSegDist, inPoly } from '../render/viewcube.js';
+import { bimCameraIsPlan } from '../views/saved-views.js';
+import { a3dToast, objById } from '../bim/csg-booleans.js';
+import { cvH, cvW } from '../ui/canvas-size.js';
+
   /* ================= __acad3dV170: the analyses in motion =================
-     reference/research-animation.md. Still until Play; Pause beside it whenever anything moves (WCAG 2.2.2),
+     docs/research/research-animation.md. Still until Play; Pause beside it whenever anything moves (WCAG 2.2.2),
      keeping the moment; Stop gives the still drawing back. The app opens still, which is what a device asking for
      reduced motion wants (2.3.3), and the device asking for it while it plays pauses it. One clock for every
      animated element, run by requestAnimationFrame while playing, so it stops while the page is hidden; a frame
@@ -344,3 +363,10 @@
     for(i=0;i<P.length;i++)P[i]=bimDgW(o,P[i]);
     return P;
   }
+export {
+  A3D_ANIM, BIM_ANIM, BIM_ANIM_AUTO, BIM_ANIM_NAMES, bimAnimAlpha, bimAnimAuto, bimAnimCentre, bimAnimClip,
+  bimAnimDrawOf, bimAnimFrame, bimAnimHalt, bimAnimKinds, bimAnimLive, bimAnimMarchOff, bimAnimMotion,
+  bimAnimOrient, bimAnimOrientLine, bimAnimOut, bimAnimPlay, bimAnimReveal, bimAnimRingK, bimAnimRingOf,
+  bimAnimScreen, bimAnimStop, bimAnimStroke, bimAnimSunDate, bimAnimSunTime, bimAnimSync, bimAnimTick,
+  bimAnimTint, bimDgBounds, bimDgCopy, bimDgTransformed, bimPickBand, bimPickDiag
+};

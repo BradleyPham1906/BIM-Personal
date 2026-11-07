@@ -1,3 +1,24 @@
+import { A3D } from '../core/state.js';
+import { bimObjOffset } from '../drawing/plan-mode-sketch.js';
+import { bimIsPoint, bimPointMarkerSegs } from '../drawing/point-node.js';
+import { bimFormatBearing } from '../survey/survey-arithmetic.js';
+import { bimIsProperty, bimPropertyGeometry } from '../site/property.js';
+import { bimAlignExport, bimIsAlignment } from '../site/alignment-profile.js';
+import { bimIsFooting } from '../bim/footings.js';
+import { bimPatternDef, bimPatternDraws, bimPatternRotation } from '../bim/type-instance-params.js';
+import { bimRoomLabelPoint, bimRoomLabelText, bimRoomTagText, bimRoomTagged } from '../bim/room-tags.js';
+import { bimDimKind } from '../annotation/dimensions.js';
+import { bimAnnotDrawable, bimTriggerDownload } from '../annotation/annotation-pick.js';
+import { bimFileStem } from './project-file.js';
+import { bimRectFootprint } from '../bim/columns-openings.js';
+import { bimDxfLayerName, bimDxfPair, bimWallOpeningBreaks } from './dxf-export.js';
+import { bimLayerEff } from '../layers/layer-rules.js';
+import { bimLinetypeDef } from '../layers/select-change.js';
+import { BIM_BULGE_EPS, bimBulgeAt } from '../drawing/arc-storage.js';
+import { bimIsHatch } from '../drawing/hatch.js';
+import { bimClineVisibleSeg, bimIsCline } from '../drawing/construction-lines.js';
+import { a3dToast } from '../bim/csg-booleans.js';
+
   /* ================= __acad3dV104: the export mappings ================= */
   function bimExportOffset(o){
     if(!o||bimIsProperty(o)||bimIsAlignment(o))return [0,0,0];   /* derived in world terms already; __acad3dV127: so is an alignment */
@@ -268,3 +289,9 @@
       count:function(){return defs.length;}
     };
   }
+  /* setters: other files assign these through them (an ES module cannot assign to an import) */
+  function setBIM_PAT_SVG_SEQ(v){BIM_PAT_SVG_SEQ=v;return v;}
+export {
+  BIM_PAT_SVG_SEQ, bimBuildDXF, bimDxfBulgesToModel, bimDxfToModel, bimEscXml, bimExportDXF, bimExportOffset,
+  bimPatternRegistry, bimPatternSvgDef, setBIM_PAT_SVG_SEQ
+};

@@ -1,3 +1,28 @@
+import { A3D, el } from '../core/state.js';
+import { bimSurveyCheck, bimSurveyReportExport, bimSurveySetControl } from '../survey/survey-check.js';
+import { bimEsc } from '../layers/layer-manager.js';
+import { A3D_PROP_GROUPS_OPEN, bimDispNum, bimPropGroup, bimPropRow, bimPropText } from './palette.js';
+import { bimPropReveal } from '../analysis/analyze-tab.js';
+import { bimCtxLevelH, bimCtxPier } from '../standards/registry.js';
+import { refreshProps } from '../site-analysis/panel.js';
+import {
+  BIM_LENS_BY, BIM_LENS_LABEL, bimDataAttrKeys, bimLensPropKeys, bimLensSet, bimLensSettings
+} from '../map/colour-lens.js';
+import { BIM_CTX_KINDS, BIM_CTX_LABEL, bimCtxSet, bimCtxSettings } from '../map/site-context.js';
+import { BIM_CTX_TREE_STEP, BIM_ROAD_USE_LABEL, bimCtxFetch, bimCtxRemove } from '../map/surroundings-3d.js';
+import { bimLodCheck, bimLodOf, bimLodText, bimObjSolidCheck, bimSolidCheckText } from '../map/lod-solids.js';
+import { bimCityJsonExport, bimCityJsonPick } from '../map/cityjson.js';
+import {
+  A3D_DATA, BIM_DATA_PRESETS, bimDataById, bimDataFeats, bimDataFetch, bimDataList
+} from '../map/data-layers.js';
+import {
+  A3D_FIND, BIM_DATA_PORTALS, BIM_FIND_CREDIT, bimDataAdd, bimDataModel, bimDataOpacity, bimDataRemove,
+  bimDataSet, bimDataToProperty, bimFindAdd, bimFindAdded, bimFindCurrent, bimFindSearch, bimFindSetPortal
+} from '../map/find-open-data.js';
+import { paint } from '../map/terrain-3d.js';
+import { refreshTree } from '../sheets/presentation-panel.js';
+import { a3dToast, objById } from '../bim/csg-booleans.js';
+
   /* ================= __acad3dV133: site context in Properties ================= */
   function bimCtxCountsText(c){
     var s=[],i,k;
@@ -327,3 +352,9 @@
     a3dToast('Data layers are in Properties: add a preset, or the web address of an ArcGIS layer, a WFS or a GeoJSON file');
     return true;
   }
+export {
+  bimCtxCountsText, bimCtxModelHtml, bimCtxPropChange, bimCtxPropClick, bimCtxPropsHtml, bimDataCommand,
+  bimDataFeatureHtml, bimDataModelHtml, bimDataPropChange, bimDataPropClick, bimDataStatusText,
+  bimFindCommand, bimFindPropChange, bimFindPropClick, bimLensCommand, bimLensHtml, bimLensPropChange,
+  bimLodHtml, bimSurveyCheckCommand, bimSurveyCheckHtml, bimSurveyPropChange, bimSurveyPropClick
+};

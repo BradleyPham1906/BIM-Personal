@@ -1,3 +1,29 @@
+import { A3D, el } from '../core/state.js';
+import { meshOf, mkBoxP, mkCylP } from '../core/mesh-primitives.js';
+import { bimObjOffset, pushUndo } from '../drawing/plan-mode-sketch.js';
+import { bimGetActiveLevel } from '../bim/levels-walls-floors.js';
+import { bimSunSettings } from '../site/sun-position.js';
+import { bimLayerShown } from '../layers/layer-rules.js';
+import { bimEsc } from '../layers/layer-manager.js';
+import {
+  bimDispLen, bimLenLabel, bimPropGroup, bimPropLen, bimPropLenText, bimPropRow, bimPropText, bimUnitLabel
+} from '../properties/palette.js';
+import { bimCtxTreeH, bimStd, bimStdFmt, bimStdUsedText } from '../standards/registry.js';
+import { refreshProps } from '../site-analysis/panel.js';
+import { objParse, stlIsBinary, stlParseAscii, stlParseBinary } from '../io/import-obj-stl.js';
+import { bimImportSKP } from '../io/sketchup-import.js';
+import { toScreen } from '../io/import-entry.js';
+import { paint } from '../map/terrain-3d.js';
+import { refreshHud, saveSoon } from '../bim/region-regenerate.js';
+import {
+  FAMILY_CATEGORIES, bimAssetKind, bimCloneMesh, bimFamilyLibraryAdd, bimMergeMeshes, bimMeshBounds,
+  bimSaveFamilyLibrary
+} from './family-library.js';
+import { refreshFamilyPanel } from './blocks.js';
+import { refreshTree } from '../sheets/presentation-panel.js';
+import { closeDlg } from '../ui/touch-input.js';
+import { a3dToast, objById } from '../bim/csg-booleans.js';
+
   /* ================= __acad3dV169: assets for scale and the simulations =================
      People, a wheelchair user, a cycle and its stand, a parking bay and trees, each a solid whose mesh is built from
      its parameters and the registry's sizes (research-assets.md). Its first two vertices mark its back and its front
@@ -635,3 +661,10 @@
     d.addEventListener('keydown',function(ev){if(ev.key==='Enter'){ev.preventDefault();ev.stopPropagation();submit();}else if(ev.key==='Escape'){ev.preventDefault();ev.stopPropagation();closeDlg();}});
     nI.focus();nI.select();
   }
+export {
+  BIM_ENT, bimAssetThumb, bimCreateFamilyInstance, bimEntBare, bimEntBody, bimEntCrownRatio, bimEntDrawTurns,
+  bimEntFrame, bimEntInLeaf, bimEntLeafOf, bimEntLib, bimEntPlace, bimEntPropSet, bimEntPropsHtml,
+  bimEntRefit, bimEntSeason, bimEntTreeMesh, bimEntTreeSize, bimEntTurns, bimEntVeh, bimEntVehMesh,
+  bimGuessImportUnit, bimImportFamilyFile, bimImportModelMesh, bimMeshThumb, bimRecsPlanLines, bimRecsThumb,
+  openSaveAsFamilyDlg
+};

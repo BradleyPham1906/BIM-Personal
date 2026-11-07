@@ -1,3 +1,14 @@
+import { bimStd } from '../standards/registry.js';
+import { bimTrHw, bimTrNet } from '../simulation/traffic-network.js';
+import { bimTrDemand, bimTrFurness, bimTrTripsOf, bimTrUses } from '../simulation/traffic-demand.js';
+import { bimTrPlanOf, bimTrSig } from '../simulation/traffic-signals.js';
+import {
+  A3D_TR, bimTrAccOf, bimTrAlloc, bimTrDeviceQ, bimTrHold, bimTrIdm, bimTrIdmP, bimTrMove, bimTrPlace,
+  bimTrResults, bimTrRng, bimTrSettings, bimTrSortCars, bimTrStart, bimTrStep, bimTrStop
+} from '../simulation/traffic-sim.js';
+import { A3D_TRD } from '../simulation/traffic-draw.js';
+import { bimTrAct } from '../simulation/traffic-ui.js';
+
   /* __acad3dV171: traffic and people around the site, for the suite: the run driven step by step, read as data */
   window.__acad3dV171='trafficrecords,network,lanes,widthkept,junctions,priority,stops,signals,webster,kellfullerton,leastgreens,demand,fdotk,furness,sandiego,'+
     'lotentry,doors,carparks,walkers,sidewalks,crossings,idm,mobil,amber,allstop,yield,walkcross,pools,warmup,tallies,draw2d,draw3d,stoplines,analysis,card,command,results,quality';

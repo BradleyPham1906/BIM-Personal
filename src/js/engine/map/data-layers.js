@@ -1,3 +1,15 @@
+import { A3D } from '../core/state.js';
+import {
+  bimGeoCleanProps, bimGeoJsonFeatures, bimGeoParts, bimGeoPositions
+} from '../properties/map-address-site-data.js';
+import { refreshProps } from '../site-analysis/panel.js';
+import { bimMapHost } from './map-tiles.js';
+import { bimCtxArea } from './site-context.js';
+import { bimCtxErr } from './surroundings-3d.js';
+import { paint } from './terrain-3d.js';
+import { saveSoon } from '../bim/region-regenerate.js';
+import { a3dToast } from '../bim/csg-booleans.js';
+
   /* ================= __acad3dV134: data layers =================
      The public record of a site -- parcels, zoning, flood zones -- from the GIS servers councils and
      agencies publish: an ArcGIS REST layer, a WFS, or a GeoJSON file. Read for the site's area, kept
@@ -119,3 +131,7 @@
     A3D_DATA.pending[id]=p;
     return p;
   }
+export {
+  A3D_DATA, BIM_DATA_PRESETS, bimDataById, bimDataFeats, bimDataFetch, bimDataKind, bimDataList,
+  bimDataNameFromUrl, bimDataParse, bimDataQueryUrl
+};

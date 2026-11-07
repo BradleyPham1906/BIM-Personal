@@ -1,3 +1,15 @@
+import { A3D } from '../core/state.js';
+import { pushUndo } from '../drawing/plan-mode-sketch.js';
+import { bimSyncActiveGlobal, clampLevelElev, clampLevelHeight } from './levels-walls-floors.js';
+import { refreshLevels } from './classification.js';
+import { refreshProps } from '../site-analysis/panel.js';
+import { paint } from '../map/terrain-3d.js';
+import { bimPropagateFrom } from './region-dependents.js';
+import { refreshHud, saveSoon } from './region-regenerate.js';
+import { bimObjectLevelId } from '../views/saved-views.js';
+import { refreshTree } from '../sheets/presentation-panel.js';
+import { a3dToast } from './csg-booleans.js';
+
   /* ---------- Phase 42: level-as-datum integrity ----------
      A BIM level is a datum, not a label. Everything hosted on it must follow it when
      its elevation moves, and nothing may be left pointing at a level that no longer
@@ -128,3 +140,4 @@
     if(adopted)a3dToast(doomed.name+' deleted - '+adopted+' element'+(adopted===1?'':'s')+' re-hosted on '+heir.name);
     else a3dToast(doomed.name+' deleted');
   }
+export { bimObjectsOnLevel, bimShiftLevelContents, bimShiftObjectY, removeLevel, updateLevel };

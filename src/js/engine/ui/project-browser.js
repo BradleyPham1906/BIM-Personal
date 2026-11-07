@@ -1,3 +1,7 @@
+import { A3D } from '../core/state.js';
+import { bimEsc } from '../layers/layer-manager.js';
+import { refreshBrowser } from '../sheets/presentation-panel.js';
+
   // ---- __acad3dV28: Revit-style Project Browser. The previous sidebar crammed 7 tabs into a
   // 210px strip -- labels clipped, later tabs unreachable, and no way to lock/unlock from the
   // tree at all. Revit doesn't use tabs here: it has a Properties palette above a hierarchical,
@@ -27,3 +31,4 @@
       '<span class="a3d-bname">'+bimEsc(label)+'</span>'+
       (extra||'')+'</div>';
   }
+export { A3D_BROWSER_OPEN, bimBrowserGroup, bimBrowserLeaf, bimBrowserToggle };

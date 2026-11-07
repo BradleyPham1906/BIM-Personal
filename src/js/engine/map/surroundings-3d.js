@@ -1,3 +1,31 @@
+import { A3D } from '../core/state.js';
+import { pushUndo, setUndoSuspend } from '../drawing/plan-mode-sketch.js';
+import { padMesh, sketchCCW } from '../drawing/drawing-input.js';
+import { bimAddPoint } from '../drawing/point-node.js';
+import { bimCreateTerrain } from '../survey/survey-check.js';
+import { bimLayerByName, bimLayerNew } from '../layers/select-change.js';
+import { refreshLayers } from '../layers/analysis-data-rows.js';
+import { bimEsc } from '../layers/layer-manager.js';
+import {
+  BIM_STD_DATA, bimCtxDeck, bimCtxDeckT, bimCtxDefaultH, bimCtxLineH, bimCtxPier, bimCtxTowerH, bimCtxTreeH,
+  bimRoadW, bimStdStamp
+} from '../standards/registry.js';
+import { bimMakeImportedSketch, refreshProps } from '../site-analysis/panel.js';
+import { bimMapHost, bimModelToGeo } from './map-tiles.js';
+import {
+  A3D_CTX, BIM_CTX_COL, BIM_CTX_GRID, BIM_CTX_KINDS, BIM_CTX_LABEL, BIM_CTX_MAX_FEATURES, BIM_CTX_OSM_CREDIT,
+  BIM_CTX_TERRAIN_CREDIT, bimCtxArea, bimCtxDatum, bimCtxElevAt, bimCtxFeatures, bimCtxQuery, bimCtxSettings,
+  bimCtxTerrain, bimOsmHeight
+} from './site-context.js';
+import { bimCtxPairParts, bimOsmPartRange } from './lod-solids.js';
+import { bimOsmRoof, bimRoofCountText } from './lod2-roofs.js';
+import { bimCtxStand, paint } from './terrain-3d.js';
+import { saveSoon } from '../bim/region-regenerate.js';
+import { bimShadowGround } from '../site/shadows.js';
+import { bimEntCrownRatio, bimEntLeafOf, bimEntTreeMesh } from '../assets/scale-assets.js';
+import { refreshTree } from '../sheets/presentation-panel.js';
+import { a3dToast, objById } from '../bim/csg-booleans.js';
+
   /* ================= __acad3dV157: the surroundings in 3D =================
      A road, a railway or a runway keeps its centre line, the element; its surface is that
      element's mesh, built here: a strip of its width along the line, on the ground point by point,
@@ -176,7 +204,7 @@
     var pinfo=feats?bimCtxPairParts(feats):{of:{},has:{}},nParts=0,nWhole=0,lowParts=0;   /* __acad3dV139 */
     var nRoofs={},nNoRoof={};   /* __acad3dV140 */
     pushUndo();
-    undoSuspend=true;
+    setUndoSuspend(true);
     try{
       /* what this fetch brings replaces what an earlier one brought, kind by kind */
       A3D.objs=A3D.objs.filter(function(x){return !(x.context&&repl[x.context.kind]);});
@@ -281,7 +309,7 @@
       if(nParts)A3D.site.context.last.parts=nParts;   /* __acad3dV139 */
       var nR=0,kR;for(kR in nRoofs)if(nRoofs.hasOwnProperty(kR))nR+=nRoofs[kR];
       if(nR)A3D.site.context.last.roofs=nR;   /* __acad3dV140 */
-    }finally{undoSuspend=false;}
+    }finally{setUndoSuspend(false);}
     /* the selection stays what it was: the surface maker selects what it makes */
     A3D.sel=objById(selWas)?selWas:null;A3D.sel2=null;
     A3D.selSet=setWas.filter(function(id){return !!objById(id);});
@@ -359,3 +387,8 @@
     if(ter)p.push(bimEsc(ter.credit||BIM_CTX_TERRAIN_CREDIT));
     return p.join(' \u00b7 ');
   }
+export {
+  BIM_CTX_LANDUSE, BIM_CTX_LAND_AREAS, BIM_CTX_TREE_STEP, BIM_OVERPASS_MIRRORS, BIM_ROAD_USE_LABEL,
+  bimCtxAlong, bimCtxCreditHtml, bimCtxErr, bimCtxFetch, bimCtxOverpass, bimCtxRemove, bimCtxWidth,
+  bimRoadUse, bimTagMetres
+};

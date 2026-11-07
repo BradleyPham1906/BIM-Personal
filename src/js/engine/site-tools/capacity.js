@@ -1,3 +1,13 @@
+import { bimPolyArea } from '../bim/rooms.js';
+import { bimDispNum } from '../properties/palette.js';
+import { bimStd, bimStdSay, bimStdUsedText } from '../standards/registry.js';
+import { bimTlDistance } from './grid.js';
+import { bimTlState } from './sources.js';
+import {
+  BIM_TL_ACRE, BIM_TL_TOOLS, bimTlArea, bimTlAreaText, bimTlInfo, bimTlSourceOf, bimTlWarn
+} from './tools.js';
+import { bimTlPlateMask, bimTlSetbackMask } from './basic.js';
+
   /* ================= __acad3dV172: the site analysis tools: Buildable area and Constraints and opportunities =================
      Buildable area is Pennsylvania's site capacity calculation (research-site-analysis-tools.md, 4; the owner chose it,
      2026-10-27), its ratios the standards registry's (Chalfont's section 440-17 the first record): the base site area, the

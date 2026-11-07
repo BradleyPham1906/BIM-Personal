@@ -1,3 +1,16 @@
+import { A3D_CLB, bimClbEl, bimClbOpen } from '../site-analysis/climate-board.js';
+import { bimLtMenuClose } from '../sheets/layout-tabs.js';
+import { bimBoardById, bimBoardHtmlFor } from '../sheets/boards.js';
+import {
+  bimBrdBands, bimBrdFigsValid, bimBrdMeasureDefault, bimBrdNatH, bimBrdRec, bimFigCapture, bimFigCat,
+  bimFigSrc
+} from '../sheets/board-figures.js';
+import {
+  A3D_BRD, bimBrdAddFig, bimBrdCatalogue, bimBrdDlgClose, bimBrdDup, bimBrdDupBoard, bimBrdEdit, bimBrdFit,
+  bimBrdMenu, bimBrdNewUi, bimBrdNudge, bimBrdOptsDlg, bimBrdOptsSet, bimBrdRemove, bimBrdRename, bimBrdReset,
+  bimBrdSnap, bimBrdSwap, bimBrdWorking
+} from '../sheets/board-edit.js';
+
   /* __acad3dV172b: a board's figures and Edit, for the suite */
   function bimBrdHookErr(e){return {error:String(e&&e.message||e)};}
   window.__a3dBrdCat=function(){

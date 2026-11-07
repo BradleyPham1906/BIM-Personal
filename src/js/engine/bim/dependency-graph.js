@@ -1,3 +1,12 @@
+import { A3D } from '../core/state.js';
+import { bimIsFooting } from './footings.js';
+import { bimFindType } from './type-instance-params.js';
+import { bimCutOpeningsIntoWall, bimOpeningSpecsFor } from './columns-openings.js';
+import { bimIsRegionDep } from './region-dependents.js';
+import { bimLevelName } from '../views/schedules.js';
+import { bimObjectLevelId } from '../views/saved-views.js';
+import { a3dToast, objById } from './csg-booleans.js';
+
   // ---- __acad3dV50: Parametric dependency graph ------------------------------------------
   // Every parametric relationship in this model used to propagate through hand-written code at
   // the point of edit: updateLevel() walked the object list to shift a level's contents, a wall
@@ -308,3 +317,8 @@
      __acad3dV99: a room traced from SEVERAL shapes is no longer a frozen snapshot. It is a
      region dependent (o.region), linked in the graph to every shape its trace walked, and
      re-traced from its seed through bimRegionBoundaryWorld -- see the V99 block below. */
+export {
+  BIM_OPENING_REPLACE_TOL, bimCutSource, bimGraphBuild, bimGraphDownstream, bimGraphLevelKey, bimGraphObjKey,
+  bimGraphPropagate, bimGraphRelationsOf, bimGraphRoomSourceId, bimGraphTopoOrder, bimGraphTypeKey,
+  bimReapplyOpeningsToWall, bimSourceTypeOf
+};

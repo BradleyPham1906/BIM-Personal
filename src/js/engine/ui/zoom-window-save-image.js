@@ -1,3 +1,14 @@
+import { A3D, el } from '../core/state.js';
+import { bimGetActiveLevel } from '../bim/levels-walls-floors.js';
+import { bimFileStem } from '../io/project-file.js';
+import { bimPresentGraphics } from '../layers/plot-by-layers.js';
+import { A3D_GPU } from '../render/webgpu.js';
+import { paint } from '../map/terrain-3d.js';
+import { bimCloseRailPop, bimOpenRailMenu } from './shortcuts.js';
+import { bimFrameBounds } from './chrome-framing.js';
+import { drag } from '../sheets/presentation-panel.js';
+import { a3dToast, groundPoint } from '../bim/csg-booleans.js';
+
   /* ---- Zoom window ----
      Rubber-band a rectangle, un-project its corners onto the active level's plane, and frame that
      world box through the V79 safe-rectangle framing -- so what the user drew a box around lands
@@ -112,3 +123,7 @@
        stopImmediatePropagation, so a second listener added later is never reached. */
     return true;
   }
+export {
+  bimApplyZoomWindow, bimCancelZoomWindow, bimStartZoomWindow, bimViewportCanvas, bimWireRailStack,
+  drawZoomWindow
+};

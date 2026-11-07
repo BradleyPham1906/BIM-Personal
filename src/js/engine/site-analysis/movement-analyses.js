@@ -1,5 +1,18 @@
+import { A3D } from '../core/state.js';
+import { bimPointInPoly } from '../bim/rooms.js';
+import { bimDispNum } from '../properties/palette.js';
+import {
+  bimAccKmhText, bimAccSpeed, bimAn, bimDgRoads, bimMvGuide, bimMvPtalBands, bimMvPtalK, bimMvPtalWalk,
+  bimMvStopLim, bimMvXtab, bimStd
+} from '../standards/registry.js';
+import { bimClimFmt } from './climate-data.js';
+import { bimAccModesText } from './access-board.js';
+import { BIM_ACC_FRONT, BIM_ACC_KINDS, BIM_ACC_MODES, bimAccLotDist, bimAccSegX } from './access-data.js';
+import { bimAccMin, bimAccPlanCols, bimAccStreetClass, bimMvLotPt } from './movement-data.js';
+import { bimMapSettings } from '../map/map-tiles.js';
+
   /* ================= __acad3dV166: site analysis in the model III, movement: the six analyses =================
-     reference/research-site-analysis-in-model.md, section 4. Each reads A3D.site.access: V161's walk times,
+     docs/research/research-site-analysis-in-model.md, section 4. Each reads A3D.site.access: V161's walk times,
      places and stops, and mv, the streets with their tags, the crossings, doors, car parks, lines and paths. */
   /* the classes, by OpenStreetMap's highway value as the usual crosswalk to the FHWA's has them; one hue,
      the higher class the brighter on the dark plan and the darker on a light map (both checked) */
@@ -564,3 +577,9 @@
     }
     return {E:E,run:{legend:leg,source:'Vehicle access and parking from OpenStreetMap',note:E.length?'':'No driveway, door or car park mapped near the lot'}};
   }
+export {
+  BIM_MV_CLASSES, BIM_MV_LTS, bimDgCyclingRun, bimDgNeedsRun, bimDgStreetsRun, bimDgTransitRun,
+  bimDgVehiclesRun, bimDgWalkRun, bimMvClassOf, bimMvKm, bimMvKmhOf, bimMvLanes, bimMvLight, bimMvLotOf,
+  bimMvLts, bimMvOf, bimMvOneway, bimMvParkText, bimMvParking, bimMvPtal, bimMvPtalBand, bimMvReach, bimMvRow,
+  bimMvSeg, bimMvSpeed, bimMvSrc, bimMvStress, bimMvWhyNot
+};

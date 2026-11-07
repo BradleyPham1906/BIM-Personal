@@ -1,3 +1,12 @@
+import { bimRecordCmd } from '../drawing/drawing-input.js';
+import { A3D_KEYS } from '../ui/shortcuts.js';
+import { bimStartShowing } from '../ui/project-tabs.js';
+import { bimSheetOnScreen } from '../sheets/present.js';
+import { a3dToast } from '../bim/csg-booleans.js';
+import { a3drIsUnimpl, a3drLabel } from '../ui/discipline-tabs.js';
+import { a3drAllCommands, bimRunAct } from '../ui/dock-tooltips.js';
+import { BIM_CMD_MAP, BIM_SHEET_ACTS, BIM_SHEET_CMDS, BIM_START_CMDS } from './command-map.js';
+
   /* ================= __acad3dV128: one catalogue of every command ================= */
   /* A ribbon action that IS a typed command: one entry, the command's, with the ribbon place added */
   var BIM_ACT_CMD={'bim:wall':'wall','s:poly':'poly','s:rect':'rect','s:circle':'circle','bim:arc':'arc','bim:floor':'floorTool',
@@ -271,3 +280,7 @@
     }
     return '';
   }
+export {
+  BIM_ACT_CMD, BIM_ACT_DESC, BIM_CMD_USE_KEY, bimActHint, bimCmdCatalog, bimCmdPublic, bimCmdRecent,
+  bimCmdRun, bimCmdSearch, bimCmdUsage, bimCmdUsed
+};

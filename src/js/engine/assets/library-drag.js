@@ -1,3 +1,21 @@
+import { A3D, el } from '../core/state.js';
+import { bimSnapPoint } from '../drawing/plan-mode-sketch.js';
+import { bimGetActiveLevel } from '../bim/levels-walls-floors.js';
+import { bimLayersPanelHtml } from '../layers/layers-panel.js';
+import { bimEsc } from '../layers/layer-manager.js';
+import { A3D_ANZ, bimAnalyzeRefresh, bimAnzAct, bimAnzFilter } from '../analysis/analyze-tab.js';
+import { bimSaWire } from '../site-analysis/panel.js';
+import { bimAwListHtml } from '../site-analysis/analysis-workspace.js';
+import { A3D_GIZ } from '../gizmo/transform-gizmo.js';
+import { bimEnsureRailStack } from '../ui/shortcuts.js';
+import { bimWireRailStack } from '../ui/zoom-window-save-image.js';
+import { pick } from '../drawing/sketch-constraints.js';
+import { bimAssetAction, bimAssetsHtml, refreshAssets } from './library.js';
+import { bimShellDockW, bimShellMore, bimShellSetTab, bimTPalPlace } from '../ui/tool-palette.js';
+import { bimProjectLabel } from '../ui/project-tabs.js';
+import { A3D_PRP, bimPresPanelHtml, bimPresThumbsQueue } from '../sheets/presentation-panel.js';
+import { a3dToast, groundPoint } from '../bim/csg-booleans.js';
+
   /* ================= __acad3dV124: drag from the library onto the drawing =================
      A press is not a drag until it travels past the click distance (V123); a drag ends with a drop
      on the drawing, or with nothing. Pointer events, so a finger drags as a mouse does. */
@@ -243,3 +261,10 @@
     if(b)b.classList.toggle('a3d-kb-up',kb>0);
     return kb;
   }
+  /* setters: other files assign these through them (an ES module cannot assign to an import) */
+  function setA3D_SHELL_OBS(v){A3D_SHELL_OBS=v;return v;}
+export {
+  A3D_ASDRAG, A3D_ASDRAG_EAT, A3D_SHELL_OBS, A3D_SHELL_TIER, bimAssetDragCancel, bimAssetDragDown,
+  bimAssetDragEnd, bimAssetDragMove, bimAssetDragUp, bimAssetDropAt, bimCleanShell, bimKbFit, bimRailIcon,
+  bimShellApplyTier, bimShellDrawer, bimShellOverlay, bimShellTier, setA3D_SHELL_OBS
+};

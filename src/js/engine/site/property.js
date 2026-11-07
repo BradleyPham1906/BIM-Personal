@@ -1,3 +1,23 @@
+import { A3D, el } from '../core/state.js';
+import { camVecs } from '../core/mesh-primitives.js';
+import { bimObjOffset, pushUndo } from '../drawing/plan-mode-sketch.js';
+import {
+  bimFormatBearing, bimLegsFromRing, bimParseLegs, bimSetbackRing, bimTraverse, bimTrueNorthDeg
+} from '../survey/survey-arithmetic.js';
+import { bimPointInPoly } from '../bim/rooms.js';
+import { bimLayerAlpha, bimLayerPickable, bimLayerShown } from '../layers/layer-rules.js';
+import { bimEsc } from '../layers/layer-manager.js';
+import { toScreen } from '../io/import-entry.js';
+import { paint } from '../map/terrain-3d.js';
+import { bimPointSegDist } from '../render/viewcube.js';
+import { bimHasBulge } from '../drawing/arc-storage.js';
+import { saveSoon } from '../bim/region-regenerate.js';
+import { bimCameraIsPlan } from '../views/saved-views.js';
+import { refreshTree } from '../sheets/presentation-panel.js';
+import { closeDlg } from '../ui/touch-input.js';
+import { a3dToast, objById } from '../bim/csg-booleans.js';
+import { cvH, cvW } from '../ui/canvas-size.js';
+
   /* ================= __acad3dV103: the property ================= */
   function bimIsProperty(o){return !!(o&&o.t==='property'&&o.start&&o.legs&&o.legs.length);}
   /* The ONE derivation: corners, closure, area and setback line, in WORLD plan terms. */
@@ -215,3 +235,7 @@
     a3dToast(pr.name+' from '+o.name+': '+bimClosureText(bimPropertyGeometry(pr)));
     return pr;
   }
+export {
+  BIM_SETBACK_TYPES, bimClosureText, bimIsProperty, bimNewProperty, bimPickProperty, bimPropertyFromSketch,
+  bimPropertyGeometry, bimSetbackViolations, drawNorthArrow, drawProperties, openPropertyDlg
+};

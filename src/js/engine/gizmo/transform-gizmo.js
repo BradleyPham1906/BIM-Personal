@@ -1,3 +1,17 @@
+import { A3D } from '../core/state.js';
+import { TYPES, camVecs, faceNormal, meshOf, vdot } from '../core/mesh-primitives.js';
+import { bimObjOffset, bimWorldElev, pushUndo } from '../drawing/plan-mode-sketch.js';
+import { bimIsLocked } from '../bim/import-compliance.js';
+import { bimLayerSelectable } from '../layers/layer-rules.js';
+import { toScreen } from '../io/import-entry.js';
+import { bimPointSegDist } from '../render/viewcube.js';
+import { bimGizmoSnapSetup, bimGizmoStarts } from './gizmo-handles.js';
+import { setA3D_MATERIALIZED } from '../editing/precision-editing.js';
+import { bimHasBulge } from '../drawing/arc-storage.js';
+import { bimIsHatch } from '../drawing/hatch.js';
+import { a3dToast, groundPoint, objById } from '../bim/csg-booleans.js';
+import { cvH, cvW } from '../ui/canvas-size.js';
+
   /* ================= __acad3dV76: the translate gizmo =================
      Attached to the selection, recomputed from live geometry every frame. */
   /* edgeOn: an axis projecting to less than this FRACTION of the best-projecting axis's
@@ -410,7 +424,7 @@
            snaps:bimGizmoSnapSetup(ids),fine:false,
            ids:ids,start:bimGizmoStarts(ids),x0:bd.x,y0:bd.y,da:0,db:0,gizVec:[0,0,0],moved:true,body:true};
     }
-    A3D_MATERIALIZED=[];
+    setA3D_MATERIALIZED([]);
     pushUndo();
     return rec;
   }
@@ -595,3 +609,8 @@
     }
     return true;
   }
+export {
+  A3D_GIZ, A3D_ORIGIN_AXES, bimBodyDragStart, bimFaceWorldPts, bimGizArcPt, bimGizAxis, bimGizInQuad,
+  bimGizmoAngleAt, bimGizmoFrame, bimGizmoGeom, bimGizmoIds, bimGizmoKind, bimPointInFace, bimRayHitObject,
+  bimRayPlane, bimScreenRay
+};

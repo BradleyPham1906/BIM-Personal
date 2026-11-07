@@ -1,5 +1,30 @@
+import { A3D } from '../core/state.js';
+import { LIGHT, faceNormal, meshOf, vdot } from '../core/mesh-primitives.js';
+import { pushUndo } from '../drawing/plan-mode-sketch.js';
+import { bimSunNow, bimSunSettings } from '../site/sun-position.js';
+import { bimTrueNorthDeg } from '../survey/survey-arithmetic.js';
+import { bimLayerShown } from '../layers/layer-rules.js';
+import { bimSimStamp, bimSolarFaces, bimSolarOccluders, bimSolarTargets } from '../analysis/simulation.js';
+import { bimResKeyFrom } from '../analysis/results-layers.js';
+import { BIM_ANZ_GROUP_OF } from '../analysis/analyze-tab.js';
+import {
+  bimStd, bimStdChanged, bimStdChangedText, bimStdStamp, bimStdUsedText
+} from '../standards/registry.js';
+import { bimSaToday } from '../site-analysis/workspace.js';
+import { bimClimFmt, bimClimInt } from '../site-analysis/climate-data.js';
+import { A3D_LB, bimLbStudyCall } from './runtime.js';
+import { bimLbData, bimLbSrcKept, bimLbSrcWords } from './sources.js';
+import { A3D_LBRUN, BIM_LB_NAMES, bimLbEnsureSource } from './analyses.js';
+import { bimLbNote, bimLbRefresh, bimLbRows } from './panel.js';
+import { shade, toScreen } from '../io/import-entry.js';
+import { paint } from '../map/terrain-3d.js';
+import { bimSafeViewRect } from '../ui/chrome-framing.js';
+import { saveSoon } from '../bim/region-regenerate.js';
+import { bimObjectVisibleOnLevel } from '../views/saved-views.js';
+import { a3dToast } from '../bim/csg-booleans.js';
+
   /* ================= __acad3dV172c: sun-hours and radiation on the model, by Ladybug =================
-     reference/research-ladybug-sun-radiation.md (5b). Two studies, beside V143's Solar and V148's Sun hours (kept,
+     docs/research/research-ladybug-sun-radiation.md (5b). Two studies, beside V143's Solar and V148's Sun hours (kept,
      the owner, 2026-11-01):
      - rad: incident radiation on each face, kWh/m2 over the weather's year (or some months): Ladybug's SkyMatrix from
        the weather V172b opened, with Radiance's gendaymtx (WebAssembly), and RadiationStudy's own sum;
@@ -236,3 +261,7 @@
     if(c==='clear')return bimLbsClear(k);
     return false;
   }
+export {
+  BIM_LB_STUDY_MS, bimLbsAct, bimLbsCards, bimLbsCol, bimLbsDraw, bimLbsGeometry, bimLbsKept, bimLbsPeriod,
+  bimLbsRun, bimLbsStale
+};

@@ -1,3 +1,17 @@
+import { A3D } from '../core/state.js';
+import { pushUndo, setUndoSuspend } from '../drawing/plan-mode-sketch.js';
+import { bimGetActiveLevel } from '../bim/levels-walls-floors.js';
+import { bimDxfBulgesToModel, bimDxfToModel } from './export-mappings.js';
+import { bimLayerById } from '../layers/layer-rules.js';
+import { BIM_LINEWEIGHTS, addLayer, bimLayerByName, bimLinetypeDef } from '../layers/select-change.js';
+import { refreshLayers } from '../layers/analysis-data-rows.js';
+import { bimMakeImportedFace, bimMakeImportedSketch } from '../site-analysis/panel.js';
+import { paint } from '../map/terrain-3d.js';
+import { fitScene } from '../ui/tool-palette.js';
+import { saveSoon } from '../bim/region-regenerate.js';
+import { refreshTree } from '../sheets/presentation-panel.js';
+import { a3dToast } from '../bim/csg-booleans.js';
+
   // ---- DXF (AutoCAD ASCII exchange format) ----
   var DXF_ACI={1:'#ff5555',2:'#e8d24a',3:'#5ac25a',4:'#4ac6c6',5:'#5a7fe0',6:'#c85ac0',7:'#d8d8d8',8:'#8a8a8a',9:'#bcbcbc'};
   var DXF_UNIT_SCALE={1:0.0254,2:0.3048,4:0.001,5:0.01,6:1,10:0.9144};
@@ -163,7 +177,7 @@
     try{res=dxfParse(text);}
     catch(eP){console.warn('[BIM] DXF parse failed: ',eP);a3dToast('DXF import failed: could not parse '+filename);return;}
     pushUndo();
-    undoSuspend=true;
+    setUndoSuspend(true);
     var __dxfStart=A3D.objs.length;
     var scale,layerMap={},dxfNames,created=0,skippedPoints=0,i;
     try{
@@ -222,7 +236,7 @@
       }
     }finally{
       var __dxfI;for(__dxfI=__dxfStart;__dxfI<A3D.objs.length;__dxfI++)A3D.objs[__dxfI].locked=true;
-      undoSuspend=false;
+      setUndoSuspend(false);
     }
     function layerIdFor(nm){
       if(layerMap[nm])return layerMap[nm];
@@ -238,3 +252,4 @@
       (res.insUnits===null?' (no units in file, assumed meters)':''));
   }
 
+export { bimImportDXF };

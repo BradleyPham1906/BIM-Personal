@@ -1,3 +1,14 @@
+import { A3D } from '../core/state.js';
+import { pushUndo, setUndoSuspend } from '../drawing/plan-mode-sketch.js';
+import { addLayer } from '../layers/select-change.js';
+import { refreshLayers } from '../layers/analysis-data-rows.js';
+import { bimDecodeUtf8 } from '../site-analysis/panel.js';
+import { paint } from '../map/terrain-3d.js';
+import { fitScene } from '../ui/tool-palette.js';
+import { saveSoon } from '../bim/region-regenerate.js';
+import { refreshTree } from '../sheets/presentation-panel.js';
+import { a3dToast } from '../bim/csg-booleans.js';
+
   // ---- OBJ (Wavefront, Y-up - matches this engine's convention directly) ----
   function objParse(text){
     var lines=text.split(/\r\n|\r|\n/),i;
@@ -53,7 +64,7 @@
     catch(eP){console.warn('[BIM] OBJ parse failed:',eP);a3dToast('OBJ import failed: could not parse '+filename);return;}
     if(!res.meshes.length){a3dToast('OBJ import: no faces found in '+filename);return;}
     pushUndo();
-    undoSuspend=true;
+    setUndoSuspend(true);
     var i,created=0,lyr;
     try{
       lyr=addLayer(filename.replace(/\.[^.]+$/,''),'#9db4c8');
@@ -66,7 +77,7 @@
         created++;
       }
     }finally{
-      undoSuspend=false;
+      setUndoSuspend(false);
     }
     refreshTree();refreshLayers();fitScene();paint();saveSoon();
     a3dToast('OBJ import: '+created+' mesh object(s) from '+filename+' ('+res.vertCount+' vertices)');
@@ -115,16 +126,17 @@
     }catch(eP){console.warn('[BIM] STL parse failed:',eP);a3dToast('STL import failed: could not parse '+filename);return;}
     if(!parsed||!parsed.f.length){a3dToast('STL import: no triangles found in '+filename);return;}
     pushUndo();
-    undoSuspend=true;
+    setUndoSuspend(true);
     try{
       var lyr=addLayer(filename.replace(/\.[^.]+$/,''),'#9db4c8');
       A3D.counts.mesh=(A3D.counts.mesh||0)+1;
       var o={id:'a3d-'+Date.now().toString(36)+'-'+(A3D.seq++),t:'solid',name:'STL_'+A3D.counts.mesh,col:'#9db4c8',pos:[0,0,0],mesh:{v:parsed.v,f:parsed.f},layer:lyr.id,locked:true};
       A3D.objs.push(o);
     }finally{
-      undoSuspend=false;
+      setUndoSuspend(false);
     }
     refreshTree();refreshLayers();fitScene();paint();saveSoon();
     a3dToast('STL import ('+(isBin?'binary':'ASCII')+'): '+parsed.f.length+' triangles from '+filename);
   }
 
+export { bimImportOBJ, bimImportSTL, objParse, stlIsBinary, stlParseAscii, stlParseBinary };

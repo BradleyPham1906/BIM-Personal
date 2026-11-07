@@ -1,3 +1,5 @@
+import { A3D, SCALE } from './state.js';
+
   function vsub(a,b){return [a[0]-b[0],a[1]-b[1],a[2]-b[2]];}
   function vcross(a,b){return [a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];}
   function vdot(a,b){return a[0]*b[0]+a[1]*b[1]+a[2]*b[2];}
@@ -205,3 +207,7 @@
     return {d:d,r:r,u:u,eye:[c.tx+d[0]*c.dist,c.ty+d[1]*c.dist,c.tz+d[2]*c.dist]};
   }
 
+export {
+  LIGHT, TYPES, camVecs, faceNormal, mergePrm, meshMinY, meshOf, mkBoxP, mkCylP, validatePrm, vcross, vdot,
+  vnorm, vsub
+};

@@ -1,3 +1,48 @@
+import { A3D } from '../core/state.js';
+import { bimObjOffset, bimUndoHold, pushUndo, setBimUndoHold } from '../drawing/plan-mode-sketch.js';
+import { bimTrueNorthDeg } from '../survey/survey-arithmetic.js';
+import { bimPointInPoly, bimPolyArea } from '../bim/rooms.js';
+import { refreshLayers } from '../layers/analysis-data-rows.js';
+import { bimEsc, bimLayerOptionsHtml } from '../layers/layer-manager.js';
+import { bimDispNum, bimObjTypeLabel, bimPropGroup, bimPropRow, bimPropText } from '../properties/palette.js';
+import {
+  A3D_DG, BIM_DG_AN, bimCtxLevelH, bimCtxTreeH, bimDgAn, bimDgEdited, bimIsDiag, bimMvPtalWalk, bimStd,
+  bimStdSay, bimStdUsedText
+} from '../standards/registry.js';
+import { bimDgPlace, bimDgReset } from './model-layers.js';
+import { BIM_ANIM_NAMES, bimAnimAuto, bimAnimKinds } from './motion.js';
+import {
+  bimDgAt, bimDgCircle, bimDgFrameRun, bimDgIsovist, bimDgNoiseRun, bimDgObstacles, bimDgShadowRun, bimDgSite,
+  bimDgViewsRun, bimDgWindRun
+} from './model-analyses.js';
+import { bimDgSunRun } from './sun-path.js';
+import {
+  BIM_MV_LTS, bimDgCyclingRun, bimDgNeedsRun, bimDgStreetsRun, bimDgTransitRun, bimDgVehiclesRun,
+  bimDgWalkRun, bimMvKm, bimMvLight, bimMvLotOf, bimMvOf, bimMvParkText, bimMvParking, bimMvPtal, bimMvReach,
+  bimMvSeg, bimMvSrc, bimMvStress
+} from './movement-analyses.js';
+import {
+  BIM_LAND_DIRNAME, BIM_LAND_DIRS, BIM_LAND_HALF, BIM_LAND_ZONES, BIM_LAND_ZORDER, bimDgAspectRun,
+  bimDgContoursRun, bimDgFloodRun, bimDgFlowRun, bimDgPondsRun, bimDgSlopeRun, bimLandAz, bimLandBfe,
+  bimLandDir8, bimLandExits, bimLandFloodZones, bimLandGround, bimLandHa, bimLandHornOf, bimLandHydroOf,
+  bimLandP, bimLandPct, bimLandSiteMask, bimLandUpstream
+} from './land-water.js';
+import { bimSaN, bimSaToday } from './workspace.js';
+import { bimClimInt } from './climate-data.js';
+import { BIM_ZN_ATTR, bimZnNum } from './zoning-envelope.js';
+import { bimAccLotDist } from './access-data.js';
+import { bimAccStreetClass } from './movement-data.js';
+import { refreshProps } from './panel.js';
+import { bimDgTrafficRun } from '../simulation/traffic-ui.js';
+import { bimCtxArea, bimCtxSettings } from '../map/site-context.js';
+import { bimDataFeats, bimDataList } from '../map/data-layers.js';
+import { bimDataModel } from '../map/find-open-data.js';
+import { paint } from '../map/terrain-3d.js';
+import { saveSoon } from '../bim/region-regenerate.js';
+import { refreshTree } from '../sheets/presentation-panel.js';
+import { a3dToast, objById } from '../bim/csg-booleans.js';
+import { a3drIcon } from '../ui/discipline-tabs.js';
+
   /* ================= __acad3dV168: Site analysis IV, land =================
      Land use by LBCS's activities; the figure-ground and its density by Spacematrix's measures; the
      green and trees by 3-30-300; the zoning around the site in its council's colours. Each is drawn
@@ -529,7 +574,7 @@
   function bimDgRunAll(only){
     var S=bimDgSite(),out={},held=bimUndoHold,i;
     if(only&&!bimDgAn(only))return null;
-    if(!held){pushUndo();bimUndoHold=true;}
+    if(!held){pushUndo();setBimUndoHold(true);}
     try{
       for(i=0;i<BIM_DG_AN.length;i++){
         var a=BIM_DG_AN[i].id;
@@ -537,7 +582,7 @@
         try{var r=BIM_DG_RUN[a](S);out[a]=bimDgPlace(a,r.E,r.run);out[a].note=(r.run&&r.run.note)||'';}
         catch(eA){console.warn('[BIM] The '+a+' analysis failed',eA);out[a]={error:String(eA&&eA.message||eA),total:0,note:''};}
       }
-    }finally{if(!held)bimUndoHold=false;}
+    }finally{if(!held)setBimUndoHold(false);}
     refreshTree();refreshLayers();refreshProps();paint();saveSoon();
     return out;
   }
@@ -742,3 +787,9 @@
     if(b.getAttribute('data-dgact')==='reset')bimDgReset(o.id);
     else if(b.getAttribute('data-dgact')==='rerun')bimDgRunAll(o.dg.a);
   }
+export {
+  bimDgPropChange, bimDgPropClick, bimDgPropsHtml, bimDgRunAll, bimDgSet, bimDgTex, bimDgTexCss, bimLandAuto,
+  bimLd33300, bimLdAreas, bimLdAuto, bimLdBuildings, bimLdClassOf, bimLdForm, bimLdGrain, bimLdMix,
+  bimLdRaster, bimLdReach, bimLdTrees, bimLdWin, bimLdWood, bimLdZnAround, bimMvAuto, bimMvPtalText,
+  bimZnDrawing, bimZnStyleOf
+};

@@ -1,3 +1,24 @@
+import { A3D, el } from '../core/state.js';
+import {
+  bimEnterDraftingMode, bimObjOffset, bimSyncStatusHint, pushUndo
+} from '../drawing/plan-mode-sketch.js';
+import { bimGetActiveLevel } from './levels-walls-floors.js';
+import { bimOffsetRing } from './section-profiles.js';
+import { bimBuildWallGeometry, buildWallSolid } from './import-compliance.js';
+import { bimEnsureTypes } from './type-instance-params.js';
+import { bimFindRoomBoundaryAt } from './rooms.js';
+import { bimBuildColumnGeometry, bimRectFootprint } from './columns-openings.js';
+import { bimFloorProfileFrom, buildFloorSolid } from './ceiling-floor-profile.js';
+import { paint } from '../map/terrain-3d.js';
+import { bimBulgeAt, bimFlattenPoly, bimHasBulge } from '../drawing/arc-storage.js';
+import { bimPtDistToBulgedSeg } from '../drawing/curve-break.js';
+import { saveSoon } from './region-regenerate.js';
+import { bimWallLength } from '../views/schedules.js';
+import { bimObjectLevelId } from '../views/saved-views.js';
+import { refreshTree } from '../sheets/presentation-panel.js';
+import { closeDlg } from '../ui/touch-input.js';
+import { a3dToast, objById } from './csg-booleans.js';
+
   /* ================= __acad3dV102: footings ================= */
   /* The strip's length is the wall's, measured along the curve (V89). */
   function bimFootingLength(o){
@@ -257,3 +278,9 @@
     });
     thkI.focus();thkI.select();
   }
+export {
+  bimAddFootingUnder, bimAlignOffsets, bimColumnAtWorld, bimFootingHostOf, bimFootingLength, bimFootingOf,
+  bimFootingVolume, bimFootingsUnderAllColumns, bimFoundationSlabAt, bimIsFooting, bimRebuildFooting,
+  bimSweepFootingHosts, bimWallAtWorld, bimWallDlgDefaults, finishWall, startFootingTool,
+  startFoundationSlabTool, startWallTool
+};

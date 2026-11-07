@@ -1,3 +1,20 @@
+import { A3D, el } from '../core/state.js';
+import {
+  SK_TOOLS, bimEnterDraftingMode, bimSyncStatusHint, cancelSketch, objBBox, pushUndo
+} from './plan-mode-sketch.js';
+import { bimFinishCurrent, bimRecordCmd } from './drawing-input.js';
+import { bimGetActiveLevel } from '../bim/levels-walls-floors.js';
+import { bimWallDlgDefaults } from '../bim/footings.js';
+import { buildWallSolid } from '../bim/import-compliance.js';
+import { paint } from '../map/terrain-3d.js';
+import { bimFmtLen } from '../gizmo/gizmo-handles.js';
+import { BIM_BULGE_EPS, bimBulgeArc, bimBulgeFrom3Pts, bimHasBulge } from './arc-storage.js';
+import { bimCircleSketch, bimPolygonSketch } from './curve-walking.js';
+import { refreshHud, saveSoon } from '../bim/region-regenerate.js';
+import { refreshTree } from '../sheets/presentation-panel.js';
+import { closeDlg } from '../ui/touch-input.js';
+import { a3dToast, objById } from '../bim/csg-booleans.js';
+
   /* ================= __acad3dV100: ending a command keeps what was drawn =================
      Which in-progress commands have something worth keeping: a LINE, PLINE or WALL with at
      least one complete segment. Everything else (an arc with two of its three points, a
@@ -191,3 +208,7 @@
     return addSketchObj(sk.pts.slice(),{bulges:sk.bulges});   /* __acad3dV90 */
   }
 
+export {
+  addSketchObj, bimEndSketch, finishArc, finishCircle, finishPoly, finishPolygon, finishRect, openPolygonDlg,
+  startArcTool, startPolygonTool, startSketch
+};

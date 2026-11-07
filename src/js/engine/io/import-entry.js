@@ -1,3 +1,17 @@
+import { A3D, el } from '../core/state.js';
+import { selSketch } from '../drawing/plan-mode-sketch.js';
+import { doPad, doPocket } from '../drawing/point-node.js';
+import { bimLandXmlImport } from '../terrain/breaklines.js';
+import { bimOpenProjectFileObj } from './project-file.js';
+import { bimGeoImportFile } from '../properties/map-address-site-data.js';
+import { bimImportDXF } from './import-dxf.js';
+import { bimImportOBJ, bimImportSTL } from './import-obj-stl.js';
+import { bimImportIFC } from './import-ifc.js';
+import { bimImportSKP } from './sketchup-import.js';
+import { bimCityJsonFile } from '../map/cityjson.js';
+import { closeDlg } from '../ui/touch-input.js';
+import { a3dToast } from '../bim/csg-booleans.js';
+
   // ---- Unified import entry point ----
   function bimHandleImportFile(file){
     if(!file)return;
@@ -86,3 +100,4 @@
     b=Math.max(0,Math.min(255,Math.round(b*k)));
     return 'rgb('+r+','+g+','+b+')';
   }
+export { bimHandleImportFile, openPadDlg, shade, toScreen };

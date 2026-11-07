@@ -1,3 +1,18 @@
+import { A3D } from '../core/state.js';
+import { camVecs } from '../core/mesh-primitives.js';
+import { bimObjOffset, pushUndo } from '../drawing/plan-mode-sketch.js';
+import { bimGetActiveLevel } from '../bim/levels-walls-floors.js';
+import { bimLayerAlpha, bimLayerPickable, bimLayerShown } from '../layers/layer-rules.js';
+import { toScreen } from '../io/import-entry.js';
+import { paint } from '../map/terrain-3d.js';
+import { bimPointSegDist } from '../render/viewcube.js';
+import { bimSafeViewRect } from '../ui/chrome-framing.js';
+import { refreshHud, saveSoon } from '../bim/region-regenerate.js';
+import { bimObjectVisibleOnLevel } from '../views/saved-views.js';
+import { refreshTree } from '../sheets/presentation-panel.js';
+import { a3dToast, groundPoint } from '../bim/csg-booleans.js';
+import { cvH, cvW } from '../ui/canvas-size.js';
+
   /* ================= __acad3dV82: the annotation overlay =================
 
      The Assets library, back, as real objects layered over the 2D and 3D views.
@@ -227,3 +242,6 @@
     inp.click();
     return true;
   }
+export {
+  BIM_NOTE_KINDS, bimNoteDef, bimNoteRect, bimPickNote, bimPlaceImageNote, bimPlaceNoteAtViewCentre, drawNotes
+};

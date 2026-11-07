@@ -1,3 +1,20 @@
+import { A3D, A3D_MATERIAL_LIBRARY, el } from '../core/state.js';
+import { pushUndo } from '../drawing/plan-mode-sketch.js';
+import { sketchCCW } from '../drawing/drawing-input.js';
+import { BIM_PROFILE_SHAPES, bimBuildBeamGeometry } from './section-profiles.js';
+import { bimRebuildFooting } from './footings.js';
+import { bimBuildWallGeometry, bimCarryBim, bimIsLocked } from './import-compliance.js';
+import { bimBuildColumnGeometry } from './columns-openings.js';
+import { bimBuildFloorGeometry } from './ceiling-floor-profile.js';
+import { bimMeshClosureCheck } from './stairs.js';
+import { bimEsc } from '../layers/layer-manager.js';
+import { paint } from '../map/terrain-3d.js';
+import { bimAfterWallRebuild } from './region-dependents.js';
+import { saveSoon } from './region-regenerate.js';
+import { refreshTree } from '../sheets/presentation-panel.js';
+import { closeDlg } from '../ui/touch-input.js';
+import { a3dToast } from './csg-booleans.js';
+
   // ---- __acad3dV38: Type / instance parameters -- the core BIM data model gap. In Revit a Wall
   // Type ("Generic - 300mm") governs many instances: change the type's thickness and every wall
   // of that type updates. Height and Location Line stay INSTANCE parameters because each wall can
@@ -879,3 +896,12 @@
     a3dToast(o.name+' updated');
     return true;
   }
+export {
+  BIM_HATCH_PATTERNS, BIM_LW_TO_PX, BIM_MAT_COLS, BIM_PATTERN_DEFS, TYPE_CATS, bimApplyGraphicsFields,
+  bimApplyTypeToInstances, bimApplyWallTypeToInstances, bimAssignTypeTo, bimCanvasPatternFill,
+  bimClearGraphicsOverride, bimDefaultGraphics, bimEnsureObjType, bimEnsureTypes, bimFindType, bimMatRow,
+  bimMaterialByName, bimMaterialCards, bimMaterialOf, bimMaterialPattern, bimMergeRow, bimObjMass,
+  bimObjVolume, bimPatternAlways, bimPatternDef, bimPatternDraws, bimPatternLabel, bimPatternRotation,
+  bimPatternTileSize, bimRebuildWall, bimResolveGraphics, bimSetGraphicsOverride, bimSetMaterial,
+  bimSetTypeGraphics, bimSetWallTypeOf, bimTypeNameOf, bimTypeOptionsHtml, openTypeDlg
+};

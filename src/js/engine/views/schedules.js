@@ -1,3 +1,14 @@
+import { A3D } from '../core/state.js';
+import { bimWallFaceRings, bimWallInsetAt } from '../bim/import-compliance.js';
+import { bimBoundaryEdges, bimPointInPoly, bimPolyArea } from '../bim/rooms.js';
+import { bimRoomField, bimRoomLoadFactor, bimRoomOccupants } from '../bim/room-data-occupancy.js';
+import { bimLineLineIntersect } from '../editing/precision-editing.js';
+import {
+  BIM_BULGE_EPS, bimBulgedLength, bimBulgedSignedArea, bimFlattenPoly
+} from '../drawing/arc-storage.js';
+import { bimArrangeEdges, bimBuildEdgeGraph, bimTraceEdgeFaces } from '../drawing/planar-arrangement.js';
+import { objById } from '../bim/csg-booleans.js';
+
   // ---- __acad3dV19: Schedules. Read-only tabular views generated fresh from A3D.objs on
   // every refreshTree() call (the same central "something changed" hook Levels/Layers/Props
   // already use) -- no separate staleness/sync problem since there's nothing to keep in sync,
@@ -215,3 +226,7 @@
               finishCeiling:bimRoomField(o,'finishCeiling'),source:o.sourceType||'-'};   /* __acad3dV101 */
     });
   }
+export {
+  bimBuildRoomSchedule, bimInsetFaceRing, bimLevelAreas, bimLevelById, bimLevelGrossRings, bimLevelName,
+  bimWallLength
+};

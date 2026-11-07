@@ -1,3 +1,8 @@
+import { A3D } from '../core/state.js';
+import { bimGetActiveLevel } from '../bim/levels-walls-floors.js';
+import { bimApplyGraphicsFields, bimDefaultGraphics } from '../bim/type-instance-params.js';
+import { bimBulgedArea, bimFlattenPoly, bimHasBulge } from './arc-storage.js';
+
   /* ================= __acad3dV96: the hatch object =================
 
      A closed region plus a pattern. Unlike every pattern this library has drawn so far, a hatch
@@ -47,3 +52,4 @@
     A3D.objs.push(o);
     return o;
   }
+export { bimAddHatch, bimHatchArea, bimHatchGraphics, bimHatchOutline, bimIsHatch };

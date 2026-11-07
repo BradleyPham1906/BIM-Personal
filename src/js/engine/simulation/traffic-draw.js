@@ -1,3 +1,16 @@
+import { LIGHT, mkBoxP, vcross, vdot, vnorm, vsub } from '../core/mesh-primitives.js';
+import { bimLayerById, bimLayerEff } from '../layers/layer-rules.js';
+import { bimDgState, bimStd } from '../standards/registry.js';
+import { bimAnimLive } from '../site-analysis/motion.js';
+import { bimMvLight } from '../site-analysis/movement-analyses.js';
+import { bimTrAt } from './traffic-network.js';
+import { bimTrSig } from './traffic-signals.js';
+import { A3D_TR, bimTrStopLine } from './traffic-sim.js';
+import { bimAwLook } from '../site-analysis/analysis-workspace.js';
+import { shade, toScreen } from '../io/import-entry.js';
+import { bimEntBody, bimEntVeh, bimEntVehMesh } from '../assets/scale-assets.js';
+import { bimCameraIsPlan } from '../views/saved-views.js';
+
   /* ================= __acad3dV171: traffic and people around the site: drawn =================
      On the drawing's overlay while V170's clock plays or holds a moment, in plan and 3D, with the analysis's layer;
      between two steps each car and walker drawn where it is between them. In plan a car is a rectangle of the design
@@ -122,3 +135,4 @@
       dw.cars++;
     });
   }
+export { A3D_TRD, bimTrDraw, bimTrLight };

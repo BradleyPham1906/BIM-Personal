@@ -1,3 +1,20 @@
+import { A3D, SCALE, el } from '../core/state.js';
+import { LIGHT, camVecs } from '../core/mesh-primitives.js';
+import { bimTerrainSuperseded } from '../terrain/grading.js';
+import { A3D_PLOT, bimLayerShown } from '../layers/layer-rules.js';
+import { refreshProps } from '../site-analysis/panel.js';
+import { bimAwBg, bimAwClear, bimAwCtxCol, bimAwLook } from '../site-analysis/analysis-workspace.js';
+import { A3D_GL, BIM_EDGE_PULL, bimGlInit, bimGlProjMatrix, bimGlViewMatrix, bimHexToRgb } from './webgl.js';
+import { A3D_SCENE, bimSceneCull, bimSceneDirty, bimSceneFrameDone, bimSceneSync } from './gpu-batches.js';
+import {
+  A3D_MAP, BIM_MAP_STYLES, bimMapEvict, bimMapOrigin, bimMapPlan, bimMapRecord, bimMapSource,
+  bimMapTileCorners
+} from '../map/map-tiles.js';
+import { BIM_DRAPE_ZREF, bimDrapeTiles, bimGlRender, bimTerrainMeshData, paint } from '../map/terrain-3d.js';
+import { bimCameraIsPlan } from '../views/saved-views.js';
+import { a3dToast } from '../bim/csg-booleans.js';
+import { cvH, cvScale, cvW } from '../ui/canvas-size.js';
+
   /* ================= __acad3dV153: the WebGPU engine =================
      Where the browser has WebGPU the model is drawn with it, from the same description: the
      chunks as vertex buffers, the table as a storage buffer, and every draw recorded once in a
@@ -524,3 +541,7 @@
      toScreen() exactly or the GL layer and the 2D overlay drift apart. The GL canvas and its
      viewport, though, are the backing store and must be in DEVICE pixels -- otherwise the whole
      shaded layer renders at half resolution under a crisp overlay. */
+export {
+  A3D_BENCH, A3D_GPU, bimBenchmark, bimBenchmarkText, bimGpuCompare, bimGpuPref, bimGpuStart,
+  bimGraphicsCommand, bimGraphicsLabel, bimGraphicsSet, bimRender3D, bimRenderBench, bimStressModel
+};

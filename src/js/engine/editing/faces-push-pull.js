@@ -1,3 +1,38 @@
+import { A3D, SCALE } from '../core/state.js';
+import {
+  TYPES, camVecs, faceNormal, mergePrm, meshMinY, meshOf, vdot, vnorm
+} from '../core/mesh-primitives.js';
+import { bimObjOffset, bimSyncStatusHint, bimWorldElev, objBBox } from '../drawing/plan-mode-sketch.js';
+import { bimEndSketch } from '../drawing/command-ending.js';
+import { bimIsPoint, bimSketchOutline } from '../drawing/point-node.js';
+import { bimIsLocked } from '../bim/import-compliance.js';
+import { bimTypeNameOf } from '../bim/type-instance-params.js';
+import { bimPointInPoly } from '../bim/rooms.js';
+import { bimLayerPickable, bimLayerShown } from '../layers/layer-rules.js';
+import { bimObjTypeLabel } from '../properties/palette.js';
+import { refreshProps } from '../site-analysis/panel.js';
+import { toScreen } from '../io/import-entry.js';
+import { paint } from '../map/terrain-3d.js';
+import { bimPointSegDist, inPoly } from '../render/viewcube.js';
+import {
+  A3D_GIZ, bimFaceWorldPts, bimPointInFace, bimRayHitObject, bimScreenRay
+} from '../gizmo/transform-gizmo.js';
+import { A3D_MODKEY } from '../ui/shortcuts.js';
+import {
+  A3D_CLICKBOX_T, bimCloseGizmoMenu, bimCloseValueBox, bimFmtLen, setA3D_CLICKBOX_T
+} from '../gizmo/gizmo-handles.js';
+import { bimFaceValueBox, bimPushReadout } from './push-pull.js';
+import { bimGraphRoomSourceId } from '../bim/dependency-graph.js';
+import { bimIsRegionDep } from '../bim/region-dependents.js';
+import { BIM_BULGE_EPS, bimBulgeArc, bimBulgeAt } from '../drawing/arc-storage.js';
+import { bimProjectOntoBulged } from '../drawing/curve-break.js';
+import { bimWallLength } from '../views/schedules.js';
+import { bimObjectVisibleOnLevel } from '../views/saved-views.js';
+import { bimSheetOnScreen } from '../sheets/present.js';
+import { cvXY, drag, refreshTree } from '../sheets/presentation-panel.js';
+import { a3dToast, objById } from '../bim/csg-booleans.js';
+import { cvH, cvW } from '../ui/canvas-size.js';
+
   /* ================= __acad3dV123: FACES -- PUSH AND PULL =================
 
      SketchUp's Push/Pull, Rhino's sub-object gumball, AutoCAD's PRESSPULL and Revit's shape handles
@@ -700,7 +735,7 @@
   function bimFaceDblClick(ev){
     try{
       if(!A3D.on||A3D.sk||A3D.conPick||A3D.zoomWindow||bimSheetOnScreen()||ev.button!==0)return;
-      if(A3D_CLICKBOX_T){clearTimeout(A3D_CLICKBOX_T);A3D_CLICKBOX_T=null;}
+      if(A3D_CLICKBOX_T){clearTimeout(A3D_CLICKBOX_T);setA3D_CLICKBOX_T(null);}
       bimCloseValueBox();
       var xy=cvXY(ev),pk=bimFacePickAt(xy[0],xy[1]);
       if(!pk)return;
@@ -720,3 +755,9 @@
     a3dToast('PRESSPULL: click a face to push or pull it (Esc to cancel)');
     return true;
   }
+export {
+  A3D_FACE_GESTURES, A3D_FACE_KEYS, A3D_PUSH, bimDrawFaceMode, bimFaceArrow, bimFaceCurrent, bimFaceDblClick,
+  bimFaceEnter, bimFaceExit, bimFaceHint, bimFaceHitAt, bimFaceKeyFor, bimFaceKeyRun, bimFaceList,
+  bimFaceObjKind, bimFacePickAt, bimPosKey, bimPressPullCommand, bimPrimBase, bimPrmDim, bimPrmLabel,
+  bimWallEndInfo
+};

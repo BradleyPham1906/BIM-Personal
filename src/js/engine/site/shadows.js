@@ -1,3 +1,20 @@
+import { A3D } from '../core/state.js';
+import { bimObjOffset } from '../drawing/plan-mode-sketch.js';
+import {
+  bimPad2, bimSunCalc, bimSunDayText, bimSunNow, bimSunNum, bimSunStudy, bimSunTzAt
+} from './sun-position.js';
+import { bimTrueNorthDeg } from '../survey/survey-arithmetic.js';
+import { bimLayerShown } from '../layers/layer-rules.js';
+import { A3D_ANIM, bimAnimLive } from '../site-analysis/motion.js';
+import { toScreen } from '../io/import-entry.js';
+import { paint } from '../map/terrain-3d.js';
+import { bimSafeViewRect } from '../ui/chrome-framing.js';
+import { bimLevelAreas, bimLevelById } from '../views/schedules.js';
+import { bimColumnLoads, bimTribLevel } from '../structure/tributary-loads.js';
+import { bimEntBare } from '../assets/scale-assets.js';
+import { bimCameraIsPlan } from '../views/saved-views.js';
+import { a3dToast } from '../bim/csg-booleans.js';
+
   /* ================= __acad3dV107: shadows on the ground =================
      Each solid's mesh is projected along the sun's rays onto the ground plane (the lowest level's
      elevation) and the model's own plan footprint is cut out of the result, so a building never
@@ -253,3 +270,7 @@
     }
     ctx.restore();
   }
+export {
+  bimFillProjected, bimShadowCasters, bimShadowGround, bimShadowPoint, bimSunVector, bimToggleAreaPlan,
+  bimToggleSun, drawAreaPlan, drawSunPath, drawSunShadows, drawTribAreas
+};

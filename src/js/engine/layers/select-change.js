@@ -1,3 +1,17 @@
+import { A3D, el } from '../core/state.js';
+import { pushUndo } from '../drawing/plan-mode-sketch.js';
+import {
+  bimLayerById, bimLayerChain, bimLayerEff, bimLayerOf, bimLayerPickable, bimLayerSelectable, bimLayerShown,
+  bimObjLayerState
+} from './layer-rules.js';
+import { refreshLayers } from './analysis-data-rows.js';
+import { refreshProps } from '../site-analysis/panel.js';
+import { paint } from '../map/terrain-3d.js';
+import { saveSoon } from '../bim/region-regenerate.js';
+import { refreshTree } from '../sheets/presentation-panel.js';
+import { closeDlg, ric } from '../ui/touch-input.js';
+import { a3dToast, objById } from '../bim/csg-booleans.js';
+
   /* ================= __acad3dV121: selecting, by the layers =================
      A click, a window and a list row pick what is shown and unlocked (bimLayerPickable); a list row
      that names one object refuses the rest through bimLayerPickRefusal. SELECT ALL and every
@@ -283,3 +297,9 @@
   var BIM_EYE_OFF=ric('<path d="M3 3l18 18"/><path d="M10.6 5.2A10.6 10.6 0 0 1 12 5c6 0 10 7 10 7a17.7 17.7 0 0 1-3.2 4M6.5 6.5C3.8 8.3 2 12 2 12s4 7 10 7c1.4 0 2.7-.3 3.9-.8"/>');
   var BIM_LOCK_ON=ric('<rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>');
   var BIM_LOCK_OFF=ric('<rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V7a4 4 0 0 1 7.4-2"/>');
+export {
+  BIM_EYE_OFF, BIM_EYE_ON, BIM_LAYER_BADCHARS, BIM_LINETYPES, BIM_LINEWEIGHTS, BIM_LOCK_OFF, BIM_LOCK_ON,
+  addLayer, bimLayerByName, bimLayerChanged, bimLayerDelete, bimLayerDropUnselectable, bimLayerMakeCurrent,
+  bimLayerNew, bimLayerPickRefusal, bimLayerSet, bimLayerUnder, bimLinetypeDef, bimObjSetLayer,
+  bimSelectByRule, openAddLayerDlg, setActiveLayer
+};

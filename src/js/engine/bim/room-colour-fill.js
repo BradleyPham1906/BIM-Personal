@@ -1,3 +1,16 @@
+import { A3D } from '../core/state.js';
+import { pushUndo } from '../drawing/plan-mode-sketch.js';
+import { bimResolveGraphics } from './type-instance-params.js';
+import { bimPolyArea } from './rooms.js';
+import { BIM_ROOM_FIELDS, bimOccLoadRow, bimRoomField } from './room-data-occupancy.js';
+import { paint } from '../map/terrain-3d.js';
+import { bimCloneRegion } from './region-dependents.js';
+import { bimSafeViewRect } from '../ui/chrome-framing.js';
+import { refreshHud, saveSoon } from './region-regenerate.js';
+import { bimInsetFaceRing } from '../views/schedules.js';
+import { refreshTree } from '../sheets/presentation-panel.js';
+import { a3dToast } from './csg-booleans.js';
+
   /* ================= __acad3dV105: room colour fill =================
      Off by default, so a drawing made before this phase looks exactly as it did. When on, each
      room is filled by the value of ONE of its fields, Department or Occupancy. Colours go to the
@@ -165,3 +178,8 @@
     a3dToast(o.name+' ('+o.number+') created \u2014 '+o.area.toFixed(2)+' m\u00b2');
     return o;
   }
+export {
+  BIM_SCHEME_ALPHA, BIM_SCHEME_COLS, bimCreateRoom, bimCycleRoomScheme, bimNextRoomNumber, bimRoomFaceRing,
+  bimRoomSchemeEntry, bimRoomSchemeGraphics, bimRoomSchemeMap, bimSetRoomField, bimSetRoomScheme,
+  drawRoomSchemeLegend
+};

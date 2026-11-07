@@ -1,3 +1,15 @@
+import { A3D } from '../core/state.js';
+import { bimObjOffset } from '../drawing/plan-mode-sketch.js';
+import { bimIsPoint } from '../drawing/point-node.js';
+import { bimRoomFaceRing } from './room-colour-fill.js';
+import { bimLayerShown } from '../layers/layer-rules.js';
+import { bimSourceBoundaryWorld } from './source-contract.js';
+import { BIM_REGION_WANT, bimRegionTraceAt } from './region-dependents.js';
+import { bimBulgeAt, bimFlattenPoly } from '../drawing/arc-storage.js';
+import { bimClineVisibleSeg, bimDrawingExtent2D, bimIsCline } from '../drawing/construction-lines.js';
+import { bimTraceBoundary } from '../drawing/planar-arrangement.js';
+import { objById } from './csg-booleans.js';
+
   // ---- __acad3dV10: Room/Space tool. Click inside an enclosed wall loop or closed sketch; the tool
   // auto-detects the boundary (smallest enclosing region, so a closet nested inside a larger room picks
   // correctly) and creates a Room object with a live area tag. Snapshot at creation time, like Floor --
@@ -146,3 +158,7 @@
     if(candidates.length)return candidates[0];
     return null;
   }
+export {
+  bimBoundaryEdges, bimFindEnclosingWallFace, bimFindRoomBoundaryAt, bimGraphNodeKey, bimPointInPoly,
+  bimPolyArea, bimPolySignedArea
+};

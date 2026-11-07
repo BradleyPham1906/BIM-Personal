@@ -1,3 +1,11 @@
+import { A3D } from '../core/state.js';
+import { TYPES, camVecs, faceNormal, meshOf, vcross, vdot, vsub } from '../core/mesh-primitives.js';
+import { pushUndo } from '../drawing/plan-mode-sketch.js';
+import { paint } from '../map/terrain-3d.js';
+import { refreshHud, saveSoon } from './region-regenerate.js';
+import { refreshTree } from '../sheets/presentation-panel.js';
+import { cvH, cvW } from '../ui/canvas-size.js';
+
   // ---- __acad3dV3: CSG solid booleans + pair selection + drag-move ----
   var CSG_EPS=1e-5;
   /* __acad3dV114: published for the chrome outside this engine -- the quick-access bar, the command
@@ -237,3 +245,4 @@
     if(t<=0)return null;
     return [V.eye[0]+dir[0]*t,y0,V.eye[2]+dir[2]*t];
   }
+export { a3dToast, csgSubtract, doBool, groundPoint, meshPolys, objById, polysToMesh };

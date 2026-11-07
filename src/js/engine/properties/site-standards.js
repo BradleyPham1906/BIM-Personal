@@ -1,3 +1,18 @@
+import { A3D, el } from '../core/state.js';
+import { bimEsc } from '../layers/layer-manager.js';
+import { bimPropRow, bimPropText } from './palette.js';
+import { bimPropReveal } from '../analysis/analyze-tab.js';
+import {
+  BIM_STD_HOW, BIM_STD_LV, BIM_STD_PACK_MAX, bimStdClear, bimStdEdition, bimStdFmt, bimStdOvOf,
+  bimStdOverride, bimStdPackApply, bimStdPackDiff, bimStdPackRemove, bimStdPick, bimStdPlace,
+  bimStdPlaceMoved, bimStdPlaceName, bimStdRecs, bimStdResolve, bimStdS, bimStdSetDate, bimStdSetPlace
+} from '../standards/registry.js';
+import { refreshProps } from '../site-analysis/panel.js';
+import { paint } from '../map/terrain-3d.js';
+import { bimShellOverlay } from '../assets/library-drag.js';
+import { refreshTree } from '../sheets/presentation-panel.js';
+import { a3dToast } from '../bim/csg-booleans.js';
+
   /* ================= __acad3dV167: Properties, Site, Standards ================= */
   var A3D_STD_UI={open:{},edit:null,place:false,pending:null,draft:{}};
   /* __acad3dV167g: what is typed in the place's and an override's fields, until Save or Cancel */
@@ -174,3 +189,7 @@
     a3dToast('The standards are in Properties, Site: '+(P?'in force for '+bimStdPlaceName(P):'no place set, so each is applied as the app\'s default and says so'));
     return true;
   }
+export {
+  A3D_STD_UI, BIM_STD_DRAFT_KEYS, bimStdCommand, bimStdDraftClear, bimStdPackLook, bimStdPropChange,
+  bimStdPropClick, bimStdPropVal, bimStdPropsHtml
+};

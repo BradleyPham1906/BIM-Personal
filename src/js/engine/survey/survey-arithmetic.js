@@ -1,3 +1,6 @@
+import { A3D } from '../core/state.js';
+import { bimPolyArea, bimPolySignedArea } from '../bim/rooms.js';
+
   /* ================= __acad3dV103: survey arithmetic ================= */
   function bimTrueNorthDeg(){
     var t=A3D.site&&A3D.site.trueNorth;
@@ -101,3 +104,7 @@
     if(!(Math.abs(sa)>1e-6)||(sa>0?1:-1)!==sgn)return {error:'the setbacks leave no buildable area'};
     return {ring:out};
   }
+export {
+  bimFormatBearing, bimLegsFromRing, bimParseBearing, bimParseLegs, bimSetbackRing, bimTraverse,
+  bimTrueNorthDeg
+};

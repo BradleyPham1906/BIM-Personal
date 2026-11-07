@@ -1,5 +1,20 @@
+import { A3D } from '../core/state.js';
+import { pushUndo } from '../drawing/plan-mode-sketch.js';
+import { refreshLayers } from '../layers/analysis-data-rows.js';
+import { bimDispNum } from '../properties/palette.js';
+import { A3D_SIM, bimSimGridImage } from '../analysis/simulation.js';
+import { A3D_RES_IMG, bimResLayers, bimResNow } from '../analysis/results-layers.js';
+import { bimAnalyzeRefresh } from '../analysis/analyze-tab.js';
+import { bimStdStamp } from '../standards/registry.js';
+import { A3D_AW, bimAwPick, bimAwRefresh } from '../site-analysis/analysis-workspace.js';
+import { A3D_TL, BIM_TL_MARGIN, bimTlDecode, bimTlEncode, bimTlGrid } from './grid.js';
+import { BIM_TL_SRC, bimTlSource, bimTlSrc, bimTlState } from './sources.js';
+import { paint } from '../map/terrain-3d.js';
+import { saveSoon } from '../bim/region-regenerate.js';
+import { a3dToast } from '../bim/csg-booleans.js';
+
   /* ================= __acad3dV172: the site analysis tools: the tools, their parameters, their runs =================
-     Esri's geoprocessing pane, read at the source (reference/research-site-analysis-tools.md, 2): every tool opens the
+     Esri's geoprocessing pane, read at the source (docs/research/research-site-analysis-tools.md, 2): every tool opens the
      same way, its parameters typed (a layer, a number with its unit, a choice, a run from History), the required ones
      marked, each checked as it is filled in -- the tool's own checks too -- with a message beside the field; Run;
      then the status (succeeded, succeeded with warnings, failed), how long it took, the messages, and the output
@@ -242,3 +257,10 @@
   function bimTlExtentText(G){return (G.ring?'the lot and '+BIM_TL_MARGIN+' m around it':'100 m around the site')+', '+G.nx+' by '+G.nz+' cells of '+bimDispNum(G.cell,2)+' m';}
   function bimTlInfo(M,s){M.push({t:'info',s:s});}
   function bimTlWarn(M,s){M.push({t:'warn',s:s});}
+export {
+  BIM_TL_ACRE, BIM_TL_LEVELS, BIM_TL_RAMP_DIST, BIM_TL_RAMP_SUIT, BIM_TL_REST, BIM_TL_REST_PAL, BIM_TL_ST,
+  BIM_TL_TOOLS, bimTlArea, bimTlAreaText, bimTlCheck, bimTlExtentText, bimTlForget, bimTlImage, bimTlInLot,
+  bimTlInfo, bimTlLast, bimTlLayerRerun, bimTlNum, bimTlOpen, bimTlOpts, bimTlParams, bimTlQuant, bimTlRamp,
+  bimTlRange, bimTlRerun, bimTlRun, bimTlRunById, bimTlRunOut, bimTlSetField, bimTlSourceOf, bimTlStale,
+  bimTlTool, bimTlWarn
+};

@@ -1,3 +1,25 @@
+import { A3D, el } from '../core/state.js';
+import { camVecs } from '../core/mesh-primitives.js';
+import { bimEnterDraftingMode, bimObjOffset, pushUndo } from '../drawing/plan-mode-sketch.js';
+import { bimGetActiveLevel } from '../bim/levels-walls-floors.js';
+import { refreshLevels } from '../bim/classification.js';
+import { bimParseSurvey, bimSurveyToModel, bimTerrainTin } from '../terrain/terrain-tin.js';
+import { BIM_SURVEY_CHECK_CODE, bimCreateTerrain } from '../survey/survey-check.js';
+import { bimTrueNorthDeg } from '../survey/survey-arithmetic.js';
+import { bimLayerAlpha, bimLayerPickable, bimLayerShown } from '../layers/layer-rules.js';
+import { bimDispNum, bimPropGroup, bimPropRow, bimPropText, bimTrimNum } from '../properties/palette.js';
+import { refreshProps } from '../site-analysis/panel.js';
+import { toScreen } from '../io/import-entry.js';
+import { paint } from '../map/terrain-3d.js';
+import { bimPointSegDist } from '../render/viewcube.js';
+import { bimArcSegments, bimHasBulge } from '../drawing/arc-storage.js';
+import { fitScene } from '../ui/tool-palette.js';
+import { saveSoon } from '../bim/region-regenerate.js';
+import { refreshTree } from '../sheets/presentation-panel.js';
+import { closeDlg } from '../ui/touch-input.js';
+import { a3dToast, objById } from '../bim/csg-booleans.js';
+import { cvH, cvW } from '../ui/canvas-size.js';
+
   /* ================= __acad3dV127: the alignment and its profile ================= */
   var BIM_ALIGN_R0=100;         /* the radius ALIGNMENT offers, when the legs leave room for it */
   function bimIsAlignment(o){return !!(o&&o.t==='alignment'&&o.pis&&o.pis.length>=2);}
@@ -736,3 +758,11 @@
     return false;
   }
 
+export {
+  bimAlignEdit, bimAlignExport, bimAlignExtentPts, bimAlignGeom, bimAlignGround, bimAlignPointAt,
+  bimAlignPropChange, bimAlignPropClick, bimAlignPropsHtml, bimAlignScheduleRows, bimAlignStationOffset,
+  bimAlignmentCommand, bimFmtStation, bimImportSurvey, bimIsAlignment, bimNewAlignment, bimPickAlignment,
+  bimPlaceProfileView, bimProfileElevAt, bimProfileGeom, bimProfileScheduleRows, bimRemoveGrid,
+  bimSetTrueNorth, bimStartProfileViewTool, bimStartStationTool, bimStationAt, bimTinHeightAt, drawAlignments,
+  drawStationMark, openSurveyDlg, openTrueNorthDlg
+};

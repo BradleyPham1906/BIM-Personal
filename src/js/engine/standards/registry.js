@@ -1,5 +1,17 @@
+import { A3D } from '../core/state.js';
+import { bimObjOffset, pushUndo } from '../drawing/plan-mode-sketch.js';
+import { bimCanon, bimHash, bimHex8 } from '../history/element-history.js';
+import { bimDispNum } from '../properties/palette.js';
+import { bimAnalyzeRefresh } from '../analysis/analyze-tab.js';
+import { BIM_SA_CLS, bimSaAuto, bimSaPair, bimSaToday } from '../site-analysis/workspace.js';
+import { bimSaRefresh, refreshProps } from '../site-analysis/panel.js';
+import { paint } from '../map/terrain-3d.js';
+import { saveSoon } from '../bim/region-regenerate.js';
+import { bimEntRefit } from '../assets/scale-assets.js';
+import { a3dToast } from '../bim/csg-booleans.js';
+
   /* ================= __acad3dV167: the standards registry =================
-     reference/research-standards-registry.md. Every standard, guideline and assumption an analysis
+     docs/research/research-standards-registry.md. Every standard, guideline and assumption an analysis
      applies is a record here, never a number in its code: a topic, and its editions. An edition says
      where and when it is in force (adopt: a place key, from, to), its source to the section and the
      level it was read at (P at its source, S from a dependable secondary one with the gap said, U not
@@ -1030,3 +1042,16 @@
   }
   function bimDgW(o,p){var q=bimObjOffset(o);return [p[0]+q[0],(p[1]||0)+q[1],p[2]+q[2]];}
   function bimDgDiags(a){return A3D.objs.filter(function(x){return bimIsDiag(x)&&(!a||x.dg.a===a);});}
+export {
+  A3D_DG, BIM_DG_AN, BIM_DG_STD, BIM_STD_DATA, BIM_STD_HOW, BIM_STD_LV, BIM_STD_PACK_MAX, bimAccIxr,
+  bimAccKmhText, bimAccLeed, bimAccSpeed, bimAn, bimClimBase, bimClimCalm, bimClimComfort, bimClimWho24,
+  bimClimWhoIt1, bimClimWhoYear, bimClimWindBins, bimCombos, bimCtxDeck, bimCtxDeckT, bimCtxDefaultH,
+  bimCtxLevelH, bimCtxLineH, bimCtxPier, bimCtxTowerH, bimCtxTreeH, bimDgAn, bimDgCore, bimDgCrtnMax,
+  bimDgDiags, bimDgEdited, bimDgRoads, bimDgState, bimDgStdChanged, bimDgStdText, bimDgW, bimIsDiag,
+  bimLandSlope, bimMvGuide, bimMvPtalBands, bimMvPtalK, bimMvPtalWalk, bimMvStopLim, bimMvXtab, bimOccLoads,
+  bimRoadW, bimSaStdText, bimSha256, bimSlopeBands, bimStd, bimStdChanged, bimStdChangedText, bimStdClear,
+  bimStdDataChanged, bimStdDone, bimStdEdition, bimStdFmt, bimStdOvOf, bimStdOverride, bimStdOwn,
+  bimStdPackApply, bimStdPackDiff, bimStdPackRemove, bimStdPath, bimStdPick, bimStdPlace,
+  bimStdPlaceFromAddress, bimStdPlaceMoved, bimStdPlaceName, bimStdRecs, bimStdResolve, bimStdS, bimStdSay,
+  bimStdSetDate, bimStdSetPlace, bimStdStamp, bimStdTopicOf, bimStdUsedText, bimStdYear
+};

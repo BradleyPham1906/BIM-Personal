@@ -1,3 +1,21 @@
+import { A3D, el } from '../core/state.js';
+import { bimEnterDraftingMode, pushUndo, selSketch } from './plan-mode-sketch.js';
+import { bimIsLocked } from '../bim/import-compliance.js';
+import { bimPickAnnotation } from '../annotation/annotation-pick.js';
+import { bimLayerPickable } from '../layers/layer-rules.js';
+import { bimPickDiag } from '../site-analysis/motion.js';
+import { A3D_GL } from '../render/webgl.js';
+import { bimPickGpu, bimPickGpuWanted } from '../render/gpu-pick.js';
+import { A3D_GPU } from '../render/webgpu.js';
+import { bimBuildPickPolys, paint } from '../map/terrain-3d.js';
+import { bimPickSketch, inPoly } from '../render/viewcube.js';
+import { bimPickNote } from '../annotation/annotation-overlay.js';
+import { bimAfterSketchEdit } from '../bim/region-dependents.js';
+import { saveSoon } from '../bim/region-regenerate.js';
+import { refreshTree } from '../sheets/presentation-panel.js';
+import { closeDlg } from '../ui/touch-input.js';
+import { a3dToast } from '../bim/csg-booleans.js';
+
   // ---- __acad3dV45: Sketch geometric constraints -- an original 2D constraint solver (damped
   // Gauss-Newton / Levenberg-Marquardt over a numeric central-difference Jacobian, a standard
   // textbook numerical method) applied to the points of the currently-selected sketch. This is
@@ -67,7 +85,7 @@
       // ---- Ported (as residual formulas, not code) from FreeCAD's planegcs solver
       // (src/Mod/Sketcher/App/planegcs/Constraints.cpp) after a from-scratch survey of the real
       // FreeCAD source confirmed these specific formulas are small, self-contained, OCCT-free
-      // pure math -- see canvas_v10_STATUS.md's "Real FreeCAD source audit via GitHub" section.
+      // pure math -- see docs/dev/canvas_v10_STATUS.md's "Real FreeCAD source audit via GitHub" section.
       // Adapted to this app's point-index/residual-vector convention (planegcs uses raw pointers
       // into a shared parameter array and a signed "scale" factor per constraint; here every
       // constraint is just an unscaled residual fed to the shared Gauss-Newton solver above).
@@ -367,3 +385,8 @@
     }
     return bimPickSketch(x,y);
   }
+export {
+  bimAddSketchConstraint, bimDeleteSketchConstraint, bimEstimateSketchDOF, bimFinishConstraintPick,
+  bimResolveSketch, bimSketchConstraintDesc, bimSketchConstraintLabel, bimSolveSketchConstraints,
+  cancelConstraintPick, pick, startConstraintTool
+};

@@ -1,5 +1,22 @@
+import { A3D } from '../core/state.js';
+import { bimSunNum, bimSunSettings } from '../site/sun-position.js';
+import { bimPointInPoly, bimPolyArea } from '../bim/rooms.js';
+import { bimEsc } from '../layers/layer-manager.js';
+import { bimResLayers } from '../analysis/results-layers.js';
+import { bimAccSpeed, bimStd } from '../standards/registry.js';
+import { bimMvPtalText } from './land-use.js';
+import { bimSaN } from './workspace.js';
+import { bimClimFmt, bimClimInt } from './climate-data.js';
+import {
+  BIM_ACC_BANDS, BIM_ACC_CLASS_NAME, BIM_ACC_FRONT, BIM_ACC_MAXT, BIM_ACC_ROUTE_MODE, bimAccDP, bimAccHas,
+  bimAccKind, bimAccLot, bimAccLotDist, bimAccLotKey, bimAccParkTime, bimAccPointTime, bimAccR2, bimAccSnap,
+  bimCenShare, bimCenSum
+} from './access-data.js';
+import { toScreen } from '../io/import-entry.js';
+import { bimGeoToModel, bimMapSettings } from '../map/map-tiles.js';
+
   /* ================= __acad3dV166: site analysis in the model III, movement: the data =================
-     reference/research-site-analysis-in-model.md, section 4. Kept with the access data as mv, so the six
+     docs/research/research-site-analysis-in-model.md, section 4. Kept with the access data as mv, so the six
      movement analyses run again offline. Coordinates in model metres to the decimetre. */
   var BIM_MV_R=800,BIM_MV_DOOR=3,BIM_MV_CAR=400,BIM_MV_NODES=6000,BIM_MV_TOL=0.75,BIM_MV_CARS=24;
   /* the tags movement reads; the rest of a way's tags stay in OpenStreetMap */
@@ -368,3 +385,8 @@
     return s+'</div>';
   }
 
+export {
+  BIM_MV_CAR, BIM_MV_R, bimAccAuto, bimAccDrawPlan, bimAccKm, bimAccMin, bimAccPlanCols, bimAccSaHtml,
+  bimAccSplitBands, bimAccStaleText, bimAccStreetClass, bimAccStreetName, bimCenDens, bimCenFmt, bimCenPct,
+  bimMvInterval, bimMvLotPt, bimMvWork
+};

@@ -1,3 +1,31 @@
+import { A3D } from '../core/state.js';
+import { pushUndo } from '../drawing/plan-mode-sketch.js';
+import { bimLegsFromRing, bimTrueNorthDeg } from '../survey/survey-arithmetic.js';
+import { bimClosureText, bimNewProperty, bimPropertyGeometry } from '../site/property.js';
+import { bimPointInPoly, bimPolyArea } from '../bim/rooms.js';
+import { BIM_SCHEME_COLS } from '../bim/room-colour-fill.js';
+import { A3D_PLOT } from '../layers/layer-rules.js';
+import { bimLayersPanelRefresh } from '../layers/analysis-data-rows.js';
+import { bimEsc } from '../layers/layer-manager.js';
+import { bimGeoParts, bimGeoPositions } from '../properties/map-address-site-data.js';
+import { refreshProps } from '../site-analysis/panel.js';
+import { toScreen } from '../io/import-entry.js';
+import { bimDataAttrKeys, bimDataFeatCol, bimDataLensScale } from './colour-lens.js';
+import { bimGeoToModel, bimMapHost, bimMapOrigin } from './map-tiles.js';
+import { bimCtxArea } from './site-context.js';
+import { bimCtxErr } from './surroundings-3d.js';
+import {
+  A3D_DATA, bimDataById, bimDataFeats, bimDataFetch, bimDataKind, bimDataList, bimDataNameFromUrl
+} from './data-layers.js';
+import { paint } from './terrain-3d.js';
+import { bimPointSegDist } from '../render/viewcube.js';
+import { saveSoon } from '../bim/region-regenerate.js';
+import { bimShadowGround } from '../site/shadows.js';
+import { refreshTree } from '../sheets/presentation-panel.js';
+import { a3dToast, groundPoint } from '../bim/csg-booleans.js';
+import { bimLoadUIPanelPrefs, bimSaveUIPanelPrefs } from '../ui/build-ui.js';
+import { cvH } from '../ui/canvas-size.js';
+
   /* ================= __acad3dV135: find open data ================= */
   /* US open-data portals, [group, [[name, host, Hub site id, ArcGIS organisation id, Socrata], ...]].
      The list, and the searches below, are ported from GeoLibre (github.com/opengeos/GeoLibre):
@@ -375,3 +403,8 @@
     for(i=0;i<L.length;i++)if(L[i].visible&&bimDataFeats(L[i].id).length&&c.indexOf(L[i].credit)<0)c.push(L[i].credit);
     return c.length?'Data: '+bimEsc(c.join('; ')):'';
   }
+export {
+  A3D_FIND, BIM_DATA_PORTALS, BIM_FIND_CREDIT, bimDataAdd, bimDataCreditHtml, bimDataModel, bimDataOpacity,
+  bimDataPick, bimDataRemove, bimDataSet, bimDataToProperty, bimFindAdd, bimFindAdded, bimFindCurrent,
+  bimFindGuess, bimFindSearch, bimFindSetPortal, bimHubSearchUrl, bimSocrataSearchUrl, drawDataLayers
+};

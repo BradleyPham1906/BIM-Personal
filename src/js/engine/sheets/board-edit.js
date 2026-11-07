@@ -1,3 +1,21 @@
+import { A3D_SNAP, pushUndo, syncSnapPill } from '../drawing/plan-mode-sketch.js';
+import {
+  A3D_CLB, bimClbClose, bimClbE, bimClbEl, bimClbOpen, bimClbTipHide
+} from '../site-analysis/climate-board.js';
+import { BIM_LB_COND } from '../ladybug/figures.js';
+import { bimShellSetTab } from '../ui/tool-palette.js';
+import { A3D_REV } from '../core/objects-save.js';
+import { saveSoon } from '../bim/region-regenerate.js';
+import { bimLtMenuOpen } from './layout-tabs.js';
+import { bimBoardById, bimPresData, bimPresIndex, bimPresOpenBoard, bimPresSeq } from './boards.js';
+import {
+  BIM_BRD_G, BIM_BRD_P0, bimBoardLabel, bimBrdBands, bimBrdEditing, bimBrdFigsValid, bimBrdKeep,
+  bimBrdMeasureDefault, bimBrdNatH, bimBrdOpts, bimBrdPx, bimBrdRec, bimFigCardHtml, bimFigCat, bimFigEntry,
+  bimFigHint, bimFigSpan, bimFigSrc
+} from './board-figures.js';
+import { bimPresPanelRefresh } from './presentation-panel.js';
+import { a3dToast } from '../bim/csg-booleans.js';
+
   /* ================= __acad3dV172b: Edit, on a board =================
      The board's own Edit. A figure moves by its handle or its body and sizes by its corner, and the
      drawing's own settings govern it as they govern a point being drawn (bimSnapPoint): Snap catches an
@@ -466,3 +484,8 @@
     b.addEventListener('keydown',bimBrdKey);
     b.addEventListener('contextmenu',bimBrdCtx);
   }
+export {
+  A3D_BRD, bimBrdAddFig, bimBrdCatalogue, bimBrdDlgClose, bimBrdDup, bimBrdDupBoard, bimBrdEdit, bimBrdEsc,
+  bimBrdFit, bimBrdMenu, bimBrdNewUi, bimBrdNudge, bimBrdOptsDlg, bimBrdOptsSet, bimBrdRemove, bimBrdRename,
+  bimBrdReset, bimBrdRestored, bimBrdSnap, bimBrdSnapSync, bimBrdSwap, bimBrdWire, bimBrdWorking
+};

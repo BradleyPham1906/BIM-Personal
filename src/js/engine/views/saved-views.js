@@ -1,3 +1,19 @@
+import { A3D, el } from '../core/state.js';
+import { pushUndo } from '../drawing/plan-mode-sketch.js';
+import { bimSyncActiveGlobal, setActiveLevel } from '../bim/levels-walls-floors.js';
+import { refreshLevels } from '../bim/classification.js';
+import { bimEsc } from '../layers/layer-manager.js';
+import { A3D_CLB, bimClbClose } from '../site-analysis/climate-board.js';
+import { bimRenderInto, refreshProps } from '../site-analysis/panel.js';
+import { paint } from '../map/terrain-3d.js';
+import { VIEWS, bimAimPreset } from '../editing/modify-toolbox.js';
+import { bimEnterSection, bimExitSection, bimFlipSection } from './section-tool.js';
+import { refreshHud, saveSoon } from '../bim/region-regenerate.js';
+import { bimSheetById, bimSheetLabel } from '../sheets/sheets.js';
+import { bimCloseSheetView, bimOpenSheetView } from '../sheets/present.js';
+import { refreshBrowser, refreshTree } from '../sheets/presentation-panel.js';
+import { a3dToast } from '../bim/csg-booleans.js';
+
   // ---- __acad3dV23: Saved views + view-specific annotations + level filtering ----
   // Saved views capture camera/mode/level/section (the section's cut PLANE only -- the cut-mesh
   // cache is recomputed on restore rather than stored, since it's large and derivable).
@@ -291,3 +307,10 @@
     bimRenderInto(el.viewrows,h);   /* __acad3dV118 */
   }
 
+  /* setters: other files assign these through them (an ES module cannot assign to an import) */
+  function setA3D_LAST_MODEL_VIEW(v){A3D_LAST_MODEL_VIEW=v;return v;}
+export {
+  A3D_LAST_MODEL_VIEW, A3D_VIEW, bimActivateView, bimAnnotationVisible, bimCameraIsPlan, bimCaptureView,
+  bimDeleteView, bimObjectLevelId, bimObjectVisibleOnLevel, bimSaveCurrentView, bimSetActiveView,
+  bimToggleLevelFilter, bimViewOfCamera, bimViewSync, refreshViews, setA3D_LAST_MODEL_VIEW
+};

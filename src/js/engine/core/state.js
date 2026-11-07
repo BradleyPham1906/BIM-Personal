@@ -1,3 +1,10 @@
+import { bimHistValid } from '../history/element-history.js';
+import { bimResValid, setA3D_RES_IMG } from '../analysis/results-layers.js';
+import { bimProjectRecord } from './objects-save.js';
+import { bimDocsBoot } from '../ui/project-tabs.js';
+import { bimAdoptLayers } from '../bim/region-regenerate.js';
+import { bimPresValid } from '../sheets/boards.js';
+
   var LSK='acad3dV1';
   var SCALE=0.35;
   var DEFCAM={yaw:-0.7,pitch:0.42,dist:30,tx:0,ty:1,tz:0};
@@ -98,7 +105,7 @@
       A3D.history=bimHistValid(st&&st.history);   /* __acad3dV146: its history, or none */
       A3D.resultLayers=bimResValid(st&&st.resultLayers);   /* __acad3dV148: its result layers, or none */
       A3D.pres=bimPresValid(st&&st.pres);   /* __acad3dV162: its boards in the set, and the set's order */
-      A3D_RES_IMG={};
+      setA3D_RES_IMG({});
       if(st&&Array.isArray(st.classifications)){
         A3D.classifications=st.classifications.filter(function(c){return c&&typeof c.id==='string'&&typeof c.code==='string';});
         if(A3D.classifications.length!==st.classifications.length)console.warn('[BIM] Discarded malformed classification(s) from '+LSK+' storage.');
@@ -126,3 +133,7 @@
   var A3D_DOCS_KEY='acad3dDocsV1',A3D_DOC_PREFIX='acad3dDocV1:';
   var A3D_DOCS=bimDocsBoot();
   var A3D_DOC_RT={};
+export {
+  A3D, A3D_BOOT_DOC, A3D_BOOT_IDB, A3D_DOCS, A3D_DOCS_KEY, A3D_DOC_PREFIX, A3D_DOC_RT, A3D_MATERIAL_LIBRARY,
+  A3D_PROJECT_DEFAULTS, DEFCAM, LSK, SCALE, bimApplyStoredState, el
+};

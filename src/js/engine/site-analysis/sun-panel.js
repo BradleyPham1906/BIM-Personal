@@ -1,5 +1,23 @@
+import { A3D, el } from '../core/state.js';
+import {
+  A3D_SUNX, bimHHMM, bimPad2, bimSetSun, bimSunCalc, bimSunClockText, bimSunDayText, bimSunNum, bimSunStudy,
+  bimSunTrying, bimSunTzAt, bimSunZone
+} from '../site/sun-position.js';
+import { bimEsc } from '../layers/layer-manager.js';
+import { bimDispNum } from '../properties/palette.js';
+import { bimDgState } from '../standards/registry.js';
+import { A3D_ANIM, bimAnimStop, bimAnimSunDate, bimAnimSunTime } from './motion.js';
+import { BIM_DG_SUNDAYS, bimDgNoPlace } from './model-analyses.js';
+import {
+  BIM_SUN_DAYC, BIM_SUN_RED, bimSunDayFacts, bimSunDomeOf, bimSunHalf, bimSunHalfText, bimSunHeatAt,
+  bimSunLen, bimSunMd, bimSunNearDrawn, bimSunXyz
+} from './sun-path.js';
+import { BIM_HEAT_COL, BIM_HEAT_SHORT } from './climate-board.js';
+import { A3D_AW, bimAwRefresh, bimAwSec } from './analysis-workspace.js';
+import { paint } from '../map/terrain-3d.js';
+
   /* ================= __acad3dV171d: the sun's panel =================
-     reference/research-sun-path.md (7). In Analyze, the Sun paths' panel: the sun now in numbers, its point on the
+     docs/research/research-sun-path.md (7). In Analyze, the Sun paths' panel: the sun now in numbers, its point on the
      dome by the formula; sliders for a place tried (never saved) and for the study's date and time (one undo step when
      let go); Play through the day or through the year; the year's turning points by hemisphere; the sky looking up and
      the sun's height through the day; the temperature's key. Its numbers follow the clock and the sliders without the
@@ -227,3 +245,7 @@
     if(a==='dst'){z=bimSunZone();return bimSetSun('dst',z.dst?'':'auto');}
     return false;
   }
+export {
+  bimSunAct, bimSunBack, bimSunChartsHtml, bimSunMode, bimSunModeHtml, bimSunNowVals, bimSunPanelHtml,
+  bimSunPanelLive, bimSunSlide, bimSunTry
+};

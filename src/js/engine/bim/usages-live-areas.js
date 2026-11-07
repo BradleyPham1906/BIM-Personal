@@ -1,3 +1,13 @@
+import { A3D } from '../core/state.js';
+import { TYPES, meshOf } from '../core/mesh-primitives.js';
+import { bimObjOffset, objBBox } from '../drawing/plan-mode-sketch.js';
+import { bimFootingHostOf, bimFootingLength, bimFootingVolume, bimIsFooting } from './footings.js';
+import { bimEnsureTypes, bimMatRow, bimMergeRow, bimTypeNameOf } from './type-instance-params.js';
+import { bimPointInPoly, bimPolyArea } from './rooms.js';
+import { bimChainEdgesToLoops } from '../views/section-tool.js';
+import { bimLevelAreas, bimLevelName, bimWallLength } from '../views/schedules.js';
+import { objById } from './csg-booleans.js';
+
   /* ================= __acad3dV131: usages and live areas =================
      A usage is a set of assumptions (Giraffe's): a colour, the GBA->GFA and GFA->NSA ratios, the
      floor-to-floor height a mass is stacked at, its own parameters and formulas. The library lives
@@ -319,3 +329,9 @@
         level:bimLevelName(o.bim.levelId)};
     });
   }
+export {
+  BIM_EXPR_NAMES, BIM_USAGE_DEFAULTS, bimBuildAreaSchedule, bimBuildBeamSchedule, bimBuildCeilingSchedule,
+  bimBuildDoorSchedule, bimBuildFootingSchedule, bimBuildWallSchedule, bimBuildWindowSchedule, bimExpr,
+  bimExprParse, bimMeshSliceArea, bimMeshSliceLoops, bimUsageById, bimUsageKeyProblem, bimUsageMeasure,
+  bimUsageScheduleRows, bimUsageSummary, bimUsageTarget, bimUsages
+};

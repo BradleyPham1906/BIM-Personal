@@ -1,3 +1,11 @@
+import { bimObjOffset } from '../drawing/plan-mode-sketch.js';
+import { bimIsPoint, bimSketchOutline } from '../drawing/point-node.js';
+import { bimPolyArea } from './rooms.js';
+import { bimGraphRoomSourceId } from './dependency-graph.js';
+import { bimIsRegionDep } from './region-dependents.js';
+import { bimHasBulge } from '../drawing/arc-storage.js';
+import { objById } from './csg-booleans.js';
+
   /* ================= __acad3dV97: the source contract =================
 
      The ONE reader of a boundary source. Everything built on a sketch or a closed wall -- room,
@@ -52,3 +60,4 @@
     var q=bimObjOffset(o);
     return pts.map(function(p){return [p[0]-q[0],p[1]-q[2]];});
   }
+export { bimFollowsText, bimSourceBoundaryWorld, bimToFrame };

@@ -1,5 +1,14 @@
+import { A3D } from '../core/state.js';
+import { A3D_SNAP } from '../drawing/plan-mode-sketch.js';
+import { A3D_CLB, bimClbCard, bimClbE, bimClbHtml } from '../site-analysis/climate-board.js';
+import { bimLbSrcKept, bimLbSrcWords } from '../ladybug/sources.js';
+import { BIM_LB_FIGS } from '../ladybug/figures.js';
+import { bimProjectLabel } from '../ui/project-tabs.js';
+import { bimBoardById, bimBoardHtmlFor, bimBoardName } from './boards.js';
+import { bimBrdWorking } from './board-edit.js';
+
   /* ================= __acad3dV172b: a board's figures, arranged =================
-     reference/research-ladybug-weather-comfort.md, 13. Every figure the boards draw has a name of its own
+     docs/research/research-ladybug-weather-comfort.md, 13. Every figure the boards draw has a name of its own
      ('clim.temp', 'zn.secA', 'lb.utci' ...). A board in the set may keep a list of figures, each placed on
      the board's own grid: 12 columns across and the same step down (x and w in columns, y and h in those
      steps), with its options. A board without a list is drawn as it always was; a board of one's own
@@ -372,3 +381,9 @@
     }finally{if(m.parentNode)m.parentNode.removeChild(m);}
     return Math.max(0.25,Math.ceil(h*1000)/1000);
   }
+export {
+  BIM_BRD_G, BIM_BRD_P0, bimBoardKey, bimBoardKeyLabel, bimBoardLabel, bimBrdBands, bimBrdEditing,
+  bimBrdFigsValid, bimBrdHtml, bimBrdKeep, bimBrdMeasureDefault, bimBrdNatH, bimBrdOpts, bimBrdPx, bimBrdRec,
+  bimBrdZoom, bimClbLabel, bimClbWhich, bimFigCapCard, bimFigCapKpis, bimFigCapture, bimFigCardHtml,
+  bimFigCat, bimFigEntry, bimFigHint, bimFigSpan, bimFigSrc
+};

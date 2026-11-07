@@ -1,3 +1,18 @@
+import { A3D } from '../core/state.js';
+import { pushUndo } from '../drawing/plan-mode-sketch.js';
+import { bimEsc } from '../layers/layer-manager.js';
+import { saveSoon } from '../bim/region-regenerate.js';
+import { bimActivateView, bimViewSync } from '../views/saved-views.js';
+import {
+  SHEET_NEW_SIZE, bimAddSheet, bimConfirmDeleteSheet, bimNextSheetNumber, bimSheetById, bimSheetLabel,
+  bimSheetViewRefresh
+} from './sheets.js';
+import { bimSheetOnScreen, bimSlideshowStart } from './present.js';
+import { bimOpenSheetPropsDlg, bimPrintSheet } from './viewports.js';
+import { bimPresIndex, bimPresSeq, bimPresStep } from './boards.js';
+import { bimPresPanelRefresh, bimPresRename, refreshBrowser } from './presentation-panel.js';
+import { a3dToast } from '../bim/csg-booleans.js';
+
   /* ================= __acad3dV116: Model and layout tabs =================
      AutoCAD's tabs at the left of the status bar: Model, then one tab per sheet, then + for a new
      one. Drawn from A3D.sheets on every refresh -- the same list the Project Browser's Sheets group
@@ -163,3 +178,7 @@
     if(a==='present')return bimSlideshowStart(id);
     return false;
   }
+export {
+  A3D_LT_EDITING, bimLayoutNew, bimLayoutRename, bimLayoutTabMenu, bimLtMenuClose, bimLtMenuOpen,
+  bimRenderLayoutTabs, bimSheetMenu, bimSheetMenuItems, bimSheetMove, bimSheetMoveNear, bimSheetRename
+};

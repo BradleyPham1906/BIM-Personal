@@ -1,5 +1,21 @@
+import { A3D } from '../core/state.js';
+import { pushUndo } from '../drawing/plan-mode-sketch.js';
+import { bimEsc } from '../layers/layer-manager.js';
+import { A3D_CLB, bimClbClose, bimClbHtml, bimClbOpen } from '../site-analysis/climate-board.js';
+import { bimShellDrawer, bimShellOverlay } from '../assets/library-drag.js';
+import { bimShellSetTab } from '../ui/tool-palette.js';
+import { bimProjectLabel } from '../ui/project-tabs.js';
+import { saveSoon } from '../bim/region-regenerate.js';
+import { bimSheetViewRefresh } from './sheets.js';
+import { bimSlideshowStart } from './present.js';
+import { bimLtMenuOpen, bimSheetMove, bimSheetMoveNear } from './layout-tabs.js';
+import { bimBoardKey, bimBoardKeyLabel, bimBoardLabel, bimBrdKeep, bimClbWhich } from './board-figures.js';
+import { bimBrdDupBoard, bimBrdEdit, bimBrdNewUi } from './board-edit.js';
+import { A3D_PRP, bimPresPanelRefresh, refreshBrowser } from './presentation-panel.js';
+import { a3dToast } from '../bim/csg-booleans.js';
+
   /* ================= __acad3dV162: the boards are pages of the set =================
-     reference/research-one-analyze-boards.md. A board is a page of the presentation beside the
+     docs/research/research-one-analyze-boards.md. A board is a page of the presentation beside the
      sheets: in the Presentation panel with its thumbnail, in the main view, in Present and in Print
      set. Analyze fetches the data and links to it. A3D.pres keeps the boards in the set and the
      set's order; the sheets keep their order among themselves (the layout tabs), and a board its
@@ -210,3 +226,8 @@
     }
     doc.__prpKey=key;   /* drawn or failed, not tried again until the model moves */
   }
+export {
+  bimBoardAdd, bimBoardById, bimBoardHtmlFor, bimBoardMenu, bimBoardMenuDo, bimBoardMenuItems, bimBoardName,
+  bimBoardPrintHtml, bimBoardRemove, bimBoardShow, bimClbCss, bimClbPrint, bimPresBoardThumb, bimPresData,
+  bimPresIndex, bimPresMoveNear, bimPresOpenBoard, bimPresSeq, bimPresStep, bimPresValid
+};

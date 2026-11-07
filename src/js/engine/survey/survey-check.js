@@ -1,3 +1,29 @@
+import { A3D } from '../core/state.js';
+import { bimObjOffset, pushUndo } from '../drawing/plan-mode-sketch.js';
+import { bimIsPoint, bimSketchOutline } from '../drawing/point-node.js';
+import {
+  BIM_SURVEY_UNITS, bimContours, bimCutFill, bimDelaunay, bimTerrainInterval, bimTerrainTin
+} from '../terrain/terrain-tin.js';
+import {
+  bimDrawSlopeArrows, bimDrawSpots, bimTerrainBands, bimTerrainLegend
+} from '../terrain/breaklines.js';
+import { bimBandsOf, bimIsPad, bimTerrainSuperseded } from '../terrain/grading.js';
+import { bimTinHeightAt } from '../site/alignment-profile.js';
+import { bimPolyArea } from '../bim/rooms.js';
+import { bimTriggerDownload } from '../annotation/annotation-pick.js';
+import { bimFileStem } from '../io/project-file.js';
+import { bimLayerAlpha, bimLayerShown } from '../layers/layer-rules.js';
+import { bimEsc } from '../layers/layer-manager.js';
+import { bimDrawBandTris } from '../analysis/results-layers.js';
+import { bimAnalyzeRefresh } from '../analysis/analyze-tab.js';
+import { refreshProps } from '../site-analysis/panel.js';
+import { toScreen } from '../io/import-entry.js';
+import { bimCtxTerrainObj, paint } from '../map/terrain-3d.js';
+import { saveSoon } from '../bim/region-regenerate.js';
+import { bimCameraIsPlan } from '../views/saved-views.js';
+import { refreshTree } from '../sheets/presentation-panel.js';
+import { a3dToast } from '../bim/csg-booleans.js';
+
   /* ================= __acad3dV138: verify the survey ================= */
   var BIM_SURVEY_TOL={fidelity:0.001,bustMin:0.5,bustK:6,bustMax:25,checkPass:0.05,checkWarn:0.15,control:0.02,offsetWarn:1.0};
   var BIM_SURVEY_CHECK_CODE='CHK';
@@ -357,3 +383,8 @@
     }
     return rows;
   }
+export {
+  BIM_SURVEY_CHECK_CODE, BIM_SURVEY_TOL, bimCreateTerrain, bimEarthwork, bimSetGradeElev, bimSetPadSlope,
+  bimSetTerrainInterval, bimSurveyCheck, bimSurveyReportExport, bimSurveyReportHtml, bimSurveySetControl,
+  drawTerrain
+};

@@ -1,3 +1,10 @@
+import { A3D } from '../core/state.js';
+import { bimTriggerDownload } from '../annotation/annotation-pick.js';
+import { fitScene } from '../ui/tool-palette.js';
+import { bimProjectLabel } from '../ui/project-tabs.js';
+import { bimDocsOpenData } from '../assets/templates.js';
+import { a3dToast } from '../bim/csg-booleans.js';
+
   // ---- __acad3dV14: Project file save/load. Builds on bimSnapshotState/bimRestoreState (the
   // existing, already-tested undo/redo machinery) rather than a parallel serialization system --
   // a project file is just that same snapshot wrapped in a versioned envelope so a random or
@@ -86,3 +93,7 @@
     fi.value='';fi.click();
     return true;
   }
+export {
+  A3D_PERSIST, bimBuildProjectEnvelope, bimExportProjectFile, bimFileStem, bimImportProjectFile,
+  bimOpenProjectFileObj, bimOpenProjectPicker, bimParseProjectEnvelope
+};

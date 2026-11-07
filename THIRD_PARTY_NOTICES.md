@@ -122,7 +122,7 @@ part of `canvas_v10.html`. Their licences travel with them:
   Software Foundation licence, `runtime/pyodide/0.29.5/CPython-LICENSE`.
 - **ladybug-core 0.44.63, ladybug-geometry 1.35.7, ladybug-comfort 0.19.13**, https://github.com/ladybug-tools, from
   PyPI: GNU Affero General Public License 3.0, each wheel's `dist-info/licenses/LICENSE`. The owner accepted the
-  AGPL for the app on 2026-10-26 (`reference/research-ladybug-tools.md`, 2); their source is the wheels themselves
+  AGPL for the app on 2026-10-26 (`docs/research/research-ladybug-tools.md`, 2); their source is the wheels themselves
   and their repositories, and this app's is this repository.
 - **click 8.3.3**, https://github.com/pallets/click, from PyPI (ladybug-core requires it): BSD-3-Clause, its
   wheel's `dist-info/licenses/LICENSE.txt`.
@@ -148,10 +148,10 @@ V172b's suite checks these analyses against values read from two more sources; n
 ## valdrada (credited; no code copied)
 
 V171's traffic and people simulation (`src/js/engine/simulation/`) follows the approach of valdrada, a city traffic
-simulator (https://github.com/mkturkcan/valdrada, MIT), as the owner chose (`reference/research-valdrada.md`): cars
+simulator (https://github.com/mkturkcan/valdrada, MIT), as the owner chose (`docs/research/research-valdrada.md`): cars
 following by the Intelligent Driver Model, lane changes by MOBIL, the site's streets only, and the agents in typed
 arrays allocated once. No code of valdrada's is in the build: the simulation is written from the models' papers and
-the other sources in `reference/research-traffic.md`, and its values are the standards registry's, each with its
+the other sources in `docs/research/research-traffic.md`, and its values are the standards registry's, each with its
 source. valdrada's NYC city compiler, renderer and models are not used.
 
 ## OpenBridge UI asset intake (not yet integrated into canvas_v10.html)

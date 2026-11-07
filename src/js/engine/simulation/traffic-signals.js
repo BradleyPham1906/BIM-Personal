@@ -1,5 +1,7 @@
+import { bimStd } from '../standards/registry.js';
+
   /* ================= __acad3dV171: traffic and people around the site: the signals =================
-     reference/research-traffic.md, sections 2, 7 and 8 (the owner's decision 1): each signalled junction's own fixed
+     docs/research/research-traffic.md, sections 2, 7 and 8 (the owner's decision 1): each signalled junction's own fixed
      plan, assumed and said, OpenStreetMap mapping where a signal is and never its timing. Two phases by axis; Webster's
      cycle from the critical lane volumes, held between the timing manual's least and its preferred most; the yellow and
      the red clearance by Kell and Fullerton within the MUTCD's limits; the greens shared by demand, each at least the
@@ -76,3 +78,4 @@
     else{out.s='r';out.left=0;}
     return out;
   }
+export { bimTrPlan, bimTrPlanOf, bimTrSig };

@@ -1,3 +1,23 @@
+import { A3D, el } from '../core/state.js';
+import { bimObjOffset } from '../drawing/plan-mode-sketch.js';
+import { bimSweepFootingHosts } from './footings.js';
+import { bimBoundaryEdges } from './rooms.js';
+import { bimSweepOrphanTags } from './room-tags.js';
+import { bimLayerById } from '../layers/layer-rules.js';
+import { bimLayerDropUnselectable } from '../layers/select-change.js';
+import { refreshProps } from '../site-analysis/panel.js';
+import { paint } from '../map/terrain-3d.js';
+import { bimCutSource, bimGraphObjKey, bimGraphPropagate, bimGraphRoomSourceId } from './dependency-graph.js';
+import {
+  BIM_REGION_WANT, bimEdgesSig, bimFollowSource, bimGraphVisit, bimInteriorPoint, bimIsRegionDep,
+  bimRegionPlaneY, bimRegionTraceAt, bimRemeasureRoomFromSource
+} from './region-dependents.js';
+import { A3D_REV, save3d, saveT, setA3D_REV, setSaveT } from '../core/objects-save.js';
+import { A3D_VIEW } from '../views/saved-views.js';
+import { bimPagesStale } from '../sheets/pages-display.js';
+import { refreshTree } from '../sheets/presentation-panel.js';
+import { a3dToast, objById } from './csg-booleans.js';
+
   /* ================= __acad3dV99: regenerate regions whose plane changed ================= */
   var A3D_REGEN_BUSY=false;
   function bimRegenerateRegions(){
@@ -79,10 +99,10 @@
     bimSweepOrphanTags();   /* __acad3dV101 */
     bimSweepFootingHosts(); /* __acad3dV102 */
     bimRegenerateRegions();
-    A3D_REV++;   /* __acad3dV122 */
+    setA3D_REV(A3D_REV+1);   /* __acad3dV122 */
     bimPagesStale();
     if(saveT)clearTimeout(saveT);
-    saveT=setTimeout(save3d,300);
+    setSaveT(setTimeout(save3d,300));
   }
   function refreshHud(){
     /* __acad3dV119: the View readout names the active view -- "Level 0 - Floor Plan", "3D View", an
@@ -92,3 +112,4 @@
     if(el.view)el.view.textContent=A3D_VIEW.name;
     if(el.count)el.count.textContent=A3D.objs.length+' object'+(A3D.objs.length===1?'':'s');
   }
+export { bimAdoptLayers, bimRegenerateRegions, refreshHud, saveSoon };

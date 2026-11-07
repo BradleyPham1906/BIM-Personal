@@ -1,3 +1,33 @@
+import { A3D } from '../core/state.js';
+import { meshOf } from '../core/mesh-primitives.js';
+import { pushUndo } from '../drawing/plan-mode-sketch.js';
+import { bimGetActiveLevel } from '../bim/levels-walls-floors.js';
+import { BIM_PROFILE_SHAPES, bimProfileProblem, bimProfileProps } from '../bim/section-profiles.js';
+import {
+  BIM_HATCH_PATTERNS, bimAssignTypeTo, bimEnsureTypes, bimFindType, bimMaterialByName, bimMaterialCards,
+  bimPatternLabel, bimSetGraphicsOverride, bimSetMaterial, bimSetWallTypeOf
+} from '../bim/type-instance-params.js';
+import { bimEsc } from '../layers/layer-manager.js';
+import { bimDispNum } from '../properties/palette.js';
+import { refreshProps } from '../site-analysis/panel.js';
+import { paint } from '../map/terrain-3d.js';
+import {
+  BIM_NOTE_KINDS, bimPlaceImageNote, bimPlaceNoteAtViewCentre
+} from '../annotation/annotation-overlay.js';
+import { bimSafeViewRect } from '../ui/chrome-framing.js';
+import { bimShellSetTab } from '../ui/tool-palette.js';
+import { bimTemplateUse, openSaveTemplateDlg } from './templates.js';
+import { saveSoon } from '../bim/region-regenerate.js';
+import {
+  A3D_ASSET_BUILTINS, bimAssetKind, bimFamilyLibraryGet, bimFamilyLibraryRemove, bimLibEntries
+} from './family-library.js';
+import {
+  BIM_ENT, bimAssetThumb, bimEntLib, bimEntPlace, bimImportFamilyFile, openSaveAsFamilyDlg
+} from './scale-assets.js';
+import { bimInsertBlock, bimPlaceFamilyInstance, openSaveBlockDlg, refreshFamilyPanel } from './blocks.js';
+import { refreshTree } from '../sheets/presentation-panel.js';
+import { a3dToast, groundPoint, objById } from '../bim/csg-booleans.js';
+
   /* ================= __acad3dV124: the Assets library =================
      The owner, in V119: Assets "should be blocks templates premade for easy drag and drop into the
      project not an overview of stuff". Models, blocks and templates first, as tiles; annotation, and
@@ -294,3 +324,7 @@
       if(nI){nI.focus();try{nI.setSelectionRange(s0,s1);}catch(eS){}}
     }
   }
+export {
+  A3D_ASSETS_UI, bimAssetAction, bimAssetRemove, bimAssetSelIds, bimAssetsAct, bimAssetsHtml,
+  bimOpenLibraryAt, bimViewCentrePlan, refreshAssets
+};

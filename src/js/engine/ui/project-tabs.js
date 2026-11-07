@@ -1,3 +1,32 @@
+import {
+  A3D, A3D_BOOT_DOC, A3D_DOCS, A3D_DOCS_KEY, A3D_DOC_PREFIX, A3D_DOC_RT, A3D_PROJECT_DEFAULTS, LSK,
+  bimApplyStoredState
+} from '../core/state.js';
+import {
+  A3D_TYPING, REDO_STACK, UNDO_STACK, bimSyncStatusBar, setREDO_STACK, setUNDO_STACK, setUndoSuspend
+} from '../drawing/plan-mode-sketch.js';
+import { bimEndSketch } from '../drawing/command-ending.js';
+import { bimSyncActiveGlobal } from '../bim/levels-walls-floors.js';
+import { bimEnsureBuildings } from '../bim/building-site-hierarchy.js';
+import { refreshLevels } from '../bim/classification.js';
+import { bimEnsureTypes } from '../bim/type-instance-params.js';
+import { refreshLayers } from '../layers/analysis-data-rows.js';
+import { refreshProps } from '../site-analysis/panel.js';
+import { paint } from '../map/terrain-3d.js';
+import { bimExitSection } from '../views/section-tool.js';
+import { bimProjectRecord, save3d, saveT, setSaveT } from '../core/objects-save.js';
+import {
+  A3D_SPILL, bimIdbDel, bimIdbGet, bimIsIdbPointer, bimParkInIdb, bimSpillSave, bimSpillToast
+} from '../core/idb-store.js';
+import { refreshHud } from '../bim/region-regenerate.js';
+import {
+  A3D_LAST_MODEL_VIEW, A3D_VIEW, bimActivateView, refreshViews, setA3D_LAST_MODEL_VIEW
+} from '../views/saved-views.js';
+import { bimCloseSheetView } from '../sheets/present.js';
+import { refreshBrowser, refreshTree } from '../sheets/presentation-panel.js';
+import { closeDlg } from './touch-input.js';
+import { a3dToast } from '../bim/csg-booleans.js';
+
   /* ================= __acad3dV115: projects side by side =================
      AutoCAD's file tabs and Revit's open projects: several projects open at once, each its own
      model with its own undo history, one on screen. What is on screen is always the project in
@@ -102,7 +131,7 @@
      the page closed or reloaded -- measured: a wall drawn just before a reload, gone 8 times in 8.
      pagehide is the last moment the page can still write. */
   window.addEventListener('pagehide',function(){
-    if(saveT){clearTimeout(saveT);saveT=null;save3d();}
+    if(saveT){clearTimeout(saveT);setSaveT(null);save3d();}
   });
   function bimDocsSave(){
     try{localStorage.setItem(A3D_DOCS_KEY,JSON.stringify(A3D_DOCS));return true;}
@@ -129,7 +158,7 @@
     var d=JSON.parse(A3D_PROJECT_DEFAULTS),k;
     for(k in d)if(d.hasOwnProperty(k))A3D[k]=d[k];
     bimApplyStoredState(st);
-    undoSuspend=true;
+    setUndoSuspend(true);
     try{
       bimEnsureTypes();
       bimEnsureBuildings();
@@ -138,7 +167,7 @@
       bimSyncActiveGlobal();
       refreshTree();refreshHud();refreshLevels();refreshLayers();refreshViews();refreshBrowser();refreshProps();
       bimSyncStatusBar();
-    }finally{undoSuspend=false;}
+    }finally{setUndoSuspend(false);}
   }
   function bimDocsSwap(toId,stB,fromKey){
     var cur=A3D_DOCS.active;
@@ -177,7 +206,7 @@
     var nameA=bimProjectLabel(),countA=A3D.objs.length;
     var rt=A3D_DOC_RT[toId]||null;
     try{
-      UNDO_STACK=rt?rt.undo:[];REDO_STACK=rt?rt.redo:[];
+      setUNDO_STACK(rt?rt.undo:[]);setREDO_STACK(rt?rt.redo:[]);
       A3D_TYPING.active=false;A3D_TYPING.buf='';
       bimLoadProjectRecord(stB);
     }catch(eL){
@@ -186,7 +215,7 @@
         localStorage.setItem(LSK,sA);
         localStorage.removeItem(A3D_DOC_PREFIX+cur);
       }catch(eP){console.warn('[BIM] Browser storage could not be put back after a failed switch.',eP);}
-      UNDO_STACK=stash.undo;REDO_STACK=stash.redo;
+      setUNDO_STACK(stash.undo);setREDO_STACK(stash.redo);
       try{bimLoadProjectRecord(JSON.parse(sA));}
       catch(eA){console.warn('[BIM] The previous project could not be reloaded.',eA);}
       a3dToast('"'+bimDocName(toId)+'" could not be opened: its stored data is damaged');
@@ -208,7 +237,7 @@
       if(shown&&rt.view.kind!=='sheet'){A3D.cam=rt.cam;paint();}
     }
     if(!shown)bimActivateView(window.ACAD_WS_CUR==='3d'?'3d':'plan',A3D.activeLevel,{anim:false});
-    A3D_LAST_MODEL_VIEW=(rt&&rt.lastModel)||null;   /* __acad3dV116: after the activation, which would record the other project's */
+    setA3D_LAST_MODEL_VIEW((rt&&rt.lastModel)||null);   /* __acad3dV116: after the activation, which would record the other project's */
     bimDocsSave();
     return true;
   }
@@ -277,3 +306,7 @@
     if(id)a3dToast('New project: '+rec.titleBlock.project);
     return id;
   }
+export {
+  bimDocEntry, bimDocName, bimDocsActivate, bimDocsAdd, bimDocsBoot, bimDocsCreate, bimDocsNotify,
+  bimDocsSave, bimLoadProjectRecord, bimNameOf, bimNextProjectName, bimProjectLabel, bimStartShowing
+};

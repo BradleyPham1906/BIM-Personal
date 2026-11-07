@@ -1,5 +1,47 @@
+import { A3D, el } from '../core/state.js';
+import { bimUndoHold, pushUndo, setBimUndoHold } from '../drawing/plan-mode-sketch.js';
+import { updateLevel } from '../bim/level-datum.js';
+import { A3D_SUNX, bimSunNum, bimSunSettings } from '../site/sun-position.js';
+import { bimIsProperty, bimPropertyGeometry } from '../site/property.js';
+import { bimSelectedGrid } from '../bim/grid-editing.js';
+import { A3D_PLOT, bimLayerById, bimLayerEff } from '../layers/layer-rules.js';
+import { bimLayerChanged } from '../layers/select-change.js';
+import { bimEsc } from '../layers/layer-manager.js';
+import { bimDispNum } from '../properties/palette.js';
+import {
+  A3D_ANZ, BIM_ANZ_GROUP_OF, BIM_ANZ_MODEL, bimAnalyzeRefresh, bimAnzAct, bimAnzBtn, bimAnzCards,
+  bimAnzCountText, bimAnzLayerAct, bimAnzStateText
+} from '../analysis/analyze-tab.js';
+import {
+  BIM_DG_AN, bimDgAn, bimDgDiags, bimDgEdited, bimDgState, bimDgStdChanged, bimDgStdText
+} from '../standards/registry.js';
+import { A3D_ANIM, bimAnimFrame, bimAnimPlay, bimAnimStop } from './motion.js';
+import { bimSunAct, bimSunChartsHtml, bimSunModeHtml, bimSunPanelHtml, bimSunSlide } from './sun-panel.js';
+import { bimMvOf, bimMvWhyNot } from './movement-analyses.js';
+import { bimDgTexCss } from './land-use.js';
+import {
+  A3D_SITERUN, BIM_DG_KEYCLS, BIM_SITERUN_CLS, BIM_SITERUN_WORD, bimDgAct, bimDgStaleText, bimSitePlaceText
+} from './analyze-site.js';
+import { BIM_SA_CATS, bimSaCat, bimSaN, bimSaNumber, bimSaOf, bimSaShown } from './workspace.js';
+import { BIM_CLIM_DIRS, bimClimFmt } from './climate-data.js';
+import { bimClbRoseSvg, bimClbSunSvg } from './climate-board.js';
+import { bimZnSet } from './zoning-envelope.js';
+import {
+  BIM_SA_DATA, BIM_SA_SEE, bimModelPropsHtml, bimRenderInto, bimSaAct, bimSaFindingHtml, refreshProps
+} from './panel.js';
+import { bimTrSettings } from '../simulation/traffic-sim.js';
+import { bimTrAct, bimTrCanPlay, bimTrCardHtml } from '../simulation/traffic-ui.js';
+import { bimTlSetField, bimTlTool } from '../site-tools/tools.js';
+import { bimTlAct, bimTlListHtml, bimTlPanelHtml } from '../site-tools/panel.js';
+import { shade } from '../io/import-entry.js';
+import { paint } from '../map/terrain-3d.js';
+import { bimShellDrawer, bimShellOverlay } from '../assets/library-drag.js';
+import { bimShellDockW, bimShellSetTab } from '../ui/tool-palette.js';
+import { saveSoon } from '../bim/region-regenerate.js';
+import { a3dToast, objById } from '../bim/csg-booleans.js';
+
   /* ================= __acad3dV171b: the analysis workspace =================
-     reference/research-analysis-workspace.md. The site analysis is a place one goes into and leaves, as archiMap's
+     docs/research/research-analysis-workspace.md. The site analysis is a place one goes into and leaves, as archiMap's
      and Forma's are: a bar over the view with the analysis in focus and a cross; on the left the analyses in their
      groups, one in focus and others ticked under it; on the right, where Properties is while nothing is selected,
      the one analysis: what it shows, its settings, its chart, its key, what the run said and its source. The view
@@ -119,8 +161,8 @@
     if(S.focus!==a||add.length!==S.add.length||bimAwFocusNow()!==a){
       pushUndo();   /* the step taken before the change, so undoing it gives the focus back with the layers */
       S.focus=a;S.add=add;
-      var held=bimUndoHold;bimUndoHold=true;
-      try{bimAwApply(false);}finally{bimUndoHold=held;}
+      var held=bimUndoHold;setBimUndoHold(true);
+      try{bimAwApply(false);}finally{setBimUndoHold(held);}
       saveSoon();
     }
     bimAwBlur();
@@ -138,8 +180,8 @@
     pushUndo();
     if(on){if(S.focus===a)S.focus=null;S.add=S.add.filter(function(x){return x!==a;});}
     else if(S.add.indexOf(a)<0)S.add.push(a);
-    var held=bimUndoHold;bimUndoHold=true;
-    try{bimAwApply(false);}finally{bimUndoHold=held;}
+    var held=bimUndoHold;setBimUndoHold(true);
+    try{bimAwApply(false);}finally{setBimUndoHold(held);}
     saveSoon();
     bimAwRefresh();
     return true;
@@ -225,8 +267,8 @@
   function bimAwAfterRun(){
     var S=bimAwState(),held=bimUndoHold;
     if(!bimDgState().last){S.focus=null;S.add=[];A3D_AW.pick=null;}
-    bimUndoHold=true;
-    try{bimAwApply(false);}finally{bimUndoHold=held;}
+    setBimUndoHold(true);
+    try{bimAwApply(false);}finally{setBimUndoHold(held);}
     bimAwOpen();
     bimAwFold(false);
     bimAwBar();
@@ -236,8 +278,8 @@
     var S=bimAwState(),held=bimUndoHold;
     S.focus='traffic';S.add=S.add.filter(function(x){return x!=='traffic';});
     A3D_AW.pick=null;A3D_AW.props=false;
-    bimUndoHold=true;
-    try{bimAwApply(false);}finally{bimUndoHold=held;}
+    setBimUndoHold(true);
+    try{bimAwApply(false);}finally{setBimUndoHold(held);}
     bimAwOpen();
     bimAwFold(false);
     bimAwRefresh();
@@ -547,3 +589,9 @@
     if(!t)return;
     t.textContent=bimAwOwns()&&!A3D_AW.props?'Analysis':'Properties';
   }
+export {
+  A3D_AW, BIM_AW_FINDS, bimAwAct, bimAwAfterRun, bimAwBg, bimAwBgHex, bimAwBtn, bimAwClear, bimAwCtxCol,
+  bimAwEnter, bimAwFocus, bimAwFocusNow, bimAwHd, bimAwInk, bimAwKeyHtml, bimAwLeave, bimAwListHtml,
+  bimAwLook, bimAwOwns, bimAwPick, bimAwRefresh, bimAwRender, bimAwRowWords, bimAwSec, bimAwShown, bimAwState,
+  bimAwTab, bimAwTick, bimAwTitleSync, bimAwTraffic
+};

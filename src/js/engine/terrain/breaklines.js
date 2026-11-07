@@ -1,3 +1,35 @@
+import { A3D } from '../core/state.js';
+import { bimObjOffset, pushUndo, setUndoSuspend } from '../drawing/plan-mode-sketch.js';
+import { sketchCCW } from '../drawing/drawing-input.js';
+import { bimIsPoint } from '../drawing/point-node.js';
+import {
+  BIM_SURVEY_UNITS, bimDelaunay, bimSurveyToModel, bimTerrainRange, bimTerrainTin
+} from './terrain-tin.js';
+import {
+  BIM_CUTFILL_BANDS, BIM_CUTFILL_COLS, BIM_CUTFILL_LABELS, bimBandsOf, bimGradeStale, bimPlane3, bimSpotElev
+} from './grading.js';
+import { bimTrueNorthDeg } from '../survey/survey-arithmetic.js';
+import { bimTinHeightAt } from '../site/alignment-profile.js';
+import { bimPointInPoly, bimPolyArea } from '../bim/rooms.js';
+import { bimTriggerDownload } from '../annotation/annotation-pick.js';
+import { bimFileStem } from '../io/project-file.js';
+import { bimLayerShown } from '../layers/layer-rules.js';
+import { bimEsc } from '../layers/layer-manager.js';
+import { bimDispNum, bimPropRow, bimPropText } from '../properties/palette.js';
+import { BIM_APP_VERSION } from '../ui/guide-versions.js';
+import { bimAnalyzeRefresh } from '../analysis/analyze-tab.js';
+import { bimSlopeBands } from '../standards/registry.js';
+import { refreshProps } from '../site-analysis/panel.js';
+import { toScreen } from '../io/import-entry.js';
+import { paint } from '../map/terrain-3d.js';
+import { bimFlattenSketch } from '../drawing/arc-storage.js';
+import { bimSafeViewRect } from '../ui/chrome-framing.js';
+import { fitScene } from '../ui/tool-palette.js';
+import { saveSoon } from '../bim/region-regenerate.js';
+import { bimCameraIsPlan } from '../views/saved-views.js';
+import { refreshTree } from '../sheets/presentation-panel.js';
+import { a3dToast, objById } from '../bim/csg-booleans.js';
+
   /* ================= __acad3dV144: breaklines, boundaries, own faces =================
      The triangles of a surface: its own (o.faces, from LandXML) as they are; else Delaunay of its
      points and of the breakline and boundary vertices, each breakline and boundary segment then
@@ -247,7 +279,7 @@
     if(!surfs.length){var m3='No TIN surface in '+name;a3dToast(m3);return {error:m3};}
     var base=(A3D.site&&A3D.site.surveyBase)||null,ids=[],made=[];
     pushUndo();
-    undoSuspend=true;
+    setUndoSuspend(true);
     try{
       surfs.forEach(function(sf){
         var P=all(sf,'P'),idx={},pts=[],i;
@@ -281,7 +313,7 @@
         else{var seen={};model=model.filter(function(m){var kk=Math.round(m[0]*1e6)+'_'+Math.round(m[1]*1e6);if(seen[kk])return false;seen[kk]=1;return true;});o.survey=model;}
         A3D.objs.push(o);ids.push(o.id);made.push({name:o.name,points:model.length,faces:faces.length});
       });
-    }finally{undoSuspend=false;}
+    }finally{setUndoSuspend(false);}
     if(!ids.length){var m4='No surface in '+name+' had three points';a3dToast(m4);return {error:m4};}
     A3D.sel=ids[0];A3D.sel2=null;A3D.selSet=[ids[0]];
     refreshTree();refreshProps();fitScene();paint();saveSoon();
@@ -490,3 +522,9 @@
     ctx.restore();
     return {x:x,y:y,w:w,h:h,rows:rows.map(function(b){return b.label;})};
   }
+export {
+  BIM_ASPECT, BIM_ELEV_COLS, BIM_SLOPE_COLS, bimBoundaryCommand, bimBreaklineCommand, bimDrawSlopeArrows,
+  bimDrawSpots, bimGradePropsHtml, bimLandXmlDoc, bimLandXmlExport, bimLandXmlImport, bimLandXmlPick,
+  bimModelToSurvey, bimSegCross, bimSurveyBreaklines, bimTerrainBands, bimTerrainEdit, bimTerrainLegend,
+  bimTerrainPropsHtml, bimTerrainSetView, bimTerrainViewCommand, bimTinBuild
+};

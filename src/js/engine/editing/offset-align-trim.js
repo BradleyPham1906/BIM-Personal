@@ -1,3 +1,16 @@
+import { A3D } from '../core/state.js';
+import { meshOf } from '../core/mesh-primitives.js';
+import { bimObjOffset } from '../drawing/plan-mode-sketch.js';
+import { bimIsPoint, bimSketchOutline } from '../drawing/point-node.js';
+import { bimIsProperty, bimPropertyGeometry } from '../site/property.js';
+import { bimAlignExtentPts, bimIsAlignment } from '../site/alignment-profile.js';
+import { bimOffsetRing } from '../bim/section-profiles.js';
+import { bimBuildWallGeometry } from '../bim/import-compliance.js';
+import { bimHasBulge } from '../drawing/arc-storage.js';
+import { bimHatchOutline, bimIsHatch } from '../drawing/hatch.js';
+import { bimIsCline } from '../drawing/construction-lines.js';
+import { bimOffsetBulged } from '../drawing/curve-offset.js';
+
   // ---- __acad3dV32: Offset and Align for BIM objects, against BIM geometry.
   // SIGN CONVENTION for Offset: for a CCW-wound closed ring the segment normals point inward,
   // so a POSITIVE distance offsets inward (shrinks) and a negative one outward. The dialog spells
@@ -92,3 +105,4 @@
   // together at a corner -- Trim cuts a wall that already CROSSES another and discards the
   // clicked side. Requires the intersection to land inside both segments, so a cutter that
   // merely points at the wall without reaching it is refused rather than extending anything.
+export { bimObjBounds2D, bimOffsetObject };

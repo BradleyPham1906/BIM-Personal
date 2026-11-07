@@ -1,3 +1,20 @@
+import { A3D } from '../core/state.js';
+import { pushUndo, setUndoSuspend } from '../drawing/plan-mode-sketch.js';
+import { bimLayerById } from '../layers/layer-rules.js';
+import { BIM_LAYER_BADCHARS, bimLayerByName, bimLayerNew } from '../layers/select-change.js';
+import { refreshLayers } from '../layers/analysis-data-rows.js';
+import { bimPropText } from '../properties/palette.js';
+import { refreshProps } from '../site-analysis/panel.js';
+import { bimHandleImportFile } from './import-entry.js';
+import { paint } from '../map/terrain-3d.js';
+import { fitScene } from '../ui/tool-palette.js';
+import { saveSoon } from '../bim/region-regenerate.js';
+import { A3D_FAMLIB, bimAssetKind, bimMergeMeshes, bimSaveFamilyLibrary } from '../assets/family-library.js';
+import { bimMeshThumb } from '../assets/scale-assets.js';
+import { refreshFamilyPanel } from '../assets/blocks.js';
+import { refreshTree } from '../sheets/presentation-panel.js';
+import { a3dToast } from '../bim/csg-booleans.js';
+
   /* ================= __acad3dV163: SketchUp files =================
      A .skp file is read by openskp's reader (MIT; the script block above the engine), which takes
      both of SketchUp's containers: the archive of SketchUp 2020 and earlier, and the ZIP of 2021 and
@@ -234,7 +251,7 @@
     var made=[],ids=[],seeThrough={},hiddenTags=0,usedTags={},i,was=A3D.activeLayer;
     if(!opt.blocksOnly&&S.parts.length){
       pushUndo();
-      undoSuspend=true;
+      setUndoSuspend(true);
       try{
         var fl=bimSkpLayer(stem,'#9db4c8',null,made).ly,tagLy={};
         if(!fl)throw new Error('the layer '+stem+' could not be made');
@@ -263,7 +280,7 @@
           A3D.objs.push(o);ids.push(o.id);
           q.layerId=ly.id;
         }
-      }finally{undoSuspend=false;}
+      }finally{setUndoSuspend(false);}
       if(bimLayerById(was))A3D.activeLayer=was;
     }
     /* the components, as blocks in the library: the same file opened again replaces its own */
@@ -341,3 +358,7 @@
     return r;
   }
 
+export {
+  BIM_SKP, bimImportSKP, bimSkpGenerated, bimSkpImportBuffer, bimSkpPick, bimSkpPropsHtml, bimSkpReader,
+  bimSkpScan
+};

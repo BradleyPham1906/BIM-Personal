@@ -1,3 +1,12 @@
+import { A3D, A3D_DOCS, LSK } from './state.js';
+import { TYPES, mergePrm, meshMinY, meshOf, validatePrm } from './mesh-primitives.js';
+import { pushUndo } from '../drawing/plan-mode-sketch.js';
+import { paint } from '../map/terrain-3d.js';
+import { A3D_SPILL, bimSpillSave } from './idb-store.js';
+import { refreshHud, saveSoon } from '../bim/region-regenerate.js';
+import { refreshTree } from '../sheets/presentation-panel.js';
+import { a3dToast } from '../bim/csg-booleans.js';
+
   function add3d(t,prm){
     var tp=TYPES[t];if(!tp)return null;
     var p=mergePrm(t,prm);
@@ -63,3 +72,11 @@
     }
     bimSpillSave(rec.docId,s,rec);
   }
+  /* setters: other files assign these through them (an ES module cannot assign to an import) */
+  function setA3D_REV(v){A3D_REV=v;return v;}
+  function setA3D_SAVE_FAILED(v){A3D_SAVE_FAILED=v;return v;}
+  function setSaveT(v){saveT=v;return v;}
+export {
+  A3D_REV, A3D_SAVE_FAILED, add3d, bimProjectRecord, del3d, save3d, saveT, setA3D_REV, setA3D_SAVE_FAILED,
+  setSaveT
+};

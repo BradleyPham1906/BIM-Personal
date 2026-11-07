@@ -1,3 +1,37 @@
+import { A3D, el } from '../core/state.js';
+import { bimObjOffset, pushUndo } from '../drawing/plan-mode-sketch.js';
+import { bimEarthwork } from '../survey/survey-check.js';
+import { bimAlignScheduleRows, bimProfileScheduleRows } from '../site/alignment-profile.js';
+import { BIM_PROFILE_SHAPES, bimProfileProblem, bimProfileProps } from '../bim/section-profiles.js';
+import { BIM_MAT_COLS, bimMatRow, bimMergeRow, bimTypeNameOf } from '../bim/type-instance-params.js';
+import { bimTriggerDownload } from '../annotation/annotation-pick.js';
+import { bimFileStem } from '../io/project-file.js';
+import { bimEsc } from '../layers/layer-manager.js';
+import {
+  A3D_PROP_GROUPS_OPEN, bimDispNum, bimPropGroup, bimPropRow, bimPropText
+} from '../properties/palette.js';
+import { bimUsageNum, bimUsageSwatch } from '../properties/usages.js';
+import { bimCombos } from '../standards/registry.js';
+import { refreshProps } from '../site-analysis/panel.js';
+import { paint } from '../map/terrain-3d.js';
+import { saveSoon } from '../bim/region-regenerate.js';
+import { bimBuildRoomSchedule, bimLevelName } from '../views/schedules.js';
+import {
+  bimBuildAreaSchedule, bimBuildBeamSchedule, bimBuildCeilingSchedule, bimBuildDoorSchedule,
+  bimBuildFootingSchedule, bimBuildWallSchedule, bimBuildWindowSchedule, bimUsageScheduleRows, bimUsageSummary
+} from '../bim/usages-live-areas.js';
+import { bimColumnLoads } from './tributary-loads.js';
+import {
+  A3D_STRUCT, BIM_LOAD_KINDS, BIM_SUPPORTS, bimColumnSupport, bimCombo, bimIsFrameMember, bimLoadProblem,
+  bimMemberMaterial, bimMemberSection, bimStructOf
+} from './analytical-model.js';
+import {
+  bimAnalyzeCommand, bimAnalyzeOff, bimMemberForceRows, bimReactionRows, bimStructAnalyze, bimStructCurrent,
+  bimStructHeadline
+} from './analysis-display.js';
+import { refreshBrowser } from '../sheets/presentation-panel.js';
+import { a3dToast, objById } from '../bim/csg-booleans.js';
+
   /* ================= __acad3dV125: the analysis in Properties ================= */
   function bimLoadLabel(ld){
     var s=ld.lc+'  ';
@@ -299,3 +333,9 @@
     bimTriggerDownload(csv,bimFileStem()+'-'+def.label.toLowerCase()+'_schedule.csv','text/csv');
     a3dToast('Exported '+bimFileStem()+'-'+def.label.toLowerCase()+'_schedule.csv ('+rows.length+' rows)');
   }
+export {
+  SCHEDULE_DEFS, bimAnzAreasHtml, bimAnzFrameHtml, bimExportScheduleCSV, bimFmtScheduleValue,
+  bimLoadDraftInput, bimRegisterSchedule, bimScheduleKeys, bimScheduleToCSV, bimStructEdit, bimStructFocus,
+  bimStructPropChange, bimStructPropClick, bimStructPropsHtml, bimSyncScheduleCats, bimToggleTrib,
+  refreshSchedule
+};

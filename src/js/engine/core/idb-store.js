@@ -1,5 +1,13 @@
+import { A3D, A3D_BOOT_IDB, A3D_DOCS, LSK } from './state.js';
+import { paint } from '../map/terrain-3d.js';
+import { A3D_SAVE_FAILED, save3d, saveT, setA3D_SAVE_FAILED, setSaveT } from './objects-save.js';
+import {
+  bimDocEntry, bimDocsNotify, bimLoadProjectRecord, bimNameOf, bimProjectLabel
+} from '../ui/project-tabs.js';
+import { a3dToast } from '../bim/csg-booleans.js';
+
   /* ================= __acad3dV172d: the browser's database, for a project too large for localStorage =================
-     reference/research-local-storage.md, phase A1. localStorage holds about 5.2 million characters for the whole
+     docs/research/research-local-storage.md, phase A1. localStorage holds about 5.2 million characters for the whole
      origin (measured in Chromium, 2026-10-31), so an imported model of about 165,000 triangles could not be saved,
      and a project over half of it could not be switched away from. IndexedDB holds a share of the disk. A project
      record localStorage refuses goes to IndexedDB, and localStorage keeps a pointer in its place -- the record's id,
@@ -85,7 +93,7 @@
       A3D_SPILL.busy=false;
       if(err){
         if(!A3D_SAVE_FAILED){
-          A3D_SAVE_FAILED=true;
+          setA3D_SAVE_FAILED(true);
           console.warn('[BIM] The project could not be saved to browser storage or to the browser\'s database.',err);
           a3dToast('This project could not be saved: browser storage is full. Use Save to keep a copy as a file.');
         }
@@ -95,7 +103,7 @@
           try{localStorage.setItem(LSK,bimIdbPointer(id,rec));}
           catch(eP){console.warn('[BIM] The pointer to the project in the browser\'s database could not be stored.',eP);}
           if(!A3D_SPILL.on){A3D_SPILL.on=true;bimSpillToast();}
-          if(A3D_SAVE_FAILED){A3D_SAVE_FAILED=false;a3dToast('Saving to browser storage works again');}
+          if(A3D_SAVE_FAILED){setA3D_SAVE_FAILED(false);a3dToast('Saving to browser storage works again');}
         }
       }
       var n=A3D_SPILL.next;A3D_SPILL.next=null;
@@ -149,5 +157,8 @@
   /* decision D9: an autosave still waiting when the page is hidden is written then, while it can finish;
      pagehide cannot wait for the database */
   document.addEventListener('visibilitychange',function(){
-    if(document.hidden&&saveT){clearTimeout(saveT);saveT=null;save3d();}
+    if(document.hidden&&saveT){clearTimeout(saveT);setSaveT(null);save3d();}
   });
+export {
+  A3D_SPILL, bimIdbDel, bimIdbGet, bimIdbPut, bimIsIdbPointer, bimParkInIdb, bimSpillSave, bimSpillToast
+};

@@ -1,3 +1,33 @@
+import { A3D, SCALE, el } from '../core/state.js';
+import { camVecs, mergePrm, meshOf, validatePrm, vdot } from '../core/mesh-primitives.js';
+import { A3D_SNAP, UNDO_STACK, bimObjOffset, bimWorldPt, pushUndo } from '../drawing/plan-mode-sketch.js';
+import { padMesh, sketchCCW } from '../drawing/drawing-input.js';
+import { bimSketchOutline } from '../drawing/point-node.js';
+import { bimSelectedGrid } from '../bim/grid-editing.js';
+import { bimBuildWallGeometry, bimCarryBim } from '../bim/import-compliance.js';
+import { bimBuildColumnGeometry } from '../bim/columns-openings.js';
+import { bimLayerShown } from '../layers/layer-rules.js';
+import { bimDispLen, bimUnitLabel } from '../properties/palette.js';
+import { refreshProps } from '../site-analysis/panel.js';
+import { toScreen } from '../io/import-entry.js';
+import { paint } from '../map/terrain-3d.js';
+import { A3D_GIZ } from '../gizmo/transform-gizmo.js';
+import {
+  A3D_CLICKBOX_T, bimFmtLen, bimGizmoParseValue, bimGizmoRestoreObjs, bimGizmoTyping, bimValueBox,
+  setA3D_CLICKBOX_T
+} from '../gizmo/gizmo-handles.js';
+import {
+  A3D_PUSH, bimFaceArrow, bimFaceCurrent, bimPosKey, bimPrmDim, bimWallEndInfo
+} from './faces-push-pull.js';
+import { bimFlushMaterialized, setA3D_MATERIALIZED } from './precision-editing.js';
+import { bimPropagateFrom } from '../bim/region-dependents.js';
+import { saveSoon } from '../bim/region-regenerate.js';
+import { bimWallLength } from '../views/schedules.js';
+import { bimObjectVisibleOnLevel } from '../views/saved-views.js';
+import { drag, refreshTree, setDrag } from '../sheets/presentation-panel.js';
+import { a3dToast, objById } from '../bim/csg-booleans.js';
+import { cvH, cvW } from '../ui/canvas-size.js';
+
   /* ================= __acad3dV123: PUSH AND PULL =================
 
      A push drag is one record (drag.pp). The press only arms it: a press that never travels is a
@@ -32,7 +62,7 @@
       d.padId='a3d-'+Date.now().toString(36)+'-'+(A3D.seq++);
       d.padName='Pad '+((A3D.counts.pad||0)+1);
     }
-    A3D_MATERIALIZED=[];
+    setA3D_MATERIALIZED([]);
     pushUndo();
     d.undoAt=UNDO_STACK.length;
     return true;
@@ -383,25 +413,25 @@
   function bimPushValue(dist){
     var rec=bimPushPress([0,0],null);
     rec.moved=true;
-    drag=rec;
-    if(!bimPushBegin(rec,false)){drag=null;return 'This face cannot move now';}
+    setDrag(rec);
+    if(!bimPushBegin(rec,false)){setDrag(null);return 'This face cannot move now';}
     if(!bimPushTo(dist,true)){
       var why=rec.limit;
-      bimPushCancel(rec,true);drag=null;
+      bimPushCancel(rec,true);setDrag(null);
       return why||'That is further than this face can go';
     }
-    drag=null;
+    setDrag(null);
     bimPushEnd(rec);
     return null;
   }
   /* a click on the held face asks for its value, once a double-click can no longer be under way */
   function bimFaceClickValue(rec){
     if(A3D_CLICKBOX_T)clearTimeout(A3D_CLICKBOX_T);
-    A3D_CLICKBOX_T=setTimeout(function(){
-      A3D_CLICKBOX_T=null;
+    setA3D_CLICKBOX_T(setTimeout(function(){
+      setA3D_CLICKBOX_T(null);
       if(drag)return;
       bimFaceValueBox(null,rec.cx,rec.cy);
-    },A3D_GIZ.clickWait);
+    },A3D_GIZ.clickWait));
   }
   function bimPickGrip(x,y){
     if(!A3D.grips)return null;
@@ -420,3 +450,7 @@
     }
     return best;
   }
+export {
+  bimFaceClickValue, bimFaceValueBox, bimPickGrip, bimPushApply, bimPushBegin, bimPushCancel, bimPushEnd,
+  bimPushPress, bimPushReadout, bimPushTo, bimPushValue
+};

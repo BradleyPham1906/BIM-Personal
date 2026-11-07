@@ -1,3 +1,21 @@
+import { A3D } from '../core/state.js';
+import { pushUndo } from '../drawing/plan-mode-sketch.js';
+import { bimLayerById } from '../layers/layer-rules.js';
+import { bimLayerChanged } from '../layers/select-change.js';
+import { bimEsc } from '../layers/layer-manager.js';
+import { bimDispNum } from '../properties/palette.js';
+import { bimAnalyzeRefresh } from '../analysis/analyze-tab.js';
+import { bimDgState, bimStdSay } from '../standards/registry.js';
+import { A3D_ANIM, bimAnimFrame, bimAnimPlay, bimAnimStop } from '../site-analysis/motion.js';
+import { bimMvOf, bimMvSrc, bimMvWhyNot } from '../site-analysis/movement-analyses.js';
+import { bimTrNet } from './traffic-network.js';
+import { bimTrDemand } from './traffic-demand.js';
+import { bimTrPlan } from './traffic-signals.js';
+import { A3D_TR, BIM_TR_Q, bimTrDeviceQ, bimTrResults, bimTrSettings, bimTrStop } from './traffic-sim.js';
+import { paint } from '../map/terrain-3d.js';
+import { saveSoon } from '../bim/region-regenerate.js';
+import { a3dToast } from '../bim/csg-booleans.js';
+
   /* ================= __acad3dV171: traffic and people around the site: the analysis =================
      Traffic and people is an analysis of Analyze's Access category, as the movement layers are: its row turns the
      simulation on (it then plays on V170's clock, Play, Pause and Stop in the status bar), sets the peak hour, the
@@ -121,3 +139,4 @@
     var note=res?'':'Simulate, then Run again for the queue, the people at the doors and the delays';
     return {E:E,run:{legend:leg,source:'Traffic and people: assumed signal plans and the run so far',note:note}};
   }
+export { bimDgTrafficRun, bimTrAct, bimTrCanPlay, bimTrCard, bimTrCardHtml, bimTrCommand };

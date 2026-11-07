@@ -1,3 +1,22 @@
+import { A3D } from '../core/state.js';
+import { faceNormal, meshOf } from '../core/mesh-primitives.js';
+import { bimObjOffset, pushUndo, setUndoSuspend } from '../drawing/plan-mode-sketch.js';
+import { earClip, sketchCCW } from '../drawing/drawing-input.js';
+import { bimTriggerDownload } from '../annotation/annotation-pick.js';
+import { bimFileStem } from '../io/project-file.js';
+import { bimLayerById } from '../layers/layer-rules.js';
+import { addLayer } from '../layers/select-change.js';
+import { refreshLayers } from '../layers/analysis-data-rows.js';
+import { refreshProps } from '../site-analysis/panel.js';
+import { BIM_D2R, BIM_WGS84_A, bimGeoToModel, bimMapOrigin, bimModelToGeo, bimSinh } from './map-tiles.js';
+import { bimCtxDatum } from './site-context.js';
+import { bimLodBuildings, bimLodOf, bimSolidCheck } from './lod-solids.js';
+import { paint } from './terrain-3d.js';
+import { fitScene } from '../ui/tool-palette.js';
+import { saveSoon } from '../bim/region-regenerate.js';
+import { refreshTree } from '../sheets/presentation-panel.js';
+import { a3dToast } from '../bim/csg-booleans.js';
+
   /* ================= __acad3dV139: CityJSON =================
      CityGML's JSON form (cityjson.org, 2.0): vertices once, as integers with a scale and a translate;
      city objects with geometry by LOD; surfaces typed. Written in the site's UTM zone, so the file
@@ -226,7 +245,7 @@
     var org=bimMapOrigin(),placed=false,datum=bimCtxDatum(),local=!utm;
     var cE=(mn[0]+mx[0])/2,cN=(mn[1]+mx[1])/2;
     pushUndo();
-    undoSuspend=true;
+    setUndoSuspend(true);
     var out=[],nOk=0,nBad=0,lods={},types={};
     try{
       if(utm&&!org){
@@ -276,7 +295,7 @@
         lods[o.cityjson.lod]=(lods[o.cityjson.lod]||0)+1;types[pk.co.type]=(types[pk.co.type]||0)+1;
         A3D.objs.push(o);out.push(o.id);
       }
-    }finally{undoSuspend=false;}
+    }finally{setUndoSuspend(false);}
     refreshTree();refreshLayers();refreshProps();fitScene();paint();saveSoon();
     var ts=Object.keys(types).map(function(x){return types[x]+' '+x;}).join(', '),ls=Object.keys(lods).sort().map(function(x){return 'LOD'+x;}).join(', ');
     a3dToast('CityJSON: '+ts+' ('+ls+') from '+name+' on the CityJSON layer; '+nOk+' valid'+(nBad?', '+nBad+' with problems (see each one\'s LOD group)':'')+
@@ -303,3 +322,7 @@
     };
     rd.readAsText(file);
   }
+export {
+  bimCityJsonDoc, bimCityJsonExport, bimCityJsonFile, bimCityJsonImportText, bimCityJsonPick, bimCjFaceSplit,
+  bimUtmFwd, bimUtmInv, bimUtmZone
+};

@@ -1,3 +1,13 @@
+import { A3D, el } from '../core/state.js';
+import { bimSyncStatusLevel, pushUndo } from '../drawing/plan-mode-sketch.js';
+import { bimEnsureBuildings } from './building-site-hierarchy.js';
+import { bimEsc } from '../layers/layer-manager.js';
+import { bimRenderInto, refreshProps } from '../site-analysis/panel.js';
+import { saveSoon } from './region-regenerate.js';
+import { refreshBrowser, refreshTree } from '../sheets/presentation-panel.js';
+import { closeDlg } from '../ui/touch-input.js';
+import { a3dToast, objById } from './csg-booleans.js';
+
   /* ---------- Phase 47: Classification system ----------
      A lightweight, original classification-code registry: each entry is just a code and a
      description, and any object can optionally carry a classId referencing one. Unlike a
@@ -142,3 +152,7 @@
     }
     bimRenderInto(el.lvlrows,h);   /* __acad3dV118 */
   }
+export {
+  addClassification, bimClassificationInUseCount, openClassificationDlg, refreshLevels, removeClassification,
+  setObjectClassification, updateClassification
+};

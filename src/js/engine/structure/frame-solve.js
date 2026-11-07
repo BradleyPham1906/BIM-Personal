@@ -1,3 +1,5 @@
+import { bimStructLoads, bimVDot, bimVLen, bimVSub } from './analytical-model.js';
+
   /* ================= __acad3dV125: the frame solve (direct stiffness) ================= */
   /* A prismatic member's stiffness in its own axes; dofs u v w rx ry rz at each end. */
   function bimFrameKLocal(e){
@@ -282,3 +284,4 @@
     }
     return out;
   }
+export { bimFrameSolve };

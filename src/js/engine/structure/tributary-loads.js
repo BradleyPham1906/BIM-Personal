@@ -1,3 +1,8 @@
+import { A3D } from '../core/state.js';
+import { bimObjOffset } from '../drawing/plan-mode-sketch.js';
+import { bimPolyArea } from '../bim/rooms.js';
+import { bimObjectLevelId } from '../views/saved-views.js';
+
   /* ================= __acad3dV106: tributary areas and the column load takedown =================
      Our own arithmetic, stated so it can be checked by hand:
        - A column carries the slab of the level its top reaches (within 50 mm), in its building.
@@ -151,3 +156,4 @@
   /* __acad3dV106: TRIBAREA. The slab on the ACTIVE level, cut into the cells of the columns that
      carry it (the ones below), each labelled with its column and area -- the numbers the Column
      Loads schedule uses, drawn from the same call. A view toggle for checking, not saved. */
+export { bimClipHalfPlane, bimColumnLoads, bimGridMark, bimTribLevel };

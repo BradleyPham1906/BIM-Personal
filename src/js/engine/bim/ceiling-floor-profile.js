@@ -1,3 +1,15 @@
+import { A3D, el } from '../core/state.js';
+import { bimEnterDraftingMode, pushUndo } from '../drawing/plan-mode-sketch.js';
+import { padMesh, sketchCCW } from '../drawing/drawing-input.js';
+import { bimGetActiveLevel } from './levels-walls-floors.js';
+import { bimEnsureObjType } from './type-instance-params.js';
+import { paint } from '../map/terrain-3d.js';
+import { bimAfterWallRebuild, bimCloneRegion } from './region-dependents.js';
+import { refreshHud, saveSoon } from './region-regenerate.js';
+import { refreshTree } from '../sheets/presentation-panel.js';
+import { closeDlg } from '../ui/touch-input.js';
+import { a3dToast } from './csg-booleans.js';
+
   // Ceiling: same geometry as Floor but extruded UPWARD from a height offset below the level
   // above, rather than downward from the level datum. Reuses bimBuildFloorGeometry entirely.
   function startCeilingTool(){
@@ -95,3 +107,7 @@
     a3dToast(o.name+' updated');
     return true;
   }
+export {
+  bimBuildFloorGeometry, bimFloorProfileFrom, bimRebuildFloor, buildFloorSolid, openCeilingDlg,
+  startCeilingTool
+};

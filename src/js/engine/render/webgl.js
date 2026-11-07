@@ -1,3 +1,5 @@
+import { faceNormal } from '../core/mesh-primitives.js';
+
   // ---- __acad3dV27: WebGL renderer. The canvas-2D path transformed every vertex, sorted every
   // polygon by depth, and issued one ctx.fill() PER FACE, every frame -- measured at ~16fps by
   // 12k faces, which is why a real IFC import was unusable. Solids now render on the GPU;
@@ -126,3 +128,10 @@
     if(rec.norm)gl.deleteBuffer(rec.norm);
     if(rec.edge)gl.deleteBuffer(rec.edge);
   }
+  /* setters: other files assign these through them (an ES module cannot assign to an import) */
+  function setA3D_GL(v){A3D_GL=v;return v;}
+  function setA3D_GL_FAILED(v){A3D_GL_FAILED=v;return v;}
+export {
+  A3D_GL, BIM_EDGE_PULL, GL_EDGE_FACE_LIMIT, bimGlBuildObjBuffer, bimGlCompile, bimGlDisposeBuffer, bimGlInit,
+  bimGlProjMatrix, bimGlViewMatrix, bimHexToRgb, setA3D_GL, setA3D_GL_FAILED
+};

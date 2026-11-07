@@ -1,5 +1,15 @@
+import { A3D } from '../core/state.js';
+import { pushUndo } from '../drawing/plan-mode-sketch.js';
+import { bimClimWindBins, bimStd, bimStdChanged, bimStdStamp } from '../standards/registry.js';
+import { bimSaToday } from '../site-analysis/workspace.js';
+import { A3D_LB, bimLbCall } from './runtime.js';
+import { bimLbData, bimLbFetchYear, bimLbSrcKept } from './sources.js';
+import { bimLbRefresh } from './panel.js';
+import { saveSoon } from '../bim/region-regenerate.js';
+import { a3dToast } from '../bim/csg-booleans.js';
+
   /* ================= __acad3dV172b: the analyses, run and kept =================
-     reference/research-ladybug-weather-comfort.md, 9 and 10. Each run calls the adapter in the worker, and its answer
+     docs/research/research-ladybug-weather-comfort.md, 9 and 10. Each run calls the adapter in the worker, and its answer
      is kept with the project with the source it read and the versions that made it (A3D.site.ladybug):
      - utci: UTCI over the year in CBE Clima's four conditions (the owner, 2026-10-31), the official scale;
      - psych: the psychrometric chart, the merged PMV comfort polygon at 0.5 and 1.0 clo and 1.1 met, and Ladybug's
@@ -82,3 +92,7 @@
     if(!R||typeof R!=='object'||!R.r||typeof R.r!=='object')return null;
     return {r:R.r,params:R.params,at:R.at,ms:R.ms,v:R.v,stale:!s||R.src!==s.key};
   }
+export {
+  A3D_LBRUN, BIM_LB_KINDS, BIM_LB_NAMES, bimLbEnsureSource, bimLbParams, bimLbResult, bimLbRun, bimLbRunAll,
+  bimLbStdChanged
+};

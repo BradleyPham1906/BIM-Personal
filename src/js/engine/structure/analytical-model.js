@@ -1,3 +1,12 @@
+import { A3D } from '../core/state.js';
+import { bimObjOffset } from '../drawing/plan-mode-sketch.js';
+import { bimProfileProblem, bimProfileProps } from '../bim/section-profiles.js';
+import { bimFootingOf } from '../bim/footings.js';
+import { bimFindType, bimMaterialByName } from '../bim/type-instance-params.js';
+import { bimDispNum } from '../properties/palette.js';
+import { bimCombos } from '../standards/registry.js';
+import { objById } from '../bim/csg-booleans.js';
+
   /* ================= __acad3dV125: the analytical model =================
      Derived on every call from the live columns and beams, never stored: the lines cannot fall out
      of step with the members they stand for. Units kN, m, kPa. */
@@ -210,3 +219,8 @@
     }
     return {el:el,nodal:nodal,total:total};
   }
+export {
+  A3D_STRUCT, BIM_LOAD_KINDS, BIM_SUPPORTS, bimAnalyticalModel, bimColumnSupport, bimCombo, bimIsFrameMember,
+  bimLoadProblem, bimMemberMaterial, bimMemberSection, bimRectSection, bimStructLoads, bimStructOf, bimVDot,
+  bimVLen, bimVSub
+};

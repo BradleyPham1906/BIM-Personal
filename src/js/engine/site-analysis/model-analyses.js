@@ -1,3 +1,20 @@
+import { A3D } from '../core/state.js';
+import { bimObjOffset } from '../drawing/plan-mode-sketch.js';
+import { bimSunCalc, bimSunNum, bimSunSettings } from '../site/sun-position.js';
+import { bimTrueNorthDeg } from '../survey/survey-arithmetic.js';
+import { bimIsProperty, bimPropertyGeometry } from '../site/property.js';
+import { bimPointInPoly } from '../bim/rooms.js';
+import { A3D_PLOT, bimLayerShown } from '../layers/layer-rules.js';
+import { bimDispNum } from '../properties/palette.js';
+import {
+  A3D_DG, BIM_DG_AN, bimAccSpeed, bimDgCrtnMax, bimDgDiags, bimDgRoads, bimDgState, bimStdSay
+} from '../standards/registry.js';
+import { bimDgTex } from './land-use.js';
+import { bimClimInt } from './climate-data.js';
+import { bimAwLook } from './analysis-workspace.js';
+import { bimSafeViewRect, bimWorldBounds } from '../ui/chrome-framing.js';
+import { bimShadowGround } from '../site/shadows.js';
+
   /* ---- the legend, on the view: each analysis shown, its key and its source ----
      A key, not a list: each analysis's title, then its swatches with short names flowing in lines,
      then its source, shortened to fit. Not on a view under 620 px, a phone's: there it would cover
@@ -533,3 +550,8 @@
     return {E:E,run:{legend:BIM_DG_NOISE_BANDS.map(function(b){return {name:b[2],short:b[3],col:b[1],kind:'fill'};}).concat([{name:'A noise source',short:'source',col:'#f0a04b',kind:'dot'}]),
       source:'L10,18h estimated from road class (CRTN, FHWA), screened (ISO 9613-2)'}};
   }
+export {
+  BIM_DG_NOISE_BANDS, BIM_DG_SUNDAYS, bimDgAt, bimDgBarrier, bimDgCircle, bimDgDome, bimDgFrameRun,
+  bimDgIsovist, bimDgL0, bimDgLat, bimDgLegendLayout, bimDgNoPlace, bimDgNoiseRun, bimDgObstacles, bimDgReach,
+  bimDgRoadClass, bimDgShadowRun, bimDgSite, bimDgViewsRun, bimDgWindRun, drawDiagramLegend
+};

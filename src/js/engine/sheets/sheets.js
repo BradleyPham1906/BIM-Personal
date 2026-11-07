@@ -1,3 +1,23 @@
+import { A3D, el } from '../core/state.js';
+import { camVecs } from '../core/mesh-primitives.js';
+import { pushUndo } from '../drawing/plan-mode-sketch.js';
+import { bimWithPlotPass } from '../layers/plot-by-layers.js';
+import { A3D_PLOT, bimLayerShown } from '../layers/layer-rules.js';
+import { paint } from '../map/terrain-3d.js';
+import { VIEWS } from '../editing/modify-toolbox.js';
+import { bimWorldBounds } from '../ui/chrome-framing.js';
+import { bimComputeSectionCuts } from '../views/section-tool.js';
+import { bimProjectLabel } from '../ui/project-tabs.js';
+import { saveSoon } from '../bim/region-regenerate.js';
+import { SCHEDULE_DEFS, bimFmtScheduleValue, bimScheduleKeys } from '../structure/analysis-properties.js';
+import { A3D_VIEW, bimObjectLevelId, bimSetActiveView } from '../views/saved-views.js';
+import { A3D_PAGES, bimPagesRefresh } from './pages-display.js';
+import { bimSheetOnScreen, bimShowModel } from './present.js';
+import { bimSheetVp } from './viewports.js';
+import { bimRenderLayoutTabs } from './layout-tabs.js';
+import { refreshBrowser } from './presentation-panel.js';
+import { a3dToast } from '../bim/csg-booleans.js';
+
   // ---- __acad3dV44: Sheets (printable layouts). A Sheet is a titled page composing one or more
   // Viewports, each a scaled window onto an existing orthographic Plan/Elevation/Section view (or
   // a Schedule table, drawn as a table). Viewports are rendered by temporarily redirecting the
@@ -442,3 +462,9 @@
     if(A3D_PAGES.display==='pages'){bimPagesRefresh();return;}   /* __acad3dV122 */
     bimRenderSheet(sheet,SHEET_PREVIEW_PXMM);
   }
+export {
+  SHEET_EXPORT_PXMM, SHEET_NEW_SIZE, SHEET_PREVIEW_PXMM, SHEET_SCALES, SHEET_SIZES, bimAddSheet,
+  bimConfirmDeleteSheet, bimDeleteSheet, bimDrawScheduleViewport, bimGetScratchCanvas, bimNewViewport,
+  bimNextSheetNumber, bimRenderSheet, bimRenderSourceToCanvas, bimResolveViewportSource, bimSheetById,
+  bimSheetLabel, bimSheetSolveCamera, bimSheetSourceOptions, bimSheetViewRefresh
+};

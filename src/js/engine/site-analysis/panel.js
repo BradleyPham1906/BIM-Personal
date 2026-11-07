@@ -1,3 +1,80 @@
+import { A3D, SCALE, el } from '../core/state.js';
+import { TYPES, mergePrm } from '../core/mesh-primitives.js';
+import { bimSyncStatusHint } from '../drawing/plan-mode-sketch.js';
+import { bimIsPoint } from '../drawing/point-node.js';
+import { bimEnsureBuildings } from '../bim/building-site-hierarchy.js';
+import { bimSunNow, bimSunNum, bimSunSettings, bimSunText, bimSunZoneRows } from '../site/sun-position.js';
+import { bimTerrainInterval, bimTerrainRange, bimTerrainTin } from '../terrain/terrain-tin.js';
+import { bimGradePropsHtml, bimTerrainPropsHtml } from '../terrain/breaklines.js';
+import { BIM_GRADE, bimGradeStale, bimGradedBy, bimIsPad, bimSpotElev } from '../terrain/grading.js';
+import { bimHistHtml, bimHistObjHtml } from '../history/branches-merge.js';
+import { bimEarthwork } from '../survey/survey-check.js';
+import { bimFormatBearing, bimTrueNorthDeg } from '../survey/survey-arithmetic.js';
+import { bimIsProperty, bimPropertyGeometry, bimSetbackViolations } from '../site/property.js';
+import { bimAlignPropsHtml, bimIsAlignment } from '../site/alignment-profile.js';
+import { bimGridPropsHtml, bimSelectedGrid } from '../bim/grid-editing.js';
+import { bimFootingHostOf, bimFootingLength, bimFootingVolume, bimIsFooting } from '../bim/footings.js';
+import { bimIsLocked } from '../bim/import-compliance.js';
+import {
+  BIM_HATCH_PATTERNS, TYPE_CATS, bimEnsureObjType, bimEnsureTypes, bimMaterialCards, bimMaterialOf,
+  bimObjMass, bimObjVolume, bimPatternDraws, bimPatternLabel, bimResolveGraphics, bimTypeOptionsHtml
+} from '../bim/type-instance-params.js';
+import { bimPolyArea } from '../bim/rooms.js';
+import {
+  BIM_ROOM_FIELDS, bimOccDatalist, bimRoomField, bimRoomLoadFactorHint, bimRoomOccupantsText
+} from '../bim/room-data-occupancy.js';
+import { bimDimKind } from '../annotation/dimensions.js';
+import { bimEsc, bimLayerOptionsHtml } from '../layers/layer-manager.js';
+import {
+  bimDispNum, bimObjTypeLabel, bimPropGroup, bimPropLen, bimPropLenText, bimPropRow, bimPropText
+} from '../properties/palette.js';
+import { bimUsageLibraryHtml, bimUsagePropsHtml } from '../properties/usages.js';
+import { bimStdPropsHtml } from '../properties/site-standards.js';
+import { bimGeoPropsHtml, bimMapPropsHtml } from '../properties/map-address-site-data.js';
+import {
+  bimCtxCountsText, bimCtxModelHtml, bimCtxPropsHtml, bimDataFeatureHtml, bimDataModelHtml, bimLensHtml,
+  bimLodHtml, bimSurveyCheckHtml
+} from '../properties/context-lod-data.js';
+import { bimVersionHtml } from '../ui/guide-versions.js';
+import { bimResultLayerAdd } from '../analysis/results-layers.js';
+import { bimAnalyzeRefresh, bimPTab, bimPropTabsHtml, bimSaGoto } from '../analysis/analyze-tab.js';
+import { bimDgState, bimIsDiag, bimSaStdText } from '../standards/registry.js';
+import { bimDgPropsHtml } from './land-use.js';
+import { bimSiteAnalyze } from './analyze-site.js';
+import { BIM_SA_CLS, BIM_SA_SEV, bimSaNumber, bimSaPair } from './workspace.js';
+import { bimClimFetch } from './climate-data.js';
+import { bimClbSaHtml } from './access-board.js';
+import {
+  A3D_ZN, bimZnBuild, bimZnFromLayer, bimZnRemoveEnvelope, bimZnSaHtml, bimZnStepAdd, bimZnStepDel
+} from './zoning-envelope.js';
+import { bimAccFetch } from './access-data.js';
+import { bimAccSaHtml } from './movement-data.js';
+import { A3D_AW, bimAwOwns, bimAwRender, bimAwTitleSync } from './analysis-workspace.js';
+import { bimSkpPropsHtml } from '../io/sketchup-import.js';
+import { A3D_BENCH, bimBenchmarkText, bimGraphicsLabel } from '../render/webgpu.js';
+import { bimLodOf } from '../map/lod-solids.js';
+import { paint } from '../map/terrain-3d.js';
+import { bimNoteDef } from '../annotation/annotation-overlay.js';
+import { bimPrimBase, bimPrmLabel } from '../editing/faces-push-pull.js';
+import { bimEstimateSketchDOF, bimSketchConstraintDesc } from '../drawing/sketch-constraints.js';
+import { bimLinkedClonesOf } from '../editing/precision-editing.js';
+import { bimGraphRelationsOf } from '../bim/dependency-graph.js';
+import { bimFollowsText } from '../bim/source-contract.js';
+import { bimHasBulge } from '../drawing/arc-storage.js';
+import { bimHatchArea, bimIsHatch } from '../drawing/hatch.js';
+import { bimIsCline } from '../drawing/construction-lines.js';
+import { saveSoon } from '../bim/region-regenerate.js';
+import { bimLevelName, bimWallLength } from '../views/schedules.js';
+import { bimUsageTarget } from '../bim/usages-live-areas.js';
+import { bimIsFrameMember } from '../structure/analytical-model.js';
+import { bimStructPropsHtml } from '../structure/analysis-properties.js';
+import { bimEntPropsHtml } from '../assets/scale-assets.js';
+import { A3D_VIEW } from '../views/saved-views.js';
+import { bimBoardShow } from '../sheets/boards.js';
+import { a3dToast, objById } from '../bim/csg-booleans.js';
+import { a3drIcon } from '../ui/discipline-tabs.js';
+import { bimNoteHex } from '../testing/hooks-view-gizmo.js';
+
   /* ---- the panel ---- */
   /* __acad3dV164: a finding the data wrote, to read: its number, what it says, its class and source */
   function bimSaFindingHtml(f){
@@ -677,3 +754,7 @@
     return s;
   }
 
+export {
+  BIM_SA_DATA, BIM_SA_SEE, bimDecodeUtf8, bimMakeImportedFace, bimMakeImportedSketch, bimModelPropsHtml,
+  bimRenderInto, bimSaAct, bimSaFindingHtml, bimSaRefresh, bimSaWire, refreshProps
+};

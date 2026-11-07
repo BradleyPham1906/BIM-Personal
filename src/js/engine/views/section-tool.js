@@ -1,3 +1,21 @@
+import { A3D, el } from '../core/state.js';
+import { vcross, vdot, vnorm, vsub } from '../core/mesh-primitives.js';
+import { toggleFlat } from '../drawing/plan-mode-sketch.js';
+import { bimEndSketch } from '../drawing/command-ending.js';
+import { earClip } from '../drawing/drawing-input.js';
+import { bimGetActiveLevel } from '../bim/levels-walls-floors.js';
+import { bimWeldMesh } from '../bim/roofs.js';
+import { paint } from '../map/terrain-3d.js';
+import { fitScene } from '../ui/tool-palette.js';
+import { refreshHud, saveSoon } from '../bim/region-regenerate.js';
+import {
+  A3D_LAST_MODEL_VIEW, A3D_VIEW, bimActivateView, bimCameraIsPlan, bimSetActiveView, bimViewOfCamera,
+  setA3D_LAST_MODEL_VIEW
+} from './saved-views.js';
+import { refreshTree } from '../sheets/presentation-panel.js';
+import { closeDlg } from '../ui/touch-input.js';
+import { a3dToast } from '../bim/csg-booleans.js';
+
   // ---- __acad3dV15/16: Section tool. Non-destructive: cuts are computed fresh into a per-object
   // cache and never touch A3D.objs' own mesh data.
   // NOTE ON APPROACH: the first implementation used csgIntersect against a large half-space box,
@@ -197,10 +215,14 @@
     if(!rec||rec.kind==='sheet'||rec.kind==='section')rec=bimViewOfCamera();
     if(A3D_VIEW.kind==='sheet'){
       if(A3D_LAST_MODEL_VIEW&&A3D_LAST_MODEL_VIEW.kind==='section')
-        A3D_LAST_MODEL_VIEW={kind:rec.kind,id:rec.id,cam:{yaw:c.yaw,pitch:c.pitch,dist:c.dist,tx:c.tx,ty:c.ty,tz:c.tz}};
+        setA3D_LAST_MODEL_VIEW({kind:rec.kind,id:rec.id,cam:{yaw:c.yaw,pitch:c.pitch,dist:c.dist,tx:c.tx,ty:c.ty,tz:c.tz}});
       refreshHud();
     }else bimSetActiveView(rec.kind,rec.id,null);
     paint();saveSoon();
     a3dToast('Exited section view');
   }
 
+export {
+  bimChainEdgesToLoops, bimClipMeshToPlane, bimComputeSectionCuts, bimEnterSection, bimExitSection,
+  bimFlipSection, startSectionTool
+};

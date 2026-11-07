@@ -1,3 +1,40 @@
+import { A3D, el } from '../core/state.js';
+import { bimSunNow } from '../site/sun-position.js';
+import { bimLandXmlExport, bimTerrainViewCommand } from '../terrain/breaklines.js';
+import {
+  bimBandsOf, bimCutFillMapCommand, bimGradeCommand, bimGradeStale, bimIsPad, bimSlopeArrowsCommand
+} from '../terrain/grading.js';
+import { bimSurveyCheck } from '../survey/survey-check.js';
+import { bimEsc } from '../layers/layer-manager.js';
+import { A3D_PROP_GROUPS_OPEN, bimDispNum } from '../properties/palette.js';
+import { bimSurveyCheckCommand } from '../properties/context-lod-data.js';
+import { A3D_SIM, BIM_SIM_RAMP, bimRainTerrain, bimSimStale, bimSolarTargets } from './simulation.js';
+import {
+  bimRainCommand, bimResHolds, bimResLayers, bimResultLayerAdd, bimSimClear, bimSolarCommand,
+  bimSunHoursCommand
+} from './results-layers.js';
+import { bimDgAct, bimDgCards } from '../site-analysis/analyze-site.js';
+import { BIM_SA_CLS, bimSaCat, bimSaN, bimSaOf, bimSaPair, bimSaShown } from '../site-analysis/workspace.js';
+import { BIM_SA_SEE, bimRenderInto, refreshProps } from '../site-analysis/panel.js';
+import { bimTrAct } from '../simulation/traffic-ui.js';
+import {
+  A3D_AW, bimAwAct, bimAwListHtml, bimAwPick, bimAwRowWords
+} from '../site-analysis/analysis-workspace.js';
+import { bimTlCards } from '../site-tools/panel.js';
+import { bimLbAct, bimLbCards } from '../ladybug/panel.js';
+import { bimLbsCards } from '../ladybug/studies.js';
+import { BIM_LENS_LABEL, bimLensSet, bimLensSettings } from '../map/colour-lens.js';
+import { bimLodCheck, bimLodOf } from '../map/lod-solids.js';
+import { bimCityJsonExport } from '../map/cityjson.js';
+import { paint } from '../map/terrain-3d.js';
+import { bimShellSetTab } from '../ui/tool-palette.js';
+import { bimUsageSummary } from '../bim/usages-live-areas.js';
+import { bimToggleSun } from '../site/shadows.js';
+import { A3D_STRUCT, bimIsFrameMember } from '../structure/analytical-model.js';
+import { bimAnalyzeCommand, bimAnalyzeOff } from '../structure/analysis-display.js';
+import { bimAnzAreasHtml, bimAnzFrameHtml } from '../structure/analysis-properties.js';
+import { refreshTree } from '../sheets/presentation-panel.js';
+
   /* ================= __acad3dV141: Properties' tabs, with nothing selected =================
      The model's groups, sorted into tabs. Every tab's groups are in the page and the others
      hidden, so each field keeps its handler and a command can reach it; the tab shown is the
@@ -269,7 +306,7 @@
   }
   function bimAnalyzeCommandTab(){bimShellSetTab('analyze');return true;}
   /* ================= __acad3dV164: site analysis drawn in the model =================
-     reference/research-site-analysis-in-model.md. The owner: "a live analysis that is editable".
+     docs/research/research-site-analysis-in-model.md. The owner: "a live analysis that is editable".
      Each analysis draws its diagram as elements of the model -- objects of their own kind, 'diag',
      on a layer of their own under Site analysis -- so each can be selected, moved, turned, restyled,
      relabelled or deleted like anything drawn by hand, and each is live: the analysis lays it down
@@ -299,3 +336,9 @@
      lines, symbols and words over it, so a building never hides what it is measured against.
      Diagram elements carry no mesh, so schedules, quantities, the LOD checks and the IFC, DXF and
      CityJSON exports, which read meshes and building types, pass them by. */
+export {
+  A3D_ANZ, A3D_PTAB, BIM_ANZ_GROUP_OF, BIM_ANZ_MODEL, bimAnalyzeCommandTab, bimAnalyzeRefresh, bimAnzAct,
+  bimAnzBtn, bimAnzCards, bimAnzCountText, bimAnzFilter, bimAnzLayerAct, bimAnzStateText, bimAnzTerrainShown,
+  bimAnzView, bimAnzWordsHit, bimPTab, bimPropReveal, bimPropTabClick, bimPropTabOf, bimPropTabsHtml,
+  bimSaGoto, bimSetPropTab
+};

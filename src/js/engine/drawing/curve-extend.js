@@ -1,3 +1,8 @@
+import { bimBulgeArc, bimBulgeAt, bimBulgedLength } from './arc-storage.js';
+import { bimSegRangeOk } from './curve-break.js';
+import { bimCircleCircleIntersect, bimCircleLineIntersect } from './curve-offset.js';
+import { bimNearestEndIndex } from '../editing/modify-toolbox.js';
+
   /* ================= __acad3dV92: growing the end of a curve ===========================
 
      EXTEND and LENGTHEN are one operation twice. Both grow (or shrink) a free end; they differ
@@ -136,3 +141,4 @@
     if(grown.error)return grown;
     return {pts:grown.pts,bulges:grown.bulges,atPt:best.pt,added:best.turn*arc.radius};
   }
+export { bimExtendBulged, bimGrowEnd, bimLengthenBulged };
