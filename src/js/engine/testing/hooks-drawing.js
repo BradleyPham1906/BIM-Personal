@@ -56,9 +56,11 @@ import {
 } from '../bim/stairs.js';
 import { bimImportDXF } from '../io/import-dxf.js';
 import { toScreen } from '../io/import-entry.js';
-import { A3D_GL, A3D_GL_FAILED } from '../render/webgl.js';
-import { A3D_CULL, A3D_GL_BATCH, A3D_SCENE, bimSceneRelease } from '../render/gpu-batches.js';
-import { A3D_PICK_GPU } from '../render/gpu-pick.js';
+import { A3D_GL, setA3D_GL, setA3D_GL_FAILED } from '../render/webgl.js';
+import {
+  A3D_CULL, A3D_GL_BATCH, A3D_SCENE, bimSceneRelease, setA3D_CULL, setA3D_GL_BATCH
+} from '../render/gpu-batches.js';
+import { A3D_PICK_GPU, setA3D_PICK_GPU } from '../render/gpu-pick.js';
 import {
   A3D_GPU, bimBenchmark, bimGpuCompare, bimGpuPref, bimGpuStart, bimGraphicsLabel, bimGraphicsSet,
   bimRenderBench, bimStressModel
@@ -371,7 +373,7 @@ import { cvH, cvW } from '../ui/canvas-size.js';
   window.__a3dGpuBreakNext=function(){A3D_GPU.breakNext=true;return true;};
   window.__a3dGpuLose=function(){if(!A3D_GPU.device)return false;A3D_GPU.device.destroy();return true;};   /* as a driver reset would */
   window.__a3dGpuWait=function(ms){var t0=Date.now();return new Promise(function(res){(function w(){if(A3D_GPU.state!=='starting'||Date.now()-t0>(ms||8000))res(A3D_GPU.state);else setTimeout(w,50);})();});};
-  window.__a3dGlBatch=function(on){if(on!==undefined){A3D_GL_BATCH=!!on;paint();}return A3D_GL_BATCH;};   /* __acad3dV152 */
+  window.__a3dGlBatch=function(on){if(on!==undefined){setA3D_GL_BATCH(!!on);paint();}return A3D_GL_BATCH;};   /* __acad3dV152 */
   window.__a3dGlStats=function(){return A3D.glStats?JSON.parse(JSON.stringify(A3D.glStats)):null;};
   window.__a3dGlBatchInfo=function(){var B=A3D_SCENE;if(!B)return (A3D_GL&&A3D_GL.gb)||A3D_GPU.state==='ready'?{chunks:[],slots:0,cap:0,free:0}:null;
     return {chunks:B.chunks.map(function(c){return {objects:c.ids.length,verts:c.count,edges:c.ecount};}),slots:Object.keys(B.slots).length,cap:B.cap,free:B.free.length};};
@@ -381,14 +383,14 @@ import { cvH, cvW } from '../ui/canvas-size.js';
   window.__a3dStressModel=function(n,size){var r=bimStressModel(n,size);paint();return r;};   /* __acad3dV155: the app's own */
   window.__a3dRenderBench=function(frames){return bimRenderBench(frames).then(function(r){paint();return r;});};
   window.__a3dBenchmark=function(){return bimBenchmark().then(function(r){return JSON.parse(JSON.stringify(r));});};
-  window.__a3dPickMode=function(m){if(m==='on'||m==='off'||m==='auto')A3D_PICK_GPU=m;return A3D_PICK_GPU;};   /* __acad3dV156 */
+  window.__a3dPickMode=function(m){if(m==='on'||m==='off'||m==='auto')setA3D_PICK_GPU(m);return A3D_PICK_GPU;};   /* __acad3dV156 */
   window.__a3dPickInfo=function(x,y){var t=performance.now(),o=pick(x,y);return {id:o&&o.id?o.id:null,path:A3D.lastPickPath||null,ms:performance.now()-t};};
-  window.__a3dCull=function(on){if(on!==undefined){A3D_CULL=!!on;paint();}return A3D_CULL;};
+  window.__a3dCull=function(on){if(on!==undefined){setA3D_CULL(!!on);paint();}return A3D_CULL;};
   window.__a3dChunkCells=function(){var B=A3D_SCENE;return B?B.chunks.map(function(c){return {cell:c.cell,objects:c.ids.length,cull:c.cull,box:c.wb?c.wb.slice(0,6):null};}):[];};
   window.__a3dTestSetObjs=function(list){A3D.objs=list;A3D.sel=null;A3D.sel2=null;A3D.selSet=[];};
   window.__a3dTestPaint=function(){paint();};
   window.__a3dTestRotate=function(d){A3D.cam.yaw+=d;};
-  window.__a3dTestForceCpu=function(on){A3D_GL_FAILED=!!on;A3D_GPU.forceOff=!!on;if(on){bimSceneRelease();A3D_GL=null;}};
+  window.__a3dTestForceCpu=function(on){setA3D_GL_FAILED(!!on);A3D_GPU.forceOff=!!on;if(on){bimSceneRelease();setA3D_GL(null);}};
   window.__a3dAngularDim=bimComputeAngularDim;
   window.__a3dCircleFrom3=bimCircleFrom3Points;
   window.__a3dBuildDXF=bimBuildDXF;

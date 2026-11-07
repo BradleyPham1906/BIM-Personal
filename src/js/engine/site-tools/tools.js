@@ -14,7 +14,7 @@ import { saveSoon } from '../bim/region-regenerate.js';
 import { a3dToast } from '../bim/csg-booleans.js';
 
   /* ================= __acad3dV172: the site analysis tools: the tools, their parameters, their runs =================
-     Esri's geoprocessing pane, read at the source (reference/research-site-analysis-tools.md, 2): every tool opens the
+     Esri's geoprocessing pane, read at the source (docs/research/research-site-analysis-tools.md, 2): every tool opens the
      same way, its parameters typed (a layer, a number with its unit, a choice, a run from History), the required ones
      marked, each checked as it is filled in -- the tool's own checks too -- with a message beside the field; Run;
      then the status (succeeded, succeeded with warnings, failed), how long it took, the messages, and the output

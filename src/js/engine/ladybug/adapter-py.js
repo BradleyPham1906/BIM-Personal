@@ -1,12 +1,12 @@
   /* ================= __acad3dV172b: the Ladybug adapter's Python, as text =================
      Written by tools/embed_py.py from src/py/bim_ladybug.py: edit the .py, then run the tool (--check proves the two
      agree). The worker writes it into Pyodide's site-packages beside the pinned wheels; Ladybug's own code runs
-     unchanged beneath it (reference/research-ladybug-weather-comfort.md). */
+     unchanged beneath it (docs/research/research-ladybug-weather-comfort.md). */
   var BIM_LB_PY=[
     "# coding=utf-8",
     "\"\"\"bim_ladybug: the app's adapter to Ladybug Tools (__acad3dV172b).",
     "",
-    "reference/research-ladybug-weather-comfort.md. This module is the app's own, and narrow: it reads a weather source into",
+    "docs/research/research-ladybug-weather-comfort.md. This module is the app's own, and narrow: it reads a weather source into",
     "Ladybug's objects, calls Ladybug's own classes, unchanged, and hands the results back as plain numbers and 2D geometry",
     "for the app to draw. It runs in Pyodide in a worker (src/js/engine/ladybug/), written into site-packages beside the",
     "pinned wheels, and natively in the suites' reference. Every value that counts comes from Ladybug; what is ours is",
@@ -476,7 +476,7 @@
     "    return out",
     "",
     "",
-    "# ---- __acad3dV172c: sun-hours and radiation on the model (reference/research-ladybug-sun-radiation.md) ----",
+    "# ---- __acad3dV172c: sun-hours and radiation on the model (docs/research/research-ladybug-sun-radiation.md) ----",
     "# Ladybug's own SkyMatrix, RadiationStudy and DirectSunStudy (ladybug-radiance), unchanged. Two things come from the",
     "# app, as Ladybug's own Grasshopper components take them from Rhino: the program gendaymtx, which Pyodide cannot",
     "# start, is Radiance's own C built to WebAssembly (runtime/radiance/, the release rad6R0P1a), run by the worker; and",

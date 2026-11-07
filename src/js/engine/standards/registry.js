@@ -11,7 +11,7 @@ import { bimEntRefit } from '../assets/scale-assets.js';
 import { a3dToast } from '../bim/csg-booleans.js';
 
   /* ================= __acad3dV167: the standards registry =================
-     reference/research-standards-registry.md. Every standard, guideline and assumption an analysis
+     docs/research/research-standards-registry.md. Every standard, guideline and assumption an analysis
      applies is a record here, never a number in its code: a topic, and its editions. An edition says
      where and when it is in force (adopt: a place key, from, to), its source to the section and the
      level it was read at (P at its source, S from a dependable secondary one with the gap said, U not

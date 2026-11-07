@@ -21,7 +21,7 @@ import { A3D_BRD, bimBrdDlgClose, bimBrdEsc, bimBrdWire } from '../sheets/board-
 import { bimPresPanelRefresh, bimPresThumbsQueue } from '../sheets/presentation-panel.js';
 
   /* ================= __acad3dV159: the Climate and risk board =================
-     reference/research-climate-risk-presentation.md. Each chart is an SVG string drawn from what
+     docs/research/research-climate-risk-presentation.md. Each chart is an SVG string drawn from what
      A3D.site.climate and A3D.site.risk keep; its colours are CSS tokens, so it follows the theme. */
   var BIM_HEAT_EDGES=[-10,0,8,14,20,24,27,30,33,36];
   var BIM_HEAT_NAMES=['Below −10 °C: extreme cold','−10 to 0: freezing','0 to 8: cold','8 to 14: cool','14 to 20: mild','20 to 24: comfortable','24 to 27: warm','27 to 30: hot','30 to 33: very hot','33 to 36: extremely hot','Above 36: dangerous heat'];

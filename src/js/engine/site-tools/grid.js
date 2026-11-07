@@ -1,7 +1,7 @@
 import { bimDgSite } from '../site-analysis/model-analyses.js';
 
   /* ================= __acad3dV172: the site analysis tools: the grid =================
-     reference/research-site-analysis-tools.md. Every tool reads and writes one grid over the lot and around it, its
+     docs/research/research-site-analysis-tools.md. Every tool reads and writes one grid over the lot and around it, its
      processing extent: 1 m cells over the lot's extent and 100 m beyond it (100 m around the site's centre with no
      lot), at most 250,000 cells, coarser where the lot is larger. As in Esri's tools, a feature outside the extent
      is not counted, and the messages say so. Areas are counted on it, so an area is good to a cell's width

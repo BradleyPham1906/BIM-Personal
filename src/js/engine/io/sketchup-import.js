@@ -1,5 +1,5 @@
 import { A3D } from '../core/state.js';
-import { pushUndo, undoSuspend } from '../drawing/plan-mode-sketch.js';
+import { pushUndo, setUndoSuspend } from '../drawing/plan-mode-sketch.js';
 import { bimLayerById } from '../layers/layer-rules.js';
 import { BIM_LAYER_BADCHARS, bimLayerByName, bimLayerNew } from '../layers/select-change.js';
 import { refreshLayers } from '../layers/analysis-data-rows.js';
@@ -251,7 +251,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
     var made=[],ids=[],seeThrough={},hiddenTags=0,usedTags={},i,was=A3D.activeLayer;
     if(!opt.blocksOnly&&S.parts.length){
       pushUndo();
-      undoSuspend=true;
+      setUndoSuspend(true);
       try{
         var fl=bimSkpLayer(stem,'#9db4c8',null,made).ly,tagLy={};
         if(!fl)throw new Error('the layer '+stem+' could not be made');
@@ -280,7 +280,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
           A3D.objs.push(o);ids.push(o.id);
           q.layerId=ly.id;
         }
-      }finally{undoSuspend=false;}
+      }finally{setUndoSuspend(false);}
       if(bimLayerById(was))A3D.activeLayer=was;
     }
     /* the components, as blocks in the library: the same file opened again replaces its own */

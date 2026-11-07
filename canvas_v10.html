@@ -5524,7 +5524,7 @@ try{
       A3D.history=bimHistValid(st&&st.history);   /* __acad3dV146: its history, or none */
       A3D.resultLayers=bimResValid(st&&st.resultLayers);   /* __acad3dV148: its result layers, or none */
       A3D.pres=bimPresValid(st&&st.pres);   /* __acad3dV162: its boards in the set, and the set's order */
-      A3D_RES_IMG={};
+      setA3D_RES_IMG({});
       if(st&&Array.isArray(st.classifications)){
         A3D.classifications=st.classifications.filter(function(c){return c&&typeof c.id==='string'&&typeof c.code==='string';});
         if(A3D.classifications.length!==st.classifications.length)console.warn('[BIM] Discarded malformed classification(s) from '+LSK+' storage.');
@@ -6200,6 +6200,11 @@ try{
     return (o&&o.t==='sketch'&&!bimIsPoint(o))?o:null;
   }
   function cancelSketch(){A3D.sk=null;paint();}
+  /* setters: other files assign these through them (an ES module cannot assign to an import) */
+  function setBimUndoHold(v){bimUndoHold=v;return v;}
+  function setREDO_STACK(v){REDO_STACK=v;return v;}
+  function setUNDO_STACK(v){UNDO_STACK=v;return v;}
+  function setUndoSuspend(v){undoSuspend=v;return v;}
   /* ================= __acad3dV100: ending a command keeps what was drawn =================
      Which in-progress commands have something worth keeping: a LINE, PLINE or WALL with at
      least one complete segment. Everything else (an arc with two of its three points, a
@@ -8196,7 +8201,7 @@ try{
       polar:W!==null?'':(hc>1?'night':'day')};
   }
   /* ================= __acad3dV171d: the sun's clock =================
-     reference/research-sun-path.md (5). The site's time zone, a name from the time zone database the climate brings
+     docs/research/research-sun-path.md (5). The site's time zone, a name from the time zone database the climate brings
      (Open-Meteo's timezone=auto), and daylight saving: Off, the UTC offset all year, the zone's standard time; Auto,
      each date's own offset, from the browser's time zone database. Open-Meteo's offset is the one in force on the day
      it was asked, so the zone's standard time is worked out here: the lower of mid-January's and mid-July's. */
@@ -8761,7 +8766,7 @@ try{
     if(!surfs.length){var m3='No TIN surface in '+name;a3dToast(m3);return {error:m3};}
     var base=(A3D.site&&A3D.site.surveyBase)||null,ids=[],made=[];
     pushUndo();
-    undoSuspend=true;
+    setUndoSuspend(true);
     try{
       surfs.forEach(function(sf){
         var P=all(sf,'P'),idx={},pts=[],i;
@@ -8795,7 +8800,7 @@ try{
         else{var seen={};model=model.filter(function(m){var kk=Math.round(m[0]*1e6)+'_'+Math.round(m[1]*1e6);if(seen[kk])return false;seen[kk]=1;return true;});o.survey=model;}
         A3D.objs.push(o);ids.push(o.id);made.push({name:o.name,points:model.length,faces:faces.length});
       });
-    }finally{undoSuspend=false;}
+    }finally{setUndoSuspend(false);}
     if(!ids.length){var m4='No surface in '+name+' had three points';a3dToast(m4);return {error:m4};}
     A3D.sel=ids[0];A3D.sel2=null;A3D.selSet=[ids[0]];
     refreshTree();refreshProps();fitScene();paint();saveSoon();
@@ -10057,6 +10062,12 @@ try{
     window.addEventListener('resize',function(){bimRightApply();});
     bimRightApply();
   }
+  /* setters: other files assign these through them (an ES module cannot assign to an import) */
+  function setA3D_BR_CMP(v){A3D_BR_CMP=v;return v;}
+  function setA3D_BR_DEL(v){A3D_BR_DEL=v;return v;}
+  function setA3D_BR_NEW(v){A3D_BR_NEW=v;return v;}
+  function setA3D_BR_PICK(v){A3D_BR_PICK=v;return v;}
+  function setA3D_HIST_MSG(v){A3D_HIST_MSG=v;return v;}
   /* ================= __acad3dV138: verify the survey ================= */
   var BIM_SURVEY_TOL={fidelity:0.001,bustMin:0.5,bustK:6,bustMax:25,checkPass:0.05,checkWarn:0.15,control:0.02,offsetWarn:1.0};
   var BIM_SURVEY_CHECK_CODE='CHK';
@@ -15195,6 +15206,8 @@ try{
       count:function(){return defs.length;}
     };
   }
+  /* setters: other files assign these through them (an ES module cannot assign to an import) */
+  function setBIM_PAT_SVG_SEQ(v){BIM_PAT_SVG_SEQ=v;return v;}
   /* ================= __acad3dV121: a plot, by the layers =================
      A plot leaves out a layer that is off, frozen or set not to plot, does not fade a locked layer,
      and draws transparency only in a presentation (bimLayerShown and bimLayerAlpha read A3D_PLOT).
@@ -18575,7 +18588,7 @@ try{
     }
     var placed=false,org=bimMapOrigin(),ids=[],nShapes=0,nPts=0;
     pushUndo();
-    undoSuspend=true;
+    setUndoSuspend(true);
     try{
       if(!org){
         if(!A3D.site||typeof A3D.site!=='object')A3D.site={name:'Site'};
@@ -18597,7 +18610,7 @@ try{
         if(pp.hole)o.geo.part='hole';
         ids.push(o.id);
       }
-    }finally{undoSuspend=false;}
+    }finally{setUndoSuspend(false);}
     refreshTree();refreshLayers();refreshProps();fitScene();paint();saveSoon();
     a3dToast('Site data: '+nShapes+' shape'+(nShapes===1?'':'s')+' and '+nPts+' point'+(nPts===1?'':'s')+' from '+name+' on the Site data layer'+
       (placed?'; the site latitude and longitude were set to the data\'s centre':'')+
@@ -18700,6 +18713,8 @@ try{
     a3dToast('Exported '+fn+' ('+fc.features.length+' feature'+(fc.features.length===1?'':'s')+', in longitude and latitude)');
     return fc;
   }
+  /* setters: other files assign these through them (an ES module cannot assign to an import) */
+  function setA3D_MAP_DRAFT(v){A3D_MAP_DRAFT=v;return v;}
   /* ================= __acad3dV133: site context in Properties ================= */
   function bimCtxCountsText(c){
     var s=[],i,k;
@@ -19655,6 +19670,8 @@ try{
     paint();refreshProps();bimAnalyzeRefresh();
     return n;
   }
+  /* setters: other files assign these through them (an ES module cannot assign to an import) */
+  function setA3D_RES_IMG(v){A3D_RES_IMG=v;return v;}
   /* ================= __acad3dV141: Properties' tabs, with nothing selected =================
      The model's groups, sorted into tabs. Every tab's groups are in the page and the others
      hidden, so each field keeps its handler and a command can reach it; the tab shown is the
@@ -19926,7 +19943,7 @@ try{
   }
   function bimAnalyzeCommandTab(){bimShellSetTab('analyze');return true;}
   /* ================= __acad3dV164: site analysis drawn in the model =================
-     reference/research-site-analysis-in-model.md. The owner: "a live analysis that is editable".
+     docs/research/research-site-analysis-in-model.md. The owner: "a live analysis that is editable".
      Each analysis draws its diagram as elements of the model -- objects of their own kind, 'diag',
      on a layer of their own under Site analysis -- so each can be selected, moved, turned, restyled,
      relabelled or deleted like anything drawn by hand, and each is live: the analysis lays it down
@@ -19957,7 +19974,7 @@ try{
      Diagram elements carry no mesh, so schedules, quantities, the LOD checks and the IFC, DXF and
      CityJSON exports, which read meshes and building types, pass them by. */
   /* ================= __acad3dV167: the standards registry =================
-     reference/research-standards-registry.md. Every standard, guideline and assumption an analysis
+     docs/research/research-standards-registry.md. Every standard, guideline and assumption an analysis
      applies is a record here, never a number in its code: a topic, and its editions. An edition says
      where and when it is in force (adopt: a place key, from, to), its source to the section and the
      level it was read at (P at its source, S from a dependable secondary one with the gap said, U not
@@ -21080,12 +21097,12 @@ try{
   function bimDgResetAnalysis(a){
     var D=bimDgState(),held=bimUndoHold,r;
     if(!bimDgAn(a)||!D.runs[a]){a3dToast('That analysis has not run yet');return null;}
-    if(!held){pushUndo();bimUndoHold=true;}
+    if(!held){pushUndo();setBimUndoHold(true);}
     try{
       A3D.objs=A3D.objs.filter(function(x){return !(bimIsDiag(x)&&x.dg.a===a);});
       D.runs[a].gone=[];D.runs[a].keys=[];
       r=bimDgRunAll(a);
-    }finally{if(!held)bimUndoHold=false;}
+    }finally{if(!held)setBimUndoHold(false);}
     a3dToast(bimDgAn(a).name+': as the analysis draws it');
     return r?r[a]:null;
   }
@@ -21411,7 +21428,7 @@ try{
     ctx.restore();
   }
   /* ================= __acad3dV170: the analyses in motion =================
-     reference/research-animation.md. Still until Play; Pause beside it whenever anything moves (WCAG 2.2.2),
+     docs/research/research-animation.md. Still until Play; Pause beside it whenever anything moves (WCAG 2.2.2),
      keeping the moment; Stop gives the still drawing back. The app opens still, which is what a device asking for
      reduced motion wants (2.3.3), and the device asking for it while it plays pauses it. One clock for every
      animated element, run by requestAnimationFrame while playing, so it stops while the page is hidden; a frame
@@ -22292,7 +22309,7 @@ try{
       source:'L10,18h estimated from road class (CRTN, FHWA), screened (ISO 9613-2)'}};
   }
   /* ================= __acad3dV171d: the sun path, one clock =================
-     reference/research-sun-path.md. The sun's elements follow what they are drawn from -- the place, the zone, the
+     docs/research/research-sun-path.md. The sun's elements follow what they are drawn from -- the place, the zone, the
      year and the moment -- as a run would draw them: the paths of the solstices and the equinoxes with their hours,
      the clock's own day, the sun now with its angles, the sun at the clock's time all year (the analemma), and the
      temperature on the band of the sky the sun crosses. A point on the dome about the site's centre is
@@ -22564,7 +22581,7 @@ try{
     return n;
   }
   /* ================= __acad3dV171d: the sun's panel =================
-     reference/research-sun-path.md (7). In Analyze, the Sun paths' panel: the sun now in numbers, its point on the
+     docs/research/research-sun-path.md (7). In Analyze, the Sun paths' panel: the sun now in numbers, its point on the
      dome by the formula; sliders for a place tried (never saved) and for the study's date and time (one undo step when
      let go); Play through the day or through the year; the year's turning points by hemisphere; the sky looking up and
      the sun's height through the day; the temperature's key. Its numbers follow the clock and the sliders without the
@@ -22793,7 +22810,7 @@ try{
     return false;
   }
   /* ================= __acad3dV166: site analysis in the model III, movement: the six analyses =================
-     reference/research-site-analysis-in-model.md, section 4. Each reads A3D.site.access: V161's walk times,
+     docs/research/research-site-analysis-in-model.md, section 4. Each reads A3D.site.access: V161's walk times,
      places and stops, and mv, the streets with their tags, the crossings, doors, car parks, lines and paths. */
   /* the classes, by OpenStreetMap's highway value as the usual crosswalk to the FHWA's has them; one hue,
      the higher class the brighter on the dark plan and the darker on a light map (both checked) */
@@ -23359,7 +23376,7 @@ try{
     return {E:E,run:{legend:leg,source:'Vehicle access and parking from OpenStreetMap',note:E.length?'':'No driveway, door or car park mapped near the lot'}};
   }
   /* ================= __acad3dV165: site analysis in the model II, land and water =================
-     reference/research-site-analysis-in-model.md, section 2. The ground at the site's scale -- a grid
+     docs/research/research-site-analysis-in-model.md, section 2. The ground at the site's scale -- a grid
      every 5 m for 150 m around it -- and six analyses on it, each a layer of the same button. The grid
      is kept with the project in metres above sea level (A3D.site.land), so each runs again offline;
      the model's own heights come from it less the datum, the height of model 0. */
@@ -24594,7 +24611,7 @@ try{
   function bimDgRunAll(only){
     var S=bimDgSite(),out={},held=bimUndoHold,i;
     if(only&&!bimDgAn(only))return null;
-    if(!held){pushUndo();bimUndoHold=true;}
+    if(!held){pushUndo();setBimUndoHold(true);}
     try{
       for(i=0;i<BIM_DG_AN.length;i++){
         var a=BIM_DG_AN[i].id;
@@ -24602,7 +24619,7 @@ try{
         try{var r=BIM_DG_RUN[a](S);out[a]=bimDgPlace(a,r.E,r.run);out[a].note=(r.run&&r.run.note)||'';}
         catch(eA){console.warn('[BIM] The '+a+' analysis failed',eA);out[a]={error:String(eA&&eA.message||eA),total:0,note:''};}
       }
-    }finally{if(!held)bimUndoHold=false;}
+    }finally{if(!held)setBimUndoHold(false);}
     refreshTree();refreshLayers();refreshProps();paint();saveSoon();
     return out;
   }
@@ -24848,10 +24865,10 @@ try{
     if(!placed&&!q){a3dToast('Where is the site? Type its address, or give its latitude and longitude in Properties, Site, Location');bimSiteAddrFocus();return null;}
     if(typeof fetch!=='function'){a3dToast('This browser cannot fetch: Analyze site gets its data from the web');return null;}
     R=A3D_SITERUN={busy:true,t0:Date.now(),held:false,steps:BIM_SITERUN_STEPS.map(function(s){return {id:s[0],name:s[1],state:'wait',text:''};})};
-    function hold(){if(!R.held){R.held=true;bimUndoHold=true;}}
+    function hold(){if(!R.held){R.held=true;setBimUndoHold(true);}}
     if(placed){pushUndo();hold();}
     function finish(ok){
-      if(R.held)bimUndoHold=false;
+      if(R.held)setBimUndoHold(false);
       R.busy=false;
       var D=bimDgState();
       D.last={date:bimSaToday(),ok:!!ok,steps:R.steps.map(function(s){return {id:s.id,name:s.name,state:s.state,text:s.text};})};
@@ -25008,7 +25025,7 @@ try{
     return false;
   }
   /* ================= __acad3dV158: Site analysis SA1, the workspace and the standard =================
-     The standard is reference/research-site-analysis-process.md: ten fixed categories, and findings
+     The standard is docs/research/research-site-analysis-process.md: ten fixed categories, and findings
      that each name a source, a date and how sure they are, classed as a constraint, an opportunity,
      a red flag or a fact. Kept with the project in A3D.site.analysis. __acad3dV164: the findings are
      the ones the data writes; the stages, the questions, typed findings, photographs, pins and
@@ -25167,7 +25184,7 @@ try{
   }
 
   /* ================= __acad3dV159: Site analysis SA2, climate and risk: the data =================
-     reference/research-climate-risk-presentation.md. Fetched only when asked; what is worked out
+     docs/research/research-climate-risk-presentation.md. Fetched only when asked; what is worked out
      is kept with the project (A3D.site.climate, A3D.site.risk), so the board opens offline. */
   var BIM_CLIM_ARCHIVE='https://archive-api.open-meteo.com/v1/archive';
   var BIM_CLIM_AQ='https://air-quality-api.open-meteo.com/v1/air-quality';
@@ -25424,7 +25441,7 @@ try{
     if(R[3].ok)E=bimClimEq(R[3].js,lat,lon);else bad.push(R[3].err);
     if(!D&&!Hh&&!Q&&!E){a3dToast('No climate or risk data: '+bad.join('; '));return {error:bad.join('; ')};}
     pushUndo();
-    undoSuspend=true;
+    setUndoSuspend(true);
     try{
       A3D.site=A3D.site||{};
       var C=A3D.site.climate&&A3D.site.climate.lat===lat&&A3D.site.climate.lon===lon?A3D.site.climate:{};
@@ -25456,7 +25473,7 @@ try{
       if(E){K.quakes=E;K.quakeSrc='USGS earthquake catalogue';}
       A3D.site.risk=K;
       bimSaFill(true);
-    }finally{undoSuspend=false;}
+    }finally{setUndoSuspend(false);}
     refreshProps();paint();saveSoon();
     if(typeof bimSaRefresh==='function')bimSaRefresh(true);
     if(typeof bimClbRefresh==='function')bimClbRefresh();
@@ -25520,7 +25537,7 @@ try{
   }
 
   /* ================= __acad3dV159: the Climate and risk board =================
-     reference/research-climate-risk-presentation.md. Each chart is an SVG string drawn from what
+     docs/research/research-climate-risk-presentation.md. Each chart is an SVG string drawn from what
      A3D.site.climate and A3D.site.risk keep; its colours are CSS tokens, so it follows the theme. */
   var BIM_HEAT_EDGES=[-10,0,8,14,20,24,27,30,33,36];
   var BIM_HEAT_NAMES=['Below −10 °C: extreme cold','−10 to 0: freezing','0 to 8: cold','8 to 14: cool','14 to 20: mild','20 to 24: comfortable','24 to 27: warm','27 to 30: hot','30 to 33: very hot','33 to 36: extremely hot','Above 36: dangerous heat'];
@@ -26045,7 +26062,7 @@ try{
   }
 
   /* ================= __acad3dV161: the Access and people board =================
-     reference/research-access-people.md (8). Every figure is titled with its finding and has its
+     docs/research/research-access-people.md (8). Every figure is titled with its finding and has its
      source and its table; the people's figures carry their margins of error. */
   var BIM_ACC_LETTER={food:'F',health:'H',learn:'L',parks:'P',eat:'E',services:'S',community:'C'};
   var BIM_ACC_SHORT={food:'Food',health:'Health',learn:'Learning',parks:'Parks, play',eat:'Eating out',services:'Banks, post',community:'Community'};
@@ -26529,7 +26546,7 @@ try{
   }
 
   /* ================= __acad3dV160: Site analysis SA3, regulation: zoning, the envelope, the yield =================
-     reference/research-zoning-envelope-yield.md. A3D.site.zoning is the record; everything else is
+     docs/research/research-zoning-envelope-yield.md. A3D.site.zoning is the record; everything else is
      worked out from it and the property, when asked. */
   var BIM_ZN_ROLES=['front','side','rear'];
   var BIM_ZN_DEF={district:'',uses:'',source:'',far:null,maxH:null,maxStoreys:null,cover:null,
@@ -26588,8 +26605,8 @@ try{
   /* every change to the record: one undo step, the envelope rebuilt if there is one, the findings refilled */
   function bimZnEdit(fn){
     pushUndo();
-    undoSuspend=true;
-    try{fn();if(bimZnEnvelopeObj())bimZnPlaceEnvelope(true);bimSaFill(true);}finally{undoSuspend=false;}
+    setUndoSuspend(true);
+    try{fn();if(bimZnEnvelopeObj())bimZnPlaceEnvelope(true);bimSaFill(true);}finally{setUndoSuspend(false);}
     bimZnDone();
     return true;
   }
@@ -26989,8 +27006,8 @@ try{
     var C0=bimZnCalc();
     if(!C0.ok){a3dToast('No envelope: '+C0.error);return C0;}
     pushUndo();
-    undoSuspend=true;var C;
-    try{C=bimZnPlaceEnvelope(false);bimSaFill(true);}finally{undoSuspend=false;}
+    setUndoSuspend(true);var C;
+    try{C=bimZnPlaceEnvelope(false);bimSaFill(true);}finally{setUndoSuspend(false);}
     bimZnDone();
     var pr=C.proposed;
     a3dToast('Zoning envelope: '+bimClimInt(C.volume)+' m³, room for '+bimClimInt(C.capacity)+' m² over '+C.plates.length+' storeys; '+
@@ -27499,7 +27516,7 @@ try{
   }
 
   /* ================= __acad3dV161: Site analysis SA4, access and people: the data =================
-     reference/research-access-people.md. Asked only when asked, from two free sources, no key:
+     docs/research/research-access-people.md. Asked only when asked, from two free sources, no key:
      - OpenStreetMap, in one Overpass request: the streets and paths with their nodes, the transit
        stops and the routes that serve them, and the places of daily needs around the site;
      - the US Census Bureau: TIGERweb names the census tract, county and state at the site, and the
@@ -28292,7 +28309,7 @@ try{
     else if(cen){P=cen;bad=bad.concat(cen.errors||[]);}
     if(!A&&!P){a3dToast('No access or people data: '+bad.join('; '));return {error:bad.join('; ')};}
     pushUndo();
-    undoSuspend=true;
+    setUndoSuspend(true);
     try{
       A3D.site=A3D.site||{};
       if(A){A.lat=lat;A.lon=lon;A.fetched=today;A.errors=bad.slice();A.src='OpenStreetMap contributors (ODbL), via Overpass ('+A.server+')';A3D.site.access=A;}
@@ -28300,7 +28317,7 @@ try{
       /* __acad3dV166: V161's Walk times layer is no longer added here: Analyze site draws the walk times in the
          model, on Layers, Site analysis; WALKTIMES still adds V161's layer */
       bimSaFill(true);
-    }finally{undoSuspend=false;}
+    }finally{setUndoSuspend(false);}
     refreshProps();refreshLayers();paint();saveSoon();
     if(typeof bimSaRefresh==='function')bimSaRefresh(true);
     if(typeof bimClbRefresh==='function')bimClbRefresh();
@@ -28311,7 +28328,7 @@ try{
     return {access:!!A,people:!!(P&&!P.outside),outside:!!(P&&P.outside),stops:A?A.stops.length:null,errors:bad};
   }
   /* ================= __acad3dV166: site analysis in the model III, movement: the data =================
-     reference/research-site-analysis-in-model.md, section 4. Kept with the access data as mv, so the six
+     docs/research/research-site-analysis-in-model.md, section 4. Kept with the access data as mv, so the six
      movement analyses run again offline. Coordinates in model metres to the decimetre. */
   var BIM_MV_R=800,BIM_MV_DOOR=3,BIM_MV_CAR=400,BIM_MV_NODES=6000,BIM_MV_TOL=0.75,BIM_MV_CARS=24;
   /* the tags movement reads; the rest of a way's tags stay in OpenStreetMap */
@@ -29360,7 +29377,7 @@ try{
   }
 
   /* ================= __acad3dV171: traffic and people around the site: the network =================
-     reference/research-traffic.md, sections 5 and 8. The streets V166 keeps (mv), within the simulation's reach of the
+     docs/research/research-traffic.md, sections 5 and 8. The streets V166 keeps (mv), within the simulation's reach of the
      lot: every way a car may use, cut at the reach and split at its junctions into edges, each edge a link for each way
      it may be driven, with its lanes, speed and width; the junctions with their arms, turns, right of way, stops and
      signals; the lot's entry and doors; the footways and the sidewalks walkers use. Built at the start of a run from what
@@ -29619,7 +29636,7 @@ try{
     });
   }
   /* ================= __acad3dV171: traffic and people around the site: the demand =================
-     reference/research-traffic.md, section 8 (the owner's decisions 3 and 4). Each street's traffic in the peak hour
+     docs/research/research-traffic.md, section 8 (the owner's decisions 3 and 4). Each street's traffic in the peak hour
      from its class's typical daily traffic (fhwa.fc) and Florida's K; the turns at each junction balanced to the
      streets' volumes by NCHRP 255's method; the design's own trips from San Diego's rates by its usages; and the
      quickest ways to the lot and away from it. Pure where it can be, so the suite works each out again. */
@@ -29742,7 +29759,7 @@ try{
     return {D:D,nx:nx};
   }
   /* ================= __acad3dV171: traffic and people around the site: the signals =================
-     reference/research-traffic.md, sections 2, 7 and 8 (the owner's decision 1): each signalled junction's own fixed
+     docs/research/research-traffic.md, sections 2, 7 and 8 (the owner's decision 1): each signalled junction's own fixed
      plan, assumed and said, OpenStreetMap mapping where a signal is and never its timing. Two phases by axis; Webster's
      cycle from the critical lane volumes, held between the timing manual's least and its preferred most; the yellow and
      the red clearance by Kell and Fullerton within the MUTCD's limits; the greens shared by demand, each at least the
@@ -29820,7 +29837,7 @@ try{
     return out;
   }
   /* ================= __acad3dV171: traffic and people around the site: the walkers' ways =================
-     reference/research-traffic.md, section 8. Walkers keep to the sidewalks of the streets they follow, each side a
+     docs/research/research-traffic.md, section 8. Walkers keep to the sidewalks of the streets they follow, each side a
      line beyond the roadway's edge, and to footways and paths along their line. At a junction they cross what lies
      between their way in and their way out, the short way round: each arm of the junction has a crossing this far from
      its middle (the junction's crossings), its two ends on the arm's two sidewalks. A way is a polyline, with the
@@ -29972,7 +29989,7 @@ try{
     return {P:P,C:C,len:C[C.length-1],cost:best,cr:cr.filter(function(x){return x.len>0.1;})};
   }
   /* ================= __acad3dV171: traffic and people around the site: the run =================
-     reference/research-traffic.md, sections 1 to 3 and 8. One run at a time, on V170's clock: built when it starts
+     docs/research/research-traffic.md, sections 1 to 3 and 8. One run at a time, on V170's clock: built when it starts
      (the network, the plans, the demand, the walkers' ways), warmed up, then stepped at a fixed step while the clock
      plays and drawn between steps; Stop gives it up. Cars and walkers live in fixed pools of typed arrays allocated
      once a run: nothing piles up while it runs. What it finds is tallied as it goes, never recorded step by step.
@@ -30849,7 +30866,7 @@ try{
     return {E:E,run:{legend:leg,source:'Traffic and people: assumed signal plans and the run so far',note:note}};
   }
   /* ================= __acad3dV171b: the analysis workspace =================
-     reference/research-analysis-workspace.md. The site analysis is a place one goes into and leaves, as archiMap's
+     docs/research/research-analysis-workspace.md. The site analysis is a place one goes into and leaves, as archiMap's
      and Forma's are: a bar over the view with the analysis in focus and a cross; on the left the analyses in their
      groups, one in focus and others ticked under it; on the right, where Properties is while nothing is selected,
      the one analysis: what it shows, its settings, its chart, its key, what the run said and its source. The view
@@ -30969,8 +30986,8 @@ try{
     if(S.focus!==a||add.length!==S.add.length||bimAwFocusNow()!==a){
       pushUndo();   /* the step taken before the change, so undoing it gives the focus back with the layers */
       S.focus=a;S.add=add;
-      var held=bimUndoHold;bimUndoHold=true;
-      try{bimAwApply(false);}finally{bimUndoHold=held;}
+      var held=bimUndoHold;setBimUndoHold(true);
+      try{bimAwApply(false);}finally{setBimUndoHold(held);}
       saveSoon();
     }
     bimAwBlur();
@@ -30988,8 +31005,8 @@ try{
     pushUndo();
     if(on){if(S.focus===a)S.focus=null;S.add=S.add.filter(function(x){return x!==a;});}
     else if(S.add.indexOf(a)<0)S.add.push(a);
-    var held=bimUndoHold;bimUndoHold=true;
-    try{bimAwApply(false);}finally{bimUndoHold=held;}
+    var held=bimUndoHold;setBimUndoHold(true);
+    try{bimAwApply(false);}finally{setBimUndoHold(held);}
     saveSoon();
     bimAwRefresh();
     return true;
@@ -31075,8 +31092,8 @@ try{
   function bimAwAfterRun(){
     var S=bimAwState(),held=bimUndoHold;
     if(!bimDgState().last){S.focus=null;S.add=[];A3D_AW.pick=null;}
-    bimUndoHold=true;
-    try{bimAwApply(false);}finally{bimUndoHold=held;}
+    setBimUndoHold(true);
+    try{bimAwApply(false);}finally{setBimUndoHold(held);}
     bimAwOpen();
     bimAwFold(false);
     bimAwBar();
@@ -31086,8 +31103,8 @@ try{
     var S=bimAwState(),held=bimUndoHold;
     S.focus='traffic';S.add=S.add.filter(function(x){return x!=='traffic';});
     A3D_AW.pick=null;A3D_AW.props=false;
-    bimUndoHold=true;
-    try{bimAwApply(false);}finally{bimUndoHold=held;}
+    setBimUndoHold(true);
+    try{bimAwApply(false);}finally{setBimUndoHold(held);}
     bimAwOpen();
     bimAwFold(false);
     bimAwRefresh();
@@ -31398,7 +31415,7 @@ try{
     t.textContent=bimAwOwns()&&!A3D_AW.props?'Analysis':'Properties';
   }
   /* ================= __acad3dV172: the site analysis tools: the grid =================
-     reference/research-site-analysis-tools.md. Every tool reads and writes one grid over the lot and around it, its
+     docs/research/research-site-analysis-tools.md. Every tool reads and writes one grid over the lot and around it, its
      processing extent: 1 m cells over the lot's extent and 100 m beyond it (100 m around the site's centre with no
      lot), at most 250,000 cells, coarser where the lot is larger. As in Esri's tools, a feature outside the extent
      is not counted, and the messages say so. Areas are counted on it, so an area is good to a cell's width
@@ -31696,7 +31713,7 @@ try{
     return true;
   }
   /* ================= __acad3dV172: the site analysis tools: the tools, their parameters, their runs =================
-     Esri's geoprocessing pane, read at the source (reference/research-site-analysis-tools.md, 2): every tool opens the
+     Esri's geoprocessing pane, read at the source (docs/research/research-site-analysis-tools.md, 2): every tool opens the
      same way, its parameters typed (a layer, a number with its unit, a choice, a run from History), the required ones
      marked, each checked as it is filled in -- the tool's own checks too -- with a message beside the field; Run;
      then the status (succeeded, succeeded with warnings, failed), how long it took, the messages, and the output
@@ -32605,12 +32622,12 @@ try{
   /* ================= __acad3dV172b: the Ladybug adapter's Python, as text =================
      Written by tools/embed_py.py from src/py/bim_ladybug.py: edit the .py, then run the tool (--check proves the two
      agree). The worker writes it into Pyodide's site-packages beside the pinned wheels; Ladybug's own code runs
-     unchanged beneath it (reference/research-ladybug-weather-comfort.md). */
+     unchanged beneath it (docs/research/research-ladybug-weather-comfort.md). */
   var BIM_LB_PY=[
     "# coding=utf-8",
     "\"\"\"bim_ladybug: the app's adapter to Ladybug Tools (__acad3dV172b).",
     "",
-    "reference/research-ladybug-weather-comfort.md. This module is the app's own, and narrow: it reads a weather source into",
+    "docs/research/research-ladybug-weather-comfort.md. This module is the app's own, and narrow: it reads a weather source into",
     "Ladybug's objects, calls Ladybug's own classes, unchanged, and hands the results back as plain numbers and 2D geometry",
     "for the app to draw. It runs in Pyodide in a worker (src/js/engine/ladybug/), written into site-packages beside the",
     "pinned wheels, and natively in the suites' reference. Every value that counts comes from Ladybug; what is ours is",
@@ -33080,7 +33097,7 @@ try{
     "    return out",
     "",
     "",
-    "# ---- __acad3dV172c: sun-hours and radiation on the model (reference/research-ladybug-sun-radiation.md) ----",
+    "# ---- __acad3dV172c: sun-hours and radiation on the model (docs/research/research-ladybug-sun-radiation.md) ----",
     "# Ladybug's own SkyMatrix, RadiationStudy and DirectSunStudy (ladybug-radiance), unchanged. Two things come from the",
     "# app, as Ladybug's own Grasshopper components take them from Rhino: the program gendaymtx, which Pyodide cannot",
     "# start, is Radiance's own C built to WebAssembly (runtime/radiance/, the release rad6R0P1a), run by the worker; and",
@@ -33203,7 +33220,7 @@ try{
     "        return json.dumps({'error': '%s: %s' % (type(e).__name__, e), 'trace': traceback.format_exc()[-1500:]})"
   ].join('\n')+'\n';
   /* ================= __acad3dV172b: Ladybug Tools in a worker =================
-     reference/research-ladybug-weather-comfort.md. Ladybug Tools' own Python, unchanged, run by Pyodide 0.29.5
+     docs/research/research-ladybug-weather-comfort.md. Ladybug Tools' own Python, unchanged, run by Pyodide 0.29.5
      (MPL-2.0) in a Web Worker made on first use: the app opens as fast as before and the drawing never waits on a
      calculation. The runtime is committed under runtime/ (runtime/MANIFEST.json) and served with the site: the
      multi-file app loads it from its own address, the one-file copy and the older versions kept under v/ from the
@@ -33412,7 +33429,7 @@ try{
     return 'Ladybug Tools loads when an analysis is first run (about 13 MB, once)';
   }
   /* ================= __acad3dV172b: the weather Ladybug reads =================
-     reference/research-ladybug-weather-comfort.md, 7 and 8. One source at a time, held in the worker:
+     docs/research/research-ladybug-weather-comfort.md, 7 and 8. One source at a time, held in the worker:
      - an EPW, or the station's ZIP (EPW, DDY, STAT) from climate.onebuilding.org, opened from a file: that server
        sends no CORS header, so the browser cannot fetch it (named, not proxied); the ZIP's DDY gives ASHRAE's design
        days, which Ladybug 0.44.63 cannot read from a 2025 EPW header;
@@ -33512,7 +33529,7 @@ try{
     return (s.city||s.name)+(s.station?' ('+s.station+')':'')+', '+s.name+(s.ddy?', with its design days':'');
   }
   /* ================= __acad3dV172b: the analyses, run and kept =================
-     reference/research-ladybug-weather-comfort.md, 9 and 10. Each run calls the adapter in the worker, and its answer
+     docs/research/research-ladybug-weather-comfort.md, 9 and 10. Each run calls the adapter in the worker, and its answer
      is kept with the project with the source it read and the versions that made it (A3D.site.ladybug):
      - utci: UTCI over the year in CBE Clima's four conditions (the owner, 2026-10-31), the official scale;
      - psych: the psychrometric chart, the merged PMV comfort polygon at 0.5 and 1.0 clo and 1.1 met, and Ladybug's
@@ -33596,7 +33613,7 @@ try{
     return {r:R.r,params:R.params,at:R.at,ms:R.ms,v:R.v,stale:!s||R.src!==s.key};
   }
   /* ================= __acad3dV172b: the Ladybug analyses as board figures =================
-     reference/research-ladybug-weather-comfort.md, 9. Each figure draws a kept result in the board's own style
+     docs/research/research-ladybug-weather-comfort.md, 9. Each figure draws a kept result in the board's own style
      (bimClbCard, its colours and ticks), names Ladybug and its version as the method and the weather it read, and says
      what it means in its title. Nothing is computed here that Ladybug did not give. */
   var BIM_UTCI_NAMES=['Extreme cold stress','Very strong cold stress','Strong cold stress','Moderate cold stress','Slight cold stress',
@@ -33924,14 +33941,14 @@ try{
     return false;
   }
   /* ================= __acad3dV172c: the sky's program and the rays, in the Ladybug worker =================
-     reference/research-ladybug-sun-radiation.md (5b, 6). These functions are not called by the engine: the worker is
+     docs/research/research-ladybug-sun-radiation.md (5b, 6). These functions are not called by the engine: the worker is
      made from their text (bimLbStart), so each reads nothing but its arguments and the worker's globals.
      - bimLbWasiRun: a WASI command (wasi_snapshot_preview1) run with stdin given and stdout, stderr gathered; the
-       twelve imports Radiance's gendaymtx asks for, no files, no folders (reference/experiments/v172c-sky/).
+       twelve imports Radiance's gendaymtx asks for, no files, no folders (docs/research/experiments/v172c-sky/).
      - bimLbBvhBuild, bimLbBvhBlocked: an any-hit ray test over a bounding-volume hierarchy of the model's
        triangles: the same Moller-Trumbore test and thresholds as V143's bimRayTri (|det| under 1e-12 misses, a hit
        beyond 1e-6), split at the median of the longest axis, leaves of up to four. Measured against the app's own
-       rays: the same answer for 362,440 rays; 20,000 faces in about 3 s (reference/experiments/v172c-rays/).
+       rays: the same answer for 362,440 rays; 20,000 faces in about 3 s (docs/research/experiments/v172c-rays/).
      - bimLbStudyVecs, bimLbStudyRows: Ladybug's directions turned into the app's frame and north, and the rows of a
        study's matrix: the cosine where a direction is seen (radiation, as Radiance's rcontrib gives Ladybug), or 1
        where the sun is (direct sun hours). */
@@ -34054,7 +34071,7 @@ try{
     return M;
   }
   /* ================= __acad3dV172c: sun-hours and radiation on the model, by Ladybug =================
-     reference/research-ladybug-sun-radiation.md (5b). Two studies, beside V143's Solar and V148's Sun hours (kept,
+     docs/research/research-ladybug-sun-radiation.md (5b). Two studies, beside V143's Solar and V148's Sun hours (kept,
      the owner, 2026-11-01):
      - rad: incident radiation on each face, kWh/m2 over the weather's year (or some months): Ladybug's SkyMatrix from
        the weather V172b opened, with Radiance's gendaymtx (WebAssembly), and RadiationStudy's own sum;
@@ -34456,7 +34473,7 @@ try{
     try{res=dxfParse(text);}
     catch(eP){console.warn('[BIM] DXF parse failed: ',eP);a3dToast('DXF import failed: could not parse '+filename);return;}
     pushUndo();
-    undoSuspend=true;
+    setUndoSuspend(true);
     var __dxfStart=A3D.objs.length;
     var scale,layerMap={},dxfNames,created=0,skippedPoints=0,i;
     try{
@@ -34515,7 +34532,7 @@ try{
       }
     }finally{
       var __dxfI;for(__dxfI=__dxfStart;__dxfI<A3D.objs.length;__dxfI++)A3D.objs[__dxfI].locked=true;
-      undoSuspend=false;
+      setUndoSuspend(false);
     }
     function layerIdFor(nm){
       if(layerMap[nm])return layerMap[nm];
@@ -34586,7 +34603,7 @@ try{
     catch(eP){console.warn('[BIM] OBJ parse failed:',eP);a3dToast('OBJ import failed: could not parse '+filename);return;}
     if(!res.meshes.length){a3dToast('OBJ import: no faces found in '+filename);return;}
     pushUndo();
-    undoSuspend=true;
+    setUndoSuspend(true);
     var i,created=0,lyr;
     try{
       lyr=addLayer(filename.replace(/\.[^.]+$/,''),'#9db4c8');
@@ -34599,7 +34616,7 @@ try{
         created++;
       }
     }finally{
-      undoSuspend=false;
+      setUndoSuspend(false);
     }
     refreshTree();refreshLayers();fitScene();paint();saveSoon();
     a3dToast('OBJ import: '+created+' mesh object(s) from '+filename+' ('+res.vertCount+' vertices)');
@@ -34648,14 +34665,14 @@ try{
     }catch(eP){console.warn('[BIM] STL parse failed:',eP);a3dToast('STL import failed: could not parse '+filename);return;}
     if(!parsed||!parsed.f.length){a3dToast('STL import: no triangles found in '+filename);return;}
     pushUndo();
-    undoSuspend=true;
+    setUndoSuspend(true);
     try{
       var lyr=addLayer(filename.replace(/\.[^.]+$/,''),'#9db4c8');
       A3D.counts.mesh=(A3D.counts.mesh||0)+1;
       var o={id:'a3d-'+Date.now().toString(36)+'-'+(A3D.seq++),t:'solid',name:'STL_'+A3D.counts.mesh,col:'#9db4c8',pos:[0,0,0],mesh:{v:parsed.v,f:parsed.f},layer:lyr.id,locked:true};
       A3D.objs.push(o);
     }finally{
-      undoSuspend=false;
+      setUndoSuspend(false);
     }
     refreshTree();refreshLayers();fitScene();paint();saveSoon();
     a3dToast('STL import ('+(isBin?'binary':'ASCII')+'): '+parsed.f.length+' triangles from '+filename);
@@ -34858,7 +34875,7 @@ try{
     var ids=Object.keys(byId);
     if(!ids.length){a3dToast('IFC import: no entities found in '+filename);return;}
     pushUndo();
-    undoSuspend=true;
+    setUndoSuspend(true);
     var scale,levelsAdded=0,wallsAdded=0,slabsAdded=0,skipped=0,recoveredWalls=0,i;
     try{
       scale=ifcFindLengthScale(byId);
@@ -34908,7 +34925,7 @@ try{
         if(isSlab)slabsAdded++;else wallsAdded++;
       }
     }finally{
-      undoSuspend=false;
+      setUndoSuspend(false);
     }
     refreshTree();refreshLevels();refreshLayers();fitScene();paint();saveSoon();
     a3dToast('IFC import: '+levelsAdded+' level(s), '+wallsAdded+' wall(s) ('+recoveredWalls+' fully editable), '+slabsAdded+' slab(s), locked by default'+
@@ -35151,7 +35168,7 @@ try{
     var made=[],ids=[],seeThrough={},hiddenTags=0,usedTags={},i,was=A3D.activeLayer;
     if(!opt.blocksOnly&&S.parts.length){
       pushUndo();
-      undoSuspend=true;
+      setUndoSuspend(true);
       try{
         var fl=bimSkpLayer(stem,'#9db4c8',null,made).ly,tagLy={};
         if(!fl)throw new Error('the layer '+stem+' could not be made');
@@ -35180,7 +35197,7 @@ try{
           A3D.objs.push(o);ids.push(o.id);
           q.layerId=ly.id;
         }
-      }finally{undoSuspend=false;}
+      }finally{setUndoSuspend(false);}
       if(bimLayerById(was))A3D.activeLayer=was;
     }
     /* the components, as blocks in the library: the same file opened again replaces its own */
@@ -35474,6 +35491,9 @@ try{
     if(rec.norm)gl.deleteBuffer(rec.norm);
     if(rec.edge)gl.deleteBuffer(rec.edge);
   }
+  /* setters: other files assign these through them (an ES module cannot assign to an import) */
+  function setA3D_GL(v){A3D_GL=v;return v;}
+  function setA3D_GL_FAILED(v){A3D_GL_FAILED=v;return v;}
   /* ================= __acad3dV152: the scene in GPU-friendly batches =================
      One description of the scene, read by both engines (__acad3dV153: WebGL and WebGPU):
      chunks of merged triangles and edges, each vertex tagged with its object's slot, and a table
@@ -35758,6 +35778,9 @@ try{
     A3D.glFaces=F.totalFaces;
     return true;
   }
+  /* setters: other files assign these through them (an ES module cannot assign to an import) */
+  function setA3D_CULL(v){A3D_CULL=v;return v;}
+  function setA3D_GL_BATCH(v){A3D_GL_BATCH=v;return v;}
   /* ================= __acad3dV156: a click picked by the GPU =================
      The batched scene drawn into an offscreen target, each element's slot+1 in its colour (24 bits),
      only the pixel under the pointer, and that pixel read back. */
@@ -35834,6 +35857,8 @@ try{
     if(A3D_PICK_GPU==='on')return true;
     return (A3D.glFaces||0)>BIM_PICK_GPU_FACES;
   }
+  /* setters: other files assign these through them (an ES module cannot assign to an import) */
+  function setA3D_PICK_GPU(v){A3D_PICK_GPU=v;return v;}
   /* ================= __acad3dV153: the WebGPU engine =================
      Where the browser has WebGPU the model is drawn with it, from the same description: the
      chunks as vertex buffers, the table as a storage buffer, and every draw recorded once in a
@@ -37371,7 +37396,7 @@ try{
     var pinfo=feats?bimCtxPairParts(feats):{of:{},has:{}},nParts=0,nWhole=0,lowParts=0;   /* __acad3dV139 */
     var nRoofs={},nNoRoof={};   /* __acad3dV140 */
     pushUndo();
-    undoSuspend=true;
+    setUndoSuspend(true);
     try{
       /* what this fetch brings replaces what an earlier one brought, kind by kind */
       A3D.objs=A3D.objs.filter(function(x){return !(x.context&&repl[x.context.kind]);});
@@ -37476,7 +37501,7 @@ try{
       if(nParts)A3D.site.context.last.parts=nParts;   /* __acad3dV139 */
       var nR=0,kR;for(kR in nRoofs)if(nRoofs.hasOwnProperty(kR))nR+=nRoofs[kR];
       if(nR)A3D.site.context.last.roofs=nR;   /* __acad3dV140 */
-    }finally{undoSuspend=false;}
+    }finally{setUndoSuspend(false);}
     /* the selection stays what it was: the surface maker selects what it makes */
     A3D.sel=objById(selWas)?selWas:null;A3D.sel2=null;
     A3D.selSet=setWas.filter(function(id){return !!objById(id);});
@@ -38198,7 +38223,7 @@ try{
     var org=bimMapOrigin(),placed=false,datum=bimCtxDatum(),local=!utm;
     var cE=(mn[0]+mx[0])/2,cN=(mn[1]+mx[1])/2;
     pushUndo();
-    undoSuspend=true;
+    setUndoSuspend(true);
     var out=[],nOk=0,nBad=0,lods={},types={};
     try{
       if(utm&&!org){
@@ -38248,7 +38273,7 @@ try{
         lods[o.cityjson.lod]=(lods[o.cityjson.lod]||0)+1;types[pk.co.type]=(types[pk.co.type]||0)+1;
         A3D.objs.push(o);out.push(o.id);
       }
-    }finally{undoSuspend=false;}
+    }finally{setUndoSuspend(false);}
     refreshTree();refreshLayers();refreshProps();fitScene();paint();saveSoon();
     var ts=Object.keys(types).map(function(x){return types[x]+' '+x;}).join(', '),ls=Object.keys(lods).sort().map(function(x){return 'LOD'+x;}).join(', ');
     a3dToast('CityJSON: '+ts+' ('+ls+') from '+name+' on the CityJSON layer; '+nOk+' valid'+(nBad?', '+nBad+' with problems (see each one\'s LOD group)':'')+
@@ -39945,7 +39970,7 @@ try{
            snaps:bimGizmoSnapSetup(ids),fine:false,
            ids:ids,start:bimGizmoStarts(ids),x0:bd.x,y0:bd.y,da:0,db:0,gizVec:[0,0,0],moved:true,body:true};
     }
-    A3D_MATERIALIZED=[];
+    setA3D_MATERIALIZED([]);
     pushUndo();
     return rec;
   }
@@ -41782,7 +41807,7 @@ try{
     if(p.error){a3dToast(p.error);paint();return true;}
     var summary=bimGizmoApplyValue(d,p.v,true);
     if(!summary){paint();return true;}
-    drag=null;
+    setDrag(null);
     bimGizmoEndDrag(summary);
     return true;
   }
@@ -41860,13 +41885,13 @@ try{
           for(i=0;i<now.length;i++)if(was.indexOf(now[i])<0)return 'The selection has changed - click the handle again';
           var p=bimGizmoParseValue(kind,text);
           if(p.error)return p.error;
-          A3D_MATERIALIZED=[];
+          setA3D_MATERIALIZED([]);
           var fresh=bimGizmoBegin(hit,xy,mods);
           if(!fresh)return 'That handle cannot take a value now - see the message';
-          drag=fresh;
+          setDrag(fresh);
           pushUndo();
           var summary=bimGizmoApplyValue(fresh,p.v,false);
-          drag=null;
+          setDrag(null);
           bimGizmoEndDrag(summary);
           return null;
         }});
@@ -41924,7 +41949,7 @@ try{
   function bimGizmoCancelDrag(){
     var d=drag;
     if(!d)return false;
-    drag=null;
+    setDrag(null);
     bimGizmoTypeClear();
     if(d.pp)return bimPushCancel(d);   /* __acad3dV123 */
     if(d.snap)bimGizmoRestoreObjs(d.ids,d.snap);
@@ -42199,6 +42224,8 @@ try{
     var cx=r?(g?r.left+g.ox+12:r.left+r.width/2):200,cy=r?(g?r.top+g.oy+12:r.top+r.height/2):200;
     bimOpenGizmoMenu(cx,cy);
   }
+  /* setters: other files assign these through them (an ES module cannot assign to an import) */
+  function setA3D_CLICKBOX_T(v){A3D_CLICKBOX_T=v;return v;}
   /* ================= __acad3dV123: FACES -- PUSH AND PULL =================
 
      SketchUp's Push/Pull, Rhino's sub-object gumball, AutoCAD's PRESSPULL and Revit's shape handles
@@ -42901,7 +42928,7 @@ try{
   function bimFaceDblClick(ev){
     try{
       if(!A3D.on||A3D.sk||A3D.conPick||A3D.zoomWindow||bimSheetOnScreen()||ev.button!==0)return;
-      if(A3D_CLICKBOX_T){clearTimeout(A3D_CLICKBOX_T);A3D_CLICKBOX_T=null;}
+      if(A3D_CLICKBOX_T){clearTimeout(A3D_CLICKBOX_T);setA3D_CLICKBOX_T(null);}
       bimCloseValueBox();
       var xy=cvXY(ev),pk=bimFacePickAt(xy[0],xy[1]);
       if(!pk)return;
@@ -42955,7 +42982,7 @@ try{
       d.padId='a3d-'+Date.now().toString(36)+'-'+(A3D.seq++);
       d.padName='Pad '+((A3D.counts.pad||0)+1);
     }
-    A3D_MATERIALIZED=[];
+    setA3D_MATERIALIZED([]);
     pushUndo();
     d.undoAt=UNDO_STACK.length;
     return true;
@@ -43306,25 +43333,25 @@ try{
   function bimPushValue(dist){
     var rec=bimPushPress([0,0],null);
     rec.moved=true;
-    drag=rec;
-    if(!bimPushBegin(rec,false)){drag=null;return 'This face cannot move now';}
+    setDrag(rec);
+    if(!bimPushBegin(rec,false)){setDrag(null);return 'This face cannot move now';}
     if(!bimPushTo(dist,true)){
       var why=rec.limit;
-      bimPushCancel(rec,true);drag=null;
+      bimPushCancel(rec,true);setDrag(null);
       return why||'That is further than this face can go';
     }
-    drag=null;
+    setDrag(null);
     bimPushEnd(rec);
     return null;
   }
   /* a click on the held face asks for its value, once a double-click can no longer be under way */
   function bimFaceClickValue(rec){
     if(A3D_CLICKBOX_T)clearTimeout(A3D_CLICKBOX_T);
-    A3D_CLICKBOX_T=setTimeout(function(){
-      A3D_CLICKBOX_T=null;
+    setA3D_CLICKBOX_T(setTimeout(function(){
+      setA3D_CLICKBOX_T(null);
       if(drag)return;
       bimFaceValueBox(null,rec.cx,rec.cy);
-    },A3D_GIZ.clickWait);
+    },A3D_GIZ.clickWait));
   }
   function bimPickGrip(x,y){
     if(!A3D.grips)return null;
@@ -43537,7 +43564,7 @@ try{
       // ---- Ported (as residual formulas, not code) from FreeCAD's planegcs solver
       // (src/Mod/Sketcher/App/planegcs/Constraints.cpp) after a from-scratch survey of the real
       // FreeCAD source confirmed these specific formulas are small, self-contained, OCCT-free
-      // pure math -- see canvas_v10_STATUS.md's "Real FreeCAD source audit via GitHub" section.
+      // pure math -- see docs/dev/canvas_v10_STATUS.md's "Real FreeCAD source audit via GitHub" section.
       // Adapted to this app's point-index/residual-vector convention (planegcs uses raw pointers
       // into a shared parameter array and a signed "scale" factor per constraint; here every
       // constraint is just an unscaled residual fed to the shared Gauss-Newton solver above).
@@ -44667,6 +44694,8 @@ try{
     a3dToast(ctx.clonesUpdated+' linked clone(s) synced to source'+(ctx.clonesFailed?' ('+ctx.clonesFailed+' could not be synced)':''));
     return ctx.clonesUpdated;
   }
+  /* setters: other files assign these through them (an ES module cannot assign to an import) */
+  function setA3D_MATERIALIZED(v){A3D_MATERIALIZED=v;return v;}
   // ---- __acad3dV50: Parametric dependency graph ------------------------------------------
   // Every parametric relationship in this model used to propagate through hand-written code at
   // the point of edit: updateLevel() walked the object list to shift a level's contents, a wall
@@ -48291,6 +48320,8 @@ try{
     if(b)b.classList.toggle('a3d-kb-up',kb>0);
     return kb;
   }
+  /* setters: other files assign these through them (an ES module cannot assign to an import) */
+  function setA3D_SHELL_OBS(v){A3D_SHELL_OBS=v;return v;}
   /* ================= __acad3dV150: the tool palette, on a phone and a tablet =================
      The essential tools in a capsule over the drawing, dragged where the hand wants them, folded
      to one button when the drawing wants the room. Where it was left is kept in this browser. */
@@ -48657,12 +48688,12 @@ try{
     var panel=document.getElementById('a3d-leftpanel');
     if(!panel||A3D_SHELL_OBS||typeof MutationObserver==='undefined')return false;
     bimCleanShell();
-    A3D_SHELL_OBS=new MutationObserver(function(){
+    setA3D_SHELL_OBS(new MutationObserver(function(){
       if(A3D_SHELL_CLEANING)return;
       A3D_SHELL_CLEANING=true;
       try{bimCleanShell();}catch(eC){console.warn('[BIM] Shell cleanup failed',eC);}
       A3D_SHELL_CLEANING=false;
-    });
+    }));
     A3D_SHELL_OBS.observe(panel,{childList:true,subtree:false});
     /* __acad3dV85: the RAIL is watched too. It is a SIBLING of the panel, not a child, so a
        rail re-render never fired this observer and the rail stack was not put back. */
@@ -48934,7 +48965,7 @@ try{
     if(!rec||rec.kind==='sheet'||rec.kind==='section')rec=bimViewOfCamera();
     if(A3D_VIEW.kind==='sheet'){
       if(A3D_LAST_MODEL_VIEW&&A3D_LAST_MODEL_VIEW.kind==='section')
-        A3D_LAST_MODEL_VIEW={kind:rec.kind,id:rec.id,cam:{yaw:c.yaw,pitch:c.pitch,dist:c.dist,tx:c.tx,ty:c.ty,tz:c.tz}};
+        setA3D_LAST_MODEL_VIEW({kind:rec.kind,id:rec.id,cam:{yaw:c.yaw,pitch:c.pitch,dist:c.dist,tx:c.tx,ty:c.ty,tz:c.tz}});
       refreshHud();
     }else bimSetActiveView(rec.kind,rec.id,null);
     paint();saveSoon();
@@ -49006,8 +49037,12 @@ try{
     }
     bimSpillSave(rec.docId,s,rec);
   }
+  /* setters: other files assign these through them (an ES module cannot assign to an import) */
+  function setA3D_REV(v){A3D_REV=v;return v;}
+  function setA3D_SAVE_FAILED(v){A3D_SAVE_FAILED=v;return v;}
+  function setSaveT(v){saveT=v;return v;}
   /* ================= __acad3dV172d: the browser's database, for a project too large for localStorage =================
-     reference/research-local-storage.md, phase A1. localStorage holds about 5.2 million characters for the whole
+     docs/research/research-local-storage.md, phase A1. localStorage holds about 5.2 million characters for the whole
      origin (measured in Chromium, 2026-10-31), so an imported model of about 165,000 triangles could not be saved,
      and a project over half of it could not be switched away from. IndexedDB holds a share of the disk. A project
      record localStorage refuses goes to IndexedDB, and localStorage keeps a pointer in its place -- the record's id,
@@ -49093,7 +49128,7 @@ try{
       A3D_SPILL.busy=false;
       if(err){
         if(!A3D_SAVE_FAILED){
-          A3D_SAVE_FAILED=true;
+          setA3D_SAVE_FAILED(true);
           console.warn('[BIM] The project could not be saved to browser storage or to the browser\'s database.',err);
           a3dToast('This project could not be saved: browser storage is full. Use Save to keep a copy as a file.');
         }
@@ -49103,7 +49138,7 @@ try{
           try{localStorage.setItem(LSK,bimIdbPointer(id,rec));}
           catch(eP){console.warn('[BIM] The pointer to the project in the browser\'s database could not be stored.',eP);}
           if(!A3D_SPILL.on){A3D_SPILL.on=true;bimSpillToast();}
-          if(A3D_SAVE_FAILED){A3D_SAVE_FAILED=false;a3dToast('Saving to browser storage works again');}
+          if(A3D_SAVE_FAILED){setA3D_SAVE_FAILED(false);a3dToast('Saving to browser storage works again');}
         }
       }
       var n=A3D_SPILL.next;A3D_SPILL.next=null;
@@ -49157,7 +49192,7 @@ try{
   /* decision D9: an autosave still waiting when the page is hidden is written then, while it can finish;
      pagehide cannot wait for the database */
   document.addEventListener('visibilitychange',function(){
-    if(document.hidden&&saveT){clearTimeout(saveT);saveT=null;save3d();}
+    if(document.hidden&&saveT){clearTimeout(saveT);setSaveT(null);save3d();}
   });
   /* ================= __acad3dV115: projects side by side =================
      AutoCAD's file tabs and Revit's open projects: several projects open at once, each its own
@@ -49263,7 +49298,7 @@ try{
      the page closed or reloaded -- measured: a wall drawn just before a reload, gone 8 times in 8.
      pagehide is the last moment the page can still write. */
   window.addEventListener('pagehide',function(){
-    if(saveT){clearTimeout(saveT);saveT=null;save3d();}
+    if(saveT){clearTimeout(saveT);setSaveT(null);save3d();}
   });
   function bimDocsSave(){
     try{localStorage.setItem(A3D_DOCS_KEY,JSON.stringify(A3D_DOCS));return true;}
@@ -49290,7 +49325,7 @@ try{
     var d=JSON.parse(A3D_PROJECT_DEFAULTS),k;
     for(k in d)if(d.hasOwnProperty(k))A3D[k]=d[k];
     bimApplyStoredState(st);
-    undoSuspend=true;
+    setUndoSuspend(true);
     try{
       bimEnsureTypes();
       bimEnsureBuildings();
@@ -49299,7 +49334,7 @@ try{
       bimSyncActiveGlobal();
       refreshTree();refreshHud();refreshLevels();refreshLayers();refreshViews();refreshBrowser();refreshProps();
       bimSyncStatusBar();
-    }finally{undoSuspend=false;}
+    }finally{setUndoSuspend(false);}
   }
   function bimDocsSwap(toId,stB,fromKey){
     var cur=A3D_DOCS.active;
@@ -49338,7 +49373,7 @@ try{
     var nameA=bimProjectLabel(),countA=A3D.objs.length;
     var rt=A3D_DOC_RT[toId]||null;
     try{
-      UNDO_STACK=rt?rt.undo:[];REDO_STACK=rt?rt.redo:[];
+      setUNDO_STACK(rt?rt.undo:[]);setREDO_STACK(rt?rt.redo:[]);
       A3D_TYPING.active=false;A3D_TYPING.buf='';
       bimLoadProjectRecord(stB);
     }catch(eL){
@@ -49347,7 +49382,7 @@ try{
         localStorage.setItem(LSK,sA);
         localStorage.removeItem(A3D_DOC_PREFIX+cur);
       }catch(eP){console.warn('[BIM] Browser storage could not be put back after a failed switch.',eP);}
-      UNDO_STACK=stash.undo;REDO_STACK=stash.redo;
+      setUNDO_STACK(stash.undo);setREDO_STACK(stash.redo);
       try{bimLoadProjectRecord(JSON.parse(sA));}
       catch(eA){console.warn('[BIM] The previous project could not be reloaded.',eA);}
       a3dToast('"'+bimDocName(toId)+'" could not be opened: its stored data is damaged');
@@ -49369,7 +49404,7 @@ try{
       if(shown&&rt.view.kind!=='sheet'){A3D.cam=rt.cam;paint();}
     }
     if(!shown)bimActivateView(window.ACAD_WS_CUR==='3d'?'3d':'plan',A3D.activeLevel,{anim:false});
-    A3D_LAST_MODEL_VIEW=(rt&&rt.lastModel)||null;   /* __acad3dV116: after the activation, which would record the other project's */
+    setA3D_LAST_MODEL_VIEW((rt&&rt.lastModel)||null);   /* __acad3dV116: after the activation, which would record the other project's */
     bimDocsSave();
     return true;
   }
@@ -49554,7 +49589,7 @@ try{
         try{if(A3D.sk)bimEndSketch();}
         catch(eE){console.warn('[BIM] The running command could not be ended before closing.',eE);}
         closeDlg();
-        if(saveT){clearTimeout(saveT);saveT=null;}
+        if(saveT){clearTimeout(saveT);setSaveT(null);}
         save3d();
       }
     }
@@ -49659,10 +49694,10 @@ try{
     bimSweepOrphanTags();   /* __acad3dV101 */
     bimSweepFootingHosts(); /* __acad3dV102 */
     bimRegenerateRegions();
-    A3D_REV++;   /* __acad3dV122 */
+    setA3D_REV(A3D_REV+1);   /* __acad3dV122 */
     bimPagesStale();
     if(saveT)clearTimeout(saveT);
-    saveT=setTimeout(save3d,300);
+    setSaveT(setTimeout(save3d,300));
   }
   function refreshHud(){
     /* __acad3dV119: the View readout names the active view -- "Level 0 - Floor Plan", "3D View", an
@@ -52945,6 +52980,8 @@ try{
     bimRenderInto(el.viewrows,h);   /* __acad3dV118 */
   }
 
+  /* setters: other files assign these through them (an ES module cannot assign to an import) */
+  function setA3D_LAST_MODEL_VIEW(v){A3D_LAST_MODEL_VIEW=v;return v;}
   // ---- __acad3dV44: Sheets (printable layouts). A Sheet is a titled page composing one or more
   // Viewports, each a scaled window onto an existing orthographic Plan/Elevation/Section view (or
   // a Schedule table, drawn as a table). Viewports are rendered by temporarily redirecting the
@@ -54458,7 +54495,7 @@ try{
        The id prefix carries a global sequence number because a single sheet export concatenates
        several viewport fragments into one SVG document, and two fragments must never define
        different <pattern> elements under the same id. */
-    var patReg=bimPatternRegistry(1,true,'a3dvpat'+(BIM_PAT_SVG_SEQ++)+'_');
+    var patReg=bimPatternRegistry(1,true,'a3dvpat'+((setBIM_PAT_SVG_SEQ(BIM_PAT_SVG_SEQ+1)-1))+'_');
     function patternOverlay(rg,objId,d,extraAttrs){
       if(!bimPatternAlways(pres,rg))return;   /* __acad3dV96 */
       var pf=patReg.resolve(rg);
@@ -55021,7 +55058,7 @@ try{
     return false;
   }
   /* ================= __acad3dV162: the boards are pages of the set =================
-     reference/research-one-analyze-boards.md. A board is a page of the presentation beside the
+     docs/research/research-one-analyze-boards.md. A board is a page of the presentation beside the
      sheets: in the Presentation panel with its thumbnail, in the main view, in Present and in Print
      set. Analyze fetches the data and links to it. A3D.pres keeps the boards in the set and the
      set's order; the sheets keep their order among themselves (the layout tabs), and a board its
@@ -55233,7 +55270,7 @@ try{
     doc.__prpKey=key;   /* drawn or failed, not tried again until the model moves */
   }
   /* ================= __acad3dV172b: a board's figures, arranged =================
-     reference/research-ladybug-weather-comfort.md, 13. Every figure the boards draw has a name of its own
+     docs/research/research-ladybug-weather-comfort.md, 13. Every figure the boards draw has a name of its own
      ('clim.temp', 'zn.secA', 'lb.utci' ...). A board in the set may keep a list of figures, each placed on
      the board's own grid: 12 columns across and the same step down (x and w in columns, y and h in those
      steps), with its options. A board without a list is drawn as it always was; a board of one's own
@@ -56545,7 +56582,7 @@ try{
       var gcopy=gz&&(gz.kind==='axis'||gz.kind==='plane'||gz.kind==='centre')&&!ev.altKey;
       if(gz&&(!gctrl||gcopy)){
         bimCloseGizmoMenu();
-        A3D_MATERIALIZED=[];
+        setA3D_MATERIALIZED([]);
         var gd=bimGizmoBegin(gz,xy,ev);
         if(gd){
           /* __acad3dV123: nothing happens on the press. The undo step and, with Ctrl, the copies are
@@ -56821,6 +56858,8 @@ try{
     bimZoomAbout(Math.pow(1.0015,ev.deltaY),xy[0],xy[1]);
     ev.preventDefault();paint();saveSoon();
   }
+  /* setters: other files assign these through them (an ES module cannot assign to an import) */
+  function setDrag(v){drag=v;return v;}
   // ---- __acad3dV8: Touch input (single-finger nav/select/move, long-press marquee, two-finger pinch/pan, touch-aim sketch placement) ----
   var BIM_IS_TOUCH=(('ontouchstart' in window)||(navigator.maxTouchPoints>0));
   var A3D_TOUCH_AIM_OFFSET=46;
@@ -57836,6 +57875,8 @@ try{
     var it=bimCatForAct(bimCmdCatalog(),act);
     if(it)bimCmdUsed(it.id);
   }
+  /* setters: other files assign these through them (an ES module cannot assign to an import) */
+  function setA3D_DISC_CUR(v){A3D_DISC_CUR=v;return v;}
   /* ================= __acad3dV128: one catalogue of every command ================= */
   /* A ribbon action that IS a typed command: one entry, the command's, with the ribbon place added */
   var BIM_ACT_CMD={'bim:wall':'wall','s:poly':'poly','s:rect':'rect','s:circle':'circle','bim:arc':'arc','bim:floor':'floorTool',
@@ -58226,7 +58267,7 @@ try{
     });
     host.addEventListener('change',function(ev){
       if(ev.target&&ev.target.id==='a3d-discsel'){
-        A3D_DISC_CUR=ev.target.value;
+        setA3D_DISC_CUR(ev.target.value);
         bimBuildDock();
         a3dToast('Discipline: '+ev.target.options[ev.target.selectedIndex].text);
       }
@@ -58781,12 +58822,12 @@ try{
       bimHistAct(hb.getAttribute('data-histact'),ev);
     });
     if(el.propsbody)el.propsbody.addEventListener('input',function(ev){
-      if(ev.target&&ev.target.hasAttribute&&ev.target.hasAttribute('data-histmsg'))A3D_HIST_MSG=ev.target.value;
-      if(ev.target&&ev.target.hasAttribute&&ev.target.hasAttribute('data-brname'))A3D_BR_NEW=ev.target.value;   /* __acad3dV151 */
+      if(ev.target&&ev.target.hasAttribute&&ev.target.hasAttribute('data-histmsg'))setA3D_HIST_MSG(ev.target.value);
+      if(ev.target&&ev.target.hasAttribute&&ev.target.hasAttribute('data-brname'))setA3D_BR_NEW(ev.target.value);   /* __acad3dV151 */
     });
     if(el.propsbody)el.propsbody.addEventListener('change',function(ev){   /* __acad3dV151: switch branch */
       if(ev.target&&ev.target.hasAttribute&&ev.target.hasAttribute('data-histbranch'))bimHistSwitchUI(ev.target.value);
-      if(ev.target&&ev.target.hasAttribute&&ev.target.hasAttribute('data-brmergefrom')){A3D_BR_PICK=ev.target.value;if(A3D_BR_DEL){A3D_BR_DEL='';refreshProps();}}   /* kept through a redraw; another picked: ask again */
+      if(ev.target&&ev.target.hasAttribute&&ev.target.hasAttribute('data-brmergefrom')){setA3D_BR_PICK(ev.target.value);if(A3D_BR_DEL){setA3D_BR_DEL('');refreshProps();}}   /* kept through a redraw; another picked: ask again */
     });
     if(el.propsbody)el.propsbody.addEventListener('keydown',function(ev){
       if(ev.key==='Enter'&&ev.target&&ev.target.hasAttribute&&ev.target.hasAttribute('data-brname')){ev.preventDefault();ev.stopPropagation();bimHistBranchAct('branch');return;}   /* __acad3dV151 */
@@ -59077,7 +59118,7 @@ try{
     });
     if(el.propsbody)el.propsbody.addEventListener('input',function(ev){   /* __acad3dV149c: kept as typed */
       var a=ev.target&&ev.target.closest?ev.target.closest('[data-propmap="addr"]'):null;
-      if(a)A3D_MAP_DRAFT=a.value;
+      if(a)setA3D_MAP_DRAFT(a.value);
     });
     if(el.propsbody)el.propsbody.addEventListener('keydown',function(ev){
       var a=ev.target&&ev.target.closest?ev.target.closest('[data-propmap="addr"]'):null;
@@ -59702,7 +59743,7 @@ try{
     history:function(){bimHistReveal(false);},
     branch:function(){bimHistReveal(false);setTimeout(function(){var i=document.querySelector('#a3d-propsbody [data-brname]');if(i)i.focus();},0);},   /* __acad3dV151 */
     merge:function(){bimHistReveal(false);if(bimHistBranches().length<2)a3dToast('There is one branch: start another with BRANCH');},
-    comparebranches:function(){A3D_BR_CMP=true;bimHistReveal(false);},
+    comparebranches:function(){setA3D_BR_CMP(true);bimHistReveal(false);},
     graphics:function(){bimGraphicsCommand();},   /* __acad3dV153 */
     benchmark:function(){bimBenchmark();},   /* __acad3dV155 */
     cutfill:function(){bimCutFillCommand();},
@@ -60653,7 +60694,7 @@ try{
   window.__a3dGpuBreakNext=function(){A3D_GPU.breakNext=true;return true;};
   window.__a3dGpuLose=function(){if(!A3D_GPU.device)return false;A3D_GPU.device.destroy();return true;};   /* as a driver reset would */
   window.__a3dGpuWait=function(ms){var t0=Date.now();return new Promise(function(res){(function w(){if(A3D_GPU.state!=='starting'||Date.now()-t0>(ms||8000))res(A3D_GPU.state);else setTimeout(w,50);})();});};
-  window.__a3dGlBatch=function(on){if(on!==undefined){A3D_GL_BATCH=!!on;paint();}return A3D_GL_BATCH;};   /* __acad3dV152 */
+  window.__a3dGlBatch=function(on){if(on!==undefined){setA3D_GL_BATCH(!!on);paint();}return A3D_GL_BATCH;};   /* __acad3dV152 */
   window.__a3dGlStats=function(){return A3D.glStats?JSON.parse(JSON.stringify(A3D.glStats)):null;};
   window.__a3dGlBatchInfo=function(){var B=A3D_SCENE;if(!B)return (A3D_GL&&A3D_GL.gb)||A3D_GPU.state==='ready'?{chunks:[],slots:0,cap:0,free:0}:null;
     return {chunks:B.chunks.map(function(c){return {objects:c.ids.length,verts:c.count,edges:c.ecount};}),slots:Object.keys(B.slots).length,cap:B.cap,free:B.free.length};};
@@ -60663,14 +60704,14 @@ try{
   window.__a3dStressModel=function(n,size){var r=bimStressModel(n,size);paint();return r;};   /* __acad3dV155: the app's own */
   window.__a3dRenderBench=function(frames){return bimRenderBench(frames).then(function(r){paint();return r;});};
   window.__a3dBenchmark=function(){return bimBenchmark().then(function(r){return JSON.parse(JSON.stringify(r));});};
-  window.__a3dPickMode=function(m){if(m==='on'||m==='off'||m==='auto')A3D_PICK_GPU=m;return A3D_PICK_GPU;};   /* __acad3dV156 */
+  window.__a3dPickMode=function(m){if(m==='on'||m==='off'||m==='auto')setA3D_PICK_GPU(m);return A3D_PICK_GPU;};   /* __acad3dV156 */
   window.__a3dPickInfo=function(x,y){var t=performance.now(),o=pick(x,y);return {id:o&&o.id?o.id:null,path:A3D.lastPickPath||null,ms:performance.now()-t};};
-  window.__a3dCull=function(on){if(on!==undefined){A3D_CULL=!!on;paint();}return A3D_CULL;};
+  window.__a3dCull=function(on){if(on!==undefined){setA3D_CULL(!!on);paint();}return A3D_CULL;};
   window.__a3dChunkCells=function(){var B=A3D_SCENE;return B?B.chunks.map(function(c){return {cell:c.cell,objects:c.ids.length,cull:c.cull,box:c.wb?c.wb.slice(0,6):null};}):[];};
   window.__a3dTestSetObjs=function(list){A3D.objs=list;A3D.sel=null;A3D.sel2=null;A3D.selSet=[];};
   window.__a3dTestPaint=function(){paint();};
   window.__a3dTestRotate=function(d){A3D.cam.yaw+=d;};
-  window.__a3dTestForceCpu=function(on){A3D_GL_FAILED=!!on;A3D_GPU.forceOff=!!on;if(on){bimSceneRelease();A3D_GL=null;}};
+  window.__a3dTestForceCpu=function(on){setA3D_GL_FAILED(!!on);A3D_GPU.forceOff=!!on;if(on){bimSceneRelease();setA3D_GL(null);}};
   window.__a3dAngularDim=bimComputeAngularDim;
   window.__a3dCircleFrom3=bimCircleFrom3Points;
   window.__a3dBuildDXF=bimBuildDXF;
@@ -61855,7 +61896,7 @@ try{
   window.__a3dSetDiscipline=function(id){
     var i;
     for(i=0;i<A3D_DISCIPLINES.length;i++)if(A3D_DISCIPLINES[i].id===id){
-      A3D_DISC_CUR=id;bimBuildDock();return true;
+      setA3D_DISC_CUR(id);bimBuildDock();return true;
     }
     return false;
   };

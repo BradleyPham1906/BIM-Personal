@@ -1,5 +1,5 @@
 import { A3D } from '../core/state.js';
-import { pushUndo, undoSuspend } from '../drawing/plan-mode-sketch.js';
+import { pushUndo, setUndoSuspend } from '../drawing/plan-mode-sketch.js';
 import { bimSunSettings } from '../site/sun-position.js';
 import { bimPropertyGeometry } from '../site/property.js';
 import { bimPointInPoly, bimPolyArea } from '../bim/rooms.js';
@@ -20,7 +20,7 @@ import { saveSoon } from '../bim/region-regenerate.js';
 import { a3dToast } from '../bim/csg-booleans.js';
 
   /* ================= __acad3dV161: Site analysis SA4, access and people: the data =================
-     reference/research-access-people.md. Asked only when asked, from two free sources, no key:
+     docs/research/research-access-people.md. Asked only when asked, from two free sources, no key:
      - OpenStreetMap, in one Overpass request: the streets and paths with their nodes, the transit
        stops and the routes that serve them, and the places of daily needs around the site;
      - the US Census Bureau: TIGERweb names the census tract, county and state at the site, and the
@@ -813,7 +813,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
     else if(cen){P=cen;bad=bad.concat(cen.errors||[]);}
     if(!A&&!P){a3dToast('No access or people data: '+bad.join('; '));return {error:bad.join('; ')};}
     pushUndo();
-    undoSuspend=true;
+    setUndoSuspend(true);
     try{
       A3D.site=A3D.site||{};
       if(A){A.lat=lat;A.lon=lon;A.fetched=today;A.errors=bad.slice();A.src='OpenStreetMap contributors (ODbL), via Overpass ('+A.server+')';A3D.site.access=A;}
@@ -821,7 +821,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
       /* __acad3dV166: V161's Walk times layer is no longer added here: Analyze site draws the walk times in the
          model, on Layers, Site analysis; WALKTIMES still adds V161's layer */
       bimSaFill(true);
-    }finally{undoSuspend=false;}
+    }finally{setUndoSuspend(false);}
     refreshProps();refreshLayers();paint();saveSoon();
     if(typeof bimSaRefresh==='function')bimSaRefresh(true);
     if(typeof bimClbRefresh==='function')bimClbRefresh();

@@ -18,7 +18,9 @@ import {
   A3D_GIZ, bimFaceWorldPts, bimPointInFace, bimRayHitObject, bimScreenRay
 } from '../gizmo/transform-gizmo.js';
 import { A3D_MODKEY } from '../ui/shortcuts.js';
-import { A3D_CLICKBOX_T, bimCloseGizmoMenu, bimCloseValueBox, bimFmtLen } from '../gizmo/gizmo-handles.js';
+import {
+  A3D_CLICKBOX_T, bimCloseGizmoMenu, bimCloseValueBox, bimFmtLen, setA3D_CLICKBOX_T
+} from '../gizmo/gizmo-handles.js';
 import { bimFaceValueBox, bimPushReadout } from './push-pull.js';
 import { bimGraphRoomSourceId } from '../bim/dependency-graph.js';
 import { bimIsRegionDep } from '../bim/region-dependents.js';
@@ -733,7 +735,7 @@ import { cvH, cvW } from '../ui/canvas-size.js';
   function bimFaceDblClick(ev){
     try{
       if(!A3D.on||A3D.sk||A3D.conPick||A3D.zoomWindow||bimSheetOnScreen()||ev.button!==0)return;
-      if(A3D_CLICKBOX_T){clearTimeout(A3D_CLICKBOX_T);A3D_CLICKBOX_T=null;}
+      if(A3D_CLICKBOX_T){clearTimeout(A3D_CLICKBOX_T);setA3D_CLICKBOX_T(null);}
       bimCloseValueBox();
       var xy=cvXY(ev),pk=bimFacePickAt(xy[0],xy[1]);
       if(!pk)return;

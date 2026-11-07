@@ -17,7 +17,7 @@ import { A3D_AW, bimAwRefresh, bimAwSec } from './analysis-workspace.js';
 import { paint } from '../map/terrain-3d.js';
 
   /* ================= __acad3dV171d: the sun's panel =================
-     reference/research-sun-path.md (7). In Analyze, the Sun paths' panel: the sun now in numbers, its point on the
+     docs/research/research-sun-path.md (7). In Analyze, the Sun paths' panel: the sun now in numbers, its point on the
      dome by the formula; sliders for a place tried (never saved) and for the study's date and time (one undo step when
      let go); Play through the day or through the year; the year's turning points by hemisphere; the sky looking up and
      the sun's height through the day; the temperature's key. Its numbers follow the clock and the sliders without the

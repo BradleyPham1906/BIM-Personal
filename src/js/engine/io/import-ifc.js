@@ -1,5 +1,5 @@
 import { A3D } from '../core/state.js';
-import { pushUndo, undoSuspend } from '../drawing/plan-mode-sketch.js';
+import { pushUndo, setUndoSuspend } from '../drawing/plan-mode-sketch.js';
 import { padMesh, sketchCCW } from '../drawing/drawing-input.js';
 import { clampLevelElev } from '../bim/levels-walls-floors.js';
 import { refreshLevels } from '../bim/classification.js';
@@ -209,7 +209,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
     var ids=Object.keys(byId);
     if(!ids.length){a3dToast('IFC import: no entities found in '+filename);return;}
     pushUndo();
-    undoSuspend=true;
+    setUndoSuspend(true);
     var scale,levelsAdded=0,wallsAdded=0,slabsAdded=0,skipped=0,recoveredWalls=0,i;
     try{
       scale=ifcFindLengthScale(byId);
@@ -259,7 +259,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
         if(isSlab)slabsAdded++;else wallsAdded++;
       }
     }finally{
-      undoSuspend=false;
+      setUndoSuspend(false);
     }
     refreshTree();refreshLevels();refreshLayers();fitScene();paint();saveSoon();
     a3dToast('IFC import: '+levelsAdded+' level(s), '+wallsAdded+' wall(s) ('+recoveredWalls+' fully editable), '+slabsAdded+' slab(s), locked by default'+

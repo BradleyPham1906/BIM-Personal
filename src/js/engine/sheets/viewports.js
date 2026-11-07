@@ -14,7 +14,9 @@ import { bimAnnotDrawable, bimTriggerDownload } from '../annotation/annotation-p
 import { bimFileStem } from '../io/project-file.js';
 import { bimRectFootprint } from '../bim/columns-openings.js';
 import { bimWallOpeningBreaks } from '../io/dxf-export.js';
-import { BIM_PAT_SVG_SEQ, bimEscXml, bimExportOffset, bimPatternRegistry } from '../io/export-mappings.js';
+import {
+  BIM_PAT_SVG_SEQ, bimEscXml, bimExportOffset, bimPatternRegistry, setBIM_PAT_SVG_SEQ
+} from '../io/export-mappings.js';
 import { bimLookPlotAttrs, bimLookPlotGraphics, bimWithPlotPass } from '../layers/plot-by-layers.js';
 import { bimLayerShown } from '../layers/layer-rules.js';
 import { bimEsc } from '../layers/layer-manager.js';
@@ -550,7 +552,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
        The id prefix carries a global sequence number because a single sheet export concatenates
        several viewport fragments into one SVG document, and two fragments must never define
        different <pattern> elements under the same id. */
-    var patReg=bimPatternRegistry(1,true,'a3dvpat'+(BIM_PAT_SVG_SEQ++)+'_');
+    var patReg=bimPatternRegistry(1,true,'a3dvpat'+((setBIM_PAT_SVG_SEQ(BIM_PAT_SVG_SEQ+1)-1))+'_');
     function patternOverlay(rg,objId,d,extraAttrs){
       if(!bimPatternAlways(pres,rg))return;   /* __acad3dV96 */
       var pf=patReg.resolve(rg);

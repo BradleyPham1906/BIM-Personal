@@ -1,5 +1,5 @@
 import { A3D } from '../core/state.js';
-import { bimUndoHold, pushUndo } from '../drawing/plan-mode-sketch.js';
+import { pushUndo, setBimUndoHold } from '../drawing/plan-mode-sketch.js';
 import { bimSunNum, bimSunSettings } from '../site/sun-position.js';
 import { refreshLayers } from '../layers/analysis-data-rows.js';
 import { bimDispNum } from '../properties/palette.js';
@@ -70,10 +70,10 @@ import { a3dToast } from '../bim/csg-booleans.js';
     if(!placed&&!q){a3dToast('Where is the site? Type its address, or give its latitude and longitude in Properties, Site, Location');bimSiteAddrFocus();return null;}
     if(typeof fetch!=='function'){a3dToast('This browser cannot fetch: Analyze site gets its data from the web');return null;}
     R=A3D_SITERUN={busy:true,t0:Date.now(),held:false,steps:BIM_SITERUN_STEPS.map(function(s){return {id:s[0],name:s[1],state:'wait',text:''};})};
-    function hold(){if(!R.held){R.held=true;bimUndoHold=true;}}
+    function hold(){if(!R.held){R.held=true;setBimUndoHold(true);}}
     if(placed){pushUndo();hold();}
     function finish(ok){
-      if(R.held)bimUndoHold=false;
+      if(R.held)setBimUndoHold(false);
       R.busy=false;
       var D=bimDgState();
       D.last={date:bimSaToday(),ok:!!ok,steps:R.steps.map(function(s){return {id:s.id,name:s.name,state:s.state,text:s.text};})};

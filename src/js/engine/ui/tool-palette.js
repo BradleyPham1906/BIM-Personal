@@ -10,7 +10,7 @@ import {
 import {
   A3D_ASDRAG, A3D_ASDRAG_EAT, A3D_SHELL_OBS, A3D_SHELL_TIER, bimAssetDragDown, bimAssetDragEnd,
   bimAssetDragMove, bimAssetDragUp, bimCleanShell, bimKbFit, bimRailIcon, bimShellApplyTier, bimShellDrawer,
-  bimShellOverlay
+  bimShellOverlay, setA3D_SHELL_OBS
 } from '../assets/library-drag.js';
 import { saveSoon } from '../bim/region-regenerate.js';
 import { bimWirePresPanel } from '../sheets/presentation-panel.js';
@@ -384,12 +384,12 @@ import { bimRunAct } from './dock-tooltips.js';
     var panel=document.getElementById('a3d-leftpanel');
     if(!panel||A3D_SHELL_OBS||typeof MutationObserver==='undefined')return false;
     bimCleanShell();
-    A3D_SHELL_OBS=new MutationObserver(function(){
+    setA3D_SHELL_OBS(new MutationObserver(function(){
       if(A3D_SHELL_CLEANING)return;
       A3D_SHELL_CLEANING=true;
       try{bimCleanShell();}catch(eC){console.warn('[BIM] Shell cleanup failed',eC);}
       A3D_SHELL_CLEANING=false;
-    });
+    }));
     A3D_SHELL_OBS.observe(panel,{childList:true,subtree:false});
     /* __acad3dV85: the RAIL is watched too. It is a SIBLING of the panel, not a child, so a
        rail re-render never fired this observer and the rail stack was not put back. */

@@ -1,5 +1,5 @@
 import { bimHistValid } from '../history/element-history.js';
-import { A3D_RES_IMG, bimResValid } from '../analysis/results-layers.js';
+import { bimResValid, setA3D_RES_IMG } from '../analysis/results-layers.js';
 import { bimProjectRecord } from './objects-save.js';
 import { bimDocsBoot } from '../ui/project-tabs.js';
 import { bimAdoptLayers } from '../bim/region-regenerate.js';
@@ -105,7 +105,7 @@ import { bimPresValid } from '../sheets/boards.js';
       A3D.history=bimHistValid(st&&st.history);   /* __acad3dV146: its history, or none */
       A3D.resultLayers=bimResValid(st&&st.resultLayers);   /* __acad3dV148: its result layers, or none */
       A3D.pres=bimPresValid(st&&st.pres);   /* __acad3dV162: its boards in the set, and the set's order */
-      A3D_RES_IMG={};
+      setA3D_RES_IMG({});
       if(st&&Array.isArray(st.classifications)){
         A3D.classifications=st.classifications.filter(function(c){return c&&typeof c.id==='string'&&typeof c.code==='string';});
         if(A3D.classifications.length!==st.classifications.length)console.warn('[BIM] Discarded malformed classification(s) from '+LSK+' storage.');

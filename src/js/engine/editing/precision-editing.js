@@ -633,10 +633,12 @@ import { a3dToast, objById } from '../bim/csg-booleans.js';
     a3dToast(ctx.clonesUpdated+' linked clone(s) synced to source'+(ctx.clonesFailed?' ('+ctx.clonesFailed+' could not be synced)':''));
     return ctx.clonesUpdated;
   }
+  /* setters: other files assign these through them (an ES module cannot assign to an import) */
+  function setA3D_MATERIALIZED(v){A3D_MATERIALIZED=v;return v;}
 export {
-  A3D_MATERIALIZED, applyMergeWalls, applyWallJoin, bimBuildPolarArray, bimCheckModel,
-  bimComputeTransformedGeometry, bimFlushMaterialized, bimJoinWalls, bimLineLineIntersect, bimLinkedClonesOf,
-  bimMaterializeInto, bimMergeWalls, bimMirrorObject, bimMirrorSelection, bimPrimitiveMesh,
-  bimRotateObjectInPlace, bimRotatePoint, bimRotateSelection, bimSyncOneClone, cloneLinked, openCheckModelDlg,
-  openPolarArrayDlg, openRotateDlg, startMirrorTool, startPolarArrayTool, startRotateTool, syncLinkedClones
+  applyMergeWalls, applyWallJoin, bimBuildPolarArray, bimCheckModel, bimComputeTransformedGeometry,
+  bimFlushMaterialized, bimJoinWalls, bimLineLineIntersect, bimLinkedClonesOf, bimMaterializeInto,
+  bimMergeWalls, bimMirrorObject, bimMirrorSelection, bimPrimitiveMesh, bimRotateObjectInPlace,
+  bimRotatePoint, bimRotateSelection, bimSyncOneClone, cloneLinked, openCheckModelDlg, openPolarArrayDlg,
+  openRotateDlg, setA3D_MATERIALIZED, startMirrorTool, startPolarArrayTool, startRotateTool, syncLinkedClones
 };

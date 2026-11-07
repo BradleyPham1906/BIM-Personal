@@ -3,7 +3,7 @@ import { bimLbBvhBlocked, bimLbBvhBuild, bimLbStudyRows, bimLbStudyVecs, bimLbWa
 import { BIM_LB_STUDY_MS } from './studies.js';
 
   /* ================= __acad3dV172b: Ladybug Tools in a worker =================
-     reference/research-ladybug-weather-comfort.md. Ladybug Tools' own Python, unchanged, run by Pyodide 0.29.5
+     docs/research/research-ladybug-weather-comfort.md. Ladybug Tools' own Python, unchanged, run by Pyodide 0.29.5
      (MPL-2.0) in a Web Worker made on first use: the app opens as fast as before and the drawing never waits on a
      calculation. The runtime is committed under runtime/ (runtime/MANIFEST.json) and served with the site: the
      multi-file app loads it from its own address, the one-file copy and the older versions kept under v/ from the

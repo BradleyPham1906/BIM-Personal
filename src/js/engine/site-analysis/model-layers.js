@@ -1,5 +1,5 @@
 import { A3D } from '../core/state.js';
-import { bimObjOffset, bimUndoHold, pushUndo } from '../drawing/plan-mode-sketch.js';
+import { bimObjOffset, bimUndoHold, pushUndo, setBimUndoHold } from '../drawing/plan-mode-sketch.js';
 import { bimSunCalc, bimSunNum, bimSunStudy, bimSunTzAt } from '../site/sun-position.js';
 import { bimLayerAlpha, bimLayerById, bimLayerShown } from '../layers/layer-rules.js';
 import { bimLayerByName, bimLayerNew } from '../layers/select-change.js';
@@ -119,12 +119,12 @@ import { a3dToast, objById } from '../bim/csg-booleans.js';
   function bimDgResetAnalysis(a){
     var D=bimDgState(),held=bimUndoHold,r;
     if(!bimDgAn(a)||!D.runs[a]){a3dToast('That analysis has not run yet');return null;}
-    if(!held){pushUndo();bimUndoHold=true;}
+    if(!held){pushUndo();setBimUndoHold(true);}
     try{
       A3D.objs=A3D.objs.filter(function(x){return !(bimIsDiag(x)&&x.dg.a===a);});
       D.runs[a].gone=[];D.runs[a].keys=[];
       r=bimDgRunAll(a);
-    }finally{if(!held)bimUndoHold=false;}
+    }finally{if(!held)setBimUndoHold(false);}
     a3dToast(bimDgAn(a).name+': as the analysis draws it');
     return r?r[a]:null;
   }

@@ -49,7 +49,7 @@ import { bimBuildPlanViewportSVG, bimBuildSheetSVG } from '../sheets/viewports.j
 import { objById } from '../bim/csg-booleans.js';
 import {
   A3DR_TABS, A3DR_UNIMPL, A3D_DISCIPLINES, A3D_DISC_CUR, a3drActOf, a3drIcon, a3drLabel, a3drRegisterCommand,
-  a3drRegisterDiscipline, a3drRegisterTab, bimBuildDock, bimOpenToolsPanel
+  a3drRegisterDiscipline, a3drRegisterTab, bimBuildDock, bimOpenToolsPanel, setA3D_DISC_CUR
 } from '../ui/discipline-tabs.js';
 import { bimCmdSearch } from '../commands/command-catalogue.js';
 import { a3drAllCommands } from '../ui/dock-tooltips.js';
@@ -391,7 +391,7 @@ import { cvH, cvScale, cvW } from '../ui/canvas-size.js';
   window.__a3dSetDiscipline=function(id){
     var i;
     for(i=0;i<A3D_DISCIPLINES.length;i++)if(A3D_DISCIPLINES[i].id===id){
-      A3D_DISC_CUR=id;bimBuildDock();return true;
+      setA3D_DISC_CUR(id);bimBuildDock();return true;
     }
     return false;
   };

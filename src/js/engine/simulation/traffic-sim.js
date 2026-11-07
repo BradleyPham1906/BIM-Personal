@@ -10,7 +10,7 @@ import { bimTrWalkRoute } from './traffic-walkers.js';
 import { a3dToast } from '../bim/csg-booleans.js';
 
   /* ================= __acad3dV171: traffic and people around the site: the run =================
-     reference/research-traffic.md, sections 1 to 3 and 8. One run at a time, on V170's clock: built when it starts
+     docs/research/research-traffic.md, sections 1 to 3 and 8. One run at a time, on V170's clock: built when it starts
      (the network, the plans, the demand, the walkers' ways), warmed up, then stepped at a fixed step while the clock
      plays and drawn between steps; Stop gives it up. Cars and walkers live in fixed pools of typed arrays allocated
      once a run: nothing piles up while it runs. What it finds is tallied as it goes, never recorded step by step.

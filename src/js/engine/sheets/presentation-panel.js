@@ -35,7 +35,7 @@ import {
   bimFinishConstraintPick, bimResolveSketch, bimSketchConstraintLabel, pick
 } from '../drawing/sketch-constraints.js';
 import { bimApplyMarquee } from '../editing/selection-tools.js';
-import { A3D_MATERIALIZED } from '../editing/precision-editing.js';
+import { setA3D_MATERIALIZED } from '../editing/precision-editing.js';
 import { bimPropagateFrom } from '../bim/region-dependents.js';
 import { VIEWS, cubeHit, inRect, setView } from '../editing/modify-toolbox.js';
 import { bimCleanShell } from '../assets/library-drag.js';
@@ -533,7 +533,7 @@ import { bimDevicePixelRatio } from '../ui/canvas-size.js';
       var gcopy=gz&&(gz.kind==='axis'||gz.kind==='plane'||gz.kind==='centre')&&!ev.altKey;
       if(gz&&(!gctrl||gcopy)){
         bimCloseGizmoMenu();
-        A3D_MATERIALIZED=[];
+        setA3D_MATERIALIZED([]);
         var gd=bimGizmoBegin(gz,xy,ev);
         if(gd){
           /* __acad3dV123: nothing happens on the press. The undo step and, with Ctrl, the copies are
@@ -809,8 +809,10 @@ import { bimDevicePixelRatio } from '../ui/canvas-size.js';
     bimZoomAbout(Math.pow(1.0015,ev.deltaY),xy[0],xy[1]);
     ev.preventDefault();paint();saveSoon();
   }
+  /* setters: other files assign these through them (an ES module cannot assign to an import) */
+  function setDrag(v){drag=v;return v;}
 export {
   A3D_PRP, BIM_ZOOM_MAX, BIM_ZOOM_MIN, bimPresHost, bimPresOpenPage, bimPresPanelHtml, bimPresPanelRefresh,
   bimPresRename, bimPresThumbsQueue, bimWirePresPanel, bimZoomAbout, bimZoomClamp, cvXY, drag, onDown, onMove,
-  onUp, onWheel, refreshBrowser, refreshTree
+  onUp, onWheel, refreshBrowser, refreshTree, setDrag
 };

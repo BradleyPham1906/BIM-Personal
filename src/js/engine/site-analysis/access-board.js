@@ -21,7 +21,7 @@ import { bimProjectLabel } from '../ui/project-tabs.js';
 import { bimFigCapKpis } from '../sheets/board-figures.js';
 
   /* ================= __acad3dV161: the Access and people board =================
-     reference/research-access-people.md (8). Every figure is titled with its finding and has its
+     docs/research/research-access-people.md (8). Every figure is titled with its finding and has its
      source and its table; the people's figures carry their margins of error. */
   var BIM_ACC_LETTER={food:'F',health:'H',learn:'L',parks:'P',eat:'E',services:'S',community:'C'};
   var BIM_ACC_SHORT={food:'Food',health:'Health',learn:'Learning',parks:'Parks, play',eat:'Eating out',services:'Banks, post',community:'Community'};

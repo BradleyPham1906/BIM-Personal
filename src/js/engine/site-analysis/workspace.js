@@ -19,7 +19,7 @@ import { saveSoon } from '../bim/region-regenerate.js';
 import { a3dToast } from '../bim/csg-booleans.js';
 
   /* ================= __acad3dV158: Site analysis SA1, the workspace and the standard =================
-     The standard is reference/research-site-analysis-process.md: ten fixed categories, and findings
+     The standard is docs/research/research-site-analysis-process.md: ten fixed categories, and findings
      that each name a source, a date and how sure they are, classed as a constraint, an opportunity,
      a red flag or a fact. Kept with the project in A3D.site.analysis. __acad3dV164: the findings are
      the ones the data writes; the stages, the questions, typed findings, photographs, pins and

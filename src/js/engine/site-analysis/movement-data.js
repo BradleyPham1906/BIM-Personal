@@ -16,7 +16,7 @@ import { toScreen } from '../io/import-entry.js';
 import { bimGeoToModel, bimMapSettings } from '../map/map-tiles.js';
 
   /* ================= __acad3dV166: site analysis in the model III, movement: the data =================
-     reference/research-site-analysis-in-model.md, section 4. Kept with the access data as mv, so the six
+     docs/research/research-site-analysis-in-model.md, section 4. Kept with the access data as mv, so the six
      movement analyses run again offline. Coordinates in model metres to the decimetre. */
   var BIM_MV_R=800,BIM_MV_DOOR=3,BIM_MV_CAR=400,BIM_MV_NODES=6000,BIM_MV_TOL=0.75,BIM_MV_CARS=24;
   /* the tags movement reads; the rest of a way's tags stay in OpenStreetMap */

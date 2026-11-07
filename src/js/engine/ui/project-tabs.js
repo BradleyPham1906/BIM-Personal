@@ -3,7 +3,7 @@ import {
   bimApplyStoredState
 } from '../core/state.js';
 import {
-  A3D_TYPING, REDO_STACK, UNDO_STACK, bimSyncStatusBar, undoSuspend
+  A3D_TYPING, REDO_STACK, UNDO_STACK, bimSyncStatusBar, setREDO_STACK, setUNDO_STACK, setUndoSuspend
 } from '../drawing/plan-mode-sketch.js';
 import { bimEndSketch } from '../drawing/command-ending.js';
 import { bimSyncActiveGlobal } from '../bim/levels-walls-floors.js';
@@ -14,12 +14,14 @@ import { refreshLayers } from '../layers/analysis-data-rows.js';
 import { refreshProps } from '../site-analysis/panel.js';
 import { paint } from '../map/terrain-3d.js';
 import { bimExitSection } from '../views/section-tool.js';
-import { bimProjectRecord, save3d, saveT } from '../core/objects-save.js';
+import { bimProjectRecord, save3d, saveT, setSaveT } from '../core/objects-save.js';
 import {
   A3D_SPILL, bimIdbDel, bimIdbGet, bimIsIdbPointer, bimParkInIdb, bimSpillSave, bimSpillToast
 } from '../core/idb-store.js';
 import { refreshHud } from '../bim/region-regenerate.js';
-import { A3D_LAST_MODEL_VIEW, A3D_VIEW, bimActivateView, refreshViews } from '../views/saved-views.js';
+import {
+  A3D_LAST_MODEL_VIEW, A3D_VIEW, bimActivateView, refreshViews, setA3D_LAST_MODEL_VIEW
+} from '../views/saved-views.js';
 import { bimCloseSheetView } from '../sheets/present.js';
 import { refreshBrowser, refreshTree } from '../sheets/presentation-panel.js';
 import { closeDlg } from './touch-input.js';
@@ -129,7 +131,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
      the page closed or reloaded -- measured: a wall drawn just before a reload, gone 8 times in 8.
      pagehide is the last moment the page can still write. */
   window.addEventListener('pagehide',function(){
-    if(saveT){clearTimeout(saveT);saveT=null;save3d();}
+    if(saveT){clearTimeout(saveT);setSaveT(null);save3d();}
   });
   function bimDocsSave(){
     try{localStorage.setItem(A3D_DOCS_KEY,JSON.stringify(A3D_DOCS));return true;}
@@ -156,7 +158,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
     var d=JSON.parse(A3D_PROJECT_DEFAULTS),k;
     for(k in d)if(d.hasOwnProperty(k))A3D[k]=d[k];
     bimApplyStoredState(st);
-    undoSuspend=true;
+    setUndoSuspend(true);
     try{
       bimEnsureTypes();
       bimEnsureBuildings();
@@ -165,7 +167,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
       bimSyncActiveGlobal();
       refreshTree();refreshHud();refreshLevels();refreshLayers();refreshViews();refreshBrowser();refreshProps();
       bimSyncStatusBar();
-    }finally{undoSuspend=false;}
+    }finally{setUndoSuspend(false);}
   }
   function bimDocsSwap(toId,stB,fromKey){
     var cur=A3D_DOCS.active;
@@ -204,7 +206,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
     var nameA=bimProjectLabel(),countA=A3D.objs.length;
     var rt=A3D_DOC_RT[toId]||null;
     try{
-      UNDO_STACK=rt?rt.undo:[];REDO_STACK=rt?rt.redo:[];
+      setUNDO_STACK(rt?rt.undo:[]);setREDO_STACK(rt?rt.redo:[]);
       A3D_TYPING.active=false;A3D_TYPING.buf='';
       bimLoadProjectRecord(stB);
     }catch(eL){
@@ -213,7 +215,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
         localStorage.setItem(LSK,sA);
         localStorage.removeItem(A3D_DOC_PREFIX+cur);
       }catch(eP){console.warn('[BIM] Browser storage could not be put back after a failed switch.',eP);}
-      UNDO_STACK=stash.undo;REDO_STACK=stash.redo;
+      setUNDO_STACK(stash.undo);setREDO_STACK(stash.redo);
       try{bimLoadProjectRecord(JSON.parse(sA));}
       catch(eA){console.warn('[BIM] The previous project could not be reloaded.',eA);}
       a3dToast('"'+bimDocName(toId)+'" could not be opened: its stored data is damaged');
@@ -235,7 +237,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
       if(shown&&rt.view.kind!=='sheet'){A3D.cam=rt.cam;paint();}
     }
     if(!shown)bimActivateView(window.ACAD_WS_CUR==='3d'?'3d':'plan',A3D.activeLevel,{anim:false});
-    A3D_LAST_MODEL_VIEW=(rt&&rt.lastModel)||null;   /* __acad3dV116: after the activation, which would record the other project's */
+    setA3D_LAST_MODEL_VIEW((rt&&rt.lastModel)||null);   /* __acad3dV116: after the activation, which would record the other project's */
     bimDocsSave();
     return true;
   }

@@ -13,17 +13,18 @@ import { toScreen } from '../io/import-entry.js';
 import { paint } from '../map/terrain-3d.js';
 import { A3D_GIZ } from '../gizmo/transform-gizmo.js';
 import {
-  A3D_CLICKBOX_T, bimFmtLen, bimGizmoParseValue, bimGizmoRestoreObjs, bimGizmoTyping, bimValueBox
+  A3D_CLICKBOX_T, bimFmtLen, bimGizmoParseValue, bimGizmoRestoreObjs, bimGizmoTyping, bimValueBox,
+  setA3D_CLICKBOX_T
 } from '../gizmo/gizmo-handles.js';
 import {
   A3D_PUSH, bimFaceArrow, bimFaceCurrent, bimPosKey, bimPrmDim, bimWallEndInfo
 } from './faces-push-pull.js';
-import { A3D_MATERIALIZED, bimFlushMaterialized } from './precision-editing.js';
+import { bimFlushMaterialized, setA3D_MATERIALIZED } from './precision-editing.js';
 import { bimPropagateFrom } from '../bim/region-dependents.js';
 import { saveSoon } from '../bim/region-regenerate.js';
 import { bimWallLength } from '../views/schedules.js';
 import { bimObjectVisibleOnLevel } from '../views/saved-views.js';
-import { drag, refreshTree } from '../sheets/presentation-panel.js';
+import { drag, refreshTree, setDrag } from '../sheets/presentation-panel.js';
 import { a3dToast, objById } from '../bim/csg-booleans.js';
 import { cvH, cvW } from '../ui/canvas-size.js';
 
@@ -61,7 +62,7 @@ import { cvH, cvW } from '../ui/canvas-size.js';
       d.padId='a3d-'+Date.now().toString(36)+'-'+(A3D.seq++);
       d.padName='Pad '+((A3D.counts.pad||0)+1);
     }
-    A3D_MATERIALIZED=[];
+    setA3D_MATERIALIZED([]);
     pushUndo();
     d.undoAt=UNDO_STACK.length;
     return true;
@@ -412,25 +413,25 @@ import { cvH, cvW } from '../ui/canvas-size.js';
   function bimPushValue(dist){
     var rec=bimPushPress([0,0],null);
     rec.moved=true;
-    drag=rec;
-    if(!bimPushBegin(rec,false)){drag=null;return 'This face cannot move now';}
+    setDrag(rec);
+    if(!bimPushBegin(rec,false)){setDrag(null);return 'This face cannot move now';}
     if(!bimPushTo(dist,true)){
       var why=rec.limit;
-      bimPushCancel(rec,true);drag=null;
+      bimPushCancel(rec,true);setDrag(null);
       return why||'That is further than this face can go';
     }
-    drag=null;
+    setDrag(null);
     bimPushEnd(rec);
     return null;
   }
   /* a click on the held face asks for its value, once a double-click can no longer be under way */
   function bimFaceClickValue(rec){
     if(A3D_CLICKBOX_T)clearTimeout(A3D_CLICKBOX_T);
-    A3D_CLICKBOX_T=setTimeout(function(){
-      A3D_CLICKBOX_T=null;
+    setA3D_CLICKBOX_T(setTimeout(function(){
+      setA3D_CLICKBOX_T(null);
       if(drag)return;
       bimFaceValueBox(null,rec.cx,rec.cy);
-    },A3D_GIZ.clickWait);
+    },A3D_GIZ.clickWait));
   }
   function bimPickGrip(x,y){
     if(!A3D.grips)return null;

@@ -261,8 +261,10 @@ import { a3dToast, groundPoint } from '../bim/csg-booleans.js';
     if(b)b.classList.toggle('a3d-kb-up',kb>0);
     return kb;
   }
+  /* setters: other files assign these through them (an ES module cannot assign to an import) */
+  function setA3D_SHELL_OBS(v){A3D_SHELL_OBS=v;return v;}
 export {
   A3D_ASDRAG, A3D_ASDRAG_EAT, A3D_SHELL_OBS, A3D_SHELL_TIER, bimAssetDragCancel, bimAssetDragDown,
   bimAssetDragEnd, bimAssetDragMove, bimAssetDragUp, bimAssetDropAt, bimCleanShell, bimKbFit, bimRailIcon,
-  bimShellApplyTier, bimShellDrawer, bimShellOverlay, bimShellTier
+  bimShellApplyTier, bimShellDrawer, bimShellOverlay, bimShellTier, setA3D_SHELL_OBS
 };

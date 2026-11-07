@@ -15,7 +15,7 @@ import { A3D_PRP, bimPresPanelRefresh, refreshBrowser } from './presentation-pan
 import { a3dToast } from '../bim/csg-booleans.js';
 
   /* ================= __acad3dV162: the boards are pages of the set =================
-     reference/research-one-analyze-boards.md. A board is a page of the presentation beside the
+     docs/research/research-one-analyze-boards.md. A board is a page of the presentation beside the
      sheets: in the Presentation panel with its thumbnail, in the main view, in Present and in Print
      set. Analyze fetches the data and links to it. A3D.pres keeps the boards in the set and the
      set's order; the sheets keep their order among themselves (the layout tabs), and a board its

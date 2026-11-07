@@ -6,7 +6,7 @@ import { bimLayerSelectable } from '../layers/layer-rules.js';
 import { toScreen } from '../io/import-entry.js';
 import { bimPointSegDist } from '../render/viewcube.js';
 import { bimGizmoSnapSetup, bimGizmoStarts } from './gizmo-handles.js';
-import { A3D_MATERIALIZED } from '../editing/precision-editing.js';
+import { setA3D_MATERIALIZED } from '../editing/precision-editing.js';
 import { bimHasBulge } from '../drawing/arc-storage.js';
 import { bimIsHatch } from '../drawing/hatch.js';
 import { a3dToast, groundPoint, objById } from '../bim/csg-booleans.js';
@@ -424,7 +424,7 @@ import { cvH, cvW } from '../ui/canvas-size.js';
            snaps:bimGizmoSnapSetup(ids),fine:false,
            ids:ids,start:bimGizmoStarts(ids),x0:bd.x,y0:bd.y,da:0,db:0,gizVec:[0,0,0],moved:true,body:true};
     }
-    A3D_MATERIALIZED=[];
+    setA3D_MATERIALIZED([]);
     pushUndo();
     return rec;
   }

@@ -1,5 +1,5 @@
 import { A3D, el } from '../core/state.js';
-import { bimUndoHold, pushUndo } from '../drawing/plan-mode-sketch.js';
+import { bimUndoHold, pushUndo, setBimUndoHold } from '../drawing/plan-mode-sketch.js';
 import { updateLevel } from '../bim/level-datum.js';
 import { A3D_SUNX, bimSunNum, bimSunSettings } from '../site/sun-position.js';
 import { bimIsProperty, bimPropertyGeometry } from '../site/property.js';
@@ -41,7 +41,7 @@ import { saveSoon } from '../bim/region-regenerate.js';
 import { a3dToast, objById } from '../bim/csg-booleans.js';
 
   /* ================= __acad3dV171b: the analysis workspace =================
-     reference/research-analysis-workspace.md. The site analysis is a place one goes into and leaves, as archiMap's
+     docs/research/research-analysis-workspace.md. The site analysis is a place one goes into and leaves, as archiMap's
      and Forma's are: a bar over the view with the analysis in focus and a cross; on the left the analyses in their
      groups, one in focus and others ticked under it; on the right, where Properties is while nothing is selected,
      the one analysis: what it shows, its settings, its chart, its key, what the run said and its source. The view
@@ -161,8 +161,8 @@ import { a3dToast, objById } from '../bim/csg-booleans.js';
     if(S.focus!==a||add.length!==S.add.length||bimAwFocusNow()!==a){
       pushUndo();   /* the step taken before the change, so undoing it gives the focus back with the layers */
       S.focus=a;S.add=add;
-      var held=bimUndoHold;bimUndoHold=true;
-      try{bimAwApply(false);}finally{bimUndoHold=held;}
+      var held=bimUndoHold;setBimUndoHold(true);
+      try{bimAwApply(false);}finally{setBimUndoHold(held);}
       saveSoon();
     }
     bimAwBlur();
@@ -180,8 +180,8 @@ import { a3dToast, objById } from '../bim/csg-booleans.js';
     pushUndo();
     if(on){if(S.focus===a)S.focus=null;S.add=S.add.filter(function(x){return x!==a;});}
     else if(S.add.indexOf(a)<0)S.add.push(a);
-    var held=bimUndoHold;bimUndoHold=true;
-    try{bimAwApply(false);}finally{bimUndoHold=held;}
+    var held=bimUndoHold;setBimUndoHold(true);
+    try{bimAwApply(false);}finally{setBimUndoHold(held);}
     saveSoon();
     bimAwRefresh();
     return true;
@@ -267,8 +267,8 @@ import { a3dToast, objById } from '../bim/csg-booleans.js';
   function bimAwAfterRun(){
     var S=bimAwState(),held=bimUndoHold;
     if(!bimDgState().last){S.focus=null;S.add=[];A3D_AW.pick=null;}
-    bimUndoHold=true;
-    try{bimAwApply(false);}finally{bimUndoHold=held;}
+    setBimUndoHold(true);
+    try{bimAwApply(false);}finally{setBimUndoHold(held);}
     bimAwOpen();
     bimAwFold(false);
     bimAwBar();
@@ -278,8 +278,8 @@ import { a3dToast, objById } from '../bim/csg-booleans.js';
     var S=bimAwState(),held=bimUndoHold;
     S.focus='traffic';S.add=S.add.filter(function(x){return x!=='traffic';});
     A3D_AW.pick=null;A3D_AW.props=false;
-    bimUndoHold=true;
-    try{bimAwApply(false);}finally{bimUndoHold=held;}
+    setBimUndoHold(true);
+    try{bimAwApply(false);}finally{setBimUndoHold(held);}
     bimAwOpen();
     bimAwFold(false);
     bimAwRefresh();

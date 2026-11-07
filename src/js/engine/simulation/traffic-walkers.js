@@ -2,7 +2,7 @@ import { bimStd } from '../standards/registry.js';
 import { bimTrAt, bimTrFootWay, bimTrHw, bimTrPolyLen, bimTrStreetWalk } from './traffic-network.js';
 
   /* ================= __acad3dV171: traffic and people around the site: the walkers' ways =================
-     reference/research-traffic.md, section 8. Walkers keep to the sidewalks of the streets they follow, each side a
+     docs/research/research-traffic.md, section 8. Walkers keep to the sidewalks of the streets they follow, each side a
      line beyond the roadway's edge, and to footways and paths along their line. At a junction they cross what lies
      between their way in and their way out, the short way round: each arm of the junction has a crossing this far from
      its middle (the junction's crossings), its two ends on the arm's two sidewalks. A way is a polyline, with the

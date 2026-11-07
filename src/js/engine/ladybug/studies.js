@@ -24,7 +24,7 @@ import { bimObjectVisibleOnLevel } from '../views/saved-views.js';
 import { a3dToast } from '../bim/csg-booleans.js';
 
   /* ================= __acad3dV172c: sun-hours and radiation on the model, by Ladybug =================
-     reference/research-ladybug-sun-radiation.md (5b). Two studies, beside V143's Solar and V148's Sun hours (kept,
+     docs/research/research-ladybug-sun-radiation.md (5b). Two studies, beside V143's Solar and V148's Sun hours (kept,
      the owner, 2026-11-01):
      - rad: incident radiation on each face, kWh/m2 over the weather's year (or some months): Ladybug's SkyMatrix from
        the weather V172b opened, with Radiance's gendaymtx (WebAssembly), and RadiationStudy's own sum;

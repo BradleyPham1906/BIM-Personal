@@ -1,6 +1,6 @@
 import { A3D } from '../core/state.js';
 import { meshOf } from '../core/mesh-primitives.js';
-import { bimObjOffset, pushUndo, undoSuspend } from '../drawing/plan-mode-sketch.js';
+import { bimObjOffset, pushUndo, setUndoSuspend } from '../drawing/plan-mode-sketch.js';
 import { earClip } from '../drawing/drawing-input.js';
 import { bimTrueNorthDeg } from '../survey/survey-arithmetic.js';
 import { BIM_SETBACK_TYPES, bimIsProperty, bimPropertyGeometry } from '../site/property.js';
@@ -27,7 +27,7 @@ import { bimPresThumbsQueue, refreshTree } from '../sheets/presentation-panel.js
 import { a3dToast } from '../bim/csg-booleans.js';
 
   /* ================= __acad3dV160: Site analysis SA3, regulation: zoning, the envelope, the yield =================
-     reference/research-zoning-envelope-yield.md. A3D.site.zoning is the record; everything else is
+     docs/research/research-zoning-envelope-yield.md. A3D.site.zoning is the record; everything else is
      worked out from it and the property, when asked. */
   var BIM_ZN_ROLES=['front','side','rear'];
   var BIM_ZN_DEF={district:'',uses:'',source:'',far:null,maxH:null,maxStoreys:null,cover:null,
@@ -86,8 +86,8 @@ import { a3dToast } from '../bim/csg-booleans.js';
   /* every change to the record: one undo step, the envelope rebuilt if there is one, the findings refilled */
   function bimZnEdit(fn){
     pushUndo();
-    undoSuspend=true;
-    try{fn();if(bimZnEnvelopeObj())bimZnPlaceEnvelope(true);bimSaFill(true);}finally{undoSuspend=false;}
+    setUndoSuspend(true);
+    try{fn();if(bimZnEnvelopeObj())bimZnPlaceEnvelope(true);bimSaFill(true);}finally{setUndoSuspend(false);}
     bimZnDone();
     return true;
   }
@@ -487,8 +487,8 @@ import { a3dToast } from '../bim/csg-booleans.js';
     var C0=bimZnCalc();
     if(!C0.ok){a3dToast('No envelope: '+C0.error);return C0;}
     pushUndo();
-    undoSuspend=true;var C;
-    try{C=bimZnPlaceEnvelope(false);bimSaFill(true);}finally{undoSuspend=false;}
+    setUndoSuspend(true);var C;
+    try{C=bimZnPlaceEnvelope(false);bimSaFill(true);}finally{setUndoSuspend(false);}
     bimZnDone();
     var pr=C.proposed;
     a3dToast('Zoning envelope: '+bimClimInt(C.volume)+' m³, room for '+bimClimInt(C.capacity)+' m² over '+C.plates.length+' storeys; '+

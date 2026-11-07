@@ -428,11 +428,17 @@ import { cvH, cvW } from '../ui/canvas-size.js';
     return (o&&o.t==='sketch'&&!bimIsPoint(o))?o:null;
   }
   function cancelSketch(){A3D.sk=null;paint();}
+  /* setters: other files assign these through them (an ES module cannot assign to an import) */
+  function setBimUndoHold(v){bimUndoHold=v;return v;}
+  function setREDO_STACK(v){REDO_STACK=v;return v;}
+  function setUNDO_STACK(v){UNDO_STACK=v;return v;}
+  function setUndoSuspend(v){undoSuspend=v;return v;}
 export {
   A3D_SNAP, A3D_TYPING, PILL_GRID, PILL_ORBIT, PILL_ORTHO, PILL_PAN, PILL_PAUSE, PILL_PLAY, PILL_SNAP,
   PILL_STOP, REDO_STACK, SK_TOOLS, UNDO_STACK, bimClinesOnPlane, bimCommitTypedLength, bimEnterDraftingMode,
   bimObjOffset, bimRestoreState, bimSnapCandidates, bimSnapPoint, bimSnapshotState, bimStatusHintText,
   bimStatusHover, bimStatusHoverOut, bimSyncPresentPill, bimSyncStatusBar, bimSyncStatusHint,
   bimSyncStatusLevel, bimUndoHold, bimWorldElev, bimWorldPt, cancelSketch, doRedo, doUndo, objBBox, pushUndo,
-  selSketch, setNav, syncSnapPill, toggleFlat, undoSuspend
+  selSketch, setBimUndoHold, setNav, setREDO_STACK, setUNDO_STACK, setUndoSuspend, syncSnapPill, toggleFlat,
+  undoSuspend
 };

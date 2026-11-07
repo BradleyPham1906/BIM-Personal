@@ -1,5 +1,5 @@
 import { A3D } from '../core/state.js';
-import { pushUndo, undoSuspend } from '../drawing/plan-mode-sketch.js';
+import { pushUndo, setUndoSuspend } from '../drawing/plan-mode-sketch.js';
 import { padMesh, sketchCCW } from '../drawing/drawing-input.js';
 import { bimAddPoint } from '../drawing/point-node.js';
 import { bimCreateTerrain } from '../survey/survey-check.js';
@@ -204,7 +204,7 @@ import { a3dToast, objById } from '../bim/csg-booleans.js';
     var pinfo=feats?bimCtxPairParts(feats):{of:{},has:{}},nParts=0,nWhole=0,lowParts=0;   /* __acad3dV139 */
     var nRoofs={},nNoRoof={};   /* __acad3dV140 */
     pushUndo();
-    undoSuspend=true;
+    setUndoSuspend(true);
     try{
       /* what this fetch brings replaces what an earlier one brought, kind by kind */
       A3D.objs=A3D.objs.filter(function(x){return !(x.context&&repl[x.context.kind]);});
@@ -309,7 +309,7 @@ import { a3dToast, objById } from '../bim/csg-booleans.js';
       if(nParts)A3D.site.context.last.parts=nParts;   /* __acad3dV139 */
       var nR=0,kR;for(kR in nRoofs)if(nRoofs.hasOwnProperty(kR))nR+=nRoofs[kR];
       if(nR)A3D.site.context.last.roofs=nR;   /* __acad3dV140 */
-    }finally{undoSuspend=false;}
+    }finally{setUndoSuspend(false);}
     /* the selection stays what it was: the surface maker selects what it makes */
     A3D.sel=objById(selWas)?selWas:null;A3D.sel2=null;
     A3D.selSet=setWas.filter(function(id){return !!objById(id);});

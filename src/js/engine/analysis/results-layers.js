@@ -268,9 +268,11 @@ import { a3dToast, objById } from '../bim/csg-booleans.js';
     paint();refreshProps();bimAnalyzeRefresh();
     return n;
   }
+  /* setters: other files assign these through them (an ES module cannot assign to an import) */
+  function setA3D_RES_IMG(v){A3D_RES_IMG=v;return v;}
 export {
   A3D_RES_IMG, BIM_TVIEW_LABEL, bimDrawBandTris, bimRainCommand, bimResById, bimResGone, bimResHolds,
   bimResKeyFrom, bimResLayers, bimResNow, bimResOpacity, bimResStale, bimResValid, bimResultLayerAdd,
   bimResultLayerMove, bimResultLayerRemove, bimResultLayerSet, bimResultLayerUpdate, bimSimClear,
-  bimSimDrawFlow, bimSolarCommand, bimSunHoursCommand, drawResultLayers
+  bimSimDrawFlow, bimSolarCommand, bimSunHoursCommand, drawResultLayers, setA3D_RES_IMG
 };

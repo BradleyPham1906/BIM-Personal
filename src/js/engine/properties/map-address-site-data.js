@@ -1,5 +1,5 @@
 import { A3D, el } from '../core/state.js';
-import { objBBox, pushUndo, undoSuspend } from '../drawing/plan-mode-sketch.js';
+import { objBBox, pushUndo, setUndoSuspend } from '../drawing/plan-mode-sketch.js';
 import { bimAddPoint, bimIsPoint } from '../drawing/point-node.js';
 import { bimTrueNorthDeg } from '../survey/survey-arithmetic.js';
 import { bimIsProperty, bimPropertyGeometry } from '../site/property.js';
@@ -310,7 +310,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
     }
     var placed=false,org=bimMapOrigin(),ids=[],nShapes=0,nPts=0;
     pushUndo();
-    undoSuspend=true;
+    setUndoSuspend(true);
     try{
       if(!org){
         if(!A3D.site||typeof A3D.site!=='object')A3D.site={name:'Site'};
@@ -332,7 +332,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
         if(pp.hole)o.geo.part='hole';
         ids.push(o.id);
       }
-    }finally{undoSuspend=false;}
+    }finally{setUndoSuspend(false);}
     refreshTree();refreshLayers();refreshProps();fitScene();paint();saveSoon();
     a3dToast('Site data: '+nShapes+' shape'+(nShapes===1?'':'s')+' and '+nPts+' point'+(nPts===1?'':'s')+' from '+name+' on the Site data layer'+
       (placed?'; the site latitude and longitude were set to the data\'s centre':'')+
@@ -435,8 +435,10 @@ import { a3dToast } from '../bim/csg-booleans.js';
     a3dToast('Exported '+fn+' ('+fc.features.length+' feature'+(fc.features.length===1?'':'s')+', in longitude and latitude)');
     return fc;
   }
+  /* setters: other files assign these through them (an ES module cannot assign to an import) */
+  function setA3D_MAP_DRAFT(v){A3D_MAP_DRAFT=v;return v;}
 export {
   A3D_MAP_DRAFT, bimGeoCleanProps, bimGeoExport, bimGeoExportFC, bimGeoImportFile, bimGeoImportPick,
   bimGeoImportText, bimGeoJsonFeatures, bimGeoParts, bimGeoPositions, bimGeoPropsHtml, bimMapCommand,
-  bimMapFind, bimMapPropChange, bimMapPropClick, bimMapPropsHtml, openFindAddressDlg
+  bimMapFind, bimMapPropChange, bimMapPropClick, bimMapPropsHtml, openFindAddressDlg, setA3D_MAP_DRAFT
 };

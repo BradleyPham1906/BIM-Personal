@@ -17,7 +17,7 @@ JS = ROOT / 'src' / 'js' / 'engine' / 'ladybug' / 'adapter-py.js'
 HEAD = '''  /* ================= __acad3dV172b: the Ladybug adapter's Python, as text =================
      Written by tools/embed_py.py from src/py/bim_ladybug.py: edit the .py, then run the tool (--check proves the two
      agree). The worker writes it into Pyodide's site-packages beside the pinned wheels; Ladybug's own code runs
-     unchanged beneath it (reference/research-ladybug-weather-comfort.md). */
+     unchanged beneath it (docs/research/research-ladybug-weather-comfort.md). */
   var BIM_LB_PY=[
 '''
 
@@ -31,13 +31,20 @@ def render():
 
 
 def main():
-    out = render()
+    # The engine file is an ES module: its import and export lines (tools/engine_modules.cjs) stay as they are.
+    sys.path.insert(0, str(ROOT / 'tools'))
+    import build_app
+    have = JS.read_text(encoding='utf-8') if JS.exists() else ''
+    code = build_app.unmodule('js/engine/ladybug/adapter-py.js', have)
+    head = build_app.MOD_HEAD.match(have)
+    tail = build_app.MOD_TAIL.search(have)
+    body = render()
+    out = (head.group(0) if head else '') + (body[:-1] + tail.group(0) if tail else body)
     if '--check' in sys.argv[1:]:
-        have = JS.read_text(encoding='utf-8') if JS.exists() else ''
-        if have != out:
+        if code != body:
             print('%s is not what %s embeds: run python3 tools/embed_py.py' % (JS.relative_to(ROOT), PY.relative_to(ROOT)))
             sys.exit(1)
-        print('%s embeds %s (%d lines)' % (JS.relative_to(ROOT), PY.relative_to(ROOT), out.count('\n') - 6))
+        print('%s embeds %s (%d lines)' % (JS.relative_to(ROOT), PY.relative_to(ROOT), body.count('\n') - 6))
         return
     JS.parent.mkdir(parents=True, exist_ok=True)
     JS.write_text(out, encoding='utf-8')

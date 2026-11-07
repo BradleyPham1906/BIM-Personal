@@ -85,7 +85,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
       // ---- Ported (as residual formulas, not code) from FreeCAD's planegcs solver
       // (src/Mod/Sketcher/App/planegcs/Constraints.cpp) after a from-scratch survey of the real
       // FreeCAD source confirmed these specific formulas are small, self-contained, OCCT-free
-      // pure math -- see canvas_v10_STATUS.md's "Real FreeCAD source audit via GitHub" section.
+      // pure math -- see docs/dev/canvas_v10_STATUS.md's "Real FreeCAD source audit via GitHub" section.
       // Adapted to this app's point-index/residual-vector convention (planegcs uses raw pointers
       // into a shared parameter array and a signed "scale" factor per constraint; here every
       // constraint is just an unscaled residual fed to the shared Gauss-Newton solver above).

@@ -12,7 +12,7 @@ import { bimAccMin, bimAccPlanCols, bimAccStreetClass, bimMvLotPt } from './move
 import { bimMapSettings } from '../map/map-tiles.js';
 
   /* ================= __acad3dV166: site analysis in the model III, movement: the six analyses =================
-     reference/research-site-analysis-in-model.md, section 4. Each reads A3D.site.access: V161's walk times,
+     docs/research/research-site-analysis-in-model.md, section 4. Each reads A3D.site.access: V161's walk times,
      places and stops, and mv, the streets with their tags, the crossings, doors, car parks, lines and paths. */
   /* the classes, by OpenStreetMap's highway value as the usual crosswalk to the FHWA's has them; one hue,
      the higher class the brighter on the dark plan and the darker on a light map (both checked) */

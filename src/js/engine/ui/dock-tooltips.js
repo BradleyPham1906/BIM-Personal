@@ -53,8 +53,8 @@ import { refreshTree } from '../sheets/presentation-panel.js';
 import { openDlg, ric } from './touch-input.js';
 import { a3dToast, doBool, objById } from '../bim/csg-booleans.js';
 import {
-  A3DR_TABS, A3DR_UNIMPL, A3D_DISC_CUR, a3drActOf, a3drExt, a3drIsUnimpl, a3drLabel, bimActUsed, bimBuildDock,
-  bimOpenToolsPanel
+  A3DR_TABS, A3DR_UNIMPL, a3drActOf, a3drExt, a3drIsUnimpl, a3drLabel, bimActUsed, bimBuildDock,
+  bimOpenToolsPanel, setA3D_DISC_CUR
 } from './discipline-tabs.js';
 import { BIM_ACT_CMD, bimCmdCatalog } from '../commands/command-catalogue.js';
 import { bimLoadUIPanelPrefs, bimSaveUIPanelPrefs } from './build-ui.js';
@@ -177,7 +177,7 @@ import { BIM_SHEET_ACTS } from '../commands/command-map.js';
     });
     host.addEventListener('change',function(ev){
       if(ev.target&&ev.target.id==='a3d-discsel'){
-        A3D_DISC_CUR=ev.target.value;
+        setA3D_DISC_CUR(ev.target.value);
         bimBuildDock();
         a3dToast('Discipline: '+ev.target.options[ev.target.selectedIndex].text);
       }

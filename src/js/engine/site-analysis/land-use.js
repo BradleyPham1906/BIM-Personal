@@ -1,5 +1,5 @@
 import { A3D } from '../core/state.js';
-import { bimObjOffset, bimUndoHold, pushUndo } from '../drawing/plan-mode-sketch.js';
+import { bimObjOffset, bimUndoHold, pushUndo, setBimUndoHold } from '../drawing/plan-mode-sketch.js';
 import { bimTrueNorthDeg } from '../survey/survey-arithmetic.js';
 import { bimPointInPoly, bimPolyArea } from '../bim/rooms.js';
 import { refreshLayers } from '../layers/analysis-data-rows.js';
@@ -574,7 +574,7 @@ import { a3drIcon } from '../ui/discipline-tabs.js';
   function bimDgRunAll(only){
     var S=bimDgSite(),out={},held=bimUndoHold,i;
     if(only&&!bimDgAn(only))return null;
-    if(!held){pushUndo();bimUndoHold=true;}
+    if(!held){pushUndo();setBimUndoHold(true);}
     try{
       for(i=0;i<BIM_DG_AN.length;i++){
         var a=BIM_DG_AN[i].id;
@@ -582,7 +582,7 @@ import { a3drIcon } from '../ui/discipline-tabs.js';
         try{var r=BIM_DG_RUN[a](S);out[a]=bimDgPlace(a,r.E,r.run);out[a].note=(r.run&&r.run.note)||'';}
         catch(eA){console.warn('[BIM] The '+a+' analysis failed',eA);out[a]={error:String(eA&&eA.message||eA),total:0,note:''};}
       }
-    }finally{if(!held)bimUndoHold=false;}
+    }finally{if(!held)setBimUndoHold(false);}
     refreshTree();refreshLayers();refreshProps();paint();saveSoon();
     return out;
   }

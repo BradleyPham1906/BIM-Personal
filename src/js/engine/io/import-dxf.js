@@ -1,5 +1,5 @@
 import { A3D } from '../core/state.js';
-import { pushUndo, undoSuspend } from '../drawing/plan-mode-sketch.js';
+import { pushUndo, setUndoSuspend } from '../drawing/plan-mode-sketch.js';
 import { bimGetActiveLevel } from '../bim/levels-walls-floors.js';
 import { bimDxfBulgesToModel, bimDxfToModel } from './export-mappings.js';
 import { bimLayerById } from '../layers/layer-rules.js';
@@ -177,7 +177,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
     try{res=dxfParse(text);}
     catch(eP){console.warn('[BIM] DXF parse failed: ',eP);a3dToast('DXF import failed: could not parse '+filename);return;}
     pushUndo();
-    undoSuspend=true;
+    setUndoSuspend(true);
     var __dxfStart=A3D.objs.length;
     var scale,layerMap={},dxfNames,created=0,skippedPoints=0,i;
     try{
@@ -236,7 +236,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
       }
     }finally{
       var __dxfI;for(__dxfI=__dxfStart;__dxfI<A3D.objs.length;__dxfI++)A3D.objs[__dxfI].locked=true;
-      undoSuspend=false;
+      setUndoSuspend(false);
     }
     function layerIdFor(nm){
       if(layerMap[nm])return layerMap[nm];

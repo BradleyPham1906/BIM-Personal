@@ -21,7 +21,7 @@ import { bimClipHalfPlane } from '../structure/tributary-loads.js';
 import { a3dToast } from '../bim/csg-booleans.js';
 
   /* ================= __acad3dV165: site analysis in the model II, land and water =================
-     reference/research-site-analysis-in-model.md, section 2. The ground at the site's scale -- a grid
+     docs/research/research-site-analysis-in-model.md, section 2. The ground at the site's scale -- a grid
      every 5 m for 150 m around it -- and six analyses on it, each a layer of the same button. The grid
      is kept with the project in metres above sea level (A3D.site.land), so each runs again offline;
      the model's own heights come from it less the datum, the height of model 0. */

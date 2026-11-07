@@ -1,6 +1,6 @@
 import { A3D } from '../core/state.js';
 import { faceNormal, meshOf } from '../core/mesh-primitives.js';
-import { bimObjOffset, pushUndo, undoSuspend } from '../drawing/plan-mode-sketch.js';
+import { bimObjOffset, pushUndo, setUndoSuspend } from '../drawing/plan-mode-sketch.js';
 import { earClip, sketchCCW } from '../drawing/drawing-input.js';
 import { bimTriggerDownload } from '../annotation/annotation-pick.js';
 import { bimFileStem } from '../io/project-file.js';
@@ -245,7 +245,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
     var org=bimMapOrigin(),placed=false,datum=bimCtxDatum(),local=!utm;
     var cE=(mn[0]+mx[0])/2,cN=(mn[1]+mx[1])/2;
     pushUndo();
-    undoSuspend=true;
+    setUndoSuspend(true);
     var out=[],nOk=0,nBad=0,lods={},types={};
     try{
       if(utm&&!org){
@@ -295,7 +295,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
         lods[o.cityjson.lod]=(lods[o.cityjson.lod]||0)+1;types[pk.co.type]=(types[pk.co.type]||0)+1;
         A3D.objs.push(o);out.push(o.id);
       }
-    }finally{undoSuspend=false;}
+    }finally{setUndoSuspend(false);}
     refreshTree();refreshLayers();refreshProps();fitScene();paint();saveSoon();
     var ts=Object.keys(types).map(function(x){return types[x]+' '+x;}).join(', '),ls=Object.keys(lods).sort().map(function(x){return 'LOD'+x;}).join(', ');
     a3dToast('CityJSON: '+ts+' ('+ls+') from '+name+' on the CityJSON layer; '+nOk+' valid'+(nBad?', '+nBad+' with problems (see each one\'s LOD group)':'')+

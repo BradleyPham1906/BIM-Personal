@@ -1,12 +1,12 @@
   /* ================= __acad3dV172c: the sky's program and the rays, in the Ladybug worker =================
-     reference/research-ladybug-sun-radiation.md (5b, 6). These functions are not called by the engine: the worker is
+     docs/research/research-ladybug-sun-radiation.md (5b, 6). These functions are not called by the engine: the worker is
      made from their text (bimLbStart), so each reads nothing but its arguments and the worker's globals.
      - bimLbWasiRun: a WASI command (wasi_snapshot_preview1) run with stdin given and stdout, stderr gathered; the
-       twelve imports Radiance's gendaymtx asks for, no files, no folders (reference/experiments/v172c-sky/).
+       twelve imports Radiance's gendaymtx asks for, no files, no folders (docs/research/experiments/v172c-sky/).
      - bimLbBvhBuild, bimLbBvhBlocked: an any-hit ray test over a bounding-volume hierarchy of the model's
        triangles: the same Moller-Trumbore test and thresholds as V143's bimRayTri (|det| under 1e-12 misses, a hit
        beyond 1e-6), split at the median of the longest axis, leaves of up to four. Measured against the app's own
-       rays: the same answer for 362,440 rays; 20,000 faces in about 3 s (reference/experiments/v172c-rays/).
+       rays: the same answer for 362,440 rays; 20,000 faces in about 3 s (docs/research/experiments/v172c-rays/).
      - bimLbStudyVecs, bimLbStudyRows: Ladybug's directions turned into the app's frame and north, and the rows of a
        study's matrix: the cosine where a direction is seen (radiation, as Radiance's rcontrib gives Ladybug), or 1
        where the sun is (direct sun hours). */

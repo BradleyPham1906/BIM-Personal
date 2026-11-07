@@ -81,4 +81,6 @@ import { cvH, cvScale, cvW } from '../ui/canvas-size.js';
     if(A3D_PICK_GPU==='on')return true;
     return (A3D.glFaces||0)>BIM_PICK_GPU_FACES;
   }
-export { A3D_PICK_GPU, bimPickGpu, bimPickGpuWanted };
+  /* setters: other files assign these through them (an ES module cannot assign to an import) */
+  function setA3D_PICK_GPU(v){A3D_PICK_GPU=v;return v;}
+export { A3D_PICK_GPU, bimPickGpu, bimPickGpuWanted, setA3D_PICK_GPU };

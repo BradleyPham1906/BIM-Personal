@@ -8,7 +8,7 @@ import { bimAccStreetClass, bimMvLotPt } from '../site-analysis/movement-data.js
 import { bimPointSegDist } from '../render/viewcube.js';
 
   /* ================= __acad3dV171: traffic and people around the site: the network =================
-     reference/research-traffic.md, sections 5 and 8. The streets V166 keeps (mv), within the simulation's reach of the
+     docs/research/research-traffic.md, sections 5 and 8. The streets V166 keeps (mv), within the simulation's reach of the
      lot: every way a car may use, cut at the reach and split at its junctions into edges, each edge a link for each way
      it may be driven, with its lanes, speed and width; the junctions with their arms, turns, right of way, stops and
      signals; the lot's entry and doors; the footways and the sidewalks walkers use. Built at the start of a run from what

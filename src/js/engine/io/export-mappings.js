@@ -289,7 +289,9 @@ import { a3dToast } from '../bim/csg-booleans.js';
       count:function(){return defs.length;}
     };
   }
+  /* setters: other files assign these through them (an ES module cannot assign to an import) */
+  function setBIM_PAT_SVG_SEQ(v){BIM_PAT_SVG_SEQ=v;return v;}
 export {
   BIM_PAT_SVG_SEQ, bimBuildDXF, bimDxfBulgesToModel, bimDxfToModel, bimEscXml, bimExportDXF, bimExportOffset,
-  bimPatternRegistry, bimPatternSvgDef
+  bimPatternRegistry, bimPatternSvgDef, setBIM_PAT_SVG_SEQ
 };

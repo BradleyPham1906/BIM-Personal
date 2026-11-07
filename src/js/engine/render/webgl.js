@@ -128,7 +128,10 @@ import { faceNormal } from '../core/mesh-primitives.js';
     if(rec.norm)gl.deleteBuffer(rec.norm);
     if(rec.edge)gl.deleteBuffer(rec.edge);
   }
+  /* setters: other files assign these through them (an ES module cannot assign to an import) */
+  function setA3D_GL(v){A3D_GL=v;return v;}
+  function setA3D_GL_FAILED(v){A3D_GL_FAILED=v;return v;}
 export {
-  A3D_GL, A3D_GL_FAILED, BIM_EDGE_PULL, GL_EDGE_FACE_LIMIT, bimGlBuildObjBuffer, bimGlCompile,
-  bimGlDisposeBuffer, bimGlInit, bimGlProjMatrix, bimGlViewMatrix, bimHexToRgb
+  A3D_GL, BIM_EDGE_PULL, GL_EDGE_FACE_LIMIT, bimGlBuildObjBuffer, bimGlCompile, bimGlDisposeBuffer, bimGlInit,
+  bimGlProjMatrix, bimGlViewMatrix, bimHexToRgb, setA3D_GL, setA3D_GL_FAILED
 };

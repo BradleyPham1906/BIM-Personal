@@ -521,10 +521,17 @@ import { size } from '../ui/canvas-size.js';
     window.addEventListener('resize',function(){bimRightApply();});
     bimRightApply();
   }
+  /* setters: other files assign these through them (an ES module cannot assign to an import) */
+  function setA3D_BR_CMP(v){A3D_BR_CMP=v;return v;}
+  function setA3D_BR_DEL(v){A3D_BR_DEL=v;return v;}
+  function setA3D_BR_NEW(v){A3D_BR_NEW=v;return v;}
+  function setA3D_BR_PICK(v){A3D_BR_PICK=v;return v;}
+  function setA3D_HIST_MSG(v){A3D_HIST_MSG=v;return v;}
 export {
-  A3D_BR_CMP, A3D_BR_DEL, A3D_BR_NEW, A3D_BR_PICK, A3D_HIST_MSG, A3D_MERGE, bimHistAct, bimHistBase,
-  bimHistBranchAct, bimHistBranchDelete, bimHistBranchNew, bimHistBranches, bimHistCommitCommand,
-  bimHistCompare, bimHistDoCommit, bimHistHtml, bimHistMergeAbort, bimHistMergeChoose, bimHistMergeFinish,
-  bimHistMergeStart, bimHistObjHtml, bimHistOf, bimHistRestore, bimHistReveal, bimHistSize, bimHistSwitch,
-  bimHistSwitchUI, bimRightApply, bimRightSetWidth, bimRightToggleMin, bimRightWire
+  A3D_BR_DEL, A3D_MERGE, bimHistAct, bimHistBase, bimHistBranchAct, bimHistBranchDelete, bimHistBranchNew,
+  bimHistBranches, bimHistCommitCommand, bimHistCompare, bimHistDoCommit, bimHistHtml, bimHistMergeAbort,
+  bimHistMergeChoose, bimHistMergeFinish, bimHistMergeStart, bimHistObjHtml, bimHistOf, bimHistRestore,
+  bimHistReveal, bimHistSize, bimHistSwitch, bimHistSwitchUI, bimRightApply, bimRightSetWidth,
+  bimRightToggleMin, bimRightWire, setA3D_BR_CMP, setA3D_BR_DEL, setA3D_BR_NEW, setA3D_BR_PICK,
+  setA3D_HIST_MSG
 };

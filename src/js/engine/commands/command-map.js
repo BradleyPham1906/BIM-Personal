@@ -11,7 +11,7 @@ import {
   bimCutFillCommand, bimCutFillMapCommand, bimGradeCommand, bimSlopeArrowsCommand, bimSpotCommand
 } from '../terrain/grading.js';
 import {
-  A3D_BR_CMP, bimHistBranches, bimHistCommitCommand, bimHistReveal
+  bimHistBranches, bimHistCommitCommand, bimHistReveal, setA3D_BR_CMP
 } from '../history/branches-merge.js';
 import { bimIsProperty, bimPropertyFromSketch, openPropertyDlg } from '../site/property.js';
 import {
@@ -137,7 +137,7 @@ import { bimOpenToolsPanel } from '../ui/discipline-tabs.js';
     history:function(){bimHistReveal(false);},
     branch:function(){bimHistReveal(false);setTimeout(function(){var i=document.querySelector('#a3d-propsbody [data-brname]');if(i)i.focus();},0);},   /* __acad3dV151 */
     merge:function(){bimHistReveal(false);if(bimHistBranches().length<2)a3dToast('There is one branch: start another with BRANCH');},
-    comparebranches:function(){A3D_BR_CMP=true;bimHistReveal(false);},
+    comparebranches:function(){setA3D_BR_CMP(true);bimHistReveal(false);},
     graphics:function(){bimGraphicsCommand();},   /* __acad3dV153 */
     benchmark:function(){bimBenchmark();},   /* __acad3dV155 */
     cutfill:function(){bimCutFillCommand();},

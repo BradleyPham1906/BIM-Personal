@@ -306,7 +306,7 @@ import { refreshTree } from '../sheets/presentation-panel.js';
   }
   function bimAnalyzeCommandTab(){bimShellSetTab('analyze');return true;}
   /* ================= __acad3dV164: site analysis drawn in the model =================
-     reference/research-site-analysis-in-model.md. The owner: "a live analysis that is editable".
+     docs/research/research-site-analysis-in-model.md. The owner: "a live analysis that is editable".
      Each analysis draws its diagram as elements of the model -- objects of their own kind, 'diag',
      on a layer of their own under Site analysis -- so each can be selected, moved, turned, restyled,
      relabelled or deleted like anything drawn by hand, and each is live: the analysis lays it down

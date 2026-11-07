@@ -9,7 +9,8 @@ import { paint } from '../map/terrain-3d.js';
 import { fitScene } from '../ui/tool-palette.js';
 import { refreshHud, saveSoon } from '../bim/region-regenerate.js';
 import {
-  A3D_LAST_MODEL_VIEW, A3D_VIEW, bimActivateView, bimCameraIsPlan, bimSetActiveView, bimViewOfCamera
+  A3D_LAST_MODEL_VIEW, A3D_VIEW, bimActivateView, bimCameraIsPlan, bimSetActiveView, bimViewOfCamera,
+  setA3D_LAST_MODEL_VIEW
 } from './saved-views.js';
 import { refreshTree } from '../sheets/presentation-panel.js';
 import { closeDlg } from '../ui/touch-input.js';
@@ -214,7 +215,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
     if(!rec||rec.kind==='sheet'||rec.kind==='section')rec=bimViewOfCamera();
     if(A3D_VIEW.kind==='sheet'){
       if(A3D_LAST_MODEL_VIEW&&A3D_LAST_MODEL_VIEW.kind==='section')
-        A3D_LAST_MODEL_VIEW={kind:rec.kind,id:rec.id,cam:{yaw:c.yaw,pitch:c.pitch,dist:c.dist,tx:c.tx,ty:c.ty,tz:c.tz}};
+        setA3D_LAST_MODEL_VIEW({kind:rec.kind,id:rec.id,cam:{yaw:c.yaw,pitch:c.pitch,dist:c.dist,tx:c.tx,ty:c.ty,tz:c.tz}});
       refreshHud();
     }else bimSetActiveView(rec.kind,rec.id,null);
     paint();saveSoon();

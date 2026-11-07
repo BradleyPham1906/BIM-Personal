@@ -323,8 +323,10 @@ import { bimLoadUIPanelPrefs, bimSaveUIPanelPrefs } from './build-ui.js';
     var it=bimCatForAct(bimCmdCatalog(),act);
     if(it)bimCmdUsed(it.id);
   }
+  /* setters: other files assign these through them (an ES module cannot assign to an import) */
+  function setA3D_DISC_CUR(v){A3D_DISC_CUR=v;return v;}
 export {
   A3DR_TABS, A3DR_UNIMPL, A3D_DISCIPLINES, A3D_DISC_CUR, A3D_DOCK_PIN_DEFAULTS, a3drActOf, a3drExt, a3drIcon,
   a3drIsUnimpl, a3drLabel, a3drRegisterCommand, a3drRegisterDiscipline, a3drRegisterTab, a3drTabGroups,
-  bimActUsed, bimBuildDock, bimDockPins, bimOpenToolsPanel, bimSetDockPin, bimToggleDockPin
+  bimActUsed, bimBuildDock, bimDockPins, bimOpenToolsPanel, bimSetDockPin, bimToggleDockPin, setA3D_DISC_CUR
 };

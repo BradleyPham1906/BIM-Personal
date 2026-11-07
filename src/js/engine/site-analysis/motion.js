@@ -18,7 +18,7 @@ import { a3dToast, objById } from '../bim/csg-booleans.js';
 import { cvH, cvW } from '../ui/canvas-size.js';
 
   /* ================= __acad3dV170: the analyses in motion =================
-     reference/research-animation.md. Still until Play; Pause beside it whenever anything moves (WCAG 2.2.2),
+     docs/research/research-animation.md. Still until Play; Pause beside it whenever anything moves (WCAG 2.2.2),
      keeping the moment; Stop gives the still drawing back. The app opens still, which is what a device asking for
      reduced motion wants (2.3.3), and the device asking for it while it plays pauses it. One clock for every
      animated element, run by requestAnimationFrame while playing, so it stops while the page is hidden; a frame

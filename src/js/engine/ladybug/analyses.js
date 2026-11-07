@@ -9,7 +9,7 @@ import { saveSoon } from '../bim/region-regenerate.js';
 import { a3dToast } from '../bim/csg-booleans.js';
 
   /* ================= __acad3dV172b: the analyses, run and kept =================
-     reference/research-ladybug-weather-comfort.md, 9 and 10. Each run calls the adapter in the worker, and its answer
+     docs/research/research-ladybug-weather-comfort.md, 9 and 10. Each run calls the adapter in the worker, and its answer
      is kept with the project with the source it read and the versions that made it (A3D.site.ladybug):
      - utci: UTCI over the year in CBE Clima's four conditions (the owner, 2026-10-31), the official scale;
      - psych: the psychrometric chart, the merged PMV comfort polygon at 0.5 and 1.0 clo and 1.1 met, and Ladybug's

@@ -10,7 +10,7 @@ import { bimLbSrcKept, bimLbSrcWords } from './sources.js';
 import { bimLbResult } from './analyses.js';
 
   /* ================= __acad3dV172b: the Ladybug analyses as board figures =================
-     reference/research-ladybug-weather-comfort.md, 9. Each figure draws a kept result in the board's own style
+     docs/research/research-ladybug-weather-comfort.md, 9. Each figure draws a kept result in the board's own style
      (bimClbCard, its colours and ticks), names Ladybug and its version as the method and the weather it read, and says
      what it means in its title. Nothing is computed here that Ladybug did not give. */
   var BIM_UTCI_NAMES=['Extreme cold stress','Very strong cold stress','Strong cold stress','Moderate cold stress','Slight cold stress',

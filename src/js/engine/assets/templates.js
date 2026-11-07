@@ -1,7 +1,7 @@
 import { A3D, A3D_DOCS, A3D_DOC_PREFIX, A3D_DOC_RT, el } from '../core/state.js';
 import { bimEndSketch } from '../drawing/command-ending.js';
 import { bimEsc } from '../layers/layer-manager.js';
-import { bimProjectRecord, save3d, saveT } from '../core/objects-save.js';
+import { bimProjectRecord, save3d, saveT, setSaveT } from '../core/objects-save.js';
 import { bimIdbDel, bimIdbGet, bimIdbPut } from '../core/idb-store.js';
 import {
   bimDocEntry, bimDocName, bimDocsActivate, bimDocsAdd, bimDocsNotify, bimDocsSave, bimNextProjectName,
@@ -129,7 +129,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
         try{if(A3D.sk)bimEndSketch();}
         catch(eE){console.warn('[BIM] The running command could not be ended before closing.',eE);}
         closeDlg();
-        if(saveT){clearTimeout(saveT);saveT=null;}
+        if(saveT){clearTimeout(saveT);setSaveT(null);}
         save3d();
       }
     }

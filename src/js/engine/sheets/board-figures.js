@@ -8,7 +8,7 @@ import { bimBoardById, bimBoardHtmlFor, bimBoardName } from './boards.js';
 import { bimBrdWorking } from './board-edit.js';
 
   /* ================= __acad3dV172b: a board's figures, arranged =================
-     reference/research-ladybug-weather-comfort.md, 13. Every figure the boards draw has a name of its own
+     docs/research/research-ladybug-weather-comfort.md, 13. Every figure the boards draw has a name of its own
      ('clim.temp', 'zn.secA', 'lb.utci' ...). A board in the set may keep a list of figures, each placed on
      the board's own grid: 12 columns across and the same step down (x and w in columns, y and h in those
      steps), with its options. A board without a list is drawn as it always was; a board of one's own

@@ -9,7 +9,7 @@ import { saveSoon } from '../bim/region-regenerate.js';
 import { a3dToast } from '../bim/csg-booleans.js';
 
   /* ================= __acad3dV172b: the weather Ladybug reads =================
-     reference/research-ladybug-weather-comfort.md, 7 and 8. One source at a time, held in the worker:
+     docs/research/research-ladybug-weather-comfort.md, 7 and 8. One source at a time, held in the worker:
      - an EPW, or the station's ZIP (EPW, DDY, STAT) from climate.onebuilding.org, opened from a file: that server
        sends no CORS header, so the browser cannot fetch it (named, not proxied); the ZIP's DDY gives ASHRAE's design
        days, which Ladybug 0.44.63 cannot read from a 2025 EPW header;

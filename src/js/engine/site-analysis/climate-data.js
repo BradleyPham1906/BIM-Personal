@@ -1,5 +1,5 @@
 import { A3D } from '../core/state.js';
-import { pushUndo, undoSuspend } from '../drawing/plan-mode-sketch.js';
+import { pushUndo, setUndoSuspend } from '../drawing/plan-mode-sketch.js';
 import { bimSunNum, bimSunSettings, bimSunZoneStd } from '../site/sun-position.js';
 import { bimDispNum } from '../properties/palette.js';
 import {
@@ -16,7 +16,7 @@ import { saveSoon } from '../bim/region-regenerate.js';
 import { a3dToast } from '../bim/csg-booleans.js';
 
   /* ================= __acad3dV159: Site analysis SA2, climate and risk: the data =================
-     reference/research-climate-risk-presentation.md. Fetched only when asked; what is worked out
+     docs/research/research-climate-risk-presentation.md. Fetched only when asked; what is worked out
      is kept with the project (A3D.site.climate, A3D.site.risk), so the board opens offline. */
   var BIM_CLIM_ARCHIVE='https://archive-api.open-meteo.com/v1/archive';
   var BIM_CLIM_AQ='https://air-quality-api.open-meteo.com/v1/air-quality';
@@ -273,7 +273,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
     if(R[3].ok)E=bimClimEq(R[3].js,lat,lon);else bad.push(R[3].err);
     if(!D&&!Hh&&!Q&&!E){a3dToast('No climate or risk data: '+bad.join('; '));return {error:bad.join('; ')};}
     pushUndo();
-    undoSuspend=true;
+    setUndoSuspend(true);
     try{
       A3D.site=A3D.site||{};
       var C=A3D.site.climate&&A3D.site.climate.lat===lat&&A3D.site.climate.lon===lon?A3D.site.climate:{};
@@ -305,7 +305,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
       if(E){K.quakes=E;K.quakeSrc='USGS earthquake catalogue';}
       A3D.site.risk=K;
       bimSaFill(true);
-    }finally{undoSuspend=false;}
+    }finally{setUndoSuspend(false);}
     refreshProps();paint();saveSoon();
     if(typeof bimSaRefresh==='function')bimSaRefresh(true);
     if(typeof bimClbRefresh==='function')bimClbRefresh();

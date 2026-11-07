@@ -1,5 +1,5 @@
 import { A3D } from '../core/state.js';
-import { bimObjOffset, pushUndo, undoSuspend } from '../drawing/plan-mode-sketch.js';
+import { bimObjOffset, pushUndo, setUndoSuspend } from '../drawing/plan-mode-sketch.js';
 import { sketchCCW } from '../drawing/drawing-input.js';
 import { bimIsPoint } from '../drawing/point-node.js';
 import {
@@ -279,7 +279,7 @@ import { a3dToast, objById } from '../bim/csg-booleans.js';
     if(!surfs.length){var m3='No TIN surface in '+name;a3dToast(m3);return {error:m3};}
     var base=(A3D.site&&A3D.site.surveyBase)||null,ids=[],made=[];
     pushUndo();
-    undoSuspend=true;
+    setUndoSuspend(true);
     try{
       surfs.forEach(function(sf){
         var P=all(sf,'P'),idx={},pts=[],i;
@@ -313,7 +313,7 @@ import { a3dToast, objById } from '../bim/csg-booleans.js';
         else{var seen={};model=model.filter(function(m){var kk=Math.round(m[0]*1e6)+'_'+Math.round(m[1]*1e6);if(seen[kk])return false;seen[kk]=1;return true;});o.survey=model;}
         A3D.objs.push(o);ids.push(o.id);made.push({name:o.name,points:model.length,faces:faces.length});
       });
-    }finally{undoSuspend=false;}
+    }finally{setUndoSuspend(false);}
     if(!ids.length){var m4='No surface in '+name+' had three points';a3dToast(m4);return {error:m4};}
     A3D.sel=ids[0];A3D.sel2=null;A3D.selSet=[ids[0]];
     refreshTree();refreshProps();fitScene();paint();saveSoon();

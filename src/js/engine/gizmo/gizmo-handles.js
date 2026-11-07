@@ -16,13 +16,13 @@ import {
 import { bimPushCancel, bimPushEnd, bimPushTo } from '../editing/push-pull.js';
 import { bimDuplicateObject } from '../editing/selection-tools.js';
 import {
-  A3D_MATERIALIZED, bimComputeTransformedGeometry, bimFlushMaterialized, bimMaterializeInto, bimPrimitiveMesh,
-  bimRotateObjectInPlace
+  bimComputeTransformedGeometry, bimFlushMaterialized, bimMaterializeInto, bimPrimitiveMesh,
+  bimRotateObjectInPlace, setA3D_MATERIALIZED
 } from '../editing/precision-editing.js';
 import { bimPropagateFrom } from '../bim/region-dependents.js';
 import { saveSoon } from '../bim/region-regenerate.js';
 import { bimRelinkCopies, bimRelinkNote } from '../assets/blocks.js';
-import { drag, refreshTree } from '../sheets/presentation-panel.js';
+import { drag, refreshTree, setDrag } from '../sheets/presentation-panel.js';
 import { a3dToast, objById } from '../bim/csg-booleans.js';
 import { cvH, cvW } from '../ui/canvas-size.js';
 
@@ -889,7 +889,7 @@ import { cvH, cvW } from '../ui/canvas-size.js';
     if(p.error){a3dToast(p.error);paint();return true;}
     var summary=bimGizmoApplyValue(d,p.v,true);
     if(!summary){paint();return true;}
-    drag=null;
+    setDrag(null);
     bimGizmoEndDrag(summary);
     return true;
   }
@@ -967,13 +967,13 @@ import { cvH, cvW } from '../ui/canvas-size.js';
           for(i=0;i<now.length;i++)if(was.indexOf(now[i])<0)return 'The selection has changed - click the handle again';
           var p=bimGizmoParseValue(kind,text);
           if(p.error)return p.error;
-          A3D_MATERIALIZED=[];
+          setA3D_MATERIALIZED([]);
           var fresh=bimGizmoBegin(hit,xy,mods);
           if(!fresh)return 'That handle cannot take a value now - see the message';
-          drag=fresh;
+          setDrag(fresh);
           pushUndo();
           var summary=bimGizmoApplyValue(fresh,p.v,false);
-          drag=null;
+          setDrag(null);
           bimGizmoEndDrag(summary);
           return null;
         }});
@@ -1031,7 +1031,7 @@ import { cvH, cvW } from '../ui/canvas-size.js';
   function bimGizmoCancelDrag(){
     var d=drag;
     if(!d)return false;
-    drag=null;
+    setDrag(null);
     bimGizmoTypeClear();
     if(d.pp)return bimPushCancel(d);   /* __acad3dV123 */
     if(d.snap)bimGizmoRestoreObjs(d.ids,d.snap);
@@ -1306,11 +1306,13 @@ import { cvH, cvW } from '../ui/canvas-size.js';
     var cx=r?(g?r.left+g.ox+12:r.left+r.width/2):200,cy=r?(g?r.top+g.oy+12:r.top+r.height/2):200;
     bimOpenGizmoMenu(cx,cy);
   }
+  /* setters: other files assign these through them (an ES module cannot assign to an import) */
+  function setA3D_CLICKBOX_T(v){A3D_CLICKBOX_T=v;return v;}
 export {
   A3D_CLICKBOX_T, A3D_VALBOX, bimCloseGizmoMenu, bimCloseValueBox, bimDrawGizmo, bimFmtLen, bimGizmoApply,
   bimGizmoApplyRotate, bimGizmoBegin, bimGizmoClickValue, bimGizmoCommand, bimGizmoEndDrag,
   bimGizmoHandleHint, bimGizmoHandleName, bimGizmoHoverKey, bimGizmoParseValue, bimGizmoReadout,
   bimGizmoRestoreObjs, bimGizmoSnapSetup, bimGizmoStartMoving, bimGizmoStarts, bimGizmoTypeKey,
   bimGizmoTyping, bimGizmoWantsKey, bimOpenGizmoMenu, bimPickGizmo, bimRotatableSplit, bimTypingDrag,
-  bimValueBox
+  bimValueBox, setA3D_CLICKBOX_T
 };

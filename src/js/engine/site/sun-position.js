@@ -49,7 +49,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
       polar:W!==null?'':(hc>1?'night':'day')};
   }
   /* ================= __acad3dV171d: the sun's clock =================
-     reference/research-sun-path.md (5). The site's time zone, a name from the time zone database the climate brings
+     docs/research/research-sun-path.md (5). The site's time zone, a name from the time zone database the climate brings
      (Open-Meteo's timezone=auto), and daylight saving: Off, the UTC offset all year, the zone's standard time; Auto,
      each date's own offset, from the browser's time zone database. Open-Meteo's offset is the one in force on the day
      it was asked, so the zone's standard time is worked out here: the lower of mid-January's and mid-July's. */

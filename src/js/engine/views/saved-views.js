@@ -307,8 +307,10 @@ import { a3dToast } from '../bim/csg-booleans.js';
     bimRenderInto(el.viewrows,h);   /* __acad3dV118 */
   }
 
+  /* setters: other files assign these through them (an ES module cannot assign to an import) */
+  function setA3D_LAST_MODEL_VIEW(v){A3D_LAST_MODEL_VIEW=v;return v;}
 export {
   A3D_LAST_MODEL_VIEW, A3D_VIEW, bimActivateView, bimAnnotationVisible, bimCameraIsPlan, bimCaptureView,
   bimDeleteView, bimObjectLevelId, bimObjectVisibleOnLevel, bimSaveCurrentView, bimSetActiveView,
-  bimToggleLevelFilter, bimViewOfCamera, bimViewSync, refreshViews
+  bimToggleLevelFilter, bimViewOfCamera, bimViewSync, refreshViews, setA3D_LAST_MODEL_VIEW
 };

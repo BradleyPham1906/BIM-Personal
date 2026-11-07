@@ -15,8 +15,8 @@ import { bimSetSun } from '../site/sun-position.js';
 import { bimLandXmlExport, bimTerrainEdit, bimTerrainSetView } from '../terrain/breaklines.js';
 import { bimGradeSpots, bimRegrade, bimSetSlopeArrows } from '../terrain/grading.js';
 import {
-  A3D_BR_DEL, A3D_BR_NEW, A3D_BR_PICK, A3D_HIST_MSG, bimHistAct, bimHistBranchAct, bimHistDoCommit,
-  bimHistSwitchUI
+  A3D_BR_DEL, bimHistAct, bimHistBranchAct, bimHistDoCommit, bimHistSwitchUI, setA3D_BR_DEL, setA3D_BR_NEW,
+  setA3D_BR_PICK, setA3D_HIST_MSG
 } from '../history/branches-merge.js';
 import { bimSetGradeElev, bimSetPadSlope, bimSetTerrainInterval } from '../survey/survey-check.js';
 import {
@@ -45,7 +45,7 @@ import {
   A3D_STD_UI, BIM_STD_DRAFT_KEYS, bimStdDraftClear, bimStdPropChange, bimStdPropClick, bimStdPropVal
 } from '../properties/site-standards.js';
 import {
-  A3D_MAP_DRAFT, bimMapFind, bimMapPropChange, bimMapPropClick
+  bimMapFind, bimMapPropChange, bimMapPropClick, setA3D_MAP_DRAFT
 } from '../properties/map-address-site-data.js';
 import {
   bimCtxPropChange, bimCtxPropClick, bimDataPropChange, bimDataPropClick, bimFindPropChange, bimFindPropClick,
@@ -532,12 +532,12 @@ import { size } from './canvas-size.js';
       bimHistAct(hb.getAttribute('data-histact'),ev);
     });
     if(el.propsbody)el.propsbody.addEventListener('input',function(ev){
-      if(ev.target&&ev.target.hasAttribute&&ev.target.hasAttribute('data-histmsg'))A3D_HIST_MSG=ev.target.value;
-      if(ev.target&&ev.target.hasAttribute&&ev.target.hasAttribute('data-brname'))A3D_BR_NEW=ev.target.value;   /* __acad3dV151 */
+      if(ev.target&&ev.target.hasAttribute&&ev.target.hasAttribute('data-histmsg'))setA3D_HIST_MSG(ev.target.value);
+      if(ev.target&&ev.target.hasAttribute&&ev.target.hasAttribute('data-brname'))setA3D_BR_NEW(ev.target.value);   /* __acad3dV151 */
     });
     if(el.propsbody)el.propsbody.addEventListener('change',function(ev){   /* __acad3dV151: switch branch */
       if(ev.target&&ev.target.hasAttribute&&ev.target.hasAttribute('data-histbranch'))bimHistSwitchUI(ev.target.value);
-      if(ev.target&&ev.target.hasAttribute&&ev.target.hasAttribute('data-brmergefrom')){A3D_BR_PICK=ev.target.value;if(A3D_BR_DEL){A3D_BR_DEL='';refreshProps();}}   /* kept through a redraw; another picked: ask again */
+      if(ev.target&&ev.target.hasAttribute&&ev.target.hasAttribute('data-brmergefrom')){setA3D_BR_PICK(ev.target.value);if(A3D_BR_DEL){setA3D_BR_DEL('');refreshProps();}}   /* kept through a redraw; another picked: ask again */
     });
     if(el.propsbody)el.propsbody.addEventListener('keydown',function(ev){
       if(ev.key==='Enter'&&ev.target&&ev.target.hasAttribute&&ev.target.hasAttribute('data-brname')){ev.preventDefault();ev.stopPropagation();bimHistBranchAct('branch');return;}   /* __acad3dV151 */
@@ -828,7 +828,7 @@ import { size } from './canvas-size.js';
     });
     if(el.propsbody)el.propsbody.addEventListener('input',function(ev){   /* __acad3dV149c: kept as typed */
       var a=ev.target&&ev.target.closest?ev.target.closest('[data-propmap="addr"]'):null;
-      if(a)A3D_MAP_DRAFT=a.value;
+      if(a)setA3D_MAP_DRAFT(a.value);
     });
     if(el.propsbody)el.propsbody.addEventListener('keydown',function(ev){
       var a=ev.target&&ev.target.closest?ev.target.closest('[data-propmap="addr"]'):null;

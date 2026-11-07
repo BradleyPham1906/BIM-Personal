@@ -292,7 +292,10 @@ import { bimObjectVisibleOnLevel } from '../views/saved-views.js';
     A3D.glFaces=F.totalFaces;
     return true;
   }
+  /* setters: other files assign these through them (an ES module cannot assign to an import) */
+  function setA3D_CULL(v){A3D_CULL=v;return v;}
+  function setA3D_GL_BATCH(v){A3D_GL_BATCH=v;return v;}
 export {
   A3D_CULL, A3D_GL_BATCH, A3D_SCENE, BIM_GB_TEXW, bimGbInit, bimGbPrepare, bimGbRender, bimSceneCull,
-  bimSceneDirty, bimSceneFrameDone, bimSceneRelease, bimSceneSync
+  bimSceneDirty, bimSceneFrameDone, bimSceneRelease, bimSceneSync, setA3D_CULL, setA3D_GL_BATCH
 };
