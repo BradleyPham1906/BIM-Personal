@@ -285,7 +285,8 @@ async def drive(ck):
         await page.reload()
         await ready()
         got = await safe("(ks)=>ks.map(function(k){return localStorage.getItem(k);})", list(KEPT))
-        own = await safe("()=>localStorage.getItem('acad3dV1')!==null")
+        # AMENDED FOR V172f: the app's own model is kept in the browser's database, its index in localStorage
+        own = await safe("()=>window.__a3dStoredGet(window.__a3dDocs.list().filter(function(d){return d.loaded;})[0].id).then(function(v){return v!==null&&localStorage.getItem('acad3dProjectsV2')!==null;})")
         ck(got == [None, None] and own is True,
            'the whiteboard\'s stored blocks and dock state are gone after a start, and the app\'s own model is still stored (%s, %s)' % (got, own))
 
