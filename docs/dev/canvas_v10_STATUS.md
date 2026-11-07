@@ -16541,7 +16541,9 @@ all as recommended.
 
 Checked: `npm run check`, `npm test` 22 of 22 (4 new in `tests/unit/file-save.test.mjs`). Amended, not run: V115's Save
 check hides the pickers first (headless Chromium cannot show the save dialog), so Save takes the download path it reads.
-The browser suites have not been run (Rule #1).
+The browser check (2026-11-07, the owner's yes): the build loaded over http, from `file://`, and from `file://` with
+storage refused as WebKit refuses it; 0 page errors and 0 console errors in each; after an edit the status bar read "Not
+saved to a file" in all three. The browser suites have not been run (Rule #1).
 
     canvas_v10.html   3995247 bytes
     sha256            930f4560c951c2f606a9865ef92f3fb3b92a519bd077b672c02b16ca0411d2ce
