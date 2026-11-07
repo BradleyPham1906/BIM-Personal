@@ -16508,7 +16508,13 @@ project on screen into the open tabs); a journal stamped ahead of the clock stay
 bar sat under the engine's toolbar (z-index 9600 over #acad3d's 9500); a save refused during a switch lost the project's
 last state (refused records are kept in the tab, read first and journaled); a lost index left the database's projects
 unlisted until a second start, and empty orphan records were listed (the migration reconciles; empty ones are removed).
-The full regression has not been run.
+The full regression (2026-11-07, from a frozen worktree of main at 3f0bcbc, after PR #67 merged): 140 suites, 6957 of
+6962 in 688 s with 4 workers. The five failures, each run again alone: V117, V122 and V126 read the project from
+`acad3dV1` (missed when the seven storage suites were amended: they read it in passing, not as their subject), now from
+the database through `__a3dStoredGet`, V126's records from before V126 seeded as a store from before V172f (database
+cleared, `acad3dV1` alone); V142 and V167 failed since PR #65 removed the kept builds (no `v/` folder on the site; V167's
+build before V167 read through `kept_builds.read`). Amended, all passing: V117 26/26, V122 93/93, V126 61/61, V142 29/29,
+V167 195/195. State after V172f: 140 suites, 7156 checks, 0 failures; `npm test` 18 of 18.
 
     canvas_v10.html   3970486 bytes
     sha256            45903347786951bf2d6ab9642dbe36bb827bc02cbdbd84dd733a41dcf6acf57d

@@ -777,7 +777,8 @@ async def drive(ck):
         await settle(700)
         # read from storage, not after a reload: the page's pagehide flush saves the model whenever a
         # save was ever scheduled (saveT is not cleared when it fires), which would hide a missing one
-        stored = await safe("()=>{var v=JSON.parse(localStorage.getItem('acad3dV1')||'{}');return (v.sheets||[]).map(function(s){return s.id;});}")
+        # AMENDED FOR V172f: the project is kept in the browser's database
+        stored = await safe("()=>window.__a3dStoredGet(window.__a3dDocs.list().filter(function(d){return d.loaded;})[0].id).then(function(r){var v=JSON.parse(r&&r.rec||'{}');return (v.sheets||[]).map(function(s){return s.id;});})")
         ck(stored == [S[2], S[0], S[1]], 'a move is saved by its own save, as every change is (%s)' % [x[-6:] for x in stored or []])
         await page.reload()
         for _ in range(80):

@@ -447,7 +447,9 @@ async def run():
             ck(cp and cp != r['c'] and cps['bim'].get('section', {}).get('shape') == 'ibeam' and cps['bim'].get('typeId') == 'ct-w12x65'
                and rel(cpv, props(W12)['A'] * 3, 1e-9), "a copy keeps its W12x65 section and its solid")
             await page.wait_for_timeout(700)
-            rec = await safe("()=>localStorage.getItem('acad3dV1')")
+            # AMENDED FOR V172f: the project is kept in the browser's database; a record from before V126 is seeded as a
+            # store from before V172f (acad3dV1 alone, no database), so the next start moves it in as the project on screen
+            rec = await safe("()=>window.__a3dStoredGet(window.__a3dDocs.list().filter(function(d){return d.loaded;})[0].id).then(function(v){return v?v.rec:null;})")
             ck(bool(rec), "the project is stored")
             if rec:
                 R = json.loads(rec)
@@ -457,6 +459,7 @@ async def run():
                 R['types'].pop('__v126', None)
                 R['objs'] = []
                 await page.goto('file://' + str(blank))
+                await page.evaluate("()=>new Promise(function(res){localStorage.clear();var q=indexedDB.deleteDatabase('BIM-Personal');q.onsuccess=q.onerror=q.onblocked=function(){res(true);};})")
                 await page.evaluate("(r)=>localStorage.setItem('acad3dV1',r)", json.dumps(R))
                 await page.goto('file://' + str(HTML))
                 await page.wait_for_timeout(2300)
@@ -467,10 +470,11 @@ async def run():
                 # an edit stores the project, and with it the record that it has had its sections
                 await safe("()=>window.__a3dColumnAt([0,0],0,0.4,0.4,3)")
                 await page.wait_for_timeout(900)
-                rec2 = json.loads(await safe("()=>localStorage.getItem('acad3dV1')") or '{}')
+                rec2 = json.loads(await safe("()=>window.__a3dStoredGet(window.__a3dDocs.list().filter(function(d){return d.loaded;})[0].id).then(function(v){return v?v.rec:null;})") or '{}')
                 if rec2.get('types'):
                     rec2['types']['column'] = [t for t in rec2['types']['column'] if t['id'] != 'ct-w8x31']
                     await page.goto('file://' + str(blank))
+                    await page.evaluate("()=>new Promise(function(res){localStorage.clear();var q=indexedDB.deleteDatabase('BIM-Personal');q.onsuccess=q.onerror=q.onblocked=function(){res(true);};})")
                     await page.evaluate("(r)=>localStorage.setItem('acad3dV1',r)", json.dumps(rec2))
                     await page.goto('file://' + str(HTML))
                     await page.wait_for_timeout(2300)

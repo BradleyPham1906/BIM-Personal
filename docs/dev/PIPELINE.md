@@ -35,8 +35,9 @@ requires command mapping, full app regressions and owner review.
     runtime           runtime/: Pyodide 0.29.5, Ladybug's five wheels, Pyodide's numpy and Radiance's gendaymtx as
                       WebAssembly (the release rad6R0P1a), 15 files each pinned in runtime/MANIFEST.json
                       (tools/check_runtime.py); asked only when a Ladybug analysis runs (V172b, V172c)
-    tests             139 suites, 7133 checks, 0 failures (the 138 suites' 7082 after V172b and V172e, and V172c's 51;
-                      with cjval built, V139 and V140 run their three more)
+    tests             140 suites, 7156 checks, 0 failures after V172f (2026-11-07: the full regression on main 3f0bcbc,
+                      6957 of 6962 in 688 s with 4 workers; the five failing suites amended, below), and the 18 unit
+                      tests (npm test); with cjval built, V139 and V140 run their three more
 
     The user guide (V142): every phase updates docs/src/, its log entry and BIM_APP_VERSION, then
     runs tools/dump_catalog.py and tools/build_docs.py. The V142 suite and the Pages workflow
@@ -261,7 +262,10 @@ version stays V172).
   pointer retired), V172e 27/27. Found by the suites: a reload with every tab closed reopened a tab (fixed); a confirmed
   journal stamped ahead of the clock stayed (fixed); the read-only bar under the engine's toolbar (fixed); a refused save
   during a switch lost the project's last state (now kept in the tab and journaled); empty orphan records listed (now
-  removed). The full regression has not been run.
+  removed). The full regression (2026-11-07, main at 3f0bcbc): 6957 of 6962; five suites failed and were amended:
+  V117, V122 and V126 still read the project from `acad3dV1` (now from the database), V142 and V167 still expected the
+  kept builds PR #65 removed (no `v/` folder; the build before V167 read from git history). V117 26/26, V122 93/93, V126
+  61/61, V142 29/29, V167 195/195 (it had stopped after 8): 140 suites, 7156 checks, 0 failures.
 
 V172c, **Ladybug L2: sun-hours and radiation on the model** (2026-11-01; the version stays V172).
 - The owner's answers: `gendaymtx` compiled and run here, then added to the runtime (over a Python port of its sky);

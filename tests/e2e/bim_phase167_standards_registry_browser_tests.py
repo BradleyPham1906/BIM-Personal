@@ -241,7 +241,7 @@ async def run():
                "the catalogue holds editions, not values the app reads, and is never applied outside its place")
             # no standard's value left in code: the constants gone, no number beside its unit outside the registry
             left, said = R.scan(HTML.read_text(encoding='utf-8'))
-            kl, ks = R.scan(R.KEPT.read_text(encoding='utf-8'))
+            kl, ks = R.scan(R.kept_builds.read(R.KEPT))   # AMENDED 2026-11-07: the kept build is read from git history (PR #65)
             ck(not left and not said, "no constant V167 moved is left in the build, and no standard's number is written beside its unit outside the registry (%s; %s)" % (left, said))
             ck(len(kl) == len(R.MOVED) and len(ks) >= 12, "the same scan of the build before V167 finds them all: %d constants, %d kinds of phrase" % (len(kl), len(ks)))
             # the move: every value as the build before V167 had it
@@ -613,7 +613,9 @@ async def run():
             # a project from before V167: its runs and data without stamps, taken as the editions' own values
             await safe("()=>{var o=window.__a3dStdState().ov;Object.keys(o).forEach(function(k){var j=k.indexOf('|');window.__a3dStdClear(k.slice(0,j),k.slice(j+1));});}", pg=p3)
             await p3.wait_for_timeout(900)
-            rec = json.loads(await safe("()=>localStorage.getItem('acad3dV1')", pg=p3) or '{}')
+            # AMENDED FOR V172f: the project is read from the browser's database; seeded as acad3dV1 into a context of its
+            # own, it is a first start, which moves it into the database as the project on screen
+            rec = json.loads(await safe("()=>window.__a3dStoredGet(window.__a3dDocs.list().filter(function(d){return d.loaded;})[0].id).then(function(v){return v?v.rec:null;})", pg=p3) or '{}')
             S_ = rec.get('site') or {}
             for r_ in (S_.get('diag') or {}).get('runs', {}).values():
                 r_.pop('std', None)

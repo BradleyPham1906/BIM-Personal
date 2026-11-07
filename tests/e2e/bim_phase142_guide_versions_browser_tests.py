@@ -228,7 +228,9 @@ async def run():
                "the site opens the newest app: the build as one file, and as the separate files src/ makes")
             ck(sorted(p.name for p in (tmp / 'docs').glob('*.html')) == sorted(pages) and (tmp / '.nojekyll').exists(), "with every guide page")
             okv = all(filecmp.cmp(tmp / 'v' / lab.lower() / 'index.html', p, shallow=False) for lab, p in kept)
-            ck(okv and len(list((tmp / 'v').iterdir())) == len(kept), "and every older build at v/<version>/, as it was")
+            # AMENDED 2026-11-07: since PR #65 no older build is kept, so the site has no v/ folder at all
+            nv = len(list((tmp / 'v').iterdir())) if (tmp / 'v').exists() else 0
+            ck(okv and nv == len(kept), "and every older build at v/<version>/, as it was (%d kept)" % len(kept))
             wf = (ROOT / '.github' / 'workflows' / 'pages.yml').read_text()
             ck('python3 tools/build_docs.py --check' in wf and 'python3 tools/build_site.py _site' in wf, "the Pages workflow checks the guide and builds the site with them")
 
