@@ -1023,8 +1023,8 @@ report, the WHATWG File System and Compression standards, RFC 1952, MDN's compat
 and six open implementations. In short: `.acad3d.json` and `.acad3d.json.gz` are valid picker extensions everywhere the
 pickers exist (16 characters at most, the dot counted); a picked file changes only when its stream closes, and `close()` is
 the one point where the save can still fail; a handle kept in the database must be asked again with a click; gzip in a
-worker stalls the page 2 to 11 ms where the main thread stalls 108 to 512 ms; a damaged gzip is refused whole in both
-engines' code and here; a private window cannot be told dependably (Chromium is removing the quota difference, and the one
+worker stalls the page 2 to 13 ms where the main thread stalls 108 to 566 ms (two sets of runs); a damaged gzip is refused whole in both
+engines' code and here; a private window cannot be told dependably (Chromium has begun removing the quota difference, and the one
 detector read has open false-positive reports); and today's build, with storage refused, runs and saves files but says three
 untrue things. The recommendation is in 14.4; the owner's questions are in 14.10.
 
@@ -1047,18 +1047,18 @@ file is made and recognised, the reminder's trigger, and the messages for refuse
 | H30 | The pickers are reachable from the one-file build on `file://` in Chromium | **Held to the dialog**: same answers as over http (e16); Blink refuses only opaque and sandboxed origins, and Chromium's file origin is the tuple `file://` | e16; Chromium `global_file_system_access.cc` 168-204, `security_origin.h` 258 | P (to the dialog) / S (the dialog itself) |
 | H31 | A write to a file leaves the old file untouched until `close()`, and `abort()` keeps it | **Held**: 5 of 5 on an origin-private file; the standard requires it for every file and Chromium writes a sibling `<name>.crswap` moved into place on close | e16; FS 524-534, 1122-1192; Chromium `file_system_access_file_handle_impl.cc` 729-761, `..._safe_move_helper.cc` 222-318 | P |
 | H32 | A handle kept in IndexedDB survives a browser restart and must be asked again before it can write | **Held in part**: it survives (3 of 3, `isSameEntry` true); "likely to return prompt" is the standard's word, and `requestPermission` needs a click; an origin-private handle answers `granted`, so the prompt could not be measured | e16; FSA 218-222, 259-261; Chromium permission context 1390-1396 | P |
-| H33 | gzip in a worker keeps the page's longest stall under one 60 Hz frame (16.7 ms) for 4 MB and 16 MB models | **Held**: 2.4-3.3 ms and 8.7-10.6 ms, against 108-127 ms and 441-512 ms on the main thread | e17 | P (Chromium) |
+| H33 | gzip in a worker keeps the page's longest stall under one 60 Hz frame (16.7 ms) for 4 MB and 16 MB models | **Held**: 2.4-3.3 ms and 8.7-12.8 ms, against 108-155 ms and 441-566 ms on the main thread (e17 and the checker's re-run) | e17 | P (Chromium) |
 | H34 | Every gzip the browser writes starts with the bytes 1F 8B, so a loader can tell it without its name | **Held**: 40 of 40 outputs; RFC 1952's ID1 and ID2 | e17; RFC 1952 lines 289-292 | P |
 | H35 | A damaged gzip (truncated, altered, trailing bytes, two members) is refused whole, never half-read | **Held**: TypeError in all four cases, 10 of 10 runs; the standard requires errors for truncation and trailing data, Chromium and WebKit implement them | e17; COMP 145-158; Chromium `inflate_transformer.cc` 93-158; WebKit `DecompressionStreamDecoder.cpp` 89-107 | P |
 | H36 | A worker made from a Blob URL runs in the one-file build on `file://` | **Held**: 5 of 5 | e17 | P (Chromium) |
-| H37 | A page can tell a Chromium private window by `navigator.storage.estimate().quota` | **Failed as a lasting signal**: Chromium 153 headless reports 3-4 GiB off the record against 10 GiB in a profile, but Chromium's source at e72d336b reports usage + 10 GiB for an incognito profile too (`kStaticStorageQuota`, on by default), so the difference is being removed | e18; Chromium `quota_manager_impl.cc` 135-153, `quota_features.cc` 37-38 | P |
+| H37 | A page can tell a Chromium private window by `navigator.storage.estimate().quota` | **Failed as a lasting signal**: Chromium 153 headless reports 3-4 GiB off the record against 10 GiB in a profile, as shipped Chromium 153 does (at tag 153.0.8010.12 the incognito part is behind `kIncognitoStaticStorageQuota`, off by default); Chromium's source at e72d336b reports usage + 10 GiB for an incognito profile too, so the difference is being removed | e18; Chromium `quota_manager_impl.cc` 135-153, `quota_features.cc` 37-38 (@e72d336); `quota_features.cc` 40-43, `quota_manager_impl.cc` 136-150 (@153.0.8010.12, the checker) | P |
 | H38 | With storage refused (as WebKit refuses it on `file://`), today's build says so truthfully | **Failed**: no page error, the edit kept on screen, Save to file works (3 of 3), but it says the old canvas data "could not be removed", that projects "stay in its smaller storage (about 5 MB in all)" and that "browser storage is full" | e19 | P (imitated refusal) |
-| H39 | Comparable apps remind users on a timer about work not saved to a file | **Failed**: none of six does; draw.io shows "Unsaved changes. Click here to save" and warns at unload; Excalidraw and tldraw show nothing | prior art, `DrawioFile.js` 3213-3258, `App.js` 3450-3482 | P |
+| H39 | Comparable apps remind users on a timer about work not saved to a file | **Failed**: none of six does; draw.io shows "Unsaved changes. Click here to save." (`resources/dia.txt` 1080) and warns at unload; Excalidraw and tldraw show nothing | prior art, `DrawioFile.js` 3213-3258, `App.js` 3450-3482 | P |
 
 ### 14.2 Method
 
 **Sources** (pins in the two agents' notes): the WICG File System Access report (`index.bs` @9311992), the WHATWG File
-System standard (`fs.bs` @d76d345), the WHATWG Compression standard (`index.bs` @94b4251), RFC 1952 (rfc-editor.org),
+System standard (`index.bs` @d76d345; the specs note calls it `fs.bs`), the WHATWG Compression standard (`index.bs` @94b4251), RFC 1952 (rfc-editor.org),
 MDN's browser-compat-data (@82daeeb), Chromium (@e72d336: Blink's picker checks, the swap file and safe move, the quota
 manager, the inflate transformer), WebKit (@49106eb: the network storage manager, origin quotas, the in-memory stores for
 an ephemeral session, the decompression decoder), Firefox (@db547b6: the private-browsing IndexedDB pref, the quota
@@ -1121,7 +1121,7 @@ Safari and Firefox, iOS downloads, and a real private window.
 |---|---|---|---|
 | gzip's ID1 and ID2 are 31 and 139 (1F 8B); a decompressor must check them | RFC 1952 lines 289-292, 464-472 | P | High |
 | The Compression standard allows one member only; truncated input and trailing data are TypeErrors; both stream classes are `[Exposed=*]`, so they run in workers | COMP 59-71, 83, 123, 145-158 | P | High |
-| Measured: ratio 0.344 (e10's varied model); main-thread stall 108-127 ms (4 MB) and 441-512 ms (16 MB); in a worker 2.4-3.3 and 8.7-10.6 ms, nearly all of it the `postMessage` of the string; total time about the same; identical over http and `file://`; round trips exact (20 of 20) | e17 | P (Chromium) | High here |
+| Measured: ratio 0.344 (e10's varied model); main-thread stall 108-155 ms (4 MB) and 441-566 ms (16 MB); in a worker 2.4-3.3 and 8.7-12.8 ms (e17 and the checker's re-run), nearly all of it the `postMessage` of the string; total time about the same; identical over http and `file://`; round trips exact (20 of 20) | e17 | P (Chromium) | High here |
 | Support: `CompressionStream` and `DecompressionStream` with gzip, Chrome 80, Firefox 113, Safari 16.4 | BCD | P | High |
 | Prior art compresses inside its own formats only (Excalidraw: zlib for PNG-embedded scenes and links; draw.io: raw deflate plus Base64 inside the XML, off by default); none writes a gzip file; Excalidraw tells an image by its first bytes, as the app would tell gzip | prior-art note | P | High |
 
@@ -1129,7 +1129,7 @@ Safari and Firefox, iOS downloads, and a real private window.
 
 | Finding | Evidence | Level | Confidence |
 |---|---|---|---|
-| Chromium: the incognito pool is 15-20% of memory, a third per site; but what pages see is usage + 10 GiB for incognito and for disks of 10 GiB or more (`kStaticStorageQuota`, on by default at e72d336), so the quota no longer tells the two apart; Chromium 153 still showed a difference here (3-4 GiB against 10) | Chromium `quota_settings.cc` 31-61, `quota_manager_impl.cc` 135-153; e18 | P | High |
+| Chromium: the incognito pool is 15-20% of memory, a third per site; but what pages see is usage + 10 GiB for incognito and for disks of 10 GiB or more (`kStaticStorageQuota`, on by default at e72d336), so the quota no longer tells the two apart there; shipped Chromium 153 keeps incognito behind `kIncognitoStaticStorageQuota`, off (the checker, at tag 153.0.8010.12), which is why e18 saw 3-4 GiB against 10 | Chromium `quota_settings.cc` 31-61, `quota_manager_impl.cc` 135-153; e18 | P | High |
 | WebKit: a private window keeps IndexedDB in memory, localStorage without a quota (5 MB in a normal window), and an origin quota near the 1000 MB default against tens of GB; a page could see these, not measured | WebKit `IDBStorageManager.cpp` 343-348, `LocalStorageManager.cpp` 195-203, `NetworkStorageManager.cpp` 752-786 | P (code) / S (effect) | Medium |
 | Firefox: IndexedDB in private windows since 115, encrypted on disk, no memory limit | Firefox release notes 115; `StaticPrefList.yaml` 3554-3558 | P | High |
 | detectIncognito 1.8.1 times strict against relaxed IndexedDB commits in Chromium (a ratio under 1.30 means private) and reads how `storage.getDirectory()` fails in Safari and Firefox; false positives reported for Chrome Guest, Android, RAM disks and Firefox 150 (#21, #60, #63, #65); it tells the engine by an error message's length | `src/detectIncognito.ts` @04d0412; issues | P | High (that it is fragile) |
@@ -1140,7 +1140,7 @@ started with no page error, the point added stayed on screen, Save to file downl
 3); the console held nine warnings, each caught; and the user saw "Some of the old canvas's saved data could not be removed
 from this browser", "This browser does not allow its database here: projects stay in its smaller storage (about 5 MB in
 all). Use Save to keep copies as files." and, at the first save, "This project could not be saved: browser storage is
-full." None is true: nothing was there to remove, nothing is kept, and the store is refused, not full.
+full. Use Save to keep a copy as a file." None is true: nothing was there to remove, nothing is kept, and the store is refused, not full.
 
 ### 14.4 The alternatives compared
 
@@ -1156,8 +1156,8 @@ browser that could be wrong; ES5, no dependency, from `file://` too.
 
 | Where the gzip runs | Longest stall, 4 MB / 16 MB | Total | `file://` | Cost |
 |---|---|---|---|---|
-| Main thread | 108-127 / 441-512 ms | 131-149 / 536-619 ms | yes | none |
-| A worker from a Blob URL, the main thread as the fallback | 2.4-3.3 / 8.7-10.6 ms | 147-162 / 570-630 ms | yes (e17) | about 25 lines |
+| Main thread | 108-155 / 441-566 ms | 131-149 / 536-619 ms | yes | none |
+| A worker from a Blob URL, the main thread as the fallback | 2.4-3.3 / 8.7-12.8 ms | 147-162 / 570-630 ms | yes (e17) | about 25 lines |
 | No gzip | none | none | yes | files about three times larger |
 
 | The reminder "in Safari or a private window" | Right in Safari | Right in a private window | False reminders | Cost |
@@ -1219,6 +1219,9 @@ with "AB"; two writers, "SECOND" (the last to close); `lastModified` changed. Ha
 | `file://`, 4 MB | 4,008,905 | 1,379,445 | 133.5-148.0 | 110.9-123.8 | 146.6-155.3 | 2.4-2.9 |
 | `file://`, 16 MB | 16,058,075 | 5,514,094 | 535.8-576.2 | 440.5-461.5 | 569.2-630.0 | 8.7-9.0 |
 
+The checker's re-run (one set of 5 runs per row): main-thread stall 116-155 ms (4 MB) and 453-566 ms (16 MB), worker
+2.5-3.0 and 8.9-12.8 ms; characters, bytes, magic, round trips and the damaged files identical.
+
 Magic 31, 139 on every output; damaged files (200,036 characters): truncated, one byte flipped, 4 trailing bytes, two
 members, each "TypeError: Failed to fetch" (the stream's error surfacing through `Response`), the same in all 10 runs.
 
@@ -1274,7 +1277,7 @@ present (`core/state.js:58-59`). Nothing in version 2 removes a field version 1 
 
 No real dialog: the swap, the permission prompt and `queryPermission` after a reload on a user's file come from the standard
 and Chromium's code, measured only on origin-private files. One engine measured. Chromium's source (@e72d336) is newer than
-the binary measured (153.0.8010.12), and the two differ on the incognito quota (H37), which is why neither is used. The
+the binary measured (153.0.8010.12), and the two differ on the incognito quota (H37: the checker found the incognito switch off at 153), which is why neither is used. The
 models are synthetic (part 9). The `persisted()` reminder will also appear in a normal Chrome tab that has not been granted
 persistence; that tab's storage can be evicted too, so the reminder is true there, but it is more often than D2's wording.
 A gzip file is about a third of the JSON's size on the varied model; a real project may compress better or worse. Safari's
@@ -1297,7 +1300,7 @@ To be asked together (the answers recorded here when given):
   wherever the browser has not agreed to keep the app's storage (`persisted()` false), which covers Safari tabs and every
   private window, worded as a fact: "This browser may clear its copy of your projects. Use Save to keep this one as a file."
   The alternative: Safari and every iOS browser by `navigator.vendor`, private windows not covered.
-- **G2, where the gzip runs** (D4's open choice). *Recommended:* a worker (2-11 ms of stall against 108-512), the main
+- **G2, where the gzip runs** (D4's open choice). *Recommended:* a worker (2-13 ms of stall against 108-566), the main
   thread only where a worker cannot be made.
 - **G3, when gzip is offered.** *Recommended:* Save as offers both types, plain JSON first; Save keeps the type the project
   was last saved as; no automatic switch by size.
@@ -1306,14 +1309,17 @@ To be asked together (the answers recorded here when given):
 - **G5, leaving with work not in a file.** draw.io warns at unload. *Recommended:* no `beforeunload` warning (the browser's
   copy is kept, and the marker and reminders say the rest); the owner may prefer the warning.
 
-The independent check: to be run on every fact 14.3 and 14.4 rely on, before the build.
+**The independent check** (protocol step 9): a separate agent re-opened the pinned source behind each of the 14 facts the
+code uses and re-ran e17: 13 confirmed, 1 corrected (e17's stall ranges, wider on the re-run; H33 holds), 0 not confirmed;
+it added the version detail for H37 and three smaller precisions, all applied above. Its table:
+[research-local-storage/independent-check-v172g.md](research-local-storage/independent-check-v172g.md).
 
 ### 14.11 References (V172g)
 
 | # | What | URL | What was read | Level |
 |---|---|---|---|---|
 | K1 | WICG File System Access @9311992 | https://raw.githubusercontent.com/WICG/file-system-access/93119927fa7a678c1863996f6f3a32d9ac53943d/index.bs | Lines 84-90, 135-156, 199, 218-261, 362-376, 494-512 | P |
-| K2 | WHATWG File System @d76d345 | https://raw.githubusercontent.com/whatwg/fs/d76d3455d5afe2f85754ed24ffdbf99fe30032d4/fs.bs | Lines 329, 485-538, 1122-1192 | P |
+| K2 | WHATWG File System @d76d345 | https://raw.githubusercontent.com/whatwg/fs/d76d3455d5afe2f85754ed24ffdbf99fe30032d4/index.bs | Lines 329, 485-538, 1122-1192 | P |
 | K3 | WHATWG Compression @94b4251 | https://raw.githubusercontent.com/whatwg/compression/94b42518d2c2f97e64bd5a483d6deb8c8f14c365/index.bs | Lines 19, 31-83, 123, 145-158 | P |
 | K4 | RFC 1952 | https://www.rfc-editor.org/rfc/rfc1952.txt | Lines 233-292, 419-472 | P |
 | K5 | MDN browser-compat-data @82daeeb | https://raw.githubusercontent.com/mdn/browser-compat-data/82daeebf5a7073d55223a8cdb8aa54fb9416e27d/api/Window.json (and FileSystemHandle, FileSystemFileHandle, FileSystemWritableFileStream, CompressionStream, DecompressionStream, Worker, html/elements/a) | First versions | P |
