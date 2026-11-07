@@ -71,9 +71,12 @@ def static_checks(ck, t):
     ck(tx is not None and 'if(err){setTimeout(function(){done(err);},0);return;}' in tx.group(1)
        and 'ended=true;setTimeout(function(){done(e,v);},0);' in tx.group(1),
        'every database answer comes after the call has returned, a refusal at once too')
+    # AMENDED FOR V172g: Save has two paths (the save picker, a download), each asking once; still from Save alone
     calls = [mm.start() for mm in re.finditer(r'bimAskPersist\(\);', code)]
-    ex = re.search(r"function bimExportProjectFile\(\)\{(.*?)\n  \}\n", code, flags=re.S)
-    ck(len(calls) == 1 and ex and 'bimAskPersist();' in ex.group(1), 'persist() is asked from Save alone (D3)')
+    saves = [re.search(r"function %s\((.*?)\n  \}\n" % fn, code, flags=re.S) for fn in ('bimFileDownload', 'bimFileSavePicked')]
+    spans = [(mm.start(), mm.end()) for mm in saves if mm]
+    ck(len(calls) == 2 and len(spans) == 2 and all(any(a <= c < b for a, b in spans) for c in calls),
+       'persist() is asked from Save alone (D3)')
 
 
 async def main():

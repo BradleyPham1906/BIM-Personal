@@ -16543,7 +16543,19 @@ Checked: `npm run check`, `npm test` 22 of 22 (4 new in `tests/unit/file-save.te
 check hides the pickers first (headless Chromium cannot show the save dialog), so Save takes the download path it reads.
 The browser check (2026-11-07, the owner's yes): the build loaded over http, from `file://`, and from `file://` with
 storage refused as WebKit refuses it; 0 page errors and 0 console errors in each; after an edit the status bar read "Not
-saved to a file" in all three. The browser suites have not been run (Rule #1).
+saved to a file" in all three.
+The new suite `tests/e2e/bim_phase172g_files_real_save_browser_tests.py` (the owner's "write and run"), 49 of 49: the
+marker and the tab's dot; the first-save reminder once, the 30-minute reminder with a 10-minute pause not counted (the
+clock moved by replacing Date.now); Save, Save as and the compressed file by download; Open of a .gz, of gzip bytes named
+.json, of a version-1 file, and a truncated .gz refused; Save through the pickers (answered with origin-private file
+handles over http, in a persistent profile: a handle read back from the database closes an off-the-record browser, part
+4.6), the second Save without a dialog, a file changed elsewhere (Cancel, Overwrite), Save as a .gz, a failing close();
+storage refused (one true message, none of the three untrue, Save, a second project and the first back from memory); a
+phone (the line inside the screen, Save as's buttons 36 px). Found by the suite and fixed: a fresh project was marked at
+start, because opening the plan view calls saveSoon; switching level or view, orbiting, panning, zooming, pinching and
+framing keep the view but are not work, and no longer mark a project (`bimFileNotWork`). Run with it: V115 49/49 (its
+Save check amended), V172d 38/38, V172e 27/27 (AMENDED FOR V172g: persist() asked from Save's two paths), V172f 26/26.
+The full regression has not been run.
 
-    canvas_v10.html   3995247 bytes
-    sha256            930f4560c951c2f606a9865ef92f3fb3b92a519bd077b672c02b16ca0411d2ce
+    canvas_v10.html   3996141 bytes
+    sha256            6fe272737ad4a605787bd6017cc727e5ce28d69f73ba591f71bc5acbaf854de6

@@ -63,6 +63,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
      one reminder (G1). The index is written only when the state changes, not at every edit. */
   function bimFileTouch(){
     if(!A3D_FILE)return;   /* an edit made while the engine is still starting, before this file's own code has run */
+    if(A3D_FILE.notWork){A3D_FILE.notWork=false;return;}
     var e=bimFileEntryNow(),now=Date.now(),id=A3D_DOCS.active,changed=false;
     if(!e||now<A3D_FILE.quietUntil)return;
     if(!e.unsaved){e.unsaved=1;e.work=0;e.told=0;changed=true;}
@@ -77,6 +78,8 @@ import { a3dToast } from '../bim/csg-booleans.js';
     if(!e.fileName&&!e.warned)bimFileFirstSave(id);
     bimFileStatus();
   }
+  /* the next saveSoon keeps a setting that is not work on the model (the current level, the view): not marked */
+  function bimFileNotWork(){if(A3D_FILE)A3D_FILE.notWork=true;}
   function bimFilePersisted(cb){
     if(A3D_PERSIST.granted===true)A3D_FILE.persisted=true;
     if(A3D_FILE.persisted!==null){cb(A3D_FILE.persisted);return;}
@@ -392,5 +395,6 @@ import { a3dToast } from '../bim/csg-booleans.js';
     if(b){ev.preventDefault();bimFileSave(false);}
   });
 export {
-  bimFileDownload, bimFileOpen, bimFilePickers, bimFileRead, bimFileSave, bimFileState, bimFileTouch, bimGzip
+  bimFileDownload, bimFileNotWork, bimFileOpen, bimFilePickers, bimFileRead, bimFileSave, bimFileState,
+  bimFileTouch, bimGzip
 };

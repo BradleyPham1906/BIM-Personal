@@ -7775,6 +7775,7 @@ try{
     bimSyncActiveGlobal();
     refreshLevels();
     paint();
+    bimFileNotWork();   /* __acad3dV172g: which level is current is kept, but it is not work on the model (D2) */
     saveSoon();
     a3dToast('Active level: '+lvl.name+' (elevation '+lvl.elev+')');
   }
@@ -14486,6 +14487,7 @@ try{
      one reminder (G1). The index is written only when the state changes, not at every edit. */
   function bimFileTouch(){
     if(!A3D_FILE)return;   /* an edit made while the engine is still starting, before this file's own code has run */
+    if(A3D_FILE.notWork){A3D_FILE.notWork=false;return;}
     var e=bimFileEntryNow(),now=Date.now(),id=A3D_DOCS.active,changed=false;
     if(!e||now<A3D_FILE.quietUntil)return;
     if(!e.unsaved){e.unsaved=1;e.work=0;e.told=0;changed=true;}
@@ -14500,6 +14502,8 @@ try{
     if(!e.fileName&&!e.warned)bimFileFirstSave(id);
     bimFileStatus();
   }
+  /* the next saveSoon keeps a setting that is not work on the model (the current level, the view): not marked */
+  function bimFileNotWork(){if(A3D_FILE)A3D_FILE.notWork=true;}
   function bimFilePersisted(cb){
     if(A3D_PERSIST.granted===true)A3D_FILE.persisted=true;
     if(A3D_FILE.persisted!==null){cb(A3D_FILE.persisted);return;}
@@ -47936,7 +47940,7 @@ try{
     if(name==='home'){to.dist=DEFCAM.dist;to.tx=DEFCAM.tx;to.ty=DEFCAM.ty;to.tz=DEFCAM.tz;}
     if(anim===false){
       c.yaw=to.yaw;c.pitch=to.pitch;c.dist=to.dist;c.tx=to.tx;c.ty=to.ty;c.tz=to.tz;
-      paint();saveSoon();return;
+      paint();bimFileNotWork();saveSoon();return;   /* __acad3dV172g: the view is kept, but it is not work (D2) */
     }
     var from={yaw:c.yaw,pitch:c.pitch,dist:c.dist,tx:c.tx,ty:c.ty,tz:c.tz};
     var t0=Date.now(),dur=260;
@@ -47946,7 +47950,7 @@ try{
       for(k in to)if(to.hasOwnProperty(k))c[k]=from[k]+(to[k]-from[k])*e;
       paint();
       if(t<1&&A3D.on)requestAnimationFrame(step);
-      else saveSoon();
+      else{bimFileNotWork();saveSoon();}   /* __acad3dV172g */
     }
     requestAnimationFrame(step);
   }
@@ -48100,7 +48104,7 @@ try{
     c.dist=Math.max(14,sz*1.6);
     bimAimAtSafeCentre(c,P);
     A3D.view='Custom';
-    refreshHud();paint();saveSoon();
+    refreshHud();paint();bimFileNotWork();saveSoon();   /* __acad3dV172g: framing is not work (D2) */
   }
   /* Revit's ZS. The direct answer to "the handles I need are behind the tool dock": it frames the
      selection into the rectangle those handles can be clicked in. */
@@ -49190,7 +49194,7 @@ try{
   function bimFrameNothing(){
     var c=A3D.cam;
     c.dist=DEFCAM.dist;c.tx=DEFCAM.tx;c.ty=DEFCAM.ty;c.tz=DEFCAM.tz;
-    paint();saveSoon();
+    paint();bimFileNotWork();saveSoon();   /* __acad3dV172g */
   }
   function fitScene(){
     /* __acad3dV79: this used to centre the model on the CANVAS and size it to the canvas, which
@@ -53856,7 +53860,7 @@ try{
       return false;
     }
     bimSetActiveView(kind,id,sv);   /* __acad3dV119: the record, and everything that reads it */
-    paint();saveSoon();
+    paint();bimFileNotWork();saveSoon();   /* __acad3dV172g: which view is open is not work (D2) */
     return true;
   }
   /* __acad3dV119: the record of the view on screen, and the readouts that follow it. Every view
@@ -57758,7 +57762,7 @@ try{
       if(c.pitch<-1.52)c.pitch=-1.52;
       A3D.view='Custom';refreshHud();
     }
-    paint();saveSoon();
+    paint();bimFileNotWork();saveSoon();   /* __acad3dV172g: panning and orbiting move the view, not the model (D2) */
   }
   function onUp(ev){
     if(!drag)return;
@@ -57858,7 +57862,7 @@ try{
   function onWheel(ev){
     var xy=cvXY(ev);
     bimZoomAbout(Math.pow(1.0015,ev.deltaY),xy[0],xy[1]);
-    ev.preventDefault();paint();saveSoon();
+    ev.preventDefault();paint();bimFileNotWork();saveSoon();   /* __acad3dV172g: zooming is not work (D2) */
   }
   /* setters: other files assign these through them (an ES module cannot assign to an import) */
   function setDrag(v){drag=v;return v;}
@@ -57939,7 +57943,7 @@ try{
       c2.tx=A3D_TOUCH.camStart.tx-(V2.r[0]*dxp-V2.u[0]*dyp)*k2;
       c2.ty=A3D_TOUCH.camStart.ty-(V2.r[1]*dxp-V2.u[1]*dyp)*k2;
       c2.tz=A3D_TOUCH.camStart.tz-(V2.r[2]*dxp-V2.u[2]*dyp)*k2;
-      paint();saveSoon();
+      paint();bimFileNotWork();saveSoon();   /* __acad3dV172g: a pinch moves the view, not the model (D2) */
       ev.preventDefault();
     }
   }

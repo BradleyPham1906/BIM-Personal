@@ -2,6 +2,7 @@ import { A3D, el } from '../core/state.js';
 import { pushUndo } from '../drawing/plan-mode-sketch.js';
 import { bimSyncActiveGlobal, setActiveLevel } from '../bim/levels-walls-floors.js';
 import { refreshLevels } from '../bim/classification.js';
+import { bimFileNotWork } from '../io/file-save.js';
 import { bimEsc } from '../layers/layer-manager.js';
 import { A3D_CLB, bimClbClose } from '../site-analysis/climate-board.js';
 import { bimRenderInto, refreshProps } from '../site-analysis/panel.js';
@@ -181,7 +182,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
       return false;
     }
     bimSetActiveView(kind,id,sv);   /* __acad3dV119: the record, and everything that reads it */
-    paint();saveSoon();
+    paint();bimFileNotWork();saveSoon();   /* __acad3dV172g: which view is open is not work (D2) */
     return true;
   }
   /* __acad3dV119: the record of the view on screen, and the readouts that follow it. Every view

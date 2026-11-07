@@ -9,7 +9,7 @@ import {
 } from '../drawing/drawing-input.js';
 import { refreshLevels } from '../bim/classification.js';
 import { bimSelectedGrid } from '../bim/grid-editing.js';
-import { bimFileOpen, bimFileSave } from '../io/file-save.js';
+import { bimFileNotWork, bimFileOpen, bimFileSave } from '../io/file-save.js';
 import { bimClbKey } from '../site-analysis/climate-board.js';
 import { refreshProps } from '../site-analysis/panel.js';
 import { paint } from '../map/terrain-3d.js';
@@ -107,7 +107,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
       c2.tx=A3D_TOUCH.camStart.tx-(V2.r[0]*dxp-V2.u[0]*dyp)*k2;
       c2.ty=A3D_TOUCH.camStart.ty-(V2.r[1]*dxp-V2.u[1]*dyp)*k2;
       c2.tz=A3D_TOUCH.camStart.tz-(V2.r[2]*dxp-V2.u[2]*dyp)*k2;
-      paint();saveSoon();
+      paint();bimFileNotWork();saveSoon();   /* __acad3dV172g: a pinch moves the view, not the model (D2) */
       ev.preventDefault();
     }
   }
