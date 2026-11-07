@@ -1,3 +1,21 @@
+import { A3D } from '../core/state.js';
+import { meshOf } from '../core/mesh-primitives.js';
+import { bimObjOffset } from '../drawing/plan-mode-sketch.js';
+import { bimHHMM, bimPad2, bimSunCalc, bimSunNow, bimSunNum, bimSunSettings } from '../site/sun-position.js';
+import { bimTerrainTin } from '../terrain/terrain-tin.js';
+import { bimTrueNorthDeg } from '../survey/survey-arithmetic.js';
+import { bimTinHeightAt } from '../site/alignment-profile.js';
+import { bimLayerShown } from '../layers/layer-rules.js';
+import { bimResHolds, bimSimDrawFlow } from './results-layers.js';
+import { bimAnalyzeRefresh } from './analyze-tab.js';
+import { refreshProps } from '../site-analysis/panel.js';
+import { toScreen } from '../io/import-entry.js';
+import { paint } from '../map/terrain-3d.js';
+import { saveSoon } from '../bim/region-regenerate.js';
+import { bimShadowCasters, bimShadowGround, bimShadowPoint, bimSunVector } from '../site/shadows.js';
+import { bimCameraIsPlan } from '../views/saved-views.js';
+import { objById } from '../bim/csg-booleans.js';
+
   /* ================= __acad3dV143: Simulation ================= */
   var A3D_SIM={sun:null,solar:null,rain:null,busy:null};
   var BIM_SIM_RAMP=['#2c3e78','#3a64a8','#3f8fc2','#5fb7b2','#9fd28e','#e7e36b','#f7b545','#f0703a'];
@@ -357,3 +375,8 @@
       }
     }catch(eD){console.warn('[BIM] simulation overlay',eD);}
   }
+export {
+  A3D_SIM, BIM_SIM_RAMP, bimRainFlow, bimRainHeap, bimRainTerrain, bimSimDrawGrid, bimSimGridImage,
+  bimSimStale, bimSimStamp, bimSolarFaces, bimSolarOccluders, bimSolarRun, bimSolarTargets, bimSolarYear,
+  bimSunHours, drawSimOverlays
+};

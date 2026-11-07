@@ -1,3 +1,150 @@
+import { A3D, el } from '../core/state.js';
+import { camVecs } from '../core/mesh-primitives.js';
+import { A3D_TYPING, UNDO_STACK, bimObjOffset, pushUndo } from '../drawing/plan-mode-sketch.js';
+import { bimParseCoordInput, bimPromptFor, bimRecordCmd, sketchCCW } from '../drawing/drawing-input.js';
+import { bimParseSurvey } from '../terrain/terrain-tin.js';
+import {
+  A3D_MERGE, bimHistBase, bimHistBranchDelete, bimHistBranchNew, bimHistBranches, bimHistCompare,
+  bimHistMergeAbort, bimHistMergeChoose, bimHistMergeFinish, bimHistMergeStart, bimHistSwitch
+} from '../history/branches-merge.js';
+import {
+  BIM_SURVEY_TOL, bimSurveyCheck, bimSurveyReportHtml, bimSurveySetControl
+} from '../survey/survey-check.js';
+import { bimTrueNorthDeg } from '../survey/survey-arithmetic.js';
+import { bimImportSurvey } from '../site/alignment-profile.js';
+import { bimLayerById } from '../layers/layer-rules.js';
+import { bimLySecHidden, bimLySecVisible } from '../layers/analysis-data-rows.js';
+import { bimUsageAdd, bimUsageAssign, bimUsageRemove } from '../properties/usages.js';
+import { A3D_STD_UI, bimStdCommand, bimStdPackLook } from '../properties/site-standards.js';
+import {
+  A3D_MAP_DRAFT, bimGeoExportFC, bimGeoImportText, bimMapCommand, bimMapFind
+} from '../properties/map-address-site-data.js';
+import { bimFindCommand, bimLensCommand } from '../properties/context-lod-data.js';
+import { A3D_GUIDE, BIM_APP_VERSION, bimDocsAnchor, bimDocsOpen } from '../ui/guide-versions.js';
+import { A3D_SIM, bimSimStale, bimSolarYear } from '../analysis/simulation.js';
+import {
+  bimRainCommand, bimResById, bimResGone, bimResHolds, bimResLayers, bimResOpacity, bimResStale, bimResValid,
+  bimResultLayerAdd, bimResultLayerMove, bimResultLayerRemove, bimResultLayerSet, bimResultLayerUpdate,
+  bimSimClear, bimSolarCommand, bimSunHoursCommand
+} from '../analysis/results-layers.js';
+import {
+  A3D_ANZ, A3D_PTAB, bimAnalyzeRefresh, bimAnzAct, bimAnzCards, bimAnzFilter, bimAnzView, bimAnzWordsHit,
+  bimPropTabOf, bimSaGoto, bimSetPropTab
+} from '../analysis/analyze-tab.js';
+import {
+  A3D_DG, bimDgDiags, bimDgEdited, bimDgState, bimDgStdChanged, bimIsDiag, bimSaStdText, bimSha256, bimStd,
+  bimStdChanged, bimStdClear, bimStdDataChanged, bimStdDone, bimStdEdition, bimStdOverride, bimStdPackApply,
+  bimStdPackDiff, bimStdPackRemove, bimStdPath, bimStdPick, bimStdPlace, bimStdPlaceFromAddress, bimStdRecs,
+  bimStdSay, bimStdSetDate, bimStdSetPlace, bimStdStamp, bimStdUsedText
+} from '../standards/registry.js';
+import { bimDgReset, bimDgResetAnalysis } from '../site-analysis/model-layers.js';
+import {
+  A3D_ANIM, BIM_ANIM, BIM_ANIM_AUTO, BIM_ANIM_NAMES, bimAnimAuto, bimAnimCentre, bimAnimDrawOf, bimAnimFrame,
+  bimAnimHalt, bimAnimKinds, bimAnimLive, bimAnimMotion, bimAnimOrient, bimAnimOrientLine, bimAnimOut,
+  bimAnimPlay, bimAnimReveal, bimAnimRingK, bimAnimRingOf, bimAnimStop, bimAnimSunDate, bimAnimSunTime,
+  bimAnimTick, bimAnimTint, bimPickDiag
+} from '../site-analysis/motion.js';
+import {
+  BIM_DG_NOISE_BANDS, bimDgBarrier, bimDgL0, bimDgLat, bimDgReach, bimDgRoadClass, bimDgSite
+} from '../site-analysis/model-analyses.js';
+import {
+  bimMvKmhOf, bimMvLotOf, bimMvLts, bimMvOf, bimMvParking, bimMvPtal, bimMvPtalBand, bimMvReach, bimMvRow,
+  bimMvStress
+} from '../site-analysis/movement-analyses.js';
+import {
+  A3D_LAND, bimLandBfe, bimLandExits, bimLandFetch, bimLandGround, bimLandHornOf, bimLandHydroOf,
+  bimLandLinks, bimLandMs, bimLandSiteMask, bimLandUS, bimLandUpstream, bimLandWarm, bimLandZoneOf
+} from '../site-analysis/land-water.js';
+import {
+  bimDgRunAll, bimDgSet, bimDgTexCss, bimLd33300, bimLdAreas, bimLdBuildings, bimLdClassOf, bimLdForm,
+  bimLdGrain, bimLdMix, bimLdRaster, bimLdReach, bimLdWin, bimLdZnAround, bimZnDrawing, bimZnStyleOf
+} from '../site-analysis/land-use.js';
+import { A3D_SITERUN, bimDgAct, bimSiteAnalyze, bimZnDrawingFetch } from '../site-analysis/analyze-site.js';
+import {
+  BIM_SA_CATS, bimSa, bimSaAuto, bimSaFill, bimSaFind, bimSaNumber, bimSaSlope
+} from '../site-analysis/workspace.js';
+import {
+  A3D_CLIM, bimClimAuto, bimClimFetch, bimClimGsl, bimClimUrls, bimHumRatio, bimKoppen
+} from '../site-analysis/climate-data.js';
+import { bimClbClose, bimClbHtml, bimClbOpen } from '../site-analysis/climate-board.js';
+import {
+  A3D_ZN, bimZn, bimZnAllows, bimZnArea2, bimZnBuild, bimZnCalc, bimZnEnvelopeObj, bimZnFromLayer, bimZnInset,
+  bimZnPlate, bimZnRules, bimZnSet, bimZnStepAdd, bimZnStepDel
+} from '../site-analysis/zoning-envelope.js';
+import {
+  A3D_ACC, bimAccFetch, bimAccLot, bimAccQuery, bimAccWork, bimCenShare, bimCenSum, bimCenUrls, bimCenYear
+} from '../site-analysis/access-data.js';
+import { bimAccAuto, bimMvInterval } from '../site-analysis/movement-data.js';
+import { bimSaRefresh, refreshProps } from '../site-analysis/panel.js';
+import {
+  BIM_SKP, bimSkpGenerated, bimSkpImportBuffer, bimSkpReader, bimSkpScan
+} from '../io/sketchup-import.js';
+import { bimHandleImportFile, toScreen } from '../io/import-entry.js';
+import {
+  A3D_LENS, BIM_LENS_NONE, BIM_LENS_RAMP, bimDataAttrKeys, bimDataFeatCol, bimDataLensScale, bimLensCol,
+  bimLensPropKeys, bimLensSet, bimLensSettings, bimLensValue, drawLensLegend
+} from '../map/colour-lens.js';
+import {
+  A3D_MAP, bimGeoToModel, bimMapDpr, bimMapFooterHtml, bimMapOrigin, bimMapPlan, bimMapSet, bimMapSettings,
+  bimMapTileCorners, bimMapTileUrl, bimModelToGeo
+} from '../map/map-tiles.js';
+import {
+  A3D_CTX, bimCtxArea, bimCtxDatum, bimCtxQuery, bimCtxSet, bimCtxSettings, bimOsmHeight, bimOsmKind,
+  bimOsmRings
+} from '../map/site-context.js';
+import {
+  BIM_OVERPASS_MIRRORS, bimCtxAlong, bimCtxCreditHtml, bimCtxFetch, bimCtxRemove, bimCtxWidth, bimRoadUse,
+  bimTagMetres
+} from '../map/surroundings-3d.js';
+import {
+  bimLodCheck, bimLodOf, bimObjSolidCheck, bimOsmPartRange, bimSolidCheck
+} from '../map/lod-solids.js';
+import { bimOsmRoof, bimRoofDir } from '../map/lod2-roofs.js';
+import {
+  bimCityJsonDoc, bimCityJsonExport, bimCityJsonImportText, bimUtmFwd, bimUtmInv, bimUtmZone
+} from '../map/cityjson.js';
+import {
+  A3D_DATA, BIM_DATA_PRESETS, bimDataById, bimDataFeats, bimDataFetch, bimDataKind, bimDataList,
+  bimDataQueryUrl
+} from '../map/data-layers.js';
+import {
+  A3D_FIND, BIM_DATA_PORTALS, bimDataAdd, bimDataCreditHtml, bimDataPick, bimDataRemove, bimDataSet,
+  bimDataToProperty, bimFindAdd, bimFindCurrent, bimFindGuess, bimFindSearch, bimFindSetPortal,
+  bimHubSearchUrl, bimSocrataSearchUrl
+} from '../map/find-open-data.js';
+import { bimCtxStand, bimDrapeTiles, paint } from '../map/terrain-3d.js';
+import { bimCatForAct } from '../ui/shortcuts.js';
+import { bimViewportCanvas } from '../ui/zoom-window-save-image.js';
+import { bimTypingDrag } from '../gizmo/gizmo-handles.js';
+import {
+  A3D_SHELL_TIER, bimKbFit, bimShellApplyTier, bimShellDrawer, bimShellTier
+} from '../assets/library-drag.js';
+import {
+  bimShellMore, bimTPalAct, bimTPalActive, bimTPalDrop, bimTPalFold, bimTPalPrefs
+} from '../ui/tool-palette.js';
+import { bimStartShowing } from '../ui/project-tabs.js';
+import {
+  BIM_USAGE_DEFAULTS, bimExpr, bimMeshSliceArea, bimUsageMeasure, bimUsageSummary, bimUsages
+} from '../bim/usages-live-areas.js';
+import { bimShadowCasters, bimShadowGround } from '../site/shadows.js';
+import {
+  BIM_ENT, bimEntBody, bimEntCrownRatio, bimEntFrame, bimEntInLeaf, bimEntLeafOf, bimEntPlace, bimEntPropSet,
+  bimEntRefit, bimEntSeason, bimEntTreeSize, bimEntTurns, bimEntVeh
+} from '../assets/scale-assets.js';
+import { A3D_SLIDESHOW, bimSheetOnScreen } from '../sheets/present.js';
+import { bimKeyForControl } from '../sheets/viewports.js';
+import { BIM_ZOOM_MAX, BIM_ZOOM_MIN, bimZoomAbout, drag } from '../sheets/presentation-panel.js';
+import { a3dToast, objById } from '../bim/csg-booleans.js';
+import {
+  A3DR_TABS, A3D_DISC_CUR, A3D_DOCK_PIN_DEFAULTS, a3drTabGroups, bimDockPins, bimOpenToolsPanel, bimSetDockPin
+} from '../ui/discipline-tabs.js';
+import {
+  BIM_CMD_USE_KEY, bimCmdCatalog, bimCmdPublic, bimCmdRecent, bimCmdRun, bimCmdSearch, bimCmdUsage
+} from '../commands/command-catalogue.js';
+import { bimDockLabelsOn, bimDockTipData, bimRunAct, bimSetDockLabels } from '../ui/dock-tooltips.js';
+import { cvH, cvW } from '../ui/canvas-size.js';
+import { BIM_CMD_MAP, BIM_SHEET_CMDS, BIM_START_CMDS } from '../commands/command-map.js';
+
   /* __acad3dV128: the command search */
   window.__a3dCommandSearch=function(q,limit){
     try{return bimCmdSearch(q,limit);}catch(eQ){console.warn('[BIM] The command search failed',eQ);return [];}

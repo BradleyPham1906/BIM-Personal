@@ -1,3 +1,17 @@
+import { A3D, el } from '../core/state.js';
+import { bimSyncStatusHint } from '../drawing/plan-mode-sketch.js';
+import { bimEsc } from '../layers/layer-manager.js';
+import { A3D_REV } from '../core/objects-save.js';
+import { bimProjectLabel } from '../ui/project-tabs.js';
+import { bimSetActiveView } from '../views/saved-views.js';
+import {
+  SHEET_PREVIEW_PXMM, bimRenderSheet, bimSheetById, bimSheetLabel, bimSheetViewRefresh
+} from './sheets.js';
+import { bimSheetOnScreen } from './present.js';
+import { bimPresThumbsQueue } from './presentation-panel.js';
+import { a3dToast } from '../bim/csg-booleans.js';
+import { bimDevicePixelRatio } from '../ui/canvas-size.js';
+
   /* ================= __acad3dV122: the Pages display =================
      The sheet view's second display: every sheet in the project's order, one under the next in one
      scroll, read-only, each drawn as it plots. The view is still a sheet -- the page being read --
@@ -283,3 +297,8 @@
       else window.addEventListener('resize',refit);
     }
   }
+export {
+  A3D_PAGES, A3D_PAGEVIEW_KEYS, A3D_PAGE_ZOOMS, bimPageKey, bimPageKeyAct, bimPageKeyWords, bimPageScaleFor,
+  bimPageSig, bimPagesGo, bimPagesIndex, bimPagesKeyDo, bimPagesOn, bimPagesRefresh, bimPagesScrollTo,
+  bimPagesSetCurrent, bimPagesSetDisplay, bimPagesStale, bimPagesZoom, bimWirePages
+};

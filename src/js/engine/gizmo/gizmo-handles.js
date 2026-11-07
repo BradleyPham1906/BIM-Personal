@@ -1,3 +1,31 @@
+import { A3D, el } from '../core/state.js';
+import { camVecs, vcross, vdot, vnorm } from '../core/mesh-primitives.js';
+import {
+  A3D_SNAP, bimObjOffset, bimSnapCandidates, bimSyncStatusHint, pushUndo
+} from '../drawing/plan-mode-sketch.js';
+import { bimEsc } from '../layers/layer-manager.js';
+import { bimDispLen, bimUnitDef, bimUnitLabel } from '../properties/palette.js';
+import { refreshProps } from '../site-analysis/panel.js';
+import { toScreen } from '../io/import-entry.js';
+import { paint } from '../map/terrain-3d.js';
+import { bimPointSegDist } from '../render/viewcube.js';
+import {
+  A3D_GIZ, bimGizArcPt, bimGizAxis, bimGizInQuad, bimGizmoAngleAt, bimGizmoFrame, bimGizmoGeom, bimGizmoIds,
+  bimGizmoKind, bimRayPlane
+} from './transform-gizmo.js';
+import { bimPushCancel, bimPushEnd, bimPushTo } from '../editing/push-pull.js';
+import { bimDuplicateObject } from '../editing/selection-tools.js';
+import {
+  A3D_MATERIALIZED, bimComputeTransformedGeometry, bimFlushMaterialized, bimMaterializeInto, bimPrimitiveMesh,
+  bimRotateObjectInPlace
+} from '../editing/precision-editing.js';
+import { bimPropagateFrom } from '../bim/region-dependents.js';
+import { saveSoon } from '../bim/region-regenerate.js';
+import { bimRelinkCopies, bimRelinkNote } from '../assets/blocks.js';
+import { drag, refreshTree } from '../sheets/presentation-panel.js';
+import { a3dToast, objById } from '../bim/csg-booleans.js';
+import { cvH, cvW } from '../ui/canvas-size.js';
+
   function bimGizmoVisible(){
     /* __acad3dV110: and not while the user has hidden it from the gizmo menu */
     return !!(A3D.on!==false)&&!A3D.sk&&!A3D.conPick&&!A3D.sheetCapture&&!A3D.gizHidden&&
@@ -1278,3 +1306,11 @@
     var cx=r?(g?r.left+g.ox+12:r.left+r.width/2):200,cy=r?(g?r.top+g.oy+12:r.top+r.height/2):200;
     bimOpenGizmoMenu(cx,cy);
   }
+export {
+  A3D_CLICKBOX_T, A3D_VALBOX, bimCloseGizmoMenu, bimCloseValueBox, bimDrawGizmo, bimFmtLen, bimGizmoApply,
+  bimGizmoApplyRotate, bimGizmoBegin, bimGizmoClickValue, bimGizmoCommand, bimGizmoEndDrag,
+  bimGizmoHandleHint, bimGizmoHandleName, bimGizmoHoverKey, bimGizmoParseValue, bimGizmoReadout,
+  bimGizmoRestoreObjs, bimGizmoSnapSetup, bimGizmoStartMoving, bimGizmoStarts, bimGizmoTypeKey,
+  bimGizmoTyping, bimGizmoWantsKey, bimOpenGizmoMenu, bimPickGizmo, bimRotatableSplit, bimTypingDrag,
+  bimValueBox
+};

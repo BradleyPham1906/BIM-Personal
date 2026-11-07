@@ -1,3 +1,6 @@
+import { bimBulgeArc, bimBulgeAt, bimBulgedLength } from './arc-storage.js';
+import { bimArcBulgeBetween, bimCircleCircleIntersect, bimCircleLineIntersect } from './curve-offset.js';
+
   /* ================= __acad3dV91: finding a place on a curve, and cutting there ========
 
      TRIM and BREAK are the same problem underneath - find a location along a polyline that may
@@ -172,3 +175,7 @@
       return {error:'That break point is at the end of the wall — there would be nothing on that side'};
     return {a:s1.a,b:s2.b,cutA:lo.pt,cutB:hi.pt};
   }
+export {
+  bimArcParamAt, bimArcPointAt, bimBreakBulged, bimIntersectBulgedSegs, bimProjectOntoBulged,
+  bimPtDistToBulgedSeg, bimSegRangeOk, bimSplitBulgedAt, bimTrimBulged
+};

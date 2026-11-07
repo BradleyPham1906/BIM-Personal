@@ -1,3 +1,27 @@
+import { A3D } from '../core/state.js';
+import { pushUndo } from '../drawing/plan-mode-sketch.js';
+import { bimTerrainTin } from '../terrain/terrain-tin.js';
+import { bimTerrainBands } from '../terrain/breaklines.js';
+import { bimBandsOf } from '../terrain/grading.js';
+import { A3D_LY } from '../layers/layers-panel.js';
+import { refreshLayers } from '../layers/analysis-data-rows.js';
+import { bimDispNum } from '../properties/palette.js';
+import {
+  A3D_SIM, BIM_SIM_RAMP, bimRainFlow, bimSimDrawGrid, bimSimGridImage, bimSimStamp, bimSolarRun,
+  bimSolarTargets, bimSunHours
+} from './simulation.js';
+import { bimAnalyzeRefresh, bimAnzTerrainShown } from './analyze-tab.js';
+import { bimAccHas } from '../site-analysis/access-data.js';
+import { bimAccDrawPlan } from '../site-analysis/movement-data.js';
+import { refreshProps } from '../site-analysis/panel.js';
+import { bimTlDataOk } from '../site-tools/grid.js';
+import { bimTlImage, bimTlLayerRerun, bimTlStale } from '../site-tools/tools.js';
+import { toScreen } from '../io/import-entry.js';
+import { paint } from '../map/terrain-3d.js';
+import { saveSoon } from '../bim/region-regenerate.js';
+import { bimCameraIsPlan } from '../views/saved-views.js';
+import { a3dToast, objById } from '../bim/csg-booleans.js';
+
   /* ================= __acad3dV148: results as layers =================
      A result kept as a layer. Sun hours and rain are kept as they were when run -- their picture is
      saved with the project, so it opens offline and two runs (June and December, say) can be laid
@@ -244,3 +268,9 @@
     paint();refreshProps();bimAnalyzeRefresh();
     return n;
   }
+export {
+  A3D_RES_IMG, BIM_TVIEW_LABEL, bimDrawBandTris, bimRainCommand, bimResById, bimResGone, bimResHolds,
+  bimResKeyFrom, bimResLayers, bimResNow, bimResOpacity, bimResStale, bimResValid, bimResultLayerAdd,
+  bimResultLayerMove, bimResultLayerRemove, bimResultLayerSet, bimResultLayerUpdate, bimSimClear,
+  bimSimDrawFlow, bimSolarCommand, bimSunHoursCommand, drawResultLayers
+};

@@ -1,3 +1,23 @@
+import { A3D, DEFCAM } from '../core/state.js';
+import { cancelSketch, setNav } from '../drawing/plan-mode-sketch.js';
+import { bimWireLayersPanel } from '../layers/analysis-data-rows.js';
+import { bimAwTab } from '../site-analysis/analysis-workspace.js';
+import { paint } from '../map/terrain-3d.js';
+import { bimFrameBounds, bimWorldBounds } from './chrome-framing.js';
+import {
+  A3D_ASSETS_UI, bimAssetAction, bimAssetRemove, bimAssetsAct, refreshAssets
+} from '../assets/library.js';
+import {
+  A3D_ASDRAG, A3D_ASDRAG_EAT, A3D_SHELL_OBS, A3D_SHELL_TIER, bimAssetDragDown, bimAssetDragEnd,
+  bimAssetDragMove, bimAssetDragUp, bimCleanShell, bimKbFit, bimRailIcon, bimShellApplyTier, bimShellDrawer,
+  bimShellOverlay
+} from '../assets/library-drag.js';
+import { saveSoon } from '../bim/region-regenerate.js';
+import { bimWirePresPanel } from '../sheets/presentation-panel.js';
+import { a3dToast } from '../bim/csg-booleans.js';
+import { bimOpenToolsPanel } from './discipline-tabs.js';
+import { bimRunAct } from './dock-tooltips.js';
+
   /* ================= __acad3dV150: the tool palette, on a phone and a tablet =================
      The essential tools in a capsule over the drawing, dragged where the hand wants them, folded
      to one button when the drawing wants the room. Where it was left is kept in this browser. */
@@ -442,3 +462,8 @@
     if(!bb){bimFrameNothing();return;}
     bimFrameBounds(bb);
   }
+export {
+  BIM_LEFT_KEEP, BIM_LEFT_MIN, BIM_LEFT_RAIL, bimBuildShell, bimLeftSetWidth, bimLeftState, bimShellDockW,
+  bimShellMore, bimShellSetTab, bimTPalAct, bimTPalActive, bimTPalDrop, bimTPalFold, bimTPalPlace,
+  bimTPalPrefs, bimTPalSync, bimWatchShell, fitScene
+};

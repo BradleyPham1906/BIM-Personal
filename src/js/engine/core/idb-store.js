@@ -1,3 +1,11 @@
+import { A3D, A3D_BOOT_IDB, A3D_DOCS, LSK } from './state.js';
+import { paint } from '../map/terrain-3d.js';
+import { A3D_SAVE_FAILED, save3d, saveT } from './objects-save.js';
+import {
+  bimDocEntry, bimDocsNotify, bimLoadProjectRecord, bimNameOf, bimProjectLabel
+} from '../ui/project-tabs.js';
+import { a3dToast } from '../bim/csg-booleans.js';
+
   /* ================= __acad3dV172d: the browser's database, for a project too large for localStorage =================
      reference/research-local-storage.md, phase A1. localStorage holds about 5.2 million characters for the whole
      origin (measured in Chromium, 2026-10-31), so an imported model of about 165,000 triangles could not be saved,
@@ -151,3 +159,6 @@
   document.addEventListener('visibilitychange',function(){
     if(document.hidden&&saveT){clearTimeout(saveT);saveT=null;save3d();}
   });
+export {
+  A3D_SPILL, bimIdbDel, bimIdbGet, bimIdbPut, bimIsIdbPointer, bimParkInIdb, bimSpillSave, bimSpillToast
+};

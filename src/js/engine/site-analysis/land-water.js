@@ -1,3 +1,25 @@
+import { A3D } from '../core/state.js';
+import { bimObjOffset } from '../drawing/plan-mode-sketch.js';
+import { bimSunNum, bimSunSettings } from '../site/sun-position.js';
+import { bimTinIndexOf } from '../terrain/grading.js';
+import { bimTrueNorthDeg } from '../survey/survey-arithmetic.js';
+import { bimPointInPoly, bimPolyArea } from '../bim/rooms.js';
+import { bimLayerShown } from '../layers/layer-rules.js';
+import { bimDispNum } from '../properties/palette.js';
+import { bimGeoParts, bimGeoPositions } from '../properties/map-address-site-data.js';
+import { bimRainHeap } from '../analysis/simulation.js';
+import { bimLandSlope } from '../standards/registry.js';
+import { bimDgSite } from './model-analyses.js';
+import { bimSaToday } from './workspace.js';
+import { bimGeoToModel, bimMapHost, bimMapOrigin, bimModelToGeo } from '../map/map-tiles.js';
+import { BIM_TERRARIUM_URL, bimCtxDatum, bimCtxElevAt, bimCtxTerrain } from '../map/site-context.js';
+import { bimCtxErr } from '../map/surroundings-3d.js';
+import { bimDataParse, bimDataQueryUrl } from '../map/data-layers.js';
+import { bimPointSegDist } from '../render/viewcube.js';
+import { saveSoon } from '../bim/region-regenerate.js';
+import { bimClipHalfPlane } from '../structure/tributary-loads.js';
+import { a3dToast } from '../bim/csg-booleans.js';
+
   /* ================= __acad3dV165: site analysis in the model II, land and water =================
      reference/research-site-analysis-in-model.md, section 2. The ground at the site's scale -- a grid
      every 5 m for 150 m around it -- and six analyses on it, each a layer of the same button. The grid
@@ -703,3 +725,10 @@
     return {E:E,run:{legend:BIM_LAND_ZORDER.filter(function(z){return present[z];}).map(function(z){var Z=BIM_LAND_ZONES[z];return {name:Z.name,short:Z.short,col:Z.col,kind:'fill'};}),
       source:'FEMA National Flood Hazard Layer',note:feats.length?'':'No flood zone mapped within 150 m'}};
   }
+export {
+  A3D_LAND, BIM_LAND_CELL, BIM_LAND_DIRNAME, BIM_LAND_DIRS, BIM_LAND_HALF, BIM_LAND_ZONES, BIM_LAND_ZORDER,
+  bimDgAspectRun, bimDgContoursRun, bimDgFloodRun, bimDgFlowRun, bimDgPondsRun, bimDgSlopeRun, bimLandAz,
+  bimLandBfe, bimLandDir8, bimLandExits, bimLandFetch, bimLandFloodZones, bimLandGround, bimLandHa,
+  bimLandHornOf, bimLandHydroOf, bimLandLinks, bimLandMs, bimLandP, bimLandPct, bimLandSiteMask, bimLandUS,
+  bimLandUpstream, bimLandWarm, bimLandZoneOf
+};

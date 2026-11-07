@@ -1,3 +1,12 @@
+import { bimDispNum } from '../properties/palette.js';
+import { bimLandSlope } from '../standards/registry.js';
+import { bimTlCx, bimTlCz, bimTlDistance, bimTlValue } from './grid.js';
+import {
+  BIM_TL_LEVELS, BIM_TL_RAMP_SUIT, BIM_TL_REST, BIM_TL_REST_PAL, BIM_TL_TOOLS, bimTlArea, bimTlAreaText,
+  bimTlInLot, bimTlInfo, bimTlLast, bimTlNum, bimTlQuant, bimTlRamp, bimTlRange, bimTlRunOut, bimTlSourceOf,
+  bimTlWarn
+} from './tools.js';
+
   /* ================= __acad3dV172: the site analysis tools: Suitability and Locate =================
      Esri's four steps (research-site-analysis-tools.md, 2): the criteria; each transformed to a common scale, 1 to 10
      by default -- Range of Classes, Unique Categories, or a continuous function between a lower and an upper threshold
@@ -234,3 +243,4 @@
         keep:function(T,h){h.region={cx:cx,cz:cz,mean:best.mean,n:best.cells.length,seed:best.seed};},
         layer:{name:bimTlAreaText(P.area)+(P.within==='lot'?' on the lot':''),lv:lv,n:1,pal:['#e8336c'],keys:[{name:'The best '+bimTlAreaText(P.area),col:'#e8336c'}],opacity:0.85}};
     }});
+export { BIM_TL_HOW_C, BIM_TL_HOW_V, bimTlGrow, bimTlScale, bimTlTransformOf };

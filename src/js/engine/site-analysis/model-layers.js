@@ -1,3 +1,32 @@
+import { A3D } from '../core/state.js';
+import { bimObjOffset, bimUndoHold, pushUndo } from '../drawing/plan-mode-sketch.js';
+import { bimSunCalc, bimSunNum, bimSunStudy, bimSunTzAt } from '../site/sun-position.js';
+import { bimLayerAlpha, bimLayerById, bimLayerShown } from '../layers/layer-rules.js';
+import { bimLayerByName, bimLayerNew } from '../layers/select-change.js';
+import {
+  A3D_DG, BIM_DG_STD, bimDgAn, bimDgDiags, bimDgEdited, bimDgState, bimDgW, bimIsDiag, bimStdStamp
+} from '../standards/registry.js';
+import {
+  A3D_ANIM, BIM_ANIM, bimAnimAlpha, bimAnimClip, bimAnimDrawOf, bimAnimFrame, bimAnimLive, bimAnimMarchOff,
+  bimAnimMotion, bimAnimOrient, bimAnimOrientLine, bimAnimOut, bimAnimReveal, bimAnimRingK, bimAnimScreen,
+  bimAnimStroke
+} from './motion.js';
+import { bimDgLegendLayout } from './model-analyses.js';
+import { bimDgSunSync, bimSunDrawMesh } from './sun-path.js';
+import { bimSunPanelLive } from './sun-panel.js';
+import { bimDgRunAll, bimDgTex } from './land-use.js';
+import { bimSaToday } from './workspace.js';
+import { refreshProps } from './panel.js';
+import { A3D_AW, bimAwInk, bimAwLook } from './analysis-workspace.js';
+import { toScreen } from '../io/import-entry.js';
+import { paint } from '../map/terrain-3d.js';
+import { saveSoon } from '../bim/region-regenerate.js';
+import {
+  bimFillProjected, bimShadowCasters, bimShadowGround, bimShadowPoint, bimSunVector
+} from '../site/shadows.js';
+import { bimCameraIsPlan } from '../views/saved-views.js';
+import { a3dToast, objById } from '../bim/csg-booleans.js';
+
   /* ---- the layers: Site analysis, and one under it for each analysis ---- */
   function bimDgLayerFind(id,name,parentId){
     var ly=id?bimLayerById(id):null;
@@ -420,3 +449,4 @@
     }
     ctx.restore();
   }
+export { bimDgBlit, bimDgOff, bimDgPlace, bimDgReset, bimDgResetAnalysis, bimDgScreen, drawDiagrams };

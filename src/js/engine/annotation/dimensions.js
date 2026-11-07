@@ -1,3 +1,15 @@
+import { A3D, el } from '../core/state.js';
+import { bimEnterDraftingMode, pushUndo } from '../drawing/plan-mode-sketch.js';
+import { bimGetActiveLevel } from '../bim/levels-walls-floors.js';
+import { bimLayerAlpha, bimLayerShown } from '../layers/layer-rules.js';
+import { toScreen } from '../io/import-entry.js';
+import { paint } from '../map/terrain-3d.js';
+import { refreshHud, saveSoon } from '../bim/region-regenerate.js';
+import { bimAnnotationVisible, bimObjectVisibleOnLevel } from '../views/saved-views.js';
+import { refreshTree } from '../sheets/presentation-panel.js';
+import { closeDlg } from '../ui/touch-input.js';
+import { a3dToast } from '../bim/csg-booleans.js';
+
   // ---- __acad3dV13: Annotation (linear dimensions, text labels) + PNG/PDF export ----
   // ---- __acad3dV25: angular / radius / diameter dimensions + leaders. All stored as t:'dim'
   // with a dimKind discriminator, so they inherit the existing dim plumbing (view-scoping,
@@ -338,3 +350,9 @@
       ctx.restore();
     }
   }
+export {
+  bimCircleFrom3Points, bimComputeAngularDim, bimComputeDim, bimComputeLeader, bimComputeRadialDim,
+  bimCreateAngularDim, bimCreateDim, bimCreateLeader, bimCreateRadialDim, bimCreateTextLabel, bimDimKind,
+  drawDims, drawTextLabels, openLeaderTextDlg, openTextLabelDlg, startAngularDimTool, startDimTool,
+  startLeaderTool, startRadialDimTool, startTextTool
+};

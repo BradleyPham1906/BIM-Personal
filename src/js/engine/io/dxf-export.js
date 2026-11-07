@@ -1,3 +1,7 @@
+import { A3D } from '../core/state.js';
+import { sketchCCW } from '../drawing/drawing-input.js';
+import { bimAlignOffsets } from '../bim/footings.js';
+
   // ---- __acad3dV24: DXF export + Ceiling tool ----
   // DXF export writes standard ASCII DXF (HEADER/TABLES/ENTITIES). Only the 2D plan footprint of
   // each object is exported -- walls as centerline + inner/outer loops, rooms/floors/roofs as
@@ -103,3 +107,4 @@
     }
     return {outerRuns:walk(outerLoop,'outer'),innerRuns:walk(innerLoop,'inner'),outerClosed:false,innerClosed:false,jambs:jambs,glaze:glaze};
   }
+export { bimDxfLayerName, bimDxfPair, bimWallOpeningBreaks };

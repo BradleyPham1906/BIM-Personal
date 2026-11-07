@@ -1,3 +1,8 @@
+import { A3D } from '../core/state.js';
+import { bimSnapshotState } from '../drawing/plan-mode-sketch.js';
+import { bimDispNum, bimObjTypeLabel } from '../properties/palette.js';
+import { saveSoon } from '../bim/region-regenerate.js';
+
   /* ================= __acad3dV146: history, by element (the Hub's H1) =================
      A commit is the model split into its elements -- each object by its id, and each of the
      project's other parts as one -- every element kept once, by the hash of its canonical JSON,
@@ -172,3 +177,7 @@
     }
     return st;
   }
+export {
+  bimCanon, bimHash, bimHex8, bimHist, bimHistChanges, bimHistCommit, bimHistCommitById, bimHistCommitDiff,
+  bimHistHead, bimHistLabel, bimHistMap, bimHistProps, bimHistStateOf, bimHistSumm, bimHistValid
+};

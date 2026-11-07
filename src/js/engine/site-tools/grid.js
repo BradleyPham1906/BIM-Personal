@@ -1,3 +1,5 @@
+import { bimDgSite } from '../site-analysis/model-analyses.js';
+
   /* ================= __acad3dV172: the site analysis tools: the grid =================
      reference/research-site-analysis-tools.md. Every tool reads and writes one grid over the lot and around it, its
      processing extent: 1 m cells over the lot's extent and 100 m beyond it (100 m around the site's centre with no
@@ -126,3 +128,7 @@
     return !!(d&&isFinite(d.x0)&&isFinite(d.z0)&&d.cell>0&&d.nx>0&&d.nz>0&&d.nx*d.nz<=1000000&&Array.isArray(d.pal)&&
       typeof d.rc==='string'&&Array.isArray(d.rn)&&d.rc.length===d.rn.length);
   }
+export {
+  A3D_TL, BIM_TL_ALPH, BIM_TL_BIG, BIM_TL_MARGIN, bimTlCount, bimTlCx, bimTlCz, bimTlDataOk, bimTlDecode,
+  bimTlDistance, bimTlDt1, bimTlEncode, bimTlFillPoly, bimTlGrid, bimTlPoint, bimTlStroke, bimTlValue
+};

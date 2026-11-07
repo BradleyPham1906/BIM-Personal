@@ -1,3 +1,17 @@
+import { A3D, el } from '../core/state.js';
+import { camVecs } from '../core/mesh-primitives.js';
+import { bimRoomTagLayout } from '../bim/room-tags.js';
+import { bimDimKind } from './dimensions.js';
+import { bimFileStem } from '../io/project-file.js';
+import { bimWithPlotPass } from '../layers/plot-by-layers.js';
+import { bimLayerPickable, bimLayerShown } from '../layers/layer-rules.js';
+import { toScreen } from '../io/import-entry.js';
+import { paint } from '../map/terrain-3d.js';
+import { bimPointSegDist } from '../render/viewcube.js';
+import { bimAnnotationVisible, bimObjectVisibleOnLevel } from '../views/saved-views.js';
+import { a3dToast, objById } from '../bim/csg-booleans.js';
+import { cvH, cvW } from '../ui/canvas-size.js';
+
   /* ================= __acad3dV98: the pick shape of an annotation =================
 
      What each annotation puts on screen, as pick geometry: segments (with the tolerance each
@@ -211,3 +225,7 @@
       a3dToast('Exported '+bimFileStem()+'-plan.pdf ('+(pdfBytes.length/1024/1024).toFixed(1)+' MB, uncompressed)');
     }catch(eD){console.warn('[BIM] PDF export failed: ',eD);a3dToast('PDF export failed: '+(eD&&eD.message?eD.message:eD));}
   }
+export {
+  bimAnnotDrawable, bimBuildSimplePdf, bimExportPDF, bimExportPNG, bimMeasureLabel, bimPickAnnotation,
+  bimTriggerDownload
+};

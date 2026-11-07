@@ -1,3 +1,57 @@
+import { A3D, el } from '../core/state.js';
+import { LIGHT, TYPES, camVecs, faceNormal, meshOf, vdot } from '../core/mesh-primitives.js';
+import {
+  drawClines, drawHatches, drawRooms, drawSkLivePreview, drawSketches
+} from '../drawing/drawing-input.js';
+import { bimTerrainTin } from '../terrain/terrain-tin.js';
+import { bimTerrainSuperseded } from '../terrain/grading.js';
+import { drawTerrain } from '../survey/survey-check.js';
+import { bimTrueNorthDeg } from '../survey/survey-arithmetic.js';
+import { drawNorthArrow, drawProperties } from '../site/property.js';
+import { bimTinHeightAt, drawAlignments, drawStationMark } from '../site/alignment-profile.js';
+import { drawGrids } from '../bim/grid-editing.js';
+import { BIM_LW_TO_PX, bimCanvasPatternFill, bimResolveGraphics } from '../bim/type-instance-params.js';
+import { drawRoomSchemeLegend } from '../bim/room-colour-fill.js';
+import { drawRoomTags } from '../bim/room-tags.js';
+import { drawDims, drawTextLabels } from '../annotation/dimensions.js';
+import { bimPresentGraphics } from '../layers/plot-by-layers.js';
+import { A3D_PLOT, bimLayerAlpha, bimLayerPickable, bimLayerShown } from '../layers/layer-rules.js';
+import { drawSimOverlays } from '../analysis/simulation.js';
+import { drawResultLayers } from '../analysis/results-layers.js';
+import { drawDiagrams } from '../site-analysis/model-layers.js';
+import { bimAnimSync } from '../site-analysis/motion.js';
+import { drawDiagramLegend } from '../site-analysis/model-analyses.js';
+import { bimTrDraw } from '../simulation/traffic-draw.js';
+import { bimAwBg, bimAwBgHex, bimAwCtxCol, bimAwLook } from '../site-analysis/analysis-workspace.js';
+import { bimLbsDraw } from '../ladybug/studies.js';
+import { shade, toScreen } from '../io/import-entry.js';
+import {
+  BIM_EDGE_PULL, GL_EDGE_FACE_LIMIT, bimGlBuildObjBuffer, bimGlCompile, bimGlDisposeBuffer, bimGlInit,
+  bimGlProjMatrix, bimGlViewMatrix, bimHexToRgb
+} from '../render/webgl.js';
+import { A3D_GL_BATCH, A3D_SCENE, bimGbRender, bimSceneRelease } from '../render/gpu-batches.js';
+import { bimRender3D } from '../render/webgpu.js';
+import { A3D_LENS, bimGlDrawFaces, bimLensCol, drawLensLegend } from './colour-lens.js';
+import {
+  BIM_MAP_STYLES, bimLatToTileY, bimLonToTileX, bimMapDraw2D, bimMapDrawGl, bimMapFooterSync, bimMapOrigin,
+  bimMapPlan, bimMapSource, bimMapTex, bimModelToGeo
+} from './map-tiles.js';
+import { drawDataLayers } from './find-open-data.js';
+import { drawCube } from '../render/viewcube.js';
+import { A3D_ORIGIN_AXES } from '../gizmo/transform-gizmo.js';
+import { drawNotes } from '../annotation/annotation-overlay.js';
+import { drawZoomWindow } from '../ui/zoom-window-save-image.js';
+import { bimDrawGizmo } from '../gizmo/gizmo-handles.js';
+import { bimDrawFaceMode, bimFaceCurrent } from '../editing/faces-push-pull.js';
+import { bimDrawGrips } from '../drawing/add-vertex.js';
+import { drawMarqueeRect } from '../editing/selection-tools.js';
+import { drawAreaPlan, drawSunPath, drawSunShadows, drawTribAreas } from '../site/shadows.js';
+import { drawStructResults } from '../structure/analysis-display.js';
+import { bimEntDrawTurns } from '../assets/scale-assets.js';
+import { bimCameraIsPlan, bimObjectVisibleOnLevel } from '../views/saved-views.js';
+import { bimSyncTouchLenInput } from '../ui/touch-input.js';
+import { cvH, cvScale, cvW } from '../ui/canvas-size.js';
+
   /* ================= __acad3dV137: the map on 3D terrain ================= */
   var BIM_DRAPE_ZREF=22,BIM_DRAPE_MAXT=36;
   /* the heights come from V127's bimTinHeightAt */
@@ -463,3 +517,7 @@
     {n:'front',f:[4,5,6,7]},{n:'back',f:[1,0,3,2]},
     {n:'right',f:[5,1,2,6]},{n:'left',f:[0,4,7,3]}
   ];
+export {
+  BIM_DRAPE_ZREF, CFACES, CORN, bimBuildPickPolys, bimCtxStand, bimCtxTerrainObj, bimDrapeTiles, bimGlRender,
+  bimTerrainMeshData, paint
+};

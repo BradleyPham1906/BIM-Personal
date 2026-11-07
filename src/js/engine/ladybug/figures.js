@@ -1,3 +1,14 @@
+import { bimStd, bimStdEdition, bimStdFmt } from '../standards/registry.js';
+import {
+  BIM_CLIM_DIRS, BIM_CLIM_MONTHS, BIM_CLIM_MONTH_NAMES, bimClimInt
+} from '../site-analysis/climate-data.js';
+import {
+  A3D_CLB, bimClbAxisY, bimClbCard, bimClbE, bimClbF, bimClbLeg, bimClbNum, bimClbRoseSvg, bimClbTable,
+  bimClbTicks, bimClbTip
+} from '../site-analysis/climate-board.js';
+import { bimLbSrcKept, bimLbSrcWords } from './sources.js';
+import { bimLbResult } from './analyses.js';
+
   /* ================= __acad3dV172b: the Ladybug analyses as board figures =================
      reference/research-ladybug-weather-comfort.md, 9. Each figure draws a kept result in the board's own style
      (bimClbCard, its colours and ticks), names Ladybug and its version as the method and the weather it read, and says
@@ -180,3 +191,4 @@
       if(c){fig++;cards.push(c);}});
     return cards.length?'<section class="a3d-clb-grid" style="margin-top:14px">'+cards.join('')+'</section>':'';
   }
+export { BIM_LB_COND, BIM_LB_FIGS, bimLbOnlyFigs, bimLbUtciRange };

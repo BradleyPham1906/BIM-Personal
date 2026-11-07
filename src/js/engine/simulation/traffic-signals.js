@@ -1,3 +1,5 @@
+import { bimStd } from '../standards/registry.js';
+
   /* ================= __acad3dV171: traffic and people around the site: the signals =================
      reference/research-traffic.md, sections 2, 7 and 8 (the owner's decision 1): each signalled junction's own fixed
      plan, assumed and said, OpenStreetMap mapping where a signal is and never its timing. Two phases by axis; Webster's
@@ -76,3 +78,4 @@
     else{out.s='r';out.left=0;}
     return out;
   }
+export { bimTrPlan, bimTrPlanOf, bimTrSig };

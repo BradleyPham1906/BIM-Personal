@@ -1,3 +1,6 @@
+import { bimStd } from '../standards/registry.js';
+import { bimTrAt, bimTrFootWay, bimTrHw, bimTrPolyLen, bimTrStreetWalk } from './traffic-network.js';
+
   /* ================= __acad3dV171: traffic and people around the site: the walkers' ways =================
      reference/research-traffic.md, section 8. Walkers keep to the sidewalks of the streets they follow, each side a
      line beyond the roadway's edge, and to footways and paths along their line. At a junction they cross what lies
@@ -150,3 +153,4 @@
     cr.forEach(function(x){x.i=map[x.i];x.s0=C[x.i];x.s1=C[Math.min(C.length-1,x.i+1)];x.len=x.s1-x.s0;});
     return {P:P,C:C,len:C[C.length-1],cost:best,cr:cr.filter(function(x){return x.len>0.1;})};
   }
+export { bimTrWalkRoute };

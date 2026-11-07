@@ -1,3 +1,29 @@
+import { A3D, el } from '../core/state.js';
+import { camVecs } from '../core/mesh-primitives.js';
+import {
+  A3D_SNAP, REDO_STACK, UNDO_STACK, bimObjOffset, bimSnapCandidates, bimStatusHintText
+} from '../drawing/plan-mode-sketch.js';
+import { paint } from '../map/terrain-3d.js';
+import { A3D_GIZ, A3D_ORIGIN_AXES, bimGizArcPt, bimRayPlane } from '../gizmo/transform-gizmo.js';
+import {
+  BIM_NOTE_KINDS, bimNoteRect, bimPickNote, bimPlaceNoteAtViewCentre
+} from '../annotation/annotation-overlay.js';
+import {
+  A3D_CLICKBOX_T, A3D_VALBOX, bimGizmoHandleName, bimGizmoHoverKey, bimGizmoReadout, bimGizmoTyping,
+  bimPickGizmo, bimRotatableSplit
+} from '../gizmo/gizmo-handles.js';
+import {
+  A3D_FACE_KEYS, bimFaceCurrent, bimFaceHitAt, bimFaceList, bimFacePickAt
+} from '../editing/faces-push-pull.js';
+import { bimPickGrip, bimPushReadout, bimPushValue } from '../editing/push-pull.js';
+import { bimObjScreenPoints } from '../editing/selection-tools.js';
+import { bimChromeRects, bimSafeViewRect, bimWorldBounds, bimZoomToSelection } from '../ui/chrome-framing.js';
+import { bimShellAudit } from '../ui/left-shell.js';
+import { bimCleanShell } from '../assets/library-drag.js';
+import { drag } from '../sheets/presentation-panel.js';
+import { a3dToast, objById } from '../bim/csg-booleans.js';
+import { cvH, cvW } from '../ui/canvas-size.js';
+
   /* __acad3dV75: the world-offset invariant, exposed so a suite can assert it directly rather
      than inferring it from pixels. bimObjWorldPoints returns the SCREEN points an object's plan
      geometry actually occupies, which is the one thing every consumer in this phase had to
@@ -326,3 +352,4 @@
   /* a suite that counts undo steps starts each scene from an empty history: past UNDO_MAX a step
      pushes the oldest out and the depth stops moving */
   window.__a3dTestClearUndo=function(){UNDO_STACK.length=0;REDO_STACK.length=0;return true;};
+export { bimNoteHex, bimWireOcclusionNotice };

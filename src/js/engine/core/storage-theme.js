@@ -1,3 +1,5 @@
+import { a3dToast } from '../bim/csg-booleans.js';
+
   /* ================= __acad3dV121b: the old canvas's saved data, cleared =================
      The old canvas this file grew from kept its board, its predecessor's board, and the 2D wire
      shell's drawings, layouts, blocks, dock and grid in browser storage under these names. Nothing
@@ -47,3 +49,4 @@
   }
   var A3D_THEME_AT_START=bimThemeRestore();
 
+export { A3D_CANVAS_CLEARED, A3D_CANVAS_KEYS, A3D_THEME_AT_START, bimThemeStore };

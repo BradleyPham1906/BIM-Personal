@@ -1,3 +1,18 @@
+import { A3D, A3D_DOCS, A3D_DOC_PREFIX, A3D_DOC_RT, el } from '../core/state.js';
+import { bimEndSketch } from '../drawing/command-ending.js';
+import { bimEsc } from '../layers/layer-manager.js';
+import { bimProjectRecord, save3d, saveT } from '../core/objects-save.js';
+import { bimIdbDel, bimIdbGet, bimIdbPut } from '../core/idb-store.js';
+import {
+  bimDocEntry, bimDocName, bimDocsActivate, bimDocsAdd, bimDocsNotify, bimDocsSave, bimNextProjectName,
+  bimProjectLabel
+} from '../ui/project-tabs.js';
+import { A3D_FAMLIB, A3D_TEMPLATE_PREFIX, bimAssetKind, bimSaveFamilyLibrary } from './family-library.js';
+import { bimRecsThumb } from './scale-assets.js';
+import { refreshFamilyPanel } from './blocks.js';
+import { closeDlg } from '../ui/touch-input.js';
+import { a3dToast } from '../bim/csg-booleans.js';
+
   /* ================= __acad3dV124: templates -- a starting project =================
      The record goes under its own key before the entry is added, so a full store adds nothing. */
   function bimTemplateSave(name){
@@ -138,3 +153,4 @@
     a3dToast('Deleted "'+(ent.name||'Untitled project')+'"');
     return true;
   }
+export { bimDocsClose, bimDocsOpenData, bimDocsRemove, bimTemplateSave, bimTemplateUse, openSaveTemplateDlg };

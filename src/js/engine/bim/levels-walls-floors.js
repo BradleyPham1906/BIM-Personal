@@ -1,3 +1,10 @@
+import { A3D } from '../core/state.js';
+import { pushUndo } from '../drawing/plan-mode-sketch.js';
+import { refreshLevels } from './classification.js';
+import { paint } from '../map/terrain-3d.js';
+import { saveSoon } from './region-regenerate.js';
+import { a3dToast } from './csg-booleans.js';
+
   // ---- __acad3dV5: BIM Level Manager + Parametric Wall + Structural Floor ----
   function clampLevelHeight(h){
     h=Number(h);
@@ -48,3 +55,4 @@
     saveSoon();
     a3dToast(lvl.name+' added at elevation '+top);
   }
+export { addLevel, bimGetActiveLevel, bimSyncActiveGlobal, clampLevelElev, clampLevelHeight, setActiveLevel };

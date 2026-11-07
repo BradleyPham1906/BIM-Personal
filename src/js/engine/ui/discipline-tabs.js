@@ -1,3 +1,15 @@
+import { TYPES } from '../core/mesh-primitives.js';
+import { bimEsc } from '../layers/layer-manager.js';
+import { bimRenderInto } from '../site-analysis/panel.js';
+import { A3D_MODKEY, bimCatForAct, bimFilterShortcuts } from './shortcuts.js';
+import { A3DR_ICONS } from './touch-input.js';
+import { a3dToast } from '../bim/csg-booleans.js';
+import { bimActHint, bimCmdCatalog, bimCmdUsed } from '../commands/command-catalogue.js';
+import {
+  A3DR_ALL_ICON, A3DR_SEARCH_ICON, a3drAllCommands, bimBindDockTips, bimDockLabelsOn, bimTipHide
+} from './dock-tooltips.js';
+import { bimLoadUIPanelPrefs, bimSaveUIPanelPrefs } from './build-ui.js';
+
   // ---- __acad3dV30: Revit-style discipline tabs. Previously all 11 panels were crammed into a
   // single "3D Tools" tab, so panels ran off the right edge and were unreachable. Revit splits
   // by discipline (Architecture / Structure / Annotate / Insert / View / Modify / Manage) with a
@@ -311,3 +323,8 @@
     var it=bimCatForAct(bimCmdCatalog(),act);
     if(it)bimCmdUsed(it.id);
   }
+export {
+  A3DR_TABS, A3DR_UNIMPL, A3D_DISCIPLINES, A3D_DISC_CUR, A3D_DOCK_PIN_DEFAULTS, a3drActOf, a3drExt, a3drIcon,
+  a3drIsUnimpl, a3drLabel, a3drRegisterCommand, a3drRegisterDiscipline, a3drRegisterTab, a3drTabGroups,
+  bimActUsed, bimBuildDock, bimDockPins, bimOpenToolsPanel, bimSetDockPin, bimToggleDockPin
+};

@@ -1,3 +1,17 @@
+import { A3D } from '../core/state.js';
+import { meshOf } from '../core/mesh-primitives.js';
+import { earClip, sketchCCW } from '../drawing/drawing-input.js';
+import { bimPointInPoly, bimPolyArea } from '../bim/rooms.js';
+import { bimDispNum } from '../properties/palette.js';
+import { A3D_ANZ } from '../analysis/analyze-tab.js';
+import { bimCtxDefaultH, bimCtxLevelH } from '../standards/registry.js';
+import { refreshProps } from '../site-analysis/panel.js';
+import { bimOsmHeight } from './site-context.js';
+import { BIM_ROOF_ANGLE } from './lod2-roofs.js';
+import { paint } from './terrain-3d.js';
+import { refreshTree } from '../sheets/presentation-panel.js';
+import { a3dToast } from '../bim/csg-booleans.js';
+
   /* ================= __acad3dV139: LOD1.3 from building parts, and valid solids =================
      OSM's Simple 3D Buildings: a building's outline, and parts inside it each with its own height and
      min_height. Where parts are, the outline is not extruded: the parts are (LOD1.3, Biljecki's
@@ -197,3 +211,7 @@
       (badL.length?'; '+badL.length+' with problems ('+Object.keys(codes).map(function(c){return BIM_SOLID_ERR[c]+' '+c;}).join(', ')+'), the first selected':''));
     return {buildings:B.length,valid:ok,bad:badL,lods:lods,codes:Object.keys(codes).map(Number)};
   }
+export {
+  bimCtxPairParts, bimLodBuildings, bimLodCheck, bimLodOf, bimLodText, bimObjSolidCheck, bimOsmMetres,
+  bimOsmPartRange, bimSolidCheck, bimSolidCheckText
+};

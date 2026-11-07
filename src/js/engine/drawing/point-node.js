@@ -1,3 +1,28 @@
+import { A3D, el } from '../core/state.js';
+import {
+  bimEnterDraftingMode, bimObjOffset, bimSyncStatusHint, objBBox, pushUndo
+} from './plan-mode-sketch.js';
+import { addSketchObj } from './command-ending.js';
+import { padMesh, sketchCCW } from './drawing-input.js';
+import { bimGetActiveLevel } from '../bim/levels-walls-floors.js';
+import { BIM_HATCH_PATTERNS, bimPatternDraws, bimPatternLabel } from '../bim/type-instance-params.js';
+import { bimBoundaryEdges } from '../bim/rooms.js';
+import { bimEsc } from '../layers/layer-manager.js';
+import { refreshProps } from '../site-analysis/panel.js';
+import { paint } from '../map/terrain-3d.js';
+import { bimFmtLen } from '../gizmo/gizmo-handles.js';
+import { bimSourceBoundaryWorld } from '../bim/source-contract.js';
+import { bimEdgesSig } from '../bim/region-dependents.js';
+import { bimBulgedLength, bimFlattenSketch } from './arc-storage.js';
+import { bimAddHatch, bimHatchArea, bimIsHatch } from './hatch.js';
+import { BIM_CLINE_MODES, BIM_CLINE_MODE_ORDER, bimClineDir } from './construction-lines.js';
+import { bimTraceBoundary } from './planar-arrangement.js';
+import { bimDividePoints, bimMeasurePoints } from './curve-walking.js';
+import { refreshHud, saveSoon } from '../bim/region-regenerate.js';
+import { refreshTree } from '../sheets/presentation-panel.js';
+import { closeDlg } from '../ui/touch-input.js';
+import { a3dToast, csgSubtract, meshPolys, objById, polysToMesh } from '../bim/csg-booleans.js';
+
   /* ================= __acad3dV93: the POINT node ================= */
   var BIM_POINT_MARK=0.15;          /* half-length of the marker cross, in model units */
   function bimIsPoint(o){
@@ -415,3 +440,9 @@
     a3dToast(o.name+' cut into '+tgt.name);
     return o;
   }
+export {
+  bimAddCline, bimAddPoint, bimApplyBoundary, bimApplyDivide, bimApplyHatchAt, bimApplyHatchEdit,
+  bimApplyMeasure, bimClineCanSetMode, bimClineReadyDir, bimDivideSource, bimHatchDefaults, bimIsPoint,
+  bimOpenHatchDlg, bimOpenSpacingDlg, bimPlaceCline, bimPointMarkerSegs, bimSetClineMode, bimSketchOutline,
+  doPad, doPocket, startBoundaryTool, startClineTool, startPointTool
+};

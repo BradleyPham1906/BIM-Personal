@@ -1,3 +1,73 @@
+import { A3D, el } from '../core/state.js';
+import { camVecs } from '../core/mesh-primitives.js';
+import { A3D_SNAP, bimWorldPt, pushUndo } from '../drawing/plan-mode-sketch.js';
+import { finishPoly, startSketch } from '../drawing/command-ending.js';
+import { bimIsPoint } from '../drawing/point-node.js';
+import {
+  addBuilding, bimEnsureBuildings, removeBuilding, setActiveBuilding, updateBuilding, updateSite
+} from '../bim/building-site-hierarchy.js';
+import {
+  addClassification, bimClassificationInUseCount, openClassificationDlg, removeClassification,
+  setObjectClassification, updateClassification
+} from '../bim/classification.js';
+import { bimTerrainTin } from '../terrain/terrain-tin.js';
+import {
+  bimBoundaryCommand, bimBreaklineCommand, bimLandXmlDoc, bimLandXmlImport, bimModelToSurvey, bimTerrainEdit,
+  bimTerrainSetView, bimTerrainViewCommand
+} from '../terrain/breaklines.js';
+import {
+  bimBandsOf, bimGrade, bimGradeExistingFor, bimGradePad, bimGradeStale, bimIsPad, bimSpotElev, bimTinIndexOf,
+  bimTinVolume
+} from '../terrain/grading.js';
+import {
+  bimCanon, bimHash, bimHist, bimHistChanges, bimHistCommit, bimHistCommitById, bimHistCommitDiff
+} from '../history/element-history.js';
+import {
+  bimHistOf, bimHistRestore, bimHistSize, bimRightApply, bimRightSetWidth, bimRightToggleMin
+} from '../history/branches-merge.js';
+import { bimSetPadSlope } from '../survey/survey-check.js';
+import {
+  bimAlignEdit, bimAlignGeom, bimAlignGround, bimAlignPointAt, bimAlignStationOffset, bimFmtStation,
+  bimIsAlignment, bimNewAlignment, bimProfileElevAt, bimProfileGeom, bimTinHeightAt
+} from '../site/alignment-profile.js';
+import {
+  bimMeshSignedVolume, bimProfileLoops, bimProfileProblem, bimProfileProps, bimSweepMesh
+} from '../bim/section-profiles.js';
+import { bimSetLocked } from '../bim/import-compliance.js';
+import { bimEnsureTypes, bimFindType } from '../bim/type-instance-params.js';
+import { bimMeshClosureCheck, bimMeshSanityCheck } from '../bim/stairs.js';
+import { bimCombos } from '../standards/registry.js';
+import { toScreen } from '../io/import-entry.js';
+import { paint } from '../map/terrain-3d.js';
+import { bimGetEditablePoints } from '../render/viewcube.js';
+import { bimPickGrip } from '../editing/push-pull.js';
+import { bimDragSketchPoint } from '../drawing/add-vertex.js';
+import { bimResolveSketch, cancelConstraintPick } from '../drawing/sketch-constraints.js';
+import {
+  applyMergeWalls, bimCheckModel, bimLinkedClonesOf, bimMergeWalls, cloneLinked, openCheckModelDlg,
+  syncLinkedClones
+} from '../editing/precision-editing.js';
+import { bimPropagateFrom } from '../bim/region-dependents.js';
+import { A3D_ASSETS_UI, bimAssetSelIds, bimViewCentrePlan } from '../assets/library.js';
+import { A3D_ASDRAG, bimAssetDropAt } from '../assets/library-drag.js';
+import { bimLeftSetWidth, bimLeftState } from '../ui/tool-palette.js';
+import { bimTemplateSave, bimTemplateUse } from '../assets/templates.js';
+import { saveSoon } from '../bim/region-regenerate.js';
+import {
+  A3D_STRUCT, bimAnalyticalModel, bimCombo, bimIsFrameMember, bimMemberSection, bimStructOf
+} from '../structure/analytical-model.js';
+import { bimFrameSolve } from '../structure/frame-solve.js';
+import { bimStructCurrent } from '../structure/analysis-display.js';
+import { bimStructEdit } from '../structure/analysis-properties.js';
+import {
+  A3D_ASSET_BUILTINS, A3D_FAMLIB, bimAssetKind, bimFamilyLibraryGet
+} from '../assets/family-library.js';
+import { bimGuessImportUnit, bimImportModelMesh } from '../assets/scale-assets.js';
+import { bimBlockSave, bimInsertBlock, refreshFamilyPanel } from '../assets/blocks.js';
+import { refreshTree } from '../sheets/presentation-panel.js';
+import { objById } from '../bim/csg-booleans.js';
+import { cvH, cvW } from '../ui/canvas-size.js';
+
   /* __acad3dV124: the library, read and driven */
   window.__a3dLibrary=function(){
     var all=A3D_FAMLIB.concat(A3D_ASSET_BUILTINS);

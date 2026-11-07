@@ -1,3 +1,66 @@
+import { A3D } from '../core/state.js';
+import { camVecs } from '../core/mesh-primitives.js';
+import {
+  A3D_TYPING, SK_TOOLS, bimObjOffset, bimSnapPoint, bimSyncStatusHint, pushUndo
+} from './plan-mode-sketch.js';
+import {
+  addSketchObj, finishArc, finishCircle, finishPoly, finishPolygon, finishRect
+} from './command-ending.js';
+import {
+  bimAddPoint, bimApplyBoundary, bimApplyHatchAt, bimClineCanSetMode, bimClineReadyDir, bimIsPoint,
+  bimPlaceCline, bimPointMarkerSegs, bimSetClineMode
+} from './point-node.js';
+import { bimAddGrid } from '../bim/structural-grids.js';
+import { bimIsAlignment, bimPlaceProfileView, bimStationAt } from '../site/alignment-profile.js';
+import { openBeamDlg } from '../bim/section-profiles.js';
+import {
+  bimAddFootingUnder, bimColumnAtWorld, bimFoundationSlabAt, bimWallAtWorld, finishWall
+} from '../bim/footings.js';
+import { BIM_LW_TO_PX, bimCanvasPatternFill, bimResolveGraphics } from '../bim/type-instance-params.js';
+import { bimFindRoomBoundaryAt } from '../bim/rooms.js';
+import {
+  BIM_SCHEME_ALPHA, bimCreateRoom, bimRoomSchemeEntry, bimRoomSchemeMap
+} from '../bim/room-colour-fill.js';
+import { bimRoomTagged, bimTagRoomAt } from '../bim/room-tags.js';
+import {
+  bimCreateAngularDim, bimCreateDim, bimCreateRadialDim, openLeaderTextDlg, openTextLabelDlg
+} from '../annotation/dimensions.js';
+import {
+  bimFindWallNear, openColumnDlg, openDoorDlg, openFloorDlg, openWindowDlg
+} from '../bim/columns-openings.js';
+import { bimPresentGraphics } from '../layers/plot-by-layers.js';
+import { bimFloorProfileFrom, openCeilingDlg } from '../bim/ceiling-floor-profile.js';
+import { bimFindRoofBoundaryAt, openRoofDlg } from '../bim/roofs.js';
+import { finishStair } from '../bim/stairs.js';
+import { bimHexA, bimLayerAlpha, bimLayerLook, bimLayerShown } from '../layers/layer-rules.js';
+import { bimUnitDef } from '../properties/palette.js';
+import { bimAwCtxCol } from '../site-analysis/analysis-workspace.js';
+import { toScreen } from '../io/import-entry.js';
+import { paint } from '../map/terrain-3d.js';
+import {
+  bimGizmoHandleHint, bimGizmoHandleName, bimGizmoHoverKey, bimPickGizmo
+} from '../gizmo/gizmo-handles.js';
+import { bimFaceHitAt } from '../editing/faces-push-pull.js';
+import { bimMirrorSelection, openPolarArrayDlg, openRotateDlg } from '../editing/precision-editing.js';
+import { bimInteriorPoint, bimIsRegionDep } from '../bim/region-dependents.js';
+import { bimBulgeAt, bimFlattenPoly, bimHasBulge } from './arc-storage.js';
+import { bimHatchGraphics, bimHatchOutline, bimIsHatch } from './hatch.js';
+import {
+  bimClineDir, bimClineModeForKey, bimClineModeLabels, bimClineVisibleSeg, bimDrawingExtent2D, bimIsCline
+} from './construction-lines.js';
+import { bimSegEndDir, bimTangentBulge } from './curve-offset.js';
+import {
+  bimApplyBreak, bimApplyExtend, bimApplyTrim, openLengthenDlg, openScaleDlg
+} from '../editing/modify-toolbox.js';
+import { bimEnterSection } from '../views/section-tool.js';
+import { refreshHud, saveSoon } from '../bim/region-regenerate.js';
+import { bimFamilyLibraryGet } from '../assets/family-library.js';
+import { bimPlaceFamilyInstance } from '../assets/blocks.js';
+import { bimObjectVisibleOnLevel } from '../views/saved-views.js';
+import { cvXY, drag, refreshTree } from '../sheets/presentation-panel.js';
+import { a3dToast, groundPoint, objById } from '../bim/csg-booleans.js';
+import { cvH, cvW } from '../ui/canvas-size.js';
+
   /* ================= __acad3dV86: AutoCAD-shaped drawing input =================
 
      LINE emits ONE OBJECT PER SEGMENT. That is the whole difference between LINE and PLINE in
@@ -873,3 +936,8 @@
     }
     return {v:v,f:f};
   }
+export {
+  BIM_COORD_TOOLS, BIM_SKETCH_KEYS, bimCommitTypedPoint, bimFinishCurrent, bimParseCoordInput, bimPromptFor,
+  bimRecordCmd, bimRepeatLastCommand, bimSetArcMode, bimSketchKeyFor, drawClines, drawHatches, drawRooms,
+  drawSkLivePreview, drawSketches, earClip, onHover, padMesh, skClick, skPlacePoint, sketchCCW
+};

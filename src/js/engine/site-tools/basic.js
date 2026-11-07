@@ -1,3 +1,16 @@
+import { A3D } from '../core/state.js';
+import { bimDispNum } from '../properties/palette.js';
+import { bimLandSlope, bimStd, bimStdUsedText } from '../standards/registry.js';
+import {
+  bimZn, bimZnConvex, bimZnLegs, bimZnPlate, bimZnProperty, bimZnRules
+} from '../site-analysis/zoning-envelope.js';
+import { BIM_TL_MARGIN, bimTlDistance, bimTlFillPoly } from './grid.js';
+import { bimTlSrc } from './sources.js';
+import {
+  BIM_TL_LEVELS, BIM_TL_RAMP_DIST, BIM_TL_TOOLS, bimTlArea, bimTlAreaText, bimTlExtentText, bimTlInLot,
+  bimTlInfo, bimTlQuant, bimTlRamp, bimTlRange, bimTlRunOut, bimTlSourceOf, bimTlWarn
+} from './tools.js';
+
   /* ================= __acad3dV172: the site analysis tools: Buffer, Distance, Slope classes, Exclusions =================
      Esri's Buffer, Euclidean Distance and Reclassify of the slope, read at the source (research-site-analysis-tools.md,
      2), on the tool grid; Exclusions is the Suitability Modeler's restricted locations: what is excluded because of
@@ -147,3 +160,4 @@
         layer:{name:on.join(', ')||'nothing',lv:lv,n:BIM_TL_EXCL.length,pal:BIM_TL_EXCL.map(function(x){return x.col;}),cats:BIM_TL_EXCL.map(function(x){return x.name;}),
           keys:BIM_TL_EXCL.filter(function(x,j){return !!masks[j];}).map(function(x){return {name:x.name,col:x.col};}),opacity:0.6}};
     }});
+export { bimTlPlateMask, bimTlSetbackMask };

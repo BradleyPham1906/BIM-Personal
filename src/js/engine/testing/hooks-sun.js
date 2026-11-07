@@ -1,3 +1,12 @@
+import { doUndo } from '../drawing/plan-mode-sketch.js';
+import {
+  A3D_SUNX, bimSetSun, bimSunSettings, bimSunStudy, bimSunTzAt, bimSunZone, bimSunZoneOff, bimSunZoneStd
+} from '../site/sun-position.js';
+import { A3D_DG } from '../standards/registry.js';
+import { A3D_ANIM, bimAnimSunDate } from '../site-analysis/motion.js';
+import { bimDgSunSync, bimSunHeatAt } from '../site-analysis/sun-path.js';
+import { bimSunBack, bimSunMode, bimSunNowVals, bimSunSlide, bimSunTry } from '../site-analysis/sun-panel.js';
+
   /* __acad3dV171d: the sun path, one clock, for the suite */
   window.__acad3dV171d='spa,dome,zone,dst,standard,trial,preview,study,yearplay,sync,today,angles,analemma,heat,labels,panel,sliders,turning,charts';
   window.__a3dSunZoneOff=function(z,d,t){return bimSunZoneOff(z,d,t);};

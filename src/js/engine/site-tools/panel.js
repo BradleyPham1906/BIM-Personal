@@ -1,3 +1,20 @@
+import { bimEsc } from '../layers/layer-manager.js';
+import { bimDispNum } from '../properties/palette.js';
+import { bimResById, bimResLayers, bimResultLayerSet } from '../analysis/results-layers.js';
+import { bimLandSlope, bimStdTopicOf, bimStdUsedText } from '../standards/registry.js';
+import {
+  A3D_AW, bimAwBtn, bimAwEnter, bimAwHd, bimAwKeyHtml, bimAwPick, bimAwRefresh, bimAwSec
+} from '../site-analysis/analysis-workspace.js';
+import { A3D_TL, bimTlGrid } from './grid.js';
+import { bimTlState, bimTlWetlandsFetch } from './sources.js';
+import {
+  BIM_TL_ST, bimTlCheck, bimTlExtentText, bimTlForget, bimTlOpen, bimTlOpts, bimTlParams, bimTlRerun,
+  bimTlRun, bimTlStale, bimTlTool
+} from './tools.js';
+import { BIM_TL_HOW_C, BIM_TL_HOW_V, bimTlScale } from './suitability.js';
+import { saveSoon } from '../bim/region-regenerate.js';
+import { a3dToast } from '../bim/csg-booleans.js';
+
   /* ================= __acad3dV172: the site analysis tools in the analysis workspace =================
      The owner (2026-10-27): the tools live in the analysis workspace. A Tools group in its left list, a row for each
      tool and one for History; a tool opens on the right where an analysis opens, in the geoprocessing pane's shape:
@@ -139,3 +156,4 @@
   }
   /* a command: Analyze open with the tool on the right */
   function bimTlCommand(id){bimAwEnter();return bimAwPick('tool',id);}
+export { bimTlAct, bimTlCards, bimTlCommand, bimTlListHtml, bimTlOrder, bimTlPanelHtml };

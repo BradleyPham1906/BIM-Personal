@@ -1,3 +1,20 @@
+import { A3D, el } from '../core/state.js';
+import {
+  A3D_CLB, bimClbClose, bimClbOpen, bimClbWidthCls, bimClbWire
+} from '../site-analysis/climate-board.js';
+import { paint } from '../map/terrain-3d.js';
+import { A3D_REV } from '../core/objects-save.js';
+import { A3D_LAST_MODEL_VIEW, A3D_VIEW, bimActivateView } from '../views/saved-views.js';
+import { SHEET_PREVIEW_PXMM, bimRenderSheet, bimSheetById, bimSheetViewRefresh } from './sheets.js';
+import {
+  A3D_PAGES, bimPageScaleFor, bimPageSig, bimPagesScrollTo, bimPagesSetCurrent
+} from './pages-display.js';
+import { bimRenderLayoutTabs } from './layout-tabs.js';
+import { bimBoardHtmlFor, bimPresSeq } from './boards.js';
+import { bimBoardKey, bimBoardLabel, bimBrdZoom } from './board-figures.js';
+import { refreshBrowser } from './presentation-panel.js';
+import { a3dToast } from '../bim/csg-booleans.js';
+
   /* ================= __acad3dV122: Present -- the pages full screen, one at a time =================
      For a client. The pages in the project's order, each drawn as it plots, fitted to the screen on
      black. Named the slideshow in the code: "presentation" there already means the Presentation
@@ -271,3 +288,7 @@
     }
     return null;
   }
+export {
+  A3D_SHOW_KEYS, A3D_SLIDESHOW, bimCloseSheetView, bimOpenSheetView, bimSheetEvtToMM, bimSheetHitTest,
+  bimSheetOnScreen, bimShowModel, bimSlideshowEnd, bimSlideshowKey, bimSlideshowStart
+};

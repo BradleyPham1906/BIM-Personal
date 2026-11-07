@@ -1,3 +1,12 @@
+import { A3D } from '../core/state.js';
+import { pushUndo } from '../drawing/plan-mode-sketch.js';
+import { bimGetActiveLevel, bimSyncActiveGlobal } from './levels-walls-floors.js';
+import { refreshLevels } from './classification.js';
+import { paint } from '../map/terrain-3d.js';
+import { saveSoon } from './region-regenerate.js';
+import { refreshTree } from '../sheets/presentation-panel.js';
+import { a3dToast } from './csg-booleans.js';
+
   /* ---------- Phase 46: Building / Site hierarchy ----------
      A single project can hold more than one building (a campus, a duplex, an addition
      modeled beside the existing structure), and every level belongs to exactly one of
@@ -90,3 +99,4 @@
     A3D.site.name=nm;
     saveSoon();
   }
+export { addBuilding, bimEnsureBuildings, removeBuilding, setActiveBuilding, updateBuilding, updateSite };

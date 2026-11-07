@@ -1,3 +1,22 @@
+import { A3D, el } from '../core/state.js';
+import { bimEnterDraftingMode, pushUndo } from '../drawing/plan-mode-sketch.js';
+import { padMesh, sketchCCW } from '../drawing/drawing-input.js';
+import { bimIsPoint } from '../drawing/point-node.js';
+import { bimGetActiveLevel } from './levels-walls-floors.js';
+import { bimProfileProblem, bimSweepMesh } from './section-profiles.js';
+import { bimBuildWallGeometry } from './import-compliance.js';
+import { bimTypeNameOf } from './type-instance-params.js';
+import { buildFloorSolid } from './ceiling-floor-profile.js';
+import { bimMeshClosureCheck } from './stairs.js';
+import { paint } from '../map/terrain-3d.js';
+import { BIM_OPENING_REPLACE_TOL } from './dependency-graph.js';
+import { bimSourceBoundaryWorld } from './source-contract.js';
+import { bimAfterWallRebuild } from './region-dependents.js';
+import { refreshHud, saveSoon } from './region-regenerate.js';
+import { refreshTree } from '../sheets/presentation-panel.js';
+import { closeDlg } from '../ui/touch-input.js';
+import { a3dToast, csgSubtract, meshPolys, objById, polysToMesh } from './csg-booleans.js';
+
   function bimGetFloorProfile(){
     var o=objById(A3D.sel);
     if(!o)return null;
@@ -450,3 +469,8 @@
     });
     thkI.focus();thkI.select();
   }
+export {
+  bimBuildColumnGeometry, bimCutOpeningsIntoWall, bimFindWallNear, bimGetFloorProfile, bimOpeningSpecsFor,
+  bimRebuildColumn, bimRectFootprint, buildColumnSolid, buildDoorOpening, buildWindowOpening, openColumnDlg,
+  openDoorDlg, openFloorDlg, openWindowDlg, startColumnTool, startDoorTool, startFloorTool, startWindowTool
+};

@@ -1,3 +1,22 @@
+import { A3D, el } from '../core/state.js';
+import { bimObjOffset } from '../drawing/plan-mode-sketch.js';
+import { sketchCCW } from '../drawing/drawing-input.js';
+import { bimIsFooting, bimRebuildFooting } from './footings.js';
+import { bimBoundaryEdges, bimPointInPoly, bimPolyArea } from './rooms.js';
+import { bimRoomFaceRing } from './room-colour-fill.js';
+import { bimBuildFloorGeometry } from './ceiling-floor-profile.js';
+import { bimBuildRoofGeometry } from './roofs.js';
+import { bimSyncOneClone, cloneLinked, syncLinkedClones } from '../editing/precision-editing.js';
+import {
+  bimCutSource, bimGraphObjKey, bimGraphPropagate, bimGraphRoomSourceId, bimReapplyOpeningsToWall
+} from './dependency-graph.js';
+import { bimSourceBoundaryWorld, bimToFrame } from './source-contract.js';
+import { bimFlattenPoly, bimHasBulge } from '../drawing/arc-storage.js';
+import { bimIsHatch } from '../drawing/hatch.js';
+import { bimTraceBoundary } from '../drawing/planar-arrangement.js';
+import { closeDlg } from '../ui/touch-input.js';
+import { a3dToast, objById } from './csg-booleans.js';
+
   /* ================= __acad3dV99: region dependents =================
 
      o.region = {seed:[x,z], y, want:'all'|'walls', members:[ids], sig, open}
@@ -412,3 +431,8 @@
     if(!id){a3dToast('Select the source object to sync its clones');return;}
     syncLinkedClones(id);
   }
+export {
+  BIM_REGION_WANT, applySyncClones, bimAfterSketchEdit, bimAfterWallRebuild, bimCloneRegion, bimEdgesSig,
+  bimFollowSource, bimGraphVisit, bimInteriorPoint, bimIsRegionDep, bimPropagateFrom, bimRegionPlaneY,
+  bimRegionTraceAt, bimRemeasureRoomFromSource, openCloneLinkedDlg
+};

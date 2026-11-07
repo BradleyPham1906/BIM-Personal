@@ -1,3 +1,7 @@
+import { A3D, el } from '../core/state.js';
+import { bimLinetypeDef } from './select-change.js';
+import { cvScale } from '../ui/canvas-size.js';
+
   // ---- __acad3dV6: Layers system + CAD/BIM file import (DXF, OBJ, STL, IFC subset) ----
   function bimLayerOf(o){
     var id=o.layer||A3D.activeLayer,i;
@@ -121,3 +125,7 @@
     var s=bimObjLayerState(o);
     return !s.frozen&&!s.locked;
   }
+export {
+  A3D_PLOT, bimHexA, bimLayerAlpha, bimLayerById, bimLayerChain, bimLayerEff, bimLayerLook, bimLayerOf,
+  bimLayerPickable, bimLayerSelectable, bimLayerShown, bimObjLayerState
+};

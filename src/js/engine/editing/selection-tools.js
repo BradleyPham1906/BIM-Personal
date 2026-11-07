@@ -1,3 +1,28 @@
+import { A3D } from '../core/state.js';
+import { camVecs, meshOf } from '../core/mesh-primitives.js';
+import { bimObjOffset, bimWorldPt, pushUndo } from '../drawing/plan-mode-sketch.js';
+import { bimRemoveGrid } from '../site/alignment-profile.js';
+import { bimSelectedGrid } from '../bim/grid-editing.js';
+import { bimIsFooting } from '../bim/footings.js';
+import { bimBuildWallGeometry, bimCarryBim, bimIsLocked } from '../bim/import-compliance.js';
+import { bimCopyRoomFields } from '../bim/room-data-occupancy.js';
+import { bimNextRoomNumber } from '../bim/room-colour-fill.js';
+import { bimDimKind } from '../annotation/dimensions.js';
+import { bimBuildColumnGeometry } from '../bim/columns-openings.js';
+import { bimBuildFloorGeometry } from '../bim/ceiling-floor-profile.js';
+import { bimBuildRoofGeometry, bimBuildStairGeometry } from '../bim/roofs.js';
+import { bimBuildStairPathGeometry } from '../bim/stairs.js';
+import { bimLayerPickable } from '../layers/layer-rules.js';
+import { toScreen } from '../io/import-entry.js';
+import { paint } from '../map/terrain-3d.js';
+import { bimIsHatch } from '../drawing/hatch.js';
+import { bimIsCline } from '../drawing/construction-lines.js';
+import { refreshHud, saveSoon } from '../bim/region-regenerate.js';
+import { bimRelinkCopies, bimRelinkNote } from '../assets/blocks.js';
+import { drag, refreshTree } from '../sheets/presentation-panel.js';
+import { a3dToast, objById } from '../bim/csg-booleans.js';
+import { cvH, cvW } from '../ui/canvas-size.js';
+
   // ---- __acad3dV7: Selection tools (marquee select, group move/delete, duplicate, linear array) ----
   function bimRectContains(rx1,ry1,rx2,ry2,px,py){
     var minx=Math.min(rx1,rx2),maxx=Math.max(rx1,rx2),miny=Math.min(ry1,ry2),maxy=Math.max(ry1,ry2);
@@ -216,3 +241,6 @@
     refreshTree();refreshHud();paint();saveSoon();
     a3dToast('Duplicated '+newIds.length+' object(s)'+bimRelinkNote(cut));
   }
+export {
+  bimApplyMarquee, bimDuplicateObject, bimObjScreenPoints, delSelection, drawMarqueeRect, duplicateSelection
+};

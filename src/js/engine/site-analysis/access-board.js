@@ -1,3 +1,25 @@
+import { A3D } from '../core/state.js';
+import { bimSunNum, bimSunSettings } from '../site/sun-position.js';
+import { bimTrueNorthDeg } from '../survey/survey-arithmetic.js';
+import { bimEsc } from '../layers/layer-manager.js';
+import { bimAccLeed, bimStd, bimStdEdition } from '../standards/registry.js';
+import { bimSaN } from './workspace.js';
+import { BIM_CLIM_DIRS, bimClimFmt, bimClimInt } from './climate-data.js';
+import {
+  A3D_CLB, bimClbCard, bimClbE, bimClbF, bimClbKpi, bimClbLeg, bimClbNum, bimClbTable, bimClbTicks, bimClbTip
+} from './climate-board.js';
+import {
+  BIM_ACC_CLASS_NAME, BIM_ACC_KINDS, BIM_ACC_MODES, BIM_CEN_BAND_NAMES, bimAccHas, bimAccKind, bimAccLotDist,
+  bimCenShare, bimCenSum
+} from './access-data.js';
+import {
+  bimAccKm, bimAccMin, bimAccSplitBands, bimAccStaleText, bimAccStreetClass, bimAccStreetName, bimCenDens,
+  bimCenFmt, bimCenPct
+} from './movement-data.js';
+import { BIM_D2R } from '../map/map-tiles.js';
+import { bimProjectLabel } from '../ui/project-tabs.js';
+import { bimFigCapKpis } from '../sheets/board-figures.js';
+
   /* ================= __acad3dV161: the Access and people board =================
      reference/research-access-people.md (8). Every figure is titled with its finding and has its
      source and its table; the people's figures carry their margins of error. */
@@ -482,3 +504,4 @@
     return s+'</div>';
   }
 
+export { bimAccBoardHtml, bimAccModesText, bimClbSaHtml };

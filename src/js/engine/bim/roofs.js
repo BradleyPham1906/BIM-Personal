@@ -1,3 +1,15 @@
+import { A3D, el } from '../core/state.js';
+import { bimEnterDraftingMode, pushUndo } from '../drawing/plan-mode-sketch.js';
+import { earClip, sketchCCW } from '../drawing/drawing-input.js';
+import { bimGetActiveLevel } from './levels-walls-floors.js';
+import { bimFindRoomBoundaryAt } from './rooms.js';
+import { paint } from '../map/terrain-3d.js';
+import { bimCloneRegion } from './region-dependents.js';
+import { refreshHud, saveSoon } from './region-regenerate.js';
+import { refreshTree } from '../sheets/presentation-panel.js';
+import { closeDlg } from '../ui/touch-input.js';
+import { a3dToast } from './csg-booleans.js';
+
   // ---- __acad3dV12: Roof tool (tilted-plane roof from a footprint + pitch, sitting on top of the wall
   // height rather than at floor level) and Stair tool (straight-run stair, built as an explicit welded
   // face soup rather than chained CSG union -- CSG-unioning many stacked step boxes accumulates enough
@@ -552,3 +564,8 @@
     if(!m||!m.f||m.f.length<4)return {error:'Stair produced an empty solid'};
     return {mesh:m,bim:{type:'stair',start:startXZ,dir:dirXZ,width:width,baseY:baseY,numSteps:numSteps,riserH:riserH,treadD:treadD,totalRise:totalRise,totalRun:numSteps*treadD}};
   }
+export {
+  bimBuildRoofGeometry, bimBuildStairGeometry, bimFindRoofBoundaryAt, bimRebuildRoof, bimSkClean, bimSkCross,
+  bimSkDist, bimSkDot, bimSkLen, bimSkNorm, bimSkShoelace, bimSkSub, bimSkelSolve, bimWeldMesh,
+  buildRoofSolid, openRoofDlg, startRoofTool
+};

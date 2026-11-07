@@ -598,3 +598,4 @@
     "    except Exception as e:",
     "        return json.dumps({'error': '%s: %s' % (type(e).__name__, e), 'trace': traceback.format_exc()[-1500:]})"
   ].join('\n')+'\n';
+export { BIM_LB_PY };

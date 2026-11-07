@@ -1,3 +1,24 @@
+import { A3D, el } from '../core/state.js';
+import {
+  UNDO_STACK, bimEnterDraftingMode, bimObjOffset, pushUndo, undoSuspend
+} from '../drawing/plan-mode-sketch.js';
+import { bimGetActiveLevel } from '../bim/levels-walls-floors.js';
+import { bimShiftObjectY } from '../bim/level-datum.js';
+import { bimLayerById } from '../layers/layer-rules.js';
+import { bimEsc } from '../layers/layer-manager.js';
+import { paint } from '../map/terrain-3d.js';
+import { bimDuplicateObject } from '../editing/selection-tools.js';
+import { bimCloneRegion, bimIsRegionDep } from '../bim/region-dependents.js';
+import { bimWorldBounds } from '../ui/chrome-framing.js';
+import { refreshAssets } from './library.js';
+import { refreshHud, saveSoon } from '../bim/region-regenerate.js';
+import { A3D_FAMLIB, bimAssetKind, bimFamilyLibraryGet, bimSaveFamilyLibrary } from './family-library.js';
+import { bimCreateFamilyInstance, bimRecsPlanLines, bimRecsThumb } from './scale-assets.js';
+import { bimObjectLevelId } from '../views/saved-views.js';
+import { refreshBrowser, refreshTree } from '../sheets/presentation-panel.js';
+import { closeDlg } from '../ui/touch-input.js';
+import { a3dToast, objById } from '../bim/csg-booleans.js';
+
   /* ================= __acad3dV124: blocks =================
      A block is object RECORDS, not a mesh, so what comes back is what went in: a wall with its
      type, a room, a sketch. Inserted through bimDuplicateObject, the one way this app copies. */
@@ -204,3 +225,7 @@
     if(el.browser)refreshBrowser();
     refreshAssets();
   }
+export {
+  bimBlockSave, bimInsertBlock, bimPlaceFamilyInstance, bimRelinkCopies, bimRelinkNote, openSaveBlockDlg,
+  refreshFamilyPanel, startFamilyPlaceTool
+};

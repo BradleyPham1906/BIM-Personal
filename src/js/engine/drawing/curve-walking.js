@@ -1,3 +1,6 @@
+import { bimBulgeArc, bimBulgeAt, bimBulgedLength } from './arc-storage.js';
+import { bimArcPointAt } from './curve-break.js';
+
   /* ================= __acad3dV93: walking a distance along a curve ====================
 
      DIVIDE and MEASURE differ in one thing only: what decides the spacing. DIVIDE takes a
@@ -124,3 +127,6 @@
     while(rel<=-Math.PI*2)rel+=Math.PI*2;
     return rel>=arc.sweep-1e-9;
   }
+export {
+  bimCircleSketch, bimDividePoints, bimMeasurePoints, bimPointAtLength, bimPointOnSweptArc, bimPolygonSketch
+};

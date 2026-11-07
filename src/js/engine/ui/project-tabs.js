@@ -1,3 +1,30 @@
+import {
+  A3D, A3D_BOOT_DOC, A3D_DOCS, A3D_DOCS_KEY, A3D_DOC_PREFIX, A3D_DOC_RT, A3D_PROJECT_DEFAULTS, LSK,
+  bimApplyStoredState
+} from '../core/state.js';
+import {
+  A3D_TYPING, REDO_STACK, UNDO_STACK, bimSyncStatusBar, undoSuspend
+} from '../drawing/plan-mode-sketch.js';
+import { bimEndSketch } from '../drawing/command-ending.js';
+import { bimSyncActiveGlobal } from '../bim/levels-walls-floors.js';
+import { bimEnsureBuildings } from '../bim/building-site-hierarchy.js';
+import { refreshLevels } from '../bim/classification.js';
+import { bimEnsureTypes } from '../bim/type-instance-params.js';
+import { refreshLayers } from '../layers/analysis-data-rows.js';
+import { refreshProps } from '../site-analysis/panel.js';
+import { paint } from '../map/terrain-3d.js';
+import { bimExitSection } from '../views/section-tool.js';
+import { bimProjectRecord, save3d, saveT } from '../core/objects-save.js';
+import {
+  A3D_SPILL, bimIdbDel, bimIdbGet, bimIsIdbPointer, bimParkInIdb, bimSpillSave, bimSpillToast
+} from '../core/idb-store.js';
+import { refreshHud } from '../bim/region-regenerate.js';
+import { A3D_LAST_MODEL_VIEW, A3D_VIEW, bimActivateView, refreshViews } from '../views/saved-views.js';
+import { bimCloseSheetView } from '../sheets/present.js';
+import { refreshBrowser, refreshTree } from '../sheets/presentation-panel.js';
+import { closeDlg } from './touch-input.js';
+import { a3dToast } from '../bim/csg-booleans.js';
+
   /* ================= __acad3dV115: projects side by side =================
      AutoCAD's file tabs and Revit's open projects: several projects open at once, each its own
      model with its own undo history, one on screen. What is on screen is always the project in
@@ -277,3 +304,7 @@
     if(id)a3dToast('New project: '+rec.titleBlock.project);
     return id;
   }
+export {
+  bimDocEntry, bimDocName, bimDocsActivate, bimDocsAdd, bimDocsBoot, bimDocsCreate, bimDocsNotify,
+  bimDocsSave, bimLoadProjectRecord, bimNameOf, bimNextProjectName, bimProjectLabel, bimStartShowing
+};

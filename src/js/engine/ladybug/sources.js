@@ -1,3 +1,13 @@
+import { A3D } from '../core/state.js';
+import { pushUndo } from '../drawing/plan-mode-sketch.js';
+import { bimSunNum, bimSunSettings } from '../site/sun-position.js';
+import { bimSaToday } from '../site-analysis/workspace.js';
+import { bimClimQs, bimClimYears } from '../site-analysis/climate-data.js';
+import { A3D_LB, bimLbCall } from './runtime.js';
+import { bimLbRefresh } from './panel.js';
+import { saveSoon } from '../bim/region-regenerate.js';
+import { a3dToast } from '../bim/csg-booleans.js';
+
   /* ================= __acad3dV172b: the weather Ladybug reads =================
      reference/research-ladybug-weather-comfort.md, 7 and 8. One source at a time, held in the worker:
      - an EPW, or the station's ZIP (EPW, DDY, STAT) from climate.onebuilding.org, opened from a file: that server
@@ -98,3 +108,7 @@
     if(s.kind==='openmeteo')return 'Open-Meteo ERA5, '+s.year+(s.half?', in UTC':'')+(s.filled?' ('+s.filled+' hours filled)':'');
     return (s.city||s.name)+(s.station?' ('+s.station+')':'')+', '+s.name+(s.ddy?', with its design days':'');
   }
+export {
+  bimLbData, bimLbFetchYear, bimLbOmUrl, bimLbOmZone, bimLbOpenBytes, bimLbPickFile, bimLbSrcKept,
+  bimLbSrcWords
+};

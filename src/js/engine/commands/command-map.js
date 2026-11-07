@@ -1,3 +1,95 @@
+import { A3D, A3D_DOCS, el } from '../core/state.js';
+import { A3D_SNAP, doRedo, doUndo } from '../drawing/plan-mode-sketch.js';
+import { openPolygonDlg, startArcTool, startSketch } from '../drawing/command-ending.js';
+import {
+  bimOpenHatchDlg, bimOpenSpacingDlg, startBoundaryTool, startClineTool, startPointTool
+} from '../drawing/point-node.js';
+import {
+  bimBoundaryCommand, bimBreaklineCommand, bimLandXmlExport, bimLandXmlPick, bimTerrainViewCommand
+} from '../terrain/breaklines.js';
+import {
+  bimCutFillCommand, bimCutFillMapCommand, bimGradeCommand, bimSlopeArrowsCommand, bimSpotCommand
+} from '../terrain/grading.js';
+import {
+  A3D_BR_CMP, bimHistBranches, bimHistCommitCommand, bimHistReveal
+} from '../history/branches-merge.js';
+import { bimIsProperty, bimPropertyFromSketch, openPropertyDlg } from '../site/property.js';
+import {
+  bimAlignmentCommand, bimStartProfileViewTool, bimStartStationTool, openSurveyDlg, openTrueNorthDlg
+} from '../site/alignment-profile.js';
+import { startGridTool } from '../bim/grid-editing.js';
+import { startBeamTool } from '../bim/section-profiles.js';
+import {
+  bimFootingsUnderAllColumns, startFootingTool, startFoundationSlabTool, startWallTool
+} from '../bim/footings.js';
+import { bimCycleRoomScheme } from '../bim/room-colour-fill.js';
+import { bimTagAllRooms, startRoomTagTool, startRoomTool } from '../bim/room-tags.js';
+import { startDimTool, startLeaderTool, startTextTool } from '../annotation/dimensions.js';
+import { bimExportPDF } from '../annotation/annotation-pick.js';
+import { bimExportProjectFile, bimOpenProjectPicker } from '../io/project-file.js';
+import { startColumnTool, startDoorTool, startFloorTool, startWindowTool } from '../bim/columns-openings.js';
+import { startCeilingTool } from '../bim/ceiling-floor-profile.js';
+import { startRoofTool } from '../bim/roofs.js';
+import { startStairTool } from '../bim/stairs.js';
+import { bimSelectByRule } from '../layers/select-change.js';
+import { bimLayerManagerOpen } from '../layers/layer-manager.js';
+import { bimUsageCommand, bimUsageLibraryCommand } from '../properties/usages.js';
+import { bimStdCommand } from '../properties/site-standards.js';
+import {
+  bimGeoExport, bimGeoImportPick, bimMapCommand, openFindAddressDlg
+} from '../properties/map-address-site-data.js';
+import {
+  bimDataCommand, bimFindCommand, bimLensCommand, bimSurveyCheckCommand
+} from '../properties/context-lod-data.js';
+import { BIM_APP_VERSION, bimDocsOpen } from '../ui/guide-versions.js';
+import {
+  bimRainCommand, bimResultLayerAdd, bimSimClear, bimSolarCommand, bimSunHoursCommand
+} from '../analysis/results-layers.js';
+import { bimAnalyzeCommandTab, bimAnzView, bimSaGoto } from '../analysis/analyze-tab.js';
+import { bimAnimPlay } from '../site-analysis/motion.js';
+import { bimSiteAnalyze } from '../site-analysis/analyze-site.js';
+import { bimClimFetch } from '../site-analysis/climate-data.js';
+import { A3D_ZN, bimZnBuild } from '../site-analysis/zoning-envelope.js';
+import { bimAccFetch } from '../site-analysis/access-data.js';
+import { bimSaRefresh, refreshProps } from '../site-analysis/panel.js';
+import { bimTrCommand } from '../simulation/traffic-ui.js';
+import { bimAwEnter, bimAwTraffic } from '../site-analysis/analysis-workspace.js';
+import { bimTlCommand } from '../site-tools/panel.js';
+import { bimSkpPick } from '../io/sketchup-import.js';
+import { bimBenchmark, bimGraphicsCommand } from '../render/webgpu.js';
+import { bimCtxFetch, bimCtxRemove } from '../map/surroundings-3d.js';
+import { bimLodCheck } from '../map/lod-solids.js';
+import { bimCityJsonExport, bimCityJsonPick } from '../map/cityjson.js';
+import { paint } from '../map/terrain-3d.js';
+import { bimSetSnap, bimSyncSnapPill } from '../ui/shortcuts.js';
+import { bimGizmoCommand } from '../gizmo/gizmo-handles.js';
+import { bimPressPullCommand } from '../editing/faces-push-pull.js';
+import { delSelection, duplicateSelection } from '../editing/selection-tools.js';
+import {
+  applyMergeWalls, startMirrorTool, startPolarArrayTool, startRotateTool
+} from '../editing/precision-editing.js';
+import {
+  applyFilletCorner, openAlignDlg, openArrayDlg, openOffsetDlg, startBreakTool, startChamferTool,
+  startExtendTool, startLengthenTool, startScaleTool, startTrimTool
+} from '../editing/modify-toolbox.js';
+import { bimOpenLibraryAt } from '../assets/library.js';
+import { fitScene } from '../ui/tool-palette.js';
+import { startSectionTool } from '../views/section-tool.js';
+import { bimDocsCreate } from '../ui/project-tabs.js';
+import { bimDocsClose } from '../assets/templates.js';
+import { bimToggleAreaPlan, bimToggleSun } from '../site/shadows.js';
+import { bimAnalyzeCommand, bimAnalyzeOff } from '../structure/analysis-display.js';
+import { bimStructFocus, bimToggleTrib } from '../structure/analysis-properties.js';
+import { openSaveBlockDlg } from '../assets/blocks.js';
+import { bimSheetById } from '../sheets/sheets.js';
+import { bimSheetOnScreen, bimShowModel } from '../sheets/present.js';
+import { bimPrintSheet, bimSetModelSpace, bimSetPaperSpace } from '../sheets/viewports.js';
+import { bimLayoutNew } from '../sheets/layout-tabs.js';
+import { bimBoardShow } from '../sheets/boards.js';
+import { refreshTree } from '../sheets/presentation-panel.js';
+import { a3dToast, objById } from '../bim/csg-booleans.js';
+import { bimOpenToolsPanel } from '../ui/discipline-tabs.js';
+
   /* ================= __acad3dV86: the command palette runs against the BIM engine =========
 
      Every entry here was driven before it was listed. A command with no BIM implementation is
@@ -186,3 +278,4 @@
     }
   };
   window.__a3dCmdSupported=function(act){return !!BIM_CMD_MAP[act];};
+export { BIM_CMD_MAP, BIM_SHEET_ACTS, BIM_SHEET_CMDS, BIM_START_CMDS };

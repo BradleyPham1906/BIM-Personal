@@ -1,3 +1,41 @@
+import { A3D, el } from '../core/state.js';
+import { objBBox, pushUndo, undoSuspend } from '../drawing/plan-mode-sketch.js';
+import { bimAddPoint, bimIsPoint } from '../drawing/point-node.js';
+import { bimTrueNorthDeg } from '../survey/survey-arithmetic.js';
+import { bimIsProperty, bimPropertyGeometry } from '../site/property.js';
+import { bimAlignExport, bimIsAlignment } from '../site/alignment-profile.js';
+import { bimIsFooting } from '../bim/footings.js';
+import { bimPointInPoly, bimPolyArea } from '../bim/rooms.js';
+import { bimTriggerDownload } from '../annotation/annotation-pick.js';
+import { bimFileStem } from '../io/project-file.js';
+import { bimRectFootprint } from '../bim/columns-openings.js';
+import { bimExportOffset } from '../io/export-mappings.js';
+import { bimLayerById, bimLayerOf } from '../layers/layer-rules.js';
+import { addLayer } from '../layers/select-change.js';
+import { refreshLayers } from '../layers/analysis-data-rows.js';
+import { bimEsc } from '../layers/layer-manager.js';
+import { bimPropGroup, bimPropRow, bimPropText } from './palette.js';
+import { bimStdPlaceFromAddress } from '../standards/registry.js';
+import { bimMakeImportedSketch, refreshProps } from '../site-analysis/panel.js';
+import {
+  A3D_MAP, BIM_MAP_ORDER, BIM_MAP_STYLES, bimGeoToModel, bimMapCredit, bimMapForgetFailures, bimMapOrigin,
+  bimMapSet, bimMapSettings, bimMapTemplate, bimModelToGeo
+} from '../map/map-tiles.js';
+import { paint } from '../map/terrain-3d.js';
+import { bimFlattenSketch } from '../drawing/arc-storage.js';
+import { bimIsHatch } from '../drawing/hatch.js';
+import { bimIsCline } from '../drawing/construction-lines.js';
+import { fitScene } from '../ui/tool-palette.js';
+import { saveSoon } from '../bim/region-regenerate.js';
+import {
+  bimMeshSliceLoops, bimUsageById, bimUsageMeasure, bimUsageTarget
+} from '../bim/usages-live-areas.js';
+import { bimShadowGround } from '../site/shadows.js';
+import { bimObjectLevelId } from '../views/saved-views.js';
+import { refreshTree } from '../sheets/presentation-panel.js';
+import { closeDlg } from '../ui/touch-input.js';
+import { a3dToast } from '../bim/csg-booleans.js';
+
   /* ================= __acad3dV132: the map in Properties, the address, site data ================= */
   function bimGeoFmt(v,pos,neg){return Math.abs(v).toFixed(6)+'\u00b0 '+(v>=0?pos:neg);}
   function bimMapPropsHtml(){
@@ -397,3 +435,8 @@
     a3dToast('Exported '+fn+' ('+fc.features.length+' feature'+(fc.features.length===1?'':'s')+', in longitude and latitude)');
     return fc;
   }
+export {
+  A3D_MAP_DRAFT, bimGeoCleanProps, bimGeoExport, bimGeoExportFC, bimGeoImportFile, bimGeoImportPick,
+  bimGeoImportText, bimGeoJsonFeatures, bimGeoParts, bimGeoPositions, bimGeoPropsHtml, bimMapCommand,
+  bimMapFind, bimMapPropChange, bimMapPropClick, bimMapPropsHtml, openFindAddressDlg
+};

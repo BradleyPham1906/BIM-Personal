@@ -1,3 +1,34 @@
+import { A3D } from '../core/state.js';
+import { bimUndoHold, pushUndo } from '../drawing/plan-mode-sketch.js';
+import { bimSunNum, bimSunSettings } from '../site/sun-position.js';
+import { refreshLayers } from '../layers/analysis-data-rows.js';
+import { bimDispNum } from '../properties/palette.js';
+import { bimMapFind } from '../properties/map-address-site-data.js';
+import { bimCtxCountsText } from '../properties/context-lod-data.js';
+import { bimAnalyzeRefresh, bimAnzView } from '../analysis/analyze-tab.js';
+import {
+  BIM_DG_AN, BIM_STD_DATA, bimDgAn, bimDgCrtnMax, bimDgDiags, bimDgEdited, bimDgState, bimDgStdChanged,
+  bimStdChangedText
+} from '../standards/registry.js';
+import { bimDgResetAnalysis } from './model-layers.js';
+import { BIM_LAND_CELL, BIM_LAND_HALF, bimLandFetch } from './land-water.js';
+import { bimDgRunAll, bimZnDrawing } from './land-use.js';
+import { bimSaFill, bimSaN, bimSaToday } from './workspace.js';
+import { bimClimFetch } from './climate-data.js';
+import { bimZnFoundText, bimZnFromLayer, bimZnProperty } from './zoning-envelope.js';
+import { bimAccFetch } from './access-data.js';
+import { bimSaRefresh, refreshProps } from './panel.js';
+import { bimTrCard } from '../simulation/traffic-ui.js';
+import { bimAwAfterRun, bimAwShown } from './analysis-workspace.js';
+import { bimMapHost } from '../map/map-tiles.js';
+import { bimCtxSettings } from '../map/site-context.js';
+import { bimCtxErr, bimCtxFetch } from '../map/surroundings-3d.js';
+import { bimDataList } from '../map/data-layers.js';
+import { paint } from '../map/terrain-3d.js';
+import { saveSoon } from '../bim/region-regenerate.js';
+import { refreshTree } from '../sheets/presentation-panel.js';
+import { a3dToast } from '../bim/csg-booleans.js';
+
   /* ================= __acad3dV164: Analyze site =================
      The owner: "all i want is button then the analysis run, then it leverage appropriate relevant
      data from target api to analyze the site, then put that under analysis layers". One button,
@@ -198,3 +229,7 @@
     }
     return false;
   }
+export {
+  A3D_SITERUN, BIM_DG_KEYCLS, BIM_SITERUN_CLS, BIM_SITERUN_WORD, bimDgAct, bimDgCards, bimDgStaleText,
+  bimSiteAnalyze, bimSitePlaceText, bimZnDrawingFetch
+};

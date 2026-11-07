@@ -1,3 +1,26 @@
+import { A3D, el } from '../core/state.js';
+import { TYPES, mergePrm } from '../core/mesh-primitives.js';
+import { bimEnterDraftingMode, bimObjOffset, pushUndo } from '../drawing/plan-mode-sketch.js';
+import { bimGetActiveLevel } from '../bim/levels-walls-floors.js';
+import { bimBuildWallGeometry, bimCarryBim, bimIsLocked } from '../bim/import-compliance.js';
+import { bimDimKind } from '../annotation/dimensions.js';
+import { bimBuildColumnGeometry } from '../bim/columns-openings.js';
+import { bimBuildFloorGeometry } from '../bim/ceiling-floor-profile.js';
+import { bimMeshClosureCheck } from '../bim/stairs.js';
+import { bimLayerPickRefusal } from '../layers/select-change.js';
+import { bimEsc } from '../layers/layer-manager.js';
+import { bimIsDiag } from '../standards/registry.js';
+import { bimDgCopy, bimDgTransformed } from '../site-analysis/motion.js';
+import { paint } from '../map/terrain-3d.js';
+import { bimCutSource } from '../bim/dependency-graph.js';
+import { bimAfterSketchEdit, bimAfterWallRebuild } from '../bim/region-dependents.js';
+import { bimWallIsCurved } from './modify-toolbox.js';
+import { refreshHud, saveSoon } from '../bim/region-regenerate.js';
+import { bimCloneMesh } from '../assets/family-library.js';
+import { refreshTree } from '../sheets/presentation-panel.js';
+import { closeDlg } from '../ui/touch-input.js';
+import { a3dToast, objById } from '../bim/csg-booleans.js';
+
   // ---- __acad3dV17: Precision editing for BIM objects (Mirror, Rotate, Polar Array, Wall Join).
   // Operates on A3D.objs directly. ----
   function bimMirrorPoint(pt,P1,P2){
@@ -610,3 +633,10 @@
     a3dToast(ctx.clonesUpdated+' linked clone(s) synced to source'+(ctx.clonesFailed?' ('+ctx.clonesFailed+' could not be synced)':''));
     return ctx.clonesUpdated;
   }
+export {
+  A3D_MATERIALIZED, applyMergeWalls, applyWallJoin, bimBuildPolarArray, bimCheckModel,
+  bimComputeTransformedGeometry, bimFlushMaterialized, bimJoinWalls, bimLineLineIntersect, bimLinkedClonesOf,
+  bimMaterializeInto, bimMergeWalls, bimMirrorObject, bimMirrorSelection, bimPrimitiveMesh,
+  bimRotateObjectInPlace, bimRotatePoint, bimRotateSelection, bimSyncOneClone, cloneLinked, openCheckModelDlg,
+  openPolarArrayDlg, openRotateDlg, startMirrorTool, startPolarArrayTool, startRotateTool, syncLinkedClones
+};

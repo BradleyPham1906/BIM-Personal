@@ -1,3 +1,21 @@
+import { A3D } from '../core/state.js';
+import { camVecs } from '../core/mesh-primitives.js';
+import { bimEnterDraftingMode, pushUndo } from '../drawing/plan-mode-sketch.js';
+import { bimGetActiveLevel } from './levels-walls-floors.js';
+import { refreshLevels } from './classification.js';
+import { bimEsc } from '../layers/layer-manager.js';
+import { bimDispLen, bimLenLabel, bimPropGroup, bimPropLenText, bimPropRow } from '../properties/palette.js';
+import { refreshProps } from '../site-analysis/panel.js';
+import { toScreen } from '../io/import-entry.js';
+import { paint } from '../map/terrain-3d.js';
+import { bimPointSegDist } from '../render/viewcube.js';
+import { saveSoon } from './region-regenerate.js';
+import { refreshTree } from '../sheets/presentation-panel.js';
+import { closeDlg } from '../ui/touch-input.js';
+import { a3dToast } from './csg-booleans.js';
+import { a3drIcon } from '../ui/discipline-tabs.js';
+import { cvH, cvW } from '../ui/canvas-size.js';
+
   /* ================= __acad3dV98: selecting and editing a grid ================= */
   function bimGridById(id){
     var i;
@@ -127,3 +145,7 @@
      padMesh (which only extrudes vertically), so the six faces are emitted directly with
      outward winding. Revit hangs a beam below its level, so the level elevation is the
      top of the section and depth runs downward. ---------- */
+export {
+  bimGridById, bimGridPropsHtml, bimPickGrid, bimRenameGrid, bimSelectGrid, bimSelectedGrid, bimSetGridEnds,
+  drawGrids, startGridTool
+};

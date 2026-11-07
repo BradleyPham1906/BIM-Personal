@@ -128,3 +128,4 @@
     }
     return M;
   }
+export { bimLbBvhBlocked, bimLbBvhBuild, bimLbStudyRows, bimLbStudyVecs, bimLbWasiRun };

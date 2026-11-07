@@ -1,3 +1,18 @@
+import { A3D } from '../core/state.js';
+import { TYPES, meshOf } from '../core/mesh-primitives.js';
+import { pushUndo } from '../drawing/plan-mode-sketch.js';
+import { BIM_SCHEME_COLS } from '../bim/room-colour-fill.js';
+import { A3D_PLOT, bimLayerById } from '../layers/layer-rules.js';
+import { refreshProps } from '../site-analysis/panel.js';
+import { bimAwCtxCol } from '../site-analysis/analysis-workspace.js';
+import { bimHexToRgb } from '../render/webgl.js';
+import { bimDataFeats, bimDataList } from './data-layers.js';
+import { paint } from './terrain-3d.js';
+import { bimSafeViewRect } from '../ui/chrome-framing.js';
+import { saveSoon } from '../bim/region-regenerate.js';
+import { bimUsageById } from '../bim/usages-live-areas.js';
+import { a3dToast } from '../bim/csg-booleans.js';
+
   /* ================= __acad3dV136: the colour-by-property lens ================= */
   var BIM_LENS_BY=['usage','level','type','layer','material','height','prop'];
   var BIM_LENS_LABEL={usage:'Usage',level:'Level',type:'Type',layer:'Layer',material:'Material',height:'Height',prop:'Property'};
@@ -239,3 +254,8 @@
     gl.vertexAttribPointer(G.loc.norm,3,gl.FLOAT,false,0,0);
     gl.drawArrays(gl.TRIANGLES,0,rec.count);
   }
+export {
+  A3D_LENS, BIM_LENS_BY, BIM_LENS_LABEL, BIM_LENS_NONE, BIM_LENS_RAMP, bimDataAttrKeys, bimDataFeatCol,
+  bimDataLensScale, bimGlDrawFaces, bimLensCol, bimLensPropKeys, bimLensSet, bimLensSettings, bimLensValue,
+  drawLensLegend
+};

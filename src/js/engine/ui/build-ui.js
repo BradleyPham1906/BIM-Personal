@@ -1,3 +1,98 @@
+import { A3D, SCALE, el } from '../core/state.js';
+import { mergePrm, meshMinY, meshOf, validatePrm } from '../core/mesh-primitives.js';
+import {
+  A3D_SNAP, PILL_GRID, PILL_ORBIT, PILL_ORTHO, PILL_PAN, PILL_PLAY, PILL_SNAP, PILL_STOP, bimStatusHover,
+  bimStatusHoverOut, bimSyncPresentPill, bimSyncStatusHint, pushUndo, setNav, syncSnapPill, toggleFlat
+} from '../drawing/plan-mode-sketch.js';
+import { onHover } from '../drawing/drawing-input.js';
+import { addLevel, setActiveLevel } from '../bim/levels-walls-floors.js';
+import { removeLevel, updateLevel } from '../bim/level-datum.js';
+import {
+  addBuilding, removeBuilding, setActiveBuilding, updateBuilding, updateSite
+} from '../bim/building-site-hierarchy.js';
+import { openClassificationDlg, setObjectClassification } from '../bim/classification.js';
+import { bimSetSun } from '../site/sun-position.js';
+import { bimLandXmlExport, bimTerrainEdit, bimTerrainSetView } from '../terrain/breaklines.js';
+import { bimGradeSpots, bimRegrade, bimSetSlopeArrows } from '../terrain/grading.js';
+import {
+  A3D_BR_DEL, A3D_BR_NEW, A3D_BR_PICK, A3D_HIST_MSG, bimHistAct, bimHistBranchAct, bimHistDoCommit,
+  bimHistSwitchUI
+} from '../history/branches-merge.js';
+import { bimSetGradeElev, bimSetPadSlope, bimSetTerrainInterval } from '../survey/survey-check.js';
+import {
+  bimIsProperty, bimPropertyGeometry, bimSetbackViolations, openPropertyDlg
+} from '../site/property.js';
+import {
+  bimAlignPropChange, bimAlignPropClick, bimRemoveGrid, bimSetTrueNorth
+} from '../site/alignment-profile.js';
+import { bimRenameGrid, bimSelectGrid, bimSelectedGrid, bimSetGridEnds } from '../bim/grid-editing.js';
+import { bimSetLocked } from '../bim/import-compliance.js';
+import {
+  TYPE_CATS, bimAssignTypeTo, bimRebuildWall, bimSetGraphicsOverride, bimSetMaterial, bimSetWallTypeOf,
+  bimTypeNameOf, openTypeDlg
+} from '../bim/type-instance-params.js';
+import { bimSetRoomField } from '../bim/room-colour-fill.js';
+import { bimOpenProjectFileObj } from '../io/project-file.js';
+import { bimBuildColumnGeometry, bimRebuildColumn } from '../bim/columns-openings.js';
+import { bimRebuildFloor } from '../bim/ceiling-floor-profile.js';
+import { bimRebuildRoof } from '../bim/roofs.js';
+import {
+  bimLayerPickRefusal, bimObjSetLayer, bimSelectByRule, setActiveLayer
+} from '../layers/select-change.js';
+import { bimLenInputToMetres, bimPropGroupToggle } from '../properties/palette.js';
+import { bimUsagePropChange, bimUsagePropClick } from '../properties/usages.js';
+import {
+  A3D_STD_UI, BIM_STD_DRAFT_KEYS, bimStdDraftClear, bimStdPropChange, bimStdPropClick, bimStdPropVal
+} from '../properties/site-standards.js';
+import {
+  A3D_MAP_DRAFT, bimMapFind, bimMapPropChange, bimMapPropClick
+} from '../properties/map-address-site-data.js';
+import {
+  bimCtxPropChange, bimCtxPropClick, bimDataPropChange, bimDataPropClick, bimFindPropChange, bimFindPropClick,
+  bimLensPropChange, bimSurveyPropChange, bimSurveyPropClick
+} from '../properties/context-lod-data.js';
+import { bimPropTabClick } from '../analysis/analyze-tab.js';
+import { bimStdOverride } from '../standards/registry.js';
+import { bimAnimPlay, bimAnimStop } from '../site-analysis/motion.js';
+import { bimDgPropChange, bimDgPropClick } from '../site-analysis/land-use.js';
+import { refreshProps } from '../site-analysis/panel.js';
+import { bimHandleImportFile } from '../io/import-entry.js';
+import { bimFindSearch } from '../map/find-open-data.js';
+import { paint } from '../map/terrain-3d.js';
+import { bimCloseGizmoMenu } from '../gizmo/gizmo-handles.js';
+import { bimFaceDblClick, bimPrimBase } from '../editing/faces-push-pull.js';
+import { bimDeleteSketchConstraint } from '../drawing/sketch-constraints.js';
+import { syncLinkedClones } from '../editing/precision-editing.js';
+import { bimPropagateFrom } from '../bim/region-dependents.js';
+import { bimCleanShell, bimShellDrawer, bimShellOverlay } from '../assets/library-drag.js';
+import { refreshHud, saveSoon } from '../bim/region-regenerate.js';
+import {
+  SCHEDULE_DEFS, bimExportScheduleCSV, bimLoadDraftInput, bimStructPropChange, bimStructPropClick,
+  bimSyncScheduleCats, refreshSchedule
+} from '../structure/analysis-properties.js';
+import { bimFamilyLibraryGet, bimFamilyLibraryRemove } from '../assets/family-library.js';
+import { bimEntPropSet, bimImportFamilyFile, openSaveAsFamilyDlg } from '../assets/scale-assets.js';
+import { refreshFamilyPanel, startFamilyPlaceTool } from '../assets/blocks.js';
+import {
+  bimActivateView, bimDeleteView, bimSaveCurrentView, bimToggleLevelFilter, refreshViews
+} from '../views/saved-views.js';
+import { bimConfirmDeleteSheet, bimSheetById } from '../sheets/sheets.js';
+import { bimWirePages } from '../sheets/pages-display.js';
+import { bimShowModel, bimSlideshowStart } from '../sheets/present.js';
+import {
+  bimExportSheetPNG, bimExportSheetSVG, bimOpenAddViewportDlg, bimOpenNewSheetDlg, bimOpenSheetPropsDlg,
+  bimOpenTitleBlockDlg, bimPrintSet, bimPrintSheet, bimSetModelSpace, bimSetPaperSpace, bimSheetContextMenu,
+  bimSheetDblClick, bimSheetPointerDown, bimSheetPointerMove, bimSheetPointerUp, bimSheetWheel
+} from '../sheets/viewports.js';
+import { bimBrowserToggle } from './project-browser.js';
+import {
+  A3D_LT_EDITING, bimLayoutNew, bimLayoutRename, bimLayoutTabMenu, bimLtMenuClose
+} from '../sheets/layout-tabs.js';
+import { onDown, onMove, onUp, onWheel, refreshBrowser, refreshTree } from '../sheets/presentation-panel.js';
+import { bimSubmitTouchLen, onKey, onTouchEnd, onTouchMove, onTouchStart } from './touch-input.js';
+import { a3dToast, objById } from '../bim/csg-booleans.js';
+import { size } from './canvas-size.js';
+
   // ---- __acad3dV20: UI panel visibility dropdown, matching the "show/hide panels" convention
   // from Revit's User Interface button / AutoCAD's palette toggles. Deliberately does NOT let
   // the toolbar itself be hidden (that's where the toggle control lives) -- same
@@ -991,3 +1086,4 @@
     var g=document.getElementById('a3d-glcanvas');
     if(g&&el.cv){if(g.width!==el.cv.width)g.width=el.cv.width;if(g.height!==el.cv.height)g.height=el.cv.height;}
   }
+export { bimLoadUIPanelPrefs, bimSaveUIPanelPrefs, bimSetUIPanelVisible, bimSyncGlCanvasSize, buildUI };

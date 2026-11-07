@@ -1,3 +1,14 @@
+import { A3D } from '../core/state.js';
+import { bimCombos } from '../standards/registry.js';
+import { refreshProps } from '../site-analysis/panel.js';
+import { toScreen } from '../io/import-entry.js';
+import { paint } from '../map/terrain-3d.js';
+import {
+  A3D_STRUCT, bimAnalyticalModel, bimCombo, bimStructOf, bimVLen, bimVSub
+} from './analytical-model.js';
+import { bimFrameSolve } from './frame-solve.js';
+import { a3dToast, objById } from '../bim/csg-booleans.js';
+
   /* ================= __acad3dV125: the analysis display ================= */
   var BIM_DIAGRAMS={M:'Bending moment (kN\u00b7m)',N:'Axial force (kN)',V:'Shear (kN)'};
   /* what the solve depends on: when it changes, the result on screen is out of date */
@@ -201,3 +212,7 @@
         fx:x.R[0],fy:x.R[1],fz:x.R[2],mx:x.R[3],my:x.R[4],mz:x.R[5],note:''};
     });
   }
+export {
+  bimAnalyzeCommand, bimAnalyzeOff, bimMemberForceRows, bimReactionRows, bimStructAnalyze, bimStructCurrent,
+  bimStructHeadline, drawStructResults
+};

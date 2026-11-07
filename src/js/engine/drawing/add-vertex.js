@@ -1,3 +1,17 @@
+import { A3D } from '../core/state.js';
+import { bimWorldElev, bimWorldPt } from './plan-mode-sketch.js';
+import { bimIsPoint } from './point-node.js';
+import { bimGetActiveLevel } from '../bim/levels-walls-floors.js';
+import { bimSelectedGrid } from '../bim/grid-editing.js';
+import { bimBuildWallGeometry, bimCarryBim, bimIsLocked } from '../bim/import-compliance.js';
+import { toScreen } from '../io/import-entry.js';
+import { bimGetEditablePoints } from '../render/viewcube.js';
+import { BIM_BULGE_EPS, bimBulgeArc, bimBulgeAt, bimHasBulge } from './arc-storage.js';
+import { bimArcPointAt } from './curve-break.js';
+import { bimArcBulgeBetween } from './curve-offset.js';
+import { drag } from '../sheets/presentation-panel.js';
+import { objById } from '../bim/csg-booleans.js';
+
   /* ================= __acad3dV97: add a vertex to a sketch ================= */
   function bimSketchSegCount(o){
     if(!o||!o.pts||o.pts.length<2)return 0;
@@ -123,3 +137,4 @@
       }
     }
   }
+export { bimDragSketchPoint, bimDragWallPoint, bimDrawGrips, bimInsertSketchVertex, bimSketchSegMid };

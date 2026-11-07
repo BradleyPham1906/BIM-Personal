@@ -1,3 +1,9 @@
+import { mkBoxP, mkCylP } from '../core/mesh-primitives.js';
+import { bimIdbDel, bimIdbGet, bimIdbPut } from '../core/idb-store.js';
+import { bimMeshThumb } from './scale-assets.js';
+import { refreshFamilyPanel } from './blocks.js';
+import { a3dToast } from '../bim/csg-booleans.js';
+
   // ---- __acad3dV21: Family Library. Persists SEPARATELY from project data (its own localStorage
   // key, like UI prefs) since a family library is reusable content meant to survive across
   // different projects, not something that should live inside or reset with any one project
@@ -189,3 +195,8 @@
       mesh:bimNormalizeMeshForFamily(bimAsmMesh(s.parts)),thumb:''};
   });
 
+export {
+  A3D_ASSET_BUILTINS, A3D_FAMLIB, A3D_FAMLIB_DIRTY, A3D_FAMLIB_IDB, A3D_FAMLIB_LOADING, A3D_TEMPLATE_PREFIX,
+  FAMILY_CATEGORIES, bimAssetKind, bimCloneMesh, bimFamilyLibraryAdd, bimFamilyLibraryGet,
+  bimFamilyLibraryRemove, bimLibEntries, bimMergeMeshes, bimMeshBounds, bimSaveFamilyLibrary
+};

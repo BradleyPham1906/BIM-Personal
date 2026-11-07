@@ -1,3 +1,31 @@
+import { A3D } from '../core/state.js';
+import { meshOf } from '../core/mesh-primitives.js';
+import { bimObjOffset, pushUndo, undoSuspend } from '../drawing/plan-mode-sketch.js';
+import { earClip } from '../drawing/drawing-input.js';
+import { bimTrueNorthDeg } from '../survey/survey-arithmetic.js';
+import { BIM_SETBACK_TYPES, bimIsProperty, bimPropertyGeometry } from '../site/property.js';
+import { bimPointInPoly } from '../bim/rooms.js';
+import { bimLayerByName, bimLayerNew } from '../layers/select-change.js';
+import { refreshLayers } from '../layers/analysis-data-rows.js';
+import { bimEsc } from '../layers/layer-manager.js';
+import { bimSaFill, bimSaToday } from './workspace.js';
+import { bimClimFmt, bimClimInt } from './climate-data.js';
+import {
+  A3D_CLB, BIM_STATE, bimClbAxisY, bimClbCard, bimClbE, bimClbF, bimClbKpi, bimClbLeg, bimClbNum, bimClbOpen,
+  bimClbTable, bimClbTicks, bimClbTip
+} from './climate-board.js';
+import { bimSaRefresh, refreshProps } from './panel.js';
+import { bimDataFeats, bimDataList } from '../map/data-layers.js';
+import { bimDataModel } from '../map/find-open-data.js';
+import { paint } from '../map/terrain-3d.js';
+import { bimPointSegDist } from '../render/viewcube.js';
+import { bimProjectLabel } from '../ui/project-tabs.js';
+import { saveSoon } from '../bim/region-regenerate.js';
+import { bimUsageMeasure, bimUsageSummary, bimUsageTarget } from '../bim/usages-live-areas.js';
+import { bimBrdRec, bimFigCapKpis } from '../sheets/board-figures.js';
+import { bimPresThumbsQueue, refreshTree } from '../sheets/presentation-panel.js';
+import { a3dToast } from '../bim/csg-booleans.js';
+
   /* ================= __acad3dV160: Site analysis SA3, regulation: zoning, the envelope, the yield =================
      reference/research-zoning-envelope-yield.md. A3D.site.zoning is the record; everything else is
      worked out from it and the property, when asked. */
@@ -968,3 +996,8 @@
     return s+'</div>';
   }
 
+export {
+  A3D_ZN, BIM_ZN_ATTR, bimZn, bimZnAllows, bimZnArea2, bimZnAuto, bimZnBoardHtml, bimZnBuild, bimZnCalc,
+  bimZnConvex, bimZnEnvelopeObj, bimZnFoundText, bimZnFromLayer, bimZnInset, bimZnLegs, bimZnNum, bimZnPlate,
+  bimZnProperty, bimZnRemoveEnvelope, bimZnRules, bimZnSaHtml, bimZnSet, bimZnStepAdd, bimZnStepDel
+};

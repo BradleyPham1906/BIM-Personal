@@ -1,3 +1,16 @@
+import { A3D } from '../core/state.js';
+import { bimObjOffset, pushUndo } from '../drawing/plan-mode-sketch.js';
+import { sketchCCW } from '../drawing/drawing-input.js';
+import { bimOffsetRing } from './section-profiles.js';
+import { bimBuildWallRibbonMesh } from './wall-corners.js';
+import { bimAlignOffsets } from './footings.js';
+import { bimEnsureTypes } from './type-instance-params.js';
+import { paint } from '../map/terrain-3d.js';
+import { bimFlattenPoly, bimHasBulge } from '../drawing/arc-storage.js';
+import { refreshHud, saveSoon } from './region-regenerate.js';
+import { refreshTree } from '../sheets/presentation-panel.js';
+import { a3dToast } from './csg-booleans.js';
+
   // ---- __acad3dV11: BIM import compliance -- object lock/pin, and recovering full parametric
   // wall data (centerline/thickness/align) from a simple rectangular imported profile so an
   // imported IFC wall becomes a genuine editable/hostable wall, not just an inert mesh. ----
@@ -178,3 +191,7 @@
     a3dToast(o.name+' created');
     return o;
   }
+export {
+  bimBuildWallGeometry, bimCarryBim, bimIsLocked, bimRayPolyDepth, bimSetLocked,
+  bimTryRecoverWallFromRectProfile, bimWallFaceRings, bimWallInsetAt, buildWallSolid
+};

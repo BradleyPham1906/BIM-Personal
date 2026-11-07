@@ -1,3 +1,8 @@
+import { bimGraphNodeKey, bimPointInPoly } from '../bim/rooms.js';
+import { bimBulgeArc, bimBulgedSignedArea, bimFlattenPoly } from './arc-storage.js';
+import { bimArcParamAt, bimIntersectBulgedSegs } from './curve-break.js';
+import { bimArcBulgeBetween, bimSegEndDir } from './curve-offset.js';
+
   /* ================= __acad3dV95: the planar arrangement =================
 
      An edge is {a,b,bulge}: one straight segment or one arc. Everything below works on those,
@@ -183,3 +188,6 @@
             srcs:hit.face.srcs||null,   /* __acad3dV105b: which object bounds EACH edge */
             srcIds:hit.face.srcIds||[]};   /* __acad3dV98: which objects bound it */
   }
+export {
+  bimArrangeEdges, bimBuildEdgeGraph, bimEdgeDirAt, bimSplitEdge, bimTraceBoundary, bimTraceEdgeFaces
+};

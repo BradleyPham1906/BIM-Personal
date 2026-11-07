@@ -1,3 +1,12 @@
+import { A3D } from '../core/state.js';
+import { pushUndo } from '../drawing/plan-mode-sketch.js';
+import { bimPropRow, bimPropText } from '../properties/palette.js';
+import { A3D_ANIM, bimAnimLive } from '../site-analysis/motion.js';
+import { refreshProps } from '../site-analysis/panel.js';
+import { paint } from '../map/terrain-3d.js';
+import { saveSoon } from '../bim/region-regenerate.js';
+import { a3dToast } from '../bim/csg-booleans.js';
+
   /* ================= __acad3dV107: sun position =================
      The NOAA Solar Calculator equations (after Meeus, Astronomical Algorithms) as NOAA's
      spreadsheet gives them, its refraction approximation included. Checked against NREL's SPA
@@ -183,3 +192,8 @@
     a3dToast('Sun: '+bimSunText(bimSunNow(true)));
     return true;
   }
+export {
+  A3D_SUNX, bimHHMM, bimPad2, bimSetSun, bimSunCalc, bimSunClockText, bimSunDayText, bimSunNow, bimSunNum,
+  bimSunOffText, bimSunSettings, bimSunStudy, bimSunText, bimSunTrying, bimSunTzAt, bimSunZone, bimSunZoneOff,
+  bimSunZoneRows, bimSunZoneStd
+};

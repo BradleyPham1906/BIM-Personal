@@ -1,3 +1,11 @@
+import { A3D } from '../core/state.js';
+import { pushUndo } from '../drawing/plan-mode-sketch.js';
+import { refreshLevels } from './classification.js';
+import { paint } from '../map/terrain-3d.js';
+import { saveSoon } from './region-regenerate.js';
+import { refreshTree } from '../sheets/presentation-panel.js';
+import { a3dToast } from './csg-booleans.js';
+
   /* ---------- Phase 42: structural grid datums ----------
      Grids are datums, not model elements: they live in A3D.grids rather than A3D.objs,
      span every level (a grid is a vertical plane in Revit, so it is stored as a plan
@@ -51,3 +59,4 @@
     a3dToast('Grid '+g.name+' placed');
     return g;
   }
+export { bimAddGrid, bimGridNextName, bimGridSnapPoints, bimSegIntersect };

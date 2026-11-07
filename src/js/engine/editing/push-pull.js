@@ -1,3 +1,32 @@
+import { A3D, SCALE, el } from '../core/state.js';
+import { camVecs, mergePrm, meshOf, validatePrm, vdot } from '../core/mesh-primitives.js';
+import { A3D_SNAP, UNDO_STACK, bimObjOffset, bimWorldPt, pushUndo } from '../drawing/plan-mode-sketch.js';
+import { padMesh, sketchCCW } from '../drawing/drawing-input.js';
+import { bimSketchOutline } from '../drawing/point-node.js';
+import { bimSelectedGrid } from '../bim/grid-editing.js';
+import { bimBuildWallGeometry, bimCarryBim } from '../bim/import-compliance.js';
+import { bimBuildColumnGeometry } from '../bim/columns-openings.js';
+import { bimLayerShown } from '../layers/layer-rules.js';
+import { bimDispLen, bimUnitLabel } from '../properties/palette.js';
+import { refreshProps } from '../site-analysis/panel.js';
+import { toScreen } from '../io/import-entry.js';
+import { paint } from '../map/terrain-3d.js';
+import { A3D_GIZ } from '../gizmo/transform-gizmo.js';
+import {
+  A3D_CLICKBOX_T, bimFmtLen, bimGizmoParseValue, bimGizmoRestoreObjs, bimGizmoTyping, bimValueBox
+} from '../gizmo/gizmo-handles.js';
+import {
+  A3D_PUSH, bimFaceArrow, bimFaceCurrent, bimPosKey, bimPrmDim, bimWallEndInfo
+} from './faces-push-pull.js';
+import { A3D_MATERIALIZED, bimFlushMaterialized } from './precision-editing.js';
+import { bimPropagateFrom } from '../bim/region-dependents.js';
+import { saveSoon } from '../bim/region-regenerate.js';
+import { bimWallLength } from '../views/schedules.js';
+import { bimObjectVisibleOnLevel } from '../views/saved-views.js';
+import { drag, refreshTree } from '../sheets/presentation-panel.js';
+import { a3dToast, objById } from '../bim/csg-booleans.js';
+import { cvH, cvW } from '../ui/canvas-size.js';
+
   /* ================= __acad3dV123: PUSH AND PULL =================
 
      A push drag is one record (drag.pp). The press only arms it: a press that never travels is a
@@ -420,3 +449,7 @@
     }
     return best;
   }
+export {
+  bimFaceClickValue, bimFaceValueBox, bimPickGrip, bimPushApply, bimPushBegin, bimPushCancel, bimPushEnd,
+  bimPushPress, bimPushReadout, bimPushTo, bimPushValue
+};

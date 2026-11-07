@@ -1,3 +1,14 @@
+import { A3D, el } from '../core/state.js';
+import { bimLayerById, bimLayerChain, bimLayerEff } from './layer-rules.js';
+import {
+  BIM_LINETYPES, BIM_LINEWEIGHTS, bimLayerDelete, bimLayerMakeCurrent, bimLayerNew, bimLayerSet,
+  bimLinetypeDef
+} from './select-change.js';
+import { A3D_LY, BIM_LY_IC, bimLayerContents, bimLayerTree } from './layers-panel.js';
+import { bimRenderInto } from '../site-analysis/panel.js';
+import { closeDlg, ric } from '../ui/touch-input.js';
+import { a3dToast } from '../bim/csg-booleans.js';
+
   /* ================= __acad3dV121: the Layer Properties Manager (LAYER, LA) =================
      AutoCAD's table: Status, Name, On, Freeze, Lock, Plot, Color, Linetype, Lineweight,
      Transparency -- with the object count and Description -- in tree order, sub-layers indented.
@@ -167,3 +178,4 @@
     });
     return h;
   }
+export { bimEsc, bimLayerManagerOpen, bimLayerManagerRefresh, bimLayerOptionsHtml };

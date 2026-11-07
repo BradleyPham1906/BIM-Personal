@@ -1,3 +1,60 @@
+import { A3D, el } from '../core/state.js';
+import { bimSyncPresentPill } from '../drawing/plan-mode-sketch.js';
+import { bimGetActiveLevel } from '../bim/levels-walls-floors.js';
+import { bimSunCalc, bimSunNow, bimSunSettings } from '../site/sun-position.js';
+import {
+  bimContours, bimCutFill, bimDelaunay, bimParseSurvey, bimSurveyToModel, bimTerrainInterval, bimTerrainTin
+} from '../terrain/terrain-tin.js';
+import { bimCreateTerrain, bimEarthwork } from '../survey/survey-check.js';
+import { bimRayPolyDepth, bimWallFaceRings, bimWallInsetAt } from '../bim/import-compliance.js';
+import {
+  BIM_HATCH_PATTERNS, BIM_LW_TO_PX, BIM_MAT_COLS, BIM_PATTERN_DEFS, bimClearGraphicsOverride, bimFindType,
+  bimMatRow, bimMaterialByName, bimMaterialCards, bimMaterialPattern, bimObjMass, bimObjVolume,
+  bimPatternDraws, bimPatternLabel, bimPatternTileSize, bimRebuildWall, bimResolveGraphics,
+  bimSetGraphicsOverride, bimSetMaterial, bimSetTypeGraphics
+} from '../bim/type-instance-params.js';
+import { bimFindRoomBoundaryAt } from '../bim/rooms.js';
+import {
+  bimRoomLoadFactor, bimRoomLoadFactorHint, bimRoomOccupants, bimRoomOccupantsText
+} from '../bim/room-data-occupancy.js';
+import { bimCreateRoom, bimSetRoomScheme } from '../bim/room-colour-fill.js';
+import {
+  bimRebuildColumn, buildColumnSolid, buildDoorOpening, buildWindowOpening
+} from '../bim/columns-openings.js';
+import { bimWallOpeningBreaks } from '../io/dxf-export.js';
+import { bimPatternSvgDef } from '../io/export-mappings.js';
+import { bimBuildSVG } from '../layers/plot-by-layers.js';
+import { bimRebuildFloor, buildFloorSolid } from '../bim/ceiling-floor-profile.js';
+import { A3D_UNITS, bimDispLen, bimSetUnits, bimUnitDp, bimUnitLabel } from '../properties/palette.js';
+import { bimOccLoads } from '../standards/registry.js';
+import { refreshProps } from '../site-analysis/panel.js';
+import { paint } from '../map/terrain-3d.js';
+import { bimDragWallPoint } from '../drawing/add-vertex.js';
+import {
+  applyWallJoin, bimBuildPolarArray, bimMirrorSelection, bimRotateSelection, bimSyncOneClone
+} from '../editing/precision-editing.js';
+import {
+  bimAfterSketchEdit, bimPropagateFrom, bimRemeasureRoomFromSource
+} from '../bim/region-dependents.js';
+import { bimApplyTrim, bimNudgeObject } from '../editing/modify-toolbox.js';
+import { saveSoon } from '../bim/region-regenerate.js';
+import { bimLevelAreas, bimLevelGrossRings } from '../views/schedules.js';
+import { bimColumnLoads, bimGridMark } from '../structure/tributary-loads.js';
+import { bimShadowCasters, bimShadowGround, bimShadowPoint, bimSunVector } from '../site/shadows.js';
+import {
+  SCHEDULE_DEFS, bimRegisterSchedule, bimScheduleKeys, refreshSchedule
+} from '../structure/analysis-properties.js';
+import { bimResolveViewportSource, bimSheetById } from '../sheets/sheets.js';
+import { bimBuildPlanViewportSVG, bimBuildSheetSVG } from '../sheets/viewports.js';
+import { objById } from '../bim/csg-booleans.js';
+import {
+  A3DR_TABS, A3DR_UNIMPL, A3D_DISCIPLINES, A3D_DISC_CUR, a3drActOf, a3drIcon, a3drLabel, a3drRegisterCommand,
+  a3drRegisterDiscipline, a3drRegisterTab, bimBuildDock, bimOpenToolsPanel
+} from '../ui/discipline-tabs.js';
+import { bimCmdSearch } from '../commands/command-catalogue.js';
+import { a3drAllCommands } from '../ui/dock-tooltips.js';
+import { cvH, cvScale, cvW } from '../ui/canvas-size.js';
+
   /* __acad3dV51: opening-propagation surface for the Phase 55b tests. */
   window.__a3dDoorAt=function(wallId,xz,w,h){
     var wall=objById(wallId);

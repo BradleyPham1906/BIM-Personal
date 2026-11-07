@@ -1,3 +1,15 @@
+import { A3D } from '../core/state.js';
+import { bimObjOffset, pushUndo } from '../drawing/plan-mode-sketch.js';
+import { A3D_SIM } from '../analysis/simulation.js';
+import { bimLandFloodZones, bimLandGround, bimLandHornOf, bimLandUS } from '../site-analysis/land-water.js';
+import { bimLdAreas, bimLdBuildings, bimLdTrees, bimLdWood } from '../site-analysis/land-use.js';
+import { bimSaToday } from '../site-analysis/workspace.js';
+import { bimClimQs } from '../site-analysis/climate-data.js';
+import { bimTlCount, bimTlCx, bimTlCz, bimTlFillPoly, bimTlGrid, bimTlPoint, bimTlStroke } from './grid.js';
+import { bimGeoToModel, bimMapOrigin, bimModelToGeo } from '../map/map-tiles.js';
+import { saveSoon } from '../bim/region-regenerate.js';
+import { a3dToast } from '../bim/csg-booleans.js';
+
   /* ================= __acad3dV172: the site analysis tools: what they read =================
      The layers a tool can take as input, each drawn on the tool grid from what the project already keeps: the lot
      and its edge (the property line), the streets (V161's network, every class, and the arterials alone), the
@@ -168,3 +180,4 @@
     });
     return true;
   }
+export { BIM_TL_SRC, bimTlSource, bimTlSrc, bimTlState, bimTlWetlandsFetch };

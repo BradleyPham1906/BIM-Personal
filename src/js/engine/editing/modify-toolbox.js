@@ -1,3 +1,28 @@
+import { A3D, DEFCAM, el } from '../core/state.js';
+import { bimEnterDraftingMode, pushUndo } from '../drawing/plan-mode-sketch.js';
+import { bimGetActiveLevel } from '../bim/levels-walls-floors.js';
+import { bimBuildWallGeometry, bimCarryBim, bimIsLocked } from '../bim/import-compliance.js';
+import { bimPolyArea } from '../bim/rooms.js';
+import { paint } from '../map/terrain-3d.js';
+import { inPoly } from '../render/viewcube.js';
+import { bimFmtLen } from '../gizmo/gizmo-handles.js';
+import { bimDuplicateObject } from './selection-tools.js';
+import {
+  bimComputeTransformedGeometry, bimFlushMaterialized, bimLineLineIntersect, bimMaterializeInto
+} from './precision-editing.js';
+import { bimCutSource } from '../bim/dependency-graph.js';
+import { bimAfterSketchEdit, bimAfterWallRebuild, bimPropagateFrom } from '../bim/region-dependents.js';
+import { bimObjBounds2D, bimOffsetObject } from './offset-align-trim.js';
+import { bimBulgeAt, bimBulgedLength, bimHasBulge } from '../drawing/arc-storage.js';
+import { bimExtendBulged, bimLengthenBulged } from '../drawing/curve-extend.js';
+import { bimBreakBulged, bimPtDistToBulgedSeg, bimTrimBulged } from '../drawing/curve-break.js';
+import { refreshHud, saveSoon } from '../bim/region-regenerate.js';
+import { bimRelinkCopies, bimRelinkNote } from '../assets/blocks.js';
+import { bimActivateView } from '../views/saved-views.js';
+import { refreshTree } from '../sheets/presentation-panel.js';
+import { closeDlg } from '../ui/touch-input.js';
+import { a3dToast, objById } from '../bim/csg-booleans.js';
+
   /* ================= __acad3dV87: the modify toolbox, part one =========================
 
      Pure polyline operations. Each takes point arrays and returns point arrays or an {error};
@@ -816,3 +841,10 @@
     }
     requestAnimationFrame(step);
   }
+export {
+  VIEWS, applyFilletCorner, bimAimPreset, bimAlignSelection, bimApplyBreak, bimApplyChamfer, bimApplyExtend,
+  bimApplyFillet, bimApplyLengthen, bimApplyTrim, bimChamferPolylines, bimFilletCorner, bimNearestEndIndex,
+  bimNudgeObject, bimPolyLength, bimProjectOntoPolyline, bimScalePoint, bimScaleSelection, bimWallIsCurved,
+  cubeHit, inRect, openAlignDlg, openArrayDlg, openLengthenDlg, openOffsetDlg, openScaleDlg, setView,
+  startBreakTool, startChamferTool, startExtendTool, startLengthenTool, startScaleTool, startTrimTool
+};

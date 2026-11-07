@@ -54,6 +54,19 @@ def parse(src=SRC):
     return out
 
 
+# The engine's files are ES modules (tools/engine_modules.cjs writes their import and export lines).
+# The build drops those lines, so the files join into the engine's one function as before.
+MOD_HEAD = re.compile(r"\A(?:import \{[^}]*\} from '[^']+';\n)+\n")
+MOD_TAIL = re.compile(r"\nexport \{[^}]*\};\n\Z")
+
+
+def unmodule(f, t):
+    """An engine file's code without its import and export lines."""
+    if not f.startswith('js/engine/') or f.endswith(('/_begin.js', '/_end.js')):
+        return t
+    return MOD_TAIL.sub('\n', MOD_HEAD.sub('', t, count=1), count=1)
+
+
 def body(blk, src=SRC):
     """A block's content: its files' bytes, in order. Each must end with a newline, or two files'
     lines would run together."""
@@ -62,7 +75,7 @@ def body(blk, src=SRC):
         t = (src / f).read_text(encoding='utf-8')
         if not t.endswith('\n'):
             sys.exit('src/%s: does not end with a newline' % f)
-        parts.append(t)
+        parts.append(unmodule(f, t))
     return ''.join(parts)
 
 

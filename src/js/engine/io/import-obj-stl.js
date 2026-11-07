@@ -1,3 +1,14 @@
+import { A3D } from '../core/state.js';
+import { pushUndo, undoSuspend } from '../drawing/plan-mode-sketch.js';
+import { addLayer } from '../layers/select-change.js';
+import { refreshLayers } from '../layers/analysis-data-rows.js';
+import { bimDecodeUtf8 } from '../site-analysis/panel.js';
+import { paint } from '../map/terrain-3d.js';
+import { fitScene } from '../ui/tool-palette.js';
+import { saveSoon } from '../bim/region-regenerate.js';
+import { refreshTree } from '../sheets/presentation-panel.js';
+import { a3dToast } from '../bim/csg-booleans.js';
+
   // ---- OBJ (Wavefront, Y-up - matches this engine's convention directly) ----
   function objParse(text){
     var lines=text.split(/\r\n|\r|\n/),i;
@@ -128,3 +139,4 @@
     a3dToast('STL import ('+(isBin?'binary':'ASCII')+'): '+parsed.f.length+' triangles from '+filename);
   }
 
+export { bimImportOBJ, bimImportSTL, objParse, stlIsBinary, stlParseAscii, stlParseBinary };

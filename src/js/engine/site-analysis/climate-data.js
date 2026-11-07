@@ -1,3 +1,20 @@
+import { A3D } from '../core/state.js';
+import { pushUndo, undoSuspend } from '../drawing/plan-mode-sketch.js';
+import { bimSunNum, bimSunSettings, bimSunZoneStd } from '../site/sun-position.js';
+import { bimDispNum } from '../properties/palette.js';
+import {
+  BIM_STD_DATA, bimClimBase, bimClimCalm, bimClimComfort, bimClimWho24, bimClimWhoIt1, bimClimWhoYear,
+  bimClimWindBins, bimStd, bimStdOwn, bimStdStamp
+} from '../standards/registry.js';
+import { bimSaFill, bimSaToday } from './workspace.js';
+import { bimClbRefresh } from './climate-board.js';
+import { bimSaRefresh, refreshProps } from './panel.js';
+import { bimMapHost } from '../map/map-tiles.js';
+import { bimCtxErr } from '../map/surroundings-3d.js';
+import { paint } from '../map/terrain-3d.js';
+import { saveSoon } from '../bim/region-regenerate.js';
+import { a3dToast } from '../bim/csg-booleans.js';
+
   /* ================= __acad3dV159: Site analysis SA2, climate and risk: the data =================
      reference/research-climate-risk-presentation.md. Fetched only when asked; what is worked out
      is kept with the project (A3D.site.climate, A3D.site.risk), so the board opens offline. */
@@ -351,3 +368,9 @@
     return A;
   }
 
+export {
+  A3D_CLIM, BIM_CLIM_DIRS, BIM_CLIM_EQ_KM, BIM_CLIM_EQ_MIN, BIM_CLIM_EQ_SINCE, BIM_CLIM_MONTHS,
+  BIM_CLIM_MONTH_NAMES, bimClimAuto, bimClimDir, bimClimFetch, bimClimFmt, bimClimGsl, bimClimInt, bimClimQs,
+  bimClimUrls, bimClimUsedBase, bimClimUsedBins, bimClimUsedCalm, bimClimUsedComfort, bimClimUsedWho24,
+  bimClimYears, bimHumRatio, bimKoppen
+};

@@ -1,3 +1,10 @@
+import { A3D, el } from '../core/state.js';
+import { camVecs } from '../core/mesh-primitives.js';
+import { A3D_GL, bimGlCompile, bimGlProjMatrix, bimGlViewMatrix } from './webgl.js';
+import { BIM_GB_TEXW, bimGbInit, bimGbPrepare } from './gpu-batches.js';
+import { objById } from '../bim/csg-booleans.js';
+import { cvH, cvScale, cvW } from '../ui/canvas-size.js';
+
   /* ================= __acad3dV156: a click picked by the GPU =================
      The batched scene drawn into an offscreen target, each element's slot+1 in its colour (24 bits),
      only the pixel under the pointer, and that pixel read back. */
@@ -74,3 +81,4 @@
     if(A3D_PICK_GPU==='on')return true;
     return (A3D.glFaces||0)>BIM_PICK_GPU_FACES;
   }
+export { A3D_PICK_GPU, bimPickGpu, bimPickGpuWanted };

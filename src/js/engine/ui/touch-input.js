@@ -1,3 +1,35 @@
+import { A3D, el } from '../core/state.js';
+import { TYPES, camVecs, mergePrm, validatePrm } from '../core/mesh-primitives.js';
+import {
+  A3D_SNAP, A3D_TYPING, bimCommitTypedLength, bimSyncStatusHint, doRedo, doUndo, syncSnapPill, toggleFlat
+} from '../drawing/plan-mode-sketch.js';
+import { bimEndSketch } from '../drawing/command-ending.js';
+import {
+  BIM_COORD_TOOLS, bimCommitTypedPoint, bimFinishCurrent, bimRepeatLastCommand, bimSketchKeyFor, onHover
+} from '../drawing/drawing-input.js';
+import { refreshLevels } from '../bim/classification.js';
+import { bimSelectedGrid } from '../bim/grid-editing.js';
+import { bimExportProjectFile, bimOpenProjectPicker } from '../io/project-file.js';
+import { bimClbKey } from '../site-analysis/climate-board.js';
+import { refreshProps } from '../site-analysis/panel.js';
+import { paint } from '../map/terrain-3d.js';
+import { bimCloseRailPop } from './shortcuts.js';
+import { bimCancelZoomWindow } from './zoom-window-save-image.js';
+import { bimCloseGizmoMenu, bimGizmoTypeKey, bimTypingDrag } from '../gizmo/gizmo-handles.js';
+import { bimFaceCurrent, bimFaceExit, bimFaceKeyFor, bimFaceKeyRun } from '../editing/faces-push-pull.js';
+import { cancelConstraintPick } from '../drawing/sketch-constraints.js';
+import { delSelection, duplicateSelection } from '../editing/selection-tools.js';
+import { bimNudgeObject } from '../editing/modify-toolbox.js';
+import { bimAssetDragCancel } from '../assets/library-drag.js';
+import { bimExitSection } from '../views/section-tool.js';
+import { add3d } from '../core/objects-save.js';
+import { bimStartShowing } from './project-tabs.js';
+import { saveSoon } from '../bim/region-regenerate.js';
+import { A3D_SLIDESHOW, bimSheetOnScreen, bimSlideshowKey } from '../sheets/present.js';
+import { bimKeyForControl, bimSheetKey } from '../sheets/viewports.js';
+import { bimZoomClamp, drag, onDown, onMove, onUp, refreshTree } from '../sheets/presentation-panel.js';
+import { a3dToast } from '../bim/csg-booleans.js';
+
   // ---- __acad3dV8: Touch input (single-finger nav/select/move, long-press marquee, two-finger pinch/pan, touch-aim sketch placement) ----
   var BIM_IS_TOUCH=(('ontouchstart' in window)||(navigator.maxTouchPoints>0));
   var A3D_TOUCH_AIM_OFFSET=46;
@@ -461,3 +493,7 @@
     exportpdf:ric('<path d="M6 2h9l5 5v15H6z"/><path d="M15 2v5h5"/><path d="M8.5 13.5h1.2c.7 0 1.3.6 1.3 1.3s-.6 1.3-1.3 1.3H8.5v-2.6z"/>')
   };
 
+export {
+  A3DR_ICONS, bimSubmitTouchLen, bimSyncTouchLenInput, bimTouchDist, bimTouchFakeEvent, bimTouchMid, closeDlg,
+  onKey, onTouchEnd, onTouchMove, onTouchStart, openDlg, ric
+};

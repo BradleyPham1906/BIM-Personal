@@ -1,3 +1,23 @@
+import { bimEsc } from '../layers/layer-manager.js';
+import { BIM_ANZ_GROUP_OF, bimAnalyzeRefresh } from '../analysis/analyze-tab.js';
+import { bimStd, bimStdChangedText, bimStdFmt, bimStdUsedText } from '../standards/registry.js';
+import { BIM_CLIM_DIRS, bimClimFmt, bimClimInt } from '../site-analysis/climate-data.js';
+import { A3D_CLB, bimClbRefresh } from '../site-analysis/climate-board.js';
+import { A3D_AW, bimAwRefresh } from '../site-analysis/analysis-workspace.js';
+import { A3D_LB } from './runtime.js';
+import { bimLbFetchYear, bimLbPickFile, bimLbSrcKept, bimLbSrcWords } from './sources.js';
+import {
+  A3D_LBRUN, BIM_LB_KINDS, BIM_LB_NAMES, bimLbResult, bimLbRun, bimLbRunAll, bimLbStdChanged
+} from './analyses.js';
+import { BIM_LB_COND } from './figures.js';
+import { bimLbsAct } from './studies.js';
+import { bimShellSetTab } from '../ui/tool-palette.js';
+import { bimLtMenuOpen } from '../sheets/layout-tabs.js';
+import { bimBoardById, bimBoardName, bimBoardShow, bimPresData, bimPresOpenBoard } from '../sheets/boards.js';
+import { bimBoardLabel, bimBrdNatH, bimFigSpan, bimFigSrc } from '../sheets/board-figures.js';
+import { bimBrdAddFig, bimBrdNewUi } from '../sheets/board-edit.js';
+import { a3dToast } from '../bim/csg-booleans.js';
+
   /* ================= __acad3dV172b: Ladybug in the analysis workspace =================
      Climate's rows, as V171b's cards are: the weather Ladybug reads, then its four analyses. A row's panel says what it
      is and what it found, in numbers, with its buttons: open a weather file or get a year of hours, Run (or Run all
@@ -144,3 +164,4 @@
     if(c==='to')return bimLbToBoard(k);
     return false;
   }
+export { bimLbAct, bimLbAddTo, bimLbCards, bimLbNote, bimLbRefresh, bimLbRows };

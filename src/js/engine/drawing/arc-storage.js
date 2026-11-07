@@ -1,3 +1,5 @@
+import { bimCircleFrom3Points } from '../annotation/dimensions.js';
+
   /* ================= __acad3dV88: arc storage =========================================
 
      PIPELINE put one decision ahead of this whole phase -- bulge factor per vertex, or a
@@ -148,3 +150,7 @@
   function bimBulgedArea(pts,bulges,closed){
     return Math.abs(bimBulgedSignedArea(pts,bulges,closed));
   }
+export {
+  BIM_BULGE_EPS, bimArcSegments, bimBulgeArc, bimBulgeAt, bimBulgeFrom3Pts, bimBulgedArea, bimBulgedLength,
+  bimBulgedSignedArea, bimFlattenPoly, bimFlattenSketch, bimHasBulge
+};

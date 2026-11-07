@@ -1,3 +1,6 @@
+import { bimEsc } from '../layers/layer-manager.js';
+import { a3dToast } from '../bim/csg-booleans.js';
+
   /* ================= __acad3dV142: the user guide, and versions =================
      The guide is in docs/ beside the app, on the same site (and in the repository, so it opens
      offline). Its command reference has a section per command, anchored by the command's id. */
@@ -19,3 +22,4 @@
       bimEsc(BIM_APP_VERSION.v)+', '+bimEsc(BIM_APP_VERSION.date)+'</a> \u00b7 '+
       '<a class="a3d-ctxlink" href="'+bimEsc(bimDocsUrl('index.html'))+'" target="_blank" rel="noopener" data-docslink="guide">User Guide</a>';
   }
+export { A3D_GUIDE, BIM_APP_VERSION, bimDocsAnchor, bimDocsOpen, bimVersionHtml };

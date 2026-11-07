@@ -1,3 +1,19 @@
+import { A3D } from '../core/state.js';
+import { BIM_LB_PY } from '../ladybug/adapter-py.js';
+import {
+  A3D_LB, BIM_LB_PAGES, BIM_LB_PYODIDE, BIM_LB_WHEELS, bimLbBase, bimLbCall, bimLbStart, bimLbStateText,
+  bimLbStop
+} from '../ladybug/runtime.js';
+import { bimLbFetchYear, bimLbOmUrl, bimLbOmZone, bimLbOpenBytes } from '../ladybug/sources.js';
+import {
+  A3D_LBRUN, bimLbParams, bimLbResult, bimLbRun, bimLbRunAll, bimLbStdChanged
+} from '../ladybug/analyses.js';
+import { bimLbUtciRange } from '../ladybug/figures.js';
+import { bimLbAct, bimLbAddTo, bimLbCards } from '../ladybug/panel.js';
+import {
+  bimLbsCards, bimLbsCol, bimLbsGeometry, bimLbsKept, bimLbsPeriod, bimLbsRun, bimLbsStale
+} from '../ladybug/studies.js';
+
   /* __acad3dV172b: the Ladybug analyses, for the suite */
   window.__acad3dV172b='runtime,manifest,worker,sha256,adapter,epw,ddy,openmeteo,standardtime,utci4,psych,pmv2clo,strategies5,windrose,designdays,kept,figids,arranged,bands,zoom,edit,snaps,keys,catalogue,options,custom,duplicate,registry,stdstamp,analyze';
   function bimLbErr(e){return {error:String(e&&e.message||e)};}

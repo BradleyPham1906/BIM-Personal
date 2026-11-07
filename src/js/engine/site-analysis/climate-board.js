@@ -1,3 +1,25 @@
+import { A3D } from '../core/state.js';
+import { bimHHMM, bimPad2, bimSunCalc, bimSunNum, bimSunSettings, bimSunTzAt } from '../site/sun-position.js';
+import { bimEsc } from '../layers/layer-manager.js';
+import { bimClimWhoYear, bimStd, bimStdEdition, bimStdYear } from '../standards/registry.js';
+import {
+  BIM_CLIM_DIRS, BIM_CLIM_EQ_KM, BIM_CLIM_EQ_MIN, BIM_CLIM_EQ_SINCE, BIM_CLIM_MONTHS, BIM_CLIM_MONTH_NAMES,
+  bimClimDir, bimClimFetch, bimClimFmt, bimClimInt, bimClimUsedBase, bimClimUsedBins, bimClimUsedCalm,
+  bimClimUsedComfort, bimClimUsedWho24, bimHumRatio
+} from './climate-data.js';
+import { bimAccBoardHtml } from './access-board.js';
+import { bimZnBoardHtml, bimZnBuild } from './zoning-envelope.js';
+import { bimAccFetch } from './access-data.js';
+import { bimLbSrcKept, bimLbSrcWords } from '../ladybug/sources.js';
+import { BIM_LB_FIGS, bimLbOnlyFigs } from '../ladybug/figures.js';
+import { bimProjectLabel } from '../ui/project-tabs.js';
+import { bimBoardById, bimClbPrint } from '../sheets/boards.js';
+import {
+  bimBrdHtml, bimBrdZoom, bimClbLabel, bimClbWhich, bimFigCapCard, bimFigCapKpis
+} from '../sheets/board-figures.js';
+import { A3D_BRD, bimBrdDlgClose, bimBrdEsc, bimBrdWire } from '../sheets/board-edit.js';
+import { bimPresPanelRefresh, bimPresThumbsQueue } from '../sheets/presentation-panel.js';
+
   /* ================= __acad3dV159: the Climate and risk board =================
      reference/research-climate-risk-presentation.md. Each chart is an SVG string drawn from what
      A3D.site.climate and A3D.site.risk keep; its colours are CSS tokens, so it follows the theme. */
@@ -523,3 +545,9 @@
 
   }
 
+export {
+  A3D_CLB, BIM_HEAT_COL, BIM_HEAT_SHORT, BIM_STATE, bimClbAxisY, bimClbCard, bimClbClose, bimClbE, bimClbEl,
+  bimClbF, bimClbHeatClass, bimClbHtml, bimClbKey, bimClbKpi, bimClbLeg, bimClbNum, bimClbOpen, bimClbRefresh,
+  bimClbRoseSvg, bimClbSunSvg, bimClbTable, bimClbTicks, bimClbTip, bimClbTipHide, bimClbW, bimClbWidthCls,
+  bimClbWire
+};

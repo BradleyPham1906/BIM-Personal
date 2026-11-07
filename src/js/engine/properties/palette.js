@@ -1,3 +1,18 @@
+import { TYPES } from '../core/mesh-primitives.js';
+import { bimIsPoint } from '../drawing/point-node.js';
+import { bimIsProperty } from '../site/property.js';
+import { bimIsAlignment } from '../site/alignment-profile.js';
+import { bimIsFooting } from '../bim/footings.js';
+import { bimTypeNameOf } from '../bim/type-instance-params.js';
+import { bimDimKind } from '../annotation/dimensions.js';
+import { bimEsc } from '../layers/layer-manager.js';
+import { bimDgAn, bimIsDiag } from '../standards/registry.js';
+import { refreshProps } from '../site-analysis/panel.js';
+import { paint } from '../map/terrain-3d.js';
+import { bimIsHatch } from '../drawing/hatch.js';
+import { bimIsCline } from '../drawing/construction-lines.js';
+import { saveSoon } from '../bim/region-regenerate.js';
+
   // ---- __acad3dV36: Revit-shaped Properties palette. Revit's palette is: a type selector header
   // (thumbnail + "Family: Type" + Edit Type), then COLLAPSIBLE parameter groups (Constraints,
   // Graphics, Dimensions, Identity Data) in a two-column name/value grid, with read-only
@@ -135,3 +150,8 @@
     if(o.t==='sketch')return 'Lines : Model Lines';
     return (TYPES[o.t]&&TYPES[o.t].n)?('Generic Models : '+TYPES[o.t].n):'Generic Models';
   }
+export {
+  A3D_PROP_GROUPS_OPEN, A3D_UNITS, bimDispLen, bimDispNum, bimLenInputToMetres, bimLenLabel, bimObjTypeLabel,
+  bimPropGroup, bimPropGroupToggle, bimPropLen, bimPropLenText, bimPropRow, bimPropText, bimSetUnits,
+  bimTrimNum, bimUnitDef, bimUnitDp, bimUnitLabel
+};

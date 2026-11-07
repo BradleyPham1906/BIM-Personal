@@ -1,3 +1,131 @@
+import { A3D, el } from '../core/state.js';
+import { camVecs } from '../core/mesh-primitives.js';
+import { A3D_TYPING, bimClinesOnPlane, bimEnterDraftingMode, pushUndo } from '../drawing/plan-mode-sketch.js';
+import { startPolygonTool } from '../drawing/command-ending.js';
+import {
+  BIM_SKETCH_KEYS, bimCommitTypedPoint, bimSetArcMode, bimSketchKeyFor, skPlacePoint
+} from '../drawing/drawing-input.js';
+import {
+  bimAddCline, bimAddPoint, bimApplyBoundary, bimApplyDivide, bimApplyHatchAt, bimApplyHatchEdit,
+  bimApplyMeasure, bimClineReadyDir, bimDivideSource, bimHatchDefaults, bimIsPoint, bimPointMarkerSegs,
+  bimSketchOutline
+} from '../drawing/point-node.js';
+import { bimGetActiveLevel } from '../bim/levels-walls-floors.js';
+import {
+  bimFormatBearing, bimLegsFromRing, bimParseBearing, bimParseLegs, bimSetbackRing, bimTraverse
+} from '../survey/survey-arithmetic.js';
+import {
+  bimIsProperty, bimPropertyFromSketch, bimPropertyGeometry, bimSetbackViolations
+} from '../site/property.js';
+import { bimSetTrueNorth } from '../site/alignment-profile.js';
+import {
+  bimPickGrid, bimRenameGrid, bimSelectGrid, bimSelectedGrid, bimSetGridEnds
+} from '../bim/grid-editing.js';
+import {
+  bimAddFootingUnder, bimFootingOf, bimFootingVolume, bimFootingsUnderAllColumns, bimFoundationSlabAt
+} from '../bim/footings.js';
+import {
+  bimIsLocked, bimSetLocked, bimTryRecoverWallFromRectProfile, buildWallSolid
+} from '../bim/import-compliance.js';
+import {
+  BIM_HATCH_PATTERNS, bimApplyTypeToInstances, bimAssignTypeTo, bimEnsureTypes, bimFindType,
+  bimPatternRotation
+} from '../bim/type-instance-params.js';
+import {
+  bimBoundaryEdges, bimFindEnclosingWallFace, bimFindRoomBoundaryAt, bimPointInPoly, bimPolyArea
+} from '../bim/rooms.js';
+import { bimNextRoomNumber, bimSetRoomField } from '../bim/room-colour-fill.js';
+import {
+  bimRoomLabelPoint, bimRoomTagText, bimRoomTagged, bimTagAllRooms, bimTagRoomAt
+} from '../bim/room-tags.js';
+import {
+  bimCircleFrom3Points, bimComputeAngularDim, bimCreateAngularDim, bimCreateDim, bimCreateLeader,
+  bimCreateRadialDim, bimCreateTextLabel
+} from '../annotation/dimensions.js';
+import { bimBuildSimplePdf } from '../annotation/annotation-pick.js';
+import {
+  bimBuildProjectEnvelope, bimExportProjectFile, bimImportProjectFile, bimParseProjectEnvelope
+} from '../io/project-file.js';
+import { bimRectFootprint } from '../bim/columns-openings.js';
+import { bimBuildDXF, bimExportDXF } from '../io/export-mappings.js';
+import { bimFloorProfileFrom, buildFloorSolid } from '../bim/ceiling-floor-profile.js';
+import { bimFindRoofBoundaryAt, buildRoofSolid } from '../bim/roofs.js';
+import {
+  bimBuildStairGuardMesh, bimBuildStairLayout, bimBuildStairPathGeometry, buildStairSolid, finishStair,
+  startStairTool
+} from '../bim/stairs.js';
+import { bimImportDXF } from '../io/import-dxf.js';
+import { toScreen } from '../io/import-entry.js';
+import { A3D_GL, A3D_GL_FAILED } from '../render/webgl.js';
+import { A3D_CULL, A3D_GL_BATCH, A3D_SCENE, bimSceneRelease } from '../render/gpu-batches.js';
+import { A3D_PICK_GPU } from '../render/gpu-pick.js';
+import {
+  A3D_GPU, bimBenchmark, bimGpuCompare, bimGpuPref, bimGpuStart, bimGraphicsLabel, bimGraphicsSet,
+  bimRenderBench, bimStressModel
+} from '../render/webgpu.js';
+import { A3D_MAP, bimMapDrop } from '../map/map-tiles.js';
+import { paint } from '../map/terrain-3d.js';
+import { bimAnnotGripPoints } from '../annotation/annotation-grips.js';
+import { bimShortcutGroups } from '../ui/shortcuts.js';
+import { bimGizmoWantsKey } from '../gizmo/gizmo-handles.js';
+import { bimFaceCurrent, bimFaceKeyFor } from '../editing/faces-push-pull.js';
+import { bimInsertSketchVertex, bimSketchSegMid } from '../drawing/add-vertex.js';
+import { pick } from '../drawing/sketch-constraints.js';
+import { bimApplyMarquee, duplicateSelection } from '../editing/selection-tools.js';
+import {
+  bimComputeTransformedGeometry, bimJoinWalls, bimMirrorObject, bimRotatePoint
+} from '../editing/precision-editing.js';
+import { bimGraphRelationsOf, bimGraphRoomSourceId, bimSourceTypeOf } from '../bim/dependency-graph.js';
+import { bimFollowsText, bimSourceBoundaryWorld } from '../bim/source-contract.js';
+import { bimFollowSource, bimIsRegionDep, bimPropagateFrom } from '../bim/region-dependents.js';
+import { bimObjBounds2D, bimOffsetObject } from '../editing/offset-align-trim.js';
+import {
+  bimArcSegments, bimBulgeArc, bimBulgeFrom3Pts, bimBulgedArea, bimBulgedLength, bimBulgedSignedArea,
+  bimFlattenPoly, bimFlattenSketch
+} from '../drawing/arc-storage.js';
+import { bimAddHatch, bimHatchArea, bimHatchGraphics, bimIsHatch } from '../drawing/hatch.js';
+import {
+  bimClineArcIntersect, bimClineCrossings, bimClineDir, bimClineModeForKey, bimClineModeLabels,
+  bimClineSegIntersect, bimClineVisibleSeg, bimClipInfinite, bimDrawingExtent2D, bimIsCline
+} from '../drawing/construction-lines.js';
+import {
+  bimArrangeEdges, bimEdgeDirAt, bimSplitEdge, bimTraceBoundary
+} from '../drawing/planar-arrangement.js';
+import {
+  bimCircleSketch, bimDividePoints, bimMeasurePoints, bimPointAtLength, bimPointOnSweptArc, bimPolygonSketch
+} from '../drawing/curve-walking.js';
+import { bimExtendBulged, bimGrowEnd, bimLengthenBulged } from '../drawing/curve-extend.js';
+import {
+  bimArcPointAt, bimBreakBulged, bimIntersectBulgedSegs, bimProjectOntoBulged, bimPtDistToBulgedSeg,
+  bimSplitBulgedAt, bimTrimBulged
+} from '../drawing/curve-break.js';
+import {
+  bimCircleLineIntersect, bimOffsetBulged, bimSegEndDir, bimTangentBulge
+} from '../drawing/curve-offset.js';
+import {
+  bimAlignSelection, bimApplyBreak, bimApplyChamfer, bimApplyExtend, bimApplyFillet, bimApplyLengthen,
+  bimChamferPolylines, bimFilletCorner, bimPolyLength, bimProjectOntoPolyline, bimScalePoint,
+  bimScaleSelection, bimWallIsCurved
+} from '../editing/modify-toolbox.js';
+import {
+  bimClipMeshToPlane, bimComputeSectionCuts, bimEnterSection, bimExitSection, bimFlipSection
+} from '../views/section-tool.js';
+import { bimRegenerateRegions, saveSoon } from '../bim/region-regenerate.js';
+import { bimBuildRoomSchedule, bimWallLength } from '../views/schedules.js';
+import { bimBuildDoorSchedule, bimBuildWallSchedule } from '../bim/usages-live-areas.js';
+import { bimScheduleToCSV } from '../structure/analysis-properties.js';
+import {
+  bimFamilyLibraryAdd, bimFamilyLibraryGet, bimFamilyLibraryRemove
+} from '../assets/family-library.js';
+import { bimPlaceFamilyInstance } from '../assets/blocks.js';
+import { bimActivateView, bimCaptureView, bimToggleLevelFilter } from '../views/saved-views.js';
+import { bimKeyForControl } from '../sheets/viewports.js';
+import { drag, refreshBrowser, refreshTree } from '../sheets/presentation-panel.js';
+import { bimTouchDist, bimTouchFakeEvent, bimTouchMid } from '../ui/touch-input.js';
+import { objById } from '../bim/csg-booleans.js';
+import { bimLoadUIPanelPrefs, bimSetUIPanelVisible } from '../ui/build-ui.js';
+import { cvH, cvW } from '../ui/canvas-size.js';
+
   /* __acad3dV87: the geometry core is exposed directly so the suite asserts on the POINTS a
      modify command produces, not on the picture drawn from them. */
   /* __acad3dV88: the arc core, exposed so the suite asserts on the stored bulge and the

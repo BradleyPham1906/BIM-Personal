@@ -1,3 +1,65 @@
+import { A3D } from '../core/state.js';
+import { TYPES } from '../core/mesh-primitives.js';
+import { startArcTool, startSketch } from '../drawing/command-ending.js';
+import { openClassificationDlg } from '../bim/classification.js';
+import { bimPropertyFromSketch, openPropertyDlg } from '../site/property.js';
+import { bimAlignmentCommand, openTrueNorthDlg } from '../site/alignment-profile.js';
+import { startGridTool } from '../bim/grid-editing.js';
+import { startBeamTool } from '../bim/section-profiles.js';
+import { startFootingTool, startFoundationSlabTool, startWallTool } from '../bim/footings.js';
+import { bimTagAllRooms, startRoomTagTool, startRoomTool } from '../bim/room-tags.js';
+import {
+  startAngularDimTool, startDimTool, startLeaderTool, startRadialDimTool, startTextTool
+} from '../annotation/dimensions.js';
+import { bimExportPDF, bimExportPNG } from '../annotation/annotation-pick.js';
+import { bimExportProjectFile, bimOpenProjectPicker } from '../io/project-file.js';
+import { startColumnTool, startDoorTool, startFloorTool, startWindowTool } from '../bim/columns-openings.js';
+import { bimExportDXF } from '../io/export-mappings.js';
+import { bimExportSVG } from '../layers/plot-by-layers.js';
+import { startCeilingTool } from '../bim/ceiling-floor-profile.js';
+import { startRoofTool } from '../bim/roofs.js';
+import { startStairTool } from '../bim/stairs.js';
+import { bimEsc } from '../layers/layer-manager.js';
+import { bimUsageCommand, bimUsageLibraryCommand } from '../properties/usages.js';
+import {
+  bimGeoExport, bimGeoImportPick, bimMapCommand, openFindAddressDlg
+} from '../properties/map-address-site-data.js';
+import { bimDataCommand } from '../properties/context-lod-data.js';
+import { openPadDlg } from '../io/import-entry.js';
+import { bimCtxFetch } from '../map/surroundings-3d.js';
+import { paint } from '../map/terrain-3d.js';
+import { A3D_MODKEY } from './shortcuts.js';
+import { bimPressPullCommand } from '../editing/faces-push-pull.js';
+import { startConstraintTool } from '../drawing/sketch-constraints.js';
+import { delSelection, duplicateSelection } from '../editing/selection-tools.js';
+import {
+  applyMergeWalls, applyWallJoin, openCheckModelDlg, startMirrorTool, startPolarArrayTool, startRotateTool
+} from '../editing/precision-editing.js';
+import { applySyncClones, openCloneLinkedDlg } from '../bim/region-dependents.js';
+import {
+  applyFilletCorner, openAlignDlg, openArrayDlg, openOffsetDlg, setView, startBreakTool, startChamferTool,
+  startExtendTool, startLengthenTool, startScaleTool, startTrimTool
+} from '../editing/modify-toolbox.js';
+import { bimOpenLibraryAt } from '../assets/library.js';
+import { fitScene } from './tool-palette.js';
+import { bimExitSection, bimFlipSection, startSectionTool } from '../views/section-tool.js';
+import { bimAnalyzeCommand } from '../structure/analysis-display.js';
+import { openSaveAsFamilyDlg } from '../assets/scale-assets.js';
+import { bimActivateView, bimSaveCurrentView } from '../views/saved-views.js';
+import { bimSheetById } from '../sheets/sheets.js';
+import { bimSheetOnScreen } from '../sheets/present.js';
+import { bimOpenNewSheetDlg, bimOpenTitleBlockDlg } from '../sheets/viewports.js';
+import { refreshTree } from '../sheets/presentation-panel.js';
+import { openDlg, ric } from './touch-input.js';
+import { a3dToast, doBool, objById } from '../bim/csg-booleans.js';
+import {
+  A3DR_TABS, A3DR_UNIMPL, A3D_DISC_CUR, a3drActOf, a3drExt, a3drIsUnimpl, a3drLabel, bimActUsed, bimBuildDock,
+  bimOpenToolsPanel
+} from './discipline-tabs.js';
+import { BIM_ACT_CMD, bimCmdCatalog } from '../commands/command-catalogue.js';
+import { bimLoadUIPanelPrefs, bimSaveUIPanelPrefs } from './build-ui.js';
+import { BIM_SHEET_ACTS } from '../commands/command-map.js';
+
   /* ================= __acad3dV129: the dock's tooltips and its names ================= */
   var A3DR_MORE_ICON=ric('<circle cx="6" cy="12" r="1.3"/><circle cx="12" cy="12" r="1.3"/><circle cx="18" cy="12" r="1.3"/>');
   function bimDockLabelsOn(){var p=bimLoadUIPanelPrefs();return p.dockLabels!==false;}
@@ -231,3 +293,7 @@
     return false;
   }
 
+export {
+  A3DR_ALL_ICON, A3DR_PIN_ICON, A3DR_SEARCH_ICON, a3drAllCommands, bimBindDock, bimBindDockTips,
+  bimDockLabelsOn, bimDockTipData, bimRunAct, bimSetDockLabels, bimTipHide
+};

@@ -1,3 +1,17 @@
+import { bimResById, bimResOpacity } from '../analysis/results-layers.js';
+import { bimDgSite } from '../site-analysis/model-analyses.js';
+import { bimLandGround } from '../site-analysis/land-water.js';
+import {
+  A3D_TL, BIM_TL_ALPH, BIM_TL_BIG, BIM_TL_MARGIN, bimTlDecode, bimTlDistance, bimTlDt1, bimTlEncode,
+  bimTlFillPoly, bimTlGrid, bimTlStroke, bimTlValue
+} from '../site-tools/grid.js';
+import { bimTlState, bimTlWetlandsFetch } from '../site-tools/sources.js';
+import {
+  bimTlCheck, bimTlParams, bimTlRun, bimTlSetField, bimTlSourceOf, bimTlStale, bimTlTool
+} from '../site-tools/tools.js';
+import { bimTlGrow, bimTlTransformOf } from '../site-tools/suitability.js';
+import { bimTlAct, bimTlOrder } from '../site-tools/panel.js';
+
   /* __acad3dV172: the site analysis tools, for the suite */
   window.__acad3dV172='grid,extent,raster,dt,buffer,distance,slopeclasses,exclusions,restricted,suitability,transforms,weights,locate,capacity,ratios,overlap,synthesis,history,rerun,pane,checks,layers,stale,wetlands,commands,phone';
   function bimTlArr(a){return a?Array.prototype.map.call(a,function(x){return typeof x==='number'&&!isFinite(x)?null:x;}):null;}

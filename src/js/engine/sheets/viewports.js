@@ -1,3 +1,44 @@
+import { A3D, el } from '../core/state.js';
+import { camVecs } from '../core/mesh-primitives.js';
+import { bimSyncStatusHint, pushUndo } from '../drawing/plan-mode-sketch.js';
+import { bimIsPoint, bimPointMarkerSegs } from '../drawing/point-node.js';
+import { bimFormatBearing } from '../survey/survey-arithmetic.js';
+import { bimIsProperty, bimPropertyGeometry } from '../site/property.js';
+import { bimAlignExport, bimIsAlignment } from '../site/alignment-profile.js';
+import { bimIsFooting } from '../bim/footings.js';
+import { bimPatternAlways, bimResolveGraphics } from '../bim/type-instance-params.js';
+import { bimRoomSchemeGraphics } from '../bim/room-colour-fill.js';
+import { bimRoomLabelPoint, bimRoomLabelText, bimRoomTagText, bimRoomTagged } from '../bim/room-tags.js';
+import { bimDimKind } from '../annotation/dimensions.js';
+import { bimAnnotDrawable, bimTriggerDownload } from '../annotation/annotation-pick.js';
+import { bimFileStem } from '../io/project-file.js';
+import { bimRectFootprint } from '../bim/columns-openings.js';
+import { bimWallOpeningBreaks } from '../io/dxf-export.js';
+import { BIM_PAT_SVG_SEQ, bimEscXml, bimExportOffset, bimPatternRegistry } from '../io/export-mappings.js';
+import { bimLookPlotAttrs, bimLookPlotGraphics, bimWithPlotPass } from '../layers/plot-by-layers.js';
+import { bimLayerShown } from '../layers/layer-rules.js';
+import { bimEsc } from '../layers/layer-manager.js';
+import { bimFlattenSketch } from '../drawing/arc-storage.js';
+import { bimHatchGraphics, bimHatchOutline, bimIsHatch } from '../drawing/hatch.js';
+import { bimClineVisibleSeg, bimIsCline } from '../drawing/construction-lines.js';
+import { bimProjectLabel } from '../ui/project-tabs.js';
+import { saveSoon } from '../bim/region-regenerate.js';
+import { bimActivateView, bimObjectLevelId } from '../views/saved-views.js';
+import {
+  SHEET_EXPORT_PXMM, SHEET_NEW_SIZE, SHEET_PREVIEW_PXMM, SHEET_SCALES, SHEET_SIZES, bimAddSheet,
+  bimConfirmDeleteSheet, bimDrawScheduleViewport, bimGetScratchCanvas, bimNewViewport, bimNextSheetNumber,
+  bimRenderSheet, bimRenderSourceToCanvas, bimResolveViewportSource, bimSheetById, bimSheetLabel,
+  bimSheetSolveCamera, bimSheetSourceOptions, bimSheetViewRefresh
+} from './sheets.js';
+import { A3D_PAGES, bimPageKeyAct, bimPagesKeyDo } from './pages-display.js';
+import { bimSheetEvtToMM, bimSheetHitTest, bimSheetOnScreen } from './present.js';
+import { bimLtMenuOpen } from './layout-tabs.js';
+import { bimBoardPrintHtml, bimClbCss, bimPresSeq } from './boards.js';
+import { bimBoardKey, bimBoardLabel } from './board-figures.js';
+import { refreshBrowser } from './presentation-panel.js';
+import { closeDlg } from '../ui/touch-input.js';
+import { a3dToast } from '../bim/csg-booleans.js';
+
   /* ================= __acad3dV116: model space through a viewport =================
      AutoCAD's MSPACE and Revit's Activate View. Double-click a viewport and it becomes a window onto
      the model: a drag pans it, the wheel steps through the standard scales about the cursor, and the
@@ -877,3 +918,9 @@
     }
   }
 
+export {
+  bimBuildPlanViewportSVG, bimBuildSheetSVG, bimExportSheetPNG, bimExportSheetSVG, bimKeyForControl,
+  bimOpenAddViewportDlg, bimOpenNewSheetDlg, bimOpenSheetPropsDlg, bimOpenTitleBlockDlg, bimPrintSet,
+  bimPrintSetHtml, bimPrintSheet, bimSetModelSpace, bimSetPaperSpace, bimSheetContextMenu, bimSheetDblClick,
+  bimSheetKey, bimSheetPointerDown, bimSheetPointerMove, bimSheetPointerUp, bimSheetVp, bimSheetWheel
+};

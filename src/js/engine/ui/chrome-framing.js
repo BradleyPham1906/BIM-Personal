@@ -1,3 +1,16 @@
+import { A3D, el } from '../core/state.js';
+import { camVecs, meshOf } from '../core/mesh-primitives.js';
+import { bimObjOffset, bimWorldPt } from '../drawing/plan-mode-sketch.js';
+import { bimIsProperty, bimPropertyGeometry } from '../site/property.js';
+import { bimAlignExtentPts, bimIsAlignment } from '../site/alignment-profile.js';
+import { bimObjLayerState } from '../layers/layer-rules.js';
+import { bimIsDiag } from '../standards/registry.js';
+import { bimDgBounds } from '../site-analysis/motion.js';
+import { paint } from '../map/terrain-3d.js';
+import { refreshHud, saveSoon } from '../bim/region-regenerate.js';
+import { a3dToast, objById } from '../bim/csg-booleans.js';
+import { cvH, cvW } from './canvas-size.js';
+
   /* ================= __acad3dV79: framing that respects the floating chrome =================
 
      Selectors for every overlay that floats OVER the drawing area. Measured live: an element that
@@ -160,3 +173,4 @@
     bimFrameBounds(bb);
     return true;
   }
+export { bimChromeRects, bimFrameBounds, bimSafeViewRect, bimWorldBounds, bimZoomToSelection };

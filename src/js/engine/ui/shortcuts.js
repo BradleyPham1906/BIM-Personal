@@ -1,3 +1,26 @@
+import { A3D } from '../core/state.js';
+import { bimThemeStore } from '../core/storage-theme.js';
+import { A3D_SNAP, bimSyncPresentPill } from '../drawing/plan-mode-sketch.js';
+import { bimEsc } from '../layers/layer-manager.js';
+import { A3D_UNITS, bimSetUnits, bimUnitDp } from '../properties/palette.js';
+import { refreshProps } from '../site-analysis/panel.js';
+import { paint } from '../map/terrain-3d.js';
+import { A3D_RAIL_ICONS, A3D_RAIL_UTILS } from './rail-utility-stack.js';
+import { bimStartZoomWindow } from './zoom-window-save-image.js';
+import { A3D_FACE_GESTURES, A3D_FACE_KEYS } from '../editing/faces-push-pull.js';
+import { bimZoomToSelection } from './chrome-framing.js';
+import { fitScene } from './tool-palette.js';
+import { saveSoon } from '../bim/region-regenerate.js';
+import { A3D_PAGEVIEW_KEYS } from '../sheets/pages-display.js';
+import { A3D_SHOW_KEYS } from '../sheets/present.js';
+import { a3dToast } from '../bim/csg-booleans.js';
+import {
+  A3DR_TABS, A3D_DISCIPLINES, A3D_DISC_CUR, a3drIcon, a3drIsUnimpl, a3drLabel, a3drTabGroups, bimDockPins,
+  bimToggleDockPin
+} from './discipline-tabs.js';
+import { BIM_ACT_CMD, BIM_ACT_DESC, bimCmdCatalog, bimCmdUsage } from '../commands/command-catalogue.js';
+import { A3DR_PIN_ICON, bimDockLabelsOn, bimSetDockLabels } from './dock-tooltips.js';
+
   /* ---- __acad3dV85: the shortcut registry ----
 
      One list, rendered into the sheet AND driven by the Phase 85 suite: every row carrying a
@@ -410,3 +433,7 @@
     }
     return false;
   }
+export {
+  A3D_KEYS, A3D_MODKEY, bimCatForAct, bimCloseRailPop, bimEnsureRailStack, bimFilterShortcuts,
+  bimOpenRailMenu, bimSetSnap, bimShortcutGroups, bimSyncSnapPill
+};

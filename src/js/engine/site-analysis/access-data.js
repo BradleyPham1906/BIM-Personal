@@ -1,3 +1,24 @@
+import { A3D } from '../core/state.js';
+import { pushUndo, undoSuspend } from '../drawing/plan-mode-sketch.js';
+import { bimSunSettings } from '../site/sun-position.js';
+import { bimPropertyGeometry } from '../site/property.js';
+import { bimPointInPoly, bimPolyArea } from '../bim/rooms.js';
+import { refreshLayers } from '../layers/analysis-data-rows.js';
+import { BIM_STD_DATA, bimAccIxr, bimAccSpeed, bimStdStamp } from '../standards/registry.js';
+import { bimSaFill, bimSaN, bimSaToday } from './workspace.js';
+import { bimClimFmt, bimClimQs } from './climate-data.js';
+import { bimClbRefresh } from './climate-board.js';
+import { bimZnProperty } from './zoning-envelope.js';
+import { BIM_MV_CAR, BIM_MV_R, bimMvWork } from './movement-data.js';
+import { bimSaRefresh, refreshProps } from './panel.js';
+import { bimGeoToModel, bimMapHost, bimMapOrigin } from '../map/map-tiles.js';
+import { bimCtxSettings } from '../map/site-context.js';
+import { bimCtxErr, bimCtxOverpass } from '../map/surroundings-3d.js';
+import { paint } from '../map/terrain-3d.js';
+import { bimPointSegDist } from '../render/viewcube.js';
+import { saveSoon } from '../bim/region-regenerate.js';
+import { a3dToast } from '../bim/csg-booleans.js';
+
   /* ================= __acad3dV161: Site analysis SA4, access and people: the data =================
      reference/research-access-people.md. Asked only when asked, from two free sources, no key:
      - OpenStreetMap, in one Overpass request: the streets and paths with their nodes, the transit
@@ -810,3 +831,9 @@
     a3dToast('Access and people: '+got.join('; ')+(bad.length?'. Not available: '+bad.join('; '):'')+(A?'. Analyze site draws them in the model (Layers, Site analysis)':''));   /* __acad3dV166 */
     return {access:!!A,people:!!(P&&!P.outside),outside:!!(P&&P.outside),stops:A?A.stops.length:null,errors:bad};
   }
+export {
+  A3D_ACC, BIM_ACC_BANDS, BIM_ACC_CLASS_NAME, BIM_ACC_FRONT, BIM_ACC_KINDS, BIM_ACC_MAXT, BIM_ACC_MODES,
+  BIM_ACC_ROUTE_MODE, BIM_CEN_BAND_NAMES, bimAccDP, bimAccFetch, bimAccHas, bimAccKind, bimAccLot,
+  bimAccLotDist, bimAccLotKey, bimAccParkTime, bimAccPointTime, bimAccQuery, bimAccR2, bimAccSegX, bimAccSnap,
+  bimAccWork, bimCenShare, bimCenSum, bimCenUrls, bimCenYear
+};

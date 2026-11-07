@@ -1,3 +1,6 @@
+import { bimSegNormal } from '../bim/section-profiles.js';
+import { bimBulgeArc, bimBulgeAt } from './arc-storage.js';
+
   /* ================= __acad3dV90: drawing curves, and offsetting them ==================
 
      TANGENT CONTINUATION. The angle between a tangent and a chord is half the arc it subtends,
@@ -146,3 +149,7 @@
     if(!closed)outBulges.push(0);
     return {pts:outPts,bulges:outBulges};
   }
+export {
+  bimArcBulgeBetween, bimCircleCircleIntersect, bimCircleLineIntersect, bimOffsetBulged, bimSegEndDir,
+  bimTangentBulge
+};

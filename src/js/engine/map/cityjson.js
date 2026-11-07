@@ -1,3 +1,22 @@
+import { A3D } from '../core/state.js';
+import { faceNormal, meshOf } from '../core/mesh-primitives.js';
+import { bimObjOffset, pushUndo, undoSuspend } from '../drawing/plan-mode-sketch.js';
+import { earClip, sketchCCW } from '../drawing/drawing-input.js';
+import { bimTriggerDownload } from '../annotation/annotation-pick.js';
+import { bimFileStem } from '../io/project-file.js';
+import { bimLayerById } from '../layers/layer-rules.js';
+import { addLayer } from '../layers/select-change.js';
+import { refreshLayers } from '../layers/analysis-data-rows.js';
+import { refreshProps } from '../site-analysis/panel.js';
+import { BIM_D2R, BIM_WGS84_A, bimGeoToModel, bimMapOrigin, bimModelToGeo, bimSinh } from './map-tiles.js';
+import { bimCtxDatum } from './site-context.js';
+import { bimLodBuildings, bimLodOf, bimSolidCheck } from './lod-solids.js';
+import { paint } from './terrain-3d.js';
+import { fitScene } from '../ui/tool-palette.js';
+import { saveSoon } from '../bim/region-regenerate.js';
+import { refreshTree } from '../sheets/presentation-panel.js';
+import { a3dToast } from '../bim/csg-booleans.js';
+
   /* ================= __acad3dV139: CityJSON =================
      CityGML's JSON form (cityjson.org, 2.0): vertices once, as integers with a scale and a translate;
      city objects with geometry by LOD; surfaces typed. Written in the site's UTM zone, so the file
@@ -303,3 +322,7 @@
     };
     rd.readAsText(file);
   }
+export {
+  bimCityJsonDoc, bimCityJsonExport, bimCityJsonFile, bimCityJsonImportText, bimCityJsonPick, bimCjFaceSplit,
+  bimUtmFwd, bimUtmInv, bimUtmZone
+};

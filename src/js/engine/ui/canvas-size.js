@@ -1,3 +1,51 @@
+import { A3D, el } from '../core/state.js';
+import { camVecs } from '../core/mesh-primitives.js';
+import {
+  bimSyncStatusBar, doRedo, doUndo, selSketch, syncSnapPill, toggleFlat
+} from '../drawing/plan-mode-sketch.js';
+import { finishCircle, finishPoly, finishRect, startSketch } from '../drawing/command-ending.js';
+import { doPad, doPocket } from '../drawing/point-node.js';
+import {
+  addLevel, bimGetActiveLevel, bimSyncActiveGlobal, setActiveLevel
+} from '../bim/levels-walls-floors.js';
+import { bimObjectsOnLevel, bimShiftLevelContents } from '../bim/level-datum.js';
+import { refreshLevels } from '../bim/classification.js';
+import { bimAddGrid, bimGridNextName, bimGridSnapPoints, bimSegIntersect } from '../bim/structural-grids.js';
+import { bimRightWire } from '../history/branches-merge.js';
+import { bimRemoveGrid } from '../site/alignment-profile.js';
+import { bimBuildBeamGeometry, buildBeamSolid } from '../bim/section-profiles.js';
+import { buildWallSolid } from '../bim/import-compliance.js';
+import {
+  TYPE_CATS, bimApplyTypeToInstances, bimApplyWallTypeToInstances, bimEnsureObjType, bimEnsureTypes,
+  bimSetWallTypeOf
+} from '../bim/type-instance-params.js';
+import { bimGetFloorProfile } from '../bim/columns-openings.js';
+import { buildFloorSolid } from '../bim/ceiling-floor-profile.js';
+import { refreshLayers } from '../layers/analysis-data-rows.js';
+import { toScreen } from '../io/import-entry.js';
+import { paint } from '../map/terrain-3d.js';
+import { pick } from '../drawing/sketch-constraints.js';
+import {
+  bimGraphBuild, bimGraphDownstream, bimGraphLevelKey, bimGraphObjKey, bimGraphPropagate, bimGraphRelationsOf,
+  bimGraphTopoOrder, bimGraphTypeKey
+} from '../bim/dependency-graph.js';
+import { setView } from '../editing/modify-toolbox.js';
+import { bimShellOverlay } from '../assets/library-drag.js';
+import {
+  bimBuildShell, bimShellDockW, bimTPalPlace, bimTPalSync, bimWatchShell, fitScene
+} from './tool-palette.js';
+import { add3d, del3d } from '../core/objects-save.js';
+import { refreshHud, saveSoon } from '../bim/region-regenerate.js';
+import { bimBuildBeamSchedule } from '../bim/usages-live-areas.js';
+import { A3D_VIEW, bimActivateView } from '../views/saved-views.js';
+import { refreshTree } from '../sheets/presentation-panel.js';
+import { openDlg } from './touch-input.js';
+import { a3dToast, doBool, objById } from '../bim/csg-booleans.js';
+import { bimBuildDock } from './discipline-tabs.js';
+import { bimBindDock } from './dock-tooltips.js';
+import { bimSyncGlCanvasSize, buildUI } from './build-ui.js';
+import { bimWireOcclusionNotice } from '../testing/hooks-view-gizmo.js';
+
   /* __acad3dV72: the canvas has TWO sizes and the code had been using one of them for both
      jobs. el.cv.width/height is the BACKING STORE in device pixels; cvW()/cvH() are the
      LOGICAL size in CSS pixels, which is the space cvXY() -- and therefore every mouse event --
@@ -318,3 +366,4 @@
   };
   window.__a3dOpenView=function(kind,id,opts){return bimActivateView(kind,id,opts);};
 
+export { bimDevicePixelRatio, cvH, cvScale, cvW, size };

@@ -1,3 +1,15 @@
+import { A3D, el } from '../core/state.js';
+import { bimEnterDraftingMode, pushUndo } from '../drawing/plan-mode-sketch.js';
+import { bimGetActiveLevel } from './levels-walls-floors.js';
+import { bimOffsetRing, bimSegNormal } from './section-profiles.js';
+import { bimWeldMesh } from './roofs.js';
+import { bimEsc } from '../layers/layer-manager.js';
+import { paint } from '../map/terrain-3d.js';
+import { refreshHud, saveSoon } from './region-regenerate.js';
+import { refreshTree } from '../sheets/presentation-panel.js';
+import { closeDlg } from '../ui/touch-input.js';
+import { a3dToast } from './csg-booleans.js';
+
   // ---- __acad3dV43: multi-flight stairs (landings/turns) + stepped guard railings ----
   // Path-based stair engine. A stair is now defined by a click-polyline centerline (bim.path);
   // a landing is centered on each interior vertex, sized from the corridor's own mitered corner
@@ -561,3 +573,7 @@
     return o;
   }
 
+export {
+  bimBuildStairGuardMesh, bimBuildStairLayout, bimBuildStairPathGeometry, bimMeshClosureCheck,
+  bimMeshSanityCheck, buildStairSolid, finishStair, startStairTool
+};

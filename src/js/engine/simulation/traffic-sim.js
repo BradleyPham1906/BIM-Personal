@@ -1,3 +1,14 @@
+import { A3D } from '../core/state.js';
+import { bimStd, bimStdSay } from '../standards/registry.js';
+import { BIM_ANIM } from '../site-analysis/motion.js';
+import { bimDgSite } from '../site-analysis/model-analyses.js';
+import { bimMvOf } from '../site-analysis/movement-analyses.js';
+import { bimTrAt, bimTrNet } from './traffic-network.js';
+import { bimTrDemand, bimTrLotAcres, bimTrToward, bimTrTripsOf, bimTrUses } from './traffic-demand.js';
+import { bimTrPlan, bimTrSig } from './traffic-signals.js';
+import { bimTrWalkRoute } from './traffic-walkers.js';
+import { a3dToast } from '../bim/csg-booleans.js';
+
   /* ================= __acad3dV171: traffic and people around the site: the run =================
      reference/research-traffic.md, sections 1 to 3 and 8. One run at a time, on V170's clock: built when it starts
      (the network, the plans, the demand, the walkers' ways), warmed up, then stepped at a fixed step while the clock
@@ -628,3 +639,8 @@
     if(R.lotOk&&res.q.n)out.q={outMean:res.q.out/res.q.n,outMax:res.q.outMax,stMean:res.q.st/res.q.n,stMax:res.q.stMax,n:res.q.n};
     return out;
   }
+export {
+  A3D_TR, BIM_TR_Q, bimTrAccOf, bimTrAdvance, bimTrAlloc, bimTrDeviceQ, bimTrFps, bimTrHold, bimTrIdm,
+  bimTrIdmP, bimTrMove, bimTrPlace, bimTrResults, bimTrRng, bimTrSettings, bimTrSortCars, bimTrStart,
+  bimTrStep, bimTrStop, bimTrStopLine
+};

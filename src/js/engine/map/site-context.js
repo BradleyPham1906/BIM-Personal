@@ -1,3 +1,15 @@
+import { A3D } from '../core/state.js';
+import { pushUndo } from '../drawing/plan-mode-sketch.js';
+import { BIM_SURVEY_UNITS } from '../terrain/terrain-tin.js';
+import { bimIsProperty, bimPropertyGeometry } from '../site/property.js';
+import { bimCtxDefaultH, bimCtxLevelH } from '../standards/registry.js';
+import { refreshProps } from '../site-analysis/panel.js';
+import { bimGeoToModel, bimLatToTileY, bimLonToTileX, bimMapOrigin, bimModelToGeo } from './map-tiles.js';
+import { BIM_CTX_LANDUSE, BIM_CTX_LAND_AREAS } from './surroundings-3d.js';
+import { bimCtxStand, paint } from './terrain-3d.js';
+import { saveSoon } from '../bim/region-regenerate.js';
+import { a3dToast } from '../bim/csg-booleans.js';
+
   /* ================= __acad3dV133: site context in one click =================
      The buildings, roads, water, green and trees around the site from OpenStreetMap (through the
      Overpass API), and the ground from AWS Terrain Tiles, as ordinary pinned objects on Context
@@ -229,3 +241,8 @@
     return (A3D.site&&isFinite(A3D.site.terrainBase))?A3D.site.terrainBase:null;
   }
   /* ---- the layers: one Context layer, a sub-layer for each kind ---- */
+export {
+  A3D_CTX, BIM_CTX_COL, BIM_CTX_GRID, BIM_CTX_KINDS, BIM_CTX_LABEL, BIM_CTX_MAX_FEATURES, BIM_CTX_OSM_CREDIT,
+  BIM_CTX_TERRAIN_CREDIT, BIM_TERRARIUM_URL, bimCtxArea, bimCtxDatum, bimCtxElevAt, bimCtxFeatures,
+  bimCtxQuery, bimCtxSet, bimCtxSettings, bimCtxTerrain, bimOsmHeight, bimOsmKind, bimOsmRings
+};

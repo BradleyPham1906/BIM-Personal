@@ -1,3 +1,7 @@
+import { bimPolyArea } from '../bim/rooms.js';
+import { bimDgRoads, bimStd } from '../standards/registry.js';
+import { bimUsageSummary } from '../bim/usages-live-areas.js';
+
   /* ================= __acad3dV171: traffic and people around the site: the demand =================
      reference/research-traffic.md, section 8 (the owner's decisions 3 and 4). Each street's traffic in the peak hour
      from its class's typical daily traffic (fhwa.fc) and Florida's K; the turns at each junction balanced to the
@@ -121,3 +125,4 @@
     }
     return {D:D,nx:nx};
   }
+export { bimTrDemand, bimTrFurness, bimTrLotAcres, bimTrToward, bimTrTripsOf, bimTrUses };

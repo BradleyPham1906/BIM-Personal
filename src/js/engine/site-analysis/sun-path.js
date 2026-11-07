@@ -1,3 +1,17 @@
+import { A3D } from '../core/state.js';
+import {
+  bimHHMM, bimPad2, bimSunCalc, bimSunClockText, bimSunDayText, bimSunNum, bimSunOffText, bimSunStudy,
+  bimSunTzAt, bimSunZone
+} from '../site/sun-position.js';
+import { bimTrueNorthDeg } from '../survey/survey-arithmetic.js';
+import { bimLayerShown } from '../layers/layer-rules.js';
+import { bimDispNum } from '../properties/palette.js';
+import { bimDgCore, bimDgDiags, bimDgState, bimDgW } from '../standards/registry.js';
+import { bimDgBlit, bimDgOff } from './model-layers.js';
+import { BIM_DG_SUNDAYS, bimDgAt, bimDgDome, bimDgSite } from './model-analyses.js';
+import { BIM_HEAT_COL, bimClbHeatClass } from './climate-board.js';
+import { toScreen } from '../io/import-entry.js';
+
   /* ================= __acad3dV171d: the sun path, one clock =================
      reference/research-sun-path.md. The sun's elements follow what they are drawn from -- the place, the zone, the
      year and the moment -- as a run would draw them: the paths of the solstices and the equinoxes with their hours,
@@ -270,3 +284,7 @@
     });
     return n;
   }
+export {
+  BIM_SUN_DAYC, BIM_SUN_RED, bimDgSunRun, bimDgSunSync, bimSunDayFacts, bimSunDomeOf, bimSunDrawMesh,
+  bimSunHalf, bimSunHalfText, bimSunHeatAt, bimSunLen, bimSunMd, bimSunNearDrawn, bimSunXyz
+};

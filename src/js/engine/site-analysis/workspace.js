@@ -1,3 +1,23 @@
+import { A3D } from '../core/state.js';
+import { pushUndo } from '../drawing/plan-mode-sketch.js';
+import { bimPad2, bimSunCalc, bimSunNum, bimSunSettings } from '../site/sun-position.js';
+import { bimTerrainRange, bimTerrainTin } from '../terrain/terrain-tin.js';
+import { bimIsProperty, bimPropertyGeometry } from '../site/property.js';
+import { bimDispNum } from '../properties/palette.js';
+import { A3D_SIM } from '../analysis/simulation.js';
+import { bimStd } from '../standards/registry.js';
+import { bimLandAuto, bimLdAuto, bimMvAuto } from './land-use.js';
+import { bimClimAuto } from './climate-data.js';
+import { bimZnAuto } from './zoning-envelope.js';
+import { bimAccAuto } from './movement-data.js';
+import { bimSaRefresh, refreshProps } from './panel.js';
+import { bimCtxDatum } from '../map/site-context.js';
+import { BIM_ROAD_USE_LABEL } from '../map/surroundings-3d.js';
+import { bimDataList } from '../map/data-layers.js';
+import { paint } from '../map/terrain-3d.js';
+import { saveSoon } from '../bim/region-regenerate.js';
+import { a3dToast } from '../bim/csg-booleans.js';
+
   /* ================= __acad3dV158: Site analysis SA1, the workspace and the standard =================
      The standard is reference/research-site-analysis-process.md: ten fixed categories, and findings
      that each name a source, a date and how sure they are, classed as a constraint, an opportunity,
@@ -157,3 +177,7 @@
     return {added:add,updated:upd,removed:del,total:A.length};
   }
 
+export {
+  BIM_SA_CATS, BIM_SA_CLS, BIM_SA_SEV, bimSa, bimSaAuto, bimSaCat, bimSaFill, bimSaFind, bimSaN, bimSaNumber,
+  bimSaOf, bimSaPair, bimSaShown, bimSaSlope, bimSaToday
+};

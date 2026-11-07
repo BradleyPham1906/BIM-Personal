@@ -1,3 +1,7 @@
+import { BIM_LB_PY } from './adapter-py.js';
+import { bimLbBvhBlocked, bimLbBvhBuild, bimLbStudyRows, bimLbStudyVecs, bimLbWasiRun } from './rays.js';
+import { BIM_LB_STUDY_MS } from './studies.js';
+
   /* ================= __acad3dV172b: Ladybug Tools in a worker =================
      reference/research-ladybug-weather-comfort.md. Ladybug Tools' own Python, unchanged, run by Pyodide 0.29.5
      (MPL-2.0) in a Web Worker made on first use: the app opens as fast as before and the drawing never waits on a
@@ -207,3 +211,7 @@
     if(A3D_LB.st==='failed')return 'Ladybug Tools could not start: '+A3D_LB.err;
     return 'Ladybug Tools loads when an analysis is first run (about 13 MB, once)';
   }
+export {
+  A3D_LB, BIM_LB_PAGES, BIM_LB_PYODIDE, BIM_LB_WHEELS, bimLbBase, bimLbCall, bimLbStart, bimLbStateText,
+  bimLbStop, bimLbStudyCall
+};

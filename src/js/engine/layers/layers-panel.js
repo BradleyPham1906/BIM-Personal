@@ -1,3 +1,12 @@
+import { A3D } from '../core/state.js';
+import { TYPES } from '../core/mesh-primitives.js';
+import { bimIsLocked } from '../bim/import-compliance.js';
+import { bimLayerById, bimLayerEff, bimLayerLook, bimLayerOf } from './layer-rules.js';
+import { BIM_EYE_OFF, BIM_EYE_ON, BIM_LOCK_OFF, BIM_LOCK_ON, bimLayerUnder } from './select-change.js';
+import { bimLySectionsHtml } from './analysis-data-rows.js';
+import { bimEsc } from './layer-manager.js';
+import { ric } from '../ui/touch-input.js';
+
   /* ================= __acad3dV121: the Layers panel =================
      The owner: "layers (this should combine with model)". The rail's Layers tab is the layer tree --
      sub-layers under their parents -- and each layer opens to the objects on it, so the model tree
@@ -120,3 +129,4 @@
     if(f&&!Object.keys(seen).length)h+='<div class="a3d-lyempty">Nothing matches</div>';
     return h+'</div>'+bimLySectionsHtml(f)+'</div>';   /* __acad3dV148: the results and the data, below the layers */
   }
+export { A3D_LY, BIM_LY_IC, bimLayerContents, bimLayerTree, bimLayersPanelHtml, bimLyTgl };

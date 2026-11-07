@@ -1,3 +1,41 @@
+import { A3D, el } from '../core/state.js';
+import { camVecs, meshOf } from '../core/mesh-primitives.js';
+import { bimEndSketch, finishPoly } from './command-ending.js';
+import { bimPromptFor } from './drawing-input.js';
+import { bimIsPoint } from './point-node.js';
+import { bimGetActiveLevel, bimSyncActiveGlobal } from '../bim/levels-walls-floors.js';
+import { bimEnsureBuildings } from '../bim/building-site-hierarchy.js';
+import { refreshLevels } from '../bim/classification.js';
+import { bimGridSnapPoints } from '../bim/structural-grids.js';
+import { bimSelectedGrid } from '../bim/grid-editing.js';
+import { finishWall } from '../bim/footings.js';
+import { bimEnsureTypes } from '../bim/type-instance-params.js';
+import { bimLayerShown } from '../layers/layer-rules.js';
+import { refreshLayers } from '../layers/analysis-data-rows.js';
+import { bimEsc } from '../layers/layer-manager.js';
+import { bimObjTypeLabel } from '../properties/palette.js';
+import { toScreen } from '../io/import-entry.js';
+import { paint } from '../map/terrain-3d.js';
+import { bimFaceCurrent, bimFaceHint, bimFaceObjKind } from '../editing/faces-push-pull.js';
+import {
+  bimClineCrossings, bimClineSegIntersect, bimClipInfinite, bimDrawingExtent2D, bimIsCline
+} from './construction-lines.js';
+import { bimExitSection } from '../views/section-tool.js';
+import { refreshHud, saveSoon } from '../bim/region-regenerate.js';
+import {
+  A3D_VIEW, bimActivateView, bimCameraIsPlan, bimSetActiveView, refreshViews
+} from '../views/saved-views.js';
+import { bimSheetById, bimSheetViewRefresh } from '../sheets/sheets.js';
+import { A3D_PAGES, bimPageKeyWords, bimPagesStale } from '../sheets/pages-display.js';
+import { bimSheetOnScreen } from '../sheets/present.js';
+import { bimSheetVp } from '../sheets/viewports.js';
+import { bimRenderLayoutTabs } from '../sheets/layout-tabs.js';
+import { bimPresValid } from '../sheets/boards.js';
+import { bimBrdRestored, bimBrdSnapSync } from '../sheets/board-edit.js';
+import { bimPresPanelRefresh, cvXY, drag, refreshTree } from '../sheets/presentation-panel.js';
+import { a3dToast, groundPoint, objById } from '../bim/csg-booleans.js';
+import { cvH, cvW } from '../ui/canvas-size.js';
+
   // ---- __acad3dV4: Snaptrude-style 2D plan mode + sketch + Pad/Pocket ----
   var SK_TOOLS={line:'Line',floor:'Floor',trim:'Trim',rect:'Rectangle',circle:'Circle',arc:'Arc',polygon:'Polygon',point:'Point',xline:'Construction line',boundary:'Boundary',hatch:'Hatch',poly:'Polyline',wall:'Wall',column:'Column',door:'Door',window:'Window',room:'Room',roof:'Roof',stair:'Stair',dim:'Dimension',text:'Text',section:'Section',mirror:'Mirror',rotate:'Rotate',polararray:'Polar Array',familyplace:'Place Family',ceiling:'Ceiling',dimangular:'Angular Dim',dimradius:'Radius Dim',dimdiameter:'Diameter Dim',leader:'Leader',roomtag:'Tag Room',footing:'Isolated Footing',wallfoundation:'Wall Foundation',foundslab:'Foundation Slab'};
   var A3D_SNAP={point:true,grid:false,gridSize:0.5,ortho:false,pxThreshold:12};
@@ -390,3 +428,11 @@
     return (o&&o.t==='sketch'&&!bimIsPoint(o))?o:null;
   }
   function cancelSketch(){A3D.sk=null;paint();}
+export {
+  A3D_SNAP, A3D_TYPING, PILL_GRID, PILL_ORBIT, PILL_ORTHO, PILL_PAN, PILL_PAUSE, PILL_PLAY, PILL_SNAP,
+  PILL_STOP, REDO_STACK, SK_TOOLS, UNDO_STACK, bimClinesOnPlane, bimCommitTypedLength, bimEnterDraftingMode,
+  bimObjOffset, bimRestoreState, bimSnapCandidates, bimSnapPoint, bimSnapshotState, bimStatusHintText,
+  bimStatusHover, bimStatusHoverOut, bimSyncPresentPill, bimSyncStatusBar, bimSyncStatusHint,
+  bimSyncStatusLevel, bimUndoHold, bimWorldElev, bimWorldPt, cancelSketch, doRedo, doUndo, objBBox, pushUndo,
+  selSketch, setNav, syncSnapPill, toggleFlat, undoSuspend
+};

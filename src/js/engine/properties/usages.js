@@ -1,3 +1,19 @@
+import { A3D, el } from '../core/state.js';
+import { pushUndo } from '../drawing/plan-mode-sketch.js';
+import { BIM_SCHEME_COLS } from '../bim/room-colour-fill.js';
+import { bimEsc } from '../layers/layer-manager.js';
+import { A3D_PROP_GROUPS_OPEN, bimDispNum, bimPropGroup, bimPropRow, bimPropText } from './palette.js';
+import { bimPropReveal } from '../analysis/analyze-tab.js';
+import { refreshProps } from '../site-analysis/panel.js';
+import { paint } from '../map/terrain-3d.js';
+import { saveSoon } from '../bim/region-regenerate.js';
+import {
+  BIM_EXPR_NAMES, bimExprParse, bimUsageById, bimUsageKeyProblem, bimUsageMeasure, bimUsageSummary,
+  bimUsageTarget, bimUsages
+} from '../bim/usages-live-areas.js';
+import { refreshTree } from '../sheets/presentation-panel.js';
+import { a3dToast, objById } from '../bim/csg-booleans.js';
+
   /* ================= __acad3dV131: usages in Properties ================= */
   var A3D_USAGE_OPEN=null;   /* the usage whose fields are open in the library, by id */
   function bimUsageSelTargets(){
@@ -220,3 +236,7 @@
     if(!quiet)a3dToast('The usages are in Properties: Edit one to change its ratios, parameters and formulas');
     return true;
   }
+export {
+  bimUsageAdd, bimUsageAssign, bimUsageCommand, bimUsageLibraryCommand, bimUsageLibraryHtml, bimUsageNum,
+  bimUsagePropChange, bimUsagePropClick, bimUsagePropsHtml, bimUsageRemove, bimUsageSwatch
+};

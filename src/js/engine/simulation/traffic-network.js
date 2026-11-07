@@ -1,3 +1,12 @@
+import { A3D } from '../core/state.js';
+import { bimRoadW, bimStd } from '../standards/registry.js';
+import {
+  BIM_MV_CLASSES, bimMvClassOf, bimMvLanes, bimMvOf, bimMvOneway, bimMvSpeed, bimMvSrc, bimMvWhyNot
+} from '../site-analysis/movement-analyses.js';
+import { bimAccLot, bimAccLotDist } from '../site-analysis/access-data.js';
+import { bimAccStreetClass, bimMvLotPt } from '../site-analysis/movement-data.js';
+import { bimPointSegDist } from '../render/viewcube.js';
+
   /* ================= __acad3dV171: traffic and people around the site: the network =================
      reference/research-traffic.md, sections 5 and 8. The streets V166 keeps (mv), within the simulation's reach of the
      lot: every way a car may use, cut at the reach and split at its junctions into edges, each edge a link for each way
@@ -257,3 +266,4 @@
       });
     });
   }
+export { bimTrAt, bimTrFootWay, bimTrHw, bimTrNet, bimTrPolyLen, bimTrStreetWalk };

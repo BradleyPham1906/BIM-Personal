@@ -1,3 +1,6 @@
+import { bimEsc } from '../layers/layer-manager.js';
+import { bimOccLoads } from '../standards/registry.js';
+
   /* ================= __acad3dV101: room data =================
      The fields a tag and a schedule read. They live on the room only. */
   var BIM_ROOM_FIELDS=[
@@ -77,3 +80,7 @@
     return h+'</datalist>';
   }
   function bimRoomField(o,k){return (o&&o[k]!==undefined&&o[k]!==null)?String(o[k]):'';}
+export {
+  BIM_ROOM_FIELDS, bimCopyRoomFields, bimOccDatalist, bimOccLoadRow, bimRoomField, bimRoomLoadFactor,
+  bimRoomLoadFactorHint, bimRoomOccupants, bimRoomOccupantsText
+};

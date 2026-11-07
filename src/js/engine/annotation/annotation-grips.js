@@ -1,3 +1,8 @@
+import {
+  bimComputeAngularDim, bimComputeDim, bimComputeLeader, bimComputeRadialDim, bimDimKind
+} from './dimensions.js';
+import { a3dToast } from '../bim/csg-booleans.js';
+
   /* ================= __acad3dV98: annotation grips =================
      The grip list and the drag below index the SAME points, in the same order, per kind. */
   function bimAnnotGripPoints(o){
@@ -82,3 +87,4 @@
     }
     return false;
   }
+export { bimAnnotGripPoints, bimDragAnnotPoint };

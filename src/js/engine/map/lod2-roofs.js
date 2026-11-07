@@ -1,3 +1,12 @@
+import { bimTrueNorthDeg } from '../survey/survey-arithmetic.js';
+import {
+  bimSkClean, bimSkCross, bimSkDist, bimSkDot, bimSkLen, bimSkNorm, bimSkShoelace, bimSkSub, bimSkelSolve
+} from '../bim/roofs.js';
+import { bimCtxLevelH } from '../standards/registry.js';
+import { BIM_D2R } from './map-tiles.js';
+import { bimOsmMetres } from './lod-solids.js';
+import { bimCjFaceSplit } from './cityjson.js';
+
   /* ================= __acad3dV140: LOD2 roofs from OpenStreetMap's tags =================
      OSM's Simple 3D Buildings: roof:shape, roof:height, roof:levels, roof:angle, roof:direction,
      roof:orientation. Each roof is planes: Phase 39's straight skeleton for hipped roofs, and for the
@@ -215,3 +224,4 @@
       info:{shape:shape,height:Math.round(roofH*1000)/1000,from:rh.from,angle:rh.angle,eave:Math.round(eave*1000)/1000,
         how:how,clamped:clamped,faces:roofs.length}};
   }
+export { BIM_ROOF_ANGLE, bimOsmRoof, bimRoofCountText, bimRoofDir };

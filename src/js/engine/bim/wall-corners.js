@@ -26,3 +26,4 @@
     }
     return {v:v,f:f};
   }
+export { bimBuildWallRibbonMesh };

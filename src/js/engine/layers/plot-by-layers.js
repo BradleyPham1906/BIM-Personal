@@ -1,3 +1,25 @@
+import { A3D } from '../core/state.js';
+import { bimIsPoint, bimPointMarkerSegs } from '../drawing/point-node.js';
+import { bimFormatBearing } from '../survey/survey-arithmetic.js';
+import { bimIsProperty, bimPropertyGeometry } from '../site/property.js';
+import { bimAlignExport, bimIsAlignment } from '../site/alignment-profile.js';
+import { bimIsFooting } from '../bim/footings.js';
+import { bimPatternAlways, bimResolveGraphics } from '../bim/type-instance-params.js';
+import { bimRoomSchemeGraphics } from '../bim/room-colour-fill.js';
+import { bimRoomLabelPoint, bimRoomLabelText, bimRoomTagText, bimRoomTagged } from '../bim/room-tags.js';
+import { bimDimKind } from '../annotation/dimensions.js';
+import { bimAnnotDrawable, bimTriggerDownload } from '../annotation/annotation-pick.js';
+import { bimFileStem } from '../io/project-file.js';
+import { bimRectFootprint } from '../bim/columns-openings.js';
+import { bimDxfLayerName, bimWallOpeningBreaks } from '../io/dxf-export.js';
+import { bimEscXml, bimExportOffset, bimPatternRegistry } from '../io/export-mappings.js';
+import { A3D_PLOT, bimLayerAlpha, bimLayerOf, bimLayerShown } from './layer-rules.js';
+import { bimLinetypeDef } from './select-change.js';
+import { bimFlattenSketch } from '../drawing/arc-storage.js';
+import { bimHatchGraphics, bimHatchOutline, bimIsHatch } from '../drawing/hatch.js';
+import { bimClineVisibleSeg, bimIsCline } from '../drawing/construction-lines.js';
+import { a3dToast } from '../bim/csg-booleans.js';
+
   /* ================= __acad3dV121: a plot, by the layers =================
      A plot leaves out a layer that is off, frozen or set not to plot, does not fade a locked layer,
      and draws transparency only in a presentation (bimLayerShown and bimLayerAlpha read A3D_PLOT).
@@ -315,3 +337,6 @@
       a3dToast('Exported '+bimFileStem()+'-plan.svg ('+res.stats.polyline+' path(s), '+res.stats.line+' line(s), '+res.stats.text+' text'+(res.stats.skipped?'; '+res.stats.skipped+' object(s) had no 2D footprint':'')+')');
     }catch(eS){console.warn('[BIM] SVG export failed: ',eS);a3dToast('SVG export failed: '+(eS&&eS.message?eS.message:eS));}
   }
+export {
+  bimBuildSVG, bimExportSVG, bimLookPlotAttrs, bimLookPlotGraphics, bimPresentGraphics, bimWithPlotPass
+};

@@ -1,3 +1,21 @@
+import { A3D } from '../core/state.js';
+import { bimObjOffset, pushUndo } from '../drawing/plan-mode-sketch.js';
+import { sketchCCW } from '../drawing/drawing-input.js';
+import { bimAddPoint, bimIsPoint, bimSketchOutline } from '../drawing/point-node.js';
+import { BIM_TIN_CACHE, bimClipToTri, bimEarthCentroid, bimTerrainTin } from './terrain-tin.js';
+import { bimSegCross, bimSurveyBreaklines, bimTerrainBands, bimTerrainSetView } from './breaklines.js';
+import { bimPointInPoly, bimPolyArea } from '../bim/rooms.js';
+import { bimLayerShown } from '../layers/layer-rules.js';
+import { bimDispNum } from '../properties/palette.js';
+import { A3D_ANZ, bimAnalyzeRefresh } from '../analysis/analyze-tab.js';
+import { refreshProps } from '../site-analysis/panel.js';
+import { paint } from '../map/terrain-3d.js';
+import { saveSoon } from '../bim/region-regenerate.js';
+import { bimClipHalfPlane } from '../structure/tributary-loads.js';
+import { bimCameraIsPlan } from '../views/saved-views.js';
+import { refreshTree } from '../sheets/presentation-panel.js';
+import { a3dToast, objById } from '../bim/csg-booleans.js';
+
   /* ================= __acad3dV145: grading =================
      A pad -- a closed outline with a Pad Elevation -- graded onto the existing surface. From every
      part of its edge a slope runs out: up at the pad's cut slope where the ground is above the pad,
@@ -373,3 +391,9 @@
     a3dToast(on?'Slope arrows on '+T[0].name+(T.length>1?' and '+(T.length-1)+' more':'')+(bimCameraIsPlan()?'':' -- shown in plan'):'Slope arrows off');
     return on;
   }
+export {
+  BIM_CUTFILL_BANDS, BIM_CUTFILL_COLS, BIM_CUTFILL_LABELS, BIM_GRADE, bimBandsOf, bimCutFillCommand,
+  bimCutFillMapCommand, bimGrade, bimGradeCommand, bimGradeExistingFor, bimGradePad, bimGradeSpots,
+  bimGradeStale, bimGradedBy, bimIsPad, bimPlane3, bimRegrade, bimSetSlopeArrows, bimSlopeArrowsCommand,
+  bimSpotCommand, bimSpotElev, bimTerrainSuperseded, bimTinIndexOf, bimTinVolume
+};

@@ -1,3 +1,32 @@
+import { A3D } from '../core/state.js';
+import { pushUndo } from '../drawing/plan-mode-sketch.js';
+import { BIM_ASPECT, BIM_ELEV_COLS, BIM_SLOPE_COLS } from '../terrain/breaklines.js';
+import { BIM_CUTFILL_COLS, bimBandsOf } from '../terrain/grading.js';
+import { bimIsLocked, bimSetLocked } from '../bim/import-compliance.js';
+import { bimLayerById } from './layer-rules.js';
+import {
+  bimLayerDelete, bimLayerMakeCurrent, bimLayerNew, bimLayerPickRefusal, bimLayerSet, bimObjSetLayer,
+  openAddLayerDlg
+} from './select-change.js';
+import { A3D_LY, BIM_LY_IC, bimLayersPanelHtml, bimLyTgl } from './layers-panel.js';
+import { bimEsc, bimLayerManagerOpen, bimLayerManagerRefresh } from './layer-manager.js';
+import { bimDispNum } from '../properties/palette.js';
+import { bimDataStatusText } from '../properties/context-lod-data.js';
+import { BIM_SIM_RAMP } from '../analysis/simulation.js';
+import {
+  BIM_TVIEW_LABEL, bimResById, bimResGone, bimResLayers, bimResOpacity, bimResStale, bimResultLayerMove,
+  bimResultLayerRemove, bimResultLayerSet, bimResultLayerUpdate
+} from '../analysis/results-layers.js';
+import { bimAnzAct } from '../analysis/analyze-tab.js';
+import { bimRenderInto, refreshProps } from '../site-analysis/panel.js';
+import { bimTlRunById, bimTlStale, bimTlTool } from '../site-tools/tools.js';
+import { A3D_DATA, bimDataById, bimDataFeats, bimDataList } from '../map/data-layers.js';
+import { bimDataOpacity, bimDataRemove, bimDataSet } from '../map/find-open-data.js';
+import { paint } from '../map/terrain-3d.js';
+import { saveSoon } from '../bim/region-regenerate.js';
+import { refreshTree } from '../sheets/presentation-panel.js';
+import { a3dToast, objById } from '../bim/csg-booleans.js';
+
   /* ================= __acad3dV148: Analysis and Data, in Layers =================
      A row's key is its section and its id: res:<id> a result layer, data:<id> a data layer. */
   var BIM_LY_IC_UPD='<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19.5 12a7.5 7.5 0 1 1-2.2-5.3M19.5 4.5v4.2h-4.2"/></svg>';
@@ -339,3 +368,6 @@
       if(inLyp(t)&&t.hasAttribute('data-lyresop'))bimLyResOpCommit(t);
     });
   }
+export {
+  bimLayersPanelRefresh, bimLySecHidden, bimLySecVisible, bimLySectionsHtml, bimWireLayersPanel, refreshLayers
+};

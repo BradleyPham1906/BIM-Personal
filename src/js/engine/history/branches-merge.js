@@ -1,3 +1,22 @@
+import { A3D } from '../core/state.js';
+import { bimRestoreState, bimSnapshotState, pushUndo } from '../drawing/plan-mode-sketch.js';
+import {
+  bimCanon, bimHash, bimHist, bimHistChanges, bimHistCommit, bimHistCommitById, bimHistCommitDiff,
+  bimHistHead, bimHistLabel, bimHistMap, bimHistProps, bimHistStateOf, bimHistSumm
+} from './element-history.js';
+import { bimEsc } from '../layers/layer-manager.js';
+import { bimDispNum, bimPropText } from '../properties/palette.js';
+import { bimPropReveal } from '../analysis/analyze-tab.js';
+import { refreshProps } from '../site-analysis/panel.js';
+import { paint } from '../map/terrain-3d.js';
+import { bimShellOverlay } from '../assets/library-drag.js';
+import { BIM_LEFT_KEEP, BIM_LEFT_MIN, BIM_LEFT_RAIL, bimShellDockW } from '../ui/tool-palette.js';
+import { saveSoon } from '../bim/region-regenerate.js';
+import { bimWallLength } from '../views/schedules.js';
+import { bimUsageSummary } from '../bim/usages-live-areas.js';
+import { a3dToast } from '../bim/csg-booleans.js';
+import { size } from '../ui/canvas-size.js';
+
   /* ================= __acad3dV151: branches and merge (the Hub's H2) =================
      A branch is a name at a version: a design option. Merging is three ways, element by element,
      against the version both branches share -- git's merge, at the grain of a building element. */
@@ -502,3 +521,10 @@
     window.addEventListener('resize',function(){bimRightApply();});
     bimRightApply();
   }
+export {
+  A3D_BR_CMP, A3D_BR_DEL, A3D_BR_NEW, A3D_BR_PICK, A3D_HIST_MSG, A3D_MERGE, bimHistAct, bimHistBase,
+  bimHistBranchAct, bimHistBranchDelete, bimHistBranchNew, bimHistBranches, bimHistCommitCommand,
+  bimHistCompare, bimHistDoCommit, bimHistHtml, bimHistMergeAbort, bimHistMergeChoose, bimHistMergeFinish,
+  bimHistMergeStart, bimHistObjHtml, bimHistOf, bimHistRestore, bimHistReveal, bimHistSize, bimHistSwitch,
+  bimHistSwitchUI, bimRightApply, bimRightSetWidth, bimRightToggleMin, bimRightWire
+};
