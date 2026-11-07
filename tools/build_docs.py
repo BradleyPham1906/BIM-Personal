@@ -8,9 +8,7 @@ Writes docs/*.html from:
   lists, tables, code, links, bold, italics; a front matter block gives each page's title and order);
 - docs/data/catalog.json -- the app's own command catalogue and keys (tools/dump_catalog.py), for
   the command reference;
-- canvas_v10_STATUS.md -- every phase's entry, for the release notes;
-- Phase/canvas_v10.html.bak_phase*_pre -- the builds kept before each phase, for the versions page
-  (tools/build_site.py publishes them at v/<version>/).
+- canvas_v10_STATUS.md -- every phase's entry, for the release notes.
 
 No dependencies beyond Python's standard library, so the Pages workflow can run it as it is. With
 --check it writes nothing and exits 1 when docs/ is not what it would write."""
@@ -253,16 +251,9 @@ MARK = re.compile(r'__acad3dV(\d+)([a-z]?)(?![a-z0-9])')   # a phase's marker, i
 
 
 def kept_versions():
-    """[(label, backup path)]: each build kept before a phase, named by the newest marker in it."""
-    out = {}
-    for p in sorted((ROOT / 'Phase').glob('canvas_v10.html.bak_phase*_pre')):
-        t = p.read_text(encoding='utf-8', errors='replace')
-        ms = [(int(a), b) for a, b in MARK.findall(t)]
-        if not ms:
-            continue
-        n, s = max(ms)
-        out['V%d%s' % (n, s)] = p
-    return sorted(out.items(), key=lambda kv: (int(re.match(r'V(\d+)', kv[0]).group(1)), kv[0]))
+    """[(label, build path)]: older builds published under v/. None since 2026-11-07, when the
+    pre-phase backups (Phase/) were removed; older builds are in git history."""
+    return []
 
 
 def versions_page(version, kept, entries):
@@ -275,12 +266,12 @@ def versions_page(version, kept, entries):
         return '<a href="changelog.html#%s">notes</a>' % a if a in ids else 'in the engineering log'
     b = ['<h1 id="versions">Versions</h1>',
          '<p>The site always opens the newest version, <strong>%s</strong> (%s). Every version below is kept on the site as it was, '
-         'so a project or a screenshot can be checked against the build it was made with. They are the builds kept in the repository before each phase.</p>' % (version['v'], version['date']),
+         'so a project or a screenshot can be checked against the build it was made with.</p>' % (version['v'], version['date']),
          '<table><thead><tr><th>Version</th><th>Open it</th><th>Release notes</th></tr></thead><tbody>',
          '<tr><td><strong>%s</strong> (newest)</td><td><a href="../index.html">the app</a></td><td><a href="changelog.html#%s">notes</a></td></tr>' % (version['v'], version['v'].lower())]
     for lab, _ in reversed(kept):
         b.append('<tr><td>%s</td><td><a href="../v/%s/index.html">v/%s/</a></td><td>%s</td></tr>' % (lab, lab.lower(), lab.lower(), notes(lab)))
-    b.append('</tbody></table><p>The older builds open on the website; in a copy of the repository, open the files in <code>Phase/</code> instead.</p>')
+    b.append('</tbody></table><p>Older builds are kept in the repository\'s git history: check out an earlier commit and open its <code>canvas_v10.html</code>.</p>')
     return '\n'.join(b)
 
 

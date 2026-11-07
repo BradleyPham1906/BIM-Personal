@@ -1,6 +1,6 @@
 # Publishes the app to GitHub Pages on every push to main.
 # The app (index.html and app/, joined from src/; canvas_v10.html, the same app as one file), the user
-# guide (docs/, V142) and every older version kept in Phase/ (v/<version>/). Served from https, the app sends a real origin and Referer,
+# guide (docs/, V142). Served from https, the app sends a real origin and Referer,
 # which tile, geocoding and Overpass servers expect from a browser.
 name: Publish app to Pages
 

@@ -7,7 +7,7 @@
   joined from src/ by tools/build_app.py --site;
 - canvas_v10.html: the same app as one file, to download and open offline;
 - docs/: the user guide (built HTML, committed; tools/build_docs.py --check proves it current);
-- v/<version>/index.html: every older build kept in Phase/ before a phase, named as on the guide's
+- v/<version>/index.html: any older build build_docs.kept_versions() names (none since 2026-11-07), named as on the guide's
   Versions page, so an older version stays reachable at a fixed address;
 - runtime/: the Ladybug analyses' Pyodide and wheels (V172b), at the fixed address the app and every
   one-file copy load them from, checked against runtime/MANIFEST.json first (tools/check_runtime.py)."""
