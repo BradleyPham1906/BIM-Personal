@@ -71,7 +71,18 @@ Vendor pages read (fetched 2026-11-07, text kept in the scratchpad):
 | 3 | git | `git show HEAD:<path>` for the files named in each section | Source text | Kept: the P facts |
 | 4 | developer.chrome.com, web.dev | The seven pages in the table above, fetched as HTML | Text | Kept (P for Workbox's and Chrome's own behaviour; the cookbook is a practitioner's document by a spec editor) |
 | 5 | api.github.com | Issue search | Refused by the proxy, as on 2026-10-31 | Set aside; web search for pointers, then each issue opened |
-| (more rows are added below as the work goes) | | | | |
+| 6 | git | `git grep` for `VitePWA`, `serviceWorker`, `workbox` in tldraw's blobless clone | Timed out (every blob fetched on demand) | Set aside; read the named files instead (`vite.config.ts`, `index.html`, `public/sw.js`, the manifest) |
+| 7 | Web search | "excalidraw github issue service worker old version stale after deploy reload" | No Excalidraw issue; Netlify forum, a CRA issue mirror, a Nuxt PWA issue mirror, a blog | Pointers only (U); led to the CRA decision, opened in row 10 |
+| 8 | Web search | "workbox github issue skipWaiting lazy loaded chunks 404 after update old page" | Stack Overflow mirrors (Jeff Posnick's answers), Workbox's update page | Workbox page already read (P); the Stack Overflow answers kept as U pointers only |
+| 9 | Web search | "draw.io github issue service worker stuck old version offline" | draw.io's wiki FAQ, GitLab MRs, a Google Group thread "Update loop" | Opened the FAQ (row 11); the group thread not opened (U) |
+| 10 | WebFetch | github.com/facebook/create-react-app/issues/2398 | Thread 2017-05-28 to 2018-10-02 | Kept (P): the counter-evidence below |
+| 11 | WebFetch | github.com/jgraph/drawio/wiki/FAQ | FAQ edited 2026-10-07 | Kept (P) |
+| 12 | Web search | "vite-plugin-pwa autoUpdate reload loses form data unsaved issue github" | Issues #702, #438, #394 (vite-plugin-pwa), docs issue #142 | Pointers (U); went to the plugin's own guide (row 13) |
+| 13 | WebFetch | vite-pwa-org.netlify.app/guide/auto-update.html | The plugin's guide to `autoUpdate` | Kept (P): its own data-loss warning |
+
+Not searched for lack of budget (gaps, in "What is open"): Figma's and Photopea's offline documents (Figma's was read on
+2026-10-31 for storage, `prior-art.md` row 18, and not re-read for updates), Excalidraw's and tldraw's issue trackers
+read directly, the reason tldraw removed its worker.
 
 ---
 
