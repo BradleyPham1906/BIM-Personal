@@ -1293,7 +1293,9 @@ MIME types there): not read. None of these changes the recommendation.
 
 ### 14.10 The owner's decisions and the independent check
 
-To be asked together (the answers recorded here when given):
+Asked together on 2026-11-07 and answered the same day, each as recommended: **G1** at the first save of each project
+wherever `persisted()` is false; **G2** in a worker; **G3** Save as offers both types, plain first, Save keeps the last;
+**G4** ask (Overwrite, Save as, Cancel); **G5** no warning at leaving. The questions as asked:
 
 - **G1, the first-save reminder.** D2 says "at the first save in Safari or a private window". A private window cannot be
   told dependably (H37, detectIncognito's false positives). *Recommended:* show it at the first save of each project
