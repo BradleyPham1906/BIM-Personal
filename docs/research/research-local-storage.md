@@ -1073,3 +1073,19 @@ Four sides, researched in parallel as part 3 of the protocol asks, each with its
 
 Then the alternatives table, an independent second reader over every fact the code will use, and the owner's
 decisions asked together.
+
+### 14.7 What the app already has (read 2026-11-07)
+
+Parts 14.3 to 14.6 follow when the three researchers report; this is the app's side, read by hand.
+
+| What | Where | What it means for the worker |
+|---|---|---|
+| The site build names each bundle `app/<name>?v=<12 hex of its SHA-256>`; the names never change, only the query | `tools/build_app.py` `write_site()` lines 93-111 | The precache list is the four URLs exactly as the page writes them; the build must hand that list (and a build id) to `sw.js`, so `sw.js` is byte-different whenever any bundle is |
+| `tools/build_site.py` writes `index.html`, `app/`, `canvas_v10.html`, `docs/*.html`, `runtime/`, `.nojekyll`; no `v/` builds kept since 2026-11-07 | `tools/build_site.py` | `sw.js`, the manifest and the icons are three more outputs here; `v/` still needs a rule for when builds are kept again |
+| Pages answers `index.html` with `cache-control: max-age=600` and an ETag; `/BIM-Personal/sw.js` 404 | measured with curl, 2026-11-07 | H35 decides whether the 600 s matter to the update check |
+| No manifest, icon, `theme-color` or `apple-touch-icon` | grep of `src/` and the repository | Icons have to be made (no project photos or third-party marks; the repository is public) |
+| The Ladybug worker is made from a `blob:` URL of the engine's own function text (`new Worker(URL.createObjectURL(new Blob([txt])))`) | `ladybug/runtime.js:149-156` | H36 must be measured for a `blob:` worker in particular: if its fetches are not seen by the service worker, the runtime cannot come from a cache offline without a change to the loader |
+| The runtime's address is the page's own folder plus `runtime/` over http(s), and the Pages address from `file://` or a `v/` build | `ladybug/runtime.js` `bimLbBase()` | On Pages the runtime is same-origin, inside the worker's scope; each wheel is checked by SHA-256 in the worker, so a cached copy is checked the same way |
+| The database `BIM-Personal` at a schema version, `onversionchange` closes and tells the user | `core/idb-store.js:23-43` | A new build that raises the schema version must not reach one tab while another runs the old code: the same rule as the worker's waiting state (H33) |
+| A Web Lock per open project | `core/tab-lock.js:19` | Several tabs are normal; the update rule has to hold with two tabs open |
+| `A3D_SPILL.dirty` and the record in flight; the `pagehide` journal | `core/idb-store.js:104`, `core/project-store.js:50` | "Unsaved work" today means not yet in the database; V172g adds "not saved to a file". D6's "no update while there is unsaved work" needs the owner's word on which of the two it means (a question for 14.11) |
