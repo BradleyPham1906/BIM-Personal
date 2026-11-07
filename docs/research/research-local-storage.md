@@ -1074,6 +1074,80 @@ Four sides, researched in parallel as part 3 of the protocol asks, each with its
 Then the alternatives table, an independent second reader over every fact the code will use, and the owner's
 decisions asked together.
 
+### 14.3 Findings, by side
+
+The three sides' notes hold the evidence row by row; this is what the code depends on.
+
+- **Standards and browsers** (`research-local-storage/v172h-standards-and-browsers.md`): the hypotheses' outcomes above; the
+  manifest's `id` resolves against the origin, so it is written `/BIM-Personal/`; Firefox's taskbar apps start at the origin
+  root without a manifest; `sw.js` must be byte-different on every build or no user is ever updated, because the check
+  compares bytes.
+- **Prior art** (`research-local-storage/v172h-prior-art.md`; Workbox, Squoosh, Excalidraw, draw.io, tldraw at pinned
+  commits): every app precaches its build's file list keyed by content, at install, and deletes old entries at activate;
+  cross-origin requests go to the network; large optional parts are cached on first use; 192 and 512 px icons plus
+  maskable ones and a separate `apple-touch-icon`; every project keeps a way to remove its worker (a self-removing `sw.js`,
+  draw.io's `clear.html`). They disagree on the page (all three apps with a worker serve `index.html` cache-first) and on
+  taking over (Excalidraw and draw.io `skipWaiting()` at once, Excalidraw then reloading every tab; Squoosh and Workbox
+  wait and offer a reload). Faults on record: draw.io users left on an old release for months by failing installs, and
+  an HTML error page cached as a script; vite-plugin-pwa warns its auto-reload loses unsaved form data; Create React App
+  made its worker opt-in because workers are "super sticky".
+- **Experiments** (`research-local-storage/v172h-experiments.md`, scripts in `experiments/v172h-offline/`; Chromium 153,
+  headless, a Pages stand-in): the outcomes above. The cost: the precache took about 330 ms and fetched the app a second
+  time (3.97 MB); a repeat load was slower with the worker (median 63 ms against 31) while the HTTP cache was fresh, and
+  faster once it was gone (50 ms and 442 bytes against 111 ms and 3.97 MB).
+
+**The finding that changes the plan:** `skipWaiting()` takes every tab, not only the one that asked (H34). "No update
+while there is unsaved work" therefore has to be decided across every open tab of the app, not in one.
+
+### 14.4 The alternatives compared
+
+Criteria, set before the comparison: (1) the app opens offline after one visit; (2) no tab ever runs code that differs
+from what its page loaded, and no edit is lost to an update; (3) a user reaches a new build within one visit or two;
+(4) ES5, no dependency, small; (5) a way back if the worker misbehaves.
+
+| Option | (1) Offline | (2) No mixed code, no lost edit | (3) Updates reach users | (4) Cost | (5) Way back |
+|---|---|---|---|---|---|
+| A. No worker; manifest and icons only | No (fails once the 600 s cache is gone, H32) | Yes | Yes | Smallest | Nothing to undo |
+| B. D6 as written: `index.html` network-first, `app/` cache-first, wait for every tab to close | Yes | **No**: a fresh `index.html` online can name bundles the old worker's cache lacks, and the page runs new code under the old worker; harmless only while the bundles are fetched from the network | Yes, at every online load | Small | Needs a self-removing `sw.js` |
+| C. App shell cache-first (`index.html` and the four bundles from one precache), update offered as "A new version is ready: Reload", `skipWaiting()` only when no tab has unsaved work (recommended) | Yes | Yes: page and bundles always come from the same build's cache | Yes: found within about 1.5 s of any navigation (H33, H35), applied at the next reload once every tab is saved, or at once when every tab closes | Small: one worker file, a page-side update banner, a cross-tab ask | Self-removing `sw.js` kept ready |
+| D. As C with Workbox | Yes | Yes | Yes | A dependency built for a bundler, not ES5; draw.io dropped its runtime | Workbox's own |
+| E. Excalidraw's way: `skipWaiting()` at once and reload every tab | Yes | **No**: reloads tabs with unsaved work (vite-plugin-pwa's own warning) | Fastest | Small | Self-removing `sw.js` |
+
+**Recommendation: C.** It meets all five criteria; B fails (2), A fails (1), E fails (2), D fails (4). What would change it:
+evidence that a user can stay on an old build for long under C (draw.io's case came from installs that failed, which a
+precache of four files makes unlikely; the update banner shows the build each tab runs), or the owner preferring D6's
+network-first page as written (decision Q2).
+
+The worker in C, from the sides together: the cache named with the app's path and the build id
+(`BIM-Personal/app/<build>`); install precaches `./`, `index.html` and the four `?v=` URLs exactly (H31), refusing a
+non-2xx answer or an HTML body for a `.js` or `.css` (draw.io's fault); activate deletes only this app's older app caches;
+navigations in scope answer `index.html` from the cache, then the network; `runtime/` cached on first use in a cache of its
+own (`BIM-Personal/runtime/<manifest hash>`), kept across builds, each wheel still checked by SHA-256 in the Ladybug worker
+(H36); `docs/`, `v/`, `canvas_v10.html` and every cross-origin request left to the network (H41: tiles must not be
+prefetched); `sw.js` carries the build id so it is byte-different each build (H35). The page registers it only over
+https (never `file://`, part 4.4), shows "Ready to work offline" once, and on a waiting worker shows "A new version is
+ready" with Reload and Later in every tab; Reload asks every tab of the app (BroadcastChannel, as V172f's take-over does)
+whether it has unsaved work, and messages the worker to `skipWaiting()` only when none has; `controllerchange` reloads
+each tab once.
+
+### 14.5 The experiments
+
+In `research-local-storage/v172h-experiments.md`, with raw numbers and run counts for each; summarised in 14.1 and 14.3.
+
+### 14.6 Edges
+
+| Edge | What happens | The rule |
+|---|---|---|
+| A tab with unsaved work when another tab presses Reload | `skipWaiting()` would switch it too (H34) | Ask every tab first; if any says unsaved, the banner says which and waits |
+| A tab left open for days | The waiting worker never activates (H33) | The banner stays; the build id is shown in About |
+| A build that raises the database's schema version | An old tab's connection gets `versionchange` (V172f) | Unchanged: V172f's own rule; the update banner comes first |
+| The 600 s HTTP cache | No effect on the update check (H35) | None needed |
+| An install interrupted or an error page | The precache must not keep it | Refuse non-2xx and HTML for scripts; the install fails and retries at the next navigation |
+| The runtime offline before any analysis was run online | Not in the cache | The analysis says it needs one online run first |
+| `file://` and the one-file build | No worker (part 4.4) | Unchanged |
+| Another Pages project of the account | Outside the scope (H29); shares the quota (H37) | Caches named with the app's path; only ours deleted |
+| `/BIM-Personal` without the slash | Pages answers 301, then the worker controls the page (e01) | None needed |
+
 ### 14.7 What the app already has (read 2026-11-07)
 
 Parts 14.3 to 14.6 follow when the three researchers report; this is the app's side, read by hand.
@@ -1089,3 +1163,47 @@ Parts 14.3 to 14.6 follow when the three researchers report; this is the app's s
 | The database `BIM-Personal` at a schema version, `onversionchange` closes and tells the user | `core/idb-store.js:23-43` | A new build that raises the schema version must not reach one tab while another runs the old code: the same rule as the worker's waiting state (H33) |
 | A Web Lock per open project | `core/tab-lock.js:19` | Several tabs are normal; the update rule has to hold with two tabs open |
 | `A3D_SPILL.dirty` and the record in flight; the `pagehide` journal | `core/idb-store.js:104`, `core/project-store.js:50` | "Unsaved work" today means not yet in the database; V172g adds "not saved to a file". D6's "no update while there is unsaved work" needs the owner's word on which of the two it means (a question for 14.11) |
+
+### 14.8 Risks and threats to validity
+
+- One engine measured: Chromium 153, headless. Firefox, Safari and iOS rely on the specifications, WPT's shared results
+  and WebKit's posts; H36 on iOS and H40 are not tested.
+- Eviction together (H37) is the Storage Standard's text, not a measurement.
+- The prior art's apps differ from ours (bundlers, hashed file names); their update choices are weighed, not copied.
+- The precache doubles the first visit's download (3.97 MB); on a metered phone that is a cost the owner may weigh.
+- A worker is "sticky": a fault in it outlives a fix to the page. The self-removing `sw.js` must exist before the first one ships.
+
+### 14.9 What is still open (U)
+
+| Open | Why | How to close |
+|---|---|---|
+| H40: the shell in standalone on phones and tablets | No device here | A look on the owner's iPhone, iPad and a computer after the build |
+| H36 on iOS: a `blob:` worker's fetches through the service worker | No iOS here | The same look: an analysis offline in the Home Screen app |
+| Whether caches and IndexedDB are evicted together in practice | Not measurable here | Relied on the Storage Standard |
+| Firefox and Safari update timing | Not installed here | The specification's algorithm, which Chromium followed exactly |
+
+### 14.10 The independent check
+
+Pending: a second reader re-reads the sources behind every fact the code will use and records each as confirmed or not
+in `research-local-storage/independent-check-v172h.md`.
+
+### 14.11 The owner's decisions
+
+Asked together on 2026-11-07, each with a recommended answer.
+
+- **Q1. What "unsaved work" holds an update back.** Not yet in the database (`A3D_SPILL.dirty` or a record in flight), or
+  not yet saved to a file (V172g's marker)? An update only reloads the page; what is in the database survives a reload,
+  so only work not yet in the database can be lost. *Recommended:* not yet in the database. The file marker would hold
+  updates back for days.
+- **Q2. The page: cache-first (option C) or network-first (D6 as written)?** Network-first can run a new page under the
+  old worker (14.4, B) and needs a time limit on slow networks; all three apps with a worker serve it cache-first.
+  *Recommended:* cache-first, with the update banner.
+- **Q3. The Ladybug runtime offline:** cache it on the first analysis (16 MB, kept across builds), or leave it online only?
+  *Recommended:* cache on first use.
+- **Q4. The update across tabs:** Reload in one tab asks every tab and waits while any has unsaved work (14.4).
+  *Recommended:* yes.
+- **Q5. The icon:** a simple mark drawn by us as SVG and exported to 192, 512, maskable and 180 px (`apple-touch-icon`),
+  or a design the owner supplies? *Recommended:* ours for now, replaceable.
+- **Q6. The guide (`docs/`) and the one-file `canvas_v10.html` offline:** left to the network in V172h. *Recommended:* yes;
+  the guide can be added later.
+- **Q7. A way back:** a self-removing `sw.js` kept in `tools/`, published only if the worker misbehaves. *Recommended:* yes.
