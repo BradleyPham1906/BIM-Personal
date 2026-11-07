@@ -223,9 +223,11 @@ async def run():
             old = [e for e in L if e['id'] == 'fam-legacy-1']
             ck(len(old) == 1 and old[0]['kind'] == 'model',
                "an entry stored before V124, with no kind, is a model (%s)" % old)
-            stored = await safe("""()=>{var a=JSON.parse(localStorage.getItem('acad3dFamilyLibrary')||'[]');
+            # AMENDED FOR V172f: the library is kept in the browser's database
+            await page.wait_for_timeout(600)
+            stored = await safe("""()=>window.__a3dStoredGet('lib:family').then(function(v){var a=v?JSON.parse(v.rec):[];
                                    var e=a.filter(function(x){return x.id==='fam-legacy-1';})[0];
-                                   return e?{kind:e.kind||null,thumb:(e.thumb||'').slice(0,14)}:null;}""")
+                                   return e?{kind:e.kind||null,thumb:(e.thumb||'').slice(0,14)}:null;})""")
             ck(stored and stored['thumb'] == 'data:image/png' and stored['kind'] is None,
                "and it is given a thumbnail that is kept, while nothing else of it is rewritten (%s)" % stored)
             ck(await safe("()=>!!document.querySelector('#a3d-leftpanel [data-a3dasdel=\"fam-legacy-1\"]')") and
@@ -359,9 +361,10 @@ async def run():
             ck(len(blk) == 1 and blk[0]['name'] == 'Studio unit' and blk[0]['count'] == 2 and blk[0]['thumb'],
                "the library has the block: two objects, with a plan thumbnail (%s)" % blk)
             bid = blk[0]['id'] if blk else ''
-            stored = await safe("""(id)=>{var a=JSON.parse(localStorage.getItem('acad3dFamilyLibrary')||'[]');
+            await page.wait_for_timeout(600)
+            stored = await safe("""(id)=>window.__a3dStoredGet('lib:family').then(function(v){var a=v?JSON.parse(v.rec):[];
               var e=a.filter(function(x){return x.id===id;})[0];
-              return e?{kinds:e.recs.map(function(r){return r.t+':'+((r.bim&&r.bim.type)||'')}),base:e.base,y0:e.y0}:null;}""", bid)
+              return e?{kinds:e.recs.map(function(r){return r.t+':'+((r.bim&&r.bim.type)||'')}),base:e.base,y0:e.y0}:null;})""", bid)
             ck(stored and sorted(stored['kinds']) == ['room:', 'solid:wall'] and near(stored['base'][0], 3, 1e-9)
                and near(stored['base'][1], 2, 1e-9) and stored['y0'] == 0,
                "stored as the objects' own records -- a wall and a room -- with its base at their centre (%s)" % stored)
@@ -635,8 +638,9 @@ async def run():
             tp = [e for e in await lib() if e['kind'] == 'template']
             ck(len(tp) == 1 and tp[0]['count'] == 2, "Save as Template keeps the project (%s)" % tp)
             tid = tp[0]['id'] if tp else ''
-            ck(await safe("(id)=>!!localStorage.getItem('acad3dTemplateV1:'+id)", tid),
-               "under its own key, beside the library")
+            await page.wait_for_timeout(600)
+            ck(await safe("(id)=>window.__a3dStoredGet('tpl:'+id).then(function(v){return !!v;})", tid),
+               "under its own key in the browser's database, beside the library")
             await safe("()=>window.__a3dWall([[0,4],[5,4]],0.2,3,'center',false)")
             await page.wait_for_timeout(400)
             home = await safe("()=>window.__a3dDocs.active()")
@@ -654,14 +658,15 @@ async def run():
             await page.wait_for_timeout(600)
             ck(await n_objs() == 3 and await safe("()=>window.__a3dProjectLabel?1:1"),
                "the project it came from still has its three walls")
-            stored_n = await safe("(id)=>JSON.parse(localStorage.getItem('acad3dTemplateV1:'+id)).objs.length", tid)
+            stored_n = await safe("(id)=>window.__a3dStoredGet('tpl:'+id).then(function(v){return JSON.parse(v.rec).objs.length;})", tid)
             ck(stored_n == 2, "and the template still holds two, whatever was drawn in the project made from it (%s)" % stored_n)
             await tab('browser')
             await tab('assets')
             dialog_answer['accept'] = True
             await page.click('#a3d-leftpanel [data-a3dasdel="%s"]' % tid)
             await page.wait_for_timeout(300)
-            ck(not [e for e in await lib() if e['id'] == tid] and await safe("(id)=>localStorage.getItem('acad3dTemplateV1:'+id)===null", tid),
+            await page.wait_for_timeout(600)
+            ck(not [e for e in await lib() if e['id'] == tid] and await safe("(id)=>window.__a3dStoredGet('tpl:'+id).then(function(v){return v===null;})", tid),
                "removing the template removes its stored project too")
 
             # ---------------------------------------------------------------------------------

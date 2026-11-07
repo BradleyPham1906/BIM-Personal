@@ -279,7 +279,9 @@ async def run():
             B2 = [e for e in await lib() if e['kind'] == 'block' and e['category'] == 'SketchUp']
             ck(len(B2) == len(B) and set(e['id'] for e in B2).isdisjoint(set(e['id'] for e in B)),
                "opened again, the file's blocks are replaced, not doubled (%d, %d)" % (len(B), len(B2)))
-            stored = await safe("()=>{try{return JSON.parse(localStorage.getItem('acad3dFamilyLibrary')).filter(function(e){return e.category==='SketchUp';}).length;}catch(e){return -1;}}")
+            await page.wait_for_timeout(600)
+            # AMENDED FOR V172f: the library is kept in the browser's database
+            stored = await safe("()=>window.__a3dStoredGet('lib:family').then(function(v){try{return JSON.parse(v.rec).filter(function(e){return e.category==='SketchUp';}).length;}catch(e){return -1;}})")
             ck(stored == len(B2), "and the library is saved with them (%s)" % stored)
             await fresh()
             n0 = len(await skp_objs())

@@ -2,8 +2,9 @@ import { A3D, A3D_DOCS, LSK } from './state.js';
 import { TYPES, mergePrm, meshMinY, meshOf, validatePrm } from './mesh-primitives.js';
 import { pushUndo } from '../drawing/plan-mode-sketch.js';
 import { paint } from '../map/terrain-3d.js';
-import { A3D_SPILL, bimSpillSave } from './idb-store.js';
+import { A3D_SPILL, A3D_STORE, bimSpillSave } from './idb-store.js';
 import { refreshHud, saveSoon } from '../bim/region-regenerate.js';
+import { A3D_TAB, bimTabReadOnlyEdit } from './tab-lock.js';
 import { refreshTree } from '../sheets/presentation-panel.js';
 import { a3dToast } from '../bim/csg-booleans.js';
 
@@ -54,23 +55,28 @@ import { a3dToast } from '../bim/csg-booleans.js';
   /* __acad3dV115: a save that failed went into an empty catch, so a full browser store lost every
      later edit without a word. It says so now -- once per run of failures, not once per edit. */
   var A3D_SAVE_FAILED=false;
-  /* __acad3dV172d: a record localStorage refuses goes to the browser's database (core/idb-store.js), and stays
-     there while it is the project on screen; nothing saves while that record is still being read */
+  /* __acad3dV172d, __acad3dV172f: every project is kept in the browser's database (core/idb-store.js); localStorage only
+     while the database has not answered for a browser that never had it, or when the browser refuses it. Nothing is
+     saved while the record on screen is still being read or copied (the edit is saved once it is), while this tab
+     shows a project another tab holds (D7), or when the database cannot be opened by this copy. */
   function save3d(){
-    if(A3D_SPILL&&A3D_SPILL.loading)return;
+    if(A3D_STORE.mode==='refused')return;
+    if((A3D_SPILL&&A3D_SPILL.loading)||A3D_STORE.mode==='migrating'||(A3D_STORE.mode==='boot'&&A3D_STORE.v2)){A3D_SPILL.dirty=true;return;}
+    if(A3D_TAB.readOnly){bimTabReadOnlyEdit();return;}
     var rec=bimProjectRecord();
     rec.docId=A3D_DOCS.active;
     var s=JSON.stringify(rec);
-    if(!(A3D_SPILL&&A3D_SPILL.on)){
-      try{
-        localStorage.setItem(LSK,s);
-        if(A3D_SAVE_FAILED){A3D_SAVE_FAILED=false;a3dToast('Saving to browser storage works again');}
-        return;
-      }catch(e1){
-        console.warn('[BIM] The project does not fit in browser storage; it goes to the browser\'s database.',e1);
+    if(A3D_STORE.mode==='idb'){bimSpillSave(rec.docId,s,rec);return;}
+    try{
+      localStorage.setItem(LSK,s);
+      if(A3D_SAVE_FAILED){A3D_SAVE_FAILED=false;a3dToast('Saving to browser storage works again');}
+    }catch(e1){
+      if(!A3D_SAVE_FAILED){
+        A3D_SAVE_FAILED=true;
+        console.warn('[BIM] The project could not be saved: browser storage is full.',e1);
+        a3dToast('This project could not be saved: browser storage is full. Use Save to keep a copy as a file.');
       }
     }
-    bimSpillSave(rec.docId,s,rec);
   }
   /* setters: other files assign these through them (an ES module cannot assign to an import) */
   function setA3D_REV(v){A3D_REV=v;return v;}

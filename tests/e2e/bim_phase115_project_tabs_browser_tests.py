@@ -135,22 +135,25 @@ async def drive(ck):
         async def active_id():
             return await safe("()=>window.__a3dDocs.active()")
 
+        # AMENDED FOR V172f: every project is kept in the browser's database under its id; localStorage keeps the index
+        # (acad3dProjectsV2) and none of the older project keys
         async def storage_places():
-            """Where each project is stored: the one in acad3dV1, and every acad3dDocV1: key."""
-            return await safe("""()=>{var o={slot:null,keys:[]};
-                try{o.slot=JSON.parse(localStorage.getItem('acad3dV1')||'{}').docId||null;}catch(e){}
+            """The database's project keys, the index's active project, and any older project key left."""
+            return await safe("""()=>window.__a3dStoredKeys().then(function(ks){var o={db:(ks||[]).filter(function(k){
+                  return String(k).indexOf('tpl:')!==0&&String(k).indexOf('lib:')!==0;}).sort(),slot:null,old:[]};
+                try{o.slot=JSON.parse(localStorage.getItem('acad3dProjectsV2')||'{}').active||null;}catch(e){}
                 for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i);
-                  if(k.indexOf('acad3dDocV1:')===0)o.keys.push(k.slice(12));}
-                o.keys.sort();return o;}""")
+                  if(k==='acad3dV1'||k.indexOf('acad3dDocV1:')===0)o.old.push(k);}
+                return o;})""")
 
         async def one_place(label):
             await page.wait_for_timeout(450)     # the autosave that follows a switch
             pl = await storage_places()
             ds = await docs()
             act = [d['id'] for d in ds if d['loaded']]
-            others = sorted(d['id'] for d in ds if not d['loaded'])
-            ck(pl is not None and len(act) == 1 and pl['slot'] == act[0] and act[0] not in pl['keys'] and pl['keys'] == others,
-               '%s: every project is stored in exactly one place -- the one on screen in acad3dV1, each other in its own key (%s)'
+            every = sorted(d['id'] for d in ds)
+            ck(pl is not None and len(act) == 1 and pl['slot'] == act[0] and pl['db'] == every and pl['old'] == [],
+               '%s: every project is stored once, in the browser\'s database under its id; the index names the one on screen (%s)'
                % (label, pl))
 
         async def start_state():
@@ -168,6 +171,8 @@ async def drive(ck):
         # the old store is written while the app is closed -- from a blank page on the same file://
         # origin -- so nothing the app still has pending can land on top of it
         await page.goto('file://' + str(BLANK))
+        # AMENDED FOR V172f: a store from before V115 has no browser's database either
+        await safe("()=>new Promise(function(res){var r=indexedDB.deleteDatabase('BIM-Personal');r.onsuccess=r.onerror=r.onblocked=function(){res(true);};})")
         await safe("(rec)=>{localStorage.clear();localStorage.setItem('acad3dV1',rec);}", json.dumps(LEGACY))
         await page.goto('file://' + str(HTML))
         await ready()
@@ -179,15 +184,15 @@ async def drive(ck):
         lv = await safe("()=>window.__a3dLevels().map(function(l){return l.name;})")
         ck(len(ds) == 1 and ds[0]['loaded'] and lv == ['Ground'],
            'the project list has that one project, and its model is the stored one -- level "Ground" (%s / %s)' % (len(ds), lv))
-        idx = await safe("()=>JSON.parse(localStorage.getItem('acad3dDocsV1')||'null')")
+        idx = await safe("()=>JSON.parse(localStorage.getItem('acad3dProjectsV2')||'null')")
         ck(idx is not None and idx.get('open') == [ds[0]['id']] and idx.get('active') == ds[0]['id'],
            'the list is written, with that project open and on screen (%s)' % idx)
         legacy = ds[0]['id'] if ds else None
         await safe("()=>{window.__a3dWall([[0,0],[4,0]],0.3,null,'center',false);}")
         await page.wait_for_timeout(500)
         pl = await storage_places()
-        ck(pl is not None and pl['slot'] == legacy,
-           'the next save tags acad3dV1 with the project it holds, so boot never has to guess (%s)' % pl)
+        ck(pl is not None and pl['slot'] == legacy and legacy in pl['db'] and pl['old'] == [],
+           'the store written before V115 is moved into the database under the project\'s id, the old key retired (%s)' % pl)
         await page.click('#acad-qat [data-acad-act="undo"]')
         await page.wait_for_timeout(450)
 
@@ -342,7 +347,8 @@ async def drive(ck):
         print('\n-- 7. failures say so and leave the project on screen whole')
         await page.click('#acad-doctabs [data-dtx="%s"]' % bridge)
         await page.wait_for_timeout(450)
-        await safe("(id)=>localStorage.setItem('acad3dDocV1:'+id,'{\"objs\":\"damaged\"}')", bridge)
+        # AMENDED FOR V172f: projects are kept in the browser's database; the damage is written there
+        await safe("(id)=>window.__a3dStoredPut(id,'{\"objs\":\"damaged\"}')", bridge)
         await page.click('#acad-doctabs [data-dt="start"]')
         await page.wait_for_timeout(250)
         await clear_toast()
@@ -350,22 +356,30 @@ async def drive(ck):
         await page.wait_for_timeout(500)
         tt = await toast()
         pl = await storage_places()
-        ck('damaged' in tt and (await active_id()) == p1 and (await objs()) == 2 and pl and pl['slot'] == p1 and bridge in pl['keys'],
-           'a damaged project says so, and Project1 stays on screen and in acad3dV1, the damaged one kept for inspection (%r)' % tt)
-        await safe("(id)=>localStorage.setItem('acad3dDocV1:'+id,JSON.stringify({objs:[],titleBlock:{project:'Bridge Deck',client:'',drawnBy:'',checkedBy:''}}))", bridge)
+        ck('damaged' in tt and (await active_id()) == p1 and (await objs()) == 2 and pl and pl['slot'] == p1 and bridge in pl['db'],
+           'a damaged project says so, and Project1 stays on screen, the damaged one kept for inspection (%r)' % tt)
+        await safe("(id)=>window.__a3dStoredPut(id,JSON.stringify({objs:[],titleBlock:{project:'Bridge Deck',client:'',drawnBy:'',checkedBy:''}}))", bridge)
         await page.click('#acad-doctabs [data-doc="%s"] .dt-name' % p1)
         await page.wait_for_timeout(300)
         n_docs = len(await docs())
-        await safe("""()=>{window.__realSet=Storage.prototype.setItem;
-            Storage.prototype.setItem=function(k,v){if(String(k).indexOf('acad3dDocV1:')===0){var e=new Error('full');e.name='QuotaExceededError';throw e;}
-              return window.__realSet.call(this,k,v);};}""")
+        # AMENDED FOR V172f: the database refuses the project left by a switch; the switch goes on, the refusal is said,
+        # and the refused record is kept in the tab, so reopening the project finds it whole
+        await safe("""()=>{window.__realSet=Storage.prototype.setItem;window.__realPut=IDBObjectStore.prototype.put;
+            IDBObjectStore.prototype.put=function(v,k){var e=new Error('full');e.name='QuotaExceededError';throw e;};}""")
         await clear_toast()
         await page.click('#acad-doctabs [data-dt="new"]')
-        await page.wait_for_timeout(500)
+        await page.wait_for_timeout(600)
         tt = await toast()
-        await safe("()=>{Storage.prototype.setItem=window.__realSet;}")
-        ck('not enough browser storage' in tt and (await active_id()) == p1 and (await objs()) == 2 and len(await docs()) == n_docs,
-           'a full store during a switch says so, and nothing moves: same project, same list (%r)' % tt)
+        p3 = await active_id()
+        await safe("()=>{IDBObjectStore.prototype.put=window.__realPut;}")
+        await safe("(id)=>window.__a3dDocs.activate(id)", p1)
+        await page.wait_for_timeout(600)
+        ck('could not be saved' in tt and p3 != p1 and (await active_id()) == p1 and (await objs()) == 2 and len(await docs()) == n_docs + 1,
+           'a full database during a switch says so, and the project left comes back whole (%r)' % tt)
+        await safe("(id)=>window.__a3dDocs.close(id)", p3)
+        await page.wait_for_timeout(300)
+        await safe("(id)=>window.__a3dDocs.remove(id)", p3)
+        await page.wait_for_timeout(500)
         # AMENDED FOR V172d: a record localStorage refuses goes to the browser's database, so a save that fails is
         # one both refuse; the database is made to refuse too (open and transaction), and both are put back
         await safe("""()=>{Storage.prototype.setItem=function(k,v){if(k==='acad3dV1'){var e=new Error('full');e.name='QuotaExceededError';throw e;}
@@ -430,14 +444,14 @@ async def drive(ck):
         answer['accept'] = False
         await page.click('#acad-start .st-card[data-doc="%s"] .st-del' % bridge)
         await page.wait_for_timeout(300)
-        still = await safe("(id)=>localStorage.getItem('acad3dDocV1:'+id)!==null", bridge)
+        still = await safe("(id)=>window.__a3dStoredGet(id).then(function(v){return v!==null;})", bridge)
         ck(dialogs and 'Bridge Deck' in dialogs[-1] and still is True and any(d['id'] == bridge for d in await docs()),
            'Delete asks, naming the project, and Cancel keeps it (%s)' % (dialogs[-1:] if dialogs else None))
         answer['accept'] = True
         await page.click('#acad-start .st-card[data-doc="%s"] .st-del' % bridge)
         await page.wait_for_timeout(300)
         answer['accept'] = False
-        gone = await safe("(id)=>localStorage.getItem('acad3dDocV1:'+id)===null", bridge)
+        gone = await safe("(id)=>window.__a3dStoredGet(id).then(function(v){return v===null;})", bridge)
         st = await start_state()
         ck(gone is True and not any(d['id'] == bridge for d in await docs()) and not any(c['id'] == bridge for c in st['cards']),
            'OK deletes it: its stored data, its list entry and its card')
@@ -452,20 +466,25 @@ async def drive(ck):
         await ready()
         ck((await objs()) == 3 and (await active_id()) == cur,
            'a wall drawn and reloaded inside the autosave\'s 300 ms wait is still there -- it was lost every time before')
+        # AMENDED FOR V172f: with every project in the database there is no parked copy to repair; what boot repairs
+        # now is a record the index lost, an index entry with nothing behind it, and an older key found later
         await page.wait_for_timeout(500)
-        await page.goto('file://' + str(BLANK))   # what a crash leaves, written while the app is closed
-        await safe("""(cur)=>{localStorage.setItem('acad3dDocV1:'+cur,localStorage.getItem('acad3dV1'));
-            localStorage.setItem('acad3dDocV1:doc-orphan-1',JSON.stringify({objs:[],titleBlock:{project:'Orphan Hall',client:'',drawnBy:'',checkedBy:''}}));
-            var ix=JSON.parse(localStorage.getItem('acad3dDocsV1'));ix.docs.push({id:'doc-ghost-1',name:'Ghost',objs:0,saved:0});
-            localStorage.setItem('acad3dDocsV1',JSON.stringify(ix));}""", cur)
+        await safe("()=>window.__a3dStoredPut('doc-orphan-1',JSON.stringify({objs:[],titleBlock:{project:'Orphan Hall',client:'',drawnBy:'',checkedBy:''}}))")
+        await page.goto('file://' + str(BLANK))   # written while the app is closed
+        await safe("""()=>{var ix=JSON.parse(localStorage.getItem('acad3dProjectsV2'));ix.docs.push({id:'doc-ghost-1',name:'Ghost',objs:0,saved:0});
+            localStorage.setItem('acad3dProjectsV2',JSON.stringify(ix));
+            localStorage.setItem('acad3dDocV1:doc-old-1',JSON.stringify({objs:[{id:'w-old',t:'wall'}],titleBlock:{project:'Old Pier',client:'',drawnBy:'',checkedBy:''}}));
+            localStorage.setItem('acad3dV1',JSON.stringify({objs:[],titleBlock:{project:'',client:'',drawnBy:'',checkedBy:''}}));}""")
         await page.goto('file://' + str(HTML))
         await ready()
+        await page.wait_for_timeout(800)
         names = [d['name'] for d in await docs()]
-        stale = await safe("(id)=>localStorage.getItem('acad3dDocV1:'+id)", cur)
-        ck(stale is None and (await active_id()) == cur and (await objs()) == 3,
-           'the copy an interrupted switch leaves is dropped at boot, and the project on screen is whole')
+        left = await safe("()=>[localStorage.getItem('acad3dDocV1:doc-old-1'),localStorage.getItem('acad3dV1')]")
+        ck((await active_id()) == cur and (await objs()) == 3, 'the project on screen is whole after the repairs')
         ck('Orphan Hall' in names, 'a stored project the list lost is listed again (%s)' % names)
         ck('Ghost' not in names, 'and a list entry with nothing stored behind it is dropped (%s)' % names)
+        ck('Old Pier' in names and left == [None, None],
+           'an older key with a project in it is kept as a project, an empty one dropped, both keys retired (%s, %s)' % (names, left))
 
         ck(not errs, 'no page errors (%s)' % errs[:3])
         await browser.close()

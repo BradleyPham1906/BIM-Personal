@@ -26,11 +26,12 @@ requires command mapping, full app regressions and owner review.
 
 **Read this first in a new session.** One page. The detail lives in the docs listed at the bottom.
 
-    canvas_v10.html   3931722 bytes
-    sha256            ec6b82ead8e2072e7e5031e18f5e7dc6364d9f1fbab2e4ad26579f071f65084a
+    canvas_v10.html   3970486 bytes
+    sha256            45903347786951bf2d6ab9642dbe36bb827bc02cbdbd84dd733a41dcf6acf57d
     markers           __acad3dV60 ... __acad3dV172, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
                       __acad3dV121b, __acad3dV124b, __acad3dV166b, __acad3dV166c, __acad3dV166d, __acad3dV171b,
-                      __acad3dV171c, __acad3dV171d, __acad3dV172b, __acad3dV172c, __acad3dV172d, __acad3dV172e
+                      __acad3dV171c, __acad3dV171d, __acad3dV172b, __acad3dV172c, __acad3dV172d, __acad3dV172e,
+                      __acad3dV172f
     runtime           runtime/: Pyodide 0.29.5, Ladybug's five wheels, Pyodide's numpy and Radiance's gendaymtx as
                       WebAssembly (the release rad6R0P1a), 15 files each pinned in runtime/MANIFEST.json
                       (tools/check_runtime.py); asked only when a Ladybug analysis runs (V172b, V172c)
@@ -161,8 +162,8 @@ three tiers: compact up to 720 px wide or 500 px high, medium up to 1024 px, des
 | 172c | Ladybug L2: sun-hours and radiation on the model | **Done** (see Recently finished): Ladybug's incident radiation (its SkyMatrix, Radiance's own `gendaymtx` built to WebAssembly from the release rad6R0P1a, Tregenza's or Reinhart's sky) and direct sun hours (its Sunpath, the day studied or the year) on each face of the model's solids, the app's rays over a bounding-volume hierarchy, Ladybug's own sums; kept, out of date and why, drawn in Ladybug's legend colours, two rows in Analyze's Climate; beside V143's Solar and V148's Sun hours (kept, the owner) | `docs/research/research-ladybug-sun-radiation.md` (with As built, 13). |
 | 172d | Storage A1: large projects in IndexedDB | **Done** (see Recently finished): a project record localStorage refuses goes to IndexedDB (`BIM-Personal`, store `projects`), a pointer in its place written once the record has committed; boot reads it back and saves nothing until then; switching parks and reopens it; deleting removes it; a waiting autosave written when the page is hidden. What fits stays where it was | `docs/research/research-local-storage.md` (D1, D9, D10; the owner, 2026-10-31). |
 | 172e | Storage A2: the library and templates in IndexedDB | **Done** (see Recently finished): the Assets library and templates localStorage refuses kept in the database (`lib:family`, `tpl:<id>`), pointers written once committed, the library read back after start with anything added meanwhile kept; the browser asked to keep the app's storage at the first Save (D3) | `docs/research/research-local-storage.md` (D1, D3). |
-| 172f | Storage A3: every project in IndexedDB, the old keys retired | **Start here.** Every project record in the database, localStorage keeping pointers and the small preferences; the old keys copied, checked and retired (the owner's approval, 2026-10-31); a schema version, old `v/` builds kept from overwriting; a second tab opens a project read-only (D7) | Same note, D1, D7, D10. |
-| 172g | Storage B: files as the real save | A "not saved to a file" marker on each project, a reminder after 30 minutes and at the first save in Safari or a private window (D2); Save and Open through the File System Access pickers in Chrome and Edge, download and a file input elsewhere; the envelope version 2 with the view; an optional `.acad3d.json.gz` known by its first bytes (D4); the `file://` build told when storage is refused (D5) | Same note, D2, D4, D5. |
+| 172f | Storage A3: every project in IndexedDB, the old keys retired | **Done** (see Recently finished): every project, template and the Assets library in the database (`BIM-Personal` version 2, the schema version), the list under `acad3dProjectsV2`; the older keys copied in one transaction, read back, compared, then removed if unchanged; older keys found later kept when they hold anything; every write committed explicitly and a `pagehide` journal; a project open in another tab read-only here, with Take over (Web Locks) | Same note, part 13 (D1, D7, D9, D10; the owner's F1, F2). |
+| 172g | Storage B: files as the real save | **Start here.** A "not saved to a file" marker on each project, a reminder after 30 minutes and at the first save in Safari or a private window (D2); Save and Open through the File System Access pickers in Chrome and Edge, download and a file input elsewhere; the envelope version 2 with the view; an optional `.acad3d.json.gz` known by its first bytes (D4); the `file://` build told when storage is refused (D5) | Same note, D2, D4, D5. |
 | 172h | Storage C: installable and offline | A manifest (`/BIM-Personal/`, standalone, 192 and 512 px icons) and an ES5 service worker at `/BIM-Personal/sw.js`: hashed `app/` files cache-first, `index.html` network-first, `v/` left alone, no update while there is unsaved work (D6) | Same note, D6. |
 | 173 | Site analysis SA6: the Contents pane | The layer stack by drawing order, by source and by selection, a legend patch under each layer; symbology (by category, graduated, stretch), labels and a filter (definition query); the stack exploded in 3D as McHarg's layer cake | ArcGIS Pro's Contents pane. |
 | 174 | Presentation P1: boards | V162 made the site analysis's boards pages of the set, and V172b their figures editable (arranged, added, sized under Snap, Grid and Ortho; boards of one's own); this phase is boards you design. New Layout's page gallery (ANSI, Architectural, ISO, portrait and landscape); map frames with a live legend, north arrow and scale bar. A board is a sheet you design on: one layer tree (frames, groups, lock, hide, reorder), opacity and blend modes on every element (canvas compositing, the same 16 modes as Figma), masks, shapes, text, images; align, distribute, smart spacing; rows and columns that space their children (a light auto layout) | Figma's layer model. `docs/research/research-presentation-panels.md` (1). |
@@ -245,7 +246,24 @@ when it starts (V111 to V138 went to other work; V139 to V193 are in NOW).
 | 118 | Blocks and data | ATTDEF ATTEDIT BEDIT WBLOCK DATAEXTRACTION TABLESTYLE TABLEDIT TABLEEXPORT | First phase that's about the disciplines, not drafting. BLOCK and INSERT landed in V124, as the Assets library's blocks: saved records inserted as independent copies. A block reference that follows its definition (what BEDIT edits) is not built. |
 | 119 | Sheets and plotting, rest | MVIEW (draw a viewport on the paper) PAGESETUP (plot settings beyond Sheet Setup) PUBLISH (V122's Print set prints every sheet in one job; a chosen subset and page setups remain) EXPORTPDF (vector PDF of a sheet) VPLAYER (per-viewport layer visibility) viewport lock | LAYOUT, MSPACE and PSPACE landed in V116, with layout tabs and model space through a viewport. |
 
-**Recently finished:** V172c, **Ladybug L2: sun-hours and radiation on the model** (2026-11-01; the version stays V172).
+**Recently finished:** V172f, **storage A3: every project in IndexedDB, the old keys retired** (2026-11-02 to 11-07; the
+version stays V172).
+- Research: `docs/research/research-local-storage.md`, part 13. Measured: a database write started as the page goes away was
+  lost at every reload without `commit()` (0 of 10) and kept with it once the database existed (120 of 120); a pre-V172d
+  build wiped V172d's pointer at start; Web Locks freed in 11 to 62 ms on reload, close or crash. The owner: F1 (older
+  versions in memory; moot since PR #65 publishes none), F2 (Web Locks only).
+- `core/idb-store.js`: version 2, `commit()` on every write, the store's mode; `core/project-store.js` (new): the start, the
+  migration (copy, check, retire), older keys found later (empty ones dropped), the journal; `core/tab-lock.js` (new): a lock
+  per project, the read-only bar, Take over; `save3d`, switching, deleting, templates and the library follow the mode.
+- Checked: modules, the build, `npm test` 18 of 18 (4 new); the browser check clean; the new suite
+  `tests/e2e/bim_phase172f_idb_every_project_browser_tests.py` 26 of 26; seven suites amended for the database and all
+  passing: V115 49/49, V121b 21/21, V124 67/67, V124b 20/20, V163 115/115, V172d 38/38 (two pointer checks removed, the
+  pointer retired), V172e 27/27. Found by the suites: a reload with every tab closed reopened a tab (fixed); a confirmed
+  journal stamped ahead of the clock stayed (fixed); the read-only bar under the engine's toolbar (fixed); a refused save
+  during a switch lost the project's last state (now kept in the tab and journaled); empty orphan records listed (now
+  removed). The full regression has not been run.
+
+V172c, **Ladybug L2: sun-hours and radiation on the model** (2026-11-01; the version stays V172).
 - The owner's answers: `gendaymtx` compiled and run here, then added to the runtime (over a Python port of its sky);
   numpy added; V143's Solar and V148's Sun hours kept beside. Research: `docs/research/research-ladybug-sun-radiation.md`.
 - **The sky:** ladybug-radiance runs Radiance for its sky and its rays; Radiance's `gendaymtx`, its C built unchanged to

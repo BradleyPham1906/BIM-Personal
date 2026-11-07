@@ -6,6 +6,11 @@ import { bimAdoptLayers } from '../bim/region-regenerate.js';
 import { bimPresValid } from '../sheets/boards.js';
 
   var LSK='acad3dV1';
+  /* __acad3dV172f: every project in the browser's database (docs/research/research-local-storage.md, part 13). The index
+     -- which projects there are, which is on screen, which are open -- is kept under a key of its own, which no older
+     build reads, so none can misread or overwrite it (an older build replaced V172d's pointer in acad3dV1 at start,
+     measured, e15); a record not yet confirmed by the database is journaled under its own key at pagehide. */
+  var A3D_INDEX_KEY='acad3dProjectsV2',A3D_JOURNAL_PREFIX='acad3dJournalV2:';
   var SCALE=0.35;
   var DEFCAM={yaw:-0.7,pitch:0.42,dist:30,tx:0,ty:1,tz:0};
   /* __acad3dV120: the material library. One array, read through bimMaterialCards() by the
@@ -115,7 +120,23 @@ import { bimPresValid } from '../sheets/boards.js';
       try{bimAdoptLayers();}
       catch(eAd){console.warn('[BIM] Objects could not be given their layers; they follow the current one until the next save.',eAd);}
   }
+  var A3D_BOOT_V2=null;   /* __acad3dV172f: the index, when the projects are already in the database */
   try{
+    var raw2=localStorage.getItem(A3D_INDEX_KEY);
+    if(raw2){
+      var ix2=JSON.parse(raw2);
+      if(ix2&&ix2.v===2&&Array.isArray(ix2.docs))A3D_BOOT_V2=ix2;
+    }
+  }catch(eV){console.warn('[BIM] The project index could not be read; the older keys are read instead.',eV);}
+  if(A3D_BOOT_V2){
+    /* the project on screen is read from the database after start; the index names it now */
+    if(typeof A3D_BOOT_V2.active==='string'&&A3D_BOOT_V2.active){
+      A3D_BOOT_IDB=A3D_BOOT_V2.active;A3D_BOOT_DOC=A3D_BOOT_V2.active;
+      A3D_BOOT_V2.docs.forEach(function(d){
+        if(d&&d.id===A3D_BOOT_IDB&&typeof d.name==='string'&&d.name&&d.name!=='Untitled project')A3D.titleBlock.project=d.name;
+      });
+    }
+  }else try{
     var raw=localStorage.getItem(LSK);
     if(raw){
       var st=JSON.parse(raw);
@@ -134,6 +155,7 @@ import { bimPresValid } from '../sheets/boards.js';
   var A3D_DOCS=bimDocsBoot();
   var A3D_DOC_RT={};
 export {
-  A3D, A3D_BOOT_DOC, A3D_BOOT_IDB, A3D_DOCS, A3D_DOCS_KEY, A3D_DOC_PREFIX, A3D_DOC_RT, A3D_MATERIAL_LIBRARY,
-  A3D_PROJECT_DEFAULTS, DEFCAM, LSK, SCALE, bimApplyStoredState, el
+  A3D, A3D_BOOT_DOC, A3D_BOOT_IDB, A3D_BOOT_V2, A3D_DOCS, A3D_DOCS_KEY, A3D_DOC_PREFIX, A3D_DOC_RT,
+  A3D_INDEX_KEY, A3D_JOURNAL_PREFIX, A3D_MATERIAL_LIBRARY, A3D_PROJECT_DEFAULTS, DEFCAM, LSK, SCALE,
+  bimApplyStoredState, el
 };

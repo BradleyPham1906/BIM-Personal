@@ -1,13 +1,14 @@
-import { A3D, A3D_DOCS, A3D_DOC_PREFIX, A3D_DOC_RT, el } from '../core/state.js';
+import { A3D, A3D_DOCS, A3D_DOC_PREFIX, A3D_DOC_RT, A3D_JOURNAL_PREFIX, el } from '../core/state.js';
 import { bimEndSketch } from '../drawing/command-ending.js';
 import { bimEsc } from '../layers/layer-manager.js';
 import { bimProjectRecord, save3d, saveT, setSaveT } from '../core/objects-save.js';
-import { bimIdbDel, bimIdbGet, bimIdbPut } from '../core/idb-store.js';
+import { A3D_STORE, bimIdbDel, bimIdbGet, bimIdbPut } from '../core/idb-store.js';
 import {
   bimDocEntry, bimDocName, bimDocsActivate, bimDocsAdd, bimDocsNotify, bimDocsSave, bimNextProjectName,
   bimProjectLabel
 } from '../ui/project-tabs.js';
 import { A3D_FAMLIB, A3D_TEMPLATE_PREFIX, bimAssetKind, bimSaveFamilyLibrary } from './family-library.js';
+import { bimTabIfFree } from '../core/tab-lock.js';
 import { bimRecsThumb } from './scale-assets.js';
 import { refreshFamilyPanel } from './blocks.js';
 import { closeDlg } from '../ui/touch-input.js';
@@ -21,8 +22,8 @@ import { a3dToast } from '../bim/csg-booleans.js';
     var id='tpl-'+Date.now().toString(36)+'-'+Math.floor(Math.random()*1e6);
     /* __acad3dV172e: a template localStorage refuses is kept in the browser's database; the entry goes again if the
        database refuses it too */
-    var s=JSON.stringify(rec),inIdb=false;
-    try{localStorage.setItem(A3D_TEMPLATE_PREFIX+id,s);}
+    var s=JSON.stringify(rec),inIdb=A3D_STORE.mode==='idb';   /* __acad3dV172f: with the projects, in the database */
+    if(!inIdb)try{localStorage.setItem(A3D_TEMPLATE_PREFIX+id,s);}
     catch(eS){
       console.warn('[BIM] The template does not fit in browser storage; it goes to the browser\'s database.',eS);
       inIdb=true;
@@ -143,6 +144,21 @@ import { a3dToast } from '../bim/csg-booleans.js';
     if(!ent)return false;
     if(A3D_DOCS.open.indexOf(id)>=0){a3dToast('Close "'+bimDocName(id)+'" before deleting it');return false;}
     if(id===A3D_DOCS.active){a3dToast('Open another project before deleting "'+bimDocName(id)+'"');return false;}
+    /* __acad3dV172f: kept in the database, it goes from there; not while another tab has it open (D7) */
+    if(A3D_STORE.mode==='idb'){
+      bimTabIfFree(id,function(){
+        bimIdbDel(id,function(eD){
+          if(eD){console.warn('[BIM] A stored project could not be deleted.',eD);a3dToast('The project could not be deleted');return;}
+          try{localStorage.removeItem(A3D_JOURNAL_PREFIX+id);}catch(eJ){console.warn('[BIM] A project\'s journal could not be removed.',eJ);}
+          A3D_DOCS.docs=A3D_DOCS.docs.filter(function(e){return e.id!==id;});
+          delete A3D_DOC_RT[id];
+          bimDocsSave();
+          bimDocsNotify('remove',id);
+          a3dToast('Deleted "'+(ent.name||'Untitled project')+'"');
+        });
+      },function(){a3dToast('"'+(ent.name||'Untitled project')+'" is open in another tab: close it there before deleting it');});
+      return true;
+    }
     try{localStorage.removeItem(A3D_DOC_PREFIX+id);}
     catch(eX){console.warn('[BIM] A stored project could not be deleted.',eX);a3dToast('The project could not be deleted');return false;}
     bimIdbDel(id,function(eD){if(eD)console.warn('[BIM] A project\'s copy in the browser\'s database could not be removed: '+id,eD);});   /* __acad3dV172d */

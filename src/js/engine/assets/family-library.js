@@ -1,5 +1,7 @@
+import { A3D_BOOT_V2 } from '../core/state.js';
 import { mkBoxP, mkCylP } from '../core/mesh-primitives.js';
 import { bimIdbDel, bimIdbGet, bimIdbPut } from '../core/idb-store.js';
+import { bimRetire } from '../core/project-store.js';
 import { bimMeshThumb } from './scale-assets.js';
 import { refreshFamilyPanel } from './blocks.js';
 import { a3dToast } from '../bim/csg-booleans.js';
@@ -15,6 +17,10 @@ import { a3dToast } from '../bim/csg-booleans.js';
   /* __acad3dV172e: the library kept in the browser's database ('lib:family'), its pointer in its key; while it is
      read, saves wait and are made with it */
   var A3D_FAMLIB_IDB=false,A3D_FAMLIB_LOADING=false,A3D_FAMLIB_DIRTY=false;
+  /* __acad3dV172f: with the projects in the database the library is always there; an older key's copy found later is
+     removed once the library holding its entries has committed */
+  var A3D_FAMLIB_RETIRE=[];
+  function setA3D_FAMLIB_IDB(v){A3D_FAMLIB_IDB=v;return v;}
   var A3D_FAMLIB=bimLoadFamilyLibrary();
   function bimMeshBounds(mesh){
     var mn=[Infinity,Infinity,Infinity],mx=[-Infinity,-Infinity,-Infinity],i,k;
@@ -45,6 +51,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
     return {v:v,f:f};
   }
   function bimLoadFamilyLibrary(){
+    if(A3D_BOOT_V2){A3D_FAMLIB_IDB=true;A3D_FAMLIB_LOADING=true;return [];}   /* __acad3dV172f */
     try{
       var raw=localStorage.getItem(FAMILY_LIB_KEY);
       if(raw){
@@ -81,6 +88,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
         try{localStorage.setItem(FAMILY_LIB_KEY,JSON.stringify({idb:1,key:'lib:family',count:n}));A3D_FAMLIB_IDB=true;}
         catch(eP){failed(eP);return;}
       }
+      A3D_FAMLIB_RETIRE.splice(0).forEach(function(p){bimRetire(p.key,p.raw);});   /* __acad3dV172f */
       worked();
     });
     return null;
@@ -92,12 +100,15 @@ import { a3dToast } from '../bim/csg-booleans.js';
       if(!err&&v&&typeof v.rec==='string'){
         try{arr=JSON.parse(v.rec);}catch(eJ){console.warn('[BIM] The Assets library in the browser\'s database is not valid JSON.',eJ);}
       }
+      if(!err&&!v)arr=[];   /* __acad3dV172f: no library kept yet */
       if(!Array.isArray(arr)){
         if(err)console.warn('[BIM] The browser\'s database could not be read.',err);
         a3dToast('The Assets library is kept in the browser\'s database, which could not be read: nothing is saved over it.');
         return;
       }
-      var added=A3D_FAMLIB.splice(0,A3D_FAMLIB.length);
+      var added=A3D_FAMLIB.splice(0,A3D_FAMLIB.length),have={};
+      arr.forEach(function(e){if(e&&e.id)have[e.id]=1;});
+      added=added.filter(function(e){return !(e&&e.id&&have[e.id]);});   /* __acad3dV172f: an entry found twice is kept once */
       Array.prototype.push.apply(A3D_FAMLIB,arr.concat(added));
       A3D_FAMLIB_LOADING=false;
       if(A3D_FAMLIB_DIRTY||added.length){A3D_FAMLIB_DIRTY=false;bimSaveFamilyLibrary();}
@@ -196,7 +207,8 @@ import { a3dToast } from '../bim/csg-booleans.js';
   });
 
 export {
-  A3D_ASSET_BUILTINS, A3D_FAMLIB, A3D_FAMLIB_DIRTY, A3D_FAMLIB_IDB, A3D_FAMLIB_LOADING, A3D_TEMPLATE_PREFIX,
-  FAMILY_CATEGORIES, bimAssetKind, bimCloneMesh, bimFamilyLibraryAdd, bimFamilyLibraryGet,
-  bimFamilyLibraryRemove, bimLibEntries, bimMergeMeshes, bimMeshBounds, bimSaveFamilyLibrary
+  A3D_ASSET_BUILTINS, A3D_FAMLIB, A3D_FAMLIB_DIRTY, A3D_FAMLIB_IDB, A3D_FAMLIB_LOADING, A3D_FAMLIB_RETIRE,
+  A3D_TEMPLATE_PREFIX, FAMILY_CATEGORIES, bimAssetKind, bimCloneMesh, bimFamilyLibraryAdd,
+  bimFamilyLibraryGet, bimFamilyLibraryRemove, bimLibEntries, bimMergeMeshes, bimMeshBounds,
+  bimSaveFamilyLibrary, setA3D_FAMLIB_IDB
 };

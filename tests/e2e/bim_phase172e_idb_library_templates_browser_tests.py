@@ -28,7 +28,7 @@ TPL = 'acad3dTemplateV1:'
 MESH = "{v:[0,0,0, 1,0,0, 0,1,0],f:[0,1,2]}"
 
 IDB_GET = """(id)=>new Promise(function(res){
-  var r;try{r=indexedDB.open('BIM-Personal',1);}catch(e){res({err:String(e)});return;}
+  var r;try{r=indexedDB.open('BIM-Personal');}catch(e){res({err:String(e)});return;}
   r.onupgradeneeded=function(){r.result.createObjectStore('projects');};
   r.onsuccess=function(){var db=r.result;try{var t=db.transaction('projects','readonly'),g=t.objectStore('projects').get(id);
     g.onsuccess=function(){db.close();res({rec:g.result?g.result.rec:null});};g.onerror=function(){db.close();res({err:'get'});};}
@@ -67,7 +67,7 @@ def static_checks(ck, t):
        'the library\'s pointer is written after its copy has committed, and not on an error')
     ck('if(A3D_FAMLIB_LOADING){A3D_FAMLIB_DIRTY=true;return null;}' in body, 'nothing saves over the library while it is read')
     ck('arr.concat(added)' in code, 'what is added while it is read is kept after what was stored')
-    tx = re.search(r"function bimIdbTx\(mode,work,done,again\)\{(.*?)\n  \}\n", code, flags=re.S)
+    tx = re.search(r"function bimIdbTx\(mode,work,done,again,strict\)\{(.*?)\n  \}\n", code, flags=re.S)   # AMENDED FOR V172f
     ck(tx is not None and 'if(err){setTimeout(function(){done(err);},0);return;}' in tx.group(1)
        and 'ended=true;setTimeout(function(){done(e,v);},0);' in tx.group(1),
        'every database answer comes after the call has returned, a refusal at once too')
@@ -146,7 +146,10 @@ async def drive(ck):
             return await safe("()=>window.__a3dLibrary().filter(function(r){return !r.builtin;}).map(function(r){return r.id;})") or []
 
         # ------------------------------------------------------------------------------------------
-        print('\n-- 1. what fits stays where it was')
+        # AMENDED FOR V172f: the library is always kept in the browser's database now; the checks that it stayed in
+        # localStorage while it fitted (and had a pointer there when it did not) assert what V172f lifted, and became
+        # the checks that localStorage holds none of it
+        print('\n-- 1. the library is kept in the browser\'s database')
         await page.goto('file://' + str(BLANK))
         await safe("()=>localStorage.clear()")
         await safe(IDB_WIPE)
@@ -154,9 +157,9 @@ async def drive(ck):
         ck((await safe("()=>window.__a3dPersist().asked")) is False, 'the browser is not asked to keep storage on load (D3)')
         a = await add('V172e first')
         await page.wait_for_timeout(400)
-        stored = await ls_json(LIB)
-        ck(isinstance(stored, list) and a in [e.get('id') for e in stored], 'a small library is saved whole in its key')
-        ck(await idb_rec('lib:family') is None, 'and the database has no copy of it')
+        r = await idb_rec('lib:family')
+        ck(r and a in r, 'the library is saved whole in the database, under lib:family')
+        ck(await ls_json(LIB) is None, 'and localStorage has no copy of it')
 
         print('\n-- 2. a library localStorage refuses goes to the database')
         await safe(REFUSE, LIB)
@@ -164,7 +167,7 @@ async def drive(ck):
         b = await add('V172e second')
         await page.wait_for_timeout(900)
         ptr = await ls_json(LIB)
-        ck(isinstance(ptr, dict) and ptr.get('idb') == 1 and ptr.get('count', 0) >= 2, 'its key holds a pointer (%s)' % (str(ptr)[:80]))
+        ck(ptr is None, 'its old key holds nothing, not even a pointer (%s)' % (str(ptr)[:80]))
         r = await idb_rec('lib:family')
         ck(r and a in r and b in r, 'the database holds the whole library')
         ck(not await toasts_with('could not be saved'), 'no toast says it could not be saved')

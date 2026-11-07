@@ -1,9 +1,6 @@
-import { A3D, A3D_BOOT_IDB, A3D_DOCS, LSK } from './state.js';
-import { paint } from '../map/terrain-3d.js';
+import { A3D_BOOT_IDB, A3D_BOOT_V2 } from './state.js';
 import { A3D_SAVE_FAILED, save3d, saveT, setA3D_SAVE_FAILED, setSaveT } from './objects-save.js';
-import {
-  bimDocEntry, bimDocsNotify, bimLoadProjectRecord, bimNameOf, bimProjectLabel
-} from '../ui/project-tabs.js';
+import { bimIndexTouch, bimJournalDrop } from './project-store.js';
 import { a3dToast } from '../bim/csg-booleans.js';
 
   /* ================= __acad3dV172d: the browser's database, for a project too large for localStorage =================
@@ -16,7 +13,14 @@ import { a3dToast } from '../bim/csg-booleans.js';
      One database named for the app (decision D10: every Pages project on the account shares the origin). ES5 and
      callbacks: the data API is events. A connection another tab's upgrade asks to close is closed (H10, measured);
      a connection the browser dropped is opened again once (idb-keyval, localForage). */
-  var A3D_IDB_NAME='BIM-Personal',A3D_IDB_VERSION=1,A3D_IDB_PROJECTS='projects';
+  var A3D_IDB_NAME='BIM-Personal',A3D_IDB_VERSION=2,A3D_IDB_PROJECTS='projects';
+  /* __acad3dV172f: version 2 is the schema version (D10). Its store is version 1's, unchanged; the number keeps V172d and
+     V172e copies -- an old tab, a file opened from disk -- out: they open version 1, are refused (VersionError) and save
+     nothing over a pointer they cannot read (measured, e15 C). A later version refuses this one the same way, and this
+     one says so. The store's mode: 'boot' until the database answers, then 'idb' (every project in it), 'migrating'
+     while the older keys are copied, 'legacy' (the browser refuses its database: localStorage as before V172d), or
+     'refused' (the projects are in a database this copy cannot open: nothing is saved over them). */
+  var A3D_STORE={mode:'boot',v2:!!A3D_BOOT_V2,newer:false};
   var A3D_IDB={db:null,waiting:null};
   function bimIdbOpen(cb){
     if(A3D_IDB.db){cb(null,A3D_IDB.db);return;}
@@ -45,7 +49,10 @@ import { a3dToast } from '../bim/csg-booleans.js';
       A3D_IDB.db=db;
       finish(null,db);
     };
-    req.onerror=function(){finish(req.error||new Error('The browser database could not be opened'),null);};
+    req.onerror=function(){
+      if(req.error&&req.error.name==='VersionError')A3D_STORE.newer=true;   /* __acad3dV172f */
+      finish(req.error||new Error('The browser database could not be opened'),null);
+    };
     req.onblocked=function(){
       console.warn('[BIM] The browser database is held open by another tab of the app.');
       a3dToast('Close the other tabs of this app so it can update its storage');
@@ -53,112 +60,88 @@ import { a3dToast } from '../bim/csg-booleans.js';
   }
   /* one transaction on the projects store; done(err, value) once it has committed or failed -- always after the
      call has returned (__acad3dV172e: a refusal at once answered inside the call) */
-  function bimIdbTx(mode,work,done,again){
+  function bimIdbTx(mode,work,done,again,strict){
     bimIdbOpen(function(err,db){
       if(err){setTimeout(function(){done(err);},0);return;}
       var tx,out={},ended=false;
       function end(e,v){if(ended)return;ended=true;setTimeout(function(){done(e,v);},0);}
-      try{tx=db.transaction(A3D_IDB_PROJECTS,mode);}
+      try{tx=strict?db.transaction(A3D_IDB_PROJECTS,mode,{durability:'strict'}):db.transaction(A3D_IDB_PROJECTS,mode);}
       catch(eT){
         A3D_IDB.db=null;
-        if(!again){bimIdbTx(mode,work,done,true);return;}
+        if(!again){bimIdbTx(mode,work,done,true,strict);return;}
         end(eT);return;
       }
       tx.oncomplete=function(){end(null,out.v);};
       tx.onabort=function(){end(tx.error||new Error('The browser database refused the change'));};
-      try{work(tx.objectStore(A3D_IDB_PROJECTS),out);}
+      try{
+        work(tx.objectStore(A3D_IDB_PROJECTS),out);
+        /* __acad3dV172f: committed at once, not when the results have been handled: a write started as the page goes
+           away was lost at every reload without it, and kept with it (e13, e13b; IndexedDB 3.0, auto-commit) */
+        if(mode==='readwrite'&&typeof tx.commit==='function')tx.commit();
+      }
       catch(eW){try{tx.abort();}catch(eA){}end(eW);}
     });
   }
   function bimIdbPut(key,val,done){bimIdbTx('readwrite',function(s){s.put(val,key);},done);}
   function bimIdbGet(key,done){bimIdbTx('readonly',function(s,out){var r=s.get(key);r.onsuccess=function(){out.v=r.result;};},done);}
   function bimIdbDel(key,done){bimIdbTx('readwrite',function(s){s['delete'](key);},done);}
-  /* the pointer localStorage keeps in a record's place */
+  /* __acad3dV172f: every key in the store; several values in one transaction, read or written (the migration's copy is
+     written with durability 'strict', the case Chrome names for it) */
+  function bimIdbKeys(done){bimIdbTx('readonly',function(s,out){var r=s.getAllKeys();r.onsuccess=function(){out.v=r.result||[];};},done);}
+  function bimIdbGetMany(keys,done){
+    bimIdbTx('readonly',function(s,out){
+      out.v={};
+      keys.forEach(function(k){var r=s.get(k);r.onsuccess=function(){out.v[k]=r.result;};});
+    },done);
+  }
+  function bimIdbPutMany(map,done){
+    bimIdbTx('readwrite',function(s){var k;for(k in map)if(map.hasOwnProperty(k))s.put(map[k],k);},done,false,true);
+  }
+  /* a V172d pointer: what acad3dV1 or a parked key held in place of a record the database kept */
   function bimIsIdbPointer(st){return !!(st&&typeof st==='object'&&st.idb===1&&typeof st.docId==='string'&&!Array.isArray(st.objs));}
-  function bimIdbPointer(id,rec){
-    return JSON.stringify({idb:1,docId:id,titleBlock:{project:bimNameOf(rec&&rec.titleBlock)},
-      count:rec&&Array.isArray(rec.objs)?rec.objs.length:0,saved:Date.now()});
-  }
-  /* the active project's database copy: the newest record wins, one write at a time */
-  var A3D_SPILL={on:!!A3D_BOOT_IDB,loading:!!A3D_BOOT_IDB,busy:false,next:null,told:false};
-  function bimSpillToast(){
-    if(A3D_SPILL.told)return;
-    A3D_SPILL.told=true;
-    a3dToast('This project is too large for quick browser storage: it is kept in the browser\'s database. Use Save to keep a copy as a file.');
-  }
+  /* the projects' database copies: one write at a time, the newest of each waiting; the record in flight and the one
+     waiting are what the pagehide journal keeps (core/project-store.js) */
+  var A3D_SPILL={on:false,loading:!!A3D_BOOT_IDB,busy:false,next:null,inflight:null,dirty:false,idle:[],failed:{}};
   function bimSpillSave(id,s,rec){
-    if(A3D_SPILL.busy){A3D_SPILL.next={id:id,s:s,rec:rec};return;}
+    if(A3D_SPILL.busy){
+      /* a waiting write of another project is written first, so no project's last state is dropped */
+      if(A3D_SPILL.next&&A3D_SPILL.next.id!==id){var w=A3D_SPILL.next;A3D_SPILL.next=null;A3D_SPILL.idle.unshift(function(){bimSpillSave(w.id,w.s,w.rec);});}
+      A3D_SPILL.next={id:id,s:s,rec:rec,saved:Date.now()};
+      return;
+    }
     A3D_SPILL.busy=true;
-    bimIdbPut(id,{rec:s,saved:Date.now(),v:1},function(err){
-      A3D_SPILL.busy=false;
+    var saved=Date.now();
+    A3D_SPILL.inflight={id:id,s:s,saved:saved};
+    bimIdbPut(id,{rec:s,saved:saved,v:1},function(err){
+      A3D_SPILL.busy=false;A3D_SPILL.inflight=null;
+      /* a record the database refused stays here for the session: reopening the project reads it first, the journal
+         keeps it at pagehide, and the next save of the project tries again */
+      if(err)A3D_SPILL.failed[id]={id:id,s:s,saved:saved};else delete A3D_SPILL.failed[id];
       if(err){
         if(!A3D_SAVE_FAILED){
           setA3D_SAVE_FAILED(true);
-          console.warn('[BIM] The project could not be saved to browser storage or to the browser\'s database.',err);
+          console.warn('[BIM] The project could not be saved to the browser\'s database.',err);
           a3dToast('This project could not be saved: browser storage is full. Use Save to keep a copy as a file.');
         }
       }else{
-        /* the pointer goes in only once the record it points to has committed */
-        if(A3D_DOCS.active===id){
-          try{localStorage.setItem(LSK,bimIdbPointer(id,rec));}
-          catch(eP){console.warn('[BIM] The pointer to the project in the browser\'s database could not be stored.',eP);}
-          if(!A3D_SPILL.on){A3D_SPILL.on=true;bimSpillToast();}
-          if(A3D_SAVE_FAILED){setA3D_SAVE_FAILED(false);a3dToast('Saving to browser storage works again');}
-        }
+        bimJournalDrop(id,Infinity);   /* only the tab holding the project writes its journal: confirmed, it goes */
+        bimIndexTouch(id,rec,saved);
+        if(A3D_SAVE_FAILED){setA3D_SAVE_FAILED(false);a3dToast('Saving to browser storage works again');}
       }
       var n=A3D_SPILL.next;A3D_SPILL.next=null;
-      if(n)bimSpillSave(n.id,n.s,n.rec);
+      if(n){bimSpillSave(n.id,n.s,n.rec);return;}
+      var q=A3D_SPILL.idle.splice(0,A3D_SPILL.idle.length),i;
+      for(i=0;i<q.length;i++){try{q[i]();}catch(eQ){console.warn('[BIM] A step waiting on the database failed.',eQ);}}
     });
   }
-  /* a parked project too large for its own key: its pointer in the key, then the record into the database. The
-     pointer may go first: while it is written, acad3dV1 still holds this project, and boot drops a parked copy of
-     the project acad3dV1 names (V115), so a crash between the two loses nothing. */
-  function bimParkInIdb(id,s,rec,key){
-    try{localStorage.setItem(key,bimIdbPointer(id,rec));}
-    catch(eK){console.warn('[BIM] The pointer to a parked project could not be stored: '+id,eK);return false;}
-    /* a queued save of this project is older than what is parked now, and would be written after it */
-    if(A3D_SPILL.next&&A3D_SPILL.next.id===id)A3D_SPILL.next=null;
-    bimIdbPut(id,{rec:s,saved:Date.now(),v:1},function(err){
-      if(err){
-        console.warn('[BIM] A parked project could not be written to the browser\'s database: '+id,err);
-        a3dToast('"'+bimNameOf(rec&&rec.titleBlock)+'" could not be stored: browser storage is full. Open it and use Save to keep a copy as a file.');
-      }
-    });
-    return true;
-  }
-  /* boot: the project on screen is in the database; nothing saves until it is read, so the fresh project the
-     page started with never takes its place */
-  function bimSpillBootLoad(){
-    var id=A3D_BOOT_IDB;
-    bimIdbGet(id,function(err,v){
-      var st=null;
-      if(!err&&v&&typeof v.rec==='string'){
-        try{st=JSON.parse(v.rec);}catch(eJ){console.warn('[BIM] The project in the browser\'s database is not valid JSON: '+id,eJ);}
-      }
-      if(!st||typeof st!=='object'||A3D_DOCS.active!==id){
-        if(err)console.warn('[BIM] The browser\'s database could not be read.',err);
-        a3dToast('This project is kept in the browser\'s database, which could not be read: nothing is saved over it. Open a saved file or start a new project.');
-        return;
-      }
-      try{
-        bimLoadProjectRecord(st);
-        A3D_SPILL.loading=false;
-        var ent=bimDocEntry(id);
-        if(ent){ent.name=bimProjectLabel();ent.objs=A3D.objs.length;}
-        paint();
-        bimDocsNotify('activate',id);
-      }catch(eL){
-        console.warn('[BIM] The project from the browser\'s database could not be loaded.',eL);
-        a3dToast('This project is kept in the browser\'s database and could not be loaded: nothing is saved over it.');
-      }
-    });
-  }
-  if(A3D_BOOT_IDB)setTimeout(bimSpillBootLoad,0);
+  /* run fn once every write sent so far has been answered */
+  function bimSpillWhenIdle(fn){if(!A3D_SPILL.busy&&!A3D_SPILL.next)fn();else A3D_SPILL.idle.push(fn);}
   /* decision D9: an autosave still waiting when the page is hidden is written then, while it can finish;
      pagehide cannot wait for the database */
   document.addEventListener('visibilitychange',function(){
     if(document.hidden&&saveT){clearTimeout(saveT);setSaveT(null);save3d();}
   });
 export {
-  A3D_SPILL, bimIdbDel, bimIdbGet, bimIdbPut, bimIsIdbPointer, bimParkInIdb, bimSpillSave, bimSpillToast
+  A3D_SPILL, A3D_STORE, bimIdbDel, bimIdbGet, bimIdbGetMany, bimIdbKeys, bimIdbOpen, bimIdbPut, bimIdbPutMany,
+  bimIsIdbPointer, bimSpillSave, bimSpillWhenIdle
 };
