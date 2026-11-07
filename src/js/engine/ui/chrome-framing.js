@@ -3,6 +3,7 @@ import { camVecs, meshOf } from '../core/mesh-primitives.js';
 import { bimObjOffset, bimWorldPt } from '../drawing/plan-mode-sketch.js';
 import { bimIsProperty, bimPropertyGeometry } from '../site/property.js';
 import { bimAlignExtentPts, bimIsAlignment } from '../site/alignment-profile.js';
+import { bimFileNotWork } from '../io/file-save.js';
 import { bimObjLayerState } from '../layers/layer-rules.js';
 import { bimIsDiag } from '../standards/registry.js';
 import { bimDgBounds } from '../site-analysis/motion.js';
@@ -161,7 +162,7 @@ import { cvH, cvW } from './canvas-size.js';
     c.dist=Math.max(14,sz*1.6);
     bimAimAtSafeCentre(c,P);
     A3D.view='Custom';
-    refreshHud();paint();saveSoon();
+    refreshHud();paint();bimFileNotWork();saveSoon();   /* __acad3dV172g: framing is not work (D2) */
   }
   /* Revit's ZS. The direct answer to "the handles I need are behind the tool dock": it frames the
      selection into the rectangle those handles can be clicked in. */

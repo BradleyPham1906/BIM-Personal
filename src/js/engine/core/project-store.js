@@ -1,5 +1,5 @@
 import {
-  A3D, A3D_BOOT_IDB, A3D_DOCS, A3D_DOCS_KEY, A3D_DOC_PREFIX, A3D_JOURNAL_PREFIX, LSK
+  A3D, A3D_BOOT_IDB, A3D_DOCS, A3D_DOCS_KEY, A3D_DOC_PREFIX, A3D_JOURNAL_PREFIX, A3D_NO_STORAGE, LSK
 } from './state.js';
 import { paint } from '../map/terrain-3d.js';
 import { bimProjectRecord, save3d } from './objects-save.js';
@@ -366,7 +366,9 @@ import { a3dToast } from '../bim/csg-booleans.js';
           bimStoreToast('This project is kept in the browser\'s database, which could not be read: nothing is saved over it. Open a saved file or start a new project.');
           return;
         }
-        bimStoreToast('This browser does not allow its database here: projects stay in its smaller storage (about 5 MB in all). Use Save to keep copies as files.');
+        /* __acad3dV172g: D5, where the browser keeps nothing at all */
+        bimStoreToast(A3D_NO_STORAGE?'This browser keeps nothing for a page opened from a file: your project lives only in the file you save. Use Save (Ctrl+S) to keep it.':
+          'This browser does not allow its database here: projects stay in its smaller storage (about 5 MB in all). Use Save to keep copies as files.');
         A3D_SPILL.loading=false;
         bimStoreFlushDirty();
         return;

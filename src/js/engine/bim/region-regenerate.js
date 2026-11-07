@@ -3,6 +3,7 @@ import { bimObjOffset } from '../drawing/plan-mode-sketch.js';
 import { bimSweepFootingHosts } from './footings.js';
 import { bimBoundaryEdges } from './rooms.js';
 import { bimSweepOrphanTags } from './room-tags.js';
+import { bimFileTouch } from '../io/file-save.js';
 import { bimLayerById } from '../layers/layer-rules.js';
 import { bimLayerDropUnselectable } from '../layers/select-change.js';
 import { refreshProps } from '../site-analysis/panel.js';
@@ -100,6 +101,7 @@ import { a3dToast, objById } from './csg-booleans.js';
     bimSweepFootingHosts(); /* __acad3dV102 */
     bimRegenerateRegions();
     setA3D_REV(A3D_REV+1);   /* __acad3dV122 */
+    bimFileTouch();   /* __acad3dV172g: changed since its file (D2) */
     bimPagesStale();
     if(saveT)clearTimeout(saveT);
     setSaveT(setTimeout(save3d,300));

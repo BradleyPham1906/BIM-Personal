@@ -1,5 +1,6 @@
 import { A3D, DEFCAM } from '../core/state.js';
 import { cancelSketch, setNav } from '../drawing/plan-mode-sketch.js';
+import { bimFileNotWork } from '../io/file-save.js';
 import { bimWireLayersPanel } from '../layers/analysis-data-rows.js';
 import { bimAwTab } from '../site-analysis/analysis-workspace.js';
 import { paint } from '../map/terrain-3d.js';
@@ -450,7 +451,7 @@ import { bimRunAct } from './dock-tooltips.js';
   function bimFrameNothing(){
     var c=A3D.cam;
     c.dist=DEFCAM.dist;c.tx=DEFCAM.tx;c.ty=DEFCAM.ty;c.tz=DEFCAM.tz;
-    paint();saveSoon();
+    paint();bimFileNotWork();saveSoon();   /* __acad3dV172g */
   }
   function fitScene(){
     /* __acad3dV79: this used to centre the model on the CANVAS and size it to the canvas, which

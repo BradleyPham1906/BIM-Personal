@@ -12,7 +12,7 @@ import {
   startAngularDimTool, startDimTool, startLeaderTool, startRadialDimTool, startTextTool
 } from '../annotation/dimensions.js';
 import { bimExportPDF, bimExportPNG } from '../annotation/annotation-pick.js';
-import { bimExportProjectFile, bimOpenProjectPicker } from '../io/project-file.js';
+import { bimFileOpen, bimFileSave } from '../io/file-save.js';
 import { startColumnTool, startDoorTool, startFloorTool, startWindowTool } from '../bim/columns-openings.js';
 import { bimExportDXF } from '../io/export-mappings.js';
 import { bimExportSVG } from '../layers/plot-by-layers.js';
@@ -272,8 +272,8 @@ import { BIM_SHEET_ACTS } from '../commands/command-map.js';
     if(act==='m:exportpdf'){bimExportPDF();return;}
     if(act==='m:exportdxf'){bimExportDXF();return;}
     if(act==='m:exportsvg'){bimExportSVG();return;}
-    if(act==='m:saveproj'){bimExportProjectFile();return;}
-    if(act==='m:openproj'){bimOpenProjectPicker();return;}   /* __acad3dV115: opens in a tab of its own */
+    if(act==='m:saveproj'){bimFileSave(false);return;}   /* __acad3dV172g */
+    if(act==='m:openproj'){bimFileOpen();return;}   /* __acad3dV115: opens in a tab of its own; __acad3dV172g */   /* __acad3dV115: opens in a tab of its own */
     if(act==='m:exitsection'){bimExitSection();return;}
     if(act==='m:flipsection'){bimFlipSection();return;}
     if(act==='bim:mirror'){startMirrorTool();return;}

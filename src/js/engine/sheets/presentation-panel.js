@@ -6,6 +6,7 @@ import { bimGetActiveLevel } from '../bim/levels-walls-floors.js';
 import { bimClassificationInUseCount, refreshLevels } from '../bim/classification.js';
 import { bimGridById, bimPickGrid, bimSelectedGrid } from '../bim/grid-editing.js';
 import { bimIsLocked } from '../bim/import-compliance.js';
+import { bimFileNotWork } from '../io/file-save.js';
 import { BIM_LOCK_ON } from '../layers/select-change.js';
 import { bimLayersPanelRefresh } from '../layers/analysis-data-rows.js';
 import { bimEsc } from '../layers/layer-manager.js';
@@ -707,7 +708,7 @@ import { bimDevicePixelRatio } from '../ui/canvas-size.js';
       if(c.pitch<-1.52)c.pitch=-1.52;
       A3D.view='Custom';refreshHud();
     }
-    paint();saveSoon();
+    paint();bimFileNotWork();saveSoon();   /* __acad3dV172g: panning and orbiting move the view, not the model (D2) */
   }
   function onUp(ev){
     if(!drag)return;
@@ -807,7 +808,7 @@ import { bimDevicePixelRatio } from '../ui/canvas-size.js';
   function onWheel(ev){
     var xy=cvXY(ev);
     bimZoomAbout(Math.pow(1.0015,ev.deltaY),xy[0],xy[1]);
-    ev.preventDefault();paint();saveSoon();
+    ev.preventDefault();paint();bimFileNotWork();saveSoon();   /* __acad3dV172g: zooming is not work (D2) */
   }
   /* setters: other files assign these through them (an ES module cannot assign to an import) */
   function setDrag(v){drag=v;return v;}

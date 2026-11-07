@@ -67,7 +67,8 @@ import { BIM_CMD_MAP, BIM_SHEET_ACTS, BIM_SHEET_CMDS, BIM_START_CMDS } from './c
     OFFSET:'parallel',TRIM:'cut clip shorten',EXTEND:'stretch longer',MIRROR:'flip reflect',ARRAYRECT:'grid pattern repeat rows columns',
     ARRAYPOLAR:'circular radial repeat',DIST:'distance length measure',DIMLINEAR:'dimension measure',MTEXT:'label note annotation words',
     TEXT:'label note annotation words',HATCH:'fill pattern poche',LAYER:'layers visibility',ZOOM:'fit extents all',UNDO:'back revert',
-    REDO:'again forward',ROTATE:'turn spin angle',SCALE:'resize size bigger smaller',PLOT:'print pdf paper',SAVE:'export file download',
+    REDO:'again forward',ROTATE:'turn spin angle',SCALE:'resize size bigger smaller',PLOT:'print pdf paper',SAVE:'export file download',SAVEAS:'save as new file copy compressed gzip',   /* __acad3dV172g */
+    
     OPEN:'load file import project',NEW:'project file blank',RECTANG:'box square',CIRCLE:'round',PLINE:'polyline path lines',
     LINE:'segment',SELECTALL:'everything select',CLEAR:'deselect none',ANALYZE:'structural frame solve stiffness forces moments deflection',
     USAGE:'program use department gross floor area gfa gba nsa net saleable lettable yield efficiency residential office retail',   /* __acad3dV131 */

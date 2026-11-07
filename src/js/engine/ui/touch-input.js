@@ -9,7 +9,7 @@ import {
 } from '../drawing/drawing-input.js';
 import { refreshLevels } from '../bim/classification.js';
 import { bimSelectedGrid } from '../bim/grid-editing.js';
-import { bimExportProjectFile, bimOpenProjectPicker } from '../io/project-file.js';
+import { bimFileNotWork, bimFileOpen, bimFileSave } from '../io/file-save.js';
 import { bimClbKey } from '../site-analysis/climate-board.js';
 import { refreshProps } from '../site-analysis/panel.js';
 import { paint } from '../map/terrain-3d.js';
@@ -107,7 +107,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
       c2.tx=A3D_TOUCH.camStart.tx-(V2.r[0]*dxp-V2.u[0]*dyp)*k2;
       c2.ty=A3D_TOUCH.camStart.ty-(V2.r[1]*dxp-V2.u[1]*dyp)*k2;
       c2.tz=A3D_TOUCH.camStart.tz-(V2.r[2]*dxp-V2.u[2]*dyp)*k2;
-      paint();saveSoon();
+      paint();bimFileNotWork();saveSoon();   /* __acad3dV172g: a pinch moves the view, not the model (D2) */
       ev.preventDefault();
     }
   }
@@ -246,10 +246,10 @@ import { a3dToast } from '../bim/csg-booleans.js';
       duplicateSelection();ev.preventDefault();ev.stopImmediatePropagation();return;
     }
     if((ev.ctrlKey||ev.metaKey)&&(ev.key==='s'||ev.key==='S')){
-      bimExportProjectFile();ev.preventDefault();ev.stopImmediatePropagation();return;
+      bimFileSave(!!ev.shiftKey);ev.preventDefault();ev.stopImmediatePropagation();return;   /* __acad3dV172g: Save, Shift for Save as */
     }
     if((ev.ctrlKey||ev.metaKey)&&!ev.shiftKey&&(ev.key==='o'||ev.key==='O')){   /* __acad3dV115: OPEN */
-      bimOpenProjectPicker();ev.preventDefault();ev.stopImmediatePropagation();return;
+      bimFileOpen();ev.preventDefault();ev.stopImmediatePropagation();return;   /* __acad3dV172g */
     }
     if(ev.key==='Escape'){
       /* __acad3dV83: the rail's own transient layers come FIRST in this chain.

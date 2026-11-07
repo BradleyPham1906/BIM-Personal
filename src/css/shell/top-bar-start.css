@@ -78,3 +78,5 @@ body.a3d-tree-docked #a3d-leftpanel > .a3d-tree > #a3d-browser{flex:1 1 auto;min
 body.a3d-tree-docked #a3d-leftpanel > .a3d-tree .a3d-palhd{background:transparent;padding:11px 12px 7px;font-size:12px;font-weight:900;letter-spacing:.01em;}
 body.a3d-tree-docked #a3d-leftpanel > .a3d-tree .a3d-palhd{flex-wrap:wrap;row-gap:5px}
 body.a3d-tree-docked #a3d-leftpanel > .a3d-tree .a3d-palhd .a3d-palbtns{flex-wrap:wrap;flex:1 1 100%;justify-content:flex-start;}
+/* __acad3dV172g: a tab whose project has work not in a file (D2) */
+.acad-doctab .dt-dot{flex:0 0 auto;width:7px;height:7px;border-radius:50%;background:#e3a64a;margin-left:2px}

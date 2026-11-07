@@ -1010,3 +1010,330 @@ not yet been run (Rule #1).
 | J10 | Firebase JS SDK @8f49775, Firestore (Apache-2.0) | https://raw.githubusercontent.com/firebase/firebase-js-sdk/8f4977509b3a014e390d2658913e469b6c59c391/packages/firestore/src/local/indexeddb_persistence.ts | Lines 80-165, 940-1015 | P |
 | J11 | The kept builds and the site, at commit 9dc7b87 (before PR #65) | `Phase/canvas_v10.html.bak_phase*_pre`; `tools/build_site.py`; `tests/bim_phase142_guide_versions_browser_tests.py` | Storage calls (grep); lines 37-42; line 238 | P |
 | J12 | Experiments e13, e13b, e14, e15 | [experiments/local-storage/](experiments/local-storage/) | Run 2026-11-02, Chromium 153 | P (measured, one engine) |
+
+## 14. V172g: files as the real save (research, 2026-11-07)
+
+**Abstract.** V172g carries out the owner's D2 (browser storage is a working copy, the file is the save, with a marker and
+reminders), D4 (the file format, with an optional gzip form) and D5 (the one-file build where storage is refused). Parts 1
+to 12 decided what; this part answers how, for the questions the code depends on: what the pickers accept, what a write to a
+picked file does if it fails half-way, how a handle is kept and asked again, where the gzip work should run (the owner's open
+choice in D4), what a damaged gzip does, whether a page can tell a private window or Safari, and what the build says today
+when storage is refused. Measured in Chromium 153 (e16 to e19) and read at pinned commits in the WICG File System Access
+report, the WHATWG File System and Compression standards, RFC 1952, MDN's compatibility data, Chromium, WebKit and Firefox,
+and six open implementations. In short: `.acad3d.json` and `.acad3d.json.gz` are valid picker extensions everywhere the
+pickers exist (16 characters at most, the dot counted); a picked file changes only when its stream closes, and `close()` is
+the one point where the save can still fail; a handle kept in the database must be asked again with a click; gzip in a
+worker stalls the page 2 to 13 ms where the main thread stalls 108 to 566 ms (two sets of runs); a damaged gzip is refused whole in both
+engines' code and here; a private window cannot be told dependably (Chromium has begun removing the quota difference, and the one
+detector read has open false-positive reports); and today's build, with storage refused, runs and saves files but says three
+untrue things. The recommendation is in 14.4; the owner's questions are in 14.10.
+
+Two research agents read the sources in parallel ([v172g-specs-and-browsers.md](research-local-storage/v172g-specs-and-browsers.md),
+[v172g-prior-art.md](research-local-storage/v172g-prior-art.md)); the experiments were run in the main session; the
+independent check is in 14.10.
+
+### 14.1 The question and the hypotheses
+
+**The question.** How should the app make a file the real save, in every browser it runs in, so that (a) a user always knows
+whether the project on screen is in a file, (b) a save to a file either completes or leaves the previous file as it was,
+(c) a project saved once in Chrome or Edge saves again to the same file without a dialog, (d) large projects can be saved
+smaller without freezing the page, and (e) the one-file build tells the truth where the browser keeps nothing? A good answer
+decides the picker options, the order of the steps in a save, where the handle is kept, the envelope's fields, how a gzip
+file is made and recognised, the reminder's trigger, and the messages for refused storage.
+
+| # | Hypothesis (falsifiable) | Outcome | Evidence | Level |
+|---|---|---|---|---|
+| H29 | Chromium's pickers accept extensions with more than one dot (`.acad3d.json`, `.acad3d.json.gz`) | **Held**: accepted over http and from `file://`; refused only past 16 characters (the dot counted), without the leading dot, ending in a dot, or with a character other than a letter, digit, `+` or `.` | e16; FSA 84-90, 500-512; Chromium `global_file_system_access.cc` 53-82 | P |
+| H30 | The pickers are reachable from the one-file build on `file://` in Chromium | **Held to the dialog**: same answers as over http (e16); Blink refuses only opaque and sandboxed origins, and Chromium's file origin is the tuple `file://` | e16; Chromium `global_file_system_access.cc` 168-204, `security_origin.h` 258 | P (to the dialog) / S (the dialog itself) |
+| H31 | A write to a file leaves the old file untouched until `close()`, and `abort()` keeps it | **Held**: 5 of 5 on an origin-private file; the standard requires it for every file and Chromium writes a sibling `<name>.crswap` moved into place on close | e16; FS 524-534, 1122-1192; Chromium `file_system_access_file_handle_impl.cc` 729-761, `..._safe_move_helper.cc` 222-318 | P |
+| H32 | A handle kept in IndexedDB survives a browser restart and must be asked again before it can write | **Held in part**: it survives (3 of 3, `isSameEntry` true); "likely to return prompt" is the standard's word, and `requestPermission` needs a click; an origin-private handle answers `granted`, so the prompt could not be measured | e16; FSA 218-222, 259-261; Chromium permission context 1390-1396 | P |
+| H33 | gzip in a worker keeps the page's longest stall under one 60 Hz frame (16.7 ms) for 4 MB and 16 MB models | **Held**: 2.4-3.3 ms and 8.7-12.8 ms, against 108-155 ms and 441-566 ms on the main thread (e17 and the checker's re-run) | e17 | P (Chromium) |
+| H34 | Every gzip the browser writes starts with the bytes 1F 8B, so a loader can tell it without its name | **Held**: 40 of 40 outputs; RFC 1952's ID1 and ID2 | e17; RFC 1952 lines 289-292 | P |
+| H35 | A damaged gzip (truncated, altered, trailing bytes, two members) is refused whole, never half-read | **Held**: TypeError in all four cases, 10 of 10 runs; the standard requires errors for truncation and trailing data, Chromium and WebKit implement them | e17; COMP 145-158; Chromium `inflate_transformer.cc` 93-158; WebKit `DecompressionStreamDecoder.cpp` 89-107 | P |
+| H36 | A worker made from a Blob URL runs in the one-file build on `file://` | **Held**: 5 of 5 | e17 | P (Chromium) |
+| H37 | A page can tell a Chromium private window by `navigator.storage.estimate().quota` | **Failed as a lasting signal**: Chromium 153 headless reports 3-4 GiB off the record against 10 GiB in a profile, as shipped Chromium 153 does (at tag 153.0.8010.12 the incognito part is behind `kIncognitoStaticStorageQuota`, off by default); Chromium's source at e72d336b reports usage + 10 GiB for an incognito profile too, so the difference is being removed | e18; Chromium `quota_manager_impl.cc` 135-153, `quota_features.cc` 37-38 (@e72d336); `quota_features.cc` 40-43, `quota_manager_impl.cc` 136-150 (@153.0.8010.12, the checker) | P |
+| H38 | With storage refused (as WebKit refuses it on `file://`), today's build says so truthfully | **Failed**: no page error, the edit kept on screen, Save to file works (3 of 3), but it says the old canvas data "could not be removed", that projects "stay in its smaller storage (about 5 MB in all)" and that "browser storage is full" | e19 | P (imitated refusal) |
+| H39 | Comparable apps remind users on a timer about work not saved to a file | **Failed**: none of six does; draw.io shows "Unsaved changes. Click here to save." (`resources/dia.txt` 1080) and warns at unload; Excalidraw and tldraw show nothing | prior art, `DrawioFile.js` 3213-3258, `App.js` 3450-3482 | P |
+
+### 14.2 Method
+
+**Sources** (pins in the two agents' notes): the WICG File System Access report (`index.bs` @9311992), the WHATWG File
+System standard (`index.bs` @d76d345; the specs note calls it `fs.bs`), the WHATWG Compression standard (`index.bs` @94b4251), RFC 1952 (rfc-editor.org),
+MDN's browser-compat-data (@82daeeb), Chromium (@e72d336: Blink's picker checks, the swap file and safe move, the quota
+manager, the inflate transformer), WebKit (@49106eb: the network storage manager, origin quotas, the in-memory stores for
+an ephemeral session, the decompression decoder), Firefox (@db547b6: the private-browsing IndexedDB pref, the quota
+manager) and its 115 release notes, WebKit bug 263608 through its REST interface, and the two standards-positions
+repositories. Open implementations read as text, licence first: browser-fs-access (@686165d, Apache-2.0), Excalidraw
+(@701b901, MIT), tldraw (@547f507, its own licence, which bars production use without a key: method only), draw.io
+(@c72c9a9, Apache-2.0), VS Code (@17c503e, MIT), detectIncognito (@04d0412, MIT); and Photopea's and Figma's own help
+pages. Issue trackers through `gh api search/issues` (the issue pages answered 403).
+
+**Search logs** are in the two agents' notes (14 and 16 rows); the main session's own: the app's code (`grep -rn` for the
+save, open, tabs and storage paths, read in 14.7), and the four experiments below.
+
+**Experiments**, scripts in [experiments/local-storage/](experiments/local-storage/): `e16_pickers_writable.js` (15
+extensions and 6 MIME keys through both pickers from a real click, over http and `file://`, the call without activation;
+a writable stream before close, after abort, shorter, with `keepExistingData`, two writers, 5 runs; a handle stored and read
+back after a restart, 3 runs), `e17_gzip_worker.js` (gzip on the main thread and in a Blob-URL worker, 4 MB and 16 MB,
+http and `file://`, 5 runs each, the longest stall by a MessageChannel ticker as e10; four damaged files), `e18_private_quota.js`
+(estimate, persisted and IndexedDB, off the record against a profile, http and `file://`, 3 runs) and `e19_storage_refused.js`
+(the build from `file://` with the `localStorage` getter and `indexedDB.open` made to throw SecurityError, as WebKit's code
+does, against a control, 3 runs). Environment: Chromium 153.0.8010.12 (chromium-1243) headless, Playwright 1.63.0, Node 22,
+4 vCPU, 15.7 GiB; raw JSON in the session's scratch directory.
+
+**What could not be measured here:** a real picker dialog (headless Chromium ends every reached picker in AbortError), so a
+user-picked file's swap, its permission prompt and `queryPermission` after a restart rest on the standard and Chromium's code;
+Safari and Firefox, iOS downloads, and a real private window.
+
+### 14.3 Findings
+
+**(a) The pickers.**
+
+| Finding | Evidence | Level | Confidence |
+|---|---|---|---|
+| An accept extension starts with `.`, holds only ASCII letters and digits, `+` and `.`, does not end with `.`, and is at most 16 characters with its dot; the report names compound extensions like `.tar.gz` as why `.` is allowed. Measured: `.acad3d.json` (12) and `.acad3d.json.gz` (15) accepted, a 16-character extension accepted, 17 refused, `-`, `_` and a space refused | FSA 84-90, 500-512; Chromium `global_file_system_access.cc` 53-82; e16 | P | High |
+| A MIME key must be a valid type (`json` refused, `application/x-acad3d+json` and `*/*` accepted); `id` is letters, digits, `_` and `-`, at most 32 | e16; Chromium 57-59, 84-99 | P | High |
+| A picker needs transient activation: measured "Must be handling a user gesture to show a file picker." 6 s after the last click (activation lasts 5 s in Chromium), over http and `file://`; opaque or sandboxed origins and cross-origin frames refused | e16; FSA 362-376; Chromium 168-204 | P | High |
+| Support: `showSaveFilePicker` and `showOpenFilePicker` Chrome and Edge 86, Chrome Android 132; `createWritable` Chrome 86, Android 109, and Firefox 111 and Safari 26 for origin-private files only; Firefox "negative" and WebKit "oppose" | BCD `api/Window.json` 7238, 7278, `FileSystemFileHandle.json` 107; MOZPOS 701-710; WKPOS | P | High |
+
+**(b) Writing a picked file.**
+
+| Finding | Evidence | Level | Confidence |
+|---|---|---|---|
+| A writable stream writes to a buffer, "expected to be a temporary file"; the file is not changed until `close()`, which runs malware and Safe Browsing checks and then replaces the file's data; `abort()` releases the lock and keeps the file; `keepExistingData` is false by default | FS 524-534, 1122-1192 | P | High |
+| Chromium: the buffer is `<name>.crswap` beside the file; on close the safe-move helper checks it and moves it with `rename()` (POSIX) or `MoveFileEx(REPLACE_EXISTING)`; atomic on one desktop volume; copied back for Android content URIs, and copy-then-delete if a rename fails; a crash before close can leave the `.crswap` behind | Chromium `file_system_access_file_handle_impl.cc` 729-761; `..._file_writer_impl.cc` 59-75, 140-150, 266-294; `..._safe_move_helper.cc` 222-318; `native_file_util.cc` 299-367 | P (code) / S (atomicity is the OS's) | High desktop, low Android |
+| `close()` can fail after every write succeeded ("Blocked by Safe Browsing.", AbortError), so the save is done only when `close()` resolves | FS 1171-1173; Chromium `safe_move_helper.cc` 276-296 | P | High |
+| Measured on an origin-private file, 5 of 5: unchanged before close, unchanged after abort, a shorter write truncates, `keepExistingData` overwrites in place, two writers at once both allowed and the last to close wins, `lastModified` moves | e16 | P | High (one engine, private files) |
+| A handle is serialisable into IndexedDB; read back on a later visit it "is also likely to return prompt"; `queryPermission` needs no click, `requestPermission` does (Chromium returns "no user activation" without one); Chromium keeps "allow on every visit" grants except on Android | FSA 135-156, 199, 218-261; FS 329; Chromium permission context 1390-1396, features 24-30 | P | High (medium for the Android branch) |
+| Prior art: draw.io opens the writable first "so that the write permission prompt is shown while the transient user activation ... is valid", then builds the data, compares `getFile().lastModified` with what it last wrote and stops on a difference, marks a handle that fails as invalid; VS Code for the web keeps handles in IndexedDB and calls `queryPermission` then `requestPermission`; browser-fs-access checks a kept handle with `getFile()` and falls back to the picker; Excalidraw saves to its handle on Ctrl+S, Save as passes none, and a lost handle falls back to the picker silently (its issue 5951 open) | `LocalFile.js` 226-320; `htmlFileSystemProvider.ts`; `file-save.mjs` 64-87; prior-art note | P | High |
+
+**(c) Downloads and the file input, where there is no picker.**
+
+| Finding | Evidence | Level | Confidence |
+|---|---|---|---|
+| `<a download>`: Chrome 14, Firefox 20, Safari 10.1, iOS 13; browser-fs-access revokes the URL after 30 s, draw.io after 20 s, the app after 1 s (enough in Chromium: an 8 MiB download from `file://` completed, e12) | BCD `html/elements/a.json` 180; prior art; `annotation-pick.js` 195-204 | P | High (Chromium) |
+| iOS Safari opens text, XML, PDF and image Blobs in a tab instead of saving them (WebKit 263608, NEW, tracked internally since 2023); one user says `application/octet-stream` avoids it; JSON is not discussed | WebKit 263608 comments 0-7 | P (tracker) / U (workaround) | High status, low workaround |
+| browser-fs-access appends its file input to the page for iOS Safari, listens for `cancel`, and calls `showPicker()` where it exists; its issues report Safari's `change` event sometimes not firing (#72, #88, #107) | `legacy/file-open.mjs`; issues | P | Medium |
+
+**(d) gzip.**
+
+| Finding | Evidence | Level | Confidence |
+|---|---|---|---|
+| gzip's ID1 and ID2 are 31 and 139 (1F 8B); a decompressor must check them | RFC 1952 lines 289-292, 464-472 | P | High |
+| The Compression standard allows one member only; truncated input and trailing data are TypeErrors; both stream classes are `[Exposed=*]`, so they run in workers | COMP 59-71, 83, 123, 145-158 | P | High |
+| Measured: ratio 0.344 (e10's varied model); main-thread stall 108-155 ms (4 MB) and 441-566 ms (16 MB); in a worker 2.4-3.3 and 8.7-12.8 ms (e17 and the checker's re-run), nearly all of it the `postMessage` of the string; total time about the same; identical over http and `file://`; round trips exact (20 of 20) | e17 | P (Chromium) | High here |
+| Support: `CompressionStream` and `DecompressionStream` with gzip, Chrome 80, Firefox 113, Safari 16.4 | BCD | P | High |
+| Prior art compresses inside its own formats only (Excalidraw: zlib for PNG-embedded scenes and links; draw.io: raw deflate plus Base64 inside the XML, off by default); none writes a gzip file; Excalidraw tells an image by its first bytes, as the app would tell gzip | prior-art note | P | High |
+
+**(e) Telling Safari and a private window.**
+
+| Finding | Evidence | Level | Confidence |
+|---|---|---|---|
+| Chromium: the incognito pool is 15-20% of memory, a third per site; but what pages see is usage + 10 GiB for incognito and for disks of 10 GiB or more (`kStaticStorageQuota`, on by default at e72d336), so the quota no longer tells the two apart there; shipped Chromium 153 keeps incognito behind `kIncognitoStaticStorageQuota`, off (the checker, at tag 153.0.8010.12), which is why e18 saw 3-4 GiB against 10 | Chromium `quota_settings.cc` 31-61, `quota_manager_impl.cc` 135-153; e18 | P | High |
+| WebKit: a private window keeps IndexedDB in memory, localStorage without a quota (5 MB in a normal window), and an origin quota near the 1000 MB default against tens of GB; a page could see these, not measured | WebKit `IDBStorageManager.cpp` 343-348, `LocalStorageManager.cpp` 195-203, `NetworkStorageManager.cpp` 752-786 | P (code) / S (effect) | Medium |
+| Firefox: IndexedDB in private windows since 115, encrypted on disk, no memory limit | Firefox release notes 115; `StaticPrefList.yaml` 3554-3558 | P | High |
+| detectIncognito 1.8.1 times strict against relaxed IndexedDB commits in Chromium (a ratio under 1.30 means private) and reads how `storage.getDirectory()` fails in Safari and Firefox; false positives reported for Chrome Guest, Android, RAM disks and Firefox 150 (#21, #60, #63, #65); it tells the engine by an error message's length | `src/detectIncognito.ts` @04d0412; issues | P | High (that it is fragile) |
+| None of the six apps read detects a private window; Excalidraw and draw.io read the user agent for Safari and iOS, only to work around display and download faults | prior-art note | P | High |
+
+**(f) The one-file build where storage is refused (D5).** e19 imitated WebKit's refusal (part 4.4) in Chromium: the build
+started with no page error, the point added stayed on screen, Save to file downloaded `Untitled project.acad3d.json` (3 of
+3); the console held nine warnings, each caught; and the user saw "Some of the old canvas's saved data could not be removed
+from this browser", "This browser does not allow its database here: projects stay in its smaller storage (about 5 MB in
+all). Use Save to keep copies as files." and, at the first save, "This project could not be saved: browser storage is
+full. Use Save to keep a copy as a file." None is true: nothing was there to remove, nothing is kept, and the store is refused, not full.
+
+### 14.4 The alternatives compared
+
+Criteria, stated first: the user knows whether the work is in a file; a failed save never damages the last good file; no
+dialog for a second save in Chrome and Edge; the same Save in every browser; no frozen page; nothing guessed about the
+browser that could be wrong; ES5, no dependency, from `file://` too.
+
+| Saving in Chrome and Edge | Second save | A save that fails | Click needed | Cost |
+|---|---|---|---|---|
+| Download every time (today) | a new file each time ("House (3).acad3d.json") | the old file untouched | yes | none |
+| Picker once, then the handle; writable opened first, data built, `lastModified` checked, closed (draw.io's order) | same file, no dialog; a permission prompt after a reload, within the click | old file kept until `close()`; a changed file found first | yes, for Save | about 150 lines; the handle in the database |
+| The handle, and every autosave also written to the file | no Save at all | as above, but a failure can happen with no click to ask permission | only after a reload | larger; writes the user did not ask for; prompts out of context |
+
+| Where the gzip runs | Longest stall, 4 MB / 16 MB | Total | `file://` | Cost |
+|---|---|---|---|---|
+| Main thread | 108-155 / 441-566 ms | 131-149 / 536-619 ms | yes | none |
+| A worker from a Blob URL, the main thread as the fallback | 2.4-3.3 / 8.7-12.8 ms | 147-162 / 570-630 ms | yes (e17) | about 25 lines |
+| No gzip | none | none | yes | files about three times larger |
+
+| The reminder "in Safari or a private window" | Right in Safari | Right in a private window | False reminders | Cost |
+|---|---|---|---|---|
+| Read the user agent for Safari; detect private windows as detectIncognito does | yes | sometimes; fails as engines change (H37) and reported wrong in Guest, Android, Firefox 150 | in normal windows | fragile, a library's worth of code |
+| `navigator.vendor` for WebKit, nothing for private windows | yes (every iOS browser too, all WebKit) | no | none | one line |
+| At the first save of each project wherever the browser has not agreed to keep the app's storage (`persisted()` false), worded as a fact about this browser's copy | yes (Safari rarely grants it) | yes in every engine (a private window never persists) | in a normal Chrome tab that has not been granted it, which is also at risk of eviction (part 4.2) | a few lines; no guess |
+
+| Storage refused (`file://` in Safari) | Truthful | Cost |
+|---|---|---|
+| Today: each path's own message (e19) | no | none |
+| One state, "nothing is kept here", known at start (the `localStorage` getter or `indexedDB.open` throwing SecurityError), one message, the others silent; the marker always on until a file is saved | yes | small |
+
+**The recommendation.**
+1. **The marker (D2).** Each project's index entry keeps when it was last saved to a file, the file's name, and whether it
+   has changed since; every edit (`saveSoon`) sets it. A dot on the project's tab and a line in the status bar, "Not saved to
+   a file", which runs Save (draw.io's form); "Saved to House.acad3d.json at 14:05" when it is. The reminder after 30
+   minutes of such work (the owner's D2), once, then again only after another 30 minutes of work; and the first-save
+   reminder by `persisted()` (question G1).
+2. **Save, in Chrome and Edge.** Save writes to the project's handle: `queryPermission`, `requestPermission` within the
+   click if needed, `createWritable` first, then the envelope, a `getFile().lastModified` check against the last save
+   (a difference asks before overwriting: question G4), write, `close()`; the project is "saved" only when `close()`
+   resolves; on any failure the last good file is untouched and the message says why. No handle yet, or Save as: the save
+   picker with `id` `acad3d-projects`, the project's name, and the two types. The handle is kept in the database beside the
+   project (the database version stays 2; a key `fh:<docId>`), dropped when the project is deleted.
+3. **Save and Open elsewhere.** A download, as today, named for the project; Open through the file input, now accepting
+   `.json` and `.gz`; in Chrome and Edge, Open through `showOpenFilePicker`, keeping the handle.
+4. **The envelope (D4).** Version 2: `data` is `bimProjectRecord()` itself (one list of what a project is, with the view
+   `cam` and `seq`), without `docId`; `app`, `formatVersion: 2`, `savedAt` and the app's version. Version 1 still read; V172f
+   and older read a version-2 file with their warning and take its fields (checked in 14.7).
+5. **gzip (D4).** `.acad3d.json.gz` made in a worker from a Blob URL (the main thread if the worker cannot be made; plain
+   JSON where `CompressionStream` is missing); a file is gzip when its first bytes are 1F 8B, whatever its name; a damaged
+   file is refused with a message, never half-opened.
+6. **The one-file build (D5).** One "nothing is kept here" state from the start, its own message, the marker on, and the
+   three untrue messages of e19 silenced in that state.
+
+What would change it: a real dialog showing Chromium not keeping the old file on a failed close (the code and the standard
+say it does); Safari granting `persisted()` to ordinary tabs (the first-save reminder would then miss them); the owner
+preferring autosave to the file.
+
+### 14.5 The experiments: the numbers
+
+| e16 | http | `file://` |
+|---|---|---|
+| Accepted extensions (save and open alike) | `.json`, `.acad3d.json`, `.gz`, `.json.gz`, `.acad3d.json.gz`, `.abcdefghijklmno` (16), `.a+b`, `..json` | the same |
+| Refused, with Chromium's words | `json` ("must start with '.'"), 17 characters ("cannot be longer than 16 characters"), `.a b`, `.a-b`, `.a_b` ("contains invalid characters"), `.`, `.json.` ("must not end with '.'") | the same |
+| MIME keys | `json` refused ("Invalid type"); the other five accepted | the same |
+| No activation (6 s after the click) | SecurityError "Must be handling a user gesture to show a file picker." | the same |
+
+e16 writable, 5 of 5 identical: after the first close "ORIGINAL-CONTENT-0123456789"; while a second writer had written
+"NEW", still the original; after `abort()` the original; "SHORT" after a shorter write; "ABORT" after `keepExistingData`
+with "AB"; two writers, "SECOND" (the last to close); `lastModified` changed. Handle after a restart, 3 of 3: found,
+`FileSystemFileHandle`, `isSameEntry` true, `queryPermission` "granted" (origin-private).
+
+| e17, 5 runs | Characters | gzip bytes | Main: total ms | Main: stall ms | Worker: total ms | Worker: stall ms |
+|---|---|---|---|---|---|---|
+| http, 4 MB | 4,008,905 | 1,379,445 | 130.5-149.6 | 108.5-127.0 | 146.6-162.2 | 2.4-3.3 |
+| http, 16 MB | 16,058,075 | 5,514,094 | 538.3-618.9 | 451.2-511.4 | 570.4-624.5 | 8.7-10.6 |
+| `file://`, 4 MB | 4,008,905 | 1,379,445 | 133.5-148.0 | 110.9-123.8 | 146.6-155.3 | 2.4-2.9 |
+| `file://`, 16 MB | 16,058,075 | 5,514,094 | 535.8-576.2 | 440.5-461.5 | 569.2-630.0 | 8.7-9.0 |
+
+The checker's re-run (one set of 5 runs per row): main-thread stall 116-155 ms (4 MB) and 453-566 ms (16 MB), worker
+2.5-3.0 and 8.9-12.8 ms; characters, bytes, magic, round trips and the damaged files identical.
+
+Magic 31, 139 on every output; damaged files (200,036 characters): truncated, one byte flipped, 4 trailing bytes, two
+members, each "TypeError: Failed to fetch" (the stream's error surfacing through `Response`), the same in all 10 runs.
+
+| e18, 3 runs | Off the record | Persistent profile |
+|---|---|---|
+| http | 4, 3, 3 GiB | 10, 10, 10 GiB |
+| `file://` | 4, 3, 4 GiB | 10, 10, 10 GiB |
+
+`persisted()` false and IndexedDB opened everywhere; host 15.7 GiB of memory (3 GiB is 19% of it, 4 GiB 25%).
+
+e19, 3 runs each: refused, 0 page errors, 11-13 warnings, the point kept, the file downloaded, the three messages of 14.3 (f);
+allowed, 0 page errors, 1-3 warnings (the GPU's), "Your projects are now kept in the browser's database (1 project)".
+
+### 14.6 Edges
+
+| Edge | One side | The other |
+|---|---|---|
+| Extension length | 16 characters with the dot: accepted | 17: TypeError before any dialog |
+| Time since the click | within 5 s (Chromium): picker and permission prompt shown | after: SecurityError, or "no user activation" for a prompt; so the writable is opened before the slow work |
+| `close()` | resolves: the file is the new one | rejects (Safe Browsing, quarantine, disk): the old file stays; a `.crswap` may be left after a crash |
+| A kept handle | permission granted: written without a dialog | "prompt": asked within Save's click; "denied" or the file gone: Save as |
+| The file changed since the last save | same `lastModified`: written | different: asked (G4) |
+| Pickers | Chrome and Edge 86, Chrome Android 132 | Firefox, Safari, iOS: download and file input |
+| gzip | `CompressionStream` present (Chrome 80, Firefox 113, Safari 16.4) and a worker | no worker: main thread; no stream: plain JSON only |
+| A file opened | first bytes 1F 8B: gzip, decompressed | anything else: read as text, the envelope checked |
+| A gzip of several members (some tools write them) | one member: read | several: refused by the standard (TypeError) |
+| Storage | kept (normal tab) | refused (`file://` in Safari): "nothing is kept here" |
+| iOS Safari download | a type it saves | text-like types opened in a tab (263608); whether JSON is one is not known (14.9) |
+
+### 14.7 What the app already has
+
+| What | Where |
+|---|---|
+| The envelope v1 with its own field list, without `cam` and `seq`; a newer `formatVersion` only warns and loads `data` | `io/project-file.js:12-25` |
+| `bimProjectRecord()`, the one list of a project (with `cam`, `seq`) | `core/objects-save.js:52-54` |
+| Save: one download through `bimTriggerDownload` (Blob, `<a download>`, revoked after 1 s), then `bimAskPersist()` (V172e) | `io/project-file.js:32-39`; `annotation/annotation-pick.js:195-204` |
+| Open: `#a3d-projin` `accept=".json"`; `bimOpenProjectFileObj` refuses any name not ending `.json` and reads text with FileReader | `ui/build-ui.js:147, 293-297`; `io/project-file.js:71-84` |
+| Save and Open reached from the File menu (`m:saveproj`, `m:openproj`), the command map (`saveJson`, `openJson`), Ctrl+S and Ctrl+O | `ui/dock-tooltips.js:275-276`; `commands/command-map.js:263, 268`; `ui/touch-input.js:248-253` |
+| Every edit passes `saveSoon()` (`A3D_REV` moved, `save3d` in 300 ms): the place an "edited since the file" flag is set | `bim/region-regenerate.js:94-106` |
+| The index entry per project `{id,name,objs,saved}`, saved by `bimDocsSave`; tabs told by the `a3ddocs` event | `ui/project-tabs.js:160-175, 337-353` |
+| The database at version 2, keys per project, `bimIdbPutMany`/`bimIdbGetMany`; deleting a project removes its record | `core/idb-store.js`; `core/project-store.js` |
+| The store's modes: `boot`, `migrating`, `idb`, `legacy`, `refused` (a newer database); no mode for "no storage at all" | `core/project-store.js:173-380` |
+| The three messages e19 saw | `core/storage-theme.js:18-22`; `core/project-store.js:362-368`; `core/objects-save.js:72-77` |
+| A worker already made on demand from a Blob URL (V172b's Pyodide) | `ladybug/runtime.js:156` |
+| The app's version for the envelope: `BIM_APP_VERSION` | `ui/guide-versions.js:7` |
+| No `beforeunload`; `pagehide` flushes the autosave | `ui/project-tabs.js:153-156` |
+
+A V172f or older build opening a version-2 file: `bimParseProjectEnvelope` sees `formatVersion>1`, keeps `data` and says the
+file is from a newer version; `bimDocsOpenData` takes the fields it knows; `cam` and `seq` are read by the record loader when
+present (`core/state.js:58-59`). Nothing in version 2 removes a field version 1 had.
+
+### 14.8 Risks and threats to validity
+
+No real dialog: the swap, the permission prompt and `queryPermission` after a reload on a user's file come from the standard
+and Chromium's code, measured only on origin-private files. One engine measured. Chromium's source (@e72d336) is newer than
+the binary measured (153.0.8010.12), and the two differ on the incognito quota (H37: the checker found the incognito switch off at 153), which is why neither is used. The
+models are synthetic (part 9). The `persisted()` reminder will also appear in a normal Chrome tab that has not been granted
+persistence; that tab's storage can be evicted too, so the reminder is true there, but it is more often than D2's wording.
+A gzip file is about a third of the JSON's size on the varied model; a real project may compress better or worse. Safari's
+handling of `.gz` downloads ("open safe files") is not known.
+
+### 14.9 What is still open (U)
+
+Whether iOS Safari saves an `application/json` or `application/gzip` Blob or opens it in a tab (263608 names text and XML;
+one user's `application/octet-stream` workaround): a test on the owner's iPhone. Safari's "open safe files" treatment of
+`.gz`: closed source; a gunzipped download still opens, since the loader reads either form. That a Safari private window
+reports about 1000 MB: code only, not used. The Android picker's handling of multi-dot extensions (sent to the system as
+MIME types there): not read. None of these changes the recommendation.
+
+### 14.10 The owner's decisions and the independent check
+
+Asked together on 2026-11-07 and answered the same day, each as recommended: **G1** at the first save of each project
+wherever `persisted()` is false; **G2** in a worker; **G3** Save as offers both types, plain first, Save keeps the last;
+**G4** ask (Overwrite, Save as, Cancel); **G5** no warning at leaving. The questions as asked:
+
+- **G1, the first-save reminder.** D2 says "at the first save in Safari or a private window". A private window cannot be
+  told dependably (H37, detectIncognito's false positives). *Recommended:* show it at the first save of each project
+  wherever the browser has not agreed to keep the app's storage (`persisted()` false), which covers Safari tabs and every
+  private window, worded as a fact: "This browser may clear its copy of your projects. Use Save to keep this one as a file."
+  The alternative: Safari and every iOS browser by `navigator.vendor`, private windows not covered.
+- **G2, where the gzip runs** (D4's open choice). *Recommended:* a worker (2-13 ms of stall against 108-566), the main
+  thread only where a worker cannot be made.
+- **G3, when gzip is offered.** *Recommended:* Save as offers both types, plain JSON first; Save keeps the type the project
+  was last saved as; no automatic switch by size.
+- **G4, a file changed elsewhere since the last save.** *Recommended:* ask (Overwrite, Save as, Cancel), as draw.io stops on
+  a changed `lastModified`.
+- **G5, leaving with work not in a file.** draw.io warns at unload. *Recommended:* no `beforeunload` warning (the browser's
+  copy is kept, and the marker and reminders say the rest); the owner may prefer the warning.
+
+**The independent check** (protocol step 9): a separate agent re-opened the pinned source behind each of the 14 facts the
+code uses and re-ran e17: 13 confirmed, 1 corrected (e17's stall ranges, wider on the re-run; H33 holds), 0 not confirmed;
+it added the version detail for H37 and three smaller precisions, all applied above. Its table:
+[research-local-storage/independent-check-v172g.md](research-local-storage/independent-check-v172g.md).
+
+**As built (2026-11-07).** As recommended in 14.4 with G1 to G5: `io/file-save.js` (new), `io/project-file.js`, and
+`A3D_NO_STORAGE` in `core/state.js`; the handle is kept under `lib:file:<id>` in the projects store, which V172f's reconcile
+passes by; the log's entry "Storage B (V172g)" has the detail. The browser suites have not yet been run (Rule #1).
+
+### 14.11 References (V172g)
+
+| # | What | URL | What was read | Level |
+|---|---|---|---|---|
+| K1 | WICG File System Access @9311992 | https://raw.githubusercontent.com/WICG/file-system-access/93119927fa7a678c1863996f6f3a32d9ac53943d/index.bs | Lines 84-90, 135-156, 199, 218-261, 362-376, 494-512 | P |
+| K2 | WHATWG File System @d76d345 | https://raw.githubusercontent.com/whatwg/fs/d76d3455d5afe2f85754ed24ffdbf99fe30032d4/index.bs | Lines 329, 485-538, 1122-1192 | P |
+| K3 | WHATWG Compression @94b4251 | https://raw.githubusercontent.com/whatwg/compression/94b42518d2c2f97e64bd5a483d6deb8c8f14c365/index.bs | Lines 19, 31-83, 123, 145-158 | P |
+| K4 | RFC 1952 | https://www.rfc-editor.org/rfc/rfc1952.txt | Lines 233-292, 419-472 | P |
+| K5 | MDN browser-compat-data @82daeeb | https://raw.githubusercontent.com/mdn/browser-compat-data/82daeebf5a7073d55223a8cdb8aa54fb9416e27d/api/Window.json (and FileSystemHandle, FileSystemFileHandle, FileSystemWritableFileStream, CompressionStream, DecompressionStream, Worker, html/elements/a) | First versions | P |
+| K6 | Chromium @e72d336 | https://raw.githubusercontent.com/chromium/chromium/e72d336b09f61d197b626c2187d92ff27939b2cc/third_party/blink/renderer/modules/file_system_access/global_file_system_access.cc (and the files listed in the specs note) | Picker checks; swap file and safe move; quota; inflate | P |
+| K7 | WebKit @49106eb | https://raw.githubusercontent.com/WebKit/WebKit/49106eb6c484fb3d2d80817e6957e341baa3b778/Source/WebKit/NetworkProcess/storage/NetworkStorageManager.cpp (and the files listed) | Ephemeral storage, quotas, decompression | P |
+| K8 | Firefox @db547b6; 115 release notes | https://raw.githubusercontent.com/mozilla-firefox/firefox/db547b61903f9dee2ddb1a86de3beeab88b2c923/modules/libpref/init/StaticPrefList.yaml; https://www.mozilla.org/en-US/firefox/115.0/releasenotes/ | Private-browsing IndexedDB | P |
+| K9 | WebKit bug 263608 | https://bugs.webkit.org/rest/bug/263608 | Status and comments 0-7 | P / U (workaround) |
+| K10 | Standards positions | mozilla/standards-positions @f5bd8e4 `activities.yml` 701-710; WebKit/standards-positions @86c1e3c `summary.json` | File System Access | P |
+| K11 | Open implementations | browser-fs-access @686165d; excalidraw @701b901; tldraw @547f507; drawio @c72c9a9; vscode @17c503e; detectIncognito @04d0412 | As listed in the prior-art note | P |
+| K12 | Specs and browsers note; prior-art note | [v172g-specs-and-browsers.md](research-local-storage/v172g-specs-and-browsers.md); [v172g-prior-art.md](research-local-storage/v172g-prior-art.md) | Written 2026-11-07 by two research agents | (the sources above) |
+| K13 | Experiments e16-e19 | [experiments/local-storage/](experiments/local-storage/) | Run 2026-11-07, Chromium 153 | P (measured, one engine) |
