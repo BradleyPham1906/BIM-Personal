@@ -765,3 +765,244 @@ date in "What" is the source's own. Where a source is P in one note and S in ano
 |---|---|---|---|---|
 | I1 | BIM-Personal `src/` at commit 179cc2f; `canvas_v10.html`; `docs/dev/CLAUDE_INSTRUCTIONS.md`; `tests/`; `tools/build_site.py` | this repository | Part 8 | P |
 | I2 | Experiment scripts e01 to e12 and `_lib.js` | [docs/research/experiments/local-storage/](experiments/local-storage/) | Run 2026-10-31, Chromium 153 | P (measured, one engine) |
+
+## 13. V172f: every project in the database, the old keys retired, old builds and a second tab (research, 2026-11-02 to 11-07)
+
+**Abstract.** V172f moves every project, template and the Assets library into the database and retires the old
+localStorage keys (D1), with a schema version and old builds kept from overwriting (D10) and a project open in one tab
+opening read-only in a second (D7). Parts 1 to 12 left three questions the code depends on: does a save started as the
+page goes away reach the database, what tells a tab that another tab holds a project, and what do the older builds on the
+same origin do to the new storage. Measured in Chromium and read in the specifications, the engines' code and three open
+implementations: (1) a database write started in `pagehide` or `visibilitychange` and left to auto-commit was lost at
+every reload (0 of 10, 1 KB and 4 MB), because a transaction auto-commits only once its results are "handled" by a page
+that is going away; an explicit `commit()` kept it (120 of 120 once the database existed before the page load; the first
+write to a database created in the same load lost), and a synchronous localStorage write kept it always (10 of 10): so
+every write commits explicitly, and the record not yet confirmed is journaled to localStorage at `pagehide` (D9's
+condition, met). (2) The Web Locks API answers "held elsewhere" exactly, frees a lock 11 to 62 ms after its tab reloads,
+navigates, closes or crashes, hands it over with `steal` while telling the old holder (AbortError), works from `file://` in
+Chromium, and Chromium evicts a cached page whose lock another tab asks for; it is in Chrome 69, Firefox 96 and Safari
+15.4. (3) A V172 build replaces a V172d pointer in `acad3dV1` with an empty record at start, without an edit; every older
+build writes an empty project under the old keys at start; V172d and V172e refuse a version-2 database and save nothing
+over its pointer; a guard script first in an old page's head gives it storage in memory and leaves the real storage
+byte-identical (four builds). The recommendation: new key names for the index, so no older build can misread it; the
+database at version 2; the guard on every older build the site serves; `commit()` and a `pagehide` journal; a Web Lock per
+project with BroadcastChannel for the take-over; the old keys copied, read back, compared, and only then removed.
+
+### 13.1 The question and the hypotheses
+
+**The question.** How should the app keep every project, template and the library in IndexedDB and retire the old keys
+so that (a) an edit made just before a reload or a close is kept, (b) an older build on the same origin can neither
+overwrite nor orphan a project, and (c) a project open in one tab opens read-only in another, with a take-over? A good
+answer decides the path at unload, the tab mechanism, the key names and the schema version, what the older builds get,
+and the order of the migration.
+
+| # | Hypothesis (falsifiable) | Outcome | Evidence | Level |
+|---|---|---|---|---|
+| H17 | A put started in `visibilitychange` (to hidden) and auto-committed survives a reload | **Failed**: 0 of 10 at 1 KB and at 4 MB; a navigation the same | e13 | P (Chromium) |
+| H18 | The same put in `pagehide` survives | **Failed**: 0 of 10 | e13 | P |
+| H19 | An explicit `commit()` after the put keeps it | **Held** on a database that existed before the page load: 120 of 120 (e13b); 9 of 10 in every e13 combination, the one loss always the first write to a database created in that same load | e13, e13b; IDB 3.0 lines 1061-1069 | P |
+| H20 | A put at `pagehide` is lost when the tab is closed | **Partly**: 1 KB auto-committed kept 9-10 of 10; 4 MB 0 of 10; with `commit()` 9-10 of 10 | e13 | P |
+| H21 | Web Locks are in all three engines and work from `file://` in Chromium | **Held**: Chrome 69, Firefox 96, Safari 15.4 (mobile the same); from `file://` the origin is "null", `isSecureContext` true, and locks work | BCD; e14 | P |
+| H22 | A lock is released when its tab reloads, navigates, closes or crashes | **Held**, 5 of 5 each: after 12-20, 11-20, 55-62 and 54-57 ms | e14; Web Locks lines 311-326 | P |
+| H23 | `steal` hands a held lock to a second tab, and the first learns of it | **Held**, 5 of 5: granted; the holder's request rejected with AbortError | e14; Web Locks lines 608-613 | P |
+| H24 | A page holding a lock is kept out of the back/forward cache | **Failed as stated**: in Chromium such a page may enter the cache, but a request from another context evicts it and releases its locks before the request is decided (`kWebLocksContention`). Not measurable here: the lock-free control page was not restored from the cache in headless Chromium either | Chromium `content/browser/locks/lock_manager.h`, `render_frame_host_impl.cc`; e14 | P (code) |
+| H25 | A build from before V172d overwrites a V172d pointer in `acad3dV1` at its first save | **Held, and earlier**: at start, with no edit | e15 A | P |
+| H26 | V172d and V172e facing a version-2 database refuse and save nothing over its pointer | **Held**: "could not be read: nothing is saved over it"; the pointer kept after an edit | e15 C | P |
+| H27 | A script first in an older build's head can give it storage in memory without breaking it, the real storage unchanged | **Held** for V114, V172, V172d and V172e: no page errors, the stored project read, an edit taken, real localStorage and IndexedDB byte-identical | e15 D | P |
+| H28 | During unload `visibilitychange` fires before `pagehide` | **Failed**: "unload a document" fires `pagehide`, then updates the visibility state to hidden. Both fired in every e13 run, so nothing depends on the order | HTML source line 114730 on | P |
+
+### 13.2 Method
+
+**Sources**, read on 2026-11-07 at pinned commits (`git ls-remote`; the GitHub API refused, as in October): the Web
+Locks API (`w3c/web-locks` index.bs @a61a773), Indexed Database API 3.0 (`w3c/IndexedDB` index.bs @f9f83f1), the HTML
+Standard (`whatwg/html` source @5fcc231), MDN's browser-compat-data (@82daeeb: `api/LockManager.json`, `Lock.json`,
+`BroadcastChannel.json`, `IDBTransaction.json`), Chromium (@35909f3: `content/browser/locks/lock_manager.h`,
+`content/browser/renderer_host/render_frame_host_impl.cc` and `.h`, `third_party/blink/renderer/modules/locks/lock_manager.cc`
+and `lock.cc`, `third_party/blink/public/mojom/feature_observer/feature_observer.mojom`), and three open implementations
+read as text, licence first: PGlite (@bac163e, Apache-2.0), wa-sqlite (@4631745, MIT), the Firebase JS SDK's Firestore
+(@8f49775, Apache-2.0). Excalidraw, tldraw and draw.io come from the October prior-art note (part 3 and 4 of
+`research-local-storage/prior-art.md`), not re-read.
+
+**Search log.**
+
+| Where | Query or path | What came back | Kept or set aside |
+|---|---|---|---|
+| raw.githubusercontent.com | `w3c/web-locks/<sha>/index.bs` | the specification's source | Kept: obtain a lock manager, termination, `request()`, request a lock, release |
+| raw.githubusercontent.com | `w3c/IndexedDB/<sha>/index.bs` | the specification's source | Kept: when a connection closes, auto-commit, `commit()`, close a database connection |
+| raw.githubusercontent.com | `whatwg/html/<sha>/source` | 8 MB | Kept: unload a document |
+| raw.githubusercontent.com | `mdn/browser-compat-data/<sha>/api/...` | four JSON files | Kept: first versions |
+| api.github.com | `repos/w3c/web-locks/commits/main` | 403 | Set aside: refused; `git ls-remote` gave the pins |
+| raw.githubusercontent.com | Chromium `content/browser/renderer_host/back_forward_cache_impl.cc`; `content/browser/locks/lock_manager.cc` | 404, 404 (moved, or the code is in the header) | Set aside; the eviction found through `render_frame_host_impl.cc` and `content/browser/locks/lock_manager.h` |
+| raw.githubusercontent.com | Blink `modules/locks/lock_manager.cc`, `lock.cc`; `feature_observer.mojom` | 200 | Kept: a held lock is reported to the browser as an observed feature (for tab freezing) |
+| raw.githubusercontent.com | PGlite `packages/pglite/src/worker/index.ts`; wa-sqlite `src/WebLocksMixin.js`; firebase-js-sdk `packages/firestore/src/local/indexeddb_persistence.ts`; each `LICENSE` | 200 | Kept: how each finds the tab that holds a resource |
+
+**Experiments**, scripts in [experiments/local-storage/](experiments/local-storage/): `e13_unload_write.js` (five ways to
+save at unload, three ways to go away, two sizes, 10 runs each), `e13b_commit_first_run.js` (which run `commit()` loses;
+20 runs, 3 contexts, 2 modes, the database new or already made), `e14_web_locks.js` (holding, probing, releasing in five
+ways, stealing; http and `file://`; 5 runs each; BroadcastChannel; the back/forward cache with Playwright's
+`--disable-back-forward-cache` removed, 3 runs) and `e15_old_builds.js` (the kept builds V114, V172, V172d and V172e served
+over http, storage seeded from a blank page of the same origin, four cases). Environment: Chromium 153.0.8010.12
+(chromium-1243) headless, Playwright 1.63.0, Node 22.23.4, 4 vCPU, 15 GB; raw JSON in the session's scratch directory.
+
+**Who read.** Two research agents were started on 2026-11-02, one for the tabs and one for the unload; both stopped at
+their first step on the account's usage limit and wrote nothing, so the reading above was done in the main session on
+2026-11-07. **The independent check** (protocol step 9): a separate agent re-opened the pinned source behind each of
+the 16 facts the code uses: 16 confirmed, 0 corrected, 0 not confirmed; one made more precise (wa-sqlite polls with
+`ifAvailable` for some locks and waits, with a timeout, for others). Its table: [research-local-storage/independent-check-v172f.md](research-local-storage/independent-check-v172f.md).
+
+### 13.3 Findings
+
+**(a) Saving as the page goes away.**
+
+| Finding | Evidence | Level | Confidence |
+|---|---|---|---|
+| A transaction auto-commits only "when all requests placed against the transaction have completed and their returned results handled"; "an explicit call to `commit()` will initiate a commit without waiting for request results to be handled by script" | IDB 3.0 lines 1061-1069, 4983-4989 | P | High |
+| A connection whose context is destroyed ("the user navigating away") is closed; closing waits for its transactions; only the forced form, for loss of the file system, a permission change or cleared storage, aborts them | IDB 3.0 lines 458-471, 5094-5110 | P | High |
+| Measured: puts auto-committed in `pagehide` or `visibilitychange` lost at every reload and navigation (0 of 10, both sizes); on close kept at 1 KB (9-10 of 10), lost at 4 MB; with `commit()` kept 9 of 10 everywhere, and 120 of 120 when the database existed before the page load | e13, e13b | P (Chromium) | High here |
+| A synchronous localStorage write in `pagehide` kept 10 of 10 in every case, 4 MB included | e13 | P | High |
+| Firestore writes a marker to localStorage at `pagehide` because "IndexedDB cannot be reliably used in window.unload since it is an asynchronous API"; tldraw and Excalidraw flush on hidden and `pagehide`; draw.io keeps a recovery draft | `indexeddb_persistence.ts` 150-160, 975-1011; prior-art.md part 3 | P | High |
+
+The specification's own condition explains the loss: a page being torn down cannot handle the put's result, so the
+transaction never reaches auto-commit; with `commit()` it need not. Why Chromium loses the first write to a database made in
+the same page load is not explained by anything read (U, 13.9).
+
+**(b) Which tab holds a project.**
+
+| Finding | Evidence | Level | Confidence |
+|---|---|---|---|
+| With `ifAvailable` the callback gets null when the lock is not grantable, without queueing; `steal` removes held locks of the name and rejects their released promise with AbortError; `steal` with `ifAvailable` is NotSupportedError | Web Locks lines 505-515, 600-627 | P | High |
+| A document's locks and requests end with its "unloading document cleanup steps" | Web Locks lines 311-326 | P | High |
+| `[SecureContext]`; the lock manager comes from the local storage bottle map, and a failure there is SecurityError | Web Locks lines 184-189, 340, 357, 508 | P | High |
+| Chromium: a request contending with a lock held by a page in the back/forward cache evicts that page (`kWebLocksContention`) and releases its locks synchronously, then decides; a `query()` does the same | `lock_manager.h` 50-54, about 320-331, 567-571; `render_frame_host_impl.cc` 4905-4911 | P | High for Chromium; Firefox and WebKit U |
+| Support: LockManager and Lock Chrome 69, Firefox 96, Safari 15.4; BroadcastChannel 54, 38, 15.4; `IDBTransaction.commit` 76, 74, 15; `durability` 83, 126, 15; mobile as desktop | BCD @82daeeb | P | High |
+| Measured: `ifAvailable` null while held (5 of 5, http and `file://`); released on reload, navigation, close and crash; `steal` granted with the holder told AbortError; BroadcastChannel delivered on http and `file://` | e14 | P (Chromium) | High here |
+| Practice: PGlite elects a leader by waiting on a Web Lock, holds a lock per tab so others learn when a tab closes, and talks over BroadcastChannel; wa-sqlite polls file locks with `ifAvailable`; Firestore, older than Web Locks, keeps a lease in IndexedDB refreshed every 4 s (a client silent for 5 s loses it); none of the three uses `steal` | PGlite `worker/index.ts` 154-190, 548-551, 591, 639-642, 745-748; wa-sqlite `WebLocksMixin.js` 5-6, 378-389; Firestore 85-98, 135-160 | P | High |
+
+**(c) The older builds on the same origin.**
+
+| Finding | Evidence | Level | Confidence |
+|---|---|---|---|
+| V172 reading a V172d pointer in `acad3dV1` replaces it with an empty record at start, without an edit; the database's record is left with nothing pointing to it | e15 A | P | High |
+| Every older build (V114, V172, V172d, V172e), finding none of its own keys, writes an empty project under them at start; V114 also the old canvas key `acadLayoutsV1` | e15 B | P | High |
+| V172d and V172e facing database version 2 say the project "could not be read: nothing is saved over it" and keep the pointer through an edit | e15 C | P | High |
+| A guard first in `<head>` (localStorage copied into memory, `indexedDB.open` answering with an error) runs all four builds without page errors; each reads the stored project and takes an edit; real localStorage and IndexedDB unchanged byte for byte | e15 D | P | High |
+| The 95 kept builds reach localStorage only through `getItem`, `setItem`, `removeItem`, `key` and `length`; three use `window.indexedDB`, two `navigator.storage` | grep of the pre-phase backups then in `Phase/` (removed 2026-11-07; in git history) | P | High |
+| The site copies each kept build unchanged to `v/<version>/`; V142's suite compares each with its `Phase/` file byte for byte | `tools/build_site.py` lines 37-42; V142 suite line 238 | P | High |
+
+### 13.4 The alternatives compared
+
+Criteria, stated first: the last edit kept at reload and at close; one tab writing a project at a time, with a take-over;
+older builds unable to harm a project; the one-file build working from `file://` in Chromium; ES5 without a dependency;
+the size of the code.
+
+| At unload | Reload | Close | Other engines | Cost |
+|---|---|---|---|---|
+| Flush on hidden only (V172d) | lost (0 of 10) | 1 KB kept, 4 MB lost | unknown | none |
+| Also on `pagehide`, auto-committed | lost | as above | unknown | none |
+| Also `commit()` | kept, but the first write to a new database lost | kept 9-10 of 10 | `commit()` in Firefox 74 and Safari 15; their behaviour at unload unknown | one call per write |
+| Also a localStorage journal at `pagehide` | kept, synchronously, up to the room localStorage has | kept | the same synchronous write as today's | about 40 lines, read when a project is loaded |
+
+| Which tab holds a project | Knows exactly | Freed on close or crash | Take-over | `file://` in Chromium | Support | Code |
+|---|---|---|---|---|---|---|
+| Web Locks, BroadcastChannel for messages | yes | yes (specification, measured) | `steal`, the holder told; a polite release asked first | yes | Chrome 69, Firefox 96, Safari 15.4 | small |
+| A lease in storage with a heartbeat (Firestore; draw.io's alive check) | after a timeout (5 s in Firestore) | after the timeout, or a marker at `pagehide` | by rewriting the lease | yes | every engine | larger: timers, clocks, races |
+| A localStorage stamp after each save (Excalidraw; part 11's D7) | no: says a tab saved, not that a tab holds the project | n/a | last write wins | yes | every engine | small |
+
+| The older builds | Overwrites | Orphans a record | Clutters the list | Cost |
+|---|---|---|---|---|
+| Keep `acad3dV1` as the pointer (V172d) | yes, at start (e15 A) | yes | yes | none |
+| New key names for the index; the old keys read when found | no | no | an empty project at each start (e15 B), unless empty records are dropped | small |
+| The database at version 2 | V172d and V172e refuse (e15 C) | no | no | none |
+| The guard on the site's `v/` pages | nothing kept | no | no | `tools/build_site.py`; V142 amended |
+
+**The recommendation.** `commit()` on every write and a journal of the record not yet confirmed, written to localStorage
+at `pagehide` when it fits and read whenever that project is read (the newer wins); a Web Lock per project
+(`ifAvailable` to open, a polite release over BroadcastChannel then `steal` to take over), no read-only mode where
+`navigator.locks` is missing; new key names for the index, the database at version 2, and the guard on every older build
+the site serves; the old keys copied in one transaction with `durability: 'strict'`, read back and compared, the index
+written, and only then each old key removed if it still holds what was copied; an old record found later kept when it
+has anything in it (under its own id, or a new one when the id is taken by a different record), dropped when it is
+empty. What would change it: Firefox or Safari losing committed writes at unload (the journal covers records that fit),
+or the owner preferring a lease that works in browsers before Web Locks.
+
+### 13.5 The experiments: the numbers
+
+| e13 (10 runs each) | 1 KB reload | 1 KB navigate | 1 KB close | 4 MB reload | 4 MB navigate | 4 MB close |
+|---|---|---|---|---|---|---|
+| `visibilitychange`, auto-commit | 0 | 0 | 9 | 0 | 0 | 0 |
+| `visibilitychange`, `commit()` | 9 | 9 | 10 | 9 | 9 | 9 |
+| `pagehide`, auto-commit | 0 | 0 | 10 | 0 | 0 | 0 |
+| `pagehide`, `commit()` | 9 | 9 | 10 | 9 | 9 | 9 |
+| `pagehide`, localStorage (the control) | 10 | 10 | 10 | 10 | 10 | 10 |
+
+The handler ran in 10 of 10 runs everywhere. e13b: with the database made by the first run's own page, `commit()` lost
+run 0 and only run 0 in 6 of 6 contexts (20 runs each, both events); with the database made and written beforehand, 0
+lost of 120. e14: probe while held null 50 of 50; B granted after a reload 14-19 ms (http) and 12-18 (`file://`), a
+navigation 12-20 and 11-19, a close 57-61 and 55-62, a crash 55-57 and 54-56; `steal` granted 10 of 10, the holder's
+log "request rejected AbortError"; BroadcastChannel "hello" delivered on both; the cache runs: lock-free control not
+restored ("pageshow persisted=false"), `notRestoredReasons` "masked", the lock free while away (released by the unload).
+e15: as in 13.3 (c).
+
+### 13.6 Edges
+
+| Edge | One side | The other |
+|---|---|---|
+| The first write to a database made in this page load | lost at a reload even with `commit()` (e13b, 6 of 6) | from the second write on, kept 120 of 120 |
+| The journal at `pagehide` | written when the record fits the room localStorage has left (5,242,880 units for the origin, the index and preferences included) | not written: `commit()` alone |
+| A lock held by a page in the cache | Chromium: the page evicted, the request granted | Firefox, WebKit: U |
+| `navigator.locks` | Chrome 69, Firefox 96, Safari 15.4 and later: read-only second tab | earlier: no read-only, last write wins |
+| An old record found later | anything in it: kept as a project | nothing (no objects, sheets, views, history, grids, result layers, boards, data, name): removed |
+| The database's version | 2: V172f | 1: V172d, V172e refuse with VersionError; a later 3 makes V172f refuse, and V172f says a newer version updated the storage |
+
+### 13.7 What the app already has
+
+`core/idb-store.js` (V172d, V172e): `bimIdbOpen` at version 1, `bimIdbTx` without `commit()`, `bimSpillSave`,
+`bimParkInIdb`, `bimSpillBootLoad`, the flush on hidden; `core/state.js` lines 111-124 (a pointer read at start);
+`ui/project-tabs.js` (`bimDocsBoot` from the keys, the `pagehide` flush at 104-106, `bimDocsSwap`, `bimDocsActivateIdb`);
+`assets/templates.js` (`tpl:<id>`; `bimDocsRemove` deletes the database copy); `assets/family-library.js` (the `lib:family`
+pointer, `bimLibBootLoad`); `io/project-file.js` (`persist()` at the first Save). Seven suites read `acad3dV1` itself
+(V115, V117, V121b, V122, V126, V167, V172d) and seven the other project keys or the database (V115, V121b, V124, V124b,
+V163, V172d, V172e).
+
+### 13.8 Risks and threats to validity
+
+One engine, headless, one machine; the first-write loss unexplained; the back/forward cache case read in Chromium's code,
+not measured; the guard changes how the site serves older builds (their code unchanged, their storage in memory for the
+visit), which V142's byte-for-byte check must be amended for; the index's open and active lists are shared by tabs, last
+writer wins (records are per project and never fought over); an older build already open in a tab during the upgrade
+keeps writing the old keys, which the new build reads later and keeps beside.
+
+### 13.9 What is still open (U)
+
+Firefox's and WebKit's behaviour for committed writes at unload and for a lock held by a cached page; why Chromium loses
+the first write to a database made in the same page load; real phones. None of these changes the recommendation: the
+journal and the lock's release on unload cover them where they are not known.
+
+### 13.10 The owner's decisions and the independent check
+
+Asked together on 2026-11-07, both answered as recommended the same day: **F1**, the older versions on the site open
+with storage of their own in memory and a line saying so (D10's "opened read-only for projects"): **yes, storage in
+memory**; **F2**, the second tab by Web Locks, with no read-only mode in browsers without them (before Chrome 69, Firefox
+96, Safari 15.4), rather than a lease that would also cover them: **Web Locks only**. Stated, not asked, as they follow from D1, D7 and D9: templates and the library move
+with the projects; the journal (D9's condition met); old records with anything in them kept, empty ones removed;
+read-only means AutoCAD's read-only: the model can be looked at and changed, nothing is saved over the stored project,
+Save to a file still works.
+
+**After PR #65 (2026-11-07).** The repository was reorganised the same day: `Phase/` was removed and the site no longer publishes older builds (`build_docs.kept_versions()` returns none), so F1's guard has no page to apply to and is not built in V172f; it stands as the answer should older versions be published again. The older builds that can still meet the new storage are tabs left open across the upgrade and copies of `canvas_v10.html` opened from `file://`; the new key names and the database at version 2 cover both (13.3 c).
+
+### 13.11 References (V172f)
+
+| # | What | URL | What was read | Level |
+|---|---|---|---|---|
+| J1 | Web Locks API, editor's draft source @a61a773 | https://raw.githubusercontent.com/w3c/web-locks/a61a77307d2a0b0928320a2ff9c897b7658a9e2e/index.bs | Lines 184-189, 311-326, 340-375, 496-515, 600-640 | P |
+| J2 | Indexed Database API 3.0, source @f9f83f1 | https://raw.githubusercontent.com/w3c/IndexedDB/f9f83f196f8501429282ff1747ebcbe35d41381a/index.bs | Lines 455-471, 1061-1071, 4983-4989, 5094-5110, 5191-5205, 5239-5251 | P |
+| J3 | HTML Standard source @5fcc231 | https://raw.githubusercontent.com/whatwg/html/5fcc2318395821db61e353705e6368ad9a000af5/source | "unload a document", line 114730 on | P |
+| J4 | MDN browser-compat-data @82daeeb | https://raw.githubusercontent.com/mdn/browser-compat-data/82daeebf5a7073d55223a8cdb8aa54fb9416e27d/api/LockManager.json (and Lock, BroadcastChannel, IDBTransaction) | First versions, mirrors followed | P |
+| J5 | Chromium @35909f3, the lock service | https://raw.githubusercontent.com/chromium/chromium/35909f33e26f314f6471c1531a20e6a0cc56e8ed/content/browser/locks/lock_manager.h | Lines 50-58, about 315-335, 560-575 | P |
+| J6 | Chromium @35909f3, the frame host | https://raw.githubusercontent.com/chromium/chromium/35909f33e26f314f6471c1531a20e6a0cc56e8ed/content/browser/renderer_host/render_frame_host_impl.cc | `OnLockContention`, lines 4905-4911; the header's line 795 | P |
+| J7 | Chromium @35909f3, Blink's locks and the feature observer | https://raw.githubusercontent.com/chromium/chromium/35909f33e26f314f6471c1531a20e6a0cc56e8ed/third_party/blink/renderer/modules/locks/lock_manager.cc | Lines 215-230; `lock.cc` 60-73; `feature_observer.mojom` 1-25 | P |
+| J8 | PGlite @bac163e (Apache-2.0) | https://raw.githubusercontent.com/electric-sql/pglite/bac163ecc92e968adda68864b74b7e3d65a68e97/packages/pglite/src/worker/index.ts | Lines 150-240, 545-555, 585-650, 740-760 | P |
+| J9 | wa-sqlite @4631745 (MIT) | https://raw.githubusercontent.com/rhashimoto/wa-sqlite/4631745762f5e24d226254158e5ceada2d5fbe1e/src/WebLocksMixin.js | Lines 1-10, 370-395 | P |
+| J10 | Firebase JS SDK @8f49775, Firestore (Apache-2.0) | https://raw.githubusercontent.com/firebase/firebase-js-sdk/8f4977509b3a014e390d2658913e469b6c59c391/packages/firestore/src/local/indexeddb_persistence.ts | Lines 80-165, 940-1015 | P |
+| J11 | The kept builds and the site, at commit 9dc7b87 (before PR #65) | `Phase/canvas_v10.html.bak_phase*_pre`; `tools/build_site.py`; `tests/bim_phase142_guide_versions_browser_tests.py` | Storage calls (grep); lines 37-42; line 238 | P |
+| J12 | Experiments e13, e13b, e14, e15 | [experiments/local-storage/](experiments/local-storage/) | Run 2026-11-02, Chromium 153 | P (measured, one engine) |
