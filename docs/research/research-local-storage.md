@@ -1010,3 +1010,66 @@ not yet been run (Rule #1).
 | J10 | Firebase JS SDK @8f49775, Firestore (Apache-2.0) | https://raw.githubusercontent.com/firebase/firebase-js-sdk/8f4977509b3a014e390d2658913e469b6c59c391/packages/firestore/src/local/indexeddb_persistence.ts | Lines 80-165, 940-1015 | P |
 | J11 | The kept builds and the site, at commit 9dc7b87 (before PR #65) | `Phase/canvas_v10.html.bak_phase*_pre`; `tools/build_site.py`; `tests/bim_phase142_guide_versions_browser_tests.py` | Storage calls (grep); lines 37-42; line 238 | P |
 | J12 | Experiments e13, e13b, e14, e15 | [experiments/local-storage/](experiments/local-storage/) | Run 2026-11-02, Chromium 153 | P (measured, one engine) |
+
+## 14. V172h: installable and offline (research, started 2026-11-07)
+
+**Status: in progress.** Parts 1 to 12 decided that the app should be installable and work offline on Pages (D6),
+and what that takes in outline: a manifest, icons, and an ES5 service worker at `/BIM-Personal/sw.js`. This part
+answers what the code depends on that those parts left open or did not ask.
+
+### 14.1 The question and the hypotheses
+
+**The question.** How should the Pages app be made installable and usable offline so that (a) after one online visit
+the app opens and works with no network, its projects read from IndexedDB, in Chrome/Edge, Safari (macOS Dock, iOS and
+iPadOS Home Screen) and Firefox; (b) a new build reaches every user without ever replacing the code under a page that
+has unsaved work, and without a user running an old build for long; (c) nothing the worker does can lose, hide or
+duplicate a project, or interfere with V172f's tab locks and the database's schema version; and (d) the one-file
+`file://` build is unchanged? A good answer decides the manifest's members and icons, what the worker caches and
+when, its strategy per kind of request, how it is versioned and updated, what the page says about it, what happens
+to the 16 MB Ladybug runtime and to third-party requests, and how all of it is tested.
+
+What the app has now (read 2026-11-07; part 14.7 has the detail): `tools/build_app.py` `write_site()` writes
+`index.html` and `app/app.css`, `app/shell.js`, `app/openskp.js`, `app/engine.js`, each named in the page with
+`?v=<first 12 hex of its SHA-256>`, so the file names do not change between builds, only the query; Pages answers
+`index.html` with `cache-control: max-age=600` and an ETag; `/BIM-Personal/sw.js` is 404; no manifest, no icon, no
+`theme-color`, no `apple-touch-icon` anywhere in `src/`; the Ladybug runtime (16 MB, `runtime/`) is fetched from the
+absolute address `https://bradleypham1906.github.io/BIM-Personal/runtime/` (`ladybug/runtime.js:15`) by Pyodide in a
+dedicated Web Worker; twelve engine files fetch third-party hosts (tiles, Overpass, Open-Meteo, the Census, FEMA and
+others); `tools/build_site.py` keeps no `v/` builds since 2026-11-07.
+
+| # | Hypothesis (falsifiable) | Outcome | Evidence | Level |
+|---|---|---|---|---|
+| H29 | A worker at `/BIM-Personal/sw.js` controls `/BIM-Personal/` and every path under it, and no other Pages project of the account | open | | |
+| H30 | Pages cannot send `Service-Worker-Allowed` or any custom header, and serves `sw.js` with a JavaScript MIME type | open | | |
+| H31 | The `?v=` query names are usable as cache keys: the Cache API matches the full URL with its query by default, so a build's four files can be precached by the exact URLs the page asks for, and an old build's entries found and deleted | open | | |
+| H32 | After one online visit, the app opens offline (Chromium's offline emulation), reads its projects from IndexedDB and saves, with no page error but the third-party fetches' own | open | | |
+| H33 | A new worker left waiting (no `skipWaiting()`) is not activated by reloading one tab while another tab of the app is open, and is activated when every tab has closed | open | | |
+| H34 | A page can hold a waiting worker back while it has unsaved work and let it in after, by messaging it, without a second reload loop | open | | |
+| H35 | The browser checks `sw.js` for an update on every navigation and at most every 24 hours, ignoring Pages' `max-age=600` (`updateViaCache` "imports" by default) | open | | |
+| H36 | Fetches made by a dedicated Web Worker the page created (Pyodide's) go through the page's service worker, so the runtime can be served from a cache offline | open | | |
+| H37 | The worker's caches are counted in the same origin quota as IndexedDB and are evicted with it (one storage bucket), so caching the app adds no eviction case of its own | open | | |
+| H38 | Chrome's automatic install prompt (`beforeinstallprompt`) still needs a fetch handler in current Chromium (left open by part 10) | open | | |
+| H39 | iOS and iPadOS take the Home Screen icon from `apple-touch-icon` before the manifest's `icons`, and Safari ignores `purpose: maskable` | open | | |
+| H40 | The app's shell (V149's safe areas, V147's panels, V150's palette) needs no change in `display: standalone`; only `display-mode` media queries would tell it apart | open | | |
+| H41 | Caching OpenStreetMap's tiles or other third-party data for offline use is not allowed by their terms, so the worker must leave cross-origin requests to the network | open | | |
+
+### 14.2 Method (planned)
+
+Four sides, researched in parallel as part 3 of the protocol asks, each with its own note in
+`research-local-storage/` and its search log:
+
+1. **Specifications and browsers** (`v172h-standards-and-browsers.md`): Service Workers (registration, scope, update,
+   lifecycle, clients, which workers a service worker controls), the Web App Manifest and its incubations (`id`,
+   `scope`, `icons` and `purpose`, `display_override`, `shortcuts`), the Storage Standard on caches and buckets, MDN's
+   browser-compat-data rows, Chromium's installability code, WebKit's and Firefox's documents and bugs, GitHub Pages'
+   own documents on headers and MIME types.
+2. **Prior art** (`v172h-prior-art.md`): open implementations read as text, licence first (Workbox's strategies and
+   its update recipes, Squoosh's hand-written worker, Excalidraw's and tldraw's PWA setup, draw.io's worker), and the
+   documents of apps that work offline (Figma, draw.io): what they cache, how they update, what they tell the user.
+3. **Experiments** (`docs/research/experiments/v172h-offline/`): measured in this container's Chromium over a local
+   server that mimics Pages' subpath and headers: H29, H31 to H37 and the cost of a precache on first visit.
+4. **The app's code** (part 14.7): what boot fetches, where unsaved work is known (V172g's marker, being built now),
+   V172f's locks and schema check, the guide pages, the runtime loader.
+
+Then the alternatives table, an independent second reader over every fact the code will use, and the owner's
+decisions asked together.
