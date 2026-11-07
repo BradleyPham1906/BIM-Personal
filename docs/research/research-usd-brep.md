@@ -1,7 +1,7 @@
 # NVIDIA's SMLib (USD BRep) as the kernel for Freeform: research
 
 Phase: V181-V187, Freeform F1-F7, with the Parametric Design Foundation (#44). Researched 2026-10-31 and
-2026-11-01 under `reference/research-protocol.md`. The research is done:
+2026-11-01 under `docs/research/research-protocol.md`. The research is done:
 - read-only research of the code, issues and licences;
 - experiments e01 and e02 (e02 approved by the owner on 2026-11-01);
 - the independent second reader, with its corrections applied.
@@ -71,7 +71,7 @@ source is listed in section 12.
   the fetch tool instead (marked P-wf: primary pages, read as a digest).
 
 **Experiments:**
-- **e01:** a synthetic module, testing the mechanism. Script: `reference/experiments/kernel-wasm/e01_file_origin_wasm.js`.
+- **e01:** a synthetic module, testing the mechanism. Script: `docs/research/experiments/kernel-wasm/e01_file_origin_wasm.js`.
 - **e02:** SMLib itself, built here with Emscripten 4.0.15 from usd-brep `3fd5b95` unchanged. The test driver is
   ours. Scripts: `e02_build.sh`, `e02_driver.cpp` and `e02_browser.js`, in the same folder.
 - **Approval:** the sandbox refused the Emscripten install under Auto mode. It ran after the owner's approval and
@@ -295,7 +295,7 @@ What holds it back is robustness and governance, and both can change with time.
 
 ### e01: a WebAssembly kernel in the one-file build, from `file://` (run 2026-10-31)
 
-**Setup.** `reference/experiments/kernel-wasm/e01_file_origin_wasm.js`, with its results in `e01_results.json`.
+**Setup.** `docs/research/experiments/kernel-wasm/e01_file_origin_wasm.js`, with its results in `e01_results.json`.
 - Chromium 153.0.8010.12 (chromium-1243), driven by Playwright 1.63.0. A fresh browser for each run, 5 runs at
   each size.
 - The module is synthetic, written by the script: integer arithmetic, sized to 1, 5 and 10 MB.
@@ -395,9 +395,9 @@ Every result was also checked as a manifold solid before its volume was taken.
   These are BSP-tree Booleans on polygon meshes, in ES5, with a plane tolerance `CSG_EPS = 1e-5` (line 2). Meshes
   go in through `meshPolys` (102) and come back through `polysToMesh` (161). Results are new meshes; nothing
   keeps a B-rep or the inputs.
-- **The gap:** `reference/research-rhino-guide-gap.md` lines 29-38, 50 and 61-64 list what is missing: NURBS
+- **The gap:** `docs/research/research-rhino-guide-gap.md` lines 29-38, 50 and 61-64 list what is missing: NURBS
   curves and surfaces, polysurfaces, Pipe, Cap and fillets on solids. PAD and POCKET exist.
-- **The plan:** `reference/plan-parametric-design.md`, which says its approval gate needs the owner before any new
+- **The plan:** `docs/research/plan-parametric-design.md`, which says its approval gate needs the owner before any new
   dependency or build step.
 - **The precedent for bundled third-party code:** `src/js/vendor/openskp.js` (216,247 bytes; credited in
   THIRD_PARTY_NOTICES.md section openskp). It is JavaScript, not a binary.
@@ -462,4 +462,4 @@ Levels: P read at the source, P-wf the source read through the fetch tool, S sec
 | Zoo, `zoo.dev/blog/zoo-design-studio-v1` | Their own geometry engine | P-wf |
 | DEVELOP3D, "Nvidia launches USD BRep geometry kernel for solid modelling" | History, ClassCAD | S |
 | 3Druck, on SMLib under Apache-2.0 | The release | S |
-| This app: `src/js/engine/bim/csg-booleans.js`, `reference/research-rhino-guide-gap.md`, `reference/plan-parametric-design.md`, `src/js/vendor/openskp.js`, `THIRD_PARTY_NOTICES.md`, `CLAUDE_INSTRUCTIONS.md` lines 50-51 | As cited | P |
+| This app: `src/js/engine/bim/csg-booleans.js`, `docs/research/research-rhino-guide-gap.md`, `docs/research/plan-parametric-design.md`, `src/js/vendor/openskp.js`, `THIRD_PARTY_NOTICES.md`, `docs/dev/CLAUDE_INSTRUCTIONS.md` lines 50-51 | As cited | P |

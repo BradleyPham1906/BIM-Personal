@@ -1,6 +1,6 @@
 """site_tools_reference.py -- V172's site analysis tools worked out again in Python, from the sources, not from the app.
 
-Each function follows what reference/research-site-analysis-tools.md read at the source:
+Each function follows what docs/research/research-site-analysis-tools.md read at the source:
 - the grid: the lot's extent and 100 m beyond it, 1 m cells, doubled while over 250,000 cells (the app's own rule,
   stated in its note); a cell belongs to an area when its centre is inside (even-odd), to a line or a point when its
   centre is within half a cell of it;

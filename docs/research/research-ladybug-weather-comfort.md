@@ -1,9 +1,9 @@
 # V172b, Ladybug L1: weather and comfort -- research
 
-The owner's decisions of 2026-10-26 (`reference/research-ladybug-tools.md`, 6) set the frame: Ladybug Tools' own
+The owner's decisions of 2026-10-26 (`docs/research/research-ladybug-tools.md`, 6) set the frame: Ladybug Tools' own
 Python, unchanged, run by Pyodide, the AGPL accepted, no Honeybee, Pyodide and the wheels served with the Pages site
 at a fixed path, and this phase after V172. "ok start" (2026-10-31) began it. This note follows
-`reference/research-protocol.md` and `reference/reuse-first-integration.md`: what was read and run on 2026-10-31,
+`docs/research/research-protocol.md` and `docs/research/reuse-first-integration.md`: what was read and run on 2026-10-31,
 at what level, what it shows, the design it leads to, and the questions for the owner.
 
 ## 1. What the app has (P, its code)
@@ -36,7 +36,7 @@ core runtime ("the same set of files that are installed if you use npm install p
 
 The package tarballs' SHA-256: 0.29.5 `6749b10e...e4aff181`, 314.0.7 `66b7949e...685ffaa0`. Both MPL-2.0.
 
-**The choice this leads to:** 0.29.5. The app's code is ES5 (`CLAUDE_INSTRUCTIONS.md`); a classic worker driven by
+**The choice this leads to:** 0.29.5. The app's code is ES5 (`docs/dev/CLAUDE_INSTRUCTIONS.md`); a classic worker driven by
 ES5 code can load 0.29.5, while 314.x needs a module worker and `import`, which ES5 cannot write. 0.29.5 is still
 maintained (released two days after 314.0.7). When the 0.29 line ends, moving to 314 needs the owner's exception for
 an ES module worker; recorded, not needed now.
@@ -371,7 +371,7 @@ same category as the app's (0 of 8,760 differ, in the shade with wind and in the
 conditions' every hour as native CPython's; comfort by Fanger's PMV for 0.5 and 1.0 clo, 17.9% of the hours by the
 reference and 18.1% in the app, the difference 211 hours at the polygon's edge; each strategy's share as native
 CPython's; Open-Meteo's hours, after patch e, as Ladybug holds a file's (0 differ). The falsification (77 ways to break
-the build) and the full regression are in the log, `canvas_v10_STATUS.md`, V172b.
+the build) and the full regression are in the log, `docs/dev/canvas_v10_STATUS.md`, V172b.
 
 **Sources added 2026-11-01:** utci.org's `UTCI Program Code.zip` again (SHA-256
 `83ea34dc2428093c8b0f4e299bfb0a24752ff49ec1e11741927a75dafae283f1`): its polynomial's 210 terms read out of

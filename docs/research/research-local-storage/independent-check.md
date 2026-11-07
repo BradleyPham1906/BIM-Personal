@@ -218,7 +218,7 @@ corrected, item 4 with a wording caution; neither changes a value the plan uses)
   new Date().toISOString(), data:{objs, levels, grids, layers, counts, ..., pres}}`; a search of line 7 finds no `cam`,
   `seq` or `docId`. CONFIRMED.
 - 15h `io/sketchup-import.js:20`: `var BIM_SKP={maxTris:250000,blockTris:6000,blockChars:1500000};`. The phrase "so the
-  library stays within browser storage" is not in that file; it is in `canvas_v10_STATUS.md:14145-14146`, which the
+  library stays within browser storage" is not in that file; it is in `docs/dev/canvas_v10_STATUS.md:14145-14146`, which the
   audit cites in the same sentence (attribution loose, value right). `annotation/annotation-overlay.js:207-229`:
   comment "Read as a data URI so the drawing stays self-contained" (207-208), `bimPlaceImageNote`, `f.size>4*1024*1024`
   refused with a toast, `readAsDataURL`, stored as `{src:String(rd.result)}`, read error warned and toasted. CONFIRMED.

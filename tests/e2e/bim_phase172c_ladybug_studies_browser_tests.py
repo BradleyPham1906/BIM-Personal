@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""V172c: sun-hours and radiation on the model, by Ladybug. reference/research-ladybug-sun-radiation.md.
+"""V172c: sun-hours and radiation on the model, by Ladybug. docs/research/research-ladybug-sun-radiation.md.
 
 Run: python3 bim_phase172c_ladybug_studies_browser_tests.py [path/to/canvas_v10.html]
 

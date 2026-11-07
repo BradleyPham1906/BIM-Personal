@@ -11,7 +11,7 @@ what was seen, at what level, against what the app has, as the input to the plan
 | The owner's video, 27.0 s, 720 x 1280 (a phone recording), AV1 with an audio track | 27 frames, one a second, at full size; the scene changes at 1.8, 2.5, 5.6, 6.5 and 18.7 s. The sound has no silences and no words were transcribed (no speech engine here); what follows is the screen's. | 2026-11-01 | P (the product's screen) |
 | archimap.masslabs-archi.com | "Site analysis in one minute. 195 countries · 100+ layers · 350+ datasets · building data 8+ · parcel data 5+ · true-width roads · 3D terrain"; "+2.5B buildings worldwide"; the source of every building dataset credited | 2026-11-01 | P |
 | masslabs-archi.com | plans: the site report on Pro (4 km2, 20 uses a month) and Max (9 km2, 30), not on Plus or the trial; exports PNG, SVG, DXF, PDF; 3DM, SKP, RVT, STL; Colorgram | 2026-11-01 | P |
-| `reference/research-analysis-workspace.md` | archiMap's earlier video (2026-10-25): its light workspace, its style card and Ratios | 2026-10-25 | P |
+| `docs/research/research-analysis-workspace.md` | archiMap's earlier video (2026-10-25): its light workspace, its style card and Ratios | 2026-10-25 | P |
 
 ## 2. The flow (the video's own captions, 7 to 20 s)
 

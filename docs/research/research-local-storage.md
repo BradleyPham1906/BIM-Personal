@@ -1,6 +1,6 @@
 # Local storage: IndexedDB, files and an installable app (research, 2026-10-31)
 
-The first note written under the protocol of 2026-10-31 (`reference/research-protocol.md`, "Research as a scientist
+The first note written under the protocol of 2026-10-31 (`docs/research/research-protocol.md`, "Research as a scientist
 does it"). Levels: **P** read in the primary source (the specification, the browser's own code, the vendor's own
 document, the bug record, the app's code, or measured here), **S** a dependable secondary source with the gap said,
 **U** a search summary or a single unchecked copy, a pointer only, labelled "to confirm" and kept out of the plan.
@@ -80,7 +80,7 @@ them and cites them, and where they disagree it says so.
 | The app's own code | about 40 files | `src/js/engine/` at commit 179cc2f (part 8) |
 | Search pointers kept as U | 12 | listed in part 12, group H |
 
-**Experiments.** Thirteen scripts in [reference/experiments/local-storage/](experiments/local-storage/): `_lib.js`
+**Experiments.** Thirteen scripts in [docs/research/experiments/local-storage/](experiments/local-storage/): `_lib.js`
 (a localhost server and helpers), `e01` to `e11` with `e02b` (the storage hypotheses), and `e12` (the files and
 install surface; the files note calls it e10, the number it had before it was renumbered to end a clash with
 `e10_compression.js`). Environment: Chromium build chromium-1243 (`browser.version()` 153.0.8010.12), headless,
@@ -292,7 +292,7 @@ the owner choosing a native desktop app, which only F answers.
 ## 6. The experiments
 
 All in Chromium 153.0.8010.12 (chromium-1243), headless, Playwright 1.63.0, on 2026-10-31; scripts in
-[reference/experiments/local-storage/](experiments/local-storage/); full tables in
+[docs/research/experiments/local-storage/](experiments/local-storage/); full tables in
 [experiments.md](research-local-storage/experiments.md) and [files-and-install.md](research-local-storage/files-and-install.md).
 
 **e01, localStorage's limit** (3 runs, spread 0; re-run by the checker, identical)
@@ -462,13 +462,13 @@ All from the app-code audit at commit 179cc2f, confirmed by the checker where ma
 | Open: hidden `#a3d-projin accept=".json"`, FileReader, each file into a new tab; Import also routes `.json` | `ui/build-ui.js:52, 197-203`; `io/project-file.js:36-72`; `io/import-entry.js:28-31` |
 | No drag-and-drop of files from the OS, no `showSaveFilePicker`, no IndexedDB, no service worker, no manifest, no `CompressionStream`, no worker | grep of `src/` (audit and files note) |
 | Element history inside the record, its blobs as JSON strings escaped a second time | `history/element-history.js:1-6, 33-38, 48-59` |
-| Imported meshes inline as `mesh:{v,f}`; SketchUp limits `BIM_SKP={maxTris:250000, blockTris:6000, blockChars:1500000}` | `io/import-obj-stl.js:82-95`; `io/sketchup-import.js:20` (15h; the "stays within browser storage" wording is in `canvas_v10_STATUS.md:14145-14146`) |
+| Imported meshes inline as `mesh:{v,f}`; SketchUp limits `BIM_SKP={maxTris:250000, blockTris:6000, blockChars:1500000}` | `io/import-obj-stl.js:82-95`; `io/sketchup-import.js:20` (15h; the "stays within browser storage" wording is in `docs/dev/canvas_v10_STATUS.md:14145-14146`) |
 | Image notes as data URIs, 4 MB cap | `annotation/annotation-overlay.js:207-229` (15h) |
 | Not saved, rebuilt: terrain TIN, map tiles, result-layer images | `terrain/terrain-tin.js:61-62`; `map/map-tiles.js:18-25`; `analysis/results-layers.js:7,175-178` |
 | Promises already used with `.then(function(){...})` in 15 engine files; no `async`, no arrows | e.g. `site-analysis/climate-data.js:41-45` |
 | Test hooks for files and projects: `__a3dExportProject`, `__a3dProjectEnvelope`, `__a3dImportProject`, `__a3dParseProjectEnvelope`, `__a3dDocs`, `__a3dTemplateSave/Use`, `__a3dFamilyAdd/Get/Remove` | `testing/hooks-drawing.js:277-300`; `testing/hooks-layers-sheets.js:165-180`; `testing/hooks-assets-structure.js:16-17` |
 | The storage contract suite: V115 (48 checks), with V121b and V124; 23 of 157 test files mention localStorage; V115 replaces `Storage.prototype.setItem` to simulate a full store | `tests/bim_phase115_project_tabs_browser_tests.py:1-26, 358-375` |
-| The build contract: one file, no dependency, "must run from `file://` with no server"; failures warned and toasted; "never a half-written localStorage record"; "existing localStorage keys (`acad3dV1` and relatives) must survive every change" | `CLAUDE_INSTRUCTIONS.md:49-56` |
+| The build contract: one file, no dependency, "must run from `file://` with no server"; failures warned and toasted; "never a half-written localStorage record"; "existing localStorage keys (`acad3dV1` and relatives) must survive every change" | `docs/dev/CLAUDE_INSTRUCTIONS.md:49-56` |
 
 What it means for the build: the boot must become two-stage (build with defaults or with a localStorage copy, then
 apply the IndexedDB record), every reader of `A3D_BOOT_DOC`, `A3D_DOCS` and `A3D_FAMLIB` at start must tolerate it,
@@ -494,7 +494,7 @@ failed migration.
 - **Small samples.** Three to five runs per measurement on a shared machine; outliers are kept in the raw numbers.
 - **SIGKILL is not power loss.** The page cache survives a killed browser, so e08 cannot show what "relaxed" risks.
 - **Scratch measurements not kept.** The app-code audit's sizes and the switch failure were measured with scripts
-  in the session scratchpad, not in `reference/experiments/`; they can be repeated from the audit's description but
+  in the session scratchpad, not in `docs/research/experiments/`; they can be repeated from the audit's description but
   not rerun as they stand.
 - **A shared scratch folder.** The standards researcher found a helper script altered between two calls by another
   process; it rewrote it in a private folder and re-made every extract after that point, so no finding depends on
@@ -603,7 +603,7 @@ second, with a button to take it over (rather than silent last-write-wins). An o
 says a newer version has updated the store.
 
 **D8. The family library's warn-without-toast fault.** `bimSaveFamilyLibrary` only warns to the console
-(`assets/family-library.js:44-46`), against the build contract (`CLAUDE_INSTRUCTIONS.md:54`); a SketchUp import into a
+(`assets/family-library.js:44-46`), against the build contract (`docs/dev/CLAUDE_INSTRUCTIONS.md:54`); a SketchUp import into a
 full library loses its blocks on reload without a word. *Recommended:* fix it now, as a small separate patch with its
 own falsified check (a toast like the template's), before phase A, since phase A moves the library anyway and the
 fault is live today.
@@ -763,5 +763,5 @@ date in "What" is the source's own. Where a source is P in one note and S in ano
 
 | # | What | Where | What was read | Level |
 |---|---|---|---|---|
-| I1 | BIM-Personal `src/` at commit 179cc2f; `canvas_v10.html`; `CLAUDE_INSTRUCTIONS.md`; `tests/`; `tools/build_site.py` | this repository | Part 8 | P |
-| I2 | Experiment scripts e01 to e12 and `_lib.js` | [reference/experiments/local-storage/](experiments/local-storage/) | Run 2026-10-31, Chromium 153 | P (measured, one engine) |
+| I1 | BIM-Personal `src/` at commit 179cc2f; `canvas_v10.html`; `docs/dev/CLAUDE_INSTRUCTIONS.md`; `tests/`; `tools/build_site.py` | this repository | Part 8 | P |
+| I2 | Experiment scripts e01 to e12 and `_lib.js` | [docs/research/experiments/local-storage/](experiments/local-storage/) | Run 2026-10-31, Chromium 153 | P (measured, one engine) |

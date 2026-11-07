@@ -4,7 +4,7 @@ your way around, and a tool dock that says what its buttons are.
 
 The owner, on the V128 sheet and the dock: "lets clean up these shortcuts stuff on the UI/UX becauase
 it kinda hard to navigate and things not very clear", and on the mockup: "thats actually what i
-want". Research: reference/research-shortcuts-ui.md (Figma, Google Docs, Linear, Fusion, Revit).
+want". Research: docs/research/research-shortcuts-ui.md (Figma, Google Docs, Linear, Fusion, Revit).
 
   1. THE PANEL opens on ? or SHORTCUTS, centred over the drawing, big enough to read, the search
      box ready; SHORTCUTS again leaves it open.

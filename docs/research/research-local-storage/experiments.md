@@ -3,7 +3,7 @@
 Measured evidence (level P, for this one Chromium build only) on ten claims a move of BIM-Personal's
 project storage from localStorage to IndexedDB will rely on, plus a look at what the built app
 writes at boot. Every number below was produced by a script in
-`reference/experiments/local-storage/`, run on 2026-10-31. Raw JSON output was written to the
+`docs/research/experiments/local-storage/`, run on 2026-10-31. Raw JSON output was written to the
 session's scratch directory, not the repository; the raw numbers are copied into the tables here.
 
 ## Method and environment
@@ -34,7 +34,7 @@ session's scratch directory, not the repository; the raw numbers are copied into
 - Temporary profiles were deleted by each script; one left by a failed first run of e08 was deleted by
   hand. No large file was written into the repository.
 
-### Scripts (all in `reference/experiments/local-storage/`)
+### Scripts (all in `docs/research/experiments/local-storage/`)
 
 | Script | Tests |
 |---|---|

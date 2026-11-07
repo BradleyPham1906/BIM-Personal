@@ -2,7 +2,7 @@
 """bim_phase132_map_browser_tests.py -- V132: the map.
 
 The owner wants the map "just like how giraffe do", with free sources only, and as much open public
-data as possible (reference/research-map.md, research-open-data.md). Every server here is routed
+data as possible (docs/research/research-map.md, research-open-data.md). Every server here is routed
 inside the browser -- the tile servers, Nominatim -- so the suite runs offline and knows exactly
 what was asked of them.
 

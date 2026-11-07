@@ -1,7 +1,7 @@
 # Reuse-first integration policy
 
 Owner direction: 2026-10-20. Applies to open-source integrations, starting with SolidCraft.
-Read with CLAUDE.md, CLAUDE_INSTRUCTIONS.md and reference/research-protocol.md.
+Read with CLAUDE.md, docs/dev/CLAUDE_INSTRUCTIONS.md and docs/research/research-protocol.md.
 
 ## Objective and order of preference
 
@@ -35,7 +35,7 @@ report evidence and trade-offs instead of forcing either reuse or a rewrite.
 
 ## SolidCraft: first deliverable
 
-Create reference/solidcraft-integration-map.md from actual source inspection. Keep it concise:
+Create docs/research/solidcraft-integration-map.md from actual source inspection. Keep it concise:
 
 - Upstream URL, exact revision, inspection date and applicable licenses/notices.
 - Verified file/module paths for sketches/constraints, parameters/expressions, feature history,

@@ -1,8 +1,8 @@
 # App code audit: how BIM-Personal stores and saves data today (2026-10-31)
 
 Groundwork for moving project saves from localStorage to IndexedDB. Read-only audit of `src/` at
-commit 179cc2f, built file `canvas_v10.html` sha256 88f3938b... (matches PIPELINE.md). Every
-citation is the app's own code (level P under `reference/research-protocol.md`); paths are relative
+commit 179cc2f, built file `canvas_v10.html` sha256 88f3938b... (matches docs/dev/PIPELINE.md). Every
+citation is the app's own code (level P under `docs/research/research-protocol.md`); paths are relative
 to the repository root. Measurements marked "measured" were taken here on 2026-10-31 by driving the
 built `canvas_v10.html` from `file://` in headless Chromium 153 (chromium-1243, Playwright 1.63.0)
 with scripts kept in the session scratchpad, not in the repository.
@@ -80,7 +80,7 @@ upgraded by tolerant field-by-field validation on load.
 - Opening a project resets every field to defaults first, then applies the record through the same validation — `src/js/engine/ui/project-tabs.js:125-142`
 - Element history (V146) travels inside the record as `history:{v:1, head, commits:[{id,parent,msg,at,by,tree:[[key,hash]...],stats,branch}], blobs:{hash: canonicalJSONString}, branches, branch}` — `src/js/engine/history/element-history.js:1-6,48-59,150-161`; each blob is a JSON string stored as a string value, so it is escaped a second time inside the record — `src/js/engine/history/element-history.js:33-38`; commits are user-initiated (and merges), not automatic — `src/js/engine/history/element-history.js:150`, `src/js/engine/history/branches-merge.js:159,344`
 - Imported meshes (OBJ, STL, SketchUp, IFC) are `mesh:{v:[[x,y,z],...], f:[[i,j,k],...]}` inline on the object; STL parsing builds exactly that shape — `src/js/engine/io/import-obj-stl.js:82-95`; SketchUp parts become `t:'solid'` objects with `mesh:q.mesh` — `src/js/engine/io/sketchup-import.js:260-263`
-- SketchUp limits "so the library stays within browser storage": `BIM_SKP={maxTris:250000, blockTris:6000, blockChars:1500000}` — `src/js/engine/io/sketchup-import.js:20`; block character budget enforced — `src/js/engine/io/sketchup-import.js:286-288`; recorded in the log — `canvas_v10_STATUS.md:14145-14146`
+- SketchUp limits "so the library stays within browser storage": `BIM_SKP={maxTris:250000, blockTris:6000, blockChars:1500000}` — `src/js/engine/io/sketchup-import.js:20`; block character budget enforced — `src/js/engine/io/sketchup-import.js:286-288`; recorded in the log — `docs/dev/canvas_v10_STATUS.md:14145-14146`
 - Terrain objects store their survey points (`survey:keep`, plus `source`), not their triangles — `src/js/engine/survey/survey-check.js:211-212`; the TIN is a derived cache, "The cache is not saved" — `src/js/engine/terrain/terrain-tin.js:61-62`
 - OpenStreetMap surroundings are placed as ordinary objects in `A3D.objs` — `src/js/engine/map/surroundings-3d.js:241`; trees capped at `BIM_CTX_TREES_MAX=3000` — `src/js/engine/map/surroundings-3d.js:13`
 - Map tiles live in an in-memory cache only (`A3D_MAP={cache:{},...}`, `BIM_MAP_CACHE=400`); only the map settings are saved under `A3D.site.map` — `src/js/engine/map/map-tiles.js:18-25`
@@ -89,7 +89,7 @@ upgraded by tolerant field-by-field validation on load.
 - Result-layer images are rebuilt into `A3D_RES_IMG`, an in-memory cache reset on load — `src/js/engine/analysis/results-layers.js:7,175-178`, `src/js/engine/core/state.js:100`
 - Asset thumbnails are PNG data URIs from a canvas (`toDataURL`) stored on the library entry — `src/js/engine/assets/scale-assets.js:359-401`, `src/js/engine/assets/family-library.js:56`, `src/js/engine/io/sketchup-import.js:284`
 - Measured sizes of `acad3dV1` (characters): empty project 28,280; with 40 walls 46,051; plus `site_kit.skp` (11 objects) 53,423; plus an OBJ of 20,000 triangles 528,922; plus an OBJ of 125,000 triangles 3,908,935 (about 31 characters per imported triangle).
-- No recorded project sizes or quota incidents were found in `canvas_v10_STATUS.md` (grep for quota, QuotaExceeded, storage full, 5 MB, IndexedDB returned only the line about the five persistence points, `canvas_v10_STATUS.md:303`, and the SketchUp limits).
+- No recorded project sizes or quota incidents were found in `docs/dev/canvas_v10_STATUS.md` (grep for quota, QuotaExceeded, storage full, 5 MB, IndexedDB returned only the line about the five persistence points, `docs/dev/canvas_v10_STATUS.md:303`, and the SketchUp limits).
 
 ### Inferences
 - A single 4 MB image note becomes about 5.6 M characters of base64, which on its own exceeds the measured localStorage quota (section 6); such a project cannot autosave today.
@@ -159,7 +159,7 @@ treated as "storage is full". Library and preference writes fail silently or to 
 - Switch: park failure aborts with toast; active-slot failure removes the parked copy and aborts; load failure restores `acad3dV1` and the previous project, toasts "stored data is damaged" — `src/js/engine/ui/project-tabs.js:158-188`
 - Index save failure toasts "The list of projects could not be saved: browser storage is full" — `src/js/engine/ui/project-tabs.js:107-114`
 - Template save failure toasts and adds no library entry ("a full store adds nothing") — `src/js/engine/assets/templates.js:1-12`
-- Family library save failure: `console.warn` only, no toast — `src/js/engine/assets/family-library.js:44-46` (the build contract requires `console.warn` plus `a3dToast`, `CLAUDE_INSTRUCTIONS.md:54`)
+- Family library save failure: `console.warn` only, no toast — `src/js/engine/assets/family-library.js:44-46` (the build contract requires `console.warn` plus `a3dToast`, `docs/dev/CLAUDE_INSTRUCTIONS.md:54`)
 - Preference writes swallow errors with empty catches — `src/js/engine/ui/build-ui.js:16,19`, `src/js/engine/ui/tool-palette.js:25-26,183-184`, `src/js/engine/history/branches-merge.js:382-383`, `src/js/engine/analysis/analyze-tab.js:32,45`, `src/js/engine/render/webgpu.js:205,472`; command usage warns only — `src/js/engine/commands/command-catalogue.js:204-205`; theme warns and toasts — `src/js/engine/core/storage-theme.js:31-34`
 - Boot read failure of `acad3dV1` warns and starts from defaults, with no toast — `src/js/engine/core/state.js:117-119`
 - No code references `QuotaExceededError` (grep); the suites simulate it by replacing `Storage.prototype.setItem` — `tests/bim_phase115_project_tabs_browser_tests.py:358-375`
@@ -204,10 +204,10 @@ via `tests/run_all.py`, and each is falsified by `tests/falsify_all.py`.
 ### Cited Findings
 - Files referencing localStorage (count of mentions): `bim_phase115_project_tabs` 15, `bim_phase121b_old_canvas_storage` 8, `bim_phase124_assets_library` 6, `bim_phase126_section_profiles` 4, `ui_responsive_audit` 3, `bim_phase117_wire_shell_retired` 3, `bim_phase114_stylesheet_start` 3, `bim_phase167_standards_registry` 2, `bim_phase166d_properties_width` 2, `bim_phase166b_panels` 2, and one each in `ui_overlap_probe`, `ui_interactive_test`, `bim_phase83`, `bim_phase55d`, `bim_phase55c`, `bim_phase46_48`, `bim_phase42`, `bim_phase163_sketchup_import`, `bim_phase153_webgpu_engine`, `bim_phase141`, `bim_phase135`, `bim_phase122`, `bim_phase116` (grep -c over `tests/`)
 - V115 asserts: legacy single-record store boots into one tab; every project in exactly one place after each switch; full store during switch and failed autosave toast and leave the project whole; boot repairs crash leftovers — `tests/bim_phase115_project_tabs_browser_tests.py:1-26`; it reads and writes keys directly — `tests/bim_phase115_project_tabs_browser_tests.py:141-182,345-355,428-459`
-- File:// storage harness hazard: an init script that touches localStorage cuts the page's storage off in about half of runs; suites seed storage from a blank page on the same origin instead — `tests/bim_phase115_project_tabs_browser_tests.py:74-79`, `canvas_v10_STATUS.md:9044-9052,9884`
+- File:// storage harness hazard: an init script that touches localStorage cuts the page's storage off in about half of runs; suites seed storage from a blank page on the same origin instead — `tests/bim_phase115_project_tabs_browser_tests.py:74-79`, `docs/dev/canvas_v10_STATUS.md:9044-9052,9884`
 - Suites using the envelope hooks: V51, V53, V73, V82, V115, V121, V148, V151, V162, V164 and `test_3d5.js` (grep for `__a3dProjectEnvelope|__a3dImportProject|__a3dExportProject`)
 - Test hooks: `__a3dExportProject`, `__a3dProjectEnvelope`, `__a3dImportProject`, `__a3dParseProjectEnvelope` — `src/js/engine/testing/hooks-drawing.js:297-300`; `__a3dDocs` (list, open, active, activate, create, close, remove, undoDepth) — `src/js/engine/testing/hooks-layers-sheets.js:165-180`; `__a3dTemplateSave/Use` — `src/js/engine/testing/hooks-assets-structure.js:16-17`; `__a3dFamilyAdd/Get/Remove`, `__a3dLoadUIPanelPrefs` — `src/js/engine/testing/hooks-drawing.js:277-282`; `__a3dHistCommit` — `src/js/engine/testing/hooks-assets-structure.js:104`; `__a3dCommandUsageClear` — `src/js/engine/testing/hooks-commands-site.js:13`
-- How they run: `tests/run_all.py [build] [filter] [-jN]`, default -j6, about 4 minutes; `tests/falsify_all.py <falsify_phaseNN.py> <suite.py>`; currently 133 suites, 6786 checks — `PIPELINE.md:19-38`; test protocol (falsify every suite, assert on the model) — `CLAUDE_INSTRUCTIONS.md:103-115`
+- How they run: `tests/run_all.py [build] [filter] [-jN]`, default -j6, about 4 minutes; `tests/falsify_all.py <falsify_phaseNN.py> <suite.py>`; currently 133 suites, 6786 checks — `docs/dev/PIPELINE.md:19-38`; test protocol (falsify every suite, assert on the model) — `docs/dev/CLAUDE_INSTRUCTIONS.md:103-115`
 
 ### Inferences
 - Six suites address `acad3dV1` by name and V115 manipulates `Storage.prototype.setItem`; a migration must either keep these keys meaningful (for example as a legacy source read once) or amend those suites, and falsify the amendments.
@@ -245,7 +245,7 @@ fits the house style. The hard constraints are the synchronous boot inside one c
 synchronous pagehide flush.
 
 ### Cited Findings
-- Build contract: one file, zero dependencies, runs from `file://`; ES5 `var`/`function`; every new path `console.warn('[BIM] ...')` plus `a3dToast`; "Never a half-written localStorage record"; "Existing localStorage keys (`acad3dV1` and relatives) must survive every change"; every new block carries `__acad3dVNN` — `CLAUDE_INSTRUCTIONS.md:49-56`
+- Build contract: one file, zero dependencies, runs from `file://`; ES5 `var`/`function`; every new path `console.warn('[BIM] ...')` plus `a3dToast`; "Never a half-written localStorage record"; "Existing localStorage keys (`acad3dV1` and relatives) must survive every change"; every new block carries `__acad3dVNN` — `docs/dev/CLAUDE_INSTRUCTIONS.md:49-56`
 - Promise use, e.g. `fetch(url).then(function(r){...})` and `Promise.all([...]).then(...)` — `src/js/engine/site-analysis/climate-data.js:41-45,244`, `src/js/engine/site-analysis/land-water.js:47-79`, `src/js/engine/site-analysis/analyze-site.js:54-143`
 - The engine is one closure joined from `src/` in `src/index.html` order (`CLAUDE.md`, "The engine is one closure"); `state.js` is included at line 41 and `storage-theme.js` at 42, `objects-save.js` at 175, `project-tabs.js` at 176, `templates.js` at 177, `family-library.js` at 187 — `src/index.html:41-42,175-177,187`
 - The stored project is applied synchronously while the closure is still executing (`src/js/engine/core/state.js:110-119`), before UI build; `A3D_DOCS=bimDocsBoot()` likewise — `src/js/engine/core/state.js:122`; `A3D_FAMLIB` is loaded at variable initialisation — `src/js/engine/assets/family-library.js:8`
@@ -271,6 +271,6 @@ synchronous pagehide flush.
 8. `grep Promise|\.then\(|async |await |=>`; `Worker|CompressionStream|pako|LZString`
 9. History: `element-history.js` 1-60, 150-175
 10. Tests: `grep -rl localStorage tests/`, per-file counts, V115 suite header and quota checks; envelope-hook users; testing hooks grep
-11. `PIPELINE.md` head; `CLAUDE_INSTRUCTIONS.md` build contract and test protocol
-12. `canvas_v10_STATUS.md` grep for quota, storage full, 5 MB, IndexedDB, init script
+11. `docs/dev/PIPELINE.md` head; `docs/dev/CLAUDE_INSTRUCTIONS.md` build contract and test protocol
+12. `docs/dev/canvas_v10_STATUS.md` grep for quota, storage full, 5 MB, IndexedDB, init script
 13. Measurements in headless Chromium from `file://` (sizes, timings, quota, IndexedDB probe); scripts in the session scratchpad only

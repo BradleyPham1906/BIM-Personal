@@ -57,7 +57,7 @@ to read; these say how hard to look, how to test, and how to show it. Every phas
    open bugs, known limits, issues filed against the implementations, browsers that behave
    differently. What is found is recorded, even when it changes nothing.
 5. **Measure what can be measured.** A claim about behaviour that can be tested from here is tested,
-   not taken from a document: a script kept in `reference/experiments/` (data, never a suite), the
+   not taken from a document: a script kept in `docs/research/experiments/` (data, never a suite), the
    environment (the browser and its build), the raw numbers, how many runs. What cannot be tested
    here (another browser, a phone, another operating system) is said, with the source relied on
    instead.
@@ -78,7 +78,7 @@ to read; these say how hard to look, how to test, and how to show it. Every phas
 
 ## The note
 
-Each phase's research note in `reference/` has these parts, in this order:
+Each phase's research note in `docs/research/` has these parts, in this order:
 
 1. **Abstract:** the question, the answer, and the recommendation, in a paragraph.
 2. **The question and the hypotheses,** and the outcome of each.

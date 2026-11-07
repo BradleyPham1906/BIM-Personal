@@ -1,6 +1,6 @@
 # The sun path, one clock (V171d research, 2026-10-26)
 
-Research for V171d, after `reference/research-protocol.md`. Levels: **P** read in the primary source, **S** a
+Research for V171d, after `docs/research/research-protocol.md`. Levels: **P** read in the primary source, **S** a
 dependable secondary source (the gap said), **U** a pointer only, never in the code.
 
 ## The owner's request

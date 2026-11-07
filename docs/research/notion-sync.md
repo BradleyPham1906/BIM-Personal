@@ -54,7 +54,7 @@ A note's page is rewritten when its note changes, so the two never disagree.
 3. **PR opened:** a line under the task's Pull requests, `(open)`.
 4. **PR merged:** the line says `(merged YYYY-MM-DD)`; the task to `Completed` with Completed on; its scope as built;
    the next phase in PIPELINE marked Start here goes to `In Progress` when its work begins.
-5. **The project page:** its "Where the project stands" table (build, hash, size, tests, Now, Next) from PIPELINE.md.
+5. **The project page:** its "Where the project stands" table (build, hash, size, tests, Now, Next) from docs/dev/PIPELINE.md.
 6. **A new phase or row in PIPELINE's ordered path:** a new task; a row removed or renumbered: its task renamed or
    archived, never left stale. Add the new page to the tables below in the same commit.
 
@@ -65,61 +65,61 @@ Search Notion before creating anything, so nothing is made twice.
 | File | Page |
 |---|---|
 | `CLAUDE.md` | `3fecbfcc3a3881398724f1ee2fd9765e` |
-| `CLAUDE_INSTRUCTIONS.md` | `3fecbfcc3a3881448252ca6f0316e029` |
-| `PIPELINE.md` | `3fecbfcc3a38814686afe3fbf3c64882` |
+| `docs/dev/CLAUDE_INSTRUCTIONS.md` | `3fecbfcc3a3881448252ca6f0316e029` |
+| `docs/dev/PIPELINE.md` | `3fecbfcc3a38814686afe3fbf3c64882` |
 | `THIRD_PARTY_NOTICES.md` | `3fecbfcc3a3881518161cc8c65e511c6` |
-| `canvas_v10_STATUS.md` | `3fecbfcc3a388169bcdcfb4f0ab28149` |
+| `docs/dev/canvas_v10_STATUS.md` | `3fecbfcc3a388169bcdcfb4f0ab28149` |
 | `docs/src/` | `3fecbfcc3a38817784eccd9b91488ee9` |
-| `reference/plan-v167-v170.md` | `3fecbfcc3a3881de90ecc1541d3685ea` |
-| `reference/research-access-people.md` | `3fecbfcc3a3881598684fed1479bb711` |
-| `reference/research-analysis-workspace.md` | `404cbfcc3a3881aaa157c4d99f450c3d` |
-| `reference/research-archimap-site-report.md` | `40bcbfcc3a3881d5985acef03d120b1b` |
-| `reference/research-alignment.md` | `3fecbfcc3a3881e881cdd2408e75b9a5` |
-| `reference/research-animation.md` | `403cbfcc3a388101837ec19cf0e0a894` |
-| `reference/research-traffic.md` | `403cbfcc3a388128b93be79356396b92` |
-| `reference/research-arcgis-site-analysis.md` | `3fecbfcc3a388106bad2c9be7ba8111c` |
-| `reference/research-archidiagram.md` | `3fecbfcc3a388195adb9e5492391d6e2` |
-| `reference/research-assets.md` | `3fecbfcc3a38811a8256d14749e71ebd` |
-| `reference/research-bim-hub.md` | `3fecbfcc3a3881bea10cea15da11cf25` |
-| `reference/research-bridge-splatting.md` | `3fecbfcc3a3881498a60ca0023b27baf` |
-| `reference/research-climate-risk-presentation.md` | `3fecbfcc3a388187a1d4ecefbe1cae25` |
-| `reference/research-colour-by.md` | `3fecbfcc3a3881d8bf07c622edde1065` |
-| `reference/research-command-ui.md` | `3fecbfcc3a388116877ad4d6ba1f045d` |
-| `reference/research-data-layers.md` | `3fecbfcc3a38813daa7afbbaf0e0d980` |
-| `reference/research-direct-manipulation.md` | `3fecbfcc3a3881eb8b12d278112ac615` |
-| `reference/research-field-autonomy.md` | `3fecbfcc3a38819990fed43c7289488e` |
-| `reference/research-giraffe.md` | `3fecbfcc3a3881e5a131fafce16dcc73` |
-| `reference/research-ladybug-tools.md` | `405cbfcc3a38819dbbdce4dc211a6b8f` |
-| `reference/research-ladybug-weather-comfort.md` | `40acbfcc3a388171a683cf330197d199` |
-| `reference/research-ladybug-sun-radiation.md` | `40bcbfcc3a3881ec9351cd2a8a19e78c` |
-| `reference/research-lod-reconstruction.md` | `3fecbfcc3a38812abfbcd3f4172e02bd` |
-| `reference/research-map.md` | `3fecbfcc3a3881b3a039fa3dba8ea81b` |
-| `reference/research-local-storage.md` | `40acbfcc3a3881c6a32fcdb69d6cc78a` |
-| `reference/research-mep-runs.md` | `3fecbfcc3a3881708aacf7e7009c4487` |
-| `reference/research-one-analyze-boards.md` | `3fecbfcc3a3881efaae7f1be56cb24da` |
-| `reference/research-open-data-portals.md` | `3fecbfcc3a388185b82cd124ddf0113c` |
-| `reference/research-open-data.md` | `3fecbfcc3a3881a3a64ee704bbaa49b0` |
-| `reference/research-panels.md` | `3fecbfcc3a3881908e46fb3e820de67a` |
-| `reference/research-presentation-panels.md` | `3fecbfcc3a388173b1cfc01bc48185ab` |
-| `reference/research-protocol.md` | `3fecbfcc3a38816aa733fe59b1b78c06` |
-| `reference/research-rhino-guide-gap.md` | `3fecbfcc3a38817bb142c5ac90f40b59` |
-| `reference/research-scale.md` | `3fecbfcc3a38810a913afad3f717a22f` |
-| `reference/research-shortcuts-ui.md` | `3fecbfcc3a38817da2f7e01e671abde6` |
-| `reference/research-site-analysis-in-model.md` | `3fecbfcc3a388110af17e44a1e218379` |
-| `reference/research-site-analysis-process.md` | `3fecbfcc3a388173ac14ca668847413c` |
-| `reference/research-site-analysis-tools.md` | `406cbfcc3a388114a854d7a89cdd935e` |
-| `reference/research-site-context.md` | `3fecbfcc3a3881d694bac9967c6cd6a7` |
-| `reference/research-sketchup-import.md` | `3fecbfcc3a3881be999bf09d57837e20` |
-| `reference/research-standards-inventory.md` | `3fecbfcc3a3881acab9be7601d152b90` |
-| `reference/research-standards-registry.md` | `3fecbfcc3a38810cab96f27728e46d6e` |
-| `reference/research-structural-ui.md` | `3fecbfcc3a38818d8c70d61677ab9d5e` |
-| `reference/research-sun-path.md` | `405cbfcc3a3881db83a8f135f145ff25` |
-| `reference/research-survey-check.md` | `3fecbfcc3a3881628cfcc1c30a343b34` |
-| `reference/research-tools-panel.md` | `3fecbfcc3a3881a48a6ce529e29f7876` |
-| `reference/research-usages.md` | `3fecbfcc3a3881ac8050e475f67cc902` |
-| `reference/research-usd-brep.md` | `40bcbfcc3a3881aa8002e692ab9c6765` |
-| `reference/research-valdrada.md` | `3fecbfcc3a3881b1a8b7edb323f75420` |
-| `reference/research-zoning-envelope-yield.md` | `3fecbfcc3a388107b391f35fd6a8f7d4` |
+| `docs/research/plan-v167-v170.md` | `3fecbfcc3a3881de90ecc1541d3685ea` |
+| `docs/research/research-access-people.md` | `3fecbfcc3a3881598684fed1479bb711` |
+| `docs/research/research-analysis-workspace.md` | `404cbfcc3a3881aaa157c4d99f450c3d` |
+| `docs/research/research-archimap-site-report.md` | `40bcbfcc3a3881d5985acef03d120b1b` |
+| `docs/research/research-alignment.md` | `3fecbfcc3a3881e881cdd2408e75b9a5` |
+| `docs/research/research-animation.md` | `403cbfcc3a388101837ec19cf0e0a894` |
+| `docs/research/research-traffic.md` | `403cbfcc3a388128b93be79356396b92` |
+| `docs/research/research-arcgis-site-analysis.md` | `3fecbfcc3a388106bad2c9be7ba8111c` |
+| `docs/research/research-archidiagram.md` | `3fecbfcc3a388195adb9e5492391d6e2` |
+| `docs/research/research-assets.md` | `3fecbfcc3a38811a8256d14749e71ebd` |
+| `docs/research/research-bim-hub.md` | `3fecbfcc3a3881bea10cea15da11cf25` |
+| `docs/research/research-bridge-splatting.md` | `3fecbfcc3a3881498a60ca0023b27baf` |
+| `docs/research/research-climate-risk-presentation.md` | `3fecbfcc3a388187a1d4ecefbe1cae25` |
+| `docs/research/research-colour-by.md` | `3fecbfcc3a3881d8bf07c622edde1065` |
+| `docs/research/research-command-ui.md` | `3fecbfcc3a388116877ad4d6ba1f045d` |
+| `docs/research/research-data-layers.md` | `3fecbfcc3a38813daa7afbbaf0e0d980` |
+| `docs/research/research-direct-manipulation.md` | `3fecbfcc3a3881eb8b12d278112ac615` |
+| `docs/research/research-field-autonomy.md` | `3fecbfcc3a38819990fed43c7289488e` |
+| `docs/research/research-giraffe.md` | `3fecbfcc3a3881e5a131fafce16dcc73` |
+| `docs/research/research-ladybug-tools.md` | `405cbfcc3a38819dbbdce4dc211a6b8f` |
+| `docs/research/research-ladybug-weather-comfort.md` | `40acbfcc3a388171a683cf330197d199` |
+| `docs/research/research-ladybug-sun-radiation.md` | `40bcbfcc3a3881ec9351cd2a8a19e78c` |
+| `docs/research/research-lod-reconstruction.md` | `3fecbfcc3a38812abfbcd3f4172e02bd` |
+| `docs/research/research-map.md` | `3fecbfcc3a3881b3a039fa3dba8ea81b` |
+| `docs/research/research-local-storage.md` | `40acbfcc3a3881c6a32fcdb69d6cc78a` |
+| `docs/research/research-mep-runs.md` | `3fecbfcc3a3881708aacf7e7009c4487` |
+| `docs/research/research-one-analyze-boards.md` | `3fecbfcc3a3881efaae7f1be56cb24da` |
+| `docs/research/research-open-data-portals.md` | `3fecbfcc3a388185b82cd124ddf0113c` |
+| `docs/research/research-open-data.md` | `3fecbfcc3a3881a3a64ee704bbaa49b0` |
+| `docs/research/research-panels.md` | `3fecbfcc3a3881908e46fb3e820de67a` |
+| `docs/research/research-presentation-panels.md` | `3fecbfcc3a388173b1cfc01bc48185ab` |
+| `docs/research/research-protocol.md` | `3fecbfcc3a38816aa733fe59b1b78c06` |
+| `docs/research/research-rhino-guide-gap.md` | `3fecbfcc3a38817bb142c5ac90f40b59` |
+| `docs/research/research-scale.md` | `3fecbfcc3a38810a913afad3f717a22f` |
+| `docs/research/research-shortcuts-ui.md` | `3fecbfcc3a38817da2f7e01e671abde6` |
+| `docs/research/research-site-analysis-in-model.md` | `3fecbfcc3a388110af17e44a1e218379` |
+| `docs/research/research-site-analysis-process.md` | `3fecbfcc3a388173ac14ca668847413c` |
+| `docs/research/research-site-analysis-tools.md` | `406cbfcc3a388114a854d7a89cdd935e` |
+| `docs/research/research-site-context.md` | `3fecbfcc3a3881d694bac9967c6cd6a7` |
+| `docs/research/research-sketchup-import.md` | `3fecbfcc3a3881be999bf09d57837e20` |
+| `docs/research/research-standards-inventory.md` | `3fecbfcc3a3881acab9be7601d152b90` |
+| `docs/research/research-standards-registry.md` | `3fecbfcc3a38810cab96f27728e46d6e` |
+| `docs/research/research-structural-ui.md` | `3fecbfcc3a38818d8c70d61677ab9d5e` |
+| `docs/research/research-sun-path.md` | `405cbfcc3a3881db83a8f135f145ff25` |
+| `docs/research/research-survey-check.md` | `3fecbfcc3a3881628cfcc1c30a343b34` |
+| `docs/research/research-tools-panel.md` | `3fecbfcc3a3881a48a6ce529e29f7876` |
+| `docs/research/research-usages.md` | `3fecbfcc3a3881ac8050e475f67cc902` |
+| `docs/research/research-usd-brep.md` | `40bcbfcc3a3881aa8002e692ab9c6765` |
+| `docs/research/research-valdrada.md` | `3fecbfcc3a3881b1a8b7edb323f75420` |
+| `docs/research/research-zoning-envelope-yield.md` | `3fecbfcc3a388107b391f35fd6a8f7d4` |
 
 ## Internal Task DB pages
 

@@ -3,7 +3,7 @@
 LODs, valid solids, CityJSON out and in.
 
 The owner wants buildings to progress LOD1 -> LOD2 -> LOD3, each level verified
-(reference/research-lod-reconstruction.md). This phase is the first step:
+(docs/research/research-lod-reconstruction.md). This phase is the first step:
 
   1. THE QUERY AND THE TAGS: building:part is asked for; a part's base and top read from
      min_height, building:min_level, height and levels.

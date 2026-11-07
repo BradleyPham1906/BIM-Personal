@@ -6,7 +6,7 @@ zero-dependency ES5 CAD/BIM app that today saves projects only in localStorage a
 HTML file opened from disk. Researcher: one research agent, 2026-10-31. Every source below was read on
 2026-10-31 unless a date says otherwise.
 
-Evidence levels (reference/research-protocol.md): **P** = read in the primary source itself (the
+Evidence levels (docs/research/research-protocol.md): **P** = read in the primary source itself (the
 specification text, the browser's own source code read as text, the vendor's own post, the bug record
 itself); **S** = dependable secondary, gap stated; **U** = search-engine summary only, never for code.
 Confidence: high / medium / low, with the reason.
@@ -221,7 +221,7 @@ is synchronous and blocks the main thread; failure is a `QuotaExceededError` DOM
 
 ### Gaps
 - Firefox legacy error name/code not verified in current source.
-- Measured synchronous cost (ms per MB) not measured here: no browser experiment was run in this research; to be done in `reference/experiments/`.
+- Measured synchronous cost (ms per MB) not measured here: no browser experiment was run in this research; to be done in `docs/research/experiments/`.
 
 ## Private and incognito windows
 
@@ -266,7 +266,7 @@ origins get no storage.
 - Feature-detect: in Safari, merely reading `window.localStorage` can throw; `indexedDB.open` can throw synchronously.
 
 ### Gaps
-- Chrome/Firefox IndexedDB (as opposed to localStorage) behaviour on file:// not tested; a Playwright experiment with the installed Chromium could measure Chrome's (not Firefox's or Safari's) and should be kept in `reference/experiments/`.
+- Chrome/Firefox IndexedDB (as opposed to localStorage) behaviour on file:// not tested; a Playwright experiment with the installed Chromium could measure Chrome's (not Firefox's or Safari's) and should be kept in `docs/research/experiments/`.
 - Safari.app's actual settings (`needsStorageAccessFromFileURLsQuirk`, `allowFileAccessFromFileURLs`) not found.
 
 ## Known bugs and counter-evidence

@@ -115,7 +115,7 @@ async def run():
             print("\n-- 1. the app knows its version")
             ver = await safe("()=>window.__a3dVersion()") or {}
             # AMENDED FOR V143: the app's version is the newest phase in the log, not V142 for ever
-            CUR = build_docs.changelog((ROOT / 'canvas_v10_STATUS.md').read_text(encoding='utf-8'))[0]['v']
+            CUR = build_docs.changelog((ROOT / 'docs' / 'dev' / 'canvas_v10_STATUS.md').read_text(encoding='utf-8'))[0]['v']
             cur = CUR.lower()
             ck(ver.get('v') == CUR and int(CUR[1:]) >= 142 and re.match(r'^\d{4}-\d{2}-\d{2}$', ver.get('date', '')), "the app says it is %s, the newest in the log, with a date (%s)" % (CUR, ver))
             await safe("()=>{window.__a3dSelectFor([]);window.__a3dSetPropTab('project');window.__a3dRefreshProps();}")
@@ -198,7 +198,7 @@ async def run():
             cmdp = pages['commands.html']
             miss = [c['anchor'] for c in cat['commands'] if c['anchor'] not in cmdp.ids]
             ck(not miss and len(set(c['anchor'] for c in cat['commands'])) == len(cat['commands']), "every command has its own entry in the reference (%s)" % miss[:5])
-            ents = build_docs.changelog((ROOT / 'canvas_v10_STATUS.md').read_text(encoding='utf-8'))
+            ents = build_docs.changelog((ROOT / 'docs' / 'dev' / 'canvas_v10_STATUS.md').read_text(encoding='utf-8'))
             vs = [e['v'] for e in ents]
             ck(vs and vs[0] == CUR and cur in pages['changelog.html'].ids, "the release notes open with this version, %s (%s)" % (CUR, vs[:3]))
             nums = [int(re.match(r'V(\d+)', v).group(1)) for v in vs]

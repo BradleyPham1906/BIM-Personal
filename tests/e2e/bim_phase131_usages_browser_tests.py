@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """bim_phase131_usages_browser_tests.py -- V131: usages and live areas.
 
-The first of Giraffe's ideas the owner chose (reference/research-giraffe.md, research-usages.md):
+The first of Giraffe's ideas the owner chose (docs/research/research-giraffe.md, research-usages.md):
 a usage is a set of assumptions -- colour, GBA->GFA and GFA->NSA ratios, a floor-to-floor height,
 parameters and formulas -- given to a room, a floor or a mass.
 

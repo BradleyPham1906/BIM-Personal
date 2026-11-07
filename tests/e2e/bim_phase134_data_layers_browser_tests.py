@@ -2,7 +2,7 @@
 """bim_phase134_data_layers_browser_tests.py -- V134: data layers.
 
 Parcels, zoning and flood zones from the GIS servers councils and agencies publish
-(reference/research-data-layers.md). Every server is routed inside the browser: an ArcGIS
+(docs/research/research-data-layers.md). Every server is routed inside the browser: an ArcGIS
 FeatureServer, FEMA's MapServer (the preset), a WFS, a GeoJSON file, and servers that fail.
 
   1. NOTHING UNTIL ASKED: the Data Layers group, the presets, no request.

@@ -18,8 +18,12 @@ src/index.html is the page. Inside it, each block (the stylesheet, and the three
 The one-file build puts each included file's bytes between the tags, in order, and drops the
 @bundle and @end lines. The site build writes the same bytes to app/<bundle> and puts a <link> or
 a <script src> in the page in their place, its address carrying the bundle's hash so a browser
-never runs an old copy. The order of the files, and why the engine's are never loaded one by one,
-is in tools/app_layout.py."""
+never runs an old copy.
+
+The engine's files (js/engine/) are ES modules: each starts with its import lines and ends with
+its export line (tools/engine_modules.cjs writes them). The build drops those lines and joins the
+files, in src/index.html's order, into the engine's one function (_begin.js opens it, _end.js
+closes it), so the browser runs the same code in the same order as before the modules."""
 import hashlib, pathlib, re, sys
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
@@ -119,8 +123,7 @@ def main(argv):
     if '--check' in argv:
         if not APP.exists() or APP.read_bytes() != data:
             print('canvas_v10.html is not what src/ builds (src/ builds %d bytes, sha256 %s).\n'
-                  'Edit src/ and run tools/build_app.py; after a change made to canvas_v10.html itself, '
-                  'run tools/split_app.py to carry it into src/.' % (len(data), sha))
+                  'Edit src/ and run tools/build_app.py (never edit canvas_v10.html itself).' % (len(data), sha))
             return 1
         print('canvas_v10.html is what src/ builds: %d bytes, sha256 %s' % (len(data), sha))
         return 0

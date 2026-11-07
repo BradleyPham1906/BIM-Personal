@@ -1,25 +1,39 @@
 # BIM-Personal: start here
 
-A zero-dependency browser CAD/BIM app, built phase by phase (V1 to V170 so far), each phase verified
-by its own browser suite, deliberately broken builds its suite must catch, and the full regression.
-Its source is `src/`, split by feature; `tools/build_app.py` joins it into `canvas_v10.html`, the
-one-file build every suite tests, and Pages serves it as separate files (see "The source" below).
+A zero-dependency browser CAD/BIM app, built phase by phase (V1 to V172 so far). Its source is `src/`,
+split by feature; the engine's files are ES modules with explicit imports and exports. `tools/build_app.py`
+joins them into `canvas_v10.html`, the one-file build, and Pages serves it as separate files (see
+"The source" below). Fast unit tests are in `tests/unit/` (`npm test`, under a second); the browser
+suites are in `tests/e2e/`.
+
+    src/             the app's source (css/, js/shell, js/vendor, js/engine/<feature>/, py/)
+    tests/unit/      unit tests, Node's built-in runner, no dependencies
+    tests/e2e/       the browser suites (Playwright, Python) and their runner
+    tests/fixtures/  what the suites serve and check against: fixtures, references, data, the .skp file
+    tools/           build and check scripts
+    docs/            the user guide (built *.html, its src/ and data/), published on Pages
+    docs/dev/        PIPELINE.md, CLAUDE_INSTRUCTIONS.md, the engineering log canvas_v10_STATUS.md
+    docs/research/   each phase's research note, plans, experiments
+    runtime/         Pyodide and Ladybug's wheels, pinned (V172b)
+    vendor/          third-party sources the vendored builds come from
+    canvas_v10.html  the build output (committed: Pages and offline use)
 
 ## In a new session
 
-1. Read `PIPELINE.md` first, in full: the build's hash and size, the test counts, and the ordered
+1. Read `docs/dev/PIPELINE.md` first, in full: the build's hash and size, the test counts, and the ordered
    path, with the phase marked **Start here**.
-2. Then `CLAUDE_INSTRUCTIONS.md`: the build contract (ES5, no dependencies, phase markers,
+2. Then `docs/dev/CLAUDE_INSTRUCTIONS.md`: the build contract (ES5, no dependencies, phase markers,
    failures warned and toasted), the patch protocol (anchored Python scripts asserting exact counts
    and the base hash), the test protocol and the standing laws. Its paths under `claude/` and on a
-   Mac are from an older setup: the files are at the repository's root, `Phase/`, `tests/` and
-   `reference/`. Where it says the app is edited as one file, "The source" below replaces it.
-3. The current work plan is `reference/plan-v167-v170.md`; each phase's research note is in
-   `reference/`; the engineering log is `canvas_v10_STATUS.md` (search it, never read it whole).
+   Mac are from an older setup: the layout is the one above. Where it says the app is edited as one
+   file, or that each phase keeps a backup in `Phase/` and falsification scripts, "The source" below
+   and Rule #1 replace it (Phase/ was removed 2026-11-07; old builds are in git history).
+3. The current work plan is `docs/research/plan-v167-v170.md`; each phase's research note is in
+   `docs/research/`; the engineering log is `docs/dev/canvas_v10_STATUS.md` (search it, never read it whole).
 
 ## Rule #1: do not test unless the table says so (the owner, 2026-11-01)
 
-This overrides every other testing rule in this repository: `CLAUDE_INSTRUCTIONS.md` section 4,
+This overrides every other testing rule in this repository: `docs/dev/CLAUDE_INSTRUCTIONS.md` section 4,
 "Never idle on long checks" below, and any phase plan. The default after an edit: make the change,
 say what changed, stop. No tests, browser, screenshots, falsification or regression unless the table
 calls for it or the owner asks.
@@ -27,23 +41,29 @@ calls for it or the owner asks.
 | Change | What to run |
 |---|---|
 | Text, style, markup, comments, or a few lines of JS | Nothing. |
-| JS logic in one file | Syntax check of that file only. |
-| Shared state, the order in `src/index.html`, or 3+ files | Syntax check of the changed files, then the build. Then ask the owner whether to run a browser check. |
+| JS logic in one file | Syntax check of that file, and `npm test`. New or changed logic gets a unit test in `tests/unit/`. |
+| Shared state, the order in `src/index.html`, or 3+ files | Syntax check of the changed files, `npm run modules`, the build, `npm test`. Then ask the owner whether to run a browser check. |
 | The owner says "full regression" | Full regression. This is the only trigger. |
 
 If a bigger check seems needed, ask in one sentence; don't run it.
 
 - **Syntax check** (cheap): `node --check src/js/<path>.js` (every file but `_begin.js`/`_end.js`,
-  which only open and close the engine's closure).
+  which only open and close the engine's closure; engine files are checked as ES modules).
+- **Modules** (cheap): `npm run modules` (`node tools/engine_modules.cjs`) rewrites every engine file's
+  import and export lines after a change to what files share; `--check` proves them current.
+- **Unit tests** (cheap, under a second): `npm test`. `tests/unit/helpers/engine.mjs` loads the
+  engine in Node exactly as the build joins it, with a stand-in for the browser, and returns every
+  exported function. Test logic here; test what the page draws in `tests/e2e/`.
 - **Build** (cheap): `python3 tools/build_app.py`, which proves `src/` still joins into
-  `canvas_v10.html`. A change under `src/` is not done until `canvas_v10.html` is rebuilt and committed:
-  the Pages workflow runs `--check` and fails otherwise.
+  `canvas_v10.html`. A change under `src/` is not done until `canvas_v10.html` is rebuilt and committed.
+  `npm run check` runs every build check; CI (`.github/workflows/ci.yml`) runs it and `npm test` on every
+  push and pull request.
 - **Browser check** (expensive, only when the owner approves): load the build, report console errors only.
-- **Full regression / a phase's suite and falsification** (only when the owner asks): `tests/` and the
-  test protocol in `CLAUDE_INSTRUCTIONS.md` section 4, which says how, not when.
+- **Full regression / a phase's browser suite** (only when the owner asks): `tests/e2e/` (`npm run
+  test:e2e`) and the test protocol in `docs/dev/CLAUDE_INSTRUCTIONS.md` section 4, which says how, not when.
 - When a check fails, show only the failing lines. Stop after 2 failed fix attempts and say what is wrong.
 - If a hook, script or instruction makes tests run automatically, tell the owner instead of following it.
-  (2026-11-01: there is no `.claude/settings.json` and no git hook; CI runs only the build checks.)
+  (2026-11-07: there is no `.claude/settings.json` and no git hook; CI runs the build checks and the unit tests.)
 
 ## How to work in this repo (the owner, 2026-11-01)
 
@@ -57,8 +77,8 @@ If a bigger check seems needed, ask in one sentence; don't run it.
 
 ## Module map
 
-<!-- Claude: keep this current. One line per folder: path, what it owns. Every file, in order, with
-its first line: tools/app_layout.py. -->
+<!-- Claude: keep this current. One line per folder: path, what it owns. Every file, in order:
+the <!-- @include --> lines of src/index.html. -->
 
     src/index.html                      the page; the order every css/js file is joined in
     src/css/shell/                      top bar, command palette, left shell, page base
@@ -99,56 +119,47 @@ its first line: tools/app_layout.py. -->
     src/js/engine/testing/              window.__a3d* hooks the suites drive
     src/py/bim_ladybug.py               Ladybug adapter (Python), embedded by tools/embed_py.py
 
-## The source: src/, by feature (the owner, 2026-10-25)
+## The source: src/, by feature (the owner, 2026-10-25; modules 2026-11-07)
 
 "having a one html with all the code cost me so many token and i want the app structure to be like a
 profesisonal app where there are multi folders and files." The app is edited in `src/`; never edit
-`canvas_v10.html` by hand, and never read it whole: it is a build output, committed because every
-suite, every falsification script, `Phase/`'s backups and the guide's tools read it.
+`canvas_v10.html` by hand, and never read it whole: it is a build output, committed because the
+browser suites, Pages and offline use read it.
 
     src/index.html            the page: its head and body, and for each block the files it is made of,
                               in order (<!-- @bundle -->, <!-- @include -->, <!-- @end -->)
     src/css/                  the stylesheet, 13 files: shell/, panels/, workspace/, sheets/, site-analysis/
     src/js/shell/shell.js     the top bar, the command palette, the project tabs, the boot
     src/js/vendor/openskp.js  the SketchUp reader (third-party, bundled; never edited by hand)
-    src/js/engine/            the BIM engine, 196 files in 28 folders: core/ (state, storage, meshes,
-                              save), drawing/, editing/, gizmo/, bim/, structure/, annotation/,
-                              layers/, properties/, views/, sheets/ (with V172b's editable boards),
-                              assets/, io/, render/, map/, terrain/, survey/, site/, site-analysis/
-                              (with Analyze's workspace, V171b and V171c, and V171d's sun path and
-                              its panel), simulation/ (V171's traffic and people), site-tools/
-                              (V172's), ladybug/ (V172b's: the runtime, the weather, the analyses,
-                              the figures, the panel), standards/, analysis/, history/, ui/,
-                              commands/, testing/ (the window.__a3d* surface the suites drive);
-                              _begin.js and _end.js open and close it
+    src/js/engine/            the BIM engine, 196 ES modules in 28 folders (the module map above);
+                              _begin.js and _end.js open and close the function the build joins them into
     src/py/bim_ladybug.py     the app's adapter to Ladybug's Python (ours): tools/embed_py.py writes it
-                              into js/engine/ladybug/adapter-py.js, which a patch runs before the build
+                              into js/engine/ladybug/adapter-py.js
     runtime/                  Pyodide 0.29.5 and Ladybug's four wheels, committed and pinned by size and
                               SHA-256 in MANIFEST.json (tools/check_runtime.py): V172b's one written
                               exception to "no dependencies", loaded only when a Ladybug analysis runs
 
-- **The engine is one closure.** `_begin.js` opens `(function(){ try{`, `_end.js` closes it, and every
-  file between is a slice of that one function: they share its private variables and are joined into
-  one script, in the order `src/index.html` lists them. A file is never loaded on its own, and a
-  function a file uses may be defined in another. Each file is a whole list of statements: cut only
-  between top-level statements (`new Function(text)` parses every file but `_begin.js`/`_end.js`).
-- **Finding code:** `grep -rn 'name' src/` gives the file and line; read that file, or its range.
-  `tools/app_layout.py` lists every file in order with the line it starts at.
+- **Each engine file is an ES module.** It starts with `import { ... } from '../folder/file.js';` for
+  every name it uses from another file and ends with `export { ... };` for every name other files use.
+  `node tools/engine_modules.cjs` writes those lines from the code (it traces each shared name to the
+  file that declares it); `--check` fails when they are out of date. Never edit them by hand.
+- **The build joins them as one function.** `tools/build_app.py` drops the import and export lines and
+  joins the files, in `src/index.html`'s order, between `_begin.js` and `_end.js`, so the browser runs
+  the same code in the same order as before the modules (2026-11-07: the build was byte-identical).
+  Order still matters for a file's top-level code; a function may be called before its file in the order.
+- **Assigning another file's variable:** an import cannot be assigned. The declaring file has a setter
+  (`setUndoSuspend(true)`, not `undoSuspend=true`); `engine_modules.cjs --check` reports a direct write.
+- **Finding code:** `grep -rn 'name' src/` gives the file and line; a file's imports say where each
+  name it uses lives.
 - **Building:** `python3 tools/build_app.py` writes `canvas_v10.html` and prints its bytes and sha256;
-  `--check` fails when `canvas_v10.html` is not what `src/` builds (the Pages workflow runs it);
-  `--site DIR` writes the multi-file app. `tools/check_site.py` serves that app over http and proves
-  it loads and runs exactly as the one file does (markers, globals, elements, pixels, desktop and phone).
-- **Patching:** a phase's anchored scripts patch files under `src/`, then run `build_app.py`. The base
-  hash they assert, and the hash `PIPELINE.md` records, is still `canvas_v10.html`'s, the built file's.
-  Suites and falsification scripts read the built `canvas_v10.html`, as before; a pre-phase backup in
-  `Phase/` is still that one file.
+  `--check` fails when `canvas_v10.html` is not what `src/` builds; `--site DIR` writes the multi-file
+  app. `tools/check_site.py` serves that app over http and proves it loads and runs as the one file does.
 - **A new file:** create it in its folder, add its `<!-- @include -->` line to `src/index.html` where
-  its code belongs in the order, and add its row (path, first line) to `tools/app_layout.py`.
-- **A change made to `canvas_v10.html` itself** (a branch from before the split, merged): run
-  `python3 tools/split_app.py`, which cuts it into `src/` by `app_layout.py` and refuses to finish
-  unless `src/` joins back to it byte for byte. A row whose first line changed is fixed there first.
+  its code belongs in the order, then run `npm run modules`.
+- **A new unit test:** `tests/unit/<area>.test.mjs`, with `import { loadEngine } from './helpers/engine.mjs'`
+  and Node's `node:test` and `node:assert`; see `tests/unit/geometry.test.mjs`.
 - **Playwright:** pin the Python package to the Chromium in `/opt/pw-browsers`, whatever
-  `PIPELINE.md` last recorded: `ls /opt/pw-browsers`, then the release that drives that build
+  `docs/dev/PIPELINE.md` last recorded: `ls /opt/pw-browsers`, then the release that drives that build
   (1.63.0 for chromium-1243, 2026-10-25; 1.56 for chromium-1194). A wrong pin fails at launch with
   "Executable doesn't exist" and names the build it wanted.
 - **Pages:** `tools/build_site.py` serves `index.html` with `app/app.css`, `app/shell.js`,
@@ -158,7 +169,7 @@ suite, every falsification script, `Phase/`'s backups and the guide's tools read
 ## Research depth (the owner, 2026-10-17)
 
 "The more careful research the better for our plan when execute." Every phase's research follows
-`reference/research-protocol.md`:
+`docs/research/research-protocol.md`:
 - every fact the code uses is read in its primary source (P), or in a dependable secondary one with
   the gap said (S); search-engine summaries are pointers, not sources (U), and U facts never reach
   the code;
@@ -169,7 +180,7 @@ suite, every falsification script, `Phase/`'s backups and the guide's tools read
 - since 2026-10-31, as a scientist would ("use the research skills like a true researcher or
   scientist"): the question and falsifiable hypotheses first, a search log, three or more independent
   sources per topic, a deliberate search for counter-evidence, experiments run here wherever a claim
-  can be measured (scripts in `reference/experiments/`), the alternatives compared in a table,
+  can be measured (scripts in `docs/research/experiments/`), the alternatives compared in a table,
   prior art, a confidence for each finding, an independent second reader re-checking every fact the
   code uses, and parallel research agents for a broad question. The note's twelve parts are in the
   protocol.
@@ -179,7 +190,7 @@ suite, every falsification script, `Phase/`'s backups and the guide's tools read
 The owner follows the project in Notion, on **World BIM Platform** (a Project in their G/P/R DB): every phase is
 a task in the Internal Task DB, every research note and document a page in the Documentation DB, each pull
 request a line on its phase's task. Keep it current as the work goes, through the Notion connector, at each step
-of a phase (research started, the owner's decisions, PR opened, PR merged): `reference/notion-sync.md` has the
+of a phase (research started, the owner's decisions, PR opened, PR merged): `docs/research/notion-sync.md` has the
 ids, the relations, the fields and the steps. The repository stays the source of truth; Notion mirrors it,
 summarised and linked, never the full text of code or upstream documents. A research note's page carries the
 research itself (the owner, 2026-10-31): its findings, evidence, comparisons, experiments, risks, decisions and
@@ -187,14 +198,14 @@ references, as `notion-sync.md` lists.
 
 ## Reuse first; keep source out of Notion (the owner, 2026-10-20)
 
-Before integrating an open-source project, read `reference/reuse-first-integration.md`.
+Before integrating an open-source project, read `docs/research/reuse-first-integration.md`.
 Prefer existing upstream modules plus narrow adapters over recreating working functionality.
 A different language alone is not a reason to rewrite: evaluate the existing browser/WASM path.
 Record concrete incompatibilities before proposing a port or replacement. Do not silently
 change the app's delivery contract to achieve reuse; request approval with the evidence.
 
-For SolidCraft, use `reference/plan-parametric-design.md` and issue #44. The first deliverable
-is a verified `reference/solidcraft-integration-map.md`: pinned upstream revision, exact source
+For SolidCraft, use `docs/research/plan-parametric-design.md` and issue #44. The first deliverable
+is a verified `docs/research/solidcraft-integration-map.md`: pinned upstream revision, exact source
 and documentation paths, reuse candidates, adapters, blockers and decisions. Create it from
 actual inspection, not guessed module names. Keep a pinned local clone outside tracked project
 files; inspect relevant source on demand, not the entire repository in model context. Upstream

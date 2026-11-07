@@ -1,6 +1,6 @@
 """bim_phase124b_library_save_toast_browser_tests.py -- V124b: the Assets library's save, warned and toasted.
 
-The owner, 2026-10-31 (decision D8 of reference/research-local-storage.md): fix now the library's silent failure.
+The owner, 2026-10-31 (decision D8 of docs/research/research-local-storage.md): fix now the library's silent failure.
 bimSaveFamilyLibrary only warned to the console when browser storage refused the library, so an asset added to a
 full store was gone at the next reload without a word, against the build contract (failures warned and toasted).
 What this suite holds the phase to:

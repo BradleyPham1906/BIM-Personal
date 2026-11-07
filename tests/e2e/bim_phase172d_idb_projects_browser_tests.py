@@ -1,6 +1,6 @@
 """bim_phase172d_idb_projects_browser_tests.py -- V172d: a project too large for localStorage, kept in IndexedDB.
 
-reference/research-local-storage.md, the owner's decision D1 (2026-10-31), storage phase A1. localStorage holds about
+docs/research/research-local-storage.md, the owner's decision D1 (2026-10-31), storage phase A1. localStorage holds about
 5.2 million characters for the whole origin (measured), so a large model could not be saved and a project over half of
 it could not be switched away from. What this suite holds the phase to:
 

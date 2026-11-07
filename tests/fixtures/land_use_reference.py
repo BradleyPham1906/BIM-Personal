@@ -2,7 +2,7 @@
 fixture's own coordinates, for the suite to hold the app to.
 
 - The crosswalk: OpenStreetMap's tags to LBCS's activities, as the research checked it against LBCS's
-  descriptions (reference/plan-v167-v170.md, "V168's second round at the source"), and the order in
+  descriptions (docs/research/plan-v167-v170.md, "V168's second round at the source"), and the order in
   which a feature's tags are read.
 - The land use mix: a 5 m grid over the 400 m square, each cell a building's own use, else the smallest
   area over it, else grass's; the shares of 1000 to 8000; Shannon's H over them divided by ln N (Cervero,

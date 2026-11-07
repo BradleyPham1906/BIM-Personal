@@ -4,8 +4,8 @@ The phase PIPELINE names: one pane for every analysis tool (typed parameters che
 History to rerun from, results as layers); buffer, distance, slope classes, exclusions, weighted suitability in
 Esri's four steps (criteria, transform, weight, locate); the constraints and opportunities map; the buildable
 area; sun hours on the GPU; each tool a guide page in one template. The owner's brief from V156 is in
-`reference/research-arcgis-site-analysis.md` (1). This note is the research before building, under
-`reference/research-protocol.md`, read on 2026-10-27.
+`docs/research/research-arcgis-site-analysis.md` (1). This note is the research before building, under
+`docs/research/research-protocol.md`, read on 2026-10-27.
 
 ## 1. Sources
 

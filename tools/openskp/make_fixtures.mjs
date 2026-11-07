@@ -8,7 +8,7 @@
 //   OPENSKP=/path/to/openskp node make_fixtures.mjs
 //
 // The writer writes the 2013-2020 container; files from SketchUp 2021 and later (a ZIP) are read by
-// the same reader and were checked by hand on openskp's own samples (reference/research-sketchup-import.md).
+// the same reader and were checked by hand on openskp's own samples (docs/research/research-sketchup-import.md).
 import * as esbuild from 'esbuild';
 import { zlibSync } from 'fflate';
 import fs from 'fs';

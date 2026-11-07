@@ -117,7 +117,7 @@ help articles, via search summaries.
 
 ## What this app takes
 
-The owner chose all four, ahead of the MEP runs, and then asked for the map "just like how giraffe do" (see PIPELINE.md for the order):
+The owner chose all four, ahead of the MEP runs, and then asked for the map "just like how giraffe do" (see docs/dev/PIPELINE.md for the order):
 
 1. **V131 Usages and live areas,** with simple formula properties.
 2. **V132 The map:** basemaps, address search, and GeoJSON/KML import and export. Built; how it

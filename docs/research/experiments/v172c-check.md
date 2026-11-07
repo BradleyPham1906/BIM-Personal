@@ -1,6 +1,6 @@
 # V172c second reader: the facts the code uses, re-read in their primary sources, 2026-11-01
 
-An independent re-check of `reference/research-ladybug-sun-radiation.md`. Every source was read as text in a scratch
+An independent re-check of `docs/research/research-ladybug-sun-radiation.md`. Every source was read as text in a scratch
 folder outside the repository: the committed wheels unzipped (`runtime/wheels/ladybug_radiance-0.2.12`,
 `ladybug_core-0.44.63`, `ladybug_geometry-1.35.7`), Radiance from raw.githubusercontent.com/LBNL-ETA/Radiance/master
 (`src/gen/gendaymtx.c`, `src/gen/Rmakefile`, `src/gen/loadEPW.c`, `License.txt`, `doc/man/man1/gendaymtx.1`,
@@ -28,14 +28,14 @@ Howell's catalogue page B-3 (thermalradiation.net). Paths below: `lbr/` = `ladyb
 | 8 | Radiance's `License.txt` is the Radiance Software License 2.0, BSD-3 style (three conditions); copyright line | CONFIRMED | `License.txt:1` ("The Radiance Software License, Version 2.0"), `:3-5`, `:10-20` (conditions (1)-(3)) | Copyright line: "Radiance v6.1 Copyright (c) 1990 to 2025, The Regents of the University of California, through Lawrence Berkeley National Laboratory (subject to receipt of any required approvals from the U.S. Dept. of Energy). All rights reserved." |
 | 9 | ladybug-radiance 0.2.12: AGPL-3.0; wheel SHA-256 66d57a56...defa028a9e629 | CONFIRMED | https://pypi.org/pypi/ladybug-radiance/0.2.12/json `info.license` = "AGPL-3.0", `urls[]` digest for the wheel; wheel `METADATA` "License: AGPL-3.0"; `dist-info/licenses/LICENSE` line 1 (GNU AGPL v3) | `sha256sum runtime/wheels/ladybug_radiance-0.2.12-py3-none-any.whl` gives the same 66d57a562c3e896e9ae55e685a4f45e0a0ada28a8948b749966defa028a9e629 |
 | 10a | `pyodide-lock.json` pins numpy 2.2.5's wheel with sha256 800c98ed...7f05c; `runtime/pyodide/0.29.5/` holds it | CONFIRMED | `runtime/pyodide/0.29.5/pyodide-lock.json` `packages.numpy` (version, file_name, sha256); `sha256sum` of `runtime/pyodide/0.29.5/numpy-2.2.5-cp313-cp313-pyemscripten_2025_0_wasm32.whl` = 800c98edc0c864dfa49f07005680c699b4b42b84eae1f8cb19d35b3634e7f05c | |
-| 10b | Pyodide 0.29.5's `loadPackage` verifies a package's sha256 when loading from indexURL | CONFIRMED in a browser (main thread or worker); **NOT CONFIRMED in Node** | `runtime/pyodide/0.29.5/pyodide.asm.js` line 8 (minified): `loadPackage(e,r={checkIntegrity:!0})`; `downloadPackage`: for a lock-file package `i="sha256-"+Xt(l.sha256)` (hex to base64), `r\|\|(i=void 0)`; `browser_getBinaryResponse`: `fetch(r, e?{integrity:e}:{})`; `node_getBinaryResponse` `function In(t,e)` reads the file or fetches **without** using `e` | In browsers the check is the Fetch API's Subresource Integrity on the lock's hash (default on). Under Node the hash is ignored, and on a local miss Node falls back to the CDN, also unchecked. `loading-packages.md` (0.29.5) mentions hash checks only for micropip (lines 74-75), not for `loadPackage`. So `reference/experiments/v172c-sky/np_load.js` (Node) did not check the SHA-256, despite its first comment |
+| 10b | Pyodide 0.29.5's `loadPackage` verifies a package's sha256 when loading from indexURL | CONFIRMED in a browser (main thread or worker); **NOT CONFIRMED in Node** | `runtime/pyodide/0.29.5/pyodide.asm.js` line 8 (minified): `loadPackage(e,r={checkIntegrity:!0})`; `downloadPackage`: for a lock-file package `i="sha256-"+Xt(l.sha256)` (hex to base64), `r\|\|(i=void 0)`; `browser_getBinaryResponse`: `fetch(r, e?{integrity:e}:{})`; `node_getBinaryResponse` `function In(t,e)` reads the file or fetches **without** using `e` | In browsers the check is the Fetch API's Subresource Integrity on the lock's hash (default on). Under Node the hash is ignored, and on a local miss Node falls back to the CDN, also unchecked. `loading-packages.md` (0.29.5) mentions hash checks only for micropip (lines 74-75), not for `loadPackage`. So `docs/research/experiments/v172c-sky/np_load.js` (Node) did not check the SHA-256, despite its first comment |
 | 11 | View factor, differential horizontal element to a parallel rectangle with one corner on its normal: F = (1/(2 pi)) [A/sqrt(1+A^2) atan(B/sqrt(1+A^2)) + B/sqrt(1+B^2) atan(A/sqrt(1+B^2))] | CONFIRMED | Howell, *A Catalog of Radiation Heat Transfer Configuration Factors*, https://www.thermalradiation.net/sectionb/B-3.html , configuration **B-3** ("Differential planar element to finite parallel rectangle. Normal to element passes through corner of rectangle"), equation image `images/B-3eq.gif` | Exact form: F_d1-2 = (1/2pi) { A/(1+A^2)^(1/2) tan^-1[B/(1+A^2)^(1/2)] + B/(1+B^2)^(1/2) tan^-1[A/(1+B^2)^(1/2)] }, A = a/c, B = b/c, c the distance from the element to the rectangle's plane. References given there: Hottel 1931; Hamilton and Morgan 1952. Courtyard (a = b = 10, c = 12): 4F = 0.464158, computed here |
 | 12 | `bimRayTri` is Moller-Trumbore, \|det\| < 1e-12 rejected, t > 1e-6 accepted; `bimRayBlocked` tests each solid's box then its triangles, a linear scan over all solids | CONFIRMED | `src/js/engine/analysis/simulation.js:132-142` (`:136` det, `:141` t), `:143-150` (loop over every occluder, box then triangles, first hit returns), `:108-120` (`bimSolarOccluders`: every visible solid, one box each), `:122-131` (`bimRayBox`, slab test from t = 0) | Occluders are only `o.t === 'solid'` on shown layers |
 
 ## The re-run (read-only; output written only to the scratch folder)
 
-`python3 -I reference/experiments/v172c-rays/dome.py <scratch>` wrote `<scratch>/exp/dome.json` (no output lines).
-`node reference/experiments/v172c-rays/rays_exact.js /home/user/BIM-Personal <scratch>/exp/dome.json`:
+`python3 -I docs/research/experiments/v172c-rays/dome.py <scratch>` wrote `<scratch>/exp/dome.json` (no output lines).
+`node docs/research/experiments/v172c-rays/rays_exact.js /home/user/BIM-Personal <scratch>/exp/dome.json`:
 
     open ground    tregenza: 290 entries, 0 differ from the exact answer, 0 on an edge; sky view factor 0.9999
     canyon floor   tregenza: 290 entries, 0 differ from the exact answer, 0 on an edge; sky view factor 0.4674
@@ -50,13 +50,13 @@ Howell's catalogue page B-3 (thermalradiation.net). Paths below: `lbr/` = `ladyb
     courtyard      reinhart: 1154 entries, 0 differ from the exact answer, 0 on an edge; sky view factor 0.4642
                    courtyard, closed form: 4 x F(point to rectangle) = 0.4642
 
-The same numbers as `reference/experiments/v172c-rays/README.md`'s table. The closed form in `rays_exact.js:64` is
+The same numbers as `docs/research/experiments/v172c-rays/README.md`'s table. The closed form in `rays_exact.js:64` is
 B-3 with A = B, and it agrees with my own evaluation of B-3 (0.464158).
 
 ## What contradicts the note
 
 1. **The ground patch is not dropped; the zenith is (fact 1c).** Run of the committed
-   `runtime/radiance/gendaymtx.wasm` (through `reference/experiments/v172c-sky/wasi-run.js`, `-m 1 -s -O1 -A`) on a
+   `runtime/radiance/gendaymtx.wasm` (through `docs/research/experiments/v172c-sky/wasi-run.js`, `-m 1 -s -O1 -A`) on a
    two-hour Wea (lat 40, June 21, 12.5 and 13.5 h): 156 lines; lines 0-8 are the header (line 5 `NAVERAGED=2`,
    line 8 blank); line 9 `51.3 51.3 51.3` is the ground (patch 0, `gendaymtx.c:928`). Ladybug's own
    `SkyMatrix._parse_mtx_data` (0.2.12, imported unchanged) on that output: 146 lines after `[9:-1]`, 145 values

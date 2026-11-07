@@ -3,7 +3,7 @@
 The owner, 2026-10-17: "make sure to fix the right panel also since i still see the analysis tab on
 it (looks like form the old design). left panel needs to be dragable like the right panel also."
 
-Researched to `reference/research-protocol.md`, the app's own code first.
+Researched to `docs/research/research-protocol.md`, the app's own code first.
 
 ## What was read
 
@@ -62,7 +62,7 @@ within what the screen allows (the drawing keeps 320 px, as V166b's left panel d
 the next width, 30 px (36 on coarse pointers), hidden where Properties is a drawer or a sheet, claimed
 in the shell's audit; the edge given the window splitter's keys. V166b's "Still open", above.
 
-Researched to `reference/research-protocol.md`, the app's own code first, then tested in the browser.
+Researched to `docs/research/research-protocol.md`, the app's own code first, then tested in the browser.
 
 ## What was read
 

@@ -11,7 +11,7 @@ new residual-formula cases plus their ribbon/label/pick-count wiring.
 The residual formulas themselves are adapted (as math, not code) from
 FreeCAD's real planegcs solver (src/Mod/Sketcher/App/planegcs/Constraints.cpp),
 confirmed during a source-level audit to be small, self-contained, OCCT-free
-pure math -- see canvas_v10_STATUS.md's "Real FreeCAD source audit via
+pure math -- see docs/dev/canvas_v10_STATUS.md's "Real FreeCAD source audit via
 GitHub" section and its "Code-reuse policy" note (this app is personal-use
 only, so copying/adapting such formulas is explicitly fine; what matters is
 that the app remains dependable and free of decorative/misattributed code).

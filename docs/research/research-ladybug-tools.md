@@ -6,7 +6,7 @@ the code is AGPL-3.0: "i dont care about legal this app is for me, if we could c
 want. i dont want to create something new again". Asked how, the owner chose **to run their Python unchanged
 in the browser through Pyodide**, over a line-by-line translation or a mix of both.
 
-This note follows `reference/research-protocol.md` and `reference/reuse-first-integration.md`. It records
+This note follows `docs/research/research-protocol.md` and `docs/research/reuse-first-integration.md`. It records
 what was read and run on 2026-10-26, the experiment's results, the proposed integration, and the owner's
 remaining decisions. No app code has changed yet.
 
@@ -45,7 +45,7 @@ whole stays under AGPL-3.0.
 **The owner's decision (2026-10-26): accepted.** "this app is for me".
 
 **It changes an earlier decision, recorded so it is a choice, not an accident:** in V166 the owner declined
-Transitous because "its terms would open the code and rule out selling the app" (PIPELINE.md, row 166). The
+Transitous because "its terms would open the code and rule out selling the app" (docs/dev/PIPELINE.md, row 166). The
 AGPL has that effect on the app as a whole. Pyodide itself is MPL-2.0 (P, its LICENSE at tag 0.29.5).
 
 ## 3. The experiment: their code, unchanged, in our browser (run 2026-10-26)

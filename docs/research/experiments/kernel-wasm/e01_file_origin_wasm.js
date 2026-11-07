@@ -1,4 +1,4 @@
-// e01_file_origin_wasm.js -- the B-rep kernel research (reference/research-usd-brep.md), 2026-10-31.
+// e01_file_origin_wasm.js -- the B-rep kernel research (docs/research/research-usd-brep.md), 2026-10-31.
 // Question: can the one-file build, opened from file://, carry a WebAssembly kernel the size of a
 // C++ CAD kernel, run it in a Worker (SMLib's rule: one kernel per worker, restart on corruption),
 // and what does it cost at load?

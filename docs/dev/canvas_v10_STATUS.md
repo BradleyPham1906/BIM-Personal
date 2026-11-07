@@ -6158,7 +6158,7 @@ MicroStation, CSiBridge and AASHTOWare are all compiled binaries. The only sourc
 
 ## Session 2026-09-15: the modify toolbox, part one (__acad3dV87)
 
-Track A, Phase 87 from PIPELINE.md: the biggest single gap in the drafting foundation. Geometry
+Track A, Phase 87 from docs/dev/PIPELINE.md: the biggest single gap in the drafting foundation. Geometry
 operations on data the app already held.
 
 ### Scope, and what it is not
@@ -6857,7 +6857,7 @@ unreachable by its own name the moment it existed.
 DONUT is a filled ring. It needs either polyline width or a hole in a sketch profile, and this
 build has neither. Two concentric circle sketches would have looked like a donut and behaved
 like two circles, which is the decorative control product principle 1 forbids. Deferred to the
-phase that settles ELLIPSE and SPLINE storage, and recorded in PIPELINE.md as such.
+phase that settles ELLIPSE and SPLINE storage, and recorded in docs/dev/PIPELINE.md as such.
 
 ### Testing
 
@@ -10439,7 +10439,7 @@ The prerequisite the ARCH5 port and the PennDOT input writer share. Mid-phase, t
 this feature is cleanly add-in the design and not overloading the UI/UX. everything must be
 consistent. I also wants u to look into rhinoceros documentation of their apps. this would refine
 our design." The McNeel sites were not reachable from the build environment; what search summaries
-and V123's Gumball research give is in `reference/research-structural-ui.md`, and it set the
+and V123's Gumball research give is in `docs/research/research-structural-ui.md`, and it set the
 interface below: no new window, rail tab or dialog.
 
 ### What was built (patches 125a to 125f)
@@ -10664,7 +10664,7 @@ the build byte for byte from `Phase/canvas_v10.html.bak_phase126_pre`.
 
 PIPELINE, Track B item 3: "Alignment / profile objects -- horizontal alignment, vertical profile,
 station-offset." Stations are what the PennDOT work, DIMORDINATE and any road or bridge layout
-read. The research is in `reference/research-alignment.md` (Civil 3D and AASHTO, from search
+read. The research is in `docs/research/research-alignment.md` (Civil 3D and AASHTO, from search
 summaries). The interface follows the owner's V125 rule: the settings are two Properties pages,
 there are three commands, and there is one button in the existing Site panel.
 
@@ -10765,7 +10765,7 @@ the build byte for byte from `Phase/canvas_v10.html.bak_phase127_pre`.
 The owner, before any more features: "lets make command UI easy to use. shortcuts searchable and
 stuff. i know we can do ctrl + k and it have a drop down for quick search. but as this app become
 more sophisticate, it is hard. pls research on how and execute." The research is in
-`reference/research-command-ui.md`: AutoCAD's Input Search Options, Rhino, Revit's Keyboard
+`docs/research/research-command-ui.md`: AutoCAD's Input Search Options, Rhino, Revit's Keyboard
 Shortcuts dialog, VS Code (from its source), Blender F3 (from its source), Figma and Linear, and the
 ARIA combobox pattern. Taken ahead of the MEP runs.
 
@@ -10907,7 +10907,7 @@ The owner, on the V128 sheet and the dock: "lets clean up these shortcuts stuff 
 becauase it kinda hard to navigate and things not very clear. can you research how a good design
 for that would look like for easy to nav and use?" A mockup went up on a design canvas first, and
 the owner answered: "oh i like that thats actually what i want". The research is in
-`reference/research-shortcuts-ui.md` (Figma, Google Docs, Linear, Fusion, Revit, and the tooltip
+`docs/research/research-shortcuts-ui.md` (Figma, Google Docs, Linear, Fusion, Revit, and the tooltip
 guidance from MDN and others). The MEP runs move to V130.
 
 ### What was wrong
@@ -11014,9 +11014,9 @@ variant `category_any_click` restores the bug.
 The owner, on the V129 dock: "this tool bar is very crowded. I say we combine it in the shortcut
 table and use search, filter sorting. group the features and stuff here. and in the main screen
 only show the keys one (those that most likely use the most)". The research is in
-`reference/research-tools-panel.md`. While this phase was open, the owner also had Giraffe
-researched (`reference/research-giraffe.md`) and chose four of its ideas, ahead of the MEP runs
-(now V138, after the map and open data). See `PIPELINE.md`.
+`docs/research/research-tools-panel.md`. While this phase was open, the owner also had Giraffe
+researched (`docs/research/research-giraffe.md`) and chose four of its ideas, ahead of the MEP runs
+(now V138, after the map and open data). See `docs/dev/PIPELINE.md`.
 
 ### What was built (patches 130a to 130c)
 
@@ -11122,8 +11122,8 @@ be reachable. The suite now checks that the rows are exactly `__a3dToolActions()
 
 ## Phase 131 (V131) - Usages and live areas
 
-The first of Giraffe's ideas the owner chose (`reference/research-giraffe.md`), then "now lets get
-building". The research is in `reference/research-usages.md`: GBA, GFA and NSA, IPMS and BOMA, and
+The first of Giraffe's ideas the owner chose (`docs/research/research-giraffe.md`), then "now lets get
+building". The research is in `docs/research/research-usages.md`: GBA, GFA and NSA, IPMS and BOMA, and
 Giraffe's usages.
 
 ### What was built (patches 131a to 131c)
@@ -11225,8 +11225,8 @@ has its own full-width line.
 
 The owner wants the map "just like how giraffe do", with free sources only ("i just want free
 stuff"), and "as much open public data as possible". The research is in
-`reference/research-map.md`; the sources and their terms are catalogued in
-`reference/research-open-data.md`.
+`docs/research/research-map.md`; the sources and their terms are catalogued in
+`docs/research/research-open-data.md`.
 
 ### What was built (patches 132a to 132c)
 
@@ -11387,7 +11387,7 @@ external host" rule now allows exactly the map's own servers and credit links.
 ## Phase 133 (V133) - Site context in one click
 
 The owner: "as much open public data as possible", and the map "just like how giraffe do". The
-research is in `reference/research-site-context.md`.
+research is in `docs/research/research-site-context.md`.
 
 ### What was built (patches 133a to 133c)
 
@@ -11575,7 +11575,7 @@ URLs, and the density suite now tests it through one. Amended:
 ## Phase 134 (V134) - Data layers, and Overpass's mirrors (V134d)
 
 The public record of a site: parcels, zoning and flood zones, from the GIS servers councils and
-agencies publish. The research is in `reference/research-data-layers.md`.
+agencies publish. The research is in `docs/research/research-data-layers.md`.
 
 ### What was built (patches 134a to 134d)
 
@@ -11660,7 +11660,7 @@ The diff is ES5-clean.
 The owner pointed at GeoLibre (geolibre.app), an open-source GIS, and asked to copy it in. It is a
 React, MapLibre and DuckDB app of about 2,000 TypeScript files, which cannot run in this one-file
 app as it is. What does carry over was taken under its MIT licence: its list of US open-data portals
-and its two searches. The research is in `reference/research-open-data-portals.md`. The licence is
+and its two searches. The research is in `docs/research/research-open-data-portals.md`. The licence is
 in `THIRD_PARTY_NOTICES.md` and, in full, beside the list in the build.
 
 ### What was built (patches 135a to 135c)
@@ -11728,7 +11728,7 @@ The diff is ES5-clean.
 ## Phase 136 (V136) - Colour by property, with legends
 
 Giraffe's lenses and GeoLibre's legends, from the owner's screenshots. The research is in
-`reference/research-colour-by.md`.
+`docs/research/research-colour-by.md`.
 
 ### What was built (patches 136a to 136c)
 
@@ -11799,7 +11799,7 @@ the build from `Phase/canvas_v10.html.bak_phase136_pre`. The diff is ES5-clean.
 ## Phase 137 (V137) - The map on 3D terrain, and buildings on the ground
 
 The owner's Cửu Long screenshot: the satellite map over the hills. V108's surfaces were plan-only and
-V133's buildings stood on the flat level. The note is in `reference/research-map.md` (V137).
+V133's buildings stood on the flat level. The note is in `docs/research/research-map.md` (V137).
 
 ### What was built (patches 137a, 137b)
 
@@ -11863,7 +11863,7 @@ build from `Phase/canvas_v10.html.bak_phase137_pre`. The diff is ES5-clean.
 ## Phase 138 (V138) - Verify the survey
 
 The owner: "build the genesis of a good foundation so data can be verified every time". The
-research is in `reference/research-survey-check.md`, and how to add a survey is in
+research is in `docs/research/research-survey-check.md`, and how to add a survey is in
 `tests/data/surveys/README.md`.
 
 ### What was built (patches 138a, 138b)
@@ -11940,8 +11940,8 @@ build from `Phase/canvas_v10.html.bak_phase138_pre`. The diff is ES5-clean.
 ## Phase 139 (V139) - LOD-A: building parts, labelled LODs, valid solids, CityJSON
 
 The owner: "a progression from LOD1 to LOD2, and then ultimately LOD3 ... make sure you do it
-carefully." This is the first of the seven phases planned in `reference/research-lod-reconstruction.md`
-(LOD-A); it also parked the drone bridge track (Track D in `PIPELINE.md`) for later, at the owner's
+carefully." This is the first of the seven phases planned in `docs/research/research-lod-reconstruction.md`
+(LOD-A); it also parked the drone bridge track (Track D in `docs/dev/PIPELINE.md`) for later, at the owner's
 word.
 
 ### What was built (patches 139a, 139b, 139c)
@@ -12035,7 +12035,7 @@ rebuilds the build from `Phase/canvas_v10.html.bak_phase139_pre`. The diff is ES
 ## Phase 140 (V140) - LOD-B: LOD2 roofs from OpenStreetMap's tags
 
 The owner: "I don't want to see any surface that's too smooth. We want from LOD1 to LOD2 and
-ultimately LOD3." Every roof is planes; none is a smoothed mesh. A picture: `reference/v140_roofs.png`.
+ultimately LOD3." Every roof is planes; none is a smoothed mesh. A picture: `docs/research/v140_roofs.png`.
 
 ### What was built (patches 140a, 140b)
 
@@ -12111,7 +12111,7 @@ build from `Phase/canvas_v10.html.bak_phase140_pre`. The diff is ES5-clean.
 The owner: "clean up the right side panels because it is too much as we add more stuff", and
 "adding analyze below assets". With nothing selected, Properties held nine groups, about 2,460 px.
 The owner chose tabs in Properties for the site's settings, and this order: panels and Analyze,
-then Simulation (V142), then terrain (V143). A picture: `reference/v141_analyze.png`.
+then Simulation (V142), then terrain (V143). A picture: `docs/research/v141_analyze.png`.
 
 ### What was built (patch 141a)
 
@@ -12163,7 +12163,7 @@ The owner: "something documented like AutoCAD and Rhinoceros on their websites .
 evolves we need documentation and versioning". The app now has a user guide on its own site,
 release notes for every version, every older build kept online, and help from inside the app.
 The owner's Rhino guide chapters were read for what the app lacks
-(`reference/research-rhino-guide-gap.md`); none of McNeel's text is in the guide, which is written
+(`docs/research/research-rhino-guide-gap.md`); none of McNeel's text is in the guide, which is written
 about this app in its own words.
 
 ### What was built
@@ -12505,7 +12505,7 @@ build from `Phase/canvas_v10.html.bak_phase145_pre`. The diff is ES5-clean.
 
 ## Phase 146 (V146) - Hub H1: history by element
 
-The first piece of the owner's "GitHub for BIM" (`reference/research-bim-hub.md`). The model keeps
+The first piece of the owner's "GitHub for BIM" (`docs/research/research-bim-hub.md`). The model keeps
 its own history, at the grain of a building element.
 
 ### What was built (patches 146a, 146b)
@@ -12580,7 +12580,7 @@ build from `Phase/canvas_v10.html.bak_phase146_pre`. The diff is ES5-clean.
 ## Phase 147 (V147) - The right panel, redesigned
 
 The owner's note: "Right panel need to clean up more and the design should be aesthetic and
-minimal, easy to use". The direction is Figma's UI3 (`reference/research-presentation-panels.md`,
+minimal, easy to use". The direction is Figma's UI3 (`docs/research/research-presentation-panels.md`,
 section 3): the work first, the panel quiet.
 
 ### What was built (patches 147a, 147b)
@@ -12646,7 +12646,7 @@ section 3): the work first, the panel quiet.
 
 104 suites, 4153 checks, 0 failures. Falsification: V147 25 of 25. The chain 147a, 147b rebuilds the
 build from `Phase/canvas_v10.html.bak_phase147_pre`. The diff is ES5-clean. Pictures:
-`reference/v147_right_panel.png`, `v147_phone.png`, `v147_tablet.png`.
+`docs/research/v147_right_panel.png`, `v147_phone.png`, `v147_tablet.png`.
 
     canvas_v10.html   2214813 bytes
     sha256            cff2ad402b13f8b5a3cabc2a076cc9deb3e511b8542deefdfc30105b59944d34
@@ -12657,7 +12657,7 @@ build from `Phase/canvas_v10.html.bak_phase147_pre`. The diff is ES5-clean. Pict
 The owner's note: "Analytic: gotta clean that panel up. Right now it looks very unprofessional and
 not easy to use or navigate. When analytics run, it should have an option to create layers in
 layer management. Same thing with data layer." And, mid-V147: every redesign must suit a phone, a
-tablet and a computer. The direction is `reference/research-presentation-panels.md`, section 2:
+tablet and a computer. The direction is `docs/research/research-presentation-panels.md`, section 2:
 QGIS writes a processing run's outputs as layers into a named group; Figma's UI3 puts what matters
 first and the rest a click away.
 
@@ -12753,7 +12753,7 @@ was stopped at its time limit, with every other suite passing (4211 of 4211 chec
 passed alone (56 of 56) and again beside V110 to V119 at six workers (410 of 410). The stall did
 not come back. Falsification: V148 57 of 57, one retired. The chain 148a, 148b rebuilds the build
 from `Phase/canvas_v10.html.bak_phase148_pre`. The diff is ES5-clean. Pictures:
-`reference/v148_analyze.png`, `v148_layers.png`, `v148_phone.png`.
+`docs/research/v148_analyze.png`, `v148_layers.png`, `v148_phone.png`.
 
     canvas_v10.html   2252576 bytes
     sha256            ffde091c9c18a002bc08518f5f5acdf22d8680859918ff8cdc8bf1222de7d525
@@ -12835,7 +12835,7 @@ computer keeps the panel beside the drawing.
 
 106 suites, 4341 checks, 0 failures. Falsification: V149 39 of 39. The chain 149a, 149b rebuilds
 from `Phase/canvas_v10.html.bak_phase149_pre`, and 149c from `bak_phase149c_pre` (149b was merged
-on its own). The diff is ES5-clean. Pictures: `reference/v149_phone.png`, `v149_phone_drawer.png`,
+on its own). The diff is ES5-clean. Pictures: `docs/research/v149_phone.png`, `v149_phone_drawer.png`,
 `v149_phone_more.png`, `v149_tablet.png`.
 
     canvas_v10.html   2264884 bytes
@@ -12900,7 +12900,7 @@ hand wants it, docks upright at either edge, and folds to one round button.
 
 107 suites, 4377 checks, 0 failures. Falsification: V150 23 of 23, two retired. Patch 150a
 rebuilds the build from `Phase/canvas_v10.html.bak_phase150_pre`. The diff is ES5-clean.
-Pictures: `reference/v150_phone_palette.png`, `v150_tablet_palette.png`.
+Pictures: `docs/research/v150_phone_palette.png`, `v150_tablet_palette.png`.
 
     canvas_v10.html   2279623 bytes
     sha256            068c32e9b694acb046e0ae6194d1ca35d649baf9b9854005a218f1c276864bfa
@@ -12973,7 +12973,7 @@ field, with the conflicts shown side by side to be kept or taken.
 
 108 suites, 4433 checks, 0 failures. Falsification: V151 37 of 37. Patches 151a and 151b rebuild
 the build from `Phase/canvas_v10.html.bak_phase151_pre`. The diff is ES5-clean.
-Pictures: `reference/v151_branches_compare.png`, `v151_phone_history.png`.
+Pictures: `docs/research/v151_branches_compare.png`, `v151_phone_history.png`.
 
     canvas_v10.html   2302577 bytes
     sha256            7837b8047ea47d646d6303f4cd81af7a1cc059d122307fb9bd48c6897a8f82e8
@@ -13422,7 +13422,7 @@ rebuild the build from `Phase/canvas_v10.html.bak_phase157_pre`. The diff is ES5
 ## Phase 158 (V158) - Site analysis SA1: the workspace and the standard
 
 The owner (V156): "do some research on how professionals do site analysis. i want to standardize
-the whole process." The research (`reference/research-site-analysis-process.md`) set one standard:
+the whole process." The research (`docs/research/research-site-analysis-process.md`) set one standard:
 the stages of RIBA Stage 1 and a developer's due diligence; ten fixed categories (Lynch's natural
 and cultural factors, McHarg's order, the due-diligence items); findings that each name a source,
 a date and how sure they are, classed as constraints, opportunities, red flags or facts. This phase
@@ -13526,7 +13526,7 @@ analysis (architectural, arcgis, data analysis,..) dont just give me mediore for
 really really really professional." And, while it was being built: "why this site analysis separate
 from 'analyze' on the left panel? they should be together".
 
-The research is in `reference/research-climate-risk-presentation.md`:
+The research is in `docs/research/research-climate-risk-presentation.md`:
 - the CBE Clima Tool, Ladybug Tools and Climate Consultant, the tools climate-led architects use;
 - Weather Spark's percentile bands, and the Walter–Lieth diagram (with the reason its two scales on
   one plot are not copied);
@@ -13656,9 +13656,9 @@ website." The answer was "mostly, on the core", with one gap in the envelope its
 each side of a lot its own setback-against-height profile; the first V160 engine stepped back and had
 a sky plane on the front only. The engine was reworked before shipping, so each kind of side has its
 own rule. The comparison, and what was and was not taken, is in
-`reference/research-zoning-envelope-yield.md` (4).
+`docs/research/research-zoning-envelope-yield.md` (4).
 
-The research (`reference/research-zoning-envelope-yield.md`) covers:
+The research (`docs/research/research-zoning-envelope-yield.md`) covers:
 - the permit zoning analysis table (permitted, proposed, complies);
 - New York's ZD1 zoning diagram, with sections at true scale and every distance dimensioned, and
   ZR 23-736's sky exposure plane;
@@ -13805,7 +13805,7 @@ The owner: "Continue" (V161 as planned: access and people), with the standing ba
 analysis: "really really really professional ... research online on how they present the analysis
 (architectural, arcgis, data analysis)".
 
-The research (`reference/research-access-people.md`) covers:
+The research (`docs/research/research-access-people.md`) covers:
 - ArcGIS Network Analyst's service areas: lines or polygons, rings or disks, and why the lines are
   honest on a network;
 - walking at 80 m a minute, so 400 and 800 m are 5 and 10 minutes;
@@ -13969,7 +13969,7 @@ be on the presentation layer not its own thing. im trying to make everything con
 sprawling everywhere". Asked how, the owner chose Analyze by the ten categories, and the boards as
 pages in the set.
 
-The research (`reference/research-one-analyze-boards.md`) covers:
+The research (`docs/research/research-one-analyze-boards.md`) covers:
 - ArcGIS Pro's one Geoprocessing pane, with one search and its tools grouped by what they do;
 - the site analysis standard's ten categories (V158), where each tool belongs with its findings;
 - reports and layouts as project items exported together (ArcGIS Pro), dashboards as story points
@@ -14103,7 +14103,7 @@ not a modelling app. Asked what to take, the owner chose **Open .skp files**: th
 and a SketchUp file opens as this app's objects -- faces and solids, materials and textures, tags as
 layers, components as blocks -- after V162.
 
-The research (`reference/research-sketchup-import.md`) covers:
+The research (`docs/research/research-sketchup-import.md`) covers:
 - the file: one header naming the SketchUp that saved it, then SketchUp's own archive (to 2020) or
   a ZIP (2021 on); inches, Z up; tags, materials, groups and components, and how SketchUp names
   what nobody named, in its own language;
@@ -14226,7 +14226,7 @@ boards stay as they are. Then: "it should make site analysis quicker with comple
 type of analysis. research how architects, GIS scientist, landscape architect, transportation
 planner, analysist do this and how they present each analysis in a professional way".
 
-The research (`reference/research-site-analysis-in-model.md`) covers how each discipline works and
+The research (`docs/research/research-site-analysis-in-model.md`) covers how each discipline works and
 draws: architects (the sun's paths, shadows, winds by season, views), landscape architects (slope,
 aspect, water), GIS scientists (isovists, map design), transportation planners (street hierarchy,
 traffic stress, catchments), acoustic analysts (CRTN, CNOSSOS-EU, DIN 18005's colours) and planners
@@ -14410,7 +14410,7 @@ phases for that button; this is the second, the land and its water: "Contours co
 slope in five classes (15% and 25% the decision points), aspect, flow lines and catchments, ponds,
 flood zones; each a live, editable layer of the same button".
 
-The research is section 2 of `reference/research-site-analysis-in-model.md` ("What V165 does (and
+The research is section 2 of `docs/research/research-site-analysis-in-model.md` ("What V165 does (and
 why)"): the ground at the site's scale (the context's terrain is a point every 25 m, one point for a
 whole building), the methods (Horn's slope and aspect, marching squares, Priority-Flood and D8,
 Strahler's order) and how each is drawn (slope in a sequential yellow to dark red, aspect read for
@@ -14627,7 +14627,7 @@ Six layers of the same button: the street hierarchy, cycling stress, transit wit
 the way to each daily need, and vehicle access and parking, all from the OpenStreetMap answer the
 access step already asks for.
 
-The research is section 4 of `reference/research-site-analysis-in-model.md` ("What V166 does (and
+The research is section 4 of `docs/research/research-site-analysis-in-model.md` ("What V166 does (and
 why)"): how a parameter plan and a masterplan draw movement, PTAL (TfL's method), the level of
 traffic stress (Mekuria, Furth and Nixon, 2012) with the 2016 crossing table and low-stress
 connectivity, and the tags for entries and parking. The owner's answers to the three questions it
@@ -14845,7 +14845,7 @@ byte for byte from `Phase/canvas_v10.html.bak_phase166_pre`. The diff is ES5-cle
 
 The owner: "make sure to fix the right panel also since i still see the analysis tab on it (looks
 like form the old design). left panel needs to be dragable like the right panel also." The research
-is `reference/research-panels.md`: the app's own panels read first, then W3C's window splitter
+is `docs/research/research-panels.md`: the app's own panels read first, then W3C's window splitter
 pattern and WCAG 2.2's 2.5.7 (Dragging Movements) and 2.5.8 (Target Size), read as text from their
 sources on GitHub (the published pages are refused here).
 
@@ -15032,7 +15032,7 @@ The owner: a button in Properties' header that steps its width through fixed wid
 screen allows (the drawing keeps 320 px, as V166b's left panel does), labelled with the next width,
 30 px (36 on coarse pointers), hidden where Properties is a drawer or a sheet, claimed in the shell's
 audit; the edge given the W3C window splitter's keys. V166b's "Not done". The research is
-`reference/research-panels.md` (V166d): the app's code and the browser first, then the window splitter
+`docs/research/research-panels.md` (V166d): the app's code and the browser first, then the window splitter
 pattern, ARIA's separator role, WCAG 2.2's 2.5.7 and 2.5.8, and two open implementations read as text
 (VS Code's view-size commands and sash, react-resizable-panels' separator), all primary.
 
@@ -15152,8 +15152,8 @@ analysis.
 The owner (2026-10-17): "building a system based on the industry standards (but flexible enough when
 the standards changed)", for any country, with fallbacks, overrides with a reason, and new editions
 with app versions and as pack files. The research, the design and what was built are
-`reference/research-standards-registry.md` (its "As built" section), with the constants classified in
-`reference/research-standards-inventory.md`. The owner's four answers of 2026-10-18, all the
+`docs/research/research-standards-registry.md` (its "As built" section), with the constants classified in
+`docs/research/research-standards-inventory.md`. The owner's four answers of 2026-10-18, all the
 recommended options: a method applied outside its place still runs and says so; only the assumptions
 the analyses use become overridable now (the roofs, survey tolerances and usages' defaults later);
 the US catalogue listed, "not applied by the app yet"; packs show their SHA-256 and publisher with
@@ -15338,8 +15338,8 @@ Patches 167a to 167i rebuild the build byte for byte from `Phase/canvas_v10.html
 
 ## Phase 168 (V168) - Site analysis in the model IV: land
 
-The plan is `reference/plan-v167-v170.md` (V168); the research, read at its sources on 2026-10-17 and
-18, is in that file's appendices and `reference/research-site-analysis-in-model.md` section 6 ("As
+The plan is `docs/research/plan-v167-v170.md` (V168); the research, read at its sources on 2026-10-17 and
+18, is in that file's appendices and `docs/research/research-site-analysis-in-model.md` section 6 ("As
 built in V168"). The owner's choices, the defaults offered and taken with "start 168": the
 neighbourhood for 3-30-300's canopy 500 m, the smallest public green space 0.5 ha, the land use mix
 over the eight LBCS families 1000 to 8000. Each is a record of the standards registry (V167),
@@ -15479,8 +15479,8 @@ Patches 168a to 168c rebuild the build byte for byte from `Phase/canvas_v10.html
 ## Phase 169 (V169) - Assets: people, cycles, vehicles, parking and trees
 
 The owner (V166): "do we have asset designed yet ... trees, building shape, human, bike, car for later
-simulations?" The plan is `reference/plan-v167-v170.md` (V169); the research, read at its sources on
-2026-10-19, is `reference/research-assets.md`. The owner's choices (2026-10-19): vehicles sized to
+simulations?" The plan is `docs/research/plan-v167-v170.md` (V169); the research, read at its sources on
+2026-10-19, is `docs/research/research-assets.md`. The owner's choices (2026-10-19): vehicles sized to
 AASHTO's design vehicles, the owner sharing the Green Book (from their Notion, the 7th Edition, read
 here for Tables 2-4 and 2-5 and 2.8.2, kept out of the repository); the van as AASHTO's SU-30; the
 context's trees by OpenStreetMap's leaf tags with the Urban Tree Database's crowns; Manual for Streets'
@@ -15605,7 +15605,7 @@ main's). The diff is ES5-clean and adds no non-ASCII character.
 
 The owner (2026-10-19), after Archi Diagram: "it allows the analysis layer to be animated"; a phase of its
 own, before the traffic simulation, which will draw with the same clock. The research is
-`reference/research-animation.md` (2026-10-24), its section 9 the design as built. The owner's choices at its
+`docs/research/research-animation.md` (2026-10-24), its section 9 the design as built. The owner's choices at its
 end (2026-10-24): still until Play, with Pause; all four motions; no video ("i dont need export motion. just on
 the app for visual") and no batch of stills ("just image at the moment it captured"). Built while V169's
 falsification and regression ran, from a frozen copy (the owner, 2026-10-24: never idle on long checks).
@@ -15699,8 +15699,8 @@ frozen copy of the final build, suites and guide. Patches 170a to 170e rebuild t
 
 ## Phase 171 (V171) - Traffic and people around the site; the analysis workspace (V171b); one Analyze (V171c); the sun path, one clock (V171d)
 
-The owner (2026-10-19, `reference/research-valdrada.md`): build the simulation on valdrada's methods inside the app,
-for the site's streets only, light enough for a modest computer. The research is `reference/research-traffic.md`
+The owner (2026-10-19, `docs/research/research-valdrada.md`): build the simulation on valdrada's methods inside the app,
+for the site's streets only, light enough for a modest computer. The research is `docs/research/research-traffic.md`
 (2026-10-24 and 25): the IDM, MOBIL, the timing manual's practice, Florida's K, NCHRP 255, San Diego's rates,
 Helbing and Molnar, SUMO's rules, each read at its source. The owner's four decisions at the start of V171's session
 (2026-10-25), each as the research proposed: each junction's own signal plan; the authors' standard car at the
@@ -15841,7 +15841,7 @@ drawn at once (202 elements in V171's neighbourhood), their words over each othe
 covering a quarter of the view; the run's steps, the categories and the cards in one long left panel; the project's
 identity and usages in Properties while analysing; the view dark with the satellite map in light mode as in dark; the
 drawing dock on screen and messages over it; on a phone, Analyze covering the whole screen. The research is
-`reference/research-analysis-workspace.md`. The owner's two decisions: the look follows the app's light or dark mode;
+`docs/research/research-analysis-workspace.md`. The owner's two decisions: the look follows the app's light or dark mode;
 one analysis at a time, others ticked under it.
 
 **What was built** (`site-analysis/analysis-workspace.js`, `css/site-analysis/workspace.css`,
@@ -15922,7 +15922,7 @@ hubs. We need to integrate these two systems into one. And also, like, the wordi
 analysis panels, I think they should be on the right panel when you open the site analysis and hit a certain analysis
 on the right panel, it will show an overview." After V171b there were two lists of the same analyses: Analyze's (V162's
 categories, each opening in place on its data, rows and findings) and the workspace's own six groups, entered from
-Analyze. The research and the design as built: `reference/research-analysis-workspace.md`, V171c.
+Analyze. The research and the design as built: `docs/research/research-analysis-workspace.md`, V171c.
 
 **What was built** (`Phase/patch_v171c_a.py`; `site-analysis/analysis-workspace.js` written again):
 - **Analyze is the workspace:** its tab opens it, any other tab leaves it; the bar's cross goes back to the tab Analyze
@@ -15985,7 +15985,7 @@ do not agree, nor with the shadows through the dates; the math to be checked aga
 the altitude and azimuth by X = R cos(alt) sin(az), Y = R sin(alt), Z = R cos(alt) cos(az); sliders for latitude,
 longitude, date and time with the altitude and azimuth live; a mesh on the dome coloured by the temperature through
 the hours and dates; the right panel broken down by the solstices and equinoxes, with a diagram. The research is
-`reference/research-sun-path.md`; the decisions were taken under the owner's standing choice to go on without
+`docs/research/research-sun-path.md`; the decisions were taken under the owner's standing choice to go on without
 stopping (daylight saving Off by default; a place tried never saved; the mesh by the half-year of the clock's date;
 the year in 36 seconds).
 
@@ -16074,7 +16074,7 @@ record). Each checks its parameters as they are filled in, runs, says how it wen
 and its run in History, to open or run again. The owner's four decisions (2026-10-27): the tools in the workspace; the
 buildable area by site capacity; sun hours left to V172c (Ladybug); a simple Locate.
 
-The research is `reference/research-site-analysis-tools.md`: Esri's geoprocessing pane, history and Suitability
+The research is `docs/research/research-site-analysis-tools.md`: Esri's geoprocessing pane, history and Suitability
 Modeler read at doc.esri.com (transform, weight, locate; Restricted kept apart from NoData); the transformation
 formulas from QGIS's `qgsalgorithmfuzzifyraster.cpp`, read as text; what Penrith's and North Sydney's councils ask a site
 analysis plan to show; Chalfont Borough's section 440-17 (a secondary copy, said so); the National Wetlands Inventory's
@@ -16184,7 +16184,7 @@ V162, V62's hosts, V171d's version) and the function nothing called that V120 fo
 
 ## Phase 124b (V124b) - The Assets library's save, warned and toasted
 
-Built on V172 on 2026-10-31; the version stays V172. The owner's decision D8 of `reference/research-local-storage.md`,
+Built on V172 on 2026-10-31; the version stays V172. The owner's decision D8 of `docs/research/research-local-storage.md`,
 found by that research's audit of the app's storage: `bimSaveFamilyLibrary` (`src/js/engine/assets/family-library.js`)
 caught a refused `localStorage.setItem` and only warned to the console, against the build contract's "failures warned
 and toasted". A SketchUp import, a block, a template or a scanned asset added to a full store stayed on screen and was
@@ -16209,7 +16209,7 @@ name and the versions page, both fixed as above, and V142 then passed 31 of 31.
 ### Storage A1 (V172d, inside Phase 172): a project too large for localStorage, kept in IndexedDB
 
 Built on V124b on 2026-10-31 and 11-01; the version stays V172. The owner's decision D1 of
-`reference/research-local-storage.md` (phase A, the IndexedDB project store, in three phases); A1 is the first half of
+`docs/research/research-local-storage.md` (phase A, the IndexedDB project store, in three phases); A1 is the first half of
 A. localStorage holds 5,242,880 UTF-16 units for the whole origin (measured, e01), so an imported model of about
 165,000 triangles could not be saved and a project over half of it could not be switched away from.
 
@@ -16264,9 +16264,9 @@ design days, on the climate board and in Analyze. The owner's answers of 2026-10
 reliable of the two, as asked); UTCI in CBE Clima's four conditions; the psychrometric chart at 0.5 and 1.0 clo with
 Ladybug's five strategies; and the boards made editable -- "not a static board ... like a generate table or chart in
 excel" -- under "the config i already have (snap, grid, ortho). do not invent new stuff", any analysis on any board and
-boards of one's own, within V172b. The research is `reference/research-ladybug-weather-comfort.md` (its sections 1 to
+boards of one's own, within V172b. The research is `docs/research/research-ladybug-weather-comfort.md` (its sections 1 to
 13, and As built in 14); the owner's video of archiMap's one-click report went to
-`reference/research-archimap-site-report.md`, kept for V176 (the owner).
+`docs/research/research-archimap-site-report.md`, kept for V176 (the owner).
 
 **What was built** (patches `Phase/patch_v172b_a.py` to `_f.py`; `src/js/engine/ladybug/`, `src/py/bim_ladybug.py`,
 `src/js/engine/sheets/board-figures.js` and `board-edit.js`, `src/css/site-analysis/boards-arranged.css`,
@@ -16363,7 +16363,7 @@ for V142, built again) and V169's thousand trees stalled under six workers (183 
 ### Storage A2 (V172e, inside Phase 172): the Assets library and templates in IndexedDB; persist() at the first Save
 
 Built on V172d on 2026-11-01; the version stays V172. The owner's decisions D1 and D3 of
-`reference/research-local-storage.md`. V172d kept a project too large for localStorage in the database; the Assets
+`docs/research/research-local-storage.md`. V172d kept a project too large for localStorage in the database; the Assets
 library (`acad3dFamilyLibrary`, rewritten whole on every change, SketchUp blocks up to 1.5 M characters each) and the
 templates (`acad3dTemplateV1:<id>`, a whole project each) still met the 5.2-million-character wall.
 
@@ -16406,8 +16406,8 @@ conflict, the records were joined by hand and the guide rebuilt. The merged buil
 
 "start v172c" (2026-11-01). Ladybug's incident radiation and direct sun hours on the model's faces, beside V143's Solar
 and V148's Sun hours, which stay (the owner: "already verified with a research paper ready, so I wouldn't replace
-it"). The research is `reference/research-ladybug-sun-radiation.md` (its parts 1 to 12, and As built in 13), the
-experiments in `reference/experiments/v172c-sky/`, `v172c-rays/` and `v172c-app/`, the second reader's check in
+it"). The research is `docs/research/research-ladybug-sun-radiation.md` (its parts 1 to 12, and As built in 13), the
+experiments in `docs/research/experiments/v172c-sky/`, `v172c-rays/` and `v172c-app/`, the second reader's check in
 `v172c-check.md`. The owner's answers of 2026-11-01: `gendaymtx` compiled and run here as the reference, then added to
 the runtime (option B, over a Python port of its sky); numpy added ("add pyodide"); Solar and Sun hours kept beside.
 

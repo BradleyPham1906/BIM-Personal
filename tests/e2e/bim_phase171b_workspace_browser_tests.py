@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """bim_phase171b_workspace_browser_tests.py -- V171b: the analysis workspace.
 
-The site analysis as a place one goes into and leaves (reference/research-analysis-workspace.md): a bar over the view,
+The site analysis as a place one goes into and leaves (docs/research/research-analysis-workspace.md): a bar over the view,
 the analyses on the left in their groups, one in focus and others ticked under it, the one analysis on the right where
 Properties is while nothing is selected, the view quiet in the app's own light or dark mode. Every service is answered
 in the browser by tests/fixtures/traffic_fixture.py (V171's neighbourhood); the satellite map's tiles by one red square, so what
@@ -346,7 +346,7 @@ async def run():
             ck('From the' in (src or '') and 'm/s' in (src or ''), "the rose's caption: the prevailing direction and the mean speed")
             await safe("()=>window.__a3dAwFocus('sun')")
             await page.wait_for_timeout(150)
-            # AMENDED FOR V171d: Sun paths' diagrams are its own now, the sky dome in plan first (reference/research-sun-path.md, 7)
+            # AMENDED FOR V171d: Sun paths' diagrams are its own now, the sky dome in plan first (docs/research/research-sun-path.md, 7)
             ck(await safe("()=>!!document.querySelector('[data-awpanel=\"sun\"] .a3d-awp-chart svg')") and 'The sky dome in plan' in (await text('[data-awpanel="sun"] .a3d-awp-cap') or ''),
                "the sun's paths drawn on the sky dome in plan, and their caption")
             ab = await text('[data-awpanel="sun"] .a3d-awp-about')

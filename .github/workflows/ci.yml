@@ -1,0 +1,25 @@
+# Runs on every push and pull request: the build checks and the unit tests (seconds, not hours).
+# The browser suites (tests/e2e/) are not run here; run them when a change needs them.
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  check-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: TypeScript, for the module check (a development tool, not part of the app)
+        run: npm install -g typescript@5.9.3
+      - name: Build checks (canvas_v10.html, engine modules, embedded Python, user guide)
+        run: npm run check
+      - name: Unit tests
+        run: npm test

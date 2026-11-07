@@ -11,7 +11,7 @@ given for each. Line numbers refer to that commit. The GitHub REST API (`gh api`
 refused by this session's proxy ("sessions are bound to their configured repositories"), so issue reports were
 found by web search and then each one cited was opened with WebFetch.
 
-**Evidence levels** (per `reference/research-protocol.md`): **P** = read in the primary source (the code, the
+**Evidence levels** (per `docs/research/research-protocol.md`): **P** = read in the primary source (the code, the
 vendor's own page, the bug tracker thread); **S** = dependable secondary, gap stated; **U** = search summary only,
 planning use only, "to confirm".
 
@@ -482,7 +482,7 @@ side changed (WebKit fixed a wipe bug in Safari 17.4).
 ### Gaps
 - tldraw's own issue tracker was not searched directly; no tldraw-specific loss report was found by web search.
 - Which Excalidraw or tldraw commits responded to which reports: not traced (GitHub API refused).
-- No measurement from here of eviction or quota; that belongs to a separate experiment in `reference/experiments/`.
+- No measurement from here of eviction or quota; that belongs to a separate experiment in `docs/research/experiments/`.
 
 ## Confidence summary
 

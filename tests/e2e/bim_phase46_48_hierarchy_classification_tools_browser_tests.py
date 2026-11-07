@@ -6,7 +6,7 @@ user's explicit "build both now" (Building/Site hierarchy, Classification) and a
 follow-up "build all three now, and log them too" (Merge Walls, Check Model, Linked
 Clone), the latter three surfaced by a careful command-by-command re-read of 8
 uploaded FreeCAD source files against what the app already ships (see
-canvas_v10_STATUS.md's "Concrete capability review" section for the file-by-file
+docs/dev/canvas_v10_STATUS.md's "Concrete capability review" section for the file-by-file
 comparison). None of the added code is copied or ported from those files -- every
 function here is an original implementation scoped from what the capability *does*.
 

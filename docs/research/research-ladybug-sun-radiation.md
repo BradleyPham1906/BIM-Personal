@@ -1,8 +1,8 @@
 # V172c, Ladybug L2: sun-hours and radiation on the model -- research
 
-Started 2026-11-01 ("start v172c"). Follows `reference/research-protocol.md` and
-`reference/reuse-first-integration.md`. The frame is the owner's decisions of 2026-10-26
-(`reference/research-ladybug-tools.md`, 6): Ladybug's own Python, unchanged, in Pyodide; AGPL accepted;
+Started 2026-11-01 ("start v172c"). Follows `docs/research/research-protocol.md` and
+`docs/research/reuse-first-integration.md`. The frame is the owner's decisions of 2026-10-26
+(`docs/research/research-ladybug-tools.md`, 6): Ladybug's own Python, unchanged, in Pyodide; AGPL accepted;
 no Honeybee; numpy only "if its sky needs it". **Status (2026-11-01): research done.** The owner answered (part 11); the sky, the rays and the sun hours
 are measured (part 6); the independent check found one fault, fixed (part 3b); the design is proposed (part 5b).
 
@@ -34,7 +34,7 @@ the year of weather V172b already holds, in a browser, at a speed a designer acc
 | H4 | A Python port of `gendaymtx`'s Perez sky agrees with `gendaymtx` within 1% per patch, annual total | Set aside: the owner chose `gendaymtx` itself (part 11). Replaced by H4b. |
 | H4b | `gendaymtx` built to WebAssembly gives the native program's output byte for byte, and Ladybug's `SkyMatrix` in Pyodide with it gives the native values | **Held** (P, measured): identical bytes in all four calls; a difference of 0 over 290 + 1154 values (part 6). |
 | H4c | Ladybug's parse puts each of `gendaymtx`'s patches on its own dome patch | **Failed with Radiance `master`, held with the release rad6R0P1a** (the second reader, part 3b; `alignment.py`). |
-| H5 | The app's JS rays give the same intersection matrix as Ladybug's (`rcontrib`: the cosine when seen, else 0) | **Held** (P, measured): every entry equals the exact answer in an open field, a canyon (floor and wall) and a courtyard, on both skies; the courtyard's view factor 0.4642 on Reinhart, as the closed form (`reference/experiments/v172c-rays/`). `rcontrib` itself not run: the comparison is with exact geometry. |
+| H5 | The app's JS rays give the same intersection matrix as Ladybug's (`rcontrib`: the cosine when seen, else 0) | **Held** (P, measured): every entry equals the exact answer in an open field, a canyon (floor and wall) and a courtyard, on both skies; the courtyard's view factor 0.4642 on Reinhart, as the closed form (`docs/research/experiments/v172c-rays/`). `rcontrib` itself not run: the comparison is with exact geometry. |
 | H6 | A typical model (5,000 faces, 145 + 145 patches) runs in under 30 s in a worker | **Failed with the app's rays, held with a BVH** (measured): the app's rays test every solid's box for every ray (2,000 faces: 48 s, 20,000 would take hours); the same test over a bounding-volume hierarchy gives the same answer for all 362,440 rays compared, and in Chromium's worker 5,000 faces in 1.0 s, 20,000 in 3.5 s, after a first start of about 5 s. |
 
 ## 3. Method
@@ -63,7 +63,7 @@ Search log, 2026-11-01:
 ## 3b. The independent check (2026-11-01)
 
 A second reader (a separate research agent) re-read every source behind the facts the code uses, and re-ran the ray
-experiment: `reference/experiments/v172c-check.md`. 17 parts confirmed, 2 not:
+experiment: `docs/research/experiments/v172c-check.md`. 17 parts confirmed, 2 not:
 - **1c, not confirmed, and a fault found**: ladybug-radiance 0.2.12 skips a fixed 9 lines of `gendaymtx`'s output
   (`skymatrix.py` 584); Radiance from 2025-12-19 (`2559a9be`, `NAVERAGED=`, in the release rad6R0P2) writes a 9-line
   header with `-A`, so with the first build (`master`) Ladybug kept the ground, dropped the zenith and put every sky
@@ -156,7 +156,7 @@ What V172c adds, in the files the module map gives (`src/js/engine/ladybug/`, `s
 
 ## 6. The experiments
 
-**Run (2026-11-01; scripts, raw numbers and environment in `reference/experiments/v172c-sky/`):**
+**Run (2026-11-01; scripts, raw numbers and environment in `docs/research/experiments/v172c-sky/`):**
 1. The reference: Ladybug's own `SkyMatrix` with `gendaymtx` built natively from Radiance `5b2a2154`. On a
    horizontal plane its diffuse is within 0.6% of the EPW's DHI, its total 97.6% (Tregenza) and 98.5% (Reinhart)
    of GHI, the gap being the sun binned to patch centres.
@@ -165,9 +165,9 @@ What V172c adds, in the files the module map gives (`src/js/engine/ladybug/`, `s
 3. The whole path in the committed Pyodide 0.29.5, `SkyMatrix._run_gendaymtx` replaced by a call to the module:
    a difference of 0 from the reference over every value; 0.71 s (Tregenza) and 0.81 s (Reinhart).
 4. The build twice: the same SHA-256. (Rebuilt after the check from the release rad6R0P1a: `45726aea...70ef05e5`,
-   114,742 bytes; every number above re-run with it, `reference/experiments/v172c-sky/README.md`.)
+   114,742 bytes; every number above re-run with it, `docs/research/experiments/v172c-sky/README.md`.)
 
-5. The rays (`reference/experiments/v172c-rays/`): the app's own ray functions, read from `simulation.js` at run
+5. The rays (`docs/research/experiments/v172c-rays/`): the app's own ray functions, read from `simulation.js` at run
    time, against exact geometry: every entry right, on both skies; the courtyard's view factor 0.4642 on Reinhart
    against 0.4642 closed form, 0.4821 on Tregenza (the coarser sky 3.9% high).
 6. Speed: the app's rays 83,000 rays/s at 100 faces falling to 5,800 at 2,000; a BVH 1.1 to 1.3 million rays/s at
@@ -175,7 +175,7 @@ What V172c adds, in the files the module map gives (`src/js/engine/ladybug/`, `s
    1.4 s with a difference of 0 from native; 20,000 faces 0.4 s to build the tree, 3.0 s of rays, 0.1 s for
    Ladybug's own numpy sum.
 
-7. Direct-sun hours (`reference/experiments/v172c-rays/sunhours.js`): Ladybug's `Sunpath` against the app's
+7. Direct-sun hours (`docs/research/experiments/v172c-rays/sunhours.js`): Ladybug's `Sunpath` against the app's
    `bimSunCalc` (V171d, held to NREL's SPA) at 218 moments with the sun up (21 March, June, December, Philadelphia,
    every 10 minutes): within 0.028 degrees; the frame mapping, the app's (x, y, z) = Ladybug's (x, z, -y) (Y up,
    north at -Z against Z up, north at +Y), within 4.3e-4 per component. Ladybug's own `DirectSunStudy.compute()` with
@@ -254,7 +254,7 @@ Yes, you should compile and run gendaymtx here. And add it to the runtime."
 - 3 (the owner, 2026-11-01, "add pyodide", read as Pyodide's numpy): **numpy added**: Pyodide 0.29.5's own build,
   `numpy-2.2.5-cp313-cp313-pyemscripten_2025_0_wasm32.whl`, 2,823,762 bytes, SHA-256 `800c98ed...4b42b84eae1f8cb19d35b3634e7f05c`
   (the value `pyodide-lock.json` pins), beside Pyodide's core so that `loadPackage('numpy')` finds and checks it;
-  loaded from the committed runtime in 777 ms (`reference/experiments/v172c-sky/np_load.js`). ladybug-radiance's sums
+  loaded from the committed runtime in 777 ms (`docs/research/experiments/v172c-sky/np_load.js`). ladybug-radiance's sums
   then take their numpy path (`np.dot`).
 
 ## 12. References
@@ -269,7 +269,7 @@ Yes, you should compile and run gendaymtx here. And add it to the runtime."
 | Radiance at the release rad6R0P1a (`7abde14f`), built; `master` (`5b2a2154`) built for comparison | https://github.com/LBNL-ETA/Radiance | `src/gen/gendaymtx.c`, `sun.c`, `loadEPW.c`, `src/common/` (five files), compiled and run; the history of `NAVERAGED` (`2559a9be`) | 2026-11-01 | P, measured |
 | Ladybug's Grasshopper components | https://github.com/ladybug-tools/ladybug-grasshopper (`4dde2331`) | `LB Incident Radiation.py`, `LB Direct Sun Hours.py`, `LB Cumulative Sky Matrix.py` | 2026-11-01 | P |
 | Howell's catalogue, configuration B-3 | https://www.thermalradiation.net/sectionb/B-3.html | the factor's form (read by the second reader) | 2026-11-01 | P |
-| The second reader's check | `reference/experiments/v172c-check.md` | every fact the code uses | 2026-11-01 | P |
+| The second reader's check | `docs/research/experiments/v172c-check.md` | every fact the code uses | 2026-11-01 | P |
 | wasi-sdk 22 | https://github.com/WebAssembly/wasi-sdk/releases/tag/wasi-sdk-22 | the sysroot and builtins, by SHA-256 | 2026-11-01 | P |
 | Philadelphia TMYx 2009-2023 | https://climate.onebuilding.org (PA, Philadelphia Intl. AP 724080) | the EPW and Wea, as test data | 2026-11-01 | P |
 
@@ -293,7 +293,7 @@ The design of part 5b, built in `Phase/patch_v172c_a.py` to `_f.py`, with what b
   the year).
 
 **Found while building:**
-- The browser check (`reference/experiments/v172c-app/`): the legend under the floating dock; numpy's version kept as
+- The browser check (`docs/research/experiments/v172c-app/`): the legend under the floating dock; numpy's version kept as
   none (the versions read before the first study loads it). Patch c.
 - The phase's suite: V143's `bimSimStamp` hashed each mesh's vertex count and position, not its coordinates, so a box
   raised from 10 to 12 m kept its stamp and Solar, Sun hours and these studies all said they were current. It hashes
@@ -305,4 +305,4 @@ The design of part 5b, built in `Phase/patch_v172c_a.py` to `_f.py`, with what b
 the suite's own reckoning in CPython from Ladybug's wheels (a lone box's five faces on both skies and with true north
 turned; a canyon floor's direct sun on two days and over the year, exactly); `Phase/falsify_phase172c.py`, 22 variants,
 all caught (184 s, 4 workers, from a frozen worktree of `737ebbd`). The full regression: part of the records
-(`canvas_v10_STATUS.md`, PIPELINE).
+(`docs/dev/canvas_v10_STATUS.md`, PIPELINE).

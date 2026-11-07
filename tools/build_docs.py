@@ -8,7 +8,7 @@ Writes docs/*.html from:
   lists, tables, code, links, bold, italics; a front matter block gives each page's title and order);
 - docs/data/catalog.json -- the app's own command catalogue and keys (tools/dump_catalog.py), for
   the command reference;
-- canvas_v10_STATUS.md -- every phase's entry, for the release notes.
+- docs/dev/canvas_v10_STATUS.md -- every phase's entry, for the release notes.
 
 No dependencies beyond Python's standard library, so the Pages workflow can run it as it is. With
 --check it writes nothing and exits 1 when docs/ is not what it would write."""
@@ -239,7 +239,7 @@ def changelog(status_text):
 def changelog_page(entries):
     b = ['<h1 id="release-notes">Release notes</h1>',
          '<p>Newest first. Each version is a phase of work, verified before it ships (its own test suite, every older suite, and deliberately broken builds the suite must catch). '
-         'The full engineering log, with the bugs found and the tests, is <a href="%s/blob/main/canvas_v10_STATUS.md">canvas_v10_STATUS.md</a>.</p>' % REPO]
+         'The full engineering log, with the bugs found and the tests, is <a href="%s/blob/main/docs/dev/canvas_v10_STATUS.md">docs/dev/canvas_v10_STATUS.md</a>.</p>' % REPO]
     for e in entries:
         b.append('<div class="rel" id="%s">%s<h3>%s - %s</h3>%s<p>%s</p></div>' % (
             e['v'].lower(), ''.join('<span id="%s"></span>' % i for i in e['ids'] if i != e['v'].lower()), html.escape(e['v']), inline(e['title']), '<div class="toc">%s</div>' % e['date'] if e['date'] else '', inline(e['summary'])))
@@ -290,7 +290,7 @@ def build():
         files[p['file']] = page(p['title'], body, srcs, p['file'], version, toc)
     body, script = commands_page(cat)
     files['commands.html'] = page('Command reference', body, srcs, 'commands.html', version, script=script)
-    entries = changelog((ROOT / 'canvas_v10_STATUS.md').read_text(encoding='utf-8'))
+    entries = changelog((ROOT / 'docs' / 'dev' / 'canvas_v10_STATUS.md').read_text(encoding='utf-8'))
     files['changelog.html'] = page('Release notes', changelog_page(entries), srcs, 'changelog.html', version)
     files['versions.html'] = page('Versions', versions_page(version, kept_versions(), entries), srcs, 'versions.html', version)
     return files

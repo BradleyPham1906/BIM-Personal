@@ -6,7 +6,7 @@ Regression suite for Phase 52a (__acad3dV60) in canvas_v10.html: the first slice
 actually consumes the Phase 51 graphic override data (fill, line color, line weight, opacity,
 shadow) in the main solid-face draw loop and in drawRooms.
 
-SCOPE, STATED PLAINLY (matches how this was scoped in canvas_v10_STATUS.md): hatch PATTERN
+SCOPE, STATED PLAINLY (matches how this was scoped in docs/dev/canvas_v10_STATUS.md): hatch PATTERN
 rendering is NOT part of this phase. The roadmap's own phase list puts "wires the existing
 material cards' hatch/hatchColor into the BIM render" in Phase 53 ("Pattern and texture library"),
 not Phase 52 -- so `pattern` stays inert data here, exactly as it was after Phase 51, and this

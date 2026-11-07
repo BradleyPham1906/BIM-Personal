@@ -431,7 +431,7 @@ how it is drawn.
 
 ### The sources read for V168, and their levels
 
-The research is in reference/plan-v167-v170.md, its appendices "V168 (land) research so far" to
+The research is in docs/research/plan-v167-v170.md, its appendices "V168 (land) research so far" to
 "V168's second round at the source", each source with what was read, the date and its level:
 - LBCS: APA's colour workbook and the activity dimension with its descriptions (P, 2026-10-18).
   The table above is from secondary copies; the workbook's hex values are the ones the app records

@@ -1,7 +1,7 @@
 # The BIM Hub: "GitHub for the built world"
 
 The owner's brief (2026-10-04), from their notes and a conversation with Gemini, in our words, and
-what it means for this app. PIPELINE.md carries the phases: H1 and H2 after V145; H3 to H5 and the
+what it means for this app. docs/dev/PIPELINE.md carries the phases: H1 and H2 after V145; H3 to H5 and the
 rendering, streaming and simulation items under "later".
 
 ## 1. The brief

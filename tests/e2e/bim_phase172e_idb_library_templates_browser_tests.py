@@ -1,7 +1,7 @@
 """bim_phase172e_idb_library_templates_browser_tests.py -- V172e: the Assets library and templates in IndexedDB; the
 browser asked to keep the app's storage at the first Save.
 
-reference/research-local-storage.md, the owner's decisions D1 (phase A) and D3 (2026-10-31). What this suite holds
+docs/research/research-local-storage.md, the owner's decisions D1 (phase A) and D3 (2026-10-31). What this suite holds
 the phase to:
 
   1. WHAT FITS STAYS WHERE IT WAS. A small library is saved whole in acad3dFamilyLibrary; the database has no copy.

@@ -1,4 +1,4 @@
-"""traffic_reference.py -- V171's numbers worked out again in Python from their sources (reference/research-traffic.md,
+"""traffic_reference.py -- V171's numbers worked out again in Python from their sources (docs/research/research-traffic.md,
 section 7), not from the app's code: the car following, the signal plans, the turns, the site's trips and the streets'
 traffic. The suite compares the app's results with these.
 

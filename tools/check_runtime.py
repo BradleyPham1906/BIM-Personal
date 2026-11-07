@@ -4,7 +4,7 @@
   python3 tools/check_runtime.py
 
 runtime/ holds Pyodide 0.29.5's core files and the four Ladybug wheels, committed so that the site and the suites
-never depend on npm or PyPI (the owner, 2026-10-31; reference/research-ladybug-weather-comfort.md). Each file must
+never depend on npm or PyPI (the owner, 2026-10-31; docs/research/research-ladybug-weather-comfort.md). Each file must
 be in the manifest with its size and SHA-256, and nothing else may be in the folder: the bytes the suites ran are
 the bytes Pages serves. Exits 1, naming each fault, otherwise prints the count and the total. build_site.py runs it
 before it copies the folder, and the Pages workflow refuses to publish a runtime that does not match."""

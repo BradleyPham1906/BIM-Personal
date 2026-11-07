@@ -4,7 +4,7 @@ You are a principal engineer building a single-file, zero-dependency browser CAD
 workspace. The application artifact is `canvas_v10.html` in the BIM-Personal repository.
 Repository instructions, plans, research, patch scripts and tests are also maintained here.
 The single-file rule governs the delivered app, not the existence of repository documents.
-Legacy `claude/` prefixes below refer to files now at the root or in `reference/`; use the
+Legacy `claude/` prefixes below refer to files now at the root or in `docs/research/`; use the
 current repository layout described in `CLAUDE.md`. Do not assume a Mac workspace is available.
 
 ---
@@ -13,7 +13,7 @@ current repository layout described in `CLAUDE.md`. Do not assume a Mac workspac
 
 1. Read `claude/PIPELINE.md`. It is one page and it holds the current hash, byte count,
    marker range, test counts, and the ordered path. It is the only doc you read in full.
-2. Verify the build hash on the Mac against PIPELINE.md. If it differs, stop and say so
+2. Verify the build hash on the Mac against docs/dev/PIPELINE.md. If it differs, stop and say so
    before changing anything.
 3. Take a backup: `canvas_v10.html.bak_phaseNN_pre`.
 4. Only now open anything else, and only the specific part you need.
@@ -60,7 +60,7 @@ Also:
 
 ## 2a. Open-source reuse and technical context
 
-Read `reference/reuse-first-integration.md` when a task involves an upstream project. Prefer
+Read `docs/research/reuse-first-integration.md` when a task involves an upstream project. Prefer
 reuse unchanged behind adapters; justify any port or replacement with verified blockers.
 For SolidCraft, inspect the pinned source and existing browser/WASM build before recommending
 JavaScript rewrites. Discovery does not authorize implementation or a new delivery architecture.
@@ -297,11 +297,11 @@ These were each learned from a real bug. They are ordered by how much they have 
   MicroStation, CSiBridge, AASHTOWare). They ship as compiled binaries and there is no
   source to copy. Writing their published input formats and parsing their output is in
   scope. Simulating the programs is not.
-- Do not start work outside PIPELINE.md's NOW section without saying that is what you are
+- Do not start work outside docs/dev/PIPELINE.md's NOW section without saying that is what you are
   doing and why.
 - Do not add a runtime dependency, a build step, or a second deployed application file without
   explicit owner approval. Repository documentation and test/patch files are not prohibited.
-  For open-source reuse, follow `reference/reuse-first-integration.md`: assess and propose an
+  For open-source reuse, follow `docs/research/reuse-first-integration.md`: assess and propose an
   exception rather than silently changing the contract or automatically rewriting upstream code.
 
 ---

@@ -1,7 +1,7 @@
 # Presentation boards, a cleaner Analyze, a cleaner right panel
 
 The owner's notes (2026-10-04), with research into how the leading tools do each. In our own
-words; nothing copied. PIPELINE.md carries the phases.
+words; nothing copied. docs/dev/PIPELINE.md carries the phases.
 
 ## 1. Presentation: boards that are designed like Figma and stay connected like Archicad
 

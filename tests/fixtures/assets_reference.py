@@ -1,6 +1,6 @@
 """assets_reference.py -- V169: the assets' sizes, worked out again in Python from their sources.
 
-Every value is the one its source prints (reference/research-assets.md names each, what was read, and
+Every value is the one its source prints (docs/research/research-assets.md names each, what was read, and
 its level); each is checked against the unit the source states it in where that differs from the app's
 metres. The derivations are written from the method each source gives, not from the app's code:
 NASA's linear scaling for a body, ETCCDI's GSL for the growing season, AASHTO's geometry for a turn.

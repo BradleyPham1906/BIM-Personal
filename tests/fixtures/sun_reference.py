@@ -8,7 +8,7 @@
 - The time zones by Python's own database (zoneinfo), not the browser's; a zone's standard time the lower of its
   mid-January and mid-July offsets.
 - Play through the year; the half-years and the temperature's bands.
-reference/research-sun-path.md."""
+docs/research/research-sun-path.md."""
 import datetime
 import math
 from zoneinfo import ZoneInfo

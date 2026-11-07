@@ -90,7 +90,7 @@ For this app, on the same GitHub Pages site that serves it:
 - **A command reference, generated from the app itself:** every command's name, aliases,
   description, where it sits on the ribbon and its keys, from the same catalogue the command
   search uses. It cannot fall behind the app.
-- **Release notes:** one entry per version (V1 onward), drawn from `canvas_v10_STATUS.md`.
+- **Release notes:** one entry per version (V1 onward), drawn from `docs/dev/canvas_v10_STATUS.md`.
 - **Versions:**
   - The app says its version (V141) and links to that version's notes.
   - Each version merged to main is tagged (`v141`), and the site keeps the builds at `/v/141/`,

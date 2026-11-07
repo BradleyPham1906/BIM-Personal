@@ -1,6 +1,6 @@
 """standards_reference.py -- V167's standards registry worked out again from its sources.
 
-What each record holds, as its source states it (reference/research-standards-registry.md says
+What each record holds, as its source states it (docs/research/research-standards-registry.md says
 where each was read, and at what level), with the arithmetic the app's values come from; the
 constants the analyses had before V167, read from the kept build; and the rules by which the app
 picks the edition in force for a place and a date, written again here so the suite can ask the app

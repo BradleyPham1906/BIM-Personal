@@ -5,7 +5,7 @@ microclimate analysis: "i think we can improve this better. please see the video
 analysis and simulation ... their layout looks clean and professional thats what i want. ours current right
 now is a mess when doing simulation and site analysis".
 
-Researched to `reference/research-protocol.md`. The products' own screens were read as pictures; their
+Researched to `docs/research/research-protocol.md`. The products' own screens were read as pictures; their
 words are our own here, and none of their frames or pictures are kept in the repository (it is public).
 
 ## What was read
@@ -18,7 +18,7 @@ words are our own here, and none of their frames or pictures are kept in the rep
 | Autodesk, "Start your pre-design site analysis with Forma Site Design's sun hours analysis", `blogs.autodesk.com/forma/?p=743` | Read through the fetch tool's digest: Sun hours is opened from Analyze in the right panel; the area and the dates are set at the panel's top; an inspect tool at the 3D scene's top right gives a point's exact value | 2026-10-25 | S (a digest) |
 | Autodesk, `blogs.autodesk.com/forma/?p=1701` | Read through the digest: "Open analysis" takes Run's place once there are results; the right panel's Highlights and Area breakdown; dates toggled; a time-interval slider; the legend filters the results to a range; a camera angle saved; an image exported with or without the date and the ranges | 2026-10-25 | S (a digest) |
 | Autodesk Learn's Forma tutorials (microclimate, compare analyses) | Refused (403) from here | 2026-10-25 | - |
-| ArcGIS Pro's Contents and geoprocessing panes | As `reference/research-arcgis-site-analysis.md` (1) read them for V157: one stack of layers, a legend patch under each, a tool's pane of parameters, Run, messages and History | 2026-10-16 | P, as recorded there |
+| ArcGIS Pro's Contents and geoprocessing panes | As `docs/research/research-arcgis-site-analysis.md` (1) read them for V157: one stack of layers, a legend patch under each, a tool's pane of parameters, Run, messages and History | 2026-10-16 | P, as recorded there |
 | The app: Analyze (`bimAnalyzeHtml`, `bimAnzCards`, `bimDgCards`), the site run (`bimAnalyzeSite`), the legend (`bimDgLegendLayout`), the labels (`drawDiagrams`), the colour lens (`bimLensCol`, read by the GPU batches every frame), the basemap shaders (`map-tiles.js`, `webgpu.js`), the paint (`terrain-3d.js`), Properties (`refreshProps`), the shell and its tiers | Read as text | 2026-10-25 | P |
 | The app as it is, screenshots of the fixture's neighbourhood analysed and its traffic simulated, at 1440 x 900 and 390 x 844, dark and light | Taken here (kept out of the repository) | 2026-10-25 | P |
 

@@ -1,0 +1,12 @@
+{
+  "name": "bim-personal",
+  "private": true,
+  "description": "A zero-dependency browser CAD/BIM app. Scripts only: the app itself has no npm dependencies.",
+  "scripts": {
+    "build": "python3 tools/build_app.py",
+    "modules": "node tools/engine_modules.cjs",
+    "check": "python3 tools/build_app.py --check && node tools/engine_modules.cjs --check && python3 tools/embed_py.py --check && python3 tools/build_docs.py --check",
+    "test": "node --test \"tests/unit/**/*.test.mjs\"",
+    "test:e2e": "python3 tests/e2e/run_all.py"
+  }
+}

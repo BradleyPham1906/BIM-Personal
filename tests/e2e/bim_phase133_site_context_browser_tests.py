@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """bim_phase133_site_context_browser_tests.py -- V133: site context in one click.
 
-The owner wants "as much open public data as possible" (reference/research-site-context.md). The
+The owner wants "as much open public data as possible" (docs/research/research-site-context.md). The
 buildings, roads, water, green and trees around the site come from OpenStreetMap through the
 Overpass API; the ground from AWS Terrain Tiles. Both are answered inside the browser here: Overpass
 by a fixture in its own answer's shape, the tiles by PNGs encoding a known ground (linear in the

@@ -1,6 +1,6 @@
 // e12_files_install_surface.js -- files-and-install hypotheses (2026-10-31).
 // Tests, in this Chromium (chromium-1243 headless shell, Playwright 1.63.0), what the note
-// reference/research-local-storage/files-and-install.md claims from the documents:
+// docs/research/research-local-storage/files-and-install.md claims from the documents:
 //   H-F1  the File System Access pickers exist on http://localhost but are refused on file://
 //         (the spec rejects an opaque origin) and in a cross-origin iframe (SecurityError);
 //         without a user gesture they throw SecurityError.

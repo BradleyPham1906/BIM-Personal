@@ -1,4 +1,4 @@
-// e02_browser.js -- the B-rep kernel research (reference/research-usd-brep.md), 2026-11-01.
+// e02_browser.js -- the B-rep kernel research (docs/research/research-usd-brep.md), 2026-11-01.
 // Runs NVIDIA's SMLib, built by e02_build.sh, the way the one-file app would have to carry it: the
 // single-file build (wasm embedded as base64 in a classic script) placed inside a page opened from
 // file://, started in a Worker made from a Blob URL (SMLib's rule: one kernel per worker, restarted

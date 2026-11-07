@@ -3,7 +3,7 @@
 listens everywhere.
 
 The owner: "lets make command UI easy to use. shortcuts searchable and stuff ... as this app become
-more sophisticate, it is hard." Research: reference/research-command-ui.md (AutoCAD's Input Search
+more sophisticate, it is hard." Research: docs/research/research-command-ui.md (AutoCAD's Input Search
 Options, Rhino, VS Code, Blender F3, Revit's Keyboard Shortcuts dialog).
 
   1. THE CATALOGUE: every runnable typed command and every implemented ribbon tool, once each; a

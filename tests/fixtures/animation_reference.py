@@ -1,5 +1,5 @@
 """animation_reference.py -- V170's motions worked out again in Python, from the design
-(reference/research-animation.md, section 9) and not from the app's code.
+(docs/research/research-animation.md, section 9) and not from the app's code.
 
 What is a fact of the world here is checked elsewhere: the sun's rise and set come from the app's
 NOAA equations, which V107's suite holds to NREL's SPA; this file says what the clock does with them.

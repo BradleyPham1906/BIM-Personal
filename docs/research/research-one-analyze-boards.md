@@ -112,4 +112,4 @@ This note is how other tools do the two things, and what V162 takes from them.
 - Esri, ArcGIS Pro: [Export Layouts](https://doc.esri.com/en/arcgis-pro/latest/tool-reference/data-management/export-layouts.html) (several layouts in one export).
 - Esri, ArcGIS Pro: [Reports in ArcGIS Pro](https://pro.arcgis.com/en/pro-app/2.6/help/reports/reports-in-arcgis-pro.htm) (reports as project items in the Catalog pane, exported to PDF).
 - Tableau, Stories: help.tableau.com, "Stories" in Tableau Desktop's help. It could not be reached from here when this note was written; the description above is the common one of the guides that quote it.
-- This repository: `reference/research-site-analysis-process.md` (V158, the ten categories and the stages) and V122's Presentation (the set, Present, Print set).
+- This repository: `docs/research/research-site-analysis-process.md` (V158, the ten categories and the stages) and V122's Presentation (the set, Present, Print set).

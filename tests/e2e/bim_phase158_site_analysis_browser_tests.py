@@ -2,7 +2,7 @@
 """bim_phase158_site_analysis_browser_tests.py -- V158: Site analysis SA1, the workspace and the standard.
 
 The owner (V156): "i want to standardize the whole process." The standard
-(reference/research-site-analysis-process.md): six stages after Define, ten fixed categories, and
+(docs/research/research-site-analysis-process.md): six stages after Define, ten fixed categories, and
 findings that each name a source, a date and how sure they are, classed as a constraint, an
 opportunity, a red flag or a fact. The context comes from V157's Overpass fixture on V133's terrain.
 
