@@ -1013,7 +1013,7 @@ not yet been run (Rule #1).
 
 ## 14. V172h: installable and offline (research, started 2026-11-07)
 
-**Status: research done 2026-11-08, independent check passed; the owner's decisions to come (14.11).** Parts 1 to 12 decided that the app should be installable and work offline on Pages (D6),
+**Status: research done 2026-11-08, independent check passed, the owner's decisions given (14.11): option C.** Parts 1 to 12 decided that the app should be installable and work offline on Pages (D6),
 and what that takes in outline: a manifest, icons, and an ES5 service worker at `/BIM-Personal/sw.js`. This part
 answers what the code depends on that those parts left open or did not ask.
 
@@ -1198,7 +1198,10 @@ method behind "twelve files", and H37's level.
 
 ### 14.11 The owner's decisions
 
-Asked together on 2026-11-07, each with a recommended answer.
+Asked together on 2026-11-07, each with a recommended answer. **The owner's answer (2026-11-08): "proceed per your
+recommendation. i agree to all."** So: Q1 not yet in the database; Q2 the page cache-first (option C, which amends D6's
+network-first page); Q3 the runtime cached on first use; Q4 Reload asks every tab; Q5 our own icon for now; Q6 the guide
+and the one-file build online only; Q7 a self-removing `sw.js` kept ready.
 
 - **Q1. What "unsaved work" holds an update back.** Not yet in the database (`A3D_SPILL.dirty` or a record in flight), or
   not yet saved to a file (V172g's marker)? An update only reloads the page; what is in the database survives a reload,
