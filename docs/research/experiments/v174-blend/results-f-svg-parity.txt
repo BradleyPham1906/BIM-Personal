@@ -15,5 +15,5 @@ Chromium 153.0.8010.12; 400 pairs per mode; half opaque, half alpha 0.5/0.75
   saturation   SVG vs canvas max channel diff: opaque 0, translucent 2 | SVG vs W3C (opaque) 0.50
   color        SVG vs canvas max channel diff: opaque 0, translucent 2 | SVG vs W3C (opaque) 0.49
   luminosity   SVG vs canvas max channel diff: opaque 0, translucent 2 | SVG vs W3C (opaque) 0.49
-SVG masks (alpha of black rect): {"luminanceDefault_grey128":128,"alphaType_quarter":64,"luminanceDefault_red":54}  [luminance of grey 128 = 128; alpha-type 0.25 = 64; red under luminance: 0.2126*255 = 54 (sRGB) or about 0.2126*255 in linear = 54 too; check]
+SVG masks (alpha of black rect): {"luminanceDefault_grey128":128,"alphaType_quarter":64,"luminanceDefault_red":54}  [expect: grey 128 under luminance gives 128 if computed on sRGB values, 55 if on linearRGB; alpha-type at 0.25 gives 64; red gives 0.2126*255 = 54 either way]
 SVG isolation over rgb(0,128,255), red multiply child: {"plainGroup":[0,0,0,255],"isolatedGroup":[255,0,0,255]}

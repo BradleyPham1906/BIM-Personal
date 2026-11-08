@@ -89,7 +89,7 @@ async function pageRun(arg) {
       ' | SVG vs W3C (opaque) ' + mxRefO.toFixed(2));
   });
   console.log('SVG masks (alpha of black rect): ' + JSON.stringify(res.masks) +
-    '  [luminance of grey 128 = 128; alpha-type 0.25 = 64; red under luminance: 0.2126*255 = 54 (sRGB) or about 0.2126*255 in linear = 54 too; check]');
+    '  [expect: grey 128 under luminance gives 128 if computed on sRGB values, 55 if on linearRGB; alpha-type at 0.25 gives 64; red gives 0.2126*255 = 54 either way]');
   console.log('SVG isolation over rgb(0,128,255), red multiply child: ' + JSON.stringify(res.isolation));
   await browser.close();
 })();
