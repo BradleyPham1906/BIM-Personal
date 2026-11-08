@@ -246,7 +246,12 @@ random cases, the edges, sampling, the stretches). Nothing draws with it yet.
 
 ## 11. The owner's decisions
 
-Each with the recommendation first. Asked together on 2026-11-08; the answers go here once given.
+Each with the recommendation first. Asked together on 2026-11-08. **The owner's answers (2026-11-07, this
+session's date): all fourteen as recommended, option A each** (D1 the Layers tab with List by; D2 reorder within
+each kind; D3 the top row on top; D4 natural breaks, 5 classes; D5 a class centred on the mean, the sample's
+standard deviation; D6 percent clip 2 to 98; D7 plain arrays; D8 the CQL2 text subset with a clause builder; D9
+numeric text compared as numbers; D10 aliases accepted, written back as CQL2; D11 a backslash escapes; D12 a field
+or a template, polylabel, greedy collisions; D13 analyses and data layers in the cake; D14 V173a to V173d).
 
 | # | Question | Options (recommended first) | Evidence |
 |---|---|---|---|

@@ -109,6 +109,28 @@ https://github.com/mapbox/earcut.
     TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
     THIS SOFTWARE.
 
+## ColorBrewer (V136, V173a)
+
+The colour ramps of the colour lens and of graduated data layers (`src/js/engine/map/colour-ramps.js`)
+are ColorBrewer 2.0's schemes: YlOrRd, YlGnBu, Blues, Greens, Purples, Greys, RdBu and RdYlBu, each at
+its class counts, as https://github.com/axismaps/colorbrewer's `colorbrewer_schemes.js` gives them
+(read 2026-11-07). The file's colours were written into ours by a script
+(`docs/research/experiments/v173-classify/colorbrewer_write.py`), not typed by hand.
+
+The schemes file's own notice, and the repository's licence (its `LICENCE.txt`, Apache 2.0; the
+repository states no copyright line of its own):
+
+    This product includes color specifications and designs developed by Cynthia Brewer
+    (http://colorbrewer.org/).
+
+    Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+    except in compliance with the License. You may obtain a copy of the License at
+    http://www.apache.org/licenses/LICENSE-2.0
+    Unless required by applicable law or agreed to in writing, software distributed under the
+    License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+    either express or implied. See the License for the specific language governing permissions
+    and limitations under the License.
+
 
 ## Ladybug Tools and Pyodide (V172b, served beside the app in runtime/)
 

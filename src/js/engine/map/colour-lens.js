@@ -6,6 +6,8 @@ import { A3D_PLOT, bimLayerById } from '../layers/layer-rules.js';
 import { refreshProps } from '../site-analysis/panel.js';
 import { bimAwCtxCol } from '../site-analysis/analysis-workspace.js';
 import { bimHexToRgb } from '../render/webgl.js';
+import { bimClsAssign } from './classify.js';
+import { bimDataClsScale, bimDataLegendTitle } from './data-symbology.js';
 import { bimDataFeats, bimDataList } from './data-layers.js';
 import { paint } from './terrain-3d.js';
 import { bimSafeViewRect } from '../ui/chrome-framing.js';
@@ -92,6 +94,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
     if(!x)return null;
     if(sc.kind==='num'){
       if(x.num===undefined)return null;
+      if(sc.breaks){i=bimClsAssign(sc.breaks,x.num);return i>=0?sc.bins[i]:null;}   /* __acad3dV173a: a data layer's classes */
       if(sc.hi<=sc.lo)return sc.bins[sc.bins.length-1];
       i=Math.min(sc.bins.length-1,Math.max(0,Math.floor((x.num-sc.lo)/(sc.hi-sc.lo)*sc.bins.length)));
       return sc.bins[i];
@@ -132,7 +135,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
     var r=[],i,c;
     if(!sc)return r;
     if(sc.kind==='num'){
-      for(i=0;i<sc.bins.length;i++)if(sc.bins[i].n)r.push({col:sc.bins[i].col,name:bimLensFmt(sc.bins[i].lo)+' to '+bimLensFmt(sc.bins[i].hi),n:sc.bins[i].n});
+      for(i=0;i<sc.bins.length;i++)if(sc.bins[i].n||sc.breaks)r.push({col:sc.bins[i].col,name:bimLensFmt(sc.bins[i].lo)+' to '+bimLensFmt(sc.bins[i].hi),n:sc.bins[i].n});
     }else for(i=0;i<sc.list.length;i++){c=sc.cats[sc.list[i]];r.push({col:c.col,name:c.name,n:c.n});}
     if(none)r.push({col:BIM_LENS_NONE,name:'no value',n:none});
     return r;
@@ -147,7 +150,11 @@ import { a3dToast } from '../bim/csg-booleans.js';
       if(typeof v==='number'||(/^-?\d+(\.\d+)?$/.test(String(v))&&isFinite(parseFloat(v))))vals.push({num:parseFloat(v)});
       else vals.push({v:'p:'+String(v).toLowerCase(),name:String(v)});
     }
-    var sc=bimLensScale(vals),k;
+    var sc=bimLensScale(vals),k,nums=[];
+    if(sc.kind==='num'){   /* __acad3dV173a: classified by the layer's method, not six equal steps */
+      for(i=0;i<vals.length;i++)if(vals[i]&&vals[i].num!==undefined)nums.push(vals[i].num);
+      sc=bimDataClsScale(L,nums)||sc;
+    }
     if(sc.kind==='num')for(i=0;i<vals.length;i++){k=bimLensPick(sc,vals[i]);if(k)k.n++;}
     return {scale:sc,vals:vals,none:none};
   }
@@ -196,7 +203,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
       if(!L[i].visible||!L[i].by)continue;
       ds=bimDataLensScale(L[i]);
       rows=ds?bimLensRows(ds.scale,ds.none):[];
-      if(rows.length)blocks.push({title:L[i].name+': '+L[i].by,rows:rows});
+      if(rows.length)blocks.push({title:bimDataLegendTitle(L[i],ds),rows:rows});   /* __acad3dV173a: with its method */
     }
     if(!blocks.length)return;
     ctx.save();
@@ -255,7 +262,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
     gl.drawArrays(gl.TRIANGLES,0,rec.count);
   }
 export {
-  A3D_LENS, BIM_LENS_BY, BIM_LENS_LABEL, BIM_LENS_NONE, BIM_LENS_RAMP, bimDataAttrKeys, bimDataFeatCol,
-  bimDataLensScale, bimGlDrawFaces, bimLensCol, bimLensPropKeys, bimLensSet, bimLensSettings, bimLensValue,
-  drawLensLegend
+  A3D_LENS, BIM_LENS_BY, BIM_LENS_LABEL, BIM_LENS_MAX_ROWS, BIM_LENS_NONE, BIM_LENS_RAMP, bimDataAttrKeys,
+  bimDataFeatCol, bimDataLensScale, bimGlDrawFaces, bimLensCol, bimLensPropKeys, bimLensRows, bimLensSet,
+  bimLensSettings, bimLensValue, drawLensLegend
 };

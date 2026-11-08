@@ -17772,12 +17772,12 @@ try{
     return h;
   }
   function bimLyDataRowHtml(L){
-    var key='data:'+L.id,sel=A3D_LY.rsel===key,hid=!L.visible,n=bimDataFeats(L.id).length,h,col=/^#[0-9a-fA-F]{6}$/.test(L.color||'')?L.color:'#7f9db8';
+    var key='data:'+L.id,sel=A3D_LY.rsel===key,hid=!L.visible,n=bimDataFeats(L.id).length,h;
     h='<div class="a3d-lyres'+(sel?' sel':'')+(hid?' dim':'')+'" data-lyres="'+bimEsc(key)+'" aria-expanded="'+sel+'">'+
-      '<span class="a3d-lyramp" style="background:'+col+'"></span>'+bimLyNameHtml(key,L.name)+
+      '<span class="a3d-lyramp" style="background:'+bimDataSwatch(L)+'"></span>'+bimLyNameHtml(key,L.name)+   /* __acad3dV173a: its classes */
       (L.status&&L.status.error?'<span class="a3d-lybadge gone" title="'+bimEsc(bimDataStatusText(L))+'">Failed</span>':'')+
       bimLyTgl('lyreson',key,hid,hid?'Show '+L.name:'Hide '+L.name,BIM_LY_IC.off,BIM_LY_IC.on)+'<span class="a3d-lyi a3d-lyspc" aria-hidden="true"></span><span class="a3d-lyi a3d-lyspc" aria-hidden="true"></span>'+'</div>';
-    if(sel)h+='<div class="a3d-lyresd" data-lyresd="'+bimEsc(key)+'">'+bimLyOpacityHtml(key,L.name,bimDataOpacity(L))+
+    if(sel)h+='<div class="a3d-lyresd" data-lyresd="'+bimEsc(key)+'">'+bimLyOpacityHtml(key,L.name,bimDataOpacity(L))+bimDataLegendHtml(L)+
       '<div class="a3d-lyresmeta">'+bimEsc(bimDataStatusText(L)+(n?'; '+n+' feature'+(n===1?'':'s'):'')+(L.credit?'. Source: '+L.credit:''))+'</div><div class="a3d-lyresacts">'+
       '<button type="button" data-lyresset="'+bimEsc(key)+'">Settings</button><button type="button" data-lyresrn="'+bimEsc(key)+'">Rename</button>'+
       '<button type="button" class="danger" data-lyresdel="'+bimEsc(key)+'">Remove</button></div></div>';
@@ -19317,6 +19317,7 @@ try{
     if(b[0]==='color')return bimDataSet(b[1],'color',f.value);
     if(b[0]==='by')return bimDataSet(b[1],'by',f.value);             /* __acad3dV136 */
     if(b[0]==='opacity')return bimDataSet(b[1],'opacity',f.value);
+    if(b[0].indexOf('cls-')===0)return bimDataSet(b[1],'cls.'+b[0].slice(4),f.type==='checkbox'?f.checked:f.value);   /* __acad3dV173a */
     return false;
   }
   function bimDataPropClick(ev){
@@ -19413,7 +19414,8 @@ try{
     for(k=0;k<keys.length;k++)o+='<option value="'+bimEsc(keys[k])+'"'+(keys[k]===L.by?' selected':'')+'>'+bimEsc(keys[k])+'</option>';
     return '<div class="a3d-prow a3d-dllens"><div class="a3d-plabel">Colour by</div><div class="a3d-pval"><div class="a3d-ukv">'+
       '<select data-propdata="by:'+id+'" aria-label="Colour '+bimEsc(L.name)+' by">'+o+'</select>'+
-      '<input type="number" min="10" max="100" step="10" data-propdata="opacity:'+id+'" value="'+Math.round(bimDataOpacity(L)*100)+'" aria-label="Opacity (%)" title="Opacity (%)"></div></div></div>';
+      '<input type="number" min="10" max="100" step="10" data-propdata="opacity:'+id+'" value="'+Math.round(bimDataOpacity(L)*100)+'" aria-label="Opacity (%)" title="Opacity (%)"></div></div></div>'+
+      bimDataSymHtml(L);   /* __acad3dV173a: a number's classes */
   }
   function bimLensPropChange(ev){
     var f=ev.target&&ev.target.closest?ev.target.closest('[data-proplens]'):null;
@@ -37023,6 +37025,192 @@ try{
     if(st.hi<=st.lo)return 1;
     return Math.max(0,Math.min(1,(v-st.lo)/(st.hi-st.lo)));
   }
+
+  /* ================= __acad3dV173: ColorBrewer's ramps =================
+     Color specifications and designs developed by Cynthia Brewer (colorbrewer.org), Apache
+     License 2.0: the colours of each scheme at each class count, as
+     axismaps/colorbrewer's colorbrewer_schemes.js gives them (read 2026-11-07), six hex digits a
+     colour, written into this file by a script from that file, never typed. Credited in
+     THIRD_PARTY_NOTICES.md. */
+  var BIM_RAMP_ORDER=['YlOrRd','YlGnBu','Blues','Greens','Purples','Greys','RdBu','RdYlBu'];
+  var BIM_RAMPS={
+    YlOrRd:{label:'Yellow, orange, red',min:3,max:9,c:{3:'ffeda0feb24cf03b20',4:'ffffb2fecc5cfd8d3ce31a1c',5:'ffffb2fecc5cfd8d3cf03b20bd0026',6:'ffffb2fed976feb24cfd8d3cf03b20bd0026',7:'ffffb2fed976feb24cfd8d3cfc4e2ae31a1cb10026',8:'ffffccffeda0fed976feb24cfd8d3cfc4e2ae31a1cb10026',9:'ffffccffeda0fed976feb24cfd8d3cfc4e2ae31a1cbd0026800026'}},
+    YlGnBu:{label:'Yellow, green, blue',min:3,max:9,c:{3:'edf8b17fcdbb2c7fb8',4:'ffffcca1dab441b6c4225ea8',5:'ffffcca1dab441b6c42c7fb8253494',6:'ffffccc7e9b47fcdbb41b6c42c7fb8253494',7:'ffffccc7e9b47fcdbb41b6c41d91c0225ea80c2c84',8:'ffffd9edf8b1c7e9b47fcdbb41b6c41d91c0225ea80c2c84',9:'ffffd9edf8b1c7e9b47fcdbb41b6c41d91c0225ea8253494081d58'}},
+    Blues:{label:'Blues',min:3,max:9,c:{3:'deebf79ecae13182bd',4:'eff3ffbdd7e76baed62171b5',5:'eff3ffbdd7e76baed63182bd08519c',6:'eff3ffc6dbef9ecae16baed63182bd08519c',7:'eff3ffc6dbef9ecae16baed64292c62171b5084594',8:'f7fbffdeebf7c6dbef9ecae16baed64292c62171b5084594',9:'f7fbffdeebf7c6dbef9ecae16baed64292c62171b508519c08306b'}},
+    Greens:{label:'Greens',min:3,max:9,c:{3:'e5f5e0a1d99b31a354',4:'edf8e9bae4b374c476238b45',5:'edf8e9bae4b374c47631a354006d2c',6:'edf8e9c7e9c0a1d99b74c47631a354006d2c',7:'edf8e9c7e9c0a1d99b74c47641ab5d238b45005a32',8:'f7fcf5e5f5e0c7e9c0a1d99b74c47641ab5d238b45005a32',9:'f7fcf5e5f5e0c7e9c0a1d99b74c47641ab5d238b45006d2c00441b'}},
+    Purples:{label:'Purples',min:3,max:9,c:{3:'efedf5bcbddc756bb1',4:'f2f0f7cbc9e29e9ac86a51a3',5:'f2f0f7cbc9e29e9ac8756bb154278f',6:'f2f0f7dadaebbcbddc9e9ac8756bb154278f',7:'f2f0f7dadaebbcbddc9e9ac8807dba6a51a34a1486',8:'fcfbfdefedf5dadaebbcbddc9e9ac8807dba6a51a34a1486',9:'fcfbfdefedf5dadaebbcbddc9e9ac8807dba6a51a354278f3f007d'}},
+    Greys:{label:'Greys',min:3,max:9,c:{3:'f0f0f0bdbdbd636363',4:'f7f7f7cccccc969696525252',5:'f7f7f7cccccc969696636363252525',6:'f7f7f7d9d9d9bdbdbd969696636363252525',7:'f7f7f7d9d9d9bdbdbd969696737373525252252525',8:'fffffff0f0f0d9d9d9bdbdbd969696737373525252252525',9:'fffffff0f0f0d9d9d9bdbdbd969696737373525252252525000000'}},
+    RdBu:{label:'Red to blue (diverging)',min:3,max:11,c:{3:'ef8a62f7f7f767a9cf',4:'ca0020f4a58292c5de0571b0',5:'ca0020f4a582f7f7f792c5de0571b0',6:'b2182bef8a62fddbc7d1e5f067a9cf2166ac',7:'b2182bef8a62fddbc7f7f7f7d1e5f067a9cf2166ac',8:'b2182bd6604df4a582fddbc7d1e5f092c5de4393c32166ac',9:'b2182bd6604df4a582fddbc7f7f7f7d1e5f092c5de4393c32166ac',10:'67001fb2182bd6604df4a582fddbc7d1e5f092c5de4393c32166ac053061',11:'67001fb2182bd6604df4a582fddbc7f7f7f7d1e5f092c5de4393c32166ac053061'}},
+    RdYlBu:{label:'Red, yellow, blue (diverging)',min:3,max:11,c:{3:'fc8d59ffffbf91bfdb',4:'d7191cfdae61abd9e92c7bb6',5:'d7191cfdae61ffffbfabd9e92c7bb6',6:'d73027fc8d59fee090e0f3f891bfdb4575b4',7:'d73027fc8d59fee090ffffbfe0f3f891bfdb4575b4',8:'d73027f46d43fdae61fee090e0f3f8abd9e974add14575b4',9:'d73027f46d43fdae61fee090ffffbfe0f3f8abd9e974add14575b4',10:'a50026d73027f46d43fdae61fee090e0f3f8abd9e974add14575b4313695',11:'a50026d73027f46d43fdae61fee090ffffbfe0f3f8abd9e974add14575b4313695'}}
+  };
+  function bimRampHex(s){var out=[],i;for(i=0;i+6<=s.length;i+=6)out.push('#'+s.slice(i,i+6));return out;}
+  function bimRampMix(a,b,t){
+    var p=parseInt(a.slice(1),16),q=parseInt(b.slice(1),16),r=[16,8,0].map(function(sh){var x=(p>>sh)&255,y=(q>>sh)&255;return Math.round(x+(y-x)*t);});
+    return '#'+r.map(function(v){return (v<16?'0':'')+v.toString(16);}).join('');
+  }
+  /* k colours of a ramp, light to dark (or reversed): the scheme's own colours from 3 to its most;
+     1 or 2 classes take the ends of its 3; above its most, its largest scheme mixed evenly between
+     its colours (ColorBrewer has no scheme there, so its colourblind checks do not cover it) */
+  function bimRampColours(name,k,rev){
+    var R=BIM_RAMPS.hasOwnProperty(name)?BIM_RAMPS[name]:BIM_RAMPS.YlOrRd,out,big,i,t,j;
+    k=Math.max(1,Math.round(+k||1));
+    if(k>=R.min&&k<=R.max)out=bimRampHex(R.c[k]);
+    else if(k<R.min){big=bimRampHex(R.c[R.min]);out=k===1?[big[big.length-1]]:[big[0],big[big.length-1]];}
+    else{
+      big=bimRampHex(R.c[R.max]);out=[];
+      for(i=0;i<k;i++){t=i*(big.length-1)/(k-1);j=Math.min(big.length-2,Math.floor(t));out.push(bimRampMix(big[j],big[j+1],t-j));}
+    }
+    return rev?out.slice().reverse():out;
+  }
+
+  /* ================= __acad3dV173a: a data layer's graduated colours =================
+     A data layer coloured by a number is classified by one of map/classify.js's methods into
+     classes, each a colour of a ColorBrewer ramp (map/colour-ramps.js). The settings are kept
+     on the layer as L.cls = {method, k, ramp, rev, step, centre, breaks}, each change one undo
+     step through bimDataSet; what is missing reads as the owner's defaults (D4, D5 in
+     docs/research/research-contents-pane.md): natural breaks, 5 classes, a class centred on the
+     mean. A text attribute keeps V136's categories. */
+  var BIM_DCLS_STEPS=[1,0.5,1/3,0.25];
+  var BIM_DCLS_STEP_LABEL=['1 standard deviation','1/2 standard deviation','1/3 standard deviation','1/4 standard deviation'];
+  var BIM_DCLS_MAXBREAKS=BIM_CLS_MAXK-1;
+  var A3D_DCLS={memo:{}};
+  /* the settings, every field read safely: a project file may carry anything */
+  function bimDataClsSettings(L){
+    var c=L&&L.cls&&typeof L.cls==='object'?L.cls:{},o={},k=Math.round(+c.k),i,b=[],t;
+    o.method=BIM_CLS_METHODS.indexOf(c.method)>=0?c.method:'natural';
+    o.k=isFinite(k)&&k>=1?Math.min(BIM_CLS_MAXK,k):5;
+    o.ramp=typeof c.ramp==='string'&&BIM_RAMPS.hasOwnProperty(c.ramp)?c.ramp:'YlOrRd';
+    o.rev=c.rev===true;
+    o.step=1;
+    for(i=0;i<BIM_DCLS_STEPS.length;i++)if(Math.abs(+c.step-BIM_DCLS_STEPS[i])<0.01)o.step=BIM_DCLS_STEPS[i];
+    o.centre=c.centre==='break'?'break':'class';
+    if(Array.isArray(c.breaks))for(i=0;i<c.breaks.length&&b.length<BIM_DCLS_MAXBREAKS;i++){t=c.breaks[i];if(typeof t==='number'&&isFinite(t)&&b.indexOf(t)<0)b.push(t);}   /* only numbers: +null would be a break at 0 */
+    o.breaks=b.sort(function(p,q){return p-q;});
+    return o;
+  }
+  /* the classes over a layer's numbers, kept until the settings, the attribute or the features change */
+  function bimDataClassify(L,nums){
+    var st=bimDataClsSettings(L),F=bimDataFeats(L.id),key=JSON.stringify(st)+'|'+L.by+'|'+nums.length,m=A3D_DCLS.memo[L.id],res,note='';
+    if(m&&m.key===key&&m.F===F)return m.res;
+    res=bimClsBreaks(nums,st.method,{k:st.k,step:st.step,centre:st.centre,breaks:st.breaks});
+    if(res.error){
+      note=res.error+'; shown in equal interval instead';
+      res=bimClsBreaks(nums,'equal',{k:st.k});
+      if(res.error)return null;
+      res.note=res.note?note+'. '+res.note:note;
+      res.fellBack=st.method;
+    }
+    res.st=st;
+    res.cols=bimRampColours(st.ramp,res.breaks.length,st.rev);
+    A3D_DCLS.memo[L.id]={key:key,F:F,res:res};
+    return res;
+  }
+  /* the lens's number scale, its bins made from the classes: bimLensPick reads sc.breaks */
+  function bimDataClsScale(L,nums){
+    var res=bimDataClassify(L,nums),bins=[],i;
+    if(!res)return null;
+    for(i=0;i<res.breaks.length;i++)bins.push({lo:i?res.breaks[i-1]:res.lo,hi:res.breaks[i],col:res.cols[i],n:0});
+    return {kind:'num',lo:res.lo,hi:res.hi,bins:bins,breaks:res.breaks,cls:res};
+  }
+  /* one field of L.cls: the change is one undo step; a value refused is said and changes nothing */
+  function bimDataClsSet(id,field,val){
+    var L=bimDataById(id),st,v,i,parts,t,cur;
+    if(!L)return false;
+    st=bimDataClsSettings(L);
+    function no(msg){a3dToast(msg);refreshProps();return false;}
+    if(field==='method'){v=String(val||'');if(BIM_CLS_METHODS.indexOf(v)<0)return no('There is no classification called '+v);}
+    else if(field==='k'){v=Math.round(parseFloat(val));if(!isFinite(v)||v<1||v>BIM_CLS_MAXK)return no('Classes: a whole number from 1 to '+BIM_CLS_MAXK);}
+    else if(field==='ramp'){v=String(val||'');if(!BIM_RAMPS.hasOwnProperty(v))return no('There is no colour ramp called '+v);}
+    else if(field==='rev'){v=val===true||val==='true';}
+    else if(field==='step'){
+      v=null;for(i=0;i<BIM_DCLS_STEPS.length;i++)if(Math.abs(parseFloat(val)-BIM_DCLS_STEPS[i])<0.01)v=BIM_DCLS_STEPS[i];
+      if(v===null)return no('The interval is 1, 1/2, 1/3 or 1/4 of a standard deviation');
+    }
+    else if(field==='centre'){v=val==='break'?'break':'class';}
+    else if(field==='breaks'){
+      parts=String(val==null?'':val).split(/[\s,;]+/);v=[];
+      for(i=0;i<parts.length;i++){
+        if(!parts[i])continue;
+        t=parseFloat(parts[i]);
+        if(!/^-?(\d+\.?\d*|\.\d+)([eE][-+]?\d+)?$/.test(parts[i])||!isFinite(t))return no('Breaks are numbers with commas between them: '+parts[i]+' is not one');
+        if(v.indexOf(t)<0)v.push(t);
+      }
+      if(v.length>BIM_DCLS_MAXBREAKS)return no('At most '+BIM_DCLS_MAXBREAKS+' breaks ('+BIM_CLS_MAXK+' classes)');
+      v.sort(function(p,q){return p-q;});
+    }
+    else return false;
+    cur=st[field];
+    if(field==='breaks'?(JSON.stringify(cur)===JSON.stringify(v)&&st.method==='manual'):cur===v)return true;
+    pushUndo();
+    if(!L.cls||typeof L.cls!=='object')L.cls={};
+    /* Manual starts from the breaks shown, as ArcGIS does; typing breaks makes the method Manual */
+    if(field==='method'&&v==='manual'&&!st.breaks.length){
+      var sh=A3D_DCLS.memo[L.id]&&A3D_DCLS.memo[L.id].res;
+      if(sh&&sh.breaks)L.cls.breaks=sh.breaks.slice(0,-1);
+    }
+    if(field==='breaks')L.cls.method='manual';
+    L.cls[field]=v;
+    delete A3D_DCLS.memo[L.id];
+    refreshProps();paint();saveSoon();bimLayersPanelRefresh();
+    return true;
+  }
+  /* the layer's colours as a swatch for its row in Layers: its colour, or its classes or categories */
+  function bimDataSwatch(L){
+    var col=/^#[0-9a-fA-F]{6}$/.test(L.color||'')?L.color:'#7f9db8',ds,c=[],i;
+    if(!L.by)return col;
+    try{ds=bimDataLensScale(L);}catch(e){console.warn('[BIM] data layer swatch',e);return col;}
+    if(!ds||!ds.scale)return col;
+    if(ds.scale.kind==='num')for(i=0;i<ds.scale.bins.length;i++)c.push(ds.scale.bins[i].col);
+    else for(i=0;i<ds.scale.list.length&&i<8;i++)c.push(ds.scale.cats[ds.scale.list[i]].col);
+    return c.length>1?'linear-gradient(90deg,'+c.join(',')+')':c.length?c[0]:col;
+  }
+  /* its legend patches, under the row in Layers, as the result layers have */
+  function bimDataLegendHtml(L){
+    var ds,rows,h='',i,more;
+    if(!L.by)return '';
+    try{ds=bimDataLensScale(L);}catch(e){console.warn('[BIM] data layer legend',e);return '';}
+    rows=ds?bimLensRows(ds.scale,ds.none):[];
+    if(!rows.length)return '';
+    more=rows.length>BIM_LENS_MAX_ROWS?rows.length-BIM_LENS_MAX_ROWS+1:0;
+    if(more)rows=rows.slice(0,BIM_LENS_MAX_ROWS-1);
+    for(i=0;i<rows.length;i++)h+='<span><i style="background:'+bimEsc(rows[i].col)+'"></i>'+bimEsc(rows[i].name)+' ('+rows[i].n+')</span>';
+    if(more)h+='<span>and '+more+' more</span>';
+    return '<div class="a3d-lyleg" title="'+bimEsc(bimDataLegendTitle(L,ds))+'">'+h+'</div>';
+  }
+  function bimDataLegendTitle(L,ds){
+    var c=ds&&ds.scale&&ds.scale.cls;
+    return L.name+': '+L.by+(c?' ('+BIM_CLS_LABEL[c.fellBack?'equal':c.method]+', '+c.k+' class'+(c.k===1?'':'es')+')':'');
+  }
+  /* Properties: the method, the classes, the ramp, and what the classification says of itself */
+  function bimDataSymHtml(L){
+    var ds,c,st,id=bimEsc(L.id),r='',o='',i,j,ctl;
+    if(!L.by)return '';
+    try{ds=bimDataLensScale(L);}catch(e){console.warn('[BIM] data layer symbology',e);return '';}
+    c=ds&&ds.scale&&ds.scale.cls;
+    if(!c)return '';
+    st=c.st;
+    function row(label,html){return '<div class="a3d-prow a3d-dllens"><div class="a3d-plabel">'+label+'</div><div class="a3d-pval">'+html+'</div></div>';}
+    for(i=0;i<BIM_CLS_METHODS.length;i++)o+='<option value="'+BIM_CLS_METHODS[i]+'"'+(st.method===BIM_CLS_METHODS[i]?' selected':'')+'>'+BIM_CLS_LABEL[BIM_CLS_METHODS[i]]+'</option>';
+    r+=row('Method','<select data-propdata="cls-method:'+id+'" aria-label="Classification of '+bimEsc(L.name)+'">'+o+'</select>');
+    if(st.method==='stddev'){
+      o='';for(i=0;i<BIM_DCLS_STEPS.length;i++)o+='<option value="'+BIM_DCLS_STEPS[i]+'"'+(st.step===BIM_DCLS_STEPS[i]?' selected':'')+'>'+BIM_DCLS_STEP_LABEL[i]+'</option>';
+      r+=row('Interval','<select data-propdata="cls-step:'+id+'" aria-label="Class width">'+o+'</select>');
+      r+=row('The mean','<select data-propdata="cls-centre:'+id+'" aria-label="Where the mean falls"><option value="class"'+(st.centre==='class'?' selected':'')+'>The centre of a class</option>'+
+        '<option value="break"'+(st.centre==='break'?' selected':'')+'>A break</option></select>');
+    }else if(st.method==='manual'){
+      r+=row('Breaks','<input type="text" data-propdata="cls-breaks:'+id+'" value="'+bimEsc(st.breaks.join(', '))+'" spellcheck="false" aria-label="Breaks, the upper bound of each class but the last" title="The upper bound of each class but the last, with commas between">');
+    }else{
+      r+=row('Classes','<input type="number" min="1" max="'+BIM_CLS_MAXK+'" step="1" data-propdata="cls-k:'+id+'" value="'+st.k+'" aria-label="Number of classes">');
+    }
+    o='';for(i=0;i<BIM_RAMP_ORDER.length;i++){j=BIM_RAMP_ORDER[i];o+='<option value="'+j+'"'+(st.ramp===j?' selected':'')+'>'+bimEsc(BIM_RAMPS[j].label)+'</option>';}
+    ctl='<div class="a3d-ukv"><select data-propdata="cls-ramp:'+id+'" aria-label="Colour ramp">'+o+'</select>'+
+      '<label class="a3d-ctxk"><input type="checkbox" data-propdata="cls-rev:'+id+'"'+(st.rev?' checked':'')+'> Reverse</label></div>';
+    r+=row('Colours',ctl);
+    r+=row('Fit','<span class="a3d-pstatic" title="Goodness of variance fit: 1 when every class holds one value">'+
+      bimEsc('GVF '+(Math.round(c.gvf*1000)/1000)+'; '+c.k+' class'+(c.k===1?'':'es')+' over '+c.n+' value'+(c.n===1?'':'s')+(ds.none?', '+ds.none+' with none':''))+'</span>');
+    if(c.note)r+=row('','<span class="a3d-pstatic'+(c.fellBack?' a3d-uerr':'')+'">'+bimEsc(c.note)+'</span>');
+    return r;
+  }
   /* ================= __acad3dV136: the colour-by-property lens ================= */
   var BIM_LENS_BY=['usage','level','type','layer','material','height','prop'];
   var BIM_LENS_LABEL={usage:'Usage',level:'Level',type:'Type',layer:'Layer',material:'Material',height:'Height',prop:'Property'};
@@ -37102,6 +37290,7 @@ try{
     if(!x)return null;
     if(sc.kind==='num'){
       if(x.num===undefined)return null;
+      if(sc.breaks){i=bimClsAssign(sc.breaks,x.num);return i>=0?sc.bins[i]:null;}   /* __acad3dV173a: a data layer's classes */
       if(sc.hi<=sc.lo)return sc.bins[sc.bins.length-1];
       i=Math.min(sc.bins.length-1,Math.max(0,Math.floor((x.num-sc.lo)/(sc.hi-sc.lo)*sc.bins.length)));
       return sc.bins[i];
@@ -37142,7 +37331,7 @@ try{
     var r=[],i,c;
     if(!sc)return r;
     if(sc.kind==='num'){
-      for(i=0;i<sc.bins.length;i++)if(sc.bins[i].n)r.push({col:sc.bins[i].col,name:bimLensFmt(sc.bins[i].lo)+' to '+bimLensFmt(sc.bins[i].hi),n:sc.bins[i].n});
+      for(i=0;i<sc.bins.length;i++)if(sc.bins[i].n||sc.breaks)r.push({col:sc.bins[i].col,name:bimLensFmt(sc.bins[i].lo)+' to '+bimLensFmt(sc.bins[i].hi),n:sc.bins[i].n});
     }else for(i=0;i<sc.list.length;i++){c=sc.cats[sc.list[i]];r.push({col:c.col,name:c.name,n:c.n});}
     if(none)r.push({col:BIM_LENS_NONE,name:'no value',n:none});
     return r;
@@ -37157,7 +37346,11 @@ try{
       if(typeof v==='number'||(/^-?\d+(\.\d+)?$/.test(String(v))&&isFinite(parseFloat(v))))vals.push({num:parseFloat(v)});
       else vals.push({v:'p:'+String(v).toLowerCase(),name:String(v)});
     }
-    var sc=bimLensScale(vals),k;
+    var sc=bimLensScale(vals),k,nums=[];
+    if(sc.kind==='num'){   /* __acad3dV173a: classified by the layer's method, not six equal steps */
+      for(i=0;i<vals.length;i++)if(vals[i]&&vals[i].num!==undefined)nums.push(vals[i].num);
+      sc=bimDataClsScale(L,nums)||sc;
+    }
     if(sc.kind==='num')for(i=0;i<vals.length;i++){k=bimLensPick(sc,vals[i]);if(k)k.n++;}
     return {scale:sc,vals:vals,none:none};
   }
@@ -37206,7 +37399,7 @@ try{
       if(!L[i].visible||!L[i].by)continue;
       ds=bimDataLensScale(L[i]);
       rows=ds?bimLensRows(ds.scale,ds.none):[];
-      if(rows.length)blocks.push({title:L[i].name+': '+L[i].by,rows:rows});
+      if(rows.length)blocks.push({title:bimDataLegendTitle(L[i],ds),rows:rows});   /* __acad3dV173a: with its method */
     }
     if(!blocks.length)return;
     ctx.save();
@@ -39305,6 +39498,7 @@ try{
   function bimDataSet(id,field,val){
     var L=bimDataById(id),v;
     if(!L)return false;
+    if(String(field).indexOf('cls.')===0)return bimDataClsSet(id,String(field).slice(4),val);   /* __acad3dV173a */
     if(field==='visible'){v=!!val&&val!=='false';if(L.visible===v)return true;}
     else if(field==='name'){v=String(val==null?'':val).replace(/\s+/g,' ').replace(/^ | $/g,'').slice(0,60);if(!v){a3dToast('A data layer needs a name');refreshProps();return false;}}
     else if(field==='color'){v=String(val||'');if(!/^#[0-9a-fA-F]{6}$/.test(v)){a3dToast('That is not a colour');refreshProps();return false;}v=v.toLowerCase();}
