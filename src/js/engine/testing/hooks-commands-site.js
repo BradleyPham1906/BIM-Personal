@@ -80,6 +80,7 @@ import {
   BIM_SKP, bimSkpGenerated, bimSkpImportBuffer, bimSkpReader, bimSkpScan
 } from '../io/sketchup-import.js';
 import { bimHandleImportFile, toScreen } from '../io/import-entry.js';
+import { bimClsBreaks, bimClsStretch, bimClsStretchAt } from '../map/classify.js';
 import {
   A3D_LENS, BIM_LENS_NONE, BIM_LENS_RAMP, bimDataAttrKeys, bimDataFeatCol, bimDataLensScale, bimLensCol,
   bimLensPropKeys, bimLensSet, bimLensSettings, bimLensValue, drawLensLegend
@@ -218,6 +219,9 @@ import { BIM_CMD_MAP, BIM_SHEET_CMDS, BIM_START_CMDS } from '../commands/command
   window.__a3dLensNone=function(){return BIM_LENS_NONE;};
   window.__a3dDataAttrKeys=function(id){return bimDataAttrKeys(id);};
   window.__a3dDataFeatCol=function(id,fi){var L=bimDataById(id);return L?bimDataFeatCol(L,bimDataLensScale(L),fi):null;};
+  /* __acad3dV173: the classification and the stretch, pure, for the suites */
+  window.__a3dClsBreaks=function(values,method,o){return bimClsBreaks(values,method,o);};
+  window.__a3dClsStretch=function(values,type,o,at){var st=bimClsStretch(values,type,o);return at===undefined?st:bimClsStretchAt(st,at);};
   window.__a3dLensCommand=function(){return bimLensCommand();};
   window.__a3dTestLegendOnPaper=function(){var s=A3D.sheetCapture;A3D.sheetCapture=true;try{drawLensLegend(el.ctx,null,0,0);}finally{A3D.sheetCapture=s;}return A3D.lastLensLegend;};
   window.__a3dTestLevelName=function(id,n){var i;for(i=0;i<A3D.levels.length;i++)if(A3D.levels[i].id===id){A3D.levels[i].name=n;A3D_LENS.cur=null;return true;}return false;};

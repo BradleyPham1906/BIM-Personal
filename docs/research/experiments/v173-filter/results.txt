@@ -1,0 +1,83 @@
+node v22.23.4, run 2026-11-08
+ok   '' escape
+ok   \' escape
+ok   unclosed string is an error
+ok   quoted field with space
+ok   unquoted field with space is an error
+ok   keyword as field needs quotes
+ok   bare keyword as field is an error
+ok   missing field = 1 is NULL
+ok   null field = 1 is NULL
+ok   null field <> 1 is NULL (not true)
+ok   NOT (H = 1) stays NULL, excluded
+ok   H IS NULL
+ok   missing IS NULL
+ok   POP IS NOT NULL
+ok   NULL OR TRUE = TRUE
+ok   NULL AND FALSE = FALSE
+ok   NULL AND TRUE = NULL
+ok   x IN (..., NULL) not found is NULL
+ok   NOT IN with a NULL item excludes all (SQL trap)
+ok   a OR b AND c = a OR (b AND c)
+ok   NOT binds tighter than AND
+ok   precedence result
+ok   grouping changes result
+ok   IN strings
+ok   NOT IN strings
+ok   IN numbers
+ok   empty IN list is an error
+ok   BETWEEN inclusive low
+ok   BETWEEN inclusive high
+ok   NOT BETWEEN
+ok   BETWEEN AND chained with AND
+ok   LIKE prefix %
+ok   LIKE single _
+ok   LIKE _ needs exactly one
+ok   LIKE is case sensitive
+ok   CASEI makes it insensitive
+ok   LIKE escaped underscore literal
+ok   LIKE escaped underscore does not match other char
+ok   LIKE escaped percent
+ok   LIKE on a number field compares its text
+ok   LIKE %%% collapses
+ok   number field = '1500' with coercion
+ok   string field '1500' = 1500 with coercion
+ok   string field '10' > 9 numeric, not text
+ok   same without coercion is NULL (excluded)
+ok   text compare '10' > '9' is false (lexicographic)
+ok   non-numeric string vs number stays incomparable
+ok   '1e3' counts as numeric
+ok   ' 12 ' with spaces counts as numeric
+ok   '' is not numeric
+ok   boolean field = TRUE
+ok   bare TRUE filter
+ok   keywords case-insensitive
+ok   prototype name is not a field
+ok   __proto__ is not a field
+ok   toString = 1 is NULL
+ok   JS code is a syntax error
+ok   function call syntax is an error
+ok   200 nested parentheses is a clean error
+ok   NOT x5000 is a clean error, not a stack overflow
+ok   trailing junk is an error
+ok   != accepted as <>
+ok   round trip NAME = 'O''Brien'  ->  NAME = 'O''Brien'
+ok   round trip "Land use" = 'Residential' AND POP > 10  ->  "Land use" = 'Residential' AND POP > 10
+ok   round trip A = 1 OR B = 2 AND C = 3  ->  A = 1 OR B = 2 AND C = 3
+ok   round trip (A = 1 OR B = 2) AND C = 3  ->  (A = 1 OR B = 2) AND C = 3
+ok   round trip NOT (A = 1 OR B = 2)  ->  NOT (A = 1 OR B = 2)
+ok   round trip Z NOT IN ('a', 'b')  ->  Z NOT IN ('a', 'b')
+ok   round trip H IS NOT NULL  ->  H IS NOT NULL
+ok   round trip CASEI(N) LIKE CASEI('a%')  ->  CASEI(N) LIKE CASEI('a%')
+ok   round trip P NOT BETWEEN 1 AND 2  ->  P NOT BETWEEN 1 AND 2
+ok   round trip "and" = 1  ->  "and" = 1
+ok   round trip NOT NOT A = 1  ->  NOT NOT A = 1
+info LIKE matcher, 20000 chars, pattern %a%a%a%a%a%a%a%b: false in 3 ms
+info RegExp /^.*a.*a.*a.*a.*a.*a.*a.*b$/ on 20 chars: false in 4 ms
+info RegExp /^.*a.*a.*a.*a.*a.*a.*a.*b$/ on 40 chars: false in 252 ms
+info RegExp /^.*a.*a.*a.*a.*a.*a.*a.*b$/ on 60 chars: false in 6672 ms
+info RegExp /^.*a.*a.*a.*a.*a.*a.*a.*b$/ on 80 chars: false in 71926 ms
+info 10000 features evaluated in 15 ms, 734 pass
+
+73 passed, 0 failed
+sketch size: 13743 bytes, 276 lines
