@@ -113,8 +113,27 @@ A good answer decides:
 
 ### 3a. The independent check
 
-To be filled from `independent-check.md` when it is done (2026-11-08). Until then every fact in part 4 carries the
-level its working note gave it.
+Done 2026-11-08 (`independent-check.md`). A fifth agent listed 138 facts that code or a default rests on, re-fetched
+every source and re-ran three measurements with its own scripts: ISO 216's halve-then-floor rule, the convergence
+formula, and blend pixels in Chromium.
+
+- **134 confirmed.** Five of them stay S (the inch sizes among them).
+- **3 not confirmed, now corrected here and in the working notes:**
+  - PDF's 0.30, 0.59, 0.11 luminosity is an informative note, not a rule. ISO 32000-1 11.5.3 leaves device-space
+    luminosity implementation-defined, so a `/Luminosity` mask is not guaranteed to match in every reader (back to
+    U; it supports D6's Alpha).
+  - ISO 7200 has eight mandatory fields, not seven: document type is the eighth.
+  - `globalCompositeOperation` is also used in `site/shadows.js:86-90` (`destination-out`). No blend mode is used
+    anywhere still holds.
+- **1 split:** the board grid's line is `board-figures.js:20`, not 19.
+- **0 could not be checked.**
+- **Smaller corrections,** with no change of level:
+  - in CSS a single item under space-around or space-evenly is centred, not at the start as in Figma;
+  - `destination` left the canvas grammar in 2015;
+  - a few app line ranges were off by one or two.
+
+The sources the check did not re-read are listed in its last part. Code that rests on any of them needs that reading
+first.
 
 ## 4. Findings, by topic
 
@@ -171,7 +190,8 @@ level its working note gave it.
 - **Where the specifications disagree.**
   - PDF 2008 and W3C differ at two dodge and burn edge colours (dodge with backdrop 0 and source 1, burn with 1
     and 0); Chromium follows W3C.
-  - The luminance weights differ: 0.30, 0.59, 0.11 in PDF against 0.2126, 0.7152, 0.0722 in SVG and CSS masks.
+  - The luminance weights differ. SVG and CSS masks use 0.2126, 0.7152, 0.0722. PDF leaves device-space luminosity to
+    the reader (11.5.3) and gives 0.30, 0.59, 0.11 only as an example in a note (the independent check, row 29).
   - P, high. This matters to V176's export.
 - **Unknown modes are ignored** and the previous mode kept, and `globalAlpha = null` silently becomes 0. The renderer
   validates both before drawing. P (measured).
@@ -230,8 +250,8 @@ level its working note gave it.
   - grid fields 50 mm.
   - The amendment's content is U.
   - P, high.
-- **ISO 7200:2004, the title block:** 180 mm wide, with seven mandatory fields (legal owner, identification number,
-  date of issue, sheet number, title, approval person, creator) and optional ones. P, through IS 11665:2009, which
+- **ISO 7200:2004, the title block:** 180 mm wide, with eight mandatory fields (legal owner, identification number,
+  date of issue, sheet number, title, approval person, creator, document type) and optional ones. P, through IS 11665:2009, which
   is identical.
 - **ANSI A to E** (8.5 x 11, 11 x 17, 17 x 22, 22 x 34, 34 x 44 in), from ASME Y14.1-2020. S: two independent
   copies agree, and the standard is sold.
@@ -388,7 +408,7 @@ available here; for them the notes rely on MDN's compatibility data and the bug 
 ## 8. What the app already has (audit, with file and line)
 
 - **Two machines.** Sheets are canvas: `sheets.js:327-449`, with viewports by `bimRenderSourceToCanvas`
-  (`sheets.js:250-297`). Boards are HTML on a 12-column grid: `board-figures.js:19`; edited in `board-edit.js:104-224`.
+  (`sheets.js:250-297`). Boards are HTML on a 12-column grid: `board-figures.js:20`; edited in `board-edit.js:104-224`.
 - **Sizes:** `SHEET_SIZES` at `sheets.js:34-48`, 11 sizes, with `ANSI-D` and `ANSI-D-L` 24 x 36 in. Only the select
   list of the New Sheet dialog (`viewports.js:274-306`).
 - **The title block:** fixed, at the bottom right (`sheets.js:367-394`, `viewports.js:738-764`).

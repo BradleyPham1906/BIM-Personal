@@ -11,7 +11,7 @@ The presentation set today holds two different kinds of page, and they are drawn
 | | Sheets (V44, V116, V121, V122) | Boards (V162, V172b) |
 |---|---|---|
 | Record | `A3D.sheets[]`: `{id, number, name, sizeKey, w, h, viewports[]}` in millimetres (`sheets/sheets.js:63-68`) | `A3D.pres = {boards[], order[]}`; a board `{id, kind, figs?, off?, name?}` (`sheets/boards.js:27-38`, `sheets/board-figures.js:63-101`) |
-| Drawn on | A canvas 2D context, at `pxPerMM` (3 on screen, 6 for export: `sheets.js:60`) | HTML: cards of SVG and tables built as strings (`bimBoardHtmlFor`, `bimClbCard`), on a 12-column grid 1408 px wide (`board-figures.js:19`) |
+| Drawn on | A canvas 2D context, at `pxPerMM` (3 on screen, 6 for export: `sheets.js:60`) | HTML: cards of SVG and tables built as strings (`bimBoardHtmlFor`, `bimClbCard`), on a 12-column grid 1408 px wide (`board-figures.js:20`) |
 | Elements | Viewports only (plan, elevation, section, schedule), each a rectangle with a scale; one fixed title block | Figures from a catalogue of 33 (`board-figures.js:25-46`), each `{k, f, x, y, w, h, o}` in grid columns and rows (`board-figures.js:72-90`); one free kind, `text` (a heading) |
 | Order on the page | The array's order | Reading order, by bands (`bimBrdBands`, `bimBrdOrder`, `board-edit.js:38`) |
 | Editing | Drag and size a viewport (`sheets/viewports.js:205-262`); wheel changes the scale (`viewports.js:121`); a properties dialog | Edit mode: move by handle or body, size by corner, arrows nudge, Shift sizes (`board-edit.js:147-224`); Snap, Grid, Ortho shared with the drawing (`board-edit.js:104-133`) |
@@ -102,8 +102,9 @@ owner's rule: free data, credited); a printed tile needs its credit on the page.
   since base64 grows by a third) and into every autosave. Images on boards need to be kept once, by reference (an
   id into IndexedDB, which V172f already runs: `core/` store), not inline. This is a design constraint, not a choice.
 - **Compositing used today.** `globalAlpha` for layer transparency (`annotation/dimensions.js:141`), and
-  `destination-out` to cut holes in analysis fills (`site-analysis/model-layers.js:246-254`). No blend modes anywhere
-  (`grep globalCompositeOperation`, `mix-blend-mode`: those two files only).
+  `destination-out` to cut holes in analysis fills (`site-analysis/model-layers.js:246-254`) and in shadows
+  (`site/shadows.js:86-90`). No blend modes anywhere: no `mix-blend-mode` in `src/`, and `globalCompositeOperation`
+  only switches between `destination-out` and `source-over` (corrected after the independent check, row 136).
 
 ## 7. File sizes, against the 400-line guide
 

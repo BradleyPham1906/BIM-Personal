@@ -32,7 +32,7 @@ it is reproduced exactly by halving the rounded size before and rounding down, s
 table, not compute it. ANSI A to E (ASME Y14.1-2020) and Architectural A to E1 are exact inch sizes; the
 app's existing "ANSI D (24x36 in)" is in fact Arch D and must be renamed. ISO 5457 fixes the frame (20 mm
 left, 10 mm elsewhere, A0 to A3 landscape only, A4 portrait only, title block bottom right) and ISO 7200 the
-title block's fields (180 mm wide; seven mandatory fields). In both professional tools the legend, north
+title block's fields (180 mm wide; eight mandatory fields, as the table in 4.3 lists). In both professional tools the legend, north
 arrow and scale bar are bound to one map frame and redraw from it; a legend follows the visible layers (and
 optionally only what is inside the extent), the north arrow adds the frame's rotation to the map's and,
 for true north on a projected map, the convergence at the frame's centre; a scale bar picks a round
