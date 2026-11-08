@@ -1,0 +1,11 @@
+case | (a) spherical | (b) Karney/Krueger | (c) finite difference | (b)-(c) arcsec | (a)-(b) arcsec
+Philadelphia City Hall, zone 18 (CM -75) | -0.105057 | -0.105057 | -0.105056 | -0.001 | 0.000
+Same latitude, 1 degree east of the CM | 0.642192 | 0.642192 | 0.642193 | -0.000 | -0.002
+Zone edge at 40 N (3 degrees from the CM) | 1.929397 | 1.929410 | 1.929410 | -0.001 | -0.044
+Zone edge at 60 N | 2.598670 | 2.598673 | 2.598673 | 0.000 | -0.011
+On the equator, 3 degrees off | 0.000000 | 0.000000 | 0.000000 | 0.000 | 0.000
+On the central meridian at 60 N | 0.000000 | 0.000000 | 0.000000 | 0.000 | 0.000
+80 N, 3 degrees off (UTM's northern limit is 84 N) | 2.954505 | 2.954505 | 2.954505 | 0.001 | -0.000
+Southern hemisphere, 33.9 S, 2 degrees east | -1.115802 | -1.115807 | -1.115807 | -0.000 | 0.016
+
+Change of convergence across 1 km east-west at Philadelphia: 27.28 arcsec

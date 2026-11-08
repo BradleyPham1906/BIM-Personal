@@ -1,0 +1,21 @@
+Chromium 153.0.8010.12; board 2000 x 1400; 200 elements (rect, ellipse, image); 30 frames after 3 warm-up; ms per frame incl. a 1-pixel read to flush
+
+default context:
+  200 elements, normal                                               median 9.0  p90 9.1  min 8.8  max 9.4
+  200 elements, random non-normal modes                              median 15.9  p90 21.3  min 13.4  max 27.0
+  200 elements, non-separable modes only                             median 22.6  p90 24.3  min 17.6  max 26.3
+  20 isolated groups (box-sized), normal children                    median 12.0  p90 13.8  min 8.5  max 14.8
+  20 isolated groups (box-sized), random children, group multiply    median 18.6  p90 19.6  min 17.6  max 21.5
+  20 isolated groups (board-sized offscreen)                         median 97.6  p90 111.3  min 87.0  max 115.7
+  200 elements each isolated (one shared 400px scratch)                    median 75.9  p90 91.5  min 70.3  max 92.3
+  200 elements each isolated (own element-sized offscreen)           median 27.5  p90 31.5  min 26.2  max 36.6
+
+willReadFrequently context:
+  200 elements, normal                                               median 7.3  p90 9.3  min 6.2  max 25.1
+  200 elements, random non-normal modes                              median 14.1  p90 19.8  min 13.3  max 22.0
+  200 elements, non-separable modes only                             median 18.4  p90 22.4  min 15.6  max 24.5
+  20 isolated groups (box-sized), normal children                    median 9.1  p90 12.4  min 8.3  max 13.0
+  20 isolated groups (box-sized), random children, group multiply    median 23.2  p90 28.8  min 18.4  max 30.0
+  20 isolated groups (board-sized offscreen)                         median 102.5  p90 106.2  min 87.8  max 120.5
+  200 elements each isolated (one shared 400px scratch)                    median 79.8  p90 96.5  min 69.7  max 97.8
+  200 elements each isolated (own element-sized offscreen)           median 24.8  p90 30.2  min 23.5  max 33.1

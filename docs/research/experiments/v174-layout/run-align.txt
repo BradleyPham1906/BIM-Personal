@@ -1,0 +1,15 @@
+align top, to selection: [{"x":0,"y":0},{"x":70,"y":0},{"x":150,"y":0},{"x":260,"y":0}]
+align vcenter, to selection (bounds 0..50, centre 25): [15,0,20,10]
+align bottom, to key object #2 (bottom 35): [15,-15,25,5]
+one box, to selection -> to parent (0,0,400,300), right: [{"x":360,"y":10}]
+distribute centres x, step 86.66666666666667: [0,91.66666666666667,168.33333333333334,260]
+distribute equal gaps x, step 46.666666666666664: [0,86.66666666666666,163.33333333333331,260]
+two boxes: distribute changes nothing: {"pos":[{"x":0,"y":10},{"x":70,"y":0}],"step":null}
+wide box, gaps-centre (Inkscape), step -45: [0,-5,250]
+wide box, gaps-edge (our Figma reading), step -10: [0,60,30]
+overlapping, equal gaps, step -40: [0,60,120]
+aabb rot 90: {"x":40,"y":-40,"w":20.000000000000007,"h":100}
+aabb rot 45: {"x":7.573593128807147,"y":-32.426406871192846,"w":84.8528137423857,"h":84.85281374238569}
+align left, a rotated 45 box with a plain one: [{"x":0,"y":0},{"x":7.573593128807147,"y":60}]
+tidy up x, mode gap 20: [0,70,140,210,280]
+board units, 3 x 4 columns, step 0: [0,4,8]

@@ -1,0 +1,52 @@
+Chromium 153.0.8010.12, 41 cases, 230 ms
+AGREE  [yes] row fixed, gap 10, pad 8 lines=1
+AGREE  [yes] column fixed, gap 12 lines=1
+AGREE  [yes] align center/center lines=1
+AGREE  [yes] align end/end lines=1
+AGREE  [yes] hug both, pad 10 lines=1
+AGREE  [yes] hug: Figma 40px text + 10px pads = 60 lines=1
+AGREE  [yes] two fill share equally lines=1
+AGREE  [yes] fill beside fixed lines=1
+AGREE  [yes] fill with min widths, room for both lines=1
+AGREE  [yes] fill with min widths, min binds lines=1
+AGREE  [yes] fill with max, cascade (spec loop) lines=1
+AGREE  [yes] fill with max, order reversed (Yoga differs) lines=1
+AGREE  [yes] fill with min > max (min wins) lines=1
+AGREE  [yes] fill when fixed overflow lines=1
+AGREE  [yes] fill cross stretch lines=1
+AGREE  [yes] fill cross stretch with max lines=1
+AGREE  [yes] hidden child leaves the flow lines=1
+AGREE  [yes] absolute child leaves the flow lines=1
+AGREE  [yes] zero children, hug lines=0
+AGREE  [yes] zero children, fixed smaller than padding lines=0
+        note: Figma: a frame is never smaller than its padding; CSS border-box lets the box be the padding (40) too, so both give 40: kept as a check
+AGREE  [yes] auto gap between lines=1
+AGREE  [yes] auto gap evenly lines=1
+AGREE  [yes] auto gap around lines=1
+AGREE  [yes] auto gap, one child sits at start lines=1
+AGREE  [yes] auto gap between, overflow: flush, no negative gap lines=1
+AGREE  [yes] auto gap around, overflow lines=1
+        note: CSS falls back to safe center, which on overflow is start (probe-overflow.js); Figma says only that the gap stops at 0
+AGREE  [yes] numeric gap, center, overflow lines=1
+AGREE  [yes] wrap row, gap 10/20 lines=2
+AGREE  [yes] wrap with a long child lines=3
+AGREE  [yes] wrap exact fit stays on line lines=2
+AGREE  [yes] wrap, hidden child does not take a slot lines=2
+AGREE  [yes] wrap fill children with min width lines=2
+AGREE  [yes] wrap fill without min stays one line lines=1
+AGREE  [yes] wrap, tracks centred lines=2
+AGREE  [yes] wrap, tracks spread (between) lines=2
+AGREE  [yes] wrap column lines=2
+DIFFER [no] hug frame with a fill child becomes fixed (hug->fixed w) lines=1
+        frame ours 300x100 css 60x100
+        #1 ours {"x":60,"y":0,"w":240,"h":30} css {"x":60,"y":0,"w":0,"h":30}
+        note: Figma: the frame turns Fixed and the Fill child takes the rest; CSS max-content: the Fill child is 0 wide
+DIFFER [no] hug cross with a stretch child (hug->fixed h) lines=1
+        frame ours 300x100 css 300x30
+        #1 ours {"x":60,"y":0,"w":60,"h":100} css {"x":60,"y":0,"w":60,"h":30}
+        note: Figma: the frame turns Fixed (100); CSS: the line is the tallest other child (30)
+AGREE  [yes] hug with min width larger than content lines=1
+AGREE  [yes] negative gap, last on top lines=1
+        note: CSS gap cannot be negative; the page uses a negative margin instead
+AGREE  [yes] nested hug frame lines=1
+Expected to agree: 39 of 39 agree. Expected to differ: 2 of 2 differ.

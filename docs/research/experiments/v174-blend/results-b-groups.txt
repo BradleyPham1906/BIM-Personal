@@ -1,0 +1,20 @@
+Chromium 153.0.8010.12
+
+1. Group opacity 0.5 over white (children opaque red, green):
+   naive per-child globalAlpha overlap: 127,163,63,255  (W3C chain 128,164,64)
+   isolated offscreen overlap:          126,227,126,255  (W3C group 128,227,128)
+   red only: naive 255,127,127,255 isolated 255,126,126,255
+   over blue, overlap: naive 64,132,63,255 isolated 0,164,126,255
+   pixels differing: {"pixelsDiffering":6000,"of":7200,"maxChannelDiff":64}
+
+2. Children multiply, group normal at opacity 1:
+   pass-through: red only 255,0,0,255 overlap 0,0,0,255 | over blue: red only 0,0,0,255 overlap 0,0,0,255
+   isolated:     red only 255,0,0,255 overlap 0,0,0,255 | over blue: red only 255,0,0,255 overlap 0,0,0,255
+   W3C over blue, pass-through red: 0,0,0; isolated red: 255,0,0 (red multiplied with a transparent initial backdrop is red)
+   pixels differing: {"pixelsDiffering":2400,"of":7200,"maxChannelDiff":255}
+
+3. Isolated group drawn with multiply at opacity 0.5: {"redOnly":[255,127,127,255],"overlap":[127,227,127,255],"greenOnly":[127,227,127,255],"redOnlyBlue":[0,64,127,255],"overlapBlue":[0,114,127,255],"greenOnlyBlue":[0,114,127,255]}
+   W3C over blue, green part: 0,114,128
+
+4. Group invariance (offscreen at opacity 1, normal, vs direct): {"pixelsDiffering":0,"of":7200,"maxChannelDiff":0}
+5. Offscreen drawn at x+0.5: {"edgePixel10":[255,128,128,255],"diff":{"pixelsDiffering":180,"of":7200,"maxChannelDiff":128}}

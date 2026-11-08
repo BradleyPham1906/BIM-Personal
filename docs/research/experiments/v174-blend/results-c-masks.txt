@@ -1,0 +1,65 @@
+Chromium 153.0.8010.12; board 2000 x 1400; 30 timed runs after 3 warm-up; ms per frame incl. a 1-pixel read to flush
+
+default context:
+  none (drawImage only)                      median 2.0  p90 2.1  min 1.8  max 2.2
+  clip() vector path                         median 3.9  p90 4.2  min 2.8  max 4.3
+  alpha mask: destination-in, mask canvas    median 15.4  p90 16.2  min 14.6  max 17.2
+  alpha mask: destination-in, gradient fill  median 23.8  p90 25.4  min 20.5  max 28.6
+  luminance mask: pixels each frame          median 37.3  p90 59.8  min 35.9  max 71.5
+  luminance mask: pixels once, cached        median 15.9  p90 17.3  min 15.2  max 19.0
+  luminance mask: SVG filter each frame      median 33.7  p90 43.8  min 31.7  max 43.9
+  luminance mask, pixels vs SVG filter (mask alpha): [{"at":[0,50],"pixels":0,"filter":0},{"at":[500,50],"pixels":63,"filter":63},{"at":[1000,50],"pixels":127,"filter":127},{"at":[1500,50],"pixels":191,"filter":191},{"at":[1999,50],"pixels":255,"filter":255},{"at":[500,700],"pixels":54,"filter":54}]
+  max alpha difference over the top 4 rows: 0; ctx.filter present: true
+
+willReadFrequently context:
+  none (drawImage only)                      median 2.0  p90 2.2  min 2.0  max 2.3
+  clip() vector path                         median 2.9  p90 3.3  min 2.7  max 3.8
+  alpha mask: destination-in, mask canvas    median 16.2  p90 19.0  min 14.5  max 19.1
+  alpha mask: destination-in, gradient fill  median 22.6  p90 39.4  min 20.0  max 45.1
+  luminance mask: pixels each frame          median 40.0  p90 58.6  min 37.1  max 59.1
+  luminance mask: pixels once, cached        median 16.8  p90 20.3  min 14.9  max 24.6
+  luminance mask: SVG filter each frame      median 41.3  p90 43.3  min 32.1  max 44.0
+
+Anti-aliasing and unbounded operators: {
+ "fill": {
+  "partialPixels": 448,
+  "fullPixels": 11202
+ },
+ "clip": {
+  "partialPixels": 454,
+  "fullPixels": 11202
+ },
+ "maxAlphaDiffFillVsClip": 1,
+ "seamClip": [
+  255,
+  0,
+  0,
+  192
+ ],
+ "seamFill": [
+  255,
+  0,
+  0,
+  192
+ ],
+ "sourceInUnbounded": {
+  "insideShape": [
+   255,
+   0,
+   0,
+   255
+  ],
+  "outsideShapeInsideClip": [
+   0,
+   0,
+   0,
+   0
+  ],
+  "outsideClip": [
+   0,
+   0,
+   255,
+   255
+  ]
+ }
+}
