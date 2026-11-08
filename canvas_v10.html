@@ -190,7 +190,10 @@ body.light-theme .a3d-projhead{border-color:rgba(0,0,0,.1)}
 body.light-theme .a3d-projsub{color:#777}
 /* __acad3dV121: the Layers panel -- the layer tree, and the objects on each layer */
 .a3d-lyp{display:flex;flex-direction:column;min-height:0;padding:6px 6px 14px;font:12px/1.3 Inter,system-ui,sans-serif;color:#c9d1d9}
-.a3d-lyhd{display:flex;align-items:center;justify-content:space-between;padding:4px 4px 6px}
+.a3d-lyhd{display:flex;align-items:center;justify-content:space-between;padding:4px 4px 6px;flex-wrap:wrap;gap:4px}
+.a3d-lyby{display:inline-flex;align-items:center;gap:4px;font-size:11px;color:#9aa7b4}   /* __acad3dV173c */
+.a3d-lyby select{font-size:11px;max-width:120px}
+body.light-theme .a3d-lyby{color:#555}
 .a3d-lyttl{font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#aeb8c2}
 .a3d-lybtns{display:flex;gap:2px}
 .a3d-lyb{width:24px;height:24px;border:0;border-radius:6px;background:transparent;color:#9aa3ad;display:grid;place-items:center;cursor:pointer;padding:0}
@@ -17692,7 +17695,7 @@ try{
       memo[l.id]=r;
       return r;
     }
-    var h='<div class="a3d-lyp"><div class="a3d-lyhd"><span class="a3d-lyttl">Layers</span><span class="a3d-lybtns">'+
+    var h='<div class="a3d-lyp"><div class="a3d-lyhd"><span class="a3d-lyttl">Layers</span>'+bimLyListBySelect()+'<span class="a3d-lybtns">'+   /* __acad3dV173c */
       bimLyBtn('new','New layer',BIM_LY_IC.add)+
       bimLyBtn('sub','New sub-layer under the selected layer',BIM_LY_IC.sub)+
       bimLyBtn('std','New layer with an AIA / NCS standard name',BIM_LY_IC.std)+
@@ -17701,6 +17704,7 @@ try{
       bimLyBtn('lpm','Layer Properties Manager (LAYER)',BIM_LY_IC.lpm)+
       '</span></div><input type="text" class="a3d-lysearch" data-lysearch="1" placeholder="Search layers and objects" value="'+
       bimEsc(A3D_LY.filter||'')+'" aria-label="Search layers and objects"><div class="a3d-lylist" data-lylist="1">';
+    if(bimLyListBy()!=='order')return h+bimLyListByHtml(f)+'</div></div>';   /* __acad3dV173c: by source or by selection */
     function render(l,depth){
       if(seen[l.id]||(f&&!match(l)))return;
       seen[l.id]=1;
@@ -17713,6 +17717,91 @@ try{
     A3D.layers.forEach(function(l){if(!bimLayerParentOk(l))render(l,0);});
     if(f&&!Object.keys(seen).length)h+='<div class="a3d-lyempty">Nothing matches</div>';
     return h+'</div>'+bimLySectionsHtml(f)+'</div>';   /* __acad3dV148: the results and the data, below the layers */
+  }
+
+  /* ================= __acad3dV173c: Layers, listed by drawing order, source or selection =================
+     ArcGIS Pro's Contents pane lists one map's layers by drawing order, by data source and by
+     selection; the rail's Layers tab does the same over the app's own stores (the owner's D1). The
+     kinds draw in a fixed order, which paint sets, and each kind reorders within itself (D2); a data
+     layer's list puts the layer drawn on top at the top, as the results' list does (D3), the stored
+     order kept. The view is the panel's own state: neither saved nor undone. */
+  var BIM_LY_LISTBY=[['order','Drawing order'],['source','Source'],['selection','Selection']];
+  function bimLyListBy(){var v=A3D_LY.listBy;return v==='source'||v==='selection'?v:'order';}
+  function bimLyListBySet(v){
+    A3D_LY.listBy=v==='source'||v==='selection'?v:'order';
+    refreshLayers();
+    return A3D_LY.listBy;
+  }
+  function bimLyListBySelect(){
+    var o='',i;
+    for(i=0;i<BIM_LY_LISTBY.length;i++)o+='<option value="'+BIM_LY_LISTBY[i][0]+'"'+(bimLyListBy()===BIM_LY_LISTBY[i][0]?' selected':'')+'>'+BIM_LY_LISTBY[i][1]+'</option>';
+    return '<label class="a3d-lyby"><span>List by</span><select data-lylistby="1" aria-label="List the layers by">'+o+'</select></label>';
+  }
+  /* the data layers top-first: the last stored draws on top, so it is listed first */
+  function bimDataListTopFirst(){return bimDataList().slice().reverse();}
+  /* a data layer moved to another's place in the list: one undo step, as a result layer's move */
+  function bimDataLayerMove(id,to){
+    var L=bimDataList(),i=-1,j=-1,k,D;
+    for(k=0;k<L.length;k++){if(L[k].id===id)i=k;if(L[k].id===to)j=k;}
+    if(i<0||j<0||i===j)return false;
+    pushUndo();
+    D=L.splice(i,1)[0];L.splice(j,0,D);
+    refreshLayers();refreshProps();paint();saveSoon();
+    return true;
+  }
+  function bimLyGroupHtml(label,n,body){
+    return '<div class="a3d-lysec"><div class="a3d-lysechd"><span class="a3d-lycar"></span><span class="a3d-lystat" aria-hidden="true"></span>'+
+      '<span class="a3d-lynm a3d-lysecttl">'+bimEsc(label)+'</span><span class="a3d-lycnt">'+(n||'')+'</span></div>'+body+'</div>';
+  }
+  /* by source: data layers by the server they come from, result layers by the run that made them,
+     the site analyses with their sources, and the model's own layers */
+  function bimLyBySourceHtml(f){
+    var h='',hosts={},order=[],k,sa=[],ml=0,i,R,rb='',L;
+    function hit(s){return !f||String(s).toLowerCase().indexOf(f)>=0;}
+    bimDataListTopFirst().forEach(function(D){
+      if(!hit(D.name))return;
+      k=bimMapHost(D.url);
+      if(!hosts[k]){hosts[k]={rows:'',n:0,bad:0};order.push(k);}
+      hosts[k].rows+=bimLyDataRowHtml(D);hosts[k].n++;if(D.status&&D.status.error)hosts[k].bad++;
+    });
+    for(i=0;i<order.length;i++)h+=bimLyGroupHtml(order[i]+(hosts[order[i]].bad?' ('+hosts[order[i]].bad+' failed)':''),hosts[order[i]].n,hosts[order[i]].rows);
+    R=bimResLayers();
+    for(i=0;i<R.length;i++)if(hit(R[i].name))rb+=bimLyResRowHtml(R[i]);
+    if(rb)h+=bimLyGroupHtml('Made in the model (Analyze)',R.length,rb);
+    for(i=0;i<A3D.layers.length;i++){
+      L=A3D.layers[i];
+      if(/^Site analysis - /.test(L.name||'')){if(hit(L.name))sa.push(L);}
+      else ml++;
+    }
+    if(sa.length)h+=bimLyGroupHtml('Site analyses (OpenStreetMap and the sources each names)',sa.length,
+      sa.map(function(l){return bimLyRowHtml(l,1,0,0,false,A3D_LY.sel,A3D.activeLayer);}).join(''));
+    h+=bimLyGroupHtml('The model',ml,'<div class="a3d-lyempty a3d-lyhint">'+ml+' layer'+(ml===1?'':'s')+' drawn here, with no outside source: Drawing order lists them</div>');
+    return h;
+  }
+  /* by selection: each layer holding what is selected, with how many */
+  function bimLySelectionCounts(){
+    var ids=(A3D.selSet&&A3D.selSet.length)?A3D.selSet:(A3D.sel?[A3D.sel]:[]),m={},i,o,ly;
+    for(i=0;i<ids.length;i++){o=objById(ids[i]);ly=o?bimLayerOf(o):null;if(ly)m[ly.id]=(m[ly.id]||0)+1;}
+    return m;
+  }
+  function bimLyBySelectionHtml(f){
+    var m=bimLySelectionCounts(),h='',n=0,i,L,s,D;
+    function hit(x){return !f||String(x).toLowerCase().indexOf(f)>=0;}
+    for(i=0;i<A3D.layers.length;i++){
+      L=A3D.layers[i];
+      if(!m[L.id]||!hit(L.name))continue;
+      h+=bimLyRowHtml(L,0,m[L.id],0,false,A3D_LY.sel,A3D.activeLayer);n+=m[L.id];
+    }
+    s=A3D_DATA.sel;D=s?bimDataById(s.layer):null;
+    if(D&&hit(D.name)){h+=bimLyGroupHtml('Data',1,bimLyDataRowHtml(D));n++;}
+    return n?h:'<div class="a3d-lyempty">Nothing is selected: pick objects in the model, or a feature of a data layer</div>';
+  }
+  /* the list under the header for the views other than drawing order */
+  function bimLyListByHtml(f){
+    var v=bimLyListBy();
+    if(v==='source')return bimLyBySourceHtml(f);
+    if(v==='selection')return bimLyBySelectionHtml(f);
+    return '';
   }
   /* ================= __acad3dV148: Analysis and Data, in Layers =================
      A row's key is its section and its id: res:<id> a result layer, data:<id> a data layer. */
@@ -17773,7 +17862,7 @@ try{
   }
   function bimLyDataRowHtml(L){
     var key='data:'+L.id,sel=A3D_LY.rsel===key,hid=!L.visible,n=bimDataFeats(L.id).length,h;
-    h='<div class="a3d-lyres'+(sel?' sel':'')+(hid?' dim':'')+'" data-lyres="'+bimEsc(key)+'" aria-expanded="'+sel+'">'+
+    h='<div class="a3d-lyres'+(sel?' sel':'')+(hid?' dim':'')+'" data-lyres="'+bimEsc(key)+'" draggable="true" aria-expanded="'+sel+'">'+   /* __acad3dV173c: dragged to its place */
       '<span class="a3d-lyramp" style="background:'+bimDataSwatch(L)+'"></span>'+bimLyNameHtml(key,L.name)+   /* __acad3dV173a: its classes */
       (L.status&&L.status.error?'<span class="a3d-lybadge gone" title="'+bimEsc(bimDataStatusText(L))+'">Failed</span>':'')+
       bimLyTgl('lyreson',key,hid,hid?'Show '+L.name:'Hide '+L.name,BIM_LY_IC.off,BIM_LY_IC.on)+'<span class="a3d-lyi a3d-lyspc" aria-hidden="true"></span><span class="a3d-lyi a3d-lyspc" aria-hidden="true"></span>'+'</div>';
@@ -17787,7 +17876,7 @@ try{
     var shut=A3D_LY.secShut||{},rb='',db='';
     function hit(s){return !f||String(s).toLowerCase().indexOf(f)>=0;}
     bimResLayers().forEach(function(R){if(hit(R.name))rb+=bimLyResRowHtml(R);});
-    bimDataList().forEach(function(L){if(hit(L.name))db+=bimLyDataRowHtml(L);});
+    bimDataListTopFirst().forEach(function(L){if(hit(L.name))db+=bimLyDataRowHtml(L);});   /* __acad3dV173c: the top row draws on top (D3) */
     /* __acad3dV158: the group's row, a layer row's columns: caret, status, swatch, name, count, eye */
     function sec(key,label,n,body,empty){
       if(f&&!body)return '';
@@ -17983,6 +18072,7 @@ try{
     panel.addEventListener('change',function(ev){
       var t=ev.target;
       if(inLyp(t)&&t.hasAttribute('data-lycol'))bimLayerSet(t.getAttribute('data-lycol'),'color',t.value);
+      if(inLyp(t)&&t.hasAttribute('data-lylistby'))bimLyListBySet(t.value);   /* __acad3dV173c */
     });
     panel.addEventListener('input',function(ev){
       var t=ev.target;
@@ -18004,7 +18094,7 @@ try{
       var t=ev.target;
       if(!inLyp(t))return;
       var o=t.closest('[data-lyobj]'),l=t.closest('[data-lyid]'),rr=t.closest('[data-lyres]'),rk=rr?bimLyKey(rr.getAttribute('data-lyres')):null;   /* __acad3dV148: a result layer, in its stack */
-      A3D_LY.drag=o?'obj:'+o.getAttribute('data-lyobj'):(l?'layer:'+l.getAttribute('data-lyid'):(rk&&rk.t==='res'?'rl:'+rk.id:null));
+      A3D_LY.drag=o?'obj:'+o.getAttribute('data-lyobj'):(l?'layer:'+l.getAttribute('data-lyid'):(rk&&rk.t==='res'?'rl:'+rk.id:(rk&&rk.t==='data'?'dl:'+rk.id:null)));   /* __acad3dV173c: a data layer too */
       if(A3D_LY.drag){
         try{ev.dataTransfer.setData('text/plain',A3D_LY.drag);ev.dataTransfer.effectAllowed='move';}
         catch(eD){console.warn('[BIM] The drag could not carry its data',eD);}
@@ -18014,6 +18104,7 @@ try{
       var t=ev.target;
       if(A3D_LY.drag&&inLyp(t)&&(t.closest('[data-lyid]')||t.closest('[data-lylist]')))ev.preventDefault();
       else if(A3D_LY.drag&&A3D_LY.drag.indexOf('rl:')===0&&inLyp(t)&&t.closest('[data-lyres^="res:"]'))ev.preventDefault();
+      else if(A3D_LY.drag&&A3D_LY.drag.indexOf('dl:')===0&&inLyp(t)&&t.closest('[data-lyres^="data:"]'))ev.preventDefault();   /* __acad3dV173c */
     });
     panel.addEventListener('drop',function(ev){
       var t=ev.target,v=A3D_LY.drag;
@@ -18023,7 +18114,8 @@ try{
       var row=t.closest('[data-lyid]'),tgt=row?row.getAttribute('data-lyid'):null;
       try{
         var rt=t.closest('[data-lyres]'),rtk=rt?bimLyKey(rt.getAttribute('data-lyres')):null;
-        if(v.indexOf('rl:')===0){if(rtk&&rtk.t==='res')bimResultLayerMove(v.slice(3),rtk.id);}   /* __acad3dV148: onto a row, to its place */
+        if(v.indexOf('rl:')===0){if(rtk&&rtk.t==='res')bimResultLayerMove(v.slice(3),rtk.id);}
+        else if(v.indexOf('dl:')===0){if(rtk&&rtk.t==='data')bimDataLayerMove(v.slice(3),rtk.id);}   /* __acad3dV173c */   /* __acad3dV148: onto a row, to its place */
         else if(v.indexOf('obj:')===0){if(tgt)bimObjSetLayer(v.slice(4),tgt);}
         else if(v.indexOf('layer:')===0&&v.slice(6)!==tgt){
           if(tgt)A3D_LY.open[tgt]=true;
@@ -62014,6 +62106,10 @@ try{
   window.__a3dDataLabelText=function(spec,props){return bimDataLabelText(spec,props);};
   window.__a3dPolyLabel=function(rings,precision){return bimPolyLabel(rings,precision);};
   window.__a3dDataLabelsDrawn=function(){return A3D.lastDataLabels||0;};
+  /* __acad3dV173c: Layers listed by drawing order, source or selection; a data layer moved */
+  window.__a3dLayersListBy=function(v){return v===undefined?bimLyListBy():bimLyListBySet(v);};
+  window.__a3dLayersPanelHtml=function(){return bimLayersPanelHtml();};
+  window.__a3dDataLayerMove=function(id,to){return bimDataLayerMove(id,to);};
   window.__a3dLensCommand=function(){return bimLensCommand();};
   window.__a3dTestLegendOnPaper=function(){var s=A3D.sheetCapture;A3D.sheetCapture=true;try{drawLensLegend(el.ctx,null,0,0);}finally{A3D.sheetCapture=s;}return A3D.lastLensLegend;};
   window.__a3dTestLevelName=function(id,n){var i;for(i=0;i<A3D.levels.length;i++)if(A3D.levels[i].id===id){A3D.levels[i].name=n;A3D_LENS.cur=null;return true;}return false;};

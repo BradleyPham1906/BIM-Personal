@@ -13,6 +13,8 @@ import {
 import { bimTrueNorthDeg } from '../survey/survey-arithmetic.js';
 import { bimImportSurvey } from '../site/alignment-profile.js';
 import { bimLayerById } from '../layers/layer-rules.js';
+import { bimLayersPanelHtml } from '../layers/layers-panel.js';
+import { bimDataLayerMove, bimLyListBy, bimLyListBySet } from '../layers/list-by.js';
 import { bimLySecHidden, bimLySecVisible } from '../layers/analysis-data-rows.js';
 import { bimUsageAdd, bimUsageAssign, bimUsageRemove } from '../properties/usages.js';
 import { A3D_STD_UI, bimStdCommand, bimStdPackLook } from '../properties/site-standards.js';
@@ -231,6 +233,10 @@ import { BIM_CMD_MAP, BIM_SHEET_CMDS, BIM_START_CMDS } from '../commands/command
   window.__a3dDataLabelText=function(spec,props){return bimDataLabelText(spec,props);};
   window.__a3dPolyLabel=function(rings,precision){return bimPolyLabel(rings,precision);};
   window.__a3dDataLabelsDrawn=function(){return A3D.lastDataLabels||0;};
+  /* __acad3dV173c: Layers listed by drawing order, source or selection; a data layer moved */
+  window.__a3dLayersListBy=function(v){return v===undefined?bimLyListBy():bimLyListBySet(v);};
+  window.__a3dLayersPanelHtml=function(){return bimLayersPanelHtml();};
+  window.__a3dDataLayerMove=function(id,to){return bimDataLayerMove(id,to);};
   window.__a3dLensCommand=function(){return bimLensCommand();};
   window.__a3dTestLegendOnPaper=function(){var s=A3D.sheetCapture;A3D.sheetCapture=true;try{drawLensLegend(el.ctx,null,0,0);}finally{A3D.sheetCapture=s;}return A3D.lastLensLegend;};
   window.__a3dTestLevelName=function(id,n){var i;for(i=0;i<A3D.levels.length;i++)if(A3D.levels[i].id===id){A3D.levels[i].name=n;A3D_LENS.cur=null;return true;}return false;};
