@@ -30,8 +30,9 @@ from playwright.async_api import async_playwright
 HTML = pathlib.Path(sys.argv[1]).resolve() if len(sys.argv) > 1 else \
     pathlib.Path(__file__).resolve().parents[2] / 'canvas_v10.html'
 
+# AMENDED FOR V174a: Blend beside Transparency (the owner's R2, docs/research/research-presentation-boards.md 11a)
 HEADERS = ['Status', 'Name', 'On', 'Freeze', 'Lock', 'Plot', 'Color', 'Linetype', 'Lineweight',
-           'Transparency', 'Objects', 'Description']
+           'Transparency', 'Blend', 'Objects', 'Description']
 ACADISO = {'DASHED': [12.7, -6.35], 'HIDDEN': [6.35, -3.175], 'CENTER': [31.75, -6.35, 6.35, -6.35],
            'PHANTOM': [31.75, -6.35, 6.35, -6.35, 6.35, -6.35], 'DOT': [0, -6.35],
            'DASHDOT': [12.7, -6.35, 0, -6.35], 'BORDER': [12.7, -6.35, 12.7, -6.35, 0, -6.35],

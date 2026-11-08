@@ -6,6 +6,9 @@ import { BIM_LB_FIGS } from '../ladybug/figures.js';
 import { bimProjectLabel } from '../ui/project-tabs.js';
 import { bimBoardById, bimBoardHtmlFor, bimBoardName } from './boards.js';
 import { bimBrdWorking } from './board-edit.js';
+import { bimBobLayValid, bimBobValid } from './board-objects.js';
+import { bimPgBoardPage, bimPgValid } from './page-sizes.js';
+import { bimBdsHtml } from './board-design.js';
 
   /* ================= __acad3dV172b: a board's figures, arranged =================
      docs/research/research-ladybug-weather-comfort.md, 13. Every figure the boards draw has a name of its own
@@ -98,6 +101,9 @@ import { bimBrdWorking } from './board-edit.js';
       r.name=(b&&typeof b.name==='string'&&b.name.replace(/\s+/g,''))?b.name.replace(/\s+/g,' ').trim().slice(0,80):'Board';
       if(!r.figs)r.figs=[];
     }
+    if(r.figs&&b&&Array.isArray(b.objs)){var T=bimBobValid(b.objs,r.figs);if(T)r.objs=T;}   /* __acad3dV174a: its objects, on the layers, when it has any */
+    if(r.objs&&b){var Ly=bimBobLayValid(b.lay);if(Ly)r.lay=Ly;}   /* __acad3dV174b: its stacks */
+    if(r.objs&&b){var Pg=bimPgValid(b.page);if(Pg)r.page=Pg;else if(b.pageOff===true)r.pageOff=true;}   /* __acad3dV174c: its page, or none by choice */
     return r;
   }
   /* ---- the figures, read from the boards ---- */
@@ -179,6 +185,7 @@ import { bimBrdWorking } from './board-edit.js';
   }
   /* the arranged figures: bands of absolutely placed figures, 1408 px across */
   function bimBrdArrHtml(figs,ctx){
+    if(ctx.B&&ctx.B.objs)return bimBdsHtml(ctx.B,figs,ctx);   /* __acad3dV174a: a board with objects on the layers */
     var bands=bimBrdBands(figs),P=BIM_BRD_P0,G=BIM_BRD_G,ov=ctx.edit?bimBrdOverlaps(figs):{k:{}},prev=null,h,bot=0;
     figs.forEach(function(f){if(f.y+f.h>bot)bot=f.y+f.h;});
     h='<section class="a3d-clb-arr'+(ctx.edit?' edit':'')+'" aria-label="Figures"'+(ctx.edit?' style="padding-bottom:'+bimBrdPx(2*P)+'px"':'')+'>';
@@ -194,12 +201,14 @@ import { bimBrdWorking } from './board-edit.js';
   }
   var BIM_BRD_GRIP='<svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="5.5" cy="3.5" r="1.3"/><circle cx="10.5" cy="3.5" r="1.3"/><circle cx="5.5" cy="8" r="1.3"/><circle cx="10.5" cy="8" r="1.3"/><circle cx="5.5" cy="12.5" r="1.3"/><circle cx="10.5" cy="12.5" r="1.3"/></svg>';
   var BIM_BRD_MORE='<svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="3.5" cy="8" r="1.4"/><circle cx="8" cy="8" r="1.4"/><circle cx="12.5" cy="8" r="1.4"/></svg>';
-  function bimBrdFigHtml(F,ctx,top,over){
+  /* ext (__acad3dV174a, a figure in a board's tree): {dx px, num: its number, cls, attr, style} */
+  function bimBrdFigHtml(F,ctx,top,over,ext){
     var P=BIM_BRD_P0,G=BIM_BRD_G,o=F.o||{},src=F.f==='text'?null:bimFigSrc(ctx,F.f,o),no=0,E=bimFigEntry(F.f),lab;
-    if(src&&!src.kpis){ctx.no++;no=ctx.no;}
+    if(ext)no=ext.num||0;
+    else if(src&&!src.kpis){ctx.no++;no=ctx.no;}
     lab=no?'Fig. '+no:(F.f==='text'?'Heading':(E?E.name:'Figure'));
-    var cls='a3d-clb-fig'+(o.show==='table'?' o-table':o.show==='both'?' o-both':'')+(over?' over':'')+(F.f==='text'?' t':'');
-    var s='<div class="'+cls+'" data-brdk="'+F.k+'" data-brdf="'+bimClbE(F.f)+'" style="left:'+bimBrdPx(F.x*P)+'px;top:'+bimBrdPx((F.y-top)*P)+'px;width:'+bimBrdPx(F.w*P-G)+'px;height:'+bimBrdPx(F.h*P-G)+'px"'+
+    var cls='a3d-clb-fig'+(o.show==='table'?' o-table':o.show==='both'?' o-both':'')+(over?' over':'')+(F.f==='text'?' t':'')+(ext?ext.cls||'':'');
+    var s='<div class="'+cls+'" data-brdk="'+F.k+'" data-brdf="'+bimClbE(F.f)+'"'+(ext?ext.attr||'':'')+' style="left:'+bimBrdPx(F.x*P+(ext?ext.dx||0:0))+'px;top:'+bimBrdPx((F.y-top)*P)+'px;width:'+bimBrdPx(F.w*P-G)+'px;height:'+bimBrdPx(F.h*P-G)+'px'+(ext?';--l:'+bimBrdPx(F.x*P+(ext.dx||0))+'px;--t:'+bimBrdPx((F.y-top)*P)+'px;--w:'+bimBrdPx(F.w*P-G)+'px;--h:'+bimBrdPx(F.h*P-G)+'px'+(ext.style?';'+ext.style:''):'')+'"'+
       (ctx.edit?' tabindex="0" role="group" aria-label="'+bimClbE(lab)+': arrow keys move it, Shift and the arrow keys size it, Delete removes it"':'')+'>'+bimFigCardHtml(F,src,no);
     if(ctx.edit)s+='<div class="a3d-clb-fctl"><button type="button" class="a3d-clb-grip" data-brdgrip="1" aria-label="Move '+bimClbE(lab)+'" title="Drag to move">'+BIM_BRD_GRIP+'</button>'+
       '<button type="button" class="a3d-clb-fmenu" data-brdmenu="1" aria-label="'+bimClbE(lab)+': its menu" aria-haspopup="menu" title="Options, duplicate, remove">'+BIM_BRD_MORE+'</button></div>'+
@@ -259,6 +268,8 @@ import { bimBrdWorking } from './board-edit.js';
     return '<div class="a3d-clb-bar a3d-clb-ebar"><div class="a3d-clb-bart">Editing '+bimClbE(bimBoardLabel(B))+'</div>'+
       (c?'<input type="text" class="a3d-clb-name" data-brdname="1" maxlength="80" value="'+bimClbE(B.name||'')+'" aria-label="The board\'s name">':'')+
       '<button type="button" class="a3d-clb-btn" data-brd="add" aria-haspopup="dialog">Add a figure</button>'+
+      '<button type="button" class="a3d-clb-btn" data-brd="draw" aria-haspopup="menu" title="Draw a shape, text or an image on the current layer">Draw</button>'+   /* __acad3dV174a */
+      '<button type="button" class="a3d-clb-btn" data-brd="page" aria-haspopup="dialog" title="The board\'s page: a size from the gallery, and a title block">Page</button>'+   /* __acad3dV174c */
       (!c&&B.figs?'<button type="button" class="a3d-clb-btn" data-brd="reset" title="The board\'s own figures, in their own places">Reset</button>':'')+
       '<span class="a3d-clb-snaps a3d-clb-hide-s" role="group" aria-label="Snaps, as in drawing">'+
         '<button type="button" class="a3d-clb-btn" data-brdsnap="point" aria-pressed="'+!!A3D_SNAP.point+'" title="Edges catch other figures\' edges (F3)">Snap</button>'+
@@ -276,7 +287,7 @@ import { bimBrdWorking } from './board-edit.js';
   /* one of the three boards with its list: its header and indicators as ever, the list where its grid was;
      its own figures that came after the list was made (new data) follow, as the board lays them out */
   function bimBrdBuiltinHtml(B,figs,edit){
-    var ctx={edit:edit,narrow:A3D_CLB.narrow,caps:{},no:0},i,j,mid,own,raw,extra=[],off=B.off||[],have={};
+    var ctx={edit:edit,narrow:A3D_CLB.narrow,caps:{},no:0,B:B},i,j,mid,own,raw,extra=[],off=B.off||[],have={};
     ctx.caps[B.kind]=bimFigCapture(B.kind,A3D_CLB.narrow);
     own=ctx.caps[B.kind];raw=own.html;   /* the board as it is drawn, read once: its page, and its cards */
     figs.forEach(function(F){have[F.f]=1;});
@@ -291,6 +302,7 @@ import { bimBrdWorking } from './board-edit.js';
     if(extra.length)mid+=(edit?'<p class="a3d-clb-ehint">New since the board was arranged: Place puts a figure below the others.</p>':'')+
       '<section class="a3d-clb-grid a3d-clb-extra">'+extra.join('')+'</section>';
     if(edit)mid=bimBrdEditHint(figs)+mid;
+    if(B.objs&&bimPgBoardPage(B))raw=raw.replace('<div class="a3d-clb-page">','<div class="a3d-clb-page pgd">');   /* __acad3dV174c: a board with a page prints its page */
     i=raw.indexOf('<section class="a3d-clb-grid"');
     if(i>=0){
       j=raw.indexOf('</section><footer class="a3d-clb-notes">',i);
@@ -303,10 +315,10 @@ import { bimBrdWorking } from './board-edit.js';
   }
   /* a board of one's own: its name, its list, and the notes of the boards its figures come from */
   function bimBrdCustomHtml(B,edit){
-    var ctx={edit:edit,narrow:A3D_CLB.narrow,caps:{},no:0},figs=B.figs||[],kinds=[],h,notes='',lb=false;
+    var ctx={edit:edit,narrow:A3D_CLB.narrow,caps:{},no:0,B:B},figs=B.figs||[],has=figs.length||(B.objs&&B.objs.length),kinds=[],h,notes='',lb=false;
     var site=(A3D.site&&A3D.site.name&&A3D.site.name!=='Site')?A3D.site.name:(bimProjectLabel()||'The site');
     figs.forEach(function(F){var E=bimFigEntry(F.f);if(E&&E.kind&&kinds.indexOf(E.kind)<0)kinds.push(E.kind);if(/^lb\./.test(F.f))lb=true;});
-    var arr=figs.length?bimBrdArrHtml(figs,ctx):'';
+    var arr=has?bimBrdArrHtml(figs,ctx):'';
     kinds.forEach(function(k){
       var N=ctx.caps[k]&&ctx.caps[k].notes,a,b;
       if(!N)return;
@@ -319,10 +331,10 @@ import { bimBrdWorking } from './board-edit.js';
       '<button type="button" class="a3d-clb-btn" data-clb="tables" aria-pressed="'+A3D_CLB.tables+'">Tables</button>'+
       '<button type="button" class="a3d-clb-btn a3d-clb-hide-s" data-clb="print">Print</button>'+
       '<button type="button" class="a3d-clb-btn" data-clb="close" aria-label="Close the board">Close</button></div>'+
-      '<div class="a3d-clb-page"><header><div class="a3d-clb-kicker">Board · '+bimClbE(site)+'</div><h1 class="a3d-clb-h1">'+bimClbE(B.name||'Board')+'</h1>'+
-      '<p class="a3d-clb-sub">'+bimClbE(figs.length?(ctx.no+' figure'+(ctx.no===1?'':'s')+(kinds.length?' from '+kinds.map(function(k){return bimBoardName(k);}).join(', '):'')):'No figures yet')+'</p></header>'+
+      '<div class="a3d-clb-page'+(B.objs&&bimPgBoardPage(B)?' pgd':'')+'"><header><div class="a3d-clb-kicker">Board · '+bimClbE(site)+'</div><h1 class="a3d-clb-h1">'+bimClbE(B.name||'Board')+'</h1>'+
+      '<p class="a3d-clb-sub">'+bimClbE(figs.length?(ctx.no+' figure'+(ctx.no===1?'':'s')+(kinds.length?' from '+kinds.map(function(k){return bimBoardName(k);}).join(', '):'')):(has?'A designed board':'No figures yet'))+'</p></header>'+
       (edit?bimBrdEditHint(figs):'')+
-      (figs.length?arr:'<div class="a3d-clb-empty">This board has no figures yet. '+(edit?'Add a figure puts the first one on it.':'Edit, then Add a figure: any analysis the project has, from any board.')+
+      (has?arr:'<div class="a3d-clb-empty">This board has no figures yet. '+(edit?'Add a figure puts the first one on it.':'Edit, then Add a figure: any analysis the project has, from any board.')+
         (A3D_CLB.other?'':'<div style="margin-top:12px"><button type="button" class="a3d-clb-btn pri" data-brd="addnew">Add a figure</button></div>')+'</div>')+
       (notes?'<footer class="a3d-clb-notes"><h3>Method and sources</h3>'+notes+'</footer>':'')+'</div>';
     return bimBrdBar(h,B,edit);
@@ -335,7 +347,7 @@ import { bimBrdWorking } from './board-edit.js';
       if(!p)continue;
       cs=(p.ownerDocument.defaultView||window).getComputedStyle(p);
       w=p.clientWidth-(parseFloat(cs.paddingLeft)||0)-(parseFloat(cs.paddingRight)||0);
-      z=w>0?Math.min(1,w/BIM_BRD_W0):1;
+      z=w>0?Math.min(1,w/(parseFloat(A[i].getAttribute('data-w'))||BIM_BRD_W0)):1;   /* __acad3dV174c: a board's page, at its own width */
       A[i].style.setProperty('--z',z.toFixed(5));
     }
   }
@@ -383,7 +395,7 @@ import { bimBrdWorking } from './board-edit.js';
   }
 export {
   BIM_BRD_G, BIM_BRD_P0, bimBoardKey, bimBoardKeyLabel, bimBoardLabel, bimBrdBands, bimBrdEditing,
-  bimBrdFigsValid, bimBrdHtml, bimBrdKeep, bimBrdMeasureDefault, bimBrdNatH, bimBrdOpts, bimBrdPx, bimBrdRec,
-  bimBrdZoom, bimClbLabel, bimClbWhich, bimFigCapCard, bimFigCapKpis, bimFigCapture, bimFigCardHtml,
-  bimFigCat, bimFigEntry, bimFigHint, bimFigSpan, bimFigSrc
+  bimBrdFigHtml, bimBrdFigsValid, bimBrdHtml, bimBrdKeep, bimBrdMeasureDefault, bimBrdNatH, bimBrdOpts,
+  bimBrdOverlaps, bimBrdPx, bimBrdRec, bimBrdZoom, bimClbLabel, bimClbWhich, bimFigCapCard, bimFigCapKpis,
+  bimFigCapture, bimFigCardHtml, bimFigCat, bimFigEntry, bimFigHint, bimFigSpan, bimFigSrc
 };

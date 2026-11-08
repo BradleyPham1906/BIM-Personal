@@ -16611,3 +16611,105 @@ here: installing from a real browser's menu, iOS and the shell in standalone (pa
 
     canvas_v10.html   4005368 bytes
     sha256            2e405746f48c53be6c22dadcdbe869bddf081213a43a8f9760858590b7533ffa
+
+### V174a: Presentation P1, a board's objects on the one layer table (2026-11-08)
+
+Research: `docs/research/research-presentation-boards.md`; the owner's D1 to D20, then 11a (R1 to R4). Branch
+`v174a-tree`, PR #82.
+
+- **First build, rejected.** A Figma-like element tree per board (frames, groups, Pass through) with its own floating
+  layers and properties panel. Its browser check passed (24 of 24), and the owner rejected the design: "everything
+  should be one just like autocad layer system. do not ever create separate system like that." The tree, the
+  groups and frames, the panel and its tests were removed; what that build had proved was kept: HTML and SVG
+  shapes (a level line's box padded, since an SVG of no height is not painted), the image store, the mask CSS,
+  images loaded before printing, the white isolated canvas, millimetres as printed, the board's keys in `bimClbKey`.
+- **Board objects** (`sheets/board-objects.js`): `B.objs`, paper-space objects as in AutoCAD's layouts, each on a
+  layer of `A3D.layers` (`layer`; none: layer 0). Kinds: rect, ellipse, line (arrows), poly, star, text, image, and
+  `fig` (a V172b figure; its place stays in its columns, so an old board looks as it did, D19). `tr` and `bm` are
+  ByLayer when absent (R2). `bimBobSync` keeps the list and the figures agreeing (in `bimBrdKeep` and
+  `bimBrdCommit`). The list is made at the first drawing on a board.
+- **Paint order** (R3): `bimBobPaint`, the layer tree (`bimLayerTree`) read from the bottom up, so a layer higher in
+  the Layers list is drawn over those below and a parent's objects over its sub-layers'; within a layer, the list's
+  order (Draw order). Boards only: the model's plan and 3D views are not reordered by it.
+- **Masks** (R4): a mask clips the objects of its own layer drawn above it, to that layer's next mask
+  (`bimBobRuns`); vector by clip-path, alpha and luminance by mask-image. Applied in both appearances.
+- **Drawing** (`sheets/board-design.js`): a layer off or frozen hides its objects; a no-plot layer's objects leave
+  paper (`bimBoardPrintHtml` builds the board in `bimWithPlotPass`); a locked layer's fade in Edit. Transparency and
+  Blend per object, in the Presentation appearance and in Present only (`bimPresentGraphics`, `A3D_SLIDESHOW`), as
+  layer transparency is drawn today; nothing is composited as a group.
+- **The layer table** (`layers/`): `blend` on a layer (`bimLayerSet`, read tolerantly by `bimLayerBlend`; new layers
+  take their source's), a Blend column in the Layer Properties Manager; `bimLayerMove` and `bimLayerStep`, with Up
+  and Down in the Layers tab and the manager, and a drop on a row's top or bottom third moving a layer before or
+  after it (the middle third still makes it a sub-layer); layer 0 found by its id (`bimLayerZero`), so the order is
+  free; Delete Layer counts every board's objects (`bimBobOnLayer`); a layer change redraws the open board.
+- **Editing** (`sheets/board-design-edit.js`, `sheets/board-design-props.js`): the board's Draw menu (on the current
+  layer); click, Shift or Ctrl to select; drag, the corner handle, the arrows; Delete, Ctrl+D, Ctrl+] and Ctrl+[.
+  The selection's properties in the Properties panel (`refreshProps`: Layer, Transparency and Blend ByLayer or set,
+  the box in mm, mask, fill and stroke, text, image; Draw order); its rows under their layers in the Layers tab
+  (`data-lybo`). The model's selection is let go when a board object is selected, and the reverse.
+- Not in V174a: rotation, image crop, text as a mask. Open, for V174c: a designed board prints as one tall layer, so
+  a figure across an A3 page break is cut (measured in the first build's check).
+- Checks: `node --check` on each changed file, `npm run modules`, the build, `npm run check`, `npm test` 83 of 83
+  (15 new in `tests/unit/board-objects.test.mjs`). `bimLayerSet` and `bimLayerMove` redraw the Layers tab, which the
+  unit tests' stand-in browser cannot (`refreshLayers` runs out of memory there, on main too): their refusals are
+  unit-tested; their changes are checked in the browser (below).
+
+### V174b to V174d: arranging, pages, map frames (2026-11-08)
+
+The owner: "just try to wrap up this whole v174 thing then we do the test". One branch and PR (#82) for the four
+parts, not one PR each (D20), because #82 is not merged and the owner's rule is no stacked PRs.
+
+- **V174b** (`sheets/board-arrange.js`, ported from the research's own experiments `v174-layout/align.js`,
+  `spacing-snap.js` and `autolayout.js`, which were measured against Chromium; `sheets/board-design-tools.js`):
+  - Align (six edges; one object to the page), Distribute (three or more: the least left and greatest right edges
+    stay, D9), Tidy up (the most common gap), in Properties' Arrange group.
+  - Smart spacing while dragging: edges, centres and equal gaps of the other shown objects and the page, at the
+    drawing's 12 px (D10), with Snap (F3); Grid rounds to whole mm otherwise; Ortho as before. Guides drawn.
+  - A layer's stack on a board (R4: the sub-layer is the group): `B.lay[layer id]` = row, column or wrap, gap or
+    Auto, padding, main and cross alignment, Hug or Fixed width and height, its corner. Each object Fixed, Fill
+    width, Fill height, Fill both, or out of the stack. Applied in `bimBdeCommit`, so every change re-lays it; an
+    object dropped in its stack takes the place it was dropped at. On a phone a row is shown as a column (D11).
+  - Not built (D7 in part): an object's min and max, Hug children, nested stacks (a parent layer's stack does not
+    take its sub-layers' objects); a stack moves through its corner fields, not by dragging its box.
+- **V174c** (`sheets/page-sizes.js`; the registry):
+  - `paper.iso216` (ISO 216:2007, P), `paper.ansi` (ASME Y14.1-2020, S), `paper.arch` (S), `drawing.iso5457`
+    (ISO 5457:1999, P: margins 20 and 10 mm, frame 0.7 mm), `drawing.iso7200` (ISO 7200:2004, P: 180 mm).
+  - The gallery (ISO A0 to A4, ANSI A to E, Arch A to E1; landscape or portrait; D13) in New Sheet, in place of
+    the size list, and in a board's Page. A gallery size the sheets already know keeps its V116 key (`ANSI-B-L`,
+    and Arch D as `ANSI-D-L`); another is `pg:<key>:<o>`. The old `ANSI-D` sizes are labelled Arch D (D12).
+  - A board with a page (`B.page`) is that page: drawn at its size on screen, printed on its own `@page` size with
+    no margin, its header off paper and its notes (credits) on the next page. This answers the tall-board print
+    problem for a board with a page.
+  - Title blocks as objects: ISO 5457's frame and ISO 7200's block at the bottom right (its eight mandatory
+    fields), or a US frame and right-hand strip (D14). Number and date of issue kept on the block and editable;
+    A0 to A3 portrait or A4 landscape is said to be outside ISO 5457.
+- **V174d** (`sheets/board-map.js`):
+  - Map frame: a plan, elevation or saved flat view at a scale (the sheets' scales, or 1, 2, 2.5, 5 times a power
+    of ten), panned; drawn by `bimRenderSourceToCanvas` at twice the page's pixels, cached by the board, the frame,
+    the model's revision and the tiles loaded; Fit centres it. Inside a frame the shown data layers and the basemap
+    are drawn on paper (`A3D.mapFrame`, D18), and the frame's corner credits the basemap and the data, always.
+  - Legend (the shown data layers, their classes, and result layers; their credits; left off paper when empty,
+    D17), north arrow (true or plan north through the frame's camera, as `drawNorthArrow`, plus an offset for
+    declination; none in an elevation, D16), scale bar (1-2-5, two divisions in 15 to 40 per cent of the frame, m to
+    km, ft to mi, D15), each bound to a frame.
+  - Not built: a frame's own rotation (4.6), the legend's extent filter (D17 says off).
+- Checks: `node --check`, `npm run modules`, the build, `npm run check`, `npm test` 96 of 96 (13 new in
+  `tests/unit/board-tools.test.mjs`).
+- **Browser check** (the owner's "then we do the test"): headless Edge over http, through the DevTools protocol,
+  `tests/e2e/bim_phase174_boards_edge_check.mjs`, a fresh profile: 27 of 27, no console errors, no [BIM] warnings.
+  It found and fixed: a map frame not centred on the model (Fit now pans to its centre). A map frame draws in about
+  30 ms; a board with one redraws in about 10 ms.
+- **Phone pass** (390 x 844, touch, `tests/e2e/bim_phase174_boards_phone_check.mjs`): 7 of 7. It found and fixed: the
+  selection's outline and a stack's box drawn where the desktop layout puts them, not the phone's column.
+- After the review: the phase marker `window.__acad3dV174`; the Layers tab finds the board's objects by layer once
+  per render (it copied the board once per layer row); the toast names the layer an object was drawn on; ES5 checked
+  by grep over the new files (no arrow functions, let, const, template strings, includes, spread).
+- **A board one draws on is a page** (the owner, 2026-11-08: "do what best. i need it to behave like a combo of cad
+  and tools from figma, canva and stuffs"). Figma's frames, Canva's designs and CAD's layouts each have a size, so the
+  first drawing on a board gives it the smallest standard page, landscape, that holds what is on it with a 10 mm
+  margin (`bimPgFit`: ISO A4 to A0, or ANSI B to E in an imperial project), and a toast says which. Page's
+  **No page** stays a choice (`B.pageOff`), and the app then leaves it so. This answers the open print question: a
+  designed board prints as its page. Unit test added (97 of 97); browser 27 of 27, phone 8 of 8.
+- **Suites amended:** V121 (the manager's columns, with Blend), V167's reference (`tests/fixtures/standards_reference.py`:
+  the five topics and their hosts). Not run: the full regression. Suites that may notice: V116 (New Sheet now a
+  gallery; its Sheet Setup list is unchanged), V162 and V172b (board printing: unchanged for a board without a page).

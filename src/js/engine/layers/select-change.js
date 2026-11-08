@@ -1,13 +1,16 @@
 import { A3D, el } from '../core/state.js';
 import { pushUndo } from '../drawing/plan-mode-sketch.js';
 import {
-  bimLayerById, bimLayerChain, bimLayerEff, bimLayerOf, bimLayerPickable, bimLayerSelectable, bimLayerShown,
-  bimObjLayerState
+  bimLayerBlend, bimLayerById, bimLayerChain, bimLayerEff, bimLayerOf, bimLayerPickable, bimLayerSelectable,
+  bimLayerShown, bimLayerZero, bimObjLayerState
 } from './layer-rules.js';
+import { bimLayerKids, bimLayerParentOk } from './layers-panel.js';
 import { refreshLayers } from './analysis-data-rows.js';
+import { A3D_CLB, bimClbOpen } from '../site-analysis/climate-board.js';
 import { refreshProps } from '../site-analysis/panel.js';
 import { paint } from '../map/terrain-3d.js';
 import { saveSoon } from '../bim/region-regenerate.js';
+import { bimBobBlend, bimBobOnLayer } from '../sheets/board-objects.js';
 import { refreshTree } from '../sheets/presentation-panel.js';
 import { closeDlg, ric } from '../ui/touch-input.js';
 import { a3dToast, objById } from '../bim/csg-booleans.js';
@@ -159,6 +162,34 @@ import { a3dToast, objById } from '../bim/csg-booleans.js';
   function bimLayerChanged(){
     bimLayerDropUnpickable();
     refreshLayers();refreshTree();paint();saveSoon();
+    if(A3D_CLB.open)bimClbOpen();   /* __acad3dV174a: a board's objects are on the layers too */
+  }
+  /* __acad3dV174a: a layer to another place in the list (R3: the list's order is a board's paint order). where:
+     'before' or 'after' the target, as its sibling (it takes the target's parent); one undo step */
+  function bimLayerMove(id,tgtId,where){
+    var ly=bimLayerById(id),tg=bimLayerById(tgtId),cur=bimLayerById(A3D.activeLayer),par,P,i,j;
+    if(!ly||!tg)return bimLayerRefuse('That layer no longer exists');
+    if(ly===tg)return true;
+    P=bimLayerParentOk(tg);par=P?P.id:null;
+    if(P&&bimLayerUnder(P,ly.id))return bimLayerRefuse('A layer cannot go under itself or one of its own sub-layers');
+    if(P&&cur&&bimLayerUnder(cur,ly.id)&&bimLayerEff(P).frozen)return bimLayerRefuse('The current layer cannot go under a frozen layer');
+    pushUndo();
+    i=A3D.layers.indexOf(ly);A3D.layers.splice(i,1);
+    j=A3D.layers.indexOf(tg);
+    A3D.layers.splice(where==='after'?j+1:j,0,ly);
+    ly.parent=par;
+    bimLayerChanged();
+    return true;
+  }
+  /* one place up (-1) or down (+1) among its siblings, for a finger or a key */
+  function bimLayerStep(id,d){
+    var ly=bimLayerById(id),P,sib,k;
+    if(!ly)return false;
+    P=bimLayerParentOk(ly);
+    sib=P?bimLayerKids(P):A3D.layers.filter(function(l){return !bimLayerParentOk(l);});
+    k=sib.indexOf(ly);
+    if(k<0||k+d<0||k+d>=sib.length)return false;
+    return bimLayerMove(id,sib[k+d].id,d<0?'before':'after');
   }
   function bimLayerRefuse(msg){
     a3dToast(msg);
@@ -194,6 +225,9 @@ import { a3dToast, objById } from '../bim/csg-booleans.js';
     }else if(field==='transparency'){
       v=Math.round(+val);
       if(!isFinite(v)||v<0||v>90)return bimLayerRefuse('Transparency is 0 to 90');
+    }else if(field==='blend'){   /* __acad3dV174a: R2, the W3C 16 under Figma's names */
+      v=String(val||'normal');
+      if(!bimBobBlend(v))return bimLayerRefuse('Unknown blend mode: '+val);
     }else if(field==='description'){
       v=String(val==null?'':val).slice(0,200);
     }else if(field==='parent'){
@@ -216,6 +250,7 @@ import { a3dToast, objById } from '../bim/csg-booleans.js';
     else if(field==='lineweight'||field==='parent')was=(ly[field]===undefined)?null:ly[field];
     else if(field==='linetype')was=(bimLinetypeDef(ly.linetype)||BIM_LINETYPES[0]).name;
     else if(field==='transparency')was=isFinite(ly.transparency)?+ly.transparency:0;
+    else if(field==='blend')was=bimLayerBlend(ly);
     else if(field==='description')was=(typeof ly.description==='string')?ly.description:'';
     else was=ly[field];
     if(was===v)return true;
@@ -241,6 +276,7 @@ import { a3dToast, objById } from '../bim/csg-booleans.js';
       linetype:(src&&bimLinetypeDef(src.linetype))?bimLinetypeDef(src.linetype).name:'Continuous',
       lineweight:(src&&src.lineweight!==undefined)?src.lineweight:null,
       transparency:(src&&isFinite(src.transparency))?src.transparency:0,
+      blend:bimLayerBlend(src),   /* __acad3dV174a */
       plot:!(src&&src.plot===false),
       description:'',parent:par?par.id:null};
     A3D.layers.push(lyr);
@@ -254,9 +290,10 @@ import { a3dToast, objById } from '../bim/csg-booleans.js';
   function bimLayerDelete(id){
     var ly=bimLayerById(id),i,n=0;
     if(!ly)return bimLayerRefuse('That layer no longer exists');
-    if(ly===A3D.layers[0])return bimLayerRefuse(ly.name+' is the first layer, which (as AutoCAD\'s layer 0) cannot be deleted');
+    if(ly===bimLayerZero())return bimLayerRefuse(ly.name+' is the first layer, which (as AutoCAD\'s layer 0) cannot be deleted');
     if(id===A3D.activeLayer)return bimLayerRefuse('The current layer cannot be deleted: make another layer current first');
     for(i=0;i<A3D.objs.length;i++)if(bimLayerOf(A3D.objs[i])===ly)n++;
+    n+=bimBobOnLayer(ly.id);   /* __acad3dV174a: and every board's objects on it */
     if(n)return bimLayerRefuse(ly.name+' holds '+n+' object'+(n===1?'':'s')+': move '+(n===1?'it':'them')+' to another layer first');
     pushUndo();
     var kids=0;
@@ -300,6 +337,6 @@ import { a3dToast, objById } from '../bim/csg-booleans.js';
 export {
   BIM_EYE_OFF, BIM_EYE_ON, BIM_LAYER_BADCHARS, BIM_LINETYPES, BIM_LINEWEIGHTS, BIM_LOCK_OFF, BIM_LOCK_ON,
   addLayer, bimLayerByName, bimLayerChanged, bimLayerDelete, bimLayerDropUnselectable, bimLayerMakeCurrent,
-  bimLayerNew, bimLayerPickRefusal, bimLayerSet, bimLayerUnder, bimLinetypeDef, bimObjSetLayer,
-  bimSelectByRule, openAddLayerDlg, setActiveLayer
+  bimLayerMove, bimLayerNew, bimLayerPickRefusal, bimLayerSet, bimLayerStep, bimLayerUnder, bimLinetypeDef,
+  bimObjSetLayer, bimSelectByRule, openAddLayerDlg, setActiveLayer
 };

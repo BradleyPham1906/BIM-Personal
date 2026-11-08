@@ -262,7 +262,7 @@ import { cvScale } from '../ui/canvas-size.js';
   /* One quad per tile on the lowest level's plane, just under it, drawn first and without writing
      depth, so every solid draws over it; the solids' own matrices, so the two cannot drift apart. */
   function bimMapDrawGl(G,V,W,H){
-    if(A3D_PLOT.on)return;
+    if(A3D_PLOT.on&&!A3D.mapFrame)return;   /* __acad3dV174d: a board's map frame prints its basemap, its credit beside it (D18) */
     A3D_MAP.frame++;
     var plan=bimMapPlan(V,W,H),srcs=[],drawn=0,i;
     var P=plan.tiles.length?bimMapGlProg(G):null,gl=G.gl;
@@ -301,7 +301,7 @@ import { cvScale } from '../ui/canvas-size.js';
      plan each tile is an image under an affine transform from three of its corners; a canvas has no
      perspective texture, so in 3D this renderer draws no map. ---- */
   function bimMapDraw2D(ctx,V,W,H){
-    if(A3D_PLOT.on)return;
+    if(A3D_PLOT.on&&!A3D.mapFrame)return;   /* __acad3dV174d */
     A3D_MAP.frame++;
     var plan=bimMapPlan(V,W,H),srcs=[],drawn=0,i,pxs=cvScale(el.cv);
     if(!A3D.flat&&plan.tiles.length){plan.tiles=[];plan.reason='3d';}

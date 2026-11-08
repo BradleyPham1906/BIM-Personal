@@ -1,5 +1,6 @@
 import { A3D } from '../core/state.js';
 import { pushUndo } from '../drawing/plan-mode-sketch.js';
+import { bimWithPlotPass } from '../layers/plot-by-layers.js';
 import { bimEsc } from '../layers/layer-manager.js';
 import { A3D_CLB, bimClbClose, bimClbHtml, bimClbOpen } from '../site-analysis/climate-board.js';
 import { bimShellDrawer, bimShellOverlay } from '../assets/library-drag.js';
@@ -11,6 +12,8 @@ import { bimSlideshowStart } from './present.js';
 import { bimLtMenuOpen, bimSheetMove, bimSheetMoveNear } from './layout-tabs.js';
 import { bimBoardKey, bimBoardKeyLabel, bimBoardLabel, bimBrdKeep, bimClbWhich } from './board-figures.js';
 import { bimBrdDupBoard, bimBrdEdit, bimBrdNewUi } from './board-edit.js';
+import { bimPgBoardPage } from './page-sizes.js';
+import { bimBimgLoad, bimBimgUsed } from './board-images.js';
 import { A3D_PRP, bimPresPanelRefresh, refreshBrowser } from './presentation-panel.js';
 import { a3dToast } from '../bim/csg-booleans.js';
 
@@ -171,7 +174,8 @@ import { a3dToast } from '../bim/csg-booleans.js';
     return h;
   }
   /* as it prints: wide, on paper */
-  function bimBoardPrintHtml(kind){return '<div class="a3d-clb prt w-l">'+bimBoardHtmlFor(kind,false)+'</div>';}
+  /* __acad3dV174a: built in a plot pass, so a board's objects on a layer set not to plot are left off, as the model's are */
+  function bimBoardPrintHtml(kind){return '<div class="a3d-clb prt w-l">'+bimWithPlotPass(A3D.presentMode,function(){return bimBoardHtmlFor(kind,false);})+'</div>';}
   /* the boards' own style rules, out of this page's style sheet, for a print window or a thumbnail */
   var A3D_CLB_CSS='';
   function bimClbCss(){
@@ -198,13 +202,16 @@ import { a3dToast } from '../bim/csg-booleans.js';
     if(!bimBoardName(kind)&&!bimBoardById(kind))kind=bimClbWhich();   /* __acad3dV172b */
     var w=window.open('','_blank');
     if(!w){a3dToast('The print window was blocked -- allow pop-ups for this page and try again');return false;}
+    bimBimgLoad(bimBimgUsed(),function(){   /* __acad3dV174a: its images loaded first */
     try{
+      var bB=bimBoardById(kind)||bimBoardById('board-'+kind),bpg=bB&&bB.objs?bimPgBoardPage(bB):null;   /* __acad3dV174c: its own page size */
       w.document.write('<html><head><title>'+bimEsc(bimProjectLabel()+' - '+bimBoardKeyLabel(kind))+'</title><style>'+bimClbCss()+
-        '@page{size:420mm 297mm;margin:10mm}body{margin:0;background:#fff}</style></head><body>'+bimBoardPrintHtml(kind)+
+        (bpg?'@page{size:'+bpg.w+'mm '+bpg.h+'mm;margin:0}':'@page{size:420mm 297mm;margin:10mm}')+'body{margin:0;background:#fff}</style></head><body>'+bimBoardPrintHtml(kind)+
         '<script>window.onload=function(){window.focus();window.print();};<\/script></body></html>');
       w.document.close();
-    }catch(eW){console.warn('[BIM] The board could not be put in the print window',eW);a3dToast('The board could not be printed -- see the console');return false;}
+    }catch(eW){console.warn('[BIM] The board could not be put in the print window',eW);a3dToast('The board could not be printed -- see the console');return;}
     a3dToast('Printing '+bimBoardKeyLabel(kind)+' -- Save as PDF in the print dialog makes a PDF');
+    });
     return true;
   }
   /* a board's thumbnail: the board as it prints, written into its frame when the model has moved

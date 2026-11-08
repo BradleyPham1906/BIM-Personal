@@ -71,6 +71,8 @@ import { bimStructPropsHtml } from '../structure/analysis-properties.js';
 import { bimEntPropsHtml } from '../assets/scale-assets.js';
 import { A3D_VIEW } from '../views/saved-views.js';
 import { bimBoardShow } from '../sheets/boards.js';
+import { bimBdeOwnsProps } from '../sheets/board-design-edit.js';
+import { bimBdePropsHtml, bimBdePropsWire } from '../sheets/board-design-props.js';
 import { a3dToast, objById } from '../bim/csg-booleans.js';
 import { a3drIcon } from '../ui/discipline-tabs.js';
 import { bimNoteHex } from '../testing/hooks-view-gizmo.js';
@@ -340,6 +342,7 @@ import { bimNoteHex } from '../testing/hooks-view-gizmo.js';
     bimAwTitleSync();   /* __acad3dV171b */
     if(!el.propsbody)return;
     if(bimAwOwns()){bimAwRender();return;}   /* __acad3dV171b: the one analysis; __acad3dV171c: or what was picked */
+    if(bimBdeOwnsProps()){bimRenderInto(el.propsbody,bimBdePropsHtml());bimBdePropsWire(el.propsbody);return;}   /* __acad3dV174a: a board's objects, while it is drawn on */
     var o=objById(A3D.sel);
     var gP=o?null:bimSelectedGrid();   /* __acad3dV98 */
     if(gP){bimRenderInto(el.propsbody,bimGridPropsHtml(gP));return;}   /* __acad3dV118 */

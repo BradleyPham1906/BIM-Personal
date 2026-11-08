@@ -1,0 +1,83 @@
+/* __acad3dV174a: a designed board. The canvas is the board's isolated root, a sheet of paper in every theme (the
+   print tokens), so a blend mode over an empty part blends with white on screen as on paper, and dark ink shows on
+   it; every element is placed in px from its millimetres */
+.a3d-clb-dcv{position:absolute;inset:0;isolation:isolate;-webkit-print-color-adjust:exact;print-color-adjust:exact;color-scheme:light;
+  --surf:#fff;--page:#fff;--ink:#0b0b0b;--ink2:#52514e;--muted:#6f6d68;--grid:#e1e0d9;--base:#c3c2b7;--ring:rgba(11,11,11,.14);
+  --s1:#2a78d6;--s2:#eb6834;--s3:#1baf7a;--s4:#eda100;--s5:#e87ba4;--s6:#008300;--s7:#6250d6;--band:rgba(11,11,11,.07);
+  --w1:#86b6ef;--w2:#5598e7;--w3:#2a78d6;--w4:#1c5cab;--w5:#104281;--hn:#e7e5df;background:var(--page);color:var(--ink)}
+.a3d-clb-dshp,.a3d-clb-dtxt,.a3d-clb-dimg,.a3d-clb-dgrp,.a3d-clb-dfrm,.a3d-clb-dmask{position:absolute;box-sizing:border-box;margin:0}
+.a3d-clb-dshp{overflow:visible}
+.a3d-clb-dtxt{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.25}
+.a3d-clb-dtxt.aw{white-space:pre}
+.a3d-clb-dimg{background-position:center}
+.a3d-clb-dimg.ph{display:flex;align-items:center;justify-content:center;border:1px dashed var(--muted);color:var(--muted);font-size:12px;text-align:center;padding:6px}
+/* in Edit: what can be picked, the selection's outlines and its handle */
+.a3d-clb-dsn:focus{outline:none}
+.a3d-clb-dsn.edit [data-bde]{cursor:move}
+.a3d-clb-dsn.edit .lk{pointer-events:none}
+.a3d-clb-dshp.ln{pointer-events:none}
+.a3d-clb-dsn.edit .a3d-clb-dshp.ln .a3d-clb-dhit{pointer-events:stroke}
+.a3d-clb-dsel{position:absolute;inset:0;pointer-events:none;z-index:8}
+.a3d-clb-dbox{position:absolute;outline:1.5px solid var(--s1);outline-offset:1px}
+.a3d-clb-dbox.mk{outline-style:dashed}
+.a3d-clb-dhdl{position:absolute;width:14px;height:14px;margin:-7px;box-sizing:border-box;background:#fff;border:1.5px solid var(--s1);border-radius:3px;pointer-events:auto;cursor:nwse-resize;touch-action:none}
+@media(pointer:coarse){.a3d-clb-dhdl{width:28px;height:28px;margin:-14px}}
+/* a phone: the designed board fitted to the screen, as it is laid out (its figures are not put in one column) */
+.a3d-clb.w-s .a3d-clb-arr.a3d-clb-dsn{width:1408px;zoom:var(--z,1)}
+.a3d-clb.w-s .a3d-clb-dsn .a3d-clb-fig{position:absolute;left:var(--l)!important;top:var(--t)!important;width:var(--w)!important;height:var(--h)!important}
+.a3d-clb.w-s .a3d-clb-dsn .a3d-clb-fig>.a3d-clb-card{position:absolute;display:flex;overflow:hidden}
+.a3d-clb.w-s .a3d-clb-dsn .a3d-clb-tcard{position:absolute}
+/* on paper and in a thumbnail: nothing of Edit */
+.a3d-clb.prt .a3d-clb-dsel{display:none!important}
+@media print{.a3d-clb-dsel{display:none!important}}
+/* a board's objects in the Properties panel and under their layers in the Layers tab */
+.a3d-pnote{font-size:11px;line-height:1.35;color:#8b949e;padding:4px 0 6px}
+.a3d-bdeacts{display:flex;flex-wrap:wrap;gap:4px;padding:4px 0}
+.a3d-bdechk{font-size:11px;color:#aab4bf;white-space:nowrap}
+.a3d-lybo .a3d-lyty{font-style:italic}
+/* __acad3dV174b: a stack's box, and the snaps caught while dragging */
+.a3d-clb-dstack{position:absolute;outline:1px dashed var(--s7);outline-offset:2px}
+.a3d-clb-dsel .a3d-clb-guide.gap{background:var(--s3)}
+/* __acad3dV174c: a board with a page: the page a sheet of paper, what lies off it on the board's own ground */
+.a3d-clb-dsn.pg{box-shadow:0 2px 14px rgba(0,0,0,.35)}
+.a3d-clb.prt .a3d-clb-dsn.pg{box-shadow:none;overflow:hidden}
+.a3d-clb.prt .a3d-clb-page.pgd{padding:0!important}
+.a3d-clb.prt .a3d-clb-page.pgd>*:not(.a3d-clb-dsn):not(.a3d-clb-notes){display:none!important}
+.a3d-clb.prt .a3d-clb-page.pgd>.a3d-clb-notes{break-before:page;page-break-before:always;padding:12mm}
+@media print{.a3d-clb-page.pgd>*:not(.a3d-clb-dsn):not(.a3d-clb-notes){display:none!important}.a3d-clb-dsn.pg{box-shadow:none;overflow:hidden}}
+/* the title block and the frame */
+.a3d-clb-dbdr{position:absolute;box-sizing:border-box;margin:0}
+.a3d-clb-dtb{position:absolute;box-sizing:border-box;background:#fff;color:#0b0b0b;overflow:hidden;font-family:Inter,system-ui,sans-serif}
+.a3d-clb-dtbi,.a3d-clb-dtbs{display:flex;flex-direction:column;height:100%}
+.a3d-clb-dtbi>.a3d-clb-dtbc{flex:1.3 1 0}
+.a3d-clb-dtbr{display:flex;flex:1 1 0;border-top:1px solid #0b0b0b}
+.a3d-clb-dtbr>.a3d-clb-dtbc+.a3d-clb-dtbc,.a3d-clb-dtbs>.a3d-clb-dtbc+.a3d-clb-dtbc{border-left:1px solid #0b0b0b}
+.a3d-clb-dtbs>.a3d-clb-dtbc+.a3d-clb-dtbc{border-left:0;border-top:1px solid #0b0b0b}
+.a3d-clb-dtbs>.a3d-clb-dtbc{flex:1 1 0}
+.a3d-clb-dtbc{flex:1 1 0;min-width:0;display:flex;flex-direction:column;justify-content:center;padding:1px 4px;overflow:hidden}
+.a3d-clb-dtbc span{color:#52514e;text-transform:uppercase;letter-spacing:.04em;line-height:1.1}
+.a3d-clb-dtbc b{font-weight:600;line-height:1.15;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* the page gallery, in New Sheet and in a board's Page */
+.a3d-pgg{display:flex;flex-direction:column;gap:8px;margin:8px 0}
+.a3d-pggh{font-size:11px;font-weight:650;letter-spacing:.05em;text-transform:uppercase;opacity:.75;margin-bottom:4px}
+.a3d-pggrow{display:flex;flex-wrap:wrap;gap:6px}
+.a3d-pggc{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:4px;min-width:58px;min-height:72px;padding:6px;border-radius:8px;border:1px solid rgba(128,128,128,.4);background:transparent;color:inherit;font:inherit;font-size:12px;cursor:pointer}
+.a3d-pggc.on{border-color:#3987e5;box-shadow:0 0 0 2px #3987e5 inset}
+.a3d-pggc:focus-visible{outline:2px solid #3987e5;outline-offset:2px}
+.a3d-pggp{display:block;background:#fff;border:1px solid #888}
+.a3d-pggo{display:flex;gap:14px;font-size:12.5px;margin:4px 0}
+.a3d-pggs{font-size:12px;opacity:.8;min-height:16px}
+.a3d-pggrowd{align-items:flex-start}
+@media(pointer:coarse){.a3d-pggc{min-width:64px;min-height:80px}}
+/* __acad3dV174d: a map frame, its legend, its credit */
+.a3d-clb-dmap,.a3d-clb-dleg{position:absolute;box-sizing:border-box;margin:0;overflow:hidden}
+.a3d-clb-dmap{background:#fff;outline:1px solid #0b0b0b}
+.a3d-clb-dmap>img{display:block;width:100%;height:100%;object-fit:fill}
+.a3d-clb-dmapcr{position:absolute;right:2px;bottom:1px;max-width:96%;padding:0 3px;background:rgba(255,255,255,.85);color:#0b0b0b;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.a3d-clb-dmap.ph,.a3d-clb-dleg.ph{display:flex;align-items:center;justify-content:center;border:1px dashed var(--muted);color:var(--muted);font-size:12px;text-align:center;padding:6px;outline:0}
+.a3d-clb-dleg{color:#0b0b0b;font-family:Inter,system-ui,sans-serif;padding:2px}
+.a3d-clb-dlegt{font-weight:650;margin-bottom:2px}
+.a3d-clb-dlegh{font-weight:600;margin-top:3px}
+.a3d-clb-dlegr{display:flex;align-items:center;gap:4px;line-height:1.3}
+.a3d-clb-dlegr i{display:inline-block;width:1.6em;height:.9em;flex:0 0 auto;border:1px solid rgba(0,0,0,.25)}
+.a3d-clb-dlegc{color:#52514e;margin-top:3px;line-height:1.25}

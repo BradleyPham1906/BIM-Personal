@@ -37,6 +37,10 @@ import { bimSheetEvtToMM, bimSheetHitTest, bimSheetOnScreen } from './present.js
 import { bimLtMenuOpen } from './layout-tabs.js';
 import { bimBoardPrintHtml, bimClbCss, bimPresSeq } from './boards.js';
 import { bimBoardKey, bimBoardLabel } from './board-figures.js';
+import {
+  bimPgBoardPage, bimPgEnsureSheetSize, bimPgGalleryHtml, bimPgGalleryWire, bimPgSheetKey
+} from './page-sizes.js';
+import { bimBimgLoad, bimBimgUsed } from './board-images.js';
 import { refreshBrowser } from './presentation-panel.js';
 import { closeDlg } from '../ui/touch-input.js';
 import { a3dToast } from '../bim/csg-booleans.js';
@@ -281,16 +285,17 @@ import { a3dToast } from '../bim/csg-booleans.js';
       '<div class="a3d-dlgbody">'+
       '<div class="a3d-dlgrow"><label>Number</label><input type="text" data-a3dp="num" value="'+bimEsc(bimNextSheetNumber())+'"></div>'+
       '<div class="a3d-dlgrow"><label>Name</label><input type="text" data-a3dp="name" value="Untitled"></div>'+
-      '<div class="a3d-dlgrow"><label>Size</label><select data-a3dp="size">'+opts+'</select></div>'+
+      '<div class="a3d-dlgrow a3d-pggrowd"><label>Page</label><div data-pggal="1">'+bimPgGalleryHtml('ansi-B','l')+'</div></div>'+   /* __acad3dV174c: the gallery (D12, D13) */
       '<div id="a3d-dlgerr" class="a3d-dlgerr"></div></div>'+
       '<div class="a3d-dlgft"><button data-a3dlg="cancel">Cancel</button><button data-a3dlg="ok">OK</button></div>';
     el.root.appendChild(d);el.dlg=d;
-    var numI=d.querySelector('[data-a3dp="num"]'),nameI=d.querySelector('[data-a3dp="name"]'),sizeI=d.querySelector('[data-a3dp="size"]');
+    var numI=d.querySelector('[data-a3dp="num"]'),nameI=d.querySelector('[data-a3dp="name"]'),pg=bimPgGalleryWire(d,'ansi-B','l',null);
     function submit(){
-      var num=numI.value.trim(),name=nameI.value.trim();
+      var num=numI.value.trim(),name=nameI.value.trim(),sk=bimPgSheetKey(pg.key,pg.o);
       if(!num){document.getElementById('a3d-dlgerr').textContent='Sheet number cannot be empty';return;}
+      if(!bimPgEnsureSheetSize(sk)){document.getElementById('a3d-dlgerr').textContent='That page size is not known';return;}
       closeDlg();
-      var s=bimAddSheet(num,name||'Untitled',sizeI.value);
+      var s=bimAddSheet(num,name||'Untitled',sk);
       bimActivateView('sheet',s.id);   /* __acad3dV116: through the view path, so the view state says Sheet */
     }
     d.addEventListener('click',function(ev){
@@ -308,6 +313,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
     var sheet=bimSheetById(A3D.activeSheetId);
     if(!sheet){a3dToast('No sheet open');return;}
     closeDlg();
+    bimPgEnsureSheetSize(sheet.sizeKey);   /* __acad3dV174c: a size from the gallery, listed */
     var opts='',k;
     for(k in SHEET_SIZES)if(SHEET_SIZES.hasOwnProperty(k))opts+='<option value="'+k+'"'+(k===sheet.sizeKey?' selected':'')+'>'+SHEET_SIZES[k].label+'</option>';
     var d=document.createElement('div');
@@ -851,7 +857,9 @@ import { a3dToast } from '../bim/csg-booleans.js';
       e=Q[i];
       if(e.t==='board'){   /* __acad3dV162: a board on A3 landscape pages of its own, as it prints alone */
         if(!brd){brd=true;css+='@page a3dbrd{size:420mm 297mm;margin:10mm}';}
-        try{body+='<div class="a3dbrd" data-page="'+bimEsc(e.id)+'" style="page:a3dbrd">'+bimBoardPrintHtml(bimBoardKey(e.b))+'</div>';}
+        var bpg=e.b.objs?bimPgBoardPage(e.b):null,pnm=bpg?'a3dbrdp'+i:'a3dbrd';   /* __acad3dV174c: a board with a page prints on its own size */
+        if(bpg)css+='@page '+pnm+'{size:'+bpg.w+'mm '+bpg.h+'mm;margin:0}';
+        try{body+='<div class="a3dbrd" data-page="'+bimEsc(e.id)+'" style="page:'+pnm+'">'+bimBoardPrintHtml(bimBoardKey(e.b))+'</div>';}
         catch(eB){
           console.warn('[BIM] Page '+(i+1)+', the '+bimBoardLabel(e.b)+' board, could not be put together',eB);
           lost.push(i+1);
@@ -890,16 +898,17 @@ import { a3dToast } from '../bim/csg-booleans.js';
   }
   function bimPrintSet(){
     if(!bimPresSeq().length){a3dToast('There are no pages to print yet: every sheet is a page');return false;}   /* __acad3dV162: a board is one too */
-    var r;
-    try{r=bimPrintSetHtml();}
-    catch(eB){console.warn('[BIM] The set could not be put together for printing',eB);a3dToast('The set could not be printed -- see the console');return false;}
-    var w=window.open('','_blank');
+    var r,w=window.open('','_blank');
     if(!w){a3dToast('The print window was blocked -- allow pop-ups for this page and try again');return false;}
+    bimBimgLoad(bimBimgUsed(),function(){   /* __acad3dV174a: the boards' images loaded before the set is written */
+    try{r=bimPrintSetHtml();}
+    catch(eB){console.warn('[BIM] The set could not be put together for printing',eB);a3dToast('The set could not be printed -- see the console');try{w.close();}catch(eC){}return;}
     try{w.document.write(r.html);w.document.close();}
-    catch(eW){console.warn('[BIM] The print window could not be written',eW);a3dToast('The set could not be printed -- see the console');return false;}
+    catch(eW){console.warn('[BIM] The print window could not be written',eW);a3dToast('The set could not be printed -- see the console');return;}
     if(r.lost&&r.lost.length)a3dToast('Page'+(r.lost.length>1?'s ':' ')+r.lost.join(', ')+' could not be drawn -- see the console');   /* __acad3dV162 */
     else if(r.bad.length)a3dToast('Page'+(r.bad.length>1?'s ':' ')+r.bad.join(', ')+' printed from '+(r.bad.length>1?'their images':'its image')+': the vector drawing failed -- see the console');
     else a3dToast('Printing '+r.n+' page'+(r.n===1?'':'s')+' -- Save as PDF in the print dialog makes a PDF');
+    });
     return true;
   }
   function bimPrintSheet(){

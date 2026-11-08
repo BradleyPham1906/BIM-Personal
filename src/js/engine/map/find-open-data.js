@@ -320,7 +320,7 @@ import { cvH } from '../ui/canvas-size.js';
   /* on the plan, under the model's linework: never on paper */
   function drawDataLayers(ctx,V,W,H){
     A3D.lastDataDrawn=0;
-    if(A3D.sheetCapture||A3D_PLOT.on)return;
+    if((A3D.sheetCapture||A3D_PLOT.on)&&!A3D.mapFrame)return;   /* __acad3dV174d: in a board's map frame they reach paper (D18) */
     var L=bimDataList(),y0=bimShadowGround(),y=y0,i,j,c,f,sel,n=0;
     function S(p){return toScreen([p[0],y,p[1]],V,W,H);}
     function path(pts,close){

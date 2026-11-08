@@ -14,6 +14,7 @@ import { bimLayerShown } from '../layers/layer-rules.js';
 import { refreshLayers } from '../layers/analysis-data-rows.js';
 import { bimEsc } from '../layers/layer-manager.js';
 import { bimObjTypeLabel } from '../properties/palette.js';
+import { A3D_CLB, bimClbOpen } from '../site-analysis/climate-board.js';
 import { toScreen } from '../io/import-entry.js';
 import { paint } from '../map/terrain-3d.js';
 import { bimFaceCurrent, bimFaceHint, bimFaceObjKind } from '../editing/faces-push-pull.js';
@@ -131,6 +132,7 @@ import { cvH, cvW } from '../ui/canvas-size.js';
   /* __acad3dV60: Phase 52a pill button label/state, same idiom as el.flip's own 2D/3D label. */
   function bimSyncPresentPill(){
     bimPagesStale();   /* __acad3dV122: every change of appearance passes here, and a page is drawn in it */
+    if(A3D_CLB.open)bimClbOpen();   /* __acad3dV174a: a board's transparency and blend modes are drawn in Presentation */
     if(!el.present)return;
     el.present.textContent=A3D.presentMode?'Pres':'Tech';
     el.present.classList.toggle('on',!!A3D.presentMode);

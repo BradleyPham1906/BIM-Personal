@@ -13,6 +13,9 @@ import {
   bimBrdMeasureDefault, bimBrdNatH, bimBrdOpts, bimBrdPx, bimBrdRec, bimFigCardHtml, bimFigCat, bimFigEntry,
   bimFigHint, bimFigSpan, bimFigSrc
 } from './board-figures.js';
+import { bimBobSync } from './board-objects.js';
+import { bimBdeDrawMenu, bimBdeEsc, bimBdeWire } from './board-design-edit.js';
+import { bimBdePageDlg } from './board-design-tools.js';
 import { bimPresPanelRefresh } from './presentation-panel.js';
 import { a3dToast } from '../bim/csg-booleans.js';
 
@@ -43,6 +46,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
     if(!F){console.warn('[BIM] A board\'s new list was not a list; nothing changed');return false;}
     pushUndo();
     B.figs=F;
+    if(B.objs)B.objs=bimBobSync(B.objs,F);   /* __acad3dV174a: a figure added or taken off is in the board's objects, or out of them */
     if(B.kind!=='custom'){
       if(off)B.off=off;
       if(B.off&&!B.off.length)delete B.off;
@@ -82,6 +86,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
   /* Escape: a dialog first, then Edit; false when neither was open */
   function bimBrdEsc(){
     if(A3D_BRD.dlg){bimBrdDlgClose();return true;}
+    if(bimBdeEsc())return true;   /* __acad3dV174a: the selection, then the group one is in */
     if(A3D_CLB.edit){bimBrdEdit(false);return true;}
     return false;
   }
@@ -149,6 +154,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
     var t=ev.target,fig=t&&t.closest?t.closest('.a3d-clb-arr .a3d-clb-fig'):null;
     if(!fig||t.closest('[data-brdmenu]'))return;
     var rsz=!!t.closest('[data-brdrsz]'),grip=!!t.closest('[data-brdgrip]');
+    if(!rsz&&fig.closest('.a3d-clb-dsn'))return;   /* __acad3dV174a: in a board's tree, a figure moves as its element does */
     if(!rsz&&!grip&&(ev.pointerType==='touch'||t.closest('a,input,select,textarea,button')))return;   /* a finger scrolls the board; it moves a figure by its handle */
     var B=bimBrdRec();if(!B)return;
     var L=bimBrdWorking(B),k=fig.getAttribute('data-brdk'),F=bimBrdFind(L,k),b=bimClbEl(),arr=fig.closest('.a3d-clb-arr');
@@ -212,6 +218,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
     var t=ev.target,k,dx=0,dy=0,st,r;
     if(t&&t.getAttribute&&t.getAttribute('data-brdname')){if(ev.key==='Enter'){ev.preventDefault();t.blur();}return;}
     if(!t||!t.classList||!t.classList.contains('a3d-clb-fig')||!t.closest('.a3d-clb-arr'))return;
+    if(t.closest('.a3d-clb-dsn')&&!A3D_CLB.narrow)return;   /* __acad3dV174a: the tree's keys */
     k=t.getAttribute('data-brdk');
     if(ev.key==='ArrowLeft')dx=-1;else if(ev.key==='ArrowRight')dx=1;else if(ev.key==='ArrowUp')dy=-1;else if(ev.key==='ArrowDown')dy=1;
     else if(ev.key==='Delete'||ev.key==='Backspace'){ev.preventDefault();bimBrdRemove(k);return;}
@@ -304,7 +311,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
     var B=bimBrdRec();
     if(!B||B.kind==='custom'||!B.figs)return false;
     pushUndo();
-    delete B.figs;delete B.off;
+    delete B.figs;delete B.off;delete B.objs;   /* __acad3dV174a: and its objects */
     saveSoon();bimBrdRedraw();
     a3dToast(bimBoardLabel(B)+': its own figures in their own places again');
     return true;
@@ -398,11 +405,11 @@ import { a3dToast } from '../bim/csg-booleans.js';
     return true;
   }
   /* ---- boards of one's own ---- */
-  function bimBrdNew(name,figs){
+  function bimBrdNew(name,figs,objs){
     var P=bimPresData(),n=0,id,r;
     P.boards.forEach(function(b){var m=/^board-c(\d+)$/.exec(b.id);if(m&&+m[1]>n)n=+m[1];});
     id='board-c'+(n+1);
-    r=bimBrdKeep({id:id,kind:'custom'},{name:name||('Board '+(n+1)),figs:figs||[]});
+    r=bimBrdKeep({id:id,kind:'custom'},{name:name||('Board '+(n+1)),figs:figs||[],objs:objs});   /* __acad3dV174a: its objects */
     pushUndo();
     P.order=bimPresSeq().map(function(e){return e.id;});
     P.boards.push(r);P.order.push(id);
@@ -410,8 +417,8 @@ import { a3dToast } from '../bim/csg-booleans.js';
     return id;
   }
   /* a new board, opened in Edit with the catalogue */
-  function bimBrdNewUi(name,figs){
-    var id=bimBrdNew(name,figs);
+  function bimBrdNewUi(name,figs,objs){
+    var id=bimBrdNew(name,figs,objs);
     bimShellSetTab('presentation');
     if(!bimPresOpenBoard(id))return id;
     A3D_CLB.edit=true;bimClbOpen();
@@ -432,7 +439,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
       L.forEach(function(F){F.y+=top;F.k='';});
       L=add.concat(L);
     }
-    return bimBrdNewUi('Copy of '+bimBoardLabel(B),L);
+    return bimBrdNewUi('Copy of '+bimBoardLabel(B),L,B.kind==='custom'&&B.objs?JSON.parse(JSON.stringify(B.objs)):null);   /* __acad3dV174a: a board of one's own keeps its keys, so its objects come too */
   }
   function bimBrdRename(name){
     var B=bimBrdRec();
@@ -460,6 +467,8 @@ import { a3dToast } from '../bim/csg-booleans.js';
     if(s==='edit')bimBrdEdit(!A3D_CLB.edit);
     else if(s==='done')bimBrdEdit(false);
     else if(s==='add')bimBrdCatalogue();
+    else if(s==='draw'){r=a.getBoundingClientRect();bimBdeDrawMenu(r.left,r.bottom+4);}   /* __acad3dV174a */
+    else if(s==='page')bimBdePageDlg();   /* __acad3dV174c */
     else if(s==='addnew'){if(!A3D_CLB.edit){A3D_CLB.edit=true;bimClbOpen();}bimBrdCatalogue();}
     else if(s==='reset')bimBrdReset();
   }
@@ -483,9 +492,11 @@ import { a3dToast } from '../bim/csg-booleans.js';
     b.addEventListener('pointercancel',bimBrdCancel);
     b.addEventListener('keydown',bimBrdKey);
     b.addEventListener('contextmenu',bimBrdCtx);
+    bimBdeWire(b);   /* __acad3dV174a */
   }
 export {
-  A3D_BRD, bimBrdAddFig, bimBrdCatalogue, bimBrdDlgClose, bimBrdDup, bimBrdDupBoard, bimBrdEdit, bimBrdEsc,
-  bimBrdFit, bimBrdMenu, bimBrdNewUi, bimBrdNudge, bimBrdOptsDlg, bimBrdOptsSet, bimBrdRemove, bimBrdRename,
-  bimBrdReset, bimBrdRestored, bimBrdSnap, bimBrdSnapSync, bimBrdSwap, bimBrdWire, bimBrdWorking
+  A3D_BRD, bimBrdAddFig, bimBrdCatalogue, bimBrdDlgClose, bimBrdDlgOpen, bimBrdDup, bimBrdDupBoard,
+  bimBrdEdit, bimBrdEsc, bimBrdFit, bimBrdMenu, bimBrdNewUi, bimBrdNudge, bimBrdOptsDlg, bimBrdOptsSet,
+  bimBrdRedraw, bimBrdRemove, bimBrdRename, bimBrdReset, bimBrdRestored, bimBrdSnap, bimBrdSnapSync,
+  bimBrdSwap, bimBrdWire, bimBrdWorking
 };

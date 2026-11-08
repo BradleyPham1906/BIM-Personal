@@ -1,6 +1,8 @@
 import { A3D, A3D_DOCS, A3D_NO_STORAGE, el } from '../core/state.js';
 import { A3D_CANVAS_CLEARED, A3D_CANVAS_KEYS, A3D_THEME_AT_START } from '../core/storage-theme.js';
-import { REDO_STACK, UNDO_STACK, bimStatusHintText } from '../drawing/plan-mode-sketch.js';
+import {
+  REDO_STACK, UNDO_STACK, bimStatusHintText, bimSyncPresentPill
+} from '../drawing/plan-mode-sketch.js';
 import { A3D_PERSIST } from '../io/project-file.js';
 import {
   bimFileOpen, bimFilePickers, bimFileRead, bimFileSave, bimFileState, bimGzip
@@ -9,11 +11,11 @@ import {
   bimLayerAlpha, bimLayerOf, bimLayerPickable, bimLayerSelectable, bimLayerShown, bimObjLayerState
 } from '../layers/layer-rules.js';
 import {
-  BIM_LINETYPES, BIM_LINEWEIGHTS, addLayer, bimLayerDelete, bimLayerMakeCurrent, bimLayerNew, bimLayerSet,
-  bimObjSetLayer, setActiveLayer
+  BIM_LINETYPES, BIM_LINEWEIGHTS, addLayer, bimLayerDelete, bimLayerMakeCurrent, bimLayerMove, bimLayerNew,
+  bimLayerSet, bimLayerStep, bimObjSetLayer, setActiveLayer
 } from '../layers/select-change.js';
 import { bimLayerTree } from '../layers/layers-panel.js';
-import { A3D_CLB, bimClbEl, bimClbW } from '../site-analysis/climate-board.js';
+import { A3D_CLB, bimClbEl, bimClbOpen, bimClbW } from '../site-analysis/climate-board.js';
 import { bimImportDXF } from '../io/import-dxf.js';
 import { bimImportOBJ, bimImportSTL } from '../io/import-obj-stl.js';
 import { bimImportIFC } from '../io/import-ifc.js';
@@ -54,6 +56,13 @@ import {
   bimBoardAdd, bimBoardById, bimBoardMenuDo, bimBoardMenuItems, bimBoardPrintHtml, bimBoardRemove,
   bimBoardShow, bimClbCss, bimPresData, bimPresMoveNear, bimPresSeq, bimPresStep
 } from '../sheets/boards.js';
+import { bimBrdRec } from '../sheets/board-figures.js';
+import { bimBobFigCols } from '../sheets/board-objects.js';
+import { bimPgSize } from '../sheets/page-sizes.js';
+import { bimBimgHash, bimBimgOk, bimBimgUsed } from '../sheets/board-images.js';
+import { bimBmapBar, bimBmapNiceDen } from '../sheets/board-map.js';
+import { A3D_BDE, bimBdeAdd, bimBdeDo, bimBdeSelect, bimBdeSet } from '../sheets/board-design-edit.js';
+import { bimBdeArrange, bimBdeLaySet, bimBdePageSet } from '../sheets/board-design-tools.js';
 import { A3D_PRP, bimPresHost, bimPresOpenPage } from '../sheets/presentation-panel.js';
 import { a3dToast, objById } from '../bim/csg-booleans.js';
 import { a3drIcon, a3drLabel } from '../ui/discipline-tabs.js';
@@ -164,6 +173,14 @@ import { a3drIcon, a3drLabel } from '../ui/discipline-tabs.js';
   window.__a3dBoardMenuDo=function(a,id){return bimBoardMenuDo(a,id);};
   window.__a3dBoardPrintHtml=function(k){return bimBoardPrintHtml(k);};
   window.__a3dPrintSetHtml=function(){return bimPrintSetHtml();};
+  window.__acad3dV174='boardobjs,onelayertable,layerblend,bylayer,presonly,layerorder,layermove,layerzero,masks,images,imgfile,lybo,props,draw,'+
+    'align,distribute,tidy,smartspacing,stack,stackphone,pagesizes,registry,gallery,boardpage,pageprint,tblockiso,tblockus,archd,'+
+    'mapframe,mapdata,mapcredit,legend,north,scalebar';
+  /* __acad3dV174a: designing the open board, in Edit: add, act on the selection, set fields, select; the tree as kept */
+  window.__a3dBoardDesign={add:function(k,o){return bimBdeAdd(k,o);},act:function(a,ids){return bimBdeDo(a,ids);},set:function(id,o){return bimBdeSet(id,o);},
+    select:function(ids){bimBdeSelect(ids||[]);return A3D_BDE.sel.slice();},
+    objs:function(){var B=bimBrdRec();return B&&B.objs?JSON.parse(JSON.stringify(B.objs)):null;},hash:bimBimgHash,imageOk:bimBimgOk,
+    figCols:bimBobFigCols,used:bimBimgUsed,layerMove:bimLayerMove,layerStep:bimLayerStep,pgSize:bimPgSize,bar:bimBmapBar,niceDen:bimBmapNiceDen,arrange:function(a){return bimBdeArrange(a);},stack:function(id,o){return bimBdeLaySet(id,o);},page:function(k,o,tb){return bimBdePageSet(k,o,tb);},pres:function(on){A3D.presentMode=!!on;bimSyncPresentPill();if(A3D_CLB.open)bimClbOpen();return A3D.presentMode;}};
   window.__a3dClbCss=function(){return bimClbCss();};
   window.__a3dClbState=function(){var b=bimClbEl();return {open:A3D_CLB.open,kind:A3D_CLB.kind,board:A3D_CLB.board,narrow:A3D_CLB.narrow,inView:!!(b&&b.parentNode&&b.parentNode.classList&&b.parentNode.classList.contains('a3d-vp')),cls:b?b.className:null,w:b?bimClbW(b):0};};
   window.__a3dSlideshowEnd=function(){return bimSlideshowEnd();};

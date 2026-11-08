@@ -3,6 +3,7 @@ import { pushUndo, setUndoSuspend } from '../drawing/plan-mode-sketch.js';
 import { padMesh, sketchCCW } from '../drawing/drawing-input.js';
 import { bimAddPoint } from '../drawing/point-node.js';
 import { bimCreateTerrain } from '../survey/survey-check.js';
+import { bimLayerZero } from '../layers/layer-rules.js';
 import { bimLayerByName, bimLayerNew } from '../layers/select-change.js';
 import { refreshLayers } from '../layers/analysis-data-rows.js';
 import { bimEsc } from '../layers/layer-manager.js';
@@ -113,7 +114,7 @@ import { a3dToast, objById } from '../bim/csg-booleans.js';
     return {v:v,f:f};
   }
   function bimCtxLayers(){
-    var par=bimLayerByName('Context')||bimLayerNew({name:'Context',color:'#9aa3ad'})||A3D.layers[0],L={},i,k,ly;
+    var par=bimLayerByName('Context')||bimLayerNew({name:'Context',color:'#9aa3ad'})||bimLayerZero(),L={},i,k,ly;
     for(i=0;i<BIM_CTX_KINDS.length;i++){
       k=BIM_CTX_KINDS[i];
       ly=bimLayerByName('Context '+k)||bimLayerNew({name:'Context '+k,color:BIM_CTX_COL[k],parent:par.id});

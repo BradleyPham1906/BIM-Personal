@@ -494,6 +494,26 @@ owner: "just go for it", after the research merged in PR #80).
 | D19 | Old boards: open each V172b figure as one element of the new tree (columns converted to millimetres), so a board made before V174 looks the same? | audit 8 | **Yes** |
 | D20 | V174's split into parts (a: the tree, elements and compositing; b: layout, align, distribute and snaps; c: the gallery and title blocks; d: map frames and their surround), one PR each as V173 was? | this note | **Yes** |
 
+### 11a. Revised 2026-11-08, after V174a's first build: one layer system
+
+The owner saw V174a's first build (a Figma-like element tree per board, with its own floating layers and properties
+panel) and rejected it: "everything should be one just like autocad layer system. do not ever create separate system
+like that. we just add on more features on the current layer system that work on the present mode." Asked together,
+the owner chose, for each:
+
+| # | Question | Chosen |
+|---|---|---|
+| R1 | Where board graphics live | **Paper space objects**: as in AutoCAD's layouts, a board is paper space; its shapes, text and images are objects on it, each on a layer of the one layer table (`A3D.layers`), the model's. On, freeze, lock and plot apply to them as to the model's objects. |
+| R2 | Blend modes and opacity | **On the layer, with a ByLayer override**: a Blend property beside Transparency in the Layer Properties Manager; each object's Blend and Transparency are ByLayer unless set in the Properties panel, as AutoCAD does for colour. Drawn only in the Presentation appearance and in Present, as layer transparency is today. |
+| R3 | Paint order on a board | **Layer order**: a layer higher in the Layers list is drawn over those below (ArcGIS, Map 3D's Display Manager); within a layer, Draw order (Bring to front, Send to back). |
+| R4 | Groups and masks | **Sub-layers and layer masks**: a group is a sub-layer (the layer tree has parents since V121); a mask is an object that clips the objects of its own layer drawn above it (alpha, vector or luminance). |
+
+What this replaces: the per-board element tree, frames and groups as elements, Pass through and group isolation (D3),
+and the separate panel. D2's list (the W3C 16 under Figma's names) and D1's surface (HTML and SVG, measured in
+V174a's browser check: `/BM /Multiply` kept in Edge's PDF) stand; D4 (images by reference), D5 (three mask types) and
+D19 (old boards unchanged) stand. Transparency is applied to each object, as AutoCAD applies a layer's, so nothing is
+composited as a group. Layer order is the paint order on boards; the model's plan and 3D views are not changed by it.
+
 ## 12. References
 
 Every source, with its URL, what was read, the date and its level, is listed in the working notes' references:

@@ -188,7 +188,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
   /* the index is a cache of what the database holds (V115's rule for the keys): a project the index lost is listed
      again, an entry with nothing behind it dropped -- the project on screen excepted, whose record may be its first */
   function bimStoreReconcile(keys){
-    var proj=keys.filter(function(k){return typeof k==='string'&&k.indexOf('tpl:')!==0&&k.indexOf('lib:')!==0;});
+    var proj=keys.filter(function(k){return typeof k==='string'&&k.indexOf('tpl:')!==0&&k.indexOf('lib:')!==0&&k.indexOf('img:')!==0;});   /* __acad3dV174a: a board's image is not a project */
     var have={},changed=false;
     A3D_DOCS.docs=A3D_DOCS.docs.filter(function(d){
       if(proj.indexOf(d.id)>=0||d.id===A3D_DOCS.active||bimJournalRead(d.id)){have[d.id]=1;return true;}
