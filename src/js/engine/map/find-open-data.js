@@ -11,6 +11,8 @@ import { bimGeoParts, bimGeoPositions } from '../properties/map-address-site-dat
 import { refreshProps } from '../site-analysis/panel.js';
 import { toScreen } from '../io/import-entry.js';
 import { bimDataClsSet } from './data-symbology.js';
+import { drawDataLabels } from './data-labels.js';
+import { bimDataFltSet, bimDataPasses } from './data-filter-ui.js';
 import { bimDataAttrKeys, bimDataFeatCol, bimDataLensScale } from './colour-lens.js';
 import { bimGeoToModel, bimMapHost, bimMapOrigin } from './map-tiles.js';
 import { bimCtxArea } from './site-context.js';
@@ -274,6 +276,7 @@ import { cvH } from '../ui/canvas-size.js';
     var L=bimDataById(id),v;
     if(!L)return false;
     if(String(field).indexOf('cls.')===0)return bimDataClsSet(id,String(field).slice(4),val);   /* __acad3dV173a */
+    if(field==='filter'||field==='label')return bimDataFltSet(id,field,val);   /* __acad3dV173b */
     if(field==='visible'){v=!!val&&val!=='false';if(L.visible===v)return true;}
     else if(field==='name'){v=String(val==null?'':val).replace(/\s+/g,' ').replace(/^ | $/g,'').slice(0,60);if(!v){a3dToast('A data layer needs a name');refreshProps();return false;}}
     else if(field==='color'){v=String(val||'');if(!/^#[0-9a-fA-F]{6}$/.test(v)){a3dToast('That is not a colour');refreshProps();return false;}v=v.toLowerCase();}
@@ -335,6 +338,7 @@ import { cvH } from '../ui/canvas-size.js';
       ctx.globalAlpha=op;
       for(j=0;j<c.feats.length;j++){
         f=c.feats[j];
+        if(!bimDataPasses(L[i],f.fi))continue;   /* __acad3dV173b: its filter */
         if(ds){fc=bimDataFeatCol(L[i],ds,f.fi);ctx.strokeStyle=fc;ctx.fillStyle=fc;}
         sel=!!(A3D_DATA.sel&&A3D_DATA.sel.layer===L[i].id&&A3D_DATA.sel.fi===f.fi);
         ctx.lineWidth=sel?2.6:1.2;
@@ -350,6 +354,7 @@ import { cvH } from '../ui/canvas-size.js';
       ctx.restore();
     }
     A3D.lastDataDrawn=n;
+    drawDataLabels(ctx,V,W,H,y);   /* __acad3dV173b */
   }
   /* what data is under a screen point: a point, then a line, then the smallest area; later layers first */
   function bimDataPick(sx,sy){
@@ -364,6 +369,7 @@ import { cvH } from '../ui/canvas-size.js';
         if(!c)continue;
         for(j=c.feats.length-1;j>=0;j--){
           f=c.feats[j];
+          if(!bimDataPasses(L[i],f.fi))continue;   /* __acad3dV173b: a filtered feature is not there */
           if(pass===0){
             for(k=0;k<f.points.length;k++)if(Math.hypot(f.points[k][0]-P[0],f.points[k][1]-P[1])<=tol)return {layer:L[i].id,fi:f.fi};
           }else if(pass===1){

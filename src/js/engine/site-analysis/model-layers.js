@@ -449,4 +449,6 @@ import { a3dToast, objById } from '../bim/csg-booleans.js';
     }
     ctx.restore();
   }
-export { bimDgBlit, bimDgOff, bimDgPlace, bimDgReset, bimDgResetAnalysis, bimDgScreen, drawDiagrams };
+export {
+  bimDgBlit, bimDgDrawText, bimDgOff, bimDgPlace, bimDgReset, bimDgResetAnalysis, bimDgScreen, drawDiagrams
+};
