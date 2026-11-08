@@ -468,8 +468,8 @@ available here; for them the notes rely on MDN's compatibility data and the bug 
 
 ## 11. The owner's decisions
 
-Asked together, each with the evidence and a recommendation. Unanswered until the owner gives them; the build waits
-on D1 to D4 only, and the rest can be answered as each part is built.
+Asked together, each with the evidence and a recommendation. **Answered 2026-11-08: all twenty as recommended** (the
+owner: "just go for it", after the research merged in PR #80).
 
 | # | Question | Evidence | Recommended |
 |---|---|---|---|
