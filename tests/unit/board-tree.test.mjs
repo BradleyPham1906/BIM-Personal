@@ -80,7 +80,7 @@ test('a figure\'s columns to millimetres and back are the same (D19)', () => {
     const back = D.figCols(E.bimBtrFigBox(F, P, G), P, G);
     for (const k of ['x', 'y', 'w', 'h']) assert.ok(Math.abs(back[k] - F[k]) < 1e-9, k);
   }
-  assert.ok(Math.abs(E.bimBtrFigBox({ x: 0, y: 0, w: 12, h: 1 }, P, G).w - 400) < 1e-9, 'twelve columns are 400 mm');
+  assert.ok(Math.abs(E.bimBtrFigBox({ x: 0, y: 0, w: 12, h: 1 }, P, G).w - 1408 * 25.4 / 96) < 1e-9, 'twelve columns are 1408 px, 372.5 mm on paper');
 });
 
 test('reordering stays within the parent', () => {
@@ -198,12 +198,12 @@ test('a frame clips and keeps its children inside it; a pass-through frame does 
   const h = draw([{ id: 'e1', t: 'frame', x: 10, y: 10, w: 50, h: 50, ch: [rect('e2', { x: 20, y: 30 })] }]);
   assert.ok(/class="a3d-clb-dfrm"[^>]*style="[^"]*overflow:hidden/.test(h));
   assert.equal(/class="a3d-clb-dfrm"[^>]*style="[^"]*isolation/.test(h), false);
-  assert.ok(h.includes('left:35.2px;top:70.4px'), 'the child at 10, 20 mm inside the frame');
+  assert.ok(h.includes('left:37.795px;top:75.591px'), 'the child at 10, 20 mm inside the frame');
 });
 
 test('masks are drawn as CSS: vector by clip-path, alpha and luminance by mask-image', () => {
   let h = draw([rect('e1', { mask: 'vector', r: 2 }), rect('e2')]);
-  assert.ok(/class="a3d-clb-dmask"[^>]*clip-path:inset\(0 round 7.04px\)/.test(h));
+  assert.ok(/class="a3d-clb-dmask"[^>]*clip-path:inset\(0 round 7.559px\)/.test(h));
   assert.equal(h.includes('data-bde="e1"'), false, 'the mask itself is not drawn');
   h = draw([{ id: 'e1', t: 'ellipse', x: 0, y: 0, w: 10, h: 10, mask: 'lum' }, rect('e2')]);
   assert.ok(h.includes("mask-image:url('data:image/svg+xml,"));

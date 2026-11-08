@@ -1105,9 +1105,13 @@ body.a3d-clb-open #a3d-dock,body.a3d-clb-open .a3d-tpal{display:none!important}
 .a3d-clb-catn{font-size:12.5px;font-weight:600}
 .a3d-clb-cath{font-size:11.5px;color:var(--ink2)}
 .a3d-clb-notes h4{font-size:12px;color:var(--ink);margin:8px 0 4px;font-weight:620}
-/* __acad3dV174a: a designed board. The canvas is the board's isolated root, painted with the page's colour, so a
-   blend mode over an empty part blends with the page; every element is placed in px from its millimetres */
-.a3d-clb-dcv{position:absolute;inset:0;isolation:isolate;background:var(--page);-webkit-print-color-adjust:exact;print-color-adjust:exact}
+/* __acad3dV174a: a designed board. The canvas is the board's isolated root, a sheet of paper in every theme (the
+   print tokens), so a blend mode over an empty part blends with white on screen as on paper, and dark ink shows on
+   it; every element is placed in px from its millimetres */
+.a3d-clb-dcv{position:absolute;inset:0;isolation:isolate;-webkit-print-color-adjust:exact;print-color-adjust:exact;color-scheme:light;
+  --surf:#fff;--page:#fff;--ink:#0b0b0b;--ink2:#52514e;--muted:#6f6d68;--grid:#e1e0d9;--base:#c3c2b7;--ring:rgba(11,11,11,.14);
+  --s1:#2a78d6;--s2:#eb6834;--s3:#1baf7a;--s4:#eda100;--s5:#e87ba4;--s6:#008300;--s7:#6250d6;--band:rgba(11,11,11,.07);
+  --w1:#86b6ef;--w2:#5598e7;--w3:#2a78d6;--w4:#1c5cab;--w5:#104281;--hn:#e7e5df;background:var(--page);color:var(--ink)}
 .a3d-clb-dshp,.a3d-clb-dtxt,.a3d-clb-dimg,.a3d-clb-dgrp,.a3d-clb-dfrm,.a3d-clb-dmask{position:absolute;box-sizing:border-box;margin:0}
 .a3d-clb-dshp{overflow:visible}
 .a3d-clb-dtxt{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.25}
@@ -26184,7 +26188,8 @@ try{
   function bimClbKey(ev){
     if(!A3D_CLB.open)return false;
     var a=document.activeElement,b=bimClbEl(),dl=A3D_BRD.dlg;   /* __acad3dV172b: Edit's dialogs are the board's */
-    if(a&&a!==document.body&&!(b&&b.contains(a))&&!(dl&&dl.contains(a))&&(/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)||a.isContentEditable))return false;
+    if(a&&a!==document.body&&!(b&&b.contains(a))&&!(dl&&dl.contains(a))&&!(A3D_BDE.pnl&&A3D_BDE.pnl.contains(a))&&   /* __acad3dV174a: the layers panel is the board's too */
+      (/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)||a.isContentEditable))return false;
     if(ev.key==='Escape'){ev.preventDefault();ev.stopImmediatePropagation();if(!bimBrdEsc())bimClbClose();return true;}   /* __acad3dV172b: a dialog, then Edit, then the board */
     if(bimBdeWantsKey(ev))return true;   /* __acad3dV174a: Ctrl+G and the order keys, while a board is designed */
     if(ev.ctrlKey||ev.metaKey||ev.altKey||/^F\d+$/.test(ev.key))return false;
@@ -58446,13 +58451,14 @@ try{
   /* ================= __acad3dV174a: a board's element tree =================
      docs/research/research-presentation-boards.md, 4.1 to 4.3 and D1 to D5, D19. A board one designs keeps one
      tree of elements (B.els), the bottom of the list first: the order is the drawing order, the last drawn in front,
-     as PDF, SVG, Figma and Penpot keep it. Every element has its box in millimetres on the board (1408 px across is
-     400 mm, A3 landscape inside its 10 mm margins, as a board prints), an opacity, a blend mode, lock, hide and a mask
+     as PDF, SVG, Figma and Penpot keep it. Every element has its box in millimetres on paper: a board prints at one
+     CSS pixel to the 96th of an inch (the print window does not zoom it), so its 1408 px are 372.5 mm across, inside
+     A3 landscape's 400 mm. Each element has an opacity, a blend mode, lock, hide and a mask
      flag; frames and groups have children. A figure of the board (V172b's list) is an element of the tree, 'fig',
      that names its figure: its place stays in the list, in columns, so every path that arranges figures is unchanged
      and a board made before V174 looks as it did (D19). The tree is made at the first change that needs it.
      Functions only, no tables made at load: a project is read before this file has run (bimPresValid). */
-  function bimBtrPxMm(){return 3.52;}   /* px per mm: 1408 px over 400 mm */
+  function bimBtrPxMm(){return 96/25.4;}   /* CSS px per mm, as printed */
   function bimBtrMax(){return {nodes:400,depth:8};}
   /* the W3C 16 under Figma's names, in Figma's order (D2), and Pass through for frames and groups (D3):
      [key, name, CSS and canvas keyword] */
@@ -58974,8 +58980,7 @@ try{
       if(m.t==='rect')return 'clip-path:inset(0'+(m.r>0?' round '+bimBdsPx(m.r)+'px':'')+');';
       if(m.t==='ellipse')return 'clip-path:ellipse(50% 50% at 50% 50%);';
       if(m.t==='poly'||m.t==='star'){
-        var W=bimBdsPx(m.w),H=bimBdsPx(m.h);
-        return 'clip-path:polygon('+bimBdsPts(m,W,H).map(function(p){return bimBrdPx(W?p[0]/W*100:0)+'% '+bimBrdPx(H?p[1]/H*100:0)+'%';}).join(',')+');';
+        return 'clip-path:polygon('+bimBdsPts(m,100,100).map(function(p){return p[0]+'% '+p[1]+'%';}).join(',')+');';   /* in hundredths of its box */
       }
       return 'clip-path:inset(0);';   /* an image's outline is its box */
     }

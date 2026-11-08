@@ -16617,6 +16617,8 @@ here: installing from a real browser's menu, iOS and the shell in standalone (pa
 Research: `docs/research/research-presentation-boards.md` (D1 to D5, D19, D20; the owner: all as recommended).
 Branch `v174a-tree`.
 
+- **Millimetres** are as printed: the print window does not zoom a board, so 1408 CSS px are 372.5 mm
+  (`bimBtrPxMm`, 96/25.4); V174c's pages and V174d's scale bar can rely on them.
 - **Model** (`sheets/board-tree.js`, pure functions, no tables made at load, because `bimPresValid` runs at boot
   before the file's top-level code). `B.els` is the tree, the bottom first. Element `{id 'e<n>', t, nm, x, y, w, h
   (mm), op, bm, lock, hide, mask, ch}`; kinds frame, group, rect, ellipse, line (signed w and h, arrows a0 and a1),
@@ -16627,7 +16629,8 @@ Branch `v174a-tree`.
 - **Drawing** (`sheets/board-design.js`): a board with a tree is drawn by `bimBdsHtml` in place of the bands.
   A pass-through group emits no element; a group or frame with a mode or an opacity is one element with
   `isolation:isolate`; paint order is the markup's, no z-index; the canvas `.a3d-clb-dcv` is isolated and painted
-  with `--page`, so Multiply on an empty part blends with the page (white on paper). Masks: vector by clip-path,
+  with the print tokens in every theme, a sheet of paper, so Multiply on an empty part blends with white on screen
+  as on paper, and dark ink shows in the dark theme. Masks: vector by clip-path,
   alpha and luminance by mask-image of the mask's own shape as an SVG data URL (`mask-mode`). On a phone a designed
   board is fitted to the screen as laid out (its figures carry `--l`, `--t`, `--w`, `--h` for the phone's rules).
 - **Images** (`sheets/board-images.js`): `img:<hash>` in the projects store (`bimStoreReconcile` skips the prefix),

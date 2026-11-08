@@ -1,6 +1,10 @@
-/* __acad3dV174a: a designed board. The canvas is the board's isolated root, painted with the page's colour, so a
-   blend mode over an empty part blends with the page; every element is placed in px from its millimetres */
-.a3d-clb-dcv{position:absolute;inset:0;isolation:isolate;background:var(--page);-webkit-print-color-adjust:exact;print-color-adjust:exact}
+/* __acad3dV174a: a designed board. The canvas is the board's isolated root, a sheet of paper in every theme (the
+   print tokens), so a blend mode over an empty part blends with white on screen as on paper, and dark ink shows on
+   it; every element is placed in px from its millimetres */
+.a3d-clb-dcv{position:absolute;inset:0;isolation:isolate;-webkit-print-color-adjust:exact;print-color-adjust:exact;color-scheme:light;
+  --surf:#fff;--page:#fff;--ink:#0b0b0b;--ink2:#52514e;--muted:#6f6d68;--grid:#e1e0d9;--base:#c3c2b7;--ring:rgba(11,11,11,.14);
+  --s1:#2a78d6;--s2:#eb6834;--s3:#1baf7a;--s4:#eda100;--s5:#e87ba4;--s6:#008300;--s7:#6250d6;--band:rgba(11,11,11,.07);
+  --w1:#86b6ef;--w2:#5598e7;--w3:#2a78d6;--w4:#1c5cab;--w5:#104281;--hn:#e7e5df;background:var(--page);color:var(--ink)}
 .a3d-clb-dshp,.a3d-clb-dtxt,.a3d-clb-dimg,.a3d-clb-dgrp,.a3d-clb-dfrm,.a3d-clb-dmask{position:absolute;box-sizing:border-box;margin:0}
 .a3d-clb-dshp{overflow:visible}
 .a3d-clb-dtxt{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.25}

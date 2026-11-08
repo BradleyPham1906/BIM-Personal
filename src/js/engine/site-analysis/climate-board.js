@@ -18,7 +18,7 @@ import {
   bimBrdHtml, bimBrdZoom, bimClbLabel, bimClbWhich, bimFigCapCard, bimFigCapKpis
 } from '../sheets/board-figures.js';
 import { A3D_BRD, bimBrdDlgClose, bimBrdEsc, bimBrdWire } from '../sheets/board-edit.js';
-import { bimBdeAfterDraw, bimBdeWantsKey } from '../sheets/board-design-edit.js';
+import { A3D_BDE, bimBdeAfterDraw, bimBdeWantsKey } from '../sheets/board-design-edit.js';
 import { bimBdePanelClose } from '../sheets/board-design-panel.js';
 import { bimPresPanelRefresh, bimPresThumbsQueue } from '../sheets/presentation-panel.js';
 
@@ -42,7 +42,8 @@ import { bimPresPanelRefresh, bimPresThumbsQueue } from '../sheets/presentation-
   function bimClbKey(ev){
     if(!A3D_CLB.open)return false;
     var a=document.activeElement,b=bimClbEl(),dl=A3D_BRD.dlg;   /* __acad3dV172b: Edit's dialogs are the board's */
-    if(a&&a!==document.body&&!(b&&b.contains(a))&&!(dl&&dl.contains(a))&&(/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)||a.isContentEditable))return false;
+    if(a&&a!==document.body&&!(b&&b.contains(a))&&!(dl&&dl.contains(a))&&!(A3D_BDE.pnl&&A3D_BDE.pnl.contains(a))&&   /* __acad3dV174a: the layers panel is the board's too */
+      (/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)||a.isContentEditable))return false;
     if(ev.key==='Escape'){ev.preventDefault();ev.stopImmediatePropagation();if(!bimBrdEsc())bimClbClose();return true;}   /* __acad3dV172b: a dialog, then Edit, then the board */
     if(bimBdeWantsKey(ev))return true;   /* __acad3dV174a: Ctrl+G and the order keys, while a board is designed */
     if(ev.ctrlKey||ev.metaKey||ev.altKey||/^F\d+$/.test(ev.key))return false;

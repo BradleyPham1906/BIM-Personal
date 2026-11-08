@@ -2,13 +2,14 @@
   /* ================= __acad3dV174a: a board's element tree =================
      docs/research/research-presentation-boards.md, 4.1 to 4.3 and D1 to D5, D19. A board one designs keeps one
      tree of elements (B.els), the bottom of the list first: the order is the drawing order, the last drawn in front,
-     as PDF, SVG, Figma and Penpot keep it. Every element has its box in millimetres on the board (1408 px across is
-     400 mm, A3 landscape inside its 10 mm margins, as a board prints), an opacity, a blend mode, lock, hide and a mask
+     as PDF, SVG, Figma and Penpot keep it. Every element has its box in millimetres on paper: a board prints at one
+     CSS pixel to the 96th of an inch (the print window does not zoom it), so its 1408 px are 372.5 mm across, inside
+     A3 landscape's 400 mm. Each element has an opacity, a blend mode, lock, hide and a mask
      flag; frames and groups have children. A figure of the board (V172b's list) is an element of the tree, 'fig',
      that names its figure: its place stays in the list, in columns, so every path that arranges figures is unchanged
      and a board made before V174 looks as it did (D19). The tree is made at the first change that needs it.
      Functions only, no tables made at load: a project is read before this file has run (bimPresValid). */
-  function bimBtrPxMm(){return 3.52;}   /* px per mm: 1408 px over 400 mm */
+  function bimBtrPxMm(){return 96/25.4;}   /* CSS px per mm, as printed */
   function bimBtrMax(){return {nodes:400,depth:8};}
   /* the W3C 16 under Figma's names, in Figma's order (D2), and Pass through for frames and groups (D3):
      [key, name, CSS and canvas keyword] */

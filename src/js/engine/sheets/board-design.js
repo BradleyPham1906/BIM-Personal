@@ -133,8 +133,7 @@ import { A3D_BIMG, bimBimgMissing, bimBimgUrl } from './board-images.js';
       if(m.t==='rect')return 'clip-path:inset(0'+(m.r>0?' round '+bimBdsPx(m.r)+'px':'')+');';
       if(m.t==='ellipse')return 'clip-path:ellipse(50% 50% at 50% 50%);';
       if(m.t==='poly'||m.t==='star'){
-        var W=bimBdsPx(m.w),H=bimBdsPx(m.h);
-        return 'clip-path:polygon('+bimBdsPts(m,W,H).map(function(p){return bimBrdPx(W?p[0]/W*100:0)+'% '+bimBrdPx(H?p[1]/H*100:0)+'%';}).join(',')+');';
+        return 'clip-path:polygon('+bimBdsPts(m,100,100).map(function(p){return p[0]+'% '+p[1]+'%';}).join(',')+');';   /* in hundredths of its box */
       }
       return 'clip-path:inset(0);';   /* an image's outline is its box */
     }
