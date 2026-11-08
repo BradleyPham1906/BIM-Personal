@@ -94,7 +94,20 @@ overridden part stops following (wherever tools have overrides); every tool with
 
 ### 3a. The independent check
 
-(Filled from `independent-check.md` when the second reader reports.)
+Research agent 4 re-read 63 facts at their sources (`independent-check.md`, with pinned commits: Penpot `904cdd97`,
+QGIS `91d4a333`, ecma402 `3691634`, browser-compat-data `82daeeb`, Preact signals `30a797e`, MobX `2a97ff6`,
+snowleopard/build `43b18b9`): **61 confirmed** (4 of them from forum posts only, S), **2 not confirmed**, none
+unreachable. Both failures are corrected here, and neither is a fact the code uses:
+- AutoCAD's stored field code closes with `%>%`: `%<\AcVar Date \f "M/d/yyyy"%>%` (Autodesk's ActiveX and LISP examples).
+- ArcGIS's help does not say dynamic text is "evaluated when drawn"; it says "Dynamic elements update in response to
+  changes in the data or the map extent". The practical reading (always live) stands; the wording is the vendor's.
+
+Smaller corrections taken: LayOut's per-section Resets (Camera, Style, Effects) are confirmed from the forum only (S);
+its help names Reset All, the Tags Reset and the per-tag resets (P). Penpot's comment that geometry "never triggers
+touched" is contradicted by its code, which marks geometry on a copy's edit unless told not to; the code is the rule
+read here, and "geometry is layout" stays our own choice. Word's Ctrl+Shift+F9 moves from U to P. The benchmark,
+re-run, agreed within 25 per cent on 22 of 23 timings (the revision compare: 0.34 ms against 0.62 ms). Canva's
+help page answered 200 on the re-check; its facts were not re-read and stay U.
 
 ## 4. Findings, by topic
 
@@ -121,7 +134,7 @@ says the same words. Read here as the boards' figures and KPI cards; asked as D1
 
 | Model | Tools | Fits here |
 |---|---|---|
-| Always live, drawn from the source | Revit's views, schedules and labels ("Revit updates all sheets", P); Archicad autotext (P); ArcGIS dynamic text, evaluated when drawn (P); QGIS labels (P); Rhino fields (P); Vectorworks wireframe viewports and linked text (P) | Numbers, text, schedules, legends, views: all are cheap here (E2) |
+| Always live, drawn from the source | Revit's views, schedules and labels ("Revit updates all sheets", P); Archicad autotext (P); ArcGIS dynamic text, which "update[s] in response to changes in the data or the map extent" (P); QGIS labels (P); Rhino fields (P); Vectorworks wireframe viewports and linked text (P) | Numbers, text, schedules, legends, views: all are cheap here (E2) |
 | On a trigger, with a stale mark | Archicad Auto (when the layout is activated) and Manual (frozen until Update); LayOut references (Update, or check at open); Vectorworks rendered viewports (Update); AutoCAD FIELDEVAL (open 1, save 2, plot 4, eTransmit 8, regen 16, default 31) | Analyses: Ladybug studies, sun hours, solar, cut and fill |
 
 Confidence high: the two models are documented by the vendors themselves, and agree across tools.
@@ -133,7 +146,7 @@ Drawing Manager lists statuses: OK, Modified (the source changed), Missing, Embe
 
 ### 4.3 The override (practice-bim 3.2, 3.3; practice-design-gis 3.3 to 3.6, 5)
 
-- **LayOut** (P): per group of a viewport's settings, each group with its own Reset, and Reset All; tag overrides can
+- **LayOut** (P for Reset All and the tags' resets; S, forum, for the Camera, Style and Effects resets): per group of a viewport's settings, each group with its own Reset, and Reset All; tag overrides can
   be pushed back to the model; overrides are kept when the model reference updates (S) and copied with the viewport.
 - **Figma** (P): per property of an instance; an overridden property no longer follows the main component while the
   rest do; reset one property, or Reset all changes.
@@ -181,7 +194,7 @@ every criterion but the smallest store, where Penpot's groups win. Confidence hi
 |---|---|---|
 | Archicad | `<PROJECTNAME>`, `<LAYOUTNUMBER>`, `<DRAWINGSCALE>`, `<SITEGROSSAREA>`, from a picker; its keys changed between AC22 and AC27 | No |
 | LayOut | `<PageNumber>`, `<SceneName>`, `<Ratio( to )>`, any component attribute; Sequence tags | No |
-| AutoCAD | `%<\AcVar Date \f "M/d/yyyy">%`, written by a dialog | Some fields are formulas |
+| AutoCAD | `%<\AcVar Date \f "M/d/yyyy"%>%`, written by a dialog | Some fields are formulas |
 | Rhino 8 | `%<Area("id","Unit")>%`, with arithmetic and Python | Yes |
 | QGIS | `[% expression %]` | Yes |
 | ArcGIS Pro | `<dyn type="..." property="..." decimalPlaces="..."/>` | No |
