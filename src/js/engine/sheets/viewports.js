@@ -37,6 +37,7 @@ import { bimSheetEvtToMM, bimSheetHitTest, bimSheetOnScreen } from './present.js
 import { bimLtMenuOpen } from './layout-tabs.js';
 import { bimBoardPrintHtml, bimClbCss, bimPresSeq } from './boards.js';
 import { bimBoardKey, bimBoardLabel } from './board-figures.js';
+import { bimBimgLoad, bimBimgUsed } from './board-images.js';
 import { refreshBrowser } from './presentation-panel.js';
 import { closeDlg } from '../ui/touch-input.js';
 import { a3dToast } from '../bim/csg-booleans.js';
@@ -890,16 +891,17 @@ import { a3dToast } from '../bim/csg-booleans.js';
   }
   function bimPrintSet(){
     if(!bimPresSeq().length){a3dToast('There are no pages to print yet: every sheet is a page');return false;}   /* __acad3dV162: a board is one too */
-    var r;
-    try{r=bimPrintSetHtml();}
-    catch(eB){console.warn('[BIM] The set could not be put together for printing',eB);a3dToast('The set could not be printed -- see the console');return false;}
-    var w=window.open('','_blank');
+    var r,w=window.open('','_blank');
     if(!w){a3dToast('The print window was blocked -- allow pop-ups for this page and try again');return false;}
+    bimBimgLoad(bimBimgUsed(),function(){   /* __acad3dV174a: the boards' images loaded before the set is written */
+    try{r=bimPrintSetHtml();}
+    catch(eB){console.warn('[BIM] The set could not be put together for printing',eB);a3dToast('The set could not be printed -- see the console');try{w.close();}catch(eC){}return;}
     try{w.document.write(r.html);w.document.close();}
-    catch(eW){console.warn('[BIM] The print window could not be written',eW);a3dToast('The set could not be printed -- see the console');return false;}
+    catch(eW){console.warn('[BIM] The print window could not be written',eW);a3dToast('The set could not be printed -- see the console');return;}
     if(r.lost&&r.lost.length)a3dToast('Page'+(r.lost.length>1?'s ':' ')+r.lost.join(', ')+' could not be drawn -- see the console');   /* __acad3dV162 */
     else if(r.bad.length)a3dToast('Page'+(r.bad.length>1?'s ':' ')+r.bad.join(', ')+' printed from '+(r.bad.length>1?'their images':'its image')+': the vector drawing failed -- see the console');
     else a3dToast('Printing '+r.n+' page'+(r.n===1?'':'s')+' -- Save as PDF in the print dialog makes a PDF');
+    });
     return true;
   }
   function bimPrintSheet(){

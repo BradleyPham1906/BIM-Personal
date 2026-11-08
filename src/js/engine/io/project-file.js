@@ -5,6 +5,7 @@ import { fitScene } from '../ui/tool-palette.js';
 import { bimProjectRecord } from '../core/objects-save.js';
 import { bimProjectLabel } from '../ui/project-tabs.js';
 import { bimDocsOpenData } from '../assets/templates.js';
+import { bimBimgForFile, bimBimgFromFile } from '../sheets/board-images.js';
 import { a3dToast } from '../bim/csg-booleans.js';
 
   // ---- __acad3dV14: Project file save/load. Builds on bimSnapshotState/bimRestoreState (the
@@ -16,8 +17,10 @@ import { a3dToast } from '../bim/csg-booleans.js';
      belongs to this browser and is not written. V172f and older read a version-2 file with their "newer version" warning
      and take every field they know (part 14.7). */
   function bimBuildProjectEnvelope(){
-    return JSON.stringify({app:'acad3d-project',formatVersion:2,savedAt:new Date().toISOString(),appVersion:BIM_APP_VERSION.v,
-      data:bimProjectRecord()});
+    var env={app:'acad3d-project',formatVersion:2,savedAt:new Date().toISOString(),appVersion:BIM_APP_VERSION.v,
+      data:bimProjectRecord()},im=bimBimgForFile();
+    if(im)env.imgs=im;   /* __acad3dV174a: the boards' images, each once by its hash; an older version leaves the field */
+    return JSON.stringify(env);
   }
   function bimParseProjectEnvelope(text){
     var parsed;
@@ -27,7 +30,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
     var warn=null;
     if(parsed.formatVersion>2)warn=   /* __acad3dV172g: version 2 is this build's */
       'this project file is from a newer version, some data may not load correctly';
-    return {data:parsed.data,warn:warn};
+    return {data:parsed.data,warn:warn,imgs:parsed.imgs||null};
   }
   /* __acad3dV115: with several projects open, "project.acad3d.json" and "plan.pdf" no longer say
      which project a file came from. Every download starts with the project's name, the way
@@ -65,6 +68,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
     filename=filename||'project.acad3d.json';
     var res=bimParseProjectEnvelope(text);
     if(res.error){a3dToast(filename+': '+res.error);return false;}
+    if(res.imgs)bimBimgFromFile(res.imgs);   /* __acad3dV174a */
     var id=bimDocsOpenData(res.data,filename);
     if(!id)return false;   /* __acad3dV172g: the new project's id, for its file */
     fitScene();

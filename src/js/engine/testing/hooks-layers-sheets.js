@@ -54,6 +54,12 @@ import {
   bimBoardAdd, bimBoardById, bimBoardMenuDo, bimBoardMenuItems, bimBoardPrintHtml, bimBoardRemove,
   bimBoardShow, bimClbCss, bimPresData, bimPresMoveNear, bimPresSeq, bimPresStep
 } from '../sheets/boards.js';
+import { bimBrdRec } from '../sheets/board-figures.js';
+import { bimBtrFigCols } from '../sheets/board-tree.js';
+import { bimBimgHash, bimBimgOk, bimBimgUsed } from '../sheets/board-images.js';
+import {
+  A3D_BDE, bimBdeAdd, bimBdeDo, bimBdeEnter, bimBdeSet, bimBdeSync
+} from '../sheets/board-design-edit.js';
 import { A3D_PRP, bimPresHost, bimPresOpenPage } from '../sheets/presentation-panel.js';
 import { a3dToast, objById } from '../bim/csg-booleans.js';
 import { a3drIcon, a3drLabel } from '../ui/discipline-tabs.js';
@@ -164,6 +170,11 @@ import { a3drIcon, a3drLabel } from '../ui/discipline-tabs.js';
   window.__a3dBoardMenuDo=function(a,id){return bimBoardMenuDo(a,id);};
   window.__a3dBoardPrintHtml=function(k){return bimBoardPrintHtml(k);};
   window.__a3dPrintSetHtml=function(){return bimPrintSetHtml();};
+  /* __acad3dV174a: designing the open board, in Edit: add, act on the selection, set fields, select; the tree as kept */
+  window.__a3dBoardDesign={add:function(k,o){return bimBdeAdd(k,o);},act:function(a,ids){return bimBdeDo(a,ids);},set:function(id,o){return bimBdeSet(id,o);},
+    select:function(ids){A3D_BDE.sel=(ids||[]).slice();bimBdeSync();return A3D_BDE.sel.slice();},enter:function(up){return bimBdeEnter(!!up);},
+    tree:function(){var B=bimBrdRec();return B&&B.els?JSON.parse(JSON.stringify(B.els)):null;},hash:bimBimgHash,imageOk:bimBimgOk,
+    figCols:bimBtrFigCols,used:bimBimgUsed};
   window.__a3dClbCss=function(){return bimClbCss();};
   window.__a3dClbState=function(){var b=bimClbEl();return {open:A3D_CLB.open,kind:A3D_CLB.kind,board:A3D_CLB.board,narrow:A3D_CLB.narrow,inView:!!(b&&b.parentNode&&b.parentNode.classList&&b.parentNode.classList.contains('a3d-vp')),cls:b?b.className:null,w:b?bimClbW(b):0};};
   window.__a3dSlideshowEnd=function(){return bimSlideshowEnd();};

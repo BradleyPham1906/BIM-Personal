@@ -11,6 +11,7 @@ import { bimSlideshowStart } from './present.js';
 import { bimLtMenuOpen, bimSheetMove, bimSheetMoveNear } from './layout-tabs.js';
 import { bimBoardKey, bimBoardKeyLabel, bimBoardLabel, bimBrdKeep, bimClbWhich } from './board-figures.js';
 import { bimBrdDupBoard, bimBrdEdit, bimBrdNewUi } from './board-edit.js';
+import { bimBimgLoad, bimBimgUsed } from './board-images.js';
 import { A3D_PRP, bimPresPanelRefresh, refreshBrowser } from './presentation-panel.js';
 import { a3dToast } from '../bim/csg-booleans.js';
 
@@ -198,13 +199,15 @@ import { a3dToast } from '../bim/csg-booleans.js';
     if(!bimBoardName(kind)&&!bimBoardById(kind))kind=bimClbWhich();   /* __acad3dV172b */
     var w=window.open('','_blank');
     if(!w){a3dToast('The print window was blocked -- allow pop-ups for this page and try again');return false;}
+    bimBimgLoad(bimBimgUsed(),function(){   /* __acad3dV174a: its images loaded first */
     try{
       w.document.write('<html><head><title>'+bimEsc(bimProjectLabel()+' - '+bimBoardKeyLabel(kind))+'</title><style>'+bimClbCss()+
         '@page{size:420mm 297mm;margin:10mm}body{margin:0;background:#fff}</style></head><body>'+bimBoardPrintHtml(kind)+
         '<script>window.onload=function(){window.focus();window.print();};<\/script></body></html>');
       w.document.close();
-    }catch(eW){console.warn('[BIM] The board could not be put in the print window',eW);a3dToast('The board could not be printed -- see the console');return false;}
+    }catch(eW){console.warn('[BIM] The board could not be put in the print window',eW);a3dToast('The board could not be printed -- see the console');return;}
     a3dToast('Printing '+bimBoardKeyLabel(kind)+' -- Save as PDF in the print dialog makes a PDF');
+    });
     return true;
   }
   /* a board's thumbnail: the board as it prints, written into its frame when the model has moved
