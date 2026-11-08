@@ -1,0 +1,36 @@
+Chromium 153.0.8010.12, Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.8010.12 Safari/537.36
+cells per mode: 25600 (half opaque, half with alpha in 255/254/192/128/64/16)
+error = |canvas - W3C reference| in 8-bit units, unpremultiplied colour; pm = premultiplied colour; a = alpha
+normal | default ctx | opaque max 0.00 | mean 0.000 | >2: 0 | translucent max 11.20 | mean 0.909 | >2: 920 | pm max 1.87 | a max 0.56
+   worst opaque: {"e":0,"b":[0,0,0,255],"s":[255,255,255,255],"got":[255,255,255,255],"want":[255,255,255]}
+normal | willReadFrequently | opaque max 0.00 | mean 0.000 | >2: 0 | translucent max 11.20 | mean 0.909 | >2: 920 | pm max 1.87 | a max 0.56
+multiply | default ctx | opaque max 1.00 | mean 0.530 | >2: 0 | translucent max 11.45 | mean 0.998 | >2: 798 | pm max 1.74 | a max 1.00
+   worst opaque: {"e":1,"b":[170,1,254,255],"s":[121,1,235,255],"got":[81,1,234,255],"want":[80.67,0,234.08]}
+multiply | willReadFrequently | opaque max 1.00 | mean 0.530 | >2: 0 | translucent max 11.45 | mean 0.998 | >2: 798 | pm max 1.74 | a max 1.00
+screen | default ctx | opaque max 0.50 | mean 0.356 | >2: 0 | translucent max 7.63 | mean 0.764 | >2: 512 | pm max 1.74 | a max 0.50
+   worst opaque: {"e":0.5,"b":[128,98,63,255],"s":[254,191,9,255],"got":[255,216,70,255],"want":[254.5,215.6,69.78]}
+screen | willReadFrequently | opaque max 0.50 | mean 0.356 | >2: 0 | translucent max 7.63 | mean 0.764 | >2: 512 | pm max 1.74 | a max 0.50
+overlay | default ctx | opaque max 0.99 | mean 0.509 | >2: 0 | translucent max 10.93 | mean 1.027 | >2: 811 | pm max 1.75 | a max 0.94
+   worst opaque: {"e":0.99,"b":[252,254,98,255],"s":[46,254,255,255],"got":[250,254,196,255],"want":[250.08,254.99,196]}
+overlay | willReadFrequently | opaque max 0.99 | mean 0.509 | >2: 0 | translucent max 10.93 | mean 1.027 | >2: 811 | pm max 1.75 | a max 0.94
+darken | default ctx | opaque max 0.00 | mean 0.000 | >2: 0 | translucent max 10.13 | mean 0.898 | >2: 846 | pm max 1.87 | a max 0.94
+   worst opaque: {"e":0,"b":[0,0,0,255],"s":[255,255,255,255],"got":[0,0,0,255],"want":[0,0,0]}
+darken | willReadFrequently | opaque max 0.00 | mean 0.000 | >2: 0 | translucent max 10.13 | mean 0.898 | >2: 846 | pm max 1.87 | a max 0.94
+lighten | default ctx | opaque max 0.00 | mean 0.000 | >2: 0 | translucent max 11.20 | mean 0.992 | >2: 926 | pm max 1.71 | a max 0.94
+   worst opaque: {"e":0,"b":[0,0,0,255],"s":[255,255,255,255],"got":[255,255,255,255],"want":[255,255,255]}
+lighten | willReadFrequently | opaque max 0.00 | mean 0.000 | >2: 0 | translucent max 11.20 | mean 0.992 | >2: 926 | pm max 1.71 | a max 0.94
+color-dodge | default ctx | opaque max 0.50 | mean 0.258 | >2: 0 | translucent max 21.11 | mean 0.708 | >2: 348 | pm max 21.23 | a max 0.50
+   worst opaque: {"e":0.5,"b":[127,114,171,255],"s":[127,255,65,255],"got":[253,255,230,255],"want":[253.01,255,229.5]}
+color-dodge | willReadFrequently | opaque max 0.50 | mean 0.258 | >2: 0 | translucent max 21.11 | mean 0.708 | >2: 348 | pm max 21.23 | a max 0.50
+color-burn | default ctx | opaque max 0.51 | mean 0.223 | >2: 0 | translucent max 10.76 | mean 0.698 | >2: 342 | pm max 10.60 | a max 0.50
+   worst opaque: {"e":0.51,"b":[1,140,58,255],"s":[254,124,27,255],"got":[0,18,0,255],"want":[0,18.51,0]}
+color-burn | willReadFrequently | opaque max 0.51 | mean 0.223 | >2: 0 | translucent max 10.76 | mean 0.698 | >2: 342 | pm max 10.60 | a max 0.50
+hard-light | default ctx | opaque max 0.99 | mean 0.508 | >2: 0 | translucent max 10.93 | mean 1.052 | >2: 861 | pm max 2.19 | a max 0.94
+   worst opaque: {"e":0.99,"b":[252,254,98,255],"s":[46,254,255,255],"got":[91,254,255,255],"want":[90.92,254.99,255]}
+hard-light | willReadFrequently | opaque max 0.99 | mean 0.508 | >2: 0 | translucent max 10.93 | mean 1.052 | >2: 861 | pm max 2.19 | a max 0.94
+soft-light | default ctx | opaque max 0.50 | mean 0.356 | >2: 0 | translucent max 4.51 | mean 0.695 | >2: 345 | pm max 1.46 | a max 0.50
+   worst opaque: {"e":0.5,"b":[65,29,254,255],"s":[217,1,84,255],"got":[110,3,254,255],"want":[109.75,3.5,253.66]}
+soft-light | willReadFrequently | opaque max 0.50 | mean 0.356 | >2: 0 | translucent max 4.51 | mean 0.695 | >2: 345 | pm max 1.46 | a max 0.50
+difference | default ctx | opaque max 0.00 | mean 0.000 | >2: 0 | translucent max 18.30 | mean 1.679 | >2: 2471 | pm max 2.71 | a max 0.94
+   worst opaque: {"e":0,"b":[127,114,171,255],"s":[127,255,65,255],"got":[0,141,106,255],"want":[0,141,106]}
+difference | willReadFrequently | opaque max 0.00 | mean 0.000 | >2: 0 | translucent max 18.30 | mean 1.679 | >2: 2471 | pm max 2.71 | a max 0.94
