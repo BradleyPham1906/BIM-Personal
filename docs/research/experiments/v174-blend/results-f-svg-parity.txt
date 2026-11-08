@@ -1,1 +1,19 @@
 Chromium 153.0.8010.12; 400 pairs per mode; half opaque, half alpha 0.5/0.75
+  normal       SVG vs canvas max channel diff: opaque 0, translucent 0 | SVG vs W3C (opaque) 0.00
+  multiply     SVG vs canvas max channel diff: opaque 0, translucent 0 | SVG vs W3C (opaque) 0.98
+  screen       SVG vs canvas max channel diff: opaque 0, translucent 0 | SVG vs W3C (opaque) 0.50
+  overlay      SVG vs canvas max channel diff: opaque 0, translucent 0 | SVG vs W3C (opaque) 0.97
+  darken       SVG vs canvas max channel diff: opaque 0, translucent 0 | SVG vs W3C (opaque) 0.00
+  lighten      SVG vs canvas max channel diff: opaque 0, translucent 0 | SVG vs W3C (opaque) 0.00
+  color-dodge  SVG vs canvas max channel diff: opaque 0, translucent 5 | SVG vs W3C (opaque) 0.50
+  color-burn   SVG vs canvas max channel diff: opaque 0, translucent 4 | SVG vs W3C (opaque) 0.50
+  hard-light   SVG vs canvas max channel diff: opaque 0, translucent 0 | SVG vs W3C (opaque) 0.97
+  soft-light   SVG vs canvas max channel diff: opaque 0, translucent 2 | SVG vs W3C (opaque) 0.50
+  difference   SVG vs canvas max channel diff: opaque 0, translucent 0 | SVG vs W3C (opaque) 0.00
+  exclusion    SVG vs canvas max channel diff: opaque 0, translucent 0 | SVG vs W3C (opaque) 1.97
+  hue          SVG vs canvas max channel diff: opaque 0, translucent 3 | SVG vs W3C (opaque) 0.50
+  saturation   SVG vs canvas max channel diff: opaque 0, translucent 2 | SVG vs W3C (opaque) 0.50
+  color        SVG vs canvas max channel diff: opaque 0, translucent 2 | SVG vs W3C (opaque) 0.49
+  luminosity   SVG vs canvas max channel diff: opaque 0, translucent 2 | SVG vs W3C (opaque) 0.49
+SVG masks (alpha of black rect): {"luminanceDefault_grey128":128,"alphaType_quarter":64,"luminanceDefault_red":54}  [luminance of grey 128 = 128; alpha-type 0.25 = 64; red under luminance: 0.2126*255 = 54 (sRGB) or about 0.2126*255 in linear = 54 too; check]
+SVG isolation over rgb(0,128,255), red multiply child: {"plainGroup":[0,0,0,255],"isolatedGroup":[255,0,0,255]}
