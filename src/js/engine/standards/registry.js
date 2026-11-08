@@ -5,6 +5,7 @@ import { bimDispNum } from '../properties/palette.js';
 import { bimAnalyzeRefresh } from '../analysis/analyze-tab.js';
 import { BIM_SA_CLS, bimSaAuto, bimSaPair, bimSaToday } from '../site-analysis/workspace.js';
 import { bimSaRefresh, refreshProps } from '../site-analysis/panel.js';
+import { bimCakeLiftObj } from '../map/layer-cake.js';
 import { paint } from '../map/terrain-3d.js';
 import { saveSoon } from '../bim/region-regenerate.js';
 import { bimEntRefit } from '../assets/scale-assets.js';
@@ -1040,7 +1041,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
     var q=o.pos||[0,0,0];
     return !!(q[0]||q[1]||q[2])||!o.dg.gen||bimDgCore(o.dg)!==o.dg.gen;
   }
-  function bimDgW(o,p){var q=bimObjOffset(o);return [p[0]+q[0],(p[1]||0)+q[1],p[2]+q[2]];}
+  function bimDgW(o,p){var q=bimObjOffset(o);return [p[0]+q[0],(p[1]||0)+q[1]+bimCakeLiftObj(o),p[2]+q[2]];}   /* __acad3dV173d: its tier in the layer cake */
   function bimDgDiags(a){return A3D.objs.filter(function(x){return bimIsDiag(x)&&(!a||x.dg.a===a);});}
 export {
   A3D_DG, BIM_DG_AN, BIM_DG_STD, BIM_STD_DATA, BIM_STD_HOW, BIM_STD_LV, BIM_STD_PACK_MAX, bimAccIxr,

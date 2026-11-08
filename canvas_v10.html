@@ -193,6 +193,10 @@ body.light-theme .a3d-projsub{color:#777}
 .a3d-lyhd{display:flex;align-items:center;justify-content:space-between;padding:4px 4px 6px;flex-wrap:wrap;gap:4px}
 .a3d-lyby{display:inline-flex;align-items:center;gap:4px;font-size:11px;color:#9aa7b4}   /* __acad3dV173c */
 .a3d-lyby select{font-size:11px;max-width:120px}
+.a3d-lycake{font-size:11px;padding:2px 6px;border-radius:5px;border:1px solid rgba(255,255,255,.18);background:transparent;color:#aeb6bf;cursor:pointer}   /* __acad3dV173d */
+.a3d-lycake.on{background:#2f7fe0;border-color:#2f7fe0;color:#fff}
+body.light-theme .a3d-lycake{color:#444;border-color:rgba(0,0,0,.2)}
+body.light-theme .a3d-lycake.on{color:#fff}
 body.light-theme .a3d-lyby{color:#555}
 .a3d-lyttl{font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#aeb8c2}
 .a3d-lybtns{display:flex;gap:2px}
@@ -17695,7 +17699,7 @@ try{
       memo[l.id]=r;
       return r;
     }
-    var h='<div class="a3d-lyp"><div class="a3d-lyhd"><span class="a3d-lyttl">Layers</span>'+bimLyListBySelect()+'<span class="a3d-lybtns">'+   /* __acad3dV173c */
+    var h='<div class="a3d-lyp"><div class="a3d-lyhd"><span class="a3d-lyttl">Layers</span>'+bimLyListBySelect()+bimCakeBtnHtml()+'<span class="a3d-lybtns">'+   /* __acad3dV173c; __acad3dV173d: the layer cake */
       bimLyBtn('new','New layer',BIM_LY_IC.add)+
       bimLyBtn('sub','New sub-layer under the selected layer',BIM_LY_IC.sub)+
       bimLyBtn('std','New layer with an AIA / NCS standard name',BIM_LY_IC.std)+
@@ -18046,6 +18050,7 @@ try{
       if(!inLyp(t))return;
       try{
         if((b=t.closest('[data-lyact]'))){bimLyAct(b.getAttribute('data-lyact'));return;}
+        if(t.closest('[data-lycake]')){bimCakeSet();return;}   /* __acad3dV173d */
         if((b=t.closest('[data-lytog]'))){l=b.getAttribute('data-lytog');A3D_LY.open[l]=!A3D_LY.open[l];refreshLayers();return;}
         if((b=t.closest('[data-lycur]'))){if(bimLayerMakeCurrent(b.getAttribute('data-lycur')))A3D_LY.sel=A3D.activeLayer;refreshLayers();return;}
         if((b=t.closest('[data-lyon]'))){l=bimLayerById(b.getAttribute('data-lyon'));if(l)bimLayerSet(l.id,'visible',l.visible===false);return;}
@@ -21545,7 +21550,7 @@ try{
     var q=o.pos||[0,0,0];
     return !!(q[0]||q[1]||q[2])||!o.dg.gen||bimDgCore(o.dg)!==o.dg.gen;
   }
-  function bimDgW(o,p){var q=bimObjOffset(o);return [p[0]+q[0],(p[1]||0)+q[1],p[2]+q[2]];}
+  function bimDgW(o,p){var q=bimObjOffset(o);return [p[0]+q[0],(p[1]||0)+q[1]+bimCakeLiftObj(o),p[2]+q[2]];}   /* __acad3dV173d: its tier in the layer cake */
   function bimDgDiags(a){return A3D.objs.filter(function(x){return bimIsDiag(x)&&(!a||x.dg.a===a);});}
   /* ---- the layers: Site analysis, and one under it for each analysis ---- */
   function bimDgLayerFind(id,name,parentId){
@@ -37679,7 +37684,7 @@ try{
       for(j=0;j<c.feats.length;j++){
         if(!an[j]||(mask&&!mask.pass[c.feats[j].fi]))continue;
         t=bimDataLabelText(L[i].label,F[c.feats[j].fi]&&F[c.feats[j].fi].p);
-        if(t)lq.push({t:t,a:an[j]});
+        if(t)lq.push({t:t,a:an[j],y:bimCakeLift('data',L[i].id)});   /* __acad3dV173d: on its tier */
       }
       lq.sort(function(u,v){return v.a.pri-u.a.pri;});
       Q=Q.concat(lq);
@@ -37690,7 +37695,7 @@ try{
       ctx.textBaseline='middle';ctx.font='11px sans-serif';
       free=function(bx){for(var k=0;k<placed.length;k++){var q=placed[k];if(bx[0]<q[0]+q[2]&&q[0]<bx[0]+bx[2]&&bx[1]<q[1]+q[3]&&q[1]<bx[1]+bx[3])return false;}return true;};
       for(i=0;i<Q.length&&n<BIM_DLAB_MAX;i++){
-        p=toScreen([Q[i].a.x,y,Q[i].a.z],V,W,H);
+        p=toScreen([Q[i].a.x,y+(Q[i].y||0),Q[i].a.z],V,W,H);
         if(!p||!isFinite(p[0])||!isFinite(p[1])||p[0]<-50||p[1]<-20||p[0]>W+50||p[1]>H+20)continue;
         wd=ctx.measureText(Q[i].t).width;
         x0=Q[i].a.kind==='point'?p[0]+6:p[0]-wd/2;
@@ -37787,6 +37792,86 @@ try{
     r+=row('Labels','<input type="text" data-propdata="label:'+id+'" value="'+bimEsc(L.label||'')+'" spellcheck="false" list="a3d-dlab-'+id+'" placeholder="a field, or {NAME} ({AREA} m2)" aria-label="Label of '+bimEsc(L.name)+'">'+
       '<datalist id="a3d-dlab-'+id+'">'+o+'</datalist>');
     return r;
+  }
+
+  /* ================= __acad3dV173d: McHarg's layer cake =================
+     McHarg's method (Design with Nature, 1969, as quoted in the research): each factor its own
+     transparent map, stacked over the base. The owner's D13: the site analyses and the data layers
+     lifted over the map, each to a height of its own, in an oblique view, its name beside it; the
+     result layers stay in plan (they draw only there). The lift is applied where every point is
+     placed (bimDgW for an analysis, drawDataLayers and bimDataPick for a data layer), so drawing and
+     picking agree. The cake is a way of looking, like a view: neither saved nor undone. */
+  var A3D_CAKE={on:false,memo:null};
+  /* the tiers, bottom up: the shown data layers in drawing order, then each site analysis layer
+     that holds an analysis; each {kind, id, name, lift} */
+  function bimCakeTiers(){
+    var out=[],L=bimDataList(),i,ly,has={},gap=bimCakeGap();
+    if(!A3D_CAKE.on)return out;
+    for(i=0;i<L.length;i++)if(L[i].visible)out.push({kind:'data',id:L[i].id,name:L[i].name});
+    bimDgDiags().forEach(function(o){if(o.layer)has[o.layer]=1;});
+    for(i=0;i<A3D.layers.length;i++){
+      ly=A3D.layers[i];
+      if(has[ly.id]&&ly.visible!==false)out.push({kind:'analysis',id:ly.id,name:String(ly.name||'').replace(/^Site analysis - /,'')});
+    }
+    for(i=0;i<out.length;i++)out[i].lift=(i+1)*gap;
+    return out;
+  }
+  /* the gap between tiers: a fifth of the site context's radius, 10 to 200 m */
+  function bimCakeGap(){return Math.max(10,Math.min(200,bimCtxSettings().radius/5));}
+  /* every point of an analysis asks for its lift: the tiers are read once a frame */
+  function bimCakeLift(kind,id){
+    if(!A3D_CAKE.on)return 0;
+    var m=A3D_CAKE.memo,T,i;
+    if(!m||m.frame!==A3D.frames){
+      T=bimCakeTiers();m={frame:A3D.frames,lift:{}};
+      for(i=0;i<T.length;i++)m.lift[T[i].kind+':'+T[i].id]=T[i].lift;
+      A3D_CAKE.memo=m;
+    }
+    return m.lift.hasOwnProperty(kind+':'+id)?m.lift[kind+':'+id]:0;
+  }
+  /* an analysis element's lift: its layer's tier */
+  function bimCakeLiftObj(o){return A3D_CAKE.on&&o&&o.layer?bimCakeLift('analysis',o.layer):0;}
+  /* on or off; on, a plan turns to the oblique view, where the heights can be seen */
+  function bimCakeSet(on){
+    A3D_CAKE.on=on===undefined?!A3D_CAKE.on:!!on;
+    A3D_CAKE.memo=null;
+    var n=bimCakeTiers().length;
+    if(A3D_CAKE.on&&bimCameraIsPlan())setView('iso');
+    refreshLayers();paint();
+    a3dToast(!A3D_CAKE.on?'Layer cake: off':n?'Layer cake: '+n+' layer'+(n===1?'':'s')+' lifted over the map, '+Math.round(bimCakeGap())+' m apart':
+      'Layer cake: no shown site analysis or data layer to lift');
+    return A3D_CAKE.on;
+  }
+  /* each tier's frame and name, at the site context's square: drawn after the layers, never on paper */
+  function drawLayerCake(ctx,V,W,H){
+    A3D.lastCakeTiers=0;
+    if(!A3D_CAKE.on||A3D.sheetCapture||A3D_PLOT.on)return;
+    var T=bimCakeTiers(),r=bimCtxSettings().radius,y0=bimShadowGround(),i,k,c,p,pts;
+    if(!T.length)return;
+    ctx.save();
+    try{
+      for(i=0;i<T.length;i++){
+        c=[[-r,-r],[r,-r],[r,r],[-r,r]];pts=[];
+        for(k=0;k<4;k++){p=toScreen([c[k][0],y0+T[i].lift,c[k][1]],V,W,H);if(!p||!isFinite(p[0])||!isFinite(p[1]))break;pts.push(p);}
+        if(pts.length<4)continue;
+        ctx.beginPath();ctx.moveTo(pts[0][0],pts[0][1]);for(k=1;k<4;k++)ctx.lineTo(pts[k][0],pts[k][1]);ctx.closePath();
+        ctx.globalAlpha=0.06;ctx.fillStyle='#e8edf2';ctx.fill();
+        ctx.globalAlpha=0.45;ctx.strokeStyle='#e8edf2';ctx.lineWidth=1;ctx.setLineDash([4,4]);ctx.stroke();ctx.setLineDash([]);
+        ctx.globalAlpha=1;ctx.textAlign='right';ctx.textBaseline='middle';
+        p=pts[0][0]<pts[3][0]?pts[0]:pts[3];
+        bimDgDrawText(ctx,T[i].name,p[0]-8,p[1],'#e8edf2',12,false);
+        A3D.lastCakeTiers++;
+      }
+    }catch(e){
+      console.warn('[BIM] layer cake',e);
+      if(!A3D.cakeWarned){A3D.cakeWarned=true;a3dToast('The layer cake could not be drawn');}
+    }
+    ctx.restore();
+  }
+  /* the toggle in the Layers header */
+  function bimCakeBtnHtml(){
+    return '<button type="button" class="a3d-lycake'+(A3D_CAKE.on?' on':'')+'" data-lycake="1" aria-pressed="'+(A3D_CAKE.on?'true':'false')+
+      '" title="Layer cake: lift the site analyses and data layers over the map, each to its own height">Layer cake</button>';
   }
   /* ================= __acad3dV136: the colour-by-property lens ================= */
   var BIM_LENS_BY=['usage','level','type','layer','material','height','prop'];
@@ -40121,7 +40206,7 @@ try{
   function drawDataLayers(ctx,V,W,H){
     A3D.lastDataDrawn=0;
     if(A3D.sheetCapture||A3D_PLOT.on)return;
-    var L=bimDataList(),y=bimShadowGround(),i,j,c,f,sel,n=0;
+    var L=bimDataList(),y0=bimShadowGround(),y=y0,i,j,c,f,sel,n=0;
     function S(p){return toScreen([p[0],y,p[1]],V,W,H);}
     function path(pts,close){
       var p=S(pts[0]),k;
@@ -40133,6 +40218,7 @@ try{
       if(!L[i].visible)continue;
       c=bimDataModel(L[i]);
       if(!c)continue;
+      y=y0+bimCakeLift('data',L[i].id);   /* __acad3dV173d: its tier in the layer cake */
       ctx.save();
       ctx.strokeStyle=L[i].color;ctx.fillStyle=L[i].color;
       var ds=bimDataLensScale(L[i]),op=bimDataOpacity(L[i]),fa=ds?0.5:0.16,fc;   /* __acad3dV136: by an attribute, at an opacity */
@@ -40155,32 +40241,35 @@ try{
       ctx.restore();
     }
     A3D.lastDataDrawn=n;
-    drawDataLabels(ctx,V,W,H,y);   /* __acad3dV173b */
+    drawDataLabels(ctx,V,W,H,y0);   /* __acad3dV173b */
   }
   /* what data is under a screen point: a point, then a line, then the smallest area; later layers first */
   function bimDataPick(sx,sy){
-    var L=bimDataList(),y=bimShadowGround(),g=groundPoint(sx,sy,y),P,tol,i,j,k,c,f,best=null,bestA=Infinity,pass,inside;
+    var L=bimDataList(),y=bimShadowGround(),g=groundPoint(sx,sy,y),P,tol,i,j,k,c,f,best=null,bestA=Infinity,pass,inside,G={};
     if(!g)return null;
     P=[g[0],g[2]];
+    /* __acad3dV173d: in the layer cake each layer is picked on its own tier */
+    function at(id){var lf=bimCakeLift('data',id),q;if(!lf)return P;if(!G[id]){q=groundPoint(sx,sy,y+lf);G[id]=q?[q[0],q[2]]:[NaN,NaN];}return G[id];}
     tol=6*Math.max(A3D.cam.dist,0.5)/(Math.max(1,cvH())*1.2);
     for(pass=0;pass<3;pass++){
       for(i=L.length-1;i>=0;i--){
         if(!L[i].visible)continue;
         c=bimDataModel(L[i]);
         if(!c)continue;
+        var Pl=at(L[i].id);
         for(j=c.feats.length-1;j>=0;j--){
           f=c.feats[j];
           if(!bimDataPasses(L[i],f.fi))continue;   /* __acad3dV173b: a filtered feature is not there */
           if(pass===0){
-            for(k=0;k<f.points.length;k++)if(Math.hypot(f.points[k][0]-P[0],f.points[k][1]-P[1])<=tol)return {layer:L[i].id,fi:f.fi};
+            for(k=0;k<f.points.length;k++)if(Math.hypot(f.points[k][0]-Pl[0],f.points[k][1]-Pl[1])<=tol)return {layer:L[i].id,fi:f.fi};
           }else if(pass===1){
             for(k=0;k<f.lines.length;k++){
               var l=f.lines[k],m;
-              for(m=0;m+1<l.length;m++)if(bimPointSegDist(P[0],P[1],l[m][0],l[m][1],l[m+1][0],l[m+1][1])<=tol)return {layer:L[i].id,fi:f.fi};
+              for(m=0;m+1<l.length;m++)if(bimPointSegDist(Pl[0],Pl[1],l[m][0],l[m][1],l[m+1][0],l[m+1][1])<=tol)return {layer:L[i].id,fi:f.fi};
             }
           }else if(f.rings.length){
             inside=0;
-            for(k=0;k<f.rings.length;k++)if(bimPointInPoly(P,f.rings[k].pts))inside++;
+            for(k=0;k<f.rings.length;k++)if(bimPointInPoly(Pl,f.rings[k].pts))inside++;
             if(inside%2===1&&f.area<bestA){bestA=f.area;best={layer:L[i].id,fi:f.fi};}
           }
         }
@@ -40634,6 +40723,7 @@ try{
     if(!capMode)bimLbsDraw(ctx,V,W,H);       /* __acad3dV172c: a Ladybug study on the model, over the solids */
     drawGrids(ctx,V,W,H);
     drawDataLayers(ctx,V,W,H);     /* __acad3dV134: the public record, under the property lines */
+    drawLayerCake(ctx,V,W,H);      /* __acad3dV173d: the tiers' frames and names */
     drawProperties(ctx,V,W,H);     /* __acad3dV103: under the model, like grids */
     drawAlignments(ctx,V,W,H);     /* __acad3dV127 */
     drawStationMark(ctx,V,W,H);
@@ -62110,6 +62200,8 @@ try{
   window.__a3dLayersListBy=function(v){return v===undefined?bimLyListBy():bimLyListBySet(v);};
   window.__a3dLayersPanelHtml=function(){return bimLayersPanelHtml();};
   window.__a3dDataLayerMove=function(id,to){return bimDataLayerMove(id,to);};
+  /* __acad3dV173d: the layer cake */
+  window.__a3dLayerCake=function(on){return on===undefined?{on:A3D_CAKE.on,tiers:bimCakeTiers(),drawn:A3D.lastCakeTiers||0}:bimCakeSet(on);};
   window.__a3dLensCommand=function(){return bimLensCommand();};
   window.__a3dTestLegendOnPaper=function(){var s=A3D.sheetCapture;A3D.sheetCapture=true;try{drawLensLegend(el.ctx,null,0,0);}finally{A3D.sheetCapture=s;}return A3D.lastLensLegend;};
   window.__a3dTestLevelName=function(id,n){var i;for(i=0;i<A3D.levels.length;i++)if(A3D.levels[i].id===id){A3D.levels[i].name=n;A3D_LENS.cur=null;return true;}return false;};

@@ -3,6 +3,7 @@ import { bimPolyArea } from '../bim/rooms.js';
 import { bimDgDrawText } from '../site-analysis/model-layers.js';
 import { toScreen } from '../io/import-entry.js';
 import { bimDataMask } from './data-filter-ui.js';
+import { bimCakeLift } from './layer-cake.js';
 import { bimDataFeats, bimDataList } from './data-layers.js';
 import { bimDataModel } from './find-open-data.js';
 import { a3dToast } from '../bim/csg-booleans.js';
@@ -128,7 +129,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
       for(j=0;j<c.feats.length;j++){
         if(!an[j]||(mask&&!mask.pass[c.feats[j].fi]))continue;
         t=bimDataLabelText(L[i].label,F[c.feats[j].fi]&&F[c.feats[j].fi].p);
-        if(t)lq.push({t:t,a:an[j]});
+        if(t)lq.push({t:t,a:an[j],y:bimCakeLift('data',L[i].id)});   /* __acad3dV173d: on its tier */
       }
       lq.sort(function(u,v){return v.a.pri-u.a.pri;});
       Q=Q.concat(lq);
@@ -139,7 +140,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
       ctx.textBaseline='middle';ctx.font='11px sans-serif';
       free=function(bx){for(var k=0;k<placed.length;k++){var q=placed[k];if(bx[0]<q[0]+q[2]&&q[0]<bx[0]+bx[2]&&bx[1]<q[1]+q[3]&&q[1]<bx[1]+bx[3])return false;}return true;};
       for(i=0;i<Q.length&&n<BIM_DLAB_MAX;i++){
-        p=toScreen([Q[i].a.x,y,Q[i].a.z],V,W,H);
+        p=toScreen([Q[i].a.x,y+(Q[i].y||0),Q[i].a.z],V,W,H);
         if(!p||!isFinite(p[0])||!isFinite(p[1])||p[0]<-50||p[1]<-20||p[0]>W+50||p[1]>H+20)continue;
         wd=ctx.measureText(Q[i].t).width;
         x0=Q[i].a.kind==='point'?p[0]+6:p[0]-wd/2;

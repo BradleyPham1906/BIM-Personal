@@ -23,6 +23,7 @@ import { bimRenderInto, refreshProps } from '../site-analysis/panel.js';
 import { bimTlRunById, bimTlStale, bimTlTool } from '../site-tools/tools.js';
 import { bimDataLegendHtml, bimDataSwatch } from '../map/data-symbology.js';
 import { bimDataFilterText } from '../map/data-filter-ui.js';
+import { bimCakeSet } from '../map/layer-cake.js';
 import { A3D_DATA, bimDataById, bimDataFeats, bimDataList } from '../map/data-layers.js';
 import { bimDataOpacity, bimDataRemove, bimDataSet } from '../map/find-open-data.js';
 import { paint } from '../map/terrain-3d.js';
@@ -273,6 +274,7 @@ import { a3dToast, objById } from '../bim/csg-booleans.js';
       if(!inLyp(t))return;
       try{
         if((b=t.closest('[data-lyact]'))){bimLyAct(b.getAttribute('data-lyact'));return;}
+        if(t.closest('[data-lycake]')){bimCakeSet();return;}   /* __acad3dV173d */
         if((b=t.closest('[data-lytog]'))){l=b.getAttribute('data-lytog');A3D_LY.open[l]=!A3D_LY.open[l];refreshLayers();return;}
         if((b=t.closest('[data-lycur]'))){if(bimLayerMakeCurrent(b.getAttribute('data-lycur')))A3D_LY.sel=A3D.activeLayer;refreshLayers();return;}
         if((b=t.closest('[data-lyon]'))){l=bimLayerById(b.getAttribute('data-lyon'));if(l)bimLayerSet(l.id,'visible',l.visible===false);return;}
