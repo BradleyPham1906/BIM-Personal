@@ -16565,3 +16565,38 @@ The full regression has not been run.
 
     canvas_v10.html   3996141 bytes
     sha256            6fe272737ad4a605787bd6017cc727e5ce28d69f73ba591f71bc5acbaf854de6
+
+### Storage C (V172h, inside Phase 172): installable and offline
+
+Built 2026-11-08 (the version stays V172). Research: `docs/research/research-local-storage.md`, part 15 (PR #70), with three
+parallel researchers' notes, experiments v172h-e01 to e07 and an independent check (30 of 32 facts confirmed); the owner's
+Q1 to Q7, all as recommended: option C.
+
+- `src/sw/sw.js` (new, ES5): the worker. Install precaches `index.html` (asked past the HTTP cache) and the four bundles by
+  their exact `?v=` addresses into `BIM-Personal/app/<build>`, refusing a non-2xx answer, an HTML body for a script or a
+  stylesheet, and a page that does not name this build's bundles; activate deletes only this app's older caches (another
+  Pages project's share the origin) and claims the page; navigations to the app's own address answer the cached page,
+  `app/` the cached bundle, `runtime/` from `BIM-Personal/runtime/<manifest hash>` filled on first use and kept across
+  builds; everything else (the guide, `v/`, `canvas_v10.html`, other sites) is left to the network; a `skip` message lets
+  a waiting build in.
+- `tools/build_pwa.py` (new), run by `tools/build_site.py`: `sw.js` with the build's id, page and bundles filled in (a new
+  build is a byte-different `sw.js`); `manifest.webmanifest`; four PNG icons drawn in the script (192, 512, maskable 512,
+  `apple-touch-icon` 180); the manifest, icon, theme colour and `<meta name="a3d-sw">` added to the site's `index.html`
+  only. `BIM_SW_REMOVE=1` publishes `tools/sw-remove.js` (new) as `sw.js` instead: it deletes the app's caches,
+  unregisters and reloads the open tabs (the way back, Q7).
+- `core/offline.js` (new): registers the worker at load where the page carries the meta tag, over https or http on this
+  machine, never under `v/`; "Ready to work offline" the first time a worker takes over, once in this browser; a bar "A
+  new version of the app is ready" with Reload and Later when a new build waits; Reload asks every tab of the app over
+  BroadcastChannel whether it has work not yet in the database (a save waiting for its debounce, a record waiting, being
+  written or unconfirmed) and sends `skip` only when none has, asking again each second up to eight times; each tab then
+  writes what is waiting and reloads once. A failed registration warns and toasts that the app works online as before.
+- `testing/hooks-layers-sheets.js`: `__acad3dV172h`, `__a3dOffline`, `__a3dOfflineRules`, `__a3dOfflineApply`.
+  `css/workspace/engine-chrome.css`: the bar, below V172f's read-only bar.
+
+Checked: syntax of the changed files, `npm run modules`, the build, `npm run check`, `npm test` 28 of 28 (6 new in
+`tests/unit/offline.test.mjs`: the page's rules, the worker's routes and guards, `sw.js` changing with any bundle, the
+manifest, the icons' sizes, the page's tags once, none in `canvas_v10.html`). The browser check and a phase suite have not
+been run (Rule #1). Not checkable here: installing from a real browser's menu, iOS and the shell in standalone (part 15.9).
+
+    canvas_v10.html   4004958 bytes
+    sha256            44b37ba15f49706e06fe4c6486a89972436c0bbb6f4a38f48b582322fe78dfbd

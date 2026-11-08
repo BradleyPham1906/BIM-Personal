@@ -5,6 +5,7 @@
 
 - index.html and app/: the newest app as separate files -- the page, its stylesheet and its scripts,
   joined from src/ by tools/build_app.py --site;
+- sw.js, manifest.webmanifest and icons/: the app installable and offline (V172h, tools/build_pwa.py);
 - canvas_v10.html: the same app as one file, to download and open offline;
 - docs/: the user guide (built HTML, committed; tools/build_docs.py --check proves it current);
 - v/<version>/index.html: any older build build_docs.kept_versions() names (none since 2026-11-07), named as on the guide's
@@ -18,6 +19,7 @@ sys.path.insert(0, str(ROOT / 'tools'))
 import build_docs  # noqa: E402
 import build_app  # noqa: E402
 import check_runtime  # noqa: E402
+import build_pwa  # noqa: E402
 
 OUT = pathlib.Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / '_site'
 
@@ -31,6 +33,7 @@ def main():
         shutil.rmtree(OUT)
     (OUT / 'docs').mkdir(parents=True)
     build_app.write_site(OUT)
+    pwa = build_pwa.write(OUT)   # V172h: sw.js, the manifest and the icons; the page's offline tags
     shutil.copy(ROOT / 'canvas_v10.html', OUT / 'canvas_v10.html')
     for p in (ROOT / 'docs').glob('*.html'):
         shutil.copy(p, OUT / 'docs' / p.name)
@@ -42,7 +45,7 @@ def main():
         n += 1
     shutil.copytree(ROOT / 'runtime', OUT / 'runtime')   # V172b: the Ladybug analyses' runtime, at its fixed address
     (OUT / '.nojekyll').touch()
-    print('%s: the app, %d guide pages, %d older versions, the runtime (%d files)' % (OUT, len(list((OUT / 'docs').glob('*.html'))), n, nrt))
+    print('%s: the app, offline build %s, %d guide pages, %d older versions, the runtime (%d files)' % (OUT, pwa['build'], len(list((OUT / 'docs').glob('*.html'))), n, nrt))
 
 
 if __name__ == '__main__':

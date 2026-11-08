@@ -1551,3 +1551,13 @@ and the one-file build online only; Q7 a self-removing `sw.js` kept ready.
 - **Q6. The guide (`docs/`) and the one-file `canvas_v10.html` offline:** left to the network in V172h. *Recommended:* yes;
   the guide can be added later.
 - **Q7. A way back:** a self-removing `sw.js` kept in `tools/`, published only if the worker misbehaves. *Recommended:* yes.
+
+### 15.12 As built (2026-11-08)
+
+Option C as 15.4 describes it, with the owner's Q1 to Q7: `src/sw/sw.js`, `tools/build_pwa.py` (run by
+`tools/build_site.py`), `core/offline.js`, `tools/sw-remove.js`; the log's "Storage C (V172h)" entry has the detail. Two
+choices made while building: the page is precached past the HTTP cache (`cache: 'no-cache'`) and the bundles through it,
+so the second download v172h-e02 measured (from `cache: 'reload'`) should not recur; and the install refuses a page that
+does not name the build's own bundles, so a half-published site cannot be cached as one build. Still to check on devices:
+H51 (the shell in standalone) and H47 on iOS (the runtime offline).
+

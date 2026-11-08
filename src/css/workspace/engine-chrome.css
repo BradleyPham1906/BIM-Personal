@@ -208,6 +208,12 @@ body.light-theme #a3d-tip strong{color:#202124}body.light-theme .a3d-tiptype b{c
 #a3d-ro-bar button{min-height:30px;padding:0 12px;border-radius:6px;border:1px solid var(--border,rgba(255,255,255,.16));background:var(--accent,#8f7aff);color:#fff;font:inherit;cursor:pointer;white-space:nowrap}
 @media(pointer:coarse){#a3d-ro-bar button{min-height:36px}}
 body.a3d-tier-phone #a3d-ro-bar{left:12px;right:12px;transform:none;max-width:none}
+/* __acad3dV172h: a new version is ready (core/offline.js); below the read-only bar, so both can show */
+#a3d-sw-bar{position:fixed;top:calc(96px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);z-index:9600;display:flex;align-items:center;gap:12px;max-width:calc(100vw - 24px);box-sizing:border-box;padding:6px 6px 6px 14px;border-radius:8px;background:var(--raised,#2b2b29);color:var(--text,#fff);border:1px solid var(--border,rgba(255,255,255,.16));font-size:13px;box-shadow:0 4px 16px rgba(0,0,0,.35)}
+#a3d-sw-bar button{min-height:30px;padding:0 12px;border-radius:6px;border:1px solid var(--border,rgba(255,255,255,.16));background:var(--accent,#8f7aff);color:#fff;font:inherit;cursor:pointer;white-space:nowrap}
+#a3d-sw-bar button.a3d-sw-later{background:transparent;color:inherit}
+@media(pointer:coarse){#a3d-sw-bar button{min-height:36px}}
+body.a3d-tier-phone #a3d-sw-bar{left:12px;right:12px;transform:none;max-width:none}
 /* __acad3dV172g: in a file or not (D2). The status bar's line runs Save; amber while the work is not in a file. */
 .a3d-stfile{max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;letter-spacing:0;font-size:11px}
 .a3d-stfile[data-state="unsaved"],.a3d-stfile[data-state="changed"]{color:#e3a64a;border-color:#5a4524}
