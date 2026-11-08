@@ -1,5 +1,6 @@
 import { save3d, saveT, setSaveT } from './objects-save.js';
 import { A3D_SPILL, bimSpillWhenIdle } from './idb-store.js';
+import { A3D_SAVE_DUE } from '../bim/region-regenerate.js';
 import { a3dToast } from '../bim/csg-booleans.js';
 
 
@@ -29,7 +30,9 @@ import { a3dToast } from '../bim/csg-booleans.js';
   function bimSwUnsavedOf(pending,spill){
     return !!(pending||(spill&&(spill.dirty||spill.inflight||spill.next||spill.busy)));
   }
-  function bimSwUnsaved(){return bimSwUnsavedOf(saveT,A3D_SPILL);}
+  /* saveT is left set after its save has run, so the time the save is due says whether one is waiting (the browser
+     check found a tab that never stopped counting as unsaved) */
+  function bimSwUnsaved(){return bimSwUnsavedOf(Date.now()<A3D_SAVE_DUE,A3D_SPILL);}
   /* the tabs' answers: true when any has unsaved work */
   function bimSwAnyUnsaved(answers){
     for(var k in answers)if(answers.hasOwnProperty(k)&&answers[k])return true;

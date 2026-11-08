@@ -92,6 +92,7 @@ import { a3dToast, objById } from './csg-booleans.js';
     }
     return n;
   }
+  var A3D_SAVE_DUE=0;   /* __acad3dV172h: when the waiting save is due (core/offline.js) */
   function saveSoon(){
     bimAdoptLayers();   /* __acad3dV121 */
     if(bimLayerDropUnselectable()){refreshTree();refreshProps();paint();}   /* __acad3dV121 */
@@ -105,6 +106,7 @@ import { a3dToast, objById } from './csg-booleans.js';
     bimPagesStale();
     if(saveT)clearTimeout(saveT);
     setSaveT(setTimeout(save3d,300));
+    A3D_SAVE_DUE=Date.now()+300;   /* __acad3dV172h: until then a save is waiting (saveT stays set after it fires) */
   }
   function refreshHud(){
     /* __acad3dV119: the View readout names the active view -- "Level 0 - Floor Plan", "3D View", an
@@ -114,4 +116,4 @@ import { a3dToast, objById } from './csg-booleans.js';
     if(el.view)el.view.textContent=A3D_VIEW.name;
     if(el.count)el.count.textContent=A3D.objs.length+' object'+(A3D.objs.length===1?'':'s');
   }
-export { bimAdoptLayers, bimRegenerateRegions, refreshHud, saveSoon };
+export { A3D_SAVE_DUE, bimAdoptLayers, bimRegenerateRegions, refreshHud, saveSoon };

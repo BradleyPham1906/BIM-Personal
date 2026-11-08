@@ -16590,13 +16590,24 @@ Q1 to Q7, all as recommended: option C.
   BroadcastChannel whether it has work not yet in the database (a save waiting for its debounce, a record waiting, being
   written or unconfirmed) and sends `skip` only when none has, asking again each second up to eight times; each tab then
   writes what is waiting and reloads once. A failed registration warns and toasts that the app works online as before.
+- `bim/region-regenerate.js`: `A3D_SAVE_DUE`, when `saveSoon`'s save is due (found by the browser check, below).
 - `testing/hooks-layers-sheets.js`: `__acad3dV172h`, `__a3dOffline`, `__a3dOfflineRules`, `__a3dOfflineApply`.
   `css/workspace/engine-chrome.css`: the bar, below V172f's read-only bar.
 
 Checked: syntax of the changed files, `npm run modules`, the build, `npm run check`, `npm test` 28 of 28 (6 new in
 `tests/unit/offline.test.mjs`: the page's rules, the worker's routes and guards, `sw.js` changing with any bundle, the
-manifest, the icons' sizes, the page's tags once, none in `canvas_v10.html`). The browser check and a phase suite have not
-been run (Rule #1). Not checkable here: installing from a real browser's menu, iOS and the shell in standalone (part 15.9).
+manifest, the icons' sizes, the page's tags once, none in `canvas_v10.html`).
+The browser check (2026-11-08, the owner's "you"): `docs/research/experiments/v172h-offline/browser_check.js`, the built
+site on the experiments' Pages stand-in, Chromium 153 headless, 21 of 21 after one fix. The first visit registers the
+worker, takes over and says "Ready to work offline" once (not again at the next visit); the cache holds the page and the
+four `?v=` bundles; the manifest is served and linked; an edit is saved; the app opens and saves offline, emulated and
+with the server stopped; a new build waits, shows the bar (Reload, Later), and a reload alone does not let it in; Reload
+while a second tab is mid-save shows "Saving changes in an open tab..." and lets the build in a second later, both tabs
+reloading once, the old cache deleted, the second tab's edit kept; `canvas_v10.html` registers nothing; no page or console
+errors. Found and fixed: a tab counted as unsaved for ever after its first edit, because `saveT` stays set after its save
+runs, so the new build could never come in; `saveSoon` now records when its save is due (`A3D_SAVE_DUE`,
+`bim/region-regenerate.js`) and only that is read. No phase suite; the full regression has not been run. Not checkable
+here: installing from a real browser's menu, iOS and the shell in standalone (part 15.9).
 
-    canvas_v10.html   4004958 bytes
-    sha256            44b37ba15f49706e06fe4c6486a89972436c0bbb6f4a38f48b582322fe78dfbd
+    canvas_v10.html   4005368 bytes
+    sha256            2e405746f48c53be6c22dadcdbe869bddf081213a43a8f9760858590b7533ffa

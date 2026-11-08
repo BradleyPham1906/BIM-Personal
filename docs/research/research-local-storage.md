@@ -1558,6 +1558,7 @@ Option C as 15.4 describes it, with the owner's Q1 to Q7: `src/sw/sw.js`, `tools
 `tools/build_site.py`), `core/offline.js`, `tools/sw-remove.js`; the log's "Storage C (V172h)" entry has the detail. Two
 choices made while building: the page is precached past the HTTP cache (`cache: 'no-cache'`) and the bundles through it,
 so the second download v172h-e02 measured (from `cache: 'reload'`) should not recur; and the install refuses a page that
-does not name the build's own bundles, so a half-published site cannot be cached as one build. Still to check on devices:
-H51 (the shell in standalone) and H47 on iOS (the runtime offline).
+does not name the build's own bundles, so a half-published site cannot be cached as one build. The browser check (21 of 21, Chromium 153; the log has the list) found that `saveT` stays set
+after its save runs, so "a save waiting for its debounce" is now the time `saveSoon`'s save is due. Still to check on
+devices: H51 (the shell in standalone) and H47 on iOS (the runtime offline).
 

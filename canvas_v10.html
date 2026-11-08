@@ -50194,6 +50194,7 @@ try{
     }
     return n;
   }
+  var A3D_SAVE_DUE=0;   /* __acad3dV172h: when the waiting save is due (core/offline.js) */
   function saveSoon(){
     bimAdoptLayers();   /* __acad3dV121 */
     if(bimLayerDropUnselectable()){refreshTree();refreshProps();paint();}   /* __acad3dV121 */
@@ -50207,6 +50208,7 @@ try{
     bimPagesStale();
     if(saveT)clearTimeout(saveT);
     setSaveT(setTimeout(save3d,300));
+    A3D_SAVE_DUE=Date.now()+300;   /* __acad3dV172h: until then a save is waiting (saveT stays set after it fires) */
   }
   function refreshHud(){
     /* __acad3dV119: the View readout names the active view -- "Level 0 - Floor Plan", "3D View", an
@@ -52883,7 +52885,9 @@ try{
   function bimSwUnsavedOf(pending,spill){
     return !!(pending||(spill&&(spill.dirty||spill.inflight||spill.next||spill.busy)));
   }
-  function bimSwUnsaved(){return bimSwUnsavedOf(saveT,A3D_SPILL);}
+  /* saveT is left set after its save has run, so the time the save is due says whether one is waiting (the browser
+     check found a tab that never stopped counting as unsaved) */
+  function bimSwUnsaved(){return bimSwUnsavedOf(Date.now()<A3D_SAVE_DUE,A3D_SPILL);}
   /* the tabs' answers: true when any has unsaved work */
   function bimSwAnyUnsaved(answers){
     for(var k in answers)if(answers.hasOwnProperty(k)&&answers[k])return true;
