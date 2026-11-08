@@ -61,7 +61,7 @@ function pageRun(arg) {
     '20 isolated groups (box-sized), normal children': function () { groupPass('source-over', 'source-over', pool); },
     '20 isolated groups (box-sized), random children, group multiply': function () { groupPass('random', 'multiply', pool); },
     '20 isolated groups (board-sized offscreen)': function () { groupPass('source-over', 'source-over', full); },
-    '200 elements each isolated (one offscreen each)': function () {
+    '200 elements each isolated (one shared 400px scratch)': function () {
       var o = single.getContext('2d');
       all.forEach(function (e) {
         o.clearRect(0, 0, 400, 400); drawEl(o, { kind: e.kind, x: 0, y: 0, w: e.w, h: e.h, color: e.color, alpha: 1 }, 'source-over', 0, 0);
