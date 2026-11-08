@@ -16565,3 +16565,49 @@ The full regression has not been run.
 
     canvas_v10.html   3996141 bytes
     sha256            6fe272737ad4a605787bd6017cc727e5ce28d69f73ba591f71bc5acbaf854de6
+
+### Storage C (V172h, inside Phase 172): installable and offline
+
+Built 2026-11-08 (the version stays V172). Research: `docs/research/research-local-storage.md`, part 15 (PR #70), with three
+parallel researchers' notes, experiments v172h-e01 to e07 and an independent check (30 of 32 facts confirmed); the owner's
+Q1 to Q7, all as recommended: option C.
+
+- `src/sw/sw.js` (new, ES5): the worker. Install precaches `index.html` (asked past the HTTP cache) and the four bundles by
+  their exact `?v=` addresses into `BIM-Personal/app/<build>`, refusing a non-2xx answer, an HTML body for a script or a
+  stylesheet, and a page that does not name this build's bundles; activate deletes only this app's older caches (another
+  Pages project's share the origin) and claims the page; navigations to the app's own address answer the cached page,
+  `app/` the cached bundle, `runtime/` from `BIM-Personal/runtime/<manifest hash>` filled on first use and kept across
+  builds; everything else (the guide, `v/`, `canvas_v10.html`, other sites) is left to the network; a `skip` message lets
+  a waiting build in.
+- `tools/build_pwa.py` (new), run by `tools/build_site.py`: `sw.js` with the build's id, page and bundles filled in (a new
+  build is a byte-different `sw.js`); `manifest.webmanifest`; four PNG icons drawn in the script (192, 512, maskable 512,
+  `apple-touch-icon` 180); the manifest, icon, theme colour and `<meta name="a3d-sw">` added to the site's `index.html`
+  only. `BIM_SW_REMOVE=1` publishes `tools/sw-remove.js` (new) as `sw.js` instead: it deletes the app's caches,
+  unregisters and reloads the open tabs (the way back, Q7).
+- `core/offline.js` (new): registers the worker at load where the page carries the meta tag, over https or http on this
+  machine, never under `v/`; "Ready to work offline" the first time a worker takes over, once in this browser; a bar "A
+  new version of the app is ready" with Reload and Later when a new build waits; Reload asks every tab of the app over
+  BroadcastChannel whether it has work not yet in the database (a save waiting for its debounce, a record waiting, being
+  written or unconfirmed) and sends `skip` only when none has, asking again each second up to eight times; each tab then
+  writes what is waiting and reloads once. A failed registration warns and toasts that the app works online as before.
+- `bim/region-regenerate.js`: `A3D_SAVE_DUE`, when `saveSoon`'s save is due (found by the browser check, below).
+- `testing/hooks-layers-sheets.js`: `__acad3dV172h`, `__a3dOffline`, `__a3dOfflineRules`, `__a3dOfflineApply`.
+  `css/workspace/engine-chrome.css`: the bar, below V172f's read-only bar.
+
+Checked: syntax of the changed files, `npm run modules`, the build, `npm run check`, `npm test` 28 of 28 (6 new in
+`tests/unit/offline.test.mjs`: the page's rules, the worker's routes and guards, `sw.js` changing with any bundle, the
+manifest, the icons' sizes, the page's tags once, none in `canvas_v10.html`).
+The browser check (2026-11-08, the owner's "you"): `docs/research/experiments/v172h-offline/browser_check.js`, the built
+site on the experiments' Pages stand-in, Chromium 153 headless, 21 of 21 after one fix. The first visit registers the
+worker, takes over and says "Ready to work offline" once (not again at the next visit); the cache holds the page and the
+four `?v=` bundles; the manifest is served and linked; an edit is saved; the app opens and saves offline, emulated and
+with the server stopped; a new build waits, shows the bar (Reload, Later), and a reload alone does not let it in; Reload
+while a second tab is mid-save shows "Saving changes in an open tab..." and lets the build in a second later, both tabs
+reloading once, the old cache deleted, the second tab's edit kept; `canvas_v10.html` registers nothing; no page or console
+errors. Found and fixed: a tab counted as unsaved for ever after its first edit, because `saveT` stays set after its save
+runs, so the new build could never come in; `saveSoon` now records when its save is due (`A3D_SAVE_DUE`,
+`bim/region-regenerate.js`) and only that is read. No phase suite; the full regression has not been run. Not checkable
+here: installing from a real browser's menu, iOS and the shell in standalone (part 15.9).
+
+    canvas_v10.html   4005368 bytes
+    sha256            2e405746f48c53be6c22dadcdbe869bddf081213a43a8f9760858590b7533ffa

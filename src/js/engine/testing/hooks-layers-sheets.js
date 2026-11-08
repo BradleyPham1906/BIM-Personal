@@ -30,6 +30,9 @@ import { saveSoon } from '../bim/region-regenerate.js';
 import { A3D_FAMLIB_DIRTY, A3D_FAMLIB_IDB, A3D_FAMLIB_LOADING } from '../assets/family-library.js';
 import { bimJournalNewer, bimJournalWrite, bimLegacyScan, bimRecordEmpty } from '../core/project-store.js';
 import { A3D_TAB, bimTabTakeOver } from '../core/tab-lock.js';
+import {
+  A3D_SW, bimSwAnyUnsaved, bimSwApply, bimSwUnsaved, bimSwUnsavedOf, bimSwWanted
+} from '../core/offline.js';
 import { A3D_VIEW, bimActivateView } from '../views/saved-views.js';
 import {
   SHEET_EXPORT_PXMM, SHEET_PREVIEW_PXMM, bimAddSheet, bimDeleteSheet, bimNewViewport, bimRenderSheet,
@@ -252,6 +255,15 @@ import { a3drIcon, a3drLabel } from '../ui/discipline-tabs.js';
   window.__a3dFileSave=bimFileSave;
   window.__a3dFileOpen=bimFileOpen;
   window.__a3dFileRead=bimFileRead;
+  /* __acad3dV172h: installable and offline */
+  window.__acad3dV172h='manifest,icons,sw,precache,pagecachefirst,runtimecache,updatebar,asktabs,skipwhensaved,readyonce,swremove';
+  window.__a3dOffline=function(){
+    var r=A3D_SW.reg;
+    return {registered:!!r,waiting:!!(r&&r.waiting),controlled:!!(navigator.serviceWorker&&navigator.serviceWorker.controller),
+            unsaved:bimSwUnsaved(),bar:!!document.getElementById('a3d-sw-bar'),reloading:A3D_SW.reloading,later:A3D_SW.later};
+  };
+  window.__a3dOfflineRules={wanted:bimSwWanted,unsavedOf:bimSwUnsavedOf,anyUnsaved:bimSwAnyUnsaved};
+  window.__a3dOfflineApply=bimSwApply;
   window.__a3dGzip=function(text){return bimGzip(text).then(function(u8){return Array.prototype.slice.call(u8,0,2).concat([u8.length]);});};
   window.__a3dJournalWrite=bimJournalWrite;
   window.__a3dStoredKeys=function(){return new Promise(function(res){bimIdbKeys(function(e,k){res(e?null:(k||[]));});});};

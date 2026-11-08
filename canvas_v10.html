@@ -558,6 +558,12 @@ body.light-theme #a3d-tip strong{color:#202124}body.light-theme .a3d-tiptype b{c
 #a3d-ro-bar button{min-height:30px;padding:0 12px;border-radius:6px;border:1px solid var(--border,rgba(255,255,255,.16));background:var(--accent,#8f7aff);color:#fff;font:inherit;cursor:pointer;white-space:nowrap}
 @media(pointer:coarse){#a3d-ro-bar button{min-height:36px}}
 body.a3d-tier-phone #a3d-ro-bar{left:12px;right:12px;transform:none;max-width:none}
+/* __acad3dV172h: a new version is ready (core/offline.js); below the read-only bar, so both can show */
+#a3d-sw-bar{position:fixed;top:calc(96px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);z-index:9600;display:flex;align-items:center;gap:12px;max-width:calc(100vw - 24px);box-sizing:border-box;padding:6px 6px 6px 14px;border-radius:8px;background:var(--raised,#2b2b29);color:var(--text,#fff);border:1px solid var(--border,rgba(255,255,255,.16));font-size:13px;box-shadow:0 4px 16px rgba(0,0,0,.35)}
+#a3d-sw-bar button{min-height:30px;padding:0 12px;border-radius:6px;border:1px solid var(--border,rgba(255,255,255,.16));background:var(--accent,#8f7aff);color:#fff;font:inherit;cursor:pointer;white-space:nowrap}
+#a3d-sw-bar button.a3d-sw-later{background:transparent;color:inherit}
+@media(pointer:coarse){#a3d-sw-bar button{min-height:36px}}
+body.a3d-tier-phone #a3d-sw-bar{left:12px;right:12px;transform:none;max-width:none}
 /* __acad3dV172g: in a file or not (D2). The status bar's line runs Save; amber while the work is not in a file. */
 .a3d-stfile{max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;letter-spacing:0;font-size:11px}
 .a3d-stfile[data-state="unsaved"],.a3d-stfile[data-state="changed"]{color:#e3a64a;border-color:#5a4524}
@@ -50188,6 +50194,7 @@ try{
     }
     return n;
   }
+  var A3D_SAVE_DUE=0;   /* __acad3dV172h: when the waiting save is due (core/offline.js) */
   function saveSoon(){
     bimAdoptLayers();   /* __acad3dV121 */
     if(bimLayerDropUnselectable()){refreshTree();refreshProps();paint();}   /* __acad3dV121 */
@@ -50201,6 +50208,7 @@ try{
     bimPagesStale();
     if(saveT)clearTimeout(saveT);
     setSaveT(setTimeout(save3d,300));
+    A3D_SAVE_DUE=Date.now()+300;   /* __acad3dV172h: until then a save is waiting (saveT stays set after it fires) */
   }
   function refreshHud(){
     /* __acad3dV119: the View readout names the active view -- "Level 0 - Floor Plan", "3D View", an
@@ -52850,6 +52858,160 @@ try{
       catch(eL){console.warn('[BIM] The read-only project could not be refreshed.',eL);}
     });
   });
+
+  /* ================= __acad3dV172h: installable and offline =================
+     docs/research/research-local-storage.md, part 15 (option C; the owner's Q1-Q7, 2026-11-08). The Pages site's page
+     carries <meta name="a3d-sw" content="sw.js"> (tools/build_pwa.py writes it there only), so the one-file build, a
+     file:// copy (no service worker there, part 4.4) and a build kept under v/ never register one.
+     - The first time the worker takes over, "Ready to work offline", once in this browser.
+     - A new build found while a page is open waits (H44: nothing but closing every tab of the old build lets it in).
+       A bar says a new version is ready, with Reload and Later. Reload asks every open tab of the app whether it has
+       work not yet in the browser's database (Q1, Q4: skipWaiting takes every tab at once, H45), and tells the worker to
+       take over only when none has; each tab then writes what is waiting and reloads once. */
+  var A3D_SW={reg:null,hadCtl:false,reloading:false,asking:false,later:false,bc:null,q:0,answers:null,tries:0};
+  var A3D_SW_READY_KEY='acad3dOfflineReadyV1';
+  var A3D_SW_CHANNEL='BIM-Personal offline';
+  var A3D_SW_ASK_MS=400,A3D_SW_RETRY_MS=1000,A3D_SW_TRIES=8;
+
+  /* should this page register the worker: the site's page, over https (or http on this machine), not under v/ */
+  function bimSwWanted(loc,meta,hasSw){
+    if(!meta||!hasSw||!loc)return false;
+    var p=String(loc.protocol||''),h=String(loc.hostname||'');
+    if(p!=='https:'&&!(p==='http:'&&/^(localhost|127\.0\.0\.1|\[::1\])$/.test(h)))return false;
+    return !/\/v\/[^\/]+\//.test(String(loc.pathname||''));
+  }
+  /* work not yet in the browser's database (the owner's Q1): a save waiting for its debounce, or a record waiting,
+     being written, or not yet confirmed */
+  function bimSwUnsavedOf(pending,spill){
+    return !!(pending||(spill&&(spill.dirty||spill.inflight||spill.next||spill.busy)));
+  }
+  /* saveT is left set after its save has run, so the time the save is due says whether one is waiting (the browser
+     check found a tab that never stopped counting as unsaved) */
+  function bimSwUnsaved(){return bimSwUnsavedOf(Date.now()<A3D_SAVE_DUE,A3D_SPILL);}
+  /* the tabs' answers: true when any has unsaved work */
+  function bimSwAnyUnsaved(answers){
+    for(var k in answers)if(answers.hasOwnProperty(k)&&answers[k])return true;
+    return false;
+  }
+
+  function bimSwStart(){
+    var meta=document.querySelector('meta[name="a3d-sw"]'),sw=navigator.serviceWorker;
+    if(!bimSwWanted(window.location,meta,!!sw))return;
+    A3D_SW.hadCtl=!!sw.controller;
+    bimSwChannel();
+    sw.addEventListener('controllerchange',bimSwControllerChange);
+    try{
+      sw.register(meta.getAttribute('content')||'sw.js').then(function(reg){
+        A3D_SW.reg=reg;
+        if(reg.waiting&&A3D_SW.hadCtl)bimSwBar(true);
+        reg.addEventListener('updatefound',function(){
+          var w=reg.installing;
+          if(!w)return;
+          w.addEventListener('statechange',function(){
+            if(w.state==='installed'&&navigator.serviceWorker.controller)bimSwBar(true);
+          });
+        });
+      },function(e){
+        console.warn('[BIM] The app could not be set up to work offline.',e);
+        a3dToast('This browser could not set the app up to work offline: it works online as before');
+      });
+    }catch(eR){
+      console.warn('[BIM] The app could not be set up to work offline.',eR);
+      a3dToast('This browser could not set the app up to work offline: it works online as before');
+    }
+  }
+  /* a worker took over: the first one (nothing was in control) says the app works offline; a new build reloads */
+  function bimSwControllerChange(){
+    if(!A3D_SW.hadCtl){
+      A3D_SW.hadCtl=true;
+      var told=false;
+      try{told=!!window.localStorage.getItem(A3D_SW_READY_KEY);}catch(eG){told=true;}
+      if(!told){
+        try{window.localStorage.setItem(A3D_SW_READY_KEY,'1');}catch(eS){}
+        a3dToast('Ready to work offline: this app now opens without a connection');
+      }
+      return;
+    }
+    if(A3D_SW.reloading)return;
+    A3D_SW.reloading=true;
+    if(saveT){clearTimeout(saveT);setSaveT(null);save3d();}
+    bimSpillWhenIdle(function(){window.location.reload();});
+  }
+
+  /* ---- the tabs, asked ---- */
+  function bimSwChannel(){
+    if(A3D_SW.bc)return;
+    try{
+      if(typeof BroadcastChannel!=='function')return;
+      A3D_SW.bc=new BroadcastChannel(A3D_SW_CHANNEL);
+      A3D_SW.bc.onmessage=function(ev){
+        var m=ev&&ev.data;
+        if(!m)return;
+        if(m.t==='ask')A3D_SW.bc.postMessage({t:'answer',q:m.q,from:bimSwTabId(),unsaved:bimSwUnsaved()});
+        else if(m.t==='answer'&&A3D_SW.answers&&m.q===A3D_SW.q)A3D_SW.answers[m.from]=!!m.unsaved;
+      };
+    }catch(eB){A3D_SW.bc=null;console.warn('[BIM] The other tabs could not be asked.',eB);}
+  }
+  function bimSwTabId(){
+    if(!A3D_SW.tab)A3D_SW.tab=String(Date.now())+'-'+String(Math.random()).slice(2,8);
+    return A3D_SW.tab;
+  }
+  /* Reload: every tab asked; the new build let in only when none has unsaved work, else asked again a moment later */
+  function bimSwApply(){
+    var reg=A3D_SW.reg;
+    if(!reg||!reg.waiting){bimSwBar(false);return;}
+    if(A3D_SW.asking)return;
+    A3D_SW.asking=true;
+    if(saveT){clearTimeout(saveT);setSaveT(null);save3d();}
+    A3D_SW.q++;
+    A3D_SW.answers={};
+    A3D_SW.answers[bimSwTabId()]=false;
+    try{if(A3D_SW.bc)A3D_SW.bc.postMessage({t:'ask',q:A3D_SW.q});}
+    catch(eP){console.warn('[BIM] The other tabs could not be asked.',eP);}
+    setTimeout(function(){
+      A3D_SW.answers[bimSwTabId()]=bimSwUnsaved();
+      var busy=bimSwAnyUnsaved(A3D_SW.answers);
+      A3D_SW.answers=null;A3D_SW.asking=false;
+      if(!busy){
+        A3D_SW.tries=0;
+        try{reg.waiting.postMessage({t:'skip'});}
+        catch(eS){console.warn('[BIM] The new version could not be started.',eS);a3dToast('The new version could not be started: close every tab of the app and open it again');}
+        return;
+      }
+      if(++A3D_SW.tries<A3D_SW_TRIES){
+        bimSwBar(true,'Saving changes in an open tab before the new version starts...');
+        setTimeout(bimSwApply,A3D_SW_RETRY_MS);
+        return;
+      }
+      A3D_SW.tries=0;
+      bimSwBar(true);
+      a3dToast('A tab of the app still has changes being saved: Reload again once it has finished');
+    },A3D_SW_ASK_MS);
+  }
+
+  /* ---- the bar ---- */
+  function bimSwBar(show,text){
+    var b=document.getElementById('a3d-sw-bar');
+    if(!show||A3D_SW.later){if(b&&b.parentNode)b.parentNode.removeChild(b);return;}
+    if(!b){
+      b=document.createElement('div');b.id='a3d-sw-bar';b.setAttribute('role','status');
+      b.addEventListener('click',function(ev){
+        var t=ev.target&&ev.target.closest?ev.target.closest('[data-a3dsw]'):null;
+        if(!t)return;
+        if(t.getAttribute('data-a3dsw')==='later'){A3D_SW.later=true;bimSwBar(false);}
+        else bimSwApply();
+      });
+      document.body.appendChild(b);
+    }
+    b.innerHTML='<span>'+(text||'A new version of the app is ready')+'</span>'+
+      '<button type="button" data-a3dsw="reload">Reload</button>'+
+      '<button type="button" data-a3dsw="later" class="a3d-sw-later">Later</button>';
+  }
+
+  try{
+    if(document.readyState==='complete')bimSwStart();
+    else window.addEventListener('load',bimSwStart);
+  }catch(eStart){console.warn('[BIM] The offline set-up did not start.',eStart);}
   /* ================= __acad3dV169: assets for scale and the simulations =================
      People, a wheelchair user, a cycle and its stand, a parking bay and trees, each a solid whose mesh is built from
      its parameters and the registry's sizes (research-assets.md). Its first two vertices mark its back and its front
@@ -61980,6 +62142,15 @@ try{
   window.__a3dFileSave=bimFileSave;
   window.__a3dFileOpen=bimFileOpen;
   window.__a3dFileRead=bimFileRead;
+  /* __acad3dV172h: installable and offline */
+  window.__acad3dV172h='manifest,icons,sw,precache,pagecachefirst,runtimecache,updatebar,asktabs,skipwhensaved,readyonce,swremove';
+  window.__a3dOffline=function(){
+    var r=A3D_SW.reg;
+    return {registered:!!r,waiting:!!(r&&r.waiting),controlled:!!(navigator.serviceWorker&&navigator.serviceWorker.controller),
+            unsaved:bimSwUnsaved(),bar:!!document.getElementById('a3d-sw-bar'),reloading:A3D_SW.reloading,later:A3D_SW.later};
+  };
+  window.__a3dOfflineRules={wanted:bimSwWanted,unsavedOf:bimSwUnsavedOf,anyUnsaved:bimSwAnyUnsaved};
+  window.__a3dOfflineApply=bimSwApply;
   window.__a3dGzip=function(text){return bimGzip(text).then(function(u8){return Array.prototype.slice.call(u8,0,2).concat([u8.length]);});};
   window.__a3dJournalWrite=bimJournalWrite;
   window.__a3dStoredKeys=function(){return new Promise(function(res){bimIdbKeys(function(e,k){res(e?null:(k||[]));});});};
