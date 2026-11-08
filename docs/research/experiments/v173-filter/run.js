@@ -100,6 +100,7 @@ RT.forEach(function (s) {
 var long = new Array(20001).join('a');
 var pat = '%a%a%a%a%a%a%a%b';
 var t0 = Date.now(); var r1 = F.like(long, pat); var ms1 = Date.now() - t0;
+rows.push('info LIKE matcher, 20000 chars, pattern ' + pat + ': ' + r1 + ' in ' + ms1 + ' ms');
 var re = new RegExp('^' + pat.replace(/%/g, '.*') + '$');
 [20, 40, 60, 80].forEach(function (n) {
   var str = new Array(n + 1).join('a');

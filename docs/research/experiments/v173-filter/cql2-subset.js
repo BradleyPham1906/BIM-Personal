@@ -30,7 +30,8 @@ function tokenize(src) {
         if (c === "'" && src.charAt(i + 1) === "'") { buf += "'"; i += 2; continue; }
         if (c === '\\' && i + 1 < n) {
           j = src.charAt(i + 1);
-          buf += j === 'n' ? '\n' : j === 't' ? '\t' : j === 'r' ? '\r' : j; i += 2; continue;
+          /* keep \% and \_ whole so LIKE still sees its escape (CQL2 uses \ for both jobs) */
+          buf += j === 'n' ? '\n' : j === 't' ? '\t' : j === 'r' ? '\r' : (j === '%' || j === '_') ? '\\' + j : j; i += 2; continue;
         }
         if (c === "'") { i++; break; }
         buf += c; i++;
