@@ -21,6 +21,7 @@ import { bimAnzAct } from '../analysis/analyze-tab.js';
 import { bimRenderInto, refreshProps } from '../site-analysis/panel.js';
 import { bimTlRunById, bimTlStale, bimTlTool } from '../site-tools/tools.js';
 import { bimDataLegendHtml, bimDataSwatch } from '../map/data-symbology.js';
+import { bimDataFilterText } from '../map/data-filter-ui.js';
 import { A3D_DATA, bimDataById, bimDataFeats, bimDataList } from '../map/data-layers.js';
 import { bimDataOpacity, bimDataRemove, bimDataSet } from '../map/find-open-data.js';
 import { paint } from '../map/terrain-3d.js';
@@ -92,7 +93,7 @@ import { a3dToast, objById } from '../bim/csg-booleans.js';
       (L.status&&L.status.error?'<span class="a3d-lybadge gone" title="'+bimEsc(bimDataStatusText(L))+'">Failed</span>':'')+
       bimLyTgl('lyreson',key,hid,hid?'Show '+L.name:'Hide '+L.name,BIM_LY_IC.off,BIM_LY_IC.on)+'<span class="a3d-lyi a3d-lyspc" aria-hidden="true"></span><span class="a3d-lyi a3d-lyspc" aria-hidden="true"></span>'+'</div>';
     if(sel)h+='<div class="a3d-lyresd" data-lyresd="'+bimEsc(key)+'">'+bimLyOpacityHtml(key,L.name,bimDataOpacity(L))+bimDataLegendHtml(L)+
-      '<div class="a3d-lyresmeta">'+bimEsc(bimDataStatusText(L)+(n?'; '+n+' feature'+(n===1?'':'s'):'')+(L.credit?'. Source: '+L.credit:''))+'</div><div class="a3d-lyresacts">'+
+      '<div class="a3d-lyresmeta">'+bimEsc(bimDataStatusText(L)+(n?'; '+n+' feature'+(n===1?'':'s'):'')+(L.filter?'. '+bimDataFilterText(L):'')+(L.credit?'. Source: '+L.credit:''))+'</div><div class="a3d-lyresacts">'+
       '<button type="button" data-lyresset="'+bimEsc(key)+'">Settings</button><button type="button" data-lyresrn="'+bimEsc(key)+'">Rename</button>'+
       '<button type="button" class="danger" data-lyresdel="'+bimEsc(key)+'">Remove</button></div></div>';
     return h;
