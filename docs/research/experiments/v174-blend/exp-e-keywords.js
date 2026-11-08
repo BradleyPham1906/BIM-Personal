@@ -51,7 +51,7 @@ function pageRun(cands) {
   var r = await page.evaluate(pageRun, CANDIDATES);
   r.modes.forEach(function (m) {
     console.log('  ' + JSON.stringify(m.set) + ' -> ' + JSON.stringify(m.readBack) + (m.threw ? ' THREW ' + m.threw : '') +
-      (m.readBack === m.set ? '  (accepted)' : '  (ignored, kept previous)'));
+      (m.readBack === m.set ? '  (accepted)' : (m.readBack !== 'multiply' ? '  (accepted, read back under another name)' : '  (ignored, kept previous)')));
   });
   console.log('pixel after difference then an ignored "linear-burn", white over rgb(200,100,50): ' + r.pixelAfterIgnoredMode +
     ' (difference gives 55,155,205)');

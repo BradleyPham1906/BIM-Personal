@@ -1,5 +1,5 @@
 Chromium 153.0.8010.12
-  "normal" -> "source-over"  (ignored, kept previous)
+  "normal" -> "source-over"  (accepted, read back under another name)
   "multiply" -> "multiply"  (accepted)
   "screen" -> "screen"  (accepted)
   "overlay" -> "overlay"  (accepted)
