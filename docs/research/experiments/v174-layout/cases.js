@@ -24,13 +24,13 @@ add('fill cross stretch with max', 'yes', frame({ gap: 10, alignCross: 'center' 
 add('hidden child leaves the flow', 'yes', frame({ gap: 10 }, [box(50, 30), box(60, 40, { hidden: true }), box(70, 20)]));
 add('absolute child leaves the flow', 'yes', frame({ gap: 10, pad: 10 }, [box(50, 30), box(20, 20, { absolute: true, x: 270, y: -10 }), box(70, 20)]));
 add('zero children, hug', 'yes', frame({ sizeW: 'hug', sizeH: 'hug', pad: [3, 4, 5, 6] }, []));
-add('zero children, fixed smaller than padding', 'no', frame({ w: 10, h: 10, pad: 20 }, []), 'Figma: a frame is never smaller than its padding; CSS border-box lets the box be the padding (40) too, so both give 40: kept as a check');
+add('zero children, fixed smaller than padding', 'yes', frame({ w: 10, h: 10, pad: 20 }, []), 'Figma: a frame is never smaller than its padding; CSS border-box lets the box be the padding (40) too, so both give 40: kept as a check');
 add('auto gap between', 'yes', frame({ gap: 'auto', auto: 'between' }, [box(50, 30), box(60, 30), box(70, 30)]));
 add('auto gap evenly', 'yes', frame({ gap: 'auto', auto: 'evenly' }, [box(50, 30), box(60, 30), box(70, 30)]));
 add('auto gap around', 'yes', frame({ gap: 'auto', auto: 'around' }, [box(50, 30), box(60, 30), box(70, 30)]));
 add('auto gap, one child sits at start', 'yes', frame({ gap: 'auto', auto: 'between' }, [box(50, 30)]));
 add('auto gap between, overflow: flush, no negative gap', 'yes', frame({ gap: 'auto', auto: 'between', w: 150 }, [box(60, 30), box(60, 30), box(60, 30)]));
-add('auto gap around, overflow', 'no', frame({ gap: 'auto', auto: 'around', w: 150 }, [box(60, 30), box(60, 30), box(60, 30)]), 'CSS falls back to safe center (spec); Figma only says the gap stops at 0; ours keeps the start');
+add('auto gap around, overflow', 'yes', frame({ gap: 'auto', auto: 'around', w: 150 }, [box(60, 30), box(60, 30), box(60, 30)]), 'CSS falls back to safe center, which on overflow is start (probe-overflow.js); Figma says only that the gap stops at 0');
 add('numeric gap, center, overflow', 'yes', frame({ gap: 10, alignMain: 'center', w: 150 }, [box(60, 30), box(60, 30), box(60, 30)]));
 add('wrap row, gap 10/20', 'yes', frame({ wrap: true, gap: 10, crossGap: 20, h: 200 }, [box(100, 30), box(100, 40), box(100, 30), box(100, 50)]));
 add('wrap with a long child', 'yes', frame({ wrap: true, gap: 10, crossGap: 10, h: 300 }, [box(50, 30), box(400, 40), box(50, 30)]));
