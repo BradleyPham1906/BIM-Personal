@@ -1,5 +1,7 @@
-# Auto detect text files and perform LF normalization
-* text=auto
+# Auto detect text files, and check them out with LF on every OS (Windows included): the build and the
+# unit tests' engine loader match the engine files' import and export lines by '\n', and the build's hash
+# is of LF text. A CRLF checkout fails every unit test with "Cannot use import statement outside a module".
+* text=auto eol=lf
 
 # V172b: the Ladybug runtime is pinned by SHA-256 (runtime/MANIFEST.json); git must never touch its bytes
 runtime/** -text
