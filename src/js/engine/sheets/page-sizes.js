@@ -45,6 +45,14 @@ import { SHEET_SIZES } from './sheets.js';
     return P.name==='A4'?o==='p':o!=='p';
   }
   /* ---- a board's page ---- */
+  /* the smallest standard page, landscape, that holds content reaching w x h mm with a 10 mm margin: ISO A4 to A0 in a
+     metric project, ANSI B to E in an imperial one; the largest when none does. {key, o, fits} (the owner, 2026-11-08:
+     a board one draws on is a page, as a Figma frame, a Canva design and a CAD layout each have a size) */
+  function bimPgFit(w,h,imperial){
+    var L=imperial?['ansi-B','ansi-C','ansi-D','ansi-E']:['iso-A4','iso-A3','iso-A2','iso-A1','iso-A0'],i,d;
+    for(i=0;i<L.length;i++){d=bimPgDims(L[i],'l');if(d&&w+10<=d.w+1e-9&&h+10<=d.h+1e-9)return {key:L[i],o:'l',fits:true};}
+    return {key:L[L.length-1],o:'l',fits:false};
+  }
   function bimPgValid(p){
     if(!p||typeof p!=='object'||!bimPgSize(p.key))return null;
     return {key:p.key,o:p.o==='p'?'p':'l'};
@@ -105,6 +113,6 @@ import { SHEET_SIZES } from './sheets.js';
     return st;
   }
 export {
-  bimPgBoardPage, bimPgDims, bimPgEnsureSheetSize, bimPgGalleryHtml, bimPgGalleryWire, bimPgIso5457Ok,
-  bimPgLabel, bimPgSheetKey, bimPgSize, bimPgValid
+  bimPgBoardPage, bimPgDims, bimPgEnsureSheetSize, bimPgFit, bimPgGalleryHtml, bimPgGalleryWire,
+  bimPgIso5457Ok, bimPgLabel, bimPgSheetKey, bimPgSize, bimPgValid
 };

@@ -57795,7 +57795,7 @@ try{
     }
     if(r.figs&&b&&Array.isArray(b.objs)){var T=bimBobValid(b.objs,r.figs);if(T)r.objs=T;}   /* __acad3dV174a: its objects, on the layers, when it has any */
     if(r.objs&&b){var Ly=bimBobLayValid(b.lay);if(Ly)r.lay=Ly;}   /* __acad3dV174b: its stacks */
-    if(r.objs&&b){var Pg=bimPgValid(b.page);if(Pg)r.page=Pg;}   /* __acad3dV174c: its page */
+    if(r.objs&&b){var Pg=bimPgValid(b.page);if(Pg)r.page=Pg;else if(b.pageOff===true)r.pageOff=true;}   /* __acad3dV174c: its page, or none by choice */
     return r;
   }
   /* ---- the figures, read from the boards ---- */
@@ -59056,6 +59056,14 @@ try{
     return P.name==='A4'?o==='p':o!=='p';
   }
   /* ---- a board's page ---- */
+  /* the smallest standard page, landscape, that holds content reaching w x h mm with a 10 mm margin: ISO A4 to A0 in a
+     metric project, ANSI B to E in an imperial one; the largest when none does. {key, o, fits} (the owner, 2026-11-08:
+     a board one draws on is a page, as a Figma frame, a Canva design and a CAD layout each have a size) */
+  function bimPgFit(w,h,imperial){
+    var L=imperial?['ansi-B','ansi-C','ansi-D','ansi-E']:['iso-A4','iso-A3','iso-A2','iso-A1','iso-A0'],i,d;
+    for(i=0;i<L.length;i++){d=bimPgDims(L[i],'l');if(d&&w+10<=d.w+1e-9&&h+10<=d.h+1e-9)return {key:L[i],o:'l',fits:true};}
+    return {key:L[L.length-1],o:'l',fits:false};
+  }
   function bimPgValid(p){
     if(!p||typeof p!=='object'||!bimPgSize(p.key))return null;
     return {key:p.key,o:p.o==='p'?'p':'l'};
@@ -59620,13 +59628,24 @@ try{
     pushUndo();
     W.B.figs=F;W.B.objs=T||[];
     if(Ly)W.B.lay=Ly;else delete W.B.lay;
-    if(W.page&&bimPgValid(W.page))W.B.page=bimPgValid(W.page);else delete W.B.page;   /* __acad3dV174c */
+    /* __acad3dV174c: a board one draws on is a page (the owner, 2026-11-08): the first drawing gives it the smallest
+       standard page that holds what is on it, unless No page was chosen */
+    var auto=null;
+    if(!W.page&&!W.B.pageOff&&W.objs.some(function(n){return n.t!=='fig';})){
+      var fb0=bimBdeFigBox(W),mx=0,my=0;
+      W.objs.forEach(function(n){var q=bimBobBox(n,fb0);if(q){mx=Math.max(mx,q.x+q.w);my=Math.max(my,q.y+q.h);}});
+      auto=bimPgFit(mx,my,/^(ft|in|ftin)$/.test(A3D_UNITS.key));
+      W.page={key:auto.key,o:auto.o};
+    }
+    if(W.page&&bimPgValid(W.page)){W.B.page=bimPgValid(W.page);delete W.B.pageOff;}else delete W.B.page;
+    if(W.pageOff&&!W.B.page)W.B.pageOff=true;
     if(W.B.kind!=='custom'){if(W.off&&W.off.length)W.B.off=W.off;else delete W.B.off;}
     if(sel)A3D_BDE.sel=sel.slice();
     saveSoon();
     bimBrdRedraw();
     refreshLayers();refreshProps();
     if(msg)a3dToast(msg);
+    if(auto)a3dToast('The board is now a page, '+bimPgLabel(auto.key,auto.o)+(auto.fits?'':', and some of it runs past the page')+': Page changes it');
     return true;
   }
   function bimBdeName(n,W){
@@ -60042,7 +60061,7 @@ try{
     var W=bimBdeWork(),d,ly=bimLayerById(A3D.activeLayer)||bimLayerZero(),ml,m,sw,id,msg;
     if(!W)return false;
     W.objs=W.objs.filter(function(n){return n.t!=='tblock'&&n.t!=='border';});
-    if(!key){W.page=null;return bimBdeCommit(W,'The board flows again, with no page',[]);}
+    if(!key){W.page=null;W.pageOff=true;return bimBdeCommit(W,'No page: the board flows, and prints in A3 strips that may cut a figure in two',[]);}
     W.page={key:key,o:o==='p'?'p':'l'};
     d=bimPgDims(key,W.page.o);
     msg=bimPgLabel(key,W.page.o);

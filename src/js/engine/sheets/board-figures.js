@@ -103,7 +103,7 @@ import { bimBdsHtml } from './board-design.js';
     }
     if(r.figs&&b&&Array.isArray(b.objs)){var T=bimBobValid(b.objs,r.figs);if(T)r.objs=T;}   /* __acad3dV174a: its objects, on the layers, when it has any */
     if(r.objs&&b){var Ly=bimBobLayValid(b.lay);if(Ly)r.lay=Ly;}   /* __acad3dV174b: its stacks */
-    if(r.objs&&b){var Pg=bimPgValid(b.page);if(Pg)r.page=Pg;}   /* __acad3dV174c: its page */
+    if(r.objs&&b){var Pg=bimPgValid(b.page);if(Pg)r.page=Pg;else if(b.pageOff===true)r.pageOff=true;}   /* __acad3dV174c: its page, or none by choice */
     return r;
   }
   /* ---- the figures, read from the boards ---- */

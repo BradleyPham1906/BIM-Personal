@@ -150,3 +150,11 @@ test('the surround\'s objects are kept good', () => {
   assert.equal(T[2].fr, undefined); assert.equal(T[2].un, 'm');
   assert.equal(T[3].st, 'iso');
 });
+
+test('a board one draws on gets the smallest standard page that holds it (the owner, 2026-11-08)', () => {
+  assert.deepEqual(E.bimPgFit(200, 150, false), { key: 'iso-A4', o: 'l', fits: true });
+  assert.deepEqual(E.bimPgFit(372.5, 200, false), { key: 'iso-A3', o: 'l', fits: true }, 'a board\'s 12 columns fit A3');
+  assert.deepEqual(E.bimPgFit(372.5, 400, false), { key: 'iso-A2', o: 'l', fits: true });
+  assert.deepEqual(E.bimPgFit(2000, 2000, false), { key: 'iso-A0', o: 'l', fits: false });
+  assert.deepEqual(E.bimPgFit(372.5, 200, true), { key: 'ansi-B', o: 'l', fits: true }, 'an imperial project: ANSI B, 17 x 11 in');
+});

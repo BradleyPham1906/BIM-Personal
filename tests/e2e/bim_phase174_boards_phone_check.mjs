@@ -1,4 +1,4 @@
-/* bim_phase174_boards_phone_check.mjs -- V174's phone pass (390 x 844, touch), run 2026-11-08: 7 of 7.
+/* bim_phase174_boards_phone_check.mjs -- V174's phone pass (390 x 844, touch), run 2026-11-08: 8 of 8.
    Run as bim_phase174_boards_edge_check.mjs is (a local server on 8765, Edge with --remote-debugging-port=9333 and a
    NEW empty profile), then: node tests/e2e/bim_phase174_boards_phone_check.mjs <a folder for the screenshots>.
    It checks: the board drawn for a phone, a row stack shown as a column in reading order (D11), no sideways page
@@ -28,9 +28,10 @@ let r = await ev(`window.__a3dEnter&&window.__a3dEnter();var D=window.__a3dBoard
   var A=q(a),B=q(b),C=q(c),se=document.scrollingElement;
   var bar=document.querySelector('.a3d-clb-ebar [data-brd="draw"]'),br=bar?bar.getBoundingClientRect():null;
   return {narrow:!!document.querySelector('.a3d-clb.w-s'),ax:Math.round(A.left),bx:Math.round(B.left),cx:Math.round(C.left),ay:Math.round(A.top),by:Math.round(B.top),cy:Math.round(C.top),
-    sw:se.scrollWidth,iw:innerWidth,draw:br?{l:Math.round(br.left),r:Math.round(br.right),vis:br.width>0}:null};`);
+    sw:se.scrollWidth,iw:innerWidth,page:(D.objs()&&window.__a3dBrdRecord(window.__a3dBrdState().cid).page)||null,draw:br?{l:Math.round(br.left),r:Math.round(br.right),vis:br.width>0}:null};`);
 ck(r && r.narrow, 'the board is drawn for a phone');
 ck(r && Math.abs(r.ax - r.bx) <= 1 && Math.abs(r.bx - r.cx) <= 1 && r.ay < r.by && r.by < r.cy, 'a row stack is shown as a column in reading order (' + JSON.stringify(r) + ')');
+ck(r && r.page && r.page.key === 'iso-A4' && r.page.o === 'l', 'the first drawing gave the board the smallest page that holds it (' + JSON.stringify(r && r.page) + ')');
 ck(r && r.sw <= r.iw, 'no sideways page scroll (' + (r && r.sw) + ' <= ' + (r && r.iw) + ')');
 ck(r && r.draw && r.draw.vis && r.draw.l >= 0 && r.draw.r <= r.iw, 'Draw is on screen');
 await shot('v174-phone-board');

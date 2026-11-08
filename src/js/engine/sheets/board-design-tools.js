@@ -97,7 +97,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
     var W=bimBdeWork(),d,ly=bimLayerById(A3D.activeLayer)||bimLayerZero(),ml,m,sw,id,msg;
     if(!W)return false;
     W.objs=W.objs.filter(function(n){return n.t!=='tblock'&&n.t!=='border';});
-    if(!key){W.page=null;return bimBdeCommit(W,'The board flows again, with no page',[]);}
+    if(!key){W.page=null;W.pageOff=true;return bimBdeCommit(W,'No page: the board flows, and prints in A3 strips that may cut a figure in two',[]);}
     W.page={key:key,o:o==='p'?'p':'l'};
     d=bimPgDims(key,W.page.o);
     msg=bimPgLabel(key,W.page.o);

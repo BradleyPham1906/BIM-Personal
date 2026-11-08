@@ -17,7 +17,7 @@ import {
   bimBobValid
 } from './board-objects.js';
 import { bimBalGaps, bimBalSnap } from './board-arrange.js';
-import { bimPgValid } from './page-sizes.js';
+import { bimPgFit, bimPgLabel, bimPgValid } from './page-sizes.js';
 import { bimBimgAdd } from './board-images.js';
 import { bimBdsFigBoxer, bimBdsPos, bimBdsPres, bimBdsPx } from './board-design.js';
 import { bimBmapFit, bimBmapSources } from './board-map.js';
@@ -56,13 +56,24 @@ import { a3dToast } from '../bim/csg-booleans.js';
     pushUndo();
     W.B.figs=F;W.B.objs=T||[];
     if(Ly)W.B.lay=Ly;else delete W.B.lay;
-    if(W.page&&bimPgValid(W.page))W.B.page=bimPgValid(W.page);else delete W.B.page;   /* __acad3dV174c */
+    /* __acad3dV174c: a board one draws on is a page (the owner, 2026-11-08): the first drawing gives it the smallest
+       standard page that holds what is on it, unless No page was chosen */
+    var auto=null;
+    if(!W.page&&!W.B.pageOff&&W.objs.some(function(n){return n.t!=='fig';})){
+      var fb0=bimBdeFigBox(W),mx=0,my=0;
+      W.objs.forEach(function(n){var q=bimBobBox(n,fb0);if(q){mx=Math.max(mx,q.x+q.w);my=Math.max(my,q.y+q.h);}});
+      auto=bimPgFit(mx,my,/^(ft|in|ftin)$/.test(A3D_UNITS.key));
+      W.page={key:auto.key,o:auto.o};
+    }
+    if(W.page&&bimPgValid(W.page)){W.B.page=bimPgValid(W.page);delete W.B.pageOff;}else delete W.B.page;
+    if(W.pageOff&&!W.B.page)W.B.pageOff=true;
     if(W.B.kind!=='custom'){if(W.off&&W.off.length)W.B.off=W.off;else delete W.B.off;}
     if(sel)A3D_BDE.sel=sel.slice();
     saveSoon();
     bimBrdRedraw();
     refreshLayers();refreshProps();
     if(msg)a3dToast(msg);
+    if(auto)a3dToast('The board is now a page, '+bimPgLabel(auto.key,auto.o)+(auto.fits?'':', and some of it runs past the page')+': Page changes it');
     return true;
   }
   function bimBdeName(n,W){

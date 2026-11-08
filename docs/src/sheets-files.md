@@ -70,10 +70,12 @@ same layers as the model, in the same Layers tab and Layer Properties Manager.
 - **Stacks:** a layer's objects on a board can be a **Stack**: a row, a column or rows that wrap, with a gap (or
   Auto), padding and alignment. Each object is Fixed, fills the width or the height, or is out of the stack.
   Drag an object to another place in its stack. On a phone a row is shown as a column.
-- **Page:** a size from the standards (ISO A0 to A4, ANSI A to E, Architectural A to E1), landscape or
-  portrait, with an ISO 5457 frame and ISO 7200 title block or a US title strip. A board with a page is that
+- **Page:** the first drawing on a board makes it a page, as a Figma frame or a Canva design has a size: the
+  smallest standard page that holds what is on it (ISO A, or ANSI in an imperial project). **Page** changes it:
+  a size from the standards (ISO A0 to A4, ANSI A to E, Architectural A to E1), landscape or portrait, with an ISO 5457 frame and ISO 7200 title block or a US title strip. A board with a page is that
   page on screen, in Present and on paper, printed at its own size. The title block takes the project's fields
-  (Project, Client, Drawn by, Checked by); its number and date of issue are its own, in Properties.
+  (Project, Client, Drawn by, Checked by); its number and date of issue are its own, in Properties. **No page**
+  lets the board flow again; it then prints in A3 strips, which may cut a figure in two.
 - **Map frames:** a plan, an elevation or a saved view at a scale, panned; **Fit** shows it whole. The site's
   shown data layers and the basemap are drawn in it, and its corner credits their sources, always. The legend
   lists the shown data and result layers; the north arrow points to the site's true north (or plan north),

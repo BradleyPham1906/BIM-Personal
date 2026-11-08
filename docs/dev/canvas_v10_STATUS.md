@@ -16704,6 +16704,12 @@ parts, not one PR each (D20), because #82 is not merged and the owner's rule is 
 - After the review: the phase marker `window.__acad3dV174`; the Layers tab finds the board's objects by layer once
   per render (it copied the board once per layer row); the toast names the layer an object was drawn on; ES5 checked
   by grep over the new files (no arrow functions, let, const, template strings, includes, spread).
+- **A board one draws on is a page** (the owner, 2026-11-08: "do what best. i need it to behave like a combo of cad
+  and tools from figma, canva and stuffs"). Figma's frames, Canva's designs and CAD's layouts each have a size, so the
+  first drawing on a board gives it the smallest standard page, landscape, that holds what is on it with a 10 mm
+  margin (`bimPgFit`: ISO A4 to A0, or ANSI B to E in an imperial project), and a toast says which. Page's
+  **No page** stays a choice (`B.pageOff`), and the app then leaves it so. This answers the open print question: a
+  designed board prints as its page. Unit test added (97 of 97); browser 27 of 27, phone 8 of 8.
 - **Suites amended:** V121 (the manager's columns, with Blend), V167's reference (`tests/fixtures/standards_reference.py`:
   the five topics and their hosts). Not run: the full regression. Suites that may notice: V116 (New Sheet now a
   gallery; its Sheet Setup list is unchanged), V162 and V172b (board printing: unchanged for a board without a page).
