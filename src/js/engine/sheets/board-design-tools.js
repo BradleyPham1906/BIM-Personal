@@ -1,6 +1,7 @@
 import { A3D } from '../core/state.js';
 import { bimLayerById, bimLayerZero } from '../layers/layer-rules.js';
 import { bimStd } from '../standards/registry.js';
+import { bimPresIndex } from './boards.js';
 import { bimBrdRec } from './board-figures.js';
 import { bimBrdDlgClose, bimBrdDlgOpen } from './board-edit.js';
 import {
@@ -10,6 +11,7 @@ import { bimBalAlign, bimBalDistribute, bimBalTidy, bimBalUnion } from './board-
 import {
   bimPgBoardPage, bimPgDims, bimPgGalleryHtml, bimPgGalleryWire, bimPgIso5457Ok, bimPgLabel
 } from './page-sizes.js';
+import { bimBdsToday } from './board-design.js';
 import {
   A3D_BDE, bimBdeCommit, bimBdeFigBox, bimBdeMoveFig, bimBdePickable, bimBdeSel, bimBdeWork
 } from './board-design-edit.js';
@@ -82,6 +84,14 @@ import { a3dToast } from '../bim/csg-booleans.js';
     },true);
     return true;
   }
+  /* a title block's number to start from: the one it had, or the board's place in the set */
+  function bimBdePageNum(W){
+    var had='',i;
+    (W.B.objs||[]).forEach(function(n){if(n.t==='tblock'&&n.num)had=n.num;});
+    if(had)return had;
+    i=bimPresIndex(W.B.id);
+    return i>=0?'B-'+('0'+(i+1)).slice(-2):'';
+  }
   /* a page (key null: none) and a title block ('none', 'iso', 'us'), the frame and block put on the current layer */
   function bimBdePageSet(key,o,tb){
     var W=bimBdeWork(),d,ly=bimLayerById(A3D.activeLayer)||bimLayerZero(),ml,m,sw,id,msg;
@@ -95,12 +105,12 @@ import { a3dToast } from '../bim/csg-booleans.js';
       ml=bimStd('drawing.iso5457','margin_left');m=bimStd('drawing.iso5457','margin');sw=bimStd('drawing.iso5457','frame');
       id=bimBobNewId(W.objs);W.objs.push({id:id,t:'border',layer:ly.id,x:ml,y:m,w:d.w-ml-m,h:d.h-2*m,sw:sw});
       var tw=Math.min(bimStd('drawing.iso7200','width'),d.w-ml-m);
-      W.objs.push({id:bimBobNewId(W.objs),t:'tblock',st:'iso',layer:ly.id,x:d.w-m-tw,y:d.h-m-36,w:tw,h:36});
+      W.objs.push({id:bimBobNewId(W.objs),t:'tblock',st:'iso',layer:ly.id,x:d.w-m-tw,y:d.h-m-36,w:tw,h:36,dt:bimBdsToday(),num:bimBdePageNum(W)});
       if(!bimPgIso5457Ok(key,W.page.o))msg+=': not to ISO 5457, which draws A0 to A3 landscape and A4 portrait';
     }else if(tb==='us'){
       m=12.7;
       W.objs.push({id:bimBobNewId(W.objs),t:'border',layer:ly.id,x:m,y:m,w:d.w-2*m,h:d.h-2*m,sw:0.7});
-      W.objs.push({id:bimBobNewId(W.objs),t:'tblock',st:'us',layer:ly.id,x:d.w-m-38,y:m,w:38,h:d.h-2*m});
+      W.objs.push({id:bimBobNewId(W.objs),t:'tblock',st:'us',layer:ly.id,x:d.w-m-38,y:m,w:38,h:d.h-2*m,dt:bimBdsToday(),num:bimBdePageNum(W)});
     }
     return bimBdeCommit(W,'The board is a page: '+msg,[]);
   }

@@ -151,16 +151,16 @@ import { bimBmapHtml } from './board-map.js';
      owner, identification number, date of issue, sheet number, title, approval person, creator, document type), or a
      US title strip with the same facts, stacked */
   function bimBdsTblock(n,ox,oy,ctx){
-    var tb=A3D.titleBlock||{},B=ctx.B,i=B?bimPresIndex(B.id):-1,N=bimPresSeq().length,d=new Date(),dt,F,h,c,fs=bimBdsPx(2.4),fl=bimBdsPx(1.8);
-    dt=d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2);
+    var tb=A3D.titleBlock||{},B=ctx.B,i=B?bimPresIndex(B.id):-1,N=bimPresSeq().length,dt=n.dt||bimBdsToday(),F,h,c,fs=bimBdsPx(2.4),fl=bimBdsPx(1.8);
     F=[['Title',B?bimBoardLabel(B):''],['Project',bimProjectLabel()],['Legal owner',tb.client||''],['Created by',tb.drawnBy||''],['Approved by',tb.checkedBy||''],
-      ['Document type','Presentation board'],['Identification',B?B.id:''],['Date of issue',dt],['Sheet',i>=0?(i+1)+' of '+N:'']];
+      ['Document type','Presentation board'],['Identification',n.num||''],['Date of issue',dt],['Sheet',i>=0?(i+1)+' of '+N:'']];
     c=function(f,big){return '<div class="a3d-clb-dtbc"><span style="font-size:'+fl+'px">'+bimClbE(f[0])+'</span><b style="font-size:'+(big?bimBdsPx(4):fs)+'px">'+bimClbE(f[1]||'-')+'</b></div>';};
     if(n.st==='us')h='<div class="a3d-clb-dtbs">'+F.map(function(f,j){return c(f,j===0);}).join('')+'</div>';
     else h='<div class="a3d-clb-dtbi">'+c(F[0],true)+'<div class="a3d-clb-dtbr">'+c(F[1])+c(F[2])+'</div><div class="a3d-clb-dtbr">'+c(F[3])+c(F[4])+c(F[5])+'</div>'+
       '<div class="a3d-clb-dtbr">'+c(F[6])+c(F[7])+c(F[8])+'</div></div>';
     return '<div'+bimBdsAttr(n,'a3d-clb-dtb',ctx)+' style="'+bimBdsPos(bimBobBox(n),ox,oy)+'border:'+bimBdsPx(0.5)+'px solid #0b0b0b;'+bimBdsComp(n,ctx)+'">'+h+'</div>';
   }
+  function bimBdsToday(){var d=new Date();return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2);}
   /* ---- the whole board ---- */
   function bimBdsFigBoxer(figs){
     var M={};
@@ -215,4 +215,4 @@ import { bimBmapHtml } from './board-map.js';
   }
   /* an image that arrives from the database: the open board drawn again with it, and the thumbnails */
   A3D_BIMG.redraw=function(){bimClbRefresh();};
-export { bimBdsAttr, bimBdsComp, bimBdsFigBoxer, bimBdsHtml, bimBdsPos, bimBdsPres, bimBdsPx };
+export { bimBdsAttr, bimBdsComp, bimBdsFigBoxer, bimBdsHtml, bimBdsPos, bimBdsPres, bimBdsPx, bimBdsToday };

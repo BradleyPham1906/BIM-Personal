@@ -20,7 +20,7 @@ import { bimBalGaps, bimBalSnap } from './board-arrange.js';
 import { bimPgValid } from './page-sizes.js';
 import { bimBimgAdd } from './board-images.js';
 import { bimBdsFigBoxer, bimBdsPos, bimBdsPres, bimBdsPx } from './board-design.js';
-import { bimBmapFitDen, bimBmapSources } from './board-map.js';
+import { bimBmapFit, bimBmapSources } from './board-map.js';
 import { bimBdePage } from './board-design-tools.js';
 import { a3dToast } from '../bim/csg-booleans.js';
 
@@ -118,7 +118,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
     else if(kind==='map'){   /* __acad3dV174d: the first plan, at a scale that shows it whole */
       var srcs=bimBmapSources();
       if(!srcs.length){a3dToast('There is no plan or view to show: add a level first');return null;}
-      n.w=160;n.h=110;n.src=srcs[0].kind+':'+srcs[0].refId;n.den=bimBmapFitDen(n);
+      n.w=160;n.h=110;n.src=srcs[0].kind+':'+srcs[0].refId;var fit=bimBmapFit(n);n.den=fit.den;n.px=fit.px;n.py=fit.py;
     }else if(kind==='legend'||kind==='north'||kind==='sbar'){
       var fr=null;
       A3D_BDE.sel.forEach(function(x){var q=bimBobFind(W.objs,x);if(q&&q.n.t==='map')fr=q.n;});

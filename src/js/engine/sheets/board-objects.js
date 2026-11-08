@@ -90,7 +90,11 @@ import { bimBalLayout } from './board-arrange.js';
       r.fit=(n.fit==='fit'||n.fit==='tile')?n.fit:'fill';
     }
     /* __acad3dV174c: a title block, ISO 7200's at the bottom right or a US strip at the right (D14); the sheet's frame line */
-    if(n.t==='tblock')r.st=n.st==='us'?'us':'iso';
+    if(n.t==='tblock'){
+      r.st=n.st==='us'?'us':'iso';
+      if(typeof n.num==='string')r.num=n.num.replace(/\s+/g,' ').trim().slice(0,40);   /* its identification number */
+      if(typeof n.dt==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(n.dt))r.dt=n.dt;   /* its date of issue, kept */
+    }
     if(n.t==='border')r.sw=bimBobNum(n.sw,0.1,5,0.7);
     /* __acad3dV174d: a map frame's view, scale and pan; the surround's frame, and their own settings */
     if(n.t==='map'){

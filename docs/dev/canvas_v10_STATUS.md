@@ -16652,5 +16652,53 @@ Research: `docs/research/research-presentation-boards.md`; the owner's D1 to D20
 - Checks: `node --check` on each changed file, `npm run modules`, the build, `npm run check`, `npm test` 83 of 83
   (15 new in `tests/unit/board-objects.test.mjs`). `bimLayerSet` and `bimLayerMove` redraw the Layers tab, which the
   unit tests' stand-in browser cannot (`refreshLayers` runs out of memory there, on main too): their refusals are
-  unit-tested, their changes wait for the browser check. No browser check of this build yet; V121's suite may check
-  the Layer Properties Manager's columns (a Blend column was added).
+  unit-tested; their changes are checked in the browser (below).
+
+### V174b to V174d: arranging, pages, map frames (2026-11-08)
+
+The owner: "just try to wrap up this whole v174 thing then we do the test". One branch and PR (#82) for the four
+parts, not one PR each (D20), because #82 is not merged and the owner's rule is no stacked PRs.
+
+- **V174b** (`sheets/board-arrange.js`, ported from the research's own experiments `v174-layout/align.js`,
+  `spacing-snap.js` and `autolayout.js`, which were measured against Chromium; `sheets/board-design-tools.js`):
+  - Align (six edges; one object to the page), Distribute (three or more: the least left and greatest right edges
+    stay, D9), Tidy up (the most common gap), in Properties' Arrange group.
+  - Smart spacing while dragging: edges, centres and equal gaps of the other shown objects and the page, at the
+    drawing's 12 px (D10), with Snap (F3); Grid rounds to whole mm otherwise; Ortho as before. Guides drawn.
+  - A layer's stack on a board (R4: the sub-layer is the group): `B.lay[layer id]` = row, column or wrap, gap or
+    Auto, padding, main and cross alignment, Hug or Fixed width and height, its corner. Each object Fixed, Fill
+    width, Fill height, Fill both, or out of the stack. Applied in `bimBdeCommit`, so every change re-lays it; an
+    object dropped in its stack takes the place it was dropped at. On a phone a row is shown as a column (D11).
+  - Not built (D7 in part): an object's min and max, Hug children, nested stacks (a parent layer's stack does not
+    take its sub-layers' objects); a stack moves through its corner fields, not by dragging its box.
+- **V174c** (`sheets/page-sizes.js`; the registry):
+  - `paper.iso216` (ISO 216:2007, P), `paper.ansi` (ASME Y14.1-2020, S), `paper.arch` (S), `drawing.iso5457`
+    (ISO 5457:1999, P: margins 20 and 10 mm, frame 0.7 mm), `drawing.iso7200` (ISO 7200:2004, P: 180 mm).
+  - The gallery (ISO A0 to A4, ANSI A to E, Arch A to E1; landscape or portrait; D13) in New Sheet, in place of
+    the size list, and in a board's Page. A gallery size the sheets already know keeps its V116 key (`ANSI-B-L`,
+    and Arch D as `ANSI-D-L`); another is `pg:<key>:<o>`. The old `ANSI-D` sizes are labelled Arch D (D12).
+  - A board with a page (`B.page`) is that page: drawn at its size on screen, printed on its own `@page` size with
+    no margin, its header off paper and its notes (credits) on the next page. This answers the tall-board print
+    problem for a board with a page.
+  - Title blocks as objects: ISO 5457's frame and ISO 7200's block at the bottom right (its eight mandatory
+    fields), or a US frame and right-hand strip (D14). Number and date of issue kept on the block and editable;
+    A0 to A3 portrait or A4 landscape is said to be outside ISO 5457.
+- **V174d** (`sheets/board-map.js`):
+  - Map frame: a plan, elevation or saved flat view at a scale (the sheets' scales, or 1, 2, 2.5, 5 times a power
+    of ten), panned; drawn by `bimRenderSourceToCanvas` at twice the page's pixels, cached by the board, the frame,
+    the model's revision and the tiles loaded; Fit centres it. Inside a frame the shown data layers and the basemap
+    are drawn on paper (`A3D.mapFrame`, D18), and the frame's corner credits the basemap and the data, always.
+  - Legend (the shown data layers, their classes, and result layers; their credits; left off paper when empty,
+    D17), north arrow (true or plan north through the frame's camera, as `drawNorthArrow`, plus an offset for
+    declination; none in an elevation, D16), scale bar (1-2-5, two divisions in 15 to 40 per cent of the frame, m to
+    km, ft to mi, D15), each bound to a frame.
+  - Not built: a frame's own rotation (4.6), the legend's extent filter (D17 says off).
+- Checks: `node --check`, `npm run modules`, the build, `npm run check`, `npm test` 96 of 96 (13 new in
+  `tests/unit/board-tools.test.mjs`).
+- **Browser check** (the owner's "then we do the test"): headless Edge over http, through the DevTools protocol,
+  `tests/e2e/bim_phase174_boards_edge_check.mjs`, a fresh profile: 27 of 27, no console errors, no [BIM] warnings.
+  It found and fixed: a map frame not centred on the model (Fit now pans to its centre). A map frame draws in about
+  30 ms; a board with one redraws in about 10 ms.
+- **Suites amended:** V121 (the manager's columns, with Blend), V167's reference (`tests/fixtures/standards_reference.py`:
+  the five topics and their hosts). Not run: the full regression. Suites that may notice: V116 (New Sheet now a
+  gallery; its Sheet Setup list is unchanged), V162 and V172b (board printing: unchanged for a board without a page).

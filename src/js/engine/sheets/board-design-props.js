@@ -8,7 +8,7 @@ import {
   bimBobBlend, bimBobBlends, bimBobBox, bimBobFind, bimBobKind, bimBobLayer, bimBobMaskTypes
 } from './board-objects.js';
 import { bimBdsPres } from './board-design.js';
-import { bimBmapFitDen, bimBmapSources } from './board-map.js';
+import { bimBmapFit, bimBmapSources } from './board-map.js';
 import {
   A3D_BDE, bimBdeAddImage, bimBdeDo, bimBdeFigBox, bimBdeName, bimBdeOwnsProps, bimBdeSel, bimBdeSet,
   bimBdeWork
@@ -92,8 +92,9 @@ import { bimBdeArrange, bimBdeLaySet } from './board-design-tools.js';
       if(n.r!==undefined)g+=bimBdeNum('Corner (mm)','r',n.r,0.5,0);
       if(n.t==='border')g+=bimBdeNum('Line (mm)','sw',n.sw,0.05,0.1,5);   /* __acad3dV174c */
       g+=bimBdeMapProps(n,W);   /* __acad3dV174d */
-      if(n.t==='tblock')g+=bimPropRow('Style','<select data-bdf="st">'+bimBdeOpt('iso','ISO 7200, at the bottom right',n.st)+bimBdeOpt('us','A title strip (US practice)',n.st)+'</select>')+
-        '<div class="a3d-pnote">Its fields come from the project (Project, Client, Drawn by, Checked by) and the board (its name, its place in the set, the date of issue: today).</div>';
+      if(n.t==='tblock')g+=bimPropRow('Number','<input type="text" data-bdf="num" maxlength="40" value="'+bimEsc(n.num||'')+'">')+
+        bimPropRow('Date of issue','<input type="date" data-bdf="dt" value="'+bimEsc(n.dt||'')+'">')+bimPropRow('Style','<select data-bdf="st">'+bimBdeOpt('iso','ISO 7200, at the bottom right',n.st)+bimBdeOpt('us','A title strip (US practice)',n.st)+'</select>')+
+        '<div class="a3d-pnote">Its other fields come from the project (Project, Client, Drawn by, Checked by) and the board (its name, its place in the set).</div>';
       if(n.t==='poly')g+=bimBdeNum('Sides','n',n.n,1,3,60);
       if(n.t==='star')g+=bimBdeNum('Points','n',n.n,1,3,60)+bimBdeNum('Inner (%)','ri',n.ri*100,1,5,95);
       if(n.t==='line')g+=bimBdeChk('Arrow at its start','a0',n.a0)+bimBdeChk('Arrow at its end','a1',n.a1);
@@ -171,7 +172,7 @@ import { bimBdeArrange, bimBdeLaySet } from './board-design-tools.js';
       v=a.getAttribute('data-bdact');
       if(v==='swapimg'){if(A3D_BDE.sel.length===1)bimBdeAddImage(A3D_BDE.sel[0]);}
       else if(/^(al|dist|tidy)-/.test(v))bimBdeArrange(v);   /* __acad3dV174b */
-      else if(v==='mapfit'){var Wf=bimBdeWork(),q=Wf&&bimBobFind(Wf.objs,A3D_BDE.sel[0]);if(q&&q.n.t==='map')bimBdeSet(null,{den:bimBmapFitDen(q.n),px:0,py:0});}   /* __acad3dV174d */
+      else if(v==='mapfit'){var Wf=bimBdeWork(),q=Wf&&bimBobFind(Wf.objs,A3D_BDE.sel[0]);if(q&&q.n.t==='map')bimBdeSet(null,bimBmapFit(q.n));}   /* __acad3dV174d */
       else bimBdeDo(v);
     });
     body.addEventListener('change',function(ev){
@@ -193,7 +194,8 @@ import { bimBdeArrange, bimBdeLaySet } from './board-design-tools.js';
       else if(f==='layer'){if(!t.value||!bimLayerById(t.value))return;o.layer=t.value;}
       else if(f==='fop'||f==='ri'){v=parseFloat(t.value);if(!isFinite(v))return;o[f]=Math.max(0,Math.min(1,v/100));}
       else if(f==='nm')o.nm=t.value.replace(/\s+/g,' ').trim()||null;
-      else if(f==='al'||f==='fit'||f==='fill'||f==='stroke'||f==='col'||f==='s'||f==='st'||f==='src'||f==='fr'||f==='ttl'||f==='nk'||f==='un')o[f]=t.value;
+      else if(f==='al'||f==='fit'||f==='fill'||f==='stroke'||f==='col'||f==='s'||f==='st'||f==='src'||f==='fr'||f==='ttl'||f==='nk'||f==='un'||f==='num')o[f]=t.value;
+      else if(f==='dt'){if(!/^\d{4}-\d{2}-\d{2}$/.test(t.value))return;o.dt=t.value;}
       else if(f==='a0'||f==='a1')o[f]=t.checked?true:null;
       else if(f==='fw')o.fw=t.checked?700:400;
       else{v=parseFloat(t.value);if(!isFinite(v))return;o[f]=v;}

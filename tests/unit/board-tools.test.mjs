@@ -109,6 +109,9 @@ test('the sheets\' old ANSI D is Arch D, keeping its size; a gallery size become
   assert.equal(E.bimPgEnsureSheetSize('pg:iso-A1:l'), true);
   assert.equal(E.SHEET_SIZES['pg:iso-A1:l'].w, 841);
   assert.equal(E.bimPgEnsureSheetSize('pg:iso-A9:l'), false);
+  assert.equal(E.bimPgSheetKey('ansi-B', 'l'), 'ANSI-B-L', 'a size the sheets already know keeps its V116 key');
+  assert.equal(E.bimPgSheetKey('arch-D', 'l'), 'ANSI-D-L', 'the old ANSI D was always Arch D');
+  assert.equal(E.bimPgSheetKey('ansi-E', 'p'), 'pg:ansi-E:p');
 });
 
 test('a board\'s page is kept with it, and only a good one', () => {

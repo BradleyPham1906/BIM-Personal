@@ -45,6 +45,43 @@ are in reading order, and each one's menu moves it earlier or later.
 it. A board's menu in Presentation duplicates it as a new board, and deletes a board of your own
 (Ctrl+Z brings it back).
 
+## Designing a board
+
+A board is paper space, as an AutoCAD layout is, and what you draw on it is on the project's own layers: the
+same layers as the model, in the same Layers tab and Layer Properties Manager.
+- **Draw**, on the board's Edit bar: a rectangle, an ellipse, a line, an arrow, a polygon, a star, text, an
+  image, or a map frame with its legend, north arrow and scale bar. It goes on the current layer.
+- **Selecting:** click an object; Shift or Ctrl adds. Its properties are in the **Properties** panel, and its
+  row is under its layer in **Layers**, where a click selects it too. Locked and frozen layers' objects are not
+  picked; a layer that is off hides them; a layer set not to plot leaves them off paper.
+- **What is drawn over what:** the Layers list, read from the bottom up: a layer higher in the list is drawn
+  over those below. Move a layer with the **Up** and **Down** buttons, or drop it on the top or bottom of
+  another layer's row (on its middle, it becomes a sub-layer). Within a layer, **Draw order** in Properties:
+  To front, Forward, Backward, To back (Ctrl+Shift+], Ctrl+], Ctrl+[, Ctrl+Shift+[).
+- **Transparency and blend modes:** **Blend** is a layer property beside Transparency in the Layer Properties
+  Manager: the sixteen modes (Multiply, Screen, Overlay and the rest). An object takes its layer's, ByLayer,
+  unless it has its own in Properties. They are drawn in the **Presentation** appearance (Pres in the status
+  bar) and in Present; the Technical appearance draws every object plain.
+- **Masks:** an object set as a mask (Alpha, Vector or Luminance) clips the objects of its own layer drawn
+  above it, up to that layer's next mask.
+- **Arranging:** Properties' **Arrange** aligns the selection (one object aligns to the page), distributes three
+  or more with equal gaps between the outermost two, or tidies them to their most common gap. While you drag,
+  **Snap** (F3) catches other objects' edges, centres and equal gaps.
+- **Stacks:** a layer's objects on a board can be a **Stack**: a row, a column or rows that wrap, with a gap (or
+  Auto), padding and alignment. Each object is Fixed, fills the width or the height, or is out of the stack.
+  Drag an object to another place in its stack. On a phone a row is shown as a column.
+- **Page:** a size from the standards (ISO A0 to A4, ANSI A to E, Architectural A to E1), landscape or
+  portrait, with an ISO 5457 frame and ISO 7200 title block or a US title strip. A board with a page is that
+  page on screen, in Present and on paper, printed at its own size. The title block takes the project's fields
+  (Project, Client, Drawn by, Checked by); its number and date of issue are its own, in Properties.
+- **Map frames:** a plan, an elevation or a saved view at a scale, panned; **Fit** shows it whole. The site's
+  shown data layers and the basemap are drawn in it, and its corner credits their sources, always. The legend
+  lists the shown data and result layers; the north arrow points to the site's true north (or plan north),
+  plus an offset you type for magnetic declination; the scale bar picks a round length for the frame.
+- **Images** are kept once in the browser and travel inside the project file (4 MB each at most).
+
+**New Sheet** chooses its page from the same gallery. Every change is one undo step and is kept with the project.
+
 ## Exporting
 
 | Format | Command |

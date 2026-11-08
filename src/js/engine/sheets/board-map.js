@@ -1,4 +1,5 @@
 import { A3D } from '../core/state.js';
+import { camVecs } from '../core/mesh-primitives.js';
 import { bimTrueNorthDeg } from '../survey/survey-arithmetic.js';
 import { bimPresentGraphics } from '../layers/plot-by-layers.js';
 import { A3D_PLOT } from '../layers/layer-rules.js';
@@ -46,20 +47,24 @@ import { bimBdsAttr, bimBdsComp, bimBdsPos, bimBdsPx } from './board-design.js';
     for(e=Math.floor(Math.log(v)/Math.LN10);e<12;e++)for(i=0;i<st.length;i++)if(st[i]*Math.pow(10,e)>=v-1e-9)return st[i]*Math.pow(10,e);
     return Math.round(v);
   }
-  /* the scale that shows the whole source in a frame of w x h mm */
-  function bimBmapFitDen(n){
-    var src=bimBmapSrc(n),k=bimBmapPxMm(),W=n.w*k,H=n.h*k,cam;
-    if(src.error)return 100;
-    cam=bimSheetSolveCamera(src,W,H,k,'fit',100,null);
-    return bimBmapNiceDen(Math.max(1,1000*k*cam.dist/(1.2*H)));
+  /* the scale that shows the whole source in a frame of w x h mm, and the pan that centres it: {den, px, py} */
+  function bimBmapFit(n){
+    var src=bimBmapSrc(n),k=bimBmapPxMm(),W=n.w*k,H=n.h*k,cam,b,V,d;
+    if(src.error)return {den:100,px:0,py:0};
+    cam=bimSheetSolveCamera(src,W,H,k,'fit',100,null);b=src.cam;
+    V=camVecs({yaw:b.yaw,pitch:b.pitch,dist:1,tx:b.tx,ty:b.ty,tz:b.tz});
+    d=[cam.tx-b.tx,cam.ty-b.ty,cam.tz-b.tz];
+    return {den:bimBmapNiceDen(Math.max(1,1000*k*cam.dist/(1.2*H))),
+      px:Math.round((d[0]*V.r[0]+d[1]*V.r[1]+d[2]*V.r[2])*1000)/1000,py:Math.round((d[0]*V.u[0]+d[1]*V.u[1]+d[2]*V.u[2])*1000)/1000};
   }
+  function bimBmapFitDen(n){return bimBmapFit(n).den;}
   /* the frame's picture, as a data URL, drawn when the model, the frame or the basemap's tiles have changed */
-  function bimBmapUrl(n){
-    var src=bimBmapSrc(n),k=bimBmapPxMm(),key,cv,u,tiles=0,t;
+  function bimBmapUrl(n,bid){
+    var src=bimBmapSrc(n),k=bimBmapPxMm(),key,cv,u,tiles=0,t,ck=(bid||'')+'|'+n.id;   /* ids repeat across boards: the board's id too */
     if(src.error)return {error:src.error};
     for(t in A3D_MAP.cache)if(A3D_MAP.cache.hasOwnProperty(t)&&A3D_MAP.cache[t].state==='ok')tiles++;
     key=A3D_REV+'|'+n.src+'|'+n.w+'|'+n.h+'|'+n.den+'|'+n.px+'|'+n.py+'|'+tiles+'|'+(A3D_PLOT.on?'p':'s')+'|'+(bimPresentGraphics()?1:0);
-    if(A3D_BMAP.img[n.id]&&A3D_BMAP.img[n.id].key===key)return {url:A3D_BMAP.img[n.id].url};
+    if(A3D_BMAP.img[ck]&&A3D_BMAP.img[ck].key===key)return {url:A3D_BMAP.img[ck].url};
     if(A3D_BMAP.busy)return {error:'A frame inside a frame is not drawn'};
     A3D_BMAP.busy=true;A3D.mapFrame=true;
     try{
@@ -67,12 +72,30 @@ import { bimBdsAttr, bimBdsComp, bimBdsPos, bimBdsPx } from './board-design.js';
       u=cv.toDataURL('image/png');
     }catch(eM){console.warn('[BIM] A map frame could not be drawn',eM);return {error:'The view could not be drawn: see the console'};}
     finally{A3D.mapFrame=false;A3D_BMAP.busy=false;}
-    A3D_BMAP.img[n.id]={key:key,url:u};
+    A3D_BMAP.img[ck]={key:key,url:u};
     return {url:u};
   }
+  /* what the frame's corner credits: the basemap's, and every shown data layer's source, always (free data, credited) */
   function bimBmapCreditText(){
-    var st=bimMapSettings();
-    return st.style!=='off'?bimMapCredit(st):'';
+    var st=bimMapSettings(),out=[],d=[];
+    if(st.style!=='off'&&bimMapCredit(st))out.push(bimMapCredit(st));
+    bimDataList().forEach(function(L){if(L.visible&&L.credit&&d.indexOf(L.credit)<0)d.push(L.credit);});
+    if(d.length)out.push('Data: '+d.join('; '));
+    return out.join(' | ');
+  }
+  /* the frame's view, looked at from above? and where north points on it, in degrees clockwise from up, through the
+     view's own camera, as the plan's north arrow is drawn (site/property.js, drawNorthArrow); null in an elevation */
+  function bimBmapNorthDeg(F,nk){
+    var src=bimBmapSrc(F),c,V,tn,n,sx,sy;
+    if(src.error||!src.cam)return null;
+    c=src.cam;
+    if(Math.abs(Math.sin(c.pitch))<0.9)return null;   /* not a plan: an elevation or a section has no north on it */
+    V=camVecs({yaw:c.yaw,pitch:c.pitch,dist:1,tx:0,ty:0,tz:0});
+    tn=(nk==='plan'?0:bimTrueNorthDeg())*Math.PI/180;
+    n=[Math.sin(tn),0,-Math.cos(tn)];
+    sx=n[0]*V.r[0]+n[1]*V.r[1]+n[2]*V.r[2];sy=n[0]*V.u[0]+n[1]*V.u[1]+n[2]*V.u[2];
+    if(!(Math.abs(sx)+Math.abs(sy)>1e-9))return null;
+    return Math.atan2(sx,sy)*180/Math.PI;
   }
   /* ---- the surround ---- */
   /* the legend's rows: the shown data layers (their classes, or their colour) and result layers */
@@ -121,7 +144,7 @@ import { bimBdsAttr, bimBdsComp, bimBdsPos, bimBdsPx } from './board-design.js';
     var b=bimBobBox(n),pos=bimBdsPos(b,ox,oy)+bimBdsComp(n,ctx),attr,F,r,h,a,bar,W,s,i,x,cr;
     attr=function(cls){return bimBdsAttr(n,cls,ctx);};
     if(n.t==='map'){
-      r=bimBmapUrl(n);cr=bimBmapCreditText();
+      r=bimBmapUrl(n,ctx.B?ctx.B.id:'');cr=bimBmapCreditText();
       if(r.error)return '<div'+attr('a3d-clb-dmap ph')+' style="'+pos+'"><span>'+bimClbE(r.error)+'</span></div>';
       return '<div'+attr('a3d-clb-dmap')+' style="'+pos+'"><img alt="'+bimClbE(n.nm||'Map frame')+'" src="'+r.url+'">'+
         (cr?'<span class="a3d-clb-dmapcr" style="font-size:'+bimBdsPx(1.8)+'px">'+bimClbE(cr)+'</span>':'')+'</div>';
@@ -138,8 +161,9 @@ import { bimBdsAttr, bimBdsComp, bimBdsPos, bimBdsPx } from './board-design.js';
     }
     if(n.t==='north'){
       if(!F)return ctx.edit?'<div'+attr('a3d-clb-dleg ph')+' style="'+pos+'"><span>North arrow: no map frame</span></div>':'';
-      if(!/^plan:|^view:/.test(F.src||''))return ctx.edit?'<div'+attr('a3d-clb-dleg ph')+' style="'+pos+'"><span>An elevation has no north</span></div>':'';
-      a=(n.nk==='plan'?0:bimTrueNorthDeg())+(n.off||0);
+      a=bimBmapNorthDeg(F,n.nk);
+      if(a===null)return ctx.edit?'<div'+attr('a3d-clb-dleg ph')+' style="'+pos+'"><span>The frame\'s view is not a plan: it has no north</span></div>':'';
+      a+=(n.off||0);
       W=Math.min(b.w,b.h);
       return '<svg'+attr('a3d-clb-dshp')+' xmlns="http://www.w3.org/2000/svg" style="'+pos+'" viewBox="-50 -50 100 100" aria-label="'+(n.nk==='plan'?'Plan north':'True north')+'">'+
         '<g transform="rotate('+Math.round(a*100)/100+')"><polygon points="0,-40 14,22 0,12 -14,22" fill="#0b0b0b"/><polygon points="0,-40 0,12 -14,22" fill="#ffffff" stroke="#0b0b0b" stroke-width="1.5"/>'+
@@ -157,4 +181,4 @@ import { bimBdsAttr, bimBdsComp, bimBdsPos, bimBdsPx } from './board-design.js';
     }
     return '';
   }
-export { bimBmapBar, bimBmapFitDen, bimBmapHtml, bimBmapNiceDen, bimBmapSources };
+export { bimBmapBar, bimBmapFit, bimBmapHtml, bimBmapNiceDen, bimBmapSources };

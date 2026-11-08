@@ -58,10 +58,16 @@ import { SHEET_SIZES } from './sheets.js';
     return {key:p.key,o:p.o,w:d.w,h:d.h,label:bimPgLabel(p.key,p.o)};
   }
   /* ---- the sheets: a size from the gallery as a sheet size, 'pg:iso-A3:l', made known to SHEET_SIZES ---- */
-  function bimPgSheetKey(key,o){return 'pg:'+key+':'+(o==='p'?'p':'l');}
+  /* a sheet size already known at exactly this size keeps its V116 key ('ANSI-B-L'), so nothing that reads it changes */
+  function bimPgSheetKey(key,o){
+    var d=bimPgDims(key,o),k;
+    if(d)for(k in SHEET_SIZES)if(SHEET_SIZES.hasOwnProperty(k)&&k!=='Custom'&&!/^pg:/.test(k)&&Math.abs(SHEET_SIZES[k].w-d.w)<0.01&&Math.abs(SHEET_SIZES[k].h-d.h)<0.01)return k;
+    return 'pg:'+key+':'+(o==='p'?'p':'l');
+  }
   function bimPgEnsureSheetSize(sk){
     var m=/^pg:([a-z]+-[A-Z0-9]+):([lp])$/.exec(String(sk||'')),d;
-    if(!m||SHEET_SIZES[sk])return !!SHEET_SIZES[sk];
+    if(SHEET_SIZES[sk])return true;
+    if(!m)return false;
     d=bimPgDims(m[1],m[2]);
     if(!d)return false;
     SHEET_SIZES[sk]={label:bimPgLabel(m[1],m[2]),w:d.w,h:d.h};

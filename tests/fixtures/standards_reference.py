@@ -189,6 +189,18 @@ TOPICS = {
         dict(id='sumo.rules.docs', pub='', st='current', lv='S', adopt=[('*', None, None)], v=None)]),
     'app.traffic': dict(kind='assumption', anywhere=True, cat=False, eds=[
         dict(id='app.traffic.1', pub='', st='current', lv='A', adopt=[('*', None, None)], v=None)]),
+    # AMENDED FOR V174c: drawing sheets -- ISO 216's A sizes, ASME Y14.1's, the Architectural sizes, ISO 5457's frame and
+    # ISO 7200's title block; their values are held to the research's tables by tests/unit/board-tools.test.mjs
+    'paper.iso216': dict(kind='standard', anywhere=True, cat=False, eds=[
+        dict(id='paper.iso216.2007', pub='2007', st='current', lv='P', adopt=[('*', '2007', None)], v=None)]),
+    'paper.ansi': dict(kind='standard', anywhere=True, cat=False, eds=[
+        dict(id='paper.ansi.y14.1.2020', pub='2020', st='current', lv='S', adopt=[('*', '2020', None)], v=None)]),
+    'paper.arch': dict(kind='standard', anywhere=True, cat=False, eds=[
+        dict(id='paper.arch.1', pub='', st='current', lv='S', adopt=[('*', None, None)], v=None)]),
+    'drawing.iso5457': dict(kind='standard', anywhere=True, cat=False, eds=[
+        dict(id='drawing.iso5457.1999', pub='1999', st='current', lv='P', adopt=[('*', '1999', None)], v=None)]),
+    'drawing.iso7200': dict(kind='standard', anywhere=True, cat=False, eds=[
+        dict(id='drawing.iso7200.2004', pub='2004', st='current', lv='P', adopt=[('*', '2004', None)], v=None)]),
     # the catalogue: in force where they are adopted, not applied by the app yet
     'pa.ucc': dict(kind='code', anywhere=False, cat=True, eds=[dict(id='pa.ucc.2026', pub='2025-11-07', st='current', lv='P', adopt=[('us-pa', '2026-01-01', None)], v={})]),
     'ibc': dict(kind='code', anywhere=False, cat=True, eds=[dict(id='ibc.2021', pub='2020-10', st='current', lv='P', adopt=[('us-pa', '2026-01-01', None)], v={}),
@@ -214,6 +226,7 @@ SOURCE_HOSTS = {'content.tfl.gov.uk', 'assets.publishing.service.gov.uk', 'www.g
                 'store.transportation.org', 'www.dot.state.pa.us', 'docs.penndot.pa.gov', 'www.concrete.org', 'www.aisc.org', 'www.faa.gov',
                 'www.planning.org', 'doi.org',   # AMENDED FOR V168: APA's LBCS; the DOIs of Buildings and Cities and of Browning et al.
                 'www.cdc.gov', 'www.nasa.gov', 'idea.ap.buffalo.edu', 'www.fs.usda.gov', 'etccdi.pacificclimate.org',   # AMENDED FOR V169: the assets' sources
+                'www.iso.org', 'www.asme.org',   # AMENDED FOR V174c: the drawing sheets' standards
                 'arxiv.org', 'mtreiber.de', 'ops.fhwa.dot.gov', 'www.fdot.gov', 'onlinepubs.trb.org', 'www.sandiego.gov', 'github.com',   # AMENDED FOR V171: traffic's sources
                 'www.zoneomics.com',   # AMENDED FOR V172: Chalfont's site capacity calculation, in Zoneomics' copy of the code
                 'www.utci.org'}   # AMENDED FOR V172b: UTCI's program and poster
