@@ -190,7 +190,14 @@ body.light-theme .a3d-projhead{border-color:rgba(0,0,0,.1)}
 body.light-theme .a3d-projsub{color:#777}
 /* __acad3dV121: the Layers panel -- the layer tree, and the objects on each layer */
 .a3d-lyp{display:flex;flex-direction:column;min-height:0;padding:6px 6px 14px;font:12px/1.3 Inter,system-ui,sans-serif;color:#c9d1d9}
-.a3d-lyhd{display:flex;align-items:center;justify-content:space-between;padding:4px 4px 6px}
+.a3d-lyhd{display:flex;align-items:center;justify-content:space-between;padding:4px 4px 6px;flex-wrap:wrap;gap:4px}
+.a3d-lyby{display:inline-flex;align-items:center;gap:4px;font-size:11px;color:#9aa7b4}   /* __acad3dV173c */
+.a3d-lyby select{font-size:11px;max-width:120px}
+.a3d-lycake{font-size:11px;padding:2px 6px;border-radius:5px;border:1px solid rgba(255,255,255,.18);background:transparent;color:#aeb6bf;cursor:pointer}   /* __acad3dV173d */
+.a3d-lycake.on{background:#2f7fe0;border-color:#2f7fe0;color:#fff}
+body.light-theme .a3d-lycake{color:#444;border-color:rgba(0,0,0,.2)}
+body.light-theme .a3d-lycake.on{color:#fff}
+body.light-theme .a3d-lyby{color:#555}
 .a3d-lyttl{font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#aeb8c2}
 .a3d-lybtns{display:flex;gap:2px}
 .a3d-lyb{width:24px;height:24px;border:0;border-radius:6px;background:transparent;color:#9aa3ad;display:grid;place-items:center;cursor:pointer;padding:0}
@@ -17692,7 +17699,7 @@ try{
       memo[l.id]=r;
       return r;
     }
-    var h='<div class="a3d-lyp"><div class="a3d-lyhd"><span class="a3d-lyttl">Layers</span><span class="a3d-lybtns">'+
+    var h='<div class="a3d-lyp"><div class="a3d-lyhd"><span class="a3d-lyttl">Layers</span>'+bimLyListBySelect()+bimCakeBtnHtml()+'<span class="a3d-lybtns">'+   /* __acad3dV173c; __acad3dV173d: the layer cake */
       bimLyBtn('new','New layer',BIM_LY_IC.add)+
       bimLyBtn('sub','New sub-layer under the selected layer',BIM_LY_IC.sub)+
       bimLyBtn('std','New layer with an AIA / NCS standard name',BIM_LY_IC.std)+
@@ -17701,6 +17708,7 @@ try{
       bimLyBtn('lpm','Layer Properties Manager (LAYER)',BIM_LY_IC.lpm)+
       '</span></div><input type="text" class="a3d-lysearch" data-lysearch="1" placeholder="Search layers and objects" value="'+
       bimEsc(A3D_LY.filter||'')+'" aria-label="Search layers and objects"><div class="a3d-lylist" data-lylist="1">';
+    if(bimLyListBy()!=='order')return h+bimLyListByHtml(f)+'</div></div>';   /* __acad3dV173c: by source or by selection */
     function render(l,depth){
       if(seen[l.id]||(f&&!match(l)))return;
       seen[l.id]=1;
@@ -17713,6 +17721,101 @@ try{
     A3D.layers.forEach(function(l){if(!bimLayerParentOk(l))render(l,0);});
     if(f&&!Object.keys(seen).length)h+='<div class="a3d-lyempty">Nothing matches</div>';
     return h+'</div>'+bimLySectionsHtml(f)+'</div>';   /* __acad3dV148: the results and the data, below the layers */
+  }
+
+  /* ================= __acad3dV173c: Layers, listed by drawing order, source or selection =================
+     ArcGIS Pro's Contents pane lists one map's layers by drawing order, by data source and by
+     selection; the rail's Layers tab does the same over the app's own stores (the owner's D1). The
+     kinds draw in a fixed order, which paint sets, and each kind reorders within itself (D2); a data
+     layer's list puts the layer drawn on top at the top, as the results' list does (D3), the stored
+     order kept. The view is the panel's own state: neither saved nor undone. */
+  var BIM_LY_LISTBY=[['order','Drawing order'],['source','Source'],['selection','Selection']];
+  function bimLyListBy(){var v=A3D_LY.listBy;return v==='source'||v==='selection'?v:'order';}
+  function bimLyListBySet(v){
+    A3D_LY.listBy=v==='source'||v==='selection'?v:'order';
+    refreshLayers();
+    return A3D_LY.listBy;
+  }
+  function bimLyListBySelect(){
+    var o='',i;
+    for(i=0;i<BIM_LY_LISTBY.length;i++)o+='<option value="'+BIM_LY_LISTBY[i][0]+'"'+(bimLyListBy()===BIM_LY_LISTBY[i][0]?' selected':'')+'>'+BIM_LY_LISTBY[i][1]+'</option>';
+    return '<label class="a3d-lyby"><span>List by</span><select data-lylistby="1" aria-label="List the layers by">'+o+'</select></label>';
+  }
+  /* the data layers top-first: the last stored draws on top, so it is listed first */
+  function bimDataListTopFirst(){return bimDataList().slice().reverse();}
+  /* a data layer moved to another's place in the list: one undo step, as a result layer's move */
+  function bimDataLayerMove(id,to){
+    var L=bimDataList(),i=-1,j=-1,k,D;
+    for(k=0;k<L.length;k++){if(L[k].id===id)i=k;if(L[k].id===to)j=k;}
+    if(i<0||j<0||i===j)return false;
+    pushUndo();
+    D=L.splice(i,1)[0];L.splice(j,0,D);
+    refreshLayers();refreshProps();paint();saveSoon();
+    return true;
+  }
+  /* one step up or down the list, for touch screens where a row cannot be dragged: up is toward
+     the top of the list, so later in the stored order */
+  function bimDataLayerStep(id,dir){
+    var L=bimDataList(),i,j;
+    for(i=0;i<L.length;i++)if(L[i].id===id)break;
+    if(i>=L.length)return false;
+    j=dir==='up'?i+1:i-1;
+    if(j<0||j>=L.length){a3dToast(L[i].name+' is at the '+(dir==='up'?'top':'bottom')+' already');return false;}
+    return bimDataLayerMove(id,L[j].id);
+  }
+  function bimLyGroupHtml(label,n,body){
+    return '<div class="a3d-lysec"><div class="a3d-lysechd"><span class="a3d-lycar"></span><span class="a3d-lystat" aria-hidden="true"></span>'+
+      '<span class="a3d-lynm a3d-lysecttl">'+bimEsc(label)+'</span><span class="a3d-lycnt">'+(n||'')+'</span></div>'+body+'</div>';
+  }
+  /* by source: data layers by the server they come from, result layers by the run that made them,
+     the site analyses with their sources, and the model's own layers */
+  function bimLyBySourceHtml(f){
+    var h='',hosts={},order=[],k,sa=[],ml=0,i,R,rb='',L;
+    function hit(s){return !f||String(s).toLowerCase().indexOf(f)>=0;}
+    bimDataListTopFirst().forEach(function(D){
+      if(!hit(D.name))return;
+      k=bimMapHost(D.url);
+      if(!hosts[k]){hosts[k]={rows:'',n:0,bad:0};order.push(k);}
+      hosts[k].rows+=bimLyDataRowHtml(D);hosts[k].n++;if(D.status&&D.status.error)hosts[k].bad++;
+    });
+    for(i=0;i<order.length;i++)h+=bimLyGroupHtml(order[i]+(hosts[order[i]].bad?' ('+hosts[order[i]].bad+' failed)':''),hosts[order[i]].n,hosts[order[i]].rows);
+    R=bimResLayers();
+    for(i=0;i<R.length;i++)if(hit(R[i].name))rb+=bimLyResRowHtml(R[i]);
+    if(rb)h+=bimLyGroupHtml('Made in the model (Analyze)',R.length,rb);
+    for(i=0;i<A3D.layers.length;i++){
+      L=A3D.layers[i];
+      if(/^Site analysis - /.test(L.name||'')){if(hit(L.name))sa.push(L);}
+      else ml++;
+    }
+    if(sa.length)h+=bimLyGroupHtml('Site analyses (OpenStreetMap and the sources each names)',sa.length,
+      sa.map(function(l){return bimLyRowHtml(l,1,0,0,false,A3D_LY.sel,A3D.activeLayer);}).join(''));
+    h+=bimLyGroupHtml('The model',ml,'<div class="a3d-lyempty a3d-lyhint">'+ml+' layer'+(ml===1?'':'s')+' drawn here, with no outside source: Drawing order lists them</div>');
+    return h;
+  }
+  /* by selection: each layer holding what is selected, with how many */
+  function bimLySelectionCounts(){
+    var ids=(A3D.selSet&&A3D.selSet.length)?A3D.selSet:(A3D.sel?[A3D.sel]:[]),m={},i,o,ly;
+    for(i=0;i<ids.length;i++){o=objById(ids[i]);ly=o?bimLayerOf(o):null;if(ly)m[ly.id]=(m[ly.id]||0)+1;}
+    return m;
+  }
+  function bimLyBySelectionHtml(f){
+    var m=bimLySelectionCounts(),h='',n=0,i,L,s,D;
+    function hit(x){return !f||String(x).toLowerCase().indexOf(f)>=0;}
+    for(i=0;i<A3D.layers.length;i++){
+      L=A3D.layers[i];
+      if(!m[L.id]||!hit(L.name))continue;
+      h+=bimLyRowHtml(L,0,m[L.id],0,false,A3D_LY.sel,A3D.activeLayer);n+=m[L.id];
+    }
+    s=A3D_DATA.sel;D=s?bimDataById(s.layer):null;
+    if(D&&hit(D.name)){h+=bimLyGroupHtml('Data',1,bimLyDataRowHtml(D));n++;}
+    return n?h:'<div class="a3d-lyempty">Nothing is selected: pick objects in the model, or a feature of a data layer</div>';
+  }
+  /* the list under the header for the views other than drawing order */
+  function bimLyListByHtml(f){
+    var v=bimLyListBy();
+    if(v==='source')return bimLyBySourceHtml(f);
+    if(v==='selection')return bimLyBySelectionHtml(f);
+    return '';
   }
   /* ================= __acad3dV148: Analysis and Data, in Layers =================
      A row's key is its section and its id: res:<id> a result layer, data:<id> a data layer. */
@@ -17773,12 +17876,13 @@ try{
   }
   function bimLyDataRowHtml(L){
     var key='data:'+L.id,sel=A3D_LY.rsel===key,hid=!L.visible,n=bimDataFeats(L.id).length,h;
-    h='<div class="a3d-lyres'+(sel?' sel':'')+(hid?' dim':'')+'" data-lyres="'+bimEsc(key)+'" aria-expanded="'+sel+'">'+
+    h='<div class="a3d-lyres'+(sel?' sel':'')+(hid?' dim':'')+'" data-lyres="'+bimEsc(key)+'" draggable="true" aria-expanded="'+sel+'">'+   /* __acad3dV173c: dragged to its place */
       '<span class="a3d-lyramp" style="background:'+bimDataSwatch(L)+'"></span>'+bimLyNameHtml(key,L.name)+   /* __acad3dV173a: its classes */
       (L.status&&L.status.error?'<span class="a3d-lybadge gone" title="'+bimEsc(bimDataStatusText(L))+'">Failed</span>':'')+
       bimLyTgl('lyreson',key,hid,hid?'Show '+L.name:'Hide '+L.name,BIM_LY_IC.off,BIM_LY_IC.on)+'<span class="a3d-lyi a3d-lyspc" aria-hidden="true"></span><span class="a3d-lyi a3d-lyspc" aria-hidden="true"></span>'+'</div>';
     if(sel)h+='<div class="a3d-lyresd" data-lyresd="'+bimEsc(key)+'">'+bimLyOpacityHtml(key,L.name,bimDataOpacity(L))+bimDataLegendHtml(L)+
-      '<div class="a3d-lyresmeta">'+bimEsc(bimDataStatusText(L)+(n?'; '+n+' feature'+(n===1?'':'s'):'')+(L.credit?'. Source: '+L.credit:''))+'</div><div class="a3d-lyresacts">'+
+      '<div class="a3d-lyresmeta">'+bimEsc(bimDataStatusText(L)+(n?'; '+n+' feature'+(n===1?'':'s'):'')+(L.filter?'. '+bimDataFilterText(L):'')+(L.credit?'. Source: '+L.credit:''))+'</div><div class="a3d-lyresacts">'+
+      '<button type="button" data-lydmv="up:'+bimEsc(L.id)+'" title="Draw over the layer above">Up</button><button type="button" data-lydmv="down:'+bimEsc(L.id)+'" title="Draw under the layer below">Down</button>'+   /* __acad3dV173c: for touch screens */
       '<button type="button" data-lyresset="'+bimEsc(key)+'">Settings</button><button type="button" data-lyresrn="'+bimEsc(key)+'">Rename</button>'+
       '<button type="button" class="danger" data-lyresdel="'+bimEsc(key)+'">Remove</button></div></div>';
     return h;
@@ -17787,7 +17891,7 @@ try{
     var shut=A3D_LY.secShut||{},rb='',db='';
     function hit(s){return !f||String(s).toLowerCase().indexOf(f)>=0;}
     bimResLayers().forEach(function(R){if(hit(R.name))rb+=bimLyResRowHtml(R);});
-    bimDataList().forEach(function(L){if(hit(L.name))db+=bimLyDataRowHtml(L);});
+    bimDataListTopFirst().forEach(function(L){if(hit(L.name))db+=bimLyDataRowHtml(L);});   /* __acad3dV173c: the top row draws on top (D3) */
     /* __acad3dV158: the group's row, a layer row's columns: caret, status, swatch, name, count, eye */
     function sec(key,label,n,body,empty){
       if(f&&!body)return '';
@@ -17896,6 +18000,7 @@ try{
     if((b=t.closest('[data-lyresdel]'))){bimLyResRemove(b.getAttribute('data-lyresdel'));return true;}
     if((b=t.closest('[data-lyresrn]'))){A3D_LY.redit=b.getAttribute('data-lyresrn');refreshLayers();bimLyResFocusEdit();return true;}
     if((b=t.closest('[data-lyresset]'))){bimAnzAct('open:Data Layers');return true;}
+    if((b=t.closest('[data-lydmv]'))){k=b.getAttribute('data-lydmv');bimDataLayerStep(k.slice(k.indexOf(':')+1),k.slice(0,k.indexOf(':')));return true;}   /* __acad3dV173c */
     if(t.closest('input')||t.closest('[data-lyresd]'))return !!t.closest('[data-lyresd],[data-lyres]');
     if((b=t.closest('[data-lyres]'))){k=b.getAttribute('data-lyres');A3D_LY.rsel=A3D_LY.rsel===k?null:k;refreshLayers();return true;}
     return false;
@@ -17957,6 +18062,7 @@ try{
       if(!inLyp(t))return;
       try{
         if((b=t.closest('[data-lyact]'))){bimLyAct(b.getAttribute('data-lyact'));return;}
+        if(t.closest('[data-lycake]')){bimCakeSet();return;}   /* __acad3dV173d */
         if((b=t.closest('[data-lytog]'))){l=b.getAttribute('data-lytog');A3D_LY.open[l]=!A3D_LY.open[l];refreshLayers();return;}
         if((b=t.closest('[data-lycur]'))){if(bimLayerMakeCurrent(b.getAttribute('data-lycur')))A3D_LY.sel=A3D.activeLayer;refreshLayers();return;}
         if((b=t.closest('[data-lyon]'))){l=bimLayerById(b.getAttribute('data-lyon'));if(l)bimLayerSet(l.id,'visible',l.visible===false);return;}
@@ -17983,6 +18089,7 @@ try{
     panel.addEventListener('change',function(ev){
       var t=ev.target;
       if(inLyp(t)&&t.hasAttribute('data-lycol'))bimLayerSet(t.getAttribute('data-lycol'),'color',t.value);
+      if(inLyp(t)&&t.hasAttribute('data-lylistby'))bimLyListBySet(t.value);   /* __acad3dV173c */
     });
     panel.addEventListener('input',function(ev){
       var t=ev.target;
@@ -18004,7 +18111,7 @@ try{
       var t=ev.target;
       if(!inLyp(t))return;
       var o=t.closest('[data-lyobj]'),l=t.closest('[data-lyid]'),rr=t.closest('[data-lyres]'),rk=rr?bimLyKey(rr.getAttribute('data-lyres')):null;   /* __acad3dV148: a result layer, in its stack */
-      A3D_LY.drag=o?'obj:'+o.getAttribute('data-lyobj'):(l?'layer:'+l.getAttribute('data-lyid'):(rk&&rk.t==='res'?'rl:'+rk.id:null));
+      A3D_LY.drag=o?'obj:'+o.getAttribute('data-lyobj'):(l?'layer:'+l.getAttribute('data-lyid'):(rk&&rk.t==='res'?'rl:'+rk.id:(rk&&rk.t==='data'?'dl:'+rk.id:null)));   /* __acad3dV173c: a data layer too */
       if(A3D_LY.drag){
         try{ev.dataTransfer.setData('text/plain',A3D_LY.drag);ev.dataTransfer.effectAllowed='move';}
         catch(eD){console.warn('[BIM] The drag could not carry its data',eD);}
@@ -18014,6 +18121,7 @@ try{
       var t=ev.target;
       if(A3D_LY.drag&&inLyp(t)&&(t.closest('[data-lyid]')||t.closest('[data-lylist]')))ev.preventDefault();
       else if(A3D_LY.drag&&A3D_LY.drag.indexOf('rl:')===0&&inLyp(t)&&t.closest('[data-lyres^="res:"]'))ev.preventDefault();
+      else if(A3D_LY.drag&&A3D_LY.drag.indexOf('dl:')===0&&inLyp(t)&&t.closest('[data-lyres^="data:"]'))ev.preventDefault();   /* __acad3dV173c */
     });
     panel.addEventListener('drop',function(ev){
       var t=ev.target,v=A3D_LY.drag;
@@ -18023,7 +18131,8 @@ try{
       var row=t.closest('[data-lyid]'),tgt=row?row.getAttribute('data-lyid'):null;
       try{
         var rt=t.closest('[data-lyres]'),rtk=rt?bimLyKey(rt.getAttribute('data-lyres')):null;
-        if(v.indexOf('rl:')===0){if(rtk&&rtk.t==='res')bimResultLayerMove(v.slice(3),rtk.id);}   /* __acad3dV148: onto a row, to its place */
+        if(v.indexOf('rl:')===0){if(rtk&&rtk.t==='res')bimResultLayerMove(v.slice(3),rtk.id);}
+        else if(v.indexOf('dl:')===0){if(rtk&&rtk.t==='data')bimDataLayerMove(v.slice(3),rtk.id);}   /* __acad3dV173c */   /* __acad3dV148: onto a row, to its place */
         else if(v.indexOf('obj:')===0){if(tgt)bimObjSetLayer(v.slice(4),tgt);}
         else if(v.indexOf('layer:')===0&&v.slice(6)!==tgt){
           if(tgt)A3D_LY.open[tgt]=true;
@@ -19317,6 +19426,7 @@ try{
     if(b[0]==='color')return bimDataSet(b[1],'color',f.value);
     if(b[0]==='by')return bimDataSet(b[1],'by',f.value);             /* __acad3dV136 */
     if(b[0]==='opacity')return bimDataSet(b[1],'opacity',f.value);
+    if(b[0]==='filter'||b[0]==='label')return bimDataSet(b[1],b[0],f.value);   /* __acad3dV173b */
     if(b[0].indexOf('cls-')===0)return bimDataSet(b[1],'cls.'+b[0].slice(4),f.type==='checkbox'?f.checked:f.value);   /* __acad3dV173a */
     return false;
   }
@@ -19329,6 +19439,8 @@ try{
     if(a==='clear'){A3D_DATA.sel=null;refreshProps();paint();return true;}
     if(b[0]==='refresh'){bimDataFetch(b[1]);refreshProps();return true;}
     if(b[0]==='remove'){bimDataRemove(b[1]);return true;}
+    if(b[0]==='fltadd'){bimDataFltAdd(b[1]);return true;}   /* __acad3dV173b */
+    if(b[0]==='fltclr'){bimDataSet(b[1],'filter','');return true;}
     return false;
   }
   /* ================= __acad3dV135: find open data, in Properties ================= */
@@ -19415,7 +19527,7 @@ try{
     return '<div class="a3d-prow a3d-dllens"><div class="a3d-plabel">Colour by</div><div class="a3d-pval"><div class="a3d-ukv">'+
       '<select data-propdata="by:'+id+'" aria-label="Colour '+bimEsc(L.name)+' by">'+o+'</select>'+
       '<input type="number" min="10" max="100" step="10" data-propdata="opacity:'+id+'" value="'+Math.round(bimDataOpacity(L)*100)+'" aria-label="Opacity (%)" title="Opacity (%)"></div></div></div>'+
-      bimDataSymHtml(L);   /* __acad3dV173a: a number's classes */
+      bimDataSymHtml(L)+bimDataFltHtml(L);   /* __acad3dV173a: a number's classes; __acad3dV173b: filter and labels */
   }
   function bimLensPropChange(ev){
     var f=ev.target&&ev.target.closest?ev.target.closest('[data-proplens]'):null;
@@ -21450,7 +21562,7 @@ try{
     var q=o.pos||[0,0,0];
     return !!(q[0]||q[1]||q[2])||!o.dg.gen||bimDgCore(o.dg)!==o.dg.gen;
   }
-  function bimDgW(o,p){var q=bimObjOffset(o);return [p[0]+q[0],(p[1]||0)+q[1],p[2]+q[2]];}
+  function bimDgW(o,p){var q=bimObjOffset(o);return [p[0]+q[0],(p[1]||0)+q[1]+bimCakeLiftObj(o),p[2]+q[2]];}   /* __acad3dV173d: its tier in the layer cake */
   function bimDgDiags(a){return A3D.objs.filter(function(x){return bimIsDiag(x)&&(!a||x.dg.a===a);});}
   /* ---- the layers: Site analysis, and one under it for each analysis ---- */
   function bimDgLayerFind(id,name,parentId){
@@ -22150,6 +22262,7 @@ try{
      (bimPickBand). */
   function bimPickDiag(x,y){
     var H=A3D_DG.hits,i,j,b;
+    if(A3D_CAKE.on)return null;   /* __acad3dV173d: in the layer cake an analysis is lifted, so it is for looking, not editing */
     for(i=H.length-1;i>=0;i--){
       var o=objById(H[i].id);
       if(!o||!bimLayerPickable(o))continue;
@@ -22164,6 +22277,7 @@ try{
      a band never covers what lies on it; a class with no line of its own is still a click away. The
      top one: the analysis drawn last, then its highest class, as bimDgDrawBands lays them. */
   function bimPickBand(x,y){
+    if(A3D_CAKE.on)return null;   /* __acad3dV173d */
     var L=bimDgDiags(),G={},order=[],V,W,H,i,j,k,m;
     for(i=0;i<L.length;i++){
       var o=L[i],gb=o.dg.g.bands;
@@ -37090,7 +37204,7 @@ try{
   }
   /* the classes over a layer's numbers, kept until the settings, the attribute or the features change */
   function bimDataClassify(L,nums){
-    var st=bimDataClsSettings(L),F=bimDataFeats(L.id),key=JSON.stringify(st)+'|'+L.by+'|'+nums.length,m=A3D_DCLS.memo[L.id],res,note='';
+    var st=bimDataClsSettings(L),F=bimDataFeats(L.id),key=JSON.stringify(st)+'|'+L.by+'|'+(L.filter||'')+'|'+nums.length,   /* __acad3dV173b: the filter too */m=A3D_DCLS.memo[L.id],res,note='';
     if(m&&m.key===key&&m.F===F)return m.res;
     res=bimClsBreaks(nums,st.method,{k:st.k,step:st.step,centre:st.centre,breaks:st.breaks});
     if(res.error){
@@ -37210,6 +37324,576 @@ try{
       bimEsc('GVF '+(Math.round(c.gvf*1000)/1000)+'; '+c.k+' class'+(c.k===1?'':'es')+' over '+c.n+' value'+(c.n===1?'':'s')+(ds.none?', '+ds.none+' with none':''))+'</span>');
     if(c.note)r+=row('','<span class="a3d-pstatic'+(c.fellBack?' a3d-uerr':'')+'">'+bimEsc(c.note)+'</span>');
     return r;
+  }
+
+  /* ================= __acad3dV173b: a layer's filter (definition query) =================
+     A subset of OGC CQL2 Text (21-065r2, 1.0.0): Basic CQL2 (= <> < <= > >=, AND OR NOT, IS [NOT]
+     NULL, TRUE, FALSE), Advanced Comparison ([NOT] LIKE, [NOT] BETWEEN, [NOT] IN) and CASEI, as
+     docs/research/research-contents-pane/filter-and-labels.md reads them, ported from its experiment
+     (docs/research/experiments/v173-filter/cql2-subset.js, 73 of 73 cases). The text is kept in the
+     project and read by this parser into a tree of known nodes: never eval, never new Function, never
+     a RegExp made from the user's text. The owner's choices (2026-11-08): D9 two values that both read
+     as numbers compare as numbers; D10 != , ILIKE, UPPER() and LOWER() accepted and written back as
+     <> and CASEI; D11 a backslash in a LIKE pattern makes the next character plain. Three-valued:
+     a missing field is NULL, a comparison with NULL is unknown, a feature is kept only when TRUE. */
+  var BIM_FLT_KW={AND:1,OR:1,NOT:1,IS:1,NULL:1,LIKE:1,ILIKE:1,BETWEEN:1,IN:1,TRUE:1,FALSE:1,CASEI:1,UPPER:1,LOWER:1};
+  var BIM_FLT_MAXLEN=4000,BIM_FLT_MAXDEPTH=64;
+  var BIM_FLT_NUM=/^\s*[+-]?(\d+\.?\d*|\.\d+)([eE][+-]?\d+)?\s*$/;
+  var BIM_FLT_ID=/^[A-Za-z_:][A-Za-z0-9_:.]*$/;
+  function BimFltError(msg,pos){this.message=msg+(pos>=0?' (at character '+(pos+1)+')':'');this.pos=pos;}
+  BimFltError.prototype=new Error();
+  function bimFltIdStart(c){return /[A-Za-z_:\u00c0-\u024f\u0370-\u03ff\u0400-\u04ff]/.test(c);}
+  function bimFltIdPart(c){return bimFltIdStart(c)||/[0-9.]/.test(c);}
+  function bimFltTokens(src){
+    var t=[],i=0,n=src.length,c,s,j,buf;
+    if(n>BIM_FLT_MAXLEN)throw new BimFltError('The filter is longer than '+BIM_FLT_MAXLEN+' characters',-1);
+    while(i<n){
+      c=src.charAt(i);
+      if(/\s/.test(c)){i++;continue;}
+      s=i;
+      if(c==="'"){   /* text: '' or \' is a quote; \% and \_ kept whole for LIKE (D11) */
+        buf='';i++;
+        for(;;){
+          if(i>=n)throw new BimFltError('A text value is not closed with a quote',s);
+          c=src.charAt(i);
+          if(c==="'"&&src.charAt(i+1)==="'"){buf+="'";i+=2;continue;}
+          if(c==='\\'&&i+1<n){j=src.charAt(i+1);buf+=j==='n'?'\n':j==='t'?'\t':j==='r'?'\r':(j==='%'||j==='_')?'\\'+j:j;i+=2;continue;}
+          if(c==="'"){i++;break;}
+          buf+=c;i++;
+        }
+        t.push({k:'str',v:buf,p:s});continue;
+      }
+      if(c==='"'){   /* a field name in double quotes: spaces allowed, "" is a quote */
+        buf='';i++;
+        for(;;){
+          if(i>=n)throw new BimFltError('A field name is not closed with a double quote',s);
+          c=src.charAt(i);
+          if(c==='"'&&src.charAt(i+1)==='"'){buf+='"';i+=2;continue;}
+          if(c==='"'){i++;break;}
+          buf+=c;i++;
+        }
+        if(!buf)throw new BimFltError('An empty field name',s);
+        t.push({k:'id',v:buf,p:s});continue;
+      }
+      if(/[0-9]/.test(c)||((c==='-'||c==='+'||c==='.')&&/[0-9.]/.test(src.charAt(i+1)))){
+        j=/^[+-]?(\d+\.?\d*|\.\d+)([eE][+-]?\d+)?/.exec(src.slice(i));
+        if(!j)throw new BimFltError('A number is not written correctly',s);
+        i+=j[0].length;
+        if(i<n&&bimFltIdPart(src.charAt(i)))throw new BimFltError('A number runs into a name',s);
+        t.push({k:'num',v:parseFloat(j[0]),p:s});continue;
+      }
+      if(bimFltIdStart(c)){
+        j=i;while(j<n&&bimFltIdPart(src.charAt(j)))j++;
+        buf=src.slice(i,j);i=j;
+        if(BIM_FLT_KW.hasOwnProperty(buf.toUpperCase()))t.push({k:'kw',v:buf.toUpperCase(),p:s});
+        else t.push({k:'id',v:buf,p:s});
+        continue;
+      }
+      j=src.substr(i,2);
+      if(j==='<>'||j==='<='||j==='>='||j==='!='){t.push({k:'op',v:j==='!='?'<>':j,p:s});i+=2;continue;}   /* D10 */
+      if('=<>(),'.indexOf(c)>=0){t.push({k:c==='('||c===')'||c===','?c:'op',v:c,p:s});i++;continue;}
+      throw new BimFltError('Unexpected character '+JSON.stringify(c),s);
+    }
+    t.push({k:'end',p:n});
+    return t;
+  }
+  /* OR < AND < NOT < a comparison, as CQL2's booleanExpression */
+  function bimFltParseTree(src){
+    var toks=bimFltTokens(String(src)),i=0,depth=0;
+    function peek(){return toks[i];}
+    function isKw(v){return toks[i].k==='kw'&&toks[i].v===v;}
+    function say(x){return x.k==='end'?'the end':x.k==='str'?"'"+x.v+"'":String(x.v===undefined?x.k:x.v);}
+    function eat(k,v){var x=toks[i];if(x.k!==k||(v!==undefined&&x.v!==v))throw new BimFltError('Expected '+(v||k)+' but found '+say(x),x.p);i++;return x;}
+    function enter(){if(++depth>BIM_FLT_MAXDEPTH)throw new BimFltError('The filter nests more than '+BIM_FLT_MAXDEPTH+' levels',toks[i].p);}
+    function orX(){enter();var a=[andX()];while(isKw('OR')){i++;a.push(andX());}depth--;return a.length===1?a[0]:{op:'or',args:a};}
+    function andX(){var a=[notX()];while(isKw('AND')){i++;a.push(notX());}return a.length===1?a[0]:{op:'and',args:a};}
+    function notX(){if(isKw('NOT')){i++;enter();var x=notX();depth--;return {op:'not',args:[x]};}return primary();}
+    function primary(){
+      var x=peek(),nx;
+      if(x.k==='('){i++;var e=orX();eat(')');return e;}
+      if(isKw('TRUE')||isKw('FALSE')){
+        nx=toks[i+1];
+        if(!(nx.k==='op'||(nx.k==='kw'&&/^(IS|LIKE|ILIKE|BETWEEN|IN|NOT)$/.test(nx.v)))){i++;return {lit:x.v==='TRUE'};}
+      }
+      return pred();
+    }
+    function operand(){
+      var x=peek(),a;
+      if(x.k==='id'){i++;return {prop:x.v};}
+      if(x.k==='str'||x.k==='num'){i++;return {lit:x.v};}
+      if(isKw('TRUE')||isKw('FALSE')){i++;return {lit:x.v==='TRUE'};}
+      if(isKw('NULL')){i++;return {lit:null};}
+      if(isKw('CASEI')||isKw('UPPER')||isKw('LOWER')){i++;eat('(');a=operand();eat(')');return {op:'casei',args:[a]};}   /* D10 */
+      throw new BimFltError('Expected a field, a value or CASEI(...) but found '+say(x),x.p);
+    }
+    function fold(a){return a.op==='casei'?a:{op:'casei',args:[a]};}
+    function pred(){
+      var l=operand(),neg=false,x,lo,hi,list;
+      x=peek();
+      if(x.k==='op'){i++;return {op:x.v,args:[l,operand()]};}
+      if(isKw('IS')){i++;if(isKw('NOT')){i++;neg=true;}eat('kw','NULL');x={op:'isNull',args:[l]};return neg?{op:'not',args:[x]}:x;}
+      if(isKw('NOT')){i++;neg=true;}
+      if(isKw('LIKE')){i++;x={op:'like',args:[l,operand()]};}
+      else if(isKw('ILIKE')){i++;x={op:'like',args:[fold(l),fold(operand())]};}   /* D10: written back as CASEI */
+      else if(isKw('BETWEEN')){i++;lo=operand();eat('kw','AND');hi=operand();x={op:'between',args:[l,lo,hi]};}
+      else if(isKw('IN')){i++;eat('(');list=[operand()];while(peek().k===','){i++;list.push(operand());}eat(')');x={op:'in',args:[l,list]};}
+      else throw new BimFltError('Expected a comparison (=, <>, <, >, LIKE, BETWEEN, IN, IS NULL) after '+say(toks[i-1]),peek().p);
+      return neg?{op:'not',args:[x]}:x;
+    }
+    var tree=orX();
+    if(peek().k!=='end')throw new BimFltError('Unexpected '+say(peek()),peek().p);
+    return tree;
+  }
+  /* the text read: {tree, text (written back as CQL2), fields, warn} or {error, pos} */
+  function bimFltParse(src){
+    var tree,fields=[],warn='';
+    function walk(n){
+      var k;
+      if(!n||typeof n!=='object')return;
+      if(n.hasOwnProperty('prop')&&fields.indexOf(n.prop)<0)fields.push(n.prop);
+      if(n.op==='in')for(k=0;k<n.args[1].length;k++)if(n.args[1][k].hasOwnProperty('lit')&&n.args[1][k].lit===null)warn='A NULL in a list makes NOT IN keep nothing, as in SQL';
+      if(n.args)for(k=0;k<n.args.length;k++){if(Array.isArray(n.args[k]))n.args[k].forEach(walk);else walk(n.args[k]);}
+    }
+    try{tree=bimFltParseTree(src);}
+    catch(e){if(e instanceof BimFltError)return {error:e.message,pos:e.pos};console.warn('[BIM] filter',e);return {error:'The filter could not be read'};}
+    walk(tree);
+    return {tree:tree,text:bimFltPrint(tree),fields:fields,warn:warn};
+  }
+  /* a value of a feature: a missing or inherited field is NULL (properties are read as own only) */
+  function bimFltValue(n,props){
+    var v;
+    if(n.hasOwnProperty('lit'))return n.lit;
+    if(n.hasOwnProperty('prop')){
+      if(!props||!Object.prototype.hasOwnProperty.call(props,n.prop))return null;
+      v=props[n.prop];
+      return v===undefined?null:v;
+    }
+    if(n.op==='casei'){v=bimFltValue(n.args[0],props);return v===null?null:String(v).toLowerCase();}
+    return bimFltTruth(n,props);
+  }
+  function bimFltNum(v){return typeof v==='number'?v:(typeof v==='string'&&BIM_FLT_NUM.test(v)?parseFloat(v):null);}
+  /* D9: two values that both read as numbers compare as numbers, else as text when both are text */
+  function bimFltCmp(op,a,b){
+    var x,y;
+    if(a===null||b===null)return null;
+    x=bimFltNum(a);y=bimFltNum(b);
+    if(x!==null&&y!==null){a=x;b=y;if(isNaN(a)||isNaN(b))return null;}
+    else if(typeof a!==typeof b)return op==='<>'?true:(op==='='?false:null);
+    if(op==='=')return a===b;
+    if(op==='<>')return a!==b;
+    if(op==='<')return a<b;
+    if(op==='<=')return a<=b;
+    if(op==='>')return a>b;
+    if(op==='>=')return a>=b;
+    return null;
+  }
+  /* LIKE without a RegExp: % any run, _ one character, \ makes the next plain (D11); O(n m) at worst */
+  function bimFltLike(s,pat){
+    var P=[],k,c,si=0,pi=0,starP=-1,starS=0,lit;
+    for(k=0;k<pat.length;k++){
+      c=pat.charAt(k);
+      if(c==='\\'&&k+1<pat.length)P.push({c:pat.charAt(++k)});
+      else if(c==='%'){if(!(P.length&&P[P.length-1].w==='%'))P.push({w:'%'});}
+      else if(c==='_')P.push({w:'_'});
+      else P.push({c:c});
+    }
+    while(si<s.length){
+      lit=P[pi];
+      if(lit&&(lit.w==='_'||(lit.c!==undefined&&lit.c===s.charAt(si)))){si++;pi++;}
+      else if(lit&&lit.w==='%'){starP=pi++;starS=si;}
+      else if(starP>=0){pi=starP+1;si=++starS;}
+      else return false;
+    }
+    while(pi<P.length&&P[pi].w==='%')pi++;
+    return pi===P.length;
+  }
+  function bimFltTruth(n,props){
+    var a,b,i,r,anyNull;
+    if(n.hasOwnProperty('lit'))return n.lit===null?null:!!n.lit;
+    switch(n.op){
+      case 'and':anyNull=false;for(i=0;i<n.args.length;i++){r=bimFltTruth(n.args[i],props);if(r===false)return false;if(r===null)anyNull=true;}return anyNull?null:true;
+      case 'or':anyNull=false;for(i=0;i<n.args.length;i++){r=bimFltTruth(n.args[i],props);if(r===true)return true;if(r===null)anyNull=true;}return anyNull?null:false;
+      case 'not':r=bimFltTruth(n.args[0],props);return r===null?null:!r;
+      case 'isNull':return bimFltValue(n.args[0],props)===null;
+      case 'like':a=bimFltValue(n.args[0],props);b=bimFltValue(n.args[1],props);if(a===null||b===null)return null;return bimFltLike(String(a),String(b));
+      case 'between':
+        a=bimFltValue(n.args[0],props);
+        r=bimFltCmp('>=',a,bimFltValue(n.args[1],props));b=bimFltCmp('<=',a,bimFltValue(n.args[2],props));
+        if(r===false||b===false)return false;
+        return r===null||b===null?null:true;
+      case 'in':
+        a=bimFltValue(n.args[0],props);if(a===null)return null;anyNull=false;
+        for(i=0;i<n.args[1].length;i++){r=bimFltCmp('=',a,bimFltValue(n.args[1][i],props));if(r===true)return true;if(r===null)anyNull=true;}
+        return anyNull?null:false;
+      case '=':case '<>':case '<':case '<=':case '>':case '>=':
+        return bimFltCmp(n.op,bimFltValue(n.args[0],props),bimFltValue(n.args[1],props));
+    }
+    return null;   /* CASEI as a whole condition: unknown */
+  }
+  /* a feature passes only when the filter is TRUE (CQL2: FALSE or NULL leaves it out) */
+  function bimFltTest(tree,props){return bimFltTruth(tree,props)===true;}
+  /* the tree written back as CQL2 text */
+  function bimFltOperand(n){
+    if(n.hasOwnProperty('prop'))return BIM_FLT_ID.test(n.prop)&&!BIM_FLT_KW.hasOwnProperty(n.prop.toUpperCase())?n.prop:'"'+n.prop.replace(/"/g,'""')+'"';
+    if(n.hasOwnProperty('lit')){
+      if(n.lit===null)return 'NULL';
+      if(typeof n.lit==='string')return "'"+n.lit.replace(/'/g,"''")+"'";
+      if(typeof n.lit==='boolean')return n.lit?'TRUE':'FALSE';
+      return String(n.lit);
+    }
+    if(n.op==='casei')return 'CASEI('+bimFltOperand(n.args[0])+')';
+    return '('+bimFltPrint(n)+')';
+  }
+  function bimFltPrint(n,parent){
+    var lv={or:1,and:2,not:3}[n.op]||4,s,x;
+    if(n.hasOwnProperty('lit'))return n.lit?'TRUE':'FALSE';
+    function list(a){return a.map(bimFltOperand).join(', ');}
+    if(n.op==='or'||n.op==='and')s=n.args.map(function(a){return bimFltPrint(a,lv);}).join(' '+n.op.toUpperCase()+' ');
+    else if(n.op==='not'){
+      x=n.args[0];
+      if(x.op==='isNull')s=bimFltOperand(x.args[0])+' IS NOT NULL';
+      else if(x.op==='like')s=bimFltOperand(x.args[0])+' NOT LIKE '+bimFltOperand(x.args[1]);
+      else if(x.op==='in')s=bimFltOperand(x.args[0])+' NOT IN ('+list(x.args[1])+')';
+      else if(x.op==='between')s=bimFltOperand(x.args[0])+' NOT BETWEEN '+bimFltOperand(x.args[1])+' AND '+bimFltOperand(x.args[2]);
+      else s='NOT '+bimFltPrint(x,3);
+    }
+    else if(n.op==='isNull')s=bimFltOperand(n.args[0])+' IS NULL';
+    else if(n.op==='like')s=bimFltOperand(n.args[0])+' LIKE '+bimFltOperand(n.args[1]);
+    else if(n.op==='in')s=bimFltOperand(n.args[0])+' IN ('+list(n.args[1])+')';
+    else if(n.op==='between')s=bimFltOperand(n.args[0])+' BETWEEN '+bimFltOperand(n.args[1])+' AND '+bimFltOperand(n.args[2]);
+    else s=bimFltOperand(n.args[0])+' '+n.op+' '+bimFltOperand(n.args[1]);
+    return parent&&lv<parent?'('+s+')':s;
+  }
+  /* one clause from the builder (field, operator, value), as CQL2 text: a number stays a number */
+  function bimFltClause(field,op,val){
+    var f={prop:String(field||'')},v=String(val==null?'':val),lit,parts,i;
+    function L(s){s=String(s).replace(/^\s+|\s+$/g,'');return BIM_FLT_NUM.test(s)?{lit:parseFloat(s)}:{lit:s};}
+    if(!f.prop)return '';
+    if(op==='null')return bimFltPrint({op:'isNull',args:[f]});
+    if(op==='notnull')return bimFltPrint({op:'not',args:[{op:'isNull',args:[f]}]});
+    if(op==='in'){parts=v.split(',');lit=[];for(i=0;i<parts.length;i++)if(parts[i].replace(/\s/g,''))lit.push(L(parts[i]));return lit.length?bimFltPrint({op:'in',args:[f,lit]}):'';}
+    if(op==='like')return bimFltPrint({op:'like',args:[f,{lit:v}]});
+    if(op==='contains')return bimFltPrint({op:'like',args:[{op:'casei',args:[f]},{op:'casei',args:[{lit:'%'+v.replace(/[%_]/g,'\\$&')+'%'}]}]});
+    if(['=','<>','<','<=','>','>='].indexOf(op)<0)return '';
+    return bimFltPrint({op:op,args:[f,L(v)]});
+  }
+
+  /* ================= __acad3dV173b: a data layer's labels =================
+     A label is one field, or a template of fields and words such as {NAME} ({AREA} m2) (the owner's
+     D12). An area is labelled at its pole of inaccessibility, the inside point furthest from every
+     edge, by polylabel's method; a line at the middle of its length; a point beside it. Labels that
+     would overlap one already drawn are dropped, the top layer's and the larger areas' first, as
+     QGIS's "never overlap". Field text is drawn with fillText, never written into the page. */
+  var A3D_DLAB={anchors:{}};
+  var BIM_DLAB_MAX=2000;
+  /* polylabel 2.1.0's method (mapbox/polylabel, ISC, Copyright (c) 2026 Mapbox; credited in
+     THIRD_PARTY_NOTICES.md), in ES5: square cells over the outer ring's box, each cell's centre's
+     signed distance to the outline, a queue by the most a cell could hold, split until no cell can
+     beat the best by more than the precision. Version 2's block skipping and seeding are left out:
+     the answer is the same, only slower on rings of thousands of points. rings[0] is the outer ring. */
+  function bimPolyLabel(rings,precision){
+    var minX=Infinity,minY=Infinity,maxX=-Infinity,maxY=-Infinity,o=rings[0],i,w,h,cell,best,bb,q=[],c,x,y,hh;
+    precision=precision>0?precision:1;
+    for(i=0;i<o.length;i++){if(o[i][0]<minX)minX=o[i][0];if(o[i][1]<minY)minY=o[i][1];if(o[i][0]>maxX)maxX=o[i][0];if(o[i][1]>maxY)maxY=o[i][1];}
+    w=maxX-minX;h=maxY-minY;
+    cell=Math.max(precision,Math.min(w,h));
+    if(cell===precision)return {x:minX,y:minY,d:0};
+    function segSq(px,py,ax,ay,bx,by){
+      var dx=bx-ax,dy=by-ay,t;
+      if(dx!==0||dy!==0){t=((px-ax)*dx+(py-ay)*dy)/(dx*dx+dy*dy);if(t>1){ax=bx;ay=by;}else if(t>0){ax+=dx*t;ay+=dy*t;}}
+      dx=px-ax;dy=py-ay;return dx*dx+dy*dy;
+    }
+    function dist(px,py){
+      var inside=false,m=Infinity,r,k,j,R,a,b;
+      for(r=0;r<rings.length;r++){
+        R=rings[r];
+        for(k=0,j=R.length-1;k<R.length;j=k++){
+          a=R[k];b=R[j];
+          if((a[1]>py)!==(b[1]>py)&&px<(b[0]-a[0])*(py-a[1])/(b[1]-a[1])+a[0])inside=!inside;
+          m=Math.min(m,segSq(px,py,a[0],a[1],b[0],b[1]));
+        }
+      }
+      return m===0?0:(inside?1:-1)*Math.sqrt(m);
+    }
+    function mk(px,py,ph){var d=dist(px,py);return {x:px,y:py,h:ph,d:d,max:d+ph*Math.SQRT2};}
+    function push(c){var k=q.length,p,t;q.push(c);while(k>0){p=(k-1)>>1;if(q[p].max>=q[k].max)break;t=q[p];q[p]=q[k];q[k]=t;k=p;}}
+    function pop(){
+      var top=q[0],last=q.pop(),k=0,l,r,m,t;
+      if(q.length){q[0]=last;for(;;){l=2*k+1;r=l+1;m=k;if(l<q.length&&q[l].max>q[m].max)m=l;if(r<q.length&&q[r].max>q[m].max)m=r;if(m===k)break;t=q[m];q[m]=q[k];q[k]=t;k=m;}}
+      return top;
+    }
+    /* the first guesses: the outer ring's centroid when inside, else its first point; then the box's centre */
+    var A=0,cx=0,cy=0,f;
+    for(i=0,x=o.length-1;i<o.length;x=i++){f=o[i][0]*o[x][1]-o[x][0]*o[i][1];cx+=(o[i][0]+o[x][0])*f;cy+=(o[i][1]+o[x][1])*f;A+=f*3;}
+    best=A!==0?mk(cx/A,cy/A,0):null;
+    if(!best||best.d<0)best=mk(o[0][0],o[0][1],0);
+    bb=mk(minX+w/2,minY+h/2,0);
+    if(bb.d>best.d)best=bb;
+    hh=cell/2;
+    for(x=minX;x<maxX;x+=cell)for(y=minY;y<maxY;y+=cell){c=mk(x+hh,y+hh,hh);if(c.max>best.d+precision)push(c);if(c.d>best.d)best=c;}
+    var probes=0;
+    while(q.length&&probes<20000){
+      c=pop();
+      if(c.max-best.d<=precision)break;
+      hh=c.h/2;
+      [[-hh,-hh],[hh,-hh],[-hh,hh],[hh,hh]].forEach(function(s){var n=mk(c.x+s[0],c.y+s[1],hh);probes++;if(n.max>best.d+precision)push(n);if(n.d>best.d)best=n;});
+    }
+    return {x:best.x,y:best.y,d:best.d};
+  }
+  /* a label's text: a template's {field}s filled, or one field's value; null when it has none */
+  function bimDataLabelText(spec,props){
+    var s=String(spec||''),out;
+    function val(k){
+      var v=props&&Object.prototype.hasOwnProperty.call(props,k)?props[k]:null;
+      if(v===null||v===undefined)return '';
+      if(typeof v==='number')return String(Math.round(v*100)/100);
+      return String(v);
+    }
+    if(!s)return null;
+    if(s.indexOf('{')<0)out=val(s);
+    else out=s.replace(/\{([^{}]{1,80})\}/g,function(m,k){return val(k);});
+    out=out.replace(/\s+/g,' ').replace(/^ | $/g,'').slice(0,120);
+    return out?out:null;
+  }
+  /* where each feature is labelled, in model terms: kept with the layer's model cache */
+  function bimDataAnchors(L,c){
+    var m=A3D_DLAB.anchors[L.id],out=[],j,f,k,best,ba,a,len,l,s,t,seg,pts,d,rings;
+    if(m&&m.c===c)return m.a;
+    for(j=0;j<c.feats.length;j++){
+      f=c.feats[j];a=null;
+      if(f.rings.length){
+        best=null;ba=-1;rings=[];
+        for(k=0;k<f.rings.length;k++)if(!f.rings[k].hole){s=Math.abs(bimPolyArea(f.rings[k].pts));if(s>ba){ba=s;best=f.rings[k].pts;}}
+        if(best){
+          rings.push(best);
+          for(k=0;k<f.rings.length;k++)if(f.rings[k].hole)rings.push(f.rings[k].pts);
+          try{d=bimPolyLabel(rings,Math.max(0.25,Math.sqrt(ba)/100));a={x:d.x,z:d.y,kind:'area',pri:ba};}
+          catch(e){console.warn('[BIM] label place',e);}
+        }
+      }else if(f.lines.length){
+        pts=null;len=-1;
+        for(k=0;k<f.lines.length;k++){l=0;for(s=1;s<f.lines[k].length;s++)l+=Math.hypot(f.lines[k][s][0]-f.lines[k][s-1][0],f.lines[k][s][1]-f.lines[k][s-1][1]);if(l>len){len=l;pts=f.lines[k];}}
+        t=len/2;
+        for(s=1;s<pts.length&&!a;s++){
+          seg=Math.hypot(pts[s][0]-pts[s-1][0],pts[s][1]-pts[s-1][1]);
+          if(t<=seg||s===pts.length-1){d=seg>0?Math.min(1,t/seg):0;a={x:pts[s-1][0]+(pts[s][0]-pts[s-1][0])*d,z:pts[s-1][1]+(pts[s][1]-pts[s-1][1])*d,kind:'line',pri:-1};}
+          t-=seg;
+        }
+      }else if(f.points.length)a={x:f.points[0][0],z:f.points[0][1],kind:'point',pri:-2};
+      out.push(a);
+    }
+    A3D_DLAB.anchors[L.id]={c:c,a:out};
+    return out;
+  }
+  /* every shown layer's labels, after the features: the top layer first, then larger areas */
+  function drawDataLabels(ctx,V,W,H,y){
+    var L=bimDataList(),Q=[],placed=[],i,j,c,an,F,mask,t,p,b,wd,n=0,x0,free;
+    A3D.lastDataLabels=0;
+    for(i=L.length-1;i>=0;i--){
+      if(!L[i].visible||!L[i].label)continue;
+      c=bimDataModel(L[i]);
+      if(!c)continue;
+      an=bimDataAnchors(L[i],c);F=bimDataFeats(L[i].id);mask=bimDataMask(L[i]);
+      var lq=[];
+      for(j=0;j<c.feats.length;j++){
+        if(!an[j]||(mask&&!mask.pass[c.feats[j].fi]))continue;
+        t=bimDataLabelText(L[i].label,F[c.feats[j].fi]&&F[c.feats[j].fi].p);
+        if(t)lq.push({t:t,a:an[j],y:bimCakeLift('data',L[i].id)});   /* __acad3dV173d: on its tier */
+      }
+      lq.sort(function(u,v){return v.a.pri-u.a.pri;});
+      Q=Q.concat(lq);
+    }
+    if(!Q.length)return;
+    ctx.save();
+    try{
+      ctx.textBaseline='middle';ctx.font='11px sans-serif';
+      free=function(bx){for(var k=0;k<placed.length;k++){var q=placed[k];if(bx[0]<q[0]+q[2]&&q[0]<bx[0]+bx[2]&&bx[1]<q[1]+q[3]&&q[1]<bx[1]+bx[3])return false;}return true;};
+      for(i=0;i<Q.length&&n<BIM_DLAB_MAX;i++){
+        p=toScreen([Q[i].a.x,y+(Q[i].y||0),Q[i].a.z],V,W,H);
+        if(!p||!isFinite(p[0])||!isFinite(p[1])||p[0]<-50||p[1]<-20||p[0]>W+50||p[1]>H+20)continue;
+        wd=ctx.measureText(Q[i].t).width;
+        x0=Q[i].a.kind==='point'?p[0]+6:p[0]-wd/2;
+        b=[x0-2,p[1]-8,wd+4,16];
+        if(!free(b))continue;
+        placed.push(b);
+        ctx.textAlign=Q[i].a.kind==='point'?'left':'center';
+        bimDgDrawText(ctx,Q[i].t,Q[i].a.kind==='point'?p[0]+6:p[0],p[1],'#e8edf2',11,false);
+        n++;
+      }
+    }catch(e){
+      console.warn('[BIM] data labels',e);
+      if(!A3D.dataLabelWarned){A3D.dataLabelWarned=true;a3dToast('The data layer labels could not be drawn');}
+    }
+    ctx.restore();
+    A3D.lastDataLabels=n;
+  }
+
+  /* ================= __acad3dV173b: a data layer's filter and labels, applied and set =================
+     L.filter is CQL2 text (map/layer-filter.js), L.label one field or a template (map/data-labels.js).
+     A filter limits what is drawn, picked, classified and labelled, as ArcGIS's definition query
+     does. Each is one undo step through bimDataSet. In Properties: the filter as text, a clause
+     builder for phone and tablet that writes it, and the label. */
+  var A3D_DFLT={memo:{}};
+  /* which features pass: {pass, n, of, error, warn}, or null when the layer has no filter */
+  function bimDataMask(L){
+    var F,m,p,pass=[],n=0,i;
+    if(!L||!L.filter)return null;
+    F=bimDataFeats(L.id);m=A3D_DFLT.memo[L.id];
+    if(m&&m.text===L.filter&&m.F===F)return m.res;
+    p=bimFltParse(L.filter);
+    if(p.error){m={text:L.filter,F:F,res:null,error:p.error};A3D_DFLT.memo[L.id]=m;return null;}   /* a broken filter from a file draws all, and says so */
+    for(i=0;i<F.length;i++){pass.push(bimFltTest(p.tree,F[i]&&F[i].p));if(pass[i])n++;}
+    A3D_DFLT.memo[L.id]={text:L.filter,F:F,res:{pass:pass,n:n,of:F.length,warn:p.warn}};
+    return A3D_DFLT.memo[L.id].res;
+  }
+  function bimDataMaskError(L){var m;bimDataMask(L);m=L&&A3D_DFLT.memo[L.id];return m&&m.text===L.filter?m.error||'':'';}
+  function bimDataPasses(L,fi){var m=bimDataMask(L);return !m||!!m.pass[fi];}
+  /* the filter or the label set: a filter that does not read is refused with where it fails */
+  function bimDataFltSet(id,field,val){
+    var L=bimDataById(id),v,p,keys,miss=[],i;
+    if(!L)return false;
+    v=String(val==null?'':val).replace(/^\s+|\s+$/g,'');
+    if(field==='filter'&&v){
+      p=bimFltParse(v);
+      if(p.error){a3dToast('Filter: '+p.error);refreshProps();return false;}
+      v=p.text;
+      keys=bimDataAttrKeys(id);
+      for(i=0;i<p.fields.length;i++)if(keys.indexOf(p.fields[i])<0)miss.push(p.fields[i]);
+    }
+    if(field==='label')v=v.slice(0,200);
+    if((L[field]||'')===v)return true;
+    pushUndo();
+    if(v)L[field]=v;else delete L[field];
+    delete A3D_DFLT.memo[id];
+    refreshProps();paint();saveSoon();bimLayersPanelRefresh();
+    if(field==='filter'){
+      var m=bimDataMask(L);
+      a3dToast(!v?L.name+': no filter':L.name+': '+m.n+' of '+m.of+' features pass'+(miss.length?'. Not a field of the layer: '+miss.join(', '):'')+(m.warn?'. '+m.warn:''));
+    }
+    return true;
+  }
+  /* the line in Layers and Properties: how many pass */
+  function bimDataFilterText(L){
+    var m,e;
+    if(!L.filter)return '';
+    e=bimDataMaskError(L);
+    if(e)return 'Filter not applied: '+e;
+    m=bimDataMask(L);
+    return m?'Filter: '+m.n+' of '+m.of+' features':'';
+  }
+  /* the builder writes one clause, joined to the filter with AND or OR */
+  function bimDataFltAdd(id){
+    var L=bimDataById(id),q=function(k){return el.propsbody?el.propsbody.querySelector('[data-propdflt="'+k+':'+id+'"]'):null;},f=q('f'),o=q('o'),v=q('v'),j=q('j'),cl;
+    if(!L||!f||!o)return false;
+    cl=bimFltClause(f.value,o.value,v?v.value:'');
+    if(!cl){a3dToast('Pick a field, an operator and a value');return false;}
+    return bimDataFltSet(id,'filter',L.filter?'('+L.filter+') '+(j&&j.value==='OR'?'OR':'AND')+' '+cl:cl);
+  }
+  var BIM_DFLT_OPS=[['=','is'],['<>','is not'],['<','less than'],['<=','at most'],['>','more than'],['>=','at least'],['contains','contains'],['like','is like (% _)'],['in','is one of (a, b)'],['null','is empty'],['notnull','is not empty']];
+  function bimDataFltHtml(L){
+    var id=bimEsc(L.id),keys=bimDataAttrKeys(L.id),r='',o='',i,ft;
+    if(!keys.length)return '';
+    function row(label,html){return '<div class="a3d-prow a3d-dllens"><div class="a3d-plabel">'+label+'</div><div class="a3d-pval">'+html+'</div></div>';}
+    r+=row('Filter','<input type="text" data-propdata="filter:'+id+'" value="'+bimEsc(L.filter||'')+'" spellcheck="false" placeholder="ZONE = \'CMX-3\' AND AREA > 500" aria-label="Filter of '+bimEsc(L.name)+', as CQL2" title="CQL2: = <> < > LIKE IN BETWEEN IS NULL, joined with AND, OR, NOT">');
+    ft=bimDataFilterText(L);
+    if(ft)r+=row('','<span class="a3d-pstatic'+(bimDataMaskError(L)?' a3d-uerr':'')+'">'+bimEsc(ft)+'</span>');
+    for(i=0;i<keys.length;i++)o+='<option value="'+bimEsc(keys[i])+'">'+bimEsc(keys[i])+'</option>';
+    var ops='';for(i=0;i<BIM_DFLT_OPS.length;i++)ops+='<option value="'+bimEsc(BIM_DFLT_OPS[i][0])+'">'+bimEsc(BIM_DFLT_OPS[i][1])+'</option>';
+    r+=row('Add a clause','<div class="a3d-ukv">'+(L.filter?'<select data-propdflt="j:'+id+'" aria-label="Join"><option value="AND">and</option><option value="OR">or</option></select>':'')+
+      '<select data-propdflt="f:'+id+'" aria-label="Field">'+o+'</select><select data-propdflt="o:'+id+'" aria-label="Operator">'+ops+'</select></div>');
+    r+=row('','<div class="a3d-ukv"><input type="text" data-propdflt="v:'+id+'" spellcheck="false" placeholder="value" aria-label="Value">'+
+      '<button type="button" class="a3d-pedit" data-propdataact="fltadd:'+id+'">Add</button>'+(L.filter?'<button type="button" class="a3d-pedit" data-propdataact="fltclr:'+id+'">Clear</button>':'')+'</div>');
+    r+=row('Labels','<input type="text" data-propdata="label:'+id+'" value="'+bimEsc(L.label||'')+'" spellcheck="false" list="a3d-dlab-'+id+'" placeholder="a field, or {NAME} ({AREA} m2)" aria-label="Label of '+bimEsc(L.name)+'">'+
+      '<datalist id="a3d-dlab-'+id+'">'+o+'</datalist>');
+    return r;
+  }
+
+  /* ================= __acad3dV173d: McHarg's layer cake =================
+     McHarg's method (Design with Nature, 1969, as quoted in the research): each factor its own
+     transparent map, stacked over the base. The owner's D13: the site analyses and the data layers
+     lifted over the map, each to a height of its own, in an oblique view, its name beside it; the
+     result layers stay in plan (they draw only there). The lift is applied where every point is
+     placed (bimDgW for an analysis, drawDataLayers and bimDataPick for a data layer), so drawing and
+     picking agree. The cake is a way of looking, like a view: neither saved nor undone. */
+  var A3D_CAKE={on:false,memo:null};
+  /* the tiers, bottom up, in the order paint draws them so a higher tier is drawn over a lower one:
+     the site analysis layers first (drawDiagrams' under pass comes before the data layers), in the
+     order drawDiagrams meets their elements, each counted only when one of its elements is shown by
+     the drawer's own rule (bimLayerShown, which honours the parent group); then the shown data
+     layers in their drawing order. Each {kind, id, name, lift} */
+  function bimCakeTiers(){
+    var out=[],L=bimDataList(),i,seen={},gap=bimCakeGap(),ly;
+    if(!A3D_CAKE.on)return out;
+    bimDgDiags().forEach(function(o){
+      if(!o.layer||seen[o.layer]||!bimLayerShown(o))return;
+      seen[o.layer]=1;ly=bimLayerById(o.layer);
+      out.push({kind:'analysis',id:o.layer,name:String(ly&&ly.name||o.layer).replace(/^Site analysis - /,'')});
+    });
+    for(i=0;i<L.length;i++)if(L[i].visible)out.push({kind:'data',id:L[i].id,name:L[i].name});
+    for(i=0;i<out.length;i++)out[i].lift=(i+1)*gap;
+    return out;
+  }
+  /* the gap between tiers: a fifth of the site context's radius, 10 to 200 m */
+  function bimCakeGap(){return Math.max(10,Math.min(200,bimCtxSettings().radius/5));}
+  /* every point of an analysis asks for its lift: the tiers are read once a frame */
+  function bimCakeLift(kind,id){
+    if(!A3D_CAKE.on)return 0;
+    var m=A3D_CAKE.memo,T,i;
+    if(!m||m.frame!==A3D.frames){
+      T=bimCakeTiers();m={frame:A3D.frames,lift:{}};
+      for(i=0;i<T.length;i++)m.lift[T[i].kind+':'+T[i].id]=T[i].lift;
+      A3D_CAKE.memo=m;
+    }
+    return m.lift.hasOwnProperty(kind+':'+id)?m.lift[kind+':'+id]:0;
+  }
+  /* an analysis element's lift: its layer's tier */
+  function bimCakeLiftObj(o){return A3D_CAKE.on&&o&&o.layer?bimCakeLift('analysis',o.layer):0;}
+  /* on or off; on, a plan turns to the oblique view, where the heights can be seen */
+  function bimCakeSet(on){
+    A3D_CAKE.on=on===undefined?!A3D_CAKE.on:!!on;
+    A3D_CAKE.memo=null;
+    var n=bimCakeTiers().length,ids=[],i,o;
+    /* an analysis is for looking while it is lifted: let go of any that is selected */
+    if(A3D_CAKE.on){
+      for(i=0;i<(A3D.selSet||[]).length;i++){o=objById(A3D.selSet[i]);if(!bimIsDiag(o))ids.push(A3D.selSet[i]);}
+      if(ids.length!==(A3D.selSet||[]).length){A3D.selSet=ids;if(A3D.sel&&bimIsDiag(objById(A3D.sel)))A3D.sel=ids[0]||null;refreshTree();refreshProps();}
+    }
+    if(A3D_CAKE.on&&bimCameraIsPlan())setView('iso');
+    refreshLayers();paint();
+    a3dToast(!A3D_CAKE.on?'Layer cake: off':n?'Layer cake: '+n+' layer'+(n===1?'':'s')+' lifted over the map, '+Math.round(bimCakeGap())+' m apart; the analyses are for looking until it is off':
+      'Layer cake: no shown site analysis or data layer to lift');
+    return A3D_CAKE.on;
+  }
+  /* each tier's frame and name, at the site context's square: drawn after the layers, never on paper */
+  function drawLayerCake(ctx,V,W,H){
+    A3D.lastCakeTiers=0;
+    if(!A3D_CAKE.on||A3D.sheetCapture||A3D_PLOT.on)return;
+    var T=bimCakeTiers(),r=bimCtxSettings().radius,y0=bimShadowGround(),i,k,c,p,pts;
+    if(!T.length)return;
+    ctx.save();
+    try{
+      for(i=0;i<T.length;i++){
+        c=[[-r,-r],[r,-r],[r,r],[-r,r]];pts=[];
+        for(k=0;k<4;k++){p=toScreen([c[k][0],y0+T[i].lift,c[k][1]],V,W,H);if(!p||!isFinite(p[0])||!isFinite(p[1]))break;pts.push(p);}
+        if(pts.length<4)continue;
+        ctx.beginPath();ctx.moveTo(pts[0][0],pts[0][1]);for(k=1;k<4;k++)ctx.lineTo(pts[k][0],pts[k][1]);ctx.closePath();
+        ctx.globalAlpha=0.06;ctx.fillStyle='#e8edf2';ctx.fill();
+        ctx.globalAlpha=0.45;ctx.strokeStyle='#e8edf2';ctx.lineWidth=1;ctx.setLineDash([4,4]);ctx.stroke();ctx.setLineDash([]);
+        ctx.globalAlpha=1;ctx.textAlign='right';ctx.textBaseline='middle';
+        p=pts[0][0]<pts[3][0]?pts[0]:pts[3];
+        bimDgDrawText(ctx,T[i].name,p[0]-8,p[1],'#e8edf2',12,false);
+        A3D.lastCakeTiers++;
+      }
+    }catch(e){
+      console.warn('[BIM] layer cake',e);
+      if(!A3D.cakeWarned){A3D.cakeWarned=true;a3dToast('The layer cake could not be drawn');}
+    }
+    ctx.restore();
+  }
+  /* the toggle in the Layers header */
+  function bimCakeBtnHtml(){
+    return '<button type="button" class="a3d-lycake'+(A3D_CAKE.on?' on':'')+'" data-lycake="1" aria-pressed="'+(A3D_CAKE.on?'true':'false')+
+      '" title="Layer cake: lift the site analyses and data layers over the map, each to its own height">Layer cake</button>';
   }
   /* ================= __acad3dV136: the colour-by-property lens ================= */
   var BIM_LENS_BY=['usage','level','type','layer','material','height','prop'];
@@ -37341,6 +38025,7 @@ try{
     if(!L.by)return null;
     var F=bimDataFeats(L.id),vals=[],i,v,none=0;
     for(i=0;i<F.length;i++){
+      if(!bimDataPasses(L,i)){vals.push(null);continue;}   /* __acad3dV173b: classified over what its filter keeps */
       v=F[i].p?F[i].p[L.by]:undefined;
       if(v===undefined||v===null||v===''){vals.push(null);none++;continue;}
       if(typeof v==='number'||(/^-?\d+(\.\d+)?$/.test(String(v))&&isFinite(parseFloat(v))))vals.push({num:parseFloat(v)});
@@ -39499,6 +40184,7 @@ try{
     var L=bimDataById(id),v;
     if(!L)return false;
     if(String(field).indexOf('cls.')===0)return bimDataClsSet(id,String(field).slice(4),val);   /* __acad3dV173a */
+    if(field==='filter'||field==='label')return bimDataFltSet(id,field,val);   /* __acad3dV173b */
     if(field==='visible'){v=!!val&&val!=='false';if(L.visible===v)return true;}
     else if(field==='name'){v=String(val==null?'':val).replace(/\s+/g,' ').replace(/^ | $/g,'').slice(0,60);if(!v){a3dToast('A data layer needs a name');refreshProps();return false;}}
     else if(field==='color'){v=String(val||'');if(!/^#[0-9a-fA-F]{6}$/.test(v)){a3dToast('That is not a colour');refreshProps();return false;}v=v.toLowerCase();}
@@ -39542,7 +40228,7 @@ try{
   function drawDataLayers(ctx,V,W,H){
     A3D.lastDataDrawn=0;
     if(A3D.sheetCapture||A3D_PLOT.on)return;
-    var L=bimDataList(),y=bimShadowGround(),i,j,c,f,sel,n=0;
+    var L=bimDataList(),y0=bimShadowGround(),y=y0,i,j,c,f,sel,n=0;
     function S(p){return toScreen([p[0],y,p[1]],V,W,H);}
     function path(pts,close){
       var p=S(pts[0]),k;
@@ -39554,12 +40240,14 @@ try{
       if(!L[i].visible)continue;
       c=bimDataModel(L[i]);
       if(!c)continue;
+      y=y0+bimCakeLift('data',L[i].id);   /* __acad3dV173d: its tier in the layer cake */
       ctx.save();
       ctx.strokeStyle=L[i].color;ctx.fillStyle=L[i].color;
       var ds=bimDataLensScale(L[i]),op=bimDataOpacity(L[i]),fa=ds?0.5:0.16,fc;   /* __acad3dV136: by an attribute, at an opacity */
       ctx.globalAlpha=op;
       for(j=0;j<c.feats.length;j++){
         f=c.feats[j];
+        if(!bimDataPasses(L[i],f.fi))continue;   /* __acad3dV173b: its filter */
         if(ds){fc=bimDataFeatCol(L[i],ds,f.fi);ctx.strokeStyle=fc;ctx.fillStyle=fc;}
         sel=!!(A3D_DATA.sel&&A3D_DATA.sel.layer===L[i].id&&A3D_DATA.sel.fi===f.fi);
         ctx.lineWidth=sel?2.6:1.2;
@@ -39575,30 +40263,35 @@ try{
       ctx.restore();
     }
     A3D.lastDataDrawn=n;
+    drawDataLabels(ctx,V,W,H,y0);   /* __acad3dV173b */
   }
   /* what data is under a screen point: a point, then a line, then the smallest area; later layers first */
   function bimDataPick(sx,sy){
-    var L=bimDataList(),y=bimShadowGround(),g=groundPoint(sx,sy,y),P,tol,i,j,k,c,f,best=null,bestA=Infinity,pass,inside;
+    var L=bimDataList(),y=bimShadowGround(),g=groundPoint(sx,sy,y),P,tol,i,j,k,c,f,best=null,bestA=Infinity,pass,inside,G={};
     if(!g)return null;
     P=[g[0],g[2]];
+    /* __acad3dV173d: in the layer cake each layer is picked on its own tier */
+    function at(id){var lf=bimCakeLift('data',id),q;if(!lf)return P;if(!G[id]){q=groundPoint(sx,sy,y+lf);G[id]=q?[q[0],q[2]]:[NaN,NaN];}return G[id];}
     tol=6*Math.max(A3D.cam.dist,0.5)/(Math.max(1,cvH())*1.2);
     for(pass=0;pass<3;pass++){
       for(i=L.length-1;i>=0;i--){
         if(!L[i].visible)continue;
         c=bimDataModel(L[i]);
         if(!c)continue;
+        var Pl=at(L[i].id);
         for(j=c.feats.length-1;j>=0;j--){
           f=c.feats[j];
+          if(!bimDataPasses(L[i],f.fi))continue;   /* __acad3dV173b: a filtered feature is not there */
           if(pass===0){
-            for(k=0;k<f.points.length;k++)if(Math.hypot(f.points[k][0]-P[0],f.points[k][1]-P[1])<=tol)return {layer:L[i].id,fi:f.fi};
+            for(k=0;k<f.points.length;k++)if(Math.hypot(f.points[k][0]-Pl[0],f.points[k][1]-Pl[1])<=tol)return {layer:L[i].id,fi:f.fi};
           }else if(pass===1){
             for(k=0;k<f.lines.length;k++){
               var l=f.lines[k],m;
-              for(m=0;m+1<l.length;m++)if(bimPointSegDist(P[0],P[1],l[m][0],l[m][1],l[m+1][0],l[m+1][1])<=tol)return {layer:L[i].id,fi:f.fi};
+              for(m=0;m+1<l.length;m++)if(bimPointSegDist(Pl[0],Pl[1],l[m][0],l[m][1],l[m+1][0],l[m+1][1])<=tol)return {layer:L[i].id,fi:f.fi};
             }
           }else if(f.rings.length){
             inside=0;
-            for(k=0;k<f.rings.length;k++)if(bimPointInPoly(P,f.rings[k].pts))inside++;
+            for(k=0;k<f.rings.length;k++)if(bimPointInPoly(Pl,f.rings[k].pts))inside++;
             if(inside%2===1&&f.area<bestA){bestA=f.area;best={layer:L[i].id,fi:f.fi};}
           }
         }
@@ -40052,6 +40745,7 @@ try{
     if(!capMode)bimLbsDraw(ctx,V,W,H);       /* __acad3dV172c: a Ladybug study on the model, over the solids */
     drawGrids(ctx,V,W,H);
     drawDataLayers(ctx,V,W,H);     /* __acad3dV134: the public record, under the property lines */
+    drawLayerCake(ctx,V,W,H);      /* __acad3dV173d: the tiers' frames and names */
     drawProperties(ctx,V,W,H);     /* __acad3dV103: under the model, like grids */
     drawAlignments(ctx,V,W,H);     /* __acad3dV127 */
     drawStationMark(ctx,V,W,H);
@@ -61518,6 +62212,18 @@ try{
   /* __acad3dV173: the classification and the stretch, pure, for the suites */
   window.__a3dClsBreaks=function(values,method,o){return bimClsBreaks(values,method,o);};
   window.__a3dClsStretch=function(values,type,o,at){var st=bimClsStretch(values,type,o);return at===undefined?st:bimClsStretchAt(st,at);};
+  /* __acad3dV173b: the filter, the labels and their place, for the suites */
+  window.__a3dFilterParse=function(src){var p=bimFltParse(src);return p.error?{error:p.error,pos:p.pos}:{text:p.text,fields:p.fields,warn:p.warn};};
+  window.__a3dDataMask=function(id){var L=bimDataById(id),m=L?bimDataMask(L):null;return m?{pass:m.pass.slice(),n:m.n,of:m.of}:null;};
+  window.__a3dDataLabelText=function(spec,props){return bimDataLabelText(spec,props);};
+  window.__a3dPolyLabel=function(rings,precision){return bimPolyLabel(rings,precision);};
+  window.__a3dDataLabelsDrawn=function(){return A3D.lastDataLabels||0;};
+  /* __acad3dV173c: Layers listed by drawing order, source or selection; a data layer moved */
+  window.__a3dLayersListBy=function(v){return v===undefined?bimLyListBy():bimLyListBySet(v);};
+  window.__a3dLayersPanelHtml=function(){return bimLayersPanelHtml();};
+  window.__a3dDataLayerMove=function(id,to){return bimDataLayerMove(id,to);};
+  /* __acad3dV173d: the layer cake */
+  window.__a3dLayerCake=function(on){return on===undefined?{on:A3D_CAKE.on,tiers:bimCakeTiers(),drawn:A3D.lastCakeTiers||0}:bimCakeSet(on);};
   window.__a3dLensCommand=function(){return bimLensCommand();};
   window.__a3dTestLegendOnPaper=function(){var s=A3D.sheetCapture;A3D.sheetCapture=true;try{drawLensLegend(el.ctx,null,0,0);}finally{A3D.sheetCapture=s;}return A3D.lastLensLegend;};
   window.__a3dTestLevelName=function(id,n){var i;for(i=0;i<A3D.levels.length;i++)if(A3D.levels[i].id===id){A3D.levels[i].name=n;A3D_LENS.cur=null;return true;}return false;};

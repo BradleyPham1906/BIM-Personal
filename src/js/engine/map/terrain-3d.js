@@ -31,6 +31,7 @@ import {
 } from '../render/webgl.js';
 import { A3D_GL_BATCH, A3D_SCENE, bimGbRender, bimSceneRelease } from '../render/gpu-batches.js';
 import { bimRender3D } from '../render/webgpu.js';
+import { drawLayerCake } from './layer-cake.js';
 import { A3D_LENS, bimGlDrawFaces, bimLensCol, drawLensLegend } from './colour-lens.js';
 import {
   BIM_MAP_STYLES, bimLatToTileY, bimLonToTileX, bimMapDraw2D, bimMapDrawGl, bimMapFooterSync, bimMapOrigin,
@@ -474,6 +475,7 @@ import { cvH, cvScale, cvW } from '../ui/canvas-size.js';
     if(!capMode)bimLbsDraw(ctx,V,W,H);       /* __acad3dV172c: a Ladybug study on the model, over the solids */
     drawGrids(ctx,V,W,H);
     drawDataLayers(ctx,V,W,H);     /* __acad3dV134: the public record, under the property lines */
+    drawLayerCake(ctx,V,W,H);      /* __acad3dV173d: the tiers' frames and names */
     drawProperties(ctx,V,W,H);     /* __acad3dV103: under the model, like grids */
     drawAlignments(ctx,V,W,H);     /* __acad3dV127 */
     drawStationMark(ctx,V,W,H);

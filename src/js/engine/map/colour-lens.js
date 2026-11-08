@@ -8,6 +8,7 @@ import { bimAwCtxCol } from '../site-analysis/analysis-workspace.js';
 import { bimHexToRgb } from '../render/webgl.js';
 import { bimClsAssign } from './classify.js';
 import { bimDataClsScale, bimDataLegendTitle } from './data-symbology.js';
+import { bimDataPasses } from './data-filter-ui.js';
 import { bimDataFeats, bimDataList } from './data-layers.js';
 import { paint } from './terrain-3d.js';
 import { bimSafeViewRect } from '../ui/chrome-framing.js';
@@ -145,6 +146,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
     if(!L.by)return null;
     var F=bimDataFeats(L.id),vals=[],i,v,none=0;
     for(i=0;i<F.length;i++){
+      if(!bimDataPasses(L,i)){vals.push(null);continue;}   /* __acad3dV173b: classified over what its filter keeps */
       v=F[i].p?F[i].p[L.by]:undefined;
       if(v===undefined||v===null||v===''){vals.push(null);none++;continue;}
       if(typeof v==='number'||(/^-?\d+(\.\d+)?$/.test(String(v))&&isFinite(parseFloat(v))))vals.push({num:parseFloat(v)});

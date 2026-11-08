@@ -170,6 +170,10 @@ Search Notion before creating anything, so nothing is made twice.
 | V172b | `405cbfcc3a388180b6f3ee08305e8361` |
 | V172c | `405cbfcc3a3881789cb1c86e67d77b62` |
 | V173 | `3fecbfcc3a388141a93be73520d09591` |
+| V173a (sub-item of V173) | `412cbfcc3a388163bdf5c45e7e3f064c` |
+| V173b (sub-item of V173) | `412cbfcc3a38815b93fffe263658eb6e` |
+| V173c (sub-item of V173) | `412cbfcc3a3881e8b5abe392c3e91845` |
+| V173d (sub-item of V173) | `412cbfcc3a38811aaefae35599f88f43` |
 | V174 | `3fecbfcc3a3881fa9594ef43af9d6616` |
 | V175 | `3fecbfcc3a3881488c3ae42826615c67` |
 | V176 | `3fecbfcc3a38811e932ed521acc186e9` |

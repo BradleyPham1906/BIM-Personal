@@ -3,8 +3,10 @@ import { TYPES } from '../core/mesh-primitives.js';
 import { bimIsLocked } from '../bim/import-compliance.js';
 import { bimLayerById, bimLayerEff, bimLayerLook, bimLayerOf } from './layer-rules.js';
 import { BIM_EYE_OFF, BIM_EYE_ON, BIM_LOCK_OFF, BIM_LOCK_ON, bimLayerUnder } from './select-change.js';
+import { bimLyListBy, bimLyListByHtml, bimLyListBySelect } from './list-by.js';
 import { bimLySectionsHtml } from './analysis-data-rows.js';
 import { bimEsc } from './layer-manager.js';
+import { bimCakeBtnHtml } from '../map/layer-cake.js';
 import { ric } from '../ui/touch-input.js';
 
   /* ================= __acad3dV121: the Layers panel =================
@@ -107,7 +109,7 @@ import { ric } from '../ui/touch-input.js';
       memo[l.id]=r;
       return r;
     }
-    var h='<div class="a3d-lyp"><div class="a3d-lyhd"><span class="a3d-lyttl">Layers</span><span class="a3d-lybtns">'+
+    var h='<div class="a3d-lyp"><div class="a3d-lyhd"><span class="a3d-lyttl">Layers</span>'+bimLyListBySelect()+bimCakeBtnHtml()+'<span class="a3d-lybtns">'+   /* __acad3dV173c; __acad3dV173d: the layer cake */
       bimLyBtn('new','New layer',BIM_LY_IC.add)+
       bimLyBtn('sub','New sub-layer under the selected layer',BIM_LY_IC.sub)+
       bimLyBtn('std','New layer with an AIA / NCS standard name',BIM_LY_IC.std)+
@@ -116,6 +118,7 @@ import { ric } from '../ui/touch-input.js';
       bimLyBtn('lpm','Layer Properties Manager (LAYER)',BIM_LY_IC.lpm)+
       '</span></div><input type="text" class="a3d-lysearch" data-lysearch="1" placeholder="Search layers and objects" value="'+
       bimEsc(A3D_LY.filter||'')+'" aria-label="Search layers and objects"><div class="a3d-lylist" data-lylist="1">';
+    if(bimLyListBy()!=='order')return h+bimLyListByHtml(f)+'</div></div>';   /* __acad3dV173c: by source or by selection */
     function render(l,depth){
       if(seen[l.id]||(f&&!match(l)))return;
       seen[l.id]=1;
@@ -129,4 +132,4 @@ import { ric } from '../ui/touch-input.js';
     if(f&&!Object.keys(seen).length)h+='<div class="a3d-lyempty">Nothing matches</div>';
     return h+'</div>'+bimLySectionsHtml(f)+'</div>';   /* __acad3dV148: the results and the data, below the layers */
   }
-export { A3D_LY, BIM_LY_IC, bimLayerContents, bimLayerTree, bimLayersPanelHtml, bimLyTgl };
+export { A3D_LY, BIM_LY_IC, bimLayerContents, bimLayerTree, bimLayersPanelHtml, bimLyRowHtml, bimLyTgl };

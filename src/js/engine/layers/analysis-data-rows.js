@@ -9,6 +9,7 @@ import {
   openAddLayerDlg
 } from './select-change.js';
 import { A3D_LY, BIM_LY_IC, bimLayersPanelHtml, bimLyTgl } from './layers-panel.js';
+import { bimDataLayerMove, bimDataLayerStep, bimDataListTopFirst, bimLyListBySet } from './list-by.js';
 import { bimEsc, bimLayerManagerOpen, bimLayerManagerRefresh } from './layer-manager.js';
 import { bimDispNum } from '../properties/palette.js';
 import { bimDataStatusText } from '../properties/context-lod-data.js';
@@ -21,6 +22,8 @@ import { bimAnzAct } from '../analysis/analyze-tab.js';
 import { bimRenderInto, refreshProps } from '../site-analysis/panel.js';
 import { bimTlRunById, bimTlStale, bimTlTool } from '../site-tools/tools.js';
 import { bimDataLegendHtml, bimDataSwatch } from '../map/data-symbology.js';
+import { bimDataFilterText } from '../map/data-filter-ui.js';
+import { bimCakeSet } from '../map/layer-cake.js';
 import { A3D_DATA, bimDataById, bimDataFeats, bimDataList } from '../map/data-layers.js';
 import { bimDataOpacity, bimDataRemove, bimDataSet } from '../map/find-open-data.js';
 import { paint } from '../map/terrain-3d.js';
@@ -87,12 +90,13 @@ import { a3dToast, objById } from '../bim/csg-booleans.js';
   }
   function bimLyDataRowHtml(L){
     var key='data:'+L.id,sel=A3D_LY.rsel===key,hid=!L.visible,n=bimDataFeats(L.id).length,h;
-    h='<div class="a3d-lyres'+(sel?' sel':'')+(hid?' dim':'')+'" data-lyres="'+bimEsc(key)+'" aria-expanded="'+sel+'">'+
+    h='<div class="a3d-lyres'+(sel?' sel':'')+(hid?' dim':'')+'" data-lyres="'+bimEsc(key)+'" draggable="true" aria-expanded="'+sel+'">'+   /* __acad3dV173c: dragged to its place */
       '<span class="a3d-lyramp" style="background:'+bimDataSwatch(L)+'"></span>'+bimLyNameHtml(key,L.name)+   /* __acad3dV173a: its classes */
       (L.status&&L.status.error?'<span class="a3d-lybadge gone" title="'+bimEsc(bimDataStatusText(L))+'">Failed</span>':'')+
       bimLyTgl('lyreson',key,hid,hid?'Show '+L.name:'Hide '+L.name,BIM_LY_IC.off,BIM_LY_IC.on)+'<span class="a3d-lyi a3d-lyspc" aria-hidden="true"></span><span class="a3d-lyi a3d-lyspc" aria-hidden="true"></span>'+'</div>';
     if(sel)h+='<div class="a3d-lyresd" data-lyresd="'+bimEsc(key)+'">'+bimLyOpacityHtml(key,L.name,bimDataOpacity(L))+bimDataLegendHtml(L)+
-      '<div class="a3d-lyresmeta">'+bimEsc(bimDataStatusText(L)+(n?'; '+n+' feature'+(n===1?'':'s'):'')+(L.credit?'. Source: '+L.credit:''))+'</div><div class="a3d-lyresacts">'+
+      '<div class="a3d-lyresmeta">'+bimEsc(bimDataStatusText(L)+(n?'; '+n+' feature'+(n===1?'':'s'):'')+(L.filter?'. '+bimDataFilterText(L):'')+(L.credit?'. Source: '+L.credit:''))+'</div><div class="a3d-lyresacts">'+
+      '<button type="button" data-lydmv="up:'+bimEsc(L.id)+'" title="Draw over the layer above">Up</button><button type="button" data-lydmv="down:'+bimEsc(L.id)+'" title="Draw under the layer below">Down</button>'+   /* __acad3dV173c: for touch screens */
       '<button type="button" data-lyresset="'+bimEsc(key)+'">Settings</button><button type="button" data-lyresrn="'+bimEsc(key)+'">Rename</button>'+
       '<button type="button" class="danger" data-lyresdel="'+bimEsc(key)+'">Remove</button></div></div>';
     return h;
@@ -101,7 +105,7 @@ import { a3dToast, objById } from '../bim/csg-booleans.js';
     var shut=A3D_LY.secShut||{},rb='',db='';
     function hit(s){return !f||String(s).toLowerCase().indexOf(f)>=0;}
     bimResLayers().forEach(function(R){if(hit(R.name))rb+=bimLyResRowHtml(R);});
-    bimDataList().forEach(function(L){if(hit(L.name))db+=bimLyDataRowHtml(L);});
+    bimDataListTopFirst().forEach(function(L){if(hit(L.name))db+=bimLyDataRowHtml(L);});   /* __acad3dV173c: the top row draws on top (D3) */
     /* __acad3dV158: the group's row, a layer row's columns: caret, status, swatch, name, count, eye */
     function sec(key,label,n,body,empty){
       if(f&&!body)return '';
@@ -210,6 +214,7 @@ import { a3dToast, objById } from '../bim/csg-booleans.js';
     if((b=t.closest('[data-lyresdel]'))){bimLyResRemove(b.getAttribute('data-lyresdel'));return true;}
     if((b=t.closest('[data-lyresrn]'))){A3D_LY.redit=b.getAttribute('data-lyresrn');refreshLayers();bimLyResFocusEdit();return true;}
     if((b=t.closest('[data-lyresset]'))){bimAnzAct('open:Data Layers');return true;}
+    if((b=t.closest('[data-lydmv]'))){k=b.getAttribute('data-lydmv');bimDataLayerStep(k.slice(k.indexOf(':')+1),k.slice(0,k.indexOf(':')));return true;}   /* __acad3dV173c */
     if(t.closest('input')||t.closest('[data-lyresd]'))return !!t.closest('[data-lyresd],[data-lyres]');
     if((b=t.closest('[data-lyres]'))){k=b.getAttribute('data-lyres');A3D_LY.rsel=A3D_LY.rsel===k?null:k;refreshLayers();return true;}
     return false;
@@ -271,6 +276,7 @@ import { a3dToast, objById } from '../bim/csg-booleans.js';
       if(!inLyp(t))return;
       try{
         if((b=t.closest('[data-lyact]'))){bimLyAct(b.getAttribute('data-lyact'));return;}
+        if(t.closest('[data-lycake]')){bimCakeSet();return;}   /* __acad3dV173d */
         if((b=t.closest('[data-lytog]'))){l=b.getAttribute('data-lytog');A3D_LY.open[l]=!A3D_LY.open[l];refreshLayers();return;}
         if((b=t.closest('[data-lycur]'))){if(bimLayerMakeCurrent(b.getAttribute('data-lycur')))A3D_LY.sel=A3D.activeLayer;refreshLayers();return;}
         if((b=t.closest('[data-lyon]'))){l=bimLayerById(b.getAttribute('data-lyon'));if(l)bimLayerSet(l.id,'visible',l.visible===false);return;}
@@ -297,6 +303,7 @@ import { a3dToast, objById } from '../bim/csg-booleans.js';
     panel.addEventListener('change',function(ev){
       var t=ev.target;
       if(inLyp(t)&&t.hasAttribute('data-lycol'))bimLayerSet(t.getAttribute('data-lycol'),'color',t.value);
+      if(inLyp(t)&&t.hasAttribute('data-lylistby'))bimLyListBySet(t.value);   /* __acad3dV173c */
     });
     panel.addEventListener('input',function(ev){
       var t=ev.target;
@@ -318,7 +325,7 @@ import { a3dToast, objById } from '../bim/csg-booleans.js';
       var t=ev.target;
       if(!inLyp(t))return;
       var o=t.closest('[data-lyobj]'),l=t.closest('[data-lyid]'),rr=t.closest('[data-lyres]'),rk=rr?bimLyKey(rr.getAttribute('data-lyres')):null;   /* __acad3dV148: a result layer, in its stack */
-      A3D_LY.drag=o?'obj:'+o.getAttribute('data-lyobj'):(l?'layer:'+l.getAttribute('data-lyid'):(rk&&rk.t==='res'?'rl:'+rk.id:null));
+      A3D_LY.drag=o?'obj:'+o.getAttribute('data-lyobj'):(l?'layer:'+l.getAttribute('data-lyid'):(rk&&rk.t==='res'?'rl:'+rk.id:(rk&&rk.t==='data'?'dl:'+rk.id:null)));   /* __acad3dV173c: a data layer too */
       if(A3D_LY.drag){
         try{ev.dataTransfer.setData('text/plain',A3D_LY.drag);ev.dataTransfer.effectAllowed='move';}
         catch(eD){console.warn('[BIM] The drag could not carry its data',eD);}
@@ -328,6 +335,7 @@ import { a3dToast, objById } from '../bim/csg-booleans.js';
       var t=ev.target;
       if(A3D_LY.drag&&inLyp(t)&&(t.closest('[data-lyid]')||t.closest('[data-lylist]')))ev.preventDefault();
       else if(A3D_LY.drag&&A3D_LY.drag.indexOf('rl:')===0&&inLyp(t)&&t.closest('[data-lyres^="res:"]'))ev.preventDefault();
+      else if(A3D_LY.drag&&A3D_LY.drag.indexOf('dl:')===0&&inLyp(t)&&t.closest('[data-lyres^="data:"]'))ev.preventDefault();   /* __acad3dV173c */
     });
     panel.addEventListener('drop',function(ev){
       var t=ev.target,v=A3D_LY.drag;
@@ -337,7 +345,8 @@ import { a3dToast, objById } from '../bim/csg-booleans.js';
       var row=t.closest('[data-lyid]'),tgt=row?row.getAttribute('data-lyid'):null;
       try{
         var rt=t.closest('[data-lyres]'),rtk=rt?bimLyKey(rt.getAttribute('data-lyres')):null;
-        if(v.indexOf('rl:')===0){if(rtk&&rtk.t==='res')bimResultLayerMove(v.slice(3),rtk.id);}   /* __acad3dV148: onto a row, to its place */
+        if(v.indexOf('rl:')===0){if(rtk&&rtk.t==='res')bimResultLayerMove(v.slice(3),rtk.id);}
+        else if(v.indexOf('dl:')===0){if(rtk&&rtk.t==='data')bimDataLayerMove(v.slice(3),rtk.id);}   /* __acad3dV173c */   /* __acad3dV148: onto a row, to its place */
         else if(v.indexOf('obj:')===0){if(tgt)bimObjSetLayer(v.slice(4),tgt);}
         else if(v.indexOf('layer:')===0&&v.slice(6)!==tgt){
           if(tgt)A3D_LY.open[tgt]=true;
@@ -370,5 +379,6 @@ import { a3dToast, objById } from '../bim/csg-booleans.js';
     });
   }
 export {
-  bimLayersPanelRefresh, bimLySecHidden, bimLySecVisible, bimLySectionsHtml, bimWireLayersPanel, refreshLayers
+  bimLayersPanelRefresh, bimLyDataRowHtml, bimLyResRowHtml, bimLySecHidden, bimLySecVisible,
+  bimLySectionsHtml, bimWireLayersPanel, refreshLayers
 };

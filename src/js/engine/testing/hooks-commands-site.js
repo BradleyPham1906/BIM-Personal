@@ -13,6 +13,8 @@ import {
 import { bimTrueNorthDeg } from '../survey/survey-arithmetic.js';
 import { bimImportSurvey } from '../site/alignment-profile.js';
 import { bimLayerById } from '../layers/layer-rules.js';
+import { bimLayersPanelHtml } from '../layers/layers-panel.js';
+import { bimDataLayerMove, bimLyListBy, bimLyListBySet } from '../layers/list-by.js';
 import { bimLySecHidden, bimLySecVisible } from '../layers/analysis-data-rows.js';
 import { bimUsageAdd, bimUsageAssign, bimUsageRemove } from '../properties/usages.js';
 import { A3D_STD_UI, bimStdCommand, bimStdPackLook } from '../properties/site-standards.js';
@@ -81,6 +83,10 @@ import {
 } from '../io/sketchup-import.js';
 import { bimHandleImportFile, toScreen } from '../io/import-entry.js';
 import { bimClsBreaks, bimClsStretch, bimClsStretchAt } from '../map/classify.js';
+import { bimFltParse } from '../map/layer-filter.js';
+import { bimDataLabelText, bimPolyLabel } from '../map/data-labels.js';
+import { bimDataMask } from '../map/data-filter-ui.js';
+import { A3D_CAKE, bimCakeSet, bimCakeTiers } from '../map/layer-cake.js';
 import {
   A3D_LENS, BIM_LENS_NONE, BIM_LENS_RAMP, bimDataAttrKeys, bimDataFeatCol, bimDataLensScale, bimLensCol,
   bimLensPropKeys, bimLensSet, bimLensSettings, bimLensValue, drawLensLegend
@@ -222,6 +228,18 @@ import { BIM_CMD_MAP, BIM_SHEET_CMDS, BIM_START_CMDS } from '../commands/command
   /* __acad3dV173: the classification and the stretch, pure, for the suites */
   window.__a3dClsBreaks=function(values,method,o){return bimClsBreaks(values,method,o);};
   window.__a3dClsStretch=function(values,type,o,at){var st=bimClsStretch(values,type,o);return at===undefined?st:bimClsStretchAt(st,at);};
+  /* __acad3dV173b: the filter, the labels and their place, for the suites */
+  window.__a3dFilterParse=function(src){var p=bimFltParse(src);return p.error?{error:p.error,pos:p.pos}:{text:p.text,fields:p.fields,warn:p.warn};};
+  window.__a3dDataMask=function(id){var L=bimDataById(id),m=L?bimDataMask(L):null;return m?{pass:m.pass.slice(),n:m.n,of:m.of}:null;};
+  window.__a3dDataLabelText=function(spec,props){return bimDataLabelText(spec,props);};
+  window.__a3dPolyLabel=function(rings,precision){return bimPolyLabel(rings,precision);};
+  window.__a3dDataLabelsDrawn=function(){return A3D.lastDataLabels||0;};
+  /* __acad3dV173c: Layers listed by drawing order, source or selection; a data layer moved */
+  window.__a3dLayersListBy=function(v){return v===undefined?bimLyListBy():bimLyListBySet(v);};
+  window.__a3dLayersPanelHtml=function(){return bimLayersPanelHtml();};
+  window.__a3dDataLayerMove=function(id,to){return bimDataLayerMove(id,to);};
+  /* __acad3dV173d: the layer cake */
+  window.__a3dLayerCake=function(on){return on===undefined?{on:A3D_CAKE.on,tiers:bimCakeTiers(),drawn:A3D.lastCakeTiers||0}:bimCakeSet(on);};
   window.__a3dLensCommand=function(){return bimLensCommand();};
   window.__a3dTestLegendOnPaper=function(){var s=A3D.sheetCapture;A3D.sheetCapture=true;try{drawLensLegend(el.ctx,null,0,0);}finally{A3D.sheetCapture=s;}return A3D.lastLensLegend;};
   window.__a3dTestLevelName=function(id,n){var i;for(i=0;i<A3D.levels.length;i++)if(A3D.levels[i].id===id){A3D.levels[i].name=n;A3D_LENS.cur=null;return true;}return false;};

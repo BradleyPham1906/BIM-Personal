@@ -6,6 +6,7 @@ import { bimPropReveal } from '../analysis/analyze-tab.js';
 import { bimCtxLevelH, bimCtxPier } from '../standards/registry.js';
 import { refreshProps } from '../site-analysis/panel.js';
 import { bimDataSymHtml } from '../map/data-symbology.js';
+import { bimDataFltAdd, bimDataFltHtml } from '../map/data-filter-ui.js';
 import {
   BIM_LENS_BY, BIM_LENS_LABEL, bimDataAttrKeys, bimLensPropKeys, bimLensSet, bimLensSettings
 } from '../map/colour-lens.js';
@@ -181,6 +182,7 @@ import { a3dToast, objById } from '../bim/csg-booleans.js';
     if(b[0]==='color')return bimDataSet(b[1],'color',f.value);
     if(b[0]==='by')return bimDataSet(b[1],'by',f.value);             /* __acad3dV136 */
     if(b[0]==='opacity')return bimDataSet(b[1],'opacity',f.value);
+    if(b[0]==='filter'||b[0]==='label')return bimDataSet(b[1],b[0],f.value);   /* __acad3dV173b */
     if(b[0].indexOf('cls-')===0)return bimDataSet(b[1],'cls.'+b[0].slice(4),f.type==='checkbox'?f.checked:f.value);   /* __acad3dV173a */
     return false;
   }
@@ -193,6 +195,8 @@ import { a3dToast, objById } from '../bim/csg-booleans.js';
     if(a==='clear'){A3D_DATA.sel=null;refreshProps();paint();return true;}
     if(b[0]==='refresh'){bimDataFetch(b[1]);refreshProps();return true;}
     if(b[0]==='remove'){bimDataRemove(b[1]);return true;}
+    if(b[0]==='fltadd'){bimDataFltAdd(b[1]);return true;}   /* __acad3dV173b */
+    if(b[0]==='fltclr'){bimDataSet(b[1],'filter','');return true;}
     return false;
   }
   /* ================= __acad3dV135: find open data, in Properties ================= */
@@ -279,7 +283,7 @@ import { a3dToast, objById } from '../bim/csg-booleans.js';
     return '<div class="a3d-prow a3d-dllens"><div class="a3d-plabel">Colour by</div><div class="a3d-pval"><div class="a3d-ukv">'+
       '<select data-propdata="by:'+id+'" aria-label="Colour '+bimEsc(L.name)+' by">'+o+'</select>'+
       '<input type="number" min="10" max="100" step="10" data-propdata="opacity:'+id+'" value="'+Math.round(bimDataOpacity(L)*100)+'" aria-label="Opacity (%)" title="Opacity (%)"></div></div></div>'+
-      bimDataSymHtml(L);   /* __acad3dV173a: a number's classes */
+      bimDataSymHtml(L)+bimDataFltHtml(L);   /* __acad3dV173a: a number's classes; __acad3dV173b: filter and labels */
   }
   function bimLensPropChange(ev){
     var f=ev.target&&ev.target.closest?ev.target.closest('[data-proplens]'):null;

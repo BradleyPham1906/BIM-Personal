@@ -38,7 +38,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
   }
   /* the classes over a layer's numbers, kept until the settings, the attribute or the features change */
   function bimDataClassify(L,nums){
-    var st=bimDataClsSettings(L),F=bimDataFeats(L.id),key=JSON.stringify(st)+'|'+L.by+'|'+nums.length,m=A3D_DCLS.memo[L.id],res,note='';
+    var st=bimDataClsSettings(L),F=bimDataFeats(L.id),key=JSON.stringify(st)+'|'+L.by+'|'+(L.filter||'')+'|'+nums.length,   /* __acad3dV173b: the filter too */m=A3D_DCLS.memo[L.id],res,note='';
     if(m&&m.key===key&&m.F===F)return m.res;
     res=bimClsBreaks(nums,st.method,{k:st.k,step:st.step,centre:st.centre,breaks:st.breaks});
     if(res.error){

@@ -11,6 +11,7 @@ import { bimDgSite } from './model-analyses.js';
 import { A3D_TR, bimTrAdvance, bimTrFps, bimTrStart, bimTrStop } from '../simulation/traffic-sim.js';
 import { bimTrCanPlay } from '../simulation/traffic-ui.js';
 import { toScreen } from '../io/import-entry.js';
+import { A3D_CAKE } from '../map/layer-cake.js';
 import { paint } from '../map/terrain-3d.js';
 import { bimPointSegDist, inPoly } from '../render/viewcube.js';
 import { bimCameraIsPlan } from '../views/saved-views.js';
@@ -293,6 +294,7 @@ import { cvH, cvW } from '../ui/canvas-size.js';
      (bimPickBand). */
   function bimPickDiag(x,y){
     var H=A3D_DG.hits,i,j,b;
+    if(A3D_CAKE.on)return null;   /* __acad3dV173d: in the layer cake an analysis is lifted, so it is for looking, not editing */
     for(i=H.length-1;i>=0;i--){
       var o=objById(H[i].id);
       if(!o||!bimLayerPickable(o))continue;
@@ -307,6 +309,7 @@ import { cvH, cvW } from '../ui/canvas-size.js';
      a band never covers what lies on it; a class with no line of its own is still a click away. The
      top one: the analysis drawn last, then its highest class, as bimDgDrawBands lays them. */
   function bimPickBand(x,y){
+    if(A3D_CAKE.on)return null;   /* __acad3dV173d */
     var L=bimDgDiags(),G={},order=[],V,W,H,i,j,k,m;
     for(i=0;i<L.length;i++){
       var o=L[i],gb=o.dg.g.bands;
