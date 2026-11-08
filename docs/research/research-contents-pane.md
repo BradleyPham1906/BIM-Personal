@@ -63,9 +63,12 @@ the label method, and the layer cake's scope.
   checked against mapclassify's examples; `time-engine.mjs` times the engine's own module) and
   `docs/research/experiments/v173-filter/` (a CQL2 subset parser, its edge cases, the LIKE timing). Our own code;
   no downloaded code was run.
-- **Independent check:** a fourth agent re-reads the sources behind every fact the code uses and writes
-  `independent-check.md`. It was started on 2026-11-08 and had not reported when this note was first committed: a
-  fact it fails goes back to U, and this note is amended to match.
+- **Independent check (2026-11-08):** a fourth agent re-fetched every source and re-read it as text, and checked the
+  calemp numbers with its own Python, apart from the notes' code (`independent-check.md`). Of 55 facts: 51 confirmed,
+  2 not confirmed, 2 not checkable (Corbett 2001 and Penn's finding aid answered 403; no code depends on them). The
+  percent clip default and McHarg's quotation are confirmed but stay S. It also traced QGIS's default graduated mode
+  further: a new renderer starts on "Custom", outside the method list, so the list shows its first entry, Equal
+  Count (Quantile) (code read, not run). The two not confirmed are in part 10.
 
 ## 4. Findings, by topic
 
@@ -226,7 +229,7 @@ random cases, the edges, sampling, the stretches). Nothing draws with it yet.
   Wang and Song's paper.
 - Brewer and Pickle (2002) through its abstract and citations (S).
 - One machine, one engine (Node 22) for timings; no phone measured.
-- The independent check had not reported when this note was first committed.
+- The independent check re-read every source, but by one more agent, with the same network.
 - Agents wrote three of the five working notes; one claim of theirs (H9) was wrong and corrected by the main session.
 
 ## 10. What is still open (U)
@@ -234,6 +237,10 @@ random cases, the edges, sampling, the stretches). Nothing draws with it yet.
 - ArcGIS's standard deviation centring and the n of its standard deviation stretch; its on-screen operator names.
 - How layer cake drawings are usually drawn (gaps, labels, viewing angle): images only.
 - The CQL2 backslash in LIKE.
+- **Back to U after the independent check:** (1) that CQL2's LIKE is case-sensitive: the standard never says so; it
+  follows from what CASEI is for, so it is the app's choice, not CQL2's rule (D10 covers it). (2) `NOT IN ('a',
+  NULL)` giving unknown "under CQL2": CQL2 Text has no NULL literal, so the list does not parse, and the standard does
+  not define IN with a null item; the app's rule is a decision (D9 extended), not CQL2's.
 - Mapbox Studio's, archiMap's, UrbanEyes' and Forma's layer lists: moved pages or nothing found; the owner may have
   their addresses.
 
