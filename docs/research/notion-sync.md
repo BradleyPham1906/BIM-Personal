@@ -177,6 +177,9 @@ Search Notion before creating anything, so nothing is made twice.
 | V173d (sub-item of V173) | `412cbfcc3a38811aaefae35599f88f43` |
 | V174 | `3fecbfcc3a3881fa9594ef43af9d6616` |
 | V174a (sub-item of V174) | `412cbfcc3a38817186c0c199c484b414` |
+| V174b (sub-item of V174) | `412cbfcc3a388181b78acd8f64959388` |
+| V174c (sub-item of V174) | `412cbfcc3a3881cd8295cb7ed9eb5eb7` |
+| V174d (sub-item of V174) | `412cbfcc3a38815db197f0c4f1d8f818` |
 | V175 | `3fecbfcc3a3881488c3ae42826615c67` |
 | V176 | `3fecbfcc3a38811e932ed521acc186e9` |
 | V177-V180 | `3fecbfcc3a388109b937fdf301083454` |
