@@ -2,20 +2,26 @@ import { A3D } from '../core/state.js';
 import { A3D_SNAP, pushUndo } from '../drawing/plan-mode-sketch.js';
 import { bimLayerById, bimLayerEff, bimLayerZero } from '../layers/layer-rules.js';
 import { refreshLayers } from '../layers/analysis-data-rows.js';
+import { A3D_UNITS } from '../properties/palette.js';
 import { bimClbEl, bimClbOpen } from '../site-analysis/climate-board.js';
 import { refreshProps } from '../site-analysis/panel.js';
 import { saveSoon } from '../bim/region-regenerate.js';
 import { bimLtMenuOpen } from './layout-tabs.js';
 import {
-  BIM_BRD_P0, bimBrdBands, bimBrdEditing, bimBrdFigsValid, bimBrdPx, bimBrdRec, bimFigEntry
+  bimBrdBands, bimBrdEditing, bimBrdFigsValid, bimBrdPx, bimBrdRec, bimFigEntry
 } from './board-figures.js';
 import { bimBrdRedraw, bimBrdWorking } from './board-edit.js';
 import {
-  bimBobBox, bimBobFind, bimBobKind, bimBobLayer, bimBobMax, bimBobNewId, bimBobPxMm, bimBobReorder,
-  bimBobShift, bimBobSync, bimBobUnion, bimBobValid
+  bimBobBox, bimBobFigMover, bimBobFind, bimBobKind, bimBobLayApply, bimBobLayReorder, bimBobLayValid,
+  bimBobLayer, bimBobMax, bimBobNewId, bimBobPxMm, bimBobReorder, bimBobShift, bimBobSync, bimBobUnion,
+  bimBobValid
 } from './board-objects.js';
+import { bimBalGaps, bimBalSnap } from './board-arrange.js';
+import { bimPgValid } from './page-sizes.js';
 import { bimBimgAdd } from './board-images.js';
 import { bimBdsFigBoxer, bimBdsPos, bimBdsPres, bimBdsPx } from './board-design.js';
+import { bimBmapFitDen, bimBmapSources } from './board-map.js';
+import { bimBdePage } from './board-design-tools.js';
 import { a3dToast } from '../bim/csg-booleans.js';
 
 
@@ -36,26 +42,21 @@ import { a3dToast } from '../bim/csg-booleans.js';
     if(B.objs)objs=JSON.parse(JSON.stringify(B.objs));
     else{objs=[];bimBrdBands(figs).forEach(function(D){D.f.forEach(function(F){order.push(F);});});}
     bimBobSync(objs,order.length?order:figs);
-    return {B:B,figs:figs,objs:objs,off:B.off?B.off.slice():null};
+    return {B:B,figs:figs,objs:objs,off:B.off?B.off.slice():null,lay:B.lay?JSON.parse(JSON.stringify(B.lay)):{},page:B.page?{key:B.page.key,o:B.page.o}:null};
   }
   function bimBdeFigBox(W){return bimBdsFigBoxer(W.figs);}
-  function bimBdeMoveFig(W){
-    return function(k,dx,dy){
-      var i,F,s=bimBobPxMm()/BIM_BRD_P0;
-      for(i=0;i<W.figs.length;i++)if(W.figs[i].k===k){
-        F=W.figs[i];
-        F.x=Math.max(0,Math.min(12-F.w,Math.round((F.x+dx*s)*10000)/10000));
-        F.y=Math.max(0,Math.round((F.y+dy*s)*10000)/10000);
-      }
-    };
-  }
+  function bimBdeMoveFig(W){return bimBobFigMover(W.figs);}
   /* one undo step: the board's figures and objects as W has them */
   function bimBdeCommit(W,msg,sel){
-    var F=bimBrdFigsValid(W.figs),T;
+    var F,T,Ly;
+    bimBobLayApply(W,bimBdeFigBox(W),bimBdeMoveFig(W),false);   /* __acad3dV174b: the stacks laid out again */
+    F=bimBrdFigsValid(W.figs);
     if(!F){console.warn('[BIM] A board\'s new figures were not a list; nothing changed');return false;}
-    T=bimBobValid(W.objs,F);
+    T=bimBobValid(W.objs,F);Ly=bimBobLayValid(W.lay);
     pushUndo();
     W.B.figs=F;W.B.objs=T||[];
+    if(Ly)W.B.lay=Ly;else delete W.B.lay;
+    if(W.page&&bimPgValid(W.page))W.B.page=bimPgValid(W.page);else delete W.B.page;   /* __acad3dV174c */
     if(W.B.kind!=='custom'){if(W.off&&W.off.length)W.B.off=W.off;else delete W.B.off;}
     if(sel)A3D_BDE.sel=sel.slice();
     saveSoon();
@@ -96,9 +97,10 @@ import { a3dToast } from '../bim/csg-booleans.js';
     }
     return {x:20,y:Math.round(y)};
   }
-  function bimBdeDrawKinds(){return [['rect','Rectangle'],['ellipse','Ellipse'],['line','Line'],['arrow','Arrow'],['poly','Polygon'],['star','Star'],['text','Text'],['image','Image…']];}
+  function bimBdeDrawKinds(){return [['rect','Rectangle'],['ellipse','Ellipse'],['line','Line'],['arrow','Arrow'],['poly','Polygon'],['star','Star'],['text','Text'],['image','Image…'],
+    '-',['map','Map frame'],['legend','Legend'],['north','North arrow'],['sbar','Scale bar']];}   /* __acad3dV174d */
   function bimBdeDrawMenu(x,y){
-    bimLtMenuOpen(x,y,bimBdeDrawKinds().map(function(k){return [k[1],k[0]];}),function(k){if(k==='image')bimBdeAddImage();else bimBdeAdd(k);});
+    bimLtMenuOpen(x,y,bimBdeDrawKinds().map(function(k){return k==='-'?k:[k[1],k[0]];}),function(k){if(k==='image')bimBdeAddImage();else bimBdeAdd(k);});
     return true;
   }
   /* a new object of a kind ('arrow' is a line with its head) on the current layer, at the top of the board's visible part */
@@ -113,6 +115,20 @@ import { a3dToast } from '../bim/csg-booleans.js';
     else if(kind==='line'||kind==='arrow'){n.w=60;n.h=0;if(kind==='arrow')n.a1=true;}
     else if(kind==='text'){n.w=80;n.h=10;n.s='Text';}
     else if(kind==='image'){n.w=100;n.h=75;}
+    else if(kind==='map'){   /* __acad3dV174d: the first plan, at a scale that shows it whole */
+      var srcs=bimBmapSources();
+      if(!srcs.length){a3dToast('There is no plan or view to show: add a level first');return null;}
+      n.w=160;n.h=110;n.src=srcs[0].kind+':'+srcs[0].refId;n.den=bimBmapFitDen(n);
+    }else if(kind==='legend'||kind==='north'||kind==='sbar'){
+      var fr=null;
+      A3D_BDE.sel.forEach(function(x){var q=bimBobFind(W.objs,x);if(q&&q.n.t==='map')fr=q.n;});
+      if(!fr)W.objs.forEach(function(q){if(!fr&&q.t==='map')fr=q;});
+      if(!fr){a3dToast('Draw a map frame first: the '+(kind==='legend'?'legend':kind==='north'?'north arrow':'scale bar')+' is bound to one');return null;}
+      n.fr=fr.id;
+      if(kind==='legend'){n.w=60;n.h=40;n.x=fr.x+fr.w+5;n.y=fr.y;}
+      else if(kind==='north'){n.w=14;n.h=18;n.x=fr.x+fr.w-18;n.y=fr.y+4;}
+      else{n.w=Math.max(40,fr.w*0.45);n.h=11;n.x=fr.x;n.y=fr.y+fr.h+3;n.un=/^(ft|in|ftin)$/.test(A3D_UNITS.key)?'ft':'m';}
+    }
     else return null;
     if(extra)for(f in extra)if(extra.hasOwnProperty(f))n[f]=extra[f];
     W.objs.push(n);
@@ -149,7 +165,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
     S.forEach(function(id){
       var f=bimBobFind(W.objs,id);if(!f)return;
       for(k in o)if(o.hasOwnProperty(k)){
-        if(f.n.t==='fig'&&k!=='layer'&&k!=='tr'&&k!=='bm'&&k!=='nm')continue;   /* a figure keeps its place in its columns */
+        if(f.n.t==='fig'&&k!=='layer'&&k!=='tr'&&k!=='bm'&&k!=='nm'&&k!=='la')continue;   /* a figure keeps its place in its columns */
         if(o[k]===null)delete f.n[k];else f.n[k]=o[k];
       }
       done++;
@@ -238,7 +254,8 @@ import { a3dToast } from '../bim/csg-booleans.js';
   function bimBdeDragStart(ev,d,W,mode,ids,box){
     var b=bimClbEl(),dom=[];
     ids.forEach(function(x){dom=dom.concat(bimBdeDom(d,x));});
-    A3D_BDE.drag={mode:mode,ids:ids,W:W,x0:ev.clientX,y0:ev.clientY,s0:b?b.scrollTop:0,z:bimBdeZoom(d),d:d,dom:dom,box:box,pid:ev.pointerId,moved:false,dx:0,dy:0};
+    A3D_BDE.drag={mode:mode,ids:ids,W:W,x0:ev.clientX,y0:ev.clientY,s0:b?b.scrollTop:0,z:bimBdeZoom(d),d:d,dom:dom,box:box,pid:ev.pointerId,moved:false,dx:0,dy:0,
+      G:mode==='move'?bimBdeSnapIndex(W,ids):null};   /* __acad3dV174b: the others' edges and gaps, found once */
     try{d.setPointerCapture(ev.pointerId);}catch(eP){}
     ev.preventDefault();
   }
@@ -249,7 +266,15 @@ import { a3dToast } from '../bim/csg-booleans.js';
     b=bimClbEl();
     dx=(ev.clientX-D.x0)/D.z/k;dy=(ev.clientY-D.y0+((b?b.scrollTop:0)-D.s0))/D.z/k;
     if(A3D_SNAP.ortho){if(Math.abs(dx)>=Math.abs(dy))dy=0;else dx=0;}
-    if(A3D_SNAP.grid){dx=Math.round(dx);dy=Math.round(dy);}   /* whole millimetres; V174b brings the board's snaps */
+    D.guides=[];
+    if(D.mode==='move'&&A3D_SNAP.point&&D.G&&D.box){   /* __acad3dV174b: smart spacing, within the drawing's 12 px (D10) */
+      var cand={x:D.box.x+dx,y:D.box.y+dy,w:D.box.w,h:D.box.h},sn=bimBalSnap(cand,D.G,A3D_SNAP.pxThreshold/(D.z*k)),gx=null,gy=null;
+      if(sn.x&&(dx!==0||!A3D_SNAP.ortho)){dx+=sn.x.d;gx=sn.x;}
+      if(sn.y&&(dy!==0||!A3D_SNAP.ortho)){dy+=sn.y.d;gy=sn.y;}
+      if(gx)D.guides.push(['x',gx.kind==='point'?gx.at:(gx.kind==='before'?D.box.x+dx+D.box.w:(gx.kind==='centre'?D.box.x+dx+D.box.w/2:D.box.x+dx)),gx.kind]);
+      if(gy)D.guides.push(['y',gy.kind==='point'?gy.at:(gy.kind==='before'?D.box.y+dy+D.box.h:(gy.kind==='centre'?D.box.y+dy+D.box.h/2:D.box.y+dy)),gy.kind]);
+      if(A3D_SNAP.grid){if(!gx)dx=Math.round(dx);if(!gy)dy=Math.round(dy);}
+    }else if(A3D_SNAP.grid){dx=Math.round(dx);dy=Math.round(dy);}   /* whole millimetres */
     D.moved=true;D.dx=dx;D.dy=dy;
     px=bimBrdPx(dx*k);py=bimBrdPx(dy*k);
     if(D.mode==='move')D.dom.forEach(function(el){el.style.transform='translate('+px+'px,'+py+'px)';});
@@ -269,7 +294,11 @@ import { a3dToast } from '../bim/csg-booleans.js';
     A3D_BDE.drag=null;
     try{D.d.releasePointerCapture(D.pid);}catch(eR){}
     if(!D.moved||(D.mode==='move'&&!D.dx&&!D.dy)){D.dom.forEach(function(el){el.style.transform='';});return;}
-    if(D.mode==='move')D.ids.forEach(function(x){f=bimBobFind(D.W.objs,x);if(f)bimBobShift(f.n,D.dx,D.dy,bimBdeMoveFig(D.W));});
+    if(D.mode==='move'){
+      D.ids.forEach(function(x){f=bimBobFind(D.W.objs,x);if(f)bimBobShift(f.n,D.dx,D.dy,bimBdeMoveFig(D.W));});
+      /* __acad3dV174b: an object dropped in its layer's stack takes the place it was dropped at */
+      D.ids.forEach(function(x){var q=bimBobFind(D.W.objs,x),ly=q&&bimBobLayer(q.n);if(ly&&D.W.lay[ly.id]&&!q.n.la)bimBobLayReorder(D.W,ly.id,bimBdeFigBox(D.W));});
+    }
     else{
       f=bimBobFind(D.W.objs,D.ids[0]);if(!f)return;
       f.n.w=D.w;f.n.h=D.h;
@@ -316,6 +345,15 @@ import { a3dToast } from '../bim/csg-booleans.js';
     b.addEventListener('pointercancel',bimBdeCancel);
     b.addEventListener('keydown',bimBdeKey);
   }
+  /* the other shown objects' boxes and the page's edges and centre, for the snaps */
+  function bimBdeSnapIndex(W,ids){
+    var fb=bimBdeFigBox(W),R=[],pg=bimBdePage(W),G;
+    W.objs.forEach(function(n){if(ids.indexOf(n.id)>=0||!bimBdePickableOrLocked(n))return;var b=bimBobBox(n,fb);if(b&&b.w>=0&&b.h>=0)R.push(b);});
+    G=bimBalGaps(R);
+    G.xs.push(pg.x,pg.x+pg.w/2,pg.x+pg.w);G.ys.push(pg.y);if(pg.h)G.ys.push(pg.y+pg.h/2,pg.y+pg.h);
+    return G;
+  }
+  function bimBdePickableOrLocked(n){var ly=bimBobLayer(n),s=ly?bimLayerEff(ly):null;return !s||(s.on&&!s.frozen);}
   /* ---- after the board is drawn: the selection's outlines ---- */
   function bimBdeOverlay(d,W,live){
     var o=d&&d.querySelector('.a3d-clb-dsel'),S,h='',fb;
@@ -330,6 +368,12 @@ import { a3dToast } from '../bim/csg-booleans.js';
       hd=S.length===1&&f.n.t!=='fig'&&bimBdePickable(W,x);
       h+='<div class="a3d-clb-dbox'+(f.n.mask?' mk':'')+'" style="'+bimBdsPos(b,0,0)+'">'+
         (hd?'<div class="a3d-clb-dhdl" data-bdh="se" title="Drag to size; Shift keeps its proportions" style="'+(f.n.t==='line'?'left:'+bimBdsPx(f.n.x+f.n.w-b.x)+'px;top:'+bimBdsPx(f.n.y+f.n.h-b.y)+'px':'right:0;bottom:0')+'"></div>':'')+'</div>';
+    });
+    /* __acad3dV174b: the stacks of the selection's layers, and the snaps caught */
+    var seen={},bx=bimBobLayApply({objs:JSON.parse(JSON.stringify(W.objs)),figs:W.figs,lay:W.lay},fb,null,false);
+    S.forEach(function(x){var ly=bimBobLayer(bimBobFind(W.objs,x).n);if(ly&&bx[ly.id]&&!seen[ly.id]){seen[ly.id]=1;h='<div class="a3d-clb-dstack" style="'+bimBdsPos(bx[ly.id],0,0)+'"></div>'+h;}});
+    if(A3D_BDE.drag&&A3D_BDE.drag.guides)A3D_BDE.drag.guides.forEach(function(g){
+      h+='<div class="a3d-clb-guide '+g[0]+(g[2]==='point'?'':' gap')+'" style="'+(g[0]==='x'?'left:'+bimBdsPx(g[1]):'top:'+bimBdsPx(g[1]))+'px"></div>';
     });
     o.innerHTML=h;
   }
@@ -351,6 +395,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
     refreshProps();refreshLayers();
   }
 export {
-  A3D_BDE, bimBdeAdd, bimBdeAddImage, bimBdeAfterDraw, bimBdeDo, bimBdeDrawMenu, bimBdeEsc, bimBdeFigBox,
-  bimBdeName, bimBdeOwnsProps, bimBdeSel, bimBdeSelect, bimBdeSet, bimBdeWantsKey, bimBdeWire, bimBdeWork
+  A3D_BDE, bimBdeAdd, bimBdeAddImage, bimBdeAfterDraw, bimBdeCommit, bimBdeDo, bimBdeDrawMenu, bimBdeEsc,
+  bimBdeFigBox, bimBdeMoveFig, bimBdeName, bimBdeOwnsProps, bimBdePickable, bimBdeSel, bimBdeSelect,
+  bimBdeSet, bimBdeWantsKey, bimBdeWire, bimBdeWork
 };

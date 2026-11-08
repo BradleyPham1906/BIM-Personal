@@ -58,8 +58,11 @@ import {
 } from '../sheets/boards.js';
 import { bimBrdRec } from '../sheets/board-figures.js';
 import { bimBobFigCols } from '../sheets/board-objects.js';
+import { bimPgSize } from '../sheets/page-sizes.js';
 import { bimBimgHash, bimBimgOk, bimBimgUsed } from '../sheets/board-images.js';
+import { bimBmapBar, bimBmapNiceDen } from '../sheets/board-map.js';
 import { A3D_BDE, bimBdeAdd, bimBdeDo, bimBdeSelect, bimBdeSet } from '../sheets/board-design-edit.js';
+import { bimBdeArrange, bimBdeLaySet, bimBdePageSet } from '../sheets/board-design-tools.js';
 import { A3D_PRP, bimPresHost, bimPresOpenPage } from '../sheets/presentation-panel.js';
 import { a3dToast, objById } from '../bim/csg-booleans.js';
 import { a3drIcon, a3drLabel } from '../ui/discipline-tabs.js';
@@ -174,7 +177,7 @@ import { a3drIcon, a3drLabel } from '../ui/discipline-tabs.js';
   window.__a3dBoardDesign={add:function(k,o){return bimBdeAdd(k,o);},act:function(a,ids){return bimBdeDo(a,ids);},set:function(id,o){return bimBdeSet(id,o);},
     select:function(ids){bimBdeSelect(ids||[]);return A3D_BDE.sel.slice();},
     objs:function(){var B=bimBrdRec();return B&&B.objs?JSON.parse(JSON.stringify(B.objs)):null;},hash:bimBimgHash,imageOk:bimBimgOk,
-    figCols:bimBobFigCols,used:bimBimgUsed,layerMove:bimLayerMove,layerStep:bimLayerStep,pres:function(on){A3D.presentMode=!!on;bimSyncPresentPill();if(A3D_CLB.open)bimClbOpen();return A3D.presentMode;}};
+    figCols:bimBobFigCols,used:bimBimgUsed,layerMove:bimLayerMove,layerStep:bimLayerStep,pgSize:bimPgSize,bar:bimBmapBar,niceDen:bimBmapNiceDen,arrange:function(a){return bimBdeArrange(a);},stack:function(id,o){return bimBdeLaySet(id,o);},page:function(k,o,tb){return bimBdePageSet(k,o,tb);},pres:function(on){A3D.presentMode=!!on;bimSyncPresentPill();if(A3D_CLB.open)bimClbOpen();return A3D.presentMode;}};
   window.__a3dClbCss=function(){return bimClbCss();};
   window.__a3dClbState=function(){var b=bimClbEl();return {open:A3D_CLB.open,kind:A3D_CLB.kind,board:A3D_CLB.board,narrow:A3D_CLB.narrow,inView:!!(b&&b.parentNode&&b.parentNode.classList&&b.parentNode.classList.contains('a3d-vp')),cls:b?b.className:null,w:b?bimClbW(b):0};};
   window.__a3dSlideshowEnd=function(){return bimSlideshowEnd();};

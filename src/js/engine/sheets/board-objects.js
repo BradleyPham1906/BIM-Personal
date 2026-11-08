@@ -1,6 +1,8 @@
 import { A3D } from '../core/state.js';
 import { bimLayerById, bimLayerZero } from '../layers/layer-rules.js';
 import { bimLayerTree } from '../layers/layers-panel.js';
+import { BIM_BRD_P0 } from './board-figures.js';
+import { bimBalLayout } from './board-arrange.js';
 
 
   /* ================= __acad3dV174a: a board's objects, on the one layer table =================
@@ -28,7 +30,9 @@ import { bimLayerTree } from '../layers/layers-panel.js';
   function bimBobBlend(k){var L=bimBobBlends(),i;for(i=0;i<L.length;i++)if(L[i][0]===k)return L[i];return null;}
   /* the kinds: [key, name, can be a mask] */
   function bimBobKinds(){
-    return [['rect','Rectangle',1],['ellipse','Ellipse',1],['line','Line',1],['poly','Polygon',1],['star','Star',1],['text','Text',0],['image','Image',1],['fig','Figure',0]];
+    return [['rect','Rectangle',1],['ellipse','Ellipse',1],['line','Line',1],['poly','Polygon',1],['star','Star',1],['text','Text',0],['image','Image',1],['fig','Figure',0],
+      ['tblock','Title block',0],['border','Sheet frame',0],   /* __acad3dV174c */
+      ['map','Map frame',0],['legend','Legend',0],['north','North arrow',0],['sbar','Scale bar',0]];   /* __acad3dV174d */
   }
   function bimBobKind(t){var L=bimBobKinds(),i;for(i=0;i<L.length;i++)if(L[i][0]===t)return L[i];return null;}
   function bimBobMaskTypes(){return [['alpha','Alpha'],['vector','Vector'],['lum','Luminance']];}
@@ -51,6 +55,10 @@ import { bimLayerTree } from '../layers/layers-panel.js';
     if(typeof n.nm==='string'&&n.nm.replace(/\s+/g,''))r.nm=n.nm.replace(/\s+/g,' ').trim().slice(0,80);
     if(typeof n.tr==='number'&&isFinite(n.tr))r.tr=Math.round(Math.max(0,Math.min(90,n.tr)));   /* absent: ByLayer */
     if(typeof n.bm==='string'&&bimBobBlend(n.bm))r.bm=n.bm;   /* absent: ByLayer */
+    /* __acad3dV174b: in its layer's auto layout: Fill on an axis, or out of the flow ("ignore auto layout") */
+    if(n.lw==='fill'&&n.t!=='fig')r.lw='fill';
+    if(n.lh==='fill'&&n.t!=='fig')r.lh='fill';
+    if(n.la===true)r.la=true;
     if(n.t==='fig'){
       if(typeof n.k!=='string'||!/^f\d{1,6}$/.test(n.k))return null;
       r.k=n.k;
@@ -81,6 +89,18 @@ import { bimLayerTree } from '../layers/layers-panel.js';
       r.src=typeof n.src==='string'&&/^h[0-9a-f]{16}$/.test(n.src)?n.src:'';
       r.fit=(n.fit==='fit'||n.fit==='tile')?n.fit:'fill';
     }
+    /* __acad3dV174c: a title block, ISO 7200's at the bottom right or a US strip at the right (D14); the sheet's frame line */
+    if(n.t==='tblock')r.st=n.st==='us'?'us':'iso';
+    if(n.t==='border')r.sw=bimBobNum(n.sw,0.1,5,0.7);
+    /* __acad3dV174d: a map frame's view, scale and pan; the surround's frame, and their own settings */
+    if(n.t==='map'){
+      r.src=typeof n.src==='string'&&/^(plan|elevation|view):.{1,100}$/.test(n.src)?n.src:'';
+      r.den=bimBobNum(n.den,1,1e8,500);r.px=bimBobNum(n.px,-1e7,1e7,0);r.py=bimBobNum(n.py,-1e7,1e7,0);
+    }
+    if(n.t==='legend'||n.t==='north'||n.t==='sbar'){if(typeof n.fr==='string'&&/^e\d{1,6}$/.test(n.fr))r.fr=n.fr;}
+    if(n.t==='legend')r.ttl=typeof n.ttl==='string'?n.ttl.slice(0,80):'Legend';
+    if(n.t==='north'){r.nk=n.nk==='plan'?'plan':'true';r.off=bimBobNum(n.off,-360,360,0);}
+    if(n.t==='sbar')r.un=n.un==='ft'?'ft':'m';
     return r;
   }
   /* a board's objects as saved, good, agreeing with its figures; null when it has none */
@@ -178,10 +198,76 @@ import { bimLayerTree } from '../layers/layers-panel.js';
     var x=Math.min(a.x,b.x),y=Math.min(a.y,b.y);
     return {x:x,y:y,w:Math.max(a.x+a.w,b.x+b.w)-x,h:Math.max(a.y+a.h,b.y+b.h)-y};
   }
+  /* what moves a figure of a list by dx, dy mm: its columns, kept on the board's 12 */
+  function bimBobFigMover(figs){
+    return function(k,dx,dy){
+      var i,F,s=bimBobPxMm()/BIM_BRD_P0;
+      for(i=0;i<figs.length;i++)if(figs[i].k===k){
+        F=figs[i];
+        F.x=Math.max(0,Math.min(12-F.w,Math.round((F.x+dx*s)*10000)/10000));
+        F.y=Math.max(0,Math.round((F.y+dy*s)*10000)/10000);
+      }
+    };
+  }
   /* moved by dx, dy mm; a figure through moveFig(k, dx, dy) */
   function bimBobShift(n,dx,dy,moveFig){
     if(n.t==='fig'){if(moveFig)moveFig(n.k,dx,dy);return;}
     n.x=Math.round((n.x+dx)*1000)/1000;n.y=Math.round((n.y+dy)*1000)/1000;
+  }
+  /* ---- __acad3dV174b: a layer's auto layout on one board (D7, R4: the sub-layer is the group) ----
+     B.lay = {layer id: {dir 'row'|'column'|'wrap', gap mm or 'auto', pad mm, am and ac 'start'|'center'|'end', x, y (the
+     stack's corner, mm), sw and sh 'hug'|'fixed', w, h}}. Its objects are that layer's on the board, in Draw order, masks
+     left out. */
+  function bimBobLayOne(L){
+    if(!L||typeof L!=='object'||(L.dir!=='row'&&L.dir!=='column'&&L.dir!=='wrap'))return null;
+    var al=function(v){return v==='center'||v==='end'?v:'start';};
+    return {dir:L.dir,gap:L.gap==='auto'?'auto':bimBobNum(L.gap,-1000,1000,5),pad:bimBobNum(L.pad,0,1000,0),am:al(L.am),ac:al(L.ac),
+      x:bimBobNum(L.x,-2000,20000,0),y:bimBobNum(L.y,-2000,20000,0),sw:L.sw==='fixed'?'fixed':'hug',sh:L.sh==='fixed'?'fixed':'hug',
+      w:bimBobNum(L.w,1,20000,100),h:bimBobNum(L.h,1,20000,60)};
+  }
+  function bimBobLayValid(m){
+    var out={},k,n=0,L;
+    if(!m||typeof m!=='object')return null;
+    for(k in m)if(m.hasOwnProperty(k)&&typeof k==='string'&&k.length<=120&&n<100){L=bimBobLayOne(m[k]);if(L){out[k]=L;n++;}}
+    return n?out:null;
+  }
+  /* the objects of a layer in a stack, in Draw order */
+  function bimBobLayKids(objs,lyId){return objs.filter(function(o){var ly=bimBobLayer(o);return ly&&ly.id===lyId&&!o.mask;});}
+  /* every stack of the board laid out: W {objs, figs, lay}; objects moved (a figure through moveFig) and Fill sized.
+     narrow: a phone, where a row is shown as a column, in reading order (D11). {layer id: the stack's box} */
+  function bimBobLayApply(W,figBox,moveFig,narrow){
+    var boxes={},k,L,kids,F,res;
+    if(!W.lay)return boxes;
+    for(k in W.lay)if(W.lay.hasOwnProperty(k)){
+      L=W.lay[k];
+      if(!bimLayerById(k))continue;
+      kids=bimBobLayKids(W.objs,k);
+      F={dir:narrow||L.dir==='column'?'column':'row',wrap:!narrow&&L.dir==='wrap',gap:L.gap,pad:L.pad,alignMain:L.am,alignCross:L.ac,
+        sizeW:L.sw,sizeH:L.sh,w:L.w,h:L.h,children:kids.map(function(o){
+          var b=bimBobBox(o,figBox)||{x:0,y:0,w:0,h:0};
+          return {w:b.w,h:b.h,x:b.x-L.x,y:b.y-L.y,sizeW:o.lw==='fill'?'fill':'fixed',sizeH:o.lh==='fill'?'fill':'fixed',absolute:!!o.la};
+        })};
+      res=bimBalLayout(F);
+      kids.forEach(function(o,i){
+        var r=res.kids[i],b=bimBobBox(o,figBox);
+        if(!r||o.la||!b)return;
+        if(o.t!=='line'&&o.t!=='fig'){if(o.lw==='fill')o.w=Math.max(0.5,Math.round(r.w*1000)/1000);if(o.lh==='fill')o.h=Math.max(0.5,Math.round(r.h*1000)/1000);}
+        bimBobShift(o,Math.round((L.x+r.x-b.x)*1000)/1000,Math.round((L.y+r.y-b.y)*1000)/1000,moveFig);
+      });
+      boxes[k]={x:L.x,y:L.y,w:res.w,h:res.h};
+    }
+    return boxes;
+  }
+  /* after a drag in a stack: its objects put in Draw order by where they now are, so the next layout follows */
+  function bimBobLayReorder(W,lyId,figBox){
+    var L=W.lay&&W.lay[lyId],idx=[],kids=[],key;
+    if(!L)return false;
+    W.objs.forEach(function(o,i){var ly=bimBobLayer(o);if(ly&&ly.id===lyId&&!o.mask){idx.push(i);kids.push(o);}});
+    key=function(o){var b=bimBobBox(o,figBox)||{x:0,y:0,w:0,h:0},cx=b.x+b.w/2,cy=b.y+b.h/2;
+      return L.dir==='column'?cy:(L.dir==='wrap'?Math.round(cy/Math.max(1,b.h))*100000+cx:cx);};
+    kids.sort(function(a,b){return key(a)-key(b);});
+    idx.forEach(function(i,j){W.objs[i]=kids[j];});
+    return true;
   }
   /* ---- the layer table's side ---- */
   /* how many objects of every board are on a layer (Delete Layer refuses a layer that holds any) */
@@ -192,7 +278,8 @@ import { bimLayerTree } from '../layers/layers-panel.js';
     return n;
   }
 export {
-  bimBobBlend, bimBobBlends, bimBobBm, bimBobBox, bimBobFigBox, bimBobFigCols, bimBobFind, bimBobKind,
-  bimBobLayer, bimBobMaskTypes, bimBobMax, bimBobNewId, bimBobOnLayer, bimBobPaint, bimBobPxMm, bimBobReorder,
-  bimBobRuns, bimBobShift, bimBobSync, bimBobTr, bimBobUnion, bimBobValid
+  bimBobBlend, bimBobBlends, bimBobBm, bimBobBox, bimBobFigBox, bimBobFigCols, bimBobFigMover, bimBobFind,
+  bimBobKind, bimBobLayApply, bimBobLayKids, bimBobLayReorder, bimBobLayValid, bimBobLayer, bimBobMaskTypes,
+  bimBobMax, bimBobNewId, bimBobOnLayer, bimBobPaint, bimBobPxMm, bimBobReorder, bimBobRuns, bimBobShift,
+  bimBobSync, bimBobTr, bimBobUnion, bimBobValid
 };

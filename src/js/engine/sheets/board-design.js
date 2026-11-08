@@ -1,15 +1,21 @@
+import { A3D } from '../core/state.js';
 import { A3D_SNAP } from '../drawing/plan-mode-sketch.js';
 import { bimPresentGraphics } from '../layers/plot-by-layers.js';
 import { A3D_PLOT, bimLayerById, bimLayerEff } from '../layers/layer-rules.js';
 import { bimClbE, bimClbRefresh } from '../site-analysis/climate-board.js';
+import { bimProjectLabel } from '../ui/project-tabs.js';
 import { A3D_SLIDESHOW } from './present.js';
+import { bimPresIndex, bimPresSeq } from './boards.js';
 import {
-  BIM_BRD_G, BIM_BRD_P0, bimBrdBands, bimBrdFigHtml, bimBrdOverlaps, bimBrdPx, bimFigSrc
+  BIM_BRD_G, BIM_BRD_P0, bimBoardLabel, bimBrdBands, bimBrdFigHtml, bimBrdOverlaps, bimBrdPx, bimFigSrc
 } from './board-figures.js';
 import {
-  bimBobBlend, bimBobBm, bimBobBox, bimBobFigBox, bimBobPaint, bimBobPxMm, bimBobRuns, bimBobTr
+  bimBobBlend, bimBobBm, bimBobBox, bimBobFigBox, bimBobFigMover, bimBobLayApply, bimBobPaint, bimBobPxMm,
+  bimBobRuns, bimBobTr
 } from './board-objects.js';
+import { bimPgBoardPage } from './page-sizes.js';
 import { A3D_BIMG, bimBimgMissing, bimBimgUrl } from './board-images.js';
+import { bimBmapHtml } from './board-map.js';
 
 
   /* ================= __acad3dV174a: a board's objects, drawn =================
@@ -82,6 +88,9 @@ import { A3D_BIMG, bimBimgMissing, bimBimgUrl } from './board-images.js';
   function bimBdsNode(n,ox,oy,ctx){
     var t=n.t,b,S,h,u,pd,Wp,Hp;
     if(t==='fig')return bimBdsFig(n,ox,oy,ctx);
+    if(t==='tblock')return bimBdsTblock(n,ox,oy,ctx);   /* __acad3dV174c */
+    if(t==='map'||t==='legend'||t==='north'||t==='sbar')return bimBmapHtml(n,ox,oy,ctx);   /* __acad3dV174d */
+    if(t==='border')return '<div'+bimBdsAttr(n,'a3d-clb-dbdr',ctx)+' style="'+bimBdsPos(bimBobBox(n),ox,oy)+'border:'+bimBdsPx(n.sw)+'px solid #0b0b0b;'+bimBdsComp(n,ctx)+'"></div>';
     b=bimBobBox(n);
     if(t==='line'){   /* a level line's box is 0 high, and an SVG of no size is not painted: it grows by its stroke and heads */
       S=bimBdsShape(n,ctx.edit);
@@ -138,6 +147,20 @@ import { A3D_BIMG, bimBimgMissing, bimBimgUrl } from './board-images.js';
     return bimBrdFigHtml(F.F,ctx,(oy*bimBobPxMm())/BIM_BRD_P0,F.over,{
       dx:-ox*bimBobPxMm(),num:F.no,cls:' a3d-clb-dfig'+(ctx.lk[n.id]?' lk':''),attr:' data-bde="'+n.id+'"',style:bimBdsComp(n,ctx)});
   }
+  /* __acad3dV174c: a title block's fields, from the project and the board: ISO 7200's eight mandatory ones (legal
+     owner, identification number, date of issue, sheet number, title, approval person, creator, document type), or a
+     US title strip with the same facts, stacked */
+  function bimBdsTblock(n,ox,oy,ctx){
+    var tb=A3D.titleBlock||{},B=ctx.B,i=B?bimPresIndex(B.id):-1,N=bimPresSeq().length,d=new Date(),dt,F,h,c,fs=bimBdsPx(2.4),fl=bimBdsPx(1.8);
+    dt=d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2);
+    F=[['Title',B?bimBoardLabel(B):''],['Project',bimProjectLabel()],['Legal owner',tb.client||''],['Created by',tb.drawnBy||''],['Approved by',tb.checkedBy||''],
+      ['Document type','Presentation board'],['Identification',B?B.id:''],['Date of issue',dt],['Sheet',i>=0?(i+1)+' of '+N:'']];
+    c=function(f,big){return '<div class="a3d-clb-dtbc"><span style="font-size:'+fl+'px">'+bimClbE(f[0])+'</span><b style="font-size:'+(big?bimBdsPx(4):fs)+'px">'+bimClbE(f[1]||'-')+'</b></div>';};
+    if(n.st==='us')h='<div class="a3d-clb-dtbs">'+F.map(function(f,j){return c(f,j===0);}).join('')+'</div>';
+    else h='<div class="a3d-clb-dtbi">'+c(F[0],true)+'<div class="a3d-clb-dtbr">'+c(F[1])+c(F[2])+'</div><div class="a3d-clb-dtbr">'+c(F[3])+c(F[4])+c(F[5])+'</div>'+
+      '<div class="a3d-clb-dtbr">'+c(F[6])+c(F[7])+c(F[8])+'</div></div>';
+    return '<div'+bimBdsAttr(n,'a3d-clb-dtb',ctx)+' style="'+bimBdsPos(bimBobBox(n),ox,oy)+'border:'+bimBdsPx(0.5)+'px solid #0b0b0b;'+bimBdsComp(n,ctx)+'">'+h+'</div>';
+  }
   /* ---- the whole board ---- */
   function bimBdsFigBoxer(figs){
     var M={};
@@ -159,8 +182,13 @@ import { A3D_BIMG, bimBimgMissing, bimBimgUrl } from './board-images.js';
   }
   /* a board with objects: the arranged figures' section, drawn from them. ctx: {edit, narrow, caps, no} */
   function bimBdsHtml(B,figs,ctx){
-    var L=B.objs||[],ov=ctx.edit?bimBrdOverlaps(figs):{k:{}},no=0,H=0,fb,h,body='';
-    ctx.figBox=fb=bimBdsFigBoxer(figs);ctx.figs={};ctx.pres=bimBdsPres();
+    var L=B.objs||[],ov=ctx.edit?bimBrdOverlaps(figs):{k:{}},no=0,H=0,fb,h,body='',Wn;
+    if(ctx.narrow&&B.lay){   /* __acad3dV174b: on a phone a stack's row is shown as a column, in reading order (D11) */
+      Wn={objs:JSON.parse(JSON.stringify(L)),figs:JSON.parse(JSON.stringify(figs)),lay:B.lay};
+      bimBobLayApply(Wn,bimBdsFigBoxer(Wn.figs),bimBobFigMover(Wn.figs),true);
+      L=Wn.objs;figs=Wn.figs;
+    }
+    ctx.figBox=fb=bimBdsFigBoxer(figs);ctx.figs={};ctx.pres=bimBdsPres();ctx.allObjs=L;
     /* figures are numbered in reading order, as the bands number them */
     bimBrdBands(figs).forEach(function(D){D.f.forEach(function(F){
       var src=F.f==='text'?null:bimFigSrc(ctx,F.f,F.o||{});
@@ -169,6 +197,8 @@ import { A3D_BIMG, bimBimgMissing, bimBimgUrl } from './board-images.js';
     });});
     ctx.no=no;
     L.forEach(function(n){var b=bimBobBox(n,fb);if(b&&b.y+b.h>H)H=b.y+b.h;});
+    var pg=bimPgBoardPage(B);   /* __acad3dV174c: a board with a page is that page */
+    if(pg)H=pg.h;
     bimBobRuns(bimBdsShown(L,ctx)).forEach(function(R){
       var inner='',b,m=R.mask;
       if(!m){R.items.forEach(function(n){body+=bimBdsNode(n,0,0,ctx);});return;}
@@ -176,7 +206,8 @@ import { A3D_BIMG, bimBimgMissing, bimBimgUrl } from './board-images.js';
       R.items.forEach(function(n){inner+=bimBdsNode(n,b.x,b.y,ctx);});
       body+='<div class="a3d-clb-dmask" data-bdmask="'+m.id+'" style="'+bimBdsPos(b,0,0)+bimBdsMaskCss(m)+'">'+inner+'</div>';
     });
-    h='<section class="a3d-clb-arr a3d-clb-dsn'+(ctx.edit?' edit':'')+'" aria-label="The board" style="height:'+bimBdsPx(H+(ctx.edit?60:0))+'px">';
+    h='<section class="a3d-clb-arr a3d-clb-dsn'+(ctx.edit?' edit':'')+(pg?' pg':'')+'" aria-label="'+(pg?bimClbE('The board\'s page, '+pg.label):'The board')+'" style="height:'+bimBdsPx(H+(ctx.edit&&!pg?60:0))+'px'+
+      (pg?';width:'+bimBdsPx(pg.w)+'px" data-w="'+bimBdsPx(pg.w):'')+'">';
     if(ctx.edit)h+='<div class="a3d-clb-arrgrid'+(A3D_SNAP.grid?' on':'')+'" aria-hidden="true" style="height:100%"></div>';
     h+='<div class="a3d-clb-dcv">'+body+'</div>';
     if(ctx.edit)h+='<div class="a3d-clb-dsel" aria-hidden="true"></div>';
@@ -184,4 +215,4 @@ import { A3D_BIMG, bimBimgMissing, bimBimgUrl } from './board-images.js';
   }
   /* an image that arrives from the database: the open board drawn again with it, and the thumbnails */
   A3D_BIMG.redraw=function(){bimClbRefresh();};
-export { bimBdsFigBoxer, bimBdsHtml, bimBdsPos, bimBdsPres, bimBdsPx };
+export { bimBdsAttr, bimBdsComp, bimBdsFigBoxer, bimBdsHtml, bimBdsPos, bimBdsPres, bimBdsPx };

@@ -15,6 +15,7 @@ import { A3D_PAGES, bimPagesRefresh } from './pages-display.js';
 import { bimSheetOnScreen, bimShowModel } from './present.js';
 import { bimSheetVp } from './viewports.js';
 import { bimRenderLayoutTabs } from './layout-tabs.js';
+import { bimPgEnsureSheetSize } from './page-sizes.js';
 import { refreshBrowser } from './presentation-panel.js';
 import { a3dToast } from '../bim/csg-booleans.js';
 
@@ -38,10 +39,10 @@ import { a3dToast } from '../bim/csg-booleans.js';
        AutoCAD page setup and a Revit title block lay them out. The portrait sizes stay for the
        sheets already made with them. */
     'ANSI-B-L':{label:'ANSI B landscape (17x11 in)',w:431.8,h:279.4},
-    'ANSI-D-L':{label:'ANSI D landscape (36x24 in)',w:914.4,h:609.6},
+    'ANSI-D-L':{label:'Arch D landscape (36x24 in)',w:914.4,h:609.6},   /* __acad3dV174c: 24 x 36 in is Arch D (ANSI D is 22 x 34); the key stays (D12) */
     'A3-L':{label:'A3 landscape (420x297 mm)',w:420,h:297},
     'A1-L':{label:'A1 landscape (841x594 mm)',w:841,h:594},
-    'ANSI-D':{label:'ANSI D (24x36 in)',w:609.6,h:914.4},
+    'ANSI-D':{label:'Arch D (24x36 in)',w:609.6,h:914.4},
     'A4':{label:'A4 (210x297 mm)',w:210,h:297},
     'A3':{label:'A3 (297x420 mm)',w:297,h:420},
     'A1':{label:'A1 (594x841 mm)',w:594,h:841},
@@ -61,6 +62,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
   var A3D_SHEET_SCRATCH=null;
 
   function bimNewSheet(number,name,sizeKey){
+    bimPgEnsureSheetSize(sizeKey);   /* __acad3dV174c: a size from the gallery */
     var sz=SHEET_SIZES[sizeKey]||SHEET_SIZES['ANSI-B'];
     return {id:'sheet-'+Date.now().toString(36)+'-'+Math.floor(Math.random()*1e6),
       number:number||bimNextSheetNumber(),name:name||'Untitled',   /* __acad3dV116 */

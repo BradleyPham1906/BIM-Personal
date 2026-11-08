@@ -15,6 +15,7 @@ import {
 } from './board-figures.js';
 import { bimBobSync } from './board-objects.js';
 import { bimBdeDrawMenu, bimBdeEsc, bimBdeWire } from './board-design-edit.js';
+import { bimBdePageDlg } from './board-design-tools.js';
 import { bimPresPanelRefresh } from './presentation-panel.js';
 import { a3dToast } from '../bim/csg-booleans.js';
 
@@ -467,6 +468,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
     else if(s==='done')bimBrdEdit(false);
     else if(s==='add')bimBrdCatalogue();
     else if(s==='draw'){r=a.getBoundingClientRect();bimBdeDrawMenu(r.left,r.bottom+4);}   /* __acad3dV174a */
+    else if(s==='page')bimBdePageDlg();   /* __acad3dV174c */
     else if(s==='addnew'){if(!A3D_CLB.edit){A3D_CLB.edit=true;bimClbOpen();}bimBrdCatalogue();}
     else if(s==='reset')bimBrdReset();
   }
@@ -493,7 +495,8 @@ import { a3dToast } from '../bim/csg-booleans.js';
     bimBdeWire(b);   /* __acad3dV174a */
   }
 export {
-  A3D_BRD, bimBrdAddFig, bimBrdCatalogue, bimBrdDlgClose, bimBrdDup, bimBrdDupBoard, bimBrdEdit, bimBrdEsc,
-  bimBrdFit, bimBrdMenu, bimBrdNewUi, bimBrdNudge, bimBrdOptsDlg, bimBrdOptsSet, bimBrdRedraw, bimBrdRemove,
-  bimBrdRename, bimBrdReset, bimBrdRestored, bimBrdSnap, bimBrdSnapSync, bimBrdSwap, bimBrdWire, bimBrdWorking
+  A3D_BRD, bimBrdAddFig, bimBrdCatalogue, bimBrdDlgClose, bimBrdDlgOpen, bimBrdDup, bimBrdDupBoard,
+  bimBrdEdit, bimBrdEsc, bimBrdFit, bimBrdMenu, bimBrdNewUi, bimBrdNudge, bimBrdOptsDlg, bimBrdOptsSet,
+  bimBrdRedraw, bimBrdRemove, bimBrdRename, bimBrdReset, bimBrdRestored, bimBrdSnap, bimBrdSnapSync,
+  bimBrdSwap, bimBrdWire, bimBrdWorking
 };

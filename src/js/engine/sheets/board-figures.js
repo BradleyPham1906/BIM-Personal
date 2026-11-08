@@ -6,7 +6,8 @@ import { BIM_LB_FIGS } from '../ladybug/figures.js';
 import { bimProjectLabel } from '../ui/project-tabs.js';
 import { bimBoardById, bimBoardHtmlFor, bimBoardName } from './boards.js';
 import { bimBrdWorking } from './board-edit.js';
-import { bimBobValid } from './board-objects.js';
+import { bimBobLayValid, bimBobValid } from './board-objects.js';
+import { bimPgBoardPage, bimPgValid } from './page-sizes.js';
 import { bimBdsHtml } from './board-design.js';
 
   /* ================= __acad3dV172b: a board's figures, arranged =================
@@ -101,6 +102,8 @@ import { bimBdsHtml } from './board-design.js';
       if(!r.figs)r.figs=[];
     }
     if(r.figs&&b&&Array.isArray(b.objs)){var T=bimBobValid(b.objs,r.figs);if(T)r.objs=T;}   /* __acad3dV174a: its objects, on the layers, when it has any */
+    if(r.objs&&b){var Ly=bimBobLayValid(b.lay);if(Ly)r.lay=Ly;}   /* __acad3dV174b: its stacks */
+    if(r.objs&&b){var Pg=bimPgValid(b.page);if(Pg)r.page=Pg;}   /* __acad3dV174c: its page */
     return r;
   }
   /* ---- the figures, read from the boards ---- */
@@ -266,6 +269,7 @@ import { bimBdsHtml } from './board-design.js';
       (c?'<input type="text" class="a3d-clb-name" data-brdname="1" maxlength="80" value="'+bimClbE(B.name||'')+'" aria-label="The board\'s name">':'')+
       '<button type="button" class="a3d-clb-btn" data-brd="add" aria-haspopup="dialog">Add a figure</button>'+
       '<button type="button" class="a3d-clb-btn" data-brd="draw" aria-haspopup="menu" title="Draw a shape, text or an image on the current layer">Draw</button>'+   /* __acad3dV174a */
+      '<button type="button" class="a3d-clb-btn" data-brd="page" aria-haspopup="dialog" title="The board\'s page: a size from the gallery, and a title block">Page</button>'+   /* __acad3dV174c */
       (!c&&B.figs?'<button type="button" class="a3d-clb-btn" data-brd="reset" title="The board\'s own figures, in their own places">Reset</button>':'')+
       '<span class="a3d-clb-snaps a3d-clb-hide-s" role="group" aria-label="Snaps, as in drawing">'+
         '<button type="button" class="a3d-clb-btn" data-brdsnap="point" aria-pressed="'+!!A3D_SNAP.point+'" title="Edges catch other figures\' edges (F3)">Snap</button>'+
@@ -298,6 +302,7 @@ import { bimBdsHtml } from './board-design.js';
     if(extra.length)mid+=(edit?'<p class="a3d-clb-ehint">New since the board was arranged: Place puts a figure below the others.</p>':'')+
       '<section class="a3d-clb-grid a3d-clb-extra">'+extra.join('')+'</section>';
     if(edit)mid=bimBrdEditHint(figs)+mid;
+    if(B.objs&&bimPgBoardPage(B))raw=raw.replace('<div class="a3d-clb-page">','<div class="a3d-clb-page pgd">');   /* __acad3dV174c: a board with a page prints its page */
     i=raw.indexOf('<section class="a3d-clb-grid"');
     if(i>=0){
       j=raw.indexOf('</section><footer class="a3d-clb-notes">',i);
@@ -326,7 +331,7 @@ import { bimBdsHtml } from './board-design.js';
       '<button type="button" class="a3d-clb-btn" data-clb="tables" aria-pressed="'+A3D_CLB.tables+'">Tables</button>'+
       '<button type="button" class="a3d-clb-btn a3d-clb-hide-s" data-clb="print">Print</button>'+
       '<button type="button" class="a3d-clb-btn" data-clb="close" aria-label="Close the board">Close</button></div>'+
-      '<div class="a3d-clb-page"><header><div class="a3d-clb-kicker">Board · '+bimClbE(site)+'</div><h1 class="a3d-clb-h1">'+bimClbE(B.name||'Board')+'</h1>'+
+      '<div class="a3d-clb-page'+(B.objs&&bimPgBoardPage(B)?' pgd':'')+'"><header><div class="a3d-clb-kicker">Board · '+bimClbE(site)+'</div><h1 class="a3d-clb-h1">'+bimClbE(B.name||'Board')+'</h1>'+
       '<p class="a3d-clb-sub">'+bimClbE(figs.length?(ctx.no+' figure'+(ctx.no===1?'':'s')+(kinds.length?' from '+kinds.map(function(k){return bimBoardName(k);}).join(', '):'')):(has?'A designed board':'No figures yet'))+'</p></header>'+
       (edit?bimBrdEditHint(figs):'')+
       (has?arr:'<div class="a3d-clb-empty">This board has no figures yet. '+(edit?'Add a figure puts the first one on it.':'Edit, then Add a figure: any analysis the project has, from any board.')+
@@ -342,7 +347,7 @@ import { bimBdsHtml } from './board-design.js';
       if(!p)continue;
       cs=(p.ownerDocument.defaultView||window).getComputedStyle(p);
       w=p.clientWidth-(parseFloat(cs.paddingLeft)||0)-(parseFloat(cs.paddingRight)||0);
-      z=w>0?Math.min(1,w/BIM_BRD_W0):1;
+      z=w>0?Math.min(1,w/(parseFloat(A[i].getAttribute('data-w'))||BIM_BRD_W0)):1;   /* __acad3dV174c: a board's page, at its own width */
       A[i].style.setProperty('--z',z.toFixed(5));
     }
   }

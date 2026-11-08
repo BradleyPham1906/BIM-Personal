@@ -390,5 +390,5 @@ import { a3dToast, objById } from '../bim/csg-booleans.js';
   }
 export {
   bimLayersPanelRefresh, bimLyDataRowHtml, bimLyResRowHtml, bimLySecHidden, bimLySecVisible,
-  bimLySectionsHtml, bimWireLayersPanel, refreshLayers
+  bimLySectionsHtml, bimResSwatch, bimWireLayersPanel, refreshLayers
 };

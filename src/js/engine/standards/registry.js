@@ -486,7 +486,32 @@ import { a3dToast } from '../bim/csg-booleans.js';
         src:{t:'American Institute of Steel Construction',w:'not read',u:'https://www.aisc.org/publications/steel-standards/',lv:'U',read:'2026-10-18'},v:[]}]},
     {id:'faa.ac150_5300_13',title:'FAA Advisory Circular 150/5300-13, Airport Design',pub:'Federal Aviation Administration',kind:'standard',area:'Aviation',cat:true,access:'free',
       eds:[{id:'faa.ac150_5300_13b.c1',name:'AC 150/5300-13B, Airport Design, Change 1 (16 August 2024)',pub:'2024-08-16',st:'current',where:'United States',adopt:[{at:'us',from:'2024-08-16'}],
-        src:{t:'FAA, the advisory circular\'s document page',w:'number 150/5300-13B, Change 1, status active, issued 2024-08-16',u:'https://www.faa.gov/airports/resources/advisory_circulars/index.cfm/go/document.current/documentNumber/150_5300-13',lv:'P',read:'2026-10-18'},v:[]}]}];
+        src:{t:'FAA, the advisory circular\'s document page',w:'number 150/5300-13B, Change 1, status active, issued 2024-08-16',u:'https://www.faa.gov/airports/resources/advisory_circulars/index.cfm/go/document.current/documentNumber/150_5300-13',lv:'P',read:'2026-10-18'},v:[]}]},
+    /* ---- __acad3dV174c: drawing sheets (docs/research/research-presentation-boards.md, 4.5, 5.5, D12 to D14) ---- */
+    {id:'paper.iso216',title:'Paper sizes: the ISO A series',pub:'ISO',kind:'standard',area:'Drawing sheets',use:'New Layout\'s page gallery: sheets and boards',anywhere:true,
+      eds:[{id:'paper.iso216.2007',name:'ISO 216:2007',pub:'2007',st:'current',where:'International',adopt:[{at:'*',from:'2007'}],
+        src:{t:'ISO 216:2007, Writing paper and certain classes of printed matter: trimmed sizes, A and B series',w:'Table 1, the A series, as published (a table, not the halving rule rounded: 12 of 22 sizes come out wrong that way)',u:'https://www.iso.org/standard/36631.html',lv:'P',read:'2026-11-08'},
+        v:[{n:'A0',t:1,v:[841,1189],u:'mm',say:'A0, its short side and its long side'},{n:'A1',t:1,v:[594,841],u:'mm',say:'A1'},{n:'A2',t:1,v:[420,594],u:'mm',say:'A2'},
+          {n:'A3',t:1,v:[297,420],u:'mm',say:'A3'},{n:'A4',t:1,v:[210,297],u:'mm',say:'A4'}]}]},
+    {id:'paper.ansi',title:'Paper sizes: ANSI A to E',pub:'ASME',kind:'standard',area:'Drawing sheets',use:'New Layout\'s page gallery: sheets and boards',anywhere:true,
+      eds:[{id:'paper.ansi.y14.1.2020',name:'ASME Y14.1-2020',pub:'2020',st:'current',where:'United States',adopt:[{at:'*',from:'2020'}],
+        src:{t:'ASME Y14.1-2020, Decimal inch drawing sheet size and format (sold: two independent copies of its table agree)',w:'the sheet sizes, in inches, converted exactly at 25.4 mm',u:'https://www.asme.org/codes-standards/find-codes-standards/y14-1-decimal-inch-drawing-sheet-size-format',lv:'S',read:'2026-11-08'},
+        v:[{n:'A',t:1,v:[215.9,279.4],u:'mm',say:'ANSI A, 8.5 by 11 in'},{n:'B',t:1,v:[279.4,431.8],u:'mm',say:'ANSI B, 11 by 17 in'},{n:'C',t:1,v:[431.8,558.8],u:'mm',say:'ANSI C, 17 by 22 in'},
+          {n:'D',t:1,v:[558.8,863.6],u:'mm',say:'ANSI D, 22 by 34 in'},{n:'E',t:1,v:[863.6,1117.6],u:'mm',say:'ANSI E, 34 by 44 in'}]}]},
+    {id:'paper.arch',title:'Paper sizes: Architectural A to E1',pub:'US practice',kind:'standard',area:'Drawing sheets',use:'New Layout\'s page gallery: sheets and boards',anywhere:true,
+      eds:[{id:'paper.arch.1',name:'The Architectural sizes (in US practice; which document defines them is open)',pub:'',st:'current',where:'United States',adopt:[{at:'*'}],
+        src:{t:'Two independent copies agree (QGIS\'s page registry, read as text, and the sizes in use); ASME Y14.1 or the NCS may define them',w:'the sizes in inches, converted exactly',u:'https://github.com/qgis/QGIS/blob/master/src/core/layout/qgspagesizeregistry.cpp',lv:'S',read:'2026-11-08'},
+        v:[{n:'A',t:1,v:[228.6,304.8],u:'mm',say:'Arch A, 9 by 12 in'},{n:'B',t:1,v:[304.8,457.2],u:'mm',say:'Arch B, 12 by 18 in'},{n:'C',t:1,v:[457.2,609.6],u:'mm',say:'Arch C, 18 by 24 in'},
+          {n:'D',t:1,v:[609.6,914.4],u:'mm',say:'Arch D, 24 by 36 in'},{n:'E1',t:1,v:[762,1066.8],u:'mm',say:'Arch E1, 30 by 42 in'},{n:'E',t:1,v:[914.4,1219.2],u:'mm',say:'Arch E, 36 by 48 in'}]}]},
+    {id:'drawing.iso5457',title:'Technical drawings: the drawing sheet\'s frame',pub:'ISO',kind:'standard',area:'Drawing sheets',use:'A board\'s ISO frame and title block',anywhere:true,
+      eds:[{id:'drawing.iso5457.1999',name:'ISO 5457:1999 (with Amd 1:2010)',pub:'1999',st:'current',where:'International',adopt:[{at:'*',from:'1999'}],
+        src:{t:'ISO 5457:1999, Technical product documentation: sizes and layout of drawing sheets (the amendment\'s content not read)',w:'the borders, the frame line, the title block\'s place, and the formats in each orientation',u:'https://www.iso.org/standard/29017.html',lv:'P',read:'2026-11-08'},
+        v:[{n:'margin_left',v:20,u:'mm',say:'the border on the filing side, left'},{n:'margin',v:10,u:'mm',say:'the border on the other three sides'},
+          {n:'frame',v:0.7,u:'mm',say:'the frame line\'s width'},{n:'grid',v:50,u:'mm',say:'the grid reference fields'}]}]},
+    {id:'drawing.iso7200',title:'Technical drawings: the title block',pub:'ISO',kind:'standard',area:'Drawing sheets',use:'A board\'s ISO title block',anywhere:true,
+      eds:[{id:'drawing.iso7200.2004',name:'ISO 7200:2004',pub:'2004',st:'current',where:'International',adopt:[{at:'*',from:'2004'}],
+        src:{t:'ISO 7200:2004, Data fields in title blocks and document headers, as IS 11665:2009 (identical) gives it',w:'the block\'s width, and its eight mandatory fields',u:'https://www.iso.org/standard/35446.html',lv:'P',read:'2026-11-08'},
+        v:[{n:'width',v:180,u:'mm',say:'the title block\'s width'}]}]}];
   var BIM_STD_LV={P:'read at its source',S:'from a dependable secondary source, the gap said',U:'not yet verified',A:'the app\'s own assumption'};
   var BIM_STD_HOW={adopted:'in force here',international:'international',chosen:'chosen for this project',outside:'applied outside its place',assumption:'the app\'s assumption',none:'none in force'};
   var BIM_STD_UNIT={min:[' minute',' minutes'],m:[' m',' m'],'m/min':[' m a minute',' m a minute'],'km/h':[' km/h',' km/h'],'%':['%','%'],'ug/m3':[' \u00b5g/m\u00b3',' \u00b5g/m\u00b3'],
