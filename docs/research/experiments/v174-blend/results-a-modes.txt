@@ -34,3 +34,30 @@ soft-light | willReadFrequently | opaque max 0.50 | mean 0.356 | >2: 0 | translu
 difference | default ctx | opaque max 0.00 | mean 0.000 | >2: 0 | translucent max 18.30 | mean 1.679 | >2: 2471 | pm max 2.71 | a max 0.94
    worst opaque: {"e":0,"b":[127,114,171,255],"s":[127,255,65,255],"got":[0,141,106,255],"want":[0,141,106]}
 difference | willReadFrequently | opaque max 0.00 | mean 0.000 | >2: 0 | translucent max 18.30 | mean 1.679 | >2: 2471 | pm max 2.71 | a max 0.94
+exclusion | default ctx | opaque max 1.99 | mean 1.061 | >2: 0 | translucent max 19.74 | mean 2.173 | >2: 3914 | pm max 2.83 | a max 0.94
+   worst opaque: {"e":1.99,"b":[1,219,126,255],"s":[1,156,63,255],"got":[0,107,125,255],"want":[1.99,107.05,126.74]}
+exclusion | willReadFrequently | opaque max 1.99 | mean 1.061 | >2: 0 | translucent max 19.74 | mean 2.173 | >2: 3914 | pm max 2.83 | a max 0.94
+hue | default ctx | opaque max 0.50 | mean 0.328 | >2: 0 | translucent max 4.78 | mean 0.697 | >2: 335 | pm max 2.55 | a max 0.50
+   worst opaque: {"e":0.5,"b":[1,255,60,255],"s":[143,128,128,255],"got":[255,115,115,255],"want":[255,115.5,115.5]}
+hue | willReadFrequently | opaque max 0.50 | mean 0.328 | >2: 0 | translucent max 4.78 | mean 0.697 | >2: 335 | pm max 2.55 | a max 0.50
+saturation | default ctx | opaque max 0.50 | mean 0.305 | >2: 0 | translucent max 8.11 | mean 0.690 | >2: 345 | pm max 8.11 | a max 0.50
+   worst opaque: {"e":0.5,"b":[38,92,92,255],"s":[127,90,129,255],"got":[48,88,88,255],"want":[48.5,87.5,87.5]}
+saturation | willReadFrequently | opaque max 0.50 | mean 0.305 | >2: 0 | translucent max 8.11 | mean 0.690 | >2: 345 | pm max 8.11 | a max 0.50
+color | default ctx | opaque max 0.50 | mean 0.281 | >2: 0 | translucent max 4.79 | mean 0.677 | >2: 344 | pm max 1.50 | a max 0.50
+   worst opaque: {"e":0.5,"b":[23,165,185,255],"s":[170,151,191,255],"got":[134,115,155,255],"want":[133.5,114.5,154.5]}
+color | willReadFrequently | opaque max 0.50 | mean 0.281 | >2: 0 | translucent max 4.79 | mean 0.677 | >2: 344 | pm max 1.50 | a max 0.50
+luminosity | default ctx | opaque max 0.50 | mean 0.283 | >2: 0 | translucent max 4.77 | mean 0.675 | >2: 322 | pm max 1.48 | a max 0.50
+   worst opaque: {"e":0.5,"b":[23,165,185,255],"s":[170,151,191,255],"got":[59,202,222,255],"want":[59.5,201.5,221.5]}
+luminosity | willReadFrequently | opaque max 0.50 | mean 0.283 | >2: 0 | translucent max 4.77 | mean 0.675 | >2: 322 | pm max 1.48 | a max 0.50
+
+Edge pairs (opaque):
+  overlay edge3 b=100,150,200 s=128,128,128 -> 100,150,200,255 (cpu 100,150,200,255) W3C 100,150,200
+  color-dodge edge0 b=0,0,0 s=255,255,255 -> 0,0,0,255 (cpu 0,0,0,255) W3C 0,0,0
+  color-burn edge1 b=255,255,255 s=0,0,0 -> 255,255,255,255 (cpu 255,255,255,255) W3C 255,255,255
+  hard-light edge3 b=100,150,200 s=128,128,128 -> 101,150,200,255 (cpu 101,150,200,255) W3C 101,150,200
+  soft-light edge2 b=64,64,64 s=200,200,200 -> 100,100,100,255 (cpu 100,100,100,255) W3C 100,100,100
+  hue edge4 b=128,128,128 s=255,0,0 -> 128,128,128,255 (cpu 128,128,128,255) W3C 128,128,128
+  hue edge5 b=255,0,0 s=0,0,255 -> 54,54,255,255 (cpu 54,54,255,255) W3C 54,54,255
+  saturation edge4 b=128,128,128 s=255,0,0 -> 128,128,128,255 (cpu 128,128,128,255) W3C 128,128,128
+  color edge4 b=128,128,128 s=255,0,0 -> 255,74,74,255 (cpu 255,74,74,255) W3C 255,74,74
+  luminosity edge5 b=255,0,0 s=0,0,255 -> 94,0,0,255 (cpu 94,0,0,255) W3C 94,0,0

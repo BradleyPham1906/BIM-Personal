@@ -73,7 +73,15 @@ function analyse(cases, back, res, mode) {
     }
     var ea = Math.abs(res[k + 3] - R.a * 255);
     g.n++; g.sum += e; if (e > g.max) g.max = e; if (e > 2) g.over2++;
-    if (g === st.tr) { if (epm > g.maxPm) g.maxPm = epm; if (ea > g.maxA) g.maxA = ea; }
+    if (g === st.tr) {
+      if (epm > g.maxPm) {
+        g.maxPm = epm;
+        st.worstTr = { epm: +epm.toFixed(2), b: [back[k], back[k + 1], back[k + 2], back[k + 3]], s: s,
+          got: [res[k], res[k + 1], res[k + 2], res[k + 3]],
+          want: R.c.map(function (v) { return +(v * 255).toFixed(2); }).concat([+(R.a * 255).toFixed(2)]) };
+      }
+      if (ea > g.maxA) g.maxA = ea;
+    }
     if (g === st.opq && (!st.worst || e > st.worst.e)) {
       st.worst = { e: +e.toFixed(2), b: [back[k], back[k + 1], back[k + 2], back[k + 3]], s: s,
         got: [res[k], res[k + 1], res[k + 2], res[k + 3]], want: R.c.map(function (v) { return +(v * 255).toFixed(2); }) };
@@ -88,8 +96,10 @@ function analyse(cases, back, res, mode) {
   console.log('cells per mode: ' + SIZE * SIZE + ' (half opaque, half with alpha in ' + ALPHAS.join('/') + ')');
   console.log('error = |canvas - W3C reference| in 8-bit units, unpremultiplied colour; pm = premultiplied colour; a = alpha');
   var cases = makeCases(17401), edges = [];
+  var only = process.env.MODES ? process.env.MODES.split(',') : null;
   for (var m = 0; m < W3C.MODES.length; m++) {
     var mode = W3C.MODES[m];
+    if (only && only.indexOf(mode) < 0) continue;
     var r = await page.evaluate(pageDraw, { size: SIZE, cases: cases, mode: mode });
     ['gpu', 'cpu'].forEach(function (path) {
       var st = analyse(cases, r[path].back, r[path].res, mode);
@@ -98,6 +108,7 @@ function analyse(cases, back, res, mode) {
         'translucent max ' + st.tr.max.toFixed(2), 'mean ' + (st.tr.sum / st.tr.n).toFixed(3), '>2: ' + st.tr.over2,
         'pm max ' + st.tr.maxPm.toFixed(2), 'a max ' + st.tr.maxA.toFixed(2)].join(' | '));
       if (path === 'gpu') console.log('   worst opaque: ' + JSON.stringify(st.worst));
+      if (path === 'gpu') console.log('   worst translucent (premultiplied): ' + JSON.stringify(st.worstTr));
     });
     for (var e = 0; e < 6; e++) {
       edges.push(mode + ' edge' + e + ' b=' + cases[e].b.slice(0, 3) + ' s=' + cases[e].s.slice(0, 3) + ' -> ' +
