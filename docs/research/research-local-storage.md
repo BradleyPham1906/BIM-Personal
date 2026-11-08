@@ -1337,3 +1337,217 @@ passes by; the log's entry "Storage B (V172g)" has the detail. The browser suite
 | K11 | Open implementations | browser-fs-access @686165d; excalidraw @701b901; tldraw @547f507; drawio @c72c9a9; vscode @17c503e; detectIncognito @04d0412 | As listed in the prior-art note | P |
 | K12 | Specs and browsers note; prior-art note | [v172g-specs-and-browsers.md](research-local-storage/v172g-specs-and-browsers.md); [v172g-prior-art.md](research-local-storage/v172g-prior-art.md) | Written 2026-11-07 by two research agents | (the sources above) |
 | K13 | Experiments e16-e19 | [experiments/local-storage/](experiments/local-storage/) | Run 2026-11-07, Chromium 153 | P (measured, one engine) |
+
+## 15. V172h: installable and offline (research, started 2026-11-07)
+
+**Status: research done 2026-11-08, independent check passed, the owner's decisions given (15.11): option C.** Parts 1 to 12 decided that the app should be installable and work offline on Pages (D6),
+and what that takes in outline: a manifest, icons, and an ES5 service worker at `/BIM-Personal/sw.js`. This part
+answers what the code depends on that those parts left open or did not ask.
+
+*Numbering (2026-11-08):* this research was written beside V172g's as "part 14" with hypotheses H29 to H41; V172g
+merged first with its own part 14 and H29 to H39, so this is part 15 and its hypotheses are H40 to H52 (each old number
+plus 11), and its experiments, kept in `experiments/v172h-offline/`, are cited as v172h-e01 to v172h-e07. The side notes
+and scripts use the same numbers.
+
+### 15.1 The question and the hypotheses
+
+**The question.** How should the Pages app be made installable and usable offline so that (a) after one online visit
+the app opens and works with no network, its projects read from IndexedDB, in Chrome/Edge, Safari (macOS Dock, iOS and
+iPadOS Home Screen) and Firefox; (b) a new build reaches every user without ever replacing the code under a page that
+has unsaved work, and without a user running an old build for long; (c) nothing the worker does can lose, hide or
+duplicate a project, or interfere with V172f's tab locks and the database's schema version; and (d) the one-file
+`file://` build is unchanged? A good answer decides the manifest's members and icons, what the worker caches and
+when, its strategy per kind of request, how it is versioned and updated, what the page says about it, what happens
+to the 16 MB Ladybug runtime and to third-party requests, and how all of it is tested.
+
+What the app has now (read 2026-11-07; part 15.7 has the detail): `tools/build_app.py` `write_site()` writes
+`index.html` and `app/app.css`, `app/shell.js`, `app/openskp.js`, `app/engine.js`, each named in the page with
+`?v=<first 12 hex of its SHA-256>`, so the file names do not change between builds, only the query; Pages answers
+`index.html` with `cache-control: max-age=600` and an ETag; `/BIM-Personal/sw.js` is 404; no manifest, no icon, no
+`theme-color`, no `apple-touch-icon` anywhere in `src/`; the Ladybug runtime (16 MB, `runtime/`) is fetched by Pyodide in a
+dedicated Web Worker from the page's own folder plus `runtime/` over http(s), and from the absolute Pages address only
+from `file://` or a `v/` build (`ladybug/runtime.js` `bimLbBase()`); twelve engine files call `fetch(` or
+`XMLHttpRequest` (`grep -rln` over `src/js/engine`, 2026-11-07), among them those that reach third-party hosts (tiles,
+Overpass, Open-Meteo, the Census, FEMA and others); `tools/build_site.py` keeps no `v/` builds since 2026-11-07.
+
+| # | Hypothesis (falsifiable) | Outcome | Evidence | Level |
+|---|---|---|---|---|
+| H40 | A worker at `/BIM-Personal/sw.js` controls `/BIM-Personal/` and every path under it, and no other Pages project of the account | **Held**: controls `/BIM-Personal/`, `docs/`, `v/x/`, not `/Other/` or `/BIM-Personalx/`; `scope:"/"` refused (SecurityError), 3 of 3 | SW spec Update algorithm; v172h-e01 | P |
+| H41 | Pages cannot send `Service-Worker-Allowed` or any custom header, and serves `sw.js` with a JavaScript MIME type | **Held**: no way to set headers on Pages; `.js` served as JavaScript, `.webmanifest` as `application/manifest+json`; no `Service-Worker-Allowed` | GitHub Docs @8cd1075; live headers | P |
+| H42 | The `?v=` query names are usable as cache keys: the Cache API matches the full URL with its query by default, so a build's four files can be precached by the exact URLs the page asks for, and an old build's entries found and deleted | **Held**: exact `?v=` URLs cached; a match without the query or with another hash misses; the old build's cache deleted on activate, 3 of 3 | Cache API spec; v172h-e02 | P |
+| H43 | After one online visit, the app opens offline (Chromium's offline emulation), reads its projects from IndexedDB and saves, with no page error but the third-party fetches' own | **Held**: opened offline (emulated and with the server stopped), project read back, an edit saved, 0 errors, 5 of 5; boot makes no third-party request. Without a worker it fails once the 600 s HTTP cache is gone | v172h-e03 | P |
+| H44 | A new worker left waiting (no `skipWaiting()`) is not activated by reloading one tab while another tab of the app is open, and is activated when every tab has closed | **Held, stronger**: no reload activates the waiting worker, even with one tab; it activates when the last tab of the old build closes or leaves; `updatefound` about 1.55 s after navigation, 5 of 5 | SW spec; v172h-e04 | P |
+| H45 | A page can hold a waiting worker back while it has unsaved work and let it in after, by messaging it, without a second reload loop | **Partly**: hold-while-unsaved, one reload and no loop work in the asking tab; but `skipWaiting()` switches every tab, another tab with unsaved work included, and the old cache is deleted under it, 5 of 5 | v172h-e04 | P |
+| H46 | The browser checks `sw.js` for an update on every navigation and at most every 24 hours, ignoring Pages' `max-age=600` (`updateViaCache` "imports" by default) | **Held, restated**: `sw.js` is revalidated on every in-scope navigation (25 of 25, past `max-age=600`); the 24 h rule only adds checks; `updateViaCache:"all"` gave 0 of 25 | SW spec; v172h-e04 | P |
+| H47 | Fetches made by a dedicated Web Worker the page created (Pyodide's) go through the page's service worker, so the runtime can be served from a cache offline | **Held**: fetches from a script worker and a `blob:` worker both go through the service worker, 3 of 3; the real Ladybug runtime started offline in about 2.5 s; spec and WPT agree for Chrome, Edge, Firefox, Safari desktop; iOS not tested | SW spec; WPT results; v172h-e05 | P (desktop) / U (iOS) |
+| H48 | The worker's caches are counted in the same origin quota as IndexedDB and are evicted with it (one storage bucket), so caching the app adds no eviction case of its own | **Held for counting** (usage 32 KB to 8.8 MB after the precache, 25 MB with the runtime); one bucket cleared together per the Storage Standard; eviction not testable here | Storage Standard; v172h-e02 | P for counting; S for eviction together (the Standard's text, not measured) |
+| H49 | Chrome's automatic install prompt (`beforeinstallprompt`) still needs a fetch handler in current Chromium (left open by part 10) | **Failed**: current Chromium's installability code has no service-worker or fetch-handler check; `beforeinstallprompt` fired with a manifest and no worker (full binary, profile on disk; not in the headless shell) | Chromium @dd4d83c; v172h-e06 | P |
+| H50 | iOS and iPadOS take the Home Screen icon from `apple-touch-icon` before the manifest's `icons`, and Safari ignores `purpose: maskable` | **Held**: `apple-touch-icon` wins on iOS; manifest icons used only with purpose `any` or none | WebKit posts (15.4, 16.4); BCD | P |
+| H51 | The app's shell (V149's safe areas, V147's panels, V150's palette) needs no change in `display: standalone`; only `display-mode` media queries would tell it apart | open: the specifications give only the `display-mode` media query; needs a look on devices | standards note 3.x | U |
+| H52 | Caching OpenStreetMap's tiles or other third-party data for offline use is not allowed by their terms, so the worker must leave cross-origin requests to the network | **Held for tiles, failed for data**: OSM's and Esri's terms forbid offline tile prefetch; Open-Meteo's data is CC BY 4.0 and may be stored; Nominatim asks for its results to be cached | the hosts' policies | P |
+
+### 15.2 Method (planned)
+
+Four sides, researched in parallel as part 3 of the protocol asks, each with its own note in
+`research-local-storage/` and its search log:
+
+1. **Specifications and browsers** (`v172h-standards-and-browsers.md`): Service Workers (registration, scope, update,
+   lifecycle, clients, which workers a service worker controls), the Web App Manifest and its incubations (`id`,
+   `scope`, `icons` and `purpose`, `display_override`, `shortcuts`), the Storage Standard on caches and buckets, MDN's
+   browser-compat-data rows, Chromium's installability code, WebKit's and Firefox's documents and bugs, GitHub Pages'
+   own documents on headers and MIME types.
+2. **Prior art** (`v172h-prior-art.md`): open implementations read as text, licence first (Workbox's strategies and
+   its update recipes, Squoosh's hand-written worker, Excalidraw's and tldraw's PWA setup, draw.io's worker), and the
+   documents of apps that work offline (Figma, draw.io): what they cache, how they update, what they tell the user.
+3. **Experiments** (`docs/research/experiments/v172h-offline/`): measured in this container's Chromium over a local
+   server that mimics Pages' subpath and headers: H40, H42 to H48 and the cost of a precache on first visit.
+4. **The app's code** (part 15.7): what boot fetches, where unsaved work is known (V172g's marker, merged 2026-11-07),
+   V172f's locks and schema check, the guide pages, the runtime loader.
+
+Then the alternatives table, an independent second reader over every fact the code will use, and the owner's
+decisions asked together.
+
+### 15.3 Findings, by side
+
+The three sides' notes hold the evidence row by row; this is what the code depends on.
+
+- **Standards and browsers** (`research-local-storage/v172h-standards-and-browsers.md`): the hypotheses' outcomes above; the
+  manifest's `id` resolves against the origin, so it is written `/BIM-Personal/`; Firefox's taskbar apps start at the origin
+  root without a manifest; `sw.js` must be byte-different on every build or no user is ever updated, because the check
+  compares bytes.
+- **Prior art** (`research-local-storage/v172h-prior-art.md`; Workbox, Squoosh, Excalidraw, draw.io, tldraw at pinned
+  commits): the apps precache their build's file list keyed by content, at install, and delete old entries at activate;
+  cross-origin requests mostly go to the network (Excalidraw caches its cross-origin fonts); large optional parts are
+  cached on first use; most carry 192 and 512 px icons, some maskable ones, and a separate `apple-touch-icon`; every project keeps a way to remove its worker (a self-removing `sw.js`,
+  draw.io's `clear.html`). They disagree on the page (all three apps with a worker serve `index.html` cache-first) and on
+  taking over (Excalidraw and draw.io `skipWaiting()` at once, Excalidraw then reloading every tab; Squoosh and Workbox
+  wait and offer a reload). Faults on record: draw.io users left on an old release for months by failing installs; and a
+  guard in draw.io's worker against caching an HTML error page as a script ("would poison the shell"), a risk its code
+  names rather than a fault it records; vite-plugin-pwa warns its auto-reload loses unsaved form data; Create React App
+  made its worker opt-in because workers are "super sticky".
+- **Experiments** (`research-local-storage/v172h-experiments.md`, scripts in `experiments/v172h-offline/`; Chromium 153,
+  headless, a Pages stand-in): the outcomes above. The cost: the precache took about 330 ms and fetched the app a second
+  time (3.97 MB), because the experiment's worker asked with `cache: 'reload'`; reading the fresh HTTP cache instead is
+  likely to avoid most of it, not measured; a repeat load was slower with the worker (median 63 ms against 31) while the HTTP cache was fresh, and
+  faster once it was gone (50 ms and 442 bytes against 111 ms and 3.97 MB).
+
+**The finding that changes the plan:** `skipWaiting()` takes every tab, not only the one that asked (H45). "No update
+while there is unsaved work" therefore has to be decided across every open tab of the app, not in one.
+
+### 15.4 The alternatives compared
+
+Criteria, set before the comparison: (1) the app opens offline after one visit; (2) no tab ever runs code that differs
+from what its page loaded, and no edit is lost to an update; (3) a user reaches a new build within one visit or two;
+(4) ES5, no dependency, small; (5) a way back if the worker misbehaves.
+
+| Option | (1) Offline | (2) No mixed code, no lost edit | (3) Updates reach users | (4) Cost | (5) Way back |
+|---|---|---|---|---|---|
+| A. No worker; manifest and icons only | No (fails once the 600 s cache is gone, H43) | Yes | Yes | Smallest | Nothing to undo |
+| B. D6 as written: `index.html` network-first, `app/` cache-first, wait for every tab to close | Yes | **No**: a fresh `index.html` online can name bundles the old worker's cache lacks, and the page runs new code under the old worker; harmless only while the bundles are fetched from the network | Yes, at every online load | Small | Needs a self-removing `sw.js` |
+| C. App shell cache-first (`index.html` and the four bundles from one precache), update offered as "A new version is ready: Reload", `skipWaiting()` only when no tab has unsaved work (recommended) | Yes | Yes: page and bundles always come from the same build's cache | Yes: found at the next navigation, in about 1.5 s in Chromium over loopback (H44, H46), applied at the next reload once every tab is saved, or at once when every tab closes | Small: one worker file, a page-side update banner, a cross-tab ask | Self-removing `sw.js` kept ready |
+| D. As C with Workbox | Yes | Yes | Yes | A dependency built for a bundler, not ES5; draw.io dropped its runtime | Workbox's own |
+| E. Excalidraw's way: `skipWaiting()` at once and reload every tab | Yes | **No**: reloads tabs with unsaved work (vite-plugin-pwa's own warning) | Fastest | Small | Self-removing `sw.js` |
+
+**Recommendation: C.** It meets all five criteria; B fails (2), A fails (1), E fails (2), D fails (4). What would change it:
+evidence that a user can stay on an old build for long under C (draw.io's case came from installs that failed, which a
+precache of four files makes unlikely; the update banner shows the build each tab runs), or the owner preferring D6's
+network-first page as written (decision Q2).
+
+The worker in C, from the sides together: the cache named with the app's path and the build id
+(`BIM-Personal/app/<build>`); install precaches `./`, `index.html` and the four `?v=` URLs exactly (H42), refusing a
+non-2xx answer or an HTML body for a `.js` or `.css` (draw.io's guard); activate deletes only this app's older app caches;
+navigations to the app's own address (`/BIM-Personal/`, `index.html`; not `docs/` or `v/`, which are also in scope) answer `index.html` from the cache, then the network; `runtime/` cached on first use in a cache of its
+own (`BIM-Personal/runtime/<manifest hash>`), kept across builds, each wheel still checked by SHA-256 in the Ladybug worker
+(H47); `docs/`, `v/`, `canvas_v10.html` and every cross-origin request left to the network (H52: tiles must not be
+prefetched); `sw.js` carries the build id so it is byte-different each build (H46). The page registers it only over
+https (never `file://`, part 4.4), shows "Ready to work offline" once, and on a waiting worker shows "A new version is
+ready" with Reload and Later in every tab; Reload asks every tab of the app (BroadcastChannel, as V172f's take-over does)
+whether it has unsaved work, and messages the worker to `skipWaiting()` only when none has; `controllerchange` reloads
+each tab once.
+
+### 15.5 The experiments
+
+In `research-local-storage/v172h-experiments.md`, with raw numbers and run counts for each; summarised in 15.1 and 15.3.
+
+### 15.6 Edges
+
+| Edge | What happens | The rule |
+|---|---|---|
+| A tab with unsaved work when another tab presses Reload | `skipWaiting()` would switch it too (H45) | Ask every tab first; if any says unsaved, the banner says which and waits |
+| A tab left open for days | The waiting worker never activates (H44) | The banner stays; the build id is shown in About |
+| A build that raises the database's schema version | An old tab's connection gets `versionchange` (V172f) | Unchanged: V172f's own rule; the update banner comes first |
+| The 600 s HTTP cache | No effect on the update check (H46) | None needed |
+| An install interrupted or an error page | The precache must not keep it | Refuse non-2xx and HTML for scripts; the install fails and retries at the next navigation |
+| The runtime offline before any analysis was run online | Not in the cache | The analysis says it needs one online run first |
+| `file://` and the one-file build | No worker (part 4.4) | Unchanged |
+| Another Pages project of the account | Outside the scope (H40); shares the quota (H48) | Caches named with the app's path; only ours deleted |
+| `/BIM-Personal` without the slash | Pages answers 301, then the worker controls the page (v172h-e01) | None needed |
+
+### 15.7 What the app already has (read 2026-11-07)
+
+Parts 15.3 to 15.6 follow when the three researchers report; this is the app's side, read by hand.
+
+| What | Where | What it means for the worker |
+|---|---|---|
+| The site build names each bundle `app/<name>?v=<12 hex of its SHA-256>`; the names never change, only the query | `tools/build_app.py` `write_site()` lines 93-111 | The precache list is the four URLs exactly as the page writes them; the build must hand that list (and a build id) to `sw.js`, so `sw.js` is byte-different whenever any bundle is |
+| `tools/build_site.py` writes `index.html`, `app/`, `canvas_v10.html`, `docs/*.html`, `runtime/`, `.nojekyll`; no `v/` builds kept since 2026-11-07 | `tools/build_site.py` | `sw.js`, the manifest and the icons are three more outputs here; `v/` still needs a rule for when builds are kept again |
+| Pages answers `index.html` with `cache-control: max-age=600` and an ETag; `/BIM-Personal/sw.js` 404 | measured with curl, 2026-11-07 | H46 decides whether the 600 s matter to the update check |
+| No manifest, icon, `theme-color` or `apple-touch-icon` | grep of `src/` and the repository | Icons have to be made (no project photos or third-party marks; the repository is public) |
+| The Ladybug worker is made from a `blob:` URL of the engine's own function text (`new Worker(URL.createObjectURL(new Blob([txt])))`) | `ladybug/runtime.js:149-156` | H47 must be measured for a `blob:` worker in particular: if its fetches are not seen by the service worker, the runtime cannot come from a cache offline without a change to the loader |
+| The runtime's address is the page's own folder plus `runtime/` over http(s), and the Pages address from `file://` or a `v/` build | `ladybug/runtime.js` `bimLbBase()` | On Pages the runtime is same-origin, inside the worker's scope; each wheel is checked by SHA-256 in the worker, so a cached copy is checked the same way |
+| The database `BIM-Personal` at a schema version, `onversionchange` closes and tells the user | `core/idb-store.js:23-43` | A new build that raises the schema version must not reach one tab while another runs the old code: the same rule as the worker's waiting state (H44) |
+| A Web Lock per open project | `core/tab-lock.js:19` | Several tabs are normal; the update rule has to hold with two tabs open |
+| `A3D_SPILL.dirty` and the record in flight; the `pagehide` journal | `core/idb-store.js:104`, `core/project-store.js:50` | "Unsaved work" today means not yet in the database; V172g added "not saved to a file". D6's "no update while there is unsaved work" needs the owner's word on which of the two it means (a question for 15.11) |
+
+### 15.8 Risks and threats to validity
+
+- One engine measured: Chromium 153, headless. Firefox, Safari and iOS rely on the specifications, WPT's shared results
+  and WebKit's posts; H47 on iOS and H51 are not tested.
+- Eviction together (H48) is the Storage Standard's text, not a measurement.
+- The prior art's apps differ from ours (bundlers, hashed file names); their update choices are weighed, not copied.
+- The experiment's precache doubled the first visit's download (3.97 MB, from `cache: 'reload'`); the built worker should read the HTTP cache to avoid it, which is to be measured.
+- A worker is "sticky": a fault in it outlives a fix to the page. The self-removing `sw.js` must exist before the first one ships.
+
+### 15.9 What is still open (U)
+
+| Open | Why | How to close |
+|---|---|---|
+| H51: the shell in standalone on phones and tablets | No device here | A look on the owner's iPhone, iPad and a computer after the build |
+| H47 on iOS: a `blob:` worker's fetches through the service worker | No iOS here | The same look: an analysis offline in the Home Screen app |
+| Whether caches and IndexedDB are evicted together in practice | Not measurable here | Relied on the Storage Standard |
+| Firefox and Safari update timing | Not installed here | The specification's algorithm, which Chromium followed in every step measured |
+
+### 15.10 The independent check
+
+Done 2026-11-08 (`research-local-storage/independent-check-v172h.md`): every pinned source fetched again and found
+byte-identical to the first reader's copy, the cited lines re-read, live headers and Esri's `exportTilesAllowed` checked
+again, every experiment's script compared with its raw results. Of 32 source facts, 30 confirmed (every fact option C
+uses), 1 partly (draw.io's cached error page is a guard in its code, not a recorded fault), 1 not re-read (Create React
+App issue 2398, GitHub answered 403; back to U, nothing depends on it). All 10 measured claims are supported by their
+method and data. Its nine corrections to this part are made: the runtime's address, draw.io's guard, "every app", the
+cause of the second download, the 1.5 s as loopback only, the navigations the page answers, "every step measured", the
+method behind "twelve files", and H48's level.
+
+### 15.11 The owner's decisions
+
+Asked together on 2026-11-07, each with a recommended answer. **The owner's answer (2026-11-08): "proceed per your
+recommendation. i agree to all."** So: Q1 not yet in the database; Q2 the page cache-first (option C, which amends D6's
+network-first page); Q3 the runtime cached on first use; Q4 Reload asks every tab; Q5 our own icon for now; Q6 the guide
+and the one-file build online only; Q7 a self-removing `sw.js` kept ready.
+
+- **Q1. What "unsaved work" holds an update back.** Not yet in the database (`A3D_SPILL.dirty` or a record in flight), or
+  not yet saved to a file (V172g's marker)? An update only reloads the page; what is in the database survives a reload,
+  so only work not yet in the database can be lost. *Recommended:* not yet in the database. The file marker would hold
+  updates back for days.
+- **Q2. The page: cache-first (option C) or network-first (D6 as written)?** Network-first can run a new page under the
+  old worker (15.4, B) and needs a time limit on slow networks; all three apps with a worker serve it cache-first.
+  *Recommended:* cache-first, with the update banner.
+- **Q3. The Ladybug runtime offline:** cache it on the first analysis (16 MB, kept across builds), or leave it online only?
+  *Recommended:* cache on first use.
+- **Q4. The update across tabs:** Reload in one tab asks every tab and waits while any has unsaved work (15.4).
+  *Recommended:* yes.
+- **Q5. The icon:** a simple mark drawn by us as SVG and exported to 192, 512, maskable and 180 px (`apple-touch-icon`),
+  or a design the owner supplies? *Recommended:* ours for now, replaceable.
+- **Q6. The guide (`docs/`) and the one-file `canvas_v10.html` offline:** left to the network in V172h. *Recommended:* yes;
+  the guide can be added later.
+- **Q7. A way back:** a self-removing `sw.js` kept in `tools/`, published only if the worker misbehaves. *Recommended:* yes.
