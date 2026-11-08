@@ -324,7 +324,7 @@ headers", replacing ISO 7200:1984 ("Technical drawings - Title blocks"); confirm
   and latitude with the meridian and prime vertical radii at the site, after rotating by that angle: a
   local tangent plane, not a projected grid. True north is therefore the same direction everywhere on the
   plan, and there is no grid north. Two boards already draw a north arrow from it (`zoning-envelope.js` 778,
-  `access-board.js` 76). The CityJSON export alone writes UTM (`cityjson.js`, Krueger's third order series).
+  `access-board.js` 73). The CityJSON export alone writes UTM (`cityjson.js`, Krueger's third order series).
 - **e03** (section 6.3): convergence at Philadelphia (zone 18) is -0.105 degrees; at a zone's edge 1.93
   (40 N) to 2.95 degrees (80 N). The spherical formula with geodetic latitude stays within 0.05 arcsec of
   the ellipsoidal value in every case; QGIS's finite difference within 0.001 arcsec. Across 1 km east-west
