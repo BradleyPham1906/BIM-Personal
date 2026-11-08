@@ -7,7 +7,7 @@ import { bimLyListBy, bimLyListByHtml, bimLyListBySelect } from './list-by.js';
 import { bimLySectionsHtml } from './analysis-data-rows.js';
 import { bimEsc } from './layer-manager.js';
 import { bimCakeBtnHtml } from '../map/layer-cake.js';
-import { bimBdeLyCount, bimBdeLyRows } from '../sheets/board-design-props.js';
+import { bimBdeLyCount, bimBdeLyIndex, bimBdeLyRows } from '../sheets/board-design-props.js';
 import { ric } from '../ui/touch-input.js';
 
   /* ================= __acad3dV121: the Layers panel =================
@@ -123,14 +123,15 @@ import { ric } from '../ui/touch-input.js';
       '</span></div><input type="text" class="a3d-lysearch" data-lysearch="1" placeholder="Search layers and objects" value="'+
       bimEsc(A3D_LY.filter||'')+'" aria-label="Search layers and objects"><div class="a3d-lylist" data-lylist="1">';
     if(bimLyListBy()!=='order')return h+bimLyListByHtml(f)+'</div></div>';   /* __acad3dV173c: by source or by selection */
+    var BX=bimBdeLyIndex();   /* __acad3dV174a: the board's objects by layer, found once */
     function render(l,depth){
       if(seen[l.id]||(f&&!match(l)))return;
       seen[l.id]=1;
-      var kids=bimLayerKids(l),objs=con[l.id]||[],nb=bimBdeLyCount(l.id),open=f?true:!!A3D_LY.open[l.id];   /* __acad3dV174a: and the board's objects on it */
+      var kids=bimLayerKids(l),objs=con[l.id]||[],nb=bimBdeLyCount(l.id,BX),open=f?true:!!A3D_LY.open[l.id];   /* __acad3dV174a: and the board's objects on it */
       h+=bimLyRowHtml(l,depth,objs.length+nb,kids.length,open,sel,cur);
       if(!open)return;
       kids.forEach(function(c){render(c,depth+1);});
-      if(nb)h+=bimBdeLyRows(l.id,depth+1,hit(l.name)?'':f);
+      if(nb)h+=bimBdeLyRows(l.id,depth+1,hit(l.name)?'':f,BX);
       objs.forEach(function(o){if(!f||hit(o.name)||hit(l.name))h+=bimLyObjHtml(o,depth+1);});
     }
     A3D.layers.forEach(function(l){if(!bimLayerParentOk(l))render(l,0);});

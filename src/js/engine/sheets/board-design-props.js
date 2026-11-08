@@ -20,14 +20,22 @@ import { bimBdeArrange, bimBdeLaySet } from './board-design-tools.js';
      No panel of their own (the owner, 2026-11-08): a board's objects are listed in the Layers tab under the layer
      each is on, and the selected ones are shown in the Properties panel, as the model's objects are. Their Layer is
      chosen there, and their Transparency and Blend are ByLayer unless set (R2). */
+  /* the board's objects by layer, once for a render of the Layers tab: {W, by: {layer id: [objects]}}, or null when no
+     board is being drawn on */
+  function bimBdeLyIndex(){
+    var W,by={};
+    if(!bimBrdEditing())return null;
+    W=bimBdeWork();if(!W)return null;
+    W.objs.forEach(function(n){var ly=bimBobLayer(n);if(ly)(by[ly.id]||(by[ly.id]=[])).push(n);});
+    return {W:W,by:by};
+  }
   /* the rows of a layer's board objects, under its row in the Layers tab, while a board is drawn on */
-  function bimBdeLyRows(lyId,depth,f){
+  function bimBdeLyRows(lyId,depth,f,X){
     var W,h='';
-    if(!bimBrdEditing())return '';
-    W=bimBdeWork();if(!W)return '';
-    W.objs.forEach(function(n){
-      var ly=bimBobLayer(n),nm,sel;
-      if(!ly||ly.id!==lyId)return;
+    if(!X||!X.by[lyId])return '';
+    W=X.W;
+    X.by[lyId].forEach(function(n){
+      var nm,sel;
       nm=bimBdeName(n,W);
       if(f&&String(nm).toLowerCase().indexOf(f)<0)return;
       sel=A3D_BDE.sel.indexOf(n.id)>=0;
@@ -37,12 +45,7 @@ import { bimBdeArrange, bimBdeLaySet } from './board-design-tools.js';
     });
     return h;
   }
-  function bimBdeLyCount(lyId){
-    var W;
-    if(!bimBrdEditing())return 0;
-    W=bimBdeWork();if(!W)return 0;
-    return W.objs.filter(function(n){var ly=bimBobLayer(n);return ly&&ly.id===lyId;}).length;
-  }
+  function bimBdeLyCount(lyId,X){return X&&X.by[lyId]?X.by[lyId].length:0;}
   /* ---- the Properties panel ---- */
   function bimBdeOpt(v,t,cur){return '<option value="'+bimEsc(v)+'"'+(String(v)===String(cur)?' selected':'')+'>'+bimEsc(t)+'</option>';}
   function bimBdeNum(lab,name,v,step,min,max){
@@ -202,4 +205,4 @@ import { bimBdeArrange, bimBdeLaySet } from './board-design-tools.js';
       bimBdeSet(null,o);
     });
   }
-export { bimBdeLyCount, bimBdeLyRows, bimBdePropsHtml, bimBdePropsWire };
+export { bimBdeLyCount, bimBdeLyIndex, bimBdeLyRows, bimBdePropsHtml, bimBdePropsWire };

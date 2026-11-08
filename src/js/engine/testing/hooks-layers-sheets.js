@@ -173,6 +173,9 @@ import { a3drIcon, a3drLabel } from '../ui/discipline-tabs.js';
   window.__a3dBoardMenuDo=function(a,id){return bimBoardMenuDo(a,id);};
   window.__a3dBoardPrintHtml=function(k){return bimBoardPrintHtml(k);};
   window.__a3dPrintSetHtml=function(){return bimPrintSetHtml();};
+  window.__acad3dV174='boardobjs,onelayertable,layerblend,bylayer,presonly,layerorder,layermove,layerzero,masks,images,imgfile,lybo,props,draw,'+
+    'align,distribute,tidy,smartspacing,stack,stackphone,pagesizes,registry,gallery,boardpage,pageprint,tblockiso,tblockus,archd,'+
+    'mapframe,mapdata,mapcredit,legend,north,scalebar';
   /* __acad3dV174a: designing the open board, in Edit: add, act on the selection, set fields, select; the tree as kept */
   window.__a3dBoardDesign={add:function(k,o){return bimBdeAdd(k,o);},act:function(a,ids){return bimBdeDo(a,ids);},set:function(id,o){return bimBdeSet(id,o);},
     select:function(ids){bimBdeSelect(ids||[]);return A3D_BDE.sel.slice();},

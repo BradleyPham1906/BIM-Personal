@@ -16699,6 +16699,11 @@ parts, not one PR each (D20), because #82 is not merged and the owner's rule is 
   `tests/e2e/bim_phase174_boards_edge_check.mjs`, a fresh profile: 27 of 27, no console errors, no [BIM] warnings.
   It found and fixed: a map frame not centred on the model (Fit now pans to its centre). A map frame draws in about
   30 ms; a board with one redraws in about 10 ms.
+- **Phone pass** (390 x 844, touch, `tests/e2e/bim_phase174_boards_phone_check.mjs`): 7 of 7. It found and fixed: the
+  selection's outline and a stack's box drawn where the desktop layout puts them, not the phone's column.
+- After the review: the phase marker `window.__acad3dV174`; the Layers tab finds the board's objects by layer once
+  per render (it copied the board once per layer row); the toast names the layer an object was drawn on; ES5 checked
+  by grep over the new files (no arrow functions, let, const, template strings, includes, spread).
 - **Suites amended:** V121 (the manager's columns, with Blend), V167's reference (`tests/fixtures/standards_reference.py`:
   the five topics and their hosts). Not run: the full regression. Suites that may notice: V116 (New Sheet now a
   gallery; its Sheet Setup list is unchanged), V162 and V172b (board printing: unchanged for a board without a page).

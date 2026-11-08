@@ -3,7 +3,7 @@ import { A3D_SNAP, pushUndo } from '../drawing/plan-mode-sketch.js';
 import { bimLayerById, bimLayerEff, bimLayerZero } from '../layers/layer-rules.js';
 import { refreshLayers } from '../layers/analysis-data-rows.js';
 import { A3D_UNITS } from '../properties/palette.js';
-import { bimClbEl, bimClbOpen } from '../site-analysis/climate-board.js';
+import { A3D_CLB, bimClbEl, bimClbOpen } from '../site-analysis/climate-board.js';
 import { refreshProps } from '../site-analysis/panel.js';
 import { saveSoon } from '../bim/region-regenerate.js';
 import { bimLtMenuOpen } from './layout-tabs.js';
@@ -132,7 +132,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
     else return null;
     if(extra)for(f in extra)if(extra.hasOwnProperty(f))n[f]=extra[f];
     W.objs.push(n);
-    if(!bimBdeCommit(W,(bimBobKind(n.t)||['',kind])[1]+' drawn on layer '+(ly?ly.name:'')+': drag it into place',[id]))return null;
+    if(!bimBdeCommit(W,(bimBobKind(n.t)||['',kind])[1]+' drawn on layer '+(bimBobLayer(n)?bimBobLayer(n).name:'')+': drag it into place',[id]))return null;
     return id;
   }
   /* an image picked from the device: a new one, or (swap) the image of an image object */
@@ -358,6 +358,10 @@ import { a3dToast } from '../bim/csg-booleans.js';
   function bimBdeOverlay(d,W,live){
     var o=d&&d.querySelector('.a3d-clb-dsel'),S,h='',fb;
     if(!o)return;
+    if(A3D_CLB.narrow&&W.lay){   /* a phone shows a stack's row as a column: the outlines follow what is shown */
+      W={B:W.B,objs:JSON.parse(JSON.stringify(W.objs)),figs:JSON.parse(JSON.stringify(W.figs)),lay:W.lay};
+      bimBobLayApply(W,bimBdeFigBox(W),bimBobFigMover(W.figs),true);
+    }
     S=bimBdeSel(W);fb=bimBdeFigBox(W);
     S.forEach(function(x){
       var f=bimBobFind(W.objs,x),b=bimBobBox(f.n,fb),hd;
@@ -370,7 +374,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
         (hd?'<div class="a3d-clb-dhdl" data-bdh="se" title="Drag to size; Shift keeps its proportions" style="'+(f.n.t==='line'?'left:'+bimBdsPx(f.n.x+f.n.w-b.x)+'px;top:'+bimBdsPx(f.n.y+f.n.h-b.y)+'px':'right:0;bottom:0')+'"></div>':'')+'</div>';
     });
     /* __acad3dV174b: the stacks of the selection's layers, and the snaps caught */
-    var seen={},bx=bimBobLayApply({objs:JSON.parse(JSON.stringify(W.objs)),figs:W.figs,lay:W.lay},fb,null,false);
+    var seen={},bx=bimBobLayApply({objs:JSON.parse(JSON.stringify(W.objs)),figs:W.figs,lay:W.lay},fb,null,!!A3D_CLB.narrow);
     S.forEach(function(x){var ly=bimBobLayer(bimBobFind(W.objs,x).n);if(ly&&bx[ly.id]&&!seen[ly.id]){seen[ly.id]=1;h='<div class="a3d-clb-dstack" style="'+bimBdsPos(bx[ly.id],0,0)+'"></div>'+h;}});
     if(A3D_BDE.drag&&A3D_BDE.drag.guides)A3D_BDE.drag.guides.forEach(function(g){
       h+='<div class="a3d-clb-guide '+g[0]+(g[2]==='point'?'':' gap')+'" style="'+(g[0]==='x'?'left:'+bimBdsPx(g[1]):'top:'+bimBdsPx(g[1]))+'px"></div>';

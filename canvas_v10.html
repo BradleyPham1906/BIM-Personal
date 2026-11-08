@@ -17838,14 +17838,15 @@ try{
       '</span></div><input type="text" class="a3d-lysearch" data-lysearch="1" placeholder="Search layers and objects" value="'+
       bimEsc(A3D_LY.filter||'')+'" aria-label="Search layers and objects"><div class="a3d-lylist" data-lylist="1">';
     if(bimLyListBy()!=='order')return h+bimLyListByHtml(f)+'</div></div>';   /* __acad3dV173c: by source or by selection */
+    var BX=bimBdeLyIndex();   /* __acad3dV174a: the board's objects by layer, found once */
     function render(l,depth){
       if(seen[l.id]||(f&&!match(l)))return;
       seen[l.id]=1;
-      var kids=bimLayerKids(l),objs=con[l.id]||[],nb=bimBdeLyCount(l.id),open=f?true:!!A3D_LY.open[l.id];   /* __acad3dV174a: and the board's objects on it */
+      var kids=bimLayerKids(l),objs=con[l.id]||[],nb=bimBdeLyCount(l.id,BX),open=f?true:!!A3D_LY.open[l.id];   /* __acad3dV174a: and the board's objects on it */
       h+=bimLyRowHtml(l,depth,objs.length+nb,kids.length,open,sel,cur);
       if(!open)return;
       kids.forEach(function(c){render(c,depth+1);});
-      if(nb)h+=bimBdeLyRows(l.id,depth+1,hit(l.name)?'':f);
+      if(nb)h+=bimBdeLyRows(l.id,depth+1,hit(l.name)?'':f,BX);
       objs.forEach(function(o){if(!f||hit(o.name)||hit(l.name))h+=bimLyObjHtml(o,depth+1);});
     }
     A3D.layers.forEach(function(l){if(!bimLayerParentOk(l))render(l,0);});
@@ -59695,7 +59696,7 @@ try{
     else return null;
     if(extra)for(f in extra)if(extra.hasOwnProperty(f))n[f]=extra[f];
     W.objs.push(n);
-    if(!bimBdeCommit(W,(bimBobKind(n.t)||['',kind])[1]+' drawn on layer '+(ly?ly.name:'')+': drag it into place',[id]))return null;
+    if(!bimBdeCommit(W,(bimBobKind(n.t)||['',kind])[1]+' drawn on layer '+(bimBobLayer(n)?bimBobLayer(n).name:'')+': drag it into place',[id]))return null;
     return id;
   }
   /* an image picked from the device: a new one, or (swap) the image of an image object */
@@ -59921,6 +59922,10 @@ try{
   function bimBdeOverlay(d,W,live){
     var o=d&&d.querySelector('.a3d-clb-dsel'),S,h='',fb;
     if(!o)return;
+    if(A3D_CLB.narrow&&W.lay){   /* a phone shows a stack's row as a column: the outlines follow what is shown */
+      W={B:W.B,objs:JSON.parse(JSON.stringify(W.objs)),figs:JSON.parse(JSON.stringify(W.figs)),lay:W.lay};
+      bimBobLayApply(W,bimBdeFigBox(W),bimBobFigMover(W.figs),true);
+    }
     S=bimBdeSel(W);fb=bimBdeFigBox(W);
     S.forEach(function(x){
       var f=bimBobFind(W.objs,x),b=bimBobBox(f.n,fb),hd;
@@ -59933,7 +59938,7 @@ try{
         (hd?'<div class="a3d-clb-dhdl" data-bdh="se" title="Drag to size; Shift keeps its proportions" style="'+(f.n.t==='line'?'left:'+bimBdsPx(f.n.x+f.n.w-b.x)+'px;top:'+bimBdsPx(f.n.y+f.n.h-b.y)+'px':'right:0;bottom:0')+'"></div>':'')+'</div>';
     });
     /* __acad3dV174b: the stacks of the selection's layers, and the snaps caught */
-    var seen={},bx=bimBobLayApply({objs:JSON.parse(JSON.stringify(W.objs)),figs:W.figs,lay:W.lay},fb,null,false);
+    var seen={},bx=bimBobLayApply({objs:JSON.parse(JSON.stringify(W.objs)),figs:W.figs,lay:W.lay},fb,null,!!A3D_CLB.narrow);
     S.forEach(function(x){var ly=bimBobLayer(bimBobFind(W.objs,x).n);if(ly&&bx[ly.id]&&!seen[ly.id]){seen[ly.id]=1;h='<div class="a3d-clb-dstack" style="'+bimBdsPos(bx[ly.id],0,0)+'"></div>'+h;}});
     if(A3D_BDE.drag&&A3D_BDE.drag.guides)A3D_BDE.drag.guides.forEach(function(g){
       h+='<div class="a3d-clb-guide '+g[0]+(g[2]==='point'?'':' gap')+'" style="'+(g[0]==='x'?'left:'+bimBdsPx(g[1]):'top:'+bimBdsPx(g[1]))+'px"></div>';
@@ -60059,14 +60064,22 @@ try{
      No panel of their own (the owner, 2026-11-08): a board's objects are listed in the Layers tab under the layer
      each is on, and the selected ones are shown in the Properties panel, as the model's objects are. Their Layer is
      chosen there, and their Transparency and Blend are ByLayer unless set (R2). */
+  /* the board's objects by layer, once for a render of the Layers tab: {W, by: {layer id: [objects]}}, or null when no
+     board is being drawn on */
+  function bimBdeLyIndex(){
+    var W,by={};
+    if(!bimBrdEditing())return null;
+    W=bimBdeWork();if(!W)return null;
+    W.objs.forEach(function(n){var ly=bimBobLayer(n);if(ly)(by[ly.id]||(by[ly.id]=[])).push(n);});
+    return {W:W,by:by};
+  }
   /* the rows of a layer's board objects, under its row in the Layers tab, while a board is drawn on */
-  function bimBdeLyRows(lyId,depth,f){
+  function bimBdeLyRows(lyId,depth,f,X){
     var W,h='';
-    if(!bimBrdEditing())return '';
-    W=bimBdeWork();if(!W)return '';
-    W.objs.forEach(function(n){
-      var ly=bimBobLayer(n),nm,sel;
-      if(!ly||ly.id!==lyId)return;
+    if(!X||!X.by[lyId])return '';
+    W=X.W;
+    X.by[lyId].forEach(function(n){
+      var nm,sel;
       nm=bimBdeName(n,W);
       if(f&&String(nm).toLowerCase().indexOf(f)<0)return;
       sel=A3D_BDE.sel.indexOf(n.id)>=0;
@@ -60076,12 +60089,7 @@ try{
     });
     return h;
   }
-  function bimBdeLyCount(lyId){
-    var W;
-    if(!bimBrdEditing())return 0;
-    W=bimBdeWork();if(!W)return 0;
-    return W.objs.filter(function(n){var ly=bimBobLayer(n);return ly&&ly.id===lyId;}).length;
-  }
+  function bimBdeLyCount(lyId,X){return X&&X.by[lyId]?X.by[lyId].length:0;}
   /* ---- the Properties panel ---- */
   function bimBdeOpt(v,t,cur){return '<option value="'+bimEsc(v)+'"'+(String(v)===String(cur)?' selected':'')+'>'+bimEsc(t)+'</option>';}
   function bimBdeNum(lab,name,v,step,min,max){
@@ -65028,6 +65036,9 @@ try{
   window.__a3dBoardMenuDo=function(a,id){return bimBoardMenuDo(a,id);};
   window.__a3dBoardPrintHtml=function(k){return bimBoardPrintHtml(k);};
   window.__a3dPrintSetHtml=function(){return bimPrintSetHtml();};
+  window.__acad3dV174='boardobjs,onelayertable,layerblend,bylayer,presonly,layerorder,layermove,layerzero,masks,images,imgfile,lybo,props,draw,'+
+    'align,distribute,tidy,smartspacing,stack,stackphone,pagesizes,registry,gallery,boardpage,pageprint,tblockiso,tblockus,archd,'+
+    'mapframe,mapdata,mapcredit,legend,north,scalebar';
   /* __acad3dV174a: designing the open board, in Edit: add, act on the selection, set fields, select; the tree as kept */
   window.__a3dBoardDesign={add:function(k,o){return bimBdeAdd(k,o);},act:function(a,ids){return bimBdeDo(a,ids);},set:function(id,o){return bimBdeSet(id,o);},
     select:function(ids){bimBdeSelect(ids||[]);return A3D_BDE.sel.slice();},
