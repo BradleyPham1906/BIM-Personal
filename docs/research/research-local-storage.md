@@ -1013,7 +1013,7 @@ not yet been run (Rule #1).
 
 ## 14. V172h: installable and offline (research, started 2026-11-07)
 
-**Status: findings in; independent check and the owner's decisions to come.** Parts 1 to 12 decided that the app should be installable and work offline on Pages (D6),
+**Status: research done 2026-11-08, independent check passed; the owner's decisions to come (14.11).** Parts 1 to 12 decided that the app should be installable and work offline on Pages (D6),
 and what that takes in outline: a manifest, icons, and an ES5 service worker at `/BIM-Personal/sw.js`. This part
 answers what the code depends on that those parts left open or did not ask.
 
@@ -1032,10 +1032,11 @@ What the app has now (read 2026-11-07; part 14.7 has the detail): `tools/build_a
 `index.html` and `app/app.css`, `app/shell.js`, `app/openskp.js`, `app/engine.js`, each named in the page with
 `?v=<first 12 hex of its SHA-256>`, so the file names do not change between builds, only the query; Pages answers
 `index.html` with `cache-control: max-age=600` and an ETag; `/BIM-Personal/sw.js` is 404; no manifest, no icon, no
-`theme-color`, no `apple-touch-icon` anywhere in `src/`; the Ladybug runtime (16 MB, `runtime/`) is fetched from the
-absolute address `https://bradleypham1906.github.io/BIM-Personal/runtime/` (`ladybug/runtime.js:15`) by Pyodide in a
-dedicated Web Worker; twelve engine files fetch third-party hosts (tiles, Overpass, Open-Meteo, the Census, FEMA and
-others); `tools/build_site.py` keeps no `v/` builds since 2026-11-07.
+`theme-color`, no `apple-touch-icon` anywhere in `src/`; the Ladybug runtime (16 MB, `runtime/`) is fetched by Pyodide in a
+dedicated Web Worker from the page's own folder plus `runtime/` over http(s), and from the absolute Pages address only
+from `file://` or a `v/` build (`ladybug/runtime.js` `bimLbBase()`); twelve engine files call `fetch(` or
+`XMLHttpRequest` (`grep -rln` over `src/js/engine`, 2026-11-07), among them those that reach third-party hosts (tiles,
+Overpass, Open-Meteo, the Census, FEMA and others); `tools/build_site.py` keeps no `v/` builds since 2026-11-07.
 
 | # | Hypothesis (falsifiable) | Outcome | Evidence | Level |
 |---|---|---|---|---|
@@ -1047,7 +1048,7 @@ others); `tools/build_site.py` keeps no `v/` builds since 2026-11-07.
 | H34 | A page can hold a waiting worker back while it has unsaved work and let it in after, by messaging it, without a second reload loop | **Partly**: hold-while-unsaved, one reload and no loop work in the asking tab; but `skipWaiting()` switches every tab, another tab with unsaved work included, and the old cache is deleted under it, 5 of 5 | e04 | P |
 | H35 | The browser checks `sw.js` for an update on every navigation and at most every 24 hours, ignoring Pages' `max-age=600` (`updateViaCache` "imports" by default) | **Held, restated**: `sw.js` is revalidated on every in-scope navigation (25 of 25, past `max-age=600`); the 24 h rule only adds checks; `updateViaCache:"all"` gave 0 of 25 | SW spec; e04 | P |
 | H36 | Fetches made by a dedicated Web Worker the page created (Pyodide's) go through the page's service worker, so the runtime can be served from a cache offline | **Held**: fetches from a script worker and a `blob:` worker both go through the service worker, 3 of 3; the real Ladybug runtime started offline in about 2.5 s; spec and WPT agree for Chrome, Edge, Firefox, Safari desktop; iOS not tested | SW spec; WPT results; e05 | P (desktop) / U (iOS) |
-| H37 | The worker's caches are counted in the same origin quota as IndexedDB and are evicted with it (one storage bucket), so caching the app adds no eviction case of its own | **Held for counting** (usage 32 KB to 8.8 MB after the precache, 25 MB with the runtime); one bucket cleared together per the Storage Standard; eviction not testable here | Storage Standard; e02 | P |
+| H37 | The worker's caches are counted in the same origin quota as IndexedDB and are evicted with it (one storage bucket), so caching the app adds no eviction case of its own | **Held for counting** (usage 32 KB to 8.8 MB after the precache, 25 MB with the runtime); one bucket cleared together per the Storage Standard; eviction not testable here | Storage Standard; e02 | P for counting; S for eviction together (the Standard's text, not measured) |
 | H38 | Chrome's automatic install prompt (`beforeinstallprompt`) still needs a fetch handler in current Chromium (left open by part 10) | **Failed**: current Chromium's installability code has no service-worker or fetch-handler check; `beforeinstallprompt` fired with a manifest and no worker (full binary, profile on disk; not in the headless shell) | Chromium @dd4d83c; e06 | P |
 | H39 | iOS and iPadOS take the Home Screen icon from `apple-touch-icon` before the manifest's `icons`, and Safari ignores `purpose: maskable` | **Held**: `apple-touch-icon` wins on iOS; manifest icons used only with purpose `any` or none | WebKit posts (15.4, 16.4); BCD | P |
 | H40 | The app's shell (V149's safe areas, V147's panels, V150's palette) needs no change in `display: standalone`; only `display-mode` media queries would tell it apart | open: the specifications give only the `display-mode` media query; needs a look on devices | standards note 3.x | U |
@@ -1083,17 +1084,19 @@ The three sides' notes hold the evidence row by row; this is what the code depen
   root without a manifest; `sw.js` must be byte-different on every build or no user is ever updated, because the check
   compares bytes.
 - **Prior art** (`research-local-storage/v172h-prior-art.md`; Workbox, Squoosh, Excalidraw, draw.io, tldraw at pinned
-  commits): every app precaches its build's file list keyed by content, at install, and deletes old entries at activate;
-  cross-origin requests go to the network; large optional parts are cached on first use; 192 and 512 px icons plus
-  maskable ones and a separate `apple-touch-icon`; every project keeps a way to remove its worker (a self-removing `sw.js`,
+  commits): the apps precache their build's file list keyed by content, at install, and delete old entries at activate;
+  cross-origin requests mostly go to the network (Excalidraw caches its cross-origin fonts); large optional parts are
+  cached on first use; most carry 192 and 512 px icons, some maskable ones, and a separate `apple-touch-icon`; every project keeps a way to remove its worker (a self-removing `sw.js`,
   draw.io's `clear.html`). They disagree on the page (all three apps with a worker serve `index.html` cache-first) and on
   taking over (Excalidraw and draw.io `skipWaiting()` at once, Excalidraw then reloading every tab; Squoosh and Workbox
-  wait and offer a reload). Faults on record: draw.io users left on an old release for months by failing installs, and
-  an HTML error page cached as a script; vite-plugin-pwa warns its auto-reload loses unsaved form data; Create React App
+  wait and offer a reload). Faults on record: draw.io users left on an old release for months by failing installs; and a
+  guard in draw.io's worker against caching an HTML error page as a script ("would poison the shell"), a risk its code
+  names rather than a fault it records; vite-plugin-pwa warns its auto-reload loses unsaved form data; Create React App
   made its worker opt-in because workers are "super sticky".
 - **Experiments** (`research-local-storage/v172h-experiments.md`, scripts in `experiments/v172h-offline/`; Chromium 153,
   headless, a Pages stand-in): the outcomes above. The cost: the precache took about 330 ms and fetched the app a second
-  time (3.97 MB); a repeat load was slower with the worker (median 63 ms against 31) while the HTTP cache was fresh, and
+  time (3.97 MB), because the experiment's worker asked with `cache: 'reload'`; reading the fresh HTTP cache instead is
+  likely to avoid most of it, not measured; a repeat load was slower with the worker (median 63 ms against 31) while the HTTP cache was fresh, and
   faster once it was gone (50 ms and 442 bytes against 111 ms and 3.97 MB).
 
 **The finding that changes the plan:** `skipWaiting()` takes every tab, not only the one that asked (H34). "No update
@@ -1109,7 +1112,7 @@ from what its page loaded, and no edit is lost to an update; (3) a user reaches 
 |---|---|---|---|---|---|
 | A. No worker; manifest and icons only | No (fails once the 600 s cache is gone, H32) | Yes | Yes | Smallest | Nothing to undo |
 | B. D6 as written: `index.html` network-first, `app/` cache-first, wait for every tab to close | Yes | **No**: a fresh `index.html` online can name bundles the old worker's cache lacks, and the page runs new code under the old worker; harmless only while the bundles are fetched from the network | Yes, at every online load | Small | Needs a self-removing `sw.js` |
-| C. App shell cache-first (`index.html` and the four bundles from one precache), update offered as "A new version is ready: Reload", `skipWaiting()` only when no tab has unsaved work (recommended) | Yes | Yes: page and bundles always come from the same build's cache | Yes: found within about 1.5 s of any navigation (H33, H35), applied at the next reload once every tab is saved, or at once when every tab closes | Small: one worker file, a page-side update banner, a cross-tab ask | Self-removing `sw.js` kept ready |
+| C. App shell cache-first (`index.html` and the four bundles from one precache), update offered as "A new version is ready: Reload", `skipWaiting()` only when no tab has unsaved work (recommended) | Yes | Yes: page and bundles always come from the same build's cache | Yes: found at the next navigation, in about 1.5 s in Chromium over loopback (H33, H35), applied at the next reload once every tab is saved, or at once when every tab closes | Small: one worker file, a page-side update banner, a cross-tab ask | Self-removing `sw.js` kept ready |
 | D. As C with Workbox | Yes | Yes | Yes | A dependency built for a bundler, not ES5; draw.io dropped its runtime | Workbox's own |
 | E. Excalidraw's way: `skipWaiting()` at once and reload every tab | Yes | **No**: reloads tabs with unsaved work (vite-plugin-pwa's own warning) | Fastest | Small | Self-removing `sw.js` |
 
@@ -1120,8 +1123,8 @@ network-first page as written (decision Q2).
 
 The worker in C, from the sides together: the cache named with the app's path and the build id
 (`BIM-Personal/app/<build>`); install precaches `./`, `index.html` and the four `?v=` URLs exactly (H31), refusing a
-non-2xx answer or an HTML body for a `.js` or `.css` (draw.io's fault); activate deletes only this app's older app caches;
-navigations in scope answer `index.html` from the cache, then the network; `runtime/` cached on first use in a cache of its
+non-2xx answer or an HTML body for a `.js` or `.css` (draw.io's guard); activate deletes only this app's older app caches;
+navigations to the app's own address (`/BIM-Personal/`, `index.html`; not `docs/` or `v/`, which are also in scope) answer `index.html` from the cache, then the network; `runtime/` cached on first use in a cache of its
 own (`BIM-Personal/runtime/<manifest hash>`), kept across builds, each wheel still checked by SHA-256 in the Ladybug worker
 (H36); `docs/`, `v/`, `canvas_v10.html` and every cross-origin request left to the network (H41: tiles must not be
 prefetched); `sw.js` carries the build id so it is byte-different each build (H35). The page registers it only over
@@ -1170,7 +1173,7 @@ Parts 14.3 to 14.6 follow when the three researchers report; this is the app's s
   and WebKit's posts; H36 on iOS and H40 are not tested.
 - Eviction together (H37) is the Storage Standard's text, not a measurement.
 - The prior art's apps differ from ours (bundlers, hashed file names); their update choices are weighed, not copied.
-- The precache doubles the first visit's download (3.97 MB); on a metered phone that is a cost the owner may weigh.
+- The experiment's precache doubled the first visit's download (3.97 MB, from `cache: 'reload'`); the built worker should read the HTTP cache to avoid it, which is to be measured.
 - A worker is "sticky": a fault in it outlives a fix to the page. The self-removing `sw.js` must exist before the first one ships.
 
 ### 14.9 What is still open (U)
@@ -1180,12 +1183,18 @@ Parts 14.3 to 14.6 follow when the three researchers report; this is the app's s
 | H40: the shell in standalone on phones and tablets | No device here | A look on the owner's iPhone, iPad and a computer after the build |
 | H36 on iOS: a `blob:` worker's fetches through the service worker | No iOS here | The same look: an analysis offline in the Home Screen app |
 | Whether caches and IndexedDB are evicted together in practice | Not measurable here | Relied on the Storage Standard |
-| Firefox and Safari update timing | Not installed here | The specification's algorithm, which Chromium followed exactly |
+| Firefox and Safari update timing | Not installed here | The specification's algorithm, which Chromium followed in every step measured |
 
 ### 14.10 The independent check
 
-Pending: a second reader re-reads the sources behind every fact the code will use and records each as confirmed or not
-in `research-local-storage/independent-check-v172h.md`.
+Done 2026-11-08 (`research-local-storage/independent-check-v172h.md`): every pinned source fetched again and found
+byte-identical to the first reader's copy, the cited lines re-read, live headers and Esri's `exportTilesAllowed` checked
+again, every experiment's script compared with its raw results. Of 32 source facts, 30 confirmed (every fact option C
+uses), 1 partly (draw.io's cached error page is a guard in its code, not a recorded fault), 1 not re-read (Create React
+App issue 2398, GitHub answered 403; back to U, nothing depends on it). All 10 measured claims are supported by their
+method and data. Its nine corrections to this part are made: the runtime's address, draw.io's guard, "every app", the
+cause of the second download, the 1.5 s as loopback only, the navigations the page answers, "every step measured", the
+method behind "twelve files", and H37's level.
 
 ### 14.11 The owner's decisions
 
