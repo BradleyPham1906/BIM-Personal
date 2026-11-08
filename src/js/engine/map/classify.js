@@ -191,4 +191,6 @@
     if(st.hi<=st.lo)return 1;
     return Math.max(0,Math.min(1,(v-st.lo)/(st.hi-st.lo)));
   }
-export { bimClsBreaks, bimClsStretch, bimClsStretchAt };
+export {
+  BIM_CLS_LABEL, BIM_CLS_MAXK, BIM_CLS_METHODS, bimClsAssign, bimClsBreaks, bimClsStretch, bimClsStretchAt
+};

@@ -340,7 +340,9 @@ async def run():
             await safe("()=>window.__a3dRedo()")
             ok = await safe("(i)=>window.__a3dDataSet(i,'by','AREA')", zid)
             fc = [await safe("(a)=>window.__a3dDataFeatCol(a[0],a[1])", [zid, i]) for i in range(4)]
-            ck(ok and fc == [RAMP[0], RAMP[3], RAMP[5], RAMP[1]], "by a number: the ramp (%s)" % fc)
+            # V173a: a number is classified by natural breaks into 5 classes (the owner's D4); four distinct
+            # values give four, on ColorBrewer's YlOrRd 4, not V136's six equal steps
+            ck(ok and fc == ['#ffffb2', '#fd8d3c', '#e31a1c', '#fecc5c'], "by a number: natural breaks on the ramp (%s)" % fc)
             ok = await safe("(i)=>window.__a3dDataSet(i,'by','NOPE')", zid)
             ck(ok is False and 'no attribute NOPE' in await toast(), "an attribute it does not have is refused")
             # opacity: the fill, at half

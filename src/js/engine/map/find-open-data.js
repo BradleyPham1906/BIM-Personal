@@ -10,6 +10,7 @@ import { bimEsc } from '../layers/layer-manager.js';
 import { bimGeoParts, bimGeoPositions } from '../properties/map-address-site-data.js';
 import { refreshProps } from '../site-analysis/panel.js';
 import { toScreen } from '../io/import-entry.js';
+import { bimDataClsSet } from './data-symbology.js';
 import { bimDataAttrKeys, bimDataFeatCol, bimDataLensScale } from './colour-lens.js';
 import { bimGeoToModel, bimMapHost, bimMapOrigin } from './map-tiles.js';
 import { bimCtxArea } from './site-context.js';
@@ -272,6 +273,7 @@ import { cvH } from '../ui/canvas-size.js';
   function bimDataSet(id,field,val){
     var L=bimDataById(id),v;
     if(!L)return false;
+    if(String(field).indexOf('cls.')===0)return bimDataClsSet(id,String(field).slice(4),val);   /* __acad3dV173a */
     if(field==='visible'){v=!!val&&val!=='false';if(L.visible===v)return true;}
     else if(field==='name'){v=String(val==null?'':val).replace(/\s+/g,' ').replace(/^ | $/g,'').slice(0,60);if(!v){a3dToast('A data layer needs a name');refreshProps();return false;}}
     else if(field==='color'){v=String(val||'');if(!/^#[0-9a-fA-F]{6}$/.test(v)){a3dToast('That is not a colour');refreshProps();return false;}v=v.toLowerCase();}

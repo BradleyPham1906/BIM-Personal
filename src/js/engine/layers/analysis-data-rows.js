@@ -20,6 +20,7 @@ import {
 import { bimAnzAct } from '../analysis/analyze-tab.js';
 import { bimRenderInto, refreshProps } from '../site-analysis/panel.js';
 import { bimTlRunById, bimTlStale, bimTlTool } from '../site-tools/tools.js';
+import { bimDataLegendHtml, bimDataSwatch } from '../map/data-symbology.js';
 import { A3D_DATA, bimDataById, bimDataFeats, bimDataList } from '../map/data-layers.js';
 import { bimDataOpacity, bimDataRemove, bimDataSet } from '../map/find-open-data.js';
 import { paint } from '../map/terrain-3d.js';
@@ -85,12 +86,12 @@ import { a3dToast, objById } from '../bim/csg-booleans.js';
     return h;
   }
   function bimLyDataRowHtml(L){
-    var key='data:'+L.id,sel=A3D_LY.rsel===key,hid=!L.visible,n=bimDataFeats(L.id).length,h,col=/^#[0-9a-fA-F]{6}$/.test(L.color||'')?L.color:'#7f9db8';
+    var key='data:'+L.id,sel=A3D_LY.rsel===key,hid=!L.visible,n=bimDataFeats(L.id).length,h;
     h='<div class="a3d-lyres'+(sel?' sel':'')+(hid?' dim':'')+'" data-lyres="'+bimEsc(key)+'" aria-expanded="'+sel+'">'+
-      '<span class="a3d-lyramp" style="background:'+col+'"></span>'+bimLyNameHtml(key,L.name)+
+      '<span class="a3d-lyramp" style="background:'+bimDataSwatch(L)+'"></span>'+bimLyNameHtml(key,L.name)+   /* __acad3dV173a: its classes */
       (L.status&&L.status.error?'<span class="a3d-lybadge gone" title="'+bimEsc(bimDataStatusText(L))+'">Failed</span>':'')+
       bimLyTgl('lyreson',key,hid,hid?'Show '+L.name:'Hide '+L.name,BIM_LY_IC.off,BIM_LY_IC.on)+'<span class="a3d-lyi a3d-lyspc" aria-hidden="true"></span><span class="a3d-lyi a3d-lyspc" aria-hidden="true"></span>'+'</div>';
-    if(sel)h+='<div class="a3d-lyresd" data-lyresd="'+bimEsc(key)+'">'+bimLyOpacityHtml(key,L.name,bimDataOpacity(L))+
+    if(sel)h+='<div class="a3d-lyresd" data-lyresd="'+bimEsc(key)+'">'+bimLyOpacityHtml(key,L.name,bimDataOpacity(L))+bimDataLegendHtml(L)+
       '<div class="a3d-lyresmeta">'+bimEsc(bimDataStatusText(L)+(n?'; '+n+' feature'+(n===1?'':'s'):'')+(L.credit?'. Source: '+L.credit:''))+'</div><div class="a3d-lyresacts">'+
       '<button type="button" data-lyresset="'+bimEsc(key)+'">Settings</button><button type="button" data-lyresrn="'+bimEsc(key)+'">Rename</button>'+
       '<button type="button" class="danger" data-lyresdel="'+bimEsc(key)+'">Remove</button></div></div>';
