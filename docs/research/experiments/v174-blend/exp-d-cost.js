@@ -34,6 +34,7 @@ function pageRun(arg) {
   var pool = groups.map(function (gp) { return mk(gp.w, gp.h); });
   var full = groups.map(function () { return mk(W, H); });
   var single = mk(400, 400);
+  var perEl = all.map(function (e) { return mk(Math.ceil(e.w), Math.ceil(e.h)); });
   function drawEl(c, e, mode, ox, oy) {
     c.globalCompositeOperation = mode; c.globalAlpha = e.alpha;
     var x = e.x - ox, y = e.y - oy;
@@ -65,6 +66,14 @@ function pageRun(arg) {
       all.forEach(function (e) {
         o.clearRect(0, 0, 400, 400); drawEl(o, { kind: e.kind, x: 0, y: 0, w: e.w, h: e.h, color: e.color, alpha: 1 }, 'source-over', 0, 0);
         g.globalAlpha = e.alpha; g.globalCompositeOperation = e.mode; g.drawImage(single, 0, 0, e.w, e.h, e.x, e.y, e.w, e.h);
+        g.globalAlpha = 1; g.globalCompositeOperation = 'source-over';
+      });
+    },
+    '200 elements each isolated (own element-sized offscreen)': function () {
+      all.forEach(function (e, i) {
+        var oc = perEl[i], o = oc.getContext('2d');
+        o.clearRect(0, 0, oc.width, oc.height); drawEl(o, { kind: e.kind, x: 0, y: 0, w: e.w, h: e.h, color: e.color, alpha: 1 }, 'source-over', 0, 0);
+        g.globalAlpha = e.alpha; g.globalCompositeOperation = e.mode; g.drawImage(oc, e.x, e.y);
         g.globalAlpha = 1; g.globalCompositeOperation = 'source-over';
       });
     }
