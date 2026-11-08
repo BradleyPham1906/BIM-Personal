@@ -1127,7 +1127,6 @@ body.a3d-clb-open #a3d-dock,body.a3d-clb-open .a3d-tpal{display:none!important}
 .a3d-clb-dsel{position:absolute;inset:0;pointer-events:none;z-index:8}
 .a3d-clb-dbox{position:absolute;outline:1.5px solid var(--s1);outline-offset:1px}
 .a3d-clb-dbox.mk{outline-style:dashed}
-.a3d-clb-dscope{position:absolute;outline:1px dashed var(--muted);outline-offset:4px}
 .a3d-clb-dhdl{position:absolute;width:14px;height:14px;margin:-7px;box-sizing:border-box;background:#fff;border:1.5px solid var(--s1);border-radius:3px;pointer-events:auto;cursor:nwse-resize;touch-action:none}
 @media(pointer:coarse){.a3d-clb-dhdl{width:28px;height:28px;margin:-14px}}
 /* a phone: the designed board fitted to the screen, as it is laid out (its figures are not put in one column) */
@@ -1137,42 +1136,12 @@ body.a3d-clb-open #a3d-dock,body.a3d-clb-open .a3d-tpal{display:none!important}
 .a3d-clb.w-s .a3d-clb-dsn .a3d-clb-tcard{position:absolute}
 /* on paper and in a thumbnail: nothing of Edit */
 .a3d-clb.prt .a3d-clb-dsel{display:none!important}
-@media print{.a3d-clb-dsel,.a3d-clb.a3d-clb-dpnl{display:none!important}}
-/* the layers and properties panel */
-.a3d-clb.a3d-clb-dpnl{inset:auto;z-index:20004;width:300px;overflow:auto;background:var(--surf);border:1px solid var(--ring);border-radius:12px;
-  box-shadow:0 14px 40px rgba(0,0,0,.35);padding:10px 12px;box-sizing:border-box;font-size:12.5px}
-.a3d-clb.a3d-clb-dpnl.nar{left:0;right:0;bottom:0;top:auto;width:auto;max-height:46vh;border-radius:12px 12px 0 0;
-  padding-bottom:max(10px,env(safe-area-inset-bottom))}
-.a3d-clb-dhd{display:flex;align-items:center;gap:6px}
-.a3d-clb-dh2{flex:1 1 auto;font-size:13px;font-weight:650;margin:0}
-.a3d-clb-dh3{font-size:12px;font-weight:650;margin:10px 0 2px}
-.a3d-clb-dadd,.a3d-clb-dacts{display:flex;flex-wrap:wrap;gap:4px;margin:8px 0}
-.a3d-clb-dadd .a3d-clb-btn,.a3d-clb-dacts .a3d-clb-btn{min-height:28px;padding:0 8px;font-size:12px}
-.a3d-clb-btn[data-danger]{color:var(--critical)}
-.a3d-clb-dlist{list-style:none;margin:6px 0;padding:0;max-height:34vh;overflow:auto;border-top:1px solid var(--ring);border-bottom:1px solid var(--ring)}
-.a3d-clb-drow{display:flex;align-items:center;gap:2px;padding-left:calc(var(--d,0)*14px);border-radius:6px}
-.a3d-clb-drow.sel{background:var(--band)}
-.a3d-clb-drow.hid .a3d-clb-dnm{opacity:.5}
-.a3d-clb-dnm{flex:1 1 auto;min-width:0;text-align:left;background:none;border:0;color:var(--ink);font:inherit;font-size:12.5px;padding:5px 4px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.a3d-clb-dnm:focus-visible,.a3d-clb-dic:focus-visible{outline:2px solid var(--s1);outline-offset:-2px}
-.a3d-clb-dkd{color:var(--muted);font-size:11px}
-.a3d-clb-dtag{display:inline-block;font-size:10px;font-weight:650;line-height:1;padding:2px 4px;margin-right:4px;border-radius:4px;background:var(--s7);color:#fff}
-.a3d-clb-dtag.u{background:none;color:var(--muted);border:1px solid var(--ring);font-weight:500}
-.a3d-clb-dic{width:26px;height:26px;flex:0 0 26px;border:0;background:none;color:var(--ink2);border-radius:5px;display:inline-flex;align-items:center;justify-content:center;padding:0;cursor:pointer}
-.a3d-clb-dic svg{width:14px;height:14px;fill:currentColor}
-.a3d-clb-dic.sp{cursor:default}
-.a3d-clb-dic[aria-pressed="true"]{color:var(--s1)}
-.a3d-clb-dhint{color:var(--ink2);font-size:12px;margin:8px 0}
-.a3d-clb-dgrid{display:grid;grid-template-columns:1fr 1fr;gap:0 8px}
-.a3d-clb-dfld{display:flex;flex-direction:column;gap:3px;font-size:11.5px;color:var(--ink2);margin:6px 0 0;min-width:0}
-.a3d-clb-dfld.col{flex-direction:row;flex-wrap:wrap;align-items:center;gap:6px}
-.a3d-clb-dfld.col span{flex:1 0 100%}
-.a3d-clb-dfld.chk{flex-direction:row;align-items:center;gap:6px}
-.a3d-clb-dfld input[type=text],.a3d-clb-dfld input[type=number],.a3d-clb-dfld select,.a3d-clb-dfld textarea{font:inherit;font-size:12.5px;color:var(--ink);background:var(--page);
-  border:1px solid var(--ring);border-radius:6px;min-height:28px;padding:0 6px;box-sizing:border-box;width:100%;min-width:0}
-.a3d-clb-dfld textarea{padding:4px 6px;resize:vertical}
-.a3d-clb-dfld input[type=color]{width:40px;height:28px;padding:0;border:1px solid var(--ring);border-radius:6px;background:var(--page)}
-@media(pointer:coarse){.a3d-clb-dic{width:40px;height:40px;flex-basis:40px}.a3d-clb-dnm{padding:10px 4px}.a3d-clb-dadd .a3d-clb-btn,.a3d-clb-dacts .a3d-clb-btn{min-height:38px}}
+@media print{.a3d-clb-dsel{display:none!important}}
+/* a board's objects in the Properties panel and under their layers in the Layers tab */
+.a3d-pnote{font-size:11px;line-height:1.35;color:#8b949e;padding:4px 0 6px}
+.a3d-bdeacts{display:flex;flex-wrap:wrap;gap:4px;padding:4px 0}
+.a3d-bdechk{font-size:11px;color:#aab4bf;white-space:nowrap}
+.a3d-lybo .a3d-lyty{font-style:italic}
 /* the panel scrolls, not the list in it: the search stays at its top while the list goes under it */
 .a3d-analyze-wrap>.a3d-anz{overflow:visible}
 .a3d-anz>.a3d-anzsearch{position:sticky;top:0;z-index:2;box-shadow:0 0 0 6px #2c2c2c}
@@ -6038,6 +6007,7 @@ try{
   /* __acad3dV60: Phase 52a pill button label/state, same idiom as el.flip's own 2D/3D label. */
   function bimSyncPresentPill(){
     bimPagesStale();   /* __acad3dV122: every change of appearance passes here, and a page is drawn in it */
+    if(A3D_CLB.open)bimClbOpen();   /* __acad3dV174a: a board's transparency and blend modes are drawn in Presentation */
     if(!el.present)return;
     el.present.textContent=A3D.presentMode?'Pres':'Tech';
     el.present.classList.toggle('on',!!A3D.presentMode);
@@ -17266,8 +17236,13 @@ try{
   function bimLayerOf(o){
     var id=o.layer||A3D.activeLayer,i;
     for(i=0;i<A3D.layers.length;i++)if(A3D.layers[i].id===id)return A3D.layers[i];
-    return A3D.layers[0]||null;
+    return bimLayerZero();
   }
+  /* __acad3dV174a: AutoCAD's layer 0 here: the project's first layer ('layer-0', named Model), found by its id, so the
+     layers can be put in any order (the order is a board's paint order); a project without it keeps its first */
+  function bimLayerZero(){return bimLayerById('layer-0')||A3D.layers[0]||null;}
+  /* __acad3dV174a: a layer's blend mode (R2), read tolerantly: a layer without one is Normal */
+  function bimLayerBlend(ly){return ly&&typeof ly.blend==='string'&&bimBobBlend(ly.blend)?ly.blend:'normal';}
   /* ================= __acad3dV121: what a layer's switches mean, asked in one place =================
 
      A layer is {id, name, color, visible, locked} since V6; V121 adds frozen, plot, linetype,
@@ -17532,6 +17507,34 @@ try{
   function bimLayerChanged(){
     bimLayerDropUnpickable();
     refreshLayers();refreshTree();paint();saveSoon();
+    if(A3D_CLB.open)bimClbOpen();   /* __acad3dV174a: a board's objects are on the layers too */
+  }
+  /* __acad3dV174a: a layer to another place in the list (R3: the list's order is a board's paint order). where:
+     'before' or 'after' the target, as its sibling (it takes the target's parent); one undo step */
+  function bimLayerMove(id,tgtId,where){
+    var ly=bimLayerById(id),tg=bimLayerById(tgtId),cur=bimLayerById(A3D.activeLayer),par,P,i,j;
+    if(!ly||!tg)return bimLayerRefuse('That layer no longer exists');
+    if(ly===tg)return true;
+    P=bimLayerParentOk(tg);par=P?P.id:null;
+    if(P&&bimLayerUnder(P,ly.id))return bimLayerRefuse('A layer cannot go under itself or one of its own sub-layers');
+    if(P&&cur&&bimLayerUnder(cur,ly.id)&&bimLayerEff(P).frozen)return bimLayerRefuse('The current layer cannot go under a frozen layer');
+    pushUndo();
+    i=A3D.layers.indexOf(ly);A3D.layers.splice(i,1);
+    j=A3D.layers.indexOf(tg);
+    A3D.layers.splice(where==='after'?j+1:j,0,ly);
+    ly.parent=par;
+    bimLayerChanged();
+    return true;
+  }
+  /* one place up (-1) or down (+1) among its siblings, for a finger or a key */
+  function bimLayerStep(id,d){
+    var ly=bimLayerById(id),P,sib,k;
+    if(!ly)return false;
+    P=bimLayerParentOk(ly);
+    sib=P?bimLayerKids(P):A3D.layers.filter(function(l){return !bimLayerParentOk(l);});
+    k=sib.indexOf(ly);
+    if(k<0||k+d<0||k+d>=sib.length)return false;
+    return bimLayerMove(id,sib[k+d].id,d<0?'before':'after');
   }
   function bimLayerRefuse(msg){
     a3dToast(msg);
@@ -17567,6 +17570,9 @@ try{
     }else if(field==='transparency'){
       v=Math.round(+val);
       if(!isFinite(v)||v<0||v>90)return bimLayerRefuse('Transparency is 0 to 90');
+    }else if(field==='blend'){   /* __acad3dV174a: R2, the W3C 16 under Figma's names */
+      v=String(val||'normal');
+      if(!bimBobBlend(v))return bimLayerRefuse('Unknown blend mode: '+val);
     }else if(field==='description'){
       v=String(val==null?'':val).slice(0,200);
     }else if(field==='parent'){
@@ -17589,6 +17595,7 @@ try{
     else if(field==='lineweight'||field==='parent')was=(ly[field]===undefined)?null:ly[field];
     else if(field==='linetype')was=(bimLinetypeDef(ly.linetype)||BIM_LINETYPES[0]).name;
     else if(field==='transparency')was=isFinite(ly.transparency)?+ly.transparency:0;
+    else if(field==='blend')was=bimLayerBlend(ly);
     else if(field==='description')was=(typeof ly.description==='string')?ly.description:'';
     else was=ly[field];
     if(was===v)return true;
@@ -17614,6 +17621,7 @@ try{
       linetype:(src&&bimLinetypeDef(src.linetype))?bimLinetypeDef(src.linetype).name:'Continuous',
       lineweight:(src&&src.lineweight!==undefined)?src.lineweight:null,
       transparency:(src&&isFinite(src.transparency))?src.transparency:0,
+      blend:bimLayerBlend(src),   /* __acad3dV174a */
       plot:!(src&&src.plot===false),
       description:'',parent:par?par.id:null};
     A3D.layers.push(lyr);
@@ -17627,9 +17635,10 @@ try{
   function bimLayerDelete(id){
     var ly=bimLayerById(id),i,n=0;
     if(!ly)return bimLayerRefuse('That layer no longer exists');
-    if(ly===A3D.layers[0])return bimLayerRefuse(ly.name+' is the first layer, which (as AutoCAD\'s layer 0) cannot be deleted');
+    if(ly===bimLayerZero())return bimLayerRefuse(ly.name+' is the first layer, which (as AutoCAD\'s layer 0) cannot be deleted');
     if(id===A3D.activeLayer)return bimLayerRefuse('The current layer cannot be deleted: make another layer current first');
     for(i=0;i<A3D.objs.length;i++)if(bimLayerOf(A3D.objs[i])===ly)n++;
+    n+=bimBobOnLayer(ly.id);   /* __acad3dV174a: and every board's objects on it */
     if(n)return bimLayerRefuse(ly.name+' holds '+n+' object'+(n===1?'':'s')+': move '+(n===1?'it':'them')+' to another layer first');
     pushUndo();
     var kids=0;
@@ -17683,6 +17692,7 @@ try{
     cur:ric('<circle cx="12" cy="12" r="5.5" fill="currentColor" stroke="none"/>'),
     notcur:ric('<circle cx="12" cy="12" r="5.5"/>'),
     add:ric('<path d="M12 5v14M5 12h14"/>'),
+    up:ric('<path d="M12 19V5M6 11l6-6 6 6"/>'),down:ric('<path d="M12 5v14M6 13l6 6 6-6"/>'),   /* __acad3dV174a */
     sub:ric('<path d="M6.5 4.5v8.5a3 3 0 0 0 3 3h9"/><path d="M15.5 12.5 19 16l-3.5 3.5"/>'),
     std:ric('<path d="M5 6.5h14M5 12h14M5 17.5h9"/>'),
     make:ric('<path d="M5 12.5 9.8 17.3 19 7.5"/>'),
@@ -17775,6 +17785,8 @@ try{
       bimLyBtn('sub','New sub-layer under the selected layer',BIM_LY_IC.sub)+
       bimLyBtn('std','New layer with an AIA / NCS standard name',BIM_LY_IC.std)+
       bimLyBtn('cur','Make the selected layer current',BIM_LY_IC.make)+
+      bimLyBtn('up','Move the selected layer up: a layer higher in the list is drawn over those below on a board',BIM_LY_IC.up)+
+      bimLyBtn('down','Move the selected layer down',BIM_LY_IC.down)+   /* __acad3dV174a */
       bimLyBtn('del','Delete the selected layer',BIM_LY_IC.del)+
       bimLyBtn('lpm','Layer Properties Manager (LAYER)',BIM_LY_IC.lpm)+
       '</span></div><input type="text" class="a3d-lysearch" data-lysearch="1" placeholder="Search layers and objects" value="'+
@@ -17783,10 +17795,11 @@ try{
     function render(l,depth){
       if(seen[l.id]||(f&&!match(l)))return;
       seen[l.id]=1;
-      var kids=bimLayerKids(l),objs=con[l.id]||[],open=f?true:!!A3D_LY.open[l.id];
-      h+=bimLyRowHtml(l,depth,objs.length,kids.length,open,sel,cur);
+      var kids=bimLayerKids(l),objs=con[l.id]||[],nb=bimBdeLyCount(l.id),open=f?true:!!A3D_LY.open[l.id];   /* __acad3dV174a: and the board's objects on it */
+      h+=bimLyRowHtml(l,depth,objs.length+nb,kids.length,open,sel,cur);
       if(!open)return;
       kids.forEach(function(c){render(c,depth+1);});
+      if(nb)h+=bimBdeLyRows(l.id,depth+1,hit(l.name)?'':f);
       objs.forEach(function(o){if(!f||hit(o.name)||hit(l.name))h+=bimLyObjHtml(o,depth+1);});
     }
     A3D.layers.forEach(function(l){if(!bimLayerParentOk(l))render(l,0);});
@@ -18121,6 +18134,8 @@ try{
       if(sel&&bimLayerDelete(sel.id)){A3D_LY.sel=A3D.activeLayer;refreshLayers();}
     }else if(a==='lpm'){
       bimLayerManagerOpen();
+    }else if(a==='up'||a==='down'){   /* __acad3dV174a: R3 */
+      if(sel){A3D_LY.sel=sel.id;bimLayerStep(sel.id,a==='up'?-1:1);}
     }
   }
   /* one set of delegated listeners on the left panel, which outlives the Layers tab's markup */
@@ -18142,7 +18157,8 @@ try{
         if((b=t.closest('[data-lypin]'))){var po=objById(b.getAttribute('data-lypin'));if(po)bimSetLocked(po,!bimIsLocked(po));return;}
         if(t.closest('.a3d-lysec')){bimLyResClick(t);return;}   /* __acad3dV148: Analysis and Data */
         if(t.closest('input'))return;
-        if((b=t.closest('[data-lyobj]'))){bimLySelectObj(b.getAttribute('data-lyobj'));return;}
+        if((b=t.closest('[data-lybo]'))){var bo=b.getAttribute('data-lybo');bimBdeSelect(ev.shiftKey||ev.ctrlKey||ev.metaKey?(A3D_BDE.sel.indexOf(bo)>=0?A3D_BDE.sel.filter(function(x){return x!==bo;}):A3D_BDE.sel.concat([bo])):[bo]);return;}   /* __acad3dV174a: a board's object */
+        if((b=t.closest('[data-lyobj]'))){A3D_BDE.sel=[];bimLySelectObj(b.getAttribute('data-lyobj'));return;}   /* __acad3dV174a: a model object: the board's selection let go */
         if((b=t.closest('[data-lyid]'))){A3D_LY.sel=b.getAttribute('data-lyid');refreshLayers();return;}
       }catch(eL){
         console.warn('[BIM] A Layers panel action failed',eL);
@@ -18206,8 +18222,14 @@ try{
         else if(v.indexOf('dl:')===0){if(rtk&&rtk.t==='data')bimDataLayerMove(v.slice(3),rtk.id);}   /* __acad3dV173c */   /* __acad3dV148: onto a row, to its place */
         else if(v.indexOf('obj:')===0){if(tgt)bimObjSetLayer(v.slice(4),tgt);}
         else if(v.indexOf('layer:')===0&&v.slice(6)!==tgt){
-          if(tgt)A3D_LY.open[tgt]=true;
-          bimLayerSet(v.slice(6),'parent',tgt);
+          /* __acad3dV174a: on a row's top or bottom third, before or after it (R3: the order is a board's paint
+             order); on its middle, under it, as before */
+          var rr=row?row.getBoundingClientRect():null,fy=rr&&rr.height?(ev.clientY-rr.top)/rr.height:0.5;
+          if(tgt&&(fy<1/3||fy>2/3))bimLayerMove(v.slice(6),tgt,fy<1/3?'before':'after');
+          else{
+            if(tgt)A3D_LY.open[tgt]=true;
+            bimLayerSet(v.slice(6),'parent',tgt);
+          }
         }
       }catch(eX){
         console.warn('[BIM] A layer drop failed',eX);
@@ -18291,12 +18313,13 @@ try{
         '<td><select data-lpmf="linetype" aria-label="Linetype of '+nm+'">'+lto+'</select></td>'+
         '<td><select data-lpmf="lineweight" aria-label="Lineweight of '+nm+'">'+lwo+'</select></td>'+
         '<td><input type="number" min="0" max="90" step="1" data-lpmf="transparency" value="'+tr+'" aria-label="Transparency of '+nm+'"></td>'+
-        '<td class="a3d-lpmcnt">'+(con[l.id]||[]).length+'</td>'+
+        '<td><select data-lpmf="blend" aria-label="Blend mode of '+nm+'" title="Drawn in the Presentation appearance and in Present">'+bimBobBlends().map(function(b){return '<option value="'+b[0]+'"'+(b[0]===bimLayerBlend(l)?' selected':'')+'>'+b[1]+'</option>';}).join('')+'</select></td>'+   /* __acad3dV174a: R2 */
+        '<td class="a3d-lpmcnt">'+((con[l.id]||[]).length+bimBobOnLayer(l.id))+'</td>'+   /* __acad3dV174a: with the boards' objects */
         '<td class="a3d-lpmdesc"><input type="text" data-lpmf="description" value="'+bimEsc(typeof l.description==='string'?l.description:'')+'" aria-label="Description of '+nm+'"></td>'+
         '</tr>';
     });
     return '<table class="a3d-lpmt"><thead><tr><th title="The current layer">Status</th><th>Name</th><th>On</th><th>Freeze</th><th>Lock</th><th>Plot</th>'+
-      '<th>Color</th><th>Linetype</th><th>Lineweight</th><th>Transparency</th><th>Objects</th><th>Description</th></tr></thead><tbody>'+rows+
+      '<th>Color</th><th>Linetype</th><th>Lineweight</th><th>Transparency</th><th title="Drawn in the Presentation appearance and in Present">Blend</th><th>Objects</th><th>Description</th></tr></thead><tbody>'+rows+
       '</tbody></table>'+(shown?'':'<div class="a3d-lyempty">No layer matches</div>');
   }
   function bimLayerManagerRefresh(){
@@ -18324,6 +18347,9 @@ try{
       bimLayerManagerRefresh();
     }else if(a==='cur'){
       if(sel)bimLayerMakeCurrent(sel.id);
+      bimLayerManagerRefresh();
+    }else if(a==='up'||a==='down'){   /* __acad3dV174a: the order is a board's paint order (R3) */
+      if(sel){A3D_LPM.sel=sel.id;bimLayerStep(sel.id,a==='up'?-1:1);}
       bimLayerManagerRefresh();
     }
   }
@@ -18379,6 +18405,7 @@ try{
           bimLpmBtn('sub','New sub-layer',BIM_LY_IC.sub)+
           bimLpmBtn('del','Delete',BIM_LY_IC.del)+
           bimLpmBtn('cur','Set current',BIM_LY_IC.make)+
+          bimLpmBtn('up','Move up',BIM_LY_IC.up)+bimLpmBtn('down','Move down',BIM_LY_IC.down)+   /* __acad3dV174a */
           '<input type="text" class="a3d-lysearch" data-lpmsearch="1" placeholder="Search for layer" aria-label="Search for layer" value="'+bimEsc(A3D_LPM.filter||'')+'">'+
         '</div><div class="a3d-lpmbody"></div><div class="a3d-lpmft"></div>';
       el.root.appendChild(d);
@@ -26188,8 +26215,7 @@ try{
   function bimClbKey(ev){
     if(!A3D_CLB.open)return false;
     var a=document.activeElement,b=bimClbEl(),dl=A3D_BRD.dlg;   /* __acad3dV172b: Edit's dialogs are the board's */
-    if(a&&a!==document.body&&!(b&&b.contains(a))&&!(dl&&dl.contains(a))&&!(A3D_BDE.pnl&&A3D_BDE.pnl.contains(a))&&   /* __acad3dV174a: the layers panel is the board's too */
-      (/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)||a.isContentEditable))return false;
+    if(a&&a!==document.body&&!(b&&b.contains(a))&&!(dl&&dl.contains(a))&&(/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)||a.isContentEditable))return false;
     if(ev.key==='Escape'){ev.preventDefault();ev.stopImmediatePropagation();if(!bimBrdEsc())bimClbClose();return true;}   /* __acad3dV172b: a dialog, then Edit, then the board */
     if(bimBdeWantsKey(ev))return true;   /* __acad3dV174a: Ctrl+G and the order keys, while a board is designed */
     if(ev.ctrlKey||ev.metaKey||ev.altKey||/^F\d+$/.test(ev.key))return false;
@@ -26634,7 +26660,7 @@ try{
     if(b){if(b.__clbRO){try{b.__clbRO.disconnect();}catch(eD){}}if(b.parentNode)b.parentNode.removeChild(b);}
     A3D_CLB.open=false;A3D_CLB.board=null;document.body.classList.remove('a3d-clb-open');
     A3D_CLB.edit=false;A3D_BRD.drag=null;bimBrdDlgClose();   /* __acad3dV172b */
-    bimBdePanelClose();   /* __acad3dV174a */
+    if(A3D_BDE.sel.length||A3D_BDE.was){A3D_BDE.sel=[];A3D_BDE.was=false;refreshProps();refreshLayers();}   /* __acad3dV174a: nothing of a closed board selected or listed */
     if(was)bimPresPanelRefresh();
     return true;
   }
@@ -29598,6 +29624,7 @@ try{
     bimAwTitleSync();   /* __acad3dV171b */
     if(!el.propsbody)return;
     if(bimAwOwns()){bimAwRender();return;}   /* __acad3dV171b: the one analysis; __acad3dV171c: or what was picked */
+    if(bimBdeOwnsProps()){bimRenderInto(el.propsbody,bimBdePropsHtml());bimBdePropsWire(el.propsbody);return;}   /* __acad3dV174a: a board's objects, while it is drawn on */
     var o=objById(A3D.sel);
     var gP=o?null:bimSelectedGrid();   /* __acad3dV98 */
     if(gP){bimRenderInto(el.propsbody,bimGridPropsHtml(gP));return;}   /* __acad3dV118 */
@@ -38896,7 +38923,7 @@ try{
     return {v:v,f:f};
   }
   function bimCtxLayers(){
-    var par=bimLayerByName('Context')||bimLayerNew({name:'Context',color:'#9aa3ad'})||A3D.layers[0],L={},i,k,ly;
+    var par=bimLayerByName('Context')||bimLayerNew({name:'Context',color:'#9aa3ad'})||bimLayerZero(),L={},i,k,ly;
     for(i=0;i<BIM_CTX_KINDS.length;i++){
       k=BIM_CTX_KINDS[i];
       ly=bimLayerByName('Context '+k)||bimLayerNew({name:'Context '+k,color:BIM_CTX_COL[k],parent:par.id});
@@ -51340,7 +51367,7 @@ try{
      an object a layer, and a missing layer read as the CURRENT one: every wall followed whichever
      layer was current, out of sight when it was off and out of reach when it was locked. */
   function bimAdoptLayers(){
-    var ids={},i,o,n=0,cur=bimLayerById(A3D.activeLayer)||A3D.layers[0],first=A3D.layers[0];
+    var ids={},i,o,n=0,cur=bimLayerById(A3D.activeLayer)||A3D.layers[0],first=bimLayerZero();   /* __acad3dV174a: layer 0 by its id */
     if(!cur||!first)return 0;
     for(i=0;i<A3D.layers.length;i++)ids[A3D.layers[i].id]=1;
     for(i=0;i<A3D.objs.length;i++){
@@ -57539,7 +57566,8 @@ try{
     return h;
   }
   /* as it prints: wide, on paper */
-  function bimBoardPrintHtml(kind){return '<div class="a3d-clb prt w-l">'+bimBoardHtmlFor(kind,false)+'</div>';}
+  /* __acad3dV174a: built in a plot pass, so a board's objects on a layer set not to plot are left off, as the model's are */
+  function bimBoardPrintHtml(kind){return '<div class="a3d-clb prt w-l">'+bimWithPlotPass(A3D.presentMode,function(){return bimBoardHtmlFor(kind,false);})+'</div>';}
   /* the boards' own style rules, out of this page's style sheet, for a print window or a thumbnail */
   var A3D_CLB_CSS='';
   function bimClbCss(){
@@ -57687,7 +57715,7 @@ try{
       r.name=(b&&typeof b.name==='string'&&b.name.replace(/\s+/g,''))?b.name.replace(/\s+/g,' ').trim().slice(0,80):'Board';
       if(!r.figs)r.figs=[];
     }
-    if(r.figs&&b&&Array.isArray(b.els)){var T=bimBtrValid(b.els,r.figs);if(T)r.els=T;}   /* __acad3dV174a: its tree, when it has one */
+    if(r.figs&&b&&Array.isArray(b.objs)){var T=bimBobValid(b.objs,r.figs);if(T)r.objs=T;}   /* __acad3dV174a: its objects, on the layers, when it has any */
     return r;
   }
   /* ---- the figures, read from the boards ---- */
@@ -57769,7 +57797,7 @@ try{
   }
   /* the arranged figures: bands of absolutely placed figures, 1408 px across */
   function bimBrdArrHtml(figs,ctx){
-    if(ctx.B&&ctx.B.els)return bimBdsHtml(ctx.B,figs,ctx);   /* __acad3dV174a: a board with a tree */
+    if(ctx.B&&ctx.B.objs)return bimBdsHtml(ctx.B,figs,ctx);   /* __acad3dV174a: a board with objects on the layers */
     var bands=bimBrdBands(figs),P=BIM_BRD_P0,G=BIM_BRD_G,ov=ctx.edit?bimBrdOverlaps(figs):{k:{}},prev=null,h,bot=0;
     figs.forEach(function(f){if(f.y+f.h>bot)bot=f.y+f.h;});
     h='<section class="a3d-clb-arr'+(ctx.edit?' edit':'')+'" aria-label="Figures"'+(ctx.edit?' style="padding-bottom:'+bimBrdPx(2*P)+'px"':'')+'>';
@@ -57852,6 +57880,7 @@ try{
     return '<div class="a3d-clb-bar a3d-clb-ebar"><div class="a3d-clb-bart">Editing '+bimClbE(bimBoardLabel(B))+'</div>'+
       (c?'<input type="text" class="a3d-clb-name" data-brdname="1" maxlength="80" value="'+bimClbE(B.name||'')+'" aria-label="The board\'s name">':'')+
       '<button type="button" class="a3d-clb-btn" data-brd="add" aria-haspopup="dialog">Add a figure</button>'+
+      '<button type="button" class="a3d-clb-btn" data-brd="draw" aria-haspopup="menu" title="Draw a shape, text or an image on the current layer">Draw</button>'+   /* __acad3dV174a */
       (!c&&B.figs?'<button type="button" class="a3d-clb-btn" data-brd="reset" title="The board\'s own figures, in their own places">Reset</button>':'')+
       '<span class="a3d-clb-snaps a3d-clb-hide-s" role="group" aria-label="Snaps, as in drawing">'+
         '<button type="button" class="a3d-clb-btn" data-brdsnap="point" aria-pressed="'+!!A3D_SNAP.point+'" title="Edges catch other figures\' edges (F3)">Snap</button>'+
@@ -57896,7 +57925,7 @@ try{
   }
   /* a board of one's own: its name, its list, and the notes of the boards its figures come from */
   function bimBrdCustomHtml(B,edit){
-    var ctx={edit:edit,narrow:A3D_CLB.narrow,caps:{},no:0,B:B},figs=B.figs||[],has=figs.length||(B.els&&B.els.length),kinds=[],h,notes='',lb=false;
+    var ctx={edit:edit,narrow:A3D_CLB.narrow,caps:{},no:0,B:B},figs=B.figs||[],has=figs.length||(B.objs&&B.objs.length),kinds=[],h,notes='',lb=false;
     var site=(A3D.site&&A3D.site.name&&A3D.site.name!=='Site')?A3D.site.name:(bimProjectLabel()||'The site');
     figs.forEach(function(F){var E=bimFigEntry(F.f);if(E&&E.kind&&kinds.indexOf(E.kind)<0)kinds.push(E.kind);if(/^lb\./.test(F.f))lb=true;});
     var arr=has?bimBrdArrHtml(figs,ctx):'';
@@ -58001,7 +58030,7 @@ try{
     if(!F){console.warn('[BIM] A board\'s new list was not a list; nothing changed');return false;}
     pushUndo();
     B.figs=F;
-    if(B.els)B.els=bimBtrSync(B.els,F);   /* __acad3dV174a: a figure added or taken off is in the tree, or out of it */
+    if(B.objs)B.objs=bimBobSync(B.objs,F);   /* __acad3dV174a: a figure added or taken off is in the board's objects, or out of them */
     if(B.kind!=='custom'){
       if(off)B.off=off;
       if(B.off&&!B.off.length)delete B.off;
@@ -58266,7 +58295,7 @@ try{
     var B=bimBrdRec();
     if(!B||B.kind==='custom'||!B.figs)return false;
     pushUndo();
-    delete B.figs;delete B.off;delete B.els;   /* __acad3dV174a: and its tree */
+    delete B.figs;delete B.off;delete B.objs;   /* __acad3dV174a: and its objects */
     saveSoon();bimBrdRedraw();
     a3dToast(bimBoardLabel(B)+': its own figures in their own places again');
     return true;
@@ -58360,11 +58389,11 @@ try{
     return true;
   }
   /* ---- boards of one's own ---- */
-  function bimBrdNew(name,figs,els){
+  function bimBrdNew(name,figs,objs){
     var P=bimPresData(),n=0,id,r;
     P.boards.forEach(function(b){var m=/^board-c(\d+)$/.exec(b.id);if(m&&+m[1]>n)n=+m[1];});
     id='board-c'+(n+1);
-    r=bimBrdKeep({id:id,kind:'custom'},{name:name||('Board '+(n+1)),figs:figs||[],els:els});   /* __acad3dV174a: its tree */
+    r=bimBrdKeep({id:id,kind:'custom'},{name:name||('Board '+(n+1)),figs:figs||[],objs:objs});   /* __acad3dV174a: its objects */
     pushUndo();
     P.order=bimPresSeq().map(function(e){return e.id;});
     P.boards.push(r);P.order.push(id);
@@ -58372,8 +58401,8 @@ try{
     return id;
   }
   /* a new board, opened in Edit with the catalogue */
-  function bimBrdNewUi(name,figs,els){
-    var id=bimBrdNew(name,figs,els);
+  function bimBrdNewUi(name,figs,objs){
+    var id=bimBrdNew(name,figs,objs);
     bimShellSetTab('presentation');
     if(!bimPresOpenBoard(id))return id;
     A3D_CLB.edit=true;bimClbOpen();
@@ -58394,7 +58423,7 @@ try{
       L.forEach(function(F){F.y+=top;F.k='';});
       L=add.concat(L);
     }
-    return bimBrdNewUi('Copy of '+bimBoardLabel(B),L,B.kind==='custom'&&B.els?JSON.parse(JSON.stringify(B.els)):null);   /* __acad3dV174a: a board of one's own keeps its keys, so its tree comes too */
+    return bimBrdNewUi('Copy of '+bimBoardLabel(B),L,B.kind==='custom'&&B.objs?JSON.parse(JSON.stringify(B.objs)):null);   /* __acad3dV174a: a board of one's own keeps its keys, so its objects come too */
   }
   function bimBrdRename(name){
     var B=bimBrdRec();
@@ -58422,6 +58451,7 @@ try{
     if(s==='edit')bimBrdEdit(!A3D_CLB.edit);
     else if(s==='done')bimBrdEdit(false);
     else if(s==='add')bimBrdCatalogue();
+    else if(s==='draw'){r=a.getBoundingClientRect();bimBdeDrawMenu(r.left,r.bottom+4);}   /* __acad3dV174a */
     else if(s==='addnew'){if(!A3D_CLB.edit){A3D_CLB.edit=true;bimClbOpen();}bimBrdCatalogue();}
     else if(s==='reset')bimBrdReset();
   }
@@ -58448,301 +58478,193 @@ try{
     bimBdeWire(b);   /* __acad3dV174a */
   }
 
-  /* ================= __acad3dV174a: a board's element tree =================
-     docs/research/research-presentation-boards.md, 4.1 to 4.3 and D1 to D5, D19. A board one designs keeps one
-     tree of elements (B.els), the bottom of the list first: the order is the drawing order, the last drawn in front,
-     as PDF, SVG, Figma and Penpot keep it. Every element has its box in millimetres on paper: a board prints at one
-     CSS pixel to the 96th of an inch (the print window does not zoom it), so its 1408 px are 372.5 mm across, inside
-     A3 landscape's 400 mm. Each element has an opacity, a blend mode, lock, hide and a mask
-     flag; frames and groups have children. A figure of the board (V172b's list) is an element of the tree, 'fig',
-     that names its figure: its place stays in the list, in columns, so every path that arranges figures is unchanged
-     and a board made before V174 looks as it did (D19). The tree is made at the first change that needs it.
-     Functions only, no tables made at load: a project is read before this file has run (bimPresValid). */
-  function bimBtrPxMm(){return 96/25.4;}   /* CSS px per mm, as printed */
-  function bimBtrMax(){return {nodes:400,depth:8};}
-  /* the W3C 16 under Figma's names, in Figma's order (D2), and Pass through for frames and groups (D3):
-     [key, name, CSS and canvas keyword] */
-  function bimBtrBlends(){
-    return [['pass','Pass through',''],['normal','Normal','normal'],['darken','Darken','darken'],['multiply','Multiply','multiply'],
-      ['color-burn','Color burn','color-burn'],['lighten','Lighten','lighten'],['screen','Screen','screen'],['color-dodge','Color dodge','color-dodge'],
-      ['overlay','Overlay','overlay'],['soft-light','Soft light','soft-light'],['hard-light','Hard light','hard-light'],['difference','Difference','difference'],
+  /* ================= __acad3dV174a: a board's objects, on the one layer table =================
+     docs/research/research-presentation-boards.md, 11a (R1 to R4, the owner, 2026-11-08: "everything should be one
+     just like autocad layer system"). A board is paper space, as an AutoCAD layout is: its rectangles, ellipses,
+     lines, polygons, stars, text and images are objects drawn on it (B.objs), and each is on a layer of the project's
+     one layer table (A3D.layers), the model's. A V172b figure of the board is one object of the list too ('fig',
+     naming its figure; its place stays in the board's columns), so an old board looks as it did (D19).
+     Paint order is the layer order (R3): the Layers list read from the bottom up, a layer higher in it drawn over
+     those below; within a layer, the list's order (Draw order: Bring to front, Send to back). A sub-layer is how
+     objects are grouped (R4). Transparency and Blend are ByLayer unless an object has its own (R2), applied to each
+     object as AutoCAD applies a layer's transparency, and drawn in the Presentation appearance and in Present.
+     A mask clips the objects of its own layer drawn above it, up to the next mask of that layer (R4, D5).
+     Millimetres are as printed: a board's 1408 CSS px are 372.5 mm on paper. Functions only, no tables made at
+     load: a project is read before this file has run (bimPresValid). */
+  function bimBobPxMm(){return 96/25.4;}
+  function bimBobMax(){return 400;}
+  /* the W3C 16 under Figma's names, in Figma's order (D2): [key, name, CSS and canvas keyword] */
+  function bimBobBlends(){
+    return [['normal','Normal','normal'],['darken','Darken','darken'],['multiply','Multiply','multiply'],['color-burn','Color burn','color-burn'],
+      ['lighten','Lighten','lighten'],['screen','Screen','screen'],['color-dodge','Color dodge','color-dodge'],['overlay','Overlay','overlay'],
+      ['soft-light','Soft light','soft-light'],['hard-light','Hard light','hard-light'],['difference','Difference','difference'],
       ['exclusion','Exclusion','exclusion'],['hue','Hue','hue'],['saturation','Saturation','saturation'],['color','Color','color'],['luminosity','Luminosity','luminosity']];
   }
-  function bimBtrBlend(k){var L=bimBtrBlends(),i;for(i=0;i<L.length;i++)if(L[i][0]===k)return L[i];return null;}
-  /* the kinds: [key, name, a container, can be a mask] */
-  function bimBtrKinds(){
-    return [['frame','Frame',1,0],['group','Group',1,0],['rect','Rectangle',0,1],['ellipse','Ellipse',0,1],['line','Line',0,1],
-      ['poly','Polygon',0,1],['star','Star',0,1],['text','Text',0,0],['image','Image',0,1],['fig','Figure',0,0]];
+  function bimBobBlend(k){var L=bimBobBlends(),i;for(i=0;i<L.length;i++)if(L[i][0]===k)return L[i];return null;}
+  /* the kinds: [key, name, can be a mask] */
+  function bimBobKinds(){
+    return [['rect','Rectangle',1],['ellipse','Ellipse',1],['line','Line',1],['poly','Polygon',1],['star','Star',1],['text','Text',0],['image','Image',1],['fig','Figure',0]];
   }
-  function bimBtrKind(t){var L=bimBtrKinds(),i;for(i=0;i<L.length;i++)if(L[i][0]===t)return L[i];return null;}
-  function bimBtrIsBox(n){return !!n&&(n.t==='frame'||n.t==='group');}
-  function bimBtrMaskTypes(){return [['alpha','Alpha'],['vector','Vector'],['lum','Luminance']];}
+  function bimBobKind(t){var L=bimBobKinds(),i;for(i=0;i<L.length;i++)if(L[i][0]===t)return L[i];return null;}
+  function bimBobMaskTypes(){return [['alpha','Alpha'],['vector','Vector'],['lum','Luminance']];}
   /* ---- the record ---- */
-  function bimBtrNum(v,lo,hi,d){v=typeof v==='number'&&isFinite(v)?v:d;return Math.max(lo,Math.min(hi,Math.round(v*1000)/1000));}
-  function bimBtrCol(v,d){
+  function bimBobNum(v,lo,hi,d){v=typeof v==='number'&&isFinite(v)?v:d;return Math.max(lo,Math.min(hi,Math.round(v*1000)/1000));}
+  function bimBobCol(v,d){
     if(v==='none')return 'none';
     if(typeof v==='string'&&/^#[0-9a-fA-F]{6}$/.test(v))return v.toLowerCase();
     return d;
   }
-  /* one element, good or null; seen: the ids so far; depth: how deep it is */
-  function bimBtrNode(n,seen,depth,cnt){
-    var K,r,ch,i,c,bl;
+  /* one object, good, or null */
+  function bimBobOne(n,seen){
+    var K,r;
     if(!n||typeof n!=='object'||typeof n.t!=='string')return null;
-    K=bimBtrKind(n.t);if(!K)return null;
-    if(cnt.n>=bimBtrMax().nodes)return null;
+    K=bimBobKind(n.t);if(!K)return null;
     if(typeof n.id!=='string'||!/^e\d{1,6}$/.test(n.id)||seen[n.id])return null;
-    seen[n.id]=1;cnt.n++;
+    seen[n.id]=1;
     r={id:n.id,t:n.t};
+    if(typeof n.layer==='string'&&n.layer&&n.layer.length<=120)r.layer=n.layer;
     if(typeof n.nm==='string'&&n.nm.replace(/\s+/g,''))r.nm=n.nm.replace(/\s+/g,' ').trim().slice(0,80);
+    if(typeof n.tr==='number'&&isFinite(n.tr))r.tr=Math.round(Math.max(0,Math.min(90,n.tr)));   /* absent: ByLayer */
+    if(typeof n.bm==='string'&&bimBobBlend(n.bm))r.bm=n.bm;   /* absent: ByLayer */
     if(n.t==='fig'){
       if(typeof n.k!=='string'||!/^f\d{1,6}$/.test(n.k))return null;
       r.k=n.k;
-    }else if(n.t!=='group'){
-      r.x=bimBtrNum(n.x,-2000,20000,0);r.y=bimBtrNum(n.y,-2000,20000,0);
-      if(n.t==='line'){r.w=bimBtrNum(n.w,-20000,20000,40);r.h=bimBtrNum(n.h,-20000,20000,0);}
-      else{r.w=bimBtrNum(n.w,0.5,20000,40);r.h=bimBtrNum(n.h,0.5,20000,30);}
+      return r;
     }
-    r.op=bimBtrNum(n.op,0,1,1);
-    bl=bimBtrIsBox(n)?'pass':'normal';
-    r.bm=(typeof n.bm==='string'&&bimBtrBlend(n.bm)&&(n.bm!=='pass'||bimBtrIsBox(n)))?n.bm:bl;
-    if(n.lock===true)r.lock=true;
-    if(n.hide===true)r.hide=true;
-    if(K[3]&&(n.mask==='alpha'||n.mask==='vector'||n.mask==='lum'))r.mask=n.mask;
-    if(n.t==='rect'||n.t==='ellipse'||n.t==='poly'||n.t==='star'||n.t==='frame'){
-      r.fill=bimBtrCol(n.fill,n.t==='frame'?'#ffffff':'#c3c2b7');
-      if(n.t!=='frame')r.fop=bimBtrNum(n.fop,0,1,1);
+    r.x=bimBobNum(n.x,-2000,20000,0);r.y=bimBobNum(n.y,-2000,20000,0);
+    if(n.t==='line'){r.w=bimBobNum(n.w,-20000,20000,40);r.h=bimBobNum(n.h,-20000,20000,0);}
+    else{r.w=bimBobNum(n.w,0.5,20000,40);r.h=bimBobNum(n.h,0.5,20000,30);}
+    if(K[2]&&(n.mask==='alpha'||n.mask==='vector'||n.mask==='lum'))r.mask=n.mask;
+    if(n.t==='rect'||n.t==='ellipse'||n.t==='poly'||n.t==='star'){r.fill=bimBobCol(n.fill,'#c3c2b7');r.fop=bimBobNum(n.fop,0,1,1);}
+    if(n.t==='rect'||n.t==='ellipse'||n.t==='poly'||n.t==='star'||n.t==='line'){
+      r.stroke=bimBobCol(n.stroke,n.t==='line'?'#0b0b0b':'none');
+      r.sw=bimBobNum(n.sw,0,50,n.t==='line'?0.5:0.35);
     }
-    if(n.t==='rect'||n.t==='ellipse'||n.t==='poly'||n.t==='star'||n.t==='line'||n.t==='frame'){
-      r.stroke=bimBtrCol(n.stroke,n.t==='line'?'#0b0b0b':'none');
-      r.sw=bimBtrNum(n.sw,0,50,n.t==='line'?0.5:0.35);
-    }
-    if(n.t==='rect'||n.t==='frame')r.r=bimBtrNum(n.r,0,1000,0);
-    if(n.t==='poly')r.n=Math.round(bimBtrNum(n.n,3,60,6));
-    if(n.t==='star'){r.n=Math.round(bimBtrNum(n.n,3,60,5));r.ri=bimBtrNum(n.ri,0.05,0.95,0.38);}
+    if(n.t==='rect')r.r=bimBobNum(n.r,0,1000,0);
+    if(n.t==='poly')r.n=Math.round(bimBobNum(n.n,3,60,6));
+    if(n.t==='star'){r.n=Math.round(bimBobNum(n.n,3,60,5));r.ri=bimBobNum(n.ri,0.05,0.95,0.38);}
     if(n.t==='line'){if(n.a0===true)r.a0=true;if(n.a1===true)r.a1=true;}
-    if(n.t==='frame')r.clip=n.clip!==false;
     if(n.t==='text'){
       r.s=typeof n.s==='string'?n.s.slice(0,4000):'Text';
-      r.fs=bimBtrNum(n.fs,4,400,14);
+      r.fs=bimBobNum(n.fs,4,400,14);
       r.fw=n.fw===700?700:400;
       r.al=(n.al==='center'||n.al==='right')?n.al:'left';
-      r.col=bimBtrCol(n.col,'#0b0b0b');if(r.col==='none')r.col='#0b0b0b';
+      r.col=bimBobCol(n.col,'#0b0b0b');if(r.col==='none')r.col='#0b0b0b';
       r.fit=(n.fit==='auto-w'||n.fit==='fixed')?n.fit:'auto-h';
     }
     if(n.t==='image'){
       r.src=typeof n.src==='string'&&/^h[0-9a-f]{16}$/.test(n.src)?n.src:'';
       r.fit=(n.fit==='fit'||n.fit==='tile')?n.fit:'fill';
     }
-    if(K[2]){
-      if(depth>=bimBtrMax().depth)return null;
-      ch=[];
-      if(Array.isArray(n.ch))for(i=0;i<n.ch.length;i++){c=bimBtrNode(n.ch[i],seen,depth+1,cnt);if(c)ch.push(c);}
-      if(n.t==='group'&&!ch.length)return null;   /* a group is its children: an empty one is nothing */
-      r.ch=ch;
-    }
     return r;
   }
-  /* a board's tree as saved, good, or null when it has none; figs: its figures, to drop an element whose figure is gone */
-  function bimBtrValid(L,figs){
+  /* a board's objects as saved, good, agreeing with its figures; null when it has none */
+  function bimBobValid(L,figs){
     if(!Array.isArray(L))return null;
-    var seen={},cnt={n:0},out=[],i,n;
-    for(i=0;i<L.length;i++){n=bimBtrNode(L[i],seen,0,cnt);if(n)out.push(n);}
-    return bimBtrSync(out,figs||[]);
+    var seen={},out=[],i,n;
+    for(i=0;i<L.length&&out.length<bimBobMax();i++){n=bimBobOne(L[i],seen);if(n)out.push(n);}
+    return bimBobSync(out,figs||[]);
   }
-  /* ---- walking ---- */
-  /* fn(node, parent or null, list, index, depth); a true return stops the walk */
-  function bimBtrWalk(L,fn,par,depth){
-    var i;depth=depth||0;
-    for(i=0;i<L.length;i++){
-      if(fn(L[i],par||null,L,i,depth))return true;
-      if(L[i].ch&&bimBtrWalk(L[i].ch,fn,L[i],depth+1))return true;
-    }
-    return false;
-  }
-  /* {n, par, list, i, path: the ancestors, outermost first} or null */
-  function bimBtrFind(L,id){
-    var out=null,stack=[];
-    (function go(list,par){
-      var i;
-      for(i=0;i<list.length&&!out;i++){
-        if(list[i].id===id){out={n:list[i],par:par,list:list,i:i,path:stack.slice()};return;}
-        if(list[i].ch){stack.push(list[i]);go(list[i].ch,list[i]);stack.pop();}
-      }
-    })(L,null);
-    return out;
-  }
-  function bimBtrNewId(L){
+  function bimBobNewId(L){
     var m=0;
-    bimBtrWalk(L,function(n){var r=/^e(\d+)$/.exec(n.id);if(r&&+r[1]>m)m=+r[1];});
+    L.forEach(function(n){var r=/^e(\d+)$/.exec(n.id);if(r&&+r[1]>m)m=+r[1];});
     return 'e'+(m+1);
   }
-  function bimBtrCount(L){var c=0;bimBtrWalk(L,function(){c++;});return c;}
-  /* locked or hidden, by itself or by an ancestor (lock and hide cascade, 4.1) */
-  function bimBtrEff(L,id){
-    var f=bimBtrFind(L,id),r={lock:false,hide:false},i;
-    if(!f)return r;
-    for(i=0;i<f.path.length;i++){if(f.path[i].lock)r.lock=true;if(f.path[i].hide)r.hide=true;}
-    if(f.n.lock)r.lock=true;if(f.n.hide)r.hide=true;
-    return r;
+  function bimBobFind(L,id){var i;for(i=0;i<L.length;i++)if(L[i].id===id)return {n:L[i],i:i};return null;}
+  /* the list agrees with the figures: an object whose figure is gone is dropped, a figure with none gets one at the
+     list's end (its layer the first layer's), in the order given (reading order); a figure named twice keeps its first */
+  function bimBobSync(L,figs){
+    var have={},seen={},i;
+    (figs||[]).forEach(function(F){if(F&&F.k)have[F.k]=1;});
+    for(i=L.length-1;i>=0;i--)if(L[i].t==='fig'&&!have[L[i].k])L.splice(i,1);
+    L.forEach(function(n){if(n.t==='fig')seen[n.k]=(seen[n.k]||0)+1;});
+    for(i=L.length-1;i>=0;i--)if(L[i].t==='fig'&&seen[L[i].k]>1){seen[L[i].k]--;L.splice(i,1);}
+    (figs||[]).forEach(function(F){if(F&&F.k&&!seen[F.k]){seen[F.k]=1;L.push({id:bimBobNewId(L),t:'fig',k:F.k});}});
+    return L;
   }
-  /* ---- the figures ---- */
+  /* ---- the layer an object is on, and what it takes from it ---- */
+  function bimBobLayer(o){return (o&&o.layer&&bimLayerById(o.layer))||bimLayerZero();}
+  /* transparency, 0 to 90 per cent, its own or its layer's */
+  function bimBobTr(o){
+    if(typeof o.tr==='number')return o.tr;
+    var ly=bimBobLayer(o),t=ly?+ly.transparency:0;
+    return isFinite(t)&&t>0?Math.min(90,t):0;
+  }
+  /* the blend mode, its own or its layer's */
+  function bimBobBm(o){
+    if(o.bm)return o.bm;
+    var ly=bimBobLayer(o);
+    return ly&&bimBobBlend(ly.blend)?ly.blend:'normal';
+  }
+  /* ---- paint order (R3): the layer tree read from the bottom up, then the list's order within a layer ---- */
+  function bimBobRank(){
+    var T=bimLayerTree(),R={},i;
+    for(i=0;i<T.length;i++)R[T[i].ly.id]=T.length-1-i;
+    return R;
+  }
+  function bimBobPaint(L){
+    var R=bimBobRank(),z=bimLayerZero(),zid=z?z.id:'';
+    return L.map(function(n,i){var ly=bimBobLayer(n),id=ly?ly.id:zid;return {n:n,i:i,ly:id,r:R.hasOwnProperty(id)?R[id]:-1};})
+      .sort(function(a,b){return a.r-b.r||a.i-b.i;});
+  }
+  /* the paint list cut into runs: a mask masks the objects of its own layer above it, up to that layer's next mask;
+     a mask whose layer is off masks nothing and its objects are not drawn either. [{mask, items:[objects]}] */
+  function bimBobRuns(P){
+    var runs=[],cur=null;
+    P.forEach(function(p){
+      var n=p.n;
+      if(n.mask){cur={mask:n,ly:p.ly,items:[]};runs.push(cur);return;}
+      if(cur&&cur.ly===p.ly){cur.items.push(n);return;}
+      cur=null;
+      runs.push({mask:null,ly:p.ly,items:[n]});
+    });
+    return runs;
+  }
+  /* Draw order within its layer (R3): 'forward', 'backward', 'front', 'back'; true when it moved */
+  function bimBobReorder(L,id,how){
+    var f=bimBobFind(L,id),ly,same=[],i,k,j;
+    if(!f)return false;
+    ly=bimBobLayer(f.n);
+    for(i=0;i<L.length;i++)if(bimBobLayer(L[i])===ly)same.push(i);
+    k=same.indexOf(f.i);
+    j=how==='forward'?k+1:how==='backward'?k-1:how==='front'?same.length-1:how==='back'?0:k;
+    j=Math.max(0,Math.min(same.length-1,j));
+    if(j===k)return false;
+    L.splice(same[j],0,L.splice(f.i,1)[0]);
+    return true;
+  }
+  /* ---- geometry, in mm ---- */
   /* a figure's box in mm, from its columns (V172b: x*P, w*P-G px) */
-  function bimBtrFigBox(F,P,G){
-    var k=bimBtrPxMm();
+  function bimBobFigBox(F,P,G){
+    var k=bimBobPxMm();
     return {x:F.x*P/k,y:F.y*P/k,w:(F.w*P-G)/k,h:(F.h*P-G)/k};
   }
   /* a box in mm back to a figure's columns */
-  function bimBtrFigCols(b,P,G){
-    var k=bimBtrPxMm();
+  function bimBobFigCols(b,P,G){
+    var k=bimBobPxMm();
     return {x:b.x*k/P,y:b.y*k/P,w:(b.w*k+G)/P,h:(b.h*k+G)/P};
   }
-  /* the tree agrees with the figures: an element whose figure is gone is dropped, a figure with no element is put on
-     top, in the order given (reading order); a figure named twice keeps its first element */
-  function bimBtrSync(L,figs){
-    var have={},seen={},drop=[];
-    (figs||[]).forEach(function(F){if(F&&F.k)have[F.k]=1;});
-    bimBtrWalk(L,function(n,par,list,i){
-      if(n.t!=='fig')return;
-      if(!have[n.k]||seen[n.k])drop.push(n.id);else seen[n.k]=1;
-    });
-    drop.forEach(function(id){bimBtrRemove(L,id);});
-    (figs||[]).forEach(function(F){if(F&&F.k&&!seen[F.k]){seen[F.k]=1;L.push({id:bimBtrNewId(L),t:'fig',k:F.k,op:1,bm:'normal'});}});
-    return L;
-  }
-  /* ---- the box of an element, in mm; figBox(k) gives a figure's ---- */
-  function bimBtrBox(n,figBox){
-    var b=null;
+  function bimBobBox(n,figBox){
     if(n.t==='fig')return figBox?figBox(n.k):null;
-    if(n.t==='group'){
-      (n.ch||[]).forEach(function(c){var q=bimBtrBox(c,figBox);if(q)b=b?bimBtrUnion(b,q):q;});
-      return b;
-    }
     if(n.t==='line')return {x:Math.min(n.x,n.x+n.w),y:Math.min(n.y,n.y+n.h),w:Math.abs(n.w),h:Math.abs(n.h)};
     return {x:n.x,y:n.y,w:n.w,h:n.h};
   }
-  function bimBtrUnion(a,b){
+  function bimBobUnion(a,b){
     var x=Math.min(a.x,b.x),y=Math.min(a.y,b.y);
     return {x:x,y:y,w:Math.max(a.x+a.w,b.x+b.w)-x,h:Math.max(a.y+a.h,b.y+b.h)-y};
   }
-  /* every element moved by dx, dy mm; a figure through moveFig(k, dx, dy) */
-  function bimBtrShift(n,dx,dy,moveFig){
+  /* moved by dx, dy mm; a figure through moveFig(k, dx, dy) */
+  function bimBobShift(n,dx,dy,moveFig){
     if(n.t==='fig'){if(moveFig)moveFig(n.k,dx,dy);return;}
-    if(typeof n.x==='number'){n.x=Math.round((n.x+dx)*1000)/1000;n.y=Math.round((n.y+dy)*1000)/1000;}
-    (n.ch||[]).forEach(function(c){bimBtrShift(c,dx,dy,moveFig);});
+    n.x=Math.round((n.x+dx)*1000)/1000;n.y=Math.round((n.y+dy)*1000)/1000;
   }
-  /* ---- changing the tree: each works in place and returns true when it changed something ---- */
-  function bimBtrRemove(L,id){
-    var f=bimBtrFind(L,id);
-    if(!f)return false;
-    f.list.splice(f.i,1);
-    if(f.par&&f.par.t==='group'&&!f.par.ch.length)bimBtrRemove(L,f.par.id);   /* a group left empty is gone */
-    return true;
-  }
-  /* within its parent: 'forward', 'backward', 'front', 'back' (4.1) */
-  function bimBtrReorder(L,id,how){
-    var f=bimBtrFind(L,id),j;
-    if(!f)return false;
-    j=how==='forward'?f.i+1:how==='backward'?f.i-1:how==='front'?f.list.length-1:how==='back'?0:f.i;
-    j=Math.max(0,Math.min(f.list.length-1,j));
-    if(j===f.i)return false;
-    f.list.splice(j,0,f.list.splice(f.i,1)[0]);
-    return true;
-  }
-  /* the ids that share one parent, in their drawing order; null when they do not */
-  function bimBtrSiblings(L,ids){
-    var F=[],par,i,f;
-    for(i=0;i<ids.length;i++){
-      f=bimBtrFind(L,ids[i]);
-      if(!f)return null;
-      if(i===0)par=f.par;else if(f.par!==par)return null;
-      F.push(f);
-    }
-    F.sort(function(a,b){return a.i-b.i;});
-    return F;
-  }
-  /* the elements into a new group (or frame, around their bounds), where the topmost of them was; its id or null */
-  function bimBtrGroup(L,ids,asFrame,figBox){
-    var F=bimBtrSiblings(L,ids),list,top,g,b=null,i;
-    if(!F||!F.length)return null;
-    if(F[0].par&&F[0].par.t!=='frame'&&F[0].par.t!=='group')return null;
-    list=F[0].list;top=F[F.length-1].i;
-    g={id:bimBtrNewId(L),t:asFrame?'frame':'group',op:1,bm:'pass',ch:[]};
-    for(i=0;i<F.length;i++){g.ch.push(F[i].n);var q=bimBtrBox(F[i].n,figBox);if(q)b=b?bimBtrUnion(b,q):q;}
-    if(asFrame){
-      if(!b)return null;
-      g.x=Math.round(b.x*1000)/1000;g.y=Math.round(b.y*1000)/1000;g.w=Math.max(0.5,Math.round(b.w*1000)/1000);g.h=Math.max(0.5,Math.round(b.h*1000)/1000);
-      g.fill='none';g.stroke='none';g.sw=0.35;g.r=0;g.clip=false;
-    }
-    list.splice(top+1,0,g);
-    for(i=F.length-1;i>=0;i--)list.splice(F[i].i,1);
-    return g.id;
-  }
-  /* a group or frame's children into its place; its opacity goes into theirs, its blend mode is let go (said by the caller) */
-  function bimBtrUngroup(L,id){
-    var f=bimBtrFind(L,id),ch;
-    if(!f||!bimBtrIsBox(f.n))return false;
-    ch=f.n.ch||[];
-    if(f.n.op<1)ch.forEach(function(c){c.op=Math.round(c.op*f.n.op*1000)/1000;});
-    Array.prototype.splice.apply(f.list,[f.i,1].concat(ch));
-    if(f.par&&f.par.t==='group'&&!f.par.ch.length)bimBtrRemove(L,f.par.id);
-    return true;
-  }
-  /* into a frame or group (pid) at index j (its end when j is not a number), or to the board with pid null; never into itself */
-  function bimBtrMoveTo(L,id,pid,j){
-    var f=bimBtrFind(L,id),p=pid?bimBtrFind(L,pid):null,dest,oldPar;
-    if(!f||(pid&&(!p||!bimBtrIsBox(p.n))))return false;
-    if(pid&&(pid===id||p.path.some(function(a){return a.id===id;})))return false;
-    dest=p?p.n.ch:L;oldPar=f.par;
-    f.list.splice(f.i,1);
-    if(typeof j!=='number'||j>dest.length)j=dest.length;
-    dest.splice(Math.max(0,j),0,f.n);
-    if(oldPar&&oldPar.t==='group'&&!oldPar.ch.length)bimBtrRemove(L,oldPar.id);
-    return true;
-  }
-  /* out of its group or frame: just above it in its parent's list */
-  function bimBtrOut(L,id){
-    var f=bimBtrFind(L,id),g;
-    if(!f||!f.par)return false;
-    g=bimBtrFind(L,f.par.id);
-    return bimBtrMoveTo(L,id,g.par?g.par.id:null,g.i+1);
-  }
-  /* a deep copy with new ids, figures left out (a figure is on a board once); null when nothing is left */
-  function bimBtrCopy(L,n){
-    var next=+bimBtrNewId(L).slice(1);
-    function cp(a){
-      if(a.t==='fig')return null;
-      var r=JSON.parse(JSON.stringify(a)),ch;
-      r.id='e'+(next++);
-      if(a.ch){ch=[];a.ch.forEach(function(c){var q=cp(c);if(q)ch.push(q);});r.ch=ch;if(a.t==='group'&&!ch.length)return null;}
-      return r;
-    }
-    return cp(n);
-  }
-  /* ---- masks (4.3): in one list, a mask masks the siblings above it up to the next mask or the list's end; a hidden
-     mask masks nothing. [{mask: node or null, items: [nodes]}], bottom first ---- */
-  function bimBtrRuns(list){
-    var runs=[],cur={mask:null,items:[]};
-    list.forEach(function(n){
-      if(n.mask){
-        if(cur.mask||cur.items.length)runs.push(cur);
-        cur={mask:n.hide?null:n,items:[]};
-      }else cur.items.push(n);
-    });
-    if(cur.mask||cur.items.length)runs.push(cur);
-    return runs;
-  }
-  /* what a click picks (4.1): the outermost unlocked, visible ancestor within the scope (a group entered, or the
-     board), or the element itself when deep; null for a locked or hidden one */
-  function bimBtrPick(L,id,scope,deep){
-    var f=bimBtrFind(L,id),i,chain,e;
-    if(!f)return null;
-    e=bimBtrEff(L,id);
-    if(e.hide||e.lock)return null;
-    if(deep)return id;
-    chain=f.path.map(function(a){return a.id;}).concat([id]);
-    i=scope?chain.indexOf(scope):-1;
-    if(scope&&i<0)i=-1;
-    return chain[i+1]||id;
+  /* ---- the layer table's side ---- */
+  /* how many objects of every board are on a layer (Delete Layer refuses a layer that holds any) */
+  function bimBobOnLayer(id){
+    var P=A3D.pres,n=0;
+    if(!P||!Array.isArray(P.boards))return 0;
+    P.boards.forEach(function(B){(B&&Array.isArray(B.objs)?B.objs:[]).forEach(function(o){var ly=bimBobLayer(o);if(ly&&ly.id===id)n++;});});
+    return n;
   }
 
   /* ================= __acad3dV174a: a board's images, kept once =================
@@ -58834,7 +58756,7 @@ try{
     var out=[],P=A3D.pres;
     if(!P||!Array.isArray(P.boards))return out;
     P.boards.forEach(function(B){
-      if(B&&Array.isArray(B.els))bimBtrWalk(B.els,function(n){if(n.t==='image'&&n.src&&out.indexOf(n.src)<0)out.push(n.src);});
+      if(B&&Array.isArray(B.objs))B.objs.forEach(function(n){if(n.t==='image'&&n.src&&out.indexOf(n.src)<0)out.push(n.src);});
     });
     return out;
   }
@@ -58856,29 +58778,34 @@ try{
     return n;
   }
 
-  /* ================= __acad3dV174a: a designed board, drawn =================
-     docs/research/research-presentation-boards.md, 5.1 (D1: HTML and SVG, as the boards are), 4.2 and 5.3 (D3, D5).
-     The tree is drawn in its order, the first element at the back. The browser composites: opacity, mix-blend-mode
-     with the W3C keywords, isolation. In CSS an opacity under 1, a blend mode, a mask or a clip-path each make a
-     stacking context, and a stacking context isolates, so a group set to Pass through is drawn with no element of its
-     own, its children straight onto what is beneath; a group or frame with a mode or an opacity is one isolated
-     element. Paint order is the markup's order, never a z-index. The canvas is painted with the page's colour inside
-     the isolated root, so a Multiply over an empty part of the board darkens the page, on screen and on paper.
-     Masks: a mask masks the siblings above it (bimBtrRuns); vector by clip-path, alpha and luminance by mask-image
-     (mask-mode), the mask's own shape drawn as an SVG image. */
-  function bimBdsPx(mm){return bimBrdPx(mm*bimBtrPxMm());}
-  function bimBdsComp(n,iso){
-    var s='',B=bimBtrBlend(n.bm);
-    if(n.op<1)s+='opacity:'+n.op+';';
-    if(B&&B[2]&&B[2]!=='normal')s+='mix-blend-mode:'+B[2]+';';
-    if(iso)s+='isolation:isolate;';
+  /* ================= __acad3dV174a: a board's objects, drawn =================
+     docs/research/research-presentation-boards.md, 5.1 (D1: HTML and SVG, as the boards are) and 11a (R1 to R4).
+     The objects are drawn in paint order (bimBobPaint: the layers from the bottom of the list up, the list's order
+     within a layer). A layer that is off or frozen hides its objects; one set not to plot leaves them off paper (a
+     print is built in a plot pass, bimWithPlotPass); a locked one fades them in Edit. Transparency and Blend, ByLayer
+     or the object's own, are applied to each object, as AutoCAD applies a layer's transparency, and only in the
+     Presentation appearance and in Present: the Technical appearance draws every object plain, as a technical plot
+     leaves transparency out. Masks apply in both, being shapes: a mask clips the objects of its layer above it,
+     vector by clip-path, alpha and luminance by mask-image (the mask's own shape as an SVG picture, mask-mode).
+     The canvas is a sheet of paper in every theme (the print tokens) and an isolated root, so a blend mode over an
+     empty part of the board blends with white, on screen as on paper. Paint order is the markup's, never a z-index. */
+  function bimBdsPx(mm){return bimBrdPx(mm*bimBobPxMm());}
+  /* the Presentation appearance, or Present: where transparency and blend modes are drawn (R2) */
+  function bimBdsPres(){return bimPresentGraphics()||!!A3D_SLIDESHOW.on;}
+  function bimBdsComp(n,ctx){
+    var s='',a=1,B;
+    if(ctx.pres){
+      a=1-bimBobTr(n)/100;
+      B=bimBobBlend(bimBobBm(n));
+      if(B&&B[2]!=='normal')s+='mix-blend-mode:'+B[2]+';';
+    }
+    if(ctx.edit&&ctx.lk[n.id])a*=0.5;   /* a locked layer, faded as AutoCAD fades it on screen */
+    if(a<1)s='opacity:'+Math.round(a*1000)/1000+';'+s;
     return s;
   }
-  /* a group or frame is drawn on its own when it has a mode other than Pass through, or an opacity (D3) */
-  function bimBdsIsolated(n){return bimBtrIsBox(n)&&(n.bm!=='pass'||n.op<1);}
   function bimBdsPos(b,ox,oy){return 'left:'+bimBdsPx(b.x-ox)+'px;top:'+bimBdsPx(b.y-oy)+'px;width:'+bimBdsPx(b.w)+'px;height:'+bimBdsPx(b.h)+'px;';}
   function bimBdsAttr(n,cls,ctx){
-    return ' class="'+cls+(n.lock?' lk':'')+'" data-bde="'+n.id+'"'+(ctx.edit?'':' aria-hidden="true"');
+    return ' class="'+cls+(ctx.lk[n.id]?' lk':'')+'" data-bde="'+n.id+'"'+(ctx.edit?'':' aria-hidden="true"');
   }
   /* ---- the shapes, as SVG markup inside a box W x H px ---- */
   function bimBdsPts(n,W,H){
@@ -58904,7 +58831,7 @@ try{
   }
   /* the shape alone: [markup, W, H] at its box's origin; a line's from its corner */
   function bimBdsShape(n,hit){
-    var b=bimBtrBox(n),W=bimBdsPx(b.w),H=bimBdsPx(b.h),k=bimBtrPxMm(),s='',x0,y0,x1,y1,sw,col;
+    var b=bimBobBox(n),W=bimBdsPx(b.w),H=bimBdsPx(b.h),k=bimBobPxMm(),s='',x0,y0,x1,y1,sw,col;
     if(n.t==='rect'){var R=Math.min(bimBdsPx(n.r),W/2,H/2);s='<rect x="0" y="0" width="'+W+'" height="'+H+'"'+(R>0?' rx="'+R+'"':'')+bimBdsPaint(n)+'/>';}
     else if(n.t==='ellipse')s='<ellipse cx="'+bimBrdPx(W/2)+'" cy="'+bimBrdPx(H/2)+'" rx="'+bimBrdPx(W/2)+'" ry="'+bimBrdPx(H/2)+'"'+bimBdsPaint(n)+'/>';
     else if(n.t==='poly'||n.t==='star')s='<polygon points="'+bimBdsPts(n,W,H).map(function(p){return p.join(',');}).join(' ')+'"'+bimBdsPaint(n)+'/>';
@@ -58917,66 +58844,36 @@ try{
     }
     return [s,W,H];
   }
-  /* ---- one element ---- */
+  /* ---- one object ---- */
   function bimBdsNode(n,ox,oy,ctx){
-    if(n.hide)return '';
-    var t=n.t,b,S,h,u;
-    if(t==='group'||t==='frame')return bimBdsBox(n,ox,oy,ctx);
+    var t=n.t,b,S,h,u,pd,Wp,Hp;
     if(t==='fig')return bimBdsFig(n,ox,oy,ctx);
-    b=bimBtrBox(n);
-    if(t==='rect'||t==='ellipse'||t==='poly'||t==='star'||t==='line'){
+    b=bimBobBox(n);
+    if(t==='line'){   /* a level line's box is 0 high, and an SVG of no size is not painted: it grows by its stroke and heads */
       S=bimBdsShape(n,ctx.edit);
-      if(t==='line'){   /* a straight line's box can be 0 high or wide, and an SVG of no size is not painted: its box grows by its stroke and heads */
-        var pd=bimBrdPx(Math.max(8,bimBdsPx(n.sw)*4)+2),Wp=bimBrdPx(S[1]+2*pd),Hp=bimBrdPx(S[2]+2*pd);
-        return '<svg'+bimBdsAttr(n,'a3d-clb-dshp ln',ctx)+' xmlns="http://www.w3.org/2000/svg" style="left:'+bimBrdPx(bimBdsPx(b.x-ox)-pd)+'px;top:'+bimBrdPx(bimBdsPx(b.y-oy)-pd)+'px;width:'+Wp+'px;height:'+Hp+'px;'+
-          bimBdsComp(n,false)+'" viewBox="'+(-pd)+' '+(-pd)+' '+Wp+' '+Hp+'">'+S[0]+'</svg>';
-      }
-      return '<svg'+bimBdsAttr(n,'a3d-clb-dshp',ctx)+' xmlns="http://www.w3.org/2000/svg" style="'+bimBdsPos(b,ox,oy)+bimBdsComp(n,false)+'" viewBox="0 0 '+Math.max(S[1],0.001)+' '+Math.max(S[2],0.001)+'" preserveAspectRatio="none">'+S[0]+'</svg>';
+      pd=bimBrdPx(Math.max(8,bimBdsPx(n.sw)*4)+2);Wp=bimBrdPx(S[1]+2*pd);Hp=bimBrdPx(S[2]+2*pd);
+      return '<svg'+bimBdsAttr(n,'a3d-clb-dshp ln',ctx)+' xmlns="http://www.w3.org/2000/svg" style="left:'+bimBrdPx(bimBdsPx(b.x-ox)-pd)+'px;top:'+bimBrdPx(bimBdsPx(b.y-oy)-pd)+'px;width:'+Wp+'px;height:'+Hp+'px;'+
+        bimBdsComp(n,ctx)+'" viewBox="'+(-pd)+' '+(-pd)+' '+Wp+' '+Hp+'">'+S[0]+'</svg>';
+    }
+    if(t==='rect'||t==='ellipse'||t==='poly'||t==='star'){
+      S=bimBdsShape(n,false);
+      return '<svg'+bimBdsAttr(n,'a3d-clb-dshp',ctx)+' xmlns="http://www.w3.org/2000/svg" style="'+bimBdsPos(b,ox,oy)+bimBdsComp(n,ctx)+'" viewBox="0 0 '+Math.max(S[1],0.001)+' '+Math.max(S[2],0.001)+'" preserveAspectRatio="none">'+S[0]+'</svg>';
     }
     if(t==='text'){
       h='left:'+bimBdsPx(b.x-ox)+'px;top:'+bimBdsPx(b.y-oy)+'px;';
       if(n.fit!=='auto-w')h+='width:'+bimBdsPx(b.w)+'px;';
       if(n.fit==='fixed')h+='height:'+bimBdsPx(b.h)+'px;overflow:hidden;';
-      h+='font-size:'+bimBrdPx(n.fs*0.352778*bimBtrPxMm())+'px;font-weight:'+n.fw+';text-align:'+n.al+';color:'+n.col+';';
-      return '<div'+bimBdsAttr(n,'a3d-clb-dtxt'+(n.fit==='auto-w'?' aw':''),ctx)+' style="'+h+bimBdsComp(n,false)+'">'+bimClbE(n.s)+'</div>';
+      h+='font-size:'+bimBrdPx(n.fs*0.352778*bimBobPxMm())+'px;font-weight:'+n.fw+';text-align:'+n.al+';color:'+n.col+';';
+      return '<div'+bimBdsAttr(n,'a3d-clb-dtxt'+(n.fit==='auto-w'?' aw':''),ctx)+' style="'+h+bimBdsComp(n,ctx)+'">'+bimClbE(n.s)+'</div>';
     }
     if(t==='image'){
       u=n.src?bimBimgUrl(n.src):null;
-      h=bimBdsPos(b,ox,oy)+bimBdsComp(n,false);
+      h=bimBdsPos(b,ox,oy)+bimBdsComp(n,ctx);
       if(!u)return '<div'+bimBdsAttr(n,'a3d-clb-dimg ph',ctx)+' style="'+h+'"><span>'+(n.src&&!bimBimgMissing(n.src)?'Loading the image':'This image is not in this browser: open the project file it came in')+'</span></div>';
       h+='background-image:url(\''+u+'\');background-size:'+(n.fit==='fit'?'contain':n.fit==='tile'?'auto':'cover')+';background-repeat:'+(n.fit==='tile'?'repeat':'no-repeat')+';';
       return '<div'+bimBdsAttr(n,'a3d-clb-dimg',ctx)+' role="img" aria-label="'+bimClbE(n.nm||'Image')+'" style="'+h+'"></div>';
     }
     return '';
-  }
-  /* a frame (its box, fill and clip) or a group; drawn as its own element only when it must be */
-  function bimBdsBox(n,ox,oy,ctx){
-    var iso=bimBdsIsolated(n),b,s,inner;
-    if(n.t==='group'){
-      if(!iso)return bimBdsList(n.ch,ox,oy,ctx);
-      b=bimBtrBox(n,ctx.figBox);if(!b)return '';
-      return '<div'+bimBdsAttr(n,'a3d-clb-dgrp',ctx)+' style="'+bimBdsPos(b,ox,oy)+bimBdsComp(n,true)+'">'+bimBdsList(n.ch,b.x,b.y,ctx)+'</div>';
-    }
-    b=bimBtrBox(n);
-    s=bimBdsPos(b,ox,oy)+bimBdsComp(n,iso);
-    if(n.fill&&n.fill!=='none')s+='background:'+n.fill+';';
-    if(n.stroke&&n.stroke!=='none'&&n.sw>0)s+='box-shadow:inset 0 0 0 '+bimBdsPx(n.sw)+'px '+n.stroke+';';
-    if(n.r>0)s+='border-radius:'+bimBdsPx(n.r)+'px;';
-    if(n.clip)s+='overflow:hidden;';
-    inner=bimBdsList(n.ch,b.x,b.y,ctx);
-    return '<div'+bimBdsAttr(n,'a3d-clb-dfrm',ctx)+' style="'+s+'">'+inner+'</div>';
-  }
-  /* a list of siblings, in runs: a run under a mask is one masked element */
-  function bimBdsList(L,ox,oy,ctx){
-    var h='';
-    bimBtrRuns(L||[]).forEach(function(R){
-      var inner='',b,m=R.mask;
-      if(!m){R.items.forEach(function(n){h+=bimBdsNode(n,ox,oy,ctx);});return;}
-      b=bimBtrBox(m);
-      R.items.forEach(function(n){inner+=bimBdsNode(n,b.x,b.y,ctx);});
-      h+='<div class="a3d-clb-dmask" data-bdmask="'+m.id+'" style="'+bimBdsPos(b,ox,oy)+bimBdsMaskCss(m)+'">'+inner+'</div>';
-    });
-    return h;
   }
   /* the CSS that masks a run: vector by its outline, alpha and luminance by its picture */
   function bimBdsMaskCss(m){
@@ -58984,9 +58881,7 @@ try{
     if(type==='vector'&&m.t!=='line'){
       if(m.t==='rect')return 'clip-path:inset(0'+(m.r>0?' round '+bimBdsPx(m.r)+'px':'')+');';
       if(m.t==='ellipse')return 'clip-path:ellipse(50% 50% at 50% 50%);';
-      if(m.t==='poly'||m.t==='star'){
-        return 'clip-path:polygon('+bimBdsPts(m,100,100).map(function(p){return p[0]+'% '+p[1]+'%';}).join(',')+');';   /* in hundredths of its box */
-      }
+      if(m.t==='poly'||m.t==='star')return 'clip-path:polygon('+bimBdsPts(m,100,100).map(function(p){return p[0]+'% '+p[1]+'%';}).join(',')+');';   /* in hundredths of its box */
       return 'clip-path:inset(0);';   /* an image's outline is its box */
     }
     if(m.t==='image'){
@@ -58996,36 +58891,42 @@ try{
       url='url(\''+url+'\')';
     }else{
       S=bimBdsShape(m,false);
-      svg='<svg xmlns="http://www.w3.org/2000/svg" width="'+Math.max(S[1],1)+'" height="'+Math.max(S[2],1)+'" viewBox="0 0 '+Math.max(S[1],0.001)+' '+Math.max(S[2],0.001)+'" preserveAspectRatio="none" overflow="visible">'+
-        (m.op<1?'<g opacity="'+m.op+'">'+S[0]+'</g>':S[0])+'</svg>';
+      svg='<svg xmlns="http://www.w3.org/2000/svg" width="'+Math.max(S[1],1)+'" height="'+Math.max(S[2],1)+'" viewBox="0 0 '+Math.max(S[1],0.001)+' '+Math.max(S[2],0.001)+'" preserveAspectRatio="none" overflow="visible">'+S[0]+'</svg>';
       url='url(\'data:image/svg+xml,'+encodeURIComponent(svg).replace(/'/g,'%27')+'\')';
     }
     return '-webkit-mask-image:'+url+';mask-image:'+url+';-webkit-mask-size:'+sz+';mask-size:'+sz+';-webkit-mask-repeat:'+rep+';mask-repeat:'+rep+';-webkit-mask-position:center;mask-position:center;'+
-      'mask-mode:'+(type==='lum'?'luminance':'alpha')+';'+(type==='lum'?'-webkit-mask-source-type:luminance;':'');
+      'mask-mode:'+(type==='lum'?'luminance':'alpha')+';';
   }
-  /* a figure of the board, where its list puts it, with its element's opacity and mode */
+  /* a figure of the board, where its list puts it, with its transparency and blend */
   function bimBdsFig(n,ox,oy,ctx){
     var F=ctx.figs[n.k];
     if(!F)return '';
-    return bimBrdFigHtml(F.F,ctx,(oy*bimBtrPxMm())/BIM_BRD_P0,F.over,{
-      dx:-ox*bimBtrPxMm(),num:F.no,cls:' a3d-clb-dfig'+(n.lock?' lk':''),attr:' data-bde="'+n.id+'"',style:bimBdsComp(n,false)});
+    return bimBrdFigHtml(F.F,ctx,(oy*bimBobPxMm())/BIM_BRD_P0,F.over,{
+      dx:-ox*bimBobPxMm(),num:F.no,cls:' a3d-clb-dfig'+(ctx.lk[n.id]?' lk':''),attr:' data-bde="'+n.id+'"',style:bimBdsComp(n,ctx)});
   }
   /* ---- the whole board ---- */
-  /* the board's height in mm: its lowest element, and its figures' */
-  function bimBdsBottom(els,figBox){
-    var bot=0;
-    bimBtrWalk(els,function(n){var b=n.t==='group'?null:bimBtrBox(n,figBox);if(b&&b.y+b.h>bot)bot=b.y+b.h;});
-    return bot;
-  }
   function bimBdsFigBoxer(figs){
     var M={};
     figs.forEach(function(F){M[F.k]=F;});
-    return function(k){var F=M[k];return F?bimBtrFigBox(F,BIM_BRD_P0,BIM_BRD_G):null;};
+    return function(k){var F=M[k];return F?bimBobFigBox(F,BIM_BRD_P0,BIM_BRD_G):null;};
   }
-  /* a board with a tree: the arranged figures' section, drawn from the tree. ctx: {edit, narrow, caps, no} */
+  /* what is drawn: the objects whose layer is on and thawed (and, on paper, plotted), in paint order; ctx.lk the
+     locked ones */
+  function bimBdsShown(L,ctx){
+    var P=bimBobPaint(L),out=[];
+    ctx.lk={};
+    P.forEach(function(p){
+      var ly=bimLayerById(p.ly),s=ly?bimLayerEff(ly):{on:true,frozen:false,locked:false,plot:true};
+      if(!s.on||s.frozen||(A3D_PLOT.on&&!s.plot))return;
+      if(s.locked&&!A3D_PLOT.on)ctx.lk[p.n.id]=1;
+      out.push(p);
+    });
+    return out;
+  }
+  /* a board with objects: the arranged figures' section, drawn from them. ctx: {edit, narrow, caps, no} */
   function bimBdsHtml(B,figs,ctx){
-    var els=B.els||[],ov=ctx.edit?bimBrdOverlaps(figs):{k:{}},no=0,H,h;
-    ctx.figBox=bimBdsFigBoxer(figs);ctx.figs={};
+    var L=B.objs||[],ov=ctx.edit?bimBrdOverlaps(figs):{k:{}},no=0,H=0,fb,h,body='';
+    ctx.figBox=fb=bimBdsFigBoxer(figs);ctx.figs={};ctx.pres=bimBdsPres();
     /* figures are numbered in reading order, as the bands number them */
     bimBrdBands(figs).forEach(function(D){D.f.forEach(function(F){
       var src=F.f==='text'?null:bimFigSrc(ctx,F.f,F.o||{});
@@ -59033,38 +58934,46 @@ try{
       ctx.figs[F.k]={F:F,over:!!ov.k[F.k],no:src&&!src.kpis?no:0};
     });});
     ctx.no=no;
-    H=bimBdsBottom(els,ctx.figBox);
+    L.forEach(function(n){var b=bimBobBox(n,fb);if(b&&b.y+b.h>H)H=b.y+b.h;});
+    bimBobRuns(bimBdsShown(L,ctx)).forEach(function(R){
+      var inner='',b,m=R.mask;
+      if(!m){R.items.forEach(function(n){body+=bimBdsNode(n,0,0,ctx);});return;}
+      b=bimBobBox(m);
+      R.items.forEach(function(n){inner+=bimBdsNode(n,b.x,b.y,ctx);});
+      body+='<div class="a3d-clb-dmask" data-bdmask="'+m.id+'" style="'+bimBdsPos(b,0,0)+bimBdsMaskCss(m)+'">'+inner+'</div>';
+    });
     h='<section class="a3d-clb-arr a3d-clb-dsn'+(ctx.edit?' edit':'')+'" aria-label="The board" style="height:'+bimBdsPx(H+(ctx.edit?60:0))+'px">';
     if(ctx.edit)h+='<div class="a3d-clb-arrgrid'+(A3D_SNAP.grid?' on':'')+'" aria-hidden="true" style="height:100%"></div>';
-    h+='<div class="a3d-clb-dcv">'+bimBdsList(els,0,0,ctx)+'</div>';
+    h+='<div class="a3d-clb-dcv">'+body+'</div>';
     if(ctx.edit)h+='<div class="a3d-clb-dsel" aria-hidden="true"></div>';
     return h+'</section>';
   }
   /* an image that arrives from the database: the open board drawn again with it, and the thumbnails */
   A3D_BIMG.redraw=function(){bimClbRefresh();};
 
-  /* ================= __acad3dV174a: designing a board, in Edit =================
-     docs/research/research-presentation-boards.md, 4.1. A click selects the outermost unlocked, visible element
-     within the group one has gone into (the board at first); Ctrl-click (Cmd on a Mac) selects deep; Shift adds.
-     Enter goes into a group, Shift+Enter out. Locked and hidden elements are not picked on the board but are in the
-     layer list. The arrows nudge 1 mm, 10 with Shift. Ctrl+G groups, Ctrl+Shift+G ungroups, Ctrl+] and Ctrl+[ bring
-     forward and send backward, with Shift to the front and the back (Figma's keys, and QGIS's). On a touch screen the
-     list's own buttons do what the keys do. Every change is one undo step, kept with the project. */
-  var A3D_BDE={sel:[],scope:null,drag:null,pnl:null,fold:{},file:null};
-  /* the board's tree and figures to change: copies, the tree made from the figures when there is none yet */
+  /* ================= __acad3dV174a: drawing on a board, in Edit =================
+     docs/research/research-presentation-boards.md, 11a. The board's Draw menu puts a rectangle, an ellipse, a line, an
+     arrow, a polygon, a star, text or an image on the board, on the current layer, as AutoCAD draws on the current
+     layer. A click selects an object (Shift or Ctrl adds); its properties are in the Properties panel and its row is
+     under its layer in the Layers tab, where it is selected too. The arrows nudge 1 mm, 10 with Shift; Delete
+     removes; Ctrl+] and Ctrl+[ bring forward and send backward within its layer, with Shift to the front and the
+     back. A locked layer's objects are not picked. Every change is one undo step, kept with the project. */
+  var A3D_BDE={sel:[],drag:null,file:null,hinted:false,was:false};
+  /* the board's objects and figures to change: copies, the objects made from the figures when there are none yet
+     (each figure on the first layer, in reading order) */
   function bimBdeWork(){
-    var B=bimBrdRec(),figs,els,order=[];
+    var B=bimBrdRec(),figs,objs,order=[];
     if(!B)return null;
     figs=bimBrdWorking(B);
-    if(B.els)els=JSON.parse(JSON.stringify(B.els));
-    else{els=[];bimBrdBands(figs).forEach(function(D){D.f.forEach(function(F){order.push(F);});});}
-    bimBtrSync(els,order.length?order:figs);
-    return {B:B,figs:figs,els:els,off:B.off?B.off.slice():null};
+    if(B.objs)objs=JSON.parse(JSON.stringify(B.objs));
+    else{objs=[];bimBrdBands(figs).forEach(function(D){D.f.forEach(function(F){order.push(F);});});}
+    bimBobSync(objs,order.length?order:figs);
+    return {B:B,figs:figs,objs:objs,off:B.off?B.off.slice():null};
   }
   function bimBdeFigBox(W){return bimBdsFigBoxer(W.figs);}
   function bimBdeMoveFig(W){
     return function(k,dx,dy){
-      var i,F,s=bimBtrPxMm()/BIM_BRD_P0;
+      var i,F,s=bimBobPxMm()/BIM_BRD_P0;
       for(i=0;i<W.figs.length;i++)if(W.figs[i].k===k){
         F=W.figs[i];
         F.x=Math.max(0,Math.min(12-F.w,Math.round((F.x+dx*s)*10000)/10000));
@@ -59072,22 +58981,23 @@ try{
       }
     };
   }
-  /* one undo step: the board's figures and tree as W has them */
+  /* one undo step: the board's figures and objects as W has them */
   function bimBdeCommit(W,msg,sel){
     var F=bimBrdFigsValid(W.figs),T;
     if(!F){console.warn('[BIM] A board\'s new figures were not a list; nothing changed');return false;}
-    T=bimBtrValid(W.els,F);
+    T=bimBobValid(W.objs,F);
     pushUndo();
-    W.B.figs=F;W.B.els=T||[];
+    W.B.figs=F;W.B.objs=T||[];
     if(W.B.kind!=='custom'){if(W.off&&W.off.length)W.B.off=W.off;else delete W.B.off;}
     if(sel)A3D_BDE.sel=sel.slice();
     saveSoon();
     bimBrdRedraw();
+    refreshLayers();refreshProps();
     if(msg)a3dToast(msg);
     return true;
   }
   function bimBdeName(n,W){
-    var K=bimBtrKind(n.t),F,E,i;
+    var K=bimBobKind(n.t),F,E,i;
     if(n.nm)return n.nm;
     if(n.t==='fig'){
       for(i=0;i<W.figs.length;i++)if(W.figs[i].k===n.k)F=W.figs[i];
@@ -59098,14 +59008,19 @@ try{
     if(n.t==='text')return n.s.replace(/\s+/g,' ').slice(0,40)||'Text';
     return K?K[1]:n.t;
   }
-  /* the selected ids that are still there, with none under another selected one */
-  function bimBdeSel(W){
-    var S=A3D_BDE.sel.filter(function(id){return !!bimBtrFind(W.els,id);});
-    return S.filter(function(id){var f=bimBtrFind(W.els,id);return !f.path.some(function(a){return S.indexOf(a.id)>=0;});});
+  /* the selected ids that are still there */
+  function bimBdeSel(W){return A3D_BDE.sel.filter(function(id){return !!bimBobFind(W.objs,id);});}
+  /* a board's objects selected: the model's selection is let go, so the two never stand together */
+  function bimBdeSelect(ids){
+    A3D_BDE.sel=ids.slice();
+    if(ids.length&&(A3D.sel||(A3D.selSet&&A3D.selSet.length))){A3D.sel=null;A3D.sel2=null;A3D.selSet=[];}
+    bimBdeSync();
   }
-  /* ---- adding ---- */
+  /* the Properties panel shows the board's selection while a board is designed */
+  function bimBdeOwnsProps(){return bimBrdEditing()&&A3D_BDE.sel.length>0&&!!bimBrdRec();}
+  /* ---- drawing ---- */
   function bimBdeAddSpot(){
-    var b=bimClbEl(),d=b&&b.querySelector('.a3d-clb-dsn'),k=bimBtrPxMm(),z,y=20,br,dr;
+    var b=bimClbEl(),d=b&&b.querySelector('.a3d-clb-dsn'),k=bimBobPxMm(),z,y=20,br,dr;
     if(d){
       z=parseFloat(d.style.getPropertyValue('--z'))||1;
       br=b.getBoundingClientRect();dr=d.getBoundingClientRect();
@@ -59113,101 +59028,95 @@ try{
     }
     return {x:20,y:Math.round(y)};
   }
-  /* a new element of a kind ('arrow' is a line with its head), at the top of the board's visible part, or of the
-     group one is in */
+  function bimBdeDrawKinds(){return [['rect','Rectangle'],['ellipse','Ellipse'],['line','Line'],['arrow','Arrow'],['poly','Polygon'],['star','Star'],['text','Text'],['image','Image…']];}
+  function bimBdeDrawMenu(x,y){
+    bimLtMenuOpen(x,y,bimBdeDrawKinds().map(function(k){return [k[1],k[0]];}),function(k){if(k==='image')bimBdeAddImage();else bimBdeAdd(k);});
+    return true;
+  }
+  /* a new object of a kind ('arrow' is a line with its head) on the current layer, at the top of the board's visible part */
   function bimBdeAdd(kind,extra){
-    var W=bimBdeWork(),p=bimBdeAddSpot(),n,id,par=null,f;
-    if(!W){a3dToast('Only a board in the set can be designed: Show in Presentation puts it there');return null;}
-    if(bimBtrCount(W.els)>=bimBtrMax().nodes){a3dToast('A board holds '+bimBtrMax().nodes+' elements at most');return null;}
-    id=bimBtrNewId(W.els);
-    n={id:id,t:kind==='arrow'?'line':kind,x:p.x,y:p.y,op:1};
+    var W=bimBdeWork(),p=bimBdeAddSpot(),n,id,f,ly=bimLayerById(A3D.activeLayer)||bimLayerZero();
+    if(!W){a3dToast('Only a board in the set can be drawn on: Show in Presentation puts it there');return null;}
+    if(W.objs.length>=bimBobMax()){a3dToast('A board holds '+bimBobMax()+' objects at most');return null;}
+    id=bimBobNewId(W.objs);
+    n={id:id,t:kind==='arrow'?'line':kind,x:p.x,y:p.y,layer:ly?ly.id:undefined};
     if(kind==='rect'){n.w=60;n.h=40;}
     else if(kind==='ellipse'||kind==='poly'||kind==='star'){n.w=50;n.h=50;}
     else if(kind==='line'||kind==='arrow'){n.w=60;n.h=0;if(kind==='arrow')n.a1=true;}
     else if(kind==='text'){n.w=80;n.h=10;n.s='Text';}
-    else if(kind==='frame'){n.w=120;n.h=80;n.fill='#ffffff';n.bm='pass';}
     else if(kind==='image'){n.w=100;n.h=75;}
     else return null;
     if(extra)for(f in extra)if(extra.hasOwnProperty(f))n[f]=extra[f];
-    if(A3D_BDE.scope){f=bimBtrFind(W.els,A3D_BDE.scope);if(f&&bimBtrIsBox(f.n))par=f.n;}
-    (par?par.ch:W.els).push(n);
-    if(!bimBdeCommit(W,(bimBtrKind(n.t)||['',kind])[1]+' added: drag it into place',[id]))return null;
+    W.objs.push(n);
+    if(!bimBdeCommit(W,(bimBobKind(n.t)||['',kind])[1]+' drawn on layer '+(ly?ly.name:'')+': drag it into place',[id]))return null;
     return id;
   }
-  function bimBdeAddImage(){
+  /* an image picked from the device: a new one, or (swap) the image of an image object */
+  function bimBdeAddImage(swap){
     var inp=A3D_BDE.file;
     if(!inp){
       inp=A3D_BDE.file=document.createElement('input');
       inp.type='file';inp.accept='image/png,image/jpeg,image/gif,image/webp';inp.style.display='none';
       inp.addEventListener('change',function(){
-        var f=inp.files&&inp.files[0],swap=inp.__swap;
+        var f=inp.files&&inp.files[0],sw=inp.__swap;
         inp.value='';inp.__swap=null;
         if(!f)return;
         bimBimgAdd(f,function(h,w,hh){
-          if(swap){bimBdeSet(swap,{src:h});return;}
-          var W0=100,H0=Math.max(1,Math.round(W0*hh/w));
-          bimBdeAdd('image',{src:h,h:H0,nm:f.name.replace(/\.[^.]+$/,'').slice(0,80)});
+          if(sw){bimBdeSet(sw,{src:h});return;}
+          bimBdeAdd('image',{src:h,h:Math.max(1,Math.round(100*hh/w)),nm:f.name.replace(/\.[^.]+$/,'').slice(0,80)});
         });
       });
       document.body.appendChild(inp);
     }
-    inp.__swap=arguments[0]||null;
+    inp.__swap=swap||null;
     inp.click();
     return true;
   }
-  /* ---- changing what is selected ---- */
-  /* fields onto one element; numbers in mm and fractions as given */
-  function bimBdeSet(id,o){
-    var W=bimBdeWork(),f=W&&bimBtrFind(W.els,id),k;
-    if(!f)return false;
-    for(k in o)if(o.hasOwnProperty(k)){if(o[k]===null)delete f.n[k];else f.n[k]=o[k];}
-    return bimBdeCommit(W,null,[id]);
-  }
-  /* one action on the selection: forward, backward, front, back, group, frame, ungroup, out, dup, del, lock, hide */
-  function bimBdeDo(a,ids){
-    var W=bimBdeWork(),S,msg=null,sel=null,id,changed=false,f,lost=false;
+  /* ---- changing the selection ---- */
+  /* fields onto objects (ids, or the selection); a null field goes back to its default (ByLayer for tr and bm) */
+  function bimBdeSet(ids,o){
+    var W=bimBdeWork(),S,k,done=0;
     if(!W)return false;
-    S=bimBdeSel({els:W.els}).filter(function(x){return !ids||ids.indexOf(x)>=0;});
-    if(ids)S=ids.filter(function(x){return !!bimBtrFind(W.els,x);});
+    S=typeof ids==='string'?[ids]:(ids||bimBdeSel(W));
+    S.forEach(function(id){
+      var f=bimBobFind(W.objs,id);if(!f)return;
+      for(k in o)if(o.hasOwnProperty(k)){
+        if(f.n.t==='fig'&&k!=='layer'&&k!=='tr'&&k!=='bm'&&k!=='nm')continue;   /* a figure keeps its place in its columns */
+        if(o[k]===null)delete f.n[k];else f.n[k]=o[k];
+      }
+      done++;
+    });
+    if(!done)return false;
+    if((o.tr!==undefined||o.bm!==undefined)&&!bimBdsPres()&&!A3D_BDE.hinted){A3D_BDE.hinted=true;a3dToast('Transparency and blend modes show in the Presentation appearance (Pres in the status bar) and in Present');}
+    return bimBdeCommit(W,null,S);
+  }
+  /* one action on the selection: forward, backward, front, back, dup, del */
+  function bimBdeDo(a,ids){
+    var W=bimBdeWork(),S,sel=null,changed=false;
+    if(!W)return false;
+    S=(ids||bimBdeSel(W)).filter(function(x){return !!bimBobFind(W.objs,x);});
     if(!S.length)return false;
-    if(a==='forward'||a==='front'){S.slice().reverse().forEach(function(x){if(bimBtrReorder(W.els,x,a))changed=true;});sel=S;}
-    else if(a==='backward'||a==='back'){S.forEach(function(x){if(bimBtrReorder(W.els,x,a))changed=true;});sel=S;}
-    else if(a==='group'||a==='frame'){
-      id=bimBtrGroup(W.els,S,a==='frame',bimBdeFigBox(W));
-      if(!id){a3dToast('Only elements side by side in one list can be grouped');return false;}
-      changed=true;sel=[id];msg=a==='frame'?'Framed':'Grouped';
-    }else if(a==='ungroup'){
-      S.forEach(function(x){
-        f=bimBtrFind(W.els,x);
-        if(f&&bimBtrIsBox(f.n)){if(f.n.bm!=='pass')lost=true;sel=(sel||[]).concat(f.n.ch.map(function(c){return c.id;}));if(bimBtrUngroup(W.els,x))changed=true;}
-      });
-      if(lost)msg='Ungrouped: the group\'s blend mode is let go, its opacity is in its elements';
-    }else if(a==='out'){S.forEach(function(x){if(bimBtrOut(W.els,x))changed=true;});sel=S;A3D_BDE.scope=null;}
-    else if(a==='lock'||a==='hide'){
-      var on=!S.every(function(x){return bimBtrFind(W.els,x).n[a];});
-      S.forEach(function(x){f=bimBtrFind(W.els,x);if(on)f.n[a]=true;else delete f.n[a];});
-      changed=true;sel=a==='hide'&&on?[]:S;
-    }else if(a==='dup'){
+    if(a==='forward'||a==='front'){S.slice().reverse().forEach(function(x){if(bimBobReorder(W.objs,x,a))changed=true;});}
+    else if(a==='backward'||a==='back'){S.forEach(function(x){if(bimBobReorder(W.objs,x,a))changed=true;});}
+    else if(a==='dup'){
       sel=[];
       S.forEach(function(x){
-        f=bimBtrFind(W.els,x);
-        var c=bimBtrCopy(W.els,f.n);
-        if(!c)return;
-        bimBtrShift(c,5,5,null);
-        f.list.splice(f.i+1,0,c);sel.push(c.id);changed=true;
+        var f=bimBobFind(W.objs,x),c;
+        if(!f||f.n.t==='fig')return;
+        c=JSON.parse(JSON.stringify(f.n));c.id=bimBobNewId(W.objs);bimBobShift(c,5,5,null);
+        W.objs.splice(f.i+1,0,c);sel.push(c.id);changed=true;
       });
       if(!changed){a3dToast('A figure is on a board once: Duplicate in its menu puts a copy below the others');return false;}
-      msg='Duplicated';
     }else if(a==='del'){
       S.forEach(function(x){
-        f=bimBtrFind(W.els,x);if(!f)return;
-        bimBtrWalk([f.n],function(n){if(n.t==='fig')bimBdeDropFig(W,n.k);});
-        bimBtrRemove(W.els,x);changed=true;
+        var f=bimBobFind(W.objs,x);if(!f)return;
+        if(f.n.t==='fig')bimBdeDropFig(W,f.n.k);
+        W.objs.splice(f.i,1);changed=true;
       });
-      sel=[];msg='Deleted: Ctrl+Z brings it back';
+      sel=[];
     }
     if(!changed)return false;
-    return bimBdeCommit(W,msg,sel||S);
+    return bimBdeCommit(W,a==='del'?'Deleted: Ctrl+Z brings it back':a==='dup'?'Duplicated':null,sel||S);
   }
   /* a figure off the board, as its menu's Remove does it (the three boards keep the figures taken off) */
   function bimBdeDropFig(W,k){
@@ -59217,80 +59126,56 @@ try{
     E=bimFigEntry(F.f);
     if(E&&E.kind===W.B.kind&&!E.kpis&&!W.figs.some(function(x){return x.f===F.f;})){W.off=W.off||[];if(W.off.indexOf(F.f)<0)W.off.push(F.f);}
   }
-  /* into a group or a frame, at its top */
-  function bimBdeInto(pid){
-    var W=bimBdeWork(),S,ok=false;
-    if(!W)return false;
-    S=bimBdeSel(W);
-    S.forEach(function(x){if(bimBtrMoveTo(W.els,x,pid))ok=true;});
-    if(!ok){a3dToast('An element cannot go into itself');return false;}
-    return bimBdeCommit(W,null,S);
-  }
-  /* Enter: into the group selected, its top element selected; Shift+Enter: out, the group selected */
-  function bimBdeEnter(up){
-    var W=bimBdeWork(),S,f,c;
-    if(!W)return false;
-    S=bimBdeSel(W);if(S.length!==1)return false;
-    f=bimBtrFind(W.els,S[0]);
-    if(up){if(!f.par)return false;A3D_BDE.scope=f.path.length>1?f.path[f.path.length-2].id:null;A3D_BDE.sel=[f.par.id];}
-    else{if(!bimBtrIsBox(f.n)||!f.n.ch.length)return false;A3D_BDE.scope=f.n.id;c=f.n.ch[f.n.ch.length-1];A3D_BDE.sel=[c.id];}
-    bimBdeSync();
-    return true;
-  }
   function bimBdeEsc(){
-    if(!bimBrdEditing()||(!A3D_BDE.sel.length&&!A3D_BDE.scope))return false;
-    if(A3D_BDE.sel.length)A3D_BDE.sel=[];else A3D_BDE.scope=null;
-    bimBdeSync();
+    if(!bimBrdEditing()||!A3D_BDE.sel.length)return false;
+    bimBdeSelect([]);
     return true;
   }
   /* ---- the board's pointer ---- */
   function bimBdeDsn(){var b=bimClbEl();return b&&b.querySelector('.a3d-clb-dsn');}
   function bimBdeZoom(d){return parseFloat(d.style.getPropertyValue('--z'))||1;}
-  /* the elements on the page that draw an element (a group drawn straight has none of its own: its children's) */
-  function bimBdeDom(d,W,id){
-    var q=d.querySelectorAll('[data-bde="'+id+'"],[data-bdmask="'+id+'"]'),f,out=[];
-    if(q.length)return [].slice.call(q);
-    f=bimBtrFind(W.els,id);
-    if(f&&f.n.ch)f.n.ch.forEach(function(c){out=out.concat(bimBdeDom(d,W,c.id));});
-    return out;
+  function bimBdeDom(d,id){return [].slice.call(d.querySelectorAll('[data-bde="'+id+'"],[data-bdmask="'+id+'"]'));}
+  function bimBdePickable(W,id){
+    var f=bimBobFind(W.objs,id),ly=f&&bimBobLayer(f.n),s=ly?bimLayerEff(ly):null;
+    return !!f&&(!s||(s.on&&!s.frozen&&!s.locked));
   }
   function bimBdeDown(ev){
     if(!bimBrdEditing()||(ev.button!==undefined&&ev.button>0))return;
-    var t=ev.target,d=t&&t.closest?t.closest('.a3d-clb-dsn'):null,W,e,id,hd,S,f,b;
+    var t=ev.target,d=t&&t.closest?t.closest('.a3d-clb-dsn'):null,W,e,id,S,f,b;
     if(!d||t.closest('[data-brdmenu],[data-brdrsz]'))return;
     W=bimBdeWork();if(!W)return;
     try{d.focus({preventScroll:true});}catch(eF){}
-    hd=t.closest('[data-bdh]');
-    if(hd){
+    if(t.closest('[data-bdh]')){
       S=bimBdeSel(W);if(S.length!==1)return;
-      f=bimBtrFind(W.els,S[0]);
+      f=bimBobFind(W.objs,S[0]);
+      if(f.n.t==='fig'||!bimBdePickable(W,S[0]))return;
       bimBdeDragStart(ev,d,W,'size',[S[0]],{x:f.n.x,y:f.n.y,w:f.n.w,h:f.n.h});
       return;
     }
     e=t.closest('[data-bde]');
-    if(!e){if(!ev.shiftKey&&(A3D_BDE.sel.length||A3D_BDE.scope)){A3D_BDE.sel=[];A3D_BDE.scope=null;bimBdeSync();}return;}
-    id=bimBtrPick(W.els,e.getAttribute('data-bde'),A3D_BDE.scope,ev.ctrlKey||ev.metaKey);
-    if(!id)return;
-    if(ev.shiftKey){
-      A3D_BDE.sel=A3D_BDE.sel.indexOf(id)>=0?A3D_BDE.sel.filter(function(x){return x!==id;}):A3D_BDE.sel.concat([id]);
-      bimBdeSync();ev.preventDefault();return;
+    if(!e){if(!ev.shiftKey&&A3D_BDE.sel.length)bimBdeSelect([]);return;}
+    id=e.getAttribute('data-bde');
+    if(!bimBdePickable(W,id))return;
+    if(ev.shiftKey||ev.ctrlKey||ev.metaKey){
+      bimBdeSelect(A3D_BDE.sel.indexOf(id)>=0?A3D_BDE.sel.filter(function(x){return x!==id;}):A3D_BDE.sel.concat([id]));
+      ev.preventDefault();return;
     }
-    if(A3D_BDE.sel.indexOf(id)<0){A3D_BDE.sel=[id];bimBdeSync();}
-    if(ev.pointerType==='touch'&&!t.closest('[data-brdgrip]'))return;   /* a finger scrolls the board; the fields place it */
-    S=bimBdeSel(W).filter(function(x){return !bimBtrEff(W.els,x).lock;});
+    if(A3D_BDE.sel.indexOf(id)<0)bimBdeSelect([id]);
+    if(ev.pointerType==='touch'&&!t.closest('[data-brdgrip]'))return;   /* a finger scrolls the board; Properties places it */
+    S=bimBdeSel(W).filter(function(x){return bimBdePickable(W,x);});
     if(!S.length)return;
-    b=null;S.forEach(function(x){var q=bimBtrBox(bimBtrFind(W.els,x).n,bimBdeFigBox(W));if(q)b=b?bimBtrUnion(b,q):q;});
+    b=null;S.forEach(function(x){var q=bimBobBox(bimBobFind(W.objs,x).n,bimBdeFigBox(W));if(q)b=b?bimBobUnion(b,q):q;});
     bimBdeDragStart(ev,d,W,'move',S,b);
   }
   function bimBdeDragStart(ev,d,W,mode,ids,box){
     var b=bimClbEl(),dom=[];
-    ids.forEach(function(x){dom=dom.concat(bimBdeDom(d,W,x));});
+    ids.forEach(function(x){dom=dom.concat(bimBdeDom(d,x));});
     A3D_BDE.drag={mode:mode,ids:ids,W:W,x0:ev.clientX,y0:ev.clientY,s0:b?b.scrollTop:0,z:bimBdeZoom(d),d:d,dom:dom,box:box,pid:ev.pointerId,moved:false,dx:0,dy:0};
     try{d.setPointerCapture(ev.pointerId);}catch(eP){}
     ev.preventDefault();
   }
   function bimBdeMoveEv(ev){
-    var D=A3D_BDE.drag,b,k=bimBtrPxMm(),dx,dy,px,py,f;
+    var D=A3D_BDE.drag,b,k=bimBobPxMm(),dx,dy,px,py,f,w,h,s;
     if(!D||ev.pointerId!==D.pid)return;
     if(!D.moved&&Math.abs(ev.clientX-D.x0)<3&&Math.abs(ev.clientY-D.y0)<3)return;
     b=bimClbEl();
@@ -59301,9 +59186,9 @@ try{
     px=bimBrdPx(dx*k);py=bimBrdPx(dy*k);
     if(D.mode==='move')D.dom.forEach(function(el){el.style.transform='translate('+px+'px,'+py+'px)';});
     else{
-      f=bimBtrFind(D.W.els,D.ids[0]).n;
-      var w=f.t==='line'?D.box.w+dx:Math.max(0.5,D.box.w+dx),h=f.t==='line'?D.box.h+dy:Math.max(0.5,D.box.h+dy);
-      if(ev.shiftKey&&f.t!=='line'&&D.box.w>0&&D.box.h>0){var s=Math.max(w/D.box.w,h/D.box.h);w=D.box.w*s;h=D.box.h*s;}
+      f=bimBobFind(D.W.objs,D.ids[0]).n;
+      w=f.t==='line'?D.box.w+dx:Math.max(0.5,D.box.w+dx);h=f.t==='line'?D.box.h+dy:Math.max(0.5,D.box.h+dy);
+      if(ev.shiftKey&&f.t!=='line'&&D.box.w>0&&D.box.h>0){s=Math.max(w/D.box.w,h/D.box.h);w=D.box.w*s;h=D.box.h*s;}
       D.w=Math.round(w*10)/10;D.h=Math.round(h*10)/10;
       D.dom.forEach(function(el){if(f.t!=='line'){el.style.width=bimBdsPx(D.w)+'px';if(f.t!=='text'||f.fit==='fixed')el.style.height=bimBdsPx(D.h)+'px';}});
     }
@@ -59316,11 +59201,9 @@ try{
     A3D_BDE.drag=null;
     try{D.d.releasePointerCapture(D.pid);}catch(eR){}
     if(!D.moved||(D.mode==='move'&&!D.dx&&!D.dy)){D.dom.forEach(function(el){el.style.transform='';});return;}
-    if(D.mode==='move'){
-      D.ids.forEach(function(x){f=bimBtrFind(D.W.els,x);if(f)bimBtrShift(f.n,D.dx,D.dy,bimBdeMoveFig(D.W));});
-    }else{
-      f=bimBtrFind(D.W.els,D.ids[0]);
-      if(!f)return;
+    if(D.mode==='move')D.ids.forEach(function(x){f=bimBobFind(D.W.objs,x);if(f)bimBobShift(f.n,D.dx,D.dy,bimBdeMoveFig(D.W));});
+    else{
+      f=bimBobFind(D.W.objs,D.ids[0]);if(!f)return;
       f.n.w=D.w;f.n.h=D.h;
       if(f.n.t==='text'&&f.n.fit==='auto-w')f.n.fit='auto-h';
     }
@@ -59333,29 +59216,27 @@ try{
     bimClbOpen();
   }
   /* ---- the keys on the board ---- */
-  /* the app's key handler asks this first: Ctrl+G, Ctrl+[ and Ctrl+] belong to the board while one designs it */
+  /* the app's key handler asks this first: Ctrl+D, Ctrl+[ and Ctrl+] belong to the board while one draws on it */
   function bimBdeWantsKey(ev){
     var a=document.activeElement;
     if(!bimBrdEditing()||!a||!a.closest||!a.closest('.a3d-clb-dsn'))return false;
-    return (ev.ctrlKey||ev.metaKey)&&/^(g|G|d|D|\[|\]|\{|\})$/.test(ev.key);
+    return (ev.ctrlKey||ev.metaKey)&&/^(d|D|\[|\]|\{|\})$/.test(ev.key);
   }
   function bimBdeKey(ev){
-    var t=ev.target,k=ev.key,c=ev.ctrlKey||ev.metaKey,W,S,m,f;
+    var t=ev.target,k=ev.key,c=ev.ctrlKey||ev.metaKey,W,S,m;
     if(!bimBrdEditing()||!t||!t.closest||!t.closest('.a3d-clb-dsn'))return;
     if(/^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))return;
     if(!A3D_BDE.sel.length)return;
-    if(c&&(k==='g'||k==='G')){bimBdeDo(ev.shiftKey?'ungroup':'group');}
-    else if(c&&(k==='d'||k==='D'))bimBdeDo('dup');
+    if(c&&(k==='d'||k==='D'))bimBdeDo('dup');
     else if(c&&(k===']'||k==='}'))bimBdeDo(ev.shiftKey?'front':'forward');
     else if(c&&(k==='['||k==='{'))bimBdeDo(ev.shiftKey?'back':'backward');
     else if(k==='Delete'||k==='Backspace')bimBdeDo('del');
-    else if(k==='Enter')bimBdeEnter(ev.shiftKey);
     else if(/^Arrow/.test(k)&&!c){
       W=bimBdeWork();if(!W)return;
-      S=bimBdeSel(W).filter(function(x){return !bimBtrEff(W.els,x).lock;});
+      S=bimBdeSel(W).filter(function(x){return bimBdePickable(W,x);});
       if(!S.length)return;
       m=ev.shiftKey?10:1;
-      S.forEach(function(x){f=bimBtrFind(W.els,x);bimBtrShift(f.n,k==='ArrowLeft'?-m:k==='ArrowRight'?m:0,k==='ArrowUp'?-m:k==='ArrowDown'?m:0,bimBdeMoveFig(W));});
+      S.forEach(function(x){bimBobShift(bimBobFind(W.objs,x).n,k==='ArrowLeft'?-m:k==='ArrowRight'?m:0,k==='ArrowUp'?-m:k==='ArrowDown'?m:0,bimBdeMoveFig(W));});
       bimBdeCommit(W,null,S);
     }else return;
     ev.preventDefault();ev.stopPropagation();
@@ -59367,219 +59248,160 @@ try{
     b.addEventListener('pointercancel',bimBdeCancel);
     b.addEventListener('keydown',bimBdeKey);
   }
-  /* ---- after the board is drawn: the selection's outlines, and the panel ---- */
+  /* ---- after the board is drawn: the selection's outlines ---- */
   function bimBdeOverlay(d,W,live){
     var o=d&&d.querySelector('.a3d-clb-dsel'),S,h='',fb;
     if(!o)return;
     S=bimBdeSel(W);fb=bimBdeFigBox(W);
-    S.forEach(function(x,i){
-      var f=bimBtrFind(W.els,x),b=bimBtrBox(f.n,fb),hd=false;
+    S.forEach(function(x){
+      var f=bimBobFind(W.objs,x),b=bimBobBox(f.n,fb),hd;
       if(!b)return;
       b={x:b.x,y:b.y,w:b.w,h:b.h};
       if(live&&live.dx!==undefined){b.x+=live.dx;b.y+=live.dy;}
       if(live&&live.w!==undefined&&f.n.t!=='line'){b.w=Math.max(0.5,live.w);b.h=Math.max(0.5,live.h);}
-      hd=S.length===1&&f.n.t!=='group'&&f.n.t!=='fig'&&!bimBtrEff(W.els,x).lock;
+      hd=S.length===1&&f.n.t!=='fig'&&bimBdePickable(W,x);
       h+='<div class="a3d-clb-dbox'+(f.n.mask?' mk':'')+'" style="'+bimBdsPos(b,0,0)+'">'+
         (hd?'<div class="a3d-clb-dhdl" data-bdh="se" title="Drag to size; Shift keeps its proportions" style="'+(f.n.t==='line'?'left:'+bimBdsPx(f.n.x+f.n.w-b.x)+'px;top:'+bimBdsPx(f.n.y+f.n.h-b.y)+'px':'right:0;bottom:0')+'"></div>':'')+'</div>';
     });
-    if(A3D_BDE.scope){var g=bimBtrFind(W.els,A3D_BDE.scope),gb=g&&bimBtrBox(g.n,fb);if(gb)h='<div class="a3d-clb-dscope" style="'+bimBdsPos(gb,0,0)+'"></div>'+h;}
     o.innerHTML=h;
   }
-  /* the board was drawn: the selection kept to what is still there, outlined, and the panel brought up to date */
+  /* the board was drawn: the selection kept to what is still there and outlined */
   function bimBdeAfterDraw(b){
-    var W,d;
-    if(!bimBrdEditing()){bimBdePanelClose();A3D_BDE.sel=[];A3D_BDE.scope=null;return;}
-    W=bimBdeWork();
-    if(!W){bimBdePanelClose();return;}
+    var W,d,n,ed=bimBrdEditing(),turned=ed!==A3D_BDE.was;
+    A3D_BDE.was=ed;
+    if(!ed){if(A3D_BDE.sel.length||turned){A3D_BDE.sel=[];refreshProps();refreshLayers();}return;}   /* the board's rows leave the Layers tab */
+    W=bimBdeWork();if(!W)return;
+    n=A3D_BDE.sel.length;
     A3D_BDE.sel=bimBdeSel(W);
-    if(A3D_BDE.scope&&!bimBtrFind(W.els,A3D_BDE.scope))A3D_BDE.scope=null;
     d=b&&b.querySelector('.a3d-clb-dsn');
-    if(d){d.setAttribute('tabindex','0');d.setAttribute('aria-label','The board: click an element to select it; the layer list beside it has every element');bimBdeOverlay(d,W,null);}
-    bimBdePanel(W);
+    if(d){d.setAttribute('tabindex','0');d.setAttribute('aria-label','The board: click an object to select it; its properties are in the Properties panel and its row under its layer in Layers');bimBdeOverlay(d,W,null);}
+    if(n!==A3D_BDE.sel.length||turned){refreshProps();refreshLayers();}   /* Edit on: the board's objects under their layers */
   }
   function bimBdeSync(){
     var W=bimBdeWork();
-    if(!W)return;
-    A3D_BDE.sel=bimBdeSel(W);
-    bimBdeOverlay(bimBdeDsn(),W,null);
-    bimBdePanel(W);
+    if(W){A3D_BDE.sel=bimBdeSel(W);bimBdeOverlay(bimBdeDsn(),W,null);}
+    refreshProps();refreshLayers();
   }
 
-  /* ================= __acad3dV174a: the board's layers and properties, beside it in Edit =================
-     One panel, over the board's right side on a wide screen and at the bottom on a phone: what can be added, the
-     layer list (the front at the top, as Figma and QGIS list it; lock and hide on each row; a group or frame opens
-     and folds), and the selection's properties: its box in millimetres, opacity, blend mode, mask, and its kind's
-     own fields. The buttons under the list do what the keys do, for a finger. */
-  function bimBdeIco(p){return '<svg viewBox="0 0 16 16" aria-hidden="true">'+p+'</svg>';}
-  function bimBdeIcons(){
-    if(bimBdeIcons.I)return bimBdeIcons.I;
-    bimBdeIcons.I={
-      lockOn:bimBdeIco('<rect x="3.5" y="7" width="9" height="7" rx="1.5"/><path d="M5.5 7V5a2.5 2.5 0 0 1 5 0v2" fill="none" stroke="currentColor" stroke-width="1.5"/>'),
-      lockOff:bimBdeIco('<rect x="3.5" y="7" width="9" height="7" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M5.5 7V5a2.5 2.5 0 0 1 5 0" fill="none" stroke="currentColor" stroke-width="1.3"/>'),
-      eyeOn:bimBdeIco('<path d="M1.5 8s2.5-4.5 6.5-4.5S14.5 8 14.5 8 12 12.5 8 12.5 1.5 8 1.5 8z" fill="none" stroke="currentColor" stroke-width="1.3"/><circle cx="8" cy="8" r="2"/>'),
-      eyeOff:bimBdeIco('<path d="M1.5 8s2.5-4.5 6.5-4.5S14.5 8 14.5 8 12 12.5 8 12.5 1.5 8 1.5 8z" fill="none" stroke="currentColor" stroke-width="1.3" opacity=".45"/><path d="M2.5 13.5l11-11" stroke="currentColor" stroke-width="1.4"/>'),
-      fold:bimBdeIco('<path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6"/>'),
-      open:bimBdeIco('<path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6"/>')
-    };
-    return bimBdeIcons.I;
-  }
-  function bimBdePanelClose(){
-    var p=A3D_BDE.pnl;
-    A3D_BDE.pnl=null;
-    if(p&&p.parentNode)p.parentNode.removeChild(p);
-  }
-  function bimBdePanelEl(){
-    var p=A3D_BDE.pnl;
-    if(p&&p.isConnected)return p;
-    p=A3D_BDE.pnl=document.createElement('aside');
-    p.className='a3d-clb a3d-clb-dpnl';   /* the board's colours */
-    p.setAttribute('aria-label','The board\'s layers and properties');
-    p.addEventListener('click',bimBdePanelClick);
-    p.addEventListener('change',bimBdePanelChange);
-    p.addEventListener('keydown',function(ev){
-      if(ev.key==='Escape'){ev.preventDefault();ev.stopPropagation();if(!bimBdeEsc())bimBrdEdit(false);}
-      else if(ev.key==='Enter'&&ev.target&&ev.target.tagName==='INPUT'){ev.preventDefault();ev.target.blur();}
+  /* ================= __acad3dV174a: a board's objects in the Layers tab and the Properties panel =================
+     No panel of their own (the owner, 2026-11-08): a board's objects are listed in the Layers tab under the layer
+     each is on, and the selected ones are shown in the Properties panel, as the model's objects are. Their Layer is
+     chosen there, and their Transparency and Blend are ByLayer unless set (R2). */
+  /* the rows of a layer's board objects, under its row in the Layers tab, while a board is drawn on */
+  function bimBdeLyRows(lyId,depth,f){
+    var W,h='';
+    if(!bimBrdEditing())return '';
+    W=bimBdeWork();if(!W)return '';
+    W.objs.forEach(function(n){
+      var ly=bimBobLayer(n),nm,sel;
+      if(!ly||ly.id!==lyId)return;
+      nm=bimBdeName(n,W);
+      if(f&&String(nm).toLowerCase().indexOf(f)<0)return;
+      sel=A3D_BDE.sel.indexOf(n.id)>=0;
+      h+='<div class="a3d-lyobj a3d-lybo'+(sel?' sel':'')+'" data-lybo="'+bimEsc(n.id)+'" style="padding-left:'+(22+depth*14)+'px" title="'+bimEsc(nm)+' -- on the board">'+
+        '<span class="a3d-lydot" style="background:'+bimEsc(n.fill&&n.fill!=='none'?n.fill:(n.stroke&&n.stroke!=='none'?n.stroke:(n.col||'#7f9db8')))+'"></span>'+
+        '<span class="a3d-lynm">'+bimEsc(nm)+'</span><span class="a3d-lyty">'+(n.mask?'mask':'board '+bimEsc((bimBobKind(n.t)||['',n.t])[1].toLowerCase()))+'</span></div>';
     });
-    document.body.appendChild(p);
-    return p;
-  }
-  /* placed over the board's right side, under its bar; a phone's: the bottom of the screen */
-  function bimBdePanelPlace(p){
-    var b=bimClbEl(),r,bar;
-    if(!b)return;
-    if(A3D_CLB.narrow){p.classList.add('nar');p.style.cssText='';return;}
-    p.classList.remove('nar');
-    r=b.getBoundingClientRect();bar=b.querySelector('.a3d-clb-bar');
-    var top=r.top+(bar?bar.getBoundingClientRect().height:44)+8;
-    p.style.cssText='top:'+Math.round(top)+'px;right:'+Math.round(Math.max(8,window.innerWidth-r.right+12))+'px;max-height:'+Math.round(Math.max(160,r.bottom-top-12))+'px';
-  }
-  function bimBdeOpt(v,t,cur){return '<option value="'+bimClbE(v)+'"'+(String(v)===String(cur)?' selected':'')+'>'+bimClbE(t)+'</option>';}
-  function bimBdeNumF(lab,name,v,step,min,max){
-    return '<label class="a3d-clb-dfld"><span>'+lab+'</span><input type="number" data-bdf="'+name+'" value="'+(Math.round(v*100)/100)+'" step="'+step+'"'+(min!==undefined?' min="'+min+'"':'')+(max!==undefined?' max="'+max+'"':'')+'></label>';
-  }
-  function bimBdeColF(lab,name,v,none){
-    var on=v&&v!=='none';
-    return '<label class="a3d-clb-dfld col"><span>'+lab+'</span><input type="color" data-bdf="'+name+'" value="'+(on?v:'#000000')+'"'+(on?'':' disabled')+'>'+
-      (none?'<input type="checkbox" data-bdf="'+name+':on" aria-label="'+bimClbE(lab)+' on"'+(on?' checked':'')+'>':'')+'</label>';
-  }
-  function bimBdeChkF(lab,name,on){return '<label class="a3d-clb-dfld chk"><input type="checkbox" data-bdf="'+name+'"'+(on?' checked':'')+'><span>'+lab+'</span></label>';}
-  /* the list: the front at the top; rows indented by depth */
-  function bimBdeRows(L,W,depth,boxes,par){
-    var I=bimBdeIcons(),h='',i,n,sel,eff,mk=false;
-    /* a row under a mask is marked so: the mask's run, from the bottom */
-    var under={};
-    for(i=0;i<L.length;i++){if(L[i].mask&&!L[i].hide)mk=true;else if(mk)under[L[i].id]=1;}
-    for(i=L.length-1;i>=0;i--){
-      n=L[i];sel=A3D_BDE.sel.indexOf(n.id)>=0;eff=bimBtrEff(W.els,n.id);
-      if(bimBtrIsBox(n))boxes.push([n.id,new Array(depth+1).join('  ')+bimBdeName(n,W)]);
-      h+='<li class="a3d-clb-drow'+(sel?' sel':'')+(eff.hide?' hid':'')+'" style="--d:'+depth+'">'+
-        (bimBtrIsBox(n)?'<button type="button" class="a3d-clb-dic" data-bdfold="'+n.id+'" aria-label="'+(A3D_BDE.fold[n.id]?'Open ':'Fold ')+bimClbE(bimBdeName(n,W))+'" aria-expanded="'+!A3D_BDE.fold[n.id]+'">'+(A3D_BDE.fold[n.id]?I.fold:I.open)+'</button>':'<span class="a3d-clb-dic sp"></span>')+
-        '<button type="button" class="a3d-clb-dnm" data-bdsel="'+n.id+'" aria-pressed="'+sel+'">'+(n.mask?'<b class="a3d-clb-dtag">Mask</b>':'')+(under[n.id]?'<span class="a3d-clb-dtag u">masked</span>':'')+
-          '<span class="a3d-clb-dkd">'+bimClbE((bimBtrKind(n.t)||['',n.t])[1])+'</span> '+bimClbE(bimBdeName(n,W))+'</button>'+
-        '<button type="button" class="a3d-clb-dic" data-bdtog="lock" data-bdid="'+n.id+'" aria-pressed="'+!!n.lock+'" aria-label="'+(n.lock?'Unlock ':'Lock ')+bimClbE(bimBdeName(n,W))+'" title="Lock">'+(n.lock?I.lockOn:I.lockOff)+'</button>'+
-        '<button type="button" class="a3d-clb-dic" data-bdtog="hide" data-bdid="'+n.id+'" aria-pressed="'+!!n.hide+'" aria-label="'+(n.hide?'Show ':'Hide ')+bimClbE(bimBdeName(n,W))+'" title="Hide">'+(n.hide?I.eyeOff:I.eyeOn)+'</button></li>';
-      if(n.ch&&!A3D_BDE.fold[n.id])h+=bimBdeRows(n.ch,W,depth+1,boxes,n);
-    }
     return h;
   }
-  function bimBdeProps(W,S){
-    var h='',n,f,K,bl,b,act;
-    act='<div class="a3d-clb-dacts" role="group" aria-label="Arrange">'+
-      [['forward','Forward','Ctrl+]'],['backward','Backward','Ctrl+['],['front','To front','Ctrl+Shift+]'],['back','To back','Ctrl+Shift+['],
-       ['group','Group','Ctrl+G'],['frame','Frame',''],['ungroup','Ungroup','Ctrl+Shift+G'],['enter','Go in','Enter'],['out','Out of its group','Shift+Enter'],
-       ['dup','Duplicate','Ctrl+D'],['del','Delete','Delete']].map(function(a){
-        return '<button type="button" class="a3d-clb-btn" data-bdact="'+a[0]+'"'+(a[2]?' title="'+a[2]+'"':'')+(a[0]==='del'?' data-danger="1"':'')+'>'+a[1]+'</button>';}).join('')+'</div>';
-    if(!S.length)return '<p class="a3d-clb-dhint">Select an element on the board or in the list. Add puts a new one at the top of what is in view.</p>';
-    if(S.length>1){
-      return '<h3 class="a3d-clb-dh3">'+S.length+' selected</h3>'+act;
-    }
-    f=bimBtrFind(W.els,S[0]);n=f.n;K=bimBtrKind(n.t);
-    h+='<h3 class="a3d-clb-dh3">'+bimClbE(K?K[1]:n.t)+'</h3>';
-    h+='<label class="a3d-clb-dfld wide"><span>Name</span><input type="text" data-bdf="nm" maxlength="80" value="'+bimClbE(n.nm||'')+'" placeholder="'+bimClbE(bimBdeName(n,W))+'"></label>';
-    if(typeof n.x==='number'){
-      h+='<div class="a3d-clb-dgrid">'+bimBdeNumF('X mm','x',n.x,1)+bimBdeNumF('Y mm','y',n.y,1)+
-        bimBdeNumF(n.t==='line'?'Run mm':'W mm','w',n.w,1,n.t==='line'?undefined:0.5)+bimBdeNumF(n.t==='line'?'Rise mm':'H mm','h',n.h,1,n.t==='line'?undefined:0.5)+'</div>';
-    }else{b=bimBtrBox(n,bimBdeFigBox(W));if(b)h+='<p class="a3d-clb-dhint">'+Math.round(b.w)+' x '+Math.round(b.h)+' mm, at '+Math.round(b.x)+', '+Math.round(b.y)+(n.t==='fig'?'. Its handle and its corner move and size it, as before.':'')+'</p>';}
-    bl=bimBtrBlends().filter(function(x){return x[0]!=='pass'||bimBtrIsBox(n);});
-    h+='<div class="a3d-clb-dgrid">'+bimBdeNumF('Opacity %','op',n.op*100,5,0,100)+
-      '<label class="a3d-clb-dfld"><span>Blend</span><select data-bdf="bm">'+bl.map(function(x){return bimBdeOpt(x[0],x[1],n.bm);}).join('')+'</select></label></div>';
-    if(K&&K[3])h+='<label class="a3d-clb-dfld wide"><span>Mask the elements above it</span><select data-bdf="mask">'+bimBdeOpt('','Not a mask',n.mask||'')+
-      bimBtrMaskTypes().map(function(m){return bimBdeOpt(m[0],m[1],n.mask||'');}).join('')+'</select></label>';
-    if(n.fill!==undefined)h+='<div class="a3d-clb-dgrid">'+bimBdeColF('Fill','fill',n.fill,true)+(n.fop!==undefined?bimBdeNumF('Fill %','fop',n.fop*100,5,0,100):'')+'</div>';
-    if(n.stroke!==undefined)h+='<div class="a3d-clb-dgrid">'+bimBdeColF('Stroke','stroke',n.stroke,true)+bimBdeNumF('Stroke mm','sw',n.sw,0.05,0,50)+'</div>';
-    if(n.r!==undefined)h+=bimBdeNumF('Corner mm','r',n.r,0.5,0);
-    if(n.t==='poly')h+=bimBdeNumF('Sides','n',n.n,1,3,60);
-    if(n.t==='star')h+='<div class="a3d-clb-dgrid">'+bimBdeNumF('Points','n',n.n,1,3,60)+bimBdeNumF('Inner %','ri',n.ri*100,1,5,95)+'</div>';
-    if(n.t==='line')h+='<div class="a3d-clb-dgrid">'+bimBdeChkF('Arrow at its start','a0',n.a0)+bimBdeChkF('Arrow at its end','a1',n.a1)+'</div>';
-    if(n.t==='frame')h+=bimBdeChkF('Clip its content','clip',n.clip);
-    if(n.t==='text'){
-      h+='<label class="a3d-clb-dfld wide"><span>Text</span><textarea data-bdf="s" rows="3" maxlength="4000">'+bimClbE(n.s)+'</textarea></label>'+
-        '<div class="a3d-clb-dgrid">'+bimBdeNumF('Size pt','fs',n.fs,1,4,400)+bimBdeColF('Colour','col',n.col,false)+
-        '<label class="a3d-clb-dfld"><span>Align</span><select data-bdf="al">'+bimBdeOpt('left','Left',n.al)+bimBdeOpt('center','Centre',n.al)+bimBdeOpt('right','Right',n.al)+'</select></label>'+
-        '<label class="a3d-clb-dfld"><span>Box</span><select data-bdf="fit">'+bimBdeOpt('auto-w','Auto width',n.fit)+bimBdeOpt('auto-h','Auto height',n.fit)+bimBdeOpt('fixed','Fixed size',n.fit)+'</select></label></div>'+
-        bimBdeChkF('Bold','fw',n.fw===700);
-    }
-    if(n.t==='image')h+='<div class="a3d-clb-dgrid"><label class="a3d-clb-dfld"><span>Fit</span><select data-bdf="fit">'+bimBdeOpt('fill','Fill',n.fit)+bimBdeOpt('fit','Fit',n.fit)+bimBdeOpt('tile','Tile',n.fit)+'</select></label>'+
-      '<button type="button" class="a3d-clb-btn" data-bdact="swapimg">Another image…</button></div>';
-    return h+act;
+  function bimBdeLyCount(lyId){
+    var W;
+    if(!bimBrdEditing())return 0;
+    W=bimBdeWork();if(!W)return 0;
+    return W.objs.filter(function(n){var ly=bimBobLayer(n);return ly&&ly.id===lyId;}).length;
   }
-  function bimBdePanel(W){
-    var p,S,boxes=[],h,into,sc,ss;
-    if(!bimBrdEditing()){bimBdePanelClose();return;}
-    p=bimBdePanelEl();
-    S=bimBdeSel(W);
-    sc=p.querySelector('.a3d-clb-dlist');ss=sc?sc.scrollTop:0;
-    h='<div class="a3d-clb-dhd"><h2 class="a3d-clb-dh2">Layers</h2>'+(A3D_BDE.scope?'<button type="button" class="a3d-clb-btn" data-bdact="scopeout" title="Shift+Enter">Out of the group</button>':'')+'</div>'+
-      '<div class="a3d-clb-dadd" role="group" aria-label="Add">'+[['rect','Rectangle'],['ellipse','Ellipse'],['line','Line'],['arrow','Arrow'],['poly','Polygon'],['star','Star'],['text','Text'],['frame','Frame'],['image','Image…']]
-        .map(function(a){return '<button type="button" class="a3d-clb-btn" data-bdadd="'+a[0]+'">'+a[1]+'</button>';}).join('')+'</div>'+
-      '<ul class="a3d-clb-dlist" role="list">'+bimBdeRows(W.els,W,0,boxes,null)+'</ul>';
-    into=boxes.filter(function(x){return S.indexOf(x[0])<0;});
-    h+='<div class="a3d-clb-dprops">'+bimBdeProps(W,S)+
-      (S.length&&into.length?'<label class="a3d-clb-dfld wide"><span>Move into</span><select data-bdinto="1">'+bimBdeOpt('','A group or frame…','')+into.map(function(x){return bimBdeOpt(x[0],x[1],'');}).join('')+'</select></label>':'')+'</div>';
-    p.innerHTML=h;
-    sc=p.querySelector('.a3d-clb-dlist');if(sc&&ss)sc.scrollTop=ss;
-    bimBdePanelPlace(p);
+  /* ---- the Properties panel ---- */
+  function bimBdeOpt(v,t,cur){return '<option value="'+bimEsc(v)+'"'+(String(v)===String(cur)?' selected':'')+'>'+bimEsc(t)+'</option>';}
+  function bimBdeNum(lab,name,v,step,min,max){
+    return bimPropRow(lab,'<input type="number" data-bdf="'+name+'" value="'+(Math.round(v*100)/100)+'" step="'+step+'"'+(min!==undefined?' min="'+min+'"':'')+(max!==undefined?' max="'+max+'"':'')+'>');
   }
-  function bimBdePanelClick(ev){
-    var t=ev.target,a=t&&t.closest?t.closest('[data-bdadd],[data-bdsel],[data-bdtog],[data-bdfold],[data-bdact]'):null,v,id;
-    if(!a)return;
-    if(a.hasAttribute('data-bdadd')){v=a.getAttribute('data-bdadd');if(v==='image')bimBdeAddImage();else bimBdeAdd(v);return;}
-    if(a.hasAttribute('data-bdsel')){
-      id=a.getAttribute('data-bdsel');
-      if(ev.shiftKey||ev.ctrlKey||ev.metaKey)A3D_BDE.sel=A3D_BDE.sel.indexOf(id)>=0?A3D_BDE.sel.filter(function(x){return x!==id;}):A3D_BDE.sel.concat([id]);
-      else A3D_BDE.sel=[id];
-      bimBdeSync();return;
+  function bimBdeCol(lab,name,v,none){
+    var on=v&&v!=='none';
+    return bimPropRow(lab,'<input type="color" data-bdf="'+name+'" value="'+(on?v:'#000000')+'"'+(on?'':' disabled')+'>'+
+      (none?' <label class="a3d-bdechk"><input type="checkbox" data-bdf="'+name+':on"'+(on?' checked':'')+'> '+bimEsc(lab)+'</label>':''));
+  }
+  function bimBdeChk(lab,name,on){return bimPropRow(lab,'<input type="checkbox" data-bdf="'+name+'"'+(on?' checked':'')+'>');}
+  function bimBdeBtn(a,label,title,danger){return '<button type="button" class="a3d-pedit" data-bdact="'+a+'"'+(title?' title="'+bimEsc(title)+'"':'')+(danger?' style="color:#ff8a80"':'')+'>'+bimEsc(label)+'</button>';}
+  function bimBdePropsHtml(){
+    var W=bimBdeWork(),S,n,K,h,lyId,same,trs,bms,ly,lt,lb,g='',fb,b;
+    if(!W)return '';
+    S=bimBdeSel(W);if(!S.length)return '';
+    n=bimBobFind(W.objs,S[0]).n;K=bimBobKind(n.t);
+    lyId=bimBobLayer(n)?bimBobLayer(n).id:'';
+    same=function(k){return S.every(function(x){var q=bimBobFind(W.objs,x).n;return q[k]===n[k];});};
+    h='<div class="a3d-ptypehd"><div class="a3d-ptypetx"><div class="a3d-ptypename">'+bimEsc(S.length>1?S.length+' board objects':bimBdeName(n,W))+'</div>'+
+      '<div class="a3d-ptypesub">'+bimEsc(S.length>1?'On the board':'Board '+(K?K[1].toLowerCase():n.t))+'</div></div></div>';
+    ly=bimLayerById(lyId);
+    lt=ly&&isFinite(ly.transparency)?Math.min(90,+ly.transparency):0;lb=bimBobBlend(bimLayerBlend(ly));
+    trs=same('tr')&&typeof n.tr==='number'?n.tr:'';
+    bms=same('bm')&&n.bm?n.bm:'';
+    g+=bimPropRow('Layer','<select data-bdf="layer">'+bimLayerOptionsHtml(S.every(function(x){var q=bimBobLayer(bimBobFind(W.objs,x).n);return q&&q.id===lyId;})?lyId:'')+'</select>');
+    g+=bimPropRow('Transparency','<input type="number" data-bdf="tr" min="0" max="90" step="5" value="'+trs+'" placeholder="ByLayer ('+lt+')" title="Empty: ByLayer">');
+    g+=bimPropRow('Blend','<select data-bdf="bm">'+bimBdeOpt('','ByLayer ('+(lb?lb[1]:'Normal')+')',bms)+bimBobBlends().map(function(x){return bimBdeOpt(x[0],x[1],bms);}).join('')+'</select>');
+    if(!bimBdsPres())g+='<div class="a3d-pnote">Transparency and blend modes show in the Presentation appearance (Pres in the status bar) and in Present.</div>';
+    h+=bimPropGroup('Graphics',g);
+    if(S.length===1){
+      g='';
+      if(n.t==='fig'){
+        fb=bimBdeFigBox(W);b=bimBobBox(n,fb);
+        if(b)g+=bimPropText('Place (mm)',Math.round(b.x)+', '+Math.round(b.y)+'; '+Math.round(b.w)+' x '+Math.round(b.h),true)+'<div class="a3d-pnote">Its handle and its corner on the board move and size it.</div>';
+      }else{
+        g+=bimBdeNum('X (mm)','x',n.x,1)+bimBdeNum('Y (mm)','y',n.y,1)+
+          bimBdeNum(n.t==='line'?'Run (mm)':'Width (mm)','w',n.w,1,n.t==='line'?undefined:0.5)+bimBdeNum(n.t==='line'?'Rise (mm)':'Height (mm)','h',n.h,1,n.t==='line'?undefined:0.5);
+      }
+      h+=bimPropGroup('Dimensions',g);
+      g='';
+      if(n.t!=='fig')g+=bimPropRow('Name','<input type="text" data-bdf="nm" maxlength="80" value="'+bimEsc(n.nm||'')+'" placeholder="'+bimEsc(bimBdeName(n,W))+'">');
+      if(K&&K[2])g+=bimPropRow('Mask','<select data-bdf="mask">'+bimBdeOpt('','Not a mask',n.mask||'')+bimBobMaskTypes().map(function(m){return bimBdeOpt(m[0],m[1],n.mask||'');}).join('')+'</select>')+
+        (n.mask?'<div class="a3d-pnote">It clips the objects of its layer drawn above it, up to the layer\'s next mask.</div>':'');
+      if(n.fill!==undefined)g+=bimBdeCol('Fill','fill',n.fill,true)+bimBdeNum('Fill opacity (%)','fop',n.fop*100,5,0,100);
+      if(n.stroke!==undefined)g+=bimBdeCol('Stroke','stroke',n.stroke,true)+bimBdeNum('Stroke (mm)','sw',n.sw,0.05,0,50);
+      if(n.r!==undefined)g+=bimBdeNum('Corner (mm)','r',n.r,0.5,0);
+      if(n.t==='poly')g+=bimBdeNum('Sides','n',n.n,1,3,60);
+      if(n.t==='star')g+=bimBdeNum('Points','n',n.n,1,3,60)+bimBdeNum('Inner (%)','ri',n.ri*100,1,5,95);
+      if(n.t==='line')g+=bimBdeChk('Arrow at its start','a0',n.a0)+bimBdeChk('Arrow at its end','a1',n.a1);
+      if(n.t==='text'){
+        g+=bimPropRow('Text','<textarea data-bdf="s" rows="3" maxlength="4000">'+bimEsc(n.s)+'</textarea>')+bimBdeNum('Size (pt)','fs',n.fs,1,4,400)+bimBdeCol('Colour','col',n.col,false)+
+          bimPropRow('Align','<select data-bdf="al">'+bimBdeOpt('left','Left',n.al)+bimBdeOpt('center','Centre',n.al)+bimBdeOpt('right','Right',n.al)+'</select>')+
+          bimPropRow('Box','<select data-bdf="fit">'+bimBdeOpt('auto-w','Auto width',n.fit)+bimBdeOpt('auto-h','Auto height',n.fit)+bimBdeOpt('fixed','Fixed size',n.fit)+'</select>')+
+          bimBdeChk('Bold','fw',n.fw===700);
+      }
+      if(n.t==='image')g+=bimPropRow('Fit','<select data-bdf="fit">'+bimBdeOpt('fill','Fill',n.fit)+bimBdeOpt('fit','Fit',n.fit)+bimBdeOpt('tile','Tile',n.fit)+'</select>')+
+        bimPropRow('Image',bimBdeBtn('swapimg','Another image…'));
+      if(g)h+=bimPropGroup('Other',g);
     }
-    if(a.hasAttribute('data-bdtog')){bimBdeDo(a.getAttribute('data-bdtog'),[a.getAttribute('data-bdid')]);return;}
-    if(a.hasAttribute('data-bdfold')){id=a.getAttribute('data-bdfold');if(A3D_BDE.fold[id])delete A3D_BDE.fold[id];else A3D_BDE.fold[id]=1;bimBdeSync();return;}
-    v=a.getAttribute('data-bdact');
-    if(v==='enter')bimBdeEnter(false);
-    else if(v==='scopeout'){if(!bimBdeEnter(true)){A3D_BDE.scope=null;bimBdeSync();}}
-    else if(v==='swapimg'){if(A3D_BDE.sel.length===1)bimBdeAddImage(A3D_BDE.sel[0]);}
-    else bimBdeDo(v);
+    h+=bimPropGroup('Draw order','<div class="a3d-bdeacts">'+bimBdeBtn('front','To front','Ctrl+Shift+]: within its layer')+bimBdeBtn('forward','Forward','Ctrl+]')+
+      bimBdeBtn('backward','Backward','Ctrl+[')+bimBdeBtn('back','To back','Ctrl+Shift+[')+bimBdeBtn('dup','Duplicate','Ctrl+D')+bimBdeBtn('del','Delete','Delete',true)+'</div>'+
+      '<div class="a3d-pnote">The layers set what is drawn over what: a layer higher in the Layers list is drawn over those below.</div>');
+    return h;
   }
-  /* a field changed: one undo step for the element selected */
-  function bimBdePanelChange(ev){
-    var t=ev.target,f=t&&t.getAttribute&&t.getAttribute('data-bdf'),id=A3D_BDE.sel[0],o={},v,W,S;
-    if(t&&t.hasAttribute&&t.hasAttribute('data-bdinto')){if(t.value)bimBdeInto(t.value);return;}
-    if(!f)return;
-    if(A3D_BDE.sel.length>1&&(f==='op'||f==='bm')){
-      W=bimBdeWork();if(!W)return;S=bimBdeSel(W);
-      S.forEach(function(x){var q=bimBtrFind(W.els,x);if(f==='op')q.n.op=Math.max(0,Math.min(1,(+t.value||0)/100));else if(t.value!=='pass'||bimBtrIsBox(q.n))q.n.bm=t.value;});
-      bimBdeCommit(W,null,S);return;
-    }
-    if(!id)return;
-    if(/:on$/.test(f)){f=f.slice(0,-3);o[f]=t.checked?((t.parentNode.querySelector('input[type=color]')||{}).value||'#000000'):'none';}
-    else if(f==='op'||f==='fop'||f==='ri'){v=parseFloat(t.value);if(!isFinite(v))return;o[f]=Math.max(0,Math.min(1,v/100));}
-    else if(f==='nm'){o.nm=t.value.replace(/\s+/g,' ').trim()||null;}
-    else if(f==='bm'||f==='al'||f==='fit'||f==='fill'||f==='stroke'||f==='col'||f==='s')o[f]=t.value;
-    else if(f==='mask')o.mask=t.value||null;
-    else if(f==='a0'||f==='a1'||f==='clip')o[f]=t.checked?true:(f==='clip'?false:null);
-    else if(f==='fw')o.fw=t.checked?700:400;
-    else{v=parseFloat(t.value);if(!isFinite(v))return;o[f]=v;}
-    bimBdeSet(id,o);
+  /* once, on the panel's body: its board fields and buttons */
+  function bimBdePropsWire(body){
+    if(!body||body.getAttribute('data-bdewired'))return;
+    body.setAttribute('data-bdewired','1');
+    body.addEventListener('click',function(ev){
+      var a=ev.target&&ev.target.closest?ev.target.closest('[data-bdact]'):null,v;
+      if(!a||!bimBdeOwnsProps())return;
+      v=a.getAttribute('data-bdact');
+      if(v==='swapimg'){if(A3D_BDE.sel.length===1)bimBdeAddImage(A3D_BDE.sel[0]);}
+      else bimBdeDo(v);
+    });
+    body.addEventListener('change',function(ev){
+      var t=ev.target,f=t&&t.getAttribute&&t.getAttribute('data-bdf'),o={},v;
+      if(!f||!bimBdeOwnsProps())return;
+      if(/:on$/.test(f)){f=f.slice(0,-3);o[f]=t.checked?((t.closest('.a3d-prow')||t.parentNode).querySelector('input[type=color]')||{}).value||'#000000':'none';}
+      else if(f==='tr'){v=t.value.trim();if(v===''){o.tr=null;}else{v=+v;if(!isFinite(v))return;o.tr=Math.round(Math.max(0,Math.min(90,v)));}}
+      else if(f==='bm'||f==='mask')o[f]=t.value||null;
+      else if(f==='layer'){if(!t.value||!bimLayerById(t.value))return;o.layer=t.value;}
+      else if(f==='fop'||f==='ri'){v=parseFloat(t.value);if(!isFinite(v))return;o[f]=Math.max(0,Math.min(1,v/100));}
+      else if(f==='nm')o.nm=t.value.replace(/\s+/g,' ').trim()||null;
+      else if(f==='al'||f==='fit'||f==='fill'||f==='stroke'||f==='col'||f==='s')o[f]=t.value;
+      else if(f==='a0'||f==='a1')o[f]=t.checked?true:null;
+      else if(f==='fw')o.fw=t.checked?700:400;
+      else{v=parseFloat(t.value);if(!isFinite(v))return;o[f]=v;}
+      bimBdeSet(null,o);
+    });
   }
-  window.addEventListener('resize',function(){if(A3D_BDE.pnl&&A3D_BDE.pnl.isConnected)bimBdePanelPlace(A3D_BDE.pnl);});
   /* ================= __acad3dV122: the Presentation panel =================
      The presentation's pages, the thumbnail column of a PDF reader. A thumbnail is the page as it
      plots, drawn by the renderer the pages and Present use, at twice its pixels and reduced. */
@@ -64369,9 +64191,9 @@ try{
   window.__a3dPrintSetHtml=function(){return bimPrintSetHtml();};
   /* __acad3dV174a: designing the open board, in Edit: add, act on the selection, set fields, select; the tree as kept */
   window.__a3dBoardDesign={add:function(k,o){return bimBdeAdd(k,o);},act:function(a,ids){return bimBdeDo(a,ids);},set:function(id,o){return bimBdeSet(id,o);},
-    select:function(ids){A3D_BDE.sel=(ids||[]).slice();bimBdeSync();return A3D_BDE.sel.slice();},enter:function(up){return bimBdeEnter(!!up);},
-    tree:function(){var B=bimBrdRec();return B&&B.els?JSON.parse(JSON.stringify(B.els)):null;},hash:bimBimgHash,imageOk:bimBimgOk,
-    figCols:bimBtrFigCols,used:bimBimgUsed};
+    select:function(ids){bimBdeSelect(ids||[]);return A3D_BDE.sel.slice();},
+    objs:function(){var B=bimBrdRec();return B&&B.objs?JSON.parse(JSON.stringify(B.objs)):null;},hash:bimBimgHash,imageOk:bimBimgOk,
+    figCols:bimBobFigCols,used:bimBimgUsed,layerMove:bimLayerMove,layerStep:bimLayerStep,pres:function(on){A3D.presentMode=!!on;bimSyncPresentPill();if(A3D_CLB.open)bimClbOpen();return A3D.presentMode;}};
   window.__a3dClbCss=function(){return bimClbCss();};
   window.__a3dClbState=function(){var b=bimClbEl();return {open:A3D_CLB.open,kind:A3D_CLB.kind,board:A3D_CLB.board,narrow:A3D_CLB.narrow,inView:!!(b&&b.parentNode&&b.parentNode.classList&&b.parentNode.classList.contains('a3d-vp')),cls:b?b.className:null,w:b?bimClbW(b):0};};
   window.__a3dSlideshowEnd=function(){return bimSlideshowEnd();};

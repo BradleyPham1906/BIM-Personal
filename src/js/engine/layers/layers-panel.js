@@ -7,6 +7,7 @@ import { bimLyListBy, bimLyListByHtml, bimLyListBySelect } from './list-by.js';
 import { bimLySectionsHtml } from './analysis-data-rows.js';
 import { bimEsc } from './layer-manager.js';
 import { bimCakeBtnHtml } from '../map/layer-cake.js';
+import { bimBdeLyCount, bimBdeLyRows } from '../sheets/board-design-props.js';
 import { ric } from '../ui/touch-input.js';
 
   /* ================= __acad3dV121: the Layers panel =================
@@ -22,6 +23,7 @@ import { ric } from '../ui/touch-input.js';
     cur:ric('<circle cx="12" cy="12" r="5.5" fill="currentColor" stroke="none"/>'),
     notcur:ric('<circle cx="12" cy="12" r="5.5"/>'),
     add:ric('<path d="M12 5v14M5 12h14"/>'),
+    up:ric('<path d="M12 19V5M6 11l6-6 6 6"/>'),down:ric('<path d="M12 5v14M6 13l6 6 6-6"/>'),   /* __acad3dV174a */
     sub:ric('<path d="M6.5 4.5v8.5a3 3 0 0 0 3 3h9"/><path d="M15.5 12.5 19 16l-3.5 3.5"/>'),
     std:ric('<path d="M5 6.5h14M5 12h14M5 17.5h9"/>'),
     make:ric('<path d="M5 12.5 9.8 17.3 19 7.5"/>'),
@@ -114,6 +116,8 @@ import { ric } from '../ui/touch-input.js';
       bimLyBtn('sub','New sub-layer under the selected layer',BIM_LY_IC.sub)+
       bimLyBtn('std','New layer with an AIA / NCS standard name',BIM_LY_IC.std)+
       bimLyBtn('cur','Make the selected layer current',BIM_LY_IC.make)+
+      bimLyBtn('up','Move the selected layer up: a layer higher in the list is drawn over those below on a board',BIM_LY_IC.up)+
+      bimLyBtn('down','Move the selected layer down',BIM_LY_IC.down)+   /* __acad3dV174a */
       bimLyBtn('del','Delete the selected layer',BIM_LY_IC.del)+
       bimLyBtn('lpm','Layer Properties Manager (LAYER)',BIM_LY_IC.lpm)+
       '</span></div><input type="text" class="a3d-lysearch" data-lysearch="1" placeholder="Search layers and objects" value="'+
@@ -122,14 +126,18 @@ import { ric } from '../ui/touch-input.js';
     function render(l,depth){
       if(seen[l.id]||(f&&!match(l)))return;
       seen[l.id]=1;
-      var kids=bimLayerKids(l),objs=con[l.id]||[],open=f?true:!!A3D_LY.open[l.id];
-      h+=bimLyRowHtml(l,depth,objs.length,kids.length,open,sel,cur);
+      var kids=bimLayerKids(l),objs=con[l.id]||[],nb=bimBdeLyCount(l.id),open=f?true:!!A3D_LY.open[l.id];   /* __acad3dV174a: and the board's objects on it */
+      h+=bimLyRowHtml(l,depth,objs.length+nb,kids.length,open,sel,cur);
       if(!open)return;
       kids.forEach(function(c){render(c,depth+1);});
+      if(nb)h+=bimBdeLyRows(l.id,depth+1,hit(l.name)?'':f);
       objs.forEach(function(o){if(!f||hit(o.name)||hit(l.name))h+=bimLyObjHtml(o,depth+1);});
     }
     A3D.layers.forEach(function(l){if(!bimLayerParentOk(l))render(l,0);});
     if(f&&!Object.keys(seen).length)h+='<div class="a3d-lyempty">Nothing matches</div>';
     return h+'</div>'+bimLySectionsHtml(f)+'</div>';   /* __acad3dV148: the results and the data, below the layers */
   }
-export { A3D_LY, BIM_LY_IC, bimLayerContents, bimLayerTree, bimLayersPanelHtml, bimLyRowHtml, bimLyTgl };
+export {
+  A3D_LY, BIM_LY_IC, bimLayerContents, bimLayerKids, bimLayerParentOk, bimLayerTree, bimLayersPanelHtml,
+  bimLyRowHtml, bimLyTgl
+};

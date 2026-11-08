@@ -20,7 +20,6 @@
 .a3d-clb-dsel{position:absolute;inset:0;pointer-events:none;z-index:8}
 .a3d-clb-dbox{position:absolute;outline:1.5px solid var(--s1);outline-offset:1px}
 .a3d-clb-dbox.mk{outline-style:dashed}
-.a3d-clb-dscope{position:absolute;outline:1px dashed var(--muted);outline-offset:4px}
 .a3d-clb-dhdl{position:absolute;width:14px;height:14px;margin:-7px;box-sizing:border-box;background:#fff;border:1.5px solid var(--s1);border-radius:3px;pointer-events:auto;cursor:nwse-resize;touch-action:none}
 @media(pointer:coarse){.a3d-clb-dhdl{width:28px;height:28px;margin:-14px}}
 /* a phone: the designed board fitted to the screen, as it is laid out (its figures are not put in one column) */
@@ -30,39 +29,9 @@
 .a3d-clb.w-s .a3d-clb-dsn .a3d-clb-tcard{position:absolute}
 /* on paper and in a thumbnail: nothing of Edit */
 .a3d-clb.prt .a3d-clb-dsel{display:none!important}
-@media print{.a3d-clb-dsel,.a3d-clb.a3d-clb-dpnl{display:none!important}}
-/* the layers and properties panel */
-.a3d-clb.a3d-clb-dpnl{inset:auto;z-index:20004;width:300px;overflow:auto;background:var(--surf);border:1px solid var(--ring);border-radius:12px;
-  box-shadow:0 14px 40px rgba(0,0,0,.35);padding:10px 12px;box-sizing:border-box;font-size:12.5px}
-.a3d-clb.a3d-clb-dpnl.nar{left:0;right:0;bottom:0;top:auto;width:auto;max-height:46vh;border-radius:12px 12px 0 0;
-  padding-bottom:max(10px,env(safe-area-inset-bottom))}
-.a3d-clb-dhd{display:flex;align-items:center;gap:6px}
-.a3d-clb-dh2{flex:1 1 auto;font-size:13px;font-weight:650;margin:0}
-.a3d-clb-dh3{font-size:12px;font-weight:650;margin:10px 0 2px}
-.a3d-clb-dadd,.a3d-clb-dacts{display:flex;flex-wrap:wrap;gap:4px;margin:8px 0}
-.a3d-clb-dadd .a3d-clb-btn,.a3d-clb-dacts .a3d-clb-btn{min-height:28px;padding:0 8px;font-size:12px}
-.a3d-clb-btn[data-danger]{color:var(--critical)}
-.a3d-clb-dlist{list-style:none;margin:6px 0;padding:0;max-height:34vh;overflow:auto;border-top:1px solid var(--ring);border-bottom:1px solid var(--ring)}
-.a3d-clb-drow{display:flex;align-items:center;gap:2px;padding-left:calc(var(--d,0)*14px);border-radius:6px}
-.a3d-clb-drow.sel{background:var(--band)}
-.a3d-clb-drow.hid .a3d-clb-dnm{opacity:.5}
-.a3d-clb-dnm{flex:1 1 auto;min-width:0;text-align:left;background:none;border:0;color:var(--ink);font:inherit;font-size:12.5px;padding:5px 4px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.a3d-clb-dnm:focus-visible,.a3d-clb-dic:focus-visible{outline:2px solid var(--s1);outline-offset:-2px}
-.a3d-clb-dkd{color:var(--muted);font-size:11px}
-.a3d-clb-dtag{display:inline-block;font-size:10px;font-weight:650;line-height:1;padding:2px 4px;margin-right:4px;border-radius:4px;background:var(--s7);color:#fff}
-.a3d-clb-dtag.u{background:none;color:var(--muted);border:1px solid var(--ring);font-weight:500}
-.a3d-clb-dic{width:26px;height:26px;flex:0 0 26px;border:0;background:none;color:var(--ink2);border-radius:5px;display:inline-flex;align-items:center;justify-content:center;padding:0;cursor:pointer}
-.a3d-clb-dic svg{width:14px;height:14px;fill:currentColor}
-.a3d-clb-dic.sp{cursor:default}
-.a3d-clb-dic[aria-pressed="true"]{color:var(--s1)}
-.a3d-clb-dhint{color:var(--ink2);font-size:12px;margin:8px 0}
-.a3d-clb-dgrid{display:grid;grid-template-columns:1fr 1fr;gap:0 8px}
-.a3d-clb-dfld{display:flex;flex-direction:column;gap:3px;font-size:11.5px;color:var(--ink2);margin:6px 0 0;min-width:0}
-.a3d-clb-dfld.col{flex-direction:row;flex-wrap:wrap;align-items:center;gap:6px}
-.a3d-clb-dfld.col span{flex:1 0 100%}
-.a3d-clb-dfld.chk{flex-direction:row;align-items:center;gap:6px}
-.a3d-clb-dfld input[type=text],.a3d-clb-dfld input[type=number],.a3d-clb-dfld select,.a3d-clb-dfld textarea{font:inherit;font-size:12.5px;color:var(--ink);background:var(--page);
-  border:1px solid var(--ring);border-radius:6px;min-height:28px;padding:0 6px;box-sizing:border-box;width:100%;min-width:0}
-.a3d-clb-dfld textarea{padding:4px 6px;resize:vertical}
-.a3d-clb-dfld input[type=color]{width:40px;height:28px;padding:0;border:1px solid var(--ring);border-radius:6px;background:var(--page)}
-@media(pointer:coarse){.a3d-clb-dic{width:40px;height:40px;flex-basis:40px}.a3d-clb-dnm{padding:10px 4px}.a3d-clb-dadd .a3d-clb-btn,.a3d-clb-dacts .a3d-clb-btn{min-height:38px}}
+@media print{.a3d-clb-dsel{display:none!important}}
+/* a board's objects in the Properties panel and under their layers in the Layers tab */
+.a3d-pnote{font-size:11px;line-height:1.35;color:#8b949e;padding:4px 0 6px}
+.a3d-bdeacts{display:flex;flex-wrap:wrap;gap:4px;padding:4px 0}
+.a3d-bdechk{font-size:11px;color:#aab4bf;white-space:nowrap}
+.a3d-lybo .a3d-lyty{font-style:italic}

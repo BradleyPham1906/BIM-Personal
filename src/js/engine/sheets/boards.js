@@ -1,5 +1,6 @@
 import { A3D } from '../core/state.js';
 import { pushUndo } from '../drawing/plan-mode-sketch.js';
+import { bimWithPlotPass } from '../layers/plot-by-layers.js';
 import { bimEsc } from '../layers/layer-manager.js';
 import { A3D_CLB, bimClbClose, bimClbHtml, bimClbOpen } from '../site-analysis/climate-board.js';
 import { bimShellDrawer, bimShellOverlay } from '../assets/library-drag.js';
@@ -172,7 +173,8 @@ import { a3dToast } from '../bim/csg-booleans.js';
     return h;
   }
   /* as it prints: wide, on paper */
-  function bimBoardPrintHtml(kind){return '<div class="a3d-clb prt w-l">'+bimBoardHtmlFor(kind,false)+'</div>';}
+  /* __acad3dV174a: built in a plot pass, so a board's objects on a layer set not to plot are left off, as the model's are */
+  function bimBoardPrintHtml(kind){return '<div class="a3d-clb prt w-l">'+bimWithPlotPass(A3D.presentMode,function(){return bimBoardHtmlFor(kind,false);})+'</div>';}
   /* the boards' own style rules, out of this page's style sheet, for a print window or a thumbnail */
   var A3D_CLB_CSS='';
   function bimClbCss(){

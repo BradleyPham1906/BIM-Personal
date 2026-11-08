@@ -5,8 +5,8 @@ import { BIM_CUTFILL_COLS, bimBandsOf } from '../terrain/grading.js';
 import { bimIsLocked, bimSetLocked } from '../bim/import-compliance.js';
 import { bimLayerById } from './layer-rules.js';
 import {
-  bimLayerDelete, bimLayerMakeCurrent, bimLayerNew, bimLayerPickRefusal, bimLayerSet, bimObjSetLayer,
-  openAddLayerDlg
+  bimLayerDelete, bimLayerMakeCurrent, bimLayerMove, bimLayerNew, bimLayerPickRefusal, bimLayerSet,
+  bimLayerStep, bimObjSetLayer, openAddLayerDlg
 } from './select-change.js';
 import { A3D_LY, BIM_LY_IC, bimLayersPanelHtml, bimLyTgl } from './layers-panel.js';
 import { bimDataLayerMove, bimDataLayerStep, bimDataListTopFirst, bimLyListBySet } from './list-by.js';
@@ -28,6 +28,7 @@ import { A3D_DATA, bimDataById, bimDataFeats, bimDataList } from '../map/data-la
 import { bimDataOpacity, bimDataRemove, bimDataSet } from '../map/find-open-data.js';
 import { paint } from '../map/terrain-3d.js';
 import { saveSoon } from '../bim/region-regenerate.js';
+import { A3D_BDE, bimBdeSelect } from '../sheets/board-design-edit.js';
 import { refreshTree } from '../sheets/presentation-panel.js';
 import { a3dToast, objById } from '../bim/csg-booleans.js';
 
@@ -264,6 +265,8 @@ import { a3dToast, objById } from '../bim/csg-booleans.js';
       if(sel&&bimLayerDelete(sel.id)){A3D_LY.sel=A3D.activeLayer;refreshLayers();}
     }else if(a==='lpm'){
       bimLayerManagerOpen();
+    }else if(a==='up'||a==='down'){   /* __acad3dV174a: R3 */
+      if(sel){A3D_LY.sel=sel.id;bimLayerStep(sel.id,a==='up'?-1:1);}
     }
   }
   /* one set of delegated listeners on the left panel, which outlives the Layers tab's markup */
@@ -285,7 +288,8 @@ import { a3dToast, objById } from '../bim/csg-booleans.js';
         if((b=t.closest('[data-lypin]'))){var po=objById(b.getAttribute('data-lypin'));if(po)bimSetLocked(po,!bimIsLocked(po));return;}
         if(t.closest('.a3d-lysec')){bimLyResClick(t);return;}   /* __acad3dV148: Analysis and Data */
         if(t.closest('input'))return;
-        if((b=t.closest('[data-lyobj]'))){bimLySelectObj(b.getAttribute('data-lyobj'));return;}
+        if((b=t.closest('[data-lybo]'))){var bo=b.getAttribute('data-lybo');bimBdeSelect(ev.shiftKey||ev.ctrlKey||ev.metaKey?(A3D_BDE.sel.indexOf(bo)>=0?A3D_BDE.sel.filter(function(x){return x!==bo;}):A3D_BDE.sel.concat([bo])):[bo]);return;}   /* __acad3dV174a: a board's object */
+        if((b=t.closest('[data-lyobj]'))){A3D_BDE.sel=[];bimLySelectObj(b.getAttribute('data-lyobj'));return;}   /* __acad3dV174a: a model object: the board's selection let go */
         if((b=t.closest('[data-lyid]'))){A3D_LY.sel=b.getAttribute('data-lyid');refreshLayers();return;}
       }catch(eL){
         console.warn('[BIM] A Layers panel action failed',eL);
@@ -349,8 +353,14 @@ import { a3dToast, objById } from '../bim/csg-booleans.js';
         else if(v.indexOf('dl:')===0){if(rtk&&rtk.t==='data')bimDataLayerMove(v.slice(3),rtk.id);}   /* __acad3dV173c */   /* __acad3dV148: onto a row, to its place */
         else if(v.indexOf('obj:')===0){if(tgt)bimObjSetLayer(v.slice(4),tgt);}
         else if(v.indexOf('layer:')===0&&v.slice(6)!==tgt){
-          if(tgt)A3D_LY.open[tgt]=true;
-          bimLayerSet(v.slice(6),'parent',tgt);
+          /* __acad3dV174a: on a row's top or bottom third, before or after it (R3: the order is a board's paint
+             order); on its middle, under it, as before */
+          var rr=row?row.getBoundingClientRect():null,fy=rr&&rr.height?(ev.clientY-rr.top)/rr.height:0.5;
+          if(tgt&&(fy<1/3||fy>2/3))bimLayerMove(v.slice(6),tgt,fy<1/3?'before':'after');
+          else{
+            if(tgt)A3D_LY.open[tgt]=true;
+            bimLayerSet(v.slice(6),'parent',tgt);
+          }
         }
       }catch(eX){
         console.warn('[BIM] A layer drop failed',eX);

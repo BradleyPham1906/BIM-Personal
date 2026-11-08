@@ -16612,48 +16612,45 @@ here: installing from a real browser's menu, iOS and the shell in standalone (pa
     canvas_v10.html   4005368 bytes
     sha256            2e405746f48c53be6c22dadcdbe869bddf081213a43a8f9760858590b7533ffa
 
-### V174a: Presentation P1, a board's element tree, compositing and masks (2026-11-08)
+### V174a: Presentation P1, a board's objects on the one layer table (2026-11-08)
 
-Research: `docs/research/research-presentation-boards.md` (D1 to D5, D19, D20; the owner: all as recommended).
-Branch `v174a-tree`.
+Research: `docs/research/research-presentation-boards.md`; the owner's D1 to D20, then 11a (R1 to R4). Branch
+`v174a-tree`, PR #82.
 
-- **Millimetres** are as printed: the print window does not zoom a board, so 1408 CSS px are 372.5 mm
-  (`bimBtrPxMm`, 96/25.4); V174c's pages and V174d's scale bar can rely on them.
-- **Model** (`sheets/board-tree.js`, pure functions, no tables made at load, because `bimPresValid` runs at boot
-  before the file's top-level code). `B.els` is the tree, the bottom first. Element `{id 'e<n>', t, nm, x, y, w, h
-  (mm), op, bm, lock, hide, mask, ch}`; kinds frame, group, rect, ellipse, line (signed w and h, arrows a0 and a1),
-  poly, star, text (auto width, auto height, fixed), image (a hash, fill, fit, tile), fig (a V172b figure, by its
-  key; its place stays in `B.figs`, in columns). A group has no box of its own and is dropped when empty; 400
-  elements and 8 levels at most. `bimBtrSync` keeps the tree and the figures agreeing (in `bimBrdKeep` and in
-  `bimBrdCommit`), so Add a figure and Remove work as they did.
-- **Drawing** (`sheets/board-design.js`): a board with a tree is drawn by `bimBdsHtml` in place of the bands.
-  A pass-through group emits no element; a group or frame with a mode or an opacity is one element with
-  `isolation:isolate`; paint order is the markup's, no z-index; the canvas `.a3d-clb-dcv` is isolated and painted
-  with the print tokens in every theme, a sheet of paper, so Multiply on an empty part blends with white on screen
-  as on paper, and dark ink shows in the dark theme. Masks: vector by clip-path,
-  alpha and luminance by mask-image of the mask's own shape as an SVG data URL (`mask-mode`). On a phone a designed
-  board is fitted to the screen as laid out (its figures carry `--l`, `--t`, `--w`, `--h` for the phone's rules).
-- **Images** (`sheets/board-images.js`): `img:<hash>` in the projects store (`bimStoreReconcile` skips the prefix),
-  4 MB, PNG, JPEG, GIF, WebP; object URLs while the app runs; never removed with an element (undo); `imgs` in the
-  project file's envelope; Print and Print set load them before writing the window.
-- **Edit** (`sheets/board-design-edit.js`, `sheets/board-design-panel.js`): selection and drag (Ortho; Grid in
-  whole mm until V174b's snaps), the corner handle, the keys (`bimBdeWantsKey` in `bimClbKey`, since the app's
-  handler listens at window capture), Escape through `bimBrdEsc`; the panel fixed over the board's right side, a
-  bottom sheet on a phone (`bimClbEl` skips it).
-- Not in V174a: rotation, Figma's image crop, a text element as a mask, a figure, group or frame as a mask. The
-  research's first build measurement (CSS blend modes printed to PDF in Chrome and Edge) waits for the owner's
-  browser check.
-- Checks: `node --check` on each changed file, `npm run modules`, the build, `npm run check`, `npm test` 89 of 89
-  (22 new in `tests/unit/board-tree.test.mjs`).
-- **Browser check** (2026-11-08, the owner's yes): headless Edge over http, driven through the DevTools protocol
-  (no Chrome on the PC for the Playwright plugin; no Python Playwright). 24 of 24: the dark theme's sheet is white
-  and isolated, Text and Line show, Multiply composites, the panel lists every element, a pass-through group has no
-  element and Normal isolates it, Ctrl+Shift+G reaches the board, hide, lock, the app's undo, a luminance mask, an
-  image (hash, proportions, object URL, `img:` record, in the project file, the file opened again), Print set;
-  no console errors, no [BIM] warnings. It found a level line not painted: an SVG of 0 height is not drawn; the
-  line's box now grows by its stroke and heads (a unit test holds it).
-- **Printed to PDF** (Edge's `Page.printToPDF`, as Save as PDF): `/BM /Multiply` in the file, soft masks for the
-  masks: the blend modes are not flattened, so D1 holds in Chromium's print path. Chrome itself not run.
-- **Found, for V174c:** a designed board prints as one tall absolute layer; a figure 385 px high across an A3
-  break (277 mm) is cut in two (measured: 2 of 6 figures on a tall board), where the bands kept a figure whole.
-  V174c's page sizes make a designed board a page.
+- **First build, rejected.** A Figma-like element tree per board (frames, groups, Pass through) with its own floating
+  layers and properties panel. Its browser check passed (24 of 24), and the owner rejected the design: "everything
+  should be one just like autocad layer system. do not ever create separate system like that." The tree, the
+  groups and frames, the panel and its tests were removed; what that build had proved was kept: HTML and SVG
+  shapes (a level line's box padded, since an SVG of no height is not painted), the image store, the mask CSS,
+  images loaded before printing, the white isolated canvas, millimetres as printed, the board's keys in `bimClbKey`.
+- **Board objects** (`sheets/board-objects.js`): `B.objs`, paper-space objects as in AutoCAD's layouts, each on a
+  layer of `A3D.layers` (`layer`; none: layer 0). Kinds: rect, ellipse, line (arrows), poly, star, text, image, and
+  `fig` (a V172b figure; its place stays in its columns, so an old board looks as it did, D19). `tr` and `bm` are
+  ByLayer when absent (R2). `bimBobSync` keeps the list and the figures agreeing (in `bimBrdKeep` and
+  `bimBrdCommit`). The list is made at the first drawing on a board.
+- **Paint order** (R3): `bimBobPaint`, the layer tree (`bimLayerTree`) read from the bottom up, so a layer higher in
+  the Layers list is drawn over those below and a parent's objects over its sub-layers'; within a layer, the list's
+  order (Draw order). Boards only: the model's plan and 3D views are not reordered by it.
+- **Masks** (R4): a mask clips the objects of its own layer drawn above it, to that layer's next mask
+  (`bimBobRuns`); vector by clip-path, alpha and luminance by mask-image. Applied in both appearances.
+- **Drawing** (`sheets/board-design.js`): a layer off or frozen hides its objects; a no-plot layer's objects leave
+  paper (`bimBoardPrintHtml` builds the board in `bimWithPlotPass`); a locked layer's fade in Edit. Transparency and
+  Blend per object, in the Presentation appearance and in Present only (`bimPresentGraphics`, `A3D_SLIDESHOW`), as
+  layer transparency is drawn today; nothing is composited as a group.
+- **The layer table** (`layers/`): `blend` on a layer (`bimLayerSet`, read tolerantly by `bimLayerBlend`; new layers
+  take their source's), a Blend column in the Layer Properties Manager; `bimLayerMove` and `bimLayerStep`, with Up
+  and Down in the Layers tab and the manager, and a drop on a row's top or bottom third moving a layer before or
+  after it (the middle third still makes it a sub-layer); layer 0 found by its id (`bimLayerZero`), so the order is
+  free; Delete Layer counts every board's objects (`bimBobOnLayer`); a layer change redraws the open board.
+- **Editing** (`sheets/board-design-edit.js`, `sheets/board-design-props.js`): the board's Draw menu (on the current
+  layer); click, Shift or Ctrl to select; drag, the corner handle, the arrows; Delete, Ctrl+D, Ctrl+] and Ctrl+[.
+  The selection's properties in the Properties panel (`refreshProps`: Layer, Transparency and Blend ByLayer or set,
+  the box in mm, mask, fill and stroke, text, image; Draw order); its rows under their layers in the Layers tab
+  (`data-lybo`). The model's selection is let go when a board object is selected, and the reverse.
+- Not in V174a: rotation, image crop, text as a mask. Open, for V174c: a designed board prints as one tall layer, so
+  a figure across an A3 page break is cut (measured in the first build's check).
+- Checks: `node --check` on each changed file, `npm run modules`, the build, `npm run check`, `npm test` 83 of 83
+  (15 new in `tests/unit/board-objects.test.mjs`). `bimLayerSet` and `bimLayerMove` redraw the Layers tab, which the
+  unit tests' stand-in browser cannot (`refreshLayers` runs out of memory there, on main too): their refusals are
+  unit-tested, their changes wait for the browser check. No browser check of this build yet; V121's suite may check
+  the Layer Properties Manager's columns (a Blend column was added).

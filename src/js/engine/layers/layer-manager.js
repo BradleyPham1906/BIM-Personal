@@ -1,11 +1,12 @@
 import { A3D, el } from '../core/state.js';
-import { bimLayerById, bimLayerChain, bimLayerEff } from './layer-rules.js';
+import { bimLayerBlend, bimLayerById, bimLayerChain, bimLayerEff } from './layer-rules.js';
 import {
-  BIM_LINETYPES, BIM_LINEWEIGHTS, bimLayerDelete, bimLayerMakeCurrent, bimLayerNew, bimLayerSet,
+  BIM_LINETYPES, BIM_LINEWEIGHTS, bimLayerDelete, bimLayerMakeCurrent, bimLayerNew, bimLayerSet, bimLayerStep,
   bimLinetypeDef
 } from './select-change.js';
 import { A3D_LY, BIM_LY_IC, bimLayerContents, bimLayerTree } from './layers-panel.js';
 import { bimRenderInto } from '../site-analysis/panel.js';
+import { bimBobBlends, bimBobOnLayer } from '../sheets/board-objects.js';
 import { closeDlg, ric } from '../ui/touch-input.js';
 import { a3dToast } from '../bim/csg-booleans.js';
 
@@ -65,12 +66,13 @@ import { a3dToast } from '../bim/csg-booleans.js';
         '<td><select data-lpmf="linetype" aria-label="Linetype of '+nm+'">'+lto+'</select></td>'+
         '<td><select data-lpmf="lineweight" aria-label="Lineweight of '+nm+'">'+lwo+'</select></td>'+
         '<td><input type="number" min="0" max="90" step="1" data-lpmf="transparency" value="'+tr+'" aria-label="Transparency of '+nm+'"></td>'+
-        '<td class="a3d-lpmcnt">'+(con[l.id]||[]).length+'</td>'+
+        '<td><select data-lpmf="blend" aria-label="Blend mode of '+nm+'" title="Drawn in the Presentation appearance and in Present">'+bimBobBlends().map(function(b){return '<option value="'+b[0]+'"'+(b[0]===bimLayerBlend(l)?' selected':'')+'>'+b[1]+'</option>';}).join('')+'</select></td>'+   /* __acad3dV174a: R2 */
+        '<td class="a3d-lpmcnt">'+((con[l.id]||[]).length+bimBobOnLayer(l.id))+'</td>'+   /* __acad3dV174a: with the boards' objects */
         '<td class="a3d-lpmdesc"><input type="text" data-lpmf="description" value="'+bimEsc(typeof l.description==='string'?l.description:'')+'" aria-label="Description of '+nm+'"></td>'+
         '</tr>';
     });
     return '<table class="a3d-lpmt"><thead><tr><th title="The current layer">Status</th><th>Name</th><th>On</th><th>Freeze</th><th>Lock</th><th>Plot</th>'+
-      '<th>Color</th><th>Linetype</th><th>Lineweight</th><th>Transparency</th><th>Objects</th><th>Description</th></tr></thead><tbody>'+rows+
+      '<th>Color</th><th>Linetype</th><th>Lineweight</th><th>Transparency</th><th title="Drawn in the Presentation appearance and in Present">Blend</th><th>Objects</th><th>Description</th></tr></thead><tbody>'+rows+
       '</tbody></table>'+(shown?'':'<div class="a3d-lyempty">No layer matches</div>');
   }
   function bimLayerManagerRefresh(){
@@ -98,6 +100,9 @@ import { a3dToast } from '../bim/csg-booleans.js';
       bimLayerManagerRefresh();
     }else if(a==='cur'){
       if(sel)bimLayerMakeCurrent(sel.id);
+      bimLayerManagerRefresh();
+    }else if(a==='up'||a==='down'){   /* __acad3dV174a: the order is a board's paint order (R3) */
+      if(sel){A3D_LPM.sel=sel.id;bimLayerStep(sel.id,a==='up'?-1:1);}
       bimLayerManagerRefresh();
     }
   }
@@ -153,6 +158,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
           bimLpmBtn('sub','New sub-layer',BIM_LY_IC.sub)+
           bimLpmBtn('del','Delete',BIM_LY_IC.del)+
           bimLpmBtn('cur','Set current',BIM_LY_IC.make)+
+          bimLpmBtn('up','Move up',BIM_LY_IC.up)+bimLpmBtn('down','Move down',BIM_LY_IC.down)+   /* __acad3dV174a */
           '<input type="text" class="a3d-lysearch" data-lpmsearch="1" placeholder="Search for layer" aria-label="Search for layer" value="'+bimEsc(A3D_LPM.filter||'')+'">'+
         '</div><div class="a3d-lpmbody"></div><div class="a3d-lpmft"></div>';
       el.root.appendChild(d);

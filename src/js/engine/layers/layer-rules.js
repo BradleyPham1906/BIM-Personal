@@ -1,13 +1,19 @@
 import { A3D, el } from '../core/state.js';
 import { bimLinetypeDef } from './select-change.js';
+import { bimBobBlend } from '../sheets/board-objects.js';
 import { cvScale } from '../ui/canvas-size.js';
 
   // ---- __acad3dV6: Layers system + CAD/BIM file import (DXF, OBJ, STL, IFC subset) ----
   function bimLayerOf(o){
     var id=o.layer||A3D.activeLayer,i;
     for(i=0;i<A3D.layers.length;i++)if(A3D.layers[i].id===id)return A3D.layers[i];
-    return A3D.layers[0]||null;
+    return bimLayerZero();
   }
+  /* __acad3dV174a: AutoCAD's layer 0 here: the project's first layer ('layer-0', named Model), found by its id, so the
+     layers can be put in any order (the order is a board's paint order); a project without it keeps its first */
+  function bimLayerZero(){return bimLayerById('layer-0')||A3D.layers[0]||null;}
+  /* __acad3dV174a: a layer's blend mode (R2), read tolerantly: a layer without one is Normal */
+  function bimLayerBlend(ly){return ly&&typeof ly.blend==='string'&&bimBobBlend(ly.blend)?ly.blend:'normal';}
   /* ================= __acad3dV121: what a layer's switches mean, asked in one place =================
 
      A layer is {id, name, color, visible, locked} since V6; V121 adds frozen, plot, linetype,
@@ -126,6 +132,6 @@ import { cvScale } from '../ui/canvas-size.js';
     return !s.frozen&&!s.locked;
   }
 export {
-  A3D_PLOT, bimHexA, bimLayerAlpha, bimLayerById, bimLayerChain, bimLayerEff, bimLayerLook, bimLayerOf,
-  bimLayerPickable, bimLayerSelectable, bimLayerShown, bimObjLayerState
+  A3D_PLOT, bimHexA, bimLayerAlpha, bimLayerBlend, bimLayerById, bimLayerChain, bimLayerEff, bimLayerLook,
+  bimLayerOf, bimLayerPickable, bimLayerSelectable, bimLayerShown, bimLayerZero, bimObjLayerState
 };

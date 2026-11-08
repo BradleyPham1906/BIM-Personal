@@ -1,5 +1,6 @@
 import { A3D } from '../core/state.js';
 import { bimHHMM, bimPad2, bimSunCalc, bimSunNum, bimSunSettings, bimSunTzAt } from '../site/sun-position.js';
+import { refreshLayers } from '../layers/analysis-data-rows.js';
 import { bimEsc } from '../layers/layer-manager.js';
 import { bimClimWhoYear, bimStd, bimStdEdition, bimStdYear } from '../standards/registry.js';
 import {
@@ -10,6 +11,7 @@ import {
 import { bimAccBoardHtml } from './access-board.js';
 import { bimZnBoardHtml, bimZnBuild } from './zoning-envelope.js';
 import { bimAccFetch } from './access-data.js';
+import { refreshProps } from './panel.js';
 import { bimLbSrcKept, bimLbSrcWords } from '../ladybug/sources.js';
 import { BIM_LB_FIGS, bimLbOnlyFigs } from '../ladybug/figures.js';
 import { bimProjectLabel } from '../ui/project-tabs.js';
@@ -19,7 +21,6 @@ import {
 } from '../sheets/board-figures.js';
 import { A3D_BRD, bimBrdDlgClose, bimBrdEsc, bimBrdWire } from '../sheets/board-edit.js';
 import { A3D_BDE, bimBdeAfterDraw, bimBdeWantsKey } from '../sheets/board-design-edit.js';
-import { bimBdePanelClose } from '../sheets/board-design-panel.js';
 import { bimPresPanelRefresh, bimPresThumbsQueue } from '../sheets/presentation-panel.js';
 
   /* ================= __acad3dV159: the Climate and risk board =================
@@ -42,8 +43,7 @@ import { bimPresPanelRefresh, bimPresThumbsQueue } from '../sheets/presentation-
   function bimClbKey(ev){
     if(!A3D_CLB.open)return false;
     var a=document.activeElement,b=bimClbEl(),dl=A3D_BRD.dlg;   /* __acad3dV172b: Edit's dialogs are the board's */
-    if(a&&a!==document.body&&!(b&&b.contains(a))&&!(dl&&dl.contains(a))&&!(A3D_BDE.pnl&&A3D_BDE.pnl.contains(a))&&   /* __acad3dV174a: the layers panel is the board's too */
-      (/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)||a.isContentEditable))return false;
+    if(a&&a!==document.body&&!(b&&b.contains(a))&&!(dl&&dl.contains(a))&&(/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)||a.isContentEditable))return false;
     if(ev.key==='Escape'){ev.preventDefault();ev.stopImmediatePropagation();if(!bimBrdEsc())bimClbClose();return true;}   /* __acad3dV172b: a dialog, then Edit, then the board */
     if(bimBdeWantsKey(ev))return true;   /* __acad3dV174a: Ctrl+G and the order keys, while a board is designed */
     if(ev.ctrlKey||ev.metaKey||ev.altKey||/^F\d+$/.test(ev.key))return false;
@@ -488,7 +488,7 @@ import { bimPresPanelRefresh, bimPresThumbsQueue } from '../sheets/presentation-
     if(b){if(b.__clbRO){try{b.__clbRO.disconnect();}catch(eD){}}if(b.parentNode)b.parentNode.removeChild(b);}
     A3D_CLB.open=false;A3D_CLB.board=null;document.body.classList.remove('a3d-clb-open');
     A3D_CLB.edit=false;A3D_BRD.drag=null;bimBrdDlgClose();   /* __acad3dV172b */
-    bimBdePanelClose();   /* __acad3dV174a */
+    if(A3D_BDE.sel.length||A3D_BDE.was){A3D_BDE.sel=[];A3D_BDE.was=false;refreshProps();refreshLayers();}   /* __acad3dV174a: nothing of a closed board selected or listed */
     if(was)bimPresPanelRefresh();
     return true;
   }

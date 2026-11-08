@@ -4,7 +4,7 @@ import { bimSweepFootingHosts } from './footings.js';
 import { bimBoundaryEdges } from './rooms.js';
 import { bimSweepOrphanTags } from './room-tags.js';
 import { bimFileTouch } from '../io/file-save.js';
-import { bimLayerById } from '../layers/layer-rules.js';
+import { bimLayerById, bimLayerZero } from '../layers/layer-rules.js';
 import { bimLayerDropUnselectable } from '../layers/select-change.js';
 import { refreshProps } from '../site-analysis/panel.js';
 import { paint } from '../map/terrain-3d.js';
@@ -82,7 +82,7 @@ import { a3dToast, objById } from './csg-booleans.js';
      an object a layer, and a missing layer read as the CURRENT one: every wall followed whichever
      layer was current, out of sight when it was off and out of reach when it was locked. */
   function bimAdoptLayers(){
-    var ids={},i,o,n=0,cur=bimLayerById(A3D.activeLayer)||A3D.layers[0],first=A3D.layers[0];
+    var ids={},i,o,n=0,cur=bimLayerById(A3D.activeLayer)||A3D.layers[0],first=bimLayerZero();   /* __acad3dV174a: layer 0 by its id */
     if(!cur||!first)return 0;
     for(i=0;i<A3D.layers.length;i++)ids[A3D.layers[i].id]=1;
     for(i=0;i<A3D.objs.length;i++){

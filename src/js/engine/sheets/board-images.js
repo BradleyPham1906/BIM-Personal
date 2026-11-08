@@ -1,6 +1,5 @@
 import { A3D } from '../core/state.js';
 import { bimIdbGet, bimIdbPut, bimIdbPutMany } from '../core/idb-store.js';
-import { bimBtrWalk } from './board-tree.js';
 import { a3dToast } from '../bim/csg-booleans.js';
 
 
@@ -93,7 +92,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
     var out=[],P=A3D.pres;
     if(!P||!Array.isArray(P.boards))return out;
     P.boards.forEach(function(B){
-      if(B&&Array.isArray(B.els))bimBtrWalk(B.els,function(n){if(n.t==='image'&&n.src&&out.indexOf(n.src)<0)out.push(n.src);});
+      if(B&&Array.isArray(B.objs))B.objs.forEach(function(n){if(n.t==='image'&&n.src&&out.indexOf(n.src)<0)out.push(n.src);});
     });
     return out;
   }
