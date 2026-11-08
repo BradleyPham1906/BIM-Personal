@@ -58926,7 +58926,12 @@ try{
     b=bimBtrBox(n);
     if(t==='rect'||t==='ellipse'||t==='poly'||t==='star'||t==='line'){
       S=bimBdsShape(n,ctx.edit);
-      return '<svg'+bimBdsAttr(n,'a3d-clb-dshp'+(t==='line'?' ln':''),ctx)+' xmlns="http://www.w3.org/2000/svg" style="'+bimBdsPos(b,ox,oy)+bimBdsComp(n,false)+'" viewBox="0 0 '+Math.max(S[1],0.001)+' '+Math.max(S[2],0.001)+'" preserveAspectRatio="none">'+S[0]+'</svg>';
+      if(t==='line'){   /* a straight line's box can be 0 high or wide, and an SVG of no size is not painted: its box grows by its stroke and heads */
+        var pd=bimBrdPx(Math.max(8,bimBdsPx(n.sw)*4)+2),Wp=bimBrdPx(S[1]+2*pd),Hp=bimBrdPx(S[2]+2*pd);
+        return '<svg'+bimBdsAttr(n,'a3d-clb-dshp ln',ctx)+' xmlns="http://www.w3.org/2000/svg" style="left:'+bimBrdPx(bimBdsPx(b.x-ox)-pd)+'px;top:'+bimBrdPx(bimBdsPx(b.y-oy)-pd)+'px;width:'+Wp+'px;height:'+Hp+'px;'+
+          bimBdsComp(n,false)+'" viewBox="'+(-pd)+' '+(-pd)+' '+Wp+' '+Hp+'">'+S[0]+'</svg>';
+      }
+      return '<svg'+bimBdsAttr(n,'a3d-clb-dshp',ctx)+' xmlns="http://www.w3.org/2000/svg" style="'+bimBdsPos(b,ox,oy)+bimBdsComp(n,false)+'" viewBox="0 0 '+Math.max(S[1],0.001)+' '+Math.max(S[2],0.001)+'" preserveAspectRatio="none">'+S[0]+'</svg>';
     }
     if(t==='text'){
       h='left:'+bimBdsPx(b.x-ox)+'px;top:'+bimBdsPx(b.y-oy)+'px;';

@@ -16644,4 +16644,16 @@ Branch `v174a-tree`.
   research's first build measurement (CSS blend modes printed to PDF in Chrome and Edge) waits for the owner's
   browser check.
 - Checks: `node --check` on each changed file, `npm run modules`, the build, `npm run check`, `npm test` 89 of 89
-  (21 new in `tests/unit/board-tree.test.mjs`).
+  (22 new in `tests/unit/board-tree.test.mjs`).
+- **Browser check** (2026-11-08, the owner's yes): headless Edge over http, driven through the DevTools protocol
+  (no Chrome on the PC for the Playwright plugin; no Python Playwright). 24 of 24: the dark theme's sheet is white
+  and isolated, Text and Line show, Multiply composites, the panel lists every element, a pass-through group has no
+  element and Normal isolates it, Ctrl+Shift+G reaches the board, hide, lock, the app's undo, a luminance mask, an
+  image (hash, proportions, object URL, `img:` record, in the project file, the file opened again), Print set;
+  no console errors, no [BIM] warnings. It found a level line not painted: an SVG of 0 height is not drawn; the
+  line's box now grows by its stroke and heads (a unit test holds it).
+- **Printed to PDF** (Edge's `Page.printToPDF`, as Save as PDF): `/BM /Multiply` in the file, soft masks for the
+  masks: the blend modes are not flattened, so D1 holds in Chromium's print path. Chrome itself not run.
+- **Found, for V174c:** a designed board prints as one tall absolute layer; a figure 385 px high across an A3
+  break (277 mm) is cut in two (measured: 2 of 6 figures on a tall board), where the bands kept a figure whole.
+  V174c's page sizes make a designed board a page.

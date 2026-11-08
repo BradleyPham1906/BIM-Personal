@@ -217,6 +217,7 @@ test('a hidden element is not drawn; a line draws its arrowheads', () => {
   assert.equal(h.includes('data-bde="e1"'), false);
   h = draw([{ id: 'e1', t: 'line', x: 0, y: 0, w: 50, h: 0, a0: true, a1: true }]);
   assert.equal((h.match(/<polygon/g) || []).length, 2);
+  assert.ok(/class="a3d-clb-dshp ln"[^>]*style="left:-[\d.]+px;top:-[\d.]+px;width:[\d.]+px;height:([1-9][\d.]*)px/.test(h), 'a level line box is not 0 high: an SVG of no size is not painted');
 });
 
 test('an image is named by its data\'s hash, and only images are taken', () => {
