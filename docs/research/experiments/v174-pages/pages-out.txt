@@ -1,0 +1,35 @@
+ISO 216, rules against the published table (mismatches listed):
+  A, R1 round each exact size: 6 wrong: A1 595x841 (table 594x841); A2 420x595 (table 420x594); A5 149x210 (table 148x210); A6 105x149 (table 105x148); A8 53x74 (table 52x74); A9 37x53 (table 37x52)
+  A, R2 halve the rounded size, floor: all 11 match
+  A, R3 halve the rounded size, round: 10 wrong: A1 595x841 (table 594x841); A2 421x595 (table 420x594); A3 298x421 (table 297x420); A4 211x298 (table 210x297); A5 149x211 (table 148x210); A6 106x149 (table 105x148); A7 75x106 (table 74x105); A8 53x75 (table 52x74); A9 38x53 (table 37x52); A10 27x38 (table 26x37)
+  B, R1 round each exact size: 6 wrong: B3 354x500 (table 353x500); B4 250x354 (table 250x353); B5 177x250 (table 176x250); B6 125x177 (table 125x176); B8 63x88 (table 62x88); B9 44x63 (table 44x62)
+  B, R2 halve the rounded size, floor: all 11 match
+  B, R3 halve the rounded size, round: 8 wrong: B3 354x500 (table 353x500); B4 250x354 (table 250x353); B5 177x250 (table 176x250); B6 125x177 (table 125x176); B7 89x125 (table 88x125); B8 63x89 (table 62x88); B9 45x63 (table 44x62); B10 32x45 (table 31x44)
+  exact A0 = 840.896 x 1189.207 mm, area 1.000000000 m2
+  exact B0 = 1000.000 x 1414.214 mm
+  table vs exact, worst error (mm): 0.651 (A), 0.777 (B)
+  table ratio long/short, A0..A10: 1.4138 1.4158 1.4143 1.4141 1.4143 1.4189 1.4095 1.4189 1.4231 1.4054 1.4231
+
+Inch series in mm (exact = in x 25.4) against QGIS:
+  ANSI A: 8.5x11 in = 215.9 x 279.4 mm; QGIS 215.9 x 279.4  same; ratio 1.2941
+  ANSI B: 11x17 in = 279.4 x 431.8 mm; QGIS 279.4 x 431.8  same; ratio 1.5455
+  ANSI C: 17x22 in = 431.8 x 558.8 mm; QGIS 431.8 x 558.8  same; ratio 1.2941
+  ANSI D: 22x34 in = 558.8 x 863.6 mm; QGIS 558.8 x 863.6  same; ratio 1.5455
+  ANSI E: 34x44 in = 863.6 x 1117.6 mm; QGIS 863.6 x 1117.6  same; ratio 1.2941
+  Arch A: 9x12 in = 228.6 x 304.8 mm; QGIS 228.6 x 304.8  same; ratio 1.3333
+  Arch B: 12x18 in = 304.8 x 457.2 mm; QGIS 304.8 x 457.2  same; ratio 1.5000
+  Arch C: 18x24 in = 457.2 x 609.6 mm; QGIS 457.2 x 609.6  same; ratio 1.3333
+  Arch D: 24x36 in = 609.6 x 914.4 mm; QGIS 609.6 x 914.4  same; ratio 1.5000
+  Arch E1: 30x42 in = 762 x 1066.8 mm; QGIS 762 x 1066.8  same; ratio 1.4000
+  Arch E: 36x48 in = 914.4 x 1219.2 mm; QGIS 914.4 x 1219.2  same; ratio 1.3333
+  Arch E2: 26x38 in = 660.4 x 965.2 mm; QGIS 660 x 965  DIFFERS by 0.40 mm; ratio 1.4615
+  Arch E3: 27x39 in = 685.8 x 990.6 mm; QGIS 686 x 991  DIFFERS by 0.40 mm; ratio 1.4444
+
+Halving: each size is two of the size below (long side of n-1 = 2 x short side of n):
+  ANSI: A->B: yes, B->C: yes, C->D: yes, D->E: yes
+  Arch: A->B: yes, B->C: yes, C->D: yes, D->E: yes
+
+The app's sizes against their names:
+  ANSI-A (215.9 x 279.4 mm, labelled ANSI A): matches ANSI A
+  ANSI-B (279.4 x 431.8 mm, labelled ANSI B): matches ANSI B
+  ANSI-D (609.6 x 914.4 mm, labelled ANSI D): does NOT match ANSI D (22x34 in); it is Arch D
