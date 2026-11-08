@@ -200,8 +200,9 @@ typed arrays (k=9, n=1e6: about 108 MB for Float64 + Int32), the real ceiling in
   give 5 breaks with empty classes [1,0,1,0,1].
 - All equal ([7,7,7,7]): one class [7] for every method. The current colour lens does not fail here:
   `bimLensPick` (`src/js/engine/map/colour-lens.js` line 95) returns the last bin when hi <= lo, before the
-  division on line 96 (corrected by the main session on 2026-11-08; the agent's first draft said NaN). It does
-  build six bins of zero width, so its legend shows one row repeated as "7 to 7"; V173's one class is better.
+  division on line 96 (corrected by the main session on 2026-11-08; the agent's first draft said NaN). It builds six
+  bins of zero width, puts every value in the last, and its legend (which lists only bins with a count) shows one
+  row, "7 to 7".
 - Duplicates ([1,1,1,1,2,2,9,9,9,30], k=4): Fisher-Jenks and quantile both give one class per distinct
   value [1,2,9,30]; equal interval [8.25,15.5,22.75,30] counts [6,3,0,1].
 - NaN, null, undefined, '', booleans, Infinity, 'x' dropped; numeric strings ('4') kept: [1,3,4].
