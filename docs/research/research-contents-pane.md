@@ -220,7 +220,14 @@ diagrams' label placement (`site-analysis/model-layers.js:370`) and the layer ca
 **Built in this phase so far (2026-11-08):** `src/js/engine/map/classify.js`, `__acad3dV173`: `bimClsBreaks`,
 `bimClsStretch`, `bimClsStretchAt`, with `window.__a3dClsBreaks` and `__a3dClsStretch` for the suites, and
 `tests/unit/classify.test.mjs` (9 tests: the calemp examples, simple-statistics' cases, a brute-force optimum on 30
-random cases, the edges, sampling, the stretches). Nothing draws with it yet.
+random cases, the edges, sampling, the stretches).
+
+**Built after the owner's decisions (2026-11-08), as D14 orders it:** V173a, a data layer's graduated colours
+(`map/data-symbology.js`, ColorBrewer's ramps in `map/colour-ramps.js`; PR #75); V173b, its filter as CQL2 text
+(`map/layer-filter.js`) and its labels at polylabel's pole of inaccessibility (`map/data-labels.js`,
+`map/data-filter-ui.js`; PR #76); V173c, the Layers tab's List by and the data layers listed top-first, dragged or
+stepped Up and Down to their place (`layers/list-by.js`; PR #77); V173d, the layer cake (`map/layer-cake.js`). The
+stretch (D6) is not used yet: the result surfaces keep their values binned, not raw.
 
 ## 9. Risks and threats to validity
 

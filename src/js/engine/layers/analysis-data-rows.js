@@ -9,7 +9,7 @@ import {
   openAddLayerDlg
 } from './select-change.js';
 import { A3D_LY, BIM_LY_IC, bimLayersPanelHtml, bimLyTgl } from './layers-panel.js';
-import { bimDataLayerMove, bimDataListTopFirst, bimLyListBySet } from './list-by.js';
+import { bimDataLayerMove, bimDataLayerStep, bimDataListTopFirst, bimLyListBySet } from './list-by.js';
 import { bimEsc, bimLayerManagerOpen, bimLayerManagerRefresh } from './layer-manager.js';
 import { bimDispNum } from '../properties/palette.js';
 import { bimDataStatusText } from '../properties/context-lod-data.js';
@@ -96,6 +96,7 @@ import { a3dToast, objById } from '../bim/csg-booleans.js';
       bimLyTgl('lyreson',key,hid,hid?'Show '+L.name:'Hide '+L.name,BIM_LY_IC.off,BIM_LY_IC.on)+'<span class="a3d-lyi a3d-lyspc" aria-hidden="true"></span><span class="a3d-lyi a3d-lyspc" aria-hidden="true"></span>'+'</div>';
     if(sel)h+='<div class="a3d-lyresd" data-lyresd="'+bimEsc(key)+'">'+bimLyOpacityHtml(key,L.name,bimDataOpacity(L))+bimDataLegendHtml(L)+
       '<div class="a3d-lyresmeta">'+bimEsc(bimDataStatusText(L)+(n?'; '+n+' feature'+(n===1?'':'s'):'')+(L.filter?'. '+bimDataFilterText(L):'')+(L.credit?'. Source: '+L.credit:''))+'</div><div class="a3d-lyresacts">'+
+      '<button type="button" data-lydmv="up:'+bimEsc(L.id)+'" title="Draw over the layer above">Up</button><button type="button" data-lydmv="down:'+bimEsc(L.id)+'" title="Draw under the layer below">Down</button>'+   /* __acad3dV173c: for touch screens */
       '<button type="button" data-lyresset="'+bimEsc(key)+'">Settings</button><button type="button" data-lyresrn="'+bimEsc(key)+'">Rename</button>'+
       '<button type="button" class="danger" data-lyresdel="'+bimEsc(key)+'">Remove</button></div></div>';
     return h;
@@ -213,6 +214,7 @@ import { a3dToast, objById } from '../bim/csg-booleans.js';
     if((b=t.closest('[data-lyresdel]'))){bimLyResRemove(b.getAttribute('data-lyresdel'));return true;}
     if((b=t.closest('[data-lyresrn]'))){A3D_LY.redit=b.getAttribute('data-lyresrn');refreshLayers();bimLyResFocusEdit();return true;}
     if((b=t.closest('[data-lyresset]'))){bimAnzAct('open:Data Layers');return true;}
+    if((b=t.closest('[data-lydmv]'))){k=b.getAttribute('data-lydmv');bimDataLayerStep(k.slice(k.indexOf(':')+1),k.slice(0,k.indexOf(':')));return true;}   /* __acad3dV173c */
     if(t.closest('input')||t.closest('[data-lyresd]'))return !!t.closest('[data-lyresd],[data-lyres]');
     if((b=t.closest('[data-lyres]'))){k=b.getAttribute('data-lyres');A3D_LY.rsel=A3D_LY.rsel===k?null:k;refreshLayers();return true;}
     return false;

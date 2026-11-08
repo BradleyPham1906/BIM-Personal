@@ -24,16 +24,17 @@ test('off: nothing is lifted', () => {
   assert.equal(E.bimCakeLift('data', 'd1'), 0);
 });
 
-test('on: shown data layers, then analysis layers holding an analysis, a fifth of the radius apart', () => {
+test('on: the analysis layers shown by the drawer\'s rule, then the shown data layers, a fifth of the radius apart', () => {
   setup();
   assert.ok(E.bimIsDiag(A3D.objs[0]));
   E.bimCakeSet(true);
   const T = E.bimCakeTiers();
-  assert.deepEqual(T.map((t) => [t.kind, t.id, t.name, t.lift]), [['data', 'd1', 'Parcels', 50], ['analysis', 'Ls', 'Slope', 100]]);
+  assert.deepEqual(T.map((t) => [t.kind, t.id, t.name, t.lift]), [['analysis', 'Ls', 'Slope', 50], ['data', 'd1', 'Parcels', 100]]);
   A3D.frames = (A3D.frames || 0) + 1;
-  assert.equal(E.bimCakeLift('data', 'd1'), 50);
+  assert.equal(E.bimCakeLift('data', 'd1'), 100);
   assert.equal(E.bimCakeLift('data', 'd2'), 0);
-  assert.equal(E.bimDgW(A3D.objs[0], [1, 2, 3])[1] - E.bimDgW({ ...A3D.objs[0], layer: 'L0' }, [1, 2, 3])[1], 100);
+  assert.equal(E.bimDgW(A3D.objs[0], [1, 2, 3])[1] - E.bimDgW({ ...A3D.objs[0], layer: 'L0' }, [1, 2, 3])[1], 50);
+  assert.equal(E.bimPickDiag(0, 0), null, 'not picked while lifted');
   E.bimCakeSet(false);
   assert.equal(E.bimCakeLift('data', 'd1'), 0);
 });
@@ -43,9 +44,18 @@ test('the gap is held to 10 to 200 m', () => {
   E.A3D_CAKE.on = true; E.A3D_CAKE.memo = null;
   A3D.site.dataLayers[1].visible = true;
   A3D.site.context.radius = 50;
-  assert.deepEqual(E.bimCakeTiers().filter((t) => t.kind === 'data').map((t) => t.lift), [10, 20]);
+  assert.deepEqual(E.bimCakeTiers().filter((t) => t.kind === 'data').map((t) => t.lift), [20, 30]);
   A3D.site.context.radius = 1000;
-  assert.deepEqual(E.bimCakeTiers().filter((t) => t.kind === 'data').map((t) => t.lift), [200, 400]);
+  assert.deepEqual(E.bimCakeTiers().filter((t) => t.kind === 'data').map((t) => t.lift), [400, 600]);
+  E.A3D_CAKE.on = false;
+});
+
+test('a hidden parent group leaves its analyses out', () => {
+  setup();
+  A3D.layers.unshift({ id: 'Lg', name: 'Site analysis', visible: false });
+  A3D.layers[2].parent = 'Lg';
+  E.A3D_CAKE.on = true; E.A3D_CAKE.memo = null;
+  assert.deepEqual(E.bimCakeTiers().map((t) => t.id), ['d1']);
   E.A3D_CAKE.on = false;
 });
 

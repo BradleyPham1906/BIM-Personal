@@ -1,8 +1,9 @@
 import { A3D } from '../core/state.js';
-import { A3D_PLOT } from '../layers/layer-rules.js';
+import { A3D_PLOT, bimLayerById, bimLayerShown } from '../layers/layer-rules.js';
 import { refreshLayers } from '../layers/analysis-data-rows.js';
-import { bimDgDiags } from '../standards/registry.js';
+import { bimDgDiags, bimIsDiag } from '../standards/registry.js';
 import { bimDgDrawText } from '../site-analysis/model-layers.js';
+import { refreshProps } from '../site-analysis/panel.js';
 import { toScreen } from '../io/import-entry.js';
 import { bimCtxSettings } from './site-context.js';
 import { bimDataList } from './data-layers.js';
@@ -10,7 +11,8 @@ import { paint } from './terrain-3d.js';
 import { setView } from '../editing/modify-toolbox.js';
 import { bimShadowGround } from '../site/shadows.js';
 import { bimCameraIsPlan } from '../views/saved-views.js';
-import { a3dToast } from '../bim/csg-booleans.js';
+import { refreshTree } from '../sheets/presentation-panel.js';
+import { a3dToast, objById } from '../bim/csg-booleans.js';
 
 
   /* ================= __acad3dV173d: McHarg's layer cake =================
@@ -21,17 +23,20 @@ import { a3dToast } from '../bim/csg-booleans.js';
      placed (bimDgW for an analysis, drawDataLayers and bimDataPick for a data layer), so drawing and
      picking agree. The cake is a way of looking, like a view: neither saved nor undone. */
   var A3D_CAKE={on:false,memo:null};
-  /* the tiers, bottom up: the shown data layers in drawing order, then each site analysis layer
-     that holds an analysis; each {kind, id, name, lift} */
+  /* the tiers, bottom up, in the order paint draws them so a higher tier is drawn over a lower one:
+     the site analysis layers first (drawDiagrams' under pass comes before the data layers), in the
+     order drawDiagrams meets their elements, each counted only when one of its elements is shown by
+     the drawer's own rule (bimLayerShown, which honours the parent group); then the shown data
+     layers in their drawing order. Each {kind, id, name, lift} */
   function bimCakeTiers(){
-    var out=[],L=bimDataList(),i,ly,has={},gap=bimCakeGap();
+    var out=[],L=bimDataList(),i,seen={},gap=bimCakeGap(),ly;
     if(!A3D_CAKE.on)return out;
+    bimDgDiags().forEach(function(o){
+      if(!o.layer||seen[o.layer]||!bimLayerShown(o))return;
+      seen[o.layer]=1;ly=bimLayerById(o.layer);
+      out.push({kind:'analysis',id:o.layer,name:String(ly&&ly.name||o.layer).replace(/^Site analysis - /,'')});
+    });
     for(i=0;i<L.length;i++)if(L[i].visible)out.push({kind:'data',id:L[i].id,name:L[i].name});
-    bimDgDiags().forEach(function(o){if(o.layer)has[o.layer]=1;});
-    for(i=0;i<A3D.layers.length;i++){
-      ly=A3D.layers[i];
-      if(has[ly.id]&&ly.visible!==false)out.push({kind:'analysis',id:ly.id,name:String(ly.name||'').replace(/^Site analysis - /,'')});
-    }
     for(i=0;i<out.length;i++)out[i].lift=(i+1)*gap;
     return out;
   }
@@ -54,10 +59,15 @@ import { a3dToast } from '../bim/csg-booleans.js';
   function bimCakeSet(on){
     A3D_CAKE.on=on===undefined?!A3D_CAKE.on:!!on;
     A3D_CAKE.memo=null;
-    var n=bimCakeTiers().length;
+    var n=bimCakeTiers().length,ids=[],i,o;
+    /* an analysis is for looking while it is lifted: let go of any that is selected */
+    if(A3D_CAKE.on){
+      for(i=0;i<(A3D.selSet||[]).length;i++){o=objById(A3D.selSet[i]);if(!bimIsDiag(o))ids.push(A3D.selSet[i]);}
+      if(ids.length!==(A3D.selSet||[]).length){A3D.selSet=ids;if(A3D.sel&&bimIsDiag(objById(A3D.sel)))A3D.sel=ids[0]||null;refreshTree();refreshProps();}
+    }
     if(A3D_CAKE.on&&bimCameraIsPlan())setView('iso');
     refreshLayers();paint();
-    a3dToast(!A3D_CAKE.on?'Layer cake: off':n?'Layer cake: '+n+' layer'+(n===1?'':'s')+' lifted over the map, '+Math.round(bimCakeGap())+' m apart':
+    a3dToast(!A3D_CAKE.on?'Layer cake: off':n?'Layer cake: '+n+' layer'+(n===1?'':'s')+' lifted over the map, '+Math.round(bimCakeGap())+' m apart; the analyses are for looking until it is off':
       'Layer cake: no shown site analysis or data layer to lift');
     return A3D_CAKE.on;
   }

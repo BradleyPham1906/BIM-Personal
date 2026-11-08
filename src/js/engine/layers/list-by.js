@@ -10,7 +10,7 @@ import { bimMapHost } from '../map/map-tiles.js';
 import { A3D_DATA, bimDataById, bimDataList } from '../map/data-layers.js';
 import { paint } from '../map/terrain-3d.js';
 import { saveSoon } from '../bim/region-regenerate.js';
-import { objById } from '../bim/csg-booleans.js';
+import { a3dToast, objById } from '../bim/csg-booleans.js';
 
 
   /* ================= __acad3dV173c: Layers, listed by drawing order, source or selection =================
@@ -42,6 +42,16 @@ import { objById } from '../bim/csg-booleans.js';
     D=L.splice(i,1)[0];L.splice(j,0,D);
     refreshLayers();refreshProps();paint();saveSoon();
     return true;
+  }
+  /* one step up or down the list, for touch screens where a row cannot be dragged: up is toward
+     the top of the list, so later in the stored order */
+  function bimDataLayerStep(id,dir){
+    var L=bimDataList(),i,j;
+    for(i=0;i<L.length;i++)if(L[i].id===id)break;
+    if(i>=L.length)return false;
+    j=dir==='up'?i+1:i-1;
+    if(j<0||j>=L.length){a3dToast(L[i].name+' is at the '+(dir==='up'?'top':'bottom')+' already');return false;}
+    return bimDataLayerMove(id,L[j].id);
   }
   function bimLyGroupHtml(label,n,body){
     return '<div class="a3d-lysec"><div class="a3d-lysechd"><span class="a3d-lycar"></span><span class="a3d-lystat" aria-hidden="true"></span>'+
@@ -98,5 +108,6 @@ import { objById } from '../bim/csg-booleans.js';
     return '';
   }
 export {
-  bimDataLayerMove, bimDataListTopFirst, bimLyListBy, bimLyListByHtml, bimLyListBySelect, bimLyListBySet
+  bimDataLayerMove, bimDataLayerStep, bimDataListTopFirst, bimLyListBy, bimLyListByHtml, bimLyListBySelect,
+  bimLyListBySet
 };

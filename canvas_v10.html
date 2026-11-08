@@ -17753,6 +17753,16 @@ try{
     refreshLayers();refreshProps();paint();saveSoon();
     return true;
   }
+  /* one step up or down the list, for touch screens where a row cannot be dragged: up is toward
+     the top of the list, so later in the stored order */
+  function bimDataLayerStep(id,dir){
+    var L=bimDataList(),i,j;
+    for(i=0;i<L.length;i++)if(L[i].id===id)break;
+    if(i>=L.length)return false;
+    j=dir==='up'?i+1:i-1;
+    if(j<0||j>=L.length){a3dToast(L[i].name+' is at the '+(dir==='up'?'top':'bottom')+' already');return false;}
+    return bimDataLayerMove(id,L[j].id);
+  }
   function bimLyGroupHtml(label,n,body){
     return '<div class="a3d-lysec"><div class="a3d-lysechd"><span class="a3d-lycar"></span><span class="a3d-lystat" aria-hidden="true"></span>'+
       '<span class="a3d-lynm a3d-lysecttl">'+bimEsc(label)+'</span><span class="a3d-lycnt">'+(n||'')+'</span></div>'+body+'</div>';
@@ -17872,6 +17882,7 @@ try{
       bimLyTgl('lyreson',key,hid,hid?'Show '+L.name:'Hide '+L.name,BIM_LY_IC.off,BIM_LY_IC.on)+'<span class="a3d-lyi a3d-lyspc" aria-hidden="true"></span><span class="a3d-lyi a3d-lyspc" aria-hidden="true"></span>'+'</div>';
     if(sel)h+='<div class="a3d-lyresd" data-lyresd="'+bimEsc(key)+'">'+bimLyOpacityHtml(key,L.name,bimDataOpacity(L))+bimDataLegendHtml(L)+
       '<div class="a3d-lyresmeta">'+bimEsc(bimDataStatusText(L)+(n?'; '+n+' feature'+(n===1?'':'s'):'')+(L.filter?'. '+bimDataFilterText(L):'')+(L.credit?'. Source: '+L.credit:''))+'</div><div class="a3d-lyresacts">'+
+      '<button type="button" data-lydmv="up:'+bimEsc(L.id)+'" title="Draw over the layer above">Up</button><button type="button" data-lydmv="down:'+bimEsc(L.id)+'" title="Draw under the layer below">Down</button>'+   /* __acad3dV173c: for touch screens */
       '<button type="button" data-lyresset="'+bimEsc(key)+'">Settings</button><button type="button" data-lyresrn="'+bimEsc(key)+'">Rename</button>'+
       '<button type="button" class="danger" data-lyresdel="'+bimEsc(key)+'">Remove</button></div></div>';
     return h;
@@ -17989,6 +18000,7 @@ try{
     if((b=t.closest('[data-lyresdel]'))){bimLyResRemove(b.getAttribute('data-lyresdel'));return true;}
     if((b=t.closest('[data-lyresrn]'))){A3D_LY.redit=b.getAttribute('data-lyresrn');refreshLayers();bimLyResFocusEdit();return true;}
     if((b=t.closest('[data-lyresset]'))){bimAnzAct('open:Data Layers');return true;}
+    if((b=t.closest('[data-lydmv]'))){k=b.getAttribute('data-lydmv');bimDataLayerStep(k.slice(k.indexOf(':')+1),k.slice(0,k.indexOf(':')));return true;}   /* __acad3dV173c */
     if(t.closest('input')||t.closest('[data-lyresd]'))return !!t.closest('[data-lyresd],[data-lyres]');
     if((b=t.closest('[data-lyres]'))){k=b.getAttribute('data-lyres');A3D_LY.rsel=A3D_LY.rsel===k?null:k;refreshLayers();return true;}
     return false;
@@ -22250,6 +22262,7 @@ try{
      (bimPickBand). */
   function bimPickDiag(x,y){
     var H=A3D_DG.hits,i,j,b;
+    if(A3D_CAKE.on)return null;   /* __acad3dV173d: in the layer cake an analysis is lifted, so it is for looking, not editing */
     for(i=H.length-1;i>=0;i--){
       var o=objById(H[i].id);
       if(!o||!bimLayerPickable(o))continue;
@@ -22264,6 +22277,7 @@ try{
      a band never covers what lies on it; a class with no line of its own is still a click away. The
      top one: the analysis drawn last, then its highest class, as bimDgDrawBands lays them. */
   function bimPickBand(x,y){
+    if(A3D_CAKE.on)return null;   /* __acad3dV173d */
     var L=bimDgDiags(),G={},order=[],V,W,H,i,j,k,m;
     for(i=0;i<L.length;i++){
       var o=L[i],gb=o.dg.g.bands;
@@ -37802,17 +37816,20 @@ try{
      placed (bimDgW for an analysis, drawDataLayers and bimDataPick for a data layer), so drawing and
      picking agree. The cake is a way of looking, like a view: neither saved nor undone. */
   var A3D_CAKE={on:false,memo:null};
-  /* the tiers, bottom up: the shown data layers in drawing order, then each site analysis layer
-     that holds an analysis; each {kind, id, name, lift} */
+  /* the tiers, bottom up, in the order paint draws them so a higher tier is drawn over a lower one:
+     the site analysis layers first (drawDiagrams' under pass comes before the data layers), in the
+     order drawDiagrams meets their elements, each counted only when one of its elements is shown by
+     the drawer's own rule (bimLayerShown, which honours the parent group); then the shown data
+     layers in their drawing order. Each {kind, id, name, lift} */
   function bimCakeTiers(){
-    var out=[],L=bimDataList(),i,ly,has={},gap=bimCakeGap();
+    var out=[],L=bimDataList(),i,seen={},gap=bimCakeGap(),ly;
     if(!A3D_CAKE.on)return out;
+    bimDgDiags().forEach(function(o){
+      if(!o.layer||seen[o.layer]||!bimLayerShown(o))return;
+      seen[o.layer]=1;ly=bimLayerById(o.layer);
+      out.push({kind:'analysis',id:o.layer,name:String(ly&&ly.name||o.layer).replace(/^Site analysis - /,'')});
+    });
     for(i=0;i<L.length;i++)if(L[i].visible)out.push({kind:'data',id:L[i].id,name:L[i].name});
-    bimDgDiags().forEach(function(o){if(o.layer)has[o.layer]=1;});
-    for(i=0;i<A3D.layers.length;i++){
-      ly=A3D.layers[i];
-      if(has[ly.id]&&ly.visible!==false)out.push({kind:'analysis',id:ly.id,name:String(ly.name||'').replace(/^Site analysis - /,'')});
-    }
     for(i=0;i<out.length;i++)out[i].lift=(i+1)*gap;
     return out;
   }
@@ -37835,10 +37852,15 @@ try{
   function bimCakeSet(on){
     A3D_CAKE.on=on===undefined?!A3D_CAKE.on:!!on;
     A3D_CAKE.memo=null;
-    var n=bimCakeTiers().length;
+    var n=bimCakeTiers().length,ids=[],i,o;
+    /* an analysis is for looking while it is lifted: let go of any that is selected */
+    if(A3D_CAKE.on){
+      for(i=0;i<(A3D.selSet||[]).length;i++){o=objById(A3D.selSet[i]);if(!bimIsDiag(o))ids.push(A3D.selSet[i]);}
+      if(ids.length!==(A3D.selSet||[]).length){A3D.selSet=ids;if(A3D.sel&&bimIsDiag(objById(A3D.sel)))A3D.sel=ids[0]||null;refreshTree();refreshProps();}
+    }
     if(A3D_CAKE.on&&bimCameraIsPlan())setView('iso');
     refreshLayers();paint();
-    a3dToast(!A3D_CAKE.on?'Layer cake: off':n?'Layer cake: '+n+' layer'+(n===1?'':'s')+' lifted over the map, '+Math.round(bimCakeGap())+' m apart':
+    a3dToast(!A3D_CAKE.on?'Layer cake: off':n?'Layer cake: '+n+' layer'+(n===1?'':'s')+' lifted over the map, '+Math.round(bimCakeGap())+' m apart; the analyses are for looking until it is off':
       'Layer cake: no shown site analysis or data layer to lift');
     return A3D_CAKE.on;
   }
