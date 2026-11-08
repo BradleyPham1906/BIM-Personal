@@ -20,6 +20,9 @@ suites are in `tests/e2e/`.
 
 ## In a new session
 
+0. The owner's routine is `/start`, work, `/finish` (`docs/dev/WORKFLOW.md`: which tool does what, Bionic's
+   local server at `localhost:1235`, the four rules). If the owner starts without `/start`, suggest it
+   once; before they leave, suggest `/finish` if work is unpushed.
 1. Read `docs/dev/PIPELINE.md` first, in full: the build's hash and size, the test counts, and the ordered
    path, with the phase marked **Start here**.
 2. Then `docs/dev/CLAUDE_INSTRUCTIONS.md`: the build contract (ES5, no dependencies, phase markers,
