@@ -3,6 +3,7 @@ import { bimEnterDraftingMode, pushUndo } from '../drawing/plan-mode-sketch.js';
 import { bimGetActiveLevel } from '../bim/levels-walls-floors.js';
 import { bimBuildWallGeometry, bimCarryBim, bimIsLocked } from '../bim/import-compliance.js';
 import { bimPolyArea } from '../bim/rooms.js';
+import { bimFileNotWork } from '../io/file-save.js';
 import { paint } from '../map/terrain-3d.js';
 import { inPoly } from '../render/viewcube.js';
 import { bimFmtLen } from '../gizmo/gizmo-handles.js';
@@ -827,7 +828,7 @@ import { a3dToast, objById } from '../bim/csg-booleans.js';
     if(name==='home'){to.dist=DEFCAM.dist;to.tx=DEFCAM.tx;to.ty=DEFCAM.ty;to.tz=DEFCAM.tz;}
     if(anim===false){
       c.yaw=to.yaw;c.pitch=to.pitch;c.dist=to.dist;c.tx=to.tx;c.ty=to.ty;c.tz=to.tz;
-      paint();saveSoon();return;
+      paint();bimFileNotWork();saveSoon();return;   /* __acad3dV172g: the view is kept, but it is not work (D2) */
     }
     var from={yaw:c.yaw,pitch:c.pitch,dist:c.dist,tx:c.tx,ty:c.ty,tz:c.tz};
     var t0=Date.now(),dur=260;
@@ -837,7 +838,7 @@ import { a3dToast, objById } from '../bim/csg-booleans.js';
       for(k in to)if(to.hasOwnProperty(k))c[k]=from[k]+(to[k]-from[k])*e;
       paint();
       if(t<1&&A3D.on)requestAnimationFrame(step);
-      else saveSoon();
+      else{bimFileNotWork();saveSoon();}   /* __acad3dV172g */
     }
     requestAnimationFrame(step);
   }

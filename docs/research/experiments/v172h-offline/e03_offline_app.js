@@ -1,4 +1,4 @@
-// e03_offline_app.js -- H32 (V172h, 2026-11-07): after one online visit with the experiment worker installed,
+// e03_offline_app.js -- H43 (V172h, 2026-11-07): after one online visit with the experiment worker installed,
 // the real built app opens with no network, its project (saved before going offline) reads back from IndexedDB,
 // and an edit saves. Two ways of being offline:
 //   'emulated': Playwright's context.setOffline(true) (Chromium's network emulation), server still up;

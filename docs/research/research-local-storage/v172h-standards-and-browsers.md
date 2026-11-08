@@ -1,13 +1,13 @@
 # V172h: specifications and browsers for an installable, offline Pages app (research, 2026-11-07)
 
-One of the four sides of part 14 of `docs/research/research-local-storage.md` (the plan in its 14.2). It answers,
+One of the four sides of part 15 of `docs/research/research-local-storage.md` (the plan in its 15.2). It answers,
 from the specifications, the browsers' own data and code, and GitHub's documents, what a web app manifest and an ES5
 service worker at `/BIM-Personal/sw.js` can rely on. It cites, and does not redo, what part 4.7 and
 `files-and-install.md` (c) already hold as P (Chrome's install criteria page, Safari 17 and 26, Firefox 143, the
 spec's path restriction measured in e12). Evidence levels are the protocol's: **P** read in the primary source or
 measured here, **S** a dependable secondary with the gap said, **U** a search summary or our own inference, planning
 only. Everything was read as text, from files kept in the session scratch directory
-(`v172h-standards/`), never run. Status: done for this side on 2026-11-07; the independent check of part 14 is still to come.
+(`v172h-standards/`), never run. Status: done for this side on 2026-11-07; the independent check of part 15 is still to come.
 
 ## 1. The question
 
@@ -17,7 +17,7 @@ the Ladybug runtime's Web Worker is controlled; how the Cache API keys the `?v=`
 origin's quota and eviction with IndexedDB; the manifest members the app will write (`id`, `scope`, `start_url`,
 `display`, `display_override`, `icons` and `purpose`, colours, `shortcuts`); Chrome's install prompt and the fetch
 handler; iOS icons and standalone; Firefox; Pages' headers and MIME types; and whether third-party tiles and data
-may be cached offline. Hypotheses H29 to H41 are those of part 14.1; this note says which held, failed or stay open
+may be cached offline. Hypotheses H40 to H52 are those of part 15.1; this note says which held, failed or stay open
 on this side's evidence. A good answer gives the code a P fact, or a stated gap, for every one of them.
 
 ## 2. Search log
@@ -31,22 +31,22 @@ on this side's evidence. A good answer gives the code a P fact, or a stated gap,
 | 5 | raw.githubusercontent.com | `WICG/manifest-incubations@a03b7d1/index.bs` | 404 | Set aside: the source is `index.html` (ReSpec, CG-DRAFT), fetched instead |
 | 6 | raw.githubusercontent.com | BCD at 82daeeb: 13 `manifests/webapp/*.json`, `api/ServiceWorkerRegistration`, `NavigationPreloadManager`, `Cache`, `CacheStorage`, `BeforeInstallPromptEvent`, `ServiceWorkerGlobalScope`, `Clients`, `StorageManager`, `css/at-rules/media` | JSON | Kept; `manifests/webapp/screenshots.json` is 404 (not a BCD file), set aside |
 | 7 | wpt.fyi API | `/api/runs?label=master&label=stable` | Runs of 2026-11-07 at WPT 8c04fb8: Chrome 157.0.8103.38, Edge 157.0.4341.42, Firefox 159.0.1, Safari 27.2 | Kept: current engines' measured behaviour, desktop only |
-| 8 | wpt.fyi `/api/search` and storage.googleapis.com per-test JSON | `local-url-inherit-controller`, `worker-interception.https` | Subtest results per engine | Kept for H36 |
+| 8 | wpt.fyi `/api/search` and storage.googleapis.com per-test JSON | `local-url-inherit-controller`, `worker-interception.https` | Subtest results per engine | Kept for H47 |
 | 9 | raw.githubusercontent.com | `web-platform-tests/wpt@fea36e4/service-workers/service-worker/{local-url-inherit-controller,worker-interception}.https.html` | Test sources | Kept: what the subtests assert |
 | 10 | Live Pages (curl -I) | `/BIM-Personal/`, `app/engine.js`, `sw.js`, `runtime/MANIFEST.json`, `x.webmanifest`; `mdn.github.io/pwa-examples/js13kpwa/*.webmanifest` and `sw.js` | Headers (section 3.7) | Kept: measured |
-| 11 | github/docs (sparse clone at 8cd1075, `content/pages/`) | grep header, MIME, cache, service worker | One MIME section; no page on response headers | Kept for H30 |
+| 11 | github/docs (sparse clone at 8cd1075, `content/pages/`) | grep header, MIME, cache, service worker | One MIME section; no page on response headers | Kept for H41 |
 
-| 12 | chromium/chromium mirror (raw) at dd4d83c | `components/webapps/browser/installable/*`, banner managers | Source files | Kept for H38; `installable_status_code.h` path 404, set aside |
-| 13 | webkit.org | Blog posts 12445, 13878, 17333 | HTML, converted to text | Kept for H39 |
+| 12 | chromium/chromium mirror (raw) at dd4d83c | `components/webapps/browser/installable/*`, banner managers | Source files | Kept for H49; `installable_status_code.h` path 404, set aside |
+| 13 | webkit.org | Blog posts 12445, 13878, 17333 | HTML, converted to text | Kept for H50 |
 | 14 | mozilla-firefox/firefox (raw) at ac7b5e4 | `browser/components/taskbartabs/` | Source files | Kept; support.mozilla.org refused (Client Challenge) |
-| 15 | grep of `src/js/engine/` | `https://` hosts | Esri, AWS terrain, Overpass, Nominatim, Open-Meteo, Census, FEMA, USGS; no `tile.openstreetmap.org` | Kept for H41 |
-| 16 | operations.osmfoundation.org, arcgis.com sharing REST, server.arcgisonline.com, open-meteo.com, awslabs/open-data-registry, tilezen/joerd, dev.overpass-api.de | Tile, Nominatim, Esri, Open-Meteo, terrain terms | Policy pages and service metadata | Kept for H41; goto.arcgisonline.com redirects to a JavaScript page, the item JSON read instead |
+| 15 | grep of `src/js/engine/` | `https://` hosts | Esri, AWS terrain, Overpass, Nominatim, Open-Meteo, Census, FEMA, USGS; no `tile.openstreetmap.org` | Kept for H52 |
+| 16 | operations.osmfoundation.org, arcgis.com sharing REST, server.arcgisonline.com, open-meteo.com, awslabs/open-data-registry, tilezen/joerd, dev.overpass-api.de | Tile, Nominatim, Esri, Open-Meteo, terrain terms | Policy pages and service metadata | Kept for H52; goto.arcgisonline.com redirects to a JavaScript page, the item JSON read instead |
 | 17 | bugs.webkit.org REST | quicksearch "service worker blob worker", "service worker home screen" | 15 and 20 bugs | Kept 4 as counter-evidence, the rest unrelated |
-| 18 | whatwg/fetch (raw) at 59afe34 | `Accept-Encoding` | HTTP-network-or-cache fetch and the layering note | Kept for H31 |
+| 18 | whatwg/fetch (raw) at 59afe34 | `Accept-Encoding` | HTTP-network-or-cache fetch and the layering note | Kept for H42 |
 
 ## 3. Findings by topic
 
-### 3.1 Scope and the path restriction (H29, H30 in part)
+### 3.1 Scope and the path restriction (H40, H41 in part)
 
 | Finding | Evidence | Level | Confidence |
 |---|---|---|---|
@@ -57,10 +57,10 @@ on this side's evidence. A good answer gives the code a P fact, or a stated gap,
 | The script fetch is made with redirect mode "error": `sw.js` must be answered directly with a 200, never through a redirect | SW spec, Update, perform the fetch hook | P | High |
 | Update rejects with `SecurityError` unless the script's MIME type is a JavaScript MIME type | SW spec, Update | P | High |
 
-**H29 held** (spec; the measured subpath rule of e12): a worker at `/BIM-Personal/sw.js` can control `/BIM-Personal/`
+**H40 held** (spec; the measured subpath rule of e12): a worker at `/BIM-Personal/sw.js` can control `/BIM-Personal/`
 and everything under it, and no other Pages project of the account.
 
-### 3.2 Updates: when the browser checks `sw.js`, and the HTTP cache (H35)
+### 3.2 Updates: when the browser checks `sw.js`, and the HTTP cache (H46)
 
 | Finding | Evidence | Level | Confidence |
 |---|---|---|---|
@@ -73,11 +73,11 @@ and everything under it, and no other Pages project of the account.
 | A shift+reload (force refresh) bypasses the worker: Handle Fetch returns null and `navigator.serviceWorker.controller` is null for that page | SW spec, Handle Fetch; note under `controller` | P | High |
 | `updateViaCache`: Chrome 68, Edge 18, Firefox 57, Safari and iOS 11.1. `update()`: Chrome 45, Firefox 44, Safari 11.1 | BCD `api/ServiceWorkerRegistration` | P | High |
 
-**H35 held, restated:** the check runs on every navigation into the scope (not "at most every 24 hours"); the 24 hours
+**H46 held, restated:** the check runs on every navigation into the scope (not "at most every 24 hours"); the 24 hours
 is when a check also runs from subresource fetches and events. With the default `updateViaCache` the check revalidates
 `sw.js` against Pages, ignoring `max-age=600`.
 
-### 3.3 Activation: waiting, reload, two tabs, skipWaiting and claim (H33, H34)
+### 3.3 Activation: waiting, reload, two tabs, skipWaiting and claim (H44, H45)
 
 | Finding | Evidence | Level | Confidence |
 |---|---|---|---|
@@ -90,12 +90,12 @@ is when a check also runs from subresource fetches and events. With the default 
 | Activation is not undone by a crash once started, and the `activate` handler "may not all run to completion": deleting old caches there must be safe to repeat on the next start | SW spec, Activate, the two notes | P | High |
 | `skipWaiting`: Chrome 41, Firefox 44, Safari 11.1; `clients.claim`: Chrome 42, Firefox 44, Safari 11.1 | BCD | P | High |
 
-**H33 held on the spec text** (one reload does not activate while another tab is open, and not even with one tab; the
-engines' order is for the experiments side). **H34 held as a mechanism** (P): message the waiting worker, which calls
+**H44 held on the spec text** (one reload does not activate while another tab is open, and not even with one tab; the
+engines' order is for the experiments side). **H45 held as a mechanism** (P): message the waiting worker, which calls
 `skipWaiting()`; whether it loops depends on the page reloading once on `controllerchange` and never calling it again,
 which is the design's, not the spec's.
 
-### 3.4 The Ladybug runtime's Web Worker (H36)
+### 3.4 The Ladybug runtime's Web Worker (H47)
 
 The app makes the worker from a Blob URL (`src/js/engine/ladybug/runtime.js:156`, `new Worker(URL.createObjectURL(new
 Blob([txt])))`), which then calls `importScripts(B+'pyodide.js')` and Pyodide fetches the `.wasm`, the standard library
@@ -108,12 +108,12 @@ and the wheels from `B`, the page's own `runtime/` folder on Pages (`runtime.js:
 | Measured in current engines (WPT run of 2026-11-07): "Same-origin blob URL worker should intercept fetch()" passes in Chrome 157, Edge 157, Firefox 159 and Safari 27.2. Chrome and Edge fail the companion "should inherit controller" subtest, which reads `navigator.serviceWorker` inside the worker; the fetch is intercepted all the same | wpt.fyi results JSON for `local-url-inherit-controller.https.html`; the test source at fea36e4 | P (measured by WPT) | High for desktop engines |
 | For a dedicated worker made from a URL, "Requests on a dedicated worker controlled by a service worker" (xhr, fetch, importScripts) passes in all four; nested dedicated workers fail in Safari, and nested-in-shared fail in Chrome and Safari. Pyodide's worker nests none | wpt.fyi, `worker-interception.https.html` | P | High |
 
-**H36 held** (spec and WPT, desktop): the runtime's fetches reach the page's service worker, so they can be served
+**H47 held** (spec and WPT, desktop): the runtime's fetches reach the page's service worker, so they can be served
 from a cache offline. Not covered: `importScripts` from a Blob worker specifically (WPT tests fetch there), and iOS
 (WPT runs Safari on macOS; same WebKit). The experiments side should measure an `importScripts` and a `.wasm` fetch
 from the app's own worker.
 
-### 3.5 The Cache API and the `?v=` names (H31)
+### 3.5 The Cache API and the `?v=` names (H42)
 
 | Finding | Evidence | Level | Confidence |
 |---|---|---|---|
@@ -123,9 +123,9 @@ from the app's own worker.
 | `addAll` rejects the whole batch if any response is not ok (200-299) or is a 206, and writes nothing (Batch Cache Operations is atomic): a precache is all or nothing | SW spec, `addAll`, Batch Cache Operations | P | High |
 | Cache: Chrome 40/43, Firefox 41, Safari and iOS 11.1; `addAll` Chrome 46 (HTTPS); CacheStorage needs a secure context (Chrome 65, Firefox 44, Safari 11.1) | BCD `api/Cache`, `api/CacheStorage` | P | High |
 
-**H31 held** (P).
+**H42 held** (P).
 
-### 3.6 One bucket: caches, IndexedDB and the worker's registration (H37)
+### 3.6 One bucket: caches, IndexedDB and the worker's registration (H48)
 
 | Finding | Evidence | Level | Confidence |
 |---|---|---|---|
@@ -134,11 +134,11 @@ from the app's own worker.
 | A local bucket becomes "persistent" only with the `persistent-storage` permission; "The user agent cannot clear storage marked as persistent without involvement from the origin or user", which the standard calls "particularly useful for resources the user needs to have available while offline". A grant covers the caches with the projects | Storage Standard, "Storage buckets", mode and its note | P | High |
 | Safari's 7-day rule names "Service Worker registrations and cache" with IndexedDB; home-screen apps have their own day counter | WebKit 10218, already P in `storage-standards-and-browsers.md` | P | High |
 
-**H37 held** (P): the worker adds no eviction case of its own. Its corollary for the design: the caches take quota
+**H48 held** (P): the worker adds no eviction case of its own. Its corollary for the design: the caches take quota
 the projects could use (the 16 MB runtime most of all), and an eviction that loses the app's cache has already lost
 the projects.
 
-### 3.7 GitHub Pages: headers and MIME types (H30)
+### 3.7 GitHub Pages: headers and MIME types (H41)
 
 | Finding | Evidence | Level | Confidence |
 |---|---|---|---|
@@ -146,7 +146,7 @@ the projects.
 | No GitHub Pages document offers a way to set a response header; the Pages content has no page on headers at all | Grep of `content/pages/` at 8cd1075 for "header", "cache", "service worker" | P (absence in the docs) | Medium-high (absence, not a statement) |
 | Measured: `.js` is `application/javascript; charset=utf-8` (a JavaScript MIME type); `.webmanifest` is `application/manifest+json; charset=utf-8` (on `mdn.github.io`, same Pages servers); every file has `cache-control: max-age=600`, `vary: Accept-Encoding`, `access-control-allow-origin: *`, an ETag; no `Service-Worker-Allowed`; `/BIM-Personal/sw.js` is 404 `text/html` today; `/BIM-Personal` is a 301 to `/BIM-Personal/` | curl -I, 2026-11-07 | P (measured) | High |
 
-**H30 held**: no custom header can be sent (docs offer none; measured none), and `sw.js` will be served with a
+**H41 held**: no custom header can be sent (docs offer none; measured none), and `sw.js` will be served with a
 JavaScript MIME type. A manifest named `manifest.webmanifest` gets the registered `application/manifest+json`.
 
 ### 3.8 The manifest members the app will write
@@ -173,7 +173,7 @@ not on the standards track. Browser rows are BCD at 82daeeb.
 | Support (BCD): `name`, `short_name`, `start_url`, `display` (standalone), `icons`: Chrome 39, Firefox Android 47-79, Safari 17 (macOS), iOS 11.3 (icons 15.4); `scope` Chrome 53, Safari 17, iOS 11.3; `id` Chrome 96, Safari 17, iOS 16.4; `theme_color` Chrome 46, Safari 17, iOS 15; `background_color` Chrome 46, Safari `false`, iOS mirror; `display_override` Chrome 89 only (experimental); `shortcuts` Chrome 96 desktop (85-96 Windows only), Chrome Android 84, Safari 17.4 macOS, iOS `false`. Desktop Firefox is `false` for every member | BCD `manifests/webapp/*` | P | High |
 | `display-mode` media feature: Chrome 42, Firefox 47, Safari 13, iOS 12.2 (sub-values browser, fullscreen, minimal-ui, standalone, picture-in-picture, window-controls-overlay). The manifest ED now also asks for an `application` value that BCD does not list yet | BCD `css/at-rules/media`; Manifest ED, display modes | P | High |
 
-### 3.9 Chrome's install prompt and the fetch handler (H38)
+### 3.9 Chrome's install prompt and the fetch handler (H49)
 
 Chromium read at `chromium/chromium@dd4d83c` (the GitHub mirror's HEAD on 2026-11-07), `components/webapps/browser/`.
 
@@ -185,11 +185,11 @@ Chromium read at `chromium/chromium@dd4d83c` (the GitHub mirror's HEAD on 2026-1
 | The list of installability error messages has no service-worker or offline entry | `installable_logging.cc` | P | High |
 | No site-engagement or 30-second rule appears in the files read; web.dev's 2024 criteria page states one. Where it now lives was not traced | Grep of the banner managers | P (absence in these files) | Low (not traced further) |
 
-**H38 failed**: current Chromium does not need a fetch handler, or any service worker, for the install prompt or the
+**H49 failed**: current Chromium does not need a fetch handler, or any service worker, for the install prompt or the
 menu install. The worker is for offline use only. (This closes the row of part 10 left open.) The Chrome blog post of
 2023-12-05 is superseded by the code.
 
-### 3.10 Safari and WebKit: icons, standalone, workers (H39)
+### 3.10 Safari and WebKit: icons, standalone, workers (H50)
 
 | Finding | Evidence | Level | Confidence |
 |---|---|---|---|
@@ -200,7 +200,7 @@ menu install. The worker is for offline use only. (This closes the row of part 1
 | Home Screen web apps "never required Service Workers ... yet including Service Workers in your code can greatly enhance the user experience"; Safari 15.4 added Navigation Preload | Blog 17333; blog 12445 | P | High |
 | `display` fullscreen and minimal-ui: Safari macOS `false` (only standalone and browser); iOS mirrors Chrome's row | BCD `manifests/webapp/display.json` | P | Medium (the iOS "mirror" is BCD's inference from Chrome, not a WebKit statement) |
 
-**H39 held**: on iOS, iPadOS and macOS Safari an `apple-touch-icon` wins over the manifest, and manifest icons are used
+**H50 held**: on iOS, iPadOS and macOS Safari an `apple-touch-icon` wins over the manifest, and manifest icons are used
 only with purpose `any` or none, so a `maskable`-only icon is never used there. The app should ship one
 `apple-touch-icon` (180 px is Apple's usual size, not re-read here: U) and an `any` icon in the manifest besides the
 `maskable` one.
@@ -216,7 +216,7 @@ only with purpose `any` or none, so a `maskable`-only icon is never used there. 
 | Service workers and the Cache API: Firefox 44 / 41 desktop and Android; `updateViaCache` 57; navigation preload 99 | BCD | P | High |
 | Mozilla's help page refused the script (a "Client Challenge" page), as on 2026-10-31 | support.mozilla.org | — | — |
 
-### 3.12 Standalone and the shell (H40, this side only)
+### 3.12 Standalone and the shell (H51, this side only)
 
 | Finding | Evidence | Level | Confidence |
 |---|---|---|---|
@@ -224,10 +224,10 @@ only with purpose `any` or none, so a `maskable`-only icon is never used there. 
 | Standalone removes the URL bar and with it the browser's back, reload and address UI; the system may keep a back button (Android) or none (iOS). Anything the app needs from them (reload after an update, leaving the guide) must be in the app | Manifest ED, `standalone` | P | High |
 | Navigation out of scope in an installed window should show "a prominent UI element indicating the URL" (how each engine draws it was not read: U); links to third-party sites are better opened with `target="_blank"` (the app already does for its credits, as seen in `map/surroundings-3d.js:386`) | Manifest ED, navigation scope | P | Medium-high |
 
-**H40 open on this side**: the spec says nothing that forces a shell change; whether V149's safe areas and V147's
+**H51 open on this side**: the spec says nothing that forces a shell change; whether V149's safe areas and V147's
 panels look right standalone is for the app-code and experiment sides, and a device.
 
-### 3.13 Third-party terms for offline caching (H41)
+### 3.13 Third-party terms for offline caching (H52)
 
 The app fetches no tiles from `tile.openstreetmap.org` (grep of `src/js/engine/`): its raster basemaps are Esri's
 World Imagery and World Street Map (`server.arcgisonline.com`), its terrain AWS Terrain Tiles (Terrarium,
@@ -242,7 +242,7 @@ and USGS.
 | Open-Meteo: data under CC BY 4.0; free API for non-commercial use under 10,000 calls a day. Storing a fetched answer is allowed by the licence with attribution | open-meteo.com/en/terms | P | High |
 | AWS Terrain Tiles: attribution required per source (USGS 3DEP, SRTM, EU-DEM and others); no offline prohibition stated; "you are responsible for researching each project" | awslabs/open-data-registry@ab85870 `datasets/terrain-tiles.yaml`; tilezen/joerd@0b86765 `docs/attribution.md` | P | Medium (the per-source licences were not each read) |
 
-**H41 held for tiles, failed for data**: prefetching or keeping Esri or OSM tiles for offline use is not allowed, and
+**H52 held for tiles, failed for data**: prefetching or keeping Esri or OSM tiles for offline use is not allowed, and
 the worker should leave cross-origin tile requests to the network (and the browser's HTTP cache, which the OSM policy
 asks for). Openly licensed data (Open-Meteo, Overpass/OSM under ODbL, US federal data) may be stored with its credit,
 and Nominatim requires it; whether the app keeps such answers is a design choice, not a legal bar.
@@ -264,7 +264,7 @@ and Nominatim requires it; whether the app keeps such answers is a design choice
 | Firefox 159 fails both blob URL **shared** worker subtests | wpt.fyi | P | Nothing: the app uses no shared worker |
 | WebKit bug 227113 "PWA mistakingly thinking to be offline" (NEW, last changed 2022-01-19) and 213726 "fetch fails only when site/pwa is added to homescreen" (NEW, 2020-07-05) | bugs.webkit.org REST search | P (the reports exist; not confirmed by WebKit) | `navigator.onLine` should not be trusted in a Home Screen app; the app should decide offline by a failed fetch |
 | WebKit bug 209732 "7-Day Cap on All Script-Writeable Storage shouldn't apply to Service Worker registrations" (NEW since 2020-03-30) and 237350 "Web App Added to Home Screen Cookies Deleted After 7 Days" (NEW, 2022-03-09) | bugs.webkit.org | P (reports) | In Safari (not installed) the worker and its caches go with the projects after seven days without a visit, as part 4.2 already says; the Home Screen exemption has at least one contrary report |
-| The Chrome blog (2023-12-05) said the install prompt "still requires" a fetch handler | Part 4.7 | P (then) | Superseded by the Chromium code read here (H38) |
+| The Chrome blog (2023-12-05) said the install prompt "still requires" a fetch handler | Part 4.7 | P (then) | Superseded by the Chromium code read here (H49) |
 | Desktop Firefox is `false` for every manifest member in BCD, yet Firefox's Taskbar Tabs read the manifest | BCD; Firefox source | P | BCD lags; the app's manifest matters for Firefox on Windows too |
 | WebKit's statement that `apple-touch-icon` wins dates from 15.4 and 16.4; Safari 26 says manifest icons "are used" without repeating the precedence | Blogs 12445, 13878, 17333 | P | Keep both, as BCD's current note still describes the precedence |
 
@@ -272,19 +272,19 @@ and Nominatim requires it; whether the app keeps such answers is a design choice
 
 | # | Outcome here | Deciding source |
 |---|---|---|
-| H29 | Held | SW spec, Update (`maxScopeString`), and e12's measurement |
-| H30 | Held | GitHub Docs (MIME from mime-db, none custom; no header setting documented) and headers measured on Pages |
-| H31 | Held | SW spec, Request Matches Cached Item (`ignoreSearch` false by default); Vary handled per the Fetch Standard |
-| H32 | Not this side's | The experiments side |
-| H33 | Held on the spec text; engines to be measured | SW spec, Try Activate, Handle Fetch, Client Unload |
-| H34 | Held as a mechanism | SW spec, `skipWaiting()` and Activate |
-| H35 | Held, restated: a check on every in-scope navigation, plus subresource/event checks after 24 h; `sw.js` revalidated whatever `max-age` says | SW spec, Handle Fetch, stale (86,400 s), Update cache mode, `updateViaCache` default `imports` |
-| H36 | Held for desktop engines | SW spec, worker client case; WPT 2026-11-07 (Chrome 157, Edge 157, Firefox 159, Safari 27.2) |
-| H37 | Held | Storage Standard, registered storage endpoints and bucket clearing |
-| H38 | Failed (no fetch handler or service worker needed) | Chromium `installable_params.h`, `installable_evaluator.cc`, `app_banner_manager_desktop.cc` at dd4d83c |
-| H39 | Held | WebKit blogs 12445 and 13878; BCD `icons` note |
-| H40 | Open | Spec gives only `display-mode`; needs the app's code and a device |
-| H41 | Held for tiles (Esri, OSM); failed for openly licensed data (Open-Meteo, OSM data, federal data), which may be stored, and Nominatim, which must be cached | OSMF tile and Nominatim policies; Esri item `licenseInfo` and `exportTilesAllowed: false`; Open-Meteo terms |
+| H40 | Held | SW spec, Update (`maxScopeString`), and e12's measurement |
+| H41 | Held | GitHub Docs (MIME from mime-db, none custom; no header setting documented) and headers measured on Pages |
+| H42 | Held | SW spec, Request Matches Cached Item (`ignoreSearch` false by default); Vary handled per the Fetch Standard |
+| H43 | Not this side's | The experiments side |
+| H44 | Held on the spec text; engines to be measured | SW spec, Try Activate, Handle Fetch, Client Unload |
+| H45 | Held as a mechanism | SW spec, `skipWaiting()` and Activate |
+| H46 | Held, restated: a check on every in-scope navigation, plus subresource/event checks after 24 h; `sw.js` revalidated whatever `max-age` says | SW spec, Handle Fetch, stale (86,400 s), Update cache mode, `updateViaCache` default `imports` |
+| H47 | Held for desktop engines | SW spec, worker client case; WPT 2026-11-07 (Chrome 157, Edge 157, Firefox 159, Safari 27.2) |
+| H48 | Held | Storage Standard, registered storage endpoints and bucket clearing |
+| H49 | Failed (no fetch handler or service worker needed) | Chromium `installable_params.h`, `installable_evaluator.cc`, `app_banner_manager_desktop.cc` at dd4d83c |
+| H50 | Held | WebKit blogs 12445 and 13878; BCD `icons` note |
+| H51 | Open | Spec gives only `display-mode`; needs the app's code and a device |
+| H52 | Held for tiles (Esri, OSM); failed for openly licensed data (Open-Meteo, OSM data, federal data), which may be stored, and Nominatim, which must be cached | OSMF tile and Nominatim policies; Esri item `licenseInfo` and `exportTilesAllowed: false`; Open-Meteo terms |
 
 ## 6. What remains open, and why
 

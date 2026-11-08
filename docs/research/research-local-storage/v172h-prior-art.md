@@ -1,6 +1,6 @@
 # V172h prior art: how open web apps make themselves installable and offline, and how they update
 
-Research date: 2026-11-07. Part of `docs/research/research-local-storage.md` part 14 (V172h, "Storage C:
+Research date: 2026-11-07. Part of `docs/research/research-local-storage.md` part 15 (V172h, "Storage C:
 installable and offline"), side 2 of its method. It extends `prior-art.md` (2026-10-31), which covered how the same
 apps store projects; that note's storage findings are not repeated here. Scope: what comparable apps and the main
 library actually do with a service worker and a manifest, read in their own code or their own documents, for a
@@ -26,7 +26,7 @@ assets, and what do their manifests and icons hold? Where do they disagree, what
 the approach, and what does all of it suggest for a hand-written ES5 `sw.js` with app files cache-first,
 `index.html` network-first and no `skipWaiting()` while a page has unsaved work?
 
-Hypotheses this side can test (the H numbers are part 14.1's):
+Hypotheses this side can test (the H numbers are part 15.1's):
 
 | # | Claim (falsifiable) | Tested here by |
 |---|---|---|
@@ -346,7 +346,7 @@ These are inferences from the evidence above, not findings; the experiments side
 1. **Precache the four bundles by their exact `?v=` URLs, on install, as a dependency.** Our URLs already carry a
    content hash, which is Workbox's "versioned URL" case (PA1): the URL is the key, no extra revision. Do not use
    `ignoreSearch` (Squoosh, draw.io): with fixed names, ignoring the query would serve one build's file for another's.
-   Skip a key already cached (Workbox, draw.io), so an unchanged `openskp.js` is not downloaded again. Test (H31).
+   Skip a key already cached (Workbox, draw.io), so an unchanged `openskp.js` is not downloaded again. Test (H42).
 2. **Refuse to cache a bad answer.** Status 400 or more, or `text/html` for a `.js` or `.css` URL, fails the install
    (draw.io's "poison" guard; GitHub Pages answers a missing file with an HTML 404 page, and a captive portal may
    answer 200 with HTML).
@@ -356,12 +356,12 @@ These are inferences from the evidence above, not findings; the experiments side
    under an old worker asks for bundles the old precache lacks (fine online: cache miss goes to the network, and they
    should then be cached; offline it cannot happen). A middle way seen in draw.io: precache `index.html` itself with
    the build's revision so the worker's own update brings the new page. This is a decision for the owner, with the
-   experiment measuring both (H32, H35).
+   experiment measuring both (H43, H46).
 4. **No `skipWaiting()` on install; skip waiting only on the page's message, and only when no tab has unsaved work.**
    Workbox's default, Squoosh, and vite-plugin-pwa's `prompt` mode agree; the plugin's own guide warns `autoUpdate`
    loses form data, and our app holds projects. draw.io's rule, "never reload a modified file", is the standard to
    meet. Because `skipWaiting()` changes the worker for every tab at once, the page that asks must know that no other
-   tab has unsaved work: V172f's tab locks and V172g's unsaved marker are where that answer comes from (H33, H34).
+   tab has unsaved work: V172f's tab locks and V172g's unsaved marker are where that answer comes from (H44, H45).
 5. **The update UX:** "Ready to work offline" once on the first install (Squoosh); "A new version is ready" with
    Reload and Later when a worker is waiting (Workbox, Squoosh), shown on every tab (`wasWaitingBeforeRegister`,
    `isExternal`); reload on `controllerchange` only in a tab that asked or that is clean; never a forced reload
@@ -370,11 +370,11 @@ These are inferences from the evidence above, not findings; the experiments side
 6. **No `clients.claim()`** needed (draw.io; Archibald: "rarely"); the first visit runs from the network and the
    worker takes over on the next one. If used, it only affects the first visit.
 7. **Cross-origin: not handled** (Squoosh, draw.io): the worker returns without `respondWith` for other origins,
-   which also keeps tile and open-data terms (H41) out of its scope.
+   which also keeps tile and open-data terms (H52) out of its scope.
 8. **The 16 MB runtime: not precached on install.** Every app read caches large optional parts on first use (PA4);
    the cookbook says such caching may not finish. Cache it when an analysis first runs, under its own cache name and
    version (it is pinned by `runtime/MANIFEST.json`), and test whether Pyodide's dedicated worker's fetches pass
-   through the service worker at all (H36).
+   through the service worker at all (H47).
 9. **Cache names include the scope** (Workbox's suffix is `registration.scope`; draw.io too), because the
    `bradleypham1906.github.io` origin is shared by every Pages project of the account and "caches are shared across
    the whole origin" (cookbook). Activate deletes only this app's old caches, by an exact prefix.

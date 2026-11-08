@@ -1,7 +1,7 @@
 # V172h experiments: installable and offline, measured in this container's Chromium (2026-11-07)
 
-Measured evidence (level P, for this one Chromium build only) on the hypotheses of part 14 of
-`research-local-storage.md` that can be tested from here: H29, H31 to H38, and the cost of a service
+Measured evidence (level P, for this one Chromium build only) on the hypotheses of part 15 of
+`research-local-storage.md` that can be tested from here: H40, H42 to H49, and the cost of a service
 worker on the app's loads. Every number below was produced by a script in
 `docs/research/experiments/v172h-offline/`, run on 2026-11-07 against the real built app
 (`python3 tools/build_site.py` of commit `d546f1d`), served by a local stand-in for GitHub Pages. Raw JSON was
@@ -19,7 +19,7 @@ code yet.
 | Item | Value |
 |---|---|
 | Browser | Chromium build `chromium-1243` in `/opt/pw-browsers`, `browser.version()` = **153.0.8010.12** |
-| Mode | **Headless**, default `chromium.launch()` (the `chromium_headless_shell-1243` binary); for H38 also the full binary in its new headless mode (`channel: 'chromium'`). No headed run was possible (no display). |
+| Mode | **Headless**, default `chromium.launch()` (the `chromium_headless_shell-1243` binary); for H49 also the full binary in its new headless mode (`channel: 'chromium'`). No headed run was possible (no display). |
 | Driver | Node v22.23.4, `require('playwright')` 1.63.0; no `playwright install` was run |
 | Machine | Linux 6.18.44, 4 vCPU, 15 GiB RAM |
 | Server | `_server.js`: Node `http` on `127.0.0.1`, pages opened as `http://localhost:<port>` (a secure context, so service workers run). It serves the built site under `/BIM-Personal/` as Pages does: `cache-control: max-age=600`, a strong ETag (SHA-1 of the bytes) and 304 on `If-None-Match`, a 301 from a directory without its slash, `application/javascript; charset=utf-8` for `.js`. It counts every request, keeps the headers of `sw.js` requests, can swap in a second build (`setBuild`), serve generated files at a path (`override`), and be stopped and restarted on the same port (`stop()` destroys open sockets, so the origin's server is gone: connection refused). A second "Pages project" of the same origin is served at `/Other/`. |
@@ -28,7 +28,7 @@ code yet.
 
 ### Procedure
 
-- Each run uses a fresh browser context (`browser.newContext()`), or where storage on disk matters (H37) a
+- Each run uses a fresh browser context (`browser.newContext()`), or where storage on disk matters (H48) a
   fresh persistent profile in a temporary directory under the scratch directory, deleted after the run.
 - Times are wall-clock in the Node driver (`Date.now()`) unless said to be in the page (`performance.now()`).
 - Run counts are given per experiment: 3 where the outcome is a yes/no or a byte count, 5 to 10 where it is a
@@ -43,31 +43,31 @@ code yet.
 | `exp.js` | helpers loaded by experiment pages: registration with its events logged, a `MessageChannel` ask, `applyUpdate` (skip waiting unless dirty), controllerchange reload-once |
 | `sw-app.template.js` | the experiment worker for the built app: precache, delete old caches on activate, fetch strategies |
 | `sw-probe.template.js` | a probe worker that answers `/__probe` itself and records every fetch it sees |
-| `e01_scope.js` | H29 (and H30's consequence for scope) |
-| `e02_precache.js` | H31, H37, the precache's cost |
-| `e03_offline_app.js` | H32: the real app offline, two ways, with a no-worker control |
-| `e04_update.js` | H33, H34, H35: a new worker reaching one tab, two tabs, closed tabs; holding it while there is unsaved work; `sw.js` refetches |
-| `e05_worker_fetch.js` | H36: fetches from a dedicated worker (script URL and `blob:`), and the real Ladybug runtime started offline |
-| `e06_install_prompt.js` | H38: `beforeinstallprompt` with no manifest, a manifest, a worker without and with a fetch handler; CDP's installability errors |
+| `e01_scope.js` | H40 (and H41's consequence for scope) |
+| `e02_precache.js` | H42, H48, the precache's cost |
+| `e03_offline_app.js` | H43: the real app offline, two ways, with a no-worker control |
+| `e04_update.js` | H44, H45, H46: a new worker reaching one tab, two tabs, closed tabs; holding it while there is unsaved work; `sw.js` refetches |
+| `e05_worker_fetch.js` | H47: fetches from a dedicated worker (script URL and `blob:`), and the real Ladybug runtime started offline |
+| `e06_install_prompt.js` | H49: `beforeinstallprompt` with no manifest, a manifest, a worker without and with a fetch handler; CDP's installability errors |
 | `e07_load_cost.js` | the worker's cost on first, repeat and offline loads of the real app |
 
 ### Which hypotheses held
 
 | # | Hypothesis | Outcome |
 |---|---|---|
-| H29 | `/BIM-Personal/sw.js` controls `/BIM-Personal/` and every path under it, no other project | **Held**, 3 of 3 runs |
-| H31 | the `?v=` URLs are usable cache keys; an old build's entries can be deleted | **Held**, 3 of 3 runs |
-| H32 | the app opens offline after one visit, reads its project, saves | **Held**, 5 of 5 runs, both ways of being offline; and a finding: without a worker it also opens offline while Pages' 600 s HTTP cache is fresh |
-| H33 | a waiting worker is not activated by reloading one tab while another is open; activated when every tab has closed | **Held**, 5 of 5; and stronger: **reloading even a single tab does not activate it** |
-| H34 | a page can hold the waiting worker while it has unsaved work and let it in after, one reload, no loop | **Partly held**, 5 of 5: held, one reload, no loop in the tab that asked; but `skipWaiting()` swaps the worker under **every** tab, including another tab with unsaved work |
-| H35 | `sw.js` checked on every navigation past Pages' `max-age=600` (`updateViaCache` "imports") | **Held**, 25 of 25 navigations; with `updateViaCache: 'all'`, 0 of 25 |
-| H36 | fetches by a dedicated worker the page created (Pyodide's, a `blob:` worker) go through the service worker | **Held**, 3 of 3, for a script-URL and a `blob:` worker; the real Ladybug runtime started offline from the worker's cache, 3 of 3 |
-| H37 | caches and IndexedDB counted in one origin usage | **Held** for counting (3 of 3); eviction together not testable here |
-| H38 | the automatic install prompt still needs a fetch handler | **Failed**: in the full Chromium binary (new headless, a profile on disk) `beforeinstallprompt` fired with a manifest and **no worker at all**, 3 of 3, with and without the engagement bypass; the headless shell never fires it |
+| H40 | `/BIM-Personal/sw.js` controls `/BIM-Personal/` and every path under it, no other project | **Held**, 3 of 3 runs |
+| H42 | the `?v=` URLs are usable cache keys; an old build's entries can be deleted | **Held**, 3 of 3 runs |
+| H43 | the app opens offline after one visit, reads its project, saves | **Held**, 5 of 5 runs, both ways of being offline; and a finding: without a worker it also opens offline while Pages' 600 s HTTP cache is fresh |
+| H44 | a waiting worker is not activated by reloading one tab while another is open; activated when every tab has closed | **Held**, 5 of 5; and stronger: **reloading even a single tab does not activate it** |
+| H45 | a page can hold the waiting worker while it has unsaved work and let it in after, one reload, no loop | **Partly held**, 5 of 5: held, one reload, no loop in the tab that asked; but `skipWaiting()` swaps the worker under **every** tab, including another tab with unsaved work |
+| H46 | `sw.js` checked on every navigation past Pages' `max-age=600` (`updateViaCache` "imports") | **Held**, 25 of 25 navigations; with `updateViaCache: 'all'`, 0 of 25 |
+| H47 | fetches by a dedicated worker the page created (Pyodide's, a `blob:` worker) go through the service worker | **Held**, 3 of 3, for a script-URL and a `blob:` worker; the real Ladybug runtime started offline from the worker's cache, 3 of 3 |
+| H48 | caches and IndexedDB counted in one origin usage | **Held** for counting (3 of 3); eviction together not testable here |
+| H49 | the automatic install prompt still needs a fetch handler | **Failed**: in the full Chromium binary (new headless, a profile on disk) `beforeinstallprompt` fired with a manifest and **no worker at all**, 3 of 3, with and without the engagement bypass; the headless shell never fires it |
 
 ---
 
-## H29. The worker's scope
+## H40. The worker's scope
 
 ### Hypothesis
 A worker at `/BIM-Personal/sw.js`, registered with no `scope` option, controls `/BIM-Personal/` and every path
@@ -111,7 +111,7 @@ the worker. The same page also tries `register('/BIM-Personal/sw.js', {scope: '/
 - A worker in `docs/` would be a second registration with its own caches; the app's design should keep exactly
   one worker, at the root of the project.
 
-## H31. The `?v=` URLs as cache keys, and deleting an old build
+## H42. The `?v=` URLs as cache keys, and deleting an old build
 
 ### Hypothesis
 The Cache API matches the full URL with its query by default, so the build's four files can be precached by the
@@ -143,9 +143,9 @@ while leaving the runtime's cache alone.
 ### Threats to validity
 - B differed from A in one file; a real deploy differs in up to four, which changes only the bytes fetched.
 - The worker matched by `Request` URL only; `Vary` headers were not involved (the server sends none, nor does
-  Pages for these files, as far as part 14.7 read; not re-measured on Pages).
+  Pages for these files, as far as part 15.7 read; not re-measured on Pages).
 
-## H32. The real app offline after one online visit
+## H43. The real app offline after one online visit
 
 ### Hypothesis
 After one online visit (the worker installed), the app opens with no network, its project saved before going
@@ -203,7 +203,7 @@ IndexedDB and works offline as it does online.
   navigation it cannot fetch with the app's page, which would show the app for a guide address offline. A real
   worker should fall back to the app's page only for the app's own address.
 
-## H33. Does a waiting worker activate on reload, with one tab and with two?
+## H44. Does a waiting worker activate on reload, with one tab and with two?
 
 ### Hypothesis
 A new worker left waiting (no `skipWaiting()`) is not activated by reloading one tab while another tab of the app
@@ -238,16 +238,16 @@ from the page: the version the controller, the active and the waiting worker ans
 during a reload the old page is still a client of A until the new one commits, so A is never without clients.
 B was activated only when the last client of A went away: the tab navigated out of scope (`/Other/`), or every
 tab closed. For the app this means a user who only ever reloads one tab would keep the old build indefinitely
-unless the page asks the waiting worker to take over (H34).
+unless the page asks the waiting worker to take over (H45).
 
 ### Threats to validity
 - Headless, driven by Playwright; a real user closing a browser window, or a phone's browser discarding a
   backgrounded tab, was not tested. Whether Chromium counts a tab in the back-forward cache as a client was not
   tested.
 - The ~1.55 s from navigation to `updatefound` is this machine on loopback; the check itself is made by the
-  browser after the navigation, so its delay is the browser's (see H35 for when the request leaves).
+  browser after the navigation, so its delay is the browser's (see H46 for when the request leaves).
 
-## H34. Holding the waiting worker while there is unsaved work
+## H45. Holding the waiting worker while there is unsaved work
 
 ### Hypothesis
 A page can hold a waiting worker back while it has unsaved work and let it in after, by messaging it, without a
@@ -281,14 +281,14 @@ B, and B's activate has already deleted A's cache.
   only an all-clean state proceed). V172f's tab locks know which tabs exist; this was not tested here.
 - A tab left on old code under the new worker is safe for this app only while it never needs a file of its own
   build after boot: the build loads its four files at boot and fetches nothing else of its own except `runtime/`
-  (in its own cache, not deleted by activate) and the guide pages. This is an inference from part 14.7, not tested.
+  (in its own cache, not deleted by activate) and the guide pages. This is an inference from part 15.7, not tested.
 
 ### Threats to validity
 - The dirty flag here is an experiment variable, not V172g's marker; the app's own signal was not used.
 - The "reload once" guard is per page load; a page that reloads into a state where it is again told to apply an
   update could still loop if its code asked every time. Only this one design was measured.
 
-## H35. `sw.js` refetched on navigation, past Pages' 600 s HTTP cache
+## H46. `sw.js` refetched on navigation, past Pages' 600 s HTTP cache
 
 ### Hypothesis
 The browser checks `sw.js` for an update on every navigation, ignoring Pages' `max-age=600`, because
@@ -316,10 +316,10 @@ The 24-hour rule (an update forced when the last check is older) was not tested:
 ### Threats to validity
 - 4 s between navigations; Chromium may coalesce checks closer together (not tested). The ~2 s delay after
   navigation is consistent across runs but its cause in Chromium was not read (U).
-- Pages answers conditional requests too (part 14.7 recorded an ETag), so the 304 path applies there; not
+- Pages answers conditional requests too (part 15.7 recorded an ETag), so the 304 path applies there; not
   measured from here.
 
-## H36. Fetches from a dedicated Web Worker the page created
+## H47. Fetches from a dedicated Web Worker the page created
 
 ### Hypothesis
 Fetches made by a dedicated Web Worker that the page created (Pyodide's, made from a `blob:` URL) go through the
@@ -374,16 +374,16 @@ end to end: the real runtime started offline from the worker's cache, 3 of 3, as
 
 ### Threats to validity
 - That a `blob:` worker inherits its creator's controller is the current spec's rule; older engines did not do
-  this (part 14's standards note has the compat data). Safari and Firefox were not tested here.
+  this (part 15's standards note has the compat data). Safari and Firefox were not tested here.
 
-## H37. Caches and IndexedDB in one origin quota
+## H48. Caches and IndexedDB in one origin quota
 
 ### Hypothesis
 The worker's caches are counted in the same origin usage and quota as IndexedDB (one storage bucket), so caching
 the app adds no eviction case of its own.
 
 ### Method
-`e02_precache.js`, same runs as H31. `navigator.storage.estimate()` (with `usageDetails`) is read: after the app
+`e02_precache.js`, same runs as H42. `navigator.storage.estimate()` (with `usageDetails`) is read: after the app
 has booted with no worker (0); after the precache (1); after the page, now controlled, fetched the 13 runtime
 files through the worker, which caches them in `bim-runtime-v1` (2); after a 10 MiB ArrayBuffer was put into an
 IndexedDB database of the same origin (3); after build B replaced A's cache (4).
@@ -408,7 +408,7 @@ IndexedDB database of the same origin (3); after build B replaced A's cache (4).
 **Held for counting**: caches, IndexedDB and the registration are reported as one origin usage under one quota.
 Whether they are **evicted together** cannot be tested here (it needs storage pressure on a real disk, and
 `persist()` behaves differently headless, experiments.md H4); it rests on the Storage Standard's one bucket per
-origin (part 14's standards note), level S for this claim.
+origin (part 15's standards note), level S for this claim.
 
 ### Inferences
 - The app adds about 8.8 MB of cache per build installed, and 16 MB more if the runtime is cached; at any
@@ -430,7 +430,7 @@ From `e02_precache.js`, 3 runs (each a profile on disk): the install fetched fiv
 `navigator.serviceWorker.ready` in the driver: **364, 376, 366 ms**. Fetching the 13 runtime files (16,050,897
 bytes) through the worker into its cache: 246, 201, 233 ms. All over loopback; e07 below has the loads.
 
-## H38. The install prompt, headless, with and without a fetch handler
+## H49. The install prompt, headless, with and without a fetch handler
 
 ### Hypothesis
 Chrome's automatic install prompt (`beforeinstallprompt`) still needs a service worker with a fetch handler in
@@ -478,7 +478,7 @@ fetch handler is not needed for the prompt in Chromium 153.
   address bar icon, the menu item) appears cannot be seen headless.
 - The persistent-context runs do not report `browser.version()` (Playwright gives no browser object for them);
   the binary is the same `chromium-1243` build, whose version experiments.md recorded as 153.0.8010.12.
-- Offline use still needs the worker (H32); this only says the prompt does not.
+- Offline use still needs the worker (H43); this only says the prompt does not.
 
 ## Cost on the app's loads, with and without the worker
 
@@ -529,10 +529,10 @@ four app files their `transferSize` and whether a worker handled them (`workerSt
 
 ## Not measured here, and why
 
-- **H30** (Pages' headers and MIME type for `sw.js`): needs Pages itself; this container's network was not used
-  for it. Measured here only its consequence: without `Service-Worker-Allowed` the scope cannot be widened (H29).
-- **H37's eviction half**: whether caches and IndexedDB are evicted together needs real storage pressure.
-- **H39** (iOS and iPadOS icons), **H40** (`display: standalone` on phones and tablets), **H41** (tile terms):
-  no Safari, no phone, and H41 is a question of terms, not behaviour.
-- **The 24-hour update rule** (H35's second half): needs the clock moved 24 h; not attempted.
+- **H41** (Pages' headers and MIME type for `sw.js`): needs Pages itself; this container's network was not used
+  for it. Measured here only its consequence: without `Service-Worker-Allowed` the scope cannot be widened (H40).
+- **H48's eviction half**: whether caches and IndexedDB are evicted together needs real storage pressure.
+- **H50** (iOS and iPadOS icons), **H51** (`display: standalone` on phones and tablets), **H52** (tile terms):
+  no Safari, no phone, and H52 is a question of terms, not behaviour.
+- **The 24-hour update rule** (H46's second half): needs the clock moved 24 h; not attempted.
 - **Firefox and Safari**: not installed; every outcome here is for Chromium 153 only.

@@ -1,3 +1,4 @@
+import { A3D_NO_STORAGE } from './state.js';
 import { a3dToast } from '../bim/csg-booleans.js';
 
   /* ================= __acad3dV121b: the old canvas's saved data, cleared =================
@@ -11,6 +12,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
     'acadLayoutsV1','acadBlocksV1','acadDockV1','canvas-grid'];
   function bimClearCanvasStorage(){
     var gone=[],i,k;
+    if(A3D_NO_STORAGE)return gone;   /* __acad3dV172g: nothing is kept here, so nothing to remove */
     for(i=0;i<A3D_CANVAS_KEYS.length;i++){
       k=A3D_CANVAS_KEYS[i];
       try{

@@ -1,6 +1,8 @@
-import { A3D } from '../core/state.js';
-import { bimTriggerDownload } from '../annotation/annotation-pick.js';
+import { A3D_DOCS } from '../core/state.js';
+import { bimFileDownload, bimFileRead } from './file-save.js';
+import { BIM_APP_VERSION } from '../ui/guide-versions.js';
 import { fitScene } from '../ui/tool-palette.js';
+import { bimProjectRecord } from '../core/objects-save.js';
 import { bimProjectLabel } from '../ui/project-tabs.js';
 import { bimDocsOpenData } from '../assets/templates.js';
 import { a3dToast } from '../bim/csg-booleans.js';
@@ -9,9 +11,13 @@ import { a3dToast } from '../bim/csg-booleans.js';
   // existing, already-tested undo/redo machinery) rather than a parallel serialization system --
   // a project file is just that same snapshot wrapped in a versioned envelope so a random or
   // foreign JSON file can be confidently rejected instead of silently corrupting the model. ----
+  /* __acad3dV172g: envelope version 2 (D4). Its data is bimProjectRecord() itself -- the one list of what a project is,
+     with the view (cam) and the id counter (seq) that version 1 left out -- and the app's version; the record's docId
+     belongs to this browser and is not written. V172f and older read a version-2 file with their "newer version" warning
+     and take every field they know (part 14.7). */
   function bimBuildProjectEnvelope(){
-    return JSON.stringify({app:'acad3d-project',formatVersion:1,savedAt:new Date().toISOString(),
-      data:{objs:A3D.objs,levels:A3D.levels,grids:A3D.grids,layers:A3D.layers,counts:A3D.counts,activeLevel:A3D.activeLevel,activeLayer:A3D.activeLayer,views:A3D.views,activeViewId:A3D.activeViewId,levelFilter:A3D.levelFilter,types:A3D.types,activeWallType:A3D.activeWallType,sheets:A3D.sheets,titleBlock:A3D.titleBlock,buildings:A3D.buildings,activeBuilding:A3D.activeBuilding,site:A3D.site,roomScheme:A3D.roomScheme||'',classifications:A3D.classifications,dataFeatures:A3D.dataFeatures||{},history:A3D.history||null,resultLayers:A3D.resultLayers||[],pres:A3D.pres||null}});   /* __acad3dV146, __acad3dV148 */
+    return JSON.stringify({app:'acad3d-project',formatVersion:2,savedAt:new Date().toISOString(),appVersion:BIM_APP_VERSION.v,
+      data:bimProjectRecord()});
   }
   function bimParseProjectEnvelope(text){
     var parsed;
@@ -19,7 +25,8 @@ import { a3dToast } from '../bim/csg-booleans.js';
     if(!parsed||typeof parsed!=='object')return {error:'not a recognized project file'};
     if(parsed.app!=='acad3d-project'||!parsed.data)return {error:'not a recognized project file'};
     var warn=null;
-    if(parsed.formatVersion>1)warn='this project file is from a newer version, some data may not load correctly';
+    if(parsed.formatVersion>2)warn=   /* __acad3dV172g: version 2 is this build's */
+      'this project file is from a newer version, some data may not load correctly';
     return {data:parsed.data,warn:warn};
   }
   /* __acad3dV115: with several projects open, "project.acad3d.json" and "plan.pdf" no longer say
@@ -29,13 +36,11 @@ import { a3dToast } from '../bim/csg-booleans.js';
     var s=bimProjectLabel().replace(/[\\\/:*?"<>|\u0000-\u001f]+/g,'_').replace(/^[\s.]+|[\s.]+$/g,'');
     return s.slice(0,80)||'project';
   }
+  /* __acad3dV172g: a download of the plain file, whatever the browser (the test hooks' export); Save itself is
+     bimFileSave in io/file-save.js */
   function bimExportProjectFile(){
-    try{
-      var json=bimBuildProjectEnvelope();
-      bimTriggerDownload(json,bimFileStem()+'.acad3d.json','application/json');
-      a3dToast('Project saved as '+bimFileStem()+'.acad3d.json ('+A3D.objs.length+' object(s))');
-      bimAskPersist();   /* __acad3dV172e */
-    }catch(eS){console.warn('[BIM] Project export failed: ',eS);a3dToast('Project export failed: '+(eS&&eS.message?eS.message:eS));}
+    try{bimFileDownload(A3D_DOCS.active,'json');}
+    catch(eS){console.warn('[BIM] Project export failed: ',eS);a3dToast('Project export failed: '+(eS&&eS.message?eS.message:eS));}
   }
   /* __acad3dV172e: decision D3. The browser keeps best-effort storage only while it has room; persist() asks it to
      keep this app's. Asked once, at the first Save -- a gesture, never on load (web.dev); Firefox shows a prompt,
@@ -61,27 +66,22 @@ import { a3dToast } from '../bim/csg-booleans.js';
     var res=bimParseProjectEnvelope(text);
     if(res.error){a3dToast(filename+': '+res.error);return false;}
     var id=bimDocsOpenData(res.data,filename);
-    if(!id)return false;
+    if(!id)return false;   /* __acad3dV172g: the new project's id, for its file */
     fitScene();
     var msg='Opened '+filename+' in a new tab: '+(res.data.objs?res.data.objs.length:0)+' object(s)';
     if(res.warn)msg+=' \u2014 '+res.warn;
     a3dToast(msg);
-    return true;
+    return id;
   }
+  /* __acad3dV172g: .json and .gz (D4); the bytes decide, in bimFileRead */
   function bimOpenProjectFileObj(file){
     if(!file)return;
     var name=file.name||'project.json',ext=(name.split('.').pop()||'').toLowerCase();
-    if(ext!=='json'){
-      a3dToast(name+' is not a project file. Open takes .json project files; use Import for DXF, IFC, OBJ or STL.');
+    if(ext!=='json'&&ext!=='gz'){
+      a3dToast(name+' is not a project file. Open takes .acad3d.json and .acad3d.json.gz project files; use Import for DXF, IFC, OBJ or STL.');
       return;
     }
-    var reader=new FileReader();
-    reader.onerror=function(){console.warn('[BIM] A project file could not be read: '+name);a3dToast('Failed to read '+name);};
-    reader.onload=function(ev){
-      try{bimImportProjectFile(ev.target.result,name);}
-      catch(eI){console.warn('[BIM] Opening a project file crashed:',eI);a3dToast('Opening '+name+' failed: '+(eI&&eI.message?eI.message:eI));}
-    };
-    reader.readAsText(file);
+    bimFileRead(file,null);
   }
   function bimOpenProjectPicker(){
     var fi=document.getElementById('a3d-projin');
@@ -94,6 +94,6 @@ import { a3dToast } from '../bim/csg-booleans.js';
     return true;
   }
 export {
-  A3D_PERSIST, bimBuildProjectEnvelope, bimExportProjectFile, bimFileStem, bimImportProjectFile,
-  bimOpenProjectFileObj, bimOpenProjectPicker, bimParseProjectEnvelope
+  A3D_PERSIST, bimAskPersist, bimBuildProjectEnvelope, bimExportProjectFile, bimFileStem,
+  bimImportProjectFile, bimOpenProjectFileObj, bimOpenProjectPicker, bimParseProjectEnvelope
 };

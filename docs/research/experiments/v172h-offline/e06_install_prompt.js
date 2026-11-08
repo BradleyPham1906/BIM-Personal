@@ -1,4 +1,4 @@
-// e06_install_prompt.js -- H38 (V172h, 2026-11-07): does Chromium fire beforeinstallprompt headless, and does it
+// e06_install_prompt.js -- H49 (V172h, 2026-11-07): does Chromium fire beforeinstallprompt headless, and does it
 // still need a service worker with a fetch handler? Four pages under /BIM-Personal/, each in a fresh context:
 //   none:        no manifest, no worker;
 //   manifest:    a manifest (name, short_name, start_url, scope, display standalone, 192 and 512 px PNG icons), no worker;

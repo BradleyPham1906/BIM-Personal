@@ -1,7 +1,7 @@
 # V172h experiments: installable and offline
 
 Data scripts, not a suite: nothing here is run by `npm test`, CI or `tests/e2e/`. They measure, in this
-container's Chromium, the hypotheses of part 14 of `docs/research/research-local-storage.md` that can be
+container's Chromium, the hypotheses of part 15 of `docs/research/research-local-storage.md` that can be
 measured from here. The results, with every raw number, are in
 `docs/research/research-local-storage/v172h-experiments.md`.
 
@@ -19,12 +19,12 @@ worker and no registration code; the drivers register these from the page with `
 
 From this folder, one script at a time (they start their own server and browser):
 
-    node e01_scope.js            # H29            ~20 s
-    node e02_precache.js         # H31, H37, cost ~30 s
-    node e03_offline_app.js      # H32            ~2 min (RUNS=5)
-    node e04_update.js           # H33, H34, H35  ~6 min (RUNS=5)
-    node e05_worker_fetch.js     # H36            ~2 min
-    node e06_install_prompt.js   # H38            ~7 min (ONLY=<launch label part> runs one launch kind)
+    node e01_scope.js            # H40            ~20 s
+    node e02_precache.js         # H42, H48, cost ~30 s
+    node e03_offline_app.js      # H43            ~2 min (RUNS=5)
+    node e04_update.js           # H44, H45, H46  ~6 min (RUNS=5)
+    node e05_worker_fetch.js     # H47            ~2 min
+    node e06_install_prompt.js   # H49            ~7 min (ONLY=<launch label part> runs one launch kind)
     node e07_load_cost.js        # load cost      ~2 min (RUNS=7)
 
 - `RUNS=<n>` changes the number of runs.

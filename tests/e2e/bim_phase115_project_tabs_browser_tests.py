@@ -262,6 +262,9 @@ async def drive(ck):
         ck([x[1] for x in tb] == ['Start', 'Legacy Tower', 'Project1', '+'] and tb[2][2] is True,
            'CLOSE closes it and the neighbour tab takes over (%s)' % [x[1] for x in tb])
         dl = None
+        # V172g: in Chrome and Edge Save opens the save picker, which headless Chromium cannot show; without the pickers
+        # (Firefox, Safari) Save downloads, the path this check reads
+        await page.evaluate("()=>{window.showSaveFilePicker=undefined;window.showOpenFilePicker=undefined;}")
         try:
             async with page.expect_download(timeout=4000) as d:
                 await page.click('#acad-qat [data-acad-act="saveJson"]')

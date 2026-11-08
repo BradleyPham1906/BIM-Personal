@@ -1,6 +1,6 @@
-// e01_scope.js -- H29 (V172h, 2026-11-07): a worker at /BIM-Personal/sw.js controls /BIM-Personal/ and every path
+// e01_scope.js -- H40 (V172h, 2026-11-07): a worker at /BIM-Personal/sw.js controls /BIM-Personal/ and every path
 // under it (docs/, v/x/), not /Other/ (another Pages project of the same origin) nor /BIM-Personalx/.
-// Also: register with scope '/' (refused without Service-Worker-Allowed: H30's consequence), and the
+// Also: register with scope '/' (refused without Service-Worker-Allowed: H41's consequence), and the
 // default scope of a worker registered from a page in docs/. Runs: RUNS fresh contexts (default 3).
 'use strict';
 var C = require('./_common.js');

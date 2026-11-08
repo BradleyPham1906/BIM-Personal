@@ -1,4 +1,4 @@
-// e05_worker_fetch.js -- H36 (V172h, 2026-11-07): fetches made by a dedicated Web Worker that a controlled page
+// e05_worker_fetch.js -- H47 (V172h, 2026-11-07): fetches made by a dedicated Web Worker that a controlled page
 // created go through the page's service worker.
 // Part 1 (probe worker): a controlled page makes (a) a same-origin worker from a script URL, (b) a blob: URL worker
 //   made the way src/js/engine/ladybug/runtime.js makes its worker (new Worker(URL.createObjectURL(new Blob([text],

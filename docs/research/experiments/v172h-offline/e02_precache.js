@@ -1,8 +1,8 @@
-// e02_precache.js -- H31, H37 and the precache's cost (V172h, 2026-11-07).
-// H31: the build's four `app/<name>?v=<hash>` URLs are precached by their exact URLs; cache.match finds them
+// e02_precache.js -- H42, H48 and the precache's cost (V172h, 2026-11-07).
+// H42: the build's four `app/<name>?v=<hash>` URLs are precached by their exact URLs; cache.match finds them
 //      with the query, not without it (unless ignoreSearch); a new build's worker deletes the old build's cache
 //      on activate and keeps the runtime cache.
-// H37: navigator.storage.estimate() (and usageDetails) before the worker, after the precache, after the 16 MB
+// H48: navigator.storage.estimate() (and usageDetails) before the worker, after the precache, after the 16 MB
 //      runtime is fetched through the worker, and after an IndexedDB write: caches and IndexedDB in one usage.
 // Cost: bytes and time of the precache on a first visit (from the worker's own count), server bytes.
 // Each run: a fresh persistent profile (a temporary user-data-dir, so storage is on disk as for a real user).

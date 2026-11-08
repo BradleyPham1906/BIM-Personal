@@ -208,3 +208,18 @@ body.light-theme #a3d-tip strong{color:#202124}body.light-theme .a3d-tiptype b{c
 #a3d-ro-bar button{min-height:30px;padding:0 12px;border-radius:6px;border:1px solid var(--border,rgba(255,255,255,.16));background:var(--accent,#8f7aff);color:#fff;font:inherit;cursor:pointer;white-space:nowrap}
 @media(pointer:coarse){#a3d-ro-bar button{min-height:36px}}
 body.a3d-tier-phone #a3d-ro-bar{left:12px;right:12px;transform:none;max-width:none}
+/* __acad3dV172g: in a file or not (D2). The status bar's line runs Save; amber while the work is not in a file. */
+.a3d-stfile{max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;letter-spacing:0;font-size:11px}
+.a3d-stfile[data-state="unsaved"],.a3d-stfile[data-state="changed"]{color:#e3a64a;border-color:#5a4524}
+.a3d-stfile[data-state="saved"]{color:#8d9196}
+body.light-theme .a3d-stfile[data-state="unsaved"],body.light-theme .a3d-stfile[data-state="changed"]{color:#8a5a0f;border-color:#d9b77a}
+/* __acad3dV172g: a small question (Save as's type, a file changed elsewhere), centred over the page */
+.a3d-filedlg{position:fixed;inset:0;z-index:99980;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.35);padding:16px}
+.a3d-filedlg-box{width:min(420px,100%);background:#23272c;border:1px solid #3a4048;border-radius:8px;box-shadow:0 10px 30px rgba(0,0,0,.45);padding:16px;color:#dfe4ea;font:13px/1.45 "Segoe UI",Inter,system-ui,sans-serif}
+.a3d-filedlg-t{font-weight:600;font-size:14px;margin-bottom:6px}
+.a3d-filedlg-x{color:#b9c0c8;margin-bottom:14px}
+.a3d-filedlg-ft{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end}
+.a3d-filedlg-ft .a3d-btn{min-height:32px}
+@media (pointer:coarse){.a3d-filedlg-ft .a3d-btn{min-height:36px}}
+body.light-theme .a3d-filedlg-box{background:#ffffff;border-color:#c9ced4;color:#202124}
+body.light-theme .a3d-filedlg-x{color:#4a4f55}

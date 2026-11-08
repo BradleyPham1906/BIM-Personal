@@ -1,14 +1,14 @@
-// e04_update.js -- H33, H34, H35 (V172h, 2026-11-07): how a new worker (build B, byte-different sw.js) reaches tabs.
+// e04_update.js -- H44, H45, H46 (V172h, 2026-11-07): how a new worker (build B, byte-different sw.js) reaches tabs.
 // The probe worker (no skipWaiting of its own) is served at /BIM-Personal/sw.js; pages are /BIM-Personal/t.html
 // with exp.js. Each scenario runs in a fresh context; RUNS runs each (default 5).
 //   one-tab:  A controls one tab; B deployed; reload (finds B: updatefound, B waits); reload again; then the tab
 //             navigates away (to /Other/) and back; then the tab is closed and a new one opened.
 //   two-tabs: A controls two tabs; B deployed; tab 1 reloads twice; tab 2 is closed; tab 1 reloads; tab 1 closed,
 //             a new tab opened.
-//   message:  (H34) one tab with unsaved work (window.__dirty) and B waiting: __applyUpdate() must hold; when clean,
+//   message:  (H45) one tab with unsaved work (window.__dirty) and B waiting: __applyUpdate() must hold; when clean,
 //             it posts SKIP_WAITING; controllerchange reloads once; the reload count is checked 3 s later (no loop).
 //             A second tab with unsaved work open at the same time: what happens to it.
-//   hits:     (H35) sw.js server hits on 5 navigations 4 s apart, within the 600 s max-age, with updateViaCache default
+//   hits:     (H46) sw.js server hits on 5 navigations 4 s apart, within the 600 s max-age, with updateViaCache default
 //             and 'all'; each hit is put down to the last navigation started before it.
 // Time from navigation to updatefound is the page's performance.now() at updatefound (0 = the navigation's start).
 'use strict';
@@ -92,7 +92,7 @@ function short(s) { return { controller: v(s.controller), active: v(s.active), w
     out.twoTabs.push(run);
     await ctx.close();
 
-    // ---- H34: messaging the waiting worker, held while dirty, one reload, no loop; a second, dirty tab
+    // ---- H45: messaging the waiting worker, held while dirty, one reload, no loop; a second, dirty tab
     ctx = await browser.newContext(); run = {};
     var m1 = await setupA(ctx);
     var m2 = await ctx.newPage(); await m2.goto(T);
@@ -122,7 +122,7 @@ function short(s) { return { controller: v(s.controller), active: v(s.active), w
     out.message.push(run);
     await ctx.close();
 
-    // ---- H35: sw.js hits on navigations inside the 600 s max-age
+    // ---- H46: sw.js hits on navigations inside the 600 s max-age
     var modes = [{}, { updateViaCache: 'all' }], hrun = {};
     for (var k = 0; k < modes.length; k++) {
       ctx = await browser.newContext();

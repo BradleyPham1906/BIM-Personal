@@ -1,6 +1,7 @@
 import { A3D } from '../core/state.js';
 import { pushUndo } from '../drawing/plan-mode-sketch.js';
 import { refreshLevels } from './classification.js';
+import { bimFileNotWork } from '../io/file-save.js';
 import { paint } from '../map/terrain-3d.js';
 import { saveSoon } from './region-regenerate.js';
 import { a3dToast } from './csg-booleans.js';
@@ -36,6 +37,7 @@ import { a3dToast } from './csg-booleans.js';
     bimSyncActiveGlobal();
     refreshLevels();
     paint();
+    bimFileNotWork();   /* __acad3dV172g: which level is current is kept, but it is not work on the model (D2) */
     saveSoon();
     a3dToast('Active level: '+lvl.name+' (elevation '+lvl.elev+')');
   }

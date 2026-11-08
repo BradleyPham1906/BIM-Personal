@@ -28,6 +28,7 @@
          than read, and it is what decides where a wall drawn with a finger lands. */
 .a3d-status{height:40px;gap:6px;padding:0 8px}
 .a3d-sthint,.a3d-stcoords{display:none}
+.a3d-stfile{max-width:40vw}   /* __acad3dV172g */
 .a3d-stbtn{padding:9px 11px;font-size:12px}
 .a3d-stlvl{font-size:11px}
 .a3d-stlvl select{font-size:13px;max-width:108px}

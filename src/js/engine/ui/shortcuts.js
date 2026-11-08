@@ -73,7 +73,8 @@ import { A3DR_PIN_ICON, bimDockLabelsOn, bimSetDockLabels } from './dock-tooltip
       {keys:['Delete'],k:null,label:'Delete the selection',cmd:'ERASE'}
     ]},
     {grp:'Project',rows:[
-      {keys:[A3D_MODKEY,'S'],k:null,label:'Export the project file',cmd:'SAVE'},
+      {keys:[A3D_MODKEY,'S'],k:null,label:'Save the project to its file',cmd:'SAVE'},   /* __acad3dV172g */
+      {keys:[A3D_MODKEY,'Shift','S'],k:null,label:'Save the project to a new file',cmd:'SAVEAS'},
       {keys:[A3D_MODKEY,'O'],k:null,label:'Open a project file',cmd:'OPEN'},   /* __acad3dV128: bound since V115, never listed */
       {keys:[A3D_MODKEY,'K'],k:null,label:'Command search, or just start typing a command'},
       {keys:['?'],k:null,label:'This panel: the keyboard shortcuts'}   /* __acad3dV129 */
