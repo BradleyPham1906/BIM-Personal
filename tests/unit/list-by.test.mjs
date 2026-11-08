@@ -38,6 +38,16 @@ test('a data layer dragged to another\'s place: the stored order changes, one un
   assert.equal(E.bimDataLayerMove('nope', 'd1'), false);
 });
 
+test('Up and Down, for touch screens: one step in the list, refused at the ends', () => {
+  setup();
+  assert.equal(E.bimDataLayerStep('d2', 'up'), true);
+  assert.deepEqual(E.bimDataListTopFirst().map((L) => L.id), ['d2', 'd3', 'd1']);
+  assert.equal(E.bimDataLayerStep('d2', 'up'), false);
+  assert.equal(E.bimDataLayerStep('d1', 'down'), false);
+  assert.equal(E.bimDataLayerStep('d3', 'down'), true);
+  assert.deepEqual(E.bimDataListTopFirst().map((L) => L.id), ['d2', 'd1', 'd3']);
+});
+
 test('by source: data layers grouped by their server, a failed one counted', () => {
   setup();
   E.bimLyListBySet('source');

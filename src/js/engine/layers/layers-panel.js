@@ -6,6 +6,7 @@ import { BIM_EYE_OFF, BIM_EYE_ON, BIM_LOCK_OFF, BIM_LOCK_ON, bimLayerUnder } fro
 import { bimLyListBy, bimLyListByHtml, bimLyListBySelect } from './list-by.js';
 import { bimLySectionsHtml } from './analysis-data-rows.js';
 import { bimEsc } from './layer-manager.js';
+import { bimCakeBtnHtml } from '../map/layer-cake.js';
 import { ric } from '../ui/touch-input.js';
 
   /* ================= __acad3dV121: the Layers panel =================
@@ -108,7 +109,7 @@ import { ric } from '../ui/touch-input.js';
       memo[l.id]=r;
       return r;
     }
-    var h='<div class="a3d-lyp"><div class="a3d-lyhd"><span class="a3d-lyttl">Layers</span>'+bimLyListBySelect()+'<span class="a3d-lybtns">'+   /* __acad3dV173c */
+    var h='<div class="a3d-lyp"><div class="a3d-lyhd"><span class="a3d-lyttl">Layers</span>'+bimLyListBySelect()+bimCakeBtnHtml()+'<span class="a3d-lybtns">'+   /* __acad3dV173c; __acad3dV173d: the layer cake */
       bimLyBtn('new','New layer',BIM_LY_IC.add)+
       bimLyBtn('sub','New sub-layer under the selected layer',BIM_LY_IC.sub)+
       bimLyBtn('std','New layer with an AIA / NCS standard name',BIM_LY_IC.std)+
