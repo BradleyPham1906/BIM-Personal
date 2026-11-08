@@ -1,0 +1,3 @@
+bimLoadProjectRecord true
+paint true
+bimSyncActiveGlobal false
