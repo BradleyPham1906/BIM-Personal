@@ -1,0 +1,18 @@
+check: gaps H 3 (expect 3: 100, 100, 250), snap x {"d":-5,"kind":"after","len":100} (expect -5, after, 100)
+check: near an edge, snap x {"d":-2,"kind":"point"} (expect -2, point: the right edge 350)
+n=50: gaps H 120 V 176; build (5 runs, ms) min 0.320 max 1.511; per move (500 moves, ms) median 0.0030 p95 0.0908 max 0.2892; moves with a snap 498
+n=200: gaps H 495 V 3201; build (5 runs, ms) min 0.548 max 1.434; per move (500 moves, ms) median 0.0197 p95 0.0290 max 0.0596; moves with a snap 500
+n=1000: gaps H 2493 V 82668; build (5 runs, ms) min 15.338 max 42.239; per move (500 moves, ms) median 0.4908 p95 0.7143 max 2.7146; moves with a snap 500
+
+check: gaps H 3 (expect 3: 100, 100, 250), snap x {"d":-5,"kind":"after","len":100} (expect -5, after, 100)
+check: near an edge, snap x {"d":-2,"kind":"point"} (expect -2, point: the right edge 350)
+n=50: gaps H 120 V 176; build (5 runs, ms) min 0.473 max 1.766; per move (500 moves, ms) median 0.0042 p95 0.0852 max 0.5429; moves with a snap 498
+n=200: gaps H 495 V 3201; build (5 runs, ms) min 0.563 max 2.121; per move (500 moves, ms) median 0.0215 p95 0.0325 max 0.0890; moves with a snap 500
+n=1000: gaps H 2493 V 82668; build (5 runs, ms) min 14.284 max 53.274; per move (500 moves, ms) median 0.5229 p95 0.7504 max 9.1568; moves with a snap 500
+
+check: gaps H 3 (expect 3: 100, 100, 250), snap x {"d":-5,"kind":"after","len":100} (expect -5, after, 100)
+check: near an edge, snap x {"d":-2,"kind":"point"} (expect -2, point: the right edge 350)
+n=50: gaps H 120 V 176; build (5 runs, ms) min 0.319 max 1.373; per move (500 moves, ms) median 0.0028 p95 0.0717 max 0.2362; moves with a snap 498
+n=200: gaps H 495 V 3201; build (5 runs, ms) min 0.590 max 1.757; per move (500 moves, ms) median 0.0197 p95 0.0289 max 0.1990; moves with a snap 500
+n=1000: gaps H 2493 V 82668; build (5 runs, ms) min 14.418 max 46.215; per move (500 moves, ms) median 0.5296 p95 0.6716 max 0.7540; moves with a snap 500
+
