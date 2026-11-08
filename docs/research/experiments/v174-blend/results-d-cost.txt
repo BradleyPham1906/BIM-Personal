@@ -1,0 +1,10 @@
+Chromium 153.0.8010.12; board 2000 x 1400; 200 elements (rect, ellipse, image); 30 frames after 3 warm-up; ms per frame incl. a 1-pixel read to flush
+
+default context:
+  200 elements, normal                                               median 9.1  p90 9.3  min 6.0  max 9.4
+  200 elements, random non-normal modes                              median 16.2  p90 20.3  min 13.4  max 21.6
+  200 elements, non-separable modes only                             median 16.9  p90 21.7  min 15.9  max 23.8
+  20 isolated groups (box-sized), normal children                    median 9.1  p90 10.3  min 8.4  max 11.8
+  20 isolated groups (box-sized), random children, group multiply    median 21.1  p90 26.8  min 19.2  max 31.8
+  20 isolated groups (board-sized offscreen)                         median 89.7  p90 108.0  min 85.8  max 111.3
+  200 elements each isolated (one offscreen each)                    median 74.3  p90 94.6  min 71.1  max 96.7

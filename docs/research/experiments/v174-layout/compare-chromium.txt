@@ -1,4 +1,4 @@
-Chromium 153.0.8010.12, 40 cases, 263 ms
+Chromium 153.0.8010.12, 41 cases, 230 ms
 AGREE  [yes] row fixed, gap 10, pad 8 lines=1
 AGREE  [yes] column fixed, gap 12 lines=1
 AGREE  [yes] align center/center lines=1
@@ -10,6 +10,7 @@ AGREE  [yes] fill beside fixed lines=1
 AGREE  [yes] fill with min widths, room for both lines=1
 AGREE  [yes] fill with min widths, min binds lines=1
 AGREE  [yes] fill with max, cascade (spec loop) lines=1
+AGREE  [yes] fill with max, order reversed (Yoga differs) lines=1
 AGREE  [yes] fill with min > max (min wins) lines=1
 AGREE  [yes] fill when fixed overflow lines=1
 AGREE  [yes] fill cross stretch lines=1
@@ -48,4 +49,4 @@ AGREE  [yes] hug with min width larger than content lines=1
 AGREE  [yes] negative gap, last on top lines=1
         note: CSS gap cannot be negative; the page uses a negative margin instead
 AGREE  [yes] nested hug frame lines=1
-Expected to agree: 38 of 38 agree. Expected to differ: 2 of 2 differ.
+Expected to agree: 39 of 39 agree. Expected to differ: 2 of 2 differ.

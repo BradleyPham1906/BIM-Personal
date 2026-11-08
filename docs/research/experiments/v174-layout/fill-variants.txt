@@ -1,0 +1,9 @@
+two fill, no limits (inner 300): spec [150, 150] | yoga [150, 150] same | penpot [150, 150] same
+min 100 on the first (inner 300): spec [150, 150] | yoga [150, 150] same | penpot [200, 100] DIFF
+min 200 on the first (inner 300): spec [200, 100] | yoga [200, 100] same | penpot [250, 50] DIFF
+max 50, max 110, free (inner 300): spec [50, 110, 140] | yoga [50, 110, 140] same | penpot [50, 110, 140] same
+min 120 (x3) in 300 (inner 300): spec [120, 120, 120] | yoga [120, 120, 120] same | penpot [120, 120, 120] same
+min 120 > max 80, free (inner 300): spec [120, 180] | yoga [120, 180] same | penpot [80, 220] DIFF
+min 60, min 60, max 40 (inner 300): spec [130, 130, 40] | yoga [130, 130, 40] same | penpot [130, 130, 40] same
+free, max 110, max 50 (order reversed) (inner 300): spec [140, 110, 50] | yoga [125, 110, 50] DIFF | penpot [140, 110, 50] same
+free, min 140, min 170 (min cascade) (inner 300): spec [0, 140, 170] | yoga [0, 140, 170] same | penpot [0, 140, 170] same

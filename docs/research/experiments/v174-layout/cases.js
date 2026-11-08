@@ -17,6 +17,7 @@ add('fill beside fixed', 'yes', frame({ gap: 10, pad: 10 }, [box(80, 30), box(0,
 add('fill with min widths, room for both', 'yes', frame({ gap: 0 }, [box(0, 30, { sizeW: 'fill', minW: 100 }), box(0, 30, { sizeW: 'fill' })]));
 add('fill with min widths, min binds', 'yes', frame({ gap: 0 }, [box(0, 30, { sizeW: 'fill', minW: 200 }), box(0, 30, { sizeW: 'fill' })]));
 add('fill with max, cascade (spec loop)', 'yes', frame({ gap: 0 }, [box(0, 30, { sizeW: 'fill', maxW: 50 }), box(0, 30, { sizeW: 'fill', maxW: 110 }), box(0, 30, { sizeW: 'fill' })]));
+add('fill with max, order reversed (Yoga differs)', 'yes', frame({ gap: 0 }, [box(0, 30, { sizeW: 'fill' }), box(0, 30, { sizeW: 'fill', maxW: 110 }), box(0, 30, { sizeW: 'fill', maxW: 50 })]));
 add('fill with min > max (min wins)', 'yes', frame({ gap: 0 }, [box(0, 30, { sizeW: 'fill', minW: 120, maxW: 80 }), box(0, 30, { sizeW: 'fill' })]));
 add('fill when fixed overflow', 'yes', frame({ gap: 10, w: 200 }, [box(150, 30), box(0, 30, { sizeW: 'fill' }), box(100, 30)]));
 add('fill cross stretch', 'yes', frame({ gap: 10, pad: 10 }, [box(50, 30), box(60, 0, { sizeH: 'fill' })]));
