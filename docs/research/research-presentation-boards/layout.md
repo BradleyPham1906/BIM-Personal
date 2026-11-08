@@ -42,7 +42,7 @@ and smart spacing that match professional practice, stay exact in print, and run
 - **H3** Yoga and Penpot share space among Fill children as the specification does. **Falsified**: Yoga
   v3.2.2's two passes (its own comment says it "deviates from the spec") leave 15 px unshared on
   [free, max 110, max 50] in 300 px; Penpot's distribute-space differs on any case where a min applies
-  ([min 100, free] in 300: Penpot 200/100, spec 150/150) (section 6a, `fill-variants.txt`).
+  ([min 100, free] in 300: Penpot 200/100, spec 150/150) (section 6, `fill-variants.txt`).
 - **H4** "Distribute horizontal spacing" has one definition. **Falsified**: Inkscape sorts by centre and
   spans first-min to last-max, which moves the outermost box when a wide box's centre is not last;
   Figma says the outermost objects keep their positions. Same answers on ordinary rows (section 6b).
@@ -150,8 +150,8 @@ re-read before code.
     is positive the min-violators freeze, if negative the max-violators, if zero all; repeat. P, high.
 12. **Line breaking** (9.3): collect items until the next item's outer hypothetical main size "would not
     fit"; a first item that does not fit goes alone; zero-sized items join the previous line even when it is
-    exactly full. Exact fit stays on the line (measured: four 100 px boxes in 400 px give one line of 4,
-    then... see 6a "wrap exact fit"). P, high.
+    exactly full. Exact fit stays on the line (measured: four 100 px boxes in a 300 px frame give 3 on
+    the first line and 1 on the second, the third ending exactly at 300). P, high.
 13. **Overflow fallbacks**: space-between falls back to safe flex-start, space-around and space-evenly to
     safe center. Measured in Chromium 153: all three put the first item at x = 0 when three 60 px boxes
     overflow a 150 px line, as does `safe center`; plain `center` puts it at -15. So "safe center" on
@@ -160,7 +160,7 @@ re-read before code.
 14. **CSS gap cannot be negative** (css-align-3; not re-read here, S); the comparison page used negative
     margins for Figma's negative gap and agreed. Figma's negative gap is ours to implement directly.
 15. **Yoga v3.2.2** resolves flexible lengths in exactly two passes (`resolveFlexibleLength`,
-    `CalculateLayout.cpp` lines 897 to 972, comment: "This two pass approach for resolving min/max
+    `CalculateLayout.cpp` lines 900 to 972, comment: "This two pass approach for resolving min/max
     constraints deviates from the spec"); its first pass also lowers the total grow factor inside the loop,
     so the result depends on child order. Display-none and absolute children are skipped when lines are
     collected (`FlexLine.cpp`). Its fallback for space-around and space-evenly is flex-start (`Align.h`,
@@ -257,7 +257,7 @@ the playwright package already present (`chromium.launch()`, nothing installed).
 
 - Expected to agree: **39 of 39 agree.** They include: row and column with gap and padding; nine-way
   alignment; Hug both axes; Figma's own example (a 40 px text with 10 px side padding hugs to 60 px);
-  two Fill children sharing 290 px as 140/140 (after a 10 px gap); Fill beside fixed children; Fill with
+  two Fill children sharing 290 px as 145/145 (after a 10 px gap); Fill beside fixed children; Fill with
   min 100 (150/150) and min 200 (200/100); Fill with max 50 and 110 in either order (50/110/140 and
   140/110/50); min greater than max (min wins: 120/180); Fill when fixed children already overflow (Fill
   0 wide); cross-axis stretch, with a max of 40 and centred; a hidden child; an absolute child at
@@ -265,14 +265,14 @@ the playwright package already present (`chromium.launch()`, nothing installed).
   40 x 40); Auto gap between, evenly, around; one child in an Auto stack at the start; Auto overflow,
   flush (between and around); numeric gap centred and overflowing (first item at -15); wrap with 10/20
   gaps (2 lines); wrap with a 400 px child in a 300 px frame (3 lines, the long child alone); exact fit
-  (4 x 100 in 300 gives 3 + 1 lines... the frame is 300 wide, so 3 per line: two lines); wrap skipping a
+  (four 100 px boxes in 300 px: 3 on the first line, 1 on the second); wrap skipping a
   hidden child; wrap of Fill children with min 120 (2 lines) and without min (1 line); wrapped tracks
   centred and spread; a column wrap; Hug with a min width larger than its content; a negative gap of -20
   (CSS drawn with margins); a nested Hug frame.
 - Expected to differ: **2 of 2 differ, as Figma documents.** A Hug frame (width 300) with a Fill child:
   ours turns Fixed and gives the Fill child 240 px; CSS `width: max-content` gives a 60 px frame and a 0
   px child. A Hug-height frame (height 100) with a stretch child: ours 100 (Fixed), CSS 30.
-- The whole run took 227 to 300 ms including the browser start.
+- The whole run took about 230 ms including the browser start.
 
 **Fill variants** (`node fill-variants.js`, `fill-variants.txt`), inner 300 px:
 
