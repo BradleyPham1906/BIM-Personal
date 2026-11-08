@@ -85,6 +85,7 @@ Search Notion before creating anything, so nothing is made twice.
 | `docs/research/research-climate-risk-presentation.md` | `3fecbfcc3a388187a1d4ecefbe1cae25` |
 | `docs/research/research-colour-by.md` | `3fecbfcc3a3881d8bf07c622edde1065` |
 | `docs/research/research-contents-pane.md` (and its folder) | `412cbfcc3a38819ea8eed3ce19c7e2b6` |
+| `docs/research/research-presentation-boards.md` (and its folder) | `412cbfcc3a388164935aca3df068e036` |
 | `docs/research/research-command-ui.md` | `3fecbfcc3a388116877ad4d6ba1f045d` |
 | `docs/research/research-data-layers.md` | `3fecbfcc3a38813daa7afbbaf0e0d980` |
 | `docs/research/research-direct-manipulation.md` | `3fecbfcc3a3881eb8b12d278112ac615` |
