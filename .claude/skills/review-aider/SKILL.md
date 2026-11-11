@@ -44,7 +44,13 @@ Fix what is wrong yourself. If the change cannot be made right (a wrong approach
 Follow CLAUDE.md's Rule #1 table for the files changed (syntax check, `npm test`, `npm run modules`
 when shared names changed). If anything under `src/` changed, rebuild: `python3 tools/build_app.py`.
 
-## 4. Hand over
+## 4. Log it
+
+Add one row per task to `docs/work-orders/aider-log.md`: date, phase (or `-`), task, its score from
+`docs/work-orders/ROUTING.md` (score it now if nobody did), tier, outcome, and the fix in a few
+words. If a phase just finished, recalibrate ROUTING.md as its last section says.
+
+## 5. Hand over
 
 Commit (message starts `Aider: `, says what it does and what the review fixed), push, and open a PR
 against `main` if none exists. Then tell the owner, in a few plain lines:

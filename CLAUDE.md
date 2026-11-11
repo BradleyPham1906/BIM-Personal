@@ -94,7 +94,9 @@ writes a unit test for every routine function, and lists them in `TASKS.md` as `
 orders. The owner fills them in with Aider for free; Claude reviews and finishes (the review-aider
 skill), and the PR merges only when no `WO-` stub is left and every test passes.
 `docs/work-orders/README.md` has the steps, the templates and the rules for writing a work order a
-14B model can do. The stubs are the one exception to "no placeholders": they never reach `main`.
+14B model can do. Who does what is scored with `docs/work-orders/ROUTING.md` (six questions, four tiers:
+Aider, Aider with a work order, Claude on Sonnet, Claude on the default model); `aider-log.md` records
+every Aider result, and the thresholds move with it after each phase. The stubs are the one exception to "no placeholders": they never reach `main`.
 
 ## How to work in this repo (the owner, 2026-11-01)
 
