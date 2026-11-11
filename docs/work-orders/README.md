@@ -50,7 +50,8 @@ A 14B model succeeds on a small, exact task and fails on a vague one. Each work 
 - names **its test** and the command to run it;
 - repeats the **don'ts** that matter for it (no other file, no import/export lines, ES5).
 
-Anything that does not fit these rules is a `[Claude]` task.
+Anything that does not fit these rules is a `[Claude]` task. Score every task with `ROUTING.md`;
+split one that scores 5 or more when its pieces would each score 4 or less.
 
 ## The one exception to "no placeholders"
 

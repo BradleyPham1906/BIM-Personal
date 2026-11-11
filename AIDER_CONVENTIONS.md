@@ -14,6 +14,11 @@ Read by Aider on every session (`.aider.conf.yml`). The full rules are in `CLAUD
   runs the checks, commits on an `aider/<task>` branch and opens the pull request.
 - If the task does not fit the code as described, stop and say what is different.
 
+## Should Aider do this?
+
+When asked to "score" a task, read `docs/work-orders/ROUTING.md`, answer its six questions with a
+reason each, give the total and the tier, and say plainly if the task is for Claude.
+
 ## Work orders (`docs/work-orders/vNNN/TASKS.md`)
 
 When asked to "do the next task":
