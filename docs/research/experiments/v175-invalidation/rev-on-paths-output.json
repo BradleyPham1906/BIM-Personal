@@ -1,0 +1,44 @@
+[
+ {
+  "path": "saveSoon()",
+  "before": 0,
+  "after": 1,
+  "moved": true,
+  "error": null
+ }
+,
+ {
+  "path": "pushUndo() alone",
+  "before": 0,
+  "after": 0,
+  "moved": false,
+  "error": null
+ }
+,
+ {
+  "path": "doUndo()",
+  "before": 0,
+  "after": 0,
+  "moved": false,
+  "error": null
+ }
+,
+ {
+  "path": "bimSetUnits(\"mm\")",
+  "before": 0,
+  "after": 1,
+  "moved": true,
+  "error": null
+ }
+,
+ {
+  "path": "paint()",
+  "before": 0,
+  "after": 0,
+  "moved": false,
+  "error": null
+ }
+]
+
+probes 4 (bimLoadProjectRecord) and 5 (bimRestoreState) ran Node out of memory (512 MB and 1 GB) through their UI refresh calls in the stand-in; not measured here.
+probe 2 (doUndo) ran on an empty undo stack ("Nothing to undo"), so it shows no move; with a step on the stack it goes through bimRestoreState, as probe 5.

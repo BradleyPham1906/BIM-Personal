@@ -1,0 +1,38 @@
+[
+ {
+  "rooms": 10,
+  "edges": 40,
+  "median_ms": 0.204,
+  "p95_ms": 0.3972,
+  "gross": 438.8999999999999,
+  "net": 0,
+  "note": ""
+ },
+ {
+  "rooms": 50,
+  "edges": 200,
+  "median_ms": 0.9443,
+  "p95_ms": 2.5157,
+  "gross": 2194.499999999998,
+  "net": 0,
+  "note": ""
+ },
+ {
+  "rooms": 100,
+  "edges": 400,
+  "median_ms": 3.0016,
+  "p95_ms": 4.7634,
+  "gross": 4388.999999999992,
+  "net": 0,
+  "note": ""
+ },
+ {
+  "rooms": 101,
+  "edges": 404,
+  "median_ms": 0.0142,
+  "p95_ms": 0.0151,
+  "gross": null,
+  "net": 0,
+  "note": "Too much geometry to trace here (404 edges, limit 400)"
+ }
+]

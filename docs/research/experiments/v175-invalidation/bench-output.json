@@ -1,0 +1,181 @@
+{
+ "env": {
+  "node": "v26.13.0",
+  "cpu": "AMD Ryzen 7 8845HS w/ Radeon 780M Graphics",
+  "cores": 16,
+  "platform": "win32 10.0.26200",
+  "date": "2026-11-08T22:09:48.177Z"
+ },
+ "model": {
+  "objects": 2000,
+  "json_bytes": 943284
+ },
+ "rev_compare_1e6": {
+  "median_ms": 0.6233,
+  "p95_ms": 0.6299,
+  "min_ms": 0.6178,
+  "runs": 41
+ },
+ "stringify_2000": {
+  "median_ms": 1.5159,
+  "p95_ms": 2.777,
+  "min_ms": 1.438,
+  "runs": 41
+ },
+ "fnv_over_json_2000": {
+  "median_ms": 0.9954,
+  "p95_ms": 2.4937,
+  "min_ms": 0.97,
+  "runs": 41
+ },
+ "stringify_plus_fnv_2000": {
+  "median_ms": 2.4599,
+  "p95_ms": 2.588,
+  "min_ms": 2.3787,
+  "runs": 41
+ },
+ "narrow_fingerprint_2000": {
+  "median_ms": 0.506,
+  "p95_ms": 0.6384,
+  "min_ms": 0.3575,
+  "runs": 41
+ },
+ "recompute_wall_area_sum_2000": {
+  "median_ms": 0.0435,
+  "p95_ms": 0.0717,
+  "min_ms": 0.029,
+  "runs": 41
+ },
+ "recompute_bimLevelAreas_2000": {
+  "median_ms": 0.14,
+  "p95_ms": 0.2976,
+  "min_ms": 0.1114,
+  "runs": 41
+ },
+ "bimLevelAreas_sample": {
+  "levelId": "lvl-0",
+  "level": "Level 0",
+  "gross": null,
+  "net": 0,
+  "efficiency": null,
+  "rooms": 0,
+  "occupants": null,
+  "rings": [],
+  "note": "Too much geometry to trace here (2000 edges, limit 400)"
+ },
+ "bimDispLen_50": {
+  "median_ms": 0.0092,
+  "p95_ms": 0.0312,
+  "min_ms": 0.0058,
+  "runs": 41
+ },
+ "bimDispNum_50": {
+  "median_ms": 0.0078,
+  "p95_ms": 0.0134,
+  "min_ms": 0.0053,
+  "runs": 41
+ },
+ "toFixed_50": {
+  "median_ms": 0.0043,
+  "p95_ms": 0.0053,
+  "min_ms": 0.0031,
+  "runs": 41
+ },
+ "Intl_cached_50": {
+  "median_ms": 0.0195,
+  "p95_ms": 0.0294,
+  "min_ms": 0.0174,
+  "runs": 41
+ },
+ "Intl_new_each_50": {
+  "median_ms": 0.6315,
+  "p95_ms": 0.666,
+  "min_ms": 0.6168,
+  "runs": 41
+ },
+ "token_subst_50": {
+  "median_ms": 0.0168,
+  "p95_ms": 0.0253,
+  "min_ms": 0.0157,
+  "runs": 41
+ },
+ "bimDispLen_200": {
+  "median_ms": 0.0228,
+  "p95_ms": 0.0284,
+  "min_ms": 0.0222,
+  "runs": 41
+ },
+ "bimDispNum_200": {
+  "median_ms": 0.0224,
+  "p95_ms": 0.0255,
+  "min_ms": 0.0218,
+  "runs": 41
+ },
+ "toFixed_200": {
+  "median_ms": 0.0136,
+  "p95_ms": 0.0146,
+  "min_ms": 0.0132,
+  "runs": 41
+ },
+ "Intl_cached_200": {
+  "median_ms": 0.0739,
+  "p95_ms": 0.0759,
+  "min_ms": 0.0711,
+  "runs": 41
+ },
+ "Intl_new_each_200": {
+  "median_ms": 2.4828,
+  "p95_ms": 2.5527,
+  "min_ms": 2.4274,
+  "runs": 41
+ },
+ "token_subst_200": {
+  "median_ms": 0.0612,
+  "p95_ms": 0.0776,
+  "min_ms": 0.0591,
+  "runs": 41
+ },
+ "board_html_80": {
+  "median_ms": 0.077,
+  "p95_ms": 0.1692,
+  "min_ms": 0.0494,
+  "runs": 41
+ },
+ "board_html_80_bytes": 23563,
+ "board_resolve_20_live_plus_html": {
+  "median_ms": 0.0989,
+  "p95_ms": 0.1352,
+  "min_ms": 0.092,
+  "runs": 41
+ },
+ "board_resolve_20_live_only": {
+  "median_ms": 0.0402,
+  "p95_ms": 0.0428,
+  "min_ms": 0.0308,
+  "runs": 41
+ },
+ "snapshot_bytes": {
+  "note": "bimSnapshotState().length, A3D.pres set to one board (the record bimPresValid would keep may differ; this is the raw size)",
+  "empty_model": {
+   "board_plain": 11232,
+   "board_20_bound": 12612,
+   "board_20_bound_with_cached_values": 14172,
+   "cache_delta": 1560,
+   "cache_delta_x50": 78000,
+   "bind_delta": 1380
+  },
+  "model_2000": {
+   "board_plain": 954514,
+   "board_20_bound": 955894,
+   "board_20_bound_with_cached_values": 957454,
+   "cache_delta_pct": 0.163
+  },
+  "snapshot_x50_model_2000_MB": 45.6
+ },
+ "snapshot_time_2000": {
+  "median_ms": 1.5459,
+  "p95_ms": 1.8769,
+  "min_ms": 1.4603,
+  "runs": 41
+ }
+}
