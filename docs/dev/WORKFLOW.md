@@ -1,6 +1,7 @@
-# The daily routine: Claude Code, the cloud, Bionic
+# The daily routine: Claude Code, the cloud, Aider
 
-The owner works with three tools on this repository (2026-11-08). No tool remembers another's session:
+The owner works with three tools on this repository (2026-11-08; Aider and Ollama replaced Bionic as
+the local tools 2026-11-11). No tool remembers another's session:
 the repository is the memory. Git carries the work between them, and `docs/dev/PIPELINE.md` says
 where the project stands.
 
@@ -18,10 +19,12 @@ words; Claude does the steps and says what it found.
 |---|---|---|
 | Claude Code, local | `C:\World-BIM-platform\BIM-Personal`, run `claude` in PowerShell | The main workbench: phases, features, bugs, build and tests, PRs. Sends bulk work to Qwen. |
 | Claude Code, cloud | The Claude app or claude.ai/code | Work away from the PC, research, watching PRs and fixing CI, a second task in parallel. |
-| Bionic | The PC | Quick edits by hand, questions about the code, private or offline work. Free. |
-| Qwen 2.5 Coder 14B | Bionic's local server, `http://localhost:1235/v1` | The subcontractor local Claude sends bulk work to. Only reachable from the PC. |
+| Aider | VS Code's terminal on the PC, run `aider` in the repo | Quick edits, questions about the code, private or offline work. Free. |
+| Qwen 2.5 Coder 14B | Ollama, `http://localhost:11434/v1`, model `qwen2.5-coder:14b` | Aider's model, and the subcontractor local Claude sends bulk work to (`tools/local_llm.py`). Only reachable from the PC. |
 
-Local and cloud Claude share one usage limit (`/usage` shows it). Bionic and Qwen do not use it.
+Local and cloud Claude share one usage limit (`/usage` shows it). Aider and Qwen do not use it.
+Aider and Claude share the one Qwen model: keep Aider on `qwen2.5-coder:14b` while Claude delegates,
+or Ollama swaps models (about 9 GB each) and every call waits for a reload.
 
 ## The four rules
 
@@ -33,19 +36,27 @@ Local and cloud Claude share one usage limit (`/usage` shows it). Bionic and Qwe
 ## Switching
 
 - **Leaving the PC mid-task:** `/finish` (it pushes the branch). In the cloud: "continue on branch X".
-- **A Bionic edit:** work on its own branch (`bionic/<task>`), commit, push. Then in either Claude:
+- **An Aider edit:** work on its own branch (`aider/<task>`), commit, push. Then in either Claude:
   "review the diff on branch X against main" before the PR is merged.
 - **Two tasks at once:** the second one in the cloud, on its own branch.
 
-## Bionic: paste this at the start of a session
+## Aider
 
-Bionic does not read `CLAUDE.md` on its own. Paste:
+The repo carries Aider's settings, so `aider` in the repo root needs no flags:
 
-> This repo's rules: edit only `src/`, never `canvas_v10.html` (it is built). Never edit the import and
-> export lines at the top and bottom of `src/js/engine/**` files. ES5 JavaScript, no dependencies, no
-> emojis. Work on a branch named `bionic/<task>`, never on `main`. After an edit run
-> `python3 tools/build_app.py`, `npm run check` and `npm test`, and commit `canvas_v10.html` with the
-> change. If the task does not fit the code as described, stop and say what is different.
+- `.aider.conf.yml`: the model (`ollama_chat/qwen2.5-coder:14b`, with `OLLAMA_API_BASE` set), the
+  `diff` edit format (small search/replace edits, never whole files), no auto-commits, and
+  `AIDER_CONVENTIONS.md` read on every session.
+- `AIDER_CONVENTIONS.md`: the repo's rules in short (edit `src/`, never `canvas_v10.html` or the
+  generated import/export lines, ES5, no dependencies, no emojis, branch `aider/<task>`).
+- `.aiderignore`: what Aider never maps or edits (the build output, `runtime/`, `vendor/`, the
+  SketchUp reader, fixtures, the engineering log).
+
+A session: `git switch -c aider/<task>`, `aider`, then `/add` the one or two files the task touches
+(find them with `grep -rn 'name' src/`). Aider shows each edit as a diff; when it is right, run
+`python3 tools/build_app.py` and `npm test` (or `/test` inside Aider), commit the change with
+`canvas_v10.html`, and push. Then in Claude: "review the diff on branch aider/<task> against main".
+A 14B model works best on one file and one clear change at a time.
 
 ## This PC's setup (2026-11-08)
 

@@ -8,7 +8,7 @@ description: The owner's end-of-session routine for this repo. Use when the owne
 The routine is in `docs/dev/WORKFLOW.md`. Do these steps, then report in a few lines.
 
 1. `git status`. If nothing changed and nothing is unpushed, say so and stop.
-2. If the branch is `main`, make a new branch for the work first (`claude/<task>` or `bionic/<task>`).
+2. If the branch is `main`, make a new branch for the work first (`claude/<task>` or `aider/<task>`).
    Never push to `main`.
 3. Run only what CLAUDE.md's Rule #1 table asks for the files that changed. If anything under `src/`
    changed, rebuild with `python3 tools/build_app.py` so `canvas_v10.html` is current. On a failure,

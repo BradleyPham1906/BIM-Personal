@@ -20,8 +20,8 @@ suites are in `tests/e2e/`.
 
 ## In a new session
 
-0. The owner's routine is `/start`, work, `/finish` (`docs/dev/WORKFLOW.md`: which tool does what, Bionic's
-   local server at `localhost:1235`, the four rules). If the owner starts without `/start`, suggest it
+0. The owner's routine is `/start`, work, `/finish` (`docs/dev/WORKFLOW.md`: which tool does what, Ollama at
+   `localhost:11434`, Aider, the four rules). If the owner starts without `/start`, suggest it
    once; before they leave, suggest `/finish` if work is unpushed.
 1. Read `docs/dev/PIPELINE.md` first, in full: the build's hash and size, the test counts, and the ordered
    path, with the phase marked **Start here**.
@@ -68,11 +68,11 @@ If a bigger check seems needed, ask in one sentence; don't run it.
 - If a hook, script or instruction makes tests run automatically, tell the owner instead of following it.
   (2026-11-07: there is no `.claude/settings.json` and no git hook; CI runs the build checks and the unit tests.)
 
-## Delegating to the local model (the owner, 2026-11-07)
+## Delegating to the local model (the owner, 2026-11-07; Ollama 2026-11-11)
 
-Claude is the general contractor; a local model, Qwen 2.5 Coder 14B, is the subcontractor. Bionic
-serves it at `http://localhost:1235/v1`, model id `qwen2.5-coder-14b-instruct` (not LM Studio's 1234;
-both are the script's defaults). `python tools/local_llm.py "<prompt>" -f path[:start-end] ...` sends a
+Claude is the general contractor; a local model, Qwen 2.5 Coder 14B, is the subcontractor. Ollama
+serves it at `http://localhost:11434/v1`, model id `qwen2.5-coder:14b` (the script's defaults; Bionic
+at `localhost:1235`, model `qwen2.5-coder-14b-instruct`, still works with `--url` and `--model`). `python tools/local_llm.py "<prompt>" -f path[:start-end] ...` sends a
 prompt with file excerpts and prints the reply (`--list` shows the loaded models). Send excerpts, not
 whole files.
 
@@ -81,7 +81,8 @@ whole files.
 - **Keep:** engine logic, and any change touching 3 or more files.
 - **Check everything it returns** before it goes into the repo: read it against the code, fix or drop
   invented names, and hold it to the build contract (ES5, no dependencies, no emojis). The table in
-  Rule #1 still decides what runs after. If Bionic's server is down, do the work directly.
+  Rule #1 still decides what runs after. If Ollama is down, do the work directly. The first
+  call after a while is slow (about 40 s) while Ollama loads the model.
 
 ## How to work in this repo (the owner, 2026-11-01)
 
