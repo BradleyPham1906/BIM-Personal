@@ -85,6 +85,17 @@ whole files.
   Rule #1 still decides what runs after. If Ollama is down, do the work directly. The first
   call after a while is slow (about 40 s) while Ollama loads the model.
 
+## Work orders: Claude designs, Aider types (the owner, 2026-11-11)
+
+From V175 on, after a phase's research and the owner's decisions, Claude does not build the whole
+phase. It writes `docs/work-orders/vNNN/SPEC.md` (a detailed spec and roadmap), builds the hard parts
+in full and a skeleton of the routine functions (each body `throw new Error('WO-NN: not built');`),
+writes a unit test for every routine function, and lists them in `TASKS.md` as `[Aider]` work
+orders. The owner fills them in with Aider for free; Claude reviews and finishes (the review-aider
+skill), and the PR merges only when no `WO-` stub is left and every test passes.
+`docs/work-orders/README.md` has the steps, the templates and the rules for writing a work order a
+14B model can do. The stubs are the one exception to "no placeholders": they never reach `main`.
+
 ## How to work in this repo (the owner, 2026-11-01)
 
 - Read the module map below first. Open only the files the task touches; find code with

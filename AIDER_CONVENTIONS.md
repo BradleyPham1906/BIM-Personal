@@ -13,3 +13,14 @@ Read by Aider on every session (`.aider.conf.yml`). The full rules are in `CLAUD
 - Leave edits uncommitted. Claude reviews them at its next session, rebuilds `canvas_v10.html`,
   runs the checks, commits on an `aider/<task>` branch and opens the pull request.
 - If the task does not fit the code as described, stop and say what is different.
+
+## Work orders (`docs/work-orders/vNNN/TASKS.md`)
+
+When asked to "do the next task":
+1. Take the first task marked `[ ]` and `[Aider]`. Do only that one.
+2. `/add` the one file it names. Replace only the `throw new Error('WO-NN: not built');` line in the
+   function it names. Use only the names the task lists.
+3. Run the tests (`/test`). If the task's cases pass and nothing else broke, change its `[ ]` to `[x]`
+   in TASKS.md.
+4. If they fail, fix once more. If they still fail, or if told "skip it", put back the `throw` line,
+   change `[ ]` to `[skipped]`, and stop. Claude will do it.

@@ -63,6 +63,18 @@ opens a PR, and asks the owner one question: "Merge it?". A forgotten review is 
 notice repeats every session until the work is merged. A 14B model works best on one file and one
 clear change at a time.
 
+## Building a phase with work orders
+
+From V175 on, Claude writes the spec, the hard code, the tests and a list of small tasks; Aider
+fills in the tasks for free; Claude reviews and finishes. In VS Code, on the phase's branch:
+
+    aider
+    /read docs/work-orders/v175/SPEC.md docs/work-orders/v175/TASKS.md
+    do the next unticked [Aider] task
+
+Repeat "do the next task" until none is left; say "skip it" when one fails twice. Steps and rules:
+`docs/work-orders/README.md`.
+
 ## This PC's setup (2026-11-08)
 
 Git 2.56, Node 26, Python 3.13 (with a `python3.exe` copy beside `python.exe`), TypeScript 5.9.3

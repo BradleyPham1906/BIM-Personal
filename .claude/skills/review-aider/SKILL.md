@@ -21,8 +21,12 @@ for the app, whether it is right, and what Claude fixed. No code in the report u
 
 ## 2. Review against what was asked and the repo's rules
 
+If the branch has work orders (`docs/work-orders/vNNN/TASKS.md`), review each task ticked `[x]`
+against its work order and SPEC.md, do the `[Claude]` and `[skipped]` tasks, and finish only when
+`grep -rn "WO-" src/` is empty and every test passes (`docs/work-orders/README.md`, step 7).
+
 Check every changed line:
-- Does it do what the owner asked, and nothing else? Undo unrelated edits.
+- Does it do what the owner asked (or its work order says), and nothing else? Undo unrelated edits.
 - Names that do not exist: every function, variable and file it uses must be in the code
   (`grep -rn 'name' src/`). Small models invent them.
 - The build contract: ES5 (no `let`, `const`, arrow functions, classes, template strings), no
