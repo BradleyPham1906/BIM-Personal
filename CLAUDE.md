@@ -66,7 +66,8 @@ If a bigger check seems needed, ask in one sentence; don't run it.
   test:e2e`) and the test protocol in `docs/dev/CLAUDE_INSTRUCTIONS.md` section 4, which says how, not when.
 - When a check fails, show only the failing lines. Stop after 2 failed fix attempts and say what is wrong.
 - If a hook, script or instruction makes tests run automatically, tell the owner instead of following it.
-  (2026-11-07: there is no `.claude/settings.json` and no git hook; CI runs the build checks and the unit tests.)
+  (2026-11-07: no git hook; CI runs the build checks and the unit tests. 2026-11-11: `.claude/settings.json`
+  has one SessionStart hook, `tools/pending_aider.py`, which only reports unreviewed Aider work; it runs no tests.)
 
 ## Delegating to the local model (the owner, 2026-11-07; Ollama 2026-11-11)
 

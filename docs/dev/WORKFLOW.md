@@ -36,7 +36,7 @@ or Ollama swaps models (about 9 GB each) and every call waits for a reload.
 ## Switching
 
 - **Leaving the PC mid-task:** `/finish` (it pushes the branch). In the cloud: "continue on branch X".
-- **An Aider edit:** work on its own branch (`aider/<task>`), commit, push. Then in either Claude:
+- **An Aider edit:** just make it and close Aider; the next Claude session reviews it (see "Aider" below). Then in either Claude:
   "review the diff on branch X against main" before the PR is merged.
 - **Two tasks at once:** the second one in the cloud, on its own branch.
 
@@ -52,11 +52,16 @@ The repo carries Aider's settings, so `aider` in the repo root needs no flags:
 - `.aiderignore`: what Aider never maps or edits (the build output, `runtime/`, `vendor/`, the
   SketchUp reader, fixtures, the engineering log).
 
-A session: `git switch -c aider/<task>`, `aider`, then `/add` the one or two files the task touches
-(find them with `grep -rn 'name' src/`). Aider shows each edit as a diff; when it is right, run
-`python3 tools/build_app.py` and `npm test` (or `/test` inside Aider), commit the change with
-`canvas_v10.html`, and push. Then in Claude: "review the diff on branch aider/<task> against main".
-A 14B model works best on one file and one clear change at a time.
+A session: `aider`, `/add` the one or two files the task touches (or ask Aider which ones), and ask
+for the change. Then close Aider. Nothing else: no branch, no build, no commit.
+
+The review is automatic. When a Claude session opens, a hook (`.claude/settings.json` runs
+`tools/pending_aider.py`) finds uncommitted changes and unmerged `aider/*` branches, with what was
+asked of Aider (`.aider.chat.history.md`), and Claude runs the review-aider skill before anything
+else: it moves the work to an `aider/<task>` branch, reviews and fixes it, rebuilds, runs the checks,
+opens a PR, and asks the owner one question: "Merge it?". A forgotten review is impossible: the
+notice repeats every session until the work is merged. A 14B model works best on one file and one
+clear change at a time.
 
 ## This PC's setup (2026-11-08)
 

@@ -10,7 +10,6 @@ Read by Aider on every session (`.aider.conf.yml`). The full rules are in `CLAUD
   strings. No dependencies. No emojis. No placeholders or TODO stubs.
 - Make small, targeted edits. Never rewrite a whole file. Keep files under about 400 lines.
 - Use only functions and files that exist in the code you were shown. If something is unknown, say so.
-- Work on a branch named `aider/<task>`, never on `main`.
-- After an edit, the owner runs `python3 tools/build_app.py` and `npm test`, and commits
-  `canvas_v10.html` with the change.
+- Leave edits uncommitted. Claude reviews them at its next session, rebuilds `canvas_v10.html`,
+  runs the checks, commits on an `aider/<task>` branch and opens the pull request.
 - If the task does not fit the code as described, stop and say what is different.
