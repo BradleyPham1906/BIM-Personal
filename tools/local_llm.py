@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """Send a prompt, with file excerpts, to the local model and print its reply.
 
-No dependencies: the standard library only. Bionic serves Qwen 2.5 Coder 14B on an
-OpenAI-style API at http://localhost:1235/v1 (the default; LM Studio's own port is 1234,
-override with --url or $LOCAL_LLM_URL). The reply is a draft: Claude checks it before
+No dependencies: the standard library only. Ollama serves Qwen 2.5 Coder 14B on an
+OpenAI-style API at http://localhost:11434/v1, model qwen2.5-coder:14b (the defaults; for Bionic
+use --url http://localhost:1235/v1 --model qwen2.5-coder-14b-instruct, or set $LOCAL_LLM_URL and
+$LOCAL_LLM_MODEL). The reply is a draft: Claude checks it before
 anything goes into the repository (CLAUDE.md, "Delegating to the local model").
 
     python tools/local_llm.py "Write a node:test scaffold for these functions" -f src/js/engine/survey/survey.js:1-80
@@ -20,8 +21,8 @@ import sys
 import urllib.error
 import urllib.request
 
-DEFAULT_URL = os.environ.get("LOCAL_LLM_URL", "http://localhost:1235/v1")
-DEFAULT_MODEL = os.environ.get("LOCAL_LLM_MODEL", "qwen2.5-coder-14b-instruct")
+DEFAULT_URL = os.environ.get("LOCAL_LLM_URL", "http://localhost:11434/v1")
+DEFAULT_MODEL = os.environ.get("LOCAL_LLM_MODEL", "qwen2.5-coder:14b")
 DEFAULT_SYSTEM = (
     "You are a careful coding assistant for a zero-dependency browser CAD/BIM app. "
     "Answer only what is asked. Keep code ES5 unless told otherwise. "
@@ -101,7 +102,7 @@ def main():
         print("local_llm: HTTP %d from %s: %s" % (e.code, base, e.read().decode("utf-8", "replace")[:500]),
               file=sys.stderr)
     except urllib.error.URLError as e:
-        print("local_llm: cannot reach %s (%s); is Bionic's server running?" % (base, e.reason), file=sys.stderr)
+        print("local_llm: cannot reach %s (%s); is Ollama running (ollama serve)?" % (base, e.reason), file=sys.stderr)
     except (OSError, ValueError, KeyError) as e:
         print("local_llm: %s" % e, file=sys.stderr)
     return 1

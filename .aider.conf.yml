@@ -1,0 +1,26 @@
+# Aider's settings for this repository (docs/dev/WORKFLOW.md, "Aider").
+# Aider reads this file from the repo root; a home-dir .aider.conf.yml is read first and overridden here.
+
+model: ollama_chat/qwen2.5-coder:14b
+set-env:
+  - OLLAMA_API_BASE=http://127.0.0.1:11434
+
+# Search/replace blocks, never whole-file rewrites (CLAUDE.md: small targeted edits).
+edit-format: diff
+
+# The repo's rules, read on every session so nobody has to paste them.
+read:
+  - AIDER_CONVENTIONS.md
+
+# The owner reviews and commits; canvas_v10.html must be rebuilt and committed with each change.
+auto-commits: false
+dirty-commits: false
+
+# .aider* is already in .gitignore; the local model has no published metadata.
+gitignore: false
+show-model-warnings: false
+check-update: false
+analytics-disable: true
+
+map-tokens: 1024
+test-cmd: npm test

@@ -12,3 +12,7 @@ venv/
 
 # V163: the openskp build tool's packages
 tools/openskp/node_modules/
+.aider*
+!.aider.conf.yml
+!.aiderignore
+!AIDER_CONVENTIONS.md

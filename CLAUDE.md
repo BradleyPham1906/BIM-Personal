@@ -20,8 +20,8 @@ suites are in `tests/e2e/`.
 
 ## In a new session
 
-0. The owner's routine is `/start`, work, `/finish` (`docs/dev/WORKFLOW.md`: which tool does what, Bionic's
-   local server at `localhost:1235`, the four rules). If the owner starts without `/start`, suggest it
+0. The owner's routine is `/start`, work, `/finish` (`docs/dev/WORKFLOW.md`: which tool does what, Ollama at
+   `localhost:11434`, Aider, the four rules). If the owner starts without `/start`, suggest it
    once; before they leave, suggest `/finish` if work is unpushed.
 1. Read `docs/dev/PIPELINE.md` first, in full: the build's hash and size, the test counts, and the ordered
    path, with the phase marked **Start here**.
@@ -66,13 +66,14 @@ If a bigger check seems needed, ask in one sentence; don't run it.
   test:e2e`) and the test protocol in `docs/dev/CLAUDE_INSTRUCTIONS.md` section 4, which says how, not when.
 - When a check fails, show only the failing lines. Stop after 2 failed fix attempts and say what is wrong.
 - If a hook, script or instruction makes tests run automatically, tell the owner instead of following it.
-  (2026-11-07: there is no `.claude/settings.json` and no git hook; CI runs the build checks and the unit tests.)
+  (2026-11-07: no git hook; CI runs the build checks and the unit tests. 2026-11-11: `.claude/settings.json`
+  has one SessionStart hook, `tools/pending_aider.py`, which only reports unreviewed Aider work; it runs no tests.)
 
-## Delegating to the local model (the owner, 2026-11-07)
+## Delegating to the local model (the owner, 2026-11-07; Ollama 2026-11-11)
 
-Claude is the general contractor; a local model, Qwen 2.5 Coder 14B, is the subcontractor. Bionic
-serves it at `http://localhost:1235/v1`, model id `qwen2.5-coder-14b-instruct` (not LM Studio's 1234;
-both are the script's defaults). `python tools/local_llm.py "<prompt>" -f path[:start-end] ...` sends a
+Claude is the general contractor; a local model, Qwen 2.5 Coder 14B, is the subcontractor. Ollama
+serves it at `http://localhost:11434/v1`, model id `qwen2.5-coder:14b` (the script's defaults; Bionic
+at `localhost:1235`, model `qwen2.5-coder-14b-instruct`, still works with `--url` and `--model`). `python tools/local_llm.py "<prompt>" -f path[:start-end] ...` sends a
 prompt with file excerpts and prints the reply (`--list` shows the loaded models). Send excerpts, not
 whole files.
 
@@ -81,7 +82,19 @@ whole files.
 - **Keep:** engine logic, and any change touching 3 or more files.
 - **Check everything it returns** before it goes into the repo: read it against the code, fix or drop
   invented names, and hold it to the build contract (ES5, no dependencies, no emojis). The table in
-  Rule #1 still decides what runs after. If Bionic's server is down, do the work directly.
+  Rule #1 still decides what runs after. If Ollama is down, do the work directly. The first
+  call after a while is slow (about 40 s) while Ollama loads the model.
+
+## Work orders: Claude designs, Aider types (the owner, 2026-11-11)
+
+From V175 on, after a phase's research and the owner's decisions, Claude does not build the whole
+phase. It writes `docs/work-orders/vNNN/SPEC.md` (a detailed spec and roadmap), builds the hard parts
+in full and a skeleton of the routine functions (each body `throw new Error('WO-NN: not built');`),
+writes a unit test for every routine function, and lists them in `TASKS.md` as `[Aider]` work
+orders. The owner fills them in with Aider for free; Claude reviews and finishes (the review-aider
+skill), and the PR merges only when no `WO-` stub is left and every test passes.
+`docs/work-orders/README.md` has the steps, the templates and the rules for writing a work order a
+14B model can do. The stubs are the one exception to "no placeholders": they never reach `main`.
 
 ## How to work in this repo (the owner, 2026-11-01)
 

@@ -1,0 +1,9 @@
+# Files Aider never adds or maps (build outputs, third-party code, large logs and data).
+canvas_v10.html
+runtime/
+vendor/
+src/js/vendor/
+tests/fixtures/
+docs/dev/canvas_v10_STATUS.md
+docs/*.html
+node_modules/
