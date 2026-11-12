@@ -108,11 +108,12 @@ import { faceNormal } from '../core/mesh-primitives.js';
         tri.push(a[0],a[1],a[2], b[0],b[1],b[2], c[0],c[1],c[2]);
         nrm.push(n[0],n[1],n[2], n[0],n[1],n[2], n[0],n[1],n[2]);
       }
-      for(j=0;j<fc.length;j++){
+      if(!m.fe)for(j=0;j<fc.length;j++){
         var p1=m.v[fc[j]],p2=m.v[fc[(j+1)%fc.length]];
         edge.push(p1[0],p1[1],p1[2], p2[0],p2[1],p2[2]);
       }
     }
+    if(m.fe)for(i=0;i<m.fe.length;i++){var e1=m.v[m.fe[i][0]],e2=m.v[m.fe[i][1]];if(e1&&e2)edge.push(e1[0],e1[1],e1[2],e2[0],e2[1],e2[2]);}   /* __acad3dV195 */
     function mk(arr){
       var b=gl.createBuffer();
       gl.bindBuffer(gl.ARRAY_BUFFER,b);

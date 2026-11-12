@@ -117,10 +117,24 @@
   },
   {
    "path": "three/0.186.1/bim-three.min.js",
-   "bytes": 743351,
-   "sha256": "afca76a322f2c7ff35ac76bb0d390a78a1e73c201b353e8456a3a83d5ce88a9d",
+   "bytes": 859434,
+   "sha256": "9e532116d159e3c1295f0e268a546ab9a4ff1dcd093ebdc8a86e8b088359a391",
    "from": "npm three@0.186.1 (the tarball sha512-blFeqb49wRCSGUGj7gtpfnSGHy2lwDk94RhUmS1c/hTby70kvChbWpkJ4Pm1390LqzzvTmzgXKHPEafJwCb8jA==), bundled unchanged by esbuild 0.28.2: tools/three/build_three.mjs",
    "licence": "MIT (three.js)"
+  },
+  {
+   "path": "three/0.186.1/draco/draco_decoder.wasm",
+   "bytes": 192420,
+   "sha256": "a680d927bed9cb864ddbd63521868891af2bfbe755092761b4837487618df8ac",
+   "from": "npm three@0.186.1, examples/jsm/libs/draco/gltf/draco_decoder.wasm",
+   "licence": "Apache-2.0 (Draco, github.com/google/draco)"
+  },
+  {
+   "path": "three/0.186.1/draco/draco_wasm_wrapper.js",
+   "bytes": 58456,
+   "sha256": "8bb2952d2ba7d67e1414f8df819410cb0434a666be53f671fff75f68843d76f6",
+   "from": "npm three@0.186.1, examples/jsm/libs/draco/gltf/draco_wasm_wrapper.js",
+   "licence": "Apache-2.0 (Draco, github.com/google/draco)"
   }
  ],
  "three": "0.186.1"

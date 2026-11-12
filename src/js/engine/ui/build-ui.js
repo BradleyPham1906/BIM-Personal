@@ -144,7 +144,7 @@ import { size } from './canvas-size.js';
     '<div class="a3d-tb">'+
       '<button class="a3d-btn a3d-drawerbtn" data-a3d="drawer" title="Show panel">\u2630</button>'+
       '<button class="a3d-btn a3d-rdrawerbtn" data-a3d="rdrawer" title="Show properties">Props</button>'+
-      '<input type="file" id="a3d-filein" accept=".dxf,.ifc,.obj,.stl,.skp,.json,.geojson,.kml,.cityjson,.xml,.landxml" style="display:none">'+
+      '<input type="file" id="a3d-filein" accept=".dxf,.ifc,.obj,.stl,.glb,.gltf,.skp,.json,.geojson,.kml,.cityjson,.xml,.landxml" style="display:none">'+
       '<input type="file" id="a3d-projin" accept=".json,.gz,application/json,application/gzip" style="display:none">'+   /* __acad3dV115 */
       '<span class="a3d-hud">View: <b id="a3d-view">Home</b><span id="a3d-count">0 objects</span></span>'+
       '<span class="a3d-uiwrap">'+

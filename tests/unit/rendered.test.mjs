@@ -223,7 +223,7 @@ test('every three.js name the picture uses is in the pinned file', () => {
   const src = fs.readFileSync(path.join(ROOT, 'src', 'js', 'engine', 'render', 'rendered-core.js'), 'utf8');
   const names = [...new Set([...src.matchAll(/\bT\.([A-Z][A-Za-z0-9]+)/g)].map((m) => m[1]))];
   assert.ok(names.length > 20, 'the names were found: ' + names.length);
-  const ctx = { console, performance, setTimeout, clearTimeout };
+  const ctx = { console, performance, setTimeout, clearTimeout, URL, TextDecoder, TextEncoder };
   ctx.self = ctx; ctx.window = ctx; ctx.globalThis = ctx;
   vm.createContext(ctx);
   vm.runInContext(fs.readFileSync(path.join(ROOT, 'runtime', E.BIM_RV_FILE), 'utf8'), ctx);

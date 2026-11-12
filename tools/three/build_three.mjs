@@ -27,15 +27,24 @@ if (!fs.existsSync(path.join(mod, 'three'))) { console.error('Run npm ci --ignor
 if (pkg('three').version !== WANT) { console.error('three is ' + pkg('three').version + ', expected ' + WANT); process.exit(2); }
 
 const r = await esbuild.build({
-  stdin: { contents: "export * from 'three';\n", resolveDir: here, loader: 'js' },
+  // V195: three.js's own glTF addons in the same bundle, so they share its one copy of three
+  stdin: { contents: "export * from 'three';\n" +
+    "export { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';\n" +
+    "export { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';\n" +
+    "export { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';\n" +
+    "export { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';\n", resolveDir: here, loader: 'js' },
   bundle: true, format: 'iife', globalName: 'BIMTHREE', target: 'es2020', platform: 'browser',
-  minify: true, legalComments: 'none', charset: 'ascii', write: false, logLevel: 'warning'
+  minify: true, legalComments: 'none', charset: 'ascii', write: false, logLevel: 'warning',
+  // DRACOLoader works out its default decoder addresses from import.meta.url when it loads; a classic script has
+  // none, so it is given a fixed base that is never fetched (the app always sets the decoder's path)
+  define: { 'import.meta.url': '"https://bim-three.invalid/examples/jsm/loaders/DRACOLoader.js"' }
 });
 const licence = read(path.join(mod, 'three', 'LICENSE'));
 const owner = /^Copyright .*$/m.exec(licence);
 if (!owner) { console.error('no copyright line in three/LICENSE'); process.exit(1); }
 const banner =
-  '/* __acad3dV194: three.js ' + WANT + ' (github.com/mrdoob/three.js, MIT, ' + owner[0].trim() + '), every file\n' +
+  '/* __acad3dV194, __acad3dV195: three.js ' + WANT + ' (github.com/mrdoob/three.js, MIT, ' + owner[0].trim() + '), with its\n' +
+  '   GLTFLoader, GLTFExporter, DRACOLoader and meshopt decoder (MIT, Copyright (c) 2016-2024 Arseny Kapoulkine), every file\n' +
   '   unchanged, as published on npm, bundled into one classic script by esbuild ' + pkg('esbuild').version +
   ' (tools/three/build_three.mjs).\n   Its only global is BIMTHREE. The licence is beside this file. */\n';
 const text = banner + r.outputFiles[0].text;
@@ -53,6 +62,10 @@ if (process.argv.includes('--check')) {
 fs.mkdirSync(dir, { recursive: true });
 fs.writeFileSync(out, text);
 fs.writeFileSync(path.join(dir, 'LICENSE'), licence);
+// V195: Draco's glTF decoder (Apache-2.0, github.com/google/draco) as three.js ships it; DRACOLoader fetches it
+const DRACO = ['draco_decoder.wasm', 'draco_wasm_wrapper.js'];
+fs.mkdirSync(path.join(dir, 'draco'), { recursive: true });
+DRACO.forEach((f) => fs.copyFileSync(path.join(mod, 'three', 'examples', 'jsm', 'libs', 'draco', 'gltf', f), path.join(dir, 'draco', f)));
 
 // the manifest's entries for the two files, replaced in place
 const manPath = path.join(root, 'runtime', 'MANIFEST.json');
@@ -67,7 +80,8 @@ const mine = [
   entry('three/' + WANT + '/LICENSE', 'npm three@' + WANT + ', LICENSE (the tarball ' + integrity + ')'),
   entry('three/' + WANT + '/bim-three.min.js', 'npm three@' + WANT + ' (the tarball ' + integrity + '), bundled unchanged by esbuild ' +
     pkg('esbuild').version + ': tools/three/build_three.mjs')
-];
+].concat(DRACO.map((f) => Object.assign(entry('three/' + WANT + '/draco/' + f, 'npm three@' + WANT + ', examples/jsm/libs/draco/gltf/' + f),
+  { licence: 'Apache-2.0 (Draco, github.com/google/draco)' })));
 man.three = WANT;
 man.files = man.files.filter((f) => !/^three\//.test(f.path)).concat(mine);
 fs.writeFileSync(manPath, JSON.stringify(man, null, 1) + '\n');
