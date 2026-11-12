@@ -19,7 +19,13 @@
   }
   /* the fields in a string, in order: [{i: where it starts, n: its length, key, dp: its decimals or null}] */
   function bimLvTokens(s){
-    throw new Error('WO-01: not built');
+    var r = [], re, m;
+    if(typeof s !== 'string')return r;
+    re = /\{\{\s*([A-Za-z][A-Za-z0-9_.]{0,39})\s*(?:\|\s*([0-6])\s*)?\}\}/g;
+    while((m = re.exec(s))){
+      r.push({i: m.index, n: m[0].length, key: m[1], dp: m[2] === undefined ? null : +m[2]});
+    }
+    return r;
   }
   /* a number as text with its thousands grouped: '12345.6' gives '12,345.6' */
   function bimLvGroup(s){
