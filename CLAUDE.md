@@ -14,7 +14,7 @@ suites are in `tests/e2e/`.
     docs/            the user guide (built *.html, its src/ and data/), published on Pages
     docs/dev/        PIPELINE.md, CLAUDE_INSTRUCTIONS.md, the engineering log canvas_v10_STATUS.md
     docs/research/   each phase's research note, plans, experiments
-    runtime/         Pyodide and Ladybug's wheels, pinned (V172b)
+    runtime/         Pyodide and Ladybug's wheels (V172b), three.js (V194), pinned
     vendor/          third-party sources the vendored builds come from
     canvas_v10.html  the build output (committed: Pages and offline use)
 
@@ -131,7 +131,7 @@ the <!-- @include --> lines of src/index.html. -->
     src/js/vendor/openskp.js            SketchUp reader (third-party, never edited by hand)
     src/js/engine/_begin.js, _end.js    open and close the engine's one closure
     src/js/engine/core/                 state, IndexedDB store, storage/theme, mesh primitives, save
-    src/js/engine/render/               WebGL/WebGPU, GPU batches and picking, view cube
+    src/js/engine/render/               WebGL/WebGPU, GPU batches and picking, view cube, the rendered view (three.js)
     src/js/engine/drawing/              drawing tools: lines, arcs, curves, construction lines, endings
     src/js/engine/editing/              selection, push/pull, offset/align/trim, precision, modify toolbox
     src/js/engine/gizmo/                transform gizmo and its handles
@@ -172,13 +172,15 @@ browser suites, Pages and offline use read it.
     src/css/                  the stylesheet, 13 files: shell/, panels/, workspace/, sheets/, site-analysis/
     src/js/shell/shell.js     the top bar, the command palette, the project tabs, the boot
     src/js/vendor/openskp.js  the SketchUp reader (third-party, bundled; never edited by hand)
-    src/js/engine/            the BIM engine, 220 ES modules in 28 folders (the module map above);
+    src/js/engine/            the BIM engine, 223 ES modules in 28 folders (the module map above);
                               _begin.js and _end.js open and close the function the build joins them into
     src/py/bim_ladybug.py     the app's adapter to Ladybug's Python (ours): tools/embed_py.py writes it
                               into js/engine/ladybug/adapter-py.js
     runtime/                  Pyodide 0.29.5 and Ladybug's four wheels, committed and pinned by size and
                               SHA-256 in MANIFEST.json (tools/check_runtime.py): V172b's one written
-                              exception to "no dependencies", loaded only when a Ladybug analysis runs
+                              exception to "no dependencies", loaded only when a Ladybug analysis runs;
+                              and three.js 0.186.1 as one classic script (tools/three builds it), the
+                              second (V194, the owner, 2026-11-11), loaded only when the rendered view is asked for
 
 - **Each engine file is an ES module.** It starts with `import { ... } from '../folder/file.js';` for
   every name it uses from another file and ends with `export { ... };` for every name other files use.

@@ -6,6 +6,7 @@ import { refreshProps } from '../site-analysis/panel.js';
 import { bimAwBg, bimAwClear, bimAwCtxCol, bimAwLook } from '../site-analysis/analysis-workspace.js';
 import { A3D_GL, BIM_EDGE_PULL, bimGlInit, bimGlProjMatrix, bimGlViewMatrix, bimHexToRgb } from './webgl.js';
 import { A3D_SCENE, bimSceneCull, bimSceneDirty, bimSceneFrameDone, bimSceneSync } from './gpu-batches.js';
+import { A3D_RV, bimRvLabel, bimRvRender } from './rendered-view.js';
 import {
   A3D_MAP, BIM_MAP_STYLES, bimMapEvict, bimMapOrigin, bimMapPlan, bimMapRecord, bimMapSource,
   bimMapTileCorners
@@ -387,6 +388,14 @@ import { cvH, cvScale, cvW } from '../ui/canvas-size.js';
   /* the frame: WebGPU where it is ready and draws everything in view, else WebGL */
   function bimRender3D(V,W,H){
     var gc=document.getElementById('a3d-gpucanvas'),lc=document.getElementById('a3d-glcanvas'),why='';
+    /* __acad3dV194: the rendered view, when it is on and ready; whatever it cannot draw falls to the engines below */
+    var rc=bimRvRender(V,W,H)?A3D_RV.cv:null;
+    if(A3D_RV.cv)A3D_RV.cv.style.visibility=rc?'visible':'hidden';
+    if(rc){
+      if(gc)gc.style.visibility='hidden';if(lc)lc.style.visibility='hidden';
+      A3D_GPU.engine='rendered';A3D_GPU.fallback='';
+      return true;
+    }
     if(A3D_GPU.state==='off')bimGpuStart();
     if(A3D_GPU.state==='ready'&&bimGpuPref()!=='webgl'&&!A3D_GPU.forceOff){
       why=bimGpuNeedsGl(V,W,H);
@@ -415,6 +424,7 @@ import { cvH, cvScale, cvW } from '../ui/canvas-size.js';
   function bimRenderBench(frames){
     var c=A3D.cam,y0=c.yaw,W=cvW(),H=cvH(),px=new Uint8Array(4),sum=0,mx=0,first=0,i=0,n=frames||20;
     if(!bimGlInit()&&A3D_GPU.state!=='ready')return Promise.resolve(null);
+    var rvHold=A3D_RV.hold;A3D_RV.hold=true;   /* __acad3dV194: the two engines are what is timed, never the rendered view */
     function one(){
       c.yaw=y0+i*0.01;
       var t0=performance.now();
@@ -428,7 +438,7 @@ import { cvH, cvScale, cvW } from '../ui/canvas-size.js';
       });
     }
     return one().then(function(){
-      c.yaw=y0;
+      c.yaw=y0;A3D_RV.hold=rvHold;
       return {first:first,avg:sum/Math.max(1,n-1),max:mx,engine:A3D_GPU.engine,stats:A3D.glStats?JSON.parse(JSON.stringify(A3D.glStats)):null};
     });
   }
@@ -478,6 +488,7 @@ import { cvH, cvScale, cvW } from '../ui/canvas-size.js';
   /* GRAPHICS: which engine draws, and the choice of WebGL for this browser */
   function bimGraphicsLabel(){
     var P=A3D_GPU;
+    if(P.engine==='rendered')return bimRvLabel();   /* __acad3dV194 */
     if(P.engine==='webgpu')return 'WebGPU';
     if(P.engine==='2d')return 'Drawn in 2D (no WebGL)';
     if(bimGpuPref()==='webgl')return 'WebGL (chosen)';

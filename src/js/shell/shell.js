@@ -64,6 +64,7 @@
     ['BRANCH',['NEWBRANCH','DESIGNOPTION','OPTION'],'branch','Start a design option: a branch of the history, switched to and compared with the others'],   /* __acad3dV151 */
     ['BENCHMARK',['BENCH','FRAMETIME','SPEEDTEST'],'benchmark','Time this device drawing 5,000 and 20,000 elements, with WebGPU and with WebGL; the model is put back as it was'],   /* __acad3dV155 */
     ['GRAPHICS',['RENDERER','WEBGPU','WEBGL'],'graphics','Draw 3D with WebGPU where the browser has it, or always with WebGL in this browser'],   /* __acad3dV153 */
+    ['RENDER',['RENDERED','REALISTIC','VISUALSTYLE','DAYLIGHT'],'render','The model rendered in daylight: materials, the sun and the sky, soft shadows; again for the shaded view'],   /* __acad3dV194 */
     ['MERGE',['MERGEBRANCH'],'merge','Merge another branch into this one, element by element, with conflicts shown side by side'],
     ['COMPAREBRANCHES',['COMPAREOPTIONS','OPTIONS'],'comparebranches','Each branch\'s numbers side by side: walls, rooms, areas, cut and fill'],
     ['GRADE',['GRADING','DAYLIGHT','GRADEPADS'],'grade','Grade the pads onto the ground: cut and fill slopes run out to the daylight line, into a proposed surface'],   /* __acad3dV145 */

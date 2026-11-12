@@ -16,3 +16,6 @@ tools/openskp/node_modules/
 !.aider.conf.yml
 !.aiderignore
 !AIDER_CONVENTIONS.md
+
+# V194: the three.js build tool's packages
+tools/three/node_modules/

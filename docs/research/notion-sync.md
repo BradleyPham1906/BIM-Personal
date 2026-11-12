@@ -216,3 +216,8 @@ Search Notion before creating anything, so nothing is made twice.
   as it is; World BIM Platform is the project now.
 - 2026-10-19: Archi Diagram's animated analysis became a new V170 (the owner); the phases from the old V170 on moved
   one number later, their tasks renamed and the table above with them.
+
+## Added 2026-11-12 (V194)
+
+- Internal Task DB: **V194 Render R6: the rendered view**, page `416cbfcc3a3881418570d882c45bd761` (In Progress; PR #88 open).
+- Documentation DB: **V194: the rendered view, and what the reference apps can give us** (`docs/research/research-rendered-view.md`), page `416cbfcc3a38819cb024d9f0f7e549bf`.

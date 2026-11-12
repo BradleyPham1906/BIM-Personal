@@ -16759,3 +16759,29 @@ then the browser check and its fixes.
 - **Not in V175a:** schedules, single KPI cards and result charts as board objects, sun hours and solar numbers
   (V175b); camera moves still move the revision (D12, recorded); in Present a date field that crosses midnight
   waits for the next change of the model. `BIM_APP_VERSION` stays V172, as through V173 and V174.
+
+## Phase 194 (V194) - The rendered view: the model in daylight
+
+`RENDER`, or Properties > View > Display > Rendered, shows the model lit by the sun and the sky, with soft shadows,
+see-through glass and a ground, drawn by three.js; the picture comes at once and sharpens while the view is still.
+Drawing, selecting and Save image work as in the shaded view, and `RENDER` again goes back to it.
+
+- Research: `docs/research/research-rendered-view.md` (2026-11-11 to 11-12), with what each project the owner named
+  can give the app. Of them only BimCraft (JavaScript, Apache-2.0) is code this app can take; its fast render is the
+  method here. GPL projects stay ideas only.
+- three.js 0.186.1 (MIT) is a runtime, not part of the build: `runtime/three/`, one classic script built by
+  `tools/three/build_three.mjs`, pinned in the manifest, checked by subresource integrity. The second written
+  exception to "no dependencies" (the owner, 2026-11-11).
+- `render/rendered-core.js` (the picture: the average of 16, 64 or 256 passes), `render/rendered-scene.js` (V152's
+  scene description read a third time, the terrain added, the view's own camera, the site's sun),
+  `render/rendered-view.js` (loading, the frame, settings, Properties). One hook in each of twelve files.
+- Experiment e01 (`docs/research/experiments/v194-rendered/`): the picture on a made-up site in headless Edge, nine
+  cases, no errors, 3 to 9 ms a pass at 1500 x 900 on this PC.
+- Found by the experiment: a face whose stored normal disagrees with its winding shades dark, so faces are shaded
+  flat from the picture itself; one sky direction stripes the walls it grazes, so the first pass has no sky shadows;
+  a night without lamps was black. Lesson: a renderer written without being looked at is not written.
+- Found by the unit tests: a function is reachable from `tests/unit` only when another file uses it, so the phase's
+  test hook (`window.__a3dRv`) is what exports them.
+- Checks: syntax, `npm run modules`, the build, `npm run check`, `npm test` 175 of 175. Not run: the app's own
+  browser check, the full regression. `BIM_APP_VERSION` left at V172, as V173 to V175a left it.
+- Not yet: the basemap and draped terrain, sheets and Present, materials by element type, textures, lamps.
