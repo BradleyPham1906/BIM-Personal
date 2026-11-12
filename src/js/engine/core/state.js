@@ -1,4 +1,5 @@
 import { bimHistValid } from '../history/element-history.js';
+import { bimApplyUnitState } from '../properties/palette.js';
 import { bimResValid, setA3D_RES_IMG } from '../analysis/results-layers.js';
 import { bimProjectRecord } from './objects-save.js';
 import { bimDocsBoot } from '../ui/project-tabs.js';
@@ -117,6 +118,7 @@ import { bimPresValid } from '../sheets/boards.js';
       A3D.history=bimHistValid(st&&st.history);   /* __acad3dV146: its history, or none */
       A3D.resultLayers=bimResValid(st&&st.resultLayers);   /* __acad3dV148: its result layers, or none */
       A3D.pres=bimPresValid(st&&st.pres);   /* __acad3dV162: its boards in the set, and the set's order */
+      bimApplyUnitState(st&&st.units);   /* __acad3dV175a (D10): its display units, metres when it has none */
       setA3D_RES_IMG({});
       if(st&&Array.isArray(st.classifications)){
         A3D.classifications=st.classifications.filter(function(c){return c&&typeof c.id==='string'&&typeof c.code==='string';});

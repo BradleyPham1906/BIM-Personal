@@ -332,6 +332,9 @@ None of these is a fact the code will use.
 
 Asked together, each with the evidence and a recommendation.
 
+**Answered 2026-11-11: the owner accepts all sixteen as recommended,** and V175a is built first (D16). Its spec and
+work orders are in `docs/work-orders/v175/`.
+
 | # | Question | Evidence | Recommended |
 |---|---|---|---|
 | D1 | What is new in V175: text fields, single numbers, schedules, single KPI cards and result charts as board objects (model views, legends and figures are live already)? | 4.1 | **Yes, all five** |

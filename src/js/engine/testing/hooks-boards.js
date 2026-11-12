@@ -1,4 +1,6 @@
+import { bimApplyUnitState, bimUnitState } from '../properties/palette.js';
 import { A3D_CLB, bimClbEl, bimClbOpen } from '../site-analysis/climate-board.js';
+import { A3D_REV, setA3D_REV } from '../core/objects-save.js';
 import { bimLtMenuClose } from '../sheets/layout-tabs.js';
 import { bimBoardById, bimBoardHtmlFor } from '../sheets/boards.js';
 import {
@@ -10,6 +12,16 @@ import {
   bimBrdMenu, bimBrdNewUi, bimBrdNudge, bimBrdOptsDlg, bimBrdOptsSet, bimBrdRemove, bimBrdRename, bimBrdReset,
   bimBrdSnap, bimBrdSwap, bimBrdWorking
 } from '../sheets/board-edit.js';
+import {
+  bimLvBindValid, bimLvFormat, bimLvGroup, bimLvKind, bimLvMenuItems, bimLvOvKeep, bimLvOvReset, bimLvOvSet,
+  bimLvOvState, bimLvOvValid, bimLvPrintNote, bimLvSubst, bimLvTokens
+} from '../sheets/live-text.js';
+import {
+  bimLiveGet, bimLiveKey, bimLiveKeys, bimLiveMarks, bimLiveShow, bimLiveStaleItems
+} from '../sheets/live-sources.js';
+import {
+  bimLvAct, bimLvAddNumber, bimLvInsertField, bimLvOverride, bimLvPropsHtml, bimLvSetDp, bimLvTextPatch
+} from '../sheets/live-edit.js';
 
   /* __acad3dV172b: a board's figures and Edit, for the suite */
   function bimBrdHookErr(e){return {error:String(e&&e.message||e)};}
@@ -57,3 +69,11 @@ import {
   window.__a3dBrdMenu=function(k){var ok=bimBrdMenu(k,40,40),m=document.getElementById('a3d-ltmenu'),it=m?[].map.call(m.querySelectorAll('[data-ltm]'),function(b){return [b.textContent,b.getAttribute('data-ltm')];}):[];bimLtMenuClose();return ok?it:null;};
   window.__a3dBrdOpen=function(key){return bimClbOpen(key);};
   window.__a3dBrdHtmlFor=function(key,narrow){return bimBoardHtmlFor(key,!!narrow);};
+  /* __acad3dV175a: live text on a board: fields, numbers, overrides, Reset, Unlink; the units kept with the project */
+  window.__acad3dV175a='fields,numbers,override,reset,keep,unlink,marks,printnote,unitsaved,loadrev';
+  window.__a3dLive={tokens:bimLvTokens,group:bimLvGroup,format:bimLvFormat,subst:bimLvSubst,ovSet:bimLvOvSet,ovReset:bimLvOvReset,ovState:bimLvOvState,ovKeep:bimLvOvKeep,
+    printNote:bimLvPrintNote,menuItems:bimLvMenuItems,kind:bimLvKind,keys:bimLiveKeys,key:bimLiveKey,get:function(k,id,nm,B){return bimLiveGet(k,id,nm,B||null);},
+    show:function(n,B,edit){return bimLiveShow(n,B||null,!!edit);},marks:bimLiveMarks,stale:bimLiveStaleItems,textPatch:bimLvTextPatch,
+    insertField:function(k){return bimLvInsertField(k);},addNumber:function(k,id){return bimLvAddNumber(k,id);},override:function(v){return bimLvOverride(v);},
+    setDp:function(v){return bimLvSetDp(v);},act:function(a){return bimLvAct(a,40,40);},propsHtml:bimLvPropsHtml,unitState:bimUnitState,applyUnits:bimApplyUnitState,
+    bindValid:bimLvBindValid,ovValid:bimLvOvValid,rev:function(){return A3D_REV;},bump:function(){setA3D_REV(A3D_REV+1);return A3D_REV;}};

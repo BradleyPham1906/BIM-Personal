@@ -15,6 +15,7 @@ import {
 } from './board-objects.js';
 import { bimPgBoardPage } from './page-sizes.js';
 import { A3D_BIMG, bimBimgMissing, bimBimgUrl } from './board-images.js';
+import { bimLiveMarks, bimLiveShow } from './live-sources.js';
 import { bimBmapHtml } from './board-map.js';
 
 
@@ -86,7 +87,7 @@ import { bimBmapHtml } from './board-map.js';
   }
   /* ---- one object ---- */
   function bimBdsNode(n,ox,oy,ctx){
-    var t=n.t,b,S,h,u,pd,Wp,Hp;
+    var t=n.t,b,S,h,u,pd,Wp,Hp,Lv;
     if(t==='fig')return bimBdsFig(n,ox,oy,ctx);
     if(t==='tblock')return bimBdsTblock(n,ox,oy,ctx);   /* __acad3dV174c */
     if(t==='map'||t==='legend'||t==='north'||t==='sbar')return bimBmapHtml(n,ox,oy,ctx);   /* __acad3dV174d */
@@ -107,7 +108,8 @@ import { bimBmapHtml } from './board-map.js';
       if(n.fit!=='auto-w')h+='width:'+bimBdsPx(b.w)+'px;';
       if(n.fit==='fixed')h+='height:'+bimBdsPx(b.h)+'px;overflow:hidden;';
       h+='font-size:'+bimBrdPx(n.fs*0.352778*bimBobPxMm())+'px;font-weight:'+n.fw+';text-align:'+n.al+';color:'+n.col+';';
-      return '<div'+bimBdsAttr(n,'a3d-clb-dtxt'+(n.fit==='auto-w'?' aw':''),ctx)+' style="'+h+bimBdsComp(n,ctx)+'">'+bimClbE(n.s)+'</div>';
+      Lv=n.bind?bimLiveShow(n,ctx.B||null,!!ctx.edit&&!A3D_PLOT.on):null;   /* __acad3dV175a: a live text's words, from the project now */
+      return '<div'+bimBdsAttr(n,'a3d-clb-dtxt'+(n.fit==='auto-w'?' aw':'')+(Lv?' lv':''),ctx)+' style="'+h+bimBdsComp(n,ctx)+'">'+bimClbE(Lv?Lv.s:n.s)+(Lv&&ctx.edit&&!A3D_PLOT.on?bimLiveMarks(Lv):'')+'</div>';
     }
     if(t==='image'){
       u=n.src?bimBimgUrl(n.src):null;

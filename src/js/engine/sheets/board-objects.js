@@ -3,6 +3,7 @@ import { bimLayerById, bimLayerZero } from '../layers/layer-rules.js';
 import { bimLayerTree } from '../layers/layers-panel.js';
 import { BIM_BRD_P0 } from './board-figures.js';
 import { bimBalLayout } from './board-arrange.js';
+import { bimLvBindValid, bimLvOvValid } from './live-text.js';
 
 
   /* ================= __acad3dV174a: a board's objects, on the one layer table =================
@@ -84,6 +85,13 @@ import { bimBalLayout } from './board-arrange.js';
       r.al=(n.al==='center'||n.al==='right')?n.al:'left';
       r.col=bimBobCol(n.col,'#0b0b0b');if(r.col==='none')r.col='#0b0b0b';
       r.fit=(n.fit==='auto-w'||n.fit==='fixed')?n.fit:'auto-h';
+      /* __acad3dV175a: a live text's binding, its overrides and the source's words when each was made; never its value (D8) */
+      if(n.bind){
+        r.bind=bimLvBindValid(n.bind);
+        if(!r.bind)delete r.bind;
+        else if((r.ov=bimLvOvValid(n.ov,null))){r.ovAt=bimLvOvValid(n.ovAt,r.ov);if(!r.ovAt)delete r.ovAt;}
+        else delete r.ov;
+      }
     }
     if(n.t==='image'){
       r.src=typeof n.src==='string'&&/^h[0-9a-f]{16}$/.test(n.src)?n.src:'';
