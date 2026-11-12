@@ -1,3 +1,5 @@
+import { bimDispNum } from '../properties/palette.js';
+
 
 
   /* ================= __acad3dV175a: live text on a board, the pure part =================
