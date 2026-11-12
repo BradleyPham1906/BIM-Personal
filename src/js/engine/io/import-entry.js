@@ -6,9 +6,9 @@ import { bimOpenProjectFileObj } from './project-file.js';
 import { bimGeoImportFile } from '../properties/map-address-site-data.js';
 import { bimImportDXF } from './import-dxf.js';
 import { bimImportOBJ, bimImportSTL } from './import-obj-stl.js';
-import { bimImportIFC } from './import-ifc.js';
 import { bimImportSKP } from './sketchup-import.js';
 import { bimImportGLTF } from './gltf.js';
+import { bimImportIFCFull } from './ifc-full.js';
 import { bimCityJsonFile } from '../map/cityjson.js';
 import { closeDlg } from '../ui/touch-input.js';
 import { a3dToast } from '../bim/csg-booleans.js';
@@ -35,8 +35,8 @@ import { a3dToast } from '../bim/csg-booleans.js';
       reader.onload=function(ev){try{bimImportOBJ(ev.target.result,name);}catch(eI){console.warn('[BIM] OBJ import crashed:',eI);a3dToast('OBJ import failed: '+(eI&&eI.message?eI.message:eI));}};
       reader.readAsText(file);
     }else if(ext==='ifc'){
-      reader.onload=function(ev){try{bimImportIFC(ev.target.result,name);}catch(eI){console.warn('[BIM] IFC import crashed:',eI);a3dToast('IFC import failed: '+(eI&&eI.message?eI.message:eI));}};
-      reader.readAsText(file);
+      reader.onload=function(ev){bimImportIFCFull(ev.target.result,name);};   /* __acad3dV196: the full reader, walls and slabs when it cannot load */
+      reader.readAsArrayBuffer(file);
     }else if(ext==='xml'||ext==='landxml'){   /* __acad3dV144: LandXML */
       reader.onload=function(ev){try{bimLandXmlImport(ev.target.result,name);}catch(eI){console.warn('[BIM] LandXML import crashed:',eI);a3dToast('LandXML import failed: '+(eI&&eI.message?eI.message:eI));}};
       reader.readAsText(file);

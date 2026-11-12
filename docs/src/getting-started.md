@@ -132,6 +132,12 @@ overcast, low sun, white studio), Quality, Ground and Edges are beside Display. 
 image work as in the shaded view; `RENDER` again goes back to it. The view is drawn by three.js, fetched the
 first time it is asked for (about 750 KB). The basemap, sheets and Presentation are not rendered yet.
 
+**IFC.** `IFCIN`, or Import with a .ifc file, reads IFC2x3, IFC4 and IFC4.3 models from Revit, ArchiCAD, Tekla,
+Bonsai and others: every element comes in as one locked solid in its own colour, with its openings cut, on a layer
+for its class (IfcWall, IfcDoor, ...) under a layer named after the file, glass on a see-through layer; storeys
+become levels; Properties shows an element's IFC class, GlobalId, storey and property sets. The first IFC opened
+loads the IFC engine (about 1.2 MB). If it cannot be loaded, only walls and slabs are read, as before.
+
 **glTF and GLB.** `GLTFIN`, or Import with a .glb or .gltf file, brings in a model from Blender, SketchUp,
 Sketchfab or Poly Haven: each material becomes one locked solid in its colour, on a layer named after the file
 (see-through materials on a sub-layer), and a model of up to 20,000 triangles is kept in Assets as a block.

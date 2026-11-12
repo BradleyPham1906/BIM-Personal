@@ -16849,3 +16849,21 @@ for its layer. Compressed files (Draco, meshopt) open too (the owner, 2026-11-12
   placing step is checked in the browser and the reading step in Node. Lesson: test the pure part, name what is not.
 - Checks: syntax, `npm run modules`, the build, `npm run check`, `npm test` 181 of 181 (6 new, a GLB built by hand
   read through three.js's loader). Not run: the app's own browser check (export needs a browser's FileReader).
+
+## Phase 196 (V196) - full IFC import
+
+Import and `IFCIN` read a whole IFC model: every element with geometry, its openings cut, in its colour, on layers by
+IFC class; storeys as levels; GlobalId, storey and property sets in Properties.
+
+- Research: `docs/research/research-ifc-engine.md`, experiment e01 (`docs/research/experiments/v196-ifc/`): web-ifc
+  and BimCraft's cc-ifc through the same calls on 13 public files; the same elements and model box on all 13. The
+  owner chose cc-ifc (2026-11-12): Apache-2.0, a third of the download, reads from a file:// page.
+- `vendor/cc-ifc/` (upstream source, unchanged), `tools/ifc/build_ifc.mjs` -> `runtime/cc-ifc/cfbd948/` (bundle with
+  Manifold's loader, Manifold's wasm, licences; 5 manifest entries). `io/ifc-full.js`; the old `io/import-ifc.js`
+  is the fallback when the runtime cannot load.
+- Found: Manifold's loader takes Node's path when it sees `process`; the unit test hides it for that one call. Coarser
+  NURBS sampling (geo-nurbs.js line 403) only halved the time on the curved-door model and lost detail, so cc-ifc is
+  unchanged. Lesson: measure a tuning before taking it.
+- Checks: syntax, `npm run modules`, the build, `npm run check`, `tools/check_runtime.py`, `npm test` 217 of 217
+  (3 new: a hand-written IFC4 wall with an opening, storey and property set). Not run: the app's own browser check.
+  Node timings through the full read: FZK-Haus 0.2 s, dental_clinic 0.8 s, schependomlaan 1.5 s, advanced_model 2.7 s.

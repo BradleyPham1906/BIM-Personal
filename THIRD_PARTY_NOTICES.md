@@ -225,6 +225,16 @@ decoder (`examples/jsm/libs/meshopt_decoder.module.js`, MIT, Copyright (c) 2016-
 three.js ships them, from https://github.com/google/draco, under the Apache License, Version 2.0
 (https://www.apache.org/licenses/LICENSE-2.0). They are fetched only to read a Draco-compressed glTF file.
 
+## cc-ifc, BimCraft's IFC engine, and Manifold (V196)
+
+`vendor/cc-ifc/ifc/` is `app/ifc/` of https://github.com/getcadcraft/bimcraft at commit cfbd948, unchanged, under the
+Apache License, Version 2.0, with that repository's LICENSE, NOTICE and PROVENANCE.md beside it (BimCraft's NOTICE is
+quoted under "BimCraft (V194)" below). `runtime/cc-ifc/cfbd948/bim-ifc.min.js` bundles it, unchanged, with the loader
+of Manifold 3.5.4 (https://github.com/elalish/manifold, npm `manifold-3d`, Apache License 2.0, Copyright the Manifold
+authors), whose `manifold.wasm` and licence (`MANIFOLD-LICENSE`) are beside it. They are loaded only when an IFC file
+is opened. web-ifc (MPL-2.0) was run only as a test oracle in the research (`docs/research/experiments/v196-ifc/`)
+and is not shipped.
+
 ## BimCraft (V194)
 
 The rendered view's method and its sky and sampling tables (`src/js/engine/render/rendered-core.js`) follow

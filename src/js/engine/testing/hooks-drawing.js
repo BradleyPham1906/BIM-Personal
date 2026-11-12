@@ -59,6 +59,10 @@ import {
   BIM_GLTF, bimGltfArrays, bimGltfElements, bimGltfExportBytes, bimGltfFeatureEdges, bimGltfGather,
   bimGltfHex, bimGltfImportBuffer, bimGltfParts, bimGltfWeld, bimGltfWhy
 } from '../io/gltf.js';
+import {
+  BIM_IFC, bimIfcClass, bimIfcContainers, bimIfcHex, bimIfcImportBuffer, bimIfcMeshParts, bimIfcPropsHtml,
+  bimIfcRead, bimIfcSet, bimIfcSources, bimIfcStoreys, bimIfcVal
+} from '../io/ifc-full.js';
 import { toScreen } from '../io/import-entry.js';
 import { A3D_GL, setA3D_GL, setA3D_GL_FAILED } from '../render/webgl.js';
 import {
@@ -389,6 +393,10 @@ import { cvH, cvW } from '../ui/canvas-size.js';
       sun:R.sun?R.sun.text:null,sky:R.sky?R.sky.n:null,info:R.info,canvas:!!R.cv,text:bimRvStateText()};
   };
   window.__a3dRenderedSet=function(k,v){return bimRvSetting(k,v);};
+  /* __acad3dV196: full IFC import */
+  window.__acad3dV196='ifcin,ccifc,manifold,openings,storeys,psets,ifcclasslayers';
+  window.__a3dIfc={importBuffer:bimIfcImportBuffer,read:bimIfcRead,meshParts:bimIfcMeshParts,storeys:bimIfcStoreys,containers:bimIfcContainers,
+    set:bimIfcSet,val:bimIfcVal,cls:bimIfcClass,hex:bimIfcHex,sources:bimIfcSources,propsHtml:bimIfcPropsHtml,limits:BIM_IFC};
   /* __acad3dV195: glTF in and out */
   window.__acad3dV195='gltfin,gltfout,draco,meshopt,featureedges,assets';
   window.__a3dGltf={importBuffer:bimGltfImportBuffer,exportBytes:bimGltfExportBytes,weld:bimGltfWeld,edges:bimGltfFeatureEdges,
