@@ -21,7 +21,7 @@ Scores are from `../ROUTING.md` (files, logic, understanding, judgment, trickine
 
 ---
 
-## [ ] WO-01 [Cline] `bimLbHist(cells, m)`
+## [x] WO-01 [Cline] `bimLbHist(cells, m)`
 
 - **It must:** return `m` counts; each digit character `d` in `cells` with `d < m` adds 1 at index `d`;
   everything else is left out; `cells` not a string gives `m` zeros (SPEC part 4).
