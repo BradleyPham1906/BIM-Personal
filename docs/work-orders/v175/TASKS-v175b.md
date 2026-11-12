@@ -31,7 +31,7 @@ Scores are from `../ROUTING.md` (files, logic, understanding, judgment, trickine
 
 ---
 
-## [ ] WO-02 [Cline] `bimLbPct(n, total)`
+## [x] WO-02 [Cline] `bimLbPct(n, total)`
 
 - **It must:** return `Math.round(n / total * 1000) / 10`, or `null` when either is not a finite number or `total <= 0`.
 - **Example:** `bimLbPct(1, 3)` returns `33.3`.
@@ -40,7 +40,7 @@ Scores are from `../ROUTING.md` (files, logic, understanding, judgment, trickine
 
 ---
 
-## [ ] WO-03 [Cline] `bimLbBars(counts, W, H, gap)`
+## [x] WO-03 [Cline] `bimLbBars(counts, W, H, gap)`
 
 - **It must:** follow SPEC part 4: equal widths `(W - gap * (n - 1)) / n`, `x = i * (w + gap)`, height
   `counts[i] / max * H` (0 when the largest is 0), `y = H - h`, each number rounded to two decimals; `[]` for none.
@@ -50,7 +50,7 @@ Scores are from `../ROUTING.md` (files, logic, understanding, judgment, trickine
 
 ---
 
-## [ ] WO-04 [Cline] `bimLbSort(rows, key, desc)`
+## [x] WO-04 [Cline] `bimLbSort(rows, key, desc)`
 
 - **It must:** return a new, stably sorted array (the given one unchanged); empty values (`''`, `null`,
   `undefined`) last whatever `desc`; two numbers compare as numbers, else as lower-case strings; `desc` reverses
@@ -61,7 +61,7 @@ Scores are from `../ROUTING.md` (files, logic, understanding, judgment, trickine
 
 ---
 
-## [ ] WO-05 [Cline] `bimLbTotals(rows, cols)`
+## [x] WO-05 [Cline] `bimLbTotals(rows, cols)`
 
 - **It must:** give one entry a column: for kind `'area'` or `'count'` the sum of the rows' finite numbers in
   column `k` (strings left out), `''` when there are none; `''` for every other kind.
@@ -71,7 +71,7 @@ Scores are from `../ROUTING.md` (files, logic, understanding, judgment, trickine
 
 ---
 
-## [ ] WO-06 [Cline] `bimLbUnesc(s)`
+## [x] WO-06 [Cline] `bimLbUnesc(s)`
 
 - **It must:** read back `&lt;` `&gt;` `&quot;` `&#39;`, then `&amp;` last; not a string gives `''`.
 - **Example:** `bimLbUnesc('&amp;lt;')` returns `'&lt;'`.
@@ -80,7 +80,7 @@ Scores are from `../ROUTING.md` (files, logic, understanding, judgment, trickine
 
 ---
 
-## [ ] WO-07 [Cline] `bimLbKpiLabels(list)`
+## [x] WO-07 [Cline] `bimLbKpiLabels(list)`
 
 - **It must:** return the labels in order, from `/data-kpi="([^"]*)"/` read back with `bimLbUnesc`; a string
   without one skipped; not an array gives `[]`.
@@ -89,7 +89,7 @@ Scores are from `../ROUTING.md` (files, logic, understanding, judgment, trickine
 
 ---
 
-## [ ] WO-08 [Cline] `bimLbKpiFind(list, label)`
+## [x] WO-08 [Cline] `bimLbKpiFind(list, label)`
 
 - **It must:** return the index in `list` (every string counts) of the first whose read-back label equals
   `label` exactly; `-1` otherwise or when `list` is not an array.
@@ -98,7 +98,7 @@ Scores are from `../ROUTING.md` (files, logic, understanding, judgment, trickine
 
 ---
 
-## [ ] WO-09 [Cline] `bimLbTableHtml(head, rows, foot, esc)`
+## [x] WO-09 [Cline] `bimLbTableHtml(head, rows, foot, esc)`
 
 - **It must:** return the exact markup of SPEC part 4: a `thead` row of `th`, a `tbody` row of `td` for each
   row with exactly as many cells as `head` (short rows filled with `<td></td>`, long ones cut), a `tfoot` only
@@ -109,7 +109,7 @@ Scores are from `../ROUTING.md` (files, logic, understanding, judgment, trickine
 
 ---
 
-## [ ] WO-10 [Cline] `bimLbHistSvg(bars, cols, W, H)`
+## [x] WO-10 [Cline] `bimLbHistSvg(bars, cols, W, H)`
 
 - **It must:** return the exact markup of SPEC part 4: the `svg` element, a `rect` for each bar with `h > 0`
   coloured `cols[i % cols.length]` (`'#888888'` when `cols` is empty), then `</svg>`.
