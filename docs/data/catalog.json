@@ -1252,6 +1252,34 @@
    "anchor": "cmd-GIZMO"
   },
   {
+   "id": "cmd:GLTFIN",
+   "name": "GLTFIN",
+   "aliases": [
+    "IMPORTGLTF",
+    "GLB",
+    "GLTF",
+    "IMPORTGLB"
+   ],
+   "desc": "Open a glTF or GLB model: its meshes as solids by material, on a layer named after the file, and kept in Assets as a block",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-GLTFIN"
+  },
+  {
+   "id": "cmd:GLTFOUT",
+   "name": "GLTFOUT",
+   "aliases": [
+    "EXPORTGLTF",
+    "EXPORTGLB"
+   ],
+   "desc": "Export the model shown as a .glb, an element a mesh under a node for its layer, for Blender, SketchUp, game engines and headsets",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-GLTFOUT"
+  },
+  {
    "id": "cmd:GRADE",
    "name": "GRADE",
    "aliases": [

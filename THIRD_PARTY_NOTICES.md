@@ -217,6 +217,14 @@ of `canvas_v10.html`; the rendered view loads it when first asked for. Its licen
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
     THE SOFTWARE.
 
+## three.js's glTF addons and Draco (V195)
+
+The same bundle carries three.js's `GLTFLoader`, `GLTFExporter` and `DRACOLoader` (MIT, as above) and its meshopt
+decoder (`examples/jsm/libs/meshopt_decoder.module.js`, MIT, Copyright (c) 2016-2024 Arseny Kapoulkine). Beside it,
+`runtime/three/0.186.1/draco/` holds Draco's glTF decoder, `draco_decoder.wasm` and `draco_wasm_wrapper.js`, as
+three.js ships them, from https://github.com/google/draco, under the Apache License, Version 2.0
+(https://www.apache.org/licenses/LICENSE-2.0). They are fetched only to read a Draco-compressed glTF file.
+
 ## BimCraft (V194)
 
 The rendered view's method and its sky and sampling tables (`src/js/engine/render/rendered-core.js`) follow

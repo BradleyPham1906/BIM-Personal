@@ -359,6 +359,6 @@ import { a3dToast } from '../bim/csg-booleans.js';
   }
 
 export {
-  BIM_SKP, bimImportSKP, bimSkpGenerated, bimSkpImportBuffer, bimSkpPick, bimSkpPropsHtml, bimSkpReader,
-  bimSkpScan
+  BIM_SKP, bimImportSKP, bimSkpGenerated, bimSkpImportBuffer, bimSkpLayer, bimSkpPick, bimSkpPropsHtml,
+  bimSkpReader, bimSkpScan
 };

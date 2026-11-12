@@ -8,6 +8,7 @@ import { bimImportDXF } from './import-dxf.js';
 import { bimImportOBJ, bimImportSTL } from './import-obj-stl.js';
 import { bimImportIFC } from './import-ifc.js';
 import { bimImportSKP } from './sketchup-import.js';
+import { bimImportGLTF } from './gltf.js';
 import { bimCityJsonFile } from '../map/cityjson.js';
 import { closeDlg } from '../ui/touch-input.js';
 import { a3dToast } from '../bim/csg-booleans.js';
@@ -20,6 +21,9 @@ import { a3dToast } from '../bim/csg-booleans.js';
     reader.onerror=function(){a3dToast('Failed to read '+name);};
     if(ext==='stl'){
       reader.onload=function(ev){try{bimImportSTL(ev.target.result,name);}catch(eI){console.warn('[BIM] STL import crashed:',eI);a3dToast('STL import failed: '+(eI&&eI.message?eI.message:eI));}};
+      reader.readAsArrayBuffer(file);
+    }else if(ext==='glb'||ext==='gltf'){   /* __acad3dV195: glTF */
+      reader.onload=function(ev){bimImportGLTF(ev.target.result,name);};
       reader.readAsArrayBuffer(file);
     }else if(ext==='skp'){   /* __acad3dV163: SketchUp */
       reader.onload=function(ev){bimImportSKP(ev.target.result,name);};
@@ -45,7 +49,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
     }else if(ext==='dwg'||ext==='step'||ext==='stp'||ext==='iges'||ext==='igs'){
       a3dToast('.'+ext.toUpperCase()+' is not supported (proprietary binary / full B-rep format). Export as DXF (CAD) or IFC (BIM) instead.');
     }else{
-      a3dToast('Unsupported file type: .'+ext+' (supported: .dxf, .ifc, .obj, .stl, .skp SketchUp, .json project files, .geojson and .kml site data, .city.json CityJSON, .xml LandXML)');
+      a3dToast('Unsupported file type: .'+ext+' (supported: .dxf, .ifc, .obj, .stl, .glb and .gltf, .skp SketchUp, .json project files, .geojson and .kml site data, .city.json CityJSON, .xml LandXML)');
     }
   }
 

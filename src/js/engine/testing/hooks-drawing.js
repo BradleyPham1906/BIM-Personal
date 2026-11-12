@@ -55,6 +55,10 @@ import {
   startStairTool
 } from '../bim/stairs.js';
 import { bimImportDXF } from '../io/import-dxf.js';
+import {
+  BIM_GLTF, bimGltfArrays, bimGltfElements, bimGltfExportBytes, bimGltfFeatureEdges, bimGltfGather,
+  bimGltfHex, bimGltfImportBuffer, bimGltfParts, bimGltfWeld, bimGltfWhy
+} from '../io/gltf.js';
 import { toScreen } from '../io/import-entry.js';
 import { A3D_GL, setA3D_GL, setA3D_GL_FAILED } from '../render/webgl.js';
 import {
@@ -385,6 +389,10 @@ import { cvH, cvW } from '../ui/canvas-size.js';
       sun:R.sun?R.sun.text:null,sky:R.sky?R.sky.n:null,info:R.info,canvas:!!R.cv,text:bimRvStateText()};
   };
   window.__a3dRenderedSet=function(k,v){return bimRvSetting(k,v);};
+  /* __acad3dV195: glTF in and out */
+  window.__acad3dV195='gltfin,gltfout,draco,meshopt,featureedges,assets';
+  window.__a3dGltf={importBuffer:bimGltfImportBuffer,exportBytes:bimGltfExportBytes,weld:bimGltfWeld,edges:bimGltfFeatureEdges,
+    gather:bimGltfGather,parts:bimGltfParts,why:bimGltfWhy,hex:bimGltfHex,elements:bimGltfElements,arrays:bimGltfArrays,limits:BIM_GLTF};
   window.__acad3dV194='rendered,threejs,passes,sky,ground,edges,terrain,saveimage';
   window.__a3dRv={halton:bimRvHalton,unit:bimRvUnit,cross:bimRvCross,basis:bimRvBasis,hemisphere:bimRvHemisphere,sunDisc:bimRvSunDisc,
     farPlane:bimRvFarPlane,jitter:bimRvJitter,lin:bimRvLin,rowColour:bimRvRowColour,chunkSig:bimRvChunkSig,chunkArrays:bimRvChunkArrays,

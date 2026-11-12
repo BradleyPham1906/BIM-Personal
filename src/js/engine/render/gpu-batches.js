@@ -51,7 +51,7 @@ import { bimObjectVisibleOnLevel } from '../views/saved-views.js';
   /* a chunk's arrays, from its objects' meshes; a mesh shared by many objects is triangulated once */
   function bimGbBuild(B,c){
     var n=0,e=0,i,j,k,id,m,cache=[],fv,ev,tri,ed;
-    for(i=0;i<c.ids.length;i++){m=c.refs[c.ids[i]];n+=bimGbVerts(m);for(j=0;j<m.f.length;j++)if(m.f[j].length>=3)e+=m.f[j].length*2;}
+    for(i=0;i<c.ids.length;i++){m=c.refs[c.ids[i]];n+=bimGbVerts(m);if(m.fe)e+=m.fe.length*2;else for(j=0;j<m.f.length;j++)if(m.f[j].length>=3)e+=m.f[j].length*2;}   /* __acad3dV195 */
     tri=new Float32Array(n*7);ed=new Float32Array(e*4);fv=0;ev=0;
     for(i=0;i<c.ids.length;i++){
       id=c.ids[i];m=c.refs[id];var s=B.slots[id],T=null;
@@ -63,8 +63,10 @@ import { bimObjectVisibleOnLevel } from '../views/saved-views.js';
           var wp=[],q;for(q=0;q<fc.length;q++)wp.push(m.v[fc[q]]);
           var nn=faceNormal(wp);
           for(q=2;q<fc.length;q++){var A=m.v[fc[0]],Bv=m.v[fc[q-1]],C=m.v[fc[q]];T.t.push(A[0],A[1],A[2],nn[0],nn[1],nn[2],Bv[0],Bv[1],Bv[2],nn[0],nn[1],nn[2],C[0],C[1],C[2],nn[0],nn[1],nn[2]);}
-          for(q=0;q<fc.length;q++){var p1=m.v[fc[q]],p2=m.v[fc[(q+1)%fc.length]];T.e.push(p1[0],p1[1],p1[2],p2[0],p2[1],p2[2]);}
+          if(!m.fe)for(q=0;q<fc.length;q++){var p1=m.v[fc[q]],p2=m.v[fc[(q+1)%fc.length]];T.e.push(p1[0],p1[1],p1[2],p2[0],p2[1],p2[2]);}
         }
+        /* __acad3dV195: a mesh that names its edges (an import's folds and borders) draws those, not every triangle's */
+        if(m.fe)for(q=0;q<m.fe.length;q++){var e1=m.v[m.fe[q][0]],e2=m.v[m.fe[q][1]];if(e1&&e2)T.e.push(e1[0],e1[1],e1[2],e2[0],e2[1],e2[2]);}
         if(cache.length>64)cache.shift();
         cache.push([m,T]);
       }
