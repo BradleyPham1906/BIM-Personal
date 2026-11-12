@@ -16,6 +16,7 @@ import {
 import { bimPgBoardPage } from './page-sizes.js';
 import { A3D_BIMG, bimBimgMissing, bimBimgUrl } from './board-images.js';
 import { bimLiveMarks, bimLiveShow } from './live-sources.js';
+import { bimLbdHtml } from './live-board-draw.js';
 import { bimBmapHtml } from './board-map.js';
 
 
@@ -91,6 +92,7 @@ import { bimBmapHtml } from './board-map.js';
     if(t==='fig')return bimBdsFig(n,ox,oy,ctx);
     if(t==='tblock')return bimBdsTblock(n,ox,oy,ctx);   /* __acad3dV174c */
     if(t==='map'||t==='legend'||t==='north'||t==='sbar')return bimBmapHtml(n,ox,oy,ctx);   /* __acad3dV174d */
+    if(t==='sched'||t==='kpi'||t==='rchart')return bimLbdHtml(n,ox,oy,ctx);   /* __acad3dV175b */
     if(t==='border')return '<div'+bimBdsAttr(n,'a3d-clb-dbdr',ctx)+' style="'+bimBdsPos(bimBobBox(n),ox,oy)+'border:'+bimBdsPx(n.sw)+'px solid #0b0b0b;'+bimBdsComp(n,ctx)+'"></div>';
     b=bimBobBox(n);
     if(t==='line'){   /* a level line's box is 0 high, and an SVG of no size is not painted: it grows by its stroke and heads */

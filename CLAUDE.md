@@ -172,7 +172,7 @@ browser suites, Pages and offline use read it.
     src/css/                  the stylesheet, 13 files: shell/, panels/, workspace/, sheets/, site-analysis/
     src/js/shell/shell.js     the top bar, the command palette, the project tabs, the boot
     src/js/vendor/openskp.js  the SketchUp reader (third-party, bundled; never edited by hand)
-    src/js/engine/            the BIM engine, 223 ES modules in 28 folders (the module map above);
+    src/js/engine/            the BIM engine, 226 ES modules in 28 folders (the module map above);
                               _begin.js and _end.js open and close the function the build joins them into
     src/py/bim_ladybug.py     the app's adapter to Ladybug's Python (ours): tools/embed_py.py writes it
                               into js/engine/ladybug/adapter-py.js

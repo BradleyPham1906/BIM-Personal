@@ -19,6 +19,7 @@ import {
 import { bimBalGaps, bimBalSnap } from './board-arrange.js';
 import { bimPgFit, bimPgLabel, bimPgValid } from './page-sizes.js';
 import { bimBimgAdd } from './board-images.js';
+import { bimLbdChartMenu, bimLbdKpiMenu, bimLbdSchedMenu } from './live-board-draw.js';
 import { bimBdsFigBoxer, bimBdsPos, bimBdsPres, bimBdsPx } from './board-design.js';
 import { bimBmapFit, bimBmapSources } from './board-map.js';
 import { bimBdePage } from './board-design-tools.js';
@@ -111,11 +112,13 @@ import { a3dToast } from '../bim/csg-booleans.js';
   }
   function bimBdeDrawKinds(){return [['rect','Rectangle'],['ellipse','Ellipse'],['line','Line'],['arrow','Arrow'],['poly','Polygon'],['star','Star'],['text','Text'],['image','Image…'],
     '-',['map','Map frame'],['legend','Legend'],['north','North arrow'],['sbar','Scale bar'],   /* __acad3dV174d */
-    '-',['lvfield','Field\u2026'],['lvnumber','Number\u2026']];}   /* __acad3dV175a: a value of the project, kept up to date */
+    '-',['lvfield','Field\u2026'],['lvnumber','Number\u2026'],['lvsched','Schedule\u2026'],['lvkpi','Indicator\u2026'],['lvchart','Result chart\u2026']];}   /* __acad3dV175b */   /* __acad3dV175a: a value of the project, kept up to date */
   function bimBdeDrawMenu(x,y){
     bimLtMenuOpen(x,y,bimBdeDrawKinds().map(function(k){return k==='-'?k:[k[1],k[0]];}),function(k){
       if(k==='image')bimBdeAddImage();
-      else if(k==='lvfield'||k==='lvnumber')setTimeout(function(){if(k==='lvfield')bimLvFieldMenu(x,y);else bimLvNumberMenu(x,y);},0);   /* after this menu has closed */
+      else if(/^lv(field|number|sched|kpi|chart)$/.test(k))setTimeout(function(){   /* __acad3dV175b: the three kinds' menus too */
+        if(k==='lvfield')bimLvFieldMenu(x,y);else if(k==='lvnumber')bimLvNumberMenu(x,y);else if(k==='lvsched')bimLbdSchedMenu(x,y);else if(k==='lvkpi')bimLbdKpiMenu(x,y);else bimLbdChartMenu(x,y);
+      },0);   /* after this menu has closed */
       else bimBdeAdd(k);
     });
     return true;
@@ -132,6 +135,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
     else if(kind==='line'||kind==='arrow'){n.w=60;n.h=0;if(kind==='arrow')n.a1=true;}
     else if(kind==='text'){n.w=80;n.h=10;n.s='Text';}
     else if(kind==='image'){n.w=100;n.h=75;}
+    else if(kind==='sched'||kind==='kpi'||kind==='rchart'){n.w=100;n.h=50;}   /* __acad3dV175b: their sizes come in extra */
     else if(kind==='map'){   /* __acad3dV174d: the first plan, at a scale that shows it whole */
       var srcs=bimBmapSources();
       if(!srcs.length){a3dToast('There is no plan or view to show: add a level first');return null;}

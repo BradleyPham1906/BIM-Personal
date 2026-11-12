@@ -16760,6 +16760,35 @@ then the browser check and its fixes.
   (V175b); camera moves still move the revision (D12, recorded); in Present a date field that crosses midnight
   waits for the next change of the model. `BIM_APP_VERSION` stays V172, as through V173 and V174.
 
+### V175b: Presentation P2, schedules, single indicators and result charts on a board (2026-11-12)
+
+The second part of V175 (D16), from the same research and the owner's D1 to D16. Spec and work orders
+`docs/work-orders/v175/SPEC-v175b.md`, `TASKS-v175b.md`.
+
+- **What it is.** Three kinds of board object, drawn from the model each time the board is (D2), saving only what
+  they show (D8): `sched` (a table: **Rooms**, or **Areas by level**, with a total row, sorted by a column from
+  Properties), `kpi` (one card of a site board's indicator row, bound by the row's figure key and the card's
+  label), `rchart` (one result layer: its text, and for Sun hours a histogram of the hours on the ground, coloured by
+  the app's ramp). In the Draw menu as **Schedule...**, **Indicator...**, **Result chart...**. Two numbers join
+  Number: the share of the ground with 6 h of sun or more (`sun.sixplus`, the newest Sun hours layer) and the
+  roofs' yearly solar yield (`solar.roofkwh`, as Solar kept it on each object), with the kinds `pct` and `kwh`.
+- **Kept results (D3).** A result chart or the sun number whose layer is out of date is drawn with the amber mark;
+  Properties says why and has **Run again** (`bimResultLayerUpdate`). A removed layer or an indicator whose label is
+  gone says what it was bound to (`n.nm`, `n.lab`), and is a dash on paper. Print lists them with V175a's.
+- **Who built what.** Cline (the owner's local run of the work orders, branch `cline/v175b-wo-01`): the ten pure
+  functions of `sheets/live-board.js`, WO-01 to WO-10, all 27 cases passing, each right against its order at
+  review, none changed. Claude (WO-11): `sheets/live-board-draw.js`, the record (`bimBobOne`), the drawing, the Draw
+  menu's entries and their menus, the Properties group, the two numbers, Print's list, the CSS, the tests.
+- **The work-order tests** lived in `docs/work-orders/v175/v175b.test.mjs`, outside `npm test`, while the orders
+  were open, so main stayed green with no stubs; they are now `tests/unit/live-board.test.mjs`, with WO-11's.
+- **Checks.** Unit tests 214 of 214 (39 new); `npm run check`; the browser check
+  `tests/e2e/bim_phase175b_board_objects_check.mjs`, 21 of 21 (Playwright, Chromium), a phone's width among them.
+  Its first run failed twice, both on the check itself (rooms without an outline for the plan to draw, and a model
+  change made without the redraw a real edit makes). Not run: the full regression.
+- **Not in V175b:** schedules other than rooms and areas by level; editing a schedule's cells on the board; a
+  chart for a result layer other than Sun hours' histogram (the others show their colours and their text).
+  New board objects all start at the same place, as V174a's do ("drag it into place").
+
 ## Phase 194 (V194) - The rendered view: the model in daylight
 
 `RENDER`, or Properties > View > Display > Rendered, shows the model lit by the sun and the sky, with soft shadows,
