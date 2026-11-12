@@ -124,6 +124,14 @@ Properties → Project →
 Statistics shows which one drew the last frame. `GRAPHICS` switches this browser to WebGL and
 back, for a driver that misbehaves.
 
+**The rendered view.** `RENDER`, or Properties → View → Display → Rendered, shows the model in daylight: the
+sun and the sky's light, soft shadows, see-through glass and a ground. The sun is the site's, at the date and
+time studied, and follows the clock while it plays; a site with no place yet is lit as the shaded view is.
+The first picture comes at once and sharpens over about a second while the view is still. Sky (clear,
+overcast, low sun, white studio), Quality, Ground and Edges are beside Display. Drawing, selecting and Save
+image work as in the shaded view; `RENDER` again goes back to it. The view is drawn by three.js, fetched the
+first time it is asked for (about 750 KB). The basemap, sheets and Presentation are not rendered yet.
+
 **What is out of view is not drawn.** The model is kept in chunks by place, 64 m squares of the
 ground, and a chunk wholly outside the view is skipped, so a large site costs little when you are
 looking at one corner of it.

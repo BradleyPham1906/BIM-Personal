@@ -1970,6 +1970,21 @@
    "anchor": "cmd-RELEASENOTES"
   },
   {
+   "id": "cmd:RENDER",
+   "name": "RENDER",
+   "aliases": [
+    "RENDERED",
+    "REALISTIC",
+    "VISUALSTYLE",
+    "DAYLIGHT"
+   ],
+   "desc": "The model rendered in daylight: materials, the sun and the sky, soft shadows; again for the shaded view",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-RENDER"
+  },
+  {
    "id": "cmd:ROOF",
    "name": "ROOF",
    "aliases": [

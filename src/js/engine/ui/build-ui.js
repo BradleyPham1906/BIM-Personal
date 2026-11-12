@@ -57,6 +57,7 @@ import { bimAnimPlay, bimAnimStop } from '../site-analysis/motion.js';
 import { bimDgPropChange, bimDgPropClick } from '../site-analysis/land-use.js';
 import { refreshProps } from '../site-analysis/panel.js';
 import { bimHandleImportFile } from '../io/import-entry.js';
+import { bimRvProp } from '../render/rendered-view.js';
 import { bimFindSearch } from '../map/find-open-data.js';
 import { paint } from '../map/terrain-3d.js';
 import { bimCloseGizmoMenu } from '../gizmo/gizmo-handles.js';
@@ -903,6 +904,7 @@ import { size } from './canvas-size.js';
         var mk=mp.getAttribute('data-propmodel'),mv=mp.value;
         if(mk==='truenorth'){bimSetTrueNorth(mv);return;}   /* __acad3dV103 */
         if(mk==='sunlat'||mk==='sunlon'||mk==='suntz'||mk==='sundate'||mk==='suntime'||mk==='sundst'){bimSetSun(mk.slice(3),mv);return;}   /* __acad3dV107; __acad3dV171d: sundst */
+        if(mk==='rendered'||mk.indexOf('rv')===0){bimRvProp(mk,mv);return;}   /* __acad3dV194: this browser's display, not the project's */
         if(mk==='project'){A3D.titleBlock.project=mv;}
         else if(mk==='client'){A3D.titleBlock.client=mv;}
         else if(mk==='site'){updateSite('name',mv);}

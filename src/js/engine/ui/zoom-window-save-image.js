@@ -76,7 +76,7 @@ import { a3dToast, groundPoint } from '../bim/csg-booleans.js';
     var cv=el.cv,out=document.createElement('canvas'),c,src=null,eng,id;
     out.width=cv.width;out.height=cv.height;c=out.getContext('2d');
     paint();
-    eng=A3D_GPU.engine;id=eng==='webgpu'?'a3d-gpucanvas':(eng==='webgl'?'a3d-glcanvas':'');
+    eng=A3D_GPU.engine;id=eng==='webgpu'?'a3d-gpucanvas':(eng==='webgl'?'a3d-glcanvas':(eng==='rendered'?'a3d-rvcanvas':''));   /* __acad3dV194 */
     if(id&&!A3D.presentMode&&!bimPresentGraphics()){src=document.getElementById(id);if(src&&(src.style.visibility==='hidden'||!(src.width>0)||!(src.height>0)))src=null;}
     if(src)c.drawImage(src,0,0,out.width,out.height);
     c.drawImage(cv,0,0);

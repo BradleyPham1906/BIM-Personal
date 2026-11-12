@@ -7,6 +7,7 @@ import { bimTrueNorthDeg } from '../survey/survey-arithmetic.js';
 import { bimLayerShown } from '../layers/layer-rules.js';
 import { A3D_ANIM, bimAnimLive } from '../site-analysis/motion.js';
 import { toScreen } from '../io/import-entry.js';
+import { A3D_RV } from '../render/rendered-view.js';
 import { paint } from '../map/terrain-3d.js';
 import { bimSafeViewRect } from '../ui/chrome-framing.js';
 import { bimLevelAreas, bimLevelById } from '../views/schedules.js';
@@ -71,7 +72,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
   }
   function drawSunShadows(ctx,V,W,H){
     A3D.lastShadows=null;
-    if(!A3D.showSun||!bimCameraIsPlan())return;   /* __acad3dV119 */
+    if(!A3D.showSun||!bimCameraIsPlan()||A3D_RV.drew)return;   /* __acad3dV119; __acad3dV194: the rendered view casts its own */
     var sun=bimSunNow();
     if(sun.missing){A3D.lastShadows={missing:sun.missing};return;}
     if(!(sun.elevation>0)){A3D.lastShadows={night:true,elevation:sun.elevation,azimuth:sun.azimuth};return;}

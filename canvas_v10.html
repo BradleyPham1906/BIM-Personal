@@ -529,8 +529,8 @@ body.light-theme #a3d-tip strong{color:#202124}body.light-theme .a3d-tiptype b{c
 .a3d-dlgrow input,.a3d-dlgrow select{width:110px;background:#1c2024;border:1px solid #3a4048;color:#dfe4ea;border-radius:4px;padding:3px 6px}
 #a3d-dlgerr{color:#e08080;min-height:14px;margin-top:4px;font-size:11px}
 .a3d-dlgft{display:flex;justify-content:flex-end;gap:8px;padding:8px 12px;border-top:1px solid #30353c}
-#a3d-glcanvas,#a3d-gpucanvas{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:0}
-#a3d-gpucanvas{visibility:hidden}
+#a3d-glcanvas,#a3d-gpucanvas,#a3d-rvcanvas{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:0}
+#a3d-gpucanvas,#a3d-rvcanvas{visibility:hidden}
 #a3d-canvas{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:1}
 .a3d-vp{position:relative}
 .a3d-tree{width:268px}
@@ -1811,6 +1811,7 @@ body.light-theme .a3d-tl-msgs,body.light-theme .a3d-tl-hn span,body.light-theme 
     ['BRANCH',['NEWBRANCH','DESIGNOPTION','OPTION'],'branch','Start a design option: a branch of the history, switched to and compared with the others'],   /* __acad3dV151 */
     ['BENCHMARK',['BENCH','FRAMETIME','SPEEDTEST'],'benchmark','Time this device drawing 5,000 and 20,000 elements, with WebGPU and with WebGL; the model is put back as it was'],   /* __acad3dV155 */
     ['GRAPHICS',['RENDERER','WEBGPU','WEBGL'],'graphics','Draw 3D with WebGPU where the browser has it, or always with WebGL in this browser'],   /* __acad3dV153 */
+    ['RENDER',['RENDERED','REALISTIC','VISUALSTYLE','DAYLIGHT'],'render','The model rendered in daylight: materials, the sun and the sky, soft shadows; again for the shaded view'],   /* __acad3dV194 */
     ['MERGE',['MERGEBRANCH'],'merge','Merge another branch into this one, element by element, with conflicts shown side by side'],
     ['COMPAREBRANCHES',['COMPAREOPTIONS','OPTIONS'],'comparebranches','Each branch\'s numbers side by side: walls, rooms, areas, cut and fill'],
     ['GRADE',['GRADING','DAYLIGHT','GRADEPADS'],'grade','Grade the pads onto the ground: cut and fill slopes run out to the daylight line, into a proposed surface'],   /* __acad3dV145 */
@@ -29565,6 +29566,7 @@ try{
     vrows+=bimPropRow('Appearance','<select data-propmodel="present">'+
       '<option value="0"'+(A3D.presentMode?'':' selected')+'>Technical</option>'+
       '<option value="1"'+(A3D.presentMode?' selected':'')+'>Presentation</option></select>');
+    vrows+=bimRvPropsHtml();   /* __acad3dV194: Shaded or Rendered, and the rendered view's settings while it is on */
     /* Read-only and honest: the engine works in metres throughout and there is no unit
        conversion layer, so this states the fact rather than offering a switch that would not
        convert anything. */
@@ -36614,6 +36616,695 @@ try{
   }
   /* setters: other files assign these through them (an ES module cannot assign to an import) */
   function setA3D_PICK_GPU(v){A3D_PICK_GPU=v;return v;}
+
+  /* ================= __acad3dV194: the rendered view, its picture =================
+     docs/research/research-rendered-view.md. A picture of the model in daylight: materials, the sun and the sky's
+     light, soft shadows and the shading of corners, drawn by three.js (MIT, runtime/three, loaded when the view is
+     first asked for: the zero-dependency contract's second written exception, the owner, 2026-11-11).
+
+     The method is BimCraft's fast render (github.com/getcadcraft/bimcraft, app/render/render-core.js and looks.js at
+     commit cfbd948, Apache-2.0, Copyright 2026 The Data Design Group, Inc.; THIRD_PARTY_NOTICES.md), rewritten in ES5
+     for this engine and made to refine a live view instead of rendering a still: the picture is the average of many
+     passes, each with the camera moved by less than a pixel (smooth edges), the sun moved inside a small cone (soft
+     shadow edges) and a second, shadow-casting light moved over the sky, cosine-weighted (soft contact shadows: the
+     ambient occlusion of daylight). The first pass is shown at once; the rest are added while the view is still.
+     Changed from BimCraft: one pass per call and the caller decides when; vertex colours instead of a material a
+     colour; every face is shaded flat, its normal taken from the picture itself, both faces cast shadows and the bias
+     is by depth only, because this app's faces are not wound one way; the first pass, the one seen while the view
+     moves, has no shadows from the sky (a single direction of it stripes the walls it grazes); the shadows' box
+     follows what the camera looks at, not the whole model; the ground and the sky follow it too.
+
+     This file knows nothing of the app's model: bimRvCore takes three.js, a canvas and plain arrays. */
+  var BIM_RV_SKIES={
+    clear:{n:'Clear sky',zenith:'#2f6cb3',horizon:'#c4d6e8',ground:'#8f8a80',sun:3.2,sky:1.6,env:0.45,tint:'#fff4e5',skyTint:'#dfeaff'},
+    overcast:{n:'Overcast',zenith:'#b9c0c8',horizon:'#dfe2e5',ground:'#8a8781',sun:0.35,sky:3.0,env:0.8,tint:'#f4f2ee',skyTint:'#eef0f3'},
+    dusk:{n:'Low sun',zenith:'#3d4f78',horizon:'#e9b48a',ground:'#5d5650',sun:2.2,sky:0.9,env:0.35,tint:'#ffb877',skyTint:'#b9c4e6'},
+    white:{n:'White studio',zenith:'#ffffff',horizon:'#ffffff',ground:'#f2f2f2',sun:2.6,sky:2.0,env:0.7,tint:'#fffaf2',skyTint:'#f4f7ff',plain:true}
+  };
+  /* the sky once the sun is down, under any sky but the white studio. BimCraft's night is lit by the model's lamps and
+     is black without them; this app has no lamps yet, so its night is a dim blue light the model can be read in. */
+  var BIM_RV_NIGHT={n:'Night',zenith:'#16213f',horizon:'#34425f',ground:'#22262e',sun:0,sky:1.1,env:0.5,tint:'#ffffff',skyTint:'#a8b9de',night:true};
+  /* passes a picture is the average of */
+  var BIM_RV_QUALITY={draft:16,good:64,best:256};
+  var BIM_RV_QUALITY_NAMES={draft:'Draft (16 passes)',good:'Good (64 passes)',best:'Best (256 passes)'};
+  /* the low-discrepancy sequence every pass is placed by: the same view gives the same picture */
+  function bimRvHalton(i,b){
+    var f=1,r=0;
+    while(i>0){f/=b;r+=f*(i%b);i=Math.floor(i/b);}
+    return r;
+  }
+  function bimRvUnit(v){var l=Math.sqrt(v[0]*v[0]+v[1]*v[1]+v[2]*v[2])||1;return [v[0]/l,v[1]/l,v[2]/l];}
+  function bimRvCross(a,b){return [a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];}
+  /* two unit vectors square to a direction */
+  function bimRvBasis(up){
+    var u=bimRvUnit(up),ax=Math.abs(u[2])<0.9?[0,0,1]:[1,0,0],e1=bimRvUnit(bimRvCross(u,ax));
+    return {up:u,e1:e1,e2:bimRvCross(u,e1)};
+  }
+  /* pass i's light from the sky: cosine-weighted over the hemisphere about up, kept off the horizon */
+  function bimRvHemisphere(i,up){
+    var B=bimRvBasis(up),r=Math.sqrt(Math.min(0.97,bimRvHalton(i+1,11))),a=2*Math.PI*bimRvHalton(i+1,13),z=Math.sqrt(1-r*r),
+      x=r*Math.cos(a),y=r*Math.sin(a);
+    return bimRvUnit([B.e1[0]*x+B.e2[0]*y+B.up[0]*z,B.e1[1]*x+B.e2[1]*y+B.up[1]*z,B.e1[2]*x+B.e2[2]*y+B.up[2]*z]);
+  }
+  /* pass i's sun: a direction inside a cone of the given half angle about the sun's (the sun is half a degree across;
+     wider is softer) */
+  function bimRvSunDisc(dir,i,degrees){
+    var B=bimRvBasis(dir),r=Math.sqrt(bimRvHalton(i+1,5))*Math.tan((degrees||1.5)*Math.PI/180),a=2*Math.PI*bimRvHalton(i+1,7),
+      x=r*Math.cos(a),y=r*Math.sin(a);
+    return bimRvUnit([B.up[0]+B.e1[0]*x+B.e2[0]*y,B.up[1]+B.e1[1]*x+B.e2[1]*y,B.up[2]+B.e1[2]*x+B.e2[2]*y]);
+  }
+  /* a projection with its far plane moved out and its near plane kept (so the ground reaches the horizon);
+     column-major, perspective with [11] = -1, parallel with [15] = 1 */
+  function bimRvFarPlane(proj,far){
+    var e=[],i,n,f,fn,sum;
+    for(i=0;i<16;i++)e.push(proj[i]);
+    if(e[15]===1&&e[11]===0){
+      fn=-2/e[10];sum=-e[14]*fn;n=(sum-fn)/2;f=Math.max(far,n+fn);
+      e[10]=-2/(f-n);e[14]=-(f+n)/(f-n);
+      return e;
+    }
+    n=e[14]/(e[10]-1);f=Math.max(far,e[14]/(e[10]+1));
+    e[10]=(f+n)/(n-f);e[14]=2*f*n/(n-f);
+    return e;
+  }
+  /* a pass's projection: the camera moved by (jx, jy) of the picture's half size, for either projection */
+  function bimRvJitter(proj,jx,jy){
+    var e=[],k;
+    for(k=0;k<16;k++)e.push(proj[k]);
+    for(k=0;k<4;k++){e[k*4]+=jx*e[k*4+3];e[k*4+1]+=jy*e[k*4+3];}
+    return e;
+  }
+  /* the sky a picture takes: the one chosen; night once the sun is down; the low sun's colours while it is under
+     eight degrees in a clear sky */
+  function bimRvSkyFor(key,sunUp,elev){
+    var S=BIM_RV_SKIES.hasOwnProperty(key)?BIM_RV_SKIES[key]:BIM_RV_SKIES.clear;
+    if(S.plain)return S;
+    if(!sunUp)return BIM_RV_NIGHT;
+    if(S===BIM_RV_SKIES.clear&&typeof elev==='number'&&elev<8)return BIM_RV_SKIES.dusk;
+    return S;
+  }
+  /* The picture. T is three.js; the canvas is drawn on. Returns
+       size(w,h)           the picture's size in device pixels
+       scene(items,build)  the model brought in line with items [{key,sig}]: build(item) is asked for the arrays of an
+                           item that is new or whose sig changed, {op,tr,ed}: opaque and see-through triangles
+                           {pos,col,n} (world positions and linear colours; see-through ones with alpha) and
+                           edges {pos,n}, any of them absent or empty
+       begin(spec)         a new picture: {world,proj (the camera, column-major), focus [x,y,z], reach (m), sun
+                           [x,y,z] toward it or null, sky (a BIM_RV_SKIES row), ground (true or false), groundAt (m),
+                           edges (true or false)}
+       pass()              one more pass added; the count
+       show()              the average so far, on the canvas
+       stats(), dispose() */
+  function bimRvCore(T,canvas,opts){
+    opts=opts||{};
+    var renderer=new T.WebGLRenderer({canvas:canvas,antialias:false,alpha:false,preserveDrawingBuffer:true,powerPreference:'high-performance'});
+    var X=renderer.extensions,half=X.has('EXT_color_buffer_half_float')||X.has('EXT_color_buffer_float');
+    if(!half){renderer.dispose();throw new Error('this device cannot keep a picture brighter than white (no half-float targets)');}
+    var accType=(X.has('EXT_color_buffer_float')&&X.has('EXT_float_blend'))?T.FloatType:T.HalfFloatType;
+    renderer.setPixelRatio(1);
+    renderer.shadowMap.enabled=true;
+    renderer.shadowMap.type=T.PCFShadowMap;   /* the softness comes from the passes, not the filter */
+    renderer.toneMapping=T.ACESFilmicToneMapping;
+    renderer.toneMappingExposure=1;
+    renderer.outputColorSpace=T.SRGBColorSpace;
+    var SM=Math.min(opts.light?2048:4096,renderer.capabilities.maxTextureSize||2048);
+    var scene=new T.Scene(),recs={},w=0,h=0,done=0,passRT=null,accRT=null;
+    var matO=new T.MeshStandardMaterial({vertexColors:true,flatShading:true,roughness:0.78,metalness:0,side:T.DoubleSide,fog:false});
+    var matT=new T.MeshStandardMaterial({vertexColors:true,flatShading:true,roughness:0.06,metalness:0,side:T.DoubleSide,fog:false,transparent:true,depthWrite:false,envMapIntensity:1.4});
+    var matE=new T.LineBasicMaterial({color:0x2a2f36,transparent:true,opacity:0.55,fog:false});
+    /* the lights: the sun, and the sky sampled a direction a pass */
+    var sunL=new T.DirectionalLight(0xffffff,0),skyL=new T.DirectionalLight(0xffffff,0);
+    [sunL,skyL].forEach(function(L){
+      L.castShadow=true;L.shadow.mapSize.set(SM,SM);L.shadow.normalBias=0;
+      scene.add(L);scene.add(L.target);
+    });
+    /* the sky: a dome graded from the horizon to the zenith, seen behind the model and, filtered, lighting it */
+    function skyDome(sky){
+      var mat=new T.ShaderMaterial({side:T.BackSide,depthWrite:false,
+        uniforms:{zen:{value:new T.Color(sky.zenith)},hor:{value:new T.Color(sky.horizon)},gnd:{value:new T.Color(sky.ground)}},
+        vertexShader:'varying vec3 vDir; void main(){ vDir=normalize(position); gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0); }',
+        fragmentShader:'uniform vec3 zen; uniform vec3 hor; uniform vec3 gnd; varying vec3 vDir;\n'+
+          'void main(){ float z=normalize(vDir).y; vec3 c=z>=0.0?mix(hor,zen,pow(z,0.6)):mix(hor,gnd,pow(-z,0.4)); gl_FragColor=vec4(c,1.0); }'});
+      var m=new T.Mesh(new T.SphereGeometry(1,48,24),mat);
+      m.frustumCulled=false;
+      return m;
+    }
+    var pm=new T.PMREMGenerator(renderer),dome=null,env=null,skyNow=null;
+    var groundMat=new T.MeshStandardMaterial({color:0xcbc6bb,roughness:1,metalness:0,fog:true});
+    var ground=new T.Mesh(new T.CircleGeometry(1,96),groundMat);
+    ground.quaternion.setFromUnitVectors(new T.Vector3(0,0,1),new T.Vector3(0,1,0));
+    ground.receiveShadow=true;
+    scene.add(ground);
+    function setSky(sky){
+      if(sky===skyNow)return;
+      if(dome){scene.remove(dome);dome.geometry.dispose();dome.material.dispose();}
+      if(env)env.dispose();
+      dome=skyDome(sky);scene.add(dome);
+      var s2=new T.Scene(),d2=skyDome(sky);
+      s2.add(d2);
+      env=pm.fromScene(s2,0,0.1,100);
+      d2.geometry.dispose();d2.material.dispose();
+      scene.environment=env.texture;scene.environmentIntensity=sky.env;
+      scene.fog=new T.Fog(new T.Color(sky.horizon),10,1000);   /* only the ground fogs: the materials say fog: false */
+      groundMat.color.set(sky.plain?'#f4f4f2':'#cbc6bb');
+      groundMat.fog=!sky.plain;groundMat.needsUpdate=true;
+      sunL.color.set(sky.tint);skyL.color.set(sky.skyTint);
+      skyNow=sky;
+    }
+    /* the two targets a picture is kept in, and the square that adds a pass and shows the average */
+    var cam=new T.Camera();
+    cam.matrixAutoUpdate=false;
+    var quadVS='varying vec2 vUv; void main(){ vUv=uv; gl_Position=vec4(position.xy,0.0,1.0); }';
+    var addMat=new T.ShaderMaterial({uniforms:{map:{value:null}},vertexShader:quadVS,
+      fragmentShader:'uniform sampler2D map; varying vec2 vUv; void main(){ gl_FragColor=vec4(texture2D(map,vUv).rgb,1.0); }',
+      blending:T.AdditiveBlending,depthTest:false,depthWrite:false,toneMapped:false});
+    var outMat=new T.ShaderMaterial({uniforms:{map:{value:null},k:{value:1}},vertexShader:quadVS,
+      fragmentShader:'uniform sampler2D map; uniform float k; varying vec2 vUv; void main(){ gl_FragColor=vec4(texture2D(map,vUv).rgb*k,1.0);\n#include <tonemapping_fragment>\n#include <colorspace_fragment>\n}',
+      depthTest:false,depthWrite:false,toneMapped:true});
+    var quad=new T.Mesh(new T.PlaneGeometry(2,2),addMat),quadScene=new T.Scene(),ortho=new T.OrthographicCamera(-1,1,1,-1,0,1);
+    quadScene.add(quad);
+    function size(nw,nh){
+      nw=Math.max(1,Math.round(nw));nh=Math.max(1,Math.round(nh));
+      if(nw===w&&nh===h&&passRT)return;
+      w=nw;h=nh;
+      renderer.setSize(w,h,false);
+      if(passRT){passRT.dispose();accRT.dispose();}
+      passRT=new T.WebGLRenderTarget(w,h,{type:T.HalfFloatType,colorSpace:T.LinearSRGBColorSpace,depthBuffer:true,samples:opts.light?0:4});
+      accRT=new T.WebGLRenderTarget(w,h,{type:accType,colorSpace:T.LinearSRGBColorSpace,depthBuffer:false});
+      addMat.uniforms.map.value=passRT.texture;outMat.uniforms.map.value=accRT.texture;
+      done=0;
+    }
+    /* the model: a mesh for a part's opaque triangles, one for its see-through ones, a line set for its edges */
+    function drop(rec){
+      rec.objs.forEach(function(o){scene.remove(o);o.geometry.dispose();});
+    }
+    function geo(a,colSize){
+      var g=new T.BufferGeometry();
+      g.setAttribute('position',new T.BufferAttribute(a.pos,3));
+      if(a.col)g.setAttribute('color',new T.BufferAttribute(a.col,colSize));
+      g.computeBoundingSphere();
+      return g;
+    }
+    function make(it,A){
+      var rec={sig:it.sig,objs:[],edges:[]},m;
+      if(A&&A.op&&A.op.n){m=new T.Mesh(geo(A.op,3),matO);m.castShadow=true;m.receiveShadow=true;rec.objs.push(m);}
+      if(A&&A.tr&&A.tr.n){m=new T.Mesh(geo(A.tr,4),matT);m.castShadow=false;m.receiveShadow=true;m.renderOrder=1;rec.objs.push(m);}
+      if(A&&A.ed&&A.ed.n){m=new T.LineSegments(geo(A.ed,0),matE);m.castShadow=false;m.receiveShadow=false;rec.objs.push(m);rec.edges.push(m);}
+      rec.objs.forEach(function(o){o.matrixAutoUpdate=false;scene.add(o);});
+      return rec;
+    }
+    function setScene(items,build){
+      var seen={},i,it,k,n=0;
+      for(i=0;i<items.length;i++){
+        it=items[i];seen[it.key]=1;
+        if(recs[it.key]&&recs[it.key].sig===it.sig)continue;
+        if(recs[it.key])drop(recs[it.key]);
+        recs[it.key]=make(it,build(it));n++;
+      }
+      for(k in recs)if(recs.hasOwnProperty(k)&&!seen[k]){drop(recs[k]);delete recs[k];n++;}
+      return n;
+    }
+    /* a new picture */
+    var S=null,P0=null,UP=[0,1,0];
+    function place(L,d){
+      var c=S.focus,R=S.reach;
+      L.position.set(c[0]+d[0]*R*4,c[1]+d[1]*R*4,c[2]+d[2]*R*4);
+      /* the shadow camera's own up must not run along the light (the sun overhead) */
+      if(Math.abs(d[0])<Math.abs(d[2]))L.shadow.camera.up.set(1,0,0);else L.shadow.camera.up.set(0,0,-1);
+    }
+    function begin(spec){
+      S=spec;
+      var c=S.focus,R=S.reach,sky=S.sky||BIM_RV_SKIES.clear,sunOn=!!S.sun&&S.sun[1]>0.02&&sky.sun>0,k,SKY_R=R*150;
+      setSky(sky);
+      S.sunOn=sunOn;
+      sunL.intensity=sunOn?sky.sun:0;sunL.castShadow=sunOn;sunL.visible=sunOn;
+      skyL.intensity=sky.sky*((sunOn||sky.night)?1:1.35);
+      [sunL,skyL].forEach(function(L){
+        var sc=L.shadow.camera;
+        sc.left=-R*1.6;sc.right=R*1.6;sc.top=R*1.6;sc.bottom=-R*1.6;sc.near=R*0.05;sc.far=R*8;
+        sc.updateProjectionMatrix();
+        L.shadow.bias=-0.0002*(4096/SM);
+        L.target.position.set(c[0],c[1],c[2]);L.target.updateMatrixWorld();
+      });
+      dome.scale.setScalar(SKY_R);dome.position.set(c[0],c[1],c[2]);dome.updateMatrixWorld();
+      scene.fog.near=R*10;scene.fog.far=R*120;
+      ground.visible=!!S.ground;
+      ground.scale.setScalar(SKY_R*0.98);
+      ground.position.set(c[0],(S.groundAt||0)-R*1e-4,c[2]);
+      for(k in recs)if(recs.hasOwnProperty(k))recs[k].edges.forEach(function(o){o.visible=!!S.edges;});
+      cam.matrix.fromArray(S.world);cam.matrixWorld.fromArray(S.world);cam.matrixWorldInverse.copy(cam.matrixWorld).invert();
+      P0=bimRvFarPlane(S.proj,R*200);
+      done=0;
+      renderer.setRenderTarget(accRT);renderer.setClearColor(0x000000,1);renderer.clear();
+      renderer.setRenderTarget(null);
+    }
+    function pass(){
+      var i=done,a=bimRvHalton(i+1,2),b=bimRvHalton(i+1,3);
+      cam.projectionMatrix.fromArray(bimRvJitter(P0,(a-0.5)*2/w,(b-0.5)*2/h));
+      cam.projectionMatrixInverse.copy(cam.projectionMatrix).invert();
+      if(S.sunOn)place(sunL,bimRvSunDisc(S.sun,i,1.5));
+      place(skyL,bimRvHemisphere(i,UP));
+      skyL.castShadow=i>0;
+      renderer.setRenderTarget(passRT);
+      renderer.render(scene,cam);
+      quad.material=addMat;
+      renderer.setRenderTarget(accRT);
+      renderer.autoClear=false;
+      renderer.render(quadScene,ortho);
+      renderer.autoClear=true;
+      renderer.setRenderTarget(null);
+      done=i+1;
+      return done;
+    }
+    function show(){
+      outMat.uniforms.k.value=1/Math.max(1,done);
+      quad.material=outMat;
+      renderer.setRenderTarget(null);
+      renderer.render(quadScene,ortho);
+    }
+    function dispose(){
+      var k;
+      for(k in recs)if(recs.hasOwnProperty(k))drop(recs[k]);
+      recs={};
+      if(dome){dome.geometry.dispose();dome.material.dispose();}
+      if(env)env.dispose();
+      pm.dispose();
+      if(passRT){passRT.dispose();accRT.dispose();}
+      [matO,matT,matE,groundMat,addMat,outMat].forEach(function(m){m.dispose();});
+      ground.geometry.dispose();quad.geometry.dispose();
+      renderer.dispose();
+      if(renderer.forceContextLoss)renderer.forceContextLoss();
+    }
+    function stats(){
+      var dbg=X.get('WEBGL_debug_renderer_info'),g=renderer.getContext(),n=0,k;
+      for(k in recs)if(recs.hasOwnProperty(k))n+=recs[k].objs.length;
+      return {done:done,w:w,h:h,meshes:n,shadowMap:SM,float32:accType===T.FloatType,
+        gpu:String(dbg?g.getParameter(dbg.UNMASKED_RENDERER_WEBGL):g.getParameter(g.RENDERER)||'')};
+    }
+    return {size:size,scene:setScene,begin:begin,pass:pass,show:show,stats:stats,dispose:dispose,three:scene};
+  }
+
+  /* ================= __acad3dV194: the rendered view, its scene =================
+     docs/research/research-rendered-view.md. What the rendered view draws, as plain numbers, with nothing of three.js
+     here, so Node tests it. The model is V152's description (bimSceneSync: chunks of merged triangles and a table of
+     each object's place, colour and transparency), read a third time, so a layer turned off, a level hidden, a colour
+     lens and a section cut are in the picture as they are in the shaded view; the terrain's triangles are added, which
+     that description does not carry. The camera is the view's own two matrices, so the picture lies exactly under the
+     overlay and a click lands where it did. The sun is the site's (V171d), the moment studied or the clock's while it
+     plays; where the site has no place yet, the shaded view's own light. */
+  var BIM_RV_SEQ=0;
+  var BIM_RV_SEL=[null,[0.306,0.631,1.0],[1.0,0.706,0.329]];   /* the shaded view's two selection colours */
+  function bimRvLin(c){return c<=0.04045?c/12.92:Math.pow((c+0.055)/1.055,2.4);}
+  /* a table row's colour as the picture takes it: linear, a selected object's drawn toward its selection colour */
+  function bimRvRowColour(d,o){
+    var r=d[o+4],g=d[o+5],b=d[o+6],s=BIM_RV_SEL[d[o+7]]||null;
+    if(s){r=r*0.55+s[0]*0.45;g=g*0.55+s[1]*0.45;b=b*0.55+s[2]*0.45;}
+    return [bimRvLin(r),bimRvLin(g),bimRvLin(b)];
+  }
+  /* what a chunk looks like now, in a few characters: its triangles' version and every row of its objects */
+  function bimRvChunkSig(B,c){
+    var d=B.data,h=0,i,o,k;
+    for(i=0;i<c.ids.length;i++){o=B.slots[c.ids[i]]*8;for(k=0;k<8;k++)h=(h*31+Math.round(d[o+k]*1000))|0;}
+    return c.ver+':'+c.ids.length+':'+h;
+  }
+  /* a chunk's triangles for the picture: world positions and linear colours, the opaque ones and the see-through
+     ones (with their transparency) apart, the hidden ones left out; its edges when asked */
+  function bimRvChunkArrays(B,c,edges){
+    var d=B.data,tri=c.tri,n=c.count||0,i,p,o,a,no=0,nt=0,ne=0,lin={},L,k,q,s;
+    for(i=0;i<n;i++){a=d[tri[i*7+6]*8+3];if(a<0)continue;if(a<0.999)nt++;else no++;}
+    var op={pos:new Float32Array(no*3),col:new Float32Array(no*3),n:no},tr={pos:new Float32Array(nt*3),col:new Float32Array(nt*4),n:nt},io=0,it=0,ed=null;
+    for(i=0;i<n;i++){
+      p=i*7;s=tri[p+6];o=s*8;a=d[o+3];
+      if(a<0)continue;
+      L=lin[s]||(lin[s]=bimRvRowColour(d,o));
+      if(a<0.999){
+        k=it*3;q=it*4;it++;
+        tr.pos[k]=tri[p]+d[o];tr.pos[k+1]=tri[p+1]+d[o+1];tr.pos[k+2]=tri[p+2]+d[o+2];
+        tr.col[q]=L[0];tr.col[q+1]=L[1];tr.col[q+2]=L[2];tr.col[q+3]=a;
+      }else{
+        k=io*3;io++;
+        op.pos[k]=tri[p]+d[o];op.pos[k+1]=tri[p+1]+d[o+1];op.pos[k+2]=tri[p+2]+d[o+2];
+        op.col[k]=L[0];op.col[k+1]=L[1];op.col[k+2]=L[2];
+      }
+    }
+    if(edges&&c.ed&&c.ecount){
+      for(i=0;i<c.ecount;i++)if(d[c.ed[i*4+3]*8+3]>=0)ne++;
+      ed={pos:new Float32Array(ne*3),n:ne};k=0;
+      for(i=0;i<c.ecount;i++){
+        p=i*4;o=c.ed[p+3]*8;
+        if(d[o+3]<0)continue;
+        ed.pos[k]=c.ed[p]+d[o];ed.pos[k+1]=c.ed[p+1]+d[o+1];ed.pos[k+2]=c.ed[p+2]+d[o+2];k+=3;
+      }
+    }
+    return {op:op,tr:tr,ed:ed};
+  }
+  /* a terrain's surface for the picture: its triangles as the 3D view drapes them, in its colour */
+  function bimRvTerrainItem(o){
+    var tin=bimTerrainTin(o),i,h=0,sel,hx,box;
+    if(!tin||!tin.tris||!tin.tris.length)return null;
+    if(!tin.tris.__rv)tin.tris.__rv=++BIM_RV_SEQ;   /* the cached triangles' own number: new when they are rebuilt */
+    box=[Infinity,Infinity,Infinity,-Infinity,-Infinity,-Infinity];
+    for(i=0;i<tin.H.length;i++){
+      h=(h*31+Math.round(tin.H[i]*1000)+Math.round(tin.P[i][0]*1000)*7+Math.round(tin.P[i][1]*1000)*13)|0;
+      if(tin.P[i][0]<box[0])box[0]=tin.P[i][0];if(tin.H[i]<box[1])box[1]=tin.H[i];if(tin.P[i][1]<box[2])box[2]=tin.P[i][1];
+      if(tin.P[i][0]>box[3])box[3]=tin.P[i][0];if(tin.H[i]>box[4])box[4]=tin.H[i];if(tin.P[i][1]>box[5])box[5]=tin.P[i][1];
+    }
+    sel=(o.id===A3D.sel||(A3D.selSet&&A3D.selSet.indexOf(o.id)>=0));
+    hx=sel?'#4ea1ff':(bimAwCtxCol(o)||o.col||'#b08559');
+    return {key:'t'+o.id,sig:tin.tris.__rv+':'+tin.H.length+':'+h+':'+hx,terrain:tin,col:hx,box:box};
+  }
+  function bimRvTerrainArrays(it){
+    var tin=it.terrain,T=tin.tris,n=T.length*3,pos=new Float32Array(n*3),col=new Float32Array(n*3),c=bimHexToRgb(it.col),
+      L=[bimRvLin(c[0]),bimRvLin(c[1]),bimRvLin(c[2])],i,j,v,k=0;
+    for(i=0;i<T.length;i++)for(j=0;j<3;j++){
+      v=T[i][j];
+      pos[k]=tin.P[v][0];pos[k+1]=tin.H[v];pos[k+2]=tin.P[v][1];
+      col[k]=L[0];col[k+1]=L[1];col[k+2]=L[2];k+=3;
+    }
+    return {op:{pos:pos,col:col,n:n},tr:null,ed:null};
+  }
+  function bimRvBoxAdd(b,x){
+    if(!x||!(x[0]<=x[3]))return b;
+    if(!b)return [x[0],x[1],x[2],x[3],x[4],x[5]];
+    if(x[0]<b[0])b[0]=x[0];if(x[1]<b[1])b[1]=x[1];if(x[2]<b[2])b[2]=x[2];
+    if(x[3]>b[3])b[3]=x[3];if(x[4]>b[4])b[4]=x[4];if(x[5]>b[5])b[5]=x[5];
+    return b;
+  }
+  /* the frame's part: the description brought up to date, and what the picture is made of: a part for each chunk and
+     each terrain shown, each with a key and its look in a few characters, the box of them all, the faces */
+  function bimRvPlan(edges){
+    var F=bimSceneSync(),B=F.S,items=[],box=null,i,c,o,t,nt=0;
+    for(i=0;i<B.chunks.length;i++){
+      c=B.chunks[i];
+      if(!c.rv)c.rv=++BIM_RV_SEQ;
+      items.push({key:'c'+c.rv,sig:bimRvChunkSig(B,c)+(edges?':e':''),chunk:c});
+      if(c.wb&&c.wb.f===B.frame)box=bimRvBoxAdd(box,c.wb);
+    }
+    for(i=0;i<A3D.objs.length;i++){
+      o=A3D.objs[i];
+      if(o.t!=='terrain'||!o.survey||!bimLayerShown(o)||bimTerrainSuperseded(o))continue;
+      t=bimRvTerrainItem(o);
+      if(t){items.push(t);box=bimRvBoxAdd(box,t.box);nt++;}
+    }
+    return {S:B,items:items,box:box,totalFaces:F.totalFaces,terrains:nt,edges:!!edges};
+  }
+  /* the arrays of one of the plan's parts, asked for only when the part is new or looks different */
+  function bimRvBuild(plan,it){
+    if(it.chunk)return bimRvChunkArrays(plan.S,it.chunk,plan.edges);
+    if(it.terrain)return bimRvTerrainArrays(it);
+    return null;
+  }
+  /* the view's camera as the picture takes it: camera to world (its right, up and back, then the eye) and the
+     projection the shaded view uses, both column-major */
+  function bimRvCamera(V,W,H,flat,dist){
+    var r=V.r,u=V.u,d=V.d,e=V.eye,P=bimGlProjMatrix(W,H,flat,dist),p=[],i;
+    for(i=0;i<16;i++)p.push(P[i]);
+    return {world:[r[0],r[1],r[2],0,u[0],u[1],u[2],0,d[0],d[1],d[2],0,e[0],e[1],e[2],1],proj:p};
+  }
+  /* how far around what the camera looks at the shadows are kept sharp: the view's own width at that distance, never
+     more than the model's size */
+  function bimRvReach(dist,box){
+    var r=Math.max(2,dist*0.6),m;
+    if(box){m=Math.sqrt((box[3]-box[0])*(box[3]-box[0])+(box[4]-box[1])*(box[4]-box[1])+(box[5]-box[2])*(box[5]-box[2]))/2*1.2;if(m>2&&m<r)r=m;}
+    return r;
+  }
+  /* the sun the picture is lit by: the site's at the moment studied, toward it; or the shaded view's light where the
+     site has no place */
+  function bimRvSun(){
+    var s=null,v,st;
+    try{s=bimSunNow();}catch(eS){console.warn('[BIM] Rendered view: the sun could not be worked out',eS);s=null;}
+    if(!s||s.missing)return {dir:[LIGHT[0],LIGHT[1],LIGHT[2]],up:true,site:false,elev:null,text:'the shaded view\'s light: the site has no place yet (Properties, Site, Location)'};
+    v=bimSunVector(s);st=s.settings||{};
+    return {dir:v,up:v[1]>0.02,site:true,elev:s.elevation,
+      text:(s.elevation>0?'the sun at '+st.time+' on '+bimSunDayText(st.date)+', altitude '+s.elevation.toFixed(1)+' deg':'night: the sun is down at '+st.time+' on '+bimSunDayText(st.date))};
+  }
+
+  /* ================= __acad3dV194: the rendered view =================
+     docs/research/research-rendered-view.md. A third way the 3D view is drawn, beside WebGPU and WebGL: the model in
+     daylight, by three.js (render/rendered-core.js draws it, render/rendered-scene.js says what). Off until asked for
+     (RENDER, or Properties > View > Display), and never kept on between sessions: the app opens as it always has.
+
+     three.js is not part of the build. It is one file, runtime/three/<version>/bim-three.min.js (MIT, pinned in
+     runtime/MANIFEST.json by its SHA-256, built by tools/three), fetched when the view is first asked for: from the
+     page's own folder over http(s), and from a copy opened from a disk first from a runtime folder beside it, then
+     from the Pages address. Where the browser can check it against its hash, it does (subresource integrity).
+
+     The picture is drawn on a canvas of its own under the overlay, where the other two engines' canvases are, with
+     the view's own camera, so the grips, dimensions and text drawn over it, picking and Save image work as before.
+     Each paint that changes what is seen (the model, the camera, the sun, a setting) starts the picture again with one
+     pass; while nothing changes, passes are added a few a frame until the quality's number is reached. Anything that
+     fails (no three.js, no WebGL 2, a lost context, a frame that throws) is said once and the shaded view is back in
+     the same frame: never a broken view. */
+  var BIM_RV_VER='0.186.1',BIM_RV_FILE='three/'+BIM_RV_VER+'/bim-three.min.js';
+  var BIM_RV_SRI='sha256-r8p2oyLyx/81rHa7DTkKeKHnPCAbNT6EVqOoPVzoip0=';   /* the file's SHA-256, as runtime/MANIFEST.json pins it */
+  var BIM_RV_KEY='acad3dRenderedV1';
+  var BIM_RV_STILL_MS=140;   /* passes are added once the view has been still this long */
+  var A3D_RV={on:false,st:'idle',err:'',T:null,core:null,cv:null,sig:'',done:0,want:64,raf:0,per:1,last:0,stillAt:0,
+    load:null,hold:false,drew:false,set:null,sun:null,sky:null,info:null};
+  /* the view's settings, this browser's: the sky, the ground, the edges, the quality */
+  function bimRvSettings(){
+    if(A3D_RV.set)return A3D_RV.set;
+    var s={sky:'clear',ground:true,edges:false,quality:'good'},r=null;
+    try{r=JSON.parse(localStorage.getItem(BIM_RV_KEY)||'null');}catch(eS){r=null;}
+    if(r&&typeof r==='object'){
+      if(BIM_RV_SKIES.hasOwnProperty(r.sky))s.sky=r.sky;
+      if(BIM_RV_QUALITY.hasOwnProperty(r.quality))s.quality=r.quality;
+      if(typeof r.ground==='boolean')s.ground=r.ground;
+      if(typeof r.edges==='boolean')s.edges=r.edges;
+    }
+    A3D_RV.set=s;
+    return s;
+  }
+  function bimRvSetting(k,v){
+    var s=bimRvSettings();
+    if(k==='sky'&&BIM_RV_SKIES.hasOwnProperty(v))s.sky=v;
+    else if(k==='quality'&&BIM_RV_QUALITY.hasOwnProperty(v))s.quality=v;
+    else if(k==='ground'||k==='edges')s[k]=(v===true||v==='1');
+    else return false;
+    try{localStorage.setItem(BIM_RV_KEY,JSON.stringify(s));}
+    catch(eS){console.warn('[BIM] The rendered view\'s settings could not be kept in this browser',eS);}
+    A3D_RV.sig='';
+    if(A3D.on)paint();
+    refreshProps();
+    return true;
+  }
+  /* where three.js is asked for, in order, [{u, sri}]: from the runtime's address (base: the page's own folder over
+     http(s), the Pages address for a copy on a disk), and for a copy on a disk first from a runtime folder beside it */
+  function bimRvSources(protocol,base){
+    var p=String(protocol||''),out=[];
+    if(p!=='http:'&&p!=='https:')out.push({u:'runtime/'+BIM_RV_FILE,sri:false});
+    out.push({u:String(base)+BIM_RV_FILE,sri:true});
+    return out;
+  }
+  /* three.js, asked for once; a promise of it */
+  function bimRvLoad(){
+    var R=A3D_RV;
+    if(R.load)return R.load;
+    if(window.BIMTHREE&&window.BIMTHREE.WebGLRenderer){R.T=window.BIMTHREE;R.st='ready';R.load=Promise.resolve(R.T);return R.load;}
+    var src=bimRvSources(window.location&&window.location.protocol,bimLbBase()),i=0;
+    R.st='loading';R.err='';
+    R.load=new Promise(function(res,rej){
+      function next(){
+        if(i>=src.length){rej(new Error('three.js could not be loaded from '+src.map(function(s){return s.u;}).join(' or ')));return;}
+        var s=src[i++],tag=document.createElement('script');
+        tag.src=s.u;
+        if(s.sri){tag.integrity=BIM_RV_SRI;tag.crossOrigin='anonymous';}
+        tag.onload=function(){if(window.BIMTHREE&&window.BIMTHREE.WebGLRenderer)res(window.BIMTHREE);else next();};
+        tag.onerror=function(){if(tag.parentNode)tag.parentNode.removeChild(tag);next();};
+        document.head.appendChild(tag);
+      }
+      next();
+    }).then(function(T){R.T=T;R.st='ready';return T;},function(e){R.st='failed';R.err=String(e&&e.message||e);R.load=null;throw e;});
+    return R.load;
+  }
+  /* a phone or a small tablet: smaller shadow maps and no multisampling */
+  function bimRvLightDevice(){
+    var m=navigator.deviceMemory,t=navigator.maxTouchPoints||0,s=window.screen?Math.min(window.screen.width||0,window.screen.height||0):0;
+    return (typeof m==='number'&&m<=4)||(t>0&&s>0&&s<=900);
+  }
+  /* the picture's canvas, under the overlay beside the other engines' */
+  function bimRvCanvas(){
+    var R=A3D_RV,over=el.cv,cv;
+    if(R.cv)return R.cv;
+    if(!over||!over.parentNode)return null;
+    cv=document.createElement('canvas');
+    cv.id='a3d-rvcanvas';
+    over.parentNode.insertBefore(cv,over);
+    cv.addEventListener('webglcontextlost',function(ev){ev.preventDefault();bimRvLost();},false);
+    R.cv=cv;
+    return cv;
+  }
+  /* the picture given back: its canvas and everything three.js holds */
+  function bimRvDrop(){
+    var R=A3D_RV;
+    if(R.raf){cancelAnimationFrame(R.raf);R.raf=0;}
+    if(R.core){try{R.core.dispose();}catch(eD){console.warn('[BIM] Rendered view: its picture could not be given back',eD);}}
+    if(R.cv&&R.cv.parentNode)R.cv.parentNode.removeChild(R.cv);
+    R.core=null;R.cv=null;R.sig='';R.done=0;R.drew=false;
+  }
+  function bimRvLost(){
+    var R=A3D_RV;
+    if(!R.core)return;
+    R.core=null;   /* its context is gone: nothing to give back */
+    bimRvDrop();
+    R.on=false;R.err='the graphics context was lost';
+    console.warn('[BIM] Rendered view: the graphics context was lost; the shaded view is back.');
+    a3dToast('The rendered view lost its graphics context. The shaded view is back.');
+    setTimeout(function(){if(A3D.on)paint();refreshProps();},0);
+  }
+  function bimRvFail(e){
+    var R=A3D_RV,s=String(e&&e.message||e);
+    R.on=false;R.err=s;
+    console.warn('[BIM] Rendered view stopped: '+s,e);
+    a3dToast('The rendered view stopped: '+s+'. The shaded view is back.');
+    bimRvDrop();
+    setTimeout(function(){if(A3D.on)paint();refreshProps();},0);
+  }
+  function bimRvEnsure(){
+    var R=A3D_RV,cv;
+    if(R.cv&&!R.cv.parentNode)bimRvDrop();   /* the view was rebuilt under it */
+    if(R.core)return R.core;
+    cv=bimRvCanvas();
+    if(!cv)return null;
+    R.core=bimRvCore(R.T,cv,{light:bimRvLightDevice()});
+    R.info=R.core.stats();
+    return R.core;
+  }
+  /* everything the picture depends on, in one string: a paint that changes none of it adds no work */
+  function bimRvSig(cam,sun,sky,st,plan,wD,hD,reach,groundAt,ground){
+    var s=[wD,hD,ground?1:0,st.edges?1:0,sky.n,sun.up?1:0,Math.round(reach*100),Math.round(groundAt*1000)],i;
+    for(i=0;i<16;i++)s.push(Math.round(cam.world[i]*1e4));
+    for(i=0;i<16;i++)s.push(Math.round(cam.proj[i]*1e5));
+    for(i=0;i<3;i++)s.push(Math.round(sun.dir[i]*1e4));
+    for(i=0;i<plan.items.length;i++)s.push(plan.items[i].key+'='+plan.items[i].sig);
+    return s.join(',');
+  }
+  /* the frame, when the view is on and ready: true when the picture is what is seen */
+  function bimRvRender(V,W,H){
+    var R=A3D_RV;
+    R.drew=false;
+    if(!R.on||R.st!=='ready'||R.hold||(A3D_BENCH&&A3D_BENCH.running))return false;
+    try{
+      var core=bimRvEnsure();
+      if(!core)return false;
+      var st=bimRvSettings(),gs=cvScale(el.cv),wD=Math.max(1,Math.round(W*gs)),hD=Math.max(1,Math.round(H*gs)),
+        plan=bimRvPlan(st.edges),cam=bimRvCamera(V,W,H,A3D.flat,A3D.cam.dist),sun=bimRvSun(),
+        sky=bimRvSkyFor(st.sky,sun.up,sun.elev),reach=bimRvReach(A3D.cam.dist,plan.box),groundAt=bimShadowGround(),
+        ground=st.ground&&!plan.terrains,   /* a terrain is the ground */
+        sig=bimRvSig(cam,sun,sky,st,plan,wD,hD,reach,groundAt,ground);
+      R.sun=sun;R.sky=sky;
+      if(sig!==R.sig){
+        core.size(wD,hD);
+        core.scene(plan.items,function(it){return bimRvBuild(plan,it);});
+        core.begin({world:cam.world,proj:cam.proj,focus:[A3D.cam.tx||0,A3D.cam.ty||0,A3D.cam.tz||0],reach:reach,
+          sun:sun.up?sun.dir:null,sky:sky,ground:ground,groundAt:groundAt,edges:st.edges});
+        R.done=core.pass();
+        core.show();
+        R.sig=sig;R.want=BIM_RV_QUALITY[st.quality]||BIM_RV_QUALITY.good;
+        R.stillAt=performance.now()+BIM_RV_STILL_MS;R.last=0;
+      }
+      R.drew=true;
+      if(R.done<R.want&&!R.raf)R.raf=requestAnimationFrame(bimRvRefine);
+      bimSceneFrameDone(plan.S,'rendered');
+      A3D.glFaces=plan.totalFaces;
+      return true;
+    }catch(eR){bimRvFail(eR);return false;}
+  }
+  /* passes added while the view is still: more a frame while the frames come on time, fewer when they come late */
+  function bimRvRefine(t){
+    var R=A3D_RV,n,i;
+    R.raf=0;
+    if(!R.on||!R.core||!R.drew||R.done>=R.want)return;
+    if(performance.now()<R.stillAt){R.raf=requestAnimationFrame(bimRvRefine);return;}
+    if(R.last){if(t-R.last<22)R.per=Math.min(8,R.per+1);else if(t-R.last>40)R.per=Math.max(1,R.per>>1);}
+    R.last=t;
+    try{
+      n=Math.min(R.per,R.want-R.done);
+      for(i=0;i<n;i++)R.done=R.core.pass();
+      R.core.show();
+    }catch(eP){bimRvFail(eP);return;}
+    if(R.done<R.want)R.raf=requestAnimationFrame(bimRvRefine);
+    else{R.last=0;bimRvTell();}
+  }
+  /* the view's state in words, for Properties */
+  function bimRvStateText(){
+    var R=A3D_RV;
+    if(R.st==='loading')return 'Loading three.js (about 750 KB, once)';
+    if(R.st==='failed')return 'Could not start: '+R.err;
+    if(!R.on)return 'Off';
+    if(!R.drew)return 'Not drawn here: Presentation and sheets are drawn in 2D';
+    return (R.done<R.want?R.done+' of '+R.want+' passes':R.want+' passes')+'; lit by '+(R.sun?R.sun.text:'the sun');
+  }
+  /* Properties' line brought up to date without redrawing the panel */
+  function bimRvTell(){
+    var e=document.querySelector('[data-rvstate]');
+    if(e)e.textContent=bimRvStateText();
+  }
+  /* the view turned on or off; a promise of whether it is on */
+  function bimRvSetOn(on){
+    var R=A3D_RV;
+    if(!on){
+      R.on=false;R.drew=false;R.sig='';
+      if(R.raf){cancelAnimationFrame(R.raf);R.raf=0;}
+      if(A3D.on)paint();
+      refreshProps();
+      return Promise.resolve(false);
+    }
+    if(!A3D.on){a3dToast('Open the model (3D) first');return Promise.resolve(false);}
+    R.on=true;R.sig='';
+    if(R.st!=='ready')a3dToast('Rendered view: loading three.js (about 750 KB, once)');
+    refreshProps();
+    return bimRvLoad().then(function(){
+      if(!R.on)return false;
+      paint();
+      refreshProps();
+      if(R.on&&R.drew)a3dToast('Rendered view: lit by '+R.sun.text+'. RENDER again for the shaded view.');
+      else if(R.on)a3dToast('Rendered view on: Presentation and sheets are still drawn in 2D');
+      return R.on;
+    },function(e){
+      R.on=false;
+      console.warn('[BIM] Rendered view: '+String(e&&e.message||e));
+      a3dToast('The rendered view could not start: '+String(e&&e.message||e));
+      if(A3D.on)paint();
+      refreshProps();
+      return false;
+    });
+  }
+  function bimRvCommand(){
+    if(A3D_RV.on){bimRvSetOn(false);a3dToast('Shaded view');return;}
+    bimRvSetOn(true);
+  }
+  /* Properties > View: the display, and the rendered view's settings while it is on */
+  function bimRvProp(mk,mv){
+    if(mk==='rendered'){bimRvSetOn(mv==='1');return true;}
+    if(mk==='rvsky')return bimRvSetting('sky',mv);
+    if(mk==='rvquality')return bimRvSetting('quality',mv);
+    if(mk==='rvground')return bimRvSetting('ground',mv);
+    if(mk==='rvedges')return bimRvSetting('edges',mv);
+    return false;
+  }
+  function bimRvPropsHtml(){
+    var R=A3D_RV,s=bimRvSettings(),h,k,o='';
+    function two(key,on,a,b){
+      return '<select data-propmodel="'+key+'"><option value="1"'+(on?' selected':'')+'>'+a+'</option><option value="0"'+(on?'':' selected')+'>'+b+'</option></select>';
+    }
+    h=bimPropRow('Display','<select data-propmodel="rendered"><option value="0"'+(R.on?'':' selected')+'>Shaded</option>'+
+      '<option value="1"'+(R.on?' selected':'')+'>Rendered</option></select>');
+    if(!R.on)return h;
+    for(k in BIM_RV_SKIES)if(BIM_RV_SKIES.hasOwnProperty(k))o+='<option value="'+k+'"'+(s.sky===k?' selected':'')+'>'+bimEsc(BIM_RV_SKIES[k].n)+'</option>';
+    h+=bimPropRow('Sky','<select data-propmodel="rvsky">'+o+'</select>');
+    o='';
+    for(k in BIM_RV_QUALITY_NAMES)if(BIM_RV_QUALITY_NAMES.hasOwnProperty(k))o+='<option value="'+k+'"'+(s.quality===k?' selected':'')+'>'+bimEsc(BIM_RV_QUALITY_NAMES[k])+'</option>';
+    h+=bimPropRow('Quality','<select data-propmodel="rvquality">'+o+'</select>');
+    h+=bimPropRow('Ground',two('rvground',s.ground,'Shown','Hidden'));
+    h+=bimPropRow('Edges',two('rvedges',s.edges,'Shown','Hidden'));
+    h+=bimPropRow('Rendered','<span class="a3d-pstatic" data-rvstate="1">'+bimEsc(bimRvStateText())+'</span>');
+    return h;
+  }
+  /* Statistics' Graphics line while the picture is what is seen */
+  function bimRvLabel(){
+    return 'Rendered (three.js r'+(A3D_RV.T?A3D_RV.T.REVISION:'')+')';
+  }
   /* ================= __acad3dV153: the WebGPU engine =================
      Where the browser has WebGPU the model is drawn with it, from the same description: the
      chunks as vertex buffers, the table as a storage buffer, and every draw recorded once in a
@@ -36986,6 +37677,14 @@ try{
   /* the frame: WebGPU where it is ready and draws everything in view, else WebGL */
   function bimRender3D(V,W,H){
     var gc=document.getElementById('a3d-gpucanvas'),lc=document.getElementById('a3d-glcanvas'),why='';
+    /* __acad3dV194: the rendered view, when it is on and ready; whatever it cannot draw falls to the engines below */
+    var rc=bimRvRender(V,W,H)?A3D_RV.cv:null;
+    if(A3D_RV.cv)A3D_RV.cv.style.visibility=rc?'visible':'hidden';
+    if(rc){
+      if(gc)gc.style.visibility='hidden';if(lc)lc.style.visibility='hidden';
+      A3D_GPU.engine='rendered';A3D_GPU.fallback='';
+      return true;
+    }
     if(A3D_GPU.state==='off')bimGpuStart();
     if(A3D_GPU.state==='ready'&&bimGpuPref()!=='webgl'&&!A3D_GPU.forceOff){
       why=bimGpuNeedsGl(V,W,H);
@@ -37014,6 +37713,7 @@ try{
   function bimRenderBench(frames){
     var c=A3D.cam,y0=c.yaw,W=cvW(),H=cvH(),px=new Uint8Array(4),sum=0,mx=0,first=0,i=0,n=frames||20;
     if(!bimGlInit()&&A3D_GPU.state!=='ready')return Promise.resolve(null);
+    var rvHold=A3D_RV.hold;A3D_RV.hold=true;   /* __acad3dV194: the two engines are what is timed, never the rendered view */
     function one(){
       c.yaw=y0+i*0.01;
       var t0=performance.now();
@@ -37027,7 +37727,7 @@ try{
       });
     }
     return one().then(function(){
-      c.yaw=y0;
+      c.yaw=y0;A3D_RV.hold=rvHold;
       return {first:first,avg:sum/Math.max(1,n-1),max:mx,engine:A3D_GPU.engine,stats:A3D.glStats?JSON.parse(JSON.stringify(A3D.glStats)):null};
     });
   }
@@ -37077,6 +37777,7 @@ try{
   /* GRAPHICS: which engine draws, and the choice of WebGL for this browser */
   function bimGraphicsLabel(){
     var P=A3D_GPU;
+    if(P.engine==='rendered')return bimRvLabel();   /* __acad3dV194 */
     if(P.engine==='webgpu')return 'WebGPU';
     if(P.engine==='2d')return 'Drawn in 2D (no WebGL)';
     if(bimGpuPref()==='webgl')return 'WebGL (chosen)';
@@ -40820,12 +41521,14 @@ try{
        behind it. This is a real, visible trade (CPU vector-quality rendering instead of GPU-
        shaded triangles) made only when a person opts in, not a silent slowdown. */
     var glOn=(capMode||A3D.presentMode||bimPresentGraphics())?false:bimRender3D(V,W,H);   /* __acad3dV122; __acad3dV153: WebGPU or WebGL */
+    if(!glOn)A3D_RV.drew=false;   /* __acad3dV194: a frame drawn in 2D is not the rendered view's */
     if(capMode){ctx.fillStyle='#ffffff';ctx.fillRect(0,0,W,H);}
     else if(glOn){ctx.clearRect(0,0,W,H);}
     else{ctx.fillStyle=bimAwBgHex();ctx.fillRect(0,0,W,H);}   /* __acad3dV171b */
     if(!capMode){
       if(!glOn)bimMapDraw2D(ctx,V,W,H);   /* __acad3dV132: the basemap; with WebGL on it is drawn there */
       bimMapFooterSync();
+      if(!A3D_RV.drew){   /* __acad3dV194: a rendered picture has neither the grid nor the origin's axes over it */
       ctx.strokeStyle=bimAwLook()?bimAwLook().grid:'#282c31';ctx.lineWidth=1;ctx.beginPath();   /* __acad3dV171b */
       for(i=-12;i<=12;i+=2){
         var g1=toScreen([i,0,-12],V,W,H),g2=toScreen([i,0,12],V,W,H);
@@ -40844,6 +41547,7 @@ try{
         var gzOe=toScreen(A3D_ORIGIN_AXES[gzOa].to,V,W,H);
         ctx.strokeStyle=A3D_ORIGIN_AXES[gzOa].col;
         ctx.beginPath();ctx.moveTo(o0[0],o0[1]);ctx.lineTo(gzOe[0],gzOe[1]);ctx.stroke();
+      }
       }
     }
     /* __acad3dV63: in presentation mode a room's colour fill is drawn BEFORE the solids, so it
@@ -42618,7 +43322,7 @@ try{
     var cv=el.cv,out=document.createElement('canvas'),c,src=null,eng,id;
     out.width=cv.width;out.height=cv.height;c=out.getContext('2d');
     paint();
-    eng=A3D_GPU.engine;id=eng==='webgpu'?'a3d-gpucanvas':(eng==='webgl'?'a3d-glcanvas':'');
+    eng=A3D_GPU.engine;id=eng==='webgpu'?'a3d-gpucanvas':(eng==='webgl'?'a3d-glcanvas':(eng==='rendered'?'a3d-rvcanvas':''));   /* __acad3dV194 */
     if(id&&!A3D.presentMode&&!bimPresentGraphics()){src=document.getElementById(id);if(src&&(src.style.visibility==='hidden'||!(src.width>0)||!(src.height>0)))src=null;}
     if(src)c.drawImage(src,0,0,out.width,out.height);
     c.drawImage(cv,0,0);
@@ -45578,7 +46282,7 @@ try{
       if(gp.ok&&!gp.o)return bimPickSketch(x,y);
     }
     A3D.lastPickPath='cpu';
-    if(A3D_GL||A3D_GPU.engine==='webgpu')bimBuildPickPolys();
+    if(A3D_GL||A3D_GPU.engine==='webgpu'||A3D_GPU.engine==='rendered')bimBuildPickPolys();   /* __acad3dV194 */
     for(i=A3D.lastPolys.length-1;i>=0;i--){
       if(A3D.lastPolys[i].lock)continue;
       if(inPoly(x,y,A3D.lastPolys[i].pts))return A3D.lastPolys[i].o;
@@ -52243,7 +52947,7 @@ try{
   }
   function drawSunShadows(ctx,V,W,H){
     A3D.lastShadows=null;
-    if(!A3D.showSun||!bimCameraIsPlan())return;   /* __acad3dV119 */
+    if(!A3D.showSun||!bimCameraIsPlan()||A3D_RV.drew)return;   /* __acad3dV119; __acad3dV194: the rendered view casts its own */
     var sun=bimSunNow();
     if(sun.missing){A3D.lastShadows={missing:sun.missing};return;}
     if(!(sun.elevation>0)){A3D.lastShadows={night:true,elevation:sun.elevation,azimuth:sun.azimuth};return;}
@@ -63901,6 +64605,7 @@ try{
         var mk=mp.getAttribute('data-propmodel'),mv=mp.value;
         if(mk==='truenorth'){bimSetTrueNorth(mv);return;}   /* __acad3dV103 */
         if(mk==='sunlat'||mk==='sunlon'||mk==='suntz'||mk==='sundate'||mk==='suntime'||mk==='sundst'){bimSetSun(mk.slice(3),mv);return;}   /* __acad3dV107; __acad3dV171d: sundst */
+        if(mk==='rendered'||mk.indexOf('rv')===0){bimRvProp(mk,mv);return;}   /* __acad3dV194: this browser's display, not the project's */
         if(mk==='project'){A3D.titleBlock.project=mv;}
         else if(mk==='client'){A3D.titleBlock.client=mv;}
         else if(mk==='site'){updateSite('name',mv);}
@@ -64454,6 +65159,7 @@ try{
     merge:function(){bimHistReveal(false);if(bimHistBranches().length<2)a3dToast('There is one branch: start another with BRANCH');},
     comparebranches:function(){setA3D_BR_CMP(true);bimHistReveal(false);},
     graphics:function(){bimGraphicsCommand();},   /* __acad3dV153 */
+    render:function(){bimRvCommand();},   /* __acad3dV194 */
     benchmark:function(){bimBenchmark();},   /* __acad3dV155 */
     cutfill:function(){bimCutFillCommand();},
     cutfillmap:function(){bimCutFillMapCommand();},
@@ -65412,6 +66118,19 @@ try{
   window.__a3dGlFaces=function(){return A3D.glFaces||0;};
   window.__a3dGpu=function(){var P=A3D_GPU;return {state:P.state,why:P.why,engine:P.engine,fallback:P.fallback,pref:bimGpuPref(),label:bimGraphicsLabel(),bundleDraws:P.bdraws,format:P.format};};   /* __acad3dV153 */
   window.__a3dGraphics=function(pref){return bimGraphicsSet(pref);};
+  /* __acad3dV194: the rendered view: its state; with true or false, turned on or off (a promise of its state) */
+  window.__a3dRendered=function(on){
+    var R=A3D_RV;
+    if(on===true||on===false)return bimRvSetOn(on).then(function(){return window.__a3dRendered();});
+    return {on:R.on,state:R.st,err:R.err,drew:R.drew,done:R.done,want:R.want,settings:JSON.parse(JSON.stringify(bimRvSettings())),
+      sun:R.sun?R.sun.text:null,sky:R.sky?R.sky.n:null,info:R.info,canvas:!!R.cv,text:bimRvStateText()};
+  };
+  window.__a3dRenderedSet=function(k,v){return bimRvSetting(k,v);};
+  window.__acad3dV194='rendered,threejs,passes,sky,ground,edges,terrain,saveimage';
+  window.__a3dRv={halton:bimRvHalton,unit:bimRvUnit,cross:bimRvCross,basis:bimRvBasis,hemisphere:bimRvHemisphere,sunDisc:bimRvSunDisc,
+    farPlane:bimRvFarPlane,jitter:bimRvJitter,lin:bimRvLin,rowColour:bimRvRowColour,chunkSig:bimRvChunkSig,chunkArrays:bimRvChunkArrays,
+    terrainItem:bimRvTerrainItem,terrainArrays:bimRvTerrainArrays,boxAdd:bimRvBoxAdd,sources:bimRvSources,load:bimRvLoad,drop:bimRvDrop,
+    night:BIM_RV_NIGHT,file:BIM_RV_FILE,sri:BIM_RV_SRI,ver:BIM_RV_VER,key:BIM_RV_KEY};
   window.__a3dGpuCompare=function(){return bimGpuCompare();};
   window.__a3dGpuRestart=function(){if(A3D_GPU.state==='starting'||A3D_GPU.state==='ready')return A3D_GPU.state;A3D_GPU.state='off';A3D_GPU.why='';bimGpuStart();return A3D_GPU.state;};
   window.__a3dGpuTiles=function(){var k,e,n=0,lv=[];for(k in A3D_MAP.cache)if(A3D_MAP.cache.hasOwnProperty(k)){e=A3D_MAP.cache[k];if(e.gtx&&e.gtx.dev===A3D_GPU.device){n++;lv.push(e.gtx.tex.mipLevelCount);}}return {textures:n,levels:lv,live:A3D_GPU.tileLive||0};};   /* __acad3dV154 */

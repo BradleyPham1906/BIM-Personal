@@ -26,15 +26,17 @@ requires command mapping, full app regressions and owner review.
 
 **Read this first in a new session.** One page. The detail lives in the docs listed at the bottom.
 
-    canvas_v10.html   4005368 bytes
-    sha256            2e405746f48c53be6c22dadcdbe869bddf081213a43a8f9760858590b7533ffa
+    canvas_v10.html   4277033 bytes (after V194, on the branch render-r6)
+    sha256            56a2f6e55d49b1cbfd265faa32d07dd29572df9af8515fc9f6aa0d2cd09c0f9b
     markers           __acad3dV60 ... __acad3dV172, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
                       __acad3dV121b, __acad3dV124b, __acad3dV166b, __acad3dV166c, __acad3dV166d, __acad3dV171b,
                       __acad3dV171c, __acad3dV171d, __acad3dV172b, __acad3dV172c, __acad3dV172d, __acad3dV172e,
                       __acad3dV172f, __acad3dV172g, __acad3dV172h
     runtime           runtime/: Pyodide 0.29.5, Ladybug's five wheels, Pyodide's numpy and Radiance's gendaymtx as
                       WebAssembly (the release rad6R0P1a), 15 files each pinned in runtime/MANIFEST.json
-                      (tools/check_runtime.py); asked only when a Ladybug analysis runs (V172b, V172c)
+                      (tools/check_runtime.py); asked only when a Ladybug analysis runs (V172b, V172c); and
+                      three.js 0.186.1 as one classic script with its licence, 2 files, asked only when the
+                      rendered view is (V194): 17 files in all
     tests             140 suites, 7156 checks, 0 failures after V172f (2026-11-07: the full regression on main 3f0bcbc,
                       6957 of 6962 in 688 s with 4 workers; the five failing suites amended, below), and the 28 unit
                       tests (npm test); with cjval built, V139 and V140 run their three more
@@ -178,6 +180,7 @@ three tiers: compact up to 720 px wide or 500 px high, medium up to 1024 px, des
 | 191 | LOD-F: LOD3 openings | Windows and doors drawn on the rectified facade, regularised into rows and columns, optionally detected (SAM in the browser, on request), cut into the wall | Checked against measured openings. |
 | 192 | LOD-G: Gaussian splats | A `.splat` capture placed on the site as a photoreal backdrop to trace against | antimatter15/splat, MIT. |
 | 193 | MEP runs | Duct and pipe runs at connectors, systems, flow, velocity and friction | MEP is its own discipline (the owner's choice). The research is drafted in `docs/research/research-mep-runs.md`. |
+| 194 | Render R6: the rendered view | **Built** (branch `render-r6`; the build checks, `npm test` 175 of 175; experiment e01 in headless Edge, nine cases, no errors; the app's own browser check not run, the full regression not run): `RENDER` and Properties > View > Display show the model in daylight, by three.js 0.186.1 (MIT) as a pinned runtime loaded on first use, the second written exception to "no dependencies" (the owner, 2026-11-11); the picture is the average of 16, 64 or 256 passes (the camera, the sun and a sky light each moved a little: smooth edges, soft shadows, shaded corners), BimCraft's method (Apache-2.0, credited), the first pass at once and the rest while the view is still; the site's sun and clock, or the shaded view's light; four skies and a night; a ground; edges; terrain surfaces; the overlay, picking and Save image as before; any failure falls back to the shaded view in the same frame. Not yet: the basemap and draped terrain, sheets and Present, materials by element type, textures, lamps | `docs/research/research-rendered-view.md`, with what each reference project (BimCraft, BIMCraft, BeamCraft, CreaBIM, Open CAD Studio, Open Infra Studio, Bonsai, FreeCAD) can and cannot give the app, and the order after this: glTF, full IFC, surfaces by kind, the map in the rendered view, the interface. `docs/work-orders/v194/`. |
 | later | Model import: glTF, and valdrada's credited models | glTF and GLB in as Assets models (meshes, materials as colours, sizes kept); valdrada's vehicles (CARLA's and its author's, CC BY 4.0) converted to V169's kinds, their dimensions kept, credited in THIRD_PARTY_NOTICES.md | The owner (V166): in-house models first, valdrada's later. Read 2026-10-24: its pedestrians (`client/src/sim/pedmesh.js`) and street trees (`client/src/city/treeGen.js`) are generator code (MIT), not model files, so they need no glTF: the walk cycle about joint pivots is for V171, on V169's bodies; the crown envelopes by species form, optional, for nearer views. |
 | later | Hub H3: full IFC | web-ifc (WebAssembly, MPL-2.0) to read and write full IFC 4 and 4.3; IFC GUIDs kept on the elements so H1's diffs are IFC diffs | Our IFC writer and reader cover a subset today. |
 | later | Hub H4: share and sync | Push and pull a project's history to a repository, one file per element so git diffs and merges per element; GitHub as the first hub; only when asked | The first network piece of the hub. |

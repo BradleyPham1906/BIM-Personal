@@ -378,7 +378,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
       if(gp.ok&&!gp.o)return bimPickSketch(x,y);
     }
     A3D.lastPickPath='cpu';
-    if(A3D_GL||A3D_GPU.engine==='webgpu')bimBuildPickPolys();
+    if(A3D_GL||A3D_GPU.engine==='webgpu'||A3D_GPU.engine==='rendered')bimBuildPickPolys();   /* __acad3dV194 */
     for(i=A3D.lastPolys.length-1;i>=0;i--){
       if(A3D.lastPolys[i].lock)continue;
       if(inPoly(x,y,A3D.lastPolys[i].pts))return A3D.lastPolys[i].o;
