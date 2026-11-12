@@ -214,10 +214,8 @@ async def run():
             return got
 
         async def snaps(point, grid, ortho, pg=None):
-            for k, v in (('point', point), ('grid', grid), ('ortho', ortho)):
-                on = await safe("(k)=>{var b=document.querySelector('[data-brdsnap=\"'+k+'\"]');return b?b.getAttribute('aria-pressed')==='true':null;}", k, pg=pg)
-                if on is not None and on != v:
-                    await safe("(k)=>document.querySelector('[data-brdsnap=\"'+k+'\"]').click()", k, pg=pg)
+            # V175c: the board bar's own Snap, Grid and Ortho are gone; the one set is the status bar's
+            await safe("(o)=>window.__a3dSnapSet(o)", {'point': point, 'grid': grid, 'ortho': ortho}, pg=pg)
 
         try:
             await within(page.goto('file://' + str(HTML)), 'goto')

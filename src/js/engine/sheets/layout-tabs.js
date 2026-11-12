@@ -35,7 +35,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
       if(h!==A3D_LT_HTML||box.innerHTML===''){box.innerHTML=h;A3D_LT_HTML=h;}
     }
     var bar=document.getElementById('a3d-statusbar');
-    if(bar)bar.classList.toggle('a3d-onsheet',bimSheetOnScreen());   /* the model's aids step aside on paper */
+    if(bar)bar.classList.toggle('a3d-onsheet',bimSheetOnScreen());   /* the model's level, coordinates and navigation step aside on paper; Snap, Grid and Ortho stay, one set for the model and every page (__acad3dV175c, D3) */
     var sp=document.getElementById('a3d-stspace');
     if(sp){
       var onSheet=bimSheetOnScreen();

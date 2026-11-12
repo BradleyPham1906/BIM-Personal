@@ -641,7 +641,7 @@ body.light-theme .a3d-filedlg-x{color:#4a4f55}
 .a3d-sshint{position:absolute;left:50%;top:16px;transform:translateX(-50%);max-width:90vw;text-align:center;color:rgba(255,255,255,.72);font:12px/1.4 system-ui,sans-serif;transition:opacity .4s}
 .a3d-slideshow.idle .a3d-ssbar,.a3d-slideshow.idle .a3d-sshint{opacity:0;pointer-events:none}
 .a3d-sheetview.open~#a3d-dock{display:none}/* __acad3dV116: the model's tools, not the paper's */
-#a3d-statusbar.a3d-onsheet .a3d-stlvl,#a3d-statusbar.a3d-onsheet #a3d-stcoords,#a3d-statusbar.a3d-onsheet #a3d-snapgrp,#a3d-statusbar.a3d-onsheet #a3d-navgrp,#a3d-statusbar.a3d-onsheet #a3d-animgrp{display:none}
+#a3d-statusbar.a3d-onsheet .a3d-stlvl,#a3d-statusbar.a3d-onsheet #a3d-stcoords,#a3d-statusbar.a3d-onsheet #a3d-navgrp,#a3d-statusbar.a3d-onsheet #a3d-animgrp{display:none}
 #a3d-sheetcanvas{background:#fff;box-shadow:0 6px 24px rgba(0,0,0,0.5);max-width:100%;height:auto;cursor:default;touch-action:none}
 .a3d-ptypehd{display:flex;align-items:center;gap:7px;padding:6px 7px;background:#272c32;border-bottom:1px solid #3a4048;margin:-5px -8px 6px}
 .a3d-ptypeic{width:26px;height:26px;flex:0 0 auto;display:flex;align-items:center;justify-content:center;background:#1c2024;border:1px solid #3a4048;border-radius:3px;color:#c3cad2}
@@ -6084,7 +6084,7 @@ try{
     bimPagesStale();   /* __acad3dV122: every change of appearance passes here, and a page is drawn in it */
     if(A3D_CLB.open)bimClbOpen();   /* __acad3dV174a: a board's transparency and blend modes are drawn in Presentation */
     if(!el.present)return;
-    el.present.textContent=A3D.presentMode?'Pres':'Tech';
+    el.present.textContent=A3D.presentMode?'Presentation style':'Technical style';   /* __acad3dV175c (D3): a style, not Present */
     el.present.classList.toggle('on',!!A3D.presentMode);
     el.present.setAttribute('title',A3D.presentMode?
       'Presentation appearance is ON — click for Technical (Phase 51 graphic overrides)':
@@ -57615,6 +57615,18 @@ try{
     }
     bimSheetViewRefresh();
   }
+  /* __acad3dV175c: how far a viewport at x, y (w by h mm) must move for one of its edges or its middle to meet the
+     paper's edges and middle or another viewport's, within 3 mm: [dx, dy] */
+  function bimSheetVpSnap(sheet,vp,x,y,w,h){
+    var T=3,bx=null,by=null,X=[0,sheet.w/2,sheet.w],Y=[0,sheet.h/2,sheet.h],i,q,j,k,d;
+    for(i=0;i<sheet.viewports.length;i++){q=sheet.viewports[i];if(q===vp)continue;X.push(q.x,q.x+q.w/2,q.x+q.w);Y.push(q.y,q.y+q.h/2,q.y+q.h);}
+    var mx=[x,x+w/2,x+w],my=[y,y+h/2,y+h];
+    for(j=0;j<3;j++){
+      for(k=0;k<X.length;k++){d=X[k]-mx[j];if(Math.abs(d)<=T&&(bx===null||Math.abs(d)<Math.abs(bx)))bx=d;}
+      for(k=0;k<Y.length;k++){d=Y[k]-my[j];if(Math.abs(d)<=T&&(by===null||Math.abs(d)<Math.abs(by)))by=d;}
+    }
+    return [bx||0,by||0];
+  }
   function bimSheetPointerMove(ev){
     if(!A3D.sheetDrag||!el.sheetcv)return;
     var sheet=bimSheetById(A3D.activeSheetId);if(!sheet){A3D.sheetDrag=null;return;}
@@ -57637,6 +57649,12 @@ try{
       return;
     }
     var o=A3D.sheetDrag.orig;
+    /* __acad3dV175c (D3): the drafting aids apply on paper, as a board's objects take them: Ortho keeps a move
+       straight across or straight down, Grid keeps a move or a size in whole millimetres, Snap catches the
+       paper's edges and the other viewports' edges within 3 mm */
+    if(A3D.sheetDrag.mode==='move'&&A3D_SNAP.ortho){if(Math.abs(dx)>=Math.abs(dy))dy=0;else dx=0;}
+    if(A3D_SNAP.grid){dx=Math.round(o.x+dx)-o.x;dy=Math.round(o.y+dy)-o.y;if(A3D.sheetDrag.mode!=='move'){dx=Math.round(o.w+dx)-o.w;dy=Math.round(o.h+dy)-o.h;}}
+    if(A3D.sheetDrag.mode==='move'&&A3D_SNAP.point){var sn=bimSheetVpSnap(sheet,vp,o.x+dx,o.y+dy,o.w,o.h);if(dx!==0||!A3D_SNAP.ortho)dx+=sn[0];if(dy!==0||!A3D_SNAP.ortho)dy+=sn[1];}
     if(A3D.sheetDrag.mode==='move'){
       vp.x=Math.max(0,Math.min(sheet.w-o.w,o.x+dx));
       vp.y=Math.max(0,Math.min(sheet.h-o.h,o.y+dy));
@@ -58365,7 +58383,7 @@ try{
       if(h!==A3D_LT_HTML||box.innerHTML===''){box.innerHTML=h;A3D_LT_HTML=h;}
     }
     var bar=document.getElementById('a3d-statusbar');
-    if(bar)bar.classList.toggle('a3d-onsheet',bimSheetOnScreen());   /* the model's aids step aside on paper */
+    if(bar)bar.classList.toggle('a3d-onsheet',bimSheetOnScreen());   /* the model's level, coordinates and navigation step aside on paper; Snap, Grid and Ortho stay, one set for the model and every page (__acad3dV175c, D3) */
     var sp=document.getElementById('a3d-stspace');
     if(sp){
       var onSheet=bimSheetOnScreen();
@@ -58987,17 +59005,13 @@ try{
       '<button type="button" class="a3d-clb-btn" data-brd="draw" aria-haspopup="menu" title="Draw a shape, text or an image on the current layer">Draw</button>'+   /* __acad3dV174a */
       '<button type="button" class="a3d-clb-btn" data-brd="page" aria-haspopup="dialog" title="The board\'s page: a size from the gallery, and a title block">Page</button>'+   /* __acad3dV174c */
       (!c&&B.figs?'<button type="button" class="a3d-clb-btn" data-brd="reset" title="The board\'s own figures, in their own places">Reset</button>':'')+
-      '<span class="a3d-clb-snaps a3d-clb-hide-s" role="group" aria-label="Snaps, as in drawing">'+
-        '<button type="button" class="a3d-clb-btn" data-brdsnap="point" aria-pressed="'+!!A3D_SNAP.point+'" title="Edges catch other figures\' edges (F3)">Snap</button>'+
-        '<button type="button" class="a3d-clb-btn" data-brdsnap="grid" aria-pressed="'+!!A3D_SNAP.grid+'" title="Edges on the board\'s 12 columns and rows (F9)">Grid</button>'+
-        '<button type="button" class="a3d-clb-btn" data-brdsnap="ortho" aria-pressed="'+!!A3D_SNAP.ortho+'" title="A drag straight across or straight down (F8)">Ortho</button></span>'+
       '<button type="button" class="a3d-clb-btn pri" data-brd="done">Done</button>'+
       '<button type="button" class="a3d-clb-btn" data-clb="close" aria-label="Close the board">Close</button></div>';
   }
   function bimBrdEditHint(figs){
     var ov=bimBrdOverlaps(figs).n;
     return '<p class="a3d-clb-ehint" role="note">'+(A3D_CLB.narrow?'On a phone the figures are in reading order: each one\'s menu moves it earlier or later. Arrange them on a larger screen.':
-      'Drag a figure by its handle or its body, size it by its corner. Snap, Grid and Ortho are the drawing\'s own (F3, F9, F8). The figure in focus moves with the arrow keys and sizes with Shift.')+
+      'Drag a figure by its handle or its body, size it by its corner. Snap, Grid and Ortho are the status bar\'s, as in drawing (F3, F9, F8). The figure in focus moves with the arrow keys and sizes with Shift.')+
       (ov?' <b>'+ov+' figures overlap.</b>':'')+'</p>';
   }
   /* one of the three boards with its list: its header and indicators as ever, the list where its grid was;
@@ -59187,7 +59201,7 @@ try{
     if(A3D_CLB.kind==='custom'&&!bimBoardById(A3D_CLB.cid)){bimClbClose();return;}
     bimClbOpen();
   }
-  /* the drawing's snaps changed (F3, F9, F8, the status bar or Edit's own buttons) */
+  /* the drawing's snaps changed (F3, F9, F8 or the status bar, the one place since V175c) */
   function bimBrdSnapSync(){
     var b=bimClbEl(),i,B,s;
     if(!b)return;
@@ -59542,17 +59556,10 @@ try{
   }
   /* ---- the board's own listeners ---- */
   function bimBrdClick(ev){
-    var t=ev.target,a=t&&t.closest?t.closest('[data-brd],[data-brdsnap],[data-brdmenu],[data-brdplace]'):null,s,r,f;
+    var t=ev.target,a=t&&t.closest?t.closest('[data-brd],[data-brdmenu],[data-brdplace]'):null,s,r,f;
     if(!a)return;
     if(a.hasAttribute('data-brdmenu')){f=a.closest('.a3d-clb-fig');r=a.getBoundingClientRect();if(f)bimBrdMenu(f.getAttribute('data-brdk'),r.left,r.bottom+4);return;}
     if(a.hasAttribute('data-brdplace')){bimBrdAddFig(a.getAttribute('data-brdplace'));return;}
-    if(a.hasAttribute('data-brdsnap')){
-      s=a.getAttribute('data-brdsnap');
-      A3D_SNAP[s]=!A3D_SNAP[s];
-      a3dToast((s==='point'?'Object snap':(s==='grid'?'Grid snap':'Ortho'))+' '+(A3D_SNAP[s]?'on':'off')+' ('+(s==='point'?'F3':(s==='grid'?'F9':'F8'))+')');
-      syncSnapPill();
-      return;
-    }
     s=a.getAttribute('data-brd');
     if(s==='edit')bimBrdEdit(!A3D_CLB.edit);
     else if(s==='done')bimBrdEdit(false);
@@ -64636,7 +64643,7 @@ try{
         '<button class="a3d-stbtn" data-a3dnav="pan" title="Pan">'+PILL_PAN+'<span>PAN</span></button>'+
         '<button class="a3d-stbtn on" data-a3dnav="orbit" title="Orbit">'+PILL_ORBIT+'<span>ORBIT</span></button>'+
         '<button class="a3d-stbtn a3d-stview" id="a3d-flip" data-a3dnav="flip" title="Go to 2D (Shift + &gt;)">2D</button>'+
-        '<button class="a3d-stbtn a3d-stview" id="a3d-present" data-a3dnav="present" title="Toggle Presentation appearance (graphic overrides from Phase 51)">Tech</button>'+
+        '<button class="a3d-stbtn a3d-stview" id="a3d-present" data-a3dnav="present" title="Technical or Presentation style: how the drawing looks (graphic overrides from Phase 51). Present, in the Presentation panel, is the slideshow">Technical style</button>'+
       '</span>'+
       '<span id="a3d-animgrp" hidden>'+   /* __acad3dV170: the site analysis in motion */
         '<button class="a3d-stbtn" id="a3d-animplay" data-a3danim="play" aria-pressed="false" aria-label="Play" title="Play the site analysis in motion">'+PILL_PLAY+'<span>PLAY</span></button>'+

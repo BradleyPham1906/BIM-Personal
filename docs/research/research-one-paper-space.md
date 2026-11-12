@@ -160,6 +160,9 @@ whether Vectorworks saved views include sheet layers (practice part 7). None is 
 
 ## 9. The owner's decisions
 
+**Answered 2026-11-12: the owner accepts all eight as recommended** ("looks good to me"). D3's quick fixes are built
+in V175c (below); the merge itself (steps 2 to 4) is the next phase, before V176, with its own spec and work orders.
+
 | # | Question | Evidence | Recommended |
 |---|---|---|---|
 | D1 | One kind of layout for drawing sheets and presentation boards? | 4.2, H1 | **Yes** |

@@ -1,4 +1,4 @@
-import { A3D_SNAP, pushUndo, syncSnapPill } from '../drawing/plan-mode-sketch.js';
+import { A3D_SNAP, pushUndo } from '../drawing/plan-mode-sketch.js';
 import {
   A3D_CLB, bimClbClose, bimClbE, bimClbEl, bimClbOpen, bimClbTipHide
 } from '../site-analysis/climate-board.js';
@@ -97,7 +97,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
     if(A3D_CLB.kind==='custom'&&!bimBoardById(A3D_CLB.cid)){bimClbClose();return;}
     bimClbOpen();
   }
-  /* the drawing's snaps changed (F3, F9, F8, the status bar or Edit's own buttons) */
+  /* the drawing's snaps changed (F3, F9, F8 or the status bar, the one place since V175c) */
   function bimBrdSnapSync(){
     var b=bimClbEl(),i,B,s;
     if(!b)return;
@@ -452,17 +452,10 @@ import { a3dToast } from '../bim/csg-booleans.js';
   }
   /* ---- the board's own listeners ---- */
   function bimBrdClick(ev){
-    var t=ev.target,a=t&&t.closest?t.closest('[data-brd],[data-brdsnap],[data-brdmenu],[data-brdplace]'):null,s,r,f;
+    var t=ev.target,a=t&&t.closest?t.closest('[data-brd],[data-brdmenu],[data-brdplace]'):null,s,r,f;
     if(!a)return;
     if(a.hasAttribute('data-brdmenu')){f=a.closest('.a3d-clb-fig');r=a.getBoundingClientRect();if(f)bimBrdMenu(f.getAttribute('data-brdk'),r.left,r.bottom+4);return;}
     if(a.hasAttribute('data-brdplace')){bimBrdAddFig(a.getAttribute('data-brdplace'));return;}
-    if(a.hasAttribute('data-brdsnap')){
-      s=a.getAttribute('data-brdsnap');
-      A3D_SNAP[s]=!A3D_SNAP[s];
-      a3dToast((s==='point'?'Object snap':(s==='grid'?'Grid snap':'Ortho'))+' '+(A3D_SNAP[s]?'on':'off')+' ('+(s==='point'?'F3':(s==='grid'?'F9':'F8'))+')');
-      syncSnapPill();
-      return;
-    }
     s=a.getAttribute('data-brd');
     if(s==='edit')bimBrdEdit(!A3D_CLB.edit);
     else if(s==='done')bimBrdEdit(false);
