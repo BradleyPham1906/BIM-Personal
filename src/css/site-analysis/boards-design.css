@@ -9,6 +9,15 @@
 .a3d-clb-dshp{overflow:visible}
 .a3d-clb-dtxt{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.25}
 .a3d-clb-dtxt.aw{white-space:pre}
+/* __acad3dV175a: a live text's marks, in Edit only and never on paper: a corner tick where it is overridden, a dot
+   where its source is out of date (amber), or removed or not a field (red); the reason is the mark's title */
+.a3d-clb-dlv{position:absolute;top:-5px;width:10px;height:10px;box-sizing:border-box;pointer-events:auto}
+.a3d-clb-dlv.ov{left:-5px;border-left:3px solid var(--s1);border-top:3px solid var(--s1)}
+.a3d-clb-dlv.stale,.a3d-clb-dlv.none,.a3d-clb-dlv.gone{right:-5px;border-radius:50%;background:var(--s4);border:1.5px solid #fff}
+.a3d-clb-dlv.gone{background:#c62828;border-radius:2px}
+.a3d-clb-dsn.edit .a3d-clb-dtxt.lv{outline:1px dotted var(--ring)}
+.a3d-clb.prt .a3d-clb-dlv{display:none!important}
+@media print{.a3d-clb-dlv{display:none!important}}
 .a3d-clb-dimg{background-position:center}
 .a3d-clb-dimg.ph{display:flex;align-items:center;justify-content:center;border:1px dashed var(--muted);color:var(--muted);font-size:12px;text-align:center;padding:6px}
 /* in Edit: what can be picked, the selection's outlines and its handle */

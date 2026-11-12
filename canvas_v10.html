@@ -1116,6 +1116,15 @@ body.a3d-clb-open #a3d-dock,body.a3d-clb-open .a3d-tpal{display:none!important}
 .a3d-clb-dshp{overflow:visible}
 .a3d-clb-dtxt{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.25}
 .a3d-clb-dtxt.aw{white-space:pre}
+/* __acad3dV175a: a live text's marks, in Edit only and never on paper: a corner tick where it is overridden, a dot
+   where its source is out of date (amber), or removed or not a field (red); the reason is the mark's title */
+.a3d-clb-dlv{position:absolute;top:-5px;width:10px;height:10px;box-sizing:border-box;pointer-events:auto}
+.a3d-clb-dlv.ov{left:-5px;border-left:3px solid var(--s1);border-top:3px solid var(--s1)}
+.a3d-clb-dlv.stale,.a3d-clb-dlv.none,.a3d-clb-dlv.gone{right:-5px;border-radius:50%;background:var(--s4);border:1.5px solid #fff}
+.a3d-clb-dlv.gone{background:#c62828;border-radius:2px}
+.a3d-clb-dsn.edit .a3d-clb-dtxt.lv{outline:1px dotted var(--ring)}
+.a3d-clb.prt .a3d-clb-dlv{display:none!important}
+@media print{.a3d-clb-dlv{display:none!important}}
 .a3d-clb-dimg{background-position:center}
 .a3d-clb-dimg.ph{display:flex;align-items:center;justify-content:center;border:1px dashed var(--muted);color:var(--muted);font-size:12px;text-align:center;padding:6px}
 /* in Edit: what can be picked, the selection's outlines and its handle */
@@ -5657,6 +5666,7 @@ try{
       A3D.history=bimHistValid(st&&st.history);   /* __acad3dV146: its history, or none */
       A3D.resultLayers=bimResValid(st&&st.resultLayers);   /* __acad3dV148: its result layers, or none */
       A3D.pres=bimPresValid(st&&st.pres);   /* __acad3dV162: its boards in the set, and the set's order */
+      bimApplyUnitState(st&&st.units);   /* __acad3dV175a (D10): its display units, metres when it has none */
       setA3D_RES_IMG({});
       if(st&&Array.isArray(st.classifications)){
         A3D.classifications=st.classifications.filter(function(c){return c&&typeof c.id==='string'&&typeof c.code==='string';});
@@ -18511,11 +18521,20 @@ try{
     cm: {label:'cm', scale:100,  dp:1},
     mm: {label:'mm', scale:1000, dp:0}
   };
-  /* Project display units. Persisted with the project (see bimUnitState/bimApplyUnitState), and
+  /* Project display units. Kept with the project since V175a (bimUnitState, bimApplyUnitState), and
      deliberately a PROJECT setting rather than a constant: this app is meant for bridge and
      structural work as well as buildings, and a 90 m span and a 6 mm plate cannot both be read
      at three decimals of a metre. */
   var A3D_UNITS={key:'m',dp:null};
+  /* __acad3dV175a (D10): the units are a field of the project (A3D.units), read with it and reset by the next one.
+     A project is read before this file has run, so what it gave waits in A3D.units and is taken here. */
+  function bimUnitState(){return {key:A3D_UNITS.key,dp:A3D_UNITS.dp===undefined?null:A3D_UNITS.dp};}
+  function bimApplyUnitState(u){
+    var U=BIM_UNITS||{m:1,cm:1,mm:1},key=u&&typeof u==='object'&&typeof u.key==='string'&&U.hasOwnProperty(u.key)?u.key:'m',dp=u&&typeof u==='object'&&typeof u.dp==='number'&&isFinite(u.dp)?Math.max(0,Math.min(4,Math.round(u.dp))):null;
+    A3D.units={key:key,dp:dp};
+    if(A3D_UNITS){A3D_UNITS.key=key;A3D_UNITS.dp=dp;}
+  }
+  if(A3D.units)bimApplyUnitState(A3D.units);
   function bimUnitDef(){return BIM_UNITS[A3D_UNITS.key]||BIM_UNITS.m;}
   function bimUnitLabel(){return bimUnitDef().label;}
   function bimUnitDp(){
@@ -18567,6 +18586,7 @@ try{
       dp=parseInt(dp,10);
       if(isFinite(dp))A3D_UNITS.dp=Math.max(0,Math.min(4,dp));
     }
+    A3D.units=bimUnitState();   /* __acad3dV175a (D10): kept with the project */
     refreshProps();paint();saveSoon();
     return {key:A3D_UNITS.key,dp:bimUnitDp()};
   }
@@ -50715,7 +50735,7 @@ try{
      need the same list to park a project in its own key and to know what a fresh project is,
      and two copies of one field list are two lists that will eventually disagree. */
   function bimProjectRecord(){
-    return {objs:A3D.objs,cam:A3D.cam,seq:A3D.seq,counts:A3D.counts,levels:A3D.levels,grids:A3D.grids,activeLevel:A3D.activeLevel,layers:A3D.layers,activeLayer:A3D.activeLayer,types:A3D.types,activeWallType:A3D.activeWallType,views:A3D.views,activeViewId:A3D.activeViewId,levelFilter:A3D.levelFilter,sheets:A3D.sheets,titleBlock:A3D.titleBlock,buildings:A3D.buildings,activeBuilding:A3D.activeBuilding,site:A3D.site,roomScheme:A3D.roomScheme||'',classifications:A3D.classifications,dataFeatures:A3D.dataFeatures||{},history:A3D.history||null,resultLayers:A3D.resultLayers||[],pres:A3D.pres||null};   /* __acad3dV146, __acad3dV148; __acad3dV162 */
+    return {objs:A3D.objs,cam:A3D.cam,seq:A3D.seq,counts:A3D.counts,levels:A3D.levels,grids:A3D.grids,activeLevel:A3D.activeLevel,layers:A3D.layers,activeLayer:A3D.activeLayer,types:A3D.types,activeWallType:A3D.activeWallType,views:A3D.views,activeViewId:A3D.activeViewId,levelFilter:A3D.levelFilter,sheets:A3D.sheets,titleBlock:A3D.titleBlock,buildings:A3D.buildings,activeBuilding:A3D.activeBuilding,site:A3D.site,roomScheme:A3D.roomScheme||'',classifications:A3D.classifications,dataFeatures:A3D.dataFeatures||{},history:A3D.history||null,resultLayers:A3D.resultLayers||[],pres:A3D.pres||null,units:A3D.units||null};   /* __acad3dV146, __acad3dV148; __acad3dV162; __acad3dV175a: its display units (D10) */
   }
   /* __acad3dV115: a save that failed went into an empty catch, so a full browser store lost every
      later edit without a word. It says so now -- once per run of failures, not once per edit. */
@@ -51052,6 +51072,9 @@ try{
       refreshTree();refreshHud();refreshLevels();refreshLayers();refreshViews();refreshBrowser();refreshProps();
       bimSyncStatusBar();
     }finally{setUndoSuspend(false);}
+    /* __acad3dV175a (D11): another project is another model, so what was drawn at a revision is drawn again. Not a
+       saveSoon: opening a project does not change it */
+    setA3D_REV(A3D_REV+1);
   }
   /* __acad3dV172g: where the browser keeps nothing (D5), a project left for another tab is parked here */
   var A3D_DOC_MEM={};
@@ -57680,6 +57703,8 @@ try{
       w.document.close();
     }catch(eW){console.warn('[BIM] The board could not be put in the print window',eW);a3dToast('The board could not be printed -- see the console');return;}
     a3dToast('Printing '+bimBoardKeyLabel(kind)+' -- Save as PDF in the print dialog makes a PDF');
+    var lvNote=bimLvPrintNote(bimLiveStaleItems(bimBoardById(kind)||bimBoardById('board-'+kind)));   /* __acad3dV175a (D4) */
+    if(lvNote)a3dToast(lvNote);
     });
     return true;
   }
@@ -58640,6 +58665,13 @@ try{
       r.al=(n.al==='center'||n.al==='right')?n.al:'left';
       r.col=bimBobCol(n.col,'#0b0b0b');if(r.col==='none')r.col='#0b0b0b';
       r.fit=(n.fit==='auto-w'||n.fit==='fixed')?n.fit:'auto-h';
+      /* __acad3dV175a: a live text's binding, its overrides and the source's words when each was made; never its value (D8) */
+      if(n.bind){
+        r.bind=bimLvBindValid(n.bind);
+        if(!r.bind)delete r.bind;
+        else if((r.ov=bimLvOvValid(n.ov,null))){r.ovAt=bimLvOvValid(n.ovAt,r.ov);if(!r.ovAt)delete r.ovAt;}
+        else delete r.ov;
+      }
     }
     if(n.t==='image'){
       r.src=typeof n.src==='string'&&/^h[0-9a-f]{16}$/.test(n.src)?n.src:'';
@@ -59235,6 +59267,360 @@ try{
     return n;
   }
 
+
+  /* ================= __acad3dV175a: live text on a board, the pure part =================
+     docs/research/research-presentation-live.md (D1 to D16, accepted by the owner 2026-11-11) and
+     docs/work-orders/v175/SPEC.md. A text object of a board can be live: its words come from the model each time the
+     board is drawn. Two kinds (n.bind.k): 'tok', a text with fields typed as {{key}} or {{key|decimals}} (D14), and
+     'num', one number with its unit. What is saved is the binding, never the value (D8). Words typed over a live
+     object are an override (n.ov), kept with the source's words at that moment (n.ovAt), so Properties can say when
+     the source has moved since (D5, D7).
+     This file holds the functions that need nothing of the page or the model: reading fields out of a string,
+     formatting, the override's rules, and what is kept of a binding when a project is read. */
+
+  /* a number's kinds: {u: the unit written after it, dp: its decimals unless a field gives its own}; null for text */
+  function bimLvKind(kind){
+    if(kind==='area')return {u:' m²',dp:1};
+    if(kind==='vol')return {u:' m³',dp:1};
+    if(kind==='count')return {u:'',dp:0};
+    return null;
+  }
+  /* the fields in a string, in order: [{i: where it starts, n: its length, key, dp: its decimals or null}] */
+  function bimLvTokens(s){
+    var r = [], re, m;
+    if(typeof s !== 'string')return r;
+    re = /\{\{\s*([A-Za-z][A-Za-z0-9_.]{0,39})\s*(?:\|\s*([0-6])\s*)?\}\}/g;
+    while((m = re.exec(s))){
+      r.push({i: m.index, n: m[0].length, key: m[1], dp: m[2] === undefined ? null : +m[2]});
+    }
+    return r;
+  }
+  /* a number as text with its thousands grouped: '12345.6' gives '12,345.6' */
+  function bimLvGroup(s){
+    var m = /^(-?)(\d+)(\.\d+)?$/.exec(s);
+    if(!m)return s;
+    var whole = m[2], neg = m[1], dec = m[3] || '';
+    var grouped = '', count = 0, i;
+    for(i = whole.length - 1; i >= 0; i--){
+      if(count > 0 && count % 3 === 0)grouped = ',' + grouped;
+      grouped = whole.charAt(i) + grouped;
+      count++;
+    }
+    return neg + grouped + dec;
+  }
+  /* a value as a board shows it: a number of a kind with its unit, or text as it is */
+  function bimLvFormat(v,kind,dp){
+    if(v===null||v===undefined)return '\u2014';
+    var K = bimLvKind(kind);
+    if(!K)return String(v);
+    if(typeof v !== 'number' || !isFinite(v))return '\u2014';
+    var d = typeof dp === 'number' ? dp : K.dp;
+    return bimLvGroup(bimDispNum(v, d)) + K.u;
+  }
+  /* a string with its fields replaced: look(key, dp) gives a field's words, or null for a key it does not know.
+     {s, keys: the keys replaced, unknown: the keys left as typed} */
+  function bimLvSubst(s,look){
+    var r = {s:'', keys:[], unknown:[]};
+    var tokens, t, i, pos, replacement, seenKeys, seenUnknown;
+    if(typeof s !== 'string')return r;
+    tokens = bimLvTokens(s);
+    pos = 0;
+    seenKeys = {};
+    seenUnknown = {};
+    for(i = 0; i < tokens.length; i++){
+      t = tokens[i];
+      r.s += s.slice(pos, t.i);
+      replacement = look(t.key, t.dp);
+      if(replacement === null || replacement === undefined){
+        r.s += s.slice(t.i, t.i + t.n);
+        if(!seenUnknown[t.key]){seenUnknown[t.key] = true; r.unknown.push(t.key);}
+      } else {
+        r.s += replacement;
+        if(!seenKeys[t.key]){seenKeys[t.key] = true; r.keys.push(t.key);}
+      }
+      pos = t.i + t.n;
+    }
+    r.s += s.slice(pos);
+    return r;
+  }
+  /* words typed over a live object: kept as its override of key, with the source's words now. true when it changed */
+  function bimLvOvSet(n,key,val,cur){
+    if(!n.bind)return false;
+    if(val===cur){
+      if(n.ov && n.ov.hasOwnProperty(key))return bimLvOvReset(n,key);
+      return false;
+    }
+    if(n.ov && n.ov.hasOwnProperty(key) && n.ov[key]===val)return false;
+    if(!n.ov)n.ov = {};
+    if(!n.ovAt)n.ovAt = {};
+    n.ov[key] = val;
+    n.ovAt[key] = cur;
+    return true;
+  }
+  /* an override taken off: one key, or every key when key is null. true when there was one */
+  function bimLvOvReset(n,key){
+    if(!n.ov)return false;
+    if(key===null||key===undefined){delete n.ov; delete n.ovAt; return true;}
+    if(!n.ov.hasOwnProperty(key))return false;
+    delete n.ov[key];
+    if(n.ovAt && n.ovAt.hasOwnProperty(key))delete n.ovAt[key];
+    var empty, k;
+    empty = true;
+    for(k in n.ov){if(n.ov.hasOwnProperty(k)){empty=false;break;}}
+    if(empty)delete n.ov;
+    if(n.ovAt){
+      empty = true;
+      for(k in n.ovAt){if(n.ovAt.hasOwnProperty(k)){empty=false;break;}}
+      if(empty)delete n.ovAt;
+    }
+    return true;
+  }
+  /* 'none', 'set', or 'changed' when the source's words are no longer what they were when the override was made */
+  function bimLvOvState(n,key,cur){
+    if(!n.ov || !n.ov.hasOwnProperty(key))return 'none';
+    if(n.ovAt && n.ovAt.hasOwnProperty(key) && n.ovAt[key]!==cur)return 'changed';
+    return 'set';
+  }
+  /* Keep: the override stands against the source as it is now. true when it changed */
+  function bimLvOvKeep(n,key,cur){
+    if(!n.ov || !n.ov.hasOwnProperty(key))return false;
+    if(n.ovAt && n.ovAt.hasOwnProperty(key) && n.ovAt[key]===cur)return false;
+    if(!n.ovAt)n.ovAt = {};
+    n.ovAt[key] = cur;
+    return true;
+  }
+  /* what Print says of the live objects that are out of date: items [{nm, why}]; '' when there are none */
+  function bimLvPrintNote(items){
+    var n, i, item, parts, part, more, plural;
+    if(!items || items.length === 0)return '';
+    n = items.length;
+    plural = n === 1 ? 'object' : 'objects';
+    part = 'Printed with ' + n + ' live ' + plural + ' not up to date: ';
+    parts = [];
+    for(i = 0; i < Math.min(3, n); i++){
+      item = items[i];
+      if(item.why === '' || item.why === undefined){
+        parts.push(item.nm);
+      } else {
+        parts.push(item.nm + ' (' + item.why + ')');
+      }
+    }
+    part += parts.join(', ');
+    if(n > 3){
+      more = ' and ' + (n - 3) + ' more';
+      part += more;
+    }
+    return part;
+  }
+  /* the fields as a menu's rows, a rule between groups: rows [key, label, kind, group] give [[label, key], '-', ...] */
+  function bimLvMenuItems(rows){
+    var result = [], i, row, prevGroup;
+    if(!rows || rows.length === 0)return result;
+    for(i = 0; i < rows.length; i++){
+      row = rows[i];
+      if(i > 0 && row[3] !== prevGroup)result.push('-');
+      result.push([row[1], row[0]]);
+      prevGroup = row[3];
+    }
+    return result;
+  }
+  /* ---- what is kept of a binding when a project is read (bimBobOne) ---- */
+  function bimLvKeyOk(k){return typeof k==='string'&&/^[A-Za-z][A-Za-z0-9_.]{0,39}$/.test(k);}
+  /* a binding as saved, good, or null. A key this build does not know is kept, and marked when drawn: a newer
+     build's project keeps its bindings through this one */
+  function bimLvBindValid(b){
+    var r;
+    if(!b||typeof b!=='object')return null;
+    if(b.k==='tok')return {k:'tok'};
+    if(b.k!=='num'||!bimLvKeyOk(b.src))return null;
+    r={k:'num',src:b.src};
+    if(typeof b.id==='string'&&b.id&&b.id.length<=120)r.id=b.id;
+    if(typeof b.nm==='string'&&b.nm.replace(/\s+/g,''))r.nm=b.nm.replace(/\s+/g,' ').trim().slice(0,80);   /* its source's name when bound, to say what was removed (D8) */
+    if(typeof b.dp==='number'&&isFinite(b.dp))r.dp=Math.max(0,Math.min(6,Math.round(b.dp)));
+    return r;
+  }
+  /* the keys an override can hold: a live text's words. Its size, weight and colour are its own, never the
+     source's, so styling a live number does not freeze it (D5) */
+  function bimLvOvKeys(){return ['s'];}
+  /* overrides (or their sources' words) as saved, good, or null; only is the override whose keys ovAt may hold */
+  function bimLvOvValid(o,only){
+    var r={},n=0;
+    if(!o||typeof o!=='object')return null;
+    bimLvOvKeys().forEach(function(k){
+      if(typeof o[k]!=='string'||(only&&!only.hasOwnProperty(k)))return;
+      r[k]=o[k].slice(0,4000);n++;
+    });
+    return n?r:null;
+  }
+
+
+  /* ================= __acad3dV175a: live text on a board, its sources =================
+     docs/research/research-presentation-live.md, 4.2, 5.1 (b) and part 7; docs/work-orders/v175/SPEC.md.
+     A field's key is looked up in a fixed table (bimLiveKeys) and never evaluated (D14). Every source here is a cheap
+     one, read from the model each time a board draws (D2); a kept analysis (cut and fill) is never run by a board: its
+     kept value is shown and marked out of date with why (D3). Each source is computed once per revision of the model
+     (A3D_REV), display units and day: the memo below, kept in memory only (D8: the value is never saved).
+     A resolver takes ids, never the active level or view: a sheet's capture swaps those while it draws. */
+  var A3D_LIVE={sig:'',memo:{},busy:false};
+  /* the fields: [key, name, kind ('text', 'area', 'vol', 'count'), group, needs an id] */
+  function bimLiveKeys(){
+    return [['project.name','Project name','text','Project'],['project.client','Client','text','Project'],
+      ['project.drawnBy','Drawn by','text','Project'],['project.checkedBy','Checked by','text','Project'],['date','Today\'s date','text','Project'],
+      ['board.name','Board name','text','Board'],['board.number','Board number','count','Board'],['board.count','Boards and sheets in the set','count','Board'],
+      ['gfa','Gross floor area','area','Building'],['rooms.area','Room area','area','Building'],['rooms','Rooms','count','Building'],['levels','Levels','count','Building'],
+      ['level.area','A level\'s gross area','area','Building',1],
+      ['site.area','Site area','area','Site'],['far.gfa','Floor area the zoning allows','area','Site'],['cut','Cut volume','vol','Site'],['fill','Fill volume','vol','Site']];
+  }
+  /* older and other names of a key (D14): a board keeps working when a key is renamed */
+  function bimLiveAliases(){return {'gba':'gfa','project':'project.name','client':'project.client','site':'site.area'};}
+  /* a key's row of the table, by its name or an alias; null for one that is not a field */
+  function bimLiveKey(key){
+    var A=bimLiveAliases(),L=bimLiveKeys(),i;
+    if(typeof key!=='string')return null;
+    if(A.hasOwnProperty(key))key=A[key];
+    for(i=0;i<L.length;i++)if(L[i][0]===key)return L[i];
+    return null;
+  }
+  /* ---- the sources: {st: 'ok', 'none' (nothing to show yet), 'gone' (its source was removed) or 'stale' (kept, out of
+     date), v, why} ---- */
+  function bimLiveOk(v){return {st:'ok',v:v,why:''};}
+  function bimLiveNone(why){return {st:'none',v:null,why:why};}
+  function bimLiveTextOf(v,what){v=String(v||'').replace(/\s+/g,' ').trim();return v?bimLiveOk(v):bimLiveNone(what+' is not filled in (Project information)');}
+  /* gross floor area: every level's closed runs of walls, summed; a level that cannot be measured says so, never 0 */
+  function bimLiveGfa(){
+    var t=0,any=false,i,a,bad='';
+    for(i=0;i<A3D.levels.length;i++){
+      a=bimLevelAreas(A3D.levels[i].id);
+      if(a.gross!==null){t+=a.gross;any=true;}
+      else if(a.note&&a.note.indexOf('no closed run')<0&&!bad)bad=a.level+': '+a.note;
+    }
+    if(bad)return bimLiveNone('Not computed: '+bad);
+    return any?bimLiveOk(t):bimLiveNone('Not computed: no level has a closed run of walls to measure');
+  }
+  function bimLiveLevelArea(id,nm){
+    var lv=bimLevelById(id),a;
+    if(!lv)return {st:'gone',v:null,why:'Source removed: '+(nm||'a level')};
+    a=bimLevelAreas(id);
+    return a.gross!==null?bimLiveOk(a.gross):bimLiveNone('Not computed: '+lv.name+', '+(a.note||'no closed run of walls'));
+  }
+  function bimLiveRooms(area){
+    var n=0,t=0;
+    A3D.objs.forEach(function(o){if(o.t==='room'){n++;if(o.area>0)t+=o.area;}});
+    return area?(n?bimLiveOk(t):bimLiveNone('Not computed: there are no rooms yet')):bimLiveOk(n);
+  }
+  function bimLiveSite(){
+    var P=bimZnProperty(),g;
+    if(!P)return bimLiveNone('Not computed: no property line yet (Site analysis, Define)');
+    g=bimPropertyGeometry(P);
+    return g&&isFinite(g.area)&&g.area>0?bimLiveOk(Math.abs(g.area)):bimLiveNone('Not computed: the property line does not close');
+  }
+  function bimLiveFar(){
+    var C=bimZnCalc();
+    if(!C||C.error||!isFinite(C.achievable))return bimLiveNone('Not computed: '+((C&&C.error)||'the zoning yield'));
+    return bimLiveOk(C.achievable);
+  }
+  /* cut or fill: the volumes CUTFILL and GRADE kept on the proposed surfaces, summed; out of date when a pad or
+     the existing surface has changed since */
+  function bimLiveCutFill(f){
+    var t=0,n=0,stale=0;
+    A3D.objs.forEach(function(o){
+      var v=o.t==='terrain'&&o.grading&&o.grading.volume;
+      if(!v||!isFinite(v[f]))return;
+      t+=v[f];n++;
+      if(bimGradeStale(o))stale++;
+    });
+    if(!n)return bimLiveNone('Not computed: GRADE a pad, or run CUTFILL');
+    return stale?{st:'stale',v:t,why:'Out of date: a pad or the existing surface has changed since it was graded'}:bimLiveOk(t);
+  }
+  function bimLiveCompute(key,id,nm,B){
+    var tb=A3D.titleBlock||{},i;
+    if(key==='project.name')return bimLiveOk(bimProjectLabel());
+    if(key==='project.client')return bimLiveTextOf(tb.client,'Client');
+    if(key==='project.drawnBy')return bimLiveTextOf(tb.drawnBy,'Drawn by');
+    if(key==='project.checkedBy')return bimLiveTextOf(tb.checkedBy,'Checked by');
+    if(key==='date')return bimLiveOk(bimBdsToday());
+    if(key==='board.name')return B?bimLiveOk(bimBoardLabel(B)):bimLiveNone('Not on a board');
+    if(key==='board.number'){i=B?bimPresIndex(B.id):-1;return i>=0?bimLiveOk(i+1):bimLiveNone('This board is not in the set');}
+    if(key==='board.count')return bimLiveOk(bimPresSeq().length);
+    if(key==='gfa')return bimLiveGfa();
+    if(key==='rooms.area')return bimLiveRooms(true);
+    if(key==='rooms')return bimLiveRooms(false);
+    if(key==='levels')return bimLiveOk(A3D.levels.length);
+    if(key==='level.area')return bimLiveLevelArea(id,nm);
+    if(key==='site.area')return bimLiveSite();
+    if(key==='far.gfa')return bimLiveFar();
+    if(key==='cut'||key==='fill')return bimLiveCutFill(key);
+    return bimLiveNone('Not a field');
+  }
+  /* a source's value, computed once per revision, units and day */
+  function bimLiveGet(key,id,nm,B){
+    var sig=A3D_REV+'|'+A3D_UNITS.key+'|'+bimUnitDp()+'|'+bimBdsToday(),mk,r;
+    if(sig!==A3D_LIVE.sig){A3D_LIVE.sig=sig;A3D_LIVE.memo={};}
+    mk=key+'|'+(id||'')+'|'+(key.indexOf('board.')===0&&B?B.id:'');
+    if(A3D_LIVE.memo.hasOwnProperty(mk))return A3D_LIVE.memo[mk];
+    if(A3D_LIVE.busy){console.warn('[BIM] A live field was asked for while another was being computed; it is left empty: '+key);return bimLiveNone('Not computed');}
+    A3D_LIVE.busy=true;
+    try{r=bimLiveCompute(key,id,nm,B);}
+    catch(eL){console.warn('[BIM] A live field could not be computed: '+key,eL);r=bimLiveNone('Not computed: see the console');}
+    finally{A3D_LIVE.busy=false;}
+    A3D_LIVE.memo[mk]=r;
+    return r;
+  }
+  /* ---- what a live text shows ---- */
+  /* n: a board's text object with a binding; B: its board; edit: in Edit, where a number with nothing to show says
+     why (on paper it is a dash). {s: its words, src: the source's words as on paper, st: its worst state, why: [reasons],
+     ov: overridden, changed: the source has moved since, unknown: [keys left as typed], keys: [keys shown]} */
+  function bimLiveShow(n,B,edit){
+    var R={s:n.s,src:n.s,st:'ok',why:[],ov:false,changed:false,unknown:[],keys:[]},rank={ok:0,stale:1,none:2,gone:3},b=n.bind,K,r,S;
+    function one(key,id,nm,dp){
+      var E=bimLiveKey(key),q;
+      if(!E)return null;
+      if(E[4]&&!id)return null;   /* a source by id is a Number's, never a typed field */
+      q=bimLiveGet(E[0],id,nm,B);
+      if(rank[q.st]>rank[R.st])R.st=q.st;
+      if(q.why&&R.why.indexOf(q.why)<0)R.why.push(q.why);
+      R.keys.push(E[0]);
+      if(q.st==='none'||q.st==='gone')return '—';
+      return bimLvFormat(q.v,E[2],dp===undefined?null:dp);
+    }
+    if(!b)return R;
+    if(b.k==='tok'){
+      S=bimLvSubst(n.s,function(key,dp){return one(key,null,null,dp);});
+      R.src=S.s;R.unknown=S.unknown;
+    }else if(b.k==='num'){
+      K=bimLiveKey(b.src);
+      r=K?one(b.src,b.id||null,b.nm||null,typeof b.dp==='number'?b.dp:null):null;
+      if(r===null){R.unknown=[b.src];R.src='{{'+b.src+'}}';}
+      else R.src=r;
+    }
+    R.s=b.k==='num'&&edit&&(R.st==='none'||R.st==='gone')&&R.why.length?R.why[0]:R.src;
+    if(n.ov&&n.ov.hasOwnProperty('s')){R.ov=true;R.s=n.ov.s;R.changed=bimLvOvState(n,'s',R.src)==='changed';}
+    return R;
+  }
+  /* its marks, in Edit only and never on paper (D4, D15): a corner tick for an override, a dot for a source that is
+     out of date, missing, or a key that is not a field. The reasons are in the title and in Properties */
+  function bimLiveMarks(R){
+    var h='',t;
+    if(!R)return '';
+    if(R.ov)h+='<i class="a3d-clb-dlv ov" title="'+bimClbE('Overridden: typed on the board'+(R.changed?'; the source has changed since':'')+'. Reset is in Properties.')+'"></i>';
+    t=R.unknown.length?'Not a field: '+R.unknown.join(', '):R.why.join('; ');
+    if(R.unknown.length||R.st!=='ok')h+='<i class="a3d-clb-dlv '+(R.unknown.length||R.st==='gone'?'gone':R.st)+'" title="'+bimClbE(t)+'"></i>';
+    return h;
+  }
+  /* a board's live objects that are not up to date, for Print's message: [{nm, why}] */
+  function bimLiveStaleItems(B){
+    var out=[];
+    (B&&Array.isArray(B.objs)?B.objs:[]).forEach(function(n){
+      var R;
+      if(n.t!=='text'||!n.bind)return;
+      R=bimLiveShow(n,B,false);
+      if(R.st==='ok'&&!R.unknown.length)return;
+      out.push({nm:n.nm||(n.bind.k==='num'&&bimLiveKey(n.bind.src)?bimLiveKey(n.bind.src)[1]:n.s.replace(/\s+/g,' ').slice(0,40)),
+        why:R.unknown.length?'not a field: '+R.unknown.join(', '):R.why[0]||''});
+    });
+    return out;
+  }
+
   /* ================= __acad3dV174a: a board's objects, drawn =================
      docs/research/research-presentation-boards.md, 5.1 (D1: HTML and SVG, as the boards are) and 11a (R1 to R4).
      The objects are drawn in paint order (bimBobPaint: the layers from the bottom of the list up, the list's order
@@ -59303,7 +59689,7 @@ try{
   }
   /* ---- one object ---- */
   function bimBdsNode(n,ox,oy,ctx){
-    var t=n.t,b,S,h,u,pd,Wp,Hp;
+    var t=n.t,b,S,h,u,pd,Wp,Hp,Lv;
     if(t==='fig')return bimBdsFig(n,ox,oy,ctx);
     if(t==='tblock')return bimBdsTblock(n,ox,oy,ctx);   /* __acad3dV174c */
     if(t==='map'||t==='legend'||t==='north'||t==='sbar')return bimBmapHtml(n,ox,oy,ctx);   /* __acad3dV174d */
@@ -59324,7 +59710,8 @@ try{
       if(n.fit!=='auto-w')h+='width:'+bimBdsPx(b.w)+'px;';
       if(n.fit==='fixed')h+='height:'+bimBdsPx(b.h)+'px;overflow:hidden;';
       h+='font-size:'+bimBrdPx(n.fs*0.352778*bimBobPxMm())+'px;font-weight:'+n.fw+';text-align:'+n.al+';color:'+n.col+';';
-      return '<div'+bimBdsAttr(n,'a3d-clb-dtxt'+(n.fit==='auto-w'?' aw':''),ctx)+' style="'+h+bimBdsComp(n,ctx)+'">'+bimClbE(n.s)+'</div>';
+      Lv=n.bind?bimLiveShow(n,ctx.B||null,!!ctx.edit&&!A3D_PLOT.on):null;   /* __acad3dV175a: a live text's words, from the project now */
+      return '<div'+bimBdsAttr(n,'a3d-clb-dtxt'+(n.fit==='auto-w'?' aw':'')+(Lv?' lv':''),ctx)+' style="'+h+bimBdsComp(n,ctx)+'">'+bimClbE(Lv?Lv.s:n.s)+(Lv&&ctx.edit&&!A3D_PLOT.on?bimLiveMarks(Lv):'')+'</div>';
     }
     if(t==='image'){
       u=n.src?bimBimgUrl(n.src):null;
@@ -59681,9 +60068,14 @@ try{
     return {x:20,y:Math.round(y)};
   }
   function bimBdeDrawKinds(){return [['rect','Rectangle'],['ellipse','Ellipse'],['line','Line'],['arrow','Arrow'],['poly','Polygon'],['star','Star'],['text','Text'],['image','Image…'],
-    '-',['map','Map frame'],['legend','Legend'],['north','North arrow'],['sbar','Scale bar']];}   /* __acad3dV174d */
+    '-',['map','Map frame'],['legend','Legend'],['north','North arrow'],['sbar','Scale bar'],   /* __acad3dV174d */
+    '-',['lvfield','Field\u2026'],['lvnumber','Number\u2026']];}   /* __acad3dV175a: a value of the project, kept up to date */
   function bimBdeDrawMenu(x,y){
-    bimLtMenuOpen(x,y,bimBdeDrawKinds().map(function(k){return k==='-'?k:[k[1],k[0]];}),function(k){if(k==='image')bimBdeAddImage();else bimBdeAdd(k);});
+    bimLtMenuOpen(x,y,bimBdeDrawKinds().map(function(k){return k==='-'?k:[k[1],k[0]];}),function(k){
+      if(k==='image')bimBdeAddImage();
+      else if(k==='lvfield'||k==='lvnumber')setTimeout(function(){if(k==='lvfield')bimLvFieldMenu(x,y);else bimLvNumberMenu(x,y);},0);   /* after this menu has closed */
+      else bimBdeAdd(k);
+    });
     return true;
   }
   /* a new object of a kind ('arrow' is a line with its head) on the current layer, at the top of the board's visible part */
@@ -60165,7 +60557,7 @@ try{
       if(n.t==='star')g+=bimBdeNum('Points','n',n.n,1,3,60)+bimBdeNum('Inner (%)','ri',n.ri*100,1,5,95);
       if(n.t==='line')g+=bimBdeChk('Arrow at its start','a0',n.a0)+bimBdeChk('Arrow at its end','a1',n.a1);
       if(n.t==='text'){
-        g+=bimPropRow('Text','<textarea data-bdf="s" rows="3" maxlength="4000">'+bimEsc(n.s)+'</textarea>')+bimBdeNum('Size (pt)','fs',n.fs,1,4,400)+bimBdeCol('Colour','col',n.col,false)+
+        g+=(n.bind&&n.bind.k==='num'?'':bimPropRow('Text','<textarea data-bdf="s" rows="3" maxlength="4000">'+bimEsc(n.s)+'</textarea>'))+bimBdeNum('Size (pt)','fs',n.fs,1,4,400)+bimBdeCol('Colour','col',n.col,false)+
           bimPropRow('Align','<select data-bdf="al">'+bimBdeOpt('left','Left',n.al)+bimBdeOpt('center','Centre',n.al)+bimBdeOpt('right','Right',n.al)+'</select>')+
           bimPropRow('Box','<select data-bdf="fit">'+bimBdeOpt('auto-w','Auto width',n.fit)+bimBdeOpt('auto-h','Auto height',n.fit)+bimBdeOpt('fixed','Fixed size',n.fit)+'</select>')+
           bimBdeChk('Bold','fw',n.fw===700);
@@ -60173,6 +60565,7 @@ try{
       if(n.t==='image')g+=bimPropRow('Fit','<select data-bdf="fit">'+bimBdeOpt('fill','Fill',n.fit)+bimBdeOpt('fit','Fit',n.fit)+bimBdeOpt('tile','Tile',n.fit)+'</select>')+
         bimPropRow('Image',bimBdeBtn('swapimg','Another image…'));
       if(g)h+=bimPropGroup('Other',g);
+      h+=bimLvPropsHtml(n,W);   /* __acad3dV175a: a text's fields, its override, Reset and Unlink */
     }
     /* __acad3dV174b: align, distribute and tidy the selection; one object aligns to the page */
     h+=bimPropGroup('Arrange','<div class="a3d-bdeacts" role="group" aria-label="Align">'+bimBdeBtn('al-left','Left','Align left edges')+bimBdeBtn('al-hcenter','Centre','Align centres across')+
@@ -60233,11 +60626,12 @@ try{
     if(!body||body.getAttribute('data-bdewired'))return;
     body.setAttribute('data-bdewired','1');
     body.addEventListener('click',function(ev){
-      var a=ev.target&&ev.target.closest?ev.target.closest('[data-bdact]'):null,v;
+      var a=ev.target&&ev.target.closest?ev.target.closest('[data-bdact]'):null,v,r;
       if(!a||!bimBdeOwnsProps())return;
       v=a.getAttribute('data-bdact');
       if(v==='swapimg'){if(A3D_BDE.sel.length===1)bimBdeAddImage(A3D_BDE.sel[0]);}
       else if(/^(al|dist|tidy)-/.test(v))bimBdeArrange(v);   /* __acad3dV174b */
+      else if(/^lv-/.test(v)){r=a.getBoundingClientRect();bimLvAct(v,r.left,r.bottom+4);}   /* __acad3dV175a */
       else if(v==='mapfit'){var Wf=bimBdeWork(),q=Wf&&bimBobFind(Wf.objs,A3D_BDE.sel[0]);if(q&&q.n.t==='map')bimBdeSet(null,bimBmapFit(q.n));}   /* __acad3dV174d */
       else bimBdeDo(v);
     });
@@ -60254,6 +60648,9 @@ try{
       }
       if(f==='lsize'&&bimBdeOwnsProps()){v=t.value;bimBdeSet(null,{lw:v==='fillw'||v==='fill'?'fill':null,lh:v==='fillh'||v==='fill'?'fill':null,la:v==='abs'?true:null});return;}
       if(!f||!bimBdeOwnsProps())return;
+      if(f==='ov.s'){bimLvOverride(t.value);return;}   /* __acad3dV175a: words typed over a live text */
+      if(f==='lv.dp'){bimLvSetDp(t.value);return;}
+      if(f==='s'&&bimLvSetText(t.value))return;   /* a text's words, and the fields in them */
       if(/:on$/.test(f)){f=f.slice(0,-3);o[f]=t.checked?((t.closest('.a3d-prow')||t.parentNode).querySelector('input[type=color]')||{}).value||'#000000':'none';}
       else if(f==='tr'){v=t.value.trim();if(v===''){o.tr=null;}else{v=+v;if(!isFinite(v))return;o.tr=Math.round(Math.max(0,Math.min(90,v)));}}
       else if(f==='bm'||f==='mask')o[f]=t.value||null;
@@ -60267,6 +60664,159 @@ try{
       else{v=parseFloat(t.value);if(!isFinite(v))return;o[f]=v;}
       bimBdeSet(null,o);
     });
+  }
+
+
+  /* ================= __acad3dV175a: live text on a board, in Edit =================
+     docs/research/research-presentation-live.md, 4.3 to 4.6; docs/work-orders/v175/SPEC.md. The board's Draw menu
+     puts a Field into a text or a Number on the board, each picked from a menu (D14: a field is seldom typed). The
+     selected live text has a Live group in the Properties panel: what it is bound to, what it shows, its override
+     with Reset and Keep (D5, D7), Run again for a kept analysis that is out of date (D3), and Unlink, one way, which
+     leaves what it shows as plain text (D6). Every change is one undo step, as the board's other changes are. */
+  /* what setting a text's words does to its binding: a text with a field in it is live, one with none is plain */
+  function bimLvTextPatch(n,s){
+    var o={s:s},any;
+    if(n.bind&&n.bind.k==='num')return o;
+    any=bimLvTokens(s).some(function(t){var E=bimLiveKey(t.key);return !!E&&!E[4];});
+    if(any){if(!n.bind)o.bind={k:'tok'};}
+    else if(n.bind){o.bind=null;o.ov=null;o.ovAt=null;}
+    return o;
+  }
+  /* the one selected text object and the board's working copy, or null */
+  function bimLvTarget(live){
+    var W=bimBdeWork(),S,f;
+    if(!W)return null;
+    S=bimBdeSel(W);
+    f=S.length===1?bimBobFind(W.objs,S[0]):null;
+    if(!f||f.n.t!=='text'||(live&&!f.n.bind))return null;
+    return {W:W,n:f.n};
+  }
+  /* the Text row of Properties: the words, and the binding they give. true when it was a text's */
+  function bimLvSetText(s){
+    var T=bimLvTarget(false);
+    if(!T||(T.n.bind&&T.n.bind.k==='num'))return false;
+    bimBdeSet(T.n.id,bimLvTextPatch(T.n,String(s).slice(0,4000)));
+    return true;
+  }
+  /* ---- the menus ---- */
+  function bimLvFieldMenu(x,y){
+    bimLtMenuOpen(x,y,bimLvMenuItems(bimLiveKeys().filter(function(k){return !k[4];})),function(key){bimLvInsertField(key);});
+    return true;
+  }
+  /* a field put at the end of the selected text, or as a new text when none is selected */
+  function bimLvInsertField(key){
+    var E=bimLiveKey(key),T,tok,s;
+    if(!E||E[4])return null;
+    tok='{{'+E[0]+'}}';
+    T=bimLvTarget(false);
+    if(T&&!(T.n.bind&&T.n.bind.k==='num')){
+      s=T.n.s==='Text'?tok:T.n.s+(/\s$/.test(T.n.s)||!T.n.s?'':' ')+tok;
+      if(s.length>4000){a3dToast('This text is full: put the field in a new text');return null;}
+      bimBdeSet(T.n.id,bimLvTextPatch(T.n,s));
+      a3dToast(E[1]+' put in the text: it follows the project');
+      return T.n.id;
+    }
+    return bimBdeAdd('text',{s:E[1]+': '+tok,bind:{k:'tok'},fit:'auto-w'});
+  }
+  function bimLvNumberMenu(x,y){
+    var items=bimLvMenuItems(bimLiveKeys().filter(function(k){return k[2]!=='text'&&!k[4];}));
+    if(A3D.levels.length){
+      items.push('-');
+      A3D.levels.forEach(function(L,i){items.push(['Gross area: '+L.name,'level.area#'+i]);});
+    }
+    bimLtMenuOpen(x,y,items,function(a){
+      var m=/^level\.area#(\d+)$/.exec(a),L=m?A3D.levels[+m[1]]:null;
+      if(m){if(L)bimLvAddNumber('level.area',L.id);}
+      else bimLvAddNumber(a);
+    });
+    return true;
+  }
+  /* one number on the board, with its unit: a text object bound to one source */
+  function bimLvAddNumber(key,id){
+    var E=bimLiveKey(key),b,lv=null;
+    if(!E||E[2]==='text')return null;
+    b={k:'num',src:E[0]};
+    if(E[4]){
+      lv=bimLevelById(id);
+      if(!lv){a3dToast('That level is not in the project');return null;}
+      b.id=lv.id;b.nm=lv.name;
+    }
+    return bimBdeAdd('text',{s:'{{'+E[0]+'}}',bind:b,fs:28,fw:700,fit:'auto-w',nm:E[1]+(lv?': '+lv.name:'')});
+  }
+  /* ---- the selected live text ---- */
+  /* words typed in Properties' Shows row: an override, or none when they are the source's own */
+  function bimLvOverride(val){
+    var T=bimLvTarget(true),cur;
+    if(!T)return false;
+    cur=bimLiveShow(T.n,T.W.B,false).src;
+    if(!bimLvOvSet(T.n,'s',String(val).slice(0,4000),cur))return false;
+    return bimBdeCommit(T.W,T.n.ov?'Overridden: it keeps these words until Reset':'It follows its source again',[T.n.id]);
+  }
+  /* a Number's decimals: '' for its kind's own */
+  function bimLvSetDp(v){
+    var T=bimLvTarget(true),d=parseInt(v,10);
+    if(!T||T.n.bind.k!=='num')return false;
+    if(isFinite(d))T.n.bind.dp=Math.max(0,Math.min(6,d));else delete T.n.bind.dp;
+    return bimBdeCommit(T.W,null,[T.n.id]);
+  }
+  /* Reset, Reset all, Keep, Unlink, Run again, Insert field */
+  function bimLvAct(a,x,y){
+    var T,R,G;
+    if(a==='lv-field')return bimLvFieldMenu(x||0,y||0);
+    if(a==='lv-run'){   /* the graded surfaces that are out of date, graded again: never by a board on its own (D3) */
+      G=A3D.objs.filter(function(o){return o.t==='terrain'&&o.grading&&bimGradeStale(o);});
+      if(!G.length){a3dToast('Nothing graded is out of date');return false;}
+      G.forEach(function(o){bimRegrade(o);});
+      return true;
+    }
+    T=bimLvTarget(true);
+    if(!T)return false;
+    if(a==='lv-reset'||a==='lv-resetall'){
+      if(!bimLvOvReset(T.n,a==='lv-reset'?'s':null))return false;
+      return bimBdeCommit(T.W,'Reset: it follows its source again',[T.n.id]);
+    }
+    if(a==='lv-keep'){
+      if(!bimLvOvKeep(T.n,'s',bimLiveShow(T.n,T.W.B,false).src))return false;
+      return bimBdeCommit(T.W,'Kept: the override stands against the source as it is now',[T.n.id]);
+    }
+    if(a==='lv-unlink'){
+      R=bimLiveShow(T.n,T.W.B,false);
+      T.n.s=R.s.slice(0,4000);
+      delete T.n.bind;delete T.n.ov;delete T.n.ovAt;
+      return bimBdeCommit(T.W,'Unlinked: plain text now, as it showed. Ctrl+Z brings the link back',[T.n.id]);
+    }
+    return false;
+  }
+  /* ---- the Live group of the Properties panel, for one selected text ---- */
+  function bimLvPropsHtml(n,W){
+    var b=n.bind,R,E,g='',src,acts='';
+    if(n.t!=='text')return '';
+    if(!b)return bimPropGroup('Live','<div class="a3d-bdeacts">'+bimBdeBtn('lv-field','Insert field…','A value of the project, kept up to date')+'</div>'+
+      '<div class="a3d-pnote">A field shows a value of the project and follows it: the project\'s name, the site area, the gross floor area. It is written {{key}} in the text.</div>');
+    R=bimLiveShow(n,W.B,false);
+    if(b.k==='num'){
+      E=bimLiveKey(b.src);
+      src=(E?E[1]:b.src)+(b.nm?': '+b.nm:'');
+      g+=bimPropText('Source',src,true);
+      if(E)g+=bimPropRow('Decimals','<select data-bdf="lv.dp">'+bimBdeOpt('','As its kind',typeof b.dp==='number'?b.dp:'')+[0,1,2,3].map(function(d){return bimBdeOpt(d,String(d),typeof b.dp==='number'?b.dp:'');}).join('')+'</select>');
+    }else{
+      src=R.keys.map(function(k){var q=bimLiveKey(k);return q?q[1]:k;}).filter(function(v,i,a){return a.indexOf(v)===i;}).join(', ');
+      g+=bimPropText('Fields',src||'None',true);
+    }
+    g+=bimPropRow('Shows','<textarea data-bdf="ov.s" rows="2" maxlength="4000" title="Typing here overrides what the source says, until Reset">'+bimEsc(R.s)+'</textarea>');
+    if(R.ov){
+      g+='<div class="a3d-pnote">Overridden: these words were typed on the board. The source says: '+bimEsc(R.src)+'.'+(R.changed?' The source has changed since this was set.':'')+'</div>';
+      acts+=bimBdeBtn('lv-reset','Reset','Back to what the source says')+(R.changed?bimBdeBtn('lv-keep','Keep','Keep the override, and stop saying the source has changed'):'');
+    }
+    if(R.unknown.length)g+='<div class="a3d-pnote">Not a field, left as typed: '+bimEsc(R.unknown.map(function(k){return '{{'+k+'}}';}).join(', '))+'. Insert field lists the fields.</div>';
+    R.why.forEach(function(w){g+='<div class="a3d-pnote">'+bimEsc(w)+'</div>';});
+    if(R.st==='stale')acts+=bimBdeBtn('lv-run','Run again','Grade again the surfaces that are out of date');
+    if(b.k==='tok')acts+=bimBdeBtn('lv-field','Insert field…','Another value of the project, at the end of the text');
+    acts+=bimBdeBtn('lv-unlink','Unlink','Keep what it shows as plain text: it no longer follows the project');
+    if(R.ov)acts+=bimBdeBtn('lv-resetall','Reset all','Every override of this object taken off');
+    g+='<div class="a3d-bdeacts">'+acts+'</div>';
+    g+='<div class="a3d-pnote">It is drawn from the project each time the board is. Its marks (overridden, out of date, source removed) show in Edit and are never printed.</div>';
+    return bimPropGroup('Live',g);
   }
   /* ================= __acad3dV122: the Presentation panel =================
      The presentation's pages, the thumbnail column of a PDF reader. A thumbnail is the page as it
@@ -66660,6 +67210,14 @@ try{
   window.__a3dBrdMenu=function(k){var ok=bimBrdMenu(k,40,40),m=document.getElementById('a3d-ltmenu'),it=m?[].map.call(m.querySelectorAll('[data-ltm]'),function(b){return [b.textContent,b.getAttribute('data-ltm')];}):[];bimLtMenuClose();return ok?it:null;};
   window.__a3dBrdOpen=function(key){return bimClbOpen(key);};
   window.__a3dBrdHtmlFor=function(key,narrow){return bimBoardHtmlFor(key,!!narrow);};
+  /* __acad3dV175a: live text on a board: fields, numbers, overrides, Reset, Unlink; the units kept with the project */
+  window.__acad3dV175a='fields,numbers,override,reset,keep,unlink,marks,printnote,unitsaved,loadrev';
+  window.__a3dLive={tokens:bimLvTokens,group:bimLvGroup,format:bimLvFormat,subst:bimLvSubst,ovSet:bimLvOvSet,ovReset:bimLvOvReset,ovState:bimLvOvState,ovKeep:bimLvOvKeep,
+    printNote:bimLvPrintNote,menuItems:bimLvMenuItems,kind:bimLvKind,keys:bimLiveKeys,key:bimLiveKey,get:function(k,id,nm,B){return bimLiveGet(k,id,nm,B||null);},
+    show:function(n,B,edit){return bimLiveShow(n,B||null,!!edit);},marks:bimLiveMarks,stale:bimLiveStaleItems,textPatch:bimLvTextPatch,
+    insertField:function(k){return bimLvInsertField(k);},addNumber:function(k,id){return bimLvAddNumber(k,id);},override:function(v){return bimLvOverride(v);},
+    setDp:function(v){return bimLvSetDp(v);},act:function(a){return bimLvAct(a,40,40);},propsHtml:bimLvPropsHtml,unitState:bimUnitState,applyUnits:bimApplyUnitState,
+    bindValid:bimLvBindValid,ovValid:bimLvOvValid,rev:function(){return A3D_REV;},bump:function(){setA3D_REV(A3D_REV+1);return A3D_REV;}};
 }catch(e){
   window.__a3dErr=String(e&&e.message||e);
   console.warn('[BIM] The engine failed to load.',e);   /* __acad3dV120 */

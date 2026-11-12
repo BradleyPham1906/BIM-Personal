@@ -1,9 +1,9 @@
-# Work orders: Claude designs, Aider types
+# Work orders: Claude specifies, Cline builds the first pass
 
-From V175 on (the owner, 2026-11-11), a phase's build is split between Claude and Aider (Qwen 2.5 Coder
-14B, local, free). Claude does the thinking and the hard code; Aider fills in the routine functions
-Claude has laid out. The split saves Claude's usage without lowering quality, because tests decide
-whether Aider's work is right, and Claude reviews it before anything is merged.
+From V175 on (the owner, 2026-11-11), Claude researches and writes the phase spec, tests and ordered
+tasks; Cline, using the owner's free Nemotron 3.5 Super VL option, builds the first usable prototype.
+Claude later reviews and improves it against the research and task criteria. Aider is a backup only
+when Cline is unavailable or the owner asks to switch.
 
 ## The folder
 
@@ -21,27 +21,23 @@ The phase's tests live in `tests/unit/<area>.test.mjs`, where `npm test` finds t
 |---|---|---|
 | 1. Research | Claude | As before (`docs/research/research-protocol.md`), the owner's decisions asked at the end. |
 | 2. Spec | Claude | `vNNN/SPEC.md`: what the feature does, every file and function, inputs and outputs, edge cases, the order of the work. |
-| 3. Skeleton | Claude | On the phase's branch: the hard parts written in full (engine logic, wiring across files, geometry, anything needing judgment); each routine function declared with its name, parameters and a comment saying exactly what it returns, its body only `throw new Error('WO-NN: not built');`. `npm run modules`, the build. |
-| 4. Tests | Claude | A unit test for every routine function, written from the spec. Each fails until its function is filled in. |
-| 5. Tasks | Claude | `vNNN/TASKS.md`: one work order per routine function, marked `[Aider]`, and anything left for Claude marked `[Claude]`. Push the branch. |
-| 6. Fill in | Owner + Aider | One task at a time (below). Free. |
-| 7. Review and finish | Claude | The review-aider skill: every Aider change read against its work order, fixes, the `[Claude]` and skipped tasks done, no `WO-` stub left (`grep -rn "WO-" src/` is empty), checks, build, PR, "Merge it?". |
+| 3. Tests and tasks | Claude | Write focused tests and `vNNN/TASKS.md`. Mark first-pass implementation tasks `[Cline]`; reserve `[Claude]` for decisions or work that should not be delegated. |
+| 4. Build | Cline | On local `main`, implement one task at a time from the research, spec and tests. Complete behavior; do not add deliberate throw stubs. |
+| 5. Check and try | Cline + owner | Follow Rule #1 in `CLAUDE.md`; rebuild `canvas_v10.html` only after the required checks pass, and use that local file. The previous HTML stays usable until then. Make a local recovery checkpoint after a verified task or coherent group. Do not push. |
+| 6. Review and improve | Claude | When available, compare the implementation against the research, spec and task criteria; fix gaps and improve the prototype. Browser checks and full regression still require owner approval. |
+| 7. Backup | Aider | Take over only when Cline is unavailable or the owner asks. Follow the same local-main, no-push and check rules. |
 
-## Doing a task with Aider (the owner)
+## Doing a task with Cline
 
-In VS Code's terminal, on the phase's branch (`/start` in Claude, or `git switch <branch>`):
-
-    aider
-    /read docs/work-orders/v175/SPEC.md docs/work-orders/v175/TASKS.md
-    do the next unticked [Aider] task
-
-Aider adds the task's one file, fills the function in, and runs its test (`/test` runs `npm test`).
-Test passes: Aider ticks the box, next task. Test fails twice: type "skip it", Aider marks it
-`[skipped]`, and Claude does it later. Close Aider when you stop; nothing needs committing.
+In VS Code, on local `main`, ask Cline to read the phase research, `SPEC.md` and `TASKS.md`, then
+complete the first open `[Cline]` task. Cline may edit project files directly and run the checks
+required by Rule #1. It marks a task `[x]` only after those checks pass. If a check fails, it makes
+up to two focused fix attempts; if still failing, it stops, preserves the diff and reports the failure
+for later review.
 
 ## Rules for writing work orders (Claude)
 
-A 14B model succeeds on a small, exact task and fails on a vague one. Each work order:
+A model is more reliable on a small, exact task than on a vague one. Each work order:
 - **one file, one function**, ideally under 40 lines of body;
 - says **where**: the file and the function's name (it is already declared there);
 - says **what**: inputs, output, and every edge case, in plain words, with an example input and its
@@ -53,7 +49,9 @@ A 14B model succeeds on a small, exact task and fails on a vague one. Each work 
 Anything that does not fit these rules is a `[Claude]` task. Score every task with `ROUTING.md`;
 split one that scores 5 or more when its pieces would each score 4 or less.
 
-## The one exception to "no placeholders"
+## Keep the local prototype usable
 
-The `WO-NN` stubs live only on the phase's branch while the work orders are open. The PR is not
-merged while any stub remains or any test fails, so `main` never has a placeholder.
+Do not create `throw new Error('WO-NN: not built')` placeholders on `main`. Work orders are complete
+implementation tasks, not invitations to land a temporarily broken skeleton. If a new feature is
+unfinished, keep its controls unavailable or complete the bounded task before building a usable
+prototype. Never push the prototype or publish it to Pages without the owner's explicit approval.

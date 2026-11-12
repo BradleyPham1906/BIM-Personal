@@ -1,3 +1,4 @@
+import { A3D } from '../core/state.js';
 import { TYPES } from '../core/mesh-primitives.js';
 import { bimIsPoint } from '../drawing/point-node.js';
 import { bimIsProperty } from '../site/property.js';
@@ -46,11 +47,20 @@ import { saveSoon } from '../bim/region-regenerate.js';
     cm: {label:'cm', scale:100,  dp:1},
     mm: {label:'mm', scale:1000, dp:0}
   };
-  /* Project display units. Persisted with the project (see bimUnitState/bimApplyUnitState), and
+  /* Project display units. Kept with the project since V175a (bimUnitState, bimApplyUnitState), and
      deliberately a PROJECT setting rather than a constant: this app is meant for bridge and
      structural work as well as buildings, and a 90 m span and a 6 mm plate cannot both be read
      at three decimals of a metre. */
   var A3D_UNITS={key:'m',dp:null};
+  /* __acad3dV175a (D10): the units are a field of the project (A3D.units), read with it and reset by the next one.
+     A project is read before this file has run, so what it gave waits in A3D.units and is taken here. */
+  function bimUnitState(){return {key:A3D_UNITS.key,dp:A3D_UNITS.dp===undefined?null:A3D_UNITS.dp};}
+  function bimApplyUnitState(u){
+    var U=BIM_UNITS||{m:1,cm:1,mm:1},key=u&&typeof u==='object'&&typeof u.key==='string'&&U.hasOwnProperty(u.key)?u.key:'m',dp=u&&typeof u==='object'&&typeof u.dp==='number'&&isFinite(u.dp)?Math.max(0,Math.min(4,Math.round(u.dp))):null;
+    A3D.units={key:key,dp:dp};
+    if(A3D_UNITS){A3D_UNITS.key=key;A3D_UNITS.dp=dp;}
+  }
+  if(A3D.units)bimApplyUnitState(A3D.units);
   function bimUnitDef(){return BIM_UNITS[A3D_UNITS.key]||BIM_UNITS.m;}
   function bimUnitLabel(){return bimUnitDef().label;}
   function bimUnitDp(){
@@ -102,6 +112,7 @@ import { saveSoon } from '../bim/region-regenerate.js';
       dp=parseInt(dp,10);
       if(isFinite(dp))A3D_UNITS.dp=Math.max(0,Math.min(4,dp));
     }
+    A3D.units=bimUnitState();   /* __acad3dV175a (D10): kept with the project */
     refreshProps();paint();saveSoon();
     return {key:A3D_UNITS.key,dp:bimUnitDp()};
   }
@@ -151,7 +162,7 @@ import { saveSoon } from '../bim/region-regenerate.js';
     return (TYPES[o.t]&&TYPES[o.t].n)?('Generic Models : '+TYPES[o.t].n):'Generic Models';
   }
 export {
-  A3D_PROP_GROUPS_OPEN, A3D_UNITS, bimDispLen, bimDispNum, bimLenInputToMetres, bimLenLabel, bimObjTypeLabel,
-  bimPropGroup, bimPropGroupToggle, bimPropLen, bimPropLenText, bimPropRow, bimPropText, bimSetUnits,
-  bimTrimNum, bimUnitDef, bimUnitDp, bimUnitLabel
+  A3D_PROP_GROUPS_OPEN, A3D_UNITS, bimApplyUnitState, bimDispLen, bimDispNum, bimLenInputToMetres,
+  bimLenLabel, bimObjTypeLabel, bimPropGroup, bimPropGroupToggle, bimPropLen, bimPropLenText, bimPropRow,
+  bimPropText, bimSetUnits, bimTrimNum, bimUnitDef, bimUnitDp, bimUnitLabel, bimUnitState
 };

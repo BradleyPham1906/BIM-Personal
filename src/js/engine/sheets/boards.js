@@ -14,6 +14,8 @@ import { bimBoardKey, bimBoardKeyLabel, bimBoardLabel, bimBrdKeep, bimClbWhich }
 import { bimBrdDupBoard, bimBrdEdit, bimBrdNewUi } from './board-edit.js';
 import { bimPgBoardPage } from './page-sizes.js';
 import { bimBimgLoad, bimBimgUsed } from './board-images.js';
+import { bimLvPrintNote } from './live-text.js';
+import { bimLiveStaleItems } from './live-sources.js';
 import { A3D_PRP, bimPresPanelRefresh, refreshBrowser } from './presentation-panel.js';
 import { a3dToast } from '../bim/csg-booleans.js';
 
@@ -211,6 +213,8 @@ import { a3dToast } from '../bim/csg-booleans.js';
       w.document.close();
     }catch(eW){console.warn('[BIM] The board could not be put in the print window',eW);a3dToast('The board could not be printed -- see the console');return;}
     a3dToast('Printing '+bimBoardKeyLabel(kind)+' -- Save as PDF in the print dialog makes a PDF');
+    var lvNote=bimLvPrintNote(bimLiveStaleItems(bimBoardById(kind)||bimBoardById('board-'+kind)));   /* __acad3dV175a (D4) */
+    if(lvNote)a3dToast(lvNote);
     });
     return true;
   }

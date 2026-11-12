@@ -20,9 +20,10 @@ suites are in `tests/e2e/`.
 
 ## In a new session
 
-0. The owner's routine is `/start`, work, `/finish` (`docs/dev/WORKFLOW.md`: which tool does what, Ollama at
-   `localhost:11434`, Aider, the four rules). If the owner starts without `/start`, suggest it
-   once; before they leave, suggest `/finish` if work is unpushed.
+0. The owner's routine is `/start`, work, `/finish` (`docs/dev/WORKFLOW.md`: which tool does what,
+   Cline's local prototype workflow, Ollama, Aider as backup, the four rules). If the owner starts
+   without `/start`, suggest it once. Do not use `/finish` to push a local Cline prototype unless
+   the owner asks to publish it.
 1. Read `docs/dev/PIPELINE.md` first, in full: the build's hash and size, the test counts, and the ordered
    path, with the phase marked **Start here**.
 2. Then `docs/dev/CLAUDE_INSTRUCTIONS.md`: the build contract (ES5, no dependencies, phase markers,
@@ -69,9 +70,11 @@ If a bigger check seems needed, ask in one sentence; don't run it.
   (2026-11-07: no git hook; CI runs the build checks and the unit tests. 2026-11-11: `.claude/settings.json`
   has one SessionStart hook, `tools/pending_aider.py`, which only reports unreviewed Aider work; it runs no tests.)
 
-## Delegating to the local model (the owner, 2026-11-07; Ollama 2026-11-11)
+## Delegating to Claude's local model (the owner, 2026-11-07; Ollama 2026-11-11)
 
-Claude is the general contractor; a local model, Qwen 2.5 Coder 14B, is the subcontractor. Ollama
+For Claude's own bulk delegations, Qwen 2.5 Coder 14B is the subcontractor. Cline's free Nemotron
+3.5 Super VL option is the primary first-pass implementer for local prototypes, as described in
+`docs/dev/WORKFLOW.md`; this Qwen workflow is separate. Ollama
 serves it at `http://localhost:11434/v1`, model id `qwen2.5-coder:14b` (the script's defaults; Bionic
 at `localhost:1235`, model `qwen2.5-coder-14b-instruct`, still works with `--url` and `--model`). `python tools/local_llm.py "<prompt>" -f path[:start-end] ...` sends a
 prompt with file excerpts and prints the reply (`--list` shows the loaded models). Send excerpts, not
@@ -79,24 +82,28 @@ whole files.
 
 - **Delegate:** bulk boilerplate, test scaffolds, draft text (notes, log entries, guide prose), and
   summaries of large files (such as a range of `canvas_v10_STATUS.md`).
-- **Keep:** engine logic, and any change touching 3 or more files.
+- **Keep:** engine logic and any change touching 3 or more files in Claude's Qwen workflow. This
+  does not prevent Cline from implementing an explicit, bounded work order.
 - **Check everything it returns** before it goes into the repo: read it against the code, fix or drop
   invented names, and hold it to the build contract (ES5, no dependencies, no emojis). The table in
   Rule #1 still decides what runs after. If Ollama is down, do the work directly. The first
   call after a while is slow (about 40 s) while Ollama loads the model.
 
-## Work orders: Claude designs, Aider types (the owner, 2026-11-11)
+## Work orders: Claude specifies, Cline builds the first pass (the owner, 2026-11-11)
 
-From V175 on, after a phase's research and the owner's decisions, Claude does not build the whole
-phase. It writes `docs/work-orders/vNNN/SPEC.md` (a detailed spec and roadmap), builds the hard parts
-in full and a skeleton of the routine functions (each body `throw new Error('WO-NN: not built');`),
-writes a unit test for every routine function, and lists them in `TASKS.md` as `[Aider]` work
-orders. The owner fills them in with Aider for free; Claude reviews and finishes (the review-aider
-skill), and the PR merges only when no `WO-` stub is left and every test passes.
-`docs/work-orders/README.md` has the steps, the templates and the rules for writing a work order a
-14B model can do. Who does what is scored with `docs/work-orders/ROUTING.md` (six questions, four tiers:
-Aider, Aider with a work order, Claude on Sonnet, Claude on the default model); `aider-log.md` records
-every Aider result, and the thresholds move with it after each phase. The stubs are the one exception to "no placeholders": they never reach `main`.
+From V175 on, Claude researches and writes `docs/work-orders/vNNN/SPEC.md`, tests, and ordered tasks
+after the owner's decisions. Cline, using the owner's free Nemotron 3.5 Super VL option, implements
+the first pass on the local `main` branch from the research and task acceptance criteria. Tasks are
+marked `[Cline]` or `[Claude]`; Cline completes behavior rather than adding throw stubs. It runs the
+required checks before rebuilding `canvas_v10.html`, keeping the existing file as the last usable
+build until then. After a verified task or coherent group, it makes a local recovery checkpoint.
+It does not push or publish unless the owner explicitly asks.
+
+When Claude is available, Claude reviews the prototype against the research, spec and task criteria,
+then fixes or improves it. Aider is the backup implementer only when Cline is unavailable or the
+owner asks to switch. `docs/work-orders/README.md` has the workflow and templates;
+`docs/work-orders/ROUTING.md` guides task assignment. `aider-log.md` remains historical and records
+explicitly requested Aider fallback work.
 
 ## How to work in this repo (the owner, 2026-11-01)
 

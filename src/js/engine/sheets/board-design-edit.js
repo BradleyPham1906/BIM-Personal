@@ -22,6 +22,7 @@ import { bimBimgAdd } from './board-images.js';
 import { bimBdsFigBoxer, bimBdsPos, bimBdsPres, bimBdsPx } from './board-design.js';
 import { bimBmapFit, bimBmapSources } from './board-map.js';
 import { bimBdePage } from './board-design-tools.js';
+import { bimLvFieldMenu, bimLvNumberMenu } from './live-edit.js';
 import { a3dToast } from '../bim/csg-booleans.js';
 
 
@@ -109,9 +110,14 @@ import { a3dToast } from '../bim/csg-booleans.js';
     return {x:20,y:Math.round(y)};
   }
   function bimBdeDrawKinds(){return [['rect','Rectangle'],['ellipse','Ellipse'],['line','Line'],['arrow','Arrow'],['poly','Polygon'],['star','Star'],['text','Text'],['image','Image…'],
-    '-',['map','Map frame'],['legend','Legend'],['north','North arrow'],['sbar','Scale bar']];}   /* __acad3dV174d */
+    '-',['map','Map frame'],['legend','Legend'],['north','North arrow'],['sbar','Scale bar'],   /* __acad3dV174d */
+    '-',['lvfield','Field\u2026'],['lvnumber','Number\u2026']];}   /* __acad3dV175a: a value of the project, kept up to date */
   function bimBdeDrawMenu(x,y){
-    bimLtMenuOpen(x,y,bimBdeDrawKinds().map(function(k){return k==='-'?k:[k[1],k[0]];}),function(k){if(k==='image')bimBdeAddImage();else bimBdeAdd(k);});
+    bimLtMenuOpen(x,y,bimBdeDrawKinds().map(function(k){return k==='-'?k:[k[1],k[0]];}),function(k){
+      if(k==='image')bimBdeAddImage();
+      else if(k==='lvfield'||k==='lvnumber')setTimeout(function(){if(k==='lvfield')bimLvFieldMenu(x,y);else bimLvNumberMenu(x,y);},0);   /* after this menu has closed */
+      else bimBdeAdd(k);
+    });
     return true;
   }
   /* a new object of a kind ('arrow' is a line with its head) on the current layer, at the top of the board's visible part */

@@ -1,7 +1,7 @@
 # VNNN spec: <feature name>
 
-Research: `docs/research/<note>.md` (the owner's decisions: <list or link>). Branch: `<branch>`.
-Written by Claude, <date>. Aider reads this with TASKS.md; keep it exact and plain.
+Research: `docs/research/<note>.md` (the owner's decisions: <list or link>). Implementation target:
+local `main`. Written by Claude, <date>. Cline reads this with TASKS.md; keep it exact and plain.
 
 ## 1. What it does for the user
 
@@ -11,7 +11,7 @@ Written by Claude, <date>. Aider reads this with TASKS.md; keep it exact and pla
 
 | File | New or changed | What it holds | Built by |
 |---|---|---|---|
-| `src/js/engine/<folder>/<file>.js` | new | <...> | Claude (hard parts) + Aider (WO-01..) |
+| `src/js/engine/<folder>/<file>.js` | new | <...> | Cline (bounded first-pass tasks) + Claude (review/fixes) |
 
 ## 3. Data
 
@@ -19,7 +19,7 @@ Written by Claude, <date>. Aider reads this with TASKS.md; keep it exact and pla
 
 ## 4. Functions
 
-For each function, Claude's or Aider's:
+For each function, Cline's or Claude's:
 
 ### `functionName(arg1, arg2)` - `src/js/engine/<folder>/<file>.js` - WO-NN or Claude
 - **Takes:** <each argument, type, meaning>

@@ -14,6 +14,7 @@ import {
   bimBdeWork
 } from './board-design-edit.js';
 import { bimBdeArrange, bimBdeLaySet } from './board-design-tools.js';
+import { bimLvAct, bimLvOverride, bimLvPropsHtml, bimLvSetDp, bimLvSetText } from './live-edit.js';
 
 
   /* ================= __acad3dV174a: a board's objects in the Layers tab and the Properties panel =================
@@ -102,7 +103,7 @@ import { bimBdeArrange, bimBdeLaySet } from './board-design-tools.js';
       if(n.t==='star')g+=bimBdeNum('Points','n',n.n,1,3,60)+bimBdeNum('Inner (%)','ri',n.ri*100,1,5,95);
       if(n.t==='line')g+=bimBdeChk('Arrow at its start','a0',n.a0)+bimBdeChk('Arrow at its end','a1',n.a1);
       if(n.t==='text'){
-        g+=bimPropRow('Text','<textarea data-bdf="s" rows="3" maxlength="4000">'+bimEsc(n.s)+'</textarea>')+bimBdeNum('Size (pt)','fs',n.fs,1,4,400)+bimBdeCol('Colour','col',n.col,false)+
+        g+=(n.bind&&n.bind.k==='num'?'':bimPropRow('Text','<textarea data-bdf="s" rows="3" maxlength="4000">'+bimEsc(n.s)+'</textarea>'))+bimBdeNum('Size (pt)','fs',n.fs,1,4,400)+bimBdeCol('Colour','col',n.col,false)+
           bimPropRow('Align','<select data-bdf="al">'+bimBdeOpt('left','Left',n.al)+bimBdeOpt('center','Centre',n.al)+bimBdeOpt('right','Right',n.al)+'</select>')+
           bimPropRow('Box','<select data-bdf="fit">'+bimBdeOpt('auto-w','Auto width',n.fit)+bimBdeOpt('auto-h','Auto height',n.fit)+bimBdeOpt('fixed','Fixed size',n.fit)+'</select>')+
           bimBdeChk('Bold','fw',n.fw===700);
@@ -110,6 +111,7 @@ import { bimBdeArrange, bimBdeLaySet } from './board-design-tools.js';
       if(n.t==='image')g+=bimPropRow('Fit','<select data-bdf="fit">'+bimBdeOpt('fill','Fill',n.fit)+bimBdeOpt('fit','Fit',n.fit)+bimBdeOpt('tile','Tile',n.fit)+'</select>')+
         bimPropRow('Image',bimBdeBtn('swapimg','Another image…'));
       if(g)h+=bimPropGroup('Other',g);
+      h+=bimLvPropsHtml(n,W);   /* __acad3dV175a: a text's fields, its override, Reset and Unlink */
     }
     /* __acad3dV174b: align, distribute and tidy the selection; one object aligns to the page */
     h+=bimPropGroup('Arrange','<div class="a3d-bdeacts" role="group" aria-label="Align">'+bimBdeBtn('al-left','Left','Align left edges')+bimBdeBtn('al-hcenter','Centre','Align centres across')+
@@ -170,11 +172,12 @@ import { bimBdeArrange, bimBdeLaySet } from './board-design-tools.js';
     if(!body||body.getAttribute('data-bdewired'))return;
     body.setAttribute('data-bdewired','1');
     body.addEventListener('click',function(ev){
-      var a=ev.target&&ev.target.closest?ev.target.closest('[data-bdact]'):null,v;
+      var a=ev.target&&ev.target.closest?ev.target.closest('[data-bdact]'):null,v,r;
       if(!a||!bimBdeOwnsProps())return;
       v=a.getAttribute('data-bdact');
       if(v==='swapimg'){if(A3D_BDE.sel.length===1)bimBdeAddImage(A3D_BDE.sel[0]);}
       else if(/^(al|dist|tidy)-/.test(v))bimBdeArrange(v);   /* __acad3dV174b */
+      else if(/^lv-/.test(v)){r=a.getBoundingClientRect();bimLvAct(v,r.left,r.bottom+4);}   /* __acad3dV175a */
       else if(v==='mapfit'){var Wf=bimBdeWork(),q=Wf&&bimBobFind(Wf.objs,A3D_BDE.sel[0]);if(q&&q.n.t==='map')bimBdeSet(null,bimBmapFit(q.n));}   /* __acad3dV174d */
       else bimBdeDo(v);
     });
@@ -191,6 +194,9 @@ import { bimBdeArrange, bimBdeLaySet } from './board-design-tools.js';
       }
       if(f==='lsize'&&bimBdeOwnsProps()){v=t.value;bimBdeSet(null,{lw:v==='fillw'||v==='fill'?'fill':null,lh:v==='fillh'||v==='fill'?'fill':null,la:v==='abs'?true:null});return;}
       if(!f||!bimBdeOwnsProps())return;
+      if(f==='ov.s'){bimLvOverride(t.value);return;}   /* __acad3dV175a: words typed over a live text */
+      if(f==='lv.dp'){bimLvSetDp(t.value);return;}
+      if(f==='s'&&bimLvSetText(t.value))return;   /* a text's words, and the fields in them */
       if(/:on$/.test(f)){f=f.slice(0,-3);o[f]=t.checked?((t.closest('.a3d-prow')||t.parentNode).querySelector('input[type=color]')||{}).value||'#000000':'none';}
       else if(f==='tr'){v=t.value.trim();if(v===''){o.tr=null;}else{v=+v;if(!isFinite(v))return;o.tr=Math.round(Math.max(0,Math.min(90,v)));}}
       else if(f==='bm'||f==='mask')o[f]=t.value||null;
@@ -205,4 +211,4 @@ import { bimBdeArrange, bimBdeLaySet } from './board-design-tools.js';
       bimBdeSet(null,o);
     });
   }
-export { bimBdeLyCount, bimBdeLyIndex, bimBdeLyRows, bimBdePropsHtml, bimBdePropsWire };
+export { bimBdeBtn, bimBdeLyCount, bimBdeLyIndex, bimBdeLyRows, bimBdeOpt, bimBdePropsHtml, bimBdePropsWire };

@@ -14,7 +14,7 @@ import { refreshLayers } from '../layers/analysis-data-rows.js';
 import { refreshProps } from '../site-analysis/panel.js';
 import { paint } from '../map/terrain-3d.js';
 import { bimExitSection } from '../views/section-tool.js';
-import { bimProjectRecord, save3d, saveT, setSaveT } from '../core/objects-save.js';
+import { A3D_REV, bimProjectRecord, save3d, saveT, setA3D_REV, setSaveT } from '../core/objects-save.js';
 import {
   A3D_SPILL, A3D_STORE, bimIdbDel, bimIdbGet, bimIsIdbPointer, bimSpillSave
 } from '../core/idb-store.js';
@@ -196,6 +196,9 @@ import { a3dToast } from '../bim/csg-booleans.js';
       refreshTree();refreshHud();refreshLevels();refreshLayers();refreshViews();refreshBrowser();refreshProps();
       bimSyncStatusBar();
     }finally{setUndoSuspend(false);}
+    /* __acad3dV175a (D11): another project is another model, so what was drawn at a revision is drawn again. Not a
+       saveSoon: opening a project does not change it */
+    setA3D_REV(A3D_REV+1);
   }
   /* __acad3dV172g: where the browser keeps nothing (D5), a project left for another tab is parked here */
   var A3D_DOC_MEM={};
