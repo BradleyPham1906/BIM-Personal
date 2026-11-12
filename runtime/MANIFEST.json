@@ -107,6 +107,21 @@
    "sha256": "66d57a562c3e896e9ae55e685a4f45e0a0ada28a8948b749966defa028a9e629",
    "from": "https://pypi.org/project/ladybug-radiance/0.2.12/",
    "licence": "AGPL-3.0 (its dist-info/licenses/LICENSE)"
+  },
+  {
+   "path": "three/0.186.1/LICENSE",
+   "bytes": 1081,
+   "sha256": "8b378ebe60e2fe500158cb0ac71cb5e8b7d92953c2abcc63a0eb90499653b5bc",
+   "from": "npm three@0.186.1, LICENSE (the tarball sha512-blFeqb49wRCSGUGj7gtpfnSGHy2lwDk94RhUmS1c/hTby70kvChbWpkJ4Pm1390LqzzvTmzgXKHPEafJwCb8jA==)",
+   "licence": "MIT (three.js)"
+  },
+  {
+   "path": "three/0.186.1/bim-three.min.js",
+   "bytes": 743351,
+   "sha256": "afca76a322f2c7ff35ac76bb0d390a78a1e73c201b353e8456a3a83d5ce88a9d",
+   "from": "npm three@0.186.1 (the tarball sha512-blFeqb49wRCSGUGj7gtpfnSGHy2lwDk94RhUmS1c/hTby70kvChbWpkJ4Pm1390LqzzvTmzgXKHPEafJwCb8jA==), bundled unchanged by esbuild 0.28.2: tools/three/build_three.mjs",
+   "licence": "MIT (three.js)"
   }
- ]
+ ],
+ "three": "0.186.1"
 }

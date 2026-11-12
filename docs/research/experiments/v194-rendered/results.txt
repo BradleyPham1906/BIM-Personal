@@ -1,0 +1,22 @@
+V194 experiment e01: the rendered view's picture, outside the app. 2026-11-12.
+harness.html driven by run.mjs in headless Edge, 1500 x 900, device scale 1.
+GPU: AMD Radeon 780M, ANGLE Direct3D 11. three.js r186. 1,092 triangles, 3 meshes, shadow maps 4096, 32-bit sum.
+The pictures are not committed.
+
+case         first ms  63 more passes ms  ms a pass  what the picture showed
+clear             456        544             8.63    soft shadows, blue shade, glass see-through (first run: shaders compiled)
+first-pass         81          -               -     one pass: hard sun shadows, no sky shadows, edges not yet smooth
+overcast           71        268             4.25    no hard shadows, even light
+low-sun (5 deg)    82        299             4.75    the low sun's colours, long shadows
+night (-10 deg)    83        212             3.37    dim blue, readable (was black with BimCraft's values)
+white-edges       174        409             6.49    white studio with edges: a drawing-like picture
+plan (parallel)    71        284             4.51    a shadowed site plan
+no-ground          80        222             3.52    the sky below the model
+best-256           72        795 (255)       3.12    smoother penumbra than 64
+
+Console: no errors. One shader compile warning from three.js's own environment filter (X4122, precision), harmless.
+
+Found and changed in rendered-core.js:
+- a box whose normals disagreed with its winding shaded dark: flat shading from the picture itself, no normals sent
+- the first pass striped walls grazed by its one sky direction: the first pass has no sky shadows
+- night was black: a dim blue night

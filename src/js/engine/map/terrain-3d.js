@@ -30,6 +30,7 @@ import {
   bimGlProjMatrix, bimGlViewMatrix, bimHexToRgb
 } from '../render/webgl.js';
 import { A3D_GL_BATCH, A3D_SCENE, bimGbRender, bimSceneRelease } from '../render/gpu-batches.js';
+import { A3D_RV } from '../render/rendered-view.js';
 import { bimRender3D } from '../render/webgpu.js';
 import { drawLayerCake } from './layer-cake.js';
 import { A3D_LENS, bimGlDrawFaces, bimLensCol, drawLensLegend } from './colour-lens.js';
@@ -356,12 +357,14 @@ import { cvH, cvScale, cvW } from '../ui/canvas-size.js';
        behind it. This is a real, visible trade (CPU vector-quality rendering instead of GPU-
        shaded triangles) made only when a person opts in, not a silent slowdown. */
     var glOn=(capMode||A3D.presentMode||bimPresentGraphics())?false:bimRender3D(V,W,H);   /* __acad3dV122; __acad3dV153: WebGPU or WebGL */
+    if(!glOn)A3D_RV.drew=false;   /* __acad3dV194: a frame drawn in 2D is not the rendered view's */
     if(capMode){ctx.fillStyle='#ffffff';ctx.fillRect(0,0,W,H);}
     else if(glOn){ctx.clearRect(0,0,W,H);}
     else{ctx.fillStyle=bimAwBgHex();ctx.fillRect(0,0,W,H);}   /* __acad3dV171b */
     if(!capMode){
       if(!glOn)bimMapDraw2D(ctx,V,W,H);   /* __acad3dV132: the basemap; with WebGL on it is drawn there */
       bimMapFooterSync();
+      if(!A3D_RV.drew){   /* __acad3dV194: a rendered picture has neither the grid nor the origin's axes over it */
       ctx.strokeStyle=bimAwLook()?bimAwLook().grid:'#282c31';ctx.lineWidth=1;ctx.beginPath();   /* __acad3dV171b */
       for(i=-12;i<=12;i+=2){
         var g1=toScreen([i,0,-12],V,W,H),g2=toScreen([i,0,12],V,W,H);
@@ -380,6 +383,7 @@ import { cvH, cvScale, cvW } from '../ui/canvas-size.js';
         var gzOe=toScreen(A3D_ORIGIN_AXES[gzOa].to,V,W,H);
         ctx.strokeStyle=A3D_ORIGIN_AXES[gzOa].col;
         ctx.beginPath();ctx.moveTo(o0[0],o0[1]);ctx.lineTo(gzOe[0],gzOe[1]);ctx.stroke();
+      }
       }
     }
     /* __acad3dV63: in presentation mode a room's colour fill is drawn BEFORE the solids, so it

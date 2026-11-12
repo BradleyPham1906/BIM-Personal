@@ -1,0 +1,14 @@
+{
+  "name": "bim-personal-three-runtime",
+  "private": true,
+  "description": "Builds runtime/three/<version>/bim-three.min.js, three.js as one classic script for the rendered view (V194). A build tool only: the app has no npm dependencies.",
+  "type": "module",
+  "scripts": {
+    "build": "node build_three.mjs",
+    "check": "node build_three.mjs --check"
+  },
+  "devDependencies": {
+    "esbuild": "0.28.2",
+    "three": "0.186.1"
+  }
+}

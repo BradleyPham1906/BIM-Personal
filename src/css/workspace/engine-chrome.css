@@ -172,8 +172,8 @@ body.light-theme #a3d-tip strong{color:#202124}body.light-theme .a3d-tiptype b{c
 .a3d-dlgrow input,.a3d-dlgrow select{width:110px;background:#1c2024;border:1px solid #3a4048;color:#dfe4ea;border-radius:4px;padding:3px 6px}
 #a3d-dlgerr{color:#e08080;min-height:14px;margin-top:4px;font-size:11px}
 .a3d-dlgft{display:flex;justify-content:flex-end;gap:8px;padding:8px 12px;border-top:1px solid #30353c}
-#a3d-glcanvas,#a3d-gpucanvas{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:0}
-#a3d-gpucanvas{visibility:hidden}
+#a3d-glcanvas,#a3d-gpucanvas,#a3d-rvcanvas{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:0}
+#a3d-gpucanvas,#a3d-rvcanvas{visibility:hidden}
 #a3d-canvas{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:1}
 .a3d-vp{position:relative}
 .a3d-tree{width:268px}

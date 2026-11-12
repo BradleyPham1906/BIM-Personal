@@ -62,6 +62,17 @@ import {
 } from '../render/gpu-batches.js';
 import { A3D_PICK_GPU, setA3D_PICK_GPU } from '../render/gpu-pick.js';
 import {
+  BIM_RV_NIGHT, bimRvBasis, bimRvCross, bimRvFarPlane, bimRvHalton, bimRvHemisphere, bimRvJitter,
+  bimRvSunDisc, bimRvUnit
+} from '../render/rendered-core.js';
+import {
+  bimRvBoxAdd, bimRvChunkArrays, bimRvChunkSig, bimRvLin, bimRvRowColour, bimRvTerrainArrays, bimRvTerrainItem
+} from '../render/rendered-scene.js';
+import {
+  A3D_RV, BIM_RV_FILE, BIM_RV_KEY, BIM_RV_SRI, BIM_RV_VER, bimRvDrop, bimRvLoad, bimRvSetOn, bimRvSetting,
+  bimRvSettings, bimRvSources, bimRvStateText
+} from '../render/rendered-view.js';
+import {
   A3D_GPU, bimBenchmark, bimGpuCompare, bimGpuPref, bimGpuStart, bimGraphicsLabel, bimGraphicsSet,
   bimRenderBench, bimStressModel
 } from '../render/webgpu.js';
@@ -366,6 +377,19 @@ import { cvH, cvW } from '../ui/canvas-size.js';
   window.__a3dGlFaces=function(){return A3D.glFaces||0;};
   window.__a3dGpu=function(){var P=A3D_GPU;return {state:P.state,why:P.why,engine:P.engine,fallback:P.fallback,pref:bimGpuPref(),label:bimGraphicsLabel(),bundleDraws:P.bdraws,format:P.format};};   /* __acad3dV153 */
   window.__a3dGraphics=function(pref){return bimGraphicsSet(pref);};
+  /* __acad3dV194: the rendered view: its state; with true or false, turned on or off (a promise of its state) */
+  window.__a3dRendered=function(on){
+    var R=A3D_RV;
+    if(on===true||on===false)return bimRvSetOn(on).then(function(){return window.__a3dRendered();});
+    return {on:R.on,state:R.st,err:R.err,drew:R.drew,done:R.done,want:R.want,settings:JSON.parse(JSON.stringify(bimRvSettings())),
+      sun:R.sun?R.sun.text:null,sky:R.sky?R.sky.n:null,info:R.info,canvas:!!R.cv,text:bimRvStateText()};
+  };
+  window.__a3dRenderedSet=function(k,v){return bimRvSetting(k,v);};
+  window.__acad3dV194='rendered,threejs,passes,sky,ground,edges,terrain,saveimage';
+  window.__a3dRv={halton:bimRvHalton,unit:bimRvUnit,cross:bimRvCross,basis:bimRvBasis,hemisphere:bimRvHemisphere,sunDisc:bimRvSunDisc,
+    farPlane:bimRvFarPlane,jitter:bimRvJitter,lin:bimRvLin,rowColour:bimRvRowColour,chunkSig:bimRvChunkSig,chunkArrays:bimRvChunkArrays,
+    terrainItem:bimRvTerrainItem,terrainArrays:bimRvTerrainArrays,boxAdd:bimRvBoxAdd,sources:bimRvSources,load:bimRvLoad,drop:bimRvDrop,
+    night:BIM_RV_NIGHT,file:BIM_RV_FILE,sri:BIM_RV_SRI,ver:BIM_RV_VER,key:BIM_RV_KEY};
   window.__a3dGpuCompare=function(){return bimGpuCompare();};
   window.__a3dGpuRestart=function(){if(A3D_GPU.state==='starting'||A3D_GPU.state==='ready')return A3D_GPU.state;A3D_GPU.state='off';A3D_GPU.why='';bimGpuStart();return A3D_GPU.state;};
   window.__a3dGpuTiles=function(){var k,e,n=0,lv=[];for(k in A3D_MAP.cache)if(A3D_MAP.cache.hasOwnProperty(k)){e=A3D_MAP.cache[k];if(e.gtx&&e.gtx.dev===A3D_GPU.device){n++;lv.push(e.gtx.tex.mipLevelCount);}}return {textures:n,levels:lv,live:A3D_GPU.tileLive||0};};   /* __acad3dV154 */

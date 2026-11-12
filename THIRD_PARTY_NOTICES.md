@@ -189,6 +189,48 @@ V172b's suite checks these analyses against values read from two more sources; n
 - **validation-data-comfort-models v1.1.0** (Federico Tartarini, https://github.com/FedericoTartarini/validation-data-comfort-models,
   MIT): ISO 7730:2005's 12 PMV cases and UTCI's 8 in-range values, as numbers, in `tests/ladybug_reference.py`.
 
+## three.js (V194, served beside the app in runtime/)
+
+`runtime/three/0.186.1/bim-three.min.js` is three.js 0.186.1 (https://github.com/mrdoob/three.js), every file
+unchanged as published on npm, bundled into one classic script by `tools/three/build_three.mjs`. It is not part
+of `canvas_v10.html`; the rendered view loads it when first asked for. Its licence is beside it.
+
+    The MIT License
+
+    Copyright © 2010-2026 three.js authors
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in
+    all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+    THE SOFTWARE.
+
+## BimCraft (V194)
+
+The rendered view's method and its sky and sampling tables (`src/js/engine/render/rendered-core.js`) follow
+`app/render/render-core.js` and `app/render/looks.js` at commit cfbd948 of https://github.com/getcadcraft/bimcraft,
+rewritten in ES5 and changed as that file's header says. BimCraft's NOTICE:
+
+    BimCraft
+    Copyright 2026 The Data Design Group, Inc.
+
+    This product is licensed under the Apache License, Version 2.0.
+
+Licensed under the Apache License, Version 2.0; a copy is at https://www.apache.org/licenses/LICENSE-2.0.
+CadCraft and its apps' names are trademarks of The Data Design Group, Inc. and are not used by this app.
+
 ## valdrada (credited; no code copied)
 
 V171's traffic and people simulation (`src/js/engine/simulation/`) follows the approach of valdrada, a city traffic
