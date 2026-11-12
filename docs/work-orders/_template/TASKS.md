@@ -1,17 +1,18 @@
 # VNNN work orders
 
-Spec: `SPEC.md` in this folder. Branch: `<branch>`. One task at a time, top to bottom.
-`[ ]` open, `[x]` done (its test passes), `[skipped]` left for Claude.
+Spec: `SPEC.md` in this folder. Implementation target: local `main`. One task at a time, top to bottom.
+`[ ]` open, `[x]` done (its required checks pass), `[skipped]` left for Claude.
 
 Every task: change only the file named, only inside the function named. Never touch the
 `import`/`export` lines, `canvas_v10.html`, or another task's function. ES5 only: `var`,
 `function`; no `let`, `const`, arrow functions, classes or template strings. Use only the names listed.
+Do not add a deliberate `WO-` throw stub; implement complete behavior.
 
 ---
 
-## [ ] WO-01 [Aider] `functionName` in `src/js/engine/<folder>/<file>.js`
+## [ ] WO-01 [Cline] `functionName` in `src/js/engine/<folder>/<file>.js`
 
-- **Replace** the line `throw new Error('WO-01: not built');` with the function's body.
+- **Implement:** the complete function behavior specified in `SPEC.md`; do not leave a placeholder or partial stub.
 - **It must:** <exact behaviour, edge cases>
 - **Example:** `functionName(...)` returns `...`
 - **May use:** `nameA` (`<file>`), `nameB` (`<file>`)

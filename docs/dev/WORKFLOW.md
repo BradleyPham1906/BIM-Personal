@@ -1,7 +1,7 @@
-# The daily routine: Claude Code, the cloud, Aider
+# The daily routine: Claude Code, Cline, Aider backup
 
-The owner works with three tools on this repository (2026-11-08; Aider and Ollama replaced Bionic as
-the local tools 2026-11-11). No tool remembers another's session:
+The owner works with Claude Code, Cline, and Aider on this repository (2026-11-11: Cline with
+Nemotron 3.5 Super VL is the primary prototype tool; Aider is the backup). No tool remembers another's session:
 the repository is the memory. Git carries the work between them, and `docs/dev/PIPELINE.md` says
 where the project stands.
 
@@ -17,63 +17,72 @@ words; Claude does the steps and says what it found.
 
 | Tool | Where | For |
 |---|---|---|
-| Claude Code, local | `C:\World-BIM-platform\BIM-Personal`, run `claude` in PowerShell | The main workbench: phases, features, bugs, build and tests, PRs. Sends bulk work to Qwen. |
+| Cline | VS Code on the PC, using the owner's free Nemotron 3.5 Super VL option | The primary first-pass implementer for researched prototypes and work orders on local `main`; rebuilds the offline HTML and runs the required checks. |
+| Claude Code, local | `C:\World-BIM-platform\BIM-Personal`, run `claude` in PowerShell | Research, phase specs, difficult design or debugging, and review/refinement of Cline's prototype against the research and task criteria. Sends bounded bulk work to Qwen. |
 | Claude Code, cloud | The Claude app or claude.ai/code | Work away from the PC, research, watching PRs and fixing CI, a second task in parallel. |
-| Aider | VS Code's terminal on the PC, run `aider` in the repo | Quick edits, questions about the code, private or offline work. Free. |
-| Qwen 2.5 Coder 14B | Ollama, `http://localhost:11434/v1`, model `qwen2.5-coder:14b` | Aider's model, and the subcontractor local Claude sends bulk work to (`tools/local_llm.py`). Only reachable from the PC. |
+| Aider (backup) | VS Code's terminal on the PC, run `aider` in the repo | Fallback when Cline is unavailable or the owner asks to switch. Uses the same local-main, no-push prototype rules. |
+| Qwen 2.5 Coder 14B | Ollama, `http://localhost:11434/v1`, model `qwen2.5-coder:14b` | Aider's model and the subcontractor local Claude sends bulk work to (`tools/local_llm.py`). Only reachable from the PC. |
 
-Local and cloud Claude share one usage limit (`/usage` shows it). Aider and Qwen do not use it.
-Aider and Claude share the one Qwen model: keep Aider on `qwen2.5-coder:14b` while Claude delegates,
-or Ollama swaps models (about 9 GB each) and every call waits for a reload.
+Local and cloud Claude share one usage limit (`/usage` shows it). Cline's free model option, Aider
+and Qwen do not use that Claude limit. Aider and Claude share the one Qwen model: keep Aider on
+`qwen2.5-coder:14b` while Claude delegates, or Ollama swaps models (about 9 GB each) and every call
+waits for a reload.
 
 ## The four rules
 
 1. **One branch, one tool.** Two tools never work on the same branch at the same time.
-2. **Push before switching** between the PC and the cloud: they see each other only through GitHub.
-3. **Pull before starting** on the PC, so no work is done on an old copy.
+2. **Local prototype means local.** Cline and backup Aider work on the local `main` branch, make local
+   checkpoints, and do not push or open a PR unless the owner explicitly asks. A push can publish the
+   build through Pages; use the local `canvas_v10.html` to try the prototype.
+3. **Pull before starting** on the PC only when local `main` has no unpushed prototype commits. Never
+   reset, rebase or discard local prototype work to match GitHub.
 4. **The repo is the memory.** What the next session needs goes in `PIPELINE.md`, the code, or the PR.
 
 ## Switching
 
-- **Leaving the PC mid-task:** `/finish` (it pushes the branch). In the cloud: "continue on branch X".
-- **An Aider edit:** just make it and close Aider; the next Claude session reviews it (see "Aider" below). Then in either Claude:
-  "review the diff on branch X against main" before the PR is merged.
+- **Leaving a Claude feature branch:** `/finish` (it pushes the branch). In the cloud: "continue on branch X".
+- **A local prototype:** leave its checkpoint commits on local `main`; do not run a push-oriented finish or
+  publish it. Claude later reviews the local diff and improves it against the phase spec and research.
+- **An Aider fallback:** use it only when Cline is unavailable or the owner asks, then leave a diff for
+  review. Do not run Aider and Cline concurrently.
 - **Two tasks at once:** the second one in the cloud, on its own branch.
 
-## Aider
+## Aider backup
 
-The repo carries Aider's settings, so `aider` in the repo root needs no flags:
+The repo carries Aider's settings, so `aider` in the repo root needs no flags. Aider is not the normal
+phase implementer:
 
 - `.aider.conf.yml`: the model (`ollama_chat/qwen2.5-coder:14b`, with `OLLAMA_API_BASE` set), the
   `diff` edit format (small search/replace edits, never whole files), no auto-commits, and
   `AIDER_CONVENTIONS.md` read on every session.
 - `AIDER_CONVENTIONS.md`: the repo's rules in short (edit `src/`, never `canvas_v10.html` or the
-  generated import/export lines, ES5, no dependencies, no emojis, branch `aider/<task>`).
+  generated import/export lines, ES5, no dependencies, no emojis, backup-only use on local `main`).
 - `.aiderignore`: what Aider never maps or edits (the build output, `runtime/`, `vendor/`, the
   SketchUp reader, fixtures, the engineering log).
 
-A session: `aider`, `/add` the one or two files the task touches (or ask Aider which ones), and ask
-for the change. Then close Aider. Nothing else: no branch, no build, no commit.
+A session: first ensure Cline is not using the checkout. Work on local `main` only, and use Aider only
+when the owner requests the fallback or Cline is unavailable. Follow the same source, build, and test
+rules as Cline. Aider does not auto-commit or push.
 
-The review is automatic. When a Claude session opens, a hook (`.claude/settings.json` runs
-`tools/pending_aider.py`) finds uncommitted changes and unmerged `aider/*` branches, with what was
-asked of Aider (`.aider.chat.history.md`), and Claude runs the review-aider skill before anything
-else: it moves the work to an `aider/<task>` branch, reviews and fixes it, rebuilds, runs the checks,
-opens a PR, and asks the owner one question: "Merge it?". A forgotten review is impossible: the
-notice repeats every session until the work is merged. A 14B model works best on one file and one
-clear change at a time.
+The `pending_aider.py` hook and review-aider skill remain for legacy or explicitly requested Aider
+work. They do not move Cline's local-main prototype to another branch or publish it.
 
 ## Building a phase with work orders
 
-From V175 on, Claude writes the spec, the hard code, the tests and a list of small tasks; Aider
-fills in the tasks for free; Claude reviews and finishes. In VS Code, on the phase's branch:
+From V175 on, Claude researches and writes the spec, tests and ordered work list. Cline makes the
+first implementation pass from those materials on local `main`, completing each task without
+deliberate throw stubs. It runs the required checks before rebuilding `canvas_v10.html`; until then,
+the existing file remains the last usable build. The owner tries that local file; Claude later reviews
+the implementation against the research and acceptance criteria, then improves it. No push or Pages
+deployment happens unless the owner asks.
+If Cline is unavailable, Aider may take over one task at a time under the same rules.
 
-    aider
-    /read docs/work-orders/v175/SPEC.md docs/work-orders/v175/TASKS.md
-    do the next unticked [Aider] task
+Work orders are marked `[Cline]`; anything that requires Claude's research or judgment is marked
+`[Claude]`. Complete the first open `[Cline]` task in order and mark it done only after its required
+checks pass. See `docs/work-orders/README.md`.
 
-Repeat "do the next task" until none is left; say "skip it" when one fails twice. Steps and rules:
-`docs/work-orders/README.md`.
+After a usable task or coherent group passes its required checks, make a local checkpoint commit so
+the last known-good prototype is recoverable. Do not push it.
 
 ## This PC's setup (2026-11-08)
 

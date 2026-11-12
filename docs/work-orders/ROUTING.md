@@ -2,17 +2,17 @@
 
 Every task goes to the cheapest worker that will get it right the first time. A task done wrong by a
 cheap worker costs more than doing it right once, so the score is about **getting it right**, not
-about size alone. The thresholds are not fixed: they move with the results in `aider-log.md`
-(see "Getting better over time").
+about size alone. Cline with Nemotron 3.5 Super VL is the primary first-pass implementer; Aider is a
+backup, not a separate default tier.
 
-## The four workers, cheapest first
+## The workers, cheapest first
 
 | Tier | Worker | Costs | Best at |
 |---|---|---|---|
-| A | Aider alone (Qwen 2.5 Coder 14B) | nothing | A small, exact change in one file whose result is easy to see |
-| B | Aider with a work order | a little Claude to write the order and its test | Routine functions in a design Claude already made |
+| A | Cline alone (Nemotron 3.5 Super VL) | free model option | A small, exact change in one file whose result is easy to see |
+| B | Cline with a work order | Claude time to write the order and its test | Bounded implementation tasks with explicit behavior and tests |
 | C | Claude, lighter model (`/model sonnet`) | less of the weekly limit | Ordinary features and fixes across a few files |
-| D | Claude, strongest model (the default) | the most | Research, design, engine logic, hard bugs, review |
+| D | Claude, strongest model (the default) | the most | Research, design decisions, hard bugs, and review |
 
 ## Score the task: six questions, 0 to 2 points each
 
@@ -29,13 +29,13 @@ about size alone. The thresholds are not fixed: they move with the results in `a
 
 | Total | Tier |
 |---|---|
-| 0 to 2 | **A** Aider alone |
-| 3 to 4 | **B** Aider with a work order (Claude writes the order and the test first) |
+| 0 to 2 | **A** Cline alone |
+| 3 to 4 | **B** Cline with a work order (Claude writes the order and the test first) |
 | 5 to 7 | **C** Claude, lighter model |
 | 8 to 12 | **D** Claude, strongest model |
 
-**Always D, whatever the score:** research; the owner's decisions; the spec and the skeleton of a
-phase; reviewing Aider's work; a bug whose cause is unknown; anything touching saving, loading or
+**Always D, whatever the score:** research; the owner's decisions; the spec and task design of a
+phase; reviewing Cline's work; a bug whose cause is unknown; anything touching saving, loading or
 deleting the owner's files; security; the build tools and CI.
 
 **Never A, whatever the score:** anything in `src/js/engine/core/`, `render/` or `history/`, and the
@@ -54,20 +54,25 @@ import/export lines (tier B at most, with a test).
 
 ## How to use it
 
-- **The owner:** ask either tool "score this with ROUTING.md: <task>". Aider scores for free. Then
-  give the task to the tier it lands on. For tier C, type `/model sonnet` in Claude first, and
+- **The owner:** ask Cline or Claude "score this with ROUTING.md: <task>". Then give the task to
+  the tier it lands on. For tier C, type `/model sonnet` in Claude first, and
   `/model default` after.
-- **Claude, writing work orders:** score every task in a phase's TASKS.md and mark it `[Aider]`
-  (tier A or B) or `[Claude]` (C or D). Split a task that scores 5 or more when the pieces would
+- **Claude, writing work orders:** score every task in a phase's TASKS.md and mark it `[Cline]`
+  (tier A or B) or `[Claude]` (C or D). For an owner-approved local prototype, a bounded and
+  verifiable `[Cline]` task may still be used above tier B; split it into smaller tasks and keep
+  research, open design, unknown-cause bugs, and safety-critical data changes with Claude. Split a
+  task that scores 5 or more when the pieces would
   each score 4 or less: that moves work to the free tiers.
-- **Claude, given a request:** if it would score 0 to 2, say so in one line ("Aider could do this
-  for free") and do it anyway unless the owner prefers to switch.
+- **Aider fallback:** use only when Cline is unavailable or the owner asks. Aider's Qwen results
+  are not evidence for Nemotron's calibration.
+- **Claude, given a request:** if it would score 0 to 2, say so in one line ("Cline can do this
+  with its free model option") and do it anyway unless the owner prefers to switch.
 
 ## Getting better over time
 
-`aider-log.md` records every task Aider did: its score and what happened. In the review (the
-review-aider skill), Claude adds one row per task. After each phase, Claude reads the rows since the
-last calibration and adjusts:
+`aider-log.md` is the historical record of Aider fallback tasks. Do not infer Nemotron performance
+from Aider's Qwen results. Before changing Cline's thresholds, record its first-pass outcomes and
+Claude's fixes in a separate Cline-specific record, then review that evidence with the owner.
 
 | What the log shows for a total score | Change |
 |---|---|
@@ -75,11 +80,12 @@ last calibration and adjusts:
 | under 50% passed without Claude's fix | That score moves one tier dearer |
 | one question keeps marking the failures | Raise its points, or add the case to "Never A" |
 
-Each change goes in the history below, with the date and the rows behind it. A new local model (a
-bigger Qwen, say) starts the evidence over: note it in the history and recalibrate.
+Each change goes in the history below, with the date and the rows behind it. Any model change starts
+the evidence over: note it in the history and recalibrate.
 
 ## Thresholds history
 
 | Date | Change | Evidence |
 |---|---|---|
 | 2026-11-11 | First version: A 0-2, B 3-4, C 5-7, D 8-12 | None yet: starting estimates |
+| 2026-11-11 | Cline/Nemotron replaces Aider/Qwen as the A/B worker; calibration starts fresh | No Cline task history yet; Aider results remain historical |

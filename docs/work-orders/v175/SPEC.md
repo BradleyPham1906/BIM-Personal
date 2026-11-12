@@ -1,8 +1,8 @@
 # V175a spec: live text on a board (fields, numbers, overrides)
 
 Research: `docs/research/research-presentation-live.md` (the owner's decisions: D1 to D16, all accepted as
-recommended, 2026-11-11). Branch: `claude/jolly-mendel-dwnanp`. Written by Claude, 2026-11-11. Aider reads this with
-TASKS.md; keep it exact and plain.
+recommended, 2026-11-11). Spec branch: `claude/jolly-mendel-dwnanp`. Implementation target: local `main` once
+this phase is present there. Written by Claude, 2026-11-11. Cline reads this with TASKS.md; keep it exact and plain.
 
 V175 is built in two parts (D16). **This is V175a.** V175b (schedules, single KPI cards and result charts as board
 objects) follows in its own branch after V175a is merged.
@@ -39,7 +39,7 @@ Everything is in the existing Properties panel and Draw menu, so it works on pho
 
 | File | New or changed | What it holds | Built by |
 |---|---|---|---|
-| `src/js/engine/sheets/live-text.js` | new | Pure functions: reading fields from a string, formatting, the override's rules, the print message, the menu rows; and the validators of the saved record | Aider (WO-01 to WO-10); Claude (`bimLvKind`, `bimLvKeyOk`, `bimLvBindValid`, `bimLvOvKeys`, `bimLvOvValid`) |
+| `src/js/engine/sheets/live-text.js` | new | Pure functions: reading fields from a string, formatting, the override's rules, the print message, the menu rows; and the validators of the saved record | Cline (WO-01 to WO-10); Claude (`bimLvKind`, `bimLvKeyOk`, `bimLvBindValid`, `bimLvOvKeys`, `bimLvOvValid`) |
 | `src/js/engine/sheets/live-sources.js` | new | The key table, each source's resolver, the memo per revision, what a live text shows, its marks, the list for Print | Claude (done) |
 | `src/js/engine/sheets/live-edit.js` | new | The Field and Number menus, override, Reset, Keep, Unlink, Run again, the Live group of Properties | Claude (done) |
 | `src/js/engine/sheets/board-objects.js` | changed | `bimBobOne` keeps `bind`, `ov`, `ovAt` on a text | Claude (done) |
@@ -185,12 +185,12 @@ Only the ten work-order functions are listed in full; Claude's are described in 
 In TASKS.md's order, top to bottom: it lists WO-06 before WO-05, because WO-05 calls WO-06's function. WO-03 needs
 WO-02; WO-04 needs WO-01. Each has its own test cases, named `WO-NN ...` in `tests/unit/live-text.test.mjs`.
 
-Until WO-01, WO-03 and WO-04 are built, the app on this branch throws when a board with a live text is drawn or a
-text's words are changed in Properties: that is expected, and why this branch is not merged while a stub remains.
-After WO-10, all of `npm test` passes (155 tests), and in the app: Edit a board, Draw, Field... or Number...
+The source on the spec branch currently has throw stubs for WO-01 to WO-10, so do not build it as the prototype
+until all ten are implemented. Keep using the last built `canvas_v10.html` meanwhile. After WO-10, run the checks
+required by Rule #1 in `CLAUDE.md`; then rebuild and try the local file: Edit a board, Draw, Field... or Number...
 
-Then Claude (WO-11): the review, the browser check if the owner wants one, the user guide, the engineering log,
-PIPELINE, the version, Notion, and the PR out of draft.
+Then Claude (WO-11): review against the spec and research, the browser check if the owner wants one, the user guide,
+the engineering log, PIPELINE, the version, and Notion. Ask the owner before any push, PR, or Pages publication.
 
 ## 6. Not in this phase
 

@@ -6,16 +6,15 @@ paths:
   - "docs/work-orders/**"
 ---
 
-# Aider-first implementation workflow
+# Local prototype workflow (Cline primary, Aider backup)
 
-- For implementation tasks in this workspace, Cline coordinates and the MCP server named `aider` makes project-file changes.
-- Use Aider's `edit_files` tool for existing files and `create_files` for new files. Do not edit project files with Cline's built-in editing tools or shell commands.
-- For V175a, `[ ]` in `docs/work-orders/v175/TASKS.md` means open and `[x]` means done; there is no separate Aider checkbox UI. Never wait for the user to tick a task. If asked for the next task, take the first open `[Aider]` item from the top of the file. Preserve its listed order, including WO-06 before WO-05.
-- If the user names a work order, do only that work order. Once it is identified, call the MCP server `aider`'s `edit_files` tool promptly, with the exact acceptance criteria, target file/function, and relevant constraints. Do not merely announce an intention to use Aider.
-- Keep exploration focused. Read each required task/spec/source file at most once per task, and rely on content already in context. Do not reread files after context compaction or scan unrelated parts of the repository.
-- If the `aider` MCP tool is missing, disconnected, or fails, stop after that failed attempt and tell the user. Do not keep rereading files, wait for a checkbox, or fall back to Cline editing.
-- Do not start a separate Aider terminal session for a Cline task; Cline must invoke the connected MCP server.
-- Follow `CLAUDE.md` startup instructions at the start of a fresh task. Follow `CLAUDE.md` and `docs/dev/CLAUDE_INSTRUCTIONS.md` for source, build, and testing requirements. Run only the checks required by those instructions; do not run browser checks or full regression unless requested.
-- Follow `CLAUDE.md` and `docs/dev/CLAUDE_INSTRUCTIONS.md` for source, build, and testing requirements. Run only the checks required by those instructions; do not run browser checks or full regression unless requested.
-- Cline may read, search, review diffs, and run required project checks. Build or test commands may generate their prescribed outputs, but do not use shell commands to make source edits.
-- After each work order, report the work order completed, files changed, checks run, and anything unresolved.
+- Cline with the owner's free Nemotron 3.5 Super VL option is the primary first-pass implementer. Cline may read, search, edit project files, and run the required checks. Aider is a backup only when Cline is unavailable or the owner asks to switch.
+- Prototype on the local `main` branch, one tool at a time. Before starting, check `git status`. If the checkout is not `main`, or has unexplained changes, stop and tell the owner rather than switching branches or overwriting work.
+- Keep each task bounded by the phase research, `SPEC.md`, and `TASKS.md`. Implement complete behavior; do not add deliberate `WO-` throw stubs to `main`. Work through `[Cline]` tasks in their written order (including V175a's WO-06 before WO-05) and mark one `[x]` only after its required checks pass.
+- Make a local checkpoint commit after each verified task or coherent task group so the last usable state can be restored. Never push, open a PR, or publish to Pages unless the owner explicitly asks.
+- After a change under `src/`, run the required checks before rebuilding `canvas_v10.html` with `python3 tools/build_app.py`; never edit the generated HTML by hand. Until then, the existing HTML remains the last usable build. The owner uses this local file, not the hosted app, to try updates.
+- Follow `CLAUDE.md` and `docs/dev/CLAUDE_INSTRUCTIONS.md` for the source, build, and test contracts. Follow Rule #1 in `CLAUDE.md` exactly: do not run tests beyond the table or browser/full-regression checks without the owner's approval.
+- If a required check fails, stop adding features and make up to two focused fix attempts. If still failing, leave the last checkpoint intact, preserve the diff, and report the failing lines and unresolved issue; do not reset or discard work.
+- If the owner asks to use Aider, or Cline is unavailable, Aider may take the current task on the same local `main` checkout. Do not run Cline and Aider concurrently or create a separate Aider branch for this prototype workflow.
+- Keep exploration focused. Read each required task/spec/source file at most once per task; do not scan unrelated parts of the repository.
+- At the end of each work order, report the task completed, files changed, checks run, local checkpoint, and anything unresolved.
