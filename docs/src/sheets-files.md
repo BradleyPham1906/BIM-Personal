@@ -82,6 +82,32 @@ same layers as the model, in the same Layers tab and Layer Properties Manager.
   plus an offset you type for magnetic declination; the scale bar picks a round length for the frame.
 - **Images** are kept once in the browser and travel inside the project file (4 MB each at most).
 
+## Live text on a board
+
+Text on a board can follow the project, so a board says what the model says.
+
+- **Field**, in Draw: a value of the project put into a text. Pick it from the menu: the project's name, the
+  client, who drew and checked it, today's date, the board's name and number, the gross floor area, the room area,
+  the site area, the floor area the zoning allows, the cut and fill volumes. In the text it is written `{{key}}`,
+  for example `Site area: {{site.area}}`; `{{site.area|2}}` gives two decimals. With a text selected the field goes
+  at its end; with none, a new text is made.
+- **Number**, in Draw: one number with its unit, in large type, for a figure that stands alone: the gross floor
+  area, a level's gross area, the site area, cut or fill. Its decimals are in Properties.
+- **It is drawn from the project** each time the board is, on screen, in Present and on paper. The value is never
+  kept in the file, only what it is bound to.
+- **Override:** in Properties, the **Shows** row holds what the text shows. Type other words there and the text
+  keeps them, marked with a blue corner tick. **Reset** goes back to the source. If the source changes after you
+  typed, Properties says so: Reset takes the new value, **Keep** keeps yours. Making a live text bold, larger or
+  another colour is not an override.
+- **Unlink** leaves what the text shows as plain text; it no longer follows the project.
+- **Marks**, in Edit only and never printed: an amber dot where the source has nothing to show yet or is out of
+  date (cut and fill after a pad has changed: **Run again** in Properties grades again; a board never reruns an
+  analysis by itself), a red square where the source was removed or a key is not a field. A deleted level says
+  which level it was; nothing is bound to another by guess. On paper such a value is a dash, and Print says which
+  live objects are not up to date.
+- A key that is not a field stays as typed. The project's display units (m, cm, mm and their decimals) are now
+  kept with the project.
+
 **New Sheet** chooses its page from the same gallery. Every change is one undo step and is kept with the project.
 
 ## Exporting
