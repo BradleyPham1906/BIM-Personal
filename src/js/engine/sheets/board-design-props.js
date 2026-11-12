@@ -7,6 +7,7 @@ import { bimBrdEditing } from './board-figures.js';
 import {
   bimBobBlend, bimBobBlends, bimBobBox, bimBobFind, bimBobKind, bimBobLayer, bimBobMaskTypes
 } from './board-objects.js';
+import { bimLbdPropsHtml } from './live-board-draw.js';
 import { bimBdsPres } from './board-design.js';
 import { bimBmapFit, bimBmapSources } from './board-map.js';
 import {
@@ -111,7 +112,7 @@ import { bimLvAct, bimLvOverride, bimLvPropsHtml, bimLvSetDp, bimLvSetText } fro
       if(n.t==='image')g+=bimPropRow('Fit','<select data-bdf="fit">'+bimBdeOpt('fill','Fill',n.fit)+bimBdeOpt('fit','Fit',n.fit)+bimBdeOpt('tile','Tile',n.fit)+'</select>')+
         bimPropRow('Image',bimBdeBtn('swapimg','Another image…'));
       if(g)h+=bimPropGroup('Other',g);
-      h+=bimLvPropsHtml(n,W);   /* __acad3dV175a: a text's fields, its override, Reset and Unlink */
+      h+=bimLvPropsHtml(n,W)+bimLbdPropsHtml(n);   /* __acad3dV175b */   /* __acad3dV175a: a text's fields, its override, Reset and Unlink */
     }
     /* __acad3dV174b: align, distribute and tidy the selection; one object aligns to the page */
     h+=bimPropGroup('Arrange','<div class="a3d-bdeacts" role="group" aria-label="Align">'+bimBdeBtn('al-left','Left','Align left edges')+bimBdeBtn('al-hcenter','Centre','Align centres across')+
@@ -196,6 +197,8 @@ import { bimLvAct, bimLvOverride, bimLvPropsHtml, bimLvSetDp, bimLvSetText } fro
       if(!f||!bimBdeOwnsProps())return;
       if(f==='ov.s'){bimLvOverride(t.value);return;}   /* __acad3dV175a: words typed over a live text */
       if(f==='lv.dp'){bimLvSetDp(t.value);return;}
+      if(f==='sk'){bimBdeSet(null,{sk:t.value||null});return;}   /* __acad3dV175b: a schedule's sort */
+      if(f==='sd'){bimBdeSet(null,{sd:t.checked?true:null});return;}
       if(f==='s'&&bimLvSetText(t.value))return;   /* a text's words, and the fields in them */
       if(/:on$/.test(f)){f=f.slice(0,-3);o[f]=t.checked?((t.closest('.a3d-prow')||t.parentNode).querySelector('input[type=color]')||{}).value||'#000000':'none';}
       else if(f==='tr'){v=t.value.trim();if(v===''){o.tr=null;}else{v=+v;if(!isFinite(v))return;o.tr=Math.round(Math.max(0,Math.min(90,v)));}}

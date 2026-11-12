@@ -2,12 +2,14 @@ import { A3D } from '../core/state.js';
 import { bimGradeStale, bimRegrade } from '../terrain/grading.js';
 import { bimEsc } from '../layers/layer-manager.js';
 import { bimPropGroup, bimPropRow, bimPropText } from '../properties/palette.js';
+import { bimResLayers, bimResultLayerUpdate } from '../analysis/results-layers.js';
 import { bimLevelById } from '../views/schedules.js';
 import { bimLtMenuOpen } from './layout-tabs.js';
 import { bimBobFind } from './board-objects.js';
 import { bimLvMenuItems, bimLvOvKeep, bimLvOvReset, bimLvOvSet, bimLvTokens } from './live-text.js';
 import { bimLiveKey, bimLiveKeys, bimLiveShow } from './live-sources.js';
-import { bimBdeAdd, bimBdeCommit, bimBdeSel, bimBdeSet, bimBdeWork } from './board-design-edit.js';
+import { bimLbdRun } from './live-board-draw.js';
+import { A3D_BDE, bimBdeAdd, bimBdeCommit, bimBdeSel, bimBdeSet, bimBdeWork } from './board-design-edit.js';
 import { bimBdeBtn, bimBdeOpt } from './board-design-props.js';
 import { a3dToast } from '../bim/csg-booleans.js';
 
@@ -109,6 +111,11 @@ import { a3dToast } from '../bim/csg-booleans.js';
   function bimLvAct(a,x,y){
     var T,R,G;
     if(a==='lv-field')return bimLvFieldMenu(x||0,y||0);
+    if(a==='lv-resrun')return A3D_BDE.sel.length===1&&bimLbdRun(A3D_BDE.sel[0]);   /* __acad3dV175b: a result chart's layer, run again */
+    if(a==='lv-run'&&(T=bimLvTarget(true))&&T.n.bind.k==='num'&&T.n.bind.src==='sun.sixplus'){   /* __acad3dV175b: the newest Sun hours layer, run again */
+      G=bimResLayers().filter(function(R){return R.kind==='sunhours';});
+      return G.length?bimResultLayerUpdate(G[0].id):false;
+    }
     if(a==='lv-run'){   /* the graded surfaces that are out of date, graded again: never by a board on its own (D3) */
       G=A3D.objs.filter(function(o){return o.t==='terrain'&&o.grading&&bimGradeStale(o);});
       if(!G.length){a3dToast('Nothing graded is out of date');return false;}

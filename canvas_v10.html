@@ -1126,6 +1126,21 @@ body.a3d-clb-open #a3d-dock,body.a3d-clb-open .a3d-tpal{display:none!important}
 .a3d-clb.prt .a3d-clb-dlv{display:none!important}
 @media print{.a3d-clb-dlv{display:none!important}}
 #a3d-right .a3d-pval textarea[data-bdf]{width:100%;box-sizing:border-box;resize:vertical}
+/* __acad3dV175b: a schedule, an indicator and a result chart on a board: ink on paper, in every theme */
+.a3d-clb-dlb{position:absolute;box-sizing:border-box;margin:0;overflow:hidden;color:#0b0b0b;line-height:1.3}
+.a3d-clb-dlb.kpi{overflow:visible}
+.a3d-clb-dlbt{font-weight:700;font-size:1.15em;margin:0 0 .35em}
+.a3d-clb-dlbx{color:#6f6d68;font-style:italic}
+.a3d-clb-dtab{width:100%;border-collapse:collapse}
+.a3d-clb-dtab th,.a3d-clb-dtab td{text-align:left;padding:.2em .45em;border-bottom:.5px solid #c3c2b7;white-space:nowrap}
+.a3d-clb-dtab thead th{border-bottom:1px solid #0b0b0b;font-weight:700}
+.a3d-clb-dtab tfoot td{border-top:1px solid #0b0b0b;border-bottom:0;font-weight:700}
+.a3d-clb-dtab td.none{color:#6f6d68;font-style:italic}
+.a3d-clb-dkpi{display:block;height:100%}
+.a3d-clb-dhist svg{display:block;width:100%;height:auto}
+.a3d-clb-dax{display:flex;justify-content:space-between;gap:.5em;color:#52514e;font-size:.85em;margin-top:.15em}
+.a3d-clb-dramp{height:.7em;border-radius:2px;margin:.2em 0}
+.a3d-clb-dmeta{margin:.35em 0 0;color:#52514e}
 .a3d-clb-dimg{background-position:center}
 .a3d-clb-dimg.ph{display:flex;align-items:center;justify-content:center;border:1px dashed var(--muted);color:var(--muted);font-size:12px;text-align:center;padding:6px}
 /* in Edit: what can be picked, the selection's outlines and its handle */
@@ -59597,7 +59612,8 @@ try{
   function bimBobKinds(){
     return [['rect','Rectangle',1],['ellipse','Ellipse',1],['line','Line',1],['poly','Polygon',1],['star','Star',1],['text','Text',0],['image','Image',1],['fig','Figure',0],
       ['tblock','Title block',0],['border','Sheet frame',0],   /* __acad3dV174c */
-      ['map','Map frame',0],['legend','Legend',0],['north','North arrow',0],['sbar','Scale bar',0]];   /* __acad3dV174d */
+      ['map','Map frame',0],['legend','Legend',0],['north','North arrow',0],['sbar','Scale bar',0],   /* __acad3dV174d */
+      ['sched','Schedule',0],['kpi','Indicator',0],['rchart','Result chart',0]];   /* __acad3dV175b */
   }
   function bimBobKind(t){var L=bimBobKinds(),i;for(i=0;i<L.length;i++)if(L[i][0]===t)return L[i];return null;}
   function bimBobMaskTypes(){return [['alpha','Alpha'],['vector','Vector'],['lum','Luminance']];}
@@ -59677,6 +59693,21 @@ try{
     if(n.t==='legend')r.ttl=typeof n.ttl==='string'?n.ttl.slice(0,80):'Legend';
     if(n.t==='north'){r.nk=n.nk==='plan'?'plan':'true';r.off=bimBobNum(n.off,-360,360,0);}
     if(n.t==='sbar')r.un=n.un==='ft'?'ft':'m';
+    /* __acad3dV175b: what a schedule, an indicator and a result chart show; never a value (D8) */
+    if(n.t==='sched'){
+      r.src=n.src==='levels'?'levels':'rooms';
+      if(typeof n.ttl==='string'&&n.ttl.replace(/\s+/g,''))r.ttl=n.ttl.replace(/\s+/g,' ').trim().slice(0,80);
+      if(typeof n.sk==='string'&&/^[a-z]{1,20}$/.test(n.sk))r.sk=n.sk;
+      if(n.sd===true)r.sd=true;
+    }
+    if(n.t==='kpi'){
+      if(typeof n.f!=='string'||!/^(clim|zn|acc|ppl)\.kpis$/.test(n.f)||typeof n.lab!=='string'||!n.lab)return null;
+      r.f=n.f;r.lab=n.lab.slice(0,120);
+    }
+    if(n.t==='rchart'){
+      r.res=typeof n.res==='string'&&/^res-[A-Za-z0-9-]{1,80}$/.test(n.res)?n.res:'';
+      if(typeof n.ttl==='string'&&n.ttl.replace(/\s+/g,''))r.ttl=n.ttl.replace(/\s+/g,' ').trim().slice(0,80);
+    }
     return r;
   }
   /* a board's objects as saved, good, agreeing with its figures; null when it has none */
@@ -60267,6 +60298,8 @@ try{
     if(kind==='area')return {u:' m²',dp:1};
     if(kind==='vol')return {u:' m³',dp:1};
     if(kind==='count')return {u:'',dp:0};
+    if(kind==='pct')return {u:' %',dp:0};   /* __acad3dV175b */
+    if(kind==='kwh')return {u:' kWh',dp:0};
     return null;
   }
   /* the fields in a string, in order: [{i: where it starts, n: its length, key, dp: its decimals or null}] */
@@ -60453,7 +60486,8 @@ try{
       ['board.name','Board name','text','Board'],['board.number','Board number','count','Board'],['board.count','Boards and sheets in the set','count','Board'],
       ['gfa','Gross floor area','area','Building'],['rooms.area','Room area','area','Building'],['rooms','Rooms','count','Building'],['levels','Levels','count','Building'],
       ['level.area','A level\'s gross area','area','Building',1],
-      ['site.area','Site area','area','Site'],['far.gfa','Floor area the zoning allows','area','Site'],['cut','Cut volume','vol','Site'],['fill','Fill volume','vol','Site']];
+      ['site.area','Site area','area','Site'],['far.gfa','Floor area the zoning allows','area','Site'],['cut','Cut volume','vol','Site'],['fill','Fill volume','vol','Site'],
+      ['sun.sixplus','Ground with 6 h of sun or more','pct','Site'],['solar.roofkwh','The roofs\' solar yield a year','kwh','Building']];   /* __acad3dV175b */
   }
   /* older and other names of a key (D14): a board keeps working when a key is renamed */
   function bimLiveAliases(){return {'gba':'gfa','project':'project.name','client':'project.client','site':'site.area'};}
@@ -60516,6 +60550,21 @@ try{
     if(!n)return bimLiveNone('Not computed: GRADE a pad, or run CUTFILL');
     return stale?{st:'stale',v:t,why:'Out of date: a pad or the existing surface has changed since it was graded'}:bimLiveOk(t);
   }
+  /* __acad3dV175b: the share of the ground with 6 hours of sun or more, from the newest Sun hours layer; kept, never
+     run again by a board (D3) */
+  function bimLiveSun(){
+    var L=bimResLayers(),i,R=null;
+    for(i=0;i<L.length&&!R;i++)if(L[i].kind==='sunhours'&&L[i].data)R=L[i];
+    if(!R)return bimLiveNone('Not computed: run Sun hours and Add as layer (Analyze)');
+    if(!isFinite(R.data.sixPlus))return bimLiveNone('Not computed: '+R.name+' has no share');
+    return bimResStale(R)?{st:'stale',v:R.data.sixPlus*100,why:'Out of date: the model has changed since '+R.name+' ran'}:bimLiveOk(R.data.sixPlus*100);
+  }
+  /* the roofs' yearly solar yield, as Solar kept it on each object */
+  function bimLiveSolar(){
+    var t=0,n=0;
+    A3D.objs.forEach(function(o){if(o.solar&&typeof o.solar.roofKwh==='number'&&isFinite(o.solar.roofKwh)){t+=o.solar.roofKwh;n++;}});
+    return n?bimLiveOk(t):bimLiveNone('Not computed: run Solar (Analyze)');
+  }
   function bimLiveCompute(key,id,nm,B){
     var tb=A3D.titleBlock||{},i;
     if(key==='project.name')return bimLiveOk(bimProjectLabel());
@@ -60534,6 +60583,8 @@ try{
     if(key==='site.area')return bimLiveSite();
     if(key==='far.gfa')return bimLiveFar();
     if(key==='cut'||key==='fill')return bimLiveCutFill(key);
+    if(key==='sun.sixplus')return bimLiveSun();   /* __acad3dV175b */
+    if(key==='solar.roofkwh')return bimLiveSolar();
     return bimLiveNone('Not a field');
   }
   /* a source's value, computed once per revision, units and day */
@@ -60597,6 +60648,11 @@ try{
     var out=[];
     (B&&Array.isArray(B.objs)?B.objs:[]).forEach(function(n){
       var R;
+      if(n.t==='sched'||n.t==='kpi'||n.t==='rchart'){   /* __acad3dV175b */
+        R=bimLbdState(n,null);
+        if(R&&R.st!=='ok')out.push({nm:n.nm||bimLbdTitle(n),why:R.why[0]||''});
+        return;
+      }
       if(n.t!=='text'||!n.bind)return;
       R=bimLiveShow(n,B,false);
       if(R.st==='ok'&&!R.unknown.length)return;
@@ -60613,6 +60669,326 @@ try{
      of the page or the model: a result layer's histogram, sorting and totalling a schedule's rows, finding one
      indicator among a board's cards, and the markup of a table and a chart. Each is a work order in
      docs/work-orders/v175/TASKS-v175b.md, added below as it is built. */
+
+  /* a histogram of digit cells: m bins; each digit d < m adds one at index d */
+  function bimLbHist(cells, m){
+    var counts = [], i, c, d;
+    if(typeof cells !== 'string'){for(i = 0; i < m; i += 1)counts[i] = 0;return counts;}
+    for(i = 0; i < m; i += 1)counts[i] = 0;
+    for(i = 0; i < cells.length; i += 1){
+      c = cells.charAt(i);
+      if(c >= '0' && c <= '9'){d = +c; if(d < m)counts[d] += 1;}
+    }
+    return counts;
+  }
+
+  /* a share as a percentage to one decimal; null when not finite numbers or total <= 0 */
+  function bimLbPct(n, total){
+    if(typeof n !== 'number' || !isFinite(n) || typeof total !== 'number' || !isFinite(total) || total <= 0)return null;
+    return Math.round(n / total * 1000) / 10;
+  }
+  /* bars of a histogram: equal widths, the tallest fills the height */
+  function bimLbBars(counts, W, H, gap){
+    var result = [], n, w, max, i, x, h, y;
+    if(!(counts instanceof Array) || counts.length === 0)return [];
+    n = counts.length;
+    w = (W - gap * (n - 1)) / n;
+    max = 0;
+    for(i = 0; i < n; i += 1){
+      if(typeof counts[i] === 'number' && isFinite(counts[i]) && counts[i] > max)max = counts[i];
+    }
+    for(i = 0; i < n; i += 1){
+      x = Math.round(i * (w + gap) * 100) / 100;
+      if(max === 0)h = 0;
+      else h = Math.round(counts[i] / max * H * 100) / 100;
+      y = Math.round((H - h) * 100) / 100;
+      result.push({x: x, y: y, w: Math.round(w * 100) / 100, h: h});
+    }
+    return result;
+  }
+  /* a new stably sorted array of rows; empty values always last */
+  function bimLbSort(rows, key, desc){
+    var marked = [], i, r, v, len, out, ea, eb, c;
+    len = rows.length;
+    for(i = 0; i < len; i += 1){
+      r = rows[i];
+      v = r[key];
+      marked.push({row: r, v: v, p: i});
+    }
+    marked.sort(function(a, b){
+      ea = (a.v === '' || a.v === null || a.v === undefined);
+      eb = (b.v === '' || b.v === null || b.v === undefined);
+      if(ea && eb)return a.p - b.p;
+      if(ea)return 1;
+      if(eb)return -1;
+      if(typeof a.v === 'number' && typeof b.v === 'number')c = a.v - b.v;
+      else c = String(a.v).toLowerCase() < String(b.v).toLowerCase() ? -1 : (String(a.v).toLowerCase() > String(b.v).toLowerCase() ? 1 : 0);
+      if(desc)c = -c;
+      if(c === 0)return a.p - b.p;
+      return c;
+    });
+    out = [];
+    for(i = 0; i < len; i += 1)out.push(marked[i].row);
+    return out;
+  }
+  /* one total per column: sum of finite numbers for area/count, else empty */
+  function bimLbTotals(rows, cols){
+    var result = [], i, j, col, v, sum, have;
+    for(i = 0; i < cols.length; i += 1){
+      col = cols[i];
+      if(col.kind !== 'area' && col.kind !== 'count'){result.push('');continue;}
+      sum = 0; have = false;
+      for(j = 0; j < rows.length; j += 1){
+        v = rows[j][col.k];
+        if(typeof v === 'number' && isFinite(v)){sum += v; have = true;}
+      }
+      result.push(have ? sum : '');
+    }
+    return result;
+  }
+  /* read back HTML entities; &amp; last so '&amp;lt;' stays '&lt;' */
+  function bimLbUnesc(s){
+    if(typeof s !== 'string')return '';
+    return s.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&amp;/g, '&');
+  }
+  /* the labels of the KPI cards, read back, skipping cards without one */
+  function bimLbKpiLabels(list){
+    var result = [], i, s, m;
+    if(!(list instanceof Array))return result;
+    for(i = 0; i < list.length; i += 1){
+      s = list[i];
+      if(typeof s !== 'string')continue;
+      m = /data-kpi="([^"]*)"/.exec(s);
+      if(m)result.push(bimLbUnesc(m[1]));
+    }
+    return result;
+  }
+  /* the index of the first KPI card whose label matches exactly */
+  function bimLbKpiFind(list, label){
+    var i, s, m;
+    if(!(list instanceof Array))return -1;
+    for(i = 0; i < list.length; i += 1){
+      s = list[i];
+      if(typeof s !== 'string')continue;
+      m = /data-kpi="([^"]*)"/.exec(s);
+      if(m && bimLbUnesc(m[1]) === label)return i;
+    }
+    return -1;
+  }
+  /* the exact markup of a schedule table */
+  function bimLbTableHtml(head, rows, foot, esc){
+    var n, i, j, row, out;
+    n = head.length;
+    out = [];
+    out.push('<table class="a3d-clb-dtab"><thead><tr>');
+    for(i = 0; i < n; i += 1)out.push('<th>' + esc(head[i]) + '</th>');
+    out.push('</tr></thead><tbody>');
+    if(rows.length === 0){
+      out.push('<tr><td colspan="' + n + '" class="none">No rows</td></tr>');
+    } else {
+      for(i = 0; i < rows.length; i += 1){
+        row = rows[i];
+        out.push('<tr>');
+        for(j = 0; j < n; j += 1){
+          if(j < row.length)out.push('<td>' + esc(row[j]) + '</td>');
+          else out.push('<td></td>');
+        }
+        out.push('</tr>');
+      }
+    }
+    out.push('</tbody>');
+    if(foot !== null){
+      out.push('<tfoot><tr>');
+      for(i = 0; i < foot.length; i += 1)out.push('<td>' + esc(foot[i]) + '</td>');
+      out.push('</tr></tfoot>');
+    }
+    out.push('</table>');
+    return out.join('');
+  }
+  /* the exact markup of a histogram svg */
+  function bimLbHistSvg(bars, cols, W, H){
+    var out = [], i, bar, c;
+    out.push('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' + W + ' ' + H + '" width="' + W + '" height="' + H + '" preserveAspectRatio="none">');
+    for(i = 0; i < bars.length; i += 1){
+      bar = bars[i];
+      if(bar.h <= 0)continue;
+      c = cols.length > 0 ? cols[i % cols.length] : '#888888';
+      out.push('<rect x="' + bar.x + '" y="' + bar.y + '" width="' + bar.w + '" height="' + bar.h + '" fill="' + c + '"/>');
+    }
+    out.push('</svg>');
+    return out.join('');
+  }
+
+
+  /* ================= __acad3dV175b: schedules, single indicators and result charts on a board =================
+     docs/research/research-presentation-live.md (D1, D2, D3, D8, D13) and docs/work-orders/v175/SPEC-v175b.md.
+     Three kinds of board object drawn from the model each time the board is, saving only what they show:
+       sched   a table of the model: rooms, or areas by level (n.src), sorted by a column (n.sk, n.sd);
+       kpi     one card of a site board's indicator row (n.f, the row's figure; n.lab, the card's label);
+       rchart  one result layer (n.res; n.nm, its name when placed): its text, and Sun hours' histogram.
+     A kept result is never run again by a board (D3): out of date, it is drawn with the amber mark and Properties
+     has Run again. A source that was removed says what it was bound to and is a dash on paper (D8). The pure
+     parts (sorting, totals, the markup) are sheets/live-board.js, built by Cline from the work orders. */
+  var A3D_LBD={sig:'',rows:{}};
+  /* a schedule's columns: {k, t (heading), kind (bimLvFormat's)} */
+  function bimLbdCols(src){
+    if(src==='levels')return [{k:'level',t:'Level',kind:'text'},{k:'gross',t:'Gross area',kind:'area'},{k:'net',t:'Room area',kind:'area'},
+      {k:'eff',t:'Efficiency',kind:'pct'}];
+    return [{k:'number',t:'Number',kind:'text'},{k:'name',t:'Name',kind:'text'},{k:'level',t:'Level',kind:'text'},{k:'area',t:'Area',kind:'area'},
+      {k:'occupants',t:'Occupants',kind:'count'}];
+  }
+  function bimLbdSchedName(src){return src==='levels'?'Areas by level':'Rooms';}
+  /* a schedule's rows, read once per revision of the model */
+  function bimLbdRows(src){
+    var sig=A3D_REV+'|'+A3D_UNITS.key,R;
+    if(sig!==A3D_LBD.sig){A3D_LBD.sig=sig;A3D_LBD.rows={};}
+    if(A3D_LBD.rows.hasOwnProperty(src))return A3D_LBD.rows[src];
+    if(src==='levels')R=A3D.levels.map(function(L){
+      var a=bimLevelAreas(L.id);
+      return {level:L.name,gross:a.gross===null?'':a.gross,net:a.net>0?a.net:'',eff:a.efficiency===null?'':Math.round(a.efficiency*10)/10};
+    });
+    else R=bimBuildRoomSchedule().map(function(r){
+      return {number:r.number||'',name:r.name||'',level:r.level||'',area:typeof r.area==='number'&&isFinite(r.area)?r.area:'',
+        occupants:typeof r.occupants==='number'?r.occupants:''};
+    });
+    A3D_LBD.rows[src]=R;
+    return R;
+  }
+  function bimLbdCell(v,kind){return v===''||v===null||v===undefined?'':bimLvFormat(v,kind,null);}
+  /* ---- what each kind shows: {st ('ok', 'none', 'gone', 'stale'), why: [reasons], html} ---- */
+  function bimLbdSched(n){
+    var cols=bimLbdCols(n.src),rows=bimLbdRows(n.src),T,foot=null,any=false,R={st:'ok',why:[],html:''};
+    if(n.sk&&cols.some(function(c){return c.k===n.sk;}))rows=bimLbSort(rows,n.sk,!!n.sd);
+    T=bimLbTotals(rows,cols);
+    T.forEach(function(v){if(v!=='')any=true;});
+    if(any&&rows.length){
+      foot=T.map(function(v,i){return bimLbdCell(v,cols[i].kind);});
+      if(cols[0].kind==='text')foot[0]='Total';
+    }
+    if(!rows.length){R.st='none';R.why.push(n.src==='levels'?'Not computed: there are no levels':'Not computed: there are no rooms yet');}
+    R.html=bimLbTableHtml(cols.map(function(c){return c.t;}),rows.map(function(r){return cols.map(function(c){return bimLbdCell(r[c.k],c.kind);});}),foot,bimClbE);
+    return R;
+  }
+  /* the indicator rows the site boards draw now, read once per render (ctx.caps): {f, name, kpis: [html]} */
+  function bimLbdKpiRows(ctx){
+    return ['clim.kpis','zn.kpis','acc.kpis','ppl.kpis'].map(function(f){
+      var E=bimFigEntry(f),P=null;
+      try{P=bimFigSrc(ctx,f,null);}catch(eK){console.warn('[BIM] The indicators of '+f+' could not be read',eK);}
+      return {f:f,name:E?E.name:f,kpis:P&&P.kpis?P.kpis:[]};
+    });
+  }
+  function bimLbdKpi(n,ctx){
+    var E=bimFigEntry(n.f),P=null,i,R={st:'ok',why:[],html:''};
+    try{P=E?bimFigSrc(ctx,n.f,null):null;}catch(eK){console.warn('[BIM] The indicators of '+n.f+' could not be read',eK);}
+    if(!P||!P.kpis||!P.kpis.length){R.st='none';R.why.push('Not computed: '+(E?E.name:'these indicators')+' are not worked out yet (Site analysis)');return R;}
+    i=bimLbKpiFind(P.kpis,n.lab);
+    if(i<0){R.st='gone';R.why.push('Source removed: '+n.lab);return R;}
+    R.html='<section class="a3d-clb-kpis a3d-clb-dkpi" style="--n:1">'+P.kpis[i]+'</section>';
+    return R;
+  }
+  function bimLbdChart(n){
+    var Rl=bimResById(n.res),R={st:'ok',why:[],html:''},d,C,h='';
+    if(!Rl||bimResGone(Rl)){R.st='gone';R.why.push('Source removed: '+(n.nm||'a result layer'));return R;}
+    if(bimResStale(Rl)){R.st='stale';R.why.push('Out of date: the model has changed since '+Rl.name+' ran');}
+    d=Rl.data;
+    if(Rl.kind==='sunhours'&&d&&typeof d.cells==='string'){
+      C=bimLbHist(d.cells,BIM_SIM_RAMP.length);
+      h+='<div class="a3d-clb-dhist">'+bimLbHistSvg(bimLbBars(C,200,60,2),BIM_SIM_RAMP,200,60)+'</div>'+
+        '<div class="a3d-clb-dax"><span>0 h</span><span>Hours of direct sun, '+bimClbE(d.date||'')+'</span><span>'+bimClbE(bimDispNum(d.day,1))+' h</span></div>';
+    }else h+='<div class="a3d-clb-dramp" style="background:'+bimResSwatch(Rl)+'"></div>';
+    R.html='<div class="a3d-clb-dch">'+h+'<p class="a3d-clb-dmeta">'+bimClbE(bimResMetaText(Rl))+'</p></div>';
+    return R;
+  }
+  /* what one of the three shows, for drawing and for Print's list */
+  function bimLbdState(n,ctx){
+    try{
+      if(n.t==='sched')return bimLbdSched(n);
+      if(n.t==='kpi')return bimLbdKpi(n,ctx||{caps:{},narrow:false});
+      if(n.t==='rchart')return bimLbdChart(n);
+    }catch(eS){console.warn('[BIM] A board object could not be drawn from the model: '+n.t,eS);return {st:'none',why:['Not computed: see the console'],html:''};}
+    return null;
+  }
+  /* its title: its own, or the source's name */
+  function bimLbdTitle(n){
+    var Rl,E;
+    if(n.t==='sched')return n.ttl||bimLbdSchedName(n.src);
+    if(n.t==='rchart'){if(n.ttl)return n.ttl;Rl=bimResById(n.res);return Rl?Rl.name:(n.nm||'Result chart');}
+    if(n.t==='kpi'){E=bimFigEntry(n.f);return E?E.name:'Indicator';}
+    return '';
+  }
+  /* drawn on the board: in Edit the reason and the marks; on paper a dash where there is nothing to show */
+  function bimLbdHtml(n,ox,oy,ctx){
+    var S=bimLbdState(n,ctx),paper=A3D_PLOT.on||!ctx.edit,body,t;
+    if(!S)return '';
+    if(S.st==='none'||S.st==='gone')body='<div class="a3d-clb-dlbx">'+(paper?'—':bimClbE(S.why[0]||''))+'</div>';
+    else body=S.html;
+    t=n.t==='kpi'?'':'<div class="a3d-clb-dlbt">'+bimClbE(bimLbdTitle(n))+'</div>';
+    return '<div'+bimBdsAttr(n,'a3d-clb-dlb '+n.t,ctx)+' style="'+bimBdsPos(bimBobBox(n),ox,oy)+'font-size:'+bimBdsPx(2.6)+'px;'+bimBdsComp(n,ctx)+'">'+t+body+
+      (paper?'':bimLiveMarks({ov:false,changed:false,unknown:[],st:S.st,why:S.why}))+'</div>';
+  }
+  /* ---- in Edit: the Draw menu's three entries ---- */
+  function bimLbdSchedMenu(x,y){
+    bimLtMenuOpen(x,y,[['Rooms','rooms'],['Areas by level','levels']],function(src){
+      bimBdeAdd('sched',{src:src,w:src==='levels'?110:150,h:50});
+    });
+    return true;
+  }
+  function bimLbdKpiMenu(x,y){
+    var items=[],ctx={caps:{},narrow:false};
+    bimLbdKpiRows(ctx).forEach(function(G){
+      var L=bimLbKpiLabels(G.kpis);
+      if(!L.length)return;
+      if(items.length)items.push('-');
+      L.forEach(function(lab,i){items.push([G.name+': '+lab,G.f+'#'+i]);});
+    });
+    if(!items.length){a3dToast('No indicators yet: work out a site board in Site analysis (climate, zoning, access) first');return false;}
+    bimLtMenuOpen(x,y,items,function(a){
+      var m=/^(.+)#(\d+)$/.exec(a),G,lab;
+      if(!m)return;
+      bimLbdKpiRows({caps:{},narrow:false}).forEach(function(q){if(q.f===m[1])G=q;});
+      lab=G?bimLbKpiLabels(G.kpis)[+m[2]]:null;
+      if(lab)bimBdeAdd('kpi',{f:m[1],lab:lab,w:45,h:26});
+    });
+    return true;
+  }
+  function bimLbdChartMenu(x,y){
+    var L=bimResLayers();
+    if(!L.length){a3dToast('No result layers yet: run an analysis (Sun hours, Rain on terrain, a terrain view) and Add as layer');return false;}
+    bimLtMenuOpen(x,y,L.map(function(R){return [R.name,R.id];}),function(id){
+      var R=bimResById(id);
+      if(R)bimBdeAdd('rchart',{res:R.id,nm:R.name.slice(0,80),w:90,h:R.kind==='sunhours'?62:40});
+    });
+    return true;
+  }
+  /* Run again, for a result chart that is out of date: its layer updated, never by the board itself (D3) */
+  function bimLbdRun(id){
+    var W=bimBdeWork(),f=W?bimBobFind(W.objs,id):null;
+    if(!f||f.n.t!=='rchart'||!bimResById(f.n.res))return false;
+    return bimResultLayerUpdate(f.n.res);
+  }
+  /* ---- the Properties panel, for one selected object of the three ---- */
+  function bimLbdPropsHtml(n){
+    var S,g='',cols,acts='';
+    if(n.t!=='sched'&&n.t!=='kpi'&&n.t!=='rchart')return '';
+    S=bimLbdState(n,null);
+    if(n.t==='sched'){
+      cols=bimLbdCols(n.src);
+      g+=bimPropText('Source',bimLbdSchedName(n.src),true);
+      g+=bimPropRow('Title','<input type="text" data-bdf="ttl" maxlength="80" value="'+bimEsc(n.ttl||'')+'" placeholder="'+bimEsc(bimLbdSchedName(n.src))+'">');
+      g+=bimPropRow('Sorted by','<select data-bdf="sk"><option value="">The model\'s order</option>'+cols.map(function(c){return '<option value="'+bimEsc(c.k)+'"'+(n.sk===c.k?' selected':'')+'>'+bimEsc(c.t)+'</option>';}).join('')+'</select>');
+      g+=bimPropRow('Descending','<input type="checkbox" data-bdf="sd"'+(n.sd?' checked':'')+'>');
+    }else if(n.t==='kpi'){
+      g+=bimPropText('Source',bimLbdTitle(n)+': '+n.lab,true);
+    }else{
+      g+=bimPropText('Source',(bimResById(n.res)||{name:n.nm||'-'}).name,true);
+      g+=bimPropRow('Title','<input type="text" data-bdf="ttl" maxlength="80" value="'+bimEsc(n.ttl||'')+'" placeholder="'+bimEsc(bimLbdTitle(n))+'">');
+      if(S&&S.st==='stale')acts+='<button type="button" class="a3d-pedit" data-bdact="lv-resrun" title="Run the analysis again on the model as it is now">Run again</button>';
+    }
+    if(S)S.why.forEach(function(w){g+='<div class="a3d-pnote">'+bimEsc(w)+'</div>';});
+    if(acts)g+='<div class="a3d-bdeacts">'+acts+'</div>';
+    g+='<div class="a3d-pnote">It is drawn from the project each time the board is. A board never runs an analysis again by itself. Its marks show in Edit and are never printed.</div>';
+    return bimPropGroup('Live',g);
+  }
 
   /* ================= __acad3dV174a: a board's objects, drawn =================
      docs/research/research-presentation-boards.md, 5.1 (D1: HTML and SVG, as the boards are) and 11a (R1 to R4).
@@ -60686,6 +61062,7 @@ try{
     if(t==='fig')return bimBdsFig(n,ox,oy,ctx);
     if(t==='tblock')return bimBdsTblock(n,ox,oy,ctx);   /* __acad3dV174c */
     if(t==='map'||t==='legend'||t==='north'||t==='sbar')return bimBmapHtml(n,ox,oy,ctx);   /* __acad3dV174d */
+    if(t==='sched'||t==='kpi'||t==='rchart')return bimLbdHtml(n,ox,oy,ctx);   /* __acad3dV175b */
     if(t==='border')return '<div'+bimBdsAttr(n,'a3d-clb-dbdr',ctx)+' style="'+bimBdsPos(bimBobBox(n),ox,oy)+'border:'+bimBdsPx(n.sw)+'px solid #0b0b0b;'+bimBdsComp(n,ctx)+'"></div>';
     b=bimBobBox(n);
     if(t==='line'){   /* a level line's box is 0 high, and an SVG of no size is not painted: it grows by its stroke and heads */
@@ -61062,11 +61439,13 @@ try{
   }
   function bimBdeDrawKinds(){return [['rect','Rectangle'],['ellipse','Ellipse'],['line','Line'],['arrow','Arrow'],['poly','Polygon'],['star','Star'],['text','Text'],['image','Image…'],
     '-',['map','Map frame'],['legend','Legend'],['north','North arrow'],['sbar','Scale bar'],   /* __acad3dV174d */
-    '-',['lvfield','Field\u2026'],['lvnumber','Number\u2026']];}   /* __acad3dV175a: a value of the project, kept up to date */
+    '-',['lvfield','Field\u2026'],['lvnumber','Number\u2026'],['lvsched','Schedule\u2026'],['lvkpi','Indicator\u2026'],['lvchart','Result chart\u2026']];}   /* __acad3dV175b */   /* __acad3dV175a: a value of the project, kept up to date */
   function bimBdeDrawMenu(x,y){
     bimLtMenuOpen(x,y,bimBdeDrawKinds().map(function(k){return k==='-'?k:[k[1],k[0]];}),function(k){
       if(k==='image')bimBdeAddImage();
-      else if(k==='lvfield'||k==='lvnumber')setTimeout(function(){if(k==='lvfield')bimLvFieldMenu(x,y);else bimLvNumberMenu(x,y);},0);   /* after this menu has closed */
+      else if(/^lv(field|number|sched|kpi|chart)$/.test(k))setTimeout(function(){   /* __acad3dV175b: the three kinds' menus too */
+        if(k==='lvfield')bimLvFieldMenu(x,y);else if(k==='lvnumber')bimLvNumberMenu(x,y);else if(k==='lvsched')bimLbdSchedMenu(x,y);else if(k==='lvkpi')bimLbdKpiMenu(x,y);else bimLbdChartMenu(x,y);
+      },0);   /* after this menu has closed */
       else bimBdeAdd(k);
     });
     return true;
@@ -61083,6 +61462,7 @@ try{
     else if(kind==='line'||kind==='arrow'){n.w=60;n.h=0;if(kind==='arrow')n.a1=true;}
     else if(kind==='text'){n.w=80;n.h=10;n.s='Text';}
     else if(kind==='image'){n.w=100;n.h=75;}
+    else if(kind==='sched'||kind==='kpi'||kind==='rchart'){n.w=100;n.h=50;}   /* __acad3dV175b: their sizes come in extra */
     else if(kind==='map'){   /* __acad3dV174d: the first plan, at a scale that shows it whole */
       var srcs=bimBmapSources();
       if(!srcs.length){a3dToast('There is no plan or view to show: add a level first');return null;}
@@ -61558,7 +61938,7 @@ try{
       if(n.t==='image')g+=bimPropRow('Fit','<select data-bdf="fit">'+bimBdeOpt('fill','Fill',n.fit)+bimBdeOpt('fit','Fit',n.fit)+bimBdeOpt('tile','Tile',n.fit)+'</select>')+
         bimPropRow('Image',bimBdeBtn('swapimg','Another image…'));
       if(g)h+=bimPropGroup('Other',g);
-      h+=bimLvPropsHtml(n,W);   /* __acad3dV175a: a text's fields, its override, Reset and Unlink */
+      h+=bimLvPropsHtml(n,W)+bimLbdPropsHtml(n);   /* __acad3dV175b */   /* __acad3dV175a: a text's fields, its override, Reset and Unlink */
     }
     /* __acad3dV174b: align, distribute and tidy the selection; one object aligns to the page */
     h+=bimPropGroup('Arrange','<div class="a3d-bdeacts" role="group" aria-label="Align">'+bimBdeBtn('al-left','Left','Align left edges')+bimBdeBtn('al-hcenter','Centre','Align centres across')+
@@ -61643,6 +62023,8 @@ try{
       if(!f||!bimBdeOwnsProps())return;
       if(f==='ov.s'){bimLvOverride(t.value);return;}   /* __acad3dV175a: words typed over a live text */
       if(f==='lv.dp'){bimLvSetDp(t.value);return;}
+      if(f==='sk'){bimBdeSet(null,{sk:t.value||null});return;}   /* __acad3dV175b: a schedule's sort */
+      if(f==='sd'){bimBdeSet(null,{sd:t.checked?true:null});return;}
       if(f==='s'&&bimLvSetText(t.value))return;   /* a text's words, and the fields in them */
       if(/:on$/.test(f)){f=f.slice(0,-3);o[f]=t.checked?((t.closest('.a3d-prow')||t.parentNode).querySelector('input[type=color]')||{}).value||'#000000':'none';}
       else if(f==='tr'){v=t.value.trim();if(v===''){o.tr=null;}else{v=+v;if(!isFinite(v))return;o.tr=Math.round(Math.max(0,Math.min(90,v)));}}
@@ -61758,6 +62140,11 @@ try{
   function bimLvAct(a,x,y){
     var T,R,G;
     if(a==='lv-field')return bimLvFieldMenu(x||0,y||0);
+    if(a==='lv-resrun')return A3D_BDE.sel.length===1&&bimLbdRun(A3D_BDE.sel[0]);   /* __acad3dV175b: a result chart's layer, run again */
+    if(a==='lv-run'&&(T=bimLvTarget(true))&&T.n.bind.k==='num'&&T.n.bind.src==='sun.sixplus'){   /* __acad3dV175b: the newest Sun hours layer, run again */
+      G=bimResLayers().filter(function(R){return R.kind==='sunhours';});
+      return G.length?bimResultLayerUpdate(G[0].id):false;
+    }
     if(a==='lv-run'){   /* the graded surfaces that are out of date, graded again: never by a board on its own (D3) */
       G=A3D.objs.filter(function(o){return o.t==='terrain'&&o.grading&&bimGradeStale(o);});
       if(!G.length){a3dToast('Nothing graded is out of date');return false;}
@@ -68234,6 +68621,11 @@ try{
     insertField:function(k){return bimLvInsertField(k);},addNumber:function(k,id){return bimLvAddNumber(k,id);},override:function(v){return bimLvOverride(v);},
     setDp:function(v){return bimLvSetDp(v);},act:function(a){return bimLvAct(a,40,40);},propsHtml:bimLvPropsHtml,unitState:bimUnitState,applyUnits:bimApplyUnitState,
     bindValid:bimLvBindValid,ovValid:bimLvOvValid,rev:function(){return A3D_REV;},bump:function(){setA3D_REV(A3D_REV+1);return A3D_REV;}};
+  /* __acad3dV175b: schedules, single indicators and result charts on a board */
+  window.__acad3dV175b='sched,kpi,rchart,hist,sunsix,solarkwh,printlist';
+  window.__a3dLiveBoard={state:function(n){return bimLbdState(n,null);},cols:bimLbdCols,rows:function(s){return bimLbdRows(s);},
+    schedMenu:function(){return bimLbdSchedMenu(40,40);},kpiMenu:function(){return bimLbdKpiMenu(40,40);},chartMenu:function(){return bimLbdChartMenu(40,40);},
+    run:function(id){return bimLbdRun(id);},addLayer:function(R){bimResLayers().unshift(R);setA3D_REV(A3D_REV+1);return R.id;},redraw:function(){bimBrdRedraw();return true;}};
 }catch(e){
   window.__a3dErr=String(e&&e.message||e);
   console.warn('[BIM] The engine failed to load.',e);   /* __acad3dV120 */

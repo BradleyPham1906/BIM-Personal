@@ -33,7 +33,8 @@ import { bimLvBindValid, bimLvOvValid } from './live-text.js';
   function bimBobKinds(){
     return [['rect','Rectangle',1],['ellipse','Ellipse',1],['line','Line',1],['poly','Polygon',1],['star','Star',1],['text','Text',0],['image','Image',1],['fig','Figure',0],
       ['tblock','Title block',0],['border','Sheet frame',0],   /* __acad3dV174c */
-      ['map','Map frame',0],['legend','Legend',0],['north','North arrow',0],['sbar','Scale bar',0]];   /* __acad3dV174d */
+      ['map','Map frame',0],['legend','Legend',0],['north','North arrow',0],['sbar','Scale bar',0],   /* __acad3dV174d */
+      ['sched','Schedule',0],['kpi','Indicator',0],['rchart','Result chart',0]];   /* __acad3dV175b */
   }
   function bimBobKind(t){var L=bimBobKinds(),i;for(i=0;i<L.length;i++)if(L[i][0]===t)return L[i];return null;}
   function bimBobMaskTypes(){return [['alpha','Alpha'],['vector','Vector'],['lum','Luminance']];}
@@ -113,6 +114,21 @@ import { bimLvBindValid, bimLvOvValid } from './live-text.js';
     if(n.t==='legend')r.ttl=typeof n.ttl==='string'?n.ttl.slice(0,80):'Legend';
     if(n.t==='north'){r.nk=n.nk==='plan'?'plan':'true';r.off=bimBobNum(n.off,-360,360,0);}
     if(n.t==='sbar')r.un=n.un==='ft'?'ft':'m';
+    /* __acad3dV175b: what a schedule, an indicator and a result chart show; never a value (D8) */
+    if(n.t==='sched'){
+      r.src=n.src==='levels'?'levels':'rooms';
+      if(typeof n.ttl==='string'&&n.ttl.replace(/\s+/g,''))r.ttl=n.ttl.replace(/\s+/g,' ').trim().slice(0,80);
+      if(typeof n.sk==='string'&&/^[a-z]{1,20}$/.test(n.sk))r.sk=n.sk;
+      if(n.sd===true)r.sd=true;
+    }
+    if(n.t==='kpi'){
+      if(typeof n.f!=='string'||!/^(clim|zn|acc|ppl)\.kpis$/.test(n.f)||typeof n.lab!=='string'||!n.lab)return null;
+      r.f=n.f;r.lab=n.lab.slice(0,120);
+    }
+    if(n.t==='rchart'){
+      r.res=typeof n.res==='string'&&/^res-[A-Za-z0-9-]{1,80}$/.test(n.res)?n.res:'';
+      if(typeof n.ttl==='string'&&n.ttl.replace(/\s+/g,''))r.ttl=n.ttl.replace(/\s+/g,' ').trim().slice(0,80);
+    }
     return r;
   }
   /* a board's objects as saved, good, agreeing with its figures; null when it has none */

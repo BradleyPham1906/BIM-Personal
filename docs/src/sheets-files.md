@@ -107,6 +107,15 @@ Text on a board can follow the project, so a board says what the model says.
   live objects are not up to date.
 - A key that is not a field stays as typed. The project's display units (m, cm, mm and their decimals) are now
   kept with the project.
+- **Schedule**, in Draw: a table of the model, **Rooms** or **Areas by level**, with a total row. In Properties:
+  its title, the column it is sorted by, and Descending. It changes as the model does.
+- **Indicator**, in Draw: one card taken out of a site board's indicators (climate, zoning, access, people), placed
+  alone. The site board must be worked out first, in Site analysis.
+- **Result chart**, in Draw: one result layer's chart and what it measured; for Sun hours, how much of the ground
+  gets how many hours of sun. Two numbers join **Number** with it: the share of the ground with 6 hours of sun or
+  more, and the roofs' solar yield in a year.
+- A result that the model has moved on from is marked (the amber dot), and **Run again** in Properties runs that
+  analysis again; a board never does so by itself. A removed layer says which one it was.
 
 **New Sheet** chooses its page from the same gallery. Every change is one undo step and is kept with the project.
 

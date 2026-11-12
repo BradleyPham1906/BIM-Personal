@@ -17,6 +17,8 @@ import { bimDispNum } from '../properties/palette.js';
     if(kind==='area')return {u:' m²',dp:1};
     if(kind==='vol')return {u:' m³',dp:1};
     if(kind==='count')return {u:'',dp:0};
+    if(kind==='pct')return {u:' %',dp:0};   /* __acad3dV175b */
+    if(kind==='kwh')return {u:' kWh',dp:0};
     return null;
   }
   /* the fields in a string, in order: [{i: where it starts, n: its length, key, dp: its decimals or null}] */

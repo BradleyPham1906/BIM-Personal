@@ -155,3 +155,6 @@
     out.push('</svg>');
     return out.join('');
   }
+export {
+  bimLbBars, bimLbHist, bimLbHistSvg, bimLbKpiFind, bimLbKpiLabels, bimLbSort, bimLbTableHtml, bimLbTotals
+};

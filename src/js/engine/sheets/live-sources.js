@@ -2,6 +2,7 @@ import { A3D } from '../core/state.js';
 import { bimGradeStale } from '../terrain/grading.js';
 import { bimPropertyGeometry } from '../site/property.js';
 import { A3D_UNITS, bimUnitDp } from '../properties/palette.js';
+import { bimResLayers, bimResStale } from '../analysis/results-layers.js';
 import { bimClbE } from '../site-analysis/climate-board.js';
 import { bimZnCalc, bimZnProperty } from '../site-analysis/zoning-envelope.js';
 import { A3D_REV } from '../core/objects-save.js';
@@ -10,6 +11,7 @@ import { bimLevelAreas, bimLevelById } from '../views/schedules.js';
 import { bimPresIndex, bimPresSeq } from './boards.js';
 import { bimBoardLabel } from './board-figures.js';
 import { bimLvFormat, bimLvOvState, bimLvSubst } from './live-text.js';
+import { bimLbdState, bimLbdTitle } from './live-board-draw.js';
 import { bimBdsToday } from './board-design.js';
 
 
@@ -29,7 +31,8 @@ import { bimBdsToday } from './board-design.js';
       ['board.name','Board name','text','Board'],['board.number','Board number','count','Board'],['board.count','Boards and sheets in the set','count','Board'],
       ['gfa','Gross floor area','area','Building'],['rooms.area','Room area','area','Building'],['rooms','Rooms','count','Building'],['levels','Levels','count','Building'],
       ['level.area','A level\'s gross area','area','Building',1],
-      ['site.area','Site area','area','Site'],['far.gfa','Floor area the zoning allows','area','Site'],['cut','Cut volume','vol','Site'],['fill','Fill volume','vol','Site']];
+      ['site.area','Site area','area','Site'],['far.gfa','Floor area the zoning allows','area','Site'],['cut','Cut volume','vol','Site'],['fill','Fill volume','vol','Site'],
+      ['sun.sixplus','Ground with 6 h of sun or more','pct','Site'],['solar.roofkwh','The roofs\' solar yield a year','kwh','Building']];   /* __acad3dV175b */
   }
   /* older and other names of a key (D14): a board keeps working when a key is renamed */
   function bimLiveAliases(){return {'gba':'gfa','project':'project.name','client':'project.client','site':'site.area'};}
@@ -92,6 +95,21 @@ import { bimBdsToday } from './board-design.js';
     if(!n)return bimLiveNone('Not computed: GRADE a pad, or run CUTFILL');
     return stale?{st:'stale',v:t,why:'Out of date: a pad or the existing surface has changed since it was graded'}:bimLiveOk(t);
   }
+  /* __acad3dV175b: the share of the ground with 6 hours of sun or more, from the newest Sun hours layer; kept, never
+     run again by a board (D3) */
+  function bimLiveSun(){
+    var L=bimResLayers(),i,R=null;
+    for(i=0;i<L.length&&!R;i++)if(L[i].kind==='sunhours'&&L[i].data)R=L[i];
+    if(!R)return bimLiveNone('Not computed: run Sun hours and Add as layer (Analyze)');
+    if(!isFinite(R.data.sixPlus))return bimLiveNone('Not computed: '+R.name+' has no share');
+    return bimResStale(R)?{st:'stale',v:R.data.sixPlus*100,why:'Out of date: the model has changed since '+R.name+' ran'}:bimLiveOk(R.data.sixPlus*100);
+  }
+  /* the roofs' yearly solar yield, as Solar kept it on each object */
+  function bimLiveSolar(){
+    var t=0,n=0;
+    A3D.objs.forEach(function(o){if(o.solar&&typeof o.solar.roofKwh==='number'&&isFinite(o.solar.roofKwh)){t+=o.solar.roofKwh;n++;}});
+    return n?bimLiveOk(t):bimLiveNone('Not computed: run Solar (Analyze)');
+  }
   function bimLiveCompute(key,id,nm,B){
     var tb=A3D.titleBlock||{},i;
     if(key==='project.name')return bimLiveOk(bimProjectLabel());
@@ -110,6 +128,8 @@ import { bimBdsToday } from './board-design.js';
     if(key==='site.area')return bimLiveSite();
     if(key==='far.gfa')return bimLiveFar();
     if(key==='cut'||key==='fill')return bimLiveCutFill(key);
+    if(key==='sun.sixplus')return bimLiveSun();   /* __acad3dV175b */
+    if(key==='solar.roofkwh')return bimLiveSolar();
     return bimLiveNone('Not a field');
   }
   /* a source's value, computed once per revision, units and day */
@@ -173,6 +193,11 @@ import { bimBdsToday } from './board-design.js';
     var out=[];
     (B&&Array.isArray(B.objs)?B.objs:[]).forEach(function(n){
       var R;
+      if(n.t==='sched'||n.t==='kpi'||n.t==='rchart'){   /* __acad3dV175b */
+        R=bimLbdState(n,null);
+        if(R&&R.st!=='ok')out.push({nm:n.nm||bimLbdTitle(n),why:R.why[0]||''});
+        return;
+      }
       if(n.t!=='text'||!n.bind)return;
       R=bimLiveShow(n,B,false);
       if(R.st==='ok'&&!R.unknown.length)return;

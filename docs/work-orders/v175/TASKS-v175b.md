@@ -118,7 +118,7 @@ Scores are from `../ROUTING.md` (files, logic, understanding, judgment, trickine
 
 ---
 
-## [ ] WO-11 [Claude] Build the three kinds on them, and close V175b
+## [x] WO-11 [Claude] Build the three kinds on them, and close V175b
 
 Claude's because it crosses many files and touches what is saved (ROUTING: always D):
 - review WO-01 to WO-10 against SPEC part 4; move `v175b.test.mjs` to `tests/unit/live-board.test.mjs`;

@@ -1,4 +1,5 @@
 import { bimApplyUnitState, bimUnitState } from '../properties/palette.js';
+import { bimResLayers } from '../analysis/results-layers.js';
 import { A3D_CLB, bimClbEl, bimClbOpen } from '../site-analysis/climate-board.js';
 import { A3D_REV, setA3D_REV } from '../core/objects-save.js';
 import { bimLtMenuClose } from '../sheets/layout-tabs.js';
@@ -9,8 +10,8 @@ import {
 } from '../sheets/board-figures.js';
 import {
   A3D_BRD, bimBrdAddFig, bimBrdCatalogue, bimBrdDlgClose, bimBrdDup, bimBrdDupBoard, bimBrdEdit, bimBrdFit,
-  bimBrdMenu, bimBrdNewUi, bimBrdNudge, bimBrdOptsDlg, bimBrdOptsSet, bimBrdRemove, bimBrdRename, bimBrdReset,
-  bimBrdSnap, bimBrdSwap, bimBrdWorking
+  bimBrdMenu, bimBrdNewUi, bimBrdNudge, bimBrdOptsDlg, bimBrdOptsSet, bimBrdRedraw, bimBrdRemove,
+  bimBrdRename, bimBrdReset, bimBrdSnap, bimBrdSwap, bimBrdWorking
 } from '../sheets/board-edit.js';
 import {
   bimLvBindValid, bimLvFormat, bimLvGroup, bimLvKind, bimLvMenuItems, bimLvOvKeep, bimLvOvReset, bimLvOvSet,
@@ -19,6 +20,9 @@ import {
 import {
   bimLiveGet, bimLiveKey, bimLiveKeys, bimLiveMarks, bimLiveShow, bimLiveStaleItems
 } from '../sheets/live-sources.js';
+import {
+  bimLbdChartMenu, bimLbdCols, bimLbdKpiMenu, bimLbdRows, bimLbdRun, bimLbdSchedMenu, bimLbdState
+} from '../sheets/live-board-draw.js';
 import {
   bimLvAct, bimLvAddNumber, bimLvInsertField, bimLvOverride, bimLvPropsHtml, bimLvSetDp, bimLvTextPatch
 } from '../sheets/live-edit.js';
@@ -77,3 +81,8 @@ import {
     insertField:function(k){return bimLvInsertField(k);},addNumber:function(k,id){return bimLvAddNumber(k,id);},override:function(v){return bimLvOverride(v);},
     setDp:function(v){return bimLvSetDp(v);},act:function(a){return bimLvAct(a,40,40);},propsHtml:bimLvPropsHtml,unitState:bimUnitState,applyUnits:bimApplyUnitState,
     bindValid:bimLvBindValid,ovValid:bimLvOvValid,rev:function(){return A3D_REV;},bump:function(){setA3D_REV(A3D_REV+1);return A3D_REV;}};
+  /* __acad3dV175b: schedules, single indicators and result charts on a board */
+  window.__acad3dV175b='sched,kpi,rchart,hist,sunsix,solarkwh,printlist';
+  window.__a3dLiveBoard={state:function(n){return bimLbdState(n,null);},cols:bimLbdCols,rows:function(s){return bimLbdRows(s);},
+    schedMenu:function(){return bimLbdSchedMenu(40,40);},kpiMenu:function(){return bimLbdKpiMenu(40,40);},chartMenu:function(){return bimLbdChartMenu(40,40);},
+    run:function(id){return bimLbdRun(id);},addLayer:function(R){bimResLayers().unshift(R);setA3D_REV(A3D_REV+1);return R.id;},redraw:function(){bimBrdRedraw();return true;}};
