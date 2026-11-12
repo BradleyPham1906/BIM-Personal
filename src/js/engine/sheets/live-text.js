@@ -29,40 +29,132 @@
   }
   /* a number as text with its thousands grouped: '12345.6' gives '12,345.6' */
   function bimLvGroup(s){
-    throw new Error('WO-02: not built');
+    var m = /^(-?)(\d+)(\.\d+)?$/.exec(s);
+    if(!m)return s;
+    var whole = m[2], neg = m[1], dec = m[3] || '';
+    var grouped = '', count = 0, i;
+    for(i = whole.length - 1; i >= 0; i--){
+      if(count > 0 && count % 3 === 0)grouped = ',' + grouped;
+      grouped = whole.charAt(i) + grouped;
+      count++;
+    }
+    return neg + grouped + dec;
   }
   /* a value as a board shows it: a number of a kind with its unit, or text as it is */
   function bimLvFormat(v,kind,dp){
-    throw new Error('WO-03: not built');
+    if(v===null||v===undefined)return '\u2014';
+    var K = bimLvKind(kind);
+    if(!K)return String(v);
+    if(typeof v !== 'number' || !isFinite(v))return '\u2014';
+    var d = typeof dp === 'number' ? dp : K.dp;
+    return bimLvGroup(bimDispNum(v, d)) + K.u;
   }
   /* a string with its fields replaced: look(key, dp) gives a field's words, or null for a key it does not know.
      {s, keys: the keys replaced, unknown: the keys left as typed} */
   function bimLvSubst(s,look){
-    throw new Error('WO-04: not built');
+    var r = {s:'', keys:[], unknown:[]};
+    var tokens, t, i, pos, replacement, seenKeys, seenUnknown;
+    if(typeof s !== 'string')return r;
+    tokens = bimLvTokens(s);
+    pos = 0;
+    seenKeys = {};
+    seenUnknown = {};
+    for(i = 0; i < tokens.length; i++){
+      t = tokens[i];
+      r.s += s.slice(pos, t.i);
+      replacement = look(t.key, t.dp);
+      if(replacement === null || replacement === undefined){
+        r.s += s.slice(t.i, t.i + t.n);
+        if(!seenUnknown[t.key]){seenUnknown[t.key] = true; r.unknown.push(t.key);}
+      } else {
+        r.s += replacement;
+        if(!seenKeys[t.key]){seenKeys[t.key] = true; r.keys.push(t.key);}
+      }
+      pos = t.i + t.n;
+    }
+    r.s += s.slice(pos);
+    return r;
   }
   /* words typed over a live object: kept as its override of key, with the source's words now. true when it changed */
   function bimLvOvSet(n,key,val,cur){
-    throw new Error('WO-05: not built');
+    if(!n.bind)return false;
+    if(val===cur){
+      if(n.ov && n.ov.hasOwnProperty(key))return bimLvOvReset(n,key);
+      return false;
+    }
+    if(n.ov && n.ov.hasOwnProperty(key) && n.ov[key]===val)return false;
+    if(!n.ov)n.ov = {};
+    if(!n.ovAt)n.ovAt = {};
+    n.ov[key] = val;
+    n.ovAt[key] = cur;
+    return true;
   }
   /* an override taken off: one key, or every key when key is null. true when there was one */
   function bimLvOvReset(n,key){
-    throw new Error('WO-06: not built');
+    if(!n.ov)return false;
+    if(key===null||key===undefined){delete n.ov; delete n.ovAt; return true;}
+    if(!n.ov.hasOwnProperty(key))return false;
+    delete n.ov[key];
+    if(n.ovAt && n.ovAt.hasOwnProperty(key))delete n.ovAt[key];
+    var empty, k;
+    empty = true;
+    for(k in n.ov){if(n.ov.hasOwnProperty(k)){empty=false;break;}}
+    if(empty)delete n.ov;
+    if(n.ovAt){
+      empty = true;
+      for(k in n.ovAt){if(n.ovAt.hasOwnProperty(k)){empty=false;break;}}
+      if(empty)delete n.ovAt;
+    }
+    return true;
   }
   /* 'none', 'set', or 'changed' when the source's words are no longer what they were when the override was made */
   function bimLvOvState(n,key,cur){
-    throw new Error('WO-07: not built');
+    if(!n.ov || !n.ov.hasOwnProperty(key))return 'none';
+    if(n.ovAt && n.ovAt.hasOwnProperty(key) && n.ovAt[key]!==cur)return 'changed';
+    return 'set';
   }
   /* Keep: the override stands against the source as it is now. true when it changed */
   function bimLvOvKeep(n,key,cur){
-    throw new Error('WO-08: not built');
+    if(!n.ov || !n.ov.hasOwnProperty(key))return false;
+    if(n.ovAt && n.ovAt.hasOwnProperty(key) && n.ovAt[key]===cur)return false;
+    if(!n.ovAt)n.ovAt = {};
+    n.ovAt[key] = cur;
+    return true;
   }
   /* what Print says of the live objects that are out of date: items [{nm, why}]; '' when there are none */
   function bimLvPrintNote(items){
-    throw new Error('WO-09: not built');
+    var n, i, item, parts, part, more, plural;
+    if(!items || items.length === 0)return '';
+    n = items.length;
+    plural = n === 1 ? 'object' : 'objects';
+    part = 'Printed with ' + n + ' live ' + plural + ' not up to date: ';
+    parts = [];
+    for(i = 0; i < Math.min(3, n); i++){
+      item = items[i];
+      if(item.why === '' || item.why === undefined){
+        parts.push(item.nm);
+      } else {
+        parts.push(item.nm + ' (' + item.why + ')');
+      }
+    }
+    part += parts.join(', ');
+    if(n > 3){
+      more = ' and ' + (n - 3) + ' more';
+      part += more;
+    }
+    return part;
   }
   /* the fields as a menu's rows, a rule between groups: rows [key, label, kind, group] give [[label, key], '-', ...] */
   function bimLvMenuItems(rows){
-    throw new Error('WO-10: not built');
+    var result = [], i, row, prevGroup;
+    if(!rows || rows.length === 0)return result;
+    for(i = 0; i < rows.length; i++){
+      row = rows[i];
+      if(i > 0 && row[3] !== prevGroup)result.push('-');
+      result.push([row[1], row[0]]);
+      prevGroup = row[3];
+    }
+    return result;
   }
   /* ---- what is kept of a binding when a project is read (bimBobOne) ---- */
   function bimLvKeyOk(k){return typeof k==='string'&&/^[A-Za-z][A-Za-z0-9_.]{0,39}$/.test(k);}
