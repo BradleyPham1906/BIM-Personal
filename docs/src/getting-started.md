@@ -132,6 +132,13 @@ overcast, low sun, white studio), Quality, Ground and Edges are beside Display. 
 image work as in the shaded view; `RENDER` again goes back to it. The view is drawn by three.js, fetched the
 first time it is asked for (about 750 KB). The basemap, sheets and Presentation are not rendered yet.
 
+**glTF and GLB.** `GLTFIN`, or Import with a .glb or .gltf file, brings in a model from Blender, SketchUp,
+Sketchfab or Poly Haven: each material becomes one locked solid in its colour, on a layer named after the file
+(see-through materials on a sub-layer), and a model of up to 20,000 triangles is kept in Assets as a block.
+Compressed files (Draco, meshopt) open too. Textures are not drawn yet, and a .gltf that refers to files beside
+it should be saved as one .glb first. `GLTFOUT` saves the model shown as a .glb: one mesh per element, named
+after it, grouped by layer, in metres with +Y up.
+
 **What is out of view is not drawn.** The model is kept in chunks by place, 64 m squares of the
 ground, and a chunk wholly outside the view is skipped, so a large site costs little when you are
 looking at one corner of it.

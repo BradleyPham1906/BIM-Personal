@@ -32,7 +32,7 @@ import { cvScale } from '../ui/canvas-size.js';
      fails (no three.js, no WebGL 2, a lost context, a frame that throws) is said once and the shaded view is back in
      the same frame: never a broken view. */
   var BIM_RV_VER='0.186.1',BIM_RV_FILE='three/'+BIM_RV_VER+'/bim-three.min.js';
-  var BIM_RV_SRI='sha256-r8p2oyLyx/81rHa7DTkKeKHnPCAbNT6EVqOoPVzoip0=';   /* the file's SHA-256, as runtime/MANIFEST.json pins it */
+  var BIM_RV_SRI='sha256-nlMhFtFZ48EpXw4milRquaT/Hc0JPr3IqG6LCINZo5E=';   /* __acad3dV195: with the glTF addons */   /* the file's SHA-256, as runtime/MANIFEST.json pins it */
   var BIM_RV_KEY='acad3dRenderedV1';
   var BIM_RV_STILL_MS=140;   /* passes are added once the view has been still this long */
   var A3D_RV={on:false,st:'idle',err:'',T:null,core:null,cv:null,sig:'',done:0,want:64,raf:0,per:1,last:0,stillAt:0,

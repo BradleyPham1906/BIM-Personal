@@ -219,5 +219,5 @@ Search Notion before creating anything, so nothing is made twice.
 
 ## Added 2026-11-12 (V194)
 
-- Internal Task DB: **V194 Render R6: the rendered view**, page `416cbfcc3a3881418570d882c45bd761` (In Progress; PR #88 open).
+- Internal Task DB: **V194 Render R6: the rendered view**, page `416cbfcc3a3881418570d882c45bd761` (Completed; PR #88 merged 2026-11-12).
 - Documentation DB: **V194: the rendered view, and what the reference apps can give us** (`docs/research/research-rendered-view.md`), page `416cbfcc3a38819cb024d9f0f7e549bf`.

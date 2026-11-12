@@ -56,6 +56,7 @@ import { bimTrCommand } from '../simulation/traffic-ui.js';
 import { bimAwEnter, bimAwTraffic } from '../site-analysis/analysis-workspace.js';
 import { bimTlCommand } from '../site-tools/panel.js';
 import { bimSkpPick } from '../io/sketchup-import.js';
+import { bimGltfExport, bimGltfPick } from '../io/gltf.js';
 import { bimRvCommand } from '../render/rendered-view.js';
 import { bimBenchmark, bimGraphicsCommand } from '../render/webgpu.js';
 import { bimCtxFetch, bimCtxRemove } from '../map/surroundings-3d.js';
@@ -228,6 +229,8 @@ import { bimOpenToolsPanel } from '../ui/discipline-tabs.js';
     lodcheck:function(){bimLodCheck();},              /* __acad3dV139 */
     cityjsonout:function(){bimCityJsonExport();},
     cityjsonin:function(){bimCityJsonPick();},
+    gltfin:function(){bimGltfPick();},   /* __acad3dV195 */
+    gltfout:function(){bimGltfExport();},
     skpin:function(){bimSkpPick();},                  /* __acad3dV163 */
     finddata:function(){bimFindCommand();},                      /* __acad3dV135 */
     datalayers:function(){bimDataCommand();},                    /* __acad3dV134 */                /* __acad3dV127 */

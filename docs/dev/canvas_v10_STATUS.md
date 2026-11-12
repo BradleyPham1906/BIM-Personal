@@ -16785,3 +16785,19 @@ Drawing, selecting and Save image work as in the shaded view, and `RENDER` again
 - Checks: syntax, `npm run modules`, the build, `npm run check`, `npm test` 175 of 175. Not run: the app's own
   browser check, the full regression. `BIM_APP_VERSION` left at V172, as V173 to V175a left it.
 - Not yet: the basemap and draped terrain, sheets and Present, materials by element type, textures, lamps.
+
+## Phase 195 (V195) - glTF and GLB, in and out
+
+`GLTFIN` (or Import with a .glb or .gltf) brings a model in as locked solids by material on a layer named after the
+file, and keeps it in Assets as a block; `GLTFOUT` saves the model shown as one .glb, an element a mesh under a node
+for its layer. Compressed files (Draco, meshopt) open too (the owner, 2026-11-12).
+
+- Research: `docs/research/research-gltf.md`. three.js's own GLTFLoader, GLTFExporter, DRACOLoader and meshopt decoder
+  in V194's bundle, one copy of three; Draco's glTF decoder beside it, fetched only for such a file.
+- `io/gltf.js`. A mesh may now name its edges (`mesh.fe`): `render/gpu-batches.js` and `render/webgl.js` draw those
+  instead of every face's border, so an import shows its folds and borders, not its triangles.
+- Found: DRACOLoader reads `import.meta.url` when it loads, which throws in a classic script; the bundle defines a
+  base that is never fetched. The unit tests' browser stand-in runs out of memory drawing the Layers panel, so the
+  placing step is checked in the browser and the reading step in Node. Lesson: test the pure part, name what is not.
+- Checks: syntax, `npm run modules`, the build, `npm run check`, `npm test` 181 of 181 (6 new, a GLB built by hand
+  read through three.js's loader). Not run: the app's own browser check (export needs a browser's FileReader).
