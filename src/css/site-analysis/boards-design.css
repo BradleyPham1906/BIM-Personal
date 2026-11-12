@@ -18,6 +18,7 @@
 .a3d-clb-dsn.edit .a3d-clb-dtxt.lv{outline:1px dotted var(--ring)}
 .a3d-clb.prt .a3d-clb-dlv{display:none!important}
 @media print{.a3d-clb-dlv{display:none!important}}
+#a3d-right .a3d-pval textarea[data-bdf]{width:100%;box-sizing:border-box;resize:vertical}
 .a3d-clb-dimg{background-position:center}
 .a3d-clb-dimg.ph{display:flex;align-items:center;justify-content:center;border:1px dashed var(--muted);color:var(--muted);font-size:12px;text-align:center;padding:6px}
 /* in Edit: what can be picked, the selection's outlines and its handle */

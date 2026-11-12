@@ -209,6 +209,8 @@ import { bimLvAct, bimLvOverride, bimLvPropsHtml, bimLvSetDp, bimLvSetText } fro
       else if(f==='fw')o.fw=t.checked?700:400;
       else{v=parseFloat(t.value);if(!isFinite(v))return;o[f]=v;}
       bimBdeSet(null,o);
-    });
+    },true);   /* __acad3dV175a: while the event goes down, before the panel's own change handlers: one of them (V118)
+                  draws the panel again from the model, and a field left by Tab or a click is no longer the focused
+                  one it keeps, so the typed value was gone before it was read here */
   }
 export { bimBdeBtn, bimBdeLyCount, bimBdeLyIndex, bimBdeLyRows, bimBdeOpt, bimBdePropsHtml, bimBdePropsWire };

@@ -109,7 +109,7 @@ import { bimBmapHtml } from './board-map.js';
       if(n.fit==='fixed')h+='height:'+bimBdsPx(b.h)+'px;overflow:hidden;';
       h+='font-size:'+bimBrdPx(n.fs*0.352778*bimBobPxMm())+'px;font-weight:'+n.fw+';text-align:'+n.al+';color:'+n.col+';';
       Lv=n.bind?bimLiveShow(n,ctx.B||null,!!ctx.edit&&!A3D_PLOT.on):null;   /* __acad3dV175a: a live text's words, from the project now */
-      return '<div'+bimBdsAttr(n,'a3d-clb-dtxt'+(n.fit==='auto-w'?' aw':'')+(Lv?' lv':''),ctx)+' style="'+h+bimBdsComp(n,ctx)+'">'+bimClbE(Lv?Lv.s:n.s)+(Lv&&ctx.edit&&!A3D_PLOT.on?bimLiveMarks(Lv):'')+'</div>';
+      return '<div'+bimBdsAttr(n,'a3d-clb-dtxt'+(n.fit==='auto-w'?' aw':'')+(Lv?' lv':''),ctx)+' style="'+h+(Lv&&Lv.hint?'font-size:'+bimBrdPx(Math.min(n.fs,9)*0.352778*bimBobPxMm())+'px;font-weight:400;font-style:italic;':'')+bimBdsComp(n,ctx)+'">'+bimClbE(Lv?Lv.s:n.s)+(Lv&&ctx.edit&&!A3D_PLOT.on?bimLiveMarks(Lv):'')+'</div>';
     }
     if(t==='image'){
       u=n.src?bimBimgUrl(n.src):null;

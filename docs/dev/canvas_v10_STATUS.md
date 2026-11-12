@@ -16713,3 +16713,49 @@ parts, not one PR each (D20), because #82 is not merged and the owner's rule is 
 - **Suites amended:** V121 (the manager's columns, with Blend), V167's reference (`tests/fixtures/standards_reference.py`:
   the five topics and their hosts). Not run: the full regression. Suites that may notice: V116 (New Sheet now a
   gallery; its Sheet Setup list is unchanged), V162 and V172b (board printing: unchanged for a board without a page).
+
+### V175a: Presentation P2, live text on a board: fields, numbers, overrides (2026-11-12)
+
+Research `docs/research/research-presentation-live.md` (PR #84); the owner's D1 to D16 all as recommended
+(2026-11-11), built in two parts (D16). Spec and work orders `docs/work-orders/v175/`. PR #87 (merged 2026-11-12),
+then the browser check and its fixes.
+
+- **What it is.** A board's text object can be live (`n.bind`): `{k:'tok'}`, a text whose words hold fields typed
+  `{{key}}` or `{{key|decimals}}`, or `{k:'num', src, id, nm, dp}`, one number with its unit. The keys are a fixed
+  table (`bimLiveKeys`, 17 keys in four groups, with aliases), looked up by name and never evaluated (D14). A text
+  without `bind` is exactly as before, so an old project is untouched, and an older build shows the text as typed (D9).
+- **Drawn from the project (D2, D8).** `bimLiveShow` resolves a live text each time the board draws; the value is
+  never saved. Each source is computed once per revision of the model, display units and day (`A3D_LIVE.memo`), with a
+  re-entry flag. Resolvers take ids, never the active level.
+- **Kept analyses (D3).** Cut and fill are the volumes GRADE and CUTFILL kept; a board never reruns them. When
+  `bimGradeStale` says a pad or the existing surface has changed, the kept value is shown with an amber mark and
+  **Run again** in Properties (`bimRegrade`).
+- **Override (D5, D7).** Words typed in Properties' **Shows** row are `n.ov.s`, with the source's words at that
+  moment in `n.ovAt.s`; **Reset**, **Reset all**; when the source has moved since, Properties says so, with **Keep**.
+  Only a live object is overridden, only when the words differ, and a redraw never writes. Size, weight and colour are
+  the object's own. **Unlink** (D6) leaves what it shows as plain text.
+- **Marks (D4, D15)** in Edit only, never on paper: a blue corner tick (overridden), an amber dot (out of date,
+  nothing to show), a red square (source removed, or a key that is not a field). A removed source says what it was
+  bound to (`bind.nm`); nothing is rebound by guess. A number with nothing to show says why in Edit, small, and is a
+  dash on paper. **Print** names the live objects that are not up to date.
+- **Two fixes.** D10: the display units are a field of the project (`A3D.units`, `bimUnitState`,
+  `bimApplyUnitState`); they used to return to metres on reload. D11: `bimLoadProjectRecord` moves `A3D_REV`, so pages
+  and boards drawn for the previous project are drawn again; not a `saveSoon`, so opening does not mark a change.
+- **Who built what.** Claude: `sheets/live-sources.js`, `sheets/live-edit.js`, the record (`bimBobOne`), the drawing,
+  the Draw menu, the Live group, Print's message, the CSS, D10, D11, the tests. Cline (the owner's first run of the
+  work-order process): the ten pure functions of `sheets/live-text.js`, WO-01 to WO-10, each right against its order
+  at review, none changed; the only fault was the file's generated import line, not rewritten after `bimDispNum`
+  came into use (`npm run modules`).
+- **Found by the browser check, and fixed.** (1) A board object's Properties field typed in and left with Tab or a
+  click was not applied: V118's change handler, which draws the panel again from the model, ran before the board's
+  (wired later, when a board object is first selected), and the panel keeps only the focused field's value. Present
+  since V174a for every typed field of a board object (Enter and the dropdowns worked), and it made the override
+  unusable. The board's handler now listens while the event goes down. (2) A number's reason was drawn at the
+  number's own size, across the board: it is drawn small now. (3) The panel's textareas ran past its edge.
+- **Checks.** Unit tests 155 of 155 (58 new, `tests/unit/live-text.test.mjs`); `npm run check`; the browser check
+  `tests/e2e/bim_phase175a_live_text_check.mjs`, 28 of 28 (Playwright, Chromium), a phone's width among them. Not run:
+  the full regression. Suites that may notice: V174's checks (the Draw menu has two more entries), V172g's file
+  tests (the record has a `units` field).
+- **Not in V175a:** schedules, single KPI cards and result charts as board objects, sun hours and solar numbers
+  (V175b); camera moves still move the revision (D12, recorded); in Present a date field that crosses midnight
+  waits for the next change of the model. `BIM_APP_VERSION` stays V172, as through V173 and V174.

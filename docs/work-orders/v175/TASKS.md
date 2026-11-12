@@ -138,7 +138,7 @@ Scores are from `../ROUTING.md` (files, logic, understanding, judgment, trickine
 
 ---
 
-## [ ] WO-11 [Claude] Review, finish and hand over V175a
+## [x] WO-11 [Claude] Review, finish and hand over V175a
 
 Claude's because it crosses files and closes the phase (tier D: review and finish):
 - each of WO-01 to WO-10 read against its order, fixed where needed; any `[skipped]` task done;

@@ -47,6 +47,7 @@ calls for it or the owner asks.
 | Text, style, markup, comments, or a few lines of JS | Nothing. |
 | JS logic in one file | Syntax check of that file, and `npm test`. New or changed logic gets a unit test in `tests/unit/`. |
 | Shared state, the order in `src/index.html`, or 3+ files | Syntax check of the changed files, `npm run modules`, the build, `npm test`. Then ask the owner whether to run a browser check. |
+| A phase's new or changed interface (a menu, a panel, what the page draws), once, before the phase closes | One browser check of that interface, without asking (the owner, 2026-11-12). Unit tests cannot see it: V175a's check found typed Properties fields that were never applied. Keep the check's script in `tests/e2e/`. |
 | The owner says "full regression" | Full regression. This is the only trigger. |
 
 If a bigger check seems needed, ask in one sentence; don't run it.
@@ -171,7 +172,7 @@ browser suites, Pages and offline use read it.
     src/css/                  the stylesheet, 13 files: shell/, panels/, workspace/, sheets/, site-analysis/
     src/js/shell/shell.js     the top bar, the command palette, the project tabs, the boot
     src/js/vendor/openskp.js  the SketchUp reader (third-party, bundled; never edited by hand)
-    src/js/engine/            the BIM engine, 196 ES modules in 28 folders (the module map above);
+    src/js/engine/            the BIM engine, 220 ES modules in 28 folders (the module map above);
                               _begin.js and _end.js open and close the function the build joins them into
     src/py/bim_ladybug.py     the app's adapter to Ladybug's Python (ours): tools/embed_py.py writes it
                               into js/engine/ladybug/adapter-py.js

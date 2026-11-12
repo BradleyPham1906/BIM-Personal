@@ -153,8 +153,9 @@ import { bimBdsToday } from './board-design.js';
       if(r===null){R.unknown=[b.src];R.src='{{'+b.src+'}}';}
       else R.src=r;
     }
-    R.s=b.k==='num'&&edit&&(R.st==='none'||R.st==='gone')&&R.why.length?R.why[0]:R.src;
-    if(n.ov&&n.ov.hasOwnProperty('s')){R.ov=true;R.s=n.ov.s;R.changed=bimLvOvState(n,'s',R.src)==='changed';}
+    if(b.k==='num'&&edit&&(R.st==='none'||R.st==='gone')&&R.why.length){R.s=R.why[0];R.hint=true;}   /* the reason, drawn small */
+    else R.s=R.src;
+    if(n.ov&&n.ov.hasOwnProperty('s')){R.ov=true;R.hint=false;R.s=n.ov.s;R.changed=bimLvOvState(n,'s',R.src)==='changed';}
     return R;
   }
   /* its marks, in Edit only and never on paper (D4, D15): a corner tick for an override, a dot for a source that is

@@ -1125,6 +1125,7 @@ body.a3d-clb-open #a3d-dock,body.a3d-clb-open .a3d-tpal{display:none!important}
 .a3d-clb-dsn.edit .a3d-clb-dtxt.lv{outline:1px dotted var(--ring)}
 .a3d-clb.prt .a3d-clb-dlv{display:none!important}
 @media print{.a3d-clb-dlv{display:none!important}}
+#a3d-right .a3d-pval textarea[data-bdf]{width:100%;box-sizing:border-box;resize:vertical}
 .a3d-clb-dimg{background-position:center}
 .a3d-clb-dimg.ph{display:flex;align-items:center;justify-content:center;border:1px dashed var(--muted);color:var(--muted);font-size:12px;text-align:center;padding:6px}
 /* in Edit: what can be picked, the selection's outlines and its handle */
@@ -59593,8 +59594,9 @@ try{
       if(r===null){R.unknown=[b.src];R.src='{{'+b.src+'}}';}
       else R.src=r;
     }
-    R.s=b.k==='num'&&edit&&(R.st==='none'||R.st==='gone')&&R.why.length?R.why[0]:R.src;
-    if(n.ov&&n.ov.hasOwnProperty('s')){R.ov=true;R.s=n.ov.s;R.changed=bimLvOvState(n,'s',R.src)==='changed';}
+    if(b.k==='num'&&edit&&(R.st==='none'||R.st==='gone')&&R.why.length){R.s=R.why[0];R.hint=true;}   /* the reason, drawn small */
+    else R.s=R.src;
+    if(n.ov&&n.ov.hasOwnProperty('s')){R.ov=true;R.hint=false;R.s=n.ov.s;R.changed=bimLvOvState(n,'s',R.src)==='changed';}
     return R;
   }
   /* its marks, in Edit only and never on paper (D4, D15): a corner tick for an override, a dot for a source that is
@@ -59711,7 +59713,7 @@ try{
       if(n.fit==='fixed')h+='height:'+bimBdsPx(b.h)+'px;overflow:hidden;';
       h+='font-size:'+bimBrdPx(n.fs*0.352778*bimBobPxMm())+'px;font-weight:'+n.fw+';text-align:'+n.al+';color:'+n.col+';';
       Lv=n.bind?bimLiveShow(n,ctx.B||null,!!ctx.edit&&!A3D_PLOT.on):null;   /* __acad3dV175a: a live text's words, from the project now */
-      return '<div'+bimBdsAttr(n,'a3d-clb-dtxt'+(n.fit==='auto-w'?' aw':'')+(Lv?' lv':''),ctx)+' style="'+h+bimBdsComp(n,ctx)+'">'+bimClbE(Lv?Lv.s:n.s)+(Lv&&ctx.edit&&!A3D_PLOT.on?bimLiveMarks(Lv):'')+'</div>';
+      return '<div'+bimBdsAttr(n,'a3d-clb-dtxt'+(n.fit==='auto-w'?' aw':'')+(Lv?' lv':''),ctx)+' style="'+h+(Lv&&Lv.hint?'font-size:'+bimBrdPx(Math.min(n.fs,9)*0.352778*bimBobPxMm())+'px;font-weight:400;font-style:italic;':'')+bimBdsComp(n,ctx)+'">'+bimClbE(Lv?Lv.s:n.s)+(Lv&&ctx.edit&&!A3D_PLOT.on?bimLiveMarks(Lv):'')+'</div>';
     }
     if(t==='image'){
       u=n.src?bimBimgUrl(n.src):null;
@@ -60663,7 +60665,9 @@ try{
       else if(f==='fw')o.fw=t.checked?700:400;
       else{v=parseFloat(t.value);if(!isFinite(v))return;o[f]=v;}
       bimBdeSet(null,o);
-    });
+    },true);   /* __acad3dV175a: while the event goes down, before the panel's own change handlers: one of them (V118)
+                  draws the panel again from the model, and a field left by Tab or a click is no longer the focused
+                  one it keeps, so the typed value was gone before it was read here */
   }
 
 
