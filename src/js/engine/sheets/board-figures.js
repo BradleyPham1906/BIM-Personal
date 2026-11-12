@@ -271,17 +271,13 @@ import { bimBdsHtml } from './board-design.js';
       '<button type="button" class="a3d-clb-btn" data-brd="draw" aria-haspopup="menu" title="Draw a shape, text or an image on the current layer">Draw</button>'+   /* __acad3dV174a */
       '<button type="button" class="a3d-clb-btn" data-brd="page" aria-haspopup="dialog" title="The board\'s page: a size from the gallery, and a title block">Page</button>'+   /* __acad3dV174c */
       (!c&&B.figs?'<button type="button" class="a3d-clb-btn" data-brd="reset" title="The board\'s own figures, in their own places">Reset</button>':'')+
-      '<span class="a3d-clb-snaps a3d-clb-hide-s" role="group" aria-label="Snaps, as in drawing">'+
-        '<button type="button" class="a3d-clb-btn" data-brdsnap="point" aria-pressed="'+!!A3D_SNAP.point+'" title="Edges catch other figures\' edges (F3)">Snap</button>'+
-        '<button type="button" class="a3d-clb-btn" data-brdsnap="grid" aria-pressed="'+!!A3D_SNAP.grid+'" title="Edges on the board\'s 12 columns and rows (F9)">Grid</button>'+
-        '<button type="button" class="a3d-clb-btn" data-brdsnap="ortho" aria-pressed="'+!!A3D_SNAP.ortho+'" title="A drag straight across or straight down (F8)">Ortho</button></span>'+
       '<button type="button" class="a3d-clb-btn pri" data-brd="done">Done</button>'+
       '<button type="button" class="a3d-clb-btn" data-clb="close" aria-label="Close the board">Close</button></div>';
   }
   function bimBrdEditHint(figs){
     var ov=bimBrdOverlaps(figs).n;
     return '<p class="a3d-clb-ehint" role="note">'+(A3D_CLB.narrow?'On a phone the figures are in reading order: each one\'s menu moves it earlier or later. Arrange them on a larger screen.':
-      'Drag a figure by its handle or its body, size it by its corner. Snap, Grid and Ortho are the drawing\'s own (F3, F9, F8). The figure in focus moves with the arrow keys and sizes with Shift.')+
+      'Drag a figure by its handle or its body, size it by its corner. Snap, Grid and Ortho are the status bar\'s, as in drawing (F3, F9, F8). The figure in focus moves with the arrow keys and sizes with Shift.')+
       (ov?' <b>'+ov+' figures overlap.</b>':'')+'</p>';
   }
   /* one of the three boards with its list: its header and indicators as ever, the list where its grid was;

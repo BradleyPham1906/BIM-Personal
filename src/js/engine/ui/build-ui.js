@@ -257,7 +257,7 @@ import { size } from './canvas-size.js';
         '<button class="a3d-stbtn" data-a3dnav="pan" title="Pan">'+PILL_PAN+'<span>PAN</span></button>'+
         '<button class="a3d-stbtn on" data-a3dnav="orbit" title="Orbit">'+PILL_ORBIT+'<span>ORBIT</span></button>'+
         '<button class="a3d-stbtn a3d-stview" id="a3d-flip" data-a3dnav="flip" title="Go to 2D (Shift + &gt;)">2D</button>'+
-        '<button class="a3d-stbtn a3d-stview" id="a3d-present" data-a3dnav="present" title="Toggle Presentation appearance (graphic overrides from Phase 51)">Tech</button>'+
+        '<button class="a3d-stbtn a3d-stview" id="a3d-present" data-a3dnav="present" title="Technical or Presentation style: how the drawing looks (graphic overrides from Phase 51). Present, in the Presentation panel, is the slideshow">Technical style</button>'+
       '</span>'+
       '<span id="a3d-animgrp" hidden>'+   /* __acad3dV170: the site analysis in motion */
         '<button class="a3d-stbtn" id="a3d-animplay" data-a3danim="play" aria-pressed="false" aria-label="Play" title="Play the site analysis in motion">'+PILL_PLAY+'<span>PLAY</span></button>'+
