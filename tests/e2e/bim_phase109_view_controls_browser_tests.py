@@ -75,7 +75,7 @@ async def run():
         s4 = await state()
         await click('present')
         s5 = await state()
-        ck(s4['pres'] is True and s4['present'] == 'Pres' and s5['pres'] is False and s5['present'] == 'Tech', 'Tech/Pres switches presentation and says which')
+        ck(s4['pres'] is True and s4['present'] == 'Presentation style' and s5['pres'] is False and s5['present'] == 'Technical style', 'Technical style / Presentation style switches presentation and says which (V175c names)')
         await click('flip')
         ck((await state())['flat'] is True, 'and back to plan')
 

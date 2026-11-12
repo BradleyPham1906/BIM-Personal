@@ -16789,6 +16789,25 @@ The second part of V175 (D16), from the same research and the owner's D1 to D16.
   chart for a result layer other than Sun hours' histogram (the others show their colours and their text).
   New board objects all start at the same place, as V174a's do ("drag it into place").
 
+### V175c: one paper space, the research and the quick fixes (2026-11-12)
+
+The owner (2026-11-12): Pages and Boards overlap, and Snap, Grid, Ortho and Present should be shared with the model
+and the layouts, as in AutoCAD. Research `docs/research/research-one-paper-space.md` with two working notes (the
+app's code; practice in AutoCAD, Revit, Archicad, Vectorworks, LayOut, Rhino, Figma and Forma Board, 36 sources):
+every drawing tool has one kind of sheet and one set of drafting aids; board-like canvases with live analyses exist
+only as separate products. The owner's D1 to D8 all as recommended: one Layout, built on the board's object model
+with the viewport as an object, in steps; D3's quick fixes first.
+
+- **The quick fixes (D3).** On a sheet the status bar no longer hides Snap, Grid and Ortho
+  (`layouts-pages-present.css`: the `#a3d-snapgrp` rule removed). Moving or sizing a viewport obeys them as a board's
+  objects do: Ortho keeps a move straight, Grid keeps whole millimetres, Snap catches the paper's and the other
+  viewports' edges and middles within 3 mm (`viewports.js`, `bimSheetVpSnap`). The board's Edit bar no longer has its
+  own Snap, Grid and Ortho (the status bar is the one place). The status bar's Tech and Pres read **Technical style**
+  and **Presentation style**, so the drawing's style is not taken for Present.
+- **Suites amended:** V109 (the pill's names), V172b (it set the board's snaps through the removed buttons; now
+  through `__a3dSnapSet`). Browser check `tests/e2e/bim_phase175c_drafting_aids_check.mjs`, 10 of 10; unit tests 214
+  of 214. Not run: the full regression.
+
 ## Phase 194 (V194) - The rendered view: the model in daylight
 
 `RENDER`, or Properties > View > Display > Rendered, shows the model lit by the sun and the sky, with soft shadows,

@@ -107,6 +107,10 @@ Text on a board can follow the project, so a board says what the model says.
   live objects are not up to date.
 - A key that is not a field stays as typed. The project's display units (m, cm, mm and their decimals) are now
   kept with the project.
+- **Snap, Grid and Ortho** are the status bar's, one set for the model, sheets and boards (F3, F9, F8). On a sheet
+  they apply when a viewport is moved or sized: Grid keeps whole millimetres, Ortho a straight move, Snap catches the
+  paper's and the other viewports' edges and middles. **Technical style** and **Presentation style**, beside them,
+  set how the drawing looks; Present, in the Presentation panel, is the slideshow.
 - **Schedule**, in Draw: a table of the model, **Rooms** or **Areas by level**, with a total row. In Properties:
   its title, the column it is sorted by, and Descending. It changes as the model does.
 - **Indicator**, in Draw: one card taken out of a site board's indicators (climate, zoning, access, people), placed

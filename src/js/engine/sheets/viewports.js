@@ -1,6 +1,6 @@
 import { A3D, el } from '../core/state.js';
 import { camVecs } from '../core/mesh-primitives.js';
-import { bimSyncStatusHint, pushUndo } from '../drawing/plan-mode-sketch.js';
+import { A3D_SNAP, bimSyncStatusHint, pushUndo } from '../drawing/plan-mode-sketch.js';
 import { bimIsPoint, bimPointMarkerSegs } from '../drawing/point-node.js';
 import { bimFormatBearing } from '../survey/survey-arithmetic.js';
 import { bimIsProperty, bimPropertyGeometry } from '../site/property.js';
@@ -230,6 +230,18 @@ import { a3dToast } from '../bim/csg-booleans.js';
     }
     bimSheetViewRefresh();
   }
+  /* __acad3dV175c: how far a viewport at x, y (w by h mm) must move for one of its edges or its middle to meet the
+     paper's edges and middle or another viewport's, within 3 mm: [dx, dy] */
+  function bimSheetVpSnap(sheet,vp,x,y,w,h){
+    var T=3,bx=null,by=null,X=[0,sheet.w/2,sheet.w],Y=[0,sheet.h/2,sheet.h],i,q,j,k,d;
+    for(i=0;i<sheet.viewports.length;i++){q=sheet.viewports[i];if(q===vp)continue;X.push(q.x,q.x+q.w/2,q.x+q.w);Y.push(q.y,q.y+q.h/2,q.y+q.h);}
+    var mx=[x,x+w/2,x+w],my=[y,y+h/2,y+h];
+    for(j=0;j<3;j++){
+      for(k=0;k<X.length;k++){d=X[k]-mx[j];if(Math.abs(d)<=T&&(bx===null||Math.abs(d)<Math.abs(bx)))bx=d;}
+      for(k=0;k<Y.length;k++){d=Y[k]-my[j];if(Math.abs(d)<=T&&(by===null||Math.abs(d)<Math.abs(by)))by=d;}
+    }
+    return [bx||0,by||0];
+  }
   function bimSheetPointerMove(ev){
     if(!A3D.sheetDrag||!el.sheetcv)return;
     var sheet=bimSheetById(A3D.activeSheetId);if(!sheet){A3D.sheetDrag=null;return;}
@@ -252,6 +264,12 @@ import { a3dToast } from '../bim/csg-booleans.js';
       return;
     }
     var o=A3D.sheetDrag.orig;
+    /* __acad3dV175c (D3): the drafting aids apply on paper, as a board's objects take them: Ortho keeps a move
+       straight across or straight down, Grid keeps a move or a size in whole millimetres, Snap catches the
+       paper's edges and the other viewports' edges within 3 mm */
+    if(A3D.sheetDrag.mode==='move'&&A3D_SNAP.ortho){if(Math.abs(dx)>=Math.abs(dy))dy=0;else dx=0;}
+    if(A3D_SNAP.grid){dx=Math.round(o.x+dx)-o.x;dy=Math.round(o.y+dy)-o.y;if(A3D.sheetDrag.mode!=='move'){dx=Math.round(o.w+dx)-o.w;dy=Math.round(o.h+dy)-o.h;}}
+    if(A3D.sheetDrag.mode==='move'&&A3D_SNAP.point){var sn=bimSheetVpSnap(sheet,vp,o.x+dx,o.y+dy,o.w,o.h);if(dx!==0||!A3D_SNAP.ortho)dx+=sn[0];if(dy!==0||!A3D_SNAP.ortho)dy+=sn[1];}
     if(A3D.sheetDrag.mode==='move'){
       vp.x=Math.max(0,Math.min(sheet.w-o.w,o.x+dx));
       vp.y=Math.max(0,Math.min(sheet.h-o.h,o.y+dy));

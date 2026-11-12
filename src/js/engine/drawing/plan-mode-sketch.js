@@ -134,7 +134,7 @@ import { cvH, cvW } from '../ui/canvas-size.js';
     bimPagesStale();   /* __acad3dV122: every change of appearance passes here, and a page is drawn in it */
     if(A3D_CLB.open)bimClbOpen();   /* __acad3dV174a: a board's transparency and blend modes are drawn in Presentation */
     if(!el.present)return;
-    el.present.textContent=A3D.presentMode?'Pres':'Tech';
+    el.present.textContent=A3D.presentMode?'Presentation style':'Technical style';   /* __acad3dV175c (D3): a style, not Present */
     el.present.classList.toggle('on',!!A3D.presentMode);
     el.present.setAttribute('title',A3D.presentMode?
       'Presentation appearance is ON — click for Technical (Phase 51 graphic overrides)':
