@@ -135,7 +135,43 @@
    "sha256": "8bb2952d2ba7d67e1414f8df819410cb0434a666be53f671fff75f68843d76f6",
    "from": "npm three@0.186.1, examples/jsm/libs/draco/gltf/draco_wasm_wrapper.js",
    "licence": "Apache-2.0 (Draco, github.com/google/draco)"
+  },
+  {
+   "path": "cc-ifc/cfbd948/LICENSE",
+   "bytes": 10351,
+   "sha256": "eb3d7b5485466acbd81f2b496f595ab637d2792e268206b27d99e793bdb67549",
+   "from": "getcadcraft/bimcraft@cfbd948, LICENSE",
+   "licence": "Apache-2.0 (cc-ifc)"
+  },
+  {
+   "path": "cc-ifc/cfbd948/NOTICE",
+   "bytes": 430,
+   "sha256": "e087a395da24cf33f00c2bb95f1fbd785288330545d6fb6abb4a651ddf8c18aa",
+   "from": "getcadcraft/bimcraft@cfbd948, NOTICE",
+   "licence": "Apache-2.0 (cc-ifc)"
+  },
+  {
+   "path": "cc-ifc/cfbd948/MANIFOLD-LICENSE",
+   "bytes": 11357,
+   "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+   "from": "npm manifold-3d@3.5.4, LICENSE (the tarball sha512-WWsme5HabwLHVcWPHT9m+s7mdmDVSEvCny+uXH1E7jEc8FbFUgM75C3Dh6NVw57Eeh3Ow7+xHCuXfxDMOemi9A==)",
+   "licence": "Apache-2.0 (Manifold)"
+  },
+  {
+   "path": "cc-ifc/cfbd948/manifold.wasm",
+   "bytes": 541470,
+   "sha256": "73e3b419ad31294f6b1cc478173944e50efc4a34bfdeeff0107bdfc12975f11c",
+   "from": "npm manifold-3d@3.5.4, manifold.wasm (the tarball sha512-WWsme5HabwLHVcWPHT9m+s7mdmDVSEvCny+uXH1E7jEc8FbFUgM75C3Dh6NVw57Eeh3Ow7+xHCuXfxDMOemi9A==)",
+   "licence": "Apache-2.0 (Manifold)"
+  },
+  {
+   "path": "cc-ifc/cfbd948/bim-ifc.min.js",
+   "bytes": 662318,
+   "sha256": "eba5764071dfab7be3973293a722b42d863df0773b52acd26d8ede4f481b1b97",
+   "from": "getcadcraft/bimcraft@cfbd948 app/ifc (vendor/cc-ifc) and npm manifold-3d@3.5.4, bundled unchanged by esbuild 0.28.2: tools/ifc/build_ifc.mjs",
+   "licence": "Apache-2.0 (cc-ifc, Manifold)"
   }
  ],
- "three": "0.186.1"
+ "three": "0.186.1",
+ "cc-ifc": "cfbd948"
 }

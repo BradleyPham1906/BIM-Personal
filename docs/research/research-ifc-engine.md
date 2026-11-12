@@ -77,22 +77,37 @@ Either way it is another pinned runtime, loaded only when an IFC file is opened,
 to the "no dependencies" contract that the owner approves. Either way the adapter is the same, so the choice can be
 changed later in one loader line. Today's `import-ifc.js` stays as the fallback when the runtime cannot load.
 
-## 6. Recommendation
+## 6. Recommendation, and the owner's decision
 
 cc-ifc with Manifold: Apache-2.0, a third of the download, works offline except for cutting openings, and in
 JavaScript we can fix and tune ourselves; e01 found it as complete as web-ifc on every file tried. Its one
 measured weakness, curved B-reps sampled too finely, is one constant. web-ifc stays the test oracle, as BimCraft
 uses it.
 
-## 7. What the build would do (after the owner's choice)
+**The owner chose cc-ifc (2026-11-12).**
 
-Elements as locked solids by IFC class on layers (IfcWall, IfcDoor, ...) with their own colours (`IfcStyledItem`),
-storeys as levels, openings cut, the GlobalId and property sets on each element for Properties, in metres with +Y
-up; the old walls-and-slabs reader kept as the fallback and for the editable-wall recovery it does today.
+Tuning tried after the choice: the curved-door model with coarser sampling (`ext / 48`, 0.35 rad; `ext / 24`, 0.5 rad)
+went from 6.5 s to 3.5 s and 2.8 s, while a proxy's area fell from 2.37 to 2.29 and 2.08 m2 (web-ifc 2.42). Not
+worth the lost detail; cc-ifc is shipped unchanged.
+
+## 7. As built (V196)
+
+- `vendor/cc-ifc/` (upstream `app/ifc/` unchanged, with LICENSE, NOTICE, PROVENANCE.md); `tools/ifc/build_ifc.mjs`
+  bundles it with Manifold's loader into `runtime/cc-ifc/cfbd948/bim-ifc.min.js` (662,318 bytes, global `BIMIFC`),
+  `manifold.wasm` beside it; five entries in `runtime/MANIFEST.json`.
+- `io/ifc-full.js`: the runtime is loaded on the first IFC (beside the page from a file://, then the site with SRI);
+  each element is one welded mesh in metres, +Y up, in the colour covering most of its opaque pieces, its outline
+  from V195's `mesh.fe`; a locked solid on a layer for its class (IfcWallStandardCase as IfcWall) under one named
+  after the file, see-through elements on a sub-layer; storeys as levels; `o.bim` holds `ifcType`, `guid`,
+  `storey`, `psets` (40 sets of 80 values at most); Properties shows them. Up to 1,500,000 triangles.
+- The walls-and-slabs reader (`import-ifc.js`) is used when the runtime cannot be loaded. Its recovery of simple
+  walls as editable walls is not done by the new reader: imported walls are locked solids.
+- Node, the full read with property sets: FZK-Haus 0.2 s, dental_clinic 0.8 s, schependomlaan 1.5 s (every
+  element on a storey), advanced_model 2.7 s (6,401 elements, 1.35 million triangles).
 
 ## 8. Open
 
-Writing IFC (Hub H3) was not tried with either engine. Georeferencing (`IfcMapConversion`) read but not placed on
+Writing IFC (Hub H3) was not tried with either engine. A window's glass and frame are one object in one colour. Georeferencing (`IfcMapConversion`) read but not placed on
 the map. Files over about 100 MB not tried. Threads (a worker) not tried; a 35 MB file takes about a second.
 
 ## 9. Sources

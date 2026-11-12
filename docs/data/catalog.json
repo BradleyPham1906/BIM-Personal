@@ -1372,6 +1372,20 @@
    "anchor": "cmd-HISTORY"
   },
   {
+   "id": "cmd:IFCIN",
+   "name": "IFCIN",
+   "aliases": [
+    "IMPORTIFC",
+    "IFC",
+    "OPENIFC"
+   ],
+   "desc": "Open an IFC model (IFC2x3, IFC4, IFC4.3): every element in its colour with its openings, on layers by class, its storeys as levels and its property sets in Properties",
+   "kind": "cmd",
+   "where": [],
+   "keys": null,
+   "anchor": "cmd-IFCIN"
+  },
+  {
    "id": "act:bim:importcad",
    "name": "IMPORTCAD",
    "aliases": [],
