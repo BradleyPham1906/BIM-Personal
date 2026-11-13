@@ -1,0 +1,8 @@
+{
+  "git_version": "git version 2.49.0",
+  "stale_push_exit_nonzero": true,
+  "disjoint_files_merge_exit": 0,
+  "orphaned_host_after_clean_merge": true,
+  "same_file_merge_exit_nonzero": true,
+  "limitations": "local Git only; not GitHub API, app code, or production security"
+}

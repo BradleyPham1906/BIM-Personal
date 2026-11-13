@@ -1,0 +1,13 @@
+{
+  "hidden_interval": [
+    37.125,
+    42.875
+  ],
+  "left_boundary_inferred_interval": [
+    37.12491989135742,
+    37.12501525878906
+  ],
+  "queries": 20,
+  "interval_width": 9.5367431640625e-05,
+  "assumptions": "adversary may submit adaptive arbitrary probes and see each yes/no result; no policy/rate limiting; simplified 1D illustrative oracle, not a real backend attack test"
+}
