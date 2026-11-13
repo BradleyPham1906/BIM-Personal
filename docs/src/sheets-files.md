@@ -107,6 +107,10 @@ Text on a board can follow the project, so a board says what the model says.
   live objects are not up to date.
 - A key that is not a field stays as typed. The project's display units (m, cm, mm and their decimals) are now
   kept with the project.
+- **Layouts:** every drawing sheet and board is a layout, a page of the set, with a tab beside Model, numbered in
+  one series (A101, A102 ...). **+ Layout**, at the end of the tabs and in the Presentation panel, makes a drawing
+  sheet, a blank board, or a site analysis board. Double-click a sheet's tab to rename it, a board's tab to
+  renumber it; a number used twice is said in the Presentation panel.
 - **Snap, Grid and Ortho** are the status bar's, one set for the model, sheets and boards (F3, F9, F8). On a sheet
   they apply when a viewport is moved or sized: Grid keeps whole millimetres, Ortho a straight move, Snap catches the
   paper's and the other viewports' edges and middles. **Technical style** and **Presentation style**, beside them,

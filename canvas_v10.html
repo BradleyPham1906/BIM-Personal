@@ -653,6 +653,9 @@ body.light-theme .a3d-filedlg-x{color:#4a4f55}
 .a3d-pedit:hover{background:#3a424a;color:#fff}
 .a3d-pgrp{display:flex;align-items:center;justify-content:space-between;background:#262b31;border-radius:5px;padding:6px 9px;margin:10px 0 0;font-size:10.5px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;color:#aeb8c2;cursor:pointer;user-select:none;transition:background .1s ease}
 .a3d-pgrp:hover{background:#2e343b;color:#dfe4ea}
+/* __acad3dV175c: numbers used by more than one layout, said in the Presentation panel; a board's tab beside Model */
+.a3d-prpdup{margin:4px 10px 6px;padding:6px 8px;border-radius:6px;background:rgba(237,161,0,.14);color:var(--ink,#ddd);font-size:12px;line-height:1.35}
+.a3d-lt.brd{font-style:italic}
 /* __acad3dV73: the property-group caret. 9px is unreadable and its parent header row was
        the only hit target; the caret now has its own 22px box inside that row. */
 .a3d-pgcar{color:#9aa3ad;font-size:12px;width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center;border-radius:4px;margin:-4px -4px -4px 0}
@@ -56827,14 +56830,7 @@ try{
   }
   /* __acad3dV116: the next number no sheet has. It was 'A'+(101+count), which repeats a number as
      soon as one sheet is deleted: with A101 and A102, delete A101 and the next sheet was A102 again. */
-  function bimNextSheetNumber(){
-    var max=100,i,m;
-    for(i=0;i<A3D.sheets.length;i++){
-      m=/^A(\d+)$/i.exec(String(A3D.sheets[i].number==null?'':A3D.sheets[i].number).trim());
-      if(m&&+m[1]>max)max=+m[1];
-    }
-    return 'A'+(max+1);
-  }
+  function bimNextSheetNumber(){return bimLyNextNumber(bimLyNumbers(),'A');}   /* __acad3dV175c: one series with the boards (D6) */
   /* __acad3dV116: three places deleted a sheet, two asked first in different words, one did not ask.
      One path now: it names the sheet and says the delete can be undone, which it can. */
   function bimConfirmDeleteSheet(id){
@@ -58708,22 +58704,27 @@ try{
      one. Drawn from A3D.sheets on every refresh -- the same list the Project Browser's Sheets group
      reads -- so the two cannot disagree. */
   var A3D_LT_EDITING=false,A3D_LT_HTML='';
+  /* __acad3dV175c (D5): every layout of the set, a drawing sheet or a board, in the set's order */
   function bimLayoutTabsHtml(){
-    var onSheet=bimSheetOnScreen(),i,s;
-    var h='<button class="a3d-lt'+(onSheet?'':' on')+'" data-lt="model" title="Model space">Model</button>';
-    for(i=0;i<A3D.sheets.length;i++){
-      s=A3D.sheets[i];
-      h+='<button class="a3d-lt'+(onSheet&&s.id===A3D.activeSheetId?' on':'')+'" data-lt="sheet" data-ltsheet="'+bimEsc(s.id)+'" '+
-        'title="'+bimEsc(bimSheetLabel(s))+' -- double-click to rename, right-click for more">'+bimEsc(bimSheetLabel(s))+'</button>';
-    }
-    return h+'<button class="a3d-lt a3d-ltplus" data-lt="new" title="New sheet">+</button>';
+    var onSheet=bimSheetOnScreen(),brd=A3D_CLB.open&&A3D_CLB.board?A3D_CLB.board:null,act=brd||(onSheet?A3D.activeSheetId:null);
+    var h='<button class="a3d-lt'+(act?'':' on')+'" data-lt="model" title="Model space">Model</button>';
+    bimLyTabs(bimLyEntries(),act).forEach(function(T){
+      h+='<button class="a3d-lt'+(T.on?' on':'')+(T.t==='board'?' brd':'')+'" data-lt="'+T.t+'" data-ltsheet="'+bimEsc(T.id)+'" '+
+        'title="'+bimEsc(T.label)+(T.t==='board'?' (a board) -- double-click to renumber':' -- double-click to rename')+', right-click for more">'+bimEsc(T.label)+'</button>';
+    });
+    return h+'<button class="a3d-lt a3d-ltplus" data-lt="new" title="New layout: a drawing sheet or a board">+</button>';
+  }
+  /* the tabs alone: also drawn when a board is added, opened or closed (bimPresPanelRefresh), since the tabs list
+     the boards too (__acad3dV175c) */
+  function bimLayoutTabsDraw(){
+    var box=document.getElementById('a3d-laytabs'),h;
+    if(!box||A3D_LT_EDITING)return false;
+    h=bimLayoutTabsHtml();
+    if(h!==A3D_LT_HTML||box.innerHTML===''){box.innerHTML=h;A3D_LT_HTML=h;}
+    return true;
   }
   function bimRenderLayoutTabs(){
-    var box=document.getElementById('a3d-laytabs');
-    if(box&&!A3D_LT_EDITING){
-      var h=bimLayoutTabsHtml();
-      if(h!==A3D_LT_HTML||box.innerHTML===''){box.innerHTML=h;A3D_LT_HTML=h;}
-    }
+    bimLayoutTabsDraw();
     var bar=document.getElementById('a3d-statusbar');
     if(bar)bar.classList.toggle('a3d-onsheet',bimSheetOnScreen());   /* the model's level, coordinates and navigation step aside on paper; Snap, Grid and Ortho stay, one set for the model and every page (__acad3dV175c, D3) */
     var sp=document.getElementById('a3d-stspace');
@@ -58746,19 +58747,20 @@ try{
     return s.id;
   }
   function bimLayoutRename(id){
-    var sh=bimSheetById(id),box=document.getElementById('a3d-laytabs');
-    if(!sh||!box)return false;
+    var sh=bimSheetById(id),bd=sh?null:bimBoardById(id),box=document.getElementById('a3d-laytabs');   /* __acad3dV175c: a board's tab renumbers it */
+    if((!sh&&!bd)||!box)return false;
     var tab=box.querySelector('[data-ltsheet="'+id+'"]');
     if(!tab)return false;
     A3D_LT_EDITING=true;
     var inp=document.createElement('input');
-    inp.className='a3d-ltin';inp.value=sh.name||'';inp.setAttribute('data-ltrename',id);
+    inp.className='a3d-ltin';inp.value=sh?(sh.name||''):(bd.num||'');inp.setAttribute('data-ltrename',id);
+    if(bd){inp.setAttribute('aria-label','The board\'s number');inp.maxLength=12;}
     tab.style.display='none';tab.parentNode.insertBefore(inp,tab);   /* an input may not sit inside a button */
     var done=false;
     function finish(keep){
       if(done)return;done=true;
       A3D_LT_EDITING=false;
-      if(keep)bimSheetRename(id,inp.value);   /* __acad3dV122: the one path, the page's too */
+      if(keep){if(sh)bimSheetRename(id,inp.value);else bimBoardSetNum(id,inp.value);}   /* __acad3dV122: the one path, the page's too */
       A3D_LT_HTML='';bimRenderLayoutTabs();
     }
     inp.addEventListener('keydown',function(ev){
@@ -58799,8 +58801,12 @@ try{
   }
   function bimLayoutTabMenu(ev,tab){
     var kind=tab.getAttribute('data-lt'),id=tab.getAttribute('data-ltsheet');
+    if(kind==='board'){   /* __acad3dV175c: a board's tab has a board's menu, with Renumber */
+      bimLtMenuOpen(ev.clientX,ev.clientY,[['Renumber','renum'],'-'].concat(bimBoardMenuItems(id)),function(a){if(a==='renum')bimLayoutRename(id);else bimBoardMenuDo(a,id);});
+      return;
+    }
     if(kind!=='sheet'){
-      bimLtMenuOpen(ev.clientX,ev.clientY,[['New sheet','new']],function(a){if(a==='new')bimLayoutNew();});
+      bimLayoutAddMenu(ev.clientX,ev.clientY);
       return;
     }
     bimSheetMenu(ev,id,'tabs');   /* __acad3dV122: the items the page's menu reads too */
@@ -58876,6 +58882,120 @@ try{
      tab beside Model. This file holds the functions that need nothing of the page or the model: the next number,
      a number made good, a layout's label, the tabs' list, and the numbers used twice. Each is a work order in
      docs/work-orders/v175c/TASKS.md, added below as it is built. */
+/* WO-01 bimLyNextNumber(numbers, prefix): the next layout number in a series */
+function bimLyNextNumber(numbers, prefix) {
+  var re, i, s, m, n, best;
+  if (!(numbers instanceof Array)) {
+    return prefix + '101';
+  }
+  re = new RegExp('^' + prefix + '(\\d+)$', 'i');
+  best = 0;
+  for (i = 0; i < numbers.length; i += 1) {
+    s = numbers[i];
+    if (typeof s !== 'string') {
+      continue;
+    }
+    s = s.replace(/^\s+|\s+$/g, '');
+    m = s.match(re);
+    if (m) {
+      n = parseInt(m[1], 10);
+      if (n > best) {
+        best = n;
+      }
+    }
+  }
+  if (best === 0) {
+    return prefix + '101';
+  }
+  n = best + 1;
+  if (n < 101) {
+    n = 101;
+  }
+  return prefix + n;
+}
+/* WO-02 bimLyNumberValid(s): a layout number made good */
+function bimLyNumberValid(s) {
+  var t;
+  if (typeof s !== 'string') {
+    return '';
+  }
+  t = s.replace(/\s+/g, ' ').replace(/^\s+|\s+$/g, '');
+  if (t === '' || !/^[A-Za-z0-9 ._-]+$/.test(t)) {
+    return '';
+  }
+  return t.slice(0, 12);
+}
+/* WO-03 bimLyLabel(number, name): a layout's tab label */
+function bimLyLabel(number, name) {
+  var n, m;
+  n = number === null || number === undefined ? '' : String(number);
+  m = name === null || name === undefined ? '' : String(name);
+  n = n.replace(/^\s+|\s+$/g, '');
+  m = m.replace(/^\s+|\s+$/g, '');
+  if (n !== '' && m !== '') {
+    return n + ' - ' + m;
+  }
+  if (n !== '') {
+    return n;
+  }
+  if (m !== '') {
+    return m;
+  }
+  return 'Layout';
+}
+/* WO-04 bimLyTabs(entries, activeId): the layout tabs list */
+function bimLyTabs(entries, activeId) {
+  var out, i, e;
+  if (!(entries instanceof Array)) {
+    return [];
+  }
+  out = [];
+  for (i = 0; i < entries.length; i += 1) {
+    e = entries[i];
+    out.push({id: e.id, t: e.t, label: bimLyLabel(e.num, e.name), on: e.id === activeId});
+  }
+  return out;
+}
+/* WO-05 bimLyDupNumbers(entries): numbers used by more than one layout */
+function bimLyDupNumbers(entries) {
+  var out, i, e, s, key, first, count, dupOrder, j, dupKey;
+  if (!(entries instanceof Array)) {
+    return [];
+  }
+  first = Object.create(null);
+  count = Object.create(null);
+  dupOrder = [];
+  for (i = 0; i < entries.length; i += 1) {
+    e = entries[i];
+    if (e === null || e === undefined) {
+      continue;
+    }
+    s = e.num;
+    if (typeof s !== 'string') {
+      continue;
+    }
+    s = s.replace(/^\s+|\s+$/g, '');
+    if (s === '') {
+      continue;
+    }
+    key = s.toLowerCase();
+    if (count[key] === undefined) {
+      first[key] = s;
+      count[key] = 1;
+    } else {
+      count[key] += 1;
+      if (count[key] === 2) {
+        dupOrder.push(key);
+      }
+    }
+  }
+  out = [];
+  for (j = 0; j < dupOrder.length; j += 1) {
+    dupKey = dupOrder[j];
+    out.push(first[dupKey]);
+  }
+  return out;
+}
   /* ================= __acad3dV162: the boards are pages of the set =================
      docs/research/research-one-analyze-boards.md. A board is a page of the presentation beside the
      sheets: in the Presentation panel with its thumbnail, in the main view, in Present and in Print
@@ -58900,7 +59020,46 @@ try{
   }
   function bimPresData(){
     if(!A3D.pres||typeof A3D.pres!=='object'||!Array.isArray(A3D.pres.boards)||!Array.isArray(A3D.pres.order))A3D.pres=bimPresValid(A3D.pres);
+    if(A3D.pres.boards.some(function(b){return !b.num;}))bimLyGiveNums(A3D.pres);   /* __acad3dV175c */
     return A3D.pres;
+  }
+  /* __acad3dV175c (D5, D6): every layout is numbered in one series. A board without a number (each made before
+     V175c, and each new one) is given the next, after the sheets', in the set's order. Kept with the board from
+     then on; not an undo step, since nothing the owner made changes */
+  function bimLyNumbers(){
+    var L=A3D.sheets.map(function(s){return String(s.number==null?'':s.number);});
+    (A3D.pres&&Array.isArray(A3D.pres.boards)?A3D.pres.boards:[]).forEach(function(b){if(b.num)L.push(b.num);});
+    return L;
+  }
+  function bimLyGiveNums(P){
+    var by={},seen={},list=[];
+    P.boards.forEach(function(b){by[b.id]=b;});
+    P.order.forEach(function(id){if(by[id]&&!seen[id]){seen[id]=1;list.push(by[id]);}});
+    P.boards.forEach(function(b){if(!seen[b.id])list.push(b);});
+    list.forEach(function(b){if(!b.num)b.num=bimLyNextNumber(bimLyNumbers(),'A');});
+  }
+  /* a board's number, from its layout tab. One undo step; a number that is not good, or the same, changes nothing */
+  function bimBoardSetNum(id,v){
+    var b=bimBoardById(id),n=bimLyNumberValid(v);
+    if(!b){a3dToast('That board is no longer in the set');return false;}
+    if(!n){if(String(v||'').trim())a3dToast('A number is letters, digits, spaces, dots, dashes and underscores, 12 at most');return false;}
+    if(n===b.num)return false;
+    pushUndo();
+    b.num=n;
+    saveSoon();bimRenderLayoutTabs();
+    return true;
+  }
+  /* the set as layouts, for the tabs and the panel: [{t, id, num, name}] */
+  function bimLyEntries(){
+    return bimPresSeq().map(function(e){
+      return e.t==='board'?{t:'board',id:e.id,num:e.b.num||'',name:bimBoardLabel(e.b)}:{t:'sheet',id:e.id,num:String(e.s.number==null?'':e.s.number),name:String(e.s.name==null?'':e.s.name)};
+    });
+  }
+  /* + Layout (D5): a drawing sheet, a blank board, or a site analysis board */
+  function bimLayoutAddMenu(x,y){
+    bimLtMenuOpen(x,y,[['Drawing sheet','sheet'],['Board','new'],'-'].concat(bimBoards().map(function(k){return [k[1]+' board'+(bimBoardById('board-'+k[0])?' (in the set)':''),k[0]];})),
+      function(k){if(k==='sheet')bimLayoutNew();else if(k==='new')bimBrdNewUi();else bimBoardShow(k);});
+    return true;
   }
   function bimBoardById(id){var B=bimPresData().boards,i;for(i=0;i<B.length;i++)if(B[i].id===id)return B[i];return null;}
   /* the set in its order, [{t:'sheet',id,s} or {t:'board',id,b}]: each place the order gives a sheet
@@ -59188,6 +59347,7 @@ try{
     if(r.figs&&b&&Array.isArray(b.objs)){var T=bimBobValid(b.objs,r.figs);if(T)r.objs=T;}   /* __acad3dV174a: its objects, on the layers, when it has any */
     if(r.objs&&b){var Ly=bimBobLayValid(b.lay);if(Ly)r.lay=Ly;}   /* __acad3dV174b: its stacks */
     if(r.objs&&b){var Pg=bimPgValid(b.page);if(Pg)r.page=Pg;else if(b.pageOff===true)r.pageOff=true;}   /* __acad3dV174c: its page, or none by choice */
+    if(b&&typeof b.num==='string'){var Nm=bimLyNumberValid(b.num);if(Nm)r.num=Nm;}   /* __acad3dV175c: its number as a layout */
     return r;
   }
   /* ---- the figures, read from the boards ---- */
@@ -62566,6 +62726,11 @@ try{
     var W=Math.max(1,Math.round(BIM_THUMB_CSS_W*bimDevicePixelRatio()));
     return {W:W,H:Math.max(1,Math.round(W*s.h/s.w))};
   }
+  /* __acad3dV175c: numbers used twice are allowed, and said */
+  function bimLyDupNote(){
+    var D=bimLyDupNumbers(bimLyEntries());
+    return D.length?'<div class="a3d-prpdup" role="note">Used by more than one layout: '+bimEsc(D.join(', '))+'. Double-click a tab to renumber.</div>':'';
+  }
   function bimPresPanelHtml(){
     var Q=bimPresSeq(),n=Q.length,cur=A3D_CLB.open&&A3D_CLB.board?A3D_CLB.board:(bimSheetOnScreen()?A3D.activeSheetId:null),i,e,s,d,lab,h;   /* __acad3dV162 */
     h='<div class="a3d-prp"><div class="a3d-prphd"><span class="a3d-prpttl">Presentation</span>'+
@@ -62573,16 +62738,15 @@ try{
       '<div class="a3d-prpbar">'+
       '<button type="button" class="a3d-prpbtn pri" data-prpact="present"'+(n?'':' disabled')+
         ' title="'+(n?'Present the pages full screen, one at a time':'No pages to present yet')+'">Present</button>'+
-      '<button type="button" class="a3d-prpbtn" data-prpact="new" title="A new sheet, the last page of the set">+ Page</button>'+
-      '<button type="button" class="a3d-prpbtn" data-prpact="board" title="A board of the site analysis -- climate and risk, zoning and yield, access and people -- as a page of the set" aria-haspopup="menu">+ Board</button>'+
+      '<button type="button" class="a3d-prpbtn" data-prpact="layout" title="A new layout, the last page of the set: a drawing sheet, a board, or a board of the site analysis" aria-haspopup="menu">+ Layout</button>'+   /* __acad3dV175c (D5) */
       '<button type="button" class="a3d-prpbtn" data-prpact="print"'+(n?'':' disabled')+
         ' title="'+(n?'Print every page in one go -- Save as PDF in the print dialog makes a PDF':'No pages to print yet')+'">Print set</button>'+
-      '</div><div class="a3d-prplist" data-prplist="1">';
-    if(!n)h+='<div class="a3d-prpempty">No pages yet. Every sheet is a page, in the order of the layout tabs; + Page makes the first. + Board adds a board of the site analysis.</div>';
+      '</div>'+bimLyDupNote()+'<div class="a3d-prplist" data-prplist="1">';
+    if(!n)h+='<div class="a3d-prpempty">No layouts yet. Every drawing sheet and board is a layout, a page of the set, with a tab beside Model; + Layout makes the first.</div>';
     for(i=0;i<n;i++){
       e=Q[i];
       if(e.t==='board'){
-        lab=bimBoardLabel(e.b);   /* __acad3dV172b */
+        lab=bimLyLabel(e.b.num,bimBoardLabel(e.b));   /* __acad3dV172b; __acad3dV175c: with its number */
         h+='<div class="a3d-prpitem a3d-prpbrd'+(e.id===cur?' cur':'')+'" data-prpitem="'+bimEsc(e.id)+'" draggable="true" title="Page '+(i+1)+': the '+bimEsc(lab)+
           ' board -- click to open it, drag to move it, right-click for more">'+
           '<div class="a3d-prpthumb a3d-prpbthumb"><iframe data-prpbframe="'+bimEsc(e.id)+'" tabindex="-1" aria-hidden="true" title=""></iframe></div>'+
@@ -62603,6 +62767,7 @@ try{
   function bimPresHost(){return document.querySelector('#a3d-leftpanel .a3d-pres-wrap');}
   function bimPresPanelRefresh(){
     var host=bimPresHost();
+    bimLayoutTabsDraw();   /* __acad3dV175c: the tabs list the boards too */
     if(!host||A3D_PRP.edit)return false;   /* not under a name being typed; it refreshes when that ends */
     bimRenderInto(host,bimPresPanelHtml());
     bimPresThumbsQueue();
@@ -62697,6 +62862,7 @@ try{
     }
     if(a==='board')return btn?bimBoardMenu(btn):false;
     if(a==='new')return bimLayoutNew();
+    if(a==='layout'){var r=btn?btn.getBoundingClientRect():{left:40,bottom:40};return bimLayoutAddMenu(r.left,r.bottom+4);}   /* __acad3dV175c */
     if(a==='print')return bimPrintSet();
     return false;
   }
@@ -65751,11 +65917,12 @@ try{
         if(!tab||A3D_LT_EDITING)return;
         var k=tab.getAttribute('data-lt');
         if(k==='model')bimShowModel();
-        else if(k==='new')bimLayoutNew();
+        else if(k==='new'){var r=tab.getBoundingClientRect();bimLayoutAddMenu(r.left,r.top-4);}   /* __acad3dV175c: + Layout */
         else if(k==='sheet')bimActivateView('sheet',tab.getAttribute('data-ltsheet'));
+        else if(k==='board')bimPresOpenBoard(tab.getAttribute('data-ltsheet'));
       });
       ltBox.addEventListener('dblclick',function(ev){
-        var tab=ev.target&&ev.target.closest?ev.target.closest('[data-lt="sheet"]'):null;
+        var tab=ev.target&&ev.target.closest?ev.target.closest('[data-lt="sheet"],[data-lt="board"]'):null;
         if(tab&&!A3D_LT_EDITING){ev.preventDefault();bimLayoutRename(tab.getAttribute('data-ltsheet'));}
       });
       ltBox.addEventListener('contextmenu',function(ev){

@@ -15,6 +15,8 @@ import { A3D_PAGES, bimPagesRefresh } from './pages-display.js';
 import { bimSheetOnScreen, bimShowModel } from './present.js';
 import { bimSheetVp } from './viewports.js';
 import { bimRenderLayoutTabs } from './layout-tabs.js';
+import { bimLyNextNumber } from './layouts.js';
+import { bimLyNumbers } from './boards.js';
 import { bimPgEnsureSheetSize } from './page-sizes.js';
 import { refreshBrowser } from './presentation-panel.js';
 import { a3dToast } from '../bim/csg-booleans.js';
@@ -77,14 +79,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
   }
   /* __acad3dV116: the next number no sheet has. It was 'A'+(101+count), which repeats a number as
      soon as one sheet is deleted: with A101 and A102, delete A101 and the next sheet was A102 again. */
-  function bimNextSheetNumber(){
-    var max=100,i,m;
-    for(i=0;i<A3D.sheets.length;i++){
-      m=/^A(\d+)$/i.exec(String(A3D.sheets[i].number==null?'':A3D.sheets[i].number).trim());
-      if(m&&+m[1]>max)max=+m[1];
-    }
-    return 'A'+(max+1);
-  }
+  function bimNextSheetNumber(){return bimLyNextNumber(bimLyNumbers(),'A');}   /* __acad3dV175c: one series with the boards (D6) */
   /* __acad3dV116: three places deleted a sheet, two asked first in different words, one did not ask.
      One path now: it names the sheet and says the delete can be undone, which it can. */
   function bimConfirmDeleteSheet(id){

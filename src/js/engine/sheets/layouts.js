@@ -120,3 +120,4 @@ function bimLyDupNumbers(entries) {
   }
   return out;
 }
+export { bimLyDupNumbers, bimLyLabel, bimLyNextNumber, bimLyNumberValid, bimLyTabs };

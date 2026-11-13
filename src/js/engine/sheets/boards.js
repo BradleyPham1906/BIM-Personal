@@ -9,7 +9,10 @@ import { bimProjectLabel } from '../ui/project-tabs.js';
 import { saveSoon } from '../bim/region-regenerate.js';
 import { bimSheetViewRefresh } from './sheets.js';
 import { bimSlideshowStart } from './present.js';
-import { bimLtMenuOpen, bimSheetMove, bimSheetMoveNear } from './layout-tabs.js';
+import {
+  bimLayoutNew, bimLtMenuOpen, bimRenderLayoutTabs, bimSheetMove, bimSheetMoveNear
+} from './layout-tabs.js';
+import { bimLyNextNumber, bimLyNumberValid } from './layouts.js';
 import { bimBoardKey, bimBoardKeyLabel, bimBoardLabel, bimBrdKeep, bimClbWhich } from './board-figures.js';
 import { bimBrdDupBoard, bimBrdEdit, bimBrdNewUi } from './board-edit.js';
 import { bimPgBoardPage } from './page-sizes.js';
@@ -43,7 +46,46 @@ import { a3dToast } from '../bim/csg-booleans.js';
   }
   function bimPresData(){
     if(!A3D.pres||typeof A3D.pres!=='object'||!Array.isArray(A3D.pres.boards)||!Array.isArray(A3D.pres.order))A3D.pres=bimPresValid(A3D.pres);
+    if(A3D.pres.boards.some(function(b){return !b.num;}))bimLyGiveNums(A3D.pres);   /* __acad3dV175c */
     return A3D.pres;
+  }
+  /* __acad3dV175c (D5, D6): every layout is numbered in one series. A board without a number (each made before
+     V175c, and each new one) is given the next, after the sheets', in the set's order. Kept with the board from
+     then on; not an undo step, since nothing the owner made changes */
+  function bimLyNumbers(){
+    var L=A3D.sheets.map(function(s){return String(s.number==null?'':s.number);});
+    (A3D.pres&&Array.isArray(A3D.pres.boards)?A3D.pres.boards:[]).forEach(function(b){if(b.num)L.push(b.num);});
+    return L;
+  }
+  function bimLyGiveNums(P){
+    var by={},seen={},list=[];
+    P.boards.forEach(function(b){by[b.id]=b;});
+    P.order.forEach(function(id){if(by[id]&&!seen[id]){seen[id]=1;list.push(by[id]);}});
+    P.boards.forEach(function(b){if(!seen[b.id])list.push(b);});
+    list.forEach(function(b){if(!b.num)b.num=bimLyNextNumber(bimLyNumbers(),'A');});
+  }
+  /* a board's number, from its layout tab. One undo step; a number that is not good, or the same, changes nothing */
+  function bimBoardSetNum(id,v){
+    var b=bimBoardById(id),n=bimLyNumberValid(v);
+    if(!b){a3dToast('That board is no longer in the set');return false;}
+    if(!n){if(String(v||'').trim())a3dToast('A number is letters, digits, spaces, dots, dashes and underscores, 12 at most');return false;}
+    if(n===b.num)return false;
+    pushUndo();
+    b.num=n;
+    saveSoon();bimRenderLayoutTabs();
+    return true;
+  }
+  /* the set as layouts, for the tabs and the panel: [{t, id, num, name}] */
+  function bimLyEntries(){
+    return bimPresSeq().map(function(e){
+      return e.t==='board'?{t:'board',id:e.id,num:e.b.num||'',name:bimBoardLabel(e.b)}:{t:'sheet',id:e.id,num:String(e.s.number==null?'':e.s.number),name:String(e.s.name==null?'':e.s.name)};
+    });
+  }
+  /* + Layout (D5): a drawing sheet, a blank board, or a site analysis board */
+  function bimLayoutAddMenu(x,y){
+    bimLtMenuOpen(x,y,[['Drawing sheet','sheet'],['Board','new'],'-'].concat(bimBoards().map(function(k){return [k[1]+' board'+(bimBoardById('board-'+k[0])?' (in the set)':''),k[0]];})),
+      function(k){if(k==='sheet')bimLayoutNew();else if(k==='new')bimBrdNewUi();else bimBoardShow(k);});
+    return true;
   }
   function bimBoardById(id){var B=bimPresData().boards,i;for(i=0;i<B.length;i++)if(B[i].id===id)return B[i];return null;}
   /* the set in its order, [{t:'sheet',id,s} or {t:'board',id,b}]: each place the order gives a sheet
@@ -239,6 +281,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
   }
 export {
   bimBoardAdd, bimBoardById, bimBoardHtmlFor, bimBoardMenu, bimBoardMenuDo, bimBoardMenuItems, bimBoardName,
-  bimBoardPrintHtml, bimBoardRemove, bimBoardShow, bimClbCss, bimClbPrint, bimPresBoardThumb, bimPresData,
-  bimPresIndex, bimPresMoveNear, bimPresOpenBoard, bimPresSeq, bimPresStep, bimPresValid
+  bimBoardPrintHtml, bimBoardRemove, bimBoardSetNum, bimBoardShow, bimClbCss, bimClbPrint, bimLayoutAddMenu,
+  bimLyEntries, bimLyNumbers, bimPresBoardThumb, bimPresData, bimPresIndex, bimPresMoveNear, bimPresOpenBoard,
+  bimPresSeq, bimPresStep, bimPresValid
 };

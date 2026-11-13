@@ -87,9 +87,8 @@ import {
   bimSheetDblClick, bimSheetPointerDown, bimSheetPointerMove, bimSheetPointerUp, bimSheetWheel
 } from '../sheets/viewports.js';
 import { bimBrowserToggle } from './project-browser.js';
-import {
-  A3D_LT_EDITING, bimLayoutNew, bimLayoutRename, bimLayoutTabMenu, bimLtMenuClose
-} from '../sheets/layout-tabs.js';
+import { A3D_LT_EDITING, bimLayoutRename, bimLayoutTabMenu, bimLtMenuClose } from '../sheets/layout-tabs.js';
+import { bimLayoutAddMenu, bimPresOpenBoard } from '../sheets/boards.js';
 import { onDown, onMove, onUp, onWheel, refreshBrowser, refreshTree } from '../sheets/presentation-panel.js';
 import { bimSubmitTouchLen, onKey, onTouchEnd, onTouchMove, onTouchStart } from './touch-input.js';
 import { a3dToast, objById } from '../bim/csg-booleans.js';
@@ -1016,11 +1015,12 @@ import { size } from './canvas-size.js';
         if(!tab||A3D_LT_EDITING)return;
         var k=tab.getAttribute('data-lt');
         if(k==='model')bimShowModel();
-        else if(k==='new')bimLayoutNew();
+        else if(k==='new'){var r=tab.getBoundingClientRect();bimLayoutAddMenu(r.left,r.top-4);}   /* __acad3dV175c: + Layout */
         else if(k==='sheet')bimActivateView('sheet',tab.getAttribute('data-ltsheet'));
+        else if(k==='board')bimPresOpenBoard(tab.getAttribute('data-ltsheet'));
       });
       ltBox.addEventListener('dblclick',function(ev){
-        var tab=ev.target&&ev.target.closest?ev.target.closest('[data-lt="sheet"]'):null;
+        var tab=ev.target&&ev.target.closest?ev.target.closest('[data-lt="sheet"],[data-lt="board"]'):null;
         if(tab&&!A3D_LT_EDITING){ev.preventDefault();bimLayoutRename(tab.getAttribute('data-ltsheet'));}
       });
       ltBox.addEventListener('contextmenu',function(ev){

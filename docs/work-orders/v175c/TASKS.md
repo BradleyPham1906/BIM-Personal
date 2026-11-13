@@ -70,11 +70,12 @@ Scores are from `../ROUTING.md` (files, logic, understanding, judgment, trickine
 
 ---
 
-## [ ] WO-06 [Claude] Build step 1 on them, and write step 2's spec
+## [x] WO-06 [Claude] Build step 1 on them, and write step 2's spec
 
 Claude's because it crosses files and touches what is saved (ROUTING: always D):
 - review WO-01 to WO-05 against SPEC part 4; move `v175c.test.mjs` to `tests/unit/layouts.test.mjs`;
 - a board's `num` kept (`bimBrdKeep`) and given at load when missing; one series (`bimNextSheetNumber`);
 - the tabs from the whole set; + and + Layout's menu; renumbering a board; numbers and duplicates in the panel;
 - `npm run modules`, the build, `npm test`, `npm run check`; the browser check, kept in `tests/e2e/`;
-- the guide, the log, PIPELINE, Notion; step 2's spec and work orders; ask the owner before merging.
+- the guide, the log, PIPELINE, Notion; ask the owner before merging.
+- Done 2026-11-13. Step 2's spec moved to the next spec sprint (QUEUE.md).

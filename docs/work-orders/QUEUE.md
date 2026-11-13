@@ -10,13 +10,12 @@ Cline: `/ship-task.md` with no arguments takes the first open `[Cline]` task bel
 
 | Phase | Tasks | Where |
 |---|---|---|
-| v175c | WO-01 to WO-05 (`[Cline]`) | `v175c/TASKS.md`, tests in `v175c/v175c.test.mjs` |
 | v194 | T-07 (`[Cline]`) | `v194/TASKS.md`, test in `tests/unit/rendered.test.mjs` |
 
 ## Claude's next (research and specs, not blocked on Cline)
 
 | Phase | Next step |
 |---|---|
-| v175c | WO-06 after WO-01 to WO-05 ship: build step 1 on them; step 2's spec and work orders |
+| v175c | Step 1 built (WO-01 to WO-05 by Cline, WO-06 by Claude). Next: step 2's spec and work orders (one editor, the viewport an object), in the next spec sprint |
 | v194 | T-08 the basemap in the rendered view; T-09 glTF/GLB (research first) |
 | next phases | Research and specs from `docs/research/plan-v167-v170.md` and `docs/dev/PIPELINE.md`, in a spec sprint |

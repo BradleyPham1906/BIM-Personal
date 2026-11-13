@@ -1,18 +1,14 @@
-/* V175c's work-order tests: the pure functions of src/js/engine/sheets/layouts.js (WO-01 to WO-05).
-
-   Outside tests/unit/ while the work orders are open, so `npm test` and CI stay green on main. Run them with:
-     node --test docs/work-orders/v175c/v175c.test.mjs
-   One work order's cases only (WO-02, say):
-     node --test --test-name-pattern="WO-02" docs/work-orders/v175c/v175c.test.mjs
-   A function not built yet fails its own cases and no others. When all five pass, Claude moves this file to
-   tests/unit/layouts.test.mjs (WO-06). The functions are pure and use no engine name: the file is read as text. */
+/* V175c step 1: the pure functions of src/js/engine/sheets/layouts.js (WO-01 to WO-05, built by Cline), then
+   Claude's part on them (WO-06): a board's number kept and given, one series, the layouts' list. Moved here from
+   docs/work-orders/v175c/v175c.test.mjs when the work orders were done. */
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { loadEngine } from './helpers/engine.mjs';
 
-const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..', '..');
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 const NAMES = ['bimLyNextNumber', 'bimLyNumberValid', 'bimLyLabel', 'bimLyTabs', 'bimLyDupNumbers'];
 function load() {
   let src = fs.readFileSync(path.join(ROOT, 'src/js/engine/sheets/layouts.js'), 'utf8');
@@ -106,4 +102,31 @@ test('WO-05 empty numbers are not duplicates; none gives none', () => {
   assert.deepEqual(fn('bimLyDupNumbers')([{ num: '' }, { num: '' }, { num: null }, {}]), []);
   assert.deepEqual(fn('bimLyDupNumbers')([]), []);
   assert.deepEqual(fn('bimLyDupNumbers')(null), []);
+});
+
+/* ================= WO-06, Claude's part ================= */
+const E = loadEngine();
+const A3D = E.A3D;
+
+test('a board keeps a good number and drops a bad one', () => {
+  const P = E.bimPresValid({ boards: [{ kind: 'custom', id: 'board-c1', name: 'Mood', num: '  P 12 ' }, { kind: 'custom', id: 'board-c2', name: 'X', num: '<b>' }], order: [] });
+  assert.equal(P.boards[0].num, 'P 12');
+  assert.equal('num' in P.boards[1], false);
+});
+
+test('boards without a number get the next ones, after the sheets, in the set\'s order; sheets follow the same series', () => {
+  A3D.sheets.length = 0;
+  A3D.sheets.push({ id: 'sheet-1', number: 'A101', name: 'Plan', w: 420, h: 297, viewports: [] }, { id: 'sheet-2', number: 'A104', name: 'Sections', w: 420, h: 297, viewports: [] });
+  A3D.pres = { boards: [{ id: 'board-c1', kind: 'custom', name: 'Second', figs: [] }, { id: 'board-c2', kind: 'custom', name: 'First', figs: [] }, { id: 'board-c3', kind: 'custom', name: 'Kept', figs: [], num: 'A110' }], order: ['board-c2', 'board-c1'] };
+  const P = E.bimPresData();
+  const num = (id) => P.boards.filter((b) => b.id === id)[0].num;
+  assert.equal(num('board-c2'), 'A111', 'first in the set\'s order');
+  assert.equal(num('board-c1'), 'A112');
+  assert.equal(num('board-c3'), 'A110', 'a number already given is kept');
+  assert.equal(E.bimNextSheetNumber(), 'A113', 'a new sheet follows the boards');
+  const L = E.bimLyEntries();
+  assert.deepEqual(L.map((e) => e.num), L.map((e) => e.t === 'sheet' ? A3D.sheets.filter((s) => s.id === e.id)[0].number : P.boards.filter((b) => b.id === e.id)[0].num));
+  assert.deepEqual(E.bimLyDupNumbers(L), []);
+  A3D.sheets.length = 0;
+  A3D.pres = null;
 });
