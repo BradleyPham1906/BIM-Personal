@@ -130,7 +130,7 @@ body.a3d-tier-phone.a3d-railutil-open #a3d-railutil .a3d-ru{width:44px;height:44
 body.a3d-tier-phone #a3d-leftpanel{left:0;width:min(360px,88vw);border-radius:0 14px 0 0}
 body.a3d-tier-phone #a3d-shell.collapsed #a3d-leftpanel{width:min(360px,88vw)}
 body.a3d-tier-phone .a3d-drawerbtn{display:none!important}
-body.a3d-tier-phone #a3d-toast{bottom:calc(74px + env(safe-area-inset-bottom,0px))!important}
+body.a3d-tier-phone #a3d-toast{top:calc(112px + env(safe-area-inset-top,0px))!important;left:50%!important}   /* __acad3dV199: at the top */
 body.light-theme.a3d-tier-phone #a3d-railutil{background:#f6f6f4;border-color:rgba(0,0,0,.12)}
 body.light-theme.a3d-tier-phone #a3d-rail .a3d-railbtn.active,body.light-theme.a3d-tier-phone #a3d-rail .a3d-railmore.on{color:#111;background:rgba(0,0,0,.07)}
 @media(pointer:coarse){body.a3d-tier-overlay #a3d-rail .a3d-railbtn,body.a3d-tier-overlay #a3d-rail .a3d-paneltoggle{min-width:44px;min-height:44px}}
@@ -166,7 +166,7 @@ body.a3d-tier-overlay.a3d-mode:has(#a3d-right.open) .a3d-tpal{display:none}
 .a3d-tpal.min .a3d-tptools,.a3d-tpal.min .a3d-tpgrip,.a3d-tpal.min .a3d-tptoggle{display:none}
 .a3d-tpal.min .a3d-tpcur{display:grid}
 .a3d-tpal.drag{box-shadow:0 18px 44px rgba(0,0,0,.5);transform:scale(1.03)}
-body.a3d-tier-overlay:not(.a3d-tier-phone) #a3d-toast{bottom:146px!important}
+body.a3d-tier-overlay:not(.a3d-tier-phone) #a3d-toast{top:108px!important}
 body.a3d-tier-overlay .a3d-touchlen{bottom:80px}
 body.light-theme .a3d-tpal{background:rgba(250,250,252,.8);border-color:rgba(0,0,0,.1);box-shadow:0 10px 30px rgba(0,0,0,.18)}
 body.light-theme .a3d-tpb,body.light-theme .a3d-tptoggle{color:#1c1c1e}
@@ -192,7 +192,8 @@ body.light-theme .a3d-projsub{color:#777}
 .a3d-lyp{display:flex;flex-direction:column;min-height:0;padding:6px 6px 14px;font:12px/1.3 Inter,system-ui,sans-serif;color:#c9d1d9}
 .a3d-lyhd{display:flex;align-items:center;justify-content:space-between;padding:4px 4px 6px;flex-wrap:wrap;gap:4px}
 .a3d-lyby{display:inline-flex;align-items:center;gap:4px;font-size:11px;color:#9aa7b4}   /* __acad3dV173c */
-.a3d-lyby select{font-size:11px;max-width:120px}
+.a3d-lyby select{font-size:11px;max-width:120px;background:#1c2024;border:1px solid #3a4048;color:#e6eaef;border-radius:4px;padding:2px 4px}   /* __acad3dV199: dark, as the other panels' fields */
+body.light-theme .a3d-lyby select{background:#fff;border-color:#c9ced4;color:#222}
 .a3d-lycake{font-size:11px;padding:2px 6px;border-radius:5px;border:1px solid rgba(255,255,255,.18);background:transparent;color:#aeb6bf;cursor:pointer}   /* __acad3dV173d */
 .a3d-lycake.on{background:#2f7fe0;border-color:#2f7fe0;color:#fff}
 body.light-theme .a3d-lycake{color:#444;border-color:rgba(0,0,0,.2)}
@@ -391,7 +392,9 @@ body.light-theme #acad3d{color-scheme:light}
        fix; it is also why the popovers can stay inside the dock's own subtree. */
 #a3d-dock{position:absolute;left:0;right:0;bottom:14px;z-index:9600;display:flex;flex-direction:column;align-items:center;pointer-events:none}
 .a3d-dockbody{display:flex;flex-direction:column;gap:3px;background:#22262b;border:1px solid #3a4048;border-radius:10px;padding:5px;box-shadow:0 6px 22px rgba(0,0,0,0.45);max-width:calc(100% - 28px);pointer-events:auto}
-.a3d-dockrow{display:flex;align-items:center;gap:2px;min-width:0}
+.a3d-dockrow{display:flex;align-items:center;gap:2px;min-width:0;overflow-x:auto;scrollbar-width:none}   /* __acad3dV199: narrower than its tools, it scrolls; it never clips them */
+.a3d-dockrow::-webkit-scrollbar{display:none}
+.a3d-dockrow>*{flex-shrink:0}
 .a3d-dockgrp{display:flex;flex-direction:column;align-items:center;gap:2px;flex:0 0 auto}
 #a3d-dock.a3d-docklabels .a3d-dockgrp{gap:1px}
 #a3d-dock.a3d-docklabels .a3d-dbtn{width:60px;height:38px;flex-direction:column;gap:2px}
@@ -429,7 +432,13 @@ body.light-theme #a3d-tip strong{color:#202124}body.light-theme .a3d-tiptype b{c
        third flex child of #acad3d (toolbar / body / status), so it spans the work area exactly. */
 .a3d-status{display:flex;align-items:center;gap:8px;padding:0 10px;height:26px;flex:0 0 auto;background:#1d2022;border-top:1px solid #101214;font:11px/1 "Segoe UI",Inter,system-ui,sans-serif;color:#a9abae;user-select:none}
 .a3d-stspring{flex:1 1 auto}
-.a3d-sthint{color:#9ec1ff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.a3d-sthint{color:#9ec1ff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;flex:0 1 auto}
+/* __acad3dV199: the hint gives way first; the layout tabs, the file state and the controls keep their size, and a bar
+   still too narrow scrolls rather than cutting its right end off */
+.a3d-status{overflow-x:auto;scrollbar-width:none}.a3d-status::-webkit-scrollbar{display:none}
+.a3d-status>*:not(.a3d-sthint):not(.a3d-stspring){flex-shrink:0}
+.a3d-laytabs{white-space:nowrap}
+@media(max-width:1280px){.a3d-stcoords{display:none}#a3d-navgrp .a3d-stbtn:not(.a3d-stview) span{display:none}.a3d-stlvl{font-size:0;gap:0}.a3d-stlvl select{font-size:11px}}
 .a3d-stcoords{font-variant-numeric:tabular-nums;color:#c8ced6;white-space:nowrap;min-width:150px;text-align:right}
 .a3d-stlvl{display:flex;align-items:center;gap:5px;white-space:nowrap}
 .a3d-stlvl select{background:#24282c;border:1px solid #3a4048;color:#dfe4ea;border-radius:3px;font-size:11px;padding:1px 4px;font-family:inherit;max-width:140px}
@@ -669,6 +678,9 @@ body.light-theme .a3d-filedlg-x{color:#4a4f55}
 .a3d-prow.ro .a3d-pstatic{color:#7d8590}.a3d-pval{text-align:right}.a3d-pval select,.a3d-pval input[type=text]{text-align:left}.a3d-pval input[type=number]{text-align:right}.a3d-prow.ro{min-height:22px}.a3d-prow.ro .a3d-plabel{color:#868f99}.a3d-assets{padding:6px 8px 14px;font:11px/1.35 Inter,system-ui,sans-serif;color:#c3cad2}.a3d-asnote{padding:6px 8px;margin-bottom:6px;border-radius:5px;background:#22262b;color:#9aa3ad;font-size:10.5px}.a3d-asgrp{display:flex;align-items:center;justify-content:space-between;background:#262b31;border-radius:5px;padding:6px 9px;margin:8px 0 4px;font-size:10.5px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;color:#aeb8c2}.a3d-assub{font-weight:400;text-transform:none;letter-spacing:0;color:#7d8590}.a3d-asrow{display:flex;width:100%;align-items:center;justify-content:space-between;gap:8px;background:transparent;border:1px solid transparent;border-radius:5px;padding:6px 8px;color:#d5dae0;cursor:pointer;font:inherit;text-align:left}.a3d-asrow:hover{background:#2f353c;border-color:#3a4048}.a3d-asrow.off{opacity:.45;cursor:default}.a3d-asrow.off:hover{background:transparent;border-color:transparent}.a3d-asnm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.a3d-asmeta{flex:0 0 auto;color:#7d8590;font-size:10px}.a3d-asempty{padding:8px;color:#7d8590;font-size:10.5px}#a3d-railutil{display:flex;flex-direction:column;align-items:center;gap:2px;margin-bottom:6px}.a3d-ru{width:30px;height:30px;display:grid;place-items:center;background:transparent;border:1px solid transparent;border-radius:7px;color:#9aa3ad;cursor:pointer;padding:0}.a3d-ru svg{width:17px;height:17px}.a3d-ru:hover{background:rgba(255,255,255,.09);color:#fff}.a3d-ru.on{background:rgba(255,255,255,.12);color:#fff}#a3d-rupop{position:fixed;z-index:10000;display:none;min-width:194px;background:#22262b;border:1px solid #3a4048;border-radius:9px;padding:6px;box-shadow:0 10px 30px rgba(0,0,0,.5);font:12px/1.35 Inter,system-ui,sans-serif;color:#d5dae0}#a3d-rupop.open{display:block}.a3d-ruhd{font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#8b949e;padding:4px 8px 6px}.a3d-ruitem{display:block;width:100%;text-align:left;background:transparent;border:0;border-radius:6px;padding:7px 9px;color:#d5dae0;cursor:pointer;font:inherit}.a3d-ruitem:hover{background:#2f353c;color:#fff}.a3d-ruitem.on{background:#2c477d;color:#e4efff}.a3d-rusep{height:1px;background:#343a41;margin:5px 4px}.a3d-rurow{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 9px;color:#d5dae0}.a3d-rurow input[type=number]{width:62px;background:#1c2024;border:1px solid #3a4048;color:#e6eaef;border-radius:4px;padding:3px 5px;font:inherit}.a3d-rukeys{min-width:336px;max-height:64vh;overflow:auto;padding:0 2px 2px}.a3d-rkgrp{font-size:9.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#8b949e;padding:9px 8px 4px}.a3d-rkrow{display:flex;align-items:baseline;gap:10px;padding:4px 8px;border-radius:5px}.a3d-rkrow:hover{background:#2a2f35}.a3d-rkkeys{flex:0 0 96px;display:flex;align-items:center;gap:3px;justify-content:flex-end}.a3d-rkkeys kbd{font:600 10px/1 Inter,system-ui,sans-serif;color:#c7ced6;background:#1c2024;border:1px solid #3a4048;border-bottom-width:2px;border-radius:4px;padding:3px 5px;white-space:nowrap}.a3d-rkplus{color:#6e7781;font-size:9px}.a3d-rklab{flex:1;color:#c3cad2;font-size:11.5px;line-height:1.35}.a3d-rkfind{display:block;box-sizing:border-box;width:calc(100% - 8px);margin:0 4px 4px;background:#1c2024;border:1px solid #3a4048;color:#e6eaef;border-radius:6px;padding:6px 8px;font:inherit;font-size:11.5px}.a3d-rkfind:focus{outline:none;border-color:#4ea1ff}.a3d-rkempty{padding:10px 8px;color:#7d8590;font-size:11px}.a3d-rukeys [hidden]{display:none!important}
 .a3d-uswatch{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px;border:1px solid rgba(0,0,0,.35);flex:0 0 auto}
 .a3d-uhead .a3d-plabel{font-weight:600}
+#a3d-right .a3d-prow.a3d-uhead,.a3d-prow.a3d-uhead{grid-template-columns:minmax(0,1fr) auto}
+.a3d-uhead .a3d-usum{display:block;font-weight:400;font-size:10px;color:#8b949e;white-space:nowrap;margin-top:2px}   /* __acad3dV199 */
+body.light-theme .a3d-uhead .a3d-usum{color:#6a737d}
 .a3d-uarea .a3d-pstatic{line-height:1.45}
 .a3d-uerr{color:#ff9b8f;font-size:11px;margin-top:3px}
 .a3d-ukv{display:flex;align-items:center;gap:4px}
@@ -1514,7 +1526,10 @@ body.a3d-mode #a3d-leftpanel .a3d-projsub .a3d-pill{font-size:9px;padding:1px 5p
 body.a3d-mode #a3d-leftpanel .a3d-projhead{justify-content:space-between;align-items:center;padding:5px 8px;min-height:0;height:auto;border-bottom:1px solid rgba(255,255,255,.06)}
 /* __acad3dV65: the Project Browser nested in the panel is a section of it, not a panel of its
    own, and the panel is the one scroll container */
-body.a3d-tree-docked #a3d-leftpanel{overflow-y:auto;overflow-x:hidden}
+body.a3d-tree-docked #a3d-leftpanel{overflow-y:auto;overflow-x:hidden;scrollbar-width:thin;scrollbar-color:#4a5058 transparent}
+/* __acad3dV199: a panel that scrolls keeps its content inside the scroll bar (Analyze was cut by its width), in the dark */
+body.a3d-tree-docked #a3d-leftpanel .a3d-tabbody,body.a3d-tree-docked #a3d-leftpanel .a3d-projhead{min-width:calc(var(--a3d-lp-w,242px) - 16px)}
+body.light-theme.a3d-tree-docked #a3d-leftpanel{scrollbar-color:#b8bec6 transparent}
 body.a3d-tree-docked #a3d-leftpanel > .a3d-tabbody{flex:0 0 auto;min-height:0}
 /* the rail picks which section the panel shows: the Project Browser, or the Assets library */
 body.a3d-tree-docked #a3d-shell[data-tab="browser"] #a3d-leftpanel > .a3d-tabbody{display:none}
@@ -18729,8 +18744,8 @@ try{
     var L=bimUsages(),r='',i,j,u,id;
     for(i=0;i<L.length;i++){
       u=L[i];id=bimEsc(u.id);
-      r+='<div class="a3d-prow a3d-uhead"><div class="a3d-plabel">'+bimUsageSwatch(u.color)+bimEsc(u.name)+'</div><div class="a3d-pval">'+
-        '<span class="a3d-pstatic">GFA '+bimUsagePct(u.gfa)+' \u00b7 NSA '+bimUsagePct(u.nsa)+' \u00b7 '+bimUsageNum(u.ftf)+' m</span> '+
+      r+='<div class="a3d-prow a3d-uhead"><div class="a3d-plabel">'+bimUsageSwatch(u.color)+bimEsc(u.name)+   /* __acad3dV199: the figures under the name, not wrapped beside the button */
+        '<span class="a3d-usum">GFA '+bimUsagePct(u.gfa)+' \u00b7 NSA '+bimUsagePct(u.nsa)+' \u00b7 '+bimUsageNum(u.ftf)+' m</span></div><div class="a3d-pval">'+
         '<button type="button" class="a3d-pedit" data-propusageact="open:'+id+'" aria-expanded="'+(A3D_USAGE_OPEN===u.id?'true':'false')+'">'+(A3D_USAGE_OPEN===u.id?'Done':'Edit')+'</button></div></div>';
       if(A3D_USAGE_OPEN!==u.id)continue;
       r+=bimPropRow('Name','<input type="color" data-propusage="u:'+id+':color" value="'+bimEsc(u.color)+'" aria-label="Colour"> '+
@@ -63171,7 +63186,7 @@ function bimLyDupNumbers(entries) {
     // ---- Sheets ----
     h+=bimBrowserGroup('sheets','Sheets',A3D.sheets.length,0);
     if(O.sheets){
-      if(!A3D.sheets.length)h+='<div class="a3d-bempty" style="padding-left:18px">none yet -- use +Sht above</div>';
+      if(!A3D.sheets.length)h+='<div class="a3d-bempty" style="padding-left:18px">none yet -- use + Sheet above</div>';
       for(i=0;i<A3D.sheets.length;i++){
         var sh=A3D.sheets[i];
         h+=bimBrowserLeaf(bimSheetLabel(sh),{data:'data-a3dbsheetgo="'+sh.id+'"',   /* __acad3dV116 */
@@ -64080,7 +64095,9 @@ function bimLyDupNumbers(entries) {
       if(!tx){
         tx=document.createElement('div');
         tx.id='a3d-toast';
-        tx.style.cssText='position:fixed;left:calc((100vw + var(--a3d-left-w,0px)) / 2);transform:translateX(-50%);bottom:16px;background:#1f2733;color:#dfe7f1;border:1px solid #3b4a5e;border-radius:6px;padding:8px 14px;font-size:12px;z-index:99990;opacity:0;transition:opacity .25s;pointer-events:none;';
+        tx.style.cssText='position:fixed;left:calc((100vw + var(--a3d-left-w,0px)) / 2);transform:translateX(-50%);top:108px;max-width:min(560px,calc(100vw - 32px));background:#1f2733;color:#dfe7f1;border:1px solid #3b4a5e;border-radius:6px;padding:8px 14px;font-size:12px;z-index:99990;opacity:0;transition:opacity .25s;pointer-events:none;';
+        /* __acad3dV199: at the top of the drawing area, under its header: at the bottom it covered the tool bar and the
+           status bar (SNAP on a phone) */
         /* __acad3dV115: on the page, not inside the drawing area: the Start page sits above the
            drawing area, and a message about what just happened there has to be seen */
         document.body.appendChild(tx);
@@ -65204,12 +65221,12 @@ function bimLyDupNumbers(entries) {
         '</div>'+
         '<div class="a3d-palhd a3d-palhd2">Project Browser'+
           '<span class="a3d-palbtns">'+
-            '<button class="a3d-palbtn" id="a3d-viewsave" title="Save current camera as a named view">+View</button>'+
-            '<button class="a3d-palbtn" id="a3d-sheetadd" title="New Sheet">+Sht</button>'+
-            '<button class="a3d-palbtn" id="a3d-lvladd" title="Add Level">+Lvl</button>'+
-            '<button class="a3d-palbtn" id="a3d-bldadd" title="Add Building">+Bldg</button>'+
-            '<button class="a3d-palbtn" id="a3d-famsave" title="Save selection as a Family">+Fam</button>'+
-            '<button class="a3d-palbtn" id="a3d-famimport" title="Import OBJ/STL as a Family">Imp</button>'+
+            '<button class="a3d-palbtn" id="a3d-viewsave" title="Save current camera as a named view">+ View</button>'+
+            '<button class="a3d-palbtn" id="a3d-sheetadd" title="New Sheet">+ Sheet</button>'+
+            '<button class="a3d-palbtn" id="a3d-lvladd" title="Add Level">+ Level</button>'+
+            '<button class="a3d-palbtn" id="a3d-bldadd" title="Add Building">+ Building</button>'+
+            '<button class="a3d-palbtn" id="a3d-famsave" title="Save selection as a Family">+ Family</button>'+
+            '<button class="a3d-palbtn" id="a3d-famimport" title="Import OBJ/STL as a Family">Import</button>'+
           '</span>'+
         '</div>'+
         '<input type="file" id="a3d-famfilein" accept=".obj,.stl,.skp" style="display:none">'+

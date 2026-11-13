@@ -168,12 +168,12 @@ import { size } from './canvas-size.js';
         '</div>'+
         '<div class="a3d-palhd a3d-palhd2">Project Browser'+
           '<span class="a3d-palbtns">'+
-            '<button class="a3d-palbtn" id="a3d-viewsave" title="Save current camera as a named view">+View</button>'+
-            '<button class="a3d-palbtn" id="a3d-sheetadd" title="New Sheet">+Sht</button>'+
-            '<button class="a3d-palbtn" id="a3d-lvladd" title="Add Level">+Lvl</button>'+
-            '<button class="a3d-palbtn" id="a3d-bldadd" title="Add Building">+Bldg</button>'+
-            '<button class="a3d-palbtn" id="a3d-famsave" title="Save selection as a Family">+Fam</button>'+
-            '<button class="a3d-palbtn" id="a3d-famimport" title="Import OBJ/STL as a Family">Imp</button>'+
+            '<button class="a3d-palbtn" id="a3d-viewsave" title="Save current camera as a named view">+ View</button>'+
+            '<button class="a3d-palbtn" id="a3d-sheetadd" title="New Sheet">+ Sheet</button>'+
+            '<button class="a3d-palbtn" id="a3d-lvladd" title="Add Level">+ Level</button>'+
+            '<button class="a3d-palbtn" id="a3d-bldadd" title="Add Building">+ Building</button>'+
+            '<button class="a3d-palbtn" id="a3d-famsave" title="Save selection as a Family">+ Family</button>'+
+            '<button class="a3d-palbtn" id="a3d-famimport" title="Import OBJ/STL as a Family">Import</button>'+
           '</span>'+
         '</div>'+
         '<input type="file" id="a3d-famfilein" accept=".obj,.stl,.skp" style="display:none">'+

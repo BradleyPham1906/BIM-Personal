@@ -17,7 +17,9 @@ import { cvH, cvW } from '../ui/canvas-size.js';
       if(!tx){
         tx=document.createElement('div');
         tx.id='a3d-toast';
-        tx.style.cssText='position:fixed;left:calc((100vw + var(--a3d-left-w,0px)) / 2);transform:translateX(-50%);bottom:16px;background:#1f2733;color:#dfe7f1;border:1px solid #3b4a5e;border-radius:6px;padding:8px 14px;font-size:12px;z-index:99990;opacity:0;transition:opacity .25s;pointer-events:none;';
+        tx.style.cssText='position:fixed;left:calc((100vw + var(--a3d-left-w,0px)) / 2);transform:translateX(-50%);top:108px;max-width:min(560px,calc(100vw - 32px));background:#1f2733;color:#dfe7f1;border:1px solid #3b4a5e;border-radius:6px;padding:8px 14px;font-size:12px;z-index:99990;opacity:0;transition:opacity .25s;pointer-events:none;';
+        /* __acad3dV199: at the top of the drawing area, under its header: at the bottom it covered the tool bar and the
+           status bar (SNAP on a phone) */
         /* __acad3dV115: on the page, not inside the drawing area: the Start page sits above the
            drawing area, and a message about what just happened there has to be seen */
         document.body.appendChild(tx);
