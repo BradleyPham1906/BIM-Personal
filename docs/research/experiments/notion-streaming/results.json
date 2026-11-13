@@ -1,0 +1,12 @@
+{
+  "base_m": 6378137.0,
+  "offset_m": 0.01,
+  "global_float32_delta_m": 0.0,
+  "local_float32_delta_m": 0.009999999776482582,
+  "y_up_vector_to_z_up": [
+    0,
+    0,
+    1
+  ],
+  "model": "IEEE binary32; synthetic equatorial coordinate, not a renderer test"
+}

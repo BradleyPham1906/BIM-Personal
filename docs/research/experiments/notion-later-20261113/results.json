@@ -1,0 +1,52 @@
+{
+  "survey": {
+    "legs_azimuth_deg_distance_m": [
+      [
+        0,
+        100
+      ],
+      [
+        90,
+        80
+      ],
+      [
+        180,
+        100
+      ],
+      [
+        270,
+        79.98
+      ]
+    ],
+    "east_m": 0.020000000000008268,
+    "north_m": -9.793500452781383e-15,
+    "misclosure_m": 0.020000000000008268,
+    "perimeter_m": 359.98,
+    "ratio": 17998.99999999256
+  },
+  "feasibility": {
+    "potential_gross_income_usd": 2460000,
+    "effective_income_usd": 2322000.0,
+    "operating_expense_usd": 300000,
+    "noi_usd": 2022000.0,
+    "total_cost_usd": 24000000,
+    "yield_on_cost": 0.08425,
+    "value_at_6_percent_cap_usd": 33700000.0
+  },
+  "generator": {
+    "lot_m2": 2000,
+    "far": 1.2,
+    "coverage": 0.5,
+    "levels": 4,
+    "plate_cap_m2": 1000,
+    "capacity_m2": 4000,
+    "far_limit_m2": 2400,
+    "achievable_m2": 2400,
+    "plate_areas_m2": [
+      1000,
+      1000,
+      400,
+      0
+    ]
+  }
+}

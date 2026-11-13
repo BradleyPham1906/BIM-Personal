@@ -1,0 +1,34 @@
+{
+  "case": "ifc-format-limits",
+  "cases": [
+    {
+      "input": 0.123456789,
+      "display": "0.123457",
+      "numericError": 2.1099999999996122e-7
+    },
+    {
+      "input": 1234567.89,
+      "display": "1234570",
+      "numericError": 2.1100000001024455
+    },
+    {
+      "input": 0.0000123456789,
+      "display": "0.0000123456789",
+      "numericError": 0
+    },
+    {
+      "input": 100.000041,
+      "display": "100",
+      "numericError": -0.000040999999995960934
+    },
+    {
+      "input": 100.000049,
+      "display": "100",
+      "numericError": -0.000049000000004184585
+    }
+  ],
+  "distinctValuesCollapse": true,
+  "textInputLength": 205,
+  "textOutputLength": 200,
+  "model": "isolated copy of format rule; not the importer"
+}

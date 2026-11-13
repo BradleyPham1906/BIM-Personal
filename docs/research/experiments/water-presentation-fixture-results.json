@@ -1,0 +1,27 @@
+{
+  "python": "3.13.15",
+  "runs": 1,
+  "pond_fixture": {
+    "discovery_ids": [
+      1,
+      2
+    ],
+    "volumes_in_discovery_order": [
+      1.0,
+      9.0
+    ],
+    "sorted_ids": [
+      2,
+      1
+    ],
+    "pid_1_at_sorted_index_zero_matches": false
+  },
+  "caustic_area_ratio_unit_old_area": {
+    "1.0": 1.0,
+    "0.25": 4.0,
+    "0.01": 100.0,
+    "1e-06": 1000000.0
+  },
+  "schlick_f0_for_example_indices": 0.020373187841971414,
+  "caveat": "CPU arithmetic examples only; no GPU, renderer, app, hydrology or physical validation"
+}

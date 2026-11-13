@@ -1,0 +1,78 @@
+{
+  "python": "3.13.15 (main, Aug 24 2026, 00:00:00) [GCC 11.5.0 20240719 (Red Hat 11.5.0-5)]",
+  "checks": {
+    "moody_purdue": {
+      "Re": 100000,
+      "relative_roughness": 0.001,
+      "colebrook_f": 0.022174535944515076,
+      "chart_f_approx": 0.0225,
+      "relative_difference": 0.014465069132663254,
+      "colebrook_residual": 0.0
+    },
+    "delft_example_1": {
+      "v": 1.086230483864731,
+      "at_5C": {
+        "Re": 423772.8137709116,
+        "f_D": 0.015392918968283568,
+        "head_m": 0.6244120151714097
+      },
+      "at_25C": {
+        "Re": 715705.196590873,
+        "f_D": 0.014673324932748795,
+        "head_m": 0.5952217645919449
+      },
+      "published_head_m": [
+        0.62,
+        0.6
+      ]
+    },
+    "laminar_circular": {
+      "Re": 1000,
+      "pressure_by_darcy_Pa": 0.3218606291324383,
+      "pressure_by_poiseuille_Pa": 0.3218606291324383
+    },
+    "hypothetical_tree": {
+      "trunk": {
+        "Q": 0.01,
+        "D": 0.1,
+        "L": 10,
+        "area": 0.007853981633974483,
+        "velocity": 1.2732395447351625,
+        "Re": 126841.08917710971,
+        "f_D": 0.017221368287728443,
+        "loss_Pa": 1393.3988943194634,
+        "colebrook_residual": 1.7763568394002505e-15
+      },
+      "branch_A": {
+        "Q": 0.004,
+        "D": 0.1,
+        "L": 5,
+        "area": 0.007853981633974483,
+        "velocity": 0.5092958178940651,
+        "Re": 50736.435670843886,
+        "f_D": 0.020878167013354185,
+        "loss_Pa": 135.14194387239183,
+        "colebrook_residual": 8.881784197001252e-16
+      },
+      "branch_B": {
+        "Q": 0.006,
+        "D": 0.1,
+        "L": 8,
+        "area": 0.007853981633974483,
+        "velocity": 0.7639437268410976,
+        "Re": 76104.65350626582,
+        "f_D": 0.019127744376482105,
+        "loss_Pa": 445.7219831129311,
+        "colebrook_residual": 8.881784197001252e-16
+      },
+      "path_A_Pa": 1528.540838191855,
+      "path_B_Pa": 1839.1208774323945,
+      "warnings": [
+        "friction only",
+        "assumed known steady branch flows",
+        "no fittings or equipment",
+        "not an app test"
+      ]
+    }
+  }
+}

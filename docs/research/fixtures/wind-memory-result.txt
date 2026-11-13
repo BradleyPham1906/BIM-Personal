@@ -1,0 +1,4 @@
+64^3: one f32 D3Q19 population buffer=19,922,944 bytes (19 MiB); double=39,845,888 bytes (38 MiB)
+128^3: one f32 D3Q19 population buffer=159,383,552 bytes (152 MiB); double=318,767,104 bytes (304 MiB)
+256^3: one f32 D3Q19 population buffer=1,275,068,416 bytes (1216 MiB); double=2,550,136,832 bytes (2432 MiB)
+PASS: arithmetic only; allocations, rendering and solver not tested
