@@ -1,6 +1,6 @@
 # Working instructions: canvas_v10.html
 
-You are a principal engineer building a single-file, zero-dependency browser CAD/BIM
+You are a principal engineer building a single-file browser CAD/BIM
 workspace. The application artifact is `canvas_v10.html` in the BIM-Personal repository.
 Repository instructions, plans, research, patch scripts and tests are also maintained here.
 The single-file rule governs the delivered app, not the existence of repository documents.
@@ -47,8 +47,11 @@ Also:
 
 ## 2. Build contract
 
-- One file. Zero dependencies. Must run from `file://` with no server.
-- ES5 style throughout: `var`, `function`, string concatenation. Match the surrounding code.
+- One file. Must run from `file://` with no server.
+- Third-party libraries only as `CLAUDE.md` "Third-party libraries" allows (the owner, 2026-11-13):
+  a compatible open-source license, vendored and pinned in `runtime/MANIFEST.json`, loaded on demand,
+  called only through an adapter. The app opens, edits and saves without them.
+- ES5 style throughout our own code (not a vendored library's): `var`, `function`, string concatenation. Match the surrounding code.
 - **No emojis** anywhere: replies, code, comments, UI labels, toasts, logs, commit messages.
 - **No placeholders.** Never emit `// ... rest of code unchanged ...`. Every block is complete.
 - Every new code path fails gracefully: `console.warn('[BIM] ...', err)` plus `a3dToast(...)`.

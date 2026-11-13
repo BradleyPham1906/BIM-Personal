@@ -64,8 +64,9 @@ dimension edit and rebuild, followed by save/reopen of feature inputs. Broader f
 Obtain approval before execution or architecture changes as required above. Do not rewrite a
 solver, evaluator, feature engine or geometry kernel while the reuse decision remains open.
 
-The current ES5/single-file/zero-runtime-dependency/offline contract stays in force unless the
-owner explicitly approves a specific exception. Research clones and repository notes do not
+The ES5/single-file/offline contract stays in force. Since 2026-11-13 runtime libraries are allowed
+under `CLAUDE.md` "Third-party libraries" (compatible license, vendored and pinned, loaded on demand,
+behind an adapter), each one approved by the owner at the end of its research. Research clones and repository notes do not
 change the shipped app. If reuse conflicts with the contract, report the choice and ask;
 do not silently add runtime dependencies or spend a phase recreating upstream to avoid asking.
 
