@@ -1,0 +1,31 @@
+{
+  "fixture_type": "synthetic graph arithmetic only; not a BIM app or accessibility assessment",
+  "units": "m",
+  "edge_inputs": [
+    [
+      "roomA",
+      "corridor",
+      4
+    ],
+    [
+      "roomB",
+      "corridor",
+      3
+    ],
+    [
+      "corridor",
+      "exit",
+      6
+    ]
+  ],
+  "roomA_to_exit": 10,
+  "roomB_to_exit": 9,
+  "roomA_to_exit_without_door": null,
+  "adjacent_rooms_direct_edge": false,
+  "isolated_32in_clear_width_predicate": {
+    "31.9": false,
+    "32.0": true,
+    "32.1": true
+  },
+  "unknown_measured_clear_width": "not evaluated"
+}

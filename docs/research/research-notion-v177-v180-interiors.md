@@ -1,0 +1,57 @@
+# V177–V180 Interiors (I1–I4): research draft
+
+Research date: 2026-11-13. Status: draft, single-researcher synthesis; not a specification, owner approval, code or fire-safety determination. App source references are pinned to main commit `95b7aee4db8be1fc28c0fbe7befc7407fabd1dda`. No actual app execution, real scan, accessibility audit, indoor daylight simulation or independent verification was performed. The 64-hour task budget is an old rough assumption, not a validated estimate for this scope.
+
+## Questions and findings
+
+1. Can room programming share the app's current model rather than duplicating it? **Candidate, subject to tests.** The current rooms and region-dependent code supply useful geometry, area and links, but valid enclosed geometry and current revision must be checked. Shared boundary, functional adjacency, door connectivity and walking distance are separate relationships.
+2. Can imported objects drive clearance decisions? **Conditionally.** Accurate real-world units, geometry, floor, rotation and intended use are prerequisites; a scan or visual bounding box is not evidence of code compliance. Each rule needs jurisdiction, edition, applicability, inputs and exceptions.
+3. Does the shortest line to an exit prove compliant egress? **No.** A candidate route can flag problems, but legal exit requirements need jurisdiction-specific occupancy, exit capacity and independence, discharge, protection, doors and other conditions. Incomplete or stale geometry means not evaluated, not a zero-length route.
+4. Can an indoor sightline stand in for daylight analysis? **No.** Geometry-only isovists can support views; sky, glazing, time, shading and light transport are additional daylight dependencies.
+
+## Evidence and existing work
+
+The owner requested room relationships and ergonomics and previously chose the Scale scan-and-fit direction: import glTF/RoomPlan data first, native Apple capture when there is a suitable shell, photo-to-mesh later and 1:1 XR last. [Task](https://app.notion.com/p/3fecbfcc3a388109b937fdf301083454); [prior Scale research at pinned main](https://github.com/BradleyPham1906/BIM-Personal/blob/95b7aee4db8be1fc28c0fbe7befc7407fabd1dda/docs/research/research-scale.md). That older report's service, licensing and availability observations must be rechecked; never submit a private image to a remote service without informed permission. Native Apple RoomPlan uses supported iOS/iPadOS capture devices; Apple's documentation describes parametric USD output but does not certify measurements ([Apple](https://developer.apple.com/documentation/roomplan)). Mac Catalyst processing is not equivalent to Mac capture.
+
+[rooms.js](https://github.com/BradleyPham1906/BIM-Personal/blob/95b7aee4db8be1fc28c0fbe7befc7407fabd1dda/src/js/engine/bim/rooms.js) contains polygon area and boundary tracing. [region-dependents.js](https://github.com/BradleyPham1906/BIM-Personal/blob/95b7aee4db8be1fc28c0fbe7befc7407fabd1dda/src/js/engine/bim/region-dependents.js) includes linked regions and remeasurement; a region can be marked open while retaining its last shape. Treat an open/failed regeneration as stale or not evaluated, not a trusted perimeter. Do not infer all rooms are always live from an old snapshot comment or from the presence of remeasurement code.
+
+[columns-openings.js](https://github.com/BradleyPham1906/BIM-Personal/blob/95b7aee4db8be1fc28c0fbe7befc7407fabd1dda/src/js/engine/bim/columns-openings.js) creates door markers with host, centre, direction and nominal width/height, not hinge and swing in that creation path. It has paths that preserve a marker while a wall cut may not be recreated. A marker alone must therefore not be accepted as proof that the wall opening is physically cut; test recut failures at runtime. Nominal opening width is not necessarily measured clear width. These are source-based risks, not an observed runtime defect.
+
+## I1 — program and adjacency
+
+Store explicit program requirements separately from measured room facts: use, desired count and area range, required/desired/forbidden relation and rationale. Link to stable room IDs and revision; allow unmatched program items and rooms. A shared-wall graph may express physical adjacency; a doorway graph expresses possible connections; distance is computed from a route through walkable geometry and has units. Program relationships such as “near” require an explicit, owner-selected threshold and interpretation. An adjacency diagram is a view of requirements and observed facts, not automatically the model itself. Multiple floors, touching corners, wall thickness and gaps require explicit topology rules; overlapping polygons and open regions must not be silently treated as valid rooms.
+
+## I2 — clearance and ergonomics
+
+Imported assets need source, license, units, transform, measured size, uncertainty, origin and model revision. Separate the visible mesh, simplified collision footprint and configurable functional clearance zones. Check physical obstructions against the appropriate space at its relevant height. Required clear spaces can overlap where permitted; blanket collision between all clearance zones produces false failures. Measurements and user-defined preferences are not an automated certification.
+
+For example, [ADA 403 and 404](https://www.access-board.gov/ada/chapter/ch04/) describe separate walking-surface, door-opening and maneuvering provisions and exceptions. The general walking-surface width is 36 in; the specified short narrowing exception has additional constraints. Manual door clear opening is generally 32 in measured from door face to stop at 90 degrees, with depth conditions and exceptions. [ADA Chapter 3 guidance](https://www.access-board.gov/ada/guides/chapter-3-clear-floor-or-ground-space-and-turning-space) covers 30 × 48 in clear space and 60 in circle or qualifying T-turn, with approach, alcove and knee/toe details. One dimension in isolation is not an ADA pass. [England Approved Document M](https://www.gov.uk/government/publications/access-to-and-use-of-buildings-approved-document-m) has different volumes and amendments; establish jurisdiction, building type, edition and transitional provisions before selecting rules. The requested Neufert and Panero/Zelnik references were not inspected: do not infer their dimensions or rights.
+
+## I3 — circulation and escape
+
+Build a revisioned graph over verified openings and accessible walkable space, with height, floor, direction, width, edge cost and obstruction facts. A graph of room centres is useful for coarse connectivity, but centre-to-centre distance may cut across obstacles and cannot establish travel distance. For path measurement consider polygon/navmesh paths, routing around actual obstacles, door geometry, floor transitions and a clearly specified point of measurement. Accessibility route and general circulation should not share identical assumptions about stairs. Return separate unknown, blocked, partial and valid-estimate states with reasons. [OSHA](https://www.osha.gov/etools/evacuation-plans-procedures/emergency-standards/design-construction) describes an exit route as exit access, exit and exit discharge; it is not a substitute for selecting the actual adopted code. Missing exit discharge, occupant load, travel limits, door swing and relevant fire/occupancy facts preclude a compliance conclusion.
+
+## I4 — indoor daylight, views and sightlines
+
+An isovist needs a reproducible observer position and height, view plane, clipping extent and current obstructing geometry. A window aperture, view to outdoors and a daylight result are different outputs. Show occlusion and incomplete/hidden geometry, and avoid calling an unverified ray trace a sunlight or daylight compliance result. Daylight modelling needs site position, north, time zone/date, climate/sky or weather file, glazing transmittance/BSDF, shading, material reflectance and sampling grid. The [LBNL daylight simulation example](https://eta-publications.lbl.gov/sites/default/files/daylight_simulation_completed_file.pdf) illustrates the inputs and simulation workflow; a proxy such as window area ratio is not spatial daylight autonomy. Choose target metric and validation reference before setting numerical thresholds.
+
+## Alternatives and proposed architecture
+
+- Program: separate graph plus stable links to existing rooms rather than rewriting room ownership. Preserve unmatched entries.
+- Fit: editable user-set units and asset metadata plus a simplified collision representation; raw triangle collisions may be costly and scanned meshes may have holes. Never default an unknown measurement to zero.
+- Routing: a room graph is cheap for connectivity but weak for distance; navmesh/polygon path improves geometry fidelity at additional invalidation and obstacle cost. Evaluate against hand-measured fixtures before selecting.
+- Daylight: quick geometric visibility is useful and cheap but is not physically based; a validated lighting backend is more defensible but requires climate/material input and computation. Offer these as different products, not different quality levels of a single compliance number.
+- Rule engine: version rule definitions and applicability separately from project geometry; results carry clause, edition, measurements, assumptions and explicit unknowns. Final interpretation remains with qualified reviewers.
+
+## Reproducible synthetic experiment
+
+Run `python3 interiors-graph-fixture.py`. Synthetic directed edges A→corridor=4 m, B→corridor=3 m and corridor→exit=6 m yield A=10 m and B=9 m. Removing A's doorway disconnects A despite the stipulated adjacency of A and B. An isolated `>=32 in` predicate gives false, true, true for 31.9/32/32.1, with missing width marked not evaluated. This is basic graph arithmetic and a single dimensional predicate; it does **not** test wall geometry, clearance measurement, any exceptions, app behavior, or ADA/egress compliance. JSON results and script accompany this report.
+
+## Tests and exit gates before implementation
+
+1. Rebuild rooms after walls, layers, sketches and openings change; open region and failed recut must invalidate dependent checks and explain stale state. Verify actual physical cut against marker; save/reopen and undo/redo.
+2. Room shared boundary without door; two doors; corner contact; level transitions; door locked/blocked; unreachable exit; obstacles that make centre-line shortcuts invalid; multiple exits and accessible-vs-stair routes.
+3. Exact/above/below measured clear opening and the 32-in short narrowing exception; approach, door-leaf swing, turning/alcove and permitted overlap; unknown hinge, unknown jurisdiction or incomplete asset mesh yields not evaluated. Verify inch/mm conversion independently.
+4. Known glTF scale and incorrectly tagged units, nonuniform transform, uncertain scan, missing furniture collision surface, licence and privacy; retain raw data only on explicit policy. Test real Apple capture and mixed imports before promising accuracy.
+5. Isovist against a hand-constructed occluder; missing geometry warning; daylight comparison against a reproducible external reference with documented inputs. Test phone/device performance and actual report rendering.
+6. Independent research review, selected jurisdiction and edition, applicability matrix, full source/licence audit, real app fixtures, performance measurements and owner decisions are still required. These recommendations are not approved work orders.
