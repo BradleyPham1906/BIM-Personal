@@ -276,3 +276,29 @@ test('the frame runs from end to end against a stand-in for three.js, and gives 
   }
   assert.equal(R.core, null); assert.equal(R.cv, null); assert.equal(R.drew, false);
 });
+
+/* ---------------- T-07 bimRvLook: looks by element type ---------------- */
+const RV_SCENE = path.join(ROOT, 'src', 'js', 'engine', 'render', 'rendered-scene.js');
+const RV_NAMES = ['bimRvLook'];
+function loadRvScene() {
+  let src = fs.readFileSync(RV_SCENE, 'utf8');
+  src = src.replace(/^import \{[^}]*\} from '[^']+';$/gm, '').replace(/\nexport \{[^}]*\};\n?$/, '\n');
+  return new Function(src + '\nreturn {' + RV_NAMES.map((n) => n + ':' + n).join(',') + '};')();
+}
+const R = loadRvScene();
+test('T-07 bimRvLook: a window is glass, even of steel', () => {
+  assert.equal(R.bimRvLook({ bim: { type: 'window', material: 'steel' } }), 'glass');
+  assert.equal(R.bimRvLook({ bim: { type: 'window' } }), 'glass');
+});
+test('T-07 bimRvLook: steel, metal and aluminium are metal, any case', () => {
+  assert.equal(R.bimRvLook({ bim: { type: 'wall', material: 'Steel' } }), 'metal');
+  assert.equal(R.bimRvLook({ bim: { type: 'column', material: 'metal' } }), 'metal');
+  assert.equal(R.bimRvLook({ bim: { type: 'beam', material: 'aluminium' } }), 'metal');
+  assert.equal(R.bimRvLook({ bim: { type: 'wall', material: 'alumin' } }), 'metal');
+});
+test('T-07 bimRvLook: anything else is matte', () => {
+  assert.equal(R.bimRvLook({ bim: { type: 'wall', material: 'concrete' } }), 'matte');
+  assert.equal(R.bimRvLook({ bim: { type: 'door' } }), 'matte');
+  assert.equal(R.bimRvLook({}), 'matte');
+  assert.equal(R.bimRvLook(null), 'matte');
+});

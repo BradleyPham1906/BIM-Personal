@@ -13,7 +13,7 @@ Spec: `SPEC.md` in this folder. Branch: `render-r6`. `[x]` done (its required ch
 - Needs the owner's word (Rule #1). Load the build over http, draw a few elements, `window.__a3dRendered(true)`,
   report the console and one picture; then Save image, a selection, a layer turned off, plan view, RENDER off.
 
-## [ ] T-07 [Cline] Looks by element type in `src/js/engine/render/rendered-scene.js`
+## [x] T-07 [Cline] Looks by element type in `src/js/engine/render/rendered-scene.js`
 
 - **Add** `bimRvLook(o)`: returns `'glass'` for an object whose `bim.type` is `'window'`, `'metal'` when its
   material name matches `/steel|metal|alumin/i`, else `'matte'`.

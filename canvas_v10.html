@@ -37595,6 +37595,15 @@ try{
     if(s){r=r*0.55+s[0]*0.45;g=g*0.55+s[1]*0.45;b=b*0.55+s[2]*0.45;}
     return [bimRvLin(r),bimRvLin(g),bimRvLin(b)];
   }
+  /* what an object looks like: glass for a window, metal for steel or aluminium, matte otherwise  __acad3dV194 */
+  function bimRvLook(o){
+    var m;
+    if(!o||!o.bim)return 'matte';
+    if(o.bim.type==='window')return 'glass';
+    m=o.bim.material||'';
+    if(/steel|metal|alumin/i.test(m))return 'metal';
+    return 'matte';
+  }
   /* what a chunk looks like now, in a few characters: its triangles' version and every row of its objects */
   function bimRvChunkSig(B,c){
     var d=B.data,h=0,i,o,k;
