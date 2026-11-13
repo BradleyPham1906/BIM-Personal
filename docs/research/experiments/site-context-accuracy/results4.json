@@ -1,0 +1,26 @@
+{
+ "exportImage 1 m": {
+  "status": 200,
+  "cors": "*",
+  "type": "image/tiff",
+  "bytes": 1049850,
+  "ms": 6279,
+  "w": 469,
+  "h": 445,
+  "min": 5.05,
+  "max": 15.42,
+  "centre": 10.89
+ },
+ "exportImage 5 m": {
+  "status": 200,
+  "cors": "*",
+  "type": "image/tiff",
+  "bytes": 66682,
+  "ms": 1366,
+  "w": 94,
+  "h": 89,
+  "min": 8.37,
+  "max": 14.96,
+  "centre": 13.59
+ }
+}

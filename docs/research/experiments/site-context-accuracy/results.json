@@ -1,0 +1,346 @@
+{
+ "date": "2026-11-13T23:10:04.539Z",
+ "bbox": [
+  -75.1665,
+  39.9505,
+  -75.161,
+  39.9545
+ ],
+ "sources": {
+  "osm_buildings": {
+   "error": "Unexpected token '<', \"<html>\r\n<h\"... is not valid JSON"
+  },
+  "osm_infra": {
+   "error": "Unexpected token '<', \"<html>\r\n<h\"... is not valid JSON"
+  },
+  "phl_footprints": {
+   "status": 200,
+   "cors": "*",
+   "metaCors": "*",
+   "ms": 559,
+   "fields": [
+    "objectid",
+    "bin",
+    "fcode",
+    "address",
+    "building_name",
+    "base_elevation",
+    "approx_hgt",
+    "max_hgt",
+    "parcel_id_num",
+    "parcel_id_source",
+    "dor_alternate_addr",
+    "square_ft",
+    "Shape__Area",
+    "Shape__Length"
+   ],
+   "heightFields": [
+    "base_elevation",
+    "approx_hgt",
+    "max_hgt"
+   ],
+   "features": 73,
+   "filled": {
+    "base_elevation": 73,
+    "approx_hgt": 73,
+    "max_hgt": 73
+   },
+   "tallest": [
+    {
+     "base_elevation": 48.2,
+     "approx_hgt": 251,
+     "max_hgt": 275.33983808000005
+    },
+    {
+     "base_elevation": 47.67,
+     "approx_hgt": 62,
+     "max_hgt": 64.96992042
+    },
+    {
+     "base_elevation": 47.63,
+     "approx_hgt": 61,
+     "max_hgt": 64.70988117
+    },
+    {
+     "base_elevation": 47.62,
+     "approx_hgt": 37,
+     "max_hgt": 54.12992733
+    },
+    {
+     "base_elevation": 47.6,
+     "approx_hgt": 81,
+     "max_hgt": 323.33016325
+    },
+    {
+     "base_elevation": 47.52,
+     "approx_hgt": 131,
+     "max_hgt": 136.29996108
+    },
+    {
+     "base_elevation": 47.5,
+     "approx_hgt": 320,
+     "max_hgt": 416.88010758
+    },
+    {
+     "base_elevation": 47.25,
+     "approx_hgt": 145,
+     "max_hgt": 161.01001725
+    }
+   ]
+  },
+  "nbi": {
+   "status": 200,
+   "cors": "*",
+   "features": 32,
+   "verticalAndSizeFields": [
+    "STRUCTURE_NUMBER_008",
+    "FEATURES_DESC_006A",
+    "FACILITY_CARRIED_007",
+    "MIN_VERT_CLR_010",
+    "YEAR_BUILT_027",
+    "NAV_VERT_CLR_MT_039",
+    "STRUCTURE_KIND_043A",
+    "STRUCTURE_TYPE_043B",
+    "MAIN_UNIT_SPANS_045",
+    "MAX_SPAN_LEN_MT_048",
+    "STRUCTURE_LEN_MT_049",
+    "ROADWAY_WIDTH_MT_051",
+    "DECK_WIDTH_MT_052",
+    "VERT_CLR_OVER_MT_053",
+    "VERT_CLR_UND_REF_054A",
+    "VERT_CLR_UND_054B",
+    "DECK_STRUCTURE_TYPE_107"
+   ],
+   "sample": [
+    {
+     "STRUCTURE_NUMBER_008": "000000000039106",
+     "FEATURES_DESC_006A": "Abolished Conrail",
+     "FACILITY_CARRIED_007": "15th Street",
+     "MIN_VERT_CLR_010": 99.99,
+     "YEAR_BUILT_027": 1898,
+     "NAV_VERT_CLR_MT_039": 0,
+     "STRUCTURE_KIND_043A": "3",
+     "STRUCTURE_TYPE_043B": "02",
+     "MAIN_UNIT_SPANS_045": 4,
+     "MAX_SPAN_LEN_MT_048": 20.4,
+     "STRUCTURE_LEN_MT_049": 78,
+     "ROADWAY_WIDTH_MT_051": 8,
+     "DECK_WIDTH_MT_052": 15.3,
+     "VERT_CLR_OVER_MT_053": 99.99,
+     "VERT_CLR_UND_REF_054A": "R",
+     "VERT_CLR_UND_054B": 6.71,
+     "DECK_STRUCTURE_TYPE_107": "1",
+     "xy": [
+      -75.16367200006616,
+      39.96007199967564
+     ]
+    },
+    {
+     "STRUCTURE_NUMBER_008": "000000000039129",
+     "FEATURES_DESC_006A": "Abandoned Conrail",
+     "FACILITY_CARRIED_007": "21st Street",
+     "MIN_VERT_CLR_010": 99.99,
+     "YEAR_BUILT_027": 1899,
+     "NAV_VERT_CLR_MT_039": 0,
+     "STRUCTURE_KIND_043A": "4",
+     "STRUCTURE_TYPE_043B": "02",
+     "MAIN_UNIT_SPANS_045": 3,
+     "MAX_SPAN_LEN_MT_048": 24.4,
+     "STRUCTURE_LEN_MT_049": 60,
+     "ROADWAY_WIDTH_MT_051": 10.1,
+     "DECK_WIDTH_MT_052": 10.5,
+     "VERT_CLR_OVER_MT_053": 99.99,
+     "VERT_CLR_UND_REF_054A": "R",
+     "VERT_CLR_UND_054B": 6.83,
+     "DECK_STRUCTURE_TYPE_107": "1",
+     "xy": [
+      -75.17332800003831,
+      39.96194199984797
+     ]
+    },
+    {
+     "STRUCTURE_NUMBER_008": "000000000038694",
+     "FEATURES_DESC_006A": "VINE STREET EXPRESSWAY",
+     "FACILITY_CARRIED_007": "12TH STREET",
+     "MIN_VERT_CLR_010": 99.99,
+     "YEAR_BUILT_027": 1990,
+     "NAV_VERT_CLR_MT_039": 0,
+     "STRUCTURE_KIND_043A": "3",
+     "STRUCTURE_TYPE_043B": "02",
+     "MAIN_UNIT_SPANS_045": 1,
+     "MAX_SPAN_LEN_MT_048": 29,
+     "STRUCTURE_LEN_MT_049": 30.2,
+     "ROADWAY_WIDTH_MT_051": 10.6,
+     "DECK_WIDTH_MT_052": 23.6,
+     "VERT_CLR_OVER_MT_053": 99.99,
+     "VERT_CLR_UND_REF_054A": "H",
+     "VERT_CLR_UND_054B": 4.5,
+     "DECK_STRUCTURE_TYPE_107": "1",
+     "xy": [
+      -75.1586750000257,
+      39.95739200013412
+     ]
+    },
+    {
+     "STRUCTURE_NUMBER_008": "000000000039006",
+     "FEATURES_DESC_006A": "RAMP EB-15 OFF",
+     "FACILITY_CARRIED_007": "16TH STREET",
+     "MIN_VERT_CLR_010": 99.99,
+     "YEAR_BUILT_027": 1989,
+     "NAV_VERT_CLR_MT_039": 0,
+     "STRUCTURE_KIND_043A": "3",
+     "STRUCTURE_TYPE_043B": "02",
+     "MAIN_UNIT_SPANS_045": 1,
+     "MAX_SPAN_LEN_MT_048": 16.8,
+     "STRUCTURE_LEN_MT_049": 17.4,
+     "ROADWAY_WIDTH_MT_051": 14,
+     "DECK_WIDTH_MT_052": 23.5,
+     "VERT_CLR_OVER_MT_053": 99.99,
+     "VERT_CLR_UND_REF_054A": "H",
+     "VERT_CLR_UND_054B": 4.5,
+     "DECK_STRUCTURE_TYPE_107": "1",
+     "xy": [
+      -75.16555599988062,
+      39.95805600018267
+     ]
+    },
+    {
+     "STRUCTURE_NUMBER_008": "000000000039109",
+     "FEATURES_DESC_006A": "Abolished Conrail",
+     "FACILITY_CARRIED_007": "17th Street",
+     "MIN_VERT_CLR_010": 99.99,
+     "YEAR_BUILT_027": 1898,
+     "NAV_VERT_CLR_MT_039": 0,
+     "STRUCTURE_KIND_043A": "3",
+     "STRUCTURE_TYPE_043B": "02",
+     "MAIN_UNIT_SPANS_045": 1,
+     "MAX_SPAN_LEN_MT_048": 19.2,
+     "STRUCTURE_LEN_MT_049": 25,
+     "ROADWAY_WIDTH_MT_051": 8,
+     "DECK_WIDTH_MT_052": 15.1,
+     "VERT_CLR_OVER_MT_053": 99.99,
+     "VERT_CLR_UND_REF_054A": "R",
+     "VERT_CLR_UND_054B": 6.43,
+     "DECK_STRUCTURE_TYPE_107": "1",
+     "xy": [
+      -75.16674199973616,
+      39.96090300004826
+     ]
+    },
+    {
+     "STRUCTURE_NUMBER_008": "000000000039125",
+     "FEATURES_DESC_006A": "Abandoned Conrail",
+     "FACILITY_CARRIED_007": "20th Street",
+     "MIN_VERT_CLR_010": 99.99,
+     "YEAR_BUILT_027": 1898,
+     "NAV_VERT_CLR_MT_039": 0,
+     "STRUCTURE_KIND_043A": "3",
+     "STRUCTURE_TYPE_043B": "02",
+     "MAIN_UNIT_SPANS_045": 1,
+     "MAX_SPAN_LEN_MT_048": 17.7,
+     "STRUCTURE_LEN_MT_049": 19.2,
+     "ROADWAY_WIDTH_MT_051": 8,
+     "DECK_WIDTH_MT_052": 8.4,
+     "VERT_CLR_OVER_MT_053": 99.99,
+     "VERT_CLR_UND_REF_054A": "R",
+     "VERT_CLR_UND_054B": 5.94,
+     "DECK_STRUCTURE_TYPE_107": "1",
+     "xy": [
+      -75.17147199981295,
+      39.96143600002039
+     ]
+    }
+   ]
+  },
+  "usgs_3dep_dem": {
+   "status": 200,
+   "cors": "*",
+   "ms": 9552,
+   "samples": 25,
+   "cellSize_m": 0.9999999900119095,
+   "min": 10.505475044,
+   "max": 14.447894096
+  },
+  "terrarium_vs_3dep": {
+   "cors": "*",
+   "imagerySources": [
+    "ned/ned19_n40x00_w075x25_pa_northeast_2010.tif",
+    "ned/ned19_n40x00_w075x25_pa_northeast_2010.tif"
+   ],
+   "terrarium": [
+    13.84,
+    13.44,
+    12.49,
+    11.97,
+    11.5,
+    14.21,
+    13.46,
+    13.76,
+    12.14,
+    11.32,
+    14.46,
+    13.68,
+    13.6,
+    12.81,
+    9.14,
+    14.09,
+    13.41,
+    13.16,
+    12.4,
+    11.31,
+    13.86,
+    13.88,
+    13.51,
+    12.32,
+    11.4
+   ],
+   "usgs3dep": [
+    14.29,
+    13.62,
+    12.7,
+    11.99,
+    11.56,
+    14.39,
+    13.54,
+    10.51,
+    12.54,
+    11.43,
+    14.45,
+    13.52,
+    10.89,
+    12.84,
+    13.51,
+    14.18,
+    13.42,
+    13.21,
+    12.45,
+    11.78,
+    13.96,
+    13.97,
+    13.61,
+    12.64,
+    11.81
+   ],
+   "diffRMSE_m": 1.23,
+   "diffMaxAbs_m": 4.37
+  },
+  "usgs_3dep_ept": {
+   "listStatus": 200,
+   "listCors": "*",
+   "paDatasets": [
+    "PA_3_County_South_Central_2018/",
+    "PA_Northcentral_B1_2019/",
+    "PA_Northcentral_B2_2019/",
+    "PA_Northcentral_B3QL1_2019/",
+    "PA_Northcentral_B3_2019/",
+    "PA_Northcentral_B4_2019/",
+    "PA_Northcentral_B5_2019/",
+    "PA_WesternPA_1_2019/",
+    "PA_WesternPA_2_2019/",
+    "PA_WesternPA_3_2019/",
+    "PA_WesternPA_4_2019/"
+   ],
+   "candidates": []
+  }
+ }
+}

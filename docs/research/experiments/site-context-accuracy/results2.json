@@ -1,0 +1,102 @@
+{
+ "City Hall": [
+  {
+   "address": "1400 JOHN F KENNEDY BLVD",
+   "building_name": "City Hall",
+   "base_elevation": 34.5,
+   "approx_hgt": 170,
+   "max_hgt": 558.2099034199999,
+   "square_ft": 153719
+  },
+  {
+   "address": "500-36 CHESTNUT ST",
+   "building_name": "Old City Hall",
+   "base_elevation": 28.7,
+   "approx_hgt": 53,
+   "max_hgt": 75.9600265,
+   "square_ft": 4006
+  },
+  {
+   "address": "1400 JOHN F KENNEDY BLVD",
+   "building_name": null,
+   "base_elevation": 43.6,
+   "approx_hgt": 15,
+   "max_hgt": 16.71004958,
+   "square_ft": 2644
+  }
+ ],
+ "One Liberty Place": [
+  {
+   "address": "1650 MARKET ST",
+   "building_name": "One Liberty Place",
+   "base_elevation": 41.6,
+   "approx_hgt": 677,
+   "max_hgt": 825.2399325800001,
+   "square_ft": 35926
+  }
+ ],
+ "Centre Square": [],
+ "overpass https://overpass-api.de/api/interpreter": {
+  "status": 502,
+  "head": "# 502 Gateway Timeout\n\nThis Overpass API server is currently at capacity. All query workers are busy\nand the request queue is full.\n\n## What to do\n\nRetry your request using exponential backoff: wait a"
+ },
+ "overpass https://overpass.kumi.systems/api/interpreter": {
+  "status": 504,
+  "head": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\"\n    \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:"
+ },
+ "eptTotal": 2296,
+ "eptNear": [
+  "DE_Statewide_1_B23/",
+  "NJ_CapeMayCo_2008/",
+  "NJ_CumberlandCo_2008/",
+  "NJ_GloucesterCo_2007/",
+  "NJ_NW6Co_2017/",
+  "NJ_SalemCo_2008/",
+  "NJ_SalemCo_2009/",
+  "NJ_South_Jersey_FEMA_2018/",
+  "NJ_SouthernNJ_2018/",
+  "NJ_SussexWarren_2008/",
+  "PA_3_County_South_Central_2018/",
+  "PA_Northcentral_B1_2019/",
+  "PA_Northcentral_B2_2019/",
+  "PA_Northcentral_B3QL1_2019/",
+  "PA_Northcentral_B3_2019/",
+  "PA_Northcentral_B4_2019/",
+  "PA_Northcentral_B5_2019/",
+  "PA_WesternPA_1_2019/",
+  "PA_WesternPA_2_2019/",
+  "PA_WesternPA_3_2019/",
+  "PA_WesternPA_4_2019/",
+  "USGS_LPC_DE_DelawareValleyHD_5A_2015_LAS_2017/",
+  "USGS_LPC_DE_DelawareValley_HD_2015_LAS_2017/",
+  "USGS_LPC_IN_ET_B6_Delaware_2012_LAS_2017/",
+  "USGS_LPC_OH_Delaware_2018_LAS_2019/"
+ ],
+ "eptCovering": [
+  {
+   "nm": "USGS_LPC_DE_DelawareValley_HD_2015_LAS_2017/",
+   "points": 41424477999,
+   "srs": "3857",
+   "dataType": "laszip",
+   "span": 256,
+   "dims": [
+    "X",
+    "Y",
+    "Z",
+    "Intensity",
+    "ReturnNumber",
+    "NumberOfReturns",
+    "ScanDirectionFlag",
+    "EdgeOfFlightLine",
+    "Classification",
+    "ScanAngleRank",
+    "UserData",
+    "PointSourceId",
+    "GpsTime",
+    "ScanChannel",
+    "ClassFlags",
+    "OriginId"
+   ]
+  }
+ ]
+}

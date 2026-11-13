@@ -1,0 +1,126 @@
+{
+ "https://overpass.private.coffee/api/interpreter": {
+  "status": 504,
+  "head": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML "
+ },
+ "osmBuildings": {
+  "host": "https://overpass-api.de/api/interpreter",
+  "status": 200,
+  "cors": "*",
+  "buildings": 86,
+  "withHeight": 27,
+  "levelsOnly": 38,
+  "neither": 21,
+  "heights": [
+   [
+    "",
+    "82.2"
+   ],
+   [
+    "Residence Inn Philadelphia Center City",
+    "106"
+   ],
+   [
+    "Masonic Temple",
+    "11.63"
+   ],
+   [
+    "The Notary Hotel",
+    "71.6"
+   ],
+   [
+    "Centre Square II",
+    "127"
+   ],
+   [
+    "Centre Square I",
+    "149"
+   ],
+   [
+    "1515 Market Street",
+    "82.2"
+   ],
+   [
+    "Widener Building",
+    "79.24"
+   ],
+   [
+    "Municipal Services Building",
+    "80.772"
+   ],
+   [
+    "The Grande",
+    "12"
+   ],
+   [
+    "Pennsylvania Building",
+    "67.66"
+   ],
+   [
+    "",
+    "71"
+   ],
+   [
+    "",
+    "48.1"
+   ],
+   [
+    "W Hotel & Element by Westin Philadelphia",
+    "189"
+   ],
+   [
+    "Land Title and Trust Building Annex",
+    "104.85"
+   ],
+   [
+    "Adelphia House",
+    "76.2"
+   ],
+   [
+    "The Ellington",
+    "81.44"
+   ],
+   [
+    "Philadelphia Justice Center",
+    "62"
+   ],
+   [
+    "City Place 101",
+    "62.48"
+   ],
+   [
+    "",
+    "70.7"
+   ]
+  ]
+ },
+ "https://maps.mail.ru/osm/tools/overpass/api/interpreter": "SyntaxError: Unexpected token '<', \"<html>\r\n<h\"... is not valid JSON",
+ "osmInfra": {
+  "bridge": {
+   "n": 63,
+   "layer": 61,
+   "vertical": 0
+  },
+  "tunnel": {
+   "n": 81,
+   "layer": 77,
+   "vertical": 0
+  },
+  "man_made=bridge": {
+   "n": 1,
+   "layer": 1,
+   "vertical": 0
+  }
+ },
+ "ept": {
+  "eptJson": [
+   200,
+   "*"
+  ],
+  "hierarchy": [
+   200,
+   "*",
+   "76275 bytes"
+  ]
+ }
+}
