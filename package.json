@@ -1,5 +1,6 @@
 {
   "name": "bim-personal",
+  "license": "Apache-2.0",
   "private": true,
   "description": "A zero-dependency browser CAD/BIM app. Scripts only: the app itself has no npm dependencies.",
   "scripts": {
