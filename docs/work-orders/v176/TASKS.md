@@ -20,7 +20,7 @@ Scores are from `../ROUTING.md` (files, logic, understanding, judgment, trickine
 
 ---
 
-## [ ] WO-01 [Cline] `bim_ifcos_summary(path)`
+## [x] WO-01 [Cline] `bim_ifcos_summary(path)`
 
 - **It must:** answer the summary of SPEC part 3 for `ifcopenshell.open(path)`, or for `_bim_ifcos_file` when `path`
   is `''`. `products`: every `file.by_type("IfcProduct")` counted by `element.is_a()`, leaving out
