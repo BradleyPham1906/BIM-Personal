@@ -1,6 +1,7 @@
 import { A3D } from '../core/state.js';
 import { pushUndo } from '../drawing/plan-mode-sketch.js';
 import { bimEsc } from '../layers/layer-manager.js';
+import { A3D_CLB } from '../site-analysis/climate-board.js';
 import { saveSoon } from '../bim/region-regenerate.js';
 import { bimActivateView, bimViewSync } from '../views/saved-views.js';
 import {
@@ -9,7 +10,11 @@ import {
 } from './sheets.js';
 import { bimSheetOnScreen, bimSlideshowStart } from './present.js';
 import { bimOpenSheetPropsDlg, bimPrintSheet } from './viewports.js';
-import { bimPresIndex, bimPresSeq, bimPresStep } from './boards.js';
+import { bimLyTabs } from './layouts.js';
+import {
+  bimBoardById, bimBoardMenuDo, bimBoardMenuItems, bimBoardSetNum, bimLayoutAddMenu, bimLyEntries,
+  bimPresIndex, bimPresSeq, bimPresStep
+} from './boards.js';
 import { bimPresPanelRefresh, bimPresRename, refreshBrowser } from './presentation-panel.js';
 import { a3dToast } from '../bim/csg-booleans.js';
 
@@ -18,22 +23,27 @@ import { a3dToast } from '../bim/csg-booleans.js';
      one. Drawn from A3D.sheets on every refresh -- the same list the Project Browser's Sheets group
      reads -- so the two cannot disagree. */
   var A3D_LT_EDITING=false,A3D_LT_HTML='';
+  /* __acad3dV175c (D5): every layout of the set, a drawing sheet or a board, in the set's order */
   function bimLayoutTabsHtml(){
-    var onSheet=bimSheetOnScreen(),i,s;
-    var h='<button class="a3d-lt'+(onSheet?'':' on')+'" data-lt="model" title="Model space">Model</button>';
-    for(i=0;i<A3D.sheets.length;i++){
-      s=A3D.sheets[i];
-      h+='<button class="a3d-lt'+(onSheet&&s.id===A3D.activeSheetId?' on':'')+'" data-lt="sheet" data-ltsheet="'+bimEsc(s.id)+'" '+
-        'title="'+bimEsc(bimSheetLabel(s))+' -- double-click to rename, right-click for more">'+bimEsc(bimSheetLabel(s))+'</button>';
-    }
-    return h+'<button class="a3d-lt a3d-ltplus" data-lt="new" title="New sheet">+</button>';
+    var onSheet=bimSheetOnScreen(),brd=A3D_CLB.open&&A3D_CLB.board?A3D_CLB.board:null,act=brd||(onSheet?A3D.activeSheetId:null);
+    var h='<button class="a3d-lt'+(act?'':' on')+'" data-lt="model" title="Model space">Model</button>';
+    bimLyTabs(bimLyEntries(),act).forEach(function(T){
+      h+='<button class="a3d-lt'+(T.on?' on':'')+(T.t==='board'?' brd':'')+'" data-lt="'+T.t+'" data-ltsheet="'+bimEsc(T.id)+'" '+
+        'title="'+bimEsc(T.label)+(T.t==='board'?' (a board) -- double-click to renumber':' -- double-click to rename')+', right-click for more">'+bimEsc(T.label)+'</button>';
+    });
+    return h+'<button class="a3d-lt a3d-ltplus" data-lt="new" title="New layout: a drawing sheet or a board">+</button>';
+  }
+  /* the tabs alone: also drawn when a board is added, opened or closed (bimPresPanelRefresh), since the tabs list
+     the boards too (__acad3dV175c) */
+  function bimLayoutTabsDraw(){
+    var box=document.getElementById('a3d-laytabs'),h;
+    if(!box||A3D_LT_EDITING)return false;
+    h=bimLayoutTabsHtml();
+    if(h!==A3D_LT_HTML||box.innerHTML===''){box.innerHTML=h;A3D_LT_HTML=h;}
+    return true;
   }
   function bimRenderLayoutTabs(){
-    var box=document.getElementById('a3d-laytabs');
-    if(box&&!A3D_LT_EDITING){
-      var h=bimLayoutTabsHtml();
-      if(h!==A3D_LT_HTML||box.innerHTML===''){box.innerHTML=h;A3D_LT_HTML=h;}
-    }
+    bimLayoutTabsDraw();
     var bar=document.getElementById('a3d-statusbar');
     if(bar)bar.classList.toggle('a3d-onsheet',bimSheetOnScreen());   /* the model's level, coordinates and navigation step aside on paper; Snap, Grid and Ortho stay, one set for the model and every page (__acad3dV175c, D3) */
     var sp=document.getElementById('a3d-stspace');
@@ -56,19 +66,20 @@ import { a3dToast } from '../bim/csg-booleans.js';
     return s.id;
   }
   function bimLayoutRename(id){
-    var sh=bimSheetById(id),box=document.getElementById('a3d-laytabs');
-    if(!sh||!box)return false;
+    var sh=bimSheetById(id),bd=sh?null:bimBoardById(id),box=document.getElementById('a3d-laytabs');   /* __acad3dV175c: a board's tab renumbers it */
+    if((!sh&&!bd)||!box)return false;
     var tab=box.querySelector('[data-ltsheet="'+id+'"]');
     if(!tab)return false;
     A3D_LT_EDITING=true;
     var inp=document.createElement('input');
-    inp.className='a3d-ltin';inp.value=sh.name||'';inp.setAttribute('data-ltrename',id);
+    inp.className='a3d-ltin';inp.value=sh?(sh.name||''):(bd.num||'');inp.setAttribute('data-ltrename',id);
+    if(bd){inp.setAttribute('aria-label','The board\'s number');inp.maxLength=12;}
     tab.style.display='none';tab.parentNode.insertBefore(inp,tab);   /* an input may not sit inside a button */
     var done=false;
     function finish(keep){
       if(done)return;done=true;
       A3D_LT_EDITING=false;
-      if(keep)bimSheetRename(id,inp.value);   /* __acad3dV122: the one path, the page's too */
+      if(keep){if(sh)bimSheetRename(id,inp.value);else bimBoardSetNum(id,inp.value);}   /* __acad3dV122: the one path, the page's too */
       A3D_LT_HTML='';bimRenderLayoutTabs();
     }
     inp.addEventListener('keydown',function(ev){
@@ -109,8 +120,12 @@ import { a3dToast } from '../bim/csg-booleans.js';
   }
   function bimLayoutTabMenu(ev,tab){
     var kind=tab.getAttribute('data-lt'),id=tab.getAttribute('data-ltsheet');
+    if(kind==='board'){   /* __acad3dV175c: a board's tab has a board's menu, with Renumber */
+      bimLtMenuOpen(ev.clientX,ev.clientY,[['Renumber','renum'],'-'].concat(bimBoardMenuItems(id)),function(a){if(a==='renum')bimLayoutRename(id);else bimBoardMenuDo(a,id);});
+      return;
+    }
     if(kind!=='sheet'){
-      bimLtMenuOpen(ev.clientX,ev.clientY,[['New sheet','new']],function(a){if(a==='new')bimLayoutNew();});
+      bimLayoutAddMenu(ev.clientX,ev.clientY);
       return;
     }
     bimSheetMenu(ev,id,'tabs');   /* __acad3dV122: the items the page's menu reads too */
@@ -179,6 +194,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
     return false;
   }
 export {
-  A3D_LT_EDITING, bimLayoutNew, bimLayoutRename, bimLayoutTabMenu, bimLtMenuClose, bimLtMenuOpen,
-  bimRenderLayoutTabs, bimSheetMenu, bimSheetMenuItems, bimSheetMove, bimSheetMoveNear, bimSheetRename
+  A3D_LT_EDITING, bimLayoutNew, bimLayoutRename, bimLayoutTabMenu, bimLayoutTabsDraw, bimLtMenuClose,
+  bimLtMenuOpen, bimRenderLayoutTabs, bimSheetMenu, bimSheetMenuItems, bimSheetMove, bimSheetMoveNear,
+  bimSheetRename
 };

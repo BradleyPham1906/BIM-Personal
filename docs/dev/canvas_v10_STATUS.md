@@ -16808,6 +16808,28 @@ with the viewport as an object, in steps; D3's quick fixes first.
   through `__a3dSnapSet`). Browser check `tests/e2e/bim_phase175c_drafting_aids_check.mjs`, 10 of 10; unit tests 214
   of 214. Not run: the full regression.
 
+### V175c step 1: one list of layouts (2026-11-13)
+
+Spec and work orders `docs/work-orders/v175c/` (the owner's D5, D6, D7). WO-01 to WO-05 by Cline (the five pure
+functions of `sheets/layouts.js`: the next number, a number made good, a label, the tabs, numbers used twice; all
+19 cases passing at review, none changed; committed on Claude's branch, since the PC was on it, not through the
+gate). WO-06 by Claude:
+
+- **One series (D6).** A board has a number (`board.num`, kept by `bimBrdKeep`). A board without one (every board
+  made before V175c, and each new one) is given the next, after the sheets', in the set's order (`bimPresData`,
+  `bimLyGiveNums`), not as an undo step. `bimNextSheetNumber` reads the same series.
+- **The tabs beside Model** list every layout of the set, sheets and boards (`bimLyEntries`, `bimLyTabs`), each
+  "A101 - Site plan"; a board's tab opens the board, its double-click renumbers it (`bimBoardSetNum`, one undo
+  step; a bad number changes nothing), and its right-click has Renumber and the board's own menu.
+- **One + Layout (D5):** the tabs' + and the Presentation panel's button: Drawing sheet, Board, or a site analysis
+  board. + Page and + Board are gone. A number used twice is said in the panel.
+- **Found by the browser check, and fixed:** the tabs were not redrawn when a board was added, opened or closed
+  (they had only listed sheets); `bimPresPanelRefresh` now draws them too (`bimLayoutTabsDraw`).
+- **Checks.** Unit tests 245 of 245 (`tests/unit/layouts.test.mjs`, the work orders' 19 and WO-06's); `npm run
+  check`; the browser check `tests/e2e/bim_phase175c_layouts_check.mjs`, 16 of 16. Not run: the full regression.
+- **Open, for step 2:** with a board open over a sheet, the status bar still says PAPER and the sheet's hint; one
+  editor (step 2) removes the two views.
+
 ## Phase 194 (V194) - The rendered view: the model in daylight
 
 `RENDER`, or Properties > View > Display > Rendered, shows the model lit by the sun and the sky, with soft shadows,

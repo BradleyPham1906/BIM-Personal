@@ -20,7 +20,7 @@ Scores are from `../ROUTING.md` (files, logic, understanding, judgment, trickine
 
 ---
 
-## [ ] WO-01 [Cline] `bimLyNextNumber(numbers, prefix)`
+## [x] WO-01 [Cline] `bimLyNextNumber(numbers, prefix)`
 
 - **It must:** return `prefix` plus one more than the highest number among the trimmed strings matching
   `new RegExp('^' + prefix + '(\\d+)$', 'i')`; `prefix + '101'` when there is none or the highest is below 101, or
@@ -31,7 +31,7 @@ Scores are from `../ROUTING.md` (files, logic, understanding, judgment, trickine
 
 ---
 
-## [ ] WO-02 [Cline] `bimLyNumberValid(s)`
+## [x] WO-02 [Cline] `bimLyNumberValid(s)`
 
 - **It must:** collapse runs of spaces to one and trim; return `''` when empty or not matching
   `/^[A-Za-z0-9 ._-]+$/`, or when `s` is not a string; else its first 12 characters.
@@ -41,7 +41,7 @@ Scores are from `../ROUTING.md` (files, logic, understanding, judgment, trickine
 
 ---
 
-## [ ] WO-03 [Cline] `bimLyLabel(number, name)`
+## [x] WO-03 [Cline] `bimLyLabel(number, name)`
 
 - **It must:** trim both (`null`/`undefined` as `''`); `number + ' - ' + name` when both; else the one there; else `'Layout'`.
 - **Example:** `bimLyLabel(null, '  Site plan ')` returns `'Site plan'`.
@@ -50,7 +50,7 @@ Scores are from `../ROUTING.md` (files, logic, understanding, judgment, trickine
 
 ---
 
-## [ ] WO-04 [Cline] `bimLyTabs(entries, activeId)`
+## [x] WO-04 [Cline] `bimLyTabs(entries, activeId)`
 
 - **It must:** return a new array `{id, t, label: bimLyLabel(num, name), on: id === activeId}` for each entry, in
   order; `[]` when `entries` is not an array; never change the entries.
@@ -59,7 +59,7 @@ Scores are from `../ROUTING.md` (files, logic, understanding, judgment, trickine
 
 ---
 
-## [ ] WO-05 [Cline] `bimLyDupNumbers(entries)`
+## [x] WO-05 [Cline] `bimLyDupNumbers(entries)`
 
 - **It must:** return each number used by more than one entry (compared trimmed, without case) once, in the order
   in which each one's second use appears, written as first written (trimmed); empty numbers never count; `[]` for
@@ -70,11 +70,12 @@ Scores are from `../ROUTING.md` (files, logic, understanding, judgment, trickine
 
 ---
 
-## [ ] WO-06 [Claude] Build step 1 on them, and write step 2's spec
+## [x] WO-06 [Claude] Build step 1 on them, and write step 2's spec
 
 Claude's because it crosses files and touches what is saved (ROUTING: always D):
 - review WO-01 to WO-05 against SPEC part 4; move `v175c.test.mjs` to `tests/unit/layouts.test.mjs`;
 - a board's `num` kept (`bimBrdKeep`) and given at load when missing; one series (`bimNextSheetNumber`);
 - the tabs from the whole set; + and + Layout's menu; renumbering a board; numbers and duplicates in the panel;
 - `npm run modules`, the build, `npm test`, `npm run check`; the browser check, kept in `tests/e2e/`;
-- the guide, the log, PIPELINE, Notion; step 2's spec and work orders; ask the owner before merging.
+- the guide, the log, PIPELINE, Notion; ask the owner before merging.
+- Done 2026-11-13. Step 2's spec moved to the next spec sprint (QUEUE.md).

@@ -53,11 +53,12 @@ import { bimSheetOnScreen, bimSlideshowStart } from './present.js';
 import { bimPrintSet } from './viewports.js';
 import { A3D_BROWSER_OPEN, bimBrowserGroup, bimBrowserLeaf } from '../ui/project-browser.js';
 import {
-  bimLayoutNew, bimLtMenuOpen, bimRenderLayoutTabs, bimSheetMenu, bimSheetRename
+  bimLayoutNew, bimLayoutTabsDraw, bimLtMenuOpen, bimRenderLayoutTabs, bimSheetMenu, bimSheetRename
 } from './layout-tabs.js';
+import { bimLyDupNumbers, bimLyLabel } from './layouts.js';
 import {
-  bimBoardById, bimBoardMenu, bimBoardMenuDo, bimBoardMenuItems, bimPresBoardThumb, bimPresMoveNear,
-  bimPresOpenBoard, bimPresSeq
+  bimBoardById, bimBoardMenu, bimBoardMenuDo, bimBoardMenuItems, bimLayoutAddMenu, bimLyEntries,
+  bimPresBoardThumb, bimPresMoveNear, bimPresOpenBoard, bimPresSeq
 } from './boards.js';
 import { bimBoardLabel } from './board-figures.js';
 import { a3dToast, groundPoint, objById } from '../bim/csg-booleans.js';
@@ -72,6 +73,11 @@ import { bimDevicePixelRatio } from '../ui/canvas-size.js';
     var W=Math.max(1,Math.round(BIM_THUMB_CSS_W*bimDevicePixelRatio()));
     return {W:W,H:Math.max(1,Math.round(W*s.h/s.w))};
   }
+  /* __acad3dV175c: numbers used twice are allowed, and said */
+  function bimLyDupNote(){
+    var D=bimLyDupNumbers(bimLyEntries());
+    return D.length?'<div class="a3d-prpdup" role="note">Used by more than one layout: '+bimEsc(D.join(', '))+'. Double-click a tab to renumber.</div>':'';
+  }
   function bimPresPanelHtml(){
     var Q=bimPresSeq(),n=Q.length,cur=A3D_CLB.open&&A3D_CLB.board?A3D_CLB.board:(bimSheetOnScreen()?A3D.activeSheetId:null),i,e,s,d,lab,h;   /* __acad3dV162 */
     h='<div class="a3d-prp"><div class="a3d-prphd"><span class="a3d-prpttl">Presentation</span>'+
@@ -79,16 +85,15 @@ import { bimDevicePixelRatio } from '../ui/canvas-size.js';
       '<div class="a3d-prpbar">'+
       '<button type="button" class="a3d-prpbtn pri" data-prpact="present"'+(n?'':' disabled')+
         ' title="'+(n?'Present the pages full screen, one at a time':'No pages to present yet')+'">Present</button>'+
-      '<button type="button" class="a3d-prpbtn" data-prpact="new" title="A new sheet, the last page of the set">+ Page</button>'+
-      '<button type="button" class="a3d-prpbtn" data-prpact="board" title="A board of the site analysis -- climate and risk, zoning and yield, access and people -- as a page of the set" aria-haspopup="menu">+ Board</button>'+
+      '<button type="button" class="a3d-prpbtn" data-prpact="layout" title="A new layout, the last page of the set: a drawing sheet, a board, or a board of the site analysis" aria-haspopup="menu">+ Layout</button>'+   /* __acad3dV175c (D5) */
       '<button type="button" class="a3d-prpbtn" data-prpact="print"'+(n?'':' disabled')+
         ' title="'+(n?'Print every page in one go -- Save as PDF in the print dialog makes a PDF':'No pages to print yet')+'">Print set</button>'+
-      '</div><div class="a3d-prplist" data-prplist="1">';
-    if(!n)h+='<div class="a3d-prpempty">No pages yet. Every sheet is a page, in the order of the layout tabs; + Page makes the first. + Board adds a board of the site analysis.</div>';
+      '</div>'+bimLyDupNote()+'<div class="a3d-prplist" data-prplist="1">';
+    if(!n)h+='<div class="a3d-prpempty">No layouts yet. Every drawing sheet and board is a layout, a page of the set, with a tab beside Model; + Layout makes the first.</div>';
     for(i=0;i<n;i++){
       e=Q[i];
       if(e.t==='board'){
-        lab=bimBoardLabel(e.b);   /* __acad3dV172b */
+        lab=bimLyLabel(e.b.num,bimBoardLabel(e.b));   /* __acad3dV172b; __acad3dV175c: with its number */
         h+='<div class="a3d-prpitem a3d-prpbrd'+(e.id===cur?' cur':'')+'" data-prpitem="'+bimEsc(e.id)+'" draggable="true" title="Page '+(i+1)+': the '+bimEsc(lab)+
           ' board -- click to open it, drag to move it, right-click for more">'+
           '<div class="a3d-prpthumb a3d-prpbthumb"><iframe data-prpbframe="'+bimEsc(e.id)+'" tabindex="-1" aria-hidden="true" title=""></iframe></div>'+
@@ -109,6 +114,7 @@ import { bimDevicePixelRatio } from '../ui/canvas-size.js';
   function bimPresHost(){return document.querySelector('#a3d-leftpanel .a3d-pres-wrap');}
   function bimPresPanelRefresh(){
     var host=bimPresHost();
+    bimLayoutTabsDraw();   /* __acad3dV175c: the tabs list the boards too */
     if(!host||A3D_PRP.edit)return false;   /* not under a name being typed; it refreshes when that ends */
     bimRenderInto(host,bimPresPanelHtml());
     bimPresThumbsQueue();
@@ -203,6 +209,7 @@ import { bimDevicePixelRatio } from '../ui/canvas-size.js';
     }
     if(a==='board')return btn?bimBoardMenu(btn):false;
     if(a==='new')return bimLayoutNew();
+    if(a==='layout'){var r=btn?btn.getBoundingClientRect():{left:40,bottom:40};return bimLayoutAddMenu(r.left,r.bottom+4);}   /* __acad3dV175c */
     if(a==='print')return bimPrintSet();
     return false;
   }
