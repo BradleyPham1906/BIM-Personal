@@ -1,3 +1,5 @@
+import { bimRvMapCanvas } from './rendered-map.js';
+
 
   /* ================= __acad3dV194: the rendered view, its picture =================
      docs/research/research-rendered-view.md. A picture of the model in daylight: materials, the sun and the sky's
@@ -136,12 +138,13 @@
     var ground=new T.Mesh(new T.CircleGeometry(1,96),groundMat);
     ground.quaternion.setFromUnitVectors(new T.Vector3(0,0,1),new T.Vector3(0,1,0));
     ground.receiveShadow=true;
+    ground.renderOrder=-2;   /* __acad3dV198: the sky, the ground, the map on it, then the model */
     scene.add(ground);
     function setSky(sky){
       if(sky===skyNow)return;
       if(dome){scene.remove(dome);dome.geometry.dispose();dome.material.dispose();}
       if(env)env.dispose();
-      dome=skyDome(sky);scene.add(dome);
+      dome=skyDome(sky);dome.renderOrder=-3;scene.add(dome);
       var s2=new T.Scene(),d2=skyDome(sky);
       s2.add(d2);
       env=pm.fromScene(s2,0,0.1,100);
@@ -179,6 +182,24 @@
     /* the model: a mesh for a part's opaque triangles, one for its see-through ones, a line set for its edges */
     function drop(rec){
       rec.objs.forEach(function(o){scene.remove(o);o.geometry.dispose();});
+      (rec.own||[]).forEach(function(x){x.dispose();});   /* __acad3dV198: a map's material and its picture */
+    }
+    /* __acad3dV198: a surface with the map on it: its atlas as a texture, lit like the ground. On the ground, drawn
+       after the ground and before the model, neither testing nor writing depth, as the shaded view draws it, so
+       neither the ground under it nor anything standing on it fights it at a low angle; draped, a surface like any other */
+    var MAXTEX=Math.min(opts.light?2048:4096,renderer.capabilities.maxTextureSize||2048),ANISO=renderer.capabilities.getMaxAnisotropy();
+    function mapMesh(a,rec){
+      var tex=new T.CanvasTexture(bimRvMapCanvas(a.atlas,MAXTEX)),g=new T.BufferGeometry(),mat,m;
+      tex.colorSpace=T.SRGBColorSpace;tex.flipY=false;tex.anisotropy=ANISO;tex.needsUpdate=true;
+      g.setAttribute('position',new T.BufferAttribute(a.pos,3));
+      g.setAttribute('uv',new T.BufferAttribute(a.uv,2));
+      g.computeBoundingSphere();
+      mat=new T.MeshStandardMaterial({map:tex,flatShading:true,roughness:a.flat?1:0.78,metalness:0,side:T.DoubleSide,fog:false,depthWrite:!a.flat,depthTest:!a.flat});
+      m=new T.Mesh(g,mat);
+      m.receiveShadow=true;m.castShadow=!a.flat;
+      if(a.flat)m.renderOrder=-1;
+      rec.own.push(mat,tex);
+      return m;
     }
     function geo(a,colSize){
       var g=new T.BufferGeometry();
@@ -188,7 +209,8 @@
       return g;
     }
     function make(it,A){
-      var rec={sig:it.sig,objs:[],edges:[]},m;
+      var rec={sig:it.sig,objs:[],edges:[],own:[]},m;
+      if(A&&A.map&&A.map.n)rec.objs.push(mapMesh(A.map,rec));   /* __acad3dV198 */
       if(A&&A.op&&A.op.n){m=new T.Mesh(geo(A.op,3),matO);m.castShadow=true;m.receiveShadow=true;rec.objs.push(m);}
       if(A&&A.tr&&A.tr.n){m=new T.Mesh(geo(A.tr,4),matT);m.castShadow=false;m.receiveShadow=true;m.renderOrder=1;rec.objs.push(m);}
       if(A&&A.ed&&A.ed.n){m=new T.LineSegments(geo(A.ed,0),matE);m.castShadow=false;m.receiveShadow=false;rec.objs.push(m);rec.edges.push(m);}

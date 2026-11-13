@@ -164,8 +164,8 @@ import { cvScale } from '../ui/canvas-size.js';
       var core=bimRvEnsure();
       if(!core)return false;
       var st=bimRvSettings(),gs=cvScale(el.cv),wD=Math.max(1,Math.round(W*gs)),hD=Math.max(1,Math.round(H*gs)),
-        plan=bimRvPlan(st.edges),cam=bimRvCamera(V,W,H,A3D.flat,A3D.cam.dist),sun=bimRvSun(),
-        sky=bimRvSkyFor(st.sky,sun.up,sun.elev),reach=bimRvReach(A3D.cam.dist,plan.box),groundAt=bimShadowGround(),
+        sun=bimRvSun(),sky=bimRvSkyFor(st.sky,sun.up,sun.elev),
+        plan=bimRvPlan(st.edges,{V:V,W:W,H:H,bg:sky.plain?'#f4f4f2':'#cbc6bb'}),cam=bimRvCamera(V,W,H,A3D.flat,A3D.cam.dist),   /* __acad3dV198: the map's ground colour */reach=bimRvReach(A3D.cam.dist,plan.box),groundAt=bimShadowGround(),
         ground=st.ground&&!plan.terrains,   /* a terrain is the ground */
         sig=bimRvSig(cam,sun,sky,st,plan,wD,hD,reach,groundAt,ground);
       R.sun=sun;R.sky=sky;
