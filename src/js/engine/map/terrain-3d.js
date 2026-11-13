@@ -40,6 +40,7 @@ import {
   bimMapPlan, bimMapSource, bimMapTex, bimModelToGeo
 } from './map-tiles.js';
 import { drawDataLayers } from './find-open-data.js';
+import { BIM_PAINT_BUDGET, bimPaintPieces } from '../render/painter-split.js';
 import { drawCube } from '../render/viewcube.js';
 import { A3D_ORIGIN_AXES } from '../gizmo/transform-gizmo.js';
 import { drawNotes } from '../annotation/annotation-overlay.js';
@@ -408,21 +409,33 @@ import { cvH, cvScale, cvW } from '../ui/canvas-size.js';
       // user actually clicks, which is what made the per-frame cost disappear.
       A3D.lastPolys=A3D.lastPolys||[];
     }else{
+    var paintBudget={left:BIM_PAINT_BUDGET},paintProj=function(p){return toScreen(p,V,W,H);},paintView=[W,H];   /* __acad3dV200: the frame's pieces, at most */
     for(i=0;i<A3D.objs.length;i++){
       var ob=A3D.objs[i],m=meshOf(ob);
       if(!m){if(ob.t==='terrain'&&ob.survey&&!bimCameraIsPlan()&&bimLayerShown(ob))bimTerrainPolys(ob,polys,V,W,H);continue;}   /* __acad3dV137 */
       if(!bimLayerShown(ob))continue;   /* __acad3dV121 */
       if(!bimObjectVisibleOnLevel(ob))continue;
       var lcol=bimLensCol(ob),col=lcol||bimSkCol(ob)||ob.col||(TYPES[ob.t]||{}).c||'#7f9db8';   /* __acad3dV136; __acad3dV197 */
-      var wv=[];
+      var wv=[],obLock=!bimLayerPickable(ob),obLa=bimLayerAlpha(ob);
+      /* __acad3dV200: a face cast as a shadow is kept whole: a shadow a piece would darken its neighbours */
+      var obCut=!(bimPresentGraphics()&&(bimResolveGraphics(ob,'presentation')||{}).shadow);
       for(j=0;j<m.v.length;j++){wv.push([m.v[j][0]+ob.pos[0],m.v[j][1]+ob.pos[1],m.v[j][2]+ob.pos[2]]);}
       for(j=0;j<m.f.length;j++){
         var fc=m.f[j],pts=[],wpts=[],zs=0;
+        for(k=0;k<fc.length;k++)wpts.push(wv[fc[k]]);
+        var fn=faceNormal(wpts),pcs=obCut?bimPaintPieces(wpts,paintBudget,0,paintProj,paintView):null,q;   /* __acad3dV200 */
+        if(pcs){
+          for(q=0;q<pcs.length;q++){
+            var ps=pcs[q].s;
+            polys.push({o:ob,pts:ps,z:(ps[0][2]+ps[1][2]+ps[2][2])/3,n:fn,col:col,lens:!!lcol,lock:obLock,la:obLa,edges:pcs[q].e});
+          }
+          continue;
+        }
         for(k=0;k<fc.length;k++){
           var sp2=toScreen(wv[fc[k]],V,W,H);
-          pts.push(sp2);zs+=sp2[2];wpts.push(wv[fc[k]]);
+          pts.push(sp2);zs+=sp2[2];
         }
-        polys.push({o:ob,pts:pts,z:zs/fc.length,n:faceNormal(wpts),col:col,lens:!!lcol,lock:!bimLayerPickable(ob),la:bimLayerAlpha(ob)});   /* __acad3dV121, __acad3dV136 */
+        polys.push({o:ob,pts:pts,z:zs/fc.length,n:fn,col:col,lens:!!lcol,lock:obLock,la:obLa});   /* __acad3dV121, __acad3dV136 */
       }
     }
     polys.sort(function(a,b){return b.z-a.z;});
@@ -458,10 +471,17 @@ import { cvH, cvScale, cvW } from '../ui/canvas-size.js';
          which is every object in every project that predates this phase. */
       var patFill=rg?bimCanvasPatternFill(ctx,rg):null;
       if(patFill){ctx.fillStyle=patFill;ctx.fill();}
+      /* __acad3dV200: a piece's cuts painted over in its own colour, so no hairline shows between pieces; an
+         opaque piece only, where a second coat changes nothing */
+      if(pl.edges&&!patFill&&ctx.globalAlpha>=1){ctx.strokeStyle=ctx.fillStyle;ctx.lineWidth=1;ctx.stroke();}
       var baseStroke=capMode?(rg?rg.lineColor:'rgba(0,0,0,0.55)'):((A3D.sel===pl.o.id)?'#4ea1ff':((A3D.sel2===pl.o.id)?'#ffb454':(rg?rg.lineColor:'rgba(0,0,0,0.35)')));   /* __acad3dV122 */
       var baseLW=(!capMode&&(A3D.sel===pl.o.id||A3D.sel2===pl.o.id))?1.4:(rg?Math.max(0.3,Math.min(6,rg.lineWeight*BIM_LW_TO_PX)):0.7);
       ctx.strokeStyle=baseStroke;
       ctx.lineWidth=baseLW;
+      if(pl.edges){   /* __acad3dV200: only the sides on the face's own outline */
+        ctx.beginPath();
+        for(j=0;j<3;j++)if(pl.edges[j]){ctx.moveTo(pl.pts[j][0],pl.pts[j][1]);ctx.lineTo(pl.pts[(j+1)%3][0],pl.pts[(j+1)%3][1]);}
+      }
       ctx.stroke();
       ctx.globalAlpha=1;
       /* __acad3dV60: test-observable record of what was actually drawn for this face, read back
