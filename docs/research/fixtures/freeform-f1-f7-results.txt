@@ -1,0 +1,7 @@
+Python 3.13.15 Linux
+quarter-circle samples = 101
+rational max radius error = 2.2204460492503131e-16
+unit weights max radius error = 0.060660171779821193
+arc radius m = 10000.0 sweep rad = 3.141592653589793 target chord error m = 0.002
+segments required = 2484 cap = 256 actual sagitta m = 0.188247173989
+PASS analytic checks; not an application test
