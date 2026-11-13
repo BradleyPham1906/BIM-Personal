@@ -21,5 +21,5 @@ Spec: `SPEC.md` in this folder. Branch: `render-r6`. `[x]` done (its required ch
 - **Do not** change `rendered-core.js`: Claude wires the look into the materials after review.
 - **Score:** 0+0+1+0+0+0 = 1, tier B
 
-## [ ] T-08 [Claude] The basemap and the map draped on a terrain, in the rendered view
-## [ ] T-09 [Claude] glTF and GLB in and out (the next phase; research first)
+## [x] T-08 [Claude] The basemap and the map draped on a terrain, in the rendered view
+## [x] T-09 [Claude] glTF and GLB in and out (the next phase; research first)

@@ -17,5 +17,6 @@ Cline: `/ship-task.md` with no arguments takes the first open `[Cline]` task bel
 | Phase | Next step |
 |---|---|
 | v175c | Step 1 built (WO-01 to WO-05 by Cline, WO-06 by Claude). Next: step 2's spec and work orders (one editor, the viewport an object), in the next spec sprint |
-| v194 | T-08 the basemap in the rendered view; T-09 glTF/GLB (research first) |
+| v194 | T-08 done as V198 (PR #99), T-09 done as V195 (PR #91); T-06 covered by V198's browser check of the rendered view. Left: Claude wires T-07's look into the materials after Cline ships it |
+| IfcOpenShell | Research begun 2026-11-13: the LGPL wasm wheel `ifcopenshell-0.9.0.post1` (4.6 MB, cp313, pyodide_2025_0) matches our Pyodide 0.29.5. Phase numbers and order wait on the owner |
 | next phases | Research and specs from `docs/research/plan-v167-v170.md` and `docs/dev/PIPELINE.md`, in a spec sprint |
