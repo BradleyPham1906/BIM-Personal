@@ -16916,3 +16916,16 @@ The basemap on the ground and draped on a terrain in the rendered view, lit and 
 - Found in the browser: the ground map lost the depth test to the ground disc at low angles (white streaks); now it
   neither tests nor writes depth. It does not fog.
 - Checks: syntax, `npm run modules`, the build, `npm run check`, `npm test` 229 of 229 (5 new), the browser check 12 of 12.
+
+## Phase 199 (V199) - the interface pass
+
+A walkthrough on desktop, tablet and phone (`tests/e2e/bim_ui_walkthrough.mjs`); the owner chose three groups of fixes.
+
+- Research: `docs/research/research-ui-pass.md` (findings F1 to F8).
+- CSS: the status bar and the dock row scroll rather than cut (`engine-chrome.css`), under 1280 px the coordinates and
+  some words go; a scrolling docked left panel keeps its content inside its scroll bar, dark (`top-bar-start.css`);
+  the layers' List by dark (`layers-presentation.css`); a usage's figures under its name (`properties-analyze.css`,
+  `properties/usages.js`).
+- Notices (`a3dToast`, `bim/csg-booleans.js`; `left-shell.css`) at the top of the drawing area.
+- Project Browser buttons in words (`ui/build-ui.js`, `sheets/presentation-panel.js`).
+- Checks: syntax, `npm run modules`, the build, `npm run check`, `npm test` 250 of 250, the walkthrough re-run.

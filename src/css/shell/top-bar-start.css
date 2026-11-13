@@ -62,7 +62,10 @@ body.a3d-mode #a3d-leftpanel .a3d-projsub .a3d-pill{font-size:9px;padding:1px 5p
 body.a3d-mode #a3d-leftpanel .a3d-projhead{justify-content:space-between;align-items:center;padding:5px 8px;min-height:0;height:auto;border-bottom:1px solid rgba(255,255,255,.06)}
 /* __acad3dV65: the Project Browser nested in the panel is a section of it, not a panel of its
    own, and the panel is the one scroll container */
-body.a3d-tree-docked #a3d-leftpanel{overflow-y:auto;overflow-x:hidden}
+body.a3d-tree-docked #a3d-leftpanel{overflow-y:auto;overflow-x:hidden;scrollbar-width:thin;scrollbar-color:#4a5058 transparent}
+/* __acad3dV199: a panel that scrolls keeps its content inside the scroll bar (Analyze was cut by its width), in the dark */
+body.a3d-tree-docked #a3d-leftpanel .a3d-tabbody,body.a3d-tree-docked #a3d-leftpanel .a3d-projhead{min-width:calc(var(--a3d-lp-w,242px) - 16px)}
+body.light-theme.a3d-tree-docked #a3d-leftpanel{scrollbar-color:#b8bec6 transparent}
 body.a3d-tree-docked #a3d-leftpanel > .a3d-tabbody{flex:0 0 auto;min-height:0}
 /* the rail picks which section the panel shows: the Project Browser, or the Assets library */
 body.a3d-tree-docked #a3d-shell[data-tab="browser"] #a3d-leftpanel > .a3d-tabbody{display:none}

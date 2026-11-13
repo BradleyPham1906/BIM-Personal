@@ -85,8 +85,8 @@ import { a3dToast, objById } from '../bim/csg-booleans.js';
     var L=bimUsages(),r='',i,j,u,id;
     for(i=0;i<L.length;i++){
       u=L[i];id=bimEsc(u.id);
-      r+='<div class="a3d-prow a3d-uhead"><div class="a3d-plabel">'+bimUsageSwatch(u.color)+bimEsc(u.name)+'</div><div class="a3d-pval">'+
-        '<span class="a3d-pstatic">GFA '+bimUsagePct(u.gfa)+' \u00b7 NSA '+bimUsagePct(u.nsa)+' \u00b7 '+bimUsageNum(u.ftf)+' m</span> '+
+      r+='<div class="a3d-prow a3d-uhead"><div class="a3d-plabel">'+bimUsageSwatch(u.color)+bimEsc(u.name)+   /* __acad3dV199: the figures under the name, not wrapped beside the button */
+        '<span class="a3d-usum">GFA '+bimUsagePct(u.gfa)+' \u00b7 NSA '+bimUsagePct(u.nsa)+' \u00b7 '+bimUsageNum(u.ftf)+' m</span></div><div class="a3d-pval">'+
         '<button type="button" class="a3d-pedit" data-propusageact="open:'+id+'" aria-expanded="'+(A3D_USAGE_OPEN===u.id?'true':'false')+'">'+(A3D_USAGE_OPEN===u.id?'Done':'Edit')+'</button></div></div>';
       if(A3D_USAGE_OPEN!==u.id)continue;
       r+=bimPropRow('Name','<input type="color" data-propusage="u:'+id+':color" value="'+bimEsc(u.color)+'" aria-label="Colour"> '+

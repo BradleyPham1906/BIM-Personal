@@ -34,7 +34,9 @@ body.light-theme #acad3d{color-scheme:light}
        fix; it is also why the popovers can stay inside the dock's own subtree. */
 #a3d-dock{position:absolute;left:0;right:0;bottom:14px;z-index:9600;display:flex;flex-direction:column;align-items:center;pointer-events:none}
 .a3d-dockbody{display:flex;flex-direction:column;gap:3px;background:#22262b;border:1px solid #3a4048;border-radius:10px;padding:5px;box-shadow:0 6px 22px rgba(0,0,0,0.45);max-width:calc(100% - 28px);pointer-events:auto}
-.a3d-dockrow{display:flex;align-items:center;gap:2px;min-width:0}
+.a3d-dockrow{display:flex;align-items:center;gap:2px;min-width:0;overflow-x:auto;scrollbar-width:none}   /* __acad3dV199: narrower than its tools, it scrolls; it never clips them */
+.a3d-dockrow::-webkit-scrollbar{display:none}
+.a3d-dockrow>*{flex-shrink:0}
 .a3d-dockgrp{display:flex;flex-direction:column;align-items:center;gap:2px;flex:0 0 auto}
 #a3d-dock.a3d-docklabels .a3d-dockgrp{gap:1px}
 #a3d-dock.a3d-docklabels .a3d-dbtn{width:60px;height:38px;flex-direction:column;gap:2px}
@@ -72,7 +74,13 @@ body.light-theme #a3d-tip strong{color:#202124}body.light-theme .a3d-tiptype b{c
        third flex child of #acad3d (toolbar / body / status), so it spans the work area exactly. */
 .a3d-status{display:flex;align-items:center;gap:8px;padding:0 10px;height:26px;flex:0 0 auto;background:#1d2022;border-top:1px solid #101214;font:11px/1 "Segoe UI",Inter,system-ui,sans-serif;color:#a9abae;user-select:none}
 .a3d-stspring{flex:1 1 auto}
-.a3d-sthint{color:#9ec1ff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.a3d-sthint{color:#9ec1ff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;flex:0 1 auto}
+/* __acad3dV199: the hint gives way first; the layout tabs, the file state and the controls keep their size, and a bar
+   still too narrow scrolls rather than cutting its right end off */
+.a3d-status{overflow-x:auto;scrollbar-width:none}.a3d-status::-webkit-scrollbar{display:none}
+.a3d-status>*:not(.a3d-sthint):not(.a3d-stspring){flex-shrink:0}
+.a3d-laytabs{white-space:nowrap}
+@media(max-width:1280px){.a3d-stcoords{display:none}#a3d-navgrp .a3d-stbtn:not(.a3d-stview) span{display:none}.a3d-stlvl{font-size:0;gap:0}.a3d-stlvl select{font-size:11px}}
 .a3d-stcoords{font-variant-numeric:tabular-nums;color:#c8ced6;white-space:nowrap;min-width:150px;text-align:right}
 .a3d-stlvl{display:flex;align-items:center;gap:5px;white-space:nowrap}
 .a3d-stlvl select{background:#24282c;border:1px solid #3a4048;color:#dfe4ea;border-radius:3px;font-size:11px;padding:1px 4px;font-family:inherit;max-width:140px}

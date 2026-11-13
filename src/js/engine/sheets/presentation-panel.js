@@ -384,7 +384,7 @@ import { bimDevicePixelRatio } from '../ui/canvas-size.js';
     // ---- Sheets ----
     h+=bimBrowserGroup('sheets','Sheets',A3D.sheets.length,0);
     if(O.sheets){
-      if(!A3D.sheets.length)h+='<div class="a3d-bempty" style="padding-left:18px">none yet -- use +Sht above</div>';
+      if(!A3D.sheets.length)h+='<div class="a3d-bempty" style="padding-left:18px">none yet -- use + Sheet above</div>';
       for(i=0;i<A3D.sheets.length;i++){
         var sh=A3D.sheets[i];
         h+=bimBrowserLeaf(bimSheetLabel(sh),{data:'data-a3dbsheetgo="'+sh.id+'"',   /* __acad3dV116 */
