@@ -170,6 +170,19 @@ To ask together:
    (recommended), or switch the import to That Open too?
 4. Order and number: before, after or between V176-V177 (IfcOpenShell)?
 
+**The owner's answers (2026-11-13):**
+
+1. **B, a Review view**, loaded on demand, beside the app's engine.
+2. **The app's own three.js**, with That Open's WebGPU paths left out (987 KB compressed).
+3. **That Open for IFC import too**, against the recommendation. One IFC reader ships (web-ifc, through That
+   Open), and cc-ifc (V196) is retired once the new import matches it. What this needs, for the spec:
+   fragments' geometry turned into the app's meshes (per element, in metres, +Y up, with V196's layers, storeys
+   and property sets), checked against V196's results on the same 13 files; the wasm wrapper and classic worker
+   from e01; the walls-and-slabs reader (`import-ifc.js`) kept as the fallback. Cost: the first IFC import
+   downloads about 1.6 MB compressed instead of cc-ifc's 0.37 MB.
+4. **After V176-V177.** Meanwhile Claude runs e02 (drawing, clipping and measuring in a canvas; fragments into
+   the app's meshes) and writes the spec. The phase number is set in `docs/dev/PIPELINE.md` with the spec.
+
 ## 12. References
 
 - @thatopen/components 3.6.0, @thatopen/components-front 3.6.1, @thatopen/fragments 3.6.1, @thatopen/ui 3.4.28,
