@@ -8,6 +8,7 @@ import { bimAwCtxCol } from '../site-analysis/analysis-workspace.js';
 import { bimGlProjMatrix, bimHexToRgb } from './webgl.js';
 import { bimSkCol } from './surface-kinds.js';
 import { bimSceneSync } from './gpu-batches.js';
+import { bimRvMapDrape, bimRvMapFlatItem, bimRvMapFrame } from './rendered-map.js';
 import { bimSunVector } from '../site/shadows.js';
 
 
@@ -100,8 +101,10 @@ import { bimSunVector } from '../site/shadows.js';
   }
   /* the frame's part: the description brought up to date, and what the picture is made of: a part for each chunk and
      each terrain shown, each with a key and its look in a few characters, the box of them all, the faces */
-  function bimRvPlan(edges){
-    var F=bimSceneSync(),B=F.S,items=[],box=null,i,c,o,t,nt=0;
+  function bimRvPlan(edges,view){
+    var F=bimSceneSync(),B=F.S,items=[],box=null,i,c,o,t,nt=0,M=null,mf,dr;
+    /* __acad3dV198: the map, when the view is given (the frame's, not a test's): on the ground and draped */
+    if(view){M=bimRvMapFrame(view.V,view.W,view.H,view.bg);mf=M?bimRvMapFlatItem(M):null;if(mf)items.push(mf);}
     for(i=0;i<B.chunks.length;i++){
       c=B.chunks[i];
       if(!c.rv)c.rv=++BIM_RV_SEQ;
@@ -112,13 +115,16 @@ import { bimSunVector } from '../site/shadows.js';
       o=A3D.objs[i];
       if(o.t!=='terrain'||!o.survey||!bimLayerShown(o)||bimTerrainSuperseded(o))continue;
       t=bimRvTerrainItem(o);
+      if(t&&M){dr=bimRvMapDrape(o,M,t.col);if(dr){t.drape=dr;t.sig+='|'+dr.sig;}}   /* __acad3dV198 */
       if(t){items.push(t);box=bimRvBoxAdd(box,t.box);nt++;}
     }
-    return {S:B,items:items,box:box,totalFaces:F.totalFaces,terrains:nt,edges:!!edges};
+    return {S:B,items:items,box:box,totalFaces:F.totalFaces,terrains:nt,edges:!!edges,map:M?M.drawn:0};
   }
   /* the arrays of one of the plan's parts, asked for only when the part is new or looks different */
   function bimRvBuild(plan,it){
     if(it.chunk)return bimRvChunkArrays(plan.S,it.chunk,plan.edges);
+    if(it.map)return {map:it.map};   /* __acad3dV198 */
+    if(it.terrain&&it.drape){var A=bimRvTerrainArrays(it);return {map:{flat:false,pos:A.op.pos,uv:it.drape.uv,n:A.op.n,atlas:it.drape.atlas}};}
     if(it.terrain)return bimRvTerrainArrays(it);
     return null;
   }

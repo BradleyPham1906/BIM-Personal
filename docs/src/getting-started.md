@@ -130,7 +130,9 @@ time studied, and follows the clock while it plays; a site with no place yet is 
 The first picture comes at once and sharpens over about a second while the view is still. Sky (clear,
 overcast, low sun, white studio), Quality, Ground and Edges are beside Display. Drawing, selecting and Save
 image work as in the shaded view; `RENDER` again goes back to it. The view is drawn by three.js, fetched the
-first time it is asked for (about 750 KB). The basemap, sheets and Presentation are not rendered yet.
+first time it is asked for (about 750 KB). With the map on, the rendered view shows it on the ground and
+draped on a terrain, in the sun and with the model's shadows, from the same tiles as the shaded view. Sheets
+and Presentation are not rendered yet.
 
 **Colours by kind.** In View (Properties with nothing selected), Colours offers the project's own colours, Study
 model or Natural. With a palette, roofs, walls, ground, water, parks, trees, roads, glass and BIM and IFC elements

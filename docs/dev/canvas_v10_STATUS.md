@@ -16902,3 +16902,17 @@ Roofs, walls, ground, water, trees and BIM and IFC elements by type, in both vie
 - Found: the face rule cannot apply to BIM or IFC elements (a wall's top looks up); they are coloured whole.
 - Checks: syntax, `npm run modules`, the build, `npm run check`, `npm test` 224 of 224 (7 new). Not run: the app's
   own browser check.
+
+## Phase 198 (V198) - the map in the rendered view
+
+The basemap on the ground and draped on a terrain in the rendered view, lit and shadowed; the shaded view's tiles.
+
+- Research: `docs/research/research-rendered-map.md`.
+- `render/rendered-map.js` (new): the frame's map (asks for tiles, records `lastMapDrawn` as `'rendered'`, evicts:
+  the rendered view skips WebGL, where that used to happen), the atlas layout, the ground's squares, the drape's u, v.
+- `render/rendered-scene.js`: `bimRvPlan(edges, view)` adds the ground map and the drape; `rendered-view.js` passes
+  the view and the ground colour; `rendered-core.js` makes the map mesh (CanvasTexture, sRGB, not flipped) and frees
+  its material and texture; sky, ground and ground map drawn first in that order.
+- Found in the browser: the ground map lost the depth test to the ground disc at low angles (white streaks); now it
+  neither tests nor writes depth. It does not fog.
+- Checks: syntax, `npm run modules`, the build, `npm run check`, `npm test` 229 of 229 (5 new), the browser check 12 of 12.

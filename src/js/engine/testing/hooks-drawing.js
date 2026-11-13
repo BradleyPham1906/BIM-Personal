@@ -77,8 +77,12 @@ import {
   bimRvSunDisc, bimRvUnit
 } from '../render/rendered-core.js';
 import {
-  bimRvBoxAdd, bimRvChunkArrays, bimRvChunkSig, bimRvLin, bimRvRowColour, bimRvTerrainArrays, bimRvTerrainItem
+  bimRvBoxAdd, bimRvBuild, bimRvChunkArrays, bimRvChunkSig, bimRvLin, bimRvPlan, bimRvRowColour,
+  bimRvTerrainArrays, bimRvTerrainItem
 } from '../render/rendered-scene.js';
+import {
+  bimRvMapCanvas, bimRvMapDrape, bimRvMapFlatItem, bimRvMapFrame, bimRvMapLayout, bimRvMapTilesSig, bimRvMapUV
+} from '../render/rendered-map.js';
 import {
   A3D_RV, BIM_RV_FILE, BIM_RV_KEY, BIM_RV_SRI, BIM_RV_VER, bimRvDrop, bimRvLoad, bimRvSetOn, bimRvSetting,
   bimRvSettings, bimRvSources, bimRvStateText
@@ -87,8 +91,8 @@ import {
   A3D_GPU, bimBenchmark, bimGpuCompare, bimGpuPref, bimGpuStart, bimGraphicsLabel, bimGraphicsSet,
   bimRenderBench, bimStressModel
 } from '../render/webgpu.js';
-import { A3D_MAP, bimMapDrop } from '../map/map-tiles.js';
-import { paint } from '../map/terrain-3d.js';
+import { A3D_MAP, bimMapDrop, bimMapTileCorners, bimMapTileUrl } from '../map/map-tiles.js';
+import { bimDrapeTiles, bimTerrainMeshData, paint } from '../map/terrain-3d.js';
 import { bimAnnotGripPoints } from '../annotation/annotation-grips.js';
 import { bimShortcutGroups } from '../ui/shortcuts.js';
 import { bimGizmoWantsKey } from '../gizmo/gizmo-handles.js';
@@ -396,6 +400,11 @@ import { cvH, cvW } from '../ui/canvas-size.js';
       sun:R.sun?R.sun.text:null,sky:R.sky?R.sky.n:null,info:R.info,canvas:!!R.cv,text:bimRvStateText()};
   };
   window.__a3dRenderedSet=function(k,v){return bimRvSetting(k,v);};
+  /* __acad3dV198: the map in the rendered view */
+  window.__acad3dV198='rvmap,rvdrape,atlas';
+  window.__a3dRvMap={layout:bimRvMapLayout,uv:bimRvMapUV,frame:bimRvMapFrame,flat:bimRvMapFlatItem,drape:bimRvMapDrape,
+    canvas:bimRvMapCanvas,tilesSig:bimRvMapTilesSig,plan:bimRvPlan,build:bimRvBuild,meshData:bimTerrainMeshData,drapeTiles:bimDrapeTiles,
+    corners:bimMapTileCorners,tileUrl:bimMapTileUrl};
   /* __acad3dV197: colours by surface kind */
   window.__acad3dV197='colours,study,natural,roofrows,kinds';
   window.__a3dKinds={pal:BIM_SK_PAL,key:bimSkKey,col:bimSkCol,roofy:bimSkRoofy,set:bimSkSet,palette:bimSkPalette,
