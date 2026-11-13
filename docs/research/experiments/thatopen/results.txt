@@ -1,0 +1,50 @@
+That Open e01, 2026-11-13, Linux (cloud container), Node 22.23.4, Chromium build 1243 driven by Playwright 1.63.0.
+Packages from npm, pinned: @thatopen/components 3.6.0, @thatopen/fragments 3.6.1, three 0.186.1, web-ifc 0.0.79,
+camera-controls 3.1.2, esbuild 0.28.2.
+Files (not committed; same SHA-256 prefixes as V196 e01), from buildingSMART/Sample-Test-Files (main):
+  c4db65ba847f6b36   92542  2x3-arch.ifc    IFC 2.3.0.1/Simple-Scene/Building-Architecture.ifc
+  8790a1e193e82b8e  142325  4-arch.ifc      IFC 4.0.2.1/Simple-Scene/Building-Architecture.ifc
+  73b0e45d931d5dc1   12492  4-wallopen.ifc  IFC 4.0.2.1/ISO Spec - ReferenceView_V1.2/wall-with-opening-and-window.ifc
+
+== Sizes: node build.mjs (entry.mjs: fragments/inline + fragments + components + three, IIFE, minified, es2020)
+bytes raw / gzip -9
+  toe-with-three.js (three bundled)              7030304 / 1390396
+  toe-ext-three.js  ("three" mapped to a global)  6674211 / 1302058
+  web-ifc.wasm (beside it, or base64 in a script) 1679477 /  605575   (base64 script: 2239330 raw)
+Bytes in the bundle by package (with three): web-ifc 3541597, three 1541792, @thatopen/fragments 1397407
+  (of which the inline worker 717032), @thatopen/components 502140, camera-controls 46416.
+Mapping "three" to a global still bundles 1174064 bytes of three: components imports "three/webgpu" and
+"three/tsl" (three.webgpu.js 718155, three.core.js 381380) and three/examples (TransformControls, Line*).
+For comparison, V196's cc-ifc runtime: 617188 / 164423 and Manifold 541470 / 203834.
+
+== The app's own three.js as the global (index.html: runtime/three/0.186.1/bim-three.min.js, 859434 bytes)
+First try, "three" mapped to window.THREE: pageerror "Ad.Box3 is not a constructor". Wrong global, not a trimmed
+build: tools/three/build_three.mjs publishes every name three exports on BIMTHREE. three-global.mjs now maps to
+window.BIMTHREE; toe-ext-three.js rebuilt 6674214 / 1302053, and the shim-classic run from file:// below gives the
+same results on the app's own three.
+build2.mjs, also stubbing "three/webgpu" and "three/tsl" (they throw if a WebGPU-only path is reached):
+  toe-ext-three-nogpu.js 5540923 / 987269; three left in it 42526 bytes (examples: TransformControls, Line*).
+  file://, shim-classic, index-nogpu.html: 14 / 13 / 2 items with geometry, convert 235 / 117 / 73 ms.
+
+== IFC to fragments, then loaded, page index-own.html (three bundled), node dbg.cjs <url> <mode>
+mode plain, http://127.0.0.1 (python http.server), crossOriginIsolated false:
+  2x3-arch.ifc   convert 205 ms, 15520 bytes, load 139 ms, items with geometry 14, categories 24
+  4-arch.ifc     convert  98 ms, 16562 bytes, load  71 ms, items with geometry 13, categories 28
+  4-wallopen.ifc convert  69 ms,  3798 bytes, load   8 ms, items with geometry  2, categories 17
+mode plain-classic, file://:
+  every file: "Aborted(both async and sync fetching of the wasm failed)" (web-ifc cannot fetch its wasm from file://)
+mode shim (wasm served from a base64 script through a fetch wrapper), file://, module worker:
+  2x3-arch.ifc converted 15519 bytes, then fm.load never resolved (60 s timeout): the module worker from a blob
+  does not run from file:// here.
+mode shim, worker made classic with { classicWorker: true } but without toClassicWorker():
+  pageerror: Unexpected token 'export'
+mode shim-classic (toClassicWorker(getWorker()) and { classicWorker: true }), file://, crossOriginIsolated false:
+  2x3-arch.ifc   convert 239 ms, 15520 bytes, load 140 ms, items with geometry 14, categories 24
+  4-arch.ifc     convert 118 ms, 16563 bytes, load  73 ms, items with geometry 13, categories 28
+  4-wallopen.ifc convert  71 ms,  3800 bytes, load  10 ms, items with geometry  2, categories 17
+One run each; times are from one headless run, for order of magnitude only.
+
+What it shows: That Open reads IFC and shows it offline from file:// when (1) web-ifc's wasm is carried in a script
+and handed to it through a fetch wrapper, and (2) the fragments worker is made classic with the library's own
+toClassicWorker(). No SharedArrayBuffer and no cross-origin isolation were needed, over http or file://.
+Not tried: drawing to a canvas (no world, renderer or camera was made), WebGPU, files over 150 KB, a phone.
