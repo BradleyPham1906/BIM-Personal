@@ -1,0 +1,18 @@
+{
+  "inputs": "synthetic; generic currency; not an operational estimate",
+  "net_volume_m3": "4.6",
+  "order_volume_m3_at_5pct_waste": "4.830",
+  "material_cost": "579.600",
+  "labor_hours": "2.30",
+  "labor_cost": "115.00",
+  "non_model_cost": "100",
+  "total": "794.600",
+  "planned_cost_by_working_day": {
+    "day1": "447.3000",
+    "day2": "347.3000"
+  },
+  "bucket_sum": "794.6000",
+  "deliberately_invalid_split_total": "1.2",
+  "invalid_split_expected": "reject",
+  "notes": "Illustrative arithmetic only. Opening fully through slab, no overlap; half on each of two working days; preliminaries charged day 1. These are stipulated assumptions, not measurement or costing rules."
+}
