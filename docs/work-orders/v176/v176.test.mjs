@@ -23,15 +23,16 @@ const PYCDN = 'https://cdn.jsdelivr.net/pyodide/v0.29.5/full/';
 const WHEELS = [
   { f: 'six-1.17.0-py2.py3-none-any.whl', sha: 'bc830cfdc71a224b6d0e4337183a87ea53f21b6623deca5771ee3bc866fd8da2', u: PYCDN },
   { f: 'python_dateutil-2.9.0.post0-py2.py3-none-any.whl', sha: '1fe3a0346ef21bc85b295227256d6aed72aa8116178b019fc5ae5d57fbd213cf', u: PYCDN },
-  { f: 'pyparsing-3.2.1-py3-none-any.whl', sha: '67a97ce758343bf6e651a1cc63731f19fd6720a2d6617eab71528021552ee3dc', u: PYCDN },
   { f: 'typing_extensions-4.15.0-py3-none-any.whl', sha: '42190f892f6219350c50e107954f57cb6196acac818fece4a7d21689c94f71de', u: PYCDN },
   { f: 'shapely-2.0.7-cp313-cp313-pyemscripten_2025_0_wasm32.whl', sha: '586daa7290c2d309f9e8d14589d4aa940b1d84502defb3adecc23e17897e476d', u: PYCDN },
   { f: 'isodate-0.7.2-py3-none-any.whl', sha: '28009937d8031054830160fce6d409ed342816b543597cece116d966c6d99e15',
     u: 'https://files.pythonhosted.org/packages/15/aa/0aca39a37d3c7eb941ba736ede56d689e7be91cab5d9ca846bde3999eba6/' },
   { f: 'lark-1.3.1-py3-none-any.whl', sha: 'c629b661023a014c37da873b4ff58a817398d12635d3bbb2c5a03be7fe5d1e12',
     u: 'https://files.pythonhosted.org/packages/82/3d/14ce75ef66813643812f3093ab17e46d3a206942ce7376d31ec2d36229e7/' },
-  { f: 'ifcopenshell-0.9.0.post1-cp313-cp313-pyodide_2025_0_wasm32.whl', sha: '5b3b46dc9e79ae030cc8d044a0844f4ba0a954c4f1b43f243d7bb840b183c209',
-    u: 'https://raw.githubusercontent.com/IfcOpenShell/wasm-wheels/v0.9.0post1/' }
+  // 0.8.5, not 0.9.0.post1: 0.9's wheel keeps its schemas in separate modules and crashes opening a file when
+  // unpacked alone (Claude, 2026-11-13; SPEC part 0)
+  { f: 'ifcopenshell-0.8.5-cp313-cp313-pyodide_2025_0_wasm32.whl', sha: 'fbebb7a7144277be213d156ed9b77de30de1d92b0b2b0c815e4a07555bfb929c',
+    u: 'https://raw.githubusercontent.com/IfcOpenShell/wasm-wheels/v0.8.5/' }
 ];
 const sha256 = (b) => crypto.createHash('sha256').update(b).digest('hex');
 async function pinned(w) {
@@ -61,7 +62,7 @@ before(async () => {
   await py.loadPackage('numpy');
   for (const w of WHEELS) { const b = await pinned(w); py.unpackArchive(new Uint8Array(b.buffer, b.byteOffset, b.byteLength), 'wheel'); }
   T.install = Date.now() - t; t = Date.now();
-  py.runPython('import ifcopenshell, ifcopenshell.api, ifcopenshell.util.element, ifcopenshell.util.placement, ifcopenshell.util.unit');
+  py.runPython('import ifcopenshell, ifcopenshell.api.project, ifcopenshell.api.root, ifcopenshell.util.element, ifcopenshell.util.placement, ifcopenshell.util.unit');
   T.import = Date.now() - t; t = Date.now();
   py.runPython(fs.readFileSync(path.join(ROOT, 'src', 'py', 'bim_ifcos.py'), 'utf8'));
   T.adapter = Date.now() - t;
@@ -73,8 +74,8 @@ before(async () => {
 const IFC = fs.readFileSync(path.join(ROOT, 'tests', 'unit', 'ifc-full.test.mjs'), 'utf8').match(/const IFC = `([\s\S]*?)`;/)[1];
 
 test('setup: the pinned IfcOpenShell imports in the app\'s own Pyodide', () => {
-  // the wasm build says ifcopenshell.version == '0.0.0'; the wheel's own metadata carries its version
-  assert.equal(py.runPython('import importlib.metadata\nimportlib.metadata.version("ifcopenshell")'), '0.9.0.post1');
+  // the wheel's own metadata carries its version (0.9's wasm build said ifcopenshell.version == '0.0.0')
+  assert.equal(py.runPython('import importlib.metadata\nimportlib.metadata.version("ifcopenshell")'), '0.8.5');
   assert.ok(T.import < 60000, 'imported in under a minute (' + T.import + ' ms)');
 });
 

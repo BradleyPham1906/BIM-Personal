@@ -7,7 +7,13 @@ IfcOpenShell is V176 and V177; Cline builds the adapter). Implementation target:
 
 ## 0. What was checked before this spec (Claude, 2026-11-13)
 
-- IfcOpenShell publishes a WebAssembly wheel: `ifcopenshell-0.9.0.post1-cp313-cp313-pyodide_2025_0_wasm32.whl`,
+- **Pinned: 0.8.5** (`ifcopenshell-0.8.5-cp313-cp313-pyodide_2025_0_wasm32.whl`, 14,654,346 bytes, SHA-256
+  `fbebb7a7...929c`, tag `v0.8.5`). Found after the first spec (Claude, 2026-11-13, WO-01's test): 0.9.0.post1's wheel
+  imports, but crashes on `ifcopenshell.open` ("memory access out of bounds") and cannot make an empty file ("Unable to
+  resolve module path"): it keeps its schemas in separate modules (the repository's `modular` folder). 0.8.5 is one
+  module and runs every step of this spec. In 0.8.5 each `ifcopenshell.api.<module>` is imported explicitly (the
+  header does it). pyparsing is not a dependency of 0.8.5.
+- IfcOpenShell publishes WebAssembly wheels: `ifcopenshell-0.9.0.post1-cp313-cp313-pyodide_2025_0_wasm32.whl`,
   4,617,450 bytes, SHA-256 `5b3b46dc...c209`, in github.com/IfcOpenShell/wasm-wheels (tag `v0.9.0post1`), built by
   IfcOpenShell's own workflow `publish-ifcopenshell-wasm-wheel.yml`. Licence LGPL-3.0-or-later (`pyodide/meta.yaml`).
   The wheel carries no licence file: V177 ships the LGPL and GPL texts beside it.
@@ -16,8 +22,10 @@ IfcOpenShell is V176 and V177; Cline builds the adapter). Implementation target:
 - Its dependencies (the wheel's METADATA): shapely, numpy, isodate, python-dateutil, lark, pyparsing,
   typing-extensions. numpy is the app's own; shapely, python-dateutil (and six), pyparsing and typing-extensions are
   Pyodide 0.29.5's builds; isodate (BSD-3) and lark (MIT) come from PyPI. All pinned by SHA-256 in `v176.test.mjs`.
-- Measured in Node with the app's runtime (Windows, 2026-11-13): Pyodide starts in 1.1 s, the wheels install in
-  0.4 s from the cache, `import ifcopenshell, ifcopenshell.api, ifcopenshell.util.*` takes 0.7 s.
+- Measured in Node with the app's runtime (Windows, 2026-11-13), 0.8.5: Pyodide starts in 1.0 s, the wheels install
+  in 0.5 s from the cache, `import ifcopenshell` takes **25 to 26 s** on every run (compiling its one 14 MB module;
+  0.9's split build imported in 0.7 s but cannot open a file). V177's first question: the time in a browser (streaming
+  compilation, and whether the compiled module can be cached), loading it in the Python worker in the background.
 - Found: in this build `ifcopenshell.version` is `'0.0.0'`; the version is read from the package metadata.
 - The `ifcopenshell.api` functions this spec names were read in the wheel's own source (0.9.0.post1), with their
   arguments. `unit.assign_unit(file)` with no units makes millimetres; this spec asks for metres.
