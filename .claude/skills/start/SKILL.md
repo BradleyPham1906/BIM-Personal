@@ -16,7 +16,10 @@ The routine is in `docs/dev/WORKFLOW.md`. Do these steps, then report in a few l
    - On another branch: say how far it is behind `origin/main`, and ask whether to keep working on it
      or start from `main`. In a cloud session, stay on the branch the session was given.
 3. Read the row marked **Start here** in `docs/dev/PIPELINE.md`, and the handoff notes beside it if any.
+   Count the open rows in `docs/work-orders/*/GATE-LOG.md` (Cline's shipped work awaiting `/audit`) and
+   the phases ready in `docs/work-orders/QUEUE.md`. If fewer than two phases are ready for Cline, say
+   so: writing the next specs comes before anything else, so Cline never waits.
 4. On the PC only: check whether Qwen is reachable (`http://localhost:11434/v1/models`). One line: up or
    not. If not, say "Ollama is off (start it, or run `ollama serve`)" and carry on; it is not needed to start.
-5. Report: the branch, whether it is current, what is next per PIPELINE.md, Qwen up or not. Then ask
+5. Report: the branch, whether it is current, what is next per PIPELINE.md, open audits, phases queued, Qwen up or not. Then ask
    what the owner wants to work on, suggesting the next phase.

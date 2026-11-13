@@ -16,8 +16,10 @@ Do not add a deliberate `WO-` throw stub; implement complete behavior.
 - **It must:** <exact behaviour, edge cases>
 - **Example:** `functionName(...)` returns `...`
 - **May use:** `nameA` (`<file>`), `nameB` (`<file>`)
+- **Files:** `src/js/engine/<folder>/<file>.js`, `tests/unit/<area>.test.mjs` (what `tools/gate.py` lets change)
+- **Budget:** 60 (added src lines the gate allows; default 120)
 - **Test:** `npm test` -> `tests/unit/<area>.test.mjs`, the cases named `WO-01 ...`
-- **Done when:** those cases pass and nothing else fails.
+- **Done when:** `python3 tools/gate.py check <phase> WO-01` passes; then `ship` it.
 
 ---
 

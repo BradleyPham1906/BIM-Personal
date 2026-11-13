@@ -20,7 +20,7 @@ words; Claude does the steps and says what it found.
 | Cline | VS Code on the PC, using the owner's free Nemotron 3.5 Super VL option | The primary first-pass implementer for researched prototypes and work orders on local `main`; rebuilds the offline HTML and runs the required checks. |
 | Claude Code, local | `C:\World-BIM-platform\BIM-Personal`, run `claude` in PowerShell | Research, phase specs, difficult design or debugging, and review/refinement of Cline's prototype against the research and task criteria. Sends bounded bulk work to Qwen. |
 | Claude Code, cloud | The Claude app or claude.ai/code | Work away from the PC, research, watching PRs and fixing CI, a second task in parallel. |
-| Aider (backup) | VS Code's terminal on the PC, run `aider` in the repo | Fallback when Cline is unavailable or the owner asks to switch. Uses the same local-main, no-push prototype rules. |
+| Aider (backup) | VS Code's terminal on the PC, run `aider` in the repo | Fallback when Cline is unavailable or the owner asks to switch. Uses the same `main` rules; ships only through `tools/gate.py`. |
 | Qwen 2.5 Coder 14B | Ollama, `http://localhost:11434/v1`, model `qwen2.5-coder:14b` | Aider's model and the subcontractor local Claude sends bulk work to (`tools/local_llm.py`). Only reachable from the PC. |
 
 Local and cloud Claude share one usage limit (`/usage` shows it). Cline's free model option, Aider
@@ -31,9 +31,10 @@ waits for a reload.
 ## The four rules
 
 1. **One branch, one tool.** Two tools never work on the same branch at the same time.
-2. **Local prototype means local.** Cline and backup Aider work on the local `main` branch, make local
-   checkpoints, and do not push or open a PR unless the owner explicitly asks. A push can publish the
-   build through Pages; use the local `canvas_v10.html` to try the prototype.
+2. **Only the gate pushes main.** Cline works on `main` and ships a finished `[Cline]` work order with
+   `python3 tools/gate.py ship <phase> <id>` (the owner, 2026-11-13), which pushes only when every check
+   passes. Nothing else is pushed to `main` by hand; Aider's work goes through the same gate. Claude's
+   own work still goes on `claude/` branches with a draft PR.
 3. **Pull before starting** on the PC only when local `main` has no unpushed prototype commits. Never
    reset, rebase or discard local prototype work to match GitHub.
 4. **The repo is the memory.** What the next session needs goes in `PIPELINE.md`, the code, or the PR.
@@ -41,8 +42,9 @@ waits for a reload.
 ## Switching
 
 - **Leaving a Claude feature branch:** `/finish` (it pushes the branch). In the cloud: "continue on branch X".
-- **A local prototype:** leave its checkpoint commits on local `main`; do not run a push-oriented finish or
-  publish it. Claude later reviews the local diff and improves it against the phase spec and research.
+- **A Cline work order:** when the gate passes, `tools/gate.py ship` pushes it; unfinished work stays as
+  checkpoint commits on local `main`; do not run `/finish` on it. Claude audits
+  what shipped in batches (`/audit`).
 - **An Aider fallback:** use it only when Cline is unavailable or the owner asks, then leave a diff for
   review. Do not run Aider and Cline concurrently.
 - **Two tasks at once:** the second one in the cloud, on its own branch.
@@ -72,9 +74,9 @@ work. They do not move Cline's local-main prototype to another branch or publish
 From V175 on, Claude researches and writes the spec, tests and ordered work list. Cline makes the
 first implementation pass from those materials on local `main`, completing each task without
 deliberate throw stubs. It runs the required checks before rebuilding `canvas_v10.html`; until then,
-the existing file remains the last usable build. The owner tries that local file; Claude later reviews
-the implementation against the research and acceptance criteria, then improves it. No push or Pages
-deployment happens unless the owner asks.
+the existing file remains the last usable build. When `tools/gate.py check` passes, `ship` pushes it
+to `main` (`.clinerules/workflows/ship-task.md`); Claude audits shipped work in batches (`/audit`)
+instead of reviewing each task before it can land.
 If Cline is unavailable, Aider may take over one task at a time under the same rules.
 
 Work orders are marked `[Cline]`; anything that requires Claude's research or judgment is marked
@@ -82,7 +84,7 @@ Work orders are marked `[Cline]`; anything that requires Claude's research or ju
 checks pass. See `docs/work-orders/README.md`.
 
 After a usable task or coherent group passes its required checks, make a local checkpoint commit so
-the last known-good prototype is recoverable. Do not push it.
+the last known-good prototype is recoverable. Only `tools/gate.py ship` pushes it.
 
 ## This PC's setup (2026-11-08)
 
