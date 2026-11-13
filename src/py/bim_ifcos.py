@@ -4,6 +4,10 @@ Pyodide. docs/work-orders/v176/SPEC.md says what each function does; docs/work-o
 Every function takes plain values and answers a plain dict (JSON), so JavaScript calls it the same way it calls the
 Ladybug adapter. The project being built is kept in _bim_ifcos_file. A failure answers {"error": "..."}; nothing is
 printed or raised to the caller."""
+import math
+import os
+
+import numpy
 import ifcopenshell
 import ifcopenshell.api
 import ifcopenshell.util.element

@@ -4,7 +4,8 @@ Spec: `SPEC.md` in this folder (part 4 has every function in full). Implementati
 One task at a time, top to bottom. `[ ]` open, `[x]` done (its tests pass), `[skipped]` left for Claude.
 
 Every task: add one function to `src/py/bim_ifcos.py`, below the file's header and imports, and change nothing else:
-not another file, not the header, not `canvas_v10.html`. Python 3.13 (Pyodide). Use only the names listed in the
+not another file, not the header, no `import` line (every module the tasks need is imported already: `math`, `os`,
+`numpy`, `ifcopenshell` and its `api` and `util` modules; the gate refuses an added import), not `canvas_v10.html`. Python 3.13 (Pyodide). Use only the names listed in the
 task and in SPEC part 4; every `ifcopenshell.api` call is `ifcopenshell.api.<module>.<function>(file, ...)` with
 keyword arguments as the spec writes them. A function answers a plain dict; on a failure it answers
 `{"error": "..."}` and never raises. Implement the whole function; never a placeholder.
@@ -29,7 +30,7 @@ Scores are from `../ROUTING.md` (files, logic, understanding, judgment, trickine
   any exception while reading: `{"error": "unreadable"}`.
 - **Example:** the test's IFC gives `{"schema": "IFC4", "products": {"IfcBuilding": 1, "IfcBuildingStorey": 1,
   "IfcSite": 1, "IfcWall": 1}, "storeys": [{"name": "Level 1", "elevation": 3.5}]}`.
-- **May use:** `os.path.exists` (add `import os` beside the other imports), `ifcopenshell.open`,
+- **May use:** `os.path.exists`, `ifcopenshell.open`,
   `ifcopenshell.util.unit.calculate_unit_scale`, `_bim_ifcos_file`.
 - **Files:** `src/py/bim_ifcos.py`, `docs/work-orders/v176/v176.test.mjs`
 - **Budget:** 40
@@ -63,8 +64,7 @@ Scores are from `../ROUTING.md` (files, logic, understanding, judgment, trickine
   the wall at (0, 0) turned a quarter turn (its X axis along +Y).
 - **May use:** `ifcopenshell.api.root.create_entity`, `ifcopenshell.api.geometry.add_wall_representation`,
   `ifcopenshell.api.geometry.assign_representation`, `ifcopenshell.api.geometry.edit_object_placement`,
-  `ifcopenshell.api.spatial.assign_container`, `math`, `numpy` (add `import math` and `import numpy` beside the
-  other imports), `_bim_ifcos_file`.
+  `ifcopenshell.api.spatial.assign_container`, `math`, `numpy`, `_bim_ifcos_file`.
 - **Files:** `src/py/bim_ifcos.py`, `docs/work-orders/v176/v176.test.mjs`
 - **Budget:** 45
 - **Test:** the cases named `WO-03 ...`. **Score:** 0+0+1+0+2+0 = 3, tier B.
