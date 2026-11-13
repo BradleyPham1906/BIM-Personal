@@ -16867,3 +16867,16 @@ IFC class; storeys as levels; GlobalId, storey and property sets in Properties.
 - Checks: syntax, `npm run modules`, the build, `npm run check`, `tools/check_runtime.py`, `npm test` 217 of 217
   (3 new: a hand-written IFC4 wall with an opening, storey and property set). Not run: the app's own browser check.
   Node timings through the full read: FZK-Haus 0.2 s, dental_clinic 0.8 s, schependomlaan 1.5 s, advanced_model 2.7 s.
+
+## Phase 197 (V197) - colours by surface kind
+
+View, Colours: own colours, Study model or Natural (the owner's choice of both, 2026-11-12), saved with the project.
+Roofs, walls, ground, water, trees and BIM and IFC elements by type, in both views.
+
+- Research: `docs/research/research-surface-kinds.md`.
+- `render/surface-kinds.js`; `render/gpu-batches.js` gives a map or city building a second table row for its roof
+  (`B.roof`, apart from `B.slots`), its upward triangles (normal's up part over 0.25) on that row; `gpu-pick.js` reads
+  it; `rendered-scene.js` includes it in a chunk's signature; terrain and the older paths take the palette after the lens.
+- Found: the face rule cannot apply to BIM or IFC elements (a wall's top looks up); they are coloured whole.
+- Checks: syntax, `npm run modules`, the build, `npm run check`, `npm test` 224 of 224 (7 new). Not run: the app's
+  own browser check.
