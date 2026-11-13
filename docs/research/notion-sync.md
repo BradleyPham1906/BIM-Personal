@@ -225,3 +225,8 @@ Search Notion before creating anything, so nothing is made twice.
 ## Added 2026-11-12 (V195)
 
 - Internal Task DB: **V195 glTF and GLB, in and out**, page `416cbfcc3a38816f9eb2f21d9cbc1d4b` (Completed; PR #91 merged 2026-11-12).
+
+## Added 2026-11-12 (V196)
+
+- Internal Task DB: **V196 Full IFC import**, page `416cbfcc3a388187ad79c80af82567f2` (Completed; PR #94 merged 2026-11-12).
+- Documentation DB: **V196: which engine reads IFC (web-ifc or BimCraft's cc-ifc)** (`docs/research/research-ifc-engine.md`), page `416cbfcc3a3881afac72cc6b8cae67a2`.
