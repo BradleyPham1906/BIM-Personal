@@ -15,3 +15,27 @@ import ifcopenshell.util.placement
 import ifcopenshell.util.unit
 
 _bim_ifcos_file = None
+
+
+def bim_ifcos_summary(path):
+    try:
+        if path:
+            if not os.path.exists(path):
+                return {"error": "not found"}
+            f = ifcopenshell.open(path)
+        else:
+            f = _bim_ifcos_file
+            if f is None:
+                return {"error": "no project"}
+        scale = ifcopenshell.util.unit.calculate_unit_scale(f)
+        products = {}
+        for element in f.by_type("IfcProduct"):
+            if element.is_a() == "IfcOpeningElement":
+                continue
+            products[element.is_a()] = products.get(element.is_a(), 0) + 1
+        storeys = [{"name": s.Name,
+                    "elevation": round((s.Elevation or 0) * scale, 6)}
+                   for s in f.by_type("IfcBuildingStorey")]
+        return {"schema": f.schema, "products": products, "storeys": storeys}
+    except Exception:
+        return {"error": "unreadable"}
