@@ -29585,6 +29585,7 @@ try{
     vrows+=bimPropRow('Appearance','<select data-propmodel="present">'+
       '<option value="0"'+(A3D.presentMode?'':' selected')+'>Technical</option>'+
       '<option value="1"'+(A3D.presentMode?' selected':'')+'>Presentation</option></select>');
+    vrows+=bimSkPropsHtml();   /* __acad3dV197: colours by surface kind, the project's */
     vrows+=bimRvPropsHtml();   /* __acad3dV194: Shaded or Rendered, and the rendered view's settings while it is on */
     /* Read-only and honest: the engine works in metres throughout and there is no unit
        conversion layer, so this states the fact rather than offering a switch that would not
@@ -36797,6 +36798,73 @@ try{
   /* setters: other files assign these through them (an ES module cannot assign to an import) */
   function setA3D_GL(v){A3D_GL=v;return v;}
   function setA3D_GL_FAILED(v){A3D_GL_FAILED=v;return v;}
+/* __acad3dV197: colours by surface kind, in the shaded view and the rendered view alike. The project chooses (View,
+   Colours; saved with it as A3D.site.colours): its own colours (the default), Study model or Natural, the owner's two
+   palettes (2026-11-12). An object's kind is what the app already records on it: a map layer's kind (Site Context),
+   a terrain, a BIM element's type, an IFC element's class. A map or city building's faces that look up (their normal
+   over 0.25 up, a slope under about 75 degrees) are its roof, drawn in the roof colour through a second row of the
+   scene's table (gpu-batches.js), so neither engine's shaders change. Imports with their own materials (glTF,
+   SketchUp) and anything of no known kind keep their own colour. A colour lens, the Analyze workspace's look and plot
+   by layer come first. docs/research/research-surface-kinds.md. */
+  var BIM_SK_PAL={
+    study:{name:'Study model',walls:'#f4f2ee',roofs:'#b9bcc2',ground:'#e7e1d3',water:'#9cc3e6',green:'#b9d9a8',trees:'#6fa86a',
+      roads:'#d0cfcb',glass:'#bcd6e6',rail:'#c4bdb4',airports:'#dddcd8',power:'#c9cbce',landuse:'#ece7dc',floor:'#e4e1da',
+      door:'#d9cbb5',structure:'#dcdcd8',stair:'#e9e6df',ceiling:'#f7f6f3'},
+    natural:{name:'Natural',walls:'#e8e1d4',roofs:'#9c4f3c',ground:'#c9b48a',water:'#4f8fd6',green:'#7cb36b',trees:'#3f7d3f',
+      roads:'#8a8f98',glass:'#9fc4dc',rail:'#7d6f62',airports:'#9a9ea5',power:'#a7abb1',landuse:'#d3c497',floor:'#bfae94',
+      door:'#8a6a4a',structure:'#b4b1ab',stair:'#cbbfa9',ceiling:'#f1ede6'}};
+  var BIM_SK_ROOF_NY=0.25;
+  /* the context kinds Site Context records, as palette keys */
+  var BIM_SK_CTX={buildings:'walls',roads:'roads',water:'water',green:'green',trees:'trees',rail:'rail',airports:'airports',
+    power:'power',landuse:'landuse',terrain:'ground'};
+  var BIM_SK_BIM={wall:'walls',floor:'floor',roof:'roofs',door:'door',window:'glass',column:'structure',beam:'structure',
+    footing:'structure',stripfooting:'structure',stair:'stair',ceiling:'ceiling'};
+  var BIM_SK_IFC=[[/^IfcRoof/,'roofs'],[/^Ifc(Window|CurtainWall|Plate)/,'glass'],[/^IfcDoor/,'door'],
+    [/^Ifc(Column|Beam|Member|Footing|Pile|ReinforcingBar|Tendon)/,'structure'],[/^Ifc(Stair|Ramp|Railing)/,'stair'],
+    [/^Ifc(Slab|Covering)/,'floor'],[/^IfcWall/,'walls'],[/^Ifc(Site|Geographic|Earthworks)/,'ground']];
+  /* the project's palette now, or null (its own colours, or plot by layer) */
+  function bimSkPalette(){
+    var k=A3D.site&&A3D.site.colours;
+    if(!k||!BIM_SK_PAL.hasOwnProperty(k)||A3D_PLOT.on)return null;
+    return BIM_SK_PAL[k];
+  }
+  /* an object's kind as a palette key, or null */
+  function bimSkKey(o){
+    if(!o)return null;
+    var c=o.context,b=o.bim,i;
+    if(c&&c.kind&&BIM_SK_CTX.hasOwnProperty(c.kind))return BIM_SK_CTX[c.kind];
+    if(o.t==='terrain')return 'ground';
+    if(o.gltf||o.skp)return null;
+    if(b&&b.ifcType){for(i=0;i<BIM_SK_IFC.length;i++)if(BIM_SK_IFC[i][0].test(b.ifcType))return BIM_SK_IFC[i][1];return null;}
+    if(b&&b.type&&BIM_SK_BIM.hasOwnProperty(b.type))return BIM_SK_BIM[b.type];
+    return null;
+  }
+  /* an object's colour by its kind under the project's palette, or null */
+  function bimSkCol(o){
+    var P=bimSkPalette(),k;
+    if(!P)return null;
+    k=bimSkKey(o);
+    return k&&P.hasOwnProperty(k)?P[k]:null;
+  }
+  /* whether an object's upward faces are a roof: a map or city building */
+  function bimSkRoofy(o){return !!(o&&o.context&&o.context.kind==='buildings');}
+  function bimSkRoofCol(){var P=bimSkPalette();return P?P.roofs:null;}
+  /* the View row */
+  function bimSkPropsHtml(){
+    var k=(A3D.site&&A3D.site.colours)||'',o='<option value=""'+(BIM_SK_PAL.hasOwnProperty(k)?'':' selected')+'>Own colours</option>',p;
+    for(p in BIM_SK_PAL)if(BIM_SK_PAL.hasOwnProperty(p))o+='<option value="'+p+'"'+(k===p?' selected':'')+'>'+bimEsc(BIM_SK_PAL[p].name)+'</option>';
+    return bimPropRow('Colours','<select data-propmodel="colours" title="Roofs, walls, ground, water and trees by kind, in both views">'+o+'</select>');
+  }
+  function bimSkSet(v){
+    v=String(v||'');
+    if(v&&!BIM_SK_PAL.hasOwnProperty(v))return false;
+    if(!A3D.site)return false;
+    if((A3D.site.colours||'')===v)return true;
+    pushUndo();
+    if(v)A3D.site.colours=v;else delete A3D.site.colours;
+    paint();saveSoon();
+    return true;
+  }
   /* ================= __acad3dV152: the scene in GPU-friendly batches =================
      One description of the scene, read by both engines (__acad3dV153: WebGL and WebGPU):
      chunks of merged triangles and edges, each vertex tagged with its object's slot, and a table
@@ -36813,20 +36881,31 @@ try{
   }
   var A3D_SCENE=null;
   function bimScene(){
-    return A3D_SCENE||(A3D_SCENE={cap:0,data:null,slots:{},free:[],next:0,chunks:[],of:{},dirty:{},cells:{},mark:{},n:0,
+    return A3D_SCENE||(A3D_SCENE={cap:0,data:null,slots:{},roof:{},free:[],next:0,chunks:[],of:{},dirty:{},cells:{},mark:{},n:0,
       st:null,tot:{frames:0,rebuilt:0,rebuiltVerts:0,uploads:0,uploadBytes:0,recorded:0}});
   }
   /* an engine's record of the table: rows lo..hi still to send, or all of it when it has none */
   function bimSceneDirty(S,eng){return S.dirty[eng]||(S.dirty[eng]={lo:-1,hi:-1,cap:0});}
   function bimGbSlot(B,id){
     if(B.slots.hasOwnProperty(id))return B.slots[id];
+    var s=bimGbAlloc(B);
+    B.slots[id]=s;
+    return s;
+  }
+  /* __acad3dV197: a building's second row, its roof's: kept apart from B.slots, which is one row an object */
+  function bimGbRoofSlot(B,id){
+    if(B.roof.hasOwnProperty(id))return B.roof[id];
+    var s=bimGbAlloc(B);
+    B.roof[id]=s;
+    return s;
+  }
+  function bimGbAlloc(B){
     var s=B.free.length?B.free.pop():B.next++;
     if(s>=B.cap){
       var cap=Math.max(512,B.cap*2),d=new Float32Array(cap*8);
       if(B.data)d.set(B.data);
       B.data=d;B.cap=cap;
     }
-    B.slots[id]=s;
     return s;
   }
   var BIM_GB_TMP=null;
@@ -36846,12 +36925,12 @@ try{
       id=c.ids[i];m=c.refs[id];var s=B.slots[id],T=null;
       for(k=0;k<cache.length;k++)if(cache[k][0]===m){T=cache[k][1];break;}
       if(!T){
-        T={t:[],e:[]};
+        T={t:[],e:[],u:[]};   /* __acad3dV197: u, each triangle's looking up (a roof's, on a building) */
         for(j=0;j<m.f.length;j++){
           var fc=m.f[j];if(fc.length<3)continue;
           var wp=[],q;for(q=0;q<fc.length;q++)wp.push(m.v[fc[q]]);
           var nn=faceNormal(wp);
-          for(q=2;q<fc.length;q++){var A=m.v[fc[0]],Bv=m.v[fc[q-1]],C=m.v[fc[q]];T.t.push(A[0],A[1],A[2],nn[0],nn[1],nn[2],Bv[0],Bv[1],Bv[2],nn[0],nn[1],nn[2],C[0],C[1],C[2],nn[0],nn[1],nn[2]);}
+          for(q=2;q<fc.length;q++){var A=m.v[fc[0]],Bv=m.v[fc[q-1]],C=m.v[fc[q]];T.u.push(nn[1]>BIM_SK_ROOF_NY?1:0);T.t.push(A[0],A[1],A[2],nn[0],nn[1],nn[2],Bv[0],Bv[1],Bv[2],nn[0],nn[1],nn[2],C[0],C[1],C[2],nn[0],nn[1],nn[2]);}
           if(!m.fe)for(q=0;q<fc.length;q++){var p1=m.v[fc[q]],p2=m.v[fc[(q+1)%fc.length]];T.e.push(p1[0],p1[1],p1[2],p2[0],p2[1],p2[2]);}
         }
         /* __acad3dV195: a mesh that names its edges (an import's folds and borders) draws those, not every triangle's */
@@ -36859,7 +36938,8 @@ try{
         if(cache.length>64)cache.shift();
         cache.push([m,T]);
       }
-      for(j=0;j<T.t.length;j+=6){tri[fv++]=T.t[j];tri[fv++]=T.t[j+1];tri[fv++]=T.t[j+2];tri[fv++]=T.t[j+3];tri[fv++]=T.t[j+4];tri[fv++]=T.t[j+5];tri[fv++]=s;}
+      var rs=B.roof.hasOwnProperty(id)?B.roof[id]:s;   /* __acad3dV197: a building's roof triangles on its roof row */
+      for(j=0;j<T.t.length;j+=6){tri[fv++]=T.t[j];tri[fv++]=T.t[j+1];tri[fv++]=T.t[j+2];tri[fv++]=T.t[j+3];tri[fv++]=T.t[j+4];tri[fv++]=T.t[j+5];tri[fv++]=T.u[(j/18)|0]?rs:s;}
       for(j=0;j<T.e.length;j+=3){ed[ev++]=T.e[j];ed[ev++]=T.e[j+1];ed[ev++]=T.e[j+2];ed[ev++]=s;}
     }
     c.tri=tri;c.ed=ed;c.count=n;c.ecount=e;c.verts=n;c.dirty=false;c.ver=(c.ver||0)+1;
@@ -36893,6 +36973,7 @@ try{
       if(!m||!m.f||!m.f.length)continue;
       id=o.id;if(mark[id]!==B.frame){mark[id]=B.frame;seenN++;}B.st.objects++;   /* __acad3dV156: seen this frame, counted */
       var s=bimGbSlot(B,id);
+      if(bimSkRoofy(o)&&!B.roof.hasOwnProperty(id)){bimGbRoofSlot(B,id);if(B.of[id])B.of[id].dirty=true;}   /* __acad3dV197 */
       c=B.of[id];
       if(!c){   /* __acad3dV155: into the open chunk of its cell */
         var nv=bimGbVerts(m),lb=bimMeshBox(m),cell=Math.floor((o.pos[0]+(lb[0]+lb[3])/2)/BIM_GB_CELL)+','+Math.floor((o.pos[2]+(lb[2]+lb[5])/2)/BIM_GB_CELL),last=B.cells[cell];
@@ -36907,19 +36988,25 @@ try{
       var shown=bimLayerShown(o)&&bimObjectVisibleOnLevel(o),la=1,col=null;
       if(shown){
         la=bimLayerAlpha(o);A3D.lastGlAlpha[id]=la;totalFaces+=m.f.length;if(la<1)hasTrans=true;
-        var hx=bimLensCol(o)||o.col;
+        var lx=bimLensCol(o),kx=lx?null:bimSkCol(o),hx=lx||kx||o.col;   /* __acad3dV197: the lens, then the palette, then its own */
         if(!hx){hx=typeCol[o.t];if(hx===undefined)hx=typeCol[o.t]=(TYPES[o.t]&&TYPES[o.t].c)||'#7f9db8';}   /* __acad3dV156: a type's colour once a frame */
         col=rgbOf[hx]||(rgbOf[hx]=bimHexToRgb(hx));
       }
       v[0]=o.pos[0];v[1]=o.pos[1];v[2]=o.pos[2];v[3]=shown?la:-1;
       v[4]=col?col[0]:0;v[5]=col?col[1]:0;v[6]=col?col[2]:0;v[7]=sel===id?1:(sel2===id?2:0);
       bimGbPut(B,s,v);
+      if(B.roof.hasOwnProperty(id)){   /* __acad3dV197: the roof row is the object's, in the roof colour when the palette chose its colour */
+        var rc=kx?bimSkRoofCol():null,rgb=rc?(rgbOf[rc]||(rgbOf[rc]=bimHexToRgb(rc))):null;
+        if(rgb){v[4]=rgb[0];v[5]=rgb[1];v[6]=rgb[2];}
+        bimGbPut(B,B.roof[id],v);
+      }
     }
     /* the objects gone: out of their chunk, their slot free; looked for only when the count says some are */
     if(seenN!==B.n)B.st.scanned=1;
     if(seenN!==B.n)for(id in B.of)if(B.of.hasOwnProperty(id)&&mark[id]!==B.frame){
       c=B.of[id];c.ids.splice(c.ids.indexOf(id),1);c.verts-=bimGbVerts(c.refs[id]);delete c.refs[id];delete c.lb[id];c.dirty=true;
       delete B.of[id];delete mark[id];B.n--;B.free.push(B.slots[id]);bimGbPut(B,B.slots[id],[0,0,0,-1,0,0,0,0]);delete B.slots[id];
+      if(B.roof.hasOwnProperty(id)){B.free.push(B.roof[id]);bimGbPut(B,B.roof[id],[0,0,0,-1,0,0,0,0]);delete B.roof[id];}   /* __acad3dV197 */
     }
     for(i=B.chunks.length-1;i>=0;i--){
       c=B.chunks[i];
@@ -37155,6 +37242,7 @@ try{
     A3D.lastPickGpu={px:px,py:py,slot:slot};
     if(n<=0)return {ok:true,o:null};
     for(id in B.slots)if(B.slots.hasOwnProperty(id)&&B.slots[id]===slot){o=objById(id);break;}
+    if(!o&&B.roof)for(id in B.roof)if(B.roof.hasOwnProperty(id)&&B.roof[id]===slot){o=objById(id);break;}   /* __acad3dV197: a roof's row */
     return {ok:!!o,o:o};
   }
   function bimPickGpuWanted(){
@@ -37472,7 +37560,8 @@ try{
   /* what a chunk looks like now, in a few characters: its triangles' version and every row of its objects */
   function bimRvChunkSig(B,c){
     var d=B.data,h=0,i,o,k;
-    for(i=0;i<c.ids.length;i++){o=B.slots[c.ids[i]]*8;for(k=0;k<8;k++)h=(h*31+Math.round(d[o+k]*1000))|0;}
+    for(i=0;i<c.ids.length;i++){o=B.slots[c.ids[i]]*8;for(k=0;k<8;k++)h=(h*31+Math.round(d[o+k]*1000))|0;
+      if(B.roof&&B.roof.hasOwnProperty(c.ids[i])){o=B.roof[c.ids[i]]*8;for(k=0;k<8;k++)h=(h*31+Math.round(d[o+k]*1000))|0;}}   /* __acad3dV197 */
     return c.ver+':'+c.ids.length+':'+h;
   }
   /* a chunk's triangles for the picture: world positions and linear colours, the opaque ones and the see-through
@@ -37518,7 +37607,7 @@ try{
       if(tin.P[i][0]>box[3])box[3]=tin.P[i][0];if(tin.H[i]>box[4])box[4]=tin.H[i];if(tin.P[i][1]>box[5])box[5]=tin.P[i][1];
     }
     sel=(o.id===A3D.sel||(A3D.selSet&&A3D.selSet.indexOf(o.id)>=0));
-    hx=sel?'#4ea1ff':(bimAwCtxCol(o)||o.col||'#b08559');
+    hx=sel?'#4ea1ff':(bimAwCtxCol(o)||bimSkCol(o)||o.col||'#b08559');   /* __acad3dV197 */
     return {key:'t'+o.id,sig:tin.tris.__rv+':'+tin.H.length+':'+h+':'+hx,terrain:tin,col:hx,box:box};
   }
   function bimRvTerrainArrays(it){
@@ -38006,7 +38095,7 @@ try{
             rec=P.terBufs[o.id]={key:D.key,vb:bimGpuBuf(dev,iv,GPUBufferUsage.VERTEX)};
           }
           sel=(o.id===A3D.sel||(A3D.selSet&&A3D.selSet.indexOf(o.id)>=0));
-          col=bimHexToRgb(sel?'#4ea1ff':(bimAwCtxCol(o)||o.col||'#b08559'));   /* __acad3dV171b */
+          col=bimHexToRgb(sel?'#4ea1ff':(bimAwCtxCol(o)||bimSkCol(o)||o.col||'#b08559'));   /* __acad3dV171b; __acad3dV197 */
           out.ter.push({vb:rec.vb,count:D.count,prm:put(col,1,[0,0,1,1],[0,0,1,0]),bg:S.dummyBg,drape:false});
           c={id:o.id,triangles:D.count/3,tiles:[],drawn:0,z:null};
           if(plan.tiles.length&&D.ext&&!bimAwLook()){   /* __acad3dV171b: in the workspace, plain */
@@ -39570,7 +39659,7 @@ try{
   /* __acad3dV121: one solid's faces, at an alpha -- the body of the face pass, shared by the opaque
      pass and the transparent one */
   function bimGlDrawFaces(G,o,rec,alpha){
-    var gl=G.gl,col=bimHexToRgb(bimLensCol(o)||o.col||(TYPES[o.t]||{}).c||'#7f9db8');   /* __acad3dV136: the lens first */
+    var gl=G.gl,col=bimHexToRgb(bimLensCol(o)||bimSkCol(o)||o.col||(TYPES[o.t]||{}).c||'#7f9db8');   /* __acad3dV197 */   /* __acad3dV136: the lens first */
     gl.uniform3f(G.loc.offset,o.pos[0],o.pos[1],o.pos[2]);
     gl.uniform3f(G.loc.color,col[0],col[1],col[2]);
     gl.uniform1f(G.loc.boost,(A3D.sel===o.id)?0.25:0);
@@ -41897,7 +41986,7 @@ try{
       rec=bimTerrainGlMesh(G,T,o,org);
       if(!rec)continue;
       sel=(o.id===A3D.sel||(A3D.selSet&&A3D.selSet.indexOf(o.id)>=0));
-      col=bimHexToRgb(sel?'#4ea1ff':(bimAwCtxCol(o)||o.col||'#b08559'));   /* __acad3dV171b */
+      col=bimHexToRgb(sel?'#4ea1ff':(bimAwCtxCol(o)||bimSkCol(o)||o.col||'#b08559'));   /* __acad3dV171b; __acad3dV197 */
       gl.uniform3f(T.color,col[0],col[1],col[2]);
       gl.bindBuffer(gl.ARRAY_BUFFER,rec.pos);gl.vertexAttribPointer(T.pos,3,gl.FLOAT,false,0,0);
       gl.bindBuffer(gl.ARRAY_BUFFER,rec.nor);gl.vertexAttribPointer(T.norm,3,gl.FLOAT,false,0,0);
@@ -41939,7 +42028,7 @@ try{
       for(k=0;k<3;k++){w.push([tin.P[tr[k]][0],tin.H[tr[k]],tin.P[tr[k]][1]]);sp=toScreen(w[k],V,W,H);if(!sp)break;pts.push(sp);zs+=sp[2];}
       if(pts.length<3)continue;
       var n=faceNormal(w);if(n[1]<0)n=[-n[0],-n[1],-n[2]];
-      polys.push({o:o,pts:pts,z:zs/3,n:n,col:bimAwCtxCol(o)||o.col||'#b08559',lock:!bimLayerPickable(o),la:bimLayerAlpha(o),terrain:true});
+      polys.push({o:o,pts:pts,z:zs/3,n:n,col:bimAwCtxCol(o)||bimSkCol(o)||o.col||'#b08559',lock:!bimLayerPickable(o),la:bimLayerAlpha(o),terrain:true});
     }
   }
   function bimGlRender(V,W,H){
@@ -42124,7 +42213,7 @@ try{
       if(!m){if(ob.t==='terrain'&&ob.survey&&!bimCameraIsPlan()&&bimLayerShown(ob))bimTerrainPolys(ob,polys,V,W,H);continue;}   /* __acad3dV137 */
       if(!bimLayerShown(ob))continue;   /* __acad3dV121 */
       if(!bimObjectVisibleOnLevel(ob))continue;
-      var lcol=bimLensCol(ob),col=lcol||ob.col||(TYPES[ob.t]||{}).c||'#7f9db8';   /* __acad3dV136 */
+      var lcol=bimLensCol(ob),col=lcol||bimSkCol(ob)||ob.col||(TYPES[ob.t]||{}).c||'#7f9db8';   /* __acad3dV136; __acad3dV197 */
       var wv=[];
       for(j=0;j<m.v.length;j++){wv.push([m.v[j][0]+ob.pos[0],m.v[j][1]+ob.pos[1],m.v[j][2]+ob.pos[2]]);}
       for(j=0;j<m.f.length;j++){
@@ -65551,6 +65640,7 @@ try{
         var mk=mp.getAttribute('data-propmodel'),mv=mp.value;
         if(mk==='truenorth'){bimSetTrueNorth(mv);return;}   /* __acad3dV103 */
         if(mk==='sunlat'||mk==='sunlon'||mk==='suntz'||mk==='sundate'||mk==='suntime'||mk==='sundst'){bimSetSun(mk.slice(3),mv);return;}   /* __acad3dV107; __acad3dV171d: sundst */
+        if(mk==='colours'){bimSkSet(mv);refreshProps();return;}   /* __acad3dV197 */
         if(mk==='rendered'||mk.indexOf('rv')===0){bimRvProp(mk,mv);return;}   /* __acad3dV194: this browser's display, not the project's */
         if(mk==='project'){A3D.titleBlock.project=mv;}
         else if(mk==='client'){A3D.titleBlock.client=mv;}
@@ -67075,6 +67165,10 @@ try{
       sun:R.sun?R.sun.text:null,sky:R.sky?R.sky.n:null,info:R.info,canvas:!!R.cv,text:bimRvStateText()};
   };
   window.__a3dRenderedSet=function(k,v){return bimRvSetting(k,v);};
+  /* __acad3dV197: colours by surface kind */
+  window.__acad3dV197='colours,study,natural,roofrows,kinds';
+  window.__a3dKinds={pal:BIM_SK_PAL,key:bimSkKey,col:bimSkCol,roofy:bimSkRoofy,set:bimSkSet,palette:bimSkPalette,
+    sync:bimSceneSync,scene:function(){return A3D_SCENE;}};
   /* __acad3dV196: full IFC import */
   window.__acad3dV196='ifcin,ccifc,manifold,openings,storeys,psets,ifcclasslayers';
   window.__a3dIfc={importBuffer:bimIfcImportBuffer,read:bimIfcRead,meshParts:bimIfcMeshParts,storeys:bimIfcStoreys,containers:bimIfcContainers,

@@ -66,7 +66,10 @@ import {
 import { toScreen } from '../io/import-entry.js';
 import { A3D_GL, setA3D_GL, setA3D_GL_FAILED } from '../render/webgl.js';
 import {
-  A3D_CULL, A3D_GL_BATCH, A3D_SCENE, bimSceneRelease, setA3D_CULL, setA3D_GL_BATCH
+  BIM_SK_PAL, bimSkCol, bimSkKey, bimSkPalette, bimSkRoofy, bimSkSet
+} from '../render/surface-kinds.js';
+import {
+  A3D_CULL, A3D_GL_BATCH, A3D_SCENE, bimSceneRelease, bimSceneSync, setA3D_CULL, setA3D_GL_BATCH
 } from '../render/gpu-batches.js';
 import { A3D_PICK_GPU, setA3D_PICK_GPU } from '../render/gpu-pick.js';
 import {
@@ -393,6 +396,10 @@ import { cvH, cvW } from '../ui/canvas-size.js';
       sun:R.sun?R.sun.text:null,sky:R.sky?R.sky.n:null,info:R.info,canvas:!!R.cv,text:bimRvStateText()};
   };
   window.__a3dRenderedSet=function(k,v){return bimRvSetting(k,v);};
+  /* __acad3dV197: colours by surface kind */
+  window.__acad3dV197='colours,study,natural,roofrows,kinds';
+  window.__a3dKinds={pal:BIM_SK_PAL,key:bimSkKey,col:bimSkCol,roofy:bimSkRoofy,set:bimSkSet,palette:bimSkPalette,
+    sync:bimSceneSync,scene:function(){return A3D_SCENE;}};
   /* __acad3dV196: full IFC import */
   window.__acad3dV196='ifcin,ccifc,manifold,openings,storeys,psets,ifcclasslayers';
   window.__a3dIfc={importBuffer:bimIfcImportBuffer,read:bimIfcRead,meshParts:bimIfcMeshParts,storeys:bimIfcStoreys,containers:bimIfcContainers,

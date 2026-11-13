@@ -5,6 +5,7 @@ import { A3D_PLOT, bimLayerShown } from '../layers/layer-rules.js';
 import { refreshProps } from '../site-analysis/panel.js';
 import { bimAwBg, bimAwClear, bimAwCtxCol, bimAwLook } from '../site-analysis/analysis-workspace.js';
 import { A3D_GL, BIM_EDGE_PULL, bimGlInit, bimGlProjMatrix, bimGlViewMatrix, bimHexToRgb } from './webgl.js';
+import { bimSkCol } from './surface-kinds.js';
 import { A3D_SCENE, bimSceneCull, bimSceneDirty, bimSceneFrameDone, bimSceneSync } from './gpu-batches.js';
 import { A3D_RV, bimRvLabel, bimRvRender } from './rendered-view.js';
 import {
@@ -169,7 +170,7 @@ import { cvH, cvScale, cvW } from '../ui/canvas-size.js';
             rec=P.terBufs[o.id]={key:D.key,vb:bimGpuBuf(dev,iv,GPUBufferUsage.VERTEX)};
           }
           sel=(o.id===A3D.sel||(A3D.selSet&&A3D.selSet.indexOf(o.id)>=0));
-          col=bimHexToRgb(sel?'#4ea1ff':(bimAwCtxCol(o)||o.col||'#b08559'));   /* __acad3dV171b */
+          col=bimHexToRgb(sel?'#4ea1ff':(bimAwCtxCol(o)||bimSkCol(o)||o.col||'#b08559'));   /* __acad3dV171b; __acad3dV197 */
           out.ter.push({vb:rec.vb,count:D.count,prm:put(col,1,[0,0,1,1],[0,0,1,0]),bg:S.dummyBg,drape:false});
           c={id:o.id,triangles:D.count/3,tiles:[],drawn:0,z:null};
           if(plan.tiles.length&&D.ext&&!bimAwLook()){   /* __acad3dV171b: in the workspace, plain */

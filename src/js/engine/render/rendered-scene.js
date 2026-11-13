@@ -6,6 +6,7 @@ import { bimTerrainSuperseded } from '../terrain/grading.js';
 import { bimLayerShown } from '../layers/layer-rules.js';
 import { bimAwCtxCol } from '../site-analysis/analysis-workspace.js';
 import { bimGlProjMatrix, bimHexToRgb } from './webgl.js';
+import { bimSkCol } from './surface-kinds.js';
 import { bimSceneSync } from './gpu-batches.js';
 import { bimSunVector } from '../site/shadows.js';
 
@@ -30,7 +31,8 @@ import { bimSunVector } from '../site/shadows.js';
   /* what a chunk looks like now, in a few characters: its triangles' version and every row of its objects */
   function bimRvChunkSig(B,c){
     var d=B.data,h=0,i,o,k;
-    for(i=0;i<c.ids.length;i++){o=B.slots[c.ids[i]]*8;for(k=0;k<8;k++)h=(h*31+Math.round(d[o+k]*1000))|0;}
+    for(i=0;i<c.ids.length;i++){o=B.slots[c.ids[i]]*8;for(k=0;k<8;k++)h=(h*31+Math.round(d[o+k]*1000))|0;
+      if(B.roof&&B.roof.hasOwnProperty(c.ids[i])){o=B.roof[c.ids[i]]*8;for(k=0;k<8;k++)h=(h*31+Math.round(d[o+k]*1000))|0;}}   /* __acad3dV197 */
     return c.ver+':'+c.ids.length+':'+h;
   }
   /* a chunk's triangles for the picture: world positions and linear colours, the opaque ones and the see-through
@@ -76,7 +78,7 @@ import { bimSunVector } from '../site/shadows.js';
       if(tin.P[i][0]>box[3])box[3]=tin.P[i][0];if(tin.H[i]>box[4])box[4]=tin.H[i];if(tin.P[i][1]>box[5])box[5]=tin.P[i][1];
     }
     sel=(o.id===A3D.sel||(A3D.selSet&&A3D.selSet.indexOf(o.id)>=0));
-    hx=sel?'#4ea1ff':(bimAwCtxCol(o)||o.col||'#b08559');
+    hx=sel?'#4ea1ff':(bimAwCtxCol(o)||bimSkCol(o)||o.col||'#b08559');   /* __acad3dV197 */
     return {key:'t'+o.id,sig:tin.tris.__rv+':'+tin.H.length+':'+h+':'+hx,terrain:tin,col:hx,box:box};
   }
   function bimRvTerrainArrays(it){

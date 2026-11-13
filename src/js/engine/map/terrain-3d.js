@@ -29,6 +29,7 @@ import {
   BIM_EDGE_PULL, GL_EDGE_FACE_LIMIT, bimGlBuildObjBuffer, bimGlCompile, bimGlDisposeBuffer, bimGlInit,
   bimGlProjMatrix, bimGlViewMatrix, bimHexToRgb
 } from '../render/webgl.js';
+import { bimSkCol } from '../render/surface-kinds.js';
 import { A3D_GL_BATCH, A3D_SCENE, bimGbRender, bimSceneRelease } from '../render/gpu-batches.js';
 import { A3D_RV } from '../render/rendered-view.js';
 import { bimRender3D } from '../render/webgpu.js';
@@ -185,7 +186,7 @@ import { cvH, cvScale, cvW } from '../ui/canvas-size.js';
       rec=bimTerrainGlMesh(G,T,o,org);
       if(!rec)continue;
       sel=(o.id===A3D.sel||(A3D.selSet&&A3D.selSet.indexOf(o.id)>=0));
-      col=bimHexToRgb(sel?'#4ea1ff':(bimAwCtxCol(o)||o.col||'#b08559'));   /* __acad3dV171b */
+      col=bimHexToRgb(sel?'#4ea1ff':(bimAwCtxCol(o)||bimSkCol(o)||o.col||'#b08559'));   /* __acad3dV171b; __acad3dV197 */
       gl.uniform3f(T.color,col[0],col[1],col[2]);
       gl.bindBuffer(gl.ARRAY_BUFFER,rec.pos);gl.vertexAttribPointer(T.pos,3,gl.FLOAT,false,0,0);
       gl.bindBuffer(gl.ARRAY_BUFFER,rec.nor);gl.vertexAttribPointer(T.norm,3,gl.FLOAT,false,0,0);
@@ -227,7 +228,7 @@ import { cvH, cvScale, cvW } from '../ui/canvas-size.js';
       for(k=0;k<3;k++){w.push([tin.P[tr[k]][0],tin.H[tr[k]],tin.P[tr[k]][1]]);sp=toScreen(w[k],V,W,H);if(!sp)break;pts.push(sp);zs+=sp[2];}
       if(pts.length<3)continue;
       var n=faceNormal(w);if(n[1]<0)n=[-n[0],-n[1],-n[2]];
-      polys.push({o:o,pts:pts,z:zs/3,n:n,col:bimAwCtxCol(o)||o.col||'#b08559',lock:!bimLayerPickable(o),la:bimLayerAlpha(o),terrain:true});
+      polys.push({o:o,pts:pts,z:zs/3,n:n,col:bimAwCtxCol(o)||bimSkCol(o)||o.col||'#b08559',lock:!bimLayerPickable(o),la:bimLayerAlpha(o),terrain:true});
     }
   }
   function bimGlRender(V,W,H){
@@ -412,7 +413,7 @@ import { cvH, cvScale, cvW } from '../ui/canvas-size.js';
       if(!m){if(ob.t==='terrain'&&ob.survey&&!bimCameraIsPlan()&&bimLayerShown(ob))bimTerrainPolys(ob,polys,V,W,H);continue;}   /* __acad3dV137 */
       if(!bimLayerShown(ob))continue;   /* __acad3dV121 */
       if(!bimObjectVisibleOnLevel(ob))continue;
-      var lcol=bimLensCol(ob),col=lcol||ob.col||(TYPES[ob.t]||{}).c||'#7f9db8';   /* __acad3dV136 */
+      var lcol=bimLensCol(ob),col=lcol||bimSkCol(ob)||ob.col||(TYPES[ob.t]||{}).c||'#7f9db8';   /* __acad3dV136; __acad3dV197 */
       var wv=[];
       for(j=0;j<m.v.length;j++){wv.push([m.v[j][0]+ob.pos[0],m.v[j][1]+ob.pos[1],m.v[j][2]+ob.pos[2]]);}
       for(j=0;j<m.f.length;j++){
