@@ -11,6 +11,7 @@ Cline: `/ship-task.md` with no arguments takes the first open `[Cline]` task bel
 | Phase | Tasks | Where |
 |---|---|---|
 | v194 | T-07 (`[Cline]`) | `v194/TASKS.md`, test in `tests/unit/rendered.test.mjs` |
+| v176 | WO-01 to WO-04 (`[Cline]`), in order | `v176/TASKS.md`, tests in `v176/v176.test.mjs` (outside `npm test`; the first run fetches about 7 MB of pinned wheels) |
 
 ## Claude's next (research and specs, not blocked on Cline)
 
@@ -18,5 +19,5 @@ Cline: `/ship-task.md` with no arguments takes the first open `[Cline]` task bel
 |---|---|
 | v175c | Step 1 built (WO-01 to WO-05 by Cline, WO-06 by Claude). Next: step 2's spec and work orders (one editor, the viewport an object), in the next spec sprint |
 | v194 | T-08 done as V198 (PR #99), T-09 done as V195 (PR #91); T-06 covered by V198's browser check of the rendered view. Left: Claude wires T-07's look into the materials after Cline ships it |
-| IfcOpenShell | Research begun 2026-11-13: the LGPL wasm wheel `ifcopenshell-0.9.0.post1` (4.6 MB, cp313, pyodide_2025_0) matches our Pyodide 0.29.5. Phase numbers and order wait on the owner |
+| v176-v177 | IfcOpenShell (the owner, 2026-11-13: V176 and V177; the DA report is now V178). V176's orders are ready; next Claude: review them (WO-05), then V177's research and spec |
 | next phases | Research and specs from `docs/research/plan-v167-v170.md` and `docs/dev/PIPELINE.md`, in a spec sprint |
