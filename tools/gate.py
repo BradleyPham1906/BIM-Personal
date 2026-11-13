@@ -286,7 +286,7 @@ def llm_review(tasks, base, files, gate, strict):
     diff = git("diff", base, "--", *files) if files else ""
     for f in git("ls-files", "--others", "--exclude-standard", "--", *files).split():
         diff += "\n+++ new file %s\n%s" % (f, open(os.path.join(ROOT, f), encoding="utf-8").read())
-    prompt = ("You review one change to a zero-dependency ES5 browser CAD app. The tests already pass. "
+    prompt = ("You review one change to an ES5 browser CAD app (libraries only through adapters). The tests already pass. "
               "Look only for: behaviour the task asks for that the code misses (an edge case listed and not handled), "
               "code that does more than the task, names not listed under 'May use', changed behaviour of existing code. "
               "Answer with a first line exactly 'VERDICT: PASS' or 'VERDICT: CONCERN', then at most 5 short bullets "

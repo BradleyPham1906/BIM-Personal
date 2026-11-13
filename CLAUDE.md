@@ -1,6 +1,7 @@
 # BIM-Personal: start here
 
-A zero-dependency browser CAD/BIM app, built phase by phase (V1 to V172 so far). Its source is `src/`,
+A browser CAD/BIM app (vetted, pinned open-source libraries allowed since 2026-11-13: see
+"Third-party libraries" below), built phase by phase (V1 to V172 so far). Its source is `src/`,
 split by feature; the engine's files are ES modules with explicit imports and exports. `tools/build_app.py`
 joins them into `canvas_v10.html`, the one-file build, and Pages serves it as separate files (see
 "The source" below). Fast unit tests are in `tests/unit/` (`npm test`, under a second); the browser
@@ -26,7 +27,7 @@ suites are in `tests/e2e/`.
    the owner asks to publish it.
 1. Read `docs/dev/PIPELINE.md` first, in full: the build's hash and size, the test counts, and the ordered
    path, with the phase marked **Start here**.
-2. Then `docs/dev/CLAUDE_INSTRUCTIONS.md`: the build contract (ES5, no dependencies, phase markers,
+2. Then `docs/dev/CLAUDE_INSTRUCTIONS.md`: the build contract (ES5, vetted libraries only, phase markers,
    failures warned and toasted), the patch protocol (anchored Python scripts asserting exact counts
    and the base hash), the test protocol and the standing laws. Its paths under `claude/` and on a
    Mac are from an older setup: the layout is the one above. Where it says the app is edited as one
@@ -86,7 +87,7 @@ whole files.
 - **Keep:** engine logic and any change touching 3 or more files in Claude's Qwen workflow. This
   does not prevent Cline from implementing an explicit, bounded work order.
 - **Check everything it returns** before it goes into the repo: read it against the code, fix or drop
-  invented names, and hold it to the build contract (ES5, no dependencies, no emojis). The table in
+  invented names, and hold it to the build contract (ES5, no unvetted libraries, no emojis). The table in
   Rule #1 still decides what runs after. If Ollama is down, do the work directly. The first
   call after a while is slow (about 40 s) while Ollama loads the model.
 
@@ -180,8 +181,8 @@ browser suites, Pages and offline use read it.
     src/py/bim_ladybug.py     the app's adapter to Ladybug's Python (ours): tools/embed_py.py writes it
                               into js/engine/ladybug/adapter-py.js
     runtime/                  Pyodide 0.29.5 and Ladybug's four wheels, committed and pinned by size and
-                              SHA-256 in MANIFEST.json (tools/check_runtime.py): V172b's one written
-                              exception to "no dependencies", loaded only when a Ladybug analysis runs;
+                              SHA-256 in MANIFEST.json (tools/check_runtime.py): V172b's first pinned
+                              library, loaded only when a Ladybug analysis runs;
                               and three.js 0.186.1 as one classic script (tools/three builds it), the
                               second (V194, the owner, 2026-11-11), loaded only when the rendered view is asked for
 
@@ -211,6 +212,28 @@ browser suites, Pages and offline use read it.
 - **Pages:** `tools/build_site.py` serves `index.html` with `app/app.css`, `app/shell.js`,
   `app/openskp.js` and `app/engine.js` (each address carries its hash, so no browser runs an old
   copy), and `canvas_v10.html`, the same app as one file, for offline use from `file://`.
+
+## Third-party libraries (the owner, 2026-11-13)
+
+"i dont like this rule anymore. it limit me too much." The blanket "no dependencies" rule is replaced.
+An open-source library may ship in the app when all of these hold:
+
+- **License:** compatible with distributing this Apache-2.0 repository: MIT, BSD, ISC, Apache-2.0,
+  MPL-2.0, or LGPL kept as its own replaceable file. Never GPL or AGPL, never non-commercial or
+  proprietary terms. Its license file and credit ship with it.
+- **Pinned and vendored:** committed under `runtime/`, pinned by version, size and SHA-256 in
+  `MANIFEST.json` and checked by `tools/check_runtime.py`, as Pyodide (V172b) and three.js (V194) are.
+  Never fetched from a CDN at run time.
+- **Loaded on demand:** only when the feature that needs it is used. The app still opens, edits and
+  saves offline without it.
+- **Behind an adapter:** our code in `src/` stays ES5 and calls the library only through a narrow
+  adapter in `src/js/engine/<feature>/`. The library's own code is not held to ES5.
+- **Researched and approved once:** a research note per `docs/research/research-protocol.md` and
+  `docs/research/reuse-first-integration.md` (why, the size cost, the alternatives), then the owner's
+  approval of that library at the end of its research.
+
+The first library chosen under this rule is That Open Engine (`@thatopen/components`, MIT), the
+owner's choice on 2026-11-13; its research is still to be done.
 
 ## Research depth (the owner, 2026-10-17)
 
