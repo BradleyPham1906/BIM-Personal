@@ -235,3 +235,8 @@ Search Notion before creating anything, so nothing is made twice.
 
 - Internal Task DB: **V197 Colours by surface kind**, page `417cbfcc3a38810d9f0cc29d494802af` (Completed; PR #96 merged 2026-11-12).
 - Documentation DB: **V197: colours by surface kind, in both views** (`docs/research/research-surface-kinds.md`), page `417cbfcc3a388128a4f6ee463f1f0cba`.
+
+## Added 2026-11-13 (V198)
+
+- Internal Task DB: **V198 The map in the rendered view**, page `417cbfcc3a38814baa38cfdbd0762cba` (Completed; PR #99 merged 2026-11-13).
+- Documentation DB: **V198: the map and draped terrain in the rendered view** (`docs/research/research-rendered-map.md`), page `417cbfcc3a3881aea799d88402d3448b`.
