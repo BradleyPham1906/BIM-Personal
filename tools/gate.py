@@ -263,7 +263,7 @@ def check(phase, ids, gate, llm=True, strict_llm=False):
     for f in js:
         run(["node", "--check", f], "node --check " + f, gate)
     for tf in sorted(allowed_tests):
-        code, out = run(["node", "--test", "--test-name-pattern=" + "|".join(ids), tf], "task tests " + tf, gate)
+        code, out = run(["node", "--test", "--test-reporter=tap", "--test-name-pattern=" + "|".join(ids), tf], "task tests " + tf, gate)
         ran = re.findall(r"^\s*ok \d+ - (?:%s)\b" % "|".join(ids), out, re.M)
         if not code and not ran:
             gate.fail("%s: no test named %s ran; the gate needs the task's own tests" % (tf, "/".join(ids)))
