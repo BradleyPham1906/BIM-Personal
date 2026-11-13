@@ -1,0 +1,94 @@
+V196 e01, 2026-11-12, Windows 11, Node 26.13.0. web-ifc 0.0.79 (npm), manifold-3d 3.5.4 (npm), cc-ifc = getcadcraft/bimcraft@cfbd948 app/ifc.
+Files (not committed; licences unstated), with sources and SHA-256:
+  c4db65ba847f6b36  92542  files/2x3-arch.ifc
+  25c09f1ea35dbf51  109012  files/2x3-struct.ifc
+  8790a1e193e82b8e  142325  files/4-arch.ifc
+  2c17ecad2b0fbd33  111375  files/4-hvac.ifc
+  73b0e45d931d5dc1  12492  files/4-wallopen.ifc
+  97e84cb93e07bfbe  1739554  files/43-bridge.ifc
+  93253acebf6c2d9b  1073991  files/43-landscape.ifc
+  a3cb29433d7176bd  263708  files/43-road.ifc
+  eff9b18a0a2fce61  14322717  big/FM_ARC_DigitalHub.ifc
+  3c822eed72ab5886  35309937  big/advanced_model.ifc
+  2ac970ce065ecac4  13003205  big/dental_clinic.ifc
+  70cc8ff245fc0894  2570803  big/fzk-haus.ifc
+  2c3565ca1904f2aa  49286967  big/schependomlaan.ifc
+  files/: https://github.com/buildingSMART/Sample-Test-Files (main): Building-Architecture, Building-Structural (IFC2x3), Building-Architecture, Building-Hvac, wall-with-opening-and-window (IFC4), Infra-Bridge, Infra-Road, Building-Landscaping (IFC4.3)
+  big/fzk-haus: https://www.ifcwiki.org/images/e/e3/AC20-FZK-Haus.ifc; the rest: https://github.com/ThatOpen/engine_web-ifc tests/ifcfiles/public/
+
+== node run.mjs <cc> files
+2x3-arch.ifc (92542 bytes)
+  web-ifc open     5 ms  mesh    14 ms  elements   12  tris    1130  box 38.543 x 7 x 24.286
+  cc-ifc  open     6 ms  mesh    15 ms  elements   12  tris    1130  box 38.543 x 7 x 24.286
+2x3-struct.ifc (109012 bytes)
+  web-ifc open     2 ms  mesh     2 ms  elements   16  tris    1496  box 38.343 x 6.576 x 24.086
+  cc-ifc  open     1 ms  mesh     8 ms  elements   16  tris    1496  box 38.343 x 6.576 x 24.086
+4-arch.ifc (142325 bytes)
+  web-ifc open     1 ms  mesh     2 ms  elements   12  tris    1127  box 38.543 x 7 x 24.286
+  cc-ifc  open     1 ms  mesh     6 ms  elements   12  tris    1130  box 38.543 x 7 x 24.286
+4-hvac.ifc (111375 bytes)
+  web-ifc open     3 ms  mesh     1 ms  elements    5  tris    1061  box 38.043 x 6.15 x 23.286
+  cc-ifc  open     0 ms  mesh     4 ms  elements    5  tris    1064  box 38.043 x 6.15 x 23.286
+4-wallopen.ifc (12492 bytes)
+  web-ifc open     0 ms  mesh    14 ms  elements    2  tris      44  box 3 x 2 x 0.3
+  cc-ifc  open     0 ms  mesh     9 ms  elements    2  tris      44  box 3 x 2 x 0.3
+43-bridge.ifc (1739554 bytes)
+  web-ifc open     8 ms  mesh    13 ms  elements   48  tris   13240  box 45.367 x 11.275 x 57.809
+  cc-ifc  open     4 ms  mesh    38 ms  elements   48  tris   13292  box 45.367 x 11.275 x 57.809
+43-landscape.ifc (1073991 bytes)
+  web-ifc open     5 ms  mesh     3 ms  elements    6  tris    4799  box 46.99 x 13.108 x 30.786
+  cc-ifc  open     2 ms  mesh    22 ms  elements    6  tris    4824  box 46.99 x 13.108 x 30.786
+43-road.ifc (263708 bytes)
+  web-ifc open     1 ms  mesh     3 ms  elements   65  tris    2580  box 72.182 x 0.59 x 48.416
+  cc-ifc  open     1 ms  mesh     5 ms  elements   65  tris    2584  box 72.182 x 0.59 x 48.416
+
+== node --max-old-space-size=8192 run.mjs <cc> big   (web-ifc printed 51 'TriangulateBounds() Expected outer bound first!' lines, all for FM_ARC_DigitalHub)
+FM_ARC_DigitalHub.ifc (14322717 bytes)
+  web-ifc open   104 ms  mesh   401 ms  elements  705  tris  307228  box 159.308 x 13.82 x 63.53
+  cc-ifc  open    79 ms  mesh  6555 ms  elements  705  tris 3220891  box 159.308 x 13.82 x 63.53
+advanced_model.ifc (35309937 bytes)
+  web-ifc open   166 ms  mesh   571 ms  elements 6401  tris 1263873  box 72.498 x 19.85 x 55.634
+  cc-ifc  open   158 ms  mesh   955 ms  elements 6401  tris 1349174  box 72.498 x 19.85 x 55.634
+dental_clinic.ifc (13003205 bytes)
+  web-ifc open    56 ms  mesh   223 ms  elements 2586  tris  174319  box 52.685 x 14.754 x 66.103
+  cc-ifc  open    74 ms  mesh   322 ms  elements 2586  tris  168703  box 52.685 x 14.754 x 66.103
+fzk-haus.ifc (2570803 bytes)
+  web-ifc open    11 ms  mesh    82 ms  elements   83  tris   21650  box 18 x 7.318 x 16
+  cc-ifc  open    21 ms  mesh    67 ms  elements   83  tris   21684  box 18 x 7.318 x 16
+schependomlaan.ifc (49286967 bytes)
+  web-ifc open   261 ms  mesh   287 ms  elements 3569  tris  261321  box 23.95 x 15.056 x 24.465
+  cc-ifc  open   215 ms  mesh   417 ms  elements 3504  tris  261457  box 23.95 x 15.056 x 24.465  not drawn 1
+  cc-ifc notes: 65
+  types differing (web-ifc/cc-ifc): IfcWallStandardCase 282/231, IfcBuildingElementProxy 27/13
+
+== run.mjs <cc> nm --no-manifold (cc-ifc without Manifold: openings not cut)
+4-wallopen.ifc (12492 bytes)
+  cc-ifc  open     2 ms  mesh     4 ms  elements    2  tris      24  box 3 x 2 x 0.3
+dental_clinic.ifc (13003205 bytes)
+  cc-ifc  open    62 ms  mesh   267 ms  elements 2586  tris  168504  box 52.685 x 14.754 x 66.103  not drawn 2
+  cc-ifc notes: 4 | 10
+fzk-haus.ifc (2570803 bytes)
+  cc-ifc  open    21 ms  mesh    39 ms  elements   83  tris   20534  box 18 x 7.318 x 16  not drawn 1
+  cc-ifc notes: 4
+
+== probe2.mjs FM_ARC_DigitalHub ratio (the elements cc-ifc draws densest, their Body items)
+135409 IfcBuildingElementProxy wi 26938 cc 126142 {"IfcAdvancedBrep":33}
+135450 IfcBuildingElementProxy wi 26938 cc 126142 {"IfcAdvancedBrep":33}
+211286 IfcDoor wi 1638 cc 35652 {"IfcAdvancedBrep":16}
+215558 IfcDoor wi 1638 cc 35652 {"IfcAdvancedBrep":16}
+215893 IfcDoor wi 1638 cc 35652 {"IfcAdvancedBrep":16}
+216175 IfcDoor wi 1638 cc 35652 {"IfcAdvancedBrep":16}
+
+== probe3.mjs surface area (m2) of the same elements: equal, so web-ifc lost no faces; cc-ifc only samples finer
+web-ifc m2 {"135409":2.424,"211286":5.72}
+cc-ifc  m2 {"135409":2.37,"211286":5.715}
+== probe3.mjs schependomlaan 46535, one of the 65 'kozijn' walls cc-ifc leaves out: web-ifc streams it with no area
+web-ifc m2 {"46535":0}
+cc-ifc  m2 {}
+
+== sizes (bytes, raw / gzip -9)
+  cc-ifc bundled by esbuild 0.28.2 (iife, minified, es2017): 617188 / 164423
+  node_modules/manifold-3d/manifold.js: 82371 / 19098
+  node_modules/manifold-3d/manifold.wasm: 541470 / 203834
+  node_modules/web-ifc/web-ifc-api-iife.js: 6091885 / 495732
+  node_modules/web-ifc/web-ifc.wasm: 1679477 / 605575

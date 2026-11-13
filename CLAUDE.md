@@ -95,13 +95,16 @@ whole files.
 From V175 on, Claude researches and writes `docs/work-orders/vNNN/SPEC.md`, tests, and ordered tasks
 after the owner's decisions. Cline, using the owner's free Nemotron 3.5 Super VL option, implements
 the first pass on the local `main` branch from the research and task acceptance criteria. Tasks are
-marked `[Cline]` or `[Claude]`; Cline completes behavior rather than adding throw stubs. It runs the
-required checks before rebuilding `canvas_v10.html`, keeping the existing file as the last usable
-build until then. After a verified task or coherent group, it makes a local recovery checkpoint.
-It does not push or publish unless the owner explicitly asks.
+marked `[Cline]` or `[Claude]`; Cline completes behavior rather than adding throw stubs.
 
-When Claude is available, Claude reviews the prototype against the research, spec and task criteria,
-then fixes or improves it. Aider is the backup implementer only when Cline is unavailable or the
+**The gate ships, Claude audits (the owner, 2026-11-13).** "im still have to wait for you to review the
+code ... in order for it to actually commit and push to main." Cline finishes a `[Cline]` task, then runs
+`python3 tools/gate.py ship <phase> <id>` (`.clinerules/workflows/ship-task.md`): it checks scope,
+the build contract and the task's tests, asks the local model for a second opinion, and only then
+commits and pushes `main`. Claude does not block on each task: it audits shipped work in batches
+(`/audit`, `GATE-LOG.md` per phase) and spends its time keeping `docs/work-orders/QUEUE.md` two or
+more phases ahead (research, specs, tests, tasks). So every `[Cline]` task Claude writes must name its
+file(s) and its test, or the gate refuses it. The gate's own code (`tools/gate.py`) is Claude's. Aider is the backup implementer only when Cline is unavailable or the
 owner asks to switch. `docs/work-orders/README.md` has the workflow and templates;
 `docs/work-orders/ROUTING.md` guides task assignment. `aider-log.md` remains historical and records
 explicitly requested Aider fallback work.

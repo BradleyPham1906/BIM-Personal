@@ -4,6 +4,7 @@ import { bimLayerAlpha, bimLayerShown } from '../layers/layer-rules.js';
 import {
   A3D_GL, BIM_EDGE_PULL, GL_EDGE_FACE_LIMIT, bimGlCompile, bimGlProjMatrix, bimGlViewMatrix, bimHexToRgb
 } from './webgl.js';
+import { BIM_SK_ROOF_NY, bimSkCol, bimSkRoofCol, bimSkRoofy } from './surface-kinds.js';
 import { A3D_GPU } from './webgpu.js';
 import { bimLensCol } from '../map/colour-lens.js';
 import { bimObjectVisibleOnLevel } from '../views/saved-views.js';
@@ -24,20 +25,31 @@ import { bimObjectVisibleOnLevel } from '../views/saved-views.js';
   }
   var A3D_SCENE=null;
   function bimScene(){
-    return A3D_SCENE||(A3D_SCENE={cap:0,data:null,slots:{},free:[],next:0,chunks:[],of:{},dirty:{},cells:{},mark:{},n:0,
+    return A3D_SCENE||(A3D_SCENE={cap:0,data:null,slots:{},roof:{},free:[],next:0,chunks:[],of:{},dirty:{},cells:{},mark:{},n:0,
       st:null,tot:{frames:0,rebuilt:0,rebuiltVerts:0,uploads:0,uploadBytes:0,recorded:0}});
   }
   /* an engine's record of the table: rows lo..hi still to send, or all of it when it has none */
   function bimSceneDirty(S,eng){return S.dirty[eng]||(S.dirty[eng]={lo:-1,hi:-1,cap:0});}
   function bimGbSlot(B,id){
     if(B.slots.hasOwnProperty(id))return B.slots[id];
+    var s=bimGbAlloc(B);
+    B.slots[id]=s;
+    return s;
+  }
+  /* __acad3dV197: a building's second row, its roof's: kept apart from B.slots, which is one row an object */
+  function bimGbRoofSlot(B,id){
+    if(B.roof.hasOwnProperty(id))return B.roof[id];
+    var s=bimGbAlloc(B);
+    B.roof[id]=s;
+    return s;
+  }
+  function bimGbAlloc(B){
     var s=B.free.length?B.free.pop():B.next++;
     if(s>=B.cap){
       var cap=Math.max(512,B.cap*2),d=new Float32Array(cap*8);
       if(B.data)d.set(B.data);
       B.data=d;B.cap=cap;
     }
-    B.slots[id]=s;
     return s;
   }
   var BIM_GB_TMP=null;
@@ -57,12 +69,12 @@ import { bimObjectVisibleOnLevel } from '../views/saved-views.js';
       id=c.ids[i];m=c.refs[id];var s=B.slots[id],T=null;
       for(k=0;k<cache.length;k++)if(cache[k][0]===m){T=cache[k][1];break;}
       if(!T){
-        T={t:[],e:[]};
+        T={t:[],e:[],u:[]};   /* __acad3dV197: u, each triangle's looking up (a roof's, on a building) */
         for(j=0;j<m.f.length;j++){
           var fc=m.f[j];if(fc.length<3)continue;
           var wp=[],q;for(q=0;q<fc.length;q++)wp.push(m.v[fc[q]]);
           var nn=faceNormal(wp);
-          for(q=2;q<fc.length;q++){var A=m.v[fc[0]],Bv=m.v[fc[q-1]],C=m.v[fc[q]];T.t.push(A[0],A[1],A[2],nn[0],nn[1],nn[2],Bv[0],Bv[1],Bv[2],nn[0],nn[1],nn[2],C[0],C[1],C[2],nn[0],nn[1],nn[2]);}
+          for(q=2;q<fc.length;q++){var A=m.v[fc[0]],Bv=m.v[fc[q-1]],C=m.v[fc[q]];T.u.push(nn[1]>BIM_SK_ROOF_NY?1:0);T.t.push(A[0],A[1],A[2],nn[0],nn[1],nn[2],Bv[0],Bv[1],Bv[2],nn[0],nn[1],nn[2],C[0],C[1],C[2],nn[0],nn[1],nn[2]);}
           if(!m.fe)for(q=0;q<fc.length;q++){var p1=m.v[fc[q]],p2=m.v[fc[(q+1)%fc.length]];T.e.push(p1[0],p1[1],p1[2],p2[0],p2[1],p2[2]);}
         }
         /* __acad3dV195: a mesh that names its edges (an import's folds and borders) draws those, not every triangle's */
@@ -70,7 +82,8 @@ import { bimObjectVisibleOnLevel } from '../views/saved-views.js';
         if(cache.length>64)cache.shift();
         cache.push([m,T]);
       }
-      for(j=0;j<T.t.length;j+=6){tri[fv++]=T.t[j];tri[fv++]=T.t[j+1];tri[fv++]=T.t[j+2];tri[fv++]=T.t[j+3];tri[fv++]=T.t[j+4];tri[fv++]=T.t[j+5];tri[fv++]=s;}
+      var rs=B.roof.hasOwnProperty(id)?B.roof[id]:s;   /* __acad3dV197: a building's roof triangles on its roof row */
+      for(j=0;j<T.t.length;j+=6){tri[fv++]=T.t[j];tri[fv++]=T.t[j+1];tri[fv++]=T.t[j+2];tri[fv++]=T.t[j+3];tri[fv++]=T.t[j+4];tri[fv++]=T.t[j+5];tri[fv++]=T.u[(j/18)|0]?rs:s;}
       for(j=0;j<T.e.length;j+=3){ed[ev++]=T.e[j];ed[ev++]=T.e[j+1];ed[ev++]=T.e[j+2];ed[ev++]=s;}
     }
     c.tri=tri;c.ed=ed;c.count=n;c.ecount=e;c.verts=n;c.dirty=false;c.ver=(c.ver||0)+1;
@@ -104,6 +117,7 @@ import { bimObjectVisibleOnLevel } from '../views/saved-views.js';
       if(!m||!m.f||!m.f.length)continue;
       id=o.id;if(mark[id]!==B.frame){mark[id]=B.frame;seenN++;}B.st.objects++;   /* __acad3dV156: seen this frame, counted */
       var s=bimGbSlot(B,id);
+      if(bimSkRoofy(o)&&!B.roof.hasOwnProperty(id)){bimGbRoofSlot(B,id);if(B.of[id])B.of[id].dirty=true;}   /* __acad3dV197 */
       c=B.of[id];
       if(!c){   /* __acad3dV155: into the open chunk of its cell */
         var nv=bimGbVerts(m),lb=bimMeshBox(m),cell=Math.floor((o.pos[0]+(lb[0]+lb[3])/2)/BIM_GB_CELL)+','+Math.floor((o.pos[2]+(lb[2]+lb[5])/2)/BIM_GB_CELL),last=B.cells[cell];
@@ -118,19 +132,25 @@ import { bimObjectVisibleOnLevel } from '../views/saved-views.js';
       var shown=bimLayerShown(o)&&bimObjectVisibleOnLevel(o),la=1,col=null;
       if(shown){
         la=bimLayerAlpha(o);A3D.lastGlAlpha[id]=la;totalFaces+=m.f.length;if(la<1)hasTrans=true;
-        var hx=bimLensCol(o)||o.col;
+        var lx=bimLensCol(o),kx=lx?null:bimSkCol(o),hx=lx||kx||o.col;   /* __acad3dV197: the lens, then the palette, then its own */
         if(!hx){hx=typeCol[o.t];if(hx===undefined)hx=typeCol[o.t]=(TYPES[o.t]&&TYPES[o.t].c)||'#7f9db8';}   /* __acad3dV156: a type's colour once a frame */
         col=rgbOf[hx]||(rgbOf[hx]=bimHexToRgb(hx));
       }
       v[0]=o.pos[0];v[1]=o.pos[1];v[2]=o.pos[2];v[3]=shown?la:-1;
       v[4]=col?col[0]:0;v[5]=col?col[1]:0;v[6]=col?col[2]:0;v[7]=sel===id?1:(sel2===id?2:0);
       bimGbPut(B,s,v);
+      if(B.roof.hasOwnProperty(id)){   /* __acad3dV197: the roof row is the object's, in the roof colour when the palette chose its colour */
+        var rc=kx?bimSkRoofCol():null,rgb=rc?(rgbOf[rc]||(rgbOf[rc]=bimHexToRgb(rc))):null;
+        if(rgb){v[4]=rgb[0];v[5]=rgb[1];v[6]=rgb[2];}
+        bimGbPut(B,B.roof[id],v);
+      }
     }
     /* the objects gone: out of their chunk, their slot free; looked for only when the count says some are */
     if(seenN!==B.n)B.st.scanned=1;
     if(seenN!==B.n)for(id in B.of)if(B.of.hasOwnProperty(id)&&mark[id]!==B.frame){
       c=B.of[id];c.ids.splice(c.ids.indexOf(id),1);c.verts-=bimGbVerts(c.refs[id]);delete c.refs[id];delete c.lb[id];c.dirty=true;
       delete B.of[id];delete mark[id];B.n--;B.free.push(B.slots[id]);bimGbPut(B,B.slots[id],[0,0,0,-1,0,0,0,0]);delete B.slots[id];
+      if(B.roof.hasOwnProperty(id)){B.free.push(B.roof[id]);bimGbPut(B,B.roof[id],[0,0,0,-1,0,0,0,0]);delete B.roof[id];}   /* __acad3dV197 */
     }
     for(i=B.chunks.length-1;i>=0;i--){
       c=B.chunks[i];

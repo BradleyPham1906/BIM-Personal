@@ -51,6 +51,8 @@ import { bimAccFetch } from './access-data.js';
 import { bimAccSaHtml } from './movement-data.js';
 import { A3D_AW, bimAwOwns, bimAwRender, bimAwTitleSync } from './analysis-workspace.js';
 import { bimSkpPropsHtml } from '../io/sketchup-import.js';
+import { bimIfcPropsHtml } from '../io/ifc-full.js';
+import { bimSkPropsHtml } from '../render/surface-kinds.js';
 import { bimRvPropsHtml } from '../render/rendered-view.js';
 import { A3D_BENCH, bimBenchmarkText, bimGraphicsLabel } from '../render/webgpu.js';
 import { bimLodOf } from '../map/lod-solids.js';
@@ -192,6 +194,7 @@ import { bimNoteHex } from '../testing/hooks-view-gizmo.js';
     vrows+=bimPropRow('Appearance','<select data-propmodel="present">'+
       '<option value="0"'+(A3D.presentMode?'':' selected')+'>Technical</option>'+
       '<option value="1"'+(A3D.presentMode?' selected':'')+'>Presentation</option></select>');
+    vrows+=bimSkPropsHtml();   /* __acad3dV197: colours by surface kind, the project's */
     vrows+=bimRvPropsHtml();   /* __acad3dV194: Shaded or Rendered, and the rendered view's settings while it is on */
     /* Read-only and honest: the engine works in metres throughout and there is no unit
        conversion layer, so this states the fact rather than offering a switch that would not
@@ -693,6 +696,7 @@ import { bimNoteHex } from '../testing/hooks-view-gizmo.js';
       idd+=bimPropRow('Occupant Load','<span data-roomload="'+bimEsc(o.id)+'">'+bimEsc(bimRoomOccupantsText(o))+'</span>');   /* __acad3dV105 */
     }
     h+=bimPropGroup('Identity Data',idd);
+    h+=bimIfcPropsHtml(o);   /* __acad3dV196: an imported IFC element's class, GlobalId, storey and property sets */
     if(finRows)h+=bimPropGroup('Finishes',finRows);
 
     /* __acad3dV50: Dependencies. Reads the parametric graph so the relationships an element takes

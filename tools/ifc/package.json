@@ -1,0 +1,14 @@
+{
+  "name": "bim-personal-ifc-runtime",
+  "private": true,
+  "description": "Builds runtime/cc-ifc/<rev>/bim-ifc.min.js, BimCraft's IFC engine and Manifold as one classic script for the IFC import (V196). A build tool only: the app has no npm dependencies.",
+  "type": "module",
+  "scripts": {
+    "build": "node build_ifc.mjs",
+    "check": "node build_ifc.mjs --check"
+  },
+  "devDependencies": {
+    "esbuild": "0.28.2",
+    "manifold-3d": "3.5.4"
+  }
+}

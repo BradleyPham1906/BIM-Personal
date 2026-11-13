@@ -19,3 +19,4 @@ tools/openskp/node_modules/
 
 # V194: the three.js build tool's packages
 tools/three/node_modules/
+tools/ifc/node_modules/

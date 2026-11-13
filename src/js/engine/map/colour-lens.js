@@ -6,6 +6,7 @@ import { A3D_PLOT, bimLayerById } from '../layers/layer-rules.js';
 import { refreshProps } from '../site-analysis/panel.js';
 import { bimAwCtxCol } from '../site-analysis/analysis-workspace.js';
 import { bimHexToRgb } from '../render/webgl.js';
+import { bimSkCol } from '../render/surface-kinds.js';
 import { bimClsAssign } from './classify.js';
 import { bimDataClsScale, bimDataLegendTitle } from './data-symbology.js';
 import { bimDataPasses } from './data-filter-ui.js';
@@ -248,7 +249,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
   /* __acad3dV121: one solid's faces, at an alpha -- the body of the face pass, shared by the opaque
      pass and the transparent one */
   function bimGlDrawFaces(G,o,rec,alpha){
-    var gl=G.gl,col=bimHexToRgb(bimLensCol(o)||o.col||(TYPES[o.t]||{}).c||'#7f9db8');   /* __acad3dV136: the lens first */
+    var gl=G.gl,col=bimHexToRgb(bimLensCol(o)||bimSkCol(o)||o.col||(TYPES[o.t]||{}).c||'#7f9db8');   /* __acad3dV197 */   /* __acad3dV136: the lens first */
     gl.uniform3f(G.loc.offset,o.pos[0],o.pos[1],o.pos[2]);
     gl.uniform3f(G.loc.color,col[0],col[1],col[2]);
     gl.uniform1f(G.loc.boost,(A3D.sel===o.id)?0.25:0);

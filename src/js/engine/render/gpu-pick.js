@@ -74,6 +74,7 @@ import { cvH, cvScale, cvW } from '../ui/canvas-size.js';
     A3D.lastPickGpu={px:px,py:py,slot:slot};
     if(n<=0)return {ok:true,o:null};
     for(id in B.slots)if(B.slots.hasOwnProperty(id)&&B.slots[id]===slot){o=objById(id);break;}
+    if(!o&&B.roof)for(id in B.roof)if(B.roof.hasOwnProperty(id)&&B.roof[id]===slot){o=objById(id);break;}   /* __acad3dV197: a roof's row */
     return {ok:!!o,o:o};
   }
   function bimPickGpuWanted(){
