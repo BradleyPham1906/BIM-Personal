@@ -1,0 +1,5 @@
+<!doctype html><meta charset="utf-8"><title>V177 e04</title><script>
+/* two workers one after the other in one page load: the second shows what the browser kept from the first */
+function run() { return new Promise(function (res) { var w = new Worker('/e04_worker.js'), t = Date.now(); w.onmessage = function (e) { e.data.total = Date.now() - t; w.terminate(); res(e.data); }; w.postMessage(1); }); }
+run().then(function (a) { return run().then(function (b) { return fetch('/result', { method: 'POST', body: JSON.stringify({ ua: navigator.userAgent, first: a, second: b }) }); }); });
+</script>

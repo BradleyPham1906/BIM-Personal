@@ -82,8 +82,11 @@ Scores are from `../ROUTING.md` (files, logic, understanding, judgment, trickine
 
 ---
 
-## [ ] WO-05 [Claude] Review, then V177's spec
+## [x] WO-05 [Claude] Review, then V177's research
 
 Claude's: review WO-01 to WO-04 against SPEC part 4 and the research; record the times in the research note; write
 V177's research and spec (the wheels pinned in `runtime/` with the LGPL and GPL texts, loaded in the Python worker;
 Save as IFC; editable imported walls and slabs).
+
+Done 2026-11-13: WO-01 to WO-04 audited ok (`GATE-LOG.md`); the times and V177's research are in
+`docs/research/research-ifcopenshell-app.md`. V177's spec waits for the owner's decisions D1 to D4 there.
