@@ -239,6 +239,12 @@ After each task: `node --check src/js/engine/io/ifc-save.js`, its own cases, the
 
 ## [ ] WO-16 [Claude] Step 2b
 
-Claude's: audit WO-09 to WO-15; the wheels and the LGPL, GPL and CGAL notices in `runtime/ifcos/` and
-`runtime/MANIFEST.json`; `tools/embed_py.py` for `bim_ifcos.py`; the IFC worker; File > Export > IFC; Make editable
-for imported walls and floors (the walls-and-slabs reader's parameters kept at import); the browser check.
+Claude's. Built 2026-11-14: the seven wheels with COPYING (GPL-3.0), COPYING.LESSER and a NOTICE in
+`runtime/ifcos/0.8.5/` and `runtime/MANIFEST.json`; `tools/embed_py.py` embeds `bim_ifcos.py` too
+(`io/ifcos-py.js`); the IFC worker and File > Export > IFC (`io/ifcos-worker.js`, the command `IFCOUT`, the IFC
+button in All tools > Export). Checked in Edge with a stand-in for WO-09 to WO-15 (not committed):
+`tests/e2e/bim_phase177_ifc_export_check.mjs`, 19 of 19; the first save took 6.9 s with IfcOpenShell's start, a
+second 0.08 s. Until WO-15 ships the command answers "this build cannot write IFC yet".
+
+Left: audit WO-09 to WO-15 and run the browser check again on Cline's code; Make editable for imported walls and
+floors (the walls-and-slabs reader's parameters kept at import); the guide page; Notion.
