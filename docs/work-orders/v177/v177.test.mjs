@@ -107,6 +107,7 @@ test('WO-02 bim_ifcos_begin: a project with one storey for each level, named and
   assert.deepEqual(ev('[round(float(ifcopenshell.util.placement.get_local_placement(s.ObjectPlacement)[2][3]), 6) for s in _bim_ifcos_file.by_type("IfcBuildingStorey")]'), [0, 3.2]);
   assert.equal(ev('len(_bim_ifcos_file.by_type("IfcBuilding")[0].IsDecomposedBy[0].RelatedObjects)'), 2, 'both storeys are parts of the building');
   assert.deepEqual(call('bim_ifcos_begin', 'Empty', []).storeys, [{ name: 'Level 0', elevation: 0 }], 'no levels: one, Level 0');
+  assert.deepEqual(call('bim_ifcos_begin', 'Broken', [{ name: 'No elevation' }]), { error: 'failed' }, 'audit: a level without its elevation is an error, not an exception');
 });
 
 test('WO-03 bim_ifcos_put_wall: a straight wall on its level, from its base, with its offset from the line', () => {
@@ -122,6 +123,8 @@ test('WO-03 bim_ifcos_put_wall: a straight wall on its level, from its base, wit
   near(box(v.guid), [-0.3, 0, 0, 0, 4, 3], 'offset 0: the wall lies to the left of its line');
   assert.deepEqual(call('bim_ifcos_put_wall', { name: 'Zero', level: 0, x0: 1, y0: 1, x1: 1, y1: 1, base: 0, height: 3, thickness: 0.2, offset: 0 }), { error: 'zero length' });
   assert.equal(ev('len(_bim_ifcos_file.by_type("IfcWall"))'), 2);
+  assert.match(call('bim_ifcos_put_wall', { level: 0, x0: 0, y0: 5, x1: 3, y1: 5, base: 0, height: 3, thickness: 0.2 }).guid, /^[0-9A-Za-z_$]{22}$/, 'audit: a wall with no name and no offset is still written');
+  assert.match(call('bim_ifcos_put_prism', { level: 0, pts: [[0, 0], [1, 0], [1, 1]], base: 0, depth: 0.2 }).guid, /^[0-9A-Za-z_$]{22}$/, 'audit: a prism with no name or class is a slab');
 });
 
 test('WO-04 bim_ifcos_put_prism: an outline raised by a depth (a floor slab, a column), as the class asked for', () => {
