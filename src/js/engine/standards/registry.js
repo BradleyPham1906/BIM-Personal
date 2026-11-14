@@ -214,6 +214,13 @@ import { a3dToast } from '../bim/csg-booleans.js';
           {n:'tree',v:8,u:'m',say:'a tree\'s height where none is mapped'},{n:'tower',v:25,u:'m',say:'a power tower\'s height'},{n:'line',v:20,u:'m',say:'the height a power line hangs at'},
           {n:'deck',v:6,u:'m',say:'a bridge deck\'s height for each layer'},{n:'deck_t',v:0.8,u:'m',say:'a bridge deck\'s thickness'},{n:'pier',v:30,u:'m',say:'the spacing of a bridge\'s piers'},
           {n:'road_w',t:1,u:'m',say:'a road\'s width by class, where neither its width nor its lanes are mapped',v:{motorway:14,motorway_link:7,trunk:12,trunk_link:7,primary:11,primary_link:6,secondary:9,secondary_link:6,tertiary:8,tertiary_link:6,residential:7,unclassified:6,living_street:6,service:4,pedestrian:6,track:3,footway:2,path:1.5,cycleway:2,steps:2,bridleway:2,corridor:2}}]}]},
+    /* ---- __acad3dV202: measured building heights, by city (the owner's D2, 2026-11-13) ---- */
+    {id:'ctx.heights',title:'Measured building heights, by city',pub:'Each city',kind:'data',area:'Site context',use:'Context buildings: the city\'s measured height before OpenStreetMap\'s; applied at the next fetch',anywhere:true,
+      eds:[{id:'ctx.heights.1',name:'The cities read so far (V202)',pub:'',st:'current',where:'Each source within its own bounds',adopt:[{at:'*'}],
+        src:{t:'City of Philadelphia, LI building footprints (OpenDataPhilly), read through ArcGIS Online',w:'its fields approx_hgt (main roof), max_hgt (top) and base_elevation (ground), all in feet, checked against City Hall and One Liberty Place (research-site-context-accuracy.md, H5 and H6)',u:'https://services.arcgis.com/fLeGjb7u4uXqeF9q/arcgis/rest/services/LI_BUILDING_FOOTPRINTS/FeatureServer/0',lv:'P',read:'2026-11-13'},
+        v:[{n:'sources',t:1,say:'each city\'s footprint layer: its address, its height fields and their unit, and where it applies (W, S, E, N)',
+          v:{'phl-li-footprints':{name:'City of Philadelphia building footprints',url:'https://services.arcgis.com/fLeGjb7u4uXqeF9q/arcgis/rest/services/LI_BUILDING_FOOTPRINTS/FeatureServer/0',
+            roof:'approx_hgt',top:'max_hgt',base:'base_elevation',unit:0.3048,credit:'City of Philadelphia (OpenDataPhilly)',read:'2026-11-13',bbox:[-75.29,39.86,-74.95,40.14]}}}]}]},
     /* ---- __acad3dV168: land use, form and green ---- */
     {id:'lbcs.activity',title:'Land-Based Classification Standards (LBCS): activity',pub:'American Planning Association',kind:'classification',area:'Land and green',use:'Land use layer, its key and its finding',anywhere:true,
       eds:[{id:'lbcs.activity.apa',name:'LBCS Activity Dimension, with APA\'s colour workbook',pub:'',st:'current',where:'A model classification for planning in the United States, adopted nowhere as a rule',adopt:[],
@@ -1076,7 +1083,7 @@ export {
   bimDgDiags, bimDgEdited, bimDgRoads, bimDgState, bimDgStdChanged, bimDgStdText, bimDgW, bimIsDiag,
   bimLandSlope, bimMvGuide, bimMvPtalBands, bimMvPtalK, bimMvPtalWalk, bimMvStopLim, bimMvXtab, bimOccLoads,
   bimRoadW, bimSaStdText, bimSha256, bimSlopeBands, bimStd, bimStdChanged, bimStdChangedText, bimStdClear,
-  bimStdDataChanged, bimStdDone, bimStdEdition, bimStdFmt, bimStdOvOf, bimStdOverride, bimStdOwn,
+  bimStdCopy, bimStdDataChanged, bimStdDone, bimStdEdition, bimStdFmt, bimStdOvOf, bimStdOverride, bimStdOwn,
   bimStdPackApply, bimStdPackDiff, bimStdPackRemove, bimStdPath, bimStdPick, bimStdPlace,
   bimStdPlaceFromAddress, bimStdPlaceMoved, bimStdPlaceName, bimStdRecs, bimStdResolve, bimStdS, bimStdSay,
   bimStdSetDate, bimStdSetPlace, bimStdStamp, bimStdTopicOf, bimStdUsedText, bimStdYear

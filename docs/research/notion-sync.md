@@ -241,5 +241,5 @@ Search Notion before creating anything, so nothing is made twice.
 - Internal Task DB: **V198 The map in the rendered view**, page `417cbfcc3a38814baa38cfdbd0762cba` (Completed; PR #99 merged 2026-11-13).
 - Documentation DB: **V198: the map and draped terrain in the rendered view** (`docs/research/research-rendered-map.md`), page `417cbfcc3a3881aea799d88402d3448b`.
 
-- Internal Task DB: **V201 Site context C3: measured heights, ground and bridges**, page `417cbfcc3a3881a1bc33faf0c50075ff` (In Progress; research done 2026-11-13, waiting on the owner's D1 to D5).
-- Documentation DB: **Research: site context at true scale (V201)** (`docs/research/research-site-context-accuracy.md`), page `417cbfcc3a3881248964d4f0bad47654`.
+- Internal Task DB: **V202 Site context C3: measured heights, ground and bridges**, page `417cbfcc3a3881a1bc33faf0c50075ff` (In Progress; research done 2026-11-13, waiting on the owner's D1 to D5).
+- Documentation DB: **Research: site context at true scale (V202)** (`docs/research/research-site-context-accuracy.md`), page `417cbfcc3a3881248964d4f0bad47654`.

@@ -1,7 +1,7 @@
-# Research: site context at true scale (V201): measured heights, ground and bridges
+# Research: site context at true scale (V202): measured heights, ground and bridges
 
 Claude, 2026-11-13. Builds on V133 (`research-site-context.md`), V157 (bridges and surfaces) and the
-owner's Notion research of 2026-11-13 (V188 point clouds, V189 roofs from LiDAR). Experiments:
+owner's Notion research of 2026-11-13 (V188 point clouds and V189 roofs from LiDAR, which PIPELINE numbers V190 and V191). Experiments:
 `docs/research/experiments/site-context-accuracy/` (four probes and their `results*.json`).
 
 ## 1. Abstract
@@ -16,14 +16,14 @@ national model. Professionals do not use OSM for this. They use a survey for the
 for the surroundings they use authoritative, measured public data: the city's building footprints
 with LiDAR heights, the national 1 m terrain model, and the bridge inventory. All three exist for
 this site, are free and keyless, and answer a browser (CORS `*`), as measured here.
-**Recommendation:** V201, "Site context C3: measured", which adds three sources behind narrow adapters
+**Recommendation:** V202, "Site context C3: measured", which adds three sources behind narrow adapters
 and keeps OSM as the fallback:
 (a) the USGS 3DEP 1 m DEM for the ground, wherever it covers;
 (b) a city's measured building heights, as a registry record per city, with Philadelphia first;
 (c) the National Bridge Inventory for each bridge's deck width, length and clearance.
 Each object records where its numbers came from, and an estimated number says it is estimated.
-LiDAR point clouds (V188/V189) remain the general, worldwide-in-principle answer for heights and
-bridge decks; they are a bigger phase and stay after V201.
+LiDAR point clouds (V190/V191) remain the general, worldwide-in-principle answer for heights and
+bridge decks; they are a bigger phase and stay after V202.
 
 ## 2. The question and the hypotheses
 
@@ -39,7 +39,7 @@ elevations and bridge geometry, and can the app's page read them directly?
 | H5 | Philadelphia publishes footprints with measured heights, CORS-open | **Supported:** 73 of 73 footprints in the box carry `base_elevation`, `approx_hgt` and `max_hgt`; CORS `*` |
 | H6 | Those heights are in feet above ground | **Supported:** City Hall 558 ft max (548 ft published to the statue's top); One Liberty Place 825 ft max (945 ft is the spire's tip, too thin for LiDAR); `base_elevation` 34.5 ft = 10.5 m against 3DEP's 10.9 m at the box centre |
 | H7 | The National Bridge Inventory gives deck width, length, spans and under-clearance, CORS-open | **Supported:** 32 structures within ~1 km; fields `DECK_WIDTH_MT_052`, `STRUCTURE_LEN_MT_049`, `MAX_SPAN_LEN_MT_048`, `MAIN_UNIT_SPANS_045`, `VERT_CLR_UND_054B`; CORS `*` |
-| H8 | 3DEP LiDAR (EPT) covers the site and a browser can read it | **Supported for access:** `USGS_LPC_DE_DelawareValley_HD_2015_LAS_2017` (41.4 billion points, EPSG:3857, LAZ, with `Classification`) covers City Hall; `ept.json` and the hierarchy answer CORS `*`. Decoding needs laz-perf (V188) |
+| H8 | 3DEP LiDAR (EPT) covers the site and a browser can read it | **Supported for access:** `USGS_LPC_DE_DelawareValley_HD_2015_LAS_2017` (41.4 billion points, EPSG:3857, LAZ, with `Classification`) covers City Hall; `ept.json` and the hierarchy answer CORS `*`. Decoding needs laz-perf (V190) |
 
 ## 3. Method
 
@@ -68,7 +68,7 @@ elevations and bridge geometry, and can the app's page read them directly?
   (in the US, USGS 3DEP; in PA, PAMAP or the city's flights). Building heights from the city's
   LiDAR-derived footprints or 3D model, or from the LiDAR itself (the height of roof returns above
   the ground). Bridges and roads from the DOT's records, or from plans when the work touches them.
-  (S: practice as the owner's own V188/V189 notes and the services' metadata describe it.)
+  (S: practice as the owner's own V190/V191 notes and the services' metadata describe it.)
 - **Commercial shortcuts** (Google's photorealistic 3D tiles, Cesium's buildings, Nearmap, Vexcel,
   Placemaker, CADMapper's paid tier) need keys or licences, and their terms limit extraction. The
   owner's rule (free, keyless) leaves them out.
@@ -114,7 +114,7 @@ elevations and bridge geometry, and can the app's page read them directly?
 - NBI covers highway structures only: footbridges, rail-only bridges and private structures are
   absent; they keep V157's layer rule and say they are estimated.
 - LiDAR class 17 (bridge deck, ASPRS LAS 1.4) would give every deck's surface directly; whether this
-  2015 dataset uses class 17 is not checked (U, V188).
+  2015 dataset uses class 17 is not checked (U, V190).
 
 ## 5. The alternatives compared
 
@@ -122,10 +122,10 @@ elevations and bridge geometry, and can the app's page read them directly?
 |---|---|---|---|---|---|---|
 | OSM tags (today) | 31% measured here | none | layer only | world | none | Keep as the fallback |
 | Terrarium tiles (today) | none | 30 m-class, 1.2 m RMSE here | none | world | none | Keep as the fallback |
-| **3DEP 1 m DEM** | none | **1 m bare earth** | none | US | small: a TIFF reader | **V201** |
-| **City footprints (registry)** | **measured, all** | base only | none | per city | small: ArcGIS query (already read) | **V201**, Philadelphia first |
-| **NBI** | none | none | **width, length, clearance** | US highway bridges | small: ArcGIS query | **V201** |
-| 3DEP LiDAR (EPT/COPC) | measured, all | 0.5-1 m | class 17 decks | US, where flown | large: laz-perf WASM, point budget | V188/V189, after V201 |
+| **3DEP 1 m DEM** | none | **1 m bare earth** | none | US | small: a TIFF reader | **V202** |
+| **City footprints (registry)** | **measured, all** | base only | none | per city | small: ArcGIS query (already read) | **V202**, Philadelphia first |
+| **NBI** | none | none | **width, length, clearance** | US highway bridges | small: ArcGIS query | **V202** |
+| 3DEP LiDAR (EPT/COPC) | measured, all | 0.5-1 m | class 17 decks | US, where flown | large: laz-perf WASM, point budget | V190/V191, after V202 |
 | Overture / Microsoft footprints | ML heights, partial | none | none | world | large: GeoParquet | Not now |
 | Google 3D tiles, Cesium | photoreal | yes | yes | world | key, paid terms | Excluded (keyless rule) |
 
@@ -192,7 +192,7 @@ elevations and bridge geometry, and can the app's page read them directly?
 
 - Philadelphia's LiDAR vintage behind `approx_hgt`, and the city's own metadata page.
 - Field names and units of other cities' layers.
-- Whether the DelawareValley 2015 LiDAR uses class 17 for decks (V188).
+- Whether the DelawareValley 2015 LiDAR uses class 17 for decks (V190).
 - The 3DEP service's rate limits for repeated use.
 
 ## 11. The owner's decisions (asked 2026-11-13)
@@ -205,9 +205,15 @@ elevations and bridge geometry, and can the app's page read them directly?
 - **D3, precedence:** for a building: the city's measured height, then OSM `height`, then OSM levels,
   then the default? Or OSM `height` first when present? *Recommended: the city first; it is
   measured for every building, OSM only where someone typed it.*
-- **D4, bridges:** NBI for highway bridges now, and the LiDAR deck (class 17) in V188? *Recommended:
+- **D4, bridges:** NBI for highway bridges now, and the LiDAR deck (class 17) in V190? *Recommended:
   yes.*
-- **D5, the phase number:** V201, after V200 (the 2D draw order), ahead of V188/V189.
+- **D5, the phase number:** a new number, ahead of V190/V191.
+
+**The owner's answer, 2026-11-13: "as recommended", D1 to D5.** D1: 3DEP at 5 m by default, 1 m and 2 m
+as a setting, Terrarium elsewhere. D2: the registry (`ctx.heights`). D3: the city first, then OSM
+`height`, levels, the default. D4: NBI now, LiDAR decks in V190. D5: asked as V201, which PIPELINE
+already gives to MEP runs (and V200 to Gaussian splats). Claude's numbering mistake, corrected the
+same day to **V202**, the first free number; the order the owner approved is unchanged.
 
 ## 12. References
 

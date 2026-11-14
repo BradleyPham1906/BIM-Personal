@@ -1,9 +1,9 @@
-# V201 spec: site context C3, measured heights, ground and bridges
+# V202 spec: site context C3, measured heights, ground and bridges
 
 Research: `docs/research/research-site-context-accuracy.md` (experiments in
-`docs/research/experiments/site-context-accuracy/`). **Status: draft, waiting for the owner's
-decisions D1 to D5 (the note's part 11).** The defaults below are the recommended answers; a
-different answer changes only the parts marked with its D-number. Implementation target: local
+`docs/research/experiments/site-context-accuracy/`). **Status: the owner chose D1 to D5 as
+recommended (2026-11-13; the note's part 11).** WO-00 is built; WO-01 to WO-05 are ready for Cline.
+A later change of mind touches only the parts marked with its D-number. Implementation target: local
 `main`. Written by Claude, 2026-11-13.
 
 ## 1. What it does for the user
@@ -40,7 +40,7 @@ Phone, tablet and desktop: no new panel. The Properties rows and the toast are t
 | `src/js/engine/map/site-context.js` | changed | the ground: 3DEP first, Terrarium as the fallback | Claude (WO-07) |
 | `src/js/engine/map/surroundings-3d.js` | changed | the height precedence (D3); bridge decks from NBI | Claude (WO-08, WO-09) |
 | `src/js/engine/testing/hooks-commands-site.js` | changed | exposes the pure functions to the tests | Claude (WO-00) |
-| `docs/work-orders/v201/v201.test.mjs` | new | the tests for WO-01 to WO-05 | Claude (written) |
+| `docs/work-orders/v202/v202.test.mjs` | new | the tests for WO-01 to WO-05 | Claude (written) |
 
 ## 3. Data
 
@@ -100,13 +100,13 @@ Phone, tablet and desktop: no new panel. The Properties rows and the toast are t
 - **Returns:** a building's height record, or `null`.
 - **Rules:**
   - The footprint's centre is the mean of its vertices.
-  - The candidates are the features whose `ring` contains that centre (`bimPointInPoly`). If several contain it, the one with the smallest area (shoelace) wins.
+  - The candidates are the features whose `ring` contains that centre (an even-odd crossing test written inside the function, as `bimPointInPoly` in `bim/rooms.js` does; no import). If several contain it, the one with the smallest area (shoelace) wins.
   - `h = a[rec.roof]*rec.unit`, rounded to 0.01. It is null (no pick) when it is not finite or not above 0.
   - `top` is worked out the same way from `a[rec.top]`, and is null when missing or not above `h`.
   - `base` comes from `a[rec.base]*rec.unit`, rounded to 0.01, and is null when not finite.
   - `from` is `'city'` and `id` is `rec.id`.
 - **Example:** a 10 m square at the origin inside a city ring with `approx_hgt:170, max_hgt:558.2, base_elevation:34.5`, with `unit:0.3048`, returns `{h:51.82, top:170.14, base:10.52, from:'city', id:'phl-li-footprints'}`.
-- **Uses:** `bimPointInPoly` (`bim/rooms.js`).
+- **Uses:** nothing beyond `Math`: the file imports only what WO-00 gave it, and import lines are Claude's.
 
 ### `bimNbiPick(pts, bridges, maxD)` - `measured-context.js` - WO-05
 - **Takes:** a bridge's centreline `pts` (model `[[x,z],...]`, two or more), the NBI structures `bridges`, and a distance `maxD` in metres (30 when it is not above 0).
@@ -142,7 +142,7 @@ screenshot of 2026-11-13.
 
 ## 6. Not in this phase
 
-- LiDAR point clouds, roof shapes from LiDAR, and class-17 decks: V188 and V189.
+- LiDAR point clouds, roof shapes from LiDAR, and class-17 decks: V190 and V191.
 - Cities other than Philadelphia: each is a registry record added after its own probe (D2).
 - Tunnels' depths: no free source measured here gives them.
 - Retaining walls, utilities, and bridge structure (girders, bearings): out of scope. The owner's bridge modelling goes through the OpenBridge research (`docs/research/research-openbridge.md`).

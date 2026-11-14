@@ -100,6 +100,9 @@ import {
   bimOsmRings
 } from '../map/site-context.js';
 import {
+  BIM_3DEP_URL, BIM_NBI_URL, bimCityHeightPick, bimCityRecs, bimDep3ElevAt, bimDep3Url, bimNbiPick, bimTiffF32
+} from '../map/measured-context.js';
+import {
   BIM_OVERPASS_MIRRORS, bimCtxAlong, bimCtxCreditHtml, bimCtxFetch, bimCtxRemove, bimCtxWidth, bimRoadUse,
   bimTagMetres
 } from '../map/surroundings-3d.js';
@@ -265,6 +268,8 @@ import { BIM_CMD_MAP, BIM_SHEET_CMDS, BIM_START_CMDS } from '../commands/command
     'addfeaturelayer,addservicelayers,addgeojsonitem,addsocrata,more,failuresnamed,findcredit,findpanel,findcommand';
   window.__acad3dV134d='overpassmirrors,overpassget';
   window.__a3dOverpassMirrors=function(){return BIM_OVERPASS_MIRRORS.slice();};
+  /* __acad3dV202: the measured context's pure functions, for the suites */
+  window.__a3dMeasured=function(){return {tiff:bimTiffF32,url:bimDep3Url,elevAt:bimDep3ElevAt,city:bimCityHeightPick,nbi:bimNbiPick,recs:bimCityRecs,dep3:BIM_3DEP_URL,nbiUrl:BIM_NBI_URL};};
   window.__acad3dV134='datakinds,arcgisquery,wfsgetfeature,geojsonfile,presets,areafilter,maxfeatures,featuresoutsideundo,'+
     'featuressaved,planoverlay,notonpaper,clicktoread,pickorder,parceltoproperty,failuresnamed,datacredit,datapanel,datacommand';
   /* __acad3dV133: site context */

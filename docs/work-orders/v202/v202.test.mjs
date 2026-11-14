@@ -1,11 +1,11 @@
-// V201, site context C3: measured heights, ground and bridges (docs/work-orders/v201/SPEC.md).
+// V202, site context C3: measured heights, ground and bridges (docs/work-orders/v202/SPEC.md).
 // The pure functions of WO-01 to WO-05, in src/js/engine/map/measured-context.js. Outside `npm test`
 // until WO-06 moves these into tests/unit/.
 //
-//   node --test docs/work-orders/v201/v201.test.mjs
-//   node --test --test-name-pattern="WO-01" docs/work-orders/v201/v201.test.mjs
+//   node --test docs/work-orders/v202/v202.test.mjs
+//   node --test --test-name-pattern="WO-01" docs/work-orders/v202/v202.test.mjs
 //
-// V201_IMPL=<path to an .mjs exporting the five functions> runs the same tests against another
+// V202_IMPL=<path to an .mjs exporting the five functions> runs the same tests against another
 // implementation (Claude checked these tests that way against a reference, 2026-11-13).
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
@@ -13,7 +13,7 @@ import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { loadEngine } from '../../../tests/unit/helpers/engine.mjs';
 
-const F = process.env.V201_IMPL ? await import(pathToFileURL(path.resolve(process.env.V201_IMPL)).href) : loadEngine();
+const F = process.env.V202_IMPL ? await import(pathToFileURL(path.resolve(process.env.V202_IMPL)).href) : loadEngine();
 const R = 6378137, D = Math.PI / 180;
 const mx = (lon) => R * lon * D, my = (lat) => R * Math.log(Math.tan(Math.PI / 4 + lat * D / 2));
 const lonOf = (x) => x / R / D, latOf = (y) => (2 * Math.atan(Math.exp(y / R)) - Math.PI / 2) / D;

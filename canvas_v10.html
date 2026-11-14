@@ -20938,6 +20938,13 @@ try{
           {n:'tree',v:8,u:'m',say:'a tree\'s height where none is mapped'},{n:'tower',v:25,u:'m',say:'a power tower\'s height'},{n:'line',v:20,u:'m',say:'the height a power line hangs at'},
           {n:'deck',v:6,u:'m',say:'a bridge deck\'s height for each layer'},{n:'deck_t',v:0.8,u:'m',say:'a bridge deck\'s thickness'},{n:'pier',v:30,u:'m',say:'the spacing of a bridge\'s piers'},
           {n:'road_w',t:1,u:'m',say:'a road\'s width by class, where neither its width nor its lanes are mapped',v:{motorway:14,motorway_link:7,trunk:12,trunk_link:7,primary:11,primary_link:6,secondary:9,secondary_link:6,tertiary:8,tertiary_link:6,residential:7,unclassified:6,living_street:6,service:4,pedestrian:6,track:3,footway:2,path:1.5,cycleway:2,steps:2,bridleway:2,corridor:2}}]}]},
+    /* ---- __acad3dV202: measured building heights, by city (the owner's D2, 2026-11-13) ---- */
+    {id:'ctx.heights',title:'Measured building heights, by city',pub:'Each city',kind:'data',area:'Site context',use:'Context buildings: the city\'s measured height before OpenStreetMap\'s; applied at the next fetch',anywhere:true,
+      eds:[{id:'ctx.heights.1',name:'The cities read so far (V202)',pub:'',st:'current',where:'Each source within its own bounds',adopt:[{at:'*'}],
+        src:{t:'City of Philadelphia, LI building footprints (OpenDataPhilly), read through ArcGIS Online',w:'its fields approx_hgt (main roof), max_hgt (top) and base_elevation (ground), all in feet, checked against City Hall and One Liberty Place (research-site-context-accuracy.md, H5 and H6)',u:'https://services.arcgis.com/fLeGjb7u4uXqeF9q/arcgis/rest/services/LI_BUILDING_FOOTPRINTS/FeatureServer/0',lv:'P',read:'2026-11-13'},
+        v:[{n:'sources',t:1,say:'each city\'s footprint layer: its address, its height fields and their unit, and where it applies (W, S, E, N)',
+          v:{'phl-li-footprints':{name:'City of Philadelphia building footprints',url:'https://services.arcgis.com/fLeGjb7u4uXqeF9q/arcgis/rest/services/LI_BUILDING_FOOTPRINTS/FeatureServer/0',
+            roof:'approx_hgt',top:'max_hgt',base:'base_elevation',unit:0.3048,credit:'City of Philadelphia (OpenDataPhilly)',read:'2026-11-13',bbox:[-75.29,39.86,-74.95,40.14]}}}]}]},
     /* ---- __acad3dV168: land use, form and green ---- */
     {id:'lbcs.activity',title:'Land-Based Classification Standards (LBCS): activity',pub:'American Planning Association',kind:'classification',area:'Land and green',use:'Land use layer, its key and its finding',anywhere:true,
       eds:[{id:'lbcs.activity.apa',name:'LBCS Activity Dimension, with APA\'s colour workbook',pub:'',st:'current',where:'A model classification for planning in the United States, adopted nowhere as a rule',adopt:[],
@@ -40427,6 +40434,47 @@ try{
     return (A3D.site&&isFinite(A3D.site.terrainBase))?A3D.site.terrainBase:null;
   }
   /* ---- the layers: one Context layer, a sub-layer for each kind ---- */
+  /* ===== __acad3dV202: site context C3, measured (docs/work-orders/v202/SPEC.md) =====
+     Measured public data in place of OpenStreetMap's guesses, where it exists: the USGS 3DEP 1 m
+     ground, a city's LiDAR building heights (the registry's ctx.heights), and the National Bridge
+     Inventory's decks. Each function below is pure; the fetches that use them follow in WO-07 to WO-09. */
+  var BIM_3DEP_URL='https://elevation.nationalmap.gov/arcgis/rest/services/3DEPElevation/ImageServer';
+  var BIM_NBI_URL='https://services.arcgis.com/xOi1kZaI0eWDREZv/arcgis/rest/services/NTAD_National_Bridge_Inventory/FeatureServer/0';
+
+  /* WO-01: a single-band, uncompressed, float32 TIFF (strips or tiles, either byte order) as
+     {w,h,data:Float32Array}, rows from the top; null for anything it cannot read exactly */
+  function bimTiffF32(bytes){
+    return null;
+  }
+  /* WO-02: the 3DEP exportImage address for an area {w,s,e,n} and a grid of cols x rows (2 to 2000),
+     the bbox in Web Mercator (R 6378137, toFixed(2)); null for a missing area or a bad size */
+  function bimDep3Url(a,cols,rows){
+    return null;
+  }
+  /* WO-03: the ground in metres at lon, lat from a DEM grid {w,h,data,a}, bilinear between pixel
+     centres in Web Mercator; NaN off the grid or on nodata (below -1000) */
+  function bimDep3ElevAt(g,lon,lat){
+    return NaN;
+  }
+  /* WO-04: the city's measured height for an OSM footprint: the smallest city ring holding the
+     footprint's vertex mean, in metres through rec.unit, as {h,top,base,from:'city',id}; else null */
+  function bimCityHeightPick(ring,feats,rec){
+    return null;
+  }
+  /* WO-05: the nearest NBI structure within maxD (30 m by default) of a bridge's centreline, as
+     {id,carried,year,width,length,spans,clear,clearRef,dist}; measured numbers only; else null */
+  function bimNbiPick(pts,bridges,maxD){
+    return null;
+  }
+  /* the city records whose bbox holds a longitude and latitude (D2: the registry's ctx.heights) */
+  function bimCityRecs(lon,lat){
+    var all=bimStd('ctx.heights','sources')||{},out=[],k,r,b;
+    for(k in all)if(all.hasOwnProperty(k)){
+      r=all[k];b=r&&r.bbox;
+      if(b&&lon>=b[0]&&lon<=b[2]&&lat>=b[1]&&lat<=b[3]){r=bimStdCopy(r);r.id=k;out.push(r);}
+    }
+    return out;
+  }
   /* ================= __acad3dV157: the surroundings in 3D =================
      A road, a railway or a runway keeps its centre line, the element; its surface is that
      element's mesh, built here: a strip of its width along the line, on the ground point by point,
@@ -66905,6 +66953,8 @@ function bimLyDupNumbers(entries) {
     'addfeaturelayer,addservicelayers,addgeojsonitem,addsocrata,more,failuresnamed,findcredit,findpanel,findcommand';
   window.__acad3dV134d='overpassmirrors,overpassget';
   window.__a3dOverpassMirrors=function(){return BIM_OVERPASS_MIRRORS.slice();};
+  /* __acad3dV202: the measured context's pure functions, for the suites */
+  window.__a3dMeasured=function(){return {tiff:bimTiffF32,url:bimDep3Url,elevAt:bimDep3ElevAt,city:bimCityHeightPick,nbi:bimNbiPick,recs:bimCityRecs,dep3:BIM_3DEP_URL,nbiUrl:BIM_NBI_URL};};
   window.__acad3dV134='datakinds,arcgisquery,wfsgetfeature,geojsonfile,presets,areafilter,maxfeatures,featuresoutsideundo,'+
     'featuressaved,planoverlay,notonpaper,clicktoread,pickorder,parceltoproperty,failuresnamed,datacredit,datapanel,datacommand';
   /* __acad3dV133: site context */
