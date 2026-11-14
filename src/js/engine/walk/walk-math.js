@@ -45,3 +45,21 @@ function bimWalkLook(v, dx, dy, k) {
     }
     return {yaw: yaw, pitch: pitch};
 }
+
+/* WO-04 bimWalkMove(inp, yaw, speed, fly): velocity from what is held */
+function bimWalkMove(inp, yaw, speed, fly) {
+    var forward = [-Math.sin(yaw), 0, -Math.cos(yaw)];
+    var right = [Math.cos(yaw), 0, -Math.sin(yaw)];
+    var vx = inp.f * forward[0] + inp.s * right[0];
+    var vz = inp.f * forward[2] + inp.s * right[2];
+    var len = Math.sqrt(vx * vx + vz * vz);
+    if (len > 1) {
+        vx = vx / len;
+        vz = vz / len;
+    }
+    var mult = inp.run ? 2 : 1;
+    vx = vx * speed * mult;
+    vz = vz * speed * mult;
+    var vy = fly ? inp.up * speed * mult : 0;
+    return [vx, vy, vz];
+}

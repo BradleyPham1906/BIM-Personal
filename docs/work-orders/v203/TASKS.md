@@ -72,7 +72,7 @@ modules, the build. `npm test` 259 of 259.
 
 ---
 
-## [ ] WO-04 [Cline] `bimWalkMove(inp, yaw, speed, fly)`
+## [x] WO-04 [Cline] `bimWalkMove(inp, yaw, speed, fly)`
 
 - **It must:** return `[vx, vy, vz]`:
   - `x = -Math.sin(yaw) * inp.f + Math.cos(yaw) * inp.s` and `z = -Math.cos(yaw) * inp.f - Math.sin(yaw) * inp.s`;
