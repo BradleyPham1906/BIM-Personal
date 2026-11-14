@@ -129,3 +129,39 @@ def bim_ifcos_write_read(path):
         return {"bytes": os.path.getsize(path), "summary": bim_ifcos_summary(path)}
     except Exception:
         return {"error": "unreadable"}
+
+
+def bim_ifcos_matrix(x, y, z, a):
+    return numpy.array([
+        [math.cos(a), -math.sin(a), 0, x],
+        [math.sin(a), math.cos(a), 0, y],
+        [0, 0, 1, z],
+        [0, 0, 0, 1],
+    ], dtype=float)
+
+
+def bim_ifcos_storey(level):
+    storeys = _bim_ifcos_file.by_type("IfcBuildingStorey")
+    if isinstance(level, int) and 0 <= level < len(storeys):
+        return storeys[level]
+    return storeys[0]
+
+
+def bim_ifcos_body():
+    for c in _bim_ifcos_file.by_type("IfcGeometricRepresentationSubContext"):
+        if c.ContextIdentifier == "Body":
+            return c
+
+
+def bim_ifcos_keep_guid(product, guid):
+    ok = (
+        isinstance(guid, str)
+        and len(guid) == 22
+        and all(c in "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz_$" for c in guid)
+    )
+    if ok:
+        try:
+            _bim_ifcos_file.by_guid(guid)
+        except Exception:
+            product.GlobalId = guid
+    return product.GlobalId

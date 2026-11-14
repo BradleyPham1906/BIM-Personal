@@ -24,7 +24,7 @@ Scores are from `../ROUTING.md` (files, logic, understanding, judgment, trickine
 
 ---
 
-## [ ] WO-01 [Cline] `bim_ifcos_matrix`, `bim_ifcos_storey`, `bim_ifcos_body`, `bim_ifcos_keep_guid`
+## [x] WO-01 [Cline] `bim_ifcos_matrix`, `bim_ifcos_storey`, `bim_ifcos_body`, `bim_ifcos_keep_guid`
 
 - **It must:** add the four functions exactly as SPEC part 4 "WO-01" writes them. These four answer values, not
   dicts, and have no `try` of their own except `bim_ifcos_keep_guid`'s around `by_guid` (it raises when no entity has
