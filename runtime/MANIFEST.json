@@ -170,8 +170,23 @@
    "sha256": "eba5764071dfab7be3973293a722b42d863df0773b52acd26d8ede4f481b1b97",
    "from": "getcadcraft/bimcraft@cfbd948 app/ifc (vendor/cc-ifc) and npm manifold-3d@3.5.4, bundled unchanged by esbuild 0.28.2: tools/ifc/build_ifc.mjs",
    "licence": "Apache-2.0 (cc-ifc, Manifold)"
+  },
+  {
+   "path": "jolt/1.1.1/LICENSE",
+   "bytes": 1074,
+   "sha256": "9907e3cd4976e88e7b4d8aee1a035ffa7d3ebe84993d00b6b273f716c74b794c",
+   "from": "npm jolt-physics@1.1.1, LICENSE (the tarball sha512-kMCQu/b4wbHwy7EgZWaSbUyDthIKZUvAGGqta4pBF4Pdq+ljWaNvQoa5hPr/PkVCUVsqcoLwXITUm6975mQhiQ==)",
+   "licence": "MIT (Jolt Physics, JoltPhysics.js)"
+  },
+  {
+   "path": "jolt/1.1.1/bim-jolt.min.js",
+   "bytes": 4011306,
+   "sha256": "2b287e9054407b0a17d179a7efdcae6f94eb96f2e7f8fb9f5debbeb59ecbbc1a",
+   "from": "npm jolt-physics@1.1.1 (the tarball sha512-kMCQu/b4wbHwy7EgZWaSbUyDthIKZUvAGGqta4pBF4Pdq+ljWaNvQoa5hPr/PkVCUVsqcoLwXITUm6975mQhiQ==), dist/jolt-physics.wasm-compat.js bundled unchanged by esbuild 0.28.2: tools/jolt/build_jolt.mjs",
+   "licence": "MIT (Jolt Physics, JoltPhysics.js)"
   }
  ],
  "three": "0.186.1",
- "cc-ifc": "cfbd948"
+ "cc-ifc": "cfbd948",
+ "jolt": "1.1.1"
 }

@@ -144,7 +144,10 @@ modules, the build. `npm test` 259 of 259.
 
 ---
 
-## [ ] C-02 [Claude] Jolt Physics 1.1.1 pinned in `runtime/`
+## [x] C-02 [Claude] Jolt Physics 1.1.1 pinned in `runtime/`
+
+Done 2026-11-14: `runtime/jolt/1.1.1/bim-jolt.min.js` 4,011,306 bytes (951,172 gzipped), loaded from `file://` in
+Chromium and `BIMJOLT.default()` started with `CharacterVirtual` present, no console errors; `check_runtime.py` 26 files.
 
 `tools/jolt/` (package.json and lock pinning jolt-physics 1.1.1 and esbuild, `build_jolt.mjs` with `--check`, as
 `tools/three`), the bundle (`external: ['node:*']`, experiment e02), its licence, `runtime/MANIFEST.json`,
