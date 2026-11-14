@@ -70,3 +70,12 @@ function bimWalkCamFirst(p, eye, yaw, pitch) {
     var d = [cp * Math.sin(yaw), Math.sin(pitch), cp * Math.cos(yaw)];
     return {tx: p[0] - d[0], ty: p[1] + eye - d[1], tz: p[2] - d[2], yaw: yaw, pitch: pitch, dist: 1};
 }
+
+/* WO-06 bimWalkCamThird(p, eye, yaw, pitch, boom, hit): third-person camera behind the walker */
+function bimWalkCamThird(p, eye, yaw, pitch, boom, hit) {
+    var dist = boom;
+    if (typeof hit === 'number' && isFinite(hit) && hit - 0.2 < boom) {
+        dist = Math.max(0.3, hit - 0.2);
+    }
+    return {tx: p[0], ty: p[1] + eye, tz: p[2], yaw: yaw, pitch: pitch, dist: dist};
+}

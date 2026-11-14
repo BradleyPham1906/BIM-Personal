@@ -101,7 +101,7 @@ modules, the build. `npm test` 259 of 259.
 
 ---
 
-## [ ] WO-06 [Cline] `bimWalkCamThird(p, eye, yaw, pitch, boom, hit)`
+## [x] WO-06 [Cline] `bimWalkCamThird(p, eye, yaw, pitch, boom, hit)`
 
 - **It must:** return `{tx: p[0], ty: p[1] + eye, tz: p[2], yaw: yaw, pitch: pitch, dist: D}`. `D` is `boom`, except
   when `hit` is a number, finite (`isFinite(hit)`), and `hit - 0.2 < boom`: then `D = Math.max(0.3, hit - 0.2)`.
