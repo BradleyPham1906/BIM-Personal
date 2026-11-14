@@ -63,6 +63,7 @@ import {
   BIM_IFC, bimIfcClass, bimIfcContainers, bimIfcHex, bimIfcImportBuffer, bimIfcMeshParts, bimIfcPropsHtml,
   bimIfcRead, bimIfcSet, bimIfcSources, bimIfcStoreys, bimIfcVal
 } from '../io/ifc-full.js';
+import { BIM_IFC_SAVE } from '../io/ifc-save.js';
 import { toScreen } from '../io/import-entry.js';
 import { A3D_GL, setA3D_GL, setA3D_GL_FAILED } from '../render/webgl.js';
 import {
@@ -405,6 +406,8 @@ import { cvH, cvW } from '../ui/canvas-size.js';
   window.__a3dRvMap={layout:bimRvMapLayout,uv:bimRvMapUV,frame:bimRvMapFrame,flat:bimRvMapFlatItem,drape:bimRvMapDrape,
     canvas:bimRvMapCanvas,tilesSig:bimRvMapTilesSig,plan:bimRvPlan,build:bimRvBuild,meshData:bimTerrainMeshData,drapeTiles:bimDrapeTiles,
     corners:bimMapTileCorners,tileUrl:bimMapTileUrl};
+  /* __acad3dV177: the model as the data Save as IFC hands IfcOpenShell (io/ifc-save.js) */
+  window.__a3dIfcSave=BIM_IFC_SAVE;
   /* __acad3dV197: colours by surface kind */
   window.__acad3dV197='colours,study,natural,roofrows,kinds';
   window.__a3dKinds={pal:BIM_SK_PAL,key:bimSkKey,col:bimSkCol,roofy:bimSkRoofy,set:bimSkSet,palette:bimSkPalette,
