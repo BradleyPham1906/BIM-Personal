@@ -169,24 +169,27 @@ def bim_ifcos_keep_guid(product, guid):
 
 def bim_ifcos_begin(name, levels):
     global _bim_ifcos_file
-    if not levels:
-        levels = [{"name": "Level 0", "elev": 0}]
-    r = bim_ifcos_new_project(name, levels[0]["elev"])
-    if "error" in r:
-        return r
-    f = _bim_ifcos_file
-    storeys = f.by_type("IfcBuildingStorey")
-    storeys[0].Name = levels[0]["name"]
-    building = f.by_type("IfcBuilding")[0]
-    for lv in levels[1:]:
-        storey = ifcopenshell.api.root.create_entity(f, ifc_class="IfcBuildingStorey", name=lv["name"])
-        storey.Elevation = lv["elev"]
-        ifcopenshell.api.aggregate.assign_object(f, products=[storey], relating_object=building)
-    for s in f.by_type("IfcBuildingStorey"):
-        ifcopenshell.api.geometry.edit_object_placement(
-            f, product=s, matrix=bim_ifcos_matrix(0, 0, s.Elevation, 0)
-        )
-    return bim_ifcos_summary("")
+    try:
+        if not levels:
+            levels = [{"name": "Level 0", "elev": 0}]
+        r = bim_ifcos_new_project(name, levels[0]["elev"])
+        if "error" in r:
+            return r
+        f = _bim_ifcos_file
+        storeys = f.by_type("IfcBuildingStorey")
+        storeys[0].Name = levels[0]["name"]
+        building = f.by_type("IfcBuilding")[0]
+        for lv in levels[1:]:
+            storey = ifcopenshell.api.root.create_entity(f, ifc_class="IfcBuildingStorey", name=lv["name"])
+            storey.Elevation = lv["elev"]
+            ifcopenshell.api.aggregate.assign_object(f, products=[storey], relating_object=building)
+        for s in f.by_type("IfcBuildingStorey"):
+            ifcopenshell.api.geometry.edit_object_placement(
+                f, product=s, matrix=bim_ifcos_matrix(0, 0, s.Elevation, 0)
+            )
+        return bim_ifcos_summary("")
+    except Exception:
+        return {"error": "failed"}
 
 
 def bim_ifcos_put_wall(w):
@@ -198,7 +201,7 @@ def bim_ifcos_put_wall(w):
         L = math.hypot(w["x1"] - w["x0"], w["y1"] - w["y0"])
         if L < 1e-9:
             return {"error": "zero length"}
-        wall = ifcopenshell.api.root.create_entity(f, ifc_class="IfcWall", name=w["name"])
+        wall = ifcopenshell.api.root.create_entity(f, ifc_class="IfcWall", name=w.get("name"))
         rep = ifcopenshell.api.geometry.add_wall_representation(
             f, context=bim_ifcos_body(), length=L, height=w["height"],
             thickness=w["thickness"], offset=w.get("offset", 0)
@@ -226,7 +229,7 @@ def bim_ifcos_put_prism(p):
         if len(pts) < 3 or depth is None or depth <= 0:
             return {"error": "bad outline"}
         element = ifcopenshell.api.root.create_entity(
-            f, ifc_class=p.get("cls") or "IfcSlab", name=p["name"]
+            f, ifc_class=p.get("cls") or "IfcSlab", name=p.get("name")
         )
         rep = ifcopenshell.api.geometry.add_slab_representation(
             f, context=bim_ifcos_body(), depth=p["depth"],

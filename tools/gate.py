@@ -264,7 +264,8 @@ def check(phase, ids, gate, llm=True, strict_llm=False):
         run(["node", "--check", f], "node --check " + f, gate)
     for tf in sorted(allowed_tests):
         code, out = run(["node", "--test", "--test-reporter=tap", "--test-name-pattern=" + "|".join(ids), tf], "task tests " + tf, gate)
-        ran = re.findall(r"^\s*ok \d+ - (?:%s)\b" % "|".join(ids), out, re.M)
+        # a skipped case ("ok 3 - WO-09 ... # SKIP") did not run
+        ran = re.findall(r"^\s*ok \d+ - (?:%s)\b(?![^\n]*# SKIP)" % "|".join(ids), out, re.M)
         if not code and not ran:
             gate.fail("%s: no test named %s ran; the gate needs the task's own tests" % (tf, "/".join(ids)))
     if not allowed_tests:

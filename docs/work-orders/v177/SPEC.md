@@ -17,7 +17,8 @@ editable: it becomes one of the app's own walls or floors, and is saved back und
 | Step | What | Who | State |
 |---|---|---|---|
 | 1 | The adapter: a model, as plain data, written as an IFC file (part 4) | Cline, WO-01 to WO-07 | ready |
-| 2 | The app's side: the model as that data (`io/ifc-save.js`), the wheels in `runtime/` with their licence texts, the worker, the command, Make editable | Claude writes its spec after step 1 ships; the runtime, the worker and the command are Claude's | next |
+| 2a | The model as that data: `src/js/engine/io/ifc-save.js` (part 7) | Cline, WO-09 to WO-15 | ready |
+| 2b | The wheels and their licence texts in `runtime/`, the worker, File > Export > IFC, Make editable, the browser check | Claude (protected paths and the worker), spec to follow | next |
 
 Step 1 changes one file, `src/py/bim_ifcos.py`; nothing in the app calls it yet, so `canvas_v10.html` does not change.
 
@@ -132,3 +133,88 @@ Node), then `npm test`.
 
 Nothing in the app (no `.js`, no menu, no worker, no wheels in `runtime/`): step 2. No curved walls as IFC walls
 (step 2 sends them as meshes), no materials, colours or types, no IFC2x3.
+
+## 7. Step 2a: the model as data (all in `src/js/engine/io/ifc-save.js`, ES5)
+
+The file's header (Claude's) has `BIM_IFC_SAVE` (the file's functions by name, for the tests), `BIM_IFC_SAVE_CLASS`
+(the IFC class by `bim.type`), `bimIfcSaveNum(v)` (a number to 4 decimals, never minus zero), `bimIfcSavePt([x, z])`
+(IFC's `[X, Y]` = `[x, -z]`) and `bimIfcSavePt3([x, y, z])` (`[x, -z, y]`). Every number put in an item goes through
+`bimIfcSaveNum`. Each function below is followed by its line in the list, as written. No function reads `A3D` or
+the page: each is given what it works on. `base` is what `bimIfcSaveBase` answered for the element; "a copy of
+`base`" is a new object with each of `base`'s own keys.
+
+An element is "moved" when any of `o.pos`'s three numbers is over 1e-9 in size (a missing `pos` is not moved).
+
+### WO-09: `bimIfcSaveLevels(levels)` and `bimIfcSaveLevel(o, lv, y)`
+- `bimIfcSaveLevels`: `{list: [{name, elev}], at: {<level id>: <its index in list>}}`, in the order given; `name`
+  is `String(l.name || ('Level ' + i))`; `null` or `[]` gives `{list: [], at: {}}`.
+- `bimIfcSaveLevel`: `lv.at[o.bim.levelId]` when `o.bim` has a `levelId` that `lv.at` has (`hasOwnProperty`); else
+  the index of the level with the greatest `elev` that is not above `y + 1e-6`; none: 0.
+- List: `BIM_IFC_SAVE.levels=bimIfcSaveLevels;BIM_IFC_SAVE.level=bimIfcSaveLevel;`
+
+### WO-10: `bimIfcSaveBase(o, layerName)`
+- `{id: o.id, name: String(o.name || o.id), psets: [...]}`, and `guid: o.bim.guid` only when it is a string of 22
+  characters. `psets` starts with `{name: 'BIM_Personal', props: {Type: String(bim.type || o.t || ''), Layer:
+  String(layerName || '')}}`; then, for each of `o.bim.psets` (an imported element's: `{name, rows: [[key, value],
+  ...]}`), `{name: String(name), props: {...}}` with each row that has a key as `String(key): String(value)` (a
+  `null` value is `''`); a set with no such row, with no name, or named `BIM_Personal`, is left out.
+- List: `BIM_IFC_SAVE.base=bimIfcSaveBase;`
+
+### WO-11: `bimIfcSaveWalls(o, lv, base)`
+- `null` unless `o.bim.type` is `'wall'`, its `centerline` has 2 or more points, `bimHasBulge(o.bim.bulges)` is
+  false, the element is not moved, and its `thickness` and `height` are above 0.
+- The sides: `off = bimAlignOffsets(bim.thickness, bim.align)` (`{dLeft, dRight}`). The segments: from point `i` to
+  point `i + 1`, and, when `bim.closed` and there are more than 2 points, from the last back to the first. A segment
+  shorter than 1e-6 is passed over. For a segment from `a` to `q` (plan points), with `dx = q[0] - a[0]`,
+  `dz = q[1] - a[1]`, `len` its length and `nr = bimSegNormal(a, q)`: `s = (nr[0] * dz - nr[1] * dx) / len` (1 or
+  -1: which side of IFC's line the app's left is on).
+- Each segment's item: a copy of `base`, and `level: bimIfcSaveLevel(o, lv, bim.baseY)`, `x0, y0` from
+  `bimIfcSavePt(a)`, `x1, y1` from `bimIfcSavePt(q)`, `base: bim.baseY`, `height`, `thickness: off.dLeft +
+  off.dRight`, `offset: Math.min(s * off.dLeft, -s * off.dRight)`. Every item after the first written has
+  `id: o.id + '#' + i` (`i` the segment's index, counting passed-over ones) and no `guid`. When more than one item
+  is written each `name` is `base.name + ' ' + (its place in the answer, from 1)`.
+- Returns the items, or `null` when none was written.
+- List: `BIM_IFC_SAVE.walls=bimIfcSaveWalls;`
+
+### WO-12: `bimIfcSavePrism(o, lv, base)`
+- `null` when the element is moved. A floor (`bim.type` `'floor'`, a `profile` of 3 or more points, `thickness`
+  above 0): `cls: 'IfcSlab'`, the outline `bim.profile`, `base: bim.baseY - bim.thickness` (a floor hangs under its
+  `baseY`), `depth: bim.thickness`. A column (`bim.type` `'column'`, no `bim.section`, a `center`, `width`, `depth`
+  and `height` above 0): `cls: 'IfcColumn'`, the outline `bimRectFootprint(bim.center, bim.width, bim.depth,
+  bim.rotation || 0)`, `base: bim.baseY`, `depth: bim.height`. Anything else: `null`.
+- The item: `{cls}` and a copy of `base`, `level: bimIfcSaveLevel(o, lv, bim.baseY)`, `pts` (each outline point
+  through `bimIfcSavePt`), `base`, `depth`.
+- List: `BIM_IFC_SAVE.prism=bimIfcSavePrism;`
+
+### WO-13: `bimIfcSaveOpening(o, walls, base)`
+- `walls` are wall items already made (WO-11). `null` unless `o.t` is `'opening'`, `o.bim.type` is `'door'` or
+  `'window'`, it has a `center`, and its `width` and `height` are above 0.
+- Its segment: among the items whose `id` is `bim.hostWallId` or starts with `bim.hostWallId + '#'`, the one nearest
+  the centre `c = bimIfcSavePt(bim.center)`: for each, `t` = the centre's place along the segment, held between 0
+  and 1 (`((c[0] - x0) * dx + (c[1] - y0) * dy) / (dx * dx + dy * dy)`), and the distance from `c` to that point.
+  None: `null`.
+- The item: a copy of `base`, `cls` (`'IfcWindow'` for a window, else `'IfcDoor'`), `host` (the segment's `id`),
+  `x, y` (the point on the segment at `t`), `a: Math.atan2(y1 - y0, x1 - x0)` (not rounded), `base: segment.base +
+  (bim.sillHeight || 0)`, `width`, `height`, `depth: segment.thickness + 0.2`.
+- List: `BIM_IFC_SAVE.opening=bimIfcSaveOpening;`
+
+### WO-14: `bimIfcSaveMesh(o, m, lv, base)`
+- `m` is the element's mesh (`{v: [[x, y, z]], f: [[i, j, k, ...]]}`). `null` when there is no `m`, `m.v` or `m.f`.
+- The item: a copy of `base`, `verts` (each corner plus `o.pos`, through `bimIfcSavePt3`), `faces` (each face of 3
+  or more corners as a fan of triangles from its first corner: `[f[0], f[j - 1], f[j]]` for `j` from 2), `cls`,
+  `level: bimIfcSaveLevel(o, lv, <the lowest y of its corners, with pos>)`. No triangle: `null`.
+- `cls`: for an imported element (`bim.imported`) whose `bim.ifcType` matches `/^Ifc[A-Za-z0-9]+$/`, that name
+  without a trailing `StandardCase` or `ElementedCase`; else `BIM_IFC_SAVE_CLASS[bim.type]`; else
+  `'IfcBuildingElementProxy'`.
+- List: `BIM_IFC_SAVE.mesh=bimIfcSaveMesh;`
+
+### WO-15: `bimIfcSaveModel(name, levels, entries)`
+- `entries` is `[{o, mesh, layer}]`: an element, its mesh (or `null`), its layer's name.
+- `lv = bimIfcSaveLevels(levels)`; the model `{name: String(name || 'Project'), levels: lv.list, walls: [],
+  prisms: [], openings: [], meshes: []}`. For each entry, `base = bimIfcSaveBase(o, layer)`; an `o.t` of
+  `'opening'` is kept for later; else the first of these that does not answer `null`: `bimIfcSaveWalls` (its items
+  added to `walls`), `bimIfcSavePrism` (to `prisms`), `bimIfcSaveMesh(o, mesh, lv, base)` (to `meshes`); all `null`:
+  `{id: o.id, why: 'no shape'}` to `left`. Then each kept opening: `bimIfcSaveOpening(o, model.walls, base)` to
+  `openings`, or `{id: o.id, why: 'its wall is not written as a straight wall'}` to `left`.
+- Returns `{model, left}`.
+- List: `BIM_IFC_SAVE.model=bimIfcSaveModel;`
