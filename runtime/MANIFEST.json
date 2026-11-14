@@ -181,7 +181,7 @@
   {
    "path": "jolt/1.1.1/bim-jolt.min.js",
    "bytes": 4011306,
-   "sha256": "2b287e9054407b0a17d179a7efdcae6f94eb96f2e7f8fb9f5debbeb59ecbbc1a",
+   "sha256": "0a35863a474aef55d39633da4b284572f6ef86ab81f0249d54fca35b9c9a31fd",
    "from": "npm jolt-physics@1.1.1 (the tarball sha512-kMCQu/b4wbHwy7EgZWaSbUyDthIKZUvAGGqta4pBF4Pdq+ljWaNvQoa5hPr/PkVCUVsqcoLwXITUm6975mQhiQ==), dist/jolt-physics.wasm-compat.js bundled unchanged by esbuild 0.28.2: tools/jolt/build_jolt.mjs",
    "licence": "MIT (Jolt Physics, JoltPhysics.js)"
   }

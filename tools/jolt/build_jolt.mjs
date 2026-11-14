@@ -1,4 +1,4 @@
-// tools/jolt/build_jolt.mjs -- V202: Jolt Physics as one classic script, for the walkthrough.
+// tools/jolt/build_jolt.mjs -- V203: Jolt Physics as one classic script, for the walkthrough.
 //
 // JoltPhysics.js (MIT, github.com/jrouwe/JoltPhysics.js) is published as ES modules only. The engine is ES5 in one
 // closure and must also run from file://, where a browser refuses a module and refuses to fetch a .wasm file, so its
@@ -37,7 +37,7 @@ const licence = read(path.join(mod, 'jolt-physics', 'LICENSE'));
 const owner = /^Copyright .*$/m.exec(licence);
 if (!owner) { console.error('no copyright line in jolt-physics/LICENSE'); process.exit(1); }
 const banner =
-  '/* __acad3dV202: Jolt Physics ' + WANT + ' (github.com/jrouwe/JoltPhysics.js, MIT, ' + owner[0].trim() + '), its wasm-compat\n' +
+  '/* __acad3dV203: Jolt Physics ' + WANT + ' (github.com/jrouwe/JoltPhysics.js, MIT, ' + owner[0].trim() + '), its wasm-compat\n' +
   '   build unchanged, as published on npm, bundled into one classic script by esbuild ' + pkg('esbuild').version +
   ' (tools/jolt/build_jolt.mjs).\n   Its only global is BIMJOLT; BIMJOLT.default() resolves to Jolt. The licence is beside this file. */\n';
 const text = banner + r.outputFiles[0].text;

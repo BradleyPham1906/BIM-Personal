@@ -199,7 +199,7 @@ Search Notion before creating anything, so nothing is made twice.
 | Later: Streaming | `3fecbfcc3a3881e3a2c7f3e240ba7f89` |
 | Later: Rendering on WebGPU | `3fecbfcc3a388102af55eae8049f4eb6` |
 | Later: Water and presentation rendering | `3fecbfcc3a38819a8f57e83effb3d081` |
-| V202 Walkthrough W1: walk | `418cbfcc3a388151b91dcbeab6e66ce8` |
+| V203 Walkthrough W1: walk | `418cbfcc3a388151b91dcbeab6e66ce8` |
 | Later: Walkthrough W2-W5, drive, fly, swim, record | `418cbfcc3a3881b4a094e4b8b8595195` |
 | Later: Structural and wind analysis | `3fecbfcc3a388188b060ced595518127` |
 | Later: Survey control | `3fecbfcc3a3881c3ade9ffb1b87d3e18` |

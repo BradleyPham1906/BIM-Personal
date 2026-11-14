@@ -1,9 +1,9 @@
 # Walkthrough W1: walking through the model
 
-Research note for phase **V202, Walkthrough W1: walk** (the owner, 2026-11-14: "a walk through feature. like i can
+Research note for phase **V203, Walkthrough W1: walk** (numbered V202 until 2026-11-14, when another session's site-context phase took V202; renumbered so the two do not share `docs/work-orders/v202/`) (the owner, 2026-11-14: "a walk through feature. like i can
 be in a car, walking, swimming and all that stuff"; on WebAssembly: "i saw people make web app game"; and "lets think
 and document that on notion also, if this can be a new phase put it where appropriate"). Started 2026-11-14 by Claude.
-Status: **research done; the owner's decisions made 2026-11-14** (part 11). Spec and work orders: `docs/work-orders/v202/`.
+Status: **research done; the owner's decisions made 2026-11-14** (part 11). Spec and work orders: `docs/work-orders/v203/`.
 
 ## 1. Abstract
 

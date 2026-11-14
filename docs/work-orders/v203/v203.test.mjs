@@ -1,9 +1,9 @@
-/* V202 work-order tests: the walk's arithmetic (src/js/engine/walk/walk-math.js).
+/* V203 work-order tests: the walk's arithmetic (src/js/engine/walk/walk-math.js).
    Outside `npm test` until Claude moves them into tests/unit/walk.test.mjs (C-08), so main stays green while the
    functions are being written. The file holds pure functions that use no other engine name, so it is loaded alone:
    its import and export lines dropped, its text run in one function that answers each function by name.
 
-     node --test --test-name-pattern="WO-01" docs/work-orders/v202/v202.test.mjs
+     node --test --test-name-pattern="WO-01" docs/work-orders/v203/v203.test.mjs
 */
 import { test } from 'node:test';
 import assert from 'node:assert/strict';

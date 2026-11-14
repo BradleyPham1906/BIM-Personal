@@ -1,4 +1,4 @@
-# V202 spec: Walkthrough W1, walk
+# V203 spec: Walkthrough W1, walk
 
 Research: `docs/research/research-walkthrough.md` (the owner's decisions D1 to D7, 2026-11-14, in its part 11).
 Implementation target: local `main`. Written by Claude, 2026-11-14. Cline reads this with TASKS.md; keep it exact and plain.

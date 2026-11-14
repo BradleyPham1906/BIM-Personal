@@ -217,7 +217,7 @@ of `canvas_v10.html`; the rendered view loads it when first asked for. Its licen
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
     THE SOFTWARE.
 
-## Jolt Physics (V202, served beside the app in runtime/)
+## Jolt Physics (V203, served beside the app in runtime/)
 
 `runtime/jolt/1.1.1/bim-jolt.min.js` is JoltPhysics.js 1.1.1 (https://github.com/jrouwe/JoltPhysics.js), the
 JavaScript and WebAssembly build of Jolt Physics (https://github.com/jrouwe/JoltPhysics), its `wasm-compat` file
