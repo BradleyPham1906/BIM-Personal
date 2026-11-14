@@ -95,3 +95,20 @@ function bimWalkJoy(cx, cy, x, y, R, dead) {
     }
     return {s: s, f: f};
 }
+
+/* WO-08 bimWalkKeys(held, joy): keyboard and joystick to velocity */
+function bimWalkKeys(h, j) {
+    var f = 0, s = 0, up = 0, run = false, ghost = false;
+    h = h || {};
+    j = j || {};
+    if (h.KeyW || h.ArrowUp) { f++; }
+    if (h.KeyS || h.ArrowDown) { f--; }
+    if (h.KeyD || h.ArrowRight) { s++; }
+    if (h.KeyA || h.ArrowLeft) { s--; }
+    if (h.ShiftLeft || h.ShiftRight) { f *= 2; s *= 2; run = true; }
+    f = Math.max(-1, Math.min(1, f + (j.f || 0)));
+    s = Math.max(-1, Math.min(1, s + (j.s || 0)));
+    up = h.Space ? 1 : h.KeyC ? -1 : 0;
+    ghost = (h.AltLeft || h.AltRight) || false;
+    return {f: f, s: s, run: run, up: up, ghost: ghost};
+}

@@ -127,7 +127,7 @@ modules, the build. `npm test` 259 of 259.
 
 ---
 
-## [ ] WO-08 [Cline] `bimWalkKeys(held, joy)`
+## [x] WO-08 [Cline] `bimWalkKeys(held, joy)`
 
 - **It must:** treat `held` `null` as `{}` and `joy` `null` as `{s: 0, f: 0}`. A key is held when `held[code]` is `true`.
   Return `{f, s, run, up, ghost}`:
