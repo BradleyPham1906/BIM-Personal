@@ -39,7 +39,7 @@ Scores are from `../ROUTING.md` (files, logic, understanding, judgment, trickine
 
 ---
 
-## [ ] WO-02 [Cline] `bim_ifcos_begin(name, levels)`
+## [x] WO-02 [Cline] `bim_ifcos_begin(name, levels)`
 
 - **It must:** follow SPEC part 4 "WO-02" in its order: the empty-levels default, `bim_ifcos_new_project`, rename the
   first storey, add the others under the building, then place every storey at its `Elevation`.
