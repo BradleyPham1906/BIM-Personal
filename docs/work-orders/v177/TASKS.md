@@ -82,7 +82,7 @@ Scores are from `../ROUTING.md` (files, logic, understanding, judgment, trickine
 
 ---
 
-## [ ] WO-05 [Cline] `bim_ifcos_put_opening(o)`
+## [x] WO-05 [Cline] `bim_ifcos_put_opening(o)`
 
 - **It must:** follow SPEC part 4 "WO-05": the host and size checks first (in that order), then the cut
   (`IfcOpeningElement`, `feature.add_feature`), then the door or window with the same matrix (`feature.add_filling`),

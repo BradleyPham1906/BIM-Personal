@@ -242,3 +242,42 @@ def bim_ifcos_put_prism(p):
         return {"guid": bim_ifcos_keep_guid(element, p.get("guid"))}
     except Exception:
         return {"error": "failed"}
+
+
+def bim_ifcos_put_opening(o):
+    global _bim_ifcos_file
+    try:
+        f = _bim_ifcos_file
+        if f is None:
+            return {"error": "no project"}
+        try:
+            host = f.by_guid(o["host"])
+        except Exception:
+            return {"error": "no host"}
+        if not host.is_a("IfcWall"):
+            return {"error": "no host"}
+        if o["width"] <= 0 or o["height"] <= 0 or o["depth"] <= 0:
+            return {"error": "bad size"}
+        a = o["a"]
+        M = bim_ifcos_matrix(o["x"] - math.cos(a) * o["width"] / 2, o["y"] - math.sin(a) * o["width"] / 2, o["base"], a)
+        body = bim_ifcos_body()
+        opening = ifcopenshell.api.root.create_entity(f, ifc_class="IfcOpeningElement", name=o.get("name"))
+        rep = ifcopenshell.api.geometry.add_wall_representation(
+            f, context=body, length=o["width"], height=o["height"], thickness=o["depth"], offset=-o["depth"] / 2
+        )
+        ifcopenshell.api.geometry.assign_representation(f, product=opening, representation=rep)
+        ifcopenshell.api.geometry.edit_object_placement(f, product=opening, matrix=M)
+        ifcopenshell.api.feature.add_feature(f, feature=opening, element=host)
+        if o.get("cls") == "IfcWindow":
+            element = ifcopenshell.api.root.create_entity(f, ifc_class="IfcWindow", name=o.get("name"))
+            rep2 = ifcopenshell.api.geometry.add_window_representation(f, context=body, overall_height=o["height"], overall_width=o["width"])
+        else:
+            element = ifcopenshell.api.root.create_entity(f, ifc_class="IfcDoor", name=o.get("name"))
+            rep2 = ifcopenshell.api.geometry.add_door_representation(f, context=body, overall_height=o["height"], overall_width=o["width"])
+        ifcopenshell.api.geometry.assign_representation(f, product=element, representation=rep2)
+        ifcopenshell.api.geometry.edit_object_placement(f, product=element, matrix=M)
+        ifcopenshell.api.feature.add_filling(f, opening=opening, element=element)
+        ifcopenshell.api.spatial.assign_container(f, products=[element], relating_structure=ifcopenshell.util.element.get_container(host))
+        return {"guid": bim_ifcos_keep_guid(element, o.get("guid")), "opening": opening.GlobalId}
+    except Exception:
+        return {"error": "failed"}
