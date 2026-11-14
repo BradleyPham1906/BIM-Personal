@@ -7,6 +7,7 @@ Chromium 153.0.8010.12 (Playwright's chromium-1243), Linux. No phone or tablet, 
 |---|---|---|---|
 | e01 | `physics-bench.mjs` | `e01-results.json` | Rapier 0.21.0, Jolt 1.1.1 and three.js 0.186.1's Octree on one course (a 0.18 m step, a 0.40 m curb, a 1:12 ramp, a 40 degree slope, a wall at 10 m/s), then a 5000-box town (60,002 triangles) walked for 600 frames, three runs |
 | e02 | `file-url-check.mjs` | `e02-results.json` | Each engine bundled by esbuild into one classic script, loaded from a `file://` page in Chromium, three runs: does it load, how long to start |
+| e03 | `e03-one-body.mjs` (with `e03-walk-physics-v1.js`) | `e03-results.txt` | Found during C-04: an obstacle in its own Jolt body against the same triangles in one mesh, eight obstacles, the app's adapter |
 
 How to run them: install the packages named at the top of each script in a scratch folder (never in the
 repository), and run the script from there. e02 also needs esbuild 0.25.10 and Playwright.
