@@ -59,11 +59,12 @@ Conventions, from the app's camera (`core/mesh-primitives.js` `camVecs`): y is u
 sin(pitch), cos(pitch) cos(yaw)]`; the eye is the focus plus `d * dist`, so one looks along `-d`. Walking forward
 is `[-sin(yaw), 0, -cos(yaw)]`, walking right `[cos(yaw), 0, -sin(yaw)]`. A positive pitch looks down.
 
-### `bimWalkStepUp(riserIn, varIn)` - walk-math.js - WO-01
-- **Takes:** the steepest riser in inches; the variation a flight may have, in inches.
-- **Returns:** `(riserIn + varIn)` in metres, rounded to the millimetre: `Math.round((r + v) * 25.4) / 1000`.
+### `bimWalkStepUp(riserMm, varMm)` - walk-math.js - WO-01
+- **Takes:** the steepest riser in millimetres; the variation a flight may have, in millimetres (the registry's
+  `stair.riser` record keeps the codes' own metric figures: 196 mm and 9.5 mm in the IRC).
+- **Returns:** their sum in metres, rounded to the millimetre: `Math.round(r + v) / 1000`.
 - **Rules:** a riser that is not a number above 0 returns 0; a variation that is not a number above 0 counts as 0.
-- **Example:** `bimWalkStepUp(7.75, 0.375)` returns `0.206`.
+- **Example:** `bimWalkStepUp(196, 9.5)` returns `0.206`.
 
 ### `bimWalkCapsule(B, R)` - walk-math.js - WO-02
 - **Returns:** `{h, r, half, eye, step, slope}`. `h` = `B.top` when above 0, else 1.75. `r` = `B.sh / 2` kept

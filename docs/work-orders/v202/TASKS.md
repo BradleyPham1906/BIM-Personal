@@ -28,11 +28,11 @@ modules, the build. `npm test` 259 of 259.
 
 ---
 
-## [ ] WO-01 [Cline] `bimWalkStepUp(riserIn, varIn)`
+## [ ] WO-01 [Cline] `bimWalkStepUp(riserMm, varMm)`
 
-- **It must:** return `Math.round((riserIn + varIn) * 25.4) / 1000`. A `riserIn` that is not a number above 0 (a string,
-  `NaN`, 0, negative) returns `0`. A `varIn` that is not a number above 0 counts as `0`.
-- **Example:** `bimWalkStepUp(7.75, 0.375)` returns `0.206`; `bimWalkStepUp(7, undefined)` returns `0.178`.
+- **It must:** return `Math.round(riserMm + varMm) / 1000` (millimetres in, metres out, to the millimetre). A `riserMm`
+  that is not a number above 0 (a string, `NaN`, 0, negative) returns `0`. A `varMm` that is not a number above 0 counts as `0`.
+- **Example:** `bimWalkStepUp(196, 9.5)` returns `0.206`; `bimWalkStepUp(178, undefined)` returns `0.178`.
 - **May use:** `Math.round`.
 - **Files:** `src/js/engine/walk/walk-math.js`, `docs/work-orders/v202/v202.test.mjs`
 - **Budget:** 15
@@ -154,7 +154,12 @@ Chromium and `BIMJOLT.default()` started with `CharacterVirtual` present, no con
 `THIRD_PARTY_NOTICES.md`, `tools/check_runtime.py` passing. Protected paths; the build tools are always Claude's.
 **Score:** 2+1+2+1+1+1 = 8, D.
 
-## [ ] C-03 [Claude] The registry's `stair.riser` and `walk.rules`
+## [x] C-03 [Claude] The registry's `stair.riser` and `walk.rules`
+
+Done 2026-11-14: `stair.riser` (IRC R311.7.5.1: 196 mm and 9.5 mm, read in South Carolina's adoption, level S; the ICC's
+own text and Philadelphia's amendment refuse scripts here, so Philadelphia's 210 mm is not applied) and `walk.rules`
+(35 degrees, running at 2x; the app's assumption, level A). WO-01 now takes millimetres, the registry's own unit. The
+wheelchair user's slope is `bimStd('ada.2010', 'ramp_slope')` where the site is in the US, else 1:12 (C-05).
 
 Read the IRC R311.7.5.1, the IBC 1011.5.2 and Philadelphia's amendment at their sources first (the note's part 11
 has them at S and U), then the records with their editions and places. Research and a shared file. **Score:** 1+1+2+2+1+1 = 8, D.

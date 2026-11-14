@@ -253,7 +253,7 @@ The owner's answers, 2026-11-14, in their words, and what follows from each:
   site is, plus the variation a flight may have. The IRC's riser is 7 3/4 in (196 mm) at most (R311.7.5.1) with 3/8 in
   (9.5 mm) between the greatest and smallest riser of a flight; the IBC's 7 in (1011.5.2). Some places amend the IRC
   upward: Philadelphia (the owner's city) and North Carolina to 8 1/4 in (210 mm). So the step-up is the registry's
-  steepest riser for the site's place plus 3/8 in: 0.206 m under the model IRC, 0.219 m in Philadelphia. Levels: the IRC
+  steepest riser for the site's place plus 3/8 in: 0.206 m under the model IRC, 0.220 m in Philadelphia once its amendment is read at the source (not applied until then). Levels: the IRC
   figure S (several jurisdictions' adoptions agree: South Carolina's regulation 8-1210, Boise's and Des Moines's
   handouts); Philadelphia's amendment U (seen only in a search's summary of its code library); both to read at the source before the
   registry record is written (a Claude task). The slope a walker climbs stays 35 degrees; a wheelchair user's step-up

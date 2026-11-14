@@ -24,23 +24,23 @@ const fn = (n) => { assert.equal(typeof W[n], 'function', n + ' is not in walk-m
 const near = (a, b, e = 1e-4) => assert.ok(Math.abs(a - b) <= e, a + ' is not ' + b);
 const nearAll = (a, b, e = 1e-4) => { assert.equal(a.length, b.length); a.forEach((x, i) => near(x, b[i], e)); };
 
-/* ---------------- WO-01 bimWalkStepUp(riserIn, varIn) ---------------- */
-test('WO-01 bimWalkStepUp: the IRC riser and its variation, in metres to the millimetre', () => {
-  near(fn('bimWalkStepUp')(7.75, 0.375), 0.206, 1e-9);
+/* ---------------- WO-01 bimWalkStepUp(riserMm, varMm) ---------------- */
+test('WO-01 bimWalkStepUp: the IRC riser (196 mm) and its variation (9.5 mm), in metres to the millimetre', () => {
+  near(fn('bimWalkStepUp')(196, 9.5), 0.206, 1e-9);
 });
-test('WO-01 bimWalkStepUp: Philadelphia 8 1/4 in, and the IBC 7 in', () => {
-  near(fn('bimWalkStepUp')(8.25, 0.375), 0.219, 1e-9);
-  near(fn('bimWalkStepUp')(7, 0.375), 0.187, 1e-9);
+test('WO-01 bimWalkStepUp: the IBC riser (178 mm), and a riser of 210 mm', () => {
+  near(fn('bimWalkStepUp')(178, 9.5), 0.188, 1e-9);
+  near(fn('bimWalkStepUp')(210, 9.5), 0.22, 1e-9);
 });
 test('WO-01 bimWalkStepUp: a missing or negative variation counts as 0', () => {
-  near(fn('bimWalkStepUp')(7, undefined), 0.178, 1e-9);
-  near(fn('bimWalkStepUp')(7, -1), 0.178, 1e-9);
+  near(fn('bimWalkStepUp')(178, undefined), 0.178, 1e-9);
+  near(fn('bimWalkStepUp')(178, -1), 0.178, 1e-9);
 });
 test('WO-01 bimWalkStepUp: no riser, or not a number, is 0', () => {
-  assert.equal(fn('bimWalkStepUp')(0, 0.375), 0);
-  assert.equal(fn('bimWalkStepUp')(-2, 0.375), 0);
-  assert.equal(fn('bimWalkStepUp')('7', 0.375), 0);
-  assert.equal(fn('bimWalkStepUp')(NaN, 0.375), 0);
+  assert.equal(fn('bimWalkStepUp')(0, 9.5), 0);
+  assert.equal(fn('bimWalkStepUp')(-2, 9.5), 0);
+  assert.equal(fn('bimWalkStepUp')('196', 9.5), 0);
+  assert.equal(fn('bimWalkStepUp')(NaN, 9.5), 0);
 });
 
 /* ---------------- WO-02 bimWalkCapsule(B, R) ---------------- */
