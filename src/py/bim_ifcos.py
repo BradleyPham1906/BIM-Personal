@@ -187,3 +187,29 @@ def bim_ifcos_begin(name, levels):
             f, product=s, matrix=bim_ifcos_matrix(0, 0, s.Elevation, 0)
         )
     return bim_ifcos_summary("")
+
+
+def bim_ifcos_put_wall(w):
+    global _bim_ifcos_file
+    try:
+        f = _bim_ifcos_file
+        if f is None:
+            return {"error": "no project"}
+        L = math.hypot(w["x1"] - w["x0"], w["y1"] - w["y0"])
+        if L < 1e-9:
+            return {"error": "zero length"}
+        wall = ifcopenshell.api.root.create_entity(f, ifc_class="IfcWall", name=w["name"])
+        rep = ifcopenshell.api.geometry.add_wall_representation(
+            f, context=bim_ifcos_body(), length=L, height=w["height"],
+            thickness=w["thickness"], offset=w.get("offset", 0)
+        )
+        ifcopenshell.api.geometry.assign_representation(f, product=wall, representation=rep)
+        a = math.atan2(w["y1"] - w["y0"], w["x1"] - w["x0"])
+        M = bim_ifcos_matrix(w["x0"], w["y0"], w["base"], a)
+        ifcopenshell.api.geometry.edit_object_placement(f, product=wall, matrix=M)
+        ifcopenshell.api.spatial.assign_container(
+            f, products=[wall], relating_structure=bim_ifcos_storey(w.get("level"))
+        )
+        return {"guid": bim_ifcos_keep_guid(wall, w.get("guid"))}
+    except Exception:
+        return {"error": "failed"}

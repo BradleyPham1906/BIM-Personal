@@ -54,7 +54,7 @@ Scores are from `../ROUTING.md` (files, logic, understanding, judgment, trickine
 
 ---
 
-## [ ] WO-03 [Cline] `bim_ifcos_put_wall(w)`
+## [x] WO-03 [Cline] `bim_ifcos_put_wall(w)`
 
 - **It must:** follow SPEC part 4 "WO-03". The zero-length check comes before anything is created.
 - **Example:** after `bim_ifcos_begin`, a wall from (1, 2) to (5, 2), base 3.2, height 2.7, thickness 0.2, offset
