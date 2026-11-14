@@ -26,3 +26,22 @@ function bimWalkCapsule(B, R) {
     eye = (typeof B.eye === 'number' && isFinite(B.eye) && B.eye > 0) ? B.eye : h - 0.12;
     return {h: h, r: r, half: half, eye: eye, step: B.chair ? 0 : R.stepUp, slope: B.chair ? Math.atan(R.chairSlope) : R.slopeDeg * Math.PI / 180};
 }
+
+/* WO-03 bimWalkLook(v, dx, dy, k): mouse/finger look, yaw wrapped, pitch clamped */
+function bimWalkLook(v, dx, dy, k) {
+    var yaw = v.yaw - dx * k;
+    while (yaw > Math.PI) {
+        yaw = yaw - 2 * Math.PI;
+    }
+    while (yaw <= -Math.PI) {
+        yaw = yaw + 2 * Math.PI;
+    }
+    var pitch = v.pitch + dy * k;
+    if (pitch > 1.5) {
+        pitch = 1.5;
+    }
+    if (pitch < -1.5) {
+        pitch = -1.5;
+    }
+    return {yaw: yaw, pitch: pitch};
+}

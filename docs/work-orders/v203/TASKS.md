@@ -58,7 +58,7 @@ modules, the build. `npm test` 259 of 259.
 
 ---
 
-## [ ] WO-03 [Cline] `bimWalkLook(v, dx, dy, k)`
+## [x] WO-03 [Cline] `bimWalkLook(v, dx, dy, k)`
 
 - **It must:** return a new object `{yaw, pitch}` and leave `v` unchanged. `yaw` = `v.yaw - dx * k`, then while it is
   above `Math.PI` take `2 * Math.PI` off, and while it is at or below `-Math.PI` add `2 * Math.PI`. `pitch` =
