@@ -17,3 +17,12 @@ function bimWalkStepUp(riserMm, varMm) {
     }
     return Math.round(riserMm + varMm) / 1000;
 }
+
+function bimWalkCapsule(B, R) {
+    var h, r, half, eye;
+    h = (typeof B.top === 'number' && isFinite(B.top) && B.top > 0) ? B.top : 1.75;
+    r = Math.min(0.35, Math.max(0.2, ((typeof B.sh === 'number' && isFinite(B.sh)) ? B.sh : 0) / 2));
+    half = Math.max(0.05, (h - 2 * r) / 2);
+    eye = (typeof B.eye === 'number' && isFinite(B.eye) && B.eye > 0) ? B.eye : h - 0.12;
+    return {h: h, r: r, half: half, eye: eye, step: B.chair ? 0 : R.stepUp, slope: B.chair ? Math.atan(R.chairSlope) : R.slopeDeg * Math.PI / 180};
+}

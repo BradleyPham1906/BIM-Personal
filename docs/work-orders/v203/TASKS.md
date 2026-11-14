@@ -40,7 +40,7 @@ modules, the build. `npm test` 259 of 259.
 
 ---
 
-## [ ] WO-02 [Cline] `bimWalkCapsule(B, R)`
+## [x] WO-02 [Cline] `bimWalkCapsule(B, R)`
 
 - **It must:** return a new object `{h, r, half, eye, step, slope}`:
   - `h`: `B.top` when it is above 0, else `1.75`;
