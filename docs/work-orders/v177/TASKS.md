@@ -1,215 +1,141 @@
-# V177 work orders: Save as IFC
+# V177 work orders, step 1: the adapter that writes a model as an IFC file
 
-Spec: `SPEC.md` in this folder (part 4 has every function in full). Implementation target: local `main`.
-One task at a time, top to bottom. `[ ]` open, `[x]` done (its tests pass), `[skipped]` left for Claude.
+Spec: `SPEC.md` in this folder (part 3 is the data, part 4 has every function in full). Implementation target: local
+`main`. One task at a time, top to bottom. `[ ]` open, `[x]` done (its tests pass), `[skipped]` left for Claude.
 
-**WO-01 to WO-08** add one function each to `src/py/bim_ifcos.py`, below the functions already there, and change
-nothing else: not the header, no `import` line (every module is imported already; the gate refuses an added import),
-not another file. Python 3.13 (Pyodide). Every `ifcopenshell.api` call is `ifcopenshell.api.<module>.<function>(f,
-...)` with keyword arguments as the spec writes them. A function answers a plain dict; on a failure
-`{"error": "..."}`, never an exception. Their tests run in the app's own Pyodide (the first run downloads the pinned
-wheels into `.cache/ifcos/`, as V176's did):
+Every task: add its function(s) to the end of `src/py/bim_ifcos.py` and change nothing else: not another file, not
+the header, no `import` line (every module the tasks need is imported already: `math`, `os`, `numpy`, `ifcopenshell`
+and its `api.aggregate`, `api.context`, `api.feature`, `api.geometry`, `api.project`, `api.pset`, `api.root`,
+`api.spatial`, `api.unit`, `guid`, `util.element`, `util.placement`, `util.unit`; the gate refuses an added import),
+not V176's functions, not `canvas_v10.html`. Python 3.13 (Pyodide). Use only the names listed in the task and in SPEC
+part 4; every `ifcopenshell.api` call is `ifcopenshell.api.<module>.<function>(_bim_ifcos_file, ...)` with keyword
+arguments as the spec writes them. Each function that the spec says answers a dict wraps its body in `try` and
+answers `{"error": "failed"}` on any exception it does not name; it answers `{"error": "no project"}` when
+`_bim_ifcos_file` is `None`. Implement the whole function; never a placeholder.
+
+The tests are in `docs/work-orders/v177/v177.test.mjs`, outside `npm test` (the first run downloads the pinned
+wheels, about 16 MB, into `.cache/ifcos/`; each run takes about 30 s). After each task run its own cases, then the
+unit tests:
 
     node --test --test-name-pattern="WO-01" docs/work-orders/v177/v177.test.mjs
     npm test
 
-**WO-09 to WO-17** add one function each to `src/js/engine/io/ifc-export.js`, below its header comment, and change
-nothing else: not another file, not the `import`/`export` lines, not `canvas_v10.html`. ES5 only: `var`, `function`;
-no `let`, `const`, arrow functions, classes or template strings. Use only the names listed; never a name from
-another file. Their tests read the file as text:
-
-    node --test --test-name-pattern="WO-09" docs/work-orders/v177/v177-js.test.mjs
-    node --check src/js/engine/io/ifc-export.js
-    npm test
-
-Implement the whole function; never a placeholder. Nothing calls these functions until WO-18. Scores are from
-`../ROUTING.md` (files, logic, understanding, judgment, trickiness, check).
+Scores are from `../ROUTING.md` (files, logic, understanding, judgment, trickiness, check).
 
 ---
 
-## [ ] WO-01 [Cline] `bim_ifcos_add_storey(name, elevation)`
+## [x] WO-01 [Cline] `bim_ifcos_matrix`, `bim_ifcos_storey`, `bim_ifcos_body`, `bim_ifcos_keep_guid`
 
-- **It must:** An `IfcBuildingStorey` named `name` with `Elevation = elevation`, aggregated to the first `IfcBuilding`; answers `{"guid": storey.GlobalId}`.
-- **May use:** `ifcopenshell.api.root.create_entity`, `ifcopenshell.api.aggregate.assign_object`, `_bim_ifcos_file`.
+- **It must:** add the four functions exactly as SPEC part 4 "WO-01" writes them. These four answer values, not
+  dicts, and have no `try` of their own except `bim_ifcos_keep_guid`'s around `by_guid` (it raises when no entity has
+  the GlobalId: that is the case where the GlobalId is free and is set).
+- **Example:** `bim_ifcos_matrix(1, 2, 3, 0)` is `[[1, 0, 0, 1], [0, 1, 0, 2], [0, 0, 1, 3], [0, 0, 0, 1]]`;
+  `bim_ifcos_keep_guid(p, "short")` leaves `p.GlobalId` as it was and answers it.
+- **May use:** `numpy.array` (with `dtype=float`), `math.cos`, `math.sin`, `_bim_ifcos_file.by_type`,
+  `_bim_ifcos_file.by_guid`, `isinstance`, `len`, `all`.
+- **Files:** `src/py/bim_ifcos.py`, `docs/work-orders/v177/v177.test.mjs`
+- **Budget:** 40
+- **Test:** the cases named `WO-01 ...`. **Score:** 0+0+1+0+1+0 = 2.
+
+---
+
+## [x] WO-02 [Cline] `bim_ifcos_begin(name, levels)`
+
+- **It must:** follow SPEC part 4 "WO-02" in its order: the empty-levels default, `bim_ifcos_new_project`, rename the
+  first storey, add the others under the building, then place every storey at its `Elevation`.
+- **Example:** `bim_ifcos_begin("House", [{"name": "Ground", "elev": 0}, {"name": "First", "elev": 3.2}])` answers a
+  summary whose `storeys` are `[{"name": "Ground", "elevation": 0}, {"name": "First", "elevation": 3.2}]`.
+- **May use:** `bim_ifcos_new_project`, `bim_ifcos_summary` (V176), `bim_ifcos_matrix` (WO-01),
+  `ifcopenshell.api.root.create_entity`, `ifcopenshell.api.aggregate.assign_object`,
+  `ifcopenshell.api.geometry.edit_object_placement`, `_bim_ifcos_file.by_type`.
+- **Files:** `src/py/bim_ifcos.py`, `docs/work-orders/v177/v177.test.mjs`
+- **Budget:** 35
+- **Test:** the cases named `WO-02 ...`. **Score:** 0+0+1+0+1+0 = 2.
+
+---
+
+## [x] WO-03 [Cline] `bim_ifcos_put_wall(w)`
+
+- **It must:** follow SPEC part 4 "WO-03". The zero-length check comes before anything is created.
+- **Example:** after `bim_ifcos_begin`, a wall from (1, 2) to (5, 2), base 3.2, height 2.7, thickness 0.2, offset
+  -0.1 fills the box from (1, 1.9, 3.2) to (5, 2.1, 5.9).
+- **May use:** `math.hypot`, `math.atan2`, `ifcopenshell.api.root.create_entity`,
+  `ifcopenshell.api.geometry.add_wall_representation`, `ifcopenshell.api.geometry.assign_representation`,
+  `ifcopenshell.api.geometry.edit_object_placement`, `ifcopenshell.api.spatial.assign_container`, and WO-01's four.
+- **Files:** `src/py/bim_ifcos.py`, `docs/work-orders/v177/v177.test.mjs`
+- **Budget:** 35
+- **Test:** the cases named `WO-03 ...`. **Score:** 0+0+1+0+1+0 = 2.
+
+---
+
+## [x] WO-04 [Cline] `bim_ifcos_put_prism(p)`
+
+- **It must:** follow SPEC part 4 "WO-04". The outline check comes before anything is created.
+- **Example:** `{"cls": "IfcColumn", "pts": [[1.8, 1.8], [2.2, 1.8], [2.2, 2.2], [1.8, 2.2]], "base": 0, "depth": 3}`
+  is a column 0.4 m square and 3 m high.
+- **May use:** `ifcopenshell.api.root.create_entity`, `ifcopenshell.api.geometry.add_slab_representation`,
+  `ifcopenshell.api.geometry.assign_representation`, `ifcopenshell.api.geometry.edit_object_placement`,
+  `ifcopenshell.api.spatial.assign_container`, and WO-01's four.
 - **Files:** `src/py/bim_ifcos.py`, `docs/work-orders/v177/v177.test.mjs`
 - **Budget:** 30
-- **Test:** the cases named `WO-01 ...` in `docs/work-orders/v177/v177.test.mjs`. **Score:** 0+0+1+0+1+0 = 2.
+- **Test:** the cases named `WO-04 ...`. **Score:** 0+0+1+0+1+0 = 2.
 
 ---
 
-## [ ] WO-02 [Cline] `bim_ifcos_add_wall_on(storey_guid, name, x0, y0, x1, y1, z, height, thickness, offset)`
+## [x] WO-05 [Cline] `bim_ifcos_put_opening(o)`
 
-- **It must:** SPEC 4.1 WO-02: as `bim_ifcos_add_wall`, on the storey whose GlobalId is `storey_guid`, at height `z`, with `offset=offset` in `add_wall_representation`. Errors in order: `no storey`, `zero length`, `bad size`; nothing added on an error. You may add the small helpers `_bim_ifcos_body(f)` (the Body sub-context), `_bim_ifcos_by_guid(f, guid, ifc_class)` and `_bim_ifcos_matrix(x, y, z, a)` above it; WO-03 to WO-07 use them.
-- **May use:** `ifcopenshell.api.root.create_entity`, `ifcopenshell.api.geometry.add_wall_representation`, `ifcopenshell.api.geometry.assign_representation`, `ifcopenshell.api.geometry.edit_object_placement`, `ifcopenshell.api.spatial.assign_container`, `math`, `numpy`, `_bim_ifcos_file`.
+- **It must:** follow SPEC part 4 "WO-05": the host and size checks first (in that order), then the cut
+  (`IfcOpeningElement`, `feature.add_feature`), then the door or window with the same matrix (`feature.add_filling`),
+  contained where its host is. The lookup of the host has its own `try`: `by_guid` raises when the GlobalId is not in
+  the file, and that answers `{"error": "no host"}`.
+- **Example:** a door 0.9 wide and 2.1 high at (2, 0) on a wall along +X, depth 0.4: its opening fills the box from
+  (1.55, -0.2, 0) to (2.45, 0.2, 2.1).
+- **May use:** `math.cos`, `math.sin`, `ifcopenshell.api.root.create_entity`,
+  `ifcopenshell.api.geometry.add_wall_representation`, `ifcopenshell.api.geometry.add_door_representation`,
+  `ifcopenshell.api.geometry.add_window_representation`, `ifcopenshell.api.geometry.assign_representation`,
+  `ifcopenshell.api.geometry.edit_object_placement`, `ifcopenshell.api.feature.add_feature`,
+  `ifcopenshell.api.feature.add_filling`, `ifcopenshell.api.spatial.assign_container`,
+  `ifcopenshell.util.element.get_container`, and WO-01's four.
+- **Files:** `src/py/bim_ifcos.py`, `docs/work-orders/v177/v177.test.mjs`
+- **Budget:** 50
+- **Test:** the cases named `WO-05 ...`. **Score:** 0+1+1+0+1+0 = 3, tier B.
+
+---
+
+## [x] WO-06 [Cline] `bim_ifcos_put_mesh(m)` and `bim_ifcos_put_psets(guid, psets)`
+
+- **It must:** follow SPEC part 4 "WO-06". In `bim_ifcos_put_mesh` the corners go in as one list inside a list and
+  the faces as one list inside a list (`vertices=[[...]]`, `faces=[[...]]`), each corner a tuple of three floats, each
+  face a tuple of ints. In `bim_ifcos_put_psets` the lookup of the element has its own `try` (`{"error": "not
+  found"}`), and a set whose `props` is empty or missing is passed over and not counted.
+- **May use:** `ifcopenshell.api.root.create_entity`, `ifcopenshell.api.geometry.add_mesh_representation`,
+  `ifcopenshell.api.geometry.assign_representation`, `ifcopenshell.api.geometry.edit_object_placement`,
+  `ifcopenshell.api.spatial.assign_container`, `ifcopenshell.api.pset.add_pset`, `ifcopenshell.api.pset.edit_pset`,
+  `_bim_ifcos_file.by_guid`, and WO-01's four.
+- **Files:** `src/py/bim_ifcos.py`, `docs/work-orders/v177/v177.test.mjs`
+- **Budget:** 50
+- **Test:** the cases named `WO-06 ...`. **Score:** 0+0+1+0+1+0 = 2.
+
+---
+
+## [x] WO-07 [Cline] `bim_ifcos_export(model, path)`
+
+- **It must:** follow SPEC part 4 "WO-07": begin, then walls, prisms, openings, meshes in that order; an opening is
+  put from a copy of its item (`dict(item)`) whose `host` is the GlobalId written for the wall with that `id`, or
+  `''`; each error goes to `skipped` with the item's `id`, each success is counted and its `psets` written; then
+  `bim_ifcos_write_read(path)` with `skipped` and `written` added to its answer.
+- **Example:** a model with a wall of no length and a window hosted by it answers `skipped` of
+  `[{"id": "w3", "why": "zero length"}, {"id": "d2", "why": "no host"}]`.
+- **May use:** `bim_ifcos_begin`, `bim_ifcos_put_wall`, `bim_ifcos_put_prism`, `bim_ifcos_put_opening`,
+  `bim_ifcos_put_mesh`, `bim_ifcos_put_psets`, `bim_ifcos_write_read` (V176), `dict`.
 - **Files:** `src/py/bim_ifcos.py`, `docs/work-orders/v177/v177.test.mjs`
 - **Budget:** 45
-- **Test:** the cases named `WO-02 ...` in `docs/work-orders/v177/v177.test.mjs`. **Score:** 0+0+1+0+2+0 = 3, tier B.
+- **Test:** the cases named `WO-07 ...`. **Score:** 0+1+1+0+1+0 = 3, tier B.
 
 ---
 
-## [ ] WO-03 [Cline] `bim_ifcos_add_slab(storey_guid, name, points, z, depth)`
+## [ ] WO-08 [Claude] Audit step 1, then step 2's spec
 
-- **It must:** SPEC 4.1 WO-03. Fewer than 3 points or not a list: `too few points`; `depth <= 0`: `bad size`; the outline closed by repeating its first point when the last differs.
-- **May use:** `ifcopenshell.api.geometry.add_slab_representation`, the WO-02 helpers and API names.
-- **Files:** `src/py/bim_ifcos.py`, `docs/work-orders/v177/v177.test.mjs`
-- **Budget:** 35
-- **Test:** the cases named `WO-03 ...` in `docs/work-orders/v177/v177.test.mjs`. **Score:** 0+0+1+0+1+0 = 2.
-
----
-
-## [ ] WO-04 [Cline] `bim_ifcos_add_column(storey_guid, name, x, y, z, width, depth, height, rotation)`
-
-- **It must:** SPEC 4.1 WO-04: an `IfcRectangleProfileDef` (`ProfileType="AREA"`, `XDim=width`, `YDim=depth`) extruded `height` by `add_profile_representation`, placed at (x, y, z) turned by `rotation`.
-- **May use:** `f.create_entity`, `ifcopenshell.api.geometry.add_profile_representation`, the WO-02 helpers and API names.
-- **Files:** `src/py/bim_ifcos.py`, `docs/work-orders/v177/v177.test.mjs`
-- **Budget:** 35
-- **Test:** the cases named `WO-04 ...` in `docs/work-orders/v177/v177.test.mjs`. **Score:** 0+0+1+0+1+0 = 2.
-
----
-
-## [ ] WO-05 [Cline] `bim_ifcos_add_opening(wall_guid, kind, name, along, sill, width, height, thickness, offset)`
-
-- **It must:** SPEC 4.1 WO-05, step by step: the opening (a box 0.1 m thicker than the wall, from `offset - 0.05`), `feature.add_feature`, the door or window (`add_door_representation` / `add_window_representation`, `OverallHeight`, `OverallWidth`), `feature.add_filling`, contained in the wall's storey. Both placements are `numpy.dot(W, local)` with `W` the wall's placement. Answers `{"guid", "opening"}`.
-- **May use:** `ifcopenshell.api.feature.add_feature`, `ifcopenshell.api.feature.add_filling`, `ifcopenshell.api.geometry.add_door_representation`, `ifcopenshell.api.geometry.add_window_representation`, `ifcopenshell.util.placement.get_local_placement`, `ifcopenshell.util.element.get_container`, `numpy.dot`, the WO-02 helpers and API names.
-- **Files:** `src/py/bim_ifcos.py`, `docs/work-orders/v177/v177.test.mjs`
-- **Budget:** 55
-- **Test:** the cases named `WO-05 ...` in `docs/work-orders/v177/v177.test.mjs`. **Score:** 0+1+1+0+2+0 = 4, tier B.
-
----
-
-## [ ] WO-06 [Cline] `bim_ifcos_add_mesh(storey_guid, name, ifc_class, vertices, faces)`
-
-- **It must:** SPEC 4.1 WO-06, with the list `BIM_IFCOS_CLASSES` added just above the function. `empty mesh`, then `bad face` (short, or an index not an int in range) before anything is added.
-- **May use:** `ifcopenshell.api.geometry.add_mesh_representation`, the WO-02 helpers and API names.
-- **Files:** `src/py/bim_ifcos.py`, `docs/work-orders/v177/v177.test.mjs`
-- **Budget:** 40
-- **Test:** the cases named `WO-06 ...` in `docs/work-orders/v177/v177.test.mjs`. **Score:** 0+0+1+0+1+0 = 2.
-
----
-
-## [ ] WO-07 [Cline] `bim_ifcos_add_pset(guid, name, props)`
-
-- **It must:** SPEC 4.1 WO-07: keep `str`, `int`, `float` (not NaN), `bool` values only; answers `{"count": <kept>}`.
-- **May use:** `ifcopenshell.api.pset.add_pset`, `ifcopenshell.api.pset.edit_pset`, the WO-02 helpers.
-- **Files:** `src/py/bim_ifcos.py`, `docs/work-orders/v177/v177.test.mjs`
-- **Budget:** 30
-- **Test:** the cases named `WO-07 ...` in `docs/work-orders/v177/v177.test.mjs`. **Score:** 0+0+0+0+1+0 = 1.
-
----
-
-## [ ] WO-08 [Cline] `bim_ifcos_save_model(model, path)`
-
-- **It must:** SPEC 4.1 WO-08 in its order: levels (or the one default), the project, the first storey renamed, the other storeys; walls, slabs, columns, openings (only on a wall that was added, with that wall's thickness and offset), meshes, psets; then `bim_ifcos_write_read(path)` plus `guids` and `skipped`.
-- **May use:** `bim_ifcos_new_project`, `bim_ifcos_write_read`, the functions of WO-01 to WO-07, `_bim_ifcos_file`.
-- **Files:** `src/py/bim_ifcos.py`, `docs/work-orders/v177/v177.test.mjs`
-- **Budget:** 75
-- **Test:** the cases named `WO-08 ...` in `docs/work-orders/v177/v177.test.mjs`. **Score:** 0+1+1+1+1+0 = 4, tier B.
-
----
-
-## [ ] WO-09 [Cline] `bimIfcxPlan(p)`
-
-- **It must:** `[p[0], 0 - p[1]]`.
-- **May use:** nothing.
-- **Files:** `src/js/engine/io/ifc-export.js`, `docs/work-orders/v177/v177-js.test.mjs`
-- **Budget:** 5
-- **Test:** the cases named `WO-09 ...` in `docs/work-orders/v177/v177-js.test.mjs`. **Score:** 0.
-
----
-
-## [ ] WO-10 [Cline] `bimIfcxLevels(levels)`
-
-- **It must:** SPEC 4.2 WO-10.
-- **May use:** nothing.
-- **Files:** `src/js/engine/io/ifc-export.js`, `docs/work-orders/v177/v177-js.test.mjs`
-- **Budget:** 20
-- **Test:** the cases named `WO-10 ...` in `docs/work-orders/v177/v177-js.test.mjs`. **Score:** 0+0+0+0+1+0 = 1.
-
----
-
-## [ ] WO-11 [Cline] `bimIfcxLevelOf(levels, levelId, y)`
-
-- **It must:** SPEC 4.2 WO-11.
-- **May use:** nothing.
-- **Files:** `src/js/engine/io/ifc-export.js`, `docs/work-orders/v177/v177-js.test.mjs`
-- **Budget:** 15
-- **Test:** the cases named `WO-11 ...` in `docs/work-orders/v177/v177-js.test.mjs`. **Score:** 0+0+0+0+1+0 = 1.
-
----
-
-## [ ] WO-12 [Cline] `bimIfcxWalls(o, levels)`
-
-- **It must:** SPEC 4.2 WO-12, with the offsets of SPEC part 3 (`thickness = dLeft + dRight`, `offset = 0 - dLeft`).
-- **May use:** `bimIfcxPlan`, `bimIfcxLevelOf` (this file).
-- **Files:** `src/js/engine/io/ifc-export.js`, `docs/work-orders/v177/v177-js.test.mjs`
-- **Budget:** 35
-- **Test:** the cases named `WO-12 ...` in `docs/work-orders/v177/v177-js.test.mjs`. **Score:** 0+0+1+0+1+0 = 2.
-
----
-
-## [ ] WO-13 [Cline] `bimIfcxSlab(o, levels)`
-
-- **It must:** SPEC 4.2 WO-13 (a floor's top is `baseY`: the slab's `z` is `baseY - thickness`).
-- **May use:** `bimIfcxPlan`, `bimIfcxLevelOf` (this file).
-- **Files:** `src/js/engine/io/ifc-export.js`, `docs/work-orders/v177/v177-js.test.mjs`
-- **Budget:** 15
-- **Test:** the cases named `WO-13 ...` in `docs/work-orders/v177/v177-js.test.mjs`. **Score:** 0+0+0+0+1+0 = 1.
-
----
-
-## [ ] WO-14 [Cline] `bimIfcxColumn(o, levels)`
-
-- **It must:** SPEC 4.2 WO-14 (`rotation: 0 - (bim.rotation || 0)`).
-- **May use:** `bimIfcxPlan`, `bimIfcxLevelOf` (this file).
-- **Files:** `src/js/engine/io/ifc-export.js`, `docs/work-orders/v177/v177-js.test.mjs`
-- **Budget:** 15
-- **Test:** the cases named `WO-14 ...` in `docs/work-orders/v177/v177-js.test.mjs`. **Score:** 0+0+0+0+1+0 = 1.
-
----
-
-## [ ] WO-15 [Cline] `bimIfcxOpening(m, walls)`
-
-- **It must:** SPEC 4.2 WO-15: the nearest segment of its host wall that the centre projects onto.
-- **May use:** `bimIfcxPlan` (this file).
-- **Files:** `src/js/engine/io/ifc-export.js`, `docs/work-orders/v177/v177-js.test.mjs`
-- **Budget:** 30
-- **Test:** the cases named `WO-15 ...` in `docs/work-orders/v177/v177-js.test.mjs`. **Score:** 0+0+0+0+2+0 = 2.
-
----
-
-## [ ] WO-16 [Cline] `bimIfcxMesh(o, levels)`
-
-- **It must:** SPEC 4.2 WO-16, with the table `BIM_IFCX_CLASS` added as a `var` just above the function.
-- **May use:** `bimIfcxLevelOf` (this file).
-- **Files:** `src/js/engine/io/ifc-export.js`, `docs/work-orders/v177/v177-js.test.mjs`
-- **Budget:** 35
-- **Test:** the cases named `WO-16 ...` in `docs/work-orders/v177/v177-js.test.mjs`. **Score:** 0+0+0+0+1+0 = 1.
-
----
-
-## [ ] WO-17 [Cline] `bimIfcxModel(objs, levels, name)`
-
-- **It must:** SPEC 4.2 WO-17: each solid into the first list that takes it, one pset per entry, the openings last.
-- **May use:** the functions of WO-10 to WO-16 (this file).
-- **Files:** `src/js/engine/io/ifc-export.js`, `docs/work-orders/v177/v177-js.test.mjs`
-- **Budget:** 40
-- **Test:** the cases named `WO-17 ...` in `docs/work-orders/v177/v177-js.test.mjs`. **Score:** 0+0+1+0+1+0 = 2.
-
----
-
-## [ ] WO-18 [Claude] The wheels, the worker, File > Export > IFC
-
-Claude's: crosses `runtime/`, the worker, the UI and the command map (score 2+2+2+1+2+1 = 10). Pin the seven wheels
-in `runtime/wheels/` and `runtime/MANIFEST.json` with the LGPL-3.0 and GPL-3.0 texts and their credit in
-`THIRD_PARTY_NOTICES.md`; load them in the Python worker on the first IFC call only; embed `bim_ifcos.py` as
-`bim_ladybug.py` is; `bimIfcExport()` (SPEC 4.3), the menu item and `IFCOUT`; move both test files into
-`tests/unit/` (the Python one stays outside `npm test` if it needs the network). One browser check of File, Export,
-IFC on phone, tablet and desktop (Rule #1: a phase's new interface), its script in `tests/e2e/`.
-
----
-
-## [ ] WO-19 [Claude] The records
-
-CLAUDE.md's library rule reworded for D1 (a): GPL and AGPL libraries allowed as separate files run only in the
-Python worker, never bundled into the app's own files. PIPELINE row 177, the log, Notion's task and the research
-note's page.
+Claude's: audit WO-01 to WO-07; then step 2 (SPEC part 2): the wheels and their licence texts in `runtime/` and its
+manifest, the worker, `io/ifc-save.js` (the model as SPEC part 3's data, Cline's with unit tests), File, Export, IFC,
+Make editable for imported walls and floors, and the phase's one browser check.

@@ -19,6 +19,7 @@ tools/openskp/node_modules/
 
 # V194: the three.js build tool's packages
 tools/three/node_modules/
+tools/jolt/node_modules/
 tools/ifc/node_modules/
 
 # V176: IfcOpenShell and its dependencies, fetched by docs/work-orders/v176/v176.test.mjs

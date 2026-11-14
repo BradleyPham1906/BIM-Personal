@@ -21010,6 +21010,16 @@ try{
       eds:[{id:'mutcd.walk.11r1',name:'MUTCD 11th Edition with Revision 1 (December 2025), 4I.06',pub:'2025-12',st:'current',where:'United States',adopt:[{at:'us',from:'2025-12'}],
         src:{t:'FHWA, Manual on Uniform Traffic Control Devices, 11th Edition with Revision 1',w:'4I.06 paragraph 07: the clearance at 3.5 feet per second; paragraph 14: the walk and the clearance at 3 feet per second; paragraph 10: slower where people who use wheelchairs routinely cross',u:'https://mutcd.fhwa.dot.gov/kno_11th_Editionr1.htm',lv:'P',read:'2026-10-19'},
         v:[{n:'clear',v:1.067,u:'m/s',say:'the walking speed for the clearance time',src:'3.5 ft/s'},{n:'slow',v:0.914,u:'m/s',say:'the slower walking speed',src:'3 ft/s',lt:'clear'}]}]},
+    /* __acad3dV203: the walkthrough: the highest step a walker climbs is the steepest code riser plus the variation a
+       flight may have (docs/research/research-walkthrough.md, part 11, D3); the walker's slope and running */
+    {id:'stair.riser',title:'Stair risers',pub:'International Code Council',kind:'code',area:'Walkthrough',use:'Walk: the highest step a walker climbs',anywhere:true,
+      eds:[{id:'stair.riser.irc',name:'International Residential Code, R311.7.5.1 Risers',pub:'',st:'current',where:'United States, one- and two-family dwellings, as adopted',adopt:[{at:'us'}],
+        src:{t:'South Carolina Code of Regulations 8-1210, its adoption of IRC R311.7.5.1 (the ICC\'s own text refuses scripts here; Philadelphia\'s amendment to 8 1/4 in is not yet read, so not applied)',w:'R311.7.5.1: the maximum riser height 7 3/4 in (196 mm); the greatest riser within any flight no more than 3/8 in (9.5 mm) over the smallest',u:'https://www.law.cornell.edu/regulations/south-carolina/R-8-1210',lv:'S',read:'2026-11-14'},
+        v:[{n:'riser',v:196,u:'mm',say:'the steepest riser',src:'7 3/4 in'},{n:'var',v:9.5,u:'mm',say:'the most the risers of a flight may differ',src:'3/8 in'}]}]},
+    {id:'walk.rules',title:'The walker',pub:'This app',kind:'assumption',area:'Walkthrough',use:'Walk: the steepest slope a walker climbs, and running',anywhere:true,
+      eds:[{id:'walk.rules.1',name:'The app\'s walker (V203)',pub:'',st:'current',where:'Anywhere',adopt:[{at:'*'}],
+        src:{t:'This app: the slope as experiment e01 tested it (a 40 degree slope refused, a 1:12 ramp climbed); running at twice the walking speed, as games do',w:'docs/research/research-walkthrough.md, parts 4.4 and 7',u:'https://github.com/BradleyPham1906/BIM-Personal/blob/main/docs/research/research-walkthrough.md',lv:'A',read:'2026-11-14'},
+        v:[{n:'slope',v:35,u:'deg',say:'the steepest slope a walker climbs'},{n:'run',v:2,u:'x',say:'running, of the walking speed'}]}]},
     {id:'ltn.cycle',title:'Cycles and cycle parking',pub:'UK Department for Transport',kind:'guideline',area:'Assets',use:'The cycle and the cycle stand',anywhere:true,
       eds:[{id:'ltn.cycle.2020',name:'Cycle Infrastructure Design, LTN 1/20 (July 2020)',pub:'2020-07',st:'current',where:'England',adopt:[{at:'gb-eng',from:'2020-07'}],
         src:{t:'Department for Transport, Cycle Infrastructure Design, Local Transport Note 1/20',w:'Table 5-1: the solo upright cycle; 11.4.6 and Table 11-2: banks of Sheffield stands',u:'https://assets.publishing.service.gov.uk/media/5ffa1f96d3bf7f65d9e35825/cycle-infrastructure-design-ltn-1-20.pdf',lv:'P',read:'2026-10-19'},
@@ -36351,14 +36361,6 @@ try{
       return {error:s};
     });
   }
-
-
-  /* ================= __acad3dV177: Save as IFC, the pure part =================
-     docs/research/research-ifcopenshell-app.md (the owner's D1 to D4, 2026-11-14) and docs/work-orders/v177/SPEC.md.
-     The app's model as the plain model src/py/bim_ifcos.py's bim_ifcos_save_model writes as IFC4: levels, walls by
-     straight segment, floors as slabs, rectangular columns, doors and windows on their walls, every other solid as a
-     mesh. Plan points [x, z] become IFC [x, -z]; heights stay y. Each function is a work order in
-     docs/work-orders/v177/TASKS.md, added below as it is built; none uses a name from another file. */
 /* __acad3dV196: full IFC import, through BimCraft's IFC engine (cc-ifc, Apache-2.0) and Manifold (Apache-2.0), a
    pinned runtime loaded only when an IFC file is opened (runtime/cc-ifc/<rev>/, tools/ifc/build_ifc.mjs). Every
    element with geometry comes in as one locked solid, in its own colour, with its openings cut, on a layer for its
@@ -42848,6 +42850,120 @@ try{
     if(ap)return {pts:ap,y:o.y||0,kind:'annot'};
     return null;
   }
+  /* ================= __acad3dV203: Walkthrough W1, the walk's arithmetic =================
+     The pure arithmetic of walking through the model (docs/research/research-walkthrough.md;
+     docs/work-orders/v203/SPEC.md part 4): the step a walker climbs, the walker's capsule, looking, the velocity
+     from what is held, the camera from the walker (first and third person), and the on-screen joystick. No state,
+     no page, no physics and no other engine name: each function answers from its arguments alone, so its test loads
+     this file by itself (docs/work-orders/v203/v203.test.mjs). Lengths in metres, angles in radians; the model's
+     y is up; yaw and pitch as the app's camera holds them (core/mesh-primitives.js camVecs: the eye is the focus
+     plus d * dist, d = [cos(pitch) sin(yaw), sin(pitch), cos(pitch) cos(yaw)], so a walker looks along -d). */
+
+/* WO-01 bimWalkStepUp(riserMm, varMm): the step a walker climbs, millimetres in, metres out */
+function bimWalkStepUp(riserMm, varMm) {
+    if (typeof riserMm !== 'number' || !isFinite(riserMm) || riserMm <= 0) {
+        return 0;
+    }
+    if (typeof varMm !== 'number' || !isFinite(varMm) || varMm <= 0) {
+        varMm = 0;
+    }
+    return Math.round(riserMm + varMm) / 1000;
+}
+
+function bimWalkCapsule(B, R) {
+    var h, r, half, eye;
+    h = (typeof B.top === 'number' && isFinite(B.top) && B.top > 0) ? B.top : 1.75;
+    r = Math.min(0.35, Math.max(0.2, ((typeof B.sh === 'number' && isFinite(B.sh)) ? B.sh : 0) / 2));
+    half = Math.max(0.05, (h - 2 * r) / 2);
+    eye = (typeof B.eye === 'number' && isFinite(B.eye) && B.eye > 0) ? B.eye : h - 0.12;
+    return {h: h, r: r, half: half, eye: eye, step: B.chair ? 0 : R.stepUp, slope: B.chair ? Math.atan(R.chairSlope) : R.slopeDeg * Math.PI / 180};
+}
+
+/* WO-03 bimWalkLook(v, dx, dy, k): mouse/finger look, yaw wrapped, pitch clamped */
+function bimWalkLook(v, dx, dy, k) {
+    var yaw = v.yaw - dx * k;
+    while (yaw > Math.PI) {
+        yaw = yaw - 2 * Math.PI;
+    }
+    while (yaw <= -Math.PI) {
+        yaw = yaw + 2 * Math.PI;
+    }
+    var pitch = v.pitch + dy * k;
+    if (pitch > 1.5) {
+        pitch = 1.5;
+    }
+    if (pitch < -1.5) {
+        pitch = -1.5;
+    }
+    return {yaw: yaw, pitch: pitch};
+}
+
+/* WO-04 bimWalkMove(inp, yaw, speed, fly): velocity from what is held */
+function bimWalkMove(inp, yaw, speed, fly) {
+    var forward = [-Math.sin(yaw), 0, -Math.cos(yaw)];
+    var right = [Math.cos(yaw), 0, -Math.sin(yaw)];
+    var vx = inp.f * forward[0] + inp.s * right[0];
+    var vz = inp.f * forward[2] + inp.s * right[2];
+    var len = Math.sqrt(vx * vx + vz * vz);
+    if (len > 1) {
+        vx = vx / len;
+        vz = vz / len;
+    }
+    var mult = inp.run ? 2 : 1;
+    vx = vx * speed * mult;
+    vz = vz * speed * mult;
+    var vy = fly ? inp.up * speed * mult : 0;
+    return [vx, vy, vz];
+}
+
+/* WO-05 bimWalkCamFirst(p, eye, yaw, pitch): first-person camera at the walker's eyes */
+function bimWalkCamFirst(p, eye, yaw, pitch) {
+    var cp = Math.cos(pitch);
+    var d = [cp * Math.sin(yaw), Math.sin(pitch), cp * Math.cos(yaw)];
+    return {tx: p[0] - d[0], ty: p[1] + eye - d[1], tz: p[2] - d[2], yaw: yaw, pitch: pitch, dist: 1};
+}
+
+/* WO-06 bimWalkCamThird(p, eye, yaw, pitch, boom, hit): third-person camera behind the walker */
+function bimWalkCamThird(p, eye, yaw, pitch, boom, hit) {
+    var dist = boom;
+    if (typeof hit === 'number' && isFinite(hit) && hit - 0.2 < boom) {
+        dist = Math.max(0.3, hit - 0.2);
+    }
+    return {tx: p[0], ty: p[1] + eye, tz: p[2], yaw: yaw, pitch: pitch, dist: dist};
+}
+
+/* WO-07 bimWalkJoy(cx, cy, x, y, R, dead): the on-screen joystick as {s, f} */
+function bimWalkJoy(cx, cy, x, y, R, dead) {
+    if (typeof R !== 'number' || !isFinite(R) || R <= 0) {
+        return {s: 0, f: 0};
+    }
+    var s = (x - cx) / R, f = (cy - y) / R;
+    var l = Math.sqrt(s * s + f * f);
+    if (l < dead) {
+        return {s: 0, f: 0};
+    }
+    if (l > 1) {
+        s /= l; f /= l;
+    }
+    return {s: s, f: f};
+}
+
+/* WO-08 bimWalkKeys(held, joy): keyboard and joystick to velocity */
+function bimWalkKeys(h, j) {
+    var f = 0, s = 0, up = 0, run = false, ghost = false;
+    h = h || {};
+    j = j || {};
+    if (h.KeyW || h.ArrowUp) { f++; }
+    if (h.KeyS || h.ArrowDown) { f--; }
+    if (h.KeyD || h.ArrowRight) { s++; }
+    if (h.KeyA || h.ArrowLeft) { s--; }
+    if (h.ShiftLeft || h.ShiftRight) { f *= 2; s *= 2; run = true; }
+    f = Math.max(-1, Math.min(1, f + (j.f || 0)));
+    s = Math.max(-1, Math.min(1, s + (j.s || 0)));
+    up = h.Space ? 1 : h.KeyC ? -1 : 0;
+    ghost = (h.AltLeft || h.AltRight) || false;
+    return {f: f, s: s, run: run, up: up, ghost: ghost};
+}
   /* ================= __acad3dV98: annotation grips =================
      The grip list and the drag below index the SAME points, in the same order, per kind. */
   function bimAnnotGripPoints(o){

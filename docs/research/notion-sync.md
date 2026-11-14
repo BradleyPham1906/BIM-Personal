@@ -121,6 +121,7 @@ Search Notion before creating anything, so nothing is made twice.
 | `docs/research/research-usages.md` | `3fecbfcc3a3881ac8050e475f67cc902` |
 | `docs/research/research-usd-brep.md` | `40bcbfcc3a3881aa8002e692ab9c6765` |
 | `docs/research/research-valdrada.md` | `3fecbfcc3a3881b1a8b7edb323f75420` |
+| `docs/research/research-walkthrough.md` (and `experiments/w1-walk/`) | `418cbfcc3a38815491c0c045b8bf2f8a` |
 | `docs/research/research-zoning-envelope-yield.md` | `3fecbfcc3a388107b391f35fd6a8f7d4` |
 
 ## Internal Task DB pages
@@ -198,6 +199,8 @@ Search Notion before creating anything, so nothing is made twice.
 | Later: Streaming | `3fecbfcc3a3881e3a2c7f3e240ba7f89` |
 | Later: Rendering on WebGPU | `3fecbfcc3a388102af55eae8049f4eb6` |
 | Later: Water and presentation rendering | `3fecbfcc3a38819a8f57e83effb3d081` |
+| V203 Walkthrough W1: walk | `418cbfcc3a388151b91dcbeab6e66ce8` |
+| Later: Walkthrough W2-W5, drive, fly, swim, record | `418cbfcc3a3881b4a094e4b8b8595195` |
 | Later: Structural and wind analysis | `3fecbfcc3a388188b060ced595518127` |
 | Later: Survey control | `3fecbfcc3a3881c3ade9ffb1b87d3e18` |
 | Later: Generators | `3fecbfcc3a38811ca674e1ee19166f0a` |

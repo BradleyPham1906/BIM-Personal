@@ -219,8 +219,12 @@ browser suites, Pages and offline use read it.
 An open-source library may ship in the app when all of these hold:
 
 - **License:** compatible with distributing this Apache-2.0 repository: MIT, BSD, ISC, Apache-2.0,
-  MPL-2.0, or LGPL kept as its own replaceable file. Never GPL or AGPL, never non-commercial or
-  proprietary terms. Its license file and credit ship with it.
+  MPL-2.0, or LGPL kept as its own replaceable file. GPL or AGPL only as a separate program (the
+  owner, 2026-11-13, `docs/research/research-ifcopenshell-app.md` D1): its own unchanged file under
+  `runtime/`, run only inside the Python worker, reached only by messages, never joined into the app's
+  own code or `canvas_v10.html`; the app must work without it (IfcOpenShell's wheel, which contains
+  CGAL's GPL code; Ladybug, AGPL). Never non-commercial or proprietary terms. Its license file and
+  credit ship with it.
 - **Pinned and vendored:** committed under `runtime/`, pinned by version, size and SHA-256 in
   `MANIFEST.json` and checked by `tools/check_runtime.py`, as Pyodide (V172b) and three.js (V194) are.
   Never fetched from a CDN at run time.

@@ -1,0 +1,14 @@
+{
+  "name": "bim-personal-jolt-runtime",
+  "private": true,
+  "description": "Builds runtime/jolt/<version>/bim-jolt.min.js, Jolt Physics as one classic script for the walkthrough (V203). A build tool only: the app has no npm dependencies.",
+  "type": "module",
+  "scripts": {
+    "build": "node build_jolt.mjs",
+    "check": "node build_jolt.mjs --check"
+  },
+  "devDependencies": {
+    "esbuild": "0.28.2",
+    "jolt-physics": "1.1.1"
+  }
+}
