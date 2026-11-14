@@ -10304,6 +10304,18 @@ try{
   function setA3D_BR_NEW(v){A3D_BR_NEW=v;return v;}
   function setA3D_BR_PICK(v){A3D_BR_PICK=v;return v;}
   function setA3D_HIST_MSG(v){A3D_HIST_MSG=v;return v;}
+
+
+  /* ================= __acad3dV216: Hub H4, share and sync through GitHub, the pure part =================
+     docs/research/research-notion-hub-h4-sharing.md and docs/work-orders/v216/SPEC.md. One canonical file per element:
+     canonical JSON, its FNV-1a hash, its path, the manifest, orphaned references after a merge. Each function is a work
+     order, added below as it is built; none uses another file's names. */
+
+
+  /* ================= __acad3dV217: Hub H5, the server's access rules, the pure part =================
+     docs/research/research-notion-hub-h5-server.md and docs/work-orders/v217/SPEC.md. Access rules: the role on an element,
+     whether it allows an action, what a private check may return, the audit entry. Each function is a work order, added
+     below as it is built; none uses another file's names. */
   /* ================= __acad3dV138: verify the survey ================= */
   var BIM_SURVEY_TOL={fidelity:0.001,bustMin:0.5,bustK:6,bustMax:25,checkPass:0.05,checkWarn:0.15,control:0.02,offsetWarn:1.0};
   var BIM_SURVEY_CHECK_CODE='CHK';
@@ -20816,6 +20828,18 @@ try{
      docs/research/research-freeform-f1-f7.md (F4) and docs/work-orders/v186/SPEC.md. Face normals and areas (Newell),
      vertex normals, draft angles, zebra stripes, Gaussian curvature by angle deficit. Each function is a work order, added
      below as it is built; none uses another file's names. */
+
+
+  /* ================= __acad3dV219: WebGPU compute: the CPU reference first, the pure part =================
+     docs/research/research-notion-later-webgpu-compute.md and docs/work-orders/v219/SPEC.md. The CPU reference a GPU kernel
+     must match: explicit diffusion in double or single precision, the comparison, a sum, workgroups. Each function is a
+     work order, added below as it is built; none uses another file's names. */
+
+
+  /* ================= __acad3dV221: Wind around buildings: the lattice Boltzmann reference, the pure part =================
+     docs/research/research-wind-lbm.md and docs/work-orders/v221/SPEC.md. A D2Q9 lattice Boltzmann reference: the
+     equilibrium, the moments, a collide-and-stream step on a periodic box, the memory a D3Q19 box needs. Each function is a
+     work order, added below as it is built; none uses another file's names. */
   /* ================= __acad3dV167: the standards registry =================
      docs/research/research-standards-registry.md. Every standard, guideline and assumption an analysis
      applies is a record here, never a number in its code: a topic, and its editions. An edition says
@@ -37946,6 +37970,12 @@ try{
      placement from two point pairs (a similarity about the vertical, Y up), placed points, back-to-front order. Each
      function is a work order, added below as it is built; none uses another file's names. */
 
+
+  /* ================= __acad3dV220: Water and presentation rendering, the pure part =================
+     docs/research/research-notion-later-water-presentation.md and docs/work-orders/v220/SPEC.md. A heightfield wave step,
+     a drop, Schlick's Fresnel, a caustic's brightness by area ratio. Each function is a work order, added below as it is
+     built; none uses another file's names. */
+
   /* ================= __acad3dV194: the rendered view =================
      docs/research/research-rendered-view.md. A third way the 3D view is drawn, beside WebGPU and WebGL: the model in
      daylight, by three.js (render/rendered-core.js draws it, render/rendered-scene.js says what). Off until asked for
@@ -42741,6 +42771,12 @@ try{
      docs/research/research-notion-v190-facades.md and docs/work-orders/v192/SPEC.md. A homography from four or more point
      pairs by the normalised DLT (Hartley), its application and its check-point error. Each function is a work order,
      added below as it is built; none uses another file's names. */
+
+
+  /* ================= __acad3dV218: Streaming: OGC 3D Tiles, the pure part =================
+     docs/research/research-notion-streaming-3d-tiles.md and docs/work-orders/v218/SPEC.md. 3D Tiles selection: screen-space
+     error, the distance to a bounding sphere, refinement by REPLACE and ADD. Each function is a work order, added below as
+     it is built; none uses another file's names. */
   // ---- __acad3dV37: ViewCube restyled to match Revit's. Revit's cube is a LIGHT solid cube with
   // dark uppercase face labels, a compass ring beneath it carrying N/E/S/W that rotates with the
   // camera, and a small house icon for Home rather than a text button. The previous version was
@@ -48644,6 +48680,18 @@ function bimWalkKeys(h, j) {
      docs/research/research-later-costs-proforma.md and docs/work-orders/v214/SPEC.md. Income lines, totals and NOI, the cost
      total, yield on cost, value by capitalisation, profit and margin. Each function is a work order, added below as it is
      built; none uses another file's names. */
+
+
+  /* ================= __acad3dV222: 4D/5D construction planning, CP0 to CP3: quantities, cost lines, allocation, the pure part =================
+     docs/research/research-4d-5d-cp0-cp3.md and docs/work-orders/v222/SPEC.md. A slab's net volume, a cost line, an
+     allocation that never exceeds 100%, planned cost by bucket. Each function is a work order, added below as it is built;
+     none uses another file's names. */
+
+
+  /* ================= __acad3dV223: 4D/5D construction planning, CP4 and CP5: procurement and drawing intake, the pure part =================
+     docs/research/research-4d-5d-cp4-cp5.md and docs/work-orders/v223/SPEC.md. Calendar dates, the working day n days
+     before a need, precision and recall of a check. Each function is a work order, added below as it is built; none uses
+     another file's names. */
   /* ================= __acad3dV97: the source contract =================
 
      The ONE reader of a boundary source. Everything built on a sketch or a closed wall -- room,
