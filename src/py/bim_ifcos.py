@@ -334,3 +334,44 @@ def bim_ifcos_put_psets(guid, psets):
         return {"psets": count}
     except Exception:
         return {"error": "failed"}
+
+
+def bim_ifcos_export(model, path):
+    global _bim_ifcos_file
+    try:
+        r = bim_ifcos_begin(model.get("name") or "Project", model.get("levels") or [])
+        if "error" in r:
+            return r
+        written = 0; skipped = []; written_guids = {}
+        for w in model.get("walls") or []:
+            res = bim_ifcos_put_wall(w)
+            if "error" in res:
+                skipped.append({"id": w.get("id"), "why": res["error"]})
+            else:
+                written_guids[w.get("id")] = res["guid"]; written += 1
+                if w.get("psets"): bim_ifcos_put_psets(res["guid"], w["psets"])
+        for p in model.get("prisms") or []:
+            res = bim_ifcos_put_prism(p)
+            if "error" in res:
+                skipped.append({"id": p.get("id"), "why": res["error"]})
+            else:
+                written_guids[p.get("id")] = res["guid"]; written += 1
+                if p.get("psets"): bim_ifcos_put_psets(res["guid"], p["psets"])
+        for o in model.get("openings") or []:
+            item = dict(o); item["host"] = written_guids.get(o.get("host"), "")
+            res = bim_ifcos_put_opening(item)
+            if "error" in res:
+                skipped.append({"id": o.get("id"), "why": res["error"]})
+            else:
+                written_guids[o.get("id")] = res["guid"]; written += 1
+                if o.get("psets"): bim_ifcos_put_psets(res["guid"], o["psets"])
+        for m in model.get("meshes") or []:
+            res = bim_ifcos_put_mesh(m)
+            if "error" in res:
+                skipped.append({"id": m.get("id"), "why": res["error"]})
+            else:
+                written_guids[m.get("id")] = res["guid"]; written += 1
+                if m.get("psets"): bim_ifcos_put_psets(res["guid"], m["psets"])
+        return {**bim_ifcos_write_read(path), "skipped": skipped, "written": written}
+    except Exception:
+        return {"error": "failed"}

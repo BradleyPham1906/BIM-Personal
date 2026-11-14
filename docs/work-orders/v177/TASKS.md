@@ -118,7 +118,7 @@ Scores are from `../ROUTING.md` (files, logic, understanding, judgment, trickine
 
 ---
 
-## [ ] WO-07 [Cline] `bim_ifcos_export(model, path)`
+## [x] WO-07 [Cline] `bim_ifcos_export(model, path)`
 
 - **It must:** follow SPEC part 4 "WO-07": begin, then walls, prisms, openings, meshes in that order; an opening is
   put from a copy of its item (`dict(item)`) whose `host` is the GlobalId written for the wall with that `id`, or
