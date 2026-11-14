@@ -3,7 +3,7 @@
 Research note for phase **V202, Walkthrough W1: walk** (the owner, 2026-11-14: "a walk through feature. like i can
 be in a car, walking, swimming and all that stuff"; on WebAssembly: "i saw people make web app game"; and "lets think
 and document that on notion also, if this can be a new phase put it where appropriate"). Started 2026-11-14 by Claude.
-Status: **research done to the owner's decisions** (part 11); no code yet.
+Status: **research done; the owner's decisions made 2026-11-14** (part 11). Spec and work orders: `docs/work-orders/v202/`.
 
 ## 1. Abstract
 
@@ -237,7 +237,37 @@ Asked 2026-11-14. Recommended answers first.
 | D6 | Passing through walls, and flying | Alt (or a button) passes through, as SketchUp; F switches Walk and Fly, as Unreal | Walk only in W1 |
 | D7 | The rest of the series | W2 drive (V171's streets, Jolt's car), W3 fly and drone, W4 swim (water, buoyancy), W5 record a path; as "later" rows until W1 is built | Another order |
 
-The owner's answers: (to be recorded here).
+The owner's answers, 2026-11-14, in their words, and what follows from each:
+
+- **D1 engine:** "jolt". Jolt Physics 1.1.1.
+- **D2 who walks:** "for walk through it would be me the user of the app, there should be like a thrid person view or
+  eye view walking like in video games where u can switch mode". The walker is the user, seen from their own eyes
+  (first person) or from behind and above their figure (third person), switched by one key or button, as games do.
+  Their figure is a V169 person (the registry's mean adult by default); the walk settings may change it, the
+  wheelchair user included, so the accessibility check of 4.2 stays available but is not the default. (Our reading
+  of the answer; said here so it can be corrected.)
+  The owner also said: "currently in the simulation i dont see people just car". V171 draws walkers in 3D as a
+  column with a head (`simulation/traffic-draw.js:18`); why none show is a separate question, not this phase's.
+- **D3 step height:** "idk about this one. use what standard." No standard sets how high a walker steps; the codes
+  set how high a stair's riser may be. The walker climbs every code-compliant stair: the steepest riser where the
+  site is, plus the variation a flight may have. The IRC's riser is 7 3/4 in (196 mm) at most (R311.7.5.1) with 3/8 in
+  (9.5 mm) between the greatest and smallest riser of a flight; the IBC's 7 in (1011.5.2). Some places amend the IRC
+  upward: Philadelphia (the owner's city) and North Carolina to 8 1/4 in (210 mm). So the step-up is the registry's
+  steepest riser for the site's place plus 3/8 in: 0.206 m under the model IRC, 0.219 m in Philadelphia. Levels: the IRC
+  figure S (several jurisdictions' adoptions agree: South Carolina's regulation 8-1210, Boise's and Des Moines's
+  handouts); Philadelphia's amendment U (seen only in a search's summary of its code library); both to read at the source before the
+  registry record is written (a Claude task). The slope a walker climbs stays 35 degrees; a wheelchair user's step-up
+  is 0 and their slope 1:12 (ADA 405.2).
+- **D4 views:** "all view, the render or plain is just a view (wirefram, detail, rendered, ... just like revit).
+  this moving simulation walkthrough can switch mode". Walking works in every visual style the app has, as Revit's
+  navigation works in each of its visual styles; the rendered view gets its moving mode.
+- **D5 phone and tablet:** "joystick". Our own on-screen joystick.
+- **D6 walls and flying:** "idk do whats standard". From the prior art in 4.1 and the games' convention: W, A, S, D
+  or the arrows to move, Shift to run, the mouse to look (pointer lock), Space to jump in Walk and to rise in Fly, C to
+  sink in Fly; hold Alt to pass through walls (SketchUp's key, P); F switches Walk and Fly (Unreal's Collab Viewer has
+  the two modes, P, on I and U; F is ours); V switches first and third person (a common games key, U: a convention,
+  not a standard); Esc leaves the walk (browsers release pointer lock on Esc, P). Every action also has a button.
+- **D7 the series:** "sure". W2 drive, W3 fly and drone, W4 swim, W5 record a path.
 
 ## 12. References
 
@@ -259,4 +289,6 @@ All read 2026-11-14. Level P unless said. Check: the independent reader's verdic
 | npm registry | versions, licences, dates of the four engines, nipplejs | https://registry.npmjs.org | P |confirmed |
 | The app's registry | `hm.walk`, `mutcd.walk`, `walk.speed`, `body.hidh`, the wheelchair record, ADA | `src/js/engine/standards/registry.js` | P |confirmed |
 | 2010 ADA Standards 405.2 | ramps 1:12 | https://www.access-board.gov/ada/ | P |confirmed |
+| IRC R311.7.5.1 risers, through South Carolina's regulation 8-1210 | 7 3/4 in at most, 3/8 in variation | https://www.law.cornell.edu/regulations/south-carolina/R-8-1210 | S | to read at the ICC |
+| Philadelphia's amendment of the IRC risers | 8 1/4 in (210 mm) | https://codelibrary.amlegal.com/codes/philadelphia/latest/philadelphia_pa/0-0-0-272271 | U (a search summary only) | to read |
 | IBC 1011.5.2, through the 2025 California Building Code | risers 7 in at most, 4 in at least | https://gocodebook.com/library/us/ca/ca-building-code/chapter-10-means-of-egress/section-1011-stairways | S |confirmed through CA's adoption |
