@@ -63,3 +63,10 @@ function bimWalkMove(inp, yaw, speed, fly) {
     var vy = fly ? inp.up * speed * mult : 0;
     return [vx, vy, vz];
 }
+
+/* WO-05 bimWalkCamFirst(p, eye, yaw, pitch): first-person camera at the walker's eyes */
+function bimWalkCamFirst(p, eye, yaw, pitch) {
+    var cp = Math.cos(pitch);
+    var d = [cp * Math.sin(yaw), Math.sin(pitch), cp * Math.cos(yaw)];
+    return {tx: p[0] - d[0], ty: p[1] + eye - d[1], tz: p[2] - d[2], yaw: yaw, pitch: pitch, dist: 1};
+}

@@ -88,7 +88,7 @@ modules, the build. `npm test` 259 of 259.
 
 ---
 
-## [ ] WO-05 [Cline] `bimWalkCamFirst(p, eye, yaw, pitch)`
+## [x] WO-05 [Cline] `bimWalkCamFirst(p, eye, yaw, pitch)`
 
 - **It must:** with `c = Math.cos(pitch)` and `d = [c * Math.sin(yaw), Math.sin(pitch), c * Math.cos(yaw)]`, return
   `{tx: p[0] - d[0], ty: p[1] + eye - d[1], tz: p[2] - d[2], yaw: yaw, pitch: pitch, dist: 1}`.
