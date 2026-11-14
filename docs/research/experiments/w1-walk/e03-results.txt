@@ -1,0 +1,21 @@
+first version (one body per element), node 22.23.4, 2026-11-14:
+obstacle             body  end x  feet y   (the walker starts at x 0; the obstacle at x 3)
+step 0.18            one   8.39   0.18
+step 0.18            two   8.39   0.18
+curb 0.30            one   2.75   0.00     stopped
+curb 0.30            two   8.40   0.30     climbed (2 steps of about 0.2 m)
+curb 0.40            one   2.75   0.00     stopped
+curb 0.40            two   8.39   0.40     climbed
+block 1m deep 0.4    one   2.75   0.00     stopped
+block 1m deep 0.4    two   8.36   0.00     climbed over
+ramp 1:12            one   8.36   0.45
+ramp 1:12            two   8.36   0.45
+slope 40             one   2.91   0.00     stopped
+slope 40             two   2.91   0.00     stopped
+wall 3m              one   2.75   0.00     stopped
+wall 3m              two   2.75   0.00     stopped
+stair 7 risers       one   8.39   1.25
+stair 7 risers       two   8.39   1.25
+Settings that did not change "two": back faces solid, the step vectors kept, CharacterVirtual's enhanced internal edge
+removal, no floor stick, no hit reduction, predictive contact 0.25 m, no penetration recovery, a 0.3 m stair forward test.
+The ground stopping at the curb, a curb with no bottom face, or a curb 1 mm above the ground: still climbed.

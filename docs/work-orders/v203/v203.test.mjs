@@ -156,3 +156,10 @@ test('WO-08 bimWalkKeys: the joystick adds, kept within -1 and 1; false keys are
 test('WO-08 bimWalkKeys: nothing held is still', () => {
   assert.deepEqual(fn('bimWalkKeys')(null, null), { f: 0, s: 0, run: false, up: 0, ghost: false });
 });
+test('WO-08 bimWalkKeys: running does not change the direction; the joystick still adds (audit, 2026-11-14)', () => {
+  assert.deepEqual(fn('bimWalkKeys')({ KeyW: true, ShiftLeft: true }, { s: 0, f: -0.5 }), { f: 0.5, s: 0, run: true, up: 0, ghost: false });
+  assert.deepEqual(fn('bimWalkKeys')({ KeyD: true, ShiftRight: true }, null), { f: 0, s: 1, run: true, up: 0, ghost: false });
+});
+test('WO-08 bimWalkKeys: Space and C together cancel (audit, 2026-11-14)', () => {
+  assert.deepEqual(fn('bimWalkKeys')({ Space: true, KeyC: true }, null), { f: 0, s: 0, run: false, up: 0, ghost: false });
+});

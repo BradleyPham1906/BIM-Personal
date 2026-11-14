@@ -188,7 +188,14 @@ discarded, and recorded because a walker placed inside a wall (a saved position 
   pushed out the wrong side; the start should be found by a downward ray from the eye.
 - **Big sites.** A V198 terrain plus a city's LOD blocks may pass 500,000 triangles; Jolt's 0.25 s for 60,000
   suggests about 2 s, so the collision is built per element (part 8) and only near the walker. U until measured.
-- **Edits while walking.** An element changed in Properties must rebuild its collision only.
+- **Edits while walking.** An element changed in Properties rebuilds the collision: one body, so all of it (about
+  0.25 s for 60,000 triangles).
+- **One body, not one per element** (experiment e03, found building C-04, 2026-11-14). With each element its own Jolt
+  body, the walker's stair walking (step 0.206 m) climbed a 0.30 m and a 0.40 m curb and a 1 m-deep 0.40 m block in two
+  steps of about 0.2 m; the same triangles in one mesh stopped it, and a 7-riser stair, a 1:12 ramp, a 40 degree slope
+  and a 3 m wall behaved the same either way. None of eight Jolt settings tried changed it. So the adapter keeps each
+  element's triangles by key and signature and builds them into one static body. Its cause inside Jolt is not
+  traced (U); the behaviour is measured (P, here).
 - **Glass, doors and open voids.** Glass is solid; a door is open or shut by its state; a void with no floor falls.
 
 ## 8. What the app already has

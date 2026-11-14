@@ -105,10 +105,10 @@ function bimWalkKeys(h, j) {
     if (h.KeyS || h.ArrowDown) { f--; }
     if (h.KeyD || h.ArrowRight) { s++; }
     if (h.KeyA || h.ArrowLeft) { s--; }
-    if (h.ShiftLeft || h.ShiftRight) { f *= 2; s *= 2; run = true; }
+    run = !!(h.ShiftLeft || h.ShiftRight);   /* running is bimWalkMove's speed, never the direction */
     f = Math.max(-1, Math.min(1, f + (j.f || 0)));
     s = Math.max(-1, Math.min(1, s + (j.s || 0)));
-    up = h.Space ? 1 : h.KeyC ? -1 : 0;
-    ghost = (h.AltLeft || h.AltRight) || false;
+    up = (h.Space ? 1 : 0) - (h.KeyC ? 1 : 0);   /* both held cancel */
+    ghost = !!(h.AltLeft || h.AltRight);
     return {f: f, s: s, run: run, up: up, ghost: ghost};
 }

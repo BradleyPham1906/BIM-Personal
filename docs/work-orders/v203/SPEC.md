@@ -118,9 +118,10 @@ is `[-sin(yaw), 0, -cos(yaw)]`, walking right `[cos(yaw), 0, -sin(yaw)]`. A posi
 - **`bimWalkLoad()`** (walk-physics.js): loads `runtime/jolt/1.1.1/bim-jolt.min.js` as `bimRvLoad` loads three.js
   (`render/rendered-view.js:76`: the page's own `runtime/` under `file://`, then Pages with SRI), then `BIMJOLT.default()`;
   a promise of Jolt. A failure is warned and toasted; the walk does not start.
-- **`bimWalkWorld(items)`**: one static Jolt mesh body per element, from the same records the rendered view keeps
-  (`rendered-core.js:220`, keyed by element, rebuilt when its signature changes): opaque triangles only (glass is
-  solid: it is opaque here), two-sided. Built element by element across frames so a large model never blocks the page.
+- **`bimWalkPhysSync(W, items, pos)`** (built, C-04): each element's triangles kept by its key and signature, from the
+  same records the rendered view keeps (`rendered-core.js:220`), and all of them built into ONE static Jolt mesh body,
+  rebuilt when one changes. Not one body per element: experiment e03 found the walker then climbs about twice its
+  step (the note's part 7). Glass is solid; triangles are solid both sides.
 - **`bimWalkCharacter(cap)`**, **`bimWalkStep(v, dt)`**: Jolt's `CharacterVirtual` with `ExtendedUpdate`, its stairs
   step-up `cap.step` and floor stick 0.3 m, its steepest slope `cap.slope`; Walk adds gravity, Fly none; ghost moves the
   feet without the character. Every Jolt object the adapter makes, it destroys (`Jolt.destroy`) when the walk ends.
