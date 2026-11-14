@@ -80,3 +80,37 @@ def bim_ifcos_new_project(name, elevation):
         return bim_ifcos_summary("")
     except Exception:
         return {"error": "unreadable"}
+
+
+def bim_ifcos_add_wall(name, x0, y0, x1, y1, height, thickness):
+    global _bim_ifcos_file
+    try:
+        f = _bim_ifcos_file
+        if f is None:
+            return {"error": "no project"}
+        L = math.hypot(x1 - x0, y1 - y0)
+        if L < 1e-9:
+            return {"error": "zero length"}
+        storey = f.by_type("IfcBuildingStorey")[0]
+        body = None
+        for c in f.by_type("IfcGeometricRepresentationSubContext"):
+            if c.ContextIdentifier == "Body":
+                body = c
+                break
+        wall = ifcopenshell.api.root.create_entity(f, ifc_class="IfcWall", name=name)
+        representation = ifcopenshell.api.geometry.add_wall_representation(
+            f, context=body, length=L, height=height, thickness=thickness
+        )
+        ifcopenshell.api.geometry.assign_representation(f, product=wall, representation=representation)
+        a = math.atan2(y1 - y0, x1 - x0)
+        M = numpy.array([
+            [math.cos(a), -math.sin(a), 0, x0],
+            [math.sin(a), math.cos(a), 0, y0],
+            [0, 0, 1, storey.Elevation],
+            [0, 0, 0, 1],
+        ], dtype=float)
+        ifcopenshell.api.geometry.edit_object_placement(f, product=wall, matrix=M)
+        ifcopenshell.api.spatial.assign_container(f, products=[wall], relating_structure=storey)
+        return {"guid": wall.GlobalId}
+    except Exception:
+        return {"error": "unreadable"}

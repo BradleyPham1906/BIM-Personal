@@ -54,7 +54,7 @@ Scores are from `../ROUTING.md` (files, logic, understanding, judgment, trickine
 
 ---
 
-## [ ] WO-03 [Cline] `bim_ifcos_add_wall(name, x0, y0, x1, y1, height, thickness)`
+## [x] WO-03 [Cline] `bim_ifcos_add_wall(name, x0, y0, x1, y1, height, thickness)`
 
 - **It must:** follow SPEC part 4: the first `IfcBuildingStorey` of `_bim_ifcos_file`; the Body sub-context (the
   `IfcGeometricRepresentationSubContext` whose `ContextIdentifier` is `"Body"`); length `math.hypot(x1 - x0, y1 - y0)`;
