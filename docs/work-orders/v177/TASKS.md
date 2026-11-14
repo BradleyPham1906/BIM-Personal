@@ -68,7 +68,7 @@ Scores are from `../ROUTING.md` (files, logic, understanding, judgment, trickine
 
 ---
 
-## [ ] WO-04 [Cline] `bim_ifcos_put_prism(p)`
+## [x] WO-04 [Cline] `bim_ifcos_put_prism(p)`
 
 - **It must:** follow SPEC part 4 "WO-04". The outline check comes before anything is created.
 - **Example:** `{"cls": "IfcColumn", "pts": [[1.8, 1.8], [2.2, 1.8], [2.2, 2.2], [1.8, 2.2]], "base": 0, "depth": 3}`

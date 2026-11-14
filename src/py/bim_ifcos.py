@@ -213,3 +213,32 @@ def bim_ifcos_put_wall(w):
         return {"guid": bim_ifcos_keep_guid(wall, w.get("guid"))}
     except Exception:
         return {"error": "failed"}
+
+
+def bim_ifcos_put_prism(p):
+    global _bim_ifcos_file
+    try:
+        f = _bim_ifcos_file
+        if f is None:
+            return {"error": "no project"}
+        pts = p.get("pts") or []
+        depth = p.get("depth")
+        if len(pts) < 3 or depth is None or depth <= 0:
+            return {"error": "bad outline"}
+        element = ifcopenshell.api.root.create_entity(
+            f, ifc_class=p.get("cls") or "IfcSlab", name=p["name"]
+        )
+        rep = ifcopenshell.api.geometry.add_slab_representation(
+            f, context=bim_ifcos_body(), depth=p["depth"],
+            polyline=[(float(x), float(y)) for (x, y) in pts]
+        )
+        ifcopenshell.api.geometry.assign_representation(f, product=element, representation=rep)
+        ifcopenshell.api.geometry.edit_object_placement(
+            f, product=element, matrix=bim_ifcos_matrix(0, 0, p["base"], 0)
+        )
+        ifcopenshell.api.spatial.assign_container(
+            f, products=[element], relating_structure=bim_ifcos_storey(p.get("level"))
+        )
+        return {"guid": bim_ifcos_keep_guid(element, p.get("guid"))}
+    except Exception:
+        return {"error": "failed"}
