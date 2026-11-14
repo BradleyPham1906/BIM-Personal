@@ -9,7 +9,7 @@ The owner's decisions (2026-11-14): for every phase below, all as its research r
 overrule any there). V177's D1 to D4 and That Open's four were answered 2026-11-13. The phases are numbered in one
 sequence, 175c to 227, in `docs/dev/PIPELINE.md`; there are no "later" rows.
 
-## Ready for Cline, in order (222 tasks)
+## Ready for Cline, in order (227 tasks)
 
 | Phase | What | Tasks | Where | Tests |
 |---|---|---|---|---|
@@ -32,6 +32,7 @@ sequence, 175c to 227, in `docs/dev/PIPELINE.md`; there are no "later" rows.
 | v192 | LOD-E, facade images rectified onto walls | WO-01 to WO-06 (6) | `v192/TASKS.md` | `v192/v192.test.mjs` |
 | v193 | LOD-F, LOD3 openings on rectified facades | WO-01 to WO-05 (5) | `v193/TASKS.md` | `v193/v193.test.mjs` |
 | v201 | MEP runs, first slice (a checked tree, straight friction only) | WO-01 to WO-07 (7) | `v201/TASKS.md` | `v201/v201.test.mjs` |
+| v202 | Site context C3: measured heights, ground and bridges | WO-01 to WO-05 (5), any order | `v202/TASKS.md` | `v202/v202.test.mjs` |
 | v204 | The Parametric Design Foundation, sketch to Pad to Pocket | WO-01 to WO-04 (4) | `v204/TASKS.md` | `v204/v204.test.mjs` |
 | v205 | LOD-G, Gaussian splats as a backdrop | WO-01 to WO-05 (5) | `v205/TASKS.md` | `v205/v205.test.mjs` |
 | v206 | That Open: the Review view and IFC import (with Hub H3's identity) | WO-01 to WO-07 (7) | `v206/TASKS.md` | `v206/v206.test.mjs` |
@@ -67,7 +68,6 @@ records.
 
 | Phase | Where |
 |---|---|
-| v202 Site context C3 | Its work orders are on the branch `worktree-site-context-accuracy` (`docs/work-orders/v202/`, WO-00 built): merge it to main to hand them to Cline |
 | v203 Walkthrough W1 | WO-01 to WO-08 shipped by Cline; Claude's C-03 to C-08 on its branch (`claude/exciting-clarke-2e2noz`) |
 | v177 | Step 1 shipped by Cline and audited (2026-11-14); step 2a is in the table above; then Claude's step 2b (the wheels, the worker, File > Export > IFC, Make editable) |
 | v194 | T-07 shipped; Claude wires its looks into the materials |
