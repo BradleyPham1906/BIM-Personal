@@ -13597,6 +13597,12 @@ try{
      docs/research/research-notion-v177-v180-interiors.md (I4) and docs/work-orders/v182/SPEC.md. Rays against wall segments
      in plan [x, z]: the nearest hit, the isovist polygon, its area, a sightline, the share of a window seen. Geometry, not
      daylight. Each function is a work order, added below as it is built; none uses another file's names. */
+
+
+  /* ================= __acad3dV193: LOD-F, LOD3 openings on rectified facades, the pure part =================
+     docs/research/research-notion-v191-openings.md and docs/work-orders/v193/SPEC.md. Openings on a rectified facade:
+     one-dimensional clusters, snapping, regularised rows and columns, overlaps, the app's wall opening. Each function is a
+     work order, added below as it is built; none uses another file's names. */
   /* ================= __acad3dV101: room data =================
      The fields a tag and a schedule read. They live on the room only. */
   var BIM_ROOM_FIELDS=[
@@ -42699,6 +42705,18 @@ try{
      precision before float32; ASPRS class names, a height ramp, ground points thinned by cell. LAZ, COPC and EPT come
      later, behind the library rule. Each function is a work order in docs/work-orders/v190/TASKS.md, added below as
      it is built; none uses another file's names. */
+
+
+  /* ================= __acad3dV191: LOD-D, LOD1.3 and LOD2.2 roofs from LiDAR, the pure part =================
+     docs/research/research-notion-v189-roofs.md and docs/work-orders/v191/SPEC.md. Roof planes from LiDAR points: Jacobi
+     eigenvectors, the least-squares plane and its RMS, points in a footprint, coverage, heights on a plane. Each function
+     is a work order, added below as it is built; none uses another file's names. */
+
+
+  /* ================= __acad3dV192: LOD-E, facade images rectified onto walls, the pure part =================
+     docs/research/research-notion-v190-facades.md and docs/work-orders/v192/SPEC.md. A homography from four or more point
+     pairs by the normalised DLT (Hartley), its application and its check-point error. Each function is a work order,
+     added below as it is built; none uses another file's names. */
   // ---- __acad3dV37: ViewCube restyled to match Revit's. Revit's cube is a LIGHT solid cube with
   // dark uppercase face labels, a compass ring beneath it carrying N/E/S/W that rotates with the
   // camera, and a small house icon for Home rather than a text button. The previous version was

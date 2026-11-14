@@ -1,33 +1,40 @@
-# LOD-D: LOD1.3 and LOD2.2 roofs from LiDAR (outline)
+# V191 spec: LOD-D, LOD1.3 and LOD2.2 roofs from LiDAR
 
-Notion: V189 LOD-D: LOD2.2 from LiDAR. PIPELINE: 191. Research: `docs/research/research-notion-v189-roofs.md`, `docs/research/research-lod-reconstruction.md`. Written by Claude, 2026-11-14, as an outline: not yet Cline-ready; the next spec sprint turns its first slice into work orders with tests.
+Notion: V189 LOD-D: LOD2.2 from LiDAR. Research: `docs/research/research-notion-v189-roofs.md`, `docs/research/research-lod-reconstruction.md`. The owner's decisions, 2026-11-14: all as the research recommends (the owner, 2026-11-14: "all as recommended"; overrule any here). Implementation target: local `main`. Written by Claude, 2026-11-14.
 
-## 0. Status
+## 1. The decisions this spec follows
 
-After V190 (point clouds) is built: this phase reads its classified points. Spec in the sprint after V190's WO-13.
-
-## 1. The owner's decisions, 2026-11-14, as recommended
-
-- LOD definitions as 3DBAG publishes them (LOD1.3 from the roof partition's heights, LOD2.2 as planar roof faces), its method only, never roofer's GPL code;
-- footprints from the open data the app already loads (V166/OSM or the city's own), their source kept on each building;
-- output is geometry with per-building RMSE to its points and the share of the footprint the points cover; under a minimum coverage (50% by default) the building stays LOD1.2 and says why;
-- processing in a worker in the browser; no server.
+- 3DBAG's published method (its definitions of LOD1.3 and LOD2.2), never roofer's GPL code.
+- Footprints from the open data already loaded, their source kept; points from V190's classified clouds (class 6, Building).
+- Each building gets roof planes by least squares with their RMS, and the share of its footprint the points cover; under 50% coverage it stays LOD1.2 and says why.
+- Processing in the browser, in a worker for large clouds.
 
 ## 2. What it does for the user
 
-Pick buildings with a classified cloud under them: each gets planar roof faces fitted to its points, extruded to its footprint, with its RMSE and coverage in Properties.
+Select buildings with a cloud under them: roof planes are fitted, the building is rebuilt with them, and Properties shows each plane's RMS and the coverage.
 
-## 3. The first slice (pure functions in `src/js/engine/map/roofs-lidar.js`, ES5, no other file's names)
+## 3. The pieces
 
-- `bimRoofPlane(points)`: the least-squares plane through [x,y,z] points (centroid and the smallest eigenvector of the covariance, by Jacobi rotations), with its RMS distance.
-- `bimRoofInFootprint(points, ring)`: the points whose x,y fall inside the footprint ring.
-- `bimRoofGrow(points, normals, seed, angleDeg, dist)`: region growing: neighbours (by a grid) whose normals are within the angle and distance join the region.
-- `bimRoofRmse(points, planes, labels)`: the RMS of each point's distance to its own plane.
-- `bimRoofLod13(regions, ring)`: LOD1.3: the partition's heights as flat roof blocks.
-- `bimRoofCoverage(points, ring, cell)`: the share of the footprint's grid cells holding at least one point.
+| File | New or changed | What it holds | Built by |
+|---|---|---|---|
+| `src/js/engine/map/roofs-lidar.js` | new, after `js/engine/map/pointcloud.js` in `src/index.html` (header done) | 5 pure functions (part 5) | Cline, WO-01 to WO-05 |
+| `docs/work-orders/v191/v191.test.mjs` | new | their tests | Claude (done) |
+| the app's own files | changed | wiring, the interface, saving and undo | Claude, WO-06, WO-07 |
 
-Tests: Synthetic gabled and hipped roofs sampled with known noise: planes recovered within 1e-6 with no noise, RMSE equal to the added noise within 5%.
+## 5. Functions, `src/js/engine/map/roofs-lidar.js`
 
-## 4. Not in this phase
+ES5. Every function is pure: it never changes what it is given and uses no name from another file.
 
-Texture; lod3; buildings without a footprint; non-planar roofs (domes) beyond a flagged fallback.
+- **WO-01 `bimRoofJacobi(A)`**: the eigen-decomposition of a symmetric 3x3 by cyclic Jacobi rotations (at most 50; stop when the largest off-diagonal is under 1e-15): {values: the diagonal, vectors: the columns of the accumulated rotation, as three [x, y, z]}; the input unchanged.
+- **WO-02 `bimRoofPlane(pts)`**: centroid c, the covariance (divided by n), its eigenvector of the smallest eigenvalue as n, flipped so n[2] >= 0; rms the root mean square of the points' signed distances to the plane. {c, n, rms}; null for fewer than 3 points.
+- **WO-03 `bimRoofInRing(pts, ring)`**: the points whose (x, y) is inside the ring (even-odd), in order.
+- **WO-04 `bimRoofCoverage(pts, ring, cell)`**: cells of size cell (1 when not positive) from the ring's minimum corner, kept while their centre is before the maximum; those whose centre is in the ring are the footprint's; the share of them holding at least one point (by floor((x - x0)/cell), floor((y - y0)/cell)); 0 for none.
+- **WO-05 `bimRoofZ(pl, x, y)`**: c[2] - (n[0](x - c[0]) + n[1](y - c[1])) / n[2]; null when |n[2]| < 1e-12.
+
+## 6. Order of the work
+
+WO-01 to WO-05 in order (a later one may use an earlier one, as its task says). Then Claude: **WO-06** region growing and the rebuilt buildings; **WO-07** the records.
+
+## 7. Not in this phase
+
+Texture; non-planar roofs beyond a flagged fallback; buildings without a footprint.
