@@ -35,7 +35,7 @@ modules, the build. `npm test` 259 of 259.
 - **Example:** `bimWalkStepUp(196, 9.5)` returns `0.206`; `bimWalkStepUp(178, undefined)` returns `0.178`.
 - **May use:** `Math.round`.
 - **Files:** `src/js/engine/walk/walk-math.js`, `docs/work-orders/v203/v203.test.mjs`
-- **Budget:** 15
+- **Budget:** 30
 - **Test:** the cases named `WO-01 ...`. **Score:** 0+0+0+0+0+0 = 0.
 
 ---
@@ -53,7 +53,7 @@ modules, the build. `npm test` 259 of 259.
   returns `{h: 1.75, r: 0.23, half: 0.645, eye: 1.63, step: 0.206, slope: 0.6109}` (slope rounded here).
 - **May use:** `Math.min`, `Math.max`, `Math.atan`, `Math.PI`.
 - **Files:** `src/js/engine/walk/walk-math.js`, `docs/work-orders/v203/v203.test.mjs`
-- **Budget:** 20
+- **Budget:** 40
 - **Test:** the cases named `WO-02 ...`. **Score:** 0+0+0+0+1+0 = 1.
 
 ---
@@ -67,7 +67,7 @@ modules, the build. `npm test` 259 of 259.
   `bimWalkLook({yaw: 3.1, pitch: 0}, -100, 0, 0.002).yaw` is `3.3 - 2 * Math.PI`.
 - **May use:** `Math.PI`, `Math.min`, `Math.max`.
 - **Files:** `src/js/engine/walk/walk-math.js`, `docs/work-orders/v203/v203.test.mjs`
-- **Budget:** 20
+- **Budget:** 40
 - **Test:** the cases named `WO-03 ...`. **Score:** 0+0+0+0+1+0 = 1.
 
 ---
@@ -83,7 +83,7 @@ modules, the build. `npm test` 259 of 259.
   `bimWalkMove({f: 1, s: 1, run: false, up: 0}, Math.PI / 2, 1, false)` returns about `[-0.7071, 0, -0.7071]`.
 - **May use:** `Math.sin`, `Math.cos`, `Math.sqrt`.
 - **Files:** `src/js/engine/walk/walk-math.js`, `docs/work-orders/v203/v203.test.mjs`
-- **Budget:** 20
+- **Budget:** 40
 - **Test:** the cases named `WO-04 ...`. **Score:** 0+0+0+0+1+0 = 1.
 
 ---
@@ -96,7 +96,7 @@ modules, the build. `npm test` 259 of 259.
 - **Example:** `bimWalkCamFirst([2, 0, 3], 1.6, 0, 0)` returns `{tx: 2, ty: 1.6, tz: 2, yaw: 0, pitch: 0, dist: 1}`.
 - **May use:** `Math.sin`, `Math.cos`.
 - **Files:** `src/js/engine/walk/walk-math.js`, `docs/work-orders/v203/v203.test.mjs`
-- **Budget:** 15
+- **Budget:** 30
 - **Test:** the cases named `WO-05 ...`. **Score:** 0+0+0+0+1+0 = 1.
 
 ---
@@ -109,7 +109,7 @@ modules, the build. `npm test` 259 of 259.
   `null`, `10` or `Infinity` it is `3`.
 - **May use:** `Math.max`, `isFinite`.
 - **Files:** `src/js/engine/walk/walk-math.js`, `docs/work-orders/v203/v203.test.mjs`
-- **Budget:** 15
+- **Budget:** 30
 - **Test:** the cases named `WO-06 ...`. **Score:** 0+0+0+0+1+0 = 1.
 
 ---
@@ -122,7 +122,7 @@ modules, the build. `npm test` 259 of 259.
   returns `{s: 0, f: 0}`.
 - **May use:** `Math.sqrt`.
 - **Files:** `src/js/engine/walk/walk-math.js`, `docs/work-orders/v203/v203.test.mjs`
-- **Budget:** 15
+- **Budget:** 30
 - **Test:** the cases named `WO-07 ...`. **Score:** 0+0+0+0+1+0 = 1.
 
 ---
@@ -139,7 +139,7 @@ modules, the build. `npm test` 259 of 259.
   `bimWalkKeys({}, {s: -0.25, f: 0.5})` returns `{f: 0.5, s: -0.25, run: false, up: 0, ghost: false}`.
 - **May use:** `Math.min`, `Math.max`.
 - **Files:** `src/js/engine/walk/walk-math.js`, `docs/work-orders/v203/v203.test.mjs`
-- **Budget:** 25
+- **Budget:** 50
 - **Test:** the cases named `WO-08 ...`. **Score:** 0+0+0+0+1+0 = 1.
 
 ---

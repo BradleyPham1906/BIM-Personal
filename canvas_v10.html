@@ -7472,6 +7472,42 @@ try{
     }
     return {v:v,f:f};
   }
+
+
+  /* ================= __acad3dV183: Freeform F1, NURBS curves, the pure part =================
+     docs/research/research-freeform-f1-f7.md (F1) and docs/work-orders/v183/SPEC.md. NURBS curves: clamped knots, the
+     knot span, the basis functions (The NURBS Book A2.1, A2.2), rational points, tangents, adaptive samples. Each function
+     is a work order, added below as it is built; none uses another file's names. */
+
+
+  /* ================= __acad3dV184: Freeform F2, surfaces from curves, the pure part =================
+     docs/research/research-freeform-f1-f7.md (F2) and docs/work-orders/v184/SPEC.md. Surfaces from sampled curves as quad
+     meshes: a grid's faces, extrude, a turn about an axis, revolve, loft, Coons patch. Each function is a work order,
+     added below as it is built; none uses another file's names. */
+
+
+  /* ================= __acad3dV185: Freeform F3, sweeps, pipes and caps, the pure part =================
+     docs/research/research-freeform-f1-f7.md (F3) and docs/work-orders/v185/SPEC.md. Rotation-minimising frames by
+     double reflection; a profile swept along a rail; a circle profile; caps. Each function is a work order, added below
+     as it is built; none uses another file's names. */
+
+
+  /* ================= __acad3dV187: Freeform F5, point editing and blends, the pure part =================
+     docs/research/research-freeform-f1-f7.md (F5) and docs/work-orders/v187/SPEC.md. Editing NURBS curves by their data:
+     knot insertion (The NURBS Book A5.1), moving a control point, G1 blends, Bezier degree elevation, reversal. Each
+     function is a work order, added below as it is built; none uses another file's names. */
+
+
+  /* ================= __acad3dV188: Freeform F6, picture planes, text objects, flow along a surface, the pure part =================
+     docs/research/research-freeform-f1-f7.md (F6) and docs/work-orders/v188/SPEC.md. Picture planes at the image's
+     aspect, text boxes, and flow along a bilinear patch (points, height along its normal). Each function is a work order,
+     added below as it is built; none uses another file's names. */
+
+
+  /* ================= __acad3dV189: Freeform F7, Make2D (hidden-line drawings), the pure part =================
+     docs/research/research-freeform-f1-f7.md (F7) and docs/work-orders/v189/SPEC.md. Make2D on meshes: projection to a
+     view, the edges a drawing keeps, a depth test against triangles, an edge cut to its visible runs. Each function is a
+     work order, added below as it is built; none uses another file's names. */
   /* ================= __acad3dV93: the POINT node ================= */
   var BIM_POINT_MARK=0.15;          /* half-length of the marker cross, in model units */
   function bimIsPoint(o){
@@ -10268,6 +10304,18 @@ try{
   function setA3D_BR_NEW(v){A3D_BR_NEW=v;return v;}
   function setA3D_BR_PICK(v){A3D_BR_PICK=v;return v;}
   function setA3D_HIST_MSG(v){A3D_HIST_MSG=v;return v;}
+
+
+  /* ================= __acad3dV216: Hub H4, share and sync through GitHub, the pure part =================
+     docs/research/research-notion-hub-h4-sharing.md and docs/work-orders/v216/SPEC.md. One canonical file per element:
+     canonical JSON, its FNV-1a hash, its path, the manifest, orphaned references after a merge. Each function is a work
+     order, added below as it is built; none uses another file's names. */
+
+
+  /* ================= __acad3dV217: Hub H5, the server's access rules, the pure part =================
+     docs/research/research-notion-hub-h5-server.md and docs/work-orders/v217/SPEC.md. Access rules: the role on an element,
+     whether it allows an action, what a private check may return, the audit entry. Each function is a work order, added
+     below as it is built; none uses another file's names. */
   /* ================= __acad3dV138: verify the survey ================= */
   var BIM_SURVEY_TOL={fidelity:0.001,bustMin:0.5,bustK:6,bustMax:25,checkPass:0.05,checkWarn:0.15,control:0.02,offsetWarn:1.0};
   var BIM_SURVEY_CHECK_CODE='CHK';
@@ -10730,6 +10778,12 @@ try{
     if(!(Math.abs(sa)>1e-6)||(sa>0?1:-1)!==sgn)return {error:'the setbacks leave no buildable area'};
     return {ring:out};
   }
+
+
+  /* ================= __acad3dV212: Survey control, traverses and closure, the pure part =================
+     docs/research/research-later-survey-control.md and docs/work-orders/v212/SPEC.md. Traverses: DMS, latitudes and
+     departures, closure for loops and links (never for open traverses), the compass rule, angular misclosure. Each function
+     is a work order, added below as it is built; none uses another file's names. */
   /* ================= __acad3dV103: the property ================= */
   function bimIsProperty(o){return !!(o&&o.t==='property'&&o.start&&o.legs&&o.legs.length);}
   /* The ONE derivation: corners, closure, area and setback line, in WORLD plan terms. */
@@ -13534,6 +13588,39 @@ try{
     if(candidates.length)return candidates[0];
     return null;
   }
+
+
+  /* ================= __acad3dV179: Interiors I1, the pure part =================
+     docs/research/research-notion-v177-v180-interiors.md (the owner's decisions as recommended, 2026-11-14) and
+     docs/work-orders/v179/SPEC.md. The programme (uses, counts, area ranges) and its relations (next to, near,
+     apart) kept apart from the measured rooms; the facts measured from the rooms: a point inside, the length two
+     rooms share across a wall, the doors linking them, route costs by the doors; each relation met, not met or not
+     evaluated, never guessed. Plan points are [x, z]. Each function is a work order in docs/work-orders/v179/TASKS.md,
+     added below as it is built; none uses another file's names. */
+
+
+  /* ================= __acad3dV180: Interiors I2, clearance and ergonomics, the pure part =================
+     docs/research/research-notion-v177-v180-interiors.md (I2) and docs/work-orders/v180/SPEC.md. Footprints and clearance
+     zones as convex polygons in plan [x, z]; overlap by separating axes; a turning circle inside a room; a measurement
+     against a registry rule. Each function is a work order, added below as it is built; none uses another file's names. */
+
+
+  /* ================= __acad3dV181: Interiors I3, circulation and escape routes, the pure part =================
+     docs/research/research-notion-v177-v180-interiors.md (I3) and docs/work-orders/v181/SPEC.md. A walkable grid in plan
+     [x, z]; the shortest 8-way route on it (Dijkstra, no corner cutting); the nearest exit; a route against a travel limit.
+     Each function is a work order, added below as it is built; none uses another file's names. */
+
+
+  /* ================= __acad3dV182: Interiors I4, sightlines and views, the pure part =================
+     docs/research/research-notion-v177-v180-interiors.md (I4) and docs/work-orders/v182/SPEC.md. Rays against wall segments
+     in plan [x, z]: the nearest hit, the isovist polygon, its area, a sightline, the share of a window seen. Geometry, not
+     daylight. Each function is a work order, added below as it is built; none uses another file's names. */
+
+
+  /* ================= __acad3dV193: LOD-F, LOD3 openings on rectified facades, the pure part =================
+     docs/research/research-notion-v191-openings.md and docs/work-orders/v193/SPEC.md. Openings on a rectified facade:
+     one-dimensional clusters, snapping, regularised rows and columns, overlaps, the app's wall opening. Each function is a
+     work order, added below as it is built; none uses another file's names. */
   /* ================= __acad3dV101: room data =================
      The fields a tag and a schedule read. They live on the room only. */
   var BIM_ROOM_FIELDS=[
@@ -20735,6 +20822,24 @@ try{
      lines, symbols and words over it, so a building never hides what it is measured against.
      Diagram elements carry no mesh, so schedules, quantities, the LOD checks and the IFC, DXF and
      CityJSON exports, which read meshes and building types, pass them by. */
+
+
+  /* ================= __acad3dV186: Freeform F4, surface analysis, the pure part =================
+     docs/research/research-freeform-f1-f7.md (F4) and docs/work-orders/v186/SPEC.md. Face normals and areas (Newell),
+     vertex normals, draft angles, zebra stripes, Gaussian curvature by angle deficit. Each function is a work order, added
+     below as it is built; none uses another file's names. */
+
+
+  /* ================= __acad3dV219: WebGPU compute: the CPU reference first, the pure part =================
+     docs/research/research-notion-later-webgpu-compute.md and docs/work-orders/v219/SPEC.md. The CPU reference a GPU kernel
+     must match: explicit diffusion in double or single precision, the comparison, a sum, workgroups. Each function is a
+     work order, added below as it is built; none uses another file's names. */
+
+
+  /* ================= __acad3dV221: Wind around buildings: the lattice Boltzmann reference, the pure part =================
+     docs/research/research-wind-lbm.md and docs/work-orders/v221/SPEC.md. A D2Q9 lattice Boltzmann reference: the
+     equilibrium, the moments, a collide-and-stream step on a periodic box, the memory a D3Q19 box needs. Each function is a
+     work order, added below as it is built; none uses another file's names. */
   /* ================= __acad3dV167: the standards registry =================
      docs/research/research-standards-registry.md. Every standard, guideline and assumption an analysis
      applies is a record here, never a number in its code: a topic, and its editions. An edition says
@@ -33284,6 +33389,12 @@ try{
         layer:{name:P.scope==='lot'?'on the lot':'the whole extent',lv:lv,n:BIM_TL_SYN.length,pal:BIM_TL_SYN.map(function(x){return x.col;}),cats:BIM_TL_SYN.map(function(x){return x.name;}),
           keys:BIM_TL_SYN.filter(function(x,j){return cnt[j]>0;}).map(function(x){return {name:(x.con?'Constraint: ':'Opportunity: ')+x.name,col:x.col};}),opacity:0.7}};
     }});
+
+
+  /* ================= __acad3dV213: Generators: massing, parking, lots, the pure part =================
+     docs/research/research-later-generators.md and docs/work-orders/v213/SPEC.md. The achievable area and its plates,
+     storeys in a height, stalls from ratios, stalls in a rectangle, lots along a frontage. Each function is a work order,
+     added below as it is built; none uses another file's names. */
   /* ================= __acad3dV172: the site analysis tools in the analysis workspace =================
      The owner (2026-10-27): the tools live in the analysis workspace. A Tools group in its left list, a row for each
      tool and one for History; a tool opens on the right where an analysis opens, in the geoprocessing pane's shape:
@@ -36624,6 +36735,12 @@ try{
      a wall has arcs, a column's four corners */
   var BIM_IFC_SAVE_USES=[bimSegNormal,bimAlignOffsets,bimHasBulge,bimRectFootprint];
   BIM_IFC_SAVE.uses=BIM_IFC_SAVE_USES;BIM_IFC_SAVE.num=bimIfcSaveNum;BIM_IFC_SAVE.pt=bimIfcSavePt;BIM_IFC_SAVE.pt3=bimIfcSavePt3;BIM_IFC_SAVE.cls=BIM_IFC_SAVE_CLASS;
+
+
+  /* ================= __acad3dV206: That Open: the Review view and IFC import (with Hub H3's identity), the pure part =================
+     docs/research/research-thatopen.md, research-notion-hub-h3-ifc.md and docs/work-orders/v206/SPEC.md. That Open's
+     geometry as the app's meshes (Z-up to Y-up), IFC GlobalIds (valid, from and to hex), imports compared class by class,
+     measuring and clipping. Each function is a work order, added below as it is built; none uses another file's names. */
   // ---- Unified import entry point ----
   function bimHandleImportFile(file){
     if(!file)return;
@@ -37867,6 +37984,18 @@ try{
     }
     return cv;
   }
+
+
+  /* ================= __acad3dV205: LOD-G, Gaussian splats as a backdrop, the pure part =================
+     docs/research/research-notion-v192-splats.md and docs/work-orders/v205/SPEC.md. A .splat file read, its bounds,
+     placement from two point pairs (a similarity about the vertical, Y up), placed points, back-to-front order. Each
+     function is a work order, added below as it is built; none uses another file's names. */
+
+
+  /* ================= __acad3dV220: Water and presentation rendering, the pure part =================
+     docs/research/research-notion-later-water-presentation.md and docs/work-orders/v220/SPEC.md. A heightfield wave step,
+     a drop, Schlick's Fresnel, a caustic's brightness by area ratio. Each function is a work order, added below as it is
+     built; none uses another file's names. */
 
   /* ================= __acad3dV194: the rendered view =================
      docs/research/research-rendered-view.md. A third way the 3D view is drawn, beside WebGPU and WebGL: the model in
@@ -42642,6 +42771,33 @@ try{
     {n:'front',f:[4,5,6,7]},{n:'back',f:[1,0,3,2]},
     {n:'right',f:[5,1,2,6]},{n:'left',f:[0,4,7,3]}
   ];
+
+
+  /* ================= __acad3dV190: LOD-C point clouds, the pure part =================
+     docs/research/research-notion-v188-point-clouds.md (the owner's decisions as recommended, 2026-11-14) and
+     docs/work-orders/v190/SPEC.md. Local LAS (1.2 to 1.4, formats 0 to 3 and 6 to 8) and PLY (ASCII and binary
+     little-endian) read from their bytes, sampled to a point budget and rebased on a whole-metre origin in double
+     precision before float32; ASPRS class names, a height ramp, ground points thinned by cell. LAZ, COPC and EPT come
+     later, behind the library rule. Each function is a work order in docs/work-orders/v190/TASKS.md, added below as
+     it is built; none uses another file's names. */
+
+
+  /* ================= __acad3dV191: LOD-D, LOD1.3 and LOD2.2 roofs from LiDAR, the pure part =================
+     docs/research/research-notion-v189-roofs.md and docs/work-orders/v191/SPEC.md. Roof planes from LiDAR points: Jacobi
+     eigenvectors, the least-squares plane and its RMS, points in a footprint, coverage, heights on a plane. Each function
+     is a work order, added below as it is built; none uses another file's names. */
+
+
+  /* ================= __acad3dV192: LOD-E, facade images rectified onto walls, the pure part =================
+     docs/research/research-notion-v190-facades.md and docs/work-orders/v192/SPEC.md. A homography from four or more point
+     pairs by the normalised DLT (Hartley), its application and its check-point error. Each function is a work order,
+     added below as it is built; none uses another file's names. */
+
+
+  /* ================= __acad3dV218: Streaming: OGC 3D Tiles, the pure part =================
+     docs/research/research-notion-streaming-3d-tiles.md and docs/work-orders/v218/SPEC.md. 3D Tiles selection: screen-space
+     error, the distance to a bounding sphere, refinement by REPLACE and ADD. Each function is a work order, added below as
+     it is built; none uses another file's names. */
   // ---- __acad3dV37: ViewCube restyled to match Revit's. Revit's cube is a LIGHT solid cube with
   // dark uppercase face labels, a compass ring beneath it carrying N/E/S/W that rotates with the
   // camera, and a small house icon for Home rather than a text button. The previous version was
@@ -42967,6 +43123,30 @@ function bimWalkKeys(h, j) {
     ghost = (h.AltLeft || h.AltRight) || false;
     return {f: f, s: s, run: run, up: up, ghost: ghost};
 }
+
+
+  /* ================= __acad3dV208: Walkthrough W2, drive, the pure part =================
+     docs/research/research-walkthrough.md (W2) and docs/work-orders/v208/SPEC.md. Driving: a kinematic bicycle-model step,
+     the turning radius, the chase camera, km/h. Each function is a work order, added below as it is built; none uses
+     another file's names. */
+
+
+  /* ================= __acad3dV209: Walkthrough W3, fly and drone, the pure part =================
+     docs/research/research-walkthrough.md (W3) and docs/work-orders/v209/SPEC.md. The drone: the altitude band, an orbit,
+     a waypoint route and the point along it. Each function is a work order, added below as it is built; none uses another
+     file's names. */
+
+
+  /* ================= __acad3dV210: Walkthrough W4, swim, the pure part =================
+     docs/research/research-walkthrough.md (W4) and docs/work-orders/v210/SPEC.md. Swimming: under the surface or not, a
+     step with thrust, drag and buoyancy, the haze by depth, staying under the surface. Each function is a work order, added
+     below as it is built; none uses another file's names. */
+
+
+  /* ================= __acad3dV211: Walkthrough W5, record and replay, the pure part =================
+     docs/research/research-walkthrough.md (W5) and docs/work-orders/v211/SPEC.md. A recorded path: the shortest turn, a pose
+     kept when it changed enough, the pose at a time, the path's length and duration. Each function is a work order, added
+     below as it is built; none uses another file's names. */
   /* ================= __acad3dV98: annotation grips =================
      The grip list and the drag below index the SAME points, in the same order, per kind. */
   function bimAnnotGripPoints(o){
@@ -48500,6 +48680,39 @@ function bimWalkKeys(h, j) {
      __acad3dV99: a room traced from SEVERAL shapes is no longer a frozen snapshot. It is a
      region dependent (o.region), linked in the graph to every shape its trace walked, and
      re-traced from its seed through bimRegionBoundaryWorld -- see the V99 block below. */
+
+
+  /* ================= __acad3dV201: MEP runs, the pure part =================
+     docs/research/research-notion-v193-mep.md and research-mep-runs.md (the owner's decisions as recommended,
+     2026-11-14) and docs/work-orders/v201/SPEC.md. Round and rectangular sections; straight friction by
+     Darcy-Weisbach with Colebrook (turbulent) or 64/Re (laminar, round only), the transition refused; runs joined end
+     to end in 3D; a single-source tree; flows from the terminals' demand; friction-only paths and the critical one.
+     Never a system pressure, a sizing or a compliance finding. SI units. Each function is a work order in
+     docs/work-orders/v201/TASKS.md, added below as it is built; none uses another file's names. */
+
+
+  /* ================= __acad3dV204: The Parametric Design Foundation, sketch to Pad to Pocket, the pure part =================
+     docs/research/research-parametric-history.md and docs/work-orders/v204/SPEC.md. Feature records: dependency order with
+     cycle refusal, what a change reaches, safe expressions, and the rebuild of sketch, Pad and Pocket keeping the last
+     valid result. Each function is a work order, added below as it is built; none uses another file's names. */
+
+
+  /* ================= __acad3dV214: Costs and pro forma, the pure part =================
+     docs/research/research-later-costs-proforma.md and docs/work-orders/v214/SPEC.md. Income lines, totals and NOI, the cost
+     total, yield on cost, value by capitalisation, profit and margin. Each function is a work order, added below as it is
+     built; none uses another file's names. */
+
+
+  /* ================= __acad3dV222: 4D/5D construction planning, CP0 to CP3: quantities, cost lines, allocation, the pure part =================
+     docs/research/research-4d-5d-cp0-cp3.md and docs/work-orders/v222/SPEC.md. A slab's net volume, a cost line, an
+     allocation that never exceeds 100%, planned cost by bucket. Each function is a work order, added below as it is built;
+     none uses another file's names. */
+
+
+  /* ================= __acad3dV223: 4D/5D construction planning, CP4 and CP5: procurement and drawing intake, the pure part =================
+     docs/research/research-4d-5d-cp4-cp5.md and docs/work-orders/v223/SPEC.md. Calendar dates, the working day n days
+     before a need, precision and recall of a check. Each function is a work order, added below as it is built; none uses
+     another file's names. */
   /* ================= __acad3dV97: the source contract =================
 
      The ONE reader of a boundary source. Everything built on a sketch or a closed wall -- room,
@@ -51816,6 +52029,12 @@ function bimWalkKeys(h, j) {
   }
   /* setters: other files assign these through them (an ES module cannot assign to an import) */
   function setA3D_SHELL_OBS(v){A3D_SHELL_OBS=v;return v;}
+
+
+  /* ================= __acad3dV207: glTF models in Assets, and valdrada's credited models, the pure part =================
+     docs/research/research-notion-gltf-assets.md and docs/work-orders/v207/SPEC.md. A glTF's counts from its JSON, a model
+     seated on the origin, the limits that ask first, the credit line. Each function is a work order, added below as it is
+     built; none uses another file's names. */
   /* ================= __acad3dV150: the tool palette, on a phone and a tablet =================
      The essential tools in a capsule over the drawing, dragged where the hand wants them, folded
      to one button when the drawing wants the room. Where it was left is kept in this browser. */
@@ -54215,6 +54434,18 @@ function bimWalkKeys(h, j) {
     }
     ctx.restore();
   }
+
+
+  /* ================= __acad3dV224: Track E, field work: positions without GPS and step-by-step instructions, the pure part =================
+     docs/research/research-field-autonomy.md and docs/work-orders/v224/SPEC.md. Bearings, where two meet, a position from
+     several sightings with its spread, the next field step. Each function is a work order, added below as it is built;
+     none uses another file's names. */
+
+
+  /* ================= __acad3dV227: Track D, the drone bridge project: flight planning, the pure part =================
+     docs/research/research-bridge-splatting.md and docs/work-orders/v227/SPEC.md. Photogrammetry flight planning: GSD, the
+     height for a GSD, a photo's footprint, spacing for overlap, flight lines. Each function is a work order, added below as
+     it is built; none uses another file's names. */
   /* ================= __acad3dV125: the analytical model =================
      Derived on every call from the live columns and beams, never stored: the lines cannot fall out
      of step with the members they stand for. Units kN, m, kPa. */
@@ -54711,6 +54942,12 @@ function bimWalkKeys(h, j) {
     }
     return out;
   }
+
+
+  /* ================= __acad3dV226: Track C, the PennDOT LRFD input writer, the pure part =================
+     docs/research/penndot/PENNDOT_INPUT_SPEC.md and docs/work-orders/v226/SPEC.md. PennDOT's LRFD programs' commands:
+     meaning by program, the shared core, STLRFD's order. Each function is a work order, added below as it is built; none
+     uses another file's names. */
   /* ================= __acad3dV125: the analysis display ================= */
   var BIM_DIAGRAMS={M:'Bending moment (kN\u00b7m)',N:'Axial force (kN)',V:'Shear (kN)'};
   /* what the solve depends on: when it changes, the result on screen is out of date */
@@ -59425,6 +59662,12 @@ function bimLyDupNumbers(entries) {
   }
   return out;
 }
+
+
+  /* ================= __acad3dV175c: One paper space, steps 2 and 3: one editor, one print, the pure part =================
+     docs/research/research-one-paper-space.md and docs/work-orders/v175c/SPEC-step2.md. Steps 2 and 3: a sheet viewport
+     as the one viewport object and back, a sheet as a layout, the drawing sheet's Draw menu, the vector print's page and
+     outlines. Each function is a work order in TASKS-step2.md, added below as it is built; none uses another file's names. */
   /* ================= __acad3dV162: the boards are pages of the set =================
      docs/research/research-one-analyze-boards.md. A board is a page of the presentation beside the
      sheets: in the Presentation panel with its thumbnail, in the main view, in Present and in Print
@@ -61607,6 +61850,14 @@ function bimLyDupNumbers(entries) {
     });
     return out;
   }
+
+
+  /* ================= __acad3dV178: the report, the pure part =================
+     docs/research/research-notion-v178-presentation.md (the owner's decisions 1 to 6 as recommended, 2026-11-14) and
+     docs/work-orders/v178/SPEC.md. A report datum carries its value, unit, state and provenance; zero is a value,
+     missing is a state. The plan of the eight Site Analysis boards and six DA sheets; the frozen manifest an export
+     is bound to; legends that say what they leave out; components whose instances keep their overrides. Each function
+     is a work order in docs/work-orders/v178/TASKS.md, added below as it is built; none uses another file's names. */
 
 
   /* ================= __acad3dV175b: board objects drawn from the model, the pure part =================
@@ -66424,6 +66675,11 @@ function bimLyDupNumbers(entries) {
     var g=document.getElementById('a3d-glcanvas');
     if(g&&el.cv){if(g.width!==el.cv.width)g.width=el.cv.width;if(g.height!==el.cv.height)g.height=el.cv.height;}
   }
+
+
+  /* ================= __acad3dV225: The OpenBridge UI foundation, the pure part =================
+     docs/research/research-openbridge.md and docs/work-orders/v225/SPEC.md. Relative luminance and contrast (WCAG 2), the
+     levels, a theme for a mode. Each function is a work order, added below as it is built; none uses another file's names. */
   /* __acad3dV72: the canvas has TWO sizes and the code had been using one of them for both
      jobs. el.cv.width/height is the BACKING STORE in device pixels; cvW()/cvH() are the
      LOGICAL size in CSS pixels, which is the space cvXY() -- and therefore every mouse event --
@@ -66937,6 +67193,12 @@ function bimLyDupNumbers(entries) {
     }
   };
   window.__a3dCmdSupported=function(act){return !!BIM_CMD_MAP[act];};
+
+
+  /* ================= __acad3dV215: Flows and an app SDK, the pure part =================
+     docs/research/research-notion-flows-sdk.md and docs/work-orders/v215/SPEC.md. Node graphs (order, refusal, evaluation)
+     and the app bridge's checks (origin, command, arguments) and read-only snapshots. Each function is a work order, added
+     below as it is built; none uses another file's names. */
   /* __acad3dV128: the command search */
   window.__a3dCommandSearch=function(q,limit){
     try{return bimCmdSearch(q,limit);}catch(eQ){console.warn('[BIM] The command search failed',eQ);return [];}
