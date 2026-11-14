@@ -281,3 +281,56 @@ def bim_ifcos_put_opening(o):
         return {"guid": bim_ifcos_keep_guid(element, o.get("guid")), "opening": opening.GlobalId}
     except Exception:
         return {"error": "failed"}
+
+
+def bim_ifcos_put_mesh(m):
+    global _bim_ifcos_file
+    try:
+        f = _bim_ifcos_file
+        if f is None:
+            return {"error": "no project"}
+        verts = m.get("verts")
+        faces = m.get("faces")
+        if not verts or not faces:
+            return {"error": "empty mesh"}
+        element = ifcopenshell.api.root.create_entity(
+            f, ifc_class=m.get("cls") or "IfcBuildingElementProxy", name=m.get("name")
+        )
+        rep = ifcopenshell.api.geometry.add_mesh_representation(
+            f, context=bim_ifcos_body(),
+            vertices=[[(float(x), float(y), float(z)) for (x, y, z) in verts]],
+            faces=[[(int(i), int(j), int(k)) for (i, j, k) in faces]],
+        )
+        ifcopenshell.api.geometry.assign_representation(f, product=element, representation=rep)
+        ifcopenshell.api.geometry.edit_object_placement(
+            f, product=element, matrix=bim_ifcos_matrix(0, 0, 0, 0)
+        )
+        ifcopenshell.api.spatial.assign_container(
+            f, products=[element], relating_structure=bim_ifcos_storey(m.get("level"))
+        )
+        return {"guid": bim_ifcos_keep_guid(element, m.get("guid"))}
+    except Exception:
+        return {"error": "failed"}
+
+
+def bim_ifcos_put_psets(guid, psets):
+    global _bim_ifcos_file
+    try:
+        f = _bim_ifcos_file
+        if f is None:
+            return {"error": "no project"}
+        try:
+            element = f.by_guid(guid)
+        except Exception:
+            return {"error": "not found"}
+        count = 0
+        for s in psets or []:
+            props = s.get("props")
+            if not props:
+                continue
+            pset = ifcopenshell.api.pset.add_pset(f, product=element, name=s["name"])
+            ifcopenshell.api.pset.edit_pset(f, pset=pset, properties=props)
+            count += 1
+        return {"psets": count}
+    except Exception:
+        return {"error": "failed"}

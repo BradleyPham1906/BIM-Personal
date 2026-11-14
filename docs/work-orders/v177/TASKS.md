@@ -102,7 +102,7 @@ Scores are from `../ROUTING.md` (files, logic, understanding, judgment, trickine
 
 ---
 
-## [ ] WO-06 [Cline] `bim_ifcos_put_mesh(m)` and `bim_ifcos_put_psets(guid, psets)`
+## [x] WO-06 [Cline] `bim_ifcos_put_mesh(m)` and `bim_ifcos_put_psets(guid, psets)`
 
 - **It must:** follow SPEC part 4 "WO-06". In `bim_ifcos_put_mesh` the corners go in as one list inside a list and
   the faces as one list inside a list (`vertices=[[...]]`, `faces=[[...]]`), each corner a tuple of three floats, each
