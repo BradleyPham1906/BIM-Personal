@@ -155,6 +155,14 @@ publishes a statement on its binaries' licence; whether a CGAL-free wasm build w
   V177 is Save as IFC only.
 - D4 Where the command lives: File, Export, "IFC (.ifc)", beside DXF and glTF. Recommended: yes.
 
+**Answered (the owner, 2026-11-13):** D1 (a): GPL and AGPL libraries are allowed as separate files run only in the
+Python worker; the rule in `CLAUDE.md` now says so, and Ladybug is settled by it. D2: the core elements as real IFC
+elements, everything else as shapes. D3: editing imported walls and slabs is in V177 too. D4: File, Export, IFC.
+
+Checked after the answers (e05, 2026-11-13): every call V177 names runs in the wasm build: a second storey, a slab
+from a polyline, an opening (`feature.add_feature`) with a door filling it (`feature.add_filling`), a window, a mesh,
+a property set, a kept GlobalId, write and read, and the geometry kernel on the written wall and slab.
+
 ## 12. References
 
 - The pinned wheel `ifcopenshell-0.8.5-cp313-cp313-pyodide_2025_0_wasm32.whl` (SHA-256 `fbebb7a7...929c`): METADATA,
