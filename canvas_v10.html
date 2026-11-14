@@ -42840,6 +42840,17 @@ try{
      this file by itself (docs/work-orders/v203/v203.test.mjs). Lengths in metres, angles in radians; the model's
      y is up; yaw and pitch as the app's camera holds them (core/mesh-primitives.js camVecs: the eye is the focus
      plus d * dist, d = [cos(pitch) sin(yaw), sin(pitch), cos(pitch) cos(yaw)], so a walker looks along -d). */
+
+/* WO-01 bimWalkStepUp(riserMm, varMm): the step a walker climbs, millimetres in, metres out */
+function bimWalkStepUp(riserMm, varMm) {
+    if (typeof riserMm !== 'number' || !isFinite(riserMm) || riserMm <= 0) {
+        return 0;
+    }
+    if (typeof varMm !== 'number' || !isFinite(varMm) || varMm <= 0) {
+        varMm = 0;
+    }
+    return Math.round(riserMm + varMm) / 1000;
+}
   /* ================= __acad3dV98: annotation grips =================
      The grip list and the drag below index the SAME points, in the same order, per kind. */
   function bimAnnotGripPoints(o){

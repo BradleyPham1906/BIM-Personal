@@ -28,7 +28,7 @@ modules, the build. `npm test` 259 of 259.
 
 ---
 
-## [ ] WO-01 [Cline] `bimWalkStepUp(riserMm, varMm)`
+## [x] WO-01 [Cline] `bimWalkStepUp(riserMm, varMm)`
 
 - **It must:** return `Math.round(riserMm + varMm) / 1000` (millimetres in, metres out, to the millimetre). A `riserMm`
   that is not a number above 0 (a string, `NaN`, 0, negative) returns `0`. A `varMm` that is not a number above 0 counts as `0`.
