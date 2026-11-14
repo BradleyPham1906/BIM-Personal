@@ -1,0 +1,57 @@
+{
+ "chromium": "153.0.8010.12",
+ "engines": {
+  "rapier 0.21.0": {
+   "bytes": 4337501,
+   "runs": [
+    {
+     "loaded": true,
+     "loadMs": 39.5,
+     "startMs": 50.5,
+     "what": "function",
+     "errors": []
+    },
+    {
+     "loaded": true,
+     "loadMs": 31.1,
+     "startMs": 47.1,
+     "what": "function",
+     "errors": []
+    },
+    {
+     "loaded": true,
+     "loadMs": 39,
+     "startMs": 55.1,
+     "what": "function",
+     "errors": []
+    }
+   ]
+  },
+  "jolt-physics 1.1.1": {
+   "bytes": 4010952,
+   "runs": [
+    {
+     "loaded": true,
+     "loadMs": 56,
+     "startMs": 151.5,
+     "what": "function",
+     "errors": []
+    },
+    {
+     "loaded": true,
+     "loadMs": 61.7,
+     "startMs": 127.5,
+     "what": "function",
+     "errors": []
+    },
+    {
+     "loaded": true,
+     "loadMs": 51.8,
+     "startMs": 148.2,
+     "what": "function",
+     "errors": []
+    }
+   ]
+  }
+ }
+}

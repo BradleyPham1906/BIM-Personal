@@ -1,0 +1,241 @@
+{
+ "node": "v22.23.4",
+ "boxes": 5000,
+ "triangles": 60002,
+ "runs": 3,
+ "sizes": [
+  {
+   "file": "@dimforge/rapier3d-compat/dist/rapier.cjs",
+   "bytes": 4343409,
+   "gzip": 1644507
+  },
+  {
+   "file": "@dimforge/rapier3d-compat/dist/rapier_wasm3d_bg.wasm",
+   "bytes": 3082103,
+   "gzip": 1175669
+  },
+  {
+   "file": "jolt-physics/dist/jolt-physics.wasm-compat.js",
+   "bytes": 3231626,
+   "gzip": 918936
+  },
+  {
+   "file": "jolt-physics/dist/jolt-physics.wasm.wasm",
+   "bytes": 2024218,
+   "gzip": 751821
+  },
+  {
+   "file": "cannon-es/dist/cannon-es.js",
+   "bytes": 346256,
+   "gzip": 74600
+  }
+ ],
+ "engines": {
+  "rapier 0.21.0": {
+   "initMs": 83.8,
+   "course": {
+    "step": {
+     "x": 6.541,
+     "feetY": 0.2
+    },
+    "curb": {
+     "x": 2.73,
+     "feetY": 0.02
+    },
+    "ramp": {
+     "x": 6.854,
+     "feetY": 0.342
+    },
+    "slope": {
+     "x": 2.909,
+     "feetY": 0.027
+    },
+    "wall": {
+     "x": 2.73,
+     "feetY": 0.02
+    }
+   },
+   "pass": {
+    "step": true,
+    "curb": true,
+    "ramp": true,
+    "slope": true,
+    "wall": true
+   },
+   "town": [
+    {
+     "end": [
+      49.79,
+      0.01,
+      32.55
+     ],
+     "buildMs": 54,
+     "frameMeanMs": 0.032,
+     "frameP95Ms": 0.0494,
+     "frameMaxMs": 0.2707
+    },
+    {
+     "end": [
+      49.79,
+      0.01,
+      32.55
+     ],
+     "buildMs": 39.6,
+     "frameMeanMs": 0.0283,
+     "frameP95Ms": 0.0386,
+     "frameMaxMs": 0.0958
+    },
+    {
+     "end": [
+      49.79,
+      0.01,
+      32.55
+     ],
+     "buildMs": 39.2,
+     "frameMeanMs": 0.0286,
+     "frameP95Ms": 0.0398,
+     "frameMaxMs": 0.1986
+    }
+   ],
+   "splitMeanMs": {
+    "controller": 0.0185,
+    "worldStep": 0.0107,
+    "frames": 1800
+   }
+  },
+  "jolt-physics 1.1.1": {
+   "initMs": 804.6,
+   "course": {
+    "step": {
+     "x": 6.994,
+     "feetY": 0.181
+    },
+    "curb": {
+     "x": 2.73,
+     "feetY": 0
+    },
+    "ramp": {
+     "x": 6.972,
+     "feetY": 0.332
+    },
+    "slope": {
+     "x": 2.902,
+     "feetY": 0
+    },
+    "wall": {
+     "x": 2.73,
+     "feetY": 0
+    }
+   },
+   "pass": {
+    "step": true,
+    "curb": true,
+    "ramp": true,
+    "slope": true,
+    "wall": true
+   },
+   "town": [
+    {
+     "end": [
+      46,
+      0,
+      33.72
+     ],
+     "buildMs": 253.7,
+     "frameMeanMs": 0.01,
+     "frameP95Ms": 0.0203,
+     "frameMaxMs": 0.3375
+    },
+    {
+     "end": [
+      46,
+      0,
+      33.72
+     ],
+     "buildMs": 263.1,
+     "frameMeanMs": 0.0089,
+     "frameP95Ms": 0.0174,
+     "frameMaxMs": 0.0829
+    },
+    {
+     "end": [
+      46,
+      0,
+      33.72
+     ],
+     "buildMs": 237,
+     "frameMeanMs": 0.0088,
+     "frameP95Ms": 0.0164,
+     "frameMaxMs": 0.1323
+    }
+   ]
+  },
+  "three 0.186.1 Octree": {
+   "initMs": 37.6,
+   "course": {
+    "step": {
+     "x": 6.756,
+     "feetY": 0.18
+    },
+    "curb": {
+     "x": 2.75,
+     "feetY": 0
+    },
+    "ramp": {
+     "x": 6.972,
+     "feetY": 0.332
+    },
+    "slope": {
+     "x": 5.31,
+     "feetY": 2.014
+    },
+    "wall": {
+     "x": 2.75,
+     "feetY": 0
+    }
+   },
+   "pass": {
+    "step": true,
+    "curb": true,
+    "ramp": true,
+    "slope": false,
+    "wall": true
+   },
+   "town": [
+    {
+     "end": [
+      46,
+      0,
+      33.75
+     ],
+     "buildMs": 5149.1,
+     "frameMeanMs": 0.0059,
+     "frameP95Ms": 0.0091,
+     "frameMaxMs": 0.0557
+    },
+    {
+     "end": [
+      46,
+      0,
+      33.75
+     ],
+     "buildMs": 5235,
+     "frameMeanMs": 0.0097,
+     "frameP95Ms": 0.0099,
+     "frameMaxMs": 1.9626
+    },
+    {
+     "end": [
+      46,
+      0,
+      33.75
+     ],
+     "buildMs": 5645,
+     "frameMeanMs": 0.0062,
+     "frameP95Ms": 0.0097,
+     "frameMaxMs": 0.1011
+    }
+   ]
+  }
+ }
+}
