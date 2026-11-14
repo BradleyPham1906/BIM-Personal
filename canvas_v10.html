@@ -7472,6 +7472,42 @@ try{
     }
     return {v:v,f:f};
   }
+
+
+  /* ================= __acad3dV183: Freeform F1, NURBS curves, the pure part =================
+     docs/research/research-freeform-f1-f7.md (F1) and docs/work-orders/v183/SPEC.md. NURBS curves: clamped knots, the
+     knot span, the basis functions (The NURBS Book A2.1, A2.2), rational points, tangents, adaptive samples. Each function
+     is a work order, added below as it is built; none uses another file's names. */
+
+
+  /* ================= __acad3dV184: Freeform F2, surfaces from curves, the pure part =================
+     docs/research/research-freeform-f1-f7.md (F2) and docs/work-orders/v184/SPEC.md. Surfaces from sampled curves as quad
+     meshes: a grid's faces, extrude, a turn about an axis, revolve, loft, Coons patch. Each function is a work order,
+     added below as it is built; none uses another file's names. */
+
+
+  /* ================= __acad3dV185: Freeform F3, sweeps, pipes and caps, the pure part =================
+     docs/research/research-freeform-f1-f7.md (F3) and docs/work-orders/v185/SPEC.md. Rotation-minimising frames by
+     double reflection; a profile swept along a rail; a circle profile; caps. Each function is a work order, added below
+     as it is built; none uses another file's names. */
+
+
+  /* ================= __acad3dV187: Freeform F5, point editing and blends, the pure part =================
+     docs/research/research-freeform-f1-f7.md (F5) and docs/work-orders/v187/SPEC.md. Editing NURBS curves by their data:
+     knot insertion (The NURBS Book A5.1), moving a control point, G1 blends, Bezier degree elevation, reversal. Each
+     function is a work order, added below as it is built; none uses another file's names. */
+
+
+  /* ================= __acad3dV188: Freeform F6, picture planes, text objects, flow along a surface, the pure part =================
+     docs/research/research-freeform-f1-f7.md (F6) and docs/work-orders/v188/SPEC.md. Picture planes at the image's
+     aspect, text boxes, and flow along a bilinear patch (points, height along its normal). Each function is a work order,
+     added below as it is built; none uses another file's names. */
+
+
+  /* ================= __acad3dV189: Freeform F7, Make2D (hidden-line drawings), the pure part =================
+     docs/research/research-freeform-f1-f7.md (F7) and docs/work-orders/v189/SPEC.md. Make2D on meshes: projection to a
+     view, the edges a drawing keeps, a depth test against triangles, an edge cut to its visible runs. Each function is a
+     work order, added below as it is built; none uses another file's names. */
   /* ================= __acad3dV93: the POINT node ================= */
   var BIM_POINT_MARK=0.15;          /* half-length of the marker cross, in model units */
   function bimIsPoint(o){
@@ -20762,6 +20798,12 @@ try{
      lines, symbols and words over it, so a building never hides what it is measured against.
      Diagram elements carry no mesh, so schedules, quantities, the LOD checks and the IFC, DXF and
      CityJSON exports, which read meshes and building types, pass them by. */
+
+
+  /* ================= __acad3dV186: Freeform F4, surface analysis, the pure part =================
+     docs/research/research-freeform-f1-f7.md (F4) and docs/work-orders/v186/SPEC.md. Face normals and areas (Newell),
+     vertex normals, draft angles, zebra stripes, Gaussian curvature by angle deficit. Each function is a work order, added
+     below as it is built; none uses another file's names. */
   /* ================= __acad3dV167: the standards registry =================
      docs/research/research-standards-registry.md. Every standard, guideline and assumption an analysis
      applies is a record here, never a number in its code: a topic, and its editions. An edition says

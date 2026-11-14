@@ -1,34 +1,45 @@
-# Freeform F1 to F7 and the Parametric Design Foundation (outline)
+# V183 spec: Freeform F1, NURBS curves
 
-Notion: V181-V187 Freeform (F1-F7); Parametric Design Foundation. PIPELINE: 183 to 189. Research: `docs/research/research-freeform-f1-f7.md`, `docs/research/research-parametric-history.md`, `docs/research/research-parametric-app-audit.md`, `docs/research/solidcraft-integration-map.md`, `docs/research/plan-parametric-design.md`, `docs/research/research-rhino-guide-gap.md`. Written by Claude, 2026-11-14, as an outline: not yet Cline-ready; the next spec sprint turns its first slice into work orders with tests.
+Notion: V183-V189 Freeform (F1-F7). Research: `docs/research/research-freeform-f1-f7.md`, `docs/research/research-rhino-guide-gap.md`, `docs/research/research-parametric-history.md`. The owner's decisions, 2026-11-14: all as the research recommends (the owner, 2026-11-14: "all as recommended"; overrule any here). Implementation target: local `main`. Written by Claude, 2026-11-14.
 
-## 0. Status
+## 1. The decisions this spec follows
 
-Next spec sprint (F1's first slice below). The exact kernel (SMLib, OCCT or none) stays a gate before F2's solids.
-
-## 1. The owner's decisions, 2026-11-14, as recommended
-
-- F1 starts with our own ES5 NURBS curves (evaluation, derivatives, sampling) behind a narrow adapter; no binary kernel yet;
-- mesh-only operations are allowed as labelled previews and exports, never called exact NURBS;
-- a B-rep kernel (SMLib's e02 or OCCT) is chosen on one shared, independently defined test corpus before F2's trimmed surfaces and solids; that choice is the owner's, with its licence under the library rule;
-- the Parametric Design Foundation (sketch, Pad, Pocket, persistent feature history) extends the app's own history (`history/`) with SolidCraft as a design reference, not copied code, until its integration map is verified;
-- on a failed regeneration the last valid shape is kept and the failing feature is marked, never silently dropped.
+- F1 starts with our own ES5 NURBS curves (evaluation, tangents, sampling) behind a narrow adapter; no binary kernel yet.
+- Mesh results from later phases are labelled previews of the exact curves and surfaces.
+- A B-rep kernel (SMLib's e02 or OCCT) is chosen on one shared test corpus before trimmed solids (after F7), under the library rule.
+- Curves are stored by their control points, weights, degree and knots, so they stay editable.
 
 ## 2. What it does for the user
 
-NURBS curves drawn and edited by control points (F1), then surfaces from curves, sweeps, analysis, point editing, picture planes and Make2D (F2 to F7), and a parametric sketch to Pad to Pocket workflow whose features can be edited and replayed.
+A Curve tool draws a NURBS curve by control points (degree 3 by default) or through points; it stays a curve, drawn smooth at any zoom, and its control points can be moved.
 
-## 3. The first slice (pure functions in `src/js/engine/drawing/nurbs.js`, ES5, no other file's names)
+## 3. The pieces
 
-- `bimNurbsKnots(n, p)`: a clamped uniform knot vector for n control points of degree p: p+1 zeros, the inner knots evenly spaced, p+1 ones; [] when n <= p.
-- `bimNurbsBasis(i, p, u, knots)`: the Cox-de Boor basis value N(i,p)(u), with u at the last knot belonging to the last span.
-- `bimNurbsPoint(ctrl, w, knots, p, u)`: the rational curve point from control points [x,y,z], weights and knots.
-- `bimNurbsDeriv(ctrl, w, knots, p, u)`: the first derivative, by the quotient rule on the weighted sums.
-- `bimNurbsSample(curve, tol)`: points along the curve, subdividing spans until the chord error is within tol.
-- `bimNurbsInterp(points, p)`: a curve through the given points (chord-length parameters, averaged knots, solved by Gaussian elimination).
+| File | New or changed | What it holds | Built by |
+|---|---|---|---|
+| `src/js/engine/drawing/nurbs.js` | new, after `js/engine/drawing/drawing-input.js` in `src/index.html` (header done) | 6 pure functions (part 5) | Cline, WO-01 to WO-06 |
+| `docs/work-orders/v183/v183.test.mjs` | new | their tests | Claude (done) |
+| the app's own files | changed | wiring, the interface, saving and undo | Claude, WO-07, WO-08 |
 
-Tests: Points and derivatives against values computed independently (a quarter circle as a rational quadratic: every sampled point at radius 1 within 1e-12; The NURBS Book's worked examples).
+## 4. Data
 
-## 4. Not in this phase
+A curve {deg, pts: [[x, y, z]...], w: [weights] (optional, all 1), knots: [n + deg + 1 values, clamped 0..1]}. Algorithms from The NURBS Book (Piegl and Tiller), A2.1 and A2.2.
 
-Trimmed surfaces and solids before the kernel decision; a full feature tree for every existing tool; make2d's exact hidden lines (f7) before the kernel.
+## 5. Functions, `src/js/engine/drawing/nurbs.js`
+
+ES5. Every function is pure: it never changes what it is given and uses no name from another file.
+
+- **WO-01 `bimNurbsKnots(n, p)`**: p+1 zeros, then i/(n-p) for i = 1 .. n-p-1, then p+1 ones; [] unless n > p >= 1.
+- **WO-02 `bimNurbsSpan(n, p, u, k)`**: The NURBS Book A2.1: n-1 when u >= k[n]; p when u <= k[p]; else the binary search for k[mid] <= u < k[mid+1].
+- **WO-03 `bimNurbsBasis(span, u, p, k)`**: The NURBS Book A2.2: the p+1 non-zero basis values N[0..p] at u for that span, by the left/right triangular scheme.
+- **WO-04 `bimNurbsPoint(c, u)`**: the rational point: sum of pts[span-p+i] * w * N[i] divided by sum of w * N[i], weights 1 when c.w is absent.
+- **WO-05 `bimNurbsTangent(c, u, h)`**: the central difference (P(b) - P(a)) / (b - a) with a = max(0, u - h), b = min(1, u + h), h 1e-6 when not positive.
+- **WO-06 `bimNurbsSample(c, tol)`**: points at parameters from 0 to 1: split each interval [a, b] in half while (the midpoint's distance from the chord P(a)P(b) is over tol, or b - a > 0.25) and b - a > 1e-6, depth first left to right; the point at 0 then the end of each kept interval. tol 0.001 when not positive.
+
+## 6. Order of the work
+
+WO-01 to WO-06 in order (a later one may use an earlier one, as its task says). Then Claude: **WO-07** the curve tool; **WO-08** the records.
+
+## 7. Not in this phase
+
+Surfaces (f2); trimming; curve offset.
