@@ -46,3 +46,37 @@ def bim_ifcos_summary(path):
         return {"schema": f.schema, "products": products, "storeys": storeys}
     except Exception:
         return {"error": "unreadable"}
+
+
+def bim_ifcos_new_project(name, elevation):
+    global _bim_ifcos_file
+    try:
+        f = ifcopenshell.api.project.create_file(version="IFC4")
+        _bim_ifcos_file = f
+        project = ifcopenshell.api.root.create_entity(f, ifc_class="IfcProject", name=name)
+        units = [
+            ifcopenshell.api.unit.add_si_unit(f, unit_type="LENGTHUNIT"),
+            ifcopenshell.api.unit.add_si_unit(f, unit_type="AREAUNIT"),
+            ifcopenshell.api.unit.add_si_unit(f, unit_type="VOLUMEUNIT"),
+        ]
+        ifcopenshell.api.unit.assign_unit(f, units=units)
+        model = ifcopenshell.api.context.add_context(f, context_type="Model")
+        ifcopenshell.api.context.add_context(
+            f,
+            context_type="Model",
+            context_identifier="Body",
+            target_view="MODEL_VIEW",
+            parent=model,
+        )
+        site = ifcopenshell.api.root.create_entity(f, ifc_class="IfcSite", name="Site")
+        building = ifcopenshell.api.root.create_entity(f, ifc_class="IfcBuilding", name="Building")
+        storey = ifcopenshell.api.root.create_entity(
+            f, ifc_class="IfcBuildingStorey", name="Level 0"
+        )
+        storey.Elevation = elevation
+        ifcopenshell.api.aggregate.assign_object(f, products=[site], relating_object=project)
+        ifcopenshell.api.aggregate.assign_object(f, products=[building], relating_object=site)
+        ifcopenshell.api.aggregate.assign_object(f, products=[storey], relating_object=building)
+        return bim_ifcos_summary("")
+    except Exception:
+        return {"error": "unreadable"}

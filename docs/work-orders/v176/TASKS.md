@@ -38,7 +38,7 @@ Scores are from `../ROUTING.md` (files, logic, understanding, judgment, trickine
 
 ---
 
-## [ ] WO-02 [Cline] `bim_ifcos_new_project(name, elevation)`
+## [x] WO-02 [Cline] `bim_ifcos_new_project(name, elevation)`
 
 - **It must:** do exactly what SPEC part 4 lists, in that order, keep the new file in `_bim_ifcos_file`
   (`global _bim_ifcos_file`), and answer `bim_ifcos_summary('')`. Units in metres: three `unit.add_si_unit` calls
