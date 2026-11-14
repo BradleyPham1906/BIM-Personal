@@ -10766,6 +10766,12 @@ try{
     if(!(Math.abs(sa)>1e-6)||(sa>0?1:-1)!==sgn)return {error:'the setbacks leave no buildable area'};
     return {ring:out};
   }
+
+
+  /* ================= __acad3dV212: Survey control, traverses and closure, the pure part =================
+     docs/research/research-later-survey-control.md and docs/work-orders/v212/SPEC.md. Traverses: DMS, latitudes and
+     departures, closure for loops and links (never for open traverses), the compass rule, angular misclosure. Each function
+     is a work order, added below as it is built; none uses another file's names. */
   /* ================= __acad3dV103: the property ================= */
   function bimIsProperty(o){return !!(o&&o.t==='property'&&o.start&&o.legs&&o.legs.length);}
   /* The ONE derivation: corners, closure, area and setback line, in WORLD plan terms. */
@@ -33359,6 +33365,12 @@ try{
         layer:{name:P.scope==='lot'?'on the lot':'the whole extent',lv:lv,n:BIM_TL_SYN.length,pal:BIM_TL_SYN.map(function(x){return x.col;}),cats:BIM_TL_SYN.map(function(x){return x.name;}),
           keys:BIM_TL_SYN.filter(function(x,j){return cnt[j]>0;}).map(function(x){return {name:(x.con?'Constraint: ':'Opportunity: ')+x.name,col:x.col};}),opacity:0.7}};
     }});
+
+
+  /* ================= __acad3dV213: Generators: massing, parking, lots, the pure part =================
+     docs/research/research-later-generators.md and docs/work-orders/v213/SPEC.md. The achievable area and its plates,
+     storeys in a height, stalls from ratios, stalls in a rectangle, lots along a frontage. Each function is a work order,
+     added below as it is built; none uses another file's names. */
   /* ================= __acad3dV172: the site analysis tools in the analysis workspace =================
      The owner (2026-10-27): the tools live in the analysis workspace. A Tools group in its left list, a row for each
      tool and one for History; a tool opens on the right where an analysis opens, in the geoprocessing pane's shape:
@@ -48626,6 +48638,12 @@ function bimWalkKeys(h, j) {
      docs/research/research-parametric-history.md and docs/work-orders/v204/SPEC.md. Feature records: dependency order with
      cycle refusal, what a change reaches, safe expressions, and the rebuild of sketch, Pad and Pocket keeping the last
      valid result. Each function is a work order, added below as it is built; none uses another file's names. */
+
+
+  /* ================= __acad3dV214: Costs and pro forma, the pure part =================
+     docs/research/research-later-costs-proforma.md and docs/work-orders/v214/SPEC.md. Income lines, totals and NOI, the cost
+     total, yield on cost, value by capitalisation, profit and margin. Each function is a work order, added below as it is
+     built; none uses another file's names. */
   /* ================= __acad3dV97: the source contract =================
 
      The ONE reader of a boundary source. Everything built on a sketch or a closed wall -- room,
@@ -67077,6 +67095,12 @@ function bimLyDupNumbers(entries) {
     }
   };
   window.__a3dCmdSupported=function(act){return !!BIM_CMD_MAP[act];};
+
+
+  /* ================= __acad3dV215: Flows and an app SDK, the pure part =================
+     docs/research/research-notion-flows-sdk.md and docs/work-orders/v215/SPEC.md. Node graphs (order, refusal, evaluation)
+     and the app bridge's checks (origin, command, arguments) and read-only snapshots. Each function is a work order, added
+     below as it is built; none uses another file's names. */
   /* __acad3dV128: the command search */
   window.__a3dCommandSearch=function(q,limit){
     try{return bimCmdSearch(q,limit);}catch(eQ){console.warn('[BIM] The command search failed',eQ);return [];}
