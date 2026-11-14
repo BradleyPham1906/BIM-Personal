@@ -164,7 +164,13 @@ wheelchair user's slope is `bimStd('ada.2010', 'ramp_slope')` where the site is 
 Read the IRC R311.7.5.1, the IBC 1011.5.2 and Philadelphia's amendment at their sources first (the note's part 11
 has them at S and U), then the records with their editions and places. Research and a shared file. **Score:** 1+1+2+2+1+1 = 8, D.
 
-## [ ] C-04 [Claude] The Jolt adapter (`walk/walk-physics.js`)
+## [x] C-04 [Claude] The Jolt adapter (`walk/walk-physics.js`)
+
+Done 2026-11-14: `bimWalkPhys`, `bimWalkPhysMesh`, `bimWalkPhysDrop`, `bimWalkPhysBuild`, `bimWalkPhysSync`,
+`bimWalkPhysChar`, `bimWalkPhysStep` (walk, fly, ghost, a jump), `bimWalkPhysRay`, `bimWalkPhysFree`; no other engine
+name. `tests/unit/walk-physics.test.mjs`, 9 cases on e01's course with the committed runtime (a 7-riser stair, the
+wheelchair user stopped by a step, ghost, fly, gravity and a jump, the ray, sync). One static body for the whole model,
+not one per element: experiment e03.
 
 SPEC part 4's outline; tried in Node on e01's course before wiring. WebAssembly, manual memory, async loading.
 **Score:** 1+2+2+1+2+1 = 9, D.
