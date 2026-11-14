@@ -25,7 +25,7 @@ after each one. Scores are from `../ROUTING.md` (files, logic, understanding, ju
 - **It must:** SPEC 4 WO-01: `'ok'` to `'available'`, `'stale'` to `'stale'`, `'gone'` to `'failed'`, anything else `'unavailable'`.
 - **May use:** nothing.
 - **Files:** `src/js/engine/sheets/report-model.js`, `docs/work-orders/v178/v178.test.mjs`
-- **Budget:** 14
+- **Budget:** 28
 - **Test:** the cases named `WO-01 ...` in `docs/work-orders/v178/v178.test.mjs`. **Score:** 0.
 
 ---
@@ -35,7 +35,7 @@ after each one. Scores are from `../ROUTING.md` (files, logic, understanding, ju
 - **It must:** SPEC 4 WO-02, with `var BIM_RPT_STATES=['available','partial','stale','unavailable','failed'];` just above the function. Example: `bimRptDatum({value: NaN, state: 'available'})` is the blank datum (`value: null`, `state: 'unavailable'`, every text field `''`).
 - **May use:** `BIM_RPT_STATES` (this task).
 - **Files:** `src/js/engine/sheets/report-model.js`, `docs/work-orders/v178/v178.test.mjs`
-- **Budget:** 35
+- **Budget:** 70
 - **Test:** the cases named `WO-02 ...` in `docs/work-orders/v178/v178.test.mjs`. **Score:** 0+0+0+0+1+0 = 1.
 
 ---
@@ -45,7 +45,7 @@ after each one. Scores are from `../ROUTING.md` (files, logic, understanding, ju
 - **It must:** SPEC 4 WO-03. Example: `bimRptText({value: 0, unit: 'm', state: 'available'})` is `'0 m'`.
 - **May use:** nothing.
 - **Files:** `src/js/engine/sheets/report-model.js`, `docs/work-orders/v178/v178.test.mjs`
-- **Budget:** 20
+- **Budget:** 40
 - **Test:** the cases named `WO-03 ...` in `docs/work-orders/v178/v178.test.mjs`. **Score:** 0+0+0+0+1+0 = 1.
 
 ---
@@ -55,7 +55,7 @@ after each one. Scores are from `../ROUTING.md` (files, logic, understanding, ju
 - **It must:** SPEC 4 WO-04. Example: `bimRptRings([3, 1, 2, 2, -1])` gives the rings 1, 2 and 3 km, each `cumulative: true`.
 - **May use:** nothing.
 - **Files:** `src/js/engine/sheets/report-model.js`, `docs/work-orders/v178/v178.test.mjs`
-- **Budget:** 20
+- **Budget:** 40
 - **Test:** the cases named `WO-04 ...` in `docs/work-orders/v178/v178.test.mjs`. **Score:** 0+0+0+0+1+0 = 1.
 
 ---
@@ -65,7 +65,7 @@ after each one. Scores are from `../ROUTING.md` (files, logic, understanding, ju
 - **It must:** SPEC 4 WO-05 and the titles of SPEC part 3, with `BIM_RPT_SA` and `BIM_RPT_DA` (lists of `[id, title]`) just above the function.
 - **May use:** `BIM_RPT_SA`, `BIM_RPT_DA` (this task).
 - **Files:** `src/js/engine/sheets/report-model.js`, `docs/work-orders/v178/v178.test.mjs`
-- **Budget:** 20
+- **Budget:** 40
 - **Test:** the cases named `WO-05 ...` in `docs/work-orders/v178/v178.test.mjs`. **Score:** 0+0+0+0+0+0 = 0.
 
 ---
@@ -75,7 +75,7 @@ after each one. Scores are from `../ROUTING.md` (files, logic, understanding, ju
 - **It must:** SPEC 4 WO-06: never blocks, only marks.
 - **May use:** `bimRptDatum` (WO-02).
 - **Files:** `src/js/engine/sheets/report-model.js`, `docs/work-orders/v178/v178.test.mjs`
-- **Budget:** 20
+- **Budget:** 40
 - **Test:** the cases named `WO-06 ...` in `docs/work-orders/v178/v178.test.mjs`. **Score:** 0+0+0+0+1+0 = 1.
 
 ---
@@ -85,7 +85,7 @@ after each one. Scores are from `../ROUTING.md` (files, logic, understanding, ju
 - **It must:** SPEC 4 WO-07: keys of the result in the order `id, revision, generated, boards, data`; every datum a copy.
 - **May use:** `bimRptDatum` (WO-02).
 - **Files:** `src/js/engine/sheets/report-model.js`, `docs/work-orders/v178/v178.test.mjs`
-- **Budget:** 20
+- **Budget:** 40
 - **Test:** the cases named `WO-07 ...` in `docs/work-orders/v178/v178.test.mjs`. **Score:** 0+0+0+0+1+0 = 1.
 
 ---
@@ -95,7 +95,7 @@ after each one. Scores are from `../ROUTING.md` (files, logic, understanding, ju
 - **It must:** SPEC 4 WO-08.
 - **May use:** nothing.
 - **Files:** `src/js/engine/sheets/report-model.js`, `docs/work-orders/v178/v178.test.mjs`
-- **Budget:** 10
+- **Budget:** 20
 - **Test:** the cases named `WO-08 ...` in `docs/work-orders/v178/v178.test.mjs`. **Score:** 0.
 
 ---
@@ -105,7 +105,7 @@ after each one. Scores are from `../ROUTING.md` (files, logic, understanding, ju
 - **It must:** SPEC 4 WO-09.
 - **May use:** nothing.
 - **Files:** `src/js/engine/sheets/report-model.js`, `docs/work-orders/v178/v178.test.mjs`
-- **Budget:** 14
+- **Budget:** 28
 - **Test:** the cases named `WO-09 ...` in `docs/work-orders/v178/v178.test.mjs`. **Score:** 0.
 
 ---
@@ -115,7 +115,7 @@ after each one. Scores are from `../ROUTING.md` (files, logic, understanding, ju
 - **It must:** SPEC 4 WO-10: a new object; an override for a key the definition lacks is ignored.
 - **May use:** nothing.
 - **Files:** `src/js/engine/sheets/report-model.js`, `docs/work-orders/v178/v178.test.mjs`
-- **Budget:** 16
+- **Budget:** 32
 - **Test:** the cases named `WO-10 ...` in `docs/work-orders/v178/v178.test.mjs`. **Score:** 0+0+0+0+1+0 = 1.
 
 ---
@@ -125,7 +125,7 @@ after each one. Scores are from `../ROUTING.md` (files, logic, understanding, ju
 - **It must:** SPEC 4 WO-11.
 - **May use:** nothing.
 - **Files:** `src/js/engine/sheets/report-model.js`, `docs/work-orders/v178/v178.test.mjs`
-- **Budget:** 16
+- **Budget:** 32
 - **Test:** the cases named `WO-11 ...` in `docs/work-orders/v178/v178.test.mjs`. **Score:** 0+0+0+0+1+0 = 1.
 
 ---
@@ -135,7 +135,7 @@ after each one. Scores are from `../ROUTING.md` (files, logic, understanding, ju
 - **It must:** SPEC 4 WO-12.
 - **May use:** `bimCompResolve` (WO-10).
 - **Files:** `src/js/engine/sheets/report-model.js`, `docs/work-orders/v178/v178.test.mjs`
-- **Budget:** 10
+- **Budget:** 20
 - **Test:** the cases named `WO-12 ...` in `docs/work-orders/v178/v178.test.mjs`. **Score:** 0.
 
 ---

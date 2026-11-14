@@ -23,7 +23,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-01: on an n x n grid (row-major) with a zero boundary, each step: interior c + alpha (up + down + left + right - 4 c) into a new grid; with f32 every operation rounded by Math.fround in the order ((((up + down) + left) + right) - 4c), times alpha, plus c. Returns the grid after the steps; the input unchanged.
 - **May use:** nothing.
 - **Files:** `src/js/engine/analysis/gpu-compute-ref.js`, `docs/work-orders/v219/v219.test.mjs`
-- **Budget:** 25
+- **Budget:** 50
 - **Test:** the cases named `WO-01 ...` in `docs/work-orders/v219/v219.test.mjs`. **Score:** 0+0+0+0+2+0 = 2.
 
 ---
@@ -33,7 +33,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-02: {max: the largest |a - b|, rms: the root mean square of the differences} (0 for none).
 - **May use:** nothing.
 - **Files:** `src/js/engine/analysis/gpu-compute-ref.js`, `docs/work-orders/v219/v219.test.mjs`
-- **Budget:** 8
+- **Budget:** 16
 - **Test:** the cases named `WO-02 ...` in `docs/work-orders/v219/v219.test.mjs`. **Score:** 0.
 
 ---
@@ -43,7 +43,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-03: the sum.
 - **May use:** nothing.
 - **Files:** `src/js/engine/analysis/gpu-compute-ref.js`, `docs/work-orders/v219/v219.test.mjs`
-- **Budget:** 4
+- **Budget:** 15
 - **Test:** the cases named `WO-03 ...` in `docs/work-orders/v219/v219.test.mjs`. **Score:** 0.
 
 ---
@@ -53,7 +53,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-04: ceil(n / size), size 8 unless positive.
 - **May use:** nothing.
 - **Files:** `src/js/engine/analysis/gpu-compute-ref.js`, `docs/work-orders/v219/v219.test.mjs`
-- **Budget:** 4
+- **Budget:** 15
 - **Test:** the cases named `WO-04 ...` in `docs/work-orders/v219/v219.test.mjs`. **Score:** 0.
 
 ---

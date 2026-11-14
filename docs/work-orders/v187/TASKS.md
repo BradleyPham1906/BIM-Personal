@@ -23,7 +23,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-01: null unless knots[deg] < u < knots[n]. The span s with knots[s] <= u < knots[s+1]; in homogeneous coordinates (x w, y w, z w, w): Q_i = P_i for i <= s - p, Q_i = P_(i-1) for i > s, else a P_i + (1 - a) P_(i-1) with a = (u - k_i)/(k_(i+p) - k_i); the knot u inserted after k_s; back to points and weights (w only when the input had w).
 - **May use:** nothing.
 - **Files:** `src/js/engine/drawing/nurbs-edit.js`, `docs/work-orders/v187/v187.test.mjs`
-- **Budget:** 35
+- **Budget:** 70
 - **Test:** the cases named `WO-01 ...` in `docs/work-orders/v187/v187.test.mjs`. **Score:** 0+0+0+0+2+0 = 2.
 
 ---
@@ -33,7 +33,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-02: a new curve with point i moved by d, every array copied; null for an index out of range.
 - **May use:** nothing.
 - **Files:** `src/js/engine/drawing/nurbs-edit.js`, `docs/work-orders/v187/v187.test.mjs`
-- **Budget:** 12
+- **Budget:** 24
 - **Test:** the cases named `WO-02 ...` in `docs/work-orders/v187/v187.test.mjs`. **Score:** 0.
 
 ---
@@ -43,7 +43,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-03: the cubic {deg: 3, pts: [p0, p0 + t0/|t0| s, p1 - t1/|t1| s, p1], knots: [0,0,0,0,1,1,1,1]}, s = k when positive, else |p1 - p0| / 3 (a zero tangent counts as length 1).
 - **May use:** nothing.
 - **Files:** `src/js/engine/drawing/nurbs-edit.js`, `docs/work-orders/v187/v187.test.mjs`
-- **Budget:** 15
+- **Budget:** 30
 - **Test:** the cases named `WO-03 ...` in `docs/work-orders/v187/v187.test.mjs`. **Score:** 0.
 
 ---
@@ -53,7 +53,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-04: Bezier points raised one degree: Q_0 = P_0, Q_i = (i/(n+1)) P_(i-1) + (1 - i/(n+1)) P_i for i = 1..n, Q_(n+1) = P_n.
 - **May use:** nothing.
 - **Files:** `src/js/engine/drawing/nurbs-edit.js`, `docs/work-orders/v187/v187.test.mjs`
-- **Budget:** 12
+- **Budget:** 24
 - **Test:** the cases named `WO-04 ...` in `docs/work-orders/v187/v187.test.mjs`. **Score:** 0.
 
 ---
@@ -63,7 +63,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-05: points and weights reversed, knots reversed and each as 1 - k; copies.
 - **May use:** nothing.
 - **Files:** `src/js/engine/drawing/nurbs-edit.js`, `docs/work-orders/v187/v187.test.mjs`
-- **Budget:** 10
+- **Budget:** 20
 - **Test:** the cases named `WO-05 ...` in `docs/work-orders/v187/v187.test.mjs`. **Score:** 0.
 
 ---

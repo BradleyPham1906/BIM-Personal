@@ -23,7 +23,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-01: [p . right, p . up, p . dir].
 - **May use:** nothing.
 - **Files:** `src/js/engine/drawing/make2d.js`, `docs/work-orders/v189/v189.test.mjs`
-- **Budget:** 6
+- **Budget:** 15
 - **Test:** the cases named `WO-01 ...` in `docs/work-orders/v189/v189.test.mjs`. **Score:** 0.
 
 ---
@@ -33,7 +33,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-02: each face's unit normal by Newell's method; each edge (smaller index first) with the faces using it, in first-met order: not exactly two faces: [a, b, 'boundary']; the two normals' dot products with dir of different sign (one < 0, one not): 'silhouette'; else the normals' dot under cos(creaseDeg) (30 when not positive): 'crease'; else left out.
 - **May use:** nothing.
 - **Files:** `src/js/engine/drawing/make2d.js`, `docs/work-orders/v189/v189.test.mjs`
-- **Budget:** 40
+- **Budget:** 80
 - **Test:** the cases named `WO-02 ...` in `docs/work-orders/v189/v189.test.mjs`. **Score:** 0+1+0+0+2+0 = 3, tier B.
 
 ---
@@ -43,7 +43,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-03: true when some triangle, projected, contains p's projection strictly (all three barycentric weights >= eps, 1e-6 by default; degenerate ones skipped) and its interpolated depth there is less than p's depth - eps.
 - **May use:** bimM2Project (WO-01).
 - **Files:** `src/js/engine/drawing/make2d.js`, `docs/work-orders/v189/v189.test.mjs`
-- **Budget:** 30
+- **Budget:** 60
 - **Test:** the cases named `WO-03 ...` in `docs/work-orders/v189/v189.test.mjs`. **Score:** 0+0+0+0+2+0 = 2.
 
 ---
@@ -53,7 +53,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-04: the segment in samples (16 when under 1) equal pieces, each kept when its midpoint is not hidden; consecutive kept pieces joined into runs; each run as its two ends projected [[x, y], [x, y]].
 - **May use:** bimM2Project (WO-01), bimM2Hidden (WO-03).
 - **Files:** `src/js/engine/drawing/make2d.js`, `docs/work-orders/v189/v189.test.mjs`
-- **Budget:** 25
+- **Budget:** 50
 - **Test:** the cases named `WO-04 ...` in `docs/work-orders/v189/v189.test.mjs`. **Score:** 0+0+0+0+2+0 = 2.
 
 ---

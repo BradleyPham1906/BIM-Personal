@@ -23,7 +23,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-01: '#rrggbb' or 'rrggbb' (any case; else null): each channel c/255 linearised (c/12.92 at or under 0.04045, else ((c + 0.055)/1.055)^2.4); 0.2126 R + 0.7152 G + 0.0722 B.
 - **May use:** nothing.
 - **Files:** `src/js/engine/ui/openbridge-theme.js`, `docs/work-orders/v225/v225.test.mjs`
-- **Budget:** 10
+- **Budget:** 20
 - **Test:** the cases named `WO-01 ...` in `docs/work-orders/v225/v225.test.mjs`. **Score:** 0.
 
 ---
@@ -33,7 +33,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-02: (the lighter + 0.05) / (the darker + 0.05); null when either colour is invalid.
 - **May use:** bimObLum (WO-01).
 - **Files:** `src/js/engine/ui/openbridge-theme.js`, `docs/work-orders/v225/v225.test.mjs`
-- **Budget:** 8
+- **Budget:** 16
 - **Test:** the cases named `WO-02 ...` in `docs/work-orders/v225/v225.test.mjs`. **Score:** 0.
 
 ---
@@ -43,7 +43,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-03: ratio >= 7 for 'AAA', 3 for 'large', else 4.5 (1e-9 tolerance); false for a non-number.
 - **May use:** nothing.
 - **Files:** `src/js/engine/ui/openbridge-theme.js`, `docs/work-orders/v225/v225.test.mjs`
-- **Budget:** 5
+- **Budget:** 15
 - **Test:** the cases named `WO-03 ...` in `docs/work-orders/v225/v225.test.mjs`. **Score:** 0.
 
 ---
@@ -53,7 +53,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-04: for each token {day, dusk, night}: its value for the mode, else its day value.
 - **May use:** nothing.
 - **Files:** `src/js/engine/ui/openbridge-theme.js`, `docs/work-orders/v225/v225.test.mjs`
-- **Budget:** 8
+- **Budget:** 16
 - **Test:** the cases named `WO-04 ...` in `docs/work-orders/v225/v225.test.mjs`. **Score:** 0.
 
 ---

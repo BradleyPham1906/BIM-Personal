@@ -25,7 +25,7 @@ after each one. Scores are from `../ROUTING.md` (files, logic, understanding, ju
 - **It must:** SPEC 4 WO-01. Example: `{use: ' Bedroom ', count: 2.7, areaMin: 14, areaMax: 10}` gives `use: 'Bedroom'`, `count: 2`, `areaMin: 10`, `areaMax: 14`.
 - **May use:** nothing.
 - **Files:** `src/js/engine/bim/interiors.js`, `docs/work-orders/v179/v179.test.mjs`
-- **Budget:** 20
+- **Budget:** 40
 - **Test:** the cases named `WO-01 ...` in `docs/work-orders/v179/v179.test.mjs`. **Score:** 0+0+0+0+1+0 = 1.
 
 ---
@@ -35,7 +35,7 @@ after each one. Scores are from `../ROUTING.md` (files, logic, understanding, ju
 - **It must:** SPEC 4 WO-02.
 - **May use:** nothing.
 - **Files:** `src/js/engine/bim/interiors.js`, `docs/work-orders/v179/v179.test.mjs`
-- **Budget:** 15
+- **Budget:** 30
 - **Test:** the cases named `WO-02 ...` in `docs/work-orders/v179/v179.test.mjs`. **Score:** 0+0+0+0+1+0 = 1.
 
 ---
@@ -45,7 +45,7 @@ after each one. Scores are from `../ROUTING.md` (files, logic, understanding, ju
 - **It must:** SPEC 4 WO-03: the even-odd crossing test, true in the room, false in a concave notch.
 - **May use:** nothing.
 - **Files:** `src/js/engine/bim/interiors.js`, `docs/work-orders/v179/v179.test.mjs`
-- **Budget:** 15
+- **Budget:** 30
 - **Test:** the cases named `WO-03 ...` in `docs/work-orders/v179/v179.test.mjs`. **Score:** 0+0+0+0+1+0 = 1.
 
 ---
@@ -55,7 +55,7 @@ after each one. Scores are from `../ROUTING.md` (files, logic, understanding, ju
 - **It must:** SPEC 4 WO-04. Example: two 4 m deep rooms either side of a 0.2 m wall share 4 with `tol` 0.3, 0 with `tol` 0.1.
 - **May use:** nothing.
 - **Files:** `src/js/engine/bim/interiors.js`, `docs/work-orders/v179/v179.test.mjs`
-- **Budget:** 30
+- **Budget:** 60
 - **Test:** the cases named `WO-04 ...` in `docs/work-orders/v179/v179.test.mjs`. **Score:** 0+0+0+0+2+0 = 2.
 
 ---
@@ -65,7 +65,7 @@ after each one. Scores are from `../ROUTING.md` (files, logic, understanding, ju
 - **It must:** SPEC 4 WO-05: the left side is `center + (-dir[1], dir[0]) / length * reach`.
 - **May use:** `bimIntInside` (WO-03).
 - **Files:** `src/js/engine/bim/interiors.js`, `docs/work-orders/v179/v179.test.mjs`
-- **Budget:** 30
+- **Budget:** 60
 - **Test:** the cases named `WO-05 ...` in `docs/work-orders/v179/v179.test.mjs`. **Score:** 0+0+0+0+1+0 = 1.
 
 ---
@@ -75,7 +75,7 @@ after each one. Scores are from `../ROUTING.md` (files, logic, understanding, ju
 - **It must:** SPEC 4 WO-06: Dijkstra; a room not reached is absent from the answer, never 0.
 - **May use:** nothing.
 - **Files:** `src/js/engine/bim/interiors.js`, `docs/work-orders/v179/v179.test.mjs`
-- **Budget:** 30
+- **Budget:** 60
 - **Test:** the cases named `WO-06 ...` in `docs/work-orders/v179/v179.test.mjs`. **Score:** 0+0+0+0+2+0 = 2.
 
 ---
@@ -85,7 +85,7 @@ after each one. Scores are from `../ROUTING.md` (files, logic, understanding, ju
 - **It must:** SPEC 4 WO-07, every status and reason word for word.
 - **May use:** nothing.
 - **Files:** `src/js/engine/bim/interiors.js`, `docs/work-orders/v179/v179.test.mjs`
-- **Budget:** 25
+- **Budget:** 50
 - **Test:** the cases named `WO-07 ...` in `docs/work-orders/v179/v179.test.mjs`. **Score:** 0+0+0+0+1+0 = 1.
 
 ---
@@ -95,7 +95,7 @@ after each one. Scores are from `../ROUTING.md` (files, logic, understanding, ju
 - **It must:** SPEC 4 WO-08: `{id, use, need, have, rooms, offArea, status}` per item.
 - **May use:** nothing.
 - **Files:** `src/js/engine/bim/interiors.js`, `docs/work-orders/v179/v179.test.mjs`
-- **Budget:** 25
+- **Budget:** 50
 - **Test:** the cases named `WO-08 ...` in `docs/work-orders/v179/v179.test.mjs`. **Score:** 0+0+0+0+1+0 = 1.
 
 ---
@@ -105,7 +105,7 @@ after each one. Scores are from `../ROUTING.md` (files, logic, understanding, ju
 - **It must:** SPEC 4 WO-09.
 - **May use:** nothing.
 - **Files:** `src/js/engine/bim/interiors.js`, `docs/work-orders/v179/v179.test.mjs`
-- **Budget:** 8
+- **Budget:** 16
 - **Test:** the cases named `WO-09 ...` in `docs/work-orders/v179/v179.test.mjs`. **Score:** 0.
 
 ---

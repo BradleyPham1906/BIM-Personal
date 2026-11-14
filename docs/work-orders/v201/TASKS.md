@@ -25,7 +25,7 @@ after each one. Scores are from `../ROUTING.md` (files, logic, understanding, ju
 - **It must:** SPEC 4 WO-01 and part 3's formulas.
 - **May use:** nothing.
 - **Files:** `src/js/engine/bim/mep-flow.js`, `docs/work-orders/v201/v201.test.mjs`
-- **Budget:** 20
+- **Budget:** 40
 - **Test:** the cases named `WO-01 ...` in `docs/work-orders/v201/v201.test.mjs`. **Score:** 0.
 
 ---
@@ -35,7 +35,7 @@ after each one. Scores are from `../ROUTING.md` (files, logic, understanding, ju
 - **It must:** SPEC 4 WO-02: exactly 100 bisection steps on [1, 100]; `Math.log(x) / Math.LN10` for log10 (ES5).
 - **May use:** nothing.
 - **Files:** `src/js/engine/bim/mep-flow.js`, `docs/work-orders/v201/v201.test.mjs`
-- **Budget:** 20
+- **Budget:** 40
 - **Test:** the cases named `WO-02 ...` in `docs/work-orders/v201/v201.test.mjs`. **Score:** 0+0+0+0+2+0 = 2.
 
 ---
@@ -45,7 +45,7 @@ after each one. Scores are from `../ROUTING.md` (files, logic, understanding, ju
 - **It must:** SPEC 4 WO-03: each state and reason word for word; Darcy's factor, never Fanning.
 - **May use:** `bimMepColebrook` (WO-02).
 - **Files:** `src/js/engine/bim/mep-flow.js`, `docs/work-orders/v201/v201.test.mjs`
-- **Budget:** 35
+- **Budget:** 70
 - **Test:** the cases named `WO-03 ...` in `docs/work-orders/v201/v201.test.mjs`. **Score:** 0+0+0+0+2+0 = 2.
 
 ---
@@ -55,7 +55,7 @@ after each one. Scores are from `../ROUTING.md` (files, logic, understanding, ju
 - **It must:** SPEC 4 WO-04: nodes by 3D distance and system; the warnings word for word, in the order met.
 - **May use:** nothing.
 - **Files:** `src/js/engine/bim/mep-flow.js`, `docs/work-orders/v201/v201.test.mjs`
-- **Budget:** 45
+- **Budget:** 90
 - **Test:** the cases named `WO-04 ...` in `docs/work-orders/v201/v201.test.mjs`. **Score:** 0+1+0+0+2+0 = 3, tier B.
 
 ---
@@ -65,7 +65,7 @@ after each one. Scores are from `../ROUTING.md` (files, logic, understanding, ju
 - **It must:** SPEC 4 WO-05: breadth first, each edge used once; loop, not connected, no source.
 - **May use:** nothing.
 - **Files:** `src/js/engine/bim/mep-flow.js`, `docs/work-orders/v201/v201.test.mjs`
-- **Budget:** 30
+- **Budget:** 60
 - **Test:** the cases named `WO-05 ...` in `docs/work-orders/v201/v201.test.mjs`. **Score:** 0+0+0+0+2+0 = 2.
 
 ---
@@ -75,7 +75,7 @@ after each one. Scores are from `../ROUTING.md` (files, logic, understanding, ju
 - **It must:** SPEC 4 WO-06: from the terminals toward the source; a terminal without a demand refuses.
 - **May use:** nothing.
 - **Files:** `src/js/engine/bim/mep-flow.js`, `docs/work-orders/v201/v201.test.mjs`
-- **Budget:** 30
+- **Budget:** 60
 - **Test:** the cases named `WO-06 ...` in `docs/work-orders/v201/v201.test.mjs`. **Score:** 0+0+0+0+2+0 = 2.
 
 ---
@@ -85,7 +85,7 @@ after each one. Scores are from `../ROUTING.md` (files, logic, understanding, ju
 - **It must:** SPEC 4 WO-07: the trunk counted once per path, never the branches added together.
 - **May use:** nothing.
 - **Files:** `src/js/engine/bim/mep-flow.js`, `docs/work-orders/v201/v201.test.mjs`
-- **Budget:** 30
+- **Budget:** 60
 - **Test:** the cases named `WO-07 ...` in `docs/work-orders/v201/v201.test.mjs`. **Score:** 0+0+0+0+2+0 = 2.
 
 ---

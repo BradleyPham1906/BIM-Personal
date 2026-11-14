@@ -23,7 +23,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-01: 'YYYY-MM-DD' as Date.UTC(year, month - 1, day); null for anything else. Write bimCpIso(t), the inverse ('YYYY-MM-DD' from UTC), with it.
 - **May use:** nothing.
 - **Files:** `src/js/engine/bim/procurement.js`, `docs/work-orders/v223/v223.test.mjs`
-- **Budget:** 5
+- **Budget:** 15
 - **Test:** the cases named `WO-01 ...` in `docs/work-orders/v223/v223.test.mjs`. **Score:** 0.
 
 ---
@@ -33,7 +33,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-02: null for a bad date or n under 0; n times: one day back, then further back while the day is Saturday, Sunday or in holidays ('YYYY-MM-DD' strings); the result as 'YYYY-MM-DD'.
 - **May use:** bimCpDate, bimCpIso (WO-01).
 - **Files:** `src/js/engine/bim/procurement.js`, `docs/work-orders/v223/v223.test.mjs`
-- **Budget:** 15
+- **Budget:** 30
 - **Test:** the cases named `WO-02 ...` in `docs/work-orders/v223/v223.test.mjs`. **Score:** 0+0+0+0+1+0 = 1.
 
 ---
@@ -43,7 +43,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-03: {precision: tp / (tp + fp), recall: tp / (tp + fn)}, each null when its denominator is 0.
 - **May use:** nothing.
 - **Files:** `src/js/engine/bim/procurement.js`, `docs/work-orders/v223/v223.test.mjs`
-- **Budget:** 5
+- **Budget:** 15
 - **Test:** the cases named `WO-03 ...` in `docs/work-orders/v223/v223.test.mjs`. **Score:** 0.
 
 ---

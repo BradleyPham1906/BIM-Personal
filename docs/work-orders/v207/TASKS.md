@@ -23,7 +23,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-01: null unless an object; {meshes, primitives, triangles, materials, textures, extensions (extensionsUsed sorted)}: triangles summed over primitives of mode 4 or no mode, floor(count / 3) of the indices accessor, else of the POSITION accessor.
 - **May use:** nothing.
 - **Files:** `src/js/engine/assets/gltf-assets.js`, `docs/work-orders/v207/v207.test.mjs`
-- **Budget:** 20
+- **Budget:** 40
 - **Test:** the cases named `WO-01 ...` in `docs/work-orders/v207/v207.test.mjs`. **Score:** 0+0+0+0+1+0 = 1.
 
 ---
@@ -33,7 +33,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-02: s = size / the largest extent when both are positive, else 1; {scale: s, move: [-(minX + maxX)/2 s, -minY s, -(minZ + maxZ)/2 s] (written so 0 stays 0, never -0), size: the extents times s}.
 - **May use:** nothing.
 - **Files:** `src/js/engine/assets/gltf-assets.js`, `docs/work-orders/v207/v207.test.mjs`
-- **Budget:** 10
+- **Budget:** 20
 - **Test:** the cases named `WO-02 ...` in `docs/work-orders/v207/v207.test.mjs`. **Score:** 0.
 
 ---
@@ -43,7 +43,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-03: messages: no stats ['not a glTF file']; triangles over limits.triangles (200000 by default): 'N triangles, over T'; bytes over limits.bytes (20 MB, 20971520): 'X MB, over Y MB', MB to one decimal.
 - **May use:** nothing.
 - **Files:** `src/js/engine/assets/gltf-assets.js`, `docs/work-orders/v207/v207.test.mjs`
-- **Budget:** 12
+- **Budget:** 24
 - **Test:** the cases named `WO-03 ...` in `docs/work-orders/v207/v207.test.mjs`. **Score:** 0.
 
 ---
@@ -53,7 +53,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-04: '"title" by author, license (source)', each part only when present; 'Untitled' without a title.
 - **May use:** nothing.
 - **Files:** `src/js/engine/assets/gltf-assets.js`, `docs/work-orders/v207/v207.test.mjs`
-- **Budget:** 8
+- **Budget:** 16
 - **Test:** the cases named `WO-04 ...` in `docs/work-orders/v207/v207.test.mjs`. **Score:** 0.
 
 ---

@@ -25,7 +25,7 @@ after each one. Scores are from `../ROUTING.md` (files, logic, understanding, ju
 - **It must:** SPEC 4 WO-01.
 - **May use:** nothing.
 - **Files:** `src/js/engine/map/pointcloud.js`, `docs/work-orders/v190/v190.test.mjs`
-- **Budget:** 14
+- **Budget:** 28
 - **Test:** the cases named `WO-01 ...` in `docs/work-orders/v190/v190.test.mjs`. **Score:** 0.
 
 ---
@@ -35,7 +35,7 @@ after each one. Scores are from `../ROUTING.md` (files, logic, understanding, ju
 - **It must:** SPEC part 3's byte offsets and SPEC 4 WO-02's errors in order, with `BIM_PC_MINLEN` (`{0:20,1:28,2:26,3:34,6:30,7:36,8:38}`) just above the function. Every read little-endian (`getUint16(at, true)` ...).
 - **May use:** `BIM_PC_MINLEN` (this task).
 - **Files:** `src/js/engine/map/pointcloud.js`, `docs/work-orders/v190/v190.test.mjs`
-- **Budget:** 40
+- **Budget:** 80
 - **Test:** the cases named `WO-02 ...` in `docs/work-orders/v190/v190.test.mjs`. **Score:** 0+0+0+0+2+0 = 2.
 
 ---
@@ -45,7 +45,7 @@ after each one. Scores are from `../ROUTING.md` (files, logic, understanding, ju
 - **It must:** SPEC 4 WO-03.
 - **May use:** nothing.
 - **Files:** `src/js/engine/map/pointcloud.js`, `docs/work-orders/v190/v190.test.mjs`
-- **Budget:** 8
+- **Budget:** 16
 - **Test:** the cases named `WO-03 ...` in `docs/work-orders/v190/v190.test.mjs`. **Score:** 0.
 
 ---
@@ -55,7 +55,7 @@ after each one. Scores are from `../ROUTING.md` (files, logic, understanding, ju
 - **It must:** SPEC 4 WO-04, with `BIM_PC_RGB` (`{2:20,3:28,7:30,8:30}`) just above the function: subtract the origin from the double-precision coordinate before storing it in the Float32Array.
 - **May use:** `bimPcStep` (WO-03), `BIM_PC_RGB` (this task).
 - **Files:** `src/js/engine/map/pointcloud.js`, `docs/work-orders/v190/v190.test.mjs`
-- **Budget:** 35
+- **Budget:** 70
 - **Test:** the cases named `WO-04 ...` in `docs/work-orders/v190/v190.test.mjs`. **Score:** 0+0+0+0+2+0 = 2.
 
 ---
@@ -65,7 +65,7 @@ after each one. Scores are from `../ROUTING.md` (files, logic, understanding, ju
 - **It must:** SPEC 4 WO-05.
 - **May use:** nothing.
 - **Files:** `src/js/engine/map/pointcloud.js`, `docs/work-orders/v190/v190.test.mjs`
-- **Budget:** 8
+- **Budget:** 16
 - **Test:** the cases named `WO-05 ...` in `docs/work-orders/v190/v190.test.mjs`. **Score:** 0.
 
 ---
@@ -75,7 +75,7 @@ after each one. Scores are from `../ROUTING.md` (files, logic, understanding, ju
 - **It must:** SPEC part 3 and SPEC 4 WO-06.
 - **May use:** nothing.
 - **Files:** `src/js/engine/map/pointcloud.js`, `docs/work-orders/v190/v190.test.mjs`
-- **Budget:** 35
+- **Budget:** 70
 - **Test:** the cases named `WO-06 ...` in `docs/work-orders/v190/v190.test.mjs`. **Score:** 0+0+0+0+1+0 = 1.
 
 ---
@@ -85,7 +85,7 @@ after each one. Scores are from `../ROUTING.md` (files, logic, understanding, ju
 - **It must:** SPEC 4 WO-07, with `BIM_PC_PLYSIZE` (each type's size in bytes) just above the function.
 - **May use:** `BIM_PC_PLYSIZE` (this task).
 - **Files:** `src/js/engine/map/pointcloud.js`, `docs/work-orders/v190/v190.test.mjs`
-- **Budget:** 25
+- **Budget:** 50
 - **Test:** the cases named `WO-07 ...` in `docs/work-orders/v190/v190.test.mjs`. **Score:** 0+0+0+0+1+0 = 1.
 
 ---
@@ -95,7 +95,7 @@ after each one. Scores are from `../ROUTING.md` (files, logic, understanding, ju
 - **It must:** SPEC 4 WO-08: ASCII by lines, binary by a fixed stride; sampled and rebased as WO-04.
 - **May use:** `bimPcStep` (WO-03), `bimPcPlyRead` (WO-07), `BIM_PC_PLYSIZE` (WO-07).
 - **Files:** `src/js/engine/map/pointcloud.js`, `docs/work-orders/v190/v190.test.mjs`
-- **Budget:** 50
+- **Budget:** 100
 - **Test:** the cases named `WO-08 ...` in `docs/work-orders/v190/v190.test.mjs`. **Score:** 0+1+0+0+2+0 = 3, tier B.
 
 ---
@@ -105,7 +105,7 @@ after each one. Scores are from `../ROUTING.md` (files, logic, understanding, ju
 - **It must:** SPEC 4 WO-09, with `BIM_PC_CLASS` just above the function.
 - **May use:** `BIM_PC_CLASS` (this task).
 - **Files:** `src/js/engine/map/pointcloud.js`, `docs/work-orders/v190/v190.test.mjs`
-- **Budget:** 14
+- **Budget:** 28
 - **Test:** the cases named `WO-09 ...` in `docs/work-orders/v190/v190.test.mjs`. **Score:** 0.
 
 ---
@@ -115,7 +115,7 @@ after each one. Scores are from `../ROUTING.md` (files, logic, understanding, ju
 - **It must:** SPEC 4 WO-10.
 - **May use:** nothing.
 - **Files:** `src/js/engine/map/pointcloud.js`, `docs/work-orders/v190/v190.test.mjs`
-- **Budget:** 10
+- **Budget:** 20
 - **Test:** the cases named `WO-10 ...` in `docs/work-orders/v190/v190.test.mjs`. **Score:** 0.
 
 ---
@@ -125,7 +125,7 @@ after each one. Scores are from `../ROUTING.md` (files, logic, understanding, ju
 - **It must:** SPEC 4 WO-11.
 - **May use:** nothing.
 - **Files:** `src/js/engine/map/pointcloud.js`, `docs/work-orders/v190/v190.test.mjs`
-- **Budget:** 25
+- **Budget:** 50
 - **Test:** the cases named `WO-11 ...` in `docs/work-orders/v190/v190.test.mjs`. **Score:** 0+0+0+0+1+0 = 1.
 
 ---

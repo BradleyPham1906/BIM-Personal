@@ -23,7 +23,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-01: the smallest t > 1e-9 with p + t(dx, dz) on a segment [[x,z],[x,z]] (its parameter u within -1e-9..1+1e-9), by the 2D cross products; parallel segments (|den| < 1e-12) are skipped; Infinity when none.
 - **May use:** nothing.
 - **Files:** `src/js/engine/bim/interiors-views.js`, `docs/work-orders/v182/v182.test.mjs`
-- **Budget:** 20
+- **Budget:** 40
 - **Test:** the cases named `WO-01 ...` in `docs/work-orders/v182/v182.test.mjs`. **Score:** 0+0+0+0+2+0 = 2.
 
 ---
@@ -33,7 +33,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-02: n rays (360 when n is under 3; floored) at angles 2 pi i / n from +x toward +z, each point p + min(hit, maxR) times its direction (maxR 50 when not positive).
 - **May use:** bimIsoHit (WO-01).
 - **Files:** `src/js/engine/bim/interiors-views.js`, `docs/work-orders/v182/v182.test.mjs`
-- **Budget:** 12
+- **Budget:** 24
 - **Test:** the cases named `WO-02 ...` in `docs/work-orders/v182/v182.test.mjs`. **Score:** 0.
 
 ---
@@ -43,7 +43,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-03: the absolute shoelace area; 0 for no polygon.
 - **May use:** nothing.
 - **Files:** `src/js/engine/bim/interiors-views.js`, `docs/work-orders/v182/v182.test.mjs`
-- **Budget:** 8
+- **Budget:** 16
 - **Test:** the cases named `WO-03 ...` in `docs/work-orders/v182/v182.test.mjs`. **Score:** 0.
 
 ---
@@ -53,7 +53,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-04: true when p and q coincide (under 1e-12 apart) or the nearest hit along p to q is at least their distance - 1e-9.
 - **May use:** bimIsoHit (WO-01).
 - **Files:** `src/js/engine/bim/interiors-views.js`, `docs/work-orders/v182/v182.test.mjs`
-- **Budget:** 10
+- **Budget:** 20
 - **Test:** the cases named `WO-04 ...` in `docs/work-orders/v182/v182.test.mjs`. **Score:** 0.
 
 ---
@@ -63,7 +63,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-05: for each window {id, a, b} in order, {id, fraction}: the share of 'samples' points (5 when under 1; floored) at (k + 0.5)/samples along a to b that bimIsoSees.
 - **May use:** bimIsoSees (WO-04).
 - **Files:** `src/js/engine/bim/interiors-views.js`, `docs/work-orders/v182/v182.test.mjs`
-- **Budget:** 18
+- **Budget:** 36
 - **Test:** the cases named `WO-05 ...` in `docs/work-orders/v182/v182.test.mjs`. **Score:** 0+0+0+0+1+0 = 1.
 
 ---

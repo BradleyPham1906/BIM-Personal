@@ -23,7 +23,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-01: sensor width mm, focal length mm, image width px, height m: sw h 100 / (f iw) cm per pixel; null unless all positive.
 - **May use:** nothing.
 - **Files:** `src/js/engine/site/drone-plan.js`, `docs/work-orders/v227/v227.test.mjs`
-- **Budget:** 4
+- **Budget:** 15
 - **Test:** the cases named `WO-01 ...` in `docs/work-orders/v227/v227.test.mjs`. **Score:** 0.
 
 ---
@@ -33,7 +33,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-02: the inverse: gsd f iw / (sw 100) m; null unless gsd, sw and iw are positive.
 - **May use:** nothing.
 - **Files:** `src/js/engine/site/drone-plan.js`, `docs/work-orders/v227/v227.test.mjs`
-- **Budget:** 4
+- **Budget:** 15
 - **Test:** the cases named `WO-02 ...` in `docs/work-orders/v227/v227.test.mjs`. **Score:** 0.
 
 ---
@@ -43,7 +43,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-03: {w: sw h / f, h: sh h / f} in metres; null unless f is positive.
 - **May use:** nothing.
 - **Files:** `src/js/engine/site/drone-plan.js`, `docs/work-orders/v227/v227.test.mjs`
-- **Budget:** 4
+- **Budget:** 15
 - **Test:** the cases named `WO-03 ...` in `docs/work-orders/v227/v227.test.mjs`. **Score:** 0.
 
 ---
@@ -53,7 +53,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-04: len (1 - overlap) for 0 <= overlap < 1, else null.
 - **May use:** nothing.
 - **Files:** `src/js/engine/site/drone-plan.js`, `docs/work-orders/v227/v227.test.mjs`
-- **Budget:** 4
+- **Budget:** 15
 - **Test:** the cases named `WO-04 ...` in `docs/work-orders/v227/v227.test.mjs`. **Score:** 0.
 
 ---
@@ -63,7 +63,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-05: ceil(width / spacing - 1e-9) + 1; null unless spacing is positive.
 - **May use:** nothing.
 - **Files:** `src/js/engine/site/drone-plan.js`, `docs/work-orders/v227/v227.test.mjs`
-- **Budget:** 4
+- **Budget:** 15
 - **Test:** the cases named `WO-05 ...` in `docs/work-orders/v227/v227.test.mjs`. **Score:** 0.
 
 ---

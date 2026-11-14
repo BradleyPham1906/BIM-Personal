@@ -23,7 +23,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-01: an ArrayBuffer of 32-byte splats, little-endian: position float32 x3 at 0, scale float32 x3 at 12, colour uint8 x4 at 24, rotation uint8 x4 at 28 read as (b - 128) / 128. {n, pos, scale (Float32Array n*3), rgba (Uint8Array n*4), rot (Float32Array n*4)}; a length not a multiple of 32 gives {error: 'not a .splat file (its length is not a multiple of 32)'}.
 - **May use:** nothing.
 - **Files:** `src/js/engine/render/splats.js`, `docs/work-orders/v205/v205.test.mjs`
-- **Budget:** 30
+- **Budget:** 60
 - **Test:** the cases named `WO-01 ...` in `docs/work-orders/v205/v205.test.mjs`. **Score:** 0+0+0+0+1+0 = 1.
 
 ---
@@ -33,7 +33,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-02: {min, max, centre} of the [x, y, z] triples; null for none.
 - **May use:** nothing.
 - **Files:** `src/js/engine/render/splats.js`, `docs/work-orders/v205/v205.test.mjs`
-- **Budget:** 12
+- **Budget:** 24
 - **Test:** the cases named `WO-02 ...` in `docs/work-orders/v205/v205.test.mjs`. **Score:** 0.
 
 ---
@@ -43,7 +43,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-03: in plan (x, z): s = |b1 - b0| / |a1 - a0|, rot = the difference of their headings (atan2(dz, dx)), t = b0 - s R a0 in plan and b0[1] - s a0[1] in height. {s, rot, t}; null when either pair's plan length is under 1e-9.
 - **May use:** nothing.
 - **Files:** `src/js/engine/render/splats.js`, `docs/work-orders/v205/v205.test.mjs`
-- **Budget:** 15
+- **Budget:** 30
 - **Test:** the cases named `WO-03 ...` in `docs/work-orders/v205/v205.test.mjs`. **Score:** 0+0+0+0+1+0 = 1.
 
 ---
@@ -53,7 +53,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-04: [s (cos x - sin z) + t0, s y + t1, s (sin x + cos z) + t2].
 - **May use:** nothing.
 - **Files:** `src/js/engine/render/splats.js`, `docs/work-orders/v205/v205.test.mjs`
-- **Budget:** 6
+- **Budget:** 15
 - **Test:** the cases named `WO-04 ...` in `docs/work-orders/v205/v205.test.mjs`. **Score:** 0.
 
 ---
@@ -63,7 +63,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-05: the indices sorted by squared distance from the eye, farthest first, ties by index; [] for none.
 - **May use:** nothing.
 - **Files:** `src/js/engine/render/splats.js`, `docs/work-orders/v205/v205.test.mjs`
-- **Budget:** 12
+- **Budget:** 24
 - **Test:** the cases named `WO-05 ...` in `docs/work-orders/v205/v205.test.mjs`. **Score:** 0.
 
 ---

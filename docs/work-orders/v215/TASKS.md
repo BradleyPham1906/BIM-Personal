@@ -23,7 +23,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-01: nodes {name: {op, in: [names]}}; for names in sorted order: a repeated input 'duplicate input edge: N', an input not a node 'missing node: N' (as {error}); then Kahn's algorithm from the sorted nodes with no inputs, releasing dependants in sorted order: {order}, or {error: 'cycle'} when not all are ordered.
 - **May use:** nothing.
 - **Files:** `src/js/engine/commands/flows.js`, `docs/work-orders/v215/v215.test.mjs`
-- **Budget:** 30
+- **Budget:** 60
 - **Test:** the cases named `WO-01 ...` in `docs/work-orders/v215/v215.test.mjs`. **Score:** 0+0+0+0+2+0 = 2.
 
 ---
@@ -33,7 +33,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-02: the error from WO-01, else in order: any input null or undefined makes the node null; 'value' its numeric value (else null); 'sum' the inputs' sum; 'double' twice its one input; 'mul' their product; any other {error: 'unsupported op: N'}. {values}.
 - **May use:** bimFlowOrder (WO-01).
 - **Files:** `src/js/engine/commands/flows.js`, `docs/work-orders/v215/v215.test.mjs`
-- **Budget:** 30
+- **Budget:** 60
 - **Test:** the cases named `WO-02 ...` in `docs/work-orders/v215/v215.test.mjs`. **Score:** 0+0+0+0+1+0 = 1.
 
 ---
@@ -43,7 +43,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-03: in order: origin not in origins 'origin not allowed'; msg not an object with a string cmd 'not a command message'; cmd not an own key of allowed 'unknown command C'; args present but not a non-null, non-array object 'args must be an object'; else {ok: true}. Failures {ok: false, why}.
 - **May use:** nothing.
 - **Files:** `src/js/engine/commands/flows.js`, `docs/work-orders/v215/v215.test.mjs`
-- **Budget:** 15
+- **Budget:** 30
 - **Test:** the cases named `WO-03 ...` in `docs/work-orders/v215/v215.test.mjs`. **Score:** 0+0+0+0+1+0 = 1.
 
 ---
@@ -53,7 +53,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-04: the listed fields that are state's own, each a deep copy (JSON).
 - **May use:** nothing.
 - **Files:** `src/js/engine/commands/flows.js`, `docs/work-orders/v215/v215.test.mjs`
-- **Budget:** 8
+- **Budget:** 16
 - **Test:** the cases named `WO-04 ...` in `docs/work-orders/v215/v215.test.mjs`. **Score:** 0.
 
 ---

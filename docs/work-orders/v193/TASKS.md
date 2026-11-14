@@ -23,7 +23,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-01: indices sorted by value (then index); a new cluster starts when a value is more than tol (0.05 when negative or absent) above the previous member; each {members (indices, ascending), mean}.
 - **May use:** nothing.
 - **Files:** `src/js/engine/bim/facade-openings.js`, `docs/work-orders/v193/v193.test.mjs`
-- **Budget:** 20
+- **Budget:** 40
 - **Test:** the cases named `WO-01 ...` in `docs/work-orders/v193/v193.test.mjs`. **Score:** 0+0+0+0+1+0 = 1.
 
 ---
@@ -33,7 +33,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-02: a copy of the values with each replaced by its cluster's mean.
 - **May use:** bimOpnCluster (WO-01).
 - **Files:** `src/js/engine/bim/facade-openings.js`, `docs/work-orders/v193/v193.test.mjs`
-- **Budget:** 8
+- **Budget:** 16
 - **Test:** the cases named `WO-02 ...` in `docs/work-orders/v193/v193.test.mjs`. **Score:** 0.
 
 ---
@@ -43,7 +43,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-03: sills (y), heads (y + h) and centres (x + w/2) each snapped (WO-02); each new rect {x: centre - w/2, y: sill, w, h: head - sill, moved: the largest of the changes of x, y and the head}.
 - **May use:** bimOpnSnap (WO-02).
 - **Files:** `src/js/engine/bim/facade-openings.js`, `docs/work-orders/v193/v193.test.mjs`
-- **Budget:** 20
+- **Budget:** 40
 - **Test:** the cases named `WO-03 ...` in `docs/work-orders/v193/v193.test.mjs`. **Score:** 0+0+0+0+1+0 = 1.
 
 ---
@@ -53,7 +53,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-04: pairs [i, j], i < j, whose interiors overlap (strictly, by 1e-9).
 - **May use:** nothing.
 - **Files:** `src/js/engine/bim/facade-openings.js`, `docs/work-orders/v193/v193.test.mjs`
-- **Budget:** 12
+- **Budget:** 24
 - **Test:** the cases named `WO-04 ...` in `docs/work-orders/v193/v193.test.mjs`. **Score:** 0.
 
 ---
@@ -63,7 +63,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-05: null unless w and h are positive and the rect lies within 0..len along and 0..height up (height checked when positive); else {along: x + w/2, sill: y, width: w, height: h, kind: 'door' when y <= 0.05, else 'window'}.
 - **May use:** nothing.
 - **Files:** `src/js/engine/bim/facade-openings.js`, `docs/work-orders/v193/v193.test.mjs`
-- **Budget:** 10
+- **Budget:** 20
 - **Test:** the cases named `WO-05 ...` in `docs/work-orders/v193/v193.test.mjs`. **Score:** 0.
 
 ---

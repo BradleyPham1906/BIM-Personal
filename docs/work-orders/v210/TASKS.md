@@ -23,7 +23,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-01: true when waterY is a number and eyeY < waterY.
 - **May use:** nothing.
 - **Files:** `src/js/engine/walk/walk-swim.js`, `docs/work-orders/v210/v210.test.mjs`
-- **Budget:** 3
+- **Budget:** 15
 - **Test:** the cases named `WO-01 ...` in `docs/work-orders/v210/v210.test.mjs`. **Score:** 0.
 
 ---
@@ -33,7 +33,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-02: each axis i: v_i + (inp_i thrust - drag v_i + (buoy on the y axis)) dt; drag 2 and thrust 1.5 unless positive, buoy 0.3 unless a number; a missing input is 0.
 - **May use:** nothing.
 - **Files:** `src/js/engine/walk/walk-swim.js`, `docs/work-orders/v210/v210.test.mjs`
-- **Budget:** 8
+- **Budget:** 16
 - **Test:** the cases named `WO-02 ...` in `docs/work-orders/v210/v210.test.mjs`. **Score:** 0.
 
 ---
@@ -43,7 +43,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-03: depth / clear (8 unless positive) clamped to 0..1.
 - **May use:** nothing.
 - **Files:** `src/js/engine/walk/walk-swim.js`, `docs/work-orders/v210/v210.test.mjs`
-- **Budget:** 5
+- **Budget:** 15
 - **Test:** the cases named `WO-03 ...` in `docs/work-orders/v210/v210.test.mjs`. **Score:** 0.
 
 ---
@@ -53,7 +53,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-04: when pos[1] > waterY - eye (eye 0.2 unless positive), the point at waterY - eye; else a copy.
 - **May use:** nothing.
 - **Files:** `src/js/engine/walk/walk-swim.js`, `docs/work-orders/v210/v210.test.mjs`
-- **Budget:** 5
+- **Budget:** 15
 - **Test:** the cases named `WO-04 ...` in `docs/work-orders/v210/v210.test.mjs`. **Score:** 0.
 
 ---

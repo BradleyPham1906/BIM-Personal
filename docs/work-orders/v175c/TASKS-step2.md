@@ -23,7 +23,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-11: a sheet viewport {id, kind, refId, label, x, y, w, h, scaleMode, scaleDenom} as the map frame {t: 'map', id, x, y, w, h, src: kind + ':' + refId, den: scaleDenom (null when scaleMode is 'fit'), fit: scaleMode === 'fit', px: 0, py: 0, label (or '')}.
 - **May use:** nothing.
 - **Files:** `src/js/engine/sheets/layout-merge.js`, `docs/work-orders/v175c/v175c-step2.test.mjs`
-- **Budget:** 10
+- **Budget:** 20
 - **Test:** the cases named `WO-11 ...` in `docs/work-orders/v175c/v175c-step2.test.mjs`. **Score:** 0.
 
 ---
@@ -33,7 +33,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-12: the inverse: kind before the first ':' of src, refId after it ('' when none); scaleMode 'fit' when fr.fit or den is not positive, else 'fixed'; scaleDenom den when positive, else 100; the keys in the order id, kind, refId, label, x, y, w, h, scaleMode, scaleDenom.
 - **May use:** nothing.
 - **Files:** `src/js/engine/sheets/layout-merge.js`, `docs/work-orders/v175c/v175c-step2.test.mjs`
-- **Budget:** 10
+- **Budget:** 20
 - **Test:** the cases named `WO-12 ...` in `docs/work-orders/v175c/v175c-step2.test.mjs`. **Score:** 0.
 
 ---
@@ -43,7 +43,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-13: {id, num: number or '', name or '', w, h, drawing: true, objs: [{t: 'tblock', id: 'tb-' + id, x: 0, y: 0, w, h}, then a frame (WO-11) per viewport]}.
 - **May use:** bimLmVpToFrame (WO-11).
 - **Files:** `src/js/engine/sheets/layout-merge.js`, `docs/work-orders/v175c/v175c-step2.test.mjs`
-- **Budget:** 10
+- **Budget:** 20
 - **Test:** the cases named `WO-13 ...` in `docs/work-orders/v175c/v175c-step2.test.mjs`. **Score:** 0.
 
 ---
@@ -53,7 +53,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-14: the items, leaving out those of kind 'live', 'figure' or 'chart' when drawing is true (the owner's D4).
 - **May use:** nothing.
 - **Files:** `src/js/engine/sheets/layout-merge.js`, `docs/work-orders/v175c/v175c-step2.test.mjs`
-- **Budget:** 8
+- **Budget:** 16
 - **Test:** the cases named `WO-14 ...` in `docs/work-orders/v175c/v175c-step2.test.mjs`. **Score:** 0.
 
 ---
@@ -63,7 +63,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-15: v rounded to 3 decimals as a string, '0' for any rounded zero.
 - **May use:** nothing.
 - **Files:** `src/js/engine/sheets/layout-merge.js`, `docs/work-orders/v175c/v175c-step2.test.mjs`
-- **Budget:** 4
+- **Budget:** 15
 - **Test:** the cases named `WO-15 ...` in `docs/work-orders/v175c/v175c-step2.test.mjs`. **Score:** 0.
 
 ---
@@ -73,7 +73,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-16: '<svg xmlns="http://www.w3.org/2000/svg" width="Wmm" height="Hmm" viewBox="0 0 W H">' with W, H by WO-15.
 - **May use:** bimLmN (WO-15).
 - **Files:** `src/js/engine/sheets/layout-merge.js`, `docs/work-orders/v175c/v175c-step2.test.mjs`
-- **Budget:** 5
+- **Budget:** 15
 - **Test:** the cases named `WO-16 ...` in `docs/work-orders/v175c/v175c-step2.test.mjs`. **Score:** 0.
 
 ---
@@ -83,7 +83,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-17: '<rect x=".." y=".." width=".." height=".." fill="none" stroke="S" stroke-width="W"/>', numbers by WO-15, stroke '#000000' and width 0.25 by default.
 - **May use:** bimLmN (WO-15).
 - **Files:** `src/js/engine/sheets/layout-merge.js`, `docs/work-orders/v175c/v175c-step2.test.mjs`
-- **Budget:** 6
+- **Budget:** 15
 - **Test:** the cases named `WO-17 ...` in `docs/work-orders/v175c/v175c-step2.test.mjs`. **Score:** 0.
 
 ---

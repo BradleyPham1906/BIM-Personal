@@ -23,7 +23,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-01: state {x, z, heading, speed}, input {throttle 0..1, brake 0..1, steer -1..1}, params {wheelbase 2.7, maxSteer 0.6, accel 3, decel 7, drag 0.05, vmax 13.9} (each when not given or not positive; drag when not given): speed + (throttle accel - drag speed) dt, then less brake decel dt (never under 0), clamped to 0..vmax; steering angle steer maxSteer clamped to +-maxSteer; heading + speed / wheelbase tan(angle) dt; position + speed (cos h, sin h) dt with the new heading.
 - **May use:** nothing.
 - **Files:** `src/js/engine/walk/walk-drive.js`, `docs/work-orders/v208/v208.test.mjs`
-- **Budget:** 20
+- **Budget:** 40
 - **Test:** the cases named `WO-01 ...` in `docs/work-orders/v208/v208.test.mjs`. **Score:** 0+0+0+0+2+0 = 2.
 
 ---
@@ -33,7 +33,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-02: L / tan|steer|; Infinity when |steer| < 1e-9.
 - **May use:** nothing.
 - **Files:** `src/js/engine/walk/walk-drive.js`, `docs/work-orders/v208/v208.test.mjs`
-- **Budget:** 5
+- **Budget:** 15
 - **Test:** the cases named `WO-02 ...` in `docs/work-orders/v208/v208.test.mjs`. **Score:** 0.
 
 ---
@@ -43,7 +43,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-03: {eye: [x - dist cos h, height, z - dist sin h], target: [x, 0.4 height, z]}.
 - **May use:** nothing.
 - **Files:** `src/js/engine/walk/walk-drive.js`, `docs/work-orders/v208/v208.test.mjs`
-- **Budget:** 6
+- **Budget:** 15
 - **Test:** the cases named `WO-03 ...` in `docs/work-orders/v208/v208.test.mjs`. **Score:** 0.
 
 ---
@@ -53,7 +53,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-04: Math.round(ms 3.6).
 - **May use:** nothing.
 - **Files:** `src/js/engine/walk/walk-drive.js`, `docs/work-orders/v208/v208.test.mjs`
-- **Budget:** 3
+- **Budget:** 15
 - **Test:** the cases named `WO-04 ...` in `docs/work-orders/v208/v208.test.mjs`. **Score:** 0.
 
 ---

@@ -23,7 +23,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-01: with BIM_PD_PS (the 44 PSLRFD codes and names of the spec's inventory) and BIM_PD_ST (the 57 STLRFD codes in section order, 5.3 CFG to 5.59 ORF) just above it: for 'PS' the name or null; for 'ST' 'Design Plate Location' for DPL, else the code when it is an STLRFD command, else null; any other program null.
 - **May use:** BIM_PD_PS, BIM_PD_ST (this task).
 - **Files:** `src/js/engine/structure/penndot-input.js`, `docs/work-orders/v226/v226.test.mjs`
-- **Budget:** 130
+- **Budget:** 260
 - **Test:** the cases named `WO-01 ...` in `docs/work-orders/v226/v226.test.mjs`. **Score:** 0+0+0+0+1+0 = 1.
 
 ---
@@ -33,7 +33,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-02: the STLRFD codes that PSLRFD also has, sorted (23).
 - **May use:** BIM_PD_PS, BIM_PD_ST (WO-01).
 - **Files:** `src/js/engine/structure/penndot-input.js`, `docs/work-orders/v226/v226.test.mjs`
-- **Budget:** 6
+- **Budget:** 15
 - **Test:** the cases named `WO-02 ...` in `docs/work-orders/v226/v226.test.mjs`. **Score:** 0.
 
 ---
@@ -43,7 +43,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-03: {ok: false, why: 'not an STLRFD command: C'} for the first unknown code; else the codes that come before an earlier one's section, as {ok: false, why: "out of the manual's order: A, B"}; else {ok: true}.
 - **May use:** BIM_PD_ST (WO-01).
 - **Files:** `src/js/engine/structure/penndot-input.js`, `docs/work-orders/v226/v226.test.mjs`
-- **Budget:** 12
+- **Budget:** 24
 - **Test:** the cases named `WO-03 ...` in `docs/work-orders/v226/v226.test.mjs`. **Score:** 0.
 
 ---

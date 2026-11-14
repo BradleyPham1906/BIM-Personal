@@ -23,7 +23,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-01: the azimuth from a to b in degrees clockwise from north (plan x east, y north), 0 to 360.
 - **May use:** nothing.
 - **Files:** `src/js/engine/site/field-guide.js`, `docs/work-orders/v224/v224.test.mjs`
-- **Budget:** 5
+- **Budget:** 15
 - **Test:** the cases named `WO-01 ...` in `docs/work-orders/v224/v224.test.mjs`. **Score:** 0.
 
 ---
@@ -33,7 +33,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-02: the meeting point of the rays from p1 along az1 and p2 along az2 (directions (sin az, cos az)); null when parallel (|cross| < 1e-9) or when it lies behind either point.
 - **May use:** nothing.
 - **Files:** `src/js/engine/site/field-guide.js`, `docs/work-orders/v224/v224.test.mjs`
-- **Budget:** 15
+- **Budget:** 30
 - **Test:** the cases named `WO-02 ...` in `docs/work-orders/v224/v224.test.mjs`. **Score:** 0+0+0+0+1+0 = 1.
 
 ---
@@ -43,7 +43,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-03: obs [{from, az}]: each pair's meeting point (WO-02); null when none; else {p: their mean, spread: the largest distance of one from the mean, pairs: how many}.
 - **May use:** bimFeIntersect (WO-02).
 - **Files:** `src/js/engine/site/field-guide.js`, `docs/work-orders/v224/v224.test.mjs`
-- **Budget:** 15
+- **Budget:** 30
 - **Test:** the cases named `WO-03 ...` in `docs/work-orders/v224/v224.test.mjs`. **Score:** 0.
 
 ---
@@ -53,7 +53,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-04: steps [{id, after: [ids]}] in order: the first not done whose prerequisites are all done as next (null when none); blocked lists the not-done steps passed over before it.
 - **May use:** nothing.
 - **Files:** `src/js/engine/site/field-guide.js`, `docs/work-orders/v224/v224.test.mjs`
-- **Budget:** 12
+- **Budget:** 24
 - **Test:** the cases named `WO-04 ...` in `docs/work-orders/v224/v224.test.mjs`. **Score:** 0.
 
 ---

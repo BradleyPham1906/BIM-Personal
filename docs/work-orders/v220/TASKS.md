@@ -23,7 +23,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-01: on an n x n grid: each interior cell's velocity becomes (v + (the mean of its four neighbours' heights - h) 2) damp (damp 0.995 unless in 0..1], 1 allowed), boundary velocities unchanged; then every height plus its new velocity. {h, v} new arrays.
 - **May use:** nothing.
 - **Files:** `src/js/engine/render/water-sim.js`, `docs/work-orders/v220/v220.test.mjs`
-- **Budget:** 15
+- **Budget:** 30
 - **Test:** the cases named `WO-01 ...` in `docs/work-orders/v220/v220.test.mjs`. **Score:** 0+0+0+0+1+0 = 1.
 
 ---
@@ -33,7 +33,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-02: a copy with, at each cell within distance r of (x, y) (d = distance / r < 1), s (0.5 + cos(pi d) / 2) added.
 - **May use:** nothing.
 - **Files:** `src/js/engine/render/water-sim.js`, `docs/work-orders/v220/v220.test.mjs`
-- **Budget:** 10
+- **Budget:** 20
 - **Test:** the cases named `WO-02 ...` in `docs/work-orders/v220/v220.test.mjs`. **Score:** 0.
 
 ---
@@ -43,7 +43,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-03: f0 + (1 - f0)(1 - cosT)^5 with f0 = ((n1 - n2)/(n1 + n2))^2.
 - **May use:** nothing.
 - **Files:** `src/js/engine/render/water-sim.js`, `docs/work-orders/v220/v220.test.mjs`
-- **Budget:** 5
+- **Budget:** 15
 - **Test:** the cases named `WO-03 ...` in `docs/work-orders/v220/v220.test.mjs`. **Score:** 0.
 
 ---
@@ -53,7 +53,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-04: oldA / newA, Infinity when newA is not positive.
 - **May use:** nothing.
 - **Files:** `src/js/engine/render/water-sim.js`, `docs/work-orders/v220/v220.test.mjs`
-- **Budget:** 4
+- **Budget:** 15
 - **Test:** the cases named `WO-04 ...` in `docs/work-orders/v220/v220.test.mjs`. **Score:** 0.
 
 ---

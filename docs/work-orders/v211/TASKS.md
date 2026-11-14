@@ -23,7 +23,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-01: the signed turn from a to b in -pi..pi: (b - a) mod 2 pi, less 2 pi when over pi, plus 2 pi when under -pi.
 - **May use:** nothing.
 - **Files:** `src/js/engine/walk/walk-record.js`, `docs/work-orders/v211/v211.test.mjs`
-- **Budget:** 8
+- **Budget:** 16
 - **Test:** the cases named `WO-01 ...` in `docs/work-orders/v211/v211.test.mjs`. **Score:** 0.
 
 ---
@@ -33,7 +33,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-02: a copy of the path, with {t, p (copied), yaw, pitch (0 when absent)} added unless there is a last pose and the move is under minDist (0.05), the yaw turn (bimRecAngle) under minTurn (0.02) and the pitch change under minTurn.
 - **May use:** bimRecAngle (WO-01).
 - **Files:** `src/js/engine/walk/walk-record.js`, `docs/work-orders/v211/v211.test.mjs`
-- **Budget:** 15
+- **Budget:** 30
 - **Test:** the cases named `WO-02 ...` in `docs/work-orders/v211/v211.test.mjs`. **Score:** 0.
 
 ---
@@ -43,7 +43,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-03: null for no path; the first pose at or before the first time, the last after the last; else between the two poses around t, u = (t - a.t)/(b.t - a.t): positions and pitch linear, yaw a.yaw + bimRecAngle(a.yaw, b.yaw) u.
 - **May use:** bimRecAngle (WO-01).
 - **Files:** `src/js/engine/walk/walk-record.js`, `docs/work-orders/v211/v211.test.mjs`
-- **Budget:** 20
+- **Budget:** 40
 - **Test:** the cases named `WO-03 ...` in `docs/work-orders/v211/v211.test.mjs`. **Score:** 0+0+0+0+1+0 = 1.
 
 ---
@@ -53,7 +53,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-04: {length: the sum of the 3D steps, duration: last t - first t, poses: the count}; zeros for no path.
 - **May use:** nothing.
 - **Files:** `src/js/engine/walk/walk-record.js`, `docs/work-orders/v211/v211.test.mjs`
-- **Budget:** 8
+- **Budget:** 16
 - **Test:** the cases named `WO-04 ...` in `docs/work-orders/v211/v211.test.mjs`. **Score:** 0.
 
 ---

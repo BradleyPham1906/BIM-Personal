@@ -23,7 +23,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-01: the eigen-decomposition of a symmetric 3x3 by cyclic Jacobi rotations (at most 50; stop when the largest off-diagonal is under 1e-15): {values: the diagonal, vectors: the columns of the accumulated rotation, as three [x, y, z]}; the input unchanged.
 - **May use:** nothing.
 - **Files:** `src/js/engine/map/roofs-lidar.js`, `docs/work-orders/v191/v191.test.mjs`
-- **Budget:** 30
+- **Budget:** 60
 - **Test:** the cases named `WO-01 ...` in `docs/work-orders/v191/v191.test.mjs`. **Score:** 0+0+0+0+2+0 = 2.
 
 ---
@@ -33,7 +33,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-02: centroid c, the covariance (divided by n), its eigenvector of the smallest eigenvalue as n, flipped so n[2] >= 0; rms the root mean square of the points' signed distances to the plane. {c, n, rms}; null for fewer than 3 points.
 - **May use:** bimRoofJacobi (WO-01).
 - **Files:** `src/js/engine/map/roofs-lidar.js`, `docs/work-orders/v191/v191.test.mjs`
-- **Budget:** 20
+- **Budget:** 40
 - **Test:** the cases named `WO-02 ...` in `docs/work-orders/v191/v191.test.mjs`. **Score:** 0+0+0+0+1+0 = 1.
 
 ---
@@ -43,7 +43,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-03: the points whose (x, y) is inside the ring (even-odd), in order.
 - **May use:** nothing.
 - **Files:** `src/js/engine/map/roofs-lidar.js`, `docs/work-orders/v191/v191.test.mjs`
-- **Budget:** 15
+- **Budget:** 30
 - **Test:** the cases named `WO-03 ...` in `docs/work-orders/v191/v191.test.mjs`. **Score:** 0.
 
 ---
@@ -53,7 +53,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-04: cells of size cell (1 when not positive) from the ring's minimum corner, kept while their centre is before the maximum; those whose centre is in the ring are the footprint's; the share of them holding at least one point (by floor((x - x0)/cell), floor((y - y0)/cell)); 0 for none.
 - **May use:** bimRoofInRing (WO-03).
 - **Files:** `src/js/engine/map/roofs-lidar.js`, `docs/work-orders/v191/v191.test.mjs`
-- **Budget:** 25
+- **Budget:** 50
 - **Test:** the cases named `WO-04 ...` in `docs/work-orders/v191/v191.test.mjs`. **Score:** 0+0+0+0+1+0 = 1.
 
 ---
@@ -63,7 +63,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-05: c[2] - (n[0](x - c[0]) + n[1](y - c[1])) / n[2]; null when |n[2]| < 1e-12.
 - **May use:** nothing.
 - **Files:** `src/js/engine/map/roofs-lidar.js`, `docs/work-orders/v191/v191.test.mjs`
-- **Budget:** 8
+- **Budget:** 16
 - **Test:** the cases named `WO-05 ...` in `docs/work-orders/v191/v191.test.mjs`. **Score:** 0.
 
 ---

@@ -23,7 +23,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-01: JSON with object keys sorted, keys whose value is undefined left out, numbers as String(Number(x.toPrecision(12))), non-finite numbers and null and undefined as null, strings and booleans by JSON.stringify, arrays in order.
 - **May use:** nothing.
 - **Files:** `src/js/engine/history/hub-files.js`, `docs/work-orders/v216/v216.test.mjs`
-- **Budget:** 25
+- **Budget:** 50
 - **Test:** the cases named `WO-01 ...` in `docs/work-orders/v216/v216.test.mjs`. **Score:** 0+0+0+0+1+0 = 1.
 
 ---
@@ -33,7 +33,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-02: 32-bit FNV-1a over the string's char codes (offset 0x811c9dc5, prime 16777619, written as the shifts h + (h<<1) + (h<<4) + (h<<7) + (h<<8) + (h<<24), unsigned), as 8 lower-case hex digits.
 - **May use:** nothing.
 - **Files:** `src/js/engine/history/hub-files.js`, `docs/work-orders/v216/v216.test.mjs`
-- **Budget:** 8
+- **Budget:** 16
 - **Test:** the cases named `WO-02 ...` in `docs/work-orders/v216/v216.test.mjs`. **Score:** 0.
 
 ---
@@ -43,7 +43,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-03: 'elements/' + (bim.type, else t, else 'object') with characters outside A-Z a-z 0-9 _ - as _ + '/' + id with characters outside A-Z a-z 0-9 _ . - as _ + '.json'.
 - **May use:** nothing.
 - **Files:** `src/js/engine/history/hub-files.js`, `docs/work-orders/v216/v216.test.mjs`
-- **Budget:** 6
+- **Budget:** 15
 - **Test:** the cases named `WO-03 ...` in `docs/work-orders/v216/v216.test.mjs`. **Score:** 0.
 
 ---
@@ -53,7 +53,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-04: {schema (1 when absent), elements: {id: bimHubHash(bimHubCanonical(element))}} with ids in sorted order.
 - **May use:** bimHubCanonical (WO-01), bimHubHash (WO-02).
 - **Files:** `src/js/engine/history/hub-files.js`, `docs/work-orders/v216/v216.test.mjs`
-- **Budget:** 10
+- **Budget:** 20
 - **Test:** the cases named `WO-04 ...` in `docs/work-orders/v216/v216.test.mjs`. **Score:** 0.
 
 ---
@@ -63,7 +63,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-05: for each element, each of hostWallId, levelId, sourceId, buildingId (read from bim, else the element) that is a non-empty string naming no element: {id, field, missing}.
 - **May use:** nothing.
 - **Files:** `src/js/engine/history/hub-files.js`, `docs/work-orders/v216/v216.test.mjs`
-- **Budget:** 12
+- **Budget:** 24
 - **Test:** the cases named `WO-05 ...` in `docs/work-orders/v216/v216.test.mjs`. **Score:** 0.
 
 ---

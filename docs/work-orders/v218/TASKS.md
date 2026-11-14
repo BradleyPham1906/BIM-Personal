@@ -23,7 +23,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-01: ge h / (2 dist tan(fov / 2)); Infinity when dist is not positive.
 - **May use:** nothing.
 - **Files:** `src/js/engine/map/tiles3d.js`, `docs/work-orders/v218/v218.test.mjs`
-- **Budget:** 6
+- **Budget:** 15
 - **Test:** the cases named `WO-01 ...` in `docs/work-orders/v218/v218.test.mjs`. **Score:** 0.
 
 ---
@@ -33,7 +33,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-02: the distance from the eye to the sphere [x, y, z, r]'s surface, 0 inside.
 - **May use:** nothing.
 - **Files:** `src/js/engine/map/tiles3d.js`, `docs/work-orders/v218/v218.test.mjs`
-- **Budget:** 6
+- **Budget:** 15
 - **Test:** the cases named `WO-02 ...` in `docs/work-orders/v218/v218.test.mjs`. **Score:** 0.
 
 ---
@@ -43,7 +43,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-03: a tile whose error is within maxSse, or with no children, gives its content uri (when it has one); else ADD tiles (refine inherited from the parent, REPLACE by default) give their own uri and then their children's, REPLACE tiles only their children's, depth first in order.
 - **May use:** bimTilesSse (WO-01), bimTilesDist (WO-02).
 - **Files:** `src/js/engine/map/tiles3d.js`, `docs/work-orders/v218/v218.test.mjs`
-- **Budget:** 20
+- **Budget:** 40
 - **Test:** the cases named `WO-03 ...` in `docs/work-orders/v218/v218.test.mjs`. **Score:** 0+0+0+0+2+0 = 2.
 
 ---

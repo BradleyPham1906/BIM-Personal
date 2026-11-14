@@ -23,7 +23,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-01: plateCap = lot cov, capacity = plateCap levels, farLimit = lot far, achievable = the smaller; plates filled from the ground, each the smaller of plateCap and what is left (never under 0). {plateCap, capacity, farLimit, achievable, plates}.
 - **May use:** nothing.
 - **Files:** `src/js/engine/site-tools/generators.js`, `docs/work-orders/v213/v213.test.mjs`
-- **Budget:** 12
+- **Budget:** 24
 - **Test:** the cases named `WO-01 ...` in `docs/work-orders/v213/v213.test.mjs`. **Score:** 0.
 
 ---
@@ -33,7 +33,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-02: ftf 3.5 unless positive; {storeys: floor(h / ftf + 1e-9), top: storeys ftf}; {0, 0} when h is not positive.
 - **May use:** nothing.
 - **Files:** `src/js/engine/site-tools/generators.js`, `docs/work-orders/v213/v213.test.mjs`
-- **Budget:** 8
+- **Budget:** 16
 - **Test:** the cases named `WO-02 ...` in `docs/work-orders/v213/v213.test.mjs`. **Score:** 0.
 
 ---
@@ -43,7 +43,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-03: needs [{qty, per, ratio}] (ratio stalls per 'per' of qty): ceil(sum of qty / per ratio - 1e-9), lines with per or qty not positive left out; 0 (never -0) when the sum is 0.
 - **May use:** nothing.
 - **Files:** `src/js/engine/site-tools/generators.js`, `docs/work-orders/v213/v213.test.mjs`
-- **Budget:** 8
+- **Budget:** 16
 - **Test:** the cases named `WO-03 ...` in `docs/work-orders/v213/v213.test.mjs`. **Score:** 0.
 
 ---
@@ -53,7 +53,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-04: stall {w 2.6, d 5.5} and aisle 7.2 unless positive; perRow = floor(w / stall.w + 1e-9); a double module is 2 stall.d + aisle deep; doubleModules = floor(d / module + 1e-9); singleRows 1 when the rest is at least stall.d + aisle; stalls = perRow (2 doubleModules + singleRows).
 - **May use:** nothing.
 - **Files:** `src/js/engine/site-tools/generators.js`, `docs/work-orders/v213/v213.test.mjs`
-- **Budget:** 15
+- **Budget:** 30
 - **Test:** the cases named `WO-04 ...` in `docs/work-orders/v213/v213.test.mjs`. **Score:** 0.
 
 ---
@@ -63,7 +63,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-05: [] unless both positive; n = max(1, floor(frontage / target + 1e-9)) lots of frontage / n.
 - **May use:** nothing.
 - **Files:** `src/js/engine/site-tools/generators.js`, `docs/work-orders/v213/v213.test.mjs`
-- **Budget:** 10
+- **Budget:** 20
 - **Test:** the cases named `WO-05 ...` in `docs/work-orders/v213/v213.test.mjs`. **Score:** 0.
 
 ---

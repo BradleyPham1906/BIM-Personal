@@ -23,7 +23,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-01: p+1 zeros, then i/(n-p) for i = 1 .. n-p-1, then p+1 ones; [] unless n > p >= 1.
 - **May use:** nothing.
 - **Files:** `src/js/engine/drawing/nurbs.js`, `docs/work-orders/v183/v183.test.mjs`
-- **Budget:** 12
+- **Budget:** 24
 - **Test:** the cases named `WO-01 ...` in `docs/work-orders/v183/v183.test.mjs`. **Score:** 0.
 
 ---
@@ -33,7 +33,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-02: The NURBS Book A2.1: n-1 when u >= k[n]; p when u <= k[p]; else the binary search for k[mid] <= u < k[mid+1].
 - **May use:** nothing.
 - **Files:** `src/js/engine/drawing/nurbs.js`, `docs/work-orders/v183/v183.test.mjs`
-- **Budget:** 15
+- **Budget:** 30
 - **Test:** the cases named `WO-02 ...` in `docs/work-orders/v183/v183.test.mjs`. **Score:** 0+0+0+0+1+0 = 1.
 
 ---
@@ -43,7 +43,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-03: The NURBS Book A2.2: the p+1 non-zero basis values N[0..p] at u for that span, by the left/right triangular scheme.
 - **May use:** nothing.
 - **Files:** `src/js/engine/drawing/nurbs.js`, `docs/work-orders/v183/v183.test.mjs`
-- **Budget:** 15
+- **Budget:** 30
 - **Test:** the cases named `WO-03 ...` in `docs/work-orders/v183/v183.test.mjs`. **Score:** 0+0+0+0+2+0 = 2.
 
 ---
@@ -53,7 +53,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-04: the rational point: sum of pts[span-p+i] * w * N[i] divided by sum of w * N[i], weights 1 when c.w is absent.
 - **May use:** bimNurbsSpan (WO-02), bimNurbsBasis (WO-03).
 - **Files:** `src/js/engine/drawing/nurbs.js`, `docs/work-orders/v183/v183.test.mjs`
-- **Budget:** 15
+- **Budget:** 30
 - **Test:** the cases named `WO-04 ...` in `docs/work-orders/v183/v183.test.mjs`. **Score:** 0+0+0+0+1+0 = 1.
 
 ---
@@ -63,7 +63,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-05: the central difference (P(b) - P(a)) / (b - a) with a = max(0, u - h), b = min(1, u + h), h 1e-6 when not positive.
 - **May use:** bimNurbsPoint (WO-04).
 - **Files:** `src/js/engine/drawing/nurbs.js`, `docs/work-orders/v183/v183.test.mjs`
-- **Budget:** 8
+- **Budget:** 16
 - **Test:** the cases named `WO-05 ...` in `docs/work-orders/v183/v183.test.mjs`. **Score:** 0.
 
 ---
@@ -73,7 +73,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-06: points at parameters from 0 to 1: split each interval [a, b] in half while (the midpoint's distance from the chord P(a)P(b) is over tol, or b - a > 0.25) and b - a > 1e-6, depth first left to right; the point at 0 then the end of each kept interval. tol 0.001 when not positive.
 - **May use:** bimNurbsPoint (WO-04).
 - **Files:** `src/js/engine/drawing/nurbs.js`, `docs/work-orders/v183/v183.test.mjs`
-- **Budget:** 30
+- **Budget:** 60
 - **Test:** the cases named `WO-06 ...` in `docs/work-orders/v183/v183.test.mjs`. **Score:** 0+0+0+0+2+0 = 2.
 
 ---

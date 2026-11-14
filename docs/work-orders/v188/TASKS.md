@@ -23,7 +23,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-01: null unless all three are positive; h = widthM hPx / wPx; {w, h, corners [[0,0],[w,0],[w,h],[0,h]], uv [[0,1],[1,1],[1,0],[0,0]]}.
 - **May use:** nothing.
 - **Files:** `src/js/engine/drawing/flow-picture.js`, `docs/work-orders/v188/v188.test.mjs`
-- **Budget:** 12
+- **Budget:** 24
 - **Test:** the cases named `WO-01 ...` in `docs/work-orders/v188/v188.test.mjs`. **Score:** 0.
 
 ---
@@ -33,7 +33,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-02: ratio 0.6 and gap 1.2 unless positive; {w: longest line's length * h * ratio, h: h + (lines - 1) h gap}; {w: 0, h: 0} for no lines or h not above 0.
 - **May use:** nothing.
 - **Files:** `src/js/engine/drawing/flow-picture.js`, `docs/work-orders/v188/v188.test.mjs`
-- **Budget:** 10
+- **Budget:** 20
 - **Test:** the cases named `WO-02 ...` in `docs/work-orders/v188/v188.test.mjs`. **Score:** 0.
 
 ---
@@ -43,7 +43,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-03: [minX, minY, maxX, maxY] of the points' first two coordinates; null for none.
 - **May use:** nothing.
 - **Files:** `src/js/engine/drawing/flow-picture.js`, `docs/work-orders/v188/v188.test.mjs`
-- **Budget:** 8
+- **Budget:** 16
 - **Test:** the cases named `WO-03 ...` in `docs/work-orders/v188/v188.test.mjs`. **Score:** 0.
 
 ---
@@ -53,7 +53,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-04: (1-u)(1-v) q0 + u(1-v) q1 + u v q2 + (1-u) v q3, per coordinate.
 - **May use:** nothing.
 - **Files:** `src/js/engine/drawing/flow-picture.js`, `docs/work-orders/v188/v188.test.mjs`
-- **Budget:** 8
+- **Budget:** 16
 - **Test:** the cases named `WO-04 ...` in `docs/work-orders/v188/v188.test.mjs`. **Score:** 0.
 
 ---
@@ -63,7 +63,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-05: each point [x, y, z]: u, v its place in the box; the patch point plus the unit normal (dP/du cross dP/dv, the bilinear partials: du = (1-v)(q1-q0) + v(q2-q3), dv = (1-u)(q3-q0) + u(q2-q1)) times z. null when the box has no width or height.
 - **May use:** bimFlowBilinear (WO-04).
 - **Files:** `src/js/engine/drawing/flow-picture.js`, `docs/work-orders/v188/v188.test.mjs`
-- **Budget:** 25
+- **Budget:** 50
 - **Test:** the cases named `WO-05 ...` in `docs/work-orders/v188/v188.test.mjs`. **Score:** 0+0+0+0+2+0 = 2.
 
 ---

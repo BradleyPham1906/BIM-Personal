@@ -23,7 +23,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-01: w l t less each hole's w l times its depth (its t when positive, capped at t; else t); never under 0.
 - **May use:** nothing.
 - **Files:** `src/js/engine/bim/cost-plan.js`, `docs/work-orders/v222/v222.test.mjs`
-- **Budget:** 8
+- **Budget:** 16
 - **Test:** the cases named `WO-01 ...` in `docs/work-orders/v222/v222.test.mjs`. **Score:** 0.
 
 ---
@@ -33,7 +33,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-02: order = q (1 + waste) (waste 0 unless 0 or more), material = order matRate, hours = q hoursPer, labour = hours labRate (missing rates 0); {order, material, hours, labour, total: material + labour}.
 - **May use:** nothing.
 - **Files:** `src/js/engine/bim/cost-plan.js`, `docs/work-orders/v222/v222.test.mjs`
-- **Budget:** 10
+- **Budget:** 20
 - **Test:** the cases named `WO-02 ...` in `docs/work-orders/v222/v222.test.mjs`. **Score:** 0.
 
 ---
@@ -43,7 +43,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-03: any share not 0 or more, or a total over 1 (by 1e-12): {error: 'invalid allocation'}; else {assigned: amount times each share, unallocated: amount - amount times the total}.
 - **May use:** nothing.
 - **Files:** `src/js/engine/bim/cost-plan.js`, `docs/work-orders/v222/v222.test.mjs`
-- **Budget:** 12
+- **Budget:** 24
 - **Test:** the cases named `WO-03 ...` in `docs/work-orders/v222/v222.test.mjs`. **Score:** 0.
 
 ---
@@ -53,7 +53,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-04: items [{amount, split: {bucket: share}}]: each bucket's sum of amount times share.
 - **May use:** nothing.
 - **Files:** `src/js/engine/bim/cost-plan.js`, `docs/work-orders/v222/v222.test.mjs`
-- **Budget:** 8
+- **Budget:** 16
 - **Test:** the cases named `WO-04 ...` in `docs/work-orders/v222/v222.test.mjs`. **Score:** 0.
 
 ---

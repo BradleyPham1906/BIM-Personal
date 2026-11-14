@@ -23,7 +23,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-01: gross = qty rate periods (periods 1 unless positive; missing qty or rate 0); vacancy used when 0 <= v < 1, else 0; {name (or ''), gross, effective: gross (1 - v)}.
 - **May use:** nothing.
 - **Files:** `src/js/engine/bim/proforma.js`, `docs/work-orders/v214/v214.test.mjs`
-- **Budget:** 8
+- **Budget:** 16
 - **Test:** the cases named `WO-01 ...` in `docs/work-orders/v214/v214.test.mjs`. **Score:** 0.
 
 ---
@@ -33,7 +33,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-02: {gross, effective (sums of the lines), opex (0 unless positive), noi: effective - opex}.
 - **May use:** bimPfmLine (WO-01).
 - **Files:** `src/js/engine/bim/proforma.js`, `docs/work-orders/v214/v214.test.mjs`
-- **Budget:** 10
+- **Budget:** 20
 - **Test:** the cases named `WO-02 ...` in `docs/work-orders/v214/v214.test.mjs`. **Score:** 0.
 
 ---
@@ -43,7 +43,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-03: the sum of the items' finite numeric amounts.
 - **May use:** nothing.
 - **Files:** `src/js/engine/bim/proforma.js`, `docs/work-orders/v214/v214.test.mjs`
-- **Budget:** 6
+- **Budget:** 15
 - **Test:** the cases named `WO-03 ...` in `docs/work-orders/v214/v214.test.mjs`. **Score:** 0.
 
 ---
@@ -53,7 +53,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-04: {yieldOnCost: noi / cost (null unless cost > 0), value: noi / cap (null unless cap > 0), profit: value - cost, marginOnCost: profit / cost} with nulls carried.
 - **May use:** nothing.
 - **Files:** `src/js/engine/bim/proforma.js`, `docs/work-orders/v214/v214.test.mjs`
-- **Budget:** 8
+- **Budget:** 16
 - **Test:** the cases named `WO-04 ...` in `docs/work-orders/v214/v214.test.mjs`. **Score:** 0.
 
 ---
