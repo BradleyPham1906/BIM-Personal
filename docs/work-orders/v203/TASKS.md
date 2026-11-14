@@ -114,7 +114,7 @@ modules, the build. `npm test` 259 of 259.
 
 ---
 
-## [ ] WO-07 [Cline] `bimWalkJoy(cx, cy, x, y, R, dead)`
+## [x] WO-07 [Cline] `bimWalkJoy(cx, cy, x, y, R, dead)`
 
 - **It must:** return `{s: 0, f: 0}` when `R` is not a number above 0. Else `s = (x - cx) / R`, `f = (cy - y) / R` and
   `L = Math.sqrt(s * s + f * f)`; when `L < dead` return `{s: 0, f: 0}`; when `L > 1` divide both by `L`; return `{s: s, f: f}`.

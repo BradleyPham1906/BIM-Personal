@@ -79,3 +79,19 @@ function bimWalkCamThird(p, eye, yaw, pitch, boom, hit) {
     }
     return {tx: p[0], ty: p[1] + eye, tz: p[2], yaw: yaw, pitch: pitch, dist: dist};
 }
+
+/* WO-07 bimWalkJoy(cx, cy, x, y, R, dead): the on-screen joystick as {s, f} */
+function bimWalkJoy(cx, cy, x, y, R, dead) {
+    if (typeof R !== 'number' || !isFinite(R) || R <= 0) {
+        return {s: 0, f: 0};
+    }
+    var s = (x - cx) / R, f = (cy - y) / R;
+    var l = Math.sqrt(s * s + f * f);
+    if (l < dead) {
+        return {s: 0, f: 0};
+    }
+    if (l > 1) {
+        s /= l; f /= l;
+    }
+    return {s: s, f: f};
+}
