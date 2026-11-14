@@ -54413,6 +54413,18 @@ function bimWalkKeys(h, j) {
     }
     ctx.restore();
   }
+
+
+  /* ================= __acad3dV224: Track E, field work: positions without GPS and step-by-step instructions, the pure part =================
+     docs/research/research-field-autonomy.md and docs/work-orders/v224/SPEC.md. Bearings, where two meet, a position from
+     several sightings with its spread, the next field step. Each function is a work order, added below as it is built;
+     none uses another file's names. */
+
+
+  /* ================= __acad3dV227: Track D, the drone bridge project: flight planning, the pure part =================
+     docs/research/research-bridge-splatting.md and docs/work-orders/v227/SPEC.md. Photogrammetry flight planning: GSD, the
+     height for a GSD, a photo's footprint, spacing for overlap, flight lines. Each function is a work order, added below as
+     it is built; none uses another file's names. */
   /* ================= __acad3dV125: the analytical model =================
      Derived on every call from the live columns and beams, never stored: the lines cannot fall out
      of step with the members they stand for. Units kN, m, kPa. */
@@ -54909,6 +54921,12 @@ function bimWalkKeys(h, j) {
     }
     return out;
   }
+
+
+  /* ================= __acad3dV226: Track C, the PennDOT LRFD input writer, the pure part =================
+     docs/research/penndot/PENNDOT_INPUT_SPEC.md and docs/work-orders/v226/SPEC.md. PennDOT's LRFD programs' commands:
+     meaning by program, the shared core, STLRFD's order. Each function is a work order, added below as it is built; none
+     uses another file's names. */
   /* ================= __acad3dV125: the analysis display ================= */
   var BIM_DIAGRAMS={M:'Bending moment (kN\u00b7m)',N:'Axial force (kN)',V:'Shear (kN)'};
   /* what the solve depends on: when it changes, the result on screen is out of date */
@@ -66630,6 +66648,11 @@ function bimLyDupNumbers(entries) {
     var g=document.getElementById('a3d-glcanvas');
     if(g&&el.cv){if(g.width!==el.cv.width)g.width=el.cv.width;if(g.height!==el.cv.height)g.height=el.cv.height;}
   }
+
+
+  /* ================= __acad3dV225: The OpenBridge UI foundation, the pure part =================
+     docs/research/research-openbridge.md and docs/work-orders/v225/SPEC.md. Relative luminance and contrast (WCAG 2), the
+     levels, a theme for a mode. Each function is a work order, added below as it is built; none uses another file's names. */
   /* __acad3dV72: the canvas has TWO sizes and the code had been using one of them for both
      jobs. el.cv.width/height is the BACKING STORE in device pixels; cvW()/cvH() are the
      LOGICAL size in CSS pixels, which is the space cvXY() -- and therefore every mouse event --
