@@ -114,3 +114,15 @@ def bim_ifcos_add_wall(name, x0, y0, x1, y1, height, thickness):
         return {"guid": wall.GlobalId}
     except Exception:
         return {"error": "unreadable"}
+
+
+def bim_ifcos_write_read(path):
+    global _bim_ifcos_file
+    try:
+        f = _bim_ifcos_file
+        if f is None:
+            return {"error": "no project"}
+        f.write(path)
+        return {"bytes": os.path.getsize(path), "summary": bim_ifcos_summary(path)}
+    except Exception:
+        return {"error": "unreadable"}

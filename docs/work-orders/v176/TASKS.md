@@ -71,7 +71,7 @@ Scores are from `../ROUTING.md` (files, logic, understanding, judgment, trickine
 
 ---
 
-## [ ] WO-04 [Cline] `bim_ifcos_write_read(path)`
+## [x] WO-04 [Cline] `bim_ifcos_write_read(path)`
 
 - **It must:** no project: `{"error": "no project"}`; else `_bim_ifcos_file.write(path)` and answer
   `{"bytes": os.path.getsize(path), "summary": bim_ifcos_summary(path)}`.
