@@ -38,7 +38,7 @@ Scores are from `../ROUTING.md` (files, logic, understanding, judgment, trickine
 
 ---
 
-## [ ] WO-02 [Cline] `bim_ifcos_new_project(name, elevation)`
+## [x] WO-02 [Cline] `bim_ifcos_new_project(name, elevation)`
 
 - **It must:** do exactly what SPEC part 4 lists, in that order, keep the new file in `_bim_ifcos_file`
   (`global _bim_ifcos_file`), and answer `bim_ifcos_summary('')`. Units in metres: three `unit.add_si_unit` calls
@@ -54,7 +54,7 @@ Scores are from `../ROUTING.md` (files, logic, understanding, judgment, trickine
 
 ---
 
-## [ ] WO-03 [Cline] `bim_ifcos_add_wall(name, x0, y0, x1, y1, height, thickness)`
+## [x] WO-03 [Cline] `bim_ifcos_add_wall(name, x0, y0, x1, y1, height, thickness)`
 
 - **It must:** follow SPEC part 4: the first `IfcBuildingStorey` of `_bim_ifcos_file`; the Body sub-context (the
   `IfcGeometricRepresentationSubContext` whose `ContextIdentifier` is `"Body"`); length `math.hypot(x1 - x0, y1 - y0)`;
@@ -71,7 +71,7 @@ Scores are from `../ROUTING.md` (files, logic, understanding, judgment, trickine
 
 ---
 
-## [ ] WO-04 [Cline] `bim_ifcos_write_read(path)`
+## [x] WO-04 [Cline] `bim_ifcos_write_read(path)`
 
 - **It must:** no project: `{"error": "no project"}`; else `_bim_ifcos_file.write(path)` and answer
   `{"bytes": os.path.getsize(path), "summary": bim_ifcos_summary(path)}`.
@@ -82,8 +82,11 @@ Scores are from `../ROUTING.md` (files, logic, understanding, judgment, trickine
 
 ---
 
-## [ ] WO-05 [Claude] Review, then V177's spec
+## [x] WO-05 [Claude] Review, then V177's research
 
 Claude's: review WO-01 to WO-04 against SPEC part 4 and the research; record the times in the research note; write
 V177's research and spec (the wheels pinned in `runtime/` with the LGPL and GPL texts, loaded in the Python worker;
 Save as IFC; editable imported walls and slabs).
+
+Done 2026-11-13: WO-01 to WO-04 audited ok (`GATE-LOG.md`); the times and V177's research are in
+`docs/research/research-ifcopenshell-app.md`. V177's spec waits for the owner's decisions D1 to D4 there.
