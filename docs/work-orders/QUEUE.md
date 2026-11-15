@@ -7,9 +7,9 @@ Cline: `/ship-task.md` with no arguments takes the first open `[Cline]` task bel
 
 The owner's decisions (2026-11-14): for every phase below, all as its research recommends (each SPEC lists them;
 overrule any there). V177's D1 to D4 and That Open's four were answered 2026-11-13. The phases are numbered in one
-sequence, 175c to 227, in `docs/dev/PIPELINE.md`; there are no "later" rows.
+sequence, 175c to 232 (228 to 232 are algorithmic design; the owner's thirteen decisions, 2026-11-15), in `docs/dev/PIPELINE.md`; there are no "later" rows.
 
-## Ready for Cline, in order (222 tasks)
+## Ready for Cline, in order (232 tasks)
 
 | Phase | What | Tasks | Where | Tests |
 |---|---|---|---|---|
@@ -56,6 +56,8 @@ sequence, 175c to 227, in `docs/dev/PIPELINE.md`; there are no "later" rows.
 | v225 | The OpenBridge UI foundation | WO-01 to WO-04 (4) | `v225/TASKS.md` | `v225/v225.test.mjs` |
 | v226 | Track C, the PennDOT LRFD input writer | WO-01 to WO-03 (3) | `v226/TASKS.md` | `v226/v226.test.mjs` |
 | v227 | Track D, the drone bridge project: flight planning | WO-01 to WO-05 (5) | `v227/TASKS.md` | `v227/v227.test.mjs` |
+| v228 | Generated elements: a stable key, re-run in place, hand overrides | WO-01 to WO-05 (5) | `v228/TASKS.md` | `v228/v228.test.mjs` |
+| v229 | A split grammar for facades | WO-01 to WO-05 (5) | `v229/TASKS.md` | `v229/v229.test.mjs` |
 
 Every test was run against a reference version that was not committed (all passing) and against the empty files
 (every case failing), so a task is done exactly when its own cases pass. Each phase's new file is already in the

@@ -2,8 +2,7 @@
 
 Research, 2026-11-14 and 2026-11-15. Levels as in `research-protocol.md`: P primary, S secondary, U a pointer
 only. The researchers' notes, with their search logs and full references, are in
-`research-algorithmic-design/`; the experiments are in `experiments/algorithmic-design/`. This note is not
-approval to build anything: the owner's decisions are asked in part 11.
+`research-algorithmic-design/`; the experiments are in `experiments/algorithmic-design/`. The owner's decisions are in part 11 (answered 2026-11-15).
 
 ## 1. Abstract
 
@@ -404,7 +403,11 @@ from Dynamo's file. Python through the existing worker (IfcOpenShell's API) is a
 ## 11. The owner's decisions
 
 Asked together, 2026-11-15, 1 to 10 after round one and 11 to 13 after round two. Each has the
-recommendation and what it rests on. Not yet answered.
+recommendation and what it rests on.
+
+**Answered 2026-11-15: all thirteen as recommended** (the owner: "Just do whats recommended"). The phases are
+V228 to V232 in `docs/dev/PIPELINE.md`; V228 and V229 have their work orders (`docs/work-orders/v228/`,
+`v229/`); V230 to V232 get theirs after the first two are wired.
 
 1. **The approach.** Generators as records with typed parameters and rules as data first; the model graph and
    the node editor after (option A, part 5). Or the node editor first (B)? Recommended: A.
