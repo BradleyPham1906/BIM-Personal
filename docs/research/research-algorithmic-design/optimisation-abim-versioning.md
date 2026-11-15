@@ -80,3 +80,34 @@ To be filled.
    architectural design optimization. Journal of Computational Design and Engineering 6(3), 414-428.
    https://academic.oup.com/jcde/article/6/3/414/5732355 . Read: sections 2.1 to 2.3, 3.1 to 3.7, 4.1 to 4.8,
    5.1, 6, the footnotes and reference list, through the fetch tool. Read 2026-11-14. Level P.
+
+## Interim findings log (2026-11-15; to be folded into the parts above)
+
+- NSGA-II (Deb, Pratap, Agarwal, Meyarivan 2002), P, PDF read as text (sections III, IV intro, VI.A): fast
+  non-dominated sort (domination count and dominated set per solution, fronts peeled off), crowding distance
+  (per objective sort, boundary points infinite, interior points add the normalised gap between neighbours),
+  crowded comparison (lower rank wins; same rank, larger distance wins), main loop (parents + offspring = 2N,
+  sort, fill by fronts, cut the last front by crowding distance, then binary tournament + SBX + polynomial
+  mutation). Constraint handling: feasible beats infeasible; two infeasible, the smaller violation wins; two
+  feasible, ordinary domination. Their runs: population 100, 250 generations = 25,000 evaluations.
+- Rutten, "Evolutionary Principles applied to Problem Solving" (his blog, 2011), P: evolutionary solvers are
+  flexible, forgiving, give harvestable intermediate answers and allow a dialogue; but "slow. Dead slow": his
+  example is 50 generations of 50 = 2,500 evaluations, two days at a minute each; no guaranteed solution.
+- Feist, Barreto, Ferreira, Leitao 2016, "Portable generative design for BIM", P (full text). Correction to the
+  brief: it is in CAADRIA 2016 (pp. 147-156), not eCAADe. RosettaBIM = an abstraction layer of parameterised
+  operations that create BIM objects (slab, wall, door, stairs ...) + a plug-in per BIM tool (Revit, ArchiCAD).
+  A window operation must receive its host wall. Defaults for family/properties keep programs portable. The
+  BIM program is shorter than the CAD one because the operations carry the semantics. Booleans are restricted
+  in BIM tools, so wall lengths were computed from the slab outline instead. IFC round trip between the two
+  tools lost families (stairs, roofs became generic objects).
+- Hypar Elements, P (README and Elements.Serialization.IFC/src read as text; commit e13edf59, 2026-11-12, MIT):
+  typed elements map to typed IFC entities (Beam -> IfcBeam, Column -> IfcColumn, StandardWall ->
+  IfcWallStandardCase, Wall -> IfcWall, Floor -> IfcSlab FLOOR, Space -> IfcSpace, Panel -> IfcPlate, Brace ->
+  IfcMember, Opening -> IfcOpeningElement with IfcRelVoidsElement); any other GeometricElement and Mass fall
+  back to IfcBuildingElementProxy. The IFC GlobalId is derived from the element's own Id (IfcGuid.ToIfcGuid).
+  README: "An Element is a uniquely identifiable piece of a building system"; proxies make a model hard to
+  reason about semantically.
+- Ma, Wang, Wang, Xiang, Sun 2021, "Generative Design in BIM: Approaches and Requirements", Sensors 21(16) 5439,
+  P (first 100,000 characters): 93 Scopus documents 2010-2020, 28 analysed. It is in Sensors, not Automation in
+  Construction. It gives no "70% early massing" figure; the nearest number is 20 of 28 studies (71%) whose
+  objective is "support design processes", which is not a design stage. The 70% claim stays U.
