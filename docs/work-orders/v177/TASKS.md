@@ -196,7 +196,7 @@ After each task: `node --check src/js/engine/io/ifc-save.js`, its own cases, the
 
 ---
 
-## [ ] WO-12 [Cline] `bimIfcSavePrism(o, lv, base)`
+## [x] WO-12 [Cline] `bimIfcSavePrism(o, lv, base)`
 
 - **It must:** follow SPEC part 7 "WO-12", then `BIM_IFC_SAVE.prism=bimIfcSavePrism;`.
 - **Example:** a floor with baseY 3.2 and thickness 0.25 has `base: 2.95, depth: 0.25, cls: "IfcSlab"`; its profile `[[0, 0], [6, 0], [6, 4], [0, 4]]` becomes `pts: [[0, 0], [6, 0], [6, -4], [0, -4]]`.

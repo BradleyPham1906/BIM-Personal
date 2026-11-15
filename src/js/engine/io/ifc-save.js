@@ -85,4 +85,22 @@ function bimIfcSaveWalls(o, lv, base){
   return walls;
 }
 BIM_IFC_SAVE.walls = bimIfcSaveWalls;
+function bimIfcSavePrism(o, lv, base){
+  var b=o&&o.bim,item,k,i,pts=[],cls,dpth;
+  if(!b||bimIfcSaveMoved(o))return null;
+  if(b.type==='floor'&&Array.isArray(b.profile)&&b.profile.length>=3&&b.thickness>0){
+    cls='IfcSlab';pts=b.profile;dpth=b.thickness;
+  }else if(b.type==='column'&&!b.section&&b.center&&b.width>0&&b.depth>0&&b.height>0){
+    cls='IfcColumn';pts=bimRectFootprint(b.center,b.width,b.depth,b.rotation||0);dpth=b.height;
+  }else return null;
+  item={cls:cls};
+  for(k in base)if(base.hasOwnProperty(k))item[k]=base[k];
+  item.level=bimIfcSaveLevel(o,lv,b.baseY);
+  for(i=0;i<pts.length;i++)pts[i]=bimIfcSavePt(pts[i]);
+  item.pts=pts;
+  item.base=bimIfcSaveNum(cls==='IfcSlab'?b.baseY-b.thickness:b.baseY);
+  item.depth=bimIfcSaveNum(dpth);
+  return item;
+}
+BIM_IFC_SAVE.prism=bimIfcSavePrism;
 export { BIM_IFC_SAVE };
