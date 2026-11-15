@@ -1,0 +1,29 @@
+node v22.23.4; the grammar core is 50 lines of ES5
+
+e02. One facade of 8 bays by 10 upper storeys and a ground floor, on four sides of a 9.6 m box:
+leaves 1632, derivation steps 2325, by rule {"Shopfront":32,"Pier":640,"Spandrel":640,"Window":320}
+median of 200 derivations: 0.442 ms
+a 96 by 48 m, 40-storey box: leaves 48240, median 36.736 ms
+
+e03. Windows before and after one change; an id is the path of rule names and indexes.
+
+| change | windows before | after | ids kept | ids lost | new ids | median move of a kept id (m) | kept ids that moved over 0.6 m |
+|---|---|---|---|---|---|---|---|
+| window 0.8 to 1.0 m wide (counts the same) | 320 | 320 | 320 | 0 | 0 | 0.00 | 0 |
+| sill 0.9 to 1.1 m (counts the same) | 320 | 320 | 320 | 0 | 0 | 0.20 | 0 |
+| building 9.6 to 10.0 m wide (8 bays become 9 on two sides: ceil) | 320 | 340 | 320 | 0 | 20 | 0.40 | 70 |
+| bay 1.2 to 1.0 m (8 bays become 10) | 320 | 400 | 320 | 0 | 80 | 1.08 | 220 |
+| building 9.6 to 12.0 m wide (8 bays become 10 on two sides) | 320 | 360 | 320 | 0 | 40 | 2.40 | 160 |
+| one storey more (10 to 11) | 320 | 352 | 320 | 0 | 32 | 0.00 | 0 |
+| ground floor 4.5 to 5.5 m, height kept (10 storeys stay 10, each shorter) | 320 | 320 | 320 | 0 | 0 | 0.60 | 160 |
+
+The repeat count, 3.5 m storeys in a given height: ceil (the 2006 paper) against round (least stretching):
+
+| height (m) | ceil: count, each (m) | round: count, each (m) |
+|---|---|---|
+| 35 | 10, 3.500 | 10, 3.500 |
+| 35.1 | 11, 3.191 | 10, 3.510 |
+| 36.7 | 11, 3.336 | 10, 3.670 |
+| 36.8 | 11, 3.345 | 11, 3.345 |
+| 38.4 | 11, 3.491 | 11, 3.491 |
+| 1 | 1, 1.000 | 1, 1.000 |
