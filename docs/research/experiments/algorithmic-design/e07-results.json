@@ -1,0 +1,42 @@
+{
+ "chromium": "153.0.8010.12",
+ "file://": {
+  "protocol": "file:",
+  "origin": "file://",
+  "openSameFile": "opened",
+  "openBlank": "opened",
+  "blankDirect": "ok: canvas CANVAS, opener can set a variable: 42",
+  "openBlob": "opened",
+  "documentPictureInPicture": "API present",
+  "postMessageSameFile": "ok",
+  "postMessageBlob": "ok",
+  "broadcastChannel": "ok",
+  "directAccessSameFile": "refused: SecurityError"
+ },
+ "http": {
+  "protocol": "http:",
+  "origin": "http://127.0.0.1:41595",
+  "openSameFile": "opened",
+  "openBlank": "opened",
+  "blankDirect": "ok: canvas CANVAS, opener can set a variable: 42",
+  "openBlob": "opened",
+  "documentPictureInPicture": "API present",
+  "postMessageSameFile": "ok",
+  "postMessageBlob": "ok",
+  "broadcastChannel": "ok",
+  "directAccessSameFile": "ok: e07 model"
+ },
+ "http, Pixel 7 emulation": {
+  "protocol": "http:",
+  "origin": "http://127.0.0.1:41595",
+  "openSameFile": "opened",
+  "openBlank": "opened",
+  "blankDirect": "ok: canvas CANVAS, opener can set a variable: 42",
+  "openBlob": "opened",
+  "documentPictureInPicture": "API present",
+  "postMessageSameFile": "ok",
+  "postMessageBlob": "ok",
+  "broadcastChannel": "ok",
+  "directAccessSameFile": "ok: e07 model"
+ }
+}
