@@ -1,5 +1,8 @@
 # V177 work orders, step 1: the adapter that writes a model as an IFC file
 
+**Step 1 (WO-01 to WO-08) is done: do not open or edit `src/py/bim_ifcos.py`.** The open tasks are WO-09 to WO-15
+under "Step 2a" further down: JavaScript, in `src/js/engine/io/ifc-save.js` only.
+
 Spec: `SPEC.md` in this folder (part 3 is the data, part 4 has every function in full). Implementation target: local
 `main`. One task at a time, top to bottom. `[ ]` open, `[x]` done (its tests pass), `[skipped]` left for Claude.
 
