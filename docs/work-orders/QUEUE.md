@@ -9,12 +9,10 @@ The owner's decisions (2026-11-14): for every phase below, all as its research r
 overrule any there). V177's D1 to D4 and That Open's four were answered 2026-11-13. The phases are numbered in one
 sequence, 175c to 227, in `docs/dev/PIPELINE.md`; there are no "later" rows.
 
-## Ready for Cline, in order (227 tasks)
+## Ready for Cline, in order (213 tasks)
 
 | Phase | What | Tasks | Where | Tests |
 |---|---|---|---|---|
-| v175c | One paper space, steps 2-3 | WO-11 to WO-17 (7) | `v175c/TASKS-step2.md` | `v175c/v175c-step2.test.mjs` |
-| v177 | IFC save, step 2a: the model as data (main's orders) | WO-09 to WO-15 (7) | `v177/TASKS.md` | `tests/unit/ifc-save.test.mjs` |
 | v178 | Presentation P3, the report (Site Analysis and DA), styles, export | WO-01 to WO-12 (12) | `v178/TASKS.md` | `v178/v178.test.mjs` |
 | v179 | Interiors I1, programme and adjacency (and I2's first measurement) | WO-01 to WO-09 (9) | `v179/TASKS.md` | `v179/v179.test.mjs` |
 | v180 | Interiors I2, clearance and ergonomics | WO-01 to WO-06 (6) | `v180/TASKS.md` | `v180/v180.test.mjs` |
@@ -69,5 +67,6 @@ records.
 | Phase | Where |
 |---|---|
 | v203 Walkthrough W1 | WO-01 to WO-08 shipped by Cline; Claude's C-03 to C-08 on its branch (`claude/exciting-clarke-2e2noz`) |
-| v177 | Step 1 shipped by Cline and audited (2026-11-14); step 2a is in the table above; then Claude's step 2b (the wheels, the worker, File > Export > IFC, Make editable) |
+| v175c | WO-11 to WO-17 shipped (2026-11-14); then Claude's WO-18 (one editor and one print in the app) and WO-19 |
+| v177 | Steps 1, 2a and 2b shipped (2a: WO-09 to WO-15, 2026-11-15, to audit); left for Claude: the browser check of File > Export > IFC on the real functions, Make editable |
 | v194 | T-07 shipped; Claude wires its looks into the materials |

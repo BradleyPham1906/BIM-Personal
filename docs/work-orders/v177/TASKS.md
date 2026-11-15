@@ -207,7 +207,7 @@ After each task: `node --check src/js/engine/io/ifc-save.js`, its own cases, the
 
 ---
 
-## [ ] WO-13 [Cline] `bimIfcSaveOpening(o, walls, base)`
+## [x] WO-13 [Cline] `bimIfcSaveOpening(o, walls, base)`
 
 - **It must:** follow SPEC part 7 "WO-13", then `BIM_IFC_SAVE.opening=bimIfcSaveOpening;`. A host id of `"w"` must not match the wall `"w1"`: compare the whole id, or the id up to `#`.
 - **Example:** a door with center `[2, 0.05]`, width 0.9, height 2.1 on the wall item `{id: "w1", x0: 0, y0: 0, x1: 6, y1: 0, base: 0, thickness: 0.2}` gives `host: "w1", x: 2, y: 0, a: 0, base: 0, depth: 0.4, cls: "IfcDoor"`.
@@ -218,7 +218,7 @@ After each task: `node --check src/js/engine/io/ifc-save.js`, its own cases, the
 
 ---
 
-## [ ] WO-14 [Cline] `bimIfcSaveMesh(o, m, lv, base)`
+## [x] WO-14 [Cline] `bimIfcSaveMesh(o, m, lv, base)`
 
 - **It must:** follow SPEC part 7 "WO-14", then `BIM_IFC_SAVE.mesh=bimIfcSaveMesh;`.
 - **Example:** a corner `[1, 2, 1]` of an element with pos `[10, 3.2, 0]` becomes `[11, -1, 5.2]`; the face `[0, 1, 2, 3]` becomes `[0, 1, 2]` and `[0, 2, 3]`.
@@ -229,7 +229,7 @@ After each task: `node --check src/js/engine/io/ifc-save.js`, its own cases, the
 
 ---
 
-## [ ] WO-15 [Cline] `bimIfcSaveModel(name, levels, entries)`
+## [x] WO-15 [Cline] `bimIfcSaveModel(name, levels, entries)`
 
 - **It must:** follow SPEC part 7 "WO-15", then `BIM_IFC_SAVE.model=bimIfcSaveModel;`. Openings are handled after every other entry, so their walls are already in `model.walls`.
 - **Example:** `bimIfcSaveModel("", [], [])` is `{model: {name: "Project", levels: [], walls: [], prisms: [], openings: [], meshes: []}, left: []}`.
