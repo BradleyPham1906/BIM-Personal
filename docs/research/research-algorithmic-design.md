@@ -37,7 +37,7 @@ Written before any search, kept unchanged in `research-algorithmic-design/00-que
 |---|---|---|---|
 | H1 | Re-evaluating 1,000 arithmetic nodes takes under a frame; geometry is the cost, and caching by input is what matters | **Held**, amended | e01: 1,000 nodes 0.03 ms, 100,000 nodes 31 ms (P, measured). None of the tools read uses fine-grained incremental evaluation as its base (P). Amendment: cache by an input version stamp, not by comparing values. Open: the cost of the app's opening cutter in the browser |
 | H2 | A CGA-style split grammar fits in under 400 lines of ES5 with no kernel and derives a 10-storey, 8-bay facade in under 50 ms | **Held**, restated | e02: core 50 lines; 1,632 leaves in 0.46 ms; 48,240 in 36 ms (P, measured). Restated: only while a shape is its box scope, rules are data, and plane cuts, occlusion, snapping and roofs are left out (the open implementations spend most of their code there, P) |
-| H3 | A generated element can carry a deterministic identity that survives a change which keeps the counts; when counts change that must be reported | **Held**, amended | e03 (P, measured); Lipp, Wonka, Wimmer 2008 (P); Dynamo's element binding (P). Amendment: an index path keeps every id when 8 bays become 10, but 220 of 320 ids then name a window over half a bay away. Keys must be semantic (storey 3, bay 2), and an override that no longer has a place is parked and listed, never moved by position |
+| H3 | A generated element can carry a deterministic identity that survives a change which keeps the counts; when counts change that must be reported | **Held**, amended | e03 (P, measured); Lipp, Wonka, Wimmer 2008 (P); Dynamo's element binding (P); Lipp et al. 2019 (P). Amendment: an index path keeps every id when 8 bays become 10, but 220 of 320 ids then name a window over half a bay away. Keys must be semantic (storey 3, bay 2), which still fail some changes (Lipp 2019: 0 to 100% of edits kept), and an override that no longer has a place is parked and listed, never moved by position |
 | H4 | The app's CSG is enough for the first slices; Manifold only for booleans between arbitrary solids; OpenCascade only for fillets, lofts, NURBS solids | **Supported**, not measured | Libraries' documents, licences and package contents read as text (P). No upstream code was run. The app's CSG is the same BSP method as csg.js and JSCAD, fragile on its own output (P, the code) |
 | H5 | Studies find node graphs easier to start with and text better for large models | **Partly held**, weak evidence | Leitao, Santos, Lopes 2012 has six subjects and is by the text tool's authors; Celani and Vaz 2012 is a course report (P for what they say, low confidence in the claim). No controlled study found, and none finding the opposite |
 | H6 | With a few hundred runs, benchmarks do not favour genetic algorithms | **Supported**, qualified | Wortmann 2019: at 500 evaluations on 7 problems both genetic algorithms were worst (P). e04 agrees on a problem of this app's kind (P, measured). Qualified: Waibel et al. 2019 find no solver dominates (abstract only, S); and the premise depends on the cost of one run: yield arithmetic allows thousands |
@@ -63,7 +63,26 @@ Written before any search, kept unchanged in `research-algorithmic-design/00-que
 
 ### 3a. The independent check
 
-INDEPENDENT-CHECK-PENDING
+A separate agent re-read the source behind each of 14 facts the code or the recommendation uses
+(`research-algorithmic-design/independent-check.md`, 2026-11-15). Result: 8 confirmed as stated, 5 confirmed
+with a correction, 1 could not be read. This note carries the corrections:
+
+| Fact | Verdict |
+|---|---|
+| Mueller 2006: the relative-size formula and `ceil` for a repeat | **Could not be read** (the PDF is refused to scripts and too large for the fetch tool; four other copies refused). Back to U. Nothing in the recommendation depends on it: the repeat's rounding is our own choice (decision 4) |
+| Esri's CGA split reference | Confirmed, including that no rounding rule is printed |
+| Lipp, Wonka, Wimmer 2008: locators, edits stored outside, invalid ones not applied | Confirmed |
+| Lipp et al. 2019: the measured numbers | Confirmed with a correction: the paper was read in full (P). Over five transfers, exact locators kept 0, 0, 0, 100, 100% of edits; the 2008 semantic locators 0, 100, 28.6, 100, 75%; the 2019 paper's own meta-locators 100, 100, 100, 100, 93.8%. An earlier draft credited the last range to plain semantic keys |
+| Manifold: licence, version, size, no threads, wasm as bytes, module glue | Confirmed. Caution: the bytes option works through the loader but is not in the package's type file |
+| Clipper2 is BSL-1.0; `straight-skeleton` wraps CGAL's GPL package | Confirmed |
+| Build Systems a la Carte | Confirmed with a correction: dirty bits alone give minimal rebuilding, not early cutoff; the cutoff comes from verifying traces (stamps) |
+| Wortmann 2019 | Confirmed |
+| Autodesk Generative Design | Confirmed with a correction: Autodesk's page names the four methods and no algorithm; NSGA-II is named by the Generative Design Primer, whose publisher is not stated (S) |
+| Dynamo's element binding | Confirmed |
+| McKinnon 1998 | Confirmed (abstract and introduction) |
+| Squarified treemaps | Confirmed with a correction: "deterministic" is our reading of pseudocode with no random step; the paper says input order matters and optimality is not guaranteed |
+| The app's code (seven facts) | Confirmed, with two corrections: the undo snapshot is a fixed list of twenty fields, not the whole state, so a new top-level field must be added to both the snapshot and the restore; and provenance fields do exist outside `bim/` and `core/` (`dg` on analysis drawings, `linkSourceId`, `bim.sourceId`, `bim.hostId`, `bim.hostWallId`). A visitor that throws during propagation is skipped and the result is still `ok:true` |
+| MDN: SharedArrayBuffer needs cross-origin isolation; a service worker needs http or https | Confirmed; MDN does not name `file://`, it says any other scheme is refused |
 
 ## 4. Findings, by topic
 
@@ -75,6 +94,7 @@ INDEPENDENT-CHECK-PENDING
 - The simplest correct algorithm for a fixed graph: mark everything downstream of the change dirty; recompute
   the dirty nodes once each in the stored topological order; skip a node whose inputs' version stamps did not
   change (Build Systems a la Carte; Jane Street Incremental; Salsa; the TC39 signals proposal; all P). The
+  skip is the stamps' doing: dirty marks alone give minimal recomputation but no early cutoff. The
   order cures the diamond glitch; a cycle is refused when the edge is made; dependencies that change during a
   run are left out at first. A signals library is not needed. Confidence high.
 - e01 shows this bookkeeping is not what decides responsiveness below about 10,000 nodes (P, measured).
@@ -88,6 +108,10 @@ INDEPENDENT-CHECK-PENDING
   a semantic locator (floor 2, column 3); edits are stored outside the derivation and re-applied each time; a
   stored key is valid, structurally invalid (its index is beyond the new count: kept, dormant) or semantically
   invalid (listed for the user) (P). Confidence high.
+- Lipp et al. 2019 measured it (Table 2, five transfers of 7 to 48 edits): exact locators kept 0, 0, 0, 100,
+  100% of the edits; the 2008 semantic locators 0, 100, 28.6, 100, 75%; the paper's own meta-locators 100, 100,
+  100, 100, 93.8% (P). So a semantic key is much better than an index path and still not safe: the parked
+  list is not optional. Meta-locators are more machinery than a first phase needs. Confidence high.
 - FreeCAD 1.0 names sub-shapes by their history and its own documents call the matching heuristic (P): there
   is no general solution, only a scheme with stated failure cases.
 - The app has the pattern once already: `bimDgPlace` (`site-analysis/model-layers.js:59-104`) keeps a stable
@@ -100,8 +124,9 @@ INDEPENDENT-CHECK-PENDING
   gives up general shape grammars on purpose. Confidence high for the split grammars; the early shape-grammar
   papers (Stiny and others) could not be reached and are S or U here.
 - A shape is a symbol, a scope (origin, three axes, three sizes) and attributes; the derivation tree is kept.
-- The 2006 arithmetic: a relative size r becomes `r * (scope - sum of absolutes) / sum of r`; a repeat makes
-  `ceil(scope / size)` pieces resized to fill (P).
+- The 2006 arithmetic as the researcher recorded it: a relative size r becomes
+  `r * (scope - sum of absolutes) / sum of r`; a repeat makes `ceil(scope / size)` pieces resized to fill. The
+  second reader could not reach the paper, so this is U and the code does not use it.
 - Esri's current CGA: no prefix is absolute, `'` is a fraction of the scope, `~` floats (the 2006 "relative"),
   `*` repeats; each child knows `split.index` and `split.total`. Esri does not print its rounding rule for the
   repeat; three sources use three rules (ceil; nearest, at least one; fill then shrink). It is a design choice
@@ -113,7 +138,8 @@ INDEPENDENT-CHECK-PENDING
 ### 4.4 Plan layout (grammars-and-layout.md)
 
 - Weber, Mueller, Reinhart 2022 review 49 methods in three families (P).
-- The squarified treemap (Bruls et al. 2000) is deterministic, about 30 lines, needs no solver, but makes
+- The squarified treemap (Bruls et al. 2000) has no random step, is about 30 lines, needs no solver, but its
+  result depends on the input order, and it makes
   rectangles only and guarantees neither adjacency nor circulation (P; Marson and Musse 2010 is S).
 - Merrell et al. 2010 takes seconds to minutes and fails in a share of runs; graph methods guarantee adjacency
   only for some graphs; learned methods need a trained network (P for Merrell; others S). Confidence medium.
@@ -151,8 +177,8 @@ missing cross-origin isolation and the opaque origin.
   developer of the winning tool, which they disclose.
 - Against it: Waibel et al. 2019 (no solver dominates; tuned GA and PSO competitive; S, abstract only); Rutten
   (a GA is slow but forgiving and can be harvested mid-run; P for his essay).
-- Practice: Autodesk's Generative Design has four methods, three of them sampling, and only Optimize is
-  NSGA-II (P).
+- Practice: Autodesk's Generative Design has four methods (Optimize, Randomize, Space evenly, Like this),
+  three of them sampling (P). That Optimize is NSGA-II comes from the Generative Design Primer (S).
 - Nelder-Mead can converge to a point that is not a minimum (McKinnon 1998, S here); storeys and bay counts
   are ordinal, so they are stepped axes, which a pattern search handles naturally.
 - NSGA-II's parts are recorded from Deb et al. 2002, but its numeric settings were lost in text extraction and
@@ -251,8 +277,10 @@ From `research-algorithmic-design/app-code-audit.md` (P, the code; paths under `
   (`bim/columns-openings.js:130`, `406-437`), `buildRoofSolid` (`bim/roofs.js:473`). Each takes its own undo
   snapshot, repaints and saves.
 - Ids from the clock and a counter: stable across save and reopen, new on every generator run. No "generated
-  by" field. The one precedent for keyed regeneration is `bimDgPlace` (`site-analysis/model-layers.js:59-104`).
-- Undo is a JSON snapshot of the whole state, 50 deep (`drawing/plan-mode-sketch.js:291-351`).
+  by" field on BIM elements, though provenance fields exist elsewhere (`dg`, `linkSourceId`, `bim.sourceId`,
+  `bim.hostId`). The one precedent for keyed regeneration is `bimDgPlace` (`site-analysis/model-layers.js:59-104`).
+- Undo is a JSON snapshot of a fixed list of twenty fields, 50 deep (`drawing/plan-mode-sketch.js:291-351`);
+  a new top-level field must be added to both the snapshot and the restore.
 - A stored project's unknown top-level keys are dropped on load (`core/state.js:64-131`); `A3D.site.*` already
   carries zoning, tools and Ladybug data and avoids that.
 - Three-way merge per element and field (`history/branches-merge.js:75-107`).
@@ -286,7 +314,7 @@ key and a generated-by field on elements; reconciliation by key on a re-run; cyc
 
 - The early shape-grammar papers (Stiny and Gips 1972 and others): hosts refused. Nothing in the code depends
   on them.
-- Lipp et al. 2019's own numbers on identity: see part 3a.
+- Mueller et al. 2006's split arithmetic: the second reader could not reach the paper (part 3a).
 - Kripac 1997; Marcheix and Pierra 2002; Grasshopper's data trees; Houdini; Blender's evaluator: not reached.
 - Manifold's speed in wasm and on phones; whether its module glue can be embedded in the one file: needs an
   approved experiment.
@@ -304,7 +332,7 @@ Asked together, 2026-11-15. Each has the recommendation and what it rests on. No
    split grammar. Recommended: yes, as the next two phases after V204, V213 and V215.
 3. **When a count changes** (8 bays become 10). An override stays with its storey and bay number; one whose
    place is gone is parked and listed, and returns if the place returns. Or follow the nearest position?
-   Recommended: by number, parked and listed (Lipp 2008; e03).
+   Recommended: by number, parked and listed (Lipp 2008 and 2019; e03).
 4. **The repeat's rounding.** Nearest count, at least one (least stretching), or `ceil` as the 2006 paper?
    Recommended: nearest (e03's table: `ceil` turns 35.1 m into 11 storeys of 3.19 m).
 5. **Manifold.** Approve an isolated experiment that downloads `manifold-3d` and tries to embed it in the
@@ -325,13 +353,13 @@ The full lists, with what was read in each and its level, are part 8 or 9 of eac
 sources the recommendation rests on (all read 2026-11-14 or 2026-11-15):
 
 - Mueller, Wonka, Haegler, Ulmer, Van Gool, "Procedural Modeling of Buildings", 2006.
-  https://peterwonka.net/Publications/pdfs/2006.SG.Mueller.ProceduralModelingOfBuildings.final.pdf (section 2, P)
+  https://peterwonka.net/Publications/pdfs/2006.SG.Mueller.ProceduralModelingOfBuildings.final.pdf (section 2; U after the check)
 - Wonka, Wimmer, Sillion, Ribarsky, "Instant Architecture", 2003.
   https://www.cg.tuwien.ac.at/research/publications/2003/Wonka-2003-Ins/Wonka-2003-Ins-Paper.pdf (P)
 - Lipp, Wonka, Wimmer, "Interactive Visual Editing of Grammars for Procedural Architecture", 2008.
   https://www.cg.tuwien.ac.at/research/publications/2008/LIPP-2008-IEV/LIPP-2008-IEV-paper.pdf (P)
 - Lipp, Specht, Lau, Wonka, Mueller, "Local Editing of Procedural Models", 2019.
-  https://peterwonka.net/Publications/pdfs/2019.EG.Lipp.LocalEditingProceduralModels.pdf (see part 3a)
+  https://peterwonka.net/Publications/pdfs/2019.EG.Lipp.LocalEditingProceduralModels.pdf (Table 2, P)
 - Esri, CityEngine CGA reference. https://doc.arcgis.com/en/cityengine/latest/cga/ (the split operation, P)
 - cgajs (Apache-2.0) https://github.com/gromgull/cgajs ; shapeml (GPL-3.0) https://github.com/stefalie/shapeml (code as text, P)
 - Bruls, Huizing, van Wijk, "Squarified Treemaps", 2000. https://www.win.tue.nl/~vanwijk/stm.pdf (P)
