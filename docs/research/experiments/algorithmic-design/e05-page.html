@@ -1,0 +1,45 @@
+<!doctype html><meta charset="utf-8"><title>e05</title>
+<script>
+// e05: what a page can use for background computation, by how it was opened (H7).
+window.e05 = function(){
+  var out = {href: location.protocol, isSecureContext: window.isSecureContext,
+    crossOriginIsolated: window.crossOriginIsolated, SharedArrayBuffer: typeof SharedArrayBuffer,
+    serviceWorker: 'serviceWorker' in navigator, indexedDB: typeof indexedDB,
+    storageGetDirectory: !!(navigator.storage && navigator.storage.getDirectory)};
+  var jobs = [];
+  // a classic worker made from a Blob, with a transferable buffer both ways
+  jobs.push(new Promise(function(res){
+    try{
+      var src = 'onmessage=function(e){var a=new Float32Array(e.data);for(var i=0;i<a.length;i++)a[i]=i*2;postMessage(a.buffer,[a.buffer]);};';
+      var w = new Worker(URL.createObjectURL(new Blob([src], {type:'text/javascript'})));
+      var buf = new Float32Array(300000).buffer, t0 = performance.now();
+      w.onmessage = function(e){ var a = new Float32Array(e.data);
+        out.blobWorker = 'ok, last=' + a[a.length-1] + ', round trip ms=' + (performance.now()-t0).toFixed(2); w.terminate(); res(); };
+      w.onerror = function(e){ out.blobWorker = 'error: ' + e.message; res(); };
+      w.postMessage(buf, [buf]); out.transferDetaches = buf.byteLength === 0;
+    }catch(e){ out.blobWorker = 'threw: ' + e.message; res(); }
+  }));
+  // a worker from a file beside the page
+  jobs.push(new Promise(function(res){
+    try{ var w2 = new Worker('e05-worker.js');
+      w2.onmessage = function(e){ out.fileWorker = 'ok: ' + e.data; w2.terminate(); res(); };
+      w2.onerror = function(e){ out.fileWorker = 'error event'; res(); };
+      setTimeout(function(){ if(!out.fileWorker){ out.fileWorker = 'no answer in 2 s'; res(); } }, 2000);
+    }catch(e){ out.fileWorker = 'threw: ' + e.name + ': ' + e.message; res(); }
+  }));
+  // the origin private file system
+  jobs.push((navigator.storage && navigator.storage.getDirectory ? navigator.storage.getDirectory() : Promise.reject(new Error('no API')))
+    .then(function(){ out.opfs = 'ok'; }, function(e){ out.opfs = 'refused: ' + e.name + ': ' + e.message; }));
+  // a service worker
+  jobs.push(('serviceWorker' in navigator ? navigator.serviceWorker.register('e05-worker.js') : Promise.reject(new Error('no API')))
+    .then(function(r){ out.swRegister = 'ok'; return r.unregister(); }, function(e){ out.swRegister = 'refused: ' + e.name + ': ' + e.message; }));
+  // WebAssembly from bytes already in the page (the smallest valid module)
+  jobs.push(WebAssembly.instantiate(new Uint8Array([0,97,115,109,1,0,0,0]))
+    .then(function(){ out.wasmFromBytes = 'ok'; }, function(e){ out.wasmFromBytes = 'refused: ' + e.message; }));
+  // IndexedDB
+  jobs.push(new Promise(function(res){ try{ var rq = indexedDB.open('e05', 1);
+    rq.onsuccess = function(){ out.idbOpen = 'ok'; rq.result.close(); res(); };
+    rq.onerror = function(){ out.idbOpen = 'error: ' + rq.error; res(); }; }catch(e){ out.idbOpen = 'threw: ' + e.message; res(); } }));
+  return Promise.all(jobs).then(function(){ return out; });
+};
+</script>

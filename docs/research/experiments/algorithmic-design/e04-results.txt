@@ -1,0 +1,11 @@
+node v22.23.4; the cap allows 3416 m2; best found by a long search: 3416 m2
+Median over 51 seeds of the best floor area found, as a percentage of that best (lower quartile in brackets).
+
+| method | 50 runs | 100 runs | 200 runs | 500 runs | 2000 runs |
+|---|---|---|---|---|---|
+| random | 6.4 (-21.4) | 16.9 (8.7) | 23.1 (16.0) | 38.6 (25.4) | 50.1 (43.4) |
+| Latin hypercube | 8.7 (-5.1) | 11.0 (3.3) | 31.9 (19.9) | 35.7 (26.5) | 55.1 (43.5) |
+| pattern search (Hooke-Jeeves), restarts | 31.2 (20.1) | 51.7 (26.0) | 72.3 (44.0) | 92.5 (77.9) | 99.7 (99.2) |
+| Nelder-Mead, restarts | 26.0 (-30.4) | 47.7 (17.6) | 50.5 (24.2) | 92.6 (37.7) | 100.0 (100.0) |
+| genetic, population 20 | 14.3 (-12.1) | 29.6 (14.6) | 51.1 (37.6) | 89.2 (73.6) | 99.7 (99.3) |
+| genetic, population 50 | 6.4 (-21.4) | 19.0 (10.4) | 37.1 (28.1) | 64.9 (48.5) | 98.3 (96.9) |

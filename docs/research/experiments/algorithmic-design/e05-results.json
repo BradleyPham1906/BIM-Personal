@@ -1,0 +1,51 @@
+{
+ "chromium": "153.0.8010.12",
+ "file://": {
+  "href": "file:",
+  "isSecureContext": true,
+  "crossOriginIsolated": false,
+  "SharedArrayBuffer": "undefined",
+  "serviceWorker": true,
+  "indexedDB": "object",
+  "storageGetDirectory": true,
+  "transferDetaches": true,
+  "fileWorker": "threw: SecurityError: Failed to construct 'Worker': Script at 'file:///home/user/BIM-Personal/docs/research/experiments/algorithmic-design/e05-worker.js' cannot be accessed from origin 'null'.",
+  "swRegister": "refused: TypeError: Failed to register a ServiceWorker: The URL protocol of the current origin ('null') is not supported.",
+  "wasmFromBytes": "ok",
+  "opfs": "refused: SecurityError: It was determined that certain files are unsafe for access within a Web application, or that too many calls are being made on file resources.",
+  "idbOpen": "ok",
+  "blobWorker": "ok, last=599998, round trip ms=34.90"
+ },
+ "http, no headers": {
+  "href": "http:",
+  "isSecureContext": true,
+  "crossOriginIsolated": false,
+  "SharedArrayBuffer": "undefined",
+  "serviceWorker": true,
+  "indexedDB": "object",
+  "storageGetDirectory": true,
+  "transferDetaches": true,
+  "wasmFromBytes": "ok",
+  "opfs": "ok",
+  "idbOpen": "ok",
+  "fileWorker": "ok: hello from a file worker",
+  "blobWorker": "ok, last=599998, round trip ms=16.70",
+  "swRegister": "refused: TypeError: Failed to register a ServiceWorker for scope ('http://127.0.0.1:43809/') with script ('http://127.0.0.1:43809/e05-worker.js'): ServiceWorker script evaluation failed"
+ },
+ "http, COOP+COEP": {
+  "href": "http:",
+  "isSecureContext": true,
+  "crossOriginIsolated": true,
+  "SharedArrayBuffer": "function",
+  "serviceWorker": true,
+  "indexedDB": "object",
+  "storageGetDirectory": true,
+  "transferDetaches": true,
+  "wasmFromBytes": "ok",
+  "opfs": "ok",
+  "idbOpen": "ok",
+  "fileWorker": "ok: hello from a file worker",
+  "blobWorker": "ok, last=599998, round trip ms=18.98",
+  "swRegister": "refused: TypeError: Failed to register a ServiceWorker for scope ('http://127.0.0.1:43699/') with script ('http://127.0.0.1:43699/e05-worker.js'): ServiceWorker script evaluation failed"
+ }
+}
