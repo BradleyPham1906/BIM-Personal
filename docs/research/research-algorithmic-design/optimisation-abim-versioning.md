@@ -111,3 +111,30 @@ To be filled.
   P (first 100,000 characters): 93 Scopus documents 2010-2020, 28 analysed. It is in Sensors, not Automation in
   Construction. It gives no "70% early massing" figure; the nearest number is 20 of 28 studies (71%) whose
   objective is "support design processes", which is not a design stage. The 70% claim stays U.
+- IFC 4.3 documentation source (buildingSMART/IFC4.3.x-development, docs/schemas, markdown read raw), P:
+  IfcBuildingElementProxy has the function of a built element "without having a predefined meaning"; it is
+  for elements the schema has no definition for or the application cannot classify; a Name should be given;
+  USERDEFINED needs ObjectType. IfcWallType holds what occurrences share (property sets, material layer set,
+  shape as representation maps); occurrences are IfcWall, linked by IfcRelDefinesByType; an occurrence
+  property with the same name overrides the type's. IfcRoot.GlobalId is the identity; IfcOwnerHistory keeps
+  only the last modification. IfcParameterizedProfileDef parametrises 2D profiles only (rectangle, circle,
+  I-shape ...). IfcConstraintResource holds named constraints (hard, soft, advisory) with a benchmark and a
+  value: a requirement that can be recorded, not a rule that regenerates anything.
+- Autodesk Generative Design in Revit help 2024 ("About Generation Methods", "Generation Settings"), P: four
+  methods: Optimize (NSGA-II), Randomize (default 40 outcomes), Space evenly (called Cross Product earlier),
+  Like this (within plus or minus 20% of a chosen outcome's values, inside each variable's limits). Rule of
+  thumb: population at least three times the number of inputs; example 40 generations of 40 = 1,600 runs; a
+  seed makes a run repeatable. Generative Design Primer Q&A, P: a customised NSGA-II, crossover 0.8, mutation
+  0.4, fixed; the returned set is the Pareto set of the whole run, not the last population.
+- McKinnon 1998 (SIAM J. Optim. 9(1) 148-158), P (abstract and introduction): Nelder-Mead can converge to a
+  non-stationary point on strictly convex two-variable functions with up to three continuous derivatives, by
+  repeated inside contraction with the best vertex fixed; pattern search (Torczon) has convergence results,
+  Nelder-Mead is not in that class.
+- Cristie and Joyce 2019, GHShot (eCAADe 37 / SIGraDi 23), P: four functions of version control for
+  parametric models: commit, diff, branch, merge. Diff shows components and links deleted (red), added
+  (green), changed attributes (yellow). Automatic merge is not offered: adding components and links from one
+  file to another "could cause the parametric model not to work correctly"; the designer copies parts by hand.
+- VVD (github.com/oderby/VVD README), P: diff of Grasshopper and Dynamo graphs into a diff file, a viewer, and
+  a patch tool that succeeds only if every change applies cleanly; three-way merge is listed as future work.
+- Dynamo .dyn sample (DynamoDS/Dynamo, Basics_Basic01.dyn), P: JSON; each node has a GUID "Id", each port its
+  own GUID "Id"; connectors name the start and end port ids; positions are kept apart in View.NodeViews.
