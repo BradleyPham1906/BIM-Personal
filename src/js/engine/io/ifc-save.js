@@ -24,4 +24,65 @@ import { bimHasBulge } from '../drawing/arc-storage.js';
      a wall has arcs, a column's four corners */
   var BIM_IFC_SAVE_USES=[bimSegNormal,bimAlignOffsets,bimHasBulge,bimRectFootprint];
   BIM_IFC_SAVE.uses=BIM_IFC_SAVE_USES;BIM_IFC_SAVE.num=bimIfcSaveNum;BIM_IFC_SAVE.pt=bimIfcSavePt;BIM_IFC_SAVE.pt3=bimIfcSavePt3;BIM_IFC_SAVE.cls=BIM_IFC_SAVE_CLASS;
+function bimIfcSaveBase(o, layerName){
+  var b=o.bim||{},r={id:o.id,name:String(o.name||o.id),psets:[]},sets=b.psets||[],i,j,ps,props,row,hasProps;
+  if(typeof b.guid==='string'&&b.guid.length===22)r.guid=b.guid;
+  r.psets.push({name:'BIM_Personal',props:{Type:String(b.type||o.t||''),Layer:String(layerName||'')}});
+  for(i=0;i<sets.length;i++){
+    ps=sets[i];if(!ps.name||ps.name==='BIM_Personal')continue;
+    props={};hasProps=false;
+    for(j=0;j<(ps.rows||[]).length;j++){
+      row=ps.rows[j];
+      if(row&&row[0]!==undefined&&row[0]!==''){props[String(row[0])]=String(row[1]==null?'':row[1]);hasProps=true;}
+    }
+    if(hasProps)r.psets.push({name:String(ps.name),props:props});
+  }
+  return r;
+}
+BIM_IFC_SAVE.base = bimIfcSaveBase;
+
+function bimIfcSaveLevels(lv){
+  var list=[],at={},i,l;
+  if(Array.isArray(lv))for(i=0;i<lv.length;i++){
+    l=lv[i];list.push({name:String(l.name||'Level '+i),elev:bimIfcSaveNum(l.elev)});at[l.id||'lvl-'+i]=i;
+  }
+  return {list:list,at:at};
+}
+BIM_IFC_SAVE.levels = bimIfcSaveLevels;
+
+function bimIfcSaveLevel(o, lv, y){
+  var at=lv&&lv.at,id=o&&o.bim&&o.bim.levelId,best=-Infinity,index=0,i;
+  if(id!==undefined&&id!==null&&at&&Object.prototype.hasOwnProperty.call(at,id))return at[id];
+  if(lv&&lv.list)for(i=0;i<lv.list.length;i++){
+    if(lv.list[i].elev<=y+1e-6&&lv.list[i].elev>best){best=lv.list[i].elev;index=i;}
+  }
+  return index;
+}
+BIM_IFC_SAVE.level = bimIfcSaveLevel;
+
+function bimIfcSaveMoved(o){
+  return !!(o&&o.pos&&(Math.abs(o.pos[0]||0)>1e-9||Math.abs(o.pos[1]||0)>1e-9||Math.abs(o.pos[2]||0)>1e-9));
+}
+
+function bimIfcSaveWalls(o, lv, base){
+  var b=o&&o.bim,p,off,n,i,a,q,dx,dz,len,nr,s,item,k,walls=[];
+  if(!b||b.type!=='wall'||!b.centerline||b.centerline.length<2||bimHasBulge(b.bulges)||bimIfcSaveMoved(o)||!(b.thickness>0)||!(b.height>0))return null;
+  p=b.centerline;off=bimAlignOffsets(b.thickness,b.align);n=p.length-1+(b.closed&&p.length>2?1:0);
+  for(i=0;i<n;i++){
+    a=p[i%p.length];q=p[(i+1)%p.length];dx=q[0]-a[0];dz=q[1]-a[1];len=Math.sqrt(dx*dx+dz*dz);
+    if(len<1e-6)continue;
+    nr=bimSegNormal(a,q);s=(nr[0]*dz-nr[1]*dx)/len;item={};
+    for(k in base)if(base.hasOwnProperty(k))item[k]=base[k];
+    q=bimIfcSavePt(q);a=bimIfcSavePt(a);
+    item.level=bimIfcSaveLevel(o,lv,b.baseY);item.x0=a[0];item.y0=a[1];item.x1=q[0];item.y1=q[1];
+    item.base=bimIfcSaveNum(b.baseY);item.height=bimIfcSaveNum(b.height);
+    item.thickness=bimIfcSaveNum(off.dLeft+off.dRight);item.offset=bimIfcSaveNum(Math.min(s*off.dLeft,-s*off.dRight));
+    if(walls.length){item.id=o.id+'#'+i;delete item.guid;}
+    walls.push(item);
+  }
+  if(!walls.length)return null;
+  if(walls.length>1)for(i=0;i<walls.length;i++)walls[i].name=String(base.name)+' '+(i+1);
+  return walls;
+}
+BIM_IFC_SAVE.walls = bimIfcSaveWalls;
 export { BIM_IFC_SAVE };

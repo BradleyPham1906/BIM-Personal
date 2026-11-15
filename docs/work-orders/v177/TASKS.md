@@ -163,7 +163,7 @@ After each task: `node --check src/js/engine/io/ifc-save.js`, its own cases, the
 
 ---
 
-## [ ] WO-09 [Cline] `bimIfcSaveLevels(levels)` and `bimIfcSaveLevel(o, lv, y)`
+## [x] WO-09 [Cline] `bimIfcSaveLevels(levels)` and `bimIfcSaveLevel(o, lv, y)`
 
 - **It must:** follow SPEC part 7 "WO-09", then the List line `BIM_IFC_SAVE.levels=bimIfcSaveLevels;BIM_IFC_SAVE.level=bimIfcSaveLevel;`.
 - **Example:** `bimIfcSaveLevels([{id: "lvl-0", name: "Ground", elev: 0}])` is `{list: [{name: "Ground", elev: 0}], at: {"lvl-0": 0}}`; with levels at 0 and 3.2, an element at height 3.1 with no level of its own is on level 0.
@@ -174,7 +174,7 @@ After each task: `node --check src/js/engine/io/ifc-save.js`, its own cases, the
 
 ---
 
-## [ ] WO-10 [Cline] `bimIfcSaveBase(o, layerName)`
+## [x] WO-10 [Cline] `bimIfcSaveBase(o, layerName)`
 
 - **It must:** follow SPEC part 7 "WO-10", then `BIM_IFC_SAVE.base=bimIfcSaveBase;`. `o.bim` may be missing.
 - **Example:** `bimIfcSaveBase({id: "a1", t: "solid", name: "Wall_1", bim: {type: "wall"}}, "Walls")` is `{id: "a1", name: "Wall_1", psets: [{name: "BIM_Personal", props: {Type: "wall", Layer: "Walls"}}]}`.
@@ -185,7 +185,7 @@ After each task: `node --check src/js/engine/io/ifc-save.js`, its own cases, the
 
 ---
 
-## [ ] WO-11 [Cline] `bimIfcSaveWalls(o, lv, base)`
+## [x] WO-11 [Cline] `bimIfcSaveWalls(o, lv, base)`
 
 - **It must:** follow SPEC part 7 "WO-11", then `BIM_IFC_SAVE.walls=bimIfcSaveWalls;`. Add, above it, the small helper `bimIfcSaveMoved(o)` (true when the element is moved, as part 7 defines it); WO-12 uses it too. The copy of `base` is made with `for (k in base) if (base.hasOwnProperty(k))`.
 - **Example:** a wall with centerline `[[0, 0], [6, 0]]`, thickness 0.2, height 3, align `"center"`, baseY 0 gives one item with `x0: 0, y0: 0, x1: 6, y1: 0, base: 0, height: 3, thickness: 0.2, offset: -0.1`.
