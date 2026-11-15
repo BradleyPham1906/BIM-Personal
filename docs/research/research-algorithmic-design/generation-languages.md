@@ -8,7 +8,29 @@ paper or its abstract: said which); **S** a dependable secondary source; **U** a
 recalled from before this session and not re-read today. U facts are pointers and must not reach the code.
 Code was read as text only; nothing was built, installed or run. Examples are written for this note.
 
-<!-- SUMMARY-GOES-HERE -->
+## 1. Summary of findings
+
+Written by the coordinator from the entries below: the researcher was stopped by the account's usage limit
+after family 2.7, before the summary, the comparison table, the search log and the reference list. Each
+entry names what was read and its level in place; there is no separate reference list for this note.
+
+1. Model generation languages fall into five families: CSG scripts (OpenSCAD, JSCAD), code on a B-rep kernel
+   (CadQuery, build123d, Replicad, KCL, FeatureScript), grammars and constraint generators (CGA, L-systems,
+   Wave Function Collapse), dataflow graphs (Grasshopper, Dynamo and DesignScript, Geometry Nodes, Houdini,
+   Marionette), and BIM-oriented generation (GDL, families, Hypar Elements, IfcOpenShell's API, Topologic).
+2. Only the last family knows what a wall is, and none of it can be adopted here as it stands: GDL and
+   families are proprietary and run only in their hosts; Hypar Elements is C# run as services; IfcOpenShell's
+   API is Python (LGPL), which this app already carries in its Python worker for IFC export. P for licences.
+3. The geometry-only languages that run in a browser under an allowed licence (JSCAD, MIT) are ordinary
+   JavaScript programs: running one means running code, which the engine does not do. OpenSCAD is GPL.
+   The B-rep ones need OpenCascade (round one: 22.9 MB). P.
+4. There is no open, implemented standard for exchanging a parametric or procedural model. IFC records the
+   result, not the rule. P for IFC and USD; S for STEP.
+5. Systems that turn text into models moved in two years from special token sequences to readable code or
+   structured text; the ones that make buildings give the model a small vocabulary of element-level calls
+   (26 in Text2BIM), not a geometry language and not raw IFC. P (papers and abstracts), medium: a young field.
+6. A new format has no training data and must be taught in the prompt; the papers that chose CadQuery did so
+   because models already know Python. P.
 
 ## 2. The families
 
@@ -398,3 +420,51 @@ What matters here is the **intermediate language** each system makes the model w
 **There is no open, implemented standard for a parametric or procedural model.** Each tool's definition is
 its own. Whatever the app chooses is the app's format; the realistic interchange is the result (IFC, glTF),
 plus the definition kept as text in the project file. Confidence medium-high: absence is hard to prove.
+
+## 3. The comparison
+
+By the coordinator, from the entries in part 2. Criteria fixed in the brief before the survey.
+
+| Language | Makes BIM elements | A non-programmer can write it | An LLM can write it (evidence) | Client-side under an allowed licence | Diffs as text | A useful subset in a few hundred lines of ES5 |
+|---|---|---|---|---|---|---|
+| OpenSCAD | No | With effort | Yes, but papers preferred CadQuery | No: GPL | Yes | The language no; a CSG tree as data yes |
+| JSCAD | No | No: JavaScript | Likely (JavaScript); not measured | Yes, MIT, but it is code to run | Yes | No: it is a program |
+| CadQuery, build123d | No | No: Python | Yes: 85 to 96% compile for general models (CADPrompt) | No: needs OpenCascade | Yes | No |
+| KCL (Zoo) | No | Through direct manipulation | Vendor's own text-to-CAD (U) | No: geometry on their servers | Yes | No |
+| CGA and split grammars | Shapes with names, not typed elements | Rules as data: yes, with a form | Not measured | Ours: 50 lines of core (e02) | Yes | Yes |
+| L-systems, Wave Function Collapse | No | No | Not measured | Small and implementable | Rules yes | Yes, but they do not fit building elements well |
+| Grasshopper `.ghx`, Dynamo `.dyn` | Through host nodes only | Yes, visually | Not measured | No engine in the browser; the files are readable | Poorly: ids and layout | The container yes; the node libraries no |
+| DesignScript | Through Revit nodes | Partly | Not measured | No | Yes | Its ideas (one assignment per name, replication) yes |
+| GDL | One object per script | No | Little known to models (inference) | No: Archicad only | Yes | Its shape (one definition gives plan, solid, schedule, form) yes |
+| Hypar Elements | Yes | No: C# | Not measured | No: services | Yes | Its element classes as a vocabulary yes |
+| IfcOpenShell API | Yes | No: Python | Yes: MCP4IFC uses it as the escape hatch | Already in the app's Python worker (LGPL, separate file) | Yes | No, and no need: it is already carried |
+| A small app format: rules and element calls as JSON | Yes, by construction | Through a form; readable as text | Plausible: JSON is well known, a schema can force validity; untested here | Ours | Yes | Yes |
+
+## 4. What this means for the app
+
+The coordinator's reasoning from the survey: inference, not a source's statement.
+
+- **Adopt as is:** none. The only BIM-aware language already inside the app's reach is IfcOpenShell's Python
+  API in the existing worker, and it is an escape hatch for later, not the everyday language: it is slow to
+  start, it is code, and it writes IFC, not the app's own elements.
+- **Import from:** nothing worth a phase. `.dyn` and `.ghx` can be read, but a graph is only as useful as its
+  node library, and those belong to Revit and Rhino.
+- **The app's own format should borrow:**
+  - from CGA: a scope, split, repeat, and rules as named data;
+  - from GDL: one definition that yields the plan symbol, the solid, the schedule values and the form, with
+    the allowed range of each parameter declared;
+  - from DesignScript: one assignment per name (so order does not matter and the dependency graph is the
+    program) and replication (a call applied to each item of a list without a loop);
+  - from Text2BIM and MCP4IFC: a small vocabulary of element-level calls (wall, slab, opening, column, roof,
+    room), not geometry;
+  - from Holodeck and LayoutGPT: state relations and boxes; let deterministic code place things;
+  - from Dynamo's file: permanent ids on nodes, and the layout stored apart from the logic.
+- **Why text matters even with a form and a canvas:** an offline one-file app has no model inside it. A rule
+  set that is plain, schema-checked text can be written by a model outside the app, pasted in, read by the
+  owner, and refused if it does not validate. That is the cheapest route to "describe it and get a building".
+
+## 5. Not done in this note
+
+The search log and the reference list were not written (the researcher was stopped). Deliberate
+counter-evidence is inside 2.6 only. No independent second reading was made of this round: nothing in it is a
+number or rule the code will use; it informs decisions 11 to 13 in the main note.

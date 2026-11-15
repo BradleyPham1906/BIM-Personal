@@ -10,6 +10,27 @@ files on raw.githubusercontent.com. No code was built or run.
 
 Parts 2 to 7 are filled topic by topic; part 1 is written last.
 
+## 1. Summary of findings
+
+Written by the coordinator from the findings below: the researcher was stopped by the account's usage limit
+after part 7 and before this part. Levels and confidence are those of the findings cited.
+
+1. Grasshopper's classic link to Rhino is three separate things: a parameter that holds a Rhino object's id
+   (in), a preview drawn in the viewport that is not in the document (out, temporary), and a bake that copies
+   the result into the document and keeps no link (out, permanent). P, high (2.1).
+2. Every vendor who took a graph to a BIM host replaced preview-then-bake with tracked elements that are
+   created in the model from the start and updated in place: Rhino.Inside.Revit, the Grasshopper-Archicad
+   connection, Rhino 8's Content Cache, Dynamo's binding. P, high (2.1, 2.2).
+3. Outside Grasshopper and Dynamo, the common pattern is not a model-wide canvas at all: the rule lives
+   inside one object and its inputs are fields in the ordinary properties panel (Blender, Marionette objects,
+   Param-O, Houdini assets, Live Components). P, medium to high (2.3).
+4. Nothing found is a client-side, permissively licensed graph engine that produces BIM elements and could be
+   vendored. That Open Engine has no generative part. P, high (2.4).
+5. No vendor ships a node canvas on a phone or tablet; what they ship there is the form (the player). The
+   evidence is the absence of examples, not a usability study. Medium (2.6).
+6. A survey of 1,982 shared Grasshopper scripts found 97.5% had no modules; unstructured ones were misread by
+   every interviewee. S, medium (2.5).
+
 ## 2. Findings by topic
 
 ### 2.1 Grasshopper in Rhino, and what changed for BIM

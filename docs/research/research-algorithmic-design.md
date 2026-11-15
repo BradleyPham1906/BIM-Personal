@@ -249,6 +249,7 @@ x64, except e05 in Chromium 153.0.8010.12.
   pattern search 31, 52, 72, 93, 100; Nelder-Mead 26, 48, 51, 93, 100; genetic (population 20) 14, 30, 51, 89,
   100; random 6, 17, 23, 39, 50. One toy problem: it agrees with the benchmarks, it does not replace them.
 - **e05, the browser** (`e05-browser.cjs`, `e05-page.html`, `e05-results.json`). Part 4.6.
+- **e07, a second window** (`e07-windows.cjs`, `e07-page.html`, `e07-results.json`). Part 10a.
 - **e06, the app's wall geometry** (`e06-app-elements.mjs`, `e06-results.txt`). `bimBuildWallGeometry` costs
   a few thousandths of a millisecond per straight wall (1,000 walls in 3.4 ms). The interactive makers and the
   opening cutter could not be measured outside a browser: they exhaust memory in the unit-test stand-in, and
@@ -322,9 +323,88 @@ key and a generated-by field on elements; reconciliation by key on a re-run; cyc
 - The "70% early massing" claim: not found anywhere.
 - The cost of the app's opening cutter and interactive makers in the browser.
 
+## 10a. Round two, 2026-11-15: the Grasshopper question and the languages
+
+The owner, after reading the first round: "This needs more research. Because i want to know how we can do
+this. Should we have a grasshopper engine popup on a tab in web that link to the model? Like how grasshopper
+run in rhino? What are the model generation languages outhere?" Two more researchers
+(`research-algorithmic-design/hosts-and-interfaces.md`, `generation-languages.md`) and one experiment (e07).
+Both researchers were stopped by the usage limit near the end; their summaries and the languages table were
+written by the coordinator from their findings, and that is said in each note. No independent second reading
+was made of this round.
+
+### How Grasshopper is attached to Rhino, and what the BIM hosts changed
+
+- Grasshopper is a plug-in with its own canvas window. Its link to the model is three separate things: a
+  parameter that holds a Rhino object's id and reloads it (in); a preview drawn in the viewport that is not
+  in the document, so it cannot be selected, saved or put on a layer (out, temporary); and a bake that copies
+  the result into the document and keeps no link, so baking twice makes two sets (out, permanent). P, the
+  Grasshopper API. Confidence high.
+- Every vendor who took a graph to a BIM host dropped preview-then-bake for tracked elements, real from the
+  start and updated in place: Rhino.Inside.Revit (per component: Update, Replace or Disabled, with a
+  duplicate warning on Disabled and on Release), the Grasshopper-Archicad connection (what the graph controls
+  is overwritten on each run; what it does not control keeps the hand-set value), Rhino 8's Content Cache,
+  Dynamo's binding. P. Confidence high. This is round one's identity finding again, from the vendors' side.
+- Tracking still fails at the key: orphans when a count shrinks, bindings lost between files, and
+  Rhino.Inside.Revit's tracking is reported to be by output index (U), the weakest key Lipp 2019 measured.
+
+### The four ways a rule engine meets its model
+
+| Pattern | Who | What goes wrong | One-file offline app | Phone |
+|---|---|---|---|---|
+| (a) A canvas in its own window or tab, model-wide | Grasshopper, Dynamo | Preview and real objects confused; duplicates on re-bake; graphs unreadable at size (1,982 shared scripts: 97.5% without modules, S) | Possible with our own editor; only the tracked form is worth building | Poor: no vendor ships one |
+| (b) The rule owned by an object, inputs in the properties panel | Blender Geometry Nodes, Marionette objects, Archicad Param-O, Houdini assets, SketchUp Live Components | Scope is one object; a shared definition changes every instance; detaching ends the link | Good: it is what V204 and V213 already are | Good |
+| (c) A form that hides the graph (a player) | Dynamo Player, Grasshopper Player, ShapeDiver, Hypar | Limited input types; users cannot go past the form; the web ones compute on servers | Good, as the face of (a) or (b) | Good: the only form vendors ship on tablets |
+| (d) Code and model as one | Zoo's KCL, CascadeStudio, OpenSCAD | Needs a language and interpreter; text is poor on touch | Poor now | Poor |
+
+- Nothing found is a client-side, permissively licensed graph engine that makes BIM elements and could be
+  vendored: the BIM-aware ones are services or desktop plug-ins (Hypar, Speckle Automate, Rhino.Inside), the
+  client-side ones make geometry only (Nodi, Bitbybit's packages, CascadeStudio), Chili3D is AGPL, and That
+  Open Engine has no generative part (P, their READMEs and licences). The engine is ours to write.
+- e07 (measured, Chromium 153): a second window linked to the model works from `file://`. An empty window
+  the model page writes into shares its script, so the editor can live there with no messaging; a second copy
+  of the app in another tab can talk by `postMessage` or `BroadcastChannel` but cannot be reached into
+  directly from `file://`. A real phone was not tested (desktop Chromium emulating one opens windows).
+
+**Answer to the owner's first question.** Yes to a graph editor that opens beside the model and stays
+linked to it, and it can be a docked tab or a popped-out window. No to the Rhino relationship itself
+(preview, then bake): the BIM hosts all abandoned it. The order that follows from the evidence: the rule
+lives on a generator object in the model (b), its inputs are a form in Properties, which is also the player
+(c) and works on a phone; the canvas (a) comes after, as the author's view of the same records, on desktop
+and tablet. The engine does not wait for the canvas.
+
+### The model generation languages
+
+Five families (`generation-languages.md`, part 2, each entry with what was read):
+
+| Family | Examples | Makes | Use to this app |
+|---|---|---|---|
+| CSG scripts | OpenSCAD (GPL), JSCAD (MIT), libfive, Curv | Solids, no building elements | The idea of a readable tree; OpenSCAD's licence rules it out, JSCAD is code to run |
+| Code on a B-rep kernel | CadQuery, build123d, Replicad, KCL, FeatureScript | Exact solids | Needs OpenCascade (22.9 MB) or a vendor's server |
+| Grammars and constraint generators | CGA, L-systems, Wave Function Collapse | Named shapes | Split grammars: round one, 50 lines of core |
+| Dataflow graphs | Grasshopper `.ghx`, Dynamo `.dyn` and DesignScript, Geometry Nodes, Houdini, Marionette | Whatever the host's nodes make | The files can be read; the node libraries are the hosts'. DesignScript's ideas are worth taking |
+| BIM-oriented | Archicad GDL, Revit families, Hypar Elements, IfcOpenShell's Python API, Topologic | Building elements | None adoptable as is: proprietary, or services, or Python. IfcOpenShell's API is already in the app's Python worker |
+
+- There is no open, implemented standard for a parametric or procedural model; IFC records the result (P).
+- Text-to-model systems moved from token sequences to readable code or structured text in two years. The
+  building ones give the model a small vocabulary of element calls (Text2BIM: 26 functions), not geometry and
+  not raw IFC. General models compile CadQuery 85 to 96% of the time without training, but compiling is not
+  being right: 48% of errors were structural, and Text2BIM's own authors report illogical door and window
+  placement and a clear gap from real designs (P, the papers). Confidence medium: a young field.
+- A new format has no training data and must be taught in the prompt each time; JSON itself is well known to
+  models and a schema can force validity (the first P, the second inference).
+
+**Answer to the owner's second question.** No existing language can be adopted. The app should speak its
+own small format: rules and element-level calls as schema-checked text (JSON), shown as a form, later as a
+graph, and always readable and pasteable as text. It borrows the scope, split and repeat from CGA; one
+definition yielding plan, solid, schedule values and form from GDL; one assignment per name and replication
+from DesignScript; a small element vocabulary from Text2BIM; permanent node ids with the layout stored apart
+from Dynamo's file. Python through the existing worker (IfcOpenShell's API) is a later escape hatch.
+
 ## 11. The owner's decisions
 
-Asked together, 2026-11-15. Each has the recommendation and what it rests on. Not yet answered.
+Asked together, 2026-11-15, 1 to 10 after round one and 11 to 13 after round two. Each has the
+recommendation and what it rests on. Not yet answered.
 
 1. **The approach.** Generators as records with typed parameters and rules as data first; the model graph and
    the node editor after (option A, part 5). Or the node editor first (B)? Recommended: A.
@@ -346,6 +426,21 @@ Asked together, 2026-11-15. Each has the recommendation and what it rests on. No
 9. **A text language.** Not now. Recommended: agreed, revisited after the graph exists.
 10. **Phase numbers.** V228 to V232 for the five phases, after the queue's V227; V204, V213 and V215 stay where
     they are and ship first. Or move them earlier in the queue?
+
+Added by round two (part 10a). Decision 11 sharpens 1 and 8; decision 13 amends 9.
+
+11. **The Grasshopper question.** The rule lives on a generator object in the model, with its inputs as a
+    form in Properties (works on a phone); the graph canvas comes after, as the author's view of the same
+    records, dockable as a tab or popped out as a window (e07), on desktop and tablet. Generated elements are
+    real and tracked from the start: no preview-then-bake. Or build the canvas first, as Grasshopper has it?
+    Recommended: the object and form first, the canvas after.
+12. **The language.** The app's own format: rules and element-level calls as schema-checked JSON. Or JavaScript
+    programs in a worker (as JSCAD), or Python in the existing worker (IfcOpenShell's API)? Recommended: our
+    own format; Python as a later escape hatch; no JavaScript programs.
+13. **A text view from the start.** Show a generator's rules as text beside its form from the first phase,
+    with paste, export and validation, so a rule set written outside the app (by hand or by a language model)
+    can be brought in and checked before it runs. This is a view of the data, not a programming language
+    (decision 9 stands). Recommended: yes.
 
 ## 12. References
 
