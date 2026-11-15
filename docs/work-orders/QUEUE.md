@@ -9,12 +9,10 @@ The owner's decisions (2026-11-14): for every phase below, all as its research r
 overrule any there). V177's D1 to D4 and That Open's four were answered 2026-11-13. The phases are numbered in one
 sequence, 175c to 232 (228 to 232 are algorithmic design; the owner's thirteen decisions, 2026-11-15), in `docs/dev/PIPELINE.md`; there are no "later" rows.
 
-## Ready for Cline, in order (232 tasks)
+## Ready for Cline, in order (223 tasks)
 
 | Phase | What | Tasks | Where | Tests |
 |---|---|---|---|---|
-| v175c | One paper space, steps 2-3 | WO-11 to WO-17 (7) | `v175c/TASKS-step2.md` | `v175c/v175c-step2.test.mjs` |
-| v177 | IFC save, step 2a: the model as data (main's orders) | WO-09 to WO-15 (7) | `v177/TASKS.md` | `tests/unit/ifc-save.test.mjs` |
 | v178 | Presentation P3, the report (Site Analysis and DA), styles, export | WO-01 to WO-12 (12) | `v178/TASKS.md` | `v178/v178.test.mjs` |
 | v179 | Interiors I1, programme and adjacency (and I2's first measurement) | WO-01 to WO-09 (9) | `v179/TASKS.md` | `v179/v179.test.mjs` |
 | v180 | Interiors I2, clearance and ergonomics | WO-01 to WO-06 (6) | `v180/TASKS.md` | `v180/v180.test.mjs` |
@@ -32,6 +30,7 @@ sequence, 175c to 232 (228 to 232 are algorithmic design; the owner's thirteen d
 | v192 | LOD-E, facade images rectified onto walls | WO-01 to WO-06 (6) | `v192/TASKS.md` | `v192/v192.test.mjs` |
 | v193 | LOD-F, LOD3 openings on rectified facades | WO-01 to WO-05 (5) | `v193/TASKS.md` | `v193/v193.test.mjs` |
 | v201 | MEP runs, first slice (a checked tree, straight friction only) | WO-01 to WO-07 (7) | `v201/TASKS.md` | `v201/v201.test.mjs` |
+| v202 | Site context C3: measured heights, ground and bridges | WO-01 to WO-05 (5), any order | `v202/TASKS.md` | `v202/v202.test.mjs` |
 | v204 | The Parametric Design Foundation, sketch to Pad to Pocket | WO-01 to WO-04 (4) | `v204/TASKS.md` | `v204/v204.test.mjs` |
 | v205 | LOD-G, Gaussian splats as a backdrop | WO-01 to WO-05 (5) | `v205/TASKS.md` | `v205/v205.test.mjs` |
 | v206 | That Open: the Review view and IFC import (with Hub H3's identity) | WO-01 to WO-07 (7) | `v206/TASKS.md` | `v206/v206.test.mjs` |
@@ -69,7 +68,7 @@ records.
 
 | Phase | Where |
 |---|---|
-| v202 Site context C3 | Its work orders are on the branch `worktree-site-context-accuracy` (`docs/work-orders/v202/`, WO-00 built): merge it to main to hand them to Cline |
 | v203 Walkthrough W1 | WO-01 to WO-08 shipped by Cline; Claude's C-03 to C-08 on its branch (`claude/exciting-clarke-2e2noz`) |
-| v177 | Step 1 shipped by Cline and audited (2026-11-14); step 2a is in the table above; then Claude's step 2b (the wheels, the worker, File > Export > IFC, Make editable) |
+| v175c | WO-11 to WO-17 shipped (2026-11-14); then Claude's WO-18 (one editor and one print in the app) and WO-19 |
+| v177 | Steps 1, 2a and 2b shipped (2a: WO-09 to WO-15, 2026-11-15, to audit); left for Claude: the browser check of File > Export > IFC on the real functions, Make editable |
 | v194 | T-07 shipped; Claude wires its looks into the materials |

@@ -473,6 +473,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
     saveproj:ric('<path d="M5 4h11l3 3v13H5z"/><path d="M8 4v6h7V4"/><rect x="8" y="13" width="8" height="7"/>'),
     openproj:ric('<path d="M3 7h6l2 2h10v10H3z"/>'),
     exportdxf:ric('<path d="M6 2h9l5 5v15H6z"/><path d="M15 2v5h5"/><path d="M9 12l6 6M15 12l-6 6"/>'),
+    exportifc:ric('<path d="M6 2h9l5 5v15H6z"/><path d="M15 2v5h5"/><path d="M9 18v-5l3-2 3 2v5z"/><path d="M12 11v7"/>'),   /* __acad3dV177 */
     exportsvg:ric('<path d="M6 2h9l5 5v15H6z"/><path d="M15 2v5h5"/><path d="M8 17c1.5-5 5-4.5 6-9"/><circle cx="8" cy="17" r="1.1"/><circle cx="14" cy="8" r="1.1"/>'),
     'bim:section':ric('<path d="M4 4v16M4 4l16 4M4 20l16-4"/><path d="M15 6l4 12"/>'),
     exitsection:ric('<path d="M6 18L18 6M6 6l12 12"/>'),

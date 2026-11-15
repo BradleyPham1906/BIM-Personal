@@ -11,3 +11,7 @@ Written by `tools/gate.py ship`. Claude's audit marks each row (`/audit`).
 | 2026-11-13 | WO-05 | 4 passed, 1 warning(s) | concern:  / Line 270:** The code checks if the host is an `IfcWall`, but the SPEC allows for other types of hosts. The code should be modified to handle other v | ok; the concern is wrong (the spec asks for IfcWall hosts) |
 | 2026-11-13 | WO-06 | 4 passed | pass | ok |
 | 2026-11-13 | WO-07 | 4 passed | pass | ok |
+| 2026-11-14 | WO-09, WO-10, WO-11 | 5 passed | pass | open |
+| 2026-11-14 | WO-09, WO-10, WO-11 | 5 passed | pass | open |
+| 2026-11-14 | WO-12 | 5 passed | pass | open |
+| 2026-11-15 | WO-13, WO-14, WO-15 | not gated: committed by hand as 7eefaba ("ifc commit"); the 8 unit cases, npm test and the build pass at that commit | none | open |

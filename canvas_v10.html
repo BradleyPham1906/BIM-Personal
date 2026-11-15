@@ -1990,6 +1990,7 @@ body.light-theme .a3d-tl-msgs,body.light-theme .a3d-tl-hn span,body.light-theme 
     ['IFCIN',['IMPORTIFC','IFC','OPENIFC'],'ifcin','Open an IFC model (IFC2x3, IFC4, IFC4.3): every element in its colour with its openings, on layers by class, its storeys as levels and its property sets in Properties'],   /* __acad3dV196 */
     ['GLTFIN',['IMPORTGLTF','GLB','GLTF','IMPORTGLB'],'gltfin','Open a glTF or GLB model: its meshes as solids by material, on a layer named after the file, and kept in Assets as a block'],   /* __acad3dV195 */
     ['GLTFOUT',['EXPORTGLTF','EXPORTGLB'],'gltfout','Export the model shown as a .glb, an element a mesh under a node for its layer, for Blender, SketchUp, game engines and headsets'],
+    ['IFCOUT',['EXPORTIFC','SAVEIFC','SAVEASIFC'],'ifcout','Export the model shown as an IFC4 file through IfcOpenShell: levels as storeys, walls, floors, doors, windows and columns as IFC elements, everything else with its shape and class'],   /* __acad3dV177 */
     ['SKPIN',['IMPORTSKP','SKETCHUP'],'skpin','Open a SketchUp file: its faces as solids, its tags as layers, its components as blocks'],   /* __acad3dV163 */
     /* __acad3dV134: data layers */
     ['FINDDATA',['OPENDATA','PORTAL'],'finddata','Find open data: search a US city, county, state or federal portal and add what it holds as a data layer'],   /* __acad3dV135 */
@@ -21043,6 +21044,13 @@ try{
           {n:'tree',v:8,u:'m',say:'a tree\'s height where none is mapped'},{n:'tower',v:25,u:'m',say:'a power tower\'s height'},{n:'line',v:20,u:'m',say:'the height a power line hangs at'},
           {n:'deck',v:6,u:'m',say:'a bridge deck\'s height for each layer'},{n:'deck_t',v:0.8,u:'m',say:'a bridge deck\'s thickness'},{n:'pier',v:30,u:'m',say:'the spacing of a bridge\'s piers'},
           {n:'road_w',t:1,u:'m',say:'a road\'s width by class, where neither its width nor its lanes are mapped',v:{motorway:14,motorway_link:7,trunk:12,trunk_link:7,primary:11,primary_link:6,secondary:9,secondary_link:6,tertiary:8,tertiary_link:6,residential:7,unclassified:6,living_street:6,service:4,pedestrian:6,track:3,footway:2,path:1.5,cycleway:2,steps:2,bridleway:2,corridor:2}}]}]},
+    /* ---- __acad3dV202: measured building heights, by city (the owner's D2, 2026-11-13) ---- */
+    {id:'ctx.heights',title:'Measured building heights, by city',pub:'Each city',kind:'data',area:'Site context',use:'Context buildings: the city\'s measured height before OpenStreetMap\'s; applied at the next fetch',anywhere:true,
+      eds:[{id:'ctx.heights.1',name:'The cities read so far (V202)',pub:'',st:'current',where:'Each source within its own bounds',adopt:[{at:'*'}],
+        src:{t:'City of Philadelphia, LI building footprints (OpenDataPhilly), read through ArcGIS Online',w:'its fields approx_hgt (main roof), max_hgt (top) and base_elevation (ground), all in feet, checked against City Hall and One Liberty Place (research-site-context-accuracy.md, H5 and H6)',u:'https://services.arcgis.com/fLeGjb7u4uXqeF9q/arcgis/rest/services/LI_BUILDING_FOOTPRINTS/FeatureServer/0',lv:'P',read:'2026-11-13'},
+        v:[{n:'sources',t:1,say:'each city\'s footprint layer: its address, its height fields and their unit, and where it applies (W, S, E, N)',
+          v:{'phl-li-footprints':{name:'City of Philadelphia building footprints',url:'https://services.arcgis.com/fLeGjb7u4uXqeF9q/arcgis/rest/services/LI_BUILDING_FOOTPRINTS/FeatureServer/0',
+            roof:'approx_hgt',top:'max_hgt',base:'base_elevation',unit:0.3048,credit:'City of Philadelphia (OpenDataPhilly)',read:'2026-11-13',bbox:[-75.29,39.86,-74.95,40.14]}}}]}]},
     /* ---- __acad3dV168: land use, form and green ---- */
     {id:'lbcs.activity',title:'Land-Based Classification Standards (LBCS): activity',pub:'American Planning Association',kind:'classification',area:'Land and green',use:'Land use layer, its key and its finding',anywhere:true,
       eds:[{id:'lbcs.activity.apa',name:'LBCS Activity Dimension, with APA\'s colour workbook',pub:'',st:'current',where:'A model classification for planning in the United States, adopted nowhere as a rule',adopt:[],
@@ -36735,6 +36743,697 @@ try{
      a wall has arcs, a column's four corners */
   var BIM_IFC_SAVE_USES=[bimSegNormal,bimAlignOffsets,bimHasBulge,bimRectFootprint];
   BIM_IFC_SAVE.uses=BIM_IFC_SAVE_USES;BIM_IFC_SAVE.num=bimIfcSaveNum;BIM_IFC_SAVE.pt=bimIfcSavePt;BIM_IFC_SAVE.pt3=bimIfcSavePt3;BIM_IFC_SAVE.cls=BIM_IFC_SAVE_CLASS;
+function bimIfcSaveBase(o, layerName){
+  var b=o.bim||{},r={id:o.id,name:String(o.name||o.id),psets:[]},sets=b.psets||[],i,j,ps,props,row,hasProps;
+  if(typeof b.guid==='string'&&b.guid.length===22)r.guid=b.guid;
+  r.psets.push({name:'BIM_Personal',props:{Type:String(b.type||o.t||''),Layer:String(layerName||'')}});
+  for(i=0;i<sets.length;i++){
+    ps=sets[i];if(!ps.name||ps.name==='BIM_Personal')continue;
+    props={};hasProps=false;
+    for(j=0;j<(ps.rows||[]).length;j++){
+      row=ps.rows[j];
+      if(row&&row[0]!==undefined&&row[0]!==''){props[String(row[0])]=String(row[1]==null?'':row[1]);hasProps=true;}
+    }
+    if(hasProps)r.psets.push({name:String(ps.name),props:props});
+  }
+  return r;
+}
+BIM_IFC_SAVE.base = bimIfcSaveBase;
+
+function bimIfcSaveLevels(lv){
+  var list=[],at={},i,l;
+  if(Array.isArray(lv))for(i=0;i<lv.length;i++){
+    l=lv[i];list.push({name:String(l.name||'Level '+i),elev:bimIfcSaveNum(l.elev)});at[l.id||'lvl-'+i]=i;
+  }
+  return {list:list,at:at};
+}
+BIM_IFC_SAVE.levels = bimIfcSaveLevels;
+
+function bimIfcSaveLevel(o, lv, y){
+  var at=lv&&lv.at,id=o&&o.bim&&o.bim.levelId,best=-Infinity,index=0,i;
+  if(id!==undefined&&id!==null&&at&&Object.prototype.hasOwnProperty.call(at,id))return at[id];
+  if(lv&&lv.list)for(i=0;i<lv.list.length;i++){
+    if(lv.list[i].elev<=y+1e-6&&lv.list[i].elev>best){best=lv.list[i].elev;index=i;}
+  }
+  return index;
+}
+BIM_IFC_SAVE.level = bimIfcSaveLevel;
+
+function bimIfcSaveMoved(o){
+  return !!(o&&o.pos&&(Math.abs(o.pos[0]||0)>1e-9||Math.abs(o.pos[1]||0)>1e-9||Math.abs(o.pos[2]||0)>1e-9));
+}
+
+function bimIfcSaveWalls(o, lv, base){
+  var b=o&&o.bim,p,off,n,i,a,q,dx,dz,len,nr,s,item,k,walls=[];
+  if(!b||b.type!=='wall'||!b.centerline||b.centerline.length<2||bimHasBulge(b.bulges)||bimIfcSaveMoved(o)||!(b.thickness>0)||!(b.height>0))return null;
+  p=b.centerline;off=bimAlignOffsets(b.thickness,b.align);n=p.length-1+(b.closed&&p.length>2?1:0);
+  for(i=0;i<n;i++){
+    a=p[i%p.length];q=p[(i+1)%p.length];dx=q[0]-a[0];dz=q[1]-a[1];len=Math.sqrt(dx*dx+dz*dz);
+    if(len<1e-6)continue;
+    nr=bimSegNormal(a,q);s=(nr[0]*dz-nr[1]*dx)/len;var oZ=Math.min(s*off.dLeft,-s*off.dRight);item={};
+    for(k in base)if(base.hasOwnProperty(k))item[k]=base[k];
+    q=bimIfcSavePt(q);a=bimIfcSavePt(a);
+    item.level=bimIfcSaveLevel(o,lv,b.baseY);item.x0=a[0];item.y0=a[1];item.x1=q[0];item.y1=q[1];
+    item.base=bimIfcSaveNum(b.baseY);item.height=bimIfcSaveNum(b.height);
+    item.thickness=bimIfcSaveNum(off.dLeft+off.dRight);item.offset=bimIfcSaveNum(oZ);
+    if(walls.length){item.id=o.id+'#'+i;delete item.guid;}
+    walls.push(item);
+  }
+  if(!walls.length)return null;
+  if(walls.length>1)for(i=0;i<walls.length;i++)walls[i].name=String(base.name)+' '+(i+1);
+  return walls;
+}
+BIM_IFC_SAVE.walls = bimIfcSaveWalls;
+function bimIfcSavePrism(o, lv, base){
+  var b=o&&o.bim,item,k,i,pts=[],cls,dpth;
+  if(!b||bimIfcSaveMoved(o))return null;
+  if(b.type==='floor'&&Array.isArray(b.profile)&&b.profile.length>=3&&b.thickness>0){
+    cls='IfcSlab';pts=b.profile;dpth=b.thickness;
+  }else if(b.type==='column'&&!b.section&&b.center&&b.width>0&&b.depth>0&&b.height>0){
+    cls='IfcColumn';pts=bimRectFootprint(b.center,b.width,b.depth,b.rotation||0);dpth=b.height;
+  }else return null;
+  item={cls:cls};
+  for(k in base)if(base.hasOwnProperty(k))item[k]=base[k];
+  item.level=bimIfcSaveLevel(o,lv,b.baseY);
+  for(i=0;i<pts.length;i++)pts[i]=bimIfcSavePt(pts[i]);
+  item.pts=pts;
+  item.base=bimIfcSaveNum(cls==='IfcSlab'?b.baseY-b.thickness:b.baseY);
+  item.depth=bimIfcSaveNum(dpth);
+  return item;
+}
+BIM_IFC_SAVE.prism=bimIfcSavePrism;
+function bimIfcSaveOpening(o, walls, base){
+  var b=o&&o.bim,item,k,c,t,best,bestd,d,s,i,x,y,wl;
+  if(o.t!=='opening'||!b||(b.type!=='door'&&b.type!=='window')||!b.center||!(b.width>0)||!(b.height>0))return null;
+  c=bimIfcSavePt(b.center);wl=[];
+  for(i=0;i<walls.length;i++){if(walls[i].id===b.hostWallId||walls[i].id.indexOf(b.hostWallId+'#')===0)wl.push(walls[i]);}
+  if(!wl.length)return null;
+  best=null;bestd=Infinity;
+  for(i=0;i<wl.length;i++){
+    s=wl[i];d=[s.x1-s.x0,s.y1-s.y0];t=((c[0]-s.x0)*d[0]+(c[1]-s.y0)*d[1])/(d[0]*d[0]+d[1]*d[1]);t=Math.max(0,Math.min(1,t));
+    x=s.x0+t*d[0];y=s.y0+t*d[1];d=Math.sqrt((c[0]-x)*(c[0]-x)+(c[1]-y)*(c[1]-y));
+    if(d<bestd){bestd=d;best=s;}
+  }
+  if(!best)return null;
+  t=((c[0]-best.x0)*(best.x1-best.x0)+(c[1]-best.y0)*(best.y1-best.y0))/((best.x1-best.x0)*(best.x1-best.x0)+(best.y1-best.y0)*(best.y1-best.y0));
+  t=Math.max(0,Math.min(1,t));
+  x=best.x0+t*(best.x1-best.x0);y=best.y0+t*(best.y1-best.y0);
+  item={cls:b.type==='window'?'IfcWindow':'IfcDoor',host:best.id,x:bimIfcSaveNum(x),y:bimIfcSaveNum(y),a:Math.atan2(best.y1-best.y0,best.x1-best.x0),base:bimIfcSaveNum(best.base+(b.sillHeight||0)),width:bimIfcSaveNum(b.width),height:bimIfcSaveNum(b.height),depth:bimIfcSaveNum(best.thickness+0.2)};
+  for(k in base)if(base.hasOwnProperty(k))item[k]=base[k];
+  return item;
+}
+BIM_IFC_SAVE.opening=bimIfcSaveOpening;
+function bimIfcSaveMesh(o, m, lv, base){
+  var b=o&&o.bim,item,k,i,j,f,verts=[],faces=[],cls,miny=Infinity,p;
+  if(!m||!m.v||!m.f)return null;
+  for(i=0;i<m.v.length;i++){p=[m.v[i][0]+(o.pos&&o.pos[0]||0),m.v[i][1]+(o.pos&&o.pos[1]||0),m.v[i][2]+(o.pos&&o.pos[2]||0)];verts.push(bimIfcSavePt3(p));if(p[1]<miny)miny=p[1];}
+  if(verts.length<3)return null;
+  for(i=0;i<m.f.length;i++){
+    f=m.f[i];if(f.length<3)continue;
+    for(j=2;j<f.length;j++)faces.push([f[0],f[j-1],f[j]]);
+  }
+  if(!faces.length)return null;
+  cls='IfcBuildingElementProxy';
+  if(b&&b.imported&&b.ifcType&&/^Ifc[A-Za-z0-9]+$/.test(b.ifcType))cls=b.ifcType.replace(/(StandardCase|ElementedCase)$/,'');
+  else if(b&&BIM_IFC_SAVE_CLASS[b.type])cls=BIM_IFC_SAVE_CLASS[b.type];
+  item={cls:cls};
+  for(k in base)if(base.hasOwnProperty(k))item[k]=base[k];
+  item.level=bimIfcSaveLevel(o,lv,miny);item.verts=verts;item.faces=faces;
+  return item;
+}
+BIM_IFC_SAVE.mesh=bimIfcSaveMesh;
+function bimIfcSaveModel(name, levels, entries){
+  var lv=bimIfcSaveLevels(levels),model={name:String(name||'Project'),levels:lv.list,walls:[],prisms:[],openings:[],meshes:[]},left=[],i,e,b,item,opens=[];
+  for(i=0;i<entries.length;i++){
+    e=entries[i];b=bimIfcSaveBase(e.o,e.layer);item=null;
+    if(e.o.t!=='opening'){item=bimIfcSaveWalls(e.o,lv,b);if(!item)item=bimIfcSavePrism(e.o,lv,b);if(!item)item=bimIfcSaveMesh(e.o,e.mesh,lv,b);}
+    if(e.o.t!=='opening'){if(item){if(Array.isArray(item))model.walls=model.walls.concat(item);else if(item.cls==='IfcSlab'||item.cls==='IfcColumn')model.prisms.push(item);else model.meshes.push(item);}else left.push({id:e.o.id,why:'no shape'});}
+    if(e.o.t==='opening')opens.push({o:e.o,base:b});
+  }
+  for(i=0;i<opens.length;i++){
+    e=opens[i];item=bimIfcSaveOpening(e.o,model.walls,e.base);
+    if(item)model.openings.push(item);else left.push({id:e.o.id,why:'its wall is not written as a straight wall'});
+  }
+  return {model:model,left:left};
+}
+BIM_IFC_SAVE.model=bimIfcSaveModel;
+  /* ================= __acad3dV177: the IfcOpenShell adapter's Python, as text =================
+     Written by tools/embed_py.py from src/py/bim_ifcos.py: edit the .py, then run the tool (--check proves the two
+     agree). The IFC worker (io/ifcos-worker.js) writes it into Pyodide's site-packages beside the pinned wheels;
+     IfcOpenShell's own code runs unchanged beneath it (docs/research/research-ifcopenshell-app.md). */
+  var BIM_IFCOS_PY=[
+    "\"\"\"__acad3dV176: the app's adapter to IfcOpenShell (LGPL-3.0, its WebAssembly wheel, unchanged), run by the app's own",
+    "Pyodide. docs/work-orders/v176/SPEC.md says what each function does; docs/work-orders/v176/v176.test.mjs tests them.",
+    "",
+    "Every function takes plain values and answers a plain dict (JSON), so JavaScript calls it the same way it calls the",
+    "Ladybug adapter. The project being built is kept in _bim_ifcos_file. A failure answers {\"error\": \"...\"}; nothing is",
+    "printed or raised to the caller.\"\"\"",
+    "import math",
+    "import os",
+    "",
+    "import numpy",
+    "import ifcopenshell",
+    "import ifcopenshell.api",
+    "import ifcopenshell.api.aggregate",
+    "import ifcopenshell.api.context",
+    "import ifcopenshell.api.feature",
+    "import ifcopenshell.api.geometry",
+    "import ifcopenshell.api.project",
+    "import ifcopenshell.api.pset",
+    "import ifcopenshell.api.root",
+    "import ifcopenshell.api.spatial",
+    "import ifcopenshell.api.unit",
+    "import ifcopenshell.guid",
+    "import ifcopenshell.util.element",
+    "import ifcopenshell.util.placement",
+    "import ifcopenshell.util.unit",
+    "",
+    "_bim_ifcos_file = None",
+    "",
+    "",
+    "def bim_ifcos_summary(path):",
+    "    try:",
+    "        if path:",
+    "            if not os.path.exists(path):",
+    "                return {\"error\": \"not found\"}",
+    "            f = ifcopenshell.open(path)",
+    "        else:",
+    "            f = _bim_ifcos_file",
+    "            if f is None:",
+    "                return {\"error\": \"no project\"}",
+    "        scale = ifcopenshell.util.unit.calculate_unit_scale(f)",
+    "        products = {}",
+    "        for element in f.by_type(\"IfcProduct\"):",
+    "            if element.is_a() == \"IfcOpeningElement\":",
+    "                continue",
+    "            products[element.is_a()] = products.get(element.is_a(), 0) + 1",
+    "        storeys = [{\"name\": s.Name,",
+    "                    \"elevation\": round((s.Elevation or 0) * scale, 6)}",
+    "                   for s in f.by_type(\"IfcBuildingStorey\")]",
+    "        return {\"schema\": f.schema, \"products\": products, \"storeys\": storeys}",
+    "    except Exception:",
+    "        return {\"error\": \"unreadable\"}",
+    "",
+    "",
+    "def bim_ifcos_new_project(name, elevation):",
+    "    global _bim_ifcos_file",
+    "    try:",
+    "        f = ifcopenshell.api.project.create_file(version=\"IFC4\")",
+    "        _bim_ifcos_file = f",
+    "        project = ifcopenshell.api.root.create_entity(f, ifc_class=\"IfcProject\", name=name)",
+    "        units = [",
+    "            ifcopenshell.api.unit.add_si_unit(f, unit_type=\"LENGTHUNIT\"),",
+    "            ifcopenshell.api.unit.add_si_unit(f, unit_type=\"AREAUNIT\"),",
+    "            ifcopenshell.api.unit.add_si_unit(f, unit_type=\"VOLUMEUNIT\"),",
+    "        ]",
+    "        ifcopenshell.api.unit.assign_unit(f, units=units)",
+    "        model = ifcopenshell.api.context.add_context(f, context_type=\"Model\")",
+    "        ifcopenshell.api.context.add_context(",
+    "            f,",
+    "            context_type=\"Model\",",
+    "            context_identifier=\"Body\",",
+    "            target_view=\"MODEL_VIEW\",",
+    "            parent=model,",
+    "        )",
+    "        site = ifcopenshell.api.root.create_entity(f, ifc_class=\"IfcSite\", name=\"Site\")",
+    "        building = ifcopenshell.api.root.create_entity(f, ifc_class=\"IfcBuilding\", name=\"Building\")",
+    "        storey = ifcopenshell.api.root.create_entity(",
+    "            f, ifc_class=\"IfcBuildingStorey\", name=\"Level 0\"",
+    "        )",
+    "        storey.Elevation = elevation",
+    "        ifcopenshell.api.aggregate.assign_object(f, products=[site], relating_object=project)",
+    "        ifcopenshell.api.aggregate.assign_object(f, products=[building], relating_object=site)",
+    "        ifcopenshell.api.aggregate.assign_object(f, products=[storey], relating_object=building)",
+    "        return bim_ifcos_summary(\"\")",
+    "    except Exception:",
+    "        return {\"error\": \"unreadable\"}",
+    "",
+    "",
+    "def bim_ifcos_add_wall(name, x0, y0, x1, y1, height, thickness):",
+    "    global _bim_ifcos_file",
+    "    try:",
+    "        f = _bim_ifcos_file",
+    "        if f is None:",
+    "            return {\"error\": \"no project\"}",
+    "        L = math.hypot(x1 - x0, y1 - y0)",
+    "        if L < 1e-9:",
+    "            return {\"error\": \"zero length\"}",
+    "        storey = f.by_type(\"IfcBuildingStorey\")[0]",
+    "        body = None",
+    "        for c in f.by_type(\"IfcGeometricRepresentationSubContext\"):",
+    "            if c.ContextIdentifier == \"Body\":",
+    "                body = c",
+    "                break",
+    "        wall = ifcopenshell.api.root.create_entity(f, ifc_class=\"IfcWall\", name=name)",
+    "        representation = ifcopenshell.api.geometry.add_wall_representation(",
+    "            f, context=body, length=L, height=height, thickness=thickness",
+    "        )",
+    "        ifcopenshell.api.geometry.assign_representation(f, product=wall, representation=representation)",
+    "        a = math.atan2(y1 - y0, x1 - x0)",
+    "        M = numpy.array([",
+    "            [math.cos(a), -math.sin(a), 0, x0],",
+    "            [math.sin(a), math.cos(a), 0, y0],",
+    "            [0, 0, 1, storey.Elevation],",
+    "            [0, 0, 0, 1],",
+    "        ], dtype=float)",
+    "        ifcopenshell.api.geometry.edit_object_placement(f, product=wall, matrix=M)",
+    "        ifcopenshell.api.spatial.assign_container(f, products=[wall], relating_structure=storey)",
+    "        return {\"guid\": wall.GlobalId}",
+    "    except Exception:",
+    "        return {\"error\": \"unreadable\"}",
+    "",
+    "",
+    "def bim_ifcos_write_read(path):",
+    "    global _bim_ifcos_file",
+    "    try:",
+    "        f = _bim_ifcos_file",
+    "        if f is None:",
+    "            return {\"error\": \"no project\"}",
+    "        f.write(path)",
+    "        return {\"bytes\": os.path.getsize(path), \"summary\": bim_ifcos_summary(path)}",
+    "    except Exception:",
+    "        return {\"error\": \"unreadable\"}",
+    "",
+    "",
+    "def bim_ifcos_matrix(x, y, z, a):",
+    "    return numpy.array([",
+    "        [math.cos(a), -math.sin(a), 0, x],",
+    "        [math.sin(a), math.cos(a), 0, y],",
+    "        [0, 0, 1, z],",
+    "        [0, 0, 0, 1],",
+    "    ], dtype=float)",
+    "",
+    "",
+    "def bim_ifcos_storey(level):",
+    "    storeys = _bim_ifcos_file.by_type(\"IfcBuildingStorey\")",
+    "    if isinstance(level, int) and 0 <= level < len(storeys):",
+    "        return storeys[level]",
+    "    return storeys[0]",
+    "",
+    "",
+    "def bim_ifcos_body():",
+    "    for c in _bim_ifcos_file.by_type(\"IfcGeometricRepresentationSubContext\"):",
+    "        if c.ContextIdentifier == \"Body\":",
+    "            return c",
+    "",
+    "",
+    "def bim_ifcos_keep_guid(product, guid):",
+    "    ok = (",
+    "        isinstance(guid, str)",
+    "        and len(guid) == 22",
+    "        and all(c in \"0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz_$\" for c in guid)",
+    "    )",
+    "    if ok:",
+    "        try:",
+    "            _bim_ifcos_file.by_guid(guid)",
+    "        except Exception:",
+    "            product.GlobalId = guid",
+    "    return product.GlobalId",
+    "",
+    "",
+    "def bim_ifcos_begin(name, levels):",
+    "    global _bim_ifcos_file",
+    "    try:",
+    "        if not levels:",
+    "            levels = [{\"name\": \"Level 0\", \"elev\": 0}]",
+    "        r = bim_ifcos_new_project(name, levels[0][\"elev\"])",
+    "        if \"error\" in r:",
+    "            return r",
+    "        f = _bim_ifcos_file",
+    "        storeys = f.by_type(\"IfcBuildingStorey\")",
+    "        storeys[0].Name = levels[0][\"name\"]",
+    "        building = f.by_type(\"IfcBuilding\")[0]",
+    "        for lv in levels[1:]:",
+    "            storey = ifcopenshell.api.root.create_entity(f, ifc_class=\"IfcBuildingStorey\", name=lv[\"name\"])",
+    "            storey.Elevation = lv[\"elev\"]",
+    "            ifcopenshell.api.aggregate.assign_object(f, products=[storey], relating_object=building)",
+    "        for s in f.by_type(\"IfcBuildingStorey\"):",
+    "            ifcopenshell.api.geometry.edit_object_placement(",
+    "                f, product=s, matrix=bim_ifcos_matrix(0, 0, s.Elevation, 0)",
+    "            )",
+    "        return bim_ifcos_summary(\"\")",
+    "    except Exception:",
+    "        return {\"error\": \"failed\"}",
+    "",
+    "",
+    "def bim_ifcos_put_wall(w):",
+    "    global _bim_ifcos_file",
+    "    try:",
+    "        f = _bim_ifcos_file",
+    "        if f is None:",
+    "            return {\"error\": \"no project\"}",
+    "        L = math.hypot(w[\"x1\"] - w[\"x0\"], w[\"y1\"] - w[\"y0\"])",
+    "        if L < 1e-9:",
+    "            return {\"error\": \"zero length\"}",
+    "        wall = ifcopenshell.api.root.create_entity(f, ifc_class=\"IfcWall\", name=w.get(\"name\"))",
+    "        rep = ifcopenshell.api.geometry.add_wall_representation(",
+    "            f, context=bim_ifcos_body(), length=L, height=w[\"height\"],",
+    "            thickness=w[\"thickness\"], offset=w.get(\"offset\", 0)",
+    "        )",
+    "        ifcopenshell.api.geometry.assign_representation(f, product=wall, representation=rep)",
+    "        a = math.atan2(w[\"y1\"] - w[\"y0\"], w[\"x1\"] - w[\"x0\"])",
+    "        M = bim_ifcos_matrix(w[\"x0\"], w[\"y0\"], w[\"base\"], a)",
+    "        ifcopenshell.api.geometry.edit_object_placement(f, product=wall, matrix=M)",
+    "        ifcopenshell.api.spatial.assign_container(",
+    "            f, products=[wall], relating_structure=bim_ifcos_storey(w.get(\"level\"))",
+    "        )",
+    "        return {\"guid\": bim_ifcos_keep_guid(wall, w.get(\"guid\"))}",
+    "    except Exception:",
+    "        return {\"error\": \"failed\"}",
+    "",
+    "",
+    "def bim_ifcos_put_prism(p):",
+    "    global _bim_ifcos_file",
+    "    try:",
+    "        f = _bim_ifcos_file",
+    "        if f is None:",
+    "            return {\"error\": \"no project\"}",
+    "        pts = p.get(\"pts\") or []",
+    "        depth = p.get(\"depth\")",
+    "        if len(pts) < 3 or depth is None or depth <= 0:",
+    "            return {\"error\": \"bad outline\"}",
+    "        element = ifcopenshell.api.root.create_entity(",
+    "            f, ifc_class=p.get(\"cls\") or \"IfcSlab\", name=p.get(\"name\")",
+    "        )",
+    "        rep = ifcopenshell.api.geometry.add_slab_representation(",
+    "            f, context=bim_ifcos_body(), depth=p[\"depth\"],",
+    "            polyline=[(float(x), float(y)) for (x, y) in pts]",
+    "        )",
+    "        ifcopenshell.api.geometry.assign_representation(f, product=element, representation=rep)",
+    "        ifcopenshell.api.geometry.edit_object_placement(",
+    "            f, product=element, matrix=bim_ifcos_matrix(0, 0, p[\"base\"], 0)",
+    "        )",
+    "        ifcopenshell.api.spatial.assign_container(",
+    "            f, products=[element], relating_structure=bim_ifcos_storey(p.get(\"level\"))",
+    "        )",
+    "        return {\"guid\": bim_ifcos_keep_guid(element, p.get(\"guid\"))}",
+    "    except Exception:",
+    "        return {\"error\": \"failed\"}",
+    "",
+    "",
+    "def bim_ifcos_put_opening(o):",
+    "    global _bim_ifcos_file",
+    "    try:",
+    "        f = _bim_ifcos_file",
+    "        if f is None:",
+    "            return {\"error\": \"no project\"}",
+    "        try:",
+    "            host = f.by_guid(o[\"host\"])",
+    "        except Exception:",
+    "            return {\"error\": \"no host\"}",
+    "        if not host.is_a(\"IfcWall\"):",
+    "            return {\"error\": \"no host\"}",
+    "        if o[\"width\"] <= 0 or o[\"height\"] <= 0 or o[\"depth\"] <= 0:",
+    "            return {\"error\": \"bad size\"}",
+    "        a = o[\"a\"]",
+    "        M = bim_ifcos_matrix(o[\"x\"] - math.cos(a) * o[\"width\"] / 2, o[\"y\"] - math.sin(a) * o[\"width\"] / 2, o[\"base\"], a)",
+    "        body = bim_ifcos_body()",
+    "        opening = ifcopenshell.api.root.create_entity(f, ifc_class=\"IfcOpeningElement\", name=o.get(\"name\"))",
+    "        rep = ifcopenshell.api.geometry.add_wall_representation(",
+    "            f, context=body, length=o[\"width\"], height=o[\"height\"], thickness=o[\"depth\"], offset=-o[\"depth\"] / 2",
+    "        )",
+    "        ifcopenshell.api.geometry.assign_representation(f, product=opening, representation=rep)",
+    "        ifcopenshell.api.geometry.edit_object_placement(f, product=opening, matrix=M)",
+    "        ifcopenshell.api.feature.add_feature(f, feature=opening, element=host)",
+    "        if o.get(\"cls\") == \"IfcWindow\":",
+    "            element = ifcopenshell.api.root.create_entity(f, ifc_class=\"IfcWindow\", name=o.get(\"name\"))",
+    "            rep2 = ifcopenshell.api.geometry.add_window_representation(f, context=body, overall_height=o[\"height\"], overall_width=o[\"width\"])",
+    "        else:",
+    "            element = ifcopenshell.api.root.create_entity(f, ifc_class=\"IfcDoor\", name=o.get(\"name\"))",
+    "            rep2 = ifcopenshell.api.geometry.add_door_representation(f, context=body, overall_height=o[\"height\"], overall_width=o[\"width\"])",
+    "        ifcopenshell.api.geometry.assign_representation(f, product=element, representation=rep2)",
+    "        ifcopenshell.api.geometry.edit_object_placement(f, product=element, matrix=M)",
+    "        ifcopenshell.api.feature.add_filling(f, opening=opening, element=element)",
+    "        ifcopenshell.api.spatial.assign_container(f, products=[element], relating_structure=ifcopenshell.util.element.get_container(host))",
+    "        return {\"guid\": bim_ifcos_keep_guid(element, o.get(\"guid\")), \"opening\": opening.GlobalId}",
+    "    except Exception:",
+    "        return {\"error\": \"failed\"}",
+    "",
+    "",
+    "def bim_ifcos_put_mesh(m):",
+    "    global _bim_ifcos_file",
+    "    try:",
+    "        f = _bim_ifcos_file",
+    "        if f is None:",
+    "            return {\"error\": \"no project\"}",
+    "        verts = m.get(\"verts\")",
+    "        faces = m.get(\"faces\")",
+    "        if not verts or not faces:",
+    "            return {\"error\": \"empty mesh\"}",
+    "        element = ifcopenshell.api.root.create_entity(",
+    "            f, ifc_class=m.get(\"cls\") or \"IfcBuildingElementProxy\", name=m.get(\"name\")",
+    "        )",
+    "        rep = ifcopenshell.api.geometry.add_mesh_representation(",
+    "            f, context=bim_ifcos_body(),",
+    "            vertices=[[(float(x), float(y), float(z)) for (x, y, z) in verts]],",
+    "            faces=[[(int(i), int(j), int(k)) for (i, j, k) in faces]],",
+    "        )",
+    "        ifcopenshell.api.geometry.assign_representation(f, product=element, representation=rep)",
+    "        ifcopenshell.api.geometry.edit_object_placement(",
+    "            f, product=element, matrix=bim_ifcos_matrix(0, 0, 0, 0)",
+    "        )",
+    "        ifcopenshell.api.spatial.assign_container(",
+    "            f, products=[element], relating_structure=bim_ifcos_storey(m.get(\"level\"))",
+    "        )",
+    "        return {\"guid\": bim_ifcos_keep_guid(element, m.get(\"guid\"))}",
+    "    except Exception:",
+    "        return {\"error\": \"failed\"}",
+    "",
+    "",
+    "def bim_ifcos_put_psets(guid, psets):",
+    "    global _bim_ifcos_file",
+    "    try:",
+    "        f = _bim_ifcos_file",
+    "        if f is None:",
+    "            return {\"error\": \"no project\"}",
+    "        try:",
+    "            element = f.by_guid(guid)",
+    "        except Exception:",
+    "            return {\"error\": \"not found\"}",
+    "        count = 0",
+    "        for s in psets or []:",
+    "            props = s.get(\"props\")",
+    "            if not props:",
+    "                continue",
+    "            pset = ifcopenshell.api.pset.add_pset(f, product=element, name=s[\"name\"])",
+    "            ifcopenshell.api.pset.edit_pset(f, pset=pset, properties=props)",
+    "            count += 1",
+    "        return {\"psets\": count}",
+    "    except Exception:",
+    "        return {\"error\": \"failed\"}",
+    "",
+    "",
+    "def bim_ifcos_export(model, path):",
+    "    global _bim_ifcos_file",
+    "    try:",
+    "        r = bim_ifcos_begin(model.get(\"name\") or \"Project\", model.get(\"levels\") or [])",
+    "        if \"error\" in r:",
+    "            return r",
+    "        written = 0; skipped = []; written_guids = {}",
+    "        for w in model.get(\"walls\") or []:",
+    "            res = bim_ifcos_put_wall(w)",
+    "            if \"error\" in res:",
+    "                skipped.append({\"id\": w.get(\"id\"), \"why\": res[\"error\"]})",
+    "            else:",
+    "                written_guids[w.get(\"id\")] = res[\"guid\"]; written += 1",
+    "                if w.get(\"psets\"): bim_ifcos_put_psets(res[\"guid\"], w[\"psets\"])",
+    "        for p in model.get(\"prisms\") or []:",
+    "            res = bim_ifcos_put_prism(p)",
+    "            if \"error\" in res:",
+    "                skipped.append({\"id\": p.get(\"id\"), \"why\": res[\"error\"]})",
+    "            else:",
+    "                written_guids[p.get(\"id\")] = res[\"guid\"]; written += 1",
+    "                if p.get(\"psets\"): bim_ifcos_put_psets(res[\"guid\"], p[\"psets\"])",
+    "        for o in model.get(\"openings\") or []:",
+    "            item = dict(o); item[\"host\"] = written_guids.get(o.get(\"host\"), \"\")",
+    "            res = bim_ifcos_put_opening(item)",
+    "            if \"error\" in res:",
+    "                skipped.append({\"id\": o.get(\"id\"), \"why\": res[\"error\"]})",
+    "            else:",
+    "                written_guids[o.get(\"id\")] = res[\"guid\"]; written += 1",
+    "                if o.get(\"psets\"): bim_ifcos_put_psets(res[\"guid\"], o[\"psets\"])",
+    "        for m in model.get(\"meshes\") or []:",
+    "            res = bim_ifcos_put_mesh(m)",
+    "            if \"error\" in res:",
+    "                skipped.append({\"id\": m.get(\"id\"), \"why\": res[\"error\"]})",
+    "            else:",
+    "                written_guids[m.get(\"id\")] = res[\"guid\"]; written += 1",
+    "                if m.get(\"psets\"): bim_ifcos_put_psets(res[\"guid\"], m[\"psets\"])",
+    "        return {**bim_ifcos_write_read(path), \"skipped\": skipped, \"written\": written}",
+    "    except Exception:",
+    "        return {\"error\": \"failed\"}"
+  ].join('\n')+'\n';
+/* ================= __acad3dV177: IfcOpenShell in a worker, and Save as IFC =================
+   docs/research/research-ifcopenshell-app.md. IfcOpenShell 0.8.5's WebAssembly wheel, unchanged, run by the app's
+   Pyodide in a Web Worker of its own, made the first time a model is saved as IFC: the app opens as fast as before
+   and never waits on it. The wheel contains GPL code (CGAL), so it stays a separate program (the owner's D1): its
+   own files under runtime/ifcos/ (runtime/MANIFEST.json, their NOTICE), fetched only here, reached only by this
+   worker's messages; none of it is joined into the app. The worker checks each wheel's SHA-256 before unpacking
+   it, then writes the app's adapter (src/py/bim_ifcos.py, embedded as BIM_IFCOS_PY) beside them. The model goes in
+   as plain data (io/ifc-save.js) and the file's text comes back. */
+  var BIM_IFCOS={dir:'ifcos/0.8.5/',mb:16,wheels:[
+    {f:'six-1.17.0-py2.py3-none-any.whl',h:'bc830cfdc71a224b6d0e4337183a87ea53f21b6623deca5771ee3bc866fd8da2'},
+    {f:'python_dateutil-2.9.0.post0-py2.py3-none-any.whl',h:'1fe3a0346ef21bc85b295227256d6aed72aa8116178b019fc5ae5d57fbd213cf'},
+    {f:'typing_extensions-4.15.0-py3-none-any.whl',h:'42190f892f6219350c50e107954f57cb6196acac818fece4a7d21689c94f71de'},
+    {f:'shapely-2.0.7-cp313-cp313-pyemscripten_2025_0_wasm32.whl',h:'586daa7290c2d309f9e8d14589d4aa940b1d84502defb3adecc23e17897e476d'},
+    {f:'isodate-0.7.2-py3-none-any.whl',h:'28009937d8031054830160fce6d409ed342816b543597cece116d966c6d99e15'},
+    {f:'lark-1.3.1-py3-none-any.whl',h:'c629b661023a014c37da873b4ff58a817398d12635d3bbb2c5a03be7fe5d1e12'},
+    {f:'ifcopenshell-0.8.5-cp313-cp313-pyodide_2025_0_wasm32.whl',h:'fbebb7a7144277be213d156ed9b77de30de1d92b0b2b0c815e4a07555bfb929c'}]};
+  var BIM_IFCOS_BOOT_MS=240000,BIM_IFCOS_RUN_MS=300000;
+  var A3D_IFCOS={w:null,st:'idle',err:'',seq:0,pend:{},boot:null,version:'',ms:null};
+  /* the worker's whole program: it is made from this function's own text, so it reads nothing of the engine's */
+  function bimIfcosWorkerMain(){
+    var PY=null;
+    function hex(buf){var a=new Uint8Array(buf),s='',i;for(i=0;i<a.length;i++)s+=('0'+a[i].toString(16)).slice(-2);return s;}
+    function say(m){self.postMessage(m);}
+    function boot(m){
+      var t0=Date.now(),B=m.base;
+      if(!(self.crypto&&self.crypto.subtle)){say({t:'fail',s:'This page cannot check IfcOpenShell\'s files (no secure context)'});return;}
+      try{importScripts(B+m.pyodide+'pyodide.js');}catch(x){say({t:'fail',s:'The Python runtime could not be loaded from '+B+' ('+(x&&x.message||x)+')'});return;}
+      if(typeof self.loadPyodide!=='function'){say({t:'fail',s:'The Python runtime at '+B+' did not start'});return;}
+      self.loadPyodide({indexURL:B+m.pyodide}).then(function(py){
+        PY=py;
+        return py.loadPackage('numpy');
+      }).then(function(){
+        return Promise.all(m.wheels.map(function(w){
+          return fetch(B+m.dir+w.f).then(function(r){if(!r.ok)throw new Error(w.f+': HTTP '+r.status);return r.arrayBuffer();})
+            .then(function(buf){return self.crypto.subtle.digest('SHA-256',buf).then(function(h){
+              if(hex(h)!==w.h)throw new Error(w.f+' does not match its SHA-256');
+              return buf;});});
+        }));
+      }).then(function(bufs){
+        var sp=PY.runPython('import site\nsite.getsitepackages()[0]');
+        bufs.forEach(function(buf){PY.unpackArchive(buf,'wheel',{extractDir:sp});});
+        PY.FS.writeFile(sp+'/bim_ifcos.py',m.py);
+        var v=PY.runPython('import bim_ifcos, importlib.metadata\nimportlib.metadata.version("ifcopenshell")');
+        say({t:'ready',ms:Date.now()-t0,version:String(v)});
+      }).then(null,function(x){say({t:'fail',s:String(x&&x.message||x)});});
+    }
+    /* one call: the adapter's function by name, its arguments as JSON, its answer as JSON; and, when asked, a file
+       it wrote read back as text and removed */
+    function run(m){
+      var r,text=null;
+      try{
+        if(!/^bim_ifcos_[a-z_]+$/.test(String(m.fn)))throw new Error('not an adapter function: '+m.fn);
+        PY.globals.set('_bim_args',m.args);
+        r=String(PY.runPython('import json, bim_ifcos\njson.dumps(getattr(bim_ifcos, "'+m.fn+'")(*json.loads(_bim_args)))'));
+        if(m.read){
+          try{text=PY.FS.readFile(m.read,{encoding:'utf8'});PY.FS.unlink(m.read);}catch(eR){text=null;}
+        }
+        say({t:'done',id:m.id,r:r,text:text});
+      }catch(x){say({t:'err',id:m.id,s:String(x&&x.message||x)});}
+    }
+    self.onmessage=function(e){var m=e.data||{};if(m.t==='boot')boot(m);else if(m.t==='run'&&PY)run(m);};
+  }
+  /* the worker ended, and every call waiting on it told why; the next call starts a fresh one */
+  function bimIfcosStop(s){
+    var k,P=A3D_IFCOS.pend;
+    try{if(A3D_IFCOS.w)A3D_IFCOS.w.terminate();}catch(eT){}
+    A3D_IFCOS.w=null;A3D_IFCOS.boot=null;A3D_IFCOS.pend={};
+    for(k in P)if(P.hasOwnProperty(k)){clearTimeout(P[k].timer);P[k].rej(new Error(s));}
+    A3D_IFCOS.st='failed';A3D_IFCOS.err=s;
+    console.warn('[BIM] IfcOpenShell: '+s);
+  }
+  function bimIfcosOnMessage(e){
+    var m=e.data||{},p=A3D_IFCOS.pend[m.id];
+    if(!p)return;
+    clearTimeout(p.timer);delete A3D_IFCOS.pend[m.id];
+    if(m.t==='done')p.res({r:m.r,text:m.text});else p.rej(new Error(m.s||'IfcOpenShell failed'));
+  }
+  /* IfcOpenShell, started once; a promise of it */
+  function bimIfcosStart(){
+    var w,s;
+    if(A3D_IFCOS.boot)return A3D_IFCOS.boot;
+    if(typeof Worker!=='function'||typeof Blob!=='function'||!window.URL||!URL.createObjectURL||typeof WebAssembly!=='object'){
+      s='This browser cannot run IfcOpenShell: it has no Web Workers or no WebAssembly';
+      A3D_IFCOS.st='failed';A3D_IFCOS.err=s;console.warn('[BIM] IfcOpenShell: '+s);
+      return Promise.reject(new Error(s));
+    }
+    try{w=new Worker(URL.createObjectURL(new Blob(['('+bimIfcosWorkerMain.toString()+')();'],{type:'text/javascript'})));}
+    catch(eW){
+      s='The IfcOpenShell worker could not be made ('+eW+')';
+      A3D_IFCOS.st='failed';A3D_IFCOS.err=s;console.warn('[BIM] IfcOpenShell: '+s);
+      return Promise.reject(new Error(s));
+    }
+    A3D_IFCOS.w=w;A3D_IFCOS.st='loading';A3D_IFCOS.err='';
+    A3D_IFCOS.boot=new Promise(function(res,rej){
+      var timer=setTimeout(function(){var t='IfcOpenShell did not load in '+Math.round(BIM_IFCOS_BOOT_MS/1000)+' s from '+bimLbBase();bimIfcosStop(t);rej(new Error(t));},BIM_IFCOS_BOOT_MS);
+      w.onmessage=function(e){
+        var m=e.data||{};
+        if(m.t==='ready'){
+          clearTimeout(timer);
+          A3D_IFCOS.st='ready';A3D_IFCOS.version=String(m.version||'');A3D_IFCOS.ms=m.ms;
+          w.onmessage=bimIfcosOnMessage;
+          res(true);
+        }else if(m.t==='fail'){clearTimeout(timer);bimIfcosStop(String(m.s||'IfcOpenShell failed to start'));rej(new Error(A3D_IFCOS.err));}
+      };
+      w.onerror=function(e){clearTimeout(timer);var t='The IfcOpenShell worker failed ('+(e&&e.message||'no message')+')';bimIfcosStop(t);rej(new Error(t));};
+      w.postMessage({t:'boot',base:bimLbBase(),pyodide:'pyodide/'+BIM_LB_PYODIDE+'/',dir:BIM_IFCOS.dir,wheels:BIM_IFCOS.wheels,py:BIM_IFCOS_PY});
+    });
+    return A3D_IFCOS.boot;
+  }
+  /* one call into the adapter: its function's name and its arguments (a list); read names a file the function
+     wrote, to be handed back as text. A promise of {r: the answer's object, text} */
+  function bimIfcosCall(fn,args,read){
+    return bimIfcosStart().then(function(){
+      return new Promise(function(res,rej){
+        var id=++A3D_IFCOS.seq;
+        A3D_IFCOS.pend[id]={res:res,rej:rej,timer:setTimeout(function(){
+          delete A3D_IFCOS.pend[id];rej(new Error('IfcOpenShell\'s '+fn+' did not finish in '+Math.round(BIM_IFCOS_RUN_MS/1000)+' s'));},BIM_IFCOS_RUN_MS)};
+        A3D_IFCOS.w.postMessage({t:'run',id:id,fn:fn,args:JSON.stringify(args||[]),read:read||null});
+      });
+    }).then(function(A){
+      var r;
+      try{r=JSON.parse(A.r);}catch(eP){throw new Error('IfcOpenShell\'s '+fn+' answered something unreadable');}
+      return {r:r,text:A.text};
+    });
+  }
+  /* what is saved: every element shown that has a shape, and the doors' and windows' markers; with its mesh and
+     its layer's name */
+  function bimIfcExportEntries(){
+    var out=[],i,o,m,ly;
+    for(i=0;i<A3D.objs.length;i++){
+      o=A3D.objs[i];
+      if(!bimLayerShown(o))continue;
+      m=o.t==='opening'?null:meshOf(o);
+      if(o.t!=='opening'&&!(m&&m.f&&m.f.length&&m.v&&m.v.length))continue;
+      ly=bimLayerById(o.layer);
+      out.push({o:o,mesh:m,layer:ly?String(ly.name):''});
+    }
+    return out;
+  }
+  /* the model as an IFC file's text; a promise of {text, written, left, summary, ms}: left is what was not written,
+     [{id, why}], from the app's side and from IfcOpenShell's */
+  function bimIfcExportText(){
+    var E=bimIfcExportEntries(),R,t0=Date.now();
+    if(typeof BIM_IFC_SAVE.model!=='function')return Promise.reject(new Error('this build cannot write IFC yet'));
+    if(!E.length)return Promise.reject(new Error('There is nothing shown to export'));
+    R=BIM_IFC_SAVE.model(bimProjectLabel(),A3D.levels,E);
+    return bimIfcosCall('bim_ifcos_export',[R.model,'/tmp/model.ifc'],'/tmp/model.ifc').then(function(A){
+      if(!A.r||A.r.error)throw new Error('IfcOpenShell could not write the file ('+((A.r&&A.r.error)||'no answer')+')');
+      if(!A.text)throw new Error('IfcOpenShell wrote no file');
+      return {text:A.text,written:A.r.written,left:R.left.concat(A.r.skipped||[]),summary:A.r.summary,ms:Date.now()-t0};
+    });
+  }
+  /* File, Export, IFC */
+  function bimIfcExport(){
+    a3dToast(A3D_IFCOS.st==='ready'?'Writing the model as IFC...':'Writing the model as IFC (the first time loads IfcOpenShell, about '+BIM_IFCOS.mb+' MB)...');
+    return bimIfcExportText().then(function(R){
+      var a=document.createElement('a'),url=URL.createObjectURL(new Blob([R.text],{type:'application/x-step'})),i;
+      a.href=url;a.download=bimFileStem()+'.ifc';
+      document.body.appendChild(a);a.click();document.body.removeChild(a);
+      setTimeout(function(){URL.revokeObjectURL(url);},4000);
+      for(i=0;i<R.left.length;i++)console.warn('[BIM] IFC export: '+R.left[i].id+' was not written: '+R.left[i].why);
+      a3dToast('Saved '+a.download+': '+R.written+' element'+(R.written===1?'':'s')+', '+Math.max(1,Math.round(R.text.length/1024))+' KB'+
+        (R.left.length?'; '+R.left.length+' not written (the console lists them)':''));
+      return R;
+    },function(e){
+      var s=String(e&&e.message||e);
+      console.warn('[BIM] IFC export failed: '+s,e);
+      a3dToast('IFC export failed: '+s);
+      return {error:s};
+    });
+  }
 
 
   /* ================= __acad3dV206: That Open: the Review view and IFC import (with Hub H3's identity), the pure part =================
@@ -40587,6 +41286,47 @@ try{
     return (A3D.site&&isFinite(A3D.site.terrainBase))?A3D.site.terrainBase:null;
   }
   /* ---- the layers: one Context layer, a sub-layer for each kind ---- */
+  /* ===== __acad3dV202: site context C3, measured (docs/work-orders/v202/SPEC.md) =====
+     Measured public data in place of OpenStreetMap's guesses, where it exists: the USGS 3DEP 1 m
+     ground, a city's LiDAR building heights (the registry's ctx.heights), and the National Bridge
+     Inventory's decks. Each function below is pure; the fetches that use them follow in WO-07 to WO-09. */
+  var BIM_3DEP_URL='https://elevation.nationalmap.gov/arcgis/rest/services/3DEPElevation/ImageServer';
+  var BIM_NBI_URL='https://services.arcgis.com/xOi1kZaI0eWDREZv/arcgis/rest/services/NTAD_National_Bridge_Inventory/FeatureServer/0';
+
+  /* WO-01: a single-band, uncompressed, float32 TIFF (strips or tiles, either byte order) as
+     {w,h,data:Float32Array}, rows from the top; null for anything it cannot read exactly */
+  function bimTiffF32(bytes){
+    return null;
+  }
+  /* WO-02: the 3DEP exportImage address for an area {w,s,e,n} and a grid of cols x rows (2 to 2000),
+     the bbox in Web Mercator (R 6378137, toFixed(2)); null for a missing area or a bad size */
+  function bimDep3Url(a,cols,rows){
+    return null;
+  }
+  /* WO-03: the ground in metres at lon, lat from a DEM grid {w,h,data,a}, bilinear between pixel
+     centres in Web Mercator; NaN off the grid or on nodata (below -1000) */
+  function bimDep3ElevAt(g,lon,lat){
+    return NaN;
+  }
+  /* WO-04: the city's measured height for an OSM footprint: the smallest city ring holding the
+     footprint's vertex mean, in metres through rec.unit, as {h,top,base,from:'city',id}; else null */
+  function bimCityHeightPick(ring,feats,rec){
+    return null;
+  }
+  /* WO-05: the nearest NBI structure within maxD (30 m by default) of a bridge's centreline, as
+     {id,carried,year,width,length,spans,clear,clearRef,dist}; measured numbers only; else null */
+  function bimNbiPick(pts,bridges,maxD){
+    return null;
+  }
+  /* the city records whose bbox holds a longitude and latitude (D2: the registry's ctx.heights) */
+  function bimCityRecs(lon,lat){
+    var all=bimStd('ctx.heights','sources')||{},out=[],k,r,b;
+    for(k in all)if(all.hasOwnProperty(k)){
+      r=all[k];b=r&&r.bbox;
+      if(b&&lon>=b[0]&&lon<=b[2]&&lat>=b[1]&&lat<=b[3]){r=bimStdCopy(r);r.id=k;out.push(r);}
+    }
+    return out;
+  }
   /* ================= __acad3dV157: the surroundings in 3D =================
      A road, a railway or a runway keeps its centre line, the element; its surface is that
      element's mesh, built here: a strip of its width along the line, on the ground point by point,
@@ -43116,13 +43856,166 @@ function bimWalkKeys(h, j) {
     if (h.KeyS || h.ArrowDown) { f--; }
     if (h.KeyD || h.ArrowRight) { s++; }
     if (h.KeyA || h.ArrowLeft) { s--; }
-    if (h.ShiftLeft || h.ShiftRight) { f *= 2; s *= 2; run = true; }
+    run = !!(h.ShiftLeft || h.ShiftRight);   /* running is bimWalkMove's speed, never the direction */
     f = Math.max(-1, Math.min(1, f + (j.f || 0)));
     s = Math.max(-1, Math.min(1, s + (j.s || 0)));
-    up = h.Space ? 1 : h.KeyC ? -1 : 0;
-    ghost = (h.AltLeft || h.AltRight) || false;
+    up = (h.Space ? 1 : 0) - (h.KeyC ? 1 : 0);   /* both held cancel */
+    ghost = !!(h.AltLeft || h.AltRight);
     return {f: f, s: s, run: run, up: up, ghost: ghost};
 }
+  /* ================= __acad3dV203: Walkthrough W1, the physics (Jolt) =================
+     The narrow adapter to Jolt Physics 1.1.1 (runtime/jolt, MIT; docs/research/research-walkthrough.md, D1;
+     docs/work-orders/v203/SPEC.md part 4, C-04). Every function takes the world W (or Jolt itself, J, to make one) and
+     uses no other engine name, so tests/unit/walk-physics.test.mjs drives it with the committed runtime file in Node.
+     Loading the file and the frame belong to walk-mode.js.
+     The model is static and is ONE Jolt mesh body: each element's triangles are kept under its key and signature, as
+     the rendered view keeps them, and the body is rebuilt from all of them when one changes. Not one body per element:
+     with the walker against a separate body, Jolt's stair walking climbs about twice its step (a 0.40 m curb, a 1 m
+     block, with a 0.206 m step), while the same triangles in one mesh stop it (C-04's probe, the note's part 7).
+     The walker is Jolt's CharacterVirtual moved by ExtendedUpdate (stairs up to the capsule's step, held to the floor
+     0.3 m down, no slope steeper than the capsule's). Jolt's objects are not garbage collected: what the adapter makes
+     once (vectors, filters) is kept on W and destroyed by bimWalkPhysFree; what it makes per call is destroyed before
+     the call returns. Layers: 0 the model (static), 1 the walker (moving); the walker collides with both. */
+  var BIM_WALK_G=9.81,BIM_WALK_JUMP=3.5,BIM_WALK_STICK=0.3;   /* m/s2; m/s, about 0.6 m up; m */
+
+  /* a world: the interface, the filters and the vectors reused every frame */
+  function bimWalkPhys(J){
+    var pairs=new J.ObjectLayerPairFilterTable(2),bpi=new J.BroadPhaseLayerInterfaceTable(2,2),st=new J.JoltSettings(),ji,W;
+    pairs.EnableCollision(0,1);pairs.EnableCollision(1,1);
+    bpi.MapObjectToBroadPhaseLayer(0,new J.BroadPhaseLayer(0));bpi.MapObjectToBroadPhaseLayer(1,new J.BroadPhaseLayer(1));
+    st.mObjectLayerPairFilter=pairs;st.mBroadPhaseLayerInterface=bpi;
+    st.mObjectVsBroadPhaseLayerFilter=new J.ObjectVsBroadPhaseLayerFilterTable(bpi,2,pairs,2);
+    ji=new J.JoltInterface(st);J.destroy(st);
+    W={J:J,ji:ji,ps:ji.GetPhysicsSystem(),parts:{},n:0,tris:0,body:null,dirty:false,ch:null,cap:null,us:null,vy:0,
+      bpf:new J.DefaultBroadPhaseLayerFilter(ji.GetObjectVsBroadPhaseLayerFilter(),1),
+      olf:new J.DefaultObjectLayerFilter(ji.GetObjectLayerPairFilter(),1),bf:new J.BodyFilter(),sf:new J.ShapeFilter(),
+      vel:new J.Vec3(0,0,0),g:new J.Vec3(0,-BIM_WALK_G,0),g0:new J.Vec3(0,0,0),at:new J.RVec3(0,0,0),rs:new J.RayCastSettings()};
+    W.bi=W.ps.GetBodyInterface();
+    return W;
+  }
+  /* an element's triangles (x, y, z for each corner, nine numbers a triangle) kept under its key; the same signature
+     keeps what is there, another replaces it, no triangle removes it. The body follows at the next bimWalkPhysBuild.
+     Answers the element's triangles. */
+  function bimWalkPhysMesh(W,key,sig,pos){
+    var old=W.parts[key],n=pos?Math.floor(pos.length/9):0;
+    if(old&&old.sig===sig)return old.n;
+    if(old)bimWalkPhysDrop(W,key);
+    if(n<1)return 0;
+    W.parts[key]={sig:sig,pos:pos,n:n};W.n++;W.tris+=n;W.dirty=true;
+    return n;
+  }
+  function bimWalkPhysDrop(W,key){
+    var b=W.parts[key];
+    if(!b)return false;
+    W.tris-=b.n;delete W.parts[key];W.n--;W.dirty=true;
+    return true;
+  }
+  /* the one body from every element's triangles, when something changed since the last build; answers the triangles
+     in it. About 0.25 s for 60,000 triangles here (experiment e01), so it is built on entering the walk and after an edit. */
+  function bimWalkPhysBuild(W){
+    var J=W.J,i=0,k,p,j,c,t,v,tl,ms,r,bcs,body;
+    if(!W.dirty)return W.tris;
+    if(W.body){W.bi.RemoveBody(W.body);W.bi.DestroyBody(W.body);W.body=null;}
+    W.dirty=false;
+    if(W.tris<1)return 0;
+    tl=new J.TriangleList();tl.resize(W.tris);
+    for(k in W.parts)if(W.parts.hasOwnProperty(k)){
+      p=W.parts[k].pos;
+      for(j=0;j<W.parts[k].n;j++,i++){t=tl.at(i);for(c=0;c<3;c++){v=t.get_mV(c);v.x=p[j*9+c*3];v.y=p[j*9+c*3+1];v.z=p[j*9+c*3+2];}}
+    }
+    ms=new J.MeshShapeSettings(tl,new J.PhysicsMaterialList());J.destroy(tl);
+    ms.Sanitize();   /* degenerate triangles out */
+    r=ms.Create();
+    if(r.HasError()){J.destroy(ms);return 0;}
+    bcs=new J.BodyCreationSettings(r.Get(),new J.RVec3(0,0,0),J.Quat.prototype.sIdentity(),J.EMotionType_Static,0);
+    body=W.bi.CreateBody(bcs);J.destroy(bcs);J.destroy(ms);
+    if(!body)return 0;
+    W.body=body.GetID();
+    W.bi.AddBody(W.body,J.EActivation_DontActivate);
+    W.ps.OptimizeBroadPhase();
+    return W.tris;
+  }
+  /* the elements as they are now: items [{key, sig}], pos(item) their triangles, asked only of new or changed ones;
+     the ones gone are dropped; the body rebuilt when anything changed. Answers true when it was rebuilt. */
+  function bimWalkPhysSync(W,items,pos){
+    var seen={},i,it,b,k;
+    for(i=0;i<items.length;i++){
+      it=items[i];seen[it.key]=1;b=W.parts[it.key];
+      if(!b||b.sig!==it.sig)bimWalkPhysMesh(W,it.key,it.sig,pos(it));
+    }
+    for(k in W.parts)if(W.parts.hasOwnProperty(k)&&!seen[k])bimWalkPhysDrop(W,k);
+    if(!W.dirty)return false;
+    bimWalkPhysBuild(W);
+    return true;
+  }
+  /* the walker: a capsule (bimWalkCapsule's {half, r, step, slope}) standing with its feet at p */
+  function bimWalkPhysChar(W,cap,p){
+    var J=W.J,cs=new J.CharacterVirtualSettings(),inner=new J.CapsuleShapeSettings(cap.half,cap.r),
+      off=new J.Vec3(0,cap.half+cap.r,0),up=new J.Vec3(0,1,0),rot,sr,pl,a;
+    if(W.ch)bimWalkPhysCharFree(W);
+    bimWalkPhysBuild(W);
+    rot=new J.RotatedTranslatedShapeSettings(off,J.Quat.prototype.sIdentity(),inner);
+    sr=rot.Create();
+    cs.mMass=80;cs.mMaxSlopeAngle=cap.slope;cs.mUp=up;cs.mShape=sr.Get();
+    pl=new J.Plane(J.Vec3.prototype.sAxisY(),-cap.r);cs.mSupportingVolume=pl;J.destroy(pl);   /* the setters copy */
+    cs.mBackFaceMode=J.EBackFaceMode_CollideWithBackFaces;   /* a wall drawn either way round is solid */
+    W.at.Set(p[0],p[1],p[2]);
+    W.ch=new J.CharacterVirtual(cs,W.at,J.Quat.prototype.sIdentity(),W.ps);
+    J.destroy(cs);J.destroy(rot);J.destroy(off);J.destroy(up);
+    W.us=new J.ExtendedUpdateSettings();
+    a=new J.Vec3(0,cap.step,0);W.us.mWalkStairsStepUp=a;J.destroy(a);
+    a=new J.Vec3(0,-BIM_WALK_STICK,0);W.us.mStickToFloorStepDown=a;J.destroy(a);
+    W.cap=cap;W.vy=0;
+    return W.ch;
+  }
+  function bimWalkPhysCharFree(W){
+    if(!W.ch)return;
+    W.J.destroy(W.ch);W.ch=null;
+    if(W.us){W.J.destroy(W.us);W.us=null;}
+  }
+  /* one frame: v = [vx, vy, vz] from bimWalkMove; mode 'walk' (gravity, a jump when asked and standing), 'fly' (no
+     gravity, v as it is) or 'ghost' (through everything, the feet moved by v alone). Answers {p, ground}. */
+  function bimWalkPhysStep(W,v,dt,mode,jump){
+    var J=W.J,ch=W.ch,ground,p;
+    if(!ch)return null;
+    bimWalkPhysBuild(W);
+    if(mode==='ghost'){
+      p=ch.GetPosition();
+      W.at.Set(p.GetX()+v[0]*dt,p.GetY()+v[1]*dt,p.GetZ()+v[2]*dt);ch.SetPosition(W.at);
+      W.vy=0;
+      return {p:[W.at.GetX(),W.at.GetY(),W.at.GetZ()],ground:false};
+    }
+    ground=ch.GetGroundState()===J.EGroundState_OnGround;
+    if(mode==='fly')W.vy=v[1];
+    else if(ground)W.vy=jump?BIM_WALK_JUMP:0;
+    else W.vy-=BIM_WALK_G*dt;
+    W.vel.Set(v[0],W.vy,v[2]);ch.SetLinearVelocity(W.vel);
+    ch.ExtendedUpdate(dt,mode==='fly'?W.g0:W.g,W.us,W.bpf,W.olf,W.bf,W.sf,W.ji.GetTempAllocator());
+    p=ch.GetPosition();
+    if(mode!=='fly'&&W.vy>0&&ch.GetLinearVelocity().GetY()<=0)W.vy=0;   /* a ceiling stops a jump */
+    return {p:[p.GetX(),p.GetY(),p.GetZ()],ground:ch.GetGroundState()===J.EGroundState_OnGround};
+  }
+  /* the distance from `from` along the unit vector `dir` to the first surface of the model, up to `most` metres;
+     Infinity when nothing is hit. For the third-person boom and the walker's start. */
+  function bimWalkPhysRay(W,from,dir,most){
+    var J=W.J,o,d,ray,col,out=Infinity;
+    bimWalkPhysBuild(W);
+    o=new J.RVec3(from[0],from[1],from[2]);d=new J.Vec3(dir[0]*most,dir[1]*most,dir[2]*most);
+    ray=new J.RRayCast(o,d);col=new J.CastRayClosestHitCollisionCollector();
+    W.ps.GetNarrowPhaseQuery().CastRay(ray,W.rs,col,W.bpf,W.olf,W.bf,W.sf);
+    if(col.HadHit())out=col.get_mHit().mFraction*most;
+    J.destroy(col);J.destroy(ray);J.destroy(d);J.destroy(o);
+    return out;
+  }
+  /* everything the world holds, and the world */
+  function bimWalkPhysFree(W){
+    var J=W.J;
+    bimWalkPhysCharFree(W);
+    if(W.body){W.bi.RemoveBody(W.body);W.bi.DestroyBody(W.body);W.body=null;}
+    W.parts={};W.n=0;W.tris=0;
+    [W.bpf,W.olf,W.bf,W.sf,W.vel,W.g,W.g0,W.at,W.rs].forEach(function(o){J.destroy(o);});
+    J.destroy(W.ji);W.ji=W.ps=W.bi=null;
+  }
 
 
   /* ================= __acad3dV208: Walkthrough W2, drive, the pure part =================
@@ -59682,6 +60575,62 @@ function bimLyDupNumbers(entries) {
      docs/research/research-one-paper-space.md and docs/work-orders/v175c/SPEC-step2.md. Steps 2 and 3: a sheet viewport
      as the one viewport object and back, a sheet as a layout, the drawing sheet's Draw menu, the vector print's page and
      outlines. Each function is a work order in TASKS-step2.md, added below as it is built; none uses another file's names. */
+
+  /* WO-11: a sheet viewport as the one viewport object (the board's map frame) */
+  function bimLmVpToFrame(vp) {
+    var fit = vp.scaleMode === 'fit';
+    return { t: 'map', id: vp.id, x: vp.x, y: vp.y, w: vp.w, h: vp.h, src: vp.kind + ':' + vp.refId,
+      den: fit ? null : vp.scaleDenom, fit: fit, px: 0, py: 0, label: vp.label || '' };
+  }
+
+  /* WO-12: the inverse */
+  function bimLmFrameToVp(fr) {
+    var src = String(fr.src || '');
+    var at = src.indexOf(':');
+    var pos = typeof fr.den === 'number' && fr.den > 0;
+    return { id: fr.id, kind: at >= 0 ? src.substring(0, at) : src, refId: at >= 0 ? src.substring(at + 1) : '',
+      label: fr.label || '', x: fr.x, y: fr.y, w: fr.w, h: fr.h,
+      scaleMode: (fr.fit || !pos) ? 'fit' : 'fixed', scaleDenom: pos ? fr.den : 100 };
+  }
+
+  /* WO-13: a sheet as a layout: its title block, then a frame per viewport */
+  function bimLmSheetToLayout(sh) {
+    var objs = [{ t: 'tblock', id: 'tb-' + sh.id, x: 0, y: 0, w: sh.w, h: sh.h }];
+    var vps = sh.viewports || [];
+    var i;
+    for (i = 0; i < vps.length; i += 1) { objs.push(bimLmVpToFrame(vps[i])); }
+    return { id: sh.id, num: sh.number || '', name: sh.name || '', w: sh.w, h: sh.h, drawing: true, objs: objs };
+  }
+
+  /* WO-14: the Draw menu; a drawing sheet leaves out live values, figures and charts */
+  function bimLmDrawMenu(items, drawing) {
+    var out = [];
+    var i, k;
+    for (i = 0; i < items.length; i += 1) {
+      k = items[i].kind;
+      if (!(drawing && (k === 'live' || k === 'figure' || k === 'chart'))) { out.push(items[i]); }
+    }
+    return out;
+  }
+
+  /* WO-15: a number for print: three decimals, '0' for any rounded zero */
+  function bimLmN(v) {
+    var n = Math.round(v * 1000) / 1000;
+    return n === 0 ? '0' : String(n);
+  }
+
+  /* WO-16: the vector print's page, in millimetres */
+  function bimLmSvgOpen(w, h) {
+    var W = bimLmN(w);
+    var H = bimLmN(h);
+    return '<svg xmlns="http://www.w3.org/2000/svg" width="' + W + 'mm" height="' + H + 'mm" viewBox="0 0 ' + W + ' ' + H + '">';
+  }
+
+  /* WO-17: an outline on the print */
+  function bimLmSvgRect(o, stroke, width) {
+    return '<rect x="' + bimLmN(o.x) + '" y="' + bimLmN(o.y) + '" width="' + bimLmN(o.w) + '" height="' + bimLmN(o.h) +
+      '" fill="none" stroke="' + (stroke || '#000000') + '" stroke-width="' + bimLmN(width == null ? 0.25 : width) + '"/>';
+  }
   /* ================= __acad3dV162: the boards are pages of the set =================
      docs/research/research-one-analyze-boards.md. A board is a page of the presentation beside the
      sheets: in the Presentation panel with its thumbnail, in the main view, in Present and in Print
@@ -64609,6 +65558,7 @@ function bimLyDupNumbers(entries) {
     saveproj:ric('<path d="M5 4h11l3 3v13H5z"/><path d="M8 4v6h7V4"/><rect x="8" y="13" width="8" height="7"/>'),
     openproj:ric('<path d="M3 7h6l2 2h10v10H3z"/>'),
     exportdxf:ric('<path d="M6 2h9l5 5v15H6z"/><path d="M15 2v5h5"/><path d="M9 12l6 6M15 12l-6 6"/>'),
+    exportifc:ric('<path d="M6 2h9l5 5v15H6z"/><path d="M15 2v5h5"/><path d="M9 18v-5l3-2 3 2v5z"/><path d="M12 11v7"/>'),   /* __acad3dV177 */
     exportsvg:ric('<path d="M6 2h9l5 5v15H6z"/><path d="M15 2v5h5"/><path d="M8 17c1.5-5 5-4.5 6-9"/><circle cx="8" cy="17" r="1.1"/><circle cx="14" cy="8" r="1.1"/>'),
     'bim:section':ric('<path d="M4 4v16M4 4l16 4M4 20l16-4"/><path d="M15 6l4 12"/>'),
     exitsection:ric('<path d="M6 18L18 6M6 6l12 12"/>'),
@@ -64947,7 +65897,7 @@ function bimLyDupNumbers(entries) {
     {id:'a3dmanage',name:'Manage',panels:[
       {t:'Settings',small:['bim:layers','bim:levels','bim:classification','bim:units']},
       {t:'Project',small:['m:saveproj','m:openproj','bim:projinfo','bim:purge','bim:checkmodel']},
-      {t:'Export',small:['m:exportpng','m:exportpdf','m:exportdxf','m:exportsvg','m:exportgeojson']}
+      {t:'Export',small:['m:exportpng','m:exportpdf','m:exportdxf','m:exportifc','m:exportsvg','m:exportgeojson']}
     ]}
   ];
   // Commands Revit has that this app does not implement yet. Listed so the tool dock shows the
@@ -65022,7 +65972,7 @@ function bimLyDupNumbers(entries) {
   function a3drLabel(act){
     var xl=a3drExt(act);
     if(xl&&xl.label)return xl.label;
-    var L={'s:rect':'Rect','s:circle':'Circle','s:poly':'Polyline','p:pad':'Pad','p:pocket':'Pocket','bim:wall':'Wall','bim:floor':'Floor','bim:room':'Room','bim:roof':'Roof','bim:stair':'Stair','bim:column':'Column','bim:door':'Door','bim:window':'Window','bim:dim':'Dimension','bim:text':'Text','bim:section':'Section','bim:ceiling':'Ceiling','bim:dimang':'Angular','bim:dimrad':'Radius','bim:dimdia':'Diameter','bim:leader':'Leader','m:exportdxf':'DXF','m:exportsvg':'SVG','bim:mirror':'Mirror','bim:rotate':'Rotate','bim:polararray':'Polar Array','bim:joinwalls':'Join Walls','bim:extend':'Extend','bim:arc':'Arc','bim:fillet':'Fillet','bim:chamfer':'Chamfer','bim:break':'Break','bim:lengthen':'Lengthen','bim:scale':'Scale','b:union':'Union','b:cut':'Cut','b:isect':'Intersect','v:home':'Home','v:fit':'Fit','v:top':'Top','v:front':'Front','v:right':'Right','v:iso':'Iso','m:del':'Delete','m:desel':'Deselect','m:dup':'Duplicate','m:array':'Array','m:exportpng':'PNG','m:exportpdf':'PDF','m:exitsection':'Exit Section','m:flipsection':'Flip Section','m:saveproj':'Save Project','m:openproj':'Open\u2026',
+    var L={'s:rect':'Rect','s:circle':'Circle','s:poly':'Polyline','p:pad':'Pad','p:pocket':'Pocket','bim:wall':'Wall','bim:floor':'Floor','bim:room':'Room','bim:roof':'Roof','bim:stair':'Stair','bim:column':'Column','bim:door':'Door','bim:window':'Window','bim:dim':'Dimension','bim:text':'Text','bim:section':'Section','bim:ceiling':'Ceiling','bim:dimang':'Angular','bim:dimrad':'Radius','bim:dimdia':'Diameter','bim:leader':'Leader','m:exportdxf':'DXF','m:exportifc':'IFC','m:exportsvg':'SVG','bim:mirror':'Mirror','bim:rotate':'Rotate','bim:polararray':'Polar Array','bim:joinwalls':'Join Walls','bim:extend':'Extend','bim:arc':'Arc','bim:fillet':'Fillet','bim:chamfer':'Chamfer','bim:break':'Break','bim:lengthen':'Lengthen','bim:scale':'Scale','b:union':'Union','b:cut':'Cut','b:isect':'Intersect','v:home':'Home','v:fit':'Fit','v:top':'Top','v:front':'Front','v:right':'Right','v:iso':'Iso','m:del':'Delete','m:desel':'Deselect','m:dup':'Duplicate','m:array':'Array','m:exportpng':'PNG','m:exportpdf':'PDF','m:exitsection':'Exit Section','m:flipsection':'Flip Section','m:saveproj':'Save Project','m:openproj':'Open\u2026',
       'bim:component':'Component','bim:famsave':'Save Family','bim:famimport':'Load Family',
       'bim:tagroom':'Tag Room','bim:tagallrooms':'Tag All Rooms','bim:tagcat':'Tag by Category','bim:level':'Level','bim:grid':'Grid',
       'bim:beam':'Beam','bim:analyze':'Analyze','bim:truss':'Truss','bim:brace':'Brace','bim:foundwall':'Wall Foundation','bim:footing':'Isolated Footing','bim:property':'Property Line','bim:propshape':'Property from Shape','bim:truenorth':'True North','bim:alignment':'Alignment','bim:usage':'Usage','bim:usages':'Usages','bim:map':'Map','bim:findaddress':'Find Address','bim:geoimport':'Import GeoJSON','bim:context':'Site Context','bim:datalayers':'Data Layers','m:exportgeojson':'GeoJSON',
@@ -65202,7 +66152,7 @@ function bimLyDupNumbers(entries) {
   var BIM_ACT_HIDE={'bim:levels':1};
   /* a ribbon-only tool's name, where its label alone would be ambiguous or not a command's name */
   var BIM_ACT_NAMES={'v:top':'VIEWTOP','v:front':'VIEWFRONT','v:right':'VIEWRIGHT','v:iso':'VIEW3D','v:home':'VIEWHOME',
-    'm:exportpng':'EXPORTPNG','m:exportpdf':'EXPORTPDF','m:exportdxf':'EXPORTDXF','m:exportsvg':'EXPORTSVG',
+    'm:exportpng':'EXPORTPNG','m:exportpdf':'EXPORTPDF','m:exportdxf':'EXPORTDXF','m:exportsvg':'EXPORTSVG','m:exportifc':'IFCOUT',
     'm:exitsection':'SECTIONEXIT','m:flipsection':'SECTIONFLIP','b:union':'UNION','b:cut':'SUBTRACT','b:isect':'INTERSECT',
     'bim:dimang':'DIMANGULAR','bim:dimrad':'DIMRADIUS','bim:dimdia':'DIMDIAMETER','bim:famimport':'FAMILYLOAD',
     'bim:famsave':'FAMILYSAVE','bim:component':'COMPONENT','bim:level':'LEVEL','bim:saveview':'SAVEVIEW',
@@ -65235,7 +66185,8 @@ function bimLyDupNumbers(entries) {
     'tube':'Place a tube','prism':'Place a prism','wedge':'Place a wedge','ellipsoid':'Place an ellipsoid',
     'bim:classification':'Manage the classification systems','bim:checkmodel':'Check the model for problems',
     'm:exportpng':'Export the view as a PNG image','m:exportpdf':'Export the plan as a PDF',
-    'm:exportdxf':'Export the drawing as a DXF file','m:exportsvg':'Export the drawing as an SVG file'};
+    'm:exportdxf':'Export the drawing as a DXF file','m:exportsvg':'Export the drawing as an SVG file',
+    'm:exportifc':'Export the model as an IFC file'};
   /* AutoCAD's synonyms: the words a person might search for a command by, beyond its name */
   var BIM_CMD_TERMS={SITETOOLS:'geoprocessing pane history arcgis analysis tools runs',BUFFER:'around within distance zone setback dissolve',   /* __acad3dV172 */
     DISTANCEFROM:'euclidean straight line nearest proximity',SLOPECLASSES:'reclassify steep gentle gradient',EXCLUSIONS:'restricted constraints mask nodata',
@@ -65671,6 +66622,7 @@ function bimLyDupNumbers(entries) {
     if(act==='m:exportpdf'){bimExportPDF();return;}
     if(act==='m:exportdxf'){bimExportDXF();return;}
     if(act==='m:exportsvg'){bimExportSVG();return;}
+    if(act==='m:exportifc'){bimIfcExport();return;}   /* __acad3dV177 */
     if(act==='m:saveproj'){bimFileSave(false);return;}   /* __acad3dV172g */
     if(act==='m:openproj'){bimFileOpen();return;}   /* __acad3dV115: opens in a tab of its own; __acad3dV172g */   /* __acad3dV115: opens in a tab of its own */
     if(act==='m:exitsection'){bimExitSection();return;}
@@ -67154,6 +68106,7 @@ function bimLyDupNumbers(entries) {
     ifcin:function(){bimIfcPick();},   /* __acad3dV196 */
     gltfin:function(){bimGltfPick();},   /* __acad3dV195 */
     gltfout:function(){bimGltfExport();},
+    ifcout:function(){bimIfcExport();},   /* __acad3dV177 */
     skpin:function(){bimSkpPick();},                  /* __acad3dV163 */
     finddata:function(){bimFindCommand();},                      /* __acad3dV135 */
     datalayers:function(){bimDataCommand();},                    /* __acad3dV134 */                /* __acad3dV127 */
@@ -67326,6 +68279,8 @@ function bimLyDupNumbers(entries) {
     'addfeaturelayer,addservicelayers,addgeojsonitem,addsocrata,more,failuresnamed,findcredit,findpanel,findcommand';
   window.__acad3dV134d='overpassmirrors,overpassget';
   window.__a3dOverpassMirrors=function(){return BIM_OVERPASS_MIRRORS.slice();};
+  /* __acad3dV202: the measured context's pure functions, for the suites */
+  window.__a3dMeasured=function(){return {tiff:bimTiffF32,url:bimDep3Url,elevAt:bimDep3ElevAt,city:bimCityHeightPick,nbi:bimNbiPick,recs:bimCityRecs,dep3:BIM_3DEP_URL,nbiUrl:BIM_NBI_URL};};
   window.__acad3dV134='datakinds,arcgisquery,wfsgetfeature,geojsonfile,presets,areafilter,maxfeatures,featuresoutsideundo,'+
     'featuressaved,planoverlay,notonpaper,clicktoread,pickorder,parceltoproperty,failuresnamed,datacredit,datapanel,datacommand';
   /* __acad3dV133: site context */
@@ -68046,6 +69001,9 @@ function bimLyDupNumbers(entries) {
     corners:bimMapTileCorners,tileUrl:bimMapTileUrl};
   /* __acad3dV177: the model as the data Save as IFC hands IfcOpenShell (io/ifc-save.js) */
   window.__a3dIfcSave=BIM_IFC_SAVE;
+  window.__acad3dV177='ifcout,ifcos,ifcsave';
+  window.__a3dIfcExport=function(){return bimIfcExportText();};
+  window.__a3dIfcos=function(){return {st:A3D_IFCOS.st,err:A3D_IFCOS.err,version:A3D_IFCOS.version,ms:A3D_IFCOS.ms};};
   /* __acad3dV197: colours by surface kind */
   window.__acad3dV197='colours,study,natural,roofrows,kinds';
   window.__a3dKinds={pal:BIM_SK_PAL,key:bimSkKey,col:bimSkCol,roofy:bimSkRoofy,set:bimSkSet,palette:bimSkPalette,

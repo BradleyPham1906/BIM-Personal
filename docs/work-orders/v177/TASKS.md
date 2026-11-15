@@ -1,5 +1,8 @@
 # V177 work orders, step 1: the adapter that writes a model as an IFC file
 
+**Step 1 (WO-01 to WO-08) is done: do not open or edit `src/py/bim_ifcos.py`.** The open tasks are WO-09 to WO-15
+under "Step 2a" further down: JavaScript, in `src/js/engine/io/ifc-save.js` only.
+
 Spec: `SPEC.md` in this folder (part 3 is the data, part 4 has every function in full). Implementation target: local
 `main`. One task at a time, top to bottom. `[ ]` open, `[x]` done (its tests pass), `[skipped]` left for Claude.
 
@@ -160,7 +163,7 @@ After each task: `node --check src/js/engine/io/ifc-save.js`, its own cases, the
 
 ---
 
-## [ ] WO-09 [Cline] `bimIfcSaveLevels(levels)` and `bimIfcSaveLevel(o, lv, y)`
+## [x] WO-09 [Cline] `bimIfcSaveLevels(levels)` and `bimIfcSaveLevel(o, lv, y)`
 
 - **It must:** follow SPEC part 7 "WO-09", then the List line `BIM_IFC_SAVE.levels=bimIfcSaveLevels;BIM_IFC_SAVE.level=bimIfcSaveLevel;`.
 - **Example:** `bimIfcSaveLevels([{id: "lvl-0", name: "Ground", elev: 0}])` is `{list: [{name: "Ground", elev: 0}], at: {"lvl-0": 0}}`; with levels at 0 and 3.2, an element at height 3.1 with no level of its own is on level 0.
@@ -171,7 +174,7 @@ After each task: `node --check src/js/engine/io/ifc-save.js`, its own cases, the
 
 ---
 
-## [ ] WO-10 [Cline] `bimIfcSaveBase(o, layerName)`
+## [x] WO-10 [Cline] `bimIfcSaveBase(o, layerName)`
 
 - **It must:** follow SPEC part 7 "WO-10", then `BIM_IFC_SAVE.base=bimIfcSaveBase;`. `o.bim` may be missing.
 - **Example:** `bimIfcSaveBase({id: "a1", t: "solid", name: "Wall_1", bim: {type: "wall"}}, "Walls")` is `{id: "a1", name: "Wall_1", psets: [{name: "BIM_Personal", props: {Type: "wall", Layer: "Walls"}}]}`.
@@ -182,7 +185,7 @@ After each task: `node --check src/js/engine/io/ifc-save.js`, its own cases, the
 
 ---
 
-## [ ] WO-11 [Cline] `bimIfcSaveWalls(o, lv, base)`
+## [x] WO-11 [Cline] `bimIfcSaveWalls(o, lv, base)`
 
 - **It must:** follow SPEC part 7 "WO-11", then `BIM_IFC_SAVE.walls=bimIfcSaveWalls;`. Add, above it, the small helper `bimIfcSaveMoved(o)` (true when the element is moved, as part 7 defines it); WO-12 uses it too. The copy of `base` is made with `for (k in base) if (base.hasOwnProperty(k))`.
 - **Example:** a wall with centerline `[[0, 0], [6, 0]]`, thickness 0.2, height 3, align `"center"`, baseY 0 gives one item with `x0: 0, y0: 0, x1: 6, y1: 0, base: 0, height: 3, thickness: 0.2, offset: -0.1`.
@@ -193,7 +196,7 @@ After each task: `node --check src/js/engine/io/ifc-save.js`, its own cases, the
 
 ---
 
-## [ ] WO-12 [Cline] `bimIfcSavePrism(o, lv, base)`
+## [x] WO-12 [Cline] `bimIfcSavePrism(o, lv, base)`
 
 - **It must:** follow SPEC part 7 "WO-12", then `BIM_IFC_SAVE.prism=bimIfcSavePrism;`.
 - **Example:** a floor with baseY 3.2 and thickness 0.25 has `base: 2.95, depth: 0.25, cls: "IfcSlab"`; its profile `[[0, 0], [6, 0], [6, 4], [0, 4]]` becomes `pts: [[0, 0], [6, 0], [6, -4], [0, -4]]`.
@@ -204,7 +207,7 @@ After each task: `node --check src/js/engine/io/ifc-save.js`, its own cases, the
 
 ---
 
-## [ ] WO-13 [Cline] `bimIfcSaveOpening(o, walls, base)`
+## [x] WO-13 [Cline] `bimIfcSaveOpening(o, walls, base)`
 
 - **It must:** follow SPEC part 7 "WO-13", then `BIM_IFC_SAVE.opening=bimIfcSaveOpening;`. A host id of `"w"` must not match the wall `"w1"`: compare the whole id, or the id up to `#`.
 - **Example:** a door with center `[2, 0.05]`, width 0.9, height 2.1 on the wall item `{id: "w1", x0: 0, y0: 0, x1: 6, y1: 0, base: 0, thickness: 0.2}` gives `host: "w1", x: 2, y: 0, a: 0, base: 0, depth: 0.4, cls: "IfcDoor"`.
@@ -215,7 +218,7 @@ After each task: `node --check src/js/engine/io/ifc-save.js`, its own cases, the
 
 ---
 
-## [ ] WO-14 [Cline] `bimIfcSaveMesh(o, m, lv, base)`
+## [x] WO-14 [Cline] `bimIfcSaveMesh(o, m, lv, base)`
 
 - **It must:** follow SPEC part 7 "WO-14", then `BIM_IFC_SAVE.mesh=bimIfcSaveMesh;`.
 - **Example:** a corner `[1, 2, 1]` of an element with pos `[10, 3.2, 0]` becomes `[11, -1, 5.2]`; the face `[0, 1, 2, 3]` becomes `[0, 1, 2]` and `[0, 2, 3]`.
@@ -226,7 +229,7 @@ After each task: `node --check src/js/engine/io/ifc-save.js`, its own cases, the
 
 ---
 
-## [ ] WO-15 [Cline] `bimIfcSaveModel(name, levels, entries)`
+## [x] WO-15 [Cline] `bimIfcSaveModel(name, levels, entries)`
 
 - **It must:** follow SPEC part 7 "WO-15", then `BIM_IFC_SAVE.model=bimIfcSaveModel;`. Openings are handled after every other entry, so their walls are already in `model.walls`.
 - **Example:** `bimIfcSaveModel("", [], [])` is `{model: {name: "Project", levels: [], walls: [], prisms: [], openings: [], meshes: []}, left: []}`.
@@ -239,6 +242,12 @@ After each task: `node --check src/js/engine/io/ifc-save.js`, its own cases, the
 
 ## [ ] WO-16 [Claude] Step 2b
 
-Claude's: audit WO-09 to WO-15; the wheels and the LGPL, GPL and CGAL notices in `runtime/ifcos/` and
-`runtime/MANIFEST.json`; `tools/embed_py.py` for `bim_ifcos.py`; the IFC worker; File > Export > IFC; Make editable
-for imported walls and floors (the walls-and-slabs reader's parameters kept at import); the browser check.
+Claude's. Built 2026-11-14: the seven wheels with COPYING (GPL-3.0), COPYING.LESSER and a NOTICE in
+`runtime/ifcos/0.8.5/` and `runtime/MANIFEST.json`; `tools/embed_py.py` embeds `bim_ifcos.py` too
+(`io/ifcos-py.js`); the IFC worker and File > Export > IFC (`io/ifcos-worker.js`, the command `IFCOUT`, the IFC
+button in All tools > Export). Checked in Edge with a stand-in for WO-09 to WO-15 (not committed):
+`tests/e2e/bim_phase177_ifc_export_check.mjs`, 19 of 19; the first save took 6.9 s with IfcOpenShell's start, a
+second 0.08 s. Until WO-15 ships the command answers "this build cannot write IFC yet".
+
+Left: audit WO-09 to WO-15 and run the browser check again on Cline's code; Make editable for imported walls and
+floors (the walls-and-slabs reader's parameters kept at import); the guide page; Notion.

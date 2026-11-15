@@ -29,12 +29,15 @@ test('WO-09 bimIfcSaveLevels and bimIfcSaveLevel: the levels in their order, and
   const lv = F.levels(LEVELS);
   assert.deepEqual(lv.list, [{ name: 'Ground', elev: 0 }, { name: 'First', elev: 3.2 }]);
   assert.deepEqual(lv.at, { 'lvl-0': 0, 'lvl-1': 1 });
+  assert.equal(F.levels([{ elev: 0 }]).list[0].name, 'Level 0');
   assert.deepEqual(F.levels([]).list, []);
   assert.deepEqual(F.levels(null).list, []);
   assert.equal(F.level({ bim: { levelId: 'lvl-1' } }, lv, 0), 1, 'its own level, whatever its height');
   assert.equal(F.level({ bim: { levelId: 'gone' } }, lv, 3.3), 1, 'a level that is not there: by height');
   assert.equal(F.level({ bim: {} }, lv, 3.2), 1, 'at a level\'s elevation: that level');
   assert.equal(F.level({ bim: {} }, lv, 3.1), 0, 'the highest level at or under it');
+  assert.equal(F.level({}, F.levels([{ name: 'Top', elev: 6 }, { name: 'Ground', elev: 0 }, { name: 'Middle', elev: 3 }]), 4), 2,
+    'choose the greatest elevation, not the last level in the list');
   assert.equal(F.level({}, lv, -5), 0, 'under every level: the first');
   assert.equal(F.level({}, F.levels([]), 1), 0);
 });
@@ -50,6 +53,8 @@ test('WO-10 bimIfcSaveBase: what every element carries: its id, name, kept Globa
     { name: 'Pset_WallCommon', props: { IsExternal: 'true', FireRating: '' } }], 'the imported sets with rows, as text; not an empty one, not a second BIM_Personal');
   assert.equal(F.base({ id: 'a3', t: 'box', bim: { guid: 'short' } }, 'L').guid, undefined, 'a GlobalId is 22 characters');
   assert.equal(F.base({ id: 'a4', t: 'box' }, 'L').psets[0].props.Type, 'box', 'no bim record: its primitive type');
+  assert.deepEqual(F.base({ id: 'a5', bim: { psets: [{ name: 'Values', rows: [['Count', 0], ['Flag', false]] }] } }, null).psets[1].props,
+    { Count: '0', Flag: 'false' }, 'falsy imported property values are retained as text');
 });
 
 test('WO-11 bimIfcSaveWalls: a straight wall as one IFC wall for each segment, or null when it is not one', { skip: todo('walls', 'WO-11') }, () => {
@@ -81,6 +86,8 @@ test('WO-11 bimIfcSaveWalls: a straight wall as one IFC wall for each segment, o
   // not a straight wall: null, and the caller sends its triangles
   assert.equal(F.walls(wall({ bim: Object.assign({}, o.bim, { bulges: [0.5] }) }), lv, base), null, 'an arc');
   assert.equal(F.walls(wall({ pos: [1, 0, 0] }), lv, base), null, 'moved by its pos');
+  assert.equal(F.walls(wall({ pos: [1e-8, 0, 0] }), lv, base), null, 'even a small displacement is moved');
+  assert.equal(F.walls(wall({ pos: [1e-10, 0, 0] }), lv, base).length, 1, 'sub-tolerance displacement is not moved');
   assert.equal(F.walls(wall({ bim: Object.assign({}, o.bim, { centerline: [[0, 0]] }) }), lv, base), null);
   assert.equal(F.walls(wall({ bim: Object.assign({}, o.bim, { centerline: [[1, 1], [1, 1]] }) }), lv, base), null, 'no segment with a length');
   assert.equal(F.walls(wall({ bim: Object.assign({}, o.bim, { thickness: 0 }) }), lv, base), null);

@@ -58,6 +58,7 @@ import { bimTlCommand } from '../site-tools/panel.js';
 import { bimSkpPick } from '../io/sketchup-import.js';
 import { bimGltfExport, bimGltfPick } from '../io/gltf.js';
 import { bimIfcPick } from '../io/ifc-full.js';
+import { bimIfcExport } from '../io/ifcos-worker.js';
 import { bimRvCommand } from '../render/rendered-view.js';
 import { bimBenchmark, bimGraphicsCommand } from '../render/webgpu.js';
 import { bimCtxFetch, bimCtxRemove } from '../map/surroundings-3d.js';
@@ -233,6 +234,7 @@ import { bimOpenToolsPanel } from '../ui/discipline-tabs.js';
     ifcin:function(){bimIfcPick();},   /* __acad3dV196 */
     gltfin:function(){bimGltfPick();},   /* __acad3dV195 */
     gltfout:function(){bimGltfExport();},
+    ifcout:function(){bimIfcExport();},   /* __acad3dV177 */
     skpin:function(){bimSkpPick();},                  /* __acad3dV163 */
     finddata:function(){bimFindCommand();},                      /* __acad3dV135 */
     datalayers:function(){bimDataCommand();},                    /* __acad3dV134 */                /* __acad3dV127 */

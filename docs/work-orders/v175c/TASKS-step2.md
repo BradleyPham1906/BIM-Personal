@@ -18,7 +18,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-11 [Cline] `bimLmVpToFrame(vp)`
+## [x] WO-11 [Cline] `bimLmVpToFrame(vp)`
 
 - **It must:** SPEC 5 WO-11: a sheet viewport {id, kind, refId, label, x, y, w, h, scaleMode, scaleDenom} as the map frame {t: 'map', id, x, y, w, h, src: kind + ':' + refId, den: scaleDenom (null when scaleMode is 'fit'), fit: scaleMode === 'fit', px: 0, py: 0, label (or '')}.
 - **May use:** nothing.
@@ -28,7 +28,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-12 [Cline] `bimLmFrameToVp(fr)`
+## [x] WO-12 [Cline] `bimLmFrameToVp(fr)`
 
 - **It must:** SPEC 5 WO-12: the inverse: kind before the first ':' of src, refId after it ('' when none); scaleMode 'fit' when fr.fit or den is not positive, else 'fixed'; scaleDenom den when positive, else 100; the keys in the order id, kind, refId, label, x, y, w, h, scaleMode, scaleDenom.
 - **May use:** nothing.
@@ -38,7 +38,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-13 [Cline] `bimLmSheetToLayout(sh)`
+## [x] WO-13 [Cline] `bimLmSheetToLayout(sh)`
 
 - **It must:** SPEC 5 WO-13: {id, num: number or '', name or '', w, h, drawing: true, objs: [{t: 'tblock', id: 'tb-' + id, x: 0, y: 0, w, h}, then a frame (WO-11) per viewport]}.
 - **May use:** bimLmVpToFrame (WO-11).
@@ -48,7 +48,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-14 [Cline] `bimLmDrawMenu(items, drawing)`
+## [x] WO-14 [Cline] `bimLmDrawMenu(items, drawing)`
 
 - **It must:** SPEC 5 WO-14: the items, leaving out those of kind 'live', 'figure' or 'chart' when drawing is true (the owner's D4).
 - **May use:** nothing.
@@ -58,7 +58,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-15 [Cline] `bimLmN(v)`
+## [x] WO-15 [Cline] `bimLmN(v)`
 
 - **It must:** SPEC 5 WO-15: v rounded to 3 decimals as a string, '0' for any rounded zero.
 - **May use:** nothing.
@@ -68,7 +68,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-16 [Cline] `bimLmSvgOpen(w, h)`
+## [x] WO-16 [Cline] `bimLmSvgOpen(w, h)`
 
 - **It must:** SPEC 5 WO-16: '<svg xmlns="http://www.w3.org/2000/svg" width="Wmm" height="Hmm" viewBox="0 0 W H">' with W, H by WO-15.
 - **May use:** bimLmN (WO-15).
@@ -78,7 +78,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-17 [Cline] `bimLmSvgRect(o, stroke, width)`
+## [x] WO-17 [Cline] `bimLmSvgRect(o, stroke, width)`
 
 - **It must:** SPEC 5 WO-17: '<rect x=".." y=".." width=".." height=".." fill="none" stroke="S" stroke-width="W"/>', numbers by WO-15, stroke '#000000' and width 0.25 by default.
 - **May use:** bimLmN (WO-15).
