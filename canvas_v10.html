@@ -36790,12 +36790,12 @@ function bimIfcSaveWalls(o, lv, base){
   for(i=0;i<n;i++){
     a=p[i%p.length];q=p[(i+1)%p.length];dx=q[0]-a[0];dz=q[1]-a[1];len=Math.sqrt(dx*dx+dz*dz);
     if(len<1e-6)continue;
-    nr=bimSegNormal(a,q);s=(nr[0]*dz-nr[1]*dx)/len;item={};
+    nr=bimSegNormal(a,q);s=(nr[0]*dz-nr[1]*dx)/len;var oZ=Math.min(s*off.dLeft,-s*off.dRight);item={};
     for(k in base)if(base.hasOwnProperty(k))item[k]=base[k];
     q=bimIfcSavePt(q);a=bimIfcSavePt(a);
     item.level=bimIfcSaveLevel(o,lv,b.baseY);item.x0=a[0];item.y0=a[1];item.x1=q[0];item.y1=q[1];
     item.base=bimIfcSaveNum(b.baseY);item.height=bimIfcSaveNum(b.height);
-    item.thickness=bimIfcSaveNum(off.dLeft+off.dRight);item.offset=bimIfcSaveNum(Math.min(s*off.dLeft,-s*off.dRight));
+    item.thickness=bimIfcSaveNum(off.dLeft+off.dRight);item.offset=bimIfcSaveNum(oZ);
     if(walls.length){item.id=o.id+'#'+i;delete item.guid;}
     walls.push(item);
   }
