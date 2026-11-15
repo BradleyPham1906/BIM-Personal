@@ -36822,6 +36822,61 @@ function bimIfcSavePrism(o, lv, base){
   return item;
 }
 BIM_IFC_SAVE.prism=bimIfcSavePrism;
+function bimIfcSaveOpening(o, walls, base){
+  var b=o&&o.bim,item,k,c,t,best,bestd,d,s,i,x,y,wl;
+  if(o.t!=='opening'||!b||(b.type!=='door'&&b.type!=='window')||!b.center||!(b.width>0)||!(b.height>0))return null;
+  c=bimIfcSavePt(b.center);wl=[];
+  for(i=0;i<walls.length;i++){if(walls[i].id===b.hostWallId||walls[i].id.indexOf(b.hostWallId+'#')===0)wl.push(walls[i]);}
+  if(!wl.length)return null;
+  best=null;bestd=Infinity;
+  for(i=0;i<wl.length;i++){
+    s=wl[i];d=[s.x1-s.x0,s.y1-s.y0];t=((c[0]-s.x0)*d[0]+(c[1]-s.y0)*d[1])/(d[0]*d[0]+d[1]*d[1]);t=Math.max(0,Math.min(1,t));
+    x=s.x0+t*d[0];y=s.y0+t*d[1];d=Math.sqrt((c[0]-x)*(c[0]-x)+(c[1]-y)*(c[1]-y));
+    if(d<bestd){bestd=d;best=s;}
+  }
+  if(!best)return null;
+  t=((c[0]-best.x0)*(best.x1-best.x0)+(c[1]-best.y0)*(best.y1-best.y0))/((best.x1-best.x0)*(best.x1-best.x0)+(best.y1-best.y0)*(best.y1-best.y0));
+  t=Math.max(0,Math.min(1,t));
+  x=best.x0+t*(best.x1-best.x0);y=best.y0+t*(best.y1-best.y0);
+  item={cls:b.type==='window'?'IfcWindow':'IfcDoor',host:best.id,x:bimIfcSaveNum(x),y:bimIfcSaveNum(y),a:Math.atan2(best.y1-best.y0,best.x1-best.x0),base:bimIfcSaveNum(best.base+(b.sillHeight||0)),width:bimIfcSaveNum(b.width),height:bimIfcSaveNum(b.height),depth:bimIfcSaveNum(best.thickness+0.2)};
+  for(k in base)if(base.hasOwnProperty(k))item[k]=base[k];
+  return item;
+}
+BIM_IFC_SAVE.opening=bimIfcSaveOpening;
+function bimIfcSaveMesh(o, m, lv, base){
+  var b=o&&o.bim,item,k,i,j,f,verts=[],faces=[],cls,miny=Infinity,p;
+  if(!m||!m.v||!m.f)return null;
+  for(i=0;i<m.v.length;i++){p=[m.v[i][0]+(o.pos&&o.pos[0]||0),m.v[i][1]+(o.pos&&o.pos[1]||0),m.v[i][2]+(o.pos&&o.pos[2]||0)];verts.push(bimIfcSavePt3(p));if(p[1]<miny)miny=p[1];}
+  if(verts.length<3)return null;
+  for(i=0;i<m.f.length;i++){
+    f=m.f[i];if(f.length<3)continue;
+    for(j=2;j<f.length;j++)faces.push([f[0],f[j-1],f[j]]);
+  }
+  if(!faces.length)return null;
+  cls='IfcBuildingElementProxy';
+  if(b&&b.imported&&b.ifcType&&/^Ifc[A-Za-z0-9]+$/.test(b.ifcType))cls=b.ifcType.replace(/(StandardCase|ElementedCase)$/,'');
+  else if(b&&BIM_IFC_SAVE_CLASS[b.type])cls=BIM_IFC_SAVE_CLASS[b.type];
+  item={cls:cls};
+  for(k in base)if(base.hasOwnProperty(k))item[k]=base[k];
+  item.level=bimIfcSaveLevel(o,lv,miny);item.verts=verts;item.faces=faces;
+  return item;
+}
+BIM_IFC_SAVE.mesh=bimIfcSaveMesh;
+function bimIfcSaveModel(name, levels, entries){
+  var lv=bimIfcSaveLevels(levels),model={name:String(name||'Project'),levels:lv.list,walls:[],prisms:[],openings:[],meshes:[]},left=[],i,e,b,item,opens=[];
+  for(i=0;i<entries.length;i++){
+    e=entries[i];b=bimIfcSaveBase(e.o,e.layer);item=null;
+    if(e.o.t!=='opening'){item=bimIfcSaveWalls(e.o,lv,b);if(!item)item=bimIfcSavePrism(e.o,lv,b);if(!item)item=bimIfcSaveMesh(e.o,e.mesh,lv,b);}
+    if(e.o.t!=='opening'){if(item){if(Array.isArray(item))model.walls=model.walls.concat(item);else if(item.cls==='IfcSlab'||item.cls==='IfcColumn')model.prisms.push(item);else model.meshes.push(item);}else left.push({id:e.o.id,why:'no shape'});}
+    if(e.o.t==='opening')opens.push({o:e.o,base:b});
+  }
+  for(i=0;i<opens.length;i++){
+    e=opens[i];item=bimIfcSaveOpening(e.o,model.walls,e.base);
+    if(item)model.openings.push(item);else left.push({id:e.o.id,why:'its wall is not written as a straight wall'});
+  }
+  return {model:model,left:left};
+}
+BIM_IFC_SAVE.model=bimIfcSaveModel;
   /* ================= __acad3dV177: the IfcOpenShell adapter's Python, as text =================
      Written by tools/embed_py.py from src/py/bim_ifcos.py: edit the .py, then run the tool (--check proves the two
      agree). The IFC worker (io/ifcos-worker.js) writes it into Pyodide's site-packages beside the pinned wheels;
