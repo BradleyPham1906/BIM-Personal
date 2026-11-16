@@ -28,7 +28,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-02 [Cline] `bimEgCell(g, p)`
+## [x] WO-02 [Cline] `bimEgCell(g, p)`
 
 - **It must:** SPEC 5 WO-02: the index j*nx + i of the cell holding p, or -1 when outside the grid or not free.
 - **May use:** nothing.
