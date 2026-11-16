@@ -113,7 +113,74 @@ fixed schedule, not a proof of a minimum (FR, P).
 
 Level: P for FR and d3-force, S for Eades and Kamada-Kawai. Confidence: high.
 
-### 2.2 Links from weighted parameters
+### 2.2 Links from weighted parameters (features 20, 21, 22, 23)
+
+**Sources read.** Gower 1971, "A general coefficient of similarity and some of its properties", *Biometrics*
+27(4) 857-871 (a JSTOR copy hosted at mathematics.foi.hr; read: sections 1, 2, 4 and the statement of the
+p.s.d. property; P). The R `gower` package vignette, van der Loo, 2024-12-16 (CRAN mirror; S, for how a
+modern implementation treats missing values). Von Luxburg 2007, "A tutorial on spectral clustering",
+arXiv 0711.0189, section 2.2 "Different similarity graphs" (P). Richard Muther and Associates, Planning
+Guide RMA 1111 "Procedure for making relationship diagrams" (2002, richardmuther.com; P), for the practice
+link between closeness ratings, line counts and a spring diagram.
+
+**No published method found that derives architectural adjacency from room-parameter similarity** (two
+searches, part 6). Anthropocity documents the feature but not the method (S). The nearest practice is
+Muther's Systematic Layout Planning: each pair of activities gets a closeness rating A, E, I, O, U or X, each
+with a coded *reason* (shared personnel, shared equipment, flow of material...); the relationship diagram then
+draws A as four lines, E three, I two, O one, U none, and X as a zigzag that Muther himself likens to a
+compressed spring pushing the pair apart, while the straight lines are elastic bands pulling them together
+(P). That is the hand version of topic 1's force diagram with link strength = number of lines, and it
+supports mapping strength 1/2/3 to a link force.
+
+**The similarity, as published (Gower, P).** For rooms i and j and parameter k, a score s_ijk in [0, 1] and a
+flag d_ijk that is 1 when the parameter can be compared (both values present) and 0 otherwise:
+- quantitative (privacy 1 to 5, daylight lux): s_ijk = 1 - |x_ik - x_jk| / R_k, R_k the range of parameter k
+  in the sample (or the population);
+- qualitative (unordered categories): 1 if equal, 0 if not;
+- dichotomous (present/absent): Gower's table, where absent-absent is not counted (d = 0).
+Similarity S_ij = sum_k w_k d_ijk s_ijk / sum_k w_k d_ijk (Gower's equation 5, weights w_k >= 0). It is
+undefined when no parameter can be compared. Without missing values and with non-negative weights the
+similarity matrix is positive semi-definite, so 1 - S behaves as a squared Euclidean distance (Gower, P).
+Modern packages simply skip missing values (vignette, S): the same as d = 0.
+
+Why Gower and not the alternatives (inference, confidence high):
+- Weighted Euclidean on range-normalised values gives the same ordering as Gower for all-numeric complete data
+  but has no rule for blanks or categories.
+- Cosine similarity ignores magnitude: a room scored 1 on every parameter and one scored 5 on every parameter
+  have cosine 1 (identical), which is wrong for "level" parameters such as privacy. Not recommended.
+- Gower handles mixed types, blanks ("blanks allowed", feature 20) and per-parameter weights (feature 20)
+  exactly as the feature asks.
+
+**From similarity to a few links (von Luxburg 2.2, P; the choices are ours).** Von Luxburg names three
+constructions: the epsilon-neighbourhood graph (connect pairs closer than a threshold), the k-nearest-neighbour
+graph (connect i and j if either is among the other's k nearest; the mutual version needs both), and the fully
+connected graph. A bubble diagram needs few links, so:
+
+1. Compute S for every pair of rooms in the same building (n(n-1)/2 pairs: 125 000 at 500 rooms, trivial).
+   Parameters with weight 0 are ignored; a pair with no comparable parameter gets no link.
+2. Candidates: for each room, its top k by S (k default 2; union kNN, so every room gets at least one link)
+   and keep only pairs with S at or above a floor (default 0.7), except as in step 3.
+3. Connectivity: add the edges of a maximum spanning tree of S (Kruskal: sort pairs by S descending, union-find)
+   that are missing, so the diagram is one piece. Mark these as "connecting" in the report.
+4. Strength: by S bands, S >= 0.9 strength 1 (primary), >= 0.8 strength 2, else 3 (thresholds are project
+   settings, shown to the user). Or by rank: the top third of the kept links strength 1, etc.
+5. Write the links as generated and "suggested" (decision 9 of program-to-plan), overwriting only earlier
+   generated links (feature 22: "regenerating overwrites"); hand-made links are never touched.
+6. Show the reason: the parameters that agreed most (Muther's reason codes in spirit), so the user can judge.
+
+Parameters: weights per parameter (default 1), k (2), floor (0.7), band thresholds (0.9, 0.8), range R_k from
+the sample. Cost: O(n^2 v) for v parameters; 500 rooms and 10 parameters is 1.25 million operations,
+milliseconds; Kruskal O(n^2 log n) on the full pair list, under 50 ms at 500 rooms.
+
+**Failure modes.** Similarity is not adjacency: rooms that must touch are often unlike (kitchen and dining
+differ in privacy and noise; a waiting room and a consulting room) and like rooms need not touch (two
+bedrooms at opposite ends). The method suggests clusters of like rooms, which is a zoning idea, not a
+circulation idea; the user must review (inference, confidence high). With one parameter, many ties: sort ties
+by programme id for determinism. With R_k = 0 (all rooms equal on k) the score is undefined: skip k.
+
+Level: P (Gower, von Luxburg, Muther), the method assembled from them is inference. Confidence: high for the
+similarity, medium for the link rules (no published architectural precedent).
+
 ### 2.3 Community detection with a resolution
 ### 2.4 Bridges, articulation points, hubs, depth, aspect
 ### 2.5 Corridors routed from user paths
