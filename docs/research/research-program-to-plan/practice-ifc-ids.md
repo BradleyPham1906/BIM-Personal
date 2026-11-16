@@ -1,14 +1,45 @@
 # Practice, IFC spaces and IDS: sources behind V233 to V238
 
 Research for `docs/research/research-program-to-plan.md`, hypotheses H5 and H6 (`00-question.md`).
-Started 2026-11-16. Status: in progress (saved after each part).
+Claude (research agent), 2026-11-16. Status: complete for this pass; part 7 lists what is open. No independent
+second reader yet.
 
 Evidence levels: P read in the source itself; S dependable secondary source or a vendor's own claim;
 U search summary only. Confidence: high, medium, low.
 
 ## 1. Summary
 
-(pending)
+- **Part A (P, high confidence):** all seven sources were read in the original. Every claim in the owner's pages
+  holds. The corrections are small: RIBA's Stage 1 is "Preparation and Briefing", and options are not appraised
+  until Stage 2. GSA's area check against the programme is in P100 2024 section 1.8.2 ("confirmed at each phase of
+  design", with an 80 percent usable-to-gross target). IfcSpaceTypeEnum has no room-function types, and INTERNAL and
+  EXTERNAL are deprecated. IDS excludes computed values and totals as well as geometry. The owner's pages also miss
+  something: IFC's **Pset_SpaceCommon.NetPlannedArea and GrossPlannedArea are defined "for programming"**, so a
+  programmed area already has a standard slot on the designed IfcSpace.
+- **B (P for IPMS 2023, FICM 2006, GSA; S for DIN 277:2021, BOMA 2017; ISO 9836:2017 is withdrawn):** all of these
+  standards split area the same way at heart: gross, then structure, then a net area divided into primary and
+  non-primary parts. They name the parts differently and **place circulation differently**. That means a circulation
+  ratio is only meaningful together with the standard used to measure it. The one published ratio found is GSA's 80
+  percent.
+- **C (P, medium-high confidence):** ifctester 0.9.0 is pure Python under the LGPL. IfcOpenShell's own web app runs it
+  on Pyodide with IfcOpenShell 0.8.5. Its core needs xmlschema and elementpath (both MIT, pure Python, about 0.77 MB);
+  neither is vendored yet. Its declared dependencies also pull in flask and the GPL-3.0 bcf-client, which the core
+  check does not import. The vendored 0.8.5 wheel has every API call needed to write an IfcSpace: create_entity,
+  aggregate.assign_object to the storey, pset and qto, a zone through group, and a kept GlobalId through
+  guid.compress. V177 already proved the GlobalId step.
+- **D (S/U, medium confidence):** professional tools keep the requirement and the designed room as separate records.
+  They join them by a **human-readable programme number** synced into the model room, report counts and areas
+  required against designed for each programme line, and keep history as a change log. No tool's approval feature
+  was documented at level S.
+- **E (P for Muther's guide, VA, AusHFG; S/U for the meaning of Muther's letters):** there is no single standard
+  scale. The kinds of relation recur: adjacency or proximity, direct access, horizontal or vertical, acoustic,
+  security, separation of flows, and sequence. So does a reason recorded with each rating.
+- **F (P, medium-high confidence):** RIBA's Stage Report, GSA's concept reviews and the Green Book 2026 all ask for
+  **records**: the options, the criteria and gates, each option's measured attributes, the comments and responses,
+  and the decision with who made it, why, and why the other options lost. They do not ask for a search engine. The
+  Green Book 2026 advises against simple weighting and scoring, and Arroyo, Tommelein and Ballard (IGLC 2014) list
+  six ways weighted scores mislead.
+- **H5:** holds in substance, with the two corrections in part 4. **H6:** supported (part 4).
 
 ## 2. Part A: the owner's claims checked against their sources
 
@@ -277,24 +308,188 @@ Findings for H6 (inference, medium-high confidence):
 
 ## 4. What bears on H5 and H6
 
-(pending)
+**H5, spaces in IFC: supported, with two corrections.**
+- Writing IfcSpace with its storey, names, quantities and property sets: every call exists in the IfcOpenShell 0.8.5
+  wheel the app already vendors, documented in its own docstrings (P, part C3). The space goes on the storey by
+  **aggregation** (`aggregate.assign_object`), not containment; `spatial.assign_container` is for furniture inside a
+  space. The GlobalId can be set from an existing value; V177's experiment e05 already kept one in the wasm build and
+  `bim_ifcos_keep_guid` exists. Not run for IfcSpace here: confidence medium-high.
+- ifctester is pure Python (P) and IfcOpenShell's own web app runs it on Pyodide with the same IfcOpenShell 0.8.5
+  (P, from the wheel's contents). **Correction 1:** "carry ifctester" means carrying three new pure-Python wheels
+  (ifctester, xmlschema, elementpath: MIT and LGPL) and **not** installing its declared dependency list as is: that
+  list names flask, odfpy, pystache and bcf-client (GPL-3.0), none of which the core check imports at module level
+  (P for the imports; that the core runs without them is inference, not run). **Correction 2:** IDS can only check
+  what a space carries as attributes, properties, classification, material and part-of relations. It cannot check
+  areas computed from geometry, area totals, or adjacency (P, IDS's own "Limitations", which uses an office-area total
+  as its example). So the programme check (required against designed area, adjacencies met) stays the app's own code;
+  IDS can check that each IfcSpace has a Name, a LongName, a NetPlannedArea, is part of a storey, and so on.
+- Verdict: H5 holds in substance; the worker could carry ifctester (about 0.8 MB of new wheels plus the 0.2 MB
+  ifctester code, not counting its 25 MB web app, which would not ship). Nothing installed or run (the owner's
+  approval is needed under the library rule).
+
+**H6, evaluation is exploration: supported.** The practice documents ask for data and records (options, criteria and
+gates, measured attributes against the programme, comments and responses, the decision with its reason and its
+participants, the rejected options with theirs), not for a new search engine (P: RIBA Stage Report, GSA P100 and
+matrix, RAIC 6.2, Green Book 2026). Two sources argue against a single weighted score (P: Green Book 2026,
+Arroyo et al. 2014), which bears on how V238 should present a comparison. Confidence medium-high; the step from
+"practice asks for records" to "V238 adds only data to V231" is inference and depends on what V231 already stores
+(not read here).
 
 ## 5. What a programme and relationship data model should carry (inference)
 
-(pending)
+Drawn from parts A, D and E. Inference throughout; each line names where it comes from.
+
+**Programme item (one requirement line)**
+- A stable internal id, and a human-readable **programme number** (the key practice uses to link a model room to a
+  requirement: dRofus room function number, Revit room number; part D).
+- Name (short) and long name, mapped to IfcSpace Name and LongName at export (A6b); function or type, mapped to
+  ObjectType or a classification reference (A6b).
+- Department or zone (IfcZone at export, A6a; health guides separate external and internal relations, E4).
+- Quantity (how many identical rooms) and **required net area per room**, with an optional gross; the export
+  writes them to Pset_SpaceCommon NetPlannedArea / GrossPlannedArea (A6f).
+- Occupancy: OccupancyType, OccupancyNumber, AreaPerOccupant (Pset_SpaceOccupancyRequirements, A6f).
+- Internal or external (Pset_SpaceCommon.IsExternal, not the deprecated predefined types; A6c), accessible, public.
+- Area category for net-to-gross reporting: primary, horizontal circulation, vertical circulation, technical,
+  sanitary, structural; mapped to the standard the project chose (part B).
+- Notes and a source (who asked, which document).
+
+**Programme (the whole)**
+- The measurement standard chosen (IPMS 2023, DIN 277:2021, BOMA 2017, FICM 2006, GSA, or custom; part B), a target
+  net-to-gross or usable-to-gross ratio with its source (GSA's 80 percent is the only published figure read), a
+  tolerance for area checks (dRofus leaves it to the project; part D).
+- Revision state: draft, issued for comment, approved; who approved, when, with what comments (WBDG and AIA
+  sign-off, RIBA sign-off of brief and concept; parts A1d, A2, A5). Changes after approval through a recorded change
+  (RIBA Change Control; F1).
+
+**Relation (between two items, or two departments)**
+- From, to, **kind** (adjacency or proximity, direct access, same floor or vertical, visual, acoustic separation,
+  security separation, flow separation, sequence) and **grade on a named ordered scale** (Muther A E I O U X, VA 1 to
+  3, the owner's four grades), with negative grades allowed (part E).
+- A reason (Muther's reason codes; VA and AusHFG prose).
+- Whether it is a must (gate) or a want (the CBA "must / want" criterion split, F4; GSA, RIBA treat adjacency as a
+  requirement to be shown met).
+
+**Designed room link and the check**
+- Each model room carries the programme number of the item it fulfils; many rooms may fulfil one item (dRofus
+  counts IfcSpaces per function and reports the difference; part D).
+- The report per item: rooms required against designed, area required against designed (sum), within tolerance or
+  not; per relation: met or not, by the geometry test of its kind.
+- At export: IfcSpace with Name, LongName, ObjectType, Pset_SpaceCommon (planned areas), Qto_SpaceBaseQuantities
+  (measured areas), aggregated to its storey, grouped into its IfcZone, GlobalId kept from the app's id.
+
+**Options and decision record (for V238 or V231)**
+- Options (at least three distinct, GSA), one marked as benchmark (Green Book BAU / do minimum); criteria with gates
+  (must) and wants; per option the measured attributes (programme compliance, net-to-gross, circulation ratio,
+  adjacencies met, cost kept separate); review comments and responses; the decision, its reason, who was party to it,
+  and why the others were not chosen (RIBA Stage Report). Importance recorded per advantage, not per abstract factor,
+  if CBA is followed.
 
 ## 6. Counter-evidence
 
-(pending)
+- **IDS cannot do the programme check.** Anyone expecting V237's "IDS checks" to verify areas or adjacencies will be
+  disappointed: the IDS documentation excludes computed values and totals (P). The check is the app's.
+- **ifctester's declared dependencies include GPL-3.0 bcf-client and a web server (flask).** Installing it the normal
+  way would pull them in; whether the core runs without them is not tested.
+- **The IFC documentation read is the development branch** (master of IFC4.3.x-development), which already carries
+  4.3.2.0 deprecation notes (INTERNAL and EXTERNAL). The app's export targets IFC4X3_ADD2 or IFC4; the deprecation may
+  not be in the edition the app writes. The bSDD property list for Pset_SpaceCommon lacked "Reference", which IFC4
+  had; not checked against ADD2.
+- **The CBA comparison is one case study** where both methods reached the same choice (P); its eight claimed
+  advantages are argued, not measured. The Green Book still allows MCDA with swing weighting at the longlist stage,
+  so weighting as such is not ruled out, only simple weighting and scoring.
+- **Professional tools mostly reached at level U.** BriefBuilder, Affinity and Codebook could not be read at their
+  own documentation; their fields and revision features are not established.
+- **No single relationship scale exists**, so the owner's four grades are one choice among several, not a standard.
+- **"Circulation ratio" differs by standard** (part B): a number without its standard is not comparable across
+  projects.
 
 ## 7. Still open
 
-(pending)
+- Running the IfcSpace chain (create, aggregate, psets, qto, zone, kept GlobalId) in the app's worker: needs the
+  owner's approval to run.
+- Whether ifctester 0.9.0 imports and validates with only ifcopenshell 0.8.5, xmlschema, elementpath (ifctester 0.9.0
+  is newer than the vendored IfcOpenShell 0.8.5; the bundled web app used ifctester 0.9.0 with an 0.8.5 build, which
+  suggests it works, untested). Which ifctester release pairs with 0.8.5 officially.
+- Pset_SpaceCommon property list in IFC4X3_ADD2 and IFC4 exactly (Reference present or not).
+- DIN 277:2021 NUF groups 1 to 7 by name; BOMA 2017 text itself; ISO 9836's exact withdrawal date and any successor.
+- GSA National Business Space Assignment Policy (its usable and gross definitions).
+- UK Health Building Notes and FGI Guidelines relationship vocabulary; Muther's full reason-code list from a primary
+  source.
+- BriefBuilder, Trelligence Affinity and Codebook at level S (vendor documentation).
+- What V231 already stores (for the H6 conclusion).
+- An independent second reader for the facts the code will use (A6, A7, C3).
 
 ## 8. Search log
 
-(pending)
+All 2026-11-16. "Fetched" means the source text was read; "search" means a search engine summary (pointer only).
+
+| # | Query or address | Result |
+|---|---|---|
+| 1 | legacy.wbdg.org/design-disciplines/architectural-programming | Fetched (P) |
+| 2 | chop.raic.ca/chapter-6.2 | Fetched (P) |
+| 3 | search: RIBA Plan of Work 2020 overview pdf | Pointer; architecture.com copy returned a script page; riba.org landing page gave /media/syneeeto/2020ribaplanofworkoverviewpdf.pdf, fetched (P) |
+| 4 | search: GSA P100 2024 three distinct concepts | Pointer to 2024 Submittal Matrix (fetched, P) and P100 2024 Final_0.pdf (fetched, P) |
+| 5 | search: AIA Best Practices 12.03.01 | Pointer; aia.org PDF fetched (P) |
+| 6 | IFC4.3.x-development raw files; GitHub API refused (repository not attached); standards.buildingsmart.org 403; ifc43-docs redirects there | Raw files under docs/schemas/core/IfcProductExtension fetched (P) |
+| 7 | api.bsdd.buildingsmart.org class IfcSpace 4.3 with properties | Fetched (S) |
+| 8 | git sparse clone github.com/buildingSMART/IDS Documentation | Read (P) |
+| 9 | pypi.org/pypi/{ifctester, xmlschema, elementpath, ifcopenshell, bcf-client, pystache, odfpy}/json; ifctester 0.9.0 wheel listed as a zip | Read (P) |
+| 10 | docs.ifcopenshell.org/ifctester.html | Fetched in two parts (P) |
+| 11 | runtime/MANIFEST.json; vendored ifcopenshell wheel listed and its api sources read as text; research-ifcopenshell-app.md; src/py/bim_ifcos.py; experiments/v177/e05 | Read (P) |
+| 12 | search: IPMS All Buildings 2023 | Pointer; rics.org PDF fetched (P) |
+| 13 | search: DIN 277:2021 categories (German) | Pointers; weka.de and bauprofessor.de fetched (S) |
+| 14 | search: ISO 9836:2017; iso.org 403; standards.govt.nz empty | Status from search summaries only (S/U) |
+| 15 | search: FICM 2006; nces.ed.gov sections 3.2.1, 3.2.2, 3.2.5 | Fetched (P) |
+| 16 | search: ANSI/BOMA Z65.1-2017 categories | Archibus help and Extreme Measures fetched (S) |
+| 17 | search: dRofus room function; help.drofus.com area overview | Fetched (S); project log page empty |
+| 18 | search: BriefBuilder (twice); briefbuilder.com 503 | Listing sites only (U) |
+| 19 | search: Trelligence Affinity; Codebook; Onuma; Archicad zones; Revit area schemes and spaces | Search summaries of vendor pages (S/U) |
+| 20 | search: Muther SLP AEIOUX; RMA 1111 PDF | Fetched (P) for the guide; letter meanings S/U |
+| 21 | search: VA PG-18-9 functional relationships; chapters 204 and 110 from wbdg.org | Fetched (P) |
+| 22 | search: AusHFG functional relationships; S3 copy refused (XML error page); intraspace.com.au copy of HPU 0190 | Fetched (P, third-party host) |
+| 23 | search: Arroyo Tommelein Ballard WRC CBA; iglc.net/papers/details/992/pdf | Fetched (P) |
+| 24 | search: Green Book options appraisal; gov.uk "Green_Book_2022__updated_links_.pdf" | Fetched; it is the 2026 edition (P) |
+
+Not searched (deliberately): layout algorithms (another researcher).
 
 ## 9. References
 
-(pending)
+- WBDG, "Architectural Programming", National Institute of Building Sciences, legacy.wbdg.org (no author or date on
+  the page). P.
+- RIBA, *RIBA Plan of Work 2020 Overview*, RIBA 2020, riba.org/media/syneeeto/2020ribaplanofworkoverviewpdf.pdf. P.
+- GSA PBS, *P100 Facilities Standards for the Public Buildings Service*, May 2024, gsa.gov/system/files/P100 2024
+  Final_0.pdf, sections 1.8.2 and Appendix A.3. P.
+- GSA, *2024 P100 Submittal Matrix*, Version 2.0, gsa.gov/system/files/2024 P100 Submittal Matrix.pdf. P.
+- RAIC, *Canadian Handbook of Practice*, chapter 6.2 "Schematic Design", chop.raic.ca/chapter-6.2. P.
+- AIA, Best Practices 12.03.01, Schematic Design Quality Management Phase checklist (pages marked 2017),
+  aia.org/sites/default/files/2024-12/BestPractices_12.03.01_SchematicDesign_checklist.pdf. P.
+- buildingSMART, IFC 4.3 documentation sources, github.com/buildingSMART/IFC4.3.x-development (master):
+  IfcSpace.md, IfcSpaceTypeEnum.md, IfcRelSpaceBoundary.md, IfcZone.md, Pset_SpaceCommon.md,
+  Pset_SpaceOccupancyRequirements.md, Qto_SpaceBaseQuantities.md, properties GrossPlannedArea.md and
+  NetPlannedArea.md. P.
+- buildingSMART Data Dictionary API, class IfcSpace (IFC 4.3), api.bsdd.buildingsmart.org. S.
+- buildingSMART, IDS repository, Documentation/UserManual (README, specifications, entity-facet, partof-facet,
+  restrictions), github.com/buildingSMART/IDS, commit 870f9c4 (2026-09-25). P.
+- IfcOpenShell, ifctester 0.9.0 (PyPI JSON and wheel contents); docs.ifcopenshell.org (0.9.0.post1). P.
+- xmlschema 4.3.2, elementpath 5.1.4, bcf-client 0.9.0, pystache 0.6.8, odfpy 1.4.1, ifcopenshell 0.9.0.post1:
+  PyPI JSON API. P.
+- This repository: runtime/MANIFEST.json; runtime/ifcos/0.8.5 wheel (api/root/create_entity.py,
+  api/aggregate/assign_object.py, api/spatial/assign_container.py, api/pset/*.py, api/group/assign_group.py,
+  api/attribute/edit_attributes.py, guid.py); docs/research/research-ifcopenshell-app.md;
+  docs/research/experiments/v177/e05_api_calls.mjs; src/py/bim_ifcos.py. P.
+- IPMSC, *International Property Measurement Standards: All Buildings*, effective 15 January 2023 (copyright 2022),
+  rics.org PDF. P.
+- DIN 277:2021-08 (sold): secondary weka.de "Eine fast ganz neue DIN 277"; bauprofessor.de "Verkehrsfläche". S.
+- ANSI/BOMA Z65.1-2017 (sold): secondary Archibus help "BOMA 2017"; Extreme Measures "BOMA office overview". S.
+- ISO 9836:2017 (sold, withdrawn): status from retailer and catalogue listings via search. S/U.
+- NCES, *Postsecondary Education Facilities Inventory and Classification Manual (FICM)*, NCES 2006-160, May 2006,
+  sections 3.2.1, 3.2.2, 3.2.5. P.
+- dRofus help, "Area overview and functional analysis", help.drofus.com. S. Other tools (BriefBuilder, Affinity,
+  Codebook, Onuma, Archicad, Revit): vendor or listing pages via search. S/U.
+- Richard Muther & Associates, RMA Planning Guide 1111, "Procedure for Making Relationship Diagrams", 2002. P.
+- US Department of Veterans Affairs, PG-18-9 Space Planning Criteria, chapters 110 and 204, 1 March 2022, wbdg.org. P.
+- Australasian Health Infrastructure Alliance, AusHFG Part B, HPU 0190, Revision 7.0, August 2022 (third-party copy). P.
+- HM Treasury, *The Green Book*, 2026 edition, assets.publishing.service.gov.uk (address titled 2022 updated links). P.
+- Arroyo, P., Tommelein, I. D., Ballard, G., "Comparing Weighting Rating and Calculating vs. Choosing By Advantages to
+  Make Design Choices", Proc. IGLC-22, Oslo, June 2014, pp. 401-412. P.
+- Suhr, J., *The Choosing By Advantages Decisionmaking System*, Quorum, 1999. Not read (sold).
