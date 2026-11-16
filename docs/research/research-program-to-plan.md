@@ -192,6 +192,12 @@ its 45 documented features are inventoried and mapped onto these phases in
 `research-program-to-plan/anthropocity-features.md`; the algorithms they need are researched in
 `research-program-to-plan/algorithms.md`.
 
+**What followed (2026-11-16).** V179's spec, budgets and tests amended (decisions 1 and 2). Work orders for
+V234 (the graph engine, `docs/work-orders/v234/`), V235 (graph analysis and user paths, `v235/`) and V236 (the
+layout view, `v236/`), each test passing against an uncommitted reference and failing against the empty file.
+V233 and V238 have no phase of their own (V179 and V231 carry them); V237 waits for V177. PIPELINE rows 233 to
+238.
+
 1. **One model.** Extend V179's programme and relation records now (rewrite its spec and tests before Cline
    builds it), so V233 and V234 are V179's records grown, not new ones. Recommended: yes.
 2. **What a programme item and a relation carry.** Item: the brief fields (department, level preference,
