@@ -20,7 +20,7 @@ after each one. Scores are from `../ROUTING.md` (files, logic, understanding, ju
 
 ---
 
-## [ ] WO-01 [Cline] `bimIntProgramItem(raw)`
+## [x] WO-01 [Cline] `bimIntProgramItem(raw)`
 
 - **It must:** SPEC 4 WO-01. Example: `{use: ' Bedroom ', count: 2.7, areaMin: 14, areaMax: 10}` gives `use: 'Bedroom'`, `count: 2`, `areaMin: 10`, `areaMax: 14`.
 - **May use:** nothing.
@@ -30,7 +30,7 @@ after each one. Scores are from `../ROUTING.md` (files, logic, understanding, ju
 
 ---
 
-## [ ] WO-02 [Cline] `bimIntRelation(raw)`
+## [x] WO-02 [Cline] `bimIntRelation(raw)`
 
 - **It must:** SPEC 4 WO-02.
 - **May use:** nothing.
@@ -40,7 +40,7 @@ after each one. Scores are from `../ROUTING.md` (files, logic, understanding, ju
 
 ---
 
-## [ ] WO-03 [Cline] `bimIntInside(p, poly)`
+## [x] WO-03 [Cline] `bimIntInside(p, poly)`
 
 - **It must:** SPEC 4 WO-03: the even-odd crossing test, true in the room, false in a concave notch.
 - **May use:** nothing.
@@ -50,7 +50,7 @@ after each one. Scores are from `../ROUTING.md` (files, logic, understanding, ju
 
 ---
 
-## [ ] WO-04 [Cline] `bimIntSharedLength(pa, pb, tol)`
+## [x] WO-04 [Cline] `bimIntSharedLength(pa, pb, tol)`
 
 - **It must:** SPEC 4 WO-04. Example: two 4 m deep rooms either side of a 0.2 m wall share 4 with `tol` 0.3, 0 with `tol` 0.1.
 - **May use:** nothing.
@@ -60,7 +60,7 @@ after each one. Scores are from `../ROUTING.md` (files, logic, understanding, ju
 
 ---
 
-## [ ] WO-05 [Cline] `bimIntDoorLinks(rooms, doors, reach)`
+## [x] WO-05 [Cline] `bimIntDoorLinks(rooms, doors, reach)`
 
 - **It must:** SPEC 4 WO-05: the left side is `center + (-dir[1], dir[0]) / length * reach`.
 - **May use:** `bimIntInside` (WO-03).
@@ -70,7 +70,7 @@ after each one. Scores are from `../ROUTING.md` (files, logic, understanding, ju
 
 ---
 
-## [ ] WO-06 [Cline] `bimIntDistances(links, from, cost)`
+## [x] WO-06 [Cline] `bimIntDistances(links, from, cost)`
 
 - **It must:** SPEC 4 WO-06: Dijkstra; a room not reached is absent from the answer, never 0.
 - **May use:** nothing.
@@ -80,7 +80,7 @@ after each one. Scores are from `../ROUTING.md` (files, logic, understanding, ju
 
 ---
 
-## [ ] WO-07 [Cline] `bimIntCheck(rel, facts)`
+## [x] WO-07 [Cline] `bimIntCheck(rel, facts)`
 
 - **It must:** SPEC 4 WO-07, every status and reason word for word.
 - **May use:** nothing.
@@ -90,7 +90,7 @@ after each one. Scores are from `../ROUTING.md` (files, logic, understanding, ju
 
 ---
 
-## [ ] WO-08 [Cline] `bimIntMatch(items, rooms)`
+## [x] WO-08 [Cline] `bimIntMatch(items, rooms)`
 
 - **It must:** SPEC 4 WO-08: `{id, use, need, have, rooms, offArea, status}` per item.
 - **May use:** nothing.
@@ -100,7 +100,7 @@ after each one. Scores are from `../ROUTING.md` (files, logic, understanding, ju
 
 ---
 
-## [ ] WO-09 [Cline] `bimIntMinWidth(widthM, minIn)`
+## [x] WO-09 [Cline] `bimIntMinWidth(widthM, minIn)`
 
 - **It must:** SPEC 4 WO-09.
 - **May use:** nothing.

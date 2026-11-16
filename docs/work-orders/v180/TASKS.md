@@ -18,7 +18,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-01 [Cline] `bimClrRect(c, w, d, rot)`
+## [x] WO-01 [Cline] `bimClrRect(c, w, d, rot)`
 
 - **It must:** SPEC 5 WO-01: the corners of a w by d rectangle centred on c=[x,z], turned by rot radians, in the order (-w/2,-d/2), (w/2,-d/2), (w/2,d/2), (-w/2,d/2) of its own axes, each turned by (x cos - z sin, x sin + z cos).
 - **May use:** nothing.
@@ -28,7 +28,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-02 [Cline] `bimClrZone(it, front, side)`
+## [x] WO-02 [Cline] `bimClrZone(it, front, side)`
 
 - **It must:** SPEC 5 WO-02: the zone in front of an item {center, w, d, rot}: a rectangle 'front' deep along the item's local +z, starting at its front face, as wide as the item plus 'side' each side, turned with it: centre = center + (-sin rot, cos rot) * (d/2 + front/2). null when front is not above 0.
 - **May use:** bimClrRect (WO-01).
@@ -38,7 +38,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-03 [Cline] `bimClrOverlap(a, b)`
+## [x] WO-03 [Cline] `bimClrOverlap(a, b)`
 
 - **It must:** SPEC 5 WO-03: true when two convex polygons overlap, by the separating axis test on every edge normal of both; projections that only touch (within 1e-9) do not overlap. false when either has fewer than 3 points.
 - **May use:** nothing.
@@ -48,7 +48,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-04 [Cline] `bimClrConflicts(items, obstacles)`
+## [x] WO-04 [Cline] `bimClrConflicts(items, obstacles)`
 
 - **It must:** SPEC 5 WO-04: for each item {id, body, zone} with a zone, in order: each other item whose body overlaps the zone, then each obstacle {id, poly} that does, as {item, with}. Zones are never tested against zones.
 - **May use:** bimClrOverlap (WO-03).
@@ -58,7 +58,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-05 [Cline] `bimClrCircleFits(poly, c, r)`
+## [x] WO-05 [Cline] `bimClrCircleFits(poly, c, r)`
 
 - **It must:** SPEC 5 WO-05: true when the centre is inside the polygon (even-odd) and its distance to every edge segment is at least r - 1e-9; false for r not above 0 or fewer than 3 points.
 - **May use:** nothing.
@@ -68,7 +68,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-06 [Cline] `bimClrRule(rule, m)`
+## [x] WO-06 [Cline] `bimClrRule(rule, m)`
 
 - **It must:** SPEC 5 WO-06: {clause, edition} (strings, else '') plus status: 'not evaluated' unless rule.minIn and m are numbers; else 'meets' when m / 0.0254 >= minIn - 1e-9, else 'below', and measuredIn rounded to 2 places.
 - **May use:** nothing.
