@@ -22,20 +22,20 @@ after each one. Scores are from `../ROUTING.md` (files, logic, understanding, ju
 
 ## [ ] WO-01 [Cline] `bimIntProgramItem(raw)`
 
-- **It must:** SPEC 4 WO-01. Example: `{use: ' Bedroom ', count: 2.7, areaMin: 14, areaMax: 10}` gives `use: 'Bedroom'`, `count: 2`, `areaMin: 10`, `areaMax: 14`.
+- **It must:** SPEC 4 WO-01 (amended 2026-11-16: the brief fields). Example: `{use: ' Bedroom ', count: 2.7, areaMin: 14, areaMax: 10}` gives `use: 'Bedroom'`, `count: 2`, `areaMin: 10`, `areaMax: 14`, and the new fields at their defaults.
 - **May use:** nothing.
 - **Files:** `src/js/engine/bim/interiors.js`, `docs/work-orders/v179/v179.test.mjs`
-- **Budget:** 40
+- **Budget:** 70
 - **Test:** the cases named `WO-01 ...` in `docs/work-orders/v179/v179.test.mjs`. **Score:** 0+0+0+0+1+0 = 1.
 
 ---
 
 ## [ ] WO-02 [Cline] `bimIntRelation(raw)`
 
-- **It must:** SPEC 4 WO-02.
+- **It must:** SPEC 4 WO-02 (amended 2026-11-16: eight relation kinds, strength, reason, status).
 - **May use:** nothing.
 - **Files:** `src/js/engine/bim/interiors.js`, `docs/work-orders/v179/v179.test.mjs`
-- **Budget:** 30
+- **Budget:** 50
 - **Test:** the cases named `WO-02 ...` in `docs/work-orders/v179/v179.test.mjs`. **Score:** 0+0+0+0+1+0 = 1.
 
 ---
@@ -82,10 +82,10 @@ after each one. Scores are from `../ROUTING.md` (files, logic, understanding, ju
 
 ## [ ] WO-07 [Cline] `bimIntCheck(rel, facts)`
 
-- **It must:** SPEC 4 WO-07, every status and reason word for word.
+- **It must:** SPEC 4 WO-07, every status and reason word for word (amended 2026-11-16: rejected relations, access, four kinds not measured).
 - **May use:** nothing.
 - **Files:** `src/js/engine/bim/interiors.js`, `docs/work-orders/v179/v179.test.mjs`
-- **Budget:** 50
+- **Budget:** 70
 - **Test:** the cases named `WO-07 ...` in `docs/work-orders/v179/v179.test.mjs`. **Score:** 0+0+0+0+1+0 = 1.
 
 ---
