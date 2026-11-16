@@ -142,5 +142,5 @@ evaluated or only suggested, rejected relations left out; a fixed layout, so the
 Claude's: SPEC part 5 WO-12.
 
 Done 2026-11-16. I2 to I4's orders were already written (`v180/`, `v181/`, `v182/`, 2026-11-14), each `[Cline]` task
-naming its file and test. The records: PIPELINE row 179, the engineering log, QUEUE. Notion's renaming (V177-V180 to
-V179-V182) is the owner's to do or to ask for in a session with the Notion connector.
+naming its file and test. The records: PIPELINE row 179, the engineering log, QUEUE. Notion: the tasks already carry
+the new names (V179 to V182); V179's and V180's tasks are In Progress with PR #113 under Pull requests.
