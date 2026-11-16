@@ -29,6 +29,7 @@ import {
   bimDispNum, bimObjTypeLabel, bimPropGroup, bimPropLen, bimPropLenText, bimPropRow, bimPropText
 } from '../properties/palette.js';
 import { bimUsageLibraryHtml, bimUsagePropsHtml } from '../properties/usages.js';
+import { bimIntPropsHtml } from '../properties/programme.js';
 import { bimStdPropsHtml } from '../properties/site-standards.js';
 import { bimGeoPropsHtml, bimMapPropsHtml } from '../properties/map-address-site-data.js';
 import {
@@ -228,6 +229,7 @@ import { bimNoteHex } from '../testing/hooks-view-gizmo.js';
     /* __acad3dV166b: the active level's floor loads and the frame's settings are in Analyze's Frame
        analysis, the project's areas by usage in its Areas by usage. The usages are the project's own --
        the rooms, floors and masses take them, Colour by and the schedules read them -- so they are here. */
+    h+=bimPTab('project',bimPropGroup('Programme',bimIntPropsHtml()));   /* __acad3dV179: the building's programme and relations */
     h+=bimPTab('project',bimPropGroup('Usages',bimUsageLibraryHtml()));   /* __acad3dV131 */
     h+=bimPTab('project',bimPropGroup('Statistics',srows));
     h+=bimPTab('project',bimPropGroup('History',bimHistHtml()));   /* __acad3dV146 */

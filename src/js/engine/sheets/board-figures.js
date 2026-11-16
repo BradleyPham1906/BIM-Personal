@@ -1,5 +1,6 @@
 import { A3D } from '../core/state.js';
 import { A3D_SNAP } from '../drawing/plan-mode-sketch.js';
+import { bimIntBubbleFig } from '../bim/interiors-model.js';
 import { A3D_CLB, bimClbCard, bimClbE, bimClbHtml } from '../site-analysis/climate-board.js';
 import { bimLbSrcKept, bimLbSrcWords } from '../ladybug/sources.js';
 import { BIM_LB_FIGS } from '../ladybug/figures.js';
@@ -28,7 +29,7 @@ import { bimBdsHtml } from './board-design.js';
      list made at load: a project is read before this file has run (bimPresValid). */
   function bimFigCat(){
     if(bimFigCat.L)return bimFigCat.L;
-    var I='Indicators',C='Climate',L='Comfort and design days (Ladybug)',R='Environmental risk',Z='Zoning and yield',A='Access and circulation',P='People and place';
+    var I='Indicators',N='Interiors',C='Climate',L='Comfort and design days (Ladybug)',R='Environmental risk',Z='Zoning and yield',A='Access and circulation',P='People and place';
     bimFigCat.L=[
       ['clim.kpis','climate',I,'Climate and risk indicators'],['zn.kpis','zoning',I,'Zoning and yield indicators'],
       ['acc.kpis','access',I,'Access indicators'],['ppl.kpis','access',I,'People indicators'],
@@ -47,6 +48,7 @@ import { bimBdsHtml } from './board-design.js';
       ['acc.streets','access',A,'Streets and frontage'],['acc.stops','access',A,'Transit stops'],['acc.conn','access',A,'Street connectivity'],
       ['ppl.compare','access',P,'The tract against its county and state'],['ppl.commute','access',P,'How people get to work'],
       ['ppl.pyramid','access',P,'Age and sex'],
+      ['int.bubble','',N,'Programme bubble diagram'],   /* __acad3dV179 */
       ['text','','Text','A heading']
     ].map(function(r){return {f:r[0],kind:r[1],cat:r[2],name:r[3],kpis:/\.kpis$/.test(r[0])};});
     return bimFigCat.L;
@@ -55,6 +57,7 @@ import { bimBdsHtml } from './board-design.js';
   /* where its data comes from, when it has none */
   function bimFigHint(E){
     if(!E)return 'This figure is not known to this version of the app.';
+    if(/^int\./.test(E.f))return 'No programme yet: with nothing selected, Properties, Project, Programme, Add use.';   /* __acad3dV179 */
     if(/^lb\./.test(E.f))return 'Ladybug has not run: Analyze, Climate, open a weather file or get a year of hours, then Run.';
     if(E.kind==='climate')return 'No climate and risk data: Analyze, Climate, Get climate and risk.';
     if(E.kind==='zoning')return 'No zoning: Analyze, Legal and regulatory, Enter zoning.';
@@ -142,6 +145,7 @@ import { bimBdsHtml } from './board-design.js';
   /* what one figure is drawn from, in a render: the boards read once each */
   function bimFigSrc(ctx,f,o){
     var E=bimFigEntry(f);
+    if(f==='int.bubble')return bimIntBubbleFig();   /* __acad3dV179: drawn from the programme, not read from a board */
     if(!E||!E.kind)return null;
     if(/^lb\./.test(f)&&o&&o.cond)return bimFigLb(f,o);
     if(!ctx.caps[E.kind])ctx.caps[E.kind]=bimFigCapture(E.kind,ctx.narrow);

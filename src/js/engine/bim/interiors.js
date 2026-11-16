@@ -8,48 +8,37 @@
      evaluated, never guessed. Plan points are [x, z]. Each function is a work order in docs/work-orders/v179/TASKS.md,
      added below as it is built; none uses another file's names. */
 function bimIntProgramItem(raw) {
-  var id = (raw && raw.id !== undefined && raw.id !== null) ? String(raw.id).trim() : '';
-  var use = (raw && raw.use !== undefined && raw.use !== null) ? String(raw.use).trim() : '';
-  var count = (raw && typeof raw.count === 'number' && isFinite(raw.count) && raw.count >= 1) ? Math.floor(raw.count) : 1;
-  var areaMin = (raw && typeof raw.areaMin === 'number' && isFinite(raw.areaMin) && raw.areaMin >= 0) ? raw.areaMin : null;
-  var areaMax = (raw && typeof raw.areaMax === 'number' && isFinite(raw.areaMax) && raw.areaMax >= 0) ? raw.areaMax : null;
-  // swapped when both are set and out of order
-  if (areaMin !== null && areaMax !== null && areaMin > areaMax) {
-    var tmp = areaMin;
-    areaMin = areaMax;
-    areaMax = tmp;
+  var r = raw || {};
+  function str(v) { return typeof v === 'string' ? v : ''; }
+  function trim(v) { return typeof v === 'string' ? v.replace(/^\s+|\s+$/g, '') : ''; }
+  function area(v) { return (typeof v === 'number' && isFinite(v) && v >= 0) ? v : null; }
+  var count = (typeof r.count === 'number' && isFinite(r.count) && r.count >= 1) ? Math.floor(r.count) : 1;
+  var areaMin = area(r.areaMin), areaMax = area(r.areaMax), tmp;
+  if (areaMin !== null && areaMax !== null && areaMin > areaMax) { tmp = areaMin; areaMin = areaMax; areaMax = tmp; }
+  var level = (typeof r.level === 'number' && isFinite(r.level)) ? Math.floor(r.level) : null;
+  var status = (r.status === 'unknown' || r.status === 'assumed' || r.status === 'confirmed') ? r.status : 'unknown';
+  var params = {}, k;
+  if (r.params && typeof r.params === 'object' && Object.prototype.toString.call(r.params) === '[object Object]') {
+    for (k in r.params) {
+      if (Object.prototype.hasOwnProperty.call(r.params, k) && typeof r.params[k] === 'number' && isFinite(r.params[k])) params[k] = r.params[k];
+    }
   }
-  var rationale = (raw && raw.rationale !== undefined && raw.rationale !== null) ? String(raw.rationale) : '';
-  if (count < 1) count = 1;
-  return { id: id, use: use, count: count, areaMin: areaMin, areaMax: areaMax, rationale: rationale };
+  var open = (r.open === 'open' || r.open === 'closed' || r.open === 'auto') ? r.open : 'auto';
+  return { id: str(r.id), use: trim(r.use), count: count, areaMin: areaMin, areaMax: areaMax, rationale: str(r.rationale),
+    building: trim(r.building), level: level, group: trim(r.group), status: status, source: str(r.source), params: params, open: open };
 }
 function bimIntRelation(raw) {
-  var kind;
-  var rel;
-  var nearM;
-  if (!raw || raw.a === undefined || raw.a === null || raw.b === undefined || raw.b === null ||
-      raw.a.trim() === '' || raw.b.trim() === '' || raw.a.trim() === raw.b.trim()) {
-    return null;
-  }
-  // kind one of the three else 'desired'
-  if (raw.kind === 'next' || raw.kind === 'desired' || raw.kind === 'forbidden' || raw.kind === 'required') {
-    kind = raw.kind;
-  } else {
-    kind = 'desired';
-  }
-  // rel one of the three else 'next'
-  if (raw.rel === 'next' || raw.rel === 'near' || raw.rel === 'apart') {
-    rel = raw.rel;
-  } else {
-    rel = 'next';
-  }
-  // nearM a finite number above 0 else 15
-  if (raw.nearM !== undefined && raw.nearM !== null && isFinite(raw.nearM) && raw.nearM > 0) {
-    nearM = raw.nearM;
-  } else {
-    nearM = 15;
-  }
-  return { a: raw.a.trim(), b: raw.b.trim(), kind: kind, rel: rel, nearM: nearM };
+  if (!raw || typeof raw.a !== 'string' || typeof raw.b !== 'string' || raw.a === '' || raw.b === '' || raw.a === raw.b) return null;
+  var kinds = { required: 1, desired: 1, forbidden: 1 };
+  var rels = { next: 1, near: 1, apart: 1, access: 1, visual: 1, acoustic: 1, secure: 1, sequence: 1 };
+  var stats = { suggested: 1, approved: 1, rejected: 1 };
+  var kind = kinds.hasOwnProperty(raw.kind) ? raw.kind : 'desired';
+  var rel = rels.hasOwnProperty(raw.rel) ? raw.rel : 'next';
+  var nearM = (typeof raw.nearM === 'number' && isFinite(raw.nearM) && raw.nearM > 0) ? raw.nearM : 15;
+  var strength = (raw.strength === 1 || raw.strength === 2 || raw.strength === 3) ? raw.strength : 2;
+  var reason = typeof raw.reason === 'string' ? raw.reason.replace(/^\s+|\s+$/g, '') : '';
+  var status = stats.hasOwnProperty(raw.status) ? raw.status : 'approved';
+  return { a: raw.a, b: raw.b, kind: kind, rel: rel, nearM: nearM, strength: strength, reason: reason, status: status };
 }
 function bimIntInside(p, poly) {
   if (!poly || poly.length === 0) {
@@ -287,6 +276,10 @@ function bimIntCheck(rel, facts) {
     return { status: 'not evaluated', why: 'not a relation' };
   }
   
+  if (rel.status === 'rejected') {
+    return { status: 'not evaluated', why: 'the relation was rejected' };
+  }
+
   // either room missing from facts.rooms: not evaluated, 'a room is not in the model'
   if (!facts || !facts.rooms || facts.rooms[rel.a] === undefined || facts.rooms[rel.b] === undefined) {
     return { status: 'not evaluated', why: 'a room is not in the model' };
@@ -347,10 +340,17 @@ function bimIntCheck(rel, facts) {
       // distance exceeds nearM, show the actual route distance
       var formattedDist = Math.round(distAB * 10) / 10;
       var formatted = formattedDist.toFixed(1);
-      return { status: 'not met', why: 'route ' + formatted + ' m, over 5 m' };
+      return { status: 'not met', why: 'route ' + formatted + ' m, over ' + nearM + ' m' };
     }
   }
   
+  if (rel.rel === 'access') {
+    if (doorCount !== null && doorCount > 0) return { status: 'met', why: 'a door between them' };
+    return { status: 'not met', why: 'no door between them' };
+  }
+  if (rel.rel === 'visual' || rel.rel === 'acoustic' || rel.rel === 'secure' || rel.rel === 'sequence') {
+    return { status: 'not evaluated', why: 'not measured in this phase' };
+  }
   return { status: 'not evaluated', why: 'not a relation' };
 }
 function bimIntMatch(items, rooms) {
@@ -379,15 +379,9 @@ function bimIntMatch(items, rooms) {
         if (rm.use === use) {
           sameUseRooms.push(rm.id);
           // check area
-          if (rm.area === undefined || rm.area === null || isNaN(rm.area)) {
-            // not a number
-          } else {
-            if (areaMin !== null && rm.area < areaMin) {
-              offArea.push(rm.id);
-            }
-            if (areaMax !== null && rm.area > areaMax) {
-              offArea.push(rm.id);
-            }
+          if (typeof rm.area !== 'number' || !isFinite(rm.area) ||
+              (areaMin !== null && rm.area < areaMin) || (areaMax !== null && rm.area > areaMax)) {
+            offArea.push(rm.id);
           }
           have++;
         }
@@ -431,3 +425,7 @@ function bimIntMinWidth(widthM, minIn) {
     return 'below';
   }
 }
+export {
+  bimIntCheck, bimIntDistances, bimIntDoorLinks, bimIntMatch, bimIntProgramItem, bimIntRelation,
+  bimIntSharedLength
+};

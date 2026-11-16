@@ -9,12 +9,11 @@ The owner's decisions (2026-11-14): for every phase below, all as its research r
 overrule any there). V177's D1 to D4 and That Open's four were answered 2026-11-13. The phases are numbered in one
 sequence, 175c to 238 (228 to 232 are algorithmic design, the owner's thirteen decisions, 2026-11-15; 233 to 238 program to plan, the owner's ten decisions, 2026-11-16), in `docs/dev/PIPELINE.md`; there are no "later" rows.
 
-## Ready for Cline, in order (247 tasks)
+## Ready for Cline, in order (238 tasks)
 
 | Phase | What | Tasks | Where | Tests |
 |---|---|---|---|---|
 | v178 | Presentation P3, the report (Site Analysis and DA), styles, export | WO-01 to WO-12 (12) | `v178/TASKS.md` | `v178/v178.test.mjs` |
-| v179 | Interiors I1, programme and adjacency (amended 2026-11-16: the brief fields and eight relation kinds) | WO-01 to WO-09 (9) | `v179/TASKS.md` | `v179/v179.test.mjs` |
 | v180 | Interiors I2, clearance and ergonomics | WO-01 to WO-06 (6) | `v180/TASKS.md` | `v180/v180.test.mjs` |
 | v181 | Interiors I3, circulation and escape routes | WO-01 to WO-05 (5) | `v181/TASKS.md` | `v181/v181.test.mjs` |
 | v182 | Interiors I4, sightlines and views | WO-01 to WO-05 (5) | `v182/TASKS.md` | `v182/v182.test.mjs` |

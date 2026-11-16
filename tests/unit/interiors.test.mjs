@@ -1,17 +1,13 @@
-/* V179's work-order tests (docs/work-orders/v179/SPEC.md, WO-01 to WO-09): the pure functions of
-   src/js/engine/bim/interiors.js, Interiors I1 (programme and adjacency) and the first measurement of I2.
-
-   Outside tests/unit/ while the work orders are open. Run them with:
-     node --test docs/work-orders/v179/v179.test.mjs
-     node --test --test-name-pattern="WO-04" docs/work-orders/v179/v179.test.mjs
-   A function not built yet fails its own cases and no others. The file is read as text. */
+/* Interiors I1 (V179, docs/work-orders/v179/SPEC.md): the pure functions of src/js/engine/bim/interiors.js
+   (WO-01 to WO-09, read as text), then the facts from the model and the bubble layout of
+   src/js/engine/bim/interiors-model.js (WO-10, WO-11, through the engine). */
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..', '..');
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 const NAMES = ['bimIntProgramItem', 'bimIntRelation', 'bimIntInside', 'bimIntSharedLength', 'bimIntDoorLinks', 'bimIntDistances',
   'bimIntCheck', 'bimIntMatch', 'bimIntMinWidth'];
 function load() {
@@ -148,4 +144,54 @@ test('WO-09 a width in metres against a minimum in inches: a measurement, not a 
   assert.deepEqual([31.9, 32, 32.1].map((i) => m(i * 0.0254, 32)), ['below', 'meets', 'meets']);
   assert.equal(m(null, 32), 'not evaluated');
   assert.equal(m(0.9, undefined), 'not evaluated');
+});
+
+// ---- WO-10, WO-11: bim/interiors-model.js, through the engine ----
+import { loadEngine } from './helpers/engine.mjs';
+const E = loadEngine();
+
+test('WO-10 facts by use: a shared wall, a door, a route; one level only; the outside of each level apart', () => {
+  const rooms = [
+    { id: 'A', use: 'Kitchen', pts: A.pts, levelId: 'L0' },
+    { id: 'B', use: 'Dining', pts: B.pts, levelId: 'L0' },
+    { id: 'C', use: 'Office', pts: C.pts, levelId: 'L0' },
+    { id: 'D', use: 'Bedroom', pts: A.pts, levelId: 'L1' }
+  ];
+  // a door in the wall between A and B at x 4.1, its dir along the wall (+z): left is -x (A), right is +x (B)
+  const doors = [{ id: 'd1', center: [4.1, 2], dir: [0, 1], width: 0.9, levelId: 'L0' }];
+  const r = E.bimIntFactsFrom(rooms, doors, 0.5);
+  assert.deepEqual(r.facts.rooms, { Kitchen: 1, Dining: 1, Office: 1, Bedroom: 1 });
+  near(r.facts.shared['Dining|Kitchen'], 4);
+  near(r.facts.shared['Dining|Office'], 2);
+  assert.equal(r.facts.shared['Bedroom|Kitchen'], undefined, 'another level shares nothing');
+  assert.deepEqual(r.facts.doors, { 'Dining|Kitchen': 1 });
+  near(r.facts.dist.Kitchen.Dining, 2.1 + 1.6, 1e-9);
+  assert.equal(r.facts.dist.Kitchen.Office, undefined, 'no door to the office: no route');
+  assert.deepEqual(E.bimIntCheck(E.bimIntRelation({ a: 'Kitchen', b: 'Dining', rel: 'near', nearM: 3 }), r.facts),
+    { status: 'not met', why: 'route 3.7 m, over 3 m' });
+  assert.deepEqual(E.bimIntCheck(E.bimIntRelation({ a: 'Office', b: 'Dining', rel: 'next' }), r.facts),
+    { status: 'met', why: 'a shared wall' });
+  assert.deepEqual(E.bimIntCheck(E.bimIntRelation({ a: 'Office', b: 'Dining', rel: 'access' }), r.facts),
+    { status: 'not met', why: 'no door between them' });
+});
+
+test('WO-10 a programme read from a building: bad items and relations dropped, nothing written', () => {
+  const b = { programme: { items: [{ id: 'p1', use: 'Kitchen' }, { use: 'no id' }], relations: [{ a: 'Kitchen', b: 'Kitchen' }, { a: 'Kitchen', b: 'Dining' }] } };
+  const before = JSON.stringify(b);
+  const P = E.bimIntProgOf(b);
+  assert.deepEqual(P.items.map((x) => x.id), ['p1']);
+  assert.equal(P.relations.length, 1);
+  assert.equal(JSON.stringify(b), before);
+  assert.deepEqual(E.bimIntProgOf(null), { items: [], relations: [] });
+});
+
+test('WO-11 the bubble layout: the same programme draws the same, circles do not overlap, apart is farther than next', () => {
+  const items = [{ use: 'K', r: 2 }, { use: 'D', r: 2 }, { use: 'G', r: 2 }, { use: 'B', r: 1.5 }];
+  const rels = [{ a: 'K', b: 'D', rel: 'next' }, { a: 'B', b: 'G', rel: 'apart' }];
+  const P = E.bimIntBubbleLayout(items, rels), Q = E.bimIntBubbleLayout(items, rels);
+  assert.deepEqual(P, Q);
+  const d = (i, j) => Math.hypot(P[i].x - P[j].x, P[i].y - P[j].y);
+  for (let i = 0; i < 4; i++) for (let j = i + 1; j < 4; j++) assert.ok(d(i, j) >= P[i].r + P[j].r - 1e-3, i + ' overlaps ' + j);
+  assert.ok(d(3, 2) - 3.5 > d(0, 1) - 4, 'apart is farther than next');
+  assert.deepEqual(E.bimIntBubbleLayout([], []), []);
 });

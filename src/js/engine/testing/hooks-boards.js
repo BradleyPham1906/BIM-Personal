@@ -1,6 +1,10 @@
+import { A3D } from '../core/state.js';
+import { bimPolyArea } from '../bim/rooms.js';
+import { bimIntBubbleFig, bimIntBuilding, bimIntReport } from '../bim/interiors-model.js';
 import { bimApplyUnitState, bimUnitState } from '../properties/palette.js';
 import { bimResLayers } from '../analysis/results-layers.js';
 import { A3D_CLB, bimClbEl, bimClbOpen } from '../site-analysis/climate-board.js';
+import { refreshProps } from '../site-analysis/panel.js';
 import { A3D_REV, setA3D_REV } from '../core/objects-save.js';
 import { bimLtMenuClose } from '../sheets/layout-tabs.js';
 import { bimBoardById, bimBoardHtmlFor } from '../sheets/boards.js';
@@ -86,3 +90,23 @@ import {
   window.__a3dLiveBoard={state:function(n){return bimLbdState(n,null);},cols:bimLbdCols,rows:function(s){return bimLbdRows(s);},
     schedMenu:function(){return bimLbdSchedMenu(40,40);},kpiMenu:function(){return bimLbdKpiMenu(40,40);},chartMenu:function(){return bimLbdChartMenu(40,40);},
     run:function(id){return bimLbdRun(id);},addLayer:function(R){bimResLayers().unshift(R);setA3D_REV(A3D_REV+1);return R.id;},redraw:function(){bimBrdRedraw();return true;}};
+  /* __acad3dV179: Interiors I1, the programme against the model */
+  window.__acad3dV179='programme,relations,bubble';
+  window.__a3dIntReport=function(){
+    var r=bimIntReport();
+    return JSON.parse(JSON.stringify({items:r.items,relations:r.relations,matches:r.matches,checks:r.checks,rooms:r.rooms.length,warnings:r.warnings,facts:r.facts||null}));
+  };
+  /* rooms {name, pts, open} on the active building's first level, as the model's only objects */
+  window.__a3dIntRooms=function(list){
+    var b=bimIntBuilding(),lv=null,i,o,out=[];
+    for(i=0;i<A3D.levels.length;i++)if(A3D.levels[i].buildingId===b.id){lv=A3D.levels[i].id;break;}
+    for(i=0;i<list.length;i++){
+      o={id:'int-r'+i,t:'room',name:list[i].name,pts:list[i].pts,y:0,area:bimPolyArea(list[i].pts),levelId:lv,col:'#888888'};
+      if(list[i].open)o.region={seed:list[i].pts[0],y:0,want:'all',members:[],sig:'',open:true};
+      out.push(o);
+    }
+    A3D.objs=out;A3D.sel=null;A3D.sel2=null;A3D.selSet=[];
+    refreshProps();
+    return lv;
+  };
+  window.__a3dIntBubble=function(){var F=bimIntBubbleFig();return F?{title:F.title,dek:F.dek,body:F.body}:null;};
