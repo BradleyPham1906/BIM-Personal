@@ -18,7 +18,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-01 [Cline] `bimEgGrid(poly, obstacles, cell)`
+## [x] WO-01 [Cline] `bimEgGrid(poly, obstacles, cell)`
 
 - **It must:** SPEC 5 WO-01: the grid over the room's bounding box: x0, z0 its minimum corner, nx = ceil((maxX - x0)/cell - 1e-9), nz likewise; free[j*nx + i] is 1 when the cell centre (x0 + (i+0.5)cell, z0 + (j+0.5)cell) is inside the room and inside no obstacle polygon (even-odd test, written in this file as bimEgInside(p, poly)), else 0. null for fewer than 3 points or a cell not above 0. Answers {x0, z0, cell, nx, nz, free (Uint8Array)}.
 - **May use:** bimEgInside (this task).
