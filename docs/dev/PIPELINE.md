@@ -33,8 +33,8 @@ requires command mapping, full app regressions and owner review.
 
 **Read this first in a new session.** One page. The detail lives in the docs listed at the bottom.
 
-    canvas_v10.html   4445857 bytes (verified from the current working tree, 2026-11-15)
-    sha256            c774c5b4df5ea11470ce16a64053731085b18290a834b9086b4eae4c58043c5a
+    canvas_v10.html   4446912 bytes (verified from the current working tree, 2026-11-15)
+    sha256            235674e3df366887383737db3e83c8ffd59a693e23b220935e72c81a61cd9aa1
     markers           __acad3dV60 ... __acad3dV172, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
                       __acad3dV121b, __acad3dV124b, __acad3dV166b, __acad3dV166c, __acad3dV166d, __acad3dV171b,
                       __acad3dV171c, __acad3dV171d, __acad3dV172b, __acad3dV172c, __acad3dV172d, __acad3dV172e,
@@ -46,7 +46,7 @@ requires command mapping, full app regressions and owner review.
                       rendered view is (V194), with its glTF addons and Draco's decoder (V195); and BimCraft's IFC
                       engine with Manifold, 5 files, asked only when an IFC file is opened (V196): 24 files in all
     tests             140 suites, 7156 checks, 0 failures after V172f (historical full regression on main 3f0bcbc,
-                      2026-11-07); 245 unit tests (last recorded after V175c step 1; historical count)
+                      2026-11-07); 280 unit tests (npm test, 2026-11-15)
 
     The user guide (V142): every phase updates docs/src/, its log entry and BIM_APP_VERSION, then
     runs tools/dump_catalog.py and tools/build_docs.py. The V142 suite and the Pages workflow
