@@ -1,0 +1,25 @@
+node v22.23.4; plan depth 18 m, corridor 1.8 m, gross over net 1.15; adjacency = a shared wall of 1.0 m or more
+
+The hand-written clinic (12 spaces, 12 required pairs, 3 forbidden):
+
+| method | required met | forbidden broken | worst aspect | worst area deviation | rooms on the corridor |
+|---|---|---|---|---|---|
+| A. treemap, programme order, no corridor | 58% | 0 | 3.3 | 0% | 0% |
+| B. treemap, adjacency order and swaps, no corridor | 83% | 0 | 1.9 | 0% | 0% |
+| C. corridor first, two equal sides, order and swaps | 67% | 0 | 12.8 | 1% | 83% |
+| D. corridor first, a 5 m side and a deep side, order and swaps | 58% | 0 | 21.7 | 19% | 67% |
+| E. double-loaded, 5.5 m rooms, length free, 2.4 m minimum width | 67% | 0 | 2.3 | 181% | 100% |
+
+200 random programmes (12 spaces, 6 to 60 m2, 14 required pairs, 3 forbidden); median [lower quartile, upper quartile]:
+
+| method | required met | forbidden broken | worst aspect | worst area deviation | rooms on the corridor | share with worst aspect over 3 |
+|---|---|---|---|---|---|---|
+| A. treemap, programme order, no corridor | 36% [29, 43] | 1 [0, 1] | 3.1 [2.7, 4.0] | 0% [0, 0] | 0% | 56% |
+| B. treemap, adjacency order and swaps, no corridor | 71% [64, 79] | 0 [0, 0] | 2.7 [2.4, 2.9] | 0% [0, 0] | 0% | 21% |
+| C. corridor first, two equal sides, order and swaps | 50% [43, 57] | 0 [0, 0] | 8.1 [7.4, 9.2] | 8% [2, 14] | 92% | 100% |
+| D. corridor first, a 5 m side and a deep side, order and swaps | 43% [43, 50] | 0 [0, 0] | 7.1 [5.3, 9.1] | 5% [2, 10] | 100% | 100% |
+| E. double-loaded, 5.5 m rooms, length free, 2.4 m minimum width | 50% [50, 57] | 0 [0, 0] | 2.3 [2.3, 2.3] | 89% [66, 120] | 100% | 0% |
+
+
+E gives the plan its own length, so its gross area over the programme varies: median 1.30 [1.26, 1.35] (the others are fixed at 1.15; the clinic: 1.41).
+Time: 2.2 ms per programme for all five methods together (B to E each evaluate about 199 orders).
