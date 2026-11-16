@@ -181,7 +181,70 @@ by programme id for determinism. With R_k = 0 (all rooms equal on k) the score i
 Level: P (Gower, von Luxburg, Muther), the method assembled from them is inference. Confidence: high for the
 similarity, medium for the link rules (no published architectural precedent).
 
-### 2.3 Community detection with a resolution
+### 2.3 Community detection with a resolution (features 25, 26)
+
+**Sources read.** Blondel, Guillaume, Lambiotte, Lefebvre 2008, "Fast unfolding of communities in large
+networks", arXiv 0803.0476 (P: the two phases, equation 2, the note on node order). Traag, Waltman, van Eck
+2019, "From Louvain to Leiden: guaranteeing well-connected communities", arXiv 1810.08473 (P: equations 1 and
+2, section II on badly connected communities, the refinement phase, the fast local move, theta). Reichardt and
+Bornholdt 2006, "Statistical mechanics of community detection", arXiv cond-mat/0603718 (P: the Hamiltonian
+with the gamma-weighted null model, A_ij - gamma p_ij). NetworkX `louvain.py` (main branch, BSD-3-Clause; P:
+defaults resolution 1, threshold 1e-7, seed None, nodes visited in a seeded random shuffle). Licences of the
+reference Leiden code: `leidenalg` (Python) GPL-3.0 (P, LICENSE read); CWTS `networkanalysis` (Java) MIT (P).
+
+**The quality function.** Modularity with resolution (Reichardt and Bornholdt's null model p_ij = k_i k_j / 2m,
+in Traag's notation): H = (1/2m) sum over communities c of [ e_c - gamma K_c^2 / 2m ], with e_c the weight of
+links inside c, K_c the sum of the weighted degrees in c, m the total link weight (P). gamma = 1 is ordinary
+modularity; higher gamma gives more, smaller communities; lower gamma fewer, larger ones (P, Traag). The
+alternative, the Constant Potts Model, H = sum_c [ e_c - gamma n_c(n_c - 1)/2 ], reads gamma as a density
+threshold and avoids modularity's resolution limit (P, Traag); its gamma is not on the same scale.
+
+**Louvain (P).** Start with each node alone. Phase 1: visit nodes in turn; for node i, compute the gain of
+moving it into each neighbour's community (equation 2: needs only the community's inside weight, its total
+degree, i's degree and i's weight into it), move it to the best positive gain (ties by a rule), repeat passes
+until no move improves. Phase 2: collapse each community into one node (inner links become a self-loop),
+then repeat phase 1 on the smaller graph; stop when nothing changes. The authors state that the result
+depends on node order, that order seemed not to matter much for the quality reached, and that it affects time
+(P). With resolution, the gain's second term is multiplied by gamma.
+
+**Leiden (P).** Louvain can return arbitrarily badly connected communities, even internally disconnected
+ones (in their tests up to 25 % badly connected and 16 % disconnected). Leiden adds a refinement phase:
+within each community of the moved partition, start from singletons and merge nodes only with
+sub-communities that are well connected to their community, choosing among improving merges at random
+with a temperature theta (they used 0.01; 0.0005 to 0.1 work); aggregate on the refined partition. Its local
+moving uses a queue: only nodes whose neighbourhood changed are revisited. Guarantees: every community is
+connected (gamma-connected) after each iteration (P).
+
+**Recommended for this app (inference, confidence medium-high).** Louvain with the resolution parameter and
+a connectivity repair, written in ES5 (about 150 lines), deterministic:
+1. Graph: rooms as nodes, adjacency links as weighted edges (strength 1 -> weight 3, 2 -> 2, 3 -> 1, so primary
+   counts most), optionally without bridges (feature 26: "ignore bridges while clustering", from topic 4).
+2. Node order: fixed (programme order, or sorted by id), not shuffled. Ties: lowest community index. This
+   makes the run reproducible without a seed; NetworkX's equivalent is a fixed seed (P).
+3. Phase 1 and phase 2 as Louvain, with gamma from the user's slider (0.2 to 3, default 1).
+4. Repair: after the last level, split any community whose induced subgraph is disconnected into its
+   connected components (a BFS per community). Traag et al. call this fix "unsatisfactory" for large networks
+   because it only fixes the extreme case (P), but at 10 to 200 rooms with a final local-moving pass it is
+   cheap and is what the user sees: no community drawn in two pieces.
+5. Output: a community id per room, the modularity value, and per community its rooms, its total area and
+   its strongest internal link (for naming).
+
+Leiden itself, with theta = 0 (greedy refinement), is an option for later if users see poorly connected
+clusters; with theta > 0 it needs a seeded generator. Writing Leiden from the paper is about 300 lines; its
+reference code in Python is GPL-3.0 and cannot be copied; the Java one is MIT (read as text only if needed).
+
+**Cost.** Louvain is near-linear in edges per pass; at 200 rooms and about 600 links, a few passes of a few
+thousand operations each: under 1 ms. On small graphs the result is sensitive: a single link change can merge
+or split clusters, and several partitions may have nearly equal quality (inference; the "degeneracy" of
+modularity is a known issue, Good, de Montjoye, Clauset 2010, not read: U).
+
+**Failure modes.** Resolution limit of modularity at gamma = 1 (small, clear groups merged in a large graph;
+Fortunato and Barthelemy 2007, cited by Traag, not read: S); disconnected communities (Louvain, fixed by step
+4); order dependence (fixed by step 2, but a different fixed order can give a different answer: say so);
+isolated rooms form singleton communities.
+
+Level: P. Confidence: high for the method, medium for the defaults chosen.
+
 ### 2.4 Bridges, articulation points, hubs, depth, aspect
 ### 2.5 Corridors routed from user paths
 ### 2.6 Stair placement
