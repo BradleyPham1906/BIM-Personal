@@ -21,6 +21,9 @@ import {
 } from '../bim/type-instance-params.js';
 import { bimPolyArea } from '../bim/rooms.js';
 import {
+  bimClrDoorHtml, bimClrIsItem, bimClrPropsHtml, bimClrRoomHtml
+} from '../bim/interiors-clearance-model.js';
+import {
   BIM_ROOM_FIELDS, bimOccDatalist, bimRoomField, bimRoomLoadFactorHint, bimRoomOccupantsText
 } from '../bim/room-data-occupancy.js';
 import { bimDimKind } from '../annotation/dimensions.js';
@@ -399,6 +402,10 @@ import { bimNoteHex } from '../testing/hooks-view-gizmo.js';
     if(o.bim&&o.bim.baseY!==undefined)cons+=bimPropLenText('Base Elevation',o.bim.baseY);
     h+=bimPropGroup('Constraints',cons);
     if(o.asset&&o.asset.k)h+=bimEntPropsHtml(o);   /* __acad3dV169: the asset's sizes and their standards */
+    /* __acad3dV180: clearance: an item's zone, a door's clear width, a room's turning space */
+    if(bimClrIsItem(o))h+=bimClrPropsHtml(o);
+    else if(o.t==='opening'&&o.bim&&o.bim.type==='door')h+=bimClrDoorHtml(o);
+    else if(o.t==='room')h+=bimClrRoomHtml(o);
 
     // ---- Graphics ----
     var gfx='';

@@ -1,10 +1,14 @@
 import { A3D } from '../core/state.js';
+import { mkBoxP } from '../core/mesh-primitives.js';
+import { bimGetActiveLevel } from '../bim/levels-walls-floors.js';
 import { bimPolyArea } from '../bim/rooms.js';
 import { bimIntBubbleFig, bimIntBuilding, bimIntReport } from '../bim/interiors-model.js';
+import { bimClrDoorCheck, bimClrRoomCheck, bimClrScene } from '../bim/interiors-clearance-model.js';
 import { bimApplyUnitState, bimUnitState } from '../properties/palette.js';
 import { bimResLayers } from '../analysis/results-layers.js';
 import { A3D_CLB, bimClbEl, bimClbOpen } from '../site-analysis/climate-board.js';
 import { refreshProps } from '../site-analysis/panel.js';
+import { paint } from '../map/terrain-3d.js';
 import { A3D_REV, setA3D_REV } from '../core/objects-save.js';
 import { bimLtMenuClose } from '../sheets/layout-tabs.js';
 import { bimBoardById, bimBoardHtmlFor } from '../sheets/boards.js';
@@ -30,6 +34,7 @@ import {
 import {
   bimLvAct, bimLvAddNumber, bimLvInsertField, bimLvOverride, bimLvPropsHtml, bimLvSetDp, bimLvTextPatch
 } from '../sheets/live-edit.js';
+import { objById } from '../bim/csg-booleans.js';
 
   /* __acad3dV172b: a board's figures and Edit, for the suite */
   function bimBrdHookErr(e){return {error:String(e&&e.message||e)};}
@@ -110,3 +115,21 @@ import {
     return lv;
   };
   window.__a3dIntBubble=function(){var F=bimIntBubbleFig();return F?{title:F.title,dek:F.dek,body:F.body}:null;};
+  /* __acad3dV180: Interiors I2, clearance on the model */
+  window.__acad3dV180='bodies,zones,doorwidth,turning';
+  /* a furniture or fixture model w by d, 0.8 high, on the active level at [x, z] */
+  window.__a3dClrItem=function(cat,x,z,w,d){
+    var lvl=bimGetActiveLevel(),m=mkBoxP(w,0.8,d),i;
+    for(i=0;i<m.v.length;i++)m.v[i][1]+=0.4;
+    A3D.counts.familyInstance=(A3D.counts.familyInstance||0)+1;
+    var o={id:'a3d-clr-'+(A3D.seq++),t:'solid',name:cat+'_'+A3D.counts.familyInstance,pos:[x,lvl.elev,z],mesh:m,
+      bim:{type:'familyInstance',familyId:'test',familyName:cat,category:cat}};
+    A3D.objs.push(o);paint();
+    return o.id;
+  };
+  window.__a3dClrState=function(){
+    var S=bimClrScene();
+    return {lastZones:A3D.lastZones||0,items:S.items.map(function(it){return {id:it.id,kind:it.kind,w:it.box.w,d:it.box.d,rot:it.box.rot,zone:!!it.zone,blocked:it.blocked.slice()};}),walls:S.walls.length};
+  };
+  window.__a3dClrDoor=function(id){return bimClrDoorCheck(objById(id));};
+  window.__a3dClrRoom=function(id){var C=bimClrRoomCheck(objById(id));return {rule:C.rule,d:C.fit.d};};

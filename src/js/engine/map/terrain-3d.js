@@ -11,6 +11,7 @@ import { drawNorthArrow, drawProperties } from '../site/property.js';
 import { bimTinHeightAt, drawAlignments, drawStationMark } from '../site/alignment-profile.js';
 import { drawGrids } from '../bim/grid-editing.js';
 import { BIM_LW_TO_PX, bimCanvasPatternFill, bimResolveGraphics } from '../bim/type-instance-params.js';
+import { bimClrDrawZones } from '../bim/interiors-clearance-model.js';
 import { drawRoomSchemeLegend } from '../bim/room-colour-fill.js';
 import { drawRoomTags } from '../bim/room-tags.js';
 import { drawDims, drawTextLabels } from '../annotation/dimensions.js';
@@ -399,6 +400,7 @@ import { cvH, cvScale, cvW } from '../ui/canvas-size.js';
     if(!capMode)drawSunShadows(ctx,V,W,H);   /* __acad3dV107: first, so everything else draws over it */
     if(!capMode)drawSimOverlays(ctx,V,W,H);  /* __acad3dV143: sun hours, ponds and flow lines */
     if(!capMode)bimEntDrawTurns(ctx,V,W,H);  /* __acad3dV169: the turning spaces of placed assets */
+    if(!capMode){try{bimClrDrawZones(ctx,V,W,H);}catch(eCZ){console.warn('[BIM] Clearance zones could not be drawn',eCZ);}}  /* __acad3dV180 */
     if(!capMode)drawResultLayers(ctx,V,W,H); /* __acad3dV148: the results kept as layers, over the live ones */
     drawDiagrams(ctx,V,W,H,'under');         /* __acad3dV164: the site analysis's bands, fills and shadows */
     var presentRooms=bimPresentGraphics();   /* __acad3dV122 */

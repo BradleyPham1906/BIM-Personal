@@ -426,6 +426,6 @@ function bimIntMinWidth(widthM, minIn) {
   }
 }
 export {
-  bimIntCheck, bimIntDistances, bimIntDoorLinks, bimIntMatch, bimIntProgramItem, bimIntRelation,
+  bimIntCheck, bimIntDistances, bimIntDoorLinks, bimIntInside, bimIntMatch, bimIntProgramItem, bimIntRelation,
   bimIntSharedLength
 };

@@ -16946,3 +16946,20 @@ The building's programme in Properties, checked against the rooms drawn; the bub
 - Hooks: `__a3dIntReport`, `__a3dIntRooms`, `__a3dIntBubble` (`testing/hooks-boards.js`).
 - Checks: syntax, `npm run modules`, the build, `npm run check`, `npm test` 292 of 292 (12 in
   `tests/unit/interiors.test.mjs`), the browser check `tests/e2e/bim_phase179_programme_browser_tests.py` 19 of 19.
+
+## Phase 180 (V180) - Interiors I2, clearance and ergonomics
+
+Bodies and clearance zones of furniture and fixtures; a door's clear width and a room's turning space, measured.
+
+- Research: `docs/research/research-notion-v177-v180-interiors.md`; spec `docs/work-orders/v180/SPEC.md`.
+- Audit of Cline's WO-01 to WO-06 (`bim/interiors-clearance.js`): shipped in ES2015 past the gate; rewritten in ES5,
+  same results; WO-06 not evaluated without `minIn`. `tests/unit/interiors-clearance.test.mjs` now refuses ES2015 there.
+- Registry: `ada.door` (2010 ADA 404.2.3, 32 in); `int.zone` (the app's assumed depths, seat 0.6, storage, work and bed
+  0.9 m, editable; a fixture uses `ada.space`).
+- `bim/interiors-clearance-model.js` (new): items (Furniture, Fixtures), bodies, zones, walls as pieces, conflicts per
+  level; `bimClrTurnFit` (the widest circle, by halving); door and room checks; Properties; `bimClrDrawZones`
+  (`map/terrain-3d.js`). Wiring: `site-analysis/panel.js`, `ui/build-ui.js`. Hooks `__a3dClrItem`, `__a3dClrState`,
+  `__a3dClrDoor`, `__a3dClrRoom`.
+- Found: the gate passed ES2015 code; a gate check for the build contract on the task's file would catch it.
+- Checks: syntax, `npm run modules`, the build, `npm run check`, `npm test` 301 of 301, the browser check 19 of 19,
+  V179's browser check re-run 19 of 19.

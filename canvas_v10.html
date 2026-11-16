@@ -14047,175 +14047,81 @@ function bimIntMinWidth(widthM, minIn) {
 */
 
 function bimClrRect(c, w, d, rot) {
-  const x = c[0];
-  const z = c[1];
-  const cosRot = Math.cos(rot);
-  const sinRot = Math.sin(rot);
-  const corners = [
-    [-w / 2, -d / 2],
-    [w / 2, -d / 2],
-    [w / 2, d / 2],
-    [-w / 2, d / 2],
-  ];
-  return corners.map(([cx, cz]) => [
-    cx * cosRot - cz * sinRot + x,
-    cx * sinRot + cz * cosRot + z,
-  ]);
+  var cs = Math.cos(rot), sn = Math.sin(rot), L = [[-w / 2, -d / 2], [w / 2, -d / 2], [w / 2, d / 2], [-w / 2, d / 2]], out = [], i;
+  for (i = 0; i < 4; i++) out.push([L[i][0] * cs - L[i][1] * sn + c[0], L[i][0] * sn + L[i][1] * cs + c[1]]);
+  return out;
 }
-
 function bimClrZone(it, front, side) {
-  if (front <= 0) return null;
-  const { center, w, d, rot } = it;
-  const x = center[0];
-  const z = center[1];
-  // Zone centre: offset from item center in the direction (-sin rot, cos rot)
-  // by distance (d/2 + front/2)
-  const cx = x - Math.sin(rot) * (d / 2 + front / 2);
-  const cz = z + Math.cos(rot) * (d / 2 + front / 2);
-  // Zone dimensions
-  const zoneW = w / 2 + side;
-  const zoneD = front / 2;
-  // Local corners relative to zone centre (before rotation)
-  const localCorners = [
-    [-zoneW, -zoneD],
-    [zoneW, -zoneD],
-    [zoneW, zoneD],
-    [-zoneW, zoneD],
-  ];
-  // Rotate and translate
-  const cosRot = Math.cos(rot);
-  const sinRot = Math.sin(rot);
-  return localCorners.map(([lcx, lcz]) => [
-    lcx * cosRot - lcz * sinRot + cx,
-    lcx * sinRot + lcz * cosRot + cz,
-  ]);
+  if (!(front > 0) || !it || !it.center) return null;
+  var rot = it.rot || 0, k = it.d / 2 + front / 2;
+  side = typeof side === 'number' && isFinite(side) ? side : 0;
+  return bimClrRect([it.center[0] - Math.sin(rot) * k, it.center[1] + Math.cos(rot) * k], it.w + 2 * side, front, rot);
 }
-
 function bimClrOverlap(a, b) {
-  if (a === null || b === null) return false;
-  if (a.length < 3 || b.length < 3) return false;
-  function getAxes(poly) {
-    const axes = [];
-    for (let i = 0; i < poly.length; i++) {
-      const p1 = poly[i];
-      const p2 = poly[(i + 1) % poly.length];
-      const ex = p2[0] - p1[0];
-      const ez = p2[1] - p1[1];
-      // Normal perpendicular to edge
-      axes.push([ez, -ex]);
+  if (!a || !b || a.length < 3 || b.length < 3) return false;
+  var P = [a, b], q, i, ax, az, A, B;
+  function proj(poly, ax, az) {
+    var lo = Infinity, hi = -Infinity, j, v;
+    for (j = 0; j < poly.length; j++) { v = ax * poly[j][0] + az * poly[j][1]; if (v < lo) lo = v; if (v > hi) hi = v; }
+    return [lo, hi];
+  }
+  for (q = 0; q < 2; q++) {
+    for (i = 0; i < P[q].length; i++) {
+      var p1 = P[q][i], p2 = P[q][(i + 1) % P[q].length], len;
+      ax = p2[1] - p1[1]; az = -(p2[0] - p1[0]); len = Math.sqrt(ax * ax + az * az);
+      if (len < 1e-12) continue;
+      ax /= len; az /= len;
+      A = proj(a, ax, az); B = proj(b, ax, az);
+      if (Math.min(A[1], B[1]) - Math.max(A[0], B[0]) <= 1e-9) return false;
     }
-    return axes;
-  }
-  function project(poly, axis) {
-    const [ax, az] = axis;
-    let min = ax * poly[0][0] + az * poly[0][1];
-    let max = min;
-    for (let i = 1; i < poly.length; i++) {
-      const proj = ax * poly[i][0] + az * poly[i][1];
-      if (proj < min) min = proj;
-      if (proj > max) max = proj;
-    }
-    return [min, max];
-  }
-  function overlapIntervals(i1, i2) {
-    return Math.max(i1[0], i2[0]) < Math.min(i1[1], i2[1]);
-  }
-  const allAxes = [...getAxes(a), ...getAxes(b)];
-  for (const axis of allAxes) {
-    const projA = project(a, axis);
-    const projB = project(b, axis);
-    if (!overlapIntervals(projA, projB)) return false;
   }
   return true;
 }
-
 function bimClrConflicts(items, obstacles) {
-  if (!items) return [];
-  const conflicts = [];
-  for (const item of items) {
-    if (!item || !item.zone) continue;
-    // Check against other items' bodies
-    for (const other of items) {
-      if (!other || other.id === item.id || !other.body) continue;
-      if (bimClrOverlap(item.zone, other.body)) {
-        conflicts.push({ item: item.id, with: other.id });
-      }
+  var out = [], i, j, it, o;
+  items = items || []; obstacles = obstacles || [];
+  for (i = 0; i < items.length; i++) {
+    it = items[i];
+    if (!it || !it.zone) continue;
+    for (j = 0; j < items.length; j++) {
+      o = items[j];
+      if (!o || j === i || o.id === it.id || !o.body) continue;
+      if (bimClrOverlap(it.zone, o.body)) out.push({ item: it.id, with: o.id });
     }
-    // Check against obstacles
-    for (const obstacle of obstacles) {
-      if (!obstacle || !obstacle.poly) continue;
-      if (bimClrOverlap(item.zone, obstacle.poly)) {
-        conflicts.push({ item: item.id, with: obstacle.id });
-      }
+    for (j = 0; j < obstacles.length; j++) {
+      o = obstacles[j];
+      if (!o || !o.poly) continue;
+      if (bimClrOverlap(it.zone, o.poly)) out.push({ item: it.id, with: o.id });
     }
   }
-  return conflicts;
+  return out;
 }
-
 function bimClrCircleFits(poly, c, r) {
-  if (r <= 0 || poly.length < 3) return false;
-  // Point-in-polygon using even-odd rule
-  function pointInPolygon(poly, px, pz) {
-    let inside = false;
-    for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
-      const xi = poly[i][0], zi = poly[i][1];
-      const xj = poly[j][0], zj = poly[j][1];
-      const intersect = ((zi > pz) !== (zj > pz)) &&
-        (px < (xj - xi) * (pz - zi) / (zj - zi) + xi);
-      if (intersect) inside = !inside;
-    }
-    return inside;
+  if (!(r > 0) || !poly || poly.length < 3 || !c) return false;
+  var inside = false, i, j, n = poly.length, xi, zi, xj, zj, dx, dz, t, L2, px, pz;
+  for (i = 0, j = n - 1; i < n; j = i++) {
+    xi = poly[i][0]; zi = poly[i][1]; xj = poly[j][0]; zj = poly[j][1];
+    if (((zi > c[1]) !== (zj > c[1])) && (c[0] < (xj - xi) * (c[1] - zi) / (zj - zi) + xi)) inside = !inside;
   }
-  // Distance from point to line segment
-  function pointToSegmentDist(px, pz, x1, z1, x2, z2) {
-    const dx = x2 - x1;
-    const dz = z2 - z1;
-    const lengthSq = dx * dx + dz * dz;
-    let t;
-    if (lengthSq === 0) {
-      const dx2 = px - x1;
-      const dz2 = pz - z1;
-      return Math.sqrt(dx2 * dx2 + dz2 * dz2);
-    }
-    t = ((px - x1) * dx + (pz - z1) * dz) / lengthSq;
-    if (t < 0) {
-      const dx2 = px - x1;
-      const dz2 = pz - z1;
-      return Math.sqrt(dx2 * dx2 + dz2 * dz2);
-    } else if (t > 1) {
-      const dx2 = px - x2;
-      const dz2 = pz - z2;
-      return Math.sqrt(dx2 * dx2 + dz2 * dz2);
-    } else {
-      const projX = x1 + t * dx;
-      const projZ = z1 + t * dz;
-      const dx2 = px - projX;
-      const dz2 = pz - projZ;
-      return Math.sqrt(dx2 * dx2 + dz2 * dz2);
-    }
-  }
-  // Check centre is inside polygon
-  if (!pointInPolygon(poly, c[0], c[1])) return false;
-  // Check distance to every edge segment
-  for (let i = 0; i < poly.length; i++) {
-    const j = (i + 1) % poly.length;
-    const dist = pointToSegmentDist(c[0], c[1], poly[i][0], poly[i][1], poly[j][0], poly[j][1]);
-    if (dist < r - 1e-9) return false;
+  if (!inside) return false;
+  for (i = 0; i < n; i++) {
+    j = (i + 1) % n;
+    dx = poly[j][0] - poly[i][0]; dz = poly[j][1] - poly[i][1]; L2 = dx * dx + dz * dz;
+    t = L2 > 0 ? ((c[0] - poly[i][0]) * dx + (c[1] - poly[i][1]) * dz) / L2 : 0;
+    t = Math.max(0, Math.min(1, t));
+    px = poly[i][0] + t * dx - c[0]; pz = poly[i][1] + t * dz - c[1];
+    if (Math.sqrt(px * px + pz * pz) < r - 1e-9) return false;
   }
   return true;
 }
-
 function bimClrRule(rule, m) {
-  if (!rule) {
-    return { clause: '', edition: '', status: 'not evaluated' };
-  }
-  if (typeof m !== 'number') {
-    return { clause: rule.clause || '', edition: rule.edition || '', status: 'not evaluated' };
-  }
-  const measuredIn = Math.round(m / 0.0254 * 100) / 100;
-  const status = m / 0.0254 >= rule.minIn - 1e-9 ? 'meets' : 'below';
-  return { clause: rule.clause || '', edition: rule.edition || '', status, measuredIn };
+  var out = { clause: rule && typeof rule.clause === 'string' ? rule.clause : '', edition: rule && typeof rule.edition === 'string' ? rule.edition : '', status: 'not evaluated' };
+  if (!rule || typeof rule.minIn !== 'number' || !isFinite(rule.minIn) || typeof m !== 'number' || !isFinite(m)) return out;
+  out.status = m / 0.0254 >= rule.minIn - 1e-9 ? 'meets' : 'below';
+  out.measuredIn = Math.round(m / 0.0254 * 100) / 100;
+  return out;
 }
+
 
 
 function bimEgInside(p, poly) {
@@ -14513,6 +14419,261 @@ function bimEgCell(g, p) {
       dek:(rep.building.name||'The building')+': '+rep.items.length+' use'+(rep.items.length===1?'':'s')+', '+rep.relations.length+' relation'+(rep.relations.length===1?'':'s')+', '+rep.rooms.length+' room'+(rep.rooms.length===1?'':'s')+' drawn',
       body:bimIntBubbleSvg(rep,!!A3D_CLB.narrow)+leg,
       src:'the project\'s programme and the rooms drawn; routes by the doors, room centre to centre, an estimate'};
+  }
+
+  /* ================= __acad3dV180: Interiors I2 on the live model =================
+     docs/work-orders/v180/SPEC.md, WO-07. A furniture or fixture model (an asset of the library, category Furniture or
+     Fixtures) has a body: its footprint, the box of its own vertices in the frame it faces. It has a clearance zone when
+     the designer gives it a kind (o.bim.clr.kind): a fixture's zone is ADA 305.3's clear floor space (ada.space), the
+     others the registry's int.zone depths, all with their edition and the owner's overrides. Which way an item faces is
+     the designer's statement (o.bim.clr.face, radians, front along (-sin, cos)), never guessed from the mesh; it follows
+     the item's later turns through two of its own vertices (ref), whose bearing is kept from when it was set. A zone is
+     blocked by another item's body or by a wall (each straight piece of its centreline, as thick as the wall; a curved
+     wall is taken by its chords); zones may overlap each other. A door's opening width and a room's turning space are
+     measured against the registry's rules (404.2.3, 304.3.1) and named with their clause and edition: a measurement,
+     never a compliance finding. Everything on one level: bases within BIM_CLR_LEVEL_TOL. */
+  var BIM_CLR_LEVEL_TOL=0.5;
+  var BIM_CLR_KINDS=[['','None: no zone'],['fixture','Fixture: a clear floor space (ADA 305.3)'],['seat','Seat'],['storage','Storage'],['work','Work surface'],['bed','Bed, at its side']];
+  function bimClrIsItem(o){
+    return !!(o&&o.t==='solid'&&o.mesh&&o.mesh.v&&o.mesh.v.length&&o.bim&&o.bim.type==='familyInstance'&&
+      (o.bim.category==='Furniture'||o.bim.category==='Fixtures'||(o.bim.clr&&o.bim.clr.kind)));
+  }
+  /* the item's vertices in world plan points, and its base */
+  function bimClrPlanPts(o){
+    var q=bimObjOffset(o),v=o.mesh.v,pts=[],i,y=Infinity;
+    for(i=0;i<v.length;i++){pts.push([v[i][0]+q[0],v[i][2]+q[2]]);if(v[i][1]<y)y=v[i][1];}
+    return {pts:pts,y:(y===Infinity?0:y)+q[1]};
+  }
+  /* the box of points in the frame turned by rot: {center, w, d, rot}. Pure. */
+  function bimClrBodyOf(pts,rot){
+    var cs=Math.cos(rot||0),sn=Math.sin(rot||0),a0=Infinity,a1=-Infinity,b0=Infinity,b1=-Infinity,i,a,b,am,bm;
+    if(!pts||!pts.length)return null;
+    for(i=0;i<pts.length;i++){
+      a=pts[i][0]*cs+pts[i][1]*sn;b=-pts[i][0]*sn+pts[i][1]*cs;
+      if(a<a0)a0=a;if(a>a1)a1=a;if(b<b0)b0=b;if(b>b1)b1=b;
+    }
+    am=(a0+a1)/2;bm=(b0+b1)/2;
+    return {center:[am*cs-bm*sn,am*sn+bm*cs],w:a1-a0,d:b1-b0,rot:rot||0};
+  }
+  function bimClrBearing(v,i,j){return Math.atan2(v[j][2]-v[i][2],v[j][0]-v[i][0]);}
+  /* the way the item faces now, radians; 0 when not set */
+  function bimClrFace(o){
+    var c=o&&o.bim&&o.bim.clr,v=o&&o.mesh&&o.mesh.v;
+    if(!c||typeof c.face!=='number')return 0;
+    if(c.ref&&v&&v[c.ref[0]]&&v[c.ref[1]]&&typeof c.b0==='number')return c.face+(bimClrBearing(v,c.ref[0],c.ref[1])-c.b0);
+    return c.face;
+  }
+  /* two of the item's vertices far apart in plan, to follow its turns */
+  function bimClrRef(o){
+    var v=o.mesh.v,j,best=-1,bd=0,d;
+    for(j=1;j<v.length;j++){d=(v[j][0]-v[0][0])*(v[j][0]-v[0][0])+(v[j][2]-v[0][2])*(v[j][2]-v[0][2]);if(d>bd){bd=d;best=j;}}
+    return bd>1e-8?[0,best]:null;
+  }
+  /* the zone's depth and side reach for a kind, from the registry; null for none */
+  function bimClrZoneSize(kind,w){
+    if(kind==='fixture'){
+      var L=bimStd('ada.space','clear_l'),W=bimStd('ada.space','clear_w');
+      if(!(L>0))return null;
+      return {front:L,side:(W>w)?(W-w)/2:0,topic:'ada.space'};
+    }
+    if(!kind)return null;
+    var f=bimStd('int.zone',kind),s=bimStd('int.zone','side');
+    return f>0?{front:f,side:s>0?s:0,topic:'int.zone'}:null;
+  }
+  /* each straight piece of each wall, as a polygon, with its base */
+  function bimClrWalls(){
+    var out=[],i,j,o,cl,n,segs,a,b,nr,off,q,t;
+    for(i=0;i<A3D.objs.length;i++){
+      o=A3D.objs[i];
+      if(!o||o.t!=='solid'||!o.bim||o.bim.type!=='wall'||!o.bim.centerline||o.bim.centerline.length<2||!bimLayerShown(o))continue;
+      cl=o.bim.centerline;n=cl.length;segs=o.bim.closed?n:n-1;t=o.bim.thickness||0.2;
+      off=bimAlignOffsets(t,o.bim.align);q=bimObjOffset(o);
+      for(j=0;j<segs;j++){
+        a=cl[j];b=cl[(j+1)%n];nr=bimSegNormal(a,b);
+        out.push({id:o.id,name:o.name,y:(o.bim.baseY||0)+q[1],poly:[
+          [a[0]+q[0]+nr[0]*off.dLeft,a[1]+q[2]+nr[1]*off.dLeft],[b[0]+q[0]+nr[0]*off.dLeft,b[1]+q[2]+nr[1]*off.dLeft],
+          [b[0]+q[0]-nr[0]*off.dRight,b[1]+q[2]-nr[1]*off.dRight],[a[0]+q[0]-nr[0]*off.dRight,a[1]+q[2]-nr[1]*off.dRight]]});
+      }
+    }
+    return out;
+  }
+  /* every item's body and zone, and what blocks each zone */
+  function bimClrScene(){
+    var items=[],walls=bimClrWalls(),i,o,P,rot,B,kind,Z,it,sub,obs,cf,j,names={};
+    for(i=0;i<A3D.objs.length;i++){
+      o=A3D.objs[i];
+      if(!bimClrIsItem(o)||!bimLayerShown(o))continue;
+      P=bimClrPlanPts(o);kind=o.bim.clr&&o.bim.clr.kind||'';rot=bimClrFace(o);
+      B=bimClrBodyOf(P.pts,rot);
+      if(!B)continue;
+      Z=bimClrZoneSize(kind,B.w);
+      it={id:o.id,name:o.name,kind:kind,y:P.y,box:B,body:bimClrRect(B.center,B.w,B.d,B.rot),zone:Z?bimClrZone(B,Z.front,Z.side):null,size:Z,blocked:[]};
+      items.push(it);names[o.id]=o.name;
+    }
+    for(i=0;i<walls.length;i++)names[walls[i].id]=walls[i].name;
+    for(i=0;i<items.length;i++){
+      it=items[i];
+      if(!it.zone)continue;
+      sub=[it];obs=[];
+      for(j=0;j<items.length;j++)if(j!==i&&Math.abs(items[j].y-it.y)<BIM_CLR_LEVEL_TOL)sub.push({id:items[j].id,body:items[j].body});
+      for(j=0;j<walls.length;j++)if(Math.abs(walls[j].y-it.y)<BIM_CLR_LEVEL_TOL)obs.push({id:walls[j].id,poly:walls[j].poly});
+      cf=bimClrConflicts(sub,obs);
+      for(j=0;j<cf.length;j++)if(cf[j].item===it.id&&it.blocked.indexOf(names[cf[j].with]||cf[j].with)<0)it.blocked.push(names[cf[j].with]||cf[j].with);
+    }
+    return {items:items,walls:walls};
+  }
+  /* the widest turning circle that fits in a room around the bodies in it: its diameter and a centre. Pure: poly the
+     room, bodies convex polygons, step the grid of centres tried; answers {d, at} (d 0 when none fits). */
+  function bimClrTurnFit(poly,bodies,step,maxD){
+    var x0=Infinity,x1=-Infinity,z0=Infinity,z1=-Infinity,i,lo=0,hi,mid,k,best=null;
+    if(!poly||poly.length<3)return {d:0,at:null};
+    step=step>0?step:0.05;
+    for(i=0;i<poly.length;i++){x0=Math.min(x0,poly[i][0]);x1=Math.max(x1,poly[i][0]);z0=Math.min(z0,poly[i][1]);z1=Math.max(z1,poly[i][1]);}
+    hi=Math.min(maxD>0?maxD:Infinity,Math.min(x1-x0,z1-z0));
+    function clearOf(c,r){
+      var b,j,n,dx,dz,L2,t,px,pz;
+      for(b=0;b<(bodies?bodies.length:0);b++){
+        n=bodies[b].length;
+        if(bimIntInside(c,bodies[b]))return false;
+        for(j=0;j<n;j++){
+          var p=bodies[b][j],q=bodies[b][(j+1)%n];
+          dx=q[0]-p[0];dz=q[1]-p[1];L2=dx*dx+dz*dz;t=L2>0?Math.max(0,Math.min(1,((c[0]-p[0])*dx+(c[1]-p[1])*dz)/L2)):0;
+          px=p[0]+t*dx-c[0];pz=p[1]+t*dz-c[1];
+          if(Math.sqrt(px*px+pz*pz)<r-1e-9)return false;
+        }
+      }
+      return true;
+    }
+    function fits(d){
+      var x,z,c;
+      for(x=x0+d/2;x<=x1-d/2+1e-9;x+=step)for(z=z0+d/2;z<=z1-d/2+1e-9;z+=step){
+        c=[x,z];
+        if(bimClrCircleFits(poly,c,d/2)&&clearOf(c,d/2))return c;
+      }
+      return null;
+    }
+    if(!(hi>0))return {d:0,at:null};
+    for(k=0;k<14;k++){
+      mid=(lo+hi)/2;
+      var c=fits(mid);
+      if(c){lo=mid;best=c;}else hi=mid;
+    }
+    return {d:best?lo:0,at:best};
+  }
+  /* the registry's rule for a check: its clause, its edition's name, its least value in inches */
+  function bimClrRuleOf(which){
+    var t=which==='door'?'ada.door':'ada.space',n=which==='door'?'clear':'turn',v=bimStd(t,n),E=bimStdEdition(t);
+    return {clause:which==='door'?'404.2.3':'304.3.1',edition:E&&E.name?E.name:'',minIn:(typeof v==='number'&&isFinite(v))?v/0.0254:undefined,topic:t};
+  }
+  function bimClrSay(R){
+    var s=R.status==='not evaluated'?'not evaluated':(R.status==='meets'?'meets':'below');
+    return s+(R.measuredIn!==undefined?', '+R.measuredIn+' in measured':'')+' ('+(R.clause?R.clause+', ':'')+(R.edition||'no edition in force')+')';
+  }
+  /* a door: its opening width against 404.2.3. The opening is what the model holds; the leaf and the stops are not taken off. */
+  function bimClrDoorCheck(o){
+    var w=o&&o.bim&&typeof o.bim.width==='number'&&isFinite(o.bim.width)&&o.bim.width>0?o.bim.width:null;
+    return bimClrRule(bimClrRuleOf('door'),w===null?undefined:w);
+  }
+  /* a room: the widest turning circle around the items in it, against 304.3.1 */
+  function bimClrRoomCheck(o){
+    if(!o||!Array.isArray(o.pts)||o.pts.length<3||(o.region&&o.region.open))return {rule:bimClrRule(bimClrRuleOf('turn'),undefined),fit:{d:0,at:null}};
+    var q=bimObjOffset(o),poly=o.pts.map(function(p){return [p[0]+q[0],p[1]+q[2]];}),S=bimClrScene(),bodies=[],i,rule=bimClrRuleOf('turn');
+    for(i=0;i<S.items.length;i++)if(Math.abs(S.items[i].y-((o.y||0)+q[1]))<BIM_CLR_LEVEL_TOL)bodies.push(S.items[i].body);
+    var fit=bimClrTurnFit(poly,bodies,0.05,(rule.minIn>0?rule.minIn*0.0254*1.5:3));
+    return {rule:bimClrRule(rule,fit.d),fit:fit};
+  }
+  /* ---- on the plan: the zones of the items selected, red when blocked ---- */
+  function bimClrDrawZones(ctx,V,W,H){
+    var ids=(A3D.selSet&&A3D.selSet.length)?A3D.selSet:(A3D.sel?[A3D.sel]:[]),S,i,j,it,s2,on,pts;
+    A3D.lastZones=0;
+    if(!ids.length)return;
+    var any=false;
+    for(i=0;i<ids.length;i++)if(bimClrIsItem(objById(ids[i])))any=true;
+    if(!any)return;
+    S=bimClrScene();
+    ctx.save();ctx.lineWidth=1.5;
+    for(i=0;i<S.items.length;i++){
+      it=S.items[i];
+      if(ids.indexOf(it.id)<0||!it.zone)continue;
+      A3D.lastZones++;
+      var bad=it.blocked.length>0;
+      ctx.strokeStyle=bad?'rgba(220,53,69,0.95)':'rgba(46,160,67,0.95)';ctx.fillStyle=bad?'rgba(220,53,69,0.16)':'rgba(46,160,67,0.14)';
+      if(ctx.setLineDash)ctx.setLineDash([6,4]);
+      ctx.beginPath();on=false;pts=it.zone;
+      for(j=0;j<pts.length;j++){
+        s2=toScreen([pts[j][0],it.y+0.02,pts[j][1]],V,W,H);
+        if(!s2)continue;
+        if(on)ctx.lineTo(s2[0],s2[1]);else{ctx.moveTo(s2[0],s2[1]);on=true;}
+      }
+      ctx.closePath();ctx.fill();ctx.stroke();
+    }
+    ctx.restore();
+  }
+  /* ---- Properties ---- */
+  function bimClrPropsHtml(o){
+    var S=bimClrScene(),it=null,i,r='',c=o.bim.clr||{},Z;
+    for(i=0;i<S.items.length;i++)if(S.items[i].id===o.id)it=S.items[i];
+    r+=bimPropRow('Kind','<select data-clr="kind">'+BIM_CLR_KINDS.map(function(k){return '<option value="'+k[0]+'"'+((c.kind||'')===k[0]?' selected':'')+'>'+bimEsc(k[1])+'</option>';}).join('')+'</select>');
+    if(!it)return bimPropGroup('Clearance',r+bimPropText('Zone','not evaluated: the item is hidden or has no shape'));
+    r+=bimPropText(bimLenLabel('Body'),bimDispLen(it.box.w)+' by '+bimDispLen(it.box.d));
+    if(c.kind){
+      var deg=Math.round(((bimClrFace(o)*180/Math.PI)%360+360)%360);
+      r+=bimPropRow('Faces (deg)','<input type="number" step="any" data-clr="face" value="'+deg+'"> <button type="button" class="a3d-pedit" data-clract="turn">Turn 90</button>');
+      Z=it.size;
+      if(Z){
+        r+=bimPropText(bimLenLabel('Zone'),bimDispLen(it.box.w+2*Z.side)+' wide, '+bimDispLen(Z.front)+' deep, in front');
+        r+=bimPropText('Zone is',it.blocked.length?'blocked by '+it.blocked.join(', '):'clear of walls and other items');
+        r+='<div class="a3d-stdsrc">Standards: '+bimEsc(bimStdUsedText(Z.topic))+'</div>';
+      }else r+=bimPropText('Zone','not evaluated: the registry has no depth for this kind');
+    }else r+=bimPropText('Zone','none: give the item a kind');
+    return bimPropGroup('Clearance',r);
+  }
+  function bimClrDoorHtml(o){
+    var R=bimClrDoorCheck(o);
+    return bimPropGroup('Clearance',bimPropText('Clear width',bimClrSay(R))+
+      bimPropText('Measured','the opening\'s width; the leaf and the stops are not taken off, and no exception is applied')+
+      '<div class="a3d-stdsrc">Standards: '+bimEsc(bimStdUsedText('ada.door'))+'</div>');
+  }
+  function bimClrRoomHtml(o){
+    var C=bimClrRoomCheck(o);
+    return bimPropGroup('Clearance',bimPropText('Turning space',bimClrSay(C.rule))+
+      bimPropText(bimLenLabel('Widest circle'),C.fit.d>0?bimDispLen(C.fit.d)+' across, around the furniture and fixtures in it':'none fits')+
+      '<div class="a3d-stdsrc">Standards: '+bimEsc(bimStdUsedText('ada.space'))+'</div>');
+  }
+  function bimClrSet(o,fn){
+    var c=JSON.parse(JSON.stringify(o.bim.clr||{}));
+    fn(c);
+    pushUndo();
+    if(!c.kind){delete o.bim.clr;}
+    else{
+      if(typeof c.face!=='number')c.face=0;
+      c.ref=bimClrRef(o);c.b0=c.ref?bimClrBearing(o.mesh.v,c.ref[0],c.ref[1]):undefined;
+      o.bim.clr=c;
+    }
+    refreshProps();paint();saveSoon();
+    return true;
+  }
+  function bimClrPropChange(ev){
+    var f=ev.target&&ev.target.closest?ev.target.closest('[data-clr]'):null;
+    if(!f)return false;
+    var o=objById(A3D.sel);
+    if(!bimClrIsItem(o)){a3dToast('Select a furniture or fixture model');return false;}
+    var k=f.getAttribute('data-clr'),v=f.value,face=bimClrFace(o);
+    if(k==='kind')return bimClrSet(o,function(c){c.kind=v;c.face=face;});
+    if(k==='face'){
+      var x=parseFloat(v);
+      if(!isFinite(x)){a3dToast('Faces is an angle in degrees');refreshProps();return false;}
+      return bimClrSet(o,function(c){c.face=x*Math.PI/180;});
+    }
+    return false;
+  }
+  function bimClrPropClick(ev){
+    var b=ev.target&&ev.target.closest?ev.target.closest('[data-clract]'):null;
+    if(!b)return false;
+    var o=objById(A3D.sel);
+    if(!bimClrIsItem(o))return false;
+    var face=bimClrFace(o);
+    return bimClrSet(o,function(c){c.face=face+Math.PI/2;});
   }
 
 
@@ -22170,6 +22331,17 @@ function bimEgCell(g, p) {
       eds:[{id:'ada.space.2010',name:'2010 ADA Standards for Accessible Design, 304.3.1 and 305.3',pub:'2010-09-15',st:'current',where:'United States',adopt:[{at:'us',from:'2012-03-15'}],
         src:{t:'U.S. Department of Justice, 2010 ADA Standards for Accessible Design',w:'304.3.1: a turning space 60 inches (1525 mm) across; 305.3: a clear floor space 30 inches (760 mm) by 48 inches (1220 mm) at least',u:'https://www.ada.gov/assets/pdfs/2010-design-standards.pdf',lv:'P',read:'2026-10-19'},
         v:[{n:'clear_w',v:0.76,u:'m',say:'the clear floor space\'s width'},{n:'clear_l',v:1.22,u:'m',say:'its length'},{n:'turn',v:1.525,u:'m',say:'the turning space, across'}]}]},
+    /* __acad3dV180: Interiors I2: the door's clear width, and each item kind's clearance zone (docs/work-orders/v180/SPEC.md) */
+    {id:'ada.door',title:'Door clear width',pub:'U.S. Department of Justice',kind:'code',area:'Interiors',use:'Interiors: a door opening\'s clear width, measured',anywhere:true,
+      eds:[{id:'ada.door.2010',name:'2010 ADA Standards for Accessible Design, 404.2.3',pub:'2010-09-15',st:'current',where:'United States',adopt:[{at:'us',from:'2012-03-15'}],
+        src:{t:'U.S. Department of Justice, 2010 ADA Standards for Accessible Design; the U.S. Access Board\'s Chapter 4',w:'404.2.3: a clear opening 32 inches (815 mm) at least, measured from the face of the door to the stop with the door open 90 degrees; its exceptions and depth conditions are not applied here',u:'https://www.access-board.gov/ada/chapter/ch04/',lv:'P',read:'2026-11-13'},
+        v:[{n:'clear',v:0.8128,u:'m',say:'a door\'s clear width, at least',src:'32 in'}]}]},
+    {id:'int.zone',title:'Clearance zones of furniture and fixtures',pub:'This app',kind:'assumption',area:'Interiors',use:'Interiors: how deep the clear space in front of each kind of item is',anywhere:true,
+      eds:[{id:'int.zone.1',name:'The app\'s clearance zones (V180)',pub:'',st:'current',where:'Anywhere',adopt:[{at:'*'}],
+        src:{t:'This app: a fixture\'s zone is ADA 305.3\'s clear floor space for a forward approach (ada.space); the others are the app\'s own starting values, not taken from any book or code, to be set by the designer',w:'docs/work-orders/v180/SPEC.md; docs/research/research-notion-v177-v180-interiors.md (Neufert and Panero were not read, so no value comes from them)',u:'https://github.com/BradleyPham1906/BIM-Personal/blob/main/docs/work-orders/v180/SPEC.md',lv:'A',read:'2026-11-16'},
+        v:[{n:'seat',v:0.6,u:'m',say:'the clear space in front of a seat'},{n:'storage',v:0.9,u:'m',say:'the clear space in front of storage, to open it'},
+          {n:'work',v:0.9,u:'m',say:'the clear space in front of a work surface'},{n:'bed',v:0.9,u:'m',say:'the clear space at the side of a bed'},
+          {n:'side',v:0,u:'m',say:'how far a zone reaches past each side of the item'}]}]},
     {id:'mutcd.walk',title:'Walking speeds at signals',pub:'Federal Highway Administration',kind:'standard',area:'Assets',use:'The wheelchair user\'s speed',anywhere:true,
       eds:[{id:'mutcd.walk.11r1',name:'MUTCD 11th Edition with Revision 1 (December 2025), 4I.06',pub:'2025-12',st:'current',where:'United States',adopt:[{at:'us',from:'2025-12'}],
         src:{t:'FHWA, Manual on Uniform Traffic Control Devices, 11th Edition with Revision 1',w:'4I.06 paragraph 07: the clearance at 3.5 feet per second; paragraph 14: the walk and the clearance at 3 feet per second; paragraph 10: slower where people who use wheelchairs routinely cross',u:'https://mutcd.fhwa.dot.gov/kno_11th_Editionr1.htm',lv:'P',read:'2026-10-19'},
@@ -30990,6 +31162,10 @@ function bimEgCell(g, p) {
     if(o.bim&&o.bim.baseY!==undefined)cons+=bimPropLenText('Base Elevation',o.bim.baseY);
     h+=bimPropGroup('Constraints',cons);
     if(o.asset&&o.asset.k)h+=bimEntPropsHtml(o);   /* __acad3dV169: the asset's sizes and their standards */
+    /* __acad3dV180: clearance: an item's zone, a door's clear width, a room's turning space */
+    if(bimClrIsItem(o))h+=bimClrPropsHtml(o);
+    else if(o.t==='opening'&&o.bim&&o.bim.type==='door')h+=bimClrDoorHtml(o);
+    else if(o.t==='room')h+=bimClrRoomHtml(o);
 
     // ---- Graphics ----
     var gfx='';
@@ -44436,6 +44612,7 @@ BIM_IFC_SAVE.model=bimIfcSaveModel;
     if(!capMode)drawSunShadows(ctx,V,W,H);   /* __acad3dV107: first, so everything else draws over it */
     if(!capMode)drawSimOverlays(ctx,V,W,H);  /* __acad3dV143: sun hours, ponds and flow lines */
     if(!capMode)bimEntDrawTurns(ctx,V,W,H);  /* __acad3dV169: the turning spaces of placed assets */
+    if(!capMode){try{bimClrDrawZones(ctx,V,W,H);}catch(eCZ){console.warn('[BIM] Clearance zones could not be drawn',eCZ);}}  /* __acad3dV180 */
     if(!capMode)drawResultLayers(ctx,V,W,H); /* __acad3dV148: the results kept as layers, over the live ones */
     drawDiagrams(ctx,V,W,H,'under');         /* __acad3dV164: the site analysis's bands, fills and shadows */
     var presentRooms=bimPresentGraphics();   /* __acad3dV122 */
@@ -68553,6 +68730,13 @@ function bimRptPlan(families) {
     if(el.propsbody)el.propsbody.addEventListener('click',function(ev){
       try{bimIntProgClick(ev);}catch(eIK){console.warn('[BIM] Programme edit failed',eIK);a3dToast('That could not be changed - see the console');}
     });
+    /* __acad3dV180: an item's clearance */
+    if(el.propsbody)el.propsbody.addEventListener('change',function(ev){
+      try{bimClrPropChange(ev);}catch(eCC){console.warn('[BIM] Clearance edit failed',eCC);a3dToast('That could not be changed - see the console');}
+    });
+    if(el.propsbody)el.propsbody.addEventListener('click',function(ev){
+      try{bimClrPropClick(ev);}catch(eCK){console.warn('[BIM] Clearance edit failed',eCK);a3dToast('That could not be changed - see the console');}
+    });
     /* __acad3dV141: Properties' tabs */
     if(el.propsbody)el.propsbody.addEventListener('click',function(ev){
       try{bimPropTabClick(ev);}catch(eTB){console.warn('[BIM] Properties tab',eTB);}
@@ -72092,6 +72276,24 @@ function bimRptPlan(families) {
     return lv;
   };
   window.__a3dIntBubble=function(){var F=bimIntBubbleFig();return F?{title:F.title,dek:F.dek,body:F.body}:null;};
+  /* __acad3dV180: Interiors I2, clearance on the model */
+  window.__acad3dV180='bodies,zones,doorwidth,turning';
+  /* a furniture or fixture model w by d, 0.8 high, on the active level at [x, z] */
+  window.__a3dClrItem=function(cat,x,z,w,d){
+    var lvl=bimGetActiveLevel(),m=mkBoxP(w,0.8,d),i;
+    for(i=0;i<m.v.length;i++)m.v[i][1]+=0.4;
+    A3D.counts.familyInstance=(A3D.counts.familyInstance||0)+1;
+    var o={id:'a3d-clr-'+(A3D.seq++),t:'solid',name:cat+'_'+A3D.counts.familyInstance,pos:[x,lvl.elev,z],mesh:m,
+      bim:{type:'familyInstance',familyId:'test',familyName:cat,category:cat}};
+    A3D.objs.push(o);paint();
+    return o.id;
+  };
+  window.__a3dClrState=function(){
+    var S=bimClrScene();
+    return {lastZones:A3D.lastZones||0,items:S.items.map(function(it){return {id:it.id,kind:it.kind,w:it.box.w,d:it.box.d,rot:it.box.rot,zone:!!it.zone,blocked:it.blocked.slice()};}),walls:S.walls.length};
+  };
+  window.__a3dClrDoor=function(id){return bimClrDoorCheck(objById(id));};
+  window.__a3dClrRoom=function(id){var C=bimClrRoomCheck(objById(id));return {rule:C.rule,d:C.fit.d};};
 }catch(e){
   window.__a3dErr=String(e&&e.message||e);
   console.warn('[BIM] The engine failed to load.',e);   /* __acad3dV120 */
