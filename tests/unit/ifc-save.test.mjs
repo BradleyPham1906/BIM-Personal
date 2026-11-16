@@ -178,3 +178,14 @@ test('WO-15 bimIfcSaveModel: the whole model, each element once, and what could 
   const e = F.model('', [], []);
   assert.deepEqual(e, { model: { name: 'Project', levels: [], walls: [], prisms: [], openings: [], meshes: [] }, left: [] });
 });
+
+test('WO-15 fallback meshes keep their mesh destination even when their IFC class is a slab or column', { skip: todo('model', 'WO-15') }, () => {
+  const floor = { id: 'f-moved', t: 'solid', pos: [1, 0, 0], bim: { type: 'floor', thickness: 0.2, baseY: 0, profile: [[0, 0], [1, 0], [1, 1]] } };
+  const column = { id: 'c-section', t: 'solid', pos: [0, 0, 0], bim: { type: 'column', width: 0.4, depth: 0.6, height: 3, baseY: 0, center: [2, 3], section: { shape: 'I' } } };
+  const r = F.model('House', LEVELS, [
+    { o: floor, mesh: box, layer: 'Floors' },
+    { o: column, mesh: box, layer: 'Columns' }
+  ]);
+  assert.equal(r.model.prisms.length, 0);
+  assert.deepEqual(r.model.meshes.map((m) => [m.id, m.cls]), [['f-moved', 'IfcSlab'], ['c-section', 'IfcColumn']]);
+});
