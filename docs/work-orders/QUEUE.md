@@ -3,7 +3,7 @@
 Claude keeps this list full; Cline takes from the top. A phase is listed here only when its research
 is done, the owner's decisions are made, and every `[Cline]` task has its test and names its file(s).
 
-Cline: `/ship-task.md` with no arguments takes the first open `[Cline]` task below.
+Cline: `/ship-task` with no arguments takes the first open `[Cline]` task below.
 
 The owner's decisions (2026-11-14): for every phase below, all as its research recommends (each SPEC lists them;
 overrule any there). V177's D1 to D4 and That Open's four were answered 2026-11-13. The phases are numbered in one

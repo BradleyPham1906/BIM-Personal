@@ -1,6 +1,6 @@
 # The terminal here is Windows PowerShell 5.1, not bash
 
-The commands in the TASKS files and in `ship-task.md` run as written. Trouble starts only with bash syntax.
+The commands in the TASKS files and in the `ship-task` skill run as written. Trouble starts only with bash syntax.
 
 - **One plain command per call**, run from the repository root (`C:\World-BIM-platform\BIM-Personal`). No `cd`,
   no `git -C <path>`: the terminal is already there.
