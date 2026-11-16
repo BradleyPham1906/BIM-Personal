@@ -7,14 +7,14 @@ Cline: `/ship-task.md` with no arguments takes the first open `[Cline]` task bel
 
 The owner's decisions (2026-11-14): for every phase below, all as its research recommends (each SPEC lists them;
 overrule any there). V177's D1 to D4 and That Open's four were answered 2026-11-13. The phases are numbered in one
-sequence, 175c to 232 (228 to 232 are algorithmic design; the owner's thirteen decisions, 2026-11-15), in `docs/dev/PIPELINE.md`; there are no "later" rows.
+sequence, 175c to 238 (228 to 232 are algorithmic design, the owner's thirteen decisions, 2026-11-15; 233 to 238 program to plan, the owner's ten decisions, 2026-11-16), in `docs/dev/PIPELINE.md`; there are no "later" rows.
 
-## Ready for Cline, in order (223 tasks)
+## Ready for Cline, in order (247 tasks)
 
 | Phase | What | Tasks | Where | Tests |
 |---|---|---|---|---|
 | v178 | Presentation P3, the report (Site Analysis and DA), styles, export | WO-01 to WO-12 (12) | `v178/TASKS.md` | `v178/v178.test.mjs` |
-| v179 | Interiors I1, programme and adjacency (and I2's first measurement) | WO-01 to WO-09 (9) | `v179/TASKS.md` | `v179/v179.test.mjs` |
+| v179 | Interiors I1, programme and adjacency (amended 2026-11-16: the brief fields and eight relation kinds) | WO-01 to WO-09 (9) | `v179/TASKS.md` | `v179/v179.test.mjs` |
 | v180 | Interiors I2, clearance and ergonomics | WO-01 to WO-06 (6) | `v180/TASKS.md` | `v180/v180.test.mjs` |
 | v181 | Interiors I3, circulation and escape routes | WO-01 to WO-05 (5) | `v181/TASKS.md` | `v181/v181.test.mjs` |
 | v182 | Interiors I4, sightlines and views | WO-01 to WO-05 (5) | `v182/TASKS.md` | `v182/v182.test.mjs` |
@@ -57,6 +57,9 @@ sequence, 175c to 232 (228 to 232 are algorithmic design; the owner's thirteen d
 | v227 | Track D, the drone bridge project: flight planning | WO-01 to WO-05 (5) | `v227/TASKS.md` | `v227/v227.test.mjs` |
 | v228 | Generated elements: a stable key, re-run in place, hand overrides | WO-01 to WO-05 (5) | `v228/TASKS.md` | `v228/v228.test.mjs` |
 | v229 | A split grammar for facades | WO-01 to WO-05 (5) | `v229/TASKS.md` | `v229/v229.test.mjs` |
+| v234 | The programme graph engine: bubble diagram, matrix, links from parameters | WO-01 to WO-07 (7) | `v234/TASKS.md` | `v234/v234.test.mjs` |
+| v235 | Graph analysis and user paths | WO-01 to WO-09 (9) | `v235/TASKS.md` | `v235/v235.test.mjs` |
+| v236 | The layout view: bay grid, corridors from paths, scorecard | WO-01 to WO-08 (8) | `v236/TASKS.md` | `v236/v236.test.mjs` |
 
 Every test was run against a reference version that was not committed (all passing) and against the empty files
 (every case failing), so a task is done exactly when its own cases pass. Each phase's new file is already in the

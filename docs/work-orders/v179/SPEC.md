@@ -28,10 +28,15 @@ area and lines by relation, coloured by status. Phone, tablet and desktop: the t
 
 ## 3. Data
 
-- **A programme item** `{id, use, count, areaMin, areaMax, rationale}`: `count` an integer 1 or more; areas in m2 or
-  `null`, `areaMin <= areaMax`.
-- **A relation** `{a, b, kind: 'required'|'desired'|'forbidden', rel: 'next'|'near'|'apart', nearM}`, `a` and `b`
-  room ids or uses as WO-10 decides.
+- **A programme item** `{id, use, count, areaMin, areaMax, rationale, building, level, group, status, source, params, open}`:
+  `count` an integer 1 or more; areas in m2 or `null`, `areaMin <= areaMax`; `level` an integer (0 the ground) or
+  `null`; `status` `'unknown'|'assumed'|'confirmed'`; `params` the room's values of the project's qualitative
+  parameters (privacy, daylight...), finite numbers by name; `open` whether other rooms may be entered through it
+  (`'open'|'closed'|'auto'`). Amended 2026-11-16 (`docs/research/research-program-to-plan.md`, decisions 1 and 2).
+- **A relation** `{a, b, kind: 'required'|'desired'|'forbidden', rel, nearM, strength, reason, status}`, `rel` one of
+  `'next'|'near'|'apart'|'access'|'visual'|'acoustic'|'secure'|'sequence'`; `strength` 1 (primary, the strongest), 2 or
+  3, as an adjacency matrix writes it; `status` `'suggested'|'approved'|'rejected'` (a relation pasted in or generated
+  is suggested until approved). `a` and `b` room ids or uses as WO-10 decides. Amended 2026-11-16.
 - **A room fact** `{id, use, area, pts: [[x, z], ...]}`, made by WO-10 from the model's rooms.
 - **A door** `{id, center: [x, z], dir: [dx, dz], width}`, as the app's door markers hold them (`dir` along the wall).
 - **A link** `{a, b, door, width}`: the room on the door's left (`center + (-dir.z, dir.x) * reach`) and on its right.
@@ -39,11 +44,17 @@ area and lines by relation, coloured by status. Phone, tablet and desktop: the t
 
 ## 4. Functions, `src/js/engine/bim/interiors.js`
 
-- **WO-01 `bimIntProgramItem(raw)`**: `id` and `rationale` strings else `''`; `use` trimmed string else `''`;
-  `count` floored when a finite number 1 or more, else 1; `areaMin`, `areaMax` finite numbers 0 or more, else `null`,
-  swapped when both are set and out of order.
+- **WO-01 `bimIntProgramItem(raw)`**: `id`, `rationale` and `source` strings else `''`; `use`, `building` and `group`
+  trimmed strings else `''`; `count` floored when a finite number 1 or more, else 1; `areaMin`, `areaMax` finite
+  numbers 0 or more, else `null`, swapped when both are set and out of order; `level` floored when a finite number
+  (negative allowed: a basement), else `null`; `status` one of the three else `'unknown'`; `params` a new object with
+  the own keys of `raw.params` whose values are finite numbers (`{}` when `raw.params` is not a plain object or is an
+  array); `open` one of the three else `'auto'`. The keys in this order: id, use, count, areaMin, areaMax, rationale,
+  building, level, group, status, source, params, open.
 - **WO-02 `bimIntRelation(raw)`**: `null` unless `a` and `b` are non-empty, different strings. `kind` one of the
-  three else `'desired'`; `rel` one of the three else `'next'`; `nearM` a finite number above 0 else 15.
+  three else `'desired'`; `rel` one of the eight else `'next'`; `nearM` a finite number above 0 else 15; `strength`
+  1, 2 or 3 when exactly one of those numbers, else 2; `reason` a trimmed string else `''`; `status` one of the three
+  else `'approved'`. Keys in this order: a, b, kind, rel, nearM, strength, reason, status.
 - **WO-03 `bimIntInside(p, poly)`**: even-odd crossing test on `[x, z]` points; `false` without a polygon.
 - **WO-04 `bimIntSharedLength(pa, pb, tol)`**: for each edge of `pa` (skipping one shorter than 1e-9) and each edge
   of `pb` whose both ends lie within `tol` (default 0.5 m when not a number 0 or more) of the edge's line, the length
@@ -56,12 +67,14 @@ area and lines by relation, coloured by status. Phone, tablet and desktop: the t
 - **WO-06 `bimIntDistances(links, from, cost)`**: Dijkstra over the links as undirected edges, each costing
   `cost[door]` when that is a number 0 or more, else 1; answers `{room: cost}` for every room reached, `from` at 0.
   Rooms not reached are absent. `{}` without links or a string `from`.
-- **WO-07 `bimIntCheck(rel, facts)`**: no relation: `not evaluated`, `'not a relation'`; either room missing from
+- **WO-07 `bimIntCheck(rel, facts)`**: no relation: `not evaluated`, `'not a relation'`; a relation whose `status` is
+  `'rejected'`: `not evaluated`, `'the relation was rejected'`; either room missing from
   `facts.rooms`: `not evaluated`, `'a room is not in the model'`. Shared length and door count read under `'a|b'` or
   `'b|a'`. `next`: met when either is above 0 (`'a door between them'` when a door, else `'a shared wall'`), else not
   met `'no shared wall or door'`. `apart`: the reverse with the same reasons. `near`: `facts.dist[a][b]`; absent:
   `not evaluated`, `'no route between them'`; else met `'route 9.0 m'` when within `nearM`, else not met
-  `'route 9.0 m, over 5 m'` (one decimal, `nearM` as it is).
+  `'route 9.0 m, over 5 m'` (one decimal, `nearM` as it is). `access`: met `'a door between them'` when the door count is above 0, else not met `'no door between them'`.
+  `visual`, `acoustic`, `secure`, `sequence`: `not evaluated`, `'not measured in this phase'` (after the room check).
 - **WO-08 `bimIntMatch(items, rooms)`**: for each item, the rooms of the same `use` in order (`rooms`), how many
   (`have`), those whose `area` is not a number or out of the item's range (`offArea`); `status` `'short'` when fewer
   than `count`, `'over'` when more, else `'area'` when any is out of range, else `'ok'`.
