@@ -92,3 +92,4 @@ the evidence over: note it in the history and recalibrate.
 |---|---|---|
 | 2026-11-11 | First version: A 0-2, B 3-4, C 5-7, D 8-12 | None yet: starting estimates |
 | 2026-11-11 | Cline/Nemotron replaces Aider/Qwen as the A/B worker; calibration starts fresh | No Cline task history yet; Aider results remain historical |
+| 2026-11-15 | First audit sample: score 0: 7 ok; score 1: 3 ok; score 2: 2 ok; score 3: 1 ok, 1 fixed; score 4: 1 ok | 14 ok, 1 fixed across v175c, v177 and v194; v177 WO-13–15 were manually committed, not Cline first-pass evidence; first-gate attempts remain unknown, so no threshold change |
