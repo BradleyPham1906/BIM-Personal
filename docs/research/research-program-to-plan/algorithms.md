@@ -4,11 +4,27 @@ Researched 2026-11-16 by Claude (a research agent) for the features listed in `a
 Anthropocity's code is not available and nothing of theirs is taken: this note names the published,
 citable method for each feature, so the app can implement it itself in ES5. Evidence levels: P (the source
 itself read), S (a dependable secondary source), U (a search summary only; never reaches the code).
-Status: IN PROGRESS (skeleton; topics are filled in order).
+Status: complete for the ten topics asked. No independent second reader yet: every number a work order uses is
+re-read at its source first (as in program-to-plan part 3).
 
 ## 1. Summary
 
-(to be written)
+No library is needed for any of the ten topics; the optional ones are SheetJS (Apache-2.0) for .xls/.ods and
+pdf.js (Apache-2.0) for PDF tables, both recommended *not now*. Everything below is about 1 500 to 2 000 lines of
+the app's own ES5 across about eight engine files, each with unit tests.
+
+| # | Topic | Recommended method, one line | Level | Confidence |
+|---|---|---|---|---|
+| 1 | Bubble diagram | d3-force's model (alpha cooling, link + many-body + collide + centre pull, fx/fy pins) as own ES5, plus projection into the parent circle/polygon, seeded spiral start and a fixed 300-tick run for reproducible output | P (FR 1991, d3-force 3.0.1 source) | high |
+| 2 | Links from parameters | Gower's weighted similarity (ranges, blanks skipped), then union top-k neighbours above a floor, plus a maximum spanning tree for connectivity, strengths by bands; generated links marked suggested | P (Gower 1971, von Luxburg 2007, Muther RMA 1111) | high (similarity), medium (link rules) |
+| 3 | Clusters | Louvain with Reichardt-Bornholdt resolution gamma, fixed node order, then split disconnected communities; Leiden later if needed | P (Blondel 2008, Traag 2019, R-B 2006) | high / medium for defaults |
+| 4 | Bridges, hubs, depth, aspect | One iterative DFS with low-link (articulation points, bridges, subtree sizes for "separates N rooms"); weighted degree; centre by minimum eccentricity and BFS depth; PCA of area-weighted room positions with extents | P (NetworkX code), S (Tarjan) | high |
+| 5 | Corridors from paths | Dijkstra per path leg on the wall graph, use counts per wall edge, spine at the threshold, Takahashi-Matsuyama nearest-first spurs, dead ends closed above a limit, corridors cut from rooms and reported | P (Mirahmadi-Shami 2012, NetworkX Steiner), S (KMB, T-M) | medium |
+| 6 | Stair | Exhaustive weighted 1-median ("path priority") or 1-centre ("worst leg") over corridor corners that fit on all levels, with a move limit | P (Hakimi 1964 abstract) | high |
+| 7 | Bay grid | Bands of depth d, rooms take whole bays of width b; b by exhaustive 1-D search for least area deviation; small rooms clustered with linked neighbours (max 3) then sliced inside their bays; order follows the bubble diagram | P (Muther, Concrete Centre), own method | medium |
+| 8 | Import | CSV per RFC 4180 first; .xlsx second by own ZIP reader + DecompressionStream('deflate-raw') + DOMParser; PDF not now (paste text instead) | P | high / medium-high / medium |
+| 9 | Export | SVG per view, PDF via print, DXF via the existing `bimBuildDXF` writer with a level elevation per polyline | P (app code), S (DXF code 38) | high |
+| 10 | AI stand-ins | Templates and paste-in text; walk-through by a name list; entrance by name, else highest betweenness (Brandes); paths by BFS from the entrance per user group | P (NetworkX Brandes), inference | medium |
 
 ## 2. The topics
 
@@ -297,19 +313,425 @@ check.) For an editable building polygon, use the polygon's own second moments i
 
 Level: P (NetworkX code), S (Tarjan, Hakimi as cited), inference for the filter and aspect. Confidence: high.
 
-### 2.5 Corridors routed from user paths
-### 2.6 Stair placement
-### 2.7 Bay grid and small-room clustering
-### 2.8 Import of a programme sheet
-### 2.9 Export
-### 2.10 Offline stand-ins for the online AI features
+### 2.5 Corridors routed from user paths (features 28, 29, 34, 36, 39)
+
+**Sources read.** Kou, Markowsky and Berman 1981 (Acta Informatica 15:141-145) and Mehlhorn 1988, as
+implemented and documented in NetworkX `algorithms/approximation/steinertree.py` (BSD-3-Clause; P for the code,
+S for the papers: the papers themselves were not read). Takahashi and Matsuyama 1980 (Math. Japonica 24) not
+reached: S from the standard account. Mirahmadi and Shami 2012, "A novel algorithm for real-time procedural
+generation of building floor plans", arXiv 1211.5842, section III.C "Corridor placement" (P). Shiksha, Anand,
+Shekhawat, Agrawal 2025 (AI EDAM 39 e9): as read and summarised in `layout-methods.md` section 2.3, cited not
+re-read (P there). Marson and Musse 2010 (IJCGT, Hindawi): both hosts (downloads.hindawi.com, Wiley) returned a
+script challenge page, not the PDF: not read; Mirahmadi and Shami describe it as placing a corridor when rooms to
+be connected are not adjacent (S). Lopes, Tutenel, Smelik, de Kraker, Bidarra 2010, "A constrained growth method
+for procedural floor plan generation" (GAME-ON 2010): graphics.tudelft.nl and publications.graphics.tudelft.nl
+reset the connection twice; a search summary says it uses A* to find a shortest route joining the rooms that need
+a corridor and then adjusts neighbouring rooms to make space (U only, not used for the method).
+
+**What the published methods say.**
+- *Corridors along walls (Mirahmadi and Shami, P).* Build a graph whose edges are the walls of the rooms that
+  need a connection and of the hub room (the living room), leaving out the building's outer walls; prune edges
+  to degree-one vertices; take the shortest path in that graph connecting all those rooms, a room counting as
+  connected if it shares an edge or a vertex with the path; justify shortest by "corridor area is wasted area";
+  among variants, reject those that leave rooms oddly shaped and keep the smallest corridor; cut the corridor
+  polygon out of the overlapping rooms. This is the closest published match to "corridors routed along walls".
+- *Steiner tree on a graph (KMB, P via NetworkX).* Given a weighted graph and terminals: compute shortest paths
+  between all terminal pairs (the metric closure), take its minimum spanning tree, replace each tree edge by its
+  shortest path, take the minimum spanning tree of that subgraph, and repeatedly delete non-terminal leaves.
+  Result within 2 - 2/l of optimal (l the number of leaves of an optimal tree). Cost O(|S| |V|^2) as documented;
+  Mehlhorn's variant O(|E| + |V| log |V|).
+- *Takahashi and Matsuyama (S).* Start from one terminal; repeatedly add the terminal nearest to the current
+  tree by its shortest path to the tree; same 2 - 2/l bound. Simpler than KMB and incremental, which is what
+  "connect the remaining rooms with the shortest spur" means.
+- *Shiksha et al. 2025 (P in layout-methods).* Corridors are inserted by shifting walls; rooms shrink by the
+  corridor area; minimal circulation is a set cover solved greedily; public rooms may serve as passages.
+
+**Recommended method (inference, confidence medium: the steps are assembled from the sources above; no paper
+does exactly paths-with-frequencies to spine).**
+
+1. *Wall graph.* From the rooms on the bay grid (topic 7), make vertices at every wall corner and T-junction,
+   and an edge for every wall segment between them, weighted by its length. Exterior walls are kept but with a
+   cost factor (default 3) so routes prefer interior walls and use the facade only for the short stubs that
+   Anthropocity describes (Mirahmadi excludes them outright). Edges through a room's interior do not exist;
+   "walk-through" rooms (feature 30: lobby, waiting) add edges across the room between its wall vertices.
+2. *Legs.* For each user path (an ordered list of rooms with a frequency weight: primary 3, secondary 2,
+   occasional 1), each consecutive pair of rooms is a leg. Route each leg with Dijkstra from all vertices on
+   room A's walls (a multi-source start at cost 0) to any vertex on room B's walls (stop at the first reached).
+   Ties: lowest vertex id, so the run is reproducible. A leg between levels is reported (feature 39), not routed,
+   until the stair exists (topic 6).
+3. *Use count.* For each wall edge, count the paths that use it (each path counted once even if several legs
+   cross the edge) and the frequency-weighted sum.
+4. *Spine.* Edges whose path count is at or above the spine threshold (a setting, default 2) get the main width
+   (a registry value; BB103's 1.8 m for a corridor serving several rooms, see `layout-methods.md` 2.3, P there).
+5. *Access spurs ("Spine + access").* Rooms not touching the network (sharing at least a door width of wall with
+   it) are joined one at a time, nearest first, by the shortest path from the room's walls to any network vertex
+   (Takahashi-Matsuyama's step, a multi-source Dijkstra from the network); spurs take the secondary width (1.2 m
+   in BB103 for a corridor to one or two rooms). "All legs" instead keeps every leg edge at the secondary width.
+6. *Entrance.* The entrance (topic 10, or the user's) is a terminal: the network must reach it; its stub to the
+   facade is the shortest path from the network to the entrance point on the exterior wall.
+7. *Loops versus dead ends.* The union of leg routes may already form loops (two paths using two sides of a block
+   of rooms). Spurs make dead ends. Report each dead end's length; where a dead end is longer than a limit (a
+   registry value: building codes cap dead-end corridors; the figures were not read here, U), close it by the
+   shortest path from its end to another network vertex not on its own spur. Anthropocity's "loops round blocks
+   with short stubs to the facade" is this union-of-routes behaviour (inference from their description, S).
+8. *Geometry.* Each corridor edge becomes a band of its width centred on, or offset to one side of, the wall line,
+   cut out of the rooms it overlaps (Mirahmadi; Shiksha). Rooms lose area; the scorecard reports each room's
+   deviation and the corridor share (layout-methods recommendation; Anthropocity's report).
+9. *Problems in plain words* (feature 39): a leg with no wall route (graph disconnected), corridor pieces not
+   joined to the rest, rooms without access and why (no wall long enough for a door), spur count and length,
+   corridor area and share.
+
+**Cost.** A bay grid of 500 rooms has a few thousand wall vertices; one Dijkstra with a binary heap is about
+E log V, about 10^4 x 12 operations; 100 paths of 10 legs is 1 000 runs, about 10^8 operations at worst: up to a
+second in a browser. Early exit at the target and a multi-source start cut this by an order of magnitude. At 10
+to 100 rooms it is instant. The heap is about 40 lines of ES5.
+
+**Failure modes.** Routes hug the walls of the first-placed rooms and so depend on the room layout: a bad room
+order makes long corridors (inference); a corridor carved from a small room can make it unusable (Mirahmadi
+filters such variants, P); greedy spurs are not the minimum total (2 - 2/l bound, S); paths through the facade
+when the interior is blocked (cost factor, report it); multi-level paths need the stair first.
+
+Level: P (Mirahmadi, NetworkX), S (KMB, Takahashi-Matsuyama as stated), U (Lopes). Confidence: medium.
+
+### 2.6 Stair placement (feature 35)
+
+**Sources read.** Hakimi 1964, "Optimum locations of switching centers and the absolute centers and medians of
+a graph", Operations Research 12(3) 450-459: the abstract only, on RePEc (P for the abstract; the body
+paywalled, not read). Kariv and Hakimi 1979, "An algorithmic approach to network location problems. I: the
+p-centers", SIAM J. Appl. Math. 37(3) 513-538: its stated running times through a search summary only (U).
+
+**What the published results say.** Hakimi generalised the graph centre and median vertex to the *absolute*
+centre and median of a graph with weights on vertices and edges; he showed the optimum "switching centre"
+(minimise the weighted sum of distances: the 1-median) is always at a vertex, while the best "police station"
+(minimise the largest distance: the 1-centre) is not necessarily at a vertex (P, abstract). So for the median,
+checking every vertex is exact; for the centre, the exact optimum may lie part-way along an edge, and
+Kariv and Hakimi give polynomial algorithms for that (U for their bounds).
+
+**Recommended method (inference, confidence high: small graphs make exhaustive search exact and simple).**
+1. *Candidates*: corner vertices of the corridor network (a vertex where the corridor turns or branches), on
+   which a stair footprint of the programme's size fits beside the corridor without cutting a room it may not
+   cut, on every level (the stair is in the same place on every level). Typically 10 to 200 candidates.
+2. *Demand*: for each room, a weight = the frequency-weighted number of path legs that start or end in it and
+   change level (those legs must pass the stair). If no leg changes level, every room on an upper level weighs 1.
+3. *Distances*: one Dijkstra from each candidate over the corridor network (plus walk-through rooms) gives its
+   distance to each room's door.
+4. *"Path priority" = weighted 1-median*: choose the candidate minimising the sum over rooms of weight x
+   distance, summed over the levels. Exact among the candidates (Hakimi's vertex result means nothing better
+   lies between vertices for an unconstrained median; here the candidates are the corners anyway).
+5. *"Balance the worst leg" = 1-centre*: choose the candidate minimising the largest weighted distance to any
+   room with demand. Restricting to corners may miss the absolute centre on an edge (Hakimi, P); the loss is at
+   most half an edge length, which on a bay grid is half a bay. Report the worst leg's length.
+6. *Ties*: smaller second criterion (centre's max for the median, median's sum for the centre), then the
+   lowest candidate id.
+7. *"How far it may move"*: a setting; candidates farther than this from the previous stair position (or from
+   the stair node in the bubble diagram) are dropped, so edits do not throw the stair across the plan (feature 41).
+Cost: C candidates x one Dijkstra (E log V): 200 x 10^4 x 12, about 2 x 10^7 operations; a few tens of ms.
+
+**Failure modes.** No candidate fits (report it and offer the best corner with the overlap); the median pulls
+the stair toward one heavy room and leaves a far wing a long walk (show both scores so the user can pick);
+egress rules (travel distance to a stair, two stairs) are code checks the method does not make (U: figures not
+read; registry data later).
+
+Level: P (Hakimi's abstract), U (Kariv-Hakimi bounds), inference for the procedure. Confidence: high.
+
+### 2.7 Bay grid and small-room clustering (features 32, 33, 41)
+
+**Sources read.** Muther, RMA 1111 (P; topic 2): its last step, the *space* relationship diagram, is drawn on
+gridded paper at a scale where one square is a fixed area, each activity drawn as a block of squares, and the
+relationship lines kept between the blocks: the hand form of "rooms take whole grid cells, placed as the
+bubble diagram says". The Concrete Centre, "Commercial" sector page (read 2026-11-16, P): its independent office
+cost study priced six short-span options on a 9.0 x 7.5 m grid and two long-span options on 15.0 x 9.0 m, and
+it names post-tensioned band beams as the economic choice above 12 m spans. Hua 2016 ("Irregular architectural
+layout synthesis with graphical inputs", Automation in Construction 72:388-396): from its abstract through a
+search summary (U), it works on irregular regions by subgraph matching and simulated annealing and is *not* a
+grid method. Lopes et al. 2010 grow rooms on a grid (U; host unreachable, topic 5). Wu et al. 2018 and the
+other layout methods: see `layout-methods.md` 2.4 and 5 (cited, not re-read).
+
+**Published methods.** No paper found that clusters small rooms before giving them bays (two searches). Grid
+growth (Lopes, U) and Muther's gridded space diagram (P) are the nearest. The method below is ours, built on
+layout-methods' recommendation (bands, ordered slicing, consecutive small rooms sharing a bay) (inference).
+
+**Recommended deterministic method (inference, confidence medium).**
+1. *Bands and depth*: from the typology (layout-methods 5, step 1-2): room bands of depth d either side of a
+   spine. The bay is the module along the band: width b. A room takes k whole bays, k = max(1, round(A / (b d))).
+2. *Bay width*: the user's minimum bay width b_min (default 3.0 m, a project setting), per building. "Fit":
+   b = b_min. "Auto-optimise": try every b from b_min to b_max (default 9.0 m: the upper end of the short-span
+   office grid the Concrete Centre priced, P) in steps of the planning module (default 0.3 m) and keep the b
+   with the least total absolute area deviation sum |k_i b d - A_i| / A_i; ties to the smaller b. At most 21
+   values x n rooms: trivial. The span is shown against the 7.5 to 9 m range so a user sees a structurally
+   odd grid (S: the range from the cost study's grid, not a design rule).
+3. *Small-room clustering*: a room is small if A < t b d (t, the small-room threshold, default 0.6 of a bay).
+   Visit small rooms in programme order; each joins the cluster of its most strongly linked small neighbour if
+   that cluster has fewer than the maximum per cluster (default 3) and their total area fits in whole bays
+   with less deviation than apart; else it starts a cluster. A cluster takes k bays like one room and is
+   sliced inside (in depth when two, in width and depth when three: the ordered slicing of layout-methods),
+   the deeper room flagged if it loses the corridor wall.
+4. *Order along the bands*: "follow the bubble diagram": project each room's bubble position onto the band's
+   axis and sort by it, splitting between the two bands by which side of the spine the bubble lies; otherwise
+   the greedy adjacency order with swaps of layout-methods 5 (steps 3 and 6).
+5. *Spare floor*: either rooms keep their k b d area and the remainder of the outline is reported as exterior
+   space, or every room's bays are scaled up in proportion to fill the level (feature 33's two options).
+6. *Stability*: once laid out, a change to one room moves only the rooms after it in its band (the order is
+   kept unless the user asks to re-order), so the layout "does not reshuffle" (feature 41).
+Size: about 200 to 300 lines of ES5 beside layout-methods' 300 to 400.
+
+**Failure modes.** Rounding to whole bays inflates small rooms by up to 50 % of a bay (hence clustering); a
+large b makes small rooms worse, a small b makes the structure odd; rooms needing a particular depth (a hall)
+do not fit a single-depth band; non-rectangular outlines need cutting into rectangles first (layout-methods 5).
+
+Level: P (Muther, Concrete Centre), U (Hua, Lopes), inference for the procedure. Confidence: medium.
+
+### 2.8 Import of a programme sheet (feature 3)
+
+**Sources read.** RFC 4180, "Common format and MIME type for CSV files" (October 2005, section 2, P). PKWARE
+APPNOTE.TXT 6.3.10 (2022-11-01, P: the local header 0x04034b50, central directory 0x02014b50, end of central
+directory 0x06054b50, general-purpose bit 3 (sizes in a data descriptor), method 8 = deflate). MDN
+browser-compat-data `api/DecompressionStream.json` (main branch, read 2026-11-16, P): DecompressionStream since
+Chrome 80, Firefox 113, Safari 16.4; the `deflate-raw` format since Chrome 103, Firefox 113, Safari 16.4.
+SheetJS: cdn.sheetjs.com index (P: "SheetJS Community Edition ... licensed under the Apache 2.0 License";
+it recommends vendoring), `xlsx-latest/package/package.json` (P: version 0.20.3, licence Apache-2.0), sizes
+measured by download (P): `xlsx.full.min.js` 951 904 bytes, `xlsx.mini.min.js` 279 523 bytes; the npm registry's
+`xlsx` is still 0.18.5 (P), i.e. current releases are distributed from SheetJS's own CDN, not npm. The git host
+git.sheetjs.com asked for a sign-in for the raw licence file (not read there). pdf.js: npm `pdfjs-dist` latest
+6.5.438, licence Apache-2.0 (P, registry), sizes by download from jsDelivr (P): `build/pdf.min.mjs` 474 284 and
+`build/pdf.worker.min.mjs` 1 271 915 bytes (legacy build 537 769 + 1 327 591). SpreadsheetML cell structure
+(ECMA-376 Part 1): from general knowledge, not re-read (S).
+
+**The app today (P, read).** No ZIP reader and no CSV parser in `src/js/engine` (a CSV *writer* exists,
+`structure/analysis-properties.js` `bimScheduleToCSV`; survey points accept delimited text in
+`site/alignment-profile.js`). `io/file-save.js` `bimGunzip` already uses the browser's DecompressionStream for
+gzip, so the same API with `deflate-raw` inflates ZIP entries with no library.
+
+**CSV (recommended first; confidence high).** A state machine over characters per RFC 4180: fields separated
+by commas; a field may be quoted; inside quotes, a doubled quote is a quote and commas and line breaks are
+data; records end at CRLF (accept LF and CR too, as most files in practice); the last record may lack a line
+break; an optional header row. Additions the RFC does not cover but real sheets need (inference): a leading
+UTF-8 BOM to strip; semicolon or tab as separator (detect from the header: the most frequent of , ; tab outside
+quotes); decimal commas in European exports (only if the separator is not a comma). About 60 lines of ES5.
+Then a column mapper: guess columns by header names (name/room/space, area/m2/sqm, count/qty/copies,
+floor/level, building, group/department), show the guess, let the user correct it; rows with no area become
+buildings or group headings when the user says so (feature 2's row type).
+
+**Excel .xlsx (recommended second, own code; confidence medium-high).** An .xlsx is a ZIP of XML parts.
+Steps: find the end-of-central-directory record by scanning back from the end for 0x06054b50; read the
+central directory (names, methods, compressed sizes, local header offsets: reading sizes here avoids bit 3's
+data descriptors); for each needed part, skip the local header (30 bytes plus name and extra lengths) and
+inflate method 8 with `DecompressionStream('deflate-raw')` (method 0 is stored, copy as is); parse the XML
+with the browser's DOMParser. Parts: `xl/workbook.xml` (sheet names and relationship ids),
+`xl/_rels/workbook.xml.rels` (sheet file paths), `xl/sharedStrings.xml` (the string table),
+`xl/worksheets/sheetN.xml` (rows of cells; a cell's reference like C12, its type: shared string index, inline
+string, boolean, error, or a number by default). Dates and merged cells are not needed for a programme sheet;
+formulas are read from their cached value. Then the CSV path's column mapper. About 150 lines of ES5. Limits:
+ZIP64 and encrypted workbooks refused with a message; the old binary .xls not supported (say "save as .xlsx
+or CSV"). SheetJS (Apache-2.0, permitted by the rule) is the fallback if users need .xls or .ods: the mini build
+is 280 KB, the full 952 KB, loaded on demand, vendored from cdn.sheetjs.com (not npm, which is stale).
+
+**PDF tables (recommended last, or not at all; confidence medium).** pdf.js (Apache-2.0) can extract each text
+run with its position, but a PDF has no table structure: columns must be inferred by clustering x positions
+and rows by y, which fails on wrapped cells, merged headings and scanned pages (no text at all). Cost: about
+1.75 MB of library (main plus worker), the largest library the app would load for one feature. Recommendation:
+not now; the paste-in-text route (topic 10) covers a PDF brief: the user copies the table text from their
+viewer and pastes it, and the CSV parser with a whitespace-column fallback reads it. Revisit if users ask.
+
+Level: P. Confidence: high (CSV), medium-high (xlsx by own code), medium (PDF advice).
+
+### 2.9 Export (feature 42)
+
+**The app today (P, quick read).** DXF: `io/export-mappings.js` `bimBuildDXF` writes an ASCII DXF with a HEADER
+($INSUNITS 6, metres), a LAYER table and ENTITIES of LWPOLYLINE, LINE and TEXT, using `bimDxfPair` and
+`bimDxfLayerName` from `io/dxf-export.js`; lines are written at z = 0 and polylines without an elevation group.
+SVG: `sheets/viewports.js` `bimExportSheetSVG` writes vector plan viewports with `bimEscXml`. PDF: the app prints
+through the browser (program-to-plan part 8).
+
+**Recommended (inference, confidence high).**
+- *SVG, direct*: each view (bubble diagram, matrix, programme map, radar, layout) builds its own SVG string:
+  circles and lines for the diagram (stroke width by link strength), rects and text for the matrix, polygons for
+  the layout; units in metres with a viewBox, so it is to scale; escape text with `bimEscXml`. About 40 to 80
+  lines per view.
+- *PDF, vector*: open the SVG in a print view at the chosen paper size and scale and call the browser's print
+  (the existing route); a scaled programme map states its scale in the drawing. No PDF library needed.
+- *DXF with levels stacked*: reuse `bimBuildDXF`'s pair writer and layer table; write each level's room outlines
+  as LWPOLYLINE with the level's elevation (group code 38, the polyline's elevation: S, DXF reference from
+  general knowledge, not re-read) and, for "one file", stacked by floor height; or one file per level at
+  elevation 0 (feature 42). Layer per level and per kind (rooms, corridors, walls, text). The app's own DXF
+  importer can round-trip-check it as the V24 comment describes.
+
+Level: P for what exists; S for group code 38. Confidence: high.
+
+### 2.10 Offline stand-ins for the online AI features (features 4, 5, 22, 30, 31)
+
+**Sources read.** NetworkX `algorithms/centrality/betweenness.py` (BSD-3-Clause, P): Brandes's algorithm as
+code, with its notes (weights must be positive; float weights can miscount equal paths, so scale to integers;
+undirected pairs counted once). Brandes 2001, "A faster algorithm for betweenness centrality", J. Math. Sociol.
+25(2):163-177: the author's copy at uni-konstanz.de returned an HTML page, not the PDF (S, via NetworkX).
+Decision 9 of `research-program-to-plan.md` part 11 (P): "AI suggested" means a rule set or relations pasted in as
+text, marked suggested until approved.
+
+**Betweenness (P via code).** For each source s: a BFS (or Dijkstra for weighted links) records the order nodes
+are finished, each node's predecessors on shortest paths, and sigma, the number of shortest paths from s; then,
+in reverse finishing order, each node w passes to each predecessor v the share sigma(v)/sigma(w) x (1 +
+delta(w)); a node's betweenness is the sum of its delta over all sources. Cost O(n m) unweighted,
+O(n m + n^2 log n) weighted: 500 rooms and 1 500 links, under a million steps. About 50 lines of ES5.
+
+**Recommended heuristics (inference, confidence medium: these are rules the user reviews, not methods with a
+published success rate; every output is marked "suggested").**
+1. *Draft a programme from a description (feature 4).* Two routes, no model: (a) the pattern library (feature 5):
+   programme templates as data (rooms, areas, groups, links) for common types, chosen by the user, with counts
+   scaled ("3 bedrooms" sets the bedroom count); a small parser picks numbers next to known room words in the
+   description and fills the template's counts; (b) paste-in text: the user pastes a list from any source
+   (including an online assistant they choose to use), one room per line, "name, area, count, group", read by
+   the CSV parser of topic 8 with a whitespace fallback.
+2. *Suggest adjacencies (feature 22's sibling).* Topic 2's parameter similarity, plus template links when the
+   programme came from a template, plus pasted lines "A - B, strength".
+3. *Walk-through rooms guessed from the name (feature 30).* A word list per language held as data (lobby, foyer,
+   hall, reception, waiting, atrium, circulation, concourse...): a room whose name contains one is "open", others
+   "closed" unless set. Word list is ours; mark guesses.
+4. *Suggest an entrance (feature 31).* In order: a room named as an entrance space (entrance, lobby, foyer,
+   reception, by the word list); else the room with the highest betweenness on the adjacency graph among rooms
+   that can reach the exterior wall (the room most paths pass through; Brandes); ties by hub score, then id. The
+   entrance point is on that room's exterior wall, at the point nearest the site's access (the road or path from
+   the site data when present), else the middle of its longest exterior wall. Rationale: a lobby is the node most
+   routes cross (inference; space syntax measures depth from the outside, Hillier and Hanson 1984, not read: S).
+5. *Suggest user paths (feature 31).* One path per user group the programme has (visitors, staff, service; from
+   room groups): start at the entrance, then visit the group's rooms in breadth-first order over the adjacency
+   graph from the entrance (depth first, then stronger link, then programme order), ending at the deepest room;
+   frequency primary for the group with most area, secondary for the next, occasional for the rest. Each path
+   is a draft the user edits. Coverage (feature 29) then shows the rooms no path reaches.
+6. *Paste-in for paths*: lines "path name: room, room, room; frequency" parsed the same way.
+
+Level: P (NetworkX code, decision 9), S (Brandes paper, Hillier and Hanson), inference for the rules.
+Confidence: medium.
+
 
 ## 3. Feature table
 
+Feature numbers are those of `anthropocity-features.md`. Line counts are estimates of the app's own ES5,
+without UI.
+
+| Features | Method | Source | ES5 lines (approx.) | Library |
+|---|---|---|---|---|
+| 10, 11, 12, 13, 41 | Force layout with pins, containment, settled state | FR 1991; d3-force 3.0.1 (ISC, read) | 300 | no |
+| 14, 19 | Scaled circles/squares, target vs current area | arithmetic | 60 | no |
+| 20, 21, 22 | Gower similarity, kNN + max spanning tree, strength bands | Gower 1971; von Luxburg 2007 | 150 | no |
+| 23, 8 | Matrix with strengths 1-3, merged copies | Muther (A/E/I lines) | UI only | no |
+| 25, 26 | Louvain with resolution, connectivity split, ignore bridges | Blondel 2008; R-B 2006; Traag 2019 | 150 | no |
+| 26, 27 | Bridges and articulation points with piece sizes; hub score; centre and depth; aspect | Hopcroft-Tarjan via NetworkX; Hakimi | 150 | no |
+| 28, 29 | Paths, coverage | data plus set arithmetic | 60 | no |
+| 30 | Walk-through by name list | own word list | 30 | no |
+| 32, 33 | Bands, bay width search, small-room clusters, slicing | Muther; layout-methods 5 | 250 (plus layout-methods' 300 to 400) | no |
+| 34, 36, 39 | Wall graph, Dijkstra legs, spine threshold, spurs, loops, report | Mirahmadi-Shami 2012; KMB; T-M | 350 | no |
+| 35 | Stair by 1-median or 1-centre | Hakimi 1964 | 100 | no |
+| 37, 38 | Doors on corridor walls; wall thicknesses | geometry on the layout | 100 | no |
+| 40 | Scorecard | layout-methods 2.5 | 60 | no |
+| 3 | CSV import | RFC 4180 | 60 + mapper 80 | no |
+| 3 | .xlsx import | APPNOTE 6.3.10; DecompressionStream | 150 | no (SheetJS Apache-2.0 only for .xls/.ods) |
+| 3 | PDF tables | pdf.js text positions | not now | pdf.js Apache-2.0, about 1.75 MB, if ever |
+| 4, 5, 31 | Templates, paste-in, entrance by name or betweenness, BFS paths | Brandes via NetworkX | 200 | no |
+| 42 | SVG, PDF by print, DXF stacked | app's `bimBuildDXF`, `bimExportSheetSVG` | 150 | no |
+
 ## 4. Counter-evidence and failure modes
+
+- **Force layouts are not optimisers with a guarantee.** FR call their termination "guesswork" and
+  Kamada-Kawai's energy can trap a node in a local minimum (P, FR). The diagram is a suggestion; pins let the
+  user override it. Bit-identical results across browsers are not guaranteed (Math.cos/sin are
+  implementation-approximated: U); compare with tolerances.
+- **Similarity is not adjacency** (topic 2): no published architectural method derives adjacency from room
+  parameter similarity; the nearest practice (Muther) rates each pair directly with a reason. Generated links
+  are a zoning hint and must stay "suggested".
+- **Community detection on small graphs is unstable**: modularity has a resolution limit and many near-equal
+  optima (S, U as cited); Louvain can produce disconnected communities (Traag et al.: up to 16 % in their tests,
+  P). Fixed order makes runs repeatable, not "right".
+- **Corridors cut rooms**: every corridor method read either shrinks rooms (Shiksha 2025; Mirahmadi) or needs
+  them planned around it; program-to-plan's experiment found a corridor reaching every room costs about 20
+  points of adjacency (P there). The router depends on the room layout it is given.
+- **Greedy Steiner spurs are approximate** (within 2 - 2/l, S); a few metres of extra corridor are possible.
+- **The 1-centre restricted to corners** can miss the absolute centre on an edge by up to half an edge (Hakimi,
+  P abstract).
+- **Bay rounding** inflates small rooms; clustering reduces but does not remove it. The 7.5 to 9 m span range is
+  from one cost study's grid, not a design rule (P, Concrete Centre).
+- **Own .xlsx reader**: files written by unusual tools (ZIP64, strict OOXML namespaces, encrypted) will fail; it
+  must refuse with a clear message rather than misread.
+- **Entrance and path heuristics** have no published success rate; their value is a starting draft.
 
 ## 5. Still open
 
+- Eades 1984 and Kamada-Kawai 1989 not read in the original (S via FR); Eades's constants are S.
+- Tarjan 1972/1974, KMB 1981, Takahashi-Matsuyama 1980, Brandes 2001, Kariv-Hakimi 1979: not read in the
+  original (paywalled or refused); their methods were read as code in NetworkX (BSD) or through the citing text.
+- Marson and Musse 2010 (both hosts returned a script challenge) and Lopes et al. 2010 (TU Delft hosts reset the
+  connection) not read: their corridor steps are S (Mirahmadi's account) and U.
+- Dead-end corridor and travel-distance limits for egress: figures not read; they belong in the standards
+  registry with an edition before V236 uses them.
+- DXF group code 38 for LWPOLYLINE elevation: from general knowledge (S); re-read in Autodesk's DXF reference
+  before the work order.
+- SheetJS's licence file on git.sheetjs.com needs a sign-in; the CDN index and package.json say Apache-2.0 (P).
+- Whether ECMAScript's Math.sqrt is required to be correctly rounded: not re-read (U); matters only for
+  cross-browser bit-identity, not for the method.
+- No independent second reader re-checked the facts here.
+
 ## 6. Search log
 
+| # | Date | Where | Query or URL | Result | Level |
+|---|---|---|---|---|---|
+| 1 | 11-16 | raw.githubusercontent.com | d3/d3-force main: src/simulation, link, manyBody, collide, x, radial, center, lcg, jiggle, LICENSE, package.json | read, ISC, 3.0.1 | P |
+| 2 | 11-16 | web search | Fruchterman Reingold 1991 pdf | author copy reingold.co | - |
+| 3 | 11-16 | reingold.co | force-directed.pdf | read (text extracted) | P |
+| 4 | 11-16 | web search | Gower 1971 general coefficient of similarity pdf | JSTOR copy on mathematics.foi.hr; CRAN vignette | - |
+| 5 | 11-16 | mathematics.foi.hr; CRAN mirror | Gower 1971; gower vignette | read | P; S |
+| 6 | 11-16 | web search | space planning adjacency from room attribute similarity | no published method found | U |
+| 7 | 11-16 | web search | Muther SLP relationship chart | RMA 1111 on richardmuther.com | - |
+| 8 | 11-16 | richardmuther.com | RMA 1111 Procedure for Making Relationship Diagrams | read | P |
+| 9 | 11-16 | arxiv.org | 0711.0189 (von Luxburg) | section 2.2 read | P |
+| 10 | 11-16 | arxiv.org | 0803.0476, 1810.08473, cond-mat/0603718 | read in parts | P |
+| 11 | 11-16 | raw.githubusercontent.com | vtraag/leidenalg LICENSE; CWTSLeiden/networkanalysis LICENSE | GPL-3.0; MIT | P |
+| 12 | 11-16 | raw.githubusercontent.com | networkx: community/louvain.py, bridges.py, components/biconnected.py, approximation/steinertree.py, centrality/betweenness.py, LICENSE.txt | read | P |
+| 13 | 11-16 | web search | Marson Musse 2010 pdf | Hindawi; arXiv 1211.5842 (Mirahmadi) | - |
+| 14 | 11-16 | downloads.hindawi.com; onlinelibrary.wiley.com | Marson Musse PDF | script challenge page, not read | - |
+| 15 | 11-16 | arxiv.org | 1211.5842 | section III.C read | P |
+| 16 | 11-16 | web search | Lopes 2010 constrained growth corridor | summary: A* corridor | U |
+| 17 | 11-16 | graphics.tudelft.nl; publications.graphics.tudelft.nl | Lopes 2010 PDF | connection reset twice | - |
+| 18 | 11-16 | web search; ideas.repec.org | Hakimi 1964 | abstract read | P (abstract) |
+| 19 | 11-16 | web search | Hua 2016 irregular layout | abstract summary: not a grid method | U |
+| 20 | 11-16 | web search; ribaj.com (403); infoacier.be (404); concretecentre.com | typical column grid spans | Concrete Centre page read | P |
+| 21 | 11-16 | rfc-editor.org | RFC 4180 | section 2 read | P |
+| 22 | 11-16 | pkware.cachefly.net | APPNOTE.TXT 6.3.10 | signatures, bit 3, method 8 | P |
+| 23 | 11-16 | raw.githubusercontent.com | mdn/browser-compat-data api/DecompressionStream.json | versions read | P |
+| 24 | 11-16 | cdn.sheetjs.com; git.sheetjs.com; registry.npmjs.org | SheetJS licence, version, sizes | Apache-2.0, 0.20.3, sizes; git host wants sign-in | P |
+| 25 | 11-16 | registry.npmjs.org; cdn.jsdelivr.net | pdfjs-dist latest, sizes | 6.5.438, Apache-2.0, sizes | P |
+| 26 | 11-16 | uni-konstanz.de | Brandes 2001 PDF | HTML page, not the PDF | - |
+| 27 | 11-16 | this repository | `io/export-mappings.js`, `io/dxf-export.js`, `io/file-save.js`, `sheets/viewports.js`, `simulation/traffic-sim.js` (grep and short reads) | DXF writer, gunzip, SVG export, seeded PRNG | P |
+
 ## 7. References
+
+| # | What it is | URL | What was read | Date | Level |
+|---|---|---|---|---|---|
+| 1 | Fruchterman, Reingold 1991, Graph drawing by force-directed placement, SPE 21(11) | https://www.reingold.co/force-directed.pdf | history, figure 1, forces, frame, grid variant, cooling, complexity | 2026-11-16 | P |
+| 2 | d3-force 3.0.1 (ISC) | https://github.com/d3/d3-force (raw files) | simulation, link, manyBody, collide, x, radial, lcg, jiggle, LICENSE | 2026-11-16 | P |
+| 3 | Eades 1984; Kamada, Kawai 1989 | via ref. 1 | FR's account | 2026-11-16 | S |
+| 4 | Gower 1971, Biometrics 27(4) 857-871 | https://mathematics.foi.hr/Rprojekti/BDP%20concept/Gover_metric.pdf | sections 1, 2, 4 | 2026-11-16 | P |
+| 5 | van der Loo, gower package vignette, 2024 | https://mirror.linux.duke.edu/cran/web/packages/gower/vignettes/intro.pdf | section 1 | 2026-11-16 | S |
+| 6 | von Luxburg 2007, A tutorial on spectral clustering | https://arxiv.org/abs/0711.0189 | section 2.2 | 2026-11-16 | P |
+| 7 | Richard Muther & Associates, RMA 1111, Procedure for making relationship diagrams (2002) | https://richardmuther.com/wp-content/uploads/2014/06/RMA%201111%20Procedure%20for%20Making%20Relationship%20Diagram.pdf | all 4 pages | 2026-11-16 | P |
+| 8 | Blondel et al. 2008, Fast unfolding of communities | https://arxiv.org/abs/0803.0476 | method, equation 2 | 2026-11-16 | P |
+| 9 | Traag, Waltman, van Eck 2019, From Louvain to Leiden | https://arxiv.org/abs/1810.08473 | introduction, section II, refinement, theta | 2026-11-16 | P |
+| 10 | Reichardt, Bornholdt 2006, Statistical mechanics of community detection | https://arxiv.org/abs/cond-mat/0603718 | the gamma null model | 2026-11-16 | P |
+| 11 | leidenalg (GPL-3.0); CWTS networkanalysis (MIT) | https://github.com/vtraag/leidenalg ; https://github.com/CWTSLeiden/networkanalysis | LICENSE files | 2026-11-16 | P |
+| 12 | NetworkX (BSD-3-Clause): louvain.py, bridges.py, biconnected.py, steinertree.py, betweenness.py | https://github.com/networkx/networkx | functions named in the text | 2026-11-16 | P |
+| 13 | Hopcroft, Tarjan 1973; Tarjan 1972, 1974 | via ref. 12 | cited | - | S |
+| 14 | Kou, Markowsky, Berman 1981; Mehlhorn 1988; Takahashi, Matsuyama 1980 | via ref. 12 | cited | - | S |
+| 15 | Mirahmadi, Shami 2012, A novel algorithm for real-time procedural generation of building floor plans | https://arxiv.org/abs/1211.5842 | section III.C | 2026-11-16 | P |
+| 16 | Shiksha et al. 2025, Automated generation of circulations within a floorplan, AI EDAM 39 e9 | see `layout-methods.md` ref. 6 | cited | 2026-11-16 | P there |
+| 17 | Marson, Musse 2010, IJCGT, doi 10.1155/2010/624817 | https://doi.org/10.1155/2010/624817 | not reached | - | S (via 15) |
+| 18 | Lopes et al. 2010, A constrained growth method for procedural floor plan generation | https://graphics.tudelft.nl/~rafa/myPapers/bidarra.GAMEON10.pdf | not reached | - | U |
+| 19 | Hakimi 1964, Operations Research 12(3) 450-459 | https://ideas.repec.org/a/inm/oropre/v12y1964i3p450-459.html | abstract | 2026-11-16 | P (abstract) |
+| 20 | Kariv, Hakimi 1979, SIAM J. Appl. Math. 37(3) | search summary | running times | - | U |
+| 21 | Hua 2016, Automation in Construction 72 | search summary | abstract | - | U |
+| 22 | The Concrete Centre, Commercial sector page | https://www.concretecentre.com/Sectors/Building-Sectors/Commercial.aspx | cost study grids, band beams | 2026-11-16 | P |
+| 23 | RFC 4180 | https://www.rfc-editor.org/rfc/rfc4180.txt | section 2 | 2026-11-16 | P |
+| 24 | PKWARE APPNOTE.TXT 6.3.10 | https://pkware.cachefly.net/webdocs/casestudies/APPNOTE.TXT | headers, bit 3, method 8 | 2026-11-16 | P |
+| 25 | MDN browser-compat-data, DecompressionStream | https://github.com/mdn/browser-compat-data/blob/main/api/DecompressionStream.json | versions | 2026-11-16 | P |
+| 26 | SheetJS Community Edition 0.20.3 (Apache-2.0) | https://cdn.sheetjs.com/ | index, package.json, build sizes | 2026-11-16 | P |
+| 27 | pdfjs-dist 6.5.438 (Apache-2.0) | https://www.npmjs.com/package/pdfjs-dist ; jsDelivr | registry entry, build sizes | 2026-11-16 | P |
+| 28 | Brandes 2001, J. Math. Sociol. 25(2) | https://doi.org/10.1080/0022250X.2001.9990249 | not reached; code in ref. 12 | - | S |
+| 29 | This app: `src/js/engine/io/export-mappings.js` (`bimBuildDXF`), `io/dxf-export.js`, `io/file-save.js` (`bimGunzip`), `sheets/viewports.js` (`bimExportSheetSVG`), `simulation/traffic-sim.js` (`bimTrRng`) | repository | short reads | 2026-11-16 | P |
+| 30 | `layout-methods.md` and `research-program-to-plan.md` (this round) | repository | parts cited | 2026-11-16 | P |
