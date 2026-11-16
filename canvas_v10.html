@@ -5799,7 +5799,6 @@ try{
     return v;
   }
   var A3D_THEME_AT_START=bimThemeRestore();
-
   function vsub(a,b){return [a[0]-b[0],a[1]-b[1],a[2]-b[2]];}
   function vcross(a,b){return [a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];}
   function vdot(a,b){return a[0]*b[0]+a[1]*b[1]+a[2]*b[2];}
@@ -35472,7 +35471,6 @@ try{
       (skippedPoints?'; '+skippedPoints+' POINT entities not rendered':'')+
       (res.insUnits===null?' (no units in file, assumed meters)':''));
   }
-
   // ---- OBJ (Wavefront, Y-up - matches this engine's convention directly) ----
   function objParse(text){
     var lines=text.split(/\r\n|\r|\n/),i;
@@ -35602,7 +35600,6 @@ try{
     refreshTree();refreshLayers();fitScene();paint();saveSoon();
     a3dToast('STL import ('+(isBin?'binary':'ASCII')+'): '+parsed.f.length+' triangles from '+filename);
   }
-
   // ---- IFC (STEP-text BIM format): subset covering IfcBuildingStorey + vertically-extruded IfcWall/IfcSlab ----
   function ifcSplitTop(s){
     var out=[],depth=0,cur='',inStr=false,i;
@@ -36849,7 +36846,8 @@ function bimIfcSaveMesh(o, m, lv, base){
   for(i=0;i<m.v.length;i++){p=[m.v[i][0]+(o.pos&&o.pos[0]||0),m.v[i][1]+(o.pos&&o.pos[1]||0),m.v[i][2]+(o.pos&&o.pos[2]||0)];verts.push(bimIfcSavePt3(p));if(p[1]<miny)miny=p[1];}
   if(verts.length<3)return null;
   for(i=0;i<m.f.length;i++){
-    f=m.f[i];if(f.length<3)continue;
+    f=m.f[i];
+    if(!f||f.length<3)continue;
     for(j=2;j<f.length;j++)faces.push([f[0],f[j-1],f[j]]);
   }
   if(!faces.length)return null;
@@ -44983,7 +44981,6 @@ function bimWalkKeys(h, j) {
     {id:'capture',label:'Save image', menu:false},
     {id:'help',   label:'Keyboard shortcuts', menu:true}
   ];
-
   /* ---- __acad3dV85: the shortcut registry ----
 
      One list, rendered into the sheet AND driven by the Phase 85 suite: every row carrying a
@@ -52378,7 +52375,6 @@ function bimWalkKeys(h, j) {
     }
     return {ok:unclaimed.length===0,claimed:claimed,unclaimed:unclaimed};
   }
-
   /* ================= __acad3dV124: the Assets library =================
      The owner, in V119: Assets "should be blocks templates premade for easy drag and drop into the
      project not an overview of stuff". Models, blocks and templates first, as tiles; annotation, and
@@ -53577,7 +53573,6 @@ function bimWalkKeys(h, j) {
     paint();saveSoon();
     a3dToast('Exited section view');
   }
-
   function add3d(t,prm){
     var tp=TYPES[t];if(!tp)return null;
     var p=mergePrm(t,prm);
@@ -56544,7 +56539,6 @@ function bimWalkKeys(h, j) {
     return {id:'builtin:'+s.k,kind:'model',builtin:true,name:s.name,category:s.cat,manufacturer:'',
       mesh:bimNormalizeMeshForFamily(bimAsmMesh(s.parts)),thumb:''};
   });
-
   /* ================= __acad3dV172f: every project in the browser's database; the older keys copied, checked, retired =================
      docs/research/research-local-storage.md, part 13 (the owner's D1, D7, D9, D10; F2). At start the database is opened:
      - the projects are already in it (the index under acad3dProjectsV2): the index is reconciled with the database's
@@ -60228,7 +60222,6 @@ function bimWalkKeys(h, j) {
       bimPrintSheetRasterFallback(sheet);
     }
   }
-
   // ---- __acad3dV28: Revit-style Project Browser. The previous sidebar crammed 7 tabs into a
   // 210px strip -- labels clipped, later tabs unreachable, and no way to lock/unlock from the
   // tree at all. Revit doesn't use tabs here: it has a Properties palette above a hierarchical,
@@ -65564,7 +65557,6 @@ function bimLyDupNumbers(entries) {
     exportpng:ric('<rect x="3" y="3" width="18" height="14" rx="1"/><path d="M3 13l5-5 4 4 4-4 5 5"/><circle cx="8" cy="8" r="1.5"/>'),
     exportpdf:ric('<path d="M6 2h9l5 5v15H6z"/><path d="M15 2v5h5"/><path d="M8.5 13.5h1.2c.7 0 1.3.6 1.3 1.3s-.6 1.3-1.3 1.3H8.5v-2.6z"/>')
   };
-
   // ---- __acad3dV3: CSG solid booleans + pair selection + drag-move ----
   var CSG_EPS=1e-5;
   /* __acad3dV114: published for the chrome outside this engine -- the quick-access bar, the command
@@ -66629,7 +66621,6 @@ function bimLyDupNumbers(entries) {
     if(TYPES[act]){openDlg(act);return;}
     return false;
   }
-
   // ---- __acad3dV20: UI panel visibility dropdown, matching the "show/hide panels" convention
   // from Revit's User Interface button / AutoCAD's palette toggles. Deliberately does NOT let
   // the toolbar itself be hidden (that's where the toggle control lives) -- same
@@ -67951,7 +67942,6 @@ function bimLyDupNumbers(entries) {
     return {kind:A3D_VIEW.kind,id:A3D_VIEW.id,name:A3D_VIEW.name};
   };
   window.__a3dOpenView=function(kind,id,opts){return bimActivateView(kind,id,opts);};
-
   /* ================= __acad3dV86: the command palette runs against the BIM engine =========
 
      Every entry here was driven before it was listed. A command with no BIM implementation is
@@ -70677,7 +70667,6 @@ function bimLyDupNumbers(entries) {
   window.__a3dSunVals=function(){var v=bimSunNowVals();delete v.st;return JSON.parse(JSON.stringify(v));};
   window.__a3dSunX=function(){return JSON.parse(JSON.stringify(A3D_SUNX));};
   window.__a3dSetSun=function(f,v){return bimSetSun(f,v);};
-  window.__a3dUndo=function(){doUndo();return true;};
   window.__a3dSunWords=function(){return JSON.parse(JSON.stringify(A3D_DG.labelWords||[]));};
   window.__a3dSunDots=function(){var o={};A3D_DG.hits.forEach(function(h){o[h.id]=h.dots.map(function(d){return d.slice();});});return o;};
   window.__a3dSunLabels=function(){return JSON.parse(JSON.stringify({boxes:A3D_DG.labelBoxes||[],dots:A3D_DG.dotKeep||[]}));};

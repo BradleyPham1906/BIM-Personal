@@ -71,8 +71,11 @@ import/export lines (tier B at most, with a test).
 ## Getting better over time
 
 `aider-log.md` is the historical record of Aider fallback tasks. Do not infer Nemotron performance
-from Aider's Qwen results. Before changing Cline's thresholds, record its first-pass outcomes and
-Claude's fixes in a separate Cline-specific record, then review that evidence with the owner.
+from Aider's Qwen results. Record Cline-only outcomes in [`CLINE-OUTCOMES.md`](./CLINE-OUTCOMES.md):
+the model, route tier, first gate result, gate retries, post-ship audit changes, and whether the
+task was reopened or reverted. Record outcomes after audit, and mark unknown first-pass data as
+unknown rather than reconstructing it from the final passing gate. Before changing thresholds,
+review at least five comparable tasks with the owner; a model change starts a new baseline.
 
 | What the log shows for a total score | Change |
 |---|---|

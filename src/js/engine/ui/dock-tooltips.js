@@ -294,7 +294,6 @@ import { BIM_SHEET_ACTS } from '../commands/command-map.js';
     if(TYPES[act]){openDlg(act);return;}
     return false;
   }
-
 export {
   A3DR_ALL_ICON, A3DR_PIN_ICON, A3DR_SEARCH_ICON, a3drAllCommands, bimBindDock, bimBindDockTips,
   bimDockLabelsOn, bimDockTipData, bimRunAct, bimSetDockLabels, bimTipHide

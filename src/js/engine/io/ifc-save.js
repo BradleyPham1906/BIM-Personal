@@ -130,7 +130,8 @@ function bimIfcSaveMesh(o, m, lv, base){
   for(i=0;i<m.v.length;i++){p=[m.v[i][0]+(o.pos&&o.pos[0]||0),m.v[i][1]+(o.pos&&o.pos[1]||0),m.v[i][2]+(o.pos&&o.pos[2]||0)];verts.push(bimIfcSavePt3(p));if(p[1]<miny)miny=p[1];}
   if(verts.length<3)return null;
   for(i=0;i<m.f.length;i++){
-    f=m.f[i];if(f.length<3)continue;
+    f=m.f[i];
+    if(!f||f.length<3)continue;
     for(j=2;j<f.length;j++)faces.push([f[0],f[j-1],f[j]]);
   }
   if(!faces.length)return null;

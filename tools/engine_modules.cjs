@@ -38,6 +38,7 @@ var ts = loadTs();
 var ROOT = path.resolve(__dirname, '..');
 var SRC = path.join(ROOT, 'src');
 var ENGINE = path.join(SRC, 'js', 'engine');
+var TEST_API = path.join(ROOT, 'tests', 'unit', 'helpers', 'engine-symbols.json');
 var WIDTH = 110;
 
 /* The same patterns tools/build_app.py strips. */
@@ -116,6 +117,28 @@ function rel(from, to) {
   return r.charAt(0) === '.' ? r : './' + r;
 }
 function sorted(set) { return Array.from(set).sort(function (a, b) { return a < b ? -1 : a > b ? 1 : 0; }); }
+function unitTestNames() {
+  // Keep direct unit-test targets available without widening production module exports.
+  var dir = path.join(ROOT, 'tests', 'unit'), names = new Set();
+  fs.readdirSync(dir).filter(function (f) { return /\.test\.mjs$/.test(f); }).forEach(function (f) {
+    var file = path.join(dir, f), text = fs.readFileSync(file, 'utf8');
+    var sf = ts.createSourceFile(file, text, ts.ScriptTarget.Latest, true, ts.ScriptKind.JS);
+    var engines = new Set();
+    (function findEngines(n) {
+      if (ts.isVariableDeclaration(n) && ts.isIdentifier(n.name) && n.initializer &&
+          ts.isCallExpression(n.initializer) && ts.isIdentifier(n.initializer.expression) &&
+          n.initializer.expression.text === 'loadEngine') engines.add(n.name.text);
+      ts.forEachChild(n, findEngines);
+    })(sf);
+    (function findNames(n) {
+      if (ts.isPropertyAccessExpression(n) && ts.isIdentifier(n.expression) && engines.has(n.expression.text)) names.add(n.name.text);
+      else if (ts.isElementAccessExpression(n) && ts.isIdentifier(n.expression) && engines.has(n.expression.text) &&
+          n.argumentExpression && ts.isStringLiteral(n.argumentExpression)) names.add(n.argumentExpression.text);
+      ts.forEachChild(n, findNames);
+    })(sf);
+  });
+  return sorted(names);
+}
 function wrap(names, indent) {
   var lines = [], cur = indent;
   names.forEach(function (n, i) {
@@ -158,6 +181,11 @@ function main(argv) {
       if (check) wrong.push(f); else fs.writeFileSync(p, want);
     }
   });
+  var testApi = JSON.stringify(unitTestNames(), null, 2) + '\n';
+  var testApiPath = path.relative(ROOT, TEST_API).replace(/\\/g, '/');
+  if (!fs.existsSync(TEST_API) || fs.readFileSync(TEST_API, 'utf8') !== testApi) {
+    if (check) wrong.push(testApiPath); else fs.writeFileSync(TEST_API, testApi);
+  }
   if (a.writes.length) {
     console.log('assigned outside the file that declares it (export a setter and call it):');
     a.writes.forEach(function (w) { console.log('  ' + w); });
@@ -168,10 +196,10 @@ function main(argv) {
         (wrong.length > 10 ? ', ...' : '') + '\nrun: node tools/engine_modules.cjs');
     }
     if (wrong.length || a.writes.length) return 1;
-    console.log('engine modules: ' + modules.length + ' files, imports and exports correct');
+    console.log('engine modules: ' + modules.length + ' files, imports/exports and unit test API correct');
     return 0;
   }
-  console.log('engine modules: ' + modules.length + ' files written');
+  console.log('engine modules: ' + modules.length + ' files written; unit test API refreshed');
   return 0;
 }
 

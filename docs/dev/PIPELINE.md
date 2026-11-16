@@ -1,5 +1,12 @@
 # canvas_v10 — the pipeline
 
+## Current handoff (2026-11-15)
+
+`docs/work-orders/QUEUE.md` is the source of truth for active phases and the next open Cline task.
+The phase roadmap and regression figures below are historical snapshots; do not treat an older
+`NOW` heading as the current queue. `tools/build_app.py --check` reports the exact build size and
+SHA-256 for the checked-out source and build.
+
 ## Repository restructure (2026-11-07)
 
 The engine's 196 files are ES modules (imports and exports written by `tools/engine_modules.cjs`);
@@ -26,8 +33,8 @@ requires command mapping, full app regressions and owner review.
 
 **Read this first in a new session.** One page. The detail lives in the docs listed at the bottom.
 
-    canvas_v10.html   4357038 bytes (after V199, on the branch ui-pass)
-    sha256            3709b2e9c9d4aa04b68036860aa32abd00ca4068e8343cda679add167266c1ef
+    canvas_v10.html   4445857 bytes (verified from the current working tree, 2026-11-15)
+    sha256            c774c5b4df5ea11470ce16a64053731085b18290a834b9086b4eae4c58043c5a
     markers           __acad3dV60 ... __acad3dV172, plus __acad3dV105b, __acad3dV113b, __acad3dV113c,
                       __acad3dV121b, __acad3dV124b, __acad3dV166b, __acad3dV166c, __acad3dV166d, __acad3dV171b,
                       __acad3dV171c, __acad3dV171d, __acad3dV172b, __acad3dV172c, __acad3dV172d, __acad3dV172e,
@@ -38,9 +45,8 @@ requires command mapping, full app regressions and owner review.
                       three.js 0.186.1 as one classic script with its licence, 2 files, asked only when the
                       rendered view is (V194), with its glTF addons and Draco's decoder (V195); and BimCraft's IFC
                       engine with Manifold, 5 files, asked only when an IFC file is opened (V196): 24 files in all
-    tests             140 suites, 7156 checks, 0 failures after V172f (2026-11-07: the full regression on main 3f0bcbc,
-                      6957 of 6962 in 688 s with 4 workers; the five failing suites amended, below), and the 245 unit
-                      tests (npm test, after V175c step 1); with cjval built, V139 and V140 run their three more
+    tests             140 suites, 7156 checks, 0 failures after V172f (historical full regression on main 3f0bcbc,
+                      2026-11-07); 245 unit tests (last recorded after V175c step 1; historical count)
 
     The user guide (V142): every phase updates docs/src/, its log entry and BIM_APP_VERSION, then
     runs tools/dump_catalog.py and tools/build_docs.py. The V142 suite and the Pages workflow
@@ -65,13 +71,12 @@ requires command mapping, full app regressions and owner review.
     when they differ. Pages serves the same app as separate files (tools/check_site.py proves they
     run alike).
 
-Start every session by verifying that hash (tools/build_app.py --check) and taking a backup. Never
-read or output canvas_v10.html whole and never edit it by hand: patch the files under src/ with
-anchored Python scripts that assert exact match counts, then run tools/build_app.py.
+Never read or output canvas_v10.html whole and never edit it by hand. Edit `src/`, then use
+`tools/build_app.py --check` or the check required by CLAUDE.md Rule #1 to verify the generated build.
 
 ---
 
-## NOW - Buildings from LOD1 to LOD3 (V139 to V145), then the hub's history and branches, the envelope and MEP
+## Historical roadmap snapshot - Buildings from LOD1 to LOD3 (V139 to V145), then the hub's history and branches, the envelope and MEP
 
 The owner looked at Giraffe (giraffe.build), a map-first feasibility app, and chose four of its
 ideas, ahead of the MEP runs, then asked for the map "just like how giraffe do". The research, with an

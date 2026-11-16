@@ -50,5 +50,4 @@ import { a3dToast } from '../bim/csg-booleans.js';
     return v;
   }
   var A3D_THEME_AT_START=bimThemeRestore();
-
 export { A3D_CANVAS_CLEARED, A3D_CANVAS_KEYS, A3D_THEME_AT_START, bimThemeStore };

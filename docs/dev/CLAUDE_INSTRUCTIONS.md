@@ -11,12 +11,12 @@ current repository layout described in `CLAUDE.md`. Do not assume a Mac workspac
 
 ## 0. Start of session, in this order
 
-1. Read `claude/PIPELINE.md`. It is one page and it holds the current hash, byte count,
-   marker range, test counts, and the ordered path. It is the only doc you read in full.
-2. Verify the build hash on the Mac against docs/dev/PIPELINE.md. If it differs, stop and say so
-   before changing anything.
-3. Take a backup: `canvas_v10.html.bak_phaseNN_pre`.
-4. Only now open anything else, and only the specific part you need.
+1. Read `docs/dev/PIPELINE.md` for the build contract and project snapshot. Use
+   `docs/work-orders/QUEUE.md` as the source of truth for active work and task order.
+2. Check `git status` before touching files. Preserve and account for existing user changes.
+3. Follow `CLAUDE.md` Rule #1 for whether to run checks; the test instructions below describe how,
+   not when. Legacy phase and build snapshots in this file do not override it.
+4. Open only the task's relevant files and ranges. Never edit `canvas_v10.html` by hand.
 
 Do not summarize the session back to the user at the start. Say in one sentence what you
 are about to do, then do it.

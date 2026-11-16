@@ -100,5 +100,4 @@
     }
     return {ok:unclaimed.length===0,claimed:claimed,unclaimed:unclaimed};
   }
-
 export { bimShellAudit };

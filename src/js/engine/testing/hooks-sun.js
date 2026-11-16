@@ -1,4 +1,3 @@
-import { doUndo } from '../drawing/plan-mode-sketch.js';
 import {
   A3D_SUNX, bimSetSun, bimSunSettings, bimSunStudy, bimSunTzAt, bimSunZone, bimSunZoneOff, bimSunZoneStd
 } from '../site/sun-position.js';
@@ -25,7 +24,6 @@ import { bimSunBack, bimSunMode, bimSunNowVals, bimSunSlide, bimSunTry } from '.
   window.__a3dSunVals=function(){var v=bimSunNowVals();delete v.st;return JSON.parse(JSON.stringify(v));};
   window.__a3dSunX=function(){return JSON.parse(JSON.stringify(A3D_SUNX));};
   window.__a3dSetSun=function(f,v){return bimSetSun(f,v);};
-  window.__a3dUndo=function(){doUndo();return true;};
   window.__a3dSunWords=function(){return JSON.parse(JSON.stringify(A3D_DG.labelWords||[]));};
   window.__a3dSunDots=function(){var o={};A3D_DG.hits.forEach(function(h){o[h.id]=h.dots.map(function(d){return d.slice();});});return o;};
   window.__a3dSunLabels=function(){return JSON.parse(JSON.stringify({boxes:A3D_DG.labelBoxes||[],dots:A3D_DG.dotKeep||[]}));};

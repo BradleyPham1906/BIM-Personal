@@ -3,9 +3,11 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { loadEngine, engineSource } from './helpers/engine.mjs';
 
-test('the engine runs its top-level code without throwing', () => {
+test('the engine runs and exposes its module exports and unit-test API', () => {
   const E = loadEngine();
-  assert.ok(Object.keys(E).length > 2000);
+  const api = engineSource();
+  const names = api.names.concat(api.testNames);
+  assert.deepEqual(names.filter((n) => !Object.prototype.hasOwnProperty.call(E, n)), []);
 });
 
 test('every setter another file uses is a function', () => {

@@ -946,7 +946,6 @@ import { a3dToast } from '../bim/csg-booleans.js';
       bimPrintSheetRasterFallback(sheet);
     }
   }
-
 export {
   bimBuildPlanViewportSVG, bimBuildSheetSVG, bimExportSheetPNG, bimExportSheetSVG, bimKeyForControl,
   bimOpenAddViewportDlg, bimOpenNewSheetDlg, bimOpenSheetPropsDlg, bimOpenTitleBlockDlg, bimPrintSet,

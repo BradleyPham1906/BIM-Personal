@@ -31,5 +31,4 @@
     {id:'capture',label:'Save image', menu:false},
     {id:'help',   label:'Keyboard shortcuts', menu:true}
   ];
-
 export { A3D_RAIL_ICONS, A3D_RAIL_UTILS };

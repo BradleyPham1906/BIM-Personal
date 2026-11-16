@@ -365,5 +365,4 @@ import { bimWireOcclusionNotice } from '../testing/hooks-view-gizmo.js';
     return {kind:A3D_VIEW.kind,id:A3D_VIEW.id,name:A3D_VIEW.name};
   };
   window.__a3dOpenView=function(kind,id,opts){return bimActivateView(kind,id,opts);};
-
 export { bimDevicePixelRatio, cvH, cvScale, cvW, size };

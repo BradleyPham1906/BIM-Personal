@@ -1,7 +1,7 @@
 # BIM-Personal: start here
 
 A browser CAD/BIM app (vetted, pinned open-source libraries allowed since 2026-11-13: see
-"Third-party libraries" below), built phase by phase (V1 to V172 so far). Its source is `src/`,
+"Third-party libraries" below), built phase by phase. Its source is `src/`,
 split by feature; the engine's files are ES modules with explicit imports and exports. `tools/build_app.py`
 joins them into `canvas_v10.html`, the one-file build, and Pages serves it as separate files (see
 "The source" below). Fast unit tests are in `tests/unit/` (`npm test`, under a second); the browser
@@ -25,16 +25,18 @@ suites are in `tests/e2e/`.
    Cline's local prototype workflow, Ollama, Aider as backup, the four rules). If the owner starts
    without `/start`, suggest it once. Do not use `/finish` to push a local Cline prototype unless
    the owner asks to publish it.
-1. Read `docs/dev/PIPELINE.md` first, in full: the build's hash and size, the test counts, and the ordered
-   path, with the phase marked **Start here**.
+1. Read `docs/dev/PIPELINE.md` first for the build contract and project snapshot. The active phase and
+   next open Cline task are authoritative in `docs/work-orders/QUEUE.md`; do not infer them from an
+   older phase heading in PIPELINE.
 2. Then `docs/dev/CLAUDE_INSTRUCTIONS.md`: the build contract (ES5, vetted libraries only, phase markers,
    failures warned and toasted), the patch protocol (anchored Python scripts asserting exact counts
    and the base hash), the test protocol and the standing laws. Its paths under `claude/` and on a
    Mac are from an older setup: the layout is the one above. Where it says the app is edited as one
    file, or that each phase keeps a backup in `Phase/` and falsification scripts, "The source" below
    and Rule #1 replace it (Phase/ was removed 2026-11-07; old builds are in git history).
-3. The current work plan is `docs/research/plan-v167-v170.md`; each phase's research note is in
-   `docs/research/`; the engineering log is `docs/dev/canvas_v10_STATUS.md` (search it, never read it whole).
+3. The current work plan is `docs/work-orders/QUEUE.md` and the selected phase's `SPEC.md` and
+   `TASKS.md`. Research notes are in `docs/research/`; the engineering log is
+   `docs/dev/canvas_v10_STATUS.md` (search it, never read it whole). Older numbered plans remain historical.
 
 ## Rule #1: do not test unless the table says so (the owner, 2026-11-01)
 
@@ -62,8 +64,8 @@ If a bigger check seems needed, ask in one sentence; don't run it.
   exported function. Test logic here; test what the page draws in `tests/e2e/`.
 - **Build** (cheap): `python3 tools/build_app.py`, which proves `src/` still joins into
   `canvas_v10.html`. A change under `src/` is not done until `canvas_v10.html` is rebuilt and committed.
-  `npm run check` runs every build check; CI (`.github/workflows/ci.yml`) runs it and `npm test` on every
-  push and pull request.
+  `npm run check` also enforces targeted static rules, including unique `window.__a3d*` hook
+  assignments; CI (`.github/workflows/ci.yml`) runs it and `npm test` on every push and pull request.
 - **Browser check** (expensive, only when the owner approves): load the build, report console errors only.
 - **Full regression / a phase's browser suite** (only when the owner asks): `tests/e2e/` (`npm run
   test:e2e`) and the test protocol in `docs/dev/CLAUDE_INSTRUCTIONS.md` section 4, which says how, not when.
@@ -204,7 +206,8 @@ browser suites, Pages and offline use read it.
 - **A new file:** create it in its folder, add its `<!-- @include -->` line to `src/index.html` where
   its code belongs in the order, then run `npm run modules`.
 - **A new unit test:** `tests/unit/<area>.test.mjs`, with `import { loadEngine } from './helpers/engine.mjs'`
-  and Node's `node:test` and `node:assert`; see `tests/unit/geometry.test.mjs`.
+  and Node's `node:test` and `node:assert`; see `tests/unit/geometry.test.mjs`. `loadEngine()` exposes
+  module exports and test-used file-private helpers; `npm run modules` keeps that test API current.
 - **Playwright:** pin the Python package to the Chromium in `/opt/pw-browsers`, whatever
   `docs/dev/PIPELINE.md` last recorded: `ls /opt/pw-browsers`, then the release that drives that build
   (1.63.0 for chromium-1243, 2026-10-25; 1.56 for chromium-1194). A wrong pin fails at launch with

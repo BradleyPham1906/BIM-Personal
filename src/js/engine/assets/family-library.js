@@ -205,7 +205,6 @@ import { a3dToast } from '../bim/csg-booleans.js';
     return {id:'builtin:'+s.k,kind:'model',builtin:true,name:s.name,category:s.cat,manufacturer:'',
       mesh:bimNormalizeMeshForFamily(bimAsmMesh(s.parts)),thumb:''};
   });
-
 export {
   A3D_ASSET_BUILTINS, A3D_FAMLIB, A3D_FAMLIB_DIRTY, A3D_FAMLIB_IDB, A3D_FAMLIB_LOADING, A3D_FAMLIB_RETIRE,
   A3D_TEMPLATE_PREFIX, FAMILY_CATEGORIES, bimAssetKind, bimCloneMesh, bimFamilyLibraryAdd,

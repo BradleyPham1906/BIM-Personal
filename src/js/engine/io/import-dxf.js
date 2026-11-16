@@ -251,5 +251,4 @@ import { a3dToast } from '../bim/csg-booleans.js';
       (skippedPoints?'; '+skippedPoints+' POINT entities not rendered':'')+
       (res.insUnits===null?' (no units in file, assumed meters)':''));
   }
-
 export { bimImportDXF };

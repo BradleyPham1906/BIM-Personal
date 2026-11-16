@@ -493,7 +493,6 @@ import { a3dToast } from '../bim/csg-booleans.js';
     exportpng:ric('<rect x="3" y="3" width="18" height="14" rx="1"/><path d="M3 13l5-5 4 4 4-4 5 5"/><circle cx="8" cy="8" r="1.5"/>'),
     exportpdf:ric('<path d="M6 2h9l5 5v15H6z"/><path d="M15 2v5h5"/><path d="M8.5 13.5h1.2c.7 0 1.3.6 1.3 1.3s-.6 1.3-1.3 1.3H8.5v-2.6z"/>')
   };
-
 export {
   A3DR_ICONS, bimSubmitTouchLen, bimSyncTouchLenInput, bimTouchDist, bimTouchFakeEvent, bimTouchMid, closeDlg,
   onKey, onTouchEnd, onTouchMove, onTouchStart, openDlg, ric

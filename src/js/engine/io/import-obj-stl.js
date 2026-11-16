@@ -138,5 +138,4 @@ import { a3dToast } from '../bim/csg-booleans.js';
     refreshTree();refreshLayers();fitScene();paint();saveSoon();
     a3dToast('STL import ('+(isBin?'binary':'ASCII')+'): '+parsed.f.length+' triangles from '+filename);
   }
-
 export { bimImportOBJ, bimImportSTL, objParse, stlIsBinary, stlParseAscii, stlParseBinary };

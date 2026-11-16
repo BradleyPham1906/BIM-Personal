@@ -15,10 +15,13 @@ Do not add a deliberate `WO-` throw stub; implement complete behavior.
 - **Implement:** the complete function behavior specified in `SPEC.md`; do not leave a placeholder or partial stub.
 - **It must:** <exact behaviour, edge cases>
 - **Example:** `functionName(...)` returns `...`
+- **User path:** <command, ribbon/panel route, or "internal only">
 - **May use:** `nameA` (`<file>`), `nameB` (`<file>`)
 - **Files:** `src/js/engine/<folder>/<file>.js`, `tests/unit/<area>.test.mjs` (what `tools/gate.py` lets change)
 - **Budget:** 60 (added src lines the gate allows; default 120)
 - **Test:** `npm test` -> `tests/unit/<area>.test.mjs`, the cases named `WO-01 ...`
+- **Distinguishing case:** <a plausible wrong implementation and the input/assertion that rejects it>
+- **Evidence:** <the exact test assertion; for interface work, the browser check required by CLAUDE.md Rule #1>
 - **Done when:** `python3 tools/gate.py check <phase> WO-01` passes; then `ship` it.
 
 ---

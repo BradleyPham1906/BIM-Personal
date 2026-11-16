@@ -13,7 +13,13 @@ when Cline is unavailable or the owner asks to switch.
       v175/SPEC.md          the phase's spec and roadmap
       v175/TASKS.md         its work orders, ticked as they are done
 
-The phase's tests live in `tests/unit/<area>.test.mjs`, where `npm test` finds them.
+The phase's tests live in `tests/unit/<area>.test.mjs`, where `npm test` finds them. For each
+user-facing task, record the user name and route in **User path**. The generated user command
+reference at `docs/commands.html` remains the source for command names and ribbon locations; work
+orders connect the changed feature to its exact test and evidence instead of copying that catalogue.
+Give each behavioral test a distinguishing case: a realistic wrong implementation must fail for
+the behavior under test, not merely because the fixture or page failed to load. For numeric or
+geometric behavior, prefer an independent reference or deterministic seeded properties.
 
 ## How a phase runs
 
@@ -32,6 +38,8 @@ The phase's tests live in `tests/unit/<area>.test.mjs`, where `npm test` finds t
 In VS Code, on `main`, type `/ship-task.md` (the first open task in `QUEUE.md`) or
 `/ship-task.md v175c WO-01`. Cline implements the task, runs the gate and ships it. If the gate still
 fails after two focused fix attempts, it stops, preserves the diff and reports the FAIL lines.
+After shipping, record the task's first gate result and any post-ship audit changes in
+`CLINE-OUTCOMES.md`; do not count Aider or Claude work as Cline calibration data.
 
 ## The gate (`tools/gate.py`)
 

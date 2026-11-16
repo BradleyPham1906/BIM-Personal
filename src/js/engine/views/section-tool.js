@@ -221,7 +221,6 @@ import { a3dToast } from '../bim/csg-booleans.js';
     paint();saveSoon();
     a3dToast('Exited section view');
   }
-
 export {
   bimChainEdgesToLoops, bimClipMeshToPlane, bimComputeSectionCuts, bimEnterSection, bimExitSection,
   bimFlipSection, startSectionTool
