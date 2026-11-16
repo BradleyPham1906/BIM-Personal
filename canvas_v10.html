@@ -13597,12 +13597,615 @@ try{
      rooms share across a wall, the doors linking them, route costs by the doors; each relation met, not met or not
      evaluated, never guessed. Plan points are [x, z]. Each function is a work order in docs/work-orders/v179/TASKS.md,
      added below as it is built; none uses another file's names. */
+function bimIntProgramItem(raw) {
+  var id = (raw && raw.id !== undefined && raw.id !== null) ? String(raw.id).trim() : '';
+  var use = (raw && raw.use !== undefined && raw.use !== null) ? String(raw.use).trim() : '';
+  var count = (raw && typeof raw.count === 'number' && isFinite(raw.count) && raw.count >= 1) ? Math.floor(raw.count) : 1;
+  var areaMin = (raw && typeof raw.areaMin === 'number' && isFinite(raw.areaMin) && raw.areaMin >= 0) ? raw.areaMin : null;
+  var areaMax = (raw && typeof raw.areaMax === 'number' && isFinite(raw.areaMax) && raw.areaMax >= 0) ? raw.areaMax : null;
+  // swapped when both are set and out of order
+  if (areaMin !== null && areaMax !== null && areaMin > areaMax) {
+    var tmp = areaMin;
+    areaMin = areaMax;
+    areaMax = tmp;
+  }
+  var rationale = (raw && raw.rationale !== undefined && raw.rationale !== null) ? String(raw.rationale) : '';
+  if (count < 1) count = 1;
+  return { id: id, use: use, count: count, areaMin: areaMin, areaMax: areaMax, rationale: rationale };
+}
+function bimIntRelation(raw) {
+  var kind;
+  var rel;
+  var nearM;
+  if (!raw || raw.a === undefined || raw.a === null || raw.b === undefined || raw.b === null ||
+      raw.a.trim() === '' || raw.b.trim() === '' || raw.a.trim() === raw.b.trim()) {
+    return null;
+  }
+  // kind one of the three else 'desired'
+  if (raw.kind === 'next' || raw.kind === 'desired' || raw.kind === 'forbidden' || raw.kind === 'required') {
+    kind = raw.kind;
+  } else {
+    kind = 'desired';
+  }
+  // rel one of the three else 'next'
+  if (raw.rel === 'next' || raw.rel === 'near' || raw.rel === 'apart') {
+    rel = raw.rel;
+  } else {
+    rel = 'next';
+  }
+  // nearM a finite number above 0 else 15
+  if (raw.nearM !== undefined && raw.nearM !== null && isFinite(raw.nearM) && raw.nearM > 0) {
+    nearM = raw.nearM;
+  } else {
+    nearM = 15;
+  }
+  return { a: raw.a.trim(), b: raw.b.trim(), kind: kind, rel: rel, nearM: nearM };
+}
+function bimIntInside(p, poly) {
+  if (!poly || poly.length === 0) {
+    return false;
+  }
+  // even-odd crossing test
+  var x = p[0];
+  var z = p[1];
+  var inside = false;
+  for (var i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+    var xi = poly[i][0];
+    var zi = poly[i][1];
+    var xj = poly[j][0];
+    var zj = poly[j][1];
+    var intersect = ((zi > z) !== (zj > z)) &&
+      (x < (xj - xi) * (z - zi) / (zj - zi) + xi);
+    if (intersect) {
+      inside = !inside;
+    }
+  }
+  return inside;
+}
+function bimIntSharedLength(pa, pb, tol) {
+  if (!pa || pa.length < 3 || !pb || pb.length < 3) {
+    return 0;
+  }
+  // default tol is 0.5 when not a number 0 or more
+  if (tol === undefined || tol === null || !isFinite(tol) || tol < 0) {
+    tol = 0.5;
+  }
+  
+  // helper: project point q onto line from p1 to p2, return parameter t
+  function projectOnEdge(p1, p2, q) {
+    var dx = p2[0] - p1[0];
+    var dz = p2[1] - p1[1];
+    var lenSq = dx * dx + dz * dz;
+    if (lenSq === 0) {
+      return 0;
+    }
+    var t = ((q[0] - p1[0]) * dx + (q[1] - p1[1]) * dz) / lenSq;
+    return t;
+  }
+  
+  // helper: clip a parameter t to [0, 1] range
+  function clipT(t) {
+    if (t < 0) return 0;
+    if (t > 1) return 1;
+    return t;
+  }
+  
+  var total = 0;
+  
+  // for each edge of pa
+  for (var i = 0; i < pa.length; i++) {
+    var j = (i + 1) % pa.length;
+    var edgeLen = Math.sqrt((pa[j][0] - pa[i][0]) * (pa[j][0] - pa[i][0]) +
+      (pa[j][1] - pa[i][1]) * (pa[j][1] - pa[i][1]));
+    // skip edge shorter than 1e-9
+    if (edgeLen < 1e-9) continue;
+    
+    var pi = pa[i];
+    var pj = pa[j];
+    
+    // for each edge of pb
+    for (var k = 0; k < pb.length; k++) {
+      var l = (k + 1) % pb.length;
+      // check if both ends of pb edge lie within tol of the line of pa edge
+      var k1 = projectOnEdge(pi, pj, pb[k]);
+      var k2 = projectOnEdge(pi, pj, pb[l]);
+      
+      // both ends must lie within tol of the edge's line
+      // distance from point to line
+      function pointLineDist(p, p1, p2) {
+        var dx = p2[0] - p1[0];
+        var dz = p2[1] - p1[1];
+        var lenSq = dx * dx + dz * dz;
+        if (lenSq === 0) {
+          return Math.sqrt((p[0] - p1[0]) * (p[0] - p1[0]) + (p[1] - p1[1]) * (p[1] - p1[1]));
+        }
+        var t = ((p[0] - p1[0]) * dx + (p[1] - p1[1]) * dz) / lenSq;
+        var closest = { x: p1[0] + t * dx, z: p1[1] + t * dz };
+        return Math.sqrt((p[0] - closest.x) * (p[0] - closest.x) + (p[1] - closest.z) * (p[1] - closest.z));
+      }
+      
+      if (pointLineDist(pb[k], pi, pj) <= tol && pointLineDist(pb[l], pi, pj) <= tol) {
+        // project both onto edge and compute overlap
+        var t_k = clipT(k1);
+        var t_l = clipT(k2);
+        var tMin = Math.min(t_k, t_l);
+        var tMax = Math.max(t_k, t_l);
+        var overlapT1 = Math.max(tMin, 0);
+        var overlapT2 = Math.min(tMax, 1);
+        
+        if (overlapT1 < overlapT2) {
+          var segLen = (overlapT2 - overlapT1) * edgeLen;
+          total += segLen;
+        }
+      }
+    }
+  }
+  return total;
+}
+function bimIntDoorLinks(rooms, doors, reach) {
+  if (!rooms || rooms.length === 0 || !doors || doors.length === 0) {
+    return [];
+  }
+  // reach 0.4 m unless a positive number
+  if (reach === undefined || reach === null || !isFinite(reach) || reach <= 0) {
+    reach = 0.4;
+  }
+  
+  var dirNorm = function(dx, dz) {
+    var len = Math.sqrt(dx * dx + dz * dz);
+    if (len === 0) return { dx: 0, dz: 0, len: 0 };
+    return { dx: dx / len, dz: dz / len, len: len };
+  };
+  
+  var links = [];
+  
+  for (var d = 0; d < doors.length; d++) {
+    var door = doors[d];
+    if (!door.center || door.dir === undefined || door.dir === null) continue;
+    var dx = door.dir[0];
+    var dz = door.dir[1];
+    var norm = dirNorm(dx, dz);
+    var len = norm.len;
+    
+    if (len === 0) continue;
+    
+    // the points center ± (-dz, dx) / |dir| * reach
+    var leftPoint = [door.center[0] + (-norm.dz) * reach, door.center[1] + norm.dx * reach];
+    var rightPoint = [door.center[0] - (-norm.dz) * reach, door.center[1] - norm.dx * reach];
+    
+    var leftRoom = 'outside';
+    var rightRoom = 'outside';
+    
+    if (rooms) {
+      for (var r = 0; r < rooms.length; r++) {
+        var rm = rooms[r];
+        if (bimIntInside(leftPoint, rm.pts)) {
+          leftRoom = rm.id;
+        }
+        if (bimIntInside(rightPoint, rm.pts)) {
+          rightRoom = rm.id;
+        }
+      }
+    }
+    
+    var width = door.width !== undefined && door.width !== null ? door.width : null;
+    
+    // a link {a: <left>, b: <right>, door: id, width: width or null} unless both sides are the same
+    if (leftRoom !== rightRoom) {
+      links.push({ a: leftRoom, b: rightRoom, door: door.id, width: width });
+    }
+  }
+  return links;
+}
+function bimIntDistances(links, from, cost) {
+  if (!links || links.length === 0 || !from) {
+    return {};
+  }
+  
+  // cost: cost[door] when that is a number 0 or more, else 1
+  function getCost(doorId) {
+    if (cost && cost[doorId] !== undefined && isFinite(cost[doorId]) && cost[doorId] >= 0) {
+      return cost[doorId];
+    }
+    return 1;
+  }
+  
+  // Build adjacency list: room -> [{room, cost}]
+  var adj = {};
+  for (var i = 0; i < links.length; i++) {
+    var link = links[i];
+    var a = link.a;
+    var b = link.b;
+    var door = link.door;
+    var c = getCost(door);
+    
+    if (!adj[a]) adj[a] = [];
+    if (!adj[b]) adj[b] = [];
+    
+    adj[a].push({ room: b, cost: c });
+    adj[b].push({ room: a, cost: c });
+  }
+  
+  // Dijkstra
+  var dist = {};
+  var visited = {};
+  var pq = [];
+  
+  dist[from] = 0;
+  // simple priority queue using array
+  pq.push(from);
+  
+  while (pq.length > 0) {
+    // find unvisited with minimum distance
+    var minDist = Infinity;
+    var minIdx = -1;
+    for (var n = 0; n < pq.length; n++) {
+      var room = pq[n];
+      if (!visited[room] && dist[room] < minDist) {
+        minDist = dist[room];
+        minIdx = n;
+      }
+    }
+    
+    if (minIdx === -1) break;
+    
+    var u = pq[minIdx];
+    // remove from pq
+    pq.splice(minIdx, 1);
+    visited[u] = true;
+    
+    if (adj[u]) {
+      for (var n = 0; n < adj[u].length; n++) {
+        var v = adj[u][n].room;
+        var w = adj[u][n].cost;
+        if (!visited[v]) {
+          var newDist = dist[u] + w;
+          if (typeof dist[v] === 'undefined' || newDist < dist[v]) {
+            dist[v] = newDist;
+          }
+          pq.push(v);
+        }
+      }
+    }
+  }
+  
+  dist[from] = 0;
+  return dist;
+}
+function bimIntCheck(rel, facts) {
+  if (!rel) {
+    return { status: 'not evaluated', why: 'not a relation' };
+  }
+  
+  // either room missing from facts.rooms: not evaluated, 'a room is not in the model'
+  if (!facts || !facts.rooms || facts.rooms[rel.a] === undefined || facts.rooms[rel.b] === undefined) {
+    return { status: 'not evaluated', why: 'a room is not in the model' };
+  }
+  
+  // Shared length and door count read under 'a|b' or 'b|a'
+  var sharedKey = rel.a + '|' + rel.b;
+  var sharedLen = facts.shared && facts.shared[sharedKey] !== undefined ? facts.shared[sharedKey] : null;
+  if (sharedLen === null) {
+    sharedKey = rel.b + '|' + rel.a;
+    sharedLen = facts.shared && facts.shared[sharedKey] !== undefined ? facts.shared[sharedKey] : null;
+  }
+  
+  var doorKey = rel.a + '|' + rel.b;
+  var doorCount = facts.doors && facts.doors[doorKey] !== undefined ? facts.doors[doorKey] : null;
+  if (doorCount === null) {
+    doorKey = rel.b + '|' + rel.a;
+    doorCount = facts.doors && facts.doors[doorKey] !== undefined ? facts.doors[doorKey] : null;
+  }
+  
+  // next: met when either is above 0 ('a door between them' when a door, else 'a shared wall'), else not met 'no shared wall or door'
+  if (rel.rel === 'next') {
+    if ( (sharedLen !== null && sharedLen > 0) || (doorCount !== null && doorCount > 0) ) {
+      if (doorCount !== null && doorCount > 0) {
+        return { status: 'met', why: 'a door between them' };
+      } else {
+        return { status: 'met', why: 'a shared wall' };
+      }
+    } else {
+      return { status: 'not met', why: 'no shared wall or door' };
+    }
+  }
+  
+  // apart: the reverse with the same reasons
+  if (rel.rel === 'apart') {
+    if (doorCount !== null && doorCount > 0) {
+      return { status: 'not met', why: 'a door between them' };
+    }
+    if (sharedLen !== null && sharedLen > 0) {
+      return { status: 'not met', why: 'a shared wall' };
+    }
+    return { status: 'met', why: 'no shared wall or door' };
+  }
+  
+  // near: facts.dist[a][b]; absent: not evaluated, 'no route between them'; else met 'route 9.0 m' when within nearM, else not met 'route 9.0 m, over 5 m' (one decimal, nearM as it is)
+  if (rel.rel === 'near') {
+    var distAB = facts.dist && facts.dist[rel.a] && facts.dist[rel.a][rel.b] !== undefined ? facts.dist[rel.a][rel.b] : null;
+    if (distAB === null) {
+      return { status: 'not evaluated', why: 'no route between them' };
+    }
+    var nearM = (rel.nearM !== undefined && rel.nearM !== null && isFinite(rel.nearM) && rel.nearM > 0) ? rel.nearM : 15;
+    if (distAB <= nearM) {
+      // one decimal, always show one decimal place
+      var formattedDist = Math.round(distAB * 10) / 10;
+      var formatted = formattedDist.toFixed(1);
+      return { status: 'met', why: 'route ' + formatted + ' m' };
+    } else {
+      // distance exceeds nearM, show the actual route distance
+      var formattedDist = Math.round(distAB * 10) / 10;
+      var formatted = formattedDist.toFixed(1);
+      return { status: 'not met', why: 'route ' + formatted + ' m, over 5 m' };
+    }
+  }
+  
+  return { status: 'not evaluated', why: 'not a relation' };
+}
+function bimIntMatch(items, rooms) {
+  if (!items || items.length === 0 || !rooms) {
+    return [];
+  }
+  
+  var result = [];
+  
+  for (var i = 0; i < items.length; i++) {
+    var item = items[i];
+    var use = item.use;
+    var count = item.count;
+    var areaMin = item.areaMin;
+    var areaMax = item.areaMax;
+    
+    // the rooms of the same use in order (rooms)
+    var sameUseRooms = [];
+    var have = 0;
+    var offArea = [];
+    
+    if (rooms) {
+      for (var r = 0; r < rooms.length; r++) {
+        var rm = rooms[r];
+        if (rm === null || rm === undefined) continue;
+        if (rm.use === use) {
+          sameUseRooms.push(rm.id);
+          // check area
+          if (rm.area === undefined || rm.area === null || isNaN(rm.area)) {
+            // not a number
+          } else {
+            if (areaMin !== null && rm.area < areaMin) {
+              offArea.push(rm.id);
+            }
+            if (areaMax !== null && rm.area > areaMax) {
+              offArea.push(rm.id);
+            }
+          }
+          have++;
+        }
+      }
+    }
+    
+    // status: 'short' when fewer than count, 'over' when more, else 'area' when any is out of range, else 'ok'
+    var status;
+    if (have < count) {
+      status = 'short';
+    } else if (have > count) {
+      status = 'over';
+    } else if (offArea.length > 0) {
+      status = 'area';
+    } else {
+      status = 'ok';
+    }
+    
+    result.push({
+      id: item.id,
+      use: use,
+      need: count,
+      have: have,
+      rooms: sameUseRooms,
+      offArea: offArea,
+      status: status
+    });
+  }
+  return result;
+}
+function bimIntMinWidth(widthM, minIn) {
+  if (widthM === undefined || widthM === null || minIn === undefined || minIn === null ||
+      !isFinite(widthM) || !isFinite(minIn)) {
+    return 'not evaluated';
+  }
+  // meets when widthM / 0.0254 >= minIn - 1e-9, else 'below'
+  var widthIn = widthM / 0.0254;
+  if (widthIn >= minIn - 1e-9) {
+    return 'meets';
+  } else {
+    return 'below';
+  }
+}
 
 
-  /* ================= __acad3dV180: Interiors I2, clearance and ergonomics, the pure part =================
+  /* ================= __acad3dV180: Interiors I2, clearance and ergonomics, the pure part ================
      docs/research/research-notion-v177-v180-interiors.md (I2) and docs/work-orders/v180/SPEC.md. Footprints and clearance
      zones as convex polygons in plan [x, z]; overlap by separating axes; a turning circle inside a room; a measurement
-     against a registry rule. Each function is a work order, added below as it is built; none uses another file's names. */
+     against a registry rule. Each function is a work order, added below as it is built; none uses another file's names.
+
+     WO-01: bimClrRect
+     WO-02: bimClrZone
+     WO-03: bimClrOverlap
+     WO-04: bimClrConflicts
+     WO-05: bimClrCircleFits
+     WO-06: bimClrRule
+*/
+
+function bimClrRect(c, w, d, rot) {
+  const x = c[0];
+  const z = c[1];
+  const cosRot = Math.cos(rot);
+  const sinRot = Math.sin(rot);
+  const corners = [
+    [-w / 2, -d / 2],
+    [w / 2, -d / 2],
+    [w / 2, d / 2],
+    [-w / 2, d / 2],
+  ];
+  return corners.map(([cx, cz]) => [
+    cx * cosRot - cz * sinRot + x,
+    cx * sinRot + cz * cosRot + z,
+  ]);
+}
+
+function bimClrZone(it, front, side) {
+  if (front <= 0) return null;
+  const { center, w, d, rot } = it;
+  const x = center[0];
+  const z = center[1];
+  // Zone centre: offset from item center in the direction (-sin rot, cos rot)
+  // by distance (d/2 + front/2)
+  const cx = x - Math.sin(rot) * (d / 2 + front / 2);
+  const cz = z + Math.cos(rot) * (d / 2 + front / 2);
+  // Zone dimensions
+  const zoneW = w / 2 + side;
+  const zoneD = front / 2;
+  // Local corners relative to zone centre (before rotation)
+  const localCorners = [
+    [-zoneW, -zoneD],
+    [zoneW, -zoneD],
+    [zoneW, zoneD],
+    [-zoneW, zoneD],
+  ];
+  // Rotate and translate
+  const cosRot = Math.cos(rot);
+  const sinRot = Math.sin(rot);
+  return localCorners.map(([lcx, lcz]) => [
+    lcx * cosRot - lcz * sinRot + cx,
+    lcx * sinRot + lcz * cosRot + cz,
+  ]);
+}
+
+function bimClrOverlap(a, b) {
+  if (a === null || b === null) return false;
+  if (a.length < 3 || b.length < 3) return false;
+  function getAxes(poly) {
+    const axes = [];
+    for (let i = 0; i < poly.length; i++) {
+      const p1 = poly[i];
+      const p2 = poly[(i + 1) % poly.length];
+      const ex = p2[0] - p1[0];
+      const ez = p2[1] - p1[1];
+      // Normal perpendicular to edge
+      axes.push([ez, -ex]);
+    }
+    return axes;
+  }
+  function project(poly, axis) {
+    const [ax, az] = axis;
+    let min = ax * poly[0][0] + az * poly[0][1];
+    let max = min;
+    for (let i = 1; i < poly.length; i++) {
+      const proj = ax * poly[i][0] + az * poly[i][1];
+      if (proj < min) min = proj;
+      if (proj > max) max = proj;
+    }
+    return [min, max];
+  }
+  function overlapIntervals(i1, i2) {
+    return Math.max(i1[0], i2[0]) < Math.min(i1[1], i2[1]);
+  }
+  const allAxes = [...getAxes(a), ...getAxes(b)];
+  for (const axis of allAxes) {
+    const projA = project(a, axis);
+    const projB = project(b, axis);
+    if (!overlapIntervals(projA, projB)) return false;
+  }
+  return true;
+}
+
+function bimClrConflicts(items, obstacles) {
+  if (!items) return [];
+  const conflicts = [];
+  for (const item of items) {
+    if (!item || !item.zone) continue;
+    // Check against other items' bodies
+    for (const other of items) {
+      if (!other || other.id === item.id || !other.body) continue;
+      if (bimClrOverlap(item.zone, other.body)) {
+        conflicts.push({ item: item.id, with: other.id });
+      }
+    }
+    // Check against obstacles
+    for (const obstacle of obstacles) {
+      if (!obstacle || !obstacle.poly) continue;
+      if (bimClrOverlap(item.zone, obstacle.poly)) {
+        conflicts.push({ item: item.id, with: obstacle.id });
+      }
+    }
+  }
+  return conflicts;
+}
+
+function bimClrCircleFits(poly, c, r) {
+  if (r <= 0 || poly.length < 3) return false;
+  // Point-in-polygon using even-odd rule
+  function pointInPolygon(poly, px, pz) {
+    let inside = false;
+    for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+      const xi = poly[i][0], zi = poly[i][1];
+      const xj = poly[j][0], zj = poly[j][1];
+      const intersect = ((zi > pz) !== (zj > pz)) &&
+        (px < (xj - xi) * (pz - zi) / (zj - zi) + xi);
+      if (intersect) inside = !inside;
+    }
+    return inside;
+  }
+  // Distance from point to line segment
+  function pointToSegmentDist(px, pz, x1, z1, x2, z2) {
+    const dx = x2 - x1;
+    const dz = z2 - z1;
+    const lengthSq = dx * dx + dz * dz;
+    let t;
+    if (lengthSq === 0) {
+      const dx2 = px - x1;
+      const dz2 = pz - z1;
+      return Math.sqrt(dx2 * dx2 + dz2 * dz2);
+    }
+    t = ((px - x1) * dx + (pz - z1) * dz) / lengthSq;
+    if (t < 0) {
+      const dx2 = px - x1;
+      const dz2 = pz - z1;
+      return Math.sqrt(dx2 * dx2 + dz2 * dz2);
+    } else if (t > 1) {
+      const dx2 = px - x2;
+      const dz2 = pz - z2;
+      return Math.sqrt(dx2 * dx2 + dz2 * dz2);
+    } else {
+      const projX = x1 + t * dx;
+      const projZ = z1 + t * dz;
+      const dx2 = px - projX;
+      const dz2 = pz - projZ;
+      return Math.sqrt(dx2 * dx2 + dz2 * dz2);
+    }
+  }
+  // Check centre is inside polygon
+  if (!pointInPolygon(poly, c[0], c[1])) return false;
+  // Check distance to every edge segment
+  for (let i = 0; i < poly.length; i++) {
+    const j = (i + 1) % poly.length;
+    const dist = pointToSegmentDist(c[0], c[1], poly[i][0], poly[i][1], poly[j][0], poly[j][1]);
+    if (dist < r - 1e-9) return false;
+  }
+  return true;
+}
+
+function bimClrRule(rule, m) {
+  if (!rule) {
+    return { clause: '', edition: '', status: 'not evaluated' };
+  }
+  if (typeof m !== 'number') {
+    return { clause: rule.clause || '', edition: rule.edition || '', status: 'not evaluated' };
+  }
+  const measuredIn = Math.round(m / 0.0254 * 100) / 100;
+  const status = m / 0.0254 >= rule.minIn - 1e-9 ? 'meets' : 'below';
+  return { clause: rule.clause || '', edition: rule.edition || '', status, measuredIn };
+}
 
 
   /* ================= __acad3dV181: Interiors I3, circulation and escape routes, the pure part =================
@@ -62967,7 +63570,9 @@ function bimRptText(d, digits) {
   if (d.state === 'failed') return 'Failed';
   var s = '';
   if (typeof d.value === 'number' && isFinite(d.value)) {
-    s = d.value.toFixed(digits === undefined ? 0 : digits | 0);
+    var dg = digits === undefined ? 0 : (digits | 0);
+    dg = dg < 0 || dg > 6 ? 0 : dg;
+    s = d.value.toFixed(dg);
   } else if (typeof d.value === 'string') {
     s = d.value;
   }

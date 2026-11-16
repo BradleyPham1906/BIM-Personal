@@ -20,7 +20,7 @@ after each one. Scores are from `../ROUTING.md` (files, logic, understanding, ju
 
 ---
 
-## [ ] WO-01 [Cline] `bimRptFromLive(st)`
+## [x] WO-01 [Cline] `bimRptFromLive(st)`
 
 - **It must:** SPEC 4 WO-01: `'ok'` to `'available'`, `'stale'` to `'stale'`, `'gone'` to `'failed'`, anything else `'unavailable'`.
 - **May use:** nothing.
@@ -30,7 +30,7 @@ after each one. Scores are from `../ROUTING.md` (files, logic, understanding, ju
 
 ---
 
-## [ ] WO-02 [Cline] `bimRptDatum(raw)`
+## [x] WO-02 [Cline] `bimRptDatum(raw)`
 
 - **It must:** SPEC 4 WO-02, with `var BIM_RPT_STATES=['available','partial','stale','unavailable','failed'];` just above the function. Example: `bimRptDatum({value: NaN, state: 'available'})` is the blank datum (`value: null`, `state: 'unavailable'`, every text field `''`).
 - **May use:** `BIM_RPT_STATES` (this task).
@@ -40,7 +40,7 @@ after each one. Scores are from `../ROUTING.md` (files, logic, understanding, ju
 
 ---
 
-## [ ] WO-03 [Cline] `bimRptText(d, digits)`
+## [x] WO-03 [Cline] `bimRptText(d, digits)`
 
 - **It must:** SPEC 4 WO-03. Example: `bimRptText({value: 0, unit: 'm', state: 'available'})` is `'0 m'`.
 - **May use:** nothing.
@@ -50,7 +50,7 @@ after each one. Scores are from `../ROUTING.md` (files, logic, understanding, ju
 
 ---
 
-## [ ] WO-04 [Cline] `bimRptRings(radiiKm)`
+## [x] WO-04 [Cline] `bimRptRings(radiiKm)`
 
 - **It must:** SPEC 4 WO-04. Example: `bimRptRings([3, 1, 2, 2, -1])` gives the rings 1, 2 and 3 km, each `cumulative: true`.
 - **May use:** nothing.
@@ -60,7 +60,7 @@ after each one. Scores are from `../ROUTING.md` (files, logic, understanding, ju
 
 ---
 
-## [ ] WO-05 [Cline] `bimRptPlan(families)`
+## [x] WO-05 [Cline] `bimRptPlan(families)`
 
 - **It must:** SPEC 4 WO-05 and the titles of SPEC part 3, with `BIM_RPT_SA` and `BIM_RPT_DA` (lists of `[id, title]`) just above the function.
 - **May use:** `BIM_RPT_SA`, `BIM_RPT_DA` (this task).
@@ -70,7 +70,7 @@ after each one. Scores are from `../ROUTING.md` (files, logic, understanding, ju
 
 ---
 
-## [ ] WO-06 [Cline] `bimRptIssue(data)`
+## [x] WO-06 [Cline] `bimRptIssue(data)`
 
 - **It must:** SPEC 4 WO-06: never blocks, only marks.
 - **May use:** `bimRptDatum` (WO-02).
@@ -80,7 +80,7 @@ after each one. Scores are from `../ROUTING.md` (files, logic, understanding, ju
 
 ---
 
-## [ ] WO-07 [Cline] `bimRptManifest(report, revision, when)`
+## [x] WO-07 [Cline] `bimRptManifest(report, revision, when)`
 
 - **It must:** SPEC 4 WO-07: keys of the result in the order `id, revision, generated, boards, data`; every datum a copy.
 - **May use:** `bimRptDatum` (WO-02).
@@ -90,7 +90,7 @@ after each one. Scores are from `../ROUTING.md` (files, logic, understanding, ju
 
 ---
 
-## [ ] WO-08 [Cline] `bimRptStale(manifest, revision)`
+## [x] WO-08 [Cline] `bimRptStale(manifest, revision)`
 
 - **It must:** SPEC 4 WO-08.
 - **May use:** nothing.
@@ -100,7 +100,7 @@ after each one. Scores are from `../ROUTING.md` (files, logic, understanding, ju
 
 ---
 
-## [ ] WO-09 [Cline] `bimRptLegend(rows, max)`
+## [x] WO-09 [Cline] `bimRptLegend(rows, max)`
 
 - **It must:** SPEC 4 WO-09.
 - **May use:** nothing.
@@ -110,7 +110,7 @@ after each one. Scores are from `../ROUTING.md` (files, logic, understanding, ju
 
 ---
 
-## [ ] WO-10 [Cline] `bimCompResolve(def, inst)`
+## [x] WO-10 [Cline] `bimCompResolve(def, inst)`
 
 - **It must:** SPEC 4 WO-10: a new object; an override for a key the definition lacks is ignored.
 - **May use:** nothing.
@@ -120,7 +120,7 @@ after each one. Scores are from `../ROUTING.md` (files, logic, understanding, ju
 
 ---
 
-## [ ] WO-11 [Cline] `bimCompSync(inst, def)`
+## [x] WO-11 [Cline] `bimCompSync(inst, def)`
 
 - **It must:** SPEC 4 WO-11.
 - **May use:** nothing.
@@ -130,7 +130,7 @@ after each one. Scores are from `../ROUTING.md` (files, logic, understanding, ju
 
 ---
 
-## [ ] WO-12 [Cline] `bimCompDetach(def, inst)`
+## [x] WO-12 [Cline] `bimCompDetach(def, inst)`
 
 - **It must:** SPEC 4 WO-12.
 - **May use:** `bimCompResolve` (WO-10).

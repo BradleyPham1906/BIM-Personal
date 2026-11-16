@@ -128,7 +128,9 @@ function bimRptText(d, digits) {
   if (d.state === 'failed') return 'Failed';
   var s = '';
   if (typeof d.value === 'number' && isFinite(d.value)) {
-    s = d.value.toFixed(digits === undefined ? 0 : digits | 0);
+    var dg = digits === undefined ? 0 : (digits | 0);
+    dg = dg < 0 || dg > 6 ? 0 : dg;
+    s = d.value.toFixed(dg);
   } else if (typeof d.value === 'string') {
     s = d.value;
   }
