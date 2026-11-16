@@ -102,7 +102,7 @@ marked `[Cline]` or `[Claude]`; Cline completes behavior rather than adding thro
 
 **The gate ships, Claude audits (the owner, 2026-11-13).** "im still have to wait for you to review the
 code ... in order for it to actually commit and push to main." Cline finishes a `[Cline]` task, then runs
-`python3 tools/gate.py ship <phase> <id>` (`.clinerules/workflows/ship-task.md`): it checks scope,
+`python3 tools/gate.py ship <phase> <id>` (`.cline/skills/ship-task/SKILL.md`): it checks scope,
 the build contract and the task's tests, asks the local model for a second opinion, and only then
 commits and pushes `main`. Claude does not block on each task: it audits shipped work in batches
 (`/audit`, `GATE-LOG.md` per phase) and spends its time keeping `docs/work-orders/QUEUE.md` two or

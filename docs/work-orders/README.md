@@ -29,14 +29,14 @@ geometric behavior, prefer an independent reference or deterministic seeded prop
 | 2. Spec | Claude | `vNNN/SPEC.md`: what the feature does, every file and function, inputs and outputs, edge cases, the order of the work. |
 | 3. Tests and tasks | Claude | Write focused tests and `vNNN/TASKS.md`. Mark first-pass implementation tasks `[Cline]`; reserve `[Claude]` for decisions or work that should not be delegated. |
 | 4. Build | Cline | On `main`, implement one task at a time from the research, spec and tests. Complete behavior; do not add deliberate throw stubs. |
-| 5. Gate and ship | Cline | `python3 tools/gate.py check <phase> <id>`, fix every FAIL, then `ship`: it rebuilds `canvas_v10.html`, ticks the task, logs it in `GATE-LOG.md`, commits and pushes `main` (`.clinerules/workflows/ship-task.md`). No wait for Claude. |
+| 5. Gate and ship | Cline | `python3 tools/gate.py check <phase> <id>`, fix every FAIL, then immediately `ship`: it rebuilds `canvas_v10.html`, ticks the task, logs it in `GATE-LOG.md`, commits and pushes `main` (`.cline/skills/ship-task/SKILL.md`). No wait for Claude. |
 | 6. Audit | Claude | In batches, not per task (`/audit`): read what shipped against the research and spec; fix, or reopen the task. Meanwhile Claude keeps `QUEUE.md` two phases ahead. Browser checks and full regression still require owner approval. |
 | 7. Backup | Aider | Take over only when Cline is unavailable or the owner asks. Follow the same local-main, no-push and check rules. |
 
 ## Doing a task with Cline
 
-In VS Code, on `main`, type `/ship-task.md` (the first open task in `QUEUE.md`) or
-`/ship-task.md v175c WO-01`. Cline implements the task, runs the gate and ships it. If the gate still
+In VS Code, on `main`, type `/ship-task` (the first open task in `QUEUE.md`) or
+`/ship-task v175c WO-01`. Cline implements the task, runs the gate, and ships it before reporting completion. If the gate still
 fails after two focused fix attempts, it stops, preserves the diff and reports the FAIL lines.
 After shipping, record the task's first gate result and any post-ship audit changes in
 `CLINE-OUTCOMES.md`; do not count Aider or Claude work as Cline calibration data.

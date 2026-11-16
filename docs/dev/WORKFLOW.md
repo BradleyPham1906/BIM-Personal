@@ -75,7 +75,7 @@ From V175 on, Claude researches and writes the spec, tests and ordered work list
 first implementation pass from those materials on local `main`, completing each task without
 deliberate throw stubs. It runs the required checks before rebuilding `canvas_v10.html`; until then,
 the existing file remains the last usable build. When `tools/gate.py check` passes, `ship` pushes it
-to `main` (`.clinerules/workflows/ship-task.md`); Claude audits shipped work in batches (`/audit`)
+to `main` (`.cline/skills/ship-task/SKILL.md`); Claude audits shipped work in batches (`/audit`)
 instead of reviewing each task before it can land.
 If Cline is unavailable, Aider may take over one task at a time under the same rules.
 
