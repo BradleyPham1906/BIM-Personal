@@ -245,7 +245,58 @@ isolated rooms form singleton communities.
 
 Level: P. Confidence: high for the method, medium for the defaults chosen.
 
-### 2.4 Bridges, articulation points, hubs, depth, aspect
+### 2.4 Bridges, articulation points, hubs, depth, aspect (features 26, 27)
+
+**Sources read.** NetworkX (BSD-3-Clause), `algorithms/components/biconnected.py` `_biconnected_dfs` and
+`algorithms/bridges.py`, main branch, read as text 2026-11-16 (P). They cite Hopcroft and Tarjan 1973,
+"Efficient algorithms for graph manipulation", CACM 16:372-378 (S, not read). Tarjan 1972 "Depth-first search
+and linear graph algorithms" (SIAM J. Computing 1(2)) and Tarjan 1974 "A note on finding the bridges of a
+graph" (Information Processing Letters 2:160-161) were not reached (paywalled): S, through NetworkX's code and
+the standard textbook statement. Hakimi 1964 for the centre: see topic 6.
+
+**Articulation points and bridges (P through NetworkX's code; S for Tarjan).** One depth-first search,
+recording for each vertex its discovery number disc(v) and low(v), the smallest discovery number reachable
+from v's subtree by tree edges down and at most one back edge up. Then, for a tree edge parent u to child v:
+- u is an articulation point if low(v) >= disc(u) and u is not the root; the root is one if it has two or more
+  tree children (NetworkX's code, P);
+- the edge (u, v) is a bridge if low(v) > disc(u) (strict).
+NetworkX runs the search with an explicit stack (no recursion), which an ES5 version should copy in spirit to
+avoid deep recursion; its bridges function instead uses chain decomposition (Schmidt 2013), an equivalent
+linear method. Cost O(V + E): nothing at 500 rooms.
+
+**"Separates at least N rooms" (inference, exact).** Record, in the same search, the size of each subtree,
+sub(v). Removing bridge (u, v) leaves two pieces of sub(v) and n_c - sub(v) rooms (n_c the size of that
+connected component); the bridge passes the filter when the smaller piece has at least N rooms (default N = 2,
+so a link to a single leaf room is not reported as a bridge: a leaf hanging on one link is trivial). For an
+articulation point u, the pieces are sub(c) for each child c with low(c) >= disc(u), plus the rest; report the
+smallest piece. Weighted links do not change bridges (they are a property of the topology); an option "count
+only links of strength 1 and 2" runs the same search on a filtered graph.
+
+**Hub score.** Weighted degree: sum of the strengths of a room's links, with strength mapped so primary counts
+most (1 -> 3, 2 -> 2, 3 -> 1; the same map as topic 3). Report the top hub, the maximum and the mean
+(feature 27). This is "strength" in network science (Barrat et al. 2004, not read: U); the definition is
+simple enough to need no source.
+
+**Depth from the network's centre.** The centre is the set of vertices of minimum eccentricity, the
+eccentricity of v being its largest shortest-path distance to any other vertex (Hakimi 1964's "absolute centre"
+generalises it to points on edges: topic 6). Recommended: hop distance (BFS) for depth, because the user reads
+"depth" as number of steps; centre = the room of minimum eccentricity, ties broken by highest hub score, then
+by id. Then BFS from the centre gives each room's depth; report the mean and the maximum (feature 27). This is
+also Hillier and Hanson's "depth" in space syntax (not read here: S from general knowledge), which supports
+the reading. Cost: n BFS runs, O(n (n + m)), 500 rooms about 500 x 2 000 = a million steps: milliseconds.
+Disconnected graph: compute per component and say so.
+
+**Building aspect, major and minor axes (inference, exact arithmetic).** Principal axes of the rooms of a
+building: take the area-weighted centroid of the room positions, the 2 x 2 covariance matrix
+[[sxx, sxy], [sxy, syy]] (area-weighted, plus each disc's own second moment r^2/4 on both axes so one big
+room is not a point), its eigenvalues in closed form, l1,2 = (sxx + syy)/2 +- sqrt(((sxx - syy)/2)^2 + sxy^2),
+and the major axis angle 0.5 atan2(2 sxy, sxx - syy). Major and minor axis lengths: the extents of the room
+discs projected on the two axes (max minus min of p.axis +- r), which a user can measure; aspect = major /
+minor. (Using 4 sqrt(l) instead gives the equivalent ellipse; either is defensible, the extents are easier to
+check.) For an editable building polygon, use the polygon's own second moments instead of the rooms.
+
+Level: P (NetworkX code), S (Tarjan, Hakimi as cited), inference for the filter and aspect. Confidence: high.
+
 ### 2.5 Corridors routed from user paths
 ### 2.6 Stair placement
 ### 2.7 Bay grid and small-room clustering
