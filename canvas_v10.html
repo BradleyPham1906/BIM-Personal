@@ -36864,8 +36864,18 @@ function bimIfcSaveModel(name, levels, entries){
   var lv=bimIfcSaveLevels(levels),model={name:String(name||'Project'),levels:lv.list,walls:[],prisms:[],openings:[],meshes:[]},left=[],i,e,b,item,opens=[];
   for(i=0;i<entries.length;i++){
     e=entries[i];b=bimIfcSaveBase(e.o,e.layer);item=null;
-    if(e.o.t!=='opening'){item=bimIfcSaveWalls(e.o,lv,b);if(!item)item=bimIfcSavePrism(e.o,lv,b);if(!item)item=bimIfcSaveMesh(e.o,e.mesh,lv,b);}
-    if(e.o.t!=='opening'){if(item){if(Array.isArray(item))model.walls=model.walls.concat(item);else if(item.cls==='IfcSlab'||item.cls==='IfcColumn')model.prisms.push(item);else model.meshes.push(item);}else left.push({id:e.o.id,why:'no shape'});}
+    if(e.o.t!=='opening'){
+      item=bimIfcSaveWalls(e.o,lv,b);
+      if(item)model.walls=model.walls.concat(item);
+      else{
+        item=bimIfcSavePrism(e.o,lv,b);
+        if(item)model.prisms.push(item);
+        else{
+          item=bimIfcSaveMesh(e.o,e.mesh,lv,b);
+          if(item)model.meshes.push(item);else left.push({id:e.o.id,why:'no shape'});
+        }
+      }
+    }
     if(e.o.t==='opening')opens.push({o:e.o,base:b});
   }
   for(i=0;i<opens.length;i++){
