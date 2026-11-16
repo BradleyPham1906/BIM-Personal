@@ -1,0 +1,46 @@
+<!doctype html><meta charset="utf-8"><title>e07 model</title>
+<button id="go">open</button>
+<script>
+// e07: can a second window (a graph editor) stay linked to the model page? Four ways of opening it and three
+// ways of talking, from file:// and from http. The same file plays both parts: ?child makes it the editor.
+var isChild = location.search.indexOf('child') >= 0;
+if(isChild){
+  window.addEventListener('message', function(e){ if(e.data && e.data.ping) e.source.postMessage({pong: e.data.ping, from: 'child'}, '*'); });
+  try{ var bc = new BroadcastChannel('e07'); bc.onmessage = function(e){ if(e.data.ping) bc.postMessage({pong: e.data.ping}); }; }catch(err){}
+  if(window.opener) window.opener.postMessage({ready: 1}, '*');
+}else{
+  window.e07 = function(){
+    var out = {protocol: location.protocol, origin: location.origin}, jobs = [];
+    function ask(win, label){ return new Promise(function(res){
+      var t = setTimeout(function(){ out[label] = 'no answer in 1.5 s'; res(); }, 1500);
+      function on(e){ if(e.data && e.data.pong === label){ clearTimeout(t); removeEventListener('message', on); out[label] = 'ok'; res(); } }
+      addEventListener('message', on);
+      var tries = 0, iv = setInterval(function(){ try{ win.postMessage({ping: label}, '*'); }catch(err){ out[label] = 'threw: ' + err.message; } if(++tries > 12) clearInterval(iv); }, 100); }); }
+    // 1. the same file in a new window, talking by postMessage
+    var w1 = window.open(location.href.split('?')[0] + '?child', 'e07a', 'width=400,height=300');
+    out.openSameFile = w1 ? 'opened' : 'blocked';
+    if(w1){ jobs.push(ask(w1, 'postMessageSameFile'));
+      jobs.push(new Promise(function(res){ setTimeout(function(){ try{ out.directAccessSameFile = w1.document ? 'ok: ' + w1.document.title : 'null'; }catch(err){ out.directAccessSameFile = 'refused: ' + err.name; } res(); }, 800); })); }
+    // 2. an empty window the model page writes into: one script context, no messages needed
+    var w2 = window.open('', 'e07b', 'width=400,height=300');
+    out.openBlank = w2 ? 'opened' : 'blocked';
+    if(w2){ try{ w2.document.write('<title>graph</title><canvas id="c"></canvas>'); w2.document.close();
+        var c = w2.document.getElementById('c'); c.addEventListener('pointerdown', function(){});
+        w2.shared = {n: 41}; out.blankDirect = 'ok: canvas ' + c.tagName + ', opener can set a variable: ' + (w2.shared.n + 1);
+      }catch(err){ out.blankDirect = 'refused: ' + err.name + ': ' + err.message; } }
+    // 3. a Blob URL window
+    var html = '<title>blob child</title><script>addEventListener("message",function(e){if(e.data&&e.data.ping)e.source.postMessage({pong:e.data.ping},"*");});<\/script>';
+    var w3 = window.open(URL.createObjectURL(new Blob([html], {type: 'text/html'})), 'e07c', 'width=400,height=300');
+    out.openBlob = w3 ? 'opened' : 'blocked'; if(w3) jobs.push(ask(w3, 'postMessageBlob'));
+    // 4. BroadcastChannel to the same-file child (works without holding a window reference, e.g. a separate tab)
+    jobs.push(new Promise(function(res){ try{ var bc = new BroadcastChannel('e07'), t = setTimeout(function(){ out.broadcastChannel = 'no answer in 1.5 s'; res(); }, 1500);
+        bc.onmessage = function(e){ if(e.data.pong === 'bc'){ clearTimeout(t); out.broadcastChannel = 'ok'; res(); } };
+        var n = 0, iv = setInterval(function(){ bc.postMessage({ping: 'bc'}); if(++n > 12) clearInterval(iv); }, 100);
+      }catch(err){ out.broadcastChannel = 'threw: ' + err.message; res(); } }));
+    // 5. Document Picture-in-Picture: an always-on-top window owned by the page
+    out.documentPictureInPicture = 'documentPictureInPicture' in window ? 'API present' : 'no API';
+    return Promise.all(jobs).then(function(){ [w1, w2, w3].forEach(function(w){ try{ w && w.close(); }catch(e){} }); return out; });
+  };
+  document.getElementById('go').onclick = function(){ window.e07().then(function(r){ window.e07result = r; }); };
+}
+</script>
