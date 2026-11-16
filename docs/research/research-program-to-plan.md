@@ -186,6 +186,12 @@ programmes have random adjacencies; a real programme's adjacencies cluster (as t
 
 Asked together, 2026-11-16. Each has the recommendation.
 
+**Answered 2026-11-16: all ten as recommended** (the owner: "just do as recommended"). With it, the owner asked
+that the diagrams, the bubble diagram and the adjacency matrix be an engine with everything Anthropocity has:
+its 45 documented features are inventoried and mapped onto these phases in
+`research-program-to-plan/anthropocity-features.md`; the algorithms they need are researched in
+`research-program-to-plan/algorithms.md`.
+
 1. **One model.** Extend V179's programme and relation records now (rewrite its spec and tests before Cline
    builds it), so V233 and V234 are V179's records grown, not new ones. Recommended: yes.
 2. **What a programme item and a relation carry.** Item: the brief fields (department, level preference,
