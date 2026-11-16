@@ -74,7 +74,7 @@ Search Notion before creating anything, so nothing is made twice.
 | `docs/research/research-access-people.md` | `3fecbfcc3a3881598684fed1479bb711` |
 | `docs/research/research-analysis-workspace.md` | `404cbfcc3a3881aaa157c4d99f450c3d` |
 | `docs/research/research-archimap-site-report.md` | `40bcbfcc3a3881d5985acef03d120b1b` |
-| `docs/research/research-program-to-plan.md` (and its folder) | (to be created; the owner's V233 to V238 pages are its starting point) |
+| `docs/research/research-program-to-plan.md` (and its folder) | `41acbfcc3a3881efa777e71e7d2182ea` |
 | `docs/research/research-algorithmic-design.md` (and its folder) | `419cbfcc3a388166aaf4f10da9849507` (task: `419cbfcc3a3881178f6cdad201c92900`) |
 | `docs/research/research-alignment.md` | `3fecbfcc3a3881e881cdd2408e75b9a5` |
 | `docs/research/research-animation.md` | `403cbfcc3a388101837ec19cf0e0a894` |
