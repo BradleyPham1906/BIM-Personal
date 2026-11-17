@@ -21,7 +21,42 @@ function bimIntProgramItem(raw) {
   }
   var rationale = (raw && raw.rationale !== undefined && raw.rationale !== null) ? String(raw.rationale) : '';
   if (count < 1) count = 1;
-  return { id: id, use: use, count: count, areaMin: areaMin, areaMax: areaMax, rationale: rationale };
+  var level = raw && raw.level !== undefined && raw.level !== null ? raw.level : null;
+  if (typeof level === 'number') level = Math.floor(level);
+  if (typeof level === 'string' && level !== '') level = null;
+  var group = raw && raw.group !== undefined && raw.group !== null ? String(raw.group).trim() : '';
+  // valid statuses for programme item; unknown otherwise
+  var status = (raw && raw.status !== undefined && raw.status !== null) ? String(raw.status).trim() : 'unknown';
+  if (status !== 'available' && status !== 'partial' && status !== 'stale' && status !== 'unavailable' && status !== 'failed' && status !== 'confirmed') status = 'unknown';
+  var source = raw && raw.source !== undefined && raw.source !== null ? String(raw.source).trim() : '';
+  var params = (raw && raw.params) || {};
+  // ensure params is a plain object; drop non-finite number values
+  var filteredParams = {};
+  if (typeof params === 'object' && !Array.isArray(params)) {
+    for (var k in params) {
+      if (params.hasOwnProperty(k) && typeof params[k] === 'number' && isFinite(params[k])) {
+        filteredParams[k] = params[k];
+      }
+    }
+  }
+  var open = (raw && raw.open !== undefined && raw.open !== null) ? String(raw.open).trim() : 'auto';
+  // valid open values; otherwise default to 'auto'
+  if (open !== 'auto' && open !== 'open' && open !== 'closed') open = 'auto';
+  return {
+    id: id,
+    use: use,
+    count: count,
+    areaMin: areaMin,
+    areaMax: areaMax,
+    rationale: rationale,
+    building: raw && raw.building !== undefined && raw.building !== null ? String(raw.building).trim() : '',
+    level: level,
+    group: group,
+    status: status,
+    source: source,
+    params: filteredParams,
+    open: open
+  };
 }
 function bimIntRelation(raw) {
   var kind;
@@ -37,9 +72,9 @@ function bimIntRelation(raw) {
   } else {
     kind = 'desired';
   }
-  // rel one of the three else 'next'
-  if (raw.rel === 'next' || raw.rel === 'near' || raw.rel === 'apart') {
-    rel = raw.rel;
+  // rel: preserve any string rel from input; default to 'next' if missing/empty
+  if (raw.rel && typeof raw.rel === 'string' && raw.rel.trim() !== '') {
+    rel = raw.rel.trim();
   } else {
     rel = 'next';
   }
@@ -49,7 +84,13 @@ function bimIntRelation(raw) {
   } else {
     nearM = 15;
   }
-  return { a: raw.a.trim(), b: raw.b.trim(), kind: kind, rel: rel, nearM: nearM };
+  // strength default 2; reason default ''; status default 'approved'
+  var strength = (raw && raw.strength !== undefined && raw.strength !== null) ? raw.strength : 2;
+  if (typeof strength === 'number') strength = Math.round(strength);
+  var reason = (raw && raw.reason !== undefined && raw.reason !== null) ? String(raw.reason).trim() : '';
+  var status = (raw && raw.status !== undefined && raw.status !== null) ? String(raw.status).trim() : 'approved';
+  if (status !== 'approved' && status !== 'met' && status !== 'not met' && status !== 'not evaluated') status = 'approved';
+  return { a: raw.a.trim(), b: raw.b.trim(), kind: kind, rel: rel, nearM: nearM, strength: strength, reason: reason, status: status };
 }
 function bimIntInside(p, poly) {
   if (!poly || poly.length === 0) {
@@ -317,6 +358,20 @@ function bimIntCheck(rel, facts) {
       }
     } else {
       return { status: 'not met', why: 'no shared wall or door' };
+    }
+  }
+  // access: met when either is above 0 ('a door between them' when a door, else 'a shared wall'), else not met 'no door between them'
+  if (rel.rel === 'access') {
+    if ( (sharedLen !== null && sharedLen > 0) || (doorCount !== null && doorCount > 0) ) {
+      if (doorCount !== null && doorCount > 0) {
+        return { status: 'met', why: 'a door between them' };
+      } else {
+        return { status: 'met', why: 'a shared wall' };
+      }
+    } else if (sharedLen !== null && sharedLen > 0) {
+      return { status: 'met', why: 'a shared wall' };
+    } else {
+      return { status: 'not met', why: 'no door between them' };
     }
   }
   
