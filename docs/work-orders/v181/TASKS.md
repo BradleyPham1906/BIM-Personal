@@ -58,7 +58,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-05 [Cline] `bimEgStatus(route, limit)`
+## [x] WO-05 [Cline] `bimEgStatus(route, limit)`
 
 - **It must:** SPEC 5 WO-05: no route: {status: 'blocked', why: 'no route to an exit'}; no positive limit: 'not evaluated', 'no travel limit chosen'; else 'within' with why '12.3 m of 30 m' (len to one decimal), or 'over' with '45.0 m, over 30 m'.
 - **May use:** nothing.
