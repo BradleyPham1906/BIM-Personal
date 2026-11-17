@@ -21732,7 +21732,7 @@ function bimEgStatus(route, limit) {
       acts:[{act:'open:Statistics',label:'Open'}]});
     var eg=bimEgRouteCard();
     C.push({id:'egress',title:'Circulation and exits',state:eg.state,status:eg.status,extra:eg.extra,
-      acts:[{act:'egress:run',label:'Run routes',pri:true,off:eg.runDisabled?'Make a room first':''},
+      acts:[{act:'egress:run',label:'Run routes',pri:true,off:false},
         {act:'egress:hide',label:'Hide routes',off:eg.hideDisabled?'Routes are not shown':''}]});
     /* __acad3dV143: the simulations */
     var miss=bimSunNow().missing,ms=miss?'Set the site '+miss.join(', ')+' first (Site: Location)':'',sh=A3D_SIM.sun,so=A3D_SIM.solar,ra=A3D_SIM.rain;

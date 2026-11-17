@@ -76,6 +76,18 @@ test('V181 routes from rooms to marked doors with no default limit', () => {
   }
 });
 
+test('V181 route action stays enabled when there are no rooms', () => {
+  const oldObjs = E.A3D.objs;
+  try {
+    E.A3D.objs = [];
+    const card = E.bimAnzCards().find((item) => item.id === 'egress');
+    assert.ok(card);
+    assert.equal(card.acts.find((act) => act.act === 'egress:run').off, false);
+  } finally {
+    E.A3D.objs = oldObjs;
+  }
+});
+
 test('V181 registry limit is explicitly unset and can be overridden by the project', () => {
   assert.equal(E.bimStd('app.egress', 'limit'), 0);
   const edition = E.bimStdEdition('app.egress');
