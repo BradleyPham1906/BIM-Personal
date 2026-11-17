@@ -120,7 +120,7 @@ import { refreshTree } from '../sheets/presentation-panel.js';
   BIM_ANZ_GROUP_OF.dgtraffic='access';   /* __acad3dV171 */
   /* __acad3dV168: land */
   BIM_ANZ_GROUP_OF.dglanduse='location';BIM_ANZ_GROUP_OF.dgfigure='location';BIM_ANZ_GROUP_OF.dggreen='ecology';BIM_ANZ_GROUP_OF.dgzoning='legal';
-  var BIM_ANZ_MODEL=['lens','areas','lod','stats','structure'];
+  var BIM_ANZ_MODEL=['lens','areas','lod','stats','structure','egress'];
   function bimAnzStateText(s){return s==='on'?'On':s==='warn'?'Check':s==='fail'?'Problems':s==='stale'?'Out of date':s==='busy'?'Running':'Off';}
   function bimAnzBtn(a){
     return '<button type="button" class="a3d-anzbtn'+(a.pri?' pri':'')+(a.lay?' lay':'')+'" data-anzact="'+a.act+'"'+(a.off?' disabled title="'+bimEsc(a.off)+'"':(a.tip?' title="'+bimEsc(a.tip)+'"':''))+'>'+bimEsc(a.label)+'</button>';

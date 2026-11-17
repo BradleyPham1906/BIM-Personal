@@ -76,12 +76,13 @@ test('V181 routes from rooms to marked doors with no default limit', () => {
   }
 });
 
-test('V181 route action stays enabled when there are no rooms', () => {
+test('V181 circulation and exits is listed in Model and enabled with no rooms', () => {
   const oldObjs = E.A3D.objs;
   try {
     E.A3D.objs = [];
     const card = E.bimAnzCards().find((item) => item.id === 'egress');
     assert.ok(card);
+    assert.ok(E.BIM_ANZ_MODEL.includes('egress'));
     assert.equal(card.acts.find((act) => act.act === 'egress:run').off, false);
   } finally {
     E.A3D.objs = oldObjs;
