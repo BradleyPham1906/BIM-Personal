@@ -28,7 +28,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-02 [Cline] `bimNurbsSpan(n, p, u, k)`
+## [x] WO-02 [Cline] `bimNurbsSpan(n, p, u, k)`
 
 - **It must:** SPEC 5 WO-02: The NURBS Book A2.1: n-1 when u >= k[n]; p when u <= k[p]; else the binary search for k[mid] <= u < k[mid+1].
 - **May use:** nothing.
