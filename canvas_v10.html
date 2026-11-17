@@ -7498,6 +7498,27 @@ function bimNurbsSpan(n, p, u, k) {
   return low;
 }
 
+function bimNurbsBasis(span, u, p, k) {
+  var N = [];
+  for (var i = 0; i <= p; i++) N[i] = 0;
+  N[0] = 1;
+  var left = [];
+  var right = [];
+  for (var j = 1; j <= p; j++) {
+    left[j] = u - k[span + 1 - j];
+    right[j] = k[span + j] - u;
+    var saved = 0;
+    for (var r = 0; r < j; r++) {
+      var denom = right[r + 1] + left[j - r];
+      var temp = denom !== 0 ? N[r] / denom : 0;
+      N[r] = saved + right[r + 1] * temp;
+      saved = left[j - r] * temp;
+    }
+    N[j] = saved;
+  }
+  return N;
+}
+
 
 
   /* ================= __acad3dV184: Freeform F2, surfaces from curves, the pure part =================

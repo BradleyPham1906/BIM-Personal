@@ -38,7 +38,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-03 [Cline] `bimNurbsBasis(span, u, p, k)`
+## [x] WO-03 [Cline] `bimNurbsBasis(span, u, p, k)`
 
 - **It must:** SPEC 5 WO-03: The NURBS Book A2.2: the p+1 non-zero basis values N[0..p] at u for that span, by the left/right triangular scheme.
 - **May use:** nothing.
