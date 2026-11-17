@@ -38,7 +38,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-03 [Cline] `bimEgPath(g, a, b)`
+## [x] WO-03 [Cline] `bimEgPath(g, a, b)`
 
 - **It must:** SPEC 5 WO-03: Dijkstra from a's cell to b's over free cells, 8 neighbours, a step cell long straight and cell*sqrt(2) diagonal; a diagonal only when both cells it passes beside are free; ties by the lower cell index. {len, cells from a's to b's} or null when either end is not free or b cannot be reached.
 - **May use:** bimEgCell (WO-02).
