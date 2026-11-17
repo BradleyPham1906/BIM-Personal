@@ -48,7 +48,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-04 [Cline] `bimNurbsPoint(c, u)`
+## [x] WO-04 [Cline] `bimNurbsPoint(c, u)`
 
 - **It must:** SPEC 5 WO-04: the rational point: sum of pts[span-p+i] * w * N[i] divided by sum of w * N[i], weights 1 when c.w is absent.
 - **May use:** bimNurbsSpan (WO-02), bimNurbsBasis (WO-03).
@@ -58,7 +58,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-05 [Cline] `bimNurbsTangent(c, u, h)`
+## [x] WO-05 [Cline] `bimNurbsTangent(c, u, h)`
 
 - **It must:** SPEC 5 WO-05: the central difference (P(b) - P(a)) / (b - a) with a = max(0, u - h), b = min(1, u + h), h 1e-6 when not positive.
 - **May use:** bimNurbsPoint (WO-04).
@@ -68,7 +68,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-06 [Cline] `bimNurbsSample(c, tol)`
+## [x] WO-06 [Cline] `bimNurbsSample(c, tol)`
 
 - **It must:** SPEC 5 WO-06: points at parameters from 0 to 1: split each interval [a, b] in half while (the midpoint's distance from the chord P(a)P(b) is over tol, or b - a > 0.25) and b - a > 1e-6, depth first left to right; the point at 0 then the end of each kept interval. tol 0.001 when not positive.
 - **May use:** bimNurbsPoint (WO-04).
