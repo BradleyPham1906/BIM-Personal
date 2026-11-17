@@ -84,7 +84,6 @@ function bimIntRelation(raw) {
   } else {
     nearM = 15;
   }
-  // strength default 2; reason default ''; status default 'approved'
   var strength = (raw && raw.strength !== undefined && raw.strength !== null) ? raw.strength : 2;
   if (typeof strength === 'number') strength = Math.round(strength);
   var reason = (raw && raw.reason !== undefined && raw.reason !== null) ? String(raw.reason).trim() : '';
