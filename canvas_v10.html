@@ -7480,6 +7480,16 @@ try{
      is a work order, added below as it is built; none uses another file's names. */
 
 
+function bimNurbsKnots(n, p) {
+  if (!(n > p && p >= 1)) return [];
+  var kv = [];
+  for (var i = 0; i <= p; i++) kv.push(0);
+  for (var i = 1; i <= n - p - 1; i++) kv.push(i / (n - p));
+  for (var i = 0; i <= p; i++) kv.push(1);
+  return kv;
+}
+
+
   /* ================= __acad3dV184: Freeform F2, surfaces from curves, the pure part =================
      docs/research/research-freeform-f1-f7.md (F2) and docs/work-orders/v184/SPEC.md. Surfaces from sampled curves as quad
      meshes: a grid's faces, extrude, a turn about an axis, revolve, loft, Coons patch. Each function is a work order,

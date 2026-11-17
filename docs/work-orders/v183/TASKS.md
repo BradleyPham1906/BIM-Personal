@@ -18,7 +18,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-01 [Cline] `bimNurbsKnots(n, p)`
+## [x] WO-01 [Cline] `bimNurbsKnots(n, p)`
 
 - **It must:** SPEC 5 WO-01: p+1 zeros, then i/(n-p) for i = 1 .. n-p-1, then p+1 ones; [] unless n > p >= 1.
 - **May use:** nothing.
