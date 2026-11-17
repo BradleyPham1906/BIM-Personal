@@ -11,6 +11,7 @@ import { drawNorthArrow, drawProperties } from '../site/property.js';
 import { bimTinHeightAt, drawAlignments, drawStationMark } from '../site/alignment-profile.js';
 import { drawGrids } from '../bim/grid-editing.js';
 import { BIM_LW_TO_PX, bimCanvasPatternFill, bimResolveGraphics } from '../bim/type-instance-params.js';
+import { bimEgRouteDraw } from '../bim/interiors-route-app.js';
 import { drawRoomSchemeLegend } from '../bim/room-colour-fill.js';
 import { drawRoomTags } from '../bim/room-tags.js';
 import { drawDims, drawTextLabels } from '../annotation/dimensions.js';
@@ -521,6 +522,7 @@ import { cvH, cvScale, cvW } from '../ui/canvas-size.js';
     drawLensLegend(ctx,V,W,H);         /* __acad3dV136: the lens's and the data layers' legend, below it */
     drawDiagramLegend(ctx,V,W,H);      /* __acad3dV164: the site analysis's, at the top right */
     drawNotes(ctx,V,W,H);          // __acad3dV82: the annotation overlay, above the model
+    if(!capMode)bimEgRouteDraw(ctx,V,W,H);   /* __acad3dV181: routes and marked exits */
     if(!capMode)drawSkLivePreview(ctx,V,W,H);   /* __acad3dV122: a tool's rubber band is not on the paper */
     if(!capMode){
       var faceNow=bimFaceCurrent();   /* __acad3dV123: read first, so a face that has lapsed lets the gizmo back */

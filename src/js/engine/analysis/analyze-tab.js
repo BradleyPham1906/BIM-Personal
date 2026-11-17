@@ -5,6 +5,7 @@ import {
   bimBandsOf, bimCutFillMapCommand, bimGradeCommand, bimGradeStale, bimIsPad, bimSlopeArrowsCommand
 } from '../terrain/grading.js';
 import { bimSurveyCheck } from '../survey/survey-check.js';
+import { bimEgRouteCard, bimEgRouteHide, bimEgRouteRun } from '../bim/interiors-route-app.js';
 import { bimEsc } from '../layers/layer-manager.js';
 import { A3D_PROP_GROUPS_OPEN, bimDispNum } from '../properties/palette.js';
 import { bimSurveyCheckCommand } from '../properties/context-lod-data.js';
@@ -194,6 +195,10 @@ import { refreshTree } from '../sheets/presentation-panel.js';
       acts:[{act:'lod:run',label:'Check',pri:true,off:nb?'':'No buildings yet'},{act:'lod:cityjson',label:'Export CityJSON',off:nb?'':'No buildings yet'}]});
     C.push({id:'stats',title:'Statistics',state:null,status:A3D.objs.length+' object'+(A3D.objs.length===1?'':'s')+', '+A3D.levels.length+' level'+(A3D.levels.length===1?'':'s')+', '+A3D.sheets.length+' sheet'+(A3D.sheets.length===1?'':'s'),
       acts:[{act:'open:Statistics',label:'Open'}]});
+    var eg=bimEgRouteCard();
+    C.push({id:'egress',title:'Circulation and exits',state:eg.state,status:eg.status,extra:eg.extra,
+      acts:[{act:'egress:run',label:'Run routes',pri:true,off:eg.runDisabled?'Make a room first':''},
+        {act:'egress:hide',label:'Hide routes',off:eg.hideDisabled?'Routes are not shown':''}]});
     /* __acad3dV143: the simulations */
     var miss=bimSunNow().missing,ms=miss?'Set the site '+miss.join(', ')+' first (Site: Location)':'',sh=A3D_SIM.sun,so=A3D_SIM.solar,ra=A3D_SIM.rain;
     var nSol=bimSolarTargets(null).length,ter=bimRainTerrain(null);
@@ -282,6 +287,8 @@ import { refreshTree } from '../sheets/presentation-panel.js';
     }
     if(k==='structure:run')bimAnalyzeCommand();
     else if(k==='structure:off')bimAnalyzeOff();
+    else if(k==='egress:run'){bimEgRouteRun();paint();bimAnalyzeRefresh(true);return true;}
+    else if(k==='egress:hide'){bimEgRouteHide();paint();}
     else if(k==='sun:toggle')bimToggleSun();
     else if(k==='survey:run')bimSurveyCheckCommand();
     else if(k==='terrain:landxml')bimLandXmlExport(null);   /* __acad3dV144 */

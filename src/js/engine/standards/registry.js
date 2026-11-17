@@ -123,6 +123,10 @@ import { a3dToast } from '../bim/csg-booleans.js';
         src:{t:'This app; 5% and 8.33% are the 2010 ADA Standards\' 1:20 walking slope and 1:12 ramp slope, 2% their 1:48 cross slope rounded',w:'ADA Standards 403.3 and 405.2',u:'https://www.ada.gov/law-and-regs/design-standards/2010-stds/',lv:'P',read:'2026-10-18'},
         v:[{n:'bands',t:1,v:[0,2,5,8.33,15,25,50],u:'%',say:'the band edges'}]}]},
     /* ---- buildings and structure ---- */
+    {id:'app.egress',title:'Owner-selected travel limit',pub:'This app',kind:'assumption',area:'Buildings',use:'V181 route estimates; not a code requirement',anywhere:true,
+      eds:[{id:'app.egress.owner',name:'Owner-selected project limit (not a code edition)',pub:'',st:'current',where:'Project-specific',adopt:[{at:'*'}],
+        src:{t:'This app; V181 route estimates',w:'The owner chooses whether to set a limit. No legal travel limit is preselected.',lv:'A'},
+        v:[{n:'limit',v:0,u:'m',say:'the owner-selected travel limit (0 means none is chosen)',src:'A project assumption, not an adopted code requirement',lv:'A'}]}]},   /* __acad3dV181 */
     {id:'ibc.occupant_load',title:'Occupant load factors',pub:'International Code Council',kind:'code',area:'Buildings',use:'Rooms\' occupant loads and the area plans',anywhere:true,
       eds:[{id:'ibc.2021.1004.5',name:'International Building Code 2021, Table 1004.5',pub:'2020-10',st:'current',where:'Pennsylvania (the Uniform Construction Code)',adopt:[{at:'us-pa',from:'2026-01-01'}],
           src:{t:'International Building Code 2021, Table 1004.5, maximum floor area allowances per occupant; adopted in Pennsylvania by 34 Pa. Code 403.21',w:'the table as V105 read it (the same in 2018 and 2021); the adoption in 34 Pa. Code 403.21, effective 1 January 2026',u:'https://www.pacodeandbulletin.gov/Display/pacode?file=/secure/pacode/data/034/chapter403/s403.21.html',lv:'S',read:'2026-10-18'},
