@@ -15,7 +15,8 @@ What it proves (any failure stops it; nothing is pushed):
      TASKS file (checkboxes only), or canvas_v10.html; nothing in the protected paths;
   3. tests are the oracle: a test file may only gain lines, never lose them; SPEC files are untouched;
   4. the build contract on added src/ lines: ES5, no emojis, no WO- stubs, no import/export edits,
-     no debugger, no bim* name that is declared nowhere in src/ (an invented name);
+     no debugger, no bim* name that is declared nowhere in src/ (an invented name), and exactly one
+     declaration of the task's named function;
   5. size: added src/ lines within the task's budget (`- **Budget:** N`, default 120 per task);
   6. node --check on each changed .js; the task's own tests (at least one ran, none failed);
      npm test; npm run check (canvas_v10.html current, modules current, embedded Python, guide).
@@ -143,7 +144,9 @@ def task_scope(t):
     srcs = [p for p in named if p.startswith("src/")]
     budget = re.search(r"\*\*Budget:\*\*\s*(\d+)", t["block"])
     names = set(re.findall(r"`(bim[A-Za-z0-9_]*)", t["block"]))
-    return {"src": srcs, "tests": tests, "budget": int(budget.group(1)) if budget else DEFAULT_BUDGET, "names": names}
+    function = re.match(r"`(bim[A-Za-z0-9_]*)\s*\(", t["title"])
+    return {"src": srcs, "tests": tests, "budget": int(budget.group(1)) if budget else DEFAULT_BUDGET,
+            "names": names, "function": function.group(1) if function else None}
 
 
 # ---------- the diff ----------
@@ -185,6 +188,11 @@ def declared_names():
                 for m in pat.finditer(open(os.path.join(d, f), encoding="utf-8", errors="replace").read()):
                     names.add(m.group(1) or m.group(2))
     return names
+
+
+def function_declaration_count(source, name):
+    pattern = r"^\s*function\s+" + re.escape(name) + r"\s*\("
+    return len(re.findall(pattern, source, re.M))
 
 
 # ---------- the checks ----------
@@ -253,15 +261,37 @@ def check(phase, ids, gate, llm=True, strict_llm=False):
                     known = known if known is not None else declared_names()
                     if name not in known:
                         gate.fail("%s: calls %s, declared nowhere in src/ (invented?)" % (f, name))
+    for task, scope in zip(tasks, scopes):
+        if not scope["function"] or not any(f.endswith(".js") for f in scope["src"]):
+            continue
+        name = scope["function"]
+        definitions = []
+        for root, _, names in os.walk(os.path.join(ROOT, "src", "js")):
+            for filename in names:
+                if not filename.endswith(".js"):
+                    continue
+                path = os.path.join(root, filename)
+                source = open(path, encoding="utf-8", errors="replace").read()
+                count = function_declaration_count(source, name)
+                if count:
+                    rel = os.path.relpath(path, ROOT).replace(os.sep, "/")
+                    definitions.append((rel, count))
+        total = sum(count for _, count in definitions)
+        if total != 1:
+            gate.fail("%s: expected exactly one declaration of %s in src/js; found %d%s" % (
+                task["id"], name, total, " (" + ", ".join(path for path, _ in definitions) + ")" if definitions else ""))
+        elif definitions[0][0] not in scope["src"]:
+            gate.fail("%s: %s is declared in %s, not a file named by the task" % (
+                task["id"], name, definitions[0][0]))
     budget = sum(s["budget"] for s in scopes)
     if added_src > budget:
         gate.fail("%d src lines added, over the budget of %d; split the task or ask Claude" % (added_src, budget))
     elif not gate.fails:
         gate.ok("scope and contract: %d file(s), %d src line(s) added (budget %d)" % (len(files), added_src, budget))
-    if gate.fails:
-        return tasks, None
     for f in js:
         run(["node", "--check", f], "node --check " + f, gate)
+    if gate.fails:
+        return tasks, None
     for tf in sorted(allowed_tests):
         code, out = run(["node", "--test", "--test-reporter=tap", "--test-name-pattern=" + "|".join(ids), tf], "task tests " + tf, gate)
         # a skipped case ("ok 3 - WO-09 ... # SKIP") did not run

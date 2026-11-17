@@ -22,11 +22,14 @@ It is complete only after `tools/gate.py ship` succeeds and the gate's commit is
 2. Run `git pull --ff-only origin main` when local `main` has no unpushed commits. If it fails, continue only if the
    gate can safely merge `origin/main` at ship time.
 3. Read the selected task block in `docs/work-orders/<phase>/TASKS*.md`, its referenced SPEC section, and its named
-   tests. Inspect the existing implementation first. If it already exists, verify it; do not rewrite it just to
-   create a diff.
+   tests. Inspect the current target file and locate the named function before editing. If it already exists, replace
+   its body in place; never append a second definition or duplicate surrounding code. If it does not exist, add it once
+   at the instructed location. After editing, inspect the diff and confirm the named function has exactly one
+   definition in `src/js`.
 4. Implement only the task's named functions and files. Follow the task's constraints, use ES5, and do not weaken or
-   remove tests.
-5. Run the task's exact test command. Fix failures, then run:
+   remove tests. Keep the patch limited to the requested function; do not copy or regenerate the whole file.
+5. Run the task's exact test command and `node --check` on every changed JavaScript file. Review the diff for duplicate
+   declarations, malformed braces, and unrelated changes. Fix failures, then run:
 
        python3 tools/gate.py check <phase> <id>
 
