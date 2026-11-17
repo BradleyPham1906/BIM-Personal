@@ -77,4 +77,4 @@ Doors can be marked as exits; routes use room outlines and model obstacles, and 
 
 ## [ ] WO-07 [Claude] The records
 
-PIPELINE row 181 is updated. The V181-V187 Notion page is not mirrored: this session has no Notion connector, and the page requires sign-in. The local work is built but not merged.
+PIPELINE row 181 is updated to "Merged" (commit 4ca9ca7). The V181-V187 Notion page is not mirrored: this session has no Notion connector, and the page requires sign-in. WO-07's Notion mirror remains pending.
