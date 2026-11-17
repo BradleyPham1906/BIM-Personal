@@ -48,7 +48,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-04 [Cline] `bimEgNearest(routes)`
+## [x] WO-04 [Cline] `bimEgNearest(routes)`
 
 - **It must:** SPEC 5 WO-04: from {exitName: {len} or null}, the shortest {exit, len}; ties to the name first in sort order; null when none.
 - **May use:** nothing.

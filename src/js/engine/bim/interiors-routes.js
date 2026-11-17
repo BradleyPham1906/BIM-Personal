@@ -126,6 +126,20 @@ function bimEgPath(g, a, b) {
   path.unshift(startCell);
   return { len: gScore[endCell], cells: path };
 }
+function bimEgNearest(routes) {
+  if (!routes) return null;
+  var keys = Object.keys(routes).sort();
+  var best = null;
+  for (var i = 0; i < keys.length; i++) {
+    var name = keys[i];
+    var route = routes[name];
+    if (!route) continue;
+    if (best === null || route.len < best.len) {
+      best = { exit: name, len: route.len };
+    }
+  }
+  return best;
+}
   /* ================= __acad3dV181: Interiors I3, circulation and escape routes, the pure part =================
      docs/research/research-notion-v177-v180-interiors.md (I3) and docs/work-orders/v181/SPEC.md. A walkable grid in plan
      [x, z]; the shortest 8-way route on it (Dijkstra, no corner cutting); the nearest exit; a route against a travel limit.
