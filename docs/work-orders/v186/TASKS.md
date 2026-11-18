@@ -18,7 +18,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-01 [Cline] `bimAnFaceNormal(v, face)`
+## [x] WO-01 [Cline] `bimAnFaceNormal(v, face)`
 
 - **It must:** SPEC 5 WO-01: Newell's method over the face's vertex indices: n = sum over edges a to b of ((ay - by)(az + bz), (az - bz)(ax + bx), (ax - bx)(ay + by)); {n: n normalised ([0, 0, 0] when its length is under 1e-15), area: |n| / 2}.
 - **May use:** nothing.
