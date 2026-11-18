@@ -94,3 +94,29 @@ function bimSrfLoft(a, b, rows) {
   }
   return { v: v, f: bimSrfGrid(rings, n, false) };
 }
+
+
+function bimSrfCoons(c0, c1, d0, d1) {
+  if (!c0 || !c1 || !d0 || !d1) return null;
+  var m = c0.length;
+  var k = d0.length;
+  if (m < 2 || k < 2) return null;
+  if (c1.length !== m || d1.length !== k) return null;
+  var v = [];
+  var j, i, u, w;
+  for (j = 0; j < k; j++) {
+    w = j / (k - 1);
+    for (i = 0; i < m; i++) {
+      u = i / (m - 1);
+      var cornerX = (1 - u) * (1 - w) * c0[0][0] + u * (1 - w) * c0[m - 1][0] + (1 - u) * w * c1[0][0] + u * w * c1[m - 1][0];
+      var cornerY = (1 - u) * (1 - w) * c0[0][1] + u * (1 - w) * c0[m - 1][1] + (1 - u) * w * c1[0][1] + u * w * c1[m - 1][1];
+      var cornerZ = (1 - u) * (1 - w) * c0[0][2] + u * (1 - w) * c0[m - 1][2] + (1 - u) * w * c1[0][2] + u * w * c1[m - 1][2];
+      v.push([
+        (1 - w) * c0[i][0] + w * c1[i][0] + (1 - u) * d0[j][0] + u * d1[j][0] - cornerX,
+        (1 - w) * c0[i][1] + w * c1[i][1] + (1 - u) * d0[j][1] + u * d1[j][1] - cornerY,
+        (1 - w) * c0[i][2] + w * c1[i][2] + (1 - u) * d0[j][2] + u * d1[j][2] - cornerZ
+      ]);
+    }
+  }
+  return { v: v, f: bimSrfGrid(k, m, false) };
+}

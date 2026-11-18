@@ -68,7 +68,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-06 [Cline] `bimSrfCoons(c0, c1, d0, d1)`
+## [x] WO-06 [Cline] `bimSrfCoons(c0, c1, d0, d1)`
 
 - **It must:** SPEC 5 WO-06: the bilinear Coons patch: c0 (v = 0) and c1 (v = 1) with m points, d0 (u = 0) and d1 (u = 1) with k points, corners shared; vertex (j, i) with u = i/(m-1), w = j/(k-1): (1-w) c0[i] + w c1[i] + (1-u) d0[j] + u d1[j] minus the bilinear blend of the four corners; faces bimSrfGrid(k, m, false). null for mismatched counts or fewer than 2.
 - **May use:** bimSrfGrid (WO-01).
