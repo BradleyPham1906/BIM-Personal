@@ -48,7 +48,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-04 [Cline] `bimNeElevate(P)`
+## [x] WO-04 [Cline] `bimNeElevate(P)`
 
 - **It must:** SPEC 5 WO-04: Bezier points raised one degree: Q_0 = P_0, Q_i = (i/(n+1)) P_(i-1) + (1 - i/(n+1)) P_i for i = 1..n, Q_(n+1) = P_n.
 - **May use:** nothing.
