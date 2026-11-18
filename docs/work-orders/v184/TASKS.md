@@ -38,7 +38,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-03 [Cline] `bimSrfRotate(p, o, ax, a)`
+## [x] WO-03 [Cline] `bimSrfRotate(p, o, ax, a)`
 
 - **It must:** SPEC 5 WO-03: p turned by a radians about the axis through o along ax (normalised), by Rodrigues' formula: x c + (k cross x) s + k (k dot x)(1 - c), x = p - o, plus o.
 - **May use:** nothing.

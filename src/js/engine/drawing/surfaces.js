@@ -32,3 +32,21 @@ function bimSrfExtrude(pts, vec) {
   }
   return { v: v, f: bimSrfGrid(2, n, false) };
 }
+
+
+function bimSrfRotate(p, o, ax, a) {
+  var x = [p[0] - o[0], p[1] - o[1], p[2] - o[2]];
+  var len = Math.sqrt(ax[0] * ax[0] + ax[1] * ax[1] + ax[2] * ax[2]);
+  var k = [ax[0] / len, ax[1] / len, ax[2] / len];
+  var c = Math.cos(a);
+  var s = Math.sin(a);
+  var kx = k[1] * x[2] - k[2] * x[1];
+  var ky = k[2] * x[0] - k[0] * x[2];
+  var kz = k[0] * x[1] - k[1] * x[0];
+  var kdotx = k[0] * x[0] + k[1] * x[1] + k[2] * x[2];
+  var r = [];
+  r[0] = x[0] * c + kx * s + k[0] * kdotx * (1 - c) + o[0];
+  r[1] = x[1] * c + ky * s + k[1] * kdotx * (1 - c) + o[1];
+  r[2] = x[2] * c + kz * s + k[2] * kdotx * (1 - c) + o[2];
+  return r;
+}
