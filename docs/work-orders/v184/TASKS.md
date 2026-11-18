@@ -48,7 +48,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-04 [Cline] `bimSrfRevolve(pts, o, ax, angle, segs)`
+## [x] WO-04 [Cline] `bimSrfRevolve(pts, o, ax, angle, segs)`
 
 - **It must:** SPEC 5 WO-04: segs (24 when under 1) steps; rings j = 0 .. segs (only 0 .. segs - 1 for a full turn, |angle| within 1e-9 of 2 pi) of the profile turned by angle j / segs; faces [a, a+1, b+1, b] with a = j n + i, b = ((j+1) % rings) n + i for j < segs, i < n - 1. null for fewer than 2 points.
 - **May use:** bimSrfRotate (WO-03).

@@ -50,3 +50,30 @@ function bimSrfRotate(p, o, ax, a) {
   r[2] = x[2] * c + kz * s + k[2] * kdotx * (1 - c) + o[2];
   return r;
 }
+
+
+function bimSrfRevolve(pts, o, ax, angle, segs) {
+  if (!pts || pts.length < 2) return null;
+  var n = pts.length;
+  if (!segs || segs < 1) segs = 24;
+  var full = Math.abs(angle - 2 * Math.PI) < 1e-9;
+  var rings = full ? segs : segs + 1;
+  var v = [];
+  var j, i, r, ang;
+  for (j = 0; j < rings; j++) {
+    ang = angle * j / segs;
+    for (i = 0; i < n; i++) {
+      r = bimSrfRotate(pts[i], o, ax, ang);
+      v.push([r[0], r[1], r[2]]);
+    }
+  }
+  var f = [];
+  for (j = 0; j < segs; j++) {
+    for (i = 0; i < n - 1; i++) {
+      var a = j * n + i;
+      var b = ((j + 1) % rings) * n + i;
+      f.push([a, a + 1, b + 1, b]);
+    }
+  }
+  return { v: v, f: f };
+}
