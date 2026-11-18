@@ -46,3 +46,16 @@ function bimAnVertexNormals(m) {
   }
   return out;
 }
+
+function bimAnDraft(n, pull) {
+  var pl = Math.sqrt(pull[0] * pull[0] + pull[1] * pull[1] + pull[2] * pull[2]), c;
+  c = (n[0] * pull[0] + n[1] * pull[1] + n[2] * pull[2]) / pl;
+  if (c < -1) {
+    c = -1;
+  }
+  if (c > 1) {
+    c = 1;
+  }
+  return 90 - Math.acos(c) * 180 / Math.PI;
+}
+

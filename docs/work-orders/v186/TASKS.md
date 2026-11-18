@@ -38,7 +38,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-03 [Cline] `bimAnDraft(n, pull)`
+## [x] WO-03 [Cline] `bimAnDraft(n, pull)`
 
 - **It must:** SPEC 5 WO-03: 90 - the angle in degrees between the unit normal and the pull direction (normalised; the cosine clamped to -1..1).
 - **May use:** nothing.
