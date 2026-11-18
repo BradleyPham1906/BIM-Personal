@@ -65,3 +65,17 @@ function bimNeMovePoint(c, i, d) {
   return out;
 }
 
+
+/* __acad3dV187 WO-03: bimNeBlend, G1 cubic blend between two curve ends, pure. */
+function bimNeBlend(p0, t0, p1, t1, k) {
+  var s, l0, l1, h0, h1, pts;
+  l0 = Math.hypot(t0[0], t0[1], t0[2]);
+  l1 = Math.hypot(t1[0], t1[1], t1[2]);
+  s = k > 0 ? k : Math.hypot(p1[0] - p0[0], p1[1] - p0[1], p1[2] - p0[2]) / 3;
+  if (l0 === 0) l0 = 1;
+  if (l1 === 0) l1 = 1;
+  h0 = [t0[0] / l0 * s, t0[1] / l0 * s, t0[2] / l0 * s];
+  h1 = [t1[0] / l1 * s, t1[1] / l1 * s, t1[2] / l1 * s];
+  pts = [p0.slice(0), [p0[0] + h0[0], p0[1] + h0[1], p0[2] + h0[2]], [p1[0] - h1[0], p1[1] - h1[1], p1[2] - h1[2]], p1.slice(0)];
+  return { deg: 3, pts: pts, knots: [0, 0, 0, 0, 1, 1, 1, 1] };
+}

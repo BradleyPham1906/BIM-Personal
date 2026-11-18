@@ -38,7 +38,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-03 [Cline] `bimNeBlend(p0, t0, p1, t1, k)`
+## [x] WO-03 [Cline] `bimNeBlend(p0, t0, p1, t1, k)`
 
 - **It must:** SPEC 5 WO-03: the cubic {deg: 3, pts: [p0, p0 + t0/|t0| s, p1 - t1/|t1| s, p1], knots: [0,0,0,0,1,1,1,1]}, s = k when positive, else |p1 - p0| / 3 (a zero tangent counts as length 1).
 - **May use:** nothing.
