@@ -18,7 +18,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-01 [Cline] `bimNeKnotInsert(c, u)`
+## [x] WO-01 [Cline] `bimNeKnotInsert(c, u)`
 
 - **It must:** SPEC 5 WO-01: null unless knots[deg] < u < knots[n]. The span s with knots[s] <= u < knots[s+1]; in homogeneous coordinates (x w, y w, z w, w): Q_i = P_i for i <= s - p, Q_i = P_(i-1) for i > s, else a P_i + (1 - a) P_(i-1) with a = (u - k_i)/(k_(i+p) - k_i); the knot u inserted after k_s; back to points and weights (w only when the input had w).
 - **May use:** nothing.
