@@ -48,7 +48,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-04 [Cline] `bimAnZebra(n, view, stripes)`
+## [x] WO-04 [Cline] `bimAnZebra(n, view, stripes)`
 
 - **It must:** SPEC 5 WO-04: the reflected view r = 2 (n . view) n - view; k = floor((r[1] + 1) / 2 * stripes) clamped to 0 .. stripes - 1; k % 2. stripes 10 when under 1 (floored).
 - **May use:** nothing.

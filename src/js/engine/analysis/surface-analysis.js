@@ -59,3 +59,22 @@ function bimAnDraft(n, pull) {
   return 90 - Math.acos(c) * 180 / Math.PI;
 }
 
+function bimAnZebra(n, view, stripes) {
+  var s = stripes, d, r, k;
+  if (s < 1 || isNaN(s)) {
+    s = 10;
+  }
+  d = n[0] * view[0] + n[1] * view[1] + n[2] * view[2];
+  r = [2 * d * n[0] - view[0], 2 * d * n[1] - view[1], 2 * d * n[2] - view[2]];
+  k = (r[1] + 1) / 2 * s;
+  k = Math.floor(k);
+  if (k < 0) {
+    k = 0;
+  }
+  if (k > s - 1) {
+    k = s - 1;
+  }
+  return k % 2;
+}
+
+
