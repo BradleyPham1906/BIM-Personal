@@ -28,7 +28,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-02 [Cline] `bimSrfExtrude(pts, vec)`
+## [x] WO-02 [Cline] `bimSrfExtrude(pts, vec)`
 
 - **It must:** SPEC 5 WO-02: {v: the points then the points moved by vec, f: bimSrfGrid(2, n, false)}; null for fewer than 2 points.
 - **May use:** bimSrfGrid (WO-01).

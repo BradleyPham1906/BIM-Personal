@@ -17,3 +17,18 @@ function bimSrfGrid(rows, cols, closeU) {
   }
   return result;
 }
+
+
+function bimSrfExtrude(pts, vec) {
+  if (!pts || pts.length < 2) return null;
+  var n = pts.length;
+  var v = [];
+  var i;
+  for (i = 0; i < n; i++) {
+    v.push([pts[i][0], pts[i][1], pts[i][2]]);
+  }
+  for (i = 0; i < n; i++) {
+    v.push([pts[i][0] + vec[0], pts[i][1] + vec[1], pts[i][2] + vec[2]]);
+  }
+  return { v: v, f: bimSrfGrid(2, n, false) };
+}
