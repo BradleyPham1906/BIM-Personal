@@ -58,7 +58,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-05 [Cline] `bimAnGauss(m)`
+## [x] WO-05 [Cline] `bimAnGauss(m)`
 
 - **It must:** SPEC 5 WO-05: {deficit, area} per vertex: 2 pi minus the sum of the corner angles at it over every face (the angle between the edges to the previous and next vertex of the face), and the sum of each face's area / its vertex count.
 - **May use:** bimAnFaceNormal (WO-01).

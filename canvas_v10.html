@@ -22523,6 +22523,38 @@ function bimAnZebra(n, view, stripes) {
 }
 
 
+function bimAnGauss(m) {
+  var v = m.v, f = m.f, deficit = [], area = [], i, j, fi, share, prev, cur, nxt, e1, e2, len1, len2, c, ang;
+  for (i = 0; i < v.length; i++) {
+    deficit.push(2 * Math.PI);
+    area.push(0);
+  }
+  for (i = 0; i < f.length; i++) {
+    fi = f[i];
+    share = bimAnFaceNormal(v, fi).area / fi.length;
+    for (j = 0; j < fi.length; j++) {
+      cur = fi[j];
+      prev = fi[(j - 1 + fi.length) % fi.length];
+      nxt = fi[(j + 1) % fi.length];
+      e1 = [v[prev][0] - v[cur][0], v[prev][1] - v[cur][1], v[prev][2] - v[cur][2]];
+      e2 = [v[nxt][0] - v[cur][0], v[nxt][1] - v[cur][1], v[nxt][2] - v[cur][2]];
+      len1 = Math.sqrt(e1[0] * e1[0] + e1[1] * e1[1] + e1[2] * e1[2]);
+      len2 = Math.sqrt(e2[0] * e2[0] + e2[1] * e2[1] + e2[2] * e2[2]);
+      c = (e1[0] * e2[0] + e1[1] * e2[1] + e1[2] * e2[2]) / (len1 * len2);
+      if (c < -1) {
+        c = -1;
+      }
+      if (c > 1) {
+        c = 1;
+      }
+      ang = Math.acos(c);
+      deficit[cur] -= ang;
+      area[cur] += share;
+    }
+  }
+  return { deficit: deficit, area: area };
+}
+
 
 
   /* ================= __acad3dV219: WebGPU compute: the CPU reference first, the pure part =================
