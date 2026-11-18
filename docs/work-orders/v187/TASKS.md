@@ -28,7 +28,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-02 [Cline] `bimNeMovePoint(c, i, d)`
+## [x] WO-02 [Cline] `bimNeMovePoint(c, i, d)`
 
 - **It must:** SPEC 5 WO-02: a new curve with point i moved by d, every array copied; null for an index out of range.
 - **May use:** nothing.

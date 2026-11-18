@@ -48,3 +48,20 @@ function bimNeKnotInsert(c, u) {
   }
   return out;
 }
+/* __acad3dV187 WO-02: bimNeMovePoint, move control point i by d, pure. */
+function bimNeMovePoint(c, i, d) {
+  var pts = c.pts, n = pts.length, j, p, w, out;
+  if (!(i >= 0 && i < n)) return null;
+  var newPts = [];
+  for (j = 0; j < n; j++) {
+    p = pts[j];
+    if (j === i) newPts.push([p[0] + d[0], p[1] + d[1], p[2] + d[2]]);
+    else newPts.push([p[0], p[1], p[2]]);
+  }
+  w = [];
+  for (j = 0; j < (c.w ? c.w.length : 0); j++) w.push(c.w[j]);
+  out = { deg: c.deg, pts: newPts, knots: c.knots.slice(0) };
+  if (c.w) out.w = w;
+  return out;
+}
+
