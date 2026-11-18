@@ -28,7 +28,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-02 [Cline] `bimAnVertexNormals(m)`
+## [x] WO-02 [Cline] `bimAnVertexNormals(m)`
 
 - **It must:** SPEC 5 WO-02: for each vertex, the sum of n * area of the faces using it, normalised (left as is when under 1e-15).
 - **May use:** bimAnFaceNormal (WO-01).

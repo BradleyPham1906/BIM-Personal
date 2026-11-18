@@ -20,3 +20,29 @@ function bimAnFaceNormal(v, face) {
   }
   return { n: [n[0] / len, n[1] / len, n[2] / len], area: len / 2 };
 }
+
+
+function bimAnVertexNormals(m) {
+  var v = m.v, f = m.f, n = [], i, j, k, r, len, out = [];
+  for (i = 0; i < v.length; i++) {
+    n.push([0, 0, 0]);
+  }
+  for (i = 0; i < f.length; i++) {
+    r = bimAnFaceNormal(v, f[i]);
+    for (j = 0; j < f[i].length; j++) {
+      k = f[i][j];
+      n[k][0] += r.n[0] * r.area;
+      n[k][1] += r.n[1] * r.area;
+      n[k][2] += r.n[2] * r.area;
+    }
+  }
+  for (i = 0; i < v.length; i++) {
+    len = Math.sqrt(n[i][0] * n[i][0] + n[i][1] * n[i][1] + n[i][2] * n[i][2]);
+    if (len < 1e-15) {
+      out.push(n[i]);
+    } else {
+      out.push([n[i][0] / len, n[i][1] / len, n[i][2] / len]);
+    }
+  }
+  return out;
+}
