@@ -7644,6 +7644,19 @@ function bimNurbsSample(c, tol) {
      added below as it is built; none uses another file's names. */
 
 
+function bimSrfGrid(rows, cols, closeU) {
+  var result = [];
+  for (var j = 0; j < rows - 1; j++) {
+    for (var i = 0; i < (closeU ? cols : cols - 1); i++) {
+      var a = j * cols + i;
+      var b = j * cols + (i + 1) % cols;
+      result.push([a, b, b + cols, a + cols]);
+    }
+  }
+  return result;
+}
+
+
   /* ================= __acad3dV185: Freeform F3, sweeps, pipes and caps, the pure part =================
      docs/research/research-freeform-f1-f7.md (F3) and docs/work-orders/v185/SPEC.md. Rotation-minimising frames by
      double reflection; a profile swept along a rail; a circle profile; caps. Each function is a work order, added below

@@ -18,7 +18,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-01 [Cline] `bimSrfGrid(rows, cols, closeU)`
+## [x] WO-01 [Cline] `bimSrfGrid(rows, cols, closeU)`
 
 - **It must:** SPEC 5 WO-01: quads [a, b, b + cols, a + cols] with a = j*cols + i and b = j*cols + (i+1) % cols, for j < rows - 1 and i < cols - 1 (i < cols when closeU).
 - **May use:** nothing.
