@@ -8019,6 +8019,17 @@ function bimNeElevate(P) {
   return Q;
 }
 
+/* __acad3dV187 WO-05: bimNeReverse, reverse a curve, pure. */
+function bimNeReverse(c) {
+  var pts = c.pts, w = c.w, knots = c.knots, n = pts.length, i, rpts = [], rw = [], rknots = [], out;
+  for (i = 0; i < n; i++) rpts.push([pts[n - 1 - i][0], pts[n - 1 - i][1], pts[n - 1 - i][2]]);
+  if (w) for (i = 0; i < n; i++) rw.push(w[n - 1 - i]);
+  for (i = 0; i < knots.length; i++) rknots.push(1 - knots[knots.length - 1 - i]);
+  out = { deg: c.deg, pts: rpts, knots: rknots };
+  if (w) out.w = rw;
+  return out;
+}
+
 
 
   /* ================= __acad3dV188: Freeform F6, picture planes, text objects, flow along a surface, the pure part =================

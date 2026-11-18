@@ -58,7 +58,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-05 [Cline] `bimNeReverse(c)`
+## [x] WO-05 [Cline] `bimNeReverse(c)`
 
 - **It must:** SPEC 5 WO-05: points and weights reversed, knots reversed and each as 1 - k; copies.
 - **May use:** nothing.
