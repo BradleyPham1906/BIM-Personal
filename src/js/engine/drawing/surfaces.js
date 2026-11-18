@@ -77,3 +77,20 @@ function bimSrfRevolve(pts, o, ax, angle, segs) {
   }
   return { v: v, f: f };
 }
+
+
+function bimSrfLoft(a, b, rows) {
+  if (!a || !b || a.length !== b.length || a.length < 2) return null;
+  var n = a.length;
+  if (!rows || rows < 1) rows = 1;
+  var rings = rows + 1;
+  var v = [];
+  var j, i, w;
+  for (j = 0; j < rings; j++) {
+    w = j / rows;
+    for (i = 0; i < n; i++) {
+      v.push([a[i][0] * (1 - w) + b[i][0] * w, a[i][1] * (1 - w) + b[i][1] * w, a[i][2] * (1 - w) + b[i][2] * w]);
+    }
+  }
+  return { v: v, f: bimSrfGrid(rings, n, false) };
+}

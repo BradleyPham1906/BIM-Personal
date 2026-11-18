@@ -7717,6 +7717,23 @@ function bimSrfRevolve(pts, o, ax, angle, segs) {
 }
 
 
+function bimSrfLoft(a, b, rows) {
+  if (!a || !b || a.length !== b.length || a.length < 2) return null;
+  var n = a.length;
+  if (!rows || rows < 1) rows = 1;
+  var rings = rows + 1;
+  var v = [];
+  var j, i, w;
+  for (j = 0; j < rings; j++) {
+    w = j / rows;
+    for (i = 0; i < n; i++) {
+      v.push([a[i][0] * (1 - w) + b[i][0] * w, a[i][1] * (1 - w) + b[i][1] * w, a[i][2] * (1 - w) + b[i][2] * w]);
+    }
+  }
+  return { v: v, f: bimSrfGrid(rings, n, false) };
+}
+
+
   /* ================= __acad3dV185: Freeform F3, sweeps, pipes and caps, the pure part =================
      docs/research/research-freeform-f1-f7.md (F3) and docs/work-orders/v185/SPEC.md. Rotation-minimising frames by
      double reflection; a profile swept along a rail; a circle profile; caps. Each function is a work order, added below

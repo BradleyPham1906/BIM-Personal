@@ -58,7 +58,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-05 [Cline] `bimSrfLoft(a, b, rows)`
+## [x] WO-05 [Cline] `bimSrfLoft(a, b, rows)`
 
 - **It must:** SPEC 5 WO-05: rows (1 when under 1) + 1 interpolated rings from a to b, faces by bimSrfGrid(rows + 1, n, false); null unless both have the same count, 2 or more.
 - **May use:** bimSrfGrid (WO-01).
