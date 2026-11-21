@@ -152,7 +152,7 @@ def example_a():
     lam, phi = np.linalg.eigh(np.linalg.solve(np.sqrt(M), np.linalg.solve(np.sqrt(M), K).T).T)
     T1 = 2 * math.pi / math.sqrt(lam[0])
     line(f'drift model: storey k={kst:.0f} kN/m (assumed), m={m:.2f} t/level, computed T1={T1:.4f} s '
-         f'(> CuTa={Cu * Ta:.3f}: design forces use CuTa... here T=Ta was used for V)')
+         f'(below CuTa={Cu * Ta:.3f} s; V above used T=Ta; 12.8.6.2 lets drift use the computed T uncapped)')
     # elastic displacements under the ELF forces (strength level), then Cd/Ie
     de = np.linalg.solve(K, np.array(F))
     rho = 1.3  # redundancy factor assumed 1.3 in SDC D for the moment-frame limit
@@ -262,7 +262,7 @@ def example_b():
     # CQC coefficient checks
     z = 0.05
     line(f'CQC rho(r=1)={cqc_rho(z, z, 1.0):.6f}; rho(r=0.9)={cqc_rho(z, z, 0.9):.4f}; '
-         f'rho(r=0.5)={cqc_rho(z, z, 0.5):.5f}; rho(r=0.618 for this 2-dof)={cqc_rho(z, z, T_exact[1] / T_exact[0]):.5f}')
+         f'rho(r=0.5)={cqc_rho(z, z, 0.5):.5f}; rho(r=T2/T1=0.382, this 2-dof)={cqc_rho(z, z, T_exact[1] / T_exact[0]):.5f}')
     eq = lambda r: 8 * z * z * (1 + r) * r ** 1.5 / ((1 - r * r) ** 2 + 4 * z * z * r * (1 + r) ** 2)
     for r in (0.3, 0.7, 0.95, 1.2):
         assert abs(cqc_rho(z, z, r) - eq(r)) < 1e-12
@@ -357,7 +357,7 @@ def example_c(bres):
         Tth = 2 * math.pi * dtf / (2 * math.atan(wdt / 2))  # exact for average acceleration, undamped
         line(f'free vibration dt/T={ratio}: amplitude after 20 T = {amp:.6f} (no decay); '
              f'period {Tnum:.5f} s, theory {Tth:.5f} s, elongation {(Tnum - 1) * 100:.3f}% '
-             f'(pi^2/12 (dt/T)^2 = {math.pi ** 2 / 12 * ratio ** 2 * 100:.3f}%)')
+             f'(approx (w dt)^2/12 = pi^2/3 (dt/T)^2 = {math.pi ** 2 / 3 * ratio ** 2 * 100:.3f}%)')
 
     line('MDOF Newmark (2-dof of (b), Rayleigh 5%) vs modal superposition, ground pulse')
     M, K = bres['M'], bres['K']
