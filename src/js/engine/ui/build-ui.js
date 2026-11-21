@@ -602,6 +602,11 @@ import { size } from './canvas-size.js';
       }else if(f==='locked'){
         bimSetLocked(o,inp.checked);
         refreshProps();
+      }else if(f==='egressExit'){
+        if(!o.bim||o.bim.type!=='door'){a3dToast('Only a door can be marked as an exit');refreshProps();return;}
+        pushUndo();
+        if(inp.checked)o.bim.exit=true;else delete o.bim.exit;
+        refreshTree();refreshProps();paint();saveSoon();
       }else if(f==='thickness'||f==='height'){
         var v=parseFloat(inp.value);
         if(!isFinite(v)||v<=0){a3dToast('Must be a positive number');refreshProps();return;}

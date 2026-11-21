@@ -4,6 +4,7 @@ import { updateLevel } from '../bim/level-datum.js';
 import { A3D_SUNX, bimSunNum, bimSunSettings } from '../site/sun-position.js';
 import { bimIsProperty, bimPropertyGeometry } from '../site/property.js';
 import { bimSelectedGrid } from '../bim/grid-editing.js';
+import { bimEgRouteParam } from '../bim/interiors-route-app.js';
 import { A3D_PLOT, bimLayerById, bimLayerEff } from '../layers/layer-rules.js';
 import { bimLayerChanged } from '../layers/select-change.js';
 import { bimEsc } from '../layers/layer-manager.js';
@@ -570,6 +571,7 @@ import { a3dToast, objById } from '../bim/csg-booleans.js';
         if((k=e.getAttribute('data-znf'))){bimZnSet(k,e.value);if(bimAwOwns())bimAwRender(true);}   /* __acad3dV160: the zoning, in Legal */
         else if((k=e.getAttribute('data-anzload'))){updateLevel(A3D.activeLevel,k,e.value);if(bimAwOwns())bimAwRender(true);}   /* __acad3dV166b: the floor loads, in Frame analysis */
         else if((k=e.getAttribute('data-sunsl')))bimSunSlide(k,e.value,true);   /* __acad3dV171d: a slider let go; the redraw keeps it in the hand */
+        else if((k=e.getAttribute('data-egress-param'))){bimEgRouteParam(k,e.value);bimAwRefresh();}
         else if((k=e.getAttribute('data-tlf'))){bimTlSetField(k,e.type==='checkbox'?e.checked:e.value);if(bimAwOwns())bimAwRender(true);}   /* __acad3dV172: a tool's field, checked again */
       }catch(eF){console.warn('[BIM] Analyze setting failed',eF);a3dToast('That setting could not be changed - see the console');}
     },true);   /* in the capture: V118's refresh after every change, the panel's last handler, would put the model's value back first */

@@ -16945,7 +16945,7 @@ The building's programme in Properties, checked against the rooms drawn; the bub
   (its handlers), `sheets/board-figures.js` (`int.bubble`), `properties-analyze.css` (tables scroll sideways).
 - Hooks: `__a3dIntReport`, `__a3dIntRooms`, `__a3dIntBubble` (`testing/hooks-boards.js`).
 - Checks: syntax, `npm run modules`, the build, `npm run check`, `npm test` 292 of 292 (12 in
-  `tests/unit/interiors.test.mjs`), the browser check `tests/e2e/bim_phase179_programme_browser_tests.py` 19 of 19.
+  `tests/unit/interiors-programme.test.mjs`), the browser check `tests/e2e/bim_phase179_programme_browser_tests.py` 19 of 19.
 
 ## Phase 180 (V180) - Interiors I2, clearance and ergonomics
 

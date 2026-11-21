@@ -18,8 +18,9 @@ Mark exits; each room shows its route to the nearest exit drawn on the plan with
 | File | New or changed | What it holds | Built by |
 |---|---|---|---|
 | `src/js/engine/bim/interiors-routes.js` | new, after `js/engine/bim/interiors-clearance.js` in `src/index.html` (header done) | 5 pure functions (part 5) | Cline, WO-01 to WO-05 |
-| `docs/work-orders/v181/v181.test.mjs` | new | their tests | Claude (done) |
-| the app's own files | changed | wiring, the interface, saving and undo | Claude, WO-06, WO-07 |
+| `tests/unit/interiors.test.mjs` | new | pure function tests and route/registry integration tests | Claude |
+| `src/js/engine/bim/interiors-route-app.js`, Analyze, Properties and plan-rendering modules, `src/js/engine/standards/registry.js` | changed | route calculation, marked exits, controls, plan overlay and owner-selected limit | Claude, WO-06 |
+| `tests/e2e/bim_phase181_interiors_routes_check.mjs` | new | focused browser check for the interface and plan overlay | Claude, WO-06 |
 
 ## 5. Functions, `src/js/engine/bim/interiors-routes.js`
 

@@ -18,7 +18,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-01 [Cline] `bimAnFaceNormal(v, face)`
+## [x] WO-01 [Cline] `bimAnFaceNormal(v, face)`
 
 - **It must:** SPEC 5 WO-01: Newell's method over the face's vertex indices: n = sum over edges a to b of ((ay - by)(az + bz), (az - bz)(ax + bx), (ax - bx)(ay + by)); {n: n normalised ([0, 0, 0] when its length is under 1e-15), area: |n| / 2}.
 - **May use:** nothing.
@@ -28,7 +28,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-02 [Cline] `bimAnVertexNormals(m)`
+## [x] WO-02 [Cline] `bimAnVertexNormals(m)`
 
 - **It must:** SPEC 5 WO-02: for each vertex, the sum of n * area of the faces using it, normalised (left as is when under 1e-15).
 - **May use:** bimAnFaceNormal (WO-01).
@@ -38,7 +38,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-03 [Cline] `bimAnDraft(n, pull)`
+## [x] WO-03 [Cline] `bimAnDraft(n, pull)`
 
 - **It must:** SPEC 5 WO-03: 90 - the angle in degrees between the unit normal and the pull direction (normalised; the cosine clamped to -1..1).
 - **May use:** nothing.
@@ -48,7 +48,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-04 [Cline] `bimAnZebra(n, view, stripes)`
+## [x] WO-04 [Cline] `bimAnZebra(n, view, stripes)`
 
 - **It must:** SPEC 5 WO-04: the reflected view r = 2 (n . view) n - view; k = floor((r[1] + 1) / 2 * stripes) clamped to 0 .. stripes - 1; k % 2. stripes 10 when under 1 (floored).
 - **May use:** nothing.
@@ -58,7 +58,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-05 [Cline] `bimAnGauss(m)`
+## [x] WO-05 [Cline] `bimAnGauss(m)`
 
 - **It must:** SPEC 5 WO-05: {deficit, area} per vertex: 2 pi minus the sum of the corner angles at it over every face (the angle between the edges to the previous and next vertex of the face), and the sum of each face's area / its vertex count.
 - **May use:** bimAnFaceNormal (WO-01).

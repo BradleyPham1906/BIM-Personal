@@ -18,7 +18,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-01 [Cline] `bimSrfGrid(rows, cols, closeU)`
+## [x] WO-01 [Cline] `bimSrfGrid(rows, cols, closeU)`
 
 - **It must:** SPEC 5 WO-01: quads [a, b, b + cols, a + cols] with a = j*cols + i and b = j*cols + (i+1) % cols, for j < rows - 1 and i < cols - 1 (i < cols when closeU).
 - **May use:** nothing.
@@ -28,7 +28,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-02 [Cline] `bimSrfExtrude(pts, vec)`
+## [x] WO-02 [Cline] `bimSrfExtrude(pts, vec)`
 
 - **It must:** SPEC 5 WO-02: {v: the points then the points moved by vec, f: bimSrfGrid(2, n, false)}; null for fewer than 2 points.
 - **May use:** bimSrfGrid (WO-01).
@@ -38,7 +38,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-03 [Cline] `bimSrfRotate(p, o, ax, a)`
+## [x] WO-03 [Cline] `bimSrfRotate(p, o, ax, a)`
 
 - **It must:** SPEC 5 WO-03: p turned by a radians about the axis through o along ax (normalised), by Rodrigues' formula: x c + (k cross x) s + k (k dot x)(1 - c), x = p - o, plus o.
 - **May use:** nothing.
@@ -48,7 +48,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-04 [Cline] `bimSrfRevolve(pts, o, ax, angle, segs)`
+## [x] WO-04 [Cline] `bimSrfRevolve(pts, o, ax, angle, segs)`
 
 - **It must:** SPEC 5 WO-04: segs (24 when under 1) steps; rings j = 0 .. segs (only 0 .. segs - 1 for a full turn, |angle| within 1e-9 of 2 pi) of the profile turned by angle j / segs; faces [a, a+1, b+1, b] with a = j n + i, b = ((j+1) % rings) n + i for j < segs, i < n - 1. null for fewer than 2 points.
 - **May use:** bimSrfRotate (WO-03).
@@ -58,7 +58,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-05 [Cline] `bimSrfLoft(a, b, rows)`
+## [x] WO-05 [Cline] `bimSrfLoft(a, b, rows)`
 
 - **It must:** SPEC 5 WO-05: rows (1 when under 1) + 1 interpolated rings from a to b, faces by bimSrfGrid(rows + 1, n, false); null unless both have the same count, 2 or more.
 - **May use:** bimSrfGrid (WO-01).
@@ -68,7 +68,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-06 [Cline] `bimSrfCoons(c0, c1, d0, d1)`
+## [x] WO-06 [Cline] `bimSrfCoons(c0, c1, d0, d1)`
 
 - **It must:** SPEC 5 WO-06: the bilinear Coons patch: c0 (v = 0) and c1 (v = 1) with m points, d0 (u = 0) and d1 (u = 1) with k points, corners shared; vertex (j, i) with u = i/(m-1), w = j/(k-1): (1-w) c0[i] + w c1[i] + (1-u) d0[j] + u d1[j] minus the bilinear blend of the four corners; faces bimSrfGrid(k, m, false). null for mismatched counts or fewer than 2.
 - **May use:** bimSrfGrid (WO-01).

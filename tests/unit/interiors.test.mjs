@@ -1,197 +1,103 @@
-/* Interiors I1 (V179, docs/work-orders/v179/SPEC.md): the pure functions of src/js/engine/bim/interiors.js
-   (WO-01 to WO-09, read as text), then the facts from the model and the bubble layout of
-   src/js/engine/bim/interiors-model.js (WO-10, WO-11, through the engine). */
+// V181: the pure grid, path, exit and travel-limit functions (bim/interiors-routes.js).
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import fs from 'node:fs';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
-
-const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
-const NAMES = ['bimIntProgramItem', 'bimIntRelation', 'bimIntInside', 'bimIntSharedLength', 'bimIntDoorLinks', 'bimIntDistances',
-  'bimIntCheck', 'bimIntMatch', 'bimIntMinWidth'];
-function load() {
-  let src = fs.readFileSync(path.join(ROOT, 'src/js/engine/bim/interiors.js'), 'utf8');
-  if (process.env.V179_REF) src += fs.readFileSync(process.env.V179_REF, 'utf8');
-  src = src.replace(/^import \{[^}]*\} from '[^']+';\n/gm, '').replace(/\nexport \{[^}]*\};\n?$/, '\n');
-  return new Function(src + '\nreturn {' + NAMES.map((n) => n + ':typeof ' + n + "==='function'?" + n + ':undefined').join(',') + '};')();
-}
-const I = load();
-const fn = (n) => { assert.equal(typeof I[n], 'function', n + ' is not built yet in src/js/engine/bim/interiors.js'); return I[n]; };
-const near = (a, b) => assert.ok(Math.abs(a - b) < 1e-9, a + ' is not ' + b);
-
-// three rooms in a row along x, 4 m deep, with 0.2 m walls between: A [0,4], B [4.2,7.2], C [7.4,10]
-const A = { id: 'A', pts: [[0, 0], [4, 0], [4, 4], [0, 4]] };
-const B = { id: 'B', pts: [[4.2, 0], [7.2, 0], [7.2, 4], [4.2, 4]] };
-const C = { id: 'C', pts: [[7.4, 0], [10, 0], [10, 2], [7.4, 2]] };
-
-test('WO-01 a programme item: text trimmed, count at least 1, the area range in order, unknowns null; the brief fields (program-to-plan, 2026-11-16)', () => {
-  const full = { id: 'p1', use: 'Bedroom', count: 2, areaMin: 10, areaMax: 14, rationale: 'brief',
-    building: '', level: null, group: '', status: 'unknown', source: '', params: {}, open: 'auto' };
-  assert.deepEqual(fn('bimIntProgramItem')({ id: 'p1', use: ' Bedroom ', count: 2.7, areaMin: 14, areaMax: 10, rationale: 'brief' }), full);
-  assert.deepEqual(fn('bimIntProgramItem')({ count: 0, areaMin: -1 }), { id: '', use: '', count: 1, areaMin: null, areaMax: null, rationale: '',
-    building: '', level: null, group: '', status: 'unknown', source: '', params: {}, open: 'auto' });
-  assert.deepEqual(fn('bimIntProgramItem')(null).count, 1);
-  const b = fn('bimIntProgramItem')({ use: 'Waiting', building: ' Clinic ', level: 1.6, group: 'Public', status: 'confirmed', source: 'brief rev B',
-    params: { privacy: 2, daylight: '3', noise: Infinity, 'bad key': 1 }, open: 'open' });
-  assert.equal(b.building, 'Clinic'); assert.equal(b.level, 1); assert.equal(b.group, 'Public');
-  assert.equal(b.status, 'confirmed'); assert.equal(b.source, 'brief rev B'); assert.equal(b.open, 'open');
-  assert.deepEqual(b.params, { privacy: 2, 'bad key': 1 }, 'finite numbers kept, anything else dropped');
-  const c = fn('bimIntProgramItem')({ level: -1, status: 'maybe', open: 'yes', params: [1, 2] });
-  assert.equal(c.level, -1, 'a basement is a level'); assert.equal(c.status, 'unknown'); assert.equal(c.open, 'auto'); assert.deepEqual(c.params, {});
-  assert.equal(fn('bimIntProgramItem')({ level: 'two' }).level, null);
-});
-
-test('WO-02 a relation: two different rooms; kind, relation, strength, reason and status defaulted', () => {
-  assert.deepEqual(fn('bimIntRelation')({ a: 'Kitchen', b: 'Dining', kind: 'required', rel: 'near', nearM: 6 }),
-    { a: 'Kitchen', b: 'Dining', kind: 'required', rel: 'near', nearM: 6, strength: 2, reason: '', status: 'approved' });
-  assert.deepEqual(fn('bimIntRelation')({ a: 'x', b: 'y', kind: 'must', rel: 'beside', nearM: -2 }),
-    { a: 'x', b: 'y', kind: 'desired', rel: 'next', nearM: 15, strength: 2, reason: '', status: 'approved' });
-  assert.equal(fn('bimIntRelation')({ a: 'x', b: 'x' }), null);
-  assert.equal(fn('bimIntRelation')({ a: 'x' }), null);
-  ['access', 'visual', 'acoustic', 'secure', 'sequence'].forEach((r) => assert.equal(fn('bimIntRelation')({ a: 'x', b: 'y', rel: r }).rel, r));
-  const s1 = fn('bimIntRelation')({ a: 'x', b: 'y', strength: 1, reason: ' staff route ', status: 'suggested' });
-  assert.equal(s1.strength, 1); assert.equal(s1.reason, 'staff route'); assert.equal(s1.status, 'suggested');
-  assert.equal(fn('bimIntRelation')({ a: 'x', b: 'y', strength: 3.0 }).strength, 3);
-  assert.equal(fn('bimIntRelation')({ a: 'x', b: 'y', strength: 4 }).strength, 2);
-  assert.equal(fn('bimIntRelation')({ a: 'x', b: 'y', strength: 1.5 }).strength, 2);
-  assert.equal(fn('bimIntRelation')({ a: 'x', b: 'y', status: 'rejected' }).status, 'rejected');
-  assert.equal(fn('bimIntRelation')({ a: 'x', b: 'y', status: 'ok' }).status, 'approved');
-});
-
-test('WO-03 a point inside a polygon (even-odd), plan [x, z]', () => {
-  const f = fn('bimIntInside');
-  assert.equal(f([1, 1], A.pts), true);
-  assert.equal(f([5, 1], A.pts), false);
-  assert.equal(f([2, 2], [[0, 0], [4, 0], [4, 4], [2, 1], [0, 4]]), false, 'in the notch of a concave room');
-  assert.equal(f([1, 1], null), false);
-});
-
-test('WO-04 the length two rooms share across a wall up to the tolerance', () => {
-  near(fn('bimIntSharedLength')(A.pts, B.pts, 0.3), 4);
-  near(fn('bimIntSharedLength')(B.pts, C.pts, 0.3), 2, 'C is only 2 m deep');
-  near(fn('bimIntSharedLength')(A.pts, C.pts, 0.3), 0);
-  near(fn('bimIntSharedLength')(A.pts, B.pts, 0.1), 0, 'the wall is thicker than the tolerance');
-  near(fn('bimIntSharedLength')(A.pts, B.pts), 4, 'the default tolerance is 0.5 m');
-  near(fn('bimIntSharedLength')(A.pts, [[0, 0], [1, 0]]), 0);
-});
-
-test('WO-05 a door links the rooms on its two sides; outside is a room called outside', () => {
-  const doors = [
-    { id: 'd1', center: [4.1, 2], dir: [0, 1], width: 0.9 },
-    { id: 'd2', center: [2, 0], dir: [1, 0], width: 1 },
-    { id: 'd3', center: [2, 2], dir: [1, 0], width: 0.8 },
-    { id: 'd4', center: [8, 1], dir: [0, 0] }
-  ];
-  assert.deepEqual(fn('bimIntDoorLinks')([A, B, C], doors), [
-    { a: 'A', b: 'B', door: 'd1', width: 0.9 },
-    { a: 'A', b: 'outside', door: 'd2', width: 1 }
-  ]);
-  assert.deepEqual(fn('bimIntDoorLinks')(null, doors), []);
-});
-
-test('WO-06 route costs from one room by the doors; unreachable rooms are absent, not zero', () => {
-  const links = [{ a: 'A', b: 'corr', door: 'dA' }, { a: 'B', b: 'corr', door: 'dB' }, { a: 'corr', b: 'exit', door: 'dX' }, { a: 'D', b: 'E', door: 'dD' }];
-  const d = fn('bimIntDistances')(links, 'A', { dA: 4, dB: 3, dX: 6 });
-  assert.deepEqual(d, { A: 0, corr: 4, B: 7, exit: 10 });
-  assert.equal('D' in d, false);
-  assert.deepEqual(fn('bimIntDistances')(links, 'B', null), { B: 0, corr: 1, A: 2, exit: 2 });
-  assert.deepEqual(fn('bimIntDistances')(null, 'A'), {});
-});
-
-const FACTS = { rooms: { A: 1, B: 1, C: 1 }, shared: { 'A|B': 4 }, doors: { 'B|C': 1 }, dist: { A: { C: 9 } } };
-test('WO-07 next and apart from shared walls and doors; near from the route; access from a door; missing facts not evaluated', () => {
-  const c = fn('bimIntCheck');
-  assert.deepEqual(c({ a: 'B', b: 'A', rel: 'next', nearM: 15 }, FACTS), { status: 'met', why: 'a shared wall' });
-  assert.deepEqual(c({ a: 'C', b: 'B', rel: 'next', nearM: 15 }, FACTS), { status: 'met', why: 'a door between them' });
-  assert.deepEqual(c({ a: 'A', b: 'C', rel: 'next', nearM: 15 }, FACTS), { status: 'not met', why: 'no shared wall or door' });
-  assert.deepEqual(c({ a: 'A', b: 'B', rel: 'apart', nearM: 15 }, FACTS), { status: 'not met', why: 'a shared wall' });
-  assert.deepEqual(c({ a: 'A', b: 'C', rel: 'apart', nearM: 15 }, FACTS), { status: 'met', why: 'no shared wall or door' });
-  assert.deepEqual(c({ a: 'A', b: 'C', rel: 'near', nearM: 10 }, FACTS), { status: 'met', why: 'route 9.0 m' });
-  assert.deepEqual(c({ a: 'A', b: 'C', rel: 'near', nearM: 5 }, FACTS), { status: 'not met', why: 'route 9.0 m, over 5 m' });
-  assert.deepEqual(c({ a: 'B', b: 'C', rel: 'near', nearM: 5 }, FACTS), { status: 'not evaluated', why: 'no route between them' });
-  assert.deepEqual(c({ a: 'A', b: 'Z', rel: 'next', nearM: 15 }, FACTS), { status: 'not evaluated', why: 'a room is not in the model' });
-  assert.deepEqual(c(null, FACTS), { status: 'not evaluated', why: 'not a relation' });
-  // the relation kinds added by program-to-plan (2026-11-16): direct access needs a door; the rest are not measured yet
-  assert.deepEqual(c({ a: 'C', b: 'B', rel: 'access', nearM: 15 }, FACTS), { status: 'met', why: 'a door between them' });
-  assert.deepEqual(c({ a: 'A', b: 'B', rel: 'access', nearM: 15 }, FACTS), { status: 'not met', why: 'no door between them' });
-  ['visual', 'acoustic', 'secure', 'sequence'].forEach((r) =>
-    assert.deepEqual(c({ a: 'A', b: 'B', rel: r, nearM: 15 }, FACTS), { status: 'not evaluated', why: 'not measured in this phase' }));
-  assert.deepEqual(c({ a: 'A', b: 'B', rel: 'next', nearM: 15, status: 'rejected' }, FACTS), { status: 'not evaluated', why: 'the relation was rejected' });
-  assert.deepEqual(c({ a: 'A', b: 'Z', rel: 'visual', nearM: 15 }, FACTS), { status: 'not evaluated', why: 'a room is not in the model' });
-});
-
-test('WO-08 the programme against the rooms: short, over, an area out of range, ok', () => {
-  const items = [
-    { id: 'p1', use: 'Bedroom', count: 2, areaMin: 10, areaMax: 16 },
-    { id: 'p2', use: 'Bath', count: 1, areaMin: null, areaMax: null },
-    { id: 'p3', use: 'Study', count: 1, areaMin: 8, areaMax: null },
-    { id: 'p4', use: 'Kitchen', count: 1, areaMin: 6, areaMax: 20 }
-  ];
-  const rooms = [{ id: 'r1', use: 'Bedroom', area: 12 }, { id: 'r2', use: 'Bath', area: 5 }, { id: 'r3', use: 'Bath', area: 4 },
-    { id: 'r4', use: 'Study', area: 7 }, { id: 'r5', use: 'Kitchen', area: 15 }, null];
-  assert.deepEqual(fn('bimIntMatch')(items, rooms), [
-    { id: 'p1', use: 'Bedroom', need: 2, have: 1, rooms: ['r1'], offArea: [], status: 'short' },
-    { id: 'p2', use: 'Bath', need: 1, have: 2, rooms: ['r2', 'r3'], offArea: [], status: 'over' },
-    { id: 'p3', use: 'Study', need: 1, have: 1, rooms: ['r4'], offArea: ['r4'], status: 'area' },
-    { id: 'p4', use: 'Kitchen', need: 1, have: 1, rooms: ['r5'], offArea: [], status: 'ok' }
-  ]);
-  assert.deepEqual(fn('bimIntMatch')(null, rooms), []);
-});
-
-test('WO-09 a width in metres against a minimum in inches: a measurement, not a finding', () => {
-  const m = fn('bimIntMinWidth');
-  assert.deepEqual([31.9, 32, 32.1].map((i) => m(i * 0.0254, 32)), ['below', 'meets', 'meets']);
-  assert.equal(m(null, 32), 'not evaluated');
-  assert.equal(m(0.9, undefined), 'not evaluated');
-});
-
-// ---- WO-10, WO-11: bim/interiors-model.js, through the engine ----
 import { loadEngine } from './helpers/engine.mjs';
+
 const E = loadEngine();
+const ROOM = [[0, 0], [10, 0], [10, 4], [0, 4]];
+const WALL = [[4, 0], [5, 0], [5, 3], [4, 3]];
+const near = (a, b, e = 1e-9, m = '') => assert.ok(Math.abs(a - b) <= e, `${m} ${a} is not ${b}`);
 
-test('WO-10 facts by use: a shared wall, a door, a route; one level only; the outside of each level apart', () => {
-  const rooms = [
-    { id: 'A', use: 'Kitchen', pts: A.pts, levelId: 'L0' },
-    { id: 'B', use: 'Dining', pts: B.pts, levelId: 'L0' },
-    { id: 'C', use: 'Office', pts: C.pts, levelId: 'L0' },
-    { id: 'D', use: 'Bedroom', pts: A.pts, levelId: 'L1' }
-  ];
-  // a door in the wall between A and B at x 4.1, its dir along the wall (+z): left is -x (A), right is +x (B)
-  const doors = [{ id: 'd1', center: [4.1, 2], dir: [0, 1], width: 0.9, levelId: 'L0' }];
-  const r = E.bimIntFactsFrom(rooms, doors, 0.5);
-  assert.deepEqual(r.facts.rooms, { Kitchen: 1, Dining: 1, Office: 1, Bedroom: 1 });
-  near(r.facts.shared['Dining|Kitchen'], 4);
-  near(r.facts.shared['Dining|Office'], 2);
-  assert.equal(r.facts.shared['Bedroom|Kitchen'], undefined, 'another level shares nothing');
-  assert.deepEqual(r.facts.doors, { 'Dining|Kitchen': 1 });
-  near(r.facts.dist.Kitchen.Dining, 2.1 + 1.6, 1e-9);
-  assert.equal(r.facts.dist.Kitchen.Office, undefined, 'no door to the office: no route');
-  assert.deepEqual(E.bimIntCheck(E.bimIntRelation({ a: 'Kitchen', b: 'Dining', rel: 'near', nearM: 3 }), r.facts),
-    { status: 'not met', why: 'route 3.7 m, over 3 m' });
-  assert.deepEqual(E.bimIntCheck(E.bimIntRelation({ a: 'Office', b: 'Dining', rel: 'next' }), r.facts),
-    { status: 'met', why: 'a shared wall' });
-  assert.deepEqual(E.bimIntCheck(E.bimIntRelation({ a: 'Office', b: 'Dining', rel: 'access' }), r.facts),
-    { status: 'not met', why: 'no door between them' });
+test('V181 grid cells are inside the room and outside obstacles', () => {
+  const g = E.bimEgGrid(ROOM, [WALL], 1);
+  assert.deepEqual([g.x0, g.z0, g.cell, g.nx, g.nz], [0, 0, 1, 10, 4]);
+  assert.deepEqual(Array.from(g.free.slice(0, 10)), [1, 1, 1, 1, 0, 1, 1, 1, 1, 1]);
+  assert.equal(g.free[3 * 10 + 4], 1);
+  assert.equal(E.bimEgGrid(ROOM, [], 0), null);
+  assert.equal(E.bimEgGrid([[0, 0], [1, 1]], [], 1), null);
 });
 
-test('WO-10 a programme read from a building: bad items and relations dropped, nothing written', () => {
-  const b = { programme: { items: [{ id: 'p1', use: 'Kitchen' }, { use: 'no id' }], relations: [{ a: 'Kitchen', b: 'Kitchen' }, { a: 'Kitchen', b: 'Dining' }] } };
-  const before = JSON.stringify(b);
-  const P = E.bimIntProgOf(b);
-  assert.deepEqual(P.items.map((x) => x.id), ['p1']);
-  assert.equal(P.relations.length, 1);
-  assert.equal(JSON.stringify(b), before);
-  assert.deepEqual(E.bimIntProgOf(null), { items: [], relations: [] });
+test('V181 cell lookup rejects blocked and outside points', () => {
+  const g = E.bimEgGrid(ROOM, [WALL], 1);
+  assert.equal(E.bimEgCell(g, [0.5, 0.5]), 0);
+  assert.equal(E.bimEgCell(g, [4.5, 0.5]), -1);
+  assert.equal(E.bimEgCell(g, [12, 1]), -1);
 });
 
-test('WO-11 the bubble layout: the same programme draws the same, circles do not overlap, apart is farther than next', () => {
-  const items = [{ use: 'K', r: 2 }, { use: 'D', r: 2 }, { use: 'G', r: 2 }, { use: 'B', r: 1.5 }];
-  const rels = [{ a: 'K', b: 'D', rel: 'next' }, { a: 'B', b: 'G', rel: 'apart' }];
-  const P = E.bimIntBubbleLayout(items, rels), Q = E.bimIntBubbleLayout(items, rels);
-  assert.deepEqual(P, Q);
-  const d = (i, j) => Math.hypot(P[i].x - P[j].x, P[i].y - P[j].y);
-  for (let i = 0; i < 4; i++) for (let j = i + 1; j < 4; j++) assert.ok(d(i, j) >= P[i].r + P[j].r - 1e-3, i + ' overlaps ' + j);
-  assert.ok(d(3, 2) - 3.5 > d(0, 1) - 4, 'apart is farther than next');
-  assert.deepEqual(E.bimIntBubbleLayout([], []), []);
+test('V181 shortest grid routes avoid obstacles without cutting corners', () => {
+  const g = E.bimEgGrid(ROOM, [WALL], 1);
+  const r = E.bimEgPath(g, [0.5, 0.5], [9.5, 0.5]);
+  near(r.len, 3 + 6 * Math.SQRT2, 1e-9, 'route length');
+  assert.equal(r.cells[0], 0);
+  assert.equal(r.cells[r.cells.length - 1], 9);
+  const shut = E.bimEgGrid(ROOM, [[[4, 0], [5, 0], [5, 4], [4, 4]]], 1);
+  assert.equal(E.bimEgPath(shut, [0.5, 0.5], [9.5, 0.5]), null);
+  assert.equal(E.bimEgPath(g, [4.5, 0.5], [9.5, 0.5]), null);
+});
+
+test('V181 chooses the nearest reachable exit, breaking ties by name', () => {
+  assert.deepEqual(E.bimEgNearest({ east: { len: 9 }, west: { len: 4 }, north: null }), { exit: 'west', len: 4 });
+  assert.deepEqual(E.bimEgNearest({ b: { len: 4 }, a: { len: 4 } }), { exit: 'a', len: 4 });
+  assert.equal(E.bimEgNearest({ a: null }), null);
+});
+
+test('V181 distinguishes blocked, unassessed and within-limit routes', () => {
+  assert.deepEqual(E.bimEgStatus({ exit: 'a', len: 12.34 }, 30), { status: 'within', why: '12.3 m of 30 m' });
+  assert.deepEqual(E.bimEgStatus({ exit: 'a', len: 45 }, 30), { status: 'over', why: '45.0 m, over 30 m' });
+  assert.deepEqual(E.bimEgStatus(null, 30), { status: 'blocked', why: 'no route to an exit' });
+  assert.deepEqual(E.bimEgStatus({ exit: 'a', len: 5 }, null), { status: 'not evaluated', why: 'no travel limit chosen' });
+});
+
+test('V181 routes from rooms to marked doors with no default limit', () => {
+  const oldObjs = E.A3D.objs;
+  const oldSite = E.A3D.site;
+  try {
+    E.A3D.site = { name: 'Test site', std: { ov: {}, pick: {}, packs: [] } };
+    E.A3D.objs = [
+      { id: 'room-1', t: 'room', name: 'Room 1', pts: [[0, 0], [4, 0], [4, 4], [0, 4]], y: 0 },
+      { id: 'wall-1', t: 'solid', bim: { type: 'wall', centerline: [[0, 0], [4, 0]], thickness: 0.15, baseY: 0, height: 3 } },
+      { id: 'door-1', t: 'opening', name: 'North door', bim: { type: 'door', center: [2, 0], width: 1, hostWallId: 'wall-1', exit: true } }
+    ];
+    const result = E.bimEgRouteRun();
+    assert.equal(result.state, 'on');
+    assert.match(result.status, /1 rooms: 0 within, 0 over, 0 blocked, 1 not evaluated/);
+    const card = E.bimEgRouteCard();
+    assert.match(card.extra, /Not chosen/);
+    assert.match(card.extra, /not an egress-compliance finding/);
+    assert.match(card.extra, /not evaluated: North door/);
+    assert.equal(card.hideDisabled, false);
+    E.bimEgRouteHide();
+    const hidden = E.bimEgRouteCard();
+    assert.equal(hidden.state, 'off');
+    assert.equal(hidden.hideDisabled, true);
+  } finally {
+    E.A3D.objs = oldObjs;
+    E.A3D.site = oldSite;
+  }
+});
+
+test('V181 circulation and exits is listed in Model and enabled with no rooms', () => {
+  const oldObjs = E.A3D.objs;
+  try {
+    E.A3D.objs = [];
+    const card = E.bimAnzCards().find((item) => item.id === 'egress');
+    assert.ok(card);
+    assert.ok(E.BIM_ANZ_MODEL.includes('egress'));
+    assert.equal(card.acts.find((act) => act.act === 'egress:run').off, false);
+  } finally {
+    E.A3D.objs = oldObjs;
+  }
+});
+
+test('V181 registry limit is explicitly unset and can be overridden by the project', () => {
+  assert.equal(E.bimStd('app.egress', 'limit'), 0);
+  const edition = E.bimStdEdition('app.egress');
+  assert.match(edition.name, /Owner-selected/);
+  const oldSite = E.A3D.site;
+  try {
+    E.A3D.site = { name: 'Test site', std: { ov: { 'app.egress|limit': { v: 10, why: 'project test', at: '2026-01-01' } }, pick: {}, packs: [] } };
+    assert.equal(E.bimStd('app.egress', 'limit'), 10);
+  } finally {
+    E.A3D.site = oldSite;
+  }
 });

@@ -18,7 +18,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-01 [Cline] `bimIsoHit(p, dx, dz, segs)`
+## [x] WO-01 [Cline] `bimIsoHit(p, dx, dz, segs)`
 
 - **It must:** SPEC 5 WO-01: the smallest t > 1e-9 with p + t(dx, dz) on a segment [[x,z],[x,z]] (its parameter u within -1e-9..1+1e-9), by the 2D cross products; parallel segments (|den| < 1e-12) are skipped; Infinity when none.
 - **May use:** nothing.
@@ -28,7 +28,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-02 [Cline] `bimIsovist(p, segs, n, maxR)`
+## [x] WO-02 [Cline] `bimIsovist(p, segs, n, maxR)`
 
 - **It must:** SPEC 5 WO-02: n rays (360 when n is under 3; floored) at angles 2 pi i / n from +x toward +z, each point p + min(hit, maxR) times its direction (maxR 50 when not positive).
 - **May use:** bimIsoHit (WO-01).
@@ -38,7 +38,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-03 [Cline] `bimIsoArea(poly)`
+## [x] WO-03 [Cline] `bimIsoArea(poly)`
 
 - **It must:** SPEC 5 WO-03: the absolute shoelace area; 0 for no polygon.
 - **May use:** nothing.
@@ -48,7 +48,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-04 [Cline] `bimIsoSees(p, q, segs)`
+## [x] WO-04 [Cline] `bimIsoSees(p, q, segs)`
 
 - **It must:** SPEC 5 WO-04: true when p and q coincide (under 1e-12 apart) or the nearest hit along p to q is at least their distance - 1e-9.
 - **May use:** bimIsoHit (WO-01).
@@ -58,7 +58,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-05 [Cline] `bimIsoWindows(p, windows, segs, samples)`
+## [x] WO-05 [Cline] `bimIsoWindows(p, windows, segs, samples)`
 
 - **It must:** SPEC 5 WO-05: for each window {id, a, b} in order, {id, fraction}: the share of 'samples' points (5 when under 1; floored) at (k + 0.5)/samples along a to b that bimIsoSees.
 - **May use:** bimIsoSees (WO-04).

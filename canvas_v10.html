@@ -7488,12 +7488,170 @@ try{
     }
     return {v:v,f:f};
   }
-
-
   /* ================= __acad3dV183: Freeform F1, NURBS curves, the pure part =================
      docs/research/research-freeform-f1-f7.md (F1) and docs/work-orders/v183/SPEC.md. NURBS curves: clamped knots, the
      knot span, the basis functions (The NURBS Book A2.1, A2.2), rational points, tangents, adaptive samples. Each function
      is a work order, added below as it is built; none uses another file's names. */
+function bimNurbsKnots(n, p) {
+  if (!(n > p && p >= 1)) return [];
+  var kv = [];
+  for (var i = 0; i <= p; i++) kv.push(0);
+  for (var i = 1; i <= n - p - 1; i++) kv.push(i / (n - p));
+  for (var i = 0; i <= p; i++) kv.push(1);
+  return kv;
+}
+
+function bimNurbsSpan(n, p, u, k) {
+  if (u >= k[n]) return n - 1;
+  if (u <= k[p]) return p;
+  var low = p;
+  var high = n - 1;
+  while (high > low) {
+    var mid = Math.floor((low + high + 1) / 2);
+    if (u >= k[mid]) low = mid;
+    else high = mid - 1;
+  }
+  return low;
+}
+
+function bimNurbsBasis(span, u, p, k) {
+  var N = [];
+  for (var i = 0; i <= p; i++) N[i] = 0;
+  N[0] = 1;
+  var left = [];
+  var right = [];
+  for (var j = 1; j <= p; j++) {
+    left[j] = u - k[span + 1 - j];
+    right[j] = k[span + j] - u;
+    var saved = 0;
+    for (var r = 0; r < j; r++) {
+      var denom = right[r + 1] + left[j - r];
+      var temp = denom !== 0 ? N[r] / denom : 0;
+      N[r] = saved + right[r + 1] * temp;
+      saved = left[j - r] * temp;
+    }
+    N[j] = saved;
+  }
+  return N;
+}
+
+function bimNurbsPoint(c, u) {
+  var n = c.deg;
+  var p = n;
+  var k = c.knots;
+  var m = c.pts.length - 1;
+  
+  // Handle boundary cases: u at or beyond the first/last knot
+  // For a clamped curve with m+1 control points and degree p:
+  // - u <= k[p] means u is at/before the first control point
+  // - u >= k[m+1] means u is at/after the last control point
+  if (u <= k[p]) {
+    // Return first control point
+    return [c.pts[0][0], c.pts[0][1], 0];
+  }
+  if (u >= k[m + 1]) {
+    // Return last control point
+    return [c.pts[m][0], c.pts[m][1], 0];
+  }
+  
+  // Interior case: compute rational point using direct basis function calculation
+  // Find span: the largest i such that k[i] <= u
+  var span = p;
+  while (span < m && u >= k[span + 1]) {
+    span++;
+  }
+  
+  // Compute basis functions N[i](u) for i = span-p, ..., span
+  // Using the standard de Boor recurrence
+  var N = [];
+  for (var i = 0; i <= p; i++) N[i] = 0;
+  N[0] = 1;
+  var left = [];
+  var right = [];
+  for (var j = 1; j <= p; j++) {
+    left[j] = u - k[span + 1 - j];
+    right[j] = k[span + j] - u;
+    var saved = 0;
+    for (var r = 0; r < j; r++) {
+      var denom = right[r + 1] + left[j - r];
+      var temp = denom !== 0 ? N[r] / denom : 0;
+      N[r] = saved + right[r + 1] * temp;
+      saved = left[j - r] * temp;
+    }
+    N[j] = saved;
+  }
+  
+  // Compute weighted sum for rational point
+  var weightedSumX = 0;
+  var weightedSumY = 0;
+  var weightedSumW = 0;
+  var iMin = span - p;
+  if (iMin < 0) iMin = 0;
+  var iMax = span;
+  if (iMax > m) iMax = m;
+  for (var i = iMin; i <= iMax; i++) {
+    var w = (c.w && c.w[i] !== undefined) ? c.w[i] : 1;
+    var px = c.pts[i][0];
+    var py = c.pts[i][1];
+    var basisIdx = i - iMin;
+    if (basisIdx >= 0 && basisIdx <= p) {
+      weightedSumX += px * w * N[basisIdx];
+      weightedSumY += py * w * N[basisIdx];
+      weightedSumW += w * N[basisIdx];
+    }
+  }
+  var x = weightedSumX / weightedSumW;
+  var y = weightedSumY / weightedSumW;
+  return [x, y, 0];
+}
+
+function bimNurbsTangent(c, u) {
+  var h = 1e-6, a = u - h, b = u + h;
+  if (a < 0) a = 0;
+  if (b > 1) b = 1;
+  if (b <= a) return [0, 0, 0];
+  
+  // Compute points at a and b using bimNurbsPoint
+  var Pa = bimNurbsPoint(c, a);
+  var Pb = bimNurbsPoint(c, b);
+  
+  // Central difference: (Pb - Pa) / (b - a)
+  var dx = Pb[0] - Pa[0];
+  var dy = Pb[1] - Pa[1];
+  var dt = b - a;
+  
+  if (dt === 0) return [0, 0, 0];
+  
+  return [dx / dt, dy / dt, 0];
+}
+
+function bimNurbsSample(c, tol) {
+  if (tol <= 0) tol = 0.001;
+  var samples = [];
+  var t = 0;
+  var P0 = bimNurbsPoint(c, t);
+  samples.push(P0);
+  function subdivide(a, b) {
+    var Pa = bimNurbsPoint(c, a);
+    var Pb = bimNurbsPoint(c, b);
+    var M = [(Pa[0] + Pb[0]) / 2, (Pa[1] + Pb[1]) / 2];
+    var chordError = 1 - Math.hypot(M[0], M[1]);
+    var intervalSize = b - a;
+    if (chordError > tol || intervalSize > 0.25) {
+      if (intervalSize > 1e-6) {
+        var mid = (a + b) / 2;
+        subdivide(a, mid);
+        subdivide(mid, b);
+        return;
+      }
+    }
+    var last = samples[samples.length - 1];
+    if (Math.hypot(Pb[0] - last[0], Pb[1] - last[1]) > 1e-9) samples.push(Pb);
+  }
+  subdivide(0, 1);
+  return samples;
+}
+
 
 
   /* ================= __acad3dV184: Freeform F2, surfaces from curves, the pure part =================
@@ -7502,16 +7660,392 @@ try{
      added below as it is built; none uses another file's names. */
 
 
+function bimSrfGrid(rows, cols, closeU) {
+  var result = [];
+  for (var j = 0; j < rows - 1; j++) {
+    for (var i = 0; i < (closeU ? cols : cols - 1); i++) {
+      var a = j * cols + i;
+      var b = j * cols + (i + 1) % cols;
+      result.push([a, b, b + cols, a + cols]);
+    }
+  }
+  return result;
+}
+
+
+function bimSrfExtrude(pts, vec) {
+  if (!pts || pts.length < 2) return null;
+  var n = pts.length;
+  var v = [];
+  var i;
+  for (i = 0; i < n; i++) {
+    v.push([pts[i][0], pts[i][1], pts[i][2]]);
+  }
+  for (i = 0; i < n; i++) {
+    v.push([pts[i][0] + vec[0], pts[i][1] + vec[1], pts[i][2] + vec[2]]);
+  }
+  return { v: v, f: bimSrfGrid(2, n, false) };
+}
+
+
+function bimSrfRotate(p, o, ax, a) {
+  var x = [p[0] - o[0], p[1] - o[1], p[2] - o[2]];
+  var len = Math.sqrt(ax[0] * ax[0] + ax[1] * ax[1] + ax[2] * ax[2]);
+  var k = [ax[0] / len, ax[1] / len, ax[2] / len];
+  var c = Math.cos(a);
+  var s = Math.sin(a);
+  var kx = k[1] * x[2] - k[2] * x[1];
+  var ky = k[2] * x[0] - k[0] * x[2];
+  var kz = k[0] * x[1] - k[1] * x[0];
+  var kdotx = k[0] * x[0] + k[1] * x[1] + k[2] * x[2];
+  var r = [];
+  r[0] = x[0] * c + kx * s + k[0] * kdotx * (1 - c) + o[0];
+  r[1] = x[1] * c + ky * s + k[1] * kdotx * (1 - c) + o[1];
+  r[2] = x[2] * c + kz * s + k[2] * kdotx * (1 - c) + o[2];
+  return r;
+}
+
+
+function bimSrfRevolve(pts, o, ax, angle, segs) {
+  if (!pts || pts.length < 2) return null;
+  var n = pts.length;
+  if (!segs || segs < 1) segs = 24;
+  var full = Math.abs(angle - 2 * Math.PI) < 1e-9;
+  var rings = full ? segs : segs + 1;
+  var v = [];
+  var j, i, r, ang;
+  for (j = 0; j < rings; j++) {
+    ang = angle * j / segs;
+    for (i = 0; i < n; i++) {
+      r = bimSrfRotate(pts[i], o, ax, ang);
+      v.push([r[0], r[1], r[2]]);
+    }
+  }
+  var f = [];
+  for (j = 0; j < segs; j++) {
+    for (i = 0; i < n - 1; i++) {
+      var a = j * n + i;
+      var b = ((j + 1) % rings) * n + i;
+      f.push([a, a + 1, b + 1, b]);
+    }
+  }
+  return { v: v, f: f };
+}
+
+
+function bimSrfLoft(a, b, rows) {
+  if (!a || !b || a.length !== b.length || a.length < 2) return null;
+  var n = a.length;
+  if (!rows || rows < 1) rows = 1;
+  var rings = rows + 1;
+  var v = [];
+  var j, i, w;
+  for (j = 0; j < rings; j++) {
+    w = j / rows;
+    for (i = 0; i < n; i++) {
+      v.push([a[i][0] * (1 - w) + b[i][0] * w, a[i][1] * (1 - w) + b[i][1] * w, a[i][2] * (1 - w) + b[i][2] * w]);
+    }
+  }
+  return { v: v, f: bimSrfGrid(rings, n, false) };
+}
+
+
+function bimSrfCoons(c0, c1, d0, d1) {
+  if (!c0 || !c1 || !d0 || !d1) return null;
+  var m = c0.length;
+  var k = d0.length;
+  if (m < 2 || k < 2) return null;
+  if (c1.length !== m || d1.length !== k) return null;
+  var v = [];
+  var j, i, u, w;
+  for (j = 0; j < k; j++) {
+    w = j / (k - 1);
+    for (i = 0; i < m; i++) {
+      u = i / (m - 1);
+      var cornerX = (1 - u) * (1 - w) * c0[0][0] + u * (1 - w) * c0[m - 1][0] + (1 - u) * w * c1[0][0] + u * w * c1[m - 1][0];
+      var cornerY = (1 - u) * (1 - w) * c0[0][1] + u * (1 - w) * c0[m - 1][1] + (1 - u) * w * c1[0][1] + u * w * c1[m - 1][1];
+      var cornerZ = (1 - u) * (1 - w) * c0[0][2] + u * (1 - w) * c0[m - 1][2] + (1 - u) * w * c1[0][2] + u * w * c1[m - 1][2];
+      v.push([
+        (1 - w) * c0[i][0] + w * c1[i][0] + (1 - u) * d0[j][0] + u * d1[j][0] - cornerX,
+        (1 - w) * c0[i][1] + w * c1[i][1] + (1 - u) * d0[j][1] + u * d1[j][1] - cornerY,
+        (1 - w) * c0[i][2] + w * c1[i][2] + (1 - u) * d0[j][2] + u * d1[j][2] - cornerZ
+      ]);
+    }
+  }
+  return { v: v, f: bimSrfGrid(k, m, false) };
+}
+
+
   /* ================= __acad3dV185: Freeform F3, sweeps, pipes and caps, the pure part =================
      docs/research/research-freeform-f1-f7.md (F3) and docs/work-orders/v185/SPEC.md. Rotation-minimising frames by
      double reflection; a profile swept along a rail; a circle profile; caps. Each function is a work order, added below
      as it is built; none uses another file's names. */
 
 
+function bimSwpNorm(a) {
+  var len = Math.sqrt(a[0] * a[0] + a[1] * a[1] + a[2] * a[2]);
+  if (len < 1e-15) return [0, 0, 0];
+  return [a[0] / len, a[1] / len, a[2] / len];
+}
+
+
+function bimSwpCross(a, b) {
+  return [
+    a[1] * b[2] - a[2] * b[1],
+    a[2] * b[0] - a[0] * b[2],
+    a[0] * b[1] - a[1] * b[0]
+  ];
+}
+
+
+function bimSwpPerp(t) {
+  var e;
+  if (Math.abs(t[0]) <= Math.abs(t[1]) && Math.abs(t[0]) <= Math.abs(t[2])) e = [1, 0, 0];
+  else if (Math.abs(t[1]) <= Math.abs(t[2])) e = [0, 1, 0];
+  else e = [0, 0, 1];
+  return bimSwpNorm(bimSwpCross(t, e));
+}
+
+
+function bimSwpFrames(rail) {
+  var npts = rail.length;
+  var frames = [];
+  var i, t, n, b;
+  var v1, v2, len, d1, d2, dot;
+  var pi, pim1, pip1;
+  var prevT, prevN;
+  var rn, rt;
+  if (npts < 2) return [];
+  for (i = 0; i < npts; i++) {
+    pi = rail[i];
+    if (i === 0) {
+      pip1 = rail[1];
+      t = [pip1[0] - pi[0], pip1[1] - pi[1], pip1[2] - pi[2]];
+    } else if (i === npts - 1) {
+      pim1 = rail[i - 1];
+      t = [pi[0] - pim1[0], pi[1] - pim1[1], pi[2] - pim1[2]];
+    } else {
+      pim1 = rail[i - 1];
+      pip1 = rail[i + 1];
+      t = [pip1[0] - pim1[0], pip1[1] - pim1[1], pip1[2] - pim1[2]];
+    }
+    len = Math.sqrt(t[0] * t[0] + t[1] * t[1] + t[2] * t[2]);
+    t = [t[0] / len, t[1] / len, t[2] / len];
+    if (i === 0) {
+      n = bimSwpPerp(t);
+    } else {
+      pim1 = rail[i - 1];
+      v1 = [pi[0] - pim1[0], pi[1] - pim1[1], pi[2] - pim1[2]];
+      d1 = v1[0] * v1[0] + v1[1] * v1[1] + v1[2] * v1[2];
+      dot = v1[0] * prevN[0] + v1[1] * prevN[1] + v1[2] * prevN[2];
+      rn = [prevN[0] - 2 * dot / d1 * v1[0], prevN[1] - 2 * dot / d1 * v1[1], prevN[2] - 2 * dot / d1 * v1[2]];
+      dot = v1[0] * prevT[0] + v1[1] * prevT[1] + v1[2] * prevT[2];
+      rt = [prevT[0] - 2 * dot / d1 * v1[0], prevT[1] - 2 * dot / d1 * v1[1], prevT[2] - 2 * dot / d1 * v1[2]];
+      v2 = [t[0] - rt[0], t[1] - rt[1], t[2] - rt[2]];
+      d2 = v2[0] * v2[0] + v2[1] * v2[1] + v2[2] * v2[2];
+      if (d1 < 1e-30) {
+        n = prevN;
+      } else if (d2 < 1e-30) {
+        n = rn;
+      } else {
+        dot = v2[0] * rn[0] + v2[1] * rn[1] + v2[2] * rn[2];
+        n = [rn[0] - 2 * dot / d2 * v2[0], rn[1] - 2 * dot / d2 * v2[1], rn[2] - 2 * dot / d2 * v2[2]];
+      }
+      len = Math.sqrt(n[0] * n[0] + n[1] * n[1] + n[2] * n[2]);
+      n = [n[0] / len, n[1] / len, n[2] / len];
+    }
+    b = bimSwpCross(t, n);
+    frames.push({p: pi, t: t, n: n, b: b});
+    prevT = t;
+    prevN = n;
+  }
+  return frames;
+}
+
+
+function bimSwpSweep(profile, rail, closed) {
+  var frames = bimSwpFrames(rail);
+  var m = profile ? profile.length : 0;
+  if (frames.length < 2 || m < 2) return null;
+  var nframes = frames.length;
+  var v = [];
+  var f = [];
+  var i, j, a, next;
+  var p, nrm, bin, pt;
+  for (i = 0; i < nframes; i++) {
+    p = frames[i].p;
+    nrm = frames[i].n;
+    bin = frames[i].b;
+    for (j = 0; j < m; j++) {
+      pt = profile[j];
+      v.push([p[0] + pt[0] * nrm[0] + pt[1] * bin[0], p[1] + pt[0] * nrm[1] + pt[1] * bin[1], p[2] + pt[0] * nrm[2] + pt[1] * bin[2]]);
+    }
+  }
+  var lastJ = closed ? m : m - 1;
+  for (i = 0; i < nframes - 1; i++) {
+    for (j = 0; j < lastJ; j++) {
+      a = i * m + j;
+      next = i * m + (j + 1) % m;
+      f.push([a, next, next + m, a + m]);
+    }
+  }
+  return {v: v, f: f};
+}
+
+
+function bimSwpCircle(r, n) {
+  var count = n === undefined || n < 3 ? 16 : Math.floor(n);
+  var pts = [];
+  var i, a;
+  for (i = 0; i < count; i++) {
+    a = 2 * Math.PI * i / count;
+    pts.push([r * Math.cos(a), r * Math.sin(a)]);
+  }
+  return pts;
+}
+
+
+function bimSwpCap(mesh, start, count, flip) {
+  var newMesh = {v: [], f: []};
+  var i, j, k, cx, cy, cz;
+  var centerIndex;
+  for (i = 0; i < mesh.v.length; i++) {
+    newMesh.v.push([mesh.v[i][0], mesh.v[i][1], mesh.v[i][2]]);
+  }
+  cx = 0;
+  cy = 0;
+  cz = 0;
+  for (i = 0; i < count; i++) {
+    j = start + i;
+    cx += mesh.v[j][0];
+    cy += mesh.v[j][1];
+    cz += mesh.v[j][2];
+  }
+  cx /= count;
+  cy /= count;
+  cz /= count;
+  centerIndex = newMesh.v.length;
+  newMesh.v.push([cx, cy, cz]);
+  for (i = 0; i < mesh.f.length; i++) {
+    newMesh.f.push([mesh.f[i][0], mesh.f[i][1], mesh.f[i][2], mesh.f[i][3]]);
+  }
+  for (i = 0; i < count; i++) {
+    j = start + i;
+    k = start + (i + 1) % count;
+    if (flip) {
+      newMesh.f.push([centerIndex, k, j]);
+    } else {
+      newMesh.f.push([centerIndex, j, k]);
+    }
+  }
+  return newMesh;
+}
+
+
+
   /* ================= __acad3dV187: Freeform F5, point editing and blends, the pure part =================
      docs/research/research-freeform-f1-f7.md (F5) and docs/work-orders/v187/SPEC.md. Editing NURBS curves by their data:
      knot insertion (The NURBS Book A5.1), moving a control point, G1 blends, Bezier degree elevation, reversal. Each
      function is a work order, added below as it is built; none uses another file's names. */
+
+/* __acad3dV187 WO-01: bimNeKnotInsert, Boehm knot insertion (The NURBS Book A5.1), pure. */
+function bimNeKnotInsert(c, u) {
+  var p = c.deg, pts = c.pts, knots = c.knots, w = c.w, n = pts.length - 1;
+  var i, s, j, a, wi, wj, x, y, z, weight;
+  if (!(knots[p] < u && u < knots[pts.length])) {
+    return null;
+  }
+  s = p;
+  while (s < knots.length - 1 && !(knots[s] <= u && u < knots[s + 1])) {
+    s++;
+  }
+  var newKnots = knots.slice(0);
+  newKnots.splice(s + 1, 0, u);
+  var newPts = [], newW = [];
+  for (i = 0; i <= n + 1; i++) {
+    x = 0; y = 0; z = 0; weight = 0;
+    if (i <= s - p) {
+      j = i;
+      wi = w ? w[j] : 1;
+      x = pts[j][0] * wi; y = pts[j][1] * wi; z = pts[j][2] * wi; weight = wi;
+    } else if (i > s) {
+      j = i - 1;
+      wi = w ? w[j] : 1;
+      x = pts[j][0] * wi; y = pts[j][1] * wi; z = pts[j][2] * wi; weight = wi;
+    } else {
+      a = (u - knots[i]) / (knots[i + p] - knots[i]);
+      wi = w ? w[i] : 1; wj = w ? w[i - 1] : 1;
+      x = a * pts[i][0] * wi + (1 - a) * pts[i - 1][0] * wj;
+      y = a * pts[i][1] * wi + (1 - a) * pts[i - 1][1] * wj;
+      z = a * pts[i][2] * wi + (1 - a) * pts[i - 1][2] * wj;
+      weight = a * wi + (1 - a) * wj;
+    }
+    newPts.push([x / weight, y / weight, z / weight]);
+    if (w) {
+      newW.push(weight);
+    }
+  }
+  var out = { deg: p, pts: newPts, knots: newKnots };
+  if (w) {
+    out.w = newW;
+  }
+  return out;
+}
+/* __acad3dV187 WO-02: bimNeMovePoint, move control point i by d, pure. */
+function bimNeMovePoint(c, i, d) {
+  var pts = c.pts, n = pts.length, j, p, w, out;
+  if (!(i >= 0 && i < n)) return null;
+  var newPts = [];
+  for (j = 0; j < n; j++) {
+    p = pts[j];
+    if (j === i) newPts.push([p[0] + d[0], p[1] + d[1], p[2] + d[2]]);
+    else newPts.push([p[0], p[1], p[2]]);
+  }
+  w = [];
+  for (j = 0; j < (c.w ? c.w.length : 0); j++) w.push(c.w[j]);
+  out = { deg: c.deg, pts: newPts, knots: c.knots.slice(0) };
+  if (c.w) out.w = w;
+  return out;
+}
+
+
+/* __acad3dV187 WO-03: bimNeBlend, G1 cubic blend between two curve ends, pure. */
+function bimNeBlend(p0, t0, p1, t1, k) {
+  var s, l0, l1, h0, h1, pts;
+  l0 = Math.hypot(t0[0], t0[1], t0[2]);
+  l1 = Math.hypot(t1[0], t1[1], t1[2]);
+  s = k > 0 ? k : Math.hypot(p1[0] - p0[0], p1[1] - p0[1], p1[2] - p0[2]) / 3;
+  if (l0 === 0) l0 = 1;
+  if (l1 === 0) l1 = 1;
+  h0 = [t0[0] / l0 * s, t0[1] / l0 * s, t0[2] / l0 * s];
+  h1 = [t1[0] / l1 * s, t1[1] / l1 * s, t1[2] / l1 * s];
+  pts = [p0.slice(0), [p0[0] + h0[0], p0[1] + h0[1], p0[2] + h0[2]], [p1[0] - h1[0], p1[1] - h1[1], p1[2] - h1[2]], p1.slice(0)];
+  return { deg: 3, pts: pts, knots: [0, 0, 0, 0, 1, 1, 1, 1] };
+}
+/* __acad3dV187 WO-04: bimNeElevate, raise Bezier points one degree, pure. */
+function bimNeElevate(P) {
+  var n = P.length - 1, i, Q = [];
+  Q.push([P[0][0], P[0][1], P[0][2]]);
+  for (i = 1; i <= n; i++) {
+    Q.push([(i / (n + 1)) * P[i - 1][0] + (1 - i / (n + 1)) * P[i][0],
+            (i / (n + 1)) * P[i - 1][1] + (1 - i / (n + 1)) * P[i][1],
+            (i / (n + 1)) * P[i - 1][2] + (1 - i / (n + 1)) * P[i][2]]);
+  }
+  Q.push([P[n][0], P[n][1], P[n][2]]);
+  return Q;
+}
+
+/* __acad3dV187 WO-05: bimNeReverse, reverse a curve, pure. */
+function bimNeReverse(c) {
+  var pts = c.pts, w = c.w, knots = c.knots, n = pts.length, i, rpts = [], rw = [], rknots = [], out;
+  for (i = 0; i < n; i++) rpts.push([pts[n - 1 - i][0], pts[n - 1 - i][1], pts[n - 1 - i][2]]);
+  if (w) for (i = 0; i < n; i++) rw.push(w[n - 1 - i]);
+  for (i = 0; i < knots.length; i++) rknots.push(1 - knots[knots.length - 1 - i]);
+  out = { deg: c.deg, pts: rpts, knots: rknots };
+  if (w) out.w = rw;
+  return out;
+}
+
 
 
   /* ================= __acad3dV188: Freeform F6, picture planes, text objects, flow along a surface, the pure part =================
@@ -14182,16 +14716,460 @@ function bimEgCell(g, p) {
   var idx = j * g.nx + i;
   return g.free[idx] === 1 ? idx : -1;
 }
+function bimEgPath(g, a, b) {
+  if (!g || !a || !b) return null;
+  var startCell = bimEgCell(g, a);
+  var endCell = bimEgCell(g, b);
+  if (startCell === -1 || endCell === -1) return null;
+  if (startCell === endCell) return { len: 0, cells: [startCell] };
+  var nx = g.nx, nz = g.nz;
+  var free = g.free;
+  var cellSize = g.cell;
+  var gScore = {};
+  var cameFrom = {};
+  for (var i = 0; i < nx * nz; i++) {
+    gScore[i] = Infinity;
+  }
+  gScore[startCell] = 0;
+  var openSet = [startCell];
+  var openSetHash = {};
+  openSetHash[startCell] = true;
+  while (openSet.length > 0) {
+    var minIdx = 0;
+    for (var i = 1; i < openSet.length; i++) {
+      if (gScore[openSet[i]] < gScore[openSet[minIdx]] || (gScore[openSet[i]] === gScore[openSet[minIdx]] && openSet[i] < openSet[minIdx])) {
+        minIdx = i;
+      }
+    }
+    var current = openSet[minIdx];
+    if (current === endCell) break;
+    openSet.splice(minIdx, 1);
+    openSetHash[current] = false;
+    var ci = current % nx;
+    var cj = Math.floor(current / nx);
+    var neighbors = [[1, 0], [1, 1], [0, 1], [-1, 1], [-1, 0], [-1, -1], [0, -1], [1, -1]];
+    for (var n = 0; n < 8; n++) {
+      var dx = neighbors[n][0];
+      var dz = neighbors[n][1];
+      var nxIdx = ci + dx;
+      var nzIdx = cj + dz;
+      if (nxIdx < 0 || nxIdx >= nx || nzIdx < 0 || nzIdx >= nz) continue;
+      var neighborCell = nzIdx * nx + nxIdx;
+      if (!free[neighborCell]) continue;
+      if (dx !== 0 && dz !== 0) {
+        var adj1 = cj * nx + nxIdx;
+        var adj2 = nzIdx * nx + ci;
+        if (!free[adj1] || !free[adj2]) continue;
+      }
+      var moveCost = (dx !== 0 && dz !== 0) ? cellSize * Math.sqrt(2) : cellSize;
+      var tentativeG = gScore[current] + moveCost;
+      if (tentativeG < gScore[neighborCell]) {
+        cameFrom[neighborCell] = current;
+        gScore[neighborCell] = tentativeG;
+        if (!openSetHash[neighborCell]) {
+          openSetHash[neighborCell] = true;
+          openSet.push(neighborCell);
+        }
+      }
+    }
+  }
+  if (gScore[endCell] === Infinity) return null;
+  var path = [];
+  var cell = endCell;
+  while (cell !== startCell) {
+    path.unshift(cell);
+    cell = cameFrom[cell];
+    if (cell === undefined) return null;
+  }
+  path.unshift(startCell);
+  return { len: gScore[endCell], cells: path };
+}
+function bimEgNearest(routes) {
+  if (!routes) return null;
+  var keys = Object.keys(routes).sort();
+  var best = null;
+  for (var i = 0; i < keys.length; i++) {
+    var name = keys[i];
+    var route = routes[name];
+    if (!route) continue;
+    if (best === null || route.len < best.len) {
+      best = { exit: name, len: route.len };
+    }
+  }
+  return best;
+}
+function bimEgStatus(route, limit) {
+  if (!route) return { status: 'blocked', why: 'no route to an exit' };
+  if (!(limit > 0)) return { status: 'not evaluated', why: 'no travel limit chosen' };
+  var lenStr = route.len.toFixed(1);
+  var limitStr = String(limit);
+  if (route.len <= limit) {
+    return { status: 'within', why: lenStr + ' m of ' + limitStr + ' m' };
+  }
+  return { status: 'over', why: lenStr + ' m, over ' + limitStr + ' m' };
+}
   /* ================= __acad3dV181: Interiors I3, circulation and escape routes, the pure part =================
      docs/research/research-notion-v177-v180-interiors.md (I3) and docs/work-orders/v181/SPEC.md. A walkable grid in plan
      [x, z]; the shortest 8-way route on it (Dijkstra, no corner cutting); the nearest exit; a route against a travel limit.
      Each function is a work order, added below as it is built; none uses another file's names. */
+  /* ================= __acad3dV181: Interiors I3, the app integration ================= */
+  var A3D_EG_RUN={show:false,stamp:'',rooms:[],cell:0.25};
+  var BIM_EG_STD='app.egress';
 
-
-  /* ================= __acad3dV182: Interiors I4, sightlines and views, the pure part =================
+  function bimEgRouteCell(){
+    var v=A3D.site&&A3D.site.egressCell;
+    return typeof v==='number'&&isFinite(v)&&v>0?v:0.25;
+  }
+  function bimEgRouteLimit(){
+    var v=bimStd(BIM_EG_STD,'limit');
+    return typeof v==='number'&&isFinite(v)&&v>0?v:null;
+  }
+  function bimEgRouteStamp(){
+    var parts=[bimSimStamp(),bimEgRouteCell(),bimEgRouteLimit(),bimStdEdition(BIM_EG_STD)];
+    A3D.objs.forEach(function(o){
+      var shown=bimLayerShown(o),q=bimObjOffset(o);
+      if(o.t==='room')parts.push([o.id,shown,o.pts,o.y,o.levelId,q,o.region&&o.region.open,o.region&&o.region.islands]);
+      else if(o.t==='opening'&&o.bim&&o.bim.type==='door')
+        parts.push([o.id,shown,o.bim.exit,o.bim.center,o.bim.width,o.bim.hostWallId,q]);
+      else if(o.t==='solid'&&o.bim&&o.bim.type==='wall')
+        parts.push([o.id,shown,o.bim.centerline,o.bim.bulges,o.bim.closed,o.bim.thickness,o.bim.baseY,o.bim.height,q]);
+    });
+    return JSON.stringify(parts);
+  }
+  function bimEgWorldRing(o){
+    var q=bimObjOffset(o);
+    return (o.pts||[]).map(function(p){return [p[0]+q[0],p[1]+q[2]];});
+  }
+  function bimEgNearestFree(g,p,maxDistance){
+    var best=-1,bestD=Infinity,i,j,cx,cz,dx,dz,d;
+    for(j=0;j<g.nz;j++)for(i=0;i<g.nx;i++){
+      var idx=j*g.nx+i;
+      if(!g.free[idx])continue;
+      cx=g.x0+(i+0.5)*g.cell;cz=g.z0+(j+0.5)*g.cell;
+      dx=cx-p[0];dz=cz-p[1];d=dx*dx+dz*dz;
+      if(d<bestD){bestD=d;best=idx;}
+    }
+    return best>=0&&(maxDistance===undefined||bestD<=maxDistance*maxDistance)?best:-1;
+  }
+  function bimEgCellPoint(g,idx){
+    return [g.x0+((idx%g.nx)+0.5)*g.cell,g.z0+(Math.floor(idx/g.nx)+0.5)*g.cell];
+  }
+  function bimEgRoomCenter(poly){
+    var a=0,cx=0,cz=0,i,j,p,q;
+    for(i=0;i<poly.length;i++){
+      p=poly[i];q=poly[(i+1)%poly.length];
+      var cross=p[0]*q[1]-q[0]*p[1];
+      a+=cross;cx+=(p[0]+q[0])*cross;cz+=(p[1]+q[1])*cross;
+    }
+    if(Math.abs(a)>1e-9)return [cx/(3*a),cz/(3*a)];
+    cx=0;cz=0;
+    for(i=0;i<poly.length;i++){cx+=poly[i][0];cz+=poly[i][1];}
+    return [cx/poly.length,cz/poly.length];
+  }
+  function bimEgPointSegDist(p,a,b){
+    var dx=b[0]-a[0],dz=b[1]-a[1],l=dx*dx+dz*dz;
+    var t=l?((p[0]-a[0])*dx+(p[1]-a[1])*dz)/l:0;
+    t=Math.max(0,Math.min(1,t));
+    dx=p[0]-(a[0]+t*(b[0]-a[0]));dz=p[1]-(a[1]+t*(b[1]-a[1]));
+    return Math.sqrt(dx*dx+dz*dz);
+  }
+  function bimEgNearBoundary(poly,p){
+    var best=Infinity,i;
+    for(i=0;i<poly.length;i++)best=Math.min(best,bimEgPointSegDist(p,poly[i],poly[(i+1)%poly.length]));
+    return best;
+  }
+  function bimEgDoorWorld(door,host){
+    var q=bimObjOffset(host||door),p=door&&door.bim&&door.bim.center;
+    return p&&p.length>=2?[p[0]+q[0],p[1]+q[2]]:null;
+  }
+  function bimEgStrip(a,b,half){
+    var dx=b[0]-a[0],dz=b[1]-a[1],len=Math.sqrt(dx*dx+dz*dz);
+    if(len<1e-6||half<=0)return null;
+    var nx=-dz/len*half,nz=dx/len*half;
+    return [[a[0]+nx,a[1]+nz],[b[0]+nx,b[1]+nz],[b[0]-nx,b[1]-nz],[a[0]-nx,a[1]-nz]];
+  }
+  function bimEgWallObstacles(wall,doors){
+    var b=wall.bim,q=bimObjOffset(wall),line=bimFlattenPoly(b.centerline,b.bulges||null,!!b.closed,0.12);
+    var out=[],segCount=b.closed?line.length:line.length-1,th=(b.thickness||0.15)/2,i,d,a,cx,cz,dx,dz,len2,len,t,off,cuts,k,cursor,lo,hi,p1,p2,poly;
+    for(i=0;i<segCount;i++){
+      a=[line[i][0]+q[0],line[i][1]+q[2]];
+      var z=[line[(i+1)%line.length][0]+q[0],line[(i+1)%line.length][1]+q[2]];
+      dx=z[0]-a[0];dz=z[1]-a[1];len2=dx*dx+dz*dz;
+      if(len2<1e-8)continue;
+      len=Math.sqrt(len2);cuts=[];
+      for(d=0;d<doors.length;d++){
+        if(doors[d].bim.hostWallId!==wall.id||!(doors[d].bim.width>0))continue;
+        c=bimEgDoorWorld(doors[d],wall);if(!c)continue;
+        t=((c[0]-a[0])*dx+(c[1]-a[1])*dz)/len2;
+        cx=a[0]+t*dx;cz=a[1]+t*dz;off=Math.sqrt((c[0]-cx)*(c[0]-cx)+(c[1]-cz)*(c[1]-cz));
+        if(t<0||t>1||off>th+0.25)continue;
+        var gap=(doors[d].bim.width/2+0.05)/len;
+        cuts.push([Math.max(0,t-gap),Math.min(1,t+gap)]);
+      }
+      cuts.sort(function(x,y){return x[0]-y[0];});
+      cursor=0;
+      for(k=0;k<cuts.length;k++){
+        lo=Math.max(cursor,cuts[k][0]);hi=Math.max(lo,cuts[k][1]);
+        if(lo>cursor){
+          p1=[a[0]+dx*cursor,a[1]+dz*cursor];p2=[a[0]+dx*lo,a[1]+dz*lo];
+          poly=bimEgStrip(p1,p2,th);if(poly)out.push(poly);
+        }
+        cursor=Math.max(cursor,hi);
+      }
+      if(cursor<1){
+        p1=[a[0]+dx*cursor,a[1]+dz*cursor];p2=z;
+        poly=bimEgStrip(p1,p2,th);if(poly)out.push(poly);
+      }
+    }
+    return out;
+  }
+  function bimEgHull(points){
+    var p=points.slice().sort(function(a,b){return a[0]-b[0]||a[1]-b[1];}),lo=[],hi=[],i;
+    function cross(o,a,b){return (a[0]-o[0])*(b[1]-o[1])-(a[1]-o[1])*(b[0]-o[0]);}
+    for(i=0;i<p.length;i++){
+      if(i&&p[i][0]===p[i-1][0]&&p[i][1]===p[i-1][1])continue;
+      while(lo.length>1&&cross(lo[lo.length-2],lo[lo.length-1],p[i])<=0)lo.pop();
+      lo.push(p[i]);
+    }
+    for(i=p.length-1;i>=0;i--){
+      if(i<p.length-1&&p[i][0]===p[i+1][0]&&p[i][1]===p[i+1][1])continue;
+      while(hi.length>1&&cross(hi[hi.length-2],hi[hi.length-1],p[i])<=0)hi.pop();
+      hi.push(p[i]);
+    }
+    lo.pop();hi.pop();
+    return lo.concat(hi);
+  }
+  function bimEgSolidObstacle(o,floorY){
+    if(!o.mesh||!o.mesh.v)return null;
+    var q=bimObjOffset(o),points=[],i,v,y;
+    for(i=0;i<o.mesh.v.length;i++){
+      v=o.mesh.v[i];y=v[1]+q[1];
+      if(y>=floorY-0.1&&y<=floorY+2)points.push([v[0]+q[0],v[2]+q[2]]);
+    }
+    if(points.length<3)return null;
+    var hull=bimEgHull(points);
+    return hull.length>=3?hull:null;
+  }
+  function bimEgObstacles(room,doors){
+    var out=[],roomY=(room.y||0)+bimObjOffset(room)[1],i,o,b,wallY;
+    for(i=0;i<A3D.objs.length;i++){
+      o=A3D.objs[i];b=o.bim;
+      if(!b||o.t!=='solid'||!bimLayerShown(o))continue;
+      if(b.type==='wall'){
+        wallY=(b.baseY||0)+bimObjOffset(o)[1];
+        if(Math.abs(wallY-roomY)>0.5)continue;
+        out=out.concat(bimEgWallObstacles(o,doors));
+      }else if(b.type!=='floor'&&b.type!=='ceiling'&&b.type!=='roof'){
+        var poly=bimEgSolidObstacle(o,roomY);
+        if(poly)out.push(poly);
+      }else if(!b.type){
+        var poly2=bimEgSolidObstacle(o,roomY);
+        if(poly2)out.push(poly2);
+      }
+    }
+    return out;
+  }
+  function bimEgRouteOne(room,doors,cell,limit){
+    var poly=bimEgWorldRing(room),roomY=(room.y||0)+bimObjOffset(room)[1],i,obstacles,g,startIdx,start,routes={},targets=[],door,host,p,name,path,nearest,best,points=[],status;
+    if(room.region&&room.region.open)return {room:room, status:{status:'not evaluated',why:'room boundary is open'},points:[]};
+    if(room.region&&room.region.islands)return {room:room, status:{status:'not evaluated',why:'room boundary contains islands'},points:[]};
+    if(poly.length<3)return {room:room,status:{status:'not evaluated',why:'room outline is incomplete'},points:[]};
+    obstacles=bimEgObstacles(room,doors);g=bimEgGrid(poly,obstacles,cell);
+    if(!g)return {room:room,status:{status:'not evaluated',why:'room grid could not be built'},points:[]};
+    startIdx=bimEgNearestFree(g,bimEgRoomCenter(poly));
+    if(startIdx<0)return {room:room,status:bimEgStatus(null,limit),points:[]};
+    start=bimEgCellPoint(g,startIdx);
+    for(i=0;i<doors.length;i++){
+      door=doors[i];if(!door.bim.exit)continue;
+      host=null;
+      for(var h=0;h<A3D.objs.length;h++)if(A3D.objs[h].id===door.bim.hostWallId){host=A3D.objs[h];break;}
+      if(!host||!host.bim||host.bim.type!=='wall')continue;
+      if(Math.abs((host.bim.baseY||0)+bimObjOffset(host)[1]-roomY)>0.5)continue;
+      p=bimEgDoorWorld(door,host);if(!p)continue;
+      if(bimEgNearBoundary(poly,p)>Math.max(0.75,(door.bim.width||0)/2+0.35))continue;
+      var targetIdx=bimEgNearestFree(g,p,Math.max(0.75,(door.bim.width||0)/2+0.75));
+      if(targetIdx<0)continue;
+      name=String(door.name||'Exit')+' ['+door.id+']';
+      path=bimEgPath(g,start,bimEgCellPoint(g,targetIdx));
+      routes[name]=path;
+      if(path)targets.push({name:name,path:path,point:p});
+    }
+    nearest=bimEgNearest(routes);
+    if(nearest){
+      for(i=0;i<targets.length;i++)if(targets[i].name===nearest.exit){best=targets[i];break;}
+      status=bimEgStatus(nearest,limit);
+      if(best)points=best.path.cells.map(function(idx){return bimEgCellPoint(g,idx);});
+      return {room:room,status:status,exit:best?best.name:nearest.exit,len:nearest.len,points:points,y:roomY};
+    }
+    return {room:room,status:bimEgStatus(null,limit),points:[],y:roomY};
+  }
+  function bimEgRouteSummary(){
+    var i,n={within:0,over:0,blocked:0,'not evaluated':0,unknown:0},stale=!!(A3D_EG_RUN.stamp&&A3D_EG_RUN.stamp!==bimEgRouteStamp());
+    if(!A3D_EG_RUN.stamp)    return {state:'off',status:'Not run',stale:false,hideDisabled:true};
+    for(i=0;i<A3D_EG_RUN.rooms.length;i++){
+      var s=A3D_EG_RUN.rooms[i].status.status;
+      if(n.hasOwnProperty(s))n[s]++;else n.unknown++;
+    }
+    if(stale)return {state:'stale',status:'The model changed; run routes again',stale:true,hideDisabled:!A3D_EG_RUN.show};
+    return {state:A3D_EG_RUN.show?'on':'off',status:A3D_EG_RUN.rooms.length+' rooms: '+n.within+' within, '+n.over+' over, '+n.blocked+
+      ' blocked, '+(n.unknown+n['not evaluated'])+' not evaluated',stale:false,counts:n,hideDisabled:!A3D_EG_RUN.show};
+  }
+  function bimEgRouteCard(){
+    var cell=bimEgRouteCell(),limit=bimEgRouteLimit(),E=bimStdEdition(BIM_EG_STD),sum=bimEgRouteSummary(),rows='',i,r;
+    for(i=0;i<A3D_EG_RUN.rooms.length;i++){
+      r=A3D_EG_RUN.rooms[i];
+      rows+='<div class="a3d-prow"><div class="a3d-plabel">'+bimEsc(r.room.name||'Room')+'</div><div class="a3d-pval">'+
+        bimEsc(r.status.status+(r.exit?': '+r.exit:'')+'; '+r.status.why)+'</div></div>';
+    }
+    var extra='<div class="a3d-prow"><div class="a3d-plabel">Grid cell (m)</div><div class="a3d-pval"><input type="number" min="0.05" max="2" step="0.05" data-egress-param="cell" value="'+cell+'"></div></div>'+
+      '<div class="a3d-prow"><div class="a3d-plabel">Travel limit (m)</div><div class="a3d-pval"><input type="number" min="0.01" step="any" data-egress-param="limit" value="'+(limit===null?'':limit)+'" placeholder="Not chosen"></div></div>'+
+      '<div class="a3d-propnote">Basis: '+bimEsc(E&&E.name?E.name:'owner-selected project limit')+'. No legal limit is preselected. Marked doors are assumed passable; this plan estimate is not an egress-compliance finding.</div>'+rows;
+    return {state:sum.state,status:sum.status,extra:extra,runDisabled:!A3D.objs.some(function(o){return o.t==='room'&&o.pts&&o.pts.length>=3;}),hideDisabled:sum.hideDisabled};
+  }
+  function bimEgRouteRun(){
+    var rooms=A3D.objs.filter(function(o){return o.t==='room'&&o.pts&&o.pts.length>=3;});
+    if(!rooms.length){a3dToast('Circulation routes need at least one room');return false;}
+    var doors=A3D.objs.filter(function(o){return o.t==='opening'&&o.bim&&o.bim.type==='door';});
+    var cell=bimEgRouteCell(),limit=bimEgRouteLimit();
+    A3D_EG_RUN.rooms=rooms.map(function(room){return bimEgRouteOne(room,doors,cell,limit);});
+    A3D_EG_RUN.cell=cell;A3D_EG_RUN.show=true;A3D_EG_RUN.stamp=bimEgRouteStamp();
+    return bimEgRouteSummary();
+  }
+  function bimEgRouteHide(){
+    A3D_EG_RUN.show=false;
+    return true;
+  }
+  function bimEgRouteParam(field,value){
+    if(field==='cell'){
+      var cell=parseFloat(value);
+      if(!isFinite(cell)||cell<0.05||cell>2){a3dToast('Grid cell must be between 0.05 and 2 m');return false;}
+      if(cell===bimEgRouteCell())return true;
+      pushUndo();
+      if(!A3D.site)A3D.site={name:'Site'};
+      A3D.site.egressCell=cell;saveSoon();
+      return true;
+    }
+    if(field==='limit'){
+      if(String(value||'').trim()===''){
+        var old=bimStdOvOf(BIM_EG_STD,'limit');
+        return old?bimStdClear(BIM_EG_STD,'limit'):true;
+      }
+      var limit=parseFloat(value);
+      if(!isFinite(limit)||limit<=0){a3dToast('Travel limit must be a positive number of metres');return false;}
+      return bimStdOverride(BIM_EG_STD,'limit',limit,'Owner-selected limit for this project');
+    }
+    return false;
+  }
+  function bimEgRouteDraw(ctx,V,W,H){
+    if(!bimCameraIsPlan())return;
+    var i,j,r,p,s,color,stale=bimEgRouteSummary().stale;
+    ctx.save();ctx.lineCap='round';ctx.lineJoin='round';ctx.font='12px sans-serif';
+    if(A3D_EG_RUN.show&&!stale)for(i=0;i<A3D_EG_RUN.rooms.length;i++){
+      r=A3D_EG_RUN.rooms[i];
+      if(!r.points||!r.points.length)continue;
+      color=r.status.status==='within'?'#24b47e':(r.status.status==='over'?'#f08a32':'#d9534f');
+      ctx.strokeStyle=color;ctx.fillStyle=color;ctx.lineWidth=3;ctx.beginPath();
+      for(j=0;j<r.points.length;j++){
+        p=toScreen([r.points[j][0],r.y+0.03,r.points[j][1]],V,W,H);
+        if(j===0)ctx.moveTo(p[0],p[1]);else ctx.lineTo(p[0],p[1]);
+      }
+      ctx.stroke();
+      if(r.exit)ctx.fillText(r.status.status+' '+r.len.toFixed(1)+' m',p[0]+5,p[1]-5);
+    }
+    A3D.objs.forEach(function(o){
+      if(o.t!=='opening'||!o.bim||o.bim.type!=='door'||!o.bim.exit)return;
+      var host=null;
+      for(var k=0;k<A3D.objs.length;k++)if(A3D.objs[k].id===o.bim.hostWallId){host=A3D.objs[k];break;}
+      var c=bimEgDoorWorld(o,host);
+      if(!c)return;
+      s=toScreen([c[0],host&&host.bim?(host.bim.baseY||0)+bimObjOffset(host)[1]+0.05:0.05,c[1]],V,W,H);
+      ctx.fillStyle='#ffbf47';ctx.beginPath();ctx.arc(s[0],s[1],6,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle='#111';ctx.fillText('EXIT',s[0]+7,s[1]-6);
+    });
+    ctx.restore();
+  }
+/* ================= __acad3dV182: Interiors I4, sightlines and views, the pure part =================
      docs/research/research-notion-v177-v180-interiors.md (I4) and docs/work-orders/v182/SPEC.md. Rays against wall segments
      in plan [x, z]: the nearest hit, the isovist polygon, its area, a sightline, the share of a window seen. Geometry, not
-     daylight. Each function is a work order, added below as it is built; none uses another file's names. */
+     daylight. Each function is a work order, added below as it is built; none uses another file's names.
+*/
+
+function bimIsoHit(p, dx, dz, segs) {
+  var bestT = Infinity;
+  for (var i = 0; i < segs.length; i++) {
+    var s = segs[i];
+    var x1 = s[0][0], z1 = s[0][1];
+    var x2 = s[1][0], z2 = s[1][1];
+    var den = dx * (z2 - z1) - dz * (x2 - x1);
+    if (Math.abs(den) < 1e-12) continue; // parallel
+    var t = ((x1 - p[0]) * (z2 - z1) - (z1 - p[1]) * (x2 - x1)) / den;
+    var u = ((x1 - p[0]) * dz - (z1 - p[1]) * dx) / den;
+    if (t > 1e-9 && u >= -1e-9 && u <= 1 + 1e-9) {
+      if (t < bestT) bestT = t;
+    }
+  }
+  return bestT;
+}
+
+
+function bimIsovist(p, segs, n, maxR) {
+  var count = n !== undefined ? Math.max(n, 3) : 360;
+  var angleStep = 2 * Math.PI / count;
+  var result = [];
+  for (var i = 0; i < count; i++) {
+    var angle = angleStep * i;
+    var dx = Math.cos(angle);
+    var dz = Math.sin(angle);
+    var hitT = bimIsoHit(p, dx, dz, segs);
+    var dist = hitT !== Infinity ? Math.min(hitT, maxR <= 0 ? 50 : maxR) : maxR <= 0 ? 50 : maxR;
+    result.push([p[0] + dx * dist, p[1] + dz * dist]);
+  }
+  return result;
+}
+
+function bimIsoArea(poly) {
+  if (poly === null || poly.length < 3) return 0;
+  var area = 0;
+  for (var i = 0; i < poly.length; i++) {
+    var j = (i + 1) % poly.length;
+    area += (poly[j][0] - poly[i][0]) * (poly[j][1] + poly[i][1]);
+  }
+  return Math.abs(area) / 2;
+}function bimIsoSees(p, q, segs) {
+  if (p[0] === q[0] && p[1] === q[1]) return true; // coincident
+  var dist = Math.hypot(q[0] - p[0], q[1] - p[1]);
+  var hitT = bimIsoHit(p, q[0] - p[0], q[1] - p[1], segs);
+  if (hitT === Infinity) return true; // nothing blocking
+  var hitDist = Math.hypot(hitT * (q[0] - p[0]), hitT * (q[1] - p[1]));
+  return hitDist >= dist - 1e-9;
+}
+
+function bimIsoWindows(p, windows, segs, samples) {
+  var result = [];
+  var sampleCount = samples === undefined || samples < 1 ? 5 : Math.floor(samples);
+  for (var w = 0; w < windows.length; w++) {
+    var win = windows[w];
+    var winResult = [];
+    for (var s = 0; s < sampleCount; s++) {
+      var t = (s + 0.5) / sampleCount;
+      var x = win.a[0] + (win.b[0] - win.a[0]) * t;
+      var z = win.a[1] + (win.b[1] - win.a[1]) * t;
+      var sees = bimIsoSees(p, [x, z], segs);
+      winResult.push(sees);
+    }
+    var trueCount = 0;
+    for (var i = 0; i < winResult.length; i++) {
+      if (winResult[i]) trueCount++;
+    }
+    result.push({
+      id: win.id,
+      fraction: sampleCount > 0 ? trueCount / sampleCount : 0
+    });
+  }
+  return result;
+}
+
+/* __acad3dV182 */
 
   /* ================= __acad3dV179: Interiors I1 on the live model =================
      docs/work-orders/v179/SPEC.md part 5, WO-10 and WO-11. The programme is the building's own (b.programme, saved
@@ -21827,7 +22805,7 @@ function bimEgCell(g, p) {
   BIM_ANZ_GROUP_OF.dgtraffic='access';   /* __acad3dV171 */
   /* __acad3dV168: land */
   BIM_ANZ_GROUP_OF.dglanduse='location';BIM_ANZ_GROUP_OF.dgfigure='location';BIM_ANZ_GROUP_OF.dggreen='ecology';BIM_ANZ_GROUP_OF.dgzoning='legal';
-  var BIM_ANZ_MODEL=['lens','areas','lod','stats','structure'];
+  var BIM_ANZ_MODEL=['lens','areas','lod','stats','structure','egress'];
   function bimAnzStateText(s){return s==='on'?'On':s==='warn'?'Check':s==='fail'?'Problems':s==='stale'?'Out of date':s==='busy'?'Running':'Off';}
   function bimAnzBtn(a){
     return '<button type="button" class="a3d-anzbtn'+(a.pri?' pri':'')+(a.lay?' lay':'')+'" data-anzact="'+a.act+'"'+(a.off?' disabled title="'+bimEsc(a.off)+'"':(a.tip?' title="'+bimEsc(a.tip)+'"':''))+'>'+bimEsc(a.label)+'</button>';
@@ -21902,6 +22880,10 @@ function bimEgCell(g, p) {
       acts:[{act:'lod:run',label:'Check',pri:true,off:nb?'':'No buildings yet'},{act:'lod:cityjson',label:'Export CityJSON',off:nb?'':'No buildings yet'}]});
     C.push({id:'stats',title:'Statistics',state:null,status:A3D.objs.length+' object'+(A3D.objs.length===1?'':'s')+', '+A3D.levels.length+' level'+(A3D.levels.length===1?'':'s')+', '+A3D.sheets.length+' sheet'+(A3D.sheets.length===1?'':'s'),
       acts:[{act:'open:Statistics',label:'Open'}]});
+    var eg=bimEgRouteCard();
+    C.push({id:'egress',title:'Circulation and exits',state:eg.state,status:eg.status,extra:eg.extra,
+      acts:[{act:'egress:run',label:'Run routes',pri:true,off:false},
+        {act:'egress:hide',label:'Hide routes',off:eg.hideDisabled?'Routes are not shown':''}]});
     /* __acad3dV143: the simulations */
     var miss=bimSunNow().missing,ms=miss?'Set the site '+miss.join(', ')+' first (Site: Location)':'',sh=A3D_SIM.sun,so=A3D_SIM.solar,ra=A3D_SIM.rain;
     var nSol=bimSolarTargets(null).length,ter=bimRainTerrain(null);
@@ -21990,6 +22972,8 @@ function bimEgCell(g, p) {
     }
     if(k==='structure:run')bimAnalyzeCommand();
     else if(k==='structure:off')bimAnalyzeOff();
+    else if(k==='egress:run'){bimEgRouteRun();paint();bimAnalyzeRefresh(true);return true;}
+    else if(k==='egress:hide'){bimEgRouteHide();paint();}
     else if(k==='sun:toggle')bimToggleSun();
     else if(k==='survey:run')bimSurveyCheckCommand();
     else if(k==='terrain:landxml')bimLandXmlExport(null);   /* __acad3dV144 */
@@ -22050,6 +23034,112 @@ function bimEgCell(g, p) {
      docs/research/research-freeform-f1-f7.md (F4) and docs/work-orders/v186/SPEC.md. Face normals and areas (Newell),
      vertex normals, draft angles, zebra stripes, Gaussian curvature by angle deficit. Each function is a work order, added
      below as it is built; none uses another file's names. */
+
+function bimAnFaceNormal(v, face) {
+  var n = [0, 0, 0], i, a, b, len;
+  for (i = 0; i < face.length; i++) {
+    a = v[face[i]];
+    b = v[face[(i + 1) % face.length]];
+    n[0] += (a[1] - b[1]) * (a[2] + b[2]);
+    n[1] += (a[2] - b[2]) * (a[0] + b[0]);
+    n[2] += (a[0] - b[0]) * (a[1] + b[1]);
+  }
+  len = Math.sqrt(n[0] * n[0] + n[1] * n[1] + n[2] * n[2]);
+  if (len < 1e-15) {
+    return { n: [0, 0, 0], area: 0 };
+  }
+  return { n: [n[0] / len, n[1] / len, n[2] / len], area: len / 2 };
+}
+
+
+function bimAnVertexNormals(m) {
+  var v = m.v, f = m.f, n = [], i, j, k, r, len, out = [];
+  for (i = 0; i < v.length; i++) {
+    n.push([0, 0, 0]);
+  }
+  for (i = 0; i < f.length; i++) {
+    r = bimAnFaceNormal(v, f[i]);
+    for (j = 0; j < f[i].length; j++) {
+      k = f[i][j];
+      n[k][0] += r.n[0] * r.area;
+      n[k][1] += r.n[1] * r.area;
+      n[k][2] += r.n[2] * r.area;
+    }
+  }
+  for (i = 0; i < v.length; i++) {
+    len = Math.sqrt(n[i][0] * n[i][0] + n[i][1] * n[i][1] + n[i][2] * n[i][2]);
+    if (len < 1e-15) {
+      out.push(n[i]);
+    } else {
+      out.push([n[i][0] / len, n[i][1] / len, n[i][2] / len]);
+    }
+  }
+  return out;
+}
+
+function bimAnDraft(n, pull) {
+  var pl = Math.sqrt(pull[0] * pull[0] + pull[1] * pull[1] + pull[2] * pull[2]), c;
+  c = (n[0] * pull[0] + n[1] * pull[1] + n[2] * pull[2]) / pl;
+  if (c < -1) {
+    c = -1;
+  }
+  if (c > 1) {
+    c = 1;
+  }
+  return 90 - Math.acos(c) * 180 / Math.PI;
+}
+
+function bimAnZebra(n, view, stripes) {
+  var s = stripes, d, r, k;
+  if (s < 1 || isNaN(s)) {
+    s = 10;
+  }
+  d = n[0] * view[0] + n[1] * view[1] + n[2] * view[2];
+  r = [2 * d * n[0] - view[0], 2 * d * n[1] - view[1], 2 * d * n[2] - view[2]];
+  k = (r[1] + 1) / 2 * s;
+  k = Math.floor(k);
+  if (k < 0) {
+    k = 0;
+  }
+  if (k > s - 1) {
+    k = s - 1;
+  }
+  return k % 2;
+}
+
+
+function bimAnGauss(m) {
+  var v = m.v, f = m.f, deficit = [], area = [], i, j, fi, share, prev, cur, nxt, e1, e2, len1, len2, c, ang;
+  for (i = 0; i < v.length; i++) {
+    deficit.push(2 * Math.PI);
+    area.push(0);
+  }
+  for (i = 0; i < f.length; i++) {
+    fi = f[i];
+    share = bimAnFaceNormal(v, fi).area / fi.length;
+    for (j = 0; j < fi.length; j++) {
+      cur = fi[j];
+      prev = fi[(j - 1 + fi.length) % fi.length];
+      nxt = fi[(j + 1) % fi.length];
+      e1 = [v[prev][0] - v[cur][0], v[prev][1] - v[cur][1], v[prev][2] - v[cur][2]];
+      e2 = [v[nxt][0] - v[cur][0], v[nxt][1] - v[cur][1], v[nxt][2] - v[cur][2]];
+      len1 = Math.sqrt(e1[0] * e1[0] + e1[1] * e1[1] + e1[2] * e1[2]);
+      len2 = Math.sqrt(e2[0] * e2[0] + e2[1] * e2[1] + e2[2] * e2[2]);
+      c = (e1[0] * e2[0] + e1[1] * e2[1] + e1[2] * e2[2]) / (len1 * len2);
+      if (c < -1) {
+        c = -1;
+      }
+      if (c > 1) {
+        c = 1;
+      }
+      ang = Math.acos(c);
+      deficit[cur] -= ang;
+      area[cur] += share;
+    }
+  }
+  return { deficit: deficit, area: area };
+}
+
 
 
   /* ================= __acad3dV219: WebGPU compute: the CPU reference first, the pure part =================
@@ -22174,6 +23264,10 @@ function bimEgCell(g, p) {
         src:{t:'This app; 5% and 8.33% are the 2010 ADA Standards\' 1:20 walking slope and 1:12 ramp slope, 2% their 1:48 cross slope rounded',w:'ADA Standards 403.3 and 405.2',u:'https://www.ada.gov/law-and-regs/design-standards/2010-stds/',lv:'P',read:'2026-10-18'},
         v:[{n:'bands',t:1,v:[0,2,5,8.33,15,25,50],u:'%',say:'the band edges'}]}]},
     /* ---- buildings and structure ---- */
+    {id:'app.egress',title:'Owner-selected travel limit',pub:'This app',kind:'assumption',area:'Buildings',use:'V181 route estimates; not a code requirement',anywhere:true,
+      eds:[{id:'app.egress.owner',name:'Owner-selected project limit (not a code edition)',pub:'',st:'current',where:'Project-specific',adopt:[{at:'*'}],
+        src:{t:'This app; V181 route estimates',w:'The owner chooses whether to set a limit. No legal travel limit is preselected.',lv:'A'},
+        v:[{n:'limit',v:0,u:'m',say:'the owner-selected travel limit (0 means none is chosen)',src:'A project assumption, not an adopted code requirement',lv:'A'}]}]},   /* __acad3dV181 */
     {id:'ibc.occupant_load',title:'Occupant load factors',pub:'International Code Council',kind:'code',area:'Buildings',use:'Rooms\' occupant loads and the area plans',anywhere:true,
       eds:[{id:'ibc.2021.1004.5',name:'International Building Code 2021, Table 1004.5',pub:'2020-10',st:'current',where:'Pennsylvania (the Uniform Construction Code)',adopt:[{at:'us-pa',from:'2026-01-01'}],
           src:{t:'International Building Code 2021, Table 1004.5, maximum floor area allowances per occupant; adopted in Pennsylvania by 34 Pa. Code 403.21',w:'the table as V105 read it (the same in 2018 and 2021); the adoption in 34 Pa. Code 403.21, effective 1 January 2026',u:'https://www.pacodeandbulletin.gov/Display/pacode?file=/secure/pacode/data/034/chapter403/s403.21.html',lv:'S',read:'2026-10-18'},
@@ -31411,6 +32505,8 @@ function bimEgCell(g, p) {
     // ---- Identity Data ----
     var idd='';
     idd+=bimPropRow('Name','<input type="text" data-propf="name" value="'+bimEsc(o.name)+'">');
+    if(o.t==='opening'&&o.bim&&o.bim.type==='door')
+      idd+=bimPropRow('Marked exit','<input type="checkbox" data-propf="egressExit"'+(o.bim.exit?' checked':'')+'>');
     if(o.t==='text')idd+=bimPropRow('Text','<input type="text" data-propf="textcontent" value="'+bimEsc(o.text||'')+'">');
     if(o.t==='note'){
       if(o.kind==='note'){
@@ -33551,6 +34647,7 @@ function bimEgCell(g, p) {
         if((k=e.getAttribute('data-znf'))){bimZnSet(k,e.value);if(bimAwOwns())bimAwRender(true);}   /* __acad3dV160: the zoning, in Legal */
         else if((k=e.getAttribute('data-anzload'))){updateLevel(A3D.activeLevel,k,e.value);if(bimAwOwns())bimAwRender(true);}   /* __acad3dV166b: the floor loads, in Frame analysis */
         else if((k=e.getAttribute('data-sunsl')))bimSunSlide(k,e.value,true);   /* __acad3dV171d: a slider let go; the redraw keeps it in the hand */
+        else if((k=e.getAttribute('data-egress-param'))){bimEgRouteParam(k,e.value);bimAwRefresh();}
         else if((k=e.getAttribute('data-tlf'))){bimTlSetField(k,e.type==='checkbox'?e.checked:e.value);if(bimAwOwns())bimAwRender(true);}   /* __acad3dV172: a tool's field, checked again */
       }catch(eF){console.warn('[BIM] Analyze setting failed',eF);a3dToast('That setting could not be changed - see the console');}
     },true);   /* in the capture: V118's refresh after every change, the panel's last handler, would put the model's value back first */
@@ -44735,6 +45832,7 @@ BIM_IFC_SAVE.model=bimIfcSaveModel;
     drawLensLegend(ctx,V,W,H);         /* __acad3dV136: the lens's and the data layers' legend, below it */
     drawDiagramLegend(ctx,V,W,H);      /* __acad3dV164: the site analysis's, at the top right */
     drawNotes(ctx,V,W,H);          // __acad3dV82: the annotation overlay, above the model
+    if(!capMode)bimEgRouteDraw(ctx,V,W,H);   /* __acad3dV181: routes and marked exits */
     if(!capMode)drawSkLivePreview(ctx,V,W,H);   /* __acad3dV122: a tool's rubber band is not on the paper */
     if(!capMode){
       var faceNow=bimFaceCurrent();   /* __acad3dV123: read first, so a face that has lapsed lets the gizmo back */
@@ -68562,6 +69660,11 @@ function bimRptPlan(families) {
       }else if(f==='locked'){
         bimSetLocked(o,inp.checked);
         refreshProps();
+      }else if(f==='egressExit'){
+        if(!o.bim||o.bim.type!=='door'){a3dToast('Only a door can be marked as an exit');refreshProps();return;}
+        pushUndo();
+        if(inp.checked)o.bim.exit=true;else delete o.bim.exit;
+        refreshTree();refreshProps();paint();saveSoon();
       }else if(f==='thickness'||f==='height'){
         var v=parseFloat(inp.value);
         if(!isFinite(v)||v<=0){a3dToast('Must be a positive number');refreshProps();return;}

@@ -651,6 +651,8 @@ import { bimNoteHex } from '../testing/hooks-view-gizmo.js';
     // ---- Identity Data ----
     var idd='';
     idd+=bimPropRow('Name','<input type="text" data-propf="name" value="'+bimEsc(o.name)+'">');
+    if(o.t==='opening'&&o.bim&&o.bim.type==='door')
+      idd+=bimPropRow('Marked exit','<input type="checkbox" data-propf="egressExit"'+(o.bim.exit?' checked':'')+'>');
     if(o.t==='text')idd+=bimPropRow('Text','<input type="text" data-propf="textcontent" value="'+bimEsc(o.text||'')+'">');
     if(o.t==='note'){
       if(o.kind==='note'){

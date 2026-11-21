@@ -112,7 +112,7 @@ after each one. Scores are from `../ROUTING.md` (files, logic, understanding, ju
 
 ## [x] WO-10 [Claude] The facts from the live model; the Programme table
 
-Claude's (score 2+2+2+1+2+1 = 10): SPEC part 5 WO-10. Moves `v179.test.mjs` into `tests/unit/interiors.test.mjs` and runs `npm run modules`.
+Claude's (score 2+2+2+1+2+1 = 10): SPEC part 5 WO-10. Moves `v179.test.mjs` into `tests/unit/interiors-programme.test.mjs` and runs `npm run modules`.
 
 Done 2026-11-16. Audit first: WO-01, WO-02 and WO-07 had been built before the 2026-11-16 amendment (3 of 9 tests
 failed) and are brought to it; WO-07 also said "over 5 m" whatever `nearM` was, and WO-08 did not count a room with no
@@ -122,7 +122,7 @@ wall left out with a warning), the facts by use (`bimIntFactsFrom`), the report.
 (the choice this order left open): a programme is written before its rooms. A room's use is its usage's name, else
 its own. A route costs, per door, room centre to door to room centre (an estimate; I3 measures walking). The
 Programme group in Properties, Project tab (`properties/programme.js`): uses and relations, each with what the model
-says, one undo step an edit. Tests: `tests/unit/interiors.test.mjs`, the nine orders' and three new.
+says, one undo step an edit. Tests: `tests/unit/interiors-programme.test.mjs`, the nine orders' and three new.
 
 ---
 

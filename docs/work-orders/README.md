@@ -53,8 +53,10 @@ The review Claude used to do by hand, as checks a script runs in seconds. It fai
   beyond its checkboxes;
 - added code is not ES5, has an emoji, a `WO-` stub or `debugger`, touches import/export lines, or
   calls a `bim*` name declared nowhere in `src/`;
+- a task-named JavaScript function is missing, duplicated, or declared outside the task's named source file;
 - more src lines are added than the task's `**Budget:**` (default 120);
-- `node --check`, the task's own tests (at least one must run), `npm test` or `npm run check` fail.
+- `node --check`, the task's own tests (at least one must run), `npm test` or `npm run check` fail. Syntax
+  checks still run when another gate check fails, so malformed code is reported alongside the original failure.
 Then the local model (Qwen, `tools/local_llm.py`) reads the task and the diff and answers PASS or
 CONCERN. A CONCERN is logged and flagged for the audit; `--strict-llm` makes it a failure.
 
@@ -71,7 +73,8 @@ phases in one sprint, instead of one phase at a time behind Cline.
 
 A model is more reliable on a small, exact task than on a vague one. Each work order:
 - **one file, one function**, ideally under 40 lines of body;
-- says **where**: the file and the function's name (it is already declared there);
+- says **where**: the file and the function's name (it is already declared there); Cline replaces that
+  function in place, never appends a duplicate, and the gate verifies there is exactly one declaration;
 - says **what**: inputs, output, and every edge case, in plain words, with an example input and its
   expected result;
 - lists **the existing names it may use**, with their files; nothing else may be called;
