@@ -24,3 +24,4 @@ tools/ifc/node_modules/
 
 # V176: IfcOpenShell and its dependencies, fetched by docs/work-orders/v176/v176.test.mjs
 .cache/
+node_modules/

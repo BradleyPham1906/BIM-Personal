@@ -55,3 +55,9 @@ test('WO-05 Gaussian curvature as angle deficits: a cube\'s add up to 4 pi', () 
   const flat = fn('bimAnGauss')({ v: [[0, 0, 0], [1, 0, 0], [1, 1, 0], [0, 1, 0], [0.5, 0.5, 0]], f: [[0, 1, 4], [1, 2, 4], [2, 3, 4], [3, 0, 4]] });
   near(flat.deficit[4], 0, 1e-12, 'an inner vertex of a plane is flat');
 });
+// Added by the audit (2026-11-21): SPEC 5 floors stripes, so a fractional count still answers 0 or 1.
+test('WO-04 a fractional stripe count is floored', () => {
+  const k = fn('bimAnZebra')([0, 1, 0], [0, 1, 0], 4.5);
+  assert.ok(k === 0 || k === 1, 'got ' + k);
+  assert.equal(k, fn('bimAnZebra')([0, 1, 0], [0, 1, 0], 4));
+});
