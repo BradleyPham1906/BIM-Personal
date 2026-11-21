@@ -80,7 +80,7 @@ after each one. Scores are from `../ROUTING.md` (files, logic, understanding, ju
 
 ---
 
-## [ ] WO-07 [Cline] `bimPcPlyRead(dv, at, type)`
+## [x] WO-07 [Cline] `bimPcPlyRead(dv, at, type)`
 
 - **It must:** SPEC 4 WO-07, with `BIM_PC_PLYSIZE` (each type's size in bytes) just above the function.
 - **May use:** `BIM_PC_PLYSIZE` (this task).

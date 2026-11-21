@@ -181,3 +181,28 @@ function bimPcPlyHeader(text) {
   if (!hasVertex) return { error: 'no vertex element' };
   return { format: format, count: count, props: props, headerBytes: headerEnd };
 }
+
+var BIM_PC_PLYSIZE = {
+  char: 1, int8: 1,
+  uchar: 1, uint8: 1,
+  short: 2, int16: 2,
+  ushort: 2, uint16: 2,
+  int: 4, int32: 4,
+  uint: 4, uint32: 4,
+  float: 4, float32: 4,
+  double: 8, float64: 8
+};
+
+function bimPcPlyRead(dv, at, type) {
+  var m = {
+    char: 'getInt8', int8: 'getInt8',
+    uchar: 'getUint8', uint8: 'getUint8',
+    short: 'getInt16', int16: 'getInt16',
+    ushort: 'getUint16', uint16: 'getUint16',
+    int: 'getInt32', int32: 'getInt32',
+    uint: 'getUint32', uint32: 'getUint32',
+    float: 'getFloat32', float32: 'getFloat32',
+    double: 'getFloat64', float64: 'getFloat64'
+  }[type];
+  return dv[m](at, true);
+}
