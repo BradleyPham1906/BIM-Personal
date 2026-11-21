@@ -115,6 +115,9 @@ import { bimRvMapCanvas } from './rendered-map.js';
     var scene=new T.Scene(),recs={},w=0,h=0,done=0,passRT=null,accRT=null;
     var matO=new T.MeshStandardMaterial({vertexColors:true,flatShading:true,roughness:0.78,metalness:0,side:T.DoubleSide,fog:false});
     var matT=new T.MeshStandardMaterial({vertexColors:true,flatShading:true,roughness:0.06,metalness:0,side:T.DoubleSide,fog:false,transparent:true,depthWrite:false,envMapIntensity:1.4});
+    /* __acad3dV194 T-07: the looks by element type: metal (steel, aluminium) and glass (a window's opaque parts, smooth) */
+    var matM=new T.MeshStandardMaterial({vertexColors:true,flatShading:true,roughness:0.4,metalness:0.55,side:T.DoubleSide,fog:false});
+    var matG=new T.MeshStandardMaterial({vertexColors:true,flatShading:true,roughness:0.08,metalness:0,side:T.DoubleSide,fog:false,envMapIntensity:1.4});
     var matE=new T.LineBasicMaterial({color:0x2a2f36,transparent:true,opacity:0.55,fog:false});
     /* the lights: the sun, and the sky sampled a direction a pass */
     var sunL=new T.DirectionalLight(0xffffff,0),skyL=new T.DirectionalLight(0xffffff,0);
@@ -212,6 +215,8 @@ import { bimRvMapCanvas } from './rendered-map.js';
       var rec={sig:it.sig,objs:[],edges:[],own:[]},m;
       if(A&&A.map&&A.map.n)rec.objs.push(mapMesh(A.map,rec));   /* __acad3dV198 */
       if(A&&A.op&&A.op.n){m=new T.Mesh(geo(A.op,3),matO);m.castShadow=true;m.receiveShadow=true;rec.objs.push(m);}
+      if(A&&A.mt&&A.mt.n){m=new T.Mesh(geo(A.mt,3),matM);m.castShadow=true;m.receiveShadow=true;rec.objs.push(m);}
+      if(A&&A.gl&&A.gl.n){m=new T.Mesh(geo(A.gl,3),matG);m.castShadow=true;m.receiveShadow=true;rec.objs.push(m);}
       if(A&&A.tr&&A.tr.n){m=new T.Mesh(geo(A.tr,4),matT);m.castShadow=false;m.receiveShadow=true;m.renderOrder=1;rec.objs.push(m);}
       if(A&&A.ed&&A.ed.n){m=new T.LineSegments(geo(A.ed,0),matE);m.castShadow=false;m.receiveShadow=false;rec.objs.push(m);rec.edges.push(m);}
       rec.objs.forEach(function(o){o.matrixAutoUpdate=false;scene.add(o);});
@@ -294,7 +299,7 @@ import { bimRvMapCanvas } from './rendered-map.js';
       if(env)env.dispose();
       pm.dispose();
       if(passRT){passRT.dispose();accRT.dispose();}
-      [matO,matT,matE,groundMat,addMat,outMat].forEach(function(m){m.dispose();});
+      [matO,matM,matG,matT,matE,groundMat,addMat,outMat].forEach(function(m){m.dispose();});
       ground.geometry.dispose();quad.geometry.dispose();
       renderer.dispose();
       if(renderer.forceContextLoss)renderer.forceContextLoss();

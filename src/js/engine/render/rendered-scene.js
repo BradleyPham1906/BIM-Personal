@@ -34,7 +34,7 @@ import { bimSunVector } from '../site/shadows.js';
     var m;
     if(!o||!o.bim)return 'matte';
     if(o.bim.type==='window')return 'glass';
-    m=o.bim.material||'';
+    m=o.bim.material||o.materialName||'';
     if(/steel|metal|alumin/i.test(m))return 'metal';
     return 'matte';
   }
@@ -47,10 +47,14 @@ import { bimSunVector } from '../site/shadows.js';
   }
   /* a chunk's triangles for the picture: world positions and linear colours, the opaque ones and the see-through
      ones (with their transparency) apart, the hidden ones left out; its edges when asked */
-  function bimRvChunkArrays(B,c,edges){
-    var d=B.data,tri=c.tri,n=c.count||0,i,p,o,a,no=0,nt=0,ne=0,lin={},L,k,q,s;
-    for(i=0;i<n;i++){a=d[tri[i*7+6]*8+3];if(a<0)continue;if(a<0.999)nt++;else no++;}
-    var op={pos:new Float32Array(no*3),col:new Float32Array(no*3),n:no},tr={pos:new Float32Array(nt*3),col:new Float32Array(nt*4),n:nt},io=0,it=0,ed=null;
+  function bimRvChunkArrays(B,c,edges,looks){
+    var d=B.data,tri=c.tri,n=c.count||0,i,p,o,a,nt=0,ne=0,lin={},L,k,q,s,lk={},cnt={matte:0,metal:0,glass:0},G,O;
+    /* __acad3dV194 T-07: each slot's look (matte unless looks names it), and the opaque triangles counted by look */
+    if(looks)for(i=0;i<c.ids.length;i++)if(looks.hasOwnProperty(c.ids[i]))lk[B.slots[c.ids[i]]]=looks[c.ids[i]];
+    for(i=0;i<n;i++){s=tri[i*7+6];a=d[s*8+3];if(a<0)continue;if(a<0.999)nt++;else cnt[lk[s]||'matte']++;}
+    function grp(m){return {pos:new Float32Array(m*3),col:new Float32Array(m*3),n:m,i:0};}
+    G={matte:grp(cnt.matte),metal:grp(cnt.metal),glass:grp(cnt.glass)};
+    var op=G.matte,tr={pos:new Float32Array(nt*3),col:new Float32Array(nt*4),n:nt},it=0,ed=null;
     for(i=0;i<n;i++){
       p=i*7;s=tri[p+6];o=s*8;a=d[o+3];
       if(a<0)continue;
@@ -60,9 +64,9 @@ import { bimSunVector } from '../site/shadows.js';
         tr.pos[k]=tri[p]+d[o];tr.pos[k+1]=tri[p+1]+d[o+1];tr.pos[k+2]=tri[p+2]+d[o+2];
         tr.col[q]=L[0];tr.col[q+1]=L[1];tr.col[q+2]=L[2];tr.col[q+3]=a;
       }else{
-        k=io*3;io++;
-        op.pos[k]=tri[p]+d[o];op.pos[k+1]=tri[p+1]+d[o+1];op.pos[k+2]=tri[p+2]+d[o+2];
-        op.col[k]=L[0];op.col[k+1]=L[1];op.col[k+2]=L[2];
+        O=G[lk[s]||'matte'];k=O.i*3;O.i++;
+        O.pos[k]=tri[p]+d[o];O.pos[k+1]=tri[p+1]+d[o+1];O.pos[k+2]=tri[p+2]+d[o+2];
+        O.col[k]=L[0];O.col[k+1]=L[1];O.col[k+2]=L[2];
       }
     }
     if(edges&&c.ed&&c.ecount){
@@ -74,7 +78,19 @@ import { bimSunVector } from '../site/shadows.js';
         ed.pos[k]=c.ed[p]+d[o];ed.pos[k+1]=c.ed[p+1]+d[o+1];ed.pos[k+2]=c.ed[p+2]+d[o+2];k+=3;
       }
     }
-    return {op:op,tr:tr,ed:ed};
+    delete G.matte.i;delete G.metal.i;delete G.glass.i;
+    return {op:op,mt:G.metal.n?G.metal:null,gl:G.glass.n?G.glass:null,tr:tr,ed:ed};
+  }
+  /* __acad3dV194 T-07: the looks of the model's objects that are not matte, by id, and a short signature of them */
+  function bimRvLooks(){
+    var L={},i,o,k;
+    for(i=0;i<A3D.objs.length;i++){o=A3D.objs[i];k=bimRvLook(o);if(k!=='matte')L[o.id]=k;}
+    return L;
+  }
+  function bimRvLooksSig(L,c){
+    var h=0,i,k;
+    for(i=0;i<c.ids.length;i++){k=L[c.ids[i]];if(k)h=(h*31+i*7+(k==='metal'?1:2))|0;}
+    return h;
   }
   /* a terrain's surface for the picture: its triangles as the 3D view drapes them, in its colour */
   function bimRvTerrainItem(o){
@@ -111,13 +127,13 @@ import { bimSunVector } from '../site/shadows.js';
   /* the frame's part: the description brought up to date, and what the picture is made of: a part for each chunk and
      each terrain shown, each with a key and its look in a few characters, the box of them all, the faces */
   function bimRvPlan(edges,view){
-    var F=bimSceneSync(),B=F.S,items=[],box=null,i,c,o,t,nt=0,M=null,mf,dr;
+    var F=bimSceneSync(),B=F.S,items=[],box=null,i,c,o,t,nt=0,M=null,mf,dr,LK=bimRvLooks();
     /* __acad3dV198: the map, when the view is given (the frame's, not a test's): on the ground and draped */
     if(view){M=bimRvMapFrame(view.V,view.W,view.H,view.bg);mf=M?bimRvMapFlatItem(M):null;if(mf)items.push(mf);}
     for(i=0;i<B.chunks.length;i++){
       c=B.chunks[i];
       if(!c.rv)c.rv=++BIM_RV_SEQ;
-      items.push({key:'c'+c.rv,sig:bimRvChunkSig(B,c)+(edges?':e':''),chunk:c});
+      items.push({key:'c'+c.rv,sig:bimRvChunkSig(B,c)+(edges?':e':'')+':l'+bimRvLooksSig(LK,c),chunk:c});
       if(c.wb&&c.wb.f===B.frame)box=bimRvBoxAdd(box,c.wb);
     }
     for(i=0;i<A3D.objs.length;i++){
@@ -127,11 +143,11 @@ import { bimSunVector } from '../site/shadows.js';
       if(t&&M){dr=bimRvMapDrape(o,M,t.col);if(dr){t.drape=dr;t.sig+='|'+dr.sig;}}   /* __acad3dV198 */
       if(t){items.push(t);box=bimRvBoxAdd(box,t.box);nt++;}
     }
-    return {S:B,items:items,box:box,totalFaces:F.totalFaces,terrains:nt,edges:!!edges,map:M?M.drawn:0};
+    return {S:B,items:items,box:box,totalFaces:F.totalFaces,terrains:nt,edges:!!edges,map:M?M.drawn:0,looks:LK};
   }
   /* the arrays of one of the plan's parts, asked for only when the part is new or looks different */
   function bimRvBuild(plan,it){
-    if(it.chunk)return bimRvChunkArrays(plan.S,it.chunk,plan.edges);
+    if(it.chunk)return bimRvChunkArrays(plan.S,it.chunk,plan.edges,plan.looks);
     if(it.map)return {map:it.map};   /* __acad3dV198 */
     if(it.terrain&&it.drape){var A=bimRvTerrainArrays(it);return {map:{flat:false,pos:A.op.pos,uv:it.drape.uv,n:A.op.n,atlas:it.drape.atlas}};}
     if(it.terrain)return bimRvTerrainArrays(it);
