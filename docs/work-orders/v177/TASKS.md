@@ -261,4 +261,4 @@ it stood, with its name, layer and GlobalId, one undo step; a wall an opening cu
 shape that is not an upward extrusion is refused with its reason. `tests/unit/ifc-editable.test.mjs` (7, with an
 IfcOpenShell-written fixture in `tests/fixtures/ifc/`); the browser check now 26 of 26 (the button clicked, the wall
 in place to 3 cm, the floor, the refusal, undo, saved again under the same GlobalIds). The guide: Sheets and files,
-Exporting, IFC files. Notion: not reachable from this session.
+Exporting, IFC files. Notion: V177's task page has the note and the pull request.

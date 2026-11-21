@@ -111,4 +111,4 @@ bar's Export PNG and Title Block stay with sheets; a layout's page and title blo
 
 PIPELINE row 175c, Notion.
 
-Done 2026-11-21: PIPELINE row 175c. Notion is not reachable from this session (no Notion connection here); its task line waits for the next session that has one.
+Done 2026-11-21: PIPELINE row 175c; Notion's V175c task page has the steps' note and the pull request.
