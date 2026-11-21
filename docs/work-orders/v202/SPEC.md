@@ -147,3 +147,117 @@ screenshot of 2026-11-13.
 - Tunnels' depths: no free source measured here gives them.
 - Retaining walls, utilities, and bridge structure (girders, bearings): out of scope. The owner's bridge modelling goes through the OpenBridge research (`docs/research/research-openbridge.md`).
 - Any key, token or paid source.
+
+---
+
+# Part B: the Site and Map interface, and the geometry fix (added 2026-11-21)
+
+**The owner, 2026-11-21:** at 30th Street Station the surroundings were "all over the place", and "their
+UI/UX is good and we should clean up our UI/UX and make it similar" (Google Earth's web app, from the
+owner's screenshots). The owner's answers: add it to this phase; start with the Site and Map workspace,
+not the whole app.
+
+## B1. The geometry (V202b, done 2026-11-21, PR #116)
+
+Three faults in `surroundings-3d.js`, fixed before the measured data arrives:
+- A road or railway was built only at OpenStreetMap's points, so between them it cut through the ground
+  or hung over it. Now every line has a point at least every 5 m (`bimCtxDense`).
+- A bridge deck stood `layer x 6 m` over the ground at every point: it dipped into a river valley and
+  ended in a 6 m wall. Now `bimCtxDeckProfile` runs the deck straight between the ground at its two
+  ends, lifted as one just enough to clear by `layer x 6 m`, ramping down only at a real abutment (an
+  end no other bridge way of the same layer shares, `bimCtxBridgeEnds`).
+- Piers did not reach the deck. Now each stands from the ground to the deck, where the gap is over 2 m.
+
+WO-09 keeps this profile and gives it NBI's measured clearance in place of `layer x 6 m`.
+
+## B2. What changes for the user
+
+Google Earth's web app is the pattern (the owner's screenshots, 2026-11-21); the app's own controls,
+names and colours stay ours. No Google content, names or images are copied.
+
+1. **The Site bar.** In the Site and Map workspace, one slim bar along the top of the drawing area, icon
+   buttons in groups, each with its title as a tooltip, wrapping to a second row on a phone:
+   *Find a place* (the address box and Find, today in Properties > Map) |
+   *Data layers* (opens B2.2) | *Site analysis* (a menu: Contours, Slope, Aspect, Cut and fill, the
+   existing `bimDgContoursRun`, `bimDgSlopeRun`, `bimDgAspectRun` and `bimCutFill`) | *Measure* |
+   *Sun and time* (a date and time pop-over, today's Sun Date and Sun Time) | *Basemap* (Off and the
+   styles). Each starts what already exists; none is a new analysis.
+2. **The Data layers dialog,** in place of the checkbox grid in Properties > Site Context: a grid of cards,
+   one per kind (`bimCtxCards`), each with its title, one sentence, its source, the number the last
+   fetch brought, and a Select toggle. Footer: "N layers selected", Cancel, and **Add to project** (Get
+   Context). Radius, Overpass and "On the terrain" go under *More options* in the same dialog. Remove
+   Context, Check LODs and the CityJSON buttons stay in Properties.
+3. **The place card.** Clicking a context object (a building, road, bridge, tree) opens a card on the right,
+   over Properties: its title and kind, the facts of `bimPlaceFacts` (height and where it came from,
+   levels, address, use, width, deck, built, operator, fetched), its credit, *Open in OpenStreetMap*,
+   *Zoom to*, and a close button. Properties stays one click away (*All properties*).
+4. **The map controls,** bottom right of the drawing area, a small column: compass (`bimCompass`; click
+   to face north), 2D / 3D (plan from above or the last perspective), zoom in, zoom out. The view cube
+   stays where it is.
+5. **A quieter view.** Context objects draw without their edges by default (a *Context edges* switch in
+   the Site bar's Basemap menu); the Views legend box folds to its title; site view labels ("VIEW:
+   ...") show on hover and for the selection only.
+6. **Phone and tablet:** the Site bar scrolls sideways when it is too wide; the dialog's cards are one
+   column on a phone, two on a tablet; the place card is a bottom sheet on a phone.
+
+## B3. Functions (WO-12 to WO-14), in `src/js/engine/map/site-ui.js`
+
+### `bimCtxCards(kinds, labels, st, counts)` - WO-12
+- **Returns:** an array, one card `{kind, title, say, source, on, count}` per kind of `kinds` that `labels`
+  names, in `kinds`' order. `[]` when `kinds` is missing or empty.
+- `title` is `labels[kind]`. `say` is one sentence of 11 to 90 characters (the table below).
+  `source` is `'AWS Terrain Tiles (Terrarium)'` for terrain, `'OpenStreetMap'` otherwise.
+  `on` is `true` only when `st.kinds[kind]` is truthy. `count` is `counts[kind]` when it is a number,
+  else `null`.
+
+| kind | say |
+|---|---|
+| buildings | Footprints raised to their height, with roofs where tagged |
+| roads | Streets, footways and cycleways as surfaces on the ground |
+| water | Rivers, lakes and the sea |
+| green | Parks, woods and grass |
+| trees | Single trees and rows of trees |
+| rail | Tracks, platforms and stations |
+| airports | Runways, taxiways and aprons |
+| power | Pylons and power lines |
+| landuse | What the land is used for, as a tint on the ground |
+| terrain | The ground, from elevation tiles |
+
+### `bimPlaceFacts(ctx, name)` - WO-13
+- **Returns:** `{title, kind, rows, credit, osmUrl}`, or `null` when `ctx` is missing. `t` is `ctx.tags` (or `{}`).
+- `title`: `t.name`, else `name`, else `'Unnamed'`.
+- `kind`: `'Bridge'` when `ctx.bridge`, `'Tunnel'` when `ctx.tunnel`, else by `ctx.kind`: buildings Building,
+  roads Road, water Water, green Green space, trees Tree, rail Railway, airports Airport, power Power,
+  landuse Land use, terrain Terrain; anything else `'Context'`.
+- `rows`, `[label, value]` pairs, in this order, each only when its value exists:
+  - Height: `ctx.height` (a number) as `'<h> m'`, then `' (<from>)'` by `ctx.heightFrom`: city *measured*,
+    height *OpenStreetMap height*, levels *storeys x 3 m*, assumed *assumed*; nothing for another value.
+  - Levels: `t['building:levels']`.
+  - Address: `t['addr:housenumber'] + ' ' + t['addr:street']`, trimmed, when the street exists.
+  - Use: the first of `t.building`, `amenity`, `highway`, `railway`, `landuse`, `leisure`, `natural`,
+    `waterway` that exists and is not `'yes'`, its underscores as spaces.
+  - Width: `ctx.width` (a number) as `'<w> m'`.
+  - Deck: when `ctx.bridge` and `ctx.deck` is a number, `'<d> m over the ground'`.
+  - Built: `t.start_date`. Operator: `t.operator`. Fetched: `ctx.fetched`.
+- `credit`: `ctx.credit`, else `null`. `osmUrl`: `'https://www.openstreetmap.org/' + ctx.osm + '/' + ctx.id`
+  when both exist, else `null`.
+
+### `bimCompass(yaw, trueNorth)` - WO-14
+- **Takes:** the camera's `A3D.cam.yaw` (radians; 0 looks toward model -z, which is north when true north
+  is 0; `camVecs` in `core/mesh-primitives.js`) and the project's true north in degrees.
+- **Returns:** `{needle, heading, letter}`, or `null` when either is not finite.
+  `needle = (yaw in degrees + trueNorth)` kept in 0 to under 360: the north needle's clockwise turn on
+  screen. `heading = -needle`, kept in 0 to under 360: the way the camera faces, clockwise from north.
+  `letter`: N, NE, E, SE, S, SW, W, NW, the nearest to `heading` (`round(heading / 45) mod 8`).
+
+## B4. Order of the work
+
+WO-11 (done), then WO-12 to WO-14 (Cline, any order, pure), then WO-15 to WO-19 (Claude, the DOM and
+CSS that use them), then WO-20, the one browser check of the Site and Map workspace at desktop, tablet
+and phone sizes. Part A's WO-01 to WO-10 are independent of part B and can be built in either order.
+
+## B5. Not in part B
+
+- The rest of the app's interface: after this workspace, if the owner likes it.
+- Photos in the place card: none are free to show without a key (the owner's standing choice).
+- Classify and Detect change (Google's imagery tools): there is no free imagery to run them on.

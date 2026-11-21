@@ -6,6 +6,9 @@ Spec: `SPEC.md` in this folder. Implementation target: local `main`. One task at
 **Status: ready.** The owner chose D1 to D5 as recommended (2026-11-13). WO-00 is built; WO-01 to
 WO-05 are independent pure functions, in any order.
 
+**Part B (2026-11-21):** the Site and Map interface (SPEC part B). WO-11 is built; WO-12 to WO-14 are
+independent pure functions in `src/js/engine/map/site-ui.js`, tested by `v202-ui.test.mjs`.
+
 Every task: change only the file named, only inside the function named. Never touch the
 `import`/`export` lines, `canvas_v10.html`, or another task's function. ES5 only: `var`,
 `function`; no `let`, `const`, arrow functions, classes or template strings. Use only the names listed.
@@ -119,3 +122,74 @@ Done 2026-11-13: the file (with `BIM_NBI_URL` and `bimCityRecs` too), its includ
 ## [ ] WO-09 [Claude] Bridges: `bimNbiFetch`; level decks from NBI clearance in `bimCtxSurface`; Properties rows
 
 ## [ ] WO-10 [Claude] The browser check of the site-context fetch on the Dilworth Park site (`tests/e2e/`)
+
+---
+
+# Part B: the Site and Map interface
+
+## [x] WO-11 [Claude] The geometry: roads follow the ground, level bridge decks, piers to the deck; scaffold `site-ui.js`
+
+Done 2026-11-21 (PR #116, SPEC B1): `bimCtxDense`, `bimCtxDeckProfile`, `bimCtxBridgeEnds` in
+`surroundings-3d.js`, tested in `tests/unit/context-bridges.test.mjs`; `site-ui.js` with its include
+line and `window.__a3dSiteUi`. The part B tests were checked against a reference implementation.
+
+---
+
+## [ ] WO-12 [Cline] `bimCtxCards` in `src/js/engine/map/site-ui.js`
+
+- **Implement:** the Data layers dialog's cards, as SPEC B3 says, with the table's sentences word for word.
+- **It must:**
+  - Return one `{kind, title, say, source, on, count}` per kind `labels` names, in `kinds`' order; `[]` for missing or empty `kinds`.
+  - Set `on` only from a truthy `st.kinds[kind]` (`st` may be null); `count` only from a number in `counts` (which may be null).
+- **Example:** `bimCtxCards(['buildings'], {buildings:'Buildings'}, {kinds:{buildings:true}}, {buildings:36})` returns one card, `on` true, `count` 36, `source` 'OpenStreetMap'.
+- **May use:** nothing outside the file.
+- **Files:** `src/js/engine/map/site-ui.js`, `docs/work-orders/v202/v202-ui.test.mjs`
+- **Budget:** 30
+- **Test:** `node --test --test-name-pattern="WO-12" docs/work-orders/v202/v202-ui.test.mjs`
+- **Done when:** `python3 tools/gate.py check v202 WO-12` passes; then `ship` it.
+
+---
+
+## [ ] WO-13 [Cline] `bimPlaceFacts` in `src/js/engine/map/site-ui.js`
+
+- **Implement:** a context object's place card, as SPEC B3 says: title, kind, the rows in their order, credit and the OpenStreetMap link.
+- **It must:**
+  - Return `null` for a missing `ctx`; treat a missing `ctx.tags` as `{}`.
+  - Add each row only when its value exists, in the order Height, Levels, Address, Use, Width, Deck, Built, Operator, Fetched.
+  - Skip `'yes'` when choosing Use, and turn underscores into spaces.
+- **Example:** a building with `height` 24.5, `heightFrom` 'height', `tags.name` '30th Street Station' gives title '30th Street Station', kind 'Building', first row `['Height','24.5 m (OpenStreetMap height)']`.
+- **May use:** nothing outside the file.
+- **Files:** `src/js/engine/map/site-ui.js`, `docs/work-orders/v202/v202-ui.test.mjs`
+- **Budget:** 45
+- **Test:** `node --test --test-name-pattern="WO-13" docs/work-orders/v202/v202-ui.test.mjs`
+- **Done when:** `python3 tools/gate.py check v202 WO-13` passes; then `ship` it.
+
+---
+
+## [ ] WO-14 [Cline] `bimCompass` in `src/js/engine/map/site-ui.js`
+
+- **Implement:** the compass's needle angle, heading and letter, as SPEC B3 says.
+- **It must:**
+  - Return `null` when `yaw` or `trueNorth` is not finite.
+  - Keep `needle` and `heading` in 0 to under 360, whatever turns `yaw` holds.
+- **Example:** `bimCompass(-Math.PI/2, 0)` returns needle 270, heading 90, letter 'E'.
+- **May use:** `Math` (built in)
+- **Files:** `src/js/engine/map/site-ui.js`, `docs/work-orders/v202/v202-ui.test.mjs`
+- **Budget:** 15
+- **Test:** `node --test --test-name-pattern="WO-14" docs/work-orders/v202/v202-ui.test.mjs`
+- **Done when:** `python3 tools/gate.py check v202 WO-14` passes; then `ship` it.
+
+---
+
+## [ ] WO-15 [Claude] The Site bar in the Site and Map workspace (SPEC B2.1, B2.6)
+
+## [ ] WO-16 [Claude] The Data layers dialog from `bimCtxCards`; Properties > Site Context keeps Remove, LODs and CityJSON (B2.2)
+
+## [ ] WO-17 [Claude] The place card from `bimPlaceFacts`; a bottom sheet on a phone (B2.3)
+
+## [ ] WO-18 [Claude] The map controls: compass from `bimCompass`, 2D / 3D, zoom (B2.4)
+
+## [ ] WO-19 [Claude] A quieter view: context edges off by default, the Views legend folded, view labels on hover (B2.5)
+
+## [ ] WO-20 [Claude] The browser check of the Site and Map workspace at desktop, tablet and phone (`tests/e2e/`)
+

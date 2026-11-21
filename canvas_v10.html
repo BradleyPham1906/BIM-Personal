@@ -43805,6 +43805,28 @@ BIM_IFC_SAVE.model=bimIfcSaveModel;
     }
     return out;
   }
+
+  /* ===== __acad3dV202u: the Site and Map interface (docs/work-orders/v202/SPEC.md, part B) =====
+     What the Site bar, the Data layers dialog, the place card and the compass show, as pure functions;
+     the DOM that draws them is WO-15 to WO-19. */
+
+  /* WO-12: the Data layers dialog's cards, one per kind in kinds' order:
+     {kind, title, say, source, on, count}. st is bimCtxSettings()'s shape, counts the last fetch's
+     {kind:n} (or null); labels the kinds' titles. A kind not in labels is left out. */
+  function bimCtxCards(kinds,labels,st,counts){
+    return null;
+  }
+  /* WO-13: a context object's place card: {title, kind, rows:[[label,value],...], credit, osmUrl}.
+     ctx is the object's o.context, name its o.name. null when ctx is missing. */
+  function bimPlaceFacts(ctx,name){
+    return null;
+  }
+  /* WO-14: the compass: the needle's angle in degrees, 0 to under 360, for the camera's yaw (radians,
+     0 looking down -z, positive turning left) and the project's true north (degrees, clockwise);
+     and its letter, N, NE, E, SE, S, SW, W or NW, for the way the camera faces. NaN in, null out. */
+  function bimCompass(yaw,trueNorth){
+    return null;
+  }
   /* ================= __acad3dV157: the surroundings in 3D =================
      A road, a railway or a runway keeps its centre line, the element; its surface is that
      element's mesh, built here: a strip of its width along the line, on the ground point by point,
@@ -71918,6 +71940,7 @@ function bimRptPlan(families) {
   window.__acad3dV134='datakinds,arcgisquery,wfsgetfeature,geojsonfile,presets,areafilter,maxfeatures,featuresoutsideundo,'+
     'featuressaved,planoverlay,notonpaper,clicktoread,pickorder,parceltoproperty,failuresnamed,datacredit,datapanel,datacommand';
   /* __acad3dV133: site context */
+  window.__a3dSiteUi=function(){return {cards:bimCtxCards,place:bimPlaceFacts,compass:bimCompass};};   /* __acad3dV202u */
   window.__a3dCtxSettings=function(){return bimCtxSettings();};
   window.__a3dCtxSet=function(f,v){return bimCtxSet(f,v);};
   window.__a3dCtxArea=function(){return bimCtxArea();};
