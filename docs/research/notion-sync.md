@@ -76,6 +76,7 @@ Search Notion before creating anything, so nothing is made twice.
 | `docs/research/research-archimap-site-report.md` | `40bcbfcc3a3881d5985acef03d120b1b` |
 | `docs/research/research-program-to-plan.md` (and its folder) | `41acbfcc3a3881efa777e71e7d2182ea` |
 | `docs/research/research-algorithmic-design.md` (and its folder) | `419cbfcc3a388166aaf4f10da9849507` (task: `419cbfcc3a3881178f6cdad201c92900`) |
+| `docs/research/research-physical-world.md` (and its folder) | `41fcbfcc3a388199add3e1ec27affe0c` (tasks V239 to V247: `41fcbfcc3a3881cca911de2d782f45cf`, `41fcbfcc3a388151b408d22885b53ff0`, `41fcbfcc3a3881728e77f8b7fa8b05ac`, `41fcbfcc3a38815bbd28e6cbba672cfd`, `41fcbfcc3a388111929cef26d8755359`, `41fcbfcc3a3881b88a67e5deaff06b74`, `41fcbfcc3a3881f4ba70e657a79cb21d`, `41fcbfcc3a3881d98a30c2eebb8f378d`, `41fcbfcc3a3881768c09c78f830bc894`) |
 | `docs/research/research-alignment.md` | `3fecbfcc3a3881e881cdd2408e75b9a5` |
 | `docs/research/research-animation.md` | `403cbfcc3a388101837ec19cf0e0a894` |
 | `docs/research/research-traffic.md` | `403cbfcc3a388128b93be79356396b92` |
