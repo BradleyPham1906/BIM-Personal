@@ -70,7 +70,7 @@ after each one. Scores are from `../ROUTING.md` (files, logic, understanding, ju
 
 ---
 
-## [ ] WO-06 [Cline] `bimPcPlyHeader(text)`
+## [x] WO-06 [Cline] `bimPcPlyHeader(text)`
 
 - **It must:** SPEC part 3 and SPEC 4 WO-06.
 - **May use:** nothing.

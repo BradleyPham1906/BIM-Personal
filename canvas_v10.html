@@ -45932,6 +45932,51 @@ function bimPcOrigin(h) {
   ];
 }
 
+function bimPcPlyHeader(text) {
+  if (typeof text !== 'string') {
+    return { error: 'not text' };
+  }
+  var lines = text.split('\n');
+  if (lines[0].indexOf('ply') !== 0) {
+    return { error: 'not a PLY header' };
+  }
+  var endIdx = -1;
+  for (var i = 0; i < lines.length; i++) {
+    if (lines[i].indexOf('end_header') === 0) {
+      endIdx = i;
+      break;
+    }
+  }
+  if (endIdx === -1) {
+    return { error: 'not a PLY header' };
+  }
+  var headerEnd = text.indexOf('end_header') + 11;
+  while (headerEnd < text.length && (text.charAt(headerEnd) === '\r' || text.charAt(headerEnd) === '\n')) {
+    headerEnd++;
+  }
+  var format = null, count = 0, props = [], inVertex = false, hasListProp = false, hasVertex = false;
+  for (var i = 1; i < endIdx; i++) {
+    var p = lines[i].replace(/\r$/, '').split(/\s+/);
+    var k = [];
+    for (var j = 0; j < p.length; j++) if (p[j] !== '') k.push(p[j]);
+    if (k.length === 0) continue;
+    if (k[0] === 'comment' || k[0] === 'obj_info') continue;
+    if (k[0] === 'format') { format = k[1]; }
+    else if (k[0] === 'element') {
+      if (k[1] === 'vertex') { inVertex = true; hasVertex = true; count = parseInt(k[2], 10); }
+      else inVertex = false;
+    } else if (k[0] === 'property' && inVertex) {
+      if (k[1] === 'list') { hasListProp = true; }
+      else props.push({ name: k[2], type: k[1] });
+    }
+  }
+  if (hasListProp) return { error: 'a list property on vertices' };
+  if (format === null) return { error: 'format missing not supported' };
+  if (format !== 'ascii' && format !== 'binary_little_endian') return { error: 'format ' + format + ' not supported' };
+  if (!hasVertex) return { error: 'no vertex element' };
+  return { format: format, count: count, props: props, headerBytes: headerEnd };
+}
+
 
   /* ================= __acad3dV191: LOD-D, LOD1.3 and LOD2.2 roofs from LiDAR, the pure part =================
      docs/research/research-notion-v189-roofs.md and docs/work-orders/v191/SPEC.md. Roof planes from LiDAR points: Jacobi
