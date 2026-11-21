@@ -65,7 +65,46 @@ import { a3dToast, objById } from '../bim/csg-booleans.js';
     if(kind==='airports')return t.aeroway==='runway'?45:(t.aeroway==='taxiway'?18:10);
     return 4;
   }
-  /* a strip of width w along pts, its corners mitred; yAt(x,z) the height under each point */
+  /* __acad3dV202b: a line with a point at least every step metres, so a strip follows the ground between
+     OpenStreetMap's points instead of cutting through it or hanging over it */
+  function bimCtxDense(pts,step){
+    var out=[],i,k,m;
+    if(!pts||!pts.length)return out;
+    out.push([pts[0][0],pts[0][1]]);
+    for(i=1;i<pts.length;i++){
+      var a=pts[i-1],b=pts[i],dx=b[0]-a[0],dz=b[1]-a[1],L=Math.sqrt(dx*dx+dz*dz);
+      m=Math.min(400,Math.ceil(L/step));
+      for(k=1;k<m;k++)out.push([a[0]+dx*k/m,a[1]+dz*k/m]);
+      if(L>1e-6)out.push([b[0],b[1]]);
+    }
+    return out;
+  }
+  /* __acad3dV202b: a bridge deck's top at each point of pts. g holds the ground at each point. The deck runs straight
+     between the ground at its two ends; where the way meets another bridge way (openA/openB false) it does not come down,
+     and where it ends (an abutment) it ramps over ramp metres. It is lifted, as one, just enough to clear the ground by
+     clear metres: over a river between high banks it stays level from bank to bank; over flat ground it rises clear. */
+  function bimCtxDeckProfile(pts,g,clear,openA,openB,ramp){
+    var n=pts.length,s=[0],i,L,r,lift=0,out=[];
+    for(i=1;i<n;i++)s.push(s[i-1]+Math.sqrt(Math.pow(pts[i][0]-pts[i-1][0],2)+Math.pow(pts[i][1]-pts[i-1][1],2)));
+    L=s[n-1]||0;r=Math.max(1e-6,Math.min(ramp,L/3));
+    function base(j){return L>1e-6?g[0]+(g[n-1]-g[0])*s[j]/L:g[0];}
+    function up(j){return Math.min(1,openA?s[j]/r:1,openB?(L-s[j])/r:1);}
+    for(i=0;i<n;i++)if(up(i)>0)lift=Math.max(lift,g[i]+clear-base(i));
+    for(i=0;i<n;i++)out.push(Math.max(base(i)+lift*up(i),g[i]+0.05));
+    return out;
+  }
+  /* __acad3dV202b: the ends of bridge ways, by layer: an end shared by two bridge ways is not an abutment */
+  function bimCtxBridgeEnds(feats){
+    var m={};
+    (feats||[]).forEach(function(f){
+      var t=f.tags||{},p=f.line&&f.line.pts;
+      if(!p||p.length<2||!t.bridge||t.bridge==='no')return;
+      [p[0],p[p.length-1]].forEach(function(q){var key=bimCtxEndKey(q,t.layer);m[key]=(m[key]||0)+1;});
+    });
+    return m;
+  }
+  function bimCtxEndKey(q,layer){return Math.round(q[0]*10)+','+Math.round(q[1]*10)+'@'+(parseFloat(layer)||1);}
+  /* a strip of width w along pts, its corners mitred; yAt(x,z,i) the height under point i */
   function bimStripMesh(pts,w,yAt,lift){
     var n=pts.length,v=[],f=[],i,h=w/2,L=[],R=[];
     for(i=0;i<n;i++){
@@ -77,16 +116,17 @@ import { a3dToast, objById } from '../bim/csg-booleans.js';
       if(ln<1e-9){nx=-d1z;nz=d1x;ln=1;}
       nx/=ln;nz/=ln;
       var cs=nx*(-d1z)+nz*d1x,s=h/Math.max(0.35,Math.abs(cs));   /* the mitre, no longer than 1/0.35 of the half width */
-      var y=yAt(b[0],b[1])+lift;
+      var y=yAt(b[0],b[1],i)+lift;
       L.push(v.length);v.push([b[0]+nx*s,y,b[1]+nz*s]);
       R.push(v.length);v.push([b[0]-nx*s,y,b[1]-nz*s]);
     }
     for(i=0;i+1<n;i++)f.push([L[i],L[i+1],R[i+1],R[i]]);
     return {v:v,f:f};
   }
-  /* a bridge: the deck as a slab of thickness, on piers every bimCtxPier() metres */
-  function bimDeckMesh(pts,w,yAt,deck){
-    var top=bimStripMesh(pts,w,function(x,z){return yAt(x,z)+deck;},0),n=top.v.length,v=top.v.slice(),f=[],i,j;
+  /* a bridge: the deck as a slab of thickness, on piers every bimCtxPier() metres. __acad3dV202b: pts is dense,
+     g the ground and d the deck's top at each point (bimCtxDeckProfile); a pier stands from the ground to the deck */
+  function bimDeckMesh(pts,w,g,d){
+    var top=bimStripMesh(pts,w,function(x,z,k){return d[k];},0),n=top.v.length,v=top.v.slice(),f=[],i,j;
     for(i=0;i<n;i++)v.push([top.v[i][0],top.v[i][1]-bimCtxDeckT(),top.v[i][2]]);
     top.f.forEach(function(q){f.push(q);f.push([q[3]+n,q[2]+n,q[1]+n,q[0]+n]);});
     for(i=0;i+2<n;i+=2){f.push([i,i+n,i+2+n,i+2]);f.push([i+3,i+3+n,i+1+n,i+1]);}   /* the two edges */
@@ -95,9 +135,9 @@ import { a3dToast, objById } from '../bim/csg-booleans.js';
     for(i=0;i+1<pts.length;i++){
       var dx=pts[i+1][0]-pts[i][0],dz=pts[i+1][1]-pts[i][1],L=Math.sqrt(dx*dx+dz*dz);
       while(next<=run+L){
-        var tt=(next-run)/L,px=pts[i][0]+dx*tt,pz=pts[i][1]+dz*tt,g=yAt(px,pz),hgt=deck-bimCtxDeckT(),s=Math.min(0.8,w/4),b0=v.length;
-        if(hgt>0.5){
-          for(j=0;j<8;j++)v.push([px+((j&1)?s:-s),g+((j&4)?hgt:0),pz+((j&2)?s:-s)]);
+        var tt=(next-run)/L,px=pts[i][0]+dx*tt,pz=pts[i][1]+dz*tt,gp=g[i]+(g[i+1]-g[i])*tt,hgt=d[i]+(d[i+1]-d[i])*tt-bimCtxDeckT()-gp,s=Math.min(0.8,w/4),b0=v.length;
+        if(hgt>2){
+          for(j=0;j<8;j++)v.push([px+((j&1)?s:-s),gp+((j&4)?hgt:0),pz+((j&2)?s:-s)]);
           f.push([b0,b0+1,b0+3,b0+2],[b0+4,b0+6,b0+7,b0+5],[b0,b0+4,b0+5,b0+1],[b0+2,b0+3,b0+7,b0+6],[b0,b0+2,b0+6,b0+4],[b0+1,b0+5,b0+7,b0+3]);
         }
         next+=bimCtxPier();
@@ -180,7 +220,7 @@ import { a3dToast, objById } from '../bim/csg-booleans.js';
   function bimCtxApply(a,st,osm,ter){
     var k=st.kinds,bad=[],feats=null,trunc=false,i,j,f,o,c,n={buildings:0,roads:0,water:0,green:0,trees:0,rail:0,airports:0,power:0,landuse:0,terrain:0},ids=[],assumed=0,yards=0,nb3={bridges:0,tunnels:0,surfaces:0};
     if(osm){
-      if(osm.ok){var fr=bimCtxFeatures(osm.js,a.org);feats=fr.features;trunc=fr.truncated;}
+      if(osm.ok){var fr=bimCtxFeatures(osm.js,a.org);feats=fr.features;trunc=fr.truncated;nb3.ends=bimCtxBridgeEnds(feats);}
       else bad=bad.concat(osm.msgs&&osm.msgs.length?osm.msgs:[bimCtxErr(bimMapHost(st.overpass),osm.err)]);   /* __acad3dV134d: each server tried */
     }
     if(ter&&!ter.ok)bad.push(bimCtxErr('s3.amazonaws.com',ter.err));
@@ -349,12 +389,15 @@ import { a3dToast, objById } from '../bim/csg-booleans.js';
     var w=bimCtxWidth(k,t);c.width=Math.round(w*100)/100;
     if(k==='roads'){c.use=bimRoadUse(t);o.col=BIM_ROAD_COL[c.use];}
     if(t.tunnel&&t.tunnel!=='no'){c.tunnel=true;o.name=('Tunnel: '+o.name).slice(0,60);nb3.tunnels++;return;}
-    function yAt(x,z){return y0+hAt(x,z);}
+    var dp=bimCtxDense(pts,5),g=dp.map(function(p){return y0+hAt(p[0],p[1]);});   /* __acad3dV202b */
+    if(dp.length<2)return;
     if(t.bridge&&t.bridge!=='no'){
       var ly=parseFloat(t.layer);if(!isFinite(ly)||ly<1)ly=1;
-      c.bridge=true;c.deck=ly*bimCtxDeck();
-      o.mesh=bimDeckMesh(pts,w,yAt,c.deck);o.name=('Bridge: '+o.name).slice(0,60);nb3.bridges++;
-    }else o.mesh=bimStripMesh(pts,w,yAt,k==='rail'?0.08:(k==='airports'?0.03:0.05));
+      var E=nb3.ends||{},oa=(E[bimCtxEndKey(pts[0],t.layer)]||0)<2,ob=(E[bimCtxEndKey(pts[pts.length-1],t.layer)]||0)<2;
+      var d=bimCtxDeckProfile(dp,g,ly*bimCtxDeck(),oa,ob,40);
+      c.bridge=true;c.deck=Math.round((Math.max.apply(null,d.map(function(y,q){return y-g[q];})))*100)/100;   /* the most it stands over the ground */
+      o.mesh=bimDeckMesh(dp,w,g,d);o.name=('Bridge: '+o.name).slice(0,60);nb3.bridges++;
+    }else o.mesh=bimStripMesh(dp,w,function(x,z,q){return g[q];},k==='rail'?0.08:(k==='airports'?0.03:0.05));
     nb3.surfaces++;
   }
   /* an area element's surface: an apron, a helipad, a platform, a land use tint */

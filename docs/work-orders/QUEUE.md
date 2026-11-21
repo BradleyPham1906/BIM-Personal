@@ -9,10 +9,11 @@ The owner's decisions (2026-11-14): for every phase below, all as its research r
 overrule any there). V177's D1 to D4 and That Open's four were answered 2026-11-13. The phases are numbered in one
 sequence, 175c to 247 (228 to 232 are algorithmic design, the owner's thirteen decisions, 2026-11-15; 233 to 238 program to plan, the owner's ten decisions, 2026-11-16; 239 to 247 the physical world, as `research-physical-world.md` recommends, 2026-11-21), in `docs/dev/PIPELINE.md`; there are no "later" rows.
 
-## Ready for Cline, in order (283 tasks)
+## Ready for Cline, in order (286 tasks)
 
 | Phase | What | Tasks | Where | Tests |
 |---|---|---|---|---|
+| v202 | Site context C3: measured heights, ground and bridges; part B, the Site and Map interface (the owner, 2026-11-21: next) | WO-01 to WO-05, WO-12 to WO-14 (8), any order | `v202/TASKS.md` | `v202/v202.test.mjs`, `v202/v202-ui.test.mjs` |
 | v178 | Presentation P3, the report (Site Analysis and DA), styles, export | WO-01 to WO-12 (12) | `v178/TASKS.md` | `v178/v178.test.mjs` |
 | v181 | Interiors I3, circulation and escape routes | WO-01 to WO-05 (5) | `v181/TASKS.md` | `v181/v181.test.mjs` |
 | v182 | Interiors I4, sightlines and views | WO-01 to WO-05 (5) | `v182/TASKS.md` | `v182/v182.test.mjs` |
@@ -28,7 +29,6 @@ sequence, 175c to 247 (228 to 232 are algorithmic design, the owner's thirteen d
 | v192 | LOD-E, facade images rectified onto walls | WO-01 to WO-06 (6) | `v192/TASKS.md` | `v192/v192.test.mjs` |
 | v193 | LOD-F, LOD3 openings on rectified facades | WO-01 to WO-05 (5) | `v193/TASKS.md` | `v193/v193.test.mjs` |
 | v201 | MEP runs, first slice (a checked tree, straight friction only) | WO-01 to WO-07 (7) | `v201/TASKS.md` | `v201/v201.test.mjs` |
-| v202 | Site context C3: measured heights, ground and bridges | WO-01 to WO-05 (5), any order | `v202/TASKS.md` | `v202/v202.test.mjs` |
 | v204 | The Parametric Design Foundation, sketch to Pad to Pocket | WO-01 to WO-04 (4) | `v204/TASKS.md` | `v204/v204.test.mjs` |
 | v205 | LOD-G, Gaussian splats as a backdrop | WO-01 to WO-05 (5) | `v205/TASKS.md` | `v205/v205.test.mjs` |
 | v206 | That Open: the Review view and IFC import (with Hub H3's identity) | WO-01 to WO-07 (7) | `v206/TASKS.md` | `v206/v206.test.mjs` |
