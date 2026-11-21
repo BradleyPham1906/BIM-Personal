@@ -102,6 +102,7 @@ import {
 import {
   BIM_3DEP_URL, BIM_NBI_URL, bimCityHeightPick, bimCityRecs, bimDep3ElevAt, bimDep3Url, bimNbiPick, bimTiffF32
 } from '../map/measured-context.js';
+import { bimCompass, bimCtxCards, bimPlaceFacts } from '../map/site-ui.js';
 import {
   BIM_OVERPASS_MIRRORS, bimCtxAlong, bimCtxCreditHtml, bimCtxFetch, bimCtxRemove, bimCtxWidth, bimRoadUse,
   bimTagMetres
@@ -273,6 +274,7 @@ import { BIM_CMD_MAP, BIM_SHEET_CMDS, BIM_START_CMDS } from '../commands/command
   window.__acad3dV134='datakinds,arcgisquery,wfsgetfeature,geojsonfile,presets,areafilter,maxfeatures,featuresoutsideundo,'+
     'featuressaved,planoverlay,notonpaper,clicktoread,pickorder,parceltoproperty,failuresnamed,datacredit,datapanel,datacommand';
   /* __acad3dV133: site context */
+  window.__a3dSiteUi=function(){return {cards:bimCtxCards,place:bimPlaceFacts,compass:bimCompass};};   /* __acad3dV202u */
   window.__a3dCtxSettings=function(){return bimCtxSettings();};
   window.__a3dCtxSet=function(f,v){return bimCtxSet(f,v);};
   window.__a3dCtxArea=function(){return bimCtxArea();};
