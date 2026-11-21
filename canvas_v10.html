@@ -45870,6 +45870,18 @@ function bimPcLasHeader(dv) {
   };
 }
 
+function bimPcStep(count, max) {
+  if (typeof max === 'number' && max >= 1) {
+    max = Math.floor(max);
+  } else {
+    max = count;
+  }
+  if (count <= max) {
+    return 1;
+  }
+  return Math.ceil(count / max);
+}
+
 
   /* ================= __acad3dV191: LOD-D, LOD1.3 and LOD2.2 roofs from LiDAR, the pure part =================
      docs/research/research-notion-v189-roofs.md and docs/work-orders/v191/SPEC.md. Roof planes from LiDAR points: Jacobi

@@ -74,3 +74,15 @@ function bimPcLasHeader(dv) {
     max: max
   };
 }
+
+function bimPcStep(count, max) {
+  if (typeof max === 'number' && max >= 1) {
+    max = Math.floor(max);
+  } else {
+    max = count;
+  }
+  if (count <= max) {
+    return 1;
+  }
+  return Math.ceil(count / max);
+}

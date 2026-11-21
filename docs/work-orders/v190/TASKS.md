@@ -40,7 +40,7 @@ after each one. Scores are from `../ROUTING.md` (files, logic, understanding, ju
 
 ---
 
-## [ ] WO-03 [Cline] `bimPcStep(count, max)`
+## [x] WO-03 [Cline] `bimPcStep(count, max)`
 
 - **It must:** SPEC 4 WO-03.
 - **May use:** nothing.
