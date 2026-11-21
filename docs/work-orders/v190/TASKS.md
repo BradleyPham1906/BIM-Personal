@@ -120,7 +120,7 @@ after each one. Scores are from `../ROUTING.md` (files, logic, understanding, ju
 
 ---
 
-## [ ] WO-11 [Cline] `bimPcGround(cloud, cell)`
+## [x] WO-11 [Cline] `bimPcGround(cloud, cell)`
 
 - **It must:** SPEC 4 WO-11.
 - **May use:** nothing.

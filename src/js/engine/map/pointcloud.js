@@ -309,3 +309,34 @@ function bimPcHeightColour(z, zmin, zmax) {
     Math.round(255 * (1 - t) * 0.5)
   ];
 }
+
+function bimPcGround(cloud, cell) {
+  if (!cloud.cls) return [];
+  if (typeof cell !== 'number' || cell <= 0) cell = 1;
+  var seen = {};
+  var order = [];
+  var best = {};
+  for (var i = 0; i < cloud.n; i++) {
+    if (cloud.cls[i] !== 2) continue;
+    var cx = Math.floor(cloud.xyz[i * 3] / cell);
+    var cy = Math.floor(cloud.xyz[i * 3 + 1] / cell);
+    var key = cx + ',' + cy;
+    if (!(key in seen)) {
+      seen[key] = true;
+      order.push(key);
+      best[key] = cloud.xyz[i * 3 + 2];
+      best['x' + key] = cloud.xyz[i * 3];
+      best['y' + key] = cloud.xyz[i * 3 + 1];
+    } else if (cloud.xyz[i * 3 + 2] < best[key]) {
+      best[key] = cloud.xyz[i * 3 + 2];
+      best['x' + key] = cloud.xyz[i * 3];
+      best['y' + key] = cloud.xyz[i * 3 + 1];
+    }
+  }
+  var res = [];
+  for (var i = 0; i < order.length; i++) {
+    var key = order[i];
+    res.push([best['x' + key], best['y' + key], best[key]]);
+  }
+  return res;
+}
