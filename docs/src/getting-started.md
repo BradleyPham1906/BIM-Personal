@@ -132,7 +132,19 @@ overcast, low sun, white studio), Quality, Ground and Edges are beside Display. 
 image work as in the shaded view; `RENDER` again goes back to it. The view is drawn by three.js, fetched the
 first time it is asked for (about 750 KB). With the map on, the rendered view shows it on the ground and
 draped on a terrain, in the sun and with the model's shadows, from the same tiles as the shaded view. Sheets
-and Presentation are not rendered yet.
+and Presentation are not rendered yet. Steel and aluminium take a metal finish, and a window's frame a smooth one.
+
+**Walking through the model.** `WALK`, or View → Walk, puts you in the model as a person, at eye height, standing
+on the floor below the middle of the view, in whatever style the view is in (shaded or rendered). W, A, S and D
+(or the arrows) walk, the mouse looks (click the view to hold the pointer; Esc lets it go), Shift runs and Space
+jumps. Walls and doors stop you; you climb stairs whose risers a code allows (up to the IRC's 196 mm and its
+9.5 mm variation) and ramps, and not a higher curb or a slope steeper than 35 degrees. **V** switches between your
+own eyes and a view from behind your figure; **F** flies (Space rises, C sinks, no gravity); hold **Alt**, or turn
+on Through walls, to pass through anything. The bar at the top of the view has the same switches and Leave; Esc
+leaves too, and the camera goes back where it was. On a phone or tablet a joystick under the left thumb walks and
+a drag anywhere else looks. Properties → View → Walker chooses who walks: the mean adult, a man, a woman, a child,
+your own height, or a wheelchair user, who climbs no step and no slope steeper than 1:12. The physics (Jolt) is
+fetched the first time you walk (about 4 MB).
 
 **Colours by kind.** In View (Properties with nothing selected), Colours offers the project's own colours, Study
 model or Natural. With a palette, roofs, walls, ground, water, parks, trees, roads, glass and BIM and IFC elements

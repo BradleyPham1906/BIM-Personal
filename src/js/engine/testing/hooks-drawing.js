@@ -73,7 +73,8 @@ import {
   BIM_SK_PAL, bimSkCol, bimSkKey, bimSkPalette, bimSkRoofy, bimSkSet
 } from '../render/surface-kinds.js';
 import {
-  A3D_CULL, A3D_GL_BATCH, A3D_SCENE, bimSceneRelease, bimSceneSync, setA3D_CULL, setA3D_GL_BATCH
+  A3D_CULL, A3D_GL_BATCH, A3D_SCENE, bimSceneExtras, bimSceneRelease, bimSceneSync, setA3D_CULL,
+  setA3D_GL_BATCH
 } from '../render/gpu-batches.js';
 import { A3D_PICK_GPU, setA3D_PICK_GPU } from '../render/gpu-pick.js';
 import {
@@ -97,6 +98,8 @@ import {
 } from '../render/webgpu.js';
 import { A3D_MAP, bimMapDrop, bimMapTileCorners, bimMapTileUrl } from '../map/map-tiles.js';
 import { bimDrapeTiles, bimTerrainMeshData, paint } from '../map/terrain-3d.js';
+import { bimWalkPhysChar } from '../walk/walk-physics.js';
+import { A3D_WALK, bimWalkCam, bimWalkEnter, bimWalkLeave } from '../walk/walk-mode.js';
 import { bimAnnotGripPoints } from '../annotation/annotation-grips.js';
 import { bimShortcutGroups } from '../ui/shortcuts.js';
 import { bimGizmoWantsKey } from '../gizmo/gizmo-handles.js';
@@ -435,6 +438,17 @@ import { cvH, cvW } from '../ui/canvas-size.js';
   window.__a3dGltf={importBuffer:bimGltfImportBuffer,exportBytes:bimGltfExportBytes,weld:bimGltfWeld,edges:bimGltfFeatureEdges,
     gather:bimGltfGather,parts:bimGltfParts,why:bimGltfWhy,hex:bimGltfHex,elements:bimGltfElements,arrays:bimGltfArrays,limits:BIM_GLTF};
   window.__acad3dV194='rendered,threejs,passes,sky,ground,edges,terrain,saveimage';
+  /* __acad3dV203: Walk. The keys and the pointer are the page's own (a test sends real events); these read the walk and
+     put the walker somewhere to start a case */
+  window.__acad3dV203='walk,jolt,firstperson,thirdperson,fly,ghost,joystick,rvmoving';
+  window.__a3dWalk={
+    state:function(){var W=A3D_WALK;return {on:W.on,st:W.st,err:W.err,mode:W.mode,view:W.view,ghost:W.ghost,p:W.p.slice(),yaw:W.yaw,pitch:W.pitch,
+      cap:W.cap,held:Object.keys(W.held),joy:W.joy,tris:W.phys?W.phys.tris:0,extra:bimSceneExtras().map(function(o){return o.id;}),
+      cam:JSON.parse(JSON.stringify(A3D.cam)),flat:!!A3D.flat};},
+    place:function(p,yaw){var W=A3D_WALK;if(!W.on)return false;W.p=[p[0],p[1],p[2]];if(typeof yaw==='number'){W.yaw=yaw;W.pitch=0;}
+      bimWalkPhysChar(W.phys,W.cap,W.p);bimWalkCam();return true;},
+    enter:function(){return bimWalkEnter();},leave:function(){return bimWalkLeave();}
+  };
   window.__a3dRv={halton:bimRvHalton,unit:bimRvUnit,cross:bimRvCross,basis:bimRvBasis,hemisphere:bimRvHemisphere,sunDisc:bimRvSunDisc,
     farPlane:bimRvFarPlane,jitter:bimRvJitter,lin:bimRvLin,rowColour:bimRvRowColour,chunkSig:bimRvChunkSig,chunkArrays:bimRvChunkArrays,
     terrainItem:bimRvTerrainItem,terrainArrays:bimRvTerrainArrays,boxAdd:bimRvBoxAdd,sources:bimRvSources,load:bimRvLoad,drop:bimRvDrop,

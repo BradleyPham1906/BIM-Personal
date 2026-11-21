@@ -65,6 +65,7 @@ import { bimCtxFetch, bimCtxRemove } from '../map/surroundings-3d.js';
 import { bimLodCheck } from '../map/lod-solids.js';
 import { bimCityJsonExport, bimCityJsonPick } from '../map/cityjson.js';
 import { paint } from '../map/terrain-3d.js';
+import { bimWalkCommand } from '../walk/walk-mode.js';
 import { bimSetSnap, bimSyncSnapPill } from '../ui/shortcuts.js';
 import { bimGizmoCommand } from '../gizmo/gizmo-handles.js';
 import { bimPressPullCommand } from '../editing/faces-push-pull.js';
@@ -144,6 +145,7 @@ import { bimOpenToolsPanel } from '../ui/discipline-tabs.js';
     comparebranches:function(){setA3D_BR_CMP(true);bimHistReveal(false);},
     graphics:function(){bimGraphicsCommand();},   /* __acad3dV153 */
     render:function(){bimRvCommand();},   /* __acad3dV194 */
+    walk:function(){bimWalkCommand();},   /* __acad3dV203 */
     benchmark:function(){bimBenchmark();},   /* __acad3dV155 */
     cutfill:function(){bimCutFillCommand();},
     cutfillmap:function(){bimCutFillMapCommand();},

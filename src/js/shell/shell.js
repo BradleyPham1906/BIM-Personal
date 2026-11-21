@@ -64,6 +64,7 @@
     ['BRANCH',['NEWBRANCH','DESIGNOPTION','OPTION'],'branch','Start a design option: a branch of the history, switched to and compared with the others'],   /* __acad3dV151 */
     ['BENCHMARK',['BENCH','FRAMETIME','SPEEDTEST'],'benchmark','Time this device drawing 5,000 and 20,000 elements, with WebGPU and with WebGL; the model is put back as it was'],   /* __acad3dV155 */
     ['GRAPHICS',['RENDERER','WEBGPU','WEBGL'],'graphics','Draw 3D with WebGPU where the browser has it, or always with WebGL in this browser'],   /* __acad3dV153 */
+    ['WALK',['WALKTHROUGH','FIRSTPERSON','WALKMODE'],'walk','Walk through the model as a person: walls stop you, stairs a code allows you climb; V third person, F fly, Esc to leave'],   /* __acad3dV203 */
     ['RENDER',['RENDERED','REALISTIC','VISUALSTYLE','DAYLIGHT'],'render','The model rendered in daylight: materials, the sun and the sky, soft shadows; again for the shaded view'],   /* __acad3dV194 */
     ['MERGE',['MERGEBRANCH'],'merge','Merge another branch into this one, element by element, with conflicts shown side by side'],
     ['COMPAREBRANCHES',['COMPAREOPTIONS','OPTIONS'],'comparebranches','Each branch\'s numbers side by side: walls, rooms, areas, cut and fill'],

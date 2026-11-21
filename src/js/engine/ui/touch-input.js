@@ -13,6 +13,7 @@ import { bimFileNotWork, bimFileOpen, bimFileSave } from '../io/file-save.js';
 import { bimClbKey } from '../site-analysis/climate-board.js';
 import { refreshProps } from '../site-analysis/panel.js';
 import { paint } from '../map/terrain-3d.js';
+import { A3D_WALK } from '../walk/walk-mode.js';
 import { bimCloseRailPop } from './shortcuts.js';
 import { bimCancelZoomWindow } from './zoom-window-save-image.js';
 import { bimCloseGizmoMenu, bimGizmoTypeKey, bimTypingDrag } from '../gizmo/gizmo-handles.js';
@@ -154,6 +155,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
   }
   function onKey(ev){
     if(!A3D.on)return;
+    if(A3D_WALK.on)return;   /* __acad3dV203: walking, the keys are the walk's (walk/walk-controls.js): Space is a jump, not the last command again */
     /* __acad3dV124: a drag from the library is the innermost thing Escape can end */
     if(ev.key==='Escape'&&bimAssetDragCancel()){a3dToast('Nothing placed');ev.preventDefault();ev.stopImmediatePropagation();return;}
     if(A3D_SLIDESHOW.on){bimSlideshowKey(ev);return;}   /* __acad3dV122: nothing typed reaches the model */
@@ -453,6 +455,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
     'bim:linkifc':ric('<path d="M10 13a4 4 0 0 0 6 .6l2-2a4 4 0 0 0-5.6-5.6l-1 1"/><path d="M14 11a4 4 0 0 0-6-.6l-2 2a4 4 0 0 0 5.6 5.6l1-1"/>'),
     'bim:linkcad':ric('<rect x="3" y="5" width="18" height="14" rx="1"/><path d="M7 15l4-6 3 4 2-2 2 4"/>'),
     'bim:importcad':ric('<path d="M4 15v4h16v-4"/><path d="M12 4v10M8 10l4 4 4-4"/><rect x="3" y="2" width="18" height="3"/>'),
+    'v:walk':ric('<circle cx="12" cy="4.5" r="2"/><path d="M12 7v6l-3 7M12 13l3 7M8 11l4-3 4 3"/>'),   /* __acad3dV203 */
     'bim:saveview':ric('<rect x="3" y="5" width="18" height="14" rx="1"/><path d="M8 5v6h8V5"/><circle cx="12" cy="15" r="2"/>'),
     'bim:sheet':ric('<rect x="4" y="3" width="16" height="18"/><path d="M7 7h10M7 11h10M14 15h3M14 18h3"/>'),
     'bim:titleblock':ric('<rect x="3" y="4" width="18" height="16"/><path d="M3 15h18M14 15v5M3 15V4"/>'),

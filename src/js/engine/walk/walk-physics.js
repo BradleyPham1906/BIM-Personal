@@ -10,7 +10,12 @@
      The walker is Jolt's CharacterVirtual moved by ExtendedUpdate (stairs up to the capsule's step, held to the floor
      0.3 m down, no slope steeper than the capsule's). Jolt's objects are not garbage collected: what the adapter makes
      once (vectors, filters) is kept on W and destroyed by bimWalkPhysFree; what it makes per call is destroyed before
-     the call returns. Layers: 0 the model (static), 1 the walker (moving); the walker collides with both. */
+     the call returns. Layers: 0 the model (static), 1 the walker (moving); the walker collides with both.
+     The walker is a cylinder, not a capsule (2026-11-21, V203 C-08's browser check): once a stair step lifts a capsule,
+     an edge below its sphere's centre reads as a gentle slope, and it rides up it, so a capsule of radius 0.23 m climbs
+     any edge up to its step plus its radius (a 0.25 m and a 0.40 m curb, on a floor that is a box). A cylinder's flat
+     foot meets that edge with its side: both curbs refused, a stair of 0.18 m risers and a 1:12 ramp still climbed, a
+     40 degree slope refused (docs/research/experiments/w1-walk/e04-cylinder.mjs). */
   var BIM_WALK_G=9.81,BIM_WALK_JUMP=3.5,BIM_WALK_STICK=0.3;   /* m/s2; m/s, about 0.6 m up; m */
 
   /* a world: the interface, the filters and the vectors reused every frame */
@@ -83,9 +88,10 @@
     bimWalkPhysBuild(W);
     return true;
   }
-  /* the walker: a capsule (bimWalkCapsule's {half, r, step, slope}) standing with its feet at p */
+  /* the walker: a cylinder the capsule's size (bimWalkCapsule's {half, r, step, slope}: 2 (half + r) tall, r round),
+     standing with its feet at p */
   function bimWalkPhysChar(W,cap,p){
-    var J=W.J,cs=new J.CharacterVirtualSettings(),inner=new J.CapsuleShapeSettings(cap.half,cap.r),
+    var J=W.J,cs=new J.CharacterVirtualSettings(),inner=new J.CylinderShapeSettings(cap.half+cap.r,cap.r,0.05),
       off=new J.Vec3(0,cap.half+cap.r,0),up=new J.Vec3(0,1,0),rot,sr,pl,a;
     if(W.ch)bimWalkPhysCharFree(W);
     bimWalkPhysBuild(W);
@@ -151,3 +157,4 @@
     [W.bpf,W.olf,W.bf,W.sf,W.vel,W.g,W.g0,W.at,W.rs].forEach(function(o){J.destroy(o);});
     J.destroy(W.ji);W.ji=W.ps=W.bi=null;
   }
+export { bimWalkPhys, bimWalkPhysChar, bimWalkPhysFree, bimWalkPhysRay, bimWalkPhysStep, bimWalkPhysSync };

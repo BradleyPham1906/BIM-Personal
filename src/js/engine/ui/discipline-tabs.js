@@ -63,7 +63,7 @@ import { bimLoadUIPanelPrefs, bimSaveUIPanelPrefs } from './build-ui.js';
       {t:'Create',big:[
         {act:'v:iso',label:'3D View',menu:[['v:iso','Default 3D View'],['v:home','Home'],['v:fit','Fit to Model']]},
         {act:'bim:section',label:'Section'}
-      ],small:['v:top','v:front','v:right','bim:saveview']},
+      ],small:['v:top','v:front','v:right','bim:saveview','v:walk']},
       {t:'Section',small:['m:exitsection','m:flipsection']},
       {t:'Sheet Composition',small:['bim:sheet','bim:titleblock']},
       {t:'Windows',small:['bim:uipanels']}
@@ -167,7 +167,7 @@ import { bimLoadUIPanelPrefs, bimSaveUIPanelPrefs } from './build-ui.js';
       'bim:tagroom':'Tag Room','bim:tagallrooms':'Tag All Rooms','bim:tagcat':'Tag by Category','bim:level':'Level','bim:grid':'Grid',
       'bim:beam':'Beam','bim:analyze':'Analyze','bim:truss':'Truss','bim:brace':'Brace','bim:foundwall':'Wall Foundation','bim:footing':'Isolated Footing','bim:property':'Property Line','bim:propshape':'Property from Shape','bim:truenorth':'True North','bim:alignment':'Alignment','bim:usage':'Usage','bim:usages':'Usages','bim:map':'Map','bim:findaddress':'Find Address','bim:geoimport':'Import GeoJSON','bim:context':'Site Context','bim:datalayers':'Data Layers','m:exportgeojson':'GeoJSON',
       'bim:foundslab':'Foundation Slab','bim:rebar':'Rebar','bim:linkifc':'Link IFC','bim:linkcad':'Link CAD',
-      'bim:importcad':'Import CAD','bim:saveview':'Save View','bim:sheet':'Sheet','bim:titleblock':'Title Block',
+      'bim:importcad':'Import CAD','bim:saveview':'Save View','v:walk':'Walk','bim:sheet':'Sheet','bim:titleblock':'Title Block',
       'bim:uipanels':'User Interface','bim:trim':'Trim','bim:offset':'Offset','bim:align':'Align',
       'bim:layers':'Layers','bim:levels':'Levels','bim:classification':'Classifications','bim:units':'Project Units','bim:projinfo':'Project Info',
       'bim:purge':'Purge Unused','bim:mergewalls':'Merge Walls','bim:checkmodel':'Check Model',

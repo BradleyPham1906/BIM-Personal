@@ -1,4 +1,5 @@
 import { faceNormal } from '../core/mesh-primitives.js';
+import { A3D_WALK } from '../walk/walk-mode.js';
 
   // ---- __acad3dV27: WebGL renderer. The canvas-2D path transformed every vertex, sorted every
   // polygon by depth, and issued one ctx.fill() PER FACE, every frame -- measured at ~16fps by
@@ -30,7 +31,7 @@ import { faceNormal } from '../core/mesh-primitives.js';
     ]);
   }
   function bimGlProjMatrix(W,H,flat,camDist){
-    var near=camDist>1000?camDist/2000:0.5,far=Math.max(4000,camDist*8);   /* __acad3dV133e: the view's own depth */
+    var near=camDist>1000?camDist/2000:(A3D_WALK.on?0.05:0.5),far=Math.max(4000,camDist*8);   /* __acad3dV133e: the view's own depth; __acad3dV203: 5 cm while walking, so a wall at arm's length is drawn */
     if(flat){
       var k=H*1.2/Math.max(camDist,0.5);
       return new Float32Array([

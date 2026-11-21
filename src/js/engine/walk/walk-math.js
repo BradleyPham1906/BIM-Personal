@@ -112,3 +112,7 @@ function bimWalkKeys(h, j) {
     ghost = !!(h.AltLeft || h.AltRight);
     return {f: f, s: s, run: run, up: up, ghost: ghost};
 }
+export {
+  bimWalkCamFirst, bimWalkCamThird, bimWalkCapsule, bimWalkJoy, bimWalkKeys, bimWalkLook, bimWalkMove,
+  bimWalkStepUp
+};

@@ -662,9 +662,9 @@ import { a3dToast, objById } from '../bim/csg-booleans.js';
     nI.focus();nI.select();
   }
 export {
-  BIM_ENT, bimAssetThumb, bimCreateFamilyInstance, bimEntBare, bimEntBody, bimEntCrownRatio, bimEntDrawTurns,
-  bimEntFrame, bimEntInLeaf, bimEntLeafOf, bimEntLib, bimEntPlace, bimEntPropSet, bimEntPropsHtml,
-  bimEntRefit, bimEntSeason, bimEntTreeMesh, bimEntTreeSize, bimEntTurns, bimEntVeh, bimEntVehMesh,
-  bimGuessImportUnit, bimImportFamilyFile, bimImportModelMesh, bimMeshThumb, bimRecsPlanLines, bimRecsThumb,
-  openSaveAsFamilyDlg
+  BIM_ENT, bimAssetThumb, bimCreateFamilyInstance, bimEntBare, bimEntBody, bimEntChairMesh, bimEntCrownRatio,
+  bimEntDrawTurns, bimEntFrame, bimEntInLeaf, bimEntLeafOf, bimEntLib, bimEntPersonMesh, bimEntPlace,
+  bimEntPropSet, bimEntPropsHtml, bimEntRefit, bimEntSeason, bimEntTreeMesh, bimEntTreeSize, bimEntTurns,
+  bimEntVeh, bimEntVehMesh, bimGuessImportUnit, bimImportFamilyFile, bimImportModelMesh, bimMeshThumb,
+  bimRecsPlanLines, bimRecsThumb, openSaveAsFamilyDlg
 };

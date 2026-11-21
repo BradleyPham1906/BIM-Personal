@@ -29,6 +29,7 @@ import { bimIfcExport } from '../io/ifcos-worker.js';
 import { openPadDlg } from '../io/import-entry.js';
 import { bimCtxFetch } from '../map/surroundings-3d.js';
 import { paint } from '../map/terrain-3d.js';
+import { bimWalkCommand } from '../walk/walk-mode.js';
 import { A3D_MODKEY } from './shortcuts.js';
 import { bimPressPullCommand } from '../editing/faces-push-pull.js';
 import { startConstraintTool } from '../drawing/sketch-constraints.js';
@@ -246,6 +247,7 @@ import { BIM_SHEET_ACTS } from '../commands/command-map.js';
     if(act==='bim:famimport'){var ffi=document.getElementById('a3d-famfilein');if(ffi){ffi.value='';ffi.click();}return;}
     if(act==='bim:linkifc'||act==='bim:importcad'){var fi2=document.getElementById('a3d-filein');if(fi2){fi2.value='';fi2.click();}return;}
     if(act==='bim:saveview'){bimSaveCurrentView();return;}
+    if(act==='v:walk'){bimWalkCommand();return;}   /* __acad3dV203 */
     if(act==='bim:sheet'){if(A3D.sheets.length){bimActivateView('sheet',A3D.activeSheetId&&bimSheetById(A3D.activeSheetId)?A3D.activeSheetId:A3D.sheets[0].id);}else{bimOpenNewSheetDlg();}return;}   /* __acad3dV116 */
     if(act==='bim:titleblock'){bimOpenTitleBlockDlg();return;}
     if(act==='bim:level'){if(typeof openAddLevelDlg==='function')openAddLevelDlg();else a3dToast('Add a level from the Project Browser');return;}

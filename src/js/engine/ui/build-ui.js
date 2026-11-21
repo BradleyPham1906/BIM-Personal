@@ -64,6 +64,7 @@ import { bimSkSet } from '../render/surface-kinds.js';
 import { bimRvProp } from '../render/rendered-view.js';
 import { bimFindSearch } from '../map/find-open-data.js';
 import { paint } from '../map/terrain-3d.js';
+import { bimWalkProp } from '../walk/walk-mode.js';
 import { bimCloseGizmoMenu } from '../gizmo/gizmo-handles.js';
 import { bimFaceDblClick, bimPrimBase } from '../editing/faces-push-pull.js';
 import { bimDeleteSketchConstraint } from '../drawing/sketch-constraints.js';
@@ -932,7 +933,8 @@ import { size } from './canvas-size.js';
         if(mk==='truenorth'){bimSetTrueNorth(mv);return;}   /* __acad3dV103 */
         if(mk==='sunlat'||mk==='sunlon'||mk==='suntz'||mk==='sundate'||mk==='suntime'||mk==='sundst'){bimSetSun(mk.slice(3),mv);return;}   /* __acad3dV107; __acad3dV171d: sundst */
         if(mk==='colours'){bimSkSet(mv);refreshProps();return;}   /* __acad3dV197 */
-        if(mk==='rendered'||mk.indexOf('rv')===0){bimRvProp(mk,mv);return;}   /* __acad3dV194: this browser's display, not the project's */
+        if(mk==='rendered'||mk.indexOf('rv')===0){bimRvProp(mk,mv);return;}
+        if(mk.indexOf('walk')===0){bimWalkProp(mk,mv);return;}   /* __acad3dV203: this browser's walker, not the project's */   /* __acad3dV194: this browser's display, not the project's */
         if(mk==='project'){A3D.titleBlock.project=mv;}
         else if(mk==='client'){A3D.titleBlock.client=mv;}
         else if(mk==='site'){updateSite('name',mv);}
