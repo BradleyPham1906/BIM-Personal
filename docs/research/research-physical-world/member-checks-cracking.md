@@ -412,3 +412,12 @@ can be filled from this note at level S).
 | RISA-3D Results View Settings | https://help.risa.com/risahelp/risa3d/Content/GraphicViewSettings/ResultsViewSettings-Members.htm | colour basis | P |
 | PyNite README | https://raw.githubusercontent.com/JWock82/Pynite/main/README.md | scope | P |
 | Refused or unreachable | aisc.org (403), xe.berkeley.edu (502), support.tekla.com / help.trimble.com (202, 404), web.wiki.csiamerica.com (202), awc.org (403), concrete.org store (tunnel closed) | - | - |
+
+## After the independent check (2026-11-21)
+
+`independent-check.md` re-derived M1 to M8; every number in part 6 matches. Two notes:
+
+- The psi-form Vc (79.7 kN) differs from the SI one (78.8 kN) mainly through the size factor: 0.8495 with
+  d in inches against 0.8452 with d in mm. Vc stays out of the code (its SI coefficients are U).
+- `member_checks.py` labels the Lb = 8 m case "elastic LTB", but 8 m is below Lr = 9.63 m: it is inelastic
+  (F2-2). The table in part 6 is right; the label is a slip.

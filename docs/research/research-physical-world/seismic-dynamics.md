@@ -511,3 +511,14 @@ All read 2026-11-21.
 | R24 | Univ. of Iowa 58:153 lecture 16 | https://user.engineering.uiowa.edu/~sxiao/class/058-153/lecture-16.pdf | stability statements (equations are images) | S |
 | R25 | A. K. Chopra, Dynamics of Structures (Table 5.4.2, Example 5.3, Table 16.3.3) | not available here | from memory, checked by computation | U |
 | R26 | USGS Open-File Report 87-672 (El Centro accelerograph, 1932) | https://pubs.usgs.gov/of/1987/0672/report.pdf | search pointer only | U |
+
+## After the independent check (2026-11-21)
+
+`independent-check.md` re-read S1 to S10. Changes to this note:
+
+- **Steel SMF Cd 5.5 moves from U to S:** an ATC 154 design report by AISC, designed to ASCE 7-22,
+  gives R 8, Omega0 3, Cd 5.5 (femap2343.atcouncil.org).
+- **Equation numbers are not settled:** FEMA P-2192 cites Ta as 7-22 Eq. 12.8-7 and Cvx as 12.8-12, this
+  note 12.8-8 and 12.8-13. They stay out of the app's labels and the registry until the text is read.
+- S2 (methods 1 and 2), S10 (the USGS service, re-tested: keyless, HTTP 200 errors, OPTIONS 405, the
+  cached copy without CORS) confirmed as written.

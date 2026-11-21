@@ -448,3 +448,17 @@ Imperial cross-check (ENERCALC, 7-22): Lo 80 psf, KLL 4, AT 570 ft2, one floor: 
 | ibuilder/massing, services/api/src/aec_api/loads.py (MIT) | https://raw.githubusercontent.com/ibuilder/massing/HEAD/services/api/src/aec_api/loads.py | whole file | P (its code) |
 | clay-good/anvilate, src/anvilate/analysis/building_loads.py (MIT) | https://raw.githubusercontent.com/clay-good/anvilate/HEAD/src/anvilate/analysis/building_loads.py | wind and LLR functions | P (its code) |
 | Pointers only (search summaries, not sources) | GAF and Carlisle blogs, Dlubal, Engineers Edge, eng-tips, scribd copies, Penn State theses | | U |
+
+## After the independent check (2026-11-21)
+
+`independent-check.md` re-read the sources behind W1 to W7 and L1, L2. Changes to this note:
+
+- **Exposure D (H7 reversed).** Ghosh's deck, slide 145, prints the ASCE 7-22 Exposure D column, and it
+  equals the 7-22 formula to rounding in all 22 rows (1.04 at 0 to 15 ft, 1.44 at 100 ft, 1.90 at 500 ft).
+  The ICC deck's D column is the unchanged 7-16 one. So the formula and the 7-22 table agree; owner
+  decision 2 above is no longer needed.
+- **Ke's formula is U** (one copy, the Oasis code, plus a fit to a 7-16 table; SPRI's slide says Ke comes
+  from "interpolation or another formula"). The code does not use it: Ke = 1.0, always permitted, or the
+  user's value.
+- **Counter-evidence recorded:** SPRI's 2023 slide still writes the 7-22 q_z with Kd inside it. The
+  pressure p is the same either way; the code follows the 7-22 placement.

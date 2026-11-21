@@ -503,3 +503,12 @@ All read 2026-11-21.
 | ECCC engineering climate IDF | https://collaboration.cmc.ec.gc.ca/cmc/climate/Engineer_Climate/IDF/ | directory listing, headers | P (access only) |
 | BoM design rainfalls | http://www.bom.gov.au/water/designRainfalls/revised-ifd/ | refused (403) | U |
 | Efficiency of DR methods for membranes, SN Appl. Sci. 2019 | https://link.springer.com/article/10.1007/s42452-019-1529-6 | script got a 3 KB stub; seen as a search summary | U |
+
+## After the independent check (2026-11-21)
+
+`independent-check.md` re-read F1 to F6. One addition:
+
+- Oasys GSA states its fictitious-mass rule: twice the sum of the translational stiffness of the connected
+  elements. It scales differently from Barnes's lam dt^2/2 sum k; both are recorded. The app's work order
+  uses half the sum of k (Barnes with lam 1, dt 1), which the tests show converging in 81 iterations. The
+  kinetic-damping position correction stays U for its attribution (derived and measured here).
