@@ -90,7 +90,7 @@ after each one. Scores are from `../ROUTING.md` (files, logic, understanding, ju
 
 ---
 
-## [ ] WO-08 [Cline] `bimPcPlyPoints(bytes, h, max, origin)`
+## [x] WO-08 [Cline] `bimPcPlyPoints(bytes, h, max, origin)`
 
 - **It must:** SPEC 4 WO-08: ASCII by lines, binary by a fixed stride; sampled and rebased as WO-04.
 - **May use:** `bimPcStep` (WO-03), `bimPcPlyRead` (WO-07), `BIM_PC_PLYSIZE` (WO-07).

@@ -46002,6 +46002,86 @@ function bimPcPlyRead(dv, at, type) {
   return dv[m](at, true);
 }
 
+function bimPcPlyPoints(bytes, h, max, origin) {
+  var xi = -1, yi = -1, zi = -1, ri = -1, gi = -1, bi = -1;
+  for (var i = 0; i < h.props.length; i++) {
+    var nm = h.props[i].name;
+    if (nm === 'x') xi = i;
+    else if (nm === 'y') yi = i;
+    else if (nm === 'z') zi = i;
+    else if (nm === 'red') ri = i;
+    else if (nm === 'green') gi = i;
+    else if (nm === 'blue') bi = i;
+  }
+  if (xi < 0 || yi < 0 || zi < 0) return { error: 'no x, y, z' };
+  var hasRgb = ri >= 0 && gi >= 0 && bi >= 0;
+  var step = bimPcStep(h.count, max);
+  var n = Math.ceil(h.count / step);
+  var xyz = new Float32Array(n * 3);
+  var rgb = hasRgb ? new Uint8Array(n * 3) : null;
+  if (origin === null || origin === undefined) origin = [0, 0, 0];
+  var M = {
+    char: 'getInt8', int8: 'getInt8',
+    uchar: 'getUint8', uint8: 'getUint8',
+    short: 'getInt16', int16: 'getInt16',
+    ushort: 'getUint16', uint16: 'getUint16',
+    int: 'getInt32', int32: 'getInt32',
+    uint: 'getUint32', uint32: 'getUint32',
+    float: 'getFloat32', float32: 'getFloat32',
+    double: 'getFloat64', float64: 'getFloat64'
+  };
+  var offAt = function (pos) {
+    var o = 0;
+    for (var k = 0; k < pos; k++) o += BIM_PC_PLYSIZE[h.props[k].type];
+    return o;
+  };
+  if (h.format === 'ascii') {
+    var text = new TextDecoder().decode(bytes).split('\n');
+    var dl = [], started = false;
+    for (var i = 0; i < text.length; i++) {
+      if (started) dl.push(text[i]);
+      else if (text[i].indexOf('end_header') === 0) started = true;
+    }
+    var pi = 0;
+    for (var si = 0; si < h.count; si += step) {
+      if (si >= dl.length) return { error: 'truncated' };
+      var vk = dl[si].replace(/\r$/, '').split(/\s+/);
+      var kk = [];
+      for (var j = 0; j < vk.length; j++) if (vk[j] !== '') kk.push(vk[j]);
+      xyz[pi * 3] = parseFloat(kk[xi]) - origin[0];
+      xyz[pi * 3 + 1] = parseFloat(kk[yi]) - origin[1];
+      xyz[pi * 3 + 2] = parseFloat(kk[zi]) - origin[2];
+      if (rgb) { rgb[pi * 3] = parseInt(kk[ri], 10); rgb[pi * 3 + 1] = parseInt(kk[gi], 10); rgb[pi * 3 + 2] = parseInt(kk[bi], 10); }
+      pi++;
+    }
+  } else {
+    var dv = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+    var stride = 0;
+    for (var i = 0; i < h.props.length; i++) stride += BIM_PC_PLYSIZE[h.props[i].type];
+    if (bytes.length < h.headerBytes + h.count * stride) return { error: 'truncated' };
+    var pi = 0;
+    for (var si = 0; si < h.count; si += step) {
+      var at = h.headerBytes + si * stride;
+      for (var j = 0; j < 3; j++) {
+        var pos = j === 0 ? xi : (j === 1 ? yi : zi);
+        var ptype = h.props[pos].type;
+        var o = offAt(pos);
+        xyz[pi * 3 + j] = dv[M[ptype]](at + o, true) - origin[j];
+      }
+      if (rgb) {
+        for (var j = 0; j < 3; j++) {
+          var pos = j === 0 ? ri : (j === 1 ? gi : bi);
+          var ptype = h.props[pos].type;
+          var o = offAt(pos);
+          rgb[pi * 3 + j] = dv[M[ptype]](at + o, true);
+        }
+      }
+      pi++;
+    }
+  }
+  return { n: n, xyz: xyz, cls: null, rgb: rgb };
+}
+
 
   /* ================= __acad3dV191: LOD-D, LOD1.3 and LOD2.2 roofs from LiDAR, the pure part =================
      docs/research/research-notion-v189-roofs.md and docs/work-orders/v191/SPEC.md. Roof planes from LiDAR points: Jacobi
