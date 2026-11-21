@@ -128,3 +128,11 @@ function bimPcLasPoints(dv, h, max, origin) {
   }
   return { n: n, xyz: xyz, cls: cls, rgb: rgb };
 }
+
+function bimPcOrigin(h) {
+  return [
+    Math.floor((h.min[0] + h.max[0]) / 2),
+    Math.floor((h.min[1] + h.max[1]) / 2),
+    Math.floor(h.min[2])
+  ];
+}

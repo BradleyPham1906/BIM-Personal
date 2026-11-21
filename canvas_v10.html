@@ -45924,6 +45924,14 @@ function bimPcLasPoints(dv, h, max, origin) {
   return { n: n, xyz: xyz, cls: cls, rgb: rgb };
 }
 
+function bimPcOrigin(h) {
+  return [
+    Math.floor((h.min[0] + h.max[0]) / 2),
+    Math.floor((h.min[1] + h.max[1]) / 2),
+    Math.floor(h.min[2])
+  ];
+}
+
 
   /* ================= __acad3dV191: LOD-D, LOD1.3 and LOD2.2 roofs from LiDAR, the pure part =================
      docs/research/research-notion-v189-roofs.md and docs/work-orders/v191/SPEC.md. Roof planes from LiDAR points: Jacobi

@@ -60,7 +60,7 @@ after each one. Scores are from `../ROUTING.md` (files, logic, understanding, ju
 
 ---
 
-## [ ] WO-05 [Cline] `bimPcOrigin(h)`
+## [x] WO-05 [Cline] `bimPcOrigin(h)`
 
 - **It must:** SPEC 4 WO-05.
 - **May use:** nothing.
