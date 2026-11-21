@@ -16929,3 +16929,37 @@ A walkthrough on desktop, tablet and phone (`tests/e2e/bim_ui_walkthrough.mjs`);
 - Notices (`a3dToast`, `bim/csg-booleans.js`; `left-shell.css`) at the top of the drawing area.
 - Project Browser buttons in words (`ui/build-ui.js`, `sheets/presentation-panel.js`).
 - Checks: syntax, `npm run modules`, the build, `npm run check`, `npm test` 250 of 250, the walkthrough re-run.
+
+## Phase 179 (V179) - Interiors I1, programme and adjacency
+
+The building's programme in Properties, checked against the rooms drawn; the bubble diagram on the boards.
+
+- Research: `docs/research/research-notion-v177-v180-interiors.md`; spec `docs/work-orders/v179/SPEC.md`.
+- Audit of Cline's WO-01 to WO-09 (`bim/interiors.js`): WO-01, WO-02, WO-07 brought to the 2026-11-16 amendment (brief
+  fields, eight relation kinds, rejected relations, access); WO-07's "over 5 m" now says `nearM`; WO-08 counts a room
+  with no area as off its range.
+- `bim/interiors-model.js` (new): `b.programme` on the building (saved, undone); rooms per level, open regions left
+  out; doors off their wall left out with a warning; facts by use (`bimIntFactsFrom`); `bimIntReport`; the bubble
+  layout and figure. Relations name uses. Routes cost room centre to door to room centre: an estimate.
+- `properties/programme.js` (new): the Programme group, Project tab; `site-analysis/panel.js`, `ui/build-ui.js`
+  (its handlers), `sheets/board-figures.js` (`int.bubble`), `properties-analyze.css` (tables scroll sideways).
+- Hooks: `__a3dIntReport`, `__a3dIntRooms`, `__a3dIntBubble` (`testing/hooks-boards.js`).
+- Checks: syntax, `npm run modules`, the build, `npm run check`, `npm test` 292 of 292 (12 in
+  `tests/unit/interiors-programme.test.mjs`), the browser check `tests/e2e/bim_phase179_programme_browser_tests.py` 19 of 19.
+
+## Phase 180 (V180) - Interiors I2, clearance and ergonomics
+
+Bodies and clearance zones of furniture and fixtures; a door's clear width and a room's turning space, measured.
+
+- Research: `docs/research/research-notion-v177-v180-interiors.md`; spec `docs/work-orders/v180/SPEC.md`.
+- Audit of Cline's WO-01 to WO-06 (`bim/interiors-clearance.js`): shipped in ES2015 past the gate; rewritten in ES5,
+  same results; WO-06 not evaluated without `minIn`. `tests/unit/interiors-clearance.test.mjs` now refuses ES2015 there.
+- Registry: `ada.door` (2010 ADA 404.2.3, 32 in); `int.zone` (the app's assumed depths, seat 0.6, storage, work and bed
+  0.9 m, editable; a fixture uses `ada.space`).
+- `bim/interiors-clearance-model.js` (new): items (Furniture, Fixtures), bodies, zones, walls as pieces, conflicts per
+  level; `bimClrTurnFit` (the widest circle, by halving); door and room checks; Properties; `bimClrDrawZones`
+  (`map/terrain-3d.js`). Wiring: `site-analysis/panel.js`, `ui/build-ui.js`. Hooks `__a3dClrItem`, `__a3dClrState`,
+  `__a3dClrDoor`, `__a3dClrRoom`.
+- Found: the gate passed ES2015 code; a gate check for the build contract on the task's file would catch it.
+- Checks: syntax, `npm run modules`, the build, `npm run check`, `npm test` 301 of 301, the browser check 19 of 19,
+  V179's browser check re-run 19 of 19.

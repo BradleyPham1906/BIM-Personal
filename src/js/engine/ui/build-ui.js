@@ -31,6 +31,7 @@ import {
   TYPE_CATS, bimAssignTypeTo, bimRebuildWall, bimSetGraphicsOverride, bimSetMaterial, bimSetWallTypeOf,
   bimTypeNameOf, openTypeDlg
 } from '../bim/type-instance-params.js';
+import { bimClrPropChange, bimClrPropClick } from '../bim/interiors-clearance-model.js';
 import { bimSetRoomField } from '../bim/room-colour-fill.js';
 import { bimOpenProjectFileObj } from '../io/project-file.js';
 import { bimBuildColumnGeometry, bimRebuildColumn } from '../bim/columns-openings.js';
@@ -41,6 +42,7 @@ import {
 } from '../layers/select-change.js';
 import { bimLenInputToMetres, bimPropGroupToggle } from '../properties/palette.js';
 import { bimUsagePropChange, bimUsagePropClick } from '../properties/usages.js';
+import { bimIntProgChange, bimIntProgClick } from '../properties/programme.js';
 import {
   A3D_STD_UI, BIM_STD_DRAFT_KEYS, bimStdDraftClear, bimStdPropChange, bimStdPropClick, bimStdPropVal
 } from '../properties/site-standards.js';
@@ -765,6 +767,20 @@ import { size } from './canvas-size.js';
     });
     if(el.propsbody)el.propsbody.addEventListener('click',function(ev){
       try{bimUsagePropClick(ev);}catch(eUK){console.warn('[BIM] Usage edit failed',eUK);a3dToast('That could not be changed - see the console');}
+    });
+    /* __acad3dV179: the Programme */
+    if(el.propsbody)el.propsbody.addEventListener('change',function(ev){
+      try{bimIntProgChange(ev);}catch(eIC){console.warn('[BIM] Programme edit failed',eIC);a3dToast('That could not be changed - see the console');}
+    });
+    if(el.propsbody)el.propsbody.addEventListener('click',function(ev){
+      try{bimIntProgClick(ev);}catch(eIK){console.warn('[BIM] Programme edit failed',eIK);a3dToast('That could not be changed - see the console');}
+    });
+    /* __acad3dV180: an item's clearance */
+    if(el.propsbody)el.propsbody.addEventListener('change',function(ev){
+      try{bimClrPropChange(ev);}catch(eCC){console.warn('[BIM] Clearance edit failed',eCC);a3dToast('That could not be changed - see the console');}
+    });
+    if(el.propsbody)el.propsbody.addEventListener('click',function(ev){
+      try{bimClrPropClick(ev);}catch(eCK){console.warn('[BIM] Clearance edit failed',eCK);a3dToast('That could not be changed - see the console');}
     });
     /* __acad3dV141: Properties' tabs */
     if(el.propsbody)el.propsbody.addEventListener('click',function(ev){

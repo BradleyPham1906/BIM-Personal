@@ -185,3 +185,19 @@ body.light-theme .a3d-anzsub,body.light-theme .a3d-anzarea{border-color:rgba(0,0
 body.light-theme .a3d-anzareaerr{color:#b42318}
 .a3d-anzstate-stale{background:rgba(255,183,77,.18);color:#ffb74d}.a3d-anzstate-busy{background:rgba(110,160,255,.18);color:#8fb4ff}
 .a3d-terrbands{margin:2px 0 8px;display:flex;flex-direction:column;gap:2px}
+/* __acad3dV179: the Programme tables; they scroll sideways on a phone */
+.a3d-int-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:4px 0;max-width:100%}
+.a3d-int-tbl{border-collapse:collapse;font-size:11px;min-width:520px;width:100%}
+.a3d-int-tbl th{text-align:left;font-weight:600;padding:3px 4px;opacity:.75;white-space:nowrap}
+.a3d-int-tbl td{padding:2px 3px;vertical-align:middle}
+.a3d-int-tbl input,.a3d-int-tbl select{width:100%;min-width:52px;box-sizing:border-box}
+.a3d-int-none{opacity:.7;padding:6px 4px}
+.a3d-int-st{display:inline-block;padding:1px 6px;border-radius:8px;white-space:nowrap}
+.a3d-int-st.ok{background:rgba(76,175,80,.18);color:#7fd182}
+.a3d-int-st.bad{background:rgba(229,115,115,.18);color:#ef8f8f}
+.a3d-int-st.ne{background:rgba(160,160,160,.18);color:#b9bec6}
+.a3d-int-warn{color:#ffb74d}
+body.light-theme .a3d-int-st.ok{color:#2f7d3a}
+body.light-theme .a3d-int-st.bad{color:#b42318}
+body.light-theme .a3d-int-st.ne{color:#5b616b}
+body.light-theme .a3d-int-warn{color:#9a5b00}
