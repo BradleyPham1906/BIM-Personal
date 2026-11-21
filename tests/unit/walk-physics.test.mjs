@@ -131,3 +131,22 @@ test('C-04 bimWalkPhysSync: keeps an unchanged signature, rebuilds on a change, 
   assert.equal(W.n, 1);
   P.bimWalkPhysFree(W);
 });
+
+/* 2026-11-21: a floor that is a box (sides, as the app's slabs are), not a single quad. A capsule walker rode up any
+   edge below its sphere's centre once a stair step lifted it (a 0.25 m and a 0.40 m curb); the cylinder walker does not. */
+test('C-08 on a box floor: a 0.25 m curb stops the walker; a stair of 0.18 m risers is still climbed', () => {
+  const run = (obs, sec) => {
+    const W = P.bimWalkPhys(J), g = [], o = [];
+    box(g, -5, -0.3, -3, 30, 0, 3); obs(o);
+    P.bimWalkPhysMesh(W, 'floor', 1, new Float32Array(g)); P.bimWalkPhysMesh(W, 'o', 1, new Float32Array(o));
+    P.bimWalkPhysChar(W, CAP, [0, 0.02, 0]);
+    let r = null, top = 0;
+    for (let i = 0; i < Math.round(sec * 60); i++) { r = P.bimWalkPhysStep(W, [1.34, 0, 0], 1 / 60, 'walk', false); top = Math.max(top, r.p[1]); }
+    P.bimWalkPhysFree(W);
+    return { x: r.p[0], top };
+  };
+  const curb = run((o) => box(o, 3, 0, -3, 4, 0.25, 3), 5);
+  assert.ok(curb.x < 3 && curb.top < 0.05, 'curb ' + JSON.stringify(curb));
+  const st = run((o) => { for (let k = 0; k < 7; k++) box(o, 3 + k * 0.28, 0, -3, 30, 0.18 * (k + 1), 3); }, 6);
+  assert.ok(st.top > 1.2, 'stair ' + JSON.stringify(st));
+});

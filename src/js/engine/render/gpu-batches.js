@@ -106,14 +106,19 @@ import { bimObjectVisibleOnLevel } from '../views/saved-views.js';
   }
   /* the frame's part common to both engines: the table brought up to date, the chunks that
      changed rebuilt. Returns what the engine needs to draw. */
+  /* __acad3dV203: objects of the scene only, never of the model (Walk's figure): drawn with it, saved and picked never */
+  var A3D_SCENE_EXTRA=[];
+  function bimSceneExtra(list){A3D_SCENE_EXTRA=list||[];return A3D_SCENE_EXTRA.length;}
+  function bimSceneExtras(){return A3D_SCENE_EXTRA;}
   function bimSceneSync(){
     var B=bimScene(),i,o,m,id,c,seenN=0,mark=B.mark,totalFaces=0,hasTrans=false,sel=A3D.sel,sel2=A3D.sel2,v=[0,0,0,0,0,0,0,0],t0=performance.now(),rgbOf={},typeCol={};   /* __acad3dV156 */
     B.st={draws:0,chunks:0,rebuilt:0,rebuiltVerts:0,uploads:0,uploadBytes:0,objects:0,culled:0,recorded:0};
     A3D.lastGlAlpha={};
     B.frame=(B.frame||0)+1;
     for(i=0;i<B.chunks.length;i++)if(!B.chunks[i].wb)B.chunks[i].wb=[0,0,0,0,0,0];
-    for(i=0;i<A3D.objs.length;i++){
-      o=A3D.objs[i];m=meshOf(o);
+    var nO=A3D.objs.length,nX=A3D_SCENE_EXTRA.length;
+    for(i=0;i<nO+nX;i++){
+      o=i<nO?A3D.objs[i]:A3D_SCENE_EXTRA[i-nO];m=meshOf(o);
       if(!m||!m.f||!m.f.length)continue;
       id=o.id;if(mark[id]!==B.frame){mark[id]=B.frame;seenN++;}B.st.objects++;   /* __acad3dV156: seen this frame, counted */
       var s=bimGbSlot(B,id);
@@ -319,5 +324,6 @@ import { bimObjectVisibleOnLevel } from '../views/saved-views.js';
   function setA3D_GL_BATCH(v){A3D_GL_BATCH=v;return v;}
 export {
   A3D_CULL, A3D_GL_BATCH, A3D_SCENE, BIM_GB_TEXW, bimGbInit, bimGbPrepare, bimGbRender, bimSceneCull,
-  bimSceneDirty, bimSceneFrameDone, bimSceneRelease, bimSceneSync, setA3D_CULL, setA3D_GL_BATCH
+  bimSceneDirty, bimSceneExtra, bimSceneExtras, bimSceneFrameDone, bimSceneRelease, bimSceneSync, setA3D_CULL,
+  setA3D_GL_BATCH
 };

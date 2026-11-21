@@ -240,7 +240,7 @@ After each task: `node --check src/js/engine/io/ifc-save.js`, its own cases, the
 
 ---
 
-## [ ] WO-16 [Claude] Step 2b
+## [x] WO-16 [Claude] Step 2b
 
 Claude's. Built 2026-11-14: the seven wheels with COPYING (GPL-3.0), COPYING.LESSER and a NOTICE in
 `runtime/ifcos/0.8.5/` and `runtime/MANIFEST.json`; `tools/embed_py.py` embeds `bim_ifcos.py` too
@@ -251,3 +251,14 @@ second 0.08 s. Until WO-15 ships the command answers "this build cannot write IF
 
 Left: audit WO-09 to WO-15 and run the browser check again on Cline's code; Make editable for imported walls and
 floors (the walls-and-slabs reader's parameters kept at import); the guide page; Notion.
+
+Finished 2026-11-21. WO-09 to WO-15 audited (GATE-LOG: ok). The browser check on Cline's code: 19 of 19 before Make
+editable. Make editable (`io/ifc-editable.js`): the full import keeps each IfcWall's and IfcSlab's walls-and-slabs
+parameters by GlobalId (`bimIfcEditParams` in `import-ifc.js`, which now also follows IFC4's `IfcIndexedPolyCurve`,
+the profile IfcOpenShell writes, and drops a ring's repeated closing point) and the engine's coordination matrix (the
+shift `COORDINATE_TO_ORIGIN` applied); Properties, IFC, Make editable rebuilds a wall or floor as the app's own where
+it stood, with its name, layer and GlobalId, one undo step; a wall an opening cuts, a non-rectangular wall plan or a
+shape that is not an upward extrusion is refused with its reason. `tests/unit/ifc-editable.test.mjs` (7, with an
+IfcOpenShell-written fixture in `tests/fixtures/ifc/`); the browser check now 26 of 26 (the button clicked, the wall
+in place to 3 cm, the floor, the refusal, undo, saved again under the same GlobalIds). The guide: Sheets and files,
+Exporting, IFC files. Notion: V177's task page has the note and the pull request.

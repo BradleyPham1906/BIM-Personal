@@ -11,6 +11,7 @@ import { refreshProps } from '../site-analysis/panel.js';
 import { paint } from '../map/terrain-3d.js';
 import { A3D_REV, setA3D_REV } from '../core/objects-save.js';
 import { bimLtMenuClose } from '../sheets/layout-tabs.js';
+import { bimLoLayoutSvg } from '../sheets/layout-open.js';
 import { bimBoardById, bimBoardHtmlFor } from '../sheets/boards.js';
 import {
   bimBrdBands, bimBrdFigsValid, bimBrdMeasureDefault, bimBrdNatH, bimBrdRec, bimFigCapture, bimFigCat,
@@ -31,6 +32,7 @@ import {
 import {
   bimLbdChartMenu, bimLbdCols, bimLbdKpiMenu, bimLbdRows, bimLbdRun, bimLbdSchedMenu, bimLbdState
 } from '../sheets/live-board-draw.js';
+import { A3D_BDE } from '../sheets/board-design-edit.js';
 import {
   bimLvAct, bimLvAddNumber, bimLvInsertField, bimLvOverride, bimLvPropsHtml, bimLvSetDp, bimLvTextPatch
 } from '../sheets/live-edit.js';
@@ -44,6 +46,9 @@ import { objById } from '../bim/csg-booleans.js';
   };
   window.__a3dBrdCapture=function(kind,narrow){var c=bimFigCapture(kind,!!narrow);return {order:c.order,notes:!!c.notes,cls:c.order.map(function(f){return c.figs[f].cls||null;})};};
   window.__a3dBrdRecord=function(id){var b=bimBoardById(id);return b?JSON.parse(JSON.stringify(b)):null;};
+  /* __acad3dV175c WO-18: a drawing layout's vector page, as Print and Print set write it */
+  window.__a3dBdeSelect=function(ids){A3D_BDE.sel=(ids||[]).slice();refreshProps();return A3D_BDE.sel.length;};
+  window.__a3dLayoutSvg=function(id){var r=bimLoLayoutSvg(bimBoardById(id),'technical');return r.why?{why:r.why}:{svg:r.svg,w:r.w,h:r.h};};
   window.__a3dBrdEdit=function(on){return bimBrdEdit(!!on);};
   /* the board on screen: its figures where they are drawn, in reading order */
   window.__a3dBrdState=function(){

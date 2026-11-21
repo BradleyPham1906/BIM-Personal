@@ -1421,6 +1421,33 @@ body.light-theme .a3d-rktitle{color:#202124}body.light-theme .a3d-rkcat{color:#3
 .a3d-tl-hint{color:#9aa3ad;font-size:10.5px;max-width:150px}
 #a3d-touchlen-input{width:70px;background:#1c2024;border:1px solid #3a4048;color:#dfe4ea;border-radius:4px;padding:6px;font-size:13px}
 .a3d-tl-set{background:#2f5d8a;border:1px solid #3f75a8;color:#e6eef6;border-radius:4px;padding:6px 10px;font-size:12px;cursor:pointer}
+/* __acad3dV203: Walk's bar, hint and joystick on the view (walk/walk-controls.js). Shown only while walking. */
+.a3d-walkbar,.a3d-walkhint,.a3d-walkjoy{display:none}
+.a3d-walking .a3d-walkbar{display:flex;position:absolute;top:10px;left:50%;transform:translateX(-50%);z-index:30;gap:6px;
+  padding:6px;border-radius:10px;background:rgba(20,22,26,.82);box-shadow:0 2px 10px rgba(0,0,0,.25)}
+.a3d-walkbar button{font:inherit;font-size:13px;color:#e8eaee;background:transparent;border:1px solid rgba(255,255,255,.18);
+  border-radius:7px;padding:6px 11px;min-height:32px;cursor:pointer;white-space:nowrap}
+.a3d-walkbar button:hover{background:rgba(255,255,255,.08)}
+.a3d-walkbar button.on{background:#3a6fd8;border-color:#3a6fd8}
+.a3d-walkbar button[data-walkact="leave"]{border-color:rgba(255,140,120,.5)}
+.a3d-walking .a3d-walkhint{display:block;position:absolute;bottom:12px;left:50%;transform:translateX(-50%);z-index:30;
+  max-width:calc(100% - 32px);padding:5px 10px;border-radius:7px;background:rgba(20,22,26,.7);color:#e8eaee;font-size:12px;
+  text-align:center;pointer-events:none}
+.a3d-walking{touch-action:none}
+.a3d-walking canvas{cursor:crosshair}
+/* the joystick: on a touch screen, under the left thumb */
+@media (pointer:coarse){
+  .a3d-walking .a3d-walkjoy{display:block;position:absolute;left:24px;bottom:56px;z-index:30;width:120px;height:120px;border-radius:50%;
+    background:rgba(20,22,26,.35);border:2px solid rgba(255,255,255,.45);touch-action:none}
+  .a3d-walkknob{position:absolute;left:50%;top:50%;width:52px;height:52px;margin:-26px 0 0 -26px;border-radius:50%;
+    background:rgba(255,255,255,.75);pointer-events:none}
+  .a3d-walking .a3d-walkhint{display:none}
+  .a3d-walkbar button{min-height:40px;padding:8px 12px}
+}
+@media (max-width:600px){
+  .a3d-walking .a3d-walkbar{top:6px;gap:4px;padding:4px;max-width:calc(100% - 32px);flex-wrap:wrap;justify-content:center}
+  .a3d-walkbar button{font-size:12px;padding:7px 9px}
+}
 @media(max-width:720px),(max-height:500px){
 .a3d-drawerbtn{display:inline-block}
 .a3d-tb{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch}
@@ -1861,6 +1888,8 @@ body.light-theme .a3d-tl-msgs,body.light-theme .a3d-tl-hn span,body.light-theme 
     ['BRANCH',['NEWBRANCH','DESIGNOPTION','OPTION'],'branch','Start a design option: a branch of the history, switched to and compared with the others'],   /* __acad3dV151 */
     ['BENCHMARK',['BENCH','FRAMETIME','SPEEDTEST'],'benchmark','Time this device drawing 5,000 and 20,000 elements, with WebGPU and with WebGL; the model is put back as it was'],   /* __acad3dV155 */
     ['GRAPHICS',['RENDERER','WEBGPU','WEBGL'],'graphics','Draw 3D with WebGPU where the browser has it, or always with WebGL in this browser'],   /* __acad3dV153 */
+    ['WALK',['WALKTHROUGH','FIRSTPERSON','WALKMODE'],'walk','Walk through the model as a person: walls stop you, stairs a code allows you climb; V third person, F fly, Esc to leave'],   /* __acad3dV203 */
+    ['SHEETLAYOUT',['OPENASLAYOUT','SHEETTOLAYOUT'],'sheetlayout','Open the sheet on screen as a layout in the board editor: its viewports become map frames, it prints as one vector page'],   /* __acad3dV175c */
     ['RENDER',['RENDERED','REALISTIC','VISUALSTYLE','DAYLIGHT'],'render','The model rendered in daylight: materials, the sun and the sky, soft shadows; again for the shaded view'],   /* __acad3dV194 */
     ['MERGE',['MERGEBRANCH'],'merge','Merge another branch into this one, element by element, with conflicts shown side by side'],
     ['COMPAREBRANCHES',['COMPAREOPTIONS','OPTIONS'],'comparebranches','Each branch\'s numbers side by side: walls, rooms, areas, cut and fill'],
@@ -31991,6 +32020,7 @@ function bimAnGauss(m) {
       '<option value="1"'+(A3D.presentMode?' selected':'')+'>Presentation</option></select>');
     vrows+=bimSkPropsHtml();   /* __acad3dV197: colours by surface kind, the project's */
     vrows+=bimRvPropsHtml();   /* __acad3dV194: Shaded or Rendered, and the rendered view's settings while it is on */
+    vrows+=bimWalkPropsHtml();   /* __acad3dV203: who walks */
     /* Read-only and honest: the engine works in metres throughout and there is no unit
        conversion layer, so this states the fact rather than offering a switch that would not
        convert anything. */
@@ -37942,6 +37972,12 @@ function bimAnGauss(m) {
   function ifcCompose(outer,inner){
     return {origin:ifcApplyPoint(outer,inner.origin),x:ifcRotateVec(outer,inner.x),y:ifcRotateVec(outer,inner.y),z:ifcRotateVec(outer,inner.z)};
   }
+  /* a closed ring's points without the repeated first point at its end */
+  function ifcOpenRing(P){
+    var n=P.length;
+    if(n>1&&Math.abs(P[0][0]-P[n-1][0])<1e-9&&Math.abs(P[0][1]-P[n-1][1])<1e-9)return P.slice(0,n-1);
+    return P;
+  }
   function ifcMakeResolver(byId){
     function get(ref){return ref&&ref.ref!==undefined?byId[ref.ref]:null;}
     function resolvePoint3(ref){
@@ -38000,7 +38036,15 @@ function bimAnGauss(m) {
         var curve=get(e.args[2]);
         if(curve&&curve.type==='IFCPOLYLINE'){
           var ptsRef=curve.args[0]||[];
-          return {pts:ptsRef.map(function(pr){var pe=get(pr);var c=pe?(pe.args[0]||[0,0]):[0,0];return [c[0]||0,c[1]||0];})};
+          return {pts:ifcOpenRing(ptsRef.map(function(pr){var pe=get(pr);var c=pe?(pe.args[0]||[0,0]):[0,0];return [c[0]||0,c[1]||0];}))};
+        }
+        /* __acad3dV177: IFC4's indexed curve, as IfcOpenShell writes a profile: its point list in order; straight
+           segments only (an IfcArcIndex segment is a curve this reader does not follow) */
+        if(curve&&curve.type==='IFCINDEXEDPOLYCURVE'){
+          var pl=get(curve.args[0]),sg=curve.args[1];
+          if(!pl||pl.type!=='IFCCARTESIANPOINTLIST2D')return {pts:null,reason:'unsupported indexed curve points ('+(pl?pl.type:'?')+')'};
+          if(sg&&JSON.stringify(sg).indexOf('IFCARCINDEX')>=0)return {pts:null,reason:'an indexed curve with arcs'};
+          return {pts:ifcOpenRing((pl.args[0]||[]).map(function(c){return [c[0]||0,c[1]||0];}))};
         }
         return {pts:null,reason:'unsupported outer curve type ('+(curve?curve.type:'?')+')'};
       }
@@ -38124,6 +38168,31 @@ function bimAnGauss(m) {
     refreshTree();refreshLevels();refreshLayers();fitScene();paint();saveSoon();
     a3dToast('IFC import: '+levelsAdded+' level(s), '+wallsAdded+' wall(s) ('+recoveredWalls+' fully editable), '+slabsAdded+' slab(s), locked by default'+
       (skipped?'; '+skipped+' element(s) skipped (unsupported/non-vertical geometry)':''));
+  }
+
+  /* __acad3dV177: the walls-and-slabs reader's parameters of each IfcWall and IfcSlab, by GlobalId, kept at the full
+     import so Make editable can rebuild the element as one of the app's own: its profile in plan (IFC's x and y, in
+     metres), its foot and its height; a wall's centreline and thickness when its profile is a rectangle; whether an
+     opening voids it (IfcRelVoidsElement). Elements the reader cannot follow (not a vertical extrusion) are left out. */
+  function bimIfcEditParams(text){
+    var byId=ifcTokenize(text),scale=ifcFindLengthScale(byId),R=ifcMakeResolver(byId),out={},voided={},k,e,res,prof,g,rec;
+    for(k in byId)if(byId.hasOwnProperty(k)){
+      e=byId[k];
+      if(e.type==='IFCRELVOIDSELEMENT'&&e.args[4]&&e.args[4].ref!==undefined)voided[e.args[4].ref]=1;
+    }
+    for(k in byId)if(byId.hasOwnProperty(k)){
+      e=byId[k];
+      if(e.type!=='IFCWALL'&&e.type!=='IFCWALLSTANDARDCASE'&&e.type!=='IFCSLAB')continue;
+      g=e.args[0];
+      if(typeof g!=='string'||!g)continue;
+      try{res=R.resolveVerticalExtrusion(parseInt(k,10));}catch(eR){res=null;}
+      if(!res||!res.ok||!res.profileXY)continue;
+      prof=res.profileXY.map(function(p){return [p[0]*scale,p[1]*scale];});
+      rec={kind:e.type==='IFCSLAB'?'floor':'wall',profile:prof,baseY:res.baseZ*scale,height:res.height*scale,voided:!!voided[k]};
+      if(rec.kind==='wall')rec.wall=bimTryRecoverWallFromRectProfile(prof,rec.baseY,rec.height);
+      out[g]=rec;
+    }
+    return out;
   }
 
   /* ================= __acad3dV163: SketchUp files =================
@@ -38898,8 +38967,9 @@ function bimAnGauss(m) {
         }
         return more().then(function(){
           var schema='';try{schema=api.GetModelSchema(mid);}catch(eS){schema='';}
+          var coord=null;try{coord=Array.prototype.slice.call(api.GetCoordinationMatrix(mid));}catch(eC){coord=null;}   /* __acad3dV177: the shift to the origin */
           api.CloseModel(mid);
-          return {parts:S.parts,storeys:st,holder:holder,tris:S.tris,cut:S.cut,skipped:S.skipped,notes:notes,booleans:!!api.booleans,schema:schema};
+          return {parts:S.parts,storeys:st,holder:holder,tris:S.tris,cut:S.cut,skipped:S.skipped,notes:notes,booleans:!!api.booleans,schema:schema,coord:coord};
         });
       });
     });
@@ -38912,7 +38982,9 @@ function bimAnGauss(m) {
     var bytes=buf instanceof Uint8Array?buf:new Uint8Array(buf);
     return bimIfcLoad().then(function(R){return bimIfcRead(R,bytes);}).then(function(D){
       if(!D.parts.length)throw new Error('no elements with geometry in '+name);
-      var made=[],ids=[],byClass={},names={},levels=0,i;
+      var made=[],ids=[],byClass={},names={},levels=0,i,EP={};
+      /* __acad3dV177: the walls-and-slabs reader's parameters, for Make editable (bimIfcMakeEditable) */
+      try{EP=bimIfcEditParams(new TextDecoder('utf-8').decode(bytes));}catch(eE){console.warn('[BIM] IFC import: walls and slabs could not be read for Make editable',eE);EP={};}
       for(i=0;i<D.storeys.length;i++)names[D.storeys[i].id]=D.storeys[i].name;
       pushUndo();
       setUndoSuspend(true);
@@ -38938,6 +39010,11 @@ function bimAnGauss(m) {
           }
           var hold=D.holder[q.id],bim={type:BIM_IFC_KIND[cls]||'ifc',imported:true,ifcType:q.type,guid:q.guid,
             storey:hold!=null&&names[hold]?names[hold]:'',file:name.slice(0,120),psets:q.psets||[]};
+          if(bim.type!=='ifc'&&q.guid&&EP.hasOwnProperty(q.guid)&&EP[q.guid].kind===bim.type){
+            bim.edit=EP[q.guid];
+            /* the import moved the model to the origin: the shift, in the app's axes, from the engine's coordination matrix */
+            bim.edit.shift=(D.coord&&D.coord.length===16)?[D.coord[12],D.coord[13],D.coord[14]]:[0,0,0];
+          }
           var o={id:'a3d-'+Date.now().toString(36)+'-'+(A3D.seq++),t:'solid',name:(q.name||cls+' '+q.id).slice(0,80),col:q.col,
             pos:[0,0,0],mesh:q.mesh,layer:byClass[key].id,locked:true,bim:bim};
           A3D.objs.push(o);ids.push(o.id);
@@ -38945,7 +39022,7 @@ function bimAnGauss(m) {
       }finally{setUndoSuspend(false);}
       if(bimLayerById(was))A3D.activeLayer=was;
       refreshTree();refreshLevels();refreshLayers();refreshProps();fitScene();paint();saveSoon();
-      return {ids:ids,layers:made,levels:levels,triangles:D.tris,cut:D.cut,skipped:D.skipped,notes:D.notes,booleans:D.booleans,ms:Date.now()-t0,
+      return {ids:ids,layers:made,levels:levels,coord:D.coord,triangles:D.tris,cut:D.cut,skipped:D.skipped,notes:D.notes,booleans:D.booleans,ms:Date.now()-t0,
         text:'IFC'+(D.schema?' ('+D.schema+')':'')+': '+ids.length+' element'+(ids.length===1?'':'s')+' from '+name+', '+levels+' level'+(levels===1?'':'s')+
           ', on the '+stem+' layer by class'+
           (D.booleans?'':'; openings not cut (the geometry library could not be loaded)')+
@@ -38977,7 +39054,7 @@ function bimAnGauss(m) {
     var b=o&&o.bim;
     if(!b||!b.ifcType||!b.guid)return '';
     var h='',rows=bimPropText('IFC Class',b.ifcType)+bimPropText('GlobalId',b.guid)+(b.storey?bimPropText('Storey',b.storey):'')+
-      (b.file?bimPropText('File',b.file):'');
+      (b.file?bimPropText('File',b.file):'')+bimIfcEditButtonHtml(o);   /* __acad3dV177: Make editable */
     h+=bimPropGroup('IFC',rows);
     (b.psets||[]).forEach(function(s){
       h+=bimPropGroup(s.name,s.rows.map(function(r){return bimPropText(r[0],r[1]);}).join(''));
@@ -38990,6 +39067,98 @@ function bimAnGauss(m) {
     inp.onchange=function(){var f=inp.files&&inp.files[0];if(f)bimHandleImportFile(f);};
     inp.click();
     return true;
+  }
+  /* ================= __acad3dV177: Make editable, an imported IFC wall or floor as one of the app's own =================
+     docs/work-orders/v177/SPEC.md part 1 (the owner's D3, 2026-11-13: editing imported walls and slabs in V177). The
+     full import keeps each IfcWall's and IfcSlab's walls-and-slabs parameters (import-ifc.js, bimIfcEditParams) in
+     bim.edit. Make editable rebuilds the element from them as an app wall or floor, under the same GlobalId, so Save as
+     IFC writes it back as the element it was. The rebuilt shape must lie where the imported one does: the reader's
+     plan is tried in IFC's axes and turned to the app's (z = -north), each moved by the import's shift to the origin
+     (bim.edit.shift, the engine's coordination matrix), and the one whose box matches the imported mesh's is taken; neither matching, or a wall voided by an opening (the cut is not rebuilt), it is refused and says why. */
+  /* a mesh's box [minX, minY, minZ, maxX, maxY, maxZ], or null */
+  function bimIfcEdBox(m){
+    var v=m&&m.v,i,b=null,p;
+    if(!v||!v.length)return null;
+    for(i=0;i<v.length;i++){
+      p=v[i];
+      if(!b){b=[p[0],p[1],p[2],p[0],p[1],p[2]];continue;}
+      if(p[0]<b[0])b[0]=p[0];if(p[1]<b[1])b[1]=p[1];if(p[2]<b[2])b[2]=p[2];
+      if(p[0]>b[3])b[3]=p[0];if(p[1]>b[4])b[4]=p[1];if(p[2]>b[5])b[5]=p[2];
+    }
+    return b;
+  }
+  /* whether two boxes agree to 2 cm, or 1% of the larger's size */
+  function bimIfcEdSame(a,b){
+    var i,t;
+    if(!a||!b)return false;
+    t=Math.max(0.02,0.01*Math.max(a[3]-a[0],a[4]-a[1],a[5]-a[2]));
+    for(i=0;i<6;i++)if(Math.abs(a[i]-b[i])>t)return false;
+    return true;
+  }
+  /* the plan of the rebuild, pure: {kind:'wall', pts, y0, height, thickness} or {kind:'floor', pts, top, thickness};
+     {why} when it cannot be made editable */
+  function bimIfcEditPlan(o){
+    var b=o&&o.bim,e=b&&b.edit,k,turn,pts,box,want,i,S,mv;
+    if(!b||!b.imported)return {why:'it was not imported from an IFC file'};
+    if(b.type!=='wall'&&b.type!=='floor')return {why:'only imported walls and floors can be made editable'};
+    if(!e||!e.profile||!(e.height>0))return {why:'its shape is not a vertical extrusion the walls-and-slabs reader can follow'};
+    if(b.type==='wall'&&e.voided)return {why:'an opening cuts it, and Make editable does not rebuild the cut yet'};
+    if(b.type==='wall'&&!e.wall)return {why:'its plan is not a rectangle, so it has no single centreline'};
+    box=bimIfcEdBox(o.mesh);
+    if(!box)return {why:'it has no shape'};
+    S=(e.shift&&e.shift.length===3)?e.shift:[0,0,0];
+    for(k=0;k<2;k++){
+      turn=k===1;
+      mv=function(p){return [p[0]+S[0],(turn?-p[1]:p[1])+S[2]];};
+      pts=e.profile.map(mv);
+      want=[Infinity,e.baseY+S[1],Infinity,-Infinity,e.baseY+e.height+S[1],-Infinity];
+      for(i=0;i<pts.length;i++){
+        if(pts[i][0]<want[0])want[0]=pts[i][0];if(pts[i][1]<want[2])want[2]=pts[i][1];
+        if(pts[i][0]>want[3])want[3]=pts[i][0];if(pts[i][1]>want[5])want[5]=pts[i][1];
+      }
+      if(!bimIfcEdSame(box,want))continue;
+      if(b.type==='floor')return {kind:'floor',pts:pts,top:e.baseY+e.height+S[1],thickness:e.height};
+      return {kind:'wall',pts:e.wall.centerline.map(mv),y0:e.wall.baseY+S[1],height:e.wall.height,thickness:e.wall.thickness};
+    }
+    return {why:'the walls-and-slabs reader places it elsewhere than the imported shape'};
+  }
+  /* Make editable: the element rebuilt as the app's own, in its place on the list, keeping its name, layer, GlobalId,
+     IFC class, storey and property sets; one undo step. The new element, or null (a toast says why). */
+  function bimIfcMakeEditable(id){
+    var o=objById(id),P,n=null,b,k,at;
+    if(!o){a3dToast('Nothing to make editable');return null;}
+    P=bimIfcEditPlan(o);
+    if(P.why){a3dToast(o.name+' cannot be made editable: '+P.why);return null;}
+    b=o.bim;
+    pushUndo();
+    setUndoSuspend(true);
+    try{
+      if(P.kind==='wall')n=buildWallSolid(P.pts,P.y0,P.height,P.thickness,'center',false);
+      else n=buildFloorSolid({pts:P.pts,y:P.top},P.thickness,'Concrete',bimGetActiveLevel());
+      if(n){
+        n.name=o.name;n.layer=o.layer;
+        for(k in {guid:1,ifcType:1,storey:1,file:1,psets:1})if(b[k]!==undefined)n.bim[k]=b[k];
+        at=A3D.objs.indexOf(o);
+        A3D.objs.splice(A3D.objs.indexOf(n),1);
+        A3D.objs.splice(at,1,n);
+        A3D.sel=n.id;A3D.sel2=null;A3D.selSet=[n.id];
+      }
+    }catch(eM){
+      console.warn('[BIM] Make editable failed for '+o.name,eM);
+      n=null;
+    }finally{setUndoSuspend(false);}
+    if(!n){a3dToast(o.name+' could not be made editable - see the console');return null;}
+    refreshTree();refreshProps();paint();saveSoon();
+    a3dToast(o.name+' is now an editable '+P.kind+', saved under its GlobalId');
+    return n;
+  }
+  /* Properties: the button, for an imported wall or floor */
+  function bimIfcEditButtonHtml(o){
+    var b=o&&o.bim;
+    if(!b||!b.imported||(b.type!=='wall'&&b.type!=='floor'))return '';
+    var P=bimIfcEditPlan(o);
+    return bimPropRow('Editing',P.why?'<span title="'+bimEsc(P.why)+'">Not editable: '+bimEsc(P.why)+'</span>':
+      '<button type="button" class="a3d-pedit" data-ifcedit="'+bimEsc(o.id)+'">Make editable</button>');
   }
 /* __acad3dV177: the model as the plain data IfcOpenShell's adapter writes as an IFC file (src/py/bim_ifcos.py,
    bim_ifcos_export; docs/work-orders/v177/SPEC.md part 3). Metres; IFC's axes are X east, Y north, Z up: the app's
@@ -39841,7 +40010,7 @@ BIM_IFC_SAVE.model=bimIfcSaveModel;
     ]);
   }
   function bimGlProjMatrix(W,H,flat,camDist){
-    var near=camDist>1000?camDist/2000:0.5,far=Math.max(4000,camDist*8);   /* __acad3dV133e: the view's own depth */
+    var near=camDist>1000?camDist/2000:(A3D_WALK.on?0.05:0.5),far=Math.max(4000,camDist*8);   /* __acad3dV133e: the view's own depth; __acad3dV203: 5 cm while walking, so a wall at arm's length is drawn */
     if(flat){
       var k=H*1.2/Math.max(camDist,0.5);
       return new Float32Array([
@@ -40107,14 +40276,19 @@ BIM_IFC_SAVE.model=bimIfcSaveModel;
   }
   /* the frame's part common to both engines: the table brought up to date, the chunks that
      changed rebuilt. Returns what the engine needs to draw. */
+  /* __acad3dV203: objects of the scene only, never of the model (Walk's figure): drawn with it, saved and picked never */
+  var A3D_SCENE_EXTRA=[];
+  function bimSceneExtra(list){A3D_SCENE_EXTRA=list||[];return A3D_SCENE_EXTRA.length;}
+  function bimSceneExtras(){return A3D_SCENE_EXTRA;}
   function bimSceneSync(){
     var B=bimScene(),i,o,m,id,c,seenN=0,mark=B.mark,totalFaces=0,hasTrans=false,sel=A3D.sel,sel2=A3D.sel2,v=[0,0,0,0,0,0,0,0],t0=performance.now(),rgbOf={},typeCol={};   /* __acad3dV156 */
     B.st={draws:0,chunks:0,rebuilt:0,rebuiltVerts:0,uploads:0,uploadBytes:0,objects:0,culled:0,recorded:0};
     A3D.lastGlAlpha={};
     B.frame=(B.frame||0)+1;
     for(i=0;i<B.chunks.length;i++)if(!B.chunks[i].wb)B.chunks[i].wb=[0,0,0,0,0,0];
-    for(i=0;i<A3D.objs.length;i++){
-      o=A3D.objs[i];m=meshOf(o);
+    var nO=A3D.objs.length,nX=A3D_SCENE_EXTRA.length;
+    for(i=0;i<nO+nX;i++){
+      o=i<nO?A3D.objs[i]:A3D_SCENE_EXTRA[i-nO];m=meshOf(o);
       if(!m||!m.f||!m.f.length)continue;
       id=o.id;if(mark[id]!==B.frame){mark[id]=B.frame;seenN++;}B.st.objects++;   /* __acad3dV156: seen this frame, counted */
       var s=bimGbSlot(B,id);
@@ -40512,6 +40686,9 @@ BIM_IFC_SAVE.model=bimIfcSaveModel;
     var scene=new T.Scene(),recs={},w=0,h=0,done=0,passRT=null,accRT=null;
     var matO=new T.MeshStandardMaterial({vertexColors:true,flatShading:true,roughness:0.78,metalness:0,side:T.DoubleSide,fog:false});
     var matT=new T.MeshStandardMaterial({vertexColors:true,flatShading:true,roughness:0.06,metalness:0,side:T.DoubleSide,fog:false,transparent:true,depthWrite:false,envMapIntensity:1.4});
+    /* __acad3dV194 T-07: the looks by element type: metal (steel, aluminium) and glass (a window's opaque parts, smooth) */
+    var matM=new T.MeshStandardMaterial({vertexColors:true,flatShading:true,roughness:0.4,metalness:0.55,side:T.DoubleSide,fog:false});
+    var matG=new T.MeshStandardMaterial({vertexColors:true,flatShading:true,roughness:0.08,metalness:0,side:T.DoubleSide,fog:false,envMapIntensity:1.4});
     var matE=new T.LineBasicMaterial({color:0x2a2f36,transparent:true,opacity:0.55,fog:false});
     /* the lights: the sun, and the sky sampled a direction a pass */
     var sunL=new T.DirectionalLight(0xffffff,0),skyL=new T.DirectionalLight(0xffffff,0);
@@ -40609,6 +40786,8 @@ BIM_IFC_SAVE.model=bimIfcSaveModel;
       var rec={sig:it.sig,objs:[],edges:[],own:[]},m;
       if(A&&A.map&&A.map.n)rec.objs.push(mapMesh(A.map,rec));   /* __acad3dV198 */
       if(A&&A.op&&A.op.n){m=new T.Mesh(geo(A.op,3),matO);m.castShadow=true;m.receiveShadow=true;rec.objs.push(m);}
+      if(A&&A.mt&&A.mt.n){m=new T.Mesh(geo(A.mt,3),matM);m.castShadow=true;m.receiveShadow=true;rec.objs.push(m);}
+      if(A&&A.gl&&A.gl.n){m=new T.Mesh(geo(A.gl,3),matG);m.castShadow=true;m.receiveShadow=true;rec.objs.push(m);}
       if(A&&A.tr&&A.tr.n){m=new T.Mesh(geo(A.tr,4),matT);m.castShadow=false;m.receiveShadow=true;m.renderOrder=1;rec.objs.push(m);}
       if(A&&A.ed&&A.ed.n){m=new T.LineSegments(geo(A.ed,0),matE);m.castShadow=false;m.receiveShadow=false;rec.objs.push(m);rec.edges.push(m);}
       rec.objs.forEach(function(o){o.matrixAutoUpdate=false;scene.add(o);});
@@ -40691,7 +40870,7 @@ BIM_IFC_SAVE.model=bimIfcSaveModel;
       if(env)env.dispose();
       pm.dispose();
       if(passRT){passRT.dispose();accRT.dispose();}
-      [matO,matT,matE,groundMat,addMat,outMat].forEach(function(m){m.dispose();});
+      [matO,matM,matG,matT,matE,groundMat,addMat,outMat].forEach(function(m){m.dispose();});
       ground.geometry.dispose();quad.geometry.dispose();
       renderer.dispose();
       if(renderer.forceContextLoss)renderer.forceContextLoss();
@@ -40727,7 +40906,7 @@ BIM_IFC_SAVE.model=bimIfcSaveModel;
     var m;
     if(!o||!o.bim)return 'matte';
     if(o.bim.type==='window')return 'glass';
-    m=o.bim.material||'';
+    m=o.bim.material||o.materialName||'';
     if(/steel|metal|alumin/i.test(m))return 'metal';
     return 'matte';
   }
@@ -40740,10 +40919,14 @@ BIM_IFC_SAVE.model=bimIfcSaveModel;
   }
   /* a chunk's triangles for the picture: world positions and linear colours, the opaque ones and the see-through
      ones (with their transparency) apart, the hidden ones left out; its edges when asked */
-  function bimRvChunkArrays(B,c,edges){
-    var d=B.data,tri=c.tri,n=c.count||0,i,p,o,a,no=0,nt=0,ne=0,lin={},L,k,q,s;
-    for(i=0;i<n;i++){a=d[tri[i*7+6]*8+3];if(a<0)continue;if(a<0.999)nt++;else no++;}
-    var op={pos:new Float32Array(no*3),col:new Float32Array(no*3),n:no},tr={pos:new Float32Array(nt*3),col:new Float32Array(nt*4),n:nt},io=0,it=0,ed=null;
+  function bimRvChunkArrays(B,c,edges,looks){
+    var d=B.data,tri=c.tri,n=c.count||0,i,p,o,a,nt=0,ne=0,lin={},L,k,q,s,lk={},cnt={matte:0,metal:0,glass:0},G,O;
+    /* __acad3dV194 T-07: each slot's look (matte unless looks names it), and the opaque triangles counted by look */
+    if(looks)for(i=0;i<c.ids.length;i++)if(looks.hasOwnProperty(c.ids[i]))lk[B.slots[c.ids[i]]]=looks[c.ids[i]];
+    for(i=0;i<n;i++){s=tri[i*7+6];a=d[s*8+3];if(a<0)continue;if(a<0.999)nt++;else cnt[lk[s]||'matte']++;}
+    function grp(m){return {pos:new Float32Array(m*3),col:new Float32Array(m*3),n:m,i:0};}
+    G={matte:grp(cnt.matte),metal:grp(cnt.metal),glass:grp(cnt.glass)};
+    var op=G.matte,tr={pos:new Float32Array(nt*3),col:new Float32Array(nt*4),n:nt},it=0,ed=null;
     for(i=0;i<n;i++){
       p=i*7;s=tri[p+6];o=s*8;a=d[o+3];
       if(a<0)continue;
@@ -40753,9 +40936,9 @@ BIM_IFC_SAVE.model=bimIfcSaveModel;
         tr.pos[k]=tri[p]+d[o];tr.pos[k+1]=tri[p+1]+d[o+1];tr.pos[k+2]=tri[p+2]+d[o+2];
         tr.col[q]=L[0];tr.col[q+1]=L[1];tr.col[q+2]=L[2];tr.col[q+3]=a;
       }else{
-        k=io*3;io++;
-        op.pos[k]=tri[p]+d[o];op.pos[k+1]=tri[p+1]+d[o+1];op.pos[k+2]=tri[p+2]+d[o+2];
-        op.col[k]=L[0];op.col[k+1]=L[1];op.col[k+2]=L[2];
+        O=G[lk[s]||'matte'];k=O.i*3;O.i++;
+        O.pos[k]=tri[p]+d[o];O.pos[k+1]=tri[p+1]+d[o+1];O.pos[k+2]=tri[p+2]+d[o+2];
+        O.col[k]=L[0];O.col[k+1]=L[1];O.col[k+2]=L[2];
       }
     }
     if(edges&&c.ed&&c.ecount){
@@ -40767,7 +40950,19 @@ BIM_IFC_SAVE.model=bimIfcSaveModel;
         ed.pos[k]=c.ed[p]+d[o];ed.pos[k+1]=c.ed[p+1]+d[o+1];ed.pos[k+2]=c.ed[p+2]+d[o+2];k+=3;
       }
     }
-    return {op:op,tr:tr,ed:ed};
+    delete G.matte.i;delete G.metal.i;delete G.glass.i;
+    return {op:op,mt:G.metal.n?G.metal:null,gl:G.glass.n?G.glass:null,tr:tr,ed:ed};
+  }
+  /* __acad3dV194 T-07: the looks of the model's objects that are not matte, by id, and a short signature of them */
+  function bimRvLooks(){
+    var L={},i,o,k;
+    for(i=0;i<A3D.objs.length;i++){o=A3D.objs[i];k=bimRvLook(o);if(k!=='matte')L[o.id]=k;}
+    return L;
+  }
+  function bimRvLooksSig(L,c){
+    var h=0,i,k;
+    for(i=0;i<c.ids.length;i++){k=L[c.ids[i]];if(k)h=(h*31+i*7+(k==='metal'?1:2))|0;}
+    return h;
   }
   /* a terrain's surface for the picture: its triangles as the 3D view drapes them, in its colour */
   function bimRvTerrainItem(o){
@@ -40804,13 +40999,13 @@ BIM_IFC_SAVE.model=bimIfcSaveModel;
   /* the frame's part: the description brought up to date, and what the picture is made of: a part for each chunk and
      each terrain shown, each with a key and its look in a few characters, the box of them all, the faces */
   function bimRvPlan(edges,view){
-    var F=bimSceneSync(),B=F.S,items=[],box=null,i,c,o,t,nt=0,M=null,mf,dr;
+    var F=bimSceneSync(),B=F.S,items=[],box=null,i,c,o,t,nt=0,M=null,mf,dr,LK=bimRvLooks();
     /* __acad3dV198: the map, when the view is given (the frame's, not a test's): on the ground and draped */
     if(view){M=bimRvMapFrame(view.V,view.W,view.H,view.bg);mf=M?bimRvMapFlatItem(M):null;if(mf)items.push(mf);}
     for(i=0;i<B.chunks.length;i++){
       c=B.chunks[i];
       if(!c.rv)c.rv=++BIM_RV_SEQ;
-      items.push({key:'c'+c.rv,sig:bimRvChunkSig(B,c)+(edges?':e':''),chunk:c});
+      items.push({key:'c'+c.rv,sig:bimRvChunkSig(B,c)+(edges?':e':'')+':l'+bimRvLooksSig(LK,c),chunk:c});
       if(c.wb&&c.wb.f===B.frame)box=bimRvBoxAdd(box,c.wb);
     }
     for(i=0;i<A3D.objs.length;i++){
@@ -40820,11 +41015,11 @@ BIM_IFC_SAVE.model=bimIfcSaveModel;
       if(t&&M){dr=bimRvMapDrape(o,M,t.col);if(dr){t.drape=dr;t.sig+='|'+dr.sig;}}   /* __acad3dV198 */
       if(t){items.push(t);box=bimRvBoxAdd(box,t.box);nt++;}
     }
-    return {S:B,items:items,box:box,totalFaces:F.totalFaces,terrains:nt,edges:!!edges,map:M?M.drawn:0};
+    return {S:B,items:items,box:box,totalFaces:F.totalFaces,terrains:nt,edges:!!edges,map:M?M.drawn:0,looks:LK};
   }
   /* the arrays of one of the plan's parts, asked for only when the part is new or looks different */
   function bimRvBuild(plan,it){
-    if(it.chunk)return bimRvChunkArrays(plan.S,it.chunk,plan.edges);
+    if(it.chunk)return bimRvChunkArrays(plan.S,it.chunk,plan.edges,plan.looks);
     if(it.map)return {map:it.map};   /* __acad3dV198 */
     if(it.terrain&&it.drape){var A=bimRvTerrainArrays(it);return {map:{flat:false,pos:A.op.pos,uv:it.drape.uv,n:A.op.n,atlas:it.drape.atlas}};}
     if(it.terrain)return bimRvTerrainArrays(it);
@@ -40996,6 +41191,9 @@ BIM_IFC_SAVE.model=bimIfcSaveModel;
   var BIM_RV_SRI='sha256-nlMhFtFZ48EpXw4milRquaT/Hc0JPr3IqG6LCINZo5E=';   /* __acad3dV195: with the glTF addons */   /* the file's SHA-256, as runtime/MANIFEST.json pins it */
   var BIM_RV_KEY='acad3dRenderedV1';
   var BIM_RV_STILL_MS=140;   /* passes are added once the view has been still this long */
+  /* __acad3dV203 C-07, the moving mode: while walking each frame is one pass with filtered (PCF) shadows framed 25 m
+     around the walker (the shadow camera follows the focus, the walker's eyes); still for 300 ms, the passes are added */
+  var BIM_RV_WALK_REACH=25,BIM_RV_WALK_STILL_MS=300;
   var A3D_RV={on:false,st:'idle',err:'',T:null,core:null,cv:null,sig:'',done:0,want:64,raf:0,per:1,last:0,stillAt:0,
     load:null,hold:false,drew:false,set:null,sun:null,sky:null,info:null};
   /* the view's settings, this browser's: the sky, the ground, the edges, the quality */
@@ -41126,7 +41324,7 @@ BIM_IFC_SAVE.model=bimIfcSaveModel;
       if(!core)return false;
       var st=bimRvSettings(),gs=cvScale(el.cv),wD=Math.max(1,Math.round(W*gs)),hD=Math.max(1,Math.round(H*gs)),
         sun=bimRvSun(),sky=bimRvSkyFor(st.sky,sun.up,sun.elev),
-        plan=bimRvPlan(st.edges,{V:V,W:W,H:H,bg:sky.plain?'#f4f4f2':'#cbc6bb'}),cam=bimRvCamera(V,W,H,A3D.flat,A3D.cam.dist),   /* __acad3dV198: the map's ground colour */reach=bimRvReach(A3D.cam.dist,plan.box),groundAt=bimShadowGround(),
+        plan=bimRvPlan(st.edges,{V:V,W:W,H:H,bg:sky.plain?'#f4f4f2':'#cbc6bb'}),cam=bimRvCamera(V,W,H,A3D.flat,A3D.cam.dist),   /* __acad3dV198: the map's ground colour */reach=A3D_WALK.on?BIM_RV_WALK_REACH:bimRvReach(A3D.cam.dist,plan.box),groundAt=bimShadowGround(),   /* __acad3dV203: while walking, the shadows sharp around the walker */
         ground=st.ground&&!plan.terrains,   /* a terrain is the ground */
         sig=bimRvSig(cam,sun,sky,st,plan,wD,hD,reach,groundAt,ground);
       R.sun=sun;R.sky=sky;
@@ -41138,7 +41336,7 @@ BIM_IFC_SAVE.model=bimIfcSaveModel;
         R.done=core.pass();
         core.show();
         R.sig=sig;R.want=BIM_RV_QUALITY[st.quality]||BIM_RV_QUALITY.good;
-        R.stillAt=performance.now()+BIM_RV_STILL_MS;R.last=0;
+        R.stillAt=performance.now()+(A3D_WALK.on?BIM_RV_WALK_STILL_MS:BIM_RV_STILL_MS);R.last=0;   /* __acad3dV203 */
       }
       R.drew=true;
       if(R.done<R.want&&!R.raf)R.raf=requestAnimationFrame(bimRvRefine);
@@ -46490,7 +46688,12 @@ function bimWalkKeys(h, j) {
      The walker is Jolt's CharacterVirtual moved by ExtendedUpdate (stairs up to the capsule's step, held to the floor
      0.3 m down, no slope steeper than the capsule's). Jolt's objects are not garbage collected: what the adapter makes
      once (vectors, filters) is kept on W and destroyed by bimWalkPhysFree; what it makes per call is destroyed before
-     the call returns. Layers: 0 the model (static), 1 the walker (moving); the walker collides with both. */
+     the call returns. Layers: 0 the model (static), 1 the walker (moving); the walker collides with both.
+     The walker is a cylinder, not a capsule (2026-11-21, V203 C-08's browser check): once a stair step lifts a capsule,
+     an edge below its sphere's centre reads as a gentle slope, and it rides up it, so a capsule of radius 0.23 m climbs
+     any edge up to its step plus its radius (a 0.25 m and a 0.40 m curb, on a floor that is a box). A cylinder's flat
+     foot meets that edge with its side: both curbs refused, a stair of 0.18 m risers and a 1:12 ramp still climbed, a
+     40 degree slope refused (docs/research/experiments/w1-walk/e04-cylinder.mjs). */
   var BIM_WALK_G=9.81,BIM_WALK_JUMP=3.5,BIM_WALK_STICK=0.3;   /* m/s2; m/s, about 0.6 m up; m */
 
   /* a world: the interface, the filters and the vectors reused every frame */
@@ -46563,9 +46766,10 @@ function bimWalkKeys(h, j) {
     bimWalkPhysBuild(W);
     return true;
   }
-  /* the walker: a capsule (bimWalkCapsule's {half, r, step, slope}) standing with its feet at p */
+  /* the walker: a cylinder the capsule's size (bimWalkCapsule's {half, r, step, slope}: 2 (half + r) tall, r round),
+     standing with its feet at p */
   function bimWalkPhysChar(W,cap,p){
-    var J=W.J,cs=new J.CharacterVirtualSettings(),inner=new J.CapsuleShapeSettings(cap.half,cap.r),
+    var J=W.J,cs=new J.CharacterVirtualSettings(),inner=new J.CylinderShapeSettings(cap.half+cap.r,cap.r,0.05),
       off=new J.Vec3(0,cap.half+cap.r,0),up=new J.Vec3(0,1,0),rot,sr,pl,a;
     if(W.ch)bimWalkPhysCharFree(W);
     bimWalkPhysBuild(W);
@@ -46630,6 +46834,425 @@ function bimWalkKeys(h, j) {
     W.parts={};W.n=0;W.tris=0;
     [W.bpf,W.olf,W.bf,W.sf,W.vel,W.g,W.g0,W.at,W.rs].forEach(function(o){J.destroy(o);});
     J.destroy(W.ji);W.ji=W.ps=W.bi=null;
+  }
+  /* ================= __acad3dV203: Walkthrough W1, the walk =================
+     docs/research/research-walkthrough.md (the owner's D1 to D7, 2026-11-14) and docs/work-orders/v203/SPEC.md, C-05.
+     WALK puts the user into the model as a person, in whatever visual style the view is in: Jolt (runtime/jolt, loaded
+     here the first time, as the rendered view loads three.js) holds them to the floor, stops them at walls and lets them
+     climb what a code stair allows (walk-physics.js); walk-math.js turns the keys, the joystick and the look into a
+     move and a camera; the camera is the app's own A3D.cam, so every view draws the walk. Third person draws a V169
+     figure at the feet, as an object of the scene only (bimSceneExtra), never of the model. Leave puts the camera back.
+     The model's triangles are each element's own (meshOf, the terrain's surface), shown ones only, kept by the
+     physics under the element's id and rebuilt when one changes: the figure is never among them. */
+  var BIM_WALK_VER='1.1.1',BIM_WALK_FILE='jolt/'+BIM_WALK_VER+'/bim-jolt.min.js';
+  var BIM_WALK_SRI='sha256-CjWGOkdK71XTljPaSyhFcvbvhquB8CSdVPyjW5yaMf0=';   /* the file's SHA-256, as runtime/MANIFEST.json pins it */
+  var BIM_WALK_KEY='acad3dWalkV1';
+  var BIM_WALK_LOOK=0.0025,BIM_WALK_BOOM=3,BIM_WALK_SYNC_MS=400;   /* radians a pixel; the third person's boom, m; how often edits are looked for */
+  var BIM_WALK_WHO={adult:'Mean adult',man:'Man',woman:'Woman',child:'Child',own:'Own height',chair:'Wheelchair user'};
+  var A3D_WALK={on:false,mode:'walk',view:'first',ghost:false,yaw:0,pitch:0,p:[0,0,0],cap:null,B:null,R:null,saved:null,
+    held:{},joy:null,last:0,raf:0,J:null,load:null,st:'idle',err:'',phys:null,seen:{},syncAt:0,jump:false,set:null,moved:0};
+
+  /* Walk's settings, this browser's: who walks, and their own height */
+  function bimWalkSettings(){
+    if(A3D_WALK.set)return A3D_WALK.set;
+    var s={who:'adult',h:1.7},r=null;
+    try{r=JSON.parse(localStorage.getItem(BIM_WALK_KEY)||'null');}catch(eS){r=null;}
+    if(r&&typeof r==='object'){
+      if(BIM_WALK_WHO.hasOwnProperty(r.who))s.who=r.who;
+      if(typeof r.h==='number'&&r.h>=0.8&&r.h<=2.3)s.h=r.h;
+    }
+    A3D_WALK.set=s;
+    return s;
+  }
+  function bimWalkSetting(k,v){
+    var s=bimWalkSettings(),n;
+    if(k==='who'&&BIM_WALK_WHO.hasOwnProperty(v))s.who=v;
+    else if(k==='h'){n=parseFloat(v);if(!(n>=0.8&&n<=2.3)){a3dToast('A height between 0.8 m and 2.3 m');refreshProps();return false;}s.h=n;}
+    else return false;
+    try{localStorage.setItem(BIM_WALK_KEY,JSON.stringify(s));}
+    catch(eS){console.warn('[BIM] Walk\'s settings could not be kept in this browser',eS);}
+    if(A3D_WALK.on)bimWalkRebody();
+    refreshProps();
+    return true;
+  }
+  /* the walker's body: {top, eye, sh, chair, speed, person} from the registry; the mean adult halfway between the
+     registry's man and woman */
+  function bimWalkBody(s){
+    var P,man,wo;
+    if(s.who==='chair')return {top:bimStd('wheel.awmp','height'),eye:bimStd('wheel.awmp','eye'),sh:bimStd('ada.space','clear_w')*0.85,
+      chair:true,speed:bimStd('walk.speed','m_min')/60,person:null};
+    if(s.who==='adult'){man=bimEntBody({who:'man'});wo=bimEntBody({who:'woman'});P=bimEntBody({h:(man.st+wo.st)/2});}
+    else if(s.who==='own')P=bimEntBody({h:s.h});
+    else P=bimEntBody({who:s.who});
+    return {top:P.top,eye:P.eye,sh:P.sh,chair:false,speed:P.speed,person:P};
+  }
+  /* the rules: the step a code stair allows, the walker's slope, the wheelchair user's slope (the ADA's where the
+     site is in the United States, 1:12 elsewhere), running */
+  function bimWalkRules(){
+    var rs=bimStd('ada.2010','ramp_slope'),run=bimStd('walk.rules','run');
+    return {stepUp:bimWalkStepUp(bimStd('stair.riser','riser'),bimStd('stair.riser','var')),slopeDeg:bimStd('walk.rules','slope'),
+      chairSlope:(typeof rs==='number'&&rs>0)?rs/100:1/12,run:(typeof run==='number'&&run>0)?run:2};
+  }
+  /* where Jolt is asked for, in order, as the rendered view asks for three.js */
+  function bimWalkSources(protocol,base){
+    var p=String(protocol||''),out=[];
+    if(p!=='http:'&&p!=='https:')out.push({u:'runtime/'+BIM_WALK_FILE,sri:false});
+    out.push({u:String(base)+BIM_WALK_FILE,sri:true});
+    return out;
+  }
+  /* Jolt, loaded and started once: a promise of it */
+  function bimWalkLoad(){
+    var W=A3D_WALK;
+    if(W.load)return W.load;
+    var src=bimWalkSources(window.location&&window.location.protocol,bimLbBase()),i=0;
+    W.st='loading';W.err='';
+    W.load=new Promise(function(res,rej){
+      if(window.BIMJOLT&&window.BIMJOLT.default){res(window.BIMJOLT);return;}
+      function next(){
+        if(i>=src.length){rej(new Error('Jolt could not be loaded from '+src.map(function(s){return s.u;}).join(' or ')));return;}
+        var s=src[i++],tag=document.createElement('script');
+        tag.src=s.u;
+        if(s.sri){tag.integrity=BIM_WALK_SRI;tag.crossOrigin='anonymous';}
+        tag.onload=function(){if(window.BIMJOLT&&window.BIMJOLT.default)res(window.BIMJOLT);else next();};
+        tag.onerror=function(){if(tag.parentNode)tag.parentNode.removeChild(tag);next();};
+        document.head.appendChild(tag);
+      }
+      next();
+    }).then(function(M){return M.default();}).then(function(J){W.J=J;W.st='ready';return J;},
+      function(e){W.st='failed';W.err=String(e&&e.message||e);W.load=null;throw e;});
+    return W.load;
+  }
+  /* an element's triangles in the world, nine numbers a triangle, its faces fanned as the shaded view fans them */
+  function bimWalkTris(o){
+    var m=meshOf(o),n=0,i,j,f,a,b,c,p=o.pos||[0,0,0],out,k=0;
+    if(!m||!m.f)return null;
+    for(i=0;i<m.f.length;i++)if(m.f[i].length>=3)n+=m.f[i].length-2;
+    if(!n)return null;
+    out=new Float32Array(n*9);
+    for(i=0;i<m.f.length;i++){
+      f=m.f[i];if(f.length<3)continue;a=m.v[f[0]];
+      for(j=2;j<f.length;j++){
+        b=m.v[f[j-1]];c=m.v[f[j]];
+        out[k++]=a[0]+p[0];out[k++]=a[1]+p[1];out[k++]=a[2]+p[2];
+        out[k++]=b[0]+p[0];out[k++]=b[1]+p[1];out[k++]=b[2]+p[2];
+        out[k++]=c[0]+p[0];out[k++]=c[1]+p[1];out[k++]=c[2]+p[2];
+      }
+    }
+    return out;
+  }
+  /* the shown elements, each with a signature that changes when its mesh, its place or its showing does */
+  function bimWalkItems(){
+    var W=A3D_WALK,items=[],i,o,m,s,t,p;
+    for(i=0;i<A3D.objs.length;i++){
+      o=A3D.objs[i];
+      if(!bimLayerShown(o)||!bimObjectVisibleOnLevel(o))continue;
+      if(o.t==='terrain'){
+        if(!o.survey||bimTerrainSuperseded(o))continue;
+        t=bimRvTerrainItem(o);
+        if(t)items.push({key:o.id,sig:'t'+t.sig,o:o,ter:t});
+        continue;
+      }
+      m=meshOf(o);
+      if(!m||!m.f||!m.f.length)continue;
+      p=o.pos||[0,0,0];s=W.seen[o.id];
+      if(!s||s.m!==m||s.x!==p[0]||s.y!==p[1]||s.z!==p[2])s=W.seen[o.id]={m:m,x:p[0],y:p[1],z:p[2],n:(s?s.n+1:1)};
+      items.push({key:o.id,sig:'m'+s.n,o:o});
+    }
+    return items;
+  }
+  /* the physics brought up to date with the model: on entering, and every so often while walking (an edit, a layer) */
+  function bimWalkSyncModel(){
+    var W=A3D_WALK;
+    if(!W.phys)return false;
+    return bimWalkPhysSync(W.phys,bimWalkItems(),function(it){return it.ter?bimRvTerrainArrays(it.ter).op.pos:bimWalkTris(it.o);});
+  }
+  /* the ground where nothing is: the shadows' ground (the active level's floor), else 0 */
+  function bimWalkGround(){var g=0;try{g=bimShadowGround();}catch(eG){g=0;}return isFinite(g)?g:0;}
+  /* where the walker starts: on the first floor below the view's focus; on the ground there when there is none; never
+     inside a solid: when something stands within the walker's height over that spot, on top of the highest surface */
+  function bimWalkStart(cap){
+    var P=A3D_WALK.phys,c=A3D.cam,x=c.tx||0,z=c.tz||0,y0=(c.ty||0)+0.5,d,y,up,top;
+    d=bimWalkPhysRay(P,[x,y0,z],[0,-1,0],500);
+    y=isFinite(d)?y0-d:bimWalkGround();
+    up=bimWalkPhysRay(P,[x,y+0.02,z],[0,1,0],cap.h);
+    if(isFinite(up)){
+      top=bimWalkPhysRay(P,[x,y+1000,z],[0,-1,0],2000);
+      if(isFinite(top))y=y+1000-top;
+    }
+    return [x,y+0.01,z];
+  }
+  /* WALK: in or out */
+  function bimWalkCommand(){
+    if(A3D_WALK.on){bimWalkLeave();return Promise.resolve(false);}
+    return bimWalkEnter();
+  }
+  function bimWalkEnter(){
+    var W=A3D_WALK;
+    if(W.on)return Promise.resolve(true);
+    if(!A3D.on){a3dToast('Open the model first');return Promise.resolve(false);}
+    if(A3D_VIEW.kind==='sheet'){a3dToast('Walk is in the model: open the Model tab first');return Promise.resolve(false);}
+    if(W.st!=='ready')a3dToast('Walk: loading the physics (about 4 MB, once)');
+    return bimWalkLoad().then(function(J){
+      if(W.on)return true;
+      var s=bimWalkSettings(),c=A3D.cam;
+      W.B=bimWalkBody(s);W.R=bimWalkRules();W.cap=bimWalkCapsule(W.B,W.R);
+      W.phys=bimWalkPhys(J);W.seen={};
+      bimWalkSyncModel();
+      W.saved={cam:{yaw:c.yaw,pitch:c.pitch,dist:c.dist,tx:c.tx,ty:c.ty,tz:c.tz},flat:!!A3D.flat};
+      A3D.flat=false;
+      W.p=bimWalkStart(W.cap);
+      bimWalkPhysChar(W.phys,W.cap,W.p);
+      W.yaw=c.yaw;W.pitch=0;W.mode='walk';W.view='first';W.ghost=false;W.held={};W.joy=null;W.last=0;W.jump=false;
+      W.syncAt=performance.now()+BIM_WALK_SYNC_MS;W.moved=performance.now();
+      W.on=true;
+      bimWalkControlsOn();
+      bimWalkCam();
+      W.raf=requestAnimationFrame(bimWalkFrame);
+      refreshProps();
+      a3dToast('Walk: W A S D to move, the mouse to look; V third person, F fly, Alt through walls, Esc to leave');
+      return true;
+    },function(e){
+      console.warn('[BIM] Walk: '+String(e&&e.message||e),e);
+      a3dToast('Walk could not start: '+String(e&&e.message||e));
+      return false;
+    });
+  }
+  /* out of the walk: the camera back where it was, everything Jolt holds given back */
+  function bimWalkLeave(){
+    var W=A3D_WALK,k;
+    if(!W.on)return false;
+    W.on=false;
+    if(W.raf){cancelAnimationFrame(W.raf);W.raf=0;}
+    bimWalkControlsOff();
+    bimSceneExtra([]);
+    if(W.phys){try{bimWalkPhysFree(W.phys);}catch(eF){console.warn('[BIM] Walk: the physics could not be freed',eF);}W.phys=null;}
+    W.seen={};
+    if(W.saved){for(k in W.saved.cam)if(W.saved.cam.hasOwnProperty(k))A3D.cam[k]=W.saved.cam[k];A3D.flat=W.saved.flat;W.saved=null;}
+    paint();refreshProps();
+    return true;
+  }
+  /* the walker's body changed in Properties while walking: a new capsule where they stand */
+  function bimWalkRebody(){
+    var W=A3D_WALK;
+    if(!W.on||!W.phys)return;
+    W.B=bimWalkBody(bimWalkSettings());W.cap=bimWalkCapsule(W.B,W.R);
+    bimWalkPhysChar(W.phys,W.cap,W.p);
+    bimWalkCam();
+  }
+  /* the camera from the walker: their eyes, or behind and above them on a boom that stops short of a wall */
+  function bimWalkCam(){
+    var W=A3D_WALK,c,e,d,hit;
+    if(W.view==='third'){
+      e=[W.p[0],W.p[1]+W.cap.eye,W.p[2]];
+      d=[Math.cos(W.pitch)*Math.sin(W.yaw),Math.sin(W.pitch),Math.cos(W.pitch)*Math.cos(W.yaw)];
+      hit=bimWalkPhysRay(W.phys,e,d,BIM_WALK_BOOM+0.5);
+      c=bimWalkCamThird(W.p,W.cap.eye,W.yaw,W.pitch,BIM_WALK_BOOM,hit);
+    }else c=bimWalkCamFirst(W.p,W.cap.eye,W.yaw,W.pitch);
+    A3D.cam.tx=c.tx;A3D.cam.ty=c.ty;A3D.cam.tz=c.tz;A3D.cam.yaw=c.yaw;A3D.cam.pitch=c.pitch;A3D.cam.dist=c.dist;
+    bimWalkFigure();
+  }
+  /* the figure at the feet, turned to the walk, in third person only: an object of the scene, not of the model */
+  function bimWalkFigure(){
+    var W=A3D_WALK,m,cy,sy;
+    if(W.view!=='third'){bimSceneExtra([]);return;}
+    if(!W.fig||W.fig.B!==W.B){m=W.B.chair?bimEntChairMesh():bimEntPersonMesh(W.B.person);W.fig={B:W.B,src:m};}
+    /* the figure faces +z (its marker runs back to front along +z); walking forward is [-sin(yaw), 0, -cos(yaw)],
+       so it is turned by the yaw and half a turn: +z goes to [sin(a), 0, cos(a)] turned by a */
+    cy=Math.cos(W.yaw+Math.PI);sy=Math.sin(W.yaw+Math.PI);
+    if(W.fig.yaw!==W.yaw){
+      W.fig.mesh={v:W.fig.src.v.map(function(q){return [q[0]*cy+q[2]*sy,q[1],-q[0]*sy+q[2]*cy];}),f:W.fig.src.f};
+      W.fig.yaw=W.yaw;
+    }
+    bimSceneExtra([{id:'a3d-walker',t:'solid',name:'Walker',col:'#c99a6e',pos:[W.p[0],W.p[1],W.p[2]],mesh:W.fig.mesh}]);
+  }
+  /* one frame: the controls to a move, the move to the physics, the walker to the camera, the view drawn */
+  function bimWalkFrame(t){
+    var W=A3D_WALK,dt,inp,v,mode,r,sp,moving;
+    W.raf=0;
+    if(!W.on)return;
+    try{
+      dt=W.last?Math.min(0.05,Math.max(0,(t-W.last)/1000)):1/60;W.last=t;
+      if(performance.now()>=W.syncAt){bimWalkSyncModel();W.syncAt=performance.now()+BIM_WALK_SYNC_MS;}
+      inp=bimWalkKeys(W.held,W.joy);
+      sp=W.B.speed*(inp.run?W.R.run/2:1);   /* bimWalkMove doubles a run; the registry's factor is kept */
+      mode=(inp.ghost||W.ghost)?'ghost':W.mode;
+      v=bimWalkMove(inp,W.yaw,sp,mode!=='walk');
+      if(mode==='walk'&&inp.up>0)W.jump=true;
+      r=bimWalkPhysStep(W.phys,v,dt,mode,W.jump&&!W.B.chair);
+      W.jump=false;
+      moving=inp.f||inp.s||inp.up||!r||Math.abs(r.p[0]-W.p[0])+Math.abs(r.p[1]-W.p[1])+Math.abs(r.p[2]-W.p[2])>1e-5;
+      if(r)W.p=r.p;
+      if(moving)W.moved=performance.now();
+      if(W.p[1]<bimWalkGround()-200){W.p=bimWalkStart(W.cap);bimWalkPhysChar(W.phys,W.cap,W.p);a3dToast('Walk: fallen off the model, back on the floor');}
+      bimWalkCam();
+      paint();
+    }catch(eW){
+      console.warn('[BIM] Walk stopped',eW);
+      a3dToast('Walk stopped: '+String(eW&&eW.message||eW));
+      bimWalkLeave();
+      return;
+    }
+    W.raf=requestAnimationFrame(bimWalkFrame);
+  }
+  /* the switches: first or third person (V), walk or fly (F), through walls (the ghost button; Alt while held) */
+  function bimWalkToggle(what){
+    var W=A3D_WALK;
+    if(!W.on)return false;
+    if(what==='view')W.view=W.view==='first'?'third':'first';
+    else if(what==='mode'){W.mode=W.mode==='walk'?'fly':'walk';if(W.mode==='walk')W.pitch=Math.max(-1.2,Math.min(1.2,W.pitch));}
+    else if(what==='ghost')W.ghost=!W.ghost;
+    else return false;
+    bimWalkCam();bimWalkControlsTell();paint();
+    return true;
+  }
+  /* the look, from the mouse or a finger */
+  function bimWalkLookBy(dx,dy){
+    var W=A3D_WALK,l;
+    if(!W.on)return;
+    l=bimWalkLook({yaw:W.yaw,pitch:W.pitch},dx,dy,BIM_WALK_LOOK);
+    W.yaw=l.yaw;W.pitch=l.pitch;W.moved=performance.now();
+  }
+  /* Properties > View: who walks */
+  function bimWalkProp(mk,mv){
+    if(mk==='walkwho')return bimWalkSetting('who',mv);
+    if(mk==='walkh')return bimWalkSetting('h',mv);
+    return false;
+  }
+  function bimWalkPropsHtml(){
+    var s=bimWalkSettings(),o='',k,h;
+    for(k in BIM_WALK_WHO)if(BIM_WALK_WHO.hasOwnProperty(k))o+='<option value="'+k+'"'+(s.who===k?' selected':'')+'>'+bimEsc(BIM_WALK_WHO[k])+'</option>';
+    h=bimPropRow('Walker','<select data-propmodel="walkwho">'+o+'</select>');
+    if(s.who==='own')h+=bimPropRow('Walker height (m)','<input type="number" step="0.01" min="0.8" max="2.3" data-propmodel="walkh" value="'+s.h+'">');
+    return h;
+  }
+  /* ================= __acad3dV203: Walkthrough W1, the controls on the page =================
+     docs/work-orders/v203/SPEC.md, C-06. While walking, the view's own handlers (orbit, pick, the app's keys) are held
+     back: these listeners sit in the capture phase on the view and the window and stop what they take.
+     - Desktop: a click on the view locks the pointer and the mouse looks; without the lock a drag looks. W A S D or the
+       arrows move, Shift runs, Space jumps (rises in Fly), C sinks, Alt held goes through walls, V third person,
+       F fly, Esc (or Leave) ends the walk.
+     - Phone and tablet: a joystick under the left thumb moves (bimWalkJoy), a drag anywhere else looks.
+     - The bar at the top: Leave, First or Third person, Walk or Fly, Through walls; a line saying what the keys do.
+     A key typed into a field (Properties) is the field's. */
+  var A3D_WALKUI={on:false,bar:null,joy:null,knob:null,hint:null,joyId:null,lookId:null,lx:0,ly:0,h:{}};
+  function bimWalkVp(){return el.cv&&el.cv.parentNode?el.cv.parentNode:null;}
+  function bimWalkInField(ev){var t=ev.target,n=t&&t.tagName;return n==='INPUT'||n==='TEXTAREA'||n==='SELECT'||!!(t&&t.isContentEditable);}
+  function bimWalkInUi(ev){return !!(ev.target&&ev.target.closest&&ev.target.closest('.a3d-walkbar,.a3d-walkjoy'));}
+  function bimWalkLocked(){return document.pointerLockElement===el.cv;}
+  /* the bar, the hint and the joystick, made once and shown while walking */
+  function bimWalkUiBuild(){
+    var U=A3D_WALKUI,vp=bimWalkVp();
+    if(U.bar||!vp)return;
+    U.bar=document.createElement('div');U.bar.className='a3d-walkbar';
+    U.bar.innerHTML='<button type="button" data-walkact="leave">Leave</button><button type="button" data-walkact="view"></button>'+
+      '<button type="button" data-walkact="mode"></button><button type="button" data-walkact="ghost">Through walls</button>';
+    U.hint=document.createElement('div');U.hint.className='a3d-walkhint';
+    U.joy=document.createElement('div');U.joy.className='a3d-walkjoy';U.joy.setAttribute('aria-label','Move');
+    U.knob=document.createElement('div');U.knob.className='a3d-walkknob';U.joy.appendChild(U.knob);
+    vp.appendChild(U.bar);vp.appendChild(U.hint);vp.appendChild(U.joy);
+    U.bar.addEventListener('click',function(ev){
+      var b=ev.target&&ev.target.closest?ev.target.closest('[data-walkact]'):null,a;
+      if(!b)return;
+      ev.preventDefault();ev.stopPropagation();
+      a=b.getAttribute('data-walkact');
+      if(a==='leave')bimWalkLeave();else bimWalkToggle(a);
+    });
+  }
+  /* the bar's words and states, as the walk is now */
+  function bimWalkControlsTell(){
+    var U=A3D_WALKUI,W=A3D_WALK,b;
+    if(!U.bar)return;
+    b=U.bar.querySelector('[data-walkact="view"]');if(b)b.textContent=W.view==='first'?'First person':'Third person';
+    b=U.bar.querySelector('[data-walkact="mode"]');if(b)b.textContent=W.mode==='walk'?'Walk':'Fly';
+    b=U.bar.querySelector('[data-walkact="ghost"]');if(b)b.classList.toggle('on',!!W.ghost);
+    if(U.hint)U.hint.textContent=W.mode==='fly'?'W A S D move, Space rises, C sinks, Shift runs, F walk, V view, Esc leaves':
+      'W A S D move, the mouse looks (click to hold it), Shift runs, Space jumps, Alt through walls, F fly, V view, Esc leaves';
+  }
+  /* the keys: held ones for the move, V and F switch, Esc leaves; the app's own shortcuts held back while walking */
+  function bimWalkKeyDown(ev){
+    var W=A3D_WALK,c=ev.code;
+    if(!W.on||bimWalkInField(ev))return;
+    if(c==='Escape'){ev.preventDefault();ev.stopPropagation();if(bimWalkLocked())return;bimWalkLeave();return;}
+    ev.stopPropagation();
+    if(c==='KeyV'&&!ev.repeat){ev.preventDefault();bimWalkToggle('view');return;}
+    if(c==='KeyF'&&!ev.repeat){ev.preventDefault();bimWalkToggle('mode');return;}
+    if(c==='AltLeft'||c==='AltRight'||c==='Space'||c.indexOf('Arrow')===0)ev.preventDefault();
+    W.held[c]=true;
+  }
+  function bimWalkKeyUp(ev){
+    var W=A3D_WALK;
+    if(!W.on||bimWalkInField(ev))return;
+    ev.stopPropagation();
+    if(ev.code==='AltLeft'||ev.code==='AltRight')ev.preventDefault();
+    delete W.held[ev.code];
+  }
+  /* nothing held once the page loses the keyboard */
+  function bimWalkBlur(){A3D_WALK.held={};A3D_WALK.joy=null;}
+  /* the pointer on the view: the joystick, a look, or the lock */
+  function bimWalkPtrDown(ev){
+    var U=A3D_WALKUI,r;
+    if(!A3D_WALK.on||bimWalkInUi(ev)&&!(ev.target&&ev.target.closest&&ev.target.closest('.a3d-walkjoy')))return;
+    ev.stopPropagation();ev.preventDefault();
+    if(ev.target&&ev.target.closest&&ev.target.closest('.a3d-walkjoy')){
+      U.joyId=ev.pointerId;bimWalkJoyAt(ev);
+      try{U.joy.setPointerCapture(ev.pointerId);}catch(eC){}
+      return;
+    }
+    if(ev.pointerType==='mouse'&&!bimWalkLocked()&&el.cv.requestPointerLock){
+      try{r=el.cv.requestPointerLock();if(r&&r.catch)r.catch(function(){});}catch(eL){}
+    }
+    U.lookId=ev.pointerId;U.lx=ev.clientX;U.ly=ev.clientY;
+  }
+  function bimWalkPtrMove(ev){
+    var U=A3D_WALKUI;
+    if(!A3D_WALK.on)return;
+    if(U.joyId!==null&&ev.pointerId===U.joyId){ev.preventDefault();bimWalkJoyAt(ev);return;}
+    if(bimWalkLocked()){bimWalkLookBy(ev.movementX||0,ev.movementY||0);return;}
+    if(U.lookId!==null&&ev.pointerId===U.lookId){
+      ev.preventDefault();
+      bimWalkLookBy(ev.clientX-U.lx,ev.clientY-U.ly);U.lx=ev.clientX;U.ly=ev.clientY;
+    }
+  }
+  function bimWalkPtrUp(ev){
+    var U=A3D_WALKUI;
+    if(U.joyId!==null&&ev.pointerId===U.joyId){U.joyId=null;A3D_WALK.joy=null;if(U.knob)U.knob.style.transform='';}
+    if(U.lookId!==null&&ev.pointerId===U.lookId)U.lookId=null;
+  }
+  /* the joystick from a finger: bimWalkJoy, the knob drawn where it points */
+  function bimWalkJoyAt(ev){
+    var U=A3D_WALKUI,r=U.joy.getBoundingClientRect(),R=r.width/2,j=bimWalkJoy(r.left+R,r.top+R,ev.clientX,ev.clientY,R,0.12);
+    A3D_WALK.joy=j;
+    U.knob.style.transform='translate('+Math.round(j.s*R*0.6)+'px,'+Math.round(-j.f*R*0.6)+'px)';
+  }
+  /* the view's own handlers held back: whatever starts on the view stops here while walking */
+  function bimWalkSwallow(ev){if(A3D_WALK.on&&!bimWalkInUi(ev)){ev.stopPropagation();if(ev.cancelable)ev.preventDefault();}}
+  function bimWalkControlsOn(){
+    var U=A3D_WALKUI,vp=bimWalkVp(),h=U.h;
+    bimWalkUiBuild();
+    if(U.on||!vp)return;
+    U.on=true;U.joyId=null;U.lookId=null;
+    h.kd=bimWalkKeyDown;h.ku=bimWalkKeyUp;h.bl=bimWalkBlur;h.pd=bimWalkPtrDown;h.pm=bimWalkPtrMove;h.pu=bimWalkPtrUp;h.sw=bimWalkSwallow;
+    window.addEventListener('keydown',h.kd,true);window.addEventListener('keyup',h.ku,true);window.addEventListener('blur',h.bl);
+    vp.addEventListener('pointerdown',h.pd,true);window.addEventListener('pointermove',h.pm,true);window.addEventListener('pointerup',h.pu,true);
+    window.addEventListener('pointercancel',h.pu,true);
+    ['mousedown','touchstart','wheel','dblclick','contextmenu'].forEach(function(n){vp.addEventListener(n,h.sw,{capture:true,passive:false});});
+    vp.classList.add('a3d-walking');
+    bimWalkControlsTell();
+  }
+  function bimWalkControlsOff(){
+    var U=A3D_WALKUI,vp=bimWalkVp(),h=U.h;
+    if(!U.on)return;
+    U.on=false;
+    window.removeEventListener('keydown',h.kd,true);window.removeEventListener('keyup',h.ku,true);window.removeEventListener('blur',h.bl);
+    window.removeEventListener('pointermove',h.pm,true);window.removeEventListener('pointerup',h.pu,true);window.removeEventListener('pointercancel',h.pu,true);
+    if(vp){
+      vp.removeEventListener('pointerdown',h.pd,true);
+      ['mousedown','touchstart','wheel','dblclick','contextmenu'].forEach(function(n){vp.removeEventListener(n,h.sw,{capture:true,passive:false});});
+      vp.classList.remove('a3d-walking');
+    }
+    if(bimWalkLocked()&&document.exitPointerLock)document.exitPointerLock();
+    U.joyId=null;U.lookId=null;
+    if(U.knob)U.knob.style.transform='';
   }
 
 
@@ -62693,10 +63316,10 @@ function bimWalkKeys(h, j) {
   // Builds one full sheet page as a single vector SVG: real vector geometry for 'plan' viewports,
   // raster <image> embeds for every other kind (or a 'plan' viewport that failed to resolve or
   // build), a vector title block, and vector borders/labels for every viewport regardless of kind.
-  function bimBuildSheetSVG(sheet,mode){   /* __acad3dV121: a sheet's SVG and its print are plots */
-    return bimWithPlotPass(mode==='presentation',function(){return bimBuildSheetSVGDrawing(sheet,mode);});
+  function bimBuildSheetSVG(sheet,mode,extra){   /* __acad3dV121: a sheet's SVG and its print are plots */
+    return bimWithPlotPass(mode==='presentation',function(){return bimBuildSheetSVGDrawing(sheet,mode,extra);});
   }
-  function bimBuildSheetSVGDrawing(sheet,mode){
+  function bimBuildSheetSVGDrawing(sheet,mode,extra){   /* __acad3dV175c: extra, a drawing layout's shapes and text, over the rest */
     var W=sheet.w,H=sheet.h,defs=[],body=[],i;
     for(i=0;i<sheet.viewports.length;i++){
       var vp=sheet.viewports[i];
@@ -62737,7 +63360,7 @@ function bimWalkKeys(h, j) {
       '<defs>'+defs.join('')+'</defs>\n'+
       '<rect x="0" y="0" width="'+W+'" height="'+H+'" fill="#ffffff"/>\n'+
       '<rect x="0.4" y="0.4" width="'+(W-0.8)+'" height="'+(H-0.8)+'" fill="none" stroke="#333333" stroke-width="0.5"/>\n'+
-      body.join('\n')+'\n</svg>\n';
+      body.join('\n')+(extra?'\n'+extra:'')+'\n</svg>\n';
   }
   function bimExportSheetSVG(){
     var sheet=bimSheetById(A3D.activeSheetId);
@@ -62780,6 +63403,16 @@ function bimWalkKeys(h, j) {
     var Q=bimPresSeq(),n=Q.length,mode=A3D.presentMode?'presentation':'technical',sizes={},css='',body='',bad=[],lost=[],i,e,s,nm,svg,cv,first=true,brd=false;   /* __acad3dV162 */
     for(i=0;i<n;i++){
       e=Q[i];
+      if(e.t==='board'&&e.b.drawing){   /* __acad3dV175c: a drawing layout, a vector page as a sheet is, when it can be */
+        var LS=bimLoLayoutSvg(e.b,mode);
+        if(LS.svg){
+          nm='a3dsz'+String(LS.w.toFixed(1)+'x'+LS.h.toFixed(1)).replace(/[^0-9x]/g,'_');
+          if(!sizes[nm]){sizes[nm]=1;if(first)css+='@page{size:'+LS.w+'mm '+LS.h+'mm;margin:0}';css+='@page '+nm+'{size:'+LS.w+'mm '+LS.h+'mm;margin:0}';}
+          first=false;
+          body+='<div class="a3dpg" data-page="'+bimEsc(e.id)+'" style="page:'+nm+';width:'+LS.w+'mm;height:'+LS.h+'mm">'+LS.svg+'</div>';
+          continue;
+        }
+      }
       if(e.t==='board'){   /* __acad3dV162: a board on A3 landscape pages of its own, as it prints alone */
         if(!brd){brd=true;css+='@page a3dbrd{size:420mm 297mm;margin:10mm}';}
         var bpg=e.b.objs?bimPgBoardPage(e.b):null,pnm=bpg?'a3dbrdp'+i:'a3dbrd';   /* __acad3dV174c: a board with a page prints on its own size */
@@ -63241,6 +63874,150 @@ function bimLyDupNumbers(entries) {
     return '<rect x="' + bimLmN(o.x) + '" y="' + bimLmN(o.y) + '" width="' + bimLmN(o.w) + '" height="' + bimLmN(o.h) +
       '" fill="none" stroke="' + (stroke || '#000000') + '" stroke-width="' + bimLmN(width == null ? 0.25 : width) + '"/>';
   }
+  /* ================= __acad3dV175c WO-18: one editor, one print, in the app =================
+     docs/research/research-one-paper-space.md (the owner's D1 to D8) and docs/work-orders/v175c/SPEC-step2.md.
+     A sheet opens as a layout in the board editor: Open as layout (the sheet bar, or SHEETLAYOUT) makes it a drawing
+     layout (board.drawing) with the sheet's number, name, page and place in the set: the ISO 5457 frame and an ISO 7200
+     title block, a map frame (bimLmVpToFrame, WO-11) for each plan, elevation and view at its scale and pan, and a
+     schedule for each rooms or levels schedule; one undo step. A sheet a layout cannot hold yet is refused with the
+     reason (a size outside the gallery, another schedule). Not done to every sheet at once: a sheet stays a sheet
+     until its owner opens it as a layout.
+     A drawing layout's Draw menu leaves out the live values and the charts (D4, bimLmDrawMenu, WO-14). Its map frames
+     are its viewports: Work in viewport opens the frame's view in the model; the layout's tab brings it back.
+     It prints as one vector page: its frames turned back into viewports (bimLmFrameToVp, WO-12) and drawn by the
+     sheets' own SVG (each clipped inside its frame, plans as vectors), its shapes and text as SVG, at its page size in
+     millimetres; a layout holding a kind the vector page does not draw prints as a board does, and says so. */
+  /* the gallery's page of a sheet's size: {key, o}, or null */
+  function bimLoPage(sh){
+    var m=/^pg:([a-z]+-[A-Z0-9]+):([lp])$/.exec(String(sh&&sh.sizeKey||'')),F=bimPgFamilies(),i,j,o,k,d;
+    if(m&&bimPgSize(m[1]))return {key:m[1],o:m[2]};
+    for(i=0;i<F.length;i++)for(j=0;j<F[i][3].length;j++)for(o=0;o<2;o++){
+      k=F[i][0]+'-'+F[i][3][j];d=bimPgDims(k,o?'p':'l');
+      if(d&&Math.abs(d.w-sh.w)<0.5&&Math.abs(d.h-sh.h)<0.5)return {key:k,o:o?'p':'l'};
+    }
+    return null;
+  }
+  /* the Draw menu's kinds as bimLmDrawMenu reads them: a live value, a chart, or anything else */
+  function bimLoDrawKind(k){return (k==='lvfield'||k==='lvnumber'||k==='lvkpi')?'live':(k==='lvchart'?'chart':'shape');}
+  function bimLoDrawKinds(L,drawing){
+    var out=bimLmDrawMenu(L.map(function(k){return {k:k,kind:k==='-'?'sep':bimLoDrawKind(k[0])};}),drawing).map(function(x){return x.k;});
+    return out.filter(function(k,i){return !(k==='-'&&(i===0||i===out.length-1||out[i-1]==='-'));});
+  }
+  /* a sheet as a drawing layout's record: {rec} or {why}. fit(frame) gives a fitted frame's {den, px, py}; ly the layer */
+  function bimLoFromSheet(sh,fit,ly){
+    var page=bimLoPage(sh),L,objs=[],k=1,i,vp,fr,n,d,ml,m,sw,tw;
+    if(!page)return {why:'its size ('+sh.w+' x '+sh.h+' mm) is not one of the page sizes a layout has'};
+    d=bimPgDims(page.key,page.o);
+    ml=bimStd('drawing.iso5457','margin_left');m=bimStd('drawing.iso5457','margin');sw=bimStd('drawing.iso5457','frame');
+    tw=Math.min(bimStd('drawing.iso7200','width'),d.w-ml-m);
+    objs.push({id:'e'+(k++),t:'border',layer:ly,x:ml,y:m,w:d.w-ml-m,h:d.h-2*m,sw:sw});
+    objs.push({id:'e'+(k++),t:'tblock',st:'iso',layer:ly,x:d.w-m-tw,y:d.h-m-36,w:tw,h:36,num:String(sh.number||'')});
+    L=bimLmSheetToLayout(sh);
+    for(i=0;i<(sh.viewports||[]).length;i++){
+      vp=sh.viewports[i];fr=L.objs[i+1];
+      if(vp.kind==='schedule'){
+        if(vp.refId!=='rooms'&&vp.refId!=='levels')return {why:'its '+(vp.label||vp.refId)+' schedule is not one a layout shows yet (rooms and levels are)'};
+        objs.push({id:'e'+(k++),t:'sched',layer:ly,x:vp.x,y:vp.y,w:vp.w,h:vp.h,src:vp.refId,ttl:vp.label||''});
+        continue;
+      }
+      n={id:'e'+(k++),t:'map',layer:ly,x:fr.x,y:fr.y,w:fr.w,h:fr.h,src:fr.src,nm:fr.label};
+      if(fr.fit){var f=fit(n);n.den=f.den;n.px=f.px;n.py=f.py;}
+      else{n.den=fr.den;n.px=vp.pan&&isFinite(vp.pan[0])?vp.pan[0]:0;n.py=vp.pan&&isFinite(vp.pan[1])?vp.pan[1]:0;}
+      objs.push(n);
+    }
+    return {rec:{name:sh.name||'Untitled',num:String(sh.number||''),page:page,objs:objs,drawing:true}};
+  }
+  /* Open as layout: the sheet replaced by its drawing layout, in its place in the set, opened in the board editor */
+  function bimLoOpenSheet(id){
+    var sh=bimSheetById(id),P,ly,plan,bid,n=0,r,order,at;
+    if(!sh){a3dToast('No sheet open');return null;}
+    ly=(bimLayerById(A3D.activeLayer)||bimLayerZero()).id;
+    plan=bimLoFromSheet(sh,bimBmapFit,ly);
+    if(plan.why){a3dToast(bimSheetLabel(sh)+' cannot open as a layout yet: '+plan.why);return null;}
+    P=bimPresData();
+    P.boards.forEach(function(b){var mm=/^board-c(\d+)$/.exec(b.id);if(mm&&+mm[1]>n)n=+mm[1];});
+    bid='board-c'+(n+1);
+    r=bimBrdKeep({id:bid,kind:'custom'},{name:plan.rec.name,figs:[],objs:plan.rec.objs,page:plan.rec.page,num:plan.rec.num,drawing:true});
+    if(!r.objs||r.objs.length!==plan.rec.objs.length){a3dToast(bimSheetLabel(sh)+' could not be opened as a layout -- see the console');
+      console.warn('[BIM] Open as layout: the layout\'s objects were not all kept',plan.rec.objs,r.objs);return null;}
+    pushUndo();
+    order=bimPresSeq().map(function(e){return e.id;});at=order.indexOf(sh.id);
+    if(A3D_VIEW.kind==='sheet')bimActivateView('3d',null,{anim:false});
+    P.boards.push(r);
+    A3D.sheets.splice(A3D.sheets.indexOf(sh),1);
+    if(A3D.activeSheetId===sh.id)A3D.activeSheetId=null;
+    if(at<0)order.push(bid);else order.splice(at,1,bid);
+    P.order=order;
+    saveSoon();refreshBrowser();bimPresPanelRefresh();bimRenderLayoutTabs();
+    bimShellSetTab('presentation');
+    if(bimPresOpenBoard(bid)){A3D_CLB.edit=true;bimClbOpen();}
+    a3dToast(bimLyLabel(r.num,r.name)+' is a drawing layout: its viewports are map frames; Undo brings the sheet back');
+    return bid;
+  }
+  /* Work in viewport: the frame's view opened in the model */
+  function bimLoWorkIn(fr){
+    var m=/^(plan|elevation|view):(.+)$/.exec(fr&&fr.src||''),ok;
+    if(!m){a3dToast('This frame shows no view yet');return false;}
+    bimClbClose();
+    ok=bimActivateView(m[1]==='plan'?'plan':(m[1]==='elevation'?'elev':'saved'),m[2]);
+    if(ok)a3dToast('Working in the model on '+(fr.nm||m[2])+': the layout\'s tab brings it back');
+    return ok;
+  }
+  /* the kinds the vector page draws */
+  var BIM_LO_VECTOR={border:1,tblock:1,map:1,sched:1,rect:1,ellipse:1,line:1,text:1};
+  /* a drawing layout as the sheet the vector page is drawn from: its frames as viewports, its schedules as theirs */
+  function bimLoAsSheet(B){
+    var pg=bimPgBoardPage(B),vps=[],tb=null;
+    if(!pg)return null;
+    (B.objs||[]).forEach(function(n){
+      var v;
+      if(n.t==='map'){v=bimLmFrameToVp({id:n.id,src:n.src,label:n.nm||'',x:n.x,y:n.y,w:n.w,h:n.h,den:n.den,fit:false});v.pan=[n.px||0,n.py||0];v.scaleMode='ratio';vps.push(v);}
+      else if(n.t==='sched')vps.push({id:n.id,kind:'schedule',refId:n.src,label:n.ttl||'',x:n.x,y:n.y,w:n.w,h:n.h,scaleMode:'fit',scaleDenom:100});
+      else if(n.t==='tblock')tb=n;
+    });
+    return {id:B.id,number:tb&&tb.num?tb.num:(B.num||''),name:B.name||'',w:pg.w,h:pg.h,viewports:vps};
+  }
+  /* its shapes and text as SVG, millimetres, as the board draws them */
+  function bimLoShapesSvg(B){
+    var s='';
+    (B.objs||[]).forEach(function(n){
+      var st=' fill="'+(n.fill&&n.fill!=='none'?n.fill:'none')+'"'+(n.fop!=null&&n.fop<1?' fill-opacity="'+n.fop+'"':'')+
+        ' stroke="'+(n.stroke&&n.stroke!=='none'?n.stroke:'none')+'" stroke-width="'+bimLmN(n.sw||0)+'"';
+      if(n.t==='rect')s+='<rect x="'+bimLmN(n.x)+'" y="'+bimLmN(n.y)+'" width="'+bimLmN(n.w)+'" height="'+bimLmN(n.h)+'" rx="'+bimLmN(n.r||0)+'"'+st+'/>';
+      else if(n.t==='ellipse')s+='<ellipse cx="'+bimLmN(n.x+n.w/2)+'" cy="'+bimLmN(n.y+n.h/2)+'" rx="'+bimLmN(n.w/2)+'" ry="'+bimLmN(n.h/2)+'"'+st+'/>';
+      else if(n.t==='line')s+='<line x1="'+bimLmN(n.x)+'" y1="'+bimLmN(n.y)+'" x2="'+bimLmN(n.x+n.w)+'" y2="'+bimLmN(n.y+n.h)+'"'+st+'/>';
+      else if(n.t==='text'){
+        var fs=(n.fs||14)*25.4/96,x=n.al==='center'?n.x+n.w/2:(n.al==='right'?n.x+n.w:n.x),a=n.al==='center'?'middle':(n.al==='right'?'end':'start');
+        String(n.s||'').split('\n').forEach(function(line,i){
+          s+='<text x="'+bimLmN(x)+'" y="'+bimLmN(n.y+fs*(1.1+i*1.25))+'" font-size="'+bimLmN(fs)+'" font-weight="'+(n.fw===700?700:400)+'" text-anchor="'+a+'" fill="'+(n.col||'#0b0b0b')+'">'+bimEscXml(line)+'</text>';
+        });
+      }
+    });
+    return s;
+  }
+  /* the vector page of a drawing layout, or null (with why) when it holds a kind the vector page does not draw */
+  function bimLoLayoutSvg(B,mode){
+    var S,bad=[];
+    if(!B||!B.drawing)return {why:'not a drawing layout'};
+    (B.objs||[]).forEach(function(n){if(!BIM_LO_VECTOR[n.t]&&bad.indexOf(n.t)<0)bad.push(n.t);});
+    if(bad.length)return {why:'it holds '+bad.map(function(t){return (bimBobKind(t)||['',t])[1].toLowerCase();}).join(', ')+', which the vector page does not draw yet'};
+    S=bimLoAsSheet(B);
+    if(!S)return {why:'it has no page'};
+    return {svg:bimBuildSheetSVG(S,mode,bimLoShapesSvg(B)),w:S.w,h:S.h};
+  }
+  /* Print, from the board's bar: a drawing layout as one vector page; anything else as a board prints */
+  function bimLoPrint(B){
+    var r=bimLoLayoutSvg(B,A3D.presentMode?'presentation':'technical'),w;
+    if(r.why){if(B&&B.drawing)a3dToast('Printed as a board prints: '+r.why);return false;}
+    w=window.open('','_blank');
+    if(!w){a3dToast('The print window was blocked -- allow pop-ups for this page and try again');return true;}
+    w.document.write('<html><head><title>'+bimEsc(bimLyLabel(B.num||'',B.name||''))+'</title><style>@page{size:'+r.w+'mm '+r.h+'mm;margin:0}'+
+      'body{margin:0}svg{width:'+r.w+'mm;height:'+r.h+'mm;display:block}</style></head><body>'+r.svg+
+      '<script>window.onload=function(){window.focus();window.print();};<\/script></body></html>');
+    w.document.close();
+    a3dToast('Printing '+bimLyLabel(B.num||'',B.name||'')+' as one vector page -- Save as PDF in the print dialog makes a PDF');
+    return true;
+  }
   /* ================= __acad3dV162: the boards are pages of the set =================
      docs/research/research-one-analyze-boards.md. A board is a page of the presentation beside the
      sheets: in the Presentation panel with its thumbnail, in the main view, in Present and in Print
@@ -63463,6 +64240,7 @@ function bimLyDupNumbers(entries) {
   /* a board alone, in a print window: A3 landscape, as Print set prints it */
   function bimClbPrint(kind){
     if(!bimBoardName(kind)&&!bimBoardById(kind))kind=bimClbWhich();   /* __acad3dV172b */
+    var bL=bimBoardById(kind);if(bL&&bL.drawing&&bimLoPrint(bL))return true;   /* __acad3dV175c: a drawing layout prints as one vector page */
     var w=window.open('','_blank');
     if(!w){a3dToast('The print window was blocked -- allow pop-ups for this page and try again');return false;}
     bimBimgLoad(bimBimgUsed(),function(){   /* __acad3dV174a: its images loaded first */
@@ -63595,6 +64373,7 @@ function bimLyDupNumbers(entries) {
     if(r.objs&&b){var Ly=bimBobLayValid(b.lay);if(Ly)r.lay=Ly;}   /* __acad3dV174b: its stacks */
     if(r.objs&&b){var Pg=bimPgValid(b.page);if(Pg)r.page=Pg;else if(b.pageOff===true)r.pageOff=true;}   /* __acad3dV174c: its page, or none by choice */
     if(b&&typeof b.num==='string'){var Nm=bimLyNumberValid(b.num);if(Nm)r.num=Nm;}   /* __acad3dV175c: its number as a layout */
+    if(r.kind==='custom'&&b&&b.drawing===true)r.drawing=true;   /* __acad3dV175c WO-18: a drawing layout (D4) */
     return r;
   }
   /* ---- the figures, read from the boards ---- */
@@ -66380,7 +67159,8 @@ function bimRptPlan(families) {
     '-',['map','Map frame'],['legend','Legend'],['north','North arrow'],['sbar','Scale bar'],   /* __acad3dV174d */
     '-',['lvfield','Field\u2026'],['lvnumber','Number\u2026'],['lvsched','Schedule\u2026'],['lvkpi','Indicator\u2026'],['lvchart','Result chart\u2026']];}   /* __acad3dV175b */   /* __acad3dV175a: a value of the project, kept up to date */
   function bimBdeDrawMenu(x,y){
-    bimLtMenuOpen(x,y,bimBdeDrawKinds().map(function(k){return k==='-'?k:[k[1],k[0]];}),function(k){
+    var Wd=bimBdeWork();   /* __acad3dV175c: a drawing layout's menu leaves out the live values and the charts (D4) */
+    bimLtMenuOpen(x,y,bimLoDrawKinds(bimBdeDrawKinds(),!!(Wd&&Wd.B&&Wd.B.drawing)).map(function(k){return k==='-'?k:[k[1],k[0]];}),function(k){
       if(k==='image')bimBdeAddImage();
       else if(/^lv(field|number|sched|kpi|chart)$/.test(k))setTimeout(function(){   /* __acad3dV175b: the three kinds' menus too */
         if(k==='lvfield')bimLvFieldMenu(x,y);else if(k==='lvnumber')bimLvNumberMenu(x,y);else if(k==='lvsched')bimLbdSchedMenu(x,y);else if(k==='lvkpi')bimLbdKpiMenu(x,y);else bimLbdChartMenu(x,y);
@@ -66919,6 +67699,7 @@ function bimRptPlan(families) {
       g+=bimPropRow('View','<select data-bdf="src">'+bimBmapSources().map(function(s){var v=s.kind+':'+s.refId;return bimBdeOpt(v,s.label,n.src);}).join('')+'</select>');
       g+=bimPropRow('Scale','<select data-bdf="den">'+SHEET_SCALES.map(function(s){return bimBdeOpt(s.denom,s.label,n.den);}).join('')+
         (SHEET_SCALES.some(function(s){return s.denom===n.den;})?'':bimBdeOpt(n.den,'1:'+n.den,n.den))+'</select> '+bimBdeBtn('mapfit','Fit','The scale that shows the view whole'));
+      g+=bimPropRow('Viewport',bimBdeBtn('mapwork','Work in viewport','Open this view in the model; the layout\'s tab brings it back'));   /* __acad3dV175c WO-18 */
       g+=bimBdeNum('Pan across (m)','px',n.px,1)+bimBdeNum('Pan up (m)','py',n.py,1);
       g+='<div class="a3d-pnote">The site\'s shown data layers and the basemap are drawn in the frame, on screen and on paper; the basemap\'s credit is printed in its corner.</div>';
     }
@@ -66945,6 +67726,7 @@ function bimRptPlan(families) {
       else if(/^(al|dist|tidy)-/.test(v))bimBdeArrange(v);   /* __acad3dV174b */
       else if(/^lv-/.test(v)){r=a.getBoundingClientRect();bimLvAct(v,r.left,r.bottom+4);}   /* __acad3dV175a */
       else if(v==='mapfit'){var Wf=bimBdeWork(),q=Wf&&bimBobFind(Wf.objs,A3D_BDE.sel[0]);if(q&&q.n.t==='map')bimBdeSet(null,bimBmapFit(q.n));}   /* __acad3dV174d */
+      else if(v==='mapwork'){var Ww=bimBdeWork(),qw=Ww&&bimBobFind(Ww.objs,A3D_BDE.sel[0]);if(qw&&qw.n.t==='map')bimLoWorkIn(qw.n);}   /* __acad3dV175c WO-18 */
       else bimBdeDo(v);
     });
     body.addEventListener('change',function(ev){
@@ -68018,6 +68800,7 @@ function bimRptPlan(families) {
   }
   function onKey(ev){
     if(!A3D.on)return;
+    if(A3D_WALK.on)return;   /* __acad3dV203: walking, the keys are the walk's (walk/walk-controls.js): Space is a jump, not the last command again */
     /* __acad3dV124: a drag from the library is the innermost thing Escape can end */
     if(ev.key==='Escape'&&bimAssetDragCancel()){a3dToast('Nothing placed');ev.preventDefault();ev.stopImmediatePropagation();return;}
     if(A3D_SLIDESHOW.on){bimSlideshowKey(ev);return;}   /* __acad3dV122: nothing typed reaches the model */
@@ -68317,6 +69100,7 @@ function bimRptPlan(families) {
     'bim:linkifc':ric('<path d="M10 13a4 4 0 0 0 6 .6l2-2a4 4 0 0 0-5.6-5.6l-1 1"/><path d="M14 11a4 4 0 0 0-6-.6l-2 2a4 4 0 0 0 5.6 5.6l1-1"/>'),
     'bim:linkcad':ric('<rect x="3" y="5" width="18" height="14" rx="1"/><path d="M7 15l4-6 3 4 2-2 2 4"/>'),
     'bim:importcad':ric('<path d="M4 15v4h16v-4"/><path d="M12 4v10M8 10l4 4 4-4"/><rect x="3" y="2" width="18" height="3"/>'),
+    'v:walk':ric('<circle cx="12" cy="4.5" r="2"/><path d="M12 7v6l-3 7M12 13l3 7M8 11l4-3 4 3"/>'),   /* __acad3dV203 */
     'bim:saveview':ric('<rect x="3" y="5" width="18" height="14" rx="1"/><path d="M8 5v6h8V5"/><circle cx="12" cy="15" r="2"/>'),
     'bim:sheet':ric('<rect x="4" y="3" width="16" height="18"/><path d="M7 7h10M7 11h10M14 15h3M14 18h3"/>'),
     'bim:titleblock':ric('<rect x="3" y="4" width="18" height="16"/><path d="M3 15h18M14 15v5M3 15V4"/>'),
@@ -68651,7 +69435,7 @@ function bimRptPlan(families) {
       {t:'Create',big:[
         {act:'v:iso',label:'3D View',menu:[['v:iso','Default 3D View'],['v:home','Home'],['v:fit','Fit to Model']]},
         {act:'bim:section',label:'Section'}
-      ],small:['v:top','v:front','v:right','bim:saveview']},
+      ],small:['v:top','v:front','v:right','bim:saveview','v:walk']},
       {t:'Section',small:['m:exitsection','m:flipsection']},
       {t:'Sheet Composition',small:['bim:sheet','bim:titleblock']},
       {t:'Windows',small:['bim:uipanels']}
@@ -68755,7 +69539,7 @@ function bimRptPlan(families) {
       'bim:tagroom':'Tag Room','bim:tagallrooms':'Tag All Rooms','bim:tagcat':'Tag by Category','bim:level':'Level','bim:grid':'Grid',
       'bim:beam':'Beam','bim:analyze':'Analyze','bim:truss':'Truss','bim:brace':'Brace','bim:foundwall':'Wall Foundation','bim:footing':'Isolated Footing','bim:property':'Property Line','bim:propshape':'Property from Shape','bim:truenorth':'True North','bim:alignment':'Alignment','bim:usage':'Usage','bim:usages':'Usages','bim:map':'Map','bim:findaddress':'Find Address','bim:geoimport':'Import GeoJSON','bim:context':'Site Context','bim:datalayers':'Data Layers','m:exportgeojson':'GeoJSON',
       'bim:foundslab':'Foundation Slab','bim:rebar':'Rebar','bim:linkifc':'Link IFC','bim:linkcad':'Link CAD',
-      'bim:importcad':'Import CAD','bim:saveview':'Save View','bim:sheet':'Sheet','bim:titleblock':'Title Block',
+      'bim:importcad':'Import CAD','bim:saveview':'Save View','v:walk':'Walk','bim:sheet':'Sheet','bim:titleblock':'Title Block',
       'bim:uipanels':'User Interface','bim:trim':'Trim','bim:offset':'Offset','bim:align':'Align',
       'bim:layers':'Layers','bim:levels':'Levels','bim:classification':'Classifications','bim:units':'Project Units','bim:projinfo':'Project Info',
       'bim:purge':'Purge Unused','bim:mergewalls':'Merge Walls','bim:checkmodel':'Check Model',
@@ -68933,7 +69717,7 @@ function bimRptPlan(families) {
     'm:exportpng':'EXPORTPNG','m:exportpdf':'EXPORTPDF','m:exportdxf':'EXPORTDXF','m:exportsvg':'EXPORTSVG','m:exportifc':'IFCOUT',
     'm:exitsection':'SECTIONEXIT','m:flipsection':'SECTIONFLIP','b:union':'UNION','b:cut':'SUBTRACT','b:isect':'INTERSECT',
     'bim:dimang':'DIMANGULAR','bim:dimrad':'DIMRADIUS','bim:dimdia':'DIMDIAMETER','bim:famimport':'FAMILYLOAD',
-    'bim:famsave':'FAMILYSAVE','bim:component':'COMPONENT','bim:level':'LEVEL','bim:saveview':'SAVEVIEW',
+    'bim:famsave':'FAMILYSAVE','bim:component':'COMPONENT','bim:level':'LEVEL','bim:saveview':'SAVEVIEW','v:walk':'WALK',
     'bim:uipanels':'USERINTERFACE','bim:classification':'CLASSIFY','bim:checkmodel':'CHECKMODEL','bim:importcad':'IMPORTCAD',
     'bim:linkifc':'LINKIFC','bim:joinwalls':'JOINWALLS','bim:clonelinked':'CLONELINKED','bim:syncclones':'SYNCCLONES',
     'bim:titleblock':'TITLEBLOCK','bim:break':'BREAK',
@@ -68952,7 +69736,7 @@ function bimRptPlan(families) {
     'con:angle':'Fix the angle between two sketch lines','con:pointonline':'Keep a sketch point on a line',
     'con:midpoint':'Keep a sketch point at the middle of a line','con:symmetric_pt':'Make two sketch points symmetric about a point',
     'con:symmetric_line':'Make two sketch points symmetric about a line','bim:dimang':'Angular dimension',
-    'bim:dimrad':'Radius dimension','bim:dimdia':'Diameter dimension','bim:saveview':'Save the current view to the Project Browser',
+    'bim:dimrad':'Radius dimension','bim:dimdia':'Diameter dimension','bim:saveview':'Save the current view to the Project Browser','v:walk':'Walk through the model as a person (Esc to leave)',
     'bim:linkifc':'Link an IFC file','bim:importcad':'Import a CAD file','m:exitsection':'Leave the section view',
     'm:flipsection':'Look at the section from the other side','bim:titleblock':'Edit the title block the sheets share',
     'bim:uipanels':'Show or hide the interface panels','bim:clonelinked':'Make a linked clone of the selection',
@@ -69373,6 +70157,7 @@ function bimRptPlan(families) {
     if(act==='bim:famimport'){var ffi=document.getElementById('a3d-famfilein');if(ffi){ffi.value='';ffi.click();}return;}
     if(act==='bim:linkifc'||act==='bim:importcad'){var fi2=document.getElementById('a3d-filein');if(fi2){fi2.value='';fi2.click();}return;}
     if(act==='bim:saveview'){bimSaveCurrentView();return;}
+    if(act==='v:walk'){bimWalkCommand();return;}   /* __acad3dV203 */
     if(act==='bim:sheet'){if(A3D.sheets.length){bimActivateView('sheet',A3D.activeSheetId&&bimSheetById(A3D.activeSheetId)?A3D.activeSheetId:A3D.sheets[0].id);}else{bimOpenNewSheetDlg();}return;}   /* __acad3dV116 */
     if(act==='bim:titleblock'){bimOpenTitleBlockDlg();return;}
     if(act==='bim:level'){if(typeof openAddLevelDlg==='function')openAddLevelDlg();else a3dToast('Add a level from the Project Browser');return;}
@@ -69544,6 +70329,7 @@ function bimRptPlan(families) {
           '<button class="a3d-btn a3d-lyonly" id="a3d-sheettbedit" title="Edit title block info">Title Block</button>'+
           '<button class="a3d-btn a3d-lyonly" id="a3d-sheetpng" title="Export sheet as PNG">Export PNG</button>'+
           '<button class="a3d-btn a3d-lyonly" id="a3d-sheetsvg" title="Export sheet as vector SVG">Export SVG</button>'+
+          '<button class="a3d-btn a3d-lyonly" id="a3d-sheetlayout" title="Open this sheet as a layout in the board editor: its viewports become map frames (Undo brings the sheet back)">Open as layout</button>'+   /* __acad3dV175c WO-18 */
           '<button class="a3d-btn a3d-btn-pri a3d-lyonly" id="a3d-sheetprint" title="Print sheet (vector)">Print</button>'+
           '<button class="a3d-btn a3d-btn-pri" id="a3d-sheetpresent" title="Present the pages full screen, one at a time, from this one">Present</button>'+   /* __acad3dV122 */
           '<button class="a3d-btn" id="a3d-sheetclose" title="Close (back to model)">× Close</button>'+
@@ -69766,6 +70552,8 @@ function bimRptPlan(families) {
     if(sheetPngBtn)sheetPngBtn.addEventListener('click',function(){bimExportSheetPNG();});
     var sheetSvgBtn=root.querySelector('#a3d-sheetsvg');
     if(sheetSvgBtn)sheetSvgBtn.addEventListener('click',function(){bimExportSheetSVG();});
+    var sheetLayoutBtn=root.querySelector('#a3d-sheetlayout');
+    if(sheetLayoutBtn)sheetLayoutBtn.addEventListener('click',function(){bimLoOpenSheet(A3D.activeSheetId);});   /* __acad3dV175c WO-18 */
     var sheetPrintBtn=root.querySelector('#a3d-sheetprint');
     if(sheetPrintBtn)sheetPrintBtn.addEventListener('click',function(){bimPrintSheet();});
     var sheetCloseBtn2=root.querySelector('#a3d-sheetclose');
@@ -69854,6 +70642,11 @@ function bimRptPlan(families) {
     /* __acad3dV59: graphics-override reset buttons live inside the Graphics prop rows but are
        plain <button data-propgfxreset> elements, not <input data-propf>, so they need their own
        click delegate rather than reusing the generic [data-propf] one above. */
+    /* __acad3dV177: an imported IFC wall or floor, Make editable */
+    if(el.propsbody)el.propsbody.addEventListener('click',function(ev){
+      var eb=ev.target&&ev.target.closest?ev.target.closest('[data-ifcedit]'):null;
+      if(eb)bimIfcMakeEditable(eb.getAttribute('data-ifcedit'));
+    });
     /* __acad3dV146: the History group's buttons, and Enter in its message */
     if(el.propsbody)el.propsbody.addEventListener('click',function(ev){
       var hb=ev.target&&ev.target.closest?ev.target.closest('[data-histact]'):null;
@@ -70251,7 +71044,8 @@ function bimRptPlan(families) {
         if(mk==='truenorth'){bimSetTrueNorth(mv);return;}   /* __acad3dV103 */
         if(mk==='sunlat'||mk==='sunlon'||mk==='suntz'||mk==='sundate'||mk==='suntime'||mk==='sundst'){bimSetSun(mk.slice(3),mv);return;}   /* __acad3dV107; __acad3dV171d: sundst */
         if(mk==='colours'){bimSkSet(mv);refreshProps();return;}   /* __acad3dV197 */
-        if(mk==='rendered'||mk.indexOf('rv')===0){bimRvProp(mk,mv);return;}   /* __acad3dV194: this browser's display, not the project's */
+        if(mk==='rendered'||mk.indexOf('rv')===0){bimRvProp(mk,mv);return;}
+        if(mk.indexOf('walk')===0){bimWalkProp(mk,mv);return;}   /* __acad3dV203: this browser's walker, not the project's */   /* __acad3dV194: this browser's display, not the project's */
         if(mk==='project'){A3D.titleBlock.project=mv;}
         else if(mk==='client'){A3D.titleBlock.client=mv;}
         else if(mk==='site'){updateSite('name',mv);}
@@ -70811,6 +71605,8 @@ function bimRptPlan(families) {
     comparebranches:function(){setA3D_BR_CMP(true);bimHistReveal(false);},
     graphics:function(){bimGraphicsCommand();},   /* __acad3dV153 */
     render:function(){bimRvCommand();},   /* __acad3dV194 */
+    walk:function(){bimWalkCommand();},   /* __acad3dV203 */
+    sheetlayout:function(){if(A3D_VIEW.kind!=='sheet'){a3dToast('Open a sheet first: SHEETLAYOUT opens the sheet on screen as a layout');return;}bimLoOpenSheet(A3D.activeSheetId);},   /* __acad3dV175c */
     benchmark:function(){bimBenchmark();},   /* __acad3dV155 */
     cutfill:function(){bimCutFillCommand();},
     cutfillmap:function(){bimCutFillMapCommand();},
@@ -71796,8 +72592,16 @@ function bimRptPlan(families) {
     corners:bimMapTileCorners,tileUrl:bimMapTileUrl};
   /* __acad3dV177: the model as the data Save as IFC hands IfcOpenShell (io/ifc-save.js) */
   window.__a3dIfcSave=BIM_IFC_SAVE;
-  window.__acad3dV177='ifcout,ifcos,ifcsave';
+  window.__acad3dV177='ifcout,ifcos,ifcsave,ifcedit';
   window.__a3dIfcExport=function(){return bimIfcExportText();};
+  window.__a3dIfcEdit={params:bimIfcEditParams,plan:bimIfcEditPlan,make:function(id){var n=bimIfcMakeEditable(id);return n?n.id:null;},box:bimIfcEdBox,same:bimIfcEdSame,
+    /* the imported walls and floors, each with why it cannot be made editable ('' when it can) */
+    list:function(){return A3D.objs.filter(function(o){return o.bim&&o.bim.imported&&(o.bim.type==='wall'||o.bim.type==='floor');})
+      .map(function(o){var P=bimIfcEditPlan(o);return {id:o.id,name:o.name,type:o.bim.type,guid:o.bim.guid,why:P.why||''};});},
+    info:function(id){var o=objById(id),b=o&&o.bim;return b?{name:o.name,layer:o.layer,type:b.type,imported:!!b.imported,guid:b.guid,
+      centerline:b.centerline||null,profile:b.profile||null,thickness:b.thickness,box:bimIfcEdBox(o.mesh)}:null;},
+    byGuid:function(g){for(var i=0;i<A3D.objs.length;i++)if(A3D.objs[i].bim&&A3D.objs[i].bim.guid===g)return A3D.objs[i].id;return null;},
+    count:function(){return A3D.objs.length;}};
   window.__a3dIfcos=function(){return {st:A3D_IFCOS.st,err:A3D_IFCOS.err,version:A3D_IFCOS.version,ms:A3D_IFCOS.ms};};
   /* __acad3dV197: colours by surface kind */
   window.__acad3dV197='colours,study,natural,roofrows,kinds';
@@ -71812,6 +72616,17 @@ function bimRptPlan(families) {
   window.__a3dGltf={importBuffer:bimGltfImportBuffer,exportBytes:bimGltfExportBytes,weld:bimGltfWeld,edges:bimGltfFeatureEdges,
     gather:bimGltfGather,parts:bimGltfParts,why:bimGltfWhy,hex:bimGltfHex,elements:bimGltfElements,arrays:bimGltfArrays,limits:BIM_GLTF};
   window.__acad3dV194='rendered,threejs,passes,sky,ground,edges,terrain,saveimage';
+  /* __acad3dV203: Walk. The keys and the pointer are the page's own (a test sends real events); these read the walk and
+     put the walker somewhere to start a case */
+  window.__acad3dV203='walk,jolt,firstperson,thirdperson,fly,ghost,joystick,rvmoving';
+  window.__a3dWalk={
+    state:function(){var W=A3D_WALK;return {on:W.on,st:W.st,err:W.err,mode:W.mode,view:W.view,ghost:W.ghost,p:W.p.slice(),yaw:W.yaw,pitch:W.pitch,
+      cap:W.cap,held:Object.keys(W.held),joy:W.joy,tris:W.phys?W.phys.tris:0,extra:bimSceneExtras().map(function(o){return o.id;}),
+      cam:JSON.parse(JSON.stringify(A3D.cam)),flat:!!A3D.flat};},
+    place:function(p,yaw){var W=A3D_WALK;if(!W.on)return false;W.p=[p[0],p[1],p[2]];if(typeof yaw==='number'){W.yaw=yaw;W.pitch=0;}
+      bimWalkPhysChar(W.phys,W.cap,W.p);bimWalkCam();return true;},
+    enter:function(){return bimWalkEnter();},leave:function(){return bimWalkLeave();}
+  };
   window.__a3dRv={halton:bimRvHalton,unit:bimRvUnit,cross:bimRvCross,basis:bimRvBasis,hemisphere:bimRvHemisphere,sunDisc:bimRvSunDisc,
     farPlane:bimRvFarPlane,jitter:bimRvJitter,lin:bimRvLin,rowColour:bimRvRowColour,chunkSig:bimRvChunkSig,chunkArrays:bimRvChunkArrays,
     terrainItem:bimRvTerrainItem,terrainArrays:bimRvTerrainArrays,boxAdd:bimRvBoxAdd,sources:bimRvSources,load:bimRvLoad,drop:bimRvDrop,
@@ -73575,6 +74390,9 @@ function bimRptPlan(families) {
   };
   window.__a3dBrdCapture=function(kind,narrow){var c=bimFigCapture(kind,!!narrow);return {order:c.order,notes:!!c.notes,cls:c.order.map(function(f){return c.figs[f].cls||null;})};};
   window.__a3dBrdRecord=function(id){var b=bimBoardById(id);return b?JSON.parse(JSON.stringify(b)):null;};
+  /* __acad3dV175c WO-18: a drawing layout's vector page, as Print and Print set write it */
+  window.__a3dBdeSelect=function(ids){A3D_BDE.sel=(ids||[]).slice();refreshProps();return A3D_BDE.sel.length;};
+  window.__a3dLayoutSvg=function(id){var r=bimLoLayoutSvg(bimBoardById(id),'technical');return r.why?{why:r.why}:{svg:r.svg,w:r.w,h:r.h};};
   window.__a3dBrdEdit=function(on){return bimBrdEdit(!!on);};
   /* the board on screen: its figures where they are drawn, in reading order */
   window.__a3dBrdState=function(){

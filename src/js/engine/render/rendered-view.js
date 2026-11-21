@@ -10,6 +10,7 @@ import {
 import { bimRvBuild, bimRvCamera, bimRvPlan, bimRvReach, bimRvSun } from './rendered-scene.js';
 import { A3D_BENCH } from './webgpu.js';
 import { paint } from '../map/terrain-3d.js';
+import { A3D_WALK } from '../walk/walk-mode.js';
 import { bimShadowGround } from '../site/shadows.js';
 import { a3dToast } from '../bim/csg-booleans.js';
 import { cvScale } from '../ui/canvas-size.js';
@@ -35,6 +36,9 @@ import { cvScale } from '../ui/canvas-size.js';
   var BIM_RV_SRI='sha256-nlMhFtFZ48EpXw4milRquaT/Hc0JPr3IqG6LCINZo5E=';   /* __acad3dV195: with the glTF addons */   /* the file's SHA-256, as runtime/MANIFEST.json pins it */
   var BIM_RV_KEY='acad3dRenderedV1';
   var BIM_RV_STILL_MS=140;   /* passes are added once the view has been still this long */
+  /* __acad3dV203 C-07, the moving mode: while walking each frame is one pass with filtered (PCF) shadows framed 25 m
+     around the walker (the shadow camera follows the focus, the walker's eyes); still for 300 ms, the passes are added */
+  var BIM_RV_WALK_REACH=25,BIM_RV_WALK_STILL_MS=300;
   var A3D_RV={on:false,st:'idle',err:'',T:null,core:null,cv:null,sig:'',done:0,want:64,raf:0,per:1,last:0,stillAt:0,
     load:null,hold:false,drew:false,set:null,sun:null,sky:null,info:null};
   /* the view's settings, this browser's: the sky, the ground, the edges, the quality */
@@ -165,7 +169,7 @@ import { cvScale } from '../ui/canvas-size.js';
       if(!core)return false;
       var st=bimRvSettings(),gs=cvScale(el.cv),wD=Math.max(1,Math.round(W*gs)),hD=Math.max(1,Math.round(H*gs)),
         sun=bimRvSun(),sky=bimRvSkyFor(st.sky,sun.up,sun.elev),
-        plan=bimRvPlan(st.edges,{V:V,W:W,H:H,bg:sky.plain?'#f4f4f2':'#cbc6bb'}),cam=bimRvCamera(V,W,H,A3D.flat,A3D.cam.dist),   /* __acad3dV198: the map's ground colour */reach=bimRvReach(A3D.cam.dist,plan.box),groundAt=bimShadowGround(),
+        plan=bimRvPlan(st.edges,{V:V,W:W,H:H,bg:sky.plain?'#f4f4f2':'#cbc6bb'}),cam=bimRvCamera(V,W,H,A3D.flat,A3D.cam.dist),   /* __acad3dV198: the map's ground colour */reach=A3D_WALK.on?BIM_RV_WALK_REACH:bimRvReach(A3D.cam.dist,plan.box),groundAt=bimShadowGround(),   /* __acad3dV203: while walking, the shadows sharp around the walker */
         ground=st.ground&&!plan.terrains,   /* a terrain is the ground */
         sig=bimRvSig(cam,sun,sky,st,plan,wD,hD,reach,groundAt,ground);
       R.sun=sun;R.sky=sky;
@@ -177,7 +181,7 @@ import { cvScale } from '../ui/canvas-size.js';
         R.done=core.pass();
         core.show();
         R.sig=sig;R.want=BIM_RV_QUALITY[st.quality]||BIM_RV_QUALITY.good;
-        R.stillAt=performance.now()+BIM_RV_STILL_MS;R.last=0;
+        R.stillAt=performance.now()+(A3D_WALK.on?BIM_RV_WALK_STILL_MS:BIM_RV_STILL_MS);R.last=0;   /* __acad3dV203 */
       }
       R.drew=true;
       if(R.done<R.want&&!R.raf)R.raf=requestAnimationFrame(bimRvRefine);

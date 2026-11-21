@@ -20,6 +20,14 @@ order: 8
   - **Present** shows it as on screen; the wheel scrolls it to its end, then goes on to the next
     page. **Print set** prints it on A3 landscape pages of its own, in its place in the set.
 - **Printing one sheet:** `PLOT`.
+- **A sheet as a layout:** **Open as layout** on the sheet's bar (or `SHEETLAYOUT`) moves the sheet into the board
+  editor as a drawing layout, in its place in the set, with its number, name and page. Its frame and title block are
+  the board's own, each viewport becomes a map frame at its scale, and a rooms or levels schedule comes too. From
+  there you can draw on it, align things and work with layers, as on any board. Live values and charts are left out
+  of a drawing layout's Draw menu. **Work in viewport**, in a frame's Properties, opens its view in the model, and the
+  layout's tab brings you back. Print and Print set print it as one vector page, each frame's drawing clipped to the
+  frame. Undo brings the sheet back. A sheet whose size is not in the page gallery, or that holds another schedule,
+  says why it cannot move yet. Sheets are never moved on their own.
 
 ## Arranging a board
 
@@ -137,7 +145,24 @@ Text on a board can follow the project, so a board says what the model says.
 | SVG | `EXPORTSVG` |
 | GeoJSON | `GEOEXPORT` |
 | CityJSON 2.0 | `CITYJSONOUT` |
+| IFC4 (for Revit, ArchiCAD and other BIM programs) | `IFCOUT` |
 | the project file (.json) | `SAVE` |
+
+### IFC files
+
+`IFCOUT` (All tools, Export, IFC) writes the model as an IFC4 file through IfcOpenShell, which loads the first time
+it is used (about ten seconds; a later save takes a moment). Levels become storeys. Straight walls, floors, doors and
+windows (each cutting its wall) and columns are written as IFC's own elements; everything else is written with its
+shape and its IFC class, so nothing is left out. Each element carries a `BIM_Personal` property set with its layer.
+
+An element that came from an IFC file keeps its GlobalId when it is saved again. An imported wall or floor can be
+turned into one of the app's own: select it, and in Properties, IFC, choose **Make editable**. It is rebuilt where it
+stood, with the same name, layer and GlobalId, and can then be edited like any wall or floor; one undo puts the
+imported element back. Properties says when an element cannot be made editable, and why: a wall an opening cuts (the
+cut is not rebuilt yet), a wall whose plan is not a rectangle, or a shape that is not a straight upward extrusion.
+
+IfcOpenShell is licensed under the LGPL and contains GPL code; it ships as its own unchanged files, run in a separate
+worker, and the app opens, edits and saves without it.
 
 ## Importing
 

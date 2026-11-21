@@ -113,6 +113,6 @@ import { SHEET_SIZES } from './sheets.js';
     return st;
   }
 export {
-  bimPgBoardPage, bimPgDims, bimPgEnsureSheetSize, bimPgFit, bimPgGalleryHtml, bimPgGalleryWire,
-  bimPgIso5457Ok, bimPgLabel, bimPgSheetKey, bimPgSize, bimPgValid
+  bimPgBoardPage, bimPgDims, bimPgEnsureSheetSize, bimPgFamilies, bimPgFit, bimPgGalleryHtml,
+  bimPgGalleryWire, bimPgIso5457Ok, bimPgLabel, bimPgSheetKey, bimPgSize, bimPgValid
 };

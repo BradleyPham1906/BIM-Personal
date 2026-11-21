@@ -1,26 +1,11 @@
-/* V203 work-order tests: the walk's arithmetic (src/js/engine/walk/walk-math.js).
-   Outside `npm test` until Claude moves them into tests/unit/walk.test.mjs (C-08), so main stays green while the
-   functions are being written. The file holds pure functions that use no other engine name, so it is loaded alone:
-   its import and export lines dropped, its text run in one function that answers each function by name.
-
-     node --test --test-name-pattern="WO-01" docs/work-orders/v203/v203.test.mjs
-*/
+// V203 Walkthrough W1: the walk's arithmetic (walk/walk-math.js, WO-01 to WO-08, moved here from the work order at C-08)
+// and Walk's own pure parts (walk/walk-mode.js): the walker's body and rules from the registry, the model's triangles.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import fs from 'node:fs';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { loadEngine } from './helpers/engine.mjs';
 
-const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..', '..');
-const NAMES = ['bimWalkStepUp', 'bimWalkCapsule', 'bimWalkLook', 'bimWalkMove', 'bimWalkCamFirst', 'bimWalkCamThird',
-  'bimWalkJoy', 'bimWalkKeys'];
-function load() {
-  let t = fs.readFileSync(path.join(ROOT, 'src/js/engine/walk/walk-math.js'), 'utf8');
-  t = t.replace(/^import \{[^}]*\} from '[^']+';\n/gm, '').replace(/\nexport \{[^}]*\};\n?$/, '\n');
-  return new Function(t + '\nreturn {' + NAMES.map((n) => n + ':(typeof ' + n + "==='function'?" + n + ':null)').join(',') + '};')();
-}
-const W = load();
-const fn = (n) => { assert.equal(typeof W[n], 'function', n + ' is not in walk-math.js yet'); return W[n]; };
+const E = loadEngine();
+const fn = (n) => { assert.equal(typeof E[n], 'function', n + ' is not in the engine'); return E[n]; };
 const near = (a, b, e = 1e-4) => assert.ok(Math.abs(a - b) <= e, a + ' is not ' + b);
 const nearAll = (a, b, e = 1e-4) => { assert.equal(a.length, b.length); a.forEach((x, i) => near(x, b[i], e)); };
 
@@ -162,4 +147,34 @@ test('WO-08 bimWalkKeys: running does not change the direction; the joystick sti
 });
 test('WO-08 bimWalkKeys: Space and C together cancel (audit, 2026-11-14)', () => {
   assert.deepEqual(fn('bimWalkKeys')({ Space: true, KeyC: true }, null), { f: 0, s: 0, run: false, up: 0, ghost: false });
+});
+
+/* ---------------- C-05 walk-mode.js: the walker and the model ---------------- */
+test('C-05 the rules: the IRC step and its variation, the walker\'s slope, running at twice the speed', () => {
+  const R = E.bimWalkRules();
+  near(R.stepUp, 0.206, 1e-9); assert.equal(R.slopeDeg, 35); assert.equal(R.run, 2);
+  assert.ok(R.chairSlope > 0.08 && R.chairSlope < 0.084, 'a 1:12 ramp');
+});
+test('C-05 the walker: the mean adult between the registry\'s man and woman; the wheelchair user climbs no step', () => {
+  const man = E.bimWalkBody({ who: 'man' }), wo = E.bimWalkBody({ who: 'woman' }), ad = E.bimWalkBody({ who: 'adult' });
+  assert.ok(ad.top > wo.top && ad.top < man.top, 'between: ' + [wo.top, ad.top, man.top]);
+  assert.ok(ad.eye < ad.top && ad.speed > 1 && ad.speed < 1.6);
+  const own = E.bimWalkBody({ who: 'own', h: 1.9 });
+  near(own.top, 1.9, 0.02);
+  const ch = E.bimWalkBody({ who: 'chair' }), cap = E.bimWalkCapsule(ch, E.bimWalkRules());
+  assert.equal(ch.chair, true); assert.equal(cap.step, 0); near(cap.slope, Math.atan(E.bimWalkRules().chairSlope), 1e-9);
+  assert.ok(ch.eye < 1.3, 'seated eyes');
+});
+test('C-05 an element\'s triangles: each face fanned, at its place', () => {
+  const o = { id: 'x', t: 'solid', pos: [10, 0, 5], mesh: { v: [[0, 0, 0], [1, 0, 0], [1, 0, 1], [0, 0, 1]], f: [[0, 1, 2, 3], [0, 1]] } };
+  const T = E.bimWalkTris(o);
+  assert.equal(T.length, 18, 'a quad is two triangles; a two-point face none');
+  assert.deepEqual(Array.from(T.slice(0, 9)), [10, 0, 5, 11, 0, 5, 11, 0, 6]);
+  assert.equal(E.bimWalkTris({ id: 'y', t: 'solid', pos: [0, 0, 0], mesh: { v: [], f: [] } }), null);
+});
+test('C-05 Jolt is asked for beside a copy on a disk first, then from the site with its SRI', () => {
+  const S = E.bimWalkSources('file:', 'https://example.org/app/');
+  assert.deepEqual(S.map((s) => s.u), ['runtime/jolt/1.1.1/bim-jolt.min.js', 'https://example.org/app/jolt/1.1.1/bim-jolt.min.js']);
+  assert.deepEqual(S.map((s) => s.sri), [false, true]);
+  assert.equal(E.bimWalkSources('https:', 'https://example.org/app/').length, 1);
 });

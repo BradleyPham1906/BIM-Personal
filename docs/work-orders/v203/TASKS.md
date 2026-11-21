@@ -175,19 +175,38 @@ not one per element: experiment e03.
 SPEC part 4's outline; tried in Node on e01's course before wiring. WebAssembly, manual memory, async loading.
 **Score:** 1+2+2+1+2+1 = 9, D.
 
-## [ ] C-05 [Claude] `WALK`: the mode, the frame, the cameras, the figure (`walk/walk-mode.js`, `render/webgl.js`)
+## [x] C-05 [Claude] `WALK`: the mode, the frame, the cameras, the figure (`walk/walk-mode.js`, `render/webgl.js`)
+
+Done 2026-11-21: `walk/walk-mode.js` (Jolt loaded as three.js is, with its SRI; the walker and the rules from the
+registry; each shown element's triangles, fanned as the shaded view fans them, kept by id; the start on the floor
+below the focus; the frame; first and third person; the figure an object of the scene only, `bimSceneExtra` in
+`render/gpu-batches.js`, never of the model); `webgl.js`'s near plane 0.05 m while walking; WALK in the command
+line, View > Walk, Properties > View > Walker. The physics' walker is a cylinder (`walk-physics.js`, experiment
+`w1-walk/e04-cylinder.mjs`): a capsule rode up a 0.25 m and a 0.40 m curb on a box floor.
 
 Shared state (`A3D.cam`), the render loop and the command catalogue. **Score:** 2+2+2+1+2+1 = 10, D.
 
-## [ ] C-06 [Claude] The controls on the page (`walk/walk-controls.js`, `css/workspace/walk.css`)
+## [x] C-06 [Claude] The controls on the page (`walk/walk-controls.js`, `css/workspace/walk.css`)
+
+Done 2026-11-21: capture-phase listeners hold the view's own handlers back while walking; the app's `onKey` stands
+aside (Space was repeating the last command); pointer lock, a drag without it, the joystick on a coarse pointer, the bar.
 
 Pointer lock, keys, the joystick and the buttons on phone, tablet and desktop. **Score:** 2+2+1+1+1+1 = 8, D.
 
-## [ ] C-07 [Claude] The rendered view's moving mode
+## [x] C-07 [Claude] The rendered view's moving mode
+
+Done 2026-11-21: while walking, one pass a frame with the shadows framed 25 m around the walker, refining after
+300 ms still (`rendered-view.js`).
 
 `rendered-view.js` and `rendered-core.js` (protected). **Score:** 2+1+2+1+2+2 = 10, D.
 
-## [ ] C-08 [Claude] Tests, the guide, the browser check
+## [x] C-08 [Claude] Tests, the guide, the browser check
+
+Done 2026-11-21: `tests/unit/walk.test.mjs` (WO-01 to WO-08 moved in, and C-05's: 33), `walk-physics.test.mjs` (10,
+with the box floor); the guide's Walking through the model; `tests/e2e/bim_phase203_walk_check.mjs` (named for this
+phase, not 202 as SPEC part 2 has it): 25 of 25 with real keys, mouse and touches: a wall stops, a 180 mm stair is
+climbed, a 400 mm curb is not, Alt passes walls, third person and its figure, fly, the look, the rendered view, Esc,
+a phone's joystick, no console errors.
 
 WO-01 to WO-08's tests moved into `tests/unit/walk.test.mjs`; the adapter's tests; the guide's page; the phase's one
 browser check (Rule #1: a phase's new interface, once, without asking), its script in `tests/e2e/`.

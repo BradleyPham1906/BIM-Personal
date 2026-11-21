@@ -117,6 +117,15 @@ test('a chunk\'s triangles: where they stand, opaque and see-through apart, the 
   assert.deepEqual(Array.from(Ed.pos), [10, 0, 0, 11, 0, 0, 0, 5, 0, 1, 5, 0]);
 });
 
+test('T-07 a chunk\'s opaque triangles go to their look: metal and glass apart from matte', () => {
+  const { B, c } = fake(), A = E.bimRvChunkArrays(B, c, false, { a: 'metal' });
+  assert.equal(A.op.n, 0, 'the only opaque object is metal'); assert.equal(A.mt.n, 3); assert.equal(A.gl, null);
+  assert.deepEqual(Array.from(A.mt.pos), [10, 0, 0, 11, 0, 0, 10, 1, 0]);
+  assert.equal(A.tr.n, 3, 'see-through stays see-through, whatever its look');
+  assert.equal(E.bimRvChunkArrays(B, c, false, { a: 'glass' }).gl.n, 3);
+  assert.equal(E.bimRvChunkArrays(B, c, false).mt, null, 'no looks, all matte');
+});
+
 test('a selected object is drawn toward its selection colour', () => {
   const { B, c } = fake();
   B.data[7] = 1;

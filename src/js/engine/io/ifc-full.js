@@ -7,9 +7,10 @@ import { refreshLayers } from '../layers/analysis-data-rows.js';
 import { bimPropGroup, bimPropText } from '../properties/palette.js';
 import { refreshProps } from '../site-analysis/panel.js';
 import { bimLbBase } from '../ladybug/runtime.js';
-import { bimImportIFC } from './import-ifc.js';
+import { bimIfcEditParams, bimImportIFC } from './import-ifc.js';
 import { bimSkpLayer } from './sketchup-import.js';
 import { bimGltfFeatureEdges, bimGltfWeld } from './gltf.js';
+import { bimIfcEditButtonHtml } from './ifc-editable.js';
 import { bimHandleImportFile } from './import-entry.js';
 import { paint } from '../map/terrain-3d.js';
 import { fitScene } from '../ui/tool-palette.js';
@@ -175,8 +176,9 @@ import { a3dToast } from '../bim/csg-booleans.js';
         }
         return more().then(function(){
           var schema='';try{schema=api.GetModelSchema(mid);}catch(eS){schema='';}
+          var coord=null;try{coord=Array.prototype.slice.call(api.GetCoordinationMatrix(mid));}catch(eC){coord=null;}   /* __acad3dV177: the shift to the origin */
           api.CloseModel(mid);
-          return {parts:S.parts,storeys:st,holder:holder,tris:S.tris,cut:S.cut,skipped:S.skipped,notes:notes,booleans:!!api.booleans,schema:schema};
+          return {parts:S.parts,storeys:st,holder:holder,tris:S.tris,cut:S.cut,skipped:S.skipped,notes:notes,booleans:!!api.booleans,schema:schema,coord:coord};
         });
       });
     });
@@ -189,7 +191,9 @@ import { a3dToast } from '../bim/csg-booleans.js';
     var bytes=buf instanceof Uint8Array?buf:new Uint8Array(buf);
     return bimIfcLoad().then(function(R){return bimIfcRead(R,bytes);}).then(function(D){
       if(!D.parts.length)throw new Error('no elements with geometry in '+name);
-      var made=[],ids=[],byClass={},names={},levels=0,i;
+      var made=[],ids=[],byClass={},names={},levels=0,i,EP={};
+      /* __acad3dV177: the walls-and-slabs reader's parameters, for Make editable (bimIfcMakeEditable) */
+      try{EP=bimIfcEditParams(new TextDecoder('utf-8').decode(bytes));}catch(eE){console.warn('[BIM] IFC import: walls and slabs could not be read for Make editable',eE);EP={};}
       for(i=0;i<D.storeys.length;i++)names[D.storeys[i].id]=D.storeys[i].name;
       pushUndo();
       setUndoSuspend(true);
@@ -215,6 +219,11 @@ import { a3dToast } from '../bim/csg-booleans.js';
           }
           var hold=D.holder[q.id],bim={type:BIM_IFC_KIND[cls]||'ifc',imported:true,ifcType:q.type,guid:q.guid,
             storey:hold!=null&&names[hold]?names[hold]:'',file:name.slice(0,120),psets:q.psets||[]};
+          if(bim.type!=='ifc'&&q.guid&&EP.hasOwnProperty(q.guid)&&EP[q.guid].kind===bim.type){
+            bim.edit=EP[q.guid];
+            /* the import moved the model to the origin: the shift, in the app's axes, from the engine's coordination matrix */
+            bim.edit.shift=(D.coord&&D.coord.length===16)?[D.coord[12],D.coord[13],D.coord[14]]:[0,0,0];
+          }
           var o={id:'a3d-'+Date.now().toString(36)+'-'+(A3D.seq++),t:'solid',name:(q.name||cls+' '+q.id).slice(0,80),col:q.col,
             pos:[0,0,0],mesh:q.mesh,layer:byClass[key].id,locked:true,bim:bim};
           A3D.objs.push(o);ids.push(o.id);
@@ -222,7 +231,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
       }finally{setUndoSuspend(false);}
       if(bimLayerById(was))A3D.activeLayer=was;
       refreshTree();refreshLevels();refreshLayers();refreshProps();fitScene();paint();saveSoon();
-      return {ids:ids,layers:made,levels:levels,triangles:D.tris,cut:D.cut,skipped:D.skipped,notes:D.notes,booleans:D.booleans,ms:Date.now()-t0,
+      return {ids:ids,layers:made,levels:levels,coord:D.coord,triangles:D.tris,cut:D.cut,skipped:D.skipped,notes:D.notes,booleans:D.booleans,ms:Date.now()-t0,
         text:'IFC'+(D.schema?' ('+D.schema+')':'')+': '+ids.length+' element'+(ids.length===1?'':'s')+' from '+name+', '+levels+' level'+(levels===1?'':'s')+
           ', on the '+stem+' layer by class'+
           (D.booleans?'':'; openings not cut (the geometry library could not be loaded)')+
@@ -254,7 +263,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
     var b=o&&o.bim;
     if(!b||!b.ifcType||!b.guid)return '';
     var h='',rows=bimPropText('IFC Class',b.ifcType)+bimPropText('GlobalId',b.guid)+(b.storey?bimPropText('Storey',b.storey):'')+
-      (b.file?bimPropText('File',b.file):'');
+      (b.file?bimPropText('File',b.file):'')+bimIfcEditButtonHtml(o);   /* __acad3dV177: Make editable */
     h+=bimPropGroup('IFC',rows);
     (b.psets||[]).forEach(function(s){
       h+=bimPropGroup(s.name,s.rows.map(function(r){return bimPropText(r[0],r[1]);}).join(''));

@@ -55,6 +55,7 @@ import {
   startStairTool
 } from '../bim/stairs.js';
 import { bimImportDXF } from '../io/import-dxf.js';
+import { bimIfcEditParams } from '../io/import-ifc.js';
 import {
   BIM_GLTF, bimGltfArrays, bimGltfElements, bimGltfExportBytes, bimGltfFeatureEdges, bimGltfGather,
   bimGltfHex, bimGltfImportBuffer, bimGltfParts, bimGltfWeld, bimGltfWhy
@@ -63,6 +64,7 @@ import {
   BIM_IFC, bimIfcClass, bimIfcContainers, bimIfcHex, bimIfcImportBuffer, bimIfcMeshParts, bimIfcPropsHtml,
   bimIfcRead, bimIfcSet, bimIfcSources, bimIfcStoreys, bimIfcVal
 } from '../io/ifc-full.js';
+import { bimIfcEdBox, bimIfcEdSame, bimIfcEditPlan, bimIfcMakeEditable } from '../io/ifc-editable.js';
 import { BIM_IFC_SAVE } from '../io/ifc-save.js';
 import { A3D_IFCOS, bimIfcExportText } from '../io/ifcos-worker.js';
 import { toScreen } from '../io/import-entry.js';
@@ -71,7 +73,8 @@ import {
   BIM_SK_PAL, bimSkCol, bimSkKey, bimSkPalette, bimSkRoofy, bimSkSet
 } from '../render/surface-kinds.js';
 import {
-  A3D_CULL, A3D_GL_BATCH, A3D_SCENE, bimSceneRelease, bimSceneSync, setA3D_CULL, setA3D_GL_BATCH
+  A3D_CULL, A3D_GL_BATCH, A3D_SCENE, bimSceneExtras, bimSceneRelease, bimSceneSync, setA3D_CULL,
+  setA3D_GL_BATCH
 } from '../render/gpu-batches.js';
 import { A3D_PICK_GPU, setA3D_PICK_GPU } from '../render/gpu-pick.js';
 import {
@@ -95,6 +98,8 @@ import {
 } from '../render/webgpu.js';
 import { A3D_MAP, bimMapDrop, bimMapTileCorners, bimMapTileUrl } from '../map/map-tiles.js';
 import { bimDrapeTiles, bimTerrainMeshData, paint } from '../map/terrain-3d.js';
+import { bimWalkPhysChar } from '../walk/walk-physics.js';
+import { A3D_WALK, bimWalkCam, bimWalkEnter, bimWalkLeave } from '../walk/walk-mode.js';
 import { bimAnnotGripPoints } from '../annotation/annotation-grips.js';
 import { bimShortcutGroups } from '../ui/shortcuts.js';
 import { bimGizmoWantsKey } from '../gizmo/gizmo-handles.js';
@@ -409,8 +414,16 @@ import { cvH, cvW } from '../ui/canvas-size.js';
     corners:bimMapTileCorners,tileUrl:bimMapTileUrl};
   /* __acad3dV177: the model as the data Save as IFC hands IfcOpenShell (io/ifc-save.js) */
   window.__a3dIfcSave=BIM_IFC_SAVE;
-  window.__acad3dV177='ifcout,ifcos,ifcsave';
+  window.__acad3dV177='ifcout,ifcos,ifcsave,ifcedit';
   window.__a3dIfcExport=function(){return bimIfcExportText();};
+  window.__a3dIfcEdit={params:bimIfcEditParams,plan:bimIfcEditPlan,make:function(id){var n=bimIfcMakeEditable(id);return n?n.id:null;},box:bimIfcEdBox,same:bimIfcEdSame,
+    /* the imported walls and floors, each with why it cannot be made editable ('' when it can) */
+    list:function(){return A3D.objs.filter(function(o){return o.bim&&o.bim.imported&&(o.bim.type==='wall'||o.bim.type==='floor');})
+      .map(function(o){var P=bimIfcEditPlan(o);return {id:o.id,name:o.name,type:o.bim.type,guid:o.bim.guid,why:P.why||''};});},
+    info:function(id){var o=objById(id),b=o&&o.bim;return b?{name:o.name,layer:o.layer,type:b.type,imported:!!b.imported,guid:b.guid,
+      centerline:b.centerline||null,profile:b.profile||null,thickness:b.thickness,box:bimIfcEdBox(o.mesh)}:null;},
+    byGuid:function(g){for(var i=0;i<A3D.objs.length;i++)if(A3D.objs[i].bim&&A3D.objs[i].bim.guid===g)return A3D.objs[i].id;return null;},
+    count:function(){return A3D.objs.length;}};
   window.__a3dIfcos=function(){return {st:A3D_IFCOS.st,err:A3D_IFCOS.err,version:A3D_IFCOS.version,ms:A3D_IFCOS.ms};};
   /* __acad3dV197: colours by surface kind */
   window.__acad3dV197='colours,study,natural,roofrows,kinds';
@@ -425,6 +438,17 @@ import { cvH, cvW } from '../ui/canvas-size.js';
   window.__a3dGltf={importBuffer:bimGltfImportBuffer,exportBytes:bimGltfExportBytes,weld:bimGltfWeld,edges:bimGltfFeatureEdges,
     gather:bimGltfGather,parts:bimGltfParts,why:bimGltfWhy,hex:bimGltfHex,elements:bimGltfElements,arrays:bimGltfArrays,limits:BIM_GLTF};
   window.__acad3dV194='rendered,threejs,passes,sky,ground,edges,terrain,saveimage';
+  /* __acad3dV203: Walk. The keys and the pointer are the page's own (a test sends real events); these read the walk and
+     put the walker somewhere to start a case */
+  window.__acad3dV203='walk,jolt,firstperson,thirdperson,fly,ghost,joystick,rvmoving';
+  window.__a3dWalk={
+    state:function(){var W=A3D_WALK;return {on:W.on,st:W.st,err:W.err,mode:W.mode,view:W.view,ghost:W.ghost,p:W.p.slice(),yaw:W.yaw,pitch:W.pitch,
+      cap:W.cap,held:Object.keys(W.held),joy:W.joy,tris:W.phys?W.phys.tris:0,extra:bimSceneExtras().map(function(o){return o.id;}),
+      cam:JSON.parse(JSON.stringify(A3D.cam)),flat:!!A3D.flat};},
+    place:function(p,yaw){var W=A3D_WALK;if(!W.on)return false;W.p=[p[0],p[1],p[2]];if(typeof yaw==='number'){W.yaw=yaw;W.pitch=0;}
+      bimWalkPhysChar(W.phys,W.cap,W.p);bimWalkCam();return true;},
+    enter:function(){return bimWalkEnter();},leave:function(){return bimWalkLeave();}
+  };
   window.__a3dRv={halton:bimRvHalton,unit:bimRvUnit,cross:bimRvCross,basis:bimRvBasis,hemisphere:bimRvHemisphere,sunDisc:bimRvSunDisc,
     farPlane:bimRvFarPlane,jitter:bimRvJitter,lin:bimRvLin,rowColour:bimRvRowColour,chunkSig:bimRvChunkSig,chunkArrays:bimRvChunkArrays,
     terrainItem:bimRvTerrainItem,terrainArrays:bimRvTerrainArrays,boxAdd:bimRvBoxAdd,sources:bimRvSources,load:bimRvLoad,drop:bimRvDrop,

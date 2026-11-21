@@ -35,6 +35,7 @@ import {
 import { A3D_PAGES, bimPageKeyAct, bimPagesKeyDo } from './pages-display.js';
 import { bimSheetEvtToMM, bimSheetHitTest, bimSheetOnScreen } from './present.js';
 import { bimLtMenuOpen } from './layout-tabs.js';
+import { bimLoLayoutSvg } from './layout-open.js';
 import { bimBoardPrintHtml, bimClbCss, bimPresSeq } from './boards.js';
 import { bimBoardKey, bimBoardLabel } from './board-figures.js';
 import {
@@ -786,10 +787,10 @@ import { a3dToast } from '../bim/csg-booleans.js';
   // Builds one full sheet page as a single vector SVG: real vector geometry for 'plan' viewports,
   // raster <image> embeds for every other kind (or a 'plan' viewport that failed to resolve or
   // build), a vector title block, and vector borders/labels for every viewport regardless of kind.
-  function bimBuildSheetSVG(sheet,mode){   /* __acad3dV121: a sheet's SVG and its print are plots */
-    return bimWithPlotPass(mode==='presentation',function(){return bimBuildSheetSVGDrawing(sheet,mode);});
+  function bimBuildSheetSVG(sheet,mode,extra){   /* __acad3dV121: a sheet's SVG and its print are plots */
+    return bimWithPlotPass(mode==='presentation',function(){return bimBuildSheetSVGDrawing(sheet,mode,extra);});
   }
-  function bimBuildSheetSVGDrawing(sheet,mode){
+  function bimBuildSheetSVGDrawing(sheet,mode,extra){   /* __acad3dV175c: extra, a drawing layout's shapes and text, over the rest */
     var W=sheet.w,H=sheet.h,defs=[],body=[],i;
     for(i=0;i<sheet.viewports.length;i++){
       var vp=sheet.viewports[i];
@@ -830,7 +831,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
       '<defs>'+defs.join('')+'</defs>\n'+
       '<rect x="0" y="0" width="'+W+'" height="'+H+'" fill="#ffffff"/>\n'+
       '<rect x="0.4" y="0.4" width="'+(W-0.8)+'" height="'+(H-0.8)+'" fill="none" stroke="#333333" stroke-width="0.5"/>\n'+
-      body.join('\n')+'\n</svg>\n';
+      body.join('\n')+(extra?'\n'+extra:'')+'\n</svg>\n';
   }
   function bimExportSheetSVG(){
     var sheet=bimSheetById(A3D.activeSheetId);
@@ -873,6 +874,16 @@ import { a3dToast } from '../bim/csg-booleans.js';
     var Q=bimPresSeq(),n=Q.length,mode=A3D.presentMode?'presentation':'technical',sizes={},css='',body='',bad=[],lost=[],i,e,s,nm,svg,cv,first=true,brd=false;   /* __acad3dV162 */
     for(i=0;i<n;i++){
       e=Q[i];
+      if(e.t==='board'&&e.b.drawing){   /* __acad3dV175c: a drawing layout, a vector page as a sheet is, when it can be */
+        var LS=bimLoLayoutSvg(e.b,mode);
+        if(LS.svg){
+          nm='a3dsz'+String(LS.w.toFixed(1)+'x'+LS.h.toFixed(1)).replace(/[^0-9x]/g,'_');
+          if(!sizes[nm]){sizes[nm]=1;if(first)css+='@page{size:'+LS.w+'mm '+LS.h+'mm;margin:0}';css+='@page '+nm+'{size:'+LS.w+'mm '+LS.h+'mm;margin:0}';}
+          first=false;
+          body+='<div class="a3dpg" data-page="'+bimEsc(e.id)+'" style="page:'+nm+';width:'+LS.w+'mm;height:'+LS.h+'mm">'+LS.svg+'</div>';
+          continue;
+        }
+      }
       if(e.t==='board'){   /* __acad3dV162: a board on A3 landscape pages of its own, as it prints alone */
         if(!brd){brd=true;css+='@page a3dbrd{size:420mm 297mm;margin:10mm}';}
         var bpg=e.b.objs?bimPgBoardPage(e.b):null,pnm=bpg?'a3dbrdp'+i:'a3dbrd';   /* __acad3dV174c: a board with a page prints on its own size */

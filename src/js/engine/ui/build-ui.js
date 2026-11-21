@@ -58,11 +58,13 @@ import { bimStdOverride } from '../standards/registry.js';
 import { bimAnimPlay, bimAnimStop } from '../site-analysis/motion.js';
 import { bimDgPropChange, bimDgPropClick } from '../site-analysis/land-use.js';
 import { refreshProps } from '../site-analysis/panel.js';
+import { bimIfcMakeEditable } from '../io/ifc-editable.js';
 import { bimHandleImportFile } from '../io/import-entry.js';
 import { bimSkSet } from '../render/surface-kinds.js';
 import { bimRvProp } from '../render/rendered-view.js';
 import { bimFindSearch } from '../map/find-open-data.js';
 import { paint } from '../map/terrain-3d.js';
+import { bimWalkProp } from '../walk/walk-mode.js';
 import { bimCloseGizmoMenu } from '../gizmo/gizmo-handles.js';
 import { bimFaceDblClick, bimPrimBase } from '../editing/faces-push-pull.js';
 import { bimDeleteSketchConstraint } from '../drawing/sketch-constraints.js';
@@ -90,6 +92,7 @@ import {
 } from '../sheets/viewports.js';
 import { bimBrowserToggle } from './project-browser.js';
 import { A3D_LT_EDITING, bimLayoutRename, bimLayoutTabMenu, bimLtMenuClose } from '../sheets/layout-tabs.js';
+import { bimLoOpenSheet } from '../sheets/layout-open.js';
 import { bimLayoutAddMenu, bimPresOpenBoard } from '../sheets/boards.js';
 import { onDown, onMove, onUp, onWheel, refreshBrowser, refreshTree } from '../sheets/presentation-panel.js';
 import { bimSubmitTouchLen, onKey, onTouchEnd, onTouchMove, onTouchStart } from './touch-input.js';
@@ -219,6 +222,7 @@ import { size } from './canvas-size.js';
           '<button class="a3d-btn a3d-lyonly" id="a3d-sheettbedit" title="Edit title block info">Title Block</button>'+
           '<button class="a3d-btn a3d-lyonly" id="a3d-sheetpng" title="Export sheet as PNG">Export PNG</button>'+
           '<button class="a3d-btn a3d-lyonly" id="a3d-sheetsvg" title="Export sheet as vector SVG">Export SVG</button>'+
+          '<button class="a3d-btn a3d-lyonly" id="a3d-sheetlayout" title="Open this sheet as a layout in the board editor: its viewports become map frames (Undo brings the sheet back)">Open as layout</button>'+   /* __acad3dV175c WO-18 */
           '<button class="a3d-btn a3d-btn-pri a3d-lyonly" id="a3d-sheetprint" title="Print sheet (vector)">Print</button>'+
           '<button class="a3d-btn a3d-btn-pri" id="a3d-sheetpresent" title="Present the pages full screen, one at a time, from this one">Present</button>'+   /* __acad3dV122 */
           '<button class="a3d-btn" id="a3d-sheetclose" title="Close (back to model)">× Close</button>'+
@@ -441,6 +445,8 @@ import { size } from './canvas-size.js';
     if(sheetPngBtn)sheetPngBtn.addEventListener('click',function(){bimExportSheetPNG();});
     var sheetSvgBtn=root.querySelector('#a3d-sheetsvg');
     if(sheetSvgBtn)sheetSvgBtn.addEventListener('click',function(){bimExportSheetSVG();});
+    var sheetLayoutBtn=root.querySelector('#a3d-sheetlayout');
+    if(sheetLayoutBtn)sheetLayoutBtn.addEventListener('click',function(){bimLoOpenSheet(A3D.activeSheetId);});   /* __acad3dV175c WO-18 */
     var sheetPrintBtn=root.querySelector('#a3d-sheetprint');
     if(sheetPrintBtn)sheetPrintBtn.addEventListener('click',function(){bimPrintSheet();});
     var sheetCloseBtn2=root.querySelector('#a3d-sheetclose');
@@ -529,6 +535,11 @@ import { size } from './canvas-size.js';
     /* __acad3dV59: graphics-override reset buttons live inside the Graphics prop rows but are
        plain <button data-propgfxreset> elements, not <input data-propf>, so they need their own
        click delegate rather than reusing the generic [data-propf] one above. */
+    /* __acad3dV177: an imported IFC wall or floor, Make editable */
+    if(el.propsbody)el.propsbody.addEventListener('click',function(ev){
+      var eb=ev.target&&ev.target.closest?ev.target.closest('[data-ifcedit]'):null;
+      if(eb)bimIfcMakeEditable(eb.getAttribute('data-ifcedit'));
+    });
     /* __acad3dV146: the History group's buttons, and Enter in its message */
     if(el.propsbody)el.propsbody.addEventListener('click',function(ev){
       var hb=ev.target&&ev.target.closest?ev.target.closest('[data-histact]'):null;
@@ -926,7 +937,8 @@ import { size } from './canvas-size.js';
         if(mk==='truenorth'){bimSetTrueNorth(mv);return;}   /* __acad3dV103 */
         if(mk==='sunlat'||mk==='sunlon'||mk==='suntz'||mk==='sundate'||mk==='suntime'||mk==='sundst'){bimSetSun(mk.slice(3),mv);return;}   /* __acad3dV107; __acad3dV171d: sundst */
         if(mk==='colours'){bimSkSet(mv);refreshProps();return;}   /* __acad3dV197 */
-        if(mk==='rendered'||mk.indexOf('rv')===0){bimRvProp(mk,mv);return;}   /* __acad3dV194: this browser's display, not the project's */
+        if(mk==='rendered'||mk.indexOf('rv')===0){bimRvProp(mk,mv);return;}
+        if(mk.indexOf('walk')===0){bimWalkProp(mk,mv);return;}   /* __acad3dV203: this browser's walker, not the project's */   /* __acad3dV194: this browser's display, not the project's */
         if(mk==='project'){A3D.titleBlock.project=mv;}
         else if(mk==='client'){A3D.titleBlock.client=mv;}
         else if(mk==='site'){updateSite('name',mv);}

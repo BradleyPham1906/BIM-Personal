@@ -61,6 +61,7 @@ import { bimRvPropsHtml } from '../render/rendered-view.js';
 import { A3D_BENCH, bimBenchmarkText, bimGraphicsLabel } from '../render/webgpu.js';
 import { bimLodOf } from '../map/lod-solids.js';
 import { paint } from '../map/terrain-3d.js';
+import { bimWalkPropsHtml } from '../walk/walk-mode.js';
 import { bimNoteDef } from '../annotation/annotation-overlay.js';
 import { bimPrimBase, bimPrmLabel } from '../editing/faces-push-pull.js';
 import { bimEstimateSketchDOF, bimSketchConstraintDesc } from '../drawing/sketch-constraints.js';
@@ -200,6 +201,7 @@ import { bimNoteHex } from '../testing/hooks-view-gizmo.js';
       '<option value="1"'+(A3D.presentMode?' selected':'')+'>Presentation</option></select>');
     vrows+=bimSkPropsHtml();   /* __acad3dV197: colours by surface kind, the project's */
     vrows+=bimRvPropsHtml();   /* __acad3dV194: Shaded or Rendered, and the rendered view's settings while it is on */
+    vrows+=bimWalkPropsHtml();   /* __acad3dV203: who walks */
     /* Read-only and honest: the engine works in metres throughout and there is no unit
        conversion layer, so this states the fact rather than offering a switch that would not
        convert anything. */
