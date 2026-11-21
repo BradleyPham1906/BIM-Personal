@@ -109,6 +109,7 @@ import { bimBdsHtml } from './board-design.js';
     if(r.objs&&b){var Ly=bimBobLayValid(b.lay);if(Ly)r.lay=Ly;}   /* __acad3dV174b: its stacks */
     if(r.objs&&b){var Pg=bimPgValid(b.page);if(Pg)r.page=Pg;else if(b.pageOff===true)r.pageOff=true;}   /* __acad3dV174c: its page, or none by choice */
     if(b&&typeof b.num==='string'){var Nm=bimLyNumberValid(b.num);if(Nm)r.num=Nm;}   /* __acad3dV175c: its number as a layout */
+    if(r.kind==='custom'&&b&&b.drawing===true)r.drawing=true;   /* __acad3dV175c WO-18: a drawing layout (D4) */
     return r;
   }
   /* ---- the figures, read from the boards ---- */

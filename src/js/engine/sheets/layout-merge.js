@@ -60,3 +60,4 @@
     return '<rect x="' + bimLmN(o.x) + '" y="' + bimLmN(o.y) + '" width="' + bimLmN(o.w) + '" height="' + bimLmN(o.h) +
       '" fill="none" stroke="' + (stroke || '#000000') + '" stroke-width="' + bimLmN(width == null ? 0.25 : width) + '"/>';
   }
+export { bimLmDrawMenu, bimLmFrameToVp, bimLmN, bimLmSheetToLayout };

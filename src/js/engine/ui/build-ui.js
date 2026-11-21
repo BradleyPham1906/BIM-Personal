@@ -92,6 +92,7 @@ import {
 } from '../sheets/viewports.js';
 import { bimBrowserToggle } from './project-browser.js';
 import { A3D_LT_EDITING, bimLayoutRename, bimLayoutTabMenu, bimLtMenuClose } from '../sheets/layout-tabs.js';
+import { bimLoOpenSheet } from '../sheets/layout-open.js';
 import { bimLayoutAddMenu, bimPresOpenBoard } from '../sheets/boards.js';
 import { onDown, onMove, onUp, onWheel, refreshBrowser, refreshTree } from '../sheets/presentation-panel.js';
 import { bimSubmitTouchLen, onKey, onTouchEnd, onTouchMove, onTouchStart } from './touch-input.js';
@@ -221,6 +222,7 @@ import { size } from './canvas-size.js';
           '<button class="a3d-btn a3d-lyonly" id="a3d-sheettbedit" title="Edit title block info">Title Block</button>'+
           '<button class="a3d-btn a3d-lyonly" id="a3d-sheetpng" title="Export sheet as PNG">Export PNG</button>'+
           '<button class="a3d-btn a3d-lyonly" id="a3d-sheetsvg" title="Export sheet as vector SVG">Export SVG</button>'+
+          '<button class="a3d-btn a3d-lyonly" id="a3d-sheetlayout" title="Open this sheet as a layout in the board editor: its viewports become map frames (Undo brings the sheet back)">Open as layout</button>'+   /* __acad3dV175c WO-18 */
           '<button class="a3d-btn a3d-btn-pri a3d-lyonly" id="a3d-sheetprint" title="Print sheet (vector)">Print</button>'+
           '<button class="a3d-btn a3d-btn-pri" id="a3d-sheetpresent" title="Present the pages full screen, one at a time, from this one">Present</button>'+   /* __acad3dV122 */
           '<button class="a3d-btn" id="a3d-sheetclose" title="Close (back to model)">× Close</button>'+
@@ -443,6 +445,8 @@ import { size } from './canvas-size.js';
     if(sheetPngBtn)sheetPngBtn.addEventListener('click',function(){bimExportSheetPNG();});
     var sheetSvgBtn=root.querySelector('#a3d-sheetsvg');
     if(sheetSvgBtn)sheetSvgBtn.addEventListener('click',function(){bimExportSheetSVG();});
+    var sheetLayoutBtn=root.querySelector('#a3d-sheetlayout');
+    if(sheetLayoutBtn)sheetLayoutBtn.addEventListener('click',function(){bimLoOpenSheet(A3D.activeSheetId);});   /* __acad3dV175c WO-18 */
     var sheetPrintBtn=root.querySelector('#a3d-sheetprint');
     if(sheetPrintBtn)sheetPrintBtn.addEventListener('click',function(){bimPrintSheet();});
     var sheetCloseBtn2=root.querySelector('#a3d-sheetclose');

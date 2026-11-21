@@ -88,12 +88,27 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-18 [Claude] One editor and one print in the app
+## [x] WO-18 [Claude] One editor and one print in the app
 
 Claude's: sheets opened as layouts in the board editor (frames as viewports with Work in viewport), the sheet bar's actions on the board bar, the SVG print with each frame's drawing clipped inside it; the test to tests/unit/; npm run modules; the browser check.
 
+Done 2026-11-21 in `sheets/layout-open.js`: Open as layout (the sheet bar and `SHEETLAYOUT`) puts a drawing layout in
+the sheet's place in the set with its number, name and page: the ISO 5457 frame, an ISO 7200 title block, a map frame
+per plan, elevation and view at its scale and pan, a schedule per rooms or levels schedule; one undo step. Refused,
+with the reason, for a size outside the gallery or another schedule. Sheets are not all converted at once: a sheet
+stays a sheet until its owner opens it as a layout, so nothing of theirs changes unasked. Work in viewport (a map
+frame's Properties) opens its view in the model. The Draw menu of a drawing layout leaves out the live values and the
+charts. Print (the board's bar) and Print set write a drawing layout as one vector page through the sheets' own SVG:
+its frames turned back into viewports (WO-12), each clipped, plans as vectors; its shapes and text as SVG; a layout
+holding a kind the vector page does not draw (a legend, an image...) prints as a board does and says so. The sheet
+bar's Export PNG and Title Block stay with sheets; a layout's page and title block are the board's Page dialog.
+`tests/unit/layout-merge.test.mjs` (WO-11 to WO-17 moved in, and WO-18's: 12); `tests/e2e/bim_phase175c_one_editor_check.mjs`
+13 of 13.
+
 ---
 
-## [ ] WO-19 [Claude] The records
+## [x] WO-19 [Claude] The records
 
 PIPELINE row 175c, Notion.
+
+Done 2026-11-21: PIPELINE row 175c. Notion is not reachable from this session (no Notion connection here); its task line waits for the next session that has one.

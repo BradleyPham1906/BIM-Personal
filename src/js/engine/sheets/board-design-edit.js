@@ -7,6 +7,7 @@ import { A3D_CLB, bimClbEl, bimClbOpen } from '../site-analysis/climate-board.js
 import { refreshProps } from '../site-analysis/panel.js';
 import { saveSoon } from '../bim/region-regenerate.js';
 import { bimLtMenuOpen } from './layout-tabs.js';
+import { bimLoDrawKinds } from './layout-open.js';
 import {
   bimBrdBands, bimBrdEditing, bimBrdFigsValid, bimBrdPx, bimBrdRec, bimFigEntry
 } from './board-figures.js';
@@ -114,7 +115,8 @@ import { a3dToast } from '../bim/csg-booleans.js';
     '-',['map','Map frame'],['legend','Legend'],['north','North arrow'],['sbar','Scale bar'],   /* __acad3dV174d */
     '-',['lvfield','Field\u2026'],['lvnumber','Number\u2026'],['lvsched','Schedule\u2026'],['lvkpi','Indicator\u2026'],['lvchart','Result chart\u2026']];}   /* __acad3dV175b */   /* __acad3dV175a: a value of the project, kept up to date */
   function bimBdeDrawMenu(x,y){
-    bimLtMenuOpen(x,y,bimBdeDrawKinds().map(function(k){return k==='-'?k:[k[1],k[0]];}),function(k){
+    var Wd=bimBdeWork();   /* __acad3dV175c: a drawing layout's menu leaves out the live values and the charts (D4) */
+    bimLtMenuOpen(x,y,bimLoDrawKinds(bimBdeDrawKinds(),!!(Wd&&Wd.B&&Wd.B.drawing)).map(function(k){return k==='-'?k:[k[1],k[0]];}),function(k){
       if(k==='image')bimBdeAddImage();
       else if(/^lv(field|number|sched|kpi|chart)$/.test(k))setTimeout(function(){   /* __acad3dV175b: the three kinds' menus too */
         if(k==='lvfield')bimLvFieldMenu(x,y);else if(k==='lvnumber')bimLvNumberMenu(x,y);else if(k==='lvsched')bimLbdSchedMenu(x,y);else if(k==='lvkpi')bimLbdKpiMenu(x,y);else bimLbdChartMenu(x,y);

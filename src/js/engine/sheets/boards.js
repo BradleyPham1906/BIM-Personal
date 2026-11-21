@@ -13,6 +13,7 @@ import {
   bimLayoutNew, bimLtMenuOpen, bimRenderLayoutTabs, bimSheetMove, bimSheetMoveNear
 } from './layout-tabs.js';
 import { bimLyNextNumber, bimLyNumberValid } from './layouts.js';
+import { bimLoPrint } from './layout-open.js';
 import { bimBoardKey, bimBoardKeyLabel, bimBoardLabel, bimBrdKeep, bimClbWhich } from './board-figures.js';
 import { bimBrdDupBoard, bimBrdEdit, bimBrdNewUi } from './board-edit.js';
 import { bimPgBoardPage } from './page-sizes.js';
@@ -244,6 +245,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
   /* a board alone, in a print window: A3 landscape, as Print set prints it */
   function bimClbPrint(kind){
     if(!bimBoardName(kind)&&!bimBoardById(kind))kind=bimClbWhich();   /* __acad3dV172b */
+    var bL=bimBoardById(kind);if(bL&&bL.drawing&&bimLoPrint(bL))return true;   /* __acad3dV175c: a drawing layout prints as one vector page */
     var w=window.open('','_blank');
     if(!w){a3dToast('The print window was blocked -- allow pop-ups for this page and try again');return false;}
     bimBimgLoad(bimBimgUsed(),function(){   /* __acad3dV174a: its images loaded first */

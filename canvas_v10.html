@@ -1889,6 +1889,7 @@ body.light-theme .a3d-tl-msgs,body.light-theme .a3d-tl-hn span,body.light-theme 
     ['BENCHMARK',['BENCH','FRAMETIME','SPEEDTEST'],'benchmark','Time this device drawing 5,000 and 20,000 elements, with WebGPU and with WebGL; the model is put back as it was'],   /* __acad3dV155 */
     ['GRAPHICS',['RENDERER','WEBGPU','WEBGL'],'graphics','Draw 3D with WebGPU where the browser has it, or always with WebGL in this browser'],   /* __acad3dV153 */
     ['WALK',['WALKTHROUGH','FIRSTPERSON','WALKMODE'],'walk','Walk through the model as a person: walls stop you, stairs a code allows you climb; V third person, F fly, Esc to leave'],   /* __acad3dV203 */
+    ['SHEETLAYOUT',['OPENASLAYOUT','SHEETTOLAYOUT'],'sheetlayout','Open the sheet on screen as a layout in the board editor: its viewports become map frames, it prints as one vector page'],   /* __acad3dV175c */
     ['RENDER',['RENDERED','REALISTIC','VISUALSTYLE','DAYLIGHT'],'render','The model rendered in daylight: materials, the sun and the sky, soft shadows; again for the shaded view'],   /* __acad3dV194 */
     ['MERGE',['MERGEBRANCH'],'merge','Merge another branch into this one, element by element, with conflicts shown side by side'],
     ['COMPAREBRANCHES',['COMPAREOPTIONS','OPTIONS'],'comparebranches','Each branch\'s numbers side by side: walls, rooms, areas, cut and fill'],
@@ -62982,10 +62983,10 @@ function bimWalkKeys(h, j) {
   // Builds one full sheet page as a single vector SVG: real vector geometry for 'plan' viewports,
   // raster <image> embeds for every other kind (or a 'plan' viewport that failed to resolve or
   // build), a vector title block, and vector borders/labels for every viewport regardless of kind.
-  function bimBuildSheetSVG(sheet,mode){   /* __acad3dV121: a sheet's SVG and its print are plots */
-    return bimWithPlotPass(mode==='presentation',function(){return bimBuildSheetSVGDrawing(sheet,mode);});
+  function bimBuildSheetSVG(sheet,mode,extra){   /* __acad3dV121: a sheet's SVG and its print are plots */
+    return bimWithPlotPass(mode==='presentation',function(){return bimBuildSheetSVGDrawing(sheet,mode,extra);});
   }
-  function bimBuildSheetSVGDrawing(sheet,mode){
+  function bimBuildSheetSVGDrawing(sheet,mode,extra){   /* __acad3dV175c: extra, a drawing layout's shapes and text, over the rest */
     var W=sheet.w,H=sheet.h,defs=[],body=[],i;
     for(i=0;i<sheet.viewports.length;i++){
       var vp=sheet.viewports[i];
@@ -63026,7 +63027,7 @@ function bimWalkKeys(h, j) {
       '<defs>'+defs.join('')+'</defs>\n'+
       '<rect x="0" y="0" width="'+W+'" height="'+H+'" fill="#ffffff"/>\n'+
       '<rect x="0.4" y="0.4" width="'+(W-0.8)+'" height="'+(H-0.8)+'" fill="none" stroke="#333333" stroke-width="0.5"/>\n'+
-      body.join('\n')+'\n</svg>\n';
+      body.join('\n')+(extra?'\n'+extra:'')+'\n</svg>\n';
   }
   function bimExportSheetSVG(){
     var sheet=bimSheetById(A3D.activeSheetId);
@@ -63069,6 +63070,16 @@ function bimWalkKeys(h, j) {
     var Q=bimPresSeq(),n=Q.length,mode=A3D.presentMode?'presentation':'technical',sizes={},css='',body='',bad=[],lost=[],i,e,s,nm,svg,cv,first=true,brd=false;   /* __acad3dV162 */
     for(i=0;i<n;i++){
       e=Q[i];
+      if(e.t==='board'&&e.b.drawing){   /* __acad3dV175c: a drawing layout, a vector page as a sheet is, when it can be */
+        var LS=bimLoLayoutSvg(e.b,mode);
+        if(LS.svg){
+          nm='a3dsz'+String(LS.w.toFixed(1)+'x'+LS.h.toFixed(1)).replace(/[^0-9x]/g,'_');
+          if(!sizes[nm]){sizes[nm]=1;if(first)css+='@page{size:'+LS.w+'mm '+LS.h+'mm;margin:0}';css+='@page '+nm+'{size:'+LS.w+'mm '+LS.h+'mm;margin:0}';}
+          first=false;
+          body+='<div class="a3dpg" data-page="'+bimEsc(e.id)+'" style="page:'+nm+';width:'+LS.w+'mm;height:'+LS.h+'mm">'+LS.svg+'</div>';
+          continue;
+        }
+      }
       if(e.t==='board'){   /* __acad3dV162: a board on A3 landscape pages of its own, as it prints alone */
         if(!brd){brd=true;css+='@page a3dbrd{size:420mm 297mm;margin:10mm}';}
         var bpg=e.b.objs?bimPgBoardPage(e.b):null,pnm=bpg?'a3dbrdp'+i:'a3dbrd';   /* __acad3dV174c: a board with a page prints on its own size */
@@ -63530,6 +63541,150 @@ function bimLyDupNumbers(entries) {
     return '<rect x="' + bimLmN(o.x) + '" y="' + bimLmN(o.y) + '" width="' + bimLmN(o.w) + '" height="' + bimLmN(o.h) +
       '" fill="none" stroke="' + (stroke || '#000000') + '" stroke-width="' + bimLmN(width == null ? 0.25 : width) + '"/>';
   }
+  /* ================= __acad3dV175c WO-18: one editor, one print, in the app =================
+     docs/research/research-one-paper-space.md (the owner's D1 to D8) and docs/work-orders/v175c/SPEC-step2.md.
+     A sheet opens as a layout in the board editor: Open as layout (the sheet bar, or SHEETLAYOUT) makes it a drawing
+     layout (board.drawing) with the sheet's number, name, page and place in the set: the ISO 5457 frame and an ISO 7200
+     title block, a map frame (bimLmVpToFrame, WO-11) for each plan, elevation and view at its scale and pan, and a
+     schedule for each rooms or levels schedule; one undo step. A sheet a layout cannot hold yet is refused with the
+     reason (a size outside the gallery, another schedule). Not done to every sheet at once: a sheet stays a sheet
+     until its owner opens it as a layout.
+     A drawing layout's Draw menu leaves out the live values and the charts (D4, bimLmDrawMenu, WO-14). Its map frames
+     are its viewports: Work in viewport opens the frame's view in the model; the layout's tab brings it back.
+     It prints as one vector page: its frames turned back into viewports (bimLmFrameToVp, WO-12) and drawn by the
+     sheets' own SVG (each clipped inside its frame, plans as vectors), its shapes and text as SVG, at its page size in
+     millimetres; a layout holding a kind the vector page does not draw prints as a board does, and says so. */
+  /* the gallery's page of a sheet's size: {key, o}, or null */
+  function bimLoPage(sh){
+    var m=/^pg:([a-z]+-[A-Z0-9]+):([lp])$/.exec(String(sh&&sh.sizeKey||'')),F=bimPgFamilies(),i,j,o,k,d;
+    if(m&&bimPgSize(m[1]))return {key:m[1],o:m[2]};
+    for(i=0;i<F.length;i++)for(j=0;j<F[i][3].length;j++)for(o=0;o<2;o++){
+      k=F[i][0]+'-'+F[i][3][j];d=bimPgDims(k,o?'p':'l');
+      if(d&&Math.abs(d.w-sh.w)<0.5&&Math.abs(d.h-sh.h)<0.5)return {key:k,o:o?'p':'l'};
+    }
+    return null;
+  }
+  /* the Draw menu's kinds as bimLmDrawMenu reads them: a live value, a chart, or anything else */
+  function bimLoDrawKind(k){return (k==='lvfield'||k==='lvnumber'||k==='lvkpi')?'live':(k==='lvchart'?'chart':'shape');}
+  function bimLoDrawKinds(L,drawing){
+    var out=bimLmDrawMenu(L.map(function(k){return {k:k,kind:k==='-'?'sep':bimLoDrawKind(k[0])};}),drawing).map(function(x){return x.k;});
+    return out.filter(function(k,i){return !(k==='-'&&(i===0||i===out.length-1||out[i-1]==='-'));});
+  }
+  /* a sheet as a drawing layout's record: {rec} or {why}. fit(frame) gives a fitted frame's {den, px, py}; ly the layer */
+  function bimLoFromSheet(sh,fit,ly){
+    var page=bimLoPage(sh),L,objs=[],k=1,i,vp,fr,n,d,ml,m,sw,tw;
+    if(!page)return {why:'its size ('+sh.w+' x '+sh.h+' mm) is not one of the page sizes a layout has'};
+    d=bimPgDims(page.key,page.o);
+    ml=bimStd('drawing.iso5457','margin_left');m=bimStd('drawing.iso5457','margin');sw=bimStd('drawing.iso5457','frame');
+    tw=Math.min(bimStd('drawing.iso7200','width'),d.w-ml-m);
+    objs.push({id:'e'+(k++),t:'border',layer:ly,x:ml,y:m,w:d.w-ml-m,h:d.h-2*m,sw:sw});
+    objs.push({id:'e'+(k++),t:'tblock',st:'iso',layer:ly,x:d.w-m-tw,y:d.h-m-36,w:tw,h:36,num:String(sh.number||'')});
+    L=bimLmSheetToLayout(sh);
+    for(i=0;i<(sh.viewports||[]).length;i++){
+      vp=sh.viewports[i];fr=L.objs[i+1];
+      if(vp.kind==='schedule'){
+        if(vp.refId!=='rooms'&&vp.refId!=='levels')return {why:'its '+(vp.label||vp.refId)+' schedule is not one a layout shows yet (rooms and levels are)'};
+        objs.push({id:'e'+(k++),t:'sched',layer:ly,x:vp.x,y:vp.y,w:vp.w,h:vp.h,src:vp.refId,ttl:vp.label||''});
+        continue;
+      }
+      n={id:'e'+(k++),t:'map',layer:ly,x:fr.x,y:fr.y,w:fr.w,h:fr.h,src:fr.src,nm:fr.label};
+      if(fr.fit){var f=fit(n);n.den=f.den;n.px=f.px;n.py=f.py;}
+      else{n.den=fr.den;n.px=vp.pan&&isFinite(vp.pan[0])?vp.pan[0]:0;n.py=vp.pan&&isFinite(vp.pan[1])?vp.pan[1]:0;}
+      objs.push(n);
+    }
+    return {rec:{name:sh.name||'Untitled',num:String(sh.number||''),page:page,objs:objs,drawing:true}};
+  }
+  /* Open as layout: the sheet replaced by its drawing layout, in its place in the set, opened in the board editor */
+  function bimLoOpenSheet(id){
+    var sh=bimSheetById(id),P,ly,plan,bid,n=0,r,order,at;
+    if(!sh){a3dToast('No sheet open');return null;}
+    ly=(bimLayerById(A3D.activeLayer)||bimLayerZero()).id;
+    plan=bimLoFromSheet(sh,bimBmapFit,ly);
+    if(plan.why){a3dToast(bimSheetLabel(sh)+' cannot open as a layout yet: '+plan.why);return null;}
+    P=bimPresData();
+    P.boards.forEach(function(b){var mm=/^board-c(\d+)$/.exec(b.id);if(mm&&+mm[1]>n)n=+mm[1];});
+    bid='board-c'+(n+1);
+    r=bimBrdKeep({id:bid,kind:'custom'},{name:plan.rec.name,figs:[],objs:plan.rec.objs,page:plan.rec.page,num:plan.rec.num,drawing:true});
+    if(!r.objs||r.objs.length!==plan.rec.objs.length){a3dToast(bimSheetLabel(sh)+' could not be opened as a layout -- see the console');
+      console.warn('[BIM] Open as layout: the layout\'s objects were not all kept',plan.rec.objs,r.objs);return null;}
+    pushUndo();
+    order=bimPresSeq().map(function(e){return e.id;});at=order.indexOf(sh.id);
+    if(A3D_VIEW.kind==='sheet')bimActivateView('3d',null,{anim:false});
+    P.boards.push(r);
+    A3D.sheets.splice(A3D.sheets.indexOf(sh),1);
+    if(A3D.activeSheetId===sh.id)A3D.activeSheetId=null;
+    if(at<0)order.push(bid);else order.splice(at,1,bid);
+    P.order=order;
+    saveSoon();refreshBrowser();bimPresPanelRefresh();bimRenderLayoutTabs();
+    bimShellSetTab('presentation');
+    if(bimPresOpenBoard(bid)){A3D_CLB.edit=true;bimClbOpen();}
+    a3dToast(bimLyLabel(r.num,r.name)+' is a drawing layout: its viewports are map frames; Undo brings the sheet back');
+    return bid;
+  }
+  /* Work in viewport: the frame's view opened in the model */
+  function bimLoWorkIn(fr){
+    var m=/^(plan|elevation|view):(.+)$/.exec(fr&&fr.src||''),ok;
+    if(!m){a3dToast('This frame shows no view yet');return false;}
+    bimClbClose();
+    ok=bimActivateView(m[1]==='plan'?'plan':(m[1]==='elevation'?'elev':'saved'),m[2]);
+    if(ok)a3dToast('Working in the model on '+(fr.nm||m[2])+': the layout\'s tab brings it back');
+    return ok;
+  }
+  /* the kinds the vector page draws */
+  var BIM_LO_VECTOR={border:1,tblock:1,map:1,sched:1,rect:1,ellipse:1,line:1,text:1};
+  /* a drawing layout as the sheet the vector page is drawn from: its frames as viewports, its schedules as theirs */
+  function bimLoAsSheet(B){
+    var pg=bimPgBoardPage(B),vps=[],tb=null;
+    if(!pg)return null;
+    (B.objs||[]).forEach(function(n){
+      var v;
+      if(n.t==='map'){v=bimLmFrameToVp({id:n.id,src:n.src,label:n.nm||'',x:n.x,y:n.y,w:n.w,h:n.h,den:n.den,fit:false});v.pan=[n.px||0,n.py||0];v.scaleMode='ratio';vps.push(v);}
+      else if(n.t==='sched')vps.push({id:n.id,kind:'schedule',refId:n.src,label:n.ttl||'',x:n.x,y:n.y,w:n.w,h:n.h,scaleMode:'fit',scaleDenom:100});
+      else if(n.t==='tblock')tb=n;
+    });
+    return {id:B.id,number:tb&&tb.num?tb.num:(B.num||''),name:B.name||'',w:pg.w,h:pg.h,viewports:vps};
+  }
+  /* its shapes and text as SVG, millimetres, as the board draws them */
+  function bimLoShapesSvg(B){
+    var s='';
+    (B.objs||[]).forEach(function(n){
+      var st=' fill="'+(n.fill&&n.fill!=='none'?n.fill:'none')+'"'+(n.fop!=null&&n.fop<1?' fill-opacity="'+n.fop+'"':'')+
+        ' stroke="'+(n.stroke&&n.stroke!=='none'?n.stroke:'none')+'" stroke-width="'+bimLmN(n.sw||0)+'"';
+      if(n.t==='rect')s+='<rect x="'+bimLmN(n.x)+'" y="'+bimLmN(n.y)+'" width="'+bimLmN(n.w)+'" height="'+bimLmN(n.h)+'" rx="'+bimLmN(n.r||0)+'"'+st+'/>';
+      else if(n.t==='ellipse')s+='<ellipse cx="'+bimLmN(n.x+n.w/2)+'" cy="'+bimLmN(n.y+n.h/2)+'" rx="'+bimLmN(n.w/2)+'" ry="'+bimLmN(n.h/2)+'"'+st+'/>';
+      else if(n.t==='line')s+='<line x1="'+bimLmN(n.x)+'" y1="'+bimLmN(n.y)+'" x2="'+bimLmN(n.x+n.w)+'" y2="'+bimLmN(n.y+n.h)+'"'+st+'/>';
+      else if(n.t==='text'){
+        var fs=(n.fs||14)*25.4/96,x=n.al==='center'?n.x+n.w/2:(n.al==='right'?n.x+n.w:n.x),a=n.al==='center'?'middle':(n.al==='right'?'end':'start');
+        String(n.s||'').split('\n').forEach(function(line,i){
+          s+='<text x="'+bimLmN(x)+'" y="'+bimLmN(n.y+fs*(1.1+i*1.25))+'" font-size="'+bimLmN(fs)+'" font-weight="'+(n.fw===700?700:400)+'" text-anchor="'+a+'" fill="'+(n.col||'#0b0b0b')+'">'+bimEscXml(line)+'</text>';
+        });
+      }
+    });
+    return s;
+  }
+  /* the vector page of a drawing layout, or null (with why) when it holds a kind the vector page does not draw */
+  function bimLoLayoutSvg(B,mode){
+    var S,bad=[];
+    if(!B||!B.drawing)return {why:'not a drawing layout'};
+    (B.objs||[]).forEach(function(n){if(!BIM_LO_VECTOR[n.t]&&bad.indexOf(n.t)<0)bad.push(n.t);});
+    if(bad.length)return {why:'it holds '+bad.map(function(t){return (bimBobKind(t)||['',t])[1].toLowerCase();}).join(', ')+', which the vector page does not draw yet'};
+    S=bimLoAsSheet(B);
+    if(!S)return {why:'it has no page'};
+    return {svg:bimBuildSheetSVG(S,mode,bimLoShapesSvg(B)),w:S.w,h:S.h};
+  }
+  /* Print, from the board's bar: a drawing layout as one vector page; anything else as a board prints */
+  function bimLoPrint(B){
+    var r=bimLoLayoutSvg(B,A3D.presentMode?'presentation':'technical'),w;
+    if(r.why){if(B&&B.drawing)a3dToast('Printed as a board prints: '+r.why);return false;}
+    w=window.open('','_blank');
+    if(!w){a3dToast('The print window was blocked -- allow pop-ups for this page and try again');return true;}
+    w.document.write('<html><head><title>'+bimEsc(bimLyLabel(B.num||'',B.name||''))+'</title><style>@page{size:'+r.w+'mm '+r.h+'mm;margin:0}'+
+      'body{margin:0}svg{width:'+r.w+'mm;height:'+r.h+'mm;display:block}</style></head><body>'+r.svg+
+      '<script>window.onload=function(){window.focus();window.print();};<\/script></body></html>');
+    w.document.close();
+    a3dToast('Printing '+bimLyLabel(B.num||'',B.name||'')+' as one vector page -- Save as PDF in the print dialog makes a PDF');
+    return true;
+  }
   /* ================= __acad3dV162: the boards are pages of the set =================
      docs/research/research-one-analyze-boards.md. A board is a page of the presentation beside the
      sheets: in the Presentation panel with its thumbnail, in the main view, in Present and in Print
@@ -63752,6 +63907,7 @@ function bimLyDupNumbers(entries) {
   /* a board alone, in a print window: A3 landscape, as Print set prints it */
   function bimClbPrint(kind){
     if(!bimBoardName(kind)&&!bimBoardById(kind))kind=bimClbWhich();   /* __acad3dV172b */
+    var bL=bimBoardById(kind);if(bL&&bL.drawing&&bimLoPrint(bL))return true;   /* __acad3dV175c: a drawing layout prints as one vector page */
     var w=window.open('','_blank');
     if(!w){a3dToast('The print window was blocked -- allow pop-ups for this page and try again');return false;}
     bimBimgLoad(bimBimgUsed(),function(){   /* __acad3dV174a: its images loaded first */
@@ -63884,6 +64040,7 @@ function bimLyDupNumbers(entries) {
     if(r.objs&&b){var Ly=bimBobLayValid(b.lay);if(Ly)r.lay=Ly;}   /* __acad3dV174b: its stacks */
     if(r.objs&&b){var Pg=bimPgValid(b.page);if(Pg)r.page=Pg;else if(b.pageOff===true)r.pageOff=true;}   /* __acad3dV174c: its page, or none by choice */
     if(b&&typeof b.num==='string'){var Nm=bimLyNumberValid(b.num);if(Nm)r.num=Nm;}   /* __acad3dV175c: its number as a layout */
+    if(r.kind==='custom'&&b&&b.drawing===true)r.drawing=true;   /* __acad3dV175c WO-18: a drawing layout (D4) */
     return r;
   }
   /* ---- the figures, read from the boards ---- */
@@ -66669,7 +66826,8 @@ function bimRptPlan(families) {
     '-',['map','Map frame'],['legend','Legend'],['north','North arrow'],['sbar','Scale bar'],   /* __acad3dV174d */
     '-',['lvfield','Field\u2026'],['lvnumber','Number\u2026'],['lvsched','Schedule\u2026'],['lvkpi','Indicator\u2026'],['lvchart','Result chart\u2026']];}   /* __acad3dV175b */   /* __acad3dV175a: a value of the project, kept up to date */
   function bimBdeDrawMenu(x,y){
-    bimLtMenuOpen(x,y,bimBdeDrawKinds().map(function(k){return k==='-'?k:[k[1],k[0]];}),function(k){
+    var Wd=bimBdeWork();   /* __acad3dV175c: a drawing layout's menu leaves out the live values and the charts (D4) */
+    bimLtMenuOpen(x,y,bimLoDrawKinds(bimBdeDrawKinds(),!!(Wd&&Wd.B&&Wd.B.drawing)).map(function(k){return k==='-'?k:[k[1],k[0]];}),function(k){
       if(k==='image')bimBdeAddImage();
       else if(/^lv(field|number|sched|kpi|chart)$/.test(k))setTimeout(function(){   /* __acad3dV175b: the three kinds' menus too */
         if(k==='lvfield')bimLvFieldMenu(x,y);else if(k==='lvnumber')bimLvNumberMenu(x,y);else if(k==='lvsched')bimLbdSchedMenu(x,y);else if(k==='lvkpi')bimLbdKpiMenu(x,y);else bimLbdChartMenu(x,y);
@@ -67208,6 +67366,7 @@ function bimRptPlan(families) {
       g+=bimPropRow('View','<select data-bdf="src">'+bimBmapSources().map(function(s){var v=s.kind+':'+s.refId;return bimBdeOpt(v,s.label,n.src);}).join('')+'</select>');
       g+=bimPropRow('Scale','<select data-bdf="den">'+SHEET_SCALES.map(function(s){return bimBdeOpt(s.denom,s.label,n.den);}).join('')+
         (SHEET_SCALES.some(function(s){return s.denom===n.den;})?'':bimBdeOpt(n.den,'1:'+n.den,n.den))+'</select> '+bimBdeBtn('mapfit','Fit','The scale that shows the view whole'));
+      g+=bimPropRow('Viewport',bimBdeBtn('mapwork','Work in viewport','Open this view in the model; the layout\'s tab brings it back'));   /* __acad3dV175c WO-18 */
       g+=bimBdeNum('Pan across (m)','px',n.px,1)+bimBdeNum('Pan up (m)','py',n.py,1);
       g+='<div class="a3d-pnote">The site\'s shown data layers and the basemap are drawn in the frame, on screen and on paper; the basemap\'s credit is printed in its corner.</div>';
     }
@@ -67234,6 +67393,7 @@ function bimRptPlan(families) {
       else if(/^(al|dist|tidy)-/.test(v))bimBdeArrange(v);   /* __acad3dV174b */
       else if(/^lv-/.test(v)){r=a.getBoundingClientRect();bimLvAct(v,r.left,r.bottom+4);}   /* __acad3dV175a */
       else if(v==='mapfit'){var Wf=bimBdeWork(),q=Wf&&bimBobFind(Wf.objs,A3D_BDE.sel[0]);if(q&&q.n.t==='map')bimBdeSet(null,bimBmapFit(q.n));}   /* __acad3dV174d */
+      else if(v==='mapwork'){var Ww=bimBdeWork(),qw=Ww&&bimBobFind(Ww.objs,A3D_BDE.sel[0]);if(qw&&qw.n.t==='map')bimLoWorkIn(qw.n);}   /* __acad3dV175c WO-18 */
       else bimBdeDo(v);
     });
     body.addEventListener('change',function(ev){
@@ -69836,6 +69996,7 @@ function bimRptPlan(families) {
           '<button class="a3d-btn a3d-lyonly" id="a3d-sheettbedit" title="Edit title block info">Title Block</button>'+
           '<button class="a3d-btn a3d-lyonly" id="a3d-sheetpng" title="Export sheet as PNG">Export PNG</button>'+
           '<button class="a3d-btn a3d-lyonly" id="a3d-sheetsvg" title="Export sheet as vector SVG">Export SVG</button>'+
+          '<button class="a3d-btn a3d-lyonly" id="a3d-sheetlayout" title="Open this sheet as a layout in the board editor: its viewports become map frames (Undo brings the sheet back)">Open as layout</button>'+   /* __acad3dV175c WO-18 */
           '<button class="a3d-btn a3d-btn-pri a3d-lyonly" id="a3d-sheetprint" title="Print sheet (vector)">Print</button>'+
           '<button class="a3d-btn a3d-btn-pri" id="a3d-sheetpresent" title="Present the pages full screen, one at a time, from this one">Present</button>'+   /* __acad3dV122 */
           '<button class="a3d-btn" id="a3d-sheetclose" title="Close (back to model)">× Close</button>'+
@@ -70058,6 +70219,8 @@ function bimRptPlan(families) {
     if(sheetPngBtn)sheetPngBtn.addEventListener('click',function(){bimExportSheetPNG();});
     var sheetSvgBtn=root.querySelector('#a3d-sheetsvg');
     if(sheetSvgBtn)sheetSvgBtn.addEventListener('click',function(){bimExportSheetSVG();});
+    var sheetLayoutBtn=root.querySelector('#a3d-sheetlayout');
+    if(sheetLayoutBtn)sheetLayoutBtn.addEventListener('click',function(){bimLoOpenSheet(A3D.activeSheetId);});   /* __acad3dV175c WO-18 */
     var sheetPrintBtn=root.querySelector('#a3d-sheetprint');
     if(sheetPrintBtn)sheetPrintBtn.addEventListener('click',function(){bimPrintSheet();});
     var sheetCloseBtn2=root.querySelector('#a3d-sheetclose');
@@ -71110,6 +71273,7 @@ function bimRptPlan(families) {
     graphics:function(){bimGraphicsCommand();},   /* __acad3dV153 */
     render:function(){bimRvCommand();},   /* __acad3dV194 */
     walk:function(){bimWalkCommand();},   /* __acad3dV203 */
+    sheetlayout:function(){if(A3D_VIEW.kind!=='sheet'){a3dToast('Open a sheet first: SHEETLAYOUT opens the sheet on screen as a layout');return;}bimLoOpenSheet(A3D.activeSheetId);},   /* __acad3dV175c */
     benchmark:function(){bimBenchmark();},   /* __acad3dV155 */
     cutfill:function(){bimCutFillCommand();},
     cutfillmap:function(){bimCutFillMapCommand();},
@@ -73893,6 +74057,9 @@ function bimRptPlan(families) {
   };
   window.__a3dBrdCapture=function(kind,narrow){var c=bimFigCapture(kind,!!narrow);return {order:c.order,notes:!!c.notes,cls:c.order.map(function(f){return c.figs[f].cls||null;})};};
   window.__a3dBrdRecord=function(id){var b=bimBoardById(id);return b?JSON.parse(JSON.stringify(b)):null;};
+  /* __acad3dV175c WO-18: a drawing layout's vector page, as Print and Print set write it */
+  window.__a3dBdeSelect=function(ids){A3D_BDE.sel=(ids||[]).slice();refreshProps();return A3D_BDE.sel.length;};
+  window.__a3dLayoutSvg=function(id){var r=bimLoLayoutSvg(bimBoardById(id),'technical');return r.why?{why:r.why}:{svg:r.svg,w:r.w,h:r.h};};
   window.__a3dBrdEdit=function(on){return bimBrdEdit(!!on);};
   /* the board on screen: its figures where they are drawn, in reading order */
   window.__a3dBrdState=function(){

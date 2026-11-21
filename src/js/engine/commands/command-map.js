@@ -86,10 +86,12 @@ import { bimToggleAreaPlan, bimToggleSun } from '../site/shadows.js';
 import { bimAnalyzeCommand, bimAnalyzeOff } from '../structure/analysis-display.js';
 import { bimStructFocus, bimToggleTrib } from '../structure/analysis-properties.js';
 import { openSaveBlockDlg } from '../assets/blocks.js';
+import { A3D_VIEW } from '../views/saved-views.js';
 import { bimSheetById } from '../sheets/sheets.js';
 import { bimSheetOnScreen, bimShowModel } from '../sheets/present.js';
 import { bimPrintSheet, bimSetModelSpace, bimSetPaperSpace } from '../sheets/viewports.js';
 import { bimLayoutNew } from '../sheets/layout-tabs.js';
+import { bimLoOpenSheet } from '../sheets/layout-open.js';
 import { bimBoardShow } from '../sheets/boards.js';
 import { refreshTree } from '../sheets/presentation-panel.js';
 import { a3dToast, objById } from '../bim/csg-booleans.js';
@@ -146,6 +148,7 @@ import { bimOpenToolsPanel } from '../ui/discipline-tabs.js';
     graphics:function(){bimGraphicsCommand();},   /* __acad3dV153 */
     render:function(){bimRvCommand();},   /* __acad3dV194 */
     walk:function(){bimWalkCommand();},   /* __acad3dV203 */
+    sheetlayout:function(){if(A3D_VIEW.kind!=='sheet'){a3dToast('Open a sheet first: SHEETLAYOUT opens the sheet on screen as a layout');return;}bimLoOpenSheet(A3D.activeSheetId);},   /* __acad3dV175c */
     benchmark:function(){bimBenchmark();},   /* __acad3dV155 */
     cutfill:function(){bimCutFillCommand();},
     cutfillmap:function(){bimCutFillMapCommand();},

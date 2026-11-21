@@ -3,6 +3,7 @@ import { bimLayerBlend, bimLayerById } from '../layers/layer-rules.js';
 import { bimEsc, bimLayerOptionsHtml } from '../layers/layer-manager.js';
 import { bimPropGroup, bimPropRow, bimPropText } from '../properties/palette.js';
 import { SHEET_SCALES } from './sheets.js';
+import { bimLoWorkIn } from './layout-open.js';
 import { bimBrdEditing } from './board-figures.js';
 import {
   bimBobBlend, bimBobBlends, bimBobBox, bimBobFind, bimBobKind, bimBobLayer, bimBobMaskTypes
@@ -154,6 +155,7 @@ import { bimLvAct, bimLvOverride, bimLvPropsHtml, bimLvSetDp, bimLvSetText } fro
       g+=bimPropRow('View','<select data-bdf="src">'+bimBmapSources().map(function(s){var v=s.kind+':'+s.refId;return bimBdeOpt(v,s.label,n.src);}).join('')+'</select>');
       g+=bimPropRow('Scale','<select data-bdf="den">'+SHEET_SCALES.map(function(s){return bimBdeOpt(s.denom,s.label,n.den);}).join('')+
         (SHEET_SCALES.some(function(s){return s.denom===n.den;})?'':bimBdeOpt(n.den,'1:'+n.den,n.den))+'</select> '+bimBdeBtn('mapfit','Fit','The scale that shows the view whole'));
+      g+=bimPropRow('Viewport',bimBdeBtn('mapwork','Work in viewport','Open this view in the model; the layout\'s tab brings it back'));   /* __acad3dV175c WO-18 */
       g+=bimBdeNum('Pan across (m)','px',n.px,1)+bimBdeNum('Pan up (m)','py',n.py,1);
       g+='<div class="a3d-pnote">The site\'s shown data layers and the basemap are drawn in the frame, on screen and on paper; the basemap\'s credit is printed in its corner.</div>';
     }
@@ -180,6 +182,7 @@ import { bimLvAct, bimLvOverride, bimLvPropsHtml, bimLvSetDp, bimLvSetText } fro
       else if(/^(al|dist|tidy)-/.test(v))bimBdeArrange(v);   /* __acad3dV174b */
       else if(/^lv-/.test(v)){r=a.getBoundingClientRect();bimLvAct(v,r.left,r.bottom+4);}   /* __acad3dV175a */
       else if(v==='mapfit'){var Wf=bimBdeWork(),q=Wf&&bimBobFind(Wf.objs,A3D_BDE.sel[0]);if(q&&q.n.t==='map')bimBdeSet(null,bimBmapFit(q.n));}   /* __acad3dV174d */
+      else if(v==='mapwork'){var Ww=bimBdeWork(),qw=Ww&&bimBobFind(Ww.objs,A3D_BDE.sel[0]);if(qw&&qw.n.t==='map')bimLoWorkIn(qw.n);}   /* __acad3dV175c WO-18 */
       else bimBdeDo(v);
     });
     body.addEventListener('change',function(ev){

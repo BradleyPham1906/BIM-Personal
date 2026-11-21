@@ -20,6 +20,14 @@ order: 8
   - **Present** shows it as on screen; the wheel scrolls it to its end, then goes on to the next
     page. **Print set** prints it on A3 landscape pages of its own, in its place in the set.
 - **Printing one sheet:** `PLOT`.
+- **A sheet as a layout:** **Open as layout** on the sheet's bar (or `SHEETLAYOUT`) moves the sheet into the board
+  editor as a drawing layout, in its place in the set, with its number, name and page. Its frame and title block are
+  the board's own, each viewport becomes a map frame at its scale, and a rooms or levels schedule comes too. From
+  there you can draw on it, align things and work with layers, as on any board. Live values and charts are left out
+  of a drawing layout's Draw menu. **Work in viewport**, in a frame's Properties, opens its view in the model, and the
+  layout's tab brings you back. Print and Print set print it as one vector page, each frame's drawing clipped to the
+  frame. Undo brings the sheet back. A sheet whose size is not in the page gallery, or that holds another schedule,
+  says why it cannot move yet. Sheets are never moved on their own.
 
 ## Arranging a board
 

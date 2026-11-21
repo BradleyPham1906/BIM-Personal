@@ -70,6 +70,6 @@ records.
 | Phase | Where |
 |---|---|
 | v203 Walkthrough W1 | Done 2026-11-21: WO-01 to WO-08 shipped by Cline; Claude's C-02 to C-08 (WALK, its controls, the rendered view's moving mode, the browser check 25 of 25) |
-| v175c | WO-11 to WO-17 shipped (2026-11-14); then Claude's WO-18 (one editor and one print in the app) and WO-19 |
+| v175c | Done 2026-11-21: WO-11 to WO-17 shipped; Claude's WO-18 (Open as layout, Work in viewport, the vector page; 13 of 13) and WO-19 |
 | v177 | Done 2026-11-21: steps 1, 2a and 2b; the browser check on Cline's functions and Make editable, 26 of 26 |
 | v194 | Done 2026-11-21: T-07's looks wired into the materials; T-06's browser check, 15 of 15 |
