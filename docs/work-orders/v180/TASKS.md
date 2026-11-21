@@ -78,12 +78,24 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-07 [Claude] Registry rules, item kinds and the check on the model
+## [x] WO-07 [Claude] Registry rules, item kinds and the check on the model
 
 Claude's: the ADA rules and clearance kinds in standards/registry.js, item bodies and zones from Assets models, the check in Properties and drawn on the plan; moves the test to tests/unit/; npm run modules; the browser check.
 
+Done 2026-11-16. Audit first: `bim/interiors-clearance.js` had been shipped in ES2015 (`const`, arrow functions,
+destructuring, spread, `for...of`), against the build contract; rewritten in ES5 with the same results, and WO-06 now
+says not evaluated when the rule has no `minIn`, WO-02 null for a missing item. A unit test now refuses ES2015 in both
+clearance files. Registry: `ada.door` (404.2.3, 32 in) and `int.zone` (a seat, storage, a work surface, a bed: the
+app's own starting values, kind assumption, not from any book; a fixture's zone is `ada.space`'s 30 by 48 in).
+`bim/interiors-clearance-model.js` (new): a Furniture or Fixtures model's body (its box in the frame it faces), its
+kind and facing in Properties (the facing follows later turns through two of its vertices), the zone blocked by walls
+and other bodies on its level, drawn on the plan for the selection, red when blocked; a door's opening width against
+404.2.3 (the leaf and stops not taken off); a room's widest turning circle around its furniture against 304.3.1. Tests:
+`tests/unit/interiors-clearance.test.mjs` (the six orders' and three new); browser check
+`tests/e2e/bim_phase180_clearance_browser_tests.py` 19 of 19.
+
 ---
 
-## [ ] WO-08 [Claude] The records
+## [x] WO-08 [Claude] The records
 
 PIPELINE row 180, Notion, the research note's page.

@@ -852,6 +852,22 @@ body.light-theme .a3d-anzsub,body.light-theme .a3d-anzarea{border-color:rgba(0,0
 body.light-theme .a3d-anzareaerr{color:#b42318}
 .a3d-anzstate-stale{background:rgba(255,183,77,.18);color:#ffb74d}.a3d-anzstate-busy{background:rgba(110,160,255,.18);color:#8fb4ff}
 .a3d-terrbands{margin:2px 0 8px;display:flex;flex-direction:column;gap:2px}
+/* __acad3dV179: the Programme tables; they scroll sideways on a phone */
+.a3d-int-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:4px 0;max-width:100%}
+.a3d-int-tbl{border-collapse:collapse;font-size:11px;min-width:520px;width:100%}
+.a3d-int-tbl th{text-align:left;font-weight:600;padding:3px 4px;opacity:.75;white-space:nowrap}
+.a3d-int-tbl td{padding:2px 3px;vertical-align:middle}
+.a3d-int-tbl input,.a3d-int-tbl select{width:100%;min-width:52px;box-sizing:border-box}
+.a3d-int-none{opacity:.7;padding:6px 4px}
+.a3d-int-st{display:inline-block;padding:1px 6px;border-radius:8px;white-space:nowrap}
+.a3d-int-st.ok{background:rgba(76,175,80,.18);color:#7fd182}
+.a3d-int-st.bad{background:rgba(229,115,115,.18);color:#ef8f8f}
+.a3d-int-st.ne{background:rgba(160,160,160,.18);color:#b9bec6}
+.a3d-int-warn{color:#ffb74d}
+body.light-theme .a3d-int-st.ok{color:#2f7d3a}
+body.light-theme .a3d-int-st.bad{color:#b42318}
+body.light-theme .a3d-int-st.ne{color:#5b616b}
+body.light-theme .a3d-int-warn{color:#9a5b00}
 /* __acad3dV158: the Site analysis tab */
 #a3d-shell[data-tab="analyze"] .a3d-sa-wrap{flex:1 1 auto;min-height:0;display:flex;flex-direction:column}   /* __acad3dV159: in Analyze */
 /* ================= __acad3dV159: the Climate and risk board =================
@@ -14132,88 +14148,37 @@ function bimNeReverse(c) {
      evaluated, never guessed. Plan points are [x, z]. Each function is a work order in docs/work-orders/v179/TASKS.md,
      added below as it is built; none uses another file's names. */
 function bimIntProgramItem(raw) {
-  var id = (raw && raw.id !== undefined && raw.id !== null) ? String(raw.id).trim() : '';
-  var use = (raw && raw.use !== undefined && raw.use !== null) ? String(raw.use).trim() : '';
-  var count = (raw && typeof raw.count === 'number' && isFinite(raw.count) && raw.count >= 1) ? Math.floor(raw.count) : 1;
-  var areaMin = (raw && typeof raw.areaMin === 'number' && isFinite(raw.areaMin) && raw.areaMin >= 0) ? raw.areaMin : null;
-  var areaMax = (raw && typeof raw.areaMax === 'number' && isFinite(raw.areaMax) && raw.areaMax >= 0) ? raw.areaMax : null;
-  // swapped when both are set and out of order
-  if (areaMin !== null && areaMax !== null && areaMin > areaMax) {
-    var tmp = areaMin;
-    areaMin = areaMax;
-    areaMax = tmp;
-  }
-  var rationale = (raw && raw.rationale !== undefined && raw.rationale !== null) ? String(raw.rationale) : '';
-  if (count < 1) count = 1;
-  var level = raw && raw.level !== undefined && raw.level !== null ? raw.level : null;
-  if (typeof level === 'number') level = Math.floor(level);
-  if (typeof level === 'string' && level !== '') level = null;
-  var group = raw && raw.group !== undefined && raw.group !== null ? String(raw.group).trim() : '';
-  // valid statuses for programme item; unknown otherwise
-  var status = (raw && raw.status !== undefined && raw.status !== null) ? String(raw.status).trim() : 'unknown';
-  if (status !== 'available' && status !== 'partial' && status !== 'stale' && status !== 'unavailable' && status !== 'failed' && status !== 'confirmed') status = 'unknown';
-  var source = raw && raw.source !== undefined && raw.source !== null ? String(raw.source).trim() : '';
-  var params = (raw && raw.params) || {};
-  // ensure params is a plain object; drop non-finite number values
-  var filteredParams = {};
-  if (typeof params === 'object' && !Array.isArray(params)) {
-    for (var k in params) {
-      if (params.hasOwnProperty(k) && typeof params[k] === 'number' && isFinite(params[k])) {
-        filteredParams[k] = params[k];
-      }
+  var r = raw || {};
+  function str(v) { return typeof v === 'string' ? v : ''; }
+  function trim(v) { return typeof v === 'string' ? v.replace(/^\s+|\s+$/g, '') : ''; }
+  function area(v) { return (typeof v === 'number' && isFinite(v) && v >= 0) ? v : null; }
+  var count = (typeof r.count === 'number' && isFinite(r.count) && r.count >= 1) ? Math.floor(r.count) : 1;
+  var areaMin = area(r.areaMin), areaMax = area(r.areaMax), tmp;
+  if (areaMin !== null && areaMax !== null && areaMin > areaMax) { tmp = areaMin; areaMin = areaMax; areaMax = tmp; }
+  var level = (typeof r.level === 'number' && isFinite(r.level)) ? Math.floor(r.level) : null;
+  var status = (r.status === 'unknown' || r.status === 'assumed' || r.status === 'confirmed') ? r.status : 'unknown';
+  var params = {}, k;
+  if (r.params && typeof r.params === 'object' && Object.prototype.toString.call(r.params) === '[object Object]') {
+    for (k in r.params) {
+      if (Object.prototype.hasOwnProperty.call(r.params, k) && typeof r.params[k] === 'number' && isFinite(r.params[k])) params[k] = r.params[k];
     }
   }
-  var open = (raw && raw.open !== undefined && raw.open !== null) ? String(raw.open).trim() : 'auto';
-  // valid open values; otherwise default to 'auto'
-  if (open !== 'auto' && open !== 'open' && open !== 'closed') open = 'auto';
-  return {
-    id: id,
-    use: use,
-    count: count,
-    areaMin: areaMin,
-    areaMax: areaMax,
-    rationale: rationale,
-    building: raw && raw.building !== undefined && raw.building !== null ? String(raw.building).trim() : '',
-    level: level,
-    group: group,
-    status: status,
-    source: source,
-    params: filteredParams,
-    open: open
-  };
+  var open = (r.open === 'open' || r.open === 'closed' || r.open === 'auto') ? r.open : 'auto';
+  return { id: str(r.id), use: trim(r.use), count: count, areaMin: areaMin, areaMax: areaMax, rationale: str(r.rationale),
+    building: trim(r.building), level: level, group: trim(r.group), status: status, source: str(r.source), params: params, open: open };
 }
 function bimIntRelation(raw) {
-  var kind;
-  var rel;
-  var nearM;
-  if (!raw || raw.a === undefined || raw.a === null || raw.b === undefined || raw.b === null ||
-      raw.a.trim() === '' || raw.b.trim() === '' || raw.a.trim() === raw.b.trim()) {
-    return null;
-  }
-  // kind one of the three else 'desired'
-  if (raw.kind === 'next' || raw.kind === 'desired' || raw.kind === 'forbidden' || raw.kind === 'required') {
-    kind = raw.kind;
-  } else {
-    kind = 'desired';
-  }
-  // rel: preserve any string rel from input; default to 'next' if missing/empty
-  if (raw.rel && typeof raw.rel === 'string' && raw.rel.trim() !== '') {
-    rel = raw.rel.trim();
-  } else {
-    rel = 'next';
-  }
-  // nearM a finite number above 0 else 15
-  if (raw.nearM !== undefined && raw.nearM !== null && isFinite(raw.nearM) && raw.nearM > 0) {
-    nearM = raw.nearM;
-  } else {
-    nearM = 15;
-  }
-  var strength = (raw && raw.strength !== undefined && raw.strength !== null) ? raw.strength : 2;
-  if (typeof strength === 'number') strength = Math.round(strength);
-  var reason = (raw && raw.reason !== undefined && raw.reason !== null) ? String(raw.reason).trim() : '';
-  var status = (raw && raw.status !== undefined && raw.status !== null) ? String(raw.status).trim() : 'approved';
-  if (status !== 'approved' && status !== 'met' && status !== 'not met' && status !== 'not evaluated') status = 'approved';
-  return { a: raw.a.trim(), b: raw.b.trim(), kind: kind, rel: rel, nearM: nearM, strength: strength, reason: reason, status: status };
+  if (!raw || typeof raw.a !== 'string' || typeof raw.b !== 'string' || raw.a === '' || raw.b === '' || raw.a === raw.b) return null;
+  var kinds = { required: 1, desired: 1, forbidden: 1 };
+  var rels = { next: 1, near: 1, apart: 1, access: 1, visual: 1, acoustic: 1, secure: 1, sequence: 1 };
+  var stats = { suggested: 1, approved: 1, rejected: 1 };
+  var kind = kinds.hasOwnProperty(raw.kind) ? raw.kind : 'desired';
+  var rel = rels.hasOwnProperty(raw.rel) ? raw.rel : 'next';
+  var nearM = (typeof raw.nearM === 'number' && isFinite(raw.nearM) && raw.nearM > 0) ? raw.nearM : 15;
+  var strength = (raw.strength === 1 || raw.strength === 2 || raw.strength === 3) ? raw.strength : 2;
+  var reason = typeof raw.reason === 'string' ? raw.reason.replace(/^\s+|\s+$/g, '') : '';
+  var status = stats.hasOwnProperty(raw.status) ? raw.status : 'approved';
+  return { a: raw.a, b: raw.b, kind: kind, rel: rel, nearM: nearM, strength: strength, reason: reason, status: status };
 }
 function bimIntInside(p, poly) {
   if (!poly || poly.length === 0) {
@@ -14451,6 +14416,10 @@ function bimIntCheck(rel, facts) {
     return { status: 'not evaluated', why: 'not a relation' };
   }
   
+  if (rel.status === 'rejected') {
+    return { status: 'not evaluated', why: 'the relation was rejected' };
+  }
+
   // either room missing from facts.rooms: not evaluated, 'a room is not in the model'
   if (!facts || !facts.rooms || facts.rooms[rel.a] === undefined || facts.rooms[rel.b] === undefined) {
     return { status: 'not evaluated', why: 'a room is not in the model' };
@@ -14483,20 +14452,6 @@ function bimIntCheck(rel, facts) {
       return { status: 'not met', why: 'no shared wall or door' };
     }
   }
-  // access: met when either is above 0 ('a door between them' when a door, else 'a shared wall'), else not met 'no door between them'
-  if (rel.rel === 'access') {
-    if ( (sharedLen !== null && sharedLen > 0) || (doorCount !== null && doorCount > 0) ) {
-      if (doorCount !== null && doorCount > 0) {
-        return { status: 'met', why: 'a door between them' };
-      } else {
-        return { status: 'met', why: 'a shared wall' };
-      }
-    } else if (sharedLen !== null && sharedLen > 0) {
-      return { status: 'met', why: 'a shared wall' };
-    } else {
-      return { status: 'not met', why: 'no door between them' };
-    }
-  }
   
   // apart: the reverse with the same reasons
   if (rel.rel === 'apart') {
@@ -14525,10 +14480,17 @@ function bimIntCheck(rel, facts) {
       // distance exceeds nearM, show the actual route distance
       var formattedDist = Math.round(distAB * 10) / 10;
       var formatted = formattedDist.toFixed(1);
-      return { status: 'not met', why: 'route ' + formatted + ' m, over 5 m' };
+      return { status: 'not met', why: 'route ' + formatted + ' m, over ' + nearM + ' m' };
     }
   }
   
+  if (rel.rel === 'access') {
+    if (doorCount !== null && doorCount > 0) return { status: 'met', why: 'a door between them' };
+    return { status: 'not met', why: 'no door between them' };
+  }
+  if (rel.rel === 'visual' || rel.rel === 'acoustic' || rel.rel === 'secure' || rel.rel === 'sequence') {
+    return { status: 'not evaluated', why: 'not measured in this phase' };
+  }
   return { status: 'not evaluated', why: 'not a relation' };
 }
 function bimIntMatch(items, rooms) {
@@ -14557,15 +14519,9 @@ function bimIntMatch(items, rooms) {
         if (rm.use === use) {
           sameUseRooms.push(rm.id);
           // check area
-          if (rm.area === undefined || rm.area === null || isNaN(rm.area)) {
-            // not a number
-          } else {
-            if (areaMin !== null && rm.area < areaMin) {
-              offArea.push(rm.id);
-            }
-            if (areaMax !== null && rm.area > areaMax) {
-              offArea.push(rm.id);
-            }
+          if (typeof rm.area !== 'number' || !isFinite(rm.area) ||
+              (areaMin !== null && rm.area < areaMin) || (areaMax !== null && rm.area > areaMax)) {
+            offArea.push(rm.id);
           }
           have++;
         }
@@ -14625,175 +14581,81 @@ function bimIntMinWidth(widthM, minIn) {
 */
 
 function bimClrRect(c, w, d, rot) {
-  const x = c[0];
-  const z = c[1];
-  const cosRot = Math.cos(rot);
-  const sinRot = Math.sin(rot);
-  const corners = [
-    [-w / 2, -d / 2],
-    [w / 2, -d / 2],
-    [w / 2, d / 2],
-    [-w / 2, d / 2],
-  ];
-  return corners.map(([cx, cz]) => [
-    cx * cosRot - cz * sinRot + x,
-    cx * sinRot + cz * cosRot + z,
-  ]);
+  var cs = Math.cos(rot), sn = Math.sin(rot), L = [[-w / 2, -d / 2], [w / 2, -d / 2], [w / 2, d / 2], [-w / 2, d / 2]], out = [], i;
+  for (i = 0; i < 4; i++) out.push([L[i][0] * cs - L[i][1] * sn + c[0], L[i][0] * sn + L[i][1] * cs + c[1]]);
+  return out;
 }
-
 function bimClrZone(it, front, side) {
-  if (front <= 0) return null;
-  const { center, w, d, rot } = it;
-  const x = center[0];
-  const z = center[1];
-  // Zone centre: offset from item center in the direction (-sin rot, cos rot)
-  // by distance (d/2 + front/2)
-  const cx = x - Math.sin(rot) * (d / 2 + front / 2);
-  const cz = z + Math.cos(rot) * (d / 2 + front / 2);
-  // Zone dimensions
-  const zoneW = w / 2 + side;
-  const zoneD = front / 2;
-  // Local corners relative to zone centre (before rotation)
-  const localCorners = [
-    [-zoneW, -zoneD],
-    [zoneW, -zoneD],
-    [zoneW, zoneD],
-    [-zoneW, zoneD],
-  ];
-  // Rotate and translate
-  const cosRot = Math.cos(rot);
-  const sinRot = Math.sin(rot);
-  return localCorners.map(([lcx, lcz]) => [
-    lcx * cosRot - lcz * sinRot + cx,
-    lcx * sinRot + lcz * cosRot + cz,
-  ]);
+  if (!(front > 0) || !it || !it.center) return null;
+  var rot = it.rot || 0, k = it.d / 2 + front / 2;
+  side = typeof side === 'number' && isFinite(side) ? side : 0;
+  return bimClrRect([it.center[0] - Math.sin(rot) * k, it.center[1] + Math.cos(rot) * k], it.w + 2 * side, front, rot);
 }
-
 function bimClrOverlap(a, b) {
-  if (a === null || b === null) return false;
-  if (a.length < 3 || b.length < 3) return false;
-  function getAxes(poly) {
-    const axes = [];
-    for (let i = 0; i < poly.length; i++) {
-      const p1 = poly[i];
-      const p2 = poly[(i + 1) % poly.length];
-      const ex = p2[0] - p1[0];
-      const ez = p2[1] - p1[1];
-      // Normal perpendicular to edge
-      axes.push([ez, -ex]);
+  if (!a || !b || a.length < 3 || b.length < 3) return false;
+  var P = [a, b], q, i, ax, az, A, B;
+  function proj(poly, ax, az) {
+    var lo = Infinity, hi = -Infinity, j, v;
+    for (j = 0; j < poly.length; j++) { v = ax * poly[j][0] + az * poly[j][1]; if (v < lo) lo = v; if (v > hi) hi = v; }
+    return [lo, hi];
+  }
+  for (q = 0; q < 2; q++) {
+    for (i = 0; i < P[q].length; i++) {
+      var p1 = P[q][i], p2 = P[q][(i + 1) % P[q].length], len;
+      ax = p2[1] - p1[1]; az = -(p2[0] - p1[0]); len = Math.sqrt(ax * ax + az * az);
+      if (len < 1e-12) continue;
+      ax /= len; az /= len;
+      A = proj(a, ax, az); B = proj(b, ax, az);
+      if (Math.min(A[1], B[1]) - Math.max(A[0], B[0]) <= 1e-9) return false;
     }
-    return axes;
-  }
-  function project(poly, axis) {
-    const [ax, az] = axis;
-    let min = ax * poly[0][0] + az * poly[0][1];
-    let max = min;
-    for (let i = 1; i < poly.length; i++) {
-      const proj = ax * poly[i][0] + az * poly[i][1];
-      if (proj < min) min = proj;
-      if (proj > max) max = proj;
-    }
-    return [min, max];
-  }
-  function overlapIntervals(i1, i2) {
-    return Math.max(i1[0], i2[0]) < Math.min(i1[1], i2[1]);
-  }
-  const allAxes = [...getAxes(a), ...getAxes(b)];
-  for (const axis of allAxes) {
-    const projA = project(a, axis);
-    const projB = project(b, axis);
-    if (!overlapIntervals(projA, projB)) return false;
   }
   return true;
 }
-
 function bimClrConflicts(items, obstacles) {
-  if (!items) return [];
-  const conflicts = [];
-  for (const item of items) {
-    if (!item || !item.zone) continue;
-    // Check against other items' bodies
-    for (const other of items) {
-      if (!other || other.id === item.id || !other.body) continue;
-      if (bimClrOverlap(item.zone, other.body)) {
-        conflicts.push({ item: item.id, with: other.id });
-      }
+  var out = [], i, j, it, o;
+  items = items || []; obstacles = obstacles || [];
+  for (i = 0; i < items.length; i++) {
+    it = items[i];
+    if (!it || !it.zone) continue;
+    for (j = 0; j < items.length; j++) {
+      o = items[j];
+      if (!o || j === i || o.id === it.id || !o.body) continue;
+      if (bimClrOverlap(it.zone, o.body)) out.push({ item: it.id, with: o.id });
     }
-    // Check against obstacles
-    for (const obstacle of obstacles) {
-      if (!obstacle || !obstacle.poly) continue;
-      if (bimClrOverlap(item.zone, obstacle.poly)) {
-        conflicts.push({ item: item.id, with: obstacle.id });
-      }
+    for (j = 0; j < obstacles.length; j++) {
+      o = obstacles[j];
+      if (!o || !o.poly) continue;
+      if (bimClrOverlap(it.zone, o.poly)) out.push({ item: it.id, with: o.id });
     }
   }
-  return conflicts;
+  return out;
 }
-
 function bimClrCircleFits(poly, c, r) {
-  if (r <= 0 || poly.length < 3) return false;
-  // Point-in-polygon using even-odd rule
-  function pointInPolygon(poly, px, pz) {
-    let inside = false;
-    for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
-      const xi = poly[i][0], zi = poly[i][1];
-      const xj = poly[j][0], zj = poly[j][1];
-      const intersect = ((zi > pz) !== (zj > pz)) &&
-        (px < (xj - xi) * (pz - zi) / (zj - zi) + xi);
-      if (intersect) inside = !inside;
-    }
-    return inside;
+  if (!(r > 0) || !poly || poly.length < 3 || !c) return false;
+  var inside = false, i, j, n = poly.length, xi, zi, xj, zj, dx, dz, t, L2, px, pz;
+  for (i = 0, j = n - 1; i < n; j = i++) {
+    xi = poly[i][0]; zi = poly[i][1]; xj = poly[j][0]; zj = poly[j][1];
+    if (((zi > c[1]) !== (zj > c[1])) && (c[0] < (xj - xi) * (c[1] - zi) / (zj - zi) + xi)) inside = !inside;
   }
-  // Distance from point to line segment
-  function pointToSegmentDist(px, pz, x1, z1, x2, z2) {
-    const dx = x2 - x1;
-    const dz = z2 - z1;
-    const lengthSq = dx * dx + dz * dz;
-    let t;
-    if (lengthSq === 0) {
-      const dx2 = px - x1;
-      const dz2 = pz - z1;
-      return Math.sqrt(dx2 * dx2 + dz2 * dz2);
-    }
-    t = ((px - x1) * dx + (pz - z1) * dz) / lengthSq;
-    if (t < 0) {
-      const dx2 = px - x1;
-      const dz2 = pz - z1;
-      return Math.sqrt(dx2 * dx2 + dz2 * dz2);
-    } else if (t > 1) {
-      const dx2 = px - x2;
-      const dz2 = pz - z2;
-      return Math.sqrt(dx2 * dx2 + dz2 * dz2);
-    } else {
-      const projX = x1 + t * dx;
-      const projZ = z1 + t * dz;
-      const dx2 = px - projX;
-      const dz2 = pz - projZ;
-      return Math.sqrt(dx2 * dx2 + dz2 * dz2);
-    }
-  }
-  // Check centre is inside polygon
-  if (!pointInPolygon(poly, c[0], c[1])) return false;
-  // Check distance to every edge segment
-  for (let i = 0; i < poly.length; i++) {
-    const j = (i + 1) % poly.length;
-    const dist = pointToSegmentDist(c[0], c[1], poly[i][0], poly[i][1], poly[j][0], poly[j][1]);
-    if (dist < r - 1e-9) return false;
+  if (!inside) return false;
+  for (i = 0; i < n; i++) {
+    j = (i + 1) % n;
+    dx = poly[j][0] - poly[i][0]; dz = poly[j][1] - poly[i][1]; L2 = dx * dx + dz * dz;
+    t = L2 > 0 ? ((c[0] - poly[i][0]) * dx + (c[1] - poly[i][1]) * dz) / L2 : 0;
+    t = Math.max(0, Math.min(1, t));
+    px = poly[i][0] + t * dx - c[0]; pz = poly[i][1] + t * dz - c[1];
+    if (Math.sqrt(px * px + pz * pz) < r - 1e-9) return false;
   }
   return true;
 }
-
 function bimClrRule(rule, m) {
-  if (!rule) {
-    return { clause: '', edition: '', status: 'not evaluated' };
-  }
-  if (typeof m !== 'number') {
-    return { clause: rule.clause || '', edition: rule.edition || '', status: 'not evaluated' };
-  }
-  const measuredIn = Math.round(m / 0.0254 * 100) / 100;
-  const status = m / 0.0254 >= rule.minIn - 1e-9 ? 'meets' : 'below';
-  return { clause: rule.clause || '', edition: rule.edition || '', status, measuredIn };
+  var out = { clause: rule && typeof rule.clause === 'string' ? rule.clause : '', edition: rule && typeof rule.edition === 'string' ? rule.edition : '', status: 'not evaluated' };
+  if (!rule || typeof rule.minIn !== 'number' || !isFinite(rule.minIn) || typeof m !== 'number' || !isFinite(m)) return out;
+  out.status = m / 0.0254 >= rule.minIn - 1e-9 ? 'meets' : 'below';
+  out.measuredIn = Math.round(m / 0.0254 * 100) / 100;
+  return out;
 }
+
 
 
 function bimEgInside(p, poly) {
@@ -15308,6 +15170,489 @@ function bimIsoWindows(p, windows, segs, samples) {
 }
 
 /* __acad3dV182 */
+
+  /* ================= __acad3dV179: Interiors I1 on the live model =================
+     docs/work-orders/v179/SPEC.md part 5, WO-10 and WO-11. The programme is the building's own (b.programme, saved
+     and undone with the buildings): items by use, relations between uses. A room's use is its usage's name, else its
+     own name, so a room named Kitchen or given the Kitchen usage is matched to the Kitchen item. Relations name uses,
+     not room ids (WO-10's choice): a programme is written before its rooms are drawn, and a use with two rooms is
+     next to another when either room is. Facts are measured per level: a shared wall within BIM_INT_SHARED_TOL of
+     the other room's edge (rooms are measured to their faces, so a wall's thickness lies between them); a door joins
+     the rooms either side of it on its wall's level; a route goes by the doors and costs, for each door, room centre to
+     the door to room centre (an estimate: true walking distances are I3's). A room on an open region is left out as
+     missing, never measured; a door off its wall (its cut failed) is left out with a warning. */
+  var BIM_INT_SHARED_TOL=0.5;
+  /* the building the programme belongs to: the given one, else the active one */
+  function bimIntBuilding(id){
+    var L=bimEnsureBuildings(),i,want=id||A3D.activeBuilding;
+    for(i=0;i<L.length;i++)if(L[i].id===want)return L[i];
+    return L[0]||null;
+  }
+  /* the building's programme, read as the pure part reads it; nothing is written unless asked */
+  function bimIntProgOf(b){
+    var p=b&&b.programme&&typeof b.programme==='object'?b.programme:{},items=[],rels=[],i,it,r;
+    for(i=0;i<(Array.isArray(p.items)?p.items.length:0);i++){it=bimIntProgramItem(p.items[i]);if(it.id)items.push(it);}
+    for(i=0;i<(Array.isArray(p.relations)?p.relations.length:0);i++){r=bimIntRelation(p.relations[i]);if(r)rels.push(r);}
+    return {items:items,relations:rels};
+  }
+  function bimIntRoomUse(o){
+    var u=o&&o.usage?bimUsageById(o.usage):null,s=u&&u.name?u.name:(o&&typeof o.name==='string'?o.name:'');
+    return String(s).replace(/^\s+|\s+$/g,'');
+  }
+  function bimIntLevelsOf(bid){
+    var out={},i;
+    for(i=0;i<A3D.levels.length;i++)if(A3D.levels[i].buildingId===bid)out[A3D.levels[i].id]=1;
+    return out;
+  }
+  /* the building's rooms as facts, and the rooms left out with why */
+  function bimIntLiveRooms(bid){
+    var lv=bimIntLevelsOf(bid),rooms=[],missing=[],i,o,q,pts,j;
+    for(i=0;i<A3D.objs.length;i++){
+      o=A3D.objs[i];
+      if(!o||o.t!=='room'||!lv[o.levelId])continue;
+      if(o.region&&o.region.open){missing.push({id:o.id,name:o.name,why:'its outline is not enclosed'});continue;}
+      if(!Array.isArray(o.pts)||o.pts.length<3){missing.push({id:o.id,name:o.name,why:'it has no outline'});continue;}
+      q=bimObjOffset(o);pts=[];
+      for(j=0;j<o.pts.length;j++)pts.push([o.pts[j][0]+q[0],o.pts[j][1]+q[2]]);
+      rooms.push({id:o.id,name:o.name,use:bimIntRoomUse(o),area:(typeof o.area==='number'&&isFinite(o.area))?o.area:null,pts:pts,levelId:o.levelId});
+    }
+    return {rooms:rooms,missing:missing};
+  }
+  /* the building's doors, in world plan points, and those left out with why */
+  function bimIntLiveDoors(bid){
+    var lv=bimIntLevelsOf(bid),doors=[],left=[],i,o,w,q,seg;
+    for(i=0;i<A3D.objs.length;i++){
+      o=A3D.objs[i];
+      if(!o||o.t!=='opening'||!o.bim||o.bim.type!=='door')continue;
+      w=objById(o.bim.hostWallId);
+      if(!w||!w.bim||!lv[w.bim.levelId])continue;
+      if(!Array.isArray(o.bim.center)||!Array.isArray(o.bim.dir)){left.push({id:o.id,name:o.name,why:'it has no recorded position'});continue;}
+      seg=bimFindWallSegmentAt(w,o.bim.center);
+      if(!seg||seg.d>BIM_OPENING_REPLACE_TOL*10){left.push({id:o.id,name:o.name,why:'it is no longer cut into '+(w.name||'its wall')});continue;}
+      q=bimObjOffset(w);
+      doors.push({id:o.id,center:[o.bim.center[0]+q[0],o.bim.center[1]+q[2]],dir:o.bim.dir.slice(),width:o.bim.width,levelId:w.bim.levelId});
+    }
+    return {doors:doors,left:left};
+  }
+  function bimIntCentroid(pts){
+    var x=0,z=0,i,n=pts?pts.length:0;
+    if(!n)return null;
+    for(i=0;i<n;i++){x+=pts[i][0];z+=pts[i][1];}
+    return [x/n,z/n];
+  }
+  /* the facts for bimIntCheck, by use, from rooms {id, use, pts, levelId} and doors {id, center, dir, width,
+     levelId}. Pure. Answers {facts, links, cost}: facts.rooms the uses with a room; facts.shared and facts.doors
+     under 'useA|useB' (each pair of different uses on one level, summed); facts.dist[useA][useB] the shortest
+     route from any room of one to any room of the other. The outside of each level is its own place. */
+  function bimIntFactsFrom(rooms,doors,tol){
+    var facts={rooms:{},shared:{},doors:{},dist:{}},links=[],cost={},byLv={},useOf={},cen={},i,j,k,a,b,key,L,lv,ra,rb,d,c,lk,u;
+    tol=(typeof tol==='number'&&tol>=0)?tol:BIM_INT_SHARED_TOL;
+    rooms=rooms||[];doors=doors||[];
+    for(i=0;i<rooms.length;i++){
+      a=rooms[i];
+      if(!a||!a.id||!a.use)continue;
+      facts.rooms[a.use]=1;useOf[a.id]=a.use;cen[a.id]=bimIntCentroid(a.pts);
+      lv=String(a.levelId||'');
+      if(!byLv[lv])byLv[lv]={rooms:[],doors:[]};
+      byLv[lv].rooms.push(a);
+    }
+    for(i=0;i<doors.length;i++){
+      lv=String(doors[i].levelId||'');
+      if(byLv[lv])byLv[lv].doors.push(doors[i]);
+    }
+    function dd(p,q){return (p&&q)?Math.sqrt((p[0]-q[0])*(p[0]-q[0])+(p[1]-q[1])*(p[1]-q[1])):0;}
+    for(lv in byLv){
+      if(!byLv.hasOwnProperty(lv))continue;
+      L=byLv[lv];
+      for(i=0;i<L.rooms.length;i++)for(j=i+1;j<L.rooms.length;j++){
+        ra=L.rooms[i];rb=L.rooms[j];
+        if(ra.use===rb.use)continue;
+        d=bimIntSharedLength(ra.pts,rb.pts,tol);
+        if(!(d>1e-9))continue;
+        key=ra.use<rb.use?ra.use+'|'+rb.use:rb.use+'|'+ra.use;
+        facts.shared[key]=(facts.shared[key]||0)+d;
+      }
+      lk=bimIntDoorLinks(L.rooms,L.doors);
+      for(k=0;k<lk.length;k++){
+        if(lk[k].a==='outside')lk[k].a='outside@'+lv;
+        if(lk[k].b==='outside')lk[k].b='outside@'+lv;
+        for(j=0;j<L.doors.length;j++)if(L.doors[j].id===lk[k].door){
+          c=L.doors[j].center;
+          cost[lk[k].door]=dd(cen[lk[k].a],c)+dd(c,cen[lk[k].b]);
+        }
+        links.push(lk[k]);
+        if(useOf[lk[k].a]&&useOf[lk[k].b]&&useOf[lk[k].a]!==useOf[lk[k].b]){
+          key=useOf[lk[k].a]<useOf[lk[k].b]?useOf[lk[k].a]+'|'+useOf[lk[k].b]:useOf[lk[k].b]+'|'+useOf[lk[k].a];
+          facts.doors[key]=(facts.doors[key]||0)+1;
+        }
+      }
+    }
+    for(i=0;i<rooms.length;i++){
+      a=rooms[i];
+      if(!a||!a.id||!a.use)continue;
+      d=bimIntDistances(links,a.id,cost);
+      for(k in d){
+        if(!d.hasOwnProperty(k)||!useOf[k]||useOf[k]===a.use)continue;
+        u=useOf[k];
+        if(!facts.dist[a.use])facts.dist[a.use]={};
+        if(facts.dist[a.use][u]===undefined||d[k]<facts.dist[a.use][u])facts.dist[a.use][u]=d[k];
+      }
+    }
+    return {facts:facts,links:links,cost:cost};
+  }
+  /* the programme against the model: each item matched, each relation checked, and what was left out */
+  function bimIntReport(bid){
+    var b=bimIntBuilding(bid),P=bimIntProgOf(b),R,D,F,warn=[],i;
+    if(!b)return {building:null,items:[],relations:[],matches:[],checks:[],rooms:[],warnings:[]};
+    R=bimIntLiveRooms(b.id);D=bimIntLiveDoors(b.id);
+    F=bimIntFactsFrom(R.rooms,D.doors,BIM_INT_SHARED_TOL);
+    for(i=0;i<R.missing.length;i++)warn.push((R.missing[i].name||'A room')+' is left out: '+R.missing[i].why);
+    for(i=0;i<D.left.length;i++)warn.push((D.left[i].name||'A door')+' is left out: '+D.left[i].why);
+    return {building:b,items:P.items,relations:P.relations,rooms:R.rooms,facts:F.facts,warnings:warn,
+      matches:bimIntMatch(P.items,R.rooms),
+      checks:P.relations.map(function(r){return bimIntCheck(r,F.facts);})};
+  }
+  /* a door left out is said once per change of the model, not on every render */
+  var A3D_INT_WARNED={};
+  function bimIntWarnOnce(list){
+    var i;
+    for(i=0;i<list.length;i++)if(!A3D_INT_WARNED[list[i]]){A3D_INT_WARNED[list[i]]=1;console.warn('[BIM] Programme: '+list[i]);}
+  }
+  /* ---- WO-11: the bubble diagram, laid out. Pure: circles {use, r} by area, relations as springs, a fixed number
+     of steps from a fixed start, so the same programme draws the same diagram. Answers [{x, y, r}] in item order. */
+  function bimIntBubbleLayout(items,relations){
+    var n=items?items.length:0,P=[],i,j,k,a,b,dx,dy,d,want,f,ix={},R0=0,step;
+    for(i=0;i<n;i++){ix[items[i].use]=i;R0+=items[i].r;}
+    R0=Math.max(R0/Math.max(1,Math.PI),1);
+    for(i=0;i<n;i++)P.push({x:R0*Math.cos(2*Math.PI*i/Math.max(1,n)),y:R0*Math.sin(2*Math.PI*i/Math.max(1,n)),r:items[i].r});
+    for(k=0;k<300;k++){
+      step=0.1*(1-k/300);
+      for(j=0;j<(relations?relations.length:0);j++){
+        a=ix[relations[j].a];b=ix[relations[j].b];
+        if(a===undefined||b===undefined||a===b)continue;
+        dx=P[b].x-P[a].x;dy=P[b].y-P[a].y;d=Math.sqrt(dx*dx+dy*dy)||1e-6;
+        want=P[a].r+P[b].r+(relations[j].rel==='apart'?R0:(relations[j].rel==='near'?0.25*R0:0.05*R0));
+        if(relations[j].rel==='apart'&&d>=want)continue;
+        f=step*(d-want)/d*0.5;
+        P[a].x+=dx*f;P[a].y+=dy*f;P[b].x-=dx*f;P[b].y-=dy*f;
+      }
+      for(i=0;i<n;i++)for(j=i+1;j<n;j++){
+        dx=P[j].x-P[i].x;dy=P[j].y-P[i].y;d=Math.sqrt(dx*dx+dy*dy);
+        want=P[i].r+P[j].r+0.04*R0;
+        if(d>=want)continue;
+        if(d<1e-9){dx=1;dy=0;d=1;}
+        f=(want-d)/d*0.5;
+        P[i].x-=dx*f;P[i].y-=dy*f;P[j].x+=dx*f;P[j].y+=dy*f;
+      }
+    }
+    return P;
+  }
+  /* the circle's area: the count by the middle of the range (or the end that is set), else the rooms measured */
+  function bimIntBubbleArea(it,m,rooms){
+    var per=(it.areaMin!==null&&it.areaMax!==null)?(it.areaMin+it.areaMax)/2:(it.areaMin!==null?it.areaMin:it.areaMax),s=0,i,j;
+    if(per!==null&&per>0)return {area:per*it.count,set:true};
+    for(i=0;m&&i<m.rooms.length;i++)for(j=0;j<rooms.length;j++)if(rooms[j].id===m.rooms[i]&&rooms[j].area>0)s+=rooms[j].area;
+    return {area:s>0?s:10*it.count,set:false};
+  }
+  var BIM_INT_COLS={'met':'#2f7d3a','not met':'#c0392b','not evaluated':'#8a8f98'};
+  function bimIntBubbleSvg(rep,narrow){
+    var W=narrow?360:640,H=narrow?300:380,pad=18,items=[],i,P,minX=1e9,maxX=-1e9,minY=1e9,maxY=-1e9,s,ox,oy,h='',r,c,a,b,ia,ib,ix={},ar,st;
+    for(i=0;i<rep.items.length;i++){
+      ar=bimIntBubbleArea(rep.items[i],rep.matches[i],rep.rooms);
+      items.push({use:rep.items[i].use,r:Math.sqrt(ar.area/Math.PI),set:ar.set,st:rep.matches[i]?rep.matches[i].status:'ok'});
+      ix[rep.items[i].use]=i;
+    }
+    var rels=rep.relations.filter(function(x){return x.status!=='rejected';});
+    P=bimIntBubbleLayout(items,rels);
+    for(i=0;i<P.length;i++){minX=Math.min(minX,P[i].x-P[i].r);maxX=Math.max(maxX,P[i].x+P[i].r);minY=Math.min(minY,P[i].y-P[i].r);maxY=Math.max(maxY,P[i].y+P[i].r);}
+    s=Math.min((W-2*pad)/Math.max(maxX-minX,1e-6),(H-2*pad)/Math.max(maxY-minY,1e-6));
+    ox=pad+((W-2*pad)-(maxX-minX)*s)/2-minX*s;oy=pad+((H-2*pad)-(maxY-minY)*s)/2-minY*s;
+    for(i=0;i<rep.relations.length;i++){
+      r=rep.relations[i];
+      if(r.status==='rejected')continue;
+      ia=ix[r.a];ib=ix[r.b];
+      if(ia===undefined||ib===undefined)continue;
+      st=rep.checks[i].status;c=BIM_INT_COLS[st]||BIM_INT_COLS['not evaluated'];
+      a=P[ia];b=P[ib];
+      h+='<line x1="'+(a.x*s+ox).toFixed(1)+'" y1="'+(a.y*s+oy).toFixed(1)+'" x2="'+(b.x*s+ox).toFixed(1)+'" y2="'+(b.y*s+oy).toFixed(1)+'" stroke="'+c+'" stroke-width="'+(4-r.strength)+'"'+
+        (st==='not evaluated'||r.status==='suggested'?' stroke-dasharray="5 4"':'')+'><title>'+bimClbE(r.a+' '+r.rel+' '+r.b+': '+st+', '+rep.checks[i].why)+'</title></line>';
+    }
+    for(i=0;i<P.length;i++){
+      c=items[i].st==='ok'?'#3b6ea5':'#c98a1b';
+      h+='<g><circle cx="'+(P[i].x*s+ox).toFixed(1)+'" cy="'+(P[i].y*s+oy).toFixed(1)+'" r="'+Math.max(3,P[i].r*s).toFixed(1)+'" fill="'+c+'" fill-opacity="0.18" stroke="'+c+'" stroke-width="1.5"'+
+        (items[i].set?'':' stroke-dasharray="4 3"')+'><title>'+bimClbE(items[i].use+': '+items[i].st)+'</title></circle>'+
+        '<text x="'+(P[i].x*s+ox).toFixed(1)+'" y="'+(P[i].y*s+oy+4).toFixed(1)+'" text-anchor="middle" font-size="'+(narrow?11:12)+'" fill="#1f2328">'+bimClbE(items[i].use)+'</text></g>';
+    }
+    return '<svg class="a3d-int-bub" viewBox="0 0 '+W+' '+H+'" width="100%" role="img" aria-label="Programme bubble diagram">'+h+'</svg>';
+  }
+  /* the board figure 'int.bubble': null without a programme */
+  function bimIntBubbleFig(){
+    var rep=bimIntReport(),n={met:0,'not met':0,'not evaluated':0},i,leg='';
+    if(!rep.building||!rep.items.length)return null;
+    for(i=0;i<rep.checks.length;i++)if(rep.relations[i].status!=='rejected')n[rep.checks[i].status]=(n[rep.checks[i].status]||0)+1;
+    leg='<p class="a3d-clb-dek">'+['met','not met','not evaluated'].map(function(k){
+      return '<span style="display:inline-block;width:18px;height:3px;vertical-align:middle;margin:0 4px 0 10px;background:'+BIM_INT_COLS[k]+'"></span>'+bimClbE(k+' '+n[k]);
+    }).join('')+'. Circles by area; dashed where no area is set. Amber: count or area not as programmed.</p>';
+    return {cls:['a3d-int-fig'],title:'Programme and adjacency',
+      dek:(rep.building.name||'The building')+': '+rep.items.length+' use'+(rep.items.length===1?'':'s')+', '+rep.relations.length+' relation'+(rep.relations.length===1?'':'s')+', '+rep.rooms.length+' room'+(rep.rooms.length===1?'':'s')+' drawn',
+      body:bimIntBubbleSvg(rep,!!A3D_CLB.narrow)+leg,
+      src:'the project\'s programme and the rooms drawn; routes by the doors, room centre to centre, an estimate'};
+  }
+
+  /* ================= __acad3dV180: Interiors I2 on the live model =================
+     docs/work-orders/v180/SPEC.md, WO-07. A furniture or fixture model (an asset of the library, category Furniture or
+     Fixtures) has a body: its footprint, the box of its own vertices in the frame it faces. It has a clearance zone when
+     the designer gives it a kind (o.bim.clr.kind): a fixture's zone is ADA 305.3's clear floor space (ada.space), the
+     others the registry's int.zone depths, all with their edition and the owner's overrides. Which way an item faces is
+     the designer's statement (o.bim.clr.face, radians, front along (-sin, cos)), never guessed from the mesh; it follows
+     the item's later turns through two of its own vertices (ref), whose bearing is kept from when it was set. A zone is
+     blocked by another item's body or by a wall (each straight piece of its centreline, as thick as the wall; a curved
+     wall is taken by its chords); zones may overlap each other. A door's opening width and a room's turning space are
+     measured against the registry's rules (404.2.3, 304.3.1) and named with their clause and edition: a measurement,
+     never a compliance finding. Everything on one level: bases within BIM_CLR_LEVEL_TOL. */
+  var BIM_CLR_LEVEL_TOL=0.5;
+  var BIM_CLR_KINDS=[['','None: no zone'],['fixture','Fixture: a clear floor space (ADA 305.3)'],['seat','Seat'],['storage','Storage'],['work','Work surface'],['bed','Bed, at its side']];
+  function bimClrIsItem(o){
+    return !!(o&&o.t==='solid'&&o.mesh&&o.mesh.v&&o.mesh.v.length&&o.bim&&o.bim.type==='familyInstance'&&
+      (o.bim.category==='Furniture'||o.bim.category==='Fixtures'||(o.bim.clr&&o.bim.clr.kind)));
+  }
+  /* the item's vertices in world plan points, and its base */
+  function bimClrPlanPts(o){
+    var q=bimObjOffset(o),v=o.mesh.v,pts=[],i,y=Infinity;
+    for(i=0;i<v.length;i++){pts.push([v[i][0]+q[0],v[i][2]+q[2]]);if(v[i][1]<y)y=v[i][1];}
+    return {pts:pts,y:(y===Infinity?0:y)+q[1]};
+  }
+  /* the box of points in the frame turned by rot: {center, w, d, rot}. Pure. */
+  function bimClrBodyOf(pts,rot){
+    var cs=Math.cos(rot||0),sn=Math.sin(rot||0),a0=Infinity,a1=-Infinity,b0=Infinity,b1=-Infinity,i,a,b,am,bm;
+    if(!pts||!pts.length)return null;
+    for(i=0;i<pts.length;i++){
+      a=pts[i][0]*cs+pts[i][1]*sn;b=-pts[i][0]*sn+pts[i][1]*cs;
+      if(a<a0)a0=a;if(a>a1)a1=a;if(b<b0)b0=b;if(b>b1)b1=b;
+    }
+    am=(a0+a1)/2;bm=(b0+b1)/2;
+    return {center:[am*cs-bm*sn,am*sn+bm*cs],w:a1-a0,d:b1-b0,rot:rot||0};
+  }
+  function bimClrBearing(v,i,j){return Math.atan2(v[j][2]-v[i][2],v[j][0]-v[i][0]);}
+  /* the way the item faces now, radians; 0 when not set */
+  function bimClrFace(o){
+    var c=o&&o.bim&&o.bim.clr,v=o&&o.mesh&&o.mesh.v;
+    if(!c||typeof c.face!=='number')return 0;
+    if(c.ref&&v&&v[c.ref[0]]&&v[c.ref[1]]&&typeof c.b0==='number')return c.face+(bimClrBearing(v,c.ref[0],c.ref[1])-c.b0);
+    return c.face;
+  }
+  /* two of the item's vertices far apart in plan, to follow its turns */
+  function bimClrRef(o){
+    var v=o.mesh.v,j,best=-1,bd=0,d;
+    for(j=1;j<v.length;j++){d=(v[j][0]-v[0][0])*(v[j][0]-v[0][0])+(v[j][2]-v[0][2])*(v[j][2]-v[0][2]);if(d>bd){bd=d;best=j;}}
+    return bd>1e-8?[0,best]:null;
+  }
+  /* the zone's depth and side reach for a kind, from the registry; null for none */
+  function bimClrZoneSize(kind,w){
+    if(kind==='fixture'){
+      var L=bimStd('ada.space','clear_l'),W=bimStd('ada.space','clear_w');
+      if(!(L>0))return null;
+      return {front:L,side:(W>w)?(W-w)/2:0,topic:'ada.space'};
+    }
+    if(!kind)return null;
+    var f=bimStd('int.zone',kind),s=bimStd('int.zone','side');
+    return f>0?{front:f,side:s>0?s:0,topic:'int.zone'}:null;
+  }
+  /* each straight piece of each wall, as a polygon, with its base */
+  function bimClrWalls(){
+    var out=[],i,j,o,cl,n,segs,a,b,nr,off,q,t;
+    for(i=0;i<A3D.objs.length;i++){
+      o=A3D.objs[i];
+      if(!o||o.t!=='solid'||!o.bim||o.bim.type!=='wall'||!o.bim.centerline||o.bim.centerline.length<2||!bimLayerShown(o))continue;
+      cl=o.bim.centerline;n=cl.length;segs=o.bim.closed?n:n-1;t=o.bim.thickness||0.2;
+      off=bimAlignOffsets(t,o.bim.align);q=bimObjOffset(o);
+      for(j=0;j<segs;j++){
+        a=cl[j];b=cl[(j+1)%n];nr=bimSegNormal(a,b);
+        out.push({id:o.id,name:o.name,y:(o.bim.baseY||0)+q[1],poly:[
+          [a[0]+q[0]+nr[0]*off.dLeft,a[1]+q[2]+nr[1]*off.dLeft],[b[0]+q[0]+nr[0]*off.dLeft,b[1]+q[2]+nr[1]*off.dLeft],
+          [b[0]+q[0]-nr[0]*off.dRight,b[1]+q[2]-nr[1]*off.dRight],[a[0]+q[0]-nr[0]*off.dRight,a[1]+q[2]-nr[1]*off.dRight]]});
+      }
+    }
+    return out;
+  }
+  /* every item's body and zone, and what blocks each zone */
+  function bimClrScene(){
+    var items=[],walls=bimClrWalls(),i,o,P,rot,B,kind,Z,it,sub,obs,cf,j,names={};
+    for(i=0;i<A3D.objs.length;i++){
+      o=A3D.objs[i];
+      if(!bimClrIsItem(o)||!bimLayerShown(o))continue;
+      P=bimClrPlanPts(o);kind=o.bim.clr&&o.bim.clr.kind||'';rot=bimClrFace(o);
+      B=bimClrBodyOf(P.pts,rot);
+      if(!B)continue;
+      Z=bimClrZoneSize(kind,B.w);
+      it={id:o.id,name:o.name,kind:kind,y:P.y,box:B,body:bimClrRect(B.center,B.w,B.d,B.rot),zone:Z?bimClrZone(B,Z.front,Z.side):null,size:Z,blocked:[]};
+      items.push(it);names[o.id]=o.name;
+    }
+    for(i=0;i<walls.length;i++)names[walls[i].id]=walls[i].name;
+    for(i=0;i<items.length;i++){
+      it=items[i];
+      if(!it.zone)continue;
+      sub=[it];obs=[];
+      for(j=0;j<items.length;j++)if(j!==i&&Math.abs(items[j].y-it.y)<BIM_CLR_LEVEL_TOL)sub.push({id:items[j].id,body:items[j].body});
+      for(j=0;j<walls.length;j++)if(Math.abs(walls[j].y-it.y)<BIM_CLR_LEVEL_TOL)obs.push({id:walls[j].id,poly:walls[j].poly});
+      cf=bimClrConflicts(sub,obs);
+      for(j=0;j<cf.length;j++)if(cf[j].item===it.id&&it.blocked.indexOf(names[cf[j].with]||cf[j].with)<0)it.blocked.push(names[cf[j].with]||cf[j].with);
+    }
+    return {items:items,walls:walls};
+  }
+  /* the widest turning circle that fits in a room around the bodies in it: its diameter and a centre. Pure: poly the
+     room, bodies convex polygons, step the grid of centres tried; answers {d, at} (d 0 when none fits). */
+  function bimClrTurnFit(poly,bodies,step,maxD){
+    var x0=Infinity,x1=-Infinity,z0=Infinity,z1=-Infinity,i,lo=0,hi,mid,k,best=null;
+    if(!poly||poly.length<3)return {d:0,at:null};
+    step=step>0?step:0.05;
+    for(i=0;i<poly.length;i++){x0=Math.min(x0,poly[i][0]);x1=Math.max(x1,poly[i][0]);z0=Math.min(z0,poly[i][1]);z1=Math.max(z1,poly[i][1]);}
+    hi=Math.min(maxD>0?maxD:Infinity,Math.min(x1-x0,z1-z0));
+    function clearOf(c,r){
+      var b,j,n,dx,dz,L2,t,px,pz;
+      for(b=0;b<(bodies?bodies.length:0);b++){
+        n=bodies[b].length;
+        if(bimIntInside(c,bodies[b]))return false;
+        for(j=0;j<n;j++){
+          var p=bodies[b][j],q=bodies[b][(j+1)%n];
+          dx=q[0]-p[0];dz=q[1]-p[1];L2=dx*dx+dz*dz;t=L2>0?Math.max(0,Math.min(1,((c[0]-p[0])*dx+(c[1]-p[1])*dz)/L2)):0;
+          px=p[0]+t*dx-c[0];pz=p[1]+t*dz-c[1];
+          if(Math.sqrt(px*px+pz*pz)<r-1e-9)return false;
+        }
+      }
+      return true;
+    }
+    function fits(d){
+      var x,z,c;
+      for(x=x0+d/2;x<=x1-d/2+1e-9;x+=step)for(z=z0+d/2;z<=z1-d/2+1e-9;z+=step){
+        c=[x,z];
+        if(bimClrCircleFits(poly,c,d/2)&&clearOf(c,d/2))return c;
+      }
+      return null;
+    }
+    if(!(hi>0))return {d:0,at:null};
+    for(k=0;k<14;k++){
+      mid=(lo+hi)/2;
+      var c=fits(mid);
+      if(c){lo=mid;best=c;}else hi=mid;
+    }
+    return {d:best?lo:0,at:best};
+  }
+  /* the registry's rule for a check: its clause, its edition's name, its least value in inches */
+  function bimClrRuleOf(which){
+    var t=which==='door'?'ada.door':'ada.space',n=which==='door'?'clear':'turn',v=bimStd(t,n),E=bimStdEdition(t);
+    return {clause:which==='door'?'404.2.3':'304.3.1',edition:E&&E.name?E.name:'',minIn:(typeof v==='number'&&isFinite(v))?v/0.0254:undefined,topic:t};
+  }
+  function bimClrSay(R){
+    var s=R.status==='not evaluated'?'not evaluated':(R.status==='meets'?'meets':'below');
+    return s+(R.measuredIn!==undefined?', '+R.measuredIn+' in measured':'')+' ('+(R.clause?R.clause+', ':'')+(R.edition||'no edition in force')+')';
+  }
+  /* a door: its opening width against 404.2.3. The opening is what the model holds; the leaf and the stops are not taken off. */
+  function bimClrDoorCheck(o){
+    var w=o&&o.bim&&typeof o.bim.width==='number'&&isFinite(o.bim.width)&&o.bim.width>0?o.bim.width:null;
+    return bimClrRule(bimClrRuleOf('door'),w===null?undefined:w);
+  }
+  /* a room: the widest turning circle around the items in it, against 304.3.1 */
+  function bimClrRoomCheck(o){
+    if(!o||!Array.isArray(o.pts)||o.pts.length<3||(o.region&&o.region.open))return {rule:bimClrRule(bimClrRuleOf('turn'),undefined),fit:{d:0,at:null}};
+    var q=bimObjOffset(o),poly=o.pts.map(function(p){return [p[0]+q[0],p[1]+q[2]];}),S=bimClrScene(),bodies=[],i,rule=bimClrRuleOf('turn');
+    for(i=0;i<S.items.length;i++)if(Math.abs(S.items[i].y-((o.y||0)+q[1]))<BIM_CLR_LEVEL_TOL)bodies.push(S.items[i].body);
+    var fit=bimClrTurnFit(poly,bodies,0.05,(rule.minIn>0?rule.minIn*0.0254*1.5:3));
+    return {rule:bimClrRule(rule,fit.d),fit:fit};
+  }
+  /* ---- on the plan: the zones of the items selected, red when blocked ---- */
+  function bimClrDrawZones(ctx,V,W,H){
+    var ids=(A3D.selSet&&A3D.selSet.length)?A3D.selSet:(A3D.sel?[A3D.sel]:[]),S,i,j,it,s2,on,pts;
+    A3D.lastZones=0;
+    if(!ids.length)return;
+    var any=false;
+    for(i=0;i<ids.length;i++)if(bimClrIsItem(objById(ids[i])))any=true;
+    if(!any)return;
+    S=bimClrScene();
+    ctx.save();ctx.lineWidth=1.5;
+    for(i=0;i<S.items.length;i++){
+      it=S.items[i];
+      if(ids.indexOf(it.id)<0||!it.zone)continue;
+      A3D.lastZones++;
+      var bad=it.blocked.length>0;
+      ctx.strokeStyle=bad?'rgba(220,53,69,0.95)':'rgba(46,160,67,0.95)';ctx.fillStyle=bad?'rgba(220,53,69,0.16)':'rgba(46,160,67,0.14)';
+      if(ctx.setLineDash)ctx.setLineDash([6,4]);
+      ctx.beginPath();on=false;pts=it.zone;
+      for(j=0;j<pts.length;j++){
+        s2=toScreen([pts[j][0],it.y+0.02,pts[j][1]],V,W,H);
+        if(!s2)continue;
+        if(on)ctx.lineTo(s2[0],s2[1]);else{ctx.moveTo(s2[0],s2[1]);on=true;}
+      }
+      ctx.closePath();ctx.fill();ctx.stroke();
+    }
+    ctx.restore();
+  }
+  /* ---- Properties ---- */
+  function bimClrPropsHtml(o){
+    var S=bimClrScene(),it=null,i,r='',c=o.bim.clr||{},Z;
+    for(i=0;i<S.items.length;i++)if(S.items[i].id===o.id)it=S.items[i];
+    r+=bimPropRow('Kind','<select data-clr="kind">'+BIM_CLR_KINDS.map(function(k){return '<option value="'+k[0]+'"'+((c.kind||'')===k[0]?' selected':'')+'>'+bimEsc(k[1])+'</option>';}).join('')+'</select>');
+    if(!it)return bimPropGroup('Clearance',r+bimPropText('Zone','not evaluated: the item is hidden or has no shape'));
+    r+=bimPropText(bimLenLabel('Body'),bimDispLen(it.box.w)+' by '+bimDispLen(it.box.d));
+    if(c.kind){
+      var deg=Math.round(((bimClrFace(o)*180/Math.PI)%360+360)%360);
+      r+=bimPropRow('Faces (deg)','<input type="number" step="any" data-clr="face" value="'+deg+'"> <button type="button" class="a3d-pedit" data-clract="turn">Turn 90</button>');
+      Z=it.size;
+      if(Z){
+        r+=bimPropText(bimLenLabel('Zone'),bimDispLen(it.box.w+2*Z.side)+' wide, '+bimDispLen(Z.front)+' deep, in front');
+        r+=bimPropText('Zone is',it.blocked.length?'blocked by '+it.blocked.join(', '):'clear of walls and other items');
+        r+='<div class="a3d-stdsrc">Standards: '+bimEsc(bimStdUsedText(Z.topic))+'</div>';
+      }else r+=bimPropText('Zone','not evaluated: the registry has no depth for this kind');
+    }else r+=bimPropText('Zone','none: give the item a kind');
+    return bimPropGroup('Clearance',r);
+  }
+  function bimClrDoorHtml(o){
+    var R=bimClrDoorCheck(o);
+    return bimPropGroup('Clearance',bimPropText('Clear width',bimClrSay(R))+
+      bimPropText('Measured','the opening\'s width; the leaf and the stops are not taken off, and no exception is applied')+
+      '<div class="a3d-stdsrc">Standards: '+bimEsc(bimStdUsedText('ada.door'))+'</div>');
+  }
+  function bimClrRoomHtml(o){
+    var C=bimClrRoomCheck(o);
+    return bimPropGroup('Clearance',bimPropText('Turning space',bimClrSay(C.rule))+
+      bimPropText(bimLenLabel('Widest circle'),C.fit.d>0?bimDispLen(C.fit.d)+' across, around the furniture and fixtures in it':'none fits')+
+      '<div class="a3d-stdsrc">Standards: '+bimEsc(bimStdUsedText('ada.space'))+'</div>');
+  }
+  function bimClrSet(o,fn){
+    var c=JSON.parse(JSON.stringify(o.bim.clr||{}));
+    fn(c);
+    pushUndo();
+    if(!c.kind){delete o.bim.clr;}
+    else{
+      if(typeof c.face!=='number')c.face=0;
+      c.ref=bimClrRef(o);c.b0=c.ref?bimClrBearing(o.mesh.v,c.ref[0],c.ref[1]):undefined;
+      o.bim.clr=c;
+    }
+    refreshProps();paint();saveSoon();
+    return true;
+  }
+  function bimClrPropChange(ev){
+    var f=ev.target&&ev.target.closest?ev.target.closest('[data-clr]'):null;
+    if(!f)return false;
+    var o=objById(A3D.sel);
+    if(!bimClrIsItem(o)){a3dToast('Select a furniture or fixture model');return false;}
+    var k=f.getAttribute('data-clr'),v=f.value,face=bimClrFace(o);
+    if(k==='kind')return bimClrSet(o,function(c){c.kind=v;c.face=face;});
+    if(k==='face'){
+      var x=parseFloat(v);
+      if(!isFinite(x)){a3dToast('Faces is an angle in degrees');refreshProps();return false;}
+      return bimClrSet(o,function(c){c.face=x*Math.PI/180;});
+    }
+    return false;
+  }
+  function bimClrPropClick(ev){
+    var b=ev.target&&ev.target.closest?ev.target.closest('[data-clract]'):null;
+    if(!b)return false;
+    var o=objById(A3D.sel);
+    if(!bimClrIsItem(o))return false;
+    var face=bimClrFace(o);
+    return bimClrSet(o,function(c){c.face=face+Math.PI/2;});
+  }
 
 
   /* ================= __acad3dV234: The programme graph engine, the pure part =================
@@ -20696,6 +21041,147 @@ function bimIsoWindows(p, windows, segs, samples) {
     if(!quiet)a3dToast('The usages are in Properties: Edit one to change its ratios, parameters and formulas');
     return true;
   }
+
+  /* ================= __acad3dV179: the Programme in Properties =================
+     docs/work-orders/v179/SPEC.md part 1 and WO-10. With nothing selected, Properties' Project tab holds the active
+     building's programme: each use, how many, the area range and why; under it the relations between uses. Each line
+     carries what the model says of it (bim/interiors-model.js): ok, short, over, area out of range; met, not met or
+     not evaluated, with the reason. One edit is one undo step; the programme is saved with the building. The tables
+     scroll sideways on a phone. */
+  var BIM_INT_RELS=['next','near','apart','access','visual','acoustic','secure','sequence'];
+  var BIM_INT_REL_WORDS={next:'next to',near:'near',apart:'apart from',access:'reached from',visual:'seen from',acoustic:'quiet from',secure:'secure from',sequence:'before'};
+  var BIM_INT_KINDS=['required','desired','forbidden'];
+  function bimIntOpts(list,cur,words){
+    return list.map(function(v){return '<option value="'+bimEsc(v)+'"'+(v===cur?' selected':'')+'>'+bimEsc(words&&words[v]?words[v]:v)+'</option>';}).join('');
+  }
+  function bimIntNumIn(key,v,min){
+    return '<input type="number" step="any"'+(min!==undefined?' min="'+min+'"':'')+' data-intprog="'+bimEsc(key)+'" value="'+(v===null||v===undefined?'':bimEsc(String(v)))+'">';
+  }
+  function bimIntMatchText(m){
+    if(!m)return '';
+    if(m.status==='short')return 'short: '+m.have+' of '+m.need;
+    if(m.status==='over')return 'over: '+m.have+' of '+m.need;
+    if(m.status==='area')return 'area out of range: '+m.offArea.length+' of '+m.have;
+    return 'ok: '+m.have+' of '+m.need;
+  }
+  function bimIntPill(st,txt){
+    var c=st==='ok'||st==='met'?'ok':(st==='not evaluated'?'ne':'bad');
+    return '<span class="a3d-int-st '+c+'">'+bimEsc(txt)+'</span>';
+  }
+  function bimIntPropsHtml(){
+    var rep=bimIntReport(),h='',i,it,r,ck,uses=[],m;
+    if(!rep.building)return bimPropText('Programme','No building');
+    bimIntWarnOnce(rep.warnings);
+    h+=bimPropText('Building',(rep.building.name||'Building')+': '+rep.rooms.length+' room'+(rep.rooms.length===1?'':'s')+' read');
+    for(i=0;i<rep.warnings.length;i++)h+='<div class="a3d-prow ro"><div class="a3d-pval a3d-int-warn" role="note">'+bimEsc(rep.warnings[i])+'</div></div>';
+    h+='<div class="a3d-int-scroll"><table class="a3d-int-tbl" aria-label="Programme"><thead><tr><th>Use</th><th>Count</th><th>Min m²</th><th>Max m²</th><th>Why</th><th>In the model</th><th></th></tr></thead><tbody>';
+    for(i=0;i<rep.items.length;i++){
+      it=rep.items[i];m=rep.matches[i];
+      if(it.use&&uses.indexOf(it.use)<0)uses.push(it.use);
+      h+='<tr><td><input type="text" data-intprog="i:'+bimEsc(it.id)+':use" value="'+bimEsc(it.use)+'" aria-label="Use"></td>'+
+        '<td>'+bimIntNumIn('i:'+it.id+':count',it.count,1)+'</td>'+
+        '<td>'+bimIntNumIn('i:'+it.id+':areaMin',it.areaMin,0)+'</td>'+
+        '<td>'+bimIntNumIn('i:'+it.id+':areaMax',it.areaMax,0)+'</td>'+
+        '<td><input type="text" data-intprog="i:'+bimEsc(it.id)+':rationale" value="'+bimEsc(it.rationale)+'" aria-label="Why"></td>'+
+        '<td>'+bimIntPill(m.status,bimIntMatchText(m))+'</td>'+
+        '<td><button type="button" class="a3d-bdel" data-intprogact="idel:'+bimEsc(it.id)+'" title="Remove this use">×</button></td></tr>';
+    }
+    if(!rep.items.length)h+='<tr><td colspan="7" class="a3d-int-none">No uses yet. A room is matched to a use by its usage, else by its name.</td></tr>';
+    h+='</tbody></table></div>';
+    h+=bimPropRow('','<button type="button" class="a3d-pedit" data-intprogact="iadd">Add use</button>');
+    h+='<div class="a3d-int-scroll"><table class="a3d-int-tbl" aria-label="Relations"><thead><tr><th>Use</th><th>Relation</th><th>Use</th><th>Kind</th><th>Within m</th><th>Status</th><th>In the model</th><th></th></tr></thead><tbody>';
+    for(i=0;i<rep.relations.length;i++){
+      r=rep.relations[i];ck=rep.checks[i];
+      h+='<tr><td><select data-intprog="r:'+i+':a" aria-label="First use">'+bimIntOpts(uses.indexOf(r.a)<0?[r.a].concat(uses):uses,r.a)+'</select></td>'+
+        '<td><select data-intprog="r:'+i+':rel" aria-label="Relation">'+bimIntOpts(BIM_INT_RELS,r.rel,BIM_INT_REL_WORDS)+'</select></td>'+
+        '<td><select data-intprog="r:'+i+':b" aria-label="Second use">'+bimIntOpts(uses.indexOf(r.b)<0?[r.b].concat(uses):uses,r.b)+'</select></td>'+
+        '<td><select data-intprog="r:'+i+':kind" aria-label="Kind">'+bimIntOpts(BIM_INT_KINDS,r.kind)+'</select></td>'+
+        '<td>'+(r.rel==='near'?bimIntNumIn('r:'+i+':nearM',r.nearM,0):'')+'</td>'+
+        '<td><select data-intprog="r:'+i+':status" aria-label="Status">'+bimIntOpts(['suggested','approved','rejected'],r.status)+'</select></td>'+
+        '<td>'+bimIntPill(ck.status,ck.status+': '+ck.why)+'</td>'+
+        '<td><button type="button" class="a3d-bdel" data-intprogact="rdel:'+i+'" title="Remove this relation">×</button></td></tr>';
+    }
+    if(!rep.relations.length)h+='<tr><td colspan="8" class="a3d-int-none">No relations yet. Near is a route by the doors, room centre to centre.</td></tr>';
+    h+='</tbody></table></div>';
+    h+=bimPropRow('','<button type="button" class="a3d-pedit" data-intprogact="radd"'+(uses.length<2?' disabled title="Two uses first"':'')+'>Add relation</button>');
+    return h;
+  }
+  /* one change to the programme, one undo step; refused with its reason, nothing changed */
+  function bimIntProgEdit(fn){
+    var b=bimIntBuilding(),c,err;
+    if(!b){a3dToast('There is no building');return false;}
+    c=JSON.parse(JSON.stringify(bimIntProgOf(b)));
+    err=fn(c);
+    if(err){a3dToast(err);refreshProps();return false;}
+    pushUndo();
+    b.programme=bimIntProgOf({programme:c});
+    refreshProps();saveSoon();
+    return true;
+  }
+  function bimIntItemIx(c,id){var i;for(i=0;i<c.items.length;i++)if(c.items[i].id===id)return i;return -1;}
+  function bimIntProgChange(ev){
+    var f=ev.target&&ev.target.closest?ev.target.closest('[data-intprog]'):null;
+    if(!f)return false;
+    var k=f.getAttribute('data-intprog').split(':'),v=f.value;
+    if(k[0]==='i'){
+      var fld=k[k.length-1],id=k.slice(1,k.length-1).join(':');
+      return bimIntProgEdit(function(c){
+        var ix=bimIntItemIx(c,id),it,old,x,j;
+        if(ix<0)return 'That use is gone';
+        it=c.items[ix];
+        if(fld==='use'){
+          x=String(v||'').replace(/\s+/g,' ').replace(/^ | $/g,'').slice(0,60);
+          if(!x)return 'A use needs a name';
+          for(j=0;j<c.items.length;j++)if(j!==ix&&c.items[j].use===x)return 'There is already a use called '+x;
+          old=it.use;it.use=x;
+          for(j=0;j<c.relations.length;j++){if(c.relations[j].a===old)c.relations[j].a=x;if(c.relations[j].b===old)c.relations[j].b=x;}
+          return;
+        }
+        if(fld==='rationale'){it.rationale=String(v||'').slice(0,200);return;}
+        x=v===''?null:parseFloat(v);
+        if(fld==='count'){if(!(x>=1))return 'A count is 1 or more';it.count=Math.floor(x);return;}
+        if(fld==='areaMin'||fld==='areaMax'){if(x!==null&&!(x>=0))return 'An area is a number, 0 or more';it[fld]=x;return;}
+        return 'Unknown field';
+      });
+    }
+    if(k[0]==='r'){
+      var ri=parseInt(k[1],10),rf=k[2];
+      return bimIntProgEdit(function(c){
+        var r=c.relations[ri],x;
+        if(!r)return 'That relation is gone';
+        if(rf==='nearM'){x=parseFloat(v);if(!(x>0))return 'A distance is above 0 m';r.nearM=x;return;}
+        r[rf]=v;
+        if(!bimIntRelation(r))return 'A relation joins two different uses';
+      });
+    }
+    return false;
+  }
+  function bimIntProgClick(ev){
+    var bt=ev.target&&ev.target.closest?ev.target.closest('[data-intprogact]'):null;
+    if(!bt)return false;
+    var a=bt.getAttribute('data-intprogact'),cut=a.indexOf(':'),act=cut<0?a:a.slice(0,cut),arg=cut<0?'':a.slice(cut+1);
+    if(act==='iadd')return bimIntProgEdit(function(c){
+      var n=c.items.length+1,nm='Use '+n,j;
+      for(j=0;j<c.items.length;j++)if(c.items[j].use===nm){nm='Use '+(++n);j=-1;}
+      c.items.push({id:'prg-'+Date.now().toString(36)+'-'+(A3D.seq++),use:nm,count:1,areaMin:null,areaMax:null,rationale:''});
+    });
+    if(act==='idel')return bimIntProgEdit(function(c){
+      var ix=bimIntItemIx(c,arg),u;
+      if(ix<0)return 'That use is gone';
+      u=c.items[ix].use;c.items.splice(ix,1);
+      c.relations=c.relations.filter(function(r){return r.a!==u&&r.b!==u;});
+    });
+    if(act==='radd')return bimIntProgEdit(function(c){
+      if(c.items.length<2)return 'A relation needs two uses';
+      c.relations.push({a:c.items[0].use,b:c.items[1].use,kind:'desired',rel:'next',status:'approved'});
+    });
+    if(act==='rdel')return bimIntProgEdit(function(c){
+      var ri=parseInt(arg,10);
+      if(!c.relations[ri])return 'That relation is gone';
+      c.relations.splice(ri,1);
+    });
+    return false;
+  }
   /* ================= __acad3dV167: Properties, Site, Standards ================= */
   var A3D_STD_UI={open:{},edit:null,place:false,pending:null,draft:{}};
   /* __acad3dV167g: what is typed in the place's and an override's fields, until Save or Cancel */
@@ -22939,6 +23425,17 @@ function bimAnGauss(m) {
       eds:[{id:'ada.space.2010',name:'2010 ADA Standards for Accessible Design, 304.3.1 and 305.3',pub:'2010-09-15',st:'current',where:'United States',adopt:[{at:'us',from:'2012-03-15'}],
         src:{t:'U.S. Department of Justice, 2010 ADA Standards for Accessible Design',w:'304.3.1: a turning space 60 inches (1525 mm) across; 305.3: a clear floor space 30 inches (760 mm) by 48 inches (1220 mm) at least',u:'https://www.ada.gov/assets/pdfs/2010-design-standards.pdf',lv:'P',read:'2026-10-19'},
         v:[{n:'clear_w',v:0.76,u:'m',say:'the clear floor space\'s width'},{n:'clear_l',v:1.22,u:'m',say:'its length'},{n:'turn',v:1.525,u:'m',say:'the turning space, across'}]}]},
+    /* __acad3dV180: Interiors I2: the door's clear width, and each item kind's clearance zone (docs/work-orders/v180/SPEC.md) */
+    {id:'ada.door',title:'Door clear width',pub:'U.S. Department of Justice',kind:'code',area:'Interiors',use:'Interiors: a door opening\'s clear width, measured',anywhere:true,
+      eds:[{id:'ada.door.2010',name:'2010 ADA Standards for Accessible Design, 404.2.3',pub:'2010-09-15',st:'current',where:'United States',adopt:[{at:'us',from:'2012-03-15'}],
+        src:{t:'U.S. Department of Justice, 2010 ADA Standards for Accessible Design; the U.S. Access Board\'s Chapter 4',w:'404.2.3: a clear opening 32 inches (815 mm) at least, measured from the face of the door to the stop with the door open 90 degrees; its exceptions and depth conditions are not applied here',u:'https://www.access-board.gov/ada/chapter/ch04/',lv:'P',read:'2026-11-13'},
+        v:[{n:'clear',v:0.8128,u:'m',say:'a door\'s clear width, at least',src:'32 in'}]}]},
+    {id:'int.zone',title:'Clearance zones of furniture and fixtures',pub:'This app',kind:'assumption',area:'Interiors',use:'Interiors: how deep the clear space in front of each kind of item is',anywhere:true,
+      eds:[{id:'int.zone.1',name:'The app\'s clearance zones (V180)',pub:'',st:'current',where:'Anywhere',adopt:[{at:'*'}],
+        src:{t:'This app: a fixture\'s zone is ADA 305.3\'s clear floor space for a forward approach (ada.space); the others are the app\'s own starting values, not taken from any book or code, to be set by the designer',w:'docs/work-orders/v180/SPEC.md; docs/research/research-notion-v177-v180-interiors.md (Neufert and Panero were not read, so no value comes from them)',u:'https://github.com/BradleyPham1906/BIM-Personal/blob/main/docs/work-orders/v180/SPEC.md',lv:'A',read:'2026-11-16'},
+        v:[{n:'seat',v:0.6,u:'m',say:'the clear space in front of a seat'},{n:'storage',v:0.9,u:'m',say:'the clear space in front of storage, to open it'},
+          {n:'work',v:0.9,u:'m',say:'the clear space in front of a work surface'},{n:'bed',v:0.9,u:'m',say:'the clear space at the side of a bed'},
+          {n:'side',v:0,u:'m',say:'how far a zone reaches past each side of the item'}]}]},
     {id:'mutcd.walk',title:'Walking speeds at signals',pub:'Federal Highway Administration',kind:'standard',area:'Assets',use:'The wheelchair user\'s speed',anywhere:true,
       eds:[{id:'mutcd.walk.11r1',name:'MUTCD 11th Edition with Revision 1 (December 2025), 4I.06',pub:'2025-12',st:'current',where:'United States',adopt:[{at:'us',from:'2025-12'}],
         src:{t:'FHWA, Manual on Uniform Traffic Control Devices, 11th Edition with Revision 1',w:'4I.06 paragraph 07: the clearance at 3.5 feet per second; paragraph 14: the walk and the clearance at 3 feet per second; paragraph 10: slower where people who use wheelchairs routinely cross',u:'https://mutcd.fhwa.dot.gov/kno_11th_Editionr1.htm',lv:'P',read:'2026-10-19'},
@@ -31589,6 +32086,7 @@ function bimAnGauss(m) {
     /* __acad3dV166b: the active level's floor loads and the frame's settings are in Analyze's Frame
        analysis, the project's areas by usage in its Areas by usage. The usages are the project's own --
        the rooms, floors and masses take them, Colour by and the schedules read them -- so they are here. */
+    h+=bimPTab('project',bimPropGroup('Programme',bimIntPropsHtml()));   /* __acad3dV179: the building's programme and relations */
     h+=bimPTab('project',bimPropGroup('Usages',bimUsageLibraryHtml()));   /* __acad3dV131 */
     h+=bimPTab('project',bimPropGroup('Statistics',srows));
     h+=bimPTab('project',bimPropGroup('History',bimHistHtml()));   /* __acad3dV146 */
@@ -31758,6 +32256,10 @@ function bimAnGauss(m) {
     if(o.bim&&o.bim.baseY!==undefined)cons+=bimPropLenText('Base Elevation',o.bim.baseY);
     h+=bimPropGroup('Constraints',cons);
     if(o.asset&&o.asset.k)h+=bimEntPropsHtml(o);   /* __acad3dV169: the asset's sizes and their standards */
+    /* __acad3dV180: clearance: an item's zone, a door's clear width, a room's turning space */
+    if(bimClrIsItem(o))h+=bimClrPropsHtml(o);
+    else if(o.t==='opening'&&o.bim&&o.bim.type==='door')h+=bimClrDoorHtml(o);
+    else if(o.t==='room')h+=bimClrRoomHtml(o);
 
     // ---- Graphics ----
     var gfx='';
@@ -45207,6 +45709,7 @@ BIM_IFC_SAVE.model=bimIfcSaveModel;
     if(!capMode)drawSunShadows(ctx,V,W,H);   /* __acad3dV107: first, so everything else draws over it */
     if(!capMode)drawSimOverlays(ctx,V,W,H);  /* __acad3dV143: sun hours, ponds and flow lines */
     if(!capMode)bimEntDrawTurns(ctx,V,W,H);  /* __acad3dV169: the turning spaces of placed assets */
+    if(!capMode){try{bimClrDrawZones(ctx,V,W,H);}catch(eCZ){console.warn('[BIM] Clearance zones could not be drawn',eCZ);}}  /* __acad3dV180 */
     if(!capMode)drawResultLayers(ctx,V,W,H); /* __acad3dV148: the results kept as layers, over the live ones */
     drawDiagrams(ctx,V,W,H,'under');         /* __acad3dV164: the site analysis's bands, fills and shadows */
     var presentRooms=bimPresentGraphics();   /* __acad3dV122 */
@@ -62742,7 +63245,7 @@ function bimLyDupNumbers(entries) {
      list made at load: a project is read before this file has run (bimPresValid). */
   function bimFigCat(){
     if(bimFigCat.L)return bimFigCat.L;
-    var I='Indicators',C='Climate',L='Comfort and design days (Ladybug)',R='Environmental risk',Z='Zoning and yield',A='Access and circulation',P='People and place';
+    var I='Indicators',N='Interiors',C='Climate',L='Comfort and design days (Ladybug)',R='Environmental risk',Z='Zoning and yield',A='Access and circulation',P='People and place';
     bimFigCat.L=[
       ['clim.kpis','climate',I,'Climate and risk indicators'],['zn.kpis','zoning',I,'Zoning and yield indicators'],
       ['acc.kpis','access',I,'Access indicators'],['ppl.kpis','access',I,'People indicators'],
@@ -62761,6 +63264,7 @@ function bimLyDupNumbers(entries) {
       ['acc.streets','access',A,'Streets and frontage'],['acc.stops','access',A,'Transit stops'],['acc.conn','access',A,'Street connectivity'],
       ['ppl.compare','access',P,'The tract against its county and state'],['ppl.commute','access',P,'How people get to work'],
       ['ppl.pyramid','access',P,'Age and sex'],
+      ['int.bubble','',N,'Programme bubble diagram'],   /* __acad3dV179 */
       ['text','','Text','A heading']
     ].map(function(r){return {f:r[0],kind:r[1],cat:r[2],name:r[3],kpis:/\.kpis$/.test(r[0])};});
     return bimFigCat.L;
@@ -62769,6 +63273,7 @@ function bimLyDupNumbers(entries) {
   /* where its data comes from, when it has none */
   function bimFigHint(E){
     if(!E)return 'This figure is not known to this version of the app.';
+    if(/^int\./.test(E.f))return 'No programme yet: with nothing selected, Properties, Project, Programme, Add use.';   /* __acad3dV179 */
     if(/^lb\./.test(E.f))return 'Ladybug has not run: Analyze, Climate, open a weather file or get a year of hours, then Run.';
     if(E.kind==='climate')return 'No climate and risk data: Analyze, Climate, Get climate and risk.';
     if(E.kind==='zoning')return 'No zoning: Analyze, Legal and regulatory, Enter zoning.';
@@ -62856,6 +63361,7 @@ function bimLyDupNumbers(entries) {
   /* what one figure is drawn from, in a render: the boards read once each */
   function bimFigSrc(ctx,f,o){
     var E=bimFigEntry(f);
+    if(f==='int.bubble')return bimIntBubbleFig();   /* __acad3dV179: drawn from the programme, not read from a board */
     if(!E||!E.kind)return null;
     if(/^lb\./.test(f)&&o&&o.cond)return bimFigLb(f,o);
     if(!ctx.caps[E.kind])ctx.caps[E.kind]=bimFigCapture(E.kind,ctx.narrow);
@@ -69320,6 +69826,20 @@ function bimRptPlan(families) {
     if(el.propsbody)el.propsbody.addEventListener('click',function(ev){
       try{bimUsagePropClick(ev);}catch(eUK){console.warn('[BIM] Usage edit failed',eUK);a3dToast('That could not be changed - see the console');}
     });
+    /* __acad3dV179: the Programme */
+    if(el.propsbody)el.propsbody.addEventListener('change',function(ev){
+      try{bimIntProgChange(ev);}catch(eIC){console.warn('[BIM] Programme edit failed',eIC);a3dToast('That could not be changed - see the console');}
+    });
+    if(el.propsbody)el.propsbody.addEventListener('click',function(ev){
+      try{bimIntProgClick(ev);}catch(eIK){console.warn('[BIM] Programme edit failed',eIK);a3dToast('That could not be changed - see the console');}
+    });
+    /* __acad3dV180: an item's clearance */
+    if(el.propsbody)el.propsbody.addEventListener('change',function(ev){
+      try{bimClrPropChange(ev);}catch(eCC){console.warn('[BIM] Clearance edit failed',eCC);a3dToast('That could not be changed - see the console');}
+    });
+    if(el.propsbody)el.propsbody.addEventListener('click',function(ev){
+      try{bimClrPropClick(ev);}catch(eCK){console.warn('[BIM] Clearance edit failed',eCK);a3dToast('That could not be changed - see the console');}
+    });
     /* __acad3dV141: Properties' tabs */
     if(el.propsbody)el.propsbody.addEventListener('click',function(ev){
       try{bimPropTabClick(ev);}catch(eTB){console.warn('[BIM] Properties tab',eTB);}
@@ -72839,6 +73359,44 @@ function bimRptPlan(families) {
   window.__a3dLiveBoard={state:function(n){return bimLbdState(n,null);},cols:bimLbdCols,rows:function(s){return bimLbdRows(s);},
     schedMenu:function(){return bimLbdSchedMenu(40,40);},kpiMenu:function(){return bimLbdKpiMenu(40,40);},chartMenu:function(){return bimLbdChartMenu(40,40);},
     run:function(id){return bimLbdRun(id);},addLayer:function(R){bimResLayers().unshift(R);setA3D_REV(A3D_REV+1);return R.id;},redraw:function(){bimBrdRedraw();return true;}};
+  /* __acad3dV179: Interiors I1, the programme against the model */
+  window.__acad3dV179='programme,relations,bubble';
+  window.__a3dIntReport=function(){
+    var r=bimIntReport();
+    return JSON.parse(JSON.stringify({items:r.items,relations:r.relations,matches:r.matches,checks:r.checks,rooms:r.rooms.length,warnings:r.warnings,facts:r.facts||null}));
+  };
+  /* rooms {name, pts, open} on the active building's first level, as the model's only objects */
+  window.__a3dIntRooms=function(list){
+    var b=bimIntBuilding(),lv=null,i,o,out=[];
+    for(i=0;i<A3D.levels.length;i++)if(A3D.levels[i].buildingId===b.id){lv=A3D.levels[i].id;break;}
+    for(i=0;i<list.length;i++){
+      o={id:'int-r'+i,t:'room',name:list[i].name,pts:list[i].pts,y:0,area:bimPolyArea(list[i].pts),levelId:lv,col:'#888888'};
+      if(list[i].open)o.region={seed:list[i].pts[0],y:0,want:'all',members:[],sig:'',open:true};
+      out.push(o);
+    }
+    A3D.objs=out;A3D.sel=null;A3D.sel2=null;A3D.selSet=[];
+    refreshProps();
+    return lv;
+  };
+  window.__a3dIntBubble=function(){var F=bimIntBubbleFig();return F?{title:F.title,dek:F.dek,body:F.body}:null;};
+  /* __acad3dV180: Interiors I2, clearance on the model */
+  window.__acad3dV180='bodies,zones,doorwidth,turning';
+  /* a furniture or fixture model w by d, 0.8 high, on the active level at [x, z] */
+  window.__a3dClrItem=function(cat,x,z,w,d){
+    var lvl=bimGetActiveLevel(),m=mkBoxP(w,0.8,d),i;
+    for(i=0;i<m.v.length;i++)m.v[i][1]+=0.4;
+    A3D.counts.familyInstance=(A3D.counts.familyInstance||0)+1;
+    var o={id:'a3d-clr-'+(A3D.seq++),t:'solid',name:cat+'_'+A3D.counts.familyInstance,pos:[x,lvl.elev,z],mesh:m,
+      bim:{type:'familyInstance',familyId:'test',familyName:cat,category:cat}};
+    A3D.objs.push(o);paint();
+    return o.id;
+  };
+  window.__a3dClrState=function(){
+    var S=bimClrScene();
+    return {lastZones:A3D.lastZones||0,items:S.items.map(function(it){return {id:it.id,kind:it.kind,w:it.box.w,d:it.box.d,rot:it.box.rot,zone:!!it.zone,blocked:it.blocked.slice()};}),walls:S.walls.length};
+  };
+  window.__a3dClrDoor=function(id){return bimClrDoorCheck(objById(id));};
+  window.__a3dClrRoom=function(id){var C=bimClrRoomCheck(objById(id));return {rule:C.rule,d:C.fit.d};};
 }catch(e){
   window.__a3dErr=String(e&&e.message||e);
   console.warn('[BIM] The engine failed to load.',e);   /* __acad3dV120 */

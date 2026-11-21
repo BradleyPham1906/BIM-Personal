@@ -1,15 +1,13 @@
-/* V180's work-order tests (docs/work-orders/v180/SPEC.md, WO-01 to WO-06): the pure functions of src/js/engine/bim/interiors-clearance.js.
-   Outside tests/unit/ while the work orders are open. Run them with:
-     node --test docs/work-orders/v180/v180.test.mjs
-     node --test --test-name-pattern="WO-01" docs/work-orders/v180/v180.test.mjs
-   A function not built yet fails its own cases and no others. The file is read as text. */
+/* Interiors I2 (V180, docs/work-orders/v180/SPEC.md): the pure functions of src/js/engine/bim/interiors-clearance.js
+   (WO-01 to WO-06, read as text), then the body, the turning circle and the rules of
+   src/js/engine/bim/interiors-clearance-model.js (WO-07, through the engine). */
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..', '..');
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 const NAMES = ["bimClrRect", "bimClrZone", "bimClrOverlap", "bimClrConflicts", "bimClrCircleFits", "bimClrRule"];
 function load() {
   let src = fs.readFileSync(path.join(ROOT, 'src/js/engine/bim/interiors-clearance.js'), 'utf8');
@@ -65,4 +63,37 @@ test('WO-06 a measurement against a registry rule, with its clause and edition',
   assert.equal(fn('bimClrRule')(rule, 31.9 * 0.0254).status, 'below');
   assert.deepEqual(fn('bimClrRule')(rule, null), { clause: '404.2.3', edition: '2010 ADA Standards', status: 'not evaluated' });
   assert.deepEqual(fn('bimClrRule')(null, 1), { clause: '', edition: '', status: 'not evaluated' });
+});
+
+// ---- WO-07: bim/interiors-clearance-model.js, through the engine ----
+import { loadEngine } from './helpers/engine.mjs';
+const E = loadEngine();
+
+test('WO-07 the clearance file is ES5, as the build contract asks', () => {
+  for (const f of ['interiors-clearance.js', 'interiors-clearance-model.js']) {
+    const t = fs.readFileSync(path.join(ROOT, 'src/js/engine/bim', f), 'utf8').replace(/^(import|export)[^;]*;$/gm, '');
+    assert.ok(!/\b(const|let)\s|=>|`|\.\.\.[a-zA-Z\[]/.test(t), f + ' uses ES2015 syntax');
+  }
+});
+
+test('WO-07 a body is the box of its points in the frame it faces', () => {
+  const pts = [[1, 1], [3, 1], [3, 2], [1, 2]];
+  const B = E.bimClrBodyOf(pts, 0);
+  near(B.center[0], 2); near(B.center[1], 1.5); near(B.w, 2); near(B.d, 1);
+  const T = E.bimClrBodyOf(pts, Math.PI / 2);
+  near(T.w, 1); near(T.d, 2); near(T.center[0], 2); near(T.center[1], 1.5);
+  assert.equal(E.bimClrBodyOf([], 0), null);
+});
+
+test('WO-07 the widest turning circle: a room, then a body in it', () => {
+  const room = SQ(0, 0, 2);
+  const f = E.bimClrTurnFit(room, [], 0.05, 3);
+  near(f.d, 2, 0.01, 'a 2 m room holds a circle 2 m across');
+  const g = E.bimClrTurnFit(room, [SQ(0, 0, 1)], 0.05, 3);
+  assert.ok(g.d < 2 - 0.1 && g.d > 0.8, 'a body in a corner takes room: ' + g.d);
+  assert.deepEqual(E.bimClrTurnFit([[0, 0], [1, 0]], [], 0.05, 3), { d: 0, at: null });
+  const R = E.bimClrRule({ clause: '304.3.1', edition: 'x', minIn: 60 }, f.d);
+  assert.equal(R.status, 'meets', '2 m is 78.74 in, over 60 in');
+  const small = E.bimClrTurnFit(SQ(0, 0, 1.2), [], 0.05, 3);
+  assert.equal(E.bimClrRule({ clause: '304.3.1', edition: 'x', minIn: 60 }, small.d).status, 'below', 'a 1.2 m room is under 60 in');
 });

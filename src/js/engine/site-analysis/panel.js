@@ -21,6 +21,9 @@ import {
 } from '../bim/type-instance-params.js';
 import { bimPolyArea } from '../bim/rooms.js';
 import {
+  bimClrDoorHtml, bimClrIsItem, bimClrPropsHtml, bimClrRoomHtml
+} from '../bim/interiors-clearance-model.js';
+import {
   BIM_ROOM_FIELDS, bimOccDatalist, bimRoomField, bimRoomLoadFactorHint, bimRoomOccupantsText
 } from '../bim/room-data-occupancy.js';
 import { bimDimKind } from '../annotation/dimensions.js';
@@ -29,6 +32,7 @@ import {
   bimDispNum, bimObjTypeLabel, bimPropGroup, bimPropLen, bimPropLenText, bimPropRow, bimPropText
 } from '../properties/palette.js';
 import { bimUsageLibraryHtml, bimUsagePropsHtml } from '../properties/usages.js';
+import { bimIntPropsHtml } from '../properties/programme.js';
 import { bimStdPropsHtml } from '../properties/site-standards.js';
 import { bimGeoPropsHtml, bimMapPropsHtml } from '../properties/map-address-site-data.js';
 import {
@@ -228,6 +232,7 @@ import { bimNoteHex } from '../testing/hooks-view-gizmo.js';
     /* __acad3dV166b: the active level's floor loads and the frame's settings are in Analyze's Frame
        analysis, the project's areas by usage in its Areas by usage. The usages are the project's own --
        the rooms, floors and masses take them, Colour by and the schedules read them -- so they are here. */
+    h+=bimPTab('project',bimPropGroup('Programme',bimIntPropsHtml()));   /* __acad3dV179: the building's programme and relations */
     h+=bimPTab('project',bimPropGroup('Usages',bimUsageLibraryHtml()));   /* __acad3dV131 */
     h+=bimPTab('project',bimPropGroup('Statistics',srows));
     h+=bimPTab('project',bimPropGroup('History',bimHistHtml()));   /* __acad3dV146 */
@@ -397,6 +402,10 @@ import { bimNoteHex } from '../testing/hooks-view-gizmo.js';
     if(o.bim&&o.bim.baseY!==undefined)cons+=bimPropLenText('Base Elevation',o.bim.baseY);
     h+=bimPropGroup('Constraints',cons);
     if(o.asset&&o.asset.k)h+=bimEntPropsHtml(o);   /* __acad3dV169: the asset's sizes and their standards */
+    /* __acad3dV180: clearance: an item's zone, a door's clear width, a room's turning space */
+    if(bimClrIsItem(o))h+=bimClrPropsHtml(o);
+    else if(o.t==='opening'&&o.bim&&o.bim.type==='door')h+=bimClrDoorHtml(o);
+    else if(o.t==='room')h+=bimClrRoomHtml(o);
 
     // ---- Graphics ----
     var gfx='';

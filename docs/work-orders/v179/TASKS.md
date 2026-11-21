@@ -110,18 +110,37 @@ after each one. Scores are from `../ROUTING.md` (files, logic, understanding, ju
 
 ---
 
-## [ ] WO-10 [Claude] The facts from the live model; the Programme table
+## [x] WO-10 [Claude] The facts from the live model; the Programme table
 
-Claude's (score 2+2+2+1+2+1 = 10): SPEC part 5 WO-10. Moves `v179.test.mjs` into `tests/unit/interiors.test.mjs` and runs `npm run modules`.
+Claude's (score 2+2+2+1+2+1 = 10): SPEC part 5 WO-10. Moves `v179.test.mjs` into `tests/unit/interiors-programme.test.mjs` and runs `npm run modules`.
+
+Done 2026-11-16. Audit first: WO-01, WO-02 and WO-07 had been built before the 2026-11-16 amendment (3 of 9 tests
+failed) and are brought to it; WO-07 also said "over 5 m" whatever `nearM` was, and WO-08 did not count a room with no
+area as off its range. `bim/interiors-model.js` (new): the building's programme (`b.programme`, saved and undone with
+the buildings), the rooms and doors read per level (an open region left out as missing; a door no longer cut into its
+wall left out with a warning), the facts by use (`bimIntFactsFrom`), the report. Relations name uses, not room ids
+(the choice this order left open): a programme is written before its rooms. A room's use is its usage's name, else
+its own. A route costs, per door, room centre to door to room centre (an estimate; I3 measures walking). The
+Programme group in Properties, Project tab (`properties/programme.js`): uses and relations, each with what the model
+says, one undo step an edit. Tests: `tests/unit/interiors-programme.test.mjs`, the nine orders' and three new.
 
 ---
 
-## [ ] WO-11 [Claude] The bubble diagram; the browser check
+## [x] WO-11 [Claude] The bubble diagram; the browser check
 
 Claude's: SPEC part 5 WO-11, the check's script in `tests/e2e/`.
 
+Done 2026-11-16. The board figure `int.bubble` (group Interiors in Add a figure): circles by area (dashed with none
+set, amber when count or area is not as programmed), lines coloured met, not met, not evaluated, dashed when not
+evaluated or only suggested, rejected relations left out; a fixed layout, so the same programme draws the same
+(`bimIntBubbleLayout`). Browser check `tests/e2e/bim_phase179_programme_browser_tests.py`: 19 of 19.
+
 ---
 
-## [ ] WO-12 [Claude] I2 to I4's next orders; the records
+## [x] WO-12 [Claude] I2 to I4's next orders; the records
 
 Claude's: SPEC part 5 WO-12.
+
+Done 2026-11-16. I2 to I4's orders were already written (`v180/`, `v181/`, `v182/`, 2026-11-14), each `[Cline]` task
+naming its file and test. The records: PIPELINE row 179, the engineering log, QUEUE. Notion: the tasks already carry
+the new names (V179 to V182); V179's and V180's tasks are In Progress with PR #113 under Pull requests.

@@ -470,7 +470,8 @@ import { a3dToast, csgSubtract, meshPolys, objById, polysToMesh } from './csg-bo
     thkI.focus();thkI.select();
   }
 export {
-  bimBuildColumnGeometry, bimCutOpeningsIntoWall, bimFindWallNear, bimGetFloorProfile, bimOpeningSpecsFor,
-  bimRebuildColumn, bimRectFootprint, buildColumnSolid, buildDoorOpening, buildWindowOpening, openColumnDlg,
-  openDoorDlg, openFloorDlg, openWindowDlg, startColumnTool, startDoorTool, startFloorTool, startWindowTool
+  bimBuildColumnGeometry, bimCutOpeningsIntoWall, bimFindWallNear, bimFindWallSegmentAt, bimGetFloorProfile,
+  bimOpeningSpecsFor, bimRebuildColumn, bimRectFootprint, buildColumnSolid, buildDoorOpening,
+  buildWindowOpening, openColumnDlg, openDoorDlg, openFloorDlg, openWindowDlg, startColumnTool, startDoorTool,
+  startFloorTool, startWindowTool
 };
