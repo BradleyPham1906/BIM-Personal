@@ -37942,6 +37942,12 @@ function bimAnGauss(m) {
   function ifcCompose(outer,inner){
     return {origin:ifcApplyPoint(outer,inner.origin),x:ifcRotateVec(outer,inner.x),y:ifcRotateVec(outer,inner.y),z:ifcRotateVec(outer,inner.z)};
   }
+  /* a closed ring's points without the repeated first point at its end */
+  function ifcOpenRing(P){
+    var n=P.length;
+    if(n>1&&Math.abs(P[0][0]-P[n-1][0])<1e-9&&Math.abs(P[0][1]-P[n-1][1])<1e-9)return P.slice(0,n-1);
+    return P;
+  }
   function ifcMakeResolver(byId){
     function get(ref){return ref&&ref.ref!==undefined?byId[ref.ref]:null;}
     function resolvePoint3(ref){
@@ -38000,7 +38006,15 @@ function bimAnGauss(m) {
         var curve=get(e.args[2]);
         if(curve&&curve.type==='IFCPOLYLINE'){
           var ptsRef=curve.args[0]||[];
-          return {pts:ptsRef.map(function(pr){var pe=get(pr);var c=pe?(pe.args[0]||[0,0]):[0,0];return [c[0]||0,c[1]||0];})};
+          return {pts:ifcOpenRing(ptsRef.map(function(pr){var pe=get(pr);var c=pe?(pe.args[0]||[0,0]):[0,0];return [c[0]||0,c[1]||0];}))};
+        }
+        /* __acad3dV177: IFC4's indexed curve, as IfcOpenShell writes a profile: its point list in order; straight
+           segments only (an IfcArcIndex segment is a curve this reader does not follow) */
+        if(curve&&curve.type==='IFCINDEXEDPOLYCURVE'){
+          var pl=get(curve.args[0]),sg=curve.args[1];
+          if(!pl||pl.type!=='IFCCARTESIANPOINTLIST2D')return {pts:null,reason:'unsupported indexed curve points ('+(pl?pl.type:'?')+')'};
+          if(sg&&JSON.stringify(sg).indexOf('IFCARCINDEX')>=0)return {pts:null,reason:'an indexed curve with arcs'};
+          return {pts:ifcOpenRing((pl.args[0]||[]).map(function(c){return [c[0]||0,c[1]||0];}))};
         }
         return {pts:null,reason:'unsupported outer curve type ('+(curve?curve.type:'?')+')'};
       }
@@ -38124,6 +38138,31 @@ function bimAnGauss(m) {
     refreshTree();refreshLevels();refreshLayers();fitScene();paint();saveSoon();
     a3dToast('IFC import: '+levelsAdded+' level(s), '+wallsAdded+' wall(s) ('+recoveredWalls+' fully editable), '+slabsAdded+' slab(s), locked by default'+
       (skipped?'; '+skipped+' element(s) skipped (unsupported/non-vertical geometry)':''));
+  }
+
+  /* __acad3dV177: the walls-and-slabs reader's parameters of each IfcWall and IfcSlab, by GlobalId, kept at the full
+     import so Make editable can rebuild the element as one of the app's own: its profile in plan (IFC's x and y, in
+     metres), its foot and its height; a wall's centreline and thickness when its profile is a rectangle; whether an
+     opening voids it (IfcRelVoidsElement). Elements the reader cannot follow (not a vertical extrusion) are left out. */
+  function bimIfcEditParams(text){
+    var byId=ifcTokenize(text),scale=ifcFindLengthScale(byId),R=ifcMakeResolver(byId),out={},voided={},k,e,res,prof,g,rec;
+    for(k in byId)if(byId.hasOwnProperty(k)){
+      e=byId[k];
+      if(e.type==='IFCRELVOIDSELEMENT'&&e.args[4]&&e.args[4].ref!==undefined)voided[e.args[4].ref]=1;
+    }
+    for(k in byId)if(byId.hasOwnProperty(k)){
+      e=byId[k];
+      if(e.type!=='IFCWALL'&&e.type!=='IFCWALLSTANDARDCASE'&&e.type!=='IFCSLAB')continue;
+      g=e.args[0];
+      if(typeof g!=='string'||!g)continue;
+      try{res=R.resolveVerticalExtrusion(parseInt(k,10));}catch(eR){res=null;}
+      if(!res||!res.ok||!res.profileXY)continue;
+      prof=res.profileXY.map(function(p){return [p[0]*scale,p[1]*scale];});
+      rec={kind:e.type==='IFCSLAB'?'floor':'wall',profile:prof,baseY:res.baseZ*scale,height:res.height*scale,voided:!!voided[k]};
+      if(rec.kind==='wall')rec.wall=bimTryRecoverWallFromRectProfile(prof,rec.baseY,rec.height);
+      out[g]=rec;
+    }
+    return out;
   }
 
   /* ================= __acad3dV163: SketchUp files =================
@@ -38898,8 +38937,9 @@ function bimAnGauss(m) {
         }
         return more().then(function(){
           var schema='';try{schema=api.GetModelSchema(mid);}catch(eS){schema='';}
+          var coord=null;try{coord=Array.prototype.slice.call(api.GetCoordinationMatrix(mid));}catch(eC){coord=null;}   /* __acad3dV177: the shift to the origin */
           api.CloseModel(mid);
-          return {parts:S.parts,storeys:st,holder:holder,tris:S.tris,cut:S.cut,skipped:S.skipped,notes:notes,booleans:!!api.booleans,schema:schema};
+          return {parts:S.parts,storeys:st,holder:holder,tris:S.tris,cut:S.cut,skipped:S.skipped,notes:notes,booleans:!!api.booleans,schema:schema,coord:coord};
         });
       });
     });
@@ -38912,7 +38952,9 @@ function bimAnGauss(m) {
     var bytes=buf instanceof Uint8Array?buf:new Uint8Array(buf);
     return bimIfcLoad().then(function(R){return bimIfcRead(R,bytes);}).then(function(D){
       if(!D.parts.length)throw new Error('no elements with geometry in '+name);
-      var made=[],ids=[],byClass={},names={},levels=0,i;
+      var made=[],ids=[],byClass={},names={},levels=0,i,EP={};
+      /* __acad3dV177: the walls-and-slabs reader's parameters, for Make editable (bimIfcMakeEditable) */
+      try{EP=bimIfcEditParams(new TextDecoder('utf-8').decode(bytes));}catch(eE){console.warn('[BIM] IFC import: walls and slabs could not be read for Make editable',eE);EP={};}
       for(i=0;i<D.storeys.length;i++)names[D.storeys[i].id]=D.storeys[i].name;
       pushUndo();
       setUndoSuspend(true);
@@ -38938,6 +38980,11 @@ function bimAnGauss(m) {
           }
           var hold=D.holder[q.id],bim={type:BIM_IFC_KIND[cls]||'ifc',imported:true,ifcType:q.type,guid:q.guid,
             storey:hold!=null&&names[hold]?names[hold]:'',file:name.slice(0,120),psets:q.psets||[]};
+          if(bim.type!=='ifc'&&q.guid&&EP.hasOwnProperty(q.guid)&&EP[q.guid].kind===bim.type){
+            bim.edit=EP[q.guid];
+            /* the import moved the model to the origin: the shift, in the app's axes, from the engine's coordination matrix */
+            bim.edit.shift=(D.coord&&D.coord.length===16)?[D.coord[12],D.coord[13],D.coord[14]]:[0,0,0];
+          }
           var o={id:'a3d-'+Date.now().toString(36)+'-'+(A3D.seq++),t:'solid',name:(q.name||cls+' '+q.id).slice(0,80),col:q.col,
             pos:[0,0,0],mesh:q.mesh,layer:byClass[key].id,locked:true,bim:bim};
           A3D.objs.push(o);ids.push(o.id);
@@ -38945,7 +38992,7 @@ function bimAnGauss(m) {
       }finally{setUndoSuspend(false);}
       if(bimLayerById(was))A3D.activeLayer=was;
       refreshTree();refreshLevels();refreshLayers();refreshProps();fitScene();paint();saveSoon();
-      return {ids:ids,layers:made,levels:levels,triangles:D.tris,cut:D.cut,skipped:D.skipped,notes:D.notes,booleans:D.booleans,ms:Date.now()-t0,
+      return {ids:ids,layers:made,levels:levels,coord:D.coord,triangles:D.tris,cut:D.cut,skipped:D.skipped,notes:D.notes,booleans:D.booleans,ms:Date.now()-t0,
         text:'IFC'+(D.schema?' ('+D.schema+')':'')+': '+ids.length+' element'+(ids.length===1?'':'s')+' from '+name+', '+levels+' level'+(levels===1?'':'s')+
           ', on the '+stem+' layer by class'+
           (D.booleans?'':'; openings not cut (the geometry library could not be loaded)')+
@@ -38977,7 +39024,7 @@ function bimAnGauss(m) {
     var b=o&&o.bim;
     if(!b||!b.ifcType||!b.guid)return '';
     var h='',rows=bimPropText('IFC Class',b.ifcType)+bimPropText('GlobalId',b.guid)+(b.storey?bimPropText('Storey',b.storey):'')+
-      (b.file?bimPropText('File',b.file):'');
+      (b.file?bimPropText('File',b.file):'')+bimIfcEditButtonHtml(o);   /* __acad3dV177: Make editable */
     h+=bimPropGroup('IFC',rows);
     (b.psets||[]).forEach(function(s){
       h+=bimPropGroup(s.name,s.rows.map(function(r){return bimPropText(r[0],r[1]);}).join(''));
@@ -38990,6 +39037,98 @@ function bimAnGauss(m) {
     inp.onchange=function(){var f=inp.files&&inp.files[0];if(f)bimHandleImportFile(f);};
     inp.click();
     return true;
+  }
+  /* ================= __acad3dV177: Make editable, an imported IFC wall or floor as one of the app's own =================
+     docs/work-orders/v177/SPEC.md part 1 (the owner's D3, 2026-11-13: editing imported walls and slabs in V177). The
+     full import keeps each IfcWall's and IfcSlab's walls-and-slabs parameters (import-ifc.js, bimIfcEditParams) in
+     bim.edit. Make editable rebuilds the element from them as an app wall or floor, under the same GlobalId, so Save as
+     IFC writes it back as the element it was. The rebuilt shape must lie where the imported one does: the reader's
+     plan is tried in IFC's axes and turned to the app's (z = -north), each moved by the import's shift to the origin
+     (bim.edit.shift, the engine's coordination matrix), and the one whose box matches the imported mesh's is taken; neither matching, or a wall voided by an opening (the cut is not rebuilt), it is refused and says why. */
+  /* a mesh's box [minX, minY, minZ, maxX, maxY, maxZ], or null */
+  function bimIfcEdBox(m){
+    var v=m&&m.v,i,b=null,p;
+    if(!v||!v.length)return null;
+    for(i=0;i<v.length;i++){
+      p=v[i];
+      if(!b){b=[p[0],p[1],p[2],p[0],p[1],p[2]];continue;}
+      if(p[0]<b[0])b[0]=p[0];if(p[1]<b[1])b[1]=p[1];if(p[2]<b[2])b[2]=p[2];
+      if(p[0]>b[3])b[3]=p[0];if(p[1]>b[4])b[4]=p[1];if(p[2]>b[5])b[5]=p[2];
+    }
+    return b;
+  }
+  /* whether two boxes agree to 2 cm, or 1% of the larger's size */
+  function bimIfcEdSame(a,b){
+    var i,t;
+    if(!a||!b)return false;
+    t=Math.max(0.02,0.01*Math.max(a[3]-a[0],a[4]-a[1],a[5]-a[2]));
+    for(i=0;i<6;i++)if(Math.abs(a[i]-b[i])>t)return false;
+    return true;
+  }
+  /* the plan of the rebuild, pure: {kind:'wall', pts, y0, height, thickness} or {kind:'floor', pts, top, thickness};
+     {why} when it cannot be made editable */
+  function bimIfcEditPlan(o){
+    var b=o&&o.bim,e=b&&b.edit,k,turn,pts,box,want,i,S,mv;
+    if(!b||!b.imported)return {why:'it was not imported from an IFC file'};
+    if(b.type!=='wall'&&b.type!=='floor')return {why:'only imported walls and floors can be made editable'};
+    if(!e||!e.profile||!(e.height>0))return {why:'its shape is not a vertical extrusion the walls-and-slabs reader can follow'};
+    if(b.type==='wall'&&e.voided)return {why:'an opening cuts it, and Make editable does not rebuild the cut yet'};
+    if(b.type==='wall'&&!e.wall)return {why:'its plan is not a rectangle, so it has no single centreline'};
+    box=bimIfcEdBox(o.mesh);
+    if(!box)return {why:'it has no shape'};
+    S=(e.shift&&e.shift.length===3)?e.shift:[0,0,0];
+    for(k=0;k<2;k++){
+      turn=k===1;
+      mv=function(p){return [p[0]+S[0],(turn?-p[1]:p[1])+S[2]];};
+      pts=e.profile.map(mv);
+      want=[Infinity,e.baseY+S[1],Infinity,-Infinity,e.baseY+e.height+S[1],-Infinity];
+      for(i=0;i<pts.length;i++){
+        if(pts[i][0]<want[0])want[0]=pts[i][0];if(pts[i][1]<want[2])want[2]=pts[i][1];
+        if(pts[i][0]>want[3])want[3]=pts[i][0];if(pts[i][1]>want[5])want[5]=pts[i][1];
+      }
+      if(!bimIfcEdSame(box,want))continue;
+      if(b.type==='floor')return {kind:'floor',pts:pts,top:e.baseY+e.height+S[1],thickness:e.height};
+      return {kind:'wall',pts:e.wall.centerline.map(mv),y0:e.wall.baseY+S[1],height:e.wall.height,thickness:e.wall.thickness};
+    }
+    return {why:'the walls-and-slabs reader places it elsewhere than the imported shape'};
+  }
+  /* Make editable: the element rebuilt as the app's own, in its place on the list, keeping its name, layer, GlobalId,
+     IFC class, storey and property sets; one undo step. The new element, or null (a toast says why). */
+  function bimIfcMakeEditable(id){
+    var o=objById(id),P,n=null,b,k,at;
+    if(!o){a3dToast('Nothing to make editable');return null;}
+    P=bimIfcEditPlan(o);
+    if(P.why){a3dToast(o.name+' cannot be made editable: '+P.why);return null;}
+    b=o.bim;
+    pushUndo();
+    setUndoSuspend(true);
+    try{
+      if(P.kind==='wall')n=buildWallSolid(P.pts,P.y0,P.height,P.thickness,'center',false);
+      else n=buildFloorSolid({pts:P.pts,y:P.top},P.thickness,'Concrete',bimGetActiveLevel());
+      if(n){
+        n.name=o.name;n.layer=o.layer;
+        for(k in {guid:1,ifcType:1,storey:1,file:1,psets:1})if(b[k]!==undefined)n.bim[k]=b[k];
+        at=A3D.objs.indexOf(o);
+        A3D.objs.splice(A3D.objs.indexOf(n),1);
+        A3D.objs.splice(at,1,n);
+        A3D.sel=n.id;A3D.sel2=null;A3D.selSet=[n.id];
+      }
+    }catch(eM){
+      console.warn('[BIM] Make editable failed for '+o.name,eM);
+      n=null;
+    }finally{setUndoSuspend(false);}
+    if(!n){a3dToast(o.name+' could not be made editable - see the console');return null;}
+    refreshTree();refreshProps();paint();saveSoon();
+    a3dToast(o.name+' is now an editable '+P.kind+', saved under its GlobalId');
+    return n;
+  }
+  /* Properties: the button, for an imported wall or floor */
+  function bimIfcEditButtonHtml(o){
+    var b=o&&o.bim;
+    if(!b||!b.imported||(b.type!=='wall'&&b.type!=='floor'))return '';
+    var P=bimIfcEditPlan(o);
+    return bimPropRow('Editing',P.why?'<span title="'+bimEsc(P.why)+'">Not editable: '+bimEsc(P.why)+'</span>':
+      '<button type="button" class="a3d-pedit" data-ifcedit="'+bimEsc(o.id)+'">Make editable</button>');
   }
 /* __acad3dV177: the model as the plain data IfcOpenShell's adapter writes as an IFC file (src/py/bim_ifcos.py,
    bim_ifcos_export; docs/work-orders/v177/SPEC.md part 3). Metres; IFC's axes are X east, Y north, Z up: the app's
@@ -69542,6 +69681,11 @@ function bimRptPlan(families) {
     /* __acad3dV59: graphics-override reset buttons live inside the Graphics prop rows but are
        plain <button data-propgfxreset> elements, not <input data-propf>, so they need their own
        click delegate rather than reusing the generic [data-propf] one above. */
+    /* __acad3dV177: an imported IFC wall or floor, Make editable */
+    if(el.propsbody)el.propsbody.addEventListener('click',function(ev){
+      var eb=ev.target&&ev.target.closest?ev.target.closest('[data-ifcedit]'):null;
+      if(eb)bimIfcMakeEditable(eb.getAttribute('data-ifcedit'));
+    });
     /* __acad3dV146: the History group's buttons, and Enter in its message */
     if(el.propsbody)el.propsbody.addEventListener('click',function(ev){
       var hb=ev.target&&ev.target.closest?ev.target.closest('[data-histact]'):null;
@@ -71484,8 +71628,16 @@ function bimRptPlan(families) {
     corners:bimMapTileCorners,tileUrl:bimMapTileUrl};
   /* __acad3dV177: the model as the data Save as IFC hands IfcOpenShell (io/ifc-save.js) */
   window.__a3dIfcSave=BIM_IFC_SAVE;
-  window.__acad3dV177='ifcout,ifcos,ifcsave';
+  window.__acad3dV177='ifcout,ifcos,ifcsave,ifcedit';
   window.__a3dIfcExport=function(){return bimIfcExportText();};
+  window.__a3dIfcEdit={params:bimIfcEditParams,plan:bimIfcEditPlan,make:function(id){var n=bimIfcMakeEditable(id);return n?n.id:null;},box:bimIfcEdBox,same:bimIfcEdSame,
+    /* the imported walls and floors, each with why it cannot be made editable ('' when it can) */
+    list:function(){return A3D.objs.filter(function(o){return o.bim&&o.bim.imported&&(o.bim.type==='wall'||o.bim.type==='floor');})
+      .map(function(o){var P=bimIfcEditPlan(o);return {id:o.id,name:o.name,type:o.bim.type,guid:o.bim.guid,why:P.why||''};});},
+    info:function(id){var o=objById(id),b=o&&o.bim;return b?{name:o.name,layer:o.layer,type:b.type,imported:!!b.imported,guid:b.guid,
+      centerline:b.centerline||null,profile:b.profile||null,thickness:b.thickness,box:bimIfcEdBox(o.mesh)}:null;},
+    byGuid:function(g){for(var i=0;i<A3D.objs.length;i++)if(A3D.objs[i].bim&&A3D.objs[i].bim.guid===g)return A3D.objs[i].id;return null;},
+    count:function(){return A3D.objs.length;}};
   window.__a3dIfcos=function(){return {st:A3D_IFCOS.st,err:A3D_IFCOS.err,version:A3D_IFCOS.version,ms:A3D_IFCOS.ms};};
   /* __acad3dV197: colours by surface kind */
   window.__acad3dV197='colours,study,natural,roofrows,kinds';

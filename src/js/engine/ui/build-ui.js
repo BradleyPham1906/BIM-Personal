@@ -58,6 +58,7 @@ import { bimStdOverride } from '../standards/registry.js';
 import { bimAnimPlay, bimAnimStop } from '../site-analysis/motion.js';
 import { bimDgPropChange, bimDgPropClick } from '../site-analysis/land-use.js';
 import { refreshProps } from '../site-analysis/panel.js';
+import { bimIfcMakeEditable } from '../io/ifc-editable.js';
 import { bimHandleImportFile } from '../io/import-entry.js';
 import { bimSkSet } from '../render/surface-kinds.js';
 import { bimRvProp } from '../render/rendered-view.js';
@@ -529,6 +530,11 @@ import { size } from './canvas-size.js';
     /* __acad3dV59: graphics-override reset buttons live inside the Graphics prop rows but are
        plain <button data-propgfxreset> elements, not <input data-propf>, so they need their own
        click delegate rather than reusing the generic [data-propf] one above. */
+    /* __acad3dV177: an imported IFC wall or floor, Make editable */
+    if(el.propsbody)el.propsbody.addEventListener('click',function(ev){
+      var eb=ev.target&&ev.target.closest?ev.target.closest('[data-ifcedit]'):null;
+      if(eb)bimIfcMakeEditable(eb.getAttribute('data-ifcedit'));
+    });
     /* __acad3dV146: the History group's buttons, and Enter in its message */
     if(el.propsbody)el.propsbody.addEventListener('click',function(ev){
       var hb=ev.target&&ev.target.closest?ev.target.closest('[data-histact]'):null;

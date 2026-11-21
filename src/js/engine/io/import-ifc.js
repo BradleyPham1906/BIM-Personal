@@ -82,6 +82,12 @@ import { a3dToast } from '../bim/csg-booleans.js';
   function ifcCompose(outer,inner){
     return {origin:ifcApplyPoint(outer,inner.origin),x:ifcRotateVec(outer,inner.x),y:ifcRotateVec(outer,inner.y),z:ifcRotateVec(outer,inner.z)};
   }
+  /* a closed ring's points without the repeated first point at its end */
+  function ifcOpenRing(P){
+    var n=P.length;
+    if(n>1&&Math.abs(P[0][0]-P[n-1][0])<1e-9&&Math.abs(P[0][1]-P[n-1][1])<1e-9)return P.slice(0,n-1);
+    return P;
+  }
   function ifcMakeResolver(byId){
     function get(ref){return ref&&ref.ref!==undefined?byId[ref.ref]:null;}
     function resolvePoint3(ref){
@@ -140,7 +146,15 @@ import { a3dToast } from '../bim/csg-booleans.js';
         var curve=get(e.args[2]);
         if(curve&&curve.type==='IFCPOLYLINE'){
           var ptsRef=curve.args[0]||[];
-          return {pts:ptsRef.map(function(pr){var pe=get(pr);var c=pe?(pe.args[0]||[0,0]):[0,0];return [c[0]||0,c[1]||0];})};
+          return {pts:ifcOpenRing(ptsRef.map(function(pr){var pe=get(pr);var c=pe?(pe.args[0]||[0,0]):[0,0];return [c[0]||0,c[1]||0];}))};
+        }
+        /* __acad3dV177: IFC4's indexed curve, as IfcOpenShell writes a profile: its point list in order; straight
+           segments only (an IfcArcIndex segment is a curve this reader does not follow) */
+        if(curve&&curve.type==='IFCINDEXEDPOLYCURVE'){
+          var pl=get(curve.args[0]),sg=curve.args[1];
+          if(!pl||pl.type!=='IFCCARTESIANPOINTLIST2D')return {pts:null,reason:'unsupported indexed curve points ('+(pl?pl.type:'?')+')'};
+          if(sg&&JSON.stringify(sg).indexOf('IFCARCINDEX')>=0)return {pts:null,reason:'an indexed curve with arcs'};
+          return {pts:ifcOpenRing((pl.args[0]||[]).map(function(c){return [c[0]||0,c[1]||0];}))};
         }
         return {pts:null,reason:'unsupported outer curve type ('+(curve?curve.type:'?')+')'};
       }
@@ -266,4 +280,29 @@ import { a3dToast } from '../bim/csg-booleans.js';
       (skipped?'; '+skipped+' element(s) skipped (unsupported/non-vertical geometry)':''));
   }
 
-export { bimImportIFC };
+  /* __acad3dV177: the walls-and-slabs reader's parameters of each IfcWall and IfcSlab, by GlobalId, kept at the full
+     import so Make editable can rebuild the element as one of the app's own: its profile in plan (IFC's x and y, in
+     metres), its foot and its height; a wall's centreline and thickness when its profile is a rectangle; whether an
+     opening voids it (IfcRelVoidsElement). Elements the reader cannot follow (not a vertical extrusion) are left out. */
+  function bimIfcEditParams(text){
+    var byId=ifcTokenize(text),scale=ifcFindLengthScale(byId),R=ifcMakeResolver(byId),out={},voided={},k,e,res,prof,g,rec;
+    for(k in byId)if(byId.hasOwnProperty(k)){
+      e=byId[k];
+      if(e.type==='IFCRELVOIDSELEMENT'&&e.args[4]&&e.args[4].ref!==undefined)voided[e.args[4].ref]=1;
+    }
+    for(k in byId)if(byId.hasOwnProperty(k)){
+      e=byId[k];
+      if(e.type!=='IFCWALL'&&e.type!=='IFCWALLSTANDARDCASE'&&e.type!=='IFCSLAB')continue;
+      g=e.args[0];
+      if(typeof g!=='string'||!g)continue;
+      try{res=R.resolveVerticalExtrusion(parseInt(k,10));}catch(eR){res=null;}
+      if(!res||!res.ok||!res.profileXY)continue;
+      prof=res.profileXY.map(function(p){return [p[0]*scale,p[1]*scale];});
+      rec={kind:e.type==='IFCSLAB'?'floor':'wall',profile:prof,baseY:res.baseZ*scale,height:res.height*scale,voided:!!voided[k]};
+      if(rec.kind==='wall')rec.wall=bimTryRecoverWallFromRectProfile(prof,rec.baseY,rec.height);
+      out[g]=rec;
+    }
+    return out;
+  }
+
+export { bimIfcEditParams, bimImportIFC };

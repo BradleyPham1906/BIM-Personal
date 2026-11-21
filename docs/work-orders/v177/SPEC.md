@@ -18,7 +18,7 @@ editable: it becomes one of the app's own walls or floors, and is saved back und
 |---|---|---|---|
 | 1 | The adapter: a model, as plain data, written as an IFC file (part 4) | Cline, WO-01 to WO-07 | ready |
 | 2a | The model as that data: `src/js/engine/io/ifc-save.js` (part 7) | Cline, WO-09 to WO-15 | ready |
-| 2b | The wheels and their licence texts in `runtime/`, the worker, File > Export > IFC, Make editable, the browser check | Claude (protected paths and the worker), spec to follow | next |
+| 2b | The wheels and their licence texts in `runtime/`, the worker, File > Export > IFC, Make editable, the browser check | Claude (protected paths and the worker), spec to follow | done 2026-11-21 |
 
 Step 1 changes one file, `src/py/bim_ifcos.py`; nothing in the app calls it yet, so `canvas_v10.html` does not change.
 

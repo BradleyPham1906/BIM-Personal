@@ -137,7 +137,24 @@ Text on a board can follow the project, so a board says what the model says.
 | SVG | `EXPORTSVG` |
 | GeoJSON | `GEOEXPORT` |
 | CityJSON 2.0 | `CITYJSONOUT` |
+| IFC4 (for Revit, ArchiCAD and other BIM programs) | `IFCOUT` |
 | the project file (.json) | `SAVE` |
+
+### IFC files
+
+`IFCOUT` (All tools, Export, IFC) writes the model as an IFC4 file through IfcOpenShell, which loads the first time
+it is used (about ten seconds; a later save takes a moment). Levels become storeys. Straight walls, floors, doors and
+windows (each cutting its wall) and columns are written as IFC's own elements; everything else is written with its
+shape and its IFC class, so nothing is left out. Each element carries a `BIM_Personal` property set with its layer.
+
+An element that came from an IFC file keeps its GlobalId when it is saved again. An imported wall or floor can be
+turned into one of the app's own: select it, and in Properties, IFC, choose **Make editable**. It is rebuilt where it
+stood, with the same name, layer and GlobalId, and can then be edited like any wall or floor; one undo puts the
+imported element back. Properties says when an element cannot be made editable, and why: a wall an opening cuts (the
+cut is not rebuilt yet), a wall whose plan is not a rectangle, or a shape that is not a straight upward extrusion.
+
+IfcOpenShell is licensed under the LGPL and contains GPL code; it ships as its own unchanged files, run in a separate
+worker, and the app opens, edits and saves without it.
 
 ## Importing
 

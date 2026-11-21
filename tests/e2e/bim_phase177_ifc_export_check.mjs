@@ -96,6 +96,31 @@ r = await ev(`window.__a3dTestSetObjs([]);var text=${JSON.stringify(text)};
   return {n:R.ids.length,by:R.text};`);
 ck(r && !r.__err && r.n === 8, 'the app opens its own file again: ' + (r && r.n) + ' elements (' + JSON.stringify(r && (r.by || r.__err)) + ')');
 
+// Make editable (WO-16): an imported wall without an opening, and the floor, rebuilt as the app's own under their GlobalIds
+r = await ev(`return window.__a3dIfcEdit.list();`);
+const L = r || [], freeWall = L.find((x) => x.type === 'wall' && !x.why), cutWall = L.find((x) => x.type === 'wall' && /opening/.test(x.why)),
+  slab = L.find((x) => x.type === 'floor');
+ck(L.length === 5 && freeWall && cutWall && slab, 'the imported walls and floor are offered or refused with a reason (' + JSON.stringify(L.map((x) => x.type + ':' + (x.why || 'ok'))) + ')');
+r = await ev(`const n0=window.__a3dIfcEdit.count(),b0=window.__a3dIfcEdit.info('${freeWall && freeWall.id}').box;
+  window.__a3dSelectFor(['${freeWall && freeWall.id}']);window.__a3dRefreshProps();await new Promise(r=>setTimeout(r,300));
+  const btn=document.querySelector('#a3d-propsbody [data-ifcedit]');if(!btn)return {nobtn:true};
+  btn.click();await new Promise(r=>setTimeout(r,300));
+  const id=window.__a3dIfcEdit.byGuid('${freeWall && freeWall.guid}');
+  return {id,n0,n1:window.__a3dIfcEdit.count(),b0,info:id?window.__a3dIfcEdit.info(id):null};`);
+const same = (a, b) => a && b && a.every((v, i) => Math.abs(v - b[i]) < 0.03);
+ck(r && r.id && r.n1 === r.n0 && r.info && !r.info.imported && r.info.centerline && r.info.guid === freeWall.guid,
+  'Properties\' Make editable: the wall is now the app\'s own wall, in its place, under its GlobalId (' + JSON.stringify(r && (r.nobtn ? 'no button' : r.info && { guid: r.info.guid, cl: r.info.centerline, t: r.info.thickness })) + ')');
+ck(r && r.info && same(r.b0, r.info.box), 'it stands exactly where the imported wall stood (' + JSON.stringify([r && r.b0, r && r.info && r.info.box]) + ')');
+r = await ev(`const id=window.__a3dIfcEdit.make('${slab && slab.id}');return id?window.__a3dIfcEdit.info(id):null;`);
+ck(r && r.type === 'floor' && r.profile && r.guid === slab.guid, 'the floor too (' + JSON.stringify(r && { guid: r.guid, n: r.profile && r.profile.length }) + ')');
+r = await ev(`return window.__a3dIfcEdit.make('${cutWall && cutWall.id}');`);
+ck(r === null, 'a wall an opening cuts is refused, not rebuilt without its cut');
+r = await ev(`window.__a3dRunCmd('undo');await new Promise(r=>setTimeout(r,300));const id=window.__a3dIfcEdit.byGuid('${slab && slab.guid}');return id?window.__a3dIfcEdit.info(id):null;`);
+ck(r && r.imported === true && r.type === 'floor', 'one undo puts the imported floor back (' + JSON.stringify(r && { imported: r.imported, guid: r.guid }) + ')');
+r = await ev(`var R=await window.__a3dIfcExport();return R.text;`);
+ck(typeof r === 'string' && r.indexOf("'" + freeWall.guid + "'") >= 0 && r.indexOf("'" + slab.guid + "'") >= 0,
+  'saved again, the editable wall and floor keep their GlobalIds');
+
 const bad = C.logs.filter((l) => /^(error|exception)/.test(l));
 ck(bad.length === 0, 'no console errors' + (bad.length ? ': ' + bad.slice(0, 3).join(' | ') : ''));
 console.log(`\n${pass} passed, ${fail} failed`);

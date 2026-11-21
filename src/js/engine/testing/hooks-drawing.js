@@ -55,6 +55,7 @@ import {
   startStairTool
 } from '../bim/stairs.js';
 import { bimImportDXF } from '../io/import-dxf.js';
+import { bimIfcEditParams } from '../io/import-ifc.js';
 import {
   BIM_GLTF, bimGltfArrays, bimGltfElements, bimGltfExportBytes, bimGltfFeatureEdges, bimGltfGather,
   bimGltfHex, bimGltfImportBuffer, bimGltfParts, bimGltfWeld, bimGltfWhy
@@ -63,6 +64,7 @@ import {
   BIM_IFC, bimIfcClass, bimIfcContainers, bimIfcHex, bimIfcImportBuffer, bimIfcMeshParts, bimIfcPropsHtml,
   bimIfcRead, bimIfcSet, bimIfcSources, bimIfcStoreys, bimIfcVal
 } from '../io/ifc-full.js';
+import { bimIfcEdBox, bimIfcEdSame, bimIfcEditPlan, bimIfcMakeEditable } from '../io/ifc-editable.js';
 import { BIM_IFC_SAVE } from '../io/ifc-save.js';
 import { A3D_IFCOS, bimIfcExportText } from '../io/ifcos-worker.js';
 import { toScreen } from '../io/import-entry.js';
@@ -409,8 +411,16 @@ import { cvH, cvW } from '../ui/canvas-size.js';
     corners:bimMapTileCorners,tileUrl:bimMapTileUrl};
   /* __acad3dV177: the model as the data Save as IFC hands IfcOpenShell (io/ifc-save.js) */
   window.__a3dIfcSave=BIM_IFC_SAVE;
-  window.__acad3dV177='ifcout,ifcos,ifcsave';
+  window.__acad3dV177='ifcout,ifcos,ifcsave,ifcedit';
   window.__a3dIfcExport=function(){return bimIfcExportText();};
+  window.__a3dIfcEdit={params:bimIfcEditParams,plan:bimIfcEditPlan,make:function(id){var n=bimIfcMakeEditable(id);return n?n.id:null;},box:bimIfcEdBox,same:bimIfcEdSame,
+    /* the imported walls and floors, each with why it cannot be made editable ('' when it can) */
+    list:function(){return A3D.objs.filter(function(o){return o.bim&&o.bim.imported&&(o.bim.type==='wall'||o.bim.type==='floor');})
+      .map(function(o){var P=bimIfcEditPlan(o);return {id:o.id,name:o.name,type:o.bim.type,guid:o.bim.guid,why:P.why||''};});},
+    info:function(id){var o=objById(id),b=o&&o.bim;return b?{name:o.name,layer:o.layer,type:b.type,imported:!!b.imported,guid:b.guid,
+      centerline:b.centerline||null,profile:b.profile||null,thickness:b.thickness,box:bimIfcEdBox(o.mesh)}:null;},
+    byGuid:function(g){for(var i=0;i<A3D.objs.length;i++)if(A3D.objs[i].bim&&A3D.objs[i].bim.guid===g)return A3D.objs[i].id;return null;},
+    count:function(){return A3D.objs.length;}};
   window.__a3dIfcos=function(){return {st:A3D_IFCOS.st,err:A3D_IFCOS.err,version:A3D_IFCOS.version,ms:A3D_IFCOS.ms};};
   /* __acad3dV197: colours by surface kind */
   window.__acad3dV197='colours,study,natural,roofrows,kinds';
