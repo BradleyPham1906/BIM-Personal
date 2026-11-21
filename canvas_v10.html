@@ -45873,6 +45873,28 @@ BIM_IFC_SAVE.model=bimIfcSaveModel;
      later, behind the library rule. Each function is a work order in docs/work-orders/v190/TASKS.md, added below as
      it is built; none uses another file's names. */
 
+/**
+ * bimPcSniff(b) - detect point cloud format from first bytes
+ * (a Uint8Array): 'las' for LASF (bytes 76 65 83 70),
+ *   'laz' when also byte 104 has bit 6 or 7 set (& 0xC0),
+ *   'ply' for ply followed by \n or \r, else '' (also for under 4 bytes).
+ */
+function bimPcSniff(b) {
+  if (b === null || b === undefined || b.length < 4) {
+    return '';
+  }
+  if (b[0] === 76 && b[1] === 65 && b[2] === 83 && b[3] === 70) {
+    if (b.length > 104 && (b[104] & 0xC0) !== 0) {
+      return 'laz';
+    }
+    return 'las';
+  }
+  if (b[0] === 112 && b[1] === 108 && b[2] === 121 && (b[3] === 10 || b[3] === 13)) {
+    return 'ply';
+  }
+  return '';
+}
+
 
   /* ================= __acad3dV191: LOD-D, LOD1.3 and LOD2.2 roofs from LiDAR, the pure part =================
      docs/research/research-notion-v189-roofs.md and docs/work-orders/v191/SPEC.md. Roof planes from LiDAR points: Jacobi

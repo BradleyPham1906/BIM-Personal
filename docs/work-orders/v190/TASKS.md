@@ -20,7 +20,7 @@ after each one. Scores are from `../ROUTING.md` (files, logic, understanding, ju
 
 ---
 
-## [ ] WO-01 [Cline] `bimPcSniff(b)`
+## [x] WO-01 [Cline] `bimPcSniff(b)`
 
 - **It must:** SPEC 4 WO-01.
 - **May use:** nothing.
