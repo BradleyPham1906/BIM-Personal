@@ -50,7 +50,7 @@ after each one. Scores are from `../ROUTING.md` (files, logic, understanding, ju
 
 ---
 
-## [ ] WO-04 [Cline] `bimPcLasPoints(dv, h, max, origin)`
+## [x] WO-04 [Cline] `bimPcLasPoints(dv, h, max, origin)`
 
 - **It must:** SPEC 4 WO-04, with `BIM_PC_RGB` (`{2:20,3:28,7:30,8:30}`) just above the function: subtract the origin from the double-precision coordinate before storing it in the Float32Array.
 - **May use:** `bimPcStep` (WO-03), `BIM_PC_RGB` (this task).

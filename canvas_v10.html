@@ -45882,6 +45882,48 @@ function bimPcStep(count, max) {
   return Math.ceil(count / max);
 }
 
+var BIM_PC_RGB = { 2: 20, 3: 28, 7: 30, 8: 30 };
+
+function bimPcLasPoints(dv, h, max, origin) {
+  var step = bimPcStep(h.count, max);
+  var n = Math.ceil(h.count / step);
+  var xyz = new Float32Array(n * 3);
+  var cls = null;
+  var rgb = null;
+  var rgbAt = BIM_PC_RGB[h.pointFormat];
+  if (rgbAt !== undefined) {
+    rgb = new Uint8Array(n * 3);
+  }
+  if (h.pointFormat < 6) {
+    cls = new Uint8Array(n);
+  } else {
+    cls = new Uint8Array(n);
+  }
+  if (origin === null || origin === undefined) {
+    origin = [0, 0, 0];
+  }
+  var pi = 0;
+  for (var i = 0; i < h.count; i += step) {
+    var at = h.offsetToPoints + i * h.recordLength;
+    for (var j = 0; j < 3; j++) {
+      var v = dv.getInt32(at + 4 * j, true) * h.scale[j] + h.offset[j] - origin[j];
+      xyz[pi * 3 + j] = v;
+    }
+    if (h.pointFormat < 6) {
+      cls[pi] = dv.getUint8(at + 15) & 0x1f;
+    } else {
+      cls[pi] = dv.getUint8(at + 16);
+    }
+    if (rgb) {
+      for (var j = 0; j < 3; j++) {
+        rgb[pi * 3 + j] = dv.getUint16(at + rgbAt + 2 * j, true) >> 8;
+      }
+    }
+    pi++;
+  }
+  return { n: n, xyz: xyz, cls: cls, rgb: rgb };
+}
+
 
   /* ================= __acad3dV191: LOD-D, LOD1.3 and LOD2.2 roofs from LiDAR, the pure part =================
      docs/research/research-notion-v189-roofs.md and docs/work-orders/v191/SPEC.md. Roof planes from LiDAR points: Jacobi
