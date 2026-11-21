@@ -1,9 +1,9 @@
-// V241, the shape of the ground: curvature, ruggedness and what can be seen from a point
-// (docs/work-orders/v241/SPEC.md). The pure functions of WO-01 to WO-03, in src/js/engine/terrain/terrain-shape.js.
+// V248, the shape of the ground: curvature, ruggedness and what can be seen from a point
+// (docs/work-orders/v248/SPEC.md). The pure functions of WO-01 to WO-03, in src/js/engine/terrain/terrain-shape.js.
 //
-//   node --test docs/work-orders/v241/v241.test.mjs
+//   node --test docs/work-orders/v248/v248.test.mjs
 //
-// V241_IMPL=<path to an .mjs exporting the functions> runs the same tests against another implementation
+// V248_IMPL=<path to an .mjs exporting the functions> runs the same tests against another implementation
 // (Claude checked these tests that way against a reference, 2026-11-21).
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
@@ -11,7 +11,7 @@ import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { loadEngine } from '../../../tests/unit/helpers/engine.mjs';
 
-const F = process.env.V241_IMPL ? await import(pathToFileURL(path.resolve(process.env.V241_IMPL)).href) : loadEngine();
+const F = process.env.V248_IMPL ? await import(pathToFileURL(path.resolve(process.env.V248_IMPL)).href) : loadEngine();
 const near = (a, b, e, msg) => assert.ok(Math.abs(a - b) <= (e || 1e-9), (msg || '') + ' ' + a + ' vs ' + b);
 // a grid as bimLandGround gives it: nx columns, nz rows, cell metres, H heights, ok flags
 function grid(nx, nz, cell, f) {

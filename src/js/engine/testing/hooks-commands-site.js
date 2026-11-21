@@ -4,7 +4,6 @@ import { A3D_TYPING, UNDO_STACK, bimObjOffset, pushUndo } from '../drawing/plan-
 import { bimParseCoordInput, bimPromptFor, bimRecordCmd, sketchCCW } from '../drawing/drawing-input.js';
 import { bimParseSurvey } from '../terrain/terrain-tin.js';
 import { bimCurvature, bimTri, bimViewshed } from '../terrain/terrain-shape.js';
-import { bimCatchment, bimD8, bimFill, bimFlowAcc } from '../terrain/ground-water.js';
 import {
   A3D_MERGE, bimHistBase, bimHistBranchDelete, bimHistBranchNew, bimHistBranches, bimHistCompare,
   bimHistMergeAbort, bimHistMergeChoose, bimHistMergeFinish, bimHistMergeStart, bimHistSwitch
@@ -278,9 +277,8 @@ import { BIM_CMD_MAP, BIM_SHEET_CMDS, BIM_START_CMDS } from '../commands/command
   window.__acad3dV134='datakinds,arcgisquery,wfsgetfeature,geojsonfile,presets,areafilter,maxfeatures,featuresoutsideundo,'+
     'featuressaved,planoverlay,notonpaper,clicktoread,pickorder,parceltoproperty,failuresnamed,datacredit,datapanel,datacommand';
   /* __acad3dV133: site context */
-  window.__a3dGroundData=function(){return {geoid:bimGeoidAt,datum:bimDatumShift,   /* __acad3dV202c, V241, V242 */
-    gemCell:bimGemCell,offset:bimSurfaceOffset,footprint:bimFootprintHeight,curvature:bimCurvature,tri:bimTri,viewshed:bimViewshed,
-    fill:bimFill,d8:bimD8,flowAcc:bimFlowAcc,catchment:bimCatchment};};
+  window.__a3dGroundData=function(){return {geoid:bimGeoidAt,datum:bimDatumShift,   /* __acad3dV202c, V248 */
+    gemCell:bimGemCell,offset:bimSurfaceOffset,footprint:bimFootprintHeight,curvature:bimCurvature,tri:bimTri,viewshed:bimViewshed};};
   window.__a3dSiteUi=function(){return {cards:bimCtxCards,place:bimPlaceFacts,compass:bimCompass};};   /* __acad3dV202u */
   window.__a3dCtxSettings=function(){return bimCtxSettings();};
   window.__a3dCtxSet=function(f,v){return bimCtxSet(f,v);};

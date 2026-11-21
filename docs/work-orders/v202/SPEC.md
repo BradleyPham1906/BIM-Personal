@@ -272,8 +272,8 @@ Research: `docs/research/research-terrain-surface.md` (experiments in `docs/rese
   pinned in `MANIFEST.json`. The research is in the note's part 4.8; this answer is the owner's approval of the library.
 - **D2:** GEM-15's heights rank as the research recommends.
 - **D3:** the project's datum follows the project's location: NAVD88 inside CONUS, EGM96 elsewhere.
-- **D4:** this part belongs to V202 ("measured heights, ground"). The analyses on the ground follow later, as V241
-  and V242.
+- **D4:** this part belongs to V202 ("measured heights, ground"). The analyses on the ground follow later: curvature,
+  ruggedness and the viewshed as V248; water on the ground is V247, another session's track (PR #117).
 
 These replace the separate V239 and V240 written earlier the same day.
 

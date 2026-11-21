@@ -10134,7 +10134,7 @@ function bimPicPlane(wPx, hPx, widthM) {
     return on;
   }
 
-  /* ===== __acad3dV241: the shape of the ground (docs/work-orders/v241/SPEC.md) =====
+  /* ===== __acad3dV248: the shape of the ground (docs/work-orders/v248/SPEC.md) =====
      On the analyses' ground grid {nx, nz, cell, H, ok}: plan and profile curvature (Zevenbergen and Thorne 1987),
      the terrain ruggedness index (Riley et al. 1999), and a viewshed by sight lines over the ground. */
   /* WO-01: plan and profile curvature (1/m) at every cell, as {plan, profile} Float64Arrays; 0 on a flat cell,
@@ -10150,28 +10150,6 @@ function bimPicPlane(wPx, hPx, widthM) {
   /* WO-03: what can be seen from cell (oi, oj) with the eye eyeH above the ground, targets tgtH tall, within maxR
      metres, as a Uint8Array: 1 seen, 0 hidden, 255 out of reach or without ground */
   function bimViewshed(G,oi,oj,eyeH,tgtH,maxR){
-    return null;
-  }
-
-  /* ===== __acad3dV242: water on the ground (docs/work-orders/v242/SPEC.md) =====
-     On the analyses' ground grid {nx, nz, cell, H, ok}: hollows filled by priority-flood (Barnes, Lehman and
-     Mulla 2014), D8 flow directions (O'Callaghan and Mark 1984), flow accumulation, and a cell's catchment. */
-  /* WO-01: the ground with its hollows filled to their spill heights, each filled cell at least eps above the
-     one it drains to, as a Float64Array; NaN where there is no ground */
-  function bimFill(G,eps){
-    return null;
-  }
-  /* WO-02: each cell's steepest way down, 0 E, 1 SE, 2 S, 3 SW, 4 W, 5 NW, 6 N, 7 NE (rows run south), as an
-     Int8Array; -1 at a pit, a flat or missing ground */
-  function bimD8(G){
-    return null;
-  }
-  /* WO-03: how many cells drain through each cell, itself included, as a Float64Array; NaN without ground */
-  function bimFlowAcc(G,dir){
-    return null;
-  }
-  /* WO-04: the cells whose water reaches cell k, k included, as a Uint8Array of 1s and 0s */
-  function bimCatchment(G,dir,k){
     return null;
   }
   /* ================= __acad3dV146: history, by element (the Hub's H1) =================
@@ -72015,9 +71993,8 @@ function bimRptPlan(families) {
   window.__acad3dV134='datakinds,arcgisquery,wfsgetfeature,geojsonfile,presets,areafilter,maxfeatures,featuresoutsideundo,'+
     'featuressaved,planoverlay,notonpaper,clicktoread,pickorder,parceltoproperty,failuresnamed,datacredit,datapanel,datacommand';
   /* __acad3dV133: site context */
-  window.__a3dGroundData=function(){return {geoid:bimGeoidAt,datum:bimDatumShift,   /* __acad3dV202c, V241, V242 */
-    gemCell:bimGemCell,offset:bimSurfaceOffset,footprint:bimFootprintHeight,curvature:bimCurvature,tri:bimTri,viewshed:bimViewshed,
-    fill:bimFill,d8:bimD8,flowAcc:bimFlowAcc,catchment:bimCatchment};};
+  window.__a3dGroundData=function(){return {geoid:bimGeoidAt,datum:bimDatumShift,   /* __acad3dV202c, V248 */
+    gemCell:bimGemCell,offset:bimSurfaceOffset,footprint:bimFootprintHeight,curvature:bimCurvature,tri:bimTri,viewshed:bimViewshed};};
   window.__a3dSiteUi=function(){return {cards:bimCtxCards,place:bimPlaceFacts,compass:bimCompass};};   /* __acad3dV202u */
   window.__a3dCtxSettings=function(){return bimCtxSettings();};
   window.__a3dCtxSet=function(f,v){return bimCtxSet(f,v);};

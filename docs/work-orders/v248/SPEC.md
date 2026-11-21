@@ -1,6 +1,7 @@
-# V241 spec: the shape of the ground, curvature, ruggedness and a viewshed
+# V248 spec: the shape of the ground, curvature, ruggedness and a viewshed
 
-Research: `docs/research/research-terrain-surface.md` parts 4.5 and 7. **Status: written 2026-11-21. The owner's D4 (2026-11-21): after V202.** Needs no new data: it runs on the ground the app already has (and on
+Research: `docs/research/research-terrain-surface.md` parts 4.5 and 7. **Status: written 2026-11-21. The owner's D4 (2026-11-21): after V202. Numbered V248 because
+another session's physical-world track (PR #117) took V239 to V247 the same day.** Needs no new data: it runs on the ground the app already has (and on
 3DEP's from V202, GEM-15's surface from V202 part C). Implementation target: local `main`. Written by Claude.
 
 ## 1. What it does for the user
@@ -23,7 +24,7 @@ Each has its legend, its method and its source in the board, as the existing ana
 |---|---|---|---|
 | `src/js/engine/terrain/terrain-shape.js` | new (scaffolded) | the three pure functions below | Cline (WO-01 to WO-03) |
 | `src/js/engine/site-analysis/land-water.js` | changed | the three runs, their legends, the menu entries | Claude (WO-04, WO-05) |
-| `docs/work-orders/v241/v241.test.mjs` | new | the tests of WO-01 to WO-03 | Claude (written, checked against a reference) |
+| `docs/work-orders/v248/v248.test.mjs` | new | the tests of WO-01 to WO-03 | Claude (written, checked against a reference) |
 
 ## 3. The grid
 

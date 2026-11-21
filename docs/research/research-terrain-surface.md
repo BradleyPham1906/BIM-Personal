@@ -1,4 +1,4 @@
-# Research: the ground and the surface, from the TerraLab / GEM-15 post (V202 part C, V241, V242)
+# Research: the ground and the surface, from the TerraLab / GEM-15 post (V202 part C, V248)
 
 Claude, 2026-11-21, for the owner, who asked: "check this post on LinkedIn where it might solve the problem of
 model reconstruction and physical model. Check if our app is missing anything, then fill in the gap, create work
@@ -30,7 +30,9 @@ The app has slope, aspect, contours, cut and fill, isovists, shadows and FEMA fl
 - runoff: where water runs and where it gathers.
 
 Following the owner's decisions (part 11), the datums and the GEM-15 surface model became V202's part C, read
-through geotiff.js. The shape of the ground (V241) and water on the ground (V242) follow later. Each has Cline tasks
+through geotiff.js. The shape of the ground follows later as V248. Water on the ground is left to V247, another session's physical-world
+track (PR #117), which specifies the same filling, D8 and accumulation; this note's catchment of a point is offered
+to it as an addition. Each has Cline tasks
 that are pure functions, tested and checked against a reference here.
 
 ## 2. The question and the hypotheses
@@ -142,9 +144,9 @@ OGC GeoTIFF 1.1 (19-008r4), GDAL's gdaldem page, Esri's articles and the datum p
 
 | Claim | Verdict | What changed |
 |---|---|---|
-| Zevenbergen and Thorne's D, E, F, G, H and their curvatures | **Partly** | The formulas are right (RichDEM `terrain_attributes.hpp` lines 216 to 220, spatialEco). They are ZT's original signs: positive profile curvature is upwardly convex. ArcGIS and RichDEM flip both signs and multiply by 100 (Esri technical article 000005086). V241 keeps ZT's signs in the functions; the board states the meaning in words ("water speeds up / slows"), not by sign, and shows 1/100 m. ZT's axes have y to the north; the app's rows run south, so the window's `z2` is the row above (north), which keeps ZT's signs (checked in the test with `z = ... + 0.02 x z`). |
+| Zevenbergen and Thorne's D, E, F, G, H and their curvatures | **Partly** | The formulas are right (RichDEM `terrain_attributes.hpp` lines 216 to 220, spatialEco). They are ZT's original signs: positive profile curvature is upwardly convex. ArcGIS and RichDEM flip both signs and multiply by 100 (Esri technical article 000005086). V248 keeps ZT's signs in the functions; the board states the meaning in words ("water speeds up / slows"), not by sign, and shows 1/100 m. ZT's axes have y to the north; the app's rows run south, so the window's `z2` is the row above (north), which keeps ZT's signs (checked in the test with `z = ... + 0.02 x z`). |
 | Riley's TRI and GDAL | **Wrong on GDAL** | Since GDAL 3.3, Riley (the root of the summed squares) is gdaldem's default for land; Wilson (mean absolute difference) is the option, for bathymetry. The formula itself is confirmed. |
-| Priority-flood with epsilon | **Partly** | The paper seeds edge cells only and drains no-data through a "pit" queue. Seeding the cells beside no-data is RichDEM's choice, and V242 makes it too (so missing ground drains, as the paper's result does). The paper prefers `nextafter` to a fixed epsilon. V242 uses a fixed `1e-4 m` in float64 (heights under 10 km keep about 1e-12 m of resolution), and the toast warns if a filled hollow rises more than 0.5 m from epsilon alone. |
+| Priority-flood with epsilon | **Partly** | The paper seeds edge cells only and drains no-data through a "pit" queue. Seeding the cells beside no-data is RichDEM's choice. The paper prefers `nextafter` to a fixed epsilon. Both points are passed to V247 (PR #117), which now owns the filling. |
 | D8, diagonals over the square root of 2 | **Confirmed as practice** | Cited to Jenson and Domingue (1988), ArcGIS's Flow Direction and TauDEM `d8.cpp`. O'Callaghan and Mark (1984), who introduced D8, were not read (paywalled). |
 | TIFF's floating-point predictor | **Confirmed** | libtiff `tif_predict.c` (`fpAcc`, `fpDiff`): byte planes most significant first, differences with a stride of SamplesPerPixel, once per row of the tile. |
 | GeoTIFF PixelIsPoint | **Confirmed** | OGC 19-008r4, 7.2.1 and B.6: the tie point is the first node's centre. It matches the 2 cm found here. |
@@ -190,7 +192,7 @@ and option A for the rest (part 11).
 | Read COGs | Our own reader (as first planned): tiled, classic and BigTIFF, DEFLATE by the browser's `DecompressionStream('deflate')`, predictors 1 and 3; about 150 lines of ES5; no library | geotiff.js (MIT, mature, every compression); a library under the 2026-11-13 rule: vendored, pinned, its own research and approval | GDAL in WebAssembly: tens of MB, far beyond the need |
 | Building heights where OSM and the city give none | GEM-15's p95 less the levelled terrain, after OSM height and the city, before levels and the default; marked *from GEM-15 (15 m)* | Leave the 6 m default | Meta's canopy maps for trees: no CORS |
 | Datums | Every height source records its datum; the project picks one (NAVD88 in the US, EGM96 elsewhere by default); heights are moved on fetch | Ignore (today) | Ask the user each time |
-| Hydrology | D8 on the filled grid (V242) | D-infinity (Tarboton 1997): smoother, more code; later if the owner asks | A full rainfall-runoff model (SWMM): outside the app |
+| Hydrology | D8 on the filled grid (now V247, PR #117) | D-infinity (Tarboton 1997): smoother, more code; later if the owner asks | A full rainfall-runoff model (SWMM): outside the app |
 
 ## 6. The experiments
 
@@ -269,8 +271,9 @@ All are in `experiments/terrain-surface/`, with the raw numbers in `results-2026
 - **D3. The project's datum:** by the location of the address the user enters: NAVD88 (GEOID18) inside CONUS, EGM96
   elsewhere.
 - **D4. Order:** "later, or in V202 if it fits": the datums and the surface model fit V202 ("measured heights,
-  ground") and are its part C (WO-21 to WO-30). Curvature, ruggedness and the viewshed (V241), and water on the
-  ground (V242), follow later.
+  ground") and are its part C (WO-21 to WO-30). Curvature, ruggedness and the viewshed follow later as V248 (V239 to V247 were taken the same day by another
+  session's physical-world track). Water on the ground is that track's V247 (PR #117): the same filling, D8 and
+  accumulation, so this note's water phase was withdrawn; its catchment of a point is offered to V247 as an addition.
 
 ## 12. References
 

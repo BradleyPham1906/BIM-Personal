@@ -1,5 +1,5 @@
 
-  /* ===== __acad3dV241: the shape of the ground (docs/work-orders/v241/SPEC.md) =====
+  /* ===== __acad3dV248: the shape of the ground (docs/work-orders/v248/SPEC.md) =====
      On the analyses' ground grid {nx, nz, cell, H, ok}: plan and profile curvature (Zevenbergen and Thorne 1987),
      the terrain ruggedness index (Riley et al. 1999), and a viewshed by sight lines over the ground. */
   /* WO-01: plan and profile curvature (1/m) at every cell, as {plan, profile} Float64Arrays; 0 on a flat cell,
