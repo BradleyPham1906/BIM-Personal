@@ -9,11 +9,11 @@ The owner's decisions (2026-11-14): for every phase below, all as its research r
 overrule any there). V177's D1 to D4 and That Open's four were answered 2026-11-13. The phases are numbered in one
 sequence, 175c to 238 (228 to 232 are algorithmic design, the owner's thirteen decisions, 2026-11-15; 233 to 238 program to plan, the owner's ten decisions, 2026-11-16), in `docs/dev/PIPELINE.md`; there are no "later" rows.
 
-## Ready for Cline, in order (250 tasks)
+## Ready for Cline, in order (247 tasks)
 
 | Phase | What | Tasks | Where | Tests |
 |---|---|---|---|---|
-| v202 | Site context C3: measured heights, ground and bridges; part B, the Site and Map interface (the owner, 2026-11-21: next) | WO-01 to WO-05, WO-12 to WO-14 (8), any order | `v202/TASKS.md` | `v202/v202.test.mjs`, `v202/v202-ui.test.mjs` |
+| v202 | Site context C3: measured heights, ground and bridges; part B, the Site and Map interface; part C, heights on one datum and the GEM-15 surface model (the owner, 2026-11-21: next) | WO-01 to WO-05, WO-12 to WO-14, WO-22 to WO-26 (13), any order | `v202/TASKS.md` | `v202/v202.test.mjs`, `v202-ui.test.mjs`, `v202-datum.test.mjs`, `v202-surface.test.mjs` |
 | v178 | Presentation P3, the report (Site Analysis and DA), styles, export | WO-01 to WO-12 (12) | `v178/TASKS.md` | `v178/v178.test.mjs` |
 | v181 | Interiors I3, circulation and escape routes | WO-01 to WO-05 (5) | `v181/TASKS.md` | `v181/v181.test.mjs` |
 | v182 | Interiors I4, sightlines and views | WO-01 to WO-05 (5) | `v182/TASKS.md` | `v182/v182.test.mjs` |
@@ -58,8 +58,6 @@ sequence, 175c to 238 (228 to 232 are algorithmic design, the owner's thirteen d
 | v234 | The programme graph engine: bubble diagram, matrix, links from parameters | WO-01 to WO-07 (7) | `v234/TASKS.md` | `v234/v234.test.mjs` |
 | v235 | Graph analysis and user paths | WO-01 to WO-09 (9) | `v235/TASKS.md` | `v235/v235.test.mjs` |
 | v236 | The layout view: bay grid, corridors from paths, scorecard | WO-01 to WO-08 (8) | `v236/TASKS.md` | `v236/v236.test.mjs` |
-| v239 | Heights on one datum; a reader for cloud-optimised GeoTIFFs (GEM-15, PROJ's geoids) | WO-01 to WO-05 (5) | `v239/TASKS.md` | `v239/v239.test.mjs` |
-| v240 | The surface model: GEM-15 levelled, building and tree heights from it | WO-01 to WO-03 (3) | `v240/TASKS.md` | `v240/v240.test.mjs` |
 | v241 | The shape of the ground: curvature, ruggedness, a viewshed | WO-01 to WO-03 (3) | `v241/TASKS.md` | `v241/v241.test.mjs` |
 | v242 | Water on the ground: hollows filled, flow, catchments | WO-01 to WO-04 (4) | `v242/TASKS.md` | `v242/v242.test.mjs` |
 

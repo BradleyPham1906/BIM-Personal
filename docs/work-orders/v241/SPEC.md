@@ -1,8 +1,7 @@
 # V241 spec: the shape of the ground, curvature, ruggedness and a viewshed
 
-Research: `docs/research/research-terrain-surface.md` parts 4.5 and 7. **Status: written 2026-11-21. No owner's
-decision needed beyond D4 (the order).** Needs no new data: it runs on the ground the app already has (and on
-3DEP's from V202, GEM-15's surface from V240). Implementation target: local `main`. Written by Claude.
+Research: `docs/research/research-terrain-surface.md` parts 4.5 and 7. **Status: written 2026-11-21. The owner's D4 (2026-11-21): after V202.** Needs no new data: it runs on the ground the app already has (and on
+3DEP's from V202, GEM-15's surface from V202 part C). Implementation target: local `main`. Written by Claude.
 
 ## 1. What it does for the user
 
@@ -13,7 +12,7 @@ The Site bar's *Site analysis* menu (V202 part B) gains three entries beside Con
   for a coarse national grid (S, to be read in the paper at WO-04). They are shown only if they hold at the app's
   2 to 25 m cells; otherwise the board shows the values with quantile breaks.
 - **Viewshed:** click a point. The ground it can see from 1.6 m (an editable eye height, and a target height) within
-  a radius is tinted, and the rest is greyed. On the surface model (V240) buildings and trees hide what lies behind
+  a radius is tinted, and the rest is greyed. On the surface model (V202 part C) buildings and trees hide what lies behind
   them. On the bare terrain, only the ground does.
 
 Each has its legend, its method and its source in the board, as the existing analyses do.

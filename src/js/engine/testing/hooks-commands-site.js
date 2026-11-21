@@ -105,7 +105,7 @@ import {
   BIM_3DEP_URL, BIM_NBI_URL, bimCityHeightPick, bimCityRecs, bimDep3ElevAt, bimDep3Url, bimNbiPick, bimTiffF32
 } from '../map/measured-context.js';
 import { bimCompass, bimCtxCards, bimPlaceFacts } from '../map/site-ui.js';
-import { bimCogTiles, bimDatumShift, bimGeoidAt, bimTiffIfd, bimTiffUnpredict } from '../map/cog-datum.js';
+import { bimDatumShift, bimGeoidAt } from '../map/cog-datum.js';
 import { bimFootprintHeight, bimGemCell, bimSurfaceOffset } from '../map/surface-model.js';
 import {
   BIM_OVERPASS_MIRRORS, bimCtxAlong, bimCtxCreditHtml, bimCtxFetch, bimCtxRemove, bimCtxWidth, bimRoadUse,
@@ -278,7 +278,7 @@ import { BIM_CMD_MAP, BIM_SHEET_CMDS, BIM_START_CMDS } from '../commands/command
   window.__acad3dV134='datakinds,arcgisquery,wfsgetfeature,geojsonfile,presets,areafilter,maxfeatures,featuresoutsideundo,'+
     'featuressaved,planoverlay,notonpaper,clicktoread,pickorder,parceltoproperty,failuresnamed,datacredit,datapanel,datacommand';
   /* __acad3dV133: site context */
-  window.__a3dGroundData=function(){return {ifd:bimTiffIfd,tiles:bimCogTiles,unpredict:bimTiffUnpredict,geoid:bimGeoidAt,datum:bimDatumShift,   /* __acad3dV239 to V242 */
+  window.__a3dGroundData=function(){return {geoid:bimGeoidAt,datum:bimDatumShift,   /* __acad3dV202c, V241, V242 */
     gemCell:bimGemCell,offset:bimSurfaceOffset,footprint:bimFootprintHeight,curvature:bimCurvature,tri:bimTri,viewshed:bimViewshed,
     fill:bimFill,d8:bimD8,flowAcc:bimFlowAcc,catchment:bimCatchment};};
   window.__a3dSiteUi=function(){return {cards:bimCtxCards,place:bimPlaceFacts,compass:bimCompass};};   /* __acad3dV202u */

@@ -261,3 +261,125 @@ and phone sizes. Part A's WO-01 to WO-10 are independent of part B and can be bu
 - The rest of the app's interface: after this workspace, if the owner likes it.
 - Photos in the place card: none are free to show without a key (the owner's standing choice).
 - Classify and Detect change (Google's imagery tools): there is no free imagery to run them on.
+
+---
+
+# Part C: heights on one datum, and the surface model (GEM-15) (added 2026-11-21)
+
+Research: `docs/research/research-terrain-surface.md` (experiments in `docs/research/experiments/terrain-surface/`).
+**The owner's decisions, 2026-11-21:**
+- **D1:** read cloud-optimised GeoTIFFs with geotiff.js. Version 3.0.5, MIT, is vendored in `runtime/geotiff/3.0.5/`,
+  pinned in `MANIFEST.json`. The research is in the note's part 4.8; this answer is the owner's approval of the library.
+- **D2:** GEM-15's heights rank as the research recommends.
+- **D3:** the project's datum follows the project's location: NAVD88 inside CONUS, EGM96 elsewhere.
+- **D4:** this part belongs to V202 ("measured heights, ground"). The analyses on the ground follow later, as V241
+  and V242.
+
+These replace the separate V239 and V240 written earlier the same day.
+
+## C1. What changes for the user
+
+- **One datum.** Every height the app fetches says which datum it is on, and is moved onto the project's. Today 3DEP
+  (NAVD88), the city's base heights (NAVD88), Terrarium (NAVD88 in the US, EGM96 elsewhere) and GEM-15 (EGM96) are
+  mixed as if they were one. At 30th Street an EGM96 height reads 1.295 m higher than NAVD88 for the same point.
+- **Project > Location** shows *Heights above: NAVD88 (GEOID18)*, set from the address's place (D3), and so does the
+  toast when a source is moved: *GEM-15 moved from EGM96 to NAVD88 (-1.30 m here)*. The geoids are read from PROJ's
+  public grids (`cdn.proj.org`, CORS open). Credit: "Geoid grids: NOAA NGS (GEOID18), NGA (EGM96, EGM2008), via PROJ".
+- **The surface model.** Site context gains *Surface (GEM-15)*: Google's 15 m surface model (mean, p5, p50, p95,
+  spread) and terrain model. Credit: "GEM-15: This dataset is produced by Google (CC BY 4.0)".
+- **Levelled.** In the US, GEM-15's terrain is first levelled to 3DEP by the median offset over open cells: -3.38 m
+  at 30th Street after the datum shift. The toast reports the offset and the number of cells. Elsewhere the toast
+  says *GEM-15 not levelled*.
+- **Heights (D2).** The order is: the city's measured height, OSM `height`, **GEM-15**, OSM levels, the default.
+  GEM-15's height is the median p95 over the footprint, less the levelled ground. Properties says *34.0 m, from
+  GEM-15 (15 m), 9 cells, spread 0.2 m*. A building whose OSM levels give over 15 storeys keeps its levels, because
+  GEM-15 misses tall buildings (Google's warning, and two towers here).
+- **Trees** with no tagged height take p95 less the ground, where the cell's spread is over 1 m.
+- **Analyze** gains a *Surface and canopy* layer: the height above the ground, and the spread (*rough: trees, edges* /
+  *smooth: roofs, paving*).
+
+## C2. The pieces
+
+| File | New or changed | What it holds | Built by |
+|---|---|---|---|
+| `runtime/geotiff/3.0.5/` | new (done) | geotiff.js's browser build unchanged, its licence, its bundled packages' licences | Claude |
+| `src/js/engine/map/cog-datum.js` | new (scaffolded) | `bimGeoidAt`, `bimDatumShift`; then the adapter `bimCogRead` and `bimGeoidFetch` | Cline (WO-22, WO-23), Claude (WO-27, WO-28) |
+| `src/js/engine/map/surface-model.js` | new (scaffolded) | `bimGemCell`, `bimSurfaceOffset`, `bimFootprintHeight`; then `bimGemFetch` | Cline (WO-24 to WO-26), Claude (WO-29) |
+| `src/js/engine/standards/registry.js` | changed | `geo.datums`: id, name, EPSG, grid file, where it holds, credit | Claude (WO-27) |
+| `src/js/engine/map/site-context.js`, `measured-context.js`, `surroundings-3d.js` | changed | datums on every source; the levelling; the height order | Claude (WO-28, WO-29) |
+| `docs/work-orders/v202/v202-datum.test.mjs`, `v202-surface.test.mjs` | new | the tests of WO-22 to WO-26 | Claude (written, checked against a reference) |
+
+## C3. Functions
+
+### `bimGeoidAt(g, lon, lat)` - WO-22, `cog-datum.js`
+- **Takes:** a geoid grid `{w, h, x0, y0, dx, dy, data}`.
+  - `x0, y0` is the first node, in degrees. For a PixelIsPoint file this is the tie point itself, measured and
+    confirmed in OGC GeoTIFF 1.1.
+  - `dx > 0`, `dy < 0`: the rows run from the north.
+- **Steps:**
+  1. Bring `lon` into `[x0, x0 + 360)` by adding or subtracting 360.
+  2. `fx = (lon - x0) / dx`, `fy = (lat - y0) / dy`, `i = floor(fx)`, `j = floor(fy)`.
+  3. Interpolate bilinearly between nodes `(i, j)`, `(i+1, j)`, `(i, j+1)`, `(i+1, j+1)`. On the last column or row
+     (`tx` or `ty` 0) the same node stands in for the next.
+- **Returns NaN** when:
+  - `g` is missing, or `lon` or `lat` is not finite;
+  - `(i, j)` is off the grid, or a needed node is past it;
+  - any of the four nodes is NaN.
+
+### `bimDatumShift(h, from, to, N)` - WO-23, `cog-datum.js`
+- `h + N[from] - N[to]`, with `ellipsoid` taken as 0.
+- NaN when `h` is not finite, `N` is missing, or either datum's N is not a finite number.
+- **Example:** at 30th Street `bimDatumShift(10, 'egm96', 'navd88', {egm96: -34.274, navd88: -32.979})` is 8.705.
+
+### `bimGemCell(lon, lat)` - WO-24, `surface-model.js`
+- `x = floor(lon)`, `y = floor(lat)`, `gx = floor(lon / 10) * 10`, `gy = floor(lat / 10) * 10`.
+- `group` is `s(gy) + '_' + s(gx)`, where `s(v)` is `'m' + (-v)` for a negative `v`, else `'p' + v`.
+- `cell` is `'w' + c(x) + 's' + c(y)`, where `c(v)` is `'m' + (-v)` for a negative `v`, else `'' + v`.
+- `dsm` and `dtm` are `'https://storage.googleapis.com/climate-and-sustainability/gem-15/' + group + '/' + cell + '/dsm/zall/mosaic.tif'`
+  (and `/dtm/`).
+- `null` when either input is not finite, `lat < -61` or `lat >= 84`, or `lon` is outside `[-180, 180)`.
+- **Checked** against GEM-15's catalog: `p30_m80/wm76s39`, `p50_m10/wm10s51`, `p50_p0/w0s50`, `m40_p170/w172sm35`,
+  `m10_m80/wm71sm1`.
+
+### `bimSurfaceOffset(pairs)` - WO-25, `surface-model.js`
+- **Takes:** `[{ref, dtm, dsm, std}]`: the local ground, and GEM-15's terrain, surface and spread at the same points,
+  all on the project's datum.
+- Keeps only pairs with four finite numbers, `|dsm - dtm| <= 1` and `std <= 1`: open ground, with nothing standing
+  on it.
+- **Returns:** `{offset, n, mad}`.
+  - `offset` is the median of `ref - dtm`. `mad` is the median of `|d - offset|`. Both are rounded to 0.01.
+  - The median of an even count is the mean of the middle two.
+  - `null` when fewer than five pairs are kept.
+
+### `bimFootprintHeight(cells, ground)` - WO-26, `surface-model.js`
+- Keeps the cells with a finite `p95`.
+- `h` is their median `p95` less `ground`. `spread` is the median of `|p95 - median|`. Both are rounded to 0.1.
+- **Returns:** `{h, n, spread, from:'gem15'}`; `null` when `ground` is not finite, fewer than three cells are kept,
+  or `h < 2`.
+
+### Claude's work
+- **WO-27:** audit WO-22 to WO-26, add the registry's `geo.datums`, and move the tests into `tests/unit/`.
+- **WO-28:** the datum code.
+  - `bimGeotiffLoad()`: inserts `runtime/geotiff/3.0.5/geotiff.min.js` once, when first needed, as the rendered
+    view loads three.js.
+  - `bimCogRead(url, window, bands)`: geotiff.js's `fromUrl` and `readRasters`, with a 20 s timeout. It resolves
+    `{ok:false}` on failure.
+  - `bimGeoidFetch(id, area)`: the grid's nodes over the area plus one node all round, cached for the session.
+  - The datum on each source (D3), and the Project row.
+  - GEOID18 holds only in CONUS, from NAD83(2011) heights; elsewhere the project falls back to EGM96.
+- **WO-29:** the surface model.
+  - `bimGemFetch(area)`: each cell's DSM and DTM window, in its UTM zone, moved to the project's datum.
+  - The levelling.
+  - The height order in `surroundings-3d.js`, trees, Properties rows, the toast and the credit.
+- **WO-30:** the *Surface and canopy* layer, and one browser check at 30th Street. The check covers:
+  - the station's height;
+  - the levelling offset;
+  - a GEM-15 and a 3DEP height of the same open ground agreeing after the shift.
+
+## C4. Not in this part
+
+- A reader of our own: geotiff.js replaces it (D1). V202's WO-01 (`bimTiffF32`, 3DEP's uncompressed export) stays,
+  so the ground can load without the library.
+- Copernicus GLO-30 and Meta/WRI's canopy maps: their buckets send no CORS header (measured).
+- NAD83 to WGS84, and tidal datums.
+- Roof shapes from the surface model: 15 m is too coarse (V191 does them from LiDAR).

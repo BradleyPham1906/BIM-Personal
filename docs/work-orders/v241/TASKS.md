@@ -3,7 +3,7 @@
 Spec: `SPEC.md` in this folder. Implementation target: local `main`. One task at a time, top to bottom.
 `[ ]` open, `[x]` done (its required checks pass), `[skipped]` left for Claude.
 
-**Status: ready (written 2026-11-21).** The shape of the ground: curvature, ruggedness and a viewshed. Needs no new data; only D4 (the order) is open. WO-00 is built;
+**Status: ready (written 2026-11-21).** The shape of the ground: curvature, ruggedness and a viewshed. Needs no new data; the owner placed it after V202 (D4, 2026-11-21). WO-00 is built;
 the Cline tasks are independent pure functions, in any order.
 
 Every task: change only the file named, only inside the function named. Never touch the

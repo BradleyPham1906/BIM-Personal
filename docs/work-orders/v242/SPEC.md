@@ -1,7 +1,6 @@
 # V242 spec: water on the ground, where it runs and where it gathers
 
-Research: `docs/research/research-terrain-surface.md` parts 4.5 and 7. **Status: written 2026-11-21. No owner's
-decision needed beyond D4 (the order).** Runs on the ground the app already has. Implementation target: local
+Research: `docs/research/research-terrain-surface.md` parts 4.5 and 7. **Status: written 2026-11-21. The owner's D4 (2026-11-21): after V202.** Runs on the ground the app already has. Implementation target: local
 `main`. Written by Claude.
 
 ## 1. What it does for the user

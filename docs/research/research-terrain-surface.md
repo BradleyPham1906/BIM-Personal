@@ -1,4 +1,4 @@
-# Research: the ground and the surface, from the TerraLab / GEM-15 post (V239 to V242)
+# Research: the ground and the surface, from the TerraLab / GEM-15 post (V202 part C, V241, V242)
 
 Claude, 2026-11-21, for the owner, who asked: "check this post on LinkedIn where it might solve the problem of
 model reconstruction and physical model. Check if our app is missing anything, then fill in the gap, create work
@@ -29,12 +29,9 @@ The app has slope, aspect, contours, cut and fill, isovists, shadows and FEMA fl
 - a viewshed over the ground;
 - runoff: where water runs and where it gathers.
 
-The recommendation is four phases, V239 to V242, each with Cline tasks that are pure functions, tested and checked
-against a reference here:
-1. V239: one datum, with a COG reader.
-2. V240: the GEM-15 surface model and heights from it.
-3. V241: the shape of the ground.
-4. V242: water on the ground.
+Following the owner's decisions (part 11), the datums and the GEM-15 surface model became V202's part C, read
+through geotiff.js. The shape of the ground (V241) and water on the ground (V242) follow later. Each has Cline tasks
+that are pure functions, tested and checked against a reference here.
 
 ## 2. The question and the hypotheses
 
@@ -92,7 +89,7 @@ reach for free without a key, and what does the app lack?
 | Copernicus GLO-30 (AWS) | 30 m, EGM2008, a DSM (X-band radar) | **no CORS** | named only |
 | Meta/WRI canopy height (AWS) | 1 m, height above ground | **no CORS** | named only |
 | USGS 3DEP lidar EPT (AWS) | points, NAVD88 | yes (catalog CORS `*`) | V190's later slices; Philadelphia's set not found in the EPT catalog (open) |
-| PROJ CDN geoid grids | EGM96 15', EGM2008 2.5', GEOID18 1' | yes (CORS `*`, ranges) | V239 |
+| PROJ CDN geoid grids | EGM96 15', EGM2008 2.5', GEOID18 1' | yes (CORS `*`, ranges) | V202 part C |
 | NGS geoid API | GEOID18 at a point | **no CORS** | checked once here |
 | IGN LiDAR HD (France) | 0.5 m | not tested (outside the owner's sites) | open |
 
@@ -106,7 +103,7 @@ reach for free without a key, and what does the app lack?
 - At 30th Street the geoid heights are -34.274 (EGM96), -33.843 (EGM2008) and -32.979 (GEOID18). So an EGM96 height
   reads 1.295 m higher than NAVD88 for the same point, and an EGM2008 height 0.864 m higher.
 - The WGS84 and NAD83 ellipsoids differ by about a metre horizontally and a few decimetres vertically. That is under
-  the noise of 15 m data, but it matters to a surveyor: recorded as an edge (part 7), not corrected in V239.
+  the noise of 15 m data, but it matters to a surveyor: recorded as an edge (part 7), not corrected in V202 part C.
 
 ### 4.4 Heights from the surface model (medium confidence)
 - Surface minus terrain (an nDSM) is the standard way to get a building or canopy height from elevation alone (S).
@@ -135,7 +132,7 @@ reach for free without a key, and what does the app lack?
 ### 4.6 What the post proposes that is left out (high confidence)
 - **Radio propagation and off-road vehicle physics:** not the app's work.
 - **Procedural detail below the DEM's resolution, scaled by the cell's spread:** the app draws measured ground, not
-  invented ground (the owner's "no placeholders"). The spread is shown as data instead, in V240.
+  invented ground (the owner's "no placeholders"). The spread is shown as data instead, in V202 part C.
 - **AI agents and vehicles:** out of scope.
 
 ### 4.7 The second reader (a separate research agent, 2026-11-21)
@@ -155,11 +152,42 @@ OGC GeoTIFF 1.1 (19-008r4), GDAL's gdaldem page, Esri's articles and the datum p
 
 The ZT and Riley papers themselves were not read by either reader (S). The implementations agree with each other.
 
+### 4.8 geotiff.js, the library the owner chose (2026-11-21; P unless marked)
+
+This is the research the 2026-11-13 library rule asks for. It was done after the owner chose the library (D1).
+- **What:** geotiff.js 3.0.5, the newest release (npm, published 2026-03-11; 3.1.0 is a beta). MIT, EOX IT Services.
+  It reads tiled and striped TIFF and BigTIFF, by HTTP ranges with `fromUrl` and `readRasters({window})`.
+- **Its browser build** `dist-browser/geotiff.js` is one UMD file setting `globalThis.GeoTIFF`: 550,900 bytes, or
+  199,327 gzipped. It bundles:
+  - lerc (Apache-2.0; its package ships no licence file);
+  - pako (MIT and Zlib);
+  - zstddec (MIT and BSD-3-Clause);
+  - quick-lru, parse-headers and @petamoriken/float16 (MIT);
+  - xml-utils (CC0-1.0);
+  - web-worker (Apache-2.0).
+
+  All are compatible with the repository's Apache-2.0. Their licence texts are in
+  `runtime/geotiff/3.0.5/THIRD-PARTY.txt`.
+- **Measured here**, the browser build loaded as a classic script in Node 22 (scratch script, not committed):
+  - GEM-15 at the station: DTM 13.21, DSM bands 46.24, 45.46, 46.26, 47.21 and 0.50. rasterio reads the same.
+  - GEOID18 by bilinear interpolation: -32.9789 m, against NGS's -32.979.
+  - The GEM-15 reads took 972 ms and the GEOID18 read 459 ms.
+  - The raster-type key reads 2 (PixelIsPoint), so the tie point is the first node.
+- **Vendored:** `runtime/geotiff/3.0.5/geotiff.min.js` is the browser build unchanged, pinned by size and SHA-256 in
+  `runtime/MANIFEST.json`. The source tarball is `sha512-OWcL9S9+...`. It is loaded only when a fetch needs a GeoTIFF;
+  the app opens, edits and saves without it.
+- **Against our own reader:** geotiff.js covers every compression (LZW, ZSTD, LERC, JPEG), not only GEM-15's DEFLATE.
+  It is maintained, and needs no task. The price is 551 KB loaded on demand, against about 150 lines.
+- **V202's WO-01** (`bimTiffF32`, 3DEP's uncompressed export) stays, so the ground loads without the library.
+
 ## 5. The alternatives compared
+
+The table is as it stood before the owner's answers. The owner chose option B for reading COGs (geotiff.js, D1),
+and option A for the rest (part 11).
 
 | Need | Option A (recommended) | Option B | Option C |
 |---|---|---|---|
-| Read COGs | Our own reader (WO-01 to WO-03 of V239): tiled, classic and BigTIFF, DEFLATE by the browser's `DecompressionStream('deflate')`, predictors 1 and 3; about 150 lines of ES5; no library | geotiff.js (MIT, mature, every compression); a library under the 2026-11-13 rule: vendored, pinned, its own research and approval | GDAL in WebAssembly: tens of MB, far beyond the need |
+| Read COGs | Our own reader (as first planned): tiled, classic and BigTIFF, DEFLATE by the browser's `DecompressionStream('deflate')`, predictors 1 and 3; about 150 lines of ES5; no library | geotiff.js (MIT, mature, every compression); a library under the 2026-11-13 rule: vendored, pinned, its own research and approval | GDAL in WebAssembly: tens of MB, far beyond the need |
 | Building heights where OSM and the city give none | GEM-15's p95 less the levelled terrain, after OSM height and the city, before levels and the default; marked *from GEM-15 (15 m)* | Leave the 6 m default | Meta's canopy maps for trees: no CORS |
 | Datums | Every height source records its datum; the project picks one (NAVD88 in the US, EGM96 elsewhere by default); heights are moved on fetch | Ignore (today) | Ask the user each time |
 | Hydrology | D8 on the filled grid (V242) | D-infinity (Tarboton 1997): smoother, more code; later if the owner asks | A full rainfall-runoff model (SWMM): outside the app |
@@ -183,7 +211,7 @@ All are in `experiments/terrain-surface/`, with the raw numbers in `results-2026
    | FMC Tower | 0.3 m | |
 
    The two towers' points were taken from memory, not surveyed, so their misses are U. They agree with Google's
-   warning about tall buildings, and V240's browser check measures them properly.
+   warning about tall buildings, and V202's WO-30 browser check measures them properly.
 4. **The reference reader:**
    - GEOID18 at the site: -32.9789 m, against NGS's -32.979.
    - GEM-15 DTM 13.21 m; DSM bands 46.24, 45.46, 46.26, 47.21 and 0.50. rasterio reads the same.
@@ -191,7 +219,7 @@ All are in `experiments/terrain-surface/`, with the raw numbers in `results-2026
 
 ## 7. Edges
 
-- **A site across two GEM-15 cells, or two UTM zones:** the fetch reads each cell's tiles in its own zone. V240's WO-04 handles it.
+- **A site across two GEM-15 cells, or two UTM zones:** the fetch reads each cell's tiles in its own zone. V202's WO-29 handles it.
 - **NaN in GEM-15** (water, masked): the cell is skipped. A footprint with under three cells gets no height.
 - **Longitudes in the geoid grids:** they run 230 to 300 (GEOID18) or -180 to 180 (EGM96). WO-04 takes longitudes round by 360.
 - **Flat ground in curvature:** where the gradient is under 1e-6, the curvature is 0, not a division by zero.
@@ -219,8 +247,8 @@ All are in `experiments/terrain-surface/`, with the raw numbers in `results-2026
 ## 9. Risks and threats to validity
 
 - GEM-15 is experimental ("under review"). Its files or their addresses may change. The STAC catalog is the way to
-  find them, and V240 reads names from the cell rule with the catalog as a check.
-- One site was measured. The bias at 30th Street says nothing about another city's, so V240 levels against 3DEP
+  find them, and V202 part C reads names from the cell rule with the catalog as a check.
+- One site was measured. The bias at 30th Street says nothing about another city's, so V202 part C levels against 3DEP
   where 3DEP exists, and reports *not levelled* elsewhere.
 - The tower points were from memory (U). The station point is on the building, but the building's true height was not
   read from a primary source.
@@ -232,15 +260,17 @@ All are in `experiments/terrain-surface/`, with the raw numbers in `results-2026
 - IGN LiDAR HD: untested (France).
 - geotiff.js's size and licence, if the owner prefers option B.
 
-## 11. The owner's decisions (asked 2026-11-21)
+## 11. The owner's decisions (asked and answered 2026-11-21)
 
-- **D1. The COG reader:** our own (recommended), or geotiff.js (a new library, its own research and approval).
-- **D2. GEM-15 heights:** use them as the third source, after the city and OSM height and before levels and the default,
-  marked *from GEM-15 (15 m)*, and never for a building whose OSM levels say it is over 15 storeys (recommended);
-  or show them only in Properties, without changing the model.
-- **D3. The project's datum:** NAVD88 in the US and EGM96 elsewhere, chosen by the site's place (recommended), or one
-  the user picks in Project.
-- **D4. Order:** V239 to V242 after V202's part B (recommended), or V241 and V242 first (they need no new data).
+- **D1. The COG reader:** geotiff.js (the owner's choice, against the recommendation of our own; it is also the
+  owner's approval of the library). Researched in part 4.8, vendored in `runtime/geotiff/3.0.5/`.
+- **D2. GEM-15 heights:** "you did the research": as recommended. The order is the city, OSM height, GEM-15, OSM
+  levels, the default. Never for a building whose levels give over 15 storeys.
+- **D3. The project's datum:** by the location of the address the user enters: NAVD88 (GEOID18) inside CONUS, EGM96
+  elsewhere.
+- **D4. Order:** "later, or in V202 if it fits": the datums and the surface model fit V202 ("measured heights,
+  ground") and are its part C (WO-21 to WO-30). Curvature, ruggedness and the viewshed (V241), and water on the
+  ground (V242), follow later.
 
 ## 12. References
 
