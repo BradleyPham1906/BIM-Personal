@@ -286,3 +286,15 @@ function bimPcPlyPoints(bytes, h, max, origin) {
   }
   return { n: n, xyz: xyz, cls: null, rgb: rgb };
 }
+
+var BIM_PC_CLASS = {
+  0: 'Never classified', 1: 'Unclassified', 2: 'Ground', 3: 'Low vegetation',
+  4: 'Medium vegetation', 5: 'High vegetation', 6: 'Building', 7: 'Low point',
+  9: 'Water', 10: 'Rail', 11: 'Road surface', 13: 'Wire guard',
+  14: 'Wire conductor', 15: 'Transmission tower', 17: 'Bridge deck', 18: 'High noise'
+};
+
+function bimPcClassName(c) {
+  var n = BIM_PC_CLASS[c];
+  return n !== undefined ? n : 'Class ' + c;
+}

@@ -100,7 +100,7 @@ after each one. Scores are from `../ROUTING.md` (files, logic, understanding, ju
 
 ---
 
-## [ ] WO-09 [Cline] `bimPcClassName(c)`
+## [x] WO-09 [Cline] `bimPcClassName(c)`
 
 - **It must:** SPEC 4 WO-09, with `BIM_PC_CLASS` just above the function.
 - **May use:** `BIM_PC_CLASS` (this task).
