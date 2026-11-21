@@ -10133,6 +10133,47 @@ function bimPicPlane(wPx, hPx, widthM) {
     a3dToast(on?'Slope arrows on '+T[0].name+(T.length>1?' and '+(T.length-1)+' more':'')+(bimCameraIsPlan()?'':' -- shown in plan'):'Slope arrows off');
     return on;
   }
+
+  /* ===== __acad3dV241: the shape of the ground (docs/work-orders/v241/SPEC.md) =====
+     On the analyses' ground grid {nx, nz, cell, H, ok}: plan and profile curvature (Zevenbergen and Thorne 1987),
+     the terrain ruggedness index (Riley et al. 1999), and a viewshed by sight lines over the ground. */
+  /* WO-01: plan and profile curvature (1/m) at every cell, as {plan, profile} Float64Arrays; 0 on a flat cell,
+     NaN on the edge or beside missing ground */
+  function bimCurvature(G){
+    return null;
+  }
+  /* WO-02: the terrain ruggedness index at every cell, sqrt of the summed squared differences to its eight
+     neighbours, as a Float64Array; NaN without all eight */
+  function bimTri(G){
+    return null;
+  }
+  /* WO-03: what can be seen from cell (oi, oj) with the eye eyeH above the ground, targets tgtH tall, within maxR
+     metres, as a Uint8Array: 1 seen, 0 hidden, 255 out of reach or without ground */
+  function bimViewshed(G,oi,oj,eyeH,tgtH,maxR){
+    return null;
+  }
+
+  /* ===== __acad3dV242: water on the ground (docs/work-orders/v242/SPEC.md) =====
+     On the analyses' ground grid {nx, nz, cell, H, ok}: hollows filled by priority-flood (Barnes, Lehman and
+     Mulla 2014), D8 flow directions (O'Callaghan and Mark 1984), flow accumulation, and a cell's catchment. */
+  /* WO-01: the ground with its hollows filled to their spill heights, each filled cell at least eps above the
+     one it drains to, as a Float64Array; NaN where there is no ground */
+  function bimFill(G,eps){
+    return null;
+  }
+  /* WO-02: each cell's steepest way down, 0 E, 1 SE, 2 S, 3 SW, 4 W, 5 NW, 6 N, 7 NE (rows run south), as an
+     Int8Array; -1 at a pit, a flat or missing ground */
+  function bimD8(G){
+    return null;
+  }
+  /* WO-03: how many cells drain through each cell, itself included, as a Float64Array; NaN without ground */
+  function bimFlowAcc(G,dir){
+    return null;
+  }
+  /* WO-04: the cells whose water reaches cell k, k included, as a Uint8Array of 1s and 0s */
+  function bimCatchment(G,dir,k){
+    return null;
+  }
   /* ================= __acad3dV146: history, by element (the Hub's H1) =================
      A commit is the model split into its elements -- each object by its id, and each of the
      project's other parts as one -- every element kept once, by the hash of its canonical JSON,
@@ -43827,6 +43868,54 @@ BIM_IFC_SAVE.model=bimIfcSaveModel;
   function bimCompass(yaw,trueNorth){
     return null;
   }
+
+  /* ===== __acad3dV239: heights on one datum (docs/work-orders/v239/SPEC.md) =====
+     A cloud-optimised GeoTIFF read by HTTP ranges (tiled, DEFLATE through the browser's DecompressionStream,
+     TIFF's floating-point predictor), and the geoid grids that put every source's heights on one datum. */
+  /* WO-01: the first IFD of a tiled TIFF, classic or BigTIFF, either byte order, as {big, le, w, h, tw, th, spp, bps,
+     fmt, comp, pred, planar, offsets, counts, nodata, scale, tie, epsg}; null for anything else or an array past the bytes */
+  function bimTiffIfd(bytes){
+    return null;
+  }
+  /* WO-02: the tiles a pixel window [x0,x1) x [y0,y1) touches, clipped to the image, row by row, as
+     {t, col, row, off, len}; [] for an empty window */
+  function bimCogTiles(ifd,x0,y0,x1,y1){
+    return [];
+  }
+  /* WO-03: a decompressed tile's bytes as a Float32Array of tw x th x spp samples: predictor 1 as little-endian
+     float32, predictor 3 (floating point) undone row by row; null for a short buffer or another predictor */
+  function bimTiffUnpredict(u8,tw,th,spp,pred){
+    return null;
+  }
+  /* WO-04: a geoid grid {w,h,x0,y0,dx,dy,data} bilinear at lon, lat (x0, y0 the first node; longitudes taken round
+     by 360 to the grid); NaN off the grid, at a NaN node, or for bad input */
+  function bimGeoidAt(g,lon,lat){
+    return NaN;
+  }
+  /* WO-05: a height moved from one datum to another, h + N[from] - N[to], N the geoid heights at the point
+     ('ellipsoid' is 0); NaN for an unknown datum or a bad height */
+  function bimDatumShift(h,from,to,N){
+    return NaN;
+  }
+
+  /* ===== __acad3dV240: the surface model (docs/work-orders/v240/SPEC.md) =====
+     GEM-15's 15 m DSM (with its 5th, 50th, 95th percentiles and spread) and DTM, levelled to the local ground,
+     and the heights of buildings and trees from them where nothing better gives one. */
+  /* WO-01: the GEM-15 cell holding lon, lat: {group, cell, dsm, dtm}, the two COGs' addresses; null outside
+     61 S to 84 N or off the globe */
+  function bimGemCell(lon,lat){
+    return null;
+  }
+  /* WO-02: GEM-15's DTM levelled to a local ground: the median of ref - dtm over open cells (|dsm - dtm| <= 1 m
+     and std <= 1 m), as {offset, n, mad}; null under five open cells */
+  function bimSurfaceOffset(pairs){
+    return null;
+  }
+  /* WO-03: a footprint's height from GEM-15: the median of its cells' p95 less the ground, as {h, n, spread,
+     from:'gem15'}; null under three cells, under 2 m, or without ground */
+  function bimFootprintHeight(cells,ground){
+    return null;
+  }
   /* ================= __acad3dV157: the surroundings in 3D =================
      A road, a railway or a runway keeps its centre line, the element; its surface is that
      element's mesh, built here: a strip of its width along the line, on the ground point by point,
@@ -71940,6 +72029,9 @@ function bimRptPlan(families) {
   window.__acad3dV134='datakinds,arcgisquery,wfsgetfeature,geojsonfile,presets,areafilter,maxfeatures,featuresoutsideundo,'+
     'featuressaved,planoverlay,notonpaper,clicktoread,pickorder,parceltoproperty,failuresnamed,datacredit,datapanel,datacommand';
   /* __acad3dV133: site context */
+  window.__a3dGroundData=function(){return {ifd:bimTiffIfd,tiles:bimCogTiles,unpredict:bimTiffUnpredict,geoid:bimGeoidAt,datum:bimDatumShift,   /* __acad3dV239 to V242 */
+    gemCell:bimGemCell,offset:bimSurfaceOffset,footprint:bimFootprintHeight,curvature:bimCurvature,tri:bimTri,viewshed:bimViewshed,
+    fill:bimFill,d8:bimD8,flowAcc:bimFlowAcc,catchment:bimCatchment};};
   window.__a3dSiteUi=function(){return {cards:bimCtxCards,place:bimPlaceFacts,compass:bimCompass};};   /* __acad3dV202u */
   window.__a3dCtxSettings=function(){return bimCtxSettings();};
   window.__a3dCtxSet=function(f,v){return bimCtxSet(f,v);};

@@ -1,0 +1,32 @@
+{
+  "date": "2026-11-21",
+  "site": "30th Street Station, Philadelphia (39.9557 N, 75.1822 W)",
+  "cors_probe": {
+    "gem15_cogs_storage.googleapis.com": "206, access-control-allow-origin *",
+    "gem15_stac_catalog": "206, access-control-allow-origin *",
+    "copernicus-dem-30m.s3.amazonaws.com": "206, no access-control-allow-origin",
+    "dataforgood-fb-data (Meta/WRI canopy v1)": "206, no access-control-allow-origin",
+    "usgs-lidar-stac (EPT catalog)": "206, access-control-allow-origin *",
+    "elevation.nationalmap.gov 3DEP ImageServer": "200, access-control-allow-origin *",
+    "geodesy.noaa.gov geoid API": "200, no access-control-allow-origin",
+    "cdn.proj.org geoid grids": "206, access-control-allow-origin *, ranges exposed",
+    "s3 elevation-tiles-prod terrarium": "206, access-control-allow-origin *"
+  },
+  "gem15_files": {
+    "cell": "p30_m80/wm76s39, bbox -76 39 -75 40, EPSG:32618, 8192 x 8192 at 15 m, tiles 512 x 512, 4 overviews",
+    "format": "BigTIFF (magic 43), DEFLATE, no predictor, float32, nodata NaN",
+    "dsm": "5 bands, pixel-interleaved: dsm, p5, p50, p95, std; 867,903,674 bytes",
+    "dtm": "1 band; 167,623,953 bytes",
+    "reference_reader_check": "station cell: dtm 13.21; dsm 46.24 p5 45.46 p50 46.26 p95 47.21 std 0.50 (rasterio: the same to 0.01 m)"
+  },
+  "gem15_vs_3dep_dtm": { "points": 73, "of": 81, "grid": "9 x 9, 120 m apart", "median_m": -2.08, "mean_m": -1.82, "stdev_m": 2.07, "min_m": -6.84, "max_m": 4.76 },
+  "datums_at_site": { "N_egm96_m": -34.274, "N_egm2008_m": -33.843, "N_geoid18_m": -32.979, "H_egm96_minus_H_navd88_m": 1.295, "H_egm2008_minus_H_navd88_m": 0.864,
+    "geoid18_from_proj_grid_reference_reader_m": -32.9789, "geoid18_ngs_api_m": -32.979 },
+  "gem15_bias_after_datum_m": -3.38,
+  "gem15_named_points": {
+    "30th Street Station": { "p95_minus_dtm_m": 34.0, "std_m": 0.5 },
+    "Cira Centre (about 132 m tall)": { "p95_minus_dtm_m": 11.8, "std_m": 0.9, "note": "point position not surveyed (U)" },
+    "FMC Tower (about 223 m tall)": { "p95_minus_dtm_m": 0.3, "std_m": 0.1, "note": "point position not surveyed (U)" },
+    "Schuylkill River Park, grass": { "p95_minus_dtm_m": 11.2, "std_m": 3.2, "note": "trees in the cell" }
+  }
+}
