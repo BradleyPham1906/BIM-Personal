@@ -58,3 +58,25 @@ test('WO-06 samples within the chord tolerance, ends exact, at least 5 points', 
   for (let i = 1; i < pts.length; i++) { const m = [(pts[i][0] + pts[i - 1][0]) / 2, (pts[i][1] + pts[i - 1][1]) / 2]; assert.ok(1 - Math.hypot(m[0], m[1]) <= 1e-3 + 1e-9, 'chord error'); }
   assert.ok(fn('bimNurbsSample')(ARC, 1e-5).length > pts.length);
 });
+// Added by the audit (2026-11-21): the cases above are all planar and all on the unit circle, which let a first pass
+// drop z and measure the chord error as 1 - |midpoint|. These hold the spec's own words.
+const LINE3 = { deg: 1, pts: [[5, 5, 5], [7, 6, 9]], knots: [0, 0, 1, 1] };
+test('WO-04 a curve in 3D keeps its z', () => {
+  assert.deepEqual(fn('bimNurbsPoint')(LINE3, 0.5), [6, 5.5, 7]);
+  const H = { deg: 2, pts: [[0, 0, 0], [1, 0, 2], [2, 0, 0]], knots: [0, 0, 0, 1, 1, 1] };
+  near(fn('bimNurbsPoint')(H, 0.5)[2], 1);
+});
+test('WO-05 the step h is used, and z is differenced', () => {
+  const T = fn('bimNurbsTangent')(LINE3, 0.5, 0.1);
+  near(T[0], 2); near(T[1], 1); near(T[2], 4);
+  const Q = { deg: 2, pts: [[0, 0, 0], [1, 2, 0], [2, 0, 0]], knots: [0, 0, 0, 1, 1, 1] };
+  near(fn('bimNurbsTangent')(Q, 0, 0.5)[1], 2, 1e-12, 'a forward difference over [0, 0.5]');
+});
+test('WO-06 the chord error is the midpoint\'s distance from the chord, for any curve', () => {
+  const pts = fn('bimNurbsSample')(LINE3, 1e-3);
+  assert.equal(pts.length, 5, 'a straight line splits only to the 0.25 limit');
+  const far = { deg: 2, pts: [[101, 100, 50], [101, 101, 50], [100, 101, 50]], w: [1, Math.SQRT1_2, 1], knots: [0, 0, 0, 1, 1, 1] };
+  const P = fn('bimNurbsSample')(far, 1e-3);
+  assert.equal(P.length, fn('bimNurbsSample')(ARC, 1e-3).length, 'the same arc moved away from the origin');
+  P.forEach((q) => near(q[2], 50));
+});

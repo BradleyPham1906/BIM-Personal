@@ -60,8 +60,8 @@ function bimAnDraft(n, pull) {
 }
 
 function bimAnZebra(n, view, stripes) {
-  var s = stripes, d, r, k;
-  if (s < 1 || isNaN(s)) {
+  var s = Math.floor(stripes), d, r, k;
+  if (!(s >= 1)) {
     s = 10;
   }
   d = n[0] * view[0] + n[1] * view[1] + n[2] * view[2];

@@ -101,3 +101,12 @@ test('V181 registry limit is explicitly unset and can be overridden by the proje
     E.A3D.site = oldSite;
   }
 });
+
+// The audit (2026-11-21): a point within one cell below or left of the grid used to truncate into cell 0.
+test('V181 a point just outside the low corner is outside the grid; a non-number cell gives no grid', () => {
+  const g = E.bimEgGrid(ROOM, [], 1);
+  assert.equal(E.bimEgCell(g, [-0.5, 0.5]), -1);
+  assert.equal(E.bimEgCell(g, [0.5, -0.5]), -1);
+  assert.equal(E.bimEgGrid(ROOM, [], undefined), null);
+  assert.equal(E.bimEgGrid(ROOM, [], NaN), null);
+});

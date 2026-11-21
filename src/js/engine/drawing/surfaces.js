@@ -56,7 +56,7 @@ function bimSrfRevolve(pts, o, ax, angle, segs) {
   if (!pts || pts.length < 2) return null;
   var n = pts.length;
   if (!segs || segs < 1) segs = 24;
-  var full = Math.abs(angle - 2 * Math.PI) < 1e-9;
+  var full = Math.abs(Math.abs(angle) - 2 * Math.PI) < 1e-9;
   var rings = full ? segs : segs + 1;
   var v = [];
   var j, i, r, ang;
