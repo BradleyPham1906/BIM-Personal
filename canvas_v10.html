@@ -10133,6 +10133,11 @@ function bimPicPlane(wPx, hPx, widthM) {
     a3dToast(on?'Slope arrows on '+T[0].name+(T.length>1?' and '+(T.length-1)+' more':'')+(bimCameraIsPlan()?'':' -- shown in plan'):'Slope arrows off');
     return on;
   }
+
+
+  /* ================= __acad3dV247: Stormwater runoff on the site, the pure part =================
+     docs/research/research-physical-world.md and docs/work-orders/v247/SPEC.md. Priority-Flood with epsilon (Barnes et al. 2014), D8 directions and accumulation, a composite runoff coefficient and the rational method (HEC-22, 2024). Each function is a work order,
+     added below as it is built; none uses another file's names. */
   /* ================= __acad3dV146: history, by element (the Hub's H1) =================
      A commit is the model split into its elements -- each object by its id, and each of the
      project's other parts as one -- every element kept once, by the hash of its canonical JSON,
@@ -23118,6 +23123,11 @@ function bimAnGauss(m) {
      docs/research/research-wind-lbm.md and docs/work-orders/v221/SPEC.md. A D2Q9 lattice Boltzmann reference: the
      equilibrium, the moments, a collide-and-stream step on a periodic box, the memory a D3Q19 box needs. Each function is a
      work order, added below as it is built; none uses another file's names. */
+
+
+  /* ================= __acad3dV246: Form-finding, the pure part =================
+     docs/research/research-physical-world.md and docs/work-orders/v246/SPEC.md. The force density method (Schek 1974) and dynamic relaxation with kinetic damping (Day, Barnes), with their own dense solve. Each function is a work order,
+     added below as it is built; none uses another file's names. */
   /* ================= __acad3dV167: the standards registry =================
      docs/research/research-standards-registry.md. Every standard, guideline and assumption an analysis
      applies is a record here, never a number in its code: a topic, and its editions. An edition says
@@ -59084,6 +59094,41 @@ function bimWalkKeys(h, j) {
     }
     return out;
   }
+
+
+  /* ================= __acad3dV239: Floor loads from the place, the pure part =================
+     docs/research/research-physical-world.md and docs/work-orders/v239/SPEC.md. Live load reduction (ASCE 7-22 4.7, IBC 1607.12.1), its KLL, and the roof live load (4.8). Each function is a work order,
+     added below as it is built; none uses another file's names. */
+
+
+  /* ================= __acad3dV240: Wind loads from the place, the pure part =================
+     docs/research/research-physical-world.md and docs/work-orders/v240/SPEC.md. ASCE 7-22's directional procedure for an enclosed rigid building: Kz, q, the leeward Cp, storey forces, the four load cases, the approximate frequency. Each function is a work order,
+     added below as it is built; none uses another file's names. */
+
+
+  /* ================= __acad3dV241: Earthquake loads from the place, the pure part =================
+     docs/research/research-physical-world.md and docs/work-orders/v241/SPEC.md. ASCE 7-22's design spectra, Ta, Cu, Cs (methods 1 and 2) with its bounds, the vertical distribution, the USGS service's request and answer, storey drift. Each function is a work order,
+     added below as it is built; none uses another file's names. */
+
+
+  /* ================= __acad3dV242: Modes and the response spectrum, the pure part =================
+     docs/research/research-physical-world.md and docs/work-orders/v242/SPEC.md. Jacobi's eigenvalues, modes of a lumped-mass model, participation, CQC and SRSS, a shear building's stiffness, the scaling to the ELF shear. Each function is a work order,
+     added below as it is built; none uses another file's names. */
+
+
+  /* ================= __acad3dV243: Concrete members: cracking and strength, the pure part =================
+     docs/research/research-physical-world.md and docs/work-orders/v243/SPEC.md. ACI 318-19's material values, the cracked section, Mcr, Ie (Table 24.2.3.5), the cracking state, flexural strength, the ratio bands. Each function is a work order,
+     added below as it is built; none uses another file's names. */
+
+
+  /* ================= __acad3dV244: Steel members: AISC 360-22 checks, the pure part =================
+     docs/research/research-physical-world.md and docs/work-orders/v244/SPEC.md. An I section's properties from its plates, compactness (B4.1), compression (E3), Lp and Lr and flexure (F2), Cb (F1), combined forces (H1-1). Each function is a work order,
+     added below as it is built; none uses another file's names. */
+
+
+  /* ================= __acad3dV245: The building under a ground motion, the pure part =================
+     docs/research/research-physical-world.md and docs/work-orders/v245/SPEC.md. Rayleigh damping, Newmark's average acceleration for one and many degrees of freedom, a dense solve, a ground-motion record read from text. Each function is a work order,
+     added below as it is built; none uses another file's names. */
 
 
   /* ================= __acad3dV226: Track C, the PennDOT LRFD input writer, the pure part =================
