@@ -30,7 +30,7 @@ after each one. Scores are from `../ROUTING.md` (files, logic, understanding, ju
 
 ---
 
-## [ ] WO-02 [Cline] `bimPcLasHeader(dv)`
+## [x] WO-02 [Cline] `bimPcLasHeader(dv)`
 
 - **It must:** SPEC part 3's byte offsets and SPEC 4 WO-02's errors in order, with `BIM_PC_MINLEN` (`{0:20,1:28,2:26,3:34,6:30,7:36,8:38}`) just above the function. Every read little-endian (`getUint16(at, true)` ...).
 - **May use:** `BIM_PC_MINLEN` (this task).

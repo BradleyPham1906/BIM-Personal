@@ -45825,6 +45825,51 @@ function bimPcSniff(b) {
   return '';
 }
 
+var BIM_PC_MINLEN = { 0: 20, 1: 28, 2: 26, 3: 34, 6: 30, 7: 36, 8: 38 };
+
+function bimPcLasHeader(dv) {
+  if (dv.byteLength < 227) {
+    return { error: 'too short' };
+  }
+  var versionMajor = dv.getUint8(24);
+  var versionMinor = dv.getUint8(25);
+  var headerSize = dv.getUint16(94, true);
+  var offsetToPoints = dv.getUint32(96, true);
+  var pointFormat = dv.getUint8(104) & 0x3f;
+  var recordLength = dv.getUint16(105, true);
+  var count = dv.getUint32(107, true);
+  var minLen = BIM_PC_MINLEN[pointFormat];
+  if (minLen === undefined) {
+    return { error: 'point format ' + pointFormat + ' not supported' };
+  }
+  if (recordLength < minLen) {
+    return { error: 'record too short' };
+  }
+  if (offsetToPoints < headerSize || offsetToPoints + count * recordLength > dv.byteLength) {
+    return { error: 'truncated' };
+  }
+  if (count === 0 && versionMinor >= 4) {
+    count = dv.getUint32(247, true) + dv.getUint32(251, true) * 0x100000000;
+  }
+  var scale = [dv.getFloat64(131, true), dv.getFloat64(139, true), dv.getFloat64(147, true)];
+  var offset = [dv.getFloat64(155, true), dv.getFloat64(163, true), dv.getFloat64(171, true)];
+  var min = [dv.getFloat64(187, true), dv.getFloat64(203, true), dv.getFloat64(219, true)];
+  var max = [dv.getFloat64(179, true), dv.getFloat64(195, true), dv.getFloat64(211, true)];
+  return {
+    versionMajor: versionMajor,
+    versionMinor: versionMinor,
+    headerSize: headerSize,
+    offsetToPoints: offsetToPoints,
+    pointFormat: pointFormat,
+    recordLength: recordLength,
+    count: count,
+    scale: scale,
+    offset: offset,
+    min: min,
+    max: max
+  };
+}
+
 
   /* ================= __acad3dV191: LOD-D, LOD1.3 and LOD2.2 roofs from LiDAR, the pure part =================
      docs/research/research-notion-v189-roofs.md and docs/work-orders/v191/SPEC.md. Roof planes from LiDAR points: Jacobi
