@@ -110,7 +110,7 @@ after each one. Scores are from `../ROUTING.md` (files, logic, understanding, ju
 
 ---
 
-## [ ] WO-10 [Cline] `bimPcHeightColour(z, zmin, zmax)`
+## [x] WO-10 [Cline] `bimPcHeightColour(z, zmin, zmax)`
 
 - **It must:** SPEC 4 WO-10.
 - **May use:** nothing.

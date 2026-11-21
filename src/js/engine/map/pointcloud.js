@@ -298,3 +298,14 @@ function bimPcClassName(c) {
   var n = BIM_PC_CLASS[c];
   return n !== undefined ? n : 'Class ' + c;
 }
+
+function bimPcHeightColour(z, zmin, zmax) {
+  var t = zmax <= zmin ? 0.5 : (z - zmin) / (zmax - zmin);
+  if (t < 0) t = 0;
+  if (t > 1) t = 1;
+  return [
+    Math.round(255 * Math.min(1, 2 * t)),
+    Math.round(255 * Math.min(1, 2 * (1 - t))),
+    Math.round(255 * (1 - t) * 0.5)
+  ];
+}
