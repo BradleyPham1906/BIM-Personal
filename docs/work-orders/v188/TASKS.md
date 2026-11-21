@@ -18,7 +18,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-01 [Cline] `bimPicPlane(wPx, hPx, widthM)`
+## [x] WO-01 [Cline] `bimPicPlane(wPx, hPx, widthM)`
 
 - **It must:** SPEC 5 WO-01: null unless all three are positive; h = widthM hPx / wPx; {w, h, corners [[0,0],[w,0],[w,h],[0,h]], uv [[0,1],[1,1],[1,0],[0,0]]}.
 - **May use:** nothing.

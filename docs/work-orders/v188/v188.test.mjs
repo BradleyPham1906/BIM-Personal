@@ -33,6 +33,7 @@ test('WO-02 a text box: the longest line by character width, lines by spacing', 
 });
 test('WO-03 the base box of points in plan', () => {
   assert.deepEqual(fn('bimFlowBox')([[1, 2, 0], [4, -1, 3], [2, 5, 0]]), [1, -1, 4, 5]);
+  assert.deepEqual(fn('bimFlowBox')([[1, 10, 0], [0, 5, 0]]), [0, 5, 1, 10]);
   assert.equal(fn('bimFlowBox')([]), null);
 });
 const PATCH = [[0, 0, 0], [10, 0, 0], [10, 0, 10], [0, 0, 10]];
