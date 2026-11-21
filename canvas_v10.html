@@ -7536,122 +7536,49 @@ function bimNurbsBasis(span, u, p, k) {
 }
 
 function bimNurbsPoint(c, u) {
-  var n = c.deg;
-  var p = n;
-  var k = c.knots;
-  var m = c.pts.length - 1;
-  
-  // Handle boundary cases: u at or beyond the first/last knot
-  // For a clamped curve with m+1 control points and degree p:
-  // - u <= k[p] means u is at/before the first control point
-  // - u >= k[m+1] means u is at/after the last control point
-  if (u <= k[p]) {
-    // Return first control point
-    return [c.pts[0][0], c.pts[0][1], 0];
+  var p = c.deg, k = c.knots, n = c.pts.length;
+  var span = bimNurbsSpan(n, p, u, k), N = bimNurbsBasis(span, u, p, k);
+  var x = 0, y = 0, z = 0, sw = 0, i, q, w, b;
+  for (i = 0; i <= p; i++) {
+    q = c.pts[span - p + i];
+    w = (c.w && typeof c.w[span - p + i] === 'number') ? c.w[span - p + i] : 1;
+    b = w * N[i];
+    x += q[0] * b; y += q[1] * b; z += (q[2] || 0) * b; sw += b;
   }
-  if (u >= k[m + 1]) {
-    // Return last control point
-    return [c.pts[m][0], c.pts[m][1], 0];
-  }
-  
-  // Interior case: compute rational point using direct basis function calculation
-  // Find span: the largest i such that k[i] <= u
-  var span = p;
-  while (span < m && u >= k[span + 1]) {
-    span++;
-  }
-  
-  // Compute basis functions N[i](u) for i = span-p, ..., span
-  // Using the standard de Boor recurrence
-  var N = [];
-  for (var i = 0; i <= p; i++) N[i] = 0;
-  N[0] = 1;
-  var left = [];
-  var right = [];
-  for (var j = 1; j <= p; j++) {
-    left[j] = u - k[span + 1 - j];
-    right[j] = k[span + j] - u;
-    var saved = 0;
-    for (var r = 0; r < j; r++) {
-      var denom = right[r + 1] + left[j - r];
-      var temp = denom !== 0 ? N[r] / denom : 0;
-      N[r] = saved + right[r + 1] * temp;
-      saved = left[j - r] * temp;
-    }
-    N[j] = saved;
-  }
-  
-  // Compute weighted sum for rational point
-  var weightedSumX = 0;
-  var weightedSumY = 0;
-  var weightedSumW = 0;
-  var iMin = span - p;
-  if (iMin < 0) iMin = 0;
-  var iMax = span;
-  if (iMax > m) iMax = m;
-  for (var i = iMin; i <= iMax; i++) {
-    var w = (c.w && c.w[i] !== undefined) ? c.w[i] : 1;
-    var px = c.pts[i][0];
-    var py = c.pts[i][1];
-    var basisIdx = i - iMin;
-    if (basisIdx >= 0 && basisIdx <= p) {
-      weightedSumX += px * w * N[basisIdx];
-      weightedSumY += py * w * N[basisIdx];
-      weightedSumW += w * N[basisIdx];
-    }
-  }
-  var x = weightedSumX / weightedSumW;
-  var y = weightedSumY / weightedSumW;
-  return [x, y, 0];
+  return [x / sw, y / sw, z / sw];
 }
 
-function bimNurbsTangent(c, u) {
-  var h = 1e-6, a = u - h, b = u + h;
-  if (a < 0) a = 0;
-  if (b > 1) b = 1;
+function bimNurbsTangent(c, u, h) {
+  if (!(typeof h === 'number' && h > 0)) h = 1e-6;
+  var a = Math.max(0, u - h), b = Math.min(1, u + h);
   if (b <= a) return [0, 0, 0];
-  
-  // Compute points at a and b using bimNurbsPoint
-  var Pa = bimNurbsPoint(c, a);
-  var Pb = bimNurbsPoint(c, b);
-  
-  // Central difference: (Pb - Pa) / (b - a)
-  var dx = Pb[0] - Pa[0];
-  var dy = Pb[1] - Pa[1];
-  var dt = b - a;
-  
-  if (dt === 0) return [0, 0, 0];
-  
-  return [dx / dt, dy / dt, 0];
+  var Pa = bimNurbsPoint(c, a), Pb = bimNurbsPoint(c, b), d = b - a;
+  return [(Pb[0] - Pa[0]) / d, (Pb[1] - Pa[1]) / d, (Pb[2] - Pa[2]) / d];
 }
 
 function bimNurbsSample(c, tol) {
-  if (tol <= 0) tol = 0.001;
-  var samples = [];
-  var t = 0;
-  var P0 = bimNurbsPoint(c, t);
-  samples.push(P0);
-  function subdivide(a, b) {
-    var Pa = bimNurbsPoint(c, a);
-    var Pb = bimNurbsPoint(c, b);
-    var M = [(Pa[0] + Pb[0]) / 2, (Pa[1] + Pb[1]) / 2];
-    var chordError = 1 - Math.hypot(M[0], M[1]);
-    var intervalSize = b - a;
-    if (chordError > tol || intervalSize > 0.25) {
-      if (intervalSize > 1e-6) {
-        var mid = (a + b) / 2;
-        subdivide(a, mid);
-        subdivide(mid, b);
-        return;
-      }
-    }
-    var last = samples[samples.length - 1];
-    if (Math.hypot(Pb[0] - last[0], Pb[1] - last[1]) > 1e-9) samples.push(Pb);
+  if (!(typeof tol === 'number' && tol > 0)) tol = 0.001;
+  var out = [bimNurbsPoint(c, 0)];
+  // the distance of M from the chord A B (from A when the chord has no length)
+  function off(A, B, M) {
+    var dx = B[0] - A[0], dy = B[1] - A[1], dz = B[2] - A[2];
+    var mx = M[0] - A[0], my = M[1] - A[1], mz = M[2] - A[2];
+    var L2 = dx * dx + dy * dy + dz * dz, t = L2 > 0 ? (mx * dx + my * dy + mz * dz) / L2 : 0;
+    var ex = mx - t * dx, ey = my - t * dy, ez = mz - t * dz;
+    return Math.sqrt(ex * ex + ey * ey + ez * ez);
   }
-  subdivide(0, 1);
-  return samples;
+  function split(a, b, Pa, Pb) {
+    var m = (a + b) / 2, Pm = bimNurbsPoint(c, m);
+    if ((off(Pa, Pb, Pm) > tol || b - a > 0.25) && b - a > 1e-6) {
+      split(a, m, Pa, Pm);
+      split(m, b, Pm, Pb);
+      return;
+    }
+    out.push(Pb);
+  }
+  split(0, 1, out[0], bimNurbsPoint(c, 1));
+  return out;
 }
-
 
 
   /* ================= __acad3dV184: Freeform F2, surfaces from curves, the pure part =================
@@ -7710,7 +7637,7 @@ function bimSrfRevolve(pts, o, ax, angle, segs) {
   if (!pts || pts.length < 2) return null;
   var n = pts.length;
   if (!segs || segs < 1) segs = 24;
-  var full = Math.abs(angle - 2 * Math.PI) < 1e-9;
+  var full = Math.abs(Math.abs(angle) - 2 * Math.PI) < 1e-9;
   var rings = full ? segs : segs + 1;
   var v = [];
   var j, i, r, ang;
@@ -14663,6 +14590,10 @@ function bimClrRule(rule, m) {
   return out;
 }
 
+  /* ================= __acad3dV181: Interiors I3, circulation and escape routes, the pure part =================
+     docs/research/research-notion-v177-v180-interiors.md (I3) and docs/work-orders/v181/SPEC.md. A walkable grid in plan
+     [x, z]; the shortest 8-way route on it (Dijkstra, no corner cutting); the nearest exit; a route against a travel limit.
+     Each function is a work order, added below as it is built; none uses another file's names. */
 
 
 function bimEgInside(p, poly) {
@@ -14678,7 +14609,7 @@ function bimEgInside(p, poly) {
 }
 
 function bimEgGrid(room, obstacles, cell) {
-  if (!room || room.length < 3 || cell <= 0) return null;
+  if (!room || room.length < 3 || !(cell > 0)) return null;
   var x0 = room[0][0], z0 = room[0][1];
   for (var i = 1; i < room.length; i++) {
     if (room[i][0] < x0) x0 = room[i][0];
@@ -14717,8 +14648,8 @@ function bimEgGrid(room, obstacles, cell) {
 }
 function bimEgCell(g, p) {
   if (!g || !p) return -1;
-  var i = (p[0] - g.x0) / g.cell | 0;
-  var j = (p[1] - g.z0) / g.cell | 0;
+  var i = Math.floor((p[0] - g.x0) / g.cell);
+  var j = Math.floor((p[1] - g.z0) / g.cell);
   if (i < 0 || i >= g.nx || j < 0 || j >= g.nz) return -1;
   var idx = j * g.nx + i;
   return g.free[idx] === 1 ? idx : -1;
@@ -14815,10 +14746,6 @@ function bimEgStatus(route, limit) {
   }
   return { status: 'over', why: lenStr + ' m, over ' + limitStr + ' m' };
 }
-  /* ================= __acad3dV181: Interiors I3, circulation and escape routes, the pure part =================
-     docs/research/research-notion-v177-v180-interiors.md (I3) and docs/work-orders/v181/SPEC.md. A walkable grid in plan
-     [x, z]; the shortest 8-way route on it (Dijkstra, no corner cutting); the nearest exit; a route against a travel limit.
-     Each function is a work order, added below as it is built; none uses another file's names. */
   /* ================= __acad3dV181: Interiors I3, the app integration ================= */
   var A3D_EG_RUN={show:false,stamp:'',rooms:[],cell:0.25};
   var BIM_EG_STD='app.egress';
@@ -15120,7 +15047,8 @@ function bimIsoHit(p, dx, dz, segs) {
 
 
 function bimIsovist(p, segs, n, maxR) {
-  var count = n !== undefined ? Math.max(n, 3) : 360;
+  var count = (typeof n === 'number' && n >= 3) ? Math.floor(n) : 360;
+  var R = (typeof maxR === 'number' && maxR > 0) ? maxR : 50;
   var angleStep = 2 * Math.PI / count;
   var result = [];
   for (var i = 0; i < count; i++) {
@@ -15128,23 +15056,25 @@ function bimIsovist(p, segs, n, maxR) {
     var dx = Math.cos(angle);
     var dz = Math.sin(angle);
     var hitT = bimIsoHit(p, dx, dz, segs);
-    var dist = hitT !== Infinity ? Math.min(hitT, maxR <= 0 ? 50 : maxR) : maxR <= 0 ? 50 : maxR;
+    var dist = Math.min(hitT, R);
     result.push([p[0] + dx * dist, p[1] + dz * dist]);
   }
   return result;
 }
 
 function bimIsoArea(poly) {
-  if (poly === null || poly.length < 3) return 0;
+  if (!poly || poly.length < 3) return 0;
   var area = 0;
   for (var i = 0; i < poly.length; i++) {
     var j = (i + 1) % poly.length;
     area += (poly[j][0] - poly[i][0]) * (poly[j][1] + poly[i][1]);
   }
   return Math.abs(area) / 2;
-}function bimIsoSees(p, q, segs) {
-  if (p[0] === q[0] && p[1] === q[1]) return true; // coincident
+}
+
+function bimIsoSees(p, q, segs) {
   var dist = Math.hypot(q[0] - p[0], q[1] - p[1]);
+  if (dist < 1e-12) return true; // coincident
   var hitT = bimIsoHit(p, q[0] - p[0], q[1] - p[1], segs);
   if (hitT === Infinity) return true; // nothing blocking
   var hitDist = Math.hypot(hitT * (q[0] - p[0]), hitT * (q[1] - p[1]));
@@ -23097,8 +23027,8 @@ function bimAnDraft(n, pull) {
 }
 
 function bimAnZebra(n, view, stripes) {
-  var s = stripes, d, r, k;
-  if (s < 1 || isNaN(s)) {
+  var s = Math.floor(stripes), d, r, k;
+  if (!(s >= 1)) {
     s = 10;
   }
   d = n[0] * view[0] + n[1] * view[1] + n[2] * view[2];
@@ -65228,7 +65158,6 @@ function bimRptDatum(raw) {
   }
   if (r.state === 'unavailable' || r.state === 'failed') {
     r.value = null;
-    r.unit = '';
   }
   return r;
 }
@@ -65270,8 +65199,7 @@ function bimRptStale(manifest, revision) {
 }
 function bimRptLegend(rows, max) {
   if (!rows) return { rows: [], more: 0 };
-  var m = max | 0;
-  if (m < 1) m = 12;
+  var m = (typeof max === 'number' && max >= 1) ? Math.floor(max) : 12;
   var taken = rows.slice(0, m);
   var more = rows.length - m;
   if (more < 0) more = 0;
@@ -65315,8 +65243,7 @@ function bimRptText(d, digits) {
   if (d.state === 'failed') return 'Failed';
   var s = '';
   if (typeof d.value === 'number' && isFinite(d.value)) {
-    var dg = digits === undefined ? 0 : (digits | 0);
-    dg = dg < 0 || dg > 6 ? 0 : dg;
+    var dg = (typeof digits === 'number' && digits >= 0 && digits < 7) ? Math.floor(digits) : 0;
     s = d.value.toFixed(dg);
   } else if (typeof d.value === 'string') {
     s = d.value;
@@ -65327,7 +65254,7 @@ function bimRptText(d, digits) {
   return s;
 }
 function bimRptRings(radiiKm) {
-  if (!Array.isArray(radiiKm)) return [];
+  if (!radiiKm || typeof radiiKm !== 'object' || typeof radiiKm.length !== 'number') return [];
   var positives = [];
   var seen = {};
   for (var i = 0; i < radiiKm.length; i++) {

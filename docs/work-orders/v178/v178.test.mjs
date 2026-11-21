@@ -127,3 +127,19 @@ test('WO-12 detach: a plain copy of what it shows, no link to the definition', (
   assert.deepEqual(fn('bimCompDetach')(DEF, { id: 'i1', defId: 'cmp-title', overrides: { size: 30 } }),
     { id: 'i1', props: { text: 'Site Analysis', color: '#111', size: 30 } });
 });
+// Added by the audit (2026-11-21): SPEC 4's words at the edges: digits and max are numbers (a string is not), rings take
+// any array-like, and an unavailable datum keeps its unit (only its value is null).
+test('WO-02 an unavailable datum keeps its unit', () => {
+  assert.equal(fn('bimRptDatum')({ value: null, unit: 'm', state: 'available' }).unit, 'm');
+});
+test('WO-03 digits must be a number', () => {
+  assert.equal(fn('bimRptText')({ value: 1.25, unit: '', state: 'available' }, '2'), '1');
+  assert.equal(fn('bimRptText')({ value: 1.25, unit: '', state: 'available' }, 6.9), '1.250000');
+});
+test('WO-04 rings from an array-like', () => {
+  assert.deepEqual(fn('bimRptRings')(new Float64Array([2, 1])).map((r) => r.km), [1, 2]);
+});
+test('WO-09 max must be a number', () => {
+  assert.equal(fn('bimRptLegend')(new Array(20).fill(0), '5').rows.length, 12);
+  assert.equal(fn('bimRptLegend')(new Array(20).fill(0), 1e10).more, 0);
+});

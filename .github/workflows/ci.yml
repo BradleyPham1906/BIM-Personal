@@ -17,8 +17,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: TypeScript, for the module check (a development tool, not part of the app)
-        run: npm install -g typescript@5.9.3
+      - name: TypeScript 5.9.3 from package-lock.json, for the module check (a development tool, not part of the app)
+        run: npm ci
       - name: Build checks (canvas_v10.html, engine modules, embedded Python, user guide)
         run: npm run check
       - name: Unit tests

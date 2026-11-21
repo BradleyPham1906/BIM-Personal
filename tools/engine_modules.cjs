@@ -28,9 +28,19 @@
 var fs = require('fs'), path = require('path'), cp = require('child_process');
 
 function loadTs() {
-  try { return require('typescript'); } catch (e) {}
-  try { return require(path.join(cp.execSync('npm root -g').toString().trim(), 'typescript')); } catch (e) {}
-  console.error('engine_modules: TypeScript is needed (npm install -g typescript)');
+  // TypeScript 7 (the native compiler) has no Node API: require('typescript') gives only its
+  // version. Skip any install without createSourceFile and use the next one (2026-11-21).
+  var tried = [], cands = [function () { return require('typescript'); },
+    function () { return require(path.join(cp.execSync('npm root -g').toString().trim(), 'typescript')); }];
+  for (var i = 0; i < cands.length; i++) {
+    try {
+      var t = cands[i]();
+      if (t && typeof t.createSourceFile === 'function') return t;
+      tried.push((t && t.version) || '?');
+    } catch (e) {}
+  }
+  console.error('engine_modules: TypeScript 5.x with its Node API is needed; run npm install in the ' +
+    'repository root (package.json pins it)' + (tried.length ? '. Found without the API: ' + tried.join(', ') : ''));
   process.exit(2);
 }
 var ts = loadTs();

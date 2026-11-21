@@ -41,7 +41,6 @@ function bimRptDatum(raw) {
   }
   if (r.state === 'unavailable' || r.state === 'failed') {
     r.value = null;
-    r.unit = '';
   }
   return r;
 }
@@ -83,8 +82,7 @@ function bimRptStale(manifest, revision) {
 }
 function bimRptLegend(rows, max) {
   if (!rows) return { rows: [], more: 0 };
-  var m = max | 0;
-  if (m < 1) m = 12;
+  var m = (typeof max === 'number' && max >= 1) ? Math.floor(max) : 12;
   var taken = rows.slice(0, m);
   var more = rows.length - m;
   if (more < 0) more = 0;
@@ -128,8 +126,7 @@ function bimRptText(d, digits) {
   if (d.state === 'failed') return 'Failed';
   var s = '';
   if (typeof d.value === 'number' && isFinite(d.value)) {
-    var dg = digits === undefined ? 0 : (digits | 0);
-    dg = dg < 0 || dg > 6 ? 0 : dg;
+    var dg = (typeof digits === 'number' && digits >= 0 && digits < 7) ? Math.floor(digits) : 0;
     s = d.value.toFixed(dg);
   } else if (typeof d.value === 'string') {
     s = d.value;
@@ -140,7 +137,7 @@ function bimRptText(d, digits) {
   return s;
 }
 function bimRptRings(radiiKm) {
-  if (!Array.isArray(radiiKm)) return [];
+  if (!radiiKm || typeof radiiKm !== 'object' || typeof radiiKm.length !== 'number') return [];
   var positives = [];
   var seen = {};
   for (var i = 0; i < radiiKm.length; i++) {

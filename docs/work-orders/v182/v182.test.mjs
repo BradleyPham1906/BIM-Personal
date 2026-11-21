@@ -58,3 +58,15 @@ test('WO-05 the share of each window seen from the eye, by evenly spaced samples
   near(r[0].fraction, 4 / 6, 1e-12, 'the two lowest samples hidden by the half wall');
   assert.equal(fn('bimIsoWindows')([2, 2], [{ id: 'w', a: [10, 0], b: [10, 6] }], BOX)[0].fraction, 1);
 });
+// Added by the audit (2026-11-21): SPEC 5's defaults: n under 3 gives 360 rays, n is floored, maxR 50 when not positive or
+// absent; no polygon has no area; points under 1e-12 apart see each other.
+test('WO-02 the ray count and range defaults', () => {
+  assert.equal(fn('bimIsovist')([0, 0], [], 2).length, 360);
+  assert.equal(fn('bimIsovist')([0, 0], [], 7.9, 1).length, 7);
+  const P = fn('bimIsovist')([0, 0], [], 4);
+  assert.ok(Math.abs(P[0][0] - 50) < 1e-9, 'maxR absent is 50, got ' + P[0][0]);
+});
+test('WO-03 no polygon, no area', () => { assert.equal(fn('bimIsoArea')(undefined), 0); });
+test('WO-04 nearly coincident points see each other', () => {
+  assert.equal(fn('bimIsoSees')([0, 0], [1e-13, 0], [[[0, -1], [0, 1]]]), true);
+});

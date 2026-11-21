@@ -65,3 +65,8 @@ test('WO-06 a Coons patch from four edges: flat edges give the flat square', () 
   near(bump.v[4][2], 0.5, 1e-12, 'a raised edge raises the middle halfway');
   assert.equal(fn('bimSrfCoons')(c0, c1.slice(0, 2), d0, d1), null);
 });
+// Added by the audit (2026-11-21): SPEC 5 says a full turn is |angle| within 1e-9 of 2 pi, so a turn the other way closes too.
+test('WO-04 a full turn the other way (-2 pi) closes without a seam ring', () => {
+  const r = fn('bimSrfRevolve')([[1, 0, 0], [1, 1, 0]], [0, 0, 0], [0, 1, 0], -2 * Math.PI, 8);
+  assert.equal(r.v.length, 16); assert.equal(r.f.length, 8);
+});

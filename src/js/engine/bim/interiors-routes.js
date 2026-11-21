@@ -1,3 +1,7 @@
+  /* ================= __acad3dV181: Interiors I3, circulation and escape routes, the pure part =================
+     docs/research/research-notion-v177-v180-interiors.md (I3) and docs/work-orders/v181/SPEC.md. A walkable grid in plan
+     [x, z]; the shortest 8-way route on it (Dijkstra, no corner cutting); the nearest exit; a route against a travel limit.
+     Each function is a work order, added below as it is built; none uses another file's names. */
 
 
 function bimEgInside(p, poly) {
@@ -13,7 +17,7 @@ function bimEgInside(p, poly) {
 }
 
 function bimEgGrid(room, obstacles, cell) {
-  if (!room || room.length < 3 || cell <= 0) return null;
+  if (!room || room.length < 3 || !(cell > 0)) return null;
   var x0 = room[0][0], z0 = room[0][1];
   for (var i = 1; i < room.length; i++) {
     if (room[i][0] < x0) x0 = room[i][0];
@@ -52,8 +56,8 @@ function bimEgGrid(room, obstacles, cell) {
 }
 function bimEgCell(g, p) {
   if (!g || !p) return -1;
-  var i = (p[0] - g.x0) / g.cell | 0;
-  var j = (p[1] - g.z0) / g.cell | 0;
+  var i = Math.floor((p[0] - g.x0) / g.cell);
+  var j = Math.floor((p[1] - g.z0) / g.cell);
   if (i < 0 || i >= g.nx || j < 0 || j >= g.nz) return -1;
   var idx = j * g.nx + i;
   return g.free[idx] === 1 ? idx : -1;
@@ -150,8 +154,4 @@ function bimEgStatus(route, limit) {
   }
   return { status: 'over', why: lenStr + ' m, over ' + limitStr + ' m' };
 }
-  /* ================= __acad3dV181: Interiors I3, circulation and escape routes, the pure part =================
-     docs/research/research-notion-v177-v180-interiors.md (I3) and docs/work-orders/v181/SPEC.md. A walkable grid in plan
-     [x, z]; the shortest 8-way route on it (Dijkstra, no corner cutting); the nearest exit; a route against a travel limit.
-     Each function is a work order, added below as it is built; none uses another file's names. */
 export { bimEgGrid, bimEgNearest, bimEgPath, bimEgStatus };

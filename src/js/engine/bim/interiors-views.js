@@ -23,7 +23,8 @@ function bimIsoHit(p, dx, dz, segs) {
 
 
 function bimIsovist(p, segs, n, maxR) {
-  var count = n !== undefined ? Math.max(n, 3) : 360;
+  var count = (typeof n === 'number' && n >= 3) ? Math.floor(n) : 360;
+  var R = (typeof maxR === 'number' && maxR > 0) ? maxR : 50;
   var angleStep = 2 * Math.PI / count;
   var result = [];
   for (var i = 0; i < count; i++) {
@@ -31,23 +32,25 @@ function bimIsovist(p, segs, n, maxR) {
     var dx = Math.cos(angle);
     var dz = Math.sin(angle);
     var hitT = bimIsoHit(p, dx, dz, segs);
-    var dist = hitT !== Infinity ? Math.min(hitT, maxR <= 0 ? 50 : maxR) : maxR <= 0 ? 50 : maxR;
+    var dist = Math.min(hitT, R);
     result.push([p[0] + dx * dist, p[1] + dz * dist]);
   }
   return result;
 }
 
 function bimIsoArea(poly) {
-  if (poly === null || poly.length < 3) return 0;
+  if (!poly || poly.length < 3) return 0;
   var area = 0;
   for (var i = 0; i < poly.length; i++) {
     var j = (i + 1) % poly.length;
     area += (poly[j][0] - poly[i][0]) * (poly[j][1] + poly[i][1]);
   }
   return Math.abs(area) / 2;
-}function bimIsoSees(p, q, segs) {
-  if (p[0] === q[0] && p[1] === q[1]) return true; // coincident
+}
+
+function bimIsoSees(p, q, segs) {
   var dist = Math.hypot(q[0] - p[0], q[1] - p[1]);
+  if (dist < 1e-12) return true; // coincident
   var hitT = bimIsoHit(p, q[0] - p[0], q[1] - p[1], segs);
   if (hitT === Infinity) return true; // nothing blocking
   var hitDist = Math.hypot(hitT * (q[0] - p[0]), hitT * (q[1] - p[1]));
