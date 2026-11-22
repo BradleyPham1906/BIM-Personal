@@ -5,6 +5,10 @@ description: The owner's end-of-session routine for this repo. Use when the owne
 
 # /finish
 
+This is an instruction skill, not a callable tool named `finish`. In Cline, load it through the Skills mechanism
+and follow the steps using the tools actually available. Never issue a tool call named `finish`; `/finish` is a
+user-facing trigger only where the client supports it.
+
 The routine is in `docs/dev/WORKFLOW.md`. Do these steps, then report in a few lines.
 
 1. `git status`. If nothing changed and nothing is unpushed, say so and stop.
