@@ -7,13 +7,13 @@ Cline: `/ship-task` with no arguments takes the first open `[Cline]` task below.
 
 The owner's decisions (2026-11-14): for every phase below, all as its research recommends (each SPEC lists them;
 overrule any there). V177's D1 to D4 and That Open's four were answered 2026-11-13. The phases are numbered in one
-sequence, 175c to 247 (228 to 232 are algorithmic design, the owner's thirteen decisions, 2026-11-15; 233 to 238 program to plan, the owner's ten decisions, 2026-11-16; 239 to 247 the physical world, as `research-physical-world.md` recommends, 2026-11-21), in `docs/dev/PIPELINE.md`; there are no "later" rows.
+sequence, 175c to 248 (228 to 232 are algorithmic design, the owner's thirteen decisions, 2026-11-15; 233 to 238 program to plan, the owner's ten decisions, 2026-11-16; 239 to 247 the physical world, as `research-physical-world.md` recommends, 2026-11-21), in `docs/dev/PIPELINE.md`; there are no "later" rows.
 
-## Ready for Cline, in order (286 tasks)
+## Ready for Cline, in order (294 tasks)
 
 | Phase | What | Tasks | Where | Tests |
 |---|---|---|---|---|
-| v202 | Site context C3: measured heights, ground and bridges; part B, the Site and Map interface (the owner, 2026-11-21: next) | WO-01 to WO-05, WO-12 to WO-14 (8), any order | `v202/TASKS.md` | `v202/v202.test.mjs`, `v202/v202-ui.test.mjs` |
+| v202 | Site context C3: measured heights, ground and bridges; part B, the Site and Map interface; part C, heights on one datum and the GEM-15 surface model (the owner, 2026-11-21: next) | WO-01 to WO-05, WO-12 to WO-14, WO-22 to WO-26 (13), any order | `v202/TASKS.md` | `v202/v202.test.mjs`, `v202/v202-ui.test.mjs`, `v202/v202-datum.test.mjs`, `v202/v202-surface.test.mjs` |
 | v178 | Presentation P3, the report (Site Analysis and DA), styles, export | WO-01 to WO-12 (12) | `v178/TASKS.md` | `v178/v178.test.mjs` |
 | v181 | Interiors I3, circulation and escape routes | WO-01 to WO-05 (5) | `v181/TASKS.md` | `v181/v181.test.mjs` |
 | v182 | Interiors I4, sightlines and views | WO-01 to WO-05 (5) | `v182/TASKS.md` | `v182/v182.test.mjs` |
@@ -67,6 +67,7 @@ sequence, 175c to 247 (228 to 232 are algorithmic design, the owner's thirteen d
 | v245 | The building under a ground motion | WO-01 to WO-05 (5) | `v245/TASKS.md` | `v245/v245.test.mjs` |
 | v246 | Form-finding: force density, dynamic relaxation | WO-01 to WO-03 (3) | `v246/TASKS.md` | `v246/v246.test.mjs` |
 | v247 | Stormwater runoff on the site | WO-01 to WO-05 (5) | `v247/TASKS.md` | `v247/v247.test.mjs` |
+| v248 | The shape of the ground: curvature, ruggedness, a viewshed | WO-01 to WO-03 (3) | `v248/TASKS.md` | `v248/v248.test.mjs` |
 
 Every test was run against a reference version that was not committed (all passing) and against the empty files
 (every case failing), so a task is done exactly when its own cases pass. Each phase's new file is already in the

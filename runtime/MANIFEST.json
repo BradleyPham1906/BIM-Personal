@@ -254,10 +254,32 @@
    "sha256": "42190f892f6219350c50e107954f57cb6196acac818fece4a7d21689c94f71de",
    "from": "https://cdn.jsdelivr.net/pyodide/v0.29.5/full/typing_extensions-4.15.0-py3-none-any.whl (as pyodide-lock.json pins it)",
    "licence": "PSF-2.0"
+  },
+  {
+   "path": "geotiff/3.0.5/geotiff.min.js",
+   "bytes": 550900,
+   "sha256": "8cfc01ffc945904766d8fb89f19da7afb799e342834454f5592fbcf0bcfe2db5",
+   "from": "npm geotiff@3.0.5 (the tarball sha512-OWcL9S9+yDZ6iAlXMt32T1iwUApJM8UiD47xbm6ZP1h33d10fqkPs14EG/ttT5EnefpZSx3G15iDFC5FxUNUwA==), dist-browser/geotiff.js unchanged (V202 part C, the owner, 2026-11-21)",
+   "licence": "MIT (geotiff.js); bundled lerc Apache-2.0, pako MIT and Zlib, zstddec MIT and BSD-3-Clause: THIRD-PARTY.txt"
+  },
+  {
+   "path": "geotiff/3.0.5/LICENSE",
+   "bytes": 1088,
+   "sha256": "da0811089f254e909f69f75fa496ca97e5167a8eaa945d9a6bffdd8499b47a49",
+   "from": "npm geotiff@3.0.5 (the tarball sha512-OWcL9S9+yDZ6iAlXMt32T1iwUApJM8UiD47xbm6ZP1h33d10fqkPs14EG/ttT5EnefpZSx3G15iDFC5FxUNUwA==), LICENSE",
+   "licence": "MIT (geotiff.js)"
+  },
+  {
+   "path": "geotiff/3.0.5/THIRD-PARTY.txt",
+   "bytes": 27315,
+   "sha256": "21bda29c25a235bd7b2976db814bed79524e1382b8a17c8c79df1b07a0512c13",
+   "from": "the licences of the packages geotiff.js 3.0.5 bundles, from their npm tarballs (2026-11-21)",
+   "licence": "as each section says"
   }
  ],
  "three": "0.186.1",
  "cc-ifc": "cfbd948",
  "jolt": "1.1.1",
- "ifcopenshell": "0.8.5"
+ "ifcopenshell": "0.8.5",
+ "geotiff": "3.0.5"
 }

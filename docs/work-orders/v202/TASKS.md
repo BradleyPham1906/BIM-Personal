@@ -6,6 +6,10 @@ Spec: `SPEC.md` in this folder. Implementation target: local `main`. One task at
 **Status: ready.** The owner chose D1 to D5 as recommended (2026-11-13). WO-00 is built; WO-01 to
 WO-05 are independent pure functions, in any order.
 
+**Part C (2026-11-21):** heights on one datum and the surface model (SPEC part C). geotiff.js is vendored;
+WO-22 to WO-26 are independent pure functions in `cog-datum.js` and `surface-model.js`, tested by
+`v202-datum.test.mjs` and `v202-surface.test.mjs`.
+
 **Part B (2026-11-21):** the Site and Map interface (SPEC part B). WO-11 is built; WO-12 to WO-14 are
 independent pure functions in `src/js/engine/map/site-ui.js`, tested by `v202-ui.test.mjs`.
 
@@ -193,3 +197,98 @@ line and `window.__a3dSiteUi`. The part B tests were checked against a reference
 
 ## [ ] WO-20 [Claude] The browser check of the Site and Map workspace at desktop, tablet and phone (`tests/e2e/`)
 
+---
+
+# Part C: heights on one datum, and the surface model
+
+## [x] WO-21 [Claude] Vendor geotiff.js 3.0.5; scaffold `cog-datum.js` and `surface-model.js`
+
+Done 2026-11-21: `runtime/geotiff/3.0.5/` (the browser build unchanged, LICENSE, THIRD-PARTY.txt), pinned in
+`runtime/MANIFEST.json` (`tools/check_runtime.py` passes). It read GEM-15 and GEOID18 exactly as rasterio and NGS do.
+The two files are scaffolded with their include lines, and `window.__a3dGroundData` is added. The tests were checked
+against a reference implementation (all pass).
+
+---
+
+## [ ] WO-22 [Cline] `bimGeoidAt` in `src/js/engine/map/cog-datum.js`
+
+- **Implement:** a geoid grid sampled bilinearly at a longitude and latitude, as SPEC part C3 says.
+- **It must:**
+  - Bring `lon` into `[x0, x0 + 360)`.
+  - Return NaN off the grid, at a NaN node, or for bad input; on the last row or column use that node.
+- **Example:** on the test's 3 x 2 grid, `bimGeoidAt(g, -129.5, 57.5)` is 5.5.
+- **May use:** `Math` (built in)
+- **Files:** `src/js/engine/map/cog-datum.js`, `docs/work-orders/v202/v202-datum.test.mjs`
+- **Budget:** 30
+- **Test:** `node --test --test-name-pattern="WO-22" docs/work-orders/v202/v202-datum.test.mjs`
+- **Done when:** `python3 tools/gate.py check v202 WO-22` passes; then `ship` it.
+
+---
+
+## [ ] WO-23 [Cline] `bimDatumShift` in `src/js/engine/map/cog-datum.js`
+
+- **Implement:** a height moved between datums, `h + N[from] - N[to]`, as SPEC part C3 says.
+- **It must:**
+  - Take `ellipsoid` as 0.
+  - Return NaN for a bad height, a missing `N`, or a datum whose N is not a finite number.
+- **Example:** `bimDatumShift(10, 'egm96', 'navd88', {egm96: -34.274, navd88: -32.979})` is 8.705.
+- **May use:** nothing
+- **Files:** `src/js/engine/map/cog-datum.js`, `docs/work-orders/v202/v202-datum.test.mjs`
+- **Budget:** 12
+- **Test:** `node --test --test-name-pattern="WO-23" docs/work-orders/v202/v202-datum.test.mjs`
+- **Done when:** `python3 tools/gate.py check v202 WO-23` passes; then `ship` it.
+
+---
+
+## [ ] WO-24 [Cline] `bimGemCell` in `src/js/engine/map/surface-model.js`
+
+- **Implement:** the GEM-15 cell and its two files for a longitude and latitude, as SPEC part C3 says.
+- **It must:**
+  - Name the group from the 10-degree tile (`p`/`m`) and the cell from the 1-degree south-west corner (`m` for negative, nothing for positive).
+  - Return `null` outside 61 S to 84 N, off `[-180, 180)`, or for bad input.
+- **Example:** `bimGemCell(-75.1822, 39.9557)` gives group `p30_m80`, cell `wm76s39`.
+- **May use:** `Math` (built in)
+- **Files:** `src/js/engine/map/surface-model.js`, `docs/work-orders/v202/v202-surface.test.mjs`
+- **Budget:** 25
+- **Test:** `node --test --test-name-pattern="WO-24" docs/work-orders/v202/v202-surface.test.mjs`
+- **Done when:** `python3 tools/gate.py check v202 WO-24` passes; then `ship` it.
+
+---
+
+## [ ] WO-25 [Cline] `bimSurfaceOffset` in `src/js/engine/map/surface-model.js`
+
+- **Implement:** the median offset of the local ground less GEM-15's terrain over open cells, as SPEC part C3 says.
+- **It must:**
+  - Keep pairs with four finite numbers, `|dsm - dtm| <= 1` and `std <= 1`.
+  - Return `{offset, n, mad}` rounded to 0.01; `null` under five kept pairs; an even count takes the mean of the middle two.
+- **Example:** five open pairs with ref - dtm of -2, -2.5, -1.6, -2 and -2.4 give `{offset: -2, n: 5, mad: 0.4}`.
+- **May use:** `Math` (built in)
+- **Files:** `src/js/engine/map/surface-model.js`, `docs/work-orders/v202/v202-surface.test.mjs`
+- **Budget:** 35
+- **Test:** `node --test --test-name-pattern="WO-25" docs/work-orders/v202/v202-surface.test.mjs`
+- **Done when:** `python3 tools/gate.py check v202 WO-25` passes; then `ship` it.
+
+---
+
+## [ ] WO-26 [Cline] `bimFootprintHeight` in `src/js/engine/map/surface-model.js`
+
+- **Implement:** a footprint's height: the median p95 of its cells less the ground, as SPEC part C3 says.
+- **It must:**
+  - Skip cells without a finite `p95`.
+  - Return `{h, n, spread, from:'gem15'}` rounded to 0.1; `null` without ground, under three cells, or under 2 m.
+- **Example:** five cells with p95 47.2, 46.8, 47.6, 45.1 and 47.0 over ground 13.2 give `{h: 33.8, n: 5, spread: 0.2, from: 'gem15'}`.
+- **May use:** `Math` (built in)
+- **Files:** `src/js/engine/map/surface-model.js`, `docs/work-orders/v202/v202-surface.test.mjs`
+- **Budget:** 30
+- **Test:** `node --test --test-name-pattern="WO-26" docs/work-orders/v202/v202-surface.test.mjs`
+- **Done when:** `python3 tools/gate.py check v202 WO-26` passes; then `ship` it.
+
+---
+
+## [ ] WO-27 [Claude] Audit WO-22 to WO-26; the registry's `geo.datums`; move the tests into `tests/unit/`
+
+## [ ] WO-28 [Claude] `bimGeotiffLoad`, `bimCogRead`, `bimGeoidFetch`; each source's datum; the project's datum from its location (D3); the Project row; credits
+
+## [ ] WO-29 [Claude] `bimGemFetch`; the levelling against 3DEP; the height order (D2); trees; Properties rows; the toast; the credit
+
+## [ ] WO-30 [Claude] The *Surface and canopy* layer in Analyze; the browser check at 30th Street Station (`tests/e2e/`)
