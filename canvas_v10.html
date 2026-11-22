@@ -10134,6 +10134,11 @@ function bimPicPlane(wPx, hPx, widthM) {
     return on;
   }
 
+
+  /* ================= __acad3dV247: Stormwater runoff on the site, the pure part =================
+     docs/research/research-physical-world.md and docs/work-orders/v247/SPEC.md. Priority-Flood with epsilon (Barnes et al. 2014), D8 directions and accumulation, a composite runoff coefficient and the rational method (HEC-22, 2024). Each function is a work order,
+     added below as it is built; none uses another file's names. */
+
   /* ===== __acad3dV248: the shape of the ground (docs/work-orders/v248/SPEC.md) =====
      On the analyses' ground grid {nx, nz, cell, H, ok}: plan and profile curvature (Zevenbergen and Thorne 1987),
      the terrain ruggedness index (Riley et al. 1999), and a viewshed by sight lines over the ground. */
@@ -15660,11 +15665,96 @@ function bimIsoWindows(p, windows, segs, samples) {
      routed from user paths (direct legs, a spine, spurs), the stair, and the scorecard every study carries. Each
      function is a work order, added below as it is built; none uses another file's names. */
 
-
-  /* ================= __acad3dV193: LOD-F, LOD3 openings on rectified facades, the pure part =================
+/* ================= __acad3dV193: LOD-F, LOD3 openings on rectified facades, the pure part =================
      docs/research/research-notion-v191-openings.md and docs/work-orders/v193/SPEC.md. Openings on a rectified facade:
      one-dimensional clusters, snapping, regularised rows and columns, overlaps, the app's wall opening. Each function is a
-     work order, added below as it is built; none uses another file's names. */
+     work order, added below as it is built; none uses another file's names.
+*/
+
+function bimOpnCluster(values, tol) {
+  tol = tol === undefined || tol < 0 ? 0.05 : tol;
+  var indexed = values.map(function(value, index) { return [value, index]; });
+  indexed.sort(function(a, b) { return a[0] - b[0] || a[1] - b[1]; });
+  var clusters = [];
+  var members = [];
+  var sum = 0;
+  var previous = null;
+  indexed.forEach(function(entry) {
+    var value = entry[0];
+    var index = entry[1];
+    if (previous !== null && value - previous > tol) {
+      clusters.push({ members: members, mean: sum / members.length });
+      members = [];
+      sum = 0;
+    }
+    members.push(index);
+    sum += value;
+    previous = value;
+  });
+  if (members.length) clusters.push({ members: members, mean: sum / members.length });
+  clusters.forEach(function(cluster) { cluster.members.sort(function(a, b) { return a - b; }); });
+  return clusters;
+}
+/* --- WO-02 --- */
+function bimOpnSnap(values, tol) {
+  var result = values.slice();
+  bimOpnCluster(values, tol).forEach(function(cluster) {
+    cluster.members.forEach(function(index) { result[index] = cluster.mean; });
+  });
+  return result;
+}
+
+/* --- WO-03 --- */
+function bimOpnRegularise(rects, tol) {
+  var sills = rects.map(function(rect) { return rect.y; });
+  var heads = rects.map(function(rect) { return rect.y + rect.h; });
+  var centres = rects.map(function(rect) { return rect.x + rect.w / 2; });
+  var snappedSills = bimOpnSnap(sills, tol);
+  var snappedHeads = bimOpnSnap(heads, tol);
+  var snappedCentres = bimOpnSnap(centres, tol);
+  return rects.map(function(rect, index) {
+    var x = snappedCentres[index] - rect.w / 2;
+    var y = snappedSills[index];
+    var head = snappedHeads[index];
+    return {
+      x: x,
+      y: y,
+      w: rect.w,
+      h: head - y,
+      moved: Math.max(Math.abs(x - rect.x), Math.abs(y - rect.y), Math.abs(head - (rect.y + rect.h)))
+    };
+  });
+}
+
+/* --- WO-04 --- */
+function bimOpnOverlap(rects) {
+  var pairs = [];
+  var i;
+  var j;
+  for (i = 0; i < rects.length; i++) {
+    for (j = i + 1; j < rects.length; j++) {
+      var a = rects[i];
+      var b = rects[j];
+      var overlapX = Math.min(a.x + a.w, b.x + b.w) - Math.max(a.x, b.x);
+      var overlapY = Math.min(a.y + a.h, b.y + b.h) - Math.max(a.y, b.y);
+      if (overlapX > 1e-9 && overlapY > 1e-9) pairs.push([i, j]);
+    }
+  }
+  return pairs;
+}
+
+/* --- WO-05 --- */
+function bimOpnToWall(rect, len, height) {
+  if (rect.w <= 0 || rect.h <= 0 || rect.x < 0 || rect.x + rect.w > len || rect.y < 0) return null;
+  if (height > 0 && rect.y + rect.h > height) return null;
+  return {
+    along: rect.x + rect.w / 2,
+    sill: rect.y,
+    width: rect.w,
+    height: rect.h,
+    kind: rect.y <= 0.05 ? 'door' : 'window'
+  };
+}
   /* ================= __acad3dV101: room data =================
      The fields a tag and a schedule read. They live on the room only. */
   var BIM_ROOM_FIELDS=[
@@ -23137,6 +23227,11 @@ function bimAnGauss(m) {
      docs/research/research-wind-lbm.md and docs/work-orders/v221/SPEC.md. A D2Q9 lattice Boltzmann reference: the
      equilibrium, the moments, a collide-and-stream step on a periodic box, the memory a D3Q19 box needs. Each function is a
      work order, added below as it is built; none uses another file's names. */
+
+
+  /* ================= __acad3dV246: Form-finding, the pure part =================
+     docs/research/research-physical-world.md and docs/work-orders/v246/SPEC.md. The force density method (Schek 1974) and dynamic relaxation with kinetic damping (Day, Barnes), with their own dense solve. Each function is a work order,
+     added below as it is built; none uses another file's names. */
   /* ================= __acad3dV167: the standards registry =================
      docs/research/research-standards-registry.md. Every standard, guideline and assumption an analysis
      applies is a record here, never a number in its code: a topic, and its editions. An edition says
@@ -43793,7 +43888,47 @@ BIM_IFC_SAVE.model=bimIfcSaveModel;
   /* WO-01: a single-band, uncompressed, float32 TIFF (strips or tiles, either byte order) as
      {w,h,data:Float32Array}, rows from the top; null for anything it cannot read exactly */
   function bimTiffF32(bytes){
-    return null;
+    if(!(bytes instanceof Uint8Array)||bytes.length<8)return null;
+    var le=bytes[0]===0x49&&bytes[1]===0x49,dv,n=bytes.length,ifd,cnt,p,tags={},i,id,ty,c,sz,at,j,a,w,h,data,offs,rps,tw,th,nx,ny,tx,tyi,rows,cols,off,x,y;
+    if(!le&&!(bytes[0]===0x4D&&bytes[1]===0x4D))return null;
+    dv=new DataView(bytes.buffer,bytes.byteOffset,bytes.byteLength);
+    if(dv.getUint16(2,le)!==42)return null;
+    ifd=dv.getUint32(4,le);
+    if(ifd<8||ifd>n-2)return null;
+    cnt=dv.getUint16(ifd,le);
+    if(ifd+2+cnt*12>n)return null;
+    for(i=0;i<cnt;i++){
+      p=ifd+2+i*12;id=dv.getUint16(p,le);ty=dv.getUint16(p+2,le);c=dv.getUint32(p+4,le);
+      if((ty!==3&&ty!==4)||!c)continue;
+      sz=ty===3?2:4;at=c*sz>4?dv.getUint32(p+8,le):p+8;
+      if(c*sz>n||at>n-c*sz)return null;
+      a=[];for(j=0;j<c;j++)a.push(ty===3?dv.getUint16(at+j*sz,le):dv.getUint32(at+j*sz,le));
+      tags[id]=a;
+    }
+    function v(id,def){return tags[id]?tags[id][0]:def}
+    w=v(256,0);h=v(257,0);
+    if(!w||!h||w*h>16777216||v(258,0)!==32||v(259,1)!==1||v(277,1)!==1||v(339,0)!==3)return null;
+    data=new Float32Array(w*h);
+    tw=v(322,0);th=v(323,0);offs=tags[324]||[];
+    if(tw||th||offs.length){
+      if(!tw||!th)return null;
+      nx=Math.ceil(w/tw);ny=Math.ceil(h/th);
+      if(offs.length!==nx*ny)return null;
+      for(i=0;i<offs.length;i++){
+        tx=i%nx;tyi=Math.floor(i/nx);rows=Math.min(th,h-tyi*th);cols=Math.min(tw,w-tx*tw);off=offs[i];
+        if(off+((rows-1)*tw+cols)*4>n)return null;
+        for(y=0;y<rows;y++)for(x=0;x<cols;x++)data[(tyi*th+y)*w+tx*tw+x]=dv.getFloat32(off+(y*tw+x)*4,le);
+      }
+    }else{
+      offs=tags[273]||[];rps=v(278,h);
+      if(!rps||offs.length!==Math.ceil(h/rps))return null;
+      for(i=0;i<offs.length;i++){
+        rows=Math.min(rps,h-i*rps);off=offs[i];
+        if(off+w*rows*4>n)return null;
+        for(j=0;j<w*rows;j++)data[i*rps*w+j]=dv.getFloat32(off+j*4,le);
+      }
+    }
+    return{w:w,h:h,data:data}
   }
   /* WO-02: the 3DEP exportImage address for an area {w,s,e,n} and a grid of cols x rows (2 to 2000),
      the bbox in Web Mercator (R 6378137, toFixed(2)); null for a missing area or a bad size */
@@ -59202,6 +59337,41 @@ function bimWalkKeys(h, j) {
     }
     return out;
   }
+
+
+  /* ================= __acad3dV239: Floor loads from the place, the pure part =================
+     docs/research/research-physical-world.md and docs/work-orders/v239/SPEC.md. Live load reduction (ASCE 7-22 4.7, IBC 1607.12.1), its KLL, and the roof live load (4.8). Each function is a work order,
+     added below as it is built; none uses another file's names. */
+
+
+  /* ================= __acad3dV240: Wind loads from the place, the pure part =================
+     docs/research/research-physical-world.md and docs/work-orders/v240/SPEC.md. ASCE 7-22's directional procedure for an enclosed rigid building: Kz, q, the leeward Cp (Ke is given: 1.0 unless the user sets it), storey forces, the four load cases, the approximate frequency. Each function is a work order,
+     added below as it is built; none uses another file's names. */
+
+
+  /* ================= __acad3dV241: Earthquake loads from the place, the pure part =================
+     docs/research/research-physical-world.md and docs/work-orders/v241/SPEC.md. ASCE 7-22's design spectra, Ta, Cu, Cs (methods 1 and 2) with its bounds, the vertical distribution, the USGS service's request and answer, storey drift. Each function is a work order,
+     added below as it is built; none uses another file's names. */
+
+
+  /* ================= __acad3dV242: Modes and the response spectrum, the pure part =================
+     docs/research/research-physical-world.md and docs/work-orders/v242/SPEC.md. Jacobi's eigenvalues, modes of a lumped-mass model, participation, CQC and SRSS, a shear building's stiffness, the scaling to the ELF shear. Each function is a work order,
+     added below as it is built; none uses another file's names. */
+
+
+  /* ================= __acad3dV243: Concrete members: cracking and strength, the pure part =================
+     docs/research/research-physical-world.md and docs/work-orders/v243/SPEC.md. ACI 318-19's material values, the cracked section, Mcr, Ie (Table 24.2.3.5), the cracking state, flexural strength, the ratio bands. Each function is a work order,
+     added below as it is built; none uses another file's names. */
+
+
+  /* ================= __acad3dV244: Steel members: AISC 360-22 checks, the pure part =================
+     docs/research/research-physical-world.md and docs/work-orders/v244/SPEC.md. An I section's properties from its plates, compactness (B4.1), compression (E3), Lp and Lr and flexure (F2), Cb (F1), combined forces (H1-1). Each function is a work order,
+     added below as it is built; none uses another file's names. */
+
+
+  /* ================= __acad3dV245: The building under a ground motion, the pure part =================
+     docs/research/research-physical-world.md and docs/work-orders/v245/SPEC.md. Rayleigh damping, Newmark's average acceleration for one and many degrees of freedom, a dense solve, a ground-motion record read from text. Each function is a work order,
+     added below as it is built; none uses another file's names. */
 
 
   /* ================= __acad3dV226: Track C, the PennDOT LRFD input writer, the pure part =================

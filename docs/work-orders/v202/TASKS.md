@@ -36,7 +36,7 @@ Done 2026-11-13: the file (with `BIM_NBI_URL` and `bimCityRecs` too), its includ
 
 ---
 
-## [ ] WO-01 [Cline] `bimTiffF32` in `src/js/engine/map/measured-context.js`
+## [x] WO-01 [Cline] `bimTiffF32` in `src/js/engine/map/measured-context.js`
 
 - **Implement:** a reader for a single-band, uncompressed, float32 TIFF (strips or tiles, either byte order), as SPEC part 4 says.
 - **It must:**

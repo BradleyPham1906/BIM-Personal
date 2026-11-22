@@ -18,7 +18,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-01 [Cline] `bimOpnCluster(values, tol)`
+## [x] WO-01 [Cline] `bimOpnCluster(values, tol)`
 
 - **It must:** SPEC 5 WO-01: indices sorted by value (then index); a new cluster starts when a value is more than tol (0.05 when negative or absent) above the previous member; each {members (indices, ascending), mean}.
 - **May use:** nothing.
@@ -28,7 +28,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-02 [Cline] `bimOpnSnap(values, tol)`
+## [x] WO-02 [Cline] `bimOpnSnap(values, tol)`
 
 - **It must:** SPEC 5 WO-02: a copy of the values with each replaced by its cluster's mean.
 - **May use:** bimOpnCluster (WO-01).
@@ -38,7 +38,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-03 [Cline] `bimOpnRegularise(rects, tol)`
+## [x] WO-03 [Cline] `bimOpnRegularise(rects, tol)`
 
 - **It must:** SPEC 5 WO-03: sills (y), heads (y + h) and centres (x + w/2) each snapped (WO-02); each new rect {x: centre - w/2, y: sill, w, h: head - sill, moved: the largest of the changes of x, y and the head}.
 - **May use:** bimOpnSnap (WO-02).
@@ -48,7 +48,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-04 [Cline] `bimOpnOverlap(rects)`
+## [x] WO-04 [Cline] `bimOpnOverlap(rects)`
 
 - **It must:** SPEC 5 WO-04: pairs [i, j], i < j, whose interiors overlap (strictly, by 1e-9).
 - **May use:** nothing.
@@ -58,7 +58,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-05 [Cline] `bimOpnToWall(r, len, height)`
+## [x] WO-05 [Cline] `bimOpnToWall(r, len, height)`
 
 - **It must:** SPEC 5 WO-05: null unless w and h are positive and the rect lies within 0..len along and 0..height up (height checked when positive); else {along: x + w/2, sill: y, width: w, height: h, kind: 'door' when y <= 0.05, else 'window'}.
 - **May use:** nothing.

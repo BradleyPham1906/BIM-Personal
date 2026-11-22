@@ -22,14 +22,19 @@ It is complete only after `tools/gate.py ship` succeeds and the gate's commit is
 2. Run `git pull --ff-only origin main` when local `main` has no unpushed commits. If it fails, continue only if the
    gate can safely merge `origin/main` at ship time.
 3. Read the selected task block in `docs/work-orders/<phase>/TASKS*.md`, its referenced SPEC section, and its named
-   tests. Inspect the current target file and locate the named function before editing. If it already exists, replace
-   its body in place; never append a second definition or duplicate surrounding code. If it does not exist, add it once
-   at the instructed location. After editing, inspect the diff and confirm the named function has exactly one
-   definition in `src/js`.
+   tests. Before editing, run `git rev-parse --show-toplevel` and verify the target exists under that root; use the
+   resulting absolute path for scripted writes. Locate the named function in the current file. If it already exists,
+   replace only its body in place; never append a second definition, use stale line numbers, or regenerate the whole
+   file.
 4. Implement only the task's named functions and files. Follow the task's constraints, use ES5, and do not weaken or
-   remove tests. Keep the patch limited to the requested function; do not copy or regenerate the whole file.
-5. Run the task's exact test command and `node --check` on every changed JavaScript file. Review the diff for duplicate
-   declarations, malformed braces, and unrelated changes. Fix failures, then run:
+   remove tests. After each write, inspect `git diff --check` and the target's full diff, confirm the named function
+   has exactly one definition, and run `node --check` on the target. If any edit command fails (including a missing
+   path or failed write), stop immediately: verify the current directory and repository root, inspect the actual diff,
+   and repair from the current file contents only. Never claim the functions are correct while cleanup errors or
+   unexplained lines remain; preserve the diff and report the failure if it cannot be repaired safely.
+5. Run the task's exact test command and `node --check` on every changed JavaScript file. Review the diff for numbered
+   editor-gutter text (`^\s*[0-9]+\s+\|`), duplicate declarations, malformed braces, and unrelated changes. Fix
+   failures, then run:
 
        python3 tools/gate.py check <phase> <id>
 
