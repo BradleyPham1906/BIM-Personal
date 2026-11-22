@@ -78,6 +78,7 @@ import { bimUsageTarget } from '../bim/usages-live-areas.js';
 import { bimIsFrameMember } from '../structure/analytical-model.js';
 import { bimStructPropsHtml } from '../structure/analysis-properties.js';
 import { bimEntPropsHtml } from '../assets/scale-assets.js';
+import { bimMatQty } from '../assets/material-cards.js';
 import { A3D_VIEW } from '../views/saved-views.js';
 import { bimBoardShow } from '../sheets/boards.js';
 import { bimBdeOwnsProps } from '../sheets/board-design-edit.js';
@@ -470,10 +471,14 @@ import { bimNoteHex } from '../testing/hooks-view-gizmo.js';
            that is always empty reads as a value the app failed to compute rather than as a
            property the material has not been given. Revit hides parameters that do not
            apply for the same reason. A card that does carry them shows them. */
-        if(isFinite(curMat.youngsModulus))
-          matRows+=bimPropText('Young\u2019s Modulus (GPa)',bimDispNum(curMat.youngsModulus,1));
+        var curE=bimMatQty('youngsModulus',curMat.youngsModulus);   /* __acad3dV268: the cards keep E as "210 GPa" */
+        if(curE!=null&&isFinite(curE))
+          matRows+=bimPropText('Young\u2019s Modulus (GPa)',bimDispNum(curE,1));
         if(isFinite(curMat.poissonRatio))
           matRows+=bimPropText('Poisson\u2019s Ratio',bimDispNum(curMat.poissonRatio,2));
+        [['yieldStrength','Yield Strength (MPa)',0],['tensileStrength','Tensile Strength (MPa)',0],['conductivity','Thermal Conductivity (W/m\u00b7K)',3],
+          ['specificHeat','Specific Heat (J/kg\u00b7K)',0],['expansion','Thermal Expansion (\u00b5m/m\u00b7K)',1]].forEach(function(r){   /* __acad3dV268 */
+          if(isFinite(curMat[r[0]])&&curMat[r[0]]!==null)matRows+=bimPropText(r[1],bimDispNum(curMat[r[0]],r[2]));});
       }
       var mVol=bimObjVolume(o),mMass=bimObjMass(o);
       // bimDispNum returns an em dash for null, which is the same 'no closed volume' signal

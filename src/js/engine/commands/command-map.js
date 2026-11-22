@@ -108,6 +108,7 @@ import { bimStructFocus, bimToggleTrib } from '../structure/analysis-properties.
 import { openSaveBlockDlg } from '../assets/blocks.js';
 import { bimAttedit, openAttdefDlg } from '../assets/block-attribs.js';
 import { openBcloseDlg, openBeditDlg } from '../assets/block-editor.js';
+import { openMaterialsDlg } from '../assets/material-browser.js';
 import { A3D_VIEW } from '../views/saved-views.js';
 import { bimSheetById } from '../sheets/sheets.js';
 import { bimSheetOnScreen, bimShowModel } from '../sheets/present.js';
@@ -302,6 +303,7 @@ import { bimOpenToolsPanel } from '../ui/discipline-tabs.js';
     solidsubtract:function(){bimOcctBoolean('cut');},
     solidintersect:function(){bimOcctBoolean('intersect');},
     exportstep:function(){bimOcctExportStep();},
+    materials:function(){openMaterialsDlg();},   /* __acad3dV268 */
     gctangent:function(){startConstraintTool('tangent');},   /* __acad3dV267 */
     dcradius:function(){startConstraintTool('radius');},
     dcdiameter:function(){startConstraintTool('diameter');},
