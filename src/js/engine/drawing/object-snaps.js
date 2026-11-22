@@ -256,11 +256,11 @@ import { a3dToast } from '../bim/csg-booleans.js';
   function bimOsnapSummary(){
     var on=[],i;
     for(i=0;i<BIM_OSNAP_KINDS.length;i++)if(A3D_OSNAP[BIM_OSNAP_KINDS[i]])on.push(BIM_OSNAP_NAMES[BIM_OSNAP_KINDS[i]]);
-    return (on.length?on.join(', '):'none')+(A3D_OSNAP.polar?'; polar every '+A3D_OSNAP.polarInc+'°':'');
+    return (on.length?on.join(', '):'none')+(A3D_OSNAP.polar?'; polar every '+A3D_OSNAP.polarInc+'\u00b0':'');
   }
   function bimTogglePolar(){
     A3D_OSNAP.polar=!A3D_OSNAP.polar;
-    a3dToast('Polar tracking '+(A3D_OSNAP.polar?'on, every '+A3D_OSNAP.polarInc+'°':'off')+' (F10)');
+    a3dToast('Polar tracking '+(A3D_OSNAP.polar?'on, every '+A3D_OSNAP.polarInc+'\u00b0':'off')+' (F10)');
     paint();
   }
   function setOsnapModes(o){

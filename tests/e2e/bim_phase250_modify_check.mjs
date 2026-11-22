@@ -75,6 +75,13 @@ await sel([rect]); await run('moveTool'); await click([0, 0]); await click([6, 0
 ck(S.length === 1 && same(S[0].pts.slice().sort(), [[6, 0], [10, 0], [10, 3], [6, 3]].sort()), 'MOVE by 6 m (' + JSON.stringify(S[0].pts) + ')');
 await shot('v250-01-moved');
 
+// MOVE again, the distance typed along the rubber band, as AutoCAD's direct distance entry: 2 m east and back
+await sel([rect]); await run('moveTool'); await click([6, 0]); await move([9, 0]);
+for (const type of ['keyDown', 'keyUp']) await C.send('Input.dispatchKeyEvent', { type, code: 'Digit2', key: '2', text: type === 'keyDown' ? '2' : undefined, windowsVirtualKeyCode: 50 });
+await tap('Enter'); S = await sks();
+ck(S.length === 1 && same(S[0].pts.slice().sort(), [[8, 0], [12, 0], [12, 3], [8, 3]].sort()), 'MOVE by a typed 2 along the rubber band (' + JSON.stringify(S[0].pts) + ')');
+await sel([rect]); await run('moveTool'); await click([8, 0]); await click([6, 0]);
+
 // COPY twice, then Esc
 await sel([rect]); await run('copyTool'); await click([6, 0]); await click([6, 5]); await click([6, 10]); await tap('Escape'); S = await sks();
 ck(S.length === 3, 'COPY repeats: two copies (' + S.length + ')');

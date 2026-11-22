@@ -94,6 +94,9 @@ import { a3dToast } from '../bim/csg-booleans.js';
     }
     if(!o)return null;
     o.layer=L;o.color=C;
+    /* __acad3dV257: its own linetype and lineweight (cc-dwg: a name or ByLayer, 1/100 mm or -1 ByLayer) */
+    if(e.linetype&&!/^by(layer|block)$/i.test(e.linetype))o.linetype=e.linetype;
+    if(typeof e.lineweight==='number'&&e.lineweight>=0)o.lineweight=e.lineweight/100;
     /* an entity whose plane faces down (extrusion 0,0,-1, how a mirrored copy is often stored) is mirrored in x */
     if(e.extrusion&&e.extrusion.z<0&&o.type!=='INSERT'&&o.type!=='3DFACE')o=dxfXform(o,{at:[0,0],sx:-1,sy:1,rot:0},[0,0]);
     return o;
@@ -184,14 +187,19 @@ import { a3dToast } from '../bim/csg-booleans.js';
   /* The DXF reader's result as a cc-dwg model: the layers and model space the writer takes (model.js's shape). */
   function bimDwgModelFrom(res,version){
     var layers=[],ents=[],k,i,e,D=Math.PI/180;
-    function col(c){return typeof c==='number'&&c>=1&&c<=255?{index:c}:{index:256};}
+    function col(c){
+      if(typeof c==='string'&&/^#[0-9a-fA-F]{6}$/.test(c))return {rgb:parseInt(c.slice(1),16)};   /* __acad3dV257: a true colour */
+      return typeof c==='number'&&c>=1&&c<=255?{index:c}:{index:256};
+    }
     for(k in res.layers)if(res.layers.hasOwnProperty(k)){
       var l=res.layers[k],rgb=parseInt(String(l.color||'#ffffff').slice(1),16);
       layers.push({name:l.name,color:{rgb:rgb},off:!!l.off,frozen:!!l.frozen,locked:!!l.locked,plot:l.plot!==false,
         linetypeName:'Continuous',lineweight:l.lineweight!=null?Math.round(l.lineweight*100):-3});
     }
     var base={linetype:'ByLayer',lineweight:-1,ltscale:1,invisible:false,extrusion:{x:0,y:0,z:1}};
-    function mk(o,e){var q;for(q in base)if(base.hasOwnProperty(q))o[q]=base[q];o.layer=e.layer||'0';o.color=col(e.color);return o;}
+    function mk(o,e){var q;for(q in base)if(base.hasOwnProperty(q))o[q]=base[q];o.layer=e.layer||'0';o.color=col(e.color);
+      if(typeof e.lineweight==='number'&&e.lineweight>=0)o.lineweight=Math.round(e.lineweight*100);   /* __acad3dV257 */
+      return o;}
     function P(p){return {x:p[0],y:p[1],z:p[2]||0};}
     for(i=0;i<res.entities.length;i++){
       e=res.entities[i];
