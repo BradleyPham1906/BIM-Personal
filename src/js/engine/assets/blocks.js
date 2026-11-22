@@ -161,7 +161,7 @@ import { a3dToast, objById } from '../bim/csg-booleans.js';
   }
   /* Insert a block with its base point at pt ([x, z] on the active level). Returns the new ids, or
      null when nothing could be made. One undo step. */
-  function bimInsertBlock(entry,pt){
+  function bimInsertBlock(entry,pt,opts){   /* __acad3dV265: opts {values, quiet} for a redefinition */
     if(!entry||bimAssetKind(entry)!=='block'||!entry.recs||!entry.recs.length){a3dToast('That block has nothing in it');return null;}
     var lvl=bimGetActiveLevel(),dx=pt[0]-entry.base[0],dz=pt[1]-entry.base[1];
     var dY=lvl.elev-(isFinite(entry.y0)?entry.y0:lvl.elev);
@@ -190,11 +190,11 @@ import { a3dToast, objById } from '../bim/csg-booleans.js';
     }
     for(i=0;i<made.length;i++)A3D.objs.push(made[i]);
     A3D.meshes={};
-    bimAttribsAfterInsert(made,entry.name);   /* __acad3dV260: each made object's insert, and its attributes asked for */
+    bimAttribsAfterInsert(made,entry.name,{id:entry.id,at:[pt[0],pt[1]],level:lvl.id},opts&&opts.values);   /* __acad3dV260; __acad3dV265: where it went */
     var ids=made.map(function(o){return o.id;});
     A3D.selSet=ids.slice();A3D.sel=ids[0];A3D.sel2=null;
     refreshTree();refreshHud();paint();saveSoon();
-    a3dToast('Inserted "'+entry.name+'" ('+made.length+' object(s))'+
+    if(!(opts&&opts.quiet))a3dToast('Inserted "'+entry.name+'" ('+made.length+' object(s))'+
       (failed?', '+failed+' could not be copied':'')+
       (cut?'; '+cut+' link(s) to objects outside the block were not kept':''));
     return ids;

@@ -51,6 +51,7 @@ import { bimDrawGizmo } from '../gizmo/gizmo-handles.js';
 import { bimDrawFaceMode, bimFaceCurrent } from '../editing/faces-push-pull.js';
 import { bimDrawGrips } from '../drawing/add-vertex.js';
 import { drawMarqueeRect } from '../editing/selection-tools.js';
+import { drawWipeouts } from '../drawing/hatch-more.js';
 import { drawAreaPlan, drawSunPath, drawSunShadows, drawTribAreas } from '../site/shadows.js';
 import { drawStructResults } from '../structure/analysis-display.js';
 import { bimEntDrawTurns } from '../assets/scale-assets.js';
@@ -511,6 +512,7 @@ import { cvH, cvScale, cvW } from '../ui/canvas-size.js';
     drawClines(ctx,V,W,H);         /* __acad3dV94: construction geometry, under the model */
     drawSketches(ctx,V,W,H);
     if(!presentRooms)drawRooms(ctx,V,W,H);
+    drawWipeouts(ctx,V,W,H);       /* __acad3dV265: over the linework, under dimensions and text */
     drawDims(ctx,V,W,H);
     drawTextLabels(ctx,V,W,H);
     drawRoomTags(ctx,V,W,H);       /* __acad3dV101 */

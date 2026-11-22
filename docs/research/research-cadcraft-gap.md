@@ -90,3 +90,22 @@ work orders under the existing workflow (Claude specifies, Cline builds).
 - github.com/storytold/cadcraft README and `docs/gaps.md`: read 2026-11-22 (S, upstream's own claims,
   not tested here).
 - This repository's `src/js/engine/` at the branch's head, 2026-11-22 (P).
+
+## 6. The list closed (V265, 2026-11-22)
+
+The owner, 2026-11-22: "Try to get it done with cad draft". V265 builds the last of section 3's items:
+
+- **Hatch holes:** a hatch has `holes`, filled even-odd. A DXF or DWG hatch's inner boundaries become its holes (islands).
+- **DONUT (DO):** a solid ring or dot.
+- **WIPEOUT:** masks what is under it with the background, under dimensions and text. Checked by the canvas's pixels.
+- **Polyline global width:** in Properties; DXF group 43 and DWG `constantWidth` both ways; drawn at drawing scale.
+- **CIRCLE TTR:** tangent to two picked lines, in the corner of the picks.
+- **BEDIT and BCLOSE:** edit a block; saving redefines every insert and keeps its attribute values.
+- **XATTACH and XREF:** attach a DXF or DWG as locked reference objects; Detach and Reload. A browser asks for the file
+  again on Reload.
+- **Patterned hatches in DXF export:** a HATCH with its holes and its pattern written as line families, one per tile
+  segment, its period and offset a basis of the tile lattice. Checked with ezdxf 1.4.2, which traced every pattern at 0
+  and 30 degrees onto the app's tiles (`docs/research/experiments/v265-hatch-dxf/`, 18 of 18). The same lines go to DWG.
+
+What remains is outside this list. The DXF export has no `$ACADVER` header and no handles, so a strict AutoCAD reader
+may refuse it; ezdxf and the app's own reader read it.

@@ -8,7 +8,9 @@ import { refreshLayers } from '../layers/analysis-data-rows.js';
 import { bimMakeImportedFace, bimMakeImportedSketch } from '../site-analysis/panel.js';
 import { dxfEntityExtra, dxfExpandInserts, dxfHatchOuter } from './dxf-entities.js';
 import { paint } from '../map/terrain-3d.js';
+import { bimFlattenPoly } from '../drawing/arc-storage.js';
 import { bimAddHatch } from '../drawing/hatch.js';
+import { bimPointInRing } from '../drawing/hatch-more.js';
 import { bimCircleSketch } from '../drawing/curve-walking.js';
 import { fitScene } from '../ui/tool-palette.js';
 import { saveSoon } from '../bim/region-regenerate.js';
@@ -162,7 +164,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
             if(vi<bulges.length)bulges[vi]=parseFloat(r.items[ri][1])||0;
           }
         }
-        if(pts.length>=2)target.push(dxfOwnLook({type:'LWPOLYLINE',closed:!!(flags2&1),layer:layerName,color:colOverride,pts:pts,bulges:bulges},ltO,lwO));
+        if(pts.length>=2)target.push(dxfOwnLook({type:'LWPOLYLINE',closed:!!(flags2&1),layer:layerName,color:colOverride,pts:pts,bulges:bulges,width:dxfNum(r.items,43,0)},ltO,lwO));   /* __acad3dV265: 43, its constant width */
       }else if(t==='3DFACE'){
         target.push({type:'3DFACE',layer:layerName,color:colOverride,pts:[
           [dxfNum(r.items,10,0),dxfNum(r.items,20,0),dxfNum(r.items,30,0)],
@@ -237,22 +239,27 @@ import { a3dToast } from '../bim/csg-booleans.js';
             /* __acad3dV88: bulge is scale-invariant (it is tan of a quarter of the swept
                angle), so it is carried across unscaled while the points are scaled. */
             o=bimMakeImportedSketch(pts,baseY,!!e.closed,bimDxfBulgesToModel(e.bulges));
+            if(o&&e.width>0)o.plWidth=e.width*scale;   /* __acad3dV265 */
           }else if(e.type==='CIRCLE'){
             /* __acad3dV251: a circle is two half-circle arcs, as CIRCLE draws one, not a 24-gon */
             var cir=bimCircleSketch(bimDxfToModel(e.c[0],e.c[1],scale),e.r*scale);
             if(!cir.error)o=bimMakeImportedSketch(cir.pts,baseY+(e.c[2]||0)*scale,true,cir.bulges);
           }else if(e.type==='HATCH'){   /* __acad3dV261: the outer boundary filled; an island is drawn as its outline */
-            var outer=dxfHatchOuter(e.loops),hk;
+            /* __acad3dV265: each outer boundary filled, the inner ones inside it its holes (islands) */
+            var outer=dxfHatchOuter(e.loops),hk,hj,made=[];
+            var toM=function(lp){return {pts:lp.pts.map(function(p){return bimDxfToModel(p[0],p[1],scale);}),bulges:bimDxfBulgesToModel(lp.bulges)};};
+            for(hk=0;hk<outer.length;hk++){
+              var om=toM(outer[hk]);
+              var ho=bimAddHatch(om.pts,om.bulges,baseY,{layer:lid,pattern:e.pattern,
+                patternScale:e.scale>0?e.scale:1,patternAngle:-(e.angle||0),
+                patternColor:typeof e.color==='string'?e.color:(e.color>=1&&e.color<=255?dxfAciToHex(e.color):undefined)});
+              if(ho){ho.locked=true;hatches++;made.push({h:ho,ring:bimFlattenPoly(om.pts,om.bulges,true)});}
+            }
             for(hk=0;hk<e.loops.length;hk++){
-              var lp=e.loops[hk],mp=lp.pts.map(function(p){return bimDxfToModel(p[0],p[1],scale);});
-              if(outer.indexOf(lp)>=0){
-                var ho=bimAddHatch(mp,bimDxfBulgesToModel(lp.bulges),baseY,{layer:lid,pattern:e.pattern,
-                  patternScale:e.scale>0?e.scale:1,patternAngle:-(e.angle||0),
-                  patternColor:typeof e.color==='string'?e.color:(e.color>=1&&e.color<=255?dxfAciToHex(e.color):undefined)});
-                if(ho){ho.locked=true;hatches++;}
-              }else{
-                var isl=bimMakeImportedSketch(mp,baseY,true,bimDxfBulgesToModel(lp.bulges));
-                if(isl){isl.layer=lid;created++;}
+              if(outer.indexOf(e.loops[hk])>=0)continue;
+              var im=toM(e.loops[hk]);
+              for(hj=0;hj<made.length;hj++)if(bimPointInRing(im.pts[0],made[hj].ring)){
+                (made[hj].h.holes=made[hj].h.holes||[]).push({pts:im.pts,bulges:im.bulges});break;
               }
             }
           }else if(e.type==='POLYPTS'){   /* __acad3dV251: ellipse, spline, solid */

@@ -76,6 +76,7 @@ import { a3dToast, objById } from '../bim/csg-booleans.js';
       rows.push(['Extents',bimFmtLen(mx[0]-mn[0])+' \u00d7 '+bimFmtLen(mx[2]-mn[2])+' \u00d7 '+bimFmtLen(mx[1]-mn[1])+' high']);
     }
     if(o.blockRef)rows.push(['Block',String(o.blockRef.name)]);   /* __acad3dV260 */
+    if(o.xref)rows.push(['External reference',String(o.xref.name)]);   /* __acad3dV265 */
     if(o.attrib)rows.push(['Attribute',String(o.attrib.tag)]);
     if(o.attdef)rows.push(['Attribute definition',String(o.attdef.tag)+(o.attdef.def?' (default '+o.attdef.def+')':'')]);
     if(bimIsLocked(o))rows.push(['Locked','yes']);

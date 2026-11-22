@@ -1,9 +1,10 @@
-import { UNDO_STACK, pushUndo } from '../drawing/plan-mode-sketch.js';
+import { UNDO_STACK, bimObjOffset, pushUndo } from '../drawing/plan-mode-sketch.js';
 import { bimLayerOf } from './layer-rules.js';
 import { BIM_LINETYPES, BIM_LINEWEIGHTS, bimLinetypeDef } from './select-change.js';
 import { bimEsc } from './layer-manager.js';
 import { bimPropRow } from '../properties/palette.js';
 import { refreshProps } from '../site-analysis/panel.js';
+import { toScreen } from '../io/import-entry.js';
 import { paint } from '../map/terrain-3d.js';
 import { saveSoon } from '../bim/region-regenerate.js';
 import { a3dToast } from '../bim/csg-booleans.js';
@@ -60,6 +61,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
     var lwo='<option value="ByLayer"'+(typeof o.lineweight==='number'?'':' selected')+'>ByLayer ('+(L.lineweight==null?'Default':L.lineweight.toFixed(2)+' mm')+')</option>';
     for(i=0;i<BIM_LINEWEIGHTS.length;i++)lwo+='<option value="'+BIM_LINEWEIGHTS[i]+'"'+(o.lineweight===BIM_LINEWEIGHTS[i]?' selected':'')+'>'+BIM_LINEWEIGHTS[i].toFixed(2)+' mm</option>';
     h+=bimPropRow('Lineweight','<select data-propf="objlineweight">'+lwo+'</select>');
+    h+=bimPropRow('Global width (m)','<input type="number" min="0" step="any" data-propf="plwidth" value="'+(o.plWidth>0?o.plWidth:0)+'">');   /* __acad3dV265 */
     return h;
   }
   /* A Properties change to one of them; true when the field was one of the three. */
@@ -71,6 +73,21 @@ import { a3dToast } from '../bim/csg-booleans.js';
     if(f==='objcolor'){bimObjLookApply(o,'color',inp.value);return true;}
     if(f==='objlinetype'){bimObjLookApply(o,'linetype',inp.value);return true;}
     if(f==='objlineweight'){bimObjLookApply(o,'lineweight',inp.value);return true;}
+    if(f==='plwidth'){   /* __acad3dV265 */
+      var w=parseFloat(inp.value);
+      if(!(w>=0)){a3dToast('A width is zero or more');refreshProps();return true;}
+      pushUndo();if(w>0)o.plWidth=w;else delete o.plWidth;paint();saveSoon();refreshProps();return true;
+    }
     return false;
   }
-export { bimObjLook, bimObjLookField, bimObjLookRows };
+  /* __acad3dV265: a polyline's global width (o.plWidth, metres), drawn at drawing scale as AutoCAD draws a wide
+     polyline; never thinner than the line it would otherwise be. */
+  function bimWideLook(lk,o,V,W,H){
+    var q=bimObjOffset(o),p=o.pts[0],a=toScreen([p[0]+q[0],(o.y||0)+q[1],p[1]+q[2]],V,W,H),b=toScreen([p[0]+q[0]+1,(o.y||0)+q[1],p[1]+q[2]],V,W,H);
+    var ppm=Math.sqrt(Math.pow(b[0]-a[0],2)+Math.pow(b[1]-a[1],2)),r={},k;
+    for(k in lk)if(lk.hasOwnProperty(k))r[k]=lk[k];
+    r.width=Math.max(lk.width,o.plWidth*ppm);
+    r.plWidth=o.plWidth;
+    return r;
+  }
+export { bimObjLook, bimObjLookField, bimObjLookRows, bimWideLook };
