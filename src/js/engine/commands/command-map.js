@@ -102,6 +102,7 @@ import { fitScene } from '../ui/tool-palette.js';
 import { startSectionTool } from '../views/section-tool.js';
 import { bimDocsCreate } from '../ui/project-tabs.js';
 import { bimDocsClose } from '../assets/templates.js';
+import { openSheetDlg } from '../views/spreadsheet.js';
 import { bimToggleAreaPlan, bimToggleSun } from '../site/shadows.js';
 import { bimAnalyzeCommand, bimAnalyzeOff } from '../structure/analysis-display.js';
 import { bimStructFocus, bimToggleTrib } from '../structure/analysis-properties.js';
@@ -304,6 +305,7 @@ import { bimOpenToolsPanel } from '../ui/discipline-tabs.js';
     solidintersect:function(){bimOcctBoolean('intersect');},
     exportstep:function(){bimOcctExportStep();},
     materials:function(){openMaterialsDlg();},   /* __acad3dV268 */
+    spreadsheet:function(){openSheetDlg();},   /* __acad3dV269 */
     gctangent:function(){startConstraintTool('tangent');},   /* __acad3dV267 */
     dcradius:function(){startConstraintTool('radius');},
     dcdiameter:function(){startConstraintTool('diameter');},

@@ -5,6 +5,7 @@ import { bimResValid, setA3D_RES_IMG } from '../analysis/results-layers.js';
 import { bimProjectRecord } from './objects-save.js';
 import { bimDocsBoot } from '../ui/project-tabs.js';
 import { bimAdoptLayers } from '../bim/region-regenerate.js';
+import { bimSheetValid } from '../views/spreadsheet.js';
 import { bimMatCardsValid } from '../assets/material-cards.js';
 import { bimPresValid } from '../sheets/boards.js';
 
@@ -124,6 +125,7 @@ import { bimPresValid } from '../sheets/boards.js';
       A3D.dimStyle=bimDimStyleValid(st&&st.dimStyle);   /* __acad3dV258: its dimension style */
       A3D.textStyle=bimTextStyleValid(st&&st.textStyle);   /* __acad3dV259: its text style */
       A3D.matCards=bimMatCardsValid(st&&st.matCards);   /* __acad3dV268: its own material cards */
+      A3D.sheet=bimSheetValid(st&&st.sheet);   /* __acad3dV269: its spreadsheet */
       setA3D_RES_IMG({});
       if(st&&Array.isArray(st.classifications)){
         A3D.classifications=st.classifications.filter(function(c){return c&&typeof c.id==='string'&&typeof c.code==='string';});
