@@ -1,5 +1,6 @@
 import { A3D, el } from '../core/state.js';
 import { bimLinetypeDef } from './select-change.js';
+import { bimObjLook } from './object-look.js';
 import { bimBobBlend } from '../sheets/board-objects.js';
 import { cvScale } from '../ui/canvas-size.js';
 
@@ -112,11 +113,11 @@ import { cvScale } from '../ui/canvas-size.js';
     return a;
   }
   function bimLayerLook(o){
-    var ly=bimLayerOf(o);
-    return {color:(ly&&/^#[0-9a-fA-F]{6}$/.test(ly.color||''))?ly.color:'#5ec4b8',
-            linetype:(ly&&bimLinetypeDef(ly.linetype))?bimLinetypeDef(ly.linetype).name:'Continuous',
-            dash:bimLinetypeDash(ly&&ly.linetype,(A3D.sheetCapture&&A3D_PLOT.pxmm>0)?A3D_PLOT.pxmm:BIM_LT_SCREEN_PXMM),
-            width:bimLineweightPx(ly?ly.lineweight:null,1.6),
+    var ly=bimLayerOf(o),own=bimObjLook(o,ly);   /* __acad3dV257: the object's own, else its layer's */
+    return {color:own.color,
+            linetype:own.linetype,
+            dash:bimLinetypeDash(own.linetype,(A3D.sheetCapture&&A3D_PLOT.pxmm>0)?A3D_PLOT.pxmm:BIM_LT_SCREEN_PXMM),
+            width:bimLineweightPx(own.lineweight,1.6),
             alpha:bimLayerAlpha(o)};
   }
   function bimHexA(hex,a){

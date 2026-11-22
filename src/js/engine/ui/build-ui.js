@@ -40,6 +40,7 @@ import { bimRebuildRoof } from '../bim/roofs.js';
 import {
   bimLayerPickRefusal, bimObjSetLayer, bimSelectByRule, setActiveLayer
 } from '../layers/select-change.js';
+import { bimObjLookField } from '../layers/object-look.js';
 import { bimLenInputToMetres, bimPropGroupToggle } from '../properties/palette.js';
 import { bimUsagePropChange, bimUsagePropClick } from '../properties/usages.js';
 import { bimIntProgChange, bimIntProgClick } from '../properties/programme.js';
@@ -576,6 +577,7 @@ import { size } from './canvas-size.js';
       var o=objById(A3D.sel);
       if(!o)return;
       var f=inp.getAttribute('data-propf');
+      if(bimObjLookField(o,f,inp))return;   /* __acad3dV257 */
       if(f==='terrint'){bimSetTerrainInterval(o,inp.value);return;}   /* __acad3dV108 */
       if(f==='terrview'){bimTerrainSetView(o,inp.value);return;}      /* __acad3dV144 */
       if(f==='cutslope'||f==='fillslope'){bimSetPadSlope(o,f,inp.value);return;}   /* __acad3dV145 */

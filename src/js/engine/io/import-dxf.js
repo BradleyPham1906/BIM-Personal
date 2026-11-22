@@ -107,8 +107,12 @@ import { a3dToast } from '../bim/csg-booleans.js';
 
       var layerName=dxfStr(r.items,8,'0');
       var colOverride=dxfNum(r.items,62,null);
+      /* __acad3dV257: an entity's own true colour (420), linetype (6) and lineweight (370) */
+      var tcO=dxfNum(r.items,420,null);
+      if(tcO!==null&&isFinite(tcO)&&tcO>=0)colOverride='#'+('000000'+Math.round(tcO).toString(16)).slice(-6);
+      var ltO=dxfStr(r.items,6,null),lwO=dxfNum(r.items,370,null);
       var extra=dxfEntityExtra(t,r.items,layerName,colOverride);
-      if(extra){target.push(extra);continue;}
+      if(extra){dxfOwnLook(extra,ltO,lwO);target.push(extra);continue;}
       if(t==='DIMENSION'||t==='ATTRIB'||t==='ATTDEF')continue;   /* ATTDEF: a block's template, never drawn */   /* a dimension without its block, a hidden attribute */
 
       if(t==='POLYLINE'){
@@ -130,16 +134,16 @@ import { a3dToast } from '../bim/csg-booleans.js';
         continue;
       }
       if(t==='LINE'){
-        target.push({type:'LINE',layer:layerName,color:colOverride,
+        target.push(dxfOwnLook({type:'LINE',layer:layerName,color:colOverride,
           p1:[dxfNum(r.items,10,0),dxfNum(r.items,20,0),dxfNum(r.items,30,0)],
-          p2:[dxfNum(r.items,11,0),dxfNum(r.items,21,0),dxfNum(r.items,31,0)]});
+          p2:[dxfNum(r.items,11,0),dxfNum(r.items,21,0),dxfNum(r.items,31,0)]},ltO,lwO));
       }else if(t==='CIRCLE'){
-        target.push({type:'CIRCLE',layer:layerName,color:colOverride,
-          c:[dxfNum(r.items,10,0),dxfNum(r.items,20,0),dxfNum(r.items,30,0)],r:dxfNum(r.items,40,1)});
+        target.push(dxfOwnLook({type:'CIRCLE',layer:layerName,color:colOverride,
+          c:[dxfNum(r.items,10,0),dxfNum(r.items,20,0),dxfNum(r.items,30,0)],r:dxfNum(r.items,40,1)},ltO,lwO));
       }else if(t==='ARC'){
-        target.push({type:'ARC',layer:layerName,color:colOverride,
+        target.push(dxfOwnLook({type:'ARC',layer:layerName,color:colOverride,
           c:[dxfNum(r.items,10,0),dxfNum(r.items,20,0),dxfNum(r.items,30,0)],r:dxfNum(r.items,40,1),
-          a1:dxfNum(r.items,50,0),a2:dxfNum(r.items,51,360)});
+          a1:dxfNum(r.items,50,0),a2:dxfNum(r.items,51,360)},ltO,lwO));
       }else if(t==='LWPOLYLINE'){
         var flags2=dxfNum(r.items,70,0);
         var xs=dxfAllNums(r.items,10),ys=dxfAllNums(r.items,20);
@@ -157,7 +161,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
             if(vi<bulges.length)bulges[vi]=parseFloat(r.items[ri][1])||0;
           }
         }
-        if(pts.length>=2)target.push({type:'LWPOLYLINE',closed:!!(flags2&1),layer:layerName,color:colOverride,pts:pts,bulges:bulges});
+        if(pts.length>=2)target.push(dxfOwnLook({type:'LWPOLYLINE',closed:!!(flags2&1),layer:layerName,color:colOverride,pts:pts,bulges:bulges},ltO,lwO));
       }else if(t==='3DFACE'){
         target.push({type:'3DFACE',layer:layerName,color:colOverride,pts:[
           [dxfNum(r.items,10,0),dxfNum(r.items,20,0),dxfNum(r.items,30,0)],
@@ -174,6 +178,12 @@ import { a3dToast } from '../bim/csg-booleans.js';
     var nIns=entities.filter(function(e){return e.type==='INSERT';}).length;
     entities=dxfExpandInserts(entities,blocks,0);   /* __acad3dV251 */
     return {layers:layers,entities:entities,blocks:Object.keys(blocks).length,inserts:nIns,skipped:skipped,scale:scale,insUnits:insUnits};
+  }
+  /* __acad3dV257: an entity's own linetype and lineweight, when it has them (BYLAYER and -1 are ByLayer) */
+  function dxfOwnLook(e,lt,lw){
+    if(lt&&!/^bylayer$|^byblock$/i.test(lt))e.linetype=lt;
+    if(lw!==null&&isFinite(lw)&&lw>=0)e.lineweight=lw/100;
+    return e;
   }
   function bimDxfApplyLayer(id,dl){
     var ly=bimLayerById(id),lt;
@@ -262,7 +272,13 @@ import { a3dToast } from '../bim/csg-booleans.js';
         }catch(eE){
           console.warn('[BIM] Failed to import a '+e.type+' entity: ',eE);
         }
-        if(o){if(typeof e.color==='string')o.col=e.color;else if(e.color!==null&&e.color!==undefined)o.col=dxfAciToHex(e.color);o.layer=lid;created++;}
+        if(o){if(typeof e.color==='string')o.col=e.color;else if(e.color!==null&&e.color!==undefined)o.col=dxfAciToHex(e.color);
+          if(typeof e.color==='string'||(typeof e.color==='number'&&e.color>=1&&e.color<=255))o.color=o.col;   /* __acad3dV257: its own colour, not ByLayer */
+          if(o.t==='sketch'){
+            if(e.linetype&&bimLinetypeDef(e.linetype))o.linetype=bimLinetypeDef(e.linetype).name;
+            if(typeof e.lineweight==='number'&&BIM_LINEWEIGHTS.indexOf(e.lineweight)>=0)o.lineweight=e.lineweight;
+          }
+          o.layer=lid;created++;}
       }
     }finally{
       var __dxfI;for(__dxfI=__dxfStart;__dxfI<A3D.objs.length;__dxfI++)A3D.objs[__dxfI].locked=true;

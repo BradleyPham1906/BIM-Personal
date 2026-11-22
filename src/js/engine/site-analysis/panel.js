@@ -27,6 +27,7 @@ import {
   BIM_ROOM_FIELDS, bimOccDatalist, bimRoomField, bimRoomLoadFactorHint, bimRoomOccupantsText
 } from '../bim/room-data-occupancy.js';
 import { bimDimKind } from '../annotation/dimensions.js';
+import { bimObjLookRows } from '../layers/object-look.js';
 import { bimEsc, bimLayerOptionsHtml } from '../layers/layer-manager.js';
 import {
   bimDispNum, bimObjTypeLabel, bimPropGroup, bimPropLen, bimPropLenText, bimPropRow, bimPropText
@@ -412,6 +413,7 @@ import { bimNoteHex } from '../testing/hooks-view-gizmo.js';
     // ---- Graphics ----
     var gfx='';
     gfx+=bimPropRow('Layer','<select data-propf="layer">'+bimLayerOptionsHtml(o.layer||A3D.activeLayer)+'</select>');
+    if(o.t==='sketch')gfx+=bimObjLookRows(o);   /* __acad3dV257: its own colour, linetype, lineweight, or ByLayer */
     h+=bimPropGroup('Graphics',gfx);
 
     /* __acad3dV59: Phase 51 graphic override. Instance-level only here -- the shared TYPE default

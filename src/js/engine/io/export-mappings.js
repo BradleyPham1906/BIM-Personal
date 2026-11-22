@@ -71,7 +71,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
   function bimBuildDXF(){
     var P=bimDxfPair,out='',layers=A3D.layers,i;
     out+=P(0,'SECTION')+P(2,'HEADER')+P(9,'$INSUNITS')+P(70,6)+P(0,'ENDSEC');
-    out+=P(0,'SECTION')+P(2,'TABLES')+bimDxfLtypeTable(layers)+P(0,'TABLE')+P(2,'LAYER')+P(70,layers.length+1);   /* __acad3dV121 */
+    out+=P(0,'SECTION')+P(2,'TABLES')+bimDxfLtypeTable(layers.concat(A3D.objs.filter(function(q){return !!q.linetype;})))+P(0,'TABLE')+P(2,'LAYER')+P(70,layers.length+1);   /* __acad3dV121 */
     out+=P(0,'LAYER')+P(2,'0')+P(70,0)+P(62,7)+P(6,'CONTINUOUS');
     for(i=0;i<layers.length;i++)out+=bimDxfLayerRecord(layers[i]);   /* __acad3dV121: every layer was white, on and Continuous */
     out+=P(0,'ENDTAB')+P(0,'ENDSEC')+P(0,'SECTION')+P(2,'ENTITIES');
@@ -87,8 +87,18 @@ import { a3dToast } from '../bim/csg-booleans.js';
     /* __acad3dV88: bulges is optional and parallel to pts. Group code 42 follows its vertex,
        which is where the DXF reference puts it, and is omitted entirely when the segment is
        straight - so a polyline with no arcs produces byte-identical output to before. */
-    function poly(pts,closed,lay,bulges){
-      out+=P(0,'LWPOLYLINE')+P(8,lay)+P(100,'AcDbEntity')+P(100,'AcDbPolyline')+P(90,pts.length)+P(70,closed?1:0);
+    /* __acad3dV257: an object's own colour, linetype and lineweight, as the entity's 62/420, 6 and 370; ByLayer
+       writes nothing, which a reader takes as ByLayer */
+    function own(o){
+      if(!o)return '';
+      var s='',lt=o.linetype&&bimLinetypeDef(o.linetype);
+      if(lt)s+=P(6,lt.pat.length?lt.name:'CONTINUOUS');
+      if(/^#[0-9a-fA-F]{6}$/.test(o.color||''))s+=P(62,bimDxfNearestAci(o.color))+P(420,parseInt(o.color.slice(1),16));
+      if(typeof o.lineweight==='number'&&isFinite(o.lineweight))s+=P(370,Math.round(o.lineweight*100));
+      return s;
+    }
+    function poly(pts,closed,lay,bulges,o){
+      out+=P(0,'LWPOLYLINE')+P(8,lay)+own(o)+P(100,'AcDbEntity')+P(100,'AcDbPolyline')+P(90,pts.length)+P(70,closed?1:0);
       var q;
       for(q=0;q<pts.length;q++){
         out+=P(10,DX(pts[q]))+P(20,DY(pts[q]));
@@ -146,7 +156,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
       }else if(o.t==='sketch'&&o.pts&&o.pts.length>=2){
         /* __acad3dV88: DXF carries the arc itself. This is the one consumer that does NOT
            flatten, because the format it writes stores exactly what this app stores. */
-        poly(o.pts,o.closed!==false,lay,o.bulges);
+        poly(o.pts,o.closed!==false,lay,o.bulges,o);
       }else if(o.t==='dim'&&bimDimKind(o)==='linear'){
         line(o.d1,o.d2,lay);line(o.p1,o.d1,lay);line(o.p2,o.d2,lay);
         text([(o.d1[0]+o.d2[0])/2,(o.d1[1]+o.d2[1])/2],o.length.toFixed(2),0.2,lay);
