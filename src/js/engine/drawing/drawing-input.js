@@ -45,6 +45,7 @@ import { bimMirrorSelection, openPolarArrayDlg, openRotateDlg } from '../editing
 import { bimInteriorPoint, bimIsRegionDep } from '../bim/region-dependents.js';
 import { bimBulgeAt, bimFlattenPoly, bimHasBulge } from './arc-storage.js';
 import { A3D_OSNAP, BIM_OSNAP_NAMES, bimOsnapDrawMarker } from './object-snaps.js';
+import { bimDmPoint, bimIsDmTool, bimMatchPropClick } from '../editing/drafting-modify.js';
 import { bimHatchGraphics, bimHatchOutline, bimIsHatch } from './hatch.js';
 import {
   bimClineDir, bimClineModeForKey, bimClineModeLabels, bimClineVisibleSeg, bimDrawingExtent2D, bimIsCline
@@ -359,6 +360,8 @@ import { cvH, cvW } from '../ui/canvas-size.js';
      skipped and everything else behaves identically. */
   function skPlacePoint(gx,gz,xy){
     var sk=A3D.sk;if(!sk)return;
+    if(bimIsDmTool(sk)){bimDmPoint(sk,[gx,gz]);return;}   /* __acad3dV250: MOVE, COPY, STRETCH */
+    if(sk.tool==='matchprop'){if(xy)bimMatchPropClick(sk,xy);return;}
     if(sk.tool==='hatch'){                      /* __acad3dV96 */
       bimApplyHatchAt([gx,gz],sk.y,sk.hatch);
       return;                                   /* sk stays live: HATCH keeps filling */

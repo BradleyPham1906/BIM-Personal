@@ -58,7 +58,7 @@ work orders under the existing workflow (Claude specifies, Cline builds).
 | Proposed | What | Why first or later |
 |---|---|---|
 | D1 | Object snaps (midpoint, center, quadrant, intersection, perpendicular, tangent, nearest, node) with an OSNAP settings dialog, polar tracking (F10) | **Built as V249, 2026-11-22.** Object snap tracking not yet |
-| D2 | Modify: move and copy by base point, stretch, explode, join polylines, overkill, draw order, match properties | The commands drafters use most that are missing |
+| D2 | Modify: move and copy by base point, stretch, explode, join polylines, overkill, draw order, match properties | **Built as V250, 2026-11-22** (MOVE and EXPLODE were typed commands with no handler before) |
 | D3 | Draw: ellipse and elliptical arc, circle 2P/3P/TTR, donut, polyline widths, revision cloud, wipeout | Small, independent |
 | D4 | Annotation styles: text styles and multiline text, dimension styles, baseline/continue/ordinate/arc-length dimensions, multileaders | Drawings that read like professional sheets |
 | D5 | Linetypes and per-object colour and lineweight | Needed for D7's round trip, and for plotting |
