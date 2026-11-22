@@ -154,7 +154,7 @@ line and `window.__a3dSiteUi`. The part B tests were checked against a reference
 
 ---
 
-## [ ] WO-13 [Cline] `bimPlaceFacts` in `src/js/engine/map/site-ui.js`
+## [x] WO-13 [Cline] `bimPlaceFacts` in `src/js/engine/map/site-ui.js`
 
 - **Implement:** a context object's place card, as SPEC B3 says: title, kind, the rows in their order, credit and the OpenStreetMap link.
 - **It must:**
