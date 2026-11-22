@@ -32,7 +32,7 @@ async function ev(expr) {
   return r.result.result.value;
 }
 let pass = 0, fail = 0;
-function ck(ok, msg) { if (ok) pass++; else fail++; console.log((ok ? 'PASS ' : 'FAIL ') + msg); }
+function ck(ok, msg) { if (ok && ok.__err) { msg += ' [page error: ' + ok.__err + ']'; ok = false; } if (ok) pass++; else fail++; console.log((ok ? 'PASS ' : 'FAIL ') + msg); }
 async function shot(name) { const r = await C.send('Page.captureScreenshot', { format: 'png' }); fs.writeFileSync(`${OUT}/${name}.png`, Buffer.from(r.result.data, 'base64')); }
 
 const KEYS = { Escape: ['Escape', 27], Enter: ['Enter', 13], F10: ['F10', 121], Digit3: ['3', 51] };
@@ -76,6 +76,7 @@ const FILE = dxf([
   [0, 'SPLINE'], [8, '0'], [70, 8], [71, 2], [40, 0], [40, 0], [40, 0], [40, 1], [40, 1], [40, 1],
   [10, 0], [20, 5], [10, 3], [20, 7], [10, 6], [20, 5],
   [0, 'CIRCLE'], [8, '0'], [10, 5], [20, 3], [40, 0.4],
+  [0, 'HATCH'], [8, 'NOTES'], [2, 'AR-CONC'], [70, 0], [91, 1], [92, 3], [72, 0], [73, 1], [93, 4], [10, 0.5], [20, 0.5], [10, 2], [20, 0.5], [10, 2], [20, 1.5], [10, 0.5], [20, 1.5], [97, 0], [52, 0], [41, 1],
   [0, 'ENDSEC'],
 ]);
 await C.send('Page.navigate', { url: APP });
@@ -95,6 +96,8 @@ ck(S.length === 11, 'eleven drawn objects (' + S.length + ')');
 ck(texts === 3, 'three texts: the dimension value, TEXT and MTEXT (' + texts + ')');
 const circ = S.find((s) => s.pts.length === 2 && s.closed && s.bulges);
 ck(!!circ, 'the CIRCLE arrives as two arcs, not a polygon');
+const H = await ev(`return window.__a3dObjects().filter(o=>o.t==='hatch').length;`);
+ck(H === 1, 'the HATCH arrives as a hatch (V261: ' + H + ')');
 // the mirrored, turned door: scale (-1, 1), then turn 90 degrees, then move to (6, 2): the leaf's end (0, 0.9) lands at
 // (5.1, 2) in DXF, which is (5.1, -2) in the model (north is -z)
 const leafs = S.filter((s) => s.pts.length === 2 && !s.closed && !s.bulges && Math.abs(Math.hypot(s.pts[1][0] - s.pts[0][0], s.pts[1][1] - s.pts[0][1]) - 0.9) < 1e-6);
@@ -104,6 +107,37 @@ ck(!!turned && turned.pts.some((p) => Math.abs(p[0] - 5.1) < 1e-6 && Math.abs(p[
 ck(/block insert/.test(toast), 'the import notice counts the blocks (' + toast.slice(0, 160) + ')');
 await ev(`window.__a3dRunCmd('zoomFit');`); await sleep(600);
 await shot('v251-01-imported');
+
+// V263: the same drawing through the Import picker, once as ASCII and once as a binary DXF made here byte by byte
+import path from 'node:path';
+const SENT = 'AutoCAD Binary DXF\r\n\u001a\u0000';
+function toBinary(text) {
+  const L = text.split('\n'), parts = [Buffer.from(SENT, 'latin1')];
+  const D = (c) => (c >= 10 && c <= 59) || (c >= 110 && c <= 149) || (c >= 210 && c <= 239);
+  const H = (c) => (c >= 60 && c <= 79) || (c >= 170 && c <= 179) || (c >= 270 && c <= 289) || (c >= 370 && c <= 389);
+  const I = (c) => (c >= 90 && c <= 99) || (c >= 420 && c <= 429);
+  for (let i = 0; i + 1 < L.length; i += 2) {
+    const c = parseInt(L[i], 10), v = L[i + 1], b = Buffer.alloc(2); b.writeUInt16LE(c); parts.push(b);
+    if (D(c)) { const x = Buffer.alloc(8); x.writeDoubleLE(parseFloat(v)); parts.push(x); }
+    else if (H(c)) { const x = Buffer.alloc(2); x.writeInt16LE(parseInt(v, 10)); parts.push(x); }
+    else if (I(c)) { const x = Buffer.alloc(4); x.writeInt32LE(parseInt(v, 10)); parts.push(x); }
+    else parts.push(Buffer.from(v + '\0', 'utf8'));
+  }
+  return Buffer.concat(parts);
+}
+const DIR = path.resolve(OUT, 'dxf'); fs.mkdirSync(DIR, { recursive: true });
+fs.writeFileSync(path.join(DIR, 'v251-ascii.dxf'), FILE);
+fs.writeFileSync(path.join(DIR, 'v251-binary.dxf'), toBinary(FILE));
+await C.send('DOM.enable');
+for (const f of ['v251-ascii.dxf', 'v251-binary.dxf']) {
+  await ev(`window.__a3dTestSetObjs([]);`);
+  const doc = await C.send('DOM.getDocument', { depth: -1 });
+  const q = await C.send('DOM.querySelector', { nodeId: doc.result.root.nodeId, selector: '#a3d-filein' });
+  await C.send('DOM.setFileInputFiles', { nodeId: q.result.nodeId, files: [path.join(DIR, f)] });
+  await sleep(1200);
+  const n = (await ev('return window.__a3dSketchWorld();')).length;
+  ck(n === 11, f + ' through the Import picker: the same eleven drawn objects (' + n + ')');
+}
 ck(errors.length === 0, 'no console errors (' + errors.slice(0, 3).join(' | ') + ')');
 console.log(`${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

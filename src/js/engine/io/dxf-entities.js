@@ -1,3 +1,5 @@
+import { bimPolySignedArea } from '../bim/rooms.js';
+
   /* ================= __acad3dV251: DXF fidelity, the entities (D7) =================
      What import-dxf.js dropped before this phase: TEXT and MTEXT, ELLIPSE, SPLINE, SOLID, and
      every block (INSERT, and DIMENSION, whose drawn lines and text AutoCAD keeps in an anonymous
@@ -84,6 +86,8 @@
     if(e.p2)o.p2=P(e.p2);
     if(e.p)o.p=P(e.p);
     if(e.pts)o.pts=e.pts.map(P);
+    if(e.loops)o.loops=e.loops.map(function(l){return {flags:l.flags,pts:l.pts.map(P),bulges:l.bulges&&mir?l.bulges.map(function(v){return -(v||0);}):l.bulges};});   /* __acad3dV261 */
+    if(e.type==='HATCH'&&typeof e.angle==='number')o.angle=(mir?-e.angle:e.angle)+(ins.rot||0);
     if(e.bulges&&mir)o.bulges=e.bulges.map(function(v){return -(v||0);});
     if(e.c)o.c=P(e.c);
     if(typeof e.r==='number')o.r=e.r*Math.abs(sx);
@@ -129,7 +133,9 @@
     function mk(o){var k;for(k in base)if(base.hasOwnProperty(k))o[k]=base[k];return o;}
     if(t==='TEXT'||t==='ATTRIB'){
       if(t==='ATTRIB'&&(N(70,0)&1))return null;   /* an invisible attribute is not drawn */
-      return mk({type:'TEXT',text:dxfTextPlain(S(1,'')),p:[N(10,0),N(20,0),N(30,0)],h:N(40,0),rot:N(50,0)});
+      var tx=mk({type:'TEXT',text:dxfTextPlain(S(1,'')),p:[N(10,0),N(20,0),N(30,0)],h:N(40,0),rot:N(50,0)});
+      if(t==='ATTRIB'&&S(2,''))tx.tag=S(2,'');   /* __acad3dV260: an attribute keeps its tag */
+      return tx;
     }
     if(t==='MTEXT'){
       var s='',i;
@@ -150,6 +156,12 @@
       var pts=dxfSplinePts(N(71,3),ctrl,A(40),A(41),fit);
       return pts.length>=2?mk({type:'POLYPTS',pts:pts,closed:!!(N(70,0)&1)}):null;
     }
+    if(t==='HATCH'){   /* __acad3dV261 */
+      var loops=dxfHatchLoops(items);
+      if(!loops.length)return null;
+      var solid=N(70,0)===1||/^SOLID$/i.test(S(2,''));
+      return mk({type:'HATCH',pattern:solid?'solid':dxfHatchPattern(S(2,'')),angle:N(52,0),scale:N(41,1),loops:loops});
+    }
     if(t==='SOLID'||t==='TRACE'){
       /* the third and fourth corners are stored crossed: 1, 2, 4, 3 is the outline */
       var q=[[N(10,0),N(20,0)],[N(11,0),N(21,0)],[N(13,N(12,0)),N(23,N(22,0))],[N(12,0),N(22,0)]];
@@ -167,4 +179,144 @@
     }
     return null;
   }
-export { dxfEllipsePts, dxfEntityExtra, dxfExpandInserts, dxfSplinePts, dxfTextPlain, dxfXform };
+  /* ================= __acad3dV261: HATCH, read as a hatch =================
+     A DXF HATCH's boundary paths (DXF Reference, HATCH, "Boundary path data"): 91 the number of paths; each starts
+     with 92 (its flags: 1 external, 2 a polyline, 16 outermost); a polyline path is 72 (has bulges), 73 (closed),
+     93 (vertices) and 10/20(/42) each; an edge path is 93 (edges) and each edge's 72: 1 line (10,20,11,21), 2 arc
+     (10,20,40,50,51,73), 3 ellipse (10,20,11,21,40,50,51,73), 4 spline (its control points 10/20, sampled
+     through their polygon). Pattern: 2 its name, 70 solid, 52 angle, 41 scale. */
+  var BIM_DXF_HATCH_MAP={SOLID:'solid',ANSI31:'diagonal',ANSI32:'steel',ANSI33:'diagonal',ANSI34:'steel',ANSI35:'diagonal',
+    ANSI36:'diagonal',ANSI37:'cross',ANSI38:'cross',NET:'cross','AR-BRSTD':'brick','AR-B816':'brick','AR-B88':'brick',
+    BRICK:'brick','AR-CONC':'concrete','AR-SAND':'dots',DOTS:'dots',LINE:'horizontal',EARTH:'cross',STEEL:'steel'};
+  function dxfHatchPattern(name){
+    var n=String(name||'').toUpperCase();
+    return BIM_DXF_HATCH_MAP.hasOwnProperty(n)?BIM_DXF_HATCH_MAP[n]:'diagonal';
+  }
+  function dxfHatchLoops(items){
+    var i=0,loops=[],n;
+    while(i<items.length&&items[i][0]!==91)i++;
+    if(i>=items.length)return loops;
+    n=parseInt(items[i][1],10)||0;i++;
+    function num(){return parseFloat(items[i++][1]);}
+    function seek(code){while(i<items.length&&items[i][0]!==code)i++;return i<items.length;}
+    for(var L=0;L<n;L++){
+      if(!seek(92))break;
+      var flags=parseInt(items[i][1],10)||0;i++;
+      var pts=[],bul=[];
+      if(flags&2){
+        var hasB=0,cnt=0;
+        while(i<items.length&&items[i][0]!==10){
+          if(items[i][0]===72)hasB=parseInt(items[i][1],10)||0;
+          if(items[i][0]===93)cnt=parseInt(items[i][1],10)||0;
+          i++;
+        }
+        for(var v=0;v<cnt&&i<items.length;v++){
+          var x=0,y=0,b=0;
+          if(items[i][0]===10)x=num();
+          if(i<items.length&&items[i][0]===20)y=num();
+          if(hasB&&i<items.length&&items[i][0]===42)b=num();
+          pts.push([x,y]);bul.push(b);
+        }
+        loops.push({flags:flags,pts:pts,bulges:hasB?bul:null});
+        continue;
+      }
+      if(!seek(93))break;
+      var ne=parseInt(items[i][1],10)||0;i++;
+      for(var e=0;e<ne;e++){
+        if(!seek(72))break;
+        var et=parseInt(items[i][1],10)||0;i++;
+        var r={},seg=[];
+        while(i<items.length&&items[i][0]!==72&&items[i][0]!==92&&items[i][0]!==97&&items[i][0]!==75){
+          var c=items[i][0];
+          if(c===10||c===20||c===11||c===21||c===40||c===50||c===51||c===73){r[c]=r[c]===undefined?parseFloat(items[i][1]):r[c];}
+          if(et===4&&c===10){(r.cx=r.cx||[]).push(parseFloat(items[i][1]));}
+          if(et===4&&c===20){(r.cy=r.cy||[]).push(parseFloat(items[i][1]));}
+          i++;
+        }
+        if(et===1)seg=[[r[10],r[20]],[r[11],r[21]]];
+        else if(et===2||et===3){
+          var a0=(r[50]||0)*Math.PI/180,a1=(r[51]||0)*Math.PI/180,ccw=r[73]!==0,k;
+          if(!ccw){a0=-a0;a1=-a1;}
+          if(a1<a0&&ccw)a1+=Math.PI*2;
+          if(et===2)for(k=0;k<=16;k++){var a=a0+(a1-a0)*k/16;seg.push([r[10]+Math.cos(a)*r[40],r[20]+Math.sin(a)*r[40]]);}
+          else seg=dxfEllipsePts([r[10],r[20]],[r[11],r[21]],r[40],a0,a1,16).pts;
+        }else if(et===4&&r.cx)for(k=0;k<Math.min(r.cx.length,r.cy.length);k++)seg.push([r.cx[k],r.cy[k]]);
+        for(k=0;k<seg.length;k++){
+          var last=pts[pts.length-1];
+          if(!last||Math.abs(last[0]-seg[k][0])>1e-9||Math.abs(last[1]-seg[k][1])>1e-9)pts.push(seg[k]);
+        }
+      }
+      if(pts.length>2&&Math.abs(pts[0][0]-pts[pts.length-1][0])<1e-9&&Math.abs(pts[0][1]-pts[pts.length-1][1])<1e-9)pts.pop();
+      loops.push({flags:flags,pts:pts,bulges:null});
+    }
+    return loops.filter(function(l){return l.pts.length>=3||(l.pts.length===2&&l.bulges);});
+  }
+  /* The loops a hatch fills: those flagged external or outermost, else the largest; the rest are its islands. */
+  function dxfHatchOuter(loops){
+    var out=loops.filter(function(l){return l.flags&(1|16);});
+    if(out.length)return out;
+    var best=null,ba=-1,i;
+    for(i=0;i<loops.length;i++){var a=Math.abs(bimPolySignedArea(loops[i].pts));if(a>ba){ba=a;best=loops[i];}}
+    return best?[best]:[];
+  }
+  /* ================= __acad3dV263: binary DXF =================
+     A binary DXF (DXF Reference, "Binary DXF Files") starts with the 22-byte sentinel "AutoCAD Binary DXF\r\n\x1a\0".
+     Then each group: its code (R13 and later: 2 bytes, little-endian; R12: 1 byte, 255 meaning a 2-byte code
+     follows) and its value, whose type the code decides (the reference's "Group Code Value Types"): text ending in
+     a 0 byte; 8-byte doubles; 2-, 4- and 8-byte integers; a 1-byte boolean; binary chunks of a length byte and
+     data. It is turned into the ASCII form, so everything after reads it as it reads any DXF. */
+  var BIM_DXF_BIN_SENTINEL='AutoCAD Binary DXF\r\n\u001a\u0000';
+  function dxfIsBinary(bytes){
+    if(!bytes||bytes.length<22)return false;
+    for(var i=0;i<22;i++)if(bytes[i]!==BIM_DXF_BIN_SENTINEL.charCodeAt(i))return false;
+    return true;
+  }
+  function dxfBinType(c){
+    if((c>=0&&c<=9)||c===100||c===102||c===105||(c>=300&&c<=309)||(c>=320&&c<=369)||(c>=390&&c<=399)||
+       (c>=410&&c<=419)||(c>=430&&c<=439)||(c>=470&&c<=481)||c===999||(c>=1000&&c<=1003)||(c>=1005&&c<=1009))return 's';
+    if((c>=10&&c<=59)||(c>=110&&c<=149)||(c>=210&&c<=239)||(c>=460&&c<=469)||(c>=1010&&c<=1059))return 'd';
+    if((c>=60&&c<=79)||(c>=170&&c<=179)||(c>=270&&c<=289)||(c>=370&&c<=389)||(c>=400&&c<=409)||(c>=1060&&c<=1070))return 'h';
+    if((c>=90&&c<=99)||(c>=420&&c<=429)||(c>=440&&c<=459)||c===1071)return 'i';
+    if(c>=160&&c<=169)return 'l';
+    if(c>=290&&c<=299)return 'b';
+    if((c>=310&&c<=319)||c===1004)return 'x';
+    return null;
+  }
+  /* The ASCII DXF a binary one says; throws on a group code it does not know. */
+  function dxfBinaryToText(bytes){
+    var dv=new DataView(bytes.buffer,bytes.byteOffset,bytes.byteLength),p=22,out=[],wide;
+    wide=bytes[22]===0&&bytes[23]===0;   /* R13+: the first code, 0, takes two bytes */
+    var dec=typeof TextDecoder!=='undefined'?new TextDecoder('utf-8'):null;
+    function str(){
+      var s=p;while(p<bytes.length&&bytes[p]!==0)p++;
+      var t=dec?dec.decode(bytes.subarray(s,p)):String.fromCharCode.apply(null,Array.prototype.slice.call(bytes,s,p));
+      p++;return t;
+    }
+    while(p<bytes.length){
+      var code;
+      if(wide){code=dv.getUint16(p,true);p+=2;}
+      else{code=bytes[p++];if(code===255){code=dv.getInt16(p,true);p+=2;}}
+      var ty=dxfBinType(code),v;
+      if(ty==='s')v=str();
+      else if(ty==='d'){v=String(dv.getFloat64(p,true));p+=8;}
+      else if(ty==='h'){v=String(dv.getInt16(p,true));p+=2;}
+      else if(ty==='i'){v=String(dv.getInt32(p,true));p+=4;}
+      else if(ty==='l'){var lo=dv.getUint32(p,true),hi=dv.getInt32(p+4,true);v=String(hi*4294967296+lo);p+=8;}
+      else if(ty==='b'){v=String(bytes[p++]);}
+      else if(ty==='x'){var n=bytes[p++],hx='',k;for(k=0;k<n;k++)hx+=(bytes[p+k]<16?'0':'')+bytes[p+k].toString(16).toUpperCase();p+=n;v=hx;}
+      else throw new Error('Binary DXF: unknown group code '+code+' at byte '+(p-2));
+      out.push(String(code),v);
+      if(code===0&&v==='EOF')break;
+    }
+    return out.join('\n')+'\n';
+  }
+  /* What import-entry.js hands the DXF reader: the text of an ASCII DXF, or of a binary one turned into ASCII. */
+  function dxfTextFromBytes(buf){
+    var b=new Uint8Array(buf);
+    if(dxfIsBinary(b))return dxfBinaryToText(b);
+    return typeof TextDecoder!=='undefined'?new TextDecoder('utf-8').decode(b):String.fromCharCode.apply(null,Array.prototype.slice.call(b));
+  }
+export {
+  dxfEllipsePts, dxfEntityExtra, dxfExpandInserts, dxfHatchOuter, dxfHatchPattern, dxfSplinePts,
+  dxfTextFromBytes, dxfTextPlain, dxfXform
+};

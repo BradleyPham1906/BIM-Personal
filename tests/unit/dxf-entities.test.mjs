@@ -103,3 +103,20 @@ test('V254: text keeps its height and rotation through the DXF export and back',
   const t = r.entities[0];
   assert.equal(t.text, 'Hello'); near(t.h, 0.5); near(t.rot, 30);
 });
+
+test('V261: a HATCH\'s boundary paths, polyline and edge, and its pattern', () => {
+  const pairs = [[0, 'SECTION'], [2, 'ENTITIES'], [0, 'HATCH'], [8, '0'], [2, 'ANSI37'], [70, 0], [71, 0], [91, 2],
+    [92, 3], [72, 0], [73, 1], [93, 4], [10, 0], [20, 0], [10, 4], [20, 0], [10, 4], [20, 3], [10, 0], [20, 3], [97, 0],
+    [92, 0], [93, 3], [72, 1], [10, 1], [20, 1], [11, 2], [21, 1], [72, 1], [10, 2], [20, 1], [11, 2], [21, 2], [72, 1], [10, 2], [20, 2], [11, 1], [21, 1], [97, 0],
+    [75, 1], [76, 1], [52, 30], [41, 2], [0, 'ENDSEC']];
+  const r = E.dxfParse(pairs.map(([c, v]) => `${c}\n${v}`).join('\n') + '\n0\nEOF\n');
+  const h = r.entities[0];
+  assert.equal(h.type, 'HATCH'); assert.equal(h.pattern, 'cross'); near(h.angle, 30); near(h.scale, 2);
+  assert.equal(h.loops.length, 2);
+  assert.deepEqual(h.loops[0].pts, [[0, 0], [4, 0], [4, 3], [0, 3]]);
+  assert.deepEqual(h.loops[1].pts, [[1, 1], [2, 1], [2, 2]], 'the edge path, its repeated joins dropped');
+  const outer = E.dxfHatchOuter(h.loops);
+  assert.equal(outer.length, 1); assert.equal(outer[0], h.loops[0], 'the external path is the one filled');
+  assert.equal(E.dxfHatchPattern('solid'), 'solid'); assert.equal(E.dxfHatchPattern('AR-CONC'), 'concrete');
+  assert.equal(E.dxfHatchPattern('SOMETHING-ELSE'), 'diagonal');
+});

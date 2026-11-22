@@ -26,6 +26,8 @@ import { bimCycleRoomScheme } from '../bim/room-colour-fill.js';
 import { bimTagAllRooms, startRoomTagTool, startRoomTool } from '../bim/room-tags.js';
 import { startDimTool, startLeaderTool, startTextTool } from '../annotation/dimensions.js';
 import { bimListCommand, startInquiryTool } from '../annotation/inquiry.js';
+import { bimCountCommand, bimMassprop, openCalDlg } from '../annotation/inquiry-more.js';
+import { openDimStyleDlg, openTextStyleDlg, startDimChainTool } from '../annotation/dim-tools.js';
 import { bimExportPDF } from '../annotation/annotation-pick.js';
 import { bimFileOpen, bimFileSave } from '../io/file-save.js';
 import { startColumnTool, startDoorTool, startFloorTool, startWindowTool } from '../bim/columns-openings.js';
@@ -60,6 +62,10 @@ import { bimTrCommand } from '../simulation/traffic-ui.js';
 import { bimAwEnter, bimAwTraffic } from '../site-analysis/analysis-workspace.js';
 import { bimTlCommand } from '../site-tools/panel.js';
 import { bimExportDWG } from '../io/dwg-io.js';
+import {
+  bimOcctBoolean, bimOcctExportStep, bimOcctLoft, startOcctEdges, startOcctExtrude, startOcctRevolve,
+  startOcctShell
+} from '../solids/occt-tools.js';
 import { bimSkpPick } from '../io/sketchup-import.js';
 import { bimGltfExport, bimGltfPick } from '../io/gltf.js';
 import { bimIfcPick } from '../io/ifc-full.js';
@@ -94,6 +100,7 @@ import { bimToggleAreaPlan, bimToggleSun } from '../site/shadows.js';
 import { bimAnalyzeCommand, bimAnalyzeOff } from '../structure/analysis-display.js';
 import { bimStructFocus, bimToggleTrib } from '../structure/analysis-properties.js';
 import { openSaveBlockDlg } from '../assets/blocks.js';
+import { bimAttedit, openAttdefDlg } from '../assets/block-attribs.js';
 import { A3D_VIEW } from '../views/saved-views.js';
 import { bimSheetById } from '../sheets/sheets.js';
 import { bimSheetOnScreen, bimShowModel } from '../sheets/present.js';
@@ -265,6 +272,26 @@ import { bimOpenToolsPanel } from '../ui/discipline-tabs.js';
     align:function(){openAlignDlg();},
     join:function(){bimJoinCommand();},   /* __acad3dV250: polylines first, then walls */
     moveTool:function(){startMoveTool();},
+    dimbase:function(){startDimChainTool('base');},   /* __acad3dV258 */
+    dimcont:function(){startDimChainTool('cont');},
+    dimord:function(){startDimChainTool('ord');},
+    dimstyle:function(){openDimStyleDlg();},
+    textstyle:function(){openTextStyleDlg();},   /* __acad3dV259 */
+    attdef:function(){openAttdefDlg();},   /* __acad3dV260 */
+    occtextrude:function(){startOcctExtrude();},   /* __acad3dV264: the solid tools, on OpenCASCADE */
+    filletedge:function(){startOcctEdges('fillet');},
+    chamferedge:function(){startOcctEdges('chamfer');},
+    occtshell:function(){startOcctShell();},
+    occtrevolve:function(){startOcctRevolve();},
+    occtloft:function(){bimOcctLoft();},
+    solidunion:function(){bimOcctBoolean('fuse');},
+    solidsubtract:function(){bimOcctBoolean('cut');},
+    solidintersect:function(){bimOcctBoolean('intersect');},
+    exportstep:function(){bimOcctExportStep();},
+    massprop:function(){bimMassprop();},   /* __acad3dV262 */
+    countblocks:function(){bimCountCommand();},
+    cal:function(){openCalDlg();},
+    attedit:function(){bimAttedit();},
     layiso:function(){bimLayIso();},   /* __acad3dV256 */
     layuniso:function(){bimLayUniso();},
     layoff:function(){bimLayCmdApply(bimSelLayerIds(),'visible',false,{none:'LAYOFF: select objects on the layers to turn off',done:'LAYOFF: # layer(s) turned off'});},

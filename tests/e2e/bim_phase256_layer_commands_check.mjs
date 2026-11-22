@@ -31,7 +31,7 @@ async function ev(expr) {
   return r.result.result.value;
 }
 let pass = 0, fail = 0;
-function ck(ok, msg) { if (ok) pass++; else fail++; console.log((ok ? 'PASS ' : 'FAIL ') + msg); }
+function ck(ok, msg) { if (ok && ok.__err) { msg += ' [page error: ' + ok.__err + ']'; ok = false; } if (ok) pass++; else fail++; console.log((ok ? 'PASS ' : 'FAIL ') + msg); }
 async function shot(name) { const r = await C.send('Page.captureScreenshot', { format: 'png' }); fs.writeFileSync(`${OUT}/${name}.png`, Buffer.from(r.result.data, 'base64')); }
 
 const KEYS = { Escape: ['Escape', 27], Enter: ['Enter', 13], F10: ['F10', 121], Digit3: ['3', 51] };
@@ -52,16 +52,17 @@ C.ws.addEventListener('message', (m) => { const d = JSON.parse(m.data); if (d.me
 
 const run = (c) => ev(`return window.__a3dRunCmd(${JSON.stringify(c)});`);
 const layers = () => ev('return window.__a3dLayers();');
-const byName = async (n) => (await layers()).find((l) => l.name === n);
+const byName = async (n) => (await layers()).find((l) => l.id === lid[n]);
 const sks = () => ev('return window.__a3dSketchWorld();');
 await C.send('Page.navigate', { url: APP });
 await sleep(5000);
 await ev(`window.__a3dEnter();window.__a3dTestSetObjs([]);window.__a3dRunCmd('2d');window.__a3dCamSet&&window.__a3dCamSet({tx:3,ty:0,tz:0,dist:30});
   window.__a3dSnapSet({point:false,grid:true,ortho:false});`);
 await sleep(600);
-const lid = {};
+const lid = {}, RUN = Date.now().toString(36);
 for (const [n, y] of [['A', 0], ['B', 2], ['C', 4]]) {
-  lid[n] = await ev(`return window.__a3dLayerNew({name:${JSON.stringify(n)},current:true});`);
+  /* a name of this run's own: a layer of that name may be left in the browser's storage by an earlier run */
+  lid[n] = await ev(`return window.__a3dLayerNew({name:${JSON.stringify(n + '-' + RUN)},current:true});`);
   await run('poly'); await click([0, y]); await click([5, y]); await tap('Enter'); await tap('Escape');
 }
 let S = await sks();

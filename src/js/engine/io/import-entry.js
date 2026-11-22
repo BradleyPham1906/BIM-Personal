@@ -4,8 +4,10 @@ import { doPad, doPocket } from '../drawing/point-node.js';
 import { bimLandXmlImport } from '../terrain/breaklines.js';
 import { bimOpenProjectFileObj } from './project-file.js';
 import { bimGeoImportFile } from '../properties/map-address-site-data.js';
+import { dxfTextFromBytes } from './dxf-entities.js';
 import { bimImportDXF } from './import-dxf.js';
 import { bimImportDWG } from './dwg-io.js';
+import { bimOcctImportStep } from '../solids/occt-tools.js';
 import { bimImportOBJ, bimImportSTL } from './import-obj-stl.js';
 import { bimImportSKP } from './sketchup-import.js';
 import { bimImportGLTF } from './gltf.js';
@@ -30,8 +32,9 @@ import { a3dToast } from '../bim/csg-booleans.js';
       reader.onload=function(ev){bimImportSKP(ev.target.result,name);};
       reader.readAsArrayBuffer(file);
     }else if(ext==='dxf'){
-      reader.onload=function(ev){try{bimImportDXF(ev.target.result,name);}catch(eI){console.warn('[BIM] DXF import crashed:',eI);a3dToast('DXF import failed: '+(eI&&eI.message?eI.message:eI));}};
-      reader.readAsText(file);
+      /* __acad3dV263: read as bytes, so a binary DXF can be told from an ASCII one */
+      reader.onload=function(ev){try{bimImportDXF(dxfTextFromBytes(ev.target.result),name);}catch(eI){console.warn('[BIM] DXF import crashed:',eI);a3dToast('DXF import failed: '+(eI&&eI.message?eI.message:eI));}};
+      reader.readAsArrayBuffer(file);
     }else if(ext==='obj'){
       reader.onload=function(ev){try{bimImportOBJ(ev.target.result,name);}catch(eI){console.warn('[BIM] OBJ import crashed:',eI);a3dToast('OBJ import failed: '+(eI&&eI.message?eI.message:eI));}};
       reader.readAsText(file);
@@ -50,8 +53,11 @@ import { a3dToast } from '../bim/csg-booleans.js';
     }else if(ext==='dwg'){   /* __acad3dV252: through cc-dwg, loaded now */
       reader.onload=function(ev){bimImportDWG(ev.target.result,name);};
       reader.readAsArrayBuffer(file);
-    }else if(ext==='step'||ext==='stp'||ext==='iges'||ext==='igs'){
-      a3dToast('.'+ext.toUpperCase()+' is not supported yet (a full B-rep format). Export as DXF or DWG (CAD) or IFC (BIM) instead.');
+    }else if(ext==='step'||ext==='stp'){   /* __acad3dV264: through OpenCASCADE */
+      reader.onload=function(ev){bimOcctImportStep(ev.target.result,name);};
+      reader.readAsArrayBuffer(file);
+    }else if(ext==='iges'||ext==='igs'){
+      a3dToast('.'+ext.toUpperCase()+' is not supported yet: export it as STEP, which Import reads');
     }else{
       a3dToast('Unsupported file type: .'+ext+' (supported: .dxf, .dwg, .ifc, .obj, .stl, .glb and .gltf, .skp SketchUp, .json project files, .geojson and .kml site data, .city.json CityJSON, .xml LandXML)');
     }

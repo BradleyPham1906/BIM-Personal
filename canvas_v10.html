@@ -1873,7 +1873,7 @@ body.light-theme .a3d-tl-msgs,body.light-theme .a3d-tl-hn span,body.light-theme 
     ['RECTANG',['REC','RECT','RECTANGLE'],'rect','Draw a rectangle'],['CIRCLE',['C'],'circle','Draw a circle'],['CIRCLE2P',['C2P'],'circle2p','Draw a circle by the two ends of its diameter'],['CIRCLE3P',['C3P'],'circle3p','Draw a circle through three points'],['REVCLOUD',['RC'],'revcloud','Draw a revision cloud round a rectangle'],
     ['ARC',['A'],'arc','Draw a 3-point arc'],['ELLIPSE',['EL'],'ellipse','Draw an ellipse'],
     ['POLYGON',['POL'],'polygon','Draw a polygon'],['SKETCH',['DRAW'],'draw','Freehand sketch'],
-    ['MTEXT',['T','MT'],'text','Text box'],['TEXT',['DT'],'text','Text box'],
+    ['MTEXT',['T','MT'],'text','Multiline text, with its height and rotation'],['TEXT',['DT','DTEXT'],'text','Text, with its height and rotation'],
     ['SPLINE',['SPL'],'spline','Spline through fit points'],
     ['ROOM',['RM'],'room','Make a room from an enclosed region'],
     ['ROOMTAG',['RT','TAGROOM'],'roomtag','Tag a room with its number and name'],
@@ -1955,7 +1955,7 @@ body.light-theme .a3d-tl-msgs,body.light-theme .a3d-tl-hn span,body.light-theme 
     ['DIST',['DI','MEASUREGEOM','MEA'],'inqdist','Measure the distance and angle between two points, leaving nothing in the drawing'],['ID',[],'inqid','Show the coordinates of a point'],['AREA',['AA'],'inqarea','Measure the area and perimeter of picked points or of the selected closed objects'],['LIST',['LI','LS'],'inqlist','List the selected objects\' properties and sizes'],   /* __acad3dV255 */
     ['DIVIDE',['DIV'],'divide','Place points dividing an object into equal parts'],
     ['MEASURE',['ME'],'measurePts','Place points at a set spacing along an object'],['DIMLINEAR',['DLI','DIM'],'bimDims','Linear dimension'],
-    ['LAYER',['LA','LAYERS'],'layers','Layer Properties Manager'],['LAYISO',[],'layiso','Isolate the layers of the selected objects: every other layer off'],['LAYUNISO',[],'layuniso','Put back the layers LAYISO turned off'],['LAYOFF',[],'layoff','Turn off the layers of the selected objects'],['LAYFRZ',[],'layfrz','Freeze the layers of the selected objects'],['LAYLCK',[],'laylck','Lock the layers of the selected objects'],['LAYON',[],'layon','Turn every layer on'],['LAYTHW',[],'laythw','Thaw every layer'],['LAYULK',[],'layulkall','Unlock every layer'],['LAYMCUR',[],'laymcur','Make the selected object\'s layer current'],['LAYERP',['LAYP'],'layerp','Undo the last change to the layer settings'],['OSNAP',['OS','DSETTINGS','DS','SE'],'osnapSettings','Object snap and polar tracking settings'],['OSMODE',['F3'],'bimSnap','Toggle object snap'],['POLAR',[],'polar','Toggle polar tracking (F10)'],
+    ['LAYER',['LA','LAYERS'],'layers','Layer Properties Manager'],['DIMBASELINE',['DBA'],'dimbase','Dimensions from the first point of the last linear dimension'],['DIMCONTINUE',['DCO'],'dimcont','Dimensions chained from the last linear dimension'],['DIMORDINATE',['DOR'],'dimord','The X or Y of a point from the origin'],['EXTRUDE',['EXT'],'occtextrude','Extrude closed sketches into true solids (OpenCASCADE)'],['FILLETEDGE',[],'filletedge','Round the edges of a solid'],['CHAMFEREDGE',[],'chamferedge','Bevel the edges of a solid'],['SHELL',[],'occtshell','Hollow a solid, its top open'],['REVOLVE',['REV'],'occtrevolve','Revolve a closed sketch about an axis'],['LOFT',[],'occtloft','A solid through closed sketches at different heights'],['SOLIDUNION',['UNIONSOLID'],'solidunion','Join solids made by the solid tools'],['SOLIDSUBTRACT',['SUBTRACTSOLID'],'solidsubtract','Cut the other solids out of the first'],['SOLIDINTERSECT',['INTERSECTSOLID'],'solidintersect','Keep where the solids overlap'],['EXPORTSTEP',['STEPOUT'],'exportstep','Export solids as a STEP file'],['MASSPROP',[],'massprop','Area, centroid and moments of inertia of the selected closed outlines'],['COUNT',[],'countblocks','How many inserts of each block the drawing holds'],['QUICKCALC',['QC','CAL'],'cal','A calculator'],['ATTDEF',['ATT'],'attdef','Define an attribute a block asks for when it is inserted'],['ATTEDIT',['ATE','EATTEDIT'],'attedit','Edit the attributes of a selected block insert'],['STYLE',['ST'],'textstyle','The text style: font and the height of new text'],['DIMSTYLE',['D','DST','DDIM'],'dimstyle','The dimension style: text, arrows, precision, spacing'],['LAYISO',[],'layiso','Isolate the layers of the selected objects: every other layer off'],['LAYUNISO',[],'layuniso','Put back the layers LAYISO turned off'],['LAYOFF',[],'layoff','Turn off the layers of the selected objects'],['LAYFRZ',[],'layfrz','Freeze the layers of the selected objects'],['LAYLCK',[],'laylck','Lock the layers of the selected objects'],['LAYON',[],'layon','Turn every layer on'],['LAYTHW',[],'laythw','Thaw every layer'],['LAYULK',[],'layulkall','Unlock every layer'],['LAYMCUR',[],'laymcur','Make the selected object\'s layer current'],['LAYERP',['LAYP'],'layerp','Undo the last change to the layer settings'],['OSNAP',['OS','DSETTINGS','DS','SE'],'osnapSettings','Object snap and polar tracking settings'],['OSMODE',['F3'],'bimSnap','Toggle object snap'],['POLAR',[],'polar','Toggle polar tracking (F10)'],
     ['ORTHO',[],'bimOrtho','Toggle ortho mode'],['GRID',[],'grid','Toggle grid'],
     ['ZOOM',['Z','ZE','FIT'],'zoomFit','Zoom to fit'],['ZOOMIN',['ZI'],'zoomIn','Zoom in'],
     ['ZOOMOUT',['ZO'],'zoomOut','Zoom out'],['ZOOM100',['Z1'],'view100','Zoom to 100%'],
@@ -5752,6 +5752,8 @@ try{
       A3D.resultLayers=bimResValid(st&&st.resultLayers);   /* __acad3dV148: its result layers, or none */
       A3D.pres=bimPresValid(st&&st.pres);   /* __acad3dV162: its boards in the set, and the set's order */
       bimApplyUnitState(st&&st.units);   /* __acad3dV175a (D10): its display units, metres when it has none */
+      A3D.dimStyle=bimDimStyleValid(st&&st.dimStyle);   /* __acad3dV258: its dimension style */
+      A3D.textStyle=bimTextStyleValid(st&&st.textStyle);   /* __acad3dV259: its text style */
       setA3D_RES_IMG({});
       if(st&&Array.isArray(st.classifications)){
         A3D.classifications=st.classifications.filter(function(c){return c&&typeof c.id==='string'&&typeof c.code==='string';});
@@ -6053,7 +6055,7 @@ try{
   }
 
   // ---- __acad3dV4: Snaptrude-style 2D plan mode + sketch + Pad/Pocket ----
-  var SK_TOOLS={line:'Line',floor:'Floor',trim:'Trim',rect:'Rectangle',circle:'Circle',circle2p:'Circle 2P',circle3p:'Circle 3P',ellipse:'Ellipse',revcloud:'Revision cloud',inqid:'ID',inqdist:'Distance',inqarea:'Area',arc:'Arc',polygon:'Polygon',point:'Point',xline:'Construction line',boundary:'Boundary',hatch:'Hatch',poly:'Polyline',wall:'Wall',column:'Column',door:'Door',window:'Window',room:'Room',roof:'Roof',stair:'Stair',dim:'Dimension',text:'Text',section:'Section',mirror:'Mirror',rotate:'Rotate',polararray:'Polar Array',familyplace:'Place Family',ceiling:'Ceiling',dimangular:'Angular Dim',dimradius:'Radius Dim',dimdiameter:'Diameter Dim',leader:'Leader',roomtag:'Tag Room',footing:'Isolated Footing',wallfoundation:'Wall Foundation',foundslab:'Foundation Slab'};
+  var SK_TOOLS={line:'Line',floor:'Floor',trim:'Trim',rect:'Rectangle',circle:'Circle',circle2p:'Circle 2P',circle3p:'Circle 3P',ellipse:'Ellipse',revcloud:'Revision cloud',inqid:'ID',attdef:'Attribute definition',revolveaxis:'Revolve axis',dimbase:'Baseline dimension',dimcont:'Continued dimension',dimord:'Ordinate dimension',inqdist:'Distance',inqarea:'Area',arc:'Arc',polygon:'Polygon',point:'Point',xline:'Construction line',boundary:'Boundary',hatch:'Hatch',poly:'Polyline',wall:'Wall',column:'Column',door:'Door',window:'Window',room:'Room',roof:'Roof',stair:'Stair',dim:'Dimension',text:'Text',section:'Section',mirror:'Mirror',rotate:'Rotate',polararray:'Polar Array',familyplace:'Place Family',ceiling:'Ceiling',dimangular:'Angular Dim',dimradius:'Radius Dim',dimdiameter:'Diameter Dim',leader:'Leader',roomtag:'Tag Room',footing:'Isolated Footing',wallfoundation:'Wall Foundation',foundslab:'Foundation Slab'};
   var A3D_SNAP={point:true,grid:false,gridSize:0.5,ortho:false,pxThreshold:12};
   /* __acad3dV67: BIM status bar read-outs. Every field here reflects state the BIM engine
      actually owns -- A3D.sk, A3D.sel/selSet, A3D.levels/activeLevel, A3D_SNAP -- which is the
@@ -6695,7 +6697,7 @@ try{
      through to the viewport. polygon joins on the same terms. */
   var BIM_COORD_TOOLS={line:1,poly:1,wall:1,rect:1,stair:1,arc:1,circle:1,polygon:1,point:1,xline:1,boundary:1,hatch:1,
     /* __acad3dV255: the drafting track's point-taking tools, so a typed point, a typed distance and Enter reach them */
-    move:1,copy:1,stretch:1,circle2p:1,circle3p:1,ellipse:1,revcloud:1,inqid:1,inqdist:1,inqarea:1};
+    move:1,copy:1,stretch:1,circle2p:1,circle3p:1,ellipse:1,revcloud:1,inqid:1,inqdist:1,inqarea:1,dimbase:1,dimcont:1,dimord:1,attdef:1,revolveaxis:1};
 
   /* AutoCAD coordinate entry. Exactly the five forms Autodesk documents:
 
@@ -6898,6 +6900,8 @@ try{
     if(sk.tool==='circle3p')return ['Specify first point on circle:','Specify second point on circle:','Specify third point on circle:'][Math.min(n,2)];
     if(sk.tool==='ellipse')return ['Specify axis endpoint of ellipse:','Specify other endpoint of axis:','Specify distance to other axis:'][Math.min(n,2)];
     if(sk.tool==='revcloud')return n?'Specify opposite corner:':'Specify first corner point:';
+    if(sk.tool==='dimbase'||sk.tool==='dimcont')return 'Specify a second extension line origin or [Undo/Select] <Select>:';
+    if(sk.tool==='dimord')return n?'Specify leader endpoint location:':'Specify feature location:';
     if(sk.tool==='inqid')return 'Specify point:';
     if(sk.tool==='inqdist')return n?'Specify second point:':'Specify first point:';
     if(sk.tool==='inqarea')return n?'Specify next point or press ENTER for total:':'Specify first corner point:';
@@ -6973,7 +6977,10 @@ try{
     var sk=A3D.sk;if(!sk)return;
     if(bimIsDmTool(sk)){bimDmPoint(sk,[gx,gz]);return;}
     if(bimIsDrawExtra(sk)){bimDrawExtraPoint(sk,[gx,gz]);return;}   /* __acad3dV253 */
-    if(bimIsInquiryTool(sk)){bimInquiryPoint(sk,[gx,gz]);return;}   /* __acad3dV255 */   /* __acad3dV250: MOVE, COPY, STRETCH */
+    if(bimIsInquiryTool(sk)){bimInquiryPoint(sk,[gx,gz]);return;}   /* __acad3dV255 */
+    if(bimIsDimChainTool(sk)){bimDimChainPoint(sk,[gx,gz]);return;}   /* __acad3dV258 */
+    if(sk.tool==='attdef'){bimAttdefPlace(sk,[gx,gz]);return;}   /* __acad3dV260 */
+    if(sk.tool==='revolveaxis'){bimOcctRevolvePoint(sk,[gx,gz]);return;}   /* __acad3dV264 */   /* __acad3dV250: MOVE, COPY, STRETCH */
     if(sk.tool==='matchprop'){if(xy)bimMatchPropClick(sk,xy);return;}
     if(sk.tool==='hatch'){                      /* __acad3dV96 */
       bimApplyHatchAt([gx,gz],sk.y,sk.hatch);
@@ -16371,6 +16378,8 @@ function bimOpnToWall(rect, len, height) {
       ctx.beginPath();ctx.moveTo(st[0],st[1]);ctx.lineTo(ed[0],ed[1]);ctx.stroke();
       lp=[(st[0]+ed[0])/2,(st[1]+ed[1])/2-10];
       label=(kind==='diameter'?'\u00d8':'R')+o.value.toFixed(2);
+    }else if(kind==='ordinate'){   /* __acad3dV258 */
+      var od=bimDrawOrdinateDim(ctx,o,sel,S);label=od.label;lp=od.at;
     }else if(kind==='leader'){
       var an=S(o.anchor),el2=S(o.elbow),la=S(o.landing);
       ctx.beginPath();ctx.moveTo(an[0],an[1]);ctx.lineTo(el2[0],el2[1]);ctx.lineTo(la[0],la[1]);ctx.stroke();
@@ -16442,9 +16451,13 @@ function bimOpnToWall(rect, len, height) {
     closeDlg();
     var d=document.createElement('div');
     d.className='a3d-dlg';
-    d.innerHTML='<div class="a3d-dlghd">Text label</div>'+
+    var ts=bimTextStyle();   /* __acad3dV259: AutoCAD's TEXT and MTEXT: the text, its height and rotation */
+    d.innerHTML='<div class="a3d-dlghd">Text</div>'+
       '<div class="a3d-dlgbody">'+
-      '<div class="a3d-dlgrow"><label>Text</label><input type="text" data-a3dp="txt" value="" maxlength="120"></div>'+
+      '<div class="a3d-dlgrow"><label>Text</label><textarea data-a3dp="txt" rows="3" maxlength="2000" style="width:100%"></textarea></div>'+
+      '<div class="a3d-dlgrow"><label>Height on the plan, m (0: a screen label)</label><input type="number" min="0" step="any" data-a3dp="h" value="'+ts.height+'"></div>'+
+      '<div class="a3d-dlgrow"><label>Rotation, degrees</label><input type="number" step="any" data-a3dp="rot" value="0"></div>'+
+      '<div class="a3d-propnote">Shift+Enter starts a new line. The font is the text style\'s (STYLE): '+bimEsc(ts.font)+'.</div>'+
       '<div id="a3d-dlgerr" class="a3d-dlgerr"></div></div>'+
       '<div class="a3d-dlgft"><button data-a3dlg="cancel">Cancel</button><button data-a3dlg="ok">OK</button></div>';
     el.root.appendChild(d);
@@ -16454,8 +16467,10 @@ function bimOpnToWall(rect, len, height) {
       var txt=tI.value;
       var eb=document.getElementById('a3d-dlgerr');
       if(!txt||!txt.trim()){eb.textContent='Enter some text';return;}
+      var h=parseFloat(d.querySelector('[data-a3dp="h"]').value),rot=parseFloat(d.querySelector('[data-a3dp="rot"]').value);
+      if(!(h>=0))h=0;if(!isFinite(rot))rot=0;
       closeDlg();
-      bimCreateTextLabel(pt,y,txt.trim());
+      bimCreateTextLabel(pt,y,txt.replace(/^\s+|\s+$/g,''),{height:h,rot:rot});
     }
     d.addEventListener('click',function(ev){
       var b=ev.target&&ev.target.closest?ev.target.closest('[data-a3dlg]'):null;
@@ -16463,17 +16478,19 @@ function bimOpnToWall(rect, len, height) {
       if(b.getAttribute('data-a3dlg')==='ok')submit();else closeDlg();
     });
     d.addEventListener('keydown',function(ev){
-      if(ev.key==='Enter'){ev.preventDefault();ev.stopPropagation();submit();}
+      if(ev.key==='Enter'&&!ev.shiftKey){ev.preventDefault();ev.stopPropagation();submit();}
       else if(ev.key==='Escape'){ev.preventDefault();ev.stopPropagation();closeDlg();}
       ev.stopPropagation();
     });
     tI.focus();
   }
-  function bimCreateTextLabel(pt,y,text){
+  function bimCreateTextLabel(pt,y,text,opts){
     pushUndo();
     A3D.counts.text=(A3D.counts.text||0)+1;
     var o={id:'a3d-'+Date.now().toString(36)+'-'+(A3D.seq++),t:'text',name:'Text_'+A3D.counts.text,col:'#dfe4ea',pos:[0,0,0],
       text:text,pt:pt,y:y,levelId:A3D.activeLevel,layer:A3D.activeLayer,viewId:A3D.activeViewId};
+    if(opts&&opts.height>0)o.height=opts.height;   /* __acad3dV259 */
+    if(opts&&opts.rot)o.rot=opts.rot;
     A3D.objs.push(o);
     A3D.sel=o.id;A3D.sel2=null;A3D.selSet=[o.id];
     refreshTree();refreshHud();paint();saveSoon();
@@ -16491,34 +16508,7 @@ function bimOpnToWall(rect, len, height) {
       if(!bimObjectVisibleOnLevel(o))continue;
       var selX=(o.id===A3D.sel||(A3D.selSet&&A3D.selSet.indexOf(o.id)>=0));
       if(bimDimKind(o)!=='linear'){drawDimExtras(ctx,V,W,H,o,selX);continue;}
-      var ox=(o.pos&&o.pos[0])||0,oy=(o.pos&&o.pos[1])||0,oz=(o.pos&&o.pos[2])||0;
-      var y0=o.y+oy;
-      var p1=toScreen([o.p1[0]+ox,y0,o.p1[1]+oz],V,W,H);
-      var p2=toScreen([o.p2[0]+ox,y0,o.p2[1]+oz],V,W,H);
-      var d1=toScreen([o.d1[0]+ox,y0,o.d1[1]+oz],V,W,H);
-      var d2=toScreen([o.d2[0]+ox,y0,o.d2[1]+oz],V,W,H);
-      var sel=(o.id===A3D.sel||(A3D.selSet&&A3D.selSet.indexOf(o.id)>=0));
-      ctx.save();
-      ctx.globalAlpha*=bimLayerAlpha(o);   /* __acad3dV121: the layer's transparency */
-      ctx.strokeStyle=sel?'#4ea1ff':'#b8c0ca';
-      ctx.lineWidth=sel?1.4:1;
-      ctx.beginPath();ctx.moveTo(p1[0],p1[1]);ctx.lineTo(d1[0],d1[1]);ctx.stroke();
-      ctx.beginPath();ctx.moveTo(p2[0],p2[1]);ctx.lineTo(d2[0],d2[1]);ctx.stroke();
-      ctx.beginPath();ctx.moveTo(d1[0],d1[1]);ctx.lineTo(d2[0],d2[1]);ctx.stroke();
-      var tdx=d2[0]-d1[0],tdy=d2[1]-d1[1],tlen=Math.sqrt(tdx*tdx+tdy*tdy)||1;
-      var tux=tdx/tlen,tuy=tdy/tlen,tick=4;
-      ctx.beginPath();ctx.moveTo(d1[0]-tuy*tick-tux*tick,d1[1]+tux*tick-tuy*tick);ctx.lineTo(d1[0]+tuy*tick+tux*tick,d1[1]-tux*tick+tuy*tick);ctx.stroke();
-      ctx.beginPath();ctx.moveTo(d2[0]-tuy*tick-tux*tick,d2[1]+tux*tick-tuy*tick);ctx.lineTo(d2[0]+tuy*tick+tux*tick,d2[1]-tux*tick+tuy*tick);ctx.stroke();
-      var mx=(d1[0]+d2[0])/2,my=(d1[1]+d2[1])/2;
-      var label=o.length.toFixed(2)+' m';
-      ctx.font='11px system-ui,sans-serif';
-      var tw=ctx.measureText(label).width;
-      ctx.fillStyle='rgba(20,22,26,0.82)';
-      ctx.fillRect(mx-tw/2-4,my-16,tw+8,14);
-      ctx.fillStyle=sel?'#9ec1ff':'#dfe4ea';
-      ctx.textAlign='center';ctx.textBaseline='middle';
-      ctx.fillText(label,mx,my-9);
-      ctx.restore();
+      bimDrawLinearDim(ctx,o,selX,V,W,H);   /* __acad3dV258: drawn with the dimension style */
     }
   }
   /* __acad3dV254: text with a height is drawing text, as AutoCAD draws TEXT and MTEXT: its height in metres on the
@@ -16541,7 +16531,7 @@ function bimOpnToWall(rect, len, height) {
     ctx.save();
     ctx.globalAlpha*=bimLayerAlpha(o);
     ctx.translate(f.x,f.y);ctx.rotate(f.ang);
-    ctx.font=f.px.toFixed(2)+'px system-ui,sans-serif';
+    ctx.font=f.px.toFixed(2)+'px '+bimTextStyle().font;   /* __acad3dV259: the text style's font */
     ctx.textAlign='left';ctx.textBaseline='alphabetic';
     ctx.fillStyle=sel?'#4ea1ff':(o.col||'#dfe4ea');
     for(k=0;k<lines.length;k++)ctx.fillText(lines[k],0,k*f.px*1.6667);   /* AutoCAD's single line spacing: 5/3 of the height */
@@ -16638,6 +16628,9 @@ function bimOpnToWall(rect, len, height) {
       for(i=0;i<o.mesh.v.length;i++)for(k=0;k<3;k++){mn[k]=Math.min(mn[k],o.mesh.v[i][k]);mx[k]=Math.max(mx[k],o.mesh.v[i][k]);}
       rows.push(['Extents',bimFmtLen(mx[0]-mn[0])+' \u00d7 '+bimFmtLen(mx[2]-mn[2])+' \u00d7 '+bimFmtLen(mx[1]-mn[1])+' high']);
     }
+    if(o.blockRef)rows.push(['Block',String(o.blockRef.name)]);   /* __acad3dV260 */
+    if(o.attrib)rows.push(['Attribute',String(o.attrib.tag)]);
+    if(o.attdef)rows.push(['Attribute definition',String(o.attdef.tag)+(o.attdef.def?' (default '+o.attdef.def+')':'')]);
     if(bimIsLocked(o))rows.push(['Locked','yes']);
     return rows;
   }
@@ -16742,6 +16735,366 @@ function bimOpnToWall(rect, len, height) {
     }
     if(ids.length>50)rows.push('-',['More',(ids.length-50)+' further objects not listed']);
     return bimInquiryShow('List: '+ids.length+' object'+(ids.length>1?'s':''),rows);
+  }
+  /* ================= __acad3dV262: MASSPROP, COUNT and CAL (D8) =================
+     MASSPROP (the region properties AutoCAD reports for a REGION, here for any closed outline): area, perimeter,
+     centroid, the second moments about the centroid (Ixx, Iyy, Ixy), the principal moments and their direction, the
+     radii of gyration. Arcs are flattened to 2 mm chords first (bimFlattenPoly), so the figures are those of the
+     curve to that tolerance. COUNT: how many inserts of each block the drawing holds. CAL (QUICKCALC, QC): an
+     expression calculator, read by its own parser (no eval): + - * / ^ and brackets, numbers, pi, and sqrt, abs,
+     sin, cos, tan, asin, acos, atan (degrees), ln, log, round. All the arithmetic is pure, tested without a canvas. */
+  /* Polygon section properties (shoelace sums); y here is the plan's second coordinate, as LIST and ID report it. */
+  function bimRegionProps(pts){
+    var n=pts.length,A=0,cx=0,cy=0,i,j;
+    if(n<3)return null;
+    for(i=0;i<n;i++){
+      j=(i+1)%n;var c=pts[i][0]*pts[j][1]-pts[j][0]*pts[i][1];
+      A+=c;cx+=(pts[i][0]+pts[j][0])*c;cy+=(pts[i][1]+pts[j][1])*c;
+    }
+    A/=2;
+    if(Math.abs(A)<1e-15)return null;
+    cx/=6*A;cy/=6*A;
+    var Ixx=0,Iyy=0,Ixy=0;
+    for(i=0;i<n;i++){
+      j=(i+1)%n;
+      var x0=pts[i][0]-cx,y0=pts[i][1]-cy,x1=pts[j][0]-cx,y1=pts[j][1]-cy,a=x0*y1-x1*y0;
+      Ixx+=(y0*y0+y0*y1+y1*y1)*a;Iyy+=(x0*x0+x0*x1+x1*x1)*a;Ixy+=(x0*y1+2*x0*y0+2*x1*y1+x1*y0)*a;
+    }
+    var s=A<0?-1:1;
+    Ixx=s*Ixx/12;Iyy=s*Iyy/12;Ixy=s*Ixy/24;A=Math.abs(A);
+    var avg=(Ixx+Iyy)/2,R=Math.sqrt(Math.pow((Ixx-Iyy)/2,2)+Ixy*Ixy);
+    var per=0;for(i=0;i<n;i++){j=(i+1)%n;per+=Math.sqrt(Math.pow(pts[j][0]-pts[i][0],2)+Math.pow(pts[j][1]-pts[i][1],2));}
+    return {area:A,perimeter:per,cx:cx,cy:cy,Ixx:Ixx,Iyy:Iyy,Ixy:Ixy,I1:avg+R,I2:avg-R,
+      angle:0.5*Math.atan2(-2*Ixy,Ixx-Iyy)*180/Math.PI,rx:Math.sqrt(Ixx/A),ry:Math.sqrt(Iyy/A)};
+  }
+  function bimMassprop(){
+    var ids=(A3D.selSet&&A3D.selSet.length)?A3D.selSet.slice():(A3D.sel?[A3D.sel]:[]),rows=[],i,o,n=0;
+    for(i=0;i<ids.length;i++){
+      o=objById(ids[i]);if(!o)continue;
+      var pts=null,bl=null;
+      if(o.t==='sketch'&&o.closed!==false&&o.pts&&(o.pts.length>2||bimHasBulge(o.bulges))){pts=o.pts;bl=o.bulges||null;}
+      else if(o.t==='room'||o.t==='hatch')pts=o.pts,bl=o.bulges||null;
+      else if(o.bim&&(o.bim.profile||o.bim.footprint))pts=o.bim.profile||o.bim.footprint;
+      if(!pts)continue;
+      var q=bimObjOffset(o),P=bimRegionProps(bimFlattenPoly(pts,bl,true).map(function(p){return [p[0]+q[0],p[1]+q[2]];}));
+      if(!P)continue;
+      if(n)rows.push('-');
+      n++;
+      var U=bimUnitDef(),s=U.scale||1,L=U.label,f=function(v,k){return bimTrimNum((v*Math.pow(s,k)).toFixed(Math.max(bimUnitDp(),3)));};
+      rows.push(['Object',o.name||o.id],['Area',f(P.area,2)+' '+L+'\u00b2'],['Perimeter',f(P.perimeter,1)+' '+L],
+        ['Centroid','X '+f(P.cx,1)+'  Y '+f(P.cy,1)],
+        ['Ixx (about centroid)',f(P.Ixx,4)+' '+L+'\u2074'],['Iyy (about centroid)',f(P.Iyy,4)+' '+L+'\u2074'],['Ixy',f(P.Ixy,4)+' '+L+'\u2074'],
+        ['Principal moments',f(P.I1,4)+', '+f(P.I2,4)+' '+L+'\u2074'],['Principal direction',P.angle.toFixed(2)+'\u00b0'],
+        ['Radii of gyration','X '+f(P.rx,1)+'  Y '+f(P.ry,1)+' '+L]);
+    }
+    if(!n){a3dToast('MASSPROP: select closed outlines, rooms, hatches or floors');return null;}
+    return bimInquiryShow('Region properties',rows);
+  }
+  /* COUNT: inserts of each block, an insert counted once however many objects it made. */
+  function bimCountBlocks(objs){
+    var seen={},count={},i,o;
+    for(i=0;i<objs.length;i++){
+      o=objs[i];
+      if(!o.blockRef||seen[o.blockRef.ins])continue;
+      seen[o.blockRef.ins]=1;
+      count[o.blockRef.name]=(count[o.blockRef.name]||0)+1;
+    }
+    return count;
+  }
+  function bimCountCommand(){
+    var c=bimCountBlocks(A3D.objs),names=Object.keys(c).sort(),rows=[],i,tot=0;
+    for(i=0;i<names.length;i++){rows.push([names[i],String(c[names[i]])]);tot+=c[names[i]];}
+    if(!names.length){a3dToast('COUNT: no block inserts in the drawing');return null;}
+    rows.push('-',['Total inserts',String(tot)]);
+    return bimInquiryShow('Count of blocks',rows);
+  }
+  /* ---------- CAL ---------- */
+  var BIM_CAL_FN={sqrt:Math.sqrt,abs:Math.abs,ln:Math.log,log:function(x){return Math.log(x)/Math.LN10;},round:Math.round,
+    sin:function(x){return Math.sin(x*Math.PI/180);},cos:function(x){return Math.cos(x*Math.PI/180);},
+    tan:function(x){return Math.tan(x*Math.PI/180);},asin:function(x){return Math.asin(x)*180/Math.PI;},
+    acos:function(x){return Math.acos(x)*180/Math.PI;},atan:function(x){return Math.atan(x)*180/Math.PI;}};
+  /* A recursive-descent reader: expr = term (+|- term)*, term = unary (*|/ unary)*,
+     unary = -unary | +unary | power, power = atom (^ unary)?, atom = number | pi | fn(expr) | (expr). Returns {value} or {error}. */
+  function bimCalEval(src){
+    var s=String(src||''),i=0;
+    function ws(){while(i<s.length&&/\s/.test(s[i]))i++;}
+    function fail(m){throw new Error(m);}
+    function expr(){var v=term();ws();while(s[i]==='+'||s[i]==='-'){var op=s[i++];var r=term();v=op==='+'?v+r:v-r;ws();}return v;}
+    function term(){var v=unary();ws();while(s[i]==='*'||s[i]==='/'){var op=s[i++];var r=unary();if(op==='/'&&r===0)fail('Division by zero');v=op==='*'?v*r:v/r;ws();}return v;}
+    /* a sign applies to the power after it (-2^2 is -4, as in mathematics); an exponent may carry its own sign */
+    function unary(){ws();if(s[i]==='-'){i++;return -unary();}if(s[i]==='+'){i++;return unary();}return power();}
+    function power(){var b=atom();ws();if(s[i]==='^'){i++;return Math.pow(b,unary());}return b;}
+    function atom(){
+      ws();
+      if(s[i]==='('){i++;var v=expr();ws();if(s[i]!==')')fail('A bracket is not closed');i++;return v;}
+      var m=/^(\d+\.?\d*(?:[eE][+-]?\d+)?|\.\d+(?:[eE][+-]?\d+)?)/.exec(s.slice(i));
+      if(m){i+=m[1].length;return parseFloat(m[1]);}
+      var w=/^[a-zA-Z]+/.exec(s.slice(i));
+      if(w){
+        var name=w[0].toLowerCase();i+=w[0].length;
+        if(name==='pi')return Math.PI;
+        if(!BIM_CAL_FN.hasOwnProperty(name))fail('Unknown name: '+w[0]);
+        ws();if(s[i]!=='(')fail(w[0]+' needs brackets: '+w[0]+'(...)');
+        i++;var a=expr();ws();if(s[i]!==')')fail('A bracket is not closed');i++;
+        return BIM_CAL_FN[name](a);
+      }
+      fail(i<s.length?'Unexpected "'+s[i]+'"':'The expression ends too soon');
+    }
+    try{
+      var v=expr();ws();
+      if(i<s.length)fail('Unexpected "'+s[i]+'"');
+      if(!isFinite(v))fail('The result is not a finite number');
+      return {value:v};
+    }catch(e){return {error:e.message};}
+  }
+  function openCalDlg(){
+    closeDlg();
+    var d=document.createElement('div');
+    d.className='a3d-dlg';
+    d.innerHTML='<div class="a3d-dlghd">Calculator</div><div class="a3d-dlgbody">'+
+      '<div class="a3d-dlgrow"><label>Expression</label><input type="text" data-a3dcal="x" maxlength="400" placeholder="(3.2+4.8)*2^2 / sqrt(16)"></div>'+
+      '<div class="a3d-dlgrow"><label>Result</label><span data-a3dcal="r" style="user-select:text"></span></div>'+
+      '<div class="a3d-propnote">+ - * / ^ and brackets; pi; sqrt, abs, ln, log, round; sin, cos, tan, asin, acos, atan in degrees.</div></div>'+
+      '<div class="a3d-dlgft"><button data-a3dlg="cancel">Close</button><button data-a3dlg="ok">=</button></div>';
+    el.root.appendChild(d);el.dlg=d;
+    var x=d.querySelector('[data-a3dcal="x"]'),r=d.querySelector('[data-a3dcal="r"]');
+    function go(){var v=bimCalEval(x.value);r.textContent=v.error?v.error:bimTrimNum(v.value.toFixed(10));}
+    d.addEventListener('click',function(ev){var b=ev.target&&ev.target.closest?ev.target.closest('[data-a3dlg]'):null;if(!b)return;if(b.getAttribute('data-a3dlg')==='ok')go();else closeDlg();});
+    d.addEventListener('keydown',function(ev){if(ev.key==='Enter'){ev.preventDefault();ev.stopPropagation();go();}else if(ev.key==='Escape'){ev.preventDefault();ev.stopPropagation();closeDlg();}ev.stopPropagation();});
+    x.focus();
+    return d;
+  }
+  /* ================= __acad3dV258: AutoCAD's dimension tools and style (D4) =================
+     DIMBASELINE (DBA) and DIMCONTINUE (DCO) from a linear dimension, DIMORDINATE (DOR), and DIMSTYLE (D): one
+     current style every dimension is drawn with, as AutoCAD's Standard style is, saved with the project
+     (A3D.dimStyle). The style's precision and the project's display units give the label, which before this was
+     always metres to two places.
+     Geometry is pure (bimDimBaselineGeom, bimDimContinueGeom, bimDimOrdinateGeom, bimDimLabelText), tested without
+     a canvas. A dimension measures along its reference's direction, as AutoCAD's baseline and continued
+     dimensions take their first dimension's. */
+  var BIM_DIMSTYLE_DEFAULT={textHeight:0,precision:2,suffix:true,arrow:'tick',arrowSize:0,extOffset:0,extBeyond:0,baselineSpacing:0.6};
+  function bimDimStyleValid(s){
+    var d=JSON.parse(JSON.stringify(BIM_DIMSTYLE_DEFAULT)),k;
+    if(!s||typeof s!=='object')return d;
+    for(k in d)if(d.hasOwnProperty(k)&&s[k]!==undefined){
+      if(typeof d[k]==='number'){var v=+s[k];if(isFinite(v)&&v>=0)d[k]=v;}
+      else if(typeof d[k]==='boolean')d[k]=!!s[k];
+      else if(k==='arrow'&&/^(tick|arrow|dot)$/.test(s[k]))d[k]=s[k];
+    }
+    d.precision=Math.min(8,Math.round(d.precision));
+    return d;
+  }
+  function bimDimStyle(){if(!A3D.dimStyle)A3D.dimStyle=bimDimStyleValid(null);return A3D.dimStyle;}
+  /* A length as a dimension's text: the project's unit, the style's precision, the unit's name when asked. */
+  function bimDimLabelText(len,st){
+    st=st||bimDimStyle();
+    var U=bimUnitDef(),v=(len*(U.scale||1)).toFixed(st.precision);
+    return v+(st.suffix?' '+U.label:'');
+  }
+  /* The linear dimension a baseline or continued one follows: the selected one, else the last drawn. */
+  function bimDimRef(){
+    var o=objById(A3D.sel),i;
+    if(o&&o.t==='dim'&&bimDimKind(o)==='linear')return o;
+    for(i=A3D.objs.length-1;i>=0;i--)if(A3D.objs[i].t==='dim'&&bimDimKind(A3D.objs[i])==='linear')return A3D.objs[i];
+    return null;
+  }
+  function bimDimFrame(ref){
+    var dx=ref.d2[0]-ref.d1[0],dz=ref.d2[1]-ref.d1[1],L=Math.sqrt(dx*dx+dz*dz);
+    if(L<1e-12){dx=ref.p2[0]-ref.p1[0];dz=ref.p2[1]-ref.p1[1];L=Math.sqrt(dx*dx+dz*dz)||1;}
+    var u=[dx/L,dz/L],n=[ref.d1[0]-ref.p1[0],ref.d1[1]-ref.p1[1]],nl=Math.sqrt(n[0]*n[0]+n[1]*n[1]);
+    /* the side the dimension line sits on; a dimension drawn on its points takes the left of its direction */
+    var side=nl>1e-12?[n[0]/nl,n[1]/nl]:[-u[1],u[0]];
+    return {u:u,n:side,off:nl};
+  }
+  /* DIMBASELINE: from the reference's first point to p, one spacing further out than the k-th before it. */
+  function bimDimBaselineGeom(ref,p,k,spacing){
+    var F=bimDimFrame(ref),a=ref.p1,t=(p[0]-a[0])*F.u[0]+(p[1]-a[1])*F.u[1],off=F.off+k*spacing;
+    var d1=[a[0]+F.n[0]*off,a[1]+F.n[1]*off],d2=[d1[0]+F.u[0]*t,d1[1]+F.u[1]*t];
+    return {p1:[a[0],a[1]],p2:[p[0],p[1]],d1:d1,d2:d2,length:Math.abs(t)};
+  }
+  /* DIMCONTINUE: from the last dimension's second point to p, on the same dimension line. */
+  function bimDimContinueGeom(prev,p){
+    var F=bimDimFrame(prev),t=(p[0]-prev.d2[0])*F.u[0]+(p[1]-prev.d2[1])*F.u[1];
+    var d2=[prev.d2[0]+F.u[0]*t,prev.d2[1]+F.u[1]*t];
+    return {p1:[prev.p2[0],prev.p2[1]],p2:[p[0],p[1]],d1:[prev.d2[0],prev.d2[1]],d2:d2,length:Math.abs(t)};
+  }
+  /* DIMORDINATE: a feature's X or Y from the origin, as the status bar reads them. A leader that runs more across
+     than up the plan gives the Y datum, more up than across the X datum, as AutoCAD decides it. */
+  function bimDimOrdinateGeom(f,e){
+    var axis=Math.abs(e[0]-f[0])>=Math.abs(e[1]-f[1])?'y':'x';
+    return {axis:axis,value:axis==='x'?f[0]:f[1],p1:[f[0],f[1]],d1:[e[0],e[1]]};
+  }
+  function bimAddDimObj(g,extra){
+    A3D.counts.dim=(A3D.counts.dim||0)+1;
+    var o={id:'a3d-'+Date.now().toString(36)+'-'+(A3D.seq++),t:'dim',name:'Dim_'+A3D.counts.dim,col:'#dfe4ea',pos:[0,0,0],
+      y:bimGetActiveLevel().elev,levelId:A3D.activeLevel,layer:A3D.activeLayer,viewId:A3D.activeViewId},k;
+    for(k in g)if(g.hasOwnProperty(k))o[k]=g[k];
+    for(k in extra||{})if(extra.hasOwnProperty(k))o[k]=extra[k];
+    A3D.objs.push(o);
+    return o;
+  }
+  function startDimChainTool(kind){
+    closeDlg();
+    var ref=null;
+    if(kind!=='ord'){
+      ref=bimDimRef();
+      if(!ref){a3dToast((kind==='base'?'DIMBASELINE':'DIMCONTINUE')+': draw or select a linear dimension first');return;}
+    }
+    bimEnterDraftingMode();
+    A3D.sk={tool:'dim'+kind,pts:[],y:bimGetActiveLevel().elev,on:null,dimRef:ref?ref.id:null,dimPrev:ref?ref.id:null,dimK:1};
+    a3dToast(kind==='ord'?'DIMORDINATE: specify the feature point':'Specify a second extension line origin (Enter or Esc to finish)');
+    paint();
+  }
+  function bimIsDimChainTool(sk){return !!sk&&(sk.tool==='dimbase'||sk.tool==='dimcont'||sk.tool==='dimord');}
+  function bimDimChainPoint(sk,p){
+    var o;
+    if(sk.tool==='dimord'){
+      sk.pts.push([p[0],p[1]]);
+      if(sk.pts.length<2){a3dToast('DIMORDINATE: specify the leader endpoint');paint();return;}
+      pushUndo();
+      o=bimAddDimObj(bimDimOrdinateGeom(sk.pts[0],sk.pts[1]),{dimKind:'ordinate'});
+      sk.pts=[];
+      A3D.sel=o.id;A3D.selSet=[o.id];
+      refreshTree();paint();saveSoon();
+      a3dToast('Ordinate dimension: '+o.axis.toUpperCase()+' = '+bimDimLabelText(o.value)+'; next feature, or Esc');
+      return;
+    }
+    var ref=objById(sk.dimRef),prev=objById(sk.dimPrev);
+    if(!ref||!prev){A3D.sk=null;a3dToast('The dimension it follows was deleted');paint();return;}
+    var g=sk.tool==='dimbase'?bimDimBaselineGeom(ref,p,sk.dimK,bimDimStyle().baselineSpacing):bimDimContinueGeom(prev,p);
+    if(!(g.length>1e-9)){a3dToast('That point is level with the last one: no length');return;}
+    pushUndo();
+    o=bimAddDimObj(g);
+    sk.dimPrev=o.id;sk.dimK++;
+    refreshTree();paint();saveSoon();
+    a3dToast(o.name+': '+bimDimLabelText(g.length)+'; next point, or Enter to finish');
+  }
+  /* ---------- DIMSTYLE ---------- */
+  function openDimStyleDlg(){
+    closeDlg();
+    var s=bimDimStyle(),U=bimUnitDef(),d=document.createElement('div');
+    d.className='a3d-dlg';
+    function num(k,label,step){return '<div class="a3d-dlgrow"><label>'+label+'</label><input type="number" min="0" step="'+(step||'any')+'" data-a3dds="'+k+'" value="'+s[k]+'"></div>';}
+    d.innerHTML='<div class="a3d-dlghd">Dimension style: Standard</div><div class="a3d-dlgbody">'+
+      num('precision','Decimal places',1)+
+      '<div class="a3d-dlgrow"><label><input type="checkbox" data-a3dds="suffix"'+(s.suffix?' checked':'')+'> Show the unit ('+bimEsc(U.label)+')</label></div>'+
+      num('textHeight','Text height on the plan, m (0: screen size)')+
+      '<div class="a3d-dlgrow"><label>Arrowheads</label><select data-a3dds="arrow">'+
+        [['tick','Architectural tick'],['arrow','Closed filled'],['dot','Dot']].map(function(a){return '<option value="'+a[0]+'"'+(s.arrow===a[0]?' selected':'')+'>'+a[1]+'</option>';}).join('')+'</select></div>'+
+      num('arrowSize','Arrow size on the plan, m (0: screen size)')+
+      num('extOffset','Offset from origin, m')+
+      num('extBeyond','Extend beyond dimension line, m')+
+      num('baselineSpacing','Baseline spacing, m')+
+      '<div class="a3d-propnote">Every dimension is drawn with this style; a change redraws them all, as AutoCAD\'s Standard style does.</div>'+
+      '<div id="a3d-dlgerr" class="a3d-dlgerr"></div></div>'+
+      '<div class="a3d-dlgft"><button data-a3dlg="cancel">Cancel</button><button data-a3dlg="ok">OK</button></div>';
+    el.root.appendChild(d);el.dlg=d;
+    function submit(){
+      var n={},f=d.querySelectorAll('[data-a3dds]'),i;
+      for(i=0;i<f.length;i++){var k=f[i].getAttribute('data-a3dds');n[k]=f[i].type==='checkbox'?f[i].checked:f[i].value;}
+      pushUndo();
+      A3D.dimStyle=bimDimStyleValid(n);
+      closeDlg();paint();saveSoon();
+      a3dToast('Dimension style changed: every dimension redrawn');
+    }
+    d.addEventListener('click',function(ev){var b=ev.target&&ev.target.closest?ev.target.closest('[data-a3dlg]'):null;if(!b)return;if(b.getAttribute('data-a3dlg')==='ok')submit();else closeDlg();});
+    d.addEventListener('keydown',function(ev){if(ev.key==='Enter'){ev.preventDefault();ev.stopPropagation();submit();}else if(ev.key==='Escape'){ev.preventDefault();ev.stopPropagation();closeDlg();}});
+  }
+  /* ---------- drawing a linear dimension with the style ---------- */
+  function bimDrawLinearDim(ctx,o,sel,V,W,H){
+    var st=bimDimStyle(),ox=(o.pos&&o.pos[0])||0,oy=(o.pos&&o.pos[1])||0,oz=(o.pos&&o.pos[2])||0,y0=o.y+oy;
+    function S(p){return toScreen([p[0]+ox,y0,p[1]+oz],V,W,H);}
+    /* extension lines: from the origin plus the offset to the dimension line plus the extension, along their own way */
+    function ext(p,d){
+      var dx=d[0]-p[0],dz=d[1]-p[1],L=Math.sqrt(dx*dx+dz*dz);
+      if(L<1e-12)return [S(p),S(d)];
+      var ux=dx/L,uz=dz/L;
+      return [S([p[0]+ux*Math.min(st.extOffset,L),p[1]+uz*Math.min(st.extOffset,L)]),S([d[0]+ux*st.extBeyond,d[1]+uz*st.extBeyond])];
+    }
+    var e1=ext(o.p1,o.d1),e2=ext(o.p2,o.d2),d1=S(o.d1),d2=S(o.d2);
+    ctx.save();
+    ctx.globalAlpha*=bimLayerAlpha(o);
+    var col=sel?'#4ea1ff':(/^#[0-9a-fA-F]{6}$/.test(o.color||'')?o.color:'#b8c0ca');
+    ctx.strokeStyle=col;ctx.fillStyle=col;
+    ctx.lineWidth=sel?1.4:1;
+    ctx.beginPath();ctx.moveTo(e1[0][0],e1[0][1]);ctx.lineTo(e1[1][0],e1[1][1]);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(e2[0][0],e2[0][1]);ctx.lineTo(e2[1][0],e2[1][1]);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(d1[0],d1[1]);ctx.lineTo(d2[0],d2[1]);ctx.stroke();
+    var tdx=d2[0]-d1[0],tdy=d2[1]-d1[1],tlen=Math.sqrt(tdx*tdx+tdy*tdy)||1,tux=tdx/tlen,tuy=tdy/tlen;
+    /* the arrow size: metres on the plan when the style gives one, else 4 px as before */
+    var ppm=Math.sqrt(Math.pow(S([o.d1[0]+1,o.d1[1]])[0]-d1[0],2)+Math.pow(S([o.d1[0]+1,o.d1[1]])[1]-d1[1],2));
+    var a=st.arrowSize>0?Math.max(1,st.arrowSize*ppm):4;
+    function head(px,py,dir){
+      if(st.arrow==='tick'){ctx.beginPath();ctx.moveTo(px-tuy*a-tux*a,py+tux*a-tuy*a);ctx.lineTo(px+tuy*a+tux*a,py-tux*a+tuy*a);ctx.stroke();}
+      else if(st.arrow==='dot'){ctx.beginPath();ctx.arc(px,py,a*0.5,0,Math.PI*2);ctx.fill();}
+      else{
+        var bx=px+dir*tux*a*2.2,by=py+dir*tuy*a*2.2;
+        ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(bx-tuy*a*0.6,by+tux*a*0.6);ctx.lineTo(bx+tuy*a*0.6,by-tux*a*0.6);ctx.closePath();ctx.fill();
+      }
+    }
+    head(d1[0],d1[1],1);head(d2[0],d2[1],-1);
+    var label=bimDimLabelText(o.length,st),mx=(d1[0]+d2[0])/2,my=(d1[1]+d2[1])/2;
+    if(st.textHeight>0){
+      /* drawing text along the dimension line, kept reading left to right, a fifth of its height above the line */
+      var px=st.textHeight*ppm,ang=Math.atan2(tuy,tux);
+      if(ang>Math.PI/2)ang-=Math.PI;else if(ang<-Math.PI/2)ang+=Math.PI;
+      if(px>=1.5){
+        ctx.translate(mx,my);ctx.rotate(ang);
+        ctx.font=px.toFixed(2)+'px '+bimTextStyle().font;ctx.textAlign='center';ctx.textBaseline='alphabetic';
+        ctx.fillStyle=sel?'#9ec1ff':(/^#[0-9a-fA-F]{6}$/.test(o.color||'')?o.color:'#dfe4ea');
+        ctx.fillText(label,0,-px*0.2);
+      }
+    }else{
+      ctx.font='11px system-ui,sans-serif';
+      var tw=ctx.measureText(label).width;
+      ctx.fillStyle='rgba(20,22,26,0.82)';
+      ctx.fillRect(mx-tw/2-4,my-16,tw+8,14);
+      ctx.fillStyle=sel?'#9ec1ff':'#dfe4ea';
+      ctx.textAlign='center';ctx.textBaseline='middle';
+      ctx.fillText(label,mx,my-9);
+    }
+    ctx.restore();
+  }
+  /* An ordinate dimension: a leader with a jog from the feature to the text, and the X or Y it reads. */
+  function bimDrawOrdinateDim(ctx,o,sel,S){
+    var f=S(o.p1),e=S(o.d1),label=o.axis.toUpperCase()+' '+bimDimLabelText(o.value);
+    var mid=o.axis==='y'?[f[0]+(e[0]-f[0])*0.6,f[1]]:[f[0],f[1]+(e[1]-f[1])*0.6];
+    ctx.beginPath();ctx.moveTo(f[0],f[1]);ctx.lineTo(mid[0],mid[1]);ctx.lineTo(e[0],e[1]);ctx.stroke();
+    return {label:label,at:[e[0]+(o.axis==='y'?(e[0]>=f[0]?1:-1)*24:0),e[1]+(o.axis==='x'?(e[1]>=f[1]?1:-1)*10:0)]};
+  }
+  /* ================= __acad3dV259: the text style (STYLE, ST) =================
+     One current style, as AutoCAD's Standard: the font every text with a height is drawn in, and the height a new
+     TEXT or MTEXT starts with (0: a screen label, as text placed before this phase is). Saved with the project. */
+  var BIM_TEXT_FONTS=[['system-ui,sans-serif','Sans (the system\'s)'],['Arial,Helvetica,sans-serif','Arial'],
+    ['"Times New Roman",Times,serif','Times New Roman'],['"Courier New",Courier,monospace','Courier New'],
+    ['Georgia,serif','Georgia'],['"Trebuchet MS",sans-serif','Trebuchet MS']];
+  function bimTextStyleValid(s){
+    var d={font:BIM_TEXT_FONTS[0][0],height:0},i;
+    if(!s||typeof s!=='object')return d;
+    for(i=0;i<BIM_TEXT_FONTS.length;i++)if(s.font===BIM_TEXT_FONTS[i][0])d.font=s.font;
+    var h=+s.height;if(isFinite(h)&&h>=0)d.height=h;
+    return d;
+  }
+  function bimTextStyle(){if(!A3D.textStyle)A3D.textStyle=bimTextStyleValid(null);return A3D.textStyle;}
+  function openTextStyleDlg(){
+    closeDlg();
+    var s=bimTextStyle(),d=document.createElement('div');
+    d.className='a3d-dlg';
+    d.innerHTML='<div class="a3d-dlghd">Text style: Standard</div><div class="a3d-dlgbody">'+
+      '<div class="a3d-dlgrow"><label>Font</label><select data-a3dts="font">'+BIM_TEXT_FONTS.map(function(f){
+        return '<option value="'+bimEsc(f[0])+'"'+(s.font===f[0]?' selected':'')+'>'+bimEsc(f[1])+'</option>';}).join('')+'</select></div>'+
+      '<div class="a3d-dlgrow"><label>Height of new text, m (0: a screen label)</label><input type="number" min="0" step="any" data-a3dts="height" value="'+s.height+'"></div>'+
+      '<div class="a3d-propnote">Every text with a height is drawn in this font; a change redraws them all.</div></div>'+
+      '<div class="a3d-dlgft"><button data-a3dlg="cancel">Cancel</button><button data-a3dlg="ok">OK</button></div>';
+    el.root.appendChild(d);el.dlg=d;
+    function submit(){
+      pushUndo();
+      A3D.textStyle=bimTextStyleValid({font:d.querySelector('[data-a3dts="font"]').value,height:d.querySelector('[data-a3dts="height"]').value});
+      closeDlg();paint();saveSoon();
+      a3dToast('Text style changed');
+    }
+    d.addEventListener('click',function(ev){var b=ev.target&&ev.target.closest?ev.target.closest('[data-a3dlg]'):null;if(!b)return;if(b.getAttribute('data-a3dlg')==='ok')submit();else closeDlg();});
+    d.addEventListener('keydown',function(ev){if(ev.key==='Enter'){ev.preventDefault();ev.stopPropagation();submit();}else if(ev.key==='Escape'){ev.preventDefault();ev.stopPropagation();closeDlg();}});
   }
   /* ================= __acad3dV98: the pick shape of an annotation =================
 
@@ -18128,7 +18481,10 @@ function bimOpnToWall(rect, len, height) {
         poly(o.pts,o.closed!==false,lay,o.bulges,o);
       }else if(o.t==='dim'&&bimDimKind(o)==='linear'){
         line(o.d1,o.d2,lay);line(o.p1,o.d1,lay);line(o.p2,o.d2,lay);
-        text([(o.d1[0]+o.d2[0])/2,(o.d1[1]+o.d2[1])/2],o.length.toFixed(2),0.2,lay);
+        text([(o.d1[0]+o.d2[0])/2,(o.d1[1]+o.d2[1])/2],bimDimLabelText(o.length),bimDimStyle().textHeight>0?bimDimStyle().textHeight:0.2,lay);   /* __acad3dV258 */
+      }else if(o.t==='dim'&&bimDimKind(o)==='ordinate'){   /* __acad3dV258 */
+        line(o.p1,o.d1,lay);
+        text(o.d1,o.axis.toUpperCase()+' '+bimDimLabelText(o.value),bimDimStyle().textHeight>0?bimDimStyle().textHeight:0.2,lay);
       }else if(o.t==='dim'&&bimDimKind(o)==='angular'){
         line(o.vertex,o.ap1,lay);line(o.vertex,o.ap2,lay);
         var arcPts=[],ai;
@@ -38169,6 +38525,8 @@ function bimAnGauss(m) {
     if(e.p2)o.p2=P(e.p2);
     if(e.p)o.p=P(e.p);
     if(e.pts)o.pts=e.pts.map(P);
+    if(e.loops)o.loops=e.loops.map(function(l){return {flags:l.flags,pts:l.pts.map(P),bulges:l.bulges&&mir?l.bulges.map(function(v){return -(v||0);}):l.bulges};});   /* __acad3dV261 */
+    if(e.type==='HATCH'&&typeof e.angle==='number')o.angle=(mir?-e.angle:e.angle)+(ins.rot||0);
     if(e.bulges&&mir)o.bulges=e.bulges.map(function(v){return -(v||0);});
     if(e.c)o.c=P(e.c);
     if(typeof e.r==='number')o.r=e.r*Math.abs(sx);
@@ -38214,7 +38572,9 @@ function bimAnGauss(m) {
     function mk(o){var k;for(k in base)if(base.hasOwnProperty(k))o[k]=base[k];return o;}
     if(t==='TEXT'||t==='ATTRIB'){
       if(t==='ATTRIB'&&(N(70,0)&1))return null;   /* an invisible attribute is not drawn */
-      return mk({type:'TEXT',text:dxfTextPlain(S(1,'')),p:[N(10,0),N(20,0),N(30,0)],h:N(40,0),rot:N(50,0)});
+      var tx=mk({type:'TEXT',text:dxfTextPlain(S(1,'')),p:[N(10,0),N(20,0),N(30,0)],h:N(40,0),rot:N(50,0)});
+      if(t==='ATTRIB'&&S(2,''))tx.tag=S(2,'');   /* __acad3dV260: an attribute keeps its tag */
+      return tx;
     }
     if(t==='MTEXT'){
       var s='',i;
@@ -38235,6 +38595,12 @@ function bimAnGauss(m) {
       var pts=dxfSplinePts(N(71,3),ctrl,A(40),A(41),fit);
       return pts.length>=2?mk({type:'POLYPTS',pts:pts,closed:!!(N(70,0)&1)}):null;
     }
+    if(t==='HATCH'){   /* __acad3dV261 */
+      var loops=dxfHatchLoops(items);
+      if(!loops.length)return null;
+      var solid=N(70,0)===1||/^SOLID$/i.test(S(2,''));
+      return mk({type:'HATCH',pattern:solid?'solid':dxfHatchPattern(S(2,'')),angle:N(52,0),scale:N(41,1),loops:loops});
+    }
     if(t==='SOLID'||t==='TRACE'){
       /* the third and fourth corners are stored crossed: 1, 2, 4, 3 is the outline */
       var q=[[N(10,0),N(20,0)],[N(11,0),N(21,0)],[N(13,N(12,0)),N(23,N(22,0))],[N(12,0),N(22,0)]];
@@ -38251,6 +38617,143 @@ function bimAnGauss(m) {
       return nm?mk({type:'INSERT',name:nm,at:[0,0],sx:1,sy:1,rot:0}):null;
     }
     return null;
+  }
+  /* ================= __acad3dV261: HATCH, read as a hatch =================
+     A DXF HATCH's boundary paths (DXF Reference, HATCH, "Boundary path data"): 91 the number of paths; each starts
+     with 92 (its flags: 1 external, 2 a polyline, 16 outermost); a polyline path is 72 (has bulges), 73 (closed),
+     93 (vertices) and 10/20(/42) each; an edge path is 93 (edges) and each edge's 72: 1 line (10,20,11,21), 2 arc
+     (10,20,40,50,51,73), 3 ellipse (10,20,11,21,40,50,51,73), 4 spline (its control points 10/20, sampled
+     through their polygon). Pattern: 2 its name, 70 solid, 52 angle, 41 scale. */
+  var BIM_DXF_HATCH_MAP={SOLID:'solid',ANSI31:'diagonal',ANSI32:'steel',ANSI33:'diagonal',ANSI34:'steel',ANSI35:'diagonal',
+    ANSI36:'diagonal',ANSI37:'cross',ANSI38:'cross',NET:'cross','AR-BRSTD':'brick','AR-B816':'brick','AR-B88':'brick',
+    BRICK:'brick','AR-CONC':'concrete','AR-SAND':'dots',DOTS:'dots',LINE:'horizontal',EARTH:'cross',STEEL:'steel'};
+  function dxfHatchPattern(name){
+    var n=String(name||'').toUpperCase();
+    return BIM_DXF_HATCH_MAP.hasOwnProperty(n)?BIM_DXF_HATCH_MAP[n]:'diagonal';
+  }
+  function dxfHatchLoops(items){
+    var i=0,loops=[],n;
+    while(i<items.length&&items[i][0]!==91)i++;
+    if(i>=items.length)return loops;
+    n=parseInt(items[i][1],10)||0;i++;
+    function num(){return parseFloat(items[i++][1]);}
+    function seek(code){while(i<items.length&&items[i][0]!==code)i++;return i<items.length;}
+    for(var L=0;L<n;L++){
+      if(!seek(92))break;
+      var flags=parseInt(items[i][1],10)||0;i++;
+      var pts=[],bul=[];
+      if(flags&2){
+        var hasB=0,cnt=0;
+        while(i<items.length&&items[i][0]!==10){
+          if(items[i][0]===72)hasB=parseInt(items[i][1],10)||0;
+          if(items[i][0]===93)cnt=parseInt(items[i][1],10)||0;
+          i++;
+        }
+        for(var v=0;v<cnt&&i<items.length;v++){
+          var x=0,y=0,b=0;
+          if(items[i][0]===10)x=num();
+          if(i<items.length&&items[i][0]===20)y=num();
+          if(hasB&&i<items.length&&items[i][0]===42)b=num();
+          pts.push([x,y]);bul.push(b);
+        }
+        loops.push({flags:flags,pts:pts,bulges:hasB?bul:null});
+        continue;
+      }
+      if(!seek(93))break;
+      var ne=parseInt(items[i][1],10)||0;i++;
+      for(var e=0;e<ne;e++){
+        if(!seek(72))break;
+        var et=parseInt(items[i][1],10)||0;i++;
+        var r={},seg=[];
+        while(i<items.length&&items[i][0]!==72&&items[i][0]!==92&&items[i][0]!==97&&items[i][0]!==75){
+          var c=items[i][0];
+          if(c===10||c===20||c===11||c===21||c===40||c===50||c===51||c===73){r[c]=r[c]===undefined?parseFloat(items[i][1]):r[c];}
+          if(et===4&&c===10){(r.cx=r.cx||[]).push(parseFloat(items[i][1]));}
+          if(et===4&&c===20){(r.cy=r.cy||[]).push(parseFloat(items[i][1]));}
+          i++;
+        }
+        if(et===1)seg=[[r[10],r[20]],[r[11],r[21]]];
+        else if(et===2||et===3){
+          var a0=(r[50]||0)*Math.PI/180,a1=(r[51]||0)*Math.PI/180,ccw=r[73]!==0,k;
+          if(!ccw){a0=-a0;a1=-a1;}
+          if(a1<a0&&ccw)a1+=Math.PI*2;
+          if(et===2)for(k=0;k<=16;k++){var a=a0+(a1-a0)*k/16;seg.push([r[10]+Math.cos(a)*r[40],r[20]+Math.sin(a)*r[40]]);}
+          else seg=dxfEllipsePts([r[10],r[20]],[r[11],r[21]],r[40],a0,a1,16).pts;
+        }else if(et===4&&r.cx)for(k=0;k<Math.min(r.cx.length,r.cy.length);k++)seg.push([r.cx[k],r.cy[k]]);
+        for(k=0;k<seg.length;k++){
+          var last=pts[pts.length-1];
+          if(!last||Math.abs(last[0]-seg[k][0])>1e-9||Math.abs(last[1]-seg[k][1])>1e-9)pts.push(seg[k]);
+        }
+      }
+      if(pts.length>2&&Math.abs(pts[0][0]-pts[pts.length-1][0])<1e-9&&Math.abs(pts[0][1]-pts[pts.length-1][1])<1e-9)pts.pop();
+      loops.push({flags:flags,pts:pts,bulges:null});
+    }
+    return loops.filter(function(l){return l.pts.length>=3||(l.pts.length===2&&l.bulges);});
+  }
+  /* The loops a hatch fills: those flagged external or outermost, else the largest; the rest are its islands. */
+  function dxfHatchOuter(loops){
+    var out=loops.filter(function(l){return l.flags&(1|16);});
+    if(out.length)return out;
+    var best=null,ba=-1,i;
+    for(i=0;i<loops.length;i++){var a=Math.abs(bimPolySignedArea(loops[i].pts));if(a>ba){ba=a;best=loops[i];}}
+    return best?[best]:[];
+  }
+  /* ================= __acad3dV263: binary DXF =================
+     A binary DXF (DXF Reference, "Binary DXF Files") starts with the 22-byte sentinel "AutoCAD Binary DXF\r\n\x1a\0".
+     Then each group: its code (R13 and later: 2 bytes, little-endian; R12: 1 byte, 255 meaning a 2-byte code
+     follows) and its value, whose type the code decides (the reference's "Group Code Value Types"): text ending in
+     a 0 byte; 8-byte doubles; 2-, 4- and 8-byte integers; a 1-byte boolean; binary chunks of a length byte and
+     data. It is turned into the ASCII form, so everything after reads it as it reads any DXF. */
+  var BIM_DXF_BIN_SENTINEL='AutoCAD Binary DXF\r\n\u001a\u0000';
+  function dxfIsBinary(bytes){
+    if(!bytes||bytes.length<22)return false;
+    for(var i=0;i<22;i++)if(bytes[i]!==BIM_DXF_BIN_SENTINEL.charCodeAt(i))return false;
+    return true;
+  }
+  function dxfBinType(c){
+    if((c>=0&&c<=9)||c===100||c===102||c===105||(c>=300&&c<=309)||(c>=320&&c<=369)||(c>=390&&c<=399)||
+       (c>=410&&c<=419)||(c>=430&&c<=439)||(c>=470&&c<=481)||c===999||(c>=1000&&c<=1003)||(c>=1005&&c<=1009))return 's';
+    if((c>=10&&c<=59)||(c>=110&&c<=149)||(c>=210&&c<=239)||(c>=460&&c<=469)||(c>=1010&&c<=1059))return 'd';
+    if((c>=60&&c<=79)||(c>=170&&c<=179)||(c>=270&&c<=289)||(c>=370&&c<=389)||(c>=400&&c<=409)||(c>=1060&&c<=1070))return 'h';
+    if((c>=90&&c<=99)||(c>=420&&c<=429)||(c>=440&&c<=459)||c===1071)return 'i';
+    if(c>=160&&c<=169)return 'l';
+    if(c>=290&&c<=299)return 'b';
+    if((c>=310&&c<=319)||c===1004)return 'x';
+    return null;
+  }
+  /* The ASCII DXF a binary one says; throws on a group code it does not know. */
+  function dxfBinaryToText(bytes){
+    var dv=new DataView(bytes.buffer,bytes.byteOffset,bytes.byteLength),p=22,out=[],wide;
+    wide=bytes[22]===0&&bytes[23]===0;   /* R13+: the first code, 0, takes two bytes */
+    var dec=typeof TextDecoder!=='undefined'?new TextDecoder('utf-8'):null;
+    function str(){
+      var s=p;while(p<bytes.length&&bytes[p]!==0)p++;
+      var t=dec?dec.decode(bytes.subarray(s,p)):String.fromCharCode.apply(null,Array.prototype.slice.call(bytes,s,p));
+      p++;return t;
+    }
+    while(p<bytes.length){
+      var code;
+      if(wide){code=dv.getUint16(p,true);p+=2;}
+      else{code=bytes[p++];if(code===255){code=dv.getInt16(p,true);p+=2;}}
+      var ty=dxfBinType(code),v;
+      if(ty==='s')v=str();
+      else if(ty==='d'){v=String(dv.getFloat64(p,true));p+=8;}
+      else if(ty==='h'){v=String(dv.getInt16(p,true));p+=2;}
+      else if(ty==='i'){v=String(dv.getInt32(p,true));p+=4;}
+      else if(ty==='l'){var lo=dv.getUint32(p,true),hi=dv.getInt32(p+4,true);v=String(hi*4294967296+lo);p+=8;}
+      else if(ty==='b'){v=String(bytes[p++]);}
+      else if(ty==='x'){var n=bytes[p++],hx='',k;for(k=0;k<n;k++)hx+=(bytes[p+k]<16?'0':'')+bytes[p+k].toString(16).toUpperCase();p+=n;v=hx;}
+      else throw new Error('Binary DXF: unknown group code '+code+' at byte '+(p-2));
+      out.push(String(code),v);
+      if(code===0&&v==='EOF')break;
+    }
+    return out.join('\n')+'\n';
+  }
+  /* What import-entry.js hands the DXF reader: the text of an ASCII DXF, or of a binary one turned into ASCII. */
+  function dxfTextFromBytes(buf){
+    var b=new Uint8Array(buf);
+    if(dxfIsBinary(b))return dxfBinaryToText(b);
+    return typeof TextDecoder!=='undefined'?new TextDecoder('utf-8').decode(b):String.fromCharCode.apply(null,Array.prototype.slice.call(b));
   }
   // ---- DXF (AutoCAD ASCII exchange format) ----
   var DXF_ACI={1:'#ff5555',2:'#e8d24a',3:'#5ac25a',4:'#4ac6c6',5:'#5a7fe0',6:'#c85ac0',7:'#d8d8d8',8:'#8a8a8a',9:'#bcbcbc'};
@@ -38446,7 +38949,7 @@ function bimAnGauss(m) {
     pushUndo();
     setUndoSuspend(true);
     var __dxfStart=A3D.objs.length;
-    var scale,layerMap={},dxfNames,created=0,skippedPoints=0,texts=0,i;
+    var scale,layerMap={},dxfNames,created=0,skippedPoints=0,texts=0,hatches=0,i;
     try{
       scale=res.scale;dxfNames=Object.keys(res.layers);
       if(!dxfNames.length)dxfNames=['0'];
@@ -38478,6 +38981,20 @@ function bimAnGauss(m) {
             /* __acad3dV251: a circle is two half-circle arcs, as CIRCLE draws one, not a 24-gon */
             var cir=bimCircleSketch(bimDxfToModel(e.c[0],e.c[1],scale),e.r*scale);
             if(!cir.error)o=bimMakeImportedSketch(cir.pts,baseY+(e.c[2]||0)*scale,true,cir.bulges);
+          }else if(e.type==='HATCH'){   /* __acad3dV261: the outer boundary filled; an island is drawn as its outline */
+            var outer=dxfHatchOuter(e.loops),hk;
+            for(hk=0;hk<e.loops.length;hk++){
+              var lp=e.loops[hk],mp=lp.pts.map(function(p){return bimDxfToModel(p[0],p[1],scale);});
+              if(outer.indexOf(lp)>=0){
+                var ho=bimAddHatch(mp,bimDxfBulgesToModel(lp.bulges),baseY,{layer:lid,pattern:e.pattern,
+                  patternScale:e.scale>0?e.scale:1,patternAngle:-(e.angle||0),
+                  patternColor:typeof e.color==='string'?e.color:(e.color>=1&&e.color<=255?dxfAciToHex(e.color):undefined)});
+                if(ho){ho.locked=true;hatches++;}
+              }else{
+                var isl=bimMakeImportedSketch(mp,baseY,true,bimDxfBulgesToModel(lp.bulges));
+                if(isl){isl.layer=lid;created++;}
+              }
+            }
           }else if(e.type==='POLYPTS'){   /* __acad3dV251: ellipse, spline, solid */
             o=bimMakeImportedSketch(e.pts.map(function(p){return bimDxfToModel(p[0],p[1],scale);}),baseY+(e.z||0)*scale,!!e.closed);
           }else if(e.type==='TEXT'){
@@ -38486,6 +39003,7 @@ function bimAnGauss(m) {
               o={id:'a3d-'+Date.now().toString(36)+'-'+(A3D.seq++),t:'text',name:'Text_'+A3D.counts.text,col:'#dfe4ea',pos:[0,0,0],
                 text:e.text,pt:bimDxfToModel(e.p[0],e.p[1],scale),y:baseY+(e.p[2]||0)*scale,levelId:A3D.activeLevel,viewId:A3D.activeViewId};
               if(e.h>0)o.height=e.h*scale;   /* __acad3dV254: drawn at its own height */
+              if(e.tag)o.attrib={tag:String(e.tag).toUpperCase()};   /* __acad3dV260: an insert's attribute */
               if(e.rot)o.rot=e.rot;
               A3D.objs.push(o);texts++;
             }
@@ -38531,7 +39049,7 @@ function bimAnGauss(m) {
     refreshTree();refreshLayers();fitScene();paint();saveSoon();
     var skipMsg=Object.keys(res.skipped).map(function(k){return res.skipped[k]+' '+k;}).join(', ');
     a3dToast((kind||'DXF')+' import: '+created+' entities on '+dxfNames.length+' layer(s)'+
-      (texts?', '+texts+' text':'')+(res.inserts?', '+res.inserts+' block insert(s) expanded':'')+
+      (texts?', '+texts+' text':'')+(hatches?', '+hatches+' hatch(es)':'')+(res.inserts?', '+res.inserts+' block insert(s) expanded':'')+
       (skipMsg?'; skipped (unsupported): '+skipMsg:'')+
       (skippedPoints?'; '+skippedPoints+' POINT entities not rendered':'')+
       (res.insUnits===null?' (no units in file, assumed meters)':''));
@@ -38603,6 +39121,7 @@ function bimAnGauss(m) {
       if(sp.length>=2)o={type:'POLYPTS',pts:sp,closed:!!e.closed};
     }else if(t==='TEXT'||t==='ATTRIB'){
       o={type:'TEXT',text:dxfTextPlain(e.value),p:bimDwgPt(e.insert),h:e.height||0,rot:(e.rotation||0)*D};
+      if(t==='ATTRIB'&&e.tag)o.tag=e.tag;   /* __acad3dV260 */
     }else if(t==='MTEXT'){
       o={type:'TEXT',text:dxfTextPlain(e.value),p:bimDwgPt(e.insert),h:e.height||0,
         rot:e.xAxis?Math.atan2(e.xAxis.y,e.xAxis.x)*D:0};
@@ -38638,7 +39157,7 @@ function bimAnGauss(m) {
       var lp=e.loops[i];
       if(lp.polyline&&lp.polyline.vertices&&lp.polyline.vertices.length>=2){
         var vs=lp.polyline.vertices;
-        out.push({type:'LWPOLYLINE',closed:true,layer:L,color:C,pts:vs.map(function(v){return [v.x,v.y];}),
+        out.push({type:'LWPOLYLINE',closed:true,layer:L,color:C,flags:lp.flags||0,pts:vs.map(function(v){return [v.x,v.y];}),
           bulges:lp.polyline.hasBulges?vs.map(function(v){return v.bulge||0;}):null});
         continue;
       }
@@ -38662,9 +39181,12 @@ function bimAnGauss(m) {
           if(!last||Math.abs(last[0]-seg[k][0])>1e-9||Math.abs(last[1]-seg[k][1])>1e-9)pts.push(seg[k]);
         }
       }
-      if(pts.length>=3)out.push({type:'POLYPTS',pts:pts,closed:true,layer:L,color:C});
+      if(pts.length>=3)out.push({type:'POLYPTS',pts:pts,closed:true,layer:L,color:C,flags:lp.flags||0});
     }
-    return out.length?out:null;
+    if(!out.length)return null;
+    /* __acad3dV261: one HATCH, its loops the outlines above, filled with its pattern */
+    return [{type:'HATCH',layer:L,color:C,pattern:e.solid?'solid':dxfHatchPattern(e.pattern),angle:(e.angle||0)*180/Math.PI,
+      scale:e.scale>0?e.scale:1,loops:out.map(function(o){return {flags:o.flags||0,pts:o.pts,bulges:o.bulges||null};})}];
   }
   /* The library's model as the DXF reader's result: layers, the model space with every block expanded, the units. */
   function bimDwgToParsed(m){
@@ -38762,6 +39284,376 @@ function bimAnGauss(m) {
       console.warn('[BIM] DWG export failed:',e);
       a3dToast('DWG export failed: '+(e&&e.message||e));
       return null;
+    });
+  }
+  /* ================= __acad3dV264: OpenCASCADE, through replicad (the owner's approval, 2026-11-22: "Yes go ahead") =================
+     FreeCAD's own geometry kernel, for what FreeCAD's Part and PartDesign do and this app's meshes cannot: true solids,
+     fillets and chamfers on their edges, shells, revolves, lofts, STEP. docs/research/research-occt-library.md.
+
+     The runtime is runtime/occt/<ver>/ (tools/occt/build_occt.mjs): bim-replicad.min.js (replicad, MIT; global
+     BIMREPLICAD) and the OpenCASCADE build it drives, replicad_single.js and .wasm (LGPL-2.1, their own unchanged files),
+     fetched only the first time a solid tool is used. This file is the only one that calls them.
+
+     The plan is the app's x and z with y up; OpenCASCADE's is X, Y with Z up. (x, y, z) goes to (X, Y, Z) = (x, -z, y),
+     a turn rather than a reflection, so faces keep their winding; a bulge changes sign with the plan's north-up flip, as
+     the DXF writer's does (export-mappings.js). A solid keeps its OpenCASCADE shape as replicad's serialized text in
+     o.occt.brep, with a signature of the mesh it made; a mesh tool that changes the mesh afterwards (rotate, scale,
+     push and pull) leaves the signature behind, and the solid is then no longer edited as a B-rep, rather than from a
+     shape it no longer matches. */
+  var BIM_OCCT={ver:'1.2.1',dir:'occt/1.2.1/',lib:'bim-replicad.min.js',loader:'replicad_single.js',wasm:'replicad_single.wasm',
+    sri:'sha256-hpbD1EWm6C2UdV5h1R+k5GlTKeXiUht9ADDHuoZNr18=',mesh:{tolerance:0.005,angularTolerance:10}};
+  var A3D_OCCT={load:null,st:'',err:'',R:null};
+  /* ---------- pure: the plan to OpenCASCADE and back ---------- */
+  function bimOcctPt(p){return [p[0],-p[1]];}
+  /* A closed outline (the app's points and bulges) in OpenCASCADE's plane, counter-clockwise. The turn to (X, Y) mirrors
+     the plan, so the points are taken there with their bulges negated; an outline that then runs clockwise is walked
+     the other way (points reversed, bulges reversed and negated). A clockwise face extrudes into a solid turned inside
+     out, whose volume still reads positive but whose booleans come out wrong: two overlapping boxes fused to the sum
+     of their volumes (found by V264's browser check). */
+  function bimOcctOutline(pts,bulges){
+    var n=pts.length,P=pts.map(bimOcctPt),B=[],i;
+    for(i=0;i<n;i++)B.push(-bimBulgeAt(bulges,i));
+    if(bimBulgedSignedArea(P,B,true)<0){
+      var P2=[],B2=[];
+      for(i=0;i<n;i++)P2.push(P[(n-i)%n]);
+      for(i=0;i<n;i++)B2.push(-B[(n-1-i+n)%n]);
+      P=P2;B=B2;
+    }
+    return {pts:P,bulges:B};
+  }
+  /* The outline drawn with replicad's pen. */
+  function bimOcctDrawing(R,pts,bulges){
+    var n=pts.length,i,b,d,O;
+    if(n<2)return null;
+    O=bimOcctOutline(pts,bulges);
+    d=R.draw(O.pts[0]);
+    for(i=0;i<n;i++){
+      var q=O.pts[(i+1)%n];b=O.bulges[i];
+      if(i===n-1){
+        if(Math.abs(b)>BIM_BULGE_EPS)d=d.bulgeArcTo(q,b);
+        break;
+      }
+      d=Math.abs(b)>BIM_BULGE_EPS?d.bulgeArcTo(q,b):d.lineTo(q);
+    }
+    return d.close();
+  }
+  /* replicad's mesh as the app's: vertices (X, Y, Z) to (x, y, z) = (X, Z, -Y), triangles as faces. */
+  function bimOcctMeshToApp(m){
+    var v=[],f=[],i;
+    for(i=0;i+2<m.vertices.length;i+=3)v.push([m.vertices[i],m.vertices[i+2],-m.vertices[i+1]]);
+    for(i=0;i+2<m.triangles.length;i+=3)f.push([m.triangles[i],m.triangles[i+1],m.triangles[i+2]]);
+    return {v:v,f:f};
+  }
+  /* A mesh's signature: its sizes and a coarse sum of its coordinates, enough to tell that a mesh tool changed it. */
+  function bimOcctSig(mesh){
+    var s=0,i;
+    for(i=0;i<mesh.v.length;i++)s+=mesh.v[i][0]*1.3+mesh.v[i][1]*1.7+mesh.v[i][2]*1.9;
+    return mesh.v.length+':'+mesh.f.length+':'+s.toFixed(4);
+  }
+  function bimOcctIsSolid(o){return !!(o&&o.occt&&typeof o.occt.brep==='string'&&o.mesh&&o.occt.sig===bimOcctSig(o.mesh));}
+  /* ---------- loading ---------- */
+  function bimOcctBases(){
+    var p=String(window.location&&window.location.protocol||''),out=[];
+    if(p!=='http:'&&p!=='https:')out.push({b:'runtime/',sri:false});
+    out.push({b:String(bimLbBase()),sri:true});
+    return out;
+  }
+  function bimOcctScript(u,sri){
+    return new Promise(function(res,rej){
+      var t=document.createElement('script');
+      t.src=u;if(sri){t.integrity=BIM_OCCT.sri;t.crossOrigin='anonymous';}
+      t.onload=function(){res();};
+      t.onerror=function(){if(t.parentNode)t.parentNode.removeChild(t);rej(new Error('could not load '+u));};
+      document.head.appendChild(t);
+    });
+  }
+  /* The OpenCASCADE loader is an ES module (it finds its wasm by import.meta.url); a dynamic import made through the
+     Function constructor keeps this file's own code ES5. */
+  var bimOcctImport=null;
+  function bimOcctModule(u){
+    if(!bimOcctImport)bimOcctImport=new Function('u','return import(u);');
+    return bimOcctImport(u);
+  }
+  function bimOcctLoad(){
+    var S=A3D_OCCT;
+    if(S.load)return S.load;
+    var bases=bimOcctBases(),k=0;
+    S.st='loading';
+    function attempt(){
+      if(k>=bases.length)return Promise.reject(new Error('the solid modeller could not be loaded from '+bases.map(function(x){return x.b+BIM_OCCT.dir;}).join(' or ')));
+      var B=bases[k++],dir=B.b+BIM_OCCT.dir;
+      var lib=window.BIMREPLICAD?Promise.resolve():bimOcctScript(dir+BIM_OCCT.lib,B.sri);
+      return lib.then(function(){return bimOcctModule(new URL(dir+BIM_OCCT.loader,document.baseURI).href);})
+        .then(function(mod){return mod.default({locateFile:function(){return new URL(dir+BIM_OCCT.wasm,document.baseURI).href;}});})
+        .then(function(oc){window.BIMREPLICAD.setOC(oc);S.R=window.BIMREPLICAD;S.st='ready';return S.R;},
+          function(e){console.warn('[BIM] OpenCASCADE from '+dir+' failed: '+(e&&e.message||e));return attempt();});
+    }
+    S.load=attempt().catch(function(e){S.st='failed';S.err=String(e&&e.message||e);S.load=null;throw e;});
+    return S.load;
+  }
+  /* ---------- solids in the model ---------- */
+  function bimOcctMesh(shape){return bimOcctMeshToApp(shape.mesh(BIM_OCCT.mesh));}
+  /* A new solid object from an OpenCASCADE shape, on the active layer. */
+  function bimOcctAddSolid(shape,name){
+    var mesh=bimOcctMesh(shape);
+    if(!mesh.f.length)return null;
+    A3D.counts.solid=(A3D.counts.solid||0)+1;
+    var o={id:'a3d-'+Date.now().toString(36)+'-'+(A3D.seq++),t:'solid',name:(name||'Solid')+' '+A3D.counts.solid,col:'#b9c7d6',
+      pos:[0,0,0],mesh:mesh,layer:A3D.activeLayer,occt:{brep:shape.serialize(),sig:bimOcctSig(mesh),v:BIM_OCCT.ver}};
+    A3D.objs.push(o);
+    return o;
+  }
+  /* An existing solid given a new shape (a fillet, a shell): its mesh and its B-rep together. */
+  function bimOcctReplace(o,shape){
+    var mesh=bimOcctMesh(shape);
+    if(!mesh.f.length)return false;
+    o.mesh=mesh;o.occt={brep:shape.serialize(),sig:bimOcctSig(mesh),v:BIM_OCCT.ver};
+    A3D.meshes={};
+    return true;
+  }
+  function bimOcctShapeOf(R,o){return R.deserializeShape(o.occt.brep);}
+  /* The shape where the model shows it: a solid moved by MOVE keeps its B-rep where it was made, and its offset
+     (o.pos) on top, as its mesh does; booleans between solids and STEP need them where they are. */
+  function bimOcctOffsetXYZ(pos){return [pos[0]||0,-(pos[2]||0),pos[1]||0];}
+  function bimOcctShapeAt(R,o,rel){
+    var q=bimObjOffset(o),b=rel?bimObjOffset(rel):[0,0,0],d=bimOcctOffsetXYZ([q[0]-b[0],q[1]-b[1],q[2]-b[2]]),s=bimOcctShapeOf(R,o);
+    return (d[0]||d[1]||d[2])?s.translate(d[0],d[1],d[2]):s;
+  }
+  /* ================= __acad3dV264: the solid tools on OpenCASCADE =================
+     AutoCAD's names for FreeCAD's Part and PartDesign operations: EXTRUDE (EXT) a closed sketch into a solid; FILLETEDGE
+     and CHAMFEREDGE on a solid's edges (all, the vertical ones, the top or the bottom ones); SHELL (a solid hollowed,
+     its top face open); REVOLVE (REV) a closed sketch about an axis picked in the plan; LOFT between closed sketches at
+     different heights; SOLIDUNION, SOLIDSUBTRACT and SOLIDINTERSECT on B-rep solids; EXPORTSTEP; and .step and .stp
+     files through Import. Each loads OpenCASCADE the first time (occt-adapter.js) and is one undo step.
+     Edge sets rather than a picked edge: an edge picked under the cursor needs the edges drawn and hit-tested, which is
+     the next step; the four sets cover a box's usual fillets. */
+  function bimOcctSel(){
+    var ids=(A3D.selSet&&A3D.selSet.length)?A3D.selSet.slice():(A3D.sel?[A3D.sel]:[]);
+    return ids.map(objById).filter(Boolean);
+  }
+  function bimOcctClosedSketch(o){return !!(o&&o.t==='sketch'&&o.closed!==false&&o.pts&&(o.pts.length>2||bimHasBulge(o.bulges)));}
+  /* Load, then act; a failure is said, not thrown into the page. */
+  function bimOcctRun(label,fn){
+    if(A3D_OCCT.st!=='ready')a3dToast(label+': loading the solid modeller (about 7 MB, the first time only)...');
+    return bimOcctLoad().then(function(R){
+      try{return fn(R);}
+      catch(e){console.warn('[BIM] '+label+' failed:',e);a3dToast(label+' failed: '+bimOcctErr(e));return null;}
+    },function(e){a3dToast(label+': '+(e&&e.message||e));return null;});
+  }
+  /* OpenCASCADE throws numbers (its own exception pointers) as well as Errors */
+  function bimOcctErr(e){return (e&&e.message)?e.message:(typeof e==='number'?'the geometry could not be built (try a smaller radius or thickness)':String(e));}
+  function bimOcctNumDlg(title,fields,onOk){
+    closeDlg();
+    var d=document.createElement('div'),h='',i;
+    d.className='a3d-dlg';
+    for(i=0;i<fields.length;i++){
+      var F=fields[i];
+      if(F.options)h+='<div class="a3d-dlgrow"><label>'+bimEsc(F.label)+'</label><select data-a3doc="'+F.k+'">'+
+        F.options.map(function(op){return '<option value="'+op[0]+'"'+(op[0]===F.v?' selected':'')+'>'+bimEsc(op[1])+'</option>';}).join('')+'</select></div>';
+      else h+='<div class="a3d-dlgrow"><label>'+bimEsc(F.label)+'</label><input type="number" step="any" data-a3doc="'+F.k+'" value="'+F.v+'"></div>';
+    }
+    d.innerHTML='<div class="a3d-dlghd">'+bimEsc(title)+'</div><div class="a3d-dlgbody">'+h+'<div id="a3d-dlgerr" class="a3d-dlgerr"></div></div>'+
+      '<div class="a3d-dlgft"><button data-a3dlg="cancel">Cancel</button><button data-a3dlg="ok">OK</button></div>';
+    el.root.appendChild(d);el.dlg=d;
+    function submit(){
+      var v={},f=d.querySelectorAll('[data-a3doc]'),j;
+      for(j=0;j<f.length;j++){var k=f[j].getAttribute('data-a3doc');v[k]=f[j].tagName==='SELECT'?f[j].value:parseFloat(f[j].value);}
+      var err=onOk(v);
+      if(err){d.querySelector('#a3d-dlgerr').textContent=err;return;}
+      closeDlg();
+    }
+    d.addEventListener('click',function(ev){var b=ev.target&&ev.target.closest?ev.target.closest('[data-a3dlg]'):null;if(!b)return;if(b.getAttribute('data-a3dlg')==='ok')submit();else closeDlg();});
+    d.addEventListener('keydown',function(ev){if(ev.key==='Enter'){ev.preventDefault();ev.stopPropagation();submit();}else if(ev.key==='Escape'){ev.preventDefault();ev.stopPropagation();closeDlg();}ev.stopPropagation();});
+    return d;
+  }
+  /* ---------- EXTRUDE ---------- */
+  function bimOcctExtrudeShape(R,o,h){
+    var q=bimObjOffset(o),pts=o.pts.map(function(p){return [p[0]+q[0],p[1]+q[2]];});
+    return bimOcctDrawing(R,pts,o.bulges||null).sketchOnPlane('XY',(o.y||0)+q[1]).extrude(h);
+  }
+  function bimOcctExtrude(ids,h){
+    return bimOcctRun('EXTRUDE',function(R){
+      var made=[],i;
+      pushUndo();
+      for(i=0;i<ids.length;i++){
+        var o=objById(ids[i]);if(!bimOcctClosedSketch(o))continue;
+        var s=bimOcctAddSolid(bimOcctExtrudeShape(R,o,h),'Extrusion');
+        if(s){s.layer=o.layer||s.layer;made.push(s.id);}
+      }
+      if(!made.length){UNDO_STACK.pop();a3dToast('EXTRUDE: select closed sketches');return null;}
+      A3D.selSet=made;A3D.sel=made[0];A3D.sel2=null;
+      refreshTree();refreshHud();paint();saveSoon();
+      a3dToast('EXTRUDE: '+made.length+' solid(s), '+bimFmtLen(h)+' high');
+      return made;
+    });
+  }
+  function startOcctExtrude(){
+    var ids=bimOcctSel().filter(bimOcctClosedSketch).map(function(o){return o.id;});
+    if(!ids.length){a3dToast('EXTRUDE: select one or more closed sketches first');return;}
+    bimOcctNumDlg('Extrude',[{k:'h',label:'Height, m',v:3}],function(v){
+      if(!(v.h>0))return 'The height must be more than zero';
+      bimOcctExtrude(ids,v.h);return '';
+    });
+  }
+  /* ---------- FILLETEDGE, CHAMFEREDGE, SHELL ---------- */
+  var BIM_OCCT_EDGESETS=[['all','All edges'],['vertical','Vertical edges'],['top','Top edges'],['bottom','Bottom edges']];
+  /* replicad's edge finder for one of the sets, the shape's height range given */
+  function bimOcctEdgeFilter(set,zmin,zmax){
+    if(set==='vertical')return function(e){return e.inDirection('Z');};
+    if(set==='top')return function(e){return e.inPlane('XY',zmax);};
+    if(set==='bottom')return function(e){return e.inPlane('XY',zmin);};
+    return null;
+  }
+  function bimOcctZRange(shape){var b=shape.boundingBox.bounds;return [b[0][2],b[1][2]];}
+  function bimOcctEdges(op,ids,r,set){
+    return bimOcctRun(op==='fillet'?'FILLETEDGE':'CHAMFEREDGE',function(R){
+      var n=0,i;
+      pushUndo();
+      for(i=0;i<ids.length;i++){
+        var o=objById(ids[i]);if(!bimOcctIsSolid(o))continue;
+        var s=bimOcctShapeOf(R,o),z=bimOcctZRange(s),f=bimOcctEdgeFilter(set,z[0],z[1]);
+        var out=op==='fillet'?(f?s.fillet(r,f):s.fillet(r)):(f?s.chamfer(r,f):s.chamfer(r));
+        if(bimOcctReplace(o,out))n++;
+      }
+      if(!n){UNDO_STACK.pop();a3dToast('Select solids made by EXTRUDE, REVOLVE, LOFT or STEP import');return null;}
+      refreshTree();paint();saveSoon();
+      a3dToast((op==='fillet'?'Filleted ':'Chamfered ')+n+' solid(s), '+bimFmtLen(r));
+      return n;
+    });
+  }
+  function startOcctEdges(op){
+    var ids=bimOcctSel().filter(bimOcctIsSolid).map(function(o){return o.id;});
+    if(!ids.length){a3dToast((op==='fillet'?'FILLETEDGE':'CHAMFEREDGE')+': select solids made by EXTRUDE, REVOLVE, LOFT or STEP import');return;}
+    bimOcctNumDlg(op==='fillet'?'Fillet edges':'Chamfer edges',[{k:'r',label:(op==='fillet'?'Radius':'Distance')+', m',v:0.1},
+      {k:'set',label:'Edges',options:BIM_OCCT_EDGESETS,v:'all'}],function(v){
+      if(!(v.r>0))return 'It must be more than zero';
+      bimOcctEdges(op,ids,v.r,v.set);return '';
+    });
+  }
+  function bimOcctShell(ids,t){
+    return bimOcctRun('SHELL',function(R){
+      var n=0,i;
+      pushUndo();
+      for(i=0;i<ids.length;i++){
+        var o=objById(ids[i]);if(!bimOcctIsSolid(o))continue;
+        var s=bimOcctShapeOf(R,o),z=bimOcctZRange(s);
+        if(bimOcctReplace(o,s.shell(t,function(fc){return fc.inPlane('XY',z[1]);})))n++;
+      }
+      if(!n){UNDO_STACK.pop();a3dToast('SHELL: select solids made by the solid tools');return null;}
+      refreshTree();paint();saveSoon();
+      a3dToast('Shelled '+n+' solid(s): walls '+bimFmtLen(t)+', the top open');
+      return n;
+    });
+  }
+  function startOcctShell(){
+    var ids=bimOcctSel().filter(bimOcctIsSolid).map(function(o){return o.id;});
+    if(!ids.length){a3dToast('SHELL: select solids made by the solid tools');return;}
+    bimOcctNumDlg('Shell',[{k:'t',label:'Wall thickness, m',v:0.1}],function(v){
+      if(!(v.t>0))return 'The thickness must be more than zero';
+      bimOcctShell(ids,v.t);return '';
+    });
+  }
+  /* ---------- REVOLVE ---------- */
+  function startOcctRevolve(){
+    var o=bimOcctSel().filter(bimOcctClosedSketch)[0];
+    if(!o){a3dToast('REVOLVE: select a closed sketch first');return;}
+    closeDlg();bimEnterDraftingMode();
+    A3D.sk={tool:'revolveaxis',pts:[],y:(o.y||0)+bimObjOffset(o)[1],on:null,revId:o.id};
+    a3dToast('REVOLVE: specify the start point of the axis');
+    paint();
+  }
+  function bimOcctRevolveShape(R,o,a,b,deg){
+    var q=bimObjOffset(o),pts=o.pts.map(function(p){return [p[0]+q[0],p[1]+q[2]];}),y=(o.y||0)+q[1];
+    var A=bimOcctPt(a),B=bimOcctPt(b);
+    return bimOcctDrawing(R,pts,o.bulges||null).sketchOnPlane('XY',y)
+      .revolve([B[0]-A[0],B[1]-A[1],0],{origin:[A[0],A[1],y],angle:deg});
+  }
+  function bimOcctRevolvePoint(sk,p){
+    sk.pts.push([p[0],p[1]]);
+    if(sk.pts.length<2){a3dToast('REVOLVE: specify the end point of the axis');paint();return;}
+    var id=sk.revId,a=sk.pts[0],b=sk.pts[1];
+    A3D.sk=null;paint();
+    if(Math.abs(a[0]-b[0])+Math.abs(a[1]-b[1])<1e-9){a3dToast('REVOLVE: the axis needs two different points');return;}
+    bimOcctNumDlg('Revolve',[{k:'deg',label:'Angle, degrees',v:360}],function(v){
+      if(!(v.deg>0&&v.deg<=360))return 'The angle is more than 0 and at most 360';
+      bimOcctRun('REVOLVE',function(R){
+        var o=objById(id);if(!o)return null;
+        pushUndo();
+        var s=bimOcctAddSolid(bimOcctRevolveShape(R,o,a,b,v.deg),'Revolution');
+        if(!s){UNDO_STACK.pop();a3dToast('REVOLVE made nothing');return null;}
+        s.layer=o.layer||s.layer;A3D.sel=s.id;A3D.selSet=[s.id];
+        refreshTree();refreshHud();paint();saveSoon();
+        a3dToast('REVOLVE: a solid of revolution, '+v.deg+'°');
+        return s;
+      });
+      return '';
+    });
+  }
+  /* ---------- LOFT ---------- */
+  /* the selected closed sketches, lowest first: LOFT runs through them in height */
+  function bimOcctLoftOrder(objs){
+    return objs.filter(bimOcctClosedSketch).sort(function(a,b){return ((a.y||0)+bimObjOffset(a)[1])-((b.y||0)+bimObjOffset(b)[1]);});
+  }
+  function bimOcctLoft(){
+    var L=bimOcctLoftOrder(bimOcctSel());
+    if(L.length<2){a3dToast('LOFT: select two or more closed sketches at different heights');return null;}
+    var h0=(L[0].y||0)+bimObjOffset(L[0])[1],h1=(L[L.length-1].y||0)+bimObjOffset(L[L.length-1])[1];
+    if(Math.abs(h1-h0)<1e-6){a3dToast('LOFT: the sketches are at one height; put them on different levels or offsets');return null;}
+    return bimOcctRun('LOFT',function(R){
+      var sk=L.map(function(o){var q=bimObjOffset(o);
+        return bimOcctDrawing(R,o.pts.map(function(p){return [p[0]+q[0],p[1]+q[2]];}),o.bulges||null).sketchOnPlane('XY',(o.y||0)+q[1]);});
+      pushUndo();
+      var s=bimOcctAddSolid(sk[0].loftWith(sk.slice(1),{ruled:false}),'Loft');
+      if(!s){UNDO_STACK.pop();a3dToast('LOFT made nothing');return null;}
+      A3D.sel=s.id;A3D.selSet=[s.id];
+      refreshTree();refreshHud();paint();saveSoon();
+      a3dToast('LOFT: a solid through '+L.length+' sections');
+      return s;
+    });
+  }
+  /* ---------- booleans ---------- */
+  function bimOcctBoolean(op){
+    var S=bimOcctSel().filter(bimOcctIsSolid);
+    if(S.length<2){a3dToast('Select two or more solids made by the solid tools (the first is kept)');return null;}
+    return bimOcctRun(op==='fuse'?'SOLIDUNION':op==='cut'?'SOLIDSUBTRACT':'SOLIDINTERSECT',function(R){
+      var base=S[0],shape=bimOcctShapeOf(R,base),i;
+      for(i=1;i<S.length;i++){
+        var t=bimOcctShapeAt(R,S[i],base);   /* in the first solid's frame, its offset kept */
+        shape=op==='fuse'?shape.fuse(t):op==='cut'?shape.cut(t):shape.intersect(t);
+      }
+      pushUndo();
+      if(!bimOcctReplace(base,shape)){UNDO_STACK.pop();a3dToast('Nothing is left of that operation');return null;}
+      for(i=1;i<S.length;i++)A3D.objs.splice(A3D.objs.indexOf(S[i]),1);
+      A3D.sel=base.id;A3D.selSet=[base.id];
+      refreshTree();refreshHud();paint();saveSoon();
+      a3dToast((op==='fuse'?'Joined ':op==='cut'?'Subtracted from ':'Intersected ')+base.name);
+      return base;
+    });
+  }
+  /* ---------- STEP ---------- */
+  function bimOcctExportStep(){
+    var S=bimOcctSel().filter(bimOcctIsSolid);
+    if(!S.length)S=A3D.objs.filter(bimOcctIsSolid);
+    if(!S.length){a3dToast('EXPORTSTEP: no solids made by the solid tools to export');return null;}
+    return bimOcctRun('EXPORTSTEP',function(R){
+      var blob=R.exportSTEP(S.map(function(o){return {shape:bimOcctShapeAt(R,o,null),name:o.name||o.id};}),{unit:'M',modelUnit:'M'});   /* where the model shows them */
+      var nm=bimFileStem()+'.step';
+      bimTriggerDownload(blob,nm,'model/step');
+      a3dToast('Exported '+nm+' ('+S.length+' solid(s))');
+      return blob;
+    });
+  }
+  function bimOcctImportStep(buf,name){
+    return bimOcctRun('STEP import',function(R){
+      return R.importSTEP(new Blob([buf])).then(function(shape){
+        pushUndo();
+        var s=bimOcctAddSolid(shape,String(name||'STEP').replace(/\.[^.]+$/,''));
+        if(!s){UNDO_STACK.pop();a3dToast('STEP import: nothing with faces in '+name);return null;}
+        A3D.sel=s.id;A3D.selSet=[s.id];
+        refreshTree();refreshHud();fitScene();paint();saveSoon();
+        a3dToast('STEP import: '+name+' ('+s.mesh.f.length+' triangles)');
+        return s;
+      },function(e){a3dToast('STEP import failed: '+bimOcctErr(e));return null;});
     });
   }
   // ---- OBJ (Wavefront, Y-up - matches this engine's convention directly) ----
@@ -40896,8 +41788,9 @@ BIM_IFC_SAVE.model=bimIfcSaveModel;
       reader.onload=function(ev){bimImportSKP(ev.target.result,name);};
       reader.readAsArrayBuffer(file);
     }else if(ext==='dxf'){
-      reader.onload=function(ev){try{bimImportDXF(ev.target.result,name);}catch(eI){console.warn('[BIM] DXF import crashed:',eI);a3dToast('DXF import failed: '+(eI&&eI.message?eI.message:eI));}};
-      reader.readAsText(file);
+      /* __acad3dV263: read as bytes, so a binary DXF can be told from an ASCII one */
+      reader.onload=function(ev){try{bimImportDXF(dxfTextFromBytes(ev.target.result),name);}catch(eI){console.warn('[BIM] DXF import crashed:',eI);a3dToast('DXF import failed: '+(eI&&eI.message?eI.message:eI));}};
+      reader.readAsArrayBuffer(file);
     }else if(ext==='obj'){
       reader.onload=function(ev){try{bimImportOBJ(ev.target.result,name);}catch(eI){console.warn('[BIM] OBJ import crashed:',eI);a3dToast('OBJ import failed: '+(eI&&eI.message?eI.message:eI));}};
       reader.readAsText(file);
@@ -40916,8 +41809,11 @@ BIM_IFC_SAVE.model=bimIfcSaveModel;
     }else if(ext==='dwg'){   /* __acad3dV252: through cc-dwg, loaded now */
       reader.onload=function(ev){bimImportDWG(ev.target.result,name);};
       reader.readAsArrayBuffer(file);
-    }else if(ext==='step'||ext==='stp'||ext==='iges'||ext==='igs'){
-      a3dToast('.'+ext.toUpperCase()+' is not supported yet (a full B-rep format). Export as DXF or DWG (CAD) or IFC (BIM) instead.');
+    }else if(ext==='step'||ext==='stp'){   /* __acad3dV264: through OpenCASCADE */
+      reader.onload=function(ev){bimOcctImportStep(ev.target.result,name);};
+      reader.readAsArrayBuffer(file);
+    }else if(ext==='iges'||ext==='igs'){
+      a3dToast('.'+ext.toUpperCase()+' is not supported yet: export it as STEP, which Import reads');
     }else{
       a3dToast('Unsupported file type: .'+ext+' (supported: .dxf, .dwg, .ifc, .obj, .stl, .glb and .gltf, .skp SketchUp, .json project files, .geojson and .kml site data, .city.json CityJSON, .xml LandXML)');
     }
@@ -53083,6 +53979,14 @@ function bimWalkKeys(h, j) {
       copy.pos=[o.pos[0]+dx,o.pos[1],o.pos[2]+dz];
       copy.name=o.name+' copy';
     }
+    /* __acad3dV260: the drafting track's own properties go with a copy, whichever branch made it -- a text's height
+       and rotation (V254, V259), an attribute or its definition (V260), a line's own look (V257). An insert's
+       membership (blockRef) does not: a copy is not part of the insert it was copied from. */
+    if(copy){
+      var ck=['height','rot','attrib','attdef','color','linetype','lineweight'],ki;
+      for(ki=0;ki<ck.length;ki++)if(o[ck[ki]]!==undefined&&copy[ck[ki]]===undefined)copy[ck[ki]]=JSON.parse(JSON.stringify(o[ck[ki]]));
+      if(copy.blockRef&&copy!==o)delete copy.blockRef;
+    }
     return copy;
   }
   function duplicateSelection(){
@@ -58766,7 +59670,7 @@ function bimWalkKeys(h, j) {
      need the same list to park a project in its own key and to know what a fresh project is,
      and two copies of one field list are two lists that will eventually disagree. */
   function bimProjectRecord(){
-    return {objs:A3D.objs,cam:A3D.cam,seq:A3D.seq,counts:A3D.counts,levels:A3D.levels,grids:A3D.grids,activeLevel:A3D.activeLevel,layers:A3D.layers,activeLayer:A3D.activeLayer,types:A3D.types,activeWallType:A3D.activeWallType,views:A3D.views,activeViewId:A3D.activeViewId,levelFilter:A3D.levelFilter,sheets:A3D.sheets,titleBlock:A3D.titleBlock,buildings:A3D.buildings,activeBuilding:A3D.activeBuilding,site:A3D.site,roomScheme:A3D.roomScheme||'',classifications:A3D.classifications,dataFeatures:A3D.dataFeatures||{},history:A3D.history||null,resultLayers:A3D.resultLayers||[],pres:A3D.pres||null,units:A3D.units||null};   /* __acad3dV146, __acad3dV148; __acad3dV162; __acad3dV175a: its display units (D10) */
+    return {objs:A3D.objs,cam:A3D.cam,seq:A3D.seq,counts:A3D.counts,levels:A3D.levels,grids:A3D.grids,activeLevel:A3D.activeLevel,layers:A3D.layers,activeLayer:A3D.activeLayer,types:A3D.types,activeWallType:A3D.activeWallType,views:A3D.views,activeViewId:A3D.activeViewId,levelFilter:A3D.levelFilter,sheets:A3D.sheets,titleBlock:A3D.titleBlock,buildings:A3D.buildings,activeBuilding:A3D.activeBuilding,site:A3D.site,roomScheme:A3D.roomScheme||'',classifications:A3D.classifications,dataFeatures:A3D.dataFeatures||{},history:A3D.history||null,resultLayers:A3D.resultLayers||[],pres:A3D.pres||null,units:A3D.units||null,dimStyle:A3D.dimStyle||null,textStyle:A3D.textStyle||null};   /* __acad3dV146, __acad3dV148; __acad3dV162; __acad3dV175a: its display units (D10) */
   }
   /* __acad3dV115: a save that failed went into an empty catch, so a full browser store lost every
      later edit without a word. It says so now -- once per run of failures, not once per edit. */
@@ -63180,6 +64084,7 @@ function bimWalkKeys(h, j) {
     }
     for(i=0;i<made.length;i++)A3D.objs.push(made[i]);
     A3D.meshes={};
+    bimAttribsAfterInsert(made,entry.name);   /* __acad3dV260: each made object's insert, and its attributes asked for */
     var ids=made.map(function(o){return o.id;});
     A3D.selSet=ids.slice();A3D.sel=ids[0];A3D.sel2=null;
     refreshTree();refreshHud();paint();saveSoon();
@@ -63215,6 +64120,119 @@ function bimWalkKeys(h, j) {
        The list this also wrote into #a3d-famrows, an element that was never shown, is gone. */
     if(el.browser)refreshBrowser();
     refreshAssets();
+  }
+  /* ================= __acad3dV260: block attributes (ATTDEF, ATTEDIT) =================
+     AutoCAD's attributes: data a block carries in text, asked for when it is inserted (a title block's sheet number,
+     a door tag's mark). ATTDEF places a definition: a text object with o.attdef {tag, prompt, def}, drawn as its tag.
+     A block saved with definitions in it asks for their values when inserted; each copy becomes a text with
+     o.attrib {tag} and the value typed. Every object an insert makes carries o.blockRef {name, ins}, the one insert
+     it belongs to, so ATTEDIT finds all of an insert's attributes from any of its members. A DXF or DWG insert's
+     attributes come in with their tags (import-dxf.js, dwg-io.js). The value logic is pure (bimAttribFill), tested
+     without a canvas. */
+  function bimAttdefValid(a){
+    var tag=String(a&&a.tag||'').replace(/^\s+|\s+$/g,'').toUpperCase().replace(/\s+/g,'_');
+    if(!tag)return {error:'An attribute needs a tag'};
+    if(/[^A-Z0-9_\-.]/.test(tag))return {error:'A tag is letters, digits, _ - and .'};
+    return {tag:tag,prompt:String(a.prompt||'').slice(0,120)||tag,def:String(a.def==null?'':a.def).slice(0,500)};
+  }
+  /* The values an insert's attributes take: the typed one, else the definition's default. */
+  function bimAttribFill(defs,values){
+    var out=[],i,d,v;
+    for(i=0;i<defs.length;i++){
+      d=defs[i];v=values&&Object.prototype.hasOwnProperty.call(values,d.tag)?String(values[d.tag]):d.def;
+      out.push({tag:d.tag,value:v});
+    }
+    return out;
+  }
+  function openAttdefDlg(){
+    closeDlg();
+    var d=document.createElement('div');
+    d.className='a3d-dlg';
+    var ts=bimTextStyle();
+    d.innerHTML='<div class="a3d-dlghd">Attribute definition</div><div class="a3d-dlgbody">'+
+      '<div class="a3d-dlgrow"><label>Tag</label><input type="text" data-a3dad="tag" maxlength="60"></div>'+
+      '<div class="a3d-dlgrow"><label>Prompt</label><input type="text" data-a3dad="prompt" maxlength="120"></div>'+
+      '<div class="a3d-dlgrow"><label>Default</label><input type="text" data-a3dad="def" maxlength="500"></div>'+
+      '<div class="a3d-dlgrow"><label>Height on the plan, m</label><input type="number" min="0" step="any" data-a3dad="h" value="'+(ts.height||0.25)+'"></div>'+
+      '<div class="a3d-propnote">Then click where it goes. Save it in a block (BLOCK) with the drawing it describes: each insert of the block asks for its value.</div>'+
+      '<div id="a3d-dlgerr" class="a3d-dlgerr"></div></div>'+
+      '<div class="a3d-dlgft"><button data-a3dlg="cancel">Cancel</button><button data-a3dlg="ok">OK</button></div>';
+    el.root.appendChild(d);el.dlg=d;
+    function submit(){
+      var a=bimAttdefValid({tag:d.querySelector('[data-a3dad="tag"]').value,prompt:d.querySelector('[data-a3dad="prompt"]').value,
+        def:d.querySelector('[data-a3dad="def"]').value});
+      if(a.error){d.querySelector('#a3d-dlgerr').textContent=a.error;return;}
+      var h=parseFloat(d.querySelector('[data-a3dad="h"]').value);
+      closeDlg();
+      bimEnterDraftingMode();
+      A3D.sk={tool:'attdef',pts:[],y:bimGetActiveLevel().elev,on:null,attdef:a,attH:h>0?h:0};
+      a3dToast('ATTDEF: specify the start point of '+a.tag);
+      paint();
+    }
+    d.addEventListener('click',function(ev){var b=ev.target&&ev.target.closest?ev.target.closest('[data-a3dlg]'):null;if(!b)return;if(b.getAttribute('data-a3dlg')==='ok')submit();else closeDlg();});
+    d.addEventListener('keydown',function(ev){if(ev.key==='Enter'){ev.preventDefault();ev.stopPropagation();submit();}else if(ev.key==='Escape'){ev.preventDefault();ev.stopPropagation();closeDlg();}ev.stopPropagation();});
+    d.querySelector('[data-a3dad="tag"]').focus();
+  }
+  function bimAttdefPlace(sk,p){
+    A3D.sk=null;
+    var o=bimCreateTextLabel([p[0],p[1]],sk.y,sk.attdef.tag,{height:sk.attH});
+    if(o){o.attdef=sk.attdef;o.name='Attribute '+sk.attdef.tag;paint();}
+    return o;
+  }
+  /* After an insert: its copies of attribute definitions become attributes, with the values asked for. */
+  function bimAttribsAfterInsert(made,name){
+    var ins='ins-'+Date.now().toString(36)+'-'+(A3D.seq++),defs=[],objs=[],i;
+    for(i=0;i<made.length;i++){
+      made[i].blockRef={name:name,ins:ins};
+      if(made[i].t==='text'&&made[i].attdef){defs.push(made[i].attdef);objs.push(made[i]);}
+    }
+    if(!defs.length)return null;
+    var vals=bimAttribFill(defs,null);
+    for(i=0;i<objs.length;i++){
+      objs[i].attrib={tag:defs[i].tag,prompt:defs[i].prompt};
+      objs[i].text=vals[i].value||'';
+      objs[i].name=name+' '+defs[i].tag;
+      delete objs[i].attdef;
+    }
+    openAttribDlg(objs,'Enter attributes: '+name);
+    return objs;
+  }
+  /* The attributes of the insert(s) the selection belongs to. */
+  function bimAttribsOfSelection(){
+    var ids=(A3D.selSet&&A3D.selSet.length)?A3D.selSet.slice():(A3D.sel?[A3D.sel]:[]),ins={},out=[],i,o;
+    for(i=0;i<ids.length;i++){o=objById(ids[i]);if(o&&o.blockRef)ins[o.blockRef.ins]=1;else if(o&&o.attrib)out.push(o);}
+    for(i=0;i<A3D.objs.length;i++){o=A3D.objs[i];if(o.attrib&&o.blockRef&&ins[o.blockRef.ins]&&out.indexOf(o)<0)out.push(o);}
+    return out;
+  }
+  function bimAttedit(){
+    var at=bimAttribsOfSelection();
+    if(!at.length){a3dToast('ATTEDIT: select a block insert that has attributes');return null;}
+    return openAttribDlg(at,'Edit attributes'+(at[0].blockRef?': '+at[0].blockRef.name:''));
+  }
+  function openAttribDlg(objs,title){
+    closeDlg();
+    var d=document.createElement('div'),h='',i;
+    d.className='a3d-dlg';
+    for(i=0;i<objs.length;i++){
+      var a=objs[i].attrib||{tag:'?'};
+      h+='<div class="a3d-dlgrow"><label>'+bimEsc(a.prompt||a.tag)+' <span style="opacity:.6">('+bimEsc(a.tag)+')</span></label>'+
+        '<input type="text" data-a3dav="'+i+'" value="'+bimEsc(objs[i].text)+'" maxlength="500"></div>';
+    }
+    d.innerHTML='<div class="a3d-dlghd">'+bimEsc(title)+'</div><div class="a3d-dlgbody">'+h+'</div>'+
+      '<div class="a3d-dlgft"><button data-a3dlg="cancel">Cancel</button><button data-a3dlg="ok">OK</button></div>';
+    el.root.appendChild(d);el.dlg=d;
+    function submit(){
+      var f=d.querySelectorAll('[data-a3dav]'),k,changed=0;
+      pushUndo();
+      for(k=0;k<f.length;k++){var o=objs[+f[k].getAttribute('data-a3dav')];if(o&&o.text!==f[k].value){o.text=f[k].value;changed++;}}
+      if(!changed)UNDO_STACK.pop();
+      closeDlg();paint();saveSoon();refreshProps();
+      if(changed)a3dToast(changed+' attribute(s) changed');
+    }
+    d.addEventListener('click',function(ev){var b=ev.target&&ev.target.closest?ev.target.closest('[data-a3dlg]'):null;if(!b)return;if(b.getAttribute('data-a3dlg')==='ok')submit();else closeDlg();});
+    d.addEventListener('keydown',function(ev){if(ev.key==='Enter'){ev.preventDefault();ev.stopPropagation();submit();}else if(ev.key==='Escape'){ev.preventDefault();ev.stopPropagation();closeDlg();}ev.stopPropagation();});
+    var first=d.querySelector('[data-a3dav]');if(first)first.focus();
+    return d;
   }
   // ---- __acad3dV23: Saved views + view-specific annotations + level filtering ----
   // Saved views capture camera/mode/level/section (the section's cut PLANE only -- the cut-mesh
@@ -72190,7 +73208,7 @@ function bimRptPlan(families) {
     '<div class="a3d-tb">'+
       '<button class="a3d-btn a3d-drawerbtn" data-a3d="drawer" title="Show panel">\u2630</button>'+
       '<button class="a3d-btn a3d-rdrawerbtn" data-a3d="rdrawer" title="Show properties">Props</button>'+
-      '<input type="file" id="a3d-filein" accept=".dxf,.dwg,.ifc,.obj,.stl,.glb,.gltf,.skp,.json,.geojson,.kml,.cityjson,.xml,.landxml" style="display:none">'+
+      '<input type="file" id="a3d-filein" accept=".dxf,.dwg,.step,.stp,.ifc,.obj,.stl,.glb,.gltf,.skp,.json,.geojson,.kml,.cityjson,.xml,.landxml" style="display:none">'+
       '<input type="file" id="a3d-projin" accept=".json,.gz,application/json,application/gzip" style="display:none">'+   /* __acad3dV115 */
       '<span class="a3d-hud">View: <b id="a3d-view">Home</b><span id="a3d-count">0 objects</span></span>'+
       '<span class="a3d-uiwrap">'+
@@ -73650,6 +74668,26 @@ function bimRptPlan(families) {
     align:function(){openAlignDlg();},
     join:function(){bimJoinCommand();},   /* __acad3dV250: polylines first, then walls */
     moveTool:function(){startMoveTool();},
+    dimbase:function(){startDimChainTool('base');},   /* __acad3dV258 */
+    dimcont:function(){startDimChainTool('cont');},
+    dimord:function(){startDimChainTool('ord');},
+    dimstyle:function(){openDimStyleDlg();},
+    textstyle:function(){openTextStyleDlg();},   /* __acad3dV259 */
+    attdef:function(){openAttdefDlg();},   /* __acad3dV260 */
+    occtextrude:function(){startOcctExtrude();},   /* __acad3dV264: the solid tools, on OpenCASCADE */
+    filletedge:function(){startOcctEdges('fillet');},
+    chamferedge:function(){startOcctEdges('chamfer');},
+    occtshell:function(){startOcctShell();},
+    occtrevolve:function(){startOcctRevolve();},
+    occtloft:function(){bimOcctLoft();},
+    solidunion:function(){bimOcctBoolean('fuse');},
+    solidsubtract:function(){bimOcctBoolean('cut');},
+    solidintersect:function(){bimOcctBoolean('intersect');},
+    exportstep:function(){bimOcctExportStep();},
+    massprop:function(){bimMassprop();},   /* __acad3dV262 */
+    countblocks:function(){bimCountCommand();},
+    cal:function(){openCalDlg();},
+    attedit:function(){bimAttedit();},
     layiso:function(){bimLayIso();},   /* __acad3dV256 */
     layuniso:function(){bimLayUniso();},
     layoff:function(){bimLayCmdApply(bimSelLayerIds(),'visible',false,{none:'LAYOFF: select objects on the layers to turn off',done:'LAYOFF: # layer(s) turned off'});},
@@ -74627,6 +75665,18 @@ function bimRptPlan(families) {
     var q=bimObjOffset(o);return {id:o.id,closed:o.closed!==false,col:o.col||null,layer:o.layer||null,bulges:o.bulges||null,
       pts:o.pts.map(function(p){return [Math.round((p[0]+q[0])*1e6)/1e6,Math.round((p[1]+q[2])*1e6)/1e6];})};});};
   window.__a3dSketchSetProps=function(id,props){var o=objById(id),k;if(!o)return false;for(k in props)if(props.hasOwnProperty(k))o[k]=props[k];paint();return true;};
+  /* __acad3dV258: every dimension as stored, and the dimension style */
+  window.__a3dDimsAll=function(){return JSON.parse(JSON.stringify(A3D.objs.filter(function(o){return o.t==='dim';})));};
+  window.__a3dDimStyle=function(){return JSON.parse(JSON.stringify(bimDimStyle()));};
+  window.__a3dTextObjs=function(){return JSON.parse(JSON.stringify(A3D.objs.filter(function(o){return o.t==='text';})));};   /* __acad3dV259 */
+  window.__a3dTextStyle=function(){return JSON.parse(JSON.stringify(bimTextStyle()));};
+  /* __acad3dV264: the solids made by OpenCASCADE, each with its B-rep's volume as OpenCASCADE measures it */
+  window.__a3dOcct={solids:function(){
+    var R=A3D_OCCT.R;
+    return A3D.objs.filter(bimOcctIsSolid).map(function(o){return {id:o.id,name:o.name,tris:o.mesh.f.length,
+      volume:R?R.measureVolume(bimOcctShapeOf(R,o)):null};});
+  },state:function(){return {st:A3D_OCCT.st,err:A3D_OCCT.err};},
+  brep:function(id){var o=objById(id);return o&&o.occt?o.occt.brep:null;}};
   window.__a3dTestSetObjs=function(list){A3D.objs=list;A3D.sel=null;A3D.sel2=null;A3D.selSet=[];};
   window.__a3dTestPaint=function(){paint();};
   window.__a3dTestRotate=function(d){A3D.cam.yaw+=d;};

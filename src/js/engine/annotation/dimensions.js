@@ -1,7 +1,9 @@
 import { A3D, el } from '../core/state.js';
 import { bimEnterDraftingMode, pushUndo } from '../drawing/plan-mode-sketch.js';
 import { bimGetActiveLevel } from '../bim/levels-walls-floors.js';
+import { bimDrawLinearDim, bimDrawOrdinateDim, bimTextStyle } from './dim-tools.js';
 import { bimLayerAlpha, bimLayerShown } from '../layers/layer-rules.js';
+import { bimEsc } from '../layers/layer-manager.js';
 import { toScreen } from '../io/import-entry.js';
 import { paint } from '../map/terrain-3d.js';
 import { refreshHud, saveSoon } from '../bim/region-regenerate.js';
@@ -173,6 +175,8 @@ import { a3dToast } from '../bim/csg-booleans.js';
       ctx.beginPath();ctx.moveTo(st[0],st[1]);ctx.lineTo(ed[0],ed[1]);ctx.stroke();
       lp=[(st[0]+ed[0])/2,(st[1]+ed[1])/2-10];
       label=(kind==='diameter'?'\u00d8':'R')+o.value.toFixed(2);
+    }else if(kind==='ordinate'){   /* __acad3dV258 */
+      var od=bimDrawOrdinateDim(ctx,o,sel,S);label=od.label;lp=od.at;
     }else if(kind==='leader'){
       var an=S(o.anchor),el2=S(o.elbow),la=S(o.landing);
       ctx.beginPath();ctx.moveTo(an[0],an[1]);ctx.lineTo(el2[0],el2[1]);ctx.lineTo(la[0],la[1]);ctx.stroke();
@@ -244,9 +248,13 @@ import { a3dToast } from '../bim/csg-booleans.js';
     closeDlg();
     var d=document.createElement('div');
     d.className='a3d-dlg';
-    d.innerHTML='<div class="a3d-dlghd">Text label</div>'+
+    var ts=bimTextStyle();   /* __acad3dV259: AutoCAD's TEXT and MTEXT: the text, its height and rotation */
+    d.innerHTML='<div class="a3d-dlghd">Text</div>'+
       '<div class="a3d-dlgbody">'+
-      '<div class="a3d-dlgrow"><label>Text</label><input type="text" data-a3dp="txt" value="" maxlength="120"></div>'+
+      '<div class="a3d-dlgrow"><label>Text</label><textarea data-a3dp="txt" rows="3" maxlength="2000" style="width:100%"></textarea></div>'+
+      '<div class="a3d-dlgrow"><label>Height on the plan, m (0: a screen label)</label><input type="number" min="0" step="any" data-a3dp="h" value="'+ts.height+'"></div>'+
+      '<div class="a3d-dlgrow"><label>Rotation, degrees</label><input type="number" step="any" data-a3dp="rot" value="0"></div>'+
+      '<div class="a3d-propnote">Shift+Enter starts a new line. The font is the text style\'s (STYLE): '+bimEsc(ts.font)+'.</div>'+
       '<div id="a3d-dlgerr" class="a3d-dlgerr"></div></div>'+
       '<div class="a3d-dlgft"><button data-a3dlg="cancel">Cancel</button><button data-a3dlg="ok">OK</button></div>';
     el.root.appendChild(d);
@@ -256,8 +264,10 @@ import { a3dToast } from '../bim/csg-booleans.js';
       var txt=tI.value;
       var eb=document.getElementById('a3d-dlgerr');
       if(!txt||!txt.trim()){eb.textContent='Enter some text';return;}
+      var h=parseFloat(d.querySelector('[data-a3dp="h"]').value),rot=parseFloat(d.querySelector('[data-a3dp="rot"]').value);
+      if(!(h>=0))h=0;if(!isFinite(rot))rot=0;
       closeDlg();
-      bimCreateTextLabel(pt,y,txt.trim());
+      bimCreateTextLabel(pt,y,txt.replace(/^\s+|\s+$/g,''),{height:h,rot:rot});
     }
     d.addEventListener('click',function(ev){
       var b=ev.target&&ev.target.closest?ev.target.closest('[data-a3dlg]'):null;
@@ -265,17 +275,19 @@ import { a3dToast } from '../bim/csg-booleans.js';
       if(b.getAttribute('data-a3dlg')==='ok')submit();else closeDlg();
     });
     d.addEventListener('keydown',function(ev){
-      if(ev.key==='Enter'){ev.preventDefault();ev.stopPropagation();submit();}
+      if(ev.key==='Enter'&&!ev.shiftKey){ev.preventDefault();ev.stopPropagation();submit();}
       else if(ev.key==='Escape'){ev.preventDefault();ev.stopPropagation();closeDlg();}
       ev.stopPropagation();
     });
     tI.focus();
   }
-  function bimCreateTextLabel(pt,y,text){
+  function bimCreateTextLabel(pt,y,text,opts){
     pushUndo();
     A3D.counts.text=(A3D.counts.text||0)+1;
     var o={id:'a3d-'+Date.now().toString(36)+'-'+(A3D.seq++),t:'text',name:'Text_'+A3D.counts.text,col:'#dfe4ea',pos:[0,0,0],
       text:text,pt:pt,y:y,levelId:A3D.activeLevel,layer:A3D.activeLayer,viewId:A3D.activeViewId};
+    if(opts&&opts.height>0)o.height=opts.height;   /* __acad3dV259 */
+    if(opts&&opts.rot)o.rot=opts.rot;
     A3D.objs.push(o);
     A3D.sel=o.id;A3D.sel2=null;A3D.selSet=[o.id];
     refreshTree();refreshHud();paint();saveSoon();
@@ -293,34 +305,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
       if(!bimObjectVisibleOnLevel(o))continue;
       var selX=(o.id===A3D.sel||(A3D.selSet&&A3D.selSet.indexOf(o.id)>=0));
       if(bimDimKind(o)!=='linear'){drawDimExtras(ctx,V,W,H,o,selX);continue;}
-      var ox=(o.pos&&o.pos[0])||0,oy=(o.pos&&o.pos[1])||0,oz=(o.pos&&o.pos[2])||0;
-      var y0=o.y+oy;
-      var p1=toScreen([o.p1[0]+ox,y0,o.p1[1]+oz],V,W,H);
-      var p2=toScreen([o.p2[0]+ox,y0,o.p2[1]+oz],V,W,H);
-      var d1=toScreen([o.d1[0]+ox,y0,o.d1[1]+oz],V,W,H);
-      var d2=toScreen([o.d2[0]+ox,y0,o.d2[1]+oz],V,W,H);
-      var sel=(o.id===A3D.sel||(A3D.selSet&&A3D.selSet.indexOf(o.id)>=0));
-      ctx.save();
-      ctx.globalAlpha*=bimLayerAlpha(o);   /* __acad3dV121: the layer's transparency */
-      ctx.strokeStyle=sel?'#4ea1ff':'#b8c0ca';
-      ctx.lineWidth=sel?1.4:1;
-      ctx.beginPath();ctx.moveTo(p1[0],p1[1]);ctx.lineTo(d1[0],d1[1]);ctx.stroke();
-      ctx.beginPath();ctx.moveTo(p2[0],p2[1]);ctx.lineTo(d2[0],d2[1]);ctx.stroke();
-      ctx.beginPath();ctx.moveTo(d1[0],d1[1]);ctx.lineTo(d2[0],d2[1]);ctx.stroke();
-      var tdx=d2[0]-d1[0],tdy=d2[1]-d1[1],tlen=Math.sqrt(tdx*tdx+tdy*tdy)||1;
-      var tux=tdx/tlen,tuy=tdy/tlen,tick=4;
-      ctx.beginPath();ctx.moveTo(d1[0]-tuy*tick-tux*tick,d1[1]+tux*tick-tuy*tick);ctx.lineTo(d1[0]+tuy*tick+tux*tick,d1[1]-tux*tick+tuy*tick);ctx.stroke();
-      ctx.beginPath();ctx.moveTo(d2[0]-tuy*tick-tux*tick,d2[1]+tux*tick-tuy*tick);ctx.lineTo(d2[0]+tuy*tick+tux*tick,d2[1]-tux*tick+tuy*tick);ctx.stroke();
-      var mx=(d1[0]+d2[0])/2,my=(d1[1]+d2[1])/2;
-      var label=o.length.toFixed(2)+' m';
-      ctx.font='11px system-ui,sans-serif';
-      var tw=ctx.measureText(label).width;
-      ctx.fillStyle='rgba(20,22,26,0.82)';
-      ctx.fillRect(mx-tw/2-4,my-16,tw+8,14);
-      ctx.fillStyle=sel?'#9ec1ff':'#dfe4ea';
-      ctx.textAlign='center';ctx.textBaseline='middle';
-      ctx.fillText(label,mx,my-9);
-      ctx.restore();
+      bimDrawLinearDim(ctx,o,selX,V,W,H);   /* __acad3dV258: drawn with the dimension style */
     }
   }
   /* __acad3dV254: text with a height is drawing text, as AutoCAD draws TEXT and MTEXT: its height in metres on the
@@ -343,7 +328,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
     ctx.save();
     ctx.globalAlpha*=bimLayerAlpha(o);
     ctx.translate(f.x,f.y);ctx.rotate(f.ang);
-    ctx.font=f.px.toFixed(2)+'px system-ui,sans-serif';
+    ctx.font=f.px.toFixed(2)+'px '+bimTextStyle().font;   /* __acad3dV259: the text style's font */
     ctx.textAlign='left';ctx.textBaseline='alphabetic';
     ctx.fillStyle=sel?'#4ea1ff':(o.col||'#dfe4ea');
     for(k=0;k<lines.length;k++)ctx.fillText(lines[k],0,k*f.px*1.6667);   /* AutoCAD's single line spacing: 5/3 of the height */

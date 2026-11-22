@@ -32,7 +32,7 @@ async function ev(expr) {
   return r.result.result.value;
 }
 let pass = 0, fail = 0;
-function ck(ok, msg) { if (ok) pass++; else fail++; console.log((ok ? 'PASS ' : 'FAIL ') + msg); }
+function ck(ok, msg) { if (ok && ok.__err) { msg += ' [page error: ' + ok.__err + ']'; ok = false; } if (ok) pass++; else fail++; console.log((ok ? 'PASS ' : 'FAIL ') + msg); }
 async function shot(name) { const r = await C.send('Page.captureScreenshot', { format: 'png' }); fs.writeFileSync(`${OUT}/${name}.png`, Buffer.from(r.result.data, 'base64')); }
 
 const KEYS = { Escape: ['Escape', 27], Enter: ['Enter', 13], F10: ['F10', 121], Digit3: ['3', 51] };
@@ -77,6 +77,8 @@ const S = await ev('return window.__a3dSketchWorld();');
 ck(objs > 500, 'the drawing arrives with its blocks expanded (' + objs + ' objects)');
 ck(texts >= 3, 'its text arrives (' + texts + ' texts)');
 ck(S.some((s) => s.closed && s.pts.length === 2 && s.bulges), 'its circle arrives as two arcs');
+const hatches = await ev(`return window.__a3dObjects().filter(o=>o.t==='hatch').length;`);
+ck(hatches === 2, 'its two hatches arrive filled (V261: ' + hatches + ')');
 ck(await ev(`return window.__a3dObjects().some(o=>o.t==='sketch')&&!!document.querySelector('#a3d-root')||true;`), 'the model holds the drawing');
 await ev(`window.__a3dRunCmd('zoomFit');`); await sleep(700);
 await shot('v252-01-dwg-opened');

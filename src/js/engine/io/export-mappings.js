@@ -8,6 +8,7 @@ import { bimIsFooting } from '../bim/footings.js';
 import { bimPatternDef, bimPatternDraws, bimPatternRotation } from '../bim/type-instance-params.js';
 import { bimRoomLabelPoint, bimRoomLabelText, bimRoomTagText, bimRoomTagged } from '../bim/room-tags.js';
 import { bimDimKind } from '../annotation/dimensions.js';
+import { bimDimLabelText, bimDimStyle } from '../annotation/dim-tools.js';
 import { bimAnnotDrawable, bimTriggerDownload } from '../annotation/annotation-pick.js';
 import { bimFileStem } from './project-file.js';
 import { bimRectFootprint } from '../bim/columns-openings.js';
@@ -159,7 +160,10 @@ import { a3dToast } from '../bim/csg-booleans.js';
         poly(o.pts,o.closed!==false,lay,o.bulges,o);
       }else if(o.t==='dim'&&bimDimKind(o)==='linear'){
         line(o.d1,o.d2,lay);line(o.p1,o.d1,lay);line(o.p2,o.d2,lay);
-        text([(o.d1[0]+o.d2[0])/2,(o.d1[1]+o.d2[1])/2],o.length.toFixed(2),0.2,lay);
+        text([(o.d1[0]+o.d2[0])/2,(o.d1[1]+o.d2[1])/2],bimDimLabelText(o.length),bimDimStyle().textHeight>0?bimDimStyle().textHeight:0.2,lay);   /* __acad3dV258 */
+      }else if(o.t==='dim'&&bimDimKind(o)==='ordinate'){   /* __acad3dV258 */
+        line(o.p1,o.d1,lay);
+        text(o.d1,o.axis.toUpperCase()+' '+bimDimLabelText(o.value),bimDimStyle().textHeight>0?bimDimStyle().textHeight:0.2,lay);
       }else if(o.t==='dim'&&bimDimKind(o)==='angular'){
         line(o.vertex,o.ap1,lay);line(o.vertex,o.ap2,lay);
         var arcPts=[],ai;

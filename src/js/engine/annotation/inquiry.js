@@ -75,6 +75,9 @@ import { a3dToast, objById } from '../bim/csg-booleans.js';
       for(i=0;i<o.mesh.v.length;i++)for(k=0;k<3;k++){mn[k]=Math.min(mn[k],o.mesh.v[i][k]);mx[k]=Math.max(mx[k],o.mesh.v[i][k]);}
       rows.push(['Extents',bimFmtLen(mx[0]-mn[0])+' \u00d7 '+bimFmtLen(mx[2]-mn[2])+' \u00d7 '+bimFmtLen(mx[1]-mn[1])+' high']);
     }
+    if(o.blockRef)rows.push(['Block',String(o.blockRef.name)]);   /* __acad3dV260 */
+    if(o.attrib)rows.push(['Attribute',String(o.attrib.tag)]);
+    if(o.attdef)rows.push(['Attribute definition',String(o.attdef.tag)+(o.attdef.def?' (default '+o.attdef.def+')':'')]);
     if(bimIsLocked(o))rows.push(['Locked','yes']);
     return rows;
   }
@@ -180,4 +183,6 @@ import { a3dToast, objById } from '../bim/csg-booleans.js';
     if(ids.length>50)rows.push('-',['More',(ids.length-50)+' further objects not listed']);
     return bimInquiryShow('List: '+ids.length+' object'+(ids.length>1?'s':''),rows);
   }
-export { bimInquiryFinish, bimInquiryPoint, bimIsInquiryTool, bimListCommand, startInquiryTool };
+export {
+  bimInquiryFinish, bimInquiryPoint, bimInquiryShow, bimIsInquiryTool, bimListCommand, startInquiryTool
+};

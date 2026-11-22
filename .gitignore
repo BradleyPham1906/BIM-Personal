@@ -21,6 +21,7 @@ tools/openskp/node_modules/
 tools/three/node_modules/
 tools/jolt/node_modules/
 tools/ifc/node_modules/
+tools/occt/node_modules/
 
 # V176: IfcOpenShell and its dependencies, fetched by docs/work-orders/v176/v176.test.mjs
 .cache/
