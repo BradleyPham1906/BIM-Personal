@@ -15,8 +15,9 @@ import { bimRectFootprint } from '../bim/columns-openings.js';
 import { bimDxfLayerName, bimDxfPair, bimWallOpeningBreaks } from './dxf-export.js';
 import { bimLayerEff } from '../layers/layer-rules.js';
 import { bimLinetypeDef } from '../layers/select-change.js';
-import { BIM_BULGE_EPS, bimBulgeAt } from '../drawing/arc-storage.js';
-import { bimIsHatch } from '../drawing/hatch.js';
+import { BIM_DXF_HATCH_OUT, dxfPatternLines, dxfPatternTile } from './dxf-entities.js';
+import { BIM_BULGE_EPS, bimBulgeAt, bimHasBulge } from '../drawing/arc-storage.js';
+import { bimHatchGraphics, bimIsHatch } from '../drawing/hatch.js';
 import { bimClineVisibleSeg, bimIsCline } from '../drawing/construction-lines.js';
 import { a3dToast } from '../bim/csg-booleans.js';
 
@@ -99,7 +100,8 @@ import { a3dToast } from '../bim/csg-booleans.js';
       return s;
     }
     function poly(pts,closed,lay,bulges,o){
-      out+=P(0,'LWPOLYLINE')+P(8,lay)+own(o)+P(100,'AcDbEntity')+P(100,'AcDbPolyline')+P(90,pts.length)+P(70,closed?1:0);
+      out+=P(0,'LWPOLYLINE')+P(8,lay)+own(o)+P(100,'AcDbEntity')+P(100,'AcDbPolyline')+P(90,pts.length)+P(70,closed?1:0)+
+        (o&&o.plWidth>0?P(43,(+o.plWidth).toFixed(6)):'');   /* __acad3dV265: its constant width */
       var q;
       for(q=0;q<pts.length;q++){
         out+=P(10,DX(pts[q]))+P(20,DY(pts[q]));
@@ -107,6 +109,36 @@ import { a3dToast } from '../bim/csg-booleans.js';
         if(Math.abs(bq)>BIM_BULGE_EPS)out+=P(42,bq.toFixed(8));
       }
       stats.lwpolyline++;
+    }
+    /* __acad3dV265: a HATCH: the outer loop external, the holes inner, the pattern's lines (dxfPatternLines) */
+    function hatchEnt(o,lay){
+      var g=bimHatchGraphics(o),pat=g.pattern||'diagonal',solid=pat==='solid',def=bimPatternDef(pat);
+      var loops=[{pts:o.pts,bulges:o.bulges||null,flag:3}].concat((o.holes||[]).map(function(h){return {pts:h.pts,bulges:h.bulges||null,flag:2};}));
+      var name=BIM_DXF_HATCH_OUT[pat]||'ANSI31',k,j;
+      out+=P(0,'HATCH')+P(8,lay)+own(o)+P(100,'AcDbEntity')+P(100,'AcDbHatch')+P(10,'0.0')+P(20,'0.0')+P(30,'0.0')+
+        P(210,'0.0')+P(220,'0.0')+P(230,'1.0')+P(2,name)+P(70,solid?1:0)+P(71,0)+P(91,loops.length);
+      for(k=0;k<loops.length;k++){
+        var L=loops[k],hb=bimHasBulge(L.bulges);
+        out+=P(92,L.flag)+P(72,hb?1:0)+P(73,1)+P(93,L.pts.length);
+        for(j=0;j<L.pts.length;j++){
+          out+=P(10,DX(L.pts[j]))+P(20,DY(L.pts[j]));
+          if(hb)out+=P(42,(-bimBulgeAt(L.bulges,j)).toFixed(8));
+        }
+        out+=P(97,0);
+      }
+      out+=P(75,0)+P(76,solid?1:2);
+      if(!solid&&def){
+        var sc=(g.patternScale>0?g.patternScale:1),T=dxfPatternTile(def,sc),ang=-(g.patternAngle||0);
+        var PL=dxfPatternLines(def,T[0],T[1],ang);
+        out+=P(52,ang.toFixed(6))+P(41,sc.toFixed(6))+P(77,0)+P(78,PL.length);
+        for(k=0;k<PL.length;k++){
+          var f=PL[k];
+          out+=P(53,f.angle.toFixed(6))+P(43,f.base[0].toFixed(6))+P(44,f.base[1].toFixed(6))+
+            P(45,f.offset[0].toFixed(6))+P(46,f.offset[1].toFixed(6))+P(79,f.dashes.length);
+          for(j=0;j<f.dashes.length;j++)out+=P(49,f.dashes[j].toFixed(6));
+        }
+      }
+      out+=P(98,0);
     }
     function line(a,b,lay){
       out+=P(0,'LINE')+P(8,lay)+P(10,DX(a))+P(20,DY(a))+P(30,'0.0')+P(11,DX(b))+P(21,DY(b))+P(31,'0.0');
@@ -138,6 +170,9 @@ import { a3dToast } from '../bim/csg-booleans.js';
       }else if(o.t==='room'){
         poly(o.pts,true,lay);
         if(!bimRoomTagged(o.id))text(bimRoomLabelPoint(o),bimRoomLabelText(o),0.25,lay);   /* __acad3dV101 */
+      }else if(bimIsHatch(o)&&!o.wipeout){      /* __acad3dV265: a real HATCH, its holes and its pattern */
+        hatchEnt(o,lay);
+        stats.hatch=(stats.hatch||0)+1;
       }else if(bimIsHatch(o)){                  /* __acad3dV96 */
         /* R12 ASCII has no HATCH entity either -- it arrived in R13, and R12 drawings carry
            hatching as exploded lines. This export writes the BOUNDARY as a closed polyline and

@@ -69,21 +69,22 @@ import { a3dToast, objById } from '../bim/csg-booleans.js';
     return o;
   }
   /* After an insert: its copies of attribute definitions become attributes, with the values asked for. */
-  function bimAttribsAfterInsert(made,name){
+  function bimAttribsAfterInsert(made,name,where,values){
     var ins='ins-'+Date.now().toString(36)+'-'+(A3D.seq++),defs=[],objs=[],i;
     for(i=0;i<made.length;i++){
       made[i].blockRef={name:name,ins:ins};
+      if(where){made[i].blockRef.id=where.id;made[i].blockRef.at=where.at;made[i].blockRef.level=where.level;}   /* __acad3dV265 */
       if(made[i].t==='text'&&made[i].attdef){defs.push(made[i].attdef);objs.push(made[i]);}
     }
     if(!defs.length)return null;
-    var vals=bimAttribFill(defs,null);
+    var vals=bimAttribFill(defs,values||null);
     for(i=0;i<objs.length;i++){
       objs[i].attrib={tag:defs[i].tag,prompt:defs[i].prompt};
       objs[i].text=vals[i].value||'';
       objs[i].name=name+' '+defs[i].tag;
       delete objs[i].attdef;
     }
-    openAttribDlg(objs,'Enter attributes: '+name);
+    if(!values)openAttribDlg(objs,'Enter attributes: '+name);   /* a redefinition keeps the values it had */
     return objs;
   }
   /* The attributes of the insert(s) the selection belongs to. */

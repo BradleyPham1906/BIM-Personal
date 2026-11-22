@@ -35,6 +35,7 @@ import { bimFloorProfileFrom, openCeilingDlg } from '../bim/ceiling-floor-profil
 import { bimFindRoofBoundaryAt, openRoofDlg } from '../bim/roofs.js';
 import { finishStair } from '../bim/stairs.js';
 import { bimHexA, bimLayerAlpha, bimLayerLook, bimLayerShown } from '../layers/layer-rules.js';
+import { bimWideLook } from '../layers/object-look.js';
 import { bimUnitDef } from '../properties/palette.js';
 import { bimAwCtxCol } from '../site-analysis/analysis-workspace.js';
 import { bimOcctRevolvePoint } from '../solids/occt-tools.js';
@@ -51,6 +52,9 @@ import { A3D_OSNAP, BIM_OSNAP_NAMES, bimOsnapDrawMarker } from './object-snaps.j
 import { bimDrawExtraPoint, bimIsDrawExtra } from './draw-extra.js';
 import { bimDmPoint, bimIsDmTool, bimMatchPropClick } from '../editing/drafting-modify.js';
 import { bimHatchGraphics, bimHatchOutline, bimIsHatch } from './hatch.js';
+import {
+  bimDonutPoint, bimHatchHoleRings, bimRingPath, bimWipeoutFinish, bimWipeoutPoint
+} from './hatch-more.js';
 import {
   bimClineDir, bimClineModeForKey, bimClineModeLabels, bimClineVisibleSeg, bimDrawingExtent2D, bimIsCline
 } from './construction-lines.js';
@@ -99,7 +103,7 @@ import { cvH, cvW } from '../ui/canvas-size.js';
      through to the viewport. polygon joins on the same terms. */
   var BIM_COORD_TOOLS={line:1,poly:1,wall:1,rect:1,stair:1,arc:1,circle:1,polygon:1,point:1,xline:1,boundary:1,hatch:1,
     /* __acad3dV255: the drafting track's point-taking tools, so a typed point, a typed distance and Enter reach them */
-    move:1,copy:1,stretch:1,circle2p:1,circle3p:1,ellipse:1,revcloud:1,inqid:1,inqdist:1,inqarea:1,dimbase:1,dimcont:1,dimord:1,attdef:1,revolveaxis:1};
+    move:1,copy:1,stretch:1,circle2p:1,circle3p:1,ellipse:1,revcloud:1,inqid:1,inqdist:1,inqarea:1,dimbase:1,dimcont:1,dimord:1,attdef:1,revolveaxis:1,donut:1,wipeout:1,circlettr:1};
 
   /* AutoCAD coordinate entry. Exactly the five forms Autodesk documents:
 
@@ -177,6 +181,7 @@ import { cvH, cvW } from '../ui/canvas-size.js';
     else if(sk.tool==='poly'){if(sk.pts.length>=2)finishPoly(true);else{A3D.sk=null;paint();}}   /* __acad3dV100: Enter ends it OPEN */
     else if(sk.tool==='stair'){if(sk.pts.length>=2)finishStair();else{A3D.sk=null;paint();}}
     else if(sk.tool==='inqarea')bimInquiryFinish(sk);   /* __acad3dV255 */
+    else if(sk.tool==='wipeout')bimWipeoutFinish(sk);   /* __acad3dV265 */
     else{A3D.sk=null;paint();}
     bimSyncStatusHint();
     return true;
@@ -382,7 +387,9 @@ import { cvH, cvW } from '../ui/canvas-size.js';
     if(bimIsInquiryTool(sk)){bimInquiryPoint(sk,[gx,gz]);return;}   /* __acad3dV255 */
     if(bimIsDimChainTool(sk)){bimDimChainPoint(sk,[gx,gz]);return;}   /* __acad3dV258 */
     if(sk.tool==='attdef'){bimAttdefPlace(sk,[gx,gz]);return;}   /* __acad3dV260 */
-    if(sk.tool==='revolveaxis'){bimOcctRevolvePoint(sk,[gx,gz]);return;}   /* __acad3dV264 */   /* __acad3dV250: MOVE, COPY, STRETCH */
+    if(sk.tool==='revolveaxis'){bimOcctRevolvePoint(sk,[gx,gz]);return;}   /* __acad3dV264 */
+    if(sk.tool==='donut'){bimDonutPoint(sk,[gx,gz]);return;}   /* __acad3dV265 */
+    if(sk.tool==='wipeout'){bimWipeoutPoint(sk,[gx,gz]);return;}   /* __acad3dV250: MOVE, COPY, STRETCH */
     if(sk.tool==='matchprop'){if(xy)bimMatchPropClick(sk,xy);return;}
     if(sk.tool==='hatch'){                      /* __acad3dV96 */
       bimApplyHatchAt([gx,gz],sk.y,sk.hatch);
@@ -711,6 +718,7 @@ import { cvH, cvW } from '../ui/canvas-size.js';
     for(i=0;i<A3D.objs.length;i++){
       o=A3D.objs[i];
       if(!bimIsHatch(o))continue;
+      if(o.wipeout)continue;   /* __acad3dV265: drawn by drawWipeouts, over the linework */
       if(!bimLayerShown(o))continue;   /* __acad3dV121 */
       if(!bimObjectVisibleOnLevel(o))continue;
       ring=bimHatchOutline(o);
@@ -724,11 +732,14 @@ import { cvH, cvW } from '../ui/canvas-size.js';
       ctx.moveTo(sp[0][0],sp[0][1]);
       for(k=1;k<sp.length;k++)ctx.lineTo(sp[k][0],sp[k][1]);
       ctx.closePath();
+      var holes=bimHatchHoleRings(o),hk;   /* __acad3dV265: its islands, filled even-odd */
+      for(hk=0;hk<holes.length;hk++)bimRingPath(ctx,holes[hk],o,V,W,H);
+      var rule=holes.length?'evenodd':'nonzero';
       ctx.globalAlpha*=bimLayerAlpha(o);   /* __acad3dV121: the layer's transparency */
       rg=bimHatchGraphics(o);
-      if(rg.fill&&rg.fill!=='none'){ctx.fillStyle=rg.fill;ctx.fill();}
+      if(rg.fill&&rg.fill!=='none'){ctx.fillStyle=rg.fill;ctx.fill(rule);}
       fill=bimCanvasPatternFill(ctx,rg);
-      if(fill){ctx.fillStyle=fill;ctx.fill();}
+      if(fill){ctx.fillStyle=fill;ctx.fill(rule);}
       /* The boundary is drawn only while selected. AutoCAD's hatch has no visible edge of its
          own -- the edge belongs to whatever bounded it -- and drawing one would put a line in
          the drawing that is not in the model. */
@@ -777,6 +788,7 @@ import { cvH, cvW } from '../ui/canvas-size.js';
       /* __acad3dV121: this never asked about layers, so a layer turned off kept all its linework */
       if(!bimLayerShown(o))continue;
       var lk=bimLayerLook(o);
+      if(o.plWidth>0)lk=bimWideLook(lk,o,V,W,H);   /* __acad3dV265: a polyline's global width, at drawing scale */
       (A3D.lastLook||(A3D.lastLook={}))[o.id]=lk;   /* what was decided, for the suite to read */
       if(bimIsPoint(o)){                        /* __acad3dV93 */
         var pmSeg=bimPointMarkerSegs(o.pts[0]),pmQ=bimObjOffset(o),pmK;

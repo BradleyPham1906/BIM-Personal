@@ -62,6 +62,7 @@ import { bimTrCommand } from '../simulation/traffic-ui.js';
 import { bimAwEnter, bimAwTraffic } from '../site-analysis/analysis-workspace.js';
 import { bimTlCommand } from '../site-tools/panel.js';
 import { bimExportDWG } from '../io/dwg-io.js';
+import { bimXattach, openXrefDlg } from '../io/xref.js';
 import {
   bimOcctBoolean, bimOcctExportStep, bimOcctLoft, startOcctEdges, startOcctExtrude, startOcctRevolve,
   startOcctShell
@@ -87,6 +88,7 @@ import {
   bimDmSelIds, bimExplodeSelection, bimJoinCommand, bimOverkill, openDrawOrderDlg, startCopyTool,
   startMatchPropTool, startMoveTool, startStretchTool
 } from '../editing/drafting-modify.js';
+import { startDonutTool, startWipeoutTool } from '../drawing/hatch-more.js';
 import {
   applyFilletCorner, openAlignDlg, openArrayDlg, openOffsetDlg, startBreakTool, startChamferTool,
   startExtendTool, startLengthenTool, startScaleTool, startTrimTool
@@ -101,6 +103,7 @@ import { bimAnalyzeCommand, bimAnalyzeOff } from '../structure/analysis-display.
 import { bimStructFocus, bimToggleTrib } from '../structure/analysis-properties.js';
 import { openSaveBlockDlg } from '../assets/blocks.js';
 import { bimAttedit, openAttdefDlg } from '../assets/block-attribs.js';
+import { openBcloseDlg, openBeditDlg } from '../assets/block-editor.js';
 import { A3D_VIEW } from '../views/saved-views.js';
 import { bimSheetById } from '../sheets/sheets.js';
 import { bimSheetOnScreen, bimShowModel } from '../sheets/present.js';
@@ -278,6 +281,13 @@ import { bimOpenToolsPanel } from '../ui/discipline-tabs.js';
     dimstyle:function(){openDimStyleDlg();},
     textstyle:function(){openTextStyleDlg();},   /* __acad3dV259 */
     attdef:function(){openAttdefDlg();},   /* __acad3dV260 */
+    donut:function(){startDonutTool();},   /* __acad3dV265 */
+    bedit:function(){openBeditDlg();},
+    xattach:function(){bimXattach();},
+    xref:function(){openXrefDlg();},
+    bclose:function(){openBcloseDlg();},
+    circlettr:function(){startSketch('circlettr');},
+    wipeout:function(){startWipeoutTool();},
     occtextrude:function(){startOcctExtrude();},   /* __acad3dV264: the solid tools, on OpenCASCADE */
     filletedge:function(){startOcctEdges('fillet');},
     chamferedge:function(){startOcctEdges('chamfer');},

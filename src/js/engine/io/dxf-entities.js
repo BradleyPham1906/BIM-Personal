@@ -100,6 +100,7 @@ import { bimPolySignedArea } from '../bim/rooms.js';
     }
     if(e.type==='TEXT')o.rot=(e.rot||0)+(ins.rot||0);
     if(typeof e.h==='number')o.h=e.h*Math.abs(sy);
+    if(typeof e.width==='number')o.width=e.width*Math.abs(sx);   /* __acad3dV265 */
     return o;
   }
   /* Every INSERT replaced by its block's entities, nested blocks included (to a depth of 8, so a
@@ -187,7 +188,8 @@ import { bimPolySignedArea } from '../bim/rooms.js';
      through their polygon). Pattern: 2 its name, 70 solid, 52 angle, 41 scale. */
   var BIM_DXF_HATCH_MAP={SOLID:'solid',ANSI31:'diagonal',ANSI32:'steel',ANSI33:'diagonal',ANSI34:'steel',ANSI35:'diagonal',
     ANSI36:'diagonal',ANSI37:'cross',ANSI38:'cross',NET:'cross','AR-BRSTD':'brick','AR-B816':'brick','AR-B88':'brick',
-    BRICK:'brick','AR-CONC':'concrete','AR-SAND':'dots',DOTS:'dots',LINE:'horizontal',EARTH:'cross',STEEL:'steel'};
+    BRICK:'brick','AR-CONC':'concrete','AR-SAND':'dots',DOTS:'dots',LINE:'horizontal',EARTH:'cross',STEEL:'steel',
+    ANSI31R:'diagonal-reverse',LINEV:'vertical'};   /* __acad3dV265: the names this app writes for its own two */
   function dxfHatchPattern(name){
     var n=String(name||'').toUpperCase();
     return BIM_DXF_HATCH_MAP.hasOwnProperty(n)?BIM_DXF_HATCH_MAP[n]:'diagonal';
@@ -316,7 +318,54 @@ import { bimPolySignedArea } from '../bim/rooms.js';
     if(dxfIsBinary(b))return dxfBinaryToText(b);
     return typeof TextDecoder!=='undefined'?new TextDecoder('utf-8').decode(b):String.fromCharCode.apply(null,Array.prototype.slice.call(b));
   }
+  /* ================= __acad3dV265: a hatch written as a DXF HATCH, with its pattern =================
+     The app's patterns are tiles of short segments and dots (BIM_PATTERN_DEFS, in tile units, y up as DXF is). A DXF
+     pattern is line families (DXF Reference, HATCH, "Pattern data": 53 angle, 43/44 base point, 45/46 offset to the
+     next line, 49 dash lengths). Each segment of the tile becomes one family that draws it on every tile: along the
+     segment the shortest tile-lattice vector p gives the dash period; a lattice vector o with p and o a basis of the
+     lattice (|p x o| = the tile's area, from the extended Euclidean algorithm) is the offset, so every tile is
+     reached once. A tile is sized as the plan shows it at 1:100 (2.5 mm on paper is 0.25 m), times the hatch's own
+     scale, turned by its angle. The pattern keeps AutoCAD's name (BIM_DXF_HATCH_OUT) so a reader maps it back. */
+  var BIM_DXF_HATCH_OUT={solid:'SOLID',diagonal:'ANSI31',cross:'ANSI37',brick:'AR-BRSTD',concrete:'AR-CONC',steel:'ANSI32',
+    dots:'DOTS',horizontal:'LINE','diagonal-reverse':'ANSI31R',vertical:'LINEV'};
+  /* A pattern tile's width and height in metres: as the plan shows it at 1:100, times the hatch's scale. */
+  function dxfPatternTile(def,sc){var k=(sc>0?sc:1)*0.1;return [def.mm*(def.w||1)*k,def.mm*k];}
+  function dxfEgcd(a,b){if(!b)return [a,1,0];var r=dxfEgcd(b,a%b);return [r[0],r[2],r[1]-Math.floor(a/b)*r[2]];}
+  /* The integers (i, j), coprime, with (i W, j H) along (dx, dy): its denominators to 64, or null. */
+  function dxfLatticeDir(dx,dy,W,H){
+    var bi=0,bj=0,be=Infinity,i,j;
+    for(j=-64;j<=64;j++)for(i=0;i<=64;i++){
+      if(!i&&!j)continue;
+      var vx=i*W,vy=j*H,L=Math.sqrt(vx*vx+vy*vy),err=Math.abs(vx*dy-vy*dx)/L;
+      if(vx*dx+vy*dy<=0)continue;
+      if(err<be-1e-12||(Math.abs(err-be)<=1e-12&&L<Math.sqrt(bi*bi*W*W+bj*bj*H*H))){be=err;bi=i;bj=j;}
+    }
+    if(be>1e-7*Math.max(W,H))return null;
+    var g=dxfEgcd(Math.abs(bi),Math.abs(bj))[0]||1;
+    return [bi/g,bj/g];
+  }
+  /* One pattern definition: [{angle, base:[x,y], offset:[x,y], dashes:[...]}] in drawing units. */
+  function dxfPatternLines(def,W,H,rotDeg){
+    var out=[],r=(rotDeg||0)*Math.PI/180,c=Math.cos(r),sn=Math.sin(r),k;
+    function R(p){return [p[0]*c-p[1]*sn,p[0]*sn+p[1]*c];}
+    function fam(a,b,isDot){
+      var dx=1,dy=0,len=0;   /* a dot: a zero-length dash on a line running along x */
+      if(!isDot){dx=b[0]-a[0];dy=b[1]-a[1];len=Math.sqrt(dx*dx+dy*dy);}
+      var ij=dxfLatticeDir(dx,dy,W,H);
+      if(!ij)return null;
+      var e=dxfEgcd(Math.abs(ij[0]),Math.abs(ij[1])),u=e[1]*(ij[0]<0?-1:1),v=e[2]*(ij[1]<0?-1:1);
+      /* u i + v j = 1, so (-v, u) with (i, j) has determinant 1: (-v W, u H) is the offset */
+      var P=[ij[0]*W,ij[1]*H],O=[-v*W,u*H],per=Math.sqrt(P[0]*P[0]+P[1]*P[1]);
+      var dashes=len>=per-1e-9?[]:[len,-(per-len)];
+      var Pr=R(P);
+      return {angle:Math.atan2(Pr[1],Pr[0])*180/Math.PI,base:R([a[0],a[1]]),offset:R(O),dashes:dashes};
+    }
+    var L=def.lines||[],D=def.dots||[],f;
+    for(k=0;k<L.length;k++){f=fam([L[k][0]*W,L[k][1]*H],[L[k][2]*W,L[k][3]*H],false);if(f)out.push(f);}
+    for(k=0;k<D.length;k++){f=fam([D[k][0]*W,D[k][1]*H],null,true);if(f){f.dashes=[0,-W];out.push(f);}}
+    return out;
+  }
 export {
-  dxfEllipsePts, dxfEntityExtra, dxfExpandInserts, dxfHatchOuter, dxfHatchPattern, dxfSplinePts,
-  dxfTextFromBytes, dxfTextPlain, dxfXform
+  BIM_DXF_HATCH_OUT, dxfEllipsePts, dxfEntityExtra, dxfExpandInserts, dxfHatchOuter, dxfHatchPattern,
+  dxfPatternLines, dxfPatternTile, dxfSplinePts, dxfTextFromBytes, dxfTextPlain, dxfXform
 };

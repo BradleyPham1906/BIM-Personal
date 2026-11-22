@@ -225,7 +225,7 @@ import { cvH, cvW } from '../ui/canvas-size.js';
        and rotation (V254, V259), an attribute or its definition (V260), a line's own look (V257). An insert's
        membership (blockRef) does not: a copy is not part of the insert it was copied from. */
     if(copy){
-      var ck=['height','rot','attrib','attdef','color','linetype','lineweight'],ki;
+      var ck=['height','rot','attrib','attdef','color','linetype','lineweight','plWidth','holes','wipeout'],ki;
       for(ki=0;ki<ck.length;ki++)if(o[ck[ki]]!==undefined&&copy[ck[ki]]===undefined)copy[ck[ki]]=JSON.parse(JSON.stringify(o[ck[ki]]));
       if(copy.blockRef&&copy!==o)delete copy.blockRef;
     }

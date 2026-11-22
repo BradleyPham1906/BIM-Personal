@@ -1,9 +1,11 @@
+import { bimPatternDef } from '../bim/type-instance-params.js';
 import { bimTriggerDownload } from '../annotation/annotation-pick.js';
 import { bimFileStem } from './project-file.js';
 import { bimBuildDXF } from './export-mappings.js';
 import { bimLbBase } from '../ladybug/runtime.js';
 import {
-  dxfEllipsePts, dxfExpandInserts, dxfHatchPattern, dxfSplinePts, dxfTextPlain, dxfXform
+  BIM_DXF_HATCH_OUT, dxfEllipsePts, dxfExpandInserts, dxfHatchPattern, dxfPatternLines, dxfPatternTile,
+  dxfSplinePts, dxfTextPlain, dxfXform
 } from './dxf-entities.js';
 import { DXF_UNIT_SCALE, bimImportParsed, dxfAciToHex, dxfParse } from './import-dxf.js';
 import { a3dToast } from '../bim/csg-booleans.js';
@@ -62,7 +64,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
     else if(t==='LWPOLYLINE'||t==='POLYLINE_2D'){
       var vs=e.vertices||[],pts=[],bl=[],any=false;
       for(k=0;k<vs.length;k++){pts.push([vs[k].x,vs[k].y]);bl.push(vs[k].bulge||0);if(vs[k].bulge)any=true;}
-      if(pts.length>=2)o={type:'LWPOLYLINE',closed:!!e.closed,pts:pts,bulges:any?bl:null};
+      if(pts.length>=2)o={type:'LWPOLYLINE',closed:!!e.closed,pts:pts,bulges:any?bl:null,width:e.constantWidth||0};   /* __acad3dV265 */
     }else if(t==='POLYLINE_3D'){
       var v3=(e.vertices||[]).map(function(v){return [v.x,v.y];});
       if(v3.length>=2)o={type:'POLYPTS',pts:v3,closed:!!e.closed};
@@ -211,7 +213,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
       e=res.entities[i];
       if(e.type==='LINE')ents.push(mk({type:'LINE',start:P(e.p1),end:P(e.p2),thickness:0},e));
       else if(e.type==='LWPOLYLINE'||e.type==='POLYLINE'||e.type==='POLYPTS')
-        ents.push(mk({type:'LWPOLYLINE',closed:!!e.closed,constantWidth:0,elevation:0,thickness:0,flags:0,plinegen:false,
+        ents.push(mk({type:'LWPOLYLINE',closed:!!e.closed,constantWidth:e.width>0?e.width:0,elevation:0,thickness:0,flags:0,plinegen:false,
           vertices:e.pts.map(function(p,j){return {x:p[0],y:p[1],bulge:e.bulges?(e.bulges[j]||0):0,startWidth:0,endWidth:0};})},e));
       else if(e.type==='CIRCLE')ents.push(mk({type:'CIRCLE',center:P(e.c),radius:e.r,thickness:0},e));
       else if(e.type==='ARC')ents.push(mk({type:'ARC',center:P(e.c),radius:e.r,startAngle:e.a1*D,endAngle:e.a2*D,thickness:0},e));
@@ -219,6 +221,17 @@ import { a3dToast } from '../bim/csg-booleans.js';
         widthFactor:1,oblique:0,style:'Standard',hAlign:0,vAlign:0,generation:0,thickness:0,elevation:0},e));
       else if(e.type==='3DFACE')ents.push(mk({type:'3DFACE',points:e.pts.map(P),invisibleEdges:0},e));
       else if(e.type==='POINT')ents.push(mk({type:'POINT',position:P(e.p),thickness:0,xAxisAngle:0},e));
+      else if(e.type==='HATCH'){   /* __acad3dV265: the hatch with its holes and its pattern's lines, as the DXF writes them */
+        var hdef=bimPatternDef(e.pattern),hsolid=e.pattern==='solid',hl=[];
+        if(!hsolid&&hdef){
+          var T=dxfPatternTile(hdef,e.scale),PL=dxfPatternLines(hdef,T[0],T[1],e.angle||0);
+          hl=PL.map(function(f){return {angle:f.angle*D,base:{x:f.base[0],y:f.base[1]},offset:{x:f.offset[0],y:f.offset[1]},dashes:f.dashes};});
+        }
+        ents.push(mk({type:'HATCH',pattern:BIM_DXF_HATCH_OUT[e.pattern]||'ANSI31',solid:hsolid,associative:false,patternType:hsolid?1:2,
+          angle:(e.angle||0)*D,scale:e.scale>0?e.scale:1,lines:hl,elevation:0,
+          loops:e.loops.map(function(lp,k){return {flags:k?2:3,polyline:{closed:true,hasBulges:!!lp.bulges,
+            vertices:lp.pts.map(function(p,j){return {x:p[0],y:p[1],bulge:lp.bulges?(lp.bulges[j]||0):0};})}};})},e));
+      }
     }
     return {version:version||BIM_DWG.saveVersion,header:{INSUNITS:res.insUnits!=null?res.insUnits:6},
       tables:{layers:layers},blocks:[{name:'*Model_Space',base:{x:0,y:0,z:0},flags:0,xrefPath:'',description:'',entities:ents}]};
