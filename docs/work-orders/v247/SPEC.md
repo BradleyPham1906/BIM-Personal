@@ -18,7 +18,7 @@ Analyze, Site, Runoff: flow paths and accumulation drawn on the terrain, ponding
 
 | File | New or changed | What it holds | Built by |
 |---|---|---|---|
-| `src/js/engine/terrain/runoff.js` | new, after `js/engine/terrain/grading.js` in `src/index.html` (header done) | 5 pure functions and the tables BIM_RUN_DR and BIM_RUN_DC (part 5) | Cline, WO-01 to WO-05 |
+| `src/js/engine/terrain/runoff.js` | new, after `js/engine/terrain/grading.js` in `src/index.html` (header done) | 6 pure functions and the tables BIM_RUN_DR and BIM_RUN_DC (part 5) | Cline, WO-01 to WO-06 |
 | `docs/work-orders/v247/v247.test.mjs` | new | their tests | Claude (done) |
 | the app's own files | changed | wiring, the interface, saving and undo | Claude, C-06, C-07 |
 
@@ -36,9 +36,11 @@ ES5. Every function is pure: it never changes what it is given and uses no name 
 - **WO-04 `bimRunC(parts)`**: the composite runoff coefficient of parts [{C, area}]: NaN when a part has C outside 0 to 1 or an area below 0, or the total area is 0 (or there are no parts); else sum(C area) / sum(area).
 - **WO-05 `bimRunRational(C, i, A)`**: {error: 'bad input'} unless 0 <= C <= 1, i >= 0 and A >= 0. {Q: C i A / 360 (m3/s, i in mm/h, A in ha), warn: 'over 80 ha: the rational method does not apply' when A is above 80, else ''}. Example: (0.6, 100, 2) gives Q 0.3333.
 
+- **WO-06 `bimRunCatchment(dir, nx, ny, k)`** (added 2026-11-21, the owner's choice; `docs/research/research-terrain-surface.md`): null unless dir has nx ny entries. An array of nx ny numbers: 1 for k and every cell whose path along dir reaches k (targets as in WO-03), 0 elsewhere; walked upstream, each cell once; all 0 when k is not a whole number from 0 to nx ny - 1. Example: on WO-02's directions for the research's plane, cell 5 (the pit) gathers 8 cells, as WO-03 counts.
+
 ## 6. Order of the work
 
-WO-01 to WO-05 in order. Then Claude: **C-06** the TIN sampled to the grid (NoData outside), the fill and its ponding, flow lines drawn by accumulation, an outlet's catchment by walking the directions upstream, C per surface from the registry's HEC-22 record, the intensity field and the pasted PFDS CSV reader, Q and its warning; the test to tests/unit/; npm run modules; **C-07** the records.
+WO-01 to WO-06 in order. Then Claude: **C-06** the TIN sampled to the grid (NoData outside), the fill and its ponding, flow lines drawn by accumulation, an outlet's catchment with WO-06, C per surface from the registry's HEC-22 record, the intensity field and the pasted PFDS CSV reader, Q and its warning; the test to tests/unit/; npm run modules; **C-07** the records.
 
 ## 7. Not in this phase
 

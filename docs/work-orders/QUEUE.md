@@ -9,7 +9,7 @@ The owner's decisions (2026-11-14): for every phase below, all as its research r
 overrule any there). V177's D1 to D4 and That Open's four were answered 2026-11-13. The phases are numbered in one
 sequence, 175c to 248 (228 to 232 are algorithmic design, the owner's thirteen decisions, 2026-11-15; 233 to 238 program to plan, the owner's ten decisions, 2026-11-16; 239 to 247 the physical world, as `research-physical-world.md` recommends, 2026-11-21), in `docs/dev/PIPELINE.md`; there are no "later" rows.
 
-## Ready for Cline, in order (294 tasks)
+## Ready for Cline, in order (295 tasks)
 
 | Phase | What | Tasks | Where | Tests |
 |---|---|---|---|---|
@@ -66,7 +66,7 @@ sequence, 175c to 248 (228 to 232 are algorithmic design, the owner's thirteen d
 | v244 | Steel members: AISC 360-22 checks | WO-01 to WO-07 (7) | `v244/TASKS.md` | `v244/v244.test.mjs` |
 | v245 | The building under a ground motion | WO-01 to WO-05 (5) | `v245/TASKS.md` | `v245/v245.test.mjs` |
 | v246 | Form-finding: force density, dynamic relaxation | WO-01 to WO-03 (3) | `v246/TASKS.md` | `v246/v246.test.mjs` |
-| v247 | Stormwater runoff on the site | WO-01 to WO-05 (5) | `v247/TASKS.md` | `v247/v247.test.mjs` |
+| v247 | Stormwater runoff on the site | WO-01 to WO-06 (6) | `v247/TASKS.md` | `v247/v247.test.mjs` |
 | v248 | The shape of the ground: curvature, ruggedness, a viewshed | WO-01 to WO-03 (3) | `v248/TASKS.md` | `v248/v248.test.mjs` |
 
 Every test was run against a reference version that was not committed (all passing) and against the empty files

@@ -126,6 +126,7 @@ Search Notion before creating anything, so nothing is made twice.
 | `docs/research/research-valdrada.md` | `3fecbfcc3a3881b1a8b7edb323f75420` |
 | `docs/research/research-walkthrough.md` (and `experiments/w1-walk/`) | `418cbfcc3a38815491c0c045b8bf2f8a` |
 | `docs/research/research-zoning-envelope-yield.md` | `3fecbfcc3a388107b391f35fd6a8f7d4` |
+| `docs/research/research-terrain-surface.md` (and `experiments/terrain-surface/`) | `41fcbfcc3a3881dc9a96d9d3095b807c` |
 
 ## Internal Task DB pages
 
@@ -198,6 +199,8 @@ Search Notion before creating anything, so nothing is made twice.
 | Later: Model import (glTF, valdrada's models) | `3fecbfcc3a3881a8aac2ccef7bcee713` |
 | Later: Hub H3, full IFC | `3fecbfcc3a3881f38adaf9da8b70bf26` |
 | Later: Hub H4, share and sync | `3fecbfcc3a3881a0ae89deed1c5dab5c` |
+| V202 (parts A, B, C) | `417cbfcc3a3881a1bc33faf0c50075ff` |
+| V248 | `420cbfcc3a3881839893ce97a1543e53` |
 | Later: Hub H5, the server | `3fecbfcc3a3881139bc7ed9832d6b76a` |
 | Later: Streaming | `3fecbfcc3a3881e3a2c7f3e240ba7f89` |
 | Later: Rendering on WebGPU | `3fecbfcc3a388102af55eae8049f4eb6` |
