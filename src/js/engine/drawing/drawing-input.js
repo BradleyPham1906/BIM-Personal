@@ -45,6 +45,7 @@ import { bimMirrorSelection, openPolarArrayDlg, openRotateDlg } from '../editing
 import { bimInteriorPoint, bimIsRegionDep } from '../bim/region-dependents.js';
 import { bimBulgeAt, bimFlattenPoly, bimHasBulge } from './arc-storage.js';
 import { A3D_OSNAP, BIM_OSNAP_NAMES, bimOsnapDrawMarker } from './object-snaps.js';
+import { bimDrawExtraPoint, bimIsDrawExtra } from './draw-extra.js';
 import { bimDmPoint, bimIsDmTool, bimMatchPropClick } from '../editing/drafting-modify.js';
 import { bimHatchGraphics, bimHatchOutline, bimIsHatch } from './hatch.js';
 import {
@@ -290,6 +291,10 @@ import { cvH, cvW } from '../ui/canvas-size.js';
     if(sk.tool==='poly')return n?('Specify next point'+bimPromptOpts(sk)+':'):'Specify start point:';
     if(sk.tool==='rect')return n?'Specify other corner point:':'Specify first corner point:';
     if(sk.tool==='circle')return n?'Specify radius:':'Specify center point:';
+    if(sk.tool==='circle2p')return n?'Specify second end point of circle\'s diameter:':'Specify first end point of circle\'s diameter:';
+    if(sk.tool==='circle3p')return ['Specify first point on circle:','Specify second point on circle:','Specify third point on circle:'][Math.min(n,2)];
+    if(sk.tool==='ellipse')return ['Specify axis endpoint of ellipse:','Specify other endpoint of axis:','Specify distance to other axis:'][Math.min(n,2)];
+    if(sk.tool==='revcloud')return n?'Specify opposite corner:':'Specify first corner point:';
     /* __acad3dV93: the form is already chosen, so the prompt states it rather than offering
        [Inscribed/Circumscribed] at a point where no key would answer it. */
     if(sk.tool==='roomtag')return 'Select a room to tag (Escape when finished):';   /* __acad3dV101 */
@@ -360,7 +365,8 @@ import { cvH, cvW } from '../ui/canvas-size.js';
      skipped and everything else behaves identically. */
   function skPlacePoint(gx,gz,xy){
     var sk=A3D.sk;if(!sk)return;
-    if(bimIsDmTool(sk)){bimDmPoint(sk,[gx,gz]);return;}   /* __acad3dV250: MOVE, COPY, STRETCH */
+    if(bimIsDmTool(sk)){bimDmPoint(sk,[gx,gz]);return;}
+    if(bimIsDrawExtra(sk)){bimDrawExtraPoint(sk,[gx,gz]);return;}   /* __acad3dV253 */   /* __acad3dV250: MOVE, COPY, STRETCH */
     if(sk.tool==='matchprop'){if(xy)bimMatchPropClick(sk,xy);return;}
     if(sk.tool==='hatch'){                      /* __acad3dV96 */
       bimApplyHatchAt([gx,gz],sk.y,sk.hatch);

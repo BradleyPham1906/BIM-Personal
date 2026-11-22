@@ -5,6 +5,7 @@ import { bimLandXmlImport } from '../terrain/breaklines.js';
 import { bimOpenProjectFileObj } from './project-file.js';
 import { bimGeoImportFile } from '../properties/map-address-site-data.js';
 import { bimImportDXF } from './import-dxf.js';
+import { bimImportDWG } from './dwg-io.js';
 import { bimImportOBJ, bimImportSTL } from './import-obj-stl.js';
 import { bimImportSKP } from './sketchup-import.js';
 import { bimImportGLTF } from './gltf.js';
@@ -46,10 +47,13 @@ import { a3dToast } from '../bim/csg-booleans.js';
       bimCityJsonFile(file);
     }else if(ext==='json'||ext==='gz'){   /* __acad3dV172g: a compressed project file too */
       bimOpenProjectFileObj(file);   /* __acad3dV115: the one project-file reader */
-    }else if(ext==='dwg'||ext==='step'||ext==='stp'||ext==='iges'||ext==='igs'){
-      a3dToast('.'+ext.toUpperCase()+' is not supported (proprietary binary / full B-rep format). Export as DXF (CAD) or IFC (BIM) instead.');
+    }else if(ext==='dwg'){   /* __acad3dV252: through cc-dwg, loaded now */
+      reader.onload=function(ev){bimImportDWG(ev.target.result,name);};
+      reader.readAsArrayBuffer(file);
+    }else if(ext==='step'||ext==='stp'||ext==='iges'||ext==='igs'){
+      a3dToast('.'+ext.toUpperCase()+' is not supported yet (a full B-rep format). Export as DXF or DWG (CAD) or IFC (BIM) instead.');
     }else{
-      a3dToast('Unsupported file type: .'+ext+' (supported: .dxf, .ifc, .obj, .stl, .glb and .gltf, .skp SketchUp, .json project files, .geojson and .kml site data, .city.json CityJSON, .xml LandXML)');
+      a3dToast('Unsupported file type: .'+ext+' (supported: .dxf, .dwg, .ifc, .obj, .stl, .glb and .gltf, .skp SketchUp, .json project files, .geojson and .kml site data, .city.json CityJSON, .xml LandXML)');
     }
   }
 

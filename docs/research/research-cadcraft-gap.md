@@ -59,13 +59,13 @@ work orders under the existing workflow (Claude specifies, Cline builds).
 |---|---|---|
 | D1 | Object snaps (midpoint, center, quadrant, intersection, perpendicular, tangent, nearest, node) with an OSNAP settings dialog, polar tracking (F10) | **Built as V249, 2026-11-22.** Object snap tracking not yet |
 | D2 | Modify: move and copy by base point, stretch, explode, join polylines, overkill, draw order, match properties | **Built as V250, 2026-11-22** (MOVE and EXPLODE were typed commands with no handler before) |
-| D3 | Draw: ellipse and elliptical arc, circle 2P/3P/TTR, donut, polyline widths, revision cloud, wipeout | Small, independent |
-| D4 | Annotation styles: text styles and multiline text, dimension styles, baseline/continue/ordinate/arc-length dimensions, multileaders | Drawings that read like professional sheets |
+| D3 | Draw: ellipse and elliptical arc, circle 2P/3P/TTR, donut, polyline widths, revision cloud, wipeout | **Partly built as V253, 2026-11-22:** CIRCLE2P, CIRCLE3P, ELLIPSE (a typed command with no handler before), REVCLOUD. Still open: elliptical arcs, TTR, DONUT, widths, WIPEOUT (they need filled and wide lines, which the plan drawing does not draw yet) |
+| D4 | Annotation styles: text styles and multiline text, dimension styles, baseline/continue/ordinate/arc-length dimensions, multileaders | **Started as V254, 2026-11-22:** text has a height and a rotation, drawn at drawing scale, multi-line, kept through DXF and DWG. Still open: text styles and fonts, typing a height, dimension styles, the other dimension types, multileaders |
 | D5 | Linetypes and per-object colour and lineweight | Needed for D7's round trip, and for plotting |
 | D6 | Blocks: attributes, a block editor, explode, external references | Title blocks and tags carry data |
 | D7 | DXF fidelity: read and write text, multiline text, blocks, hatches, dimensions, ellipses, splines, linetypes; binary DXF in | **Import built as V251, 2026-11-22:** blocks (nested, arrays, mirrored), dimensions, TEXT, MTEXT, ATTRIB, ELLIPSE, SPLINE, SOLID, true-arc circles. Still open: HATCH, binary DXF, and the export side |
 | D8 | Inquiry: LIST, ID, DIST, AREA, MASSPROP for regions, COUNT, a calculator | Small |
-| D9 | DWG, research only first | Needs a library: acadrust (CADCraft's, Rust) through WebAssembly, or LibreDWG (GPL, so only as a separate program under the third-party rule). License, size and fidelity to be measured before the owner approves one |
+| D9 | DWG | **Built as V252, 2026-11-22** (the owner approved cc-dwg): opens R13 to R2018 through the Import picker, saves the plan as AutoCAD 2013 DWG (EXPORTDWG, DWGOUT, the ribbon's DWG). docs/research/research-dwg-library.md |
 
 ## 4. The owner's decisions
 

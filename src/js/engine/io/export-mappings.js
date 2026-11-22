@@ -101,8 +101,9 @@ import { a3dToast } from '../bim/csg-booleans.js';
       out+=P(0,'LINE')+P(8,lay)+P(10,DX(a))+P(20,DY(a))+P(30,'0.0')+P(11,DX(b))+P(21,DY(b))+P(31,'0.0');
       stats.line++;
     }
-    function text(pt,str,h,lay){
-      out+=P(0,'TEXT')+P(8,lay)+P(10,DX(pt))+P(20,DY(pt))+P(30,'0.0')+P(40,h.toFixed(4))+P(1,String(str).replace(/[\r\n]+/g,' '));
+    function text(pt,str,h,lay,rot){
+      out+=P(0,'TEXT')+P(8,lay)+P(10,DX(pt))+P(20,DY(pt))+P(30,'0.0')+P(40,h.toFixed(4))+P(1,String(str).replace(/[\r\n]+/g,' '))+
+        (rot?P(50,(+rot).toFixed(4)):'');   /* __acad3dV254: its rotation, degrees counter-clockwise */
       stats.text++;
     }
     for(i=0;i<A3D.objs.length;i++){
@@ -184,7 +185,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
       }else if(o.t==='roomtag'){   /* __acad3dV101 */
         if(bimAnnotDrawable(o))text(o.pt,bimRoomTagText(o),0.25,lay);
       }else if(o.t==='text'){
-        text(o.pt,o.text,0.25,lay);
+        text(o.pt,o.text,o.height>0?o.height:0.25,lay,o.rot||0);   /* __acad3dV254: its own height */
       }else if(b&&(b.type==='floor'||b.type==='ceiling'||b.type==='roof')&&(b.profile||b.footprint)){
         poly(b.profile||b.footprint,true,lay);
       }else if(b&&b.type==='column'&&b.center){

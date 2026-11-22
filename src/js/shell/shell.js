@@ -46,7 +46,7 @@
   var CADCMDS=[
     ['LINE',['L'],'line','Draw a line'],['PLINE',['PL','POLYLINE','POLY'],'poly','Draw a polyline'],
     ['WALL',['WA'],'wall','Draw a wall (A for arc segments)'],
-    ['RECTANG',['REC','RECT','RECTANGLE'],'rect','Draw a rectangle'],['CIRCLE',['C'],'circle','Draw a circle'],
+    ['RECTANG',['REC','RECT','RECTANGLE'],'rect','Draw a rectangle'],['CIRCLE',['C'],'circle','Draw a circle'],['CIRCLE2P',['C2P'],'circle2p','Draw a circle by the two ends of its diameter'],['CIRCLE3P',['C3P'],'circle3p','Draw a circle through three points'],['REVCLOUD',['RC'],'revcloud','Draw a revision cloud round a rectangle'],
     ['ARC',['A'],'arc','Draw a 3-point arc'],['ELLIPSE',['EL'],'ellipse','Draw an ellipse'],
     ['POLYGON',['POL'],'polygon','Draw a polygon'],['SKETCH',['DRAW'],'draw','Freehand sketch'],
     ['MTEXT',['T','MT'],'text','Text box'],['TEXT',['DT'],'text','Text box'],
@@ -211,6 +211,7 @@
     ['IFCIN',['IMPORTIFC','IFC','OPENIFC'],'ifcin','Open an IFC model (IFC2x3, IFC4, IFC4.3): every element in its colour with its openings, on layers by class, its storeys as levels and its property sets in Properties'],   /* __acad3dV196 */
     ['GLTFIN',['IMPORTGLTF','GLB','GLTF','IMPORTGLB'],'gltfin','Open a glTF or GLB model: its meshes as solids by material, on a layer named after the file, and kept in Assets as a block'],   /* __acad3dV195 */
     ['GLTFOUT',['EXPORTGLTF','EXPORTGLB'],'gltfout','Export the model shown as a .glb, an element a mesh under a node for its layer, for Blender, SketchUp, game engines and headsets'],
+    ['EXPORTDWG',['DWGOUT','SAVEDWG'],'dwgout','Export the plan as an AutoCAD DWG file (2013 format) through cc-dwg'],   /* __acad3dV252 */
     ['IFCOUT',['EXPORTIFC','SAVEIFC','SAVEASIFC'],'ifcout','Export the model shown as an IFC4 file through IfcOpenShell: levels as storeys, walls, floors, doors, windows and columns as IFC elements, everything else with its shape and class'],   /* __acad3dV177 */
     ['SKPIN',['IMPORTSKP','SKETCHUP'],'skpin','Open a SketchUp file: its faces as solids, its tags as layers, its components as blocks'],   /* __acad3dV163 */
     /* __acad3dV134: data layers */

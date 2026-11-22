@@ -97,3 +97,9 @@ test('the parser reads blocks, inserts, text, ellipses, splines, solids and dime
   assert.deepEqual(solid.pts, [[0, 0], [1, 0], [1, 1], [0, 1]], 'SOLID corners 3 and 4 are uncrossed');
   assert.equal(r.skipped.DIMENSION, undefined);
 });
+
+test('V254: text keeps its height and rotation through the DXF export and back', () => {
+  const r = E.dxfParse('0\nSECTION\n2\nENTITIES\n0\nTEXT\n8\n0\n10\n1\n20\n2\n40\n0.5\n50\n30\n1\nHello\n0\nENDSEC\n0\nEOF\n');
+  const t = r.entities[0];
+  assert.equal(t.text, 'Hello'); near(t.h, 0.5); near(t.rot, 30);
+});
