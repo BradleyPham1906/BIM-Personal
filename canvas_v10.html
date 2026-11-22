@@ -1873,7 +1873,7 @@ body.light-theme .a3d-tl-msgs,body.light-theme .a3d-tl-hn span,body.light-theme 
     ['RECTANG',['REC','RECT','RECTANGLE'],'rect','Draw a rectangle'],['CIRCLE',['C'],'circle','Draw a circle'],['CIRCLE2P',['C2P'],'circle2p','Draw a circle by the two ends of its diameter'],['CIRCLE3P',['C3P'],'circle3p','Draw a circle through three points'],['REVCLOUD',['RC'],'revcloud','Draw a revision cloud round a rectangle'],
     ['ARC',['A'],'arc','Draw a 3-point arc'],['ELLIPSE',['EL'],'ellipse','Draw an ellipse'],
     ['POLYGON',['POL'],'polygon','Draw a polygon'],['SKETCH',['DRAW'],'draw','Freehand sketch'],
-    ['MTEXT',['T','MT'],'text','Text box'],['TEXT',['DT'],'text','Text box'],
+    ['MTEXT',['T','MT'],'text','Multiline text, with its height and rotation'],['TEXT',['DT','DTEXT'],'text','Text, with its height and rotation'],
     ['SPLINE',['SPL'],'spline','Spline through fit points'],
     ['ROOM',['RM'],'room','Make a room from an enclosed region'],
     ['ROOMTAG',['RT','TAGROOM'],'roomtag','Tag a room with its number and name'],
@@ -1955,7 +1955,7 @@ body.light-theme .a3d-tl-msgs,body.light-theme .a3d-tl-hn span,body.light-theme 
     ['DIST',['DI','MEASUREGEOM','MEA'],'inqdist','Measure the distance and angle between two points, leaving nothing in the drawing'],['ID',[],'inqid','Show the coordinates of a point'],['AREA',['AA'],'inqarea','Measure the area and perimeter of picked points or of the selected closed objects'],['LIST',['LI','LS'],'inqlist','List the selected objects\' properties and sizes'],   /* __acad3dV255 */
     ['DIVIDE',['DIV'],'divide','Place points dividing an object into equal parts'],
     ['MEASURE',['ME'],'measurePts','Place points at a set spacing along an object'],['DIMLINEAR',['DLI','DIM'],'bimDims','Linear dimension'],
-    ['LAYER',['LA','LAYERS'],'layers','Layer Properties Manager'],['DIMBASELINE',['DBA'],'dimbase','Dimensions from the first point of the last linear dimension'],['DIMCONTINUE',['DCO'],'dimcont','Dimensions chained from the last linear dimension'],['DIMORDINATE',['DOR'],'dimord','The X or Y of a point from the origin'],['DIMSTYLE',['D','DST','DDIM'],'dimstyle','The dimension style: text, arrows, precision, spacing'],['LAYISO',[],'layiso','Isolate the layers of the selected objects: every other layer off'],['LAYUNISO',[],'layuniso','Put back the layers LAYISO turned off'],['LAYOFF',[],'layoff','Turn off the layers of the selected objects'],['LAYFRZ',[],'layfrz','Freeze the layers of the selected objects'],['LAYLCK',[],'laylck','Lock the layers of the selected objects'],['LAYON',[],'layon','Turn every layer on'],['LAYTHW',[],'laythw','Thaw every layer'],['LAYULK',[],'layulkall','Unlock every layer'],['LAYMCUR',[],'laymcur','Make the selected object\'s layer current'],['LAYERP',['LAYP'],'layerp','Undo the last change to the layer settings'],['OSNAP',['OS','DSETTINGS','DS','SE'],'osnapSettings','Object snap and polar tracking settings'],['OSMODE',['F3'],'bimSnap','Toggle object snap'],['POLAR',[],'polar','Toggle polar tracking (F10)'],
+    ['LAYER',['LA','LAYERS'],'layers','Layer Properties Manager'],['DIMBASELINE',['DBA'],'dimbase','Dimensions from the first point of the last linear dimension'],['DIMCONTINUE',['DCO'],'dimcont','Dimensions chained from the last linear dimension'],['DIMORDINATE',['DOR'],'dimord','The X or Y of a point from the origin'],['STYLE',['ST'],'textstyle','The text style: font and the height of new text'],['DIMSTYLE',['D','DST','DDIM'],'dimstyle','The dimension style: text, arrows, precision, spacing'],['LAYISO',[],'layiso','Isolate the layers of the selected objects: every other layer off'],['LAYUNISO',[],'layuniso','Put back the layers LAYISO turned off'],['LAYOFF',[],'layoff','Turn off the layers of the selected objects'],['LAYFRZ',[],'layfrz','Freeze the layers of the selected objects'],['LAYLCK',[],'laylck','Lock the layers of the selected objects'],['LAYON',[],'layon','Turn every layer on'],['LAYTHW',[],'laythw','Thaw every layer'],['LAYULK',[],'layulkall','Unlock every layer'],['LAYMCUR',[],'laymcur','Make the selected object\'s layer current'],['LAYERP',['LAYP'],'layerp','Undo the last change to the layer settings'],['OSNAP',['OS','DSETTINGS','DS','SE'],'osnapSettings','Object snap and polar tracking settings'],['OSMODE',['F3'],'bimSnap','Toggle object snap'],['POLAR',[],'polar','Toggle polar tracking (F10)'],
     ['ORTHO',[],'bimOrtho','Toggle ortho mode'],['GRID',[],'grid','Toggle grid'],
     ['ZOOM',['Z','ZE','FIT'],'zoomFit','Zoom to fit'],['ZOOMIN',['ZI'],'zoomIn','Zoom in'],
     ['ZOOMOUT',['ZO'],'zoomOut','Zoom out'],['ZOOM100',['Z1'],'view100','Zoom to 100%'],
@@ -5753,6 +5753,7 @@ try{
       A3D.pres=bimPresValid(st&&st.pres);   /* __acad3dV162: its boards in the set, and the set's order */
       bimApplyUnitState(st&&st.units);   /* __acad3dV175a (D10): its display units, metres when it has none */
       A3D.dimStyle=bimDimStyleValid(st&&st.dimStyle);   /* __acad3dV258: its dimension style */
+      A3D.textStyle=bimTextStyleValid(st&&st.textStyle);   /* __acad3dV259: its text style */
       setA3D_RES_IMG({});
       if(st&&Array.isArray(st.classifications)){
         A3D.classifications=st.classifications.filter(function(c){return c&&typeof c.id==='string'&&typeof c.code==='string';});
@@ -16448,9 +16449,13 @@ function bimOpnToWall(rect, len, height) {
     closeDlg();
     var d=document.createElement('div');
     d.className='a3d-dlg';
-    d.innerHTML='<div class="a3d-dlghd">Text label</div>'+
+    var ts=bimTextStyle();   /* __acad3dV259: AutoCAD's TEXT and MTEXT: the text, its height and rotation */
+    d.innerHTML='<div class="a3d-dlghd">Text</div>'+
       '<div class="a3d-dlgbody">'+
-      '<div class="a3d-dlgrow"><label>Text</label><input type="text" data-a3dp="txt" value="" maxlength="120"></div>'+
+      '<div class="a3d-dlgrow"><label>Text</label><textarea data-a3dp="txt" rows="3" maxlength="2000" style="width:100%"></textarea></div>'+
+      '<div class="a3d-dlgrow"><label>Height on the plan, m (0: a screen label)</label><input type="number" min="0" step="any" data-a3dp="h" value="'+ts.height+'"></div>'+
+      '<div class="a3d-dlgrow"><label>Rotation, degrees</label><input type="number" step="any" data-a3dp="rot" value="0"></div>'+
+      '<div class="a3d-propnote">Shift+Enter starts a new line. The font is the text style\'s (STYLE): '+bimEsc(ts.font)+'.</div>'+
       '<div id="a3d-dlgerr" class="a3d-dlgerr"></div></div>'+
       '<div class="a3d-dlgft"><button data-a3dlg="cancel">Cancel</button><button data-a3dlg="ok">OK</button></div>';
     el.root.appendChild(d);
@@ -16460,8 +16465,10 @@ function bimOpnToWall(rect, len, height) {
       var txt=tI.value;
       var eb=document.getElementById('a3d-dlgerr');
       if(!txt||!txt.trim()){eb.textContent='Enter some text';return;}
+      var h=parseFloat(d.querySelector('[data-a3dp="h"]').value),rot=parseFloat(d.querySelector('[data-a3dp="rot"]').value);
+      if(!(h>=0))h=0;if(!isFinite(rot))rot=0;
       closeDlg();
-      bimCreateTextLabel(pt,y,txt.trim());
+      bimCreateTextLabel(pt,y,txt.replace(/^\s+|\s+$/g,''),{height:h,rot:rot});
     }
     d.addEventListener('click',function(ev){
       var b=ev.target&&ev.target.closest?ev.target.closest('[data-a3dlg]'):null;
@@ -16469,17 +16476,19 @@ function bimOpnToWall(rect, len, height) {
       if(b.getAttribute('data-a3dlg')==='ok')submit();else closeDlg();
     });
     d.addEventListener('keydown',function(ev){
-      if(ev.key==='Enter'){ev.preventDefault();ev.stopPropagation();submit();}
+      if(ev.key==='Enter'&&!ev.shiftKey){ev.preventDefault();ev.stopPropagation();submit();}
       else if(ev.key==='Escape'){ev.preventDefault();ev.stopPropagation();closeDlg();}
       ev.stopPropagation();
     });
     tI.focus();
   }
-  function bimCreateTextLabel(pt,y,text){
+  function bimCreateTextLabel(pt,y,text,opts){
     pushUndo();
     A3D.counts.text=(A3D.counts.text||0)+1;
     var o={id:'a3d-'+Date.now().toString(36)+'-'+(A3D.seq++),t:'text',name:'Text_'+A3D.counts.text,col:'#dfe4ea',pos:[0,0,0],
       text:text,pt:pt,y:y,levelId:A3D.activeLevel,layer:A3D.activeLayer,viewId:A3D.activeViewId};
+    if(opts&&opts.height>0)o.height=opts.height;   /* __acad3dV259 */
+    if(opts&&opts.rot)o.rot=opts.rot;
     A3D.objs.push(o);
     A3D.sel=o.id;A3D.sel2=null;A3D.selSet=[o.id];
     refreshTree();refreshHud();paint();saveSoon();
@@ -16520,7 +16529,7 @@ function bimOpnToWall(rect, len, height) {
     ctx.save();
     ctx.globalAlpha*=bimLayerAlpha(o);
     ctx.translate(f.x,f.y);ctx.rotate(f.ang);
-    ctx.font=f.px.toFixed(2)+'px system-ui,sans-serif';
+    ctx.font=f.px.toFixed(2)+'px '+bimTextStyle().font;   /* __acad3dV259: the text style's font */
     ctx.textAlign='left';ctx.textBaseline='alphabetic';
     ctx.fillStyle=sel?'#4ea1ff':(o.col||'#dfe4ea');
     for(k=0;k<lines.length;k++)ctx.fillText(lines[k],0,k*f.px*1.6667);   /* AutoCAD's single line spacing: 5/3 of the height */
@@ -16898,7 +16907,7 @@ function bimOpnToWall(rect, len, height) {
       if(ang>Math.PI/2)ang-=Math.PI;else if(ang<-Math.PI/2)ang+=Math.PI;
       if(px>=1.5){
         ctx.translate(mx,my);ctx.rotate(ang);
-        ctx.font=px.toFixed(2)+'px system-ui,sans-serif';ctx.textAlign='center';ctx.textBaseline='alphabetic';
+        ctx.font=px.toFixed(2)+'px '+bimTextStyle().font;ctx.textAlign='center';ctx.textBaseline='alphabetic';
         ctx.fillStyle=sel?'#9ec1ff':(/^#[0-9a-fA-F]{6}$/.test(o.color||'')?o.color:'#dfe4ea');
         ctx.fillText(label,0,-px*0.2);
       }
@@ -16919,6 +16928,40 @@ function bimOpnToWall(rect, len, height) {
     var mid=o.axis==='y'?[f[0]+(e[0]-f[0])*0.6,f[1]]:[f[0],f[1]+(e[1]-f[1])*0.6];
     ctx.beginPath();ctx.moveTo(f[0],f[1]);ctx.lineTo(mid[0],mid[1]);ctx.lineTo(e[0],e[1]);ctx.stroke();
     return {label:label,at:[e[0]+(o.axis==='y'?(e[0]>=f[0]?1:-1)*24:0),e[1]+(o.axis==='x'?(e[1]>=f[1]?1:-1)*10:0)]};
+  }
+  /* ================= __acad3dV259: the text style (STYLE, ST) =================
+     One current style, as AutoCAD's Standard: the font every text with a height is drawn in, and the height a new
+     TEXT or MTEXT starts with (0: a screen label, as text placed before this phase is). Saved with the project. */
+  var BIM_TEXT_FONTS=[['system-ui,sans-serif','Sans (the system\'s)'],['Arial,Helvetica,sans-serif','Arial'],
+    ['"Times New Roman",Times,serif','Times New Roman'],['"Courier New",Courier,monospace','Courier New'],
+    ['Georgia,serif','Georgia'],['"Trebuchet MS",sans-serif','Trebuchet MS']];
+  function bimTextStyleValid(s){
+    var d={font:BIM_TEXT_FONTS[0][0],height:0},i;
+    if(!s||typeof s!=='object')return d;
+    for(i=0;i<BIM_TEXT_FONTS.length;i++)if(s.font===BIM_TEXT_FONTS[i][0])d.font=s.font;
+    var h=+s.height;if(isFinite(h)&&h>=0)d.height=h;
+    return d;
+  }
+  function bimTextStyle(){if(!A3D.textStyle)A3D.textStyle=bimTextStyleValid(null);return A3D.textStyle;}
+  function openTextStyleDlg(){
+    closeDlg();
+    var s=bimTextStyle(),d=document.createElement('div');
+    d.className='a3d-dlg';
+    d.innerHTML='<div class="a3d-dlghd">Text style: Standard</div><div class="a3d-dlgbody">'+
+      '<div class="a3d-dlgrow"><label>Font</label><select data-a3dts="font">'+BIM_TEXT_FONTS.map(function(f){
+        return '<option value="'+bimEsc(f[0])+'"'+(s.font===f[0]?' selected':'')+'>'+bimEsc(f[1])+'</option>';}).join('')+'</select></div>'+
+      '<div class="a3d-dlgrow"><label>Height of new text, m (0: a screen label)</label><input type="number" min="0" step="any" data-a3dts="height" value="'+s.height+'"></div>'+
+      '<div class="a3d-propnote">Every text with a height is drawn in this font; a change redraws them all.</div></div>'+
+      '<div class="a3d-dlgft"><button data-a3dlg="cancel">Cancel</button><button data-a3dlg="ok">OK</button></div>';
+    el.root.appendChild(d);el.dlg=d;
+    function submit(){
+      pushUndo();
+      A3D.textStyle=bimTextStyleValid({font:d.querySelector('[data-a3dts="font"]').value,height:d.querySelector('[data-a3dts="height"]').value});
+      closeDlg();paint();saveSoon();
+      a3dToast('Text style changed');
+    }
+    d.addEventListener('click',function(ev){var b=ev.target&&ev.target.closest?ev.target.closest('[data-a3dlg]'):null;if(!b)return;if(b.getAttribute('data-a3dlg')==='ok')submit();else closeDlg();});
+    d.addEventListener('keydown',function(ev){if(ev.key==='Enter'){ev.preventDefault();ev.stopPropagation();submit();}else if(ev.key==='Escape'){ev.preventDefault();ev.stopPropagation();closeDlg();}});
   }
   /* ================= __acad3dV98: the pick shape of an annotation =================
 
@@ -58946,7 +58989,7 @@ function bimWalkKeys(h, j) {
      need the same list to park a project in its own key and to know what a fresh project is,
      and two copies of one field list are two lists that will eventually disagree. */
   function bimProjectRecord(){
-    return {objs:A3D.objs,cam:A3D.cam,seq:A3D.seq,counts:A3D.counts,levels:A3D.levels,grids:A3D.grids,activeLevel:A3D.activeLevel,layers:A3D.layers,activeLayer:A3D.activeLayer,types:A3D.types,activeWallType:A3D.activeWallType,views:A3D.views,activeViewId:A3D.activeViewId,levelFilter:A3D.levelFilter,sheets:A3D.sheets,titleBlock:A3D.titleBlock,buildings:A3D.buildings,activeBuilding:A3D.activeBuilding,site:A3D.site,roomScheme:A3D.roomScheme||'',classifications:A3D.classifications,dataFeatures:A3D.dataFeatures||{},history:A3D.history||null,resultLayers:A3D.resultLayers||[],pres:A3D.pres||null,units:A3D.units||null,dimStyle:A3D.dimStyle||null};   /* __acad3dV146, __acad3dV148; __acad3dV162; __acad3dV175a: its display units (D10) */
+    return {objs:A3D.objs,cam:A3D.cam,seq:A3D.seq,counts:A3D.counts,levels:A3D.levels,grids:A3D.grids,activeLevel:A3D.activeLevel,layers:A3D.layers,activeLayer:A3D.activeLayer,types:A3D.types,activeWallType:A3D.activeWallType,views:A3D.views,activeViewId:A3D.activeViewId,levelFilter:A3D.levelFilter,sheets:A3D.sheets,titleBlock:A3D.titleBlock,buildings:A3D.buildings,activeBuilding:A3D.activeBuilding,site:A3D.site,roomScheme:A3D.roomScheme||'',classifications:A3D.classifications,dataFeatures:A3D.dataFeatures||{},history:A3D.history||null,resultLayers:A3D.resultLayers||[],pres:A3D.pres||null,units:A3D.units||null,dimStyle:A3D.dimStyle||null,textStyle:A3D.textStyle||null};   /* __acad3dV146, __acad3dV148; __acad3dV162; __acad3dV175a: its display units (D10) */
   }
   /* __acad3dV115: a save that failed went into an empty catch, so a full browser store lost every
      later edit without a word. It says so now -- once per run of failures, not once per edit. */
@@ -73834,6 +73877,7 @@ function bimRptPlan(families) {
     dimcont:function(){startDimChainTool('cont');},
     dimord:function(){startDimChainTool('ord');},
     dimstyle:function(){openDimStyleDlg();},
+    textstyle:function(){openTextStyleDlg();},   /* __acad3dV259 */
     layiso:function(){bimLayIso();},   /* __acad3dV256 */
     layuniso:function(){bimLayUniso();},
     layoff:function(){bimLayCmdApply(bimSelLayerIds(),'visible',false,{none:'LAYOFF: select objects on the layers to turn off',done:'LAYOFF: # layer(s) turned off'});},
@@ -74814,6 +74858,8 @@ function bimRptPlan(families) {
   /* __acad3dV258: every dimension as stored, and the dimension style */
   window.__a3dDimsAll=function(){return JSON.parse(JSON.stringify(A3D.objs.filter(function(o){return o.t==='dim';})));};
   window.__a3dDimStyle=function(){return JSON.parse(JSON.stringify(bimDimStyle()));};
+  window.__a3dTextObjs=function(){return JSON.parse(JSON.stringify(A3D.objs.filter(function(o){return o.t==='text';})));};   /* __acad3dV259 */
+  window.__a3dTextStyle=function(){return JSON.parse(JSON.stringify(bimTextStyle()));};
   window.__a3dTestSetObjs=function(list){A3D.objs=list;A3D.sel=null;A3D.sel2=null;A3D.selSet=[];};
   window.__a3dTestPaint=function(){paint();};
   window.__a3dTestRotate=function(d){A3D.cam.yaw+=d;};

@@ -188,7 +188,7 @@ import { a3dToast, objById } from '../bim/csg-booleans.js';
       if(ang>Math.PI/2)ang-=Math.PI;else if(ang<-Math.PI/2)ang+=Math.PI;
       if(px>=1.5){
         ctx.translate(mx,my);ctx.rotate(ang);
-        ctx.font=px.toFixed(2)+'px system-ui,sans-serif';ctx.textAlign='center';ctx.textBaseline='alphabetic';
+        ctx.font=px.toFixed(2)+'px '+bimTextStyle().font;ctx.textAlign='center';ctx.textBaseline='alphabetic';
         ctx.fillStyle=sel?'#9ec1ff':(/^#[0-9a-fA-F]{6}$/.test(o.color||'')?o.color:'#dfe4ea');
         ctx.fillText(label,0,-px*0.2);
       }
@@ -210,7 +210,41 @@ import { a3dToast, objById } from '../bim/csg-booleans.js';
     ctx.beginPath();ctx.moveTo(f[0],f[1]);ctx.lineTo(mid[0],mid[1]);ctx.lineTo(e[0],e[1]);ctx.stroke();
     return {label:label,at:[e[0]+(o.axis==='y'?(e[0]>=f[0]?1:-1)*24:0),e[1]+(o.axis==='x'?(e[1]>=f[1]?1:-1)*10:0)]};
   }
+  /* ================= __acad3dV259: the text style (STYLE, ST) =================
+     One current style, as AutoCAD's Standard: the font every text with a height is drawn in, and the height a new
+     TEXT or MTEXT starts with (0: a screen label, as text placed before this phase is). Saved with the project. */
+  var BIM_TEXT_FONTS=[['system-ui,sans-serif','Sans (the system\'s)'],['Arial,Helvetica,sans-serif','Arial'],
+    ['"Times New Roman",Times,serif','Times New Roman'],['"Courier New",Courier,monospace','Courier New'],
+    ['Georgia,serif','Georgia'],['"Trebuchet MS",sans-serif','Trebuchet MS']];
+  function bimTextStyleValid(s){
+    var d={font:BIM_TEXT_FONTS[0][0],height:0},i;
+    if(!s||typeof s!=='object')return d;
+    for(i=0;i<BIM_TEXT_FONTS.length;i++)if(s.font===BIM_TEXT_FONTS[i][0])d.font=s.font;
+    var h=+s.height;if(isFinite(h)&&h>=0)d.height=h;
+    return d;
+  }
+  function bimTextStyle(){if(!A3D.textStyle)A3D.textStyle=bimTextStyleValid(null);return A3D.textStyle;}
+  function openTextStyleDlg(){
+    closeDlg();
+    var s=bimTextStyle(),d=document.createElement('div');
+    d.className='a3d-dlg';
+    d.innerHTML='<div class="a3d-dlghd">Text style: Standard</div><div class="a3d-dlgbody">'+
+      '<div class="a3d-dlgrow"><label>Font</label><select data-a3dts="font">'+BIM_TEXT_FONTS.map(function(f){
+        return '<option value="'+bimEsc(f[0])+'"'+(s.font===f[0]?' selected':'')+'>'+bimEsc(f[1])+'</option>';}).join('')+'</select></div>'+
+      '<div class="a3d-dlgrow"><label>Height of new text, m (0: a screen label)</label><input type="number" min="0" step="any" data-a3dts="height" value="'+s.height+'"></div>'+
+      '<div class="a3d-propnote">Every text with a height is drawn in this font; a change redraws them all.</div></div>'+
+      '<div class="a3d-dlgft"><button data-a3dlg="cancel">Cancel</button><button data-a3dlg="ok">OK</button></div>';
+    el.root.appendChild(d);el.dlg=d;
+    function submit(){
+      pushUndo();
+      A3D.textStyle=bimTextStyleValid({font:d.querySelector('[data-a3dts="font"]').value,height:d.querySelector('[data-a3dts="height"]').value});
+      closeDlg();paint();saveSoon();
+      a3dToast('Text style changed');
+    }
+    d.addEventListener('click',function(ev){var b=ev.target&&ev.target.closest?ev.target.closest('[data-a3dlg]'):null;if(!b)return;if(b.getAttribute('data-a3dlg')==='ok')submit();else closeDlg();});
+    d.addEventListener('keydown',function(ev){if(ev.key==='Enter'){ev.preventDefault();ev.stopPropagation();submit();}else if(ev.key==='Escape'){ev.preventDefault();ev.stopPropagation();closeDlg();}});
+  }
 export {
   bimDimChainPoint, bimDimLabelText, bimDimStyle, bimDimStyleValid, bimDrawLinearDim, bimDrawOrdinateDim,
-  bimIsDimChainTool, openDimStyleDlg, startDimChainTool
+  bimIsDimChainTool, bimTextStyle, bimTextStyleValid, openDimStyleDlg, openTextStyleDlg, startDimChainTool
 };

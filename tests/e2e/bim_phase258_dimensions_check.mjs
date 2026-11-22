@@ -32,7 +32,7 @@ async function ev(expr) {
   return r.result.result.value;
 }
 let pass = 0, fail = 0;
-function ck(ok, msg) { if (ok) pass++; else fail++; console.log((ok ? 'PASS ' : 'FAIL ') + msg); }
+function ck(ok, msg) { if (ok && ok.__err) { msg += ' [page error: ' + ok.__err + ']'; ok = false; } if (ok) pass++; else fail++; console.log((ok ? 'PASS ' : 'FAIL ') + msg); }
 async function shot(name) { const r = await C.send('Page.captureScreenshot', { format: 'png' }); fs.writeFileSync(`${OUT}/${name}.png`, Buffer.from(r.result.data, 'base64')); }
 
 const KEYS = { Escape: ['Escape', 27], Enter: ['Enter', 13], F10: ['F10', 121], Digit3: ['3', 51] };
@@ -80,9 +80,9 @@ ck(ord && ord.axis === 'y' && Math.abs(ord.value - 2) < 1e-6, 'DIMORDINATE: Y 2 
 await shot('v258-01-dims');
 // DIMSTYLE: three decimals, arrows, 0.25 m text
 await run('dimstyle');
-ck(await ev(`const d=document.querySelector('.a3d-dlg [data-a3dds="precision"]');if(!d)return false;d.value='3';
-  document.querySelector('.a3d-dlg [data-a3dds="arrow"]').value='arrow';document.querySelector('.a3d-dlg [data-a3dds="textHeight"]').value='0.25';
-  document.querySelector('.a3d-dlg [data-a3dlg="ok"]').click();return true;`), 'the DIMSTYLE dialog takes precision, arrows and text height');
+ck(true === await ev(`const p=document.querySelector('.a3d-dlg [data-a3dds="precision"]');if(!p)return false;const d=p.closest('.a3d-dlg');p.value='3';
+  d.querySelector('[data-a3dds="arrow"]').value='arrow';d.querySelector('[data-a3dds="textHeight"]').value='0.25';
+  d.querySelector('[data-a3dlg="ok"]').click();return true;`), 'the DIMSTYLE dialog takes precision, arrows and text height');
 const stl = await ev('return window.__a3dDimStyle();');
 ck(stl.precision === 3 && stl.arrow === 'arrow' && stl.textHeight === 0.25, 'the style is kept (' + JSON.stringify(stl) + ')');
 const dxf = await ev('return window.__a3dBuildDXF().text;');
