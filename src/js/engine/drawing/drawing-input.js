@@ -44,6 +44,8 @@ import { bimFaceHitAt } from '../editing/faces-push-pull.js';
 import { bimMirrorSelection, openPolarArrayDlg, openRotateDlg } from '../editing/precision-editing.js';
 import { bimInteriorPoint, bimIsRegionDep } from '../bim/region-dependents.js';
 import { bimBulgeAt, bimFlattenPoly, bimHasBulge } from './arc-storage.js';
+import { A3D_OSNAP, BIM_OSNAP_NAMES, bimOsnapDrawMarker } from './object-snaps.js';
+import { bimDmPoint, bimIsDmTool, bimMatchPropClick } from '../editing/drafting-modify.js';
 import { bimHatchGraphics, bimHatchOutline, bimIsHatch } from './hatch.js';
 import {
   bimClineDir, bimClineModeForKey, bimClineModeLabels, bimClineVisibleSeg, bimDrawingExtent2D, bimIsCline
@@ -358,6 +360,8 @@ import { cvH, cvW } from '../ui/canvas-size.js';
      skipped and everything else behaves identically. */
   function skPlacePoint(gx,gz,xy){
     var sk=A3D.sk;if(!sk)return;
+    if(bimIsDmTool(sk)){bimDmPoint(sk,[gx,gz]);return;}   /* __acad3dV250: MOVE, COPY, STRETCH */
+    if(sk.tool==='matchprop'){if(xy)bimMatchPropClick(sk,xy);return;}
     if(sk.tool==='hatch'){                      /* __acad3dV96 */
       bimApplyHatchAt([gx,gz],sk.y,sk.hatch);
       return;                                   /* sk stays live: HATCH keeps filling */
@@ -628,7 +632,7 @@ import { cvH, cvW } from '../ui/canvas-size.js';
     var g=groundPoint(xy[0],xy[1],sk.y);
     if(!g){sk.hover=null;return;}
     var snapped=bimSnapPoint(xy,g,sk);
-    sk.hover={x:snapped[0],z:snapped[1],snapped:snapped[2]};
+    sk.hover={x:snapped[0],z:snapped[1],snapped:snapped[2],kind:snapped[3]||'',polar:A3D_OSNAP.polarAngle};
     if(sk.pts.length){
       var last=sk.pts[sk.pts.length-1];
       var ddx=snapped[0]-last[0],ddz=snapped[1]-last[1];
@@ -862,11 +866,14 @@ import { cvH, cvW } from '../ui/canvas-size.js';
       ctx.setLineDash([6,4]);
       ctx.beginPath();ctx.moveTo(p1[0],p1[1]);ctx.lineTo(p2[0],p2[1]);ctx.stroke();
       ctx.setLineDash([]);
-      if(sk.hover.snapped){
-        ctx.beginPath();ctx.arc(p2[0],p2[1],5,0,Math.PI*2);ctx.strokeStyle='#4ea1ff';ctx.lineWidth=1.6;ctx.stroke();
+      if(typeof sk.hover.polar==='number'){   /* __acad3dV249: the polar tracking path */
+        var pe=toScreen([last[0]+(sk.hover.x-last[0])*40,sk.y,last[1]+(sk.hover.z-last[1])*40],V,W,H);
+        ctx.strokeStyle='rgba(78,161,255,0.55)';ctx.lineWidth=1;ctx.setLineDash([2,4]);
+        ctx.beginPath();ctx.moveTo(p1[0],p1[1]);ctx.lineTo(pe[0],pe[1]);ctx.stroke();ctx.setLineDash([]);
       }
       var mx=(p1[0]+p2[0])/2,my=(p1[1]+p2[1])/2;
       var label=(A3D_TYPING.active?(A3D_TYPING.buf||'0'):(sk.liveLen||0).toFixed(2));
+      if(!A3D_TYPING.active&&typeof sk.hover.polar==='number')label+=' < '+(Math.round(sk.hover.polar*100)/100)+'°';
       ctx.font='11px system-ui,sans-serif';
       var tw=ctx.measureText(label).width;
       ctx.fillStyle='rgba(20,22,26,0.85)';
@@ -875,6 +882,16 @@ import { cvH, cvW } from '../ui/canvas-size.js';
       ctx.textAlign='center';ctx.textBaseline='middle';
       ctx.fillText(label,mx,my-11);
       ctx.restore();
+    }
+    if(sk.hover&&sk.hover.snapped){   /* __acad3dV249: the snap's own marker, and its name */
+      var sp=toScreen([sk.hover.x,sk.y,sk.hover.z],V,W,H);
+      bimOsnapDrawMarker(ctx,sp[0],sp[1],sk.hover.kind||'end');
+      if(sk.hover.kind&&BIM_OSNAP_NAMES[sk.hover.kind]){
+        ctx.save();ctx.font='11px system-ui,sans-serif';ctx.textAlign='left';ctx.textBaseline='top';
+        var nm=BIM_OSNAP_NAMES[sk.hover.kind],nw=ctx.measureText(nm).width;
+        ctx.fillStyle='rgba(20,22,26,0.85)';ctx.fillRect(sp[0]+10,sp[1]+10,nw+8,16);
+        ctx.fillStyle='#9ec1ff';ctx.fillText(nm,sp[0]+14,sp[1]+12);ctx.restore();
+      }
     }
     /* __acad3dV67: the tool/modifier banner used to be painted into the canvas at (10,10),
        over the drawing, restating what the snap pill beside it already showed. Both now live

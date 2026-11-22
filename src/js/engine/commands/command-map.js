@@ -70,9 +70,12 @@ import { bimSetSnap, bimSyncSnapPill } from '../ui/shortcuts.js';
 import { bimGizmoCommand } from '../gizmo/gizmo-handles.js';
 import { bimPressPullCommand } from '../editing/faces-push-pull.js';
 import { delSelection, duplicateSelection } from '../editing/selection-tools.js';
+import { startMirrorTool, startPolarArrayTool, startRotateTool } from '../editing/precision-editing.js';
+import { bimTogglePolar, openOsnapDlg } from '../drawing/object-snaps.js';
 import {
-  applyMergeWalls, startMirrorTool, startPolarArrayTool, startRotateTool
-} from '../editing/precision-editing.js';
+  bimDmSelIds, bimExplodeSelection, bimJoinCommand, bimOverkill, openDrawOrderDlg, startCopyTool,
+  startMatchPropTool, startMoveTool, startStretchTool
+} from '../editing/drafting-modify.js';
 import {
   applyFilletCorner, openAlignDlg, openArrayDlg, openOffsetDlg, startBreakTool, startChamferTool,
   startExtendTool, startLengthenTool, startScaleTool, startTrimTool
@@ -254,7 +257,14 @@ import { bimOpenToolsPanel } from '../ui/discipline-tabs.js';
     arrayRect:function(){openArrayDlg();},
     arrayPolar:function(){startPolarArrayTool();},
     align:function(){openAlignDlg();},
-    join:function(){applyMergeWalls();},
+    join:function(){bimJoinCommand();},   /* __acad3dV250: polylines first, then walls */
+    moveTool:function(){startMoveTool();},
+    copyTool:function(){startCopyTool();},
+    stretch:function(){startStretchTool();},
+    explode:function(){bimExplodeSelection();},
+    overkill:function(){bimOverkill(bimDmSelIds());},
+    draworder:function(){openDrawOrderDlg();},
+    matchprop:function(){startMatchPropTool();},
     mirror:function(){startMirrorTool();},
     offset:function(){openOffsetDlg();},
     duplicate:function(){duplicateSelection();},
@@ -270,6 +280,8 @@ import { bimOpenToolsPanel } from '../ui/discipline-tabs.js';
       a3dToast('Object snap '+(A3D_SNAP.point?'on':'off'));},
     bimOrtho:function(){bimSetSnap({ortho:!A3D_SNAP.ortho});bimSyncSnapPill();paint();
       a3dToast('Ortho '+(A3D_SNAP.ortho?'on':'off'));},
+    osnapSettings:function(){openOsnapDlg();},   /* __acad3dV249 */
+    polar:function(){bimTogglePolar();},
     grid:function(){bimSetSnap({grid:!A3D_SNAP.grid});bimSyncSnapPill();paint();
       a3dToast('Grid snap '+(A3D_SNAP.grid?'on':'off'));},
     /* __acad3dV115: the document commands, which the quick-access bar's Save, Open, Undo, Redo and

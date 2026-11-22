@@ -6,7 +6,9 @@ import { bimLayerById } from '../layers/layer-rules.js';
 import { BIM_LINEWEIGHTS, addLayer, bimLayerByName, bimLinetypeDef } from '../layers/select-change.js';
 import { refreshLayers } from '../layers/analysis-data-rows.js';
 import { bimMakeImportedFace, bimMakeImportedSketch } from '../site-analysis/panel.js';
+import { dxfEntityExtra, dxfExpandInserts } from './dxf-entities.js';
 import { paint } from '../map/terrain-3d.js';
+import { bimCircleSketch } from '../drawing/curve-walking.js';
 import { fitScene } from '../ui/tool-palette.js';
 import { saveSoon } from '../bim/region-regenerate.js';
 import { refreshTree } from '../sheets/presentation-panel.js';
@@ -64,7 +66,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
     if(rec)records.push(rec);
 
     var section=null,inTable=null,insUnits=null;
-    var layers={},entities=[],skipped={};
+    var layers={},entities=[],skipped={},blocks={},curBlock=null,target;
     var curPoly=null;
     var ENTITY_TYPES={LINE:1,CIRCLE:1,ARC:1,LWPOLYLINE:1,POLYLINE:1,VERTEX:1,SEQEND:1,'3DFACE':1,POINT:1};
 
@@ -94,10 +96,20 @@ import { a3dToast } from '../bim/csg-booleans.js';
           lineweight:(isFinite(lwv)&&lwv>=0)?lwv/100:null,plot:plv!==0};
         continue;
       }
-      if(section!=='ENTITIES')continue;
+      /* __acad3dV251: a block's entities are read as the drawing's are, into the block */
+      if(section==='BLOCKS'){
+        if(t==='BLOCK'){curBlock={name:dxfStr(r.items,2,''),base:[dxfNum(r.items,10,0),dxfNum(r.items,20,0)],ents:[]};continue;}
+        if(t==='ENDBLK'){if(curBlock&&curBlock.name)blocks[curBlock.name]=curBlock;curBlock=null;continue;}
+        if(!curBlock)continue;
+        target=curBlock.ents;
+      }else if(section==='ENTITIES')target=entities;
+      else continue;
 
       var layerName=dxfStr(r.items,8,'0');
       var colOverride=dxfNum(r.items,62,null);
+      var extra=dxfEntityExtra(t,r.items,layerName,colOverride);
+      if(extra){target.push(extra);continue;}
+      if(t==='DIMENSION'||t==='ATTRIB')continue;   /* a dimension without its block, a hidden attribute */
 
       if(t==='POLYLINE'){
         var flags=dxfNum(r.items,70,0);
@@ -109,7 +121,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
         continue;
       }
       if(t==='SEQEND'){
-        if(curPoly&&curPoly.pts.length>=2)entities.push(curPoly);
+        if(curPoly&&curPoly.pts.length>=2)target.push(curPoly);
         curPoly=null;
         continue;
       }
@@ -118,14 +130,14 @@ import { a3dToast } from '../bim/csg-booleans.js';
         continue;
       }
       if(t==='LINE'){
-        entities.push({type:'LINE',layer:layerName,color:colOverride,
+        target.push({type:'LINE',layer:layerName,color:colOverride,
           p1:[dxfNum(r.items,10,0),dxfNum(r.items,20,0),dxfNum(r.items,30,0)],
           p2:[dxfNum(r.items,11,0),dxfNum(r.items,21,0),dxfNum(r.items,31,0)]});
       }else if(t==='CIRCLE'){
-        entities.push({type:'CIRCLE',layer:layerName,color:colOverride,
+        target.push({type:'CIRCLE',layer:layerName,color:colOverride,
           c:[dxfNum(r.items,10,0),dxfNum(r.items,20,0),dxfNum(r.items,30,0)],r:dxfNum(r.items,40,1)});
       }else if(t==='ARC'){
-        entities.push({type:'ARC',layer:layerName,color:colOverride,
+        target.push({type:'ARC',layer:layerName,color:colOverride,
           c:[dxfNum(r.items,10,0),dxfNum(r.items,20,0),dxfNum(r.items,30,0)],r:dxfNum(r.items,40,1),
           a1:dxfNum(r.items,50,0),a2:dxfNum(r.items,51,360)});
       }else if(t==='LWPOLYLINE'){
@@ -145,21 +157,23 @@ import { a3dToast } from '../bim/csg-booleans.js';
             if(vi<bulges.length)bulges[vi]=parseFloat(r.items[ri][1])||0;
           }
         }
-        if(pts.length>=2)entities.push({type:'LWPOLYLINE',closed:!!(flags2&1),layer:layerName,color:colOverride,pts:pts,bulges:bulges});
+        if(pts.length>=2)target.push({type:'LWPOLYLINE',closed:!!(flags2&1),layer:layerName,color:colOverride,pts:pts,bulges:bulges});
       }else if(t==='3DFACE'){
-        entities.push({type:'3DFACE',layer:layerName,color:colOverride,pts:[
+        target.push({type:'3DFACE',layer:layerName,color:colOverride,pts:[
           [dxfNum(r.items,10,0),dxfNum(r.items,20,0),dxfNum(r.items,30,0)],
           [dxfNum(r.items,11,0),dxfNum(r.items,21,0),dxfNum(r.items,31,0)],
           [dxfNum(r.items,12,0),dxfNum(r.items,22,0),dxfNum(r.items,32,0)],
           [dxfNum(r.items,13,0),dxfNum(r.items,23,0),dxfNum(r.items,33,0)]
         ]});
       }else if(t==='POINT'){
-        entities.push({type:'POINT',layer:layerName,color:colOverride,
+        target.push({type:'POINT',layer:layerName,color:colOverride,
           p:[dxfNum(r.items,10,0),dxfNum(r.items,20,0),dxfNum(r.items,30,0)]});
       }
     }
     var scale=DXF_UNIT_SCALE[insUnits]||1;
-    return {layers:layers,entities:entities,skipped:skipped,scale:scale,insUnits:insUnits};
+    var nIns=entities.filter(function(e){return e.type==='INSERT';}).length;
+    entities=dxfExpandInserts(entities,blocks,0);   /* __acad3dV251 */
+    return {layers:layers,entities:entities,blocks:Object.keys(blocks).length,inserts:nIns,skipped:skipped,scale:scale,insUnits:insUnits};
   }
   function bimDxfApplyLayer(id,dl){
     var ly=bimLayerById(id),lt;
@@ -179,7 +193,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
     pushUndo();
     setUndoSuspend(true);
     var __dxfStart=A3D.objs.length;
-    var scale,layerMap={},dxfNames,created=0,skippedPoints=0,i;
+    var scale,layerMap={},dxfNames,created=0,skippedPoints=0,texts=0,i;
     try{
       scale=res.scale;dxfNames=Object.keys(res.layers);
       if(!dxfNames.length)dxfNames=['0'];
@@ -208,9 +222,18 @@ import { a3dToast } from '../bim/csg-booleans.js';
                angle), so it is carried across unscaled while the points are scaled. */
             o=bimMakeImportedSketch(pts,baseY,!!e.closed,bimDxfBulgesToModel(e.bulges));
           }else if(e.type==='CIRCLE'){
-            var cpts=[],k,n=24;
-            for(k=0;k<n;k++){var an=k/n*Math.PI*2;cpts.push(bimDxfToModel(e.c[0]+Math.cos(an)*e.r,e.c[1]+Math.sin(an)*e.r,scale));}
-            o=bimMakeImportedSketch(cpts,baseY+(e.c[2]||0)*scale,true);
+            /* __acad3dV251: a circle is two half-circle arcs, as CIRCLE draws one, not a 24-gon */
+            var cir=bimCircleSketch(bimDxfToModel(e.c[0],e.c[1],scale),e.r*scale);
+            if(!cir.error)o=bimMakeImportedSketch(cir.pts,baseY+(e.c[2]||0)*scale,true,cir.bulges);
+          }else if(e.type==='POLYPTS'){   /* __acad3dV251: ellipse, spline, solid */
+            o=bimMakeImportedSketch(e.pts.map(function(p){return bimDxfToModel(p[0],p[1],scale);}),baseY+(e.z||0)*scale,!!e.closed);
+          }else if(e.type==='TEXT'){
+            if(e.text&&e.text.replace(/\s/g,'').length){
+              A3D.counts.text=(A3D.counts.text||0)+1;
+              o={id:'a3d-'+Date.now().toString(36)+'-'+(A3D.seq++),t:'text',name:'Text_'+A3D.counts.text,col:'#dfe4ea',pos:[0,0,0],
+                text:e.text,pt:bimDxfToModel(e.p[0],e.p[1],scale),y:baseY+(e.p[2]||0)*scale,levelId:A3D.activeLevel,viewId:A3D.activeViewId};
+              A3D.objs.push(o);texts++;
+            }
           }else if(e.type==='ARC'){
             /* __acad3dV88: an ARC is now STORED as an arc - two vertices and one bulge -
                instead of being tessellated into a fan of chords on the way in. DXF arcs are
@@ -247,6 +270,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
     refreshTree();refreshLayers();fitScene();paint();saveSoon();
     var skipMsg=Object.keys(res.skipped).map(function(k){return res.skipped[k]+' '+k;}).join(', ');
     a3dToast('DXF import: '+created+' entities on '+dxfNames.length+' layer(s)'+
+      (texts?', '+texts+' text':'')+(res.inserts?', '+res.inserts+' block insert(s) expanded':'')+
       (skipMsg?'; skipped (unsupported): '+skipMsg:'')+
       (skippedPoints?'; '+skippedPoints+' POINT entities not rendered':'')+
       (res.insUnits===null?' (no units in file, assumed meters)':''));

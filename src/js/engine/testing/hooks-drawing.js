@@ -1,6 +1,8 @@
 import { A3D, el } from '../core/state.js';
 import { camVecs } from '../core/mesh-primitives.js';
-import { A3D_TYPING, bimClinesOnPlane, bimEnterDraftingMode, pushUndo } from '../drawing/plan-mode-sketch.js';
+import {
+  A3D_TYPING, bimClinesOnPlane, bimEnterDraftingMode, bimObjOffset, pushUndo
+} from '../drawing/plan-mode-sketch.js';
 import { startPolygonTool } from '../drawing/command-ending.js';
 import {
   BIM_SKETCH_KEYS, bimCommitTypedPoint, bimSetArcMode, bimSketchKeyFor, skPlacePoint
@@ -118,6 +120,7 @@ import {
   bimArcSegments, bimBulgeArc, bimBulgeFrom3Pts, bimBulgedArea, bimBulgedLength, bimBulgedSignedArea,
   bimFlattenPoly, bimFlattenSketch
 } from '../drawing/arc-storage.js';
+import { openOsnapDlg, setOsnapModes } from '../drawing/object-snaps.js';
 import { bimAddHatch, bimHatchArea, bimHatchGraphics, bimIsHatch } from '../drawing/hatch.js';
 import {
   bimClineArcIntersect, bimClineCrossings, bimClineDir, bimClineModeForKey, bimClineModeLabels,
@@ -474,6 +477,15 @@ import { cvH, cvW } from '../ui/canvas-size.js';
   window.__a3dPickInfo=function(x,y){var t=performance.now(),o=pick(x,y);return {id:o&&o.id?o.id:null,path:A3D.lastPickPath||null,ms:performance.now()-t};};
   window.__a3dCull=function(on){if(on!==undefined){setA3D_CULL(!!on);paint();}return A3D_CULL;};
   window.__a3dChunkCells=function(){var B=A3D_SCENE;return B?B.chunks.map(function(c){return {cell:c.cell,objects:c.ids.length,cull:c.cull,box:c.wb?c.wb.slice(0,6):null};}):[];};
+  /* __acad3dV249: the running object snaps' settings and the live hover (kind, polar angle) */
+  window.__a3dOsnap={set:function(o){return JSON.parse(JSON.stringify(setOsnapModes(o||{})));},
+    hover:function(){var h=A3D.sk&&A3D.sk.hover;return h?JSON.parse(JSON.stringify(h)):null;},
+    dialog:function(){openOsnapDlg();return !!(el.dlg&&el.dlg.querySelector('[data-a3dos]'));}};
+  /* __acad3dV250: every sketch as world points, for the modify commands' check */
+  window.__a3dSketchWorld=function(){return A3D.objs.filter(function(o){return o.t==='sketch';}).map(function(o){
+    var q=bimObjOffset(o);return {id:o.id,closed:o.closed!==false,col:o.col||null,layer:o.layer||null,bulges:o.bulges||null,
+      pts:o.pts.map(function(p){return [Math.round((p[0]+q[0])*1e6)/1e6,Math.round((p[1]+q[2])*1e6)/1e6];})};});};
+  window.__a3dSketchSetProps=function(id,props){var o=objById(id),k;if(!o)return false;for(k in props)if(props.hasOwnProperty(k))o[k]=props[k];paint();return true;};
   window.__a3dTestSetObjs=function(list){A3D.objs=list;A3D.sel=null;A3D.sel2=null;A3D.selSet=[];};
   window.__a3dTestPaint=function(){paint();};
   window.__a3dTestRotate=function(d){A3D.cam.yaw+=d;};
