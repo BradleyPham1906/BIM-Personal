@@ -252,9 +252,15 @@ practice pages (refused).
 
 The protocol asks them together at the end of research. The owner asked for the work orders to follow
 the research in one sprint ("Do your research first, properly. And then develop the work orders",
-2026-11-21), so the work orders follow the recommendations below, as on 2026-11-14 and 2026-11-15; **any
-of them can be overruled** and the affected work order changed before Cline takes it. The pure functions
-of the work orders do not depend on most of these; Claude's wiring does.
+2026-11-21), so the work orders were written on the recommendations below.
+
+**Answered 2026-11-22** (the owner: "do what standards and easy to scale once the app got more
+sophisticated"): each decision takes the choice that is standard practice and scales as the app grows. That
+keeps twelve as recommended and amends three (4, 9, 11), marked **Amended** below. What makes it scale is
+the same throughout: values that change with an edition or a place are registry data (V167), not code; each
+analysis is a pure function the model graph (V230) can call; and each heavy step (eigensolver, section
+properties, data sources) sits behind one interface, so a larger solver or a published table can replace it
+without changing its callers.
 
 1. **Order.** V239 floor, V240 wind, V241 earthquake, V242 modes, V243 concrete, V244 steel, V245 time
    history, V246 form-finding, V247 runoff, after the queue's V236. Recommended: as listed.
@@ -262,8 +268,10 @@ of the work orders do not depend on most of these; Claude's wiring does.
    Recommended: yes.
 3. **Wind speed.** The user enters V and Risk Category; a link to the ASCE Hazard Tool; ASCE's
    undocumented map server not used without ASCE's permission. Recommended: yes.
-4. **Wind cases.** Case 1 in both directions applied to the frame first; cases 2 to 4 computed and
-   listed, applied once V242's rigid floors can take a torsion. Recommended: yes.
+4. **Wind cases.** **Amended:** ASCE 7-22 requires all four cases of Figure 27.3-8, so all four are
+   computed as data (`bimWindCases`). Cases 1 and 3 (translation, each direction and both at once) are
+   applied to the frame now. Cases 2 and 4 are applied once V242's rigid floors take a torsion; until
+   then, the result says they are not yet applied.
 5. **Live load reduction.** A switch per project, off by default (the takedown's conservative default).
    Recommended: off by default.
 6. **ELF method.** Method 2 by default, Method 1 beside it where the USGS answer has the multi-period
@@ -273,13 +281,18 @@ of the work orders do not depend on most of these; Claude's wiring does.
    Recommended: yes.
 8. **Seismic systems.** The registry carries the steel SMF (R 8, Cd 5.5, Omega0 3); other systems typed
    by the user until the owner's copy of Table 12.2-1 is read. Recommended: yes.
-9. **Mass and modes.** Lumped masses per storey (self-weight plus the level's dead load), three degrees of
-   freedom per storey with rigid floors, our own Jacobi; no library. Recommended: yes.
+9. **Mass and modes.** **Amended:** lumped masses per storey (self-weight plus the level's dead load), three
+   degrees of freedom per storey with rigid floors, and our own Jacobi now, as ETABS does. The
+   eigensolver sits behind one interface (K and M in, modes out), so a subspace-iteration solver on the
+   full frame (Bathe; Frame3DD's method) can replace it when models outgrow about 120 degrees of freedom
+   (e01) without changing its callers. No library.
 10. **Ground motions.** User-loaded records and synthetic pulses; no record shipped. Recommended: yes.
-11. **Concrete and steel inputs.** f'c and Fy on the material cards (the solve keeps the card's E, and a
-    mismatch with 4700 sqrt(f'c) is shown); reinforcement per beam type (bottom and top bars, cover);
-    Lb = member length, K = 1, Cb = 1 by default with an override; steel properties from the plates until
-    an AISC table's licence is read. Recommended: yes.
+11. **Concrete and steel inputs.** **Amended:** f'c and Fy on the material cards (the solve keeps the
+    card's E, and a mismatch with 4700 sqrt(f'c) is shown); reinforcement per beam type (bottom and top
+    bars, cover); Lb = member length, K = 1, Cb = 1 by default with an override. Section properties come
+    through one source that prefers a published table, the industry standard (AISC's Shapes Database,
+    once its licence is read; other catalogues as further editions). It falls back to properties
+    computed from the plates (`bimStIProps`), labelled as such.
 12. **Colours.** Grey not checked; ratio bands under 0.5, 0.5 to 0.9, 0.9 to 1.0, over 1.0; cracking
     uncracked / reduced / cracked. Recommended: yes.
 13. **Form-finding.** Force density first, dynamic relaxation second; a V230 graph node later; hand over

@@ -1,6 +1,6 @@
 # V240 spec: Wind loads from the place
 
-Research: `docs/research/research-physical-world.md` (part 4.2) and `docs/research/research-physical-world/loads-wind-gravity.md`; the independent check in `docs/research/research-physical-world/independent-check.md`. The owner's decisions: as the research recommends (part 11 of the note; the owner, 2026-11-21: "Do your research first, properly. And then develop the work orders"; overrule any here). Implementation target: local `main`. Written by Claude, 2026-11-21.
+Research: `docs/research/research-physical-world.md` (part 4.2) and `docs/research/research-physical-world/loads-wind-gravity.md`; the independent check in `docs/research/research-physical-world/independent-check.md`. The owner's decisions: as the research recommends, answered 2026-11-22 (standard and scalable; 4, 9 and 11 amended) (part 11 of the note; the owner, 2026-11-21: "Do your research first, properly. And then develop the work orders"; overrule any here). Implementation target: local `main`. Written by Claude, 2026-11-21.
 
 ## 1. The decisions this spec follows
 
@@ -8,7 +8,7 @@ Research: `docs/research/research-physical-world.md` (part 4.2) and `docs/resear
 - Terrain constants of 7-22 Table 26.11-1 (B 7.5 / 3280 ft, C 9.8 / 2460 ft, D 11.5 / 1935 ft); the formula equals the tabulated values (independent check).
 - Basic wind speed V typed by the user with its Risk Category; a link to the ASCE Hazard Tool; no undocumented service (decision 3).
 - Ke is given (1.0 unless the user sets it): its exponential formula has one source only and stays out of the code (independent check W7).
-- Case 1 applied to the frame in X and Z; cases 2 to 4 computed and listed, applied once V242's rigid floors take a torsion (decision 4).
+- All four load cases of Figure 27.3-8 computed (ASCE 7-22 requires them); cases 1 and 3 applied to the frame now, cases 2 and 4 once V242's rigid floors take a torsion, with the result saying so until then (decision 4, amended 2026-11-22).
 - The approximate frequency tells the user whether the rigid G = 0.85 applies (n1 >= 1 Hz); flexible buildings are refused for now.
 
 ## 2. What it does for the user
