@@ -14,6 +14,7 @@ import { refreshAssets } from './library.js';
 import { refreshHud, saveSoon } from '../bim/region-regenerate.js';
 import { A3D_FAMLIB, bimAssetKind, bimFamilyLibraryGet, bimSaveFamilyLibrary } from './family-library.js';
 import { bimCreateFamilyInstance, bimRecsPlanLines, bimRecsThumb } from './scale-assets.js';
+import { bimAttribsAfterInsert } from './block-attribs.js';
 import { bimObjectLevelId } from '../views/saved-views.js';
 import { refreshBrowser, refreshTree } from '../sheets/presentation-panel.js';
 import { closeDlg } from '../ui/touch-input.js';
@@ -189,6 +190,7 @@ import { a3dToast, objById } from '../bim/csg-booleans.js';
     }
     for(i=0;i<made.length;i++)A3D.objs.push(made[i]);
     A3D.meshes={};
+    bimAttribsAfterInsert(made,entry.name);   /* __acad3dV260: each made object's insert, and its attributes asked for */
     var ids=made.map(function(o){return o.id;});
     A3D.selSet=ids.slice();A3D.sel=ids[0];A3D.sel2=null;
     refreshTree();refreshHud();paint();saveSoon();

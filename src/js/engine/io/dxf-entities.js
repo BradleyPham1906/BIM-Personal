@@ -129,7 +129,9 @@
     function mk(o){var k;for(k in base)if(base.hasOwnProperty(k))o[k]=base[k];return o;}
     if(t==='TEXT'||t==='ATTRIB'){
       if(t==='ATTRIB'&&(N(70,0)&1))return null;   /* an invisible attribute is not drawn */
-      return mk({type:'TEXT',text:dxfTextPlain(S(1,'')),p:[N(10,0),N(20,0),N(30,0)],h:N(40,0),rot:N(50,0)});
+      var tx=mk({type:'TEXT',text:dxfTextPlain(S(1,'')),p:[N(10,0),N(20,0),N(30,0)],h:N(40,0),rot:N(50,0)});
+      if(t==='ATTRIB'&&S(2,''))tx.tag=S(2,'');   /* __acad3dV260: an attribute keeps its tag */
+      return tx;
     }
     if(t==='MTEXT'){
       var s='',i;

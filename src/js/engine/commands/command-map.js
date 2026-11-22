@@ -95,6 +95,7 @@ import { bimToggleAreaPlan, bimToggleSun } from '../site/shadows.js';
 import { bimAnalyzeCommand, bimAnalyzeOff } from '../structure/analysis-display.js';
 import { bimStructFocus, bimToggleTrib } from '../structure/analysis-properties.js';
 import { openSaveBlockDlg } from '../assets/blocks.js';
+import { bimAttedit, openAttdefDlg } from '../assets/block-attribs.js';
 import { A3D_VIEW } from '../views/saved-views.js';
 import { bimSheetById } from '../sheets/sheets.js';
 import { bimSheetOnScreen, bimShowModel } from '../sheets/present.js';
@@ -271,6 +272,8 @@ import { bimOpenToolsPanel } from '../ui/discipline-tabs.js';
     dimord:function(){startDimChainTool('ord');},
     dimstyle:function(){openDimStyleDlg();},
     textstyle:function(){openTextStyleDlg();},   /* __acad3dV259 */
+    attdef:function(){openAttdefDlg();},   /* __acad3dV260 */
+    attedit:function(){bimAttedit();},
     layiso:function(){bimLayIso();},   /* __acad3dV256 */
     layuniso:function(){bimLayUniso();},
     layoff:function(){bimLayCmdApply(bimSelLayerIds(),'visible',false,{none:'LAYOFF: select objects on the layers to turn off',done:'LAYOFF: # layer(s) turned off'});},

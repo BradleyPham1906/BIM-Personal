@@ -73,6 +73,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
       if(sp.length>=2)o={type:'POLYPTS',pts:sp,closed:!!e.closed};
     }else if(t==='TEXT'||t==='ATTRIB'){
       o={type:'TEXT',text:dxfTextPlain(e.value),p:bimDwgPt(e.insert),h:e.height||0,rot:(e.rotation||0)*D};
+      if(t==='ATTRIB'&&e.tag)o.tag=e.tag;   /* __acad3dV260 */
     }else if(t==='MTEXT'){
       o={type:'TEXT',text:dxfTextPlain(e.value),p:bimDwgPt(e.insert),h:e.height||0,
         rot:e.xAxis?Math.atan2(e.xAxis.y,e.xAxis.x)*D:0};

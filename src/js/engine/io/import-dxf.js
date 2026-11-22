@@ -248,6 +248,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
               o={id:'a3d-'+Date.now().toString(36)+'-'+(A3D.seq++),t:'text',name:'Text_'+A3D.counts.text,col:'#dfe4ea',pos:[0,0,0],
                 text:e.text,pt:bimDxfToModel(e.p[0],e.p[1],scale),y:baseY+(e.p[2]||0)*scale,levelId:A3D.activeLevel,viewId:A3D.activeViewId};
               if(e.h>0)o.height=e.h*scale;   /* __acad3dV254: drawn at its own height */
+              if(e.tag)o.attrib={tag:String(e.tag).toUpperCase()};   /* __acad3dV260: an insert's attribute */
               if(e.rot)o.rot=e.rot;
               A3D.objs.push(o);texts++;
             }
