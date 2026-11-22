@@ -1,0 +1,8 @@
+{
+  "name": "bim-personal-occt-runtime",
+  "private": true,
+  "description": "Builds runtime/occt/<ver>/: replicad (MIT) bundled into one classic script, and the OpenCASCADE build it drives (replicad-opencascadejs, LGPL-2.1) copied unchanged as its own files, for the solid tools (V264). A build tool only: the app has no npm dependencies.",
+  "type": "module",
+  "scripts": { "build": "node build_occt.mjs", "check": "node build_occt.mjs --check" },
+  "devDependencies": { "esbuild": "0.28.2", "replicad": "1.2.1", "replicad-opencascadejs": "1.2.1" }
+}

@@ -58,6 +58,7 @@ import {
   startStairTool
 } from '../bim/stairs.js';
 import { bimImportDXF } from '../io/import-dxf.js';
+import { A3D_OCCT, bimOcctIsSolid, bimOcctShapeOf } from '../solids/occt-adapter.js';
 import { bimIfcEditParams } from '../io/import-ifc.js';
 import {
   BIM_GLTF, bimGltfArrays, bimGltfElements, bimGltfExportBytes, bimGltfFeatureEdges, bimGltfGather,
@@ -492,6 +493,13 @@ import { cvH, cvW } from '../ui/canvas-size.js';
   window.__a3dDimStyle=function(){return JSON.parse(JSON.stringify(bimDimStyle()));};
   window.__a3dTextObjs=function(){return JSON.parse(JSON.stringify(A3D.objs.filter(function(o){return o.t==='text';})));};   /* __acad3dV259 */
   window.__a3dTextStyle=function(){return JSON.parse(JSON.stringify(bimTextStyle()));};
+  /* __acad3dV264: the solids made by OpenCASCADE, each with its B-rep's volume as OpenCASCADE measures it */
+  window.__a3dOcct={solids:function(){
+    var R=A3D_OCCT.R;
+    return A3D.objs.filter(bimOcctIsSolid).map(function(o){return {id:o.id,name:o.name,tris:o.mesh.f.length,
+      volume:R?R.measureVolume(bimOcctShapeOf(R,o)):null};});
+  },state:function(){return {st:A3D_OCCT.st,err:A3D_OCCT.err};},
+  brep:function(id){var o=objById(id);return o&&o.occt?o.occt.brep:null;}};
   window.__a3dTestSetObjs=function(list){A3D.objs=list;A3D.sel=null;A3D.sel2=null;A3D.selSet=[];};
   window.__a3dTestPaint=function(){paint();};
   window.__a3dTestRotate=function(d){A3D.cam.yaw+=d;};

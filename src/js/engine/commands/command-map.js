@@ -62,6 +62,10 @@ import { bimTrCommand } from '../simulation/traffic-ui.js';
 import { bimAwEnter, bimAwTraffic } from '../site-analysis/analysis-workspace.js';
 import { bimTlCommand } from '../site-tools/panel.js';
 import { bimExportDWG } from '../io/dwg-io.js';
+import {
+  bimOcctBoolean, bimOcctExportStep, bimOcctLoft, startOcctEdges, startOcctExtrude, startOcctRevolve,
+  startOcctShell
+} from '../solids/occt-tools.js';
 import { bimSkpPick } from '../io/sketchup-import.js';
 import { bimGltfExport, bimGltfPick } from '../io/gltf.js';
 import { bimIfcPick } from '../io/ifc-full.js';
@@ -274,6 +278,16 @@ import { bimOpenToolsPanel } from '../ui/discipline-tabs.js';
     dimstyle:function(){openDimStyleDlg();},
     textstyle:function(){openTextStyleDlg();},   /* __acad3dV259 */
     attdef:function(){openAttdefDlg();},   /* __acad3dV260 */
+    occtextrude:function(){startOcctExtrude();},   /* __acad3dV264: the solid tools, on OpenCASCADE */
+    filletedge:function(){startOcctEdges('fillet');},
+    chamferedge:function(){startOcctEdges('chamfer');},
+    occtshell:function(){startOcctShell();},
+    occtrevolve:function(){startOcctRevolve();},
+    occtloft:function(){bimOcctLoft();},
+    solidunion:function(){bimOcctBoolean('fuse');},
+    solidsubtract:function(){bimOcctBoolean('cut');},
+    solidintersect:function(){bimOcctBoolean('intersect');},
+    exportstep:function(){bimOcctExportStep();},
     massprop:function(){bimMassprop();},   /* __acad3dV262 */
     countblocks:function(){bimCountCommand();},
     cal:function(){openCalDlg();},

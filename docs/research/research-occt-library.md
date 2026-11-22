@@ -69,3 +69,21 @@ First three things to build, once approved:
 - **The owner's approval** of replicad and replicad-opencascadejs is needed before anything is vendored (the rule).
 - **FreeCAD's own code:** FreeCAD's sources are LGPL C++ and Python built on OCCT. They are not copied into the app's
   files, which are Apache-2.0. The same capability comes from OCCT itself, as above.
+
+## 6. Built (V264, 2026-11-22), the owner's approval: "Yes go ahead"
+
+- `runtime/occt/1.2.1/`: `bim-replicad.min.js` (replicad with flatbush, flatqueue, opentype.js; MIT and ISC; 373 KB),
+  `replicad_single.js` and `replicad_single.wasm` (LGPL-2.1, unchanged, 22.9 MB), `OCCT-LICENSE`, `OCCT-SOURCE.md` (the
+  source offer), `REPLICAD-LICENSE`; pinned in `runtime/MANIFEST.json` by `tools/occt/build_occt.mjs` (`--check`).
+- `src/js/engine/solids/occt-adapter.js` (loading, the plan's frame, outlines counter-clockwise, meshes, the B-rep kept
+  with a mesh signature) and `occt-tools.js` (EXTRUDE, FILLETEDGE, CHAMFEREDGE, SHELL, REVOLVE, LOFT, SOLIDUNION,
+  SOLIDSUBTRACT, SOLIDINTERSECT, EXPORTSTEP, STEP import). It runs in the page, not in a worker: a box's fillet takes
+  about 50 ms here.
+- Measured in Node with the pinned files: loading 0.18 s; the volumes of an arc-sided extrusion, a circle, a fillet, a
+  chamfer, a shell, a revolve, a loft and a STEP round trip all equal their closed forms (`tests/unit/occt.test.mjs`).
+  In the page: `tests/e2e/bim_phase264_occt_check.mjs`, 14 of 14.
+- Found on the way: an outline that runs clockwise in OpenCASCADE's plane extrudes into a solid turned inside out,
+  whose booleans come out wrong; outlines are now always walked counter-clockwise.
+- Still open: picking one edge under the cursor (edges are chosen as all, vertical, top or bottom); IGES; a worker;
+  sweeps along a path; the app's other tools editing an OpenCASCADE solid as a B-rep (they change its mesh, after which
+  it is no longer edited as a B-rep).

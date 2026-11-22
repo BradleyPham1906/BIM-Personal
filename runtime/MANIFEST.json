@@ -296,6 +296,48 @@
    "sha256": "797baf6e7175118e5e1fc7db4861f4a17f01244ae4f17fff739a76ab3b797c09",
    "from": "getcadcraft/bimcraft@e36a94d tests/lib/dwg (vendor/cc-dwg), bundled unchanged by esbuild 0.28.2: tools/dwg/build_dwg.mjs",
    "licence": "Apache-2.0 (cc-dwg)"
+  },
+  {
+   "path": "occt/1.2.1/bim-replicad.min.js",
+   "bytes": 373412,
+   "sha256": "8696c3d445a6e82d94755e61d51fa4e4695329e5e2521b7d0030c7ba864daf5f",
+   "from": "npm replicad@1.2.1 with flatbush, flatqueue, opentype.js, bundled unchanged by esbuild 0.28.2: tools/occt/build_occt.mjs",
+   "licence": "MIT (replicad, opentype.js), ISC (flatbush, flatqueue)"
+  },
+  {
+   "path": "occt/1.2.1/REPLICAD-LICENSE",
+   "bytes": 1063,
+   "sha256": "7a3c098c1cf5d8de05efa0b930e7c8398c221da2a59032b617057fb7f122cf70",
+   "from": "npm replicad@1.2.1, LICENSE",
+   "licence": "MIT (replicad, opentype.js), ISC (flatbush, flatqueue)"
+  },
+  {
+   "path": "occt/1.2.1/replicad_single.js",
+   "bytes": 60483,
+   "sha256": "465b68c209b416396857fad30a6e33e7f5407907373cfe240c194af6d80c4a1d",
+   "from": "npm replicad-opencascadejs@1.2.1, dist/replicad_single.js, unchanged",
+   "licence": "LGPL-2.1-only (OpenCASCADE, replicad-opencascadejs)"
+  },
+  {
+   "path": "occt/1.2.1/replicad_single.wasm",
+   "bytes": 22942327,
+   "sha256": "a9335919fa64bfeaee3e241d3139ad134022682429c6688e20d8ca12093d33d9",
+   "from": "npm replicad-opencascadejs@1.2.1, dist/replicad_single.wasm, unchanged",
+   "licence": "LGPL-2.1-only (OpenCASCADE, replicad-opencascadejs)"
+  },
+  {
+   "path": "occt/1.2.1/OCCT-LICENSE",
+   "bytes": 26526,
+   "sha256": "20c17d8b8c48a600800dfd14f95d5cb9ff47066a9641ddeab48dc54aec96e331",
+   "from": "npm replicad-opencascadejs@1.2.1, LICENSE",
+   "licence": "LGPL-2.1-only (OpenCASCADE, replicad-opencascadejs)"
+  },
+  {
+   "path": "occt/1.2.1/OCCT-SOURCE.md",
+   "bytes": 1057,
+   "sha256": "6ea202662d0face2c746a5d71ca0ad7cc5f2e28922f8ee1a7ccd02af463453ae",
+   "from": "written by tools/occt/build_occt.mjs: the source offer",
+   "licence": "LGPL-2.1-only (OpenCASCADE, replicad-opencascadejs)"
   }
  ],
  "three": "0.186.1",
@@ -303,5 +345,6 @@
  "jolt": "1.1.1",
  "ifcopenshell": "0.8.5",
  "geotiff": "3.0.5",
- "cc-dwg": "e36a94d"
+ "cc-dwg": "e36a94d",
+ "occt": "1.2.1"
 }
