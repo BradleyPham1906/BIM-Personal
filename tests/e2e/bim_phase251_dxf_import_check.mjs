@@ -76,6 +76,7 @@ const FILE = dxf([
   [0, 'SPLINE'], [8, '0'], [70, 8], [71, 2], [40, 0], [40, 0], [40, 0], [40, 1], [40, 1], [40, 1],
   [10, 0], [20, 5], [10, 3], [20, 7], [10, 6], [20, 5],
   [0, 'CIRCLE'], [8, '0'], [10, 5], [20, 3], [40, 0.4],
+  [0, 'HATCH'], [8, 'NOTES'], [2, 'AR-CONC'], [70, 0], [91, 1], [92, 3], [72, 0], [73, 1], [93, 4], [10, 0.5], [20, 0.5], [10, 2], [20, 0.5], [10, 2], [20, 1.5], [10, 0.5], [20, 1.5], [97, 0], [52, 0], [41, 1],
   [0, 'ENDSEC'],
 ]);
 await C.send('Page.navigate', { url: APP });
@@ -95,6 +96,8 @@ ck(S.length === 11, 'eleven drawn objects (' + S.length + ')');
 ck(texts === 3, 'three texts: the dimension value, TEXT and MTEXT (' + texts + ')');
 const circ = S.find((s) => s.pts.length === 2 && s.closed && s.bulges);
 ck(!!circ, 'the CIRCLE arrives as two arcs, not a polygon');
+const H = await ev(`return window.__a3dObjects().filter(o=>o.t==='hatch').length;`);
+ck(H === 1, 'the HATCH arrives as a hatch (V261: ' + H + ')');
 // the mirrored, turned door: scale (-1, 1), then turn 90 degrees, then move to (6, 2): the leaf's end (0, 0.9) lands at
 // (5.1, 2) in DXF, which is (5.1, -2) in the model (north is -z)
 const leafs = S.filter((s) => s.pts.length === 2 && !s.closed && !s.bulges && Math.abs(Math.hypot(s.pts[1][0] - s.pts[0][0], s.pts[1][1] - s.pts[0][1]) - 0.9) < 1e-6);

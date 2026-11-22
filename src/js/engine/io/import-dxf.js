@@ -6,8 +6,9 @@ import { bimLayerById } from '../layers/layer-rules.js';
 import { BIM_LINEWEIGHTS, addLayer, bimLayerByName, bimLinetypeDef } from '../layers/select-change.js';
 import { refreshLayers } from '../layers/analysis-data-rows.js';
 import { bimMakeImportedFace, bimMakeImportedSketch } from '../site-analysis/panel.js';
-import { dxfEntityExtra, dxfExpandInserts } from './dxf-entities.js';
+import { dxfEntityExtra, dxfExpandInserts, dxfHatchOuter } from './dxf-entities.js';
 import { paint } from '../map/terrain-3d.js';
+import { bimAddHatch } from '../drawing/hatch.js';
 import { bimCircleSketch } from '../drawing/curve-walking.js';
 import { fitScene } from '../ui/tool-palette.js';
 import { saveSoon } from '../bim/region-regenerate.js';
@@ -208,7 +209,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
     pushUndo();
     setUndoSuspend(true);
     var __dxfStart=A3D.objs.length;
-    var scale,layerMap={},dxfNames,created=0,skippedPoints=0,texts=0,i;
+    var scale,layerMap={},dxfNames,created=0,skippedPoints=0,texts=0,hatches=0,i;
     try{
       scale=res.scale;dxfNames=Object.keys(res.layers);
       if(!dxfNames.length)dxfNames=['0'];
@@ -240,6 +241,20 @@ import { a3dToast } from '../bim/csg-booleans.js';
             /* __acad3dV251: a circle is two half-circle arcs, as CIRCLE draws one, not a 24-gon */
             var cir=bimCircleSketch(bimDxfToModel(e.c[0],e.c[1],scale),e.r*scale);
             if(!cir.error)o=bimMakeImportedSketch(cir.pts,baseY+(e.c[2]||0)*scale,true,cir.bulges);
+          }else if(e.type==='HATCH'){   /* __acad3dV261: the outer boundary filled; an island is drawn as its outline */
+            var outer=dxfHatchOuter(e.loops),hk;
+            for(hk=0;hk<e.loops.length;hk++){
+              var lp=e.loops[hk],mp=lp.pts.map(function(p){return bimDxfToModel(p[0],p[1],scale);});
+              if(outer.indexOf(lp)>=0){
+                var ho=bimAddHatch(mp,bimDxfBulgesToModel(lp.bulges),baseY,{layer:lid,pattern:e.pattern,
+                  patternScale:e.scale>0?e.scale:1,patternAngle:-(e.angle||0),
+                  patternColor:typeof e.color==='string'?e.color:(e.color>=1&&e.color<=255?dxfAciToHex(e.color):undefined)});
+                if(ho){ho.locked=true;hatches++;}
+              }else{
+                var isl=bimMakeImportedSketch(mp,baseY,true,bimDxfBulgesToModel(lp.bulges));
+                if(isl){isl.layer=lid;created++;}
+              }
+            }
           }else if(e.type==='POLYPTS'){   /* __acad3dV251: ellipse, spline, solid */
             o=bimMakeImportedSketch(e.pts.map(function(p){return bimDxfToModel(p[0],p[1],scale);}),baseY+(e.z||0)*scale,!!e.closed);
           }else if(e.type==='TEXT'){
@@ -294,7 +309,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
     refreshTree();refreshLayers();fitScene();paint();saveSoon();
     var skipMsg=Object.keys(res.skipped).map(function(k){return res.skipped[k]+' '+k;}).join(', ');
     a3dToast((kind||'DXF')+' import: '+created+' entities on '+dxfNames.length+' layer(s)'+
-      (texts?', '+texts+' text':'')+(res.inserts?', '+res.inserts+' block insert(s) expanded':'')+
+      (texts?', '+texts+' text':'')+(hatches?', '+hatches+' hatch(es)':'')+(res.inserts?', '+res.inserts+' block insert(s) expanded':'')+
       (skipMsg?'; skipped (unsupported): '+skipMsg:'')+
       (skippedPoints?'; '+skippedPoints+' POINT entities not rendered':'')+
       (res.insUnits===null?' (no units in file, assumed meters)':''));

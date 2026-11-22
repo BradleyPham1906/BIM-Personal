@@ -77,6 +77,8 @@ const S = await ev('return window.__a3dSketchWorld();');
 ck(objs > 500, 'the drawing arrives with its blocks expanded (' + objs + ' objects)');
 ck(texts >= 3, 'its text arrives (' + texts + ' texts)');
 ck(S.some((s) => s.closed && s.pts.length === 2 && s.bulges), 'its circle arrives as two arcs');
+const hatches = await ev(`return window.__a3dObjects().filter(o=>o.t==='hatch').length;`);
+ck(hatches === 2, 'its two hatches arrive filled (V261: ' + hatches + ')');
 ck(await ev(`return window.__a3dObjects().some(o=>o.t==='sketch')&&!!document.querySelector('#a3d-root')||true;`), 'the model holds the drawing');
 await ev(`window.__a3dRunCmd('zoomFit');`); await sleep(700);
 await shot('v252-01-dwg-opened');

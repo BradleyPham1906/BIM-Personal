@@ -40,7 +40,8 @@ test('a cc-dwg model becomes the DXF reader\'s entities, blocks expanded', () =>
   assert.equal(r.scale, 0.001, 'millimetres');
   assert.equal(r.layers['A-WALL'].lineweight, 0.5);
   const types = r.entities.map((e) => e.type).sort();
-  assert.deepEqual(types, ['ARC', 'LINE', 'LWPOLYLINE', 'POLYPTS', 'TEXT', 'TEXT']);
+  // V261: a hatch arrives as a HATCH (filled), not as its outline
+  assert.deepEqual(types, ['ARC', 'HATCH', 'LINE', 'LWPOLYLINE', 'TEXT', 'TEXT']);
   const pl = r.entities.find((e) => e.type === 'LWPOLYLINE');
   assert.deepEqual(pl.bulges, [0, 0.5, 0]);
   near(r.entities.find((e) => e.type === 'ARC').a2, 90);

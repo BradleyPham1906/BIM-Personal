@@ -1,3 +1,5 @@
+import { bimPolySignedArea } from '../bim/rooms.js';
+
   /* ================= __acad3dV251: DXF fidelity, the entities (D7) =================
      What import-dxf.js dropped before this phase: TEXT and MTEXT, ELLIPSE, SPLINE, SOLID, and
      every block (INSERT, and DIMENSION, whose drawn lines and text AutoCAD keeps in an anonymous
@@ -84,6 +86,8 @@
     if(e.p2)o.p2=P(e.p2);
     if(e.p)o.p=P(e.p);
     if(e.pts)o.pts=e.pts.map(P);
+    if(e.loops)o.loops=e.loops.map(function(l){return {flags:l.flags,pts:l.pts.map(P),bulges:l.bulges&&mir?l.bulges.map(function(v){return -(v||0);}):l.bulges};});   /* __acad3dV261 */
+    if(e.type==='HATCH'&&typeof e.angle==='number')o.angle=(mir?-e.angle:e.angle)+(ins.rot||0);
     if(e.bulges&&mir)o.bulges=e.bulges.map(function(v){return -(v||0);});
     if(e.c)o.c=P(e.c);
     if(typeof e.r==='number')o.r=e.r*Math.abs(sx);
@@ -152,6 +156,12 @@
       var pts=dxfSplinePts(N(71,3),ctrl,A(40),A(41),fit);
       return pts.length>=2?mk({type:'POLYPTS',pts:pts,closed:!!(N(70,0)&1)}):null;
     }
+    if(t==='HATCH'){   /* __acad3dV261 */
+      var loops=dxfHatchLoops(items);
+      if(!loops.length)return null;
+      var solid=N(70,0)===1||/^SOLID$/i.test(S(2,''));
+      return mk({type:'HATCH',pattern:solid?'solid':dxfHatchPattern(S(2,'')),angle:N(52,0),scale:N(41,1),loops:loops});
+    }
     if(t==='SOLID'||t==='TRACE'){
       /* the third and fourth corners are stored crossed: 1, 2, 4, 3 is the outline */
       var q=[[N(10,0),N(20,0)],[N(11,0),N(21,0)],[N(13,N(12,0)),N(23,N(22,0))],[N(12,0),N(22,0)]];
@@ -169,4 +179,87 @@
     }
     return null;
   }
-export { dxfEllipsePts, dxfEntityExtra, dxfExpandInserts, dxfSplinePts, dxfTextPlain, dxfXform };
+  /* ================= __acad3dV261: HATCH, read as a hatch =================
+     A DXF HATCH's boundary paths (DXF Reference, HATCH, "Boundary path data"): 91 the number of paths; each starts
+     with 92 (its flags: 1 external, 2 a polyline, 16 outermost); a polyline path is 72 (has bulges), 73 (closed),
+     93 (vertices) and 10/20(/42) each; an edge path is 93 (edges) and each edge's 72: 1 line (10,20,11,21), 2 arc
+     (10,20,40,50,51,73), 3 ellipse (10,20,11,21,40,50,51,73), 4 spline (its control points 10/20, sampled
+     through their polygon). Pattern: 2 its name, 70 solid, 52 angle, 41 scale. */
+  var BIM_DXF_HATCH_MAP={SOLID:'solid',ANSI31:'diagonal',ANSI32:'steel',ANSI33:'diagonal',ANSI34:'steel',ANSI35:'diagonal',
+    ANSI36:'diagonal',ANSI37:'cross',ANSI38:'cross',NET:'cross','AR-BRSTD':'brick','AR-B816':'brick','AR-B88':'brick',
+    BRICK:'brick','AR-CONC':'concrete','AR-SAND':'dots',DOTS:'dots',LINE:'horizontal',EARTH:'cross',STEEL:'steel'};
+  function dxfHatchPattern(name){
+    var n=String(name||'').toUpperCase();
+    return BIM_DXF_HATCH_MAP.hasOwnProperty(n)?BIM_DXF_HATCH_MAP[n]:'diagonal';
+  }
+  function dxfHatchLoops(items){
+    var i=0,loops=[],n;
+    while(i<items.length&&items[i][0]!==91)i++;
+    if(i>=items.length)return loops;
+    n=parseInt(items[i][1],10)||0;i++;
+    function num(){return parseFloat(items[i++][1]);}
+    function seek(code){while(i<items.length&&items[i][0]!==code)i++;return i<items.length;}
+    for(var L=0;L<n;L++){
+      if(!seek(92))break;
+      var flags=parseInt(items[i][1],10)||0;i++;
+      var pts=[],bul=[];
+      if(flags&2){
+        var hasB=0,cnt=0;
+        while(i<items.length&&items[i][0]!==10){
+          if(items[i][0]===72)hasB=parseInt(items[i][1],10)||0;
+          if(items[i][0]===93)cnt=parseInt(items[i][1],10)||0;
+          i++;
+        }
+        for(var v=0;v<cnt&&i<items.length;v++){
+          var x=0,y=0,b=0;
+          if(items[i][0]===10)x=num();
+          if(i<items.length&&items[i][0]===20)y=num();
+          if(hasB&&i<items.length&&items[i][0]===42)b=num();
+          pts.push([x,y]);bul.push(b);
+        }
+        loops.push({flags:flags,pts:pts,bulges:hasB?bul:null});
+        continue;
+      }
+      if(!seek(93))break;
+      var ne=parseInt(items[i][1],10)||0;i++;
+      for(var e=0;e<ne;e++){
+        if(!seek(72))break;
+        var et=parseInt(items[i][1],10)||0;i++;
+        var r={},seg=[];
+        while(i<items.length&&items[i][0]!==72&&items[i][0]!==92&&items[i][0]!==97&&items[i][0]!==75){
+          var c=items[i][0];
+          if(c===10||c===20||c===11||c===21||c===40||c===50||c===51||c===73){r[c]=r[c]===undefined?parseFloat(items[i][1]):r[c];}
+          if(et===4&&c===10){(r.cx=r.cx||[]).push(parseFloat(items[i][1]));}
+          if(et===4&&c===20){(r.cy=r.cy||[]).push(parseFloat(items[i][1]));}
+          i++;
+        }
+        if(et===1)seg=[[r[10],r[20]],[r[11],r[21]]];
+        else if(et===2||et===3){
+          var a0=(r[50]||0)*Math.PI/180,a1=(r[51]||0)*Math.PI/180,ccw=r[73]!==0,k;
+          if(!ccw){a0=-a0;a1=-a1;}
+          if(a1<a0&&ccw)a1+=Math.PI*2;
+          if(et===2)for(k=0;k<=16;k++){var a=a0+(a1-a0)*k/16;seg.push([r[10]+Math.cos(a)*r[40],r[20]+Math.sin(a)*r[40]]);}
+          else seg=dxfEllipsePts([r[10],r[20]],[r[11],r[21]],r[40],a0,a1,16).pts;
+        }else if(et===4&&r.cx)for(k=0;k<Math.min(r.cx.length,r.cy.length);k++)seg.push([r.cx[k],r.cy[k]]);
+        for(k=0;k<seg.length;k++){
+          var last=pts[pts.length-1];
+          if(!last||Math.abs(last[0]-seg[k][0])>1e-9||Math.abs(last[1]-seg[k][1])>1e-9)pts.push(seg[k]);
+        }
+      }
+      if(pts.length>2&&Math.abs(pts[0][0]-pts[pts.length-1][0])<1e-9&&Math.abs(pts[0][1]-pts[pts.length-1][1])<1e-9)pts.pop();
+      loops.push({flags:flags,pts:pts,bulges:null});
+    }
+    return loops.filter(function(l){return l.pts.length>=3||(l.pts.length===2&&l.bulges);});
+  }
+  /* The loops a hatch fills: those flagged external or outermost, else the largest; the rest are its islands. */
+  function dxfHatchOuter(loops){
+    var out=loops.filter(function(l){return l.flags&(1|16);});
+    if(out.length)return out;
+    var best=null,ba=-1,i;
+    for(i=0;i<loops.length;i++){var a=Math.abs(bimPolySignedArea(loops[i].pts));if(a>ba){ba=a;best=loops[i];}}
+    return best?[best]:[];
+  }
+export {
+  dxfEllipsePts, dxfEntityExtra, dxfExpandInserts, dxfHatchOuter, dxfHatchPattern, dxfSplinePts, dxfTextPlain,
+  dxfXform
+};

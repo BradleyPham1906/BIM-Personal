@@ -227,6 +227,8 @@
   "camVecs",
   "dxfEllipsePts",
   "dxfExpandInserts",
+  "dxfHatchOuter",
+  "dxfHatchPattern",
   "dxfParse",
   "dxfSplinePts",
   "dxfTextPlain",

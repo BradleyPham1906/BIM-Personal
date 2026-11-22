@@ -2,7 +2,9 @@ import { bimTriggerDownload } from '../annotation/annotation-pick.js';
 import { bimFileStem } from './project-file.js';
 import { bimBuildDXF } from './export-mappings.js';
 import { bimLbBase } from '../ladybug/runtime.js';
-import { dxfEllipsePts, dxfExpandInserts, dxfSplinePts, dxfTextPlain, dxfXform } from './dxf-entities.js';
+import {
+  dxfEllipsePts, dxfExpandInserts, dxfHatchPattern, dxfSplinePts, dxfTextPlain, dxfXform
+} from './dxf-entities.js';
 import { DXF_UNIT_SCALE, bimImportParsed, dxfAciToHex, dxfParse } from './import-dxf.js';
 import { a3dToast } from '../bim/csg-booleans.js';
 
@@ -109,7 +111,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
       var lp=e.loops[i];
       if(lp.polyline&&lp.polyline.vertices&&lp.polyline.vertices.length>=2){
         var vs=lp.polyline.vertices;
-        out.push({type:'LWPOLYLINE',closed:true,layer:L,color:C,pts:vs.map(function(v){return [v.x,v.y];}),
+        out.push({type:'LWPOLYLINE',closed:true,layer:L,color:C,flags:lp.flags||0,pts:vs.map(function(v){return [v.x,v.y];}),
           bulges:lp.polyline.hasBulges?vs.map(function(v){return v.bulge||0;}):null});
         continue;
       }
@@ -133,9 +135,12 @@ import { a3dToast } from '../bim/csg-booleans.js';
           if(!last||Math.abs(last[0]-seg[k][0])>1e-9||Math.abs(last[1]-seg[k][1])>1e-9)pts.push(seg[k]);
         }
       }
-      if(pts.length>=3)out.push({type:'POLYPTS',pts:pts,closed:true,layer:L,color:C});
+      if(pts.length>=3)out.push({type:'POLYPTS',pts:pts,closed:true,layer:L,color:C,flags:lp.flags||0});
     }
-    return out.length?out:null;
+    if(!out.length)return null;
+    /* __acad3dV261: one HATCH, its loops the outlines above, filled with its pattern */
+    return [{type:'HATCH',layer:L,color:C,pattern:e.solid?'solid':dxfHatchPattern(e.pattern),angle:(e.angle||0)*180/Math.PI,
+      scale:e.scale>0?e.scale:1,loops:out.map(function(o){return {flags:o.flags||0,pts:o.pts,bulges:o.bulges||null};})}];
   }
   /* The library's model as the DXF reader's result: layers, the model space with every block expanded, the units. */
   function bimDwgToParsed(m){
