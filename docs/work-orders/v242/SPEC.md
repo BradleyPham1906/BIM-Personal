@@ -1,11 +1,11 @@
 # V242 spec: Modes and the response spectrum
 
-Research: `docs/research/research-physical-world.md` (part 4.4) and `docs/research/research-physical-world/seismic-dynamics.md`; the independent check in `docs/research/research-physical-world/independent-check.md`. The owner's decisions: as the research recommends (part 11 of the note; the owner, 2026-11-21: "Do your research first, properly. And then develop the work orders"; overrule any here). Implementation target: local `main`. Written by Claude, 2026-11-21.
+Research: `docs/research/research-physical-world.md` (part 4.4) and `docs/research/research-physical-world/seismic-dynamics.md`; the independent check in `docs/research/research-physical-world/independent-check.md`. The owner's decisions: as the research recommends, answered 2026-11-22 (standard and scalable; 4, 9 and 11 amended) (part 11 of the note; the owner, 2026-11-21: "Do your research first, properly. And then develop the work orders"; overrule any here). Implementation target: local `main`. Written by Claude, 2026-11-21.
 
 ## 1. The decisions this spec follows
 
 - Lumped masses and three degrees of freedom per storey (two translations and a rotation, rigid floors), as ETABS does; e01: Jacobi is exact and fast to about 120 dof (decision 9).
-- Our own cyclic Jacobi on M^-1/2 K M^-1/2; no library (PyNite in the worker stays a later cross-check).
+- Our own cyclic Jacobi on M^-1/2 K M^-1/2, behind one interface (K and M in, modes out), so a subspace-iteration solver on the full frame can replace it beyond about 120 dof without changing callers; no library (decision 9, amended 2026-11-22).
 - Enough modes for 90 % of the mass in each direction, listed with their participation; CQC at 5 % by default, SRSS beside it.
 - The spectrum's base shear scaled up to 100 % of the ELF shear (7-22; 85 % was 7-10), never down.
 

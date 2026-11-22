@@ -1,11 +1,11 @@
 # V244 spec: Steel members: AISC 360-22 checks
 
-Research: `docs/research/research-physical-world.md` (part 4.5) and `docs/research/research-physical-world/member-checks-cracking.md`; the independent check in `docs/research/research-physical-world/independent-check.md`. The owner's decisions: as the research recommends (part 11 of the note; the owner, 2026-11-21: "Do your research first, properly. And then develop the work orders"; overrule any here). Implementation target: local `main`. Written by Claude, 2026-11-21.
+Research: `docs/research/research-physical-world.md` (part 4.5) and `docs/research/research-physical-world/member-checks-cracking.md`; the independent check in `docs/research/research-physical-world/independent-check.md`. The owner's decisions: as the research recommends, answered 2026-11-22 (standard and scalable; 4, 9 and 11 amended) (part 11 of the note; the owner, 2026-11-21: "Do your research first, properly. And then develop the work orders"; overrule any here). Implementation target: local `main`. Written by Claude, 2026-11-21.
 
 ## 1. The decisions this spec follows
 
 - AISC 360-22 LRFD for compact, doubly symmetric I shapes: E3 compression, F2 flexure about the major axis (Lp, Lr, Cb), F6 minor axis as min(Fy Zy, 1.6 Fy Sy), H1-1 interaction in compression; E = 200 GPa for the checks whatever the card says.
-- Section properties from the profile's plates (no fillets) until an AISC table's licence is read: within 1.4 % of the table, J 6.9 % low, which errs safe (decision 11).
+- Section properties through one source that prefers a published table (AISC's Shapes Database once its licence is read) and falls back to the profile's plates (`bimStIProps`, no fillets: within 1.4 % of the table, J 6.9 % low, which errs safe), labelled with where they came from (decision 11, amended 2026-11-22).
 - Lb = the member's length, K = 1, Cb = 1 by default, each with an override per member (decision 11).
 - Refused as "not checked", with the reason: noncompact or slender plates, HSS, pipes, channels, members in tension (H1.2 not read), concrete, timber.
 

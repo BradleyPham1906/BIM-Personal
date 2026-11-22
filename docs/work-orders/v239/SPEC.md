@@ -1,6 +1,6 @@
 # V239 spec: Floor loads from the place
 
-Research: `docs/research/research-physical-world.md` (part 4.1) and `docs/research/research-physical-world/loads-wind-gravity.md`; the independent check in `docs/research/research-physical-world/independent-check.md`. The owner's decisions: as the research recommends (part 11 of the note; the owner, 2026-11-21: "Do your research first, properly. And then develop the work orders"; overrule any here). Implementation target: local `main`. Written by Claude, 2026-11-21.
+Research: `docs/research/research-physical-world.md` (part 4.1) and `docs/research/research-physical-world/loads-wind-gravity.md`; the independent check in `docs/research/research-physical-world/independent-check.md`. The owner's decisions: as the research recommends, answered 2026-11-22 (standard and scalable) (part 11 of the note; the owner, 2026-11-21: "Do your research first, properly. And then develop the work orders"; overrule any here). Implementation target: local `main`. Written by Claude, 2026-11-21.
 
 ## 1. The decisions this spec follows
 
