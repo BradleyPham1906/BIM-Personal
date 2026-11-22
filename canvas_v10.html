@@ -1955,7 +1955,7 @@ body.light-theme .a3d-tl-msgs,body.light-theme .a3d-tl-hn span,body.light-theme 
     ['DIST',['DI','MEASUREGEOM','MEA'],'inqdist','Measure the distance and angle between two points, leaving nothing in the drawing'],['ID',[],'inqid','Show the coordinates of a point'],['AREA',['AA'],'inqarea','Measure the area and perimeter of picked points or of the selected closed objects'],['LIST',['LI','LS'],'inqlist','List the selected objects\' properties and sizes'],   /* __acad3dV255 */
     ['DIVIDE',['DIV'],'divide','Place points dividing an object into equal parts'],
     ['MEASURE',['ME'],'measurePts','Place points at a set spacing along an object'],['DIMLINEAR',['DLI','DIM'],'bimDims','Linear dimension'],
-    ['LAYER',['LA','LAYERS'],'layers','Layer Properties Manager'],['OSNAP',['OS','DSETTINGS','DS','SE'],'osnapSettings','Object snap and polar tracking settings'],['OSMODE',['F3'],'bimSnap','Toggle object snap'],['POLAR',[],'polar','Toggle polar tracking (F10)'],
+    ['LAYER',['LA','LAYERS'],'layers','Layer Properties Manager'],['LAYISO',[],'layiso','Isolate the layers of the selected objects: every other layer off'],['LAYUNISO',[],'layuniso','Put back the layers LAYISO turned off'],['LAYOFF',[],'layoff','Turn off the layers of the selected objects'],['LAYFRZ',[],'layfrz','Freeze the layers of the selected objects'],['LAYLCK',[],'laylck','Lock the layers of the selected objects'],['LAYON',[],'layon','Turn every layer on'],['LAYTHW',[],'laythw','Thaw every layer'],['LAYULK',[],'layulkall','Unlock every layer'],['LAYMCUR',[],'laymcur','Make the selected object\'s layer current'],['LAYERP',['LAYP'],'layerp','Undo the last change to the layer settings'],['OSNAP',['OS','DSETTINGS','DS','SE'],'osnapSettings','Object snap and polar tracking settings'],['OSMODE',['F3'],'bimSnap','Toggle object snap'],['POLAR',[],'polar','Toggle polar tracking (F10)'],
     ['ORTHO',[],'bimOrtho','Toggle ortho mode'],['GRID',[],'grid','Toggle grid'],
     ['ZOOM',['Z','ZE','FIT'],'zoomFit','Zoom to fit'],['ZOOMIN',['ZI'],'zoomIn','Zoom in'],
     ['ZOOMOUT',['ZO'],'zoomOut','Zoom out'],['ZOOM100',['Z1'],'view100','Zoom to 100%'],
@@ -20160,6 +20160,7 @@ function bimOpnToWall(rect, len, height) {
     else was=ly[field];
     if(was===v)return true;
     pushUndo();
+    if(field!=='name'&&field!=='description')bimLayerRecordPrev();   /* __acad3dV256: LAYERP steps back over it */
     ly[field]=v;
     if(field==='visible'&&!v&&cur&&bimLayerUnder(cur,ly.id))a3dToast('The current layer is off: what you draw on it will not show until it is on');
     bimLayerChanged();
@@ -20239,6 +20240,119 @@ function bimOpnToWall(rect, len, height) {
   var BIM_EYE_OFF=ric('<path d="M3 3l18 18"/><path d="M10.6 5.2A10.6 10.6 0 0 1 12 5c6 0 10 7 10 7a17.7 17.7 0 0 1-3.2 4M6.5 6.5C3.8 8.3 2 12 2 12s4 7 10 7c1.4 0 2.7-.3 3.9-.8"/>');
   var BIM_LOCK_ON=ric('<rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>');
   var BIM_LOCK_OFF=ric('<rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V7a4 4 0 0 1 7.4-2"/>');
+  /* ================= __acad3dV256: AutoCAD's layer commands (docs/research/research-cadcraft-gap.md) =================
+     LAYISO and LAYUNISO, LAYOFF, LAYFRZ, LAYLCK, LAYON, LAYTHW, LAYMCUR and LAYERP, by AutoCAD's names: each acts on
+     the layers of the selected objects, or on every layer, in one undo step. LAYERP (LAYP) steps back through the
+     layer settings as they were before each change, whether it came from these commands or from the Layer
+     Properties Manager (bimLayerSet records it), as AutoCAD's does; LAYUNISO puts back what the last LAYISO changed.
+     The arithmetic is pure (bimLayerSnap, bimLayIsoPlan), tested without a canvas. */
+  var BIM_LAY_FIELDS=['visible','frozen','locked','plot','color','linetype','lineweight','transparency'];
+  var A3D_LAYP={stack:[],max:50,iso:null};
+  /* Every layer's settings and the current layer, as LAYERP and LAYUNISO put them back. */
+  function bimLayerSnap(layers,current){
+    return {cur:current,ls:layers.map(function(l){
+      var o={id:l.id},k;
+      for(k=0;k<BIM_LAY_FIELDS.length;k++)o[BIM_LAY_FIELDS[k]]=l[BIM_LAY_FIELDS[k]];
+      return o;
+    })};
+  }
+  function bimLayerRecordPrev(){
+    A3D_LAYP.stack.push(bimLayerSnap(A3D.layers,A3D.activeLayer));
+    if(A3D_LAYP.stack.length>A3D_LAYP.max)A3D_LAYP.stack.shift();
+  }
+  function bimLayerRestore(snap,fields){
+    var i,k,l,s;
+    fields=fields||BIM_LAY_FIELDS;
+    for(i=0;i<snap.ls.length;i++){
+      s=snap.ls[i];l=bimLayerById(s.id);
+      if(!l)continue;
+      for(k=0;k<fields.length;k++){
+        if(s[fields[k]]===undefined)delete l[fields[k]];else l[fields[k]]=s[fields[k]];
+      }
+    }
+    if(snap.cur&&bimLayerById(snap.cur))A3D.activeLayer=snap.cur;
+  }
+  /* The layers the selected objects are on (ids, in the list's order). */
+  function bimSelLayerIds(){
+    var ids=(A3D.selSet&&A3D.selSet.length)?A3D.selSet.slice():(A3D.sel?[A3D.sel]:[]),seen={},out=[],i,o,ly;
+    for(i=0;i<ids.length;i++){
+      o=objById(ids[i]);ly=o?bimLayerOf(o):null;
+      if(ly&&!seen[ly.id]){seen[ly.id]=1;out.push(ly.id);}
+    }
+    return out;
+  }
+  /* LAYISO's plan: the kept layers and the layers above them stay on; every other layer goes off. A layer that
+     holds a kept layer is not turned off, or the kept one would vanish with it. */
+  function bimLayIsoPlan(layers,keepIds){
+    var keep={},i,j,off=[];
+    for(i=0;i<keepIds.length;i++){
+      var c=null;
+      for(j=0;j<layers.length;j++)if(layers[j].id===keepIds[i])c=layers[j];
+      while(c&&!keep[c.id]){
+        keep[c.id]=1;
+        var p=c.parent,n=null;
+        for(j=0;p&&j<layers.length;j++)if(layers[j].id===p)n=layers[j];
+        c=n;
+      }
+    }
+    for(i=0;i<layers.length;i++)if(!keep[layers[i].id]&&layers[i].visible!==false)off.push(layers[i].id);
+    return {keep:Object.keys(keep),off:off};
+  }
+  function bimLayCmdApply(ids,field,val,msg){
+    if(!ids.length){a3dToast(msg.none);return 0;}
+    var cur=bimLayerById(A3D.activeLayer),n=0,skipped=0,i,l;
+    pushUndo();bimLayerRecordPrev();
+    for(i=0;i<ids.length;i++){
+      l=bimLayerById(ids[i]);if(!l)continue;
+      if(field==='frozen'&&val&&cur&&bimLayerUnder(cur,l.id)){skipped++;continue;}
+      var was=field==='visible'?l.visible!==false:!!l[field];
+      if(was===val)continue;
+      l[field]=val;n++;
+    }
+    if(!n){A3D_LAYP.stack.pop();UNDO_STACK.pop();}
+    bimLayerChanged();
+    a3dToast(msg.done.replace('#',n)+(skipped?' (the current layer cannot be frozen)':''));
+    return n;
+  }
+  function bimLayIso(){
+    var keep=bimSelLayerIds();
+    if(!keep.length){a3dToast('LAYISO: select objects on the layers to keep');return null;}
+    var plan=bimLayIsoPlan(A3D.layers,keep);
+    pushUndo();bimLayerRecordPrev();
+    A3D_LAYP.iso=bimLayerSnap(A3D.layers,A3D.activeLayer);
+    for(var i=0;i<plan.off.length;i++)bimLayerById(plan.off[i]).visible=false;
+    /* AutoCAD makes an isolated layer current when the current one went off */
+    if(plan.off.indexOf(A3D.activeLayer)>=0)A3D.activeLayer=keep[0];
+    bimLayerChanged();
+    a3dToast('LAYISO: '+keep.length+' layer(s) isolated, '+plan.off.length+' turned off');
+    return plan;
+  }
+  function bimLayUniso(){
+    if(!A3D_LAYP.iso){a3dToast('LAYUNISO: no layers were isolated with LAYISO');return false;}
+    pushUndo();bimLayerRecordPrev();
+    bimLayerRestore(A3D_LAYP.iso,['visible','locked']);
+    A3D_LAYP.iso=null;
+    bimLayerChanged();
+    a3dToast('LAYUNISO: the layers are back as they were before LAYISO');
+    return true;
+  }
+  function bimLayerPrevious(){
+    var s=A3D_LAYP.stack.pop();
+    if(!s){a3dToast('LAYERP: no layer changes to undo');return false;}
+    pushUndo();
+    bimLayerRestore(s);
+    bimLayerChanged();
+    a3dToast('LAYERP: the layer settings are back as they were before the last change');
+    return true;
+  }
+  function bimLayMcur(){
+    var ids=bimSelLayerIds();
+    if(ids.length!==1){a3dToast(ids.length?'LAYMCUR: select objects on one layer':'LAYMCUR: select an object first');return false;}
+    return bimLayerMakeCurrent(ids[0]);
+  }
+  function bimLayAll(field,val,label){
+    return bimLayCmdApply(A3D.layers.map(function(l){return l.id;}),field,val,{none:label+': no layers',done:label+': # layer(s) changed'});
+  }
   /* ================= __acad3dV121: the Layers panel =================
      The owner: "layers (this should combine with model)". The rail's Layers tab is the layer tree --
      sub-layers under their parents -- and each layer opens to the objects on it, so the model tree
@@ -73435,6 +73549,16 @@ function bimRptPlan(families) {
     align:function(){openAlignDlg();},
     join:function(){bimJoinCommand();},   /* __acad3dV250: polylines first, then walls */
     moveTool:function(){startMoveTool();},
+    layiso:function(){bimLayIso();},   /* __acad3dV256 */
+    layuniso:function(){bimLayUniso();},
+    layoff:function(){bimLayCmdApply(bimSelLayerIds(),'visible',false,{none:'LAYOFF: select objects on the layers to turn off',done:'LAYOFF: # layer(s) turned off'});},
+    layfrz:function(){bimLayCmdApply(bimSelLayerIds(),'frozen',true,{none:'LAYFRZ: select objects on the layers to freeze',done:'LAYFRZ: # layer(s) frozen'});},
+    laylck:function(){bimLayCmdApply(bimSelLayerIds(),'locked',true,{none:'LAYLCK: select objects on the layers to lock',done:'LAYLCK: # layer(s) locked'});},
+    layon:function(){bimLayAll('visible',true,'LAYON');},
+    laythw:function(){bimLayAll('frozen',false,'LAYTHW');},
+    layulkall:function(){bimLayAll('locked',false,'LAYULK');},
+    laymcur:function(){bimLayMcur();},
+    layerp:function(){bimLayerPrevious();},
     inqid:function(){startInquiryTool('id');},   /* __acad3dV255 */
     inqdist:function(){startInquiryTool('dist');},
     inqarea:function(){startInquiryTool('area');},

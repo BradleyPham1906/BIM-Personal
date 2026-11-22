@@ -33,6 +33,9 @@ import { startCeilingTool } from '../bim/ceiling-floor-profile.js';
 import { startRoofTool } from '../bim/roofs.js';
 import { startStairTool } from '../bim/stairs.js';
 import { bimSelectByRule } from '../layers/select-change.js';
+import {
+  bimLayAll, bimLayCmdApply, bimLayIso, bimLayMcur, bimLayUniso, bimLayerPrevious, bimSelLayerIds
+} from '../layers/layer-commands.js';
 import { bimLayerManagerOpen } from '../layers/layer-manager.js';
 import { bimUsageCommand, bimUsageLibraryCommand } from '../properties/usages.js';
 import { bimStdCommand } from '../properties/site-standards.js';
@@ -262,6 +265,16 @@ import { bimOpenToolsPanel } from '../ui/discipline-tabs.js';
     align:function(){openAlignDlg();},
     join:function(){bimJoinCommand();},   /* __acad3dV250: polylines first, then walls */
     moveTool:function(){startMoveTool();},
+    layiso:function(){bimLayIso();},   /* __acad3dV256 */
+    layuniso:function(){bimLayUniso();},
+    layoff:function(){bimLayCmdApply(bimSelLayerIds(),'visible',false,{none:'LAYOFF: select objects on the layers to turn off',done:'LAYOFF: # layer(s) turned off'});},
+    layfrz:function(){bimLayCmdApply(bimSelLayerIds(),'frozen',true,{none:'LAYFRZ: select objects on the layers to freeze',done:'LAYFRZ: # layer(s) frozen'});},
+    laylck:function(){bimLayCmdApply(bimSelLayerIds(),'locked',true,{none:'LAYLCK: select objects on the layers to lock',done:'LAYLCK: # layer(s) locked'});},
+    layon:function(){bimLayAll('visible',true,'LAYON');},
+    laythw:function(){bimLayAll('frozen',false,'LAYTHW');},
+    layulkall:function(){bimLayAll('locked',false,'LAYULK');},
+    laymcur:function(){bimLayMcur();},
+    layerp:function(){bimLayerPrevious();},
     inqid:function(){startInquiryTool('id');},   /* __acad3dV255 */
     inqdist:function(){startInquiryTool('dist');},
     inqarea:function(){startInquiryTool('area');},
