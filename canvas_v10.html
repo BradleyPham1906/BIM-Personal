@@ -44049,7 +44049,21 @@ BIM_IFC_SAVE.model=bimIfcSaveModel;
      0 looking down -z, positive turning left) and the project's true north (degrees, clockwise);
      and its letter, N, NE, E, SE, S, SW, W or NW, for the way the camera faces. NaN in, null out. */
   function bimCompass(yaw,trueNorth){
-    return null;
+    if(isNaN(yaw)||isNaN(trueNorth))return null;
+    var R=Math.PI/180;
+    var deg=-yaw/R; // convert radians to degrees
+    var h=((deg-trueNorth)%360+360)%360; // heading adjusted by trueNorth: 0=north, 90=east, etc
+    var n=((360-h)%360+360)%360; // needle: opposite direction of heading
+    var letter;
+    if(h>=337.5||h<22.5)letter='N';
+    else if(h<67.5)letter='NE';
+    else if(h<112.5)letter='E';
+    else if(h<157.5)letter='SE';
+    else if(h<202.5)letter='S';
+    else if(h<247.5)letter='SW';
+    else if(h<292.5)letter='W';
+    else letter='NW';
+    return {needle:n,heading:h,letter:letter};
   }
 
   /* ===== __acad3dV202c: heights on one datum (docs/work-orders/v202/SPEC.md, part C) =====

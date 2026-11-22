@@ -170,7 +170,7 @@ line and `window.__a3dSiteUi`. The part B tests were checked against a reference
 
 ---
 
-## [ ] WO-14 [Cline] `bimCompass` in `src/js/engine/map/site-ui.js`
+## [x] WO-14 [Cline] `bimCompass` in `src/js/engine/map/site-ui.js`
 
 - **Implement:** the compass's needle angle, heading and letter, as SPEC B3 says.
 - **It must:**
