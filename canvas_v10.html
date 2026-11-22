@@ -1870,7 +1870,7 @@ body.light-theme .a3d-tl-msgs,body.light-theme .a3d-tl-hn span,body.light-theme 
   var CADCMDS=[
     ['LINE',['L'],'line','Draw a line'],['PLINE',['PL','POLYLINE','POLY'],'poly','Draw a polyline'],
     ['WALL',['WA'],'wall','Draw a wall (A for arc segments)'],
-    ['RECTANG',['REC','RECT','RECTANGLE'],'rect','Draw a rectangle'],['CIRCLE',['C'],'circle','Draw a circle'],
+    ['RECTANG',['REC','RECT','RECTANGLE'],'rect','Draw a rectangle'],['CIRCLE',['C'],'circle','Draw a circle'],['CIRCLE2P',['C2P'],'circle2p','Draw a circle by the two ends of its diameter'],['CIRCLE3P',['C3P'],'circle3p','Draw a circle through three points'],['REVCLOUD',['RC'],'revcloud','Draw a revision cloud round a rectangle'],
     ['ARC',['A'],'arc','Draw a 3-point arc'],['ELLIPSE',['EL'],'ellipse','Draw an ellipse'],
     ['POLYGON',['POL'],'polygon','Draw a polygon'],['SKETCH',['DRAW'],'draw','Freehand sketch'],
     ['MTEXT',['T','MT'],'text','Text box'],['TEXT',['DT'],'text','Text box'],
@@ -6053,7 +6053,7 @@ try{
   }
 
   // ---- __acad3dV4: Snaptrude-style 2D plan mode + sketch + Pad/Pocket ----
-  var SK_TOOLS={line:'Line',floor:'Floor',trim:'Trim',rect:'Rectangle',circle:'Circle',arc:'Arc',polygon:'Polygon',point:'Point',xline:'Construction line',boundary:'Boundary',hatch:'Hatch',poly:'Polyline',wall:'Wall',column:'Column',door:'Door',window:'Window',room:'Room',roof:'Roof',stair:'Stair',dim:'Dimension',text:'Text',section:'Section',mirror:'Mirror',rotate:'Rotate',polararray:'Polar Array',familyplace:'Place Family',ceiling:'Ceiling',dimangular:'Angular Dim',dimradius:'Radius Dim',dimdiameter:'Diameter Dim',leader:'Leader',roomtag:'Tag Room',footing:'Isolated Footing',wallfoundation:'Wall Foundation',foundslab:'Foundation Slab'};
+  var SK_TOOLS={line:'Line',floor:'Floor',trim:'Trim',rect:'Rectangle',circle:'Circle',circle2p:'Circle 2P',circle3p:'Circle 3P',ellipse:'Ellipse',revcloud:'Revision cloud',arc:'Arc',polygon:'Polygon',point:'Point',xline:'Construction line',boundary:'Boundary',hatch:'Hatch',poly:'Polyline',wall:'Wall',column:'Column',door:'Door',window:'Window',room:'Room',roof:'Roof',stair:'Stair',dim:'Dimension',text:'Text',section:'Section',mirror:'Mirror',rotate:'Rotate',polararray:'Polar Array',familyplace:'Place Family',ceiling:'Ceiling',dimangular:'Angular Dim',dimradius:'Radius Dim',dimdiameter:'Diameter Dim',leader:'Leader',roomtag:'Tag Room',footing:'Isolated Footing',wallfoundation:'Wall Foundation',foundslab:'Foundation Slab'};
   var A3D_SNAP={point:true,grid:false,gridSize:0.5,ortho:false,pxThreshold:12};
   /* __acad3dV67: BIM status bar read-outs. Every field here reflects state the BIM engine
      actually owns -- A3D.sk, A3D.sel/selSet, A3D.levels/activeLevel, A3D_SNAP -- which is the
@@ -6891,6 +6891,10 @@ try{
     if(sk.tool==='poly')return n?('Specify next point'+bimPromptOpts(sk)+':'):'Specify start point:';
     if(sk.tool==='rect')return n?'Specify other corner point:':'Specify first corner point:';
     if(sk.tool==='circle')return n?'Specify radius:':'Specify center point:';
+    if(sk.tool==='circle2p')return n?'Specify second end point of circle\'s diameter:':'Specify first end point of circle\'s diameter:';
+    if(sk.tool==='circle3p')return ['Specify first point on circle:','Specify second point on circle:','Specify third point on circle:'][Math.min(n,2)];
+    if(sk.tool==='ellipse')return ['Specify axis endpoint of ellipse:','Specify other endpoint of axis:','Specify distance to other axis:'][Math.min(n,2)];
+    if(sk.tool==='revcloud')return n?'Specify opposite corner:':'Specify first corner point:';
     /* __acad3dV93: the form is already chosen, so the prompt states it rather than offering
        [Inscribed/Circumscribed] at a point where no key would answer it. */
     if(sk.tool==='roomtag')return 'Select a room to tag (Escape when finished):';   /* __acad3dV101 */
@@ -6961,7 +6965,8 @@ try{
      skipped and everything else behaves identically. */
   function skPlacePoint(gx,gz,xy){
     var sk=A3D.sk;if(!sk)return;
-    if(bimIsDmTool(sk)){bimDmPoint(sk,[gx,gz]);return;}   /* __acad3dV250: MOVE, COPY, STRETCH */
+    if(bimIsDmTool(sk)){bimDmPoint(sk,[gx,gz]);return;}
+    if(bimIsDrawExtra(sk)){bimDrawExtraPoint(sk,[gx,gz]);return;}   /* __acad3dV253 */   /* __acad3dV250: MOVE, COPY, STRETCH */
     if(sk.tool==='matchprop'){if(xy)bimMatchPropClick(sk,xy);return;}
     if(sk.tool==='hatch'){                      /* __acad3dV96 */
       bimApplyHatchAt([gx,gz],sk.y,sk.hatch);
@@ -54624,6 +54629,78 @@ function bimWalkKeys(h, j) {
     for(k in o)if(o.hasOwnProperty(k)&&A3D_OSNAP.hasOwnProperty(k))A3D_OSNAP[k]=o[k];
     return A3D_OSNAP;
   }
+  /* ================= __acad3dV253: AutoCAD's other draw commands (D3) =================
+     CIRCLE's 2P and 3P forms, ELLIPSE (EL) by its axis endpoints and the other half-axis, and REVCLOUD's rectangular
+     form. A circle is two half-circle arcs as CIRCLE makes it; a revision cloud is arcs along its outline, bulging
+     outward; an ellipse has no arc form in a polyline, so it is stored as 72 points on it, as an imported ELLIPSE is.
+     The geometry is pure (bimCircle2P, bimEllipseFromAxis, bimRevcloudRect), tested without a canvas. */
+  var BIM_REVCLOUD={arc:0.5};   /* the arc length as a fraction of a metre: AutoCAD's default arc length is in drawing units */
+  function bimCircle2P(a,b){
+    var c=[(a[0]+b[0])/2,(a[1]+b[1])/2],r=Math.sqrt(Math.pow(b[0]-a[0],2)+Math.pow(b[1]-a[1],2))/2;
+    return r>1e-9?{center:c,radius:r}:null;
+  }
+  /* The ellipse whose major axis runs from a to b, with the other half-axis d long. */
+  function bimEllipseFromAxis(a,b,d,n){
+    var c=[(a[0]+b[0])/2,(a[1]+b[1])/2],ax=(b[0]-a[0])/2,az=(b[1]-a[1])/2,A=Math.sqrt(ax*ax+az*az),k,out=[];
+    if(!(A>1e-9)||!(d>1e-9))return null;
+    var ux=ax/A,uz=az/A;
+    n=n||72;
+    for(k=0;k<n;k++){
+      var t=k/n*Math.PI*2,x=Math.cos(t)*A,y=Math.sin(t)*d;
+      out.push([c[0]+x*ux-y*uz,c[1]+x*uz+y*ux]);
+    }
+    return {pts:out,center:c,a:A,b:d};
+  }
+  /* The distance of p from the line through a and b: the other half-axis the third click gives. */
+  function bimDistToLine(p,a,b){
+    var dx=b[0]-a[0],dz=b[1]-a[1],L=Math.sqrt(dx*dx+dz*dz);
+    return L>0?Math.abs((p[0]-a[0])*dz-(p[1]-a[1])*dx)/L:0;
+  }
+  /* A rectangle's outline split into arcs about len long, each bulging outward. */
+  function bimRevcloudRect(a,b,len){
+    var x0=Math.min(a[0],b[0]),x1=Math.max(a[0],b[0]),z0=Math.min(a[1],b[1]),z1=Math.max(a[1],b[1]);
+    if(x1-x0<1e-9||z1-z0<1e-9)return null;
+    len=len>0?len:BIM_REVCLOUD.arc;
+    var corners=[[x0,z0],[x1,z0],[x1,z1],[x0,z1]],pts=[],i,k;
+    for(i=0;i<4;i++){
+      var p=corners[i],q=corners[(i+1)%4],L=Math.sqrt(Math.pow(q[0]-p[0],2)+Math.pow(q[1]-p[1],2)),n=Math.max(1,Math.round(L/len));
+      for(k=0;k<n;k++)pts.push([p[0]+(q[0]-p[0])*k/n,p[1]+(q[1]-p[1])*k/n]);
+    }
+    /* a positive bulge bows to the right of the direction of travel (arc-storage.js); round a polygon of positive
+       signed area the outside is on the right */
+    var s=bimPolySignedArea(pts)>0?0.5:-0.5;
+    return {pts:pts,bulges:pts.map(function(){return s;})};
+  }
+  /* The clicks of the four tools, from skPlacePoint. */
+  function bimDrawExtraPoint(sk,p){
+    sk.pts.push([p[0],p[1]]);
+    var n=sk.pts.length,r,c;
+    if(sk.tool==='circle2p'){
+      if(n<2){a3dToast('Circle 2P: specify the second end of the diameter');paint();return;}
+      r=bimCircle2P(sk.pts[0],sk.pts[1]);
+      if(!r){sk.pts=[];a3dToast('Circle 2P: the two points are the same');paint();return;}
+      c=bimCircleSketch(r.center,r.radius);
+      addSketchObj(c.pts,{bulges:c.bulges,toast:'Circle created, radius '+bimFmtLen(r.radius)});
+    }else if(sk.tool==='circle3p'){
+      if(n<3){a3dToast('Circle 3P: specify the '+(n===1?'second':'third')+' point on the circle');paint();return;}
+      r=bimCircleFrom3Points(sk.pts[0],sk.pts[1],sk.pts[2]);
+      if(!r||!(r.radius>1e-9)||!isFinite(r.radius)){sk.pts=[];a3dToast('Circle 3P: three points in a line make no circle');paint();return;}
+      c=bimCircleSketch(r.center,r.radius);
+      addSketchObj(c.pts,{bulges:c.bulges,toast:'Circle created, radius '+bimFmtLen(r.radius)});
+    }else if(sk.tool==='ellipse'){
+      if(n<2){a3dToast('Ellipse: specify the other endpoint of the axis');paint();return;}
+      if(n<3){a3dToast('Ellipse: specify the distance to the other axis');paint();return;}
+      r=bimEllipseFromAxis(sk.pts[0],sk.pts[1],bimDistToLine(sk.pts[2],sk.pts[0],sk.pts[1]));
+      if(!r){sk.pts=[];a3dToast('Ellipse: the axes must have length');paint();return;}
+      addSketchObj(r.pts,{toast:'Ellipse created, axes '+bimFmtLen(2*r.a)+' by '+bimFmtLen(2*r.b)});
+    }else if(sk.tool==='revcloud'){
+      if(n<2){a3dToast('Revision cloud: specify the opposite corner');paint();return;}
+      r=bimRevcloudRect(sk.pts[0],sk.pts[1],BIM_REVCLOUD.arc);
+      if(!r){sk.pts=[];a3dToast('Revision cloud: drag out a rectangle');paint();return;}
+      addSketchObj(r.pts,{bulges:r.bulges,toast:'Revision cloud created'});
+    }
+  }
+  function bimIsDrawExtra(sk){return !!sk&&(sk.tool==='circle2p'||sk.tool==='circle3p'||sk.tool==='ellipse'||sk.tool==='revcloud');}
   /* ================= __acad3dV250: AutoCAD's modify commands (D2) =================
      MOVE, COPY, STRETCH, EXPLODE, JOIN (polylines), OVERKILL, DRAWORDER and MATCHPROP, by
      AutoCAD's names and aliases. MOVE and COPY take a base point and a second point (a typed
@@ -73153,6 +73230,10 @@ function bimRptPlan(families) {
     align:function(){openAlignDlg();},
     join:function(){bimJoinCommand();},   /* __acad3dV250: polylines first, then walls */
     moveTool:function(){startMoveTool();},
+    circle2p:function(){startSketch('circle2p');},   /* __acad3dV253 */
+    circle3p:function(){startSketch('circle3p');},
+    ellipse:function(){startSketch('ellipse');},
+    revcloud:function(){startSketch('revcloud');},
     copyTool:function(){startCopyTool();},
     stretch:function(){startStretchTool();},
     explode:function(){bimExplodeSelection();},

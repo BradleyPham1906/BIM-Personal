@@ -261,6 +261,10 @@ import { bimOpenToolsPanel } from '../ui/discipline-tabs.js';
     align:function(){openAlignDlg();},
     join:function(){bimJoinCommand();},   /* __acad3dV250: polylines first, then walls */
     moveTool:function(){startMoveTool();},
+    circle2p:function(){startSketch('circle2p');},   /* __acad3dV253 */
+    circle3p:function(){startSketch('circle3p');},
+    ellipse:function(){startSketch('ellipse');},
+    revcloud:function(){startSketch('revcloud');},
     copyTool:function(){startCopyTool();},
     stretch:function(){startStretchTool();},
     explode:function(){bimExplodeSelection();},
