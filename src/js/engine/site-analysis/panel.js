@@ -62,6 +62,7 @@ import { bimRvPropsHtml } from '../render/rendered-view.js';
 import { A3D_BENCH, bimBenchmarkText, bimGraphicsLabel } from '../render/webgpu.js';
 import { bimLodOf } from '../map/lod-solids.js';
 import { paint } from '../map/terrain-3d.js';
+import { bimPcPropsHtml } from '../map/pointcloud-view.js';
 import { bimWalkPropsHtml } from '../walk/walk-mode.js';
 import { bimNoteDef } from '../annotation/annotation-overlay.js';
 import { bimPrimBase, bimPrmLabel } from '../editing/faces-push-pull.js';
@@ -627,6 +628,7 @@ import { bimNoteHex } from '../testing/hooks-view-gizmo.js';
     h+=bimPropGroup('Dimensions',dims);
     if(o.t==='terrain'&&o.survey&&!o.grading)h+=bimPropGroup('Survey Check',bimSurveyCheckHtml(o));   /* __acad3dV138; __acad3dV145: not a proposed one */
     if(o.t==='terrain'&&o.survey)h+=bimPropGroup('Terrain Analysis',bimTerrainPropsHtml(o));   /* __acad3dV144 */
+    if(o.t==='pointcloud'&&o.pc)h+=bimPropGroup('Point Cloud',bimPcPropsHtml(o));   /* __acad3dV190 */
     if(o.t==='terrain'&&o.grading)h+=bimPropGroup('Grading',bimGradePropsHtml(o));            /* __acad3dV145 */
     if(bimIsFrameMember(o))h+=bimStructPropsHtml(o);   /* __acad3dV125 */
     if(bimIsAlignment(o))h+=bimAlignPropsHtml(o);       /* __acad3dV127 */

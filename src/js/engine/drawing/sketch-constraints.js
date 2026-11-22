@@ -8,6 +8,7 @@ import { A3D_GL } from '../render/webgl.js';
 import { bimPickGpu, bimPickGpuWanted } from '../render/gpu-pick.js';
 import { A3D_GPU } from '../render/webgpu.js';
 import { bimBuildPickPolys, paint } from '../map/terrain-3d.js';
+import { bimPcPick } from '../map/pointcloud-view.js';
 import { bimPickSketch, inPoly } from '../render/viewcube.js';
 import { bimPickNote } from '../annotation/annotation-overlay.js';
 import {
@@ -409,6 +410,8 @@ import { a3dToast } from '../bim/csg-booleans.js';
       if(A3D.lastPolys[i].lock)continue;
       if(inPoly(x,y,A3D.lastPolys[i].pts))return A3D.lastPolys[i].o;
     }
+    var pcHit=bimPcPick(x,y);   /* __acad3dV190: a point cloud, by its nearest point */
+    if(pcHit)return pcHit;
     return bimPickSketch(x,y);
   }
 export {

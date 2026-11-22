@@ -2,6 +2,7 @@ import { bimHistValid } from '../history/element-history.js';
 import { bimDimStyleValid, bimTextStyleValid } from '../annotation/dim-tools.js';
 import { bimApplyUnitState } from '../properties/palette.js';
 import { bimResValid, setA3D_RES_IMG } from '../analysis/results-layers.js';
+import { bimPcRestoreData } from '../map/pointcloud-view.js';
 import { bimProjectRecord } from './objects-save.js';
 import { bimDocsBoot } from '../ui/project-tabs.js';
 import { bimAdoptLayers } from '../bim/region-regenerate.js';
@@ -126,6 +127,7 @@ import { bimPresValid } from '../sheets/boards.js';
       A3D.textStyle=bimTextStyleValid(st&&st.textStyle);   /* __acad3dV259: its text style */
       A3D.matCards=bimMatCardsValid(st&&st.matCards);   /* __acad3dV268: its own material cards */
       A3D.sheet=bimSheetValid(st&&st.sheet);   /* __acad3dV269: its spreadsheet */
+      bimPcRestoreData(st&&st.pcData);   /* __acad3dV190: its point clouds' points */
       setA3D_RES_IMG({});
       if(st&&Array.isArray(st.classifications)){
         A3D.classifications=st.classifications.filter(function(c){return c&&typeof c.id==='string'&&typeof c.code==='string';});

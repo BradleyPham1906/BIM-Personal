@@ -70,6 +70,7 @@ import {
 import {
   bimOcctSweep, startOcctDraft, startOcctPattern, startOcctThickness
 } from '../solids/occt-features.js';
+import { bimMeshRepairCommand, bimMeshToSolidCommand } from '../editing/mesh-repair.js';
 import { bimSkpPick } from '../io/sketchup-import.js';
 import { bimGltfExport, bimGltfPick } from '../io/gltf.js';
 import { bimIfcPick } from '../io/ifc-full.js';
@@ -306,6 +307,8 @@ import { bimOpenToolsPanel } from '../ui/discipline-tabs.js';
     exportstep:function(){bimOcctExportStep();},
     materials:function(){openMaterialsDlg();},   /* __acad3dV268 */
     spreadsheet:function(){openSheetDlg();},   /* __acad3dV269 */
+    meshrepair:function(){bimMeshRepairCommand();},   /* __acad3dV271 */
+    meshtosolid:function(){bimMeshToSolidCommand();},
     gctangent:function(){startConstraintTool('tangent');},   /* __acad3dV267 */
     dcradius:function(){startConstraintTool('radius');},
     dcdiameter:function(){startConstraintTool('diameter');},

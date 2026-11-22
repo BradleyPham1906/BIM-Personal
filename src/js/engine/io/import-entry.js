@@ -13,6 +13,7 @@ import { bimImportSKP } from './sketchup-import.js';
 import { bimImportGLTF } from './gltf.js';
 import { bimImportIFCFull } from './ifc-full.js';
 import { bimCityJsonFile } from '../map/cityjson.js';
+import { bimPcImport } from '../map/pointcloud-view.js';
 import { closeDlg } from '../ui/touch-input.js';
 import { a3dToast } from '../bim/csg-booleans.js';
 
@@ -56,10 +57,13 @@ import { a3dToast } from '../bim/csg-booleans.js';
     }else if(ext==='step'||ext==='stp'){   /* __acad3dV264: through OpenCASCADE */
       reader.onload=function(ev){bimOcctImportStep(ev.target.result,name);};
       reader.readAsArrayBuffer(file);
+    }else if(ext==='las'||ext==='laz'||ext==='ply'){   /* __acad3dV190: point clouds */
+      reader.onload=function(ev){try{bimPcImport(ev.target.result,name);}catch(eI){console.warn('[BIM] point cloud import crashed:',eI);a3dToast('Point cloud import failed: '+(eI&&eI.message?eI.message:eI));}};
+      reader.readAsArrayBuffer(file);
     }else if(ext==='iges'||ext==='igs'){
       a3dToast('.'+ext.toUpperCase()+' is not supported yet: export it as STEP, which Import reads');
     }else{
-      a3dToast('Unsupported file type: .'+ext+' (supported: .dxf, .dwg, .ifc, .obj, .stl, .glb and .gltf, .skp SketchUp, .json project files, .geojson and .kml site data, .city.json CityJSON, .xml LandXML)');
+      a3dToast('Unsupported file type: .'+ext+' (supported: .dxf, .dwg, .ifc, .obj, .stl, .glb and .gltf, .skp SketchUp, .json project files, .geojson and .kml site data, .city.json CityJSON, .xml LandXML, .step, .las and .ply point clouds)');
     }
   }
 

@@ -2,9 +2,8 @@
    src/js/engine/map/pointcloud.js, LOD-C's first slice: local LAS and PLY files read, sampled to a point budget and
    rebased in double precision; class names, height colours and ground points by cell.
 
-   Outside tests/unit/ while the work orders are open. Run them with:
-     node --test docs/work-orders/v190/v190.test.mjs
-     node --test --test-name-pattern="WO-02" docs/work-orders/v190/v190.test.mjs
+   Moved into tests/unit/ by WO-12 (it was docs/work-orders/v190/v190.test.mjs while the orders were open); the
+   import's own pure parts (pointcloud-view.js) are tested at the end through the engine.
    The LAS and PLY files are built here byte by byte from the specifications (ASPRS LAS 1.2 and 1.4, PLY), so the
    expected values do not come from the code under test. */
 import { test } from 'node:test';
@@ -12,8 +11,9 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { loadEngine } from './helpers/engine.mjs';
 
-const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..', '..');
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 const NAMES = ['bimPcSniff', 'bimPcLasHeader', 'bimPcStep', 'bimPcLasPoints', 'bimPcOrigin', 'bimPcPlyHeader', 'bimPcPlyRead',
   'bimPcPlyPoints', 'bimPcClassName', 'bimPcHeightColour', 'bimPcGround'];
 function load() {
@@ -194,4 +194,35 @@ test('WO-11 ground points thinned to the lowest in each cell; other classes left
   assert.deepEqual(fn('bimPcGround')(cloud, 1).map((p) => p.map((v) => Math.round(v * 10) / 10)), [[0.8, 0.9, 4], [1.5, 0.5, 6]]);
   assert.equal(fn('bimPcGround')(cloud, 5).length, 1);
   assert.deepEqual(fn('bimPcGround')({ n: 1, xyz: new Float32Array(3), cls: null }, 1), []);
+});
+
+// ---- WO-12, WO-13: the import's pure parts (engine/map/pointcloud-view.js) ----
+const E = loadEngine();
+test('WO-12 a LAS file read whole: its origin kept, its points rebased, sampled to a budget', () => {
+  const r = E.bimPcReadBytes(bytesOf(las({ pts: PTS })), 1000);
+  assert.equal(r.kind, 'las'); assert.equal(r.count, 4); assert.equal(r.cloud.n, 4);
+  assert.deepEqual(r.origin, [500011, 4400021, 12]);
+  near(r.cloud.xyz[0], 500010.25 - 500011, 1e-4);
+  const s = E.bimPcReadBytes(bytesOf(las({ pts: PTS })), 2);
+  assert.equal(s.cloud.n, 2, 'every second point');
+  assert.match(E.bimPcReadBytes(new Uint8Array([1, 2, 3, 4, 5]), 10).error, /Not a LAS or PLY/);
+  const laz = bytesOf(las({ pts: PTS })); laz[104] |= 0x80;
+  assert.match(E.bimPcReadBytes(laz, 10).error, /LAZ/);
+});
+test('WO-12 a PLY file is rebased on its own whole-metre origin', () => {
+  const txt = 'ply\nformat ascii 1.0\nelement vertex 2\nproperty float x\nproperty float y\nproperty float z\nend_header\n10.5 20.25 3\n12.5 22.25 5\n';
+  const r = E.bimPcReadBytes(new TextEncoder().encode(txt), 100);
+  assert.equal(r.kind, 'ply'); assert.deepEqual(r.origin, [11, 21, 3]);
+  near(r.cloud.xyz[0], -0.5, 1e-6); near(r.cloud.xyz[5], 2, 1e-6);
+});
+test('WO-13 colours by RGB, class or height, a hidden class transparent; the classes listed', () => {
+  const c = E.bimPcReadBytes(bytesOf(las({ pts: PTS })), 1000).cloud;
+  assert.deepEqual(E.bimPcClasses(c), [2, 5, 6]);
+  const rgb = E.bimPcColours(c, 'rgb', {});
+  assert.deepEqual([...rgb.slice(0, 4)], [255, 0, 1, 255]);
+  const cls = E.bimPcColours(c, 'class', { 6: true });
+  assert.equal(cls[2 * 4 + 3], 0, 'the building point is hidden');
+  assert.equal(cls[0 * 4 + 3], 255);
+  const ht = E.bimPcColours(c, 'height', {});
+  assert.deepEqual([...ht.slice(2 * 4, 2 * 4 + 3)], E.bimPcHeightColour(c.xyz[8], ...E.bimPcZRange(c)));
 });
