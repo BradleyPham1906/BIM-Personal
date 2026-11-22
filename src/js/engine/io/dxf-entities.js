@@ -259,7 +259,64 @@ import { bimPolySignedArea } from '../bim/rooms.js';
     for(i=0;i<loops.length;i++){var a=Math.abs(bimPolySignedArea(loops[i].pts));if(a>ba){ba=a;best=loops[i];}}
     return best?[best]:[];
   }
+  /* ================= __acad3dV263: binary DXF =================
+     A binary DXF (DXF Reference, "Binary DXF Files") starts with the 22-byte sentinel "AutoCAD Binary DXF\r\n\x1a\0".
+     Then each group: its code (R13 and later: 2 bytes, little-endian; R12: 1 byte, 255 meaning a 2-byte code
+     follows) and its value, whose type the code decides (the reference's "Group Code Value Types"): text ending in
+     a 0 byte; 8-byte doubles; 2-, 4- and 8-byte integers; a 1-byte boolean; binary chunks of a length byte and
+     data. It is turned into the ASCII form, so everything after reads it as it reads any DXF. */
+  var BIM_DXF_BIN_SENTINEL='AutoCAD Binary DXF\r\n\u001a\u0000';
+  function dxfIsBinary(bytes){
+    if(!bytes||bytes.length<22)return false;
+    for(var i=0;i<22;i++)if(bytes[i]!==BIM_DXF_BIN_SENTINEL.charCodeAt(i))return false;
+    return true;
+  }
+  function dxfBinType(c){
+    if((c>=0&&c<=9)||c===100||c===102||c===105||(c>=300&&c<=309)||(c>=320&&c<=369)||(c>=390&&c<=399)||
+       (c>=410&&c<=419)||(c>=430&&c<=439)||(c>=470&&c<=481)||c===999||(c>=1000&&c<=1003)||(c>=1005&&c<=1009))return 's';
+    if((c>=10&&c<=59)||(c>=110&&c<=149)||(c>=210&&c<=239)||(c>=460&&c<=469)||(c>=1010&&c<=1059))return 'd';
+    if((c>=60&&c<=79)||(c>=170&&c<=179)||(c>=270&&c<=289)||(c>=370&&c<=389)||(c>=400&&c<=409)||(c>=1060&&c<=1070))return 'h';
+    if((c>=90&&c<=99)||(c>=420&&c<=429)||(c>=440&&c<=459)||c===1071)return 'i';
+    if(c>=160&&c<=169)return 'l';
+    if(c>=290&&c<=299)return 'b';
+    if((c>=310&&c<=319)||c===1004)return 'x';
+    return null;
+  }
+  /* The ASCII DXF a binary one says; throws on a group code it does not know. */
+  function dxfBinaryToText(bytes){
+    var dv=new DataView(bytes.buffer,bytes.byteOffset,bytes.byteLength),p=22,out=[],wide;
+    wide=bytes[22]===0&&bytes[23]===0;   /* R13+: the first code, 0, takes two bytes */
+    var dec=typeof TextDecoder!=='undefined'?new TextDecoder('utf-8'):null;
+    function str(){
+      var s=p;while(p<bytes.length&&bytes[p]!==0)p++;
+      var t=dec?dec.decode(bytes.subarray(s,p)):String.fromCharCode.apply(null,Array.prototype.slice.call(bytes,s,p));
+      p++;return t;
+    }
+    while(p<bytes.length){
+      var code;
+      if(wide){code=dv.getUint16(p,true);p+=2;}
+      else{code=bytes[p++];if(code===255){code=dv.getInt16(p,true);p+=2;}}
+      var ty=dxfBinType(code),v;
+      if(ty==='s')v=str();
+      else if(ty==='d'){v=String(dv.getFloat64(p,true));p+=8;}
+      else if(ty==='h'){v=String(dv.getInt16(p,true));p+=2;}
+      else if(ty==='i'){v=String(dv.getInt32(p,true));p+=4;}
+      else if(ty==='l'){var lo=dv.getUint32(p,true),hi=dv.getInt32(p+4,true);v=String(hi*4294967296+lo);p+=8;}
+      else if(ty==='b'){v=String(bytes[p++]);}
+      else if(ty==='x'){var n=bytes[p++],hx='',k;for(k=0;k<n;k++)hx+=(bytes[p+k]<16?'0':'')+bytes[p+k].toString(16).toUpperCase();p+=n;v=hx;}
+      else throw new Error('Binary DXF: unknown group code '+code+' at byte '+(p-2));
+      out.push(String(code),v);
+      if(code===0&&v==='EOF')break;
+    }
+    return out.join('\n')+'\n';
+  }
+  /* What import-entry.js hands the DXF reader: the text of an ASCII DXF, or of a binary one turned into ASCII. */
+  function dxfTextFromBytes(buf){
+    var b=new Uint8Array(buf);
+    if(dxfIsBinary(b))return dxfBinaryToText(b);
+    return typeof TextDecoder!=='undefined'?new TextDecoder('utf-8').decode(b):String.fromCharCode.apply(null,Array.prototype.slice.call(b));
+  }
 export {
-  dxfEllipsePts, dxfEntityExtra, dxfExpandInserts, dxfHatchOuter, dxfHatchPattern, dxfSplinePts, dxfTextPlain,
-  dxfXform
+  dxfEllipsePts, dxfEntityExtra, dxfExpandInserts, dxfHatchOuter, dxfHatchPattern, dxfSplinePts,
+  dxfTextFromBytes, dxfTextPlain, dxfXform
 };

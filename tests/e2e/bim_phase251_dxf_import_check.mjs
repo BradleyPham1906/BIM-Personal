@@ -107,6 +107,37 @@ ck(!!turned && turned.pts.some((p) => Math.abs(p[0] - 5.1) < 1e-6 && Math.abs(p[
 ck(/block insert/.test(toast), 'the import notice counts the blocks (' + toast.slice(0, 160) + ')');
 await ev(`window.__a3dRunCmd('zoomFit');`); await sleep(600);
 await shot('v251-01-imported');
+
+// V263: the same drawing through the Import picker, once as ASCII and once as a binary DXF made here byte by byte
+import path from 'node:path';
+const SENT = 'AutoCAD Binary DXF\r\n\u001a\u0000';
+function toBinary(text) {
+  const L = text.split('\n'), parts = [Buffer.from(SENT, 'latin1')];
+  const D = (c) => (c >= 10 && c <= 59) || (c >= 110 && c <= 149) || (c >= 210 && c <= 239);
+  const H = (c) => (c >= 60 && c <= 79) || (c >= 170 && c <= 179) || (c >= 270 && c <= 289) || (c >= 370 && c <= 389);
+  const I = (c) => (c >= 90 && c <= 99) || (c >= 420 && c <= 429);
+  for (let i = 0; i + 1 < L.length; i += 2) {
+    const c = parseInt(L[i], 10), v = L[i + 1], b = Buffer.alloc(2); b.writeUInt16LE(c); parts.push(b);
+    if (D(c)) { const x = Buffer.alloc(8); x.writeDoubleLE(parseFloat(v)); parts.push(x); }
+    else if (H(c)) { const x = Buffer.alloc(2); x.writeInt16LE(parseInt(v, 10)); parts.push(x); }
+    else if (I(c)) { const x = Buffer.alloc(4); x.writeInt32LE(parseInt(v, 10)); parts.push(x); }
+    else parts.push(Buffer.from(v + '\0', 'utf8'));
+  }
+  return Buffer.concat(parts);
+}
+const DIR = path.resolve(OUT, 'dxf'); fs.mkdirSync(DIR, { recursive: true });
+fs.writeFileSync(path.join(DIR, 'v251-ascii.dxf'), FILE);
+fs.writeFileSync(path.join(DIR, 'v251-binary.dxf'), toBinary(FILE));
+await C.send('DOM.enable');
+for (const f of ['v251-ascii.dxf', 'v251-binary.dxf']) {
+  await ev(`window.__a3dTestSetObjs([]);`);
+  const doc = await C.send('DOM.getDocument', { depth: -1 });
+  const q = await C.send('DOM.querySelector', { nodeId: doc.result.root.nodeId, selector: '#a3d-filein' });
+  await C.send('DOM.setFileInputFiles', { nodeId: q.result.nodeId, files: [path.join(DIR, f)] });
+  await sleep(1200);
+  const n = (await ev('return window.__a3dSketchWorld();')).length;
+  ck(n === 11, f + ' through the Import picker: the same eleven drawn objects (' + n + ')');
+}
 ck(errors.length === 0, 'no console errors (' + errors.slice(0, 3).join(' | ') + ')');
 console.log(`${pass} passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);
