@@ -139,7 +139,7 @@ line and `window.__a3dSiteUi`. The part B tests were checked against a reference
 
 ---
 
-## [ ] WO-12 [Cline] `bimCtxCards` in `src/js/engine/map/site-ui.js`
+## [x] WO-12 [Cline] `bimCtxCards` in `src/js/engine/map/site-ui.js`
 
 - **Implement:** the Data layers dialog's cards, as SPEC B3 says, with the table's sentences word for word.
 - **It must:**
