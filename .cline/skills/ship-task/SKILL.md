@@ -49,6 +49,9 @@ It is complete only after `tools/gate.py ship` succeeds and the gate's commit is
    a merge conflicts, or the push fails, do not say the task shipped; report the exact failure and stop.
 8. Report the task ID, checks, commit hash, and push result. Then stop unless the owner requested more tasks.
 
+This workflow ends with the normal response; do not invoke a tool named `finish` or the separate Claude `/finish`
+routine for a Cline work order.
+
 ## Failure handling
 
 - Allow at most two focused fix attempts for a failure. Then preserve the work and report the failing lines.
