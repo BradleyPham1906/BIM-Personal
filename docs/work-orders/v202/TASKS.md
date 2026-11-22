@@ -49,7 +49,7 @@ Done 2026-11-13: the file (with `BIM_NBI_URL` and `bimCityRecs` too), its includ
 
 ---
 
-## [ ] WO-02 [Cline] `bimDep3Url` in `src/js/engine/map/measured-context.js`
+## [x] WO-02 [Cline] `bimDep3Url` in `src/js/engine/map/measured-context.js`
 
 - **Implement:** the 3DEP `exportImage` address for an area and a grid size, exactly as SPEC part 4 writes it.
 - **It must:**

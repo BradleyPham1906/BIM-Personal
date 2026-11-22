@@ -43903,8 +43903,15 @@ BIM_IFC_SAVE.model=bimIfcSaveModel;
   }
   /* WO-02: the 3DEP exportImage address for an area {w,s,e,n} and a grid of cols x rows (2 to 2000),
      the bbox in Web Mercator (R 6378137, toFixed(2)); null for a missing area or a bad size */
-  function bimDep3Url(a,cols,rows){
-    return null;
+  function bimDep3Url(a, cols, rows) {
+    if (!a || typeof cols !== 'number' || typeof rows !== 'number') return null;
+    if (cols < 2 || cols > 2000 || rows < 2 || rows > 2000) return null;
+    if (!a.w || !a.s || !a.e || !a.n) return null;
+    var R = 6378137, D = Math.PI / 180;
+    var mx = function(lon) { return R * lon * D; };
+    var my = function(lat) { return R * Math.log(Math.tan(Math.PI / 4 + lat * D / 2)); };
+    var bbox = mx(a.w).toFixed(2) + ',' + my(a.s).toFixed(2) + ',' + mx(a.e).toFixed(2) + ',' + my(a.n).toFixed(2);
+    return 'https://elevation.nationalmap.gov/arcgis/rest/services/3DEPElevation/ImageServer/exportImage?bbox=' + bbox + '&bboxSR=3857&imageSR=3857&size=' + cols + ',' + rows + '&format=tiff&pixelType=F32&compression=None&interpolation=RSP_BilinearInterpolation&f=image';
   }
   /* WO-03: the ground in metres at lon, lat from a DEM grid {w,h,data,a}, bilinear between pixel
      centres in Web Mercator; NaN off the grid or on nodata (below -1000) */
