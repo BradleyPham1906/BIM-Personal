@@ -119,6 +119,7 @@
   "bimHatchHoleArea",
   "bimIfcEditParams",
   "bimIfcEditPlan",
+  "bimIgesMesh",
   "bimInquiryArea",
   "bimInquiryDist",
   "bimIntBubbleLayout",

@@ -16974,6 +16974,7 @@ The owner, 2026-11-22: "do it all in one run". Research and the full list: `docs
   noise diagonal as zero.
 - V268 MATERIALS with FreeCAD 1.0 .FCMat; V269 SPREADSHEET bound to the model; V190 WO-12, WO-13 point clouds in the model;
   V271 MESHREPAIR, MESHTOSOLID; V272 VIEWBASE (OpenCASCADE HLR); V273 JOINT and BOM.
-- Open: IGES (V270) waits for the owner's approval of occt-import-js.
-- Checks: syntax, `npm run modules`, the build, `npm run check`, `npm test` 495 of 495, the browser check
-  `tests/e2e/bim_phase266_273_check.mjs` 32 of 32.
+- V270 IGES import (the owner's approval, "Yes"): occt-import-js 0.0.23 pinned at `runtime/occt-import/0.0.23/`,
+  loaded on first IGES import (`io/iges-io.js`); tested on an IGES box of our own (`tests/unit/iges.test.mjs`).
+- Checks: syntax, `npm run modules`, the build, `npm run check`, `npm test` 496 of 496, the browser check
+  `tests/e2e/bim_phase266_273_check.mjs` 35 of 35.

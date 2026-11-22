@@ -8,6 +8,7 @@ import { dxfTextFromBytes } from './dxf-entities.js';
 import { bimImportDXF } from './import-dxf.js';
 import { bimImportDWG } from './dwg-io.js';
 import { bimOcctImportStep } from '../solids/occt-tools.js';
+import { bimImportIGES } from './iges-io.js';
 import { bimImportOBJ, bimImportSTL } from './import-obj-stl.js';
 import { bimImportSKP } from './sketchup-import.js';
 import { bimImportGLTF } from './gltf.js';
@@ -60,10 +61,11 @@ import { a3dToast } from '../bim/csg-booleans.js';
     }else if(ext==='las'||ext==='laz'||ext==='ply'){   /* __acad3dV190: point clouds */
       reader.onload=function(ev){try{bimPcImport(ev.target.result,name);}catch(eI){console.warn('[BIM] point cloud import crashed:',eI);a3dToast('Point cloud import failed: '+(eI&&eI.message?eI.message:eI));}};
       reader.readAsArrayBuffer(file);
-    }else if(ext==='iges'||ext==='igs'){
-      a3dToast('.'+ext.toUpperCase()+' is not supported yet: export it as STEP, which Import reads');
+    }else if(ext==='iges'||ext==='igs'){   /* __acad3dV270: through occt-import-js, loaded now */
+      reader.onload=function(ev){bimImportIGES(ev.target.result,name);};
+      reader.readAsArrayBuffer(file);
     }else{
-      a3dToast('Unsupported file type: .'+ext+' (supported: .dxf, .dwg, .ifc, .obj, .stl, .glb and .gltf, .skp SketchUp, .json project files, .geojson and .kml site data, .city.json CityJSON, .xml LandXML, .step, .las and .ply point clouds)');
+      a3dToast('Unsupported file type: .'+ext+' (supported: .dxf, .dwg, .ifc, .obj, .stl, .glb and .gltf, .skp SketchUp, .json project files, .geojson and .kml site data, .city.json CityJSON, .xml LandXML, .step, .iges, .las and .ply point clouds)');
     }
   }
 

@@ -63,11 +63,20 @@ Checks: `npm test` 495 of 495; the browser check `tests/e2e/bim_phase266_273_che
 
 ## 5. What is open
 
-- **IGES (V270): needs the owner's approval of occt-import-js 0.0.23** (LGPL-2.1, its own file under `runtime/`, as
-  OpenCASCADE's build is). It was not run here. `docs/research/experiments/v270-iges/` holds a generator of our own IGES
-  box for its test. Until then Import says to use STEP.
+- IGES (V270) is built since the owner's approval (2026-11-22, "Yes"): see section 6. IGES export is not: no IGES
+  writer is in either OpenCASCADE build.
 - Joints: a hinge's axis is vertical; a ball, a cylindrical joint, or a hinge on a tilted axis is not built; closed loops
   are refused rather than solved.
 - Make2D on meshes (v189) stays Cline's; VIEWBASE covers OpenCASCADE solids exactly.
 - A point cloud over 500,000 points is not saved inside the project; it asks for its file again after a reload.
 - Not attempted: FreeCAD's FEM, CAM, Robot, OpenSCAD (out of scope since the September survey).
+
+## 6. Built after approval: IGES import (V270)
+
+The owner, 2026-11-22: "Yes" (to occt-import-js 0.0.23). `runtime/occt-import/0.0.23/`: `occt-import-js.js` and
+`.wasm` copied unchanged (LGPL-2.1, 7.6 MB), both licences and a source offer, pinned in `runtime/MANIFEST.json` by
+`tools/occt/build_occt_import.mjs` (`--check`). `src/js/engine/io/iges-io.js` loads it only when an IGES file is
+imported (SRI over http, as the other runtimes), reads in metres, turns Z up into the app's y up, and makes one mesh
+object, which MESHTOSOLID (V271) makes a solid. Measured: our own IGES box (`tests/fixtures/iges/box-2x1x3.igs`, from
+the experiment's generator) reads as six faces, 2 x 1 x 3 m, and closes to 6 m3 (`tests/unit/iges.test.mjs`; the
+browser check, 35 of 35).

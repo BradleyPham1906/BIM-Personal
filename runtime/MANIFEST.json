@@ -338,6 +338,41 @@
    "sha256": "6ea202662d0face2c746a5d71ca0ad7cc5f2e28922f8ee1a7ccd02af463453ae",
    "from": "written by tools/occt/build_occt.mjs: the source offer",
    "licence": "LGPL-2.1-only (OpenCASCADE, replicad-opencascadejs)"
+  },
+  {
+   "path": "occt-import/0.0.23/occt-import-js.js",
+   "bytes": 96871,
+   "sha256": "3fb44ce11d00611f9b3f3c5775d520ebab48930c1f08279b7b1316f05f0d3379",
+   "from": "npm occt-import-js@0.0.23, dist/occt-import-js.js, unchanged",
+   "licence": "LGPL-2.1 (occt-import-js; OpenCASCADE)"
+  },
+  {
+   "path": "occt-import/0.0.23/occt-import-js.wasm",
+   "bytes": 7604031,
+   "sha256": "33391fc9d94ea5c869a6718488bf0a9a464222bac9bdc764dfe1690cef281952",
+   "from": "npm occt-import-js@0.0.23, dist/occt-import-js.wasm, unchanged",
+   "licence": "LGPL-2.1 (occt-import-js; OpenCASCADE)"
+  },
+  {
+   "path": "occt-import/0.0.23/LICENSE-occt-import-js.txt",
+   "bytes": 27030,
+   "sha256": "7ffe1954587c77dfba1cf8eb9b2ea743671fa6e63f9e7a2f258119d42e14eefe",
+   "from": "npm occt-import-js@0.0.23, dist/license.occt-import-js.txt",
+   "licence": "LGPL-2.1 (occt-import-js; OpenCASCADE)"
+  },
+  {
+   "path": "occt-import/0.0.23/LICENSE-occt.txt",
+   "bytes": 26936,
+   "sha256": "090f8eb6ba63e72887c1f89b009fb1656cfda02d83b6e9805b20468520a5d77f",
+   "from": "npm occt-import-js@0.0.23, dist/license.occt.txt",
+   "licence": "LGPL-2.1 (occt-import-js; OpenCASCADE)"
+  },
+  {
+   "path": "occt-import/0.0.23/SOURCE.md",
+   "bytes": 929,
+   "sha256": "9af885467c05afe44008ce4bd2fe8e87bdef112607374f4bc6082cb8a5b24100",
+   "from": "written by tools/occt/build_occt_import.mjs: the source offer",
+   "licence": "LGPL-2.1 (occt-import-js; OpenCASCADE)"
   }
  ],
  "three": "0.186.1",
@@ -346,5 +381,6 @@
  "ifcopenshell": "0.8.5",
  "geotiff": "3.0.5",
  "cc-dwg": "e36a94d",
- "occt": "1.2.1"
+ "occt": "1.2.1",
+ "occtImport": "0.0.23"
 }

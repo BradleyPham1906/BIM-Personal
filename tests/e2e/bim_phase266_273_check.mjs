@@ -6,6 +6,7 @@
      V267 DCRADIUS on a circle      V268 MATERIALS: a new card, assigned, exported as .FCMat
      V269 SPREADSHEET: a cell bound to a solid's elevation      V190 a LAS cloud imported, drawn, ground to surface
      V271 an STL soup repaired and made a solid      V272 VIEWBASE      V273 JOINT (a hinge) and BOM
+     V270 an IGES file of our own imported and made a solid
 
    To run it:
      python3 -m http.server 8765 --bind 127.0.0.1                       (from the repository's root)
@@ -288,6 +289,19 @@ await press('[data-a3dlg="cancel"]');
 await ev(`window.__a3dRunAct('v:iso');window.__a3dSelectFor([]);`); await sleep(300); await ev(`window.__a3dRunCmd('zoomFit');`); await sleep(800);
 await shot('v273-assembly');
 
+// ---- V270: an IGES file of our own, through Import, then a true solid ----
+const igs = path.resolve('tests/fixtures/iges/box-2x1x3.igs');
+const before2 = (await ev('return window.__a3dObjects();')).map((o) => o.id);
+await ev(`window.__a3dSelectFor([]);`); await pickFile(igs);
+const ig = await waitFor(async () => (await ev('return window.__a3dObjects();')).find((o) => before2.indexOf(o.id) < 0), 60000);
+ck(ig && ig.name === 'box-2x1x3', 'an IGES file imports (the reader loaded on first use): ' + (ig && ig.name));
+if (ig) {
+  const igb = bounds(await snap(ig.id));
+  ck(near(igb[3] - igb[0], 2, 1e-6) && near(igb[4] - igb[1], 3, 1e-6) && near(igb[5] - igb[2], 1, 1e-6), 'its box is 2 east, 3 up, 1 north (' + igb.map((v) => +v.toFixed(3)) + ')');
+  await ev(`window.__a3dSelectFor([${JSON.stringify(ig.id)}]);`); await run('meshtosolid'); await sleep(1500);
+  const is = (await solids()).find((v) => v.id === ig.id);
+  ck(is && near(is.volume, 6, 1e-6), 'MESHTOSOLID makes it a 6 m3 solid (' + (is && is.volume) + ')');
+}
 const real = errors.filter((e) => !/favicon\.ico/.test(e));
 ck(real.length === 0, 'no console errors (' + real.slice(0, 3).join(' | ') + ')');
 console.log(`${pass} passed, ${fail} failed`);
