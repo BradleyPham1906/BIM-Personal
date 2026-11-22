@@ -63,7 +63,7 @@ work orders under the existing workflow (Claude specifies, Cline builds).
 | D4 | Annotation styles: text styles and multiline text, dimension styles, baseline/continue/ordinate/arc-length dimensions, multileaders | Drawings that read like professional sheets |
 | D5 | Linetypes and per-object colour and lineweight | Needed for D7's round trip, and for plotting |
 | D6 | Blocks: attributes, a block editor, explode, external references | Title blocks and tags carry data |
-| D7 | DXF fidelity: read and write text, multiline text, blocks, hatches, dimensions, ellipses, splines, linetypes; binary DXF in | What every consultant's drawing arrives as |
+| D7 | DXF fidelity: read and write text, multiline text, blocks, hatches, dimensions, ellipses, splines, linetypes; binary DXF in | **Import built as V251, 2026-11-22:** blocks (nested, arrays, mirrored), dimensions, TEXT, MTEXT, ATTRIB, ELLIPSE, SPLINE, SOLID, true-arc circles. Still open: HATCH, binary DXF, and the export side |
 | D8 | Inquiry: LIST, ID, DIST, AREA, MASSPROP for regions, COUNT, a calculator | Small |
 | D9 | DWG, research only first | Needs a library: acadrust (CADCraft's, Rust) through WebAssembly, or LibreDWG (GPL, so only as a separate program under the third-party rule). License, size and fidelity to be measured before the owner approves one |
 
