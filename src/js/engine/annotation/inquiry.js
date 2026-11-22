@@ -183,4 +183,6 @@ import { a3dToast, objById } from '../bim/csg-booleans.js';
     if(ids.length>50)rows.push('-',['More',(ids.length-50)+' further objects not listed']);
     return bimInquiryShow('List: '+ids.length+' object'+(ids.length>1?'s':''),rows);
   }
-export { bimInquiryFinish, bimInquiryPoint, bimIsInquiryTool, bimListCommand, startInquiryTool };
+export {
+  bimInquiryFinish, bimInquiryPoint, bimInquiryShow, bimIsInquiryTool, bimListCommand, startInquiryTool
+};

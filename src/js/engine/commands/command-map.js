@@ -26,6 +26,7 @@ import { bimCycleRoomScheme } from '../bim/room-colour-fill.js';
 import { bimTagAllRooms, startRoomTagTool, startRoomTool } from '../bim/room-tags.js';
 import { startDimTool, startLeaderTool, startTextTool } from '../annotation/dimensions.js';
 import { bimListCommand, startInquiryTool } from '../annotation/inquiry.js';
+import { bimCountCommand, bimMassprop, openCalDlg } from '../annotation/inquiry-more.js';
 import { openDimStyleDlg, openTextStyleDlg, startDimChainTool } from '../annotation/dim-tools.js';
 import { bimExportPDF } from '../annotation/annotation-pick.js';
 import { bimFileOpen, bimFileSave } from '../io/file-save.js';
@@ -273,6 +274,9 @@ import { bimOpenToolsPanel } from '../ui/discipline-tabs.js';
     dimstyle:function(){openDimStyleDlg();},
     textstyle:function(){openTextStyleDlg();},   /* __acad3dV259 */
     attdef:function(){openAttdefDlg();},   /* __acad3dV260 */
+    massprop:function(){bimMassprop();},   /* __acad3dV262 */
+    countblocks:function(){bimCountCommand();},
+    cal:function(){openCalDlg();},
     attedit:function(){bimAttedit();},
     layiso:function(){bimLayIso();},   /* __acad3dV256 */
     layuniso:function(){bimLayUniso();},
