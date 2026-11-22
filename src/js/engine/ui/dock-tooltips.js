@@ -25,6 +25,7 @@ import {
   bimGeoExport, bimGeoImportPick, bimMapCommand, openFindAddressDlg
 } from '../properties/map-address-site-data.js';
 import { bimDataCommand } from '../properties/context-lod-data.js';
+import { bimExportDWG } from '../io/dwg-io.js';
 import { bimIfcExport } from '../io/ifcos-worker.js';
 import { openPadDlg } from '../io/import-entry.js';
 import { bimCtxFetch } from '../map/surroundings-3d.js';
@@ -274,6 +275,7 @@ import { BIM_SHEET_ACTS } from '../commands/command-map.js';
     if(act==='m:exportpng'){bimExportPNG();return;}
     if(act==='m:exportpdf'){bimExportPDF();return;}
     if(act==='m:exportdxf'){bimExportDXF();return;}
+    if(act==='m:exportdwg'){bimExportDWG();return;}   /* __acad3dV252 */
     if(act==='m:exportsvg'){bimExportSVG();return;}
     if(act==='m:exportifc'){bimIfcExport();return;}   /* __acad3dV177 */
     if(act==='m:saveproj'){bimFileSave(false);return;}   /* __acad3dV172g */

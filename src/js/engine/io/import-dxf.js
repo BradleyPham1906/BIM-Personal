@@ -109,7 +109,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
       var colOverride=dxfNum(r.items,62,null);
       var extra=dxfEntityExtra(t,r.items,layerName,colOverride);
       if(extra){target.push(extra);continue;}
-      if(t==='DIMENSION'||t==='ATTRIB')continue;   /* a dimension without its block, a hidden attribute */
+      if(t==='DIMENSION'||t==='ATTRIB'||t==='ATTDEF')continue;   /* ATTDEF: a block's template, never drawn */   /* a dimension without its block, a hidden attribute */
 
       if(t==='POLYLINE'){
         var flags=dxfNum(r.items,70,0);
@@ -190,6 +190,11 @@ import { a3dToast } from '../bim/csg-booleans.js';
     var res;
     try{res=dxfParse(text);}
     catch(eP){console.warn('[BIM] DXF parse failed: ',eP);a3dToast('DXF import failed: could not parse '+filename);return;}
+    bimImportParsed(res,filename,'DXF');
+  }
+  /* __acad3dV252: what a parsed drawing becomes, whichever file it came from: DXF here, DWG from dwg-io.js. A colour
+     is an AutoCAD index, or already a hex string (a DWG's true colour). */
+  function bimImportParsed(res,filename,kind){
     pushUndo();
     setUndoSuspend(true);
     var __dxfStart=A3D.objs.length;
@@ -255,7 +260,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
         }catch(eE){
           console.warn('[BIM] Failed to import a '+e.type+' entity: ',eE);
         }
-        if(o){if(e.color!==null&&e.color!==undefined)o.col=dxfAciToHex(e.color);o.layer=lid;created++;}
+        if(o){if(typeof e.color==='string')o.col=e.color;else if(e.color!==null&&e.color!==undefined)o.col=dxfAciToHex(e.color);o.layer=lid;created++;}
       }
     }finally{
       var __dxfI;for(__dxfI=__dxfStart;__dxfI<A3D.objs.length;__dxfI++)A3D.objs[__dxfI].locked=true;
@@ -269,10 +274,10 @@ import { a3dToast } from '../bim/csg-booleans.js';
     }
     refreshTree();refreshLayers();fitScene();paint();saveSoon();
     var skipMsg=Object.keys(res.skipped).map(function(k){return res.skipped[k]+' '+k;}).join(', ');
-    a3dToast('DXF import: '+created+' entities on '+dxfNames.length+' layer(s)'+
+    a3dToast((kind||'DXF')+' import: '+created+' entities on '+dxfNames.length+' layer(s)'+
       (texts?', '+texts+' text':'')+(res.inserts?', '+res.inserts+' block insert(s) expanded':'')+
       (skipMsg?'; skipped (unsupported): '+skipMsg:'')+
       (skippedPoints?'; '+skippedPoints+' POINT entities not rendered':'')+
       (res.insUnits===null?' (no units in file, assumed meters)':''));
   }
-export { bimImportDXF };
+export { DXF_UNIT_SCALE, bimImportDXF, bimImportParsed, dxfAciToHex, dxfParse };

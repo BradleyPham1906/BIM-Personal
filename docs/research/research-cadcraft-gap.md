@@ -65,7 +65,7 @@ work orders under the existing workflow (Claude specifies, Cline builds).
 | D6 | Blocks: attributes, a block editor, explode, external references | Title blocks and tags carry data |
 | D7 | DXF fidelity: read and write text, multiline text, blocks, hatches, dimensions, ellipses, splines, linetypes; binary DXF in | **Import built as V251, 2026-11-22:** blocks (nested, arrays, mirrored), dimensions, TEXT, MTEXT, ATTRIB, ELLIPSE, SPLINE, SOLID, true-arc circles. Still open: HATCH, binary DXF, and the export side |
 | D8 | Inquiry: LIST, ID, DIST, AREA, MASSPROP for regions, COUNT, a calculator | Small |
-| D9 | DWG, research only first | Needs a library: acadrust (CADCraft's, Rust) through WebAssembly, or LibreDWG (GPL, so only as a separate program under the third-party rule). License, size and fidelity to be measured before the owner approves one |
+| D9 | DWG | **Built as V252, 2026-11-22** (the owner approved cc-dwg): opens R13 to R2018 through the Import picker, saves the plan as AutoCAD 2013 DWG (EXPORTDWG, DWGOUT, the ribbon's DWG). docs/research/research-dwg-library.md |
 
 ## 4. The owner's decisions
 

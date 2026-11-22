@@ -275,11 +275,33 @@
    "sha256": "21bda29c25a235bd7b2976db814bed79524e1382b8a17c8c79df1b07a0512c13",
    "from": "the licences of the packages geotiff.js 3.0.5 bundles, from their npm tarballs (2026-11-21)",
    "licence": "as each section says"
+  },
+  {
+   "path": "cc-dwg/e36a94d/LICENSE",
+   "bytes": 10174,
+   "sha256": "0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594",
+   "from": "getcadcraft/bimcraft@e36a94d, LICENSE",
+   "licence": "Apache-2.0 (cc-dwg)"
+  },
+  {
+   "path": "cc-dwg/e36a94d/NOTICE",
+   "bytes": 422,
+   "sha256": "cfaa71fce2eb8c5c2e2246a543985c7c3ca4bb86c32fd84d654c3db71081353c",
+   "from": "getcadcraft/bimcraft@e36a94d, NOTICE",
+   "licence": "Apache-2.0 (cc-dwg)"
+  },
+  {
+   "path": "cc-dwg/e36a94d/bim-dwg.min.js",
+   "bytes": 315128,
+   "sha256": "797baf6e7175118e5e1fc7db4861f4a17f01244ae4f17fff739a76ab3b797c09",
+   "from": "getcadcraft/bimcraft@e36a94d tests/lib/dwg (vendor/cc-dwg), bundled unchanged by esbuild 0.28.2: tools/dwg/build_dwg.mjs",
+   "licence": "Apache-2.0 (cc-dwg)"
   }
  ],
  "three": "0.186.1",
  "cc-ifc": "cfbd948",
  "jolt": "1.1.1",
  "ifcopenshell": "0.8.5",
- "geotiff": "3.0.5"
+ "geotiff": "3.0.5",
+ "cc-dwg": "e36a94d"
 }

@@ -55,6 +55,7 @@ import { bimSaRefresh, refreshProps } from '../site-analysis/panel.js';
 import { bimTrCommand } from '../simulation/traffic-ui.js';
 import { bimAwEnter, bimAwTraffic } from '../site-analysis/analysis-workspace.js';
 import { bimTlCommand } from '../site-tools/panel.js';
+import { bimExportDWG } from '../io/dwg-io.js';
 import { bimSkpPick } from '../io/sketchup-import.js';
 import { bimGltfExport, bimGltfPick } from '../io/gltf.js';
 import { bimIfcPick } from '../io/ifc-full.js';
@@ -242,7 +243,8 @@ import { bimOpenToolsPanel } from '../ui/discipline-tabs.js';
     ifcin:function(){bimIfcPick();},   /* __acad3dV196 */
     gltfin:function(){bimGltfPick();},   /* __acad3dV195 */
     gltfout:function(){bimGltfExport();},
-    ifcout:function(){bimIfcExport();},   /* __acad3dV177 */
+    ifcout:function(){bimIfcExport();},
+    dwgout:function(){bimExportDWG();},   /* __acad3dV252 */   /* __acad3dV177 */
     skpin:function(){bimSkpPick();},                  /* __acad3dV163 */
     finddata:function(){bimFindCommand();},                      /* __acad3dV135 */
     datalayers:function(){bimDataCommand();},                    /* __acad3dV134 */                /* __acad3dV127 */

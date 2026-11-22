@@ -2035,6 +2035,7 @@ body.light-theme .a3d-tl-msgs,body.light-theme .a3d-tl-hn span,body.light-theme 
     ['IFCIN',['IMPORTIFC','IFC','OPENIFC'],'ifcin','Open an IFC model (IFC2x3, IFC4, IFC4.3): every element in its colour with its openings, on layers by class, its storeys as levels and its property sets in Properties'],   /* __acad3dV196 */
     ['GLTFIN',['IMPORTGLTF','GLB','GLTF','IMPORTGLB'],'gltfin','Open a glTF or GLB model: its meshes as solids by material, on a layer named after the file, and kept in Assets as a block'],   /* __acad3dV195 */
     ['GLTFOUT',['EXPORTGLTF','EXPORTGLB'],'gltfout','Export the model shown as a .glb, an element a mesh under a node for its layer, for Blender, SketchUp, game engines and headsets'],
+    ['EXPORTDWG',['DWGOUT','SAVEDWG'],'dwgout','Export the plan as an AutoCAD DWG file (2013 format) through cc-dwg'],   /* __acad3dV252 */
     ['IFCOUT',['EXPORTIFC','SAVEIFC','SAVEASIFC'],'ifcout','Export the model shown as an IFC4 file through IfcOpenShell: levels as storeys, walls, floors, doors, windows and columns as IFC elements, everything else with its shape and class'],   /* __acad3dV177 */
     ['SKPIN',['IMPORTSKP','SKETCHUP'],'skpin','Open a SketchUp file: its faces as solids, its tags as layers, its components as blocks'],   /* __acad3dV163 */
     /* __acad3dV134: data layers */
@@ -37948,7 +37949,7 @@ function bimAnGauss(m) {
       var colOverride=dxfNum(r.items,62,null);
       var extra=dxfEntityExtra(t,r.items,layerName,colOverride);
       if(extra){target.push(extra);continue;}
-      if(t==='DIMENSION'||t==='ATTRIB')continue;   /* a dimension without its block, a hidden attribute */
+      if(t==='DIMENSION'||t==='ATTRIB'||t==='ATTDEF')continue;   /* ATTDEF: a block's template, never drawn */   /* a dimension without its block, a hidden attribute */
 
       if(t==='POLYLINE'){
         var flags=dxfNum(r.items,70,0);
@@ -38029,6 +38030,11 @@ function bimAnGauss(m) {
     var res;
     try{res=dxfParse(text);}
     catch(eP){console.warn('[BIM] DXF parse failed: ',eP);a3dToast('DXF import failed: could not parse '+filename);return;}
+    bimImportParsed(res,filename,'DXF');
+  }
+  /* __acad3dV252: what a parsed drawing becomes, whichever file it came from: DXF here, DWG from dwg-io.js. A colour
+     is an AutoCAD index, or already a hex string (a DWG's true colour). */
+  function bimImportParsed(res,filename,kind){
     pushUndo();
     setUndoSuspend(true);
     var __dxfStart=A3D.objs.length;
@@ -38094,7 +38100,7 @@ function bimAnGauss(m) {
         }catch(eE){
           console.warn('[BIM] Failed to import a '+e.type+' entity: ',eE);
         }
-        if(o){if(e.color!==null&&e.color!==undefined)o.col=dxfAciToHex(e.color);o.layer=lid;created++;}
+        if(o){if(typeof e.color==='string')o.col=e.color;else if(e.color!==null&&e.color!==undefined)o.col=dxfAciToHex(e.color);o.layer=lid;created++;}
       }
     }finally{
       var __dxfI;for(__dxfI=__dxfStart;__dxfI<A3D.objs.length;__dxfI++)A3D.objs[__dxfI].locked=true;
@@ -38108,11 +38114,231 @@ function bimAnGauss(m) {
     }
     refreshTree();refreshLayers();fitScene();paint();saveSoon();
     var skipMsg=Object.keys(res.skipped).map(function(k){return res.skipped[k]+' '+k;}).join(', ');
-    a3dToast('DXF import: '+created+' entities on '+dxfNames.length+' layer(s)'+
+    a3dToast((kind||'DXF')+' import: '+created+' entities on '+dxfNames.length+' layer(s)'+
       (texts?', '+texts+' text':'')+(res.inserts?', '+res.inserts+' block insert(s) expanded':'')+
       (skipMsg?'; skipped (unsupported): '+skipMsg:'')+
       (skippedPoints?'; '+skippedPoints+' POINT entities not rendered':'')+
       (res.insUnits===null?' (no units in file, assumed meters)':''));
+  }
+  /* ================= __acad3dV252: DWG open and save, through cc-dwg =================
+     The owner's approval, 2026-11-22: "yes". cc-dwg is BimCraft's own DWG library (Apache-2.0,
+     docs/research/research-dwg-library.md), pinned at runtime/cc-dwg/<rev>/ and loaded only when a DWG is opened or
+     saved (tools/dwg/build_dwg.mjs). It reads R13 to R2018 and writes R2000 to R2018.
+
+     This file is the only one that calls it. OPEN: the library's model is turned into the entity list the DXF
+     reader makes (import-dxf.js), so a DWG brings in what a DXF does -- layers, blocks, dimensions, text, arcs,
+     ellipses, splines, hatches' boundaries -- through the same code. SAVE: the plan is written as the DXF export
+     writes it (bimBuildDXF), read back by the same DXF reader, and handed to the library's writer, so a DWG carries
+     exactly what the DXF does. */
+  var BIM_DWG={rev:'e36a94d',file:'cc-dwg/e36a94d/bim-dwg.min.js',sri:'sha256-eXuvbnF1EY5eH8fbSGH0oX8BJErk8X//c5p2qzt5fAk=',
+    saveVersion:'AC1027'};
+  var A3D_DWG={load:null,st:'',err:''};
+  function bimDwgLoad(){
+    var R=A3D_DWG;
+    if(R.load)return R.load;
+    var p=String(window.location&&window.location.protocol||''),src=[],i=0;
+    if(p!=='http:'&&p!=='https:')src.push({u:'runtime/'+BIM_DWG.file,sri:false});
+    src.push({u:String(bimLbBase())+BIM_DWG.file,sri:true});
+    R.st='loading';
+    R.load=new Promise(function(res,rej){
+      if(window.BIMDWG&&window.BIMDWG.readDwg){res(window.BIMDWG);return;}
+      function next(){
+        if(i>=src.length){rej(new Error('the DWG library could not be loaded from '+src.map(function(s){return s.u;}).join(' or ')));return;}
+        var s=src[i++],tag=document.createElement('script');
+        tag.src=s.u;
+        if(s.sri){tag.integrity=BIM_DWG.sri;tag.crossOrigin='anonymous';}
+        tag.onload=function(){if(window.BIMDWG&&window.BIMDWG.readDwg)res(window.BIMDWG);else next();};
+        tag.onerror=function(){if(tag.parentNode)tag.parentNode.removeChild(tag);next();};
+        document.head.appendChild(tag);
+      }
+      next();
+    }).then(function(D){R.st='ready';return D;},function(e){R.st='failed';R.err=String(e&&e.message||e);R.load=null;throw e;});
+    return R.load;
+  }
+  /* A cc-dwg colour as the DXF reader's: an AutoCAD index (1..255), a hex string for a true colour, null for ByLayer. */
+  function bimDwgColor(c){
+    if(!c)return null;
+    if(typeof c.rgb==='number')return '#'+('000000'+(c.rgb&0xffffff).toString(16)).slice(-6);
+    if(c.index>=1&&c.index<=255)return c.index;
+    return null;
+  }
+  function bimDwgPt(p){return [p&&p.x||0,p&&p.y||0,p&&p.z||0];}
+  /* One cc-dwg entity as the DXF reader's, or null (angles: radians there, degrees here, as DXF stores them). */
+  function bimDwgEntity(e){
+    var L=e.layer||'0',C=bimDwgColor(e.color),o=null,k,D=180/Math.PI;
+    if(e.invisible)return null;
+    var t=e.type;
+    if(t==='LINE')o={type:'LINE',p1:bimDwgPt(e.start),p2:bimDwgPt(e.end)};
+    else if(t==='CIRCLE')o={type:'CIRCLE',c:bimDwgPt(e.center),r:e.radius};
+    else if(t==='ARC')o={type:'ARC',c:bimDwgPt(e.center),r:e.radius,a1:e.startAngle*D,a2:e.endAngle*D};
+    else if(t==='LWPOLYLINE'||t==='POLYLINE_2D'){
+      var vs=e.vertices||[],pts=[],bl=[],any=false;
+      for(k=0;k<vs.length;k++){pts.push([vs[k].x,vs[k].y]);bl.push(vs[k].bulge||0);if(vs[k].bulge)any=true;}
+      if(pts.length>=2)o={type:'LWPOLYLINE',closed:!!e.closed,pts:pts,bulges:any?bl:null};
+    }else if(t==='POLYLINE_3D'){
+      var v3=(e.vertices||[]).map(function(v){return [v.x,v.y];});
+      if(v3.length>=2)o={type:'POLYPTS',pts:v3,closed:!!e.closed};
+    }else if(t==='ELLIPSE'){
+      var el=dxfEllipsePts([e.center.x,e.center.y],[e.majorAxis.x,e.majorAxis.y],e.ratio,e.startParam,e.endParam);
+      o={type:'POLYPTS',pts:el.pts,closed:el.closed,z:e.center.z||0};
+    }else if(t==='SPLINE'){
+      var ctrl=(e.control||[]).map(function(q){return [q.x,q.y];}),fit=(e.fit||[]).map(function(q){return [q.x,q.y];});
+      var sp=dxfSplinePts(e.degree,ctrl,e.knots||[],e.weights||null,fit);
+      if(sp.length>=2)o={type:'POLYPTS',pts:sp,closed:!!e.closed};
+    }else if(t==='TEXT'||t==='ATTRIB'){
+      o={type:'TEXT',text:dxfTextPlain(e.value),p:bimDwgPt(e.insert),h:e.height||0,rot:(e.rotation||0)*D};
+    }else if(t==='MTEXT'){
+      o={type:'TEXT',text:dxfTextPlain(e.value),p:bimDwgPt(e.insert),h:e.height||0,
+        rot:e.xAxis?Math.atan2(e.xAxis.y,e.xAxis.x)*D:0};
+    }else if(t==='INSERT'||t==='MINSERT'){
+      o={type:'INSERT',name:e.block,at:[e.insert.x,e.insert.y],sx:e.scale?e.scale.x:1,sy:e.scale?e.scale.y:1,rot:(e.rotation||0)*D,
+        cols:e.cols||1,rows:e.rows||1,colSp:e.colSpacing||0,rowSp:e.rowSpacing||0};
+    }else if(/DIMENSION/.test(t)||t==='ACAD_TABLE'){
+      if(e.block)o={type:'INSERT',name:e.block,at:[0,0],sx:1,sy:1,rot:0};
+    }else if(t==='SOLID'||t==='TRACE'){
+      var q=(e.points||[]).map(function(p){return [p.x,p.y];});
+      if(q.length===4){q=[q[0],q[1],q[3],q[2]];if(Math.abs(q[2][0]-q[3][0])<1e-12&&Math.abs(q[2][1]-q[3][1])<1e-12)q.pop();}
+      if(q.length>=3)o={type:'POLYPTS',pts:q,closed:true};
+    }else if(t==='3DFACE'){
+      o={type:'3DFACE',pts:(e.points||[]).map(bimDwgPt)};
+    }else if(t==='POINT'){
+      o={type:'POINT',p:bimDwgPt(e.position)};
+    }else if(t==='HATCH'){
+      return bimDwgHatchLoops(e,L,C);
+    }
+    if(!o)return null;
+    o.layer=L;o.color=C;
+    /* an entity whose plane faces down (extrusion 0,0,-1, how a mirrored copy is often stored) is mirrored in x */
+    if(e.extrusion&&e.extrusion.z<0&&o.type!=='INSERT'&&o.type!=='3DFACE')o=dxfXform(o,{at:[0,0],sx:-1,sy:1,rot:0},[0,0]);
+    return o;
+  }
+  /* A hatch's boundaries, as outlines: polyline loops as they are, edge loops of lines, arcs and ellipses as points. */
+  function bimDwgHatchLoops(e,L,C){
+    var out=[],i,j;
+    for(i=0;i<(e.loops||[]).length;i++){
+      var lp=e.loops[i];
+      if(lp.polyline&&lp.polyline.vertices&&lp.polyline.vertices.length>=2){
+        var vs=lp.polyline.vertices;
+        out.push({type:'LWPOLYLINE',closed:true,layer:L,color:C,pts:vs.map(function(v){return [v.x,v.y];}),
+          bulges:lp.polyline.hasBulges?vs.map(function(v){return v.bulge||0;}):null});
+        continue;
+      }
+      var pts=[];
+      for(j=0;j<(lp.edges||[]).length;j++){
+        var g=lp.edges[j],seg=[];
+        if(g.type==='line')seg=[[g.start.x,g.start.y],[g.end.x,g.end.y]];
+        else if(g.type==='arc'){
+          var a0=g.startAngle,a1=g.endAngle,n=16,s;
+          if(g.ccw===false){a0=-g.startAngle;a1=-g.endAngle;}
+          if(a1<a0&&g.ccw!==false)a1+=Math.PI*2;
+          for(s=0;s<=n;s++){var a=a0+(a1-a0)*s/n;seg.push([g.center.x+Math.cos(a)*g.radius,g.center.y+Math.sin(a)*g.radius]);}
+        }else if(g.type==='ellipse'){
+          seg=dxfEllipsePts([g.center.x,g.center.y],[g.majorAxis.x,g.majorAxis.y],g.ratio,g.startAngle,g.endAngle,16).pts;
+        }else if(g.type==='spline'){
+          seg=dxfSplinePts(g.degree,(g.control||[]).map(function(q){return [q.x,q.y];}),g.knots||[],g.weights||null,
+            (g.fit||[]).map(function(q){return [q.x,q.y];}));
+        }
+        for(var k=0;k<seg.length;k++){
+          var last=pts[pts.length-1];
+          if(!last||Math.abs(last[0]-seg[k][0])>1e-9||Math.abs(last[1]-seg[k][1])>1e-9)pts.push(seg[k]);
+        }
+      }
+      if(pts.length>=3)out.push({type:'POLYPTS',pts:pts,closed:true,layer:L,color:C});
+    }
+    return out.length?out:null;
+  }
+  /* The library's model as the DXF reader's result: layers, the model space with every block expanded, the units. */
+  function bimDwgToParsed(m){
+    var layers={},blocks={},ents=[],skipped={},i,j,b,ms=null;
+    var tl=(m.tables&&m.tables.layers)||[];
+    for(i=0;i<tl.length;i++){
+      var ly=tl[i],c=bimDwgColor(ly.color);
+      layers[ly.name]={name:ly.name,color:typeof c==='string'?c:dxfAciToHex(c||7),off:!!ly.off,frozen:!!ly.frozen,locked:!!ly.locked,
+        linetype:ly.linetypeName||'CONTINUOUS',lineweight:ly.lineweight>=0?ly.lineweight/100:null,plot:ly.plot!==false};
+    }
+    function conv(list){
+      var out=[],k,r;
+      for(k=0;k<list.length;k++){
+        r=bimDwgEntity(list[k]);
+        /* an ATTDEF is the block's template for an attribute: AutoCAD never draws it in an insert, the ATTRIB is drawn */
+        if(!r){if(!list[k].invisible&&list[k].type!=='ATTDEF')skipped[list[k].type]=(skipped[list[k].type]||0)+1;continue;}
+        if(r.length!==undefined)out=out.concat(r);else out.push(r);
+        /* an insert's attributes are drawn where they are, in world coordinates */
+        if(list[k].attribs)for(j=0;j<list[k].attribs.length;j++){var at=bimDwgEntity(list[k].attribs[j]);if(at)out.push(at);}
+      }
+      return out;
+    }
+    for(i=0;i<(m.blocks||[]).length;i++){
+      b=m.blocks[i];
+      if(b.name==='*Model_Space'){ms=b;continue;}
+      if(/^\*Paper_Space/i.test(b.name))continue;
+      blocks[b.name]={name:b.name,base:[b.base?b.base.x:0,b.base?b.base.y:0],ents:conv(b.entities||[])};
+    }
+    if(ms)ents=conv(ms.entities||[]);
+    var nIns=ents.filter(function(e){return e.type==='INSERT';}).length;
+    var iu=m.header&&typeof m.header.INSUNITS==='number'?m.header.INSUNITS:null;
+    return {layers:layers,entities:dxfExpandInserts(ents,blocks,0),blocks:Object.keys(blocks).length,inserts:nIns,
+      skipped:skipped,scale:DXF_UNIT_SCALE[iu]||1,insUnits:iu,version:m.version};
+  }
+  function bimImportDWG(buf,name){
+    a3dToast('Opening '+name+'...');
+    return bimDwgLoad().then(function(D){
+      var m=D.readDwg(new Uint8Array(buf));
+      if(m.report&&m.report.error){a3dToast('DWG import failed: '+m.report.error);return null;}
+      var res=bimDwgToParsed(m);
+      bimImportParsed(res,name,'DWG '+((D.VERSIONS&&D.VERSIONS[m.version])||m.version||''));
+      return res;
+    }).catch(function(e){
+      console.warn('[BIM] DWG import failed:',e);
+      a3dToast('DWG import failed: '+(e&&e.message||e));
+      return null;
+    });
+  }
+  /* ---------- save ---------- */
+  /* The DXF reader's result as a cc-dwg model: the layers and model space the writer takes (model.js's shape). */
+  function bimDwgModelFrom(res,version){
+    var layers=[],ents=[],k,i,e,D=Math.PI/180;
+    function col(c){return typeof c==='number'&&c>=1&&c<=255?{index:c}:{index:256};}
+    for(k in res.layers)if(res.layers.hasOwnProperty(k)){
+      var l=res.layers[k],rgb=parseInt(String(l.color||'#ffffff').slice(1),16);
+      layers.push({name:l.name,color:{rgb:rgb},off:!!l.off,frozen:!!l.frozen,locked:!!l.locked,plot:l.plot!==false,
+        linetypeName:'Continuous',lineweight:l.lineweight!=null?Math.round(l.lineweight*100):-3});
+    }
+    var base={linetype:'ByLayer',lineweight:-1,ltscale:1,invisible:false,extrusion:{x:0,y:0,z:1}};
+    function mk(o,e){var q;for(q in base)if(base.hasOwnProperty(q))o[q]=base[q];o.layer=e.layer||'0';o.color=col(e.color);return o;}
+    function P(p){return {x:p[0],y:p[1],z:p[2]||0};}
+    for(i=0;i<res.entities.length;i++){
+      e=res.entities[i];
+      if(e.type==='LINE')ents.push(mk({type:'LINE',start:P(e.p1),end:P(e.p2),thickness:0},e));
+      else if(e.type==='LWPOLYLINE'||e.type==='POLYLINE'||e.type==='POLYPTS')
+        ents.push(mk({type:'LWPOLYLINE',closed:!!e.closed,constantWidth:0,elevation:0,thickness:0,flags:0,plinegen:false,
+          vertices:e.pts.map(function(p,j){return {x:p[0],y:p[1],bulge:e.bulges?(e.bulges[j]||0):0,startWidth:0,endWidth:0};})},e));
+      else if(e.type==='CIRCLE')ents.push(mk({type:'CIRCLE',center:P(e.c),radius:e.r,thickness:0},e));
+      else if(e.type==='ARC')ents.push(mk({type:'ARC',center:P(e.c),radius:e.r,startAngle:e.a1*D,endAngle:e.a2*D,thickness:0},e));
+      else if(e.type==='TEXT')ents.push(mk({type:'TEXT',insert:P(e.p),align:P(e.p),height:e.h||0.25,value:e.text,rotation:(e.rot||0)*D,
+        widthFactor:1,oblique:0,style:'Standard',hAlign:0,vAlign:0,generation:0,thickness:0,elevation:0},e));
+      else if(e.type==='3DFACE')ents.push(mk({type:'3DFACE',points:e.pts.map(P),invisibleEdges:0},e));
+      else if(e.type==='POINT')ents.push(mk({type:'POINT',position:P(e.p),thickness:0,xAxisAngle:0},e));
+    }
+    return {version:version||BIM_DWG.saveVersion,header:{INSUNITS:res.insUnits!=null?res.insUnits:6},
+      tables:{layers:layers},blocks:[{name:'*Model_Space',base:{x:0,y:0,z:0},flags:0,xrefPath:'',description:'',entities:ents}]};
+  }
+  function bimExportDWG(version){
+    var built;
+    try{built=bimBuildDXF();}catch(eB){a3dToast('DWG export failed: '+(eB&&eB.message||eB));return Promise.resolve(null);}
+    if(!built.stats.lwpolyline&&!built.stats.line&&!built.stats.text){a3dToast('Nothing with a 2D footprint to export');return Promise.resolve(null);}
+    return bimDwgLoad().then(function(D){
+      var model=bimDwgModelFrom(dxfParse(built.text),version);
+      var w=D.writeDwg(model,{version:model.version});
+      var nm=bimFileStem()+'-plan.dwg';
+      bimTriggerDownload(w.bytes,nm,'application/acad');
+      a3dToast('Exported '+nm+' (AutoCAD '+(D.VERSIONS[model.version]||model.version)+', '+model.blocks[0].entities.length+' entities)');
+      return w;
+    }).catch(function(e){
+      console.warn('[BIM] DWG export failed:',e);
+      a3dToast('DWG export failed: '+(e&&e.message||e));
+      return null;
+    });
   }
   // ---- OBJ (Wavefront, Y-up - matches this engine's convention directly) ----
   function objParse(text){
@@ -40263,10 +40489,13 @@ BIM_IFC_SAVE.model=bimIfcSaveModel;
       bimCityJsonFile(file);
     }else if(ext==='json'||ext==='gz'){   /* __acad3dV172g: a compressed project file too */
       bimOpenProjectFileObj(file);   /* __acad3dV115: the one project-file reader */
-    }else if(ext==='dwg'||ext==='step'||ext==='stp'||ext==='iges'||ext==='igs'){
-      a3dToast('.'+ext.toUpperCase()+' is not supported (proprietary binary / full B-rep format). Export as DXF (CAD) or IFC (BIM) instead.');
+    }else if(ext==='dwg'){   /* __acad3dV252: through cc-dwg, loaded now */
+      reader.onload=function(ev){bimImportDWG(ev.target.result,name);};
+      reader.readAsArrayBuffer(file);
+    }else if(ext==='step'||ext==='stp'||ext==='iges'||ext==='igs'){
+      a3dToast('.'+ext.toUpperCase()+' is not supported yet (a full B-rep format). Export as DXF or DWG (CAD) or IFC (BIM) instead.');
     }else{
-      a3dToast('Unsupported file type: .'+ext+' (supported: .dxf, .ifc, .obj, .stl, .glb and .gltf, .skp SketchUp, .json project files, .geojson and .kml site data, .city.json CityJSON, .xml LandXML)');
+      a3dToast('Unsupported file type: .'+ext+' (supported: .dxf, .dwg, .ifc, .obj, .stl, .glb and .gltf, .skp SketchUp, .json project files, .geojson and .kml site data, .city.json CityJSON, .xml LandXML)');
     }
   }
 
@@ -70667,7 +70896,7 @@ function bimRptPlan(families) {
     {id:'a3dmanage',name:'Manage',panels:[
       {t:'Settings',small:['bim:layers','bim:levels','bim:classification','bim:units']},
       {t:'Project',small:['m:saveproj','m:openproj','bim:projinfo','bim:purge','bim:checkmodel']},
-      {t:'Export',small:['m:exportpng','m:exportpdf','m:exportdxf','m:exportifc','m:exportsvg','m:exportgeojson']}
+      {t:'Export',small:['m:exportpng','m:exportpdf','m:exportdxf','m:exportdwg','m:exportifc','m:exportsvg','m:exportgeojson']}
     ]}
   ];
   // Commands Revit has that this app does not implement yet. Listed so the tool dock shows the
@@ -70742,7 +70971,7 @@ function bimRptPlan(families) {
   function a3drLabel(act){
     var xl=a3drExt(act);
     if(xl&&xl.label)return xl.label;
-    var L={'s:rect':'Rect','s:circle':'Circle','s:poly':'Polyline','p:pad':'Pad','p:pocket':'Pocket','bim:wall':'Wall','bim:floor':'Floor','bim:room':'Room','bim:roof':'Roof','bim:stair':'Stair','bim:column':'Column','bim:door':'Door','bim:window':'Window','bim:dim':'Dimension','bim:text':'Text','bim:section':'Section','bim:ceiling':'Ceiling','bim:dimang':'Angular','bim:dimrad':'Radius','bim:dimdia':'Diameter','bim:leader':'Leader','m:exportdxf':'DXF','m:exportifc':'IFC','m:exportsvg':'SVG','bim:mirror':'Mirror','bim:rotate':'Rotate','bim:polararray':'Polar Array','bim:joinwalls':'Join Walls','bim:extend':'Extend','bim:arc':'Arc','bim:fillet':'Fillet','bim:chamfer':'Chamfer','bim:break':'Break','bim:lengthen':'Lengthen','bim:scale':'Scale','b:union':'Union','b:cut':'Cut','b:isect':'Intersect','v:home':'Home','v:fit':'Fit','v:top':'Top','v:front':'Front','v:right':'Right','v:iso':'Iso','m:del':'Delete','m:desel':'Deselect','m:dup':'Duplicate','m:array':'Array','m:exportpng':'PNG','m:exportpdf':'PDF','m:exitsection':'Exit Section','m:flipsection':'Flip Section','m:saveproj':'Save Project','m:openproj':'Open\u2026',
+    var L={'s:rect':'Rect','s:circle':'Circle','s:poly':'Polyline','p:pad':'Pad','p:pocket':'Pocket','bim:wall':'Wall','bim:floor':'Floor','bim:room':'Room','bim:roof':'Roof','bim:stair':'Stair','bim:column':'Column','bim:door':'Door','bim:window':'Window','bim:dim':'Dimension','bim:text':'Text','bim:section':'Section','bim:ceiling':'Ceiling','bim:dimang':'Angular','bim:dimrad':'Radius','bim:dimdia':'Diameter','bim:leader':'Leader','m:exportdxf':'DXF','m:exportdwg':'DWG','m:exportifc':'IFC','m:exportsvg':'SVG','bim:mirror':'Mirror','bim:rotate':'Rotate','bim:polararray':'Polar Array','bim:joinwalls':'Join Walls','bim:extend':'Extend','bim:arc':'Arc','bim:fillet':'Fillet','bim:chamfer':'Chamfer','bim:break':'Break','bim:lengthen':'Lengthen','bim:scale':'Scale','b:union':'Union','b:cut':'Cut','b:isect':'Intersect','v:home':'Home','v:fit':'Fit','v:top':'Top','v:front':'Front','v:right':'Right','v:iso':'Iso','m:del':'Delete','m:desel':'Deselect','m:dup':'Duplicate','m:array':'Array','m:exportpng':'PNG','m:exportpdf':'PDF','m:exitsection':'Exit Section','m:flipsection':'Flip Section','m:saveproj':'Save Project','m:openproj':'Open\u2026',
       'bim:component':'Component','bim:famsave':'Save Family','bim:famimport':'Load Family',
       'bim:tagroom':'Tag Room','bim:tagallrooms':'Tag All Rooms','bim:tagcat':'Tag by Category','bim:level':'Level','bim:grid':'Grid',
       'bim:beam':'Beam','bim:analyze':'Analyze','bim:truss':'Truss','bim:brace':'Brace','bim:foundwall':'Wall Foundation','bim:footing':'Isolated Footing','bim:property':'Property Line','bim:propshape':'Property from Shape','bim:truenorth':'True North','bim:alignment':'Alignment','bim:usage':'Usage','bim:usages':'Usages','bim:map':'Map','bim:findaddress':'Find Address','bim:geoimport':'Import GeoJSON','bim:context':'Site Context','bim:datalayers':'Data Layers','m:exportgeojson':'GeoJSON',
@@ -70922,7 +71151,7 @@ function bimRptPlan(families) {
   var BIM_ACT_HIDE={'bim:levels':1};
   /* a ribbon-only tool's name, where its label alone would be ambiguous or not a command's name */
   var BIM_ACT_NAMES={'v:top':'VIEWTOP','v:front':'VIEWFRONT','v:right':'VIEWRIGHT','v:iso':'VIEW3D','v:home':'VIEWHOME',
-    'm:exportpng':'EXPORTPNG','m:exportpdf':'EXPORTPDF','m:exportdxf':'EXPORTDXF','m:exportsvg':'EXPORTSVG','m:exportifc':'IFCOUT',
+    'm:exportpng':'EXPORTPNG','m:exportpdf':'EXPORTPDF','m:exportdxf':'EXPORTDXF','m:exportdwg':'EXPORTDWG','m:exportsvg':'EXPORTSVG','m:exportifc':'IFCOUT',
     'm:exitsection':'SECTIONEXIT','m:flipsection':'SECTIONFLIP','b:union':'UNION','b:cut':'SUBTRACT','b:isect':'INTERSECT',
     'bim:dimang':'DIMANGULAR','bim:dimrad':'DIMRADIUS','bim:dimdia':'DIMDIAMETER','bim:famimport':'FAMILYLOAD',
     'bim:famsave':'FAMILYSAVE','bim:component':'COMPONENT','bim:level':'LEVEL','bim:saveview':'SAVEVIEW','v:walk':'WALK',
@@ -70955,7 +71184,7 @@ function bimRptPlan(families) {
     'tube':'Place a tube','prism':'Place a prism','wedge':'Place a wedge','ellipsoid':'Place an ellipsoid',
     'bim:classification':'Manage the classification systems','bim:checkmodel':'Check the model for problems',
     'm:exportpng':'Export the view as a PNG image','m:exportpdf':'Export the plan as a PDF',
-    'm:exportdxf':'Export the drawing as a DXF file','m:exportsvg':'Export the drawing as an SVG file',
+    'm:exportdxf':'Export the drawing as a DXF file','m:exportdwg':'Export the drawing as an AutoCAD DWG file (2013 format)','m:exportsvg':'Export the drawing as an SVG file',
     'm:exportifc':'Export the model as an IFC file'};
   /* AutoCAD's synonyms: the words a person might search for a command by, beyond its name */
   var BIM_CMD_TERMS={SITETOOLS:'geoprocessing pane history arcgis analysis tools runs',BUFFER:'around within distance zone setback dissolve',   /* __acad3dV172 */
@@ -71023,7 +71252,7 @@ function bimRptPlan(families) {
     FOUNDATIONSLAB:'mat raft slab',COLUMN:'post pillar',BEAM:'girder joist',FLOOR:'slab deck',JOIN:'merge walls',OSNAP:'snap object',
     ORTHO:'orthogonal perpendicular',GRID:'snap grid',SHORTCUTS:'keyboard keys help hotkeys',LAYOUT:'sheet paper',PSPACE:'paper sheet',
     MSPACE:'model viewport',GIZMO:'transform move handles',BOUNDARY:'region outline',DIVIDE:'split equal points',MEASURE:'spacing points',
-    ALIGN:'line up',BREAKATPOINT:'split',EXPORTPDF:'print save pdf',EXPORTPNG:'image picture screenshot',EXPORTDXF:'cad autocad',
+    ALIGN:'line up',BREAKATPOINT:'split',EXPORTPDF:'print save pdf',EXPORTPNG:'image picture screenshot',EXPORTDXF:'cad autocad',EXPORTDWG:'cad autocad save',
     EXPORTSVG:'vector image',UNION:'boolean add merge combine',SUBTRACT:'boolean difference cut minus',INTERSECT:'boolean common',
     VIEW3D:'isometric iso 3d',VIEWTOP:'plan top',BOX:'cube block',CYLINDER:'tube pipe round',COMPONENT:'family furniture place',
     LEVEL:'storey story floor elevation',SAVEVIEW:'camera bookmark',ROOMTAG:'label tag room',ROOMCOLOR:'color fill scheme department',COLOURBY:'color colour lens legend scheme theme thematic height usage heatmap',
@@ -71392,6 +71621,7 @@ function bimRptPlan(families) {
     if(act==='m:exportpng'){bimExportPNG();return;}
     if(act==='m:exportpdf'){bimExportPDF();return;}
     if(act==='m:exportdxf'){bimExportDXF();return;}
+    if(act==='m:exportdwg'){bimExportDWG();return;}   /* __acad3dV252 */
     if(act==='m:exportsvg'){bimExportSVG();return;}
     if(act==='m:exportifc'){bimIfcExport();return;}   /* __acad3dV177 */
     if(act==='m:saveproj'){bimFileSave(false);return;}   /* __acad3dV172g */
@@ -71464,7 +71694,7 @@ function bimRptPlan(families) {
     '<div class="a3d-tb">'+
       '<button class="a3d-btn a3d-drawerbtn" data-a3d="drawer" title="Show panel">\u2630</button>'+
       '<button class="a3d-btn a3d-rdrawerbtn" data-a3d="rdrawer" title="Show properties">Props</button>'+
-      '<input type="file" id="a3d-filein" accept=".dxf,.ifc,.obj,.stl,.glb,.gltf,.skp,.json,.geojson,.kml,.cityjson,.xml,.landxml" style="display:none">'+
+      '<input type="file" id="a3d-filein" accept=".dxf,.dwg,.ifc,.obj,.stl,.glb,.gltf,.skp,.json,.geojson,.kml,.cityjson,.xml,.landxml" style="display:none">'+
       '<input type="file" id="a3d-projin" accept=".json,.gz,application/json,application/gzip" style="display:none">'+   /* __acad3dV115 */
       '<span class="a3d-hud">View: <b id="a3d-view">Home</b><span id="a3d-count">0 objects</span></span>'+
       '<span class="a3d-uiwrap">'+
@@ -72905,7 +73135,8 @@ function bimRptPlan(families) {
     ifcin:function(){bimIfcPick();},   /* __acad3dV196 */
     gltfin:function(){bimGltfPick();},   /* __acad3dV195 */
     gltfout:function(){bimGltfExport();},
-    ifcout:function(){bimIfcExport();},   /* __acad3dV177 */
+    ifcout:function(){bimIfcExport();},
+    dwgout:function(){bimExportDWG();},   /* __acad3dV252 */   /* __acad3dV177 */
     skpin:function(){bimSkpPick();},                  /* __acad3dV163 */
     finddata:function(){bimFindCommand();},                      /* __acad3dV135 */
     datalayers:function(){bimDataCommand();},                    /* __acad3dV134 */                /* __acad3dV127 */

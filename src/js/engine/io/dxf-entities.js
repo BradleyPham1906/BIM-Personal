@@ -167,4 +167,4 @@
     }
     return null;
   }
-export { dxfEntityExtra, dxfExpandInserts };
+export { dxfEllipsePts, dxfEntityExtra, dxfExpandInserts, dxfSplinePts, dxfTextPlain, dxfXform };

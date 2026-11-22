@@ -24,7 +24,7 @@ import { BIM_CMD_MAP, BIM_SHEET_ACTS, BIM_SHEET_CMDS, BIM_START_CMDS } from './c
   var BIM_ACT_HIDE={'bim:levels':1};
   /* a ribbon-only tool's name, where its label alone would be ambiguous or not a command's name */
   var BIM_ACT_NAMES={'v:top':'VIEWTOP','v:front':'VIEWFRONT','v:right':'VIEWRIGHT','v:iso':'VIEW3D','v:home':'VIEWHOME',
-    'm:exportpng':'EXPORTPNG','m:exportpdf':'EXPORTPDF','m:exportdxf':'EXPORTDXF','m:exportsvg':'EXPORTSVG','m:exportifc':'IFCOUT',
+    'm:exportpng':'EXPORTPNG','m:exportpdf':'EXPORTPDF','m:exportdxf':'EXPORTDXF','m:exportdwg':'EXPORTDWG','m:exportsvg':'EXPORTSVG','m:exportifc':'IFCOUT',
     'm:exitsection':'SECTIONEXIT','m:flipsection':'SECTIONFLIP','b:union':'UNION','b:cut':'SUBTRACT','b:isect':'INTERSECT',
     'bim:dimang':'DIMANGULAR','bim:dimrad':'DIMRADIUS','bim:dimdia':'DIMDIAMETER','bim:famimport':'FAMILYLOAD',
     'bim:famsave':'FAMILYSAVE','bim:component':'COMPONENT','bim:level':'LEVEL','bim:saveview':'SAVEVIEW','v:walk':'WALK',
@@ -57,7 +57,7 @@ import { BIM_CMD_MAP, BIM_SHEET_ACTS, BIM_SHEET_CMDS, BIM_START_CMDS } from './c
     'tube':'Place a tube','prism':'Place a prism','wedge':'Place a wedge','ellipsoid':'Place an ellipsoid',
     'bim:classification':'Manage the classification systems','bim:checkmodel':'Check the model for problems',
     'm:exportpng':'Export the view as a PNG image','m:exportpdf':'Export the plan as a PDF',
-    'm:exportdxf':'Export the drawing as a DXF file','m:exportsvg':'Export the drawing as an SVG file',
+    'm:exportdxf':'Export the drawing as a DXF file','m:exportdwg':'Export the drawing as an AutoCAD DWG file (2013 format)','m:exportsvg':'Export the drawing as an SVG file',
     'm:exportifc':'Export the model as an IFC file'};
   /* AutoCAD's synonyms: the words a person might search for a command by, beyond its name */
   var BIM_CMD_TERMS={SITETOOLS:'geoprocessing pane history arcgis analysis tools runs',BUFFER:'around within distance zone setback dissolve',   /* __acad3dV172 */
@@ -125,7 +125,7 @@ import { BIM_CMD_MAP, BIM_SHEET_ACTS, BIM_SHEET_CMDS, BIM_START_CMDS } from './c
     FOUNDATIONSLAB:'mat raft slab',COLUMN:'post pillar',BEAM:'girder joist',FLOOR:'slab deck',JOIN:'merge walls',OSNAP:'snap object',
     ORTHO:'orthogonal perpendicular',GRID:'snap grid',SHORTCUTS:'keyboard keys help hotkeys',LAYOUT:'sheet paper',PSPACE:'paper sheet',
     MSPACE:'model viewport',GIZMO:'transform move handles',BOUNDARY:'region outline',DIVIDE:'split equal points',MEASURE:'spacing points',
-    ALIGN:'line up',BREAKATPOINT:'split',EXPORTPDF:'print save pdf',EXPORTPNG:'image picture screenshot',EXPORTDXF:'cad autocad',
+    ALIGN:'line up',BREAKATPOINT:'split',EXPORTPDF:'print save pdf',EXPORTPNG:'image picture screenshot',EXPORTDXF:'cad autocad',EXPORTDWG:'cad autocad save',
     EXPORTSVG:'vector image',UNION:'boolean add merge combine',SUBTRACT:'boolean difference cut minus',INTERSECT:'boolean common',
     VIEW3D:'isometric iso 3d',VIEWTOP:'plan top',BOX:'cube block',CYLINDER:'tube pipe round',COMPONENT:'family furniture place',
     LEVEL:'storey story floor elevation',SAVEVIEW:'camera bookmark',ROOMTAG:'label tag room',ROOMCOLOR:'color fill scheme department',COLOURBY:'color colour lens legend scheme theme thematic height usage heatmap',
