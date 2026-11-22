@@ -7,6 +7,7 @@ import {
   A3D_OCCT, bimOcctAddSolid, bimOcctDrawing, bimOcctIsSolid, bimOcctLoad, bimOcctPt, bimOcctReplace,
   bimOcctShapeAt, bimOcctShapeOf
 } from './occt-adapter.js';
+import { startOcctEdgePick } from './occt-features.js';
 import { paint } from '../map/terrain-3d.js';
 import { bimFmtLen } from '../gizmo/gizmo-handles.js';
 import { bimHasBulge } from '../drawing/arc-storage.js';
@@ -22,8 +23,7 @@ import { a3dToast, objById } from '../bim/csg-booleans.js';
      its top face open); REVOLVE (REV) a closed sketch about an axis picked in the plan; LOFT between closed sketches at
      different heights; SOLIDUNION, SOLIDSUBTRACT and SOLIDINTERSECT on B-rep solids; EXPORTSTEP; and .step and .stp
      files through Import. Each loads OpenCASCADE the first time (occt-adapter.js) and is one undo step.
-     Edge sets rather than a picked edge: an edge picked under the cursor needs the edges drawn and hit-tested, which is
-     the next step; the four sets cover a box's usual fillets. */
+     Edges in sets (all, vertical, top, bottom), or picked one by one with the mouse (V266, occt-features.js). */
   function bimOcctSel(){
     var ids=(A3D.selSet&&A3D.selSet.length)?A3D.selSet.slice():(A3D.sel?[A3D.sel]:[]);
     return ids.map(objById).filter(Boolean);
@@ -93,7 +93,7 @@ import { a3dToast, objById } from '../bim/csg-booleans.js';
     });
   }
   /* ---------- FILLETEDGE, CHAMFEREDGE, SHELL ---------- */
-  var BIM_OCCT_EDGESETS=[['all','All edges'],['vertical','Vertical edges'],['top','Top edges'],['bottom','Bottom edges']];
+  var BIM_OCCT_EDGESETS=[['all','All edges'],['vertical','Vertical edges'],['top','Top edges'],['bottom','Bottom edges'],['pick','Pick them (click edges)']];
   /* replicad's edge finder for one of the sets, the shape's height range given */
   function bimOcctEdgeFilter(set,zmin,zmax){
     if(set==='vertical')return function(e){return e.inDirection('Z');};
@@ -124,6 +124,7 @@ import { a3dToast, objById } from '../bim/csg-booleans.js';
     bimOcctNumDlg(op==='fillet'?'Fillet edges':'Chamfer edges',[{k:'r',label:(op==='fillet'?'Radius':'Distance')+', m',v:0.1},
       {k:'set',label:'Edges',options:BIM_OCCT_EDGESETS,v:'all'}],function(v){
       if(!(v.r>0))return 'It must be more than zero';
+      if(v.set==='pick'){startOcctEdgePick(op,ids[0],v.r);return '';}   /* __acad3dV266: the first selected solid */
       bimOcctEdges(op,ids,v.r,v.set);return '';
     });
   }
@@ -254,6 +255,7 @@ import { a3dToast, objById } from '../bim/csg-booleans.js';
     });
   }
 export {
-  bimOcctBoolean, bimOcctExportStep, bimOcctImportStep, bimOcctLoft, bimOcctRevolvePoint, startOcctEdges,
-  startOcctExtrude, startOcctRevolve, startOcctShell
+  bimOcctBoolean, bimOcctClosedSketch, bimOcctExportStep, bimOcctImportStep, bimOcctLoft, bimOcctNumDlg,
+  bimOcctRevolvePoint, bimOcctRun, bimOcctSel, startOcctEdges, startOcctExtrude, startOcctRevolve,
+  startOcctShell
 };

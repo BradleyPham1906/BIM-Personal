@@ -13,6 +13,7 @@ import {
   bimMapTileCorners
 } from '../map/map-tiles.js';
 import { BIM_DRAPE_ZREF, bimDrapeTiles, bimGlRender, bimTerrainMeshData, paint } from '../map/terrain-3d.js';
+import { bimPcVisible } from '../map/pointcloud-view.js';
 import { bimCameraIsPlan } from '../views/saved-views.js';
 import { a3dToast } from '../bim/csg-booleans.js';
 import { cvH, cvScale, cvW } from '../ui/canvas-size.js';
@@ -297,6 +298,7 @@ import { cvH, cvScale, cvW } from '../ui/canvas-size.js';
   }
   /* what WebGPU does not draw yet: the map, and a terrain surface in 3D */
   function bimGpuNeedsGl(V,W,H){
+    if(bimPcVisible().length)return 'a point cloud is drawn with WebGL';   /* __acad3dV190 */
     return '';   /* __acad3dV154: the map and the terrain are drawn with WebGPU too */
   }
   function bimGpuBuf(dev,arr,usage){

@@ -55,6 +55,7 @@ import {
 import { bimAccFetch } from './access-data.js';
 import { bimAccSaHtml } from './movement-data.js';
 import { A3D_AW, bimAwOwns, bimAwRender, bimAwTitleSync } from './analysis-workspace.js';
+import { bimJointPropsHtml } from '../assembly/joints.js';
 import { bimSkpPropsHtml } from '../io/sketchup-import.js';
 import { bimIfcPropsHtml } from '../io/ifc-full.js';
 import { bimSkPropsHtml } from '../render/surface-kinds.js';
@@ -62,6 +63,7 @@ import { bimRvPropsHtml } from '../render/rendered-view.js';
 import { A3D_BENCH, bimBenchmarkText, bimGraphicsLabel } from '../render/webgpu.js';
 import { bimLodOf } from '../map/lod-solids.js';
 import { paint } from '../map/terrain-3d.js';
+import { bimPcPropsHtml } from '../map/pointcloud-view.js';
 import { bimWalkPropsHtml } from '../walk/walk-mode.js';
 import { bimNoteDef } from '../annotation/annotation-overlay.js';
 import { bimPrimBase, bimPrmLabel } from '../editing/faces-push-pull.js';
@@ -78,6 +80,7 @@ import { bimUsageTarget } from '../bim/usages-live-areas.js';
 import { bimIsFrameMember } from '../structure/analytical-model.js';
 import { bimStructPropsHtml } from '../structure/analysis-properties.js';
 import { bimEntPropsHtml } from '../assets/scale-assets.js';
+import { bimMatQty } from '../assets/material-cards.js';
 import { A3D_VIEW } from '../views/saved-views.js';
 import { bimBoardShow } from '../sheets/boards.js';
 import { bimBdeOwnsProps } from '../sheets/board-design-edit.js';
@@ -470,10 +473,14 @@ import { bimNoteHex } from '../testing/hooks-view-gizmo.js';
            that is always empty reads as a value the app failed to compute rather than as a
            property the material has not been given. Revit hides parameters that do not
            apply for the same reason. A card that does carry them shows them. */
-        if(isFinite(curMat.youngsModulus))
-          matRows+=bimPropText('Young\u2019s Modulus (GPa)',bimDispNum(curMat.youngsModulus,1));
+        var curE=bimMatQty('youngsModulus',curMat.youngsModulus);   /* __acad3dV268: the cards keep E as "210 GPa" */
+        if(curE!=null&&isFinite(curE))
+          matRows+=bimPropText('Young\u2019s Modulus (GPa)',bimDispNum(curE,1));
         if(isFinite(curMat.poissonRatio))
           matRows+=bimPropText('Poisson\u2019s Ratio',bimDispNum(curMat.poissonRatio,2));
+        [['yieldStrength','Yield Strength (MPa)',0],['tensileStrength','Tensile Strength (MPa)',0],['conductivity','Thermal Conductivity (W/m\u00b7K)',3],
+          ['specificHeat','Specific Heat (J/kg\u00b7K)',0],['expansion','Thermal Expansion (\u00b5m/m\u00b7K)',1]].forEach(function(r){   /* __acad3dV268 */
+          if(isFinite(curMat[r[0]])&&curMat[r[0]]!==null)matRows+=bimPropText(r[1],bimDispNum(curMat[r[0]],r[2]));});
       }
       var mVol=bimObjVolume(o),mMass=bimObjMass(o);
       // bimDispNum returns an em dash for null, which is the same 'no closed volume' signal
@@ -622,6 +629,8 @@ import { bimNoteHex } from '../testing/hooks-view-gizmo.js';
     h+=bimPropGroup('Dimensions',dims);
     if(o.t==='terrain'&&o.survey&&!o.grading)h+=bimPropGroup('Survey Check',bimSurveyCheckHtml(o));   /* __acad3dV138; __acad3dV145: not a proposed one */
     if(o.t==='terrain'&&o.survey)h+=bimPropGroup('Terrain Analysis',bimTerrainPropsHtml(o));   /* __acad3dV144 */
+    if(o.t==='pointcloud'&&o.pc)h+=bimPropGroup('Point Cloud',bimPcPropsHtml(o));   /* __acad3dV190 */
+    if(o.joint)h+=bimPropGroup('Assembly',bimJointPropsHtml(o));   /* __acad3dV273 */
     if(o.t==='terrain'&&o.grading)h+=bimPropGroup('Grading',bimGradePropsHtml(o));            /* __acad3dV145 */
     if(bimIsFrameMember(o))h+=bimStructPropsHtml(o);   /* __acad3dV125 */
     if(bimIsAlignment(o))h+=bimAlignPropsHtml(o);       /* __acad3dV127 */

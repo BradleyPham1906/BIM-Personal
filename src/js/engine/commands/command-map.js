@@ -67,6 +67,12 @@ import {
   bimOcctBoolean, bimOcctExportStep, bimOcctLoft, startOcctEdges, startOcctExtrude, startOcctRevolve,
   startOcctShell
 } from '../solids/occt-tools.js';
+import {
+  bimOcctSweep, startOcctDraft, startOcctPattern, startOcctThickness
+} from '../solids/occt-features.js';
+import { openViewbaseDlg } from '../solids/occt-views.js';
+import { bimMeshRepairCommand, bimMeshToSolidCommand } from '../editing/mesh-repair.js';
+import { openBomDlg, openJointDlg } from '../assembly/joints.js';
 import { bimSkpPick } from '../io/sketchup-import.js';
 import { bimGltfExport, bimGltfPick } from '../io/gltf.js';
 import { bimIfcPick } from '../io/ifc-full.js';
@@ -81,6 +87,7 @@ import { bimWalkCommand } from '../walk/walk-mode.js';
 import { bimSetSnap, bimSyncSnapPill } from '../ui/shortcuts.js';
 import { bimGizmoCommand } from '../gizmo/gizmo-handles.js';
 import { bimPressPullCommand } from '../editing/faces-push-pull.js';
+import { startConstraintTool } from '../drawing/sketch-constraints.js';
 import { delSelection, duplicateSelection } from '../editing/selection-tools.js';
 import { startMirrorTool, startPolarArrayTool, startRotateTool } from '../editing/precision-editing.js';
 import { bimTogglePolar, openOsnapDlg } from '../drawing/object-snaps.js';
@@ -98,12 +105,14 @@ import { fitScene } from '../ui/tool-palette.js';
 import { startSectionTool } from '../views/section-tool.js';
 import { bimDocsCreate } from '../ui/project-tabs.js';
 import { bimDocsClose } from '../assets/templates.js';
+import { openSheetDlg } from '../views/spreadsheet.js';
 import { bimToggleAreaPlan, bimToggleSun } from '../site/shadows.js';
 import { bimAnalyzeCommand, bimAnalyzeOff } from '../structure/analysis-display.js';
 import { bimStructFocus, bimToggleTrib } from '../structure/analysis-properties.js';
 import { openSaveBlockDlg } from '../assets/blocks.js';
 import { bimAttedit, openAttdefDlg } from '../assets/block-attribs.js';
 import { openBcloseDlg, openBeditDlg } from '../assets/block-editor.js';
+import { openMaterialsDlg } from '../assets/material-browser.js';
 import { A3D_VIEW } from '../views/saved-views.js';
 import { bimSheetById } from '../sheets/sheets.js';
 import { bimSheetOnScreen, bimShowModel } from '../sheets/present.js';
@@ -298,6 +307,21 @@ import { bimOpenToolsPanel } from '../ui/discipline-tabs.js';
     solidsubtract:function(){bimOcctBoolean('cut');},
     solidintersect:function(){bimOcctBoolean('intersect');},
     exportstep:function(){bimOcctExportStep();},
+    materials:function(){openMaterialsDlg();},   /* __acad3dV268 */
+    spreadsheet:function(){openSheetDlg();},   /* __acad3dV269 */
+    meshrepair:function(){bimMeshRepairCommand();},   /* __acad3dV271 */
+    viewbase:function(){openViewbaseDlg();},   /* __acad3dV272 */
+    joint:function(){openJointDlg();},   /* __acad3dV273 */
+    bom:function(){openBomDlg();},
+    meshtosolid:function(){bimMeshToSolidCommand();},
+    gctangent:function(){startConstraintTool('tangent');},   /* __acad3dV267 */
+    dcradius:function(){startConstraintTool('radius');},
+    dcdiameter:function(){startConstraintTool('diameter');},
+    gcpointonarc:function(){startConstraintTool('pointonarc');},
+    occtdraft:function(){startOcctDraft();},   /* __acad3dV266 */
+    occtsweep:function(){bimOcctSweep();},
+    occtpattern:function(){startOcctPattern();},
+    occtthickness:function(){startOcctThickness();},
     massprop:function(){bimMassprop();},   /* __acad3dV262 */
     countblocks:function(){bimCountCommand();},
     cal:function(){openCalDlg();},

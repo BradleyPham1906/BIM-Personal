@@ -595,6 +595,17 @@ body.light-theme .a3d-stfile[data-state="unsaved"],body.light-theme .a3d-stfile[
 @media (pointer:coarse){.a3d-filedlg-ft .a3d-btn{min-height:36px}}
 body.light-theme .a3d-filedlg-box{background:#ffffff;border-color:#c9ced4;color:#202124}
 body.light-theme .a3d-filedlg-x{color:#4a4f55}
+/* __acad3dV268, __acad3dV269: the Materials dialog and the spreadsheet, wider than a small dialog */
+.a3d-dlg.a3d-matb{width:min(380px,94vw);max-height:86vh;overflow:auto}
+.a3d-dlg.a3d-sheet{width:min(760px,96vw);max-height:88vh;overflow:auto}
+.a3d-sheetwrap{max-height:46vh;overflow:auto;border:1px solid #3a4048;margin:6px 0}
+.a3d-sheetgrid{border-collapse:collapse;font-size:11px}
+.a3d-sheetgrid th{position:sticky;top:0;background:#2b3036;color:#9aa4ae;font-weight:500;padding:2px 4px;min-width:22px}
+.a3d-sheetgrid td{padding:0;border:1px solid #333a42}
+.a3d-sheetgrid td input{width:64px;background:transparent;border:0;color:#dfe4ea;padding:2px 4px;font:inherit}
+.a3d-sheetgrid td input:focus{background:#1b1f24;outline:1px solid #4ea1ff}
+.a3d-sheetgrid td input.a3d-sheeterr{color:#e08080}
+.a3d-sheetgrid td input[data-bound]{background:rgba(78,161,255,0.12)}
 /* __acad3dV116: the layout tabs, the space button, and the menus they open */
 .a3d-laytabs{display:flex;align-items:stretch;align-self:stretch;flex:0 1 auto;min-width:0;overflow:hidden;margin-left:-10px;border-right:1px solid #101214}
 .a3d-lt{flex:0 1 auto;min-width:0;max-width:180px;background:transparent;border:0;border-right:1px solid #101214;color:#a9abae;padding:0 12px;font:inherit;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -1955,7 +1966,7 @@ body.light-theme .a3d-tl-msgs,body.light-theme .a3d-tl-hn span,body.light-theme 
     ['DIST',['DI','MEASUREGEOM','MEA'],'inqdist','Measure the distance and angle between two points, leaving nothing in the drawing'],['ID',[],'inqid','Show the coordinates of a point'],['AREA',['AA'],'inqarea','Measure the area and perimeter of picked points or of the selected closed objects'],['LIST',['LI','LS'],'inqlist','List the selected objects\' properties and sizes'],   /* __acad3dV255 */
     ['DIVIDE',['DIV'],'divide','Place points dividing an object into equal parts'],
     ['MEASURE',['ME'],'measurePts','Place points at a set spacing along an object'],['DIMLINEAR',['DLI','DIM'],'bimDims','Linear dimension'],
-    ['LAYER',['LA','LAYERS'],'layers','Layer Properties Manager'],['DIMBASELINE',['DBA'],'dimbase','Dimensions from the first point of the last linear dimension'],['DIMCONTINUE',['DCO'],'dimcont','Dimensions chained from the last linear dimension'],['DIMORDINATE',['DOR'],'dimord','The X or Y of a point from the origin'],['XATTACH',['XA'],'xattach','Attach a DXF or DWG drawing as a reference'],['XREF',['XR','EXTERNALREFERENCES'],'xref','The attached drawings: reload, detach'],['BEDIT',['BE'],'bedit','Edit a block definition; every insert follows'],['BCLOSE',[],'bclose','Close the block editor, saving or discarding'],['DONUT',['DO','DOUGHNUT'],'donut','Filled rings and dots'],['WIPEOUT',[],'wipeout','Mask what is under an area with the background'],['EXTRUDE',['EXT'],'occtextrude','Extrude closed sketches into true solids (OpenCASCADE)'],['FILLETEDGE',[],'filletedge','Round the edges of a solid'],['CHAMFEREDGE',[],'chamferedge','Bevel the edges of a solid'],['SHELL',[],'occtshell','Hollow a solid, its top open'],['REVOLVE',['REV'],'occtrevolve','Revolve a closed sketch about an axis'],['LOFT',[],'occtloft','A solid through closed sketches at different heights'],['SOLIDUNION',['UNIONSOLID'],'solidunion','Join solids made by the solid tools'],['SOLIDSUBTRACT',['SUBTRACTSOLID'],'solidsubtract','Cut the other solids out of the first'],['SOLIDINTERSECT',['INTERSECTSOLID'],'solidintersect','Keep where the solids overlap'],['EXPORTSTEP',['STEPOUT'],'exportstep','Export solids as a STEP file'],['MASSPROP',[],'massprop','Area, centroid and moments of inertia of the selected closed outlines'],['COUNT',[],'countblocks','How many inserts of each block the drawing holds'],['QUICKCALC',['QC','CAL'],'cal','A calculator'],['ATTDEF',['ATT'],'attdef','Define an attribute a block asks for when it is inserted'],['ATTEDIT',['ATE','EATTEDIT'],'attedit','Edit the attributes of a selected block insert'],['STYLE',['ST'],'textstyle','The text style: font and the height of new text'],['DIMSTYLE',['D','DST','DDIM'],'dimstyle','The dimension style: text, arrows, precision, spacing'],['LAYISO',[],'layiso','Isolate the layers of the selected objects: every other layer off'],['LAYUNISO',[],'layuniso','Put back the layers LAYISO turned off'],['LAYOFF',[],'layoff','Turn off the layers of the selected objects'],['LAYFRZ',[],'layfrz','Freeze the layers of the selected objects'],['LAYLCK',[],'laylck','Lock the layers of the selected objects'],['LAYON',[],'layon','Turn every layer on'],['LAYTHW',[],'laythw','Thaw every layer'],['LAYULK',[],'layulkall','Unlock every layer'],['LAYMCUR',[],'laymcur','Make the selected object\'s layer current'],['LAYERP',['LAYP'],'layerp','Undo the last change to the layer settings'],['OSNAP',['OS','DSETTINGS','DS','SE'],'osnapSettings','Object snap and polar tracking settings'],['OSMODE',['F3'],'bimSnap','Toggle object snap'],['POLAR',[],'polar','Toggle polar tracking (F10)'],
+    ['LAYER',['LA','LAYERS'],'layers','Layer Properties Manager'],['DIMBASELINE',['DBA'],'dimbase','Dimensions from the first point of the last linear dimension'],['DIMCONTINUE',['DCO'],'dimcont','Dimensions chained from the last linear dimension'],['DIMORDINATE',['DOR'],'dimord','The X or Y of a point from the origin'],['XATTACH',['XA'],'xattach','Attach a DXF or DWG drawing as a reference'],['XREF',['XR','EXTERNALREFERENCES'],'xref','The attached drawings: reload, detach'],['BEDIT',['BE'],'bedit','Edit a block definition; every insert follows'],['BCLOSE',[],'bclose','Close the block editor, saving or discarding'],['DONUT',['DO','DOUGHNUT'],'donut','Filled rings and dots'],['WIPEOUT',[],'wipeout','Mask what is under an area with the background'],['EXTRUDE',['EXT'],'occtextrude','Extrude closed sketches into true solids (OpenCASCADE)'],['FILLETEDGE',[],'filletedge','Round the edges of a solid'],['CHAMFEREDGE',[],'chamferedge','Bevel the edges of a solid'],['SHELL',[],'occtshell','Hollow a solid, its top open'],['REVOLVE',['REV'],'occtrevolve','Revolve a closed sketch about an axis'],['LOFT',[],'occtloft','A solid through closed sketches at different heights'],['SOLIDUNION',['UNIONSOLID'],'solidunion','Join solids made by the solid tools'],['SOLIDSUBTRACT',['SUBTRACTSOLID'],'solidsubtract','Cut the other solids out of the first'],['SOLIDINTERSECT',['INTERSECTSOLID'],'solidintersect','Keep where the solids overlap'],['EXPORTSTEP',['STEPOUT'],'exportstep','Export solids as a STEP file'],['JOINT',['ASSEMBLYJOINT'],'joint','Join two parts: fixed, a hinge or a slider (the base first)'],['BOM',['PARTSLIST'],'bom','Bill of materials of an assembly, as CSV'],['VIEWBASE',['TECHDRAW','SOLIDVIEWS'],'viewbase','Drawing views of solids: front, top, right, isometric, hidden lines exact'],['MESHREPAIR',['MESHFIX'],'meshrepair','Repair meshes: weld points, drop bad faces, turn faces outward, report holes'],['MESHTOSOLID',['CONVTOSOLID'],'meshtosolid','Make closed meshes true solids (OpenCASCADE)'],['SPREADSHEET',['SHEETCALC','PARAMSHEET'],'spreadsheet','A spreadsheet whose cells read and drive the model (FreeCAD\'s Spreadsheet)'],['MATERIALS',['MAT','MATBROWSEROPEN','RMAT'],'materials','The material library: cards, FreeCAD .FCMat import and export, assign'],['GCTANGENT',[],'gctangent','Constraint: a line tangent to an arc of the selected sketch'],['DCRADIUS',[],'dcradius','Constraint: the radius of an arc of the selected sketch'],['DCDIAMETER',[],'dcdiameter','Constraint: the diameter of an arc of the selected sketch'],['GCPOINTONARC',[],'gcpointonarc','Constraint: a point on an arc of the selected sketch'],['DRAFTANGLE',['TAPER'],'occtdraft','Tilt the sides of a solid by a draft angle'],['SWEEP',[],'occtsweep','Sweep a closed sketch along an open one into a solid'],['SOLIDPATTERN',['PATTERN'],'occtpattern','Linear, polar or mirrored copies joined into a solid'],['THICKNESS',['THICKEN'],'occtthickness','Hollow a solid, the top, the bottom or both open'],['MASSPROP',[],'massprop','Area, centroid and moments of inertia of the selected closed outlines'],['COUNT',[],'countblocks','How many inserts of each block the drawing holds'],['QUICKCALC',['QC','CAL'],'cal','A calculator'],['ATTDEF',['ATT'],'attdef','Define an attribute a block asks for when it is inserted'],['ATTEDIT',['ATE','EATTEDIT'],'attedit','Edit the attributes of a selected block insert'],['STYLE',['ST'],'textstyle','The text style: font and the height of new text'],['DIMSTYLE',['D','DST','DDIM'],'dimstyle','The dimension style: text, arrows, precision, spacing'],['LAYISO',[],'layiso','Isolate the layers of the selected objects: every other layer off'],['LAYUNISO',[],'layuniso','Put back the layers LAYISO turned off'],['LAYOFF',[],'layoff','Turn off the layers of the selected objects'],['LAYFRZ',[],'layfrz','Freeze the layers of the selected objects'],['LAYLCK',[],'laylck','Lock the layers of the selected objects'],['LAYON',[],'layon','Turn every layer on'],['LAYTHW',[],'laythw','Thaw every layer'],['LAYULK',[],'layulkall','Unlock every layer'],['LAYMCUR',[],'laymcur','Make the selected object\'s layer current'],['LAYERP',['LAYP'],'layerp','Undo the last change to the layer settings'],['OSNAP',['OS','DSETTINGS','DS','SE'],'osnapSettings','Object snap and polar tracking settings'],['OSMODE',['F3'],'bimSnap','Toggle object snap'],['POLAR',[],'polar','Toggle polar tracking (F10)'],
     ['ORTHO',[],'bimOrtho','Toggle ortho mode'],['GRID',[],'grid','Toggle grid'],
     ['ZOOM',['Z','ZE','FIT'],'zoomFit','Zoom to fit'],['ZOOMIN',['ZI'],'zoomIn','Zoom in'],
     ['ZOOMOUT',['ZO'],'zoomOut','Zoom out'],['ZOOM100',['Z1'],'view100','Zoom to 100%'],
@@ -5754,6 +5765,9 @@ try{
       bimApplyUnitState(st&&st.units);   /* __acad3dV175a (D10): its display units, metres when it has none */
       A3D.dimStyle=bimDimStyleValid(st&&st.dimStyle);   /* __acad3dV258: its dimension style */
       A3D.textStyle=bimTextStyleValid(st&&st.textStyle);   /* __acad3dV259: its text style */
+      A3D.matCards=bimMatCardsValid(st&&st.matCards);   /* __acad3dV268: its own material cards */
+      A3D.sheet=bimSheetValid(st&&st.sheet);   /* __acad3dV269: its spreadsheet */
+      bimPcRestoreData(st&&st.pcData);   /* __acad3dV190: its point clouds' points */
       setA3D_RES_IMG({});
       if(st&&Array.isArray(st.classifications)){
         A3D.classifications=st.classifications.filter(function(c){return c&&typeof c.id==='string'&&typeof c.code==='string';});
@@ -6055,7 +6069,7 @@ try{
   }
 
   // ---- __acad3dV4: Snaptrude-style 2D plan mode + sketch + Pad/Pocket ----
-  var SK_TOOLS={line:'Line',floor:'Floor',trim:'Trim',rect:'Rectangle',circle:'Circle',circle2p:'Circle 2P',circle3p:'Circle 3P',circlettr:'Circle TTR',ellipse:'Ellipse',revcloud:'Revision cloud',inqid:'ID',attdef:'Attribute definition',revolveaxis:'Revolve axis',donut:'Donut',wipeout:'Wipeout',dimbase:'Baseline dimension',dimcont:'Continued dimension',dimord:'Ordinate dimension',inqdist:'Distance',inqarea:'Area',arc:'Arc',polygon:'Polygon',point:'Point',xline:'Construction line',boundary:'Boundary',hatch:'Hatch',poly:'Polyline',wall:'Wall',column:'Column',door:'Door',window:'Window',room:'Room',roof:'Roof',stair:'Stair',dim:'Dimension',text:'Text',section:'Section',mirror:'Mirror',rotate:'Rotate',polararray:'Polar Array',familyplace:'Place Family',ceiling:'Ceiling',dimangular:'Angular Dim',dimradius:'Radius Dim',dimdiameter:'Diameter Dim',leader:'Leader',roomtag:'Tag Room',footing:'Isolated Footing',wallfoundation:'Wall Foundation',foundslab:'Foundation Slab'};
+  var SK_TOOLS={line:'Line',floor:'Floor',trim:'Trim',rect:'Rectangle',circle:'Circle',circle2p:'Circle 2P',circle3p:'Circle 3P',circlettr:'Circle TTR',ellipse:'Ellipse',revcloud:'Revision cloud',inqid:'ID',attdef:'Attribute definition',revolveaxis:'Revolve axis',occtedge:'Pick edges',jointaxis:'Joint hinge',donut:'Donut',wipeout:'Wipeout',dimbase:'Baseline dimension',dimcont:'Continued dimension',dimord:'Ordinate dimension',inqdist:'Distance',inqarea:'Area',arc:'Arc',polygon:'Polygon',point:'Point',xline:'Construction line',boundary:'Boundary',hatch:'Hatch',poly:'Polyline',wall:'Wall',column:'Column',door:'Door',window:'Window',room:'Room',roof:'Roof',stair:'Stair',dim:'Dimension',text:'Text',section:'Section',mirror:'Mirror',rotate:'Rotate',polararray:'Polar Array',familyplace:'Place Family',ceiling:'Ceiling',dimangular:'Angular Dim',dimradius:'Radius Dim',dimdiameter:'Diameter Dim',leader:'Leader',roomtag:'Tag Room',footing:'Isolated Footing',wallfoundation:'Wall Foundation',foundslab:'Foundation Slab'};
   var A3D_SNAP={point:true,grid:false,gridSize:0.5,ortho:false,pxThreshold:12};
   /* __acad3dV67: BIM status bar read-outs. Every field here reflects state the BIM engine
      actually owns -- A3D.sk, A3D.sel/selSet, A3D.levels/activeLevel, A3D_SNAP -- which is the
@@ -6328,7 +6342,7 @@ try{
   }
   var UNDO_STACK=[],REDO_STACK=[],UNDO_MAX=50,undoSuspend=false;
   function bimSnapshotState(){
-    return JSON.stringify({objs:A3D.objs,levels:A3D.levels,grids:A3D.grids,layers:A3D.layers,counts:A3D.counts,activeLevel:A3D.activeLevel,activeLayer:A3D.activeLayer,views:A3D.views,levelFilter:A3D.levelFilter,types:A3D.types,activeWallType:A3D.activeWallType,sheets:A3D.sheets,titleBlock:A3D.titleBlock,buildings:A3D.buildings,activeBuilding:A3D.activeBuilding,site:A3D.site,roomScheme:A3D.roomScheme||'',classifications:A3D.classifications,resultLayers:A3D.resultLayers||[],pres:A3D.pres||null});   /* __acad3dV148; __acad3dV162 */
+    return JSON.stringify({objs:A3D.objs,levels:A3D.levels,grids:A3D.grids,layers:A3D.layers,counts:A3D.counts,activeLevel:A3D.activeLevel,activeLayer:A3D.activeLayer,views:A3D.views,levelFilter:A3D.levelFilter,types:A3D.types,activeWallType:A3D.activeWallType,sheets:A3D.sheets,titleBlock:A3D.titleBlock,buildings:A3D.buildings,activeBuilding:A3D.activeBuilding,site:A3D.site,roomScheme:A3D.roomScheme||'',classifications:A3D.classifications,resultLayers:A3D.resultLayers||[],pres:A3D.pres||null,matCards:A3D.matCards||[],sheet:A3D.sheet||null});   /* __acad3dV148; __acad3dV162; __acad3dV268, __acad3dV269 */
   }
   /* __acad3dV164: held while a run of many steps is under way, after the one snapshot it takes */
   var bimUndoHold=false;
@@ -6364,6 +6378,8 @@ try{
     A3D.classifications=Array.isArray(st.classifications)?st.classifications:[];
     if(Array.isArray(st.resultLayers))A3D.resultLayers=st.resultLayers;   /* __acad3dV148: a version from History has none, and keeps today's */
     A3D.pres=bimPresValid(st.pres);   /* __acad3dV162: the set as it was */
+    if(Array.isArray(st.matCards))A3D.matCards=st.matCards;   /* __acad3dV268; a version from History has none, and keeps today's */
+    if(st.sheet&&typeof st.sheet==='object')A3D.sheet=st.sheet;   /* __acad3dV269 */
     bimEnsureTypes();
     bimEnsureBuildings();
     A3D.sel=null;A3D.sel2=null;A3D.meshes={};
@@ -6697,7 +6713,7 @@ try{
      through to the viewport. polygon joins on the same terms. */
   var BIM_COORD_TOOLS={line:1,poly:1,wall:1,rect:1,stair:1,arc:1,circle:1,polygon:1,point:1,xline:1,boundary:1,hatch:1,
     /* __acad3dV255: the drafting track's point-taking tools, so a typed point, a typed distance and Enter reach them */
-    move:1,copy:1,stretch:1,circle2p:1,circle3p:1,ellipse:1,revcloud:1,inqid:1,inqdist:1,inqarea:1,dimbase:1,dimcont:1,dimord:1,attdef:1,revolveaxis:1,donut:1,wipeout:1,circlettr:1};
+    move:1,copy:1,stretch:1,circle2p:1,circle3p:1,ellipse:1,revcloud:1,inqid:1,inqdist:1,inqarea:1,dimbase:1,dimcont:1,dimord:1,attdef:1,revolveaxis:1,donut:1,wipeout:1,circlettr:1,occtedge:1,jointaxis:1};
 
   /* AutoCAD coordinate entry. Exactly the five forms Autodesk documents:
 
@@ -6776,6 +6792,7 @@ try{
     else if(sk.tool==='stair'){if(sk.pts.length>=2)finishStair();else{A3D.sk=null;paint();}}
     else if(sk.tool==='inqarea')bimInquiryFinish(sk);   /* __acad3dV255 */
     else if(sk.tool==='wipeout')bimWipeoutFinish(sk);   /* __acad3dV265 */
+    else if(sk.tool==='occtedge')bimOcctEdgeFinish(sk);   /* __acad3dV266 */
     else{A3D.sk=null;paint();}
     bimSyncStatusHint();
     return true;
@@ -6941,6 +6958,7 @@ try{
       :(n?'Break \u00b7 specify second break point:':'Break \u00b7 specify first break point:');
     if(sk.tool==='lengthen')return 'Lengthen \u00b7 select the end to change:';
     if(sk.tool==='scale')return 'Scale \u00b7 specify base point:';
+    if(sk.tool==='occtedge')return (sk.op==='fillet'?'Fillet':'Chamfer')+' edges \u00b7 click the edges ('+sk.picked.length+' picked), Enter to apply:';   /* __acad3dV266 */
     var msg=(SK_TOOLS[sk.tool]||sk.tool);
     return msg+(n?'  ·  click the next point, or type a length + Enter':'  ·  click to start');
   }
@@ -6958,6 +6976,7 @@ try{
   }
   function skClick(xy){
     var sk=A3D.sk;if(!sk)return;
+    if(sk.tool==='occtedge'){bimOcctEdgeClick(sk,xy);return;}   /* __acad3dV266: an edge, picked on the screen */
     var g=groundPoint(xy[0],xy[1],sk.y);if(!g)return;
     var snapped=bimSnapPoint(xy,g,sk);
     skPlacePoint(snapped[0],snapped[1],xy);
@@ -6982,6 +7001,7 @@ try{
     if(bimIsDimChainTool(sk)){bimDimChainPoint(sk,[gx,gz]);return;}   /* __acad3dV258 */
     if(sk.tool==='attdef'){bimAttdefPlace(sk,[gx,gz]);return;}   /* __acad3dV260 */
     if(sk.tool==='revolveaxis'){bimOcctRevolvePoint(sk,[gx,gz]);return;}   /* __acad3dV264 */
+    if(sk.tool==='jointaxis'){bimJointAxisPoint(sk,[gx,gz]);return;}   /* __acad3dV273 */
     if(sk.tool==='donut'){bimDonutPoint(sk,[gx,gz]);return;}   /* __acad3dV265 */
     if(sk.tool==='wipeout'){bimWipeoutPoint(sk,[gx,gz]);return;}   /* __acad3dV250: MOVE, COPY, STRETCH */
     if(sk.tool==='matchprop'){if(xy)bimMatchPropClick(sk,xy);return;}
@@ -7484,6 +7504,7 @@ try{
   function drawSkLivePreview(ctx,V,W,H){
     var sk=A3D.sk;
     if(!sk)return;
+    if(sk.tool==='occtedge')bimOcctEdgeDraw(ctx,V,W,H);   /* __acad3dV266 */
     if(sk.pts.length&&sk.hover){
       var last=sk.pts[sk.pts.length-1];
       var p1=toScreen([last[0],sk.y,last[1]],V,W,H);
@@ -13523,7 +13544,7 @@ function bimPicPlane(wPx, hPx, widthM) {
   /* __acad3dV69: assigning a card to a solid gives BOTH a plan cut pattern and a quantity takeoff
      from the same act. */
   function bimMaterialCards(){
-    return A3D_MATERIAL_LIBRARY;   /* __acad3dV120 */
+    return bimMatLibrary(A3D_MATERIAL_LIBRARY,A3D.matCards);   /* __acad3dV120; __acad3dV268: and the project's own cards */
   }
   function bimMaterialByName(n){
     var cards=bimMaterialCards(),i;
@@ -33251,10 +33272,14 @@ function bimAnGauss(m) {
            that is always empty reads as a value the app failed to compute rather than as a
            property the material has not been given. Revit hides parameters that do not
            apply for the same reason. A card that does carry them shows them. */
-        if(isFinite(curMat.youngsModulus))
-          matRows+=bimPropText('Young\u2019s Modulus (GPa)',bimDispNum(curMat.youngsModulus,1));
+        var curE=bimMatQty('youngsModulus',curMat.youngsModulus);   /* __acad3dV268: the cards keep E as "210 GPa" */
+        if(curE!=null&&isFinite(curE))
+          matRows+=bimPropText('Young\u2019s Modulus (GPa)',bimDispNum(curE,1));
         if(isFinite(curMat.poissonRatio))
           matRows+=bimPropText('Poisson\u2019s Ratio',bimDispNum(curMat.poissonRatio,2));
+        [['yieldStrength','Yield Strength (MPa)',0],['tensileStrength','Tensile Strength (MPa)',0],['conductivity','Thermal Conductivity (W/m\u00b7K)',3],
+          ['specificHeat','Specific Heat (J/kg\u00b7K)',0],['expansion','Thermal Expansion (\u00b5m/m\u00b7K)',1]].forEach(function(r){   /* __acad3dV268 */
+          if(isFinite(curMat[r[0]])&&curMat[r[0]]!==null)matRows+=bimPropText(r[1],bimDispNum(curMat[r[0]],r[2]));});
       }
       var mVol=bimObjVolume(o),mMass=bimObjMass(o);
       // bimDispNum returns an em dash for null, which is the same 'no closed volume' signal
@@ -33403,6 +33428,8 @@ function bimAnGauss(m) {
     h+=bimPropGroup('Dimensions',dims);
     if(o.t==='terrain'&&o.survey&&!o.grading)h+=bimPropGroup('Survey Check',bimSurveyCheckHtml(o));   /* __acad3dV138; __acad3dV145: not a proposed one */
     if(o.t==='terrain'&&o.survey)h+=bimPropGroup('Terrain Analysis',bimTerrainPropsHtml(o));   /* __acad3dV144 */
+    if(o.t==='pointcloud'&&o.pc)h+=bimPropGroup('Point Cloud',bimPcPropsHtml(o));   /* __acad3dV190 */
+    if(o.joint)h+=bimPropGroup('Assembly',bimJointPropsHtml(o));   /* __acad3dV273 */
     if(o.t==='terrain'&&o.grading)h+=bimPropGroup('Grading',bimGradePropsHtml(o));            /* __acad3dV145 */
     if(bimIsFrameMember(o))h+=bimStructPropsHtml(o);   /* __acad3dV125 */
     if(bimIsAlignment(o))h+=bimAlignPropsHtml(o);       /* __acad3dV127 */
@@ -39498,9 +39525,9 @@ function bimAnGauss(m) {
      The plan is the app's x and z with y up; OpenCASCADE's is X, Y with Z up. (x, y, z) goes to (X, Y, Z) = (x, -z, y),
      a turn rather than a reflection, so faces keep their winding; a bulge changes sign with the plan's north-up flip, as
      the DXF writer's does (export-mappings.js). A solid keeps its OpenCASCADE shape as replicad's serialized text in
-     o.occt.brep, with a signature of the mesh it made; a mesh tool that changes the mesh afterwards (rotate, scale,
-     push and pull) leaves the signature behind, and the solid is then no longer edited as a B-rep, rather than from a
-     shape it no longer matches. */
+     o.occt.brep, with a signature of the mesh it made. A mesh tool that turns, mirrors or scales the mesh evenly keeps
+     it a solid: the B-rep follows the same map (V266, bimOcctShapeOf). One that stretches or rebuilds it (a plan-only
+     SCALE, push and pull) leaves it a mesh, rather than a shape it no longer matches. */
   var BIM_OCCT={ver:'1.2.1',dir:'occt/1.2.1/',lib:'bim-replicad.min.js',loader:'replicad_single.js',wasm:'replicad_single.wasm',
     sri:'sha256-hpbD1EWm6C2UdV5h1R+k5GlTKeXiUht9ADDHuoZNr18=',mesh:{tolerance:0.005,angularTolerance:10}};
   var A3D_OCCT={load:null,st:'',err:'',R:null};
@@ -39551,7 +39578,60 @@ function bimAnGauss(m) {
     for(i=0;i<mesh.v.length;i++)s+=mesh.v[i][0]*1.3+mesh.v[i][1]*1.7+mesh.v[i][2]*1.9;
     return mesh.v.length+':'+mesh.f.length+':'+s.toFixed(4);
   }
-  function bimOcctIsSolid(o){return !!(o&&o.occt&&typeof o.occt.brep==='string'&&o.mesh&&o.occt.sig===bimOcctSig(o.mesh));}
+  /* __acad3dV266: a solid whose mesh a mesh tool moved, turned, mirrored or scaled (ROTATE, MIRROR, SCALE, the gizmo)
+     is still a solid: the same vertices in the same order, carried by one affine map. Its sizes still match the
+     signature's, and bimOcctShapeOf finds the map and carries the B-rep with it. */
+  function bimOcctSigSizes(sig){var m=/^(\d+):(\d+):/.exec(String(sig||''));return m?[+m[1],+m[2]]:null;}
+  function bimOcctIsSolid(o){
+    if(!(o&&o.occt&&typeof o.occt.brep==='string'&&o.mesh&&o.mesh.v))return false;
+    if(o.occt.sig===bimOcctSig(o.mesh))return true;
+    var n=bimOcctSigSizes(o.occt.sig);
+    return !!(n&&n[0]===o.mesh.v.length&&n[1]===o.mesh.f.length&&!o.occt.lost);
+  }
+  /* The affine map that takes points P to points Q (q = A p + t), by least squares, and how well it fits: the largest
+     distance left, and whether A is a turn, a mirror and one scale (a similarity), which a B-rep can follow; a stretch
+     cannot. Pure. */
+  function bimOcctFitAffine(P,Q){
+    var n=Math.min(P.length,Q.length),M=[[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]],B=[[0,0,0,0],[0,0,0,0],[0,0,0,0]],i,j,k;
+    if(n<4)return null;
+    for(i=0;i<n;i++){
+      var p=[P[i][0],P[i][1],P[i][2],1];
+      for(j=0;j<4;j++){for(k=0;k<4;k++)M[j][k]+=p[j]*p[k];for(k=0;k<3;k++)B[k][j]+=Q[i][k]*p[j];}
+    }
+    var X=[];
+    for(k=0;k<3;k++){var x=bimOcctSolve4(M,B[k]);if(!x)return null;X.push(x);}
+    var A=[[X[0][0],X[0][1],X[0][2]],[X[1][0],X[1][1],X[1][2]],[X[2][0],X[2][1],X[2][2]]],t=[X[0][3],X[1][3],X[2][3]];
+    var err=0,size=0;
+    for(i=0;i<n;i++){
+      var d=0;
+      for(k=0;k<3;k++){var q=A[k][0]*P[i][0]+A[k][1]*P[i][1]+A[k][2]*P[i][2]+t[k];d+=(q-Q[i][k])*(q-Q[i][k]);size=Math.max(size,Math.abs(Q[i][k]));}
+      err=Math.max(err,Math.sqrt(d));
+    }
+    var det=A[0][0]*(A[1][1]*A[2][2]-A[1][2]*A[2][1])-A[0][1]*(A[1][0]*A[2][2]-A[1][2]*A[2][0])+A[0][2]*(A[1][0]*A[2][1]-A[1][1]*A[2][0]);
+    var s=Math.pow(Math.abs(det),1/3),sim=s>1e-9;
+    for(j=0;j<3&&sim;j++)for(k=0;k<3;k++){
+      var dot=A[0][j]*A[0][k]+A[1][j]*A[1][k]+A[2][j]*A[2][k];
+      if(Math.abs(dot-(j===k?s*s:0))>1e-6*Math.max(1,s*s)){sim=false;break;}
+    }
+    return {A:A,t:t,err:err,ok:err<=1e-6*Math.max(1,size),similar:sim,det:det,s:s};
+  }
+  function bimOcctSolve4(M,b){
+    var a=M.map(function(r,i){return r.slice().concat([b[i]]);}),i,j,k;
+    for(i=0;i<4;i++){
+      var piv=i;for(j=i+1;j<4;j++)if(Math.abs(a[j][i])>Math.abs(a[piv][i]))piv=j;
+      if(Math.abs(a[piv][i])<1e-12)return null;
+      var tmp=a[i];a[i]=a[piv];a[piv]=tmp;
+      for(j=0;j<4;j++){if(j===i)continue;var f=a[j][i]/a[i][i];for(k=i;k<5;k++)a[j][k]-=f*a[i][k];}
+    }
+    return [a[0][4]/a[0][0],a[1][4]/a[1][1],a[2][4]/a[2][2],a[3][4]/a[3][3]];
+  }
+  /* The app's map in OpenCASCADE's frame: (X, Y, Z) = (x, -z, y) is the turn Q, so A' = Q A Q^T and t' = Q t. Pure. */
+  function bimOcctAffineToOcc(A,t){
+    var Q=[[1,0,0],[0,0,-1],[0,1,0]],QA=[[0,0,0],[0,0,0],[0,0,0]],R=[[0,0,0],[0,0,0],[0,0,0]],i,j,k;
+    for(i=0;i<3;i++)for(j=0;j<3;j++)for(k=0;k<3;k++)QA[i][j]+=Q[i][k]*A[k][j];
+    for(i=0;i<3;i++)for(j=0;j<3;j++)for(k=0;k<3;k++)R[i][j]+=QA[i][k]*Q[j][k];
+    return {A:R,t:[t[0],-t[2],t[1]]};
+  }
   /* ---------- loading ---------- */
   function bimOcctBases(){
     var p=String(window.location&&window.location.protocol||''),out=[];
@@ -39612,7 +39692,22 @@ function bimAnGauss(m) {
     A3D.meshes={};
     return true;
   }
-  function bimOcctShapeOf(R,o){return R.deserializeShape(o.occt.brep);}
+  function bimOcctShapeOf(R,o){
+    var s=R.deserializeShape(o.occt.brep);
+    if(o.occt.sig===bimOcctSig(o.mesh))return s;
+    /* __acad3dV266: a mesh tool moved the mesh; find its map from the mesh the B-rep makes, and follow it */
+    var m0=bimOcctMesh(s),fit=(m0.v.length===o.mesh.v.length)?bimOcctFitAffine(m0.v,o.mesh.v):null;
+    if(!fit||!fit.ok||!fit.similar){
+      o.occt.lost=true;
+      throw new Error(o.name+' was '+(fit&&fit.ok?'stretched':'reshaped')+' by a mesh tool, so it is no longer edited as a solid');
+    }
+    var F=bimOcctAffineToOcc(fit.A,fit.t),oc=R.getOC(),tr=new oc.gp_Trsf();
+    tr.SetValues(F.A[0][0],F.A[0][1],F.A[0][2],F.t[0],F.A[1][0],F.A[1][1],F.A[1][2],F.t[1],F.A[2][0],F.A[2][1],F.A[2][2],F.t[2]);
+    var bt=new oc.BRepBuilderAPI_Transform(s.wrapped,tr,true),out=R.cast(bt.Shape());
+    tr.delete();bt.delete();
+    o.occt={brep:out.serialize(),sig:bimOcctSig(o.mesh),v:BIM_OCCT.ver};   /* the B-rep follows; the mesh stays as the tool left it */
+    return out;
+  }
   /* The shape where the model shows it: a solid moved by MOVE keeps its B-rep where it was made, and its offset
      (o.pos) on top, as its mesh does; booleans between solids and STEP need them where they are. */
   function bimOcctOffsetXYZ(pos){return [pos[0]||0,-(pos[2]||0),pos[1]||0];}
@@ -39626,8 +39721,7 @@ function bimAnGauss(m) {
      its top face open); REVOLVE (REV) a closed sketch about an axis picked in the plan; LOFT between closed sketches at
      different heights; SOLIDUNION, SOLIDSUBTRACT and SOLIDINTERSECT on B-rep solids; EXPORTSTEP; and .step and .stp
      files through Import. Each loads OpenCASCADE the first time (occt-adapter.js) and is one undo step.
-     Edge sets rather than a picked edge: an edge picked under the cursor needs the edges drawn and hit-tested, which is
-     the next step; the four sets cover a box's usual fillets. */
+     Edges in sets (all, vertical, top, bottom), or picked one by one with the mouse (V266, occt-features.js). */
   function bimOcctSel(){
     var ids=(A3D.selSet&&A3D.selSet.length)?A3D.selSet.slice():(A3D.sel?[A3D.sel]:[]);
     return ids.map(objById).filter(Boolean);
@@ -39697,7 +39791,7 @@ function bimAnGauss(m) {
     });
   }
   /* ---------- FILLETEDGE, CHAMFEREDGE, SHELL ---------- */
-  var BIM_OCCT_EDGESETS=[['all','All edges'],['vertical','Vertical edges'],['top','Top edges'],['bottom','Bottom edges']];
+  var BIM_OCCT_EDGESETS=[['all','All edges'],['vertical','Vertical edges'],['top','Top edges'],['bottom','Bottom edges'],['pick','Pick them (click edges)']];
   /* replicad's edge finder for one of the sets, the shape's height range given */
   function bimOcctEdgeFilter(set,zmin,zmax){
     if(set==='vertical')return function(e){return e.inDirection('Z');};
@@ -39728,6 +39822,7 @@ function bimAnGauss(m) {
     bimOcctNumDlg(op==='fillet'?'Fillet edges':'Chamfer edges',[{k:'r',label:(op==='fillet'?'Radius':'Distance')+', m',v:0.1},
       {k:'set',label:'Edges',options:BIM_OCCT_EDGESETS,v:'all'}],function(v){
       if(!(v.r>0))return 'It must be more than zero';
+      if(v.set==='pick'){startOcctEdgePick(op,ids[0],v.r);return '';}   /* __acad3dV266: the first selected solid */
       bimOcctEdges(op,ids,v.r,v.set);return '';
     });
   }
@@ -39857,6 +39952,771 @@ function bimAnGauss(m) {
       },function(e){a3dToast('STEP import failed: '+bimOcctErr(e));return null;});
     });
   }
+  /* ================= __acad3dV266: more of FreeCAD's PartDesign on OpenCASCADE =================
+     What V264 left open (docs/research/research-occt-library.md, section 6):
+     - FILLETEDGE and CHAMFEREDGE on edges picked with the mouse: the solid's edges are drawn over it, a click takes the
+       one nearest the cursor on the screen (in any view), Enter applies. An edge is known again by its midpoint.
+     - DRAFTANGLE (TAPER): FreeCAD's Draft feature, AutoCAD's SOLIDEDIT taper: the side faces of a solid tilted by an
+       angle about its bottom plane, inward for a positive angle, as a mould needs.
+     - SWEEP: a closed sketch (the section) swept along an open sketch (the path), as AutoCAD's SWEEP and FreeCAD's
+       Sweep: the section is set square to the path at its start, centred on it.
+     - SOLIDPATTERN: FreeCAD's LinearPattern, PolarPattern and Mirrored: copies of a solid, joined into it.
+     - THICKNESS: FreeCAD's Thickness: SHELL with the open face chosen (the top, the bottom, or both).
+     Each loads OpenCASCADE the first time and is one undo step. The pure parts (the edge nearest a click, the pattern's
+     placements) are tested without a canvas. */
+  /* ---------- edges picked with the mouse ---------- */
+  var BIM_OCCT_EDGE_SAMPLES=12;
+  /* An OpenCASCADE point (X, Y, Z) where the app shows it: (x, y, z) = (X, Z, -Y), plus the object's offset. */
+  function bimOcctToApp(P,q){return [P[0]+q[0],P[2]+q[1],-P[1]+q[2]];}
+  /* The edges of a shape as polylines in the app's frame, each with its midpoint in OpenCASCADE's. */
+  function bimOcctEdgeLines(shape,q){
+    var out=[],E=shape.edges,i,k;
+    for(i=0;i<E.length;i++){
+      var pts=[];
+      for(k=0;k<=BIM_OCCT_EDGE_SAMPLES;k++)pts.push(bimOcctToApp(E[i].pointAt(k/BIM_OCCT_EDGE_SAMPLES).toTuple(),q));
+      out.push({pts:pts,mid:E[i].pointAt(0.5).toTuple()});
+    }
+    return out;
+  }
+  /* The edge nearest a screen point, within tol pixels, from edges already projected to the screen. Pure. */
+  function bimOcctNearestEdge(screenEdges,xy,tol){
+    var best=-1,bd=tol,i,k;
+    for(i=0;i<screenEdges.length;i++){
+      var S=screenEdges[i];
+      for(k=0;k+1<S.length;k++){
+        var a=S[k],b=S[k+1],dx=b[0]-a[0],dy=b[1]-a[1],L=dx*dx+dy*dy,t=L>0?((xy[0]-a[0])*dx+(xy[1]-a[1])*dy)/L:0;
+        t=Math.max(0,Math.min(1,t));
+        var ex=a[0]+dx*t-xy[0],ey=a[1]+dy*t-xy[1],d=Math.sqrt(ex*ex+ey*ey);
+        if(d<bd){bd=d;best=i;}
+      }
+    }
+    return best;
+  }
+  function bimOcctSameMid(a,b){return Math.abs(a[0]-b[0])+Math.abs(a[1]-b[1])+Math.abs(a[2]-b[2])<1e-6;}
+  function startOcctEdgePick(op,id,r){
+    var label=op==='fillet'?'FILLETEDGE':'CHAMFEREDGE';
+    return bimOcctRun(label,function(R){
+      var o=objById(id);if(!o)return null;
+      var edges=bimOcctEdgeLines(bimOcctShapeOf(R,o),bimObjOffset(o));
+      if(A3D.sk)A3D.sk=null;
+      A3D.sk={tool:'occtedge',pts:[],y:0,on:null,op:op,r:r,id:id,edges:edges,picked:[]};
+      a3dToast(label+': click the edges ('+edges.length+' on this solid), then Enter');
+      paint();
+      return A3D.sk;
+    });
+  }
+  function bimOcctEdgeScreen(sk){
+    var V=camVecs(A3D.cam),W=cvW(),H=cvH();
+    return sk.edges.map(function(e){return e.pts.map(function(p){return toScreen(p,V,W,H);});});
+  }
+  function bimOcctEdgeClick(sk,xy){
+    var i=bimOcctNearestEdge(bimOcctEdgeScreen(sk),xy,14);
+    if(i<0){a3dToast('No edge there: click on one of the drawn edges');return;}
+    var at=sk.picked.indexOf(i);
+    if(at>=0)sk.picked.splice(at,1);else sk.picked.push(i);
+    a3dToast(sk.picked.length+' edge(s) picked; Enter applies, Esc cancels');
+    paint();
+  }
+  function bimOcctEdgeDraw(ctx,V,W,H){
+    var sk=A3D.sk,i,k;
+    if(!sk||sk.tool!=='occtedge')return;
+    ctx.save();
+    for(i=0;i<sk.edges.length;i++){
+      var on=sk.picked.indexOf(i)>=0,P=sk.edges[i].pts;
+      ctx.strokeStyle=on?'#ff9f1a':'rgba(78,161,255,0.85)';ctx.lineWidth=on?3:1.5;
+      ctx.beginPath();
+      for(k=0;k<P.length;k++){var s=toScreen(P[k],V,W,H);if(k)ctx.lineTo(s[0],s[1]);else ctx.moveTo(s[0],s[1]);}
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+  function bimOcctEdgeFinish(sk){
+    A3D.sk=null;paint();
+    if(!sk.picked.length){a3dToast('No edges picked');return null;}
+    var mids=sk.picked.map(function(i){return sk.edges[i].mid;}),label=sk.op==='fillet'?'FILLETEDGE':'CHAMFEREDGE';
+    return bimOcctRun(label,function(R){
+      var o=objById(sk.id);if(!o)return null;
+      var s=bimOcctShapeOf(R,o);
+      var f=function(e){var m=e.pointAt(0.5).toTuple(),j;for(j=0;j<mids.length;j++)if(bimOcctSameMid(m,mids[j]))return sk.r;return null;};
+      var out=sk.op==='fillet'?s.fillet(f):s.chamfer(f);
+      pushUndo();
+      if(!bimOcctReplace(o,out)){UNDO_STACK.pop();a3dToast(label+' made nothing');return null;}
+      refreshTree();paint();saveSoon();
+      a3dToast((sk.op==='fillet'?'Filleted ':'Chamfered ')+mids.length+' edge(s), '+bimFmtLen(sk.r));
+      return o;
+    });
+  }
+  /* ---------- DRAFTANGLE ---------- */
+  function bimOcctDraft(ids,deg){
+    return bimOcctRun('DRAFTANGLE',function(R){
+      var n=0,i;
+      pushUndo();
+      for(i=0;i<ids.length;i++){
+        var o=objById(ids[i]);if(!bimOcctIsSolid(o))continue;
+        var s=bimOcctShapeOf(R,o),b=s.boundingBox.bounds;
+        /* the side faces: their normals square to the vertical; the neutral plane is the bottom */
+        var out=s.draft(deg,function(fc){return fc.atAngleWith('Z',90);},R.makePlane('XY',[0,0,b[0][2]]));
+        if(bimOcctReplace(o,out))n++;
+      }
+      if(!n){UNDO_STACK.pop();a3dToast('DRAFTANGLE: select solids made by the solid tools');return null;}
+      refreshTree();paint();saveSoon();
+      a3dToast('Drafted the sides of '+n+' solid(s) by '+deg+'°');
+      return n;
+    });
+  }
+  function startOcctDraft(){
+    var ids=bimOcctSel().filter(bimOcctIsSolid).map(function(o){return o.id;});
+    if(!ids.length){a3dToast('DRAFTANGLE: select solids made by the solid tools');return;}
+    bimOcctNumDlg('Draft angle',[{k:'deg',label:'Angle of the sides, degrees (positive leans in)',v:3}],function(v){
+      if(!(Math.abs(v.deg)>0&&Math.abs(v.deg)<45))return 'The angle is between -45 and 45, not 0';
+      bimOcctDraft(ids,v.deg);return '';
+    });
+  }
+  /* ---------- SWEEP ---------- */
+  function bimOcctOpenSketch(o){return !!(o&&o.t==='sketch'&&o.closed===false&&o.pts&&o.pts.length>=2);}
+  /* A section's outline centred on its own middle (its box's centre), as the sweep sets it on the path. */
+  function bimOcctCentred(pts){
+    var x0=Infinity,x1=-Infinity,z0=Infinity,z1=-Infinity,i;
+    for(i=0;i<pts.length;i++){x0=Math.min(x0,pts[i][0]);x1=Math.max(x1,pts[i][0]);z0=Math.min(z0,pts[i][1]);z1=Math.max(z1,pts[i][1]);}
+    var cx=(x0+x1)/2,cz=(z0+z1)/2;
+    return pts.map(function(p){return [p[0]-cx,p[1]-cz];});
+  }
+  function bimOcctPathDrawing(R,o){
+    var q=bimObjOffset(o),P=o.pts.map(function(p){return bimOcctPt([p[0]+q[0],p[1]+q[2]]);}),d=R.draw(P[0]),i;
+    for(i=1;i<P.length;i++){
+      var b=-bimBulgeAt(o.bulges,i-1);
+      d=Math.abs(b)>BIM_BULGE_EPS?d.bulgeArcTo(P[i],b):d.lineTo(P[i]);
+    }
+    return d.done().sketchOnPlane('XY',(o.y||0)+q[1]);
+  }
+  function bimOcctSweep(){
+    var S=bimOcctSel(),sec=S.filter(bimOcctClosedSketch)[0],path=S.filter(bimOcctOpenSketch)[0];
+    if(!sec||!path){a3dToast('SWEEP: select one closed sketch (the section) and one open sketch (the path)');return null;}
+    return bimOcctRun('SWEEP',function(R){
+      var prof=bimOcctCentred(sec.pts);
+      var shape=bimOcctPathDrawing(R,path).sweepSketch(function(plane,origin){
+        return bimOcctDrawing(R,prof,sec.bulges||null).sketchOnPlane(plane,origin);
+      },{transitionMode:'round'});
+      pushUndo();
+      var s=bimOcctAddSolid(shape,'Sweep');
+      if(!s){UNDO_STACK.pop();a3dToast('SWEEP made nothing');return null;}
+      s.layer=sec.layer||s.layer;A3D.sel=s.id;A3D.selSet=[s.id];
+      refreshTree();refreshHud();paint();saveSoon();
+      a3dToast('SWEEP: '+(sec.name||'the section')+' along '+(path.name||'the path'));
+      return s;
+    });
+  }
+  /* ---------- SOLIDPATTERN ---------- */
+  /* The placements of a pattern's copies (the original not counted), in the app's frame. Pure.
+     linear: {count, dx, dy, dz}; polar: {count, angle (the whole, degrees), cx, cz} about the vertical through (cx, cz),
+     the copies spread over the angle (a full turn is shared out without a copy on the original); mirror: {axis 'x' or
+     'z', at}, one copy reflected in the plane x = at or z = at. */
+  function bimOcctPatternSteps(p){
+    var out=[],i,n=Math.max(1,Math.round(p.count||1));
+    if(p.type==='linear')for(i=1;i<n;i++)out.push({move:[p.dx*i,(p.dy||0)*i,p.dz*i]});
+    else if(p.type==='polar'){
+      var full=Math.abs(Math.abs(p.angle)-360)<1e-9,step=n>1?p.angle/(full?n:n-1):0;
+      for(i=1;i<n;i++)out.push({turn:step*i,about:[p.cx||0,p.cz||0]});
+    }
+    else if(p.type==='mirror')out.push({mirror:p.axis==='z'?'z':'x',at:p.at||0});
+    return out;
+  }
+  /* One placement on an OpenCASCADE shape: the app's (x, y, z) is OpenCASCADE's (x, -z, y), so OpenCASCADE's XY seen
+     from above is the plan with north up: a turn about the app's vertical, counter-clockwise on the plan for a positive
+     angle, is the same turn about Z; and the plane z = c is Y = -c. */
+  function bimOcctPlace(s,st){
+    if(st.move)return s.clone().translate(st.move[0],-st.move[2],st.move[1]);
+    if(st.turn!=null)return s.clone().rotate(st.turn,[st.about[0],-st.about[1],0],[0,0,1]);
+    return st.mirror==='x'?s.clone().mirror([1,0,0],[st.at,0,0]):s.clone().mirror([0,1,0],[0,-st.at,0]);
+  }
+  function bimOcctPattern(id,p){
+    return bimOcctRun('SOLIDPATTERN',function(R){
+      var o=objById(id);if(!bimOcctIsSolid(o))return null;
+      var steps=bimOcctPatternSteps(p),q=bimObjOffset(o),off=bimOcctOffsetXYZ(q),i;
+      if(!steps.length){a3dToast('SOLIDPATTERN: that pattern has no copies');return null;}
+      /* in the model's frame (the offset applied), then back into the solid's own */
+      var base=bimOcctShapeAt(R,o,null),shape=base;
+      for(i=0;i<steps.length;i++)shape=shape.fuse(bimOcctPlace(base,steps[i]));
+      if(off[0]||off[1]||off[2])shape=shape.translate(-off[0],-off[1],-off[2]);
+      pushUndo();
+      if(!bimOcctReplace(o,shape)){UNDO_STACK.pop();a3dToast('SOLIDPATTERN made nothing');return null;}
+      refreshTree();paint();saveSoon();
+      a3dToast('SOLIDPATTERN: '+(steps.length+1)+' copies joined into '+o.name);
+      return o;
+    });
+  }
+  function startOcctPattern(){
+    var o=bimOcctSel().filter(bimOcctIsSolid)[0];
+    if(!o){a3dToast('SOLIDPATTERN: select a solid made by the solid tools');return;}
+    bimOcctNumDlg('Pattern',[{k:'type',label:'Pattern',options:[['linear','Linear'],['polar','Polar'],['mirror','Mirrored']],v:'linear'},
+      {k:'count',label:'Count (linear, polar)',v:3},{k:'dx',label:'Linear: step east, m',v:2},{k:'dz',label:'Linear: step south, m',v:0},
+      {k:'dy',label:'Linear: step up, m',v:0},{k:'angle',label:'Polar: angle, degrees',v:360},{k:'cx',label:'Polar: centre x, m',v:0},
+      {k:'cz',label:'Polar: centre z, m',v:0},{k:'axis',label:'Mirrored: plane',options:[['x','x = (east-west mirror)'],['z','z = (north-south mirror)']],v:'x'},
+      {k:'at',label:'Mirrored: at, m',v:0}],function(v){
+      if(v.type!=='mirror'&&!(v.count>=2))return 'A pattern needs a count of 2 or more';
+      if(v.type==='linear'&&!(v.dx||v.dz||v.dy))return 'A linear pattern needs a step';
+      if(v.type==='polar'&&!(Math.abs(v.angle)>0&&Math.abs(v.angle)<=360))return 'The angle is more than 0 and at most 360';
+      bimOcctPattern(o.id,v);return '';
+    });
+  }
+  /* ---------- THICKNESS ---------- */
+  function bimOcctThickness(ids,t,open){
+    return bimOcctRun('THICKNESS',function(R){
+      var n=0,i;
+      pushUndo();
+      for(i=0;i<ids.length;i++){
+        var o=objById(ids[i]);if(!bimOcctIsSolid(o))continue;
+        var s=bimOcctShapeOf(R,o),b=s.boundingBox.bounds,z0=b[0][2],z1=b[1][2];
+        var out=s.shell(t,function(fc){
+          if(open==='bottom')return fc.inPlane('XY',z0);
+          if(open==='both')return fc.either([function(f){return f.inPlane('XY',z0);},function(f){return f.inPlane('XY',z1);}]);
+          return fc.inPlane('XY',z1);
+        });
+        if(bimOcctReplace(o,out))n++;
+      }
+      if(!n){UNDO_STACK.pop();a3dToast('THICKNESS: select solids made by the solid tools');return null;}
+      refreshTree();paint();saveSoon();
+      a3dToast('THICKNESS: '+n+' solid(s), walls '+bimFmtLen(t)+', open at the '+(open==='both'?'top and bottom':open));
+      return n;
+    });
+  }
+  function startOcctThickness(){
+    var ids=bimOcctSel().filter(bimOcctIsSolid).map(function(o){return o.id;});
+    if(!ids.length){a3dToast('THICKNESS: select solids made by the solid tools');return;}
+    bimOcctNumDlg('Thickness',[{k:'t',label:'Wall thickness, m',v:0.1},
+      {k:'open',label:'Open face',options:[['top','The top'],['bottom','The bottom'],['both','Top and bottom']],v:'top'}],function(v){
+      if(!(v.t>0))return 'The thickness must be more than zero';
+      bimOcctThickness(ids,v.t,v.open);return '';
+    });
+  }
+  /* ================= __acad3dV272: drawing views of solids (AutoCAD's VIEWBASE, FreeCAD's TechDraw) =================
+     The selected OpenCASCADE solids projected with OpenCASCADE's exact hidden-line removal (HLRBRep, through
+     replicad's makeProjectedEdges): front, top, right and an isometric view, each as plain 2D lines in the plan,
+     visible edges on "Drawing - visible", hidden ones dashed on "Drawing - hidden", laid out in third-angle
+     projection (top above front, right beside it, the isometric up and right) east of the solids. They are ordinary
+     sketches: dimension them, put them on a sheet. Exact on the B-rep, unlike Make2D on meshes (v189), which stays
+     for meshes. The camera and the layout are pure, tested without a page; a view's direction points at the viewer,
+     its x along xAxis and its y along direction x xAxis, as OpenCASCADE's projector takes them (measured, 2026-11-22).
+     The app's (x, y, z) is OpenCASCADE's (x, -z, y) (occt-adapter.js). */
+  var BIM_VIEWBASE_VIEWS={
+    front:{dir:[0,-1,0],x:[1,0,0],label:'Front'},
+    top:{dir:[0,0,1],x:[1,0,0],label:'Top'},
+    right:{dir:[1,0,0],x:[0,1,0],label:'Right'},
+    iso:{dir:[1,-1,1],x:[1,1,0],label:'Isometric'}};
+  function bimVbUnit(v){var l=Math.sqrt(v[0]*v[0]+v[1]*v[1]+v[2]*v[2]);return [v[0]/l,v[1]/l,v[2]/l];}
+  /* Polylines [u, v] from projected edges: a line by its ends, a curve sampled. Pure on replicad's edges. */
+  function bimVbPolylines(edges,samples){
+    var out=[],i,k;
+    for(i=0;i<edges.length;i++){
+      var e=edges[i],pts=[];
+      if(e.geomType==='LINE')pts=[e.startPoint.toTuple(),e.endPoint.toTuple()];
+      else for(k=0;k<=samples;k++)pts.push(e.pointAt(k/samples).toTuple());
+      out.push(pts.map(function(p){return [p[0],p[1]];}));
+    }
+    return out;
+  }
+  function bimVbBox(lines){
+    var b=[Infinity,Infinity,-Infinity,-Infinity];
+    lines.forEach(function(L){L.forEach(function(p){b[0]=Math.min(b[0],p[0]);b[1]=Math.min(b[1],p[1]);b[2]=Math.max(b[2],p[0]);b[3]=Math.max(b[3],p[1]);});});
+    return b[0]===Infinity?[0,0,0,0]:b;
+  }
+  /* Where each view goes: {name: [du, dv]} added to its own (u, v), third-angle, a gap between. Pure.
+     boxes: {name: [umin, vmin, umax, vmax]}; the front view's lower left lands on (0, 0). */
+  function bimVbLayout(boxes,gap){
+    var F=boxes.front||[0,0,0,0],out={};
+    var fw=F[2]-F[0],fh=F[3]-F[1];
+    if(boxes.front)out.front=[-F[0],-F[1]];
+    if(boxes.top){var T=boxes.top;out.top=[-T[0],fh+gap-T[1]];}
+    if(boxes.right){var Rr=boxes.right;out.right=[fw+gap-Rr[0],-Rr[1]];}
+    if(boxes.iso){var I=boxes.iso,rw=boxes.right?boxes.right[2]-boxes.right[0]+gap:0;out.iso=[fw+gap+rw-I[0],fh+gap-I[1]];}
+    for(var k in out)out[k]=[out[k][0]+0,out[k][1]+0];   /* -0 read as 0 */
+    return out;
+  }
+  function bimVbLayer(name,linetype){
+    var L=bimLayerByName(name);
+    if(!L){L=bimLayerNew({name:name});if(L&&linetype){L.linetype=linetype;bimLayerChanged();}}
+    return L?L.id:A3D.activeLayer;
+  }
+  function openViewbaseDlg(){
+    var S=bimOcctSel().filter(bimOcctIsSolid);
+    if(!S.length){a3dToast('VIEWBASE: select solids made by the solid tools');return null;}
+    closeDlg();
+    var d=document.createElement('div');d.className='a3d-dlg';
+    d.innerHTML='<div class="a3d-dlghd">Drawing views</div><div class="a3d-dlgbody">'+
+      ['front','top','right','iso'].map(function(k){return '<div class="a3d-dlgrow"><label>'+BIM_VIEWBASE_VIEWS[k].label+'</label><input type="checkbox" data-a3dvb="'+k+'" checked></div>';}).join('')+
+      '<div class="a3d-dlgrow"><label>Hidden lines</label><input type="checkbox" data-a3dvb="hidden" checked></div>'+
+      '<div class="a3d-dlgrow"><label>Gap between views, m</label><input type="number" min="0" step="any" data-a3dvb="gap" value="1"></div>'+
+      '<div class="a3d-propnote">Exact hidden lines from OpenCASCADE, drawn east of the solids as 2D lines.</div>'+
+      '<div id="a3d-dlgerr" class="a3d-dlgerr"></div></div>'+
+      '<div class="a3d-dlgft"><button data-a3dlg="cancel">Cancel</button><button data-a3dlg="ok">Draw</button></div>';
+    el.root.appendChild(d);el.dlg=d;
+    d.addEventListener('click',function(ev){var b=ev.target&&ev.target.closest?ev.target.closest('[data-a3dlg]'):null;if(!b)return;
+      if(b.getAttribute('data-a3dlg')!=='ok'){closeDlg();return;}
+      var views=['front','top','right','iso'].filter(function(k){return d.querySelector('[data-a3dvb="'+k+'"]').checked;});
+      if(!views.length){d.querySelector('#a3d-dlgerr').textContent='Choose a view';return;}
+      var hid=d.querySelector('[data-a3dvb="hidden"]').checked,gap=Math.max(0,+d.querySelector('[data-a3dvb="gap"]').value||0);
+      closeDlg();
+      bimViewbase(S.map(function(o){return o.id;}),views,hid,gap);
+    });
+    return d;
+  }
+  function bimViewbase(ids,views,hidden,gap){
+    return bimOcctRun('VIEWBASE',function(R){
+      var S=ids.map(objById).filter(bimOcctIsSolid),shape=null,i,v;
+      if(!S.length)return null;
+      for(i=0;i<S.length;i++){var s=bimOcctShapeAt(R,S[i],null);shape=shape?shape.fuse(s):s;}
+      var got={},boxes={};
+      for(i=0;i<views.length;i++){
+        v=BIM_VIEWBASE_VIEWS[views[i]];
+        var cam=new R.ProjectionCamera([0,0,0],bimVbUnit(v.dir),bimVbUnit(v.x));
+        var r=R.makeProjectedEdges(shape,cam,hidden);
+        got[views[i]]={vis:bimVbPolylines(r.visible,24),hid:hidden?bimVbPolylines(r.hidden,24):[]};
+        boxes[views[i]]=bimVbBox(got[views[i]].vis.concat(got[views[i]].hid));
+      }
+      var place=bimVbLayout(boxes,gap);
+      /* east of the solids, at the active level */
+      var bb=shape.boundingBox.bounds,x0=bb[1][0]+Math.max(2,gap*2),z0=-bb[0][1],y=bimGetActiveLevel().elev;
+      pushUndo();
+      setUndoSuspend(true);   /* the layers and labels made here push their own steps: VIEWBASE is one */
+      try{
+      var layV=bimVbLayer('Drawing - visible',null),layH=hidden?bimVbLayer('Drawing - hidden','HIDDEN'):null,made=[];
+      for(i=0;i<views.length;i++){
+        var k=views[i],off=place[k]||[0,0],G=got[k];
+        [[G.vis,layV],[G.hid,layH]].forEach(function(pair){
+          pair[0].forEach(function(L){
+            if(L.length<2)return;
+            A3D.counts.sketch=(A3D.counts.sketch||0)+1;
+            var o={id:'a3d-'+Date.now().toString(36)+'-'+(A3D.seq++),t:'sketch',name:BIM_VIEWBASE_VIEWS[k].label+' view '+A3D.counts.sketch,
+              pts:L.map(function(p){return [x0+p[0]+off[0],z0-(p[1]+off[1])];}),closed:false,y:y,pos:[0,0,0],layer:pair[1],col:'#dfe4ea'};
+            A3D.objs.push(o);made.push(o.id);
+          });
+        });
+        var bx=boxes[k];
+        var lab=bimCreateTextLabel([x0+off[0]+bx[0],z0-(off[1]+bx[1])+0.4],y,BIM_VIEWBASE_VIEWS[k].label.toUpperCase(),{height:0.25});
+        if(lab){lab.layer=layV;made.push(lab.id);}
+      }
+      }finally{setUndoSuspend(false);}
+      A3D.selSet=made;A3D.sel=made[0]||null;
+      refreshTree();refreshHud();paint();saveSoon();
+      a3dToast('VIEWBASE: '+views.length+' view(s), '+made.length+' objects');
+      return made;
+    });
+  }
+  /* ================= __acad3dV271: FreeCAD's Mesh workbench: repair, and a mesh made a solid =================
+     MESHREPAIR (FreeCAD's Mesh "Analyze and repair"): on the selected meshes, points closer than a tolerance welded
+     into one, faces that collapse (two corners the same, or no area) dropped, repeated faces dropped, the faces turned
+     to agree with their neighbours and then outward (a positive volume), and what is left open reported: its
+     boundary edges, as holes. MESHTOSOLID (FreeCAD's Part "Shape from mesh", then "Convert to solid"): a closed mesh
+     sewn into an OpenCASCADE solid, so the solid tools (V264 to V266) and STEP work on it. The repair is pure, tested
+     without a page; the solid uses OpenCASCADE's sewing through replicad's makeSolid. */
+  /* Weld points within tol (by a grid of tol cells, the neighbours checked), faces re-indexed. Pure. */
+  function bimMeshWeld(mesh,tol){
+    tol=tol>0?tol:1e-6;
+    var grid={},map=[],V=[],i,k;
+    function key(a,b,c){return a+','+b+','+c;}
+    for(i=0;i<mesh.v.length;i++){
+      var p=mesh.v[i],g=[Math.floor(p[0]/tol),Math.floor(p[1]/tol),Math.floor(p[2]/tol)],hit=-1,dx,dy,dz;
+      for(dx=-1;dx<=1&&hit<0;dx++)for(dy=-1;dy<=1&&hit<0;dy++)for(dz=-1;dz<=1&&hit<0;dz++){
+        var L=grid[key(g[0]+dx,g[1]+dy,g[2]+dz)];
+        if(L)for(k=0;k<L.length;k++){var q=V[L[k]];if(Math.abs(q[0]-p[0])<=tol&&Math.abs(q[1]-p[1])<=tol&&Math.abs(q[2]-p[2])<=tol){hit=L[k];break;}}
+      }
+      if(hit<0){hit=V.length;V.push([p[0],p[1],p[2]]);var kk=key(g[0],g[1],g[2]);(grid[kk]||(grid[kk]=[])).push(hit);}
+      map.push(hit);
+    }
+    return {v:V,f:mesh.f.map(function(fc){return fc.map(function(j){return map[j];});}),merged:mesh.v.length-V.length};
+  }
+  function bimMeshTriArea(a,b,c){
+    var u=[b[0]-a[0],b[1]-a[1],b[2]-a[2]],w=[c[0]-a[0],c[1]-a[1],c[2]-a[2]];
+    var x=u[1]*w[2]-u[2]*w[1],y=u[2]*w[0]-u[0]*w[2],z=u[0]*w[1]-u[1]*w[0];
+    return Math.sqrt(x*x+y*y+z*z)/2;
+  }
+  /* Faces as triangles, the collapsed and repeated ones dropped. Pure. */
+  function bimMeshCleanFaces(mesh,minArea){
+    var out=[],seen={},degen=0,dup=0,i,j;
+    for(i=0;i<mesh.f.length;i++){
+      var fc=mesh.f[i];
+      for(j=2;j<fc.length;j++){
+        var t=[fc[0],fc[j-1],fc[j]];
+        if(t[0]===t[1]||t[1]===t[2]||t[0]===t[2]||bimMeshTriArea(mesh.v[t[0]],mesh.v[t[1]],mesh.v[t[2]])<=(minArea||1e-12)){degen++;continue;}
+        var k=t.slice().sort(function(a,b){return a-b;}).join(',');
+        if(seen[k]){dup++;continue;}
+        seen[k]=1;out.push(t);
+      }
+    }
+    return {f:out,degenerate:degen,duplicates:dup};
+  }
+  /* Each edge's faces: {"a,b": [face indices]} with a < b. Pure. */
+  function bimMeshEdges(f){
+    var E={},i,j;
+    for(i=0;i<f.length;i++)for(j=0;j<3;j++){var a=f[i][j],b=f[i][(j+1)%3],k=a<b?a+','+b:b+','+a;(E[k]||(E[k]=[])).push(i);}
+    return E;
+  }
+  /* The faces turned to agree with their neighbours (each shared edge run opposite ways), part by part, then each
+     closed part turned outward (positive signed volume). Returns the faces and how many were turned. Pure. */
+  function bimMeshOrient(v,f){
+    var F=f.map(function(t){return t.slice();}),E=bimMeshEdges(F),done=new Array(F.length),turned=0,i;
+    function has(t,a,b){return (t[0]===a&&t[1]===b)||(t[1]===a&&t[2]===b)||(t[2]===a&&t[0]===b);}
+    for(i=0;i<F.length;i++){
+      if(done[i])continue;
+      var part=[i],q=[i];done[i]=true;
+      while(q.length){
+        var c=q.pop(),t=F[c],j;
+        for(j=0;j<3;j++){
+          var a=t[j],b=t[(j+1)%3],L=E[a<b?a+','+b:b+','+a],m;
+          for(m=0;m<L.length;m++){
+            var n=L[m];if(done[n])continue;
+            if(has(F[n],a,b)){F[n].reverse();turned++;}   /* the neighbour runs the edge the same way: turn it */
+            done[n]=true;q.push(n);part.push(n);
+          }
+        }
+      }
+      var vol=0;
+      part.forEach(function(k){var A=v[F[k][0]],B=v[F[k][1]],C=v[F[k][2]];
+        vol+=(A[0]*(B[1]*C[2]-B[2]*C[1])-A[1]*(B[0]*C[2]-B[2]*C[0])+A[2]*(B[0]*C[1]-B[1]*C[0]))/6;});
+      if(vol<0){part.forEach(function(k){F[k].reverse();});turned+=part.length;}
+    }
+    return {f:F,turned:turned};
+  }
+  /* The whole repair, and its report. Pure. */
+  function bimMeshRepair(mesh,tol){
+    var w=bimMeshWeld(mesh,tol),c=bimMeshCleanFaces(w),o=bimMeshOrient(w.v,c.f),E=bimMeshEdges(o.f),open=0,nonManifold=0,k;
+    for(k in E){if(E[k].length===1)open++;else if(E[k].length>2)nonManifold++;}
+    /* the points no face uses, dropped */
+    var used={},V=[],map={},i;
+    o.f.forEach(function(t){used[t[0]]=used[t[1]]=used[t[2]]=1;});
+    for(i=0;i<w.v.length;i++)if(used[i]){map[i]=V.length;V.push(w.v[i]);}
+    return {mesh:{v:V,f:o.f.map(function(t){return [map[t[0]],map[t[1]],map[t[2]]];})},
+      report:{merged:w.merged,degenerate:c.degenerate,duplicates:c.duplicates,turned:o.turned,openEdges:open,nonManifold:nonManifold,closed:!open&&!nonManifold}};
+  }
+  function bimMeshSel(){
+    var ids=(A3D.selSet&&A3D.selSet.length)?A3D.selSet.slice():(A3D.sel?[A3D.sel]:[]);
+    return ids.map(objById).filter(function(o){return o&&o.mesh&&o.mesh.f&&o.mesh.f.length&&!o.bim;});
+  }
+  function bimMeshRepairCommand(){
+    var L=bimMeshSel(),i,msg=[];
+    if(!L.length){a3dToast('MESHREPAIR: select meshes (an STL, OBJ or SketchUp import, a solid)');return null;}
+    pushUndo();
+    for(i=0;i<L.length;i++){
+      var r=bimMeshRepair(L[i].mesh,1e-6),R=r.report;
+      L[i].mesh=r.mesh;if(L[i].occt)delete L[i].occt;
+      msg.push(L[i].name+': '+R.merged+' points welded, '+(R.degenerate+R.duplicates)+' faces dropped, '+R.turned+' turned; '+
+        (R.closed?'closed':(R.openEdges+' open edges'+(R.nonManifold?', '+R.nonManifold+' shared by 3 or more faces':''))));
+    }
+    A3D.meshes={};
+    refreshTree();refreshProps();paint();saveSoon();
+    a3dToast(msg.join(' | '));
+    return msg;
+  }
+  /* A closed mesh sewn into a solid (its points where the mesh has them, the offset kept by pos). */
+  function bimMeshToSolidShape(R,mesh){
+    var faces=[],i;
+    for(i=0;i<mesh.f.length;i++){
+      var t=mesh.f[i];
+      faces.push(R.makePolygon([0,1,2].map(function(j){var p=mesh.v[t[j]];return [p[0],-p[2],p[1]];})));   /* app to OpenCASCADE */
+    }
+    return R.makeSolid(faces);
+  }
+  function bimMeshToSolidCommand(){
+    var L=bimMeshSel();
+    if(!L.length){a3dToast('MESHTOSOLID: select closed meshes');return null;}
+    return bimOcctRun('MESHTOSOLID',function(R){
+      var n=0,bad=[],i;
+      pushUndo();
+      for(i=0;i<L.length;i++){
+        var r=bimMeshRepair(L[i].mesh,1e-6);
+        if(!r.report.closed){bad.push(L[i].name+' ('+r.report.openEdges+' open edges)');continue;}
+        if(r.mesh.f.length>20000){bad.push(L[i].name+' (over 20,000 faces)');continue;}
+        var s=bimMeshToSolidShape(R,r.mesh);
+        if(bimOcctReplace(L[i],s))n++;
+      }
+      if(!n)UNDO_STACK.pop();
+      refreshTree();paint();saveSoon();
+      a3dToast('MESHTOSOLID: '+n+' solid(s)'+(bad.length?'; not closed or too large: '+bad.join(', '):''));
+      return n;
+    });
+  }
+  /* ================= __acad3dV270: IGES import, through occt-import-js =================
+     The owner's approval, 2026-11-22: "Yes". occt-import-js 0.0.23 (LGPL-2.1) is OpenCASCADE's IGES reader as
+     WebAssembly, pinned at runtime/occt-import/<ver>/ as its own unchanged files (tools/occt/build_occt_import.mjs) and
+     loaded only when an IGES file is imported. This file is the only one that calls it.
+     The reader triangulates what it reads; the app takes it in metres (the file's own unit converted by OpenCASCADE),
+     turned from IGES's Z up to the app's y up ((X, Y, Z) to (x, y, z) = (X, Z, -Y)), as one mesh object, its faces
+     kept apart as the file has them. A closed one becomes a true solid with MESHTOSOLID (V271), which welds them.
+     The conversion is pure, tested with the pinned reader in Node on an IGES file of our own
+     (docs/research/experiments/v270-iges). */
+  var BIM_IGES={ver:'0.0.23',dir:'occt-import/0.0.23/',file:'occt-import-js.js',sri:'sha256-P7RM4R0AYR+bPzxXddUg66tIkwwfCCebexMW8F8NM3k='};
+  var A3D_IGES={load:null,st:'',err:''};
+  function bimIgesLoad(){
+    var R=A3D_IGES;
+    if(R.load)return R.load;
+    var p=String(window.location&&window.location.protocol||''),src=[],i=0;
+    if(p!=='http:'&&p!=='https:')src.push({b:'runtime/',sri:false});
+    src.push({b:String(bimLbBase()),sri:true});
+    R.st='loading';
+    R.load=new Promise(function(res,rej){
+      function start(base){
+        window.occtimportjs({locateFile:function(f){return new URL(base+BIM_IGES.dir+f,document.baseURI).href;}}).then(res,function(e){rej(e);});
+      }
+      if(typeof window.occtimportjs==='function'){start(src[src.length-1].b);return;}
+      function next(){
+        if(i>=src.length){rej(new Error('the IGES reader could not be loaded from '+src.map(function(s){return s.b+BIM_IGES.dir;}).join(' or ')));return;}
+        var s=src[i++],tag=document.createElement('script');
+        tag.src=s.b+BIM_IGES.dir+BIM_IGES.file;
+        if(s.sri){tag.integrity=BIM_IGES.sri;tag.crossOrigin='anonymous';}
+        tag.onload=function(){if(typeof window.occtimportjs==='function')start(s.b);else next();};
+        tag.onerror=function(){if(tag.parentNode)tag.parentNode.removeChild(tag);next();};
+        document.head.appendChild(tag);
+      }
+      next();
+    }).then(function(M){R.st='ready';return M;},function(e){R.st='failed';R.err=String(e&&e.message||e);R.load=null;throw e;});
+    return R.load;
+  }
+  /* The reader's result as one app mesh {v, f}, its colour, and the number of faces it had. Pure. */
+  function bimIgesMesh(res){
+    var v=[],f=[],col=null,i,k;
+    if(!res||!res.success||!res.meshes)return null;
+    for(i=0;i<res.meshes.length;i++){
+      var m=res.meshes[i],P=m.attributes&&m.attributes.position&&m.attributes.position.array,I=m.index&&m.index.array,base=v.length;
+      if(!P||!I)continue;
+      for(k=0;k+2<P.length;k+=3)v.push([P[k],P[k+2],-P[k+1]]);
+      for(k=0;k+2<I.length;k+=3)f.push([base+I[k],base+I[k+1],base+I[k+2]]);
+      if(!col&&m.color&&m.color.length>=3)col='#'+[0,1,2].map(function(j){var c=Math.max(0,Math.min(255,Math.round(m.color[j]*255)));return (c<16?'0':'')+c.toString(16);}).join('');
+    }
+    return f.length?{mesh:{v:v,f:f},col:col,parts:res.meshes.length}:null;
+  }
+  function bimImportIGES(buf,name){
+    if(A3D_IGES.st!=='ready')a3dToast('IGES: loading the reader (about 7.6 MB, the first time only)...');
+    return bimIgesLoad().then(function(M){
+      var res,r;
+      try{res=M.ReadIgesFile(new Uint8Array(buf),{linearUnit:'meter',linearDeflectionType:'bounding_box_ratio',linearDeflection:0.001});}
+      catch(e){console.warn('[BIM] IGES read failed:',e);a3dToast('IGES import failed: the file could not be read');return null;}
+      r=bimIgesMesh(res);
+      if(!r){a3dToast('IGES import: no surfaces in '+name);return null;}
+      pushUndo();
+      A3D.counts.solid=(A3D.counts.solid||0)+1;
+      var o={id:'a3d-'+Date.now().toString(36)+'-'+(A3D.seq++),t:'solid',name:String(name||'IGES').replace(/\.[^.]+$/,'').slice(0,60),
+        col:r.col||'#b9c7d6',pos:[0,0,0],mesh:r.mesh,layer:A3D.activeLayer};
+      A3D.objs.push(o);
+      A3D.sel=o.id;A3D.sel2=null;A3D.selSet=[o.id];
+      refreshTree();refreshHud();fitScene();paint();saveSoon();
+      a3dToast('IGES import: '+name+' ('+r.parts+' surface(s), '+r.mesh.f.length+' triangles). MESHTOSOLID makes a closed one a true solid');
+      return o;
+    },function(e){a3dToast('IGES: '+(e&&e.message||e));return null;});
+  }
+  /* ================= __acad3dV273: FreeCAD's Assembly workbench: parts, joints, a bill of materials =================
+     JOINT joins two selected objects, the first the base and the second the part that moves: Fixed (it follows the
+     base), Revolute (it turns about a vertical hinge, clicked in the plan, as a door or a gate does) or Slider (it
+     slides along a direction, as a sliding door or a drawer). A part has one joint to its base, so an assembly is a
+     tree from a grounded part, which moves only when it is moved itself. A joint's value (degrees, or metres) is set
+     in Properties, within its limits: the part and everything joined below it moves by the change, their own hinges
+     and directions with them (forward kinematics, the joints of a tree solved in order; closed loops are refused).
+     BOM lists an assembly's parts, counted by name and material, with volume and mass, and exports them as CSV, as
+     FreeCAD's BOM does. Movement goes through the app's own ROTATE and MOVE, so an OpenCASCADE solid stays one
+     (V266). The tree and the arithmetic are pure, tested without a page. */
+  var BIM_JOINT_TYPES=[['fixed','Fixed'],['revolute','Revolute (vertical hinge)'],['slider','Slider']];
+  /* ---------- pure: the tree ---------- */
+  function bimJointChildren(objs,id){return objs.filter(function(o){return o.joint&&o.joint.parent===id;}).map(function(o){return o.id;});}
+  /* The part and everything joined below it, each once. */
+  function bimJointSubtree(objs,id){
+    var out=[id],seen={},i;seen[id]=1;
+    for(i=0;i<out.length;i++)bimJointChildren(objs,out[i]).forEach(function(c){if(!seen[c]){seen[c]=1;out.push(c);}});
+    return out;
+  }
+  /* Joining child under parent would close a loop (the parent is the child or below it). */
+  function bimJointWouldLoop(objs,parentId,childId){return bimJointSubtree(objs,childId).indexOf(parentId)>=0;}
+  /* The whole assembly a part is in: up to its root, then down. */
+  function bimJointRoot(objs,id){
+    var by={},cur=id,guard=0;
+    objs.forEach(function(o){by[o.id]=o;});
+    while(by[cur]&&by[cur].joint&&by[cur].joint.parent&&by[by[cur].joint.parent]&&guard++<1000)cur=by[cur].joint.parent;
+    return cur;
+  }
+  function bimJointClamp(j,v){
+    if(isFinite(j.min)&&v<j.min)v=j.min;
+    if(isFinite(j.max)&&v>j.max)v=j.max;
+    return v;
+  }
+  /* A plan point turned counter-clockwise (north up) by deg about a centre; the app's z runs south. Pure. */
+  function bimJointTurnPt(p,c,deg){
+    var a=-deg*Math.PI/180,vx=p[0]-c[0],vz=p[1]-c[1],co=Math.cos(a),s=Math.sin(a);
+    return [c[0]+vx*co-vz*s,c[1]+vx*s+vz*co];
+  }
+  /* A direction turned the same way (its plan part). Pure. */
+  function bimJointTurnDir(d,deg){var p=bimJointTurnPt([d[0],d[2]],[0,0],deg);return [p[0],d[1],p[1]];}
+  /* ---------- the model ---------- */
+  function bimJointSet(o,value){
+    var j=o&&o.joint;
+    if(!j||j.type==='fixed')return false;
+    var v=bimJointClamp(j,+value);
+    if(!isFinite(v))return false;
+    var delta=v-(j.value||0);
+    if(Math.abs(delta)<1e-12)return false;
+    var ids=bimJointSubtree(A3D.objs,o.id),i;
+    pushUndo();
+    setUndoSuspend(true);
+    try{
+      for(i=0;i<ids.length;i++){
+        var s=objById(ids[i]);if(!s)continue;
+        if(j.type==='revolute'){
+          bimRotateObjectInPlace(s,[j.axis[0],j.axis[2]],-delta*Math.PI/180);
+          if(s!==o&&s.joint){var ap=bimJointTurnPt([s.joint.axis[0],s.joint.axis[2]],[j.axis[0],j.axis[2]],delta);s.joint.axis=[ap[0],s.joint.axis[1],ap[1]];
+            if(s.joint.dir)s.joint.dir=bimJointTurnDir(s.joint.dir,delta);}
+        }else{
+          var d=[j.dir[0]*delta,j.dir[1]*delta,j.dir[2]*delta];
+          if(!s.pos)s.pos=[0,0,0];
+          s.pos[0]+=d[0];s.pos[1]+=d[1];s.pos[2]+=d[2];
+          bimPropagateFrom([s.id],'transform',d);
+          if(s!==o&&s.joint)s.joint.axis=[s.joint.axis[0]+d[0],s.joint.axis[1]+d[1],s.joint.axis[2]+d[2]];
+        }
+      }
+    }finally{setUndoSuspend(false);}
+    j.value=v;
+    A3D.meshes={};
+    refreshTree();refreshProps();paint();saveSoon();
+    return true;
+  }
+  function bimJointCreate(parent,child,spec){
+    if(!parent||!child||parent===child)return {error:'Select the base, then the part that moves'};
+    if(bimJointWouldLoop(A3D.objs,parent.id,child.id))return {error:child.name+' is already above '+parent.name+' in the assembly: a loop is not solved'};
+    var j={id:'joint-'+Date.now().toString(36)+'-'+(A3D.seq++),type:spec.type,parent:parent.id,value:0};
+    if(spec.type==='revolute'){j.axis=[spec.at[0],0,spec.at[1]];j.min=isFinite(spec.min)?spec.min:-180;j.max=isFinite(spec.max)?spec.max:180;}
+    if(spec.type==='slider'){
+      var d=spec.dir,l=Math.sqrt(d[0]*d[0]+d[1]*d[1]+d[2]*d[2]);
+      if(!(l>0))return {error:'A slider needs a direction'};
+      j.dir=[d[0]/l,d[1]/l,d[2]/l];j.axis=[0,0,0];j.min=isFinite(spec.min)?spec.min:0;j.max=isFinite(spec.max)?spec.max:1;
+    }
+    pushUndo();
+    child.joint=j;
+    var name=parent.asm||child.asm;
+    if(!name){A3D.counts.asm=(A3D.counts.asm||0)+1;name='Assembly '+A3D.counts.asm;}
+    bimJointSubtree(A3D.objs,bimJointRoot(A3D.objs,parent.id)).forEach(function(id){var x=objById(id);if(x)x.asm=name;});
+    refreshTree();refreshProps();paint();saveSoon();
+    return j;
+  }
+  function openJointDlg(){
+    var ids=(A3D.selSet&&A3D.selSet.length)?A3D.selSet.slice():[];
+    if(ids.length!==2){a3dToast('JOINT: select two objects, the base first, then the part that moves');return null;}
+    var P=objById(ids[0]),C=objById(ids[1]);
+    if(!P||!C)return null;
+    closeDlg();
+    var d=document.createElement('div');d.className='a3d-dlg';
+    d.innerHTML='<div class="a3d-dlghd">Joint: '+bimEsc(C.name)+' on '+bimEsc(P.name)+'</div><div class="a3d-dlgbody">'+
+      '<div class="a3d-dlgrow"><label>Type</label><select data-a3djt="type">'+BIM_JOINT_TYPES.map(function(t){return '<option value="'+t[0]+'">'+t[1]+'</option>';}).join('')+'</select></div>'+
+      '<div class="a3d-dlgrow"><label>Revolute: limits, degrees</label><span><input type="number" step="any" data-a3djt="rmin" value="-90" style="width:60px"> to <input type="number" step="any" data-a3djt="rmax" value="90" style="width:60px"></span></div>'+
+      '<div class="a3d-dlgrow"><label>Slider: direction east, north, up</label><span><input type="number" step="any" data-a3djt="dx" value="1" style="width:44px"><input type="number" step="any" data-a3djt="dn" value="0" style="width:44px"><input type="number" step="any" data-a3djt="du" value="0" style="width:44px"></span></div>'+
+      '<div class="a3d-dlgrow"><label>Slider: limits, m</label><span><input type="number" step="any" data-a3djt="smin" value="0" style="width:60px"> to <input type="number" step="any" data-a3djt="smax" value="1" style="width:60px"></span></div>'+
+      '<div class="a3d-propnote">A revolute joint asks for its hinge next: click it in the plan. Set the joint’s value in Properties.</div>'+
+      '<div id="a3d-dlgerr" class="a3d-dlgerr"></div></div>'+
+      '<div class="a3d-dlgft"><button data-a3dlg="cancel">Cancel</button><button data-a3dlg="ok">OK</button></div>';
+    el.root.appendChild(d);el.dlg=d;
+    function val(k){return parseFloat(d.querySelector('[data-a3djt="'+k+'"]').value);}
+    d.addEventListener('click',function(ev){var b=ev.target&&ev.target.closest?ev.target.closest('[data-a3dlg]'):null;if(!b)return;
+      if(b.getAttribute('data-a3dlg')!=='ok'){closeDlg();return;}
+      var type=d.querySelector('[data-a3djt="type"]').value,spec={type:type};
+      if(type==='revolute'){
+        spec.min=val('rmin');spec.max=val('rmax');
+        if(!(spec.min<=0&&spec.max>=0)){d.querySelector('#a3d-dlgerr').textContent='The limits must take in 0, where it is now';return;}
+        closeDlg();bimEnterDraftingMode();
+        A3D.sk={tool:'jointaxis',pts:[],y:bimGetActiveLevel().elev,on:null,jP:P.id,jC:C.id,spec:spec};
+        a3dToast('JOINT: click the hinge');paint();return;
+      }
+      if(type==='slider'){spec.dir=[val('dx'),val('du'),-val('dn')];spec.min=val('smin');spec.max=val('smax');
+        if(!(spec.min<=0&&spec.max>=0)){d.querySelector('#a3d-dlgerr').textContent='The limits must take in 0, where it is now';return;}}
+      var r=bimJointCreate(P,C,spec);
+      if(r.error){d.querySelector('#a3d-dlgerr').textContent=r.error;return;}
+      closeDlg();a3dToast('Joint: '+C.name+' on '+P.name+' ('+type+')');
+    });
+    return d;
+  }
+  function bimJointAxisPoint(sk,p){
+    A3D.sk=null;paint();
+    var P=objById(sk.jP),C=objById(sk.jC);
+    var spec=sk.spec;spec.at=[p[0],p[1]];
+    var r=bimJointCreate(P,C,spec);
+    if(r.error){a3dToast(r.error);return null;}
+    a3dToast('Joint: '+C.name+' turns on '+P.name+' about ('+p[0].toFixed(2)+', '+(-p[1]).toFixed(2)+'). Set its angle in Properties.');
+    return r;
+  }
+  /* ---------- Properties ---------- */
+  function bimJointPropsHtml(o){
+    var j=o.joint,P=objById(j.parent),h='';
+    h+=bimPropText('Assembly',o.asm||'');
+    h+=bimPropText('Joint',(BIM_JOINT_TYPES.filter(function(t){return t[0]===j.type;})[0]||[0,j.type])[1]+' on '+(P?P.name:'(gone)'));
+    if(j.type!=='fixed')h+=bimPropRow(j.type==='revolute'?'Angle, degrees ('+j.min+' to '+j.max+')':'Distance, m ('+j.min+' to '+j.max+')',
+      '<input type="number" step="any" data-propf="jointval" value="'+(+(+j.value||0).toFixed(6))+'">');
+    h+=bimPropRow('','<button data-propf="jointdel">Remove joint</button>');
+    return h;
+  }
+  function bimJointPropField(o,f,inp){
+    if(f!=='jointval'||!o||!o.joint)return false;
+    var v=parseFloat(inp.value);
+    if(!isFinite(v)){a3dToast('Must be a number');refreshProps();return true;}
+    var c=bimJointClamp(o.joint,v);
+    bimJointSet(o,c);
+    if(c!==v)a3dToast('Held at its limit: '+c);
+    refreshProps();
+    return true;
+  }
+  function bimJointRemove(o){
+    if(!o||!o.joint)return;
+    pushUndo();delete o.joint;
+    refreshProps();saveSoon();a3dToast(o.name+' is free of its joint');
+  }
+  /* ---------- BOM ---------- */
+  /* A part's name for counting: its own without a trailing count or "copy". Pure. */
+  function bimBomName(n){return String(n||'Part').replace(/(\s+(copy|mirror))+$/i,'').replace(/[\s_]*\d+$/,'')||String(n||'Part');}
+  /* The rows: {part, material, count, volume, mass} each, sorted by part. Pure on its reader. */
+  function bimBomRows(objs,info){
+    var by={},out=[],k;
+    objs.forEach(function(o){
+      var m=info(o),key=bimBomName(o.name)+'|'+(m.material||'');
+      if(!by[key]){by[key]={part:bimBomName(o.name),material:m.material||'',count:0,volume:m.volume,mass:m.mass};out.push(by[key]);}
+      by[key].count++;
+    });
+    return out.sort(function(a,b){return a.part<b.part?-1:a.part>b.part?1:0;});
+  }
+  function bimBomCsv(rows){
+    var q=function(s){s=String(s==null?'':s);return /[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;};
+    return ['Part,Material,Count,Volume each (m3),Mass each (kg)'].concat(rows.map(function(r){
+      return [q(r.part),q(r.material),r.count,r.volume==null?'':(+r.volume.toFixed(6)),r.mass==null?'':(+r.mass.toFixed(3))].join(',');})).join('\n')+'\n';
+  }
+  function bimBomObjects(){
+    var sel=(A3D.selSet&&A3D.selSet.length)?A3D.selSet.map(objById).filter(Boolean):(A3D.sel?[objById(A3D.sel)].filter(Boolean):[]);
+    var names={};sel.forEach(function(o){if(o.asm)names[o.asm]=1;});
+    var L=A3D.objs.filter(function(o){return o.asm&&(!sel.length||names[o.asm]);});
+    return L.length?L:sel;
+  }
+  function openBomDlg(){
+    var L=bimBomObjects();
+    if(!L.length){a3dToast('BOM: no assembly (JOINT makes one); or select the parts to list');return null;}
+    var rows=bimBomRows(L,function(o){return {material:o.materialName||'',volume:bimObjVolume(o),mass:bimObjMass(o)};});
+    closeDlg();
+    var d=document.createElement('div');d.className='a3d-dlg a3d-matb';
+    d.innerHTML='<div class="a3d-dlghd">Bill of materials</div><div class="a3d-dlgbody"><table class="a3d-sheetgrid" style="width:100%"><tr><th>Part</th><th>Material</th><th>Count</th><th>Mass each, kg</th></tr>'+
+      rows.map(function(r){return '<tr><td>'+bimEsc(r.part)+'</td><td>'+bimEsc(r.material||'—')+'</td><td>'+r.count+'</td><td>'+(r.mass==null?'—':r.mass.toFixed(1))+'</td></tr>';}).join('')+
+      '</table></div><div class="a3d-dlgft"><button data-a3dbom="csv">Export CSV</button><button data-a3dlg="cancel">Close</button></div>';
+    el.root.appendChild(d);el.dlg=d;
+    d.addEventListener('click',function(ev){var b=ev.target&&ev.target.closest?ev.target.closest('[data-a3dbom],[data-a3dlg]'):null;if(!b)return;
+      if(b.getAttribute('data-a3dlg')){closeDlg();return;}
+      bimTriggerDownload(bimBomCsv(rows),bimFileStem()+'-bom.csv','text/csv');a3dToast('BOM exported');});
+    return d;
+  }
+  /* __acad3dV266-V273: what the FreeCAD-gap browser check (tests/e2e/bim_phase266_273_check.mjs) reads */
+  window.__a3dEdgePick=function(){
+    var sk=A3D.sk;
+    if(!sk||sk.tool!=='occtedge')return null;
+    var V=camVecs(A3D.cam),W=cvW(),H=cvH();
+    return {picked:sk.picked.slice(),edges:sk.edges.map(function(e){var m=e.pts[Math.floor(e.pts.length/2)],s=toScreen(m,V,W,H);
+      return {a:e.pts[0],b:e.pts[e.pts.length-1],mid:m,screen:[s[0],s[1]]};})};
+  };
+  window.__a3dMatCards=function(){return JSON.parse(JSON.stringify(bimMaterialCards()));};
+  window.__a3dSheetState=function(){return JSON.parse(JSON.stringify(bimSheet()));};
+  window.__a3dPcState=function(){
+    return {drewGl:!!A3D_PC.drewGl,budget:A3D_PC.budget,preview:A3D_PC.preview?A3D_PC.preview.pts.length:0,
+      clouds:A3D.objs.filter(bimPcIsCloud).map(function(o){var D=bimPcData(o);return {id:o.id,name:o.name,n:o.pc.n,count:o.pc.count,origin:o.pc.origin,
+        mode:o.pc.mode,classes:o.pc.classes,hidden:o.pc.hidden,loaded:!!D};})};
+  };
+  window.__a3dWorldToScreen=function(p){var s=toScreen(p,camVecs(A3D.cam),cvW(),cvH());return [s[0],s[1]];};
   // ---- OBJ (Wavefront, Y-up - matches this engine's convention directly) ----
   function objParse(text){
     var lines=text.split(/\r\n|\r|\n/),i;
@@ -42013,10 +42873,14 @@ BIM_IFC_SAVE.model=bimIfcSaveModel;
     }else if(ext==='step'||ext==='stp'){   /* __acad3dV264: through OpenCASCADE */
       reader.onload=function(ev){bimOcctImportStep(ev.target.result,name);};
       reader.readAsArrayBuffer(file);
-    }else if(ext==='iges'||ext==='igs'){
-      a3dToast('.'+ext.toUpperCase()+' is not supported yet: export it as STEP, which Import reads');
+    }else if(ext==='las'||ext==='laz'||ext==='ply'){   /* __acad3dV190: point clouds */
+      reader.onload=function(ev){try{bimPcImport(ev.target.result,name);}catch(eI){console.warn('[BIM] point cloud import crashed:',eI);a3dToast('Point cloud import failed: '+(eI&&eI.message?eI.message:eI));}};
+      reader.readAsArrayBuffer(file);
+    }else if(ext==='iges'||ext==='igs'){   /* __acad3dV270: through occt-import-js, loaded now */
+      reader.onload=function(ev){bimImportIGES(ev.target.result,name);};
+      reader.readAsArrayBuffer(file);
     }else{
-      a3dToast('Unsupported file type: .'+ext+' (supported: .dxf, .dwg, .ifc, .obj, .stl, .glb and .gltf, .skp SketchUp, .json project files, .geojson and .kml site data, .city.json CityJSON, .xml LandXML)');
+      a3dToast('Unsupported file type: .'+ext+' (supported: .dxf, .dwg, .ifc, .obj, .stl, .glb and .gltf, .skp SketchUp, .json project files, .geojson and .kml site data, .city.json CityJSON, .xml LandXML, .step, .iges, .las and .ply point clouds)');
     }
   }
 
@@ -43811,6 +44675,7 @@ BIM_IFC_SAVE.model=bimIfcSaveModel;
   }
   /* what WebGPU does not draw yet: the map, and a terrain surface in 3D */
   function bimGpuNeedsGl(V,W,H){
+    if(bimPcVisible().length)return 'a point cloud is drawn with WebGL';   /* __acad3dV190 */
     return '';   /* __acad3dV154: the map and the terrain are drawn with WebGPU too */
   }
   function bimGpuBuf(dev,arr,usage){
@@ -48005,6 +48870,7 @@ BIM_IFC_SAVE.model=bimIfcSaveModel;
     gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
     bimMapDrawGl(G,V,W,H);   /* __acad3dV132: the basemap, under everything */
     bimTerrainDrawGl(G,V,W,H);   /* __acad3dV137: the terrain in 3D, the map draped on it */
+    bimPcDrawGl(G,V,W,H);   /* __acad3dV190: point clouds */
     if(A3D_GL_BATCH&&bimGbRender(G,V,W,H)){   /* __acad3dV152: the batches */
       var kb;for(kb in G.bufs)if(G.bufs.hasOwnProperty(kb)){bimGlDisposeBuffer(G,G.bufs[kb]);delete G.bufs[kb];}
       return true;
@@ -48155,6 +49021,7 @@ BIM_IFC_SAVE.model=bimIfcSaveModel;
        presentation graphics are on, which forces glOn false (see the glOn line above), so it can
        never double-draw against the GPU path. __acad3dV122: on a sheet too. */
     drawTerrain(ctx,V,W,H);                  /* __acad3dV108: the ground, under everything */
+    if(!capMode)bimPcDraw2d(ctx,V,W,H,glOn);  /* __acad3dV190: point clouds, where WebGL did not draw them */
     if(!capMode)drawSunShadows(ctx,V,W,H);   /* __acad3dV107: first, so everything else draws over it */
     if(!capMode)drawSimOverlays(ctx,V,W,H);  /* __acad3dV143: sun hours, ponds and flow lines */
     if(!capMode)bimEntDrawTurns(ctx,V,W,H);  /* __acad3dV169: the turning spaces of placed assets */
@@ -48648,6 +49515,293 @@ function bimPcGround(cloud, cell) {
   }
   return res;
 }
+  /* ================= __acad3dV190 WO-12, WO-13: point clouds in the model =================
+     docs/work-orders/v190/SPEC.md parts 1 and 5, on pointcloud.js's pure functions (Cline's WO-01 to WO-11).
+     - Import a .las or .ply: sniffed (a .laz is named, not read: LAZ waits for laz-perf's research), sampled to the
+       point budget (2,000,000 unless set), rebased on its whole-metre origin, which the object keeps in double
+       precision. A cloud has no known CRS here, so it opens as an "unregistered preview" at the model's origin, for
+       the owner to place (MOVE); nothing is georeferenced silently.
+     - Its points live beside the object (A3D_PC.data), not in it, so an undo step does not copy them. A cloud of
+       up to 500,000 points is saved with the project (its sampled points, base64); a larger one keeps a reference,
+       and after a reload asks for its file again.
+     - Drawn as GL points (a WebGPU frame hands a frame with a cloud to WebGL), else, without WebGL, a thinned set
+       on the 2D canvas. Coloured by RGB when the file has it, else by height; Properties sets RGB, class or height,
+       hides classes, and runs Ground to surface: the lowest ground point per cell, previewed, then on confirmation
+       a terrain surface (V108) whose survey check (V138) is reported. */
+  var A3D_PC={data:{},gl:null,preview:null,budget:2000000};
+  var BIM_PC_KEEP=500000,BIM_PC_2D_MAX=60000;
+  /* ---------- reading ---------- */
+  function bimPcLatin1(bytes,n){
+    var s='',i,end=Math.min(bytes.length,n),CH=8192;
+    for(i=0;i<end;i+=CH)s+=String.fromCharCode.apply(null,Array.prototype.slice.call(bytes.subarray(i,Math.min(end,i+CH))));
+    return s;
+  }
+  /* A file's bytes to {kind, count, origin, cloud} or {error}. Pure on its inputs. */
+  function bimPcReadBytes(bytes,max){
+    var kind=bimPcSniff(bytes),dv,h,origin,cloud;
+    if(kind==='laz')return {error:'LAZ (compressed LAS) is not read yet: decompress it to .las first (for example: laszip -i in.laz -o out.las)'};
+    if(kind==='las'){
+      dv=new DataView(bytes.buffer,bytes.byteOffset,bytes.byteLength);
+      h=bimPcLasHeader(dv);
+      if(h.error)return {error:'LAS: '+h.error};
+      origin=bimPcOrigin(h);
+      cloud=bimPcLasPoints(dv,h,max,origin);
+      return {kind:'las',count:h.count,origin:origin,cloud:cloud,version:h.versionMajor+'.'+h.versionMinor,format:h.pointFormat};
+    }
+    if(kind==='ply'){
+      h=bimPcPlyHeader(bimPcLatin1(bytes,65536));
+      if(h.error)return {error:'PLY: '+h.error};
+      cloud=bimPcPlyPoints(bytes,h,max,[0,0,0]);
+      if(cloud.error)return {error:'PLY: '+cloud.error};
+      origin=bimPcRebase(cloud);   /* PLY has no bounds in its header: the origin from its points */
+      return {kind:'ply',count:h.count,origin:origin,cloud:cloud,format:h.format};
+    }
+    return {error:'Not a LAS or PLY file'};
+  }
+  /* A cloud read at [0, 0, 0] moved onto its own whole-metre origin (as bimPcOrigin's for LAS). Pure. */
+  function bimPcRebase(cloud){
+    var mn=[Infinity,Infinity,Infinity],mx=[-Infinity,-Infinity,-Infinity],i,k;
+    for(i=0;i<cloud.n;i++)for(k=0;k<3;k++){var v=cloud.xyz[i*3+k];if(v<mn[k])mn[k]=v;if(v>mx[k])mx[k]=v;}
+    if(!cloud.n)return [0,0,0];
+    var o=[Math.floor((mn[0]+mx[0])/2),Math.floor((mn[1]+mx[1])/2),Math.floor(mn[2])];
+    for(i=0;i<cloud.n;i++)for(k=0;k<3;k++)cloud.xyz[i*3+k]-=o[k];
+    return o;
+  }
+  /* The cloud's height range (its own z, the file's up). Pure. */
+  function bimPcZRange(cloud){
+    var lo=Infinity,hi=-Infinity,i;
+    for(i=0;i<cloud.n;i++){var z=cloud.xyz[i*3+2];if(z<lo)lo=z;if(z>hi)hi=z;}
+    return cloud.n?[lo,hi]:[0,0];
+  }
+  /* The classes a cloud has, sorted. Pure. */
+  function bimPcClasses(cloud){
+    var seen={},out=[],i;
+    if(!cloud.cls)return out;
+    for(i=0;i<cloud.n;i++)if(!seen[cloud.cls[i]]){seen[cloud.cls[i]]=1;out.push(cloud.cls[i]);}
+    return out.sort(function(a,b){return a-b;});
+  }
+  /* Each point's colour in a mode: 'rgb' (else height), 'class', 'height'; a hidden class's points alpha 0. Pure. */
+  var BIM_PC_CLASS_COL={0:[150,150,150],1:[190,190,190],2:[166,124,82],3:[120,190,90],4:[70,160,60],5:[30,120,40],6:[220,90,70],7:[255,0,255],9:[70,130,220],
+    10:[120,100,90],11:[90,90,90],13:[250,210,60],14:[250,170,40],15:[200,200,60],17:[160,160,200],18:[255,0,128]};
+  function bimPcColours(cloud,mode,hidden){
+    var out=new Uint8Array(cloud.n*4),zr=bimPcZRange(cloud),i;
+    var m=mode==='class'&&cloud.cls?'class':(mode==='rgb'||!mode)&&cloud.rgb?'rgb':'height';
+    for(i=0;i<cloud.n;i++){
+      var c;
+      if(m==='rgb')c=[cloud.rgb[i*3],cloud.rgb[i*3+1],cloud.rgb[i*3+2]];
+      else if(m==='class')c=BIM_PC_CLASS_COL[cloud.cls[i]]||[200,200,200];
+      else c=bimPcHeightColour(cloud.xyz[i*3+2],zr[0],zr[1]);
+      out[i*4]=c[0];out[i*4+1]=c[1];out[i*4+2]=c[2];
+      out[i*4+3]=(hidden&&cloud.cls&&hidden[cloud.cls[i]])?0:255;
+    }
+    return out;
+  }
+  /* ---------- in the model ---------- */
+  function bimPcAdd(res,name,bytes){
+    var cl=res.cloud;
+    if(!cl.n)return null;
+    pushUndo();
+    A3D.counts.pointcloud=(A3D.counts.pointcloud||0)+1;
+    var o={id:'a3d-'+Date.now().toString(36)+'-'+(A3D.seq++),t:'pointcloud',name:'Cloud_'+A3D.counts.pointcloud+' '+String(name||'').replace(/\.[^.]+$/,'').slice(0,40),
+      pos:[0,0,0],layer:A3D.activeLayer,col:'#9ec1ff',
+      pc:{file:String(name||'').slice(0,120),bytes:bytes||0,kind:res.kind,count:res.count,n:cl.n,origin:res.origin,
+        unregistered:true,mode:cl.rgb?'rgb':'height',hidden:{},zr:bimPcZRange(cl),classes:bimPcClasses(cl),hasRgb:!!cl.rgb}};
+    o.pc.dataId=o.id;   /* a copy (COPY, MIRROR) shares the points by this */
+    A3D_PC.data[o.id]={cloud:cl};
+    A3D.objs.push(o);
+    A3D.sel=o.id;A3D.sel2=null;A3D.selSet=[o.id];
+    refreshTree();refreshHud();refreshProps();paint();saveSoon();
+    return o;
+  }
+  function bimPcImport(buf,name){
+    var bytes=new Uint8Array(buf),res=bimPcReadBytes(bytes,A3D_PC.budget);
+    if(res.error){a3dToast(name+': '+res.error);return null;}
+    var o=bimPcAdd(res,name,bytes.length);
+    if(!o){a3dToast(name+': no points');return null;}
+    fitScene();
+    a3dToast(o.name+': '+o.pc.n.toLocaleString()+' points'+(o.pc.n<o.pc.count?' of '+o.pc.count.toLocaleString()+' (sampled to the budget)':'')+
+      '. An unregistered preview: place it with MOVE');
+    return o;
+  }
+  function bimPcIsCloud(o){return !!(o&&o.t==='pointcloud'&&o.pc);}
+  /* the cloud's point i where the model shows it: file (x east, y north, z up) to app (x, y up, z south), plus pos */
+  function bimPcWorld(o,cl,i){var q=bimObjOffset(o);return [cl.xyz[i*3]+q[0],cl.xyz[i*3+2]+q[1],-cl.xyz[i*3+1]+q[2]];}
+  function bimPcData(o){return bimPcIsCloud(o)?A3D_PC.data[o.pc.dataId||o.id]||null:null;}
+  /* the colours per object (a copy may colour its shared points its own way) */
+  function bimPcColOf(o){
+    var D=bimPcData(o);if(!D)return null;
+    if(!D.cols)D.cols={};
+    var key=o.pc.mode+'|'+JSON.stringify(o.pc.hidden||{}),C=D.cols[o.id];
+    if(!C||C.key!==key){if(C&&C.gl&&C.G)C.G.gl.deleteBuffer(C.gl);C=D.cols[o.id]={key:key,col:bimPcColours(D.cloud,o.pc.mode,o.pc.hidden),gl:null};}
+    return C;
+  }
+  function bimPcVisible(){return A3D.objs.filter(function(o){return bimPcData(o)&&bimLayerShown(o);});}
+  /* The cloud under a screen point: the nearest of its points (every k-th, at most 20,000) within 6 px. */
+  function bimPcPick(x,y){
+    var L=bimPcVisible(),V=camVecs(A3D.cam),W=cvW(),H=cvH(),best=null,bd=6,i,j;
+    for(i=0;i<L.length;i++){
+      var o=L[i],D=bimPcData(o),n=D.cloud.n,step=Math.max(1,Math.ceil(n/20000));
+      for(j=0;j<n;j+=step){var s=toScreen(bimPcWorld(o,D.cloud,j),V,W,H),d=Math.abs(s[0]-x)+Math.abs(s[1]-y);if(d<bd){bd=d;best=o;}}
+    }
+    return best;
+  }
+  /* ---------- drawing ---------- */
+  function bimPcGlProg(G){
+    if(A3D_PC.gl&&A3D_PC.gl.G===G)return A3D_PC.gl;
+    var gl=G.gl;
+    var vs=bimGlCompile(gl,gl.VERTEX_SHADER,'attribute vec3 aPos;attribute vec4 aCol;uniform mat4 uView;uniform mat4 uProj;uniform vec3 uOffset;uniform float uSize;varying vec4 vCol;'+
+      'void main(){vCol=aCol;gl_Position=uProj*uView*vec4(aPos.x+uOffset.x,aPos.z+uOffset.y,-aPos.y+uOffset.z,1.0);gl_PointSize=aCol.a>0.0?uSize:0.0;}');
+    var fs=bimGlCompile(gl,gl.FRAGMENT_SHADER,'precision mediump float;varying vec4 vCol;uniform vec3 uSel;uniform float uIsSel;'+
+      'void main(){if(vCol.a<0.5)discard;gl_FragColor=vec4(mix(vCol.rgb,uSel,uIsSel*0.35),1.0);}');
+    if(!vs||!fs)return null;
+    var p=gl.createProgram();gl.attachShader(p,vs);gl.attachShader(p,fs);gl.linkProgram(p);
+    if(!gl.getProgramParameter(p,gl.LINK_STATUS)){console.warn('[BIM] point cloud shader: '+gl.getProgramInfoLog(p));return null;}
+    A3D_PC.gl={G:G,prog:p,pos:gl.getAttribLocation(p,'aPos'),col:gl.getAttribLocation(p,'aCol'),view:gl.getUniformLocation(p,'uView'),
+      proj:gl.getUniformLocation(p,'uProj'),off:gl.getUniformLocation(p,'uOffset'),size:gl.getUniformLocation(p,'uSize'),
+      sel:gl.getUniformLocation(p,'uSel'),isSel:gl.getUniformLocation(p,'uIsSel')};
+    return A3D_PC.gl;
+  }
+  function bimPcDrawGl(G,V,W,H){
+    A3D_PC.drewGl=false;
+    var L=bimPcVisible();if(!L.length)return;
+    var P=bimPcGlProg(G);if(!P)return;
+    var gl=G.gl,i;
+    gl.useProgram(P.prog);
+    gl.uniformMatrix4fv(P.view,false,bimGlViewMatrix(V));
+    gl.uniformMatrix4fv(P.proj,false,bimGlProjMatrix(W,H,A3D.flat,A3D.cam.dist));
+    gl.uniform1f(P.size,Math.max(1,Math.round(2*cvScale(el.cv))));
+    gl.uniform3f(P.sel,0.306,0.631,1.0);
+    gl.enableVertexAttribArray(P.pos);gl.enableVertexAttribArray(P.col);
+    for(i=0;i<L.length;i++){
+      var o=L[i],D=bimPcData(o),C=bimPcColOf(o),q=bimObjOffset(o);
+      if(!D.glPos||D.glG!==G){D.glPos=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,D.glPos);gl.bufferData(gl.ARRAY_BUFFER,D.cloud.xyz,gl.STATIC_DRAW);D.glG=G;}
+      if(!C.gl||C.G!==G){C.gl=gl.createBuffer();C.G=G;gl.bindBuffer(gl.ARRAY_BUFFER,C.gl);gl.bufferData(gl.ARRAY_BUFFER,C.col,gl.STATIC_DRAW);}
+      gl.uniform3f(P.off,q[0],q[1],q[2]);
+      gl.uniform1f(P.isSel,(A3D.sel===o.id||(A3D.selSet&&A3D.selSet.indexOf(o.id)>=0))?1:0);
+      gl.bindBuffer(gl.ARRAY_BUFFER,D.glPos);gl.vertexAttribPointer(P.pos,3,gl.FLOAT,false,0,0);
+      gl.bindBuffer(gl.ARRAY_BUFFER,C.gl);gl.vertexAttribPointer(P.col,4,gl.UNSIGNED_BYTE,true,0,0);
+      gl.drawArrays(gl.POINTS,0,D.cloud.n);
+    }
+    gl.disableVertexAttribArray(P.pos);gl.disableVertexAttribArray(P.col);
+    A3D_PC.drewGl=true;
+  }
+  /* Without WebGL: every k-th point, at most BIM_PC_2D_MAX, as small squares on the 2D canvas. */
+  function bimPcDraw2d(ctx,V,W,H,glOn){
+    var L=bimPcVisible(),i,j;
+    if(A3D_PC.preview)bimPcDrawPreview(ctx,V,W,H);
+    if(!L.length||(glOn&&A3D_PC.drewGl))return;
+    for(i=0;i<L.length;i++){
+      var o=L[i],D=bimPcData(o),col=bimPcColOf(o).col,n=D.cloud.n,step=Math.max(1,Math.ceil(n/BIM_PC_2D_MAX));
+      for(j=0;j<n;j+=step){
+        if(!col[j*4+3])continue;
+        var s=toScreen(bimPcWorld(o,D.cloud,j),V,W,H);
+        if(s[0]<0||s[1]<0||s[0]>W||s[1]>H)continue;
+        ctx.fillStyle='rgb('+col[j*4]+','+col[j*4+1]+','+col[j*4+2]+')';
+        ctx.fillRect(s[0]-1,s[1]-1,2,2);
+      }
+    }
+  }
+  function bimPcDrawPreview(ctx,V,W,H){
+    var P=A3D_PC.preview,o=objById(P&&P.id),i;
+    if(!o)return;
+    var q=bimObjOffset(o);
+    ctx.save();ctx.fillStyle='#ff9f1a';
+    for(i=0;i<P.pts.length;i++){var p=P.pts[i],s=toScreen([p[0]+q[0],p[2]+q[1],-p[1]+q[2]],V,W,H);ctx.fillRect(s[0]-2,s[1]-2,4,4);}
+    ctx.restore();
+  }
+  /* ---------- saved with the project ---------- */
+  function bimPcB64(arr){
+    var b=new Uint8Array(arr.buffer,arr.byteOffset,arr.byteLength),s='',i,CH=8192;
+    for(i=0;i<b.length;i+=CH)s+=String.fromCharCode.apply(null,Array.prototype.slice.call(b.subarray(i,i+CH)));
+    return btoa(s);
+  }
+  function bimPcUnB64(s,Type){
+    var t=atob(String(s||'')),b=new Uint8Array(t.length),i;
+    for(i=0;i<t.length;i++)b[i]=t.charCodeAt(i);
+    return new Type(b.buffer);
+  }
+  function bimPcSaveData(){
+    var out={},i;
+    for(i=0;i<A3D.objs.length;i++){
+      var o=A3D.objs[i],D=bimPcData(o),k=o.pc&&(o.pc.dataId||o.id);
+      if(!D||D.cloud.n>BIM_PC_KEEP||out[k])continue;
+      try{out[k]={n:D.cloud.n,xyz:bimPcB64(D.cloud.xyz),cls:D.cloud.cls?bimPcB64(D.cloud.cls):null,rgb:D.cloud.rgb?bimPcB64(D.cloud.rgb):null};}
+      catch(e){console.warn('[BIM] point cloud not saved: '+o.name,e);}
+    }
+    return out;
+  }
+  function bimPcRestoreData(saved){
+    A3D_PC.data={};A3D_PC.preview=null;
+    if(!saved||typeof saved!=='object')return;
+    var k;
+    for(k in saved){
+      var s=saved[k];
+      try{
+        var cl={n:+s.n,xyz:bimPcUnB64(s.xyz,Float32Array),cls:s.cls?bimPcUnB64(s.cls,Uint8Array):null,rgb:s.rgb?bimPcUnB64(s.rgb,Uint8Array):null};
+        if(cl.xyz.length===cl.n*3)A3D_PC.data[k]={cloud:cl};
+      }catch(e){console.warn('[BIM] a saved point cloud could not be read',e);}
+    }
+  }
+  /* ---------- Properties ---------- */
+  function bimPcPropsHtml(o){
+    var p=o.pc,D=bimPcData(o),h='',modes=[['rgb','RGB'],['class','Class'],['height','Height']];
+    h+=bimPropText('Points',p.n.toLocaleString()+(p.n<p.count?' of '+p.count.toLocaleString()+' (sampled)':''));
+    h+=bimPropText('File',p.file+' ('+String(p.kind).toUpperCase()+')');
+    h+=bimPropText('Origin (file x, y, z)',p.origin.join(', '));
+    if(p.unregistered)h+=bimPropText('Placement','Unregistered preview: no CRS; place it with MOVE');
+    if(!D)return h+'<div class="a3d-propnote">Its points are not in this session (a cloud over '+BIM_PC_KEEP.toLocaleString()+' points is not saved inside the project): import '+bimEsc(p.file)+' again.</div>';
+    h+=bimPropRow('Colour by','<select data-propf="pcmode">'+modes.filter(function(m){return m[0]!=='rgb'||p.hasRgb;}).filter(function(m){return m[0]!=='class'||p.classes.length;})
+      .map(function(m){return '<option value="'+m[0]+'"'+(p.mode===m[0]?' selected':'')+'>'+m[1]+'</option>';}).join('')+'</select>');
+    p.classes.forEach(function(c){
+      h+=bimPropRow(bimEsc(bimPcClassName(c)),'<input type="checkbox" data-propf="pccls:'+c+'"'+(p.hidden&&p.hidden[c]?'':' checked')+'> shown');
+    });
+    h+=bimPropRow('Budget for imports','<input type="number" min="1000" step="1000" data-propf="pcbudget" value="'+A3D_PC.budget+'">');
+    if(p.classes.indexOf(2)>=0)h+=bimPropRow('Ground to surface','<button data-propf="pcground">Preview…</button>');
+    return h;
+  }
+  function bimPcPropField(o,f,inp){
+    if(!bimPcIsCloud(o))return false;
+    if(f==='pcmode'){pushUndo();o.pc.mode=inp.value;paint();saveSoon();return true;}
+    if(f.indexOf('pccls:')===0){pushUndo();var c=+f.slice(6);if(!o.pc.hidden)o.pc.hidden={};if(inp.checked)delete o.pc.hidden[c];else o.pc.hidden[c]=true;paint();saveSoon();return true;}
+    if(f==='pcbudget'){var b=Math.floor(+inp.value);if(!(b>=1000)){a3dToast('A budget is 1,000 points or more');refreshProps();return true;}A3D_PC.budget=b;a3dToast('The next import keeps up to '+b.toLocaleString()+' points');return true;}
+    return false;
+  }
+  /* Ground to surface: the lowest ground point per cell, previewed; on confirmation a terrain surface, checked. */
+  function openPcGroundDlg(o){
+    var D=bimPcData(o);
+    if(!D){a3dToast('Select a point cloud whose points are loaded');return null;}
+    closeDlg();
+    var d=document.createElement('div');d.className='a3d-dlg';
+    d.innerHTML='<div class="a3d-dlghd">Ground to surface</div><div class="a3d-dlgbody">'+
+      '<div class="a3d-dlgrow"><label>Cell, m</label><input type="number" min="0.1" step="any" data-a3dpg="cell" value="2"></div>'+
+      '<div class="a3d-propnote" data-a3dpg="msg">The lowest ground point (class 2) in each cell. Preview shows them; Create makes a terrain surface and checks it.</div>'+
+      '<div id="a3d-dlgerr" class="a3d-dlgerr"></div></div>'+
+      '<div class="a3d-dlgft"><button data-a3dlg="cancel">Cancel</button><button data-a3dpgact="preview">Preview</button><button data-a3dpgact="create">Create surface</button></div>';
+    el.root.appendChild(d);el.dlg=d;
+    function pts(){
+      var cell=+d.querySelector('[data-a3dpg="cell"]').value;
+      if(!(cell>0)){d.querySelector('#a3d-dlgerr').textContent='The cell is more than 0';return null;}
+      var g=bimPcGround(D.cloud,cell);
+      if(g.length<3){d.querySelector('#a3d-dlgerr').textContent='Fewer than 3 ground points: a larger cell, or a cloud with ground classified';return null;}
+      if(g.length>40000){d.querySelector('#a3d-dlgerr').textContent=g.length.toLocaleString()+' cells is more than a surface should take (40,000): a larger cell';return null;}
+      return g;
+    }
+    d.addEventListener('click',function(ev){
+      var b=ev.target&&ev.target.closest?ev.target.closest('[data-a3dpgact],[data-a3dlg]'):null;if(!b)return;
+      if(b.getAttribute('data-a3dlg')){A3D_PC.preview=null;closeDlg();paint();return;}
+      var g=pts();if(!g)return;
+      if(b.getAttribute('data-a3dpgact')==='preview'){
+        A3D_PC.preview={id:o.id,pts:g};paint();
+        d.querySelector('[data-a3dpg="msg"]').textContent=g.length.toLocaleString()+' ground points (orange). Create makes the surface.';
+        return;
+      }
+      A3D_PC.preview=null;closeDlg();
+      var q=bimObjOffset(o),model=g.map(function(p,i){return [p[0]+q[0],-p[1]+q[2],p[2]+q[1],'G'+(i+1),'ground'];});
+      var t=bimCreateTerrain(model,{format:'Point cloud ground',units:'m',file:o.pc.file,from:o.id});
+      if(t){var r=bimSurveyCheck(t);a3dToast(t.name+' from '+g.length+' ground points'+(r?': survey check '+r.verdict:''));}
+    });
+    return d;
+  }
 
 
   /* ================= __acad3dV191: LOD-D, LOD1.3 and LOD2.2 roofs from LiDAR, the pure part =================
@@ -53631,7 +54785,7 @@ function bimWalkKeys(h, j) {
   // A 'fixed' kind also exists internally (pins one point to an exact X/Z) but is only ever added
   // transiently during a grip drag -- it drives the solve while the user's cursor is the source of
   // truth for that one point, and is never itself persisted as a stored constraint.
-  function bimConResidual(kind,pts,refs,value){
+  function bimConResidual(kind,pts,refs,value,B){
     function P(i){return pts[i];}
     switch(kind){
       case 'coincident':{
@@ -53722,7 +54876,7 @@ function bimWalkKeys(h, j) {
         return [onLine3,perp3];
       }
       default:
-        return [];
+        return bimConIsArcKind(kind)?bimConArcResidual(kind,pts,refs,value,B):[];   /* __acad3dV267 */
     }
   }
   function bimConResidualCount(kind){
@@ -53783,38 +54937,46 @@ function bimWalkKeys(h, j) {
     var maxIter=opts.maxIter||60,tol=opts.tol||1e-9,lambda0=opts.lambda||1e-3;
     var n=ptsIn.length,x=[],i;
     for(i=0;i<n;i++){x.push(ptsIn[i][0]);x.push(ptsIn[i][1]);}
+    /* __acad3dV267: the bulge of each arc a constraint names is an unknown too, after the points */
+    var B0=(opts.bulges||[]).slice(),segs=[];
+    for(i=0;i<constraints.length;i++)if(bimConIsArcKind(constraints[i].type)){var sg=bimConArcOf(constraints[i]);if(segs.indexOf(sg)<0){segs.push(sg);x.push(Math.log(Math.abs(bimConArcStart(B0[sg]||0))||1e-9));}}
+    var nv=x.length;
+    /* the unknown is log|b|: an arc keeps its side of the chord and never passes through straight */
+    function bulgesOf(xv){var Bv=B0.slice(),j;for(j=0;j<segs.length;j++)Bv[segs[j]]=((B0[segs[j]]||0)<0?-1:1)*Math.exp(xv[2*n+j]);return Bv;}
     function unpack(xv){
       var pts=[],j;
       for(j=0;j<n;j++)pts.push([xv[j*2],xv[j*2+1]]);
       return pts;
     }
     function evalResiduals(xv){
-      var pts=unpack(xv),r=[],c,k;
+      var pts=unpack(xv),Bv=segs.length?bulgesOf(xv):B0,r=[],c,k;
       for(c=0;c<constraints.length;c++){
         var cons=constraints[c];
-        var rc=bimConResidual(cons.type,pts,cons.refs,cons.value);
+        var rc=bimConResidual(cons.type,pts,cons.refs,cons.value,Bv);
         for(k=0;k<rc.length;k++)r.push(rc[k]);
       }
       return r;
     }
     var mSize=0;
     for(i=0;i<constraints.length;i++)mSize+=bimConResidualCount(constraints[i].type);
-    if(mSize===0)return {pts:ptsIn.map(function(p){return p.slice();}),iterations:0,residualNorm:0};
+    if(mSize===0)return {pts:ptsIn.map(function(p){return p.slice();}),bulges:B0,iterations:0,residualNorm:0};
     var lambda=lambda0,r=evalResiduals(x),normSq=bimConDot(r,r),iter;
     for(iter=0;iter<maxIter;iter++){
       if(normSq<tol)break;
       var h=1e-6,J=[],rr,v;
-      for(rr=0;rr<mSize;rr++)J.push(new Array(2*n).fill(0));
-      for(v=0;v<2*n;v++){
+      for(rr=0;rr<mSize;rr++)J.push(new Array(nv).fill(0));
+      for(v=0;v<nv;v++){
         var xp=x.slice();xp[v]+=h;
         var xm=x.slice();xm[v]-=h;
         var rp=evalResiduals(xp),rm=evalResiduals(xm);
         for(rr=0;rr<mSize;rr++)J[rr][v]=(rp[rr]-rm[rr])/(2*h);
       }
-      var JT_J=bimConMatATA(J,mSize,2*n),JT_r=bimConMatVecAT(J,r,mSize,2*n);
+      var JT_J=bimConMatATA(J,mSize,nv),JT_r=bimConMatVecAT(J,r,mSize,nv);
       var tries=0,improved=false;
       while(tries<12&&!improved){
-        var A=JT_J.map(function(row,ri){return row.map(function(val,ci){return val+(ri===ci?lambda*(val||1):0);});});
+        /* __acad3dV267: a diagonal that is numerical noise (an arc's chord moved square to itself) is damped as a zero
+           one; damping it by itself let a 1e-22 entry turn noise into a step of millions */
+        var A=JT_J.map(function(row,ri){return row.map(function(val,ci){return val+(ri===ci?lambda*(val>1e-12?val:1):0);});});
         var negJTr=JT_r.map(function(v2){return -v2;});
         var dx=bimConSolveLinear(A,negJTr);
         if(!dx){lambda*=4;tries++;continue;}
@@ -53829,7 +54991,7 @@ function bimWalkKeys(h, j) {
       if(!improved)break;
     }
     if(!isFinite(normSq))return {error:'Solver diverged (non-finite residual)'};
-    return {pts:unpack(x),iterations:iter,residualNorm:Math.sqrt(normSq)};
+    return {pts:unpack(x),bulges:bulgesOf(x),iterations:iter,residualNorm:Math.sqrt(normSq)};
   }
   // Crude DOF estimate: 2 unknowns per point minus the number of independent-looking equation
   // rows. Not a rigorous rank analysis (that would need a real SVD) -- clearly an approximation,
@@ -53839,8 +55001,10 @@ function bimWalkKeys(h, j) {
     for(i=0;i<constraints.length;i++)eqCount+=bimConResidualCount(constraints[i].type);
     return Math.max(0,ptsCount*2-eqCount);
   }
-  var A3D_CON_LABELS={coincident:'Coincident',horizontal:'Horizontal',vertical:'Vertical',distance:'Distance',equal:'Equal Length',parallel:'Parallel',perpendicular:'Perpendicular',angle:'Angle',pointonline:'Point on Line',midpoint:'Midpoint',symmetric_pt:'Symmetric (about point)',symmetric_line:'Symmetric (about line)'};
-  var A3D_CON_NEED={coincident:2,horizontal:2,vertical:2,distance:2,equal:4,parallel:4,perpendicular:4,angle:4,pointonline:3,midpoint:3,symmetric_pt:3,symmetric_line:4};
+  var A3D_CON_LABELS={coincident:'Coincident',horizontal:'Horizontal',vertical:'Vertical',distance:'Distance',equal:'Equal Length',parallel:'Parallel',perpendicular:'Perpendicular',angle:'Angle',pointonline:'Point on Line',midpoint:'Midpoint',symmetric_pt:'Symmetric (about point)',symmetric_line:'Symmetric (about line)',
+    radius:'Radius',diameter:'Diameter',pointonarc:'Point on Arc',tangent:'Tangent'};
+  var A3D_CON_NEED={coincident:2,horizontal:2,vertical:2,distance:2,equal:4,parallel:4,perpendicular:4,angle:4,pointonline:3,midpoint:3,symmetric_pt:3,symmetric_line:4,
+    radius:2,diameter:2,pointonarc:3,tangent:4};
   function bimSketchConstraintLabel(type){return A3D_CON_LABELS[type]||type;}
   function bimSketchConstraintDesc(o,c){
     var lbl=bimSketchConstraintLabel(c.type);
@@ -53850,6 +55014,9 @@ function bimWalkKeys(h, j) {
     if(c.type==='pointonline')return lbl+' ('+names[0]+' on '+names[1]+'-'+names[2]+')';
     if(c.type==='midpoint')return lbl+' ('+names[0]+' = mid of '+names[1]+'-'+names[2]+')';
     if(c.type==='symmetric_pt')return lbl+' ('+names[0]+'-'+names[1]+' about '+names[2]+')';
+    if(c.type==='radius'||c.type==='diameter')return lbl+' (arc '+names[0]+'-'+names[1]+' = '+c.value.toFixed(3)+'m)';   /* __acad3dV267 */
+    if(c.type==='pointonarc')return lbl+' ('+names[0]+' on arc '+names[1]+'-'+names[2]+')';
+    if(c.type==='tangent')return lbl+' ('+names[0]+names[1]+' to arc '+names[2]+names[3]+')';
     if(c.type==='symmetric_line')return lbl+' ('+names[0]+'-'+names[1]+' about '+names[2]+'-'+names[3]+')';
     if(c.refs.length===4)return lbl+' ('+names[0]+names[1]+' / '+names[2]+names[3]+')';
     return lbl+' ('+names[0]+'-'+names[1]+')';
@@ -53867,7 +55034,7 @@ function bimWalkKeys(h, j) {
     if(pinIdx!==undefined&&pinIdx!==null&&pinIdx>=0&&pinIdx<o.pts.length){
       cons.push({type:'fixed',refs:[pinIdx],value:[o.pts[pinIdx][0],o.pts[pinIdx][1]]});
     }
-    var res=bimSolveSketchConstraints(o.pts,cons);
+    var res=bimSolveSketchConstraints(o.pts,cons,{bulges:o.bulges||[]});
     if(res.error){
       console.warn('[BIM] Sketch constraint solve failed on "'+o.name+'": '+res.error);
       if(!opts.silent)a3dToast('Constraint solve failed: '+res.error);
@@ -53880,6 +55047,7 @@ function bimWalkKeys(h, j) {
     }
     var i;
     for(i=0;i<o.pts.length;i++)o.pts[i]=[res.pts[i][0],res.pts[i][1]];
+    if(o.bulges&&res.bulges)for(i=0;i<o.bulges.length;i++)o.bulges[i]=res.bulges[i]||0;   /* __acad3dV267: a radius moves its arc */
     return {ok:true,solved:true,residualNorm:res.residualNorm};
   }
   function bimAddSketchConstraint(o,type,refs,value){
@@ -53889,6 +55057,12 @@ function bimWalkKeys(h, j) {
     if(!need||!refs||refs.length!==need){console.warn('[BIM] Rejected malformed constraint request (type='+type+', refs='+JSON.stringify(refs)+').');return null;}
     var i;
     for(i=0;i<refs.length;i++)if(refs[i]<0||refs[i]>=o.pts.length){a3dToast('Constraint point out of range');return null;}
+    if(bimConIsArcKind(type)){   /* __acad3dV267: the arc is named by its two end points, and must be an arc */
+      var ar=bimConArcRefs(type,refs,o.pts.length,o.closed);
+      if(!ar){a3dToast('Pick the two end points of one segment for the arc');return null;}
+      if(Math.abs((o.bulges||[])[bimConArcOf({type:type,refs:ar})]||0)<1e-9){a3dToast('That segment is straight: '+bimSketchConstraintLabel(type)+' needs an arc');return null;}
+      refs=ar;
+    }
     pushUndo();
     if(!o.constraints)o.constraints=[];
     var c={id:'con-'+Date.now().toString(36)+'-'+(A3D.seq++),type:type,refs:refs.slice(),value:value};
@@ -53922,7 +55096,9 @@ function bimWalkKeys(h, j) {
     closeDlg();
     bimEnterDraftingMode();
     A3D.conPick={type:type,need:A3D_CON_NEED[type],picked:[]};
-    a3dToast(bimSketchConstraintLabel(type)+': click point 1 of '+A3D_CON_NEED[type]+' on '+o.name+' (Escape to cancel)');
+    var hint={radius:'click the two end points of the arc',diameter:'click the two end points of the arc',
+      pointonarc:'click the point, then the two end points of the arc',tangent:'click the line\'s two points, then the arc\'s two end points'}[type];   /* __acad3dV267 */
+    a3dToast(bimSketchConstraintLabel(type)+': '+(hint||'click point 1 of '+A3D_CON_NEED[type])+' on '+o.name+' (Escape to cancel)');
     paint();
   }
   function cancelConstraintPick(){A3D.conPick=null;paint();}
@@ -53930,7 +55106,7 @@ function bimWalkKeys(h, j) {
     var cp=A3D.conPick,o=selSketch();
     A3D.conPick=null;
     if(!o||!cp)return;
-    if(cp.type==='distance'||cp.type==='angle'){openConstraintValueDlg(cp.type,o,cp.picked.slice());return;}
+    if(cp.type==='distance'||cp.type==='angle'||cp.type==='radius'||cp.type==='diameter'){openConstraintValueDlg(cp.type,o,cp.picked.slice());return;}
     bimAddSketchConstraint(o,cp.type,cp.picked.slice());
   }
   function openConstraintValueDlg(kind,o,refs){
@@ -53938,8 +55114,9 @@ function bimWalkKeys(h, j) {
     var isAngle=(kind==='angle');
     var d=document.createElement('div');
     d.className='a3d-dlg';
-    d.innerHTML='<div class="a3d-dlghd">'+(isAngle?'Angle Constraint':'Distance Constraint')+'</div><div class="a3d-dlgbody">'+
-      '<div class="a3d-dlgrow"><label>'+(isAngle?'Angle (degrees)':'Distance (m)')+'</label><input type="number" step="any" data-a3dp="v" value="'+(isAngle?'45':'1')+'"></div>'+
+    var nm=isAngle?'Angle':kind==='radius'?'Radius':kind==='diameter'?'Diameter':'Distance';   /* __acad3dV267 */
+    d.innerHTML='<div class="a3d-dlghd">'+nm+' Constraint</div><div class="a3d-dlgbody">'+
+      '<div class="a3d-dlgrow"><label>'+(isAngle?'Angle (degrees)':nm+' (m)')+'</label><input type="number" step="any" data-a3dp="v" value="'+(isAngle?'45':'1')+'"></div>'+
       '<div id="a3d-dlgerr" class="a3d-dlgerr"></div></div>'+
       '<div class="a3d-dlgft"><button data-a3dlg="cancel">Cancel</button><button data-a3dlg="ok">OK</button></div>';
     el.root.appendChild(d);el.dlg=d;
@@ -53948,7 +55125,7 @@ function bimWalkKeys(h, j) {
       var v=parseFloat(vI.value);
       var eb=document.getElementById('a3d-dlgerr');
       if(!isFinite(v)){eb.textContent='Must be a number';return;}
-      if(!isAngle&&v<=0){eb.textContent='Distance must be a positive number';return;}
+      if(!isAngle&&v<=0){eb.textContent=nm+' must be a positive number';return;}
       closeDlg();
       bimAddSketchConstraint(o,kind,refs,isAngle?(v*Math.PI/180):v);
     }
@@ -53981,7 +55158,51 @@ function bimWalkKeys(h, j) {
       if(A3D.lastPolys[i].lock)continue;
       if(inPoly(x,y,A3D.lastPolys[i].pts))return A3D.lastPolys[i].o;
     }
+    var pcHit=bimPcPick(x,y);   /* __acad3dV190: a point cloud, by its nearest point */
+    if(pcHit)return pcHit;
     return bimPickSketch(x,y);
+  }
+  /* ================= __acad3dV267: constraints on a sketch's arcs =================
+     FreeCAD's Sketcher (and AutoCAD's GCTANGENT, DCRADIUS, DCDIAMETER) on the app's sketches, whose arcs are bulges on
+     segments: a segment from point i to point i+1 with bulge b is an arc of radius c(1 + b^2) / (4|b|) on its chord c.
+     The solver (sketch-constraints.js) takes the bulge of every arc a constraint names as one more unknown, so a radius
+     drives its arc as FreeCAD's does, rather than only reporting it.
+       radius(a, b, r)        the arc from point a to point b has radius r
+       diameter(a, b, d)      ... diameter d
+       pointonarc(p, a, b)    point p lies on the circle of the arc a-b
+       tangent(l0, l1, a, b)  the line through l0, l1 touches the circle of the arc a-b
+     An arc is named by its two end points, in either order, as they are clicked; it is stored by its own order. */
+  var BIM_CON_ARC_KINDS={radius:1,diameter:1,pointonarc:1,tangent:1};
+  function bimConIsArcKind(kind){return !!BIM_CON_ARC_KINDS[kind];}
+  /* The segment between two neighbouring points: its first point's index (the bulge's), or -1. Pure. */
+  function bimConArcSeg(n,a,b,closed){
+    if(b===a+1)return a;
+    if(a===b+1)return b;
+    if(closed!==false&&n>2){if(a===n-1&&b===0)return a;if(b===n-1&&a===0)return b;}
+    return -1;
+  }
+  /* The refs of an arc constraint with its arc stored as [seg, next]. */
+  function bimConArcRefs(kind,refs,n,closed){
+    var k=kind==='pointonarc'?1:kind==='tangent'?2:0,s=bimConArcSeg(n,refs[k],refs[k+1],closed);
+    if(s<0)return null;
+    var out=refs.slice();out[k]=s;out[k+1]=(s+1)%n;
+    return out;
+  }
+  /* A bulge's starting value for the solver. A half circle (|b| = 1) is where the radius on a fixed chord is least, so
+     its slope there is zero and the solver could not leave it; it starts a little flatter. */
+  function bimConArcStart(b){return Math.abs(Math.abs(b)-1)<1e-3?b*0.97:b;}
+  /* The segment a constraint's arc is on. */
+  function bimConArcOf(c){var k=c.type==='pointonarc'?1:c.type==='tangent'?2:0;return c.refs[k];}
+  function bimConArcResidual(kind,pts,refs,value,B){
+    var k=kind==='pointonarc'?1:kind==='tangent'?2:0,a=refs[k],b=refs[k+1];
+    var arc=bimBulgeArc(pts[a],pts[b],B?B[a]:0);
+    if(!arc)return [1e3];   /* a straight segment has no circle: far from any answer */
+    if(kind==='radius')return [arc.radius-value];
+    if(kind==='diameter')return [2*arc.radius-value];
+    if(kind==='pointonarc'){var p=pts[refs[0]];return [Math.sqrt((p[0]-arc.center[0])*(p[0]-arc.center[0])+(p[1]-arc.center[1])*(p[1]-arc.center[1]))-arc.radius];}
+    var A=pts[refs[0]],L=pts[refs[1]],dx=L[0]-A[0],dz=L[1]-A[1],len=Math.sqrt(dx*dx+dz*dz)||1e-9;
+    var dist=Math.abs((arc.center[0]-A[0])*dz-(arc.center[1]-A[1])*dx)/len;
+    return [dist-arc.radius];
   }
   // ---- __acad3dV7: Selection tools (marquee select, group move/delete, duplicate, linear array) ----
   function bimRectContains(rx1,ry1,rx2,ry2,px,py){
@@ -54375,7 +55596,8 @@ function bimWalkKeys(h, j) {
     else if(g.kind==='wall'){A3D.counts.wall=(A3D.counts.wall||0)+1;copy.t='solid';copy.name='Wall_'+A3D.counts.wall;copy.mesh=g.mesh;copy.bim=bimCarryBim(o.bim,g.bim);}
     else if(g.kind==='floor'){A3D.counts.floor=(A3D.counts.floor||0)+1;copy.t='solid';copy.name='Floor_'+A3D.counts.floor;copy.mesh=g.mesh;copy.bim=bimCarryBim(o.bim,g.bim);}
     else if(g.kind==='column'){A3D.counts.column=(A3D.counts.column||0)+1;copy.t='solid';copy.name='Column_'+A3D.counts.column;copy.mesh=g.mesh;copy.bim=bimCarryBim(o.bim,g.bim);}
-    else if(g.kind==='mesh'){copy.t=g.materialized?'solid':o.t;copy.name=o.name+' mirror';copy.mesh=g.mesh;if(o.prm&&!g.materialized)copy.prm=JSON.parse(JSON.stringify(o.prm));if(g.materialized)bimNoteMaterialized(copy.name);}   /* __acad3dV110 */
+    else if(g.kind==='mesh'){copy.t=g.materialized?'solid':o.t;copy.name=o.name+' mirror';copy.mesh=g.mesh;if(o.prm&&!g.materialized)copy.prm=JSON.parse(JSON.stringify(o.prm));if(g.materialized)bimNoteMaterialized(copy.name);
+      if(o.occt&&!g.materialized)copy.occt=JSON.parse(JSON.stringify(o.occt));}   /* __acad3dV110; __acad3dV266: an OpenCASCADE solid's B-rep follows its mesh */
     else if(g.kind==='pos'){copy.t=o.t;copy.name=o.name+' mirror';copy.pos=g.pos;if(o.prm)copy.prm=JSON.parse(JSON.stringify(o.prm));}
     else if(g.kind==='diag')bimDgCopy(o,g,copy,'mirror');   /* __acad3dV164 */
     else if(g.kind==='alignment'){   /* __acad3dV127 */
@@ -54543,7 +55765,8 @@ function bimWalkKeys(h, j) {
     else if(g.kind==='wall'){A3D.counts.wall=(A3D.counts.wall||0)+1;copy.t='solid';copy.name='Wall_'+A3D.counts.wall;copy.mesh=g.mesh;copy.bim=bimCarryBim(o.bim,g.bim);}
     else if(g.kind==='floor'){A3D.counts.floor=(A3D.counts.floor||0)+1;copy.t='solid';copy.name='Floor_'+A3D.counts.floor;copy.mesh=g.mesh;copy.bim=bimCarryBim(o.bim,g.bim);}
     else if(g.kind==='column'){A3D.counts.column=(A3D.counts.column||0)+1;copy.t='solid';copy.name='Column_'+A3D.counts.column;copy.mesh=g.mesh;copy.bim=bimCarryBim(o.bim,g.bim);}
-    else if(g.kind==='mesh'){copy.t=g.materialized?'solid':o.t;copy.name=o.name+' copy';copy.mesh=g.mesh;if(o.prm&&!g.materialized)copy.prm=JSON.parse(JSON.stringify(o.prm));if(g.materialized)bimNoteMaterialized(copy.name);}   /* __acad3dV110 */
+    else if(g.kind==='mesh'){copy.t=g.materialized?'solid':o.t;copy.name=o.name+' copy';copy.mesh=g.mesh;if(o.prm&&!g.materialized)copy.prm=JSON.parse(JSON.stringify(o.prm));if(g.materialized)bimNoteMaterialized(copy.name);
+      if(o.occt&&!g.materialized)copy.occt=JSON.parse(JSON.stringify(o.occt));}   /* __acad3dV110; __acad3dV266: an OpenCASCADE solid's B-rep follows its mesh */
     else if(g.kind==='pos'){copy.t=o.t;copy.name=o.name+' copy';copy.pos=g.pos;if(o.prm)copy.prm=JSON.parse(JSON.stringify(o.prm));}
     else if(g.kind==='diag')bimDgCopy(o,g,copy,'copy');   /* __acad3dV164 */
     else return null;
@@ -60073,7 +61296,7 @@ function bimWalkKeys(h, j) {
      need the same list to park a project in its own key and to know what a fresh project is,
      and two copies of one field list are two lists that will eventually disagree. */
   function bimProjectRecord(){
-    return {objs:A3D.objs,cam:A3D.cam,seq:A3D.seq,counts:A3D.counts,levels:A3D.levels,grids:A3D.grids,activeLevel:A3D.activeLevel,layers:A3D.layers,activeLayer:A3D.activeLayer,types:A3D.types,activeWallType:A3D.activeWallType,views:A3D.views,activeViewId:A3D.activeViewId,levelFilter:A3D.levelFilter,sheets:A3D.sheets,titleBlock:A3D.titleBlock,buildings:A3D.buildings,activeBuilding:A3D.activeBuilding,site:A3D.site,roomScheme:A3D.roomScheme||'',classifications:A3D.classifications,dataFeatures:A3D.dataFeatures||{},history:A3D.history||null,resultLayers:A3D.resultLayers||[],pres:A3D.pres||null,units:A3D.units||null,dimStyle:A3D.dimStyle||null,textStyle:A3D.textStyle||null};   /* __acad3dV146, __acad3dV148; __acad3dV162; __acad3dV175a: its display units (D10) */
+    return {objs:A3D.objs,cam:A3D.cam,seq:A3D.seq,counts:A3D.counts,levels:A3D.levels,grids:A3D.grids,activeLevel:A3D.activeLevel,layers:A3D.layers,activeLayer:A3D.activeLayer,types:A3D.types,activeWallType:A3D.activeWallType,views:A3D.views,activeViewId:A3D.activeViewId,levelFilter:A3D.levelFilter,sheets:A3D.sheets,titleBlock:A3D.titleBlock,buildings:A3D.buildings,activeBuilding:A3D.activeBuilding,site:A3D.site,roomScheme:A3D.roomScheme||'',classifications:A3D.classifications,dataFeatures:A3D.dataFeatures||{},history:A3D.history||null,resultLayers:A3D.resultLayers||[],pres:A3D.pres||null,units:A3D.units||null,dimStyle:A3D.dimStyle||null,textStyle:A3D.textStyle||null,matCards:A3D.matCards||[],sheet:A3D.sheet||null,pcData:bimPcSaveData()};   /* __acad3dV146, __acad3dV148; __acad3dV162; __acad3dV175a: its display units (D10) */
   }
   /* __acad3dV115: a save that failed went into an empty catch, so a full browser store lost every
      later edit without a word. It says so now -- once per run of failures, not once per edit. */
@@ -61050,6 +62273,329 @@ function bimWalkKeys(h, j) {
               finishFloor:bimRoomField(o,'finishFloor'),finishWall:bimRoomField(o,'finishWall'),
               finishCeiling:bimRoomField(o,'finishCeiling'),source:o.sourceType||'-'};   /* __acad3dV101 */
     });
+  }
+  /* ================= __acad3dV269: the spreadsheet's formulas =================
+     FreeCAD's Spreadsheet workbench: cells of numbers, text and formulas, a cell named by an alias, and expressions that
+     read the model and drive it. This file is the formula language, pure, tested without a page:
+       a cell's content: "=formula", or a number, or text;
+       formula: + - * / ^, brackets, numbers, cells (A1, $B$2), aliases (width), ranges in functions (A1:B4), pi;
+       functions: sum, min, max, average, count, abs, sqrt, round(x[, places]), floor, ceil, mod(a, b), sin, cos, tan,
+       asin, acos, atan in degrees (as QUICKCALC's), if(test, then, else), and obj("name", "property"), which reads an
+       object of the model (spreadsheet.js says which properties).
+     A reference to an empty cell is 0; a cycle, an unknown name or a bad formula is that cell's error, and so is any
+     cell that reads it. */
+  var BIM_SHEET_COLS=12,BIM_SHEET_ROWS=40;
+  function bimSheetColName(c){return String.fromCharCode(65+c);}
+  /* "B3" to [1, 2] (column, row from 0), or null */
+  function bimSheetParseRef(s){
+    var m=/^\$?([A-Za-z])\$?(\d{1,3})$/.exec(String(s||''));
+    if(!m)return null;
+    var c=m[1].toUpperCase().charCodeAt(0)-65,r=parseInt(m[2],10)-1;
+    return (c>=0&&c<BIM_SHEET_COLS&&r>=0&&r<BIM_SHEET_ROWS)?[c,r]:null;
+  }
+  function bimSheetRefName(c,r){return bimSheetColName(c)+(r+1);}
+  function bimSheetRangeCells(a,b){
+    var A=bimSheetParseRef(a),B=bimSheetParseRef(b),out=[],c,r;
+    if(!A||!B)return null;
+    for(r=Math.min(A[1],B[1]);r<=Math.max(A[1],B[1]);r++)for(c=Math.min(A[0],B[0]);c<=Math.max(A[0],B[0]);c++)out.push(bimSheetRefName(c,r));
+    return out;
+  }
+  var BIM_SHEET_D2R=Math.PI/180;
+  var BIM_SHEET_FN={
+    sum:function(a){return a.reduce(function(s,x){return s+x;},0);},
+    min:function(a){return Math.min.apply(null,a);},max:function(a){return Math.max.apply(null,a);},
+    average:function(a){return a.reduce(function(s,x){return s+x;},0)/a.length;},
+    count:function(a){return a.length;},
+    abs:function(a){return Math.abs(a[0]);},sqrt:function(a){if(a[0]<0)throw new Error('sqrt of a negative number');return Math.sqrt(a[0]);},
+    round:function(a){var k=Math.pow(10,a.length>1?Math.round(a[1]):0);return Math.round(a[0]*k)/k;},
+    floor:function(a){return Math.floor(a[0]);},ceil:function(a){return Math.ceil(a[0]);},
+    mod:function(a){if(!a[1])throw new Error('mod by zero');return a[0]-a[1]*Math.floor(a[0]/a[1]);},
+    sin:function(a){return Math.sin(a[0]*BIM_SHEET_D2R);},cos:function(a){return Math.cos(a[0]*BIM_SHEET_D2R);},tan:function(a){return Math.tan(a[0]*BIM_SHEET_D2R);},
+    asin:function(a){return Math.asin(a[0])/BIM_SHEET_D2R;},acos:function(a){return Math.acos(a[0])/BIM_SHEET_D2R;},atan:function(a){return Math.atan(a[0])/BIM_SHEET_D2R;},
+    if:function(a){return a[0]?a[1]:a[2];}
+  };
+  var BIM_SHEET_NARGS={average:-1,sum:-1,min:-1,max:-1,count:-1,round:-2,mod:2,if:3};
+  /* Every cell's value. cells: {A1: "=B1*2", ...}; aliases: {A1: "width"}; readObj(name, prop) gives a number or throws.
+     Returns {A1: number | text} with an error as {error}. Pure on its inputs. */
+  function bimSheetEvaluate(cells,aliases,readObj){
+    var out={},state={},byAlias={},k;
+    for(k in (aliases||{}))if(aliases[k])byAlias[String(aliases[k]).toLowerCase()]=k;
+    function cellValue(ref){
+      if(state[ref]===2)return out[ref];
+      if(state[ref]===1)throw new Error('A cycle through '+ref);
+      state[ref]=1;
+      var v;
+      try{v=cellOf(cells[ref]);}catch(e){v={error:e.message};}
+      out[ref]=v;state[ref]=2;
+      return v;
+    }
+    function cellOf(raw){
+      var s=raw==null?'':String(raw);
+      if(s.charAt(0)==='=')return formula(s.slice(1));
+      if(/^\s*$/.test(s))return '';
+      var n=Number(s);
+      return (isFinite(n)&&/^\s*[-+]?(\d+\.?\d*|\.\d+)([eE][-+]?\d+)?\s*$/.test(s))?n:s;
+    }
+    function num(ref){
+      var v=cellValue(ref);
+      if(v&&typeof v==='object')throw new Error(ref+' has an error');
+      if(v==='')return 0;
+      if(typeof v!=='number')throw new Error(ref+' is text, not a number');
+      return v;
+    }
+    function formula(src){
+      var s=src,i=0;
+      function ws(){while(i<s.length&&/\s/.test(s[i]))i++;}
+      function fail(m){throw new Error(m);}
+      function cmp(){var v=expr();ws();var m=/^(<=|>=|<>|=|<|>)/.exec(s.slice(i));
+        if(m){i+=m[1].length;var r=expr();var o=m[1];return (o==='<'?v<r:o==='>'?v>r:o==='<='?v<=r:o==='>='?v>=r:o==='<>'?v!==r:v===r)?1:0;}return v;}
+      function expr(){var v=term();ws();while(s[i]==='+'||s[i]==='-'){var op=s[i++];var r=term();v=op==='+'?v+r:v-r;ws();}return v;}
+      function term(){var v=unary();ws();while(s[i]==='*'||s[i]==='/'){var op=s[i++];var r=unary();if(op==='/'&&r===0)fail('Division by zero');v=op==='*'?v*r:v/r;ws();}return v;}
+      function unary(){ws();if(s[i]==='-'){i++;return -unary();}if(s[i]==='+'){i++;return unary();}return power();}
+      function power(){var b=atom();ws();if(s[i]==='^'){i++;return Math.pow(b,unary());}return b;}
+      function str(){var q=s[i++],j=i;while(i<s.length&&s[i]!==q)i++;if(i>=s.length)fail('A quote is not closed');return s.slice(j,i++);}
+      /* a function's arguments: numbers, ranges spread into them, strings kept for obj() */
+      function args(){
+        var a=[];ws();
+        if(s[i]===')'){i++;return a;}
+        for(;;){
+          ws();
+          var rm=/^(\$?[A-Za-z]\$?\d{1,3}):(\$?[A-Za-z]\$?\d{1,3})/.exec(s.slice(i));
+          if(rm){var R=bimSheetRangeCells(rm[1].replace(/\$/g,''),rm[2].replace(/\$/g,''));if(!R)fail('A range is outside the sheet');i+=rm[0].length;
+            R.forEach(function(ref){var v=cellValue(ref);if(typeof v==='number')a.push(v);else if(v&&typeof v==='object')fail(ref+' has an error');});}
+          else if(s[i]==='"'||s[i]==='\'')a.push(str());
+          else a.push(cmp());
+          ws();
+          if(s[i]===','||s[i]===';'){i++;continue;}
+          if(s[i]===')'){i++;return a;}
+          fail('A function’s brackets are not closed');
+        }
+      }
+      function atom(){
+        ws();
+        if(s[i]==='('){i++;var v=cmp();ws();if(s[i]!==')')fail('A bracket is not closed');i++;return v;}
+        var m=/^(\d+\.?\d*(?:[eE][+-]?\d+)?|\.\d+(?:[eE][+-]?\d+)?)/.exec(s.slice(i));
+        if(m){i+=m[1].length;return parseFloat(m[1]);}
+        var w=/^\$?[A-Za-z_][A-Za-z0-9_]*(\$?\d+)?/.exec(s.slice(i));
+        if(w){
+          var word=w[0];i+=word.length;ws();
+          var name=word.toLowerCase();
+          if(s[i]==='('){
+            i++;var a=args();
+            if(name==='obj'){if(a.length!==2||typeof a[0]!=='string'||typeof a[1]!=='string')fail('obj needs a name and a property: obj("Wall_1", "height")');
+              var ov=readObj?readObj(a[0],a[1]):null;if(typeof ov!=='number'||!isFinite(ov))fail('obj("'+a[0]+'", "'+a[1]+'") has no number');return ov;}
+            if(!BIM_SHEET_FN.hasOwnProperty(name))fail('Unknown function: '+word);
+            var need=BIM_SHEET_NARGS[name];
+            if(a.some(function(x){return typeof x!=='number';}))fail(word+' takes numbers');
+            if(need===undefined&&a.length!==1)fail(word+' takes one number');
+            if(need>0&&a.length!==need)fail(word+' takes '+need+' numbers');
+            if(need===-1&&!a.length)fail(word+' needs numbers');
+            if(need===-2&&(a.length<1||a.length>2))fail(word+' takes one or two numbers');
+            return BIM_SHEET_FN[name](a);
+          }
+          if(name==='pi')return Math.PI;
+          var ref=bimSheetParseRef(word);
+          if(ref)return num(bimSheetRefName(ref[0],ref[1]));
+          if(byAlias[name])return num(byAlias[name]);
+          fail('Unknown name: '+word);
+        }
+        fail(i<s.length?'Unexpected "'+s[i]+'"':'The formula ends too soon');
+      }
+      var v=cmp();ws();
+      if(i<s.length)fail('Unexpected "'+s[i]+'"');
+      if(typeof v!=='number'||!isFinite(v))fail('The result is not a finite number');
+      return v;
+    }
+    for(k in (cells||{}))cellValue(k);
+    return out;
+  }
+  /* ================= __acad3dV269: SPREADSHEET, cells that read and drive the model =================
+     FreeCAD's Spreadsheet: a project sheet (A3D.sheet, saved with it) of cells (spreadsheet-eval.js), each with an
+     optional alias, and bindings that push a cell's value into the model, as FreeCAD's expressions bound to a property
+     do: every recalculation sets each bound property to its cell, as one undo step. What can be bound, per object:
+       x, y, z           where it sits (its offset, as MOVE sets it)
+       height, thickness a wall's (it is rebuilt)
+       text              a text's words (any cell's value)
+       con:<id>          a sketch constraint's value (a distance, a radius or diameter in m; an angle in degrees), the
+                         sketch solved again, as FreeCAD's spreadsheet drives a Sketcher dimension
+     and what obj("name", "property") reads: x, y, z, height, thickness, volume, mass, area, length. */
+  function bimSheetValid(s){
+    var out={cells:{},aliases:{},binds:[]},k;
+    if(!s||typeof s!=='object')return out;
+    for(k in (s.cells||{}))if(bimSheetParseRef(k)&&s.cells[k]!=null&&String(s.cells[k])!=='')out.cells[k]=String(s.cells[k]).slice(0,400);
+    for(k in (s.aliases||{}))if(bimSheetParseRef(k)&&/^[A-Za-z_][A-Za-z0-9_]{0,30}$/.test(String(s.aliases[k]))&&!bimSheetParseRef(s.aliases[k]))out.aliases[k]=String(s.aliases[k]);
+    if(Array.isArray(s.binds))s.binds.forEach(function(b){if(b&&bimSheetParseRef(b.cell)&&typeof b.obj==='string'&&typeof b.prop==='string')out.binds.push({cell:b.cell,obj:b.obj,prop:b.prop});});
+    return out;
+  }
+  function bimSheet(){if(!A3D.sheet)A3D.sheet=bimSheetValid(null);return A3D.sheet;}
+  function bimSheetObjByName(name){
+    var i;for(i=0;i<A3D.objs.length;i++)if(A3D.objs[i].name===name)return A3D.objs[i];
+    return objById(name);
+  }
+  /* The properties an object can have bound, [key, label]. */
+  function bimSheetTargets(o){
+    var out=[['x','Position x'],['y','Position y (elevation)'],['z','Position z']];
+    if(!o)return [];
+    if(o.bim&&o.bim.type==='wall')out.push(['height','Wall height'],['thickness','Wall thickness']);
+    if(o.t==='text')out.push(['text','Text']);
+    (o.constraints||[]).forEach(function(c){
+      if(c.type==='distance'||c.type==='angle'||c.type==='radius'||c.type==='diameter')out.push(['con:'+c.id,bimSketchConstraintDesc(o,c)]);
+    });
+    return out;
+  }
+  function bimSheetRead(name,prop){
+    var o=bimSheetObjByName(name);
+    if(!o)throw new Error('No object named '+name);
+    var q=bimObjOffset(o);
+    if(prop==='x')return q[0];if(prop==='y')return q[1];if(prop==='z')return q[2];
+    if((prop==='height'||prop==='thickness')&&o.bim&&isFinite(o.bim[prop]))return o.bim[prop];
+    if(prop==='volume'){var v=bimObjVolume(o);if(v!=null)return v;}
+    if(prop==='mass'){var m=bimObjMass(o);if(m!=null)return m;}
+    if(o.t==='sketch'&&o.pts){
+      if(prop==='area'&&o.closed!==false)return bimBulgedArea(o.pts,o.bulges,true);
+      if(prop==='length')return bimBulgedLength(o.pts,o.bulges,o.closed!==false);
+    }
+    throw new Error(name+' has no '+prop);
+  }
+  /* One bound property set; true when it changed. */
+  function bimSheetApplyOne(o,prop,v){
+    var q=bimObjOffset(o);
+    if(prop==='text'){if(o.t!=='text')return false;var t=typeof v==='number'?String(+v.toPrecision(10)):String(v);if(o.text===t)return false;o.text=t;return true;}
+    if(typeof v!=='number'||!isFinite(v))return false;
+    if(prop==='x'||prop==='y'||prop==='z'){
+      var k=prop==='x'?0:prop==='y'?1:2;
+      if(Math.abs(q[k]-v)<1e-12)return false;
+      if(!o.pos)o.pos=[0,0,0];
+      var d=[0,0,0];d[k]=v-q[k];o.pos[k]=v;
+      bimPropagateFrom([o.id],'transform',d);
+      return true;
+    }
+    if((prop==='height'||prop==='thickness')&&o.bim&&o.bim.type==='wall'){
+      if(!(v>0)||Math.abs(o.bim[prop]-v)<1e-12)return false;
+      bimRebuildWall(o,prop==='thickness'?v:o.bim.thickness,prop==='height'?v:o.bim.height,o.bim.align);
+      return true;
+    }
+    if(prop.indexOf('con:')===0&&o.constraints){
+      var c=null,i;for(i=0;i<o.constraints.length;i++)if('con:'+o.constraints[i].id===prop)c=o.constraints[i];
+      if(!c)return false;
+      var nv=c.type==='angle'?v*Math.PI/180:v;
+      if(!(c.type==='angle'||nv>0)||Math.abs(c.value-nv)<1e-12)return false;
+      var old=c.value;c.value=nv;
+      if(!bimResolveSketch(o,null,{silent:true}).ok){c.value=old;throw new Error('the sketch cannot take '+v);}
+      bimAfterSketchEdit(o);
+      return true;
+    }
+    return false;
+  }
+  /* Evaluate, then push the bound cells into the model: one undo step, nothing when nothing changes. */
+  function bimSheetRecalc(){
+    var S=bimSheet(),vals=bimSheetEvaluate(S.cells,S.aliases,bimSheetRead),n=0,errs=[],i;
+    pushUndo();
+    setUndoSuspend(true);   /* a wall's rebuild pushes its own step: the recalculation is one */
+    try{
+    for(i=0;i<S.binds.length;i++){
+      var b=S.binds[i],o=objById(b.obj),v=vals[b.cell];
+      if(!o){errs.push(b.cell+': its object is gone');continue;}
+      if(v&&typeof v==='object'){errs.push(b.cell+': '+v.error);continue;}
+      try{if(bimSheetApplyOne(o,b.prop,v===''?0:v))n++;}catch(e){errs.push(b.cell+': '+e.message);}
+    }
+    }finally{setUndoSuspend(false);}
+    if(!n)UNDO_STACK.pop();
+    else{refreshTree();refreshHud();paint();refreshProps();}
+    saveSoon();
+    return {values:vals,changed:n,errors:errs};
+  }
+  function bimSheetFmt(v){
+    if(v&&typeof v==='object')return '#ERR';
+    if(typeof v==='number')return String(+v.toPrecision(10));
+    return v==null?'':String(v);
+  }
+  function openSheetDlg(){
+    closeDlg();
+    var d=document.createElement('div'),S=bimSheet(),focus='A1';
+    d.className='a3d-dlg a3d-sheet';
+    el.root.appendChild(d);el.dlg=d;
+    function render(res){
+      var vals=res?res.values:bimSheetEvaluate(S.cells,S.aliases,bimSheetRead),r,c,h='<table class="a3d-sheetgrid"><tr><th></th>';
+      for(c=0;c<BIM_SHEET_COLS;c++)h+='<th>'+bimSheetColName(c)+'</th>';
+      h+='</tr>';
+      for(r=0;r<BIM_SHEET_ROWS;r++){
+        h+='<tr><th>'+(r+1)+'</th>';
+        for(c=0;c<BIM_SHEET_COLS;c++){
+          var ref=bimSheetRefName(c,r),v=vals[ref],err=v&&typeof v==='object';
+          var bound=S.binds.some(function(b){return b.cell===ref;});
+          h+='<td><input type="text" data-a3dsc="'+ref+'" value="'+bimEsc(bimSheetFmt(v))+'"'+(err?' title="'+bimEsc(v.error)+'" class="a3d-sheeterr"':'')+
+            (bound?' data-bound="1"':'')+' aria-label="'+ref+(S.aliases[ref]?' ('+bimEsc(S.aliases[ref])+')':'')+'"></td>';
+        }
+        h+='</tr>';
+      }
+      h+='</table>';
+      var binds=S.binds.map(function(b,i){var o=objById(b.obj);
+        return '<div class="a3d-dlgrow"><label>'+bimEsc(b.cell)+' → '+bimEsc(o?o.name:'(gone)')+' · '+bimEsc(b.prop)+'</label><button data-a3dsb="del" data-i="'+i+'">Remove</button></div>';}).join('');
+      var sel=objById(A3D.sel),tg=bimSheetTargets(sel);
+      d.innerHTML='<div class="a3d-dlghd">Spreadsheet</div><div class="a3d-dlgbody">'+
+        '<div class="a3d-dlgrow"><label>Cell <b data-a3dsf="ref">'+focus+'</b></label><input type="text" data-a3dsf="f" maxlength="400" value="'+bimEsc(S.cells[focus]||'')+'" placeholder="=A1*2, 3.5, or text"></div>'+
+        '<div class="a3d-dlgrow"><label>Alias</label><input type="text" data-a3dsf="alias" maxlength="31" value="'+bimEsc(S.aliases[focus]||'')+'" placeholder="width"></div>'+
+        '<div class="a3d-sheetwrap">'+h+'</div>'+
+        '<div class="a3d-dlghd" style="font-size:12px">Bound to the model</div>'+(binds||'<div class="a3d-propnote">Nothing bound yet.</div>')+
+        (sel&&tg.length?'<div class="a3d-dlgrow"><label>Bind '+focus+' to '+bimEsc(sel.name)+'</label><select data-a3dsf="prop">'+
+          tg.map(function(t){return '<option value="'+bimEsc(t[0])+'">'+bimEsc(t[1])+'</option>';}).join('')+'</select> <button data-a3dsb="bind">Bind</button></div>'
+          :'<div class="a3d-propnote">Select an object in the model to bind a cell to one of its properties.</div>')+
+        '<div class="a3d-propnote">Formulas: + - * / ^, cells (A1), aliases, sum(A1:A4), min, max, average, round, sqrt, sin and cos in degrees, if(test, a, b), obj("Name", "volume").</div>'+
+        '<div id="a3d-dlgerr" class="a3d-dlgerr">'+bimEsc(res&&res.errors.length?res.errors.join('; '):'')+'</div></div>'+
+        '<div class="a3d-dlgft"><button data-a3dsb="recalc">Recalculate</button><button data-a3dlg="cancel">Close</button></div>';
+    }
+    function setCell(ref,raw){
+      if(raw==null||raw==='')delete S.cells[ref];else S.cells[ref]=String(raw).slice(0,400);
+      var res=bimSheetRecalc();render(res);
+      if(res.changed)a3dToast('Spreadsheet: '+res.changed+' propert'+(res.changed===1?'y':'ies')+' of the model set');
+      return res;
+    }
+    render(null);
+    d.addEventListener('focusin',function(ev){
+      var t=ev.target,ref=t&&t.getAttribute&&t.getAttribute('data-a3dsc');
+      if(!ref)return;
+      focus=ref;t.value=S.cells[ref]||'';
+      var fr=d.querySelector('[data-a3dsf="ref"]');if(fr)fr.textContent=ref;
+      var ff=d.querySelector('[data-a3dsf="f"]');if(ff)ff.value=S.cells[ref]||'';
+      var fa=d.querySelector('[data-a3dsf="alias"]');if(fa)fa.value=S.aliases[ref]||'';
+    });
+    d.addEventListener('change',function(ev){
+      var t=ev.target;if(!t||!t.getAttribute)return;
+      var ref=t.getAttribute('data-a3dsc');
+      if(ref){setCell(ref,t.value);return;}
+      var f=t.getAttribute('data-a3dsf');
+      if(f==='f')setCell(focus,t.value);
+      else if(f==='alias'){
+        var a=String(t.value||'').replace(/^\s+|\s+$/g,'');
+        if(a&&(!/^[A-Za-z_][A-Za-z0-9_]{0,30}$/.test(a)||bimSheetParseRef(a)||BIM_SHEET_FN.hasOwnProperty(a.toLowerCase())||a.toLowerCase()==='pi'||a.toLowerCase()==='obj')){
+          d.querySelector('#a3d-dlgerr').textContent='An alias is a name of letters, digits and _, not a cell or a function';return;}
+        var k;for(k in S.aliases)if(k!==focus&&String(S.aliases[k]).toLowerCase()===a.toLowerCase()){d.querySelector('#a3d-dlgerr').textContent=k+' already has that alias';return;}
+        if(a)S.aliases[focus]=a;else delete S.aliases[focus];
+        render(bimSheetRecalc());
+      }
+    });
+    d.addEventListener('click',function(ev){
+      var b=ev.target&&ev.target.closest?ev.target.closest('[data-a3dsb],[data-a3dlg]'):null;if(!b)return;
+      if(b.getAttribute('data-a3dlg')){closeDlg();return;}
+      var a=b.getAttribute('data-a3dsb');
+      if(a==='recalc')render(bimSheetRecalc());
+      else if(a==='del'){S.binds.splice(+b.getAttribute('data-i'),1);saveSoon();render(null);}
+      else if(a==='bind'){
+        var sel=objById(A3D.sel),p=d.querySelector('[data-a3dsf="prop"]');
+        if(!sel||!p)return;
+        S.binds=S.binds.filter(function(x){return !(x.obj===sel.id&&x.prop===p.value);});   /* one cell per property */
+        S.binds.push({cell:focus,obj:sel.id,prop:p.value});
+        var res=bimSheetRecalc();render(res);
+        a3dToast(focus+' now drives '+sel.name+' · '+p.value);
+      }
+    });
+    d.addEventListener('keydown',function(ev){
+      if(ev.key==='Escape'){ev.preventDefault();ev.stopPropagation();closeDlg();return;}
+      if(ev.key==='Enter'&&ev.target&&ev.target.getAttribute&&ev.target.getAttribute('data-a3dsc')){ev.preventDefault();ev.target.blur();}
+      ev.stopPropagation();
+    });
+    return d;
   }
   /* ================= __acad3dV131: usages and live areas =================
      A usage is a set of assumptions (Giraffe's): a colour, the GBA->GFA and GFA->NSA ratios, the
@@ -64730,6 +66276,261 @@ function bimWalkKeys(h, j) {
     refreshTree();refreshHud();paint();saveSoon();refreshFamilyPanel();
     a3dToast(save?'Block "'+(e?e.name:'')+'" saved; '+n+' insert(s) redefined':'Block editor closed; nothing saved');
     return n;
+  }
+  /* ================= __acad3dV268: material cards, as FreeCAD's Material workbench keeps them =================
+     V120's library is five fixed cards. FreeCAD's material cards are a library a user edits: physical properties
+     (linear elastic: density, Young's modulus, Poisson's ratio, strengths), thermal ones (conductivity, specific heat,
+     expansion), an appearance (diffuse colour, transparency), each a .FCMat file. Here:
+     - the project carries its own cards (A3D.matCards, saved with it), beside the built-in ones; a project card of a
+       built-in's name stands in for it;
+     - MATERIALS (MAT, MATBROWSEROPEN) lists them: new, duplicate, edit, delete, assign to the selection (its material,
+       and its colour from the card's appearance), import and export .FCMat;
+     - .FCMat is FreeCAD 1.0's format (YAML: General, Models, AppearanceModels, each model by its UUID; read from
+       FreeCAD's own src/Mod/Material/Resources at 170926f, 2026-11-22). Older cards (an INI of Key = value) are read
+       too. Units are read as written (kg/m^3, MPa, GPa, W/m/K, J/kg/K, m/m/K, µm/m/K) and kept in the app's.
+     The built-in cards' values are V120's, which match FreeCAD's generic cards; the thermal values added to Steel and
+     the expansion added to Glass are FreeCAD's Steel-Generic and Glass-Generic (read the same day). The parse, the
+     units and the writer are pure, tested without a page. */
+  var BIM_FCMAT_MODELS={linear:['LinearElastic','7b561d1d-fb9b-44f6-9da9-56a4f74d7536'],thermal:['Thermal','9959d007-a970-4ea7-bae4-3eb1b8b883c7'],
+    standard:['MaterialStandard','1e2c0088-904a-4537-925f-64064c07d700'],render:['BasicRendering','f006c7e4-35b7-43d5-bbf9-c5d572309e6e']};
+  /* [the card's key, the label, the app's unit, FreeCAD's key, its model] */
+  var BIM_MAT_FIELDS=[
+    ['density','Density','kg/m³','Density','linear'],
+    ['youngsModulus','Young’s modulus','GPa','YoungsModulus','linear'],
+    ['poissonRatio','Poisson’s ratio','','PoissonRatio','linear'],
+    ['yieldStrength','Yield strength','MPa','YieldStrength','linear'],
+    ['tensileStrength','Ultimate tensile strength','MPa','UltimateTensileStrength','linear'],
+    ['conductivity','Thermal conductivity','W/m·K','ThermalConductivity','thermal'],
+    ['specificHeat','Specific heat','J/kg·K','SpecificHeat','thermal'],
+    ['expansion','Thermal expansion','µm/m·K','ThermalExpansionCoefficient','thermal']];
+  /* what FreeCAD's generic cards add to V120's (see above) */
+  var BIM_MAT_BUILTIN_EXTRA={Steel:{conductivity:50,specificHeat:500,expansion:12},Glass:{expansion:9,transparency:0.6}};
+  /* ---------- pure: units ---------- */
+  /* A FreeCAD quantity ("210 GPa", "0.000012 m/m/K") in the app's unit for that field, or null. */
+  function bimMatQty(field,s){
+    var m=/^\s*(-?[0-9]*\.?[0-9]+(?:[eE][-+]?[0-9]+)?)\s*(.*)$/.exec(String(s==null?'':s));
+    if(!m)return null;
+    var v=parseFloat(m[1]),u=m[2].replace(/\s+/g,'').replace('µ','u').replace('μ','u').toLowerCase();
+    if(!isFinite(v))return null;
+    if(field==='density')return u==='g/cm^3'||u==='g/cm3'?v*1000:v;
+    if(field==='youngsModulus')return u==='mpa'?v/1000:u==='kpa'?v/1e6:u==='pa'?v/1e9:v;   /* GPa */
+    if(field==='yieldStrength'||field==='tensileStrength')return u==='gpa'?v*1000:u==='kpa'?v/1000:u==='pa'?v/1e6:v;   /* MPa */
+    if(field==='specificHeat')return u==='kj/kg/k'?v*1000:v;
+    if(field==='expansion')return (u==='m/m/k'||u==='1/k'||u==='/k')?v*1e6:v;   /* um/m/K */
+    return v;
+  }
+  /* "(r, g, b, a)" with 0..1 parts to #rrggbb, and back */
+  function bimMatColorFromFc(s){
+    var m=/\(\s*([0-9.]+)\s*,\s*([0-9.]+)\s*,\s*([0-9.]+)/.exec(String(s||''));
+    if(!m)return null;
+    return '#'+[m[1],m[2],m[3]].map(function(x){var n=Math.max(0,Math.min(255,Math.round(parseFloat(x)*255)));return (n<16?'0':'')+n.toString(16);}).join('');
+  }
+  function bimMatColorToFc(hex){
+    var n=parseInt(String(hex||'#cccccc').slice(1),16);
+    return '('+[(n>>16)&255,(n>>8)&255,n&255].map(function(c){return (c/255).toFixed(4);}).join(', ')+', 1.0)';
+  }
+  /* ---------- pure: .FCMat ---------- */
+  /* A card from an .FCMat file's text: FreeCAD 1.0's YAML, or the older INI. Pure. */
+  function bimFcmatParse(text){
+    var lines=String(text||'').split(/\r?\n/),vals={},i;
+    for(i=0;i<lines.length;i++){
+      var L=lines[i];
+      if(/^\s*[#;]/.test(L))continue;
+      var m=/^\s*([A-Za-z][A-Za-z0-9]*)\s*[:=]\s*(.*?)\s*$/.exec(L);
+      if(!m||m[2]==='')continue;
+      var v=m[2],q=/^(["'])(.*)\1$/.exec(v);
+      if(q)v=q[1]==='"'?q[2].replace(/\\(["\\])/g,'$1'):q[2].replace(/''/g,"'");   /* YAML's quoting undone */
+      if(!(m[1] in vals))vals[m[1]]=v;   /* the first: General's Name before any model's */
+    }
+    if(!vals.Name)return {error:'No material name in the file'};
+    var card={name:String(vals.Name).slice(0,80),kind:String(vals.KindOfMaterial||vals.Father||'Custom').slice(0,40),custom:true},k;
+    for(k=0;k<BIM_MAT_FIELDS.length;k++){
+      var F=BIM_MAT_FIELDS[k],raw=vals[F[3]];
+      if(raw==null)continue;
+      var q=bimMatQty(F[0],raw);
+      if(q==null)continue;
+      card[F[0]]=F[0]==='youngsModulus'?(+q.toPrecision(6))+' GPa':+q.toPrecision(8);   /* E as V120 keeps it */
+    }
+    var col=bimMatColorFromFc(vals.DiffuseColor);
+    if(col)card.color=col;
+    if(vals.Transparency!=null&&isFinite(parseFloat(vals.Transparency)))card.transparency=Math.max(0,Math.min(1,parseFloat(vals.Transparency)));
+    if(vals.Description)card.description=String(vals.Description).slice(0,300);
+    return card;
+  }
+  function bimMatYamlStr(s){return '"'+String(s).replace(/\\/g,'\\\\').replace(/"/g,'\\"')+'"';}
+  /* A card as FreeCAD 1.0's .FCMat. Pure, but for the UUID it is given. */
+  function bimFcmatWrite(card,uuid){
+    var out=['---','# Written by BIM-Personal (MATERIALS)','General:','  UUID: '+bimMatYamlStr(uuid),'  Name: '+bimMatYamlStr(card.name)];
+    if(card.description)out.push('  Description: '+bimMatYamlStr(card.description));
+    out.push('Models:');
+    out.push('  '+BIM_FCMAT_MODELS.standard[0]+':','    UUID: \''+BIM_FCMAT_MODELS.standard[1]+'\'','    KindOfMaterial: '+bimMatYamlStr(card.kind||'Custom'));
+    ['linear','thermal'].forEach(function(model){
+      var rows=[],k;
+      for(k=0;k<BIM_MAT_FIELDS.length;k++){
+        var F=BIM_MAT_FIELDS[k];
+        if(F[4]!==model)continue;
+        var v=F[0]==='youngsModulus'?bimMatQty('youngsModulus',card.youngsModulus):card[F[0]];
+        if(v==null||v===''||!isFinite(v))continue;
+        var unit={density:' kg/m^3',youngsModulus:' GPa',poissonRatio:'',yieldStrength:' MPa',tensileStrength:' MPa',conductivity:' W/m/K',specificHeat:' J/kg/K',expansion:' µm/m/K'}[F[0]];
+        rows.push('    '+F[3]+': '+bimMatYamlStr(+(+v).toPrecision(8)+unit));
+      }
+      if(rows.length)out.push('  '+BIM_FCMAT_MODELS[model][0]+':','    UUID: \''+BIM_FCMAT_MODELS[model][1]+'\'');
+      out.push.apply(out,rows);
+    });
+    out.push('AppearanceModels:','  '+BIM_FCMAT_MODELS.render[0]+':','    UUID: \''+BIM_FCMAT_MODELS.render[1]+'\'',
+      '    DiffuseColor: '+bimMatYamlStr(bimMatColorToFc(card.color)),'    Transparency: '+bimMatYamlStr(String(card.transparency||0)));
+    return out.join('\n')+'\n';
+  }
+  /* A card as the user typed it: a name, numbers where given. Pure. */
+  function bimMatCardValid(c){
+    if(!c||typeof c.name!=='string'||!c.name.replace(/\s+/g,''))return {error:'A material needs a name'};
+    var out={name:c.name.replace(/^\s+|\s+$/g,'').slice(0,80),kind:String(c.kind||'Custom').slice(0,40)||'Custom',custom:true},k;
+    for(k=0;k<BIM_MAT_FIELDS.length;k++){
+      var f=BIM_MAT_FIELDS[k][0],v=c[f];
+      if(v==null||v==='')continue;
+      if(f==='youngsModulus'){var g=typeof v==='number'?v:bimMatQty(f,/[a-z]/i.test(String(v))?v:v+' GPa');if(g!=null&&g>0)out[f]=(+g.toPrecision(6))+' GPa';continue;}
+      v=+v;
+      if(!isFinite(v)||v<0)return {error:BIM_MAT_FIELDS[k][1]+' must be a number, not negative'};
+      if(f==='poissonRatio'&&v>=0.5)return {error:'Poisson’s ratio is below 0.5'};
+      out[f]=v;
+    }
+    if(/^#[0-9a-f]{6}$/i.test(String(c.color||'')))out.color=String(c.color).toLowerCase();
+    if(c.transparency!=null&&isFinite(+c.transparency))out.transparency=Math.max(0,Math.min(1,+c.transparency));
+    if(c.hatch&&typeof c.hatch==='object')out.hatch={angle:+c.hatch.angle||0,gap:+c.hatch.gap||10,cross:!!c.hatch.cross};
+    if(c.description)out.description=String(c.description).slice(0,300);
+    return out;
+  }
+  function bimMatCardsValid(list){
+    var out=[],seen={},i;
+    if(!Array.isArray(list))return [];
+    for(i=0;i<list.length;i++){var c=bimMatCardValid(list[i]);if(!c.error&&!seen[c.name]){seen[c.name]=1;out.push(c);}}
+    return out;
+  }
+  /* The library: the built-in cards (with what FreeCAD's generic ones add), then the project's; a project card of a
+     built-in's name stands in for it. Pure on its inputs. */
+  function bimMatLibrary(builtin,project){
+    var out=[],by={},i;
+    for(i=0;i<builtin.length;i++){
+      var b=JSON.parse(JSON.stringify(builtin[i])),x=BIM_MAT_BUILTIN_EXTRA[b.name],k;
+      if(x)for(k in x)if(b[k]==null)b[k]=x[k];
+      by[b.name]=out.length;out.push(b);
+    }
+    for(i=0;i<(project||[]).length;i++){
+      var p=JSON.parse(JSON.stringify(project[i]));
+      if(by[p.name]!=null){var base=out[by[p.name]];out[by[p.name]]=p;if(!p.hatch&&base.hatch)p.hatch=base.hatch;}
+      else{by[p.name]=out.length;out.push(p);}
+    }
+    return out;
+  }
+  /* ================= __acad3dV268: MATERIALS, the material library's browser and editor =================
+     AutoCAD's MATBROWSEROPEN, FreeCAD's material editor: the cards (material-cards.js) in a list, the chosen one in a
+     form. A built-in card is read only (Duplicate makes an editable copy, or a project card of its name, which then
+     stands in for it); a project card is edited in place. Assign gives the selected solids the card (their material,
+     and the card's colour); Import and Export read and write FreeCAD's .FCMat. Each change is one undo step. */
+  var A3D_MATB={sel:null};
+  function bimMatProjectCards(){if(!Array.isArray(A3D.matCards))A3D.matCards=[];return A3D.matCards;}
+  function bimMatFind(name){var L=bimMaterialCards(),i;for(i=0;i<L.length;i++)if(L[i].name===name)return L[i];return null;}
+  function bimMatIsProject(name){return bimMatProjectCards().some(function(c){return c.name===name;});}
+  function bimMatPut(card,oldName){
+    var L=bimMatProjectCards(),i,at=-1;
+    for(i=0;i<L.length;i++)if(L[i].name===(oldName||card.name))at=i;
+    pushUndo();
+    if(at>=0)L[at]=card;else L.push(card);
+    if(oldName&&oldName!==card.name)for(i=0;i<A3D.objs.length;i++)if(A3D.objs[i].materialName===oldName)A3D.objs[i].materialName=card.name;   /* a rename follows */
+    saveSoon();refreshProps();
+  }
+  function bimMatUniqueName(base){var n=base,k=2;while(bimMatFind(n))n=base+' '+(k++);return n;}
+  function bimMatAssign(name){
+    var c=bimMatFind(name),ids=(A3D.selSet&&A3D.selSet.length)?A3D.selSet.slice():(A3D.sel?[A3D.sel]:[]),n=0,i;
+    if(!c)return 0;
+    pushUndo();
+    for(i=0;i<ids.length;i++){var o=objById(ids[i]);if(o&&o.t==='solid'&&bimSetMaterial(o,name)){if(c.color)o.col=c.color;n++;}}
+    if(!n)UNDO_STACK.pop();
+    paint();saveSoon();refreshProps();
+    return n;
+  }
+  function bimMatDelete(name){
+    var L=bimMatProjectCards(),i;
+    for(i=0;i<L.length;i++)if(L[i].name===name){pushUndo();L.splice(i,1);
+      if(!bimMatFind(name))for(var k=0;k<A3D.objs.length;k++)if(A3D.objs[k].materialName===name)delete A3D.objs[k].materialName;
+      saveSoon();refreshProps();return true;}
+    return false;
+  }
+  function bimMatImportText(text){
+    var c=bimFcmatParse(text);
+    if(c.error)return c;
+    var v=bimMatCardValid(c);
+    if(v.error)return v;
+    bimMatPut(v,null);
+    return v;
+  }
+  function bimMatExport(name){
+    var c=bimMatFind(name);if(!c)return null;
+    var u=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():'00000000-0000-4000-8000-'+Date.now().toString(16).slice(-12);
+    var text=bimFcmatWrite(c,u);
+    bimTriggerDownload(text,c.name.replace(/[^A-Za-z0-9_.-]+/g,'-')+'.FCMat','text/yaml');
+    return text;
+  }
+  function openMaterialsDlg(){
+    closeDlg();
+    var d=document.createElement('div');
+    d.className='a3d-dlg a3d-matb';
+    el.root.appendChild(d);el.dlg=d;
+    function render(){
+      var L=bimMaterialCards(),cur=bimMatFind(A3D_MATB.sel)||L[0],i,k;
+      A3D_MATB.sel=cur?cur.name:null;
+      var list=L.map(function(c){return '<option value="'+bimEsc(c.name)+'"'+(cur&&c.name===cur.name?' selected':'')+'>'+bimEsc(c.name)+
+        (bimMatIsProject(c.name)?' (project)':'')+' · '+bimEsc(c.kind||'')+'</option>';}).join('');
+      var ro=!(cur&&bimMatIsProject(cur.name)),f='';
+      f+='<div class="a3d-dlgrow"><label>Name</label><input type="text" data-a3dmb="name" maxlength="80" value="'+bimEsc(cur?cur.name:'')+'"'+(ro?' disabled':'')+'></div>';
+      f+='<div class="a3d-dlgrow"><label>Kind</label><input type="text" data-a3dmb="kind" maxlength="40" value="'+bimEsc(cur?cur.kind||'':'')+'"'+(ro?' disabled':'')+'></div>';
+      for(k=0;k<BIM_MAT_FIELDS.length;k++){
+        var F=BIM_MAT_FIELDS[k],v=cur?cur[F[0]]:null;
+        if(F[0]==='youngsModulus')v=v==null?null:bimMatQty('youngsModulus',v);
+        f+='<div class="a3d-dlgrow"><label>'+bimEsc(F[1])+(F[2]?', '+F[2]:'')+'</label><input type="number" step="any" min="0" data-a3dmb="'+F[0]+'" value="'+(v==null?'':v)+'"'+(ro?' disabled':'')+'></div>';
+      }
+      f+='<div class="a3d-dlgrow"><label>Colour</label><input type="color" data-a3dmb="color" value="'+bimEsc(cur&&cur.color||'#cccccc')+'"'+(ro?' disabled':'')+'></div>';
+      f+='<div class="a3d-dlgrow"><label>Transparency, 0 to 1</label><input type="number" step="0.05" min="0" max="1" data-a3dmb="transparency" value="'+(cur&&cur.transparency!=null?cur.transparency:0)+'"'+(ro?' disabled':'')+'></div>';
+      d.innerHTML='<div class="a3d-dlghd">Materials</div><div class="a3d-dlgbody">'+
+        '<div class="a3d-dlgrow"><label>Card</label><select data-a3dmb="pick">'+list+'</select></div>'+
+        '<div class="a3d-propnote">'+(ro?'A built-in card: Duplicate it to change it.':'A card of this project, saved with it.')+'</div>'+f+
+        '<div id="a3d-dlgerr" class="a3d-dlgerr"></div></div>'+
+        '<div class="a3d-dlgft"><button data-a3dmbact="new">New</button><button data-a3dmbact="dup">Duplicate</button>'+
+        (ro?'':'<button data-a3dmbact="save">Save</button><button data-a3dmbact="del">Delete</button>')+
+        '<button data-a3dmbact="import">Import .FCMat</button><button data-a3dmbact="export">Export .FCMat</button>'+
+        '<button data-a3dmbact="assign">Assign to selection</button><button data-a3dlg="cancel">Close</button></div>';
+    }
+    function err(t){var e=d.querySelector('#a3d-dlgerr');if(e)e.textContent=t||'';}
+    function formCard(){
+      var c={},f=d.querySelectorAll('[data-a3dmb]'),j;
+      for(j=0;j<f.length;j++){var k=f[j].getAttribute('data-a3dmb');if(k!=='pick')c[k]=f[j].value;}
+      var cur=bimMatFind(A3D_MATB.sel);if(cur&&cur.hatch)c.hatch=cur.hatch;
+      return c;
+    }
+    render();
+    d.addEventListener('change',function(ev){var t=ev.target;if(t&&t.getAttribute('data-a3dmb')==='pick'){A3D_MATB.sel=t.value;render();}});
+    d.addEventListener('click',function(ev){
+      var b=ev.target&&ev.target.closest?ev.target.closest('[data-a3dmbact],[data-a3dlg]'):null;if(!b)return;
+      if(b.getAttribute('data-a3dlg')){closeDlg();return;}
+      var a=b.getAttribute('data-a3dmbact'),cur=bimMatFind(A3D_MATB.sel);
+      if(a==='new'){var nm=bimMatUniqueName('New material');bimMatPut({name:nm,kind:'Custom',custom:true,color:'#cccccc'},null);A3D_MATB.sel=nm;render();}
+      else if(a==='dup'&&cur){var c=JSON.parse(JSON.stringify(cur));c.name=bimMatUniqueName(cur.name+' copy');c.custom=true;bimMatPut(bimMatCardValid(c),null);A3D_MATB.sel=c.name;render();}
+      else if(a==='save'&&cur){var v=bimMatCardValid(formCard());if(v.error){err(v.error);return;}
+        if(v.name!==cur.name&&bimMatFind(v.name)&&bimMatIsProject(v.name)){err('Another project card has that name');return;}
+        bimMatPut(v,cur.name);A3D_MATB.sel=v.name;render();a3dToast('Material "'+v.name+'" saved');}
+      else if(a==='del'&&cur){bimMatDelete(cur.name);A3D_MATB.sel=null;render();}
+      else if(a==='export'&&cur){bimMatExport(cur.name);}
+      else if(a==='assign'&&cur){var n=bimMatAssign(cur.name);a3dToast(n?cur.name+' assigned to '+n+' solid(s)':'Select solids first, then Assign');}
+      else if(a==='import'){
+        var inp=document.createElement('input');inp.type='file';inp.accept='.FCMat,.fcmat';
+        inp.onchange=function(){var file=inp.files&&inp.files[0];if(!file)return;var rd=new FileReader();
+          rd.onload=function(){var r=bimMatImportText(String(rd.result||''));if(r.error){err(r.error);return;}A3D_MATB.sel=r.name;render();a3dToast('Imported material "'+r.name+'"');};
+          rd.readAsText(file);};
+        inp.click();
+      }
+    });
+    d.addEventListener('keydown',function(ev){if(ev.key==='Escape'){ev.preventDefault();ev.stopPropagation();closeDlg();}ev.stopPropagation();});
+    return d;
   }
   // ---- __acad3dV23: Saved views + view-specific annotations + level filtering ----
   // Saved views capture camera/mode/level/section (the section's cut PLANE only -- the cut-mesh
@@ -72502,6 +74303,10 @@ function bimRptPlan(families) {
     'con:midpoint':ric('<path d="M4 12h16"/><circle cx="12" cy="12" r="2.2"/><path d="M4 9v6M20 9v6" stroke-dasharray="2 2"/>'),
     'con:symmetric_pt':ric('<circle cx="5" cy="12" r="2"/><circle cx="19" cy="12" r="2"/><circle cx="12" cy="12" r="1.2"/><path d="M5 12h14" stroke-dasharray="2 2"/>'),
     'con:symmetric_line':ric('<path d="M12 4v16" stroke-dasharray="2 2"/><circle cx="6" cy="12" r="2"/><circle cx="18" cy="12" r="2"/><path d="M6 12h12"/>'),
+    'con:tangent':ric('<circle cx="12" cy="13" r="6"/><path d="M3 7h18"/>'),   /* __acad3dV267 */
+    'con:pointonarc':ric('<path d="M5 17a8 8 0 0 1 14 0"/><circle cx="12" cy="9" r="2.2"/>'),
+    'con:radius':ric('<circle cx="12" cy="12" r="8"/><path d="M12 12l6-5"/><text x="7" y="19" font-size="6" stroke="none" fill="currentColor">R</text>'),
+    'con:diameter':ric('<circle cx="12" cy="12" r="8"/><path d="M6 17L18 7"/>'),
     'bim:wall':ric('<rect x="3" y="9" width="18" height="6"/><path d="M3 9l4-4M8 9l4-4M13 9l4-4M18 9l3-3"/>'),
     'bim:floor':ric('<rect x="4" y="6" width="16" height="12"/><path d="M4 10h16M4 14h16M9.3 6v12M14.6 6v12"/>'),
     'bim:column':ric('<rect x="8" y="4" width="8" height="16"/><path d="M6 4h12M6 20h12"/>'),
@@ -72861,7 +74666,7 @@ function bimRptPlan(families) {
         {act:'s:circle',label:'Circle'}
       ],small:['bim:arc','bim:wall','bim:room','bim:floor','bim:column']},
       {t:'Modify',small:['bim:trim','bim:extend','bim:fillet','bim:chamfer','bim:break','bim:lengthen','bim:scale','bim:offset','bim:align','bim:mirror','bim:rotate','bim:presspull','m:array','bim:polararray','m:dup','m:del']},
-      {t:'Constraints',small:['con:coincident','con:horizontal','con:vertical','con:parallel','con:perpendicular','con:equal','con:distance','con:angle','con:pointonline','con:midpoint','con:symmetric_pt','con:symmetric_line']},
+      {t:'Constraints',small:['con:coincident','con:horizontal','con:vertical','con:parallel','con:perpendicular','con:equal','con:distance','con:angle','con:pointonline','con:midpoint','con:symmetric_pt','con:symmetric_line','con:tangent','con:pointonarc','con:radius','con:diameter']},
       {t:'Dimension',big:[
         {act:'bim:dim',label:'Dimension',menu:[['bim:dim','Aligned / Linear'],['bim:dimang','Angular'],['bim:dimrad','Radial'],['bim:dimdia','Diameter']]}
       ],small:['bim:text','bim:leader','bim:tagroom']},
@@ -72896,7 +74701,7 @@ function bimRptPlan(families) {
       ],small:['m:array','bim:polararray','bim:joinwalls','bim:mergewalls','m:del','m:desel','bim:trim','bim:extend','bim:fillet','bim:chamfer','bim:break','bim:lengthen','bim:scale','bim:offset','bim:align','bim:clonelinked','bim:syncclones']},
       {t:'Geometry',small:['b:union','b:cut','b:isect']},
       {t:'Sketch',small:['s:rect','s:circle','s:poly','p:pad','p:pocket','bim:presspull']},
-      {t:'Constraints',small:['con:coincident','con:horizontal','con:vertical','con:parallel','con:perpendicular','con:equal','con:distance','con:angle','con:pointonline','con:midpoint','con:symmetric_pt','con:symmetric_line']}
+      {t:'Constraints',small:['con:coincident','con:horizontal','con:vertical','con:parallel','con:perpendicular','con:equal','con:distance','con:angle','con:pointonline','con:midpoint','con:symmetric_pt','con:symmetric_line','con:tangent','con:pointonarc','con:radius','con:diameter']}
     ]},
     {id:'a3dmassing',name:'Massing & Site',panels:[
       {t:'Conceptual Mass',small:['box','cyl','sphere','cone','torus']},
@@ -72995,7 +74800,8 @@ function bimRptPlan(families) {
       'con:coincident':'Coincident','con:horizontal':'Horizontal','con:vertical':'Vertical',
       'con:parallel':'Parallel','con:perpendicular':'Perpendicular','con:equal':'Equal',
       'con:distance':'Distance','con:angle':'Angle','con:pointonline':'Point on Line','con:midpoint':'Midpoint',
-      'con:symmetric_pt':'Symmetric (Point)','con:symmetric_line':'Symmetric (Line)'};
+      'con:symmetric_pt':'Symmetric (Point)','con:symmetric_line':'Symmetric (Line)',
+      'con:tangent':'Tangent','con:pointonarc':'Point on Arc','con:radius':'Radius','con:diameter':'Diameter'};
     if(L[act])return L[act];
     return (TYPES[act]||{}).n||act;
   }
@@ -73705,7 +75511,7 @@ function bimRptPlan(families) {
     '<div class="a3d-tb">'+
       '<button class="a3d-btn a3d-drawerbtn" data-a3d="drawer" title="Show panel">\u2630</button>'+
       '<button class="a3d-btn a3d-rdrawerbtn" data-a3d="rdrawer" title="Show properties">Props</button>'+
-      '<input type="file" id="a3d-filein" accept=".dxf,.dwg,.step,.stp,.ifc,.obj,.stl,.glb,.gltf,.skp,.json,.geojson,.kml,.cityjson,.xml,.landxml" style="display:none">'+
+      '<input type="file" id="a3d-filein" accept=".dxf,.dwg,.step,.stp,.iges,.igs,.las,.ply,.laz,.ifc,.obj,.stl,.glb,.gltf,.skp,.json,.geojson,.kml,.cityjson,.xml,.landxml" style="display:none">'+
       '<input type="file" id="a3d-projin" accept=".json,.gz,application/json,application/gzip" style="display:none">'+   /* __acad3dV115 */
       '<span class="a3d-hud">View: <b id="a3d-view">Home</b><span id="a3d-count">0 objects</span></span>'+
       '<span class="a3d-uiwrap">'+
@@ -74079,6 +75885,8 @@ function bimRptPlan(families) {
       }
       if(f==='editclass'){openClassificationDlg();return;}
       if(f.indexOf('terrdrop:')===0){var tdo=objById(A3D.sel);if(tdo)bimTerrainEdit(tdo,f.slice(9));return;}   /* __acad3dV144 */
+      if(f==='pcground'){openPcGroundDlg(objById(A3D.sel));return;}   /* __acad3dV190 */
+      if(f==='jointdel'){bimJointRemove(objById(A3D.sel));return;}   /* __acad3dV273 */
       if(f==='terrlandxml'){var tlo=objById(A3D.sel);if(tlo)bimLandXmlExport([tlo.id]);return;}
       if(f==='regrade'){bimRegrade(objById(A3D.sel));return;}   /* __acad3dV145 */
       if(f==='gradespots'){bimGradeSpots(objById(A3D.sel));return;}
@@ -74133,6 +75941,8 @@ function bimRptPlan(families) {
       if(!o)return;
       var f=inp.getAttribute('data-propf');
       if(bimObjLookField(o,f,inp))return;   /* __acad3dV257 */
+      if(bimPcPropField(o,f,inp))return;   /* __acad3dV190 */
+      if(bimJointPropField(o,f,inp))return;   /* __acad3dV273 */
       if(f==='terrint'){bimSetTerrainInterval(o,inp.value);return;}   /* __acad3dV108 */
       if(f==='terrview'){bimTerrainSetView(o,inp.value);return;}      /* __acad3dV144 */
       if(f==='cutslope'||f==='fillslope'){bimSetPadSlope(o,f,inp.value);return;}   /* __acad3dV145 */
@@ -75188,6 +76998,21 @@ function bimRptPlan(families) {
     solidsubtract:function(){bimOcctBoolean('cut');},
     solidintersect:function(){bimOcctBoolean('intersect');},
     exportstep:function(){bimOcctExportStep();},
+    materials:function(){openMaterialsDlg();},   /* __acad3dV268 */
+    spreadsheet:function(){openSheetDlg();},   /* __acad3dV269 */
+    meshrepair:function(){bimMeshRepairCommand();},   /* __acad3dV271 */
+    viewbase:function(){openViewbaseDlg();},   /* __acad3dV272 */
+    joint:function(){openJointDlg();},   /* __acad3dV273 */
+    bom:function(){openBomDlg();},
+    meshtosolid:function(){bimMeshToSolidCommand();},
+    gctangent:function(){startConstraintTool('tangent');},   /* __acad3dV267 */
+    dcradius:function(){startConstraintTool('radius');},
+    dcdiameter:function(){startConstraintTool('diameter');},
+    gcpointonarc:function(){startConstraintTool('pointonarc');},
+    occtdraft:function(){startOcctDraft();},   /* __acad3dV266 */
+    occtsweep:function(){bimOcctSweep();},
+    occtpattern:function(){startOcctPattern();},
+    occtthickness:function(){startOcctThickness();},
     massprop:function(){bimMassprop();},   /* __acad3dV262 */
     countblocks:function(){bimCountCommand();},
     cal:function(){openCalDlg();},

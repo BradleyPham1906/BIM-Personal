@@ -43,6 +43,7 @@ import {
 } from './map-tiles.js';
 import { drawDataLayers } from './find-open-data.js';
 import { BIM_PAINT_BUDGET, bimPaintPieces } from '../render/painter-split.js';
+import { bimPcDraw2d, bimPcDrawGl } from './pointcloud-view.js';
 import { drawCube } from '../render/viewcube.js';
 import { A3D_ORIGIN_AXES } from '../gizmo/transform-gizmo.js';
 import { drawNotes } from '../annotation/annotation-overlay.js';
@@ -249,6 +250,7 @@ import { cvH, cvScale, cvW } from '../ui/canvas-size.js';
     gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
     bimMapDrawGl(G,V,W,H);   /* __acad3dV132: the basemap, under everything */
     bimTerrainDrawGl(G,V,W,H);   /* __acad3dV137: the terrain in 3D, the map draped on it */
+    bimPcDrawGl(G,V,W,H);   /* __acad3dV190: point clouds */
     if(A3D_GL_BATCH&&bimGbRender(G,V,W,H)){   /* __acad3dV152: the batches */
       var kb;for(kb in G.bufs)if(G.bufs.hasOwnProperty(kb)){bimGlDisposeBuffer(G,G.bufs[kb]);delete G.bufs[kb];}
       return true;
@@ -399,6 +401,7 @@ import { cvH, cvScale, cvW } from '../ui/canvas-size.js';
        presentation graphics are on, which forces glOn false (see the glOn line above), so it can
        never double-draw against the GPU path. __acad3dV122: on a sheet too. */
     drawTerrain(ctx,V,W,H);                  /* __acad3dV108: the ground, under everything */
+    if(!capMode)bimPcDraw2d(ctx,V,W,H,glOn);  /* __acad3dV190: point clouds, where WebGL did not draw them */
     if(!capMode)drawSunShadows(ctx,V,W,H);   /* __acad3dV107: first, so everything else draws over it */
     if(!capMode)drawSimOverlays(ctx,V,W,H);  /* __acad3dV143: sun hours, ponds and flow lines */
     if(!capMode)bimEntDrawTurns(ctx,V,W,H);  /* __acad3dV169: the turning spaces of placed assets */

@@ -41,7 +41,7 @@ import { a3dToast, groundPoint, objById } from '../bim/csg-booleans.js';
 import { cvH, cvW } from '../ui/canvas-size.js';
 
   // ---- __acad3dV4: Snaptrude-style 2D plan mode + sketch + Pad/Pocket ----
-  var SK_TOOLS={line:'Line',floor:'Floor',trim:'Trim',rect:'Rectangle',circle:'Circle',circle2p:'Circle 2P',circle3p:'Circle 3P',circlettr:'Circle TTR',ellipse:'Ellipse',revcloud:'Revision cloud',inqid:'ID',attdef:'Attribute definition',revolveaxis:'Revolve axis',donut:'Donut',wipeout:'Wipeout',dimbase:'Baseline dimension',dimcont:'Continued dimension',dimord:'Ordinate dimension',inqdist:'Distance',inqarea:'Area',arc:'Arc',polygon:'Polygon',point:'Point',xline:'Construction line',boundary:'Boundary',hatch:'Hatch',poly:'Polyline',wall:'Wall',column:'Column',door:'Door',window:'Window',room:'Room',roof:'Roof',stair:'Stair',dim:'Dimension',text:'Text',section:'Section',mirror:'Mirror',rotate:'Rotate',polararray:'Polar Array',familyplace:'Place Family',ceiling:'Ceiling',dimangular:'Angular Dim',dimradius:'Radius Dim',dimdiameter:'Diameter Dim',leader:'Leader',roomtag:'Tag Room',footing:'Isolated Footing',wallfoundation:'Wall Foundation',foundslab:'Foundation Slab'};
+  var SK_TOOLS={line:'Line',floor:'Floor',trim:'Trim',rect:'Rectangle',circle:'Circle',circle2p:'Circle 2P',circle3p:'Circle 3P',circlettr:'Circle TTR',ellipse:'Ellipse',revcloud:'Revision cloud',inqid:'ID',attdef:'Attribute definition',revolveaxis:'Revolve axis',occtedge:'Pick edges',jointaxis:'Joint hinge',donut:'Donut',wipeout:'Wipeout',dimbase:'Baseline dimension',dimcont:'Continued dimension',dimord:'Ordinate dimension',inqdist:'Distance',inqarea:'Area',arc:'Arc',polygon:'Polygon',point:'Point',xline:'Construction line',boundary:'Boundary',hatch:'Hatch',poly:'Polyline',wall:'Wall',column:'Column',door:'Door',window:'Window',room:'Room',roof:'Roof',stair:'Stair',dim:'Dimension',text:'Text',section:'Section',mirror:'Mirror',rotate:'Rotate',polararray:'Polar Array',familyplace:'Place Family',ceiling:'Ceiling',dimangular:'Angular Dim',dimradius:'Radius Dim',dimdiameter:'Diameter Dim',leader:'Leader',roomtag:'Tag Room',footing:'Isolated Footing',wallfoundation:'Wall Foundation',foundslab:'Foundation Slab'};
   var A3D_SNAP={point:true,grid:false,gridSize:0.5,ortho:false,pxThreshold:12};
   /* __acad3dV67: BIM status bar read-outs. Every field here reflects state the BIM engine
      actually owns -- A3D.sk, A3D.sel/selSet, A3D.levels/activeLevel, A3D_SNAP -- which is the
@@ -314,7 +314,7 @@ import { cvH, cvW } from '../ui/canvas-size.js';
   }
   var UNDO_STACK=[],REDO_STACK=[],UNDO_MAX=50,undoSuspend=false;
   function bimSnapshotState(){
-    return JSON.stringify({objs:A3D.objs,levels:A3D.levels,grids:A3D.grids,layers:A3D.layers,counts:A3D.counts,activeLevel:A3D.activeLevel,activeLayer:A3D.activeLayer,views:A3D.views,levelFilter:A3D.levelFilter,types:A3D.types,activeWallType:A3D.activeWallType,sheets:A3D.sheets,titleBlock:A3D.titleBlock,buildings:A3D.buildings,activeBuilding:A3D.activeBuilding,site:A3D.site,roomScheme:A3D.roomScheme||'',classifications:A3D.classifications,resultLayers:A3D.resultLayers||[],pres:A3D.pres||null});   /* __acad3dV148; __acad3dV162 */
+    return JSON.stringify({objs:A3D.objs,levels:A3D.levels,grids:A3D.grids,layers:A3D.layers,counts:A3D.counts,activeLevel:A3D.activeLevel,activeLayer:A3D.activeLayer,views:A3D.views,levelFilter:A3D.levelFilter,types:A3D.types,activeWallType:A3D.activeWallType,sheets:A3D.sheets,titleBlock:A3D.titleBlock,buildings:A3D.buildings,activeBuilding:A3D.activeBuilding,site:A3D.site,roomScheme:A3D.roomScheme||'',classifications:A3D.classifications,resultLayers:A3D.resultLayers||[],pres:A3D.pres||null,matCards:A3D.matCards||[],sheet:A3D.sheet||null});   /* __acad3dV148; __acad3dV162; __acad3dV268, __acad3dV269 */
   }
   /* __acad3dV164: held while a run of many steps is under way, after the one snapshot it takes */
   var bimUndoHold=false;
@@ -350,6 +350,8 @@ import { cvH, cvW } from '../ui/canvas-size.js';
     A3D.classifications=Array.isArray(st.classifications)?st.classifications:[];
     if(Array.isArray(st.resultLayers))A3D.resultLayers=st.resultLayers;   /* __acad3dV148: a version from History has none, and keeps today's */
     A3D.pres=bimPresValid(st.pres);   /* __acad3dV162: the set as it was */
+    if(Array.isArray(st.matCards))A3D.matCards=st.matCards;   /* __acad3dV268; a version from History has none, and keeps today's */
+    if(st.sheet&&typeof st.sheet==='object')A3D.sheet=st.sheet;   /* __acad3dV269 */
     bimEnsureTypes();
     bimEnsureBuildings();
     A3D.sel=null;A3D.sel2=null;A3D.meshes={};

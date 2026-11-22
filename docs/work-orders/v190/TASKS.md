@@ -130,13 +130,13 @@ after each one. Scores are from `../ROUTING.md` (files, logic, understanding, ju
 
 ---
 
-## [ ] WO-12 [Claude] Import and drawing
+## [x] WO-12 [Claude] Import and drawing
 
 Claude's (score 2+2+2+1+2+1 = 10): SPEC part 5 WO-12. Moves `v190.test.mjs` into `tests/unit/pointcloud.test.mjs`; `npm run modules`.
 
 ---
 
-## [ ] WO-13 [Claude] Colour modes, ground to surface, the browser check
+## [x] WO-13 [Claude] Colour modes, ground to surface, the browser check
 
 Claude's: SPEC part 5 WO-13, the check's script in `tests/e2e/`.
 

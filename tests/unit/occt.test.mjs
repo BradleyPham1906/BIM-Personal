@@ -71,8 +71,12 @@ test('revolve, loft, and the mesh signature that guards the B-rep', () => {
   const o = { occt: { brep: ring.serialize(), sig: E.bimOcctSig(mesh) }, mesh };
   assert.equal(E.bimOcctIsSolid(o), true);
   near(volume(R.deserializeShape(o.occt.brep)), volume(ring), 1e-9);
+  // V266: a mesh moved by a mesh tool still carries its B-rep (the map is found when it is used); a mesh with other
+  // sizes (rebuilt) does not
   o.mesh = { v: mesh.v.map((v) => [v[0] + 1, v[1], v[2]]), f: mesh.f };
-  assert.equal(E.bimOcctIsSolid(o), false, 'a mesh moved by a mesh tool is no longer the B-rep\'s');
+  assert.equal(E.bimOcctIsSolid(o), true);
+  o.mesh = { v: mesh.v.slice(1), f: mesh.f };
+  assert.equal(E.bimOcctIsSolid(o), false, 'a rebuilt mesh is no longer the B-rep\'s');
 });
 
 test('STEP out and back in keeps the solid', async () => {
