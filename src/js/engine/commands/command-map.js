@@ -25,6 +25,7 @@ import {
 import { bimCycleRoomScheme } from '../bim/room-colour-fill.js';
 import { bimTagAllRooms, startRoomTagTool, startRoomTool } from '../bim/room-tags.js';
 import { startDimTool, startLeaderTool, startTextTool } from '../annotation/dimensions.js';
+import { bimListCommand, startInquiryTool } from '../annotation/inquiry.js';
 import { bimExportPDF } from '../annotation/annotation-pick.js';
 import { bimFileOpen, bimFileSave } from '../io/file-save.js';
 import { startColumnTool, startDoorTool, startFloorTool, startWindowTool } from '../bim/columns-openings.js';
@@ -261,6 +262,10 @@ import { bimOpenToolsPanel } from '../ui/discipline-tabs.js';
     align:function(){openAlignDlg();},
     join:function(){bimJoinCommand();},   /* __acad3dV250: polylines first, then walls */
     moveTool:function(){startMoveTool();},
+    inqid:function(){startInquiryTool('id');},   /* __acad3dV255 */
+    inqdist:function(){startInquiryTool('dist');},
+    inqarea:function(){startInquiryTool('area');},
+    inqlist:function(){bimListCommand();},
     circle2p:function(){startSketch('circle2p');},   /* __acad3dV253 */
     circle3p:function(){startSketch('circle3p');},
     ellipse:function(){startSketch('ellipse');},

@@ -57,7 +57,7 @@
     ['COLOURBY',['COLORBY','LENS'],'colourby','Colour the model by usage, level, type, layer, material, height or any property, with a legend'],   /* __acad3dV136 */
     ['ROOMCOLOR',['COLORFILL','ROOMCOLOUR'],'roomcolor','Fill rooms by Department, then by Occupancy, then off'],   /* __acad3dV105 */
     ['TRIBAREA',['TRIBUTARY','TRIB'],'tribarea','Show or hide the tributary area each column carries on this level'],   /* __acad3dV106 */
-    ['AREAPLAN',['AREA','GROSSAREA','AP'],'areaplan','Show or hide the gross area inside the exterior walls on this level'],   /* __acad3dV105b */
+    ['AREAPLAN',['GROSSAREA','AP'],'areaplan','Show or hide the gross area inside the exterior walls on this level'],   /* __acad3dV105b */
     ['SUNSTUDY',['SHADOWS','SUNPATH'],'sunstudy','Show or hide the shadows on the ground and the sun path, for the site date and time'],   /* __acad3dV107 */
     ['COMMIT',['CHECKPOINT','SAVEVERSION'],'commit','Keep this state of the model as a version, with a message: what changed, element by element'],   /* __acad3dV146 */
     ['HISTORY',['VERSIONS','VERSIONHISTORY'],'history','The model\'s versions: what changed in each, element by element, and Restore'],
@@ -128,7 +128,7 @@
     /* __acad3dV93: MEASURE was an alias of DIST. In AutoCAD they are different commands --
        DIST reports a distance, MEASURE steps points off along an object -- so the alias made
        the real command unreachable by its own name. */
-    ['DIST',['DI'],'measure','Measure distance'],
+    ['DIST',['DI','MEASUREGEOM','MEA'],'inqdist','Measure the distance and angle between two points, leaving nothing in the drawing'],['ID',[],'inqid','Show the coordinates of a point'],['AREA',['AA'],'inqarea','Measure the area and perimeter of picked points or of the selected closed objects'],['LIST',['LI','LS'],'inqlist','List the selected objects\' properties and sizes'],   /* __acad3dV255 */
     ['DIVIDE',['DIV'],'divide','Place points dividing an object into equal parts'],
     ['MEASURE',['ME'],'measurePts','Place points at a set spacing along an object'],['DIMLINEAR',['DLI','DIM'],'bimDims','Linear dimension'],
     ['LAYER',['LA','LAYERS'],'layers','Layer Properties Manager'],['OSNAP',['OS','DSETTINGS','DS','SE'],'osnapSettings','Object snap and polar tracking settings'],['OSMODE',['F3'],'bimSnap','Toggle object snap'],['POLAR',[],'polar','Toggle polar tracking (F10)'],

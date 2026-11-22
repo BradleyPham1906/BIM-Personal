@@ -1881,7 +1881,7 @@ body.light-theme .a3d-tl-msgs,body.light-theme .a3d-tl-hn span,body.light-theme 
     ['COLOURBY',['COLORBY','LENS'],'colourby','Colour the model by usage, level, type, layer, material, height or any property, with a legend'],   /* __acad3dV136 */
     ['ROOMCOLOR',['COLORFILL','ROOMCOLOUR'],'roomcolor','Fill rooms by Department, then by Occupancy, then off'],   /* __acad3dV105 */
     ['TRIBAREA',['TRIBUTARY','TRIB'],'tribarea','Show or hide the tributary area each column carries on this level'],   /* __acad3dV106 */
-    ['AREAPLAN',['AREA','GROSSAREA','AP'],'areaplan','Show or hide the gross area inside the exterior walls on this level'],   /* __acad3dV105b */
+    ['AREAPLAN',['GROSSAREA','AP'],'areaplan','Show or hide the gross area inside the exterior walls on this level'],   /* __acad3dV105b */
     ['SUNSTUDY',['SHADOWS','SUNPATH'],'sunstudy','Show or hide the shadows on the ground and the sun path, for the site date and time'],   /* __acad3dV107 */
     ['COMMIT',['CHECKPOINT','SAVEVERSION'],'commit','Keep this state of the model as a version, with a message: what changed, element by element'],   /* __acad3dV146 */
     ['HISTORY',['VERSIONS','VERSIONHISTORY'],'history','The model\'s versions: what changed in each, element by element, and Restore'],
@@ -1952,7 +1952,7 @@ body.light-theme .a3d-tl-msgs,body.light-theme .a3d-tl-hn span,body.light-theme 
     /* __acad3dV93: MEASURE was an alias of DIST. In AutoCAD they are different commands --
        DIST reports a distance, MEASURE steps points off along an object -- so the alias made
        the real command unreachable by its own name. */
-    ['DIST',['DI'],'measure','Measure distance'],
+    ['DIST',['DI','MEASUREGEOM','MEA'],'inqdist','Measure the distance and angle between two points, leaving nothing in the drawing'],['ID',[],'inqid','Show the coordinates of a point'],['AREA',['AA'],'inqarea','Measure the area and perimeter of picked points or of the selected closed objects'],['LIST',['LI','LS'],'inqlist','List the selected objects\' properties and sizes'],   /* __acad3dV255 */
     ['DIVIDE',['DIV'],'divide','Place points dividing an object into equal parts'],
     ['MEASURE',['ME'],'measurePts','Place points at a set spacing along an object'],['DIMLINEAR',['DLI','DIM'],'bimDims','Linear dimension'],
     ['LAYER',['LA','LAYERS'],'layers','Layer Properties Manager'],['OSNAP',['OS','DSETTINGS','DS','SE'],'osnapSettings','Object snap and polar tracking settings'],['OSMODE',['F3'],'bimSnap','Toggle object snap'],['POLAR',[],'polar','Toggle polar tracking (F10)'],
@@ -6053,7 +6053,7 @@ try{
   }
 
   // ---- __acad3dV4: Snaptrude-style 2D plan mode + sketch + Pad/Pocket ----
-  var SK_TOOLS={line:'Line',floor:'Floor',trim:'Trim',rect:'Rectangle',circle:'Circle',circle2p:'Circle 2P',circle3p:'Circle 3P',ellipse:'Ellipse',revcloud:'Revision cloud',arc:'Arc',polygon:'Polygon',point:'Point',xline:'Construction line',boundary:'Boundary',hatch:'Hatch',poly:'Polyline',wall:'Wall',column:'Column',door:'Door',window:'Window',room:'Room',roof:'Roof',stair:'Stair',dim:'Dimension',text:'Text',section:'Section',mirror:'Mirror',rotate:'Rotate',polararray:'Polar Array',familyplace:'Place Family',ceiling:'Ceiling',dimangular:'Angular Dim',dimradius:'Radius Dim',dimdiameter:'Diameter Dim',leader:'Leader',roomtag:'Tag Room',footing:'Isolated Footing',wallfoundation:'Wall Foundation',foundslab:'Foundation Slab'};
+  var SK_TOOLS={line:'Line',floor:'Floor',trim:'Trim',rect:'Rectangle',circle:'Circle',circle2p:'Circle 2P',circle3p:'Circle 3P',ellipse:'Ellipse',revcloud:'Revision cloud',inqid:'ID',inqdist:'Distance',inqarea:'Area',arc:'Arc',polygon:'Polygon',point:'Point',xline:'Construction line',boundary:'Boundary',hatch:'Hatch',poly:'Polyline',wall:'Wall',column:'Column',door:'Door',window:'Window',room:'Room',roof:'Roof',stair:'Stair',dim:'Dimension',text:'Text',section:'Section',mirror:'Mirror',rotate:'Rotate',polararray:'Polar Array',familyplace:'Place Family',ceiling:'Ceiling',dimangular:'Angular Dim',dimradius:'Radius Dim',dimdiameter:'Diameter Dim',leader:'Leader',roomtag:'Tag Room',footing:'Isolated Footing',wallfoundation:'Wall Foundation',foundslab:'Foundation Slab'};
   var A3D_SNAP={point:true,grid:false,gridSize:0.5,ortho:false,pxThreshold:12};
   /* __acad3dV67: BIM status bar read-outs. Every field here reflects state the BIM engine
      actually owns -- A3D.sk, A3D.sel/selSet, A3D.levels/activeLevel, A3D_SNAP -- which is the
@@ -6693,7 +6693,9 @@ try{
   /* __acad3dV93: circle was missing. skPlacePoint has handled a typed circle radius since
      V87, but this gate is upstream of it, so the buffer never opened and the keystrokes fell
      through to the viewport. polygon joins on the same terms. */
-  var BIM_COORD_TOOLS={line:1,poly:1,wall:1,rect:1,stair:1,arc:1,circle:1,polygon:1,point:1,xline:1,boundary:1,hatch:1};
+  var BIM_COORD_TOOLS={line:1,poly:1,wall:1,rect:1,stair:1,arc:1,circle:1,polygon:1,point:1,xline:1,boundary:1,hatch:1,
+    /* __acad3dV255: the drafting track's point-taking tools, so a typed point, a typed distance and Enter reach them */
+    move:1,copy:1,stretch:1,circle2p:1,circle3p:1,ellipse:1,revcloud:1,inqid:1,inqdist:1,inqarea:1};
 
   /* AutoCAD coordinate entry. Exactly the five forms Autodesk documents:
 
@@ -6770,6 +6772,7 @@ try{
     else if(sk.tool==='wall'){if(sk.pts.length>=2)finishWall(false);else{A3D.sk=null;paint();}}
     else if(sk.tool==='poly'){if(sk.pts.length>=2)finishPoly(true);else{A3D.sk=null;paint();}}   /* __acad3dV100: Enter ends it OPEN */
     else if(sk.tool==='stair'){if(sk.pts.length>=2)finishStair();else{A3D.sk=null;paint();}}
+    else if(sk.tool==='inqarea')bimInquiryFinish(sk);   /* __acad3dV255 */
     else{A3D.sk=null;paint();}
     bimSyncStatusHint();
     return true;
@@ -6895,6 +6898,9 @@ try{
     if(sk.tool==='circle3p')return ['Specify first point on circle:','Specify second point on circle:','Specify third point on circle:'][Math.min(n,2)];
     if(sk.tool==='ellipse')return ['Specify axis endpoint of ellipse:','Specify other endpoint of axis:','Specify distance to other axis:'][Math.min(n,2)];
     if(sk.tool==='revcloud')return n?'Specify opposite corner:':'Specify first corner point:';
+    if(sk.tool==='inqid')return 'Specify point:';
+    if(sk.tool==='inqdist')return n?'Specify second point:':'Specify first point:';
+    if(sk.tool==='inqarea')return n?'Specify next point or press ENTER for total:':'Specify first corner point:';
     /* __acad3dV93: the form is already chosen, so the prompt states it rather than offering
        [Inscribed/Circumscribed] at a point where no key would answer it. */
     if(sk.tool==='roomtag')return 'Select a room to tag (Escape when finished):';   /* __acad3dV101 */
@@ -6966,7 +6972,8 @@ try{
   function skPlacePoint(gx,gz,xy){
     var sk=A3D.sk;if(!sk)return;
     if(bimIsDmTool(sk)){bimDmPoint(sk,[gx,gz]);return;}
-    if(bimIsDrawExtra(sk)){bimDrawExtraPoint(sk,[gx,gz]);return;}   /* __acad3dV253 */   /* __acad3dV250: MOVE, COPY, STRETCH */
+    if(bimIsDrawExtra(sk)){bimDrawExtraPoint(sk,[gx,gz]);return;}   /* __acad3dV253 */
+    if(bimIsInquiryTool(sk)){bimInquiryPoint(sk,[gx,gz]);return;}   /* __acad3dV255 */   /* __acad3dV250: MOVE, COPY, STRETCH */
     if(sk.tool==='matchprop'){if(xy)bimMatchPropClick(sk,xy);return;}
     if(sk.tool==='hatch'){                      /* __acad3dV96 */
       bimApplyHatchAt([gx,gz],sk.y,sk.hatch);
@@ -16567,6 +16574,174 @@ function bimOpnToWall(rect, len, height) {
       ctx.fillText(o.text,sp[0]+10,sp[1]);
       ctx.restore();
     }
+  }
+  /* ================= __acad3dV255: AutoCAD's inquiry commands (D8) =================
+     ID, DIST (DI), AREA (AA) and LIST (LI), by AutoCAD's names: they measure and leave nothing in the drawing, unlike
+     a dimension (FreeCAD's Measure does the same; docs/research/research-cadcraft-gap.md). Points are picked with the
+     running object snaps; the answer opens in a read-out that stays until it is closed, so a value can be copied.
+     X and Y are the plan's as the status bar shows them, Z the active level's elevation.
+     The arithmetic is pure (bimInquiryDist, bimInquiryArea, bimListRows), tested without a canvas. */
+  function bimInquiryDist(a,b){
+    var dx=b[0]-a[0],dy=b[1]-a[1],d=Math.sqrt(dx*dx+dy*dy),ang=Math.atan2(dy,dx)*180/Math.PI;
+    if(ang<0)ang+=360;
+    return {d:d,dx:dx,dy:dy,angle:ang};
+  }
+  /* The area and perimeter of a closed run of points (bulges optional: arcs count as arcs). */
+  function bimInquiryArea(pts,bulges){
+    if(!pts||pts.length<3)return null;
+    return {area:bimBulgedArea(pts,bulges||null,true),perimeter:bimBulgedLength(pts,bulges||null,true)};
+  }
+  /* What LIST says of one object: [label, value] rows. */
+  function bimListRows(o){
+    var rows=[['Name',o.name||o.id],['Type',bimListType(o)]],q=bimObjOffset(o),ly=bimLayerById(o.layer);
+    rows.push(['Layer',ly?ly.name:(o.layer||'0')]);
+    if(o.col)rows.push(['Color',o.col]);
+    if(o.t==='sketch'&&o.pts){
+      var closed=o.closed!==false&&(o.pts.length>2||bimHasBulge(o.bulges));   /* a circle is two points and two arcs */
+      rows.push(['Vertices',String(o.pts.length)]);
+      rows.push([closed?'Perimeter':'Length',bimFmtLen(bimBulgedLength(o.pts,o.bulges||null,closed))]);
+      if(closed)rows.push(['Area',bimFmtArea(bimBulgedArea(o.pts,o.bulges||null,true))]);
+      if(o.pts.length===2&&!bimHasBulge(o.bulges)){
+        var D=bimInquiryDist(o.pts[0],o.pts[1]);
+        rows.push(['Angle in plan',D.angle.toFixed(2)+'\u00b0']);
+      }
+      rows.push(['From',bimListPt([o.pts[0][0]+q[0],o.pts[0][1]+q[2]],(o.y||0)+q[1])]);
+    }else if(o.t==='room'&&o.pts){
+      rows.push(['Area',bimFmtArea(bimBulgedArea(o.pts,null,true))]);
+      rows.push(['Perimeter',bimFmtLen(bimBulgedLength(o.pts,null,true))]);
+    }else if(o.t==='text'){
+      rows.push(['Text',String(o.text)]);
+      if(o.height>0)rows.push(['Height',bimFmtLen(o.height)]);
+      if(o.rot)rows.push(['Rotation',(+o.rot).toFixed(2)+'\u00b0']);
+      rows.push(['Insertion point',bimListPt([o.pt[0]+q[0],o.pt[1]+q[2]],(o.y||0)+q[1])]);
+    }else if(o.t==='dim'){
+      rows.push(['Kind',bimDimKind(o)]);
+      if(typeof o.length==='number')rows.push(['Measurement',bimFmtLen(o.length)]);
+      if(typeof o.value==='number')rows.push(['Measurement',bimFmtLen(o.value)]);
+      if(typeof o.degrees==='number')rows.push(['Measurement',o.degrees.toFixed(2)+'\u00b0']);
+    }else if(o.bim&&o.bim.type==='wall'){
+      var cl=o.bim.centerline||[];
+      rows.push(['Length',bimFmtLen(bimBulgedLength(cl,o.bim.bulges||null,!!o.bim.closed))]);
+      rows.push(['Thickness',bimFmtLen(o.bim.thickness||0)]);
+      rows.push(['Height',bimFmtLen(o.bim.height||0)]);
+    }else if(o.bim&&(o.bim.type==='floor'||o.bim.type==='ceiling'||o.bim.type==='roof')&&(o.bim.profile||o.bim.footprint)){
+      var pf=o.bim.profile||o.bim.footprint;
+      rows.push(['Area',bimFmtArea(bimBulgedArea(pf,null,true))]);
+      rows.push(['Perimeter',bimFmtLen(bimBulgedLength(pf,null,true))]);
+      if(o.bim.thickness)rows.push(['Thickness',bimFmtLen(o.bim.thickness)]);
+    }else if(o.bim&&o.bim.type==='column'){
+      rows.push(['Size',bimFmtLen(o.bim.width||0)+' \u00d7 '+bimFmtLen(o.bim.depth||0)]);
+      rows.push(['Height',bimFmtLen(o.bim.height||0)]);
+    }
+    if(o.mesh&&o.mesh.v&&o.mesh.v.length){
+      var mn=[Infinity,Infinity,Infinity],mx=[-Infinity,-Infinity,-Infinity],i,k;
+      for(i=0;i<o.mesh.v.length;i++)for(k=0;k<3;k++){mn[k]=Math.min(mn[k],o.mesh.v[i][k]);mx[k]=Math.max(mx[k],o.mesh.v[i][k]);}
+      rows.push(['Extents',bimFmtLen(mx[0]-mn[0])+' \u00d7 '+bimFmtLen(mx[2]-mn[2])+' \u00d7 '+bimFmtLen(mx[1]-mn[1])+' high']);
+    }
+    if(bimIsLocked(o))rows.push(['Locked','yes']);
+    return rows;
+  }
+  function bimListType(o){
+    if(o.bim&&o.bim.type)return o.bim.type.charAt(0).toUpperCase()+o.bim.type.slice(1);
+    if(o.t==='sketch')return o.pts&&o.pts.length===1?'Point':(o.pts&&o.pts.length===2&&!bimHasBulge(o.bulges)?'Line':
+      (o.bulges&&o.closed!==false&&o.pts.length===2?'Circle':'Polyline'));
+    return o.t?o.t.charAt(0).toUpperCase()+o.t.slice(1):'Object';
+  }
+  function bimListPt(p,y){return 'X '+p[0].toFixed(3)+'  Y '+p[1].toFixed(3)+'  Z '+(+y||0).toFixed(3);}
+  /* An area in square metres, in the project's unit squared (m\u00b2, mm\u00b2, ft\u00b2), at the unit's precision */
+  function bimFmtArea(a){
+    var U=bimUnitDef(),s=U.scale||1;
+    return bimTrimNum((Math.abs(a)*s*s).toFixed(Math.max(bimUnitDp(),2)))+' '+U.label+'\u00b2';
+  }
+  /* The read-out: a small window of [label, value] rows, kept until closed. */
+  function bimInquiryShow(title,rows){
+    closeDlg();
+    var d=document.createElement('div'),h='',i;
+    d.className='a3d-dlg';
+    d.setAttribute('data-a3dinq','1');
+    for(i=0;i<rows.length;i++){
+      if(rows[i]==='-'){h+='<hr style="border:0;border-top:1px solid #3b4a5e;margin:6px 0">';continue;}
+      h+='<div class="a3d-dlgrow"><label>'+bimEsc(rows[i][0])+'</label><span style="user-select:text" data-a3dinqv="'+bimEsc(rows[i][0])+'">'+bimEsc(rows[i][1])+'</span></div>';
+    }
+    d.innerHTML='<div class="a3d-dlghd">'+bimEsc(title)+'</div><div class="a3d-dlgbody">'+h+'</div>'+
+      '<div class="a3d-dlgft"><button data-a3dlg="ok">Close</button></div>';
+    el.root.appendChild(d);el.dlg=d;
+    d.addEventListener('click',function(ev){var b=ev.target&&ev.target.closest?ev.target.closest('[data-a3dlg]'):null;if(b)closeDlg();});
+    d.addEventListener('keydown',function(ev){if(ev.key==='Escape'||ev.key==='Enter'){ev.preventDefault();ev.stopPropagation();closeDlg();}});
+    return d;
+  }
+  /* ---------- the commands ---------- */
+  function startInquiryTool(kind){
+    closeDlg();
+    bimEnterDraftingMode();
+    if(kind==='area'){
+      var ids=(A3D.selSet&&A3D.selSet.length)?A3D.selSet.slice():(A3D.sel?[A3D.sel]:[]);
+      if(ids.length){bimAreaOfObjects(ids);return;}
+    }
+    A3D.sk={tool:'inq'+kind,pts:[],y:bimGetActiveLevel().elev,on:null};
+    a3dToast(kind==='id'?'ID: specify a point':kind==='dist'?'Distance: specify the first point':
+      'Area: specify corner points, then Enter (or select closed objects first)');
+    paint();
+  }
+  function bimIsInquiryTool(sk){return !!sk&&(sk.tool==='inqid'||sk.tool==='inqdist'||sk.tool==='inqarea');}
+  function bimInquiryPoint(sk,p){
+    var y=sk.y;
+    if(sk.tool==='inqid'){
+      A3D.sk=null;paint();
+      bimInquiryShow('ID',[['Point',bimListPt(p,y)]]);
+      return;
+    }
+    sk.pts.push([p[0],p[1]]);
+    if(sk.tool==='inqdist'){
+      if(sk.pts.length<2){a3dToast('Distance: specify the second point');paint();return;}
+      var D=bimInquiryDist(sk.pts[0],sk.pts[1]);
+      A3D.sk=null;paint();
+      bimInquiryShow('Distance',[['Distance',bimFmtLen(D.d)],['Angle in plan',D.angle.toFixed(2)+'\u00b0'],
+        ['Delta X',bimFmtLen(D.dx)],['Delta Y',bimFmtLen(D.dy)],'-',['From',bimListPt(sk.pts[0],y)],['To',bimListPt(sk.pts[1],y)]]);
+      return;
+    }
+    a3dToast('Area: next point, or Enter to measure ('+sk.pts.length+' so far)');
+    paint();
+  }
+  /* AREA's Enter: the points picked so far, closed. */
+  function bimInquiryFinish(sk){
+    if(!sk||sk.tool!=='inqarea')return false;
+    var r=bimInquiryArea(sk.pts);
+    A3D.sk=null;paint();
+    if(!r){a3dToast('Area: pick three or more points');return true;}
+    bimInquiryShow('Area',[['Area',bimFmtArea(r.area)],['Perimeter',bimFmtLen(r.perimeter)],['Points',String(sk.pts.length)]]);
+    return true;
+  }
+  function bimAreaOfObjects(ids){
+    var tot=0,per=0,n=0,i,o,rows=[];
+    for(i=0;i<ids.length;i++){
+      o=objById(ids[i]);if(!o)continue;
+      var pts=null,bl=null;
+      if(o.t==='sketch'&&o.closed!==false&&o.pts&&o.pts.length>=2&&(o.pts.length>2||o.bulges)){pts=o.pts;bl=o.bulges||null;}
+      else if(o.t==='room')pts=o.pts;
+      else if(o.bim&&(o.bim.profile||o.bim.footprint))pts=o.bim.profile||o.bim.footprint;
+      if(!pts)continue;
+      var a=bimBulgedArea(pts,bl,true),p=bimBulgedLength(pts,bl,true);
+      tot+=a;per+=p;n++;
+      if(ids.length>1)rows.push([o.name||o.id,bimFmtArea(a)]);
+    }
+    if(!n){a3dToast('Area: none of the selected objects is closed');return null;}
+    if(rows.length)rows.push('-');
+    rows.push(['Total area',bimFmtArea(tot)]);
+    rows.push(['Total perimeter',bimFmtLen(per)]);
+    bimInquiryShow('Area of '+n+' object'+(n>1?'s':''),rows);
+    return {area:tot,perimeter:per,n:n};
+  }
+  function bimListCommand(){
+    var ids=(A3D.selSet&&A3D.selSet.length)?A3D.selSet.slice():(A3D.sel?[A3D.sel]:[]),rows=[],i,o;
+    if(!ids.length){a3dToast('List: select the objects first');return null;}
+    for(i=0;i<ids.length&&i<50;i++){
+      o=objById(ids[i]);if(!o)continue;
+      if(rows.length)rows.push('-');
+      rows=rows.concat(bimListRows(o));
+    }
+    if(ids.length>50)rows.push('-',['More',(ids.length-50)+' further objects not listed']);
+    return bimInquiryShow('List: '+ids.length+' object'+(ids.length>1?'s':''),rows);
   }
   /* ================= __acad3dV98: the pick shape of an annotation =================
 
@@ -37739,7 +37914,7 @@ function bimAnGauss(m) {
     t=t.replace(/\\[fFHhCcWwQqTtAa][^;]*;/g,'');
     t=t.replace(/\\[LlOoKk]/g,'');
     t=t.replace(/\\\\/g,'\u0000').replace(/[{}]/g,'').replace(/\u0000/g,'\\');
-    t=t.replace(/%%[cC]/g,'Ø').replace(/%%[dD]/g,'°').replace(/%%[pP]/g,'±').replace(/%%%/g,'%');
+    t=t.replace(/%%[cC]/g,'\u00d8').replace(/%%[dD]/g,'\u00b0').replace(/%%[pP]/g,'\u00b1').replace(/%%%/g,'%');
     return t;
   }
   /* An ELLIPSE as points: centre c, major axis end m (relative to c), minor/major ratio, from
@@ -54647,11 +54822,11 @@ function bimWalkKeys(h, j) {
   function bimOsnapSummary(){
     var on=[],i;
     for(i=0;i<BIM_OSNAP_KINDS.length;i++)if(A3D_OSNAP[BIM_OSNAP_KINDS[i]])on.push(BIM_OSNAP_NAMES[BIM_OSNAP_KINDS[i]]);
-    return (on.length?on.join(', '):'none')+(A3D_OSNAP.polar?'; polar every '+A3D_OSNAP.polarInc+'°':'');
+    return (on.length?on.join(', '):'none')+(A3D_OSNAP.polar?'; polar every '+A3D_OSNAP.polarInc+'\u00b0':'');
   }
   function bimTogglePolar(){
     A3D_OSNAP.polar=!A3D_OSNAP.polar;
-    a3dToast('Polar tracking '+(A3D_OSNAP.polar?'on, every '+A3D_OSNAP.polarInc+'°':'off')+' (F10)');
+    a3dToast('Polar tracking '+(A3D_OSNAP.polar?'on, every '+A3D_OSNAP.polarInc+'\u00b0':'off')+' (F10)');
     paint();
   }
   function setOsnapModes(o){
@@ -73260,6 +73435,10 @@ function bimRptPlan(families) {
     align:function(){openAlignDlg();},
     join:function(){bimJoinCommand();},   /* __acad3dV250: polylines first, then walls */
     moveTool:function(){startMoveTool();},
+    inqid:function(){startInquiryTool('id');},   /* __acad3dV255 */
+    inqdist:function(){startInquiryTool('dist');},
+    inqarea:function(){startInquiryTool('area');},
+    inqlist:function(){bimListCommand();},
     circle2p:function(){startSketch('circle2p');},   /* __acad3dV253 */
     circle3p:function(){startSketch('circle3p');},
     ellipse:function(){startSketch('ellipse');},

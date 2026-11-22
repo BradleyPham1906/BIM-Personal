@@ -64,7 +64,7 @@ work orders under the existing workflow (Claude specifies, Cline builds).
 | D5 | Linetypes and per-object colour and lineweight | Needed for D7's round trip, and for plotting |
 | D6 | Blocks: attributes, a block editor, explode, external references | Title blocks and tags carry data |
 | D7 | DXF fidelity: read and write text, multiline text, blocks, hatches, dimensions, ellipses, splines, linetypes; binary DXF in | **Import built as V251, 2026-11-22:** blocks (nested, arrays, mirrored), dimensions, TEXT, MTEXT, ATTRIB, ELLIPSE, SPLINE, SOLID, true-arc circles. Still open: HATCH, binary DXF, and the export side |
-| D8 | Inquiry: LIST, ID, DIST, AREA, MASSPROP for regions, COUNT, a calculator | Small |
+| D8 | Inquiry: LIST, ID, DIST, AREA, MASSPROP for regions, COUNT, a calculator | **Built as V255, 2026-11-22:** ID, DIST (DI, MEASUREGEOM), AREA (AA; points or selected closed objects), LIST (LI); a read-out that leaves nothing in the drawing (also FreeCAD's Measure gap). DIST used to place a dimension, AREA was an alias of the gross-area overlay. Still open: MASSPROP, COUNT, a calculator |
 | D9 | DWG | **Built as V252, 2026-11-22** (the owner approved cc-dwg): opens R13 to R2018 through the Import picker, saves the plan as AutoCAD 2013 DWG (EXPORTDWG, DWGOUT, the ribbon's DWG). docs/research/research-dwg-library.md |
 
 ## 4. The owner's decisions

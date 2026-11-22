@@ -19,7 +19,7 @@
     t=t.replace(/\\[fFHhCcWwQqTtAa][^;]*;/g,'');
     t=t.replace(/\\[LlOoKk]/g,'');
     t=t.replace(/\\\\/g,'\u0000').replace(/[{}]/g,'').replace(/\u0000/g,'\\');
-    t=t.replace(/%%[cC]/g,'Ø').replace(/%%[dD]/g,'°').replace(/%%[pP]/g,'±').replace(/%%%/g,'%');
+    t=t.replace(/%%[cC]/g,'\u00d8').replace(/%%[dD]/g,'\u00b0').replace(/%%[pP]/g,'\u00b1').replace(/%%%/g,'%');
     return t;
   }
   /* An ELLIPSE as points: centre c, major axis end m (relative to c), minor/major ratio, from
