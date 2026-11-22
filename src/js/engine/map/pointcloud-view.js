@@ -308,6 +308,6 @@ import { cvH, cvScale, cvW } from '../ui/canvas-size.js';
     return d;
   }
 export {
-  bimPcDraw2d, bimPcDrawGl, bimPcImport, bimPcPick, bimPcPropField, bimPcPropsHtml, bimPcRestoreData,
-  bimPcSaveData, bimPcVisible, openPcGroundDlg
+  A3D_PC, bimPcData, bimPcDraw2d, bimPcDrawGl, bimPcImport, bimPcIsCloud, bimPcPick, bimPcPropField,
+  bimPcPropsHtml, bimPcRestoreData, bimPcSaveData, bimPcVisible, openPcGroundDlg
 };

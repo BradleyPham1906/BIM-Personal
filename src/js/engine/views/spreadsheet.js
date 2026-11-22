@@ -204,4 +204,4 @@ import { a3dToast, objById } from '../bim/csg-booleans.js';
     });
     return d;
   }
-export { bimSheetValid, openSheetDlg };
+export { bimSheet, bimSheetValid, openSheetDlg };

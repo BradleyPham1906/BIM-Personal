@@ -136,7 +136,7 @@ Claude's (score 2+2+2+1+2+1 = 10): SPEC part 5 WO-12. Moves `v190.test.mjs` into
 
 ---
 
-## [ ] WO-13 [Claude] Colour modes, ground to surface, the browser check
+## [x] WO-13 [Claude] Colour modes, ground to surface, the browser check
 
 Claude's: SPEC part 5 WO-13, the check's script in `tests/e2e/`.
 
