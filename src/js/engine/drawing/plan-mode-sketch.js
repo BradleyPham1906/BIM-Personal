@@ -19,6 +19,9 @@ import { toScreen } from '../io/import-entry.js';
 import { paint } from '../map/terrain-3d.js';
 import { bimFaceCurrent, bimFaceHint, bimFaceObjKind } from '../editing/faces-push-pull.js';
 import {
+  A3D_OSNAP, bimOsnapCandidates, bimOsnapModelPrims, bimOsnapPick, bimPolarTrack
+} from './object-snaps.js';
+import {
   bimClineCrossings, bimClineSegIntersect, bimClipInfinite, bimDrawingExtent2D, bimIsCline
 } from './construction-lines.js';
 import { bimExitSection } from '../views/section-tool.js';
@@ -260,6 +263,27 @@ import { cvH, cvW } from '../ui/canvas-size.js';
         if(d<bestD){bestD=d;best=c;}
       }
       if(best){px=best[0];pz=best[1];snapped=true;}
+      A3D_OSNAP.lastKind=best?'end':'';
+      /* __acad3dV249: the running object snaps. The pick tolerance is the same pixel threshold,
+         turned into metres at the cursor; a vertex already caught within it is still a vertex,
+         and the typed snaps compete with it on distance. */
+      try{
+        var c0=toScreen([gRaw[0],sk.y,gRaw[2]],V,W,H),c1=toScreen([gRaw[0]+1,sk.y,gRaw[2]],V,W,H);
+        var ppm=Math.sqrt(Math.pow(c1[0]-c0[0],2)+Math.pow(c1[1]-c0[1],2));
+        if(ppm>1e-6){
+          var tolW=A3D_SNAP.pxThreshold/ppm,cur=[gRaw[0],gRaw[2]];
+          var mp=bimOsnapModelPrims(sk.y,sk.skip||null,sk);
+          var oc=bimOsnapCandidates(mp.prims,cur,tolW,sk.pts.length?sk.pts[sk.pts.length-1]:null,A3D_OSNAP,mp.nodes);
+          if(best)oc.push({p:best,kind:'end',d:bestD/ppm});
+          var win=bimOsnapPick(oc);
+          if(win){px=win.p[0];pz=win.p[1];snapped=true;A3D_OSNAP.lastKind=win.kind;}
+        }
+      }catch(eO){console.warn('[BIM] Object snap failed',eO);}
+    }
+    A3D_OSNAP.polarAngle=null;
+    if(!snapped&&A3D_OSNAP.polar&&!A3D_SNAP.ortho&&sk.pts.length){
+      var pt=bimPolarTrack(sk.pts[sk.pts.length-1],[px,pz],A3D_OSNAP.polarInc,A3D_OSNAP.polarTolDeg);
+      if(pt){px=pt.p[0];pz=pt.p[1];A3D_OSNAP.polarAngle=pt.angle;}
     }
     if(!snapped&&A3D_SNAP.grid&&A3D_SNAP.gridSize>0){
       px=Math.round(px/A3D_SNAP.gridSize)*A3D_SNAP.gridSize;
@@ -270,7 +294,7 @@ import { cvH, cvW } from '../ui/canvas-size.js';
       var ddx=px-last[0],ddz=pz-last[1];
       if(Math.abs(ddx)>=Math.abs(ddz))pz=last[1];else px=last[0];
     }
-    return [px,pz,snapped];
+    return [px,pz,snapped,snapped?A3D_OSNAP.lastKind:''];
   }
   function bimCommitTypedLength(len){
     var sk=A3D.sk;

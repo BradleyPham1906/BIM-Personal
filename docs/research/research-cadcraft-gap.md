@@ -36,7 +36,7 @@ Our side was read in `src/js/engine/` on 2026-11-22 (P: the code). "Have" means 
 | Dimensions | every DIM type, DIMSTYLE, associative | linear, angular, radius, diameter, leader (`annotation/dimensions.js`) | **missing:** baseline, continue, ordinate, arc length; dimension styles (text height, arrows, units, precision, scale) |
 | Text | TEXT, MTEXT with formatting codes, TrueType fonts, text styles | one text tool | **missing:** multiline text, text styles, fonts |
 | Leaders, tables | MLEADER, TABLE | leader; schedules | **partial:** no multileader styles; no drawn table object outside schedules |
-| Linetypes and colour | linetypes, lineweights, colour index and true colour per layer and per object | lineweight per layer, plot by layer | **missing:** linetypes (dashed, centre, hidden), per-object overrides |
+| Linetypes and colour | linetypes, lineweights, colour index and true colour per layer and per object | AutoCAD's acadiso linetypes and lineweights per layer (`layers/select-change.js`), plot by layer | **partial:** no per-object linetype, colour or lineweight overrides (corrected 2026-11-22: linetypes per layer were already there) |
 | Layers | isolate, freeze, off, lock, match, previous, layer states | show, lock, pin, rules, list by | **partial:** no isolate, freeze per viewport, previous, layer states |
 | Blocks | BLOCK, INSERT, attributes, nested blocks, external references, image attach | block make and insert, families, the library | **missing:** attributes, a block editor, explode, external references (DXF), images in model space (V188 adds picture planes) |
 | Inquiry | DIST, AREA, ID, LIST, MASSPROP, COUNT, QuickCalc | measure, tributary area, area plans | **partial:** no LIST, ID, MASSPROP, COUNT or calculator as commands |
@@ -57,7 +57,7 @@ work orders under the existing workflow (Claude specifies, Cline builds).
 
 | Proposed | What | Why first or later |
 |---|---|---|
-| D1 | Object snaps (midpoint, center, quadrant, intersection, perpendicular, tangent, nearest, insertion) with a snap-mode toggle, polar tracking, object snap tracking | Every draw and modify tool benefits; today only vertices snap |
+| D1 | Object snaps (midpoint, center, quadrant, intersection, perpendicular, tangent, nearest, node) with an OSNAP settings dialog, polar tracking (F10) | **Built as V249, 2026-11-22.** Object snap tracking not yet |
 | D2 | Modify: move and copy by base point, stretch, explode, join polylines, overkill, draw order, match properties | The commands drafters use most that are missing |
 | D3 | Draw: ellipse and elliptical arc, circle 2P/3P/TTR, donut, polyline widths, revision cloud, wipeout | Small, independent |
 | D4 | Annotation styles: text styles and multiline text, dimension styles, baseline/continue/ordinate/arc-length dimensions, multileaders | Drawings that read like professional sheets |

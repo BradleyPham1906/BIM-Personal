@@ -131,7 +131,7 @@
     ['DIST',['DI'],'measure','Measure distance'],
     ['DIVIDE',['DIV'],'divide','Place points dividing an object into equal parts'],
     ['MEASURE',['ME'],'measurePts','Place points at a set spacing along an object'],['DIMLINEAR',['DLI','DIM'],'bimDims','Linear dimension'],
-    ['LAYER',['LA','LAYERS'],'layers','Layer Properties Manager'],['OSNAP',['OS'],'bimSnap','Toggle object snap'],
+    ['LAYER',['LA','LAYERS'],'layers','Layer Properties Manager'],['OSNAP',['OS','DSETTINGS','DS','SE'],'osnapSettings','Object snap and polar tracking settings'],['OSMODE',['F3'],'bimSnap','Toggle object snap'],['POLAR',[],'polar','Toggle polar tracking (F10)'],
     ['ORTHO',[],'bimOrtho','Toggle ortho mode'],['GRID',[],'grid','Toggle grid'],
     ['ZOOM',['Z','ZE','FIT'],'zoomFit','Zoom to fit'],['ZOOMIN',['ZI'],'zoomIn','Zoom in'],
     ['ZOOMOUT',['ZO'],'zoomOut','Zoom out'],['ZOOM100',['Z1'],'view100','Zoom to 100%'],

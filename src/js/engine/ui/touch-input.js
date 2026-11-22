@@ -20,6 +20,7 @@ import { bimCloseGizmoMenu, bimGizmoTypeKey, bimTypingDrag } from '../gizmo/gizm
 import { bimFaceCurrent, bimFaceExit, bimFaceKeyFor, bimFaceKeyRun } from '../editing/faces-push-pull.js';
 import { cancelConstraintPick } from '../drawing/sketch-constraints.js';
 import { delSelection, duplicateSelection } from '../editing/selection-tools.js';
+import { bimTogglePolar } from '../drawing/object-snaps.js';
 import { bimNudgeObject } from '../editing/modify-toolbox.js';
 import { bimAssetDragCancel } from '../assets/library-drag.js';
 import { bimExitSection } from '../views/section-tool.js';
@@ -237,6 +238,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
     }
     if(ev.key==='F8'){A3D_SNAP.ortho=!A3D_SNAP.ortho;a3dToast('Ortho '+(A3D_SNAP.ortho?'on':'off')+' (F8)');syncSnapPill();paint();ev.preventDefault();return;}
     if(ev.key==='F3'){A3D_SNAP.point=!A3D_SNAP.point;a3dToast('Object snap '+(A3D_SNAP.point?'on':'off')+' (F3)');syncSnapPill();paint();ev.preventDefault();return;}
+    if(ev.key==='F10'){bimTogglePolar();ev.preventDefault();return;}   /* __acad3dV249 */
     if(ev.key==='F9'){A3D_SNAP.grid=!A3D_SNAP.grid;a3dToast('Grid snap '+(A3D_SNAP.grid?'on':'off')+' (F9)');syncSnapPill();paint();ev.preventDefault();return;}
     if((ev.ctrlKey||ev.metaKey)&&!ev.shiftKey&&(ev.key==='z'||ev.key==='Z')){
       doUndo();ev.preventDefault();ev.stopImmediatePropagation();return;
