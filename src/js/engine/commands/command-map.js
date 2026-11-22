@@ -72,6 +72,7 @@ import {
 } from '../solids/occt-features.js';
 import { openViewbaseDlg } from '../solids/occt-views.js';
 import { bimMeshRepairCommand, bimMeshToSolidCommand } from '../editing/mesh-repair.js';
+import { openBomDlg, openJointDlg } from '../assembly/joints.js';
 import { bimSkpPick } from '../io/sketchup-import.js';
 import { bimGltfExport, bimGltfPick } from '../io/gltf.js';
 import { bimIfcPick } from '../io/ifc-full.js';
@@ -310,6 +311,8 @@ import { bimOpenToolsPanel } from '../ui/discipline-tabs.js';
     spreadsheet:function(){openSheetDlg();},   /* __acad3dV269 */
     meshrepair:function(){bimMeshRepairCommand();},   /* __acad3dV271 */
     viewbase:function(){openViewbaseDlg();},   /* __acad3dV272 */
+    joint:function(){openJointDlg();},   /* __acad3dV273 */
+    bom:function(){openBomDlg();},
     meshtosolid:function(){bimMeshToSolidCommand();},
     gctangent:function(){startConstraintTool('tangent');},   /* __acad3dV267 */
     dcradius:function(){startConstraintTool('radius');},

@@ -40,6 +40,7 @@ import { bimUnitDef } from '../properties/palette.js';
 import { bimAwCtxCol } from '../site-analysis/analysis-workspace.js';
 import { bimOcctRevolvePoint } from '../solids/occt-tools.js';
 import { bimOcctEdgeClick, bimOcctEdgeDraw, bimOcctEdgeFinish } from '../solids/occt-features.js';
+import { bimJointAxisPoint } from '../assembly/joints.js';
 import { toScreen } from '../io/import-entry.js';
 import { paint } from '../map/terrain-3d.js';
 import {
@@ -104,7 +105,7 @@ import { cvH, cvW } from '../ui/canvas-size.js';
      through to the viewport. polygon joins on the same terms. */
   var BIM_COORD_TOOLS={line:1,poly:1,wall:1,rect:1,stair:1,arc:1,circle:1,polygon:1,point:1,xline:1,boundary:1,hatch:1,
     /* __acad3dV255: the drafting track's point-taking tools, so a typed point, a typed distance and Enter reach them */
-    move:1,copy:1,stretch:1,circle2p:1,circle3p:1,ellipse:1,revcloud:1,inqid:1,inqdist:1,inqarea:1,dimbase:1,dimcont:1,dimord:1,attdef:1,revolveaxis:1,donut:1,wipeout:1,circlettr:1,occtedge:1};
+    move:1,copy:1,stretch:1,circle2p:1,circle3p:1,ellipse:1,revcloud:1,inqid:1,inqdist:1,inqarea:1,dimbase:1,dimcont:1,dimord:1,attdef:1,revolveaxis:1,donut:1,wipeout:1,circlettr:1,occtedge:1,jointaxis:1};
 
   /* AutoCAD coordinate entry. Exactly the five forms Autodesk documents:
 
@@ -392,6 +393,7 @@ import { cvH, cvW } from '../ui/canvas-size.js';
     if(bimIsDimChainTool(sk)){bimDimChainPoint(sk,[gx,gz]);return;}   /* __acad3dV258 */
     if(sk.tool==='attdef'){bimAttdefPlace(sk,[gx,gz]);return;}   /* __acad3dV260 */
     if(sk.tool==='revolveaxis'){bimOcctRevolvePoint(sk,[gx,gz]);return;}   /* __acad3dV264 */
+    if(sk.tool==='jointaxis'){bimJointAxisPoint(sk,[gx,gz]);return;}   /* __acad3dV273 */
     if(sk.tool==='donut'){bimDonutPoint(sk,[gx,gz]);return;}   /* __acad3dV265 */
     if(sk.tool==='wipeout'){bimWipeoutPoint(sk,[gx,gz]);return;}   /* __acad3dV250: MOVE, COPY, STRETCH */
     if(sk.tool==='matchprop'){if(xy)bimMatchPropClick(sk,xy);return;}

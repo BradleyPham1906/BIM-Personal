@@ -59,6 +59,7 @@ import { bimStdOverride } from '../standards/registry.js';
 import { bimAnimPlay, bimAnimStop } from '../site-analysis/motion.js';
 import { bimDgPropChange, bimDgPropClick } from '../site-analysis/land-use.js';
 import { refreshProps } from '../site-analysis/panel.js';
+import { bimJointPropField, bimJointRemove } from '../assembly/joints.js';
 import { bimIfcMakeEditable } from '../io/ifc-editable.js';
 import { bimHandleImportFile } from '../io/import-entry.js';
 import { bimSkSet } from '../render/surface-kinds.js';
@@ -526,6 +527,7 @@ import { size } from './canvas-size.js';
       if(f==='editclass'){openClassificationDlg();return;}
       if(f.indexOf('terrdrop:')===0){var tdo=objById(A3D.sel);if(tdo)bimTerrainEdit(tdo,f.slice(9));return;}   /* __acad3dV144 */
       if(f==='pcground'){openPcGroundDlg(objById(A3D.sel));return;}   /* __acad3dV190 */
+      if(f==='jointdel'){bimJointRemove(objById(A3D.sel));return;}   /* __acad3dV273 */
       if(f==='terrlandxml'){var tlo=objById(A3D.sel);if(tlo)bimLandXmlExport([tlo.id]);return;}
       if(f==='regrade'){bimRegrade(objById(A3D.sel));return;}   /* __acad3dV145 */
       if(f==='gradespots'){bimGradeSpots(objById(A3D.sel));return;}
@@ -581,6 +583,7 @@ import { size } from './canvas-size.js';
       var f=inp.getAttribute('data-propf');
       if(bimObjLookField(o,f,inp))return;   /* __acad3dV257 */
       if(bimPcPropField(o,f,inp))return;   /* __acad3dV190 */
+      if(bimJointPropField(o,f,inp))return;   /* __acad3dV273 */
       if(f==='terrint'){bimSetTerrainInterval(o,inp.value);return;}   /* __acad3dV108 */
       if(f==='terrview'){bimTerrainSetView(o,inp.value);return;}      /* __acad3dV144 */
       if(f==='cutslope'||f==='fillslope'){bimSetPadSlope(o,f,inp.value);return;}   /* __acad3dV145 */

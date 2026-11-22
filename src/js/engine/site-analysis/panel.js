@@ -55,6 +55,7 @@ import {
 import { bimAccFetch } from './access-data.js';
 import { bimAccSaHtml } from './movement-data.js';
 import { A3D_AW, bimAwOwns, bimAwRender, bimAwTitleSync } from './analysis-workspace.js';
+import { bimJointPropsHtml } from '../assembly/joints.js';
 import { bimSkpPropsHtml } from '../io/sketchup-import.js';
 import { bimIfcPropsHtml } from '../io/ifc-full.js';
 import { bimSkPropsHtml } from '../render/surface-kinds.js';
@@ -629,6 +630,7 @@ import { bimNoteHex } from '../testing/hooks-view-gizmo.js';
     if(o.t==='terrain'&&o.survey&&!o.grading)h+=bimPropGroup('Survey Check',bimSurveyCheckHtml(o));   /* __acad3dV138; __acad3dV145: not a proposed one */
     if(o.t==='terrain'&&o.survey)h+=bimPropGroup('Terrain Analysis',bimTerrainPropsHtml(o));   /* __acad3dV144 */
     if(o.t==='pointcloud'&&o.pc)h+=bimPropGroup('Point Cloud',bimPcPropsHtml(o));   /* __acad3dV190 */
+    if(o.joint)h+=bimPropGroup('Assembly',bimJointPropsHtml(o));   /* __acad3dV273 */
     if(o.t==='terrain'&&o.grading)h+=bimPropGroup('Grading',bimGradePropsHtml(o));            /* __acad3dV145 */
     if(bimIsFrameMember(o))h+=bimStructPropsHtml(o);   /* __acad3dV125 */
     if(bimIsAlignment(o))h+=bimAlignPropsHtml(o);       /* __acad3dV127 */
