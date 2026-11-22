@@ -41,7 +41,7 @@ import { bimLoadUIPanelPrefs, bimSaveUIPanelPrefs } from './build-ui.js';
         {act:'s:circle',label:'Circle'}
       ],small:['bim:arc','bim:wall','bim:room','bim:floor','bim:column']},
       {t:'Modify',small:['bim:trim','bim:extend','bim:fillet','bim:chamfer','bim:break','bim:lengthen','bim:scale','bim:offset','bim:align','bim:mirror','bim:rotate','bim:presspull','m:array','bim:polararray','m:dup','m:del']},
-      {t:'Constraints',small:['con:coincident','con:horizontal','con:vertical','con:parallel','con:perpendicular','con:equal','con:distance','con:angle','con:pointonline','con:midpoint','con:symmetric_pt','con:symmetric_line']},
+      {t:'Constraints',small:['con:coincident','con:horizontal','con:vertical','con:parallel','con:perpendicular','con:equal','con:distance','con:angle','con:pointonline','con:midpoint','con:symmetric_pt','con:symmetric_line','con:tangent','con:pointonarc','con:radius','con:diameter']},
       {t:'Dimension',big:[
         {act:'bim:dim',label:'Dimension',menu:[['bim:dim','Aligned / Linear'],['bim:dimang','Angular'],['bim:dimrad','Radial'],['bim:dimdia','Diameter']]}
       ],small:['bim:text','bim:leader','bim:tagroom']},
@@ -76,7 +76,7 @@ import { bimLoadUIPanelPrefs, bimSaveUIPanelPrefs } from './build-ui.js';
       ],small:['m:array','bim:polararray','bim:joinwalls','bim:mergewalls','m:del','m:desel','bim:trim','bim:extend','bim:fillet','bim:chamfer','bim:break','bim:lengthen','bim:scale','bim:offset','bim:align','bim:clonelinked','bim:syncclones']},
       {t:'Geometry',small:['b:union','b:cut','b:isect']},
       {t:'Sketch',small:['s:rect','s:circle','s:poly','p:pad','p:pocket','bim:presspull']},
-      {t:'Constraints',small:['con:coincident','con:horizontal','con:vertical','con:parallel','con:perpendicular','con:equal','con:distance','con:angle','con:pointonline','con:midpoint','con:symmetric_pt','con:symmetric_line']}
+      {t:'Constraints',small:['con:coincident','con:horizontal','con:vertical','con:parallel','con:perpendicular','con:equal','con:distance','con:angle','con:pointonline','con:midpoint','con:symmetric_pt','con:symmetric_line','con:tangent','con:pointonarc','con:radius','con:diameter']}
     ]},
     {id:'a3dmassing',name:'Massing & Site',panels:[
       {t:'Conceptual Mass',small:['box','cyl','sphere','cone','torus']},
@@ -175,7 +175,8 @@ import { bimLoadUIPanelPrefs, bimSaveUIPanelPrefs } from './build-ui.js';
       'con:coincident':'Coincident','con:horizontal':'Horizontal','con:vertical':'Vertical',
       'con:parallel':'Parallel','con:perpendicular':'Perpendicular','con:equal':'Equal',
       'con:distance':'Distance','con:angle':'Angle','con:pointonline':'Point on Line','con:midpoint':'Midpoint',
-      'con:symmetric_pt':'Symmetric (Point)','con:symmetric_line':'Symmetric (Line)'};
+      'con:symmetric_pt':'Symmetric (Point)','con:symmetric_line':'Symmetric (Line)',
+      'con:tangent':'Tangent','con:pointonarc':'Point on Arc','con:radius':'Radius','con:diameter':'Diameter'};
     if(L[act])return L[act];
     return (TYPES[act]||{}).n||act;
   }

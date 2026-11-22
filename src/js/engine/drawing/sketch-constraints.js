@@ -10,6 +10,9 @@ import { A3D_GPU } from '../render/webgpu.js';
 import { bimBuildPickPolys, paint } from '../map/terrain-3d.js';
 import { bimPickSketch, inPoly } from '../render/viewcube.js';
 import { bimPickNote } from '../annotation/annotation-overlay.js';
+import {
+  bimConArcOf, bimConArcRefs, bimConArcResidual, bimConArcStart, bimConIsArcKind
+} from './sketch-arc-constraints.js';
 import { bimAfterSketchEdit } from '../bim/region-dependents.js';
 import { saveSoon } from '../bim/region-regenerate.js';
 import { refreshTree } from '../sheets/presentation-panel.js';
@@ -33,7 +36,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
   // A 'fixed' kind also exists internally (pins one point to an exact X/Z) but is only ever added
   // transiently during a grip drag -- it drives the solve while the user's cursor is the source of
   // truth for that one point, and is never itself persisted as a stored constraint.
-  function bimConResidual(kind,pts,refs,value){
+  function bimConResidual(kind,pts,refs,value,B){
     function P(i){return pts[i];}
     switch(kind){
       case 'coincident':{
@@ -124,7 +127,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
         return [onLine3,perp3];
       }
       default:
-        return [];
+        return bimConIsArcKind(kind)?bimConArcResidual(kind,pts,refs,value,B):[];   /* __acad3dV267 */
     }
   }
   function bimConResidualCount(kind){
@@ -185,38 +188,46 @@ import { a3dToast } from '../bim/csg-booleans.js';
     var maxIter=opts.maxIter||60,tol=opts.tol||1e-9,lambda0=opts.lambda||1e-3;
     var n=ptsIn.length,x=[],i;
     for(i=0;i<n;i++){x.push(ptsIn[i][0]);x.push(ptsIn[i][1]);}
+    /* __acad3dV267: the bulge of each arc a constraint names is an unknown too, after the points */
+    var B0=(opts.bulges||[]).slice(),segs=[];
+    for(i=0;i<constraints.length;i++)if(bimConIsArcKind(constraints[i].type)){var sg=bimConArcOf(constraints[i]);if(segs.indexOf(sg)<0){segs.push(sg);x.push(Math.log(Math.abs(bimConArcStart(B0[sg]||0))||1e-9));}}
+    var nv=x.length;
+    /* the unknown is log|b|: an arc keeps its side of the chord and never passes through straight */
+    function bulgesOf(xv){var Bv=B0.slice(),j;for(j=0;j<segs.length;j++)Bv[segs[j]]=((B0[segs[j]]||0)<0?-1:1)*Math.exp(xv[2*n+j]);return Bv;}
     function unpack(xv){
       var pts=[],j;
       for(j=0;j<n;j++)pts.push([xv[j*2],xv[j*2+1]]);
       return pts;
     }
     function evalResiduals(xv){
-      var pts=unpack(xv),r=[],c,k;
+      var pts=unpack(xv),Bv=segs.length?bulgesOf(xv):B0,r=[],c,k;
       for(c=0;c<constraints.length;c++){
         var cons=constraints[c];
-        var rc=bimConResidual(cons.type,pts,cons.refs,cons.value);
+        var rc=bimConResidual(cons.type,pts,cons.refs,cons.value,Bv);
         for(k=0;k<rc.length;k++)r.push(rc[k]);
       }
       return r;
     }
     var mSize=0;
     for(i=0;i<constraints.length;i++)mSize+=bimConResidualCount(constraints[i].type);
-    if(mSize===0)return {pts:ptsIn.map(function(p){return p.slice();}),iterations:0,residualNorm:0};
+    if(mSize===0)return {pts:ptsIn.map(function(p){return p.slice();}),bulges:B0,iterations:0,residualNorm:0};
     var lambda=lambda0,r=evalResiduals(x),normSq=bimConDot(r,r),iter;
     for(iter=0;iter<maxIter;iter++){
       if(normSq<tol)break;
       var h=1e-6,J=[],rr,v;
-      for(rr=0;rr<mSize;rr++)J.push(new Array(2*n).fill(0));
-      for(v=0;v<2*n;v++){
+      for(rr=0;rr<mSize;rr++)J.push(new Array(nv).fill(0));
+      for(v=0;v<nv;v++){
         var xp=x.slice();xp[v]+=h;
         var xm=x.slice();xm[v]-=h;
         var rp=evalResiduals(xp),rm=evalResiduals(xm);
         for(rr=0;rr<mSize;rr++)J[rr][v]=(rp[rr]-rm[rr])/(2*h);
       }
-      var JT_J=bimConMatATA(J,mSize,2*n),JT_r=bimConMatVecAT(J,r,mSize,2*n);
+      var JT_J=bimConMatATA(J,mSize,nv),JT_r=bimConMatVecAT(J,r,mSize,nv);
       var tries=0,improved=false;
       while(tries<12&&!improved){
-        var A=JT_J.map(function(row,ri){return row.map(function(val,ci){return val+(ri===ci?lambda*(val||1):0);});});
+        /* __acad3dV267: a diagonal that is numerical noise (an arc's chord moved square to itself) is damped as a zero
+           one; damping it by itself let a 1e-22 entry turn noise into a step of millions */
+        var A=JT_J.map(function(row,ri){return row.map(function(val,ci){return val+(ri===ci?lambda*(val>1e-12?val:1):0);});});
         var negJTr=JT_r.map(function(v2){return -v2;});
         var dx=bimConSolveLinear(A,negJTr);
         if(!dx){lambda*=4;tries++;continue;}
@@ -231,7 +242,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
       if(!improved)break;
     }
     if(!isFinite(normSq))return {error:'Solver diverged (non-finite residual)'};
-    return {pts:unpack(x),iterations:iter,residualNorm:Math.sqrt(normSq)};
+    return {pts:unpack(x),bulges:bulgesOf(x),iterations:iter,residualNorm:Math.sqrt(normSq)};
   }
   // Crude DOF estimate: 2 unknowns per point minus the number of independent-looking equation
   // rows. Not a rigorous rank analysis (that would need a real SVD) -- clearly an approximation,
@@ -241,8 +252,10 @@ import { a3dToast } from '../bim/csg-booleans.js';
     for(i=0;i<constraints.length;i++)eqCount+=bimConResidualCount(constraints[i].type);
     return Math.max(0,ptsCount*2-eqCount);
   }
-  var A3D_CON_LABELS={coincident:'Coincident',horizontal:'Horizontal',vertical:'Vertical',distance:'Distance',equal:'Equal Length',parallel:'Parallel',perpendicular:'Perpendicular',angle:'Angle',pointonline:'Point on Line',midpoint:'Midpoint',symmetric_pt:'Symmetric (about point)',symmetric_line:'Symmetric (about line)'};
-  var A3D_CON_NEED={coincident:2,horizontal:2,vertical:2,distance:2,equal:4,parallel:4,perpendicular:4,angle:4,pointonline:3,midpoint:3,symmetric_pt:3,symmetric_line:4};
+  var A3D_CON_LABELS={coincident:'Coincident',horizontal:'Horizontal',vertical:'Vertical',distance:'Distance',equal:'Equal Length',parallel:'Parallel',perpendicular:'Perpendicular',angle:'Angle',pointonline:'Point on Line',midpoint:'Midpoint',symmetric_pt:'Symmetric (about point)',symmetric_line:'Symmetric (about line)',
+    radius:'Radius',diameter:'Diameter',pointonarc:'Point on Arc',tangent:'Tangent'};
+  var A3D_CON_NEED={coincident:2,horizontal:2,vertical:2,distance:2,equal:4,parallel:4,perpendicular:4,angle:4,pointonline:3,midpoint:3,symmetric_pt:3,symmetric_line:4,
+    radius:2,diameter:2,pointonarc:3,tangent:4};
   function bimSketchConstraintLabel(type){return A3D_CON_LABELS[type]||type;}
   function bimSketchConstraintDesc(o,c){
     var lbl=bimSketchConstraintLabel(c.type);
@@ -252,6 +265,9 @@ import { a3dToast } from '../bim/csg-booleans.js';
     if(c.type==='pointonline')return lbl+' ('+names[0]+' on '+names[1]+'-'+names[2]+')';
     if(c.type==='midpoint')return lbl+' ('+names[0]+' = mid of '+names[1]+'-'+names[2]+')';
     if(c.type==='symmetric_pt')return lbl+' ('+names[0]+'-'+names[1]+' about '+names[2]+')';
+    if(c.type==='radius'||c.type==='diameter')return lbl+' (arc '+names[0]+'-'+names[1]+' = '+c.value.toFixed(3)+'m)';   /* __acad3dV267 */
+    if(c.type==='pointonarc')return lbl+' ('+names[0]+' on arc '+names[1]+'-'+names[2]+')';
+    if(c.type==='tangent')return lbl+' ('+names[0]+names[1]+' to arc '+names[2]+names[3]+')';
     if(c.type==='symmetric_line')return lbl+' ('+names[0]+'-'+names[1]+' about '+names[2]+'-'+names[3]+')';
     if(c.refs.length===4)return lbl+' ('+names[0]+names[1]+' / '+names[2]+names[3]+')';
     return lbl+' ('+names[0]+'-'+names[1]+')';
@@ -269,7 +285,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
     if(pinIdx!==undefined&&pinIdx!==null&&pinIdx>=0&&pinIdx<o.pts.length){
       cons.push({type:'fixed',refs:[pinIdx],value:[o.pts[pinIdx][0],o.pts[pinIdx][1]]});
     }
-    var res=bimSolveSketchConstraints(o.pts,cons);
+    var res=bimSolveSketchConstraints(o.pts,cons,{bulges:o.bulges||[]});
     if(res.error){
       console.warn('[BIM] Sketch constraint solve failed on "'+o.name+'": '+res.error);
       if(!opts.silent)a3dToast('Constraint solve failed: '+res.error);
@@ -282,6 +298,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
     }
     var i;
     for(i=0;i<o.pts.length;i++)o.pts[i]=[res.pts[i][0],res.pts[i][1]];
+    if(o.bulges&&res.bulges)for(i=0;i<o.bulges.length;i++)o.bulges[i]=res.bulges[i]||0;   /* __acad3dV267: a radius moves its arc */
     return {ok:true,solved:true,residualNorm:res.residualNorm};
   }
   function bimAddSketchConstraint(o,type,refs,value){
@@ -291,6 +308,12 @@ import { a3dToast } from '../bim/csg-booleans.js';
     if(!need||!refs||refs.length!==need){console.warn('[BIM] Rejected malformed constraint request (type='+type+', refs='+JSON.stringify(refs)+').');return null;}
     var i;
     for(i=0;i<refs.length;i++)if(refs[i]<0||refs[i]>=o.pts.length){a3dToast('Constraint point out of range');return null;}
+    if(bimConIsArcKind(type)){   /* __acad3dV267: the arc is named by its two end points, and must be an arc */
+      var ar=bimConArcRefs(type,refs,o.pts.length,o.closed);
+      if(!ar){a3dToast('Pick the two end points of one segment for the arc');return null;}
+      if(Math.abs((o.bulges||[])[bimConArcOf({type:type,refs:ar})]||0)<1e-9){a3dToast('That segment is straight: '+bimSketchConstraintLabel(type)+' needs an arc');return null;}
+      refs=ar;
+    }
     pushUndo();
     if(!o.constraints)o.constraints=[];
     var c={id:'con-'+Date.now().toString(36)+'-'+(A3D.seq++),type:type,refs:refs.slice(),value:value};
@@ -324,7 +347,9 @@ import { a3dToast } from '../bim/csg-booleans.js';
     closeDlg();
     bimEnterDraftingMode();
     A3D.conPick={type:type,need:A3D_CON_NEED[type],picked:[]};
-    a3dToast(bimSketchConstraintLabel(type)+': click point 1 of '+A3D_CON_NEED[type]+' on '+o.name+' (Escape to cancel)');
+    var hint={radius:'click the two end points of the arc',diameter:'click the two end points of the arc',
+      pointonarc:'click the point, then the two end points of the arc',tangent:'click the line\'s two points, then the arc\'s two end points'}[type];   /* __acad3dV267 */
+    a3dToast(bimSketchConstraintLabel(type)+': '+(hint||'click point 1 of '+A3D_CON_NEED[type])+' on '+o.name+' (Escape to cancel)');
     paint();
   }
   function cancelConstraintPick(){A3D.conPick=null;paint();}
@@ -332,7 +357,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
     var cp=A3D.conPick,o=selSketch();
     A3D.conPick=null;
     if(!o||!cp)return;
-    if(cp.type==='distance'||cp.type==='angle'){openConstraintValueDlg(cp.type,o,cp.picked.slice());return;}
+    if(cp.type==='distance'||cp.type==='angle'||cp.type==='radius'||cp.type==='diameter'){openConstraintValueDlg(cp.type,o,cp.picked.slice());return;}
     bimAddSketchConstraint(o,cp.type,cp.picked.slice());
   }
   function openConstraintValueDlg(kind,o,refs){
@@ -340,8 +365,9 @@ import { a3dToast } from '../bim/csg-booleans.js';
     var isAngle=(kind==='angle');
     var d=document.createElement('div');
     d.className='a3d-dlg';
-    d.innerHTML='<div class="a3d-dlghd">'+(isAngle?'Angle Constraint':'Distance Constraint')+'</div><div class="a3d-dlgbody">'+
-      '<div class="a3d-dlgrow"><label>'+(isAngle?'Angle (degrees)':'Distance (m)')+'</label><input type="number" step="any" data-a3dp="v" value="'+(isAngle?'45':'1')+'"></div>'+
+    var nm=isAngle?'Angle':kind==='radius'?'Radius':kind==='diameter'?'Diameter':'Distance';   /* __acad3dV267 */
+    d.innerHTML='<div class="a3d-dlghd">'+nm+' Constraint</div><div class="a3d-dlgbody">'+
+      '<div class="a3d-dlgrow"><label>'+(isAngle?'Angle (degrees)':nm+' (m)')+'</label><input type="number" step="any" data-a3dp="v" value="'+(isAngle?'45':'1')+'"></div>'+
       '<div id="a3d-dlgerr" class="a3d-dlgerr"></div></div>'+
       '<div class="a3d-dlgft"><button data-a3dlg="cancel">Cancel</button><button data-a3dlg="ok">OK</button></div>';
     el.root.appendChild(d);el.dlg=d;
@@ -350,7 +376,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
       var v=parseFloat(vI.value);
       var eb=document.getElementById('a3d-dlgerr');
       if(!isFinite(v)){eb.textContent='Must be a number';return;}
-      if(!isAngle&&v<=0){eb.textContent='Distance must be a positive number';return;}
+      if(!isAngle&&v<=0){eb.textContent=nm+' must be a positive number';return;}
       closeDlg();
       bimAddSketchConstraint(o,kind,refs,isAngle?(v*Math.PI/180):v);
     }

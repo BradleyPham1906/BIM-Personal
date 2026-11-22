@@ -84,6 +84,7 @@ import { bimWalkCommand } from '../walk/walk-mode.js';
 import { bimSetSnap, bimSyncSnapPill } from '../ui/shortcuts.js';
 import { bimGizmoCommand } from '../gizmo/gizmo-handles.js';
 import { bimPressPullCommand } from '../editing/faces-push-pull.js';
+import { startConstraintTool } from '../drawing/sketch-constraints.js';
 import { delSelection, duplicateSelection } from '../editing/selection-tools.js';
 import { startMirrorTool, startPolarArrayTool, startRotateTool } from '../editing/precision-editing.js';
 import { bimTogglePolar, openOsnapDlg } from '../drawing/object-snaps.js';
@@ -301,6 +302,10 @@ import { bimOpenToolsPanel } from '../ui/discipline-tabs.js';
     solidsubtract:function(){bimOcctBoolean('cut');},
     solidintersect:function(){bimOcctBoolean('intersect');},
     exportstep:function(){bimOcctExportStep();},
+    gctangent:function(){startConstraintTool('tangent');},   /* __acad3dV267 */
+    dcradius:function(){startConstraintTool('radius');},
+    dcdiameter:function(){startConstraintTool('diameter');},
+    gcpointonarc:function(){startConstraintTool('pointonarc');},
     occtdraft:function(){startOcctDraft();},   /* __acad3dV266 */
     occtsweep:function(){bimOcctSweep();},
     occtpattern:function(){startOcctPattern();},
