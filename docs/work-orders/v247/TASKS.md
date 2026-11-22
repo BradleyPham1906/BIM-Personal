@@ -68,9 +68,19 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
+## [ ] WO-06 [Cline] `bimRunCatchment(dir, nx, ny, k)`
+
+- **It must:** SPEC 5 WO-06: null unless dir has nx ny entries. Returns an array of nx ny numbers, 1 for cell k and for every cell whose path along `dir` reaches k, 0 for the rest. A cell's target is the neighbour its direction points to (BIM_RUN_DR and BIM_RUN_DC; none for -1 or off the grid). List each cell's upstream cells, then walk upstream from k, marking each cell once (so a cycle ends). All 0 when k is not a whole number from 0 to nx ny - 1. Never changes `dir`.
+- **May use:** BIM_RUN_DR, BIM_RUN_DC (WO-01).
+- **Files:** `src/js/engine/terrain/runoff.js`, `docs/work-orders/v247/v247.test.mjs`
+- **Budget:** 20
+- **Test:** the cases named `WO-06 ...` in `docs/work-orders/v247/v247.test.mjs`. Added 2026-11-21 at the owner's choice (`docs/research/research-terrain-surface.md`); checked against a reference implementation.
+
+---
+
 ## [ ] C-06 [Claude] The wiring
 
-The grid, the drawing, the catchment and Q. The test to tests/unit/; npm run modules; the browser check.
+The grid, the drawing, the catchment (WO-06, from a clicked outlet) and Q. The test to tests/unit/; npm run modules; the browser check.
 
 ---
 
