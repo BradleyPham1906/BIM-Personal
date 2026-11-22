@@ -16514,6 +16514,32 @@ function bimOpnToWall(rect, len, height) {
       ctx.restore();
     }
   }
+  /* __acad3dV254: text with a height is drawing text, as AutoCAD draws TEXT and MTEXT: its height in metres on the
+     plan, so it grows and shrinks with the zoom; turned by its rotation (degrees counter-clockwise, as DXF stores it,
+     north up); its insertion point at the left of its first line's baseline; a line per paragraph. Text smaller than
+     a pixel and a half is not drawn, as AutoCAD shows it as a mark. */
+  function bimTextScreenFrame(pt,h,rotDeg,V,W,H){
+    var r=(rotDeg||0)*Math.PI/180;
+    var p0=toScreen(pt,V,W,H);
+    var px=toScreen([pt[0]+Math.cos(r)*h,pt[1],pt[2]-Math.sin(r)*h],V,W,H);   /* model north is -z */
+    var dx=px[0]-p0[0],dy=px[1]-p0[1],L=Math.sqrt(dx*dx+dy*dy);
+    return {x:p0[0],y:p0[1],px:L,ang:Math.atan2(dy,dx)};
+  }
+  function bimDrawScaledText(ctx,o,pt,sel,V,W,H){
+    var f=bimTextScreenFrame(pt,o.height,o.rot,V,W,H),lines=String(o.text).split('\n'),k;
+    if(!(f.px>=1.5)){
+      if(sel){ctx.save();ctx.fillStyle='#4ea1ff';ctx.fillRect(f.x-2,f.y-2,4,4);ctx.restore();}
+      return;
+    }
+    ctx.save();
+    ctx.globalAlpha*=bimLayerAlpha(o);
+    ctx.translate(f.x,f.y);ctx.rotate(f.ang);
+    ctx.font=f.px.toFixed(2)+'px system-ui,sans-serif';
+    ctx.textAlign='left';ctx.textBaseline='alphabetic';
+    ctx.fillStyle=sel?'#4ea1ff':(o.col||'#dfe4ea');
+    for(k=0;k<lines.length;k++)ctx.fillText(lines[k],0,k*f.px*1.6667);   /* AutoCAD's single line spacing: 5/3 of the height */
+    ctx.restore();
+  }
   function drawTextLabels(ctx,V,W,H){
     if(A3D.section)return;
     var i,o;
@@ -16527,6 +16553,7 @@ function bimOpnToWall(rect, len, height) {
       var y0=o.y+oy;
       var sp=toScreen([o.pt[0]+ox,y0,o.pt[1]+oz],V,W,H);
       var sel=(o.id===A3D.sel||(A3D.selSet&&A3D.selSet.indexOf(o.id)>=0));
+      if(o.height>0){bimDrawScaledText(ctx,o,[o.pt[0]+ox,y0,o.pt[1]+oz],sel,V,W,H);continue;}   /* __acad3dV254 */
       ctx.save();
       ctx.globalAlpha*=bimLayerAlpha(o);   /* __acad3dV121: the layer's transparency */
       ctx.fillStyle=sel?'#4ea1ff':'#dfe4ea';
@@ -17868,8 +17895,9 @@ function bimOpnToWall(rect, len, height) {
       out+=P(0,'LINE')+P(8,lay)+P(10,DX(a))+P(20,DY(a))+P(30,'0.0')+P(11,DX(b))+P(21,DY(b))+P(31,'0.0');
       stats.line++;
     }
-    function text(pt,str,h,lay){
-      out+=P(0,'TEXT')+P(8,lay)+P(10,DX(pt))+P(20,DY(pt))+P(30,'0.0')+P(40,h.toFixed(4))+P(1,String(str).replace(/[\r\n]+/g,' '));
+    function text(pt,str,h,lay,rot){
+      out+=P(0,'TEXT')+P(8,lay)+P(10,DX(pt))+P(20,DY(pt))+P(30,'0.0')+P(40,h.toFixed(4))+P(1,String(str).replace(/[\r\n]+/g,' '))+
+        (rot?P(50,(+rot).toFixed(4)):'');   /* __acad3dV254: its rotation, degrees counter-clockwise */
       stats.text++;
     }
     for(i=0;i<A3D.objs.length;i++){
@@ -17951,7 +17979,7 @@ function bimOpnToWall(rect, len, height) {
       }else if(o.t==='roomtag'){   /* __acad3dV101 */
         if(bimAnnotDrawable(o))text(o.pt,bimRoomTagText(o),0.25,lay);
       }else if(o.t==='text'){
-        text(o.pt,o.text,0.25,lay);
+        text(o.pt,o.text,o.height>0?o.height:0.25,lay,o.rot||0);   /* __acad3dV254: its own height */
       }else if(b&&(b.type==='floor'||b.type==='ceiling'||b.type==='roof')&&(b.profile||b.footprint)){
         poly(b.profile||b.footprint,true,lay);
       }else if(b&&b.type==='column'&&b.center){
@@ -38082,6 +38110,8 @@ function bimAnGauss(m) {
               A3D.counts.text=(A3D.counts.text||0)+1;
               o={id:'a3d-'+Date.now().toString(36)+'-'+(A3D.seq++),t:'text',name:'Text_'+A3D.counts.text,col:'#dfe4ea',pos:[0,0,0],
                 text:e.text,pt:bimDxfToModel(e.p[0],e.p[1],scale),y:baseY+(e.p[2]||0)*scale,levelId:A3D.activeLevel,viewId:A3D.activeViewId};
+              if(e.h>0)o.height=e.h*scale;   /* __acad3dV254: drawn at its own height */
+              if(e.rot)o.rot=e.rot;
               A3D.objs.push(o);texts++;
             }
           }else if(e.type==='ARC'){
@@ -55018,7 +55048,7 @@ function bimWalkKeys(h, j) {
       var w=b.getAttribute('data-a3dlg');closeDlg();if(w==='front'||w==='back')bimDrawOrderCommand(w);});
   }
   /* ---------- MATCHPROP (MA) ---------- */
-  var BIM_MATCH_PROPS=['layer','col','linetype','lineweight','ltScale','textSize','hatch'];
+  var BIM_MATCH_PROPS=['layer','col','linetype','lineweight','ltScale','height','hatch'];
   /* The source's properties copied to the destination; only those the source has. */
   function bimMatchProps(src,dst){
     var n=0,i,k;

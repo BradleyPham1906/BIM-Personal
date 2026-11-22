@@ -200,6 +200,7 @@
   "bimSwAnyUnsaved",
   "bimSwUnsavedOf",
   "bimSwWanted",
+  "bimTextScreenFrame",
   "bimTraverse",
   "bimWalkBody",
   "bimWalkCapsule",

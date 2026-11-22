@@ -334,7 +334,7 @@ import { a3dToast, objById } from '../bim/csg-booleans.js';
       var w=b.getAttribute('data-a3dlg');closeDlg();if(w==='front'||w==='back')bimDrawOrderCommand(w);});
   }
   /* ---------- MATCHPROP (MA) ---------- */
-  var BIM_MATCH_PROPS=['layer','col','linetype','lineweight','ltScale','textSize','hatch'];
+  var BIM_MATCH_PROPS=['layer','col','linetype','lineweight','ltScale','height','hatch'];
   /* The source's properties copied to the destination; only those the source has. */
   function bimMatchProps(src,dst){
     var n=0,i,k;

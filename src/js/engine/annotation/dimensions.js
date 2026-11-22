@@ -323,6 +323,32 @@ import { a3dToast } from '../bim/csg-booleans.js';
       ctx.restore();
     }
   }
+  /* __acad3dV254: text with a height is drawing text, as AutoCAD draws TEXT and MTEXT: its height in metres on the
+     plan, so it grows and shrinks with the zoom; turned by its rotation (degrees counter-clockwise, as DXF stores it,
+     north up); its insertion point at the left of its first line's baseline; a line per paragraph. Text smaller than
+     a pixel and a half is not drawn, as AutoCAD shows it as a mark. */
+  function bimTextScreenFrame(pt,h,rotDeg,V,W,H){
+    var r=(rotDeg||0)*Math.PI/180;
+    var p0=toScreen(pt,V,W,H);
+    var px=toScreen([pt[0]+Math.cos(r)*h,pt[1],pt[2]-Math.sin(r)*h],V,W,H);   /* model north is -z */
+    var dx=px[0]-p0[0],dy=px[1]-p0[1],L=Math.sqrt(dx*dx+dy*dy);
+    return {x:p0[0],y:p0[1],px:L,ang:Math.atan2(dy,dx)};
+  }
+  function bimDrawScaledText(ctx,o,pt,sel,V,W,H){
+    var f=bimTextScreenFrame(pt,o.height,o.rot,V,W,H),lines=String(o.text).split('\n'),k;
+    if(!(f.px>=1.5)){
+      if(sel){ctx.save();ctx.fillStyle='#4ea1ff';ctx.fillRect(f.x-2,f.y-2,4,4);ctx.restore();}
+      return;
+    }
+    ctx.save();
+    ctx.globalAlpha*=bimLayerAlpha(o);
+    ctx.translate(f.x,f.y);ctx.rotate(f.ang);
+    ctx.font=f.px.toFixed(2)+'px system-ui,sans-serif';
+    ctx.textAlign='left';ctx.textBaseline='alphabetic';
+    ctx.fillStyle=sel?'#4ea1ff':(o.col||'#dfe4ea');
+    for(k=0;k<lines.length;k++)ctx.fillText(lines[k],0,k*f.px*1.6667);   /* AutoCAD's single line spacing: 5/3 of the height */
+    ctx.restore();
+  }
   function drawTextLabels(ctx,V,W,H){
     if(A3D.section)return;
     var i,o;
@@ -336,6 +362,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
       var y0=o.y+oy;
       var sp=toScreen([o.pt[0]+ox,y0,o.pt[1]+oz],V,W,H);
       var sel=(o.id===A3D.sel||(A3D.selSet&&A3D.selSet.indexOf(o.id)>=0));
+      if(o.height>0){bimDrawScaledText(ctx,o,[o.pt[0]+ox,y0,o.pt[1]+oz],sel,V,W,H);continue;}   /* __acad3dV254 */
       ctx.save();
       ctx.globalAlpha*=bimLayerAlpha(o);   /* __acad3dV121: the layer's transparency */
       ctx.fillStyle=sel?'#4ea1ff':'#dfe4ea';
