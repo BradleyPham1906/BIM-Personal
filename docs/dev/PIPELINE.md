@@ -7,6 +7,12 @@ The phase roadmap and regression figures below are historical snapshots; do not 
 `NOW` heading as the current queue. `tools/build_app.py --check` reports the exact build size and
 SHA-256 for the checked-out source and build.
 
+2026-11-22: V249 to V273 done and merged (PRs #123 to #128). The CADCraft drafting list is
+`docs/research/research-cadcraft-gap.md` and the FreeCAD gaps are `docs/research/research-freecad-gap.md`.
+Libraries pinned in this work are cc-dwg (V252), OpenCASCADE through replicad (V264) and occt-import-js
+(V270, IGES). Still open from those lists: IGES export (no writer in either OpenCASCADE build); joints
+beyond fixed, vertical hinge and slider; and Make2D on meshes (v189, Cline's). Next: the queue as before.
+
 ## Repository restructure (2026-11-07)
 
 The engine's 196 files are ES modules (imports and exports written by `tools/engine_modules.cjs`);
