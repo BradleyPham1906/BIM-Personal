@@ -26,6 +26,7 @@ import { bimCycleRoomScheme } from '../bim/room-colour-fill.js';
 import { bimTagAllRooms, startRoomTagTool, startRoomTool } from '../bim/room-tags.js';
 import { startDimTool, startLeaderTool, startTextTool } from '../annotation/dimensions.js';
 import { bimListCommand, startInquiryTool } from '../annotation/inquiry.js';
+import { openDimStyleDlg, startDimChainTool } from '../annotation/dim-tools.js';
 import { bimExportPDF } from '../annotation/annotation-pick.js';
 import { bimFileOpen, bimFileSave } from '../io/file-save.js';
 import { startColumnTool, startDoorTool, startFloorTool, startWindowTool } from '../bim/columns-openings.js';
@@ -265,6 +266,10 @@ import { bimOpenToolsPanel } from '../ui/discipline-tabs.js';
     align:function(){openAlignDlg();},
     join:function(){bimJoinCommand();},   /* __acad3dV250: polylines first, then walls */
     moveTool:function(){startMoveTool();},
+    dimbase:function(){startDimChainTool('base');},   /* __acad3dV258 */
+    dimcont:function(){startDimChainTool('cont');},
+    dimord:function(){startDimChainTool('ord');},
+    dimstyle:function(){openDimStyleDlg();},
     layiso:function(){bimLayIso();},   /* __acad3dV256 */
     layuniso:function(){bimLayUniso();},
     layoff:function(){bimLayCmdApply(bimSelLayerIds(),'visible',false,{none:'LAYOFF: select objects on the layers to turn off',done:'LAYOFF: # layer(s) turned off'});},

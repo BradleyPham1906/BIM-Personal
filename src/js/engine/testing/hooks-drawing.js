@@ -44,6 +44,7 @@ import {
   bimCircleFrom3Points, bimComputeAngularDim, bimCreateAngularDim, bimCreateDim, bimCreateLeader,
   bimCreateRadialDim, bimCreateTextLabel
 } from '../annotation/dimensions.js';
+import { bimDimStyle } from '../annotation/dim-tools.js';
 import { bimBuildSimplePdf } from '../annotation/annotation-pick.js';
 import {
   bimBuildProjectEnvelope, bimExportProjectFile, bimImportProjectFile, bimParseProjectEnvelope
@@ -486,6 +487,9 @@ import { cvH, cvW } from '../ui/canvas-size.js';
     var q=bimObjOffset(o);return {id:o.id,closed:o.closed!==false,col:o.col||null,layer:o.layer||null,bulges:o.bulges||null,
       pts:o.pts.map(function(p){return [Math.round((p[0]+q[0])*1e6)/1e6,Math.round((p[1]+q[2])*1e6)/1e6];})};});};
   window.__a3dSketchSetProps=function(id,props){var o=objById(id),k;if(!o)return false;for(k in props)if(props.hasOwnProperty(k))o[k]=props[k];paint();return true;};
+  /* __acad3dV258: every dimension as stored, and the dimension style */
+  window.__a3dDimsAll=function(){return JSON.parse(JSON.stringify(A3D.objs.filter(function(o){return o.t==='dim';})));};
+  window.__a3dDimStyle=function(){return JSON.parse(JSON.stringify(bimDimStyle()));};
   window.__a3dTestSetObjs=function(list){A3D.objs=list;A3D.sel=null;A3D.sel2=null;A3D.selSet=[];};
   window.__a3dTestPaint=function(){paint();};
   window.__a3dTestRotate=function(d){A3D.cam.yaw+=d;};

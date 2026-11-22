@@ -1,6 +1,7 @@
 import { A3D, el } from '../core/state.js';
 import { bimEnterDraftingMode, pushUndo } from '../drawing/plan-mode-sketch.js';
 import { bimGetActiveLevel } from '../bim/levels-walls-floors.js';
+import { bimDrawLinearDim, bimDrawOrdinateDim } from './dim-tools.js';
 import { bimLayerAlpha, bimLayerShown } from '../layers/layer-rules.js';
 import { toScreen } from '../io/import-entry.js';
 import { paint } from '../map/terrain-3d.js';
@@ -173,6 +174,8 @@ import { a3dToast } from '../bim/csg-booleans.js';
       ctx.beginPath();ctx.moveTo(st[0],st[1]);ctx.lineTo(ed[0],ed[1]);ctx.stroke();
       lp=[(st[0]+ed[0])/2,(st[1]+ed[1])/2-10];
       label=(kind==='diameter'?'\u00d8':'R')+o.value.toFixed(2);
+    }else if(kind==='ordinate'){   /* __acad3dV258 */
+      var od=bimDrawOrdinateDim(ctx,o,sel,S);label=od.label;lp=od.at;
     }else if(kind==='leader'){
       var an=S(o.anchor),el2=S(o.elbow),la=S(o.landing);
       ctx.beginPath();ctx.moveTo(an[0],an[1]);ctx.lineTo(el2[0],el2[1]);ctx.lineTo(la[0],la[1]);ctx.stroke();
@@ -293,34 +296,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
       if(!bimObjectVisibleOnLevel(o))continue;
       var selX=(o.id===A3D.sel||(A3D.selSet&&A3D.selSet.indexOf(o.id)>=0));
       if(bimDimKind(o)!=='linear'){drawDimExtras(ctx,V,W,H,o,selX);continue;}
-      var ox=(o.pos&&o.pos[0])||0,oy=(o.pos&&o.pos[1])||0,oz=(o.pos&&o.pos[2])||0;
-      var y0=o.y+oy;
-      var p1=toScreen([o.p1[0]+ox,y0,o.p1[1]+oz],V,W,H);
-      var p2=toScreen([o.p2[0]+ox,y0,o.p2[1]+oz],V,W,H);
-      var d1=toScreen([o.d1[0]+ox,y0,o.d1[1]+oz],V,W,H);
-      var d2=toScreen([o.d2[0]+ox,y0,o.d2[1]+oz],V,W,H);
-      var sel=(o.id===A3D.sel||(A3D.selSet&&A3D.selSet.indexOf(o.id)>=0));
-      ctx.save();
-      ctx.globalAlpha*=bimLayerAlpha(o);   /* __acad3dV121: the layer's transparency */
-      ctx.strokeStyle=sel?'#4ea1ff':'#b8c0ca';
-      ctx.lineWidth=sel?1.4:1;
-      ctx.beginPath();ctx.moveTo(p1[0],p1[1]);ctx.lineTo(d1[0],d1[1]);ctx.stroke();
-      ctx.beginPath();ctx.moveTo(p2[0],p2[1]);ctx.lineTo(d2[0],d2[1]);ctx.stroke();
-      ctx.beginPath();ctx.moveTo(d1[0],d1[1]);ctx.lineTo(d2[0],d2[1]);ctx.stroke();
-      var tdx=d2[0]-d1[0],tdy=d2[1]-d1[1],tlen=Math.sqrt(tdx*tdx+tdy*tdy)||1;
-      var tux=tdx/tlen,tuy=tdy/tlen,tick=4;
-      ctx.beginPath();ctx.moveTo(d1[0]-tuy*tick-tux*tick,d1[1]+tux*tick-tuy*tick);ctx.lineTo(d1[0]+tuy*tick+tux*tick,d1[1]-tux*tick+tuy*tick);ctx.stroke();
-      ctx.beginPath();ctx.moveTo(d2[0]-tuy*tick-tux*tick,d2[1]+tux*tick-tuy*tick);ctx.lineTo(d2[0]+tuy*tick+tux*tick,d2[1]-tux*tick+tuy*tick);ctx.stroke();
-      var mx=(d1[0]+d2[0])/2,my=(d1[1]+d2[1])/2;
-      var label=o.length.toFixed(2)+' m';
-      ctx.font='11px system-ui,sans-serif';
-      var tw=ctx.measureText(label).width;
-      ctx.fillStyle='rgba(20,22,26,0.82)';
-      ctx.fillRect(mx-tw/2-4,my-16,tw+8,14);
-      ctx.fillStyle=sel?'#9ec1ff':'#dfe4ea';
-      ctx.textAlign='center';ctx.textBaseline='middle';
-      ctx.fillText(label,mx,my-9);
-      ctx.restore();
+      bimDrawLinearDim(ctx,o,selX,V,W,H);   /* __acad3dV258: drawn with the dimension style */
     }
   }
   /* __acad3dV254: text with a height is drawing text, as AutoCAD draws TEXT and MTEXT: its height in metres on the

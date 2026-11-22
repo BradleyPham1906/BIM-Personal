@@ -26,6 +26,7 @@ import {
   bimCreateAngularDim, bimCreateDim, bimCreateRadialDim, openLeaderTextDlg, openTextLabelDlg
 } from '../annotation/dimensions.js';
 import { bimInquiryFinish, bimInquiryPoint, bimIsInquiryTool } from '../annotation/inquiry.js';
+import { bimDimChainPoint, bimIsDimChainTool } from '../annotation/dim-tools.js';
 import {
   bimFindWallNear, openColumnDlg, openDoorDlg, openFloorDlg, openWindowDlg
 } from '../bim/columns-openings.js';
@@ -96,7 +97,7 @@ import { cvH, cvW } from '../ui/canvas-size.js';
      through to the viewport. polygon joins on the same terms. */
   var BIM_COORD_TOOLS={line:1,poly:1,wall:1,rect:1,stair:1,arc:1,circle:1,polygon:1,point:1,xline:1,boundary:1,hatch:1,
     /* __acad3dV255: the drafting track's point-taking tools, so a typed point, a typed distance and Enter reach them */
-    move:1,copy:1,stretch:1,circle2p:1,circle3p:1,ellipse:1,revcloud:1,inqid:1,inqdist:1,inqarea:1};
+    move:1,copy:1,stretch:1,circle2p:1,circle3p:1,ellipse:1,revcloud:1,inqid:1,inqdist:1,inqarea:1,dimbase:1,dimcont:1,dimord:1};
 
   /* AutoCAD coordinate entry. Exactly the five forms Autodesk documents:
 
@@ -299,6 +300,8 @@ import { cvH, cvW } from '../ui/canvas-size.js';
     if(sk.tool==='circle3p')return ['Specify first point on circle:','Specify second point on circle:','Specify third point on circle:'][Math.min(n,2)];
     if(sk.tool==='ellipse')return ['Specify axis endpoint of ellipse:','Specify other endpoint of axis:','Specify distance to other axis:'][Math.min(n,2)];
     if(sk.tool==='revcloud')return n?'Specify opposite corner:':'Specify first corner point:';
+    if(sk.tool==='dimbase'||sk.tool==='dimcont')return 'Specify a second extension line origin or [Undo/Select] <Select>:';
+    if(sk.tool==='dimord')return n?'Specify leader endpoint location:':'Specify feature location:';
     if(sk.tool==='inqid')return 'Specify point:';
     if(sk.tool==='inqdist')return n?'Specify second point:':'Specify first point:';
     if(sk.tool==='inqarea')return n?'Specify next point or press ENTER for total:':'Specify first corner point:';
@@ -374,7 +377,8 @@ import { cvH, cvW } from '../ui/canvas-size.js';
     var sk=A3D.sk;if(!sk)return;
     if(bimIsDmTool(sk)){bimDmPoint(sk,[gx,gz]);return;}
     if(bimIsDrawExtra(sk)){bimDrawExtraPoint(sk,[gx,gz]);return;}   /* __acad3dV253 */
-    if(bimIsInquiryTool(sk)){bimInquiryPoint(sk,[gx,gz]);return;}   /* __acad3dV255 */   /* __acad3dV250: MOVE, COPY, STRETCH */
+    if(bimIsInquiryTool(sk)){bimInquiryPoint(sk,[gx,gz]);return;}   /* __acad3dV255 */
+    if(bimIsDimChainTool(sk)){bimDimChainPoint(sk,[gx,gz]);return;}   /* __acad3dV258 */   /* __acad3dV250: MOVE, COPY, STRETCH */
     if(sk.tool==='matchprop'){if(xy)bimMatchPropClick(sk,xy);return;}
     if(sk.tool==='hatch'){                      /* __acad3dV96 */
       bimApplyHatchAt([gx,gz],sk.y,sk.hatch);
