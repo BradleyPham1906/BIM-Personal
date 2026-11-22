@@ -187,7 +187,8 @@ import { a3dToast, objById } from '../bim/csg-booleans.js';
     else if(g.kind==='wall'){A3D.counts.wall=(A3D.counts.wall||0)+1;copy.t='solid';copy.name='Wall_'+A3D.counts.wall;copy.mesh=g.mesh;copy.bim=bimCarryBim(o.bim,g.bim);}
     else if(g.kind==='floor'){A3D.counts.floor=(A3D.counts.floor||0)+1;copy.t='solid';copy.name='Floor_'+A3D.counts.floor;copy.mesh=g.mesh;copy.bim=bimCarryBim(o.bim,g.bim);}
     else if(g.kind==='column'){A3D.counts.column=(A3D.counts.column||0)+1;copy.t='solid';copy.name='Column_'+A3D.counts.column;copy.mesh=g.mesh;copy.bim=bimCarryBim(o.bim,g.bim);}
-    else if(g.kind==='mesh'){copy.t=g.materialized?'solid':o.t;copy.name=o.name+' mirror';copy.mesh=g.mesh;if(o.prm&&!g.materialized)copy.prm=JSON.parse(JSON.stringify(o.prm));if(g.materialized)bimNoteMaterialized(copy.name);}   /* __acad3dV110 */
+    else if(g.kind==='mesh'){copy.t=g.materialized?'solid':o.t;copy.name=o.name+' mirror';copy.mesh=g.mesh;if(o.prm&&!g.materialized)copy.prm=JSON.parse(JSON.stringify(o.prm));if(g.materialized)bimNoteMaterialized(copy.name);
+      if(o.occt&&!g.materialized)copy.occt=JSON.parse(JSON.stringify(o.occt));}   /* __acad3dV110; __acad3dV266: an OpenCASCADE solid's B-rep follows its mesh */
     else if(g.kind==='pos'){copy.t=o.t;copy.name=o.name+' mirror';copy.pos=g.pos;if(o.prm)copy.prm=JSON.parse(JSON.stringify(o.prm));}
     else if(g.kind==='diag')bimDgCopy(o,g,copy,'mirror');   /* __acad3dV164 */
     else if(g.kind==='alignment'){   /* __acad3dV127 */
@@ -355,7 +356,8 @@ import { a3dToast, objById } from '../bim/csg-booleans.js';
     else if(g.kind==='wall'){A3D.counts.wall=(A3D.counts.wall||0)+1;copy.t='solid';copy.name='Wall_'+A3D.counts.wall;copy.mesh=g.mesh;copy.bim=bimCarryBim(o.bim,g.bim);}
     else if(g.kind==='floor'){A3D.counts.floor=(A3D.counts.floor||0)+1;copy.t='solid';copy.name='Floor_'+A3D.counts.floor;copy.mesh=g.mesh;copy.bim=bimCarryBim(o.bim,g.bim);}
     else if(g.kind==='column'){A3D.counts.column=(A3D.counts.column||0)+1;copy.t='solid';copy.name='Column_'+A3D.counts.column;copy.mesh=g.mesh;copy.bim=bimCarryBim(o.bim,g.bim);}
-    else if(g.kind==='mesh'){copy.t=g.materialized?'solid':o.t;copy.name=o.name+' copy';copy.mesh=g.mesh;if(o.prm&&!g.materialized)copy.prm=JSON.parse(JSON.stringify(o.prm));if(g.materialized)bimNoteMaterialized(copy.name);}   /* __acad3dV110 */
+    else if(g.kind==='mesh'){copy.t=g.materialized?'solid':o.t;copy.name=o.name+' copy';copy.mesh=g.mesh;if(o.prm&&!g.materialized)copy.prm=JSON.parse(JSON.stringify(o.prm));if(g.materialized)bimNoteMaterialized(copy.name);
+      if(o.occt&&!g.materialized)copy.occt=JSON.parse(JSON.stringify(o.occt));}   /* __acad3dV110; __acad3dV266: an OpenCASCADE solid's B-rep follows its mesh */
     else if(g.kind==='pos'){copy.t=o.t;copy.name=o.name+' copy';copy.pos=g.pos;if(o.prm)copy.prm=JSON.parse(JSON.stringify(o.prm));}
     else if(g.kind==='diag')bimDgCopy(o,g,copy,'copy');   /* __acad3dV164 */
     else return null;

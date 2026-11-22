@@ -14,9 +14,9 @@ import { BIM_BULGE_EPS, bimBulgeAt, bimBulgedSignedArea } from '../drawing/arc-s
      The plan is the app's x and z with y up; OpenCASCADE's is X, Y with Z up. (x, y, z) goes to (X, Y, Z) = (x, -z, y),
      a turn rather than a reflection, so faces keep their winding; a bulge changes sign with the plan's north-up flip, as
      the DXF writer's does (export-mappings.js). A solid keeps its OpenCASCADE shape as replicad's serialized text in
-     o.occt.brep, with a signature of the mesh it made; a mesh tool that changes the mesh afterwards (rotate, scale,
-     push and pull) leaves the signature behind, and the solid is then no longer edited as a B-rep, rather than from a
-     shape it no longer matches. */
+     o.occt.brep, with a signature of the mesh it made. A mesh tool that turns, mirrors or scales the mesh evenly keeps
+     it a solid: the B-rep follows the same map (V266, bimOcctShapeOf). One that stretches or rebuilds it (a plan-only
+     SCALE, push and pull) leaves it a mesh, rather than a shape it no longer matches. */
   var BIM_OCCT={ver:'1.2.1',dir:'occt/1.2.1/',lib:'bim-replicad.min.js',loader:'replicad_single.js',wasm:'replicad_single.wasm',
     sri:'sha256-hpbD1EWm6C2UdV5h1R+k5GlTKeXiUht9ADDHuoZNr18=',mesh:{tolerance:0.005,angularTolerance:10}};
   var A3D_OCCT={load:null,st:'',err:'',R:null};
@@ -67,7 +67,60 @@ import { BIM_BULGE_EPS, bimBulgeAt, bimBulgedSignedArea } from '../drawing/arc-s
     for(i=0;i<mesh.v.length;i++)s+=mesh.v[i][0]*1.3+mesh.v[i][1]*1.7+mesh.v[i][2]*1.9;
     return mesh.v.length+':'+mesh.f.length+':'+s.toFixed(4);
   }
-  function bimOcctIsSolid(o){return !!(o&&o.occt&&typeof o.occt.brep==='string'&&o.mesh&&o.occt.sig===bimOcctSig(o.mesh));}
+  /* __acad3dV266: a solid whose mesh a mesh tool moved, turned, mirrored or scaled (ROTATE, MIRROR, SCALE, the gizmo)
+     is still a solid: the same vertices in the same order, carried by one affine map. Its sizes still match the
+     signature's, and bimOcctShapeOf finds the map and carries the B-rep with it. */
+  function bimOcctSigSizes(sig){var m=/^(\d+):(\d+):/.exec(String(sig||''));return m?[+m[1],+m[2]]:null;}
+  function bimOcctIsSolid(o){
+    if(!(o&&o.occt&&typeof o.occt.brep==='string'&&o.mesh&&o.mesh.v))return false;
+    if(o.occt.sig===bimOcctSig(o.mesh))return true;
+    var n=bimOcctSigSizes(o.occt.sig);
+    return !!(n&&n[0]===o.mesh.v.length&&n[1]===o.mesh.f.length&&!o.occt.lost);
+  }
+  /* The affine map that takes points P to points Q (q = A p + t), by least squares, and how well it fits: the largest
+     distance left, and whether A is a turn, a mirror and one scale (a similarity), which a B-rep can follow; a stretch
+     cannot. Pure. */
+  function bimOcctFitAffine(P,Q){
+    var n=Math.min(P.length,Q.length),M=[[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]],B=[[0,0,0,0],[0,0,0,0],[0,0,0,0]],i,j,k;
+    if(n<4)return null;
+    for(i=0;i<n;i++){
+      var p=[P[i][0],P[i][1],P[i][2],1];
+      for(j=0;j<4;j++){for(k=0;k<4;k++)M[j][k]+=p[j]*p[k];for(k=0;k<3;k++)B[k][j]+=Q[i][k]*p[j];}
+    }
+    var X=[];
+    for(k=0;k<3;k++){var x=bimOcctSolve4(M,B[k]);if(!x)return null;X.push(x);}
+    var A=[[X[0][0],X[0][1],X[0][2]],[X[1][0],X[1][1],X[1][2]],[X[2][0],X[2][1],X[2][2]]],t=[X[0][3],X[1][3],X[2][3]];
+    var err=0,size=0;
+    for(i=0;i<n;i++){
+      var d=0;
+      for(k=0;k<3;k++){var q=A[k][0]*P[i][0]+A[k][1]*P[i][1]+A[k][2]*P[i][2]+t[k];d+=(q-Q[i][k])*(q-Q[i][k]);size=Math.max(size,Math.abs(Q[i][k]));}
+      err=Math.max(err,Math.sqrt(d));
+    }
+    var det=A[0][0]*(A[1][1]*A[2][2]-A[1][2]*A[2][1])-A[0][1]*(A[1][0]*A[2][2]-A[1][2]*A[2][0])+A[0][2]*(A[1][0]*A[2][1]-A[1][1]*A[2][0]);
+    var s=Math.pow(Math.abs(det),1/3),sim=s>1e-9;
+    for(j=0;j<3&&sim;j++)for(k=0;k<3;k++){
+      var dot=A[0][j]*A[0][k]+A[1][j]*A[1][k]+A[2][j]*A[2][k];
+      if(Math.abs(dot-(j===k?s*s:0))>1e-6*Math.max(1,s*s)){sim=false;break;}
+    }
+    return {A:A,t:t,err:err,ok:err<=1e-6*Math.max(1,size),similar:sim,det:det,s:s};
+  }
+  function bimOcctSolve4(M,b){
+    var a=M.map(function(r,i){return r.slice().concat([b[i]]);}),i,j,k;
+    for(i=0;i<4;i++){
+      var piv=i;for(j=i+1;j<4;j++)if(Math.abs(a[j][i])>Math.abs(a[piv][i]))piv=j;
+      if(Math.abs(a[piv][i])<1e-12)return null;
+      var tmp=a[i];a[i]=a[piv];a[piv]=tmp;
+      for(j=0;j<4;j++){if(j===i)continue;var f=a[j][i]/a[i][i];for(k=i;k<5;k++)a[j][k]-=f*a[i][k];}
+    }
+    return [a[0][4]/a[0][0],a[1][4]/a[1][1],a[2][4]/a[2][2],a[3][4]/a[3][3]];
+  }
+  /* The app's map in OpenCASCADE's frame: (X, Y, Z) = (x, -z, y) is the turn Q, so A' = Q A Q^T and t' = Q t. Pure. */
+  function bimOcctAffineToOcc(A,t){
+    var Q=[[1,0,0],[0,0,-1],[0,1,0]],QA=[[0,0,0],[0,0,0],[0,0,0]],R=[[0,0,0],[0,0,0],[0,0,0]],i,j,k;
+    for(i=0;i<3;i++)for(j=0;j<3;j++)for(k=0;k<3;k++)QA[i][j]+=Q[i][k]*A[k][j];
+    for(i=0;i<3;i++)for(j=0;j<3;j++)for(k=0;k<3;k++)R[i][j]+=QA[i][k]*Q[j][k];
+    return {A:R,t:[t[0],-t[2],t[1]]};
+  }
   /* ---------- loading ---------- */
   function bimOcctBases(){
     var p=String(window.location&&window.location.protocol||''),out=[];
@@ -128,7 +181,22 @@ import { BIM_BULGE_EPS, bimBulgeAt, bimBulgedSignedArea } from '../drawing/arc-s
     A3D.meshes={};
     return true;
   }
-  function bimOcctShapeOf(R,o){return R.deserializeShape(o.occt.brep);}
+  function bimOcctShapeOf(R,o){
+    var s=R.deserializeShape(o.occt.brep);
+    if(o.occt.sig===bimOcctSig(o.mesh))return s;
+    /* __acad3dV266: a mesh tool moved the mesh; find its map from the mesh the B-rep makes, and follow it */
+    var m0=bimOcctMesh(s),fit=(m0.v.length===o.mesh.v.length)?bimOcctFitAffine(m0.v,o.mesh.v):null;
+    if(!fit||!fit.ok||!fit.similar){
+      o.occt.lost=true;
+      throw new Error(o.name+' was '+(fit&&fit.ok?'stretched':'reshaped')+' by a mesh tool, so it is no longer edited as a solid');
+    }
+    var F=bimOcctAffineToOcc(fit.A,fit.t),oc=R.getOC(),tr=new oc.gp_Trsf();
+    tr.SetValues(F.A[0][0],F.A[0][1],F.A[0][2],F.t[0],F.A[1][0],F.A[1][1],F.A[1][2],F.t[1],F.A[2][0],F.A[2][1],F.A[2][2],F.t[2]);
+    var bt=new oc.BRepBuilderAPI_Transform(s.wrapped,tr,true),out=R.cast(bt.Shape());
+    tr.delete();bt.delete();
+    o.occt={brep:out.serialize(),sig:bimOcctSig(o.mesh),v:BIM_OCCT.ver};   /* the B-rep follows; the mesh stays as the tool left it */
+    return out;
+  }
   /* The shape where the model shows it: a solid moved by MOVE keeps its B-rep where it was made, and its offset
      (o.pos) on top, as its mesh does; booleans between solids and STEP need them where they are. */
   function bimOcctOffsetXYZ(pos){return [pos[0]||0,-(pos[2]||0),pos[1]||0];}
@@ -137,6 +205,6 @@ import { BIM_BULGE_EPS, bimBulgeAt, bimBulgedSignedArea } from '../drawing/arc-s
     return (d[0]||d[1]||d[2])?s.translate(d[0],d[1],d[2]):s;
   }
 export {
-  A3D_OCCT, bimOcctAddSolid, bimOcctDrawing, bimOcctIsSolid, bimOcctLoad, bimOcctPt, bimOcctReplace,
-  bimOcctShapeAt, bimOcctShapeOf
+  A3D_OCCT, bimOcctAddSolid, bimOcctDrawing, bimOcctIsSolid, bimOcctLoad, bimOcctOffsetXYZ, bimOcctPt,
+  bimOcctReplace, bimOcctShapeAt, bimOcctShapeOf
 };

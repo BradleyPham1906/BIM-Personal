@@ -39,6 +39,7 @@ import { bimWideLook } from '../layers/object-look.js';
 import { bimUnitDef } from '../properties/palette.js';
 import { bimAwCtxCol } from '../site-analysis/analysis-workspace.js';
 import { bimOcctRevolvePoint } from '../solids/occt-tools.js';
+import { bimOcctEdgeClick, bimOcctEdgeDraw, bimOcctEdgeFinish } from '../solids/occt-features.js';
 import { toScreen } from '../io/import-entry.js';
 import { paint } from '../map/terrain-3d.js';
 import {
@@ -103,7 +104,7 @@ import { cvH, cvW } from '../ui/canvas-size.js';
      through to the viewport. polygon joins on the same terms. */
   var BIM_COORD_TOOLS={line:1,poly:1,wall:1,rect:1,stair:1,arc:1,circle:1,polygon:1,point:1,xline:1,boundary:1,hatch:1,
     /* __acad3dV255: the drafting track's point-taking tools, so a typed point, a typed distance and Enter reach them */
-    move:1,copy:1,stretch:1,circle2p:1,circle3p:1,ellipse:1,revcloud:1,inqid:1,inqdist:1,inqarea:1,dimbase:1,dimcont:1,dimord:1,attdef:1,revolveaxis:1,donut:1,wipeout:1,circlettr:1};
+    move:1,copy:1,stretch:1,circle2p:1,circle3p:1,ellipse:1,revcloud:1,inqid:1,inqdist:1,inqarea:1,dimbase:1,dimcont:1,dimord:1,attdef:1,revolveaxis:1,donut:1,wipeout:1,circlettr:1,occtedge:1};
 
   /* AutoCAD coordinate entry. Exactly the five forms Autodesk documents:
 
@@ -182,6 +183,7 @@ import { cvH, cvW } from '../ui/canvas-size.js';
     else if(sk.tool==='stair'){if(sk.pts.length>=2)finishStair();else{A3D.sk=null;paint();}}
     else if(sk.tool==='inqarea')bimInquiryFinish(sk);   /* __acad3dV255 */
     else if(sk.tool==='wipeout')bimWipeoutFinish(sk);   /* __acad3dV265 */
+    else if(sk.tool==='occtedge')bimOcctEdgeFinish(sk);   /* __acad3dV266 */
     else{A3D.sk=null;paint();}
     bimSyncStatusHint();
     return true;
@@ -347,6 +349,7 @@ import { cvH, cvW } from '../ui/canvas-size.js';
       :(n?'Break \u00b7 specify second break point:':'Break \u00b7 specify first break point:');
     if(sk.tool==='lengthen')return 'Lengthen \u00b7 select the end to change:';
     if(sk.tool==='scale')return 'Scale \u00b7 specify base point:';
+    if(sk.tool==='occtedge')return (sk.op==='fillet'?'Fillet':'Chamfer')+' edges \u00b7 click the edges ('+sk.picked.length+' picked), Enter to apply:';   /* __acad3dV266 */
     var msg=(SK_TOOLS[sk.tool]||sk.tool);
     return msg+(n?'  ·  click the next point, or type a length + Enter':'  ·  click to start');
   }
@@ -364,6 +367,7 @@ import { cvH, cvW } from '../ui/canvas-size.js';
   }
   function skClick(xy){
     var sk=A3D.sk;if(!sk)return;
+    if(sk.tool==='occtedge'){bimOcctEdgeClick(sk,xy);return;}   /* __acad3dV266: an edge, picked on the screen */
     var g=groundPoint(xy[0],xy[1],sk.y);if(!g)return;
     var snapped=bimSnapPoint(xy,g,sk);
     skPlacePoint(snapped[0],snapped[1],xy);
@@ -890,6 +894,7 @@ import { cvH, cvW } from '../ui/canvas-size.js';
   function drawSkLivePreview(ctx,V,W,H){
     var sk=A3D.sk;
     if(!sk)return;
+    if(sk.tool==='occtedge')bimOcctEdgeDraw(ctx,V,W,H);   /* __acad3dV266 */
     if(sk.pts.length&&sk.hover){
       var last=sk.pts[sk.pts.length-1];
       var p1=toScreen([last[0],sk.y,last[1]],V,W,H);

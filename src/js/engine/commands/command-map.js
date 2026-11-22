@@ -67,6 +67,9 @@ import {
   bimOcctBoolean, bimOcctExportStep, bimOcctLoft, startOcctEdges, startOcctExtrude, startOcctRevolve,
   startOcctShell
 } from '../solids/occt-tools.js';
+import {
+  bimOcctSweep, startOcctDraft, startOcctPattern, startOcctThickness
+} from '../solids/occt-features.js';
 import { bimSkpPick } from '../io/sketchup-import.js';
 import { bimGltfExport, bimGltfPick } from '../io/gltf.js';
 import { bimIfcPick } from '../io/ifc-full.js';
@@ -298,6 +301,10 @@ import { bimOpenToolsPanel } from '../ui/discipline-tabs.js';
     solidsubtract:function(){bimOcctBoolean('cut');},
     solidintersect:function(){bimOcctBoolean('intersect');},
     exportstep:function(){bimOcctExportStep();},
+    occtdraft:function(){startOcctDraft();},   /* __acad3dV266 */
+    occtsweep:function(){bimOcctSweep();},
+    occtpattern:function(){startOcctPattern();},
+    occtthickness:function(){startOcctThickness();},
     massprop:function(){bimMassprop();},   /* __acad3dV262 */
     countblocks:function(){bimCountCommand();},
     cal:function(){openCalDlg();},
