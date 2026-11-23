@@ -234,3 +234,63 @@ function bimMepFlows(tree, edges, demand) {
   }
   return { flow: flow };
 }
+function bimMepPaths(tree, edges, loss) {
+  var order = tree.order, parent = tree.parent, via = tree.via;
+  var i, n, p, dp, critical = null, dpBest = -1;
+  var isParent = {}, terminals = [];
+  for (i = 0; i < order.length; i++) {
+    n = order[i];
+    p = parent[n];
+    if (p >= 0) {
+      isParent[p] = true;
+    }
+  }
+  for (i = 0; i < order.length; i++) {
+    n = order[i];
+    if (!isParent[n]) {
+      terminals.push(n);
+    }
+  }
+  var paths = [];
+  for (i = 0; i < terminals.length; i++) {
+    n = terminals[i];
+    dp = (loss && loss[via[n]] !== undefined) ? loss[via[n]] : null;
+    var edgeIndices = [], cur = n;
+    while (cur >= 0 && cur !== undefined && cur !== null) {
+      var e = via[cur];
+      if (e !== undefined) {
+        edgeIndices.unshift(e);
+      }
+      cur = parent[cur];
+    }
+    var runs = [];
+    var dpAcc = null;
+    if (dp !== null && edgeIndices.length > 0) {
+      dpAcc = 0;
+      for (var j = 0; j < edgeIndices.length; j++) {
+        var e = edgeIndices[j];
+        if (loss && loss[e] !== undefined) {
+          dpAcc = dpAcc + loss[e];
+          runs.push(edges[e].run);
+        }
+      }
+    }
+    var path = { to: n, runs: runs, dp: dpAcc };
+    paths.push(path);
+    if (!critical) {
+      critical = n;
+      dpBest = dpAcc;
+    } else {
+      if (dpAcc !== null && dpBest !== null && dpAcc > dpBest) {
+        critical = n;
+        dpBest = dpAcc;
+      } else if (dpAcc === null && dpBest === null) {
+        critical = n;
+      } else if (dpAcc !== null && dpBest !== null && dpAcc === dpBest && n < critical) {
+        critical = n;
+        dpBest = dpAcc;
+      }
+    }
+  }
+  return { paths: paths, critical: critical === null ? null : critical };
+}

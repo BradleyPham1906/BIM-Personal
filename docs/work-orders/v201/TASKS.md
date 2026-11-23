@@ -80,7 +80,7 @@ after each one. Scores are from `../ROUTING.md` (files, logic, understanding, ju
 
 ---
 
-## [ ] WO-07 [Cline] `bimMepPaths(tree, edges, loss)`
+## [x] WO-07 [Cline] `bimMepPaths(tree, edges, loss)`
 
 - **It must:** SPEC 4 WO-07: the trunk counted once per path, never the branches added together.
 - **May use:** nothing.
