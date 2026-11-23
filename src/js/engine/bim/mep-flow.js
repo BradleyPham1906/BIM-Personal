@@ -51,3 +51,48 @@ function bimMepColebrook(re, rr) {
   var x = (lo + hi) / 2;
   return { f: 1 / (x * x), residual: g(x) };
 }
+function bimMepFriction(q, sec, len, fluid) {
+  var rho, mu, eps, area, dh, v, re, cr, f, dp, why, state;
+  if (!sec || !(q >= 0) || !isFinite(q) || !(len >= 0) || !isFinite(len) ||
+      !fluid || !(fluid.rho > 0) || !(fluid.mu > 0) || !(fluid.eps >= 0)) {
+    return { state: 'not evaluated', why: 'bad input' };
+  }
+  rho = fluid.rho;
+  mu = fluid.mu;
+  eps = fluid.eps;
+  area = sec.area;
+  dh = sec.dh;
+  v = q / area;
+  re = rho * v * dh / mu;
+  f = null;
+  dp = null;
+  why = '';
+  if (q === 0) {
+    state = 'no flow';
+    dp = 0;
+  } else if (re < 2300) {
+    if (sec.shape === 'round') {
+      state = 'laminar';
+      f = 64 / re;
+    } else {
+      state = 'not evaluated';
+      why = 'laminar flow in a rectangular duct';
+    }
+  } else if (re <= 4000) {
+    state = 'transitional';
+    why = 'Reynolds number between 2300 and 4000';
+  } else {
+    cr = bimMepColebrook(re, eps / dh);
+    if (!cr) {
+      state = 'not evaluated';
+      why = 'Colebrook did not converge';
+    } else {
+      state = 'turbulent';
+      f = cr.f;
+    }
+  }
+  if (f !== null) {
+    dp = f * (len / dh) * rho * v * v / 2;
+  }
+  return { state: state, v: v, re: re, f: f, dp: dp, why: why };
+}

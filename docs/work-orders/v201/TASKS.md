@@ -40,7 +40,7 @@ after each one. Scores are from `../ROUTING.md` (files, logic, understanding, ju
 
 ---
 
-## [ ] WO-03 [Cline] `bimMepFriction(q, sec, len, fluid)`
+## [x] WO-03 [Cline] `bimMepFriction(q, sec, len, fluid)`
 
 - **It must:** SPEC 4 WO-03: each state and reason word for word; Darcy's factor, never Fanning.
 - **May use:** `bimMepColebrook` (WO-02).
