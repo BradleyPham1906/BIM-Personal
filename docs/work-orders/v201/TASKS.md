@@ -50,7 +50,7 @@ after each one. Scores are from `../ROUTING.md` (files, logic, understanding, ju
 
 ---
 
-## [ ] WO-04 [Cline] `bimMepJoin(runs, tol)`
+## [x] WO-04 [Cline] `bimMepJoin(runs, tol)`
 
 - **It must:** SPEC 4 WO-04: nodes by 3D distance and system; the warnings word for word, in the order met.
 - **May use:** nothing.

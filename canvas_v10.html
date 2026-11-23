@@ -56769,6 +56769,73 @@ function bimMepFriction(q, sec, len, fluid) {
   }
   return { state: state, v: v, re: re, f: f, dp: dp, why: why };
 }
+function bimMepJoin(runs, tol) {
+  if (!(tol > 0)) {
+    tol = 0.01;
+  }
+  var nodes = [], edges = [], warnings = [];
+  if (!runs) {
+    return { nodes: nodes, edges: edges, warnings: warnings };
+  }
+  var nr = runs.length, i, run, pts, len, j, p1, p2, id1, id2, k, d, found, sys, pt;
+  for (i = 0; i < nr; i++) {
+    run = runs[i];
+    if (!run) {
+      continue;
+    }
+    pts = run.pts;
+    if (!pts || pts.length < 2) {
+      warnings.push('run ' + run.id + ' has fewer than 2 points');
+      continue;
+    }
+    len = 0;
+    for (j = 1; j < pts.length; j++) {
+      p1 = pts[j - 1];
+      p2 = pts[j];
+      len += Math.sqrt((p2[0] - p1[0]) * (p2[0] - p1[0]) + (p2[1] - p1[1]) * (p2[1] - p1[1]) + (p2[2] - p1[2]) * (p2[2] - p1[2]));
+    }
+    if (len < 1e-9) {
+      warnings.push('run ' + run.id + ' has no length');
+      continue;
+    }
+    sys = run.sys;
+    id1 = -1;
+    id2 = -1;
+    for (j = 0; j < 2; j++) {
+      pt = j === 0 ? pts[0] : pts[pts.length - 1];
+      found = -1;
+      for (k = 0; k < nodes.length; k++) {
+        d = Math.sqrt((pt[0] - nodes[k].p[0]) * (pt[0] - nodes[k].p[0]) + (pt[1] - nodes[k].p[1]) * (pt[1] - nodes[k].p[1]) + (pt[2] - nodes[k].p[2]) * (pt[2] - nodes[k].p[2]));
+        if (d <= tol && nodes[k].sys === sys) {
+          found = k;
+          break;
+        }
+      }
+      if (found < 0) {
+        for (k = 0; k < nodes.length; k++) {
+          d = Math.sqrt((pt[0] - nodes[k].p[0]) * (pt[0] - nodes[k].p[0]) + (pt[1] - nodes[k].p[1]) * (pt[1] - nodes[k].p[1]) + (pt[2] - nodes[k].p[2]) * (pt[2] - nodes[k].p[2]));
+          if (d <= tol) {
+            warnings.push('different systems meet at node ' + k);
+            break;
+          }
+        }
+        found = nodes.length;
+        nodes.push({ id: found, p: [pt[0], pt[1], pt[2]], sys: sys });
+      }
+      if (j === 0) {
+        id1 = found;
+      } else {
+        id2 = found;
+      }
+    }
+    if (id1 === id2) {
+      warnings.push('run ' + run.id + ' starts and ends at one node');
+    } else {
+      edges.push({ run: run.id, a: id1, b: id2, len: len });
+    }
+  }
+  return { nodes: nodes, edges: edges, warnings: warnings };
+}
 
 
   /* ================= __acad3dV204: The Parametric Design Foundation, sketch to Pad to Pocket, the pure part =================
