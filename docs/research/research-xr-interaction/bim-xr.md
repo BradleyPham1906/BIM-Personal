@@ -1,5 +1,8 @@
 # BIM in XR: prior art, exploded views, and what the gestures would drive (H7, H8)
 
+Corrections from the independent check (2026-11-23) are in `independent-check.md` and applied in the main note,
+`../research-xr-interaction.md`; where they differ, those win.
+
 One of three topic notes for `docs/research/research-xr-interaction.md`, written 2026-11-23 by a research agent,
 following `docs/research/research-protocol.md`. Levels: P primary (read at the source, or the app's own code), S
 secondary (a dependable work citing the source, or a vendor page read only through the fetch tool's digest), U

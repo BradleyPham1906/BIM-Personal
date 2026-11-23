@@ -1,5 +1,8 @@
 # Topic note: the gesture vocabulary and its evidence (H5, H6)
 
+Corrections from the independent check (2026-11-23) are in `independent-check.md` and applied in the main note,
+`../research-xr-interaction.md`; where they differ, those win.
+
 One of the three topic notes of `docs/research/research-xr-interaction.md`. Researched 2026-11-23 by a research agent,
 following `docs/research/research-protocol.md`. Every fact carries its level: P (primary source read: the vendor's own
 guide or SDK page, the paper's own text, the code read as text), S (dependable secondary, the gap said), U (search

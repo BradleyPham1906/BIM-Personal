@@ -1,5 +1,8 @@
 # Topic note: the device ladder and one input layer (H1 to H4)
 
+Corrections from the independent check (2026-11-23) are in `independent-check.md` and applied in the main note,
+`../research-xr-interaction.md`; where they differ, those win.
+
 Part of `docs/research/research-xr-interaction.md`, researched 2026-11-23 by one of three parallel researchers, under
 `docs/research/research-protocol.md`. The iPhone cardboard path (`research-devices-xr.md`, V274) is not redone here;
 its measured results are used as they stand. Levels: P primary (read in the source, the code read as text, the
