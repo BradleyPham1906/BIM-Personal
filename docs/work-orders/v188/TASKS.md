@@ -58,7 +58,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-05 [Cline] `bimFlowMap(pts, box, q)`
+## [x] WO-05 [Cline] `bimFlowMap(pts, box, q)`
 
 - **It must:** SPEC 5 WO-05: each point [x, y, z]: u, v its place in the box; the patch point plus the unit normal (dP/du cross dP/dv, the bilinear partials: du = (1-v)(q1-q0) + v(q2-q3), dv = (1-u)(q3-q0) + u(q2-q1)) times z. null when the box has no width or height.
 - **May use:** bimFlowBilinear (WO-04).

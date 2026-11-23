@@ -55,3 +55,32 @@ function bimFlowBilinear(q, u, v) {
     a * q[0][2] + b * q[1][2] + c * q[2][2] + d * q[3][2]
   ];
 }
+function bimFlowMap(pts, box, q) {
+  var w = box[2] - box[0], h = box[3] - box[1];
+  if (!w || !h) {
+    return null;
+  }
+  var out = [], i, p, u, v, pt;
+  var dux, duy, duz, dvx, dvy, dvz, nx, ny, nz, len;
+  for (i = 0; i < pts.length; i++) {
+    p = pts[i];
+    u = (p[0] - box[0]) / w;
+    v = (p[1] - box[1]) / h;
+    pt = bimFlowBilinear(q, u, v);
+    dux = (1 - v) * (q[1][0] - q[0][0]) + v * (q[2][0] - q[3][0]);
+    duy = (1 - v) * (q[1][1] - q[0][1]) + v * (q[2][1] - q[3][1]);
+    duz = (1 - v) * (q[1][2] - q[0][2]) + v * (q[2][2] - q[3][2]);
+    dvx = (1 - u) * (q[3][0] - q[0][0]) + u * (q[2][0] - q[1][0]);
+    dvy = (1 - u) * (q[3][1] - q[0][1]) + u * (q[2][1] - q[1][1]);
+    dvz = (1 - u) * (q[3][2] - q[0][2]) + u * (q[2][2] - q[1][2]);
+    nx = duy * dvz - duz * dvy;
+    ny = duz * dvx - dux * dvz;
+    nz = dux * dvy - duy * dvx;
+    len = Math.sqrt(nx * nx + ny * ny + nz * nz);
+    nx = nx / len;
+    ny = ny / len;
+    nz = nz / len;
+    out.push([pt[0] + nx * p[2], pt[1] + ny * p[2], pt[2] + nz * p[2]]);
+  }
+  return out;
+}
