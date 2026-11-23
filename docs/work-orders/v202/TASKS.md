@@ -240,7 +240,7 @@ against a reference implementation (all pass).
 
 ---
 
-## [ ] WO-24 [Cline] `bimGemCell` in `src/js/engine/map/surface-model.js`
+## [x] WO-24 [Cline] `bimGemCell` in `src/js/engine/map/surface-model.js`
 
 - **Implement:** the GEM-15 cell and its two files for a longitude and latitude, as SPEC part C3 says.
 - **It must:**

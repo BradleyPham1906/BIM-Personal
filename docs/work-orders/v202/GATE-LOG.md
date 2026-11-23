@@ -14,3 +14,4 @@ Written by `tools/gate.py ship`. Claude's audit marks each row (`/audit`).
 | 2026-11-23 | WO-05 | 5 passed, 1 warning(s) | skipped | open |
 | 2026-11-23 | WO-22 | 5 passed, 1 warning(s) | skipped | open |
 | 2026-11-23 | WO-23 | 5 passed, 1 warning(s) | skipped | open |
+| 2026-11-23 | WO-24 | 5 passed, 1 warning(s) | skipped | open |
