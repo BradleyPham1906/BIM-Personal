@@ -210,7 +210,7 @@ against a reference implementation (all pass).
 
 ---
 
-## [ ] WO-22 [Cline] `bimGeoidAt` in `src/js/engine/map/cog-datum.js`
+## [x] WO-22 [Cline] `bimGeoidAt` in `src/js/engine/map/cog-datum.js`
 
 - **Implement:** a geoid grid sampled bilinearly at a longitude and latitude, as SPEC part C3 says.
 - **It must:**
