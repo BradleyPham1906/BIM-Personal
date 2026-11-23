@@ -56873,6 +56873,40 @@ function bimMepTree(nodeCount, edges, source) {
   }
   return { source: source, parent: parent, via: via, order: order };
 }
+function bimMepFlows(tree, edges, demand) {
+  var order = tree.order, parent = tree.parent, via = tree.via;
+  var isParent = {}, n, i, node, p, d, nodeFlow, flowAcc, flow = {};
+  for (i = 0; i < order.length; i++) {
+    n = order[i];
+    p = parent[n];
+    if (p >= 0) {
+      isParent[p] = true;
+    }
+  }
+  flowAcc = {};
+  for (i = order.length - 1; i >= 0; i--) {
+    node = order[i];
+    if (!isParent[node]) {
+      d = demand[node];
+      if (!(d >= 0) || !isFinite(d)) {
+        return { error: 'no demand at node ' + node };
+      }
+      nodeFlow = d;
+    } else {
+      nodeFlow = flowAcc[node] || 0;
+      d = demand[node];
+      if (d > 0) {
+        nodeFlow = nodeFlow + d;
+      }
+    }
+    p = parent[node];
+    if (p >= 0) {
+      flow[via[node]] = nodeFlow;
+      flowAcc[p] = (flowAcc[p] || 0) + nodeFlow;
+    }
+  }
+  return { flow: flow };
+}
 
 
   /* ================= __acad3dV204: The Parametric Design Foundation, sketch to Pad to Pocket, the pure part =================

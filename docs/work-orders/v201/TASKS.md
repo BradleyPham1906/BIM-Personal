@@ -70,7 +70,7 @@ after each one. Scores are from `../ROUTING.md` (files, logic, understanding, ju
 
 ---
 
-## [ ] WO-06 [Cline] `bimMepFlows(tree, edges, demand)`
+## [x] WO-06 [Cline] `bimMepFlows(tree, edges, demand)`
 
 - **It must:** SPEC 4 WO-06: from the terminals toward the source; a terminal without a demand refuses.
 - **May use:** nothing.
