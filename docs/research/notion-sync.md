@@ -128,6 +128,7 @@ Search Notion before creating anything, so nothing is made twice.
 | `docs/research/research-zoning-envelope-yield.md` | `3fecbfcc3a388107b391f35fd6a8f7d4` |
 | `docs/research/research-terrain-surface.md` (and `experiments/terrain-surface/`) | `41fcbfcc3a3881dc9a96d9d3095b807c` |
 | `docs/research/research-devices-xr.md` (and `research-devices-xr/`) | `421cbfcc3a38810095d8d8c4a5c0273b` |
+| `docs/research/research-xr-interaction.md` (and `research-xr-interaction/`) | `421cbfcc3a3881b69787efd51191c0e2` |
 
 ## Internal Task DB pages
 
@@ -203,6 +204,7 @@ Search Notion before creating anything, so nothing is made twice.
 | V202 (parts A, B, C) | `417cbfcc3a3881a1bc33faf0c50075ff` |
 | V248 | `420cbfcc3a3881839893ce97a1543e53` |
 | V274 XR-1, the headset view | `421cbfcc3a3881fa9190dc967deb839a` |
+| V275 The Explode view | `421cbfcc3a38819bae3ae2cfa731f7a2` |
 | Later: Hub H5, the server | `3fecbfcc3a3881139bc7ed9832d6b76a` |
 | Later: Streaming | `3fecbfcc3a3881e3a2c7f3e240ba7f89` |
 | Later: Rendering on WebGPU | `3fecbfcc3a388102af55eae8049f4eb6` |
