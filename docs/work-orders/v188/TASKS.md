@@ -28,7 +28,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-02 [Cline] `bimTextBox(lines, h, ratio, gap)`
+## [x] WO-02 [Cline] `bimTextBox(lines, h, ratio, gap)`
 
 - **It must:** SPEC 5 WO-02: ratio 0.6 and gap 1.2 unless positive; {w: longest line's length * h * ratio, h: h + (lines - 1) h gap}; {w: 0, h: 0} for no lines or h not above 0.
 - **May use:** nothing.

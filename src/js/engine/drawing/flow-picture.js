@@ -11,3 +11,21 @@ function bimPicPlane(wPx, hPx, widthM) {
   var h = widthM * hPx / wPx;
   return { w: widthM, h: h, corners: [[0, 0], [widthM, 0], [widthM, h], [0, h]], uv: [[0, 1], [1, 1], [1, 0], [0, 0]] };
 }
+function bimTextBox(lines, h, ratio, gap) {
+  if (!lines || lines.length === 0 || !(h > 0)) {
+    return { w: 0, h: 0 };
+  }
+  if (!(ratio > 0)) {
+    ratio = 0.6;
+  }
+  if (!(gap > 0)) {
+    gap = 1.2;
+  }
+  var longest = 0, i;
+  for (i = 0; i < lines.length; i++) {
+    if (lines[i].length > longest) {
+      longest = lines[i].length;
+    }
+  }
+  return { w: longest * h * ratio, h: h + (lines.length - 1) * h * gap };
+}
