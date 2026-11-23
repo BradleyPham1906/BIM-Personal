@@ -18,7 +18,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-01 [Cline] `bimPfOrder(fs)`
+## [x] WO-01 [Cline] `bimPfOrder(fs)`
 
 - **It must:** SPEC 5 WO-01: a depth-first post-order over the features in their given order, following refs (refs to absent ids are ignored): {order: [ids]}; a cycle met gives {error: 'cycle', ids: the path from the repeated id back to it, e.g. ['a', 'b', 'a']}.
 - **May use:** nothing.
