@@ -33,6 +33,17 @@
   /* WO-26: a footprint's height from GEM-15: the median of its cells' p95 less the ground, as {h, n, spread,
      from:'gem15'}; null under three cells, under 2 m, or without ground */
   function bimFootprintHeight(cells,ground){
-    return null;
+  if(!cells||!isFinite(ground))return null;
+  var vals=[],i;for(i=0;i<cells.length;i++){if(cells[i]&&isFinite(cells[i].p95))vals.push(cells[i].p95);}
+  if(vals.length<3)return null;
+  vals.sort(function(a,b){return a-b;});
+  var n=vals.length,m=Math.floor(n/2);
+  var med=n%2?vals[m]:(vals[m-1]+vals[m])/2;
+  var h=Math.round((med-ground)*10)/10;
+  if(h<2)return null;
+  var devs=[];for(i=0;i<n;i++)devs.push(Math.abs(vals[i]-med));
+  devs.sort(function(a,b){return a-b;});
+  var spread=n%2?devs[m]:(devs[m-1]+devs[m])/2;
+  return{h:h,n:n,spread:Math.round(spread*10)/10,from:'gem15'};
   }
 export { bimFootprintHeight, bimGemCell, bimSurfaceOffset };

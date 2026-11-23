@@ -270,7 +270,7 @@ against a reference implementation (all pass).
 
 ---
 
-## [ ] WO-26 [Cline] `bimFootprintHeight` in `src/js/engine/map/surface-model.js`
+## [x] WO-26 [Cline] `bimFootprintHeight` in `src/js/engine/map/surface-model.js`
 
 - **Implement:** a footprint's height: the median p95 of its cells less the ground, as SPEC part C3 says.
 - **It must:**
