@@ -142,9 +142,10 @@ a pinch-progress ring, sounds, the hand dimmed when tracking is unsure.
 
 1. **V275 Explode view:** storey explode as a display-only view state, a slider in the view and saved views; the
    renderer audit; the chunk cost measured. On every device from day one.
-2. **V276 The input layer:** pointers (ray, grab, poke) and the two-hand step, fed by mouse, touch and MediaPipe hands
-   (in a worker, the One Euro filter, the calibration: research-devices-xr.md's XR-2); the vocabulary's functions
-   written once against it.
+2. **V276 The input layer and the simulated hand:** pointers (ray, grab, poke) and the two-hand step, fed by mouse,
+   touch and MediaPipe hands (in a worker, the One Euro filter, the calibration: research-devices-xr.md's XR-2); the
+   25-joint skeleton with MediaPipe retargeted onto it, the skinned hand (E4) and a Jolt capsule on every bone; the
+   vocabulary's functions written once against it.
 3. **V277 The headset session:** three.js WebXR on Quest, Vision Pro and Android XR (`renderer.setAnimationLoop`),
    WebXR hands, controllers and the transient pointer into the input layer, simple hand drawing of our own, the 3D
    menus and the hand menu; checked with Meta's emulator in a browser test if approved, then on a Quest.
@@ -196,7 +197,7 @@ Asked 2026-11-23 (answers recorded here when given):
 | E1 | The order | V275 Explode view, V276 input layer, V277 headset session, V278 BIM in the headset. |
 | E2 | The Explode view | By storey first (then building, then layer), upward, one amount from 0 to 1 by slider or two-hand spread in its mode; display only, saved in saved views, collapsed before an edit; a new name (Explode view), not `EXPLODE`. |
 | E3 | The gesture vocabulary | The ten in part 4, palm-toward-user pinches never acted on; few gestures, visible menus. |
-| E4 | Hands drawn in the headset | Our own simple hand drawing (an outline and joints), not the library's models from a CDN; vendoring its 94 KB MIT generic hand only if ours falls short. |
+| E4 | Hands drawn and simulated | **The owner, 2026-11-23: "i dont want the hand to be simple outline, i need the skeleton and actual hand simulated so it can accurately interact with models".** A full 25-joint skeleton (WebXR Hand Input) on every device: measured by Quest, Vision Pro (after its prompt) and Android XR; on the iPhone and webcams, MediaPipe's 21 points retargeted onto it (metacarpals placed between wrist and knuckles, bone rotations from the joints they join: a short research of its own, Kalidokit (MIT) as prior art). Drawn as a skinned hand: three.js's `XRHandMeshModel` added to the bundle `tools/three/build_three.mjs` makes, and the WebXR generic hand models (MIT, about 94 KB; licence confirmed by the check) vendored under `runtime/`, pinned, loaded locally, never from the CDN. Simulated: a capsule collider on every bone (about 24 a hand) in the app's Jolt, driven toward its joint so it stops at surfaces; fingertips press, pinch or a closed hand grabs. Precision follows the device: measured joints on headsets, a few centimetres in depth from one phone camera. |
 | E5 | Quest controllers | First-class beside hands: trigger is pinch, grip is grab. |
 | E6 | Menus in the headset | Our own 3D panels; the hand menu on Quest and Android XR, a floating toolbar on Vision Pro. |
 | E7 | A headset emulator for tests | Meta's `iwer` (MIT) as a test-only package, pinned, never shipped in the app (a library decision under the rule). |
