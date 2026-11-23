@@ -190,7 +190,8 @@ a pinch-progress ring, sounds, the hand dimmed when tracking is unsure.
 
 ## 11. The owner's decisions
 
-Asked 2026-11-23 (answers recorded here when given):
+Asked 2026-11-23. **Answered the same day: E4 changed by the owner (below); the rest "as recommended".** V275, the
+Explode view, is written (`docs/work-orders/v275/`).
 
 | # | Decision | Recommended |
 |---|---|---|
