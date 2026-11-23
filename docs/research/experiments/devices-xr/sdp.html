@@ -1,0 +1,22 @@
+<!doctype html><html><body><pre id="o">wait</pre><script>
+async function one(label, cfg){
+  var pc = new RTCPeerConnection(cfg);
+  pc.createDataChannel('link', {ordered:false, maxRetransmits:0});
+  var off = await pc.createOffer(); await pc.setLocalDescription(off);
+  await new Promise(function(r){ if(pc.iceGatheringState==='complete') r(); pc.onicegatheringstatechange=function(){ if(pc.iceGatheringState==='complete') r(); }; setTimeout(r,3000); });
+  var s = pc.localDescription.sdp;
+  var bytes = new TextEncoder().encode(s);
+  var cs = new CompressionStream('deflate-raw'); var w = cs.writable.getWriter(); w.write(bytes); w.close();
+  var comp = new Uint8Array(await new Response(cs.readable).arrayBuffer());
+  var cands = s.split('\n').filter(function(l){return l.indexOf('a=candidate')===0;});
+  pc.close();
+  return label+': sdp '+bytes.length+' B, deflate-raw '+comp.length+' B, base64 of that '+Math.ceil(comp.length/3)*4+' chars, candidates '+cands.length+'\n'+cands.map(function(c){return '  '+c.replace(/(\d+\.\d+\.\d+)\.\d+/,'$1.x');}).join('\n')+'\n';
+}
+(async function(){ var out='';
+  out += await one('no ICE servers', {iceServers:[]});
+  out += await one('first run again', {iceServers:[]});
+  console.log('RESULT '+out); document.getElementById('o').textContent = out + '\nFULL SDP (one run):\n' + '';
+  var pc = new RTCPeerConnection({iceServers:[]}); pc.createDataChannel('x'); var o = await pc.createOffer();
+  console.log('FULLSDP '+o.sdp.replace(/(\d+\.\d+\.\d+)\.\d+/g,'$1.x')); document.getElementById('o').textContent += o.sdp.replace(/(\d+\.\d+\.\d+)\.\d+/g,'$1.x');
+})().catch(function(e){console.log('ERR '+e);});
+</script></body></html>
