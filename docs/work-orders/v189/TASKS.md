@@ -28,7 +28,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-02 [Cline] `bimM2Edges(m, dir, creaseDeg)`
+## [x] WO-02 [Cline] `bimM2Edges(m, dir, creaseDeg)`
 
 - **It must:** SPEC 5 WO-02: each face's unit normal by Newell's method; each edge (smaller index first) with the faces using it, in first-met order: not exactly two faces: [a, b, 'boundary']; the two normals' dot products with dir of different sign (one < 0, one not): 'silhouette'; else the normals' dot under cos(creaseDeg) (30 when not positive): 'crease'; else left out.
 - **May use:** nothing.
