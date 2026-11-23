@@ -28,7 +28,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-02 [Cline] `bimPfDownstream(fs, id)`
+## [x] WO-02 [Cline] `bimPfDownstream(fs, id)`
 
 - **It must:** SPEC 5 WO-02: the ids that depend on id directly or through others, in bimPfOrder's order; the cycle error object when there is one.
 - **May use:** bimPfOrder (WO-01).

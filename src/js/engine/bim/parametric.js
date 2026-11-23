@@ -22,3 +22,16 @@ function bimPfOrder(fs) {
     inStack[id] = visited[id] = true; order.push(id); inStack[id] = false; }
   for (var i = 0; i < idList.length; i++) { visit(idList[i], []); if (cycle.length) return { error: 'cycle', ids: cycle }; }
   return { order: order }; }
+function bimPfDownstream(fs, id) {
+  var fm = {};
+  if (Array.isArray(fs)) for (var i = 0; i < fs.length; i++) if (fs[i] && fs[i].id && fs[i].refs) fm[fs[i].id] = fs[i];
+  else { var kl = Object.keys(fs); for (var i = 0; i < kl.length; i++) if (fs[kl[i]] && fs[kl[i]].refs) fm[kl[i]] = fs[kl[i]]; }
+  var ds = [];
+  function H(fid, idF) { if (fid === idF) return true; var r = fm[fid] ? fm[fid].refs || [] : []; for (var i = 0; i < r.length; i++) if (H(r[i], idF)) return true; return false; }
+  var fids = Object.keys(fm);
+  for (var i = 0; i < fids.length; i++) { var fj = fids[i]; if (fj !== id && H(fj, id)) ds.push(fj); }
+  if (ds.length > 0) { var order = bimPfOrder(fs).order; var r = []; for (var i = 0; i < order.length; i++) if (ds.indexOf(order[i]) >= 0) r.push(order[i]); return r; }
+  return [];
+}
+function bimPfExpr(s, params) { return { value: 0 }; }
+function bimPfRebuild(fs, params, last) { return { order: [], results: {} }; }
