@@ -18,7 +18,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-01 [Cline] `bimM2Project(p, view)`
+## [x] WO-01 [Cline] `bimM2Project(p, view)`
 
 - **It must:** SPEC 5 WO-01: [p . right, p . up, p . dir].
 - **May use:** nothing.
