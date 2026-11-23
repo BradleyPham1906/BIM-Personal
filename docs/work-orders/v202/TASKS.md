@@ -225,7 +225,7 @@ against a reference implementation (all pass).
 
 ---
 
-## [ ] WO-23 [Cline] `bimDatumShift` in `src/js/engine/map/cog-datum.js`
+## [x] WO-23 [Cline] `bimDatumShift` in `src/js/engine/map/cog-datum.js`
 
 - **Implement:** a height moved between datums, `h + N[from] - N[to]`, as SPEC part C3 says.
 - **It must:**

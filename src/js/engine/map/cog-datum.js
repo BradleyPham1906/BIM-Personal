@@ -20,6 +20,9 @@
   /* WO-23: a height moved from one datum to another, h + N[from] - N[to], N the geoid heights at the point
      ('ellipsoid' is 0); NaN for an unknown datum or a bad height */
   function bimDatumShift(h,from,to,N){
-    return NaN;
+  if(!isFinite(h)||!N)return NaN;
+  var nf=from==='ellipsoid'?0:N[from],nt=to==='ellipsoid'?0:N[to];
+  if(!isFinite(nf)||!isFinite(nt))return NaN;
+  return h+nf-nt;
   }
 export { bimDatumShift, bimGeoidAt };
