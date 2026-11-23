@@ -8,14 +8,16 @@ import { bimIsFooting } from '../bim/footings.js';
 import { bimPatternDef, bimPatternDraws, bimPatternRotation } from '../bim/type-instance-params.js';
 import { bimRoomLabelPoint, bimRoomLabelText, bimRoomTagText, bimRoomTagged } from '../bim/room-tags.js';
 import { bimDimKind } from '../annotation/dimensions.js';
+import { bimDimLabelText, bimDimStyle } from '../annotation/dim-tools.js';
 import { bimAnnotDrawable, bimTriggerDownload } from '../annotation/annotation-pick.js';
 import { bimFileStem } from './project-file.js';
 import { bimRectFootprint } from '../bim/columns-openings.js';
 import { bimDxfLayerName, bimDxfPair, bimWallOpeningBreaks } from './dxf-export.js';
 import { bimLayerEff } from '../layers/layer-rules.js';
 import { bimLinetypeDef } from '../layers/select-change.js';
-import { BIM_BULGE_EPS, bimBulgeAt } from '../drawing/arc-storage.js';
-import { bimIsHatch } from '../drawing/hatch.js';
+import { BIM_DXF_HATCH_OUT, dxfPatternLines, dxfPatternTile } from './dxf-entities.js';
+import { BIM_BULGE_EPS, bimBulgeAt, bimHasBulge } from '../drawing/arc-storage.js';
+import { bimHatchGraphics, bimIsHatch } from '../drawing/hatch.js';
 import { bimClineVisibleSeg, bimIsCline } from '../drawing/construction-lines.js';
 import { a3dToast } from '../bim/csg-booleans.js';
 
@@ -71,7 +73,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
   function bimBuildDXF(){
     var P=bimDxfPair,out='',layers=A3D.layers,i;
     out+=P(0,'SECTION')+P(2,'HEADER')+P(9,'$INSUNITS')+P(70,6)+P(0,'ENDSEC');
-    out+=P(0,'SECTION')+P(2,'TABLES')+bimDxfLtypeTable(layers)+P(0,'TABLE')+P(2,'LAYER')+P(70,layers.length+1);   /* __acad3dV121 */
+    out+=P(0,'SECTION')+P(2,'TABLES')+bimDxfLtypeTable(layers.concat(A3D.objs.filter(function(q){return !!q.linetype;})))+P(0,'TABLE')+P(2,'LAYER')+P(70,layers.length+1);   /* __acad3dV121 */
     out+=P(0,'LAYER')+P(2,'0')+P(70,0)+P(62,7)+P(6,'CONTINUOUS');
     for(i=0;i<layers.length;i++)out+=bimDxfLayerRecord(layers[i]);   /* __acad3dV121: every layer was white, on and Continuous */
     out+=P(0,'ENDTAB')+P(0,'ENDSEC')+P(0,'SECTION')+P(2,'ENTITIES');
@@ -87,8 +89,19 @@ import { a3dToast } from '../bim/csg-booleans.js';
     /* __acad3dV88: bulges is optional and parallel to pts. Group code 42 follows its vertex,
        which is where the DXF reference puts it, and is omitted entirely when the segment is
        straight - so a polyline with no arcs produces byte-identical output to before. */
-    function poly(pts,closed,lay,bulges){
-      out+=P(0,'LWPOLYLINE')+P(8,lay)+P(100,'AcDbEntity')+P(100,'AcDbPolyline')+P(90,pts.length)+P(70,closed?1:0);
+    /* __acad3dV257: an object's own colour, linetype and lineweight, as the entity's 62/420, 6 and 370; ByLayer
+       writes nothing, which a reader takes as ByLayer */
+    function own(o){
+      if(!o)return '';
+      var s='',lt=o.linetype&&bimLinetypeDef(o.linetype);
+      if(lt)s+=P(6,lt.pat.length?lt.name:'CONTINUOUS');
+      if(/^#[0-9a-fA-F]{6}$/.test(o.color||''))s+=P(62,bimDxfNearestAci(o.color))+P(420,parseInt(o.color.slice(1),16));
+      if(typeof o.lineweight==='number'&&isFinite(o.lineweight))s+=P(370,Math.round(o.lineweight*100));
+      return s;
+    }
+    function poly(pts,closed,lay,bulges,o){
+      out+=P(0,'LWPOLYLINE')+P(8,lay)+own(o)+P(100,'AcDbEntity')+P(100,'AcDbPolyline')+P(90,pts.length)+P(70,closed?1:0)+
+        (o&&o.plWidth>0?P(43,(+o.plWidth).toFixed(6)):'');   /* __acad3dV265: its constant width */
       var q;
       for(q=0;q<pts.length;q++){
         out+=P(10,DX(pts[q]))+P(20,DY(pts[q]));
@@ -97,12 +110,43 @@ import { a3dToast } from '../bim/csg-booleans.js';
       }
       stats.lwpolyline++;
     }
+    /* __acad3dV265: a HATCH: the outer loop external, the holes inner, the pattern's lines (dxfPatternLines) */
+    function hatchEnt(o,lay){
+      var g=bimHatchGraphics(o),pat=g.pattern||'diagonal',solid=pat==='solid',def=bimPatternDef(pat);
+      var loops=[{pts:o.pts,bulges:o.bulges||null,flag:3}].concat((o.holes||[]).map(function(h){return {pts:h.pts,bulges:h.bulges||null,flag:2};}));
+      var name=BIM_DXF_HATCH_OUT[pat]||'ANSI31',k,j;
+      out+=P(0,'HATCH')+P(8,lay)+own(o)+P(100,'AcDbEntity')+P(100,'AcDbHatch')+P(10,'0.0')+P(20,'0.0')+P(30,'0.0')+
+        P(210,'0.0')+P(220,'0.0')+P(230,'1.0')+P(2,name)+P(70,solid?1:0)+P(71,0)+P(91,loops.length);
+      for(k=0;k<loops.length;k++){
+        var L=loops[k],hb=bimHasBulge(L.bulges);
+        out+=P(92,L.flag)+P(72,hb?1:0)+P(73,1)+P(93,L.pts.length);
+        for(j=0;j<L.pts.length;j++){
+          out+=P(10,DX(L.pts[j]))+P(20,DY(L.pts[j]));
+          if(hb)out+=P(42,(-bimBulgeAt(L.bulges,j)).toFixed(8));
+        }
+        out+=P(97,0);
+      }
+      out+=P(75,0)+P(76,solid?1:2);
+      if(!solid&&def){
+        var sc=(g.patternScale>0?g.patternScale:1),T=dxfPatternTile(def,sc),ang=-(g.patternAngle||0);
+        var PL=dxfPatternLines(def,T[0],T[1],ang);
+        out+=P(52,ang.toFixed(6))+P(41,sc.toFixed(6))+P(77,0)+P(78,PL.length);
+        for(k=0;k<PL.length;k++){
+          var f=PL[k];
+          out+=P(53,f.angle.toFixed(6))+P(43,f.base[0].toFixed(6))+P(44,f.base[1].toFixed(6))+
+            P(45,f.offset[0].toFixed(6))+P(46,f.offset[1].toFixed(6))+P(79,f.dashes.length);
+          for(j=0;j<f.dashes.length;j++)out+=P(49,f.dashes[j].toFixed(6));
+        }
+      }
+      out+=P(98,0);
+    }
     function line(a,b,lay){
       out+=P(0,'LINE')+P(8,lay)+P(10,DX(a))+P(20,DY(a))+P(30,'0.0')+P(11,DX(b))+P(21,DY(b))+P(31,'0.0');
       stats.line++;
     }
-    function text(pt,str,h,lay){
-      out+=P(0,'TEXT')+P(8,lay)+P(10,DX(pt))+P(20,DY(pt))+P(30,'0.0')+P(40,h.toFixed(4))+P(1,String(str).replace(/[\r\n]+/g,' '));
+    function text(pt,str,h,lay,rot){
+      out+=P(0,'TEXT')+P(8,lay)+P(10,DX(pt))+P(20,DY(pt))+P(30,'0.0')+P(40,h.toFixed(4))+P(1,String(str).replace(/[\r\n]+/g,' '))+
+        (rot?P(50,(+rot).toFixed(4)):'');   /* __acad3dV254: its rotation, degrees counter-clockwise */
       stats.text++;
     }
     for(i=0;i<A3D.objs.length;i++){
@@ -126,6 +170,9 @@ import { a3dToast } from '../bim/csg-booleans.js';
       }else if(o.t==='room'){
         poly(o.pts,true,lay);
         if(!bimRoomTagged(o.id))text(bimRoomLabelPoint(o),bimRoomLabelText(o),0.25,lay);   /* __acad3dV101 */
+      }else if(bimIsHatch(o)&&!o.wipeout){      /* __acad3dV265: a real HATCH, its holes and its pattern */
+        hatchEnt(o,lay);
+        stats.hatch=(stats.hatch||0)+1;
       }else if(bimIsHatch(o)){                  /* __acad3dV96 */
         /* R12 ASCII has no HATCH entity either -- it arrived in R13, and R12 drawings carry
            hatching as exploded lines. This export writes the BOUNDARY as a closed polyline and
@@ -145,10 +192,13 @@ import { a3dToast } from '../bim/csg-booleans.js';
       }else if(o.t==='sketch'&&o.pts&&o.pts.length>=2){
         /* __acad3dV88: DXF carries the arc itself. This is the one consumer that does NOT
            flatten, because the format it writes stores exactly what this app stores. */
-        poly(o.pts,o.closed!==false,lay,o.bulges);
+        poly(o.pts,o.closed!==false,lay,o.bulges,o);
       }else if(o.t==='dim'&&bimDimKind(o)==='linear'){
         line(o.d1,o.d2,lay);line(o.p1,o.d1,lay);line(o.p2,o.d2,lay);
-        text([(o.d1[0]+o.d2[0])/2,(o.d1[1]+o.d2[1])/2],o.length.toFixed(2),0.2,lay);
+        text([(o.d1[0]+o.d2[0])/2,(o.d1[1]+o.d2[1])/2],bimDimLabelText(o.length),bimDimStyle().textHeight>0?bimDimStyle().textHeight:0.2,lay);   /* __acad3dV258 */
+      }else if(o.t==='dim'&&bimDimKind(o)==='ordinate'){   /* __acad3dV258 */
+        line(o.p1,o.d1,lay);
+        text(o.d1,o.axis.toUpperCase()+' '+bimDimLabelText(o.value),bimDimStyle().textHeight>0?bimDimStyle().textHeight:0.2,lay);
       }else if(o.t==='dim'&&bimDimKind(o)==='angular'){
         line(o.vertex,o.ap1,lay);line(o.vertex,o.ap2,lay);
         var arcPts=[],ai;
@@ -184,7 +234,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
       }else if(o.t==='roomtag'){   /* __acad3dV101 */
         if(bimAnnotDrawable(o))text(o.pt,bimRoomTagText(o),0.25,lay);
       }else if(o.t==='text'){
-        text(o.pt,o.text,0.25,lay);
+        text(o.pt,o.text,o.height>0?o.height:0.25,lay,o.rot||0);   /* __acad3dV254: its own height */
       }else if(b&&(b.type==='floor'||b.type==='ceiling'||b.type==='roof')&&(b.profile||b.footprint)){
         poly(b.profile||b.footprint,true,lay);
       }else if(b&&b.type==='column'&&b.center){

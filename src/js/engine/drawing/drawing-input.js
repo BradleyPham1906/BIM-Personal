@@ -25,6 +25,8 @@ import { bimRoomTagged, bimTagRoomAt } from '../bim/room-tags.js';
 import {
   bimCreateAngularDim, bimCreateDim, bimCreateRadialDim, openLeaderTextDlg, openTextLabelDlg
 } from '../annotation/dimensions.js';
+import { bimInquiryFinish, bimInquiryPoint, bimIsInquiryTool } from '../annotation/inquiry.js';
+import { bimDimChainPoint, bimIsDimChainTool } from '../annotation/dim-tools.js';
 import {
   bimFindWallNear, openColumnDlg, openDoorDlg, openFloorDlg, openWindowDlg
 } from '../bim/columns-openings.js';
@@ -33,8 +35,12 @@ import { bimFloorProfileFrom, openCeilingDlg } from '../bim/ceiling-floor-profil
 import { bimFindRoofBoundaryAt, openRoofDlg } from '../bim/roofs.js';
 import { finishStair } from '../bim/stairs.js';
 import { bimHexA, bimLayerAlpha, bimLayerLook, bimLayerShown } from '../layers/layer-rules.js';
+import { bimWideLook } from '../layers/object-look.js';
 import { bimUnitDef } from '../properties/palette.js';
 import { bimAwCtxCol } from '../site-analysis/analysis-workspace.js';
+import { bimOcctRevolvePoint } from '../solids/occt-tools.js';
+import { bimOcctEdgeClick, bimOcctEdgeDraw, bimOcctEdgeFinish } from '../solids/occt-features.js';
+import { bimJointAxisPoint } from '../assembly/joints.js';
 import { toScreen } from '../io/import-entry.js';
 import { paint } from '../map/terrain-3d.js';
 import {
@@ -44,7 +50,13 @@ import { bimFaceHitAt } from '../editing/faces-push-pull.js';
 import { bimMirrorSelection, openPolarArrayDlg, openRotateDlg } from '../editing/precision-editing.js';
 import { bimInteriorPoint, bimIsRegionDep } from '../bim/region-dependents.js';
 import { bimBulgeAt, bimFlattenPoly, bimHasBulge } from './arc-storage.js';
+import { A3D_OSNAP, BIM_OSNAP_NAMES, bimOsnapDrawMarker } from './object-snaps.js';
+import { bimDrawExtraPoint, bimIsDrawExtra } from './draw-extra.js';
+import { bimDmPoint, bimIsDmTool, bimMatchPropClick } from '../editing/drafting-modify.js';
 import { bimHatchGraphics, bimHatchOutline, bimIsHatch } from './hatch.js';
+import {
+  bimDonutPoint, bimHatchHoleRings, bimRingPath, bimWipeoutFinish, bimWipeoutPoint
+} from './hatch-more.js';
 import {
   bimClineDir, bimClineModeForKey, bimClineModeLabels, bimClineVisibleSeg, bimDrawingExtent2D, bimIsCline
 } from './construction-lines.js';
@@ -56,6 +68,7 @@ import { bimEnterSection } from '../views/section-tool.js';
 import { refreshHud, saveSoon } from '../bim/region-regenerate.js';
 import { bimFamilyLibraryGet } from '../assets/family-library.js';
 import { bimPlaceFamilyInstance } from '../assets/blocks.js';
+import { bimAttdefPlace } from '../assets/block-attribs.js';
 import { bimObjectVisibleOnLevel } from '../views/saved-views.js';
 import { cvXY, drag, refreshTree } from '../sheets/presentation-panel.js';
 import { a3dToast, groundPoint, objById } from '../bim/csg-booleans.js';
@@ -90,7 +103,9 @@ import { cvH, cvW } from '../ui/canvas-size.js';
   /* __acad3dV93: circle was missing. skPlacePoint has handled a typed circle radius since
      V87, but this gate is upstream of it, so the buffer never opened and the keystrokes fell
      through to the viewport. polygon joins on the same terms. */
-  var BIM_COORD_TOOLS={line:1,poly:1,wall:1,rect:1,stair:1,arc:1,circle:1,polygon:1,point:1,xline:1,boundary:1,hatch:1};
+  var BIM_COORD_TOOLS={line:1,poly:1,wall:1,rect:1,stair:1,arc:1,circle:1,polygon:1,point:1,xline:1,boundary:1,hatch:1,
+    /* __acad3dV255: the drafting track's point-taking tools, so a typed point, a typed distance and Enter reach them */
+    move:1,copy:1,stretch:1,circle2p:1,circle3p:1,ellipse:1,revcloud:1,inqid:1,inqdist:1,inqarea:1,dimbase:1,dimcont:1,dimord:1,attdef:1,revolveaxis:1,donut:1,wipeout:1,circlettr:1,occtedge:1,jointaxis:1};
 
   /* AutoCAD coordinate entry. Exactly the five forms Autodesk documents:
 
@@ -167,6 +182,9 @@ import { cvH, cvW } from '../ui/canvas-size.js';
     else if(sk.tool==='wall'){if(sk.pts.length>=2)finishWall(false);else{A3D.sk=null;paint();}}
     else if(sk.tool==='poly'){if(sk.pts.length>=2)finishPoly(true);else{A3D.sk=null;paint();}}   /* __acad3dV100: Enter ends it OPEN */
     else if(sk.tool==='stair'){if(sk.pts.length>=2)finishStair();else{A3D.sk=null;paint();}}
+    else if(sk.tool==='inqarea')bimInquiryFinish(sk);   /* __acad3dV255 */
+    else if(sk.tool==='wipeout')bimWipeoutFinish(sk);   /* __acad3dV265 */
+    else if(sk.tool==='occtedge')bimOcctEdgeFinish(sk);   /* __acad3dV266 */
     else{A3D.sk=null;paint();}
     bimSyncStatusHint();
     return true;
@@ -288,6 +306,15 @@ import { cvH, cvW } from '../ui/canvas-size.js';
     if(sk.tool==='poly')return n?('Specify next point'+bimPromptOpts(sk)+':'):'Specify start point:';
     if(sk.tool==='rect')return n?'Specify other corner point:':'Specify first corner point:';
     if(sk.tool==='circle')return n?'Specify radius:':'Specify center point:';
+    if(sk.tool==='circle2p')return n?'Specify second end point of circle\'s diameter:':'Specify first end point of circle\'s diameter:';
+    if(sk.tool==='circle3p')return ['Specify first point on circle:','Specify second point on circle:','Specify third point on circle:'][Math.min(n,2)];
+    if(sk.tool==='ellipse')return ['Specify axis endpoint of ellipse:','Specify other endpoint of axis:','Specify distance to other axis:'][Math.min(n,2)];
+    if(sk.tool==='revcloud')return n?'Specify opposite corner:':'Specify first corner point:';
+    if(sk.tool==='dimbase'||sk.tool==='dimcont')return 'Specify a second extension line origin or [Undo/Select] <Select>:';
+    if(sk.tool==='dimord')return n?'Specify leader endpoint location:':'Specify feature location:';
+    if(sk.tool==='inqid')return 'Specify point:';
+    if(sk.tool==='inqdist')return n?'Specify second point:':'Specify first point:';
+    if(sk.tool==='inqarea')return n?'Specify next point or press ENTER for total:':'Specify first corner point:';
     /* __acad3dV93: the form is already chosen, so the prompt states it rather than offering
        [Inscribed/Circumscribed] at a point where no key would answer it. */
     if(sk.tool==='roomtag')return 'Select a room to tag (Escape when finished):';   /* __acad3dV101 */
@@ -323,6 +350,7 @@ import { cvH, cvW } from '../ui/canvas-size.js';
       :(n?'Break \u00b7 specify second break point:':'Break \u00b7 specify first break point:');
     if(sk.tool==='lengthen')return 'Lengthen \u00b7 select the end to change:';
     if(sk.tool==='scale')return 'Scale \u00b7 specify base point:';
+    if(sk.tool==='occtedge')return (sk.op==='fillet'?'Fillet':'Chamfer')+' edges \u00b7 click the edges ('+sk.picked.length+' picked), Enter to apply:';   /* __acad3dV266 */
     var msg=(SK_TOOLS[sk.tool]||sk.tool);
     return msg+(n?'  ·  click the next point, or type a length + Enter':'  ·  click to start');
   }
@@ -340,6 +368,7 @@ import { cvH, cvW } from '../ui/canvas-size.js';
   }
   function skClick(xy){
     var sk=A3D.sk;if(!sk)return;
+    if(sk.tool==='occtedge'){bimOcctEdgeClick(sk,xy);return;}   /* __acad3dV266: an edge, picked on the screen */
     var g=groundPoint(xy[0],xy[1],sk.y);if(!g)return;
     var snapped=bimSnapPoint(xy,g,sk);
     skPlacePoint(snapped[0],snapped[1],xy);
@@ -358,6 +387,16 @@ import { cvH, cvW } from '../ui/canvas-size.js';
      skipped and everything else behaves identically. */
   function skPlacePoint(gx,gz,xy){
     var sk=A3D.sk;if(!sk)return;
+    if(bimIsDmTool(sk)){bimDmPoint(sk,[gx,gz]);return;}
+    if(bimIsDrawExtra(sk)){bimDrawExtraPoint(sk,[gx,gz]);return;}   /* __acad3dV253 */
+    if(bimIsInquiryTool(sk)){bimInquiryPoint(sk,[gx,gz]);return;}   /* __acad3dV255 */
+    if(bimIsDimChainTool(sk)){bimDimChainPoint(sk,[gx,gz]);return;}   /* __acad3dV258 */
+    if(sk.tool==='attdef'){bimAttdefPlace(sk,[gx,gz]);return;}   /* __acad3dV260 */
+    if(sk.tool==='revolveaxis'){bimOcctRevolvePoint(sk,[gx,gz]);return;}   /* __acad3dV264 */
+    if(sk.tool==='jointaxis'){bimJointAxisPoint(sk,[gx,gz]);return;}   /* __acad3dV273 */
+    if(sk.tool==='donut'){bimDonutPoint(sk,[gx,gz]);return;}   /* __acad3dV265 */
+    if(sk.tool==='wipeout'){bimWipeoutPoint(sk,[gx,gz]);return;}   /* __acad3dV250: MOVE, COPY, STRETCH */
+    if(sk.tool==='matchprop'){if(xy)bimMatchPropClick(sk,xy);return;}
     if(sk.tool==='hatch'){                      /* __acad3dV96 */
       bimApplyHatchAt([gx,gz],sk.y,sk.hatch);
       return;                                   /* sk stays live: HATCH keeps filling */
@@ -628,7 +667,7 @@ import { cvH, cvW } from '../ui/canvas-size.js';
     var g=groundPoint(xy[0],xy[1],sk.y);
     if(!g){sk.hover=null;return;}
     var snapped=bimSnapPoint(xy,g,sk);
-    sk.hover={x:snapped[0],z:snapped[1],snapped:snapped[2]};
+    sk.hover={x:snapped[0],z:snapped[1],snapped:snapped[2],kind:snapped[3]||'',polar:A3D_OSNAP.polarAngle};
     if(sk.pts.length){
       var last=sk.pts[sk.pts.length-1];
       var ddx=snapped[0]-last[0],ddz=snapped[1]-last[1];
@@ -685,6 +724,7 @@ import { cvH, cvW } from '../ui/canvas-size.js';
     for(i=0;i<A3D.objs.length;i++){
       o=A3D.objs[i];
       if(!bimIsHatch(o))continue;
+      if(o.wipeout)continue;   /* __acad3dV265: drawn by drawWipeouts, over the linework */
       if(!bimLayerShown(o))continue;   /* __acad3dV121 */
       if(!bimObjectVisibleOnLevel(o))continue;
       ring=bimHatchOutline(o);
@@ -698,11 +738,14 @@ import { cvH, cvW } from '../ui/canvas-size.js';
       ctx.moveTo(sp[0][0],sp[0][1]);
       for(k=1;k<sp.length;k++)ctx.lineTo(sp[k][0],sp[k][1]);
       ctx.closePath();
+      var holes=bimHatchHoleRings(o),hk;   /* __acad3dV265: its islands, filled even-odd */
+      for(hk=0;hk<holes.length;hk++)bimRingPath(ctx,holes[hk],o,V,W,H);
+      var rule=holes.length?'evenodd':'nonzero';
       ctx.globalAlpha*=bimLayerAlpha(o);   /* __acad3dV121: the layer's transparency */
       rg=bimHatchGraphics(o);
-      if(rg.fill&&rg.fill!=='none'){ctx.fillStyle=rg.fill;ctx.fill();}
+      if(rg.fill&&rg.fill!=='none'){ctx.fillStyle=rg.fill;ctx.fill(rule);}
       fill=bimCanvasPatternFill(ctx,rg);
-      if(fill){ctx.fillStyle=fill;ctx.fill();}
+      if(fill){ctx.fillStyle=fill;ctx.fill(rule);}
       /* The boundary is drawn only while selected. AutoCAD's hatch has no visible edge of its
          own -- the edge belongs to whatever bounded it -- and drawing one would put a line in
          the drawing that is not in the model. */
@@ -751,6 +794,7 @@ import { cvH, cvW } from '../ui/canvas-size.js';
       /* __acad3dV121: this never asked about layers, so a layer turned off kept all its linework */
       if(!bimLayerShown(o))continue;
       var lk=bimLayerLook(o);
+      if(o.plWidth>0)lk=bimWideLook(lk,o,V,W,H);   /* __acad3dV265: a polyline's global width, at drawing scale */
       (A3D.lastLook||(A3D.lastLook={}))[o.id]=lk;   /* what was decided, for the suite to read */
       if(bimIsPoint(o)){                        /* __acad3dV93 */
         var pmSeg=bimPointMarkerSegs(o.pts[0]),pmQ=bimObjOffset(o),pmK;
@@ -852,6 +896,7 @@ import { cvH, cvW } from '../ui/canvas-size.js';
   function drawSkLivePreview(ctx,V,W,H){
     var sk=A3D.sk;
     if(!sk)return;
+    if(sk.tool==='occtedge')bimOcctEdgeDraw(ctx,V,W,H);   /* __acad3dV266 */
     if(sk.pts.length&&sk.hover){
       var last=sk.pts[sk.pts.length-1];
       var p1=toScreen([last[0],sk.y,last[1]],V,W,H);
@@ -862,11 +907,14 @@ import { cvH, cvW } from '../ui/canvas-size.js';
       ctx.setLineDash([6,4]);
       ctx.beginPath();ctx.moveTo(p1[0],p1[1]);ctx.lineTo(p2[0],p2[1]);ctx.stroke();
       ctx.setLineDash([]);
-      if(sk.hover.snapped){
-        ctx.beginPath();ctx.arc(p2[0],p2[1],5,0,Math.PI*2);ctx.strokeStyle='#4ea1ff';ctx.lineWidth=1.6;ctx.stroke();
+      if(typeof sk.hover.polar==='number'){   /* __acad3dV249: the polar tracking path */
+        var pe=toScreen([last[0]+(sk.hover.x-last[0])*40,sk.y,last[1]+(sk.hover.z-last[1])*40],V,W,H);
+        ctx.strokeStyle='rgba(78,161,255,0.55)';ctx.lineWidth=1;ctx.setLineDash([2,4]);
+        ctx.beginPath();ctx.moveTo(p1[0],p1[1]);ctx.lineTo(pe[0],pe[1]);ctx.stroke();ctx.setLineDash([]);
       }
       var mx=(p1[0]+p2[0])/2,my=(p1[1]+p2[1])/2;
       var label=(A3D_TYPING.active?(A3D_TYPING.buf||'0'):(sk.liveLen||0).toFixed(2));
+      if(!A3D_TYPING.active&&typeof sk.hover.polar==='number')label+=' < '+(Math.round(sk.hover.polar*100)/100)+'°';
       ctx.font='11px system-ui,sans-serif';
       var tw=ctx.measureText(label).width;
       ctx.fillStyle='rgba(20,22,26,0.85)';
@@ -875,6 +923,16 @@ import { cvH, cvW } from '../ui/canvas-size.js';
       ctx.textAlign='center';ctx.textBaseline='middle';
       ctx.fillText(label,mx,my-11);
       ctx.restore();
+    }
+    if(sk.hover&&sk.hover.snapped){   /* __acad3dV249: the snap's own marker, and its name */
+      var sp=toScreen([sk.hover.x,sk.y,sk.hover.z],V,W,H);
+      bimOsnapDrawMarker(ctx,sp[0],sp[1],sk.hover.kind||'end');
+      if(sk.hover.kind&&BIM_OSNAP_NAMES[sk.hover.kind]){
+        ctx.save();ctx.font='11px system-ui,sans-serif';ctx.textAlign='left';ctx.textBaseline='top';
+        var nm=BIM_OSNAP_NAMES[sk.hover.kind],nw=ctx.measureText(nm).width;
+        ctx.fillStyle='rgba(20,22,26,0.85)';ctx.fillRect(sp[0]+10,sp[1]+10,nw+8,16);
+        ctx.fillStyle='#9ec1ff';ctx.fillText(nm,sp[0]+14,sp[1]+12);ctx.restore();
+      }
     }
     /* __acad3dV67: the tool/modifier banner used to be painted into the canvas at (10,10),
        over the drawing, restating what the snap pill beside it already showed. Both now live

@@ -16963,3 +16963,18 @@ Bodies and clearance zones of furniture and fixtures; a door's clear width and a
 - Found: the gate passed ES2015 code; a gate check for the build contract on the task's file would catch it.
 - Checks: syntax, `npm run modules`, the build, `npm run check`, `npm test` 301 of 301, the browser check 19 of 19,
   V179's browser check re-run 19 of 19.
+
+## Phases 266 to 273 (and V190 WO-12, WO-13) - the FreeCAD gaps
+
+The owner, 2026-11-22: "do it all in one run". Research and the full list: `docs/research/research-freecad-gap.md`.
+
+- V266 solid tools on OpenCASCADE: edges picked with the mouse, DRAFTANGLE, SWEEP, SOLIDPATTERN, THICKNESS; a solid turned,
+  mirrored or scaled evenly by a mesh tool keeps its B-rep (the affine map fitted from the two meshes, applied as a gp_Trsf).
+- V267 arc constraints (tangent, point on arc, radius, diameter); the solver takes log|bulge| as an unknown, and damps a
+  noise diagonal as zero.
+- V268 MATERIALS with FreeCAD 1.0 .FCMat; V269 SPREADSHEET bound to the model; V190 WO-12, WO-13 point clouds in the model;
+  V271 MESHREPAIR, MESHTOSOLID; V272 VIEWBASE (OpenCASCADE HLR); V273 JOINT and BOM.
+- V270 IGES import (the owner's approval, "Yes"): occt-import-js 0.0.23 pinned at `runtime/occt-import/0.0.23/`,
+  loaded on first IGES import (`io/iges-io.js`); tested on an IGES box of our own (`tests/unit/iges.test.mjs`).
+- Checks: syntax, `npm run modules`, the build, `npm run check`, `npm test` 496 of 496, the browser check
+  `tests/e2e/bim_phase266_273_check.mjs` 35 of 35.

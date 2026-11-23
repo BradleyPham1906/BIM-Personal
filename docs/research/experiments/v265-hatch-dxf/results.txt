@@ -1,0 +1,19 @@
+OK  diagonal@0             segments 24 off-pattern 0 length 50.912 of 50.912
+OK  diagonal@30            segments 21 off-pattern 0 length 51.080 of 50.912
+OK  diagonal-reverse@0     segments 24 off-pattern 0 length 50.912 of 50.912
+OK  diagonal-reverse@30    segments 21 off-pattern 0 length 50.804 of 50.912
+OK  cross@0                segments 48 off-pattern 0 length 101.823 of 101.823
+OK  cross@30               segments 42 off-pattern 0 length 101.884 of 101.823
+OK  brick@0                segments 79 off-pattern 0 length 57.000 of 56.250
+OK  brick@30               segments 81 off-pattern 0 length 56.109 of 56.250
+OK  concrete@0             segments 180 off-pattern 0 length 8.945 of 8.945
+OK  concrete@30            segments 185 off-pattern 0 length 8.930 of 8.945
+OK  steel@0                segments 240 off-pattern 0 length 84.853 of 84.853
+OK  steel@30               segments 233 off-pattern 0 length 84.962 of 84.853
+OK  dots@0                 segments 100 off-pattern 0 length 0.000 of 0.000
+OK  dots@30                segments 100 off-pattern 0 length 0.000 of 0.000
+OK  horizontal@0           segments 12 off-pattern 0 length 36.000 of 36.000
+OK  horizontal@30          segments 16 off-pattern 0 length 36.000 of 36.000
+OK  vertical@0             segments 12 off-pattern 0 length 36.000 of 36.000
+OK  vertical@30            segments 16 off-pattern 0 length 36.000 of 36.000
+ezdxf 1.4.2 patterns failing: 0

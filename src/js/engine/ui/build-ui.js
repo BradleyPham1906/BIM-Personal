@@ -40,6 +40,7 @@ import { bimRebuildRoof } from '../bim/roofs.js';
 import {
   bimLayerPickRefusal, bimObjSetLayer, bimSelectByRule, setActiveLayer
 } from '../layers/select-change.js';
+import { bimObjLookField } from '../layers/object-look.js';
 import { bimLenInputToMetres, bimPropGroupToggle } from '../properties/palette.js';
 import { bimUsagePropChange, bimUsagePropClick } from '../properties/usages.js';
 import { bimIntProgChange, bimIntProgClick } from '../properties/programme.js';
@@ -58,12 +59,14 @@ import { bimStdOverride } from '../standards/registry.js';
 import { bimAnimPlay, bimAnimStop } from '../site-analysis/motion.js';
 import { bimDgPropChange, bimDgPropClick } from '../site-analysis/land-use.js';
 import { refreshProps } from '../site-analysis/panel.js';
+import { bimJointPropField, bimJointRemove } from '../assembly/joints.js';
 import { bimIfcMakeEditable } from '../io/ifc-editable.js';
 import { bimHandleImportFile } from '../io/import-entry.js';
 import { bimSkSet } from '../render/surface-kinds.js';
 import { bimRvProp } from '../render/rendered-view.js';
 import { bimFindSearch } from '../map/find-open-data.js';
 import { paint } from '../map/terrain-3d.js';
+import { bimPcPropField, openPcGroundDlg } from '../map/pointcloud-view.js';
 import { bimWalkProp } from '../walk/walk-mode.js';
 import { bimCloseGizmoMenu } from '../gizmo/gizmo-handles.js';
 import { bimFaceDblClick, bimPrimBase } from '../editing/faces-push-pull.js';
@@ -149,7 +152,7 @@ import { size } from './canvas-size.js';
     '<div class="a3d-tb">'+
       '<button class="a3d-btn a3d-drawerbtn" data-a3d="drawer" title="Show panel">\u2630</button>'+
       '<button class="a3d-btn a3d-rdrawerbtn" data-a3d="rdrawer" title="Show properties">Props</button>'+
-      '<input type="file" id="a3d-filein" accept=".dxf,.ifc,.obj,.stl,.glb,.gltf,.skp,.json,.geojson,.kml,.cityjson,.xml,.landxml" style="display:none">'+
+      '<input type="file" id="a3d-filein" accept=".dxf,.dwg,.step,.stp,.iges,.igs,.las,.ply,.laz,.ifc,.obj,.stl,.glb,.gltf,.skp,.json,.geojson,.kml,.cityjson,.xml,.landxml" style="display:none">'+
       '<input type="file" id="a3d-projin" accept=".json,.gz,application/json,application/gzip" style="display:none">'+   /* __acad3dV115 */
       '<span class="a3d-hud">View: <b id="a3d-view">Home</b><span id="a3d-count">0 objects</span></span>'+
       '<span class="a3d-uiwrap">'+
@@ -523,6 +526,8 @@ import { size } from './canvas-size.js';
       }
       if(f==='editclass'){openClassificationDlg();return;}
       if(f.indexOf('terrdrop:')===0){var tdo=objById(A3D.sel);if(tdo)bimTerrainEdit(tdo,f.slice(9));return;}   /* __acad3dV144 */
+      if(f==='pcground'){openPcGroundDlg(objById(A3D.sel));return;}   /* __acad3dV190 */
+      if(f==='jointdel'){bimJointRemove(objById(A3D.sel));return;}   /* __acad3dV273 */
       if(f==='terrlandxml'){var tlo=objById(A3D.sel);if(tlo)bimLandXmlExport([tlo.id]);return;}
       if(f==='regrade'){bimRegrade(objById(A3D.sel));return;}   /* __acad3dV145 */
       if(f==='gradespots'){bimGradeSpots(objById(A3D.sel));return;}
@@ -576,6 +581,9 @@ import { size } from './canvas-size.js';
       var o=objById(A3D.sel);
       if(!o)return;
       var f=inp.getAttribute('data-propf');
+      if(bimObjLookField(o,f,inp))return;   /* __acad3dV257 */
+      if(bimPcPropField(o,f,inp))return;   /* __acad3dV190 */
+      if(bimJointPropField(o,f,inp))return;   /* __acad3dV273 */
       if(f==='terrint'){bimSetTerrainInterval(o,inp.value);return;}   /* __acad3dV108 */
       if(f==='terrview'){bimTerrainSetView(o,inp.value);return;}      /* __acad3dV144 */
       if(f==='cutslope'||f==='fillslope'){bimSetPadSlope(o,f,inp.value);return;}   /* __acad3dV145 */

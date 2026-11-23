@@ -237,3 +237,14 @@ body.light-theme .a3d-stfile[data-state="unsaved"],body.light-theme .a3d-stfile[
 @media (pointer:coarse){.a3d-filedlg-ft .a3d-btn{min-height:36px}}
 body.light-theme .a3d-filedlg-box{background:#ffffff;border-color:#c9ced4;color:#202124}
 body.light-theme .a3d-filedlg-x{color:#4a4f55}
+/* __acad3dV268, __acad3dV269: the Materials dialog and the spreadsheet, wider than a small dialog */
+.a3d-dlg.a3d-matb{width:min(380px,94vw);max-height:86vh;overflow:auto}
+.a3d-dlg.a3d-sheet{width:min(760px,96vw);max-height:88vh;overflow:auto}
+.a3d-sheetwrap{max-height:46vh;overflow:auto;border:1px solid #3a4048;margin:6px 0}
+.a3d-sheetgrid{border-collapse:collapse;font-size:11px}
+.a3d-sheetgrid th{position:sticky;top:0;background:#2b3036;color:#9aa4ae;font-weight:500;padding:2px 4px;min-width:22px}
+.a3d-sheetgrid td{padding:0;border:1px solid #333a42}
+.a3d-sheetgrid td input{width:64px;background:transparent;border:0;color:#dfe4ea;padding:2px 4px;font:inherit}
+.a3d-sheetgrid td input:focus{background:#1b1f24;outline:1px solid #4ea1ff}
+.a3d-sheetgrid td input.a3d-sheeterr{color:#e08080}
+.a3d-sheetgrid td input[data-bound]{background:rgba(78,161,255,0.12)}

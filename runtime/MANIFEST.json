@@ -275,11 +275,112 @@
    "sha256": "21bda29c25a235bd7b2976db814bed79524e1382b8a17c8c79df1b07a0512c13",
    "from": "the licences of the packages geotiff.js 3.0.5 bundles, from their npm tarballs (2026-11-21)",
    "licence": "as each section says"
+  },
+  {
+   "path": "cc-dwg/e36a94d/LICENSE",
+   "bytes": 10174,
+   "sha256": "0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594",
+   "from": "getcadcraft/bimcraft@e36a94d, LICENSE",
+   "licence": "Apache-2.0 (cc-dwg)"
+  },
+  {
+   "path": "cc-dwg/e36a94d/NOTICE",
+   "bytes": 422,
+   "sha256": "cfaa71fce2eb8c5c2e2246a543985c7c3ca4bb86c32fd84d654c3db71081353c",
+   "from": "getcadcraft/bimcraft@e36a94d, NOTICE",
+   "licence": "Apache-2.0 (cc-dwg)"
+  },
+  {
+   "path": "cc-dwg/e36a94d/bim-dwg.min.js",
+   "bytes": 315128,
+   "sha256": "797baf6e7175118e5e1fc7db4861f4a17f01244ae4f17fff739a76ab3b797c09",
+   "from": "getcadcraft/bimcraft@e36a94d tests/lib/dwg (vendor/cc-dwg), bundled unchanged by esbuild 0.28.2: tools/dwg/build_dwg.mjs",
+   "licence": "Apache-2.0 (cc-dwg)"
+  },
+  {
+   "path": "occt/1.2.1/bim-replicad.min.js",
+   "bytes": 373412,
+   "sha256": "8696c3d445a6e82d94755e61d51fa4e4695329e5e2521b7d0030c7ba864daf5f",
+   "from": "npm replicad@1.2.1 with flatbush, flatqueue, opentype.js, bundled unchanged by esbuild 0.28.2: tools/occt/build_occt.mjs",
+   "licence": "MIT (replicad, opentype.js), ISC (flatbush, flatqueue)"
+  },
+  {
+   "path": "occt/1.2.1/REPLICAD-LICENSE",
+   "bytes": 1063,
+   "sha256": "7a3c098c1cf5d8de05efa0b930e7c8398c221da2a59032b617057fb7f122cf70",
+   "from": "npm replicad@1.2.1, LICENSE",
+   "licence": "MIT (replicad, opentype.js), ISC (flatbush, flatqueue)"
+  },
+  {
+   "path": "occt/1.2.1/replicad_single.js",
+   "bytes": 60483,
+   "sha256": "465b68c209b416396857fad30a6e33e7f5407907373cfe240c194af6d80c4a1d",
+   "from": "npm replicad-opencascadejs@1.2.1, dist/replicad_single.js, unchanged",
+   "licence": "LGPL-2.1-only (OpenCASCADE, replicad-opencascadejs)"
+  },
+  {
+   "path": "occt/1.2.1/replicad_single.wasm",
+   "bytes": 22942327,
+   "sha256": "a9335919fa64bfeaee3e241d3139ad134022682429c6688e20d8ca12093d33d9",
+   "from": "npm replicad-opencascadejs@1.2.1, dist/replicad_single.wasm, unchanged",
+   "licence": "LGPL-2.1-only (OpenCASCADE, replicad-opencascadejs)"
+  },
+  {
+   "path": "occt/1.2.1/OCCT-LICENSE",
+   "bytes": 26526,
+   "sha256": "20c17d8b8c48a600800dfd14f95d5cb9ff47066a9641ddeab48dc54aec96e331",
+   "from": "npm replicad-opencascadejs@1.2.1, LICENSE",
+   "licence": "LGPL-2.1-only (OpenCASCADE, replicad-opencascadejs)"
+  },
+  {
+   "path": "occt/1.2.1/OCCT-SOURCE.md",
+   "bytes": 1057,
+   "sha256": "6ea202662d0face2c746a5d71ca0ad7cc5f2e28922f8ee1a7ccd02af463453ae",
+   "from": "written by tools/occt/build_occt.mjs: the source offer",
+   "licence": "LGPL-2.1-only (OpenCASCADE, replicad-opencascadejs)"
+  },
+  {
+   "path": "occt-import/0.0.23/occt-import-js.js",
+   "bytes": 96871,
+   "sha256": "3fb44ce11d00611f9b3f3c5775d520ebab48930c1f08279b7b1316f05f0d3379",
+   "from": "npm occt-import-js@0.0.23, dist/occt-import-js.js, unchanged",
+   "licence": "LGPL-2.1 (occt-import-js; OpenCASCADE)"
+  },
+  {
+   "path": "occt-import/0.0.23/occt-import-js.wasm",
+   "bytes": 7604031,
+   "sha256": "33391fc9d94ea5c869a6718488bf0a9a464222bac9bdc764dfe1690cef281952",
+   "from": "npm occt-import-js@0.0.23, dist/occt-import-js.wasm, unchanged",
+   "licence": "LGPL-2.1 (occt-import-js; OpenCASCADE)"
+  },
+  {
+   "path": "occt-import/0.0.23/LICENSE-occt-import-js.txt",
+   "bytes": 27030,
+   "sha256": "7ffe1954587c77dfba1cf8eb9b2ea743671fa6e63f9e7a2f258119d42e14eefe",
+   "from": "npm occt-import-js@0.0.23, dist/license.occt-import-js.txt",
+   "licence": "LGPL-2.1 (occt-import-js; OpenCASCADE)"
+  },
+  {
+   "path": "occt-import/0.0.23/LICENSE-occt.txt",
+   "bytes": 26936,
+   "sha256": "090f8eb6ba63e72887c1f89b009fb1656cfda02d83b6e9805b20468520a5d77f",
+   "from": "npm occt-import-js@0.0.23, dist/license.occt.txt",
+   "licence": "LGPL-2.1 (occt-import-js; OpenCASCADE)"
+  },
+  {
+   "path": "occt-import/0.0.23/SOURCE.md",
+   "bytes": 929,
+   "sha256": "9af885467c05afe44008ce4bd2fe8e87bdef112607374f4bc6082cb8a5b24100",
+   "from": "written by tools/occt/build_occt_import.mjs: the source offer",
+   "licence": "LGPL-2.1 (occt-import-js; OpenCASCADE)"
   }
  ],
  "three": "0.186.1",
  "cc-ifc": "cfbd948",
  "jolt": "1.1.1",
  "ifcopenshell": "0.8.5",
- "geotiff": "3.0.5"
+ "geotiff": "3.0.5",
+ "cc-dwg": "e36a94d",
+ "occt": "1.2.1",
+ "occtImport": "0.0.23"
 }

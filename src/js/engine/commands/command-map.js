@@ -25,6 +25,9 @@ import {
 import { bimCycleRoomScheme } from '../bim/room-colour-fill.js';
 import { bimTagAllRooms, startRoomTagTool, startRoomTool } from '../bim/room-tags.js';
 import { startDimTool, startLeaderTool, startTextTool } from '../annotation/dimensions.js';
+import { bimListCommand, startInquiryTool } from '../annotation/inquiry.js';
+import { bimCountCommand, bimMassprop, openCalDlg } from '../annotation/inquiry-more.js';
+import { openDimStyleDlg, openTextStyleDlg, startDimChainTool } from '../annotation/dim-tools.js';
 import { bimExportPDF } from '../annotation/annotation-pick.js';
 import { bimFileOpen, bimFileSave } from '../io/file-save.js';
 import { startColumnTool, startDoorTool, startFloorTool, startWindowTool } from '../bim/columns-openings.js';
@@ -32,6 +35,9 @@ import { startCeilingTool } from '../bim/ceiling-floor-profile.js';
 import { startRoofTool } from '../bim/roofs.js';
 import { startStairTool } from '../bim/stairs.js';
 import { bimSelectByRule } from '../layers/select-change.js';
+import {
+  bimLayAll, bimLayCmdApply, bimLayIso, bimLayMcur, bimLayUniso, bimLayerPrevious, bimSelLayerIds
+} from '../layers/layer-commands.js';
 import { bimLayerManagerOpen } from '../layers/layer-manager.js';
 import { bimUsageCommand, bimUsageLibraryCommand } from '../properties/usages.js';
 import { bimStdCommand } from '../properties/site-standards.js';
@@ -55,6 +61,18 @@ import { bimSaRefresh, refreshProps } from '../site-analysis/panel.js';
 import { bimTrCommand } from '../simulation/traffic-ui.js';
 import { bimAwEnter, bimAwTraffic } from '../site-analysis/analysis-workspace.js';
 import { bimTlCommand } from '../site-tools/panel.js';
+import { bimExportDWG } from '../io/dwg-io.js';
+import { bimXattach, openXrefDlg } from '../io/xref.js';
+import {
+  bimOcctBoolean, bimOcctExportStep, bimOcctLoft, startOcctEdges, startOcctExtrude, startOcctRevolve,
+  startOcctShell
+} from '../solids/occt-tools.js';
+import {
+  bimOcctSweep, startOcctDraft, startOcctPattern, startOcctThickness
+} from '../solids/occt-features.js';
+import { openViewbaseDlg } from '../solids/occt-views.js';
+import { bimMeshRepairCommand, bimMeshToSolidCommand } from '../editing/mesh-repair.js';
+import { openBomDlg, openJointDlg } from '../assembly/joints.js';
 import { bimSkpPick } from '../io/sketchup-import.js';
 import { bimGltfExport, bimGltfPick } from '../io/gltf.js';
 import { bimIfcPick } from '../io/ifc-full.js';
@@ -69,10 +87,15 @@ import { bimWalkCommand } from '../walk/walk-mode.js';
 import { bimSetSnap, bimSyncSnapPill } from '../ui/shortcuts.js';
 import { bimGizmoCommand } from '../gizmo/gizmo-handles.js';
 import { bimPressPullCommand } from '../editing/faces-push-pull.js';
+import { startConstraintTool } from '../drawing/sketch-constraints.js';
 import { delSelection, duplicateSelection } from '../editing/selection-tools.js';
+import { startMirrorTool, startPolarArrayTool, startRotateTool } from '../editing/precision-editing.js';
+import { bimTogglePolar, openOsnapDlg } from '../drawing/object-snaps.js';
 import {
-  applyMergeWalls, startMirrorTool, startPolarArrayTool, startRotateTool
-} from '../editing/precision-editing.js';
+  bimDmSelIds, bimExplodeSelection, bimJoinCommand, bimOverkill, openDrawOrderDlg, startCopyTool,
+  startMatchPropTool, startMoveTool, startStretchTool
+} from '../editing/drafting-modify.js';
+import { startDonutTool, startWipeoutTool } from '../drawing/hatch-more.js';
 import {
   applyFilletCorner, openAlignDlg, openArrayDlg, openOffsetDlg, startBreakTool, startChamferTool,
   startExtendTool, startLengthenTool, startScaleTool, startTrimTool
@@ -82,10 +105,14 @@ import { fitScene } from '../ui/tool-palette.js';
 import { startSectionTool } from '../views/section-tool.js';
 import { bimDocsCreate } from '../ui/project-tabs.js';
 import { bimDocsClose } from '../assets/templates.js';
+import { openSheetDlg } from '../views/spreadsheet.js';
 import { bimToggleAreaPlan, bimToggleSun } from '../site/shadows.js';
 import { bimAnalyzeCommand, bimAnalyzeOff } from '../structure/analysis-display.js';
 import { bimStructFocus, bimToggleTrib } from '../structure/analysis-properties.js';
 import { openSaveBlockDlg } from '../assets/blocks.js';
+import { bimAttedit, openAttdefDlg } from '../assets/block-attribs.js';
+import { openBcloseDlg, openBeditDlg } from '../assets/block-editor.js';
+import { openMaterialsDlg } from '../assets/material-browser.js';
 import { A3D_VIEW } from '../views/saved-views.js';
 import { bimSheetById } from '../sheets/sheets.js';
 import { bimSheetOnScreen, bimShowModel } from '../sheets/present.js';
@@ -239,7 +266,8 @@ import { bimOpenToolsPanel } from '../ui/discipline-tabs.js';
     ifcin:function(){bimIfcPick();},   /* __acad3dV196 */
     gltfin:function(){bimGltfPick();},   /* __acad3dV195 */
     gltfout:function(){bimGltfExport();},
-    ifcout:function(){bimIfcExport();},   /* __acad3dV177 */
+    ifcout:function(){bimIfcExport();},
+    dwgout:function(){bimExportDWG();},   /* __acad3dV252 */   /* __acad3dV177 */
     skpin:function(){bimSkpPick();},                  /* __acad3dV163 */
     finddata:function(){bimFindCommand();},                      /* __acad3dV135 */
     datalayers:function(){bimDataCommand();},                    /* __acad3dV134 */                /* __acad3dV127 */
@@ -254,7 +282,74 @@ import { bimOpenToolsPanel } from '../ui/discipline-tabs.js';
     arrayRect:function(){openArrayDlg();},
     arrayPolar:function(){startPolarArrayTool();},
     align:function(){openAlignDlg();},
-    join:function(){applyMergeWalls();},
+    join:function(){bimJoinCommand();},   /* __acad3dV250: polylines first, then walls */
+    moveTool:function(){startMoveTool();},
+    dimbase:function(){startDimChainTool('base');},   /* __acad3dV258 */
+    dimcont:function(){startDimChainTool('cont');},
+    dimord:function(){startDimChainTool('ord');},
+    dimstyle:function(){openDimStyleDlg();},
+    textstyle:function(){openTextStyleDlg();},   /* __acad3dV259 */
+    attdef:function(){openAttdefDlg();},   /* __acad3dV260 */
+    donut:function(){startDonutTool();},   /* __acad3dV265 */
+    bedit:function(){openBeditDlg();},
+    xattach:function(){bimXattach();},
+    xref:function(){openXrefDlg();},
+    bclose:function(){openBcloseDlg();},
+    circlettr:function(){startSketch('circlettr');},
+    wipeout:function(){startWipeoutTool();},
+    occtextrude:function(){startOcctExtrude();},   /* __acad3dV264: the solid tools, on OpenCASCADE */
+    filletedge:function(){startOcctEdges('fillet');},
+    chamferedge:function(){startOcctEdges('chamfer');},
+    occtshell:function(){startOcctShell();},
+    occtrevolve:function(){startOcctRevolve();},
+    occtloft:function(){bimOcctLoft();},
+    solidunion:function(){bimOcctBoolean('fuse');},
+    solidsubtract:function(){bimOcctBoolean('cut');},
+    solidintersect:function(){bimOcctBoolean('intersect');},
+    exportstep:function(){bimOcctExportStep();},
+    materials:function(){openMaterialsDlg();},   /* __acad3dV268 */
+    spreadsheet:function(){openSheetDlg();},   /* __acad3dV269 */
+    meshrepair:function(){bimMeshRepairCommand();},   /* __acad3dV271 */
+    viewbase:function(){openViewbaseDlg();},   /* __acad3dV272 */
+    joint:function(){openJointDlg();},   /* __acad3dV273 */
+    bom:function(){openBomDlg();},
+    meshtosolid:function(){bimMeshToSolidCommand();},
+    gctangent:function(){startConstraintTool('tangent');},   /* __acad3dV267 */
+    dcradius:function(){startConstraintTool('radius');},
+    dcdiameter:function(){startConstraintTool('diameter');},
+    gcpointonarc:function(){startConstraintTool('pointonarc');},
+    occtdraft:function(){startOcctDraft();},   /* __acad3dV266 */
+    occtsweep:function(){bimOcctSweep();},
+    occtpattern:function(){startOcctPattern();},
+    occtthickness:function(){startOcctThickness();},
+    massprop:function(){bimMassprop();},   /* __acad3dV262 */
+    countblocks:function(){bimCountCommand();},
+    cal:function(){openCalDlg();},
+    attedit:function(){bimAttedit();},
+    layiso:function(){bimLayIso();},   /* __acad3dV256 */
+    layuniso:function(){bimLayUniso();},
+    layoff:function(){bimLayCmdApply(bimSelLayerIds(),'visible',false,{none:'LAYOFF: select objects on the layers to turn off',done:'LAYOFF: # layer(s) turned off'});},
+    layfrz:function(){bimLayCmdApply(bimSelLayerIds(),'frozen',true,{none:'LAYFRZ: select objects on the layers to freeze',done:'LAYFRZ: # layer(s) frozen'});},
+    laylck:function(){bimLayCmdApply(bimSelLayerIds(),'locked',true,{none:'LAYLCK: select objects on the layers to lock',done:'LAYLCK: # layer(s) locked'});},
+    layon:function(){bimLayAll('visible',true,'LAYON');},
+    laythw:function(){bimLayAll('frozen',false,'LAYTHW');},
+    layulkall:function(){bimLayAll('locked',false,'LAYULK');},
+    laymcur:function(){bimLayMcur();},
+    layerp:function(){bimLayerPrevious();},
+    inqid:function(){startInquiryTool('id');},   /* __acad3dV255 */
+    inqdist:function(){startInquiryTool('dist');},
+    inqarea:function(){startInquiryTool('area');},
+    inqlist:function(){bimListCommand();},
+    circle2p:function(){startSketch('circle2p');},   /* __acad3dV253 */
+    circle3p:function(){startSketch('circle3p');},
+    ellipse:function(){startSketch('ellipse');},
+    revcloud:function(){startSketch('revcloud');},
+    copyTool:function(){startCopyTool();},
+    stretch:function(){startStretchTool();},
+    explode:function(){bimExplodeSelection();},
+    overkill:function(){bimOverkill(bimDmSelIds());},
+    draworder:function(){openDrawOrderDlg();},
+    matchprop:function(){startMatchPropTool();},
     mirror:function(){startMirrorTool();},
     offset:function(){openOffsetDlg();},
     duplicate:function(){duplicateSelection();},
@@ -270,6 +365,8 @@ import { bimOpenToolsPanel } from '../ui/discipline-tabs.js';
       a3dToast('Object snap '+(A3D_SNAP.point?'on':'off'));},
     bimOrtho:function(){bimSetSnap({ortho:!A3D_SNAP.ortho});bimSyncSnapPill();paint();
       a3dToast('Ortho '+(A3D_SNAP.ortho?'on':'off'));},
+    osnapSettings:function(){openOsnapDlg();},   /* __acad3dV249 */
+    polar:function(){bimTogglePolar();},
     grid:function(){bimSetSnap({grid:!A3D_SNAP.grid});bimSyncSnapPill();paint();
       a3dToast('Grid snap '+(A3D_SNAP.grid?'on':'off'));},
     /* __acad3dV115: the document commands, which the quick-access bar's Save, Open, Undo, Redo and

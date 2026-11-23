@@ -4,6 +4,7 @@ import {
   bimLayerBlend, bimLayerById, bimLayerChain, bimLayerEff, bimLayerOf, bimLayerPickable, bimLayerSelectable,
   bimLayerShown, bimLayerZero, bimObjLayerState
 } from './layer-rules.js';
+import { bimLayerRecordPrev } from './layer-commands.js';
 import { bimLayerKids, bimLayerParentOk } from './layers-panel.js';
 import { refreshLayers } from './analysis-data-rows.js';
 import { A3D_CLB, bimClbOpen } from '../site-analysis/climate-board.js';
@@ -255,6 +256,7 @@ import { a3dToast, objById } from '../bim/csg-booleans.js';
     else was=ly[field];
     if(was===v)return true;
     pushUndo();
+    if(field!=='name'&&field!=='description')bimLayerRecordPrev();   /* __acad3dV256: LAYERP steps back over it */
     ly[field]=v;
     if(field==='visible'&&!v&&cur&&bimLayerUnder(cur,ly.id))a3dToast('The current layer is off: what you draw on it will not show until it is on');
     bimLayerChanged();

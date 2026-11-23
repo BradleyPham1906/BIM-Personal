@@ -11,6 +11,7 @@ import { bimEsc } from '../layers/layer-manager.js';
 import { paint } from '../map/terrain-3d.js';
 import { bimAfterWallRebuild } from './region-dependents.js';
 import { saveSoon } from './region-regenerate.js';
+import { bimMatLibrary } from '../assets/material-cards.js';
 import { refreshTree } from '../sheets/presentation-panel.js';
 import { closeDlg } from '../ui/touch-input.js';
 import { a3dToast } from './csg-booleans.js';
@@ -378,7 +379,7 @@ import { a3dToast } from './csg-booleans.js';
   /* __acad3dV69: assigning a card to a solid gives BOTH a plan cut pattern and a quantity takeoff
      from the same act. */
   function bimMaterialCards(){
-    return A3D_MATERIAL_LIBRARY;   /* __acad3dV120 */
+    return bimMatLibrary(A3D_MATERIAL_LIBRARY,A3D.matCards);   /* __acad3dV120; __acad3dV268: and the project's own cards */
   }
   function bimMaterialByName(n){
     var cards=bimMaterialCards(),i;

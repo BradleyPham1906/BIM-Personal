@@ -15,7 +15,7 @@ suites are in `tests/e2e/`.
     docs/            the user guide (built *.html, its src/ and data/), published on Pages
     docs/dev/        PIPELINE.md, CLAUDE_INSTRUCTIONS.md, the engineering log canvas_v10_STATUS.md
     docs/research/   each phase's research note, plans, experiments
-    runtime/         Pyodide and Ladybug's wheels (V172b), three.js (V194), pinned
+    runtime/         Pyodide and Ladybug's wheels (V172b), three.js (V194), cc-ifc (V196), cc-dwg (V252), OpenCASCADE (V264), occt-import-js (V270), pinned
     vendor/          third-party sources the vendored builds come from
     canvas_v10.html  the build output (committed: Pages and offline use)
 

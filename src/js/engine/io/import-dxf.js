@@ -6,7 +6,12 @@ import { bimLayerById } from '../layers/layer-rules.js';
 import { BIM_LINEWEIGHTS, addLayer, bimLayerByName, bimLinetypeDef } from '../layers/select-change.js';
 import { refreshLayers } from '../layers/analysis-data-rows.js';
 import { bimMakeImportedFace, bimMakeImportedSketch } from '../site-analysis/panel.js';
+import { dxfEntityExtra, dxfExpandInserts, dxfHatchOuter } from './dxf-entities.js';
 import { paint } from '../map/terrain-3d.js';
+import { bimFlattenPoly } from '../drawing/arc-storage.js';
+import { bimAddHatch } from '../drawing/hatch.js';
+import { bimPointInRing } from '../drawing/hatch-more.js';
+import { bimCircleSketch } from '../drawing/curve-walking.js';
 import { fitScene } from '../ui/tool-palette.js';
 import { saveSoon } from '../bim/region-regenerate.js';
 import { refreshTree } from '../sheets/presentation-panel.js';
@@ -64,7 +69,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
     if(rec)records.push(rec);
 
     var section=null,inTable=null,insUnits=null;
-    var layers={},entities=[],skipped={};
+    var layers={},entities=[],skipped={},blocks={},curBlock=null,target;
     var curPoly=null;
     var ENTITY_TYPES={LINE:1,CIRCLE:1,ARC:1,LWPOLYLINE:1,POLYLINE:1,VERTEX:1,SEQEND:1,'3DFACE':1,POINT:1};
 
@@ -94,10 +99,24 @@ import { a3dToast } from '../bim/csg-booleans.js';
           lineweight:(isFinite(lwv)&&lwv>=0)?lwv/100:null,plot:plv!==0};
         continue;
       }
-      if(section!=='ENTITIES')continue;
+      /* __acad3dV251: a block's entities are read as the drawing's are, into the block */
+      if(section==='BLOCKS'){
+        if(t==='BLOCK'){curBlock={name:dxfStr(r.items,2,''),base:[dxfNum(r.items,10,0),dxfNum(r.items,20,0)],ents:[]};continue;}
+        if(t==='ENDBLK'){if(curBlock&&curBlock.name)blocks[curBlock.name]=curBlock;curBlock=null;continue;}
+        if(!curBlock)continue;
+        target=curBlock.ents;
+      }else if(section==='ENTITIES')target=entities;
+      else continue;
 
       var layerName=dxfStr(r.items,8,'0');
       var colOverride=dxfNum(r.items,62,null);
+      /* __acad3dV257: an entity's own true colour (420), linetype (6) and lineweight (370) */
+      var tcO=dxfNum(r.items,420,null);
+      if(tcO!==null&&isFinite(tcO)&&tcO>=0)colOverride='#'+('000000'+Math.round(tcO).toString(16)).slice(-6);
+      var ltO=dxfStr(r.items,6,null),lwO=dxfNum(r.items,370,null);
+      var extra=dxfEntityExtra(t,r.items,layerName,colOverride);
+      if(extra){dxfOwnLook(extra,ltO,lwO);target.push(extra);continue;}
+      if(t==='DIMENSION'||t==='ATTRIB'||t==='ATTDEF')continue;   /* ATTDEF: a block's template, never drawn */   /* a dimension without its block, a hidden attribute */
 
       if(t==='POLYLINE'){
         var flags=dxfNum(r.items,70,0);
@@ -109,7 +128,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
         continue;
       }
       if(t==='SEQEND'){
-        if(curPoly&&curPoly.pts.length>=2)entities.push(curPoly);
+        if(curPoly&&curPoly.pts.length>=2)target.push(curPoly);
         curPoly=null;
         continue;
       }
@@ -118,16 +137,16 @@ import { a3dToast } from '../bim/csg-booleans.js';
         continue;
       }
       if(t==='LINE'){
-        entities.push({type:'LINE',layer:layerName,color:colOverride,
+        target.push(dxfOwnLook({type:'LINE',layer:layerName,color:colOverride,
           p1:[dxfNum(r.items,10,0),dxfNum(r.items,20,0),dxfNum(r.items,30,0)],
-          p2:[dxfNum(r.items,11,0),dxfNum(r.items,21,0),dxfNum(r.items,31,0)]});
+          p2:[dxfNum(r.items,11,0),dxfNum(r.items,21,0),dxfNum(r.items,31,0)]},ltO,lwO));
       }else if(t==='CIRCLE'){
-        entities.push({type:'CIRCLE',layer:layerName,color:colOverride,
-          c:[dxfNum(r.items,10,0),dxfNum(r.items,20,0),dxfNum(r.items,30,0)],r:dxfNum(r.items,40,1)});
+        target.push(dxfOwnLook({type:'CIRCLE',layer:layerName,color:colOverride,
+          c:[dxfNum(r.items,10,0),dxfNum(r.items,20,0),dxfNum(r.items,30,0)],r:dxfNum(r.items,40,1)},ltO,lwO));
       }else if(t==='ARC'){
-        entities.push({type:'ARC',layer:layerName,color:colOverride,
+        target.push(dxfOwnLook({type:'ARC',layer:layerName,color:colOverride,
           c:[dxfNum(r.items,10,0),dxfNum(r.items,20,0),dxfNum(r.items,30,0)],r:dxfNum(r.items,40,1),
-          a1:dxfNum(r.items,50,0),a2:dxfNum(r.items,51,360)});
+          a1:dxfNum(r.items,50,0),a2:dxfNum(r.items,51,360)},ltO,lwO));
       }else if(t==='LWPOLYLINE'){
         var flags2=dxfNum(r.items,70,0);
         var xs=dxfAllNums(r.items,10),ys=dxfAllNums(r.items,20);
@@ -145,21 +164,29 @@ import { a3dToast } from '../bim/csg-booleans.js';
             if(vi<bulges.length)bulges[vi]=parseFloat(r.items[ri][1])||0;
           }
         }
-        if(pts.length>=2)entities.push({type:'LWPOLYLINE',closed:!!(flags2&1),layer:layerName,color:colOverride,pts:pts,bulges:bulges});
+        if(pts.length>=2)target.push(dxfOwnLook({type:'LWPOLYLINE',closed:!!(flags2&1),layer:layerName,color:colOverride,pts:pts,bulges:bulges,width:dxfNum(r.items,43,0)},ltO,lwO));   /* __acad3dV265: 43, its constant width */
       }else if(t==='3DFACE'){
-        entities.push({type:'3DFACE',layer:layerName,color:colOverride,pts:[
+        target.push({type:'3DFACE',layer:layerName,color:colOverride,pts:[
           [dxfNum(r.items,10,0),dxfNum(r.items,20,0),dxfNum(r.items,30,0)],
           [dxfNum(r.items,11,0),dxfNum(r.items,21,0),dxfNum(r.items,31,0)],
           [dxfNum(r.items,12,0),dxfNum(r.items,22,0),dxfNum(r.items,32,0)],
           [dxfNum(r.items,13,0),dxfNum(r.items,23,0),dxfNum(r.items,33,0)]
         ]});
       }else if(t==='POINT'){
-        entities.push({type:'POINT',layer:layerName,color:colOverride,
+        target.push({type:'POINT',layer:layerName,color:colOverride,
           p:[dxfNum(r.items,10,0),dxfNum(r.items,20,0),dxfNum(r.items,30,0)]});
       }
     }
     var scale=DXF_UNIT_SCALE[insUnits]||1;
-    return {layers:layers,entities:entities,skipped:skipped,scale:scale,insUnits:insUnits};
+    var nIns=entities.filter(function(e){return e.type==='INSERT';}).length;
+    entities=dxfExpandInserts(entities,blocks,0);   /* __acad3dV251 */
+    return {layers:layers,entities:entities,blocks:Object.keys(blocks).length,inserts:nIns,skipped:skipped,scale:scale,insUnits:insUnits};
+  }
+  /* __acad3dV257: an entity's own linetype and lineweight, when it has them (BYLAYER and -1 are ByLayer) */
+  function dxfOwnLook(e,lt,lw){
+    if(lt&&!/^bylayer$|^byblock$/i.test(lt))e.linetype=lt;
+    if(lw!==null&&isFinite(lw)&&lw>=0)e.lineweight=lw/100;
+    return e;
   }
   function bimDxfApplyLayer(id,dl){
     var ly=bimLayerById(id),lt;
@@ -176,10 +203,15 @@ import { a3dToast } from '../bim/csg-booleans.js';
     var res;
     try{res=dxfParse(text);}
     catch(eP){console.warn('[BIM] DXF parse failed: ',eP);a3dToast('DXF import failed: could not parse '+filename);return;}
+    bimImportParsed(res,filename,'DXF');
+  }
+  /* __acad3dV252: what a parsed drawing becomes, whichever file it came from: DXF here, DWG from dwg-io.js. A colour
+     is an AutoCAD index, or already a hex string (a DWG's true colour). */
+  function bimImportParsed(res,filename,kind){
     pushUndo();
     setUndoSuspend(true);
     var __dxfStart=A3D.objs.length;
-    var scale,layerMap={},dxfNames,created=0,skippedPoints=0,i;
+    var scale,layerMap={},dxfNames,created=0,skippedPoints=0,texts=0,hatches=0,i;
     try{
       scale=res.scale;dxfNames=Object.keys(res.layers);
       if(!dxfNames.length)dxfNames=['0'];
@@ -207,10 +239,41 @@ import { a3dToast } from '../bim/csg-booleans.js';
             /* __acad3dV88: bulge is scale-invariant (it is tan of a quarter of the swept
                angle), so it is carried across unscaled while the points are scaled. */
             o=bimMakeImportedSketch(pts,baseY,!!e.closed,bimDxfBulgesToModel(e.bulges));
+            if(o&&e.width>0)o.plWidth=e.width*scale;   /* __acad3dV265 */
           }else if(e.type==='CIRCLE'){
-            var cpts=[],k,n=24;
-            for(k=0;k<n;k++){var an=k/n*Math.PI*2;cpts.push(bimDxfToModel(e.c[0]+Math.cos(an)*e.r,e.c[1]+Math.sin(an)*e.r,scale));}
-            o=bimMakeImportedSketch(cpts,baseY+(e.c[2]||0)*scale,true);
+            /* __acad3dV251: a circle is two half-circle arcs, as CIRCLE draws one, not a 24-gon */
+            var cir=bimCircleSketch(bimDxfToModel(e.c[0],e.c[1],scale),e.r*scale);
+            if(!cir.error)o=bimMakeImportedSketch(cir.pts,baseY+(e.c[2]||0)*scale,true,cir.bulges);
+          }else if(e.type==='HATCH'){   /* __acad3dV261: the outer boundary filled; an island is drawn as its outline */
+            /* __acad3dV265: each outer boundary filled, the inner ones inside it its holes (islands) */
+            var outer=dxfHatchOuter(e.loops),hk,hj,made=[];
+            var toM=function(lp){return {pts:lp.pts.map(function(p){return bimDxfToModel(p[0],p[1],scale);}),bulges:bimDxfBulgesToModel(lp.bulges)};};
+            for(hk=0;hk<outer.length;hk++){
+              var om=toM(outer[hk]);
+              var ho=bimAddHatch(om.pts,om.bulges,baseY,{layer:lid,pattern:e.pattern,
+                patternScale:e.scale>0?e.scale:1,patternAngle:-(e.angle||0),
+                patternColor:typeof e.color==='string'?e.color:(e.color>=1&&e.color<=255?dxfAciToHex(e.color):undefined)});
+              if(ho){ho.locked=true;hatches++;made.push({h:ho,ring:bimFlattenPoly(om.pts,om.bulges,true)});}
+            }
+            for(hk=0;hk<e.loops.length;hk++){
+              if(outer.indexOf(e.loops[hk])>=0)continue;
+              var im=toM(e.loops[hk]);
+              for(hj=0;hj<made.length;hj++)if(bimPointInRing(im.pts[0],made[hj].ring)){
+                (made[hj].h.holes=made[hj].h.holes||[]).push({pts:im.pts,bulges:im.bulges});break;
+              }
+            }
+          }else if(e.type==='POLYPTS'){   /* __acad3dV251: ellipse, spline, solid */
+            o=bimMakeImportedSketch(e.pts.map(function(p){return bimDxfToModel(p[0],p[1],scale);}),baseY+(e.z||0)*scale,!!e.closed);
+          }else if(e.type==='TEXT'){
+            if(e.text&&e.text.replace(/\s/g,'').length){
+              A3D.counts.text=(A3D.counts.text||0)+1;
+              o={id:'a3d-'+Date.now().toString(36)+'-'+(A3D.seq++),t:'text',name:'Text_'+A3D.counts.text,col:'#dfe4ea',pos:[0,0,0],
+                text:e.text,pt:bimDxfToModel(e.p[0],e.p[1],scale),y:baseY+(e.p[2]||0)*scale,levelId:A3D.activeLevel,viewId:A3D.activeViewId};
+              if(e.h>0)o.height=e.h*scale;   /* __acad3dV254: drawn at its own height */
+              if(e.tag)o.attrib={tag:String(e.tag).toUpperCase()};   /* __acad3dV260: an insert's attribute */
+              if(e.rot)o.rot=e.rot;
+              A3D.objs.push(o);texts++;
+            }
           }else if(e.type==='ARC'){
             /* __acad3dV88: an ARC is now STORED as an arc - two vertices and one bulge -
                instead of being tessellated into a fan of chords on the way in. DXF arcs are
@@ -232,7 +295,13 @@ import { a3dToast } from '../bim/csg-booleans.js';
         }catch(eE){
           console.warn('[BIM] Failed to import a '+e.type+' entity: ',eE);
         }
-        if(o){if(e.color!==null&&e.color!==undefined)o.col=dxfAciToHex(e.color);o.layer=lid;created++;}
+        if(o){if(typeof e.color==='string')o.col=e.color;else if(e.color!==null&&e.color!==undefined)o.col=dxfAciToHex(e.color);
+          if(typeof e.color==='string'||(typeof e.color==='number'&&e.color>=1&&e.color<=255))o.color=o.col;   /* __acad3dV257: its own colour, not ByLayer */
+          if(o.t==='sketch'){
+            if(e.linetype&&bimLinetypeDef(e.linetype))o.linetype=bimLinetypeDef(e.linetype).name;
+            if(typeof e.lineweight==='number'&&BIM_LINEWEIGHTS.indexOf(e.lineweight)>=0)o.lineweight=e.lineweight;
+          }
+          o.layer=lid;created++;}
       }
     }finally{
       var __dxfI;for(__dxfI=__dxfStart;__dxfI<A3D.objs.length;__dxfI++)A3D.objs[__dxfI].locked=true;
@@ -246,9 +315,10 @@ import { a3dToast } from '../bim/csg-booleans.js';
     }
     refreshTree();refreshLayers();fitScene();paint();saveSoon();
     var skipMsg=Object.keys(res.skipped).map(function(k){return res.skipped[k]+' '+k;}).join(', ');
-    a3dToast('DXF import: '+created+' entities on '+dxfNames.length+' layer(s)'+
+    a3dToast((kind||'DXF')+' import: '+created+' entities on '+dxfNames.length+' layer(s)'+
+      (texts?', '+texts+' text':'')+(hatches?', '+hatches+' hatch(es)':'')+(res.inserts?', '+res.inserts+' block insert(s) expanded':'')+
       (skipMsg?'; skipped (unsupported): '+skipMsg:'')+
       (skippedPoints?'; '+skippedPoints+' POINT entities not rendered':'')+
       (res.insUnits===null?' (no units in file, assumed meters)':''));
   }
-export { bimImportDXF };
+export { DXF_UNIT_SCALE, bimImportDXF, bimImportParsed, dxfAciToHex, dxfParse };

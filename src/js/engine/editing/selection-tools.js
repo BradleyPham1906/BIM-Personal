@@ -221,6 +221,14 @@ import { cvH, cvW } from '../ui/canvas-size.js';
       copy.pos=[o.pos[0]+dx,o.pos[1],o.pos[2]+dz];
       copy.name=o.name+' copy';
     }
+    /* __acad3dV260: the drafting track's own properties go with a copy, whichever branch made it -- a text's height
+       and rotation (V254, V259), an attribute or its definition (V260), a line's own look (V257). An insert's
+       membership (blockRef) does not: a copy is not part of the insert it was copied from. */
+    if(copy){
+      var ck=['height','rot','attrib','attdef','color','linetype','lineweight','plWidth','holes','wipeout'],ki;
+      for(ki=0;ki<ck.length;ki++)if(o[ck[ki]]!==undefined&&copy[ck[ki]]===undefined)copy[ck[ki]]=JSON.parse(JSON.stringify(o[ck[ki]]));
+      if(copy.blockRef&&copy!==o)delete copy.blockRef;
+    }
     return copy;
   }
   function duplicateSelection(){

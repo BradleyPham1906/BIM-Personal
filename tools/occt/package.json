@@ -1,0 +1,16 @@
+{
+  "name": "bim-personal-occt-runtime",
+  "private": true,
+  "description": "Builds runtime/occt/<ver>/: replicad (MIT) bundled into one classic script, and the OpenCASCADE build it drives (replicad-opencascadejs, LGPL-2.1) copied unchanged as its own files, for the solid tools (V264); and runtime/occt-import/<ver>/: occt-import-js (LGPL-2.1), OpenCASCADE's IGES reader, copied unchanged for IGES import (V270). A build tool only: the app has no npm dependencies.",
+  "type": "module",
+  "scripts": {
+    "build": "node build_occt.mjs && node build_occt_import.mjs",
+    "check": "node build_occt.mjs --check && node build_occt_import.mjs --check"
+  },
+  "devDependencies": {
+    "esbuild": "0.28.2",
+    "replicad": "1.2.1",
+    "replicad-opencascadejs": "1.2.1",
+    "occt-import-js": "0.0.23"
+  }
+}

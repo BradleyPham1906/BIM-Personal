@@ -29,7 +29,9 @@ import { bimBulgedArea, bimFlattenPoly, bimHasBulge } from './arc-storage.js';
   }
   function bimHatchArea(o){
     if(!o||!o.pts)return 0;
-    return bimBulgedArea(o.pts,o.bulges||null,true);
+    var a=bimBulgedArea(o.pts,o.bulges||null,true);
+    if(o.holes)for(var i=0;i<o.holes.length;i++)a-=bimBulgedArea(o.holes[i].pts,o.holes[i].bulges||null,true);   /* __acad3dV265 */
+    return a;
   }
   function bimAddHatch(pts,bulges,y,opts){
     opts=opts||{};

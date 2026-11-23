@@ -20,6 +20,7 @@ import { bimCloseGizmoMenu, bimGizmoTypeKey, bimTypingDrag } from '../gizmo/gizm
 import { bimFaceCurrent, bimFaceExit, bimFaceKeyFor, bimFaceKeyRun } from '../editing/faces-push-pull.js';
 import { cancelConstraintPick } from '../drawing/sketch-constraints.js';
 import { delSelection, duplicateSelection } from '../editing/selection-tools.js';
+import { bimTogglePolar } from '../drawing/object-snaps.js';
 import { bimNudgeObject } from '../editing/modify-toolbox.js';
 import { bimAssetDragCancel } from '../assets/library-drag.js';
 import { bimExitSection } from '../views/section-tool.js';
@@ -237,6 +238,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
     }
     if(ev.key==='F8'){A3D_SNAP.ortho=!A3D_SNAP.ortho;a3dToast('Ortho '+(A3D_SNAP.ortho?'on':'off')+' (F8)');syncSnapPill();paint();ev.preventDefault();return;}
     if(ev.key==='F3'){A3D_SNAP.point=!A3D_SNAP.point;a3dToast('Object snap '+(A3D_SNAP.point?'on':'off')+' (F3)');syncSnapPill();paint();ev.preventDefault();return;}
+    if(ev.key==='F10'){bimTogglePolar();ev.preventDefault();return;}   /* __acad3dV249 */
     if(ev.key==='F9'){A3D_SNAP.grid=!A3D_SNAP.grid;a3dToast('Grid snap '+(A3D_SNAP.grid?'on':'off')+' (F9)');syncSnapPill();paint();ev.preventDefault();return;}
     if((ev.ctrlKey||ev.metaKey)&&!ev.shiftKey&&(ev.key==='z'||ev.key==='Z')){
       doUndo();ev.preventDefault();ev.stopImmediatePropagation();return;
@@ -409,6 +411,10 @@ import { a3dToast } from '../bim/csg-booleans.js';
     'con:midpoint':ric('<path d="M4 12h16"/><circle cx="12" cy="12" r="2.2"/><path d="M4 9v6M20 9v6" stroke-dasharray="2 2"/>'),
     'con:symmetric_pt':ric('<circle cx="5" cy="12" r="2"/><circle cx="19" cy="12" r="2"/><circle cx="12" cy="12" r="1.2"/><path d="M5 12h14" stroke-dasharray="2 2"/>'),
     'con:symmetric_line':ric('<path d="M12 4v16" stroke-dasharray="2 2"/><circle cx="6" cy="12" r="2"/><circle cx="18" cy="12" r="2"/><path d="M6 12h12"/>'),
+    'con:tangent':ric('<circle cx="12" cy="13" r="6"/><path d="M3 7h18"/>'),   /* __acad3dV267 */
+    'con:pointonarc':ric('<path d="M5 17a8 8 0 0 1 14 0"/><circle cx="12" cy="9" r="2.2"/>'),
+    'con:radius':ric('<circle cx="12" cy="12" r="8"/><path d="M12 12l6-5"/><text x="7" y="19" font-size="6" stroke="none" fill="currentColor">R</text>'),
+    'con:diameter':ric('<circle cx="12" cy="12" r="8"/><path d="M6 17L18 7"/>'),
     'bim:wall':ric('<rect x="3" y="9" width="18" height="6"/><path d="M3 9l4-4M8 9l4-4M13 9l4-4M18 9l3-3"/>'),
     'bim:floor':ric('<rect x="4" y="6" width="16" height="12"/><path d="M4 10h16M4 14h16M9.3 6v12M14.6 6v12"/>'),
     'bim:column':ric('<rect x="8" y="4" width="8" height="16"/><path d="M6 4h12M6 20h12"/>'),

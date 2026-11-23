@@ -43,6 +43,7 @@ import {
 } from './map-tiles.js';
 import { drawDataLayers } from './find-open-data.js';
 import { BIM_PAINT_BUDGET, bimPaintPieces } from '../render/painter-split.js';
+import { bimPcDraw2d, bimPcDrawGl } from './pointcloud-view.js';
 import { drawCube } from '../render/viewcube.js';
 import { A3D_ORIGIN_AXES } from '../gizmo/transform-gizmo.js';
 import { drawNotes } from '../annotation/annotation-overlay.js';
@@ -51,6 +52,7 @@ import { bimDrawGizmo } from '../gizmo/gizmo-handles.js';
 import { bimDrawFaceMode, bimFaceCurrent } from '../editing/faces-push-pull.js';
 import { bimDrawGrips } from '../drawing/add-vertex.js';
 import { drawMarqueeRect } from '../editing/selection-tools.js';
+import { drawWipeouts } from '../drawing/hatch-more.js';
 import { drawAreaPlan, drawSunPath, drawSunShadows, drawTribAreas } from '../site/shadows.js';
 import { drawStructResults } from '../structure/analysis-display.js';
 import { bimEntDrawTurns } from '../assets/scale-assets.js';
@@ -248,6 +250,7 @@ import { cvH, cvScale, cvW } from '../ui/canvas-size.js';
     gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
     bimMapDrawGl(G,V,W,H);   /* __acad3dV132: the basemap, under everything */
     bimTerrainDrawGl(G,V,W,H);   /* __acad3dV137: the terrain in 3D, the map draped on it */
+    bimPcDrawGl(G,V,W,H);   /* __acad3dV190: point clouds */
     if(A3D_GL_BATCH&&bimGbRender(G,V,W,H)){   /* __acad3dV152: the batches */
       var kb;for(kb in G.bufs)if(G.bufs.hasOwnProperty(kb)){bimGlDisposeBuffer(G,G.bufs[kb]);delete G.bufs[kb];}
       return true;
@@ -398,6 +401,7 @@ import { cvH, cvScale, cvW } from '../ui/canvas-size.js';
        presentation graphics are on, which forces glOn false (see the glOn line above), so it can
        never double-draw against the GPU path. __acad3dV122: on a sheet too. */
     drawTerrain(ctx,V,W,H);                  /* __acad3dV108: the ground, under everything */
+    if(!capMode)bimPcDraw2d(ctx,V,W,H,glOn);  /* __acad3dV190: point clouds, where WebGL did not draw them */
     if(!capMode)drawSunShadows(ctx,V,W,H);   /* __acad3dV107: first, so everything else draws over it */
     if(!capMode)drawSimOverlays(ctx,V,W,H);  /* __acad3dV143: sun hours, ponds and flow lines */
     if(!capMode)bimEntDrawTurns(ctx,V,W,H);  /* __acad3dV169: the turning spaces of placed assets */
@@ -511,6 +515,7 @@ import { cvH, cvScale, cvW } from '../ui/canvas-size.js';
     drawClines(ctx,V,W,H);         /* __acad3dV94: construction geometry, under the model */
     drawSketches(ctx,V,W,H);
     if(!presentRooms)drawRooms(ctx,V,W,H);
+    drawWipeouts(ctx,V,W,H);       /* __acad3dV265: over the linework, under dimensions and text */
     drawDims(ctx,V,W,H);
     drawTextLabels(ctx,V,W,H);
     drawRoomTags(ctx,V,W,H);       /* __acad3dV101 */

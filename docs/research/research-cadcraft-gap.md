@@ -33,11 +33,11 @@ Our side was read in `src/js/engine/` on 2026-11-22 (P: the code). "Have" means 
 | Draw | LINE, PLINE with widths, CIRCLE (2P, 3P, TTR), ARC, RECTANG with fillet/chamfer, POLYGON, ELLIPSE and elliptical arcs, SPLINE, POINT, XLINE, RAY, DONUT, MLINE, REGION, HELIX, TEXT, MTEXT, HATCH with gradients | line, polyline with arcs, rectangle, circle (centre and radius), arc, polygon, point, xline, ray, boundary, hatch | **missing:** ellipse and elliptical arc, circle 2P/3P/TTR, donut, polyline widths, revision cloud, wipeout. Spline is already queued (V183, NURBS curves) |
 | Modify | MOVE, COPY, ROTATE, SCALE, MIRROR, STRETCH, OFFSET, TRIM, EXTEND, FILLET, CHAMFER, BREAK, JOIN, EXPLODE, ARRAY (associative), draw order, OVERKILL, grips that cycle Stretch/Move/Rotate/Scale/Mirror | rotate, scale, mirror, offset, trim, extend, fillet, chamfer, break, lengthen, align, rectangular and polar arrays (not associative), duplicate, the gizmo | **partial:** move and copy by base point and second point (the gizmo and duplicate do part of it). **Missing:** stretch by crossing window, explode, join for polylines (JOIN here merges walls), overkill, draw order, match properties, associative arrays |
 | Constraints | geometric and dimensional, AUTOCONSTRAIN, parameters with expressions | the GC/DC set in sketches (`drawing/sketch-constraints.js`) | **partial:** no auto-constrain, no parameter expressions |
-| Dimensions | every DIM type, DIMSTYLE, associative | linear, angular, radius, diameter, leader (`annotation/dimensions.js`) | **missing:** baseline, continue, ordinate, arc length; dimension styles (text height, arrows, units, precision, scale) |
-| Text | TEXT, MTEXT with formatting codes, TrueType fonts, text styles | one text tool | **missing:** multiline text, text styles, fonts |
+| Dimensions | every DIM type, DIMSTYLE, associative | linear, angular, radius, diameter, leader; **V258 (2026-11-22):** DIMBASELINE, DIMCONTINUE, DIMORDINATE, DIMSTYLE (precision, units, arrows, text height, offsets, baseline spacing) | **partial:** arc length, several named styles, associativity not checked |
+| Text | TEXT, MTEXT with formatting codes, TrueType fonts, text styles | **V254 and V259 (2026-11-22):** TEXT and MTEXT with height, rotation and several lines, drawn at drawing scale; STYLE (font and default height) | **partial:** one style, six web fonts, no inline formatting |
 | Leaders, tables | MLEADER, TABLE | leader; schedules | **partial:** no multileader styles; no drawn table object outside schedules |
-| Linetypes and colour | linetypes, lineweights, colour index and true colour per layer and per object | lineweight per layer, plot by layer | **missing:** linetypes (dashed, centre, hidden), per-object overrides |
-| Layers | isolate, freeze, off, lock, match, previous, layer states | show, lock, pin, rules, list by | **partial:** no isolate, freeze per viewport, previous, layer states |
+| Linetypes and colour | linetypes, lineweights, colour index and true colour per layer and per object | AutoCAD's acadiso linetypes and lineweights per layer (`layers/select-change.js`), plot by layer | **partial:** no per-object linetype, colour or lineweight overrides (corrected 2026-11-22: linetypes per layer were already there) |
+| Layers | isolate, freeze, off, lock, match, previous, layer states | show, lock, pin, rules, list by; **V256 (2026-11-22):** LAYISO, LAYUNISO, LAYOFF, LAYFRZ, LAYLCK, LAYON, LAYTHW, LAYULK, LAYMCUR, LAYERP | **partial:** no freeze per viewport, named layer states |
 | Blocks | BLOCK, INSERT, attributes, nested blocks, external references, image attach | block make and insert, families, the library | **missing:** attributes, a block editor, explode, external references (DXF), images in model space (V188 adds picture planes) |
 | Inquiry | DIST, AREA, ID, LIST, MASSPROP, COUNT, QuickCalc | measure, tributary area, area plans | **partial:** no LIST, ID, MASSPROP, COUNT or calculator as commands |
 | DXF in | R12 to 2018, ASCII and binary, every common entity | LINE, ARC, CIRCLE, LWPOLYLINE, POLYLINE, POINT, 3DFACE (`io/import-dxf.js`) | **missing:** TEXT, MTEXT, INSERT and blocks, HATCH, DIMENSION, ELLIPSE, SPLINE, linetypes, binary DXF |
@@ -57,15 +57,15 @@ work orders under the existing workflow (Claude specifies, Cline builds).
 
 | Proposed | What | Why first or later |
 |---|---|---|
-| D1 | Object snaps (midpoint, center, quadrant, intersection, perpendicular, tangent, nearest, insertion) with a snap-mode toggle, polar tracking, object snap tracking | Every draw and modify tool benefits; today only vertices snap |
-| D2 | Modify: move and copy by base point, stretch, explode, join polylines, overkill, draw order, match properties | The commands drafters use most that are missing |
-| D3 | Draw: ellipse and elliptical arc, circle 2P/3P/TTR, donut, polyline widths, revision cloud, wipeout | Small, independent |
-| D4 | Annotation styles: text styles and multiline text, dimension styles, baseline/continue/ordinate/arc-length dimensions, multileaders | Drawings that read like professional sheets |
-| D5 | Linetypes and per-object colour and lineweight | Needed for D7's round trip, and for plotting |
-| D6 | Blocks: attributes, a block editor, explode, external references | Title blocks and tags carry data |
-| D7 | DXF fidelity: read and write text, multiline text, blocks, hatches, dimensions, ellipses, splines, linetypes; binary DXF in | What every consultant's drawing arrives as |
-| D8 | Inquiry: LIST, ID, DIST, AREA, MASSPROP for regions, COUNT, a calculator | Small |
-| D9 | DWG, research only first | Needs a library: acadrust (CADCraft's, Rust) through WebAssembly, or LibreDWG (GPL, so only as a separate program under the third-party rule). License, size and fidelity to be measured before the owner approves one |
+| D1 | Object snaps (midpoint, center, quadrant, intersection, perpendicular, tangent, nearest, node) with an OSNAP settings dialog, polar tracking (F10) | **Built as V249, 2026-11-22.** Object snap tracking not yet |
+| D2 | Modify: move and copy by base point, stretch, explode, join polylines, overkill, draw order, match properties | **Built as V250, 2026-11-22** (MOVE and EXPLODE were typed commands with no handler before) |
+| D3 | Draw: ellipse and elliptical arc, circle 2P/3P/TTR, donut, polyline widths, revision cloud, wipeout | **Partly built as V253, 2026-11-22:** CIRCLE2P, CIRCLE3P, ELLIPSE (a typed command with no handler before), REVCLOUD. Still open: elliptical arcs, TTR, DONUT, widths, WIPEOUT (they need filled and wide lines, which the plan drawing does not draw yet) |
+| D4 | Annotation styles: text styles and multiline text, dimension styles, baseline/continue/ordinate/arc-length dimensions, multileaders | **Started as V254, 2026-11-22:** text has a height and a rotation, drawn at drawing scale, multi-line, kept through DXF and DWG. Still open: text styles and fonts, typing a height, dimension styles, the other dimension types, multileaders |
+| D5 | Linetypes and per-object colour and lineweight | **Built as V257, 2026-11-22:** a line's own colour, linetype and lineweight, ByLayer when unset, in Properties, drawn on the plan, read and written by DXF and DWG, copied by MATCHPROP |
+| D6 | Blocks: attributes, a block editor, explode, external references | **Attributes built as V260, 2026-11-22:** ATTDEF, values asked at insert, ATTEDIT, tags kept from DXF and DWG, each insert's members known. Still open: a block editor, external references |
+| D7 | DXF fidelity: read and write text, multiline text, blocks, hatches, dimensions, ellipses, splines, linetypes; binary DXF in | **Import built as V251, 2026-11-22:** blocks (nested, arrays, mirrored), dimensions, TEXT, MTEXT, ATTRIB, ELLIPSE, SPLINE, SOLID, true-arc circles. HATCH filled since V261 (AutoCAD's patterns mapped to the app's; islands drawn as outlines). Binary DXF in since V263. Still open: the export side (a hatch is exported as its boundary: a patterned HATCH needs every pattern's line definitions written) |
+| D8 | Inquiry: LIST, ID, DIST, AREA, MASSPROP for regions, COUNT, a calculator | **Built as V255, 2026-11-22:** ID, DIST (DI, MEASUREGEOM), AREA (AA; points or selected closed objects), LIST (LI); a read-out that leaves nothing in the drawing (also FreeCAD's Measure gap). DIST used to place a dimension, AREA was an alias of the gross-area overlay. MASSPROP, COUNT and QUICKCALC (CAL) added as V262 |
+| D9 | DWG | **Built as V252, 2026-11-22** (the owner approved cc-dwg): opens R13 to R2018 through the Import picker, saves the plan as AutoCAD 2013 DWG (EXPORTDWG, DWGOUT, the ribbon's DWG). docs/research/research-dwg-library.md |
 
 ## 4. The owner's decisions
 
@@ -90,3 +90,22 @@ work orders under the existing workflow (Claude specifies, Cline builds).
 - github.com/storytold/cadcraft README and `docs/gaps.md`: read 2026-11-22 (S, upstream's own claims,
   not tested here).
 - This repository's `src/js/engine/` at the branch's head, 2026-11-22 (P).
+
+## 6. The list closed (V265, 2026-11-22)
+
+The owner, 2026-11-22: "Try to get it done with cad draft". V265 builds the last of section 3's items:
+
+- **Hatch holes:** a hatch has `holes`, filled even-odd. A DXF or DWG hatch's inner boundaries become its holes (islands).
+- **DONUT (DO):** a solid ring or dot.
+- **WIPEOUT:** masks what is under it with the background, under dimensions and text. Checked by the canvas's pixels.
+- **Polyline global width:** in Properties; DXF group 43 and DWG `constantWidth` both ways; drawn at drawing scale.
+- **CIRCLE TTR:** tangent to two picked lines, in the corner of the picks.
+- **BEDIT and BCLOSE:** edit a block; saving redefines every insert and keeps its attribute values.
+- **XATTACH and XREF:** attach a DXF or DWG as locked reference objects; Detach and Reload. A browser asks for the file
+  again on Reload.
+- **Patterned hatches in DXF export:** a HATCH with its holes and its pattern written as line families, one per tile
+  segment, its period and offset a basis of the tile lattice. Checked with ezdxf 1.4.2, which traced every pattern at 0
+  and 30 degrees onto the app's tiles (`docs/research/experiments/v265-hatch-dxf/`, 18 of 18). The same lines go to DWG.
+
+What remains is outside this list. The DXF export has no `$ACADVER` header and no handles, so a strict AutoCAD reader
+may refuse it; ezdxf and the app's own reader read it.

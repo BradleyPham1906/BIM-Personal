@@ -46,10 +46,10 @@
   var CADCMDS=[
     ['LINE',['L'],'line','Draw a line'],['PLINE',['PL','POLYLINE','POLY'],'poly','Draw a polyline'],
     ['WALL',['WA'],'wall','Draw a wall (A for arc segments)'],
-    ['RECTANG',['REC','RECT','RECTANGLE'],'rect','Draw a rectangle'],['CIRCLE',['C'],'circle','Draw a circle'],
+    ['RECTANG',['REC','RECT','RECTANGLE'],'rect','Draw a rectangle'],['CIRCLE',['C'],'circle','Draw a circle'],['CIRCLE2P',['C2P'],'circle2p','Draw a circle by the two ends of its diameter'],['CIRCLETTR',['TTR'],'circlettr','Draw a circle tangent to two lines with a radius'],['CIRCLE3P',['C3P'],'circle3p','Draw a circle through three points'],['REVCLOUD',['RC'],'revcloud','Draw a revision cloud round a rectangle'],
     ['ARC',['A'],'arc','Draw a 3-point arc'],['ELLIPSE',['EL'],'ellipse','Draw an ellipse'],
     ['POLYGON',['POL'],'polygon','Draw a polygon'],['SKETCH',['DRAW'],'draw','Freehand sketch'],
-    ['MTEXT',['T','MT'],'text','Text box'],['TEXT',['DT'],'text','Text box'],
+    ['MTEXT',['T','MT'],'text','Multiline text, with its height and rotation'],['TEXT',['DT','DTEXT'],'text','Text, with its height and rotation'],
     ['SPLINE',['SPL'],'spline','Spline through fit points'],
     ['ROOM',['RM'],'room','Make a room from an enclosed region'],
     ['ROOMTAG',['RT','TAGROOM'],'roomtag','Tag a room with its number and name'],
@@ -57,7 +57,7 @@
     ['COLOURBY',['COLORBY','LENS'],'colourby','Colour the model by usage, level, type, layer, material, height or any property, with a legend'],   /* __acad3dV136 */
     ['ROOMCOLOR',['COLORFILL','ROOMCOLOUR'],'roomcolor','Fill rooms by Department, then by Occupancy, then off'],   /* __acad3dV105 */
     ['TRIBAREA',['TRIBUTARY','TRIB'],'tribarea','Show or hide the tributary area each column carries on this level'],   /* __acad3dV106 */
-    ['AREAPLAN',['AREA','GROSSAREA','AP'],'areaplan','Show or hide the gross area inside the exterior walls on this level'],   /* __acad3dV105b */
+    ['AREAPLAN',['GROSSAREA','AP'],'areaplan','Show or hide the gross area inside the exterior walls on this level'],   /* __acad3dV105b */
     ['SUNSTUDY',['SHADOWS','SUNPATH'],'sunstudy','Show or hide the shadows on the ground and the sun path, for the site date and time'],   /* __acad3dV107 */
     ['COMMIT',['CHECKPOINT','SAVEVERSION'],'commit','Keep this state of the model as a version, with a message: what changed, element by element'],   /* __acad3dV146 */
     ['HISTORY',['VERSIONS','VERSIONHISTORY'],'history','The model\'s versions: what changed in each, element by element, and Restore'],
@@ -113,11 +113,11 @@
     ['LEADER',['LE','QLEADER'],'leader','Leader balloon'],['TRIM',['TR'],'trim','Trim to intersection'],
     ['EXTEND',['EX'],'extend','Extend to boundary'],['FILLET',['F'],'fillet','Fillet two walls (radius 0)'],
     ['CHAMFER',['CHA'],'chamfer','Chamfer a corner between two walls'],['EXPLODE',['X'],'explode','Explode into segments'],
-    ['MOVE',['M'],'moveTool','Move selection'],['COPY',['CO','CP'],'duplicate','Copy selection'],
+    ['MOVE',['M'],'moveTool','Move selection'],['COPY',['CO','CP'],'copyTool','Copy selection from a base point'],['STRETCH',['S'],'stretch','Stretch what a crossing window catches'],['OVERKILL',['OV'],'overkill','Delete duplicate lines and repeated vertices'],['DRAWORDER',['DR'],'draworder','Bring to front or send to back'],['MATCHPROP',['MA','PAINTER'],'matchprop','Copy one object\'s properties to others'],
     ['BREAK',['BR'],'break','Break a wall between two points'],
     ['BREAKATPOINT',['BRP','BREAKAT'],'breakat','Split a wall at one point'],
     ['LENGTHEN',['LEN'],'lengthen','Change a wall length at one end'],
-    ['JOIN',['J'],'join','Join two colinear walls into one'],
+    ['JOIN',['J'],'join','Join lines end to end into polylines, or two walls into one'],
     ['ALIGN',['AL'],'align','Align objects to the first selected'],
     ['ARRAYRECT',['AR','ARRAY','ARRAYCLASSIC'],'arrayRect','Rectangular array'],
     ['ARRAYPOLAR',['ARP'],'arrayPolar','Polar array'],
@@ -128,10 +128,10 @@
     /* __acad3dV93: MEASURE was an alias of DIST. In AutoCAD they are different commands --
        DIST reports a distance, MEASURE steps points off along an object -- so the alias made
        the real command unreachable by its own name. */
-    ['DIST',['DI'],'measure','Measure distance'],
+    ['DIST',['DI','MEASUREGEOM','MEA'],'inqdist','Measure the distance and angle between two points, leaving nothing in the drawing'],['ID',[],'inqid','Show the coordinates of a point'],['AREA',['AA'],'inqarea','Measure the area and perimeter of picked points or of the selected closed objects'],['LIST',['LI','LS'],'inqlist','List the selected objects\' properties and sizes'],   /* __acad3dV255 */
     ['DIVIDE',['DIV'],'divide','Place points dividing an object into equal parts'],
     ['MEASURE',['ME'],'measurePts','Place points at a set spacing along an object'],['DIMLINEAR',['DLI','DIM'],'bimDims','Linear dimension'],
-    ['LAYER',['LA','LAYERS'],'layers','Layer Properties Manager'],['OSNAP',['OS'],'bimSnap','Toggle object snap'],
+    ['LAYER',['LA','LAYERS'],'layers','Layer Properties Manager'],['DIMBASELINE',['DBA'],'dimbase','Dimensions from the first point of the last linear dimension'],['DIMCONTINUE',['DCO'],'dimcont','Dimensions chained from the last linear dimension'],['DIMORDINATE',['DOR'],'dimord','The X or Y of a point from the origin'],['XATTACH',['XA'],'xattach','Attach a DXF or DWG drawing as a reference'],['XREF',['XR','EXTERNALREFERENCES'],'xref','The attached drawings: reload, detach'],['BEDIT',['BE'],'bedit','Edit a block definition; every insert follows'],['BCLOSE',[],'bclose','Close the block editor, saving or discarding'],['DONUT',['DO','DOUGHNUT'],'donut','Filled rings and dots'],['WIPEOUT',[],'wipeout','Mask what is under an area with the background'],['EXTRUDE',['EXT'],'occtextrude','Extrude closed sketches into true solids (OpenCASCADE)'],['FILLETEDGE',[],'filletedge','Round the edges of a solid'],['CHAMFEREDGE',[],'chamferedge','Bevel the edges of a solid'],['SHELL',[],'occtshell','Hollow a solid, its top open'],['REVOLVE',['REV'],'occtrevolve','Revolve a closed sketch about an axis'],['LOFT',[],'occtloft','A solid through closed sketches at different heights'],['SOLIDUNION',['UNIONSOLID'],'solidunion','Join solids made by the solid tools'],['SOLIDSUBTRACT',['SUBTRACTSOLID'],'solidsubtract','Cut the other solids out of the first'],['SOLIDINTERSECT',['INTERSECTSOLID'],'solidintersect','Keep where the solids overlap'],['EXPORTSTEP',['STEPOUT'],'exportstep','Export solids as a STEP file'],['JOINT',['ASSEMBLYJOINT'],'joint','Join two parts: fixed, a hinge or a slider (the base first)'],['BOM',['PARTSLIST'],'bom','Bill of materials of an assembly, as CSV'],['VIEWBASE',['TECHDRAW','SOLIDVIEWS'],'viewbase','Drawing views of solids: front, top, right, isometric, hidden lines exact'],['MESHREPAIR',['MESHFIX'],'meshrepair','Repair meshes: weld points, drop bad faces, turn faces outward, report holes'],['MESHTOSOLID',['CONVTOSOLID'],'meshtosolid','Make closed meshes true solids (OpenCASCADE)'],['SPREADSHEET',['SHEETCALC','PARAMSHEET'],'spreadsheet','A spreadsheet whose cells read and drive the model (FreeCAD\'s Spreadsheet)'],['MATERIALS',['MAT','MATBROWSEROPEN','RMAT'],'materials','The material library: cards, FreeCAD .FCMat import and export, assign'],['GCTANGENT',[],'gctangent','Constraint: a line tangent to an arc of the selected sketch'],['DCRADIUS',[],'dcradius','Constraint: the radius of an arc of the selected sketch'],['DCDIAMETER',[],'dcdiameter','Constraint: the diameter of an arc of the selected sketch'],['GCPOINTONARC',[],'gcpointonarc','Constraint: a point on an arc of the selected sketch'],['DRAFTANGLE',['TAPER'],'occtdraft','Tilt the sides of a solid by a draft angle'],['SWEEP',[],'occtsweep','Sweep a closed sketch along an open one into a solid'],['SOLIDPATTERN',['PATTERN'],'occtpattern','Linear, polar or mirrored copies joined into a solid'],['THICKNESS',['THICKEN'],'occtthickness','Hollow a solid, the top, the bottom or both open'],['MASSPROP',[],'massprop','Area, centroid and moments of inertia of the selected closed outlines'],['COUNT',[],'countblocks','How many inserts of each block the drawing holds'],['QUICKCALC',['QC','CAL'],'cal','A calculator'],['ATTDEF',['ATT'],'attdef','Define an attribute a block asks for when it is inserted'],['ATTEDIT',['ATE','EATTEDIT'],'attedit','Edit the attributes of a selected block insert'],['STYLE',['ST'],'textstyle','The text style: font and the height of new text'],['DIMSTYLE',['D','DST','DDIM'],'dimstyle','The dimension style: text, arrows, precision, spacing'],['LAYISO',[],'layiso','Isolate the layers of the selected objects: every other layer off'],['LAYUNISO',[],'layuniso','Put back the layers LAYISO turned off'],['LAYOFF',[],'layoff','Turn off the layers of the selected objects'],['LAYFRZ',[],'layfrz','Freeze the layers of the selected objects'],['LAYLCK',[],'laylck','Lock the layers of the selected objects'],['LAYON',[],'layon','Turn every layer on'],['LAYTHW',[],'laythw','Thaw every layer'],['LAYULK',[],'layulkall','Unlock every layer'],['LAYMCUR',[],'laymcur','Make the selected object\'s layer current'],['LAYERP',['LAYP'],'layerp','Undo the last change to the layer settings'],['OSNAP',['OS','DSETTINGS','DS','SE'],'osnapSettings','Object snap and polar tracking settings'],['OSMODE',['F3'],'bimSnap','Toggle object snap'],['POLAR',[],'polar','Toggle polar tracking (F10)'],
     ['ORTHO',[],'bimOrtho','Toggle ortho mode'],['GRID',[],'grid','Toggle grid'],
     ['ZOOM',['Z','ZE','FIT'],'zoomFit','Zoom to fit'],['ZOOMIN',['ZI'],'zoomIn','Zoom in'],
     ['ZOOMOUT',['ZO'],'zoomOut','Zoom out'],['ZOOM100',['Z1'],'view100','Zoom to 100%'],
@@ -211,6 +211,7 @@
     ['IFCIN',['IMPORTIFC','IFC','OPENIFC'],'ifcin','Open an IFC model (IFC2x3, IFC4, IFC4.3): every element in its colour with its openings, on layers by class, its storeys as levels and its property sets in Properties'],   /* __acad3dV196 */
     ['GLTFIN',['IMPORTGLTF','GLB','GLTF','IMPORTGLB'],'gltfin','Open a glTF or GLB model: its meshes as solids by material, on a layer named after the file, and kept in Assets as a block'],   /* __acad3dV195 */
     ['GLTFOUT',['EXPORTGLTF','EXPORTGLB'],'gltfout','Export the model shown as a .glb, an element a mesh under a node for its layer, for Blender, SketchUp, game engines and headsets'],
+    ['EXPORTDWG',['DWGOUT','SAVEDWG'],'dwgout','Export the plan as an AutoCAD DWG file (2013 format) through cc-dwg'],   /* __acad3dV252 */
     ['IFCOUT',['EXPORTIFC','SAVEIFC','SAVEASIFC'],'ifcout','Export the model shown as an IFC4 file through IfcOpenShell: levels as storeys, walls, floors, doors, windows and columns as IFC elements, everything else with its shape and class'],   /* __acad3dV177 */
     ['SKPIN',['IMPORTSKP','SKETCHUP'],'skpin','Open a SketchUp file: its faces as solids, its tags as layers, its components as blocks'],   /* __acad3dV163 */
     /* __acad3dV134: data layers */

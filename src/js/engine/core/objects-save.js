@@ -2,6 +2,7 @@ import { A3D, A3D_DOCS, A3D_NO_STORAGE, LSK } from './state.js';
 import { TYPES, mergePrm, meshMinY, meshOf, validatePrm } from './mesh-primitives.js';
 import { pushUndo } from '../drawing/plan-mode-sketch.js';
 import { paint } from '../map/terrain-3d.js';
+import { bimPcSaveData } from '../map/pointcloud-view.js';
 import { A3D_SPILL, A3D_STORE, bimSpillSave } from './idb-store.js';
 import { refreshHud, saveSoon } from '../bim/region-regenerate.js';
 import { A3D_TAB, bimTabReadOnlyEdit } from './tab-lock.js';
@@ -50,7 +51,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
      need the same list to park a project in its own key and to know what a fresh project is,
      and two copies of one field list are two lists that will eventually disagree. */
   function bimProjectRecord(){
-    return {objs:A3D.objs,cam:A3D.cam,seq:A3D.seq,counts:A3D.counts,levels:A3D.levels,grids:A3D.grids,activeLevel:A3D.activeLevel,layers:A3D.layers,activeLayer:A3D.activeLayer,types:A3D.types,activeWallType:A3D.activeWallType,views:A3D.views,activeViewId:A3D.activeViewId,levelFilter:A3D.levelFilter,sheets:A3D.sheets,titleBlock:A3D.titleBlock,buildings:A3D.buildings,activeBuilding:A3D.activeBuilding,site:A3D.site,roomScheme:A3D.roomScheme||'',classifications:A3D.classifications,dataFeatures:A3D.dataFeatures||{},history:A3D.history||null,resultLayers:A3D.resultLayers||[],pres:A3D.pres||null,units:A3D.units||null};   /* __acad3dV146, __acad3dV148; __acad3dV162; __acad3dV175a: its display units (D10) */
+    return {objs:A3D.objs,cam:A3D.cam,seq:A3D.seq,counts:A3D.counts,levels:A3D.levels,grids:A3D.grids,activeLevel:A3D.activeLevel,layers:A3D.layers,activeLayer:A3D.activeLayer,types:A3D.types,activeWallType:A3D.activeWallType,views:A3D.views,activeViewId:A3D.activeViewId,levelFilter:A3D.levelFilter,sheets:A3D.sheets,titleBlock:A3D.titleBlock,buildings:A3D.buildings,activeBuilding:A3D.activeBuilding,site:A3D.site,roomScheme:A3D.roomScheme||'',classifications:A3D.classifications,dataFeatures:A3D.dataFeatures||{},history:A3D.history||null,resultLayers:A3D.resultLayers||[],pres:A3D.pres||null,units:A3D.units||null,dimStyle:A3D.dimStyle||null,textStyle:A3D.textStyle||null,matCards:A3D.matCards||[],sheet:A3D.sheet||null,pcData:bimPcSaveData()};   /* __acad3dV146, __acad3dV148; __acad3dV162; __acad3dV175a: its display units (D10) */
   }
   /* __acad3dV115: a save that failed went into an empty catch, so a full browser store lost every
      later edit without a word. It says so now -- once per run of failures, not once per edit. */

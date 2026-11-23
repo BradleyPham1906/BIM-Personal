@@ -41,7 +41,7 @@ import { bimLoadUIPanelPrefs, bimSaveUIPanelPrefs } from './build-ui.js';
         {act:'s:circle',label:'Circle'}
       ],small:['bim:arc','bim:wall','bim:room','bim:floor','bim:column']},
       {t:'Modify',small:['bim:trim','bim:extend','bim:fillet','bim:chamfer','bim:break','bim:lengthen','bim:scale','bim:offset','bim:align','bim:mirror','bim:rotate','bim:presspull','m:array','bim:polararray','m:dup','m:del']},
-      {t:'Constraints',small:['con:coincident','con:horizontal','con:vertical','con:parallel','con:perpendicular','con:equal','con:distance','con:angle','con:pointonline','con:midpoint','con:symmetric_pt','con:symmetric_line']},
+      {t:'Constraints',small:['con:coincident','con:horizontal','con:vertical','con:parallel','con:perpendicular','con:equal','con:distance','con:angle','con:pointonline','con:midpoint','con:symmetric_pt','con:symmetric_line','con:tangent','con:pointonarc','con:radius','con:diameter']},
       {t:'Dimension',big:[
         {act:'bim:dim',label:'Dimension',menu:[['bim:dim','Aligned / Linear'],['bim:dimang','Angular'],['bim:dimrad','Radial'],['bim:dimdia','Diameter']]}
       ],small:['bim:text','bim:leader','bim:tagroom']},
@@ -76,7 +76,7 @@ import { bimLoadUIPanelPrefs, bimSaveUIPanelPrefs } from './build-ui.js';
       ],small:['m:array','bim:polararray','bim:joinwalls','bim:mergewalls','m:del','m:desel','bim:trim','bim:extend','bim:fillet','bim:chamfer','bim:break','bim:lengthen','bim:scale','bim:offset','bim:align','bim:clonelinked','bim:syncclones']},
       {t:'Geometry',small:['b:union','b:cut','b:isect']},
       {t:'Sketch',small:['s:rect','s:circle','s:poly','p:pad','p:pocket','bim:presspull']},
-      {t:'Constraints',small:['con:coincident','con:horizontal','con:vertical','con:parallel','con:perpendicular','con:equal','con:distance','con:angle','con:pointonline','con:midpoint','con:symmetric_pt','con:symmetric_line']}
+      {t:'Constraints',small:['con:coincident','con:horizontal','con:vertical','con:parallel','con:perpendicular','con:equal','con:distance','con:angle','con:pointonline','con:midpoint','con:symmetric_pt','con:symmetric_line','con:tangent','con:pointonarc','con:radius','con:diameter']}
     ]},
     {id:'a3dmassing',name:'Massing & Site',panels:[
       {t:'Conceptual Mass',small:['box','cyl','sphere','cone','torus']},
@@ -87,7 +87,7 @@ import { bimLoadUIPanelPrefs, bimSaveUIPanelPrefs } from './build-ui.js';
     {id:'a3dmanage',name:'Manage',panels:[
       {t:'Settings',small:['bim:layers','bim:levels','bim:classification','bim:units']},
       {t:'Project',small:['m:saveproj','m:openproj','bim:projinfo','bim:purge','bim:checkmodel']},
-      {t:'Export',small:['m:exportpng','m:exportpdf','m:exportdxf','m:exportifc','m:exportsvg','m:exportgeojson']}
+      {t:'Export',small:['m:exportpng','m:exportpdf','m:exportdxf','m:exportdwg','m:exportifc','m:exportsvg','m:exportgeojson']}
     ]}
   ];
   // Commands Revit has that this app does not implement yet. Listed so the tool dock shows the
@@ -162,7 +162,7 @@ import { bimLoadUIPanelPrefs, bimSaveUIPanelPrefs } from './build-ui.js';
   function a3drLabel(act){
     var xl=a3drExt(act);
     if(xl&&xl.label)return xl.label;
-    var L={'s:rect':'Rect','s:circle':'Circle','s:poly':'Polyline','p:pad':'Pad','p:pocket':'Pocket','bim:wall':'Wall','bim:floor':'Floor','bim:room':'Room','bim:roof':'Roof','bim:stair':'Stair','bim:column':'Column','bim:door':'Door','bim:window':'Window','bim:dim':'Dimension','bim:text':'Text','bim:section':'Section','bim:ceiling':'Ceiling','bim:dimang':'Angular','bim:dimrad':'Radius','bim:dimdia':'Diameter','bim:leader':'Leader','m:exportdxf':'DXF','m:exportifc':'IFC','m:exportsvg':'SVG','bim:mirror':'Mirror','bim:rotate':'Rotate','bim:polararray':'Polar Array','bim:joinwalls':'Join Walls','bim:extend':'Extend','bim:arc':'Arc','bim:fillet':'Fillet','bim:chamfer':'Chamfer','bim:break':'Break','bim:lengthen':'Lengthen','bim:scale':'Scale','b:union':'Union','b:cut':'Cut','b:isect':'Intersect','v:home':'Home','v:fit':'Fit','v:top':'Top','v:front':'Front','v:right':'Right','v:iso':'Iso','m:del':'Delete','m:desel':'Deselect','m:dup':'Duplicate','m:array':'Array','m:exportpng':'PNG','m:exportpdf':'PDF','m:exitsection':'Exit Section','m:flipsection':'Flip Section','m:saveproj':'Save Project','m:openproj':'Open\u2026',
+    var L={'s:rect':'Rect','s:circle':'Circle','s:poly':'Polyline','p:pad':'Pad','p:pocket':'Pocket','bim:wall':'Wall','bim:floor':'Floor','bim:room':'Room','bim:roof':'Roof','bim:stair':'Stair','bim:column':'Column','bim:door':'Door','bim:window':'Window','bim:dim':'Dimension','bim:text':'Text','bim:section':'Section','bim:ceiling':'Ceiling','bim:dimang':'Angular','bim:dimrad':'Radius','bim:dimdia':'Diameter','bim:leader':'Leader','m:exportdxf':'DXF','m:exportdwg':'DWG','m:exportifc':'IFC','m:exportsvg':'SVG','bim:mirror':'Mirror','bim:rotate':'Rotate','bim:polararray':'Polar Array','bim:joinwalls':'Join Walls','bim:extend':'Extend','bim:arc':'Arc','bim:fillet':'Fillet','bim:chamfer':'Chamfer','bim:break':'Break','bim:lengthen':'Lengthen','bim:scale':'Scale','b:union':'Union','b:cut':'Cut','b:isect':'Intersect','v:home':'Home','v:fit':'Fit','v:top':'Top','v:front':'Front','v:right':'Right','v:iso':'Iso','m:del':'Delete','m:desel':'Deselect','m:dup':'Duplicate','m:array':'Array','m:exportpng':'PNG','m:exportpdf':'PDF','m:exitsection':'Exit Section','m:flipsection':'Flip Section','m:saveproj':'Save Project','m:openproj':'Open\u2026',
       'bim:component':'Component','bim:famsave':'Save Family','bim:famimport':'Load Family',
       'bim:tagroom':'Tag Room','bim:tagallrooms':'Tag All Rooms','bim:tagcat':'Tag by Category','bim:level':'Level','bim:grid':'Grid',
       'bim:beam':'Beam','bim:analyze':'Analyze','bim:truss':'Truss','bim:brace':'Brace','bim:foundwall':'Wall Foundation','bim:footing':'Isolated Footing','bim:property':'Property Line','bim:propshape':'Property from Shape','bim:truenorth':'True North','bim:alignment':'Alignment','bim:usage':'Usage','bim:usages':'Usages','bim:map':'Map','bim:findaddress':'Find Address','bim:geoimport':'Import GeoJSON','bim:context':'Site Context','bim:datalayers':'Data Layers','m:exportgeojson':'GeoJSON',
@@ -175,7 +175,8 @@ import { bimLoadUIPanelPrefs, bimSaveUIPanelPrefs } from './build-ui.js';
       'con:coincident':'Coincident','con:horizontal':'Horizontal','con:vertical':'Vertical',
       'con:parallel':'Parallel','con:perpendicular':'Perpendicular','con:equal':'Equal',
       'con:distance':'Distance','con:angle':'Angle','con:pointonline':'Point on Line','con:midpoint':'Midpoint',
-      'con:symmetric_pt':'Symmetric (Point)','con:symmetric_line':'Symmetric (Line)'};
+      'con:symmetric_pt':'Symmetric (Point)','con:symmetric_line':'Symmetric (Line)',
+      'con:tangent':'Tangent','con:pointonarc':'Point on Arc','con:radius':'Radius','con:diameter':'Diameter'};
     if(L[act])return L[act];
     return (TYPES[act]||{}).n||act;
   }

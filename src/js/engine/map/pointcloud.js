@@ -340,3 +340,7 @@ function bimPcGround(cloud, cell) {
   }
   return res;
 }
+export {
+  bimPcClassName, bimPcGround, bimPcHeightColour, bimPcLasHeader, bimPcLasPoints, bimPcOrigin, bimPcPlyHeader,
+  bimPcPlyPoints, bimPcSniff
+};
