@@ -1,0 +1,19 @@
+{
+ "page": "link-test 2026-11-23",
+ "devices": "the owner's Windows mini PC (Chrome 154, the computer) and iPhone 13 (Safari 27, the phone), on one home Wi-Fi",
+ "role": "computer",
+ "ua": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Safari/537.36",
+ "runs": [
+  {"step": "offer", "at": "2026-11-23T03:23:49.659Z", "data": {"sdpBytes": 715, "urlChars": 757, "qrVersion": 93, "stun": false,
+   "candidates": ["<uuid>.local 60938 typ host", "<uuid>.local 60939 typ host"]}},
+  {"step": "relay", "at": "2026-11-23T03:24:10.091Z", "data": {"answerViaRelay": true, "ms": 20581}},
+  {"step": "state", "at": "2026-11-23T03:24:10.109Z", "data": {"connection": "connecting", "ms": 20600}},
+  {"step": "state", "at": "2026-11-23T03:24:10.267Z", "data": {"connection": "connected", "ms": 20757}},
+  {"step": "open", "at": "2026-11-23T03:24:10.314Z", "data": {"msFromStart": 20804}},
+  {"step": "measure", "at": "2026-11-23T03:24:32.362Z", "data": {"role": "computer", "pings": 200,
+   "rttMs": {"median": 12.3, "p90": 21.3, "max": 52.9}, "pair": {"local": "host udp", "remote": "host udp", "statsRttMs": 9},
+   "bulkMB": 2, "bulkMs": 1346, "bulkMBps": 1.49}},
+  {"step": "pose", "at": "2026-11-23T03:24:34.501Z", "data": {"received": 1200, "lost": 8, "gapMs": {"median": 19.8, "p90": 26.9}}},
+  {"step": "pose", "at": "2026-11-23T03:24:56.876Z", "data": {"received": 2316, "lost": 10, "gapMs": {"median": 19.8, "p90": 25.9}}}
+ ]
+}
