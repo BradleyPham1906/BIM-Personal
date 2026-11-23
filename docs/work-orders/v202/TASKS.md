@@ -84,7 +84,7 @@ Done 2026-11-13: the file (with `BIM_NBI_URL` and `bimCityRecs` too), its includ
 
 ---
 
-## [ ] WO-04 [Cline] `bimCityHeightPick` in `src/js/engine/map/measured-context.js`
+## [x] WO-04 [Cline] `bimCityHeightPick` in `src/js/engine/map/measured-context.js`
 
 - **Implement:** the city's measured height for an OSM footprint: the smallest city ring holding the footprint's vertex mean, in metres through `rec.unit`, as SPEC part 4 says.
 - **It must:**

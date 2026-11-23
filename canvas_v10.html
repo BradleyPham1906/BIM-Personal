@@ -46807,7 +46807,27 @@ BIM_IFC_SAVE.model=bimIfcSaveModel;
   /* WO-04: the city's measured height for an OSM footprint: the smallest city ring holding the
      footprint's vertex mean, in metres through rec.unit, as {h,top,base,from:'city',id}; else null */
   function bimCityHeightPick(ring,feats,rec){
-    return null;
+  if(!ring||!feats||!rec)return null;
+  var cx=0,cy=0,n=ring.length,i;for(i=0;i<n;i++){cx+=ring[i][0];cy+=ring[i][1];}
+  cx/=n;cy/=n;
+  var best=null,bestArea=Infinity,fi;for(fi=0;fi<feats.length;fi++){
+    var f=feats[fi];
+    if(!f.ring||!f.a)continue;
+    var r=f.ring,m=r.length,j,k=m-1,inside=false;
+    for(j=0;j<m;j++){if((r[j][1]>cy)!=(r[k][1]>cy)&&cx<(r[k][0]-r[j][0])*(cy-r[j][1])/(r[k][1]-r[j][1])+r[j][0])inside=!inside;k=j;}
+    if(!inside)continue;
+    var area=0;for(j=0;j<m;j++){var p=r[j],q=r[(j+1)%m];area+=p[0]*q[1]-q[0]*p[1];}
+    area=Math.abs(area)/2;
+    if(area>=bestArea)continue;
+    var h=f.a[rec.roof]*rec.unit;
+    if(!isFinite(h)||h<=0)continue;
+    h=Math.round(h*100)/100;
+    var topV=f.a[rec.top],top=topV==null?null:(isFinite(topV)?Math.round(topV*rec.unit*100)/100:null);
+    if(top!==null&&top<=h)top=null;
+    var baseV=f.a[rec.base],base=baseV==null?null:(isFinite(baseV)?Math.round(baseV*rec.unit*100)/100:null);
+    best={h:h,top:top,base:base,from:'city',id:rec.id};bestArea=area;
+  }
+  return best;
   }
   /* WO-05: the nearest NBI structure within maxD (30 m by default) of a bridge's centreline, as
      {id,carried,year,width,length,spans,clear,clearRef,dist}; measured numbers only; else null */
