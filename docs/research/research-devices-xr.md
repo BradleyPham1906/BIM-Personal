@@ -60,7 +60,21 @@ independent second reader re-checking every fact the code would use.
 
 ## 6. The experiments
 
-(When run.)
+- **E1, E2 (splats-and-link.md part 6):** an offer's SDP fits one QR code (572 base64 characters); 1,000,000 splats
+  select by box, sphere or colour in 7 to 11 ms on this machine's CPU, and v205 WO-05's comparison sort takes about
+  595 ms against 24.5 ms for a 16-bit counting sort. Scripts: `experiments/devices-xr/sdp.html`, `splat_cost.js`.
+- **E3, the iPhone test page** (`experiments/devices-xr/phone-test.html`, published by `tools/build_site.py` at
+  `/lab/phone-test.html` once on `main`): the device (M1, M3, M9), the motion sensors and their drift (M2), the back
+  camera and its per-frame texture copy (M4, M5), the wake lock (M6), Jolt's step time with a 20,000 or 100,000
+  triangle model (hands-and-physics.md 9.3), MediaPipe on GPU and CPU (9.1), the viewer's profile or QR address (M7),
+  and the headset view: two eyes on the lenses with the barrel correction, the camera behind, a table of 20 blocks in
+  Jolt pushed by six hand bodies and picked up by a pinch, the frame rate logged each minute (M8, H6). Results are
+  copied as JSON for the note. three.js and Jolt come from the site's `runtime/`; MediaPipe 1.2.3 and its model are
+  fetched from pinned addresses for this page only (the model's SHA-256 checked here, `fbc2a300...07cde1`), since
+  they are not vendored before the owner's approval.
+  Checked once in headless Chromium here (software drawing, so no speed figures): every step runs with no page
+  error; at the iPhone 13's 3x scale both eyes fall on the lens centres and the blocks settle on the table.
+  **Waiting on the owner's phone.**
 
 ## 7. Edges
 
@@ -71,7 +85,10 @@ independent second reader re-checking every fact the code would use.
 - `src/js/engine/walk/`: walk mode, its controls (keys and a touch joystick), its own collision
   (`walk-physics.js`), and the queued drive, drone, swim and record modes (v208 to v211).
 - `tools/build_pwa.py` and `src/js/engine/core/offline.js`: the installable, offline web app (V172h).
-- No rigid-body engine, no camera input, no hand input, no stereo view yet.
+- Jolt Physics 1.1.1 (MIT, `runtime/jolt/`, V203) behind `walk/walk-physics.js`: the model as one static mesh body
+  and a walker; no dynamic bodies yet (correction from hands-and-physics.md part 3: a rigid-body engine is there).
+- `io/gltf.js` lines 267 to 276 export GLB (native-paths.md, for a Godot viewer if ever wanted).
+- No camera input, no hand input, no stereo view yet.
 
 ## 9. Risks and threats to validity
 

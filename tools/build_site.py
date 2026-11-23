@@ -11,7 +11,8 @@
 - v/<version>/index.html: any older build build_docs.kept_versions() names (none since 2026-11-07), named as on the guide's
   Versions page, so an older version stays reachable at a fixed address;
 - runtime/: the Ladybug analyses' Pyodide and wheels (V172b), at the fixed address the app and every
-  one-file copy load them from, checked against runtime/MANIFEST.json first (tools/check_runtime.py)."""
+  one-file copy load them from, checked against runtime/MANIFEST.json first (tools/check_runtime.py);
+- lab/: research test pages listed in LAB, to open on a phone over https (the iPhone XR test, 2026-11-23)."""
 import pathlib, shutil, sys
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
@@ -22,6 +23,7 @@ import check_runtime  # noqa: E402
 import build_pwa  # noqa: E402
 
 OUT = pathlib.Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / '_site'
+LAB = ['docs/research/experiments/devices-xr/phone-test.html']
 
 
 def main():
@@ -44,6 +46,11 @@ def main():
         shutil.copy(src, d / 'index.html')
         n += 1
     shutil.copytree(ROOT / 'runtime', OUT / 'runtime')   # V172b: the Ladybug analyses' runtime, at its fixed address
+    # research pages the owner opens on a phone over https (docs/research/research-devices-xr.md, part 6); they load
+    # three.js and Jolt from ../runtime/, so they sit one folder down
+    (OUT / 'lab').mkdir()
+    for p in LAB:
+        shutil.copy(ROOT / p, OUT / 'lab' / pathlib.Path(p).name)
     (OUT / '.nojekyll').touch()
     print('%s: the app, offline build %s, %d guide pages, %d older versions, the runtime (%d files)' % (OUT, pwa['build'], len(list((OUT / 'docs').glob('*.html'))), n, nrt))
 

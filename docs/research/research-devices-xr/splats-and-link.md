@@ -241,8 +241,7 @@ Chrome on macOS and ChromeOS only (P, browser-compat-data `api/BarcodeDetector.j
 vetted QR decoding library, or the laptop scans the phone's code and the phone receives the laptop's by its camera
 through that library: a decision.
 
-## 6. The experiments (scripts kept in the session scratchpad, not committed: this research task allowed no file but
-this note; they belong in `docs/research/experiments/` if the owner wants them kept)
+## 6. The experiments (scripts in `docs/research/experiments/devices-xr/`: `sdp.html`, `splat_cost.js`)
 
 **E1. SDP size.** A page of our own (`sdp.html`) made an offer with one data channel and no ICE servers, waited for
 gathering, compressed the SDP with `CompressionStream('deflate-raw')`, and logged sizes. Environment: Chrome for
