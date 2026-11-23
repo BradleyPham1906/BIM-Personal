@@ -1,0 +1,50 @@
+{
+ "page": "phone-test 2026-11-23",
+ "device": "the owner's iPhone 13, in a Safari tab (not the Home Screen app); the camera's deviceId and groupId removed",
+ "runs": [
+  {"step": "device", "at": "2026-11-23T02:45:35.682Z", "standalone": false, "data": {
+   "ua": "Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/27.0.1 Mobile/15E148 Safari/604.1",
+   "standalone": false, "displayModeFullscreen": false, "inner": [390, 699], "screen": [390, 844], "dpr": 3, "angle": 0,
+   "safeArea": ["0px", "0px", "0px", "0px"], "navigatorXR": "undefined", "motionPermissionApi": "function", "wakeLockApi": true,
+   "fullscreenApi": false, "webkitFullscreenApi": false, "webgl2": true, "gpu": "Apple GPU", "webgpu": true,
+   "offscreenCanvas": "function", "rvfc": true, "trackProcessor": "undefined", "barcodeDetector": "undefined",
+   "crossOriginIsolated": false, "cores": 4}},
+  {"step": "motion", "at": "2026-11-23T02:45:52.921Z", "standalone": false, "data": {
+   "granted": true, "eventsPerSecond": 56.4, "compassHeading": 154.45831298828125, "angle": 0,
+   "samples": [[0.1, 28.3, -0.3], [0, 28.7, 0], [1, 35.4, -1.1], [37.5, 74.8, 14.9], [60.1, 49, 2.5], [80.3, 48.1, -4.5],
+    [80.7, 46, -7.1], [84.9, 46.7, -4.2], [115, 35.6, 3.3], [154.6, 49.7, 4.2]]}},
+  {"step": "camera", "at": "2026-11-23T02:45:53.752Z", "standalone": false, "data": {
+   "openMs": 1553, "settings": {"aspectRatio": 0.5625, "backgroundBlur": false, "facingMode": "environment", "frameRate": 60,
+    "height": 1280, "powerEfficient": true, "torch": false, "whiteBalanceMode": "continuous", "width": 720, "zoom": 1},
+   "capabilities": {"aspectRatio": {"max": 4032, "min": 0.00033068783068783067}, "backgroundBlur": [false],
+    "facingMode": ["environment"], "focusDistance": {"min": 0.15}, "frameRate": {"max": 60, "min": 1},
+    "height": {"max": 3024, "min": 1}, "powerEfficient": [false, true], "torch": true,
+    "whiteBalanceMode": ["manual", "continuous"], "width": {"max": 4032, "min": 1}, "zoom": {"max": 10, "min": 0.5}},
+   "video": [720, 1280], "framesPerSecond": 52.9, "textureUploadMs": {"median": 1, "p90": 2}}},
+  {"step": "wakelock", "at": "2026-11-23T02:45:58.863Z", "standalone": false, "data": {"granted": true}},
+  {"step": "camera", "at": "2026-11-23T02:46:01.280Z", "standalone": false, "data": {
+   "openMs": 303, "video": [720, 1280], "framesPerSecond": 58.2, "textureUploadMs": {"median": 1, "p90": 2},
+   "settings": "as the first camera run"}},
+  {"step": "physics", "at": "2026-11-23T02:46:06.608Z", "standalone": false, "data": {
+   "joltLoadMs": 118, "modelTriangles": 20000, "worldBuildMs": 60, "stepMs": {"median": 0, "p90": 0, "max": 3}}},
+  {"step": "hands", "at": "2026-11-23T02:46:30.649Z", "standalone": false, "data": {
+   "delegate": "GPU", "loadMs": 1541, "video": [720, 1280], "detectMs": {"median": 18, "p90": 24}, "framesPerSecond": 9.1,
+   "handFoundShare": 0.44, "thumbIndexMetres": {"min": 0.009, "median": 0.08}}},
+  {"step": "drift", "at": "2026-11-23T02:46:52.772Z", "standalone": false, "data": {
+   "alphaStart": 154.67964471513685, "alphaEnd": 214.8375582848031, "alphaDriftDegIn60s": 60.16,
+   "compassStart": 154.45831298828125, "compassEnd": 76.33013153076172}},
+  {"step": "headset", "at": "2026-11-23T02:47:17.993Z", "standalone": false, "data": {
+   "motion": true, "camera": true, "hands": true, "handDelegate": "GPU", "lens": true,
+   "viewer": {"qr": null, "il": 0.064, "sl": 0.039, "tl": 0.035, "K": [0.34, 0.55], "ppi": 460},
+   "seconds": 35, "framesPerSecondPerMinute": [], "frameMs": {"median": 24, "p90": 33}, "physicsMs": {"median": 0, "p90": 1},
+   "drawMs": {"median": 1, "p90": 2}, "handDetectMs": {"median": 19, "p90": 26}, "handFrames": 1370,
+   "screen": [844, 390, 3], "angle": 90}},
+  {"step": "headset", "at": "2026-11-23T02:50:05.649Z", "standalone": false, "data": {
+   "motion": true, "camera": true, "hands": true, "handDelegate": "GPU", "lens": true,
+   "viewer": {"qr": null, "il": 0.064, "sl": 0.039, "tl": 0.035, "K": [0.34, 0.55], "ppi": 460},
+   "seconds": 73, "framesPerSecondPerMinute": [35.4], "frameMs": {"median": 28, "p90": 39}, "physicsMs": {"median": 0, "p90": 1},
+   "drawMs": {"median": 1, "p90": 2}, "handDetectMs": {"median": 21, "p90": 30}, "handFrames": 2554,
+   "screen": [844, 280, 3], "angle": 90}},
+  {"step": "wakelock-released", "at": "2026-11-23T02:50:15.943Z", "standalone": false, "data": {"afterS": 257}}
+ ]
+}

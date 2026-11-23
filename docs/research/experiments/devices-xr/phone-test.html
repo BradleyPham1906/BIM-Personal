@@ -207,11 +207,13 @@ $('b-mot').onclick=function(){
 };
 $('b-drift').onclick=function(){
   if(!state.mot){status('mot','tap Allow first',false);return;}
-  status('mot','lay the phone flat and still: 60 s...');
+  status('mot','lay the phone flat and do not touch it for 60 s...');
   var a0=state.mot.last&&state.mot.last.a,c0=state.mot.compass;
   setTimeout(function(){
     var a1=state.mot.last&&state.mot.last.a,dd=(a1!=null&&a0!=null)?((a1-a0+540)%360)-180:null,
-      d={alphaStart:a0,alphaEnd:a1,alphaDriftDegIn60s:dd!=null?+dd.toFixed(2):null,compassStart:c0,compassEnd:state.mot.compass};
+      cd=(c0!=null&&state.mot.compass!=null)?Math.abs(((state.mot.compass-c0+540)%360)-180):null,
+      d={alphaStart:a0,alphaEnd:a1,alphaDriftDegIn60s:dd!=null?+dd.toFixed(2):null,compassStart:c0,compassEnd:state.mot.compass,
+        valid:cd==null||cd<5,note:cd!=null&&cd>=5?'the compass moved '+cd.toFixed(0)+' deg: the phone was turned; run again untouched':''};
     show('mot',d);status('mot','drift done',true);record('drift',d);
   },60000);
 };
@@ -345,7 +347,7 @@ function runHands(delegate){
       var a=now(),r=h.detectForVideo(v,ts);ms.push(now()-a);frames++;
       if(r.landmarks&&r.landmarks.length){found++;
         var w=r.worldLandmarks[0],dx=w[4].x-w[8].x,dy=w[4].y-w[8].y,dz=w[4].z-w[8].z;pinches.push(Math.sqrt(dx*dx+dy*dy+dz*dz));}
-      if(now()-t0<20000)(v.requestVideoFrameCallback?v.requestVideoFrameCallback(tick):requestAnimationFrame(tick));
+      if(now()-t0<20000)requestAnimationFrame(tick);   /* as the headset loop: the video-frame callback skipped frames here */
       else{
         var d={delegate:delegate,loadMs:state.handLoadMs,video:[v.videoWidth,v.videoHeight],
           detectMs:{median:med(ms),p90:pct(ms,0.9)},framesPerSecond:+(frames/((now()-t0)/1000)).toFixed(1),
@@ -354,7 +356,7 @@ function runHands(delegate){
         show('hand',d);status('hand','done',true);record('hands',d);
       }
     }
-    v.requestVideoFrameCallback?v.requestVideoFrameCallback(tick):requestAnimationFrame(tick);
+    requestAnimationFrame(tick);
   }).catch(function(e){status('hand','failed: '+e,false);record('hands',{delegate:delegate,error:String(e)});});
 }
 $('b-hand-gpu').onclick=function(){runHands('GPU');};

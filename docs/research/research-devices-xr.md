@@ -69,9 +69,9 @@ independent second reader re-checking every fact the code would use.
 | H1 | **Held** (P, high). WebXR is compiled only for visionOS and Macs; `navigator.xr` is absent on an iPhone. | web-on-iphone F1; confirmed by the check |
 | H2 | **Held, with conditions** (P). Orientation after `requestPermission()` in a tap, HTTPS, up to 60 events a second, yaw from an arbitrary zero. The back camera works in the Home Screen app since iOS 13.4; a re-prompt at each launch is reported by users (S, medium). | web-on-iphone F2, F3; check |
 | H3 | **Held** (P, high). No element fullscreen on iPhone; the Home Screen app is the full-screen way (by default for every site from iOS 26); Wake Lock there from iOS 18.4. | web-on-iphone F4; check |
-| H4 | **Open, plausible.** No figure exists for MediaPipe 1.2.3 in Safari on an iPhone; the older library gave 5 to 8 fps on an iPhone 11 and 6 to 7 on a 13 Pro (2021-22); natively the model runs in 5.3 ms. | hands-and-physics 4.1; to measure (E3) |
+| H4 | **Held on the owner's iPhone 13** (measured, E3): 18 to 21 ms a frame on the GPU, 35 to 39 hand frames a second in the headset loop. No published figure existed. | E3, 2026-11-23 |
 | H5 | **Held** (P, high), and better than hoped: the app's own Jolt 1.1.1 (single-thread, no shared memory) serves. Rapier is the fallback; cannon-es lacks continuous collision; ammo.js is zlib, outside the rule. | hands-and-physics 4.4; check |
-| H6 | **Open.** No combined measurement anywhere; an iPhone 13 keeps about 74 to 78 % of its GPU speed under sustained load (benchmark sites, S). | to measure (E3, 10 to 20 minutes) |
+| H6 | **Held for 73 s** (E3): 35.4 frames a second with everything on, the hands taking most of each frame. Ten minutes, for heat, still to run. | E3, 2026-11-23 |
 | H7 | **Mostly held** (P). ARKit gives 6DoF on the iPhone 13 without LiDAR; a free Apple ID installs for 7 days (3 apps, 3 devices). Two corrections: no plugin exists, we write one; Apple's Vision hand pose is 2D. | native-paths 3.1 to 3.3; check |
 | H8 | **Held in part.** Godot gets the model only by GLB (which the app exports). Its plugins exist, MIT, updated in 2026, but none shows hand pose on an iPhone; its cardboard mode is 3DoF and unmaintained. | native-paths 3.4; check |
 | H9 | **Held, with conditions** (medium). Box, sphere and colour selection on 1,000,000 splats in 7 to 11 ms on this machine's CPU, reproduced by the check; the "grow" worst case (2.2 s) was not reproducible from the committed script and is U. The phone is not measured. | splats-and-link A3, E2; check |
@@ -175,7 +175,42 @@ each written as a work order after the owner's decisions and the phone's numbers
   they are not vendored before the owner's approval.
   Checked once in headless Chromium here (software drawing, so no speed figures): every step runs with no page
   error; at the iPhone 13's 3x scale both eyes fall on the lens centres and the blocks settle on the table.
-  **Waiting on the owner's phone.**
+  **First run on the owner's iPhone 13, 2026-11-23, in a Safari tab** (`experiments/devices-xr/results-2026-11-23-safari-tab.json`,
+  the camera's device and group ids removed). Safari 27.0.1; the page is told "iPhone OS 18_7" (Apple freezes the
+  version the page sees since iOS 26, so the app tests features, never the version).
+  - `navigator.xr` undefined: H1 confirmed on the device. Motion: granted on a tap, 56.4 events a second.
+  - Camera: 720 x 1280 (upright, whatever was asked) at 52.9 to 58.2 frames a second; opened in 1.55 s, then 0.30 s;
+    copying a frame into WebGL took 1 ms (median; 2 ms p90), below bug 226830's 2.5 to 4.3 ms. Wake lock granted.
+  - Jolt: loaded in 118 ms, a 20,000-triangle model built in 60 ms, a step under Safari's 1 ms timer (max 3 ms).
+  - Hands (GPU, main thread): 18 to 21 ms a frame (p90 24 to 30); thumb-to-index from 0.9 cm pinched to 8 cm open.
+    In the headset loop they ran on every frame: 1,370 hand frames in 35 s and 2,554 in 73 s, so 35 to 39 a second:
+    **H4 held.** (The hand step's own 9.1 a second came from its video-frame callback skipping frames; the page now
+    uses the headset's loop.)
+  - Everything together (two eyes, lens correction, camera, hands, physics): 35.4 frames a second over the first full
+    minute; a frame 24 to 28 ms median, 33 to 39 p90, of which the hands take about 20 ms and drawing and physics 1 to
+    2 ms. **H6 held for a 73-second run;** heat over 10 minutes not yet measured.
+  - Not valid yet: the drift test (the compass moved 78 degrees: the phone was turned; the page now flags this), the
+    second headset run (the page was 280 px high: Safari's bars showing), the Home Screen app, the viewer's profile.
+
+- **E4, the link test page** (`experiments/devices-xr/link-test.html`, at `/lab/link-test.html`; H10): the computer
+  offers a WebRTC data channel (no ICE servers by default; Cloudflare STUN as an option); the offer rides in a QR code
+  as a link the iPhone's own Camera app opens (the owner's mini PC has no webcam, so no scanning on the computer); the
+  phone's answer comes back through ntfy.sh (free, keyless, CORS open; a random topic; kept there up to 12 hours by
+  its policy), or by copy and paste when the relay refuses (it answered 429 to this container's shared address, and
+  accepted the browser's post). Then it measures 200 round trips, 2 MB sent, the candidate pair, and streams the
+  phone's orientation at about 60 a second to a block the computer draws, with edits sent back. qrcode-generator 1.4.4
+  (MIT) draws the code from a pinned address for this page only. Checked here between two headless Chromium pages:
+  a 677-character link (QR 89 modules), the relay path worked, host-to-host UDP over mDNS names, 1.3 ms median round
+  trip and 3.9 MB/s on one machine, an edit arrived; no page error. Prior art read for the link and hands:
+  trflorian/virtual-hand-clone (MIT, 2026): Python MediaPipe to Godot 4.6 over UDP JSON on localhost, a rigid body on
+  each of the 21 points and fingertip contacts counted; its UDP cannot be used from a page, which is why the link is
+  WebRTC. Two of its ideas taken for XR-3, with credit: colliders on all 21 points, and grabs from fingertip contacts.
+  **Waiting on the owner's iPhone and Windows mini PC.**
+
+  **What it changes:** the hands must leave the drawing loop. At 20 ms of a 26 ms frame they hold the view to about
+  36 frames a second, and the view must follow the head within about 20 ms. So XR-2 runs MediaPipe in a worker (as
+  hands-and-physics.md recommended; GPU in a worker needs iOS 17, tested by feature), the view drawing from the motion
+  sensors at the screen's rate and the hands updating at about 35 a second beside it.
 
 ## 7. Edges
 
@@ -227,7 +262,7 @@ Asked 2026-11-23, with the evidence above (answers recorded here when given):
 | D1 | The path | Web app first; the Capacitor shell only if the phone's numbers fail. Not Godot, not Swift. |
 | D2 | Hand tracking library | MediaPipe Tasks Vision 1.2.3 and its hand model (Apache-2.0), vendored under `runtime/` (about 23 MB), after the phone test. |
 | D3 | Physics | Reuse the app's Jolt for hands and movable elements; no new engine. |
-| D4 | Minimum iOS for hand mode | iOS 17, with a message on older systems. |
+| D4 | Minimum iOS for hand mode | iOS 17, tested by feature (a GPU context in a worker), not by the version the page is told, which Apple freezes at 18.7 (E3); a message on older systems. |
 | D5 | How hands act | Push with physics, pinch to grab, release with the hand's speed. |
 | D6 | LOD-G2 | On v205's own renderer, no new library; Spark only if the phone shows ours too slow. |
 | D7 | First splat edits | Hide and delete by box and sphere; then colour and grow; then move. |
