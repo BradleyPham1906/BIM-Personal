@@ -154,6 +154,12 @@ a pinch-progress ring, sounds, the hand dimmed when tracking is unsure.
 
 ## 6. The experiments
 
+- **E5, where the generic hand's metacarpals sit** (`experiments/xr-interaction/hand_bind_pose.py`, 2026-11-23):
+  `@webxr-input-profiles/assets` 1.0.20 (MIT) `generic-hand/{left,right}.glb` read as data; each metacarpal joint lies
+  on the wrist-to-knuckle line within 6.7 mm, at 0.398 (left) and 0.341 (right) for the index, 0.320 middle, 0.328 ring,
+  0.502 pinky; the thumb's metacarpal 49.5 mm from the wrist. V276 rebuilds MediaPipe's 21 points as 25 joints with
+  0.37, 0.32, 0.33 and 0.5.
+
 ## 7. Edges
 
 - Vision Pro has no hover: no feature may depend on it. Its pinch arrives as a transient pointer; reading the joints

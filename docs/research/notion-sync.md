@@ -205,6 +205,7 @@ Search Notion before creating anything, so nothing is made twice.
 | V248 | `420cbfcc3a3881839893ce97a1543e53` |
 | V274 XR-1, the headset view | `421cbfcc3a3881fa9190dc967deb839a` |
 | V275 The Explode view | `421cbfcc3a38819bae3ae2cfa731f7a2` |
+| V276 The input layer and the simulated hand | `421cbfcc3a3881bfb1d6ce852c3f1644` |
 | Later: Hub H5, the server | `3fecbfcc3a3881139bc7ed9832d6b76a` |
 | Later: Streaming | `3fecbfcc3a3881e3a2c7f3e240ba7f89` |
 | Later: Rendering on WebGPU | `3fecbfcc3a388102af55eae8049f4eb6` |
