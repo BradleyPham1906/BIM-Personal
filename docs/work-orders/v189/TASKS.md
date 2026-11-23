@@ -38,7 +38,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-03 [Cline] `bimM2Hidden(p, tris, view, eps)`
+## [x] WO-03 [Cline] `bimM2Hidden(p, tris, view, eps)`
 
 - **It must:** SPEC 5 WO-03: true when some triangle, projected, contains p's projection strictly (all three barycentric weights >= eps, 1e-6 by default; degenerate ones skipped) and its interpolated depth there is less than p's depth - eps.
 - **May use:** bimM2Project (WO-01).

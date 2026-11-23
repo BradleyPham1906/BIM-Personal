@@ -8247,6 +8247,38 @@ function bimM2Edges(m, dir, creaseDeg) {
   }
   return result;
 }
+function bimM2Hidden(p, tris, view, eps) {
+  if (!(eps > 0)) {
+    eps = 1e-6;
+  }
+  var pp = bimM2Project(p, view);
+  var px = pp[0], py = pp[1], pd = pp[2];
+  var nt = tris.length, i, tri, q0, q1, q2;
+  var ax, ay, bx, by, cx, cy, denom, wa, wb, wc, id;
+  for (i = 0; i < nt; i++) {
+    tri = tris[i];
+    q0 = bimM2Project(tri[0], view);
+    q1 = bimM2Project(tri[1], view);
+    q2 = bimM2Project(tri[2], view);
+    ax = q0[0]; ay = q0[1];
+    bx = q1[0]; by = q1[1];
+    cx = q2[0]; cy = q2[1];
+    denom = (by - cy) * (ax - cx) + (cx - bx) * (ay - cy);
+    if (!(denom > 0) && !(denom < 0)) {
+      continue;
+    }
+    wa = ((by - cy) * (px - cx) + (cx - bx) * (py - cy)) / denom;
+    wb = ((cy - ay) * (px - cx) + (ax - cx) * (py - cy)) / denom;
+    wc = 1 - wa - wb;
+    if (wa >= eps && wb >= eps && wc >= eps) {
+      id = wa * q0[2] + wb * q1[2] + wc * q2[2];
+      if (id < pd - eps) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
   /* ================= __acad3dV93: the POINT node ================= */
   var BIM_POINT_MARK=0.15;          /* half-length of the marker cross, in model units */
   function bimIsPoint(o){
