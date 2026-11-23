@@ -1,5 +1,8 @@
 # Topic note: the web app on an iPhone 13 as a cardboard headset (H1, H2, H3)
 
+Corrections from the independent check (2026-11-23) are in `independent-check.md` and applied in the main note,
+`../research-devices-xr.md`; where they differ, those win.
+
 Part of `docs/research/research-devices-xr.md`. Researched 2026-11-23 by one of four parallel research agents,
 following `docs/research/research-protocol.md`. Nothing here was run on an iPhone; what must be measured on the
 owner's phone is listed in section 7. No third-party code was run: library and browser sources were read as text.

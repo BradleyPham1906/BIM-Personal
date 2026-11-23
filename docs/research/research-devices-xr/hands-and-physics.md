@@ -1,5 +1,8 @@
 # Topic note: hands from the phone camera, and physics hands (H4, H5, H6)
 
+Corrections from the independent check (2026-11-23) are in `independent-check.md` and applied in the main note,
+`../research-devices-xr.md`; where they differ, those win.
+
 One of the four topic notes of `docs/research/research-devices-xr.md`. Researched 2026-11-23 by a research agent,
 following `docs/research/research-protocol.md`. Every fact carries its level: P (primary source read, or measured
 here), S (dependable secondary, the gap said), U (search summary, single unchecked copy, or our own reasoning not yet

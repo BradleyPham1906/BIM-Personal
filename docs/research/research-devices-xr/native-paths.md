@@ -1,5 +1,8 @@
 # Topic note: native paths on iOS (H7, H8)
 
+Corrections from the independent check (2026-11-23) are in `independent-check.md` and applied in the main note,
+`../research-devices-xr.md`; where they differ, those win.
+
 Part of `docs/research/research-devices-xr.md`. Researched 2026-11-23 by one of four parallel research agents,
 following `docs/research/research-protocol.md`. Nothing here has been run on a phone or a Mac: every finding is
 from documents and source code read as text. Third-party code was cloned shallowly into the session's scratch

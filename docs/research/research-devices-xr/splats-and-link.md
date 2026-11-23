@@ -1,5 +1,8 @@
 # Topic note: splat editing in the browser (LOD-G2) and the device link (H9, H10)
 
+Corrections from the independent check (2026-11-23) are in `independent-check.md` and applied in the main note,
+`../research-devices-xr.md`; where they differ, those win.
+
 One of four topic notes for `docs/research/research-devices-xr.md`. Researched 2026-11-23 by a Claude research agent,
 following `docs/research/research-protocol.md`. Levels: P (primary source read), S (dependable secondary, gap said),
 U (search summary or unverified; never reaches the code). No third-party code was run. Two small experiments of our
