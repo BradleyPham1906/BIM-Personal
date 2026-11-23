@@ -100,7 +100,7 @@ Done 2026-11-13: the file (with `BIM_NBI_URL` and `bimCityRecs` too), its includ
 
 ---
 
-## [ ] WO-05 [Cline] `bimNbiPick` in `src/js/engine/map/measured-context.js`
+## [x] WO-05 [Cline] `bimNbiPick` in `src/js/engine/map/measured-context.js`
 
 - **Implement:** the nearest NBI structure within `maxD` (30 by default) of a bridge's centreline, as its NBI record, as SPEC part 4 says.
 - **It must:**

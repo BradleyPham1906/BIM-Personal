@@ -112,7 +112,32 @@ import { bimStd, bimStdCopy } from '../standards/registry.js';
   /* WO-05: the nearest NBI structure within maxD (30 m by default) of a bridge's centreline, as
      {id,carried,year,width,length,spans,clear,clearRef,dist}; measured numbers only; else null */
   function bimNbiPick(pts,bridges,maxD){
-    return null;
+  if(!pts||!bridges)return null;
+  if(!maxD||maxD<=0)maxD=30;
+  var best=null,bestDist=Infinity,bi,si;
+  for(bi=0;bi<bridges.length;bi++){
+    var b=bridges[bi],p=b.p;
+    if(!p)continue;
+    var md=Infinity;
+    for(si=0;si<pts.length-1;si++){
+      var a=pts[si],bb=pts[si+1],l2=(bb[0]-a[0])*(bb[0]-a[0])+(bb[1]-a[1])*(bb[1]-a[1]);
+      var t=l2===0?0:Math.max(0,Math.min(1,((p[0]-a[0])*(bb[0]-a[0])+(p[1]-a[1])*(bb[1]-a[1]))/l2));
+      var d=Math.sqrt((p[0]-a[0]-t*(bb[0]-a[0]))*(p[0]-a[0]-t*(bb[0]-a[0]))+(p[1]-a[1]-t*(bb[1]-a[1]))*(p[1]-a[1]-t*(bb[1]-a[1])));
+      if(d<md)md=d;
+    }
+    if(md>maxD||md>=bestDist)continue;
+    var a0=b.a;
+    var id=String(a0.STRUCTURE_NUMBER_008||'').replace(/\s+/g,'');
+    var carried=a0.FACILITY_CARRIED_007;carried=typeof carried==='string'?carried:null;
+    var year=a0.YEAR_BUILT_027;year=isFinite(year)?year:null;
+    var width=a0.DECK_WIDTH_MT_052;width=isFinite(width)&&width>0?width:null;
+    var length=a0.STRUCTURE_LEN_MT_049;length=isFinite(length)&&length>0?length:null;
+    var spans=a0.MAIN_UNIT_SPANS_045;spans=isFinite(spans)&&spans>0?spans:null;
+    var clear=a0.VERT_CLR_UND_054B;clear=isFinite(clear)&&clear>0&&clear<99?clear:null;
+    var clearRef=a0.VERT_CLR_UND_REF_054A;clearRef=typeof clearRef==='string'?clearRef:null;
+    best={id:id,carried:carried,year:year,width:width,length:length,spans:spans,clear:clear,clearRef:clearRef,dist:Math.round(md*100)/100};bestDist=md;
+  }
+  return best;
   }
   /* the city records whose bbox holds a longitude and latitude (D2: the registry's ctx.heights) */
   function bimCityRecs(lon,lat){
