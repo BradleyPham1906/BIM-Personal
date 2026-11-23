@@ -127,6 +127,7 @@ Search Notion before creating anything, so nothing is made twice.
 | `docs/research/research-walkthrough.md` (and `experiments/w1-walk/`) | `418cbfcc3a38815491c0c045b8bf2f8a` |
 | `docs/research/research-zoning-envelope-yield.md` | `3fecbfcc3a388107b391f35fd6a8f7d4` |
 | `docs/research/research-terrain-surface.md` (and `experiments/terrain-surface/`) | `41fcbfcc3a3881dc9a96d9d3095b807c` |
+| `docs/research/research-devices-xr.md` (and `research-devices-xr/`) | `421cbfcc3a38810095d8d8c4a5c0273b` |
 
 ## Internal Task DB pages
 

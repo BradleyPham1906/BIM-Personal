@@ -35,6 +35,11 @@ ES5. Every function is pure: it never changes what it is given and uses no name 
 
 WO-01 to WO-05 in order (a later one may use an earlier one, as its task says). Then Claude: **WO-06** splats in the rendered view; **WO-07** the records.
 
+Note for WO-06 (docs/research/research-devices-xr/splats-and-link.md, E2, 2026-11-23): `bimSplatOrder` (WO-05) is the
+tested reference, but at 1,000,000 splats its comparison sort takes about 595 ms here. The order drawn each frame is a
+16-bit counting sort by squared distance in a worker (about 18 to 25 ms here, antimatter15's method, MIT), checked
+against WO-05 on small inputs.
+
 ## 7. Not in this phase
 
 Training splats; editing splats; splats in sheets and prints.
