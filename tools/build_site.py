@@ -23,7 +23,7 @@ import check_runtime  # noqa: E402
 import build_pwa  # noqa: E402
 
 OUT = pathlib.Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / '_site'
-LAB = ['docs/research/experiments/devices-xr/phone-test.html']
+LAB = ['docs/research/experiments/devices-xr/phone-test.html', 'docs/research/experiments/devices-xr/link-test.html']
 
 
 def main():

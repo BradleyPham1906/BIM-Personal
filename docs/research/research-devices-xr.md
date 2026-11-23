@@ -192,6 +192,21 @@ each written as a work order after the owner's decisions and the phone's numbers
   - Not valid yet: the drift test (the compass moved 78 degrees: the phone was turned; the page now flags this), the
     second headset run (the page was 280 px high: Safari's bars showing), the Home Screen app, the viewer's profile.
 
+- **E4, the link test page** (`experiments/devices-xr/link-test.html`, at `/lab/link-test.html`; H10): the computer
+  offers a WebRTC data channel (no ICE servers by default; Cloudflare STUN as an option); the offer rides in a QR code
+  as a link the iPhone's own Camera app opens (the owner's mini PC has no webcam, so no scanning on the computer); the
+  phone's answer comes back through ntfy.sh (free, keyless, CORS open; a random topic; kept there up to 12 hours by
+  its policy), or by copy and paste when the relay refuses (it answered 429 to this container's shared address, and
+  accepted the browser's post). Then it measures 200 round trips, 2 MB sent, the candidate pair, and streams the
+  phone's orientation at about 60 a second to a block the computer draws, with edits sent back. qrcode-generator 1.4.4
+  (MIT) draws the code from a pinned address for this page only. Checked here between two headless Chromium pages:
+  a 677-character link (QR 89 modules), the relay path worked, host-to-host UDP over mDNS names, 1.3 ms median round
+  trip and 3.9 MB/s on one machine, an edit arrived; no page error. Prior art read for the link and hands:
+  trflorian/virtual-hand-clone (MIT, 2026): Python MediaPipe to Godot 4.6 over UDP JSON on localhost, a rigid body on
+  each of the 21 points and fingertip contacts counted; its UDP cannot be used from a page, which is why the link is
+  WebRTC. Two of its ideas taken for XR-3, with credit: colliders on all 21 points, and grabs from fingertip contacts.
+  **Waiting on the owner's iPhone and Windows mini PC.**
+
   **What it changes:** the hands must leave the drawing loop. At 20 ms of a 26 ms frame they hold the view to about
   36 frames a second, and the view must follow the head within about 20 ms. So XR-2 runs MediaPipe in a worker (as
   hands-and-physics.md recommended; GPU in a worker needs iOS 17, tested by feature), the view drawing from the motion

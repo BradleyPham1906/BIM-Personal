@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Phone link lab</title>
+<!-- docs/research/research-devices-xr.md, H10 and part 6 (E4): can the owner's computer (the editor) and iPhone (the
+     headset) talk directly over Wi-Fi, with no server of ours? A research page, not the app.
+     The computer offers a WebRTC data channel; its offer rides in a QR code as a link the iPhone's own Camera app opens.
+     The phone's answer comes back through ntfy.sh (free, keyless, open source; a random topic, two small messages,
+     kept there up to 12 hours by its policy), or by copy and paste when the relay refuses. After that the two talk
+     directly. No ICE servers by default (one Wi-Fi, mDNS names); Cloudflare's STUN is an option for other networks.
+     qrcode-generator 1.4.4 (MIT, Kazuhiko Arase) draws the QR code, fetched from a pinned address for this page only. -->
+<style>
+:root{--bg:#f3f4f7;--fg:#161a22;--mut:#5b6474;--card:#fff;--line:#d9dde5;--acc:#5b45d6;--ok:#1d7a46;--bad:#b3261e;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color-scheme:light}
+@media (prefers-color-scheme:dark){:root{--bg:#12151c;--fg:#e8eaf0;--mut:#9aa3b5;--card:#1b2029;--line:#2c3340;--acc:#a99bff;
+  --ok:#5fd08f;--bad:#ff8a80;color-scheme:dark}}
+html,body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.45 -apple-system,system-ui,"Segoe UI",sans-serif}
+main{max-width:760px;margin:0 auto;padding:max(16px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right))
+  40px max(16px,env(safe-area-inset-left));display:grid;gap:14px}
+h1{font-size:22px;margin:4px 0 0}h2{font-size:16px;margin:0}p{margin:0;color:var(--mut)}
+section{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px;display:grid;gap:8px}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+button{font:inherit;padding:9px 14px;border-radius:8px;border:1px solid var(--acc);background:var(--acc);color:#fff}
+button.ghost{background:transparent;color:var(--acc)}
+label{display:flex;gap:6px;align-items:center;font-size:14px;color:var(--mut)}
+textarea{width:100%;box-sizing:border-box;height:90px;font:11px/1.35 var(--mono);background:var(--bg);color:var(--fg);
+  border:1px solid var(--line);border-radius:6px}
+.st{font-weight:600}.st.ok{color:var(--ok)}.st.bad{color:var(--bad)}
+.out{font:12px/1.4 var(--mono);white-space:pre-wrap;word-break:break-word;margin:0}
+#qr{background:#fff;padding:10px;border-radius:8px;justify-self:start;max-width:100%}
+#qr img,#qr svg{display:block;width:min(340px,80vw);height:auto}
+#mirror{width:100%;height:260px;border-radius:8px;background:#20262f;display:block}
+#swatch{height:60px;border-radius:8px;background:#5b45d6}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<main>
+  <h1>Phone link lab</h1>
+  <p>Tests whether your computer and iPhone can talk directly over your Wi-Fi. Start on the computer, scan the code
+    with the iPhone's Camera app, tap the link it offers, then tap Join on the phone.</p>
+
+  <section id="host-box"><h2>On the computer</h2>
+    <div class="row"><label><input type="checkbox" id="stun" style="width:auto"> Use Cloudflare STUN (not on the same Wi-Fi)</label></div>
+    <div class="row"><button id="b-host">Start as the computer</button><span class="st" id="st-host"></span></div>
+    <div id="qr" hidden></div>
+    <p id="qr-note" hidden>Point the iPhone's Camera app at this code and tap the yellow link.</p>
+    <div id="paste-box" hidden><p>If the phone says the relay refused, copy the reply text it shows, send it to this
+      computer any way you like, and paste it here.</p>
+      <textarea id="paste" placeholder="Paste the phone's reply"></textarea>
+      <div class="row"><button class="ghost" id="b-paste">Use pasted reply</button></div></div>
+  </section>
+
+  <section id="join-box" hidden><h2>On the phone</h2>
+    <div class="row"><button id="b-join">Join</button><span class="st" id="st-join"></span></div>
+    <div id="reply-box" hidden><p>The relay refused. Copy this reply and send it to the computer, then paste it there.</p>
+      <textarea id="reply" readonly></textarea><div class="row"><button class="ghost" id="b-copyreply">Copy reply</button></div></div>
+  </section>
+
+  <section id="live" hidden><h2>Connected</h2>
+    <div class="row"><button id="b-measure">Measure the link</button><span class="st" id="st-measure"></span></div>
+    <pre class="out" id="o-measure"></pre>
+    <div id="host-live" hidden>
+      <p>Tilt and turn the phone: the block follows it, sent from the phone about 60 times a second. Change the colour
+        to send an edit to the phone.</p>
+      <canvas id="mirror"></canvas>
+      <div class="row"><button class="ghost" id="b-edit">Send an edit (new colour)</button><span class="out" id="pose-rate"></span></div>
+    </div>
+    <div id="phone-live" hidden><p>The computer's edits arrive here:</p><div id="swatch"></div><span class="out" id="edits"></span></div>
+  </section>
+
+  <section><h2>Results</h2>
+    <div class="row"><button id="b-copy">Copy results</button><span class="st" id="st-copy"></span></div>
+    <textarea id="results" readonly style="height:150px"></textarea></section>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
+<script src="../runtime/three/0.186.1/bim-three.min.js"></script>
+<script>
+'use strict';
+var RELAY='https://ntfy.sh/',STUN=[{urls:'stun:stun.cloudflare.com:3478'}];
+var $=function(id){return document.getElementById(id);};
+var R={page:'link-test 2026-11-23',role:null,ua:navigator.userAgent,runs:[]};
+var S={pc:null,ch:null,pose:null,topic:null,t0:0};
+function now(){return performance.now();}
+function med(a){if(!a.length)return null;var b=a.slice().sort(function(x,y){return x-y;});return +b[b.length>>1].toFixed(2);}
+function pct(a,p){if(!a.length)return null;var b=a.slice().sort(function(x,y){return x-y;});return +b[Math.min(b.length-1,Math.floor(b.length*p))].toFixed(2);}
+function status(id,t,ok){var e=$('st-'+id);e.textContent=t;e.className='st'+(ok===true?' ok':ok===false?' bad':'');}
+function record(step,data){R.runs.push({step:step,at:new Date().toISOString(),data:data});$('results').value=JSON.stringify(R,null,1);}
+
+/* the description, squeezed: deflate-raw then base64url (splats-and-link.md E1: an offer is about 570 characters) */
+function pack(obj){
+  var bytes=new TextEncoder().encode(JSON.stringify(obj));
+  var cs=new Blob([bytes]).stream().pipeThrough(new CompressionStream('deflate-raw'));
+  return new Response(cs).arrayBuffer().then(function(buf){
+    var s='',u=new Uint8Array(buf);for(var i=0;i<u.length;i++)s+=String.fromCharCode(u[i]);
+    return btoa(s).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+  });
+}
+function unpack(str){
+  var b=atob(str.replace(/-/g,'+').replace(/_/g,'/')),u=new Uint8Array(b.length);for(var i=0;i<b.length;i++)u[i]=b.charCodeAt(i);
+  var ds=new Blob([u]).stream().pipeThrough(new DecompressionStream('deflate-raw'));
+  return new Response(ds).text().then(JSON.parse);
+}
+function gathered(pc,ms){
+  return new Promise(function(res){
+    if(pc.iceGatheringState==='complete')return res();
+    var t=setTimeout(res,ms);pc.addEventListener('icegatheringstatechange',function(){if(pc.iceGatheringState==='complete'){clearTimeout(t);res();}});
+  });
+}
+function newPeer(stun){
+  var pc=new RTCPeerConnection({iceServers:stun?STUN:[]});S.pc=pc;
+  pc.addEventListener('connectionstatechange',function(){
+    record('state',{connection:pc.connectionState,ms:Math.round(now()-S.t0)});
+    if(pc.connectionState==='failed')status(R.role==='computer'?'host':'join','connection failed: try Cloudflare STUN',false);
+  });
+  return pc;
+}
+function wire(ch){
+  if(ch.label==='lab'){S.ch=ch;ch.onopen=opened;ch.onmessage=onLab;if(ch.readyState==='open')opened();}
+  else{S.pose=ch;ch.onmessage=onPose;}
+}
+
+/* ---------- the computer ---------- */
+$('b-host').onclick=function(){
+  R.role='computer';S.t0=now();status('host','making the offer...');
+  var stun=$('stun').checked,pc=newPeer(stun);
+  wire(pc.createDataChannel('lab'));wire(pc.createDataChannel('pose',{ordered:false,maxRetransmits:0}));
+  S.topic='bimlab-'+Array.prototype.map.call(crypto.getRandomValues(new Uint8Array(12)),function(b){return b.toString(16);}).join('');
+  pc.createOffer().then(function(o){return pc.setLocalDescription(o);}).then(function(){return gathered(pc,4000);}).then(function(){
+    var sdp=pc.localDescription.sdp,cands=(sdp.match(/a=candidate:[^\r\n]+/g)||[]).map(function(c){return c.split(' ').slice(4,8).join(' ');});
+    return pack({sdp:sdp,stun:stun}).then(function(p){
+      var url=location.href.split('#')[0]+'#j='+p+'&t='+S.topic;
+      var q=qrcode(0,'L');q.addData(url);q.make();$('qr').innerHTML=q.createSvgTag({cellSize:4,margin:2,scalable:true});
+      $('qr').hidden=false;$('qr-note').hidden=false;$('paste-box').hidden=false;
+      record('offer',{sdpBytes:sdp.length,urlChars:url.length,qrVersion:q.getModuleCount(),stun:stun,candidates:cands});
+      status('host','waiting for the phone...');listen();
+    });
+  }).catch(function(e){status('host','failed: '+e,false);record('offer',{error:String(e)});});
+};
+function listen(){
+  var since=Math.floor(Date.now()/1000)-5;
+  (function poll(){
+    if(S.pc.remoteDescription)return;
+    fetch(RELAY+S.topic+'/json?poll=1&since='+since).then(function(r){return r.text();}).then(function(t){
+      var lines=t.split('\n').filter(Boolean),m,i;
+      for(i=0;i<lines.length;i++){m=JSON.parse(lines[i]);if(m.event==='message'&&m.message&&m.message.indexOf('a1:')===0){
+        record('relay',{answerViaRelay:true,ms:Math.round(now()-S.t0)});return useAnswer(m.message.slice(3));}}
+      setTimeout(poll,1500);
+    }).catch(function(){setTimeout(poll,3000);});
+  })();
+}
+function useAnswer(p){
+  return unpack(p).then(function(a){
+    status('host','phone answered: connecting...');
+    return S.pc.setRemoteDescription({type:'answer',sdp:a.sdp});
+  }).catch(function(e){status('host','bad reply: '+e,false);});
+}
+$('b-paste').onclick=function(){var v=$('paste').value.trim();if(v){record('relay',{answerViaRelay:false});useAnswer(v);}};
+
+/* ---------- the phone ---------- */
+var H=(function(){var h={};location.hash.slice(1).split('&').forEach(function(kv){var i=kv.indexOf('=');if(i>0)h[kv.slice(0,i)]=kv.slice(i+1);});return h;})();
+if(H.j){$('host-box').hidden=true;$('join-box').hidden=false;}
+$('b-join').onclick=function(){
+  R.role='phone';S.t0=now();status('join','joining...');
+  var api=window.DeviceOrientationEvent&&DeviceOrientationEvent.requestPermission;
+  if(typeof api==='function')api.call(DeviceOrientationEvent).then(startPose,function(){});else startPose('granted');
+  unpack(H.j).then(function(o){
+    var pc=newPeer(o.stun);pc.ondatachannel=function(e){wire(e.channel);};
+    return pc.setRemoteDescription({type:'offer',sdp:o.sdp}).then(function(){return pc.createAnswer();})
+      .then(function(a){return pc.setLocalDescription(a);}).then(function(){return gathered(pc,4000);}).then(function(){
+        var sdp=pc.localDescription.sdp;
+        return pack({sdp:sdp}).then(function(p){
+          record('answer',{sdpBytes:sdp.length,packedChars:p.length,candidates:(sdp.match(/a=candidate:[^\r\n]+/g)||[]).map(function(c){return c.split(' ').slice(4,8).join(' ');})});
+          $('reply').value=p;
+          return fetch(RELAY+H.t,{method:'POST',body:'a1:'+p}).then(function(r){
+            if(!r.ok)throw new Error('relay '+r.status);status('join','sent; waiting for the computer...');
+          }).catch(function(e){$('reply-box').hidden=false;status('join','the relay refused ('+e.message+'): copy the reply',false);
+            record('relay',{error:e.message});});
+        });
+      });
+  }).catch(function(e){status('join','failed: '+e,false);record('answer',{error:String(e)});});
+};
+$('b-copyreply').onclick=function(){navigator.clipboard.writeText($('reply').value).catch(function(){$('reply').select();});};
+
+/* ---------- once open ---------- */
+function opened(){
+  $('live').hidden=false;status(R.role==='computer'?'host':'join','connected',true);
+  record('open',{msFromStart:Math.round(now()-S.t0)});
+  if(R.role==='computer'){$('host-live').hidden=false;startMirror();}else $('phone-live').hidden=false;
+}
+var pend={},rtts=[],bulk=null;
+function onLab(e){
+  var m=JSON.parse(e.data);
+  if(m.k==='ping')S.ch.send(JSON.stringify({k:'pong',i:m.i}));
+  else if(m.k==='pong'&&pend[m.i]){rtts.push(now()-pend[m.i]);delete pend[m.i];}
+  else if(m.k==='bulk'){if(!bulk)bulk={n:0,t:now()};bulk.n+=m.d.length;if(m.last){S.ch.send(JSON.stringify({k:'bulkdone',n:bulk.n,ms:now()-bulk.t}));bulk=null;}}
+  else if(m.k==='bulkdone')S.bulkDone&&S.bulkDone(m);
+  else if(m.k==='edit'){$('swatch').style.background=m.c;$('edits').textContent='edit '+m.n+' at '+new Date().toLocaleTimeString();}
+}
+$('b-measure').onclick=function(){
+  status('measure','pinging 200 times...');rtts=[];var i=0;
+  (function next(){
+    if(i>=200){
+      setTimeout(function(){
+        S.pc.getStats().then(function(st){
+          var pair=null,loc={},rem={};
+          st.forEach(function(r){if(r.type==='candidate-pair'&&(r.nominated||r.selected)&&r.state==='succeeded')pair=r;});
+          st.forEach(function(r){if(pair&&r.id===pair.localCandidateId)loc=r;if(pair&&r.id===pair.remoteCandidateId)rem=r;});
+          var d={role:R.role,pings:rtts.length,rttMs:{median:med(rtts),p90:pct(rtts,0.9),max:rtts.length?+Math.max.apply(null,rtts).toFixed(1):null},
+            pair:pair?{local:loc.candidateType+' '+(loc.protocol||''),remote:rem.candidateType+' '+(rem.protocol||''),
+              statsRttMs:pair.currentRoundTripTime!=null?+(pair.currentRoundTripTime*1000).toFixed(1):null}:null};
+          if(R.role!=='computer'){done(d);return;}
+          status('measure','sending 2 MB...');
+          S.bulkDone=function(m){d.bulkMB=+(m.n/1048576).toFixed(2);d.bulkMs=Math.round(m.ms);d.bulkMBps=+(m.n/1048576/(m.ms/1000)).toFixed(2);done(d);};
+          var chunk=new Array(16*1024+1).join('x'),k=0,N=128;
+          S.ch.bufferedAmountLowThreshold=256*1024;
+          (function pump(){
+            while(k<N&&S.ch.bufferedAmount<1024*1024){S.ch.send(JSON.stringify({k:'bulk',d:chunk,last:k===N-1}));k++;}
+            if(k<N)S.ch.onbufferedamountlow=pump;
+          })();
+        });
+      },300);return;
+    }
+    pend[i]=now();S.ch.send(JSON.stringify({k:'ping',i:i}));i++;setTimeout(next,15);
+  })();
+  function done(d){$('o-measure').textContent=JSON.stringify(d,null,1);status('measure','done',true);record('measure',d);}
+};
+
+/* the phone's orientation, sent about 60 times a second on the unordered channel */
+var orient=null,sent=0;
+function startPose(s){
+  if(s!=='granted')return;
+  window.addEventListener('deviceorientation',function(e){orient=[e.alpha,e.beta,e.gamma];});
+  setInterval(function(){
+    if(S.pose&&S.pose.readyState==='open'&&orient){S.pose.send(JSON.stringify({o:orient,a:screen.orientation?screen.orientation.angle:(window.orientation||0),n:sent++}));}
+  },16);
+}
+var poseLog={n:0,lost:0,last:-1,gaps:[],t:0};
+function onPose(e){
+  var m=JSON.parse(e.data),t=now();
+  if(poseLog.last>=0&&m.n>poseLog.last+1)poseLog.lost+=m.n-poseLog.last-1;
+  if(poseLog.t)poseLog.gaps.push(t-poseLog.t);
+  poseLog.t=t;poseLog.last=m.n;poseLog.n++;S.lastPose=m;
+  if(poseLog.n%120===0){
+    $('pose-rate').textContent=(1000/med(poseLog.gaps.slice(-120))).toFixed(0)+' poses/s, '+poseLog.lost+' lost';
+    if(poseLog.n%1200===0)record('pose',{received:poseLog.n,lost:poseLog.lost,gapMs:{median:med(poseLog.gaps),p90:pct(poseLog.gaps,0.9)}});
+  }
+}
+function startMirror(){
+  var T=window.BIMTHREE,cv=$('mirror'),ren=new T.WebGLRenderer({canvas:cv,antialias:true}),sc=new T.Scene(),
+    cam=new T.PerspectiveCamera(40,1,0.1,10),box=new T.Mesh(new T.BoxGeometry(0.7,0.08,1.45),
+      [0x8f7aff,0x8f7aff,0xd8d2ff,0x3a3160,0x8f7aff,0x8f7aff].map(function(c){return new T.MeshLambertMaterial({color:c});}));
+  ren.setPixelRatio(devicePixelRatio);sc.add(new T.HemisphereLight(0xffffff,0x334455,2.5));sc.add(box);cam.position.set(0,2.4,2.4);cam.lookAt(0,0,0);
+  var e=new T.Euler(),deg=Math.PI/180;
+  (function draw(){
+    var w=cv.clientWidth,h=cv.clientHeight;if(cv.width!==w*devicePixelRatio){ren.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix();}
+    var m=S.lastPose;if(m&&m.o[0]!=null){e.set(m.o[1]*deg,m.o[0]*deg,-m.o[2]*deg,'YXZ');box.quaternion.setFromEuler(e);}
+    ren.render(sc,cam);requestAnimationFrame(draw);
+  })();
+}
+var edits=0;
+$('b-edit').onclick=function(){var c='hsl('+Math.floor(Math.random()*360)+',65%,55%)';S.ch.send(JSON.stringify({k:'edit',c:c,n:++edits}));};
+$('b-copy').onclick=function(){
+  if(poseLog.n)record('pose',{received:poseLog.n,lost:poseLog.lost,gapMs:{median:med(poseLog.gaps),p90:pct(poseLog.gaps,0.9)}});
+  navigator.clipboard.writeText($('results').value).then(function(){status('copy','copied',true);},function(){$('results').select();status('copy','select and copy by hand');});
+};
+</script>
+</body>
+</html>
