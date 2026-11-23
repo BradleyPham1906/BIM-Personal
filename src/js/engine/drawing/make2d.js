@@ -104,3 +104,39 @@ function bimM2Hidden(p, tris, view, eps) {
   }
   return false;
 }
+function bimM2Visible(a, b, tris, view, samples) {
+  if (!(samples > 0)) {
+    samples = 16;
+  }
+  var dx = b[0] - a[0], dy = b[1] - a[1], dz = b[2] - a[2];
+  var kept = [], i, t, mx, my, mz;
+  for (i = 0; i < samples; i++) {
+    t = (i + 0.5) / samples;
+    mx = a[0] + dx * t;
+    my = a[1] + dy * t;
+    mz = a[2] + dz * t;
+    kept.push(!bimM2Hidden([mx, my, mz], tris, view));
+  }
+  var result = [], runStart = -1, t0, t1, x0, y0, z0, x1, y1, z1, p0, p1;
+  for (i = 0; i <= samples; i++) {
+    if (i < samples && kept[i]) {
+      if (runStart < 0) {
+        runStart = i;
+      }
+    } else if (runStart >= 0) {
+      t0 = runStart / samples;
+      t1 = i / samples;
+      x0 = a[0] + dx * t0;
+      y0 = a[1] + dy * t0;
+      z0 = a[2] + dz * t0;
+      x1 = a[0] + dx * t1;
+      y1 = a[1] + dy * t1;
+      z1 = a[2] + dz * t1;
+      p0 = bimM2Project([x0, y0, z0], view);
+      p1 = bimM2Project([x1, y1, z1], view);
+      result.push([[p0[0], p0[1]], [p1[0], p1[1]]]);
+      runStart = -1;
+    }
+  }
+  return result;
+}

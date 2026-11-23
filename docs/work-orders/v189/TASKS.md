@@ -48,7 +48,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-04 [Cline] `bimM2Visible(a, b, tris, view, samples)`
+## [x] WO-04 [Cline] `bimM2Visible(a, b, tris, view, samples)`
 
 - **It must:** SPEC 5 WO-04: the segment in samples (16 when under 1) equal pieces, each kept when its midpoint is not hidden; consecutive kept pieces joined into runs; each run as its two ends projected [[x, y], [x, y]].
 - **May use:** bimM2Project (WO-01), bimM2Hidden (WO-03).
