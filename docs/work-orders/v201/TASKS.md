@@ -30,7 +30,7 @@ after each one. Scores are from `../ROUTING.md` (files, logic, understanding, ju
 
 ---
 
-## [ ] WO-02 [Cline] `bimMepColebrook(re, rr)`
+## [x] WO-02 [Cline] `bimMepColebrook(re, rr)`
 
 - **It must:** SPEC 4 WO-02: exactly 100 bisection steps on [1, 100]; `Math.log(x) / Math.LN10` for log10 (ES5).
 - **May use:** nothing.

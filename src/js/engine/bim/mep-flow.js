@@ -26,3 +26,28 @@ function bimMepSection(p) {
   }
   return null;
 }
+function bimMepColebrook(re, rr) {
+  if (!(re > 4000) || !(rr >= 0) || !(rr < 1)) {
+    return null;
+  }
+  var log10 = function (x) {
+    return Math.log(x) / Math.LN10;
+  };
+  var g = function (x) {
+    return x + 2 * log10(rr / 3.7 + 2.51 * x / re);
+  };
+  if (!(g(1) < 0) || !(0 < g(100))) {
+    return null;
+  }
+  var lo = 1, hi = 100, mid, i;
+  for (i = 0; i < 100; i++) {
+    mid = (lo + hi) / 2;
+    if (g(mid) > 0) {
+      hi = mid;
+    } else {
+      lo = mid;
+    }
+  }
+  var x = (lo + hi) / 2;
+  return { f: 1 / (x * x), residual: g(x) };
+}
