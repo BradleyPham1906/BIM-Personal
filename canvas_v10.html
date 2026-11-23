@@ -47011,7 +47011,20 @@ BIM_IFC_SAVE.model=bimIfcSaveModel;
   /* WO-25: GEM-15's DTM levelled to a local ground: the median of ref - dtm over open cells (|dsm - dtm| <= 1 m
      and std <= 1 m), as {offset, n, mad}; null under five open cells */
   function bimSurfaceOffset(pairs){
-    return null;
+  if(!pairs)return null;
+  var ok=function(v){return v!=null&&isFinite(v);},kept=[],i,p;for(i=0;i<pairs.length;i++){p=pairs[i];if(!p)continue;
+    if(!ok(p.ref)||!ok(p.dtm)||!ok(p.dsm)||!ok(p.std))continue;
+    if(Math.abs(p.dsm-p.dtm)>1||p.std>1)continue;
+    kept.push(p.ref-p.dtm);
+  }
+  if(kept.length<5)return null;
+  kept.sort(function(a,b){return a-b;});
+  var n=kept.length,m=Math.floor(n/2);
+  var offset=n%2?kept[m]:(kept[m-1]+kept[m])/2;
+  var devs=[];for(i=0;i<n;i++)devs.push(Math.abs(kept[i]-offset));
+  devs.sort(function(a,b){return a-b;});
+  var mad=n%2?devs[m]:(devs[m-1]+devs[m])/2;
+  return{offset:Math.round(offset*100)/100,n:n,mad:Math.round(mad*100)/100};
   }
   /* WO-26: a footprint's height from GEM-15: the median of its cells' p95 less the ground, as {h, n, spread,
      from:'gem15'}; null under three cells, under 2 m, or without ground */

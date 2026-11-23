@@ -255,7 +255,7 @@ against a reference implementation (all pass).
 
 ---
 
-## [ ] WO-25 [Cline] `bimSurfaceOffset` in `src/js/engine/map/surface-model.js`
+## [x] WO-25 [Cline] `bimSurfaceOffset` in `src/js/engine/map/surface-model.js`
 
 - **Implement:** the median offset of the local ground less GEM-15's terrain over open cells, as SPEC part C3 says.
 - **It must:**
