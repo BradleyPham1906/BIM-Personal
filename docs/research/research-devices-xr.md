@@ -75,7 +75,7 @@ independent second reader re-checking every fact the code would use.
 | H7 | **Mostly held** (P). ARKit gives 6DoF on the iPhone 13 without LiDAR; a free Apple ID installs for 7 days (3 apps, 3 devices). Two corrections: no plugin exists, we write one; Apple's Vision hand pose is 2D. | native-paths 3.1 to 3.3; check |
 | H8 | **Held in part.** Godot gets the model only by GLB (which the app exports). Its plugins exist, MIT, updated in 2026, but none shows hand pose on an iPhone; its cardboard mode is 3DoF and unmaintained. | native-paths 3.4; check |
 | H9 | **Held, with conditions** (medium). Box, sphere and colour selection on 1,000,000 splats in 7 to 11 ms on this machine's CPU, reproduced by the check; the "grow" worst case (2.2 s) was not reproducible from the committed script and is U. The phone is not measured. | splats-and-link A3, E2; check |
-| H10 | **Held** (medium-high). Signalling is left to the application (RFC 9429, which replaced RFC 8829); an offer fits one QR code; on one Wi-Fi no STUN is needed. Not yet tried between the owner's iPhone and Mac. | splats-and-link B1, E1; check |
+| H10 | **Held on the owner's Windows mini PC and iPhone** (measured, E4): direct host-to-host UDP with no STUN, paired by a QR link and the ntfy.sh relay with no webcam; 12.3 ms median round trip, 1.5 MB/s, 0.4 % of poses lost. | E4, 2026-11-23 |
 
 ## 4. Findings, by topic
 
@@ -205,7 +205,13 @@ each written as a work order after the owner's decisions and the phone's numbers
   trflorian/virtual-hand-clone (MIT, 2026): Python MediaPipe to Godot 4.6 over UDP JSON on localhost, a rigid body on
   each of the 21 points and fingertip contacts counted; its UDP cannot be used from a page, which is why the link is
   WebRTC. Two of its ideas taken for XR-3, with credit: colliders on all 21 points, and grabs from fingertip contacts.
-  **Waiting on the owner's iPhone and Windows mini PC.**
+  **Run on the owner's Windows mini PC (Chrome 154, no webcam) and iPhone 13 (Safari 27), one home Wi-Fi, 2026-11-23**
+  (`experiments/devices-xr/results-2026-11-23-link-windows-iphone.json`, the mDNS names replaced): no STUN; the
+  answer came back through the relay; connected 0.16 s after it (20.6 s from Start, mostly the owner scanning); the pair
+  host to host over UDP, so Windows resolved the iPhone's `.local` name. 200 round trips: 12.3 ms median, 21.3 p90,
+  52.9 max (9 ms by the connection's own statistics). 2 MB in 1.35 s, 1.49 MB/s. The phone's orientation: 2,316 poses,
+  10 lost (0.4 %), one every 19.8 ms (about 50 a second: a 16 ms timer runs slow in Safari; XR-4 sends on each drawn
+  frame). **H10 held on the owner's own devices.**
 
   **What it changes:** the hands must leave the drawing loop. At 20 ms of a 26 ms frame they hold the view to about
   36 frames a second, and the view must follow the head within about 20 ms. So XR-2 runs MediaPipe in a worker (as
@@ -248,14 +254,19 @@ each written as a work order after the owner's decisions and the phone's numbers
 
 ## 10. What is still open (U)
 
-- The phone's numbers: hand tracking rate, Jolt in Safari, the combined rate over 10 to 20 minutes, camera re-prompt,
-  wake lock, the viewer's profile (E3).
-- Safari-to-Mac multicast DNS for the link; the splat "grow" worst case (its script to be committed); Spark's SPZ v4
+- From the phone (E3): the combined rate over 10 to 20 minutes from the Home Screen app, the drift test untouched,
+  the camera re-prompt there, the viewer's profile.
+- The link with STUN from another network (cellular): on one Wi-Fi it chose the same direct path (E4, second run:
+  host to peer-reflexive, 18.9 ms, 5.6 MB/s). With STUN the offer carries the computer's public IPv4 and IPv6
+  addresses into the QR link and the relay, so STUN stays off by default (D8). The test page's state lines are not
+  tagged per connection: a second run on one page logs the first connection's close ("failed") among the second's.
+- the splat "grow" worst case (its script to be committed); Spark's SPZ v4
   support and its compiled Rust code's licences; whether ARKit runs under a free Apple ID (first build).
 
 ## 11. The owner's decisions
 
-Asked 2026-11-23, with the evidence above (answers recorded here when given):
+Asked 2026-11-23, with the evidence above. **Answered 2026-11-23: D1 to D9 "all as recommended"; D10 approved.**
+XR-1 is written as V274 (`docs/work-orders/v274/`).
 
 | # | Decision | Recommended |
 |---|---|---|
@@ -266,7 +277,7 @@ Asked 2026-11-23, with the evidence above (answers recorded here when given):
 | D5 | How hands act | Push with physics, pinch to grab, release with the hand's speed. |
 | D6 | LOD-G2 | On v205's own renderer, no new library; Spark only if the phone shows ours too slow. |
 | D7 | First splat edits | Hide and delete by box and sphere; then colour and grow; then move. |
-| D8 | The link | QR codes on one Wi-Fi; Cloudflare's STUN as an option for other networks. |
+| D8 | The link | A QR link the phone's Camera app opens, the phone's answer back through ntfy.sh (or copy and paste), no STUN on one Wi-Fi (E4), Cloudflare's STUN as an option for other networks. |
 | D9 | QR scanning on the iPhone | A small vetted QR library (its own short research), since Safari's built-in reader is behind a flag. |
 | D10 | The test page | Keep MediaPipe from its pinned CDN address on the lab page only, until D2. **Approved by the owner, 2026-11-23** ("i approve"). |
 

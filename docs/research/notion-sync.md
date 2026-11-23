@@ -202,6 +202,7 @@ Search Notion before creating anything, so nothing is made twice.
 | Later: Hub H4, share and sync | `3fecbfcc3a3881a0ae89deed1c5dab5c` |
 | V202 (parts A, B, C) | `417cbfcc3a3881a1bc33faf0c50075ff` |
 | V248 | `420cbfcc3a3881839893ce97a1543e53` |
+| V274 XR-1, the headset view | `421cbfcc3a3881fa9190dc967deb839a` |
 | Later: Hub H5, the server | `3fecbfcc3a3881139bc7ed9832d6b76a` |
 | Later: Streaming | `3fecbfcc3a3881e3a2c7f3e240ba7f89` |
 | Later: Rendering on WebGPU | `3fecbfcc3a388102af55eae8049f4eb6` |

@@ -83,7 +83,7 @@ textarea{width:100%;box-sizing:border-box;height:90px;font:11px/1.35 var(--mono)
 var RELAY='https://ntfy.sh/',STUN=[{urls:'stun:stun.cloudflare.com:3478'}];
 var $=function(id){return document.getElementById(id);};
 var R={page:'link-test 2026-11-23',role:null,ua:navigator.userAgent,runs:[]};
-var S={pc:null,ch:null,pose:null,topic:null,t0:0};
+var S={pc:null,ch:null,pose:null,topic:null,t0:0,n:0};
 function now(){return performance.now();}
 function med(a){if(!a.length)return null;var b=a.slice().sort(function(x,y){return x-y;});return +b[b.length>>1].toFixed(2);}
 function pct(a,p){if(!a.length)return null;var b=a.slice().sort(function(x,y){return x-y;});return +b[Math.min(b.length-1,Math.floor(b.length*p))].toFixed(2);}
@@ -111,10 +111,12 @@ function gathered(pc,ms){
   });
 }
 function newPeer(stun){
-  var pc=new RTCPeerConnection({iceServers:stun?STUN:[]});S.pc=pc;
+  var pc=new RTCPeerConnection({iceServers:stun?STUN:[]}),id=++S.n;
+  if(S.pc&&S.pc.connectionState!=='closed')S.pc.close();   /* a second run on one page: the first connection ends here */
+  S.pc=pc;
   pc.addEventListener('connectionstatechange',function(){
-    record('state',{connection:pc.connectionState,ms:Math.round(now()-S.t0)});
-    if(pc.connectionState==='failed')status(R.role==='computer'?'host':'join','connection failed: try Cloudflare STUN',false);
+    record('state',{connectionId:id,connection:pc.connectionState,ms:Math.round(now()-S.t0)});
+    if(pc.connectionState==='failed'&&pc===S.pc)status(R.role==='computer'?'host':'join','connection failed: try Cloudflare STUN',false);
   });
   return pc;
 }
