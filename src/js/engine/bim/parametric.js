@@ -33,5 +33,89 @@ function bimPfDownstream(fs, id) {
   if (ds.length > 0) { var order = bimPfOrder(fs).order; var r = []; for (var i = 0; i < order.length; i++) if (ds.indexOf(order[i]) >= 0) r.push(order[i]); return r; }
   return [];
 }
-function bimPfExpr(s, params) { return { value: 0 }; }
+function bimPfExpr(s, params) {
+  var i = 0, sLen = s.length;
+  var hadParenAfterName = false;
+  function skipSpaces() { while (i < sLen && s[i] <= ' ') i++; }
+  function parseNum() {
+    skipSpaces();
+    if (i >= sLen) return { error: 'end' };
+    var start = i;
+    if (s[i] === '.') { i++; while (i < sLen && s[i] >= '0' && s[i] <= '9') i++; }
+    else { while (i < sLen && s[i] >= '0' && s[i] <= '9') i++; }
+    var numStr = s.substring(start, i);
+    if (numStr.length === 0 || numStr === '.') return { error: 'end' };
+    skipSpaces();
+    return { value: parseFloat(numStr) };
+  }
+  function parseAtom() {
+    skipSpaces();
+    if (i >= sLen) return { error: 'end' };
+    var c = s[i];
+    if (c === '(') {
+      i++; skipSpaces();
+      var r = parseSum();
+      skipSpaces();
+      if (i >= sLen || s[i] !== ')') return { error: 'expected )' };
+      i++; return r;
+    }
+    if (c === '-' || c === '+') {
+      i++; skipSpaces();
+      var a = parseAtom();
+      if (a.error) return a;
+      return { value: c === '-' ? -a.value : a.value };
+    }
+    if (c >= '0' && c <= '9' || c === '.') return parseNum();
+    // name - read identifier
+    var start = i;
+    while (i < sLen && (s[i] >= 'a' && s[i] <= 'z' || s[i] >= 'A' && s[i] <= 'Z' || s[i] >= '0' && s[i] <= '9' || s[i] === '_')) i++;
+    var name = s.substring(start, i);
+    skipSpaces();
+    // Check if next non-space char is ( - if so, error
+    if (i < sLen && s[i] === '(') { hadParenAfterName = true; return { error: 'unexpected (' }; }
+    if (!params || !(name in params)) return { error: 'unknown name ' + name };
+    return { value: params[name] };
+  }
+  function parseProd() {
+    var left = parseAtom();
+    if (left.error) return left;
+    while (true) {
+      skipSpaces();
+      if (i >= sLen) break;
+      var op = s[i];
+      if (op !== '*' && op !== '/') break;
+      i++;
+      var right = parseAtom();
+      if (right.error) return right;
+      if (op === '/') {
+        if (right.value === 0) return { error: 'division by zero' };
+        left.value = left.value / right.value;
+      } else {
+        left.value = left.value * right.value;
+      }
+    }
+    return left;
+  }
+  function parseSum() {
+    var left = parseProd();
+    if (left.error) return left;
+    while (true) {
+      skipSpaces();
+      if (i >= sLen) break;
+      var op = s[i];
+      if (op !== '+' && op !== '-') break;
+      i++;
+      var right = parseProd();
+      if (right.error) return right;
+      if (op === '-') left.value = left.value - right.value;
+      else left.value = left.value + right.value;
+    }
+    return left;
+  }
+  var r = parseSum();
+  skipSpaces();
+  if (hadParenAfterName) return { error: 'unexpected (' };
+  if (!r.error && i < sLen) return { error: 'unexpected (' + s[i] + ')' };
+  return r;
+}
 function bimPfRebuild(fs, params, last) { return { order: [], results: {} }; }

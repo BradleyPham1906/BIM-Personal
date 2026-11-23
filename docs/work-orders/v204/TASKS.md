@@ -38,7 +38,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-03 [Cline] `bimPfExpr(s, params)`
+## [x] WO-03 [Cline] `bimPfExpr(s, params)`
 
 - **It must:** SPEC 5 WO-03: a recursive-descent reader over sum := prod (('+'|'-') prod)*, prod := atom (('*'|'/') atom)*, atom := number | name | '(' sum ')' | '-' atom, spaces skipped: {value} or {error} with the first of 'unknown name N', 'division by zero', 'expected )', 'unexpected C' (C the character, or 'end'). A name must be a number in params. No eval, no Function.
 - **May use:** nothing.
