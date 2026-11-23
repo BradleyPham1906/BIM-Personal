@@ -67429,6 +67429,11 @@ function bimMepPaths(tree, edges, loss) {
 
   /* setters: other files assign these through them (an ES module cannot assign to an import) */
   function setA3D_LAST_MODEL_VIEW(v){A3D_LAST_MODEL_VIEW=v;return v;}
+  /* ================= __acad3dV275: the Explode view, the pure part =================
+     docs/research/research-xr-interaction.md (E1, E2) and docs/work-orders/v275/SPEC.md. Storeys pulled apart upward for
+     viewing, by one amount from 0 to 1: the storeys ranked by elevation in each building, each element's storey, the gap,
+     the offsets, the view state. Display only: nothing here changes an element. Each function is a work order, added
+     below as it is built; none uses another file's names. */
   // ---- __acad3dV44: Sheets (printable layouts). A Sheet is a titled page composing one or more
   // Viewports, each a scaled window onto an existing orthographic Plan/Elevation/Section view (or
   // a Schedule table, drawn as a table). Viewports are rendered by temporarily redirecting the
