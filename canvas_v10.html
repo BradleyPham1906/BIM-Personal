@@ -43945,7 +43945,22 @@ BIM_IFC_SAVE.model=bimIfcSaveModel;
   /* WO-03: the ground in metres at lon, lat from a DEM grid {w,h,data,a}, bilinear between pixel
      centres in Web Mercator; NaN off the grid or on nodata (below -1000) */
   function bimDep3ElevAt(g,lon,lat){
-    return NaN;
+  var A=g.a,fx=(lon-A.w)/(A.e-A.w),fy=(A.n-lat)/(A.n-A.s);
+  if(fx<0||fx>1||fy<0||fy>1)return NaN;
+  var cx=(0.5+Math.floor(fx*g.w))/g.w,cy=(0.5+Math.floor(fy*g.h))/g.h;
+  var ix=Math.floor(fx*g.w),iy=Math.floor(fy*g.h);
+  if(ix>=g.w)ix=g.w-1;if(iy>=g.h)iy=g.h-1;
+  var dx=fx-cx,dy=fy-cy;
+  var ixa=ix,ixb=ix,ya=iy,yb=iy;
+  if(dx<0){ixa=ix-1;if(ixa<0)ixa=0;}else{ixb=ix+1;if(ixb>=g.w)ixb=g.w-1;}
+  if(dy<0){ya=iy-1;if(ya<0)ya=0;}else{yb=iy+1;if(yb>=g.h)yb=g.h-1;}
+  var v00=g.data[ya*g.w+ixa],v10=g.data[ya*g.w+ixb],v01=g.data[yb*g.w+ixa],v11=g.data[yb*g.w+ixb];
+  if(Math.abs(dx)<1e-9&&Math.abs(dy)<1e-9)return v00;
+  var wx=Math.abs(dx)*g.w,wy=Math.abs(dy)*g.h;
+  if(Math.abs(dx)<1e-9){if(!isFinite(v00)||v00<-1000||!isFinite(v01)||v01<-1000)return NaN;return v00+wy*(v01-v00);}
+  if(Math.abs(dy)<1e-9){if(!isFinite(v00)||v00<-1000||!isFinite(v10)||v10<-1000)return NaN;return v00+wx*(v10-v00);}
+  if(!isFinite(v00)||v00<-1000||!isFinite(v10)||v10<-1000||!isFinite(v01)||v01<-1000||!isFinite(v11)||v11<-1000)return NaN;
+  return (1-wx)*(1-wy)*v00+wx*(1-wy)*v10+(1-wx)*wy*v01+wx*wy*v11;
   }
   /* WO-04: the city's measured height for an OSM footprint: the smallest city ring holding the
      footprint's vertex mean, in metres through rec.unit, as {h,top,base,from:'city',id}; else null */

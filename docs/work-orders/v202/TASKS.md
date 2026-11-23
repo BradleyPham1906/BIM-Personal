@@ -68,7 +68,7 @@ Done 2026-11-13: the file (with `BIM_NBI_URL` and `bimCityRecs` too), its includ
 
 ---
 
-## [ ] WO-03 [Cline] `bimDep3ElevAt` in `src/js/engine/map/measured-context.js`
+## [x] WO-03 [Cline] `bimDep3ElevAt` in `src/js/engine/map/measured-context.js`
 
 - **Implement:** bilinear height from a DEM grid at a longitude and latitude, between pixel centres in Web Mercator, as SPEC part 4 says.
 - **It must:**
