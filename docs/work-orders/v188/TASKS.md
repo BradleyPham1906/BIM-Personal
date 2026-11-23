@@ -48,7 +48,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-04 [Cline] `bimFlowBilinear(q, u, v)`
+## [x] WO-04 [Cline] `bimFlowBilinear(q, u, v)`
 
 - **It must:** SPEC 5 WO-04: (1-u)(1-v) q0 + u(1-v) q1 + u v q2 + (1-u) v q3, per coordinate.
 - **May use:** nothing.

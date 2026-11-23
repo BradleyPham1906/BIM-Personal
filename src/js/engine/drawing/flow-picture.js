@@ -44,3 +44,14 @@ function bimFlowBox(pts) {
   }
   return [minX, minY, maxX, maxY];
 }
+function bimFlowBilinear(q, u, v) {
+  var a = (1 - u) * (1 - v);
+  var b = u * (1 - v);
+  var c = u * v;
+  var d = (1 - u) * v;
+  return [
+    a * q[0][0] + b * q[1][0] + c * q[2][0] + d * q[3][0],
+    a * q[0][1] + b * q[1][1] + c * q[2][1] + d * q[3][1],
+    a * q[0][2] + b * q[1][2] + c * q[2][2] + d * q[3][2]
+  ];
+}
