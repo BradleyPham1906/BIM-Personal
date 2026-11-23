@@ -254,14 +254,19 @@ each written as a work order after the owner's decisions and the phone's numbers
 
 ## 10. What is still open (U)
 
-- The phone's numbers: hand tracking rate, Jolt in Safari, the combined rate over 10 to 20 minutes, camera re-prompt,
-  wake lock, the viewer's profile (E3).
+- From the phone (E3): the combined rate over 10 to 20 minutes from the Home Screen app, the drift test untouched,
+  the camera re-prompt there, the viewer's profile.
+- The link with STUN from another network (cellular): on one Wi-Fi it chose the same direct path (E4, second run:
+  host to peer-reflexive, 18.9 ms, 5.6 MB/s). With STUN the offer carries the computer's public IPv4 and IPv6
+  addresses into the QR link and the relay, so STUN stays off by default (D8). The test page's state lines are not
+  tagged per connection: a second run on one page logs the first connection's close ("failed") among the second's.
 - the splat "grow" worst case (its script to be committed); Spark's SPZ v4
   support and its compiled Rust code's licences; whether ARKit runs under a free Apple ID (first build).
 
 ## 11. The owner's decisions
 
-Asked 2026-11-23, with the evidence above (answers recorded here when given):
+Asked 2026-11-23, with the evidence above. **Answered 2026-11-23: D1 to D9 "all as recommended"; D10 approved.**
+XR-1 is written as V274 (`docs/work-orders/v274/`).
 
 | # | Decision | Recommended |
 |---|---|---|
