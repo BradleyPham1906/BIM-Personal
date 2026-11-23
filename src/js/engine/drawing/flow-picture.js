@@ -29,3 +29,18 @@ function bimTextBox(lines, h, ratio, gap) {
   }
   return { w: longest * h * ratio, h: h + (lines.length - 1) * h * gap };
 }
+function bimFlowBox(pts) {
+  if (!pts || pts.length === 0) {
+    return null;
+  }
+  var minX = pts[0][0], minY = pts[0][1], maxX = pts[0][0], maxY = pts[0][1];
+  var i, p;
+  for (i = 1; i < pts.length; i++) {
+    p = pts[i];
+    minX = Math.min(minX, p[0]);
+    minY = Math.min(minY, p[1]);
+    maxX = Math.max(maxX, p[0]);
+    maxY = Math.max(maxY, p[1]);
+  }
+  return [minX, minY, maxX, maxY];
+}

@@ -38,7 +38,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-03 [Cline] `bimFlowBox(pts)`
+## [x] WO-03 [Cline] `bimFlowBox(pts)`
 
 - **It must:** SPEC 5 WO-03: [minX, minY, maxX, maxY] of the points' first two coordinates; null for none.
 - **May use:** nothing.
