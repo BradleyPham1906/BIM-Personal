@@ -163,3 +163,40 @@ function bimMepJoin(runs, tol) {
   }
   return { nodes: nodes, edges: edges, warnings: warnings };
 }
+function bimMepTree(nodeCount, edges, source) {
+  var order, seen, parent, via, i, e, a, b, aSeen, bSeen;
+  if (!(source >= 0) || !(source < nodeCount) || !isFinite(source)) {
+    return { error: 'no source' };
+  }
+  order = [source];
+  seen = {};
+  seen[source] = true;
+  parent = {};
+  parent[source] = -1;
+  via = {};
+  for (i = 0; i < edges.length; i++) {
+    e = edges[i];
+    a = e.a;
+    b = e.b;
+    aSeen = seen[a] === true;
+    bSeen = seen[b] === true;
+    if (aSeen && bSeen) {
+      return { error: 'loop' };
+    }
+    if (aSeen && !bSeen) {
+      seen[b] = true;
+      order.push(b);
+      parent[b] = a;
+      via[b] = i;
+    } else if (!aSeen && bSeen) {
+      seen[a] = true;
+      order.push(a);
+      parent[a] = b;
+      via[a] = i;
+    }
+  }
+  if (order.length < nodeCount) {
+    return { error: 'not connected' };
+  }
+  return { source: source, parent: parent, via: via, order: order };
+}

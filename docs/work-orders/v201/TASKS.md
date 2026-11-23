@@ -60,7 +60,7 @@ after each one. Scores are from `../ROUTING.md` (files, logic, understanding, ju
 
 ---
 
-## [ ] WO-05 [Cline] `bimMepTree(nodeCount, edges, source)`
+## [x] WO-05 [Cline] `bimMepTree(nodeCount, edges, source)`
 
 - **It must:** SPEC 4 WO-05: breadth first, each edge used once; loop, not connected, no source.
 - **May use:** nothing.
