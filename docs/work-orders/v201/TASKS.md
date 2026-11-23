@@ -20,7 +20,7 @@ after each one. Scores are from `../ROUTING.md` (files, logic, understanding, ju
 
 ---
 
-## [ ] WO-01 [Cline] `bimMepSection(p)`
+## [x] WO-01 [Cline] `bimMepSection(p)`
 
 - **It must:** SPEC 4 WO-01 and part 3's formulas.
 - **May use:** nothing.
