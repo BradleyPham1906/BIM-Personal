@@ -38,7 +38,8 @@ backup, not a separate default tier.
 phase; reviewing Cline's work; a bug whose cause is unknown; anything touching saving, loading or
 deleting the owner's files; security; the build tools and CI.
 
-**Never A, whatever the score:** anything in `src/js/engine/core/`, `render/` or `history/`, and the
+**Never A, whatever the score:** anything in `src/js/engine/core/`, `render/` or `history/` (except a
+pure file the gate lists in `PROTECTED_EXEMPT`: put a new Cline file in `history/` there first), and the
 import/export lines (tier B at most, with a test).
 
 ## Examples
