@@ -78,7 +78,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-07 [Cline] `bimTorClip(p, plane)`
+## [x] WO-07 [Cline] `bimTorClip(p, plane)`
 
 - **It must:** SPEC 5 WO-07: true when (p - plane.p) . plane.n > 1e-9 (the clipped-away side); a point on the plane is kept.
 - **May use:** nothing.

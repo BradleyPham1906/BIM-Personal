@@ -18,7 +18,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-01 [Cline] `bimAstGltfStats(g)`
+## [x] WO-01 [Cline] `bimAstGltfStats(g)`
 
 - **It must:** SPEC 5 WO-01: null unless an object; {meshes, primitives, triangles, materials, textures, extensions (extensionsUsed sorted)}: triangles summed over primitives of mode 4 or no mode, floor(count / 3) of the indices accessor, else of the POSITION accessor.
 - **May use:** nothing.
@@ -28,7 +28,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-02 [Cline] `bimAstFitBox(min, max, size)`
+## [x] WO-02 [Cline] `bimAstFitBox(min, max, size)`
 
 - **It must:** SPEC 5 WO-02: s = size / the largest extent when both are positive, else 1; {scale: s, move: [-(minX + maxX)/2 s, -minY s, -(minZ + maxZ)/2 s] (written so 0 stays 0, never -0), size: the extents times s}.
 - **May use:** nothing.
@@ -38,7 +38,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-03 [Cline] `bimAstCheck(stats, bytes, limits)`
+## [x] WO-03 [Cline] `bimAstCheck(stats, bytes, limits)`
 
 - **It must:** SPEC 5 WO-03: messages: no stats ['not a glTF file']; triangles over limits.triangles (200000 by default): 'N triangles, over T'; bytes over limits.bytes (20 MB, 20971520): 'X MB, over Y MB', MB to one decimal.
 - **May use:** nothing.
@@ -48,7 +48,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-04 [Cline] `bimAstCredit(e)`
+## [x] WO-04 [Cline] `bimAstCredit(e)`
 
 - **It must:** SPEC 5 WO-04: '"title" by author, license (source)', each part only when present; 'Untitled' without a title.
 - **May use:** nothing.

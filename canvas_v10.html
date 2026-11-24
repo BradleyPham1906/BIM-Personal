@@ -43036,12 +43036,18 @@ BIM_IFC_SAVE.model=bimIfcSaveModel;
       return {error:s};
     });
   }
-
-
-  /* ================= __acad3dV206: That Open: the Review view and IFC import (with Hub H3's identity), the pure part =================
-     docs/research/research-thatopen.md, research-notion-hub-h3-ifc.md and docs/work-orders/v206/SPEC.md. That Open's
-     geometry as the app's meshes (Z-up to Y-up), IFC GlobalIds (valid, from and to hex), imports compared class by class,
-     measuring and clipping. Each function is a work order, added below as it is built; none uses another file's names. */
+/* ================= __acad3dV206: That Open: the Review view and IFC import (with Hub H3's identity), the pure part ================
+   docs/research/research-thatopen.md, research-notion-hub-h3-ifc.md and docs/work-orders/v206/SPEC.md. That Open's
+   geometry as the app's meshes (Z-up to Y-up), IFC GlobalIds (valid, from and to hex), imports compared class by class,
+   measuring and clipping. Each function is a work order, added below as it is built; none uses another file's names.
+*/
+function bimTorMesh(pos,idx,scale){if(pos.length%3!==0)return null;scale=scale!==undefined&&scale>0?scale:1;var v=[];for(var i=0;i<pos.length;i+=3){var x=pos[i],y=pos[i+1],z=pos[i+2];v.push([x*scale,z*scale,(0-y)*scale])}var f=[];for(var i=0;i<idx.length;i+=3)f.push([idx[i]||0,idx[i+1]||0,idx[i+2]||0]);return{v:v,f:f}}
+function bimTorGuidValid(g){if(typeof g!=='string'||g.length!==22)return false;var A='0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz_$',c=g.charAt(0);if(c<'0'||c>'3')return false;for(var i=1;i<22;i++){if(A.indexOf(g.charAt(i))===-1)return false}return true}
+function bimTorGuidFromHex(hex){if(typeof hex!=='string')return null;var c=hex.replace(/-/g,'');if(c.length!==32)return null;if(!/^[0-9a-fA-F]+$/.test(c))return null;var n=BigInt('0x'+c);var A='0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz_$';var s='';for(var i=0;i<22;i++){s=A[Number(n%64n)]+s;n/=64n}return s}
+function bimTorGuidToHex(g){if(!bimTorGuidValid(g))return null;var A='0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz_$';var n=BigInt(0);for(var i=0;i<22;i++){var idx=A.indexOf(g.charAt(i));if(idx===-1)return null;n=n*64n+BigInt(idx)}var hex=n.toString(16).toLowerCase().padStart(32,'0');return hex}
+function bimTorCompare(a,b){var C={};for(var cls in a)C[cls]=true;for(var cls in b)C[cls]=true;var S=[];for(var cls in C)S.push(cls);S.sort();var same=[],diff=[];for(var i=0;i<S.length;i++){var cls=S[i],ca=a[cls]||0,cb=b[cls]||0;if(ca===cb)same.push(cls);else diff.push({cls:cls,a:ca,b:cb})}return{same:same,diff:diff}}
+function bimTorArea(pts){if(pts.length===0)return 0;var Nx=0,Ny=0,Nz=0,n=pts.length;for(var i=0;i<n;i++){var j=(i+1)%n,xi=pts[i][0],yi=pts[i][1],zi=pts[i][2],xj=pts[j][0],yj=pts[j][1],zj=pts[j][2];Nx+=yi*zj-zi*yj;Ny+=zi*xj-xi*zj;Nz+=xi*yj-yi*xj}return 0.5*Math.sqrt(Nx*Nx+Ny*Ny+Nz*Nz)}
+function bimTorClip(p,plane){var dp=(p[0]-plane.p[0])*plane.n[0]+(p[1]-plane.p[1])*plane.n[1]+(p[2]-plane.p[2])*plane.n[2];return dp>1e-9}
   // ---- Unified import entry point ----
   function bimHandleImportFile(file){
     if(!file)return;
@@ -44324,6 +44330,119 @@ BIM_IFC_SAVE.model=bimIfcSaveModel;
   }
 
 
+/* ================= __acad3dV205: LOD-G, Gaussian splats as a backdrop, the pure part =================
+     docs/research/research-notion-v192-splats.md and docs/work-orders/v205/SPEC.md. A .splat file read, its bounds,
+     placement from two point pairs (a similarity about the vertical, Y up), placed points, back-to-front order. Each
+     function is a work order, added below as it is built; none uses another file's names.
+*/
+
+function bimSplatParse(buf) {
+  if (buf.byteLength % 32 !== 0) {
+    return { error: 'not a .splat file (its length is not a multiple of 32)' };
+  }
+  var n = buf.byteLength / 32;
+  var dv = new DataView(buf);
+  var pos = new Float32Array(n * 3);
+  var scale = new Float32Array(n * 3);
+  var rgba = new Uint8Array(n * 4);
+  var rot = new Float32Array(n * 4);
+  for (var i = 0; i < n; i++) {
+    var o = i * 32;
+    for (var k = 0; k < 3; k++) {
+      pos[i * 3 + k] = dv.getFloat32(o + 4 * k, true);
+    }
+    for (var k = 0; k < 3; k++) {
+      scale[i * 3 + k] = dv.getFloat32(o + 12 + 4 * k, true);
+    }
+    for (var k = 0; k < 4; k++) {
+      rgba[i * 4 + k] = dv.getUint8(o + 24 + k);
+    }
+    for (var k = 0; k < 4; k++) {
+      rot[i * 4 + k] = (dv.getUint8(o + 28 + k) - 128) / 128;
+    }
+  }
+  return { n: n, pos: pos, scale: scale, rgba: rgba, rot: rot };
+}
+
+function bimSplatBounds(pos) {
+  if (pos === null || pos === undefined || pos.length === 0) {
+    return null;
+  }
+  var n = pos.length / 3;
+  var min = new Float32Array(3);
+  var max = new Float32Array(3);
+  min[0] = pos[0];
+  min[1] = pos[1];
+  min[2] = pos[2];
+  max[0] = pos[0];
+  max[1] = pos[1];
+  max[2] = pos[2];
+  for (var i = 1; i < n; i++) {
+    var p = i * 3;
+    if (pos[p] < min[0]) min[0] = pos[p];
+    if (pos[p + 1] < min[1]) min[1] = pos[p + 1];
+    if (pos[p + 2] < min[2]) min[2] = pos[p + 2];
+    if (pos[p] > max[0]) max[0] = pos[p];
+    if (pos[p + 1] > max[1]) max[1] = pos[p + 1];
+    if (pos[p + 2] > max[2]) max[2] = pos[p + 2];
+  }
+  var centre = new Float32Array(3);
+  centre[0] = (min[0] + max[0]) / 2;
+  centre[1] = (min[1] + max[1]) / 2;
+  centre[2] = (min[2] + max[2]) / 2;
+  return { min: [min[0], min[1], min[2]], max: [max[0], max[1], max[2]], centre: [centre[0], centre[1], centre[2]] };
+}
+
+function bimSplatFit2(a0, a1, b0, b1) {
+  var adx = a1[0] - a0[0];
+  var adz = a1[2] - a0[2];
+  var bdx = b1[0] - b0[0];
+  var bdz = b1[2] - b0[2];
+  var alen = Math.sqrt(adx * adx + adz * adz);
+  var blen = Math.sqrt(bdx * bdx + bdz * bdz);
+  if (alen < 1e-9 || blen < 1e-9) {
+    return null;
+  }
+  var s = blen / alen;
+  var rot = Math.atan2(bdz, bdx) - Math.atan2(adz, adx);
+  var tx = b0[0] - s * (adx * Math.cos(rot) - adz * Math.sin(rot));
+  var ty = b0[1] - s * a0[1];
+  var tz = b0[2] - s * (adx * Math.sin(rot) + adz * Math.cos(rot));
+  return { s: s, rot: rot, t: [tx, ty, tz] };
+}
+
+function bimSplatApply(T, p) {
+  var s = T.s;
+  var cx = Math.cos(T.rot);
+  var sz = Math.sin(T.rot);
+  var x = T.t[0];
+  var y = s * p[1] + T.t[1];
+  var z = s * p[0] + s + T.t[2];
+  return [x, y, z];
+}
+
+function bimSplatOrder(pos, eye) {
+  if (pos === null || pos === undefined || pos.length === 0) {
+    return [];
+  }
+  var n = pos.length / 3;
+  var d = [];
+  for (var i = 0; i < n; i++) {
+    var p = i * 3;
+    var ex = eye ? eye[0] - pos[p] : 0;
+    var ey = eye ? eye[1] - pos[p + 1] : 0;
+    var ez = eye ? eye[2] - pos[p + 2] : 0;
+    d[i] = ex * ex + ey * ey + ez * ez;
+  }
+  var order = [];
+  for (var i = 0; i < n; i++) {
+    order[i] = i;
+  }
+  order.sort(function (i, j) {
+    return d[j] - d[i];
+  });
+  return order;
+}
   /* ================= __acad3dV205: LOD-G, Gaussian splats as a backdrop, the pure part =================
      docs/research/research-notion-v192-splats.md and docs/work-orders/v205/SPEC.md. A .splat file read, its bounds,
      placement from two point pairs (a similarity about the vertical, Y up), placed points, back-to-front order. Each
@@ -57092,7 +57211,108 @@ function bimPfExpr(s, params) {
   if (!r.error && i < sLen) return { error: 'unexpected (' + s[i] + ')' };
   return r;
 }
-function bimPfRebuild(fs, params, last) { return { order: [], results: {} }; }
+function bimPfRebuild(fs, params, last) {
+  // Build feature reference map
+  var fm = {};
+  if (Array.isArray(fs)) {
+    for (var i = 0; i < fs.length; i++) {
+      if (fs[i] && fs[i].id) fm[fs[i].id] = fs[i];
+    }
+  } else {
+    var idList = Object.keys(fs);
+    for (var i = 0; i < idList.length; i++) {
+      if (fs[idList[i]]) fm[idList[i]] = fs[idList[i]];
+    }
+  }
+  // Get ordered features
+  var orderResult = bimPfOrder(fs);
+  if (orderResult.error) return { error: 'cycle', ids: orderResult.ids };
+  var order = orderResult.order;
+  // Compute volumes/areas for each feature
+  var volumes = {};
+  for (var i = 0; i < order.length; i++) {
+    var fid = order[i];
+    var feature = fm[fid];
+    if (!feature) continue;
+    var inputs = feature.inputs || {};
+    var kind = feature.kind;
+    function getParam(name) {
+      if (params && name in params) return params[name];
+      return parseFloat(name);
+    }
+    if (kind === 'sketch') {
+      // Sketch uses 'w' and 'l' property keys
+      var w = getParam(inputs.w);
+      var l = getParam(inputs.l);
+      if (isNaN(w) || isNaN(l) || w <= 0 || l <= 0) {
+        volumes[fid] = { status: 'failed', why: 'the sketch needs a positive width and length', kept: null };
+      } else {
+        var area = w * l;
+        volumes[fid] = { status: 'ok', why: null, kept: { width: w, length: l, area: area }, volume: area };
+      }
+    } else if (kind === 'pad') {
+      var refId = feature.refs ? feature.refs[0] : null;
+      var refVol = volumes[refId];
+      if (!refVol || refVol.status !== 'ok' || !refVol.kept) {
+        volumes[fid] = { status: 'failed', why: 'its sketch or depth is not valid', kept: null };
+      } else {
+        var depth = getParam(inputs.depth);
+        if (isNaN(depth) || depth <= 0) {
+          volumes[fid] = { status: 'failed', why: 'its sketch or depth is not valid', kept: null };
+        } else {
+          var padArea = refVol.kept.area;
+          var padVolume = padArea * depth;
+          volumes[fid] = { status: 'ok', why: null, kept: { depth: depth, area: padArea, volume: padVolume, width: refVol.kept.width, length: refVol.kept.length }, volume: padVolume };
+        }
+      }
+    } else if (kind === 'pocket') {
+      var padRef = feature.refs ? feature.refs[0] : null;
+      var padVol = volumes[padRef];
+      if (!padVol || padVol.status !== 'ok' || !padVol.kept) {
+        volumes[fid] = { status: 'failed', why: 'its pad is not valid', kept: null };
+      } else {
+        // Use the pocket's own depth input
+        var d = getParam(inputs.depth);
+        var w = getParam(inputs.w);
+        var l = getParam(inputs.l);
+        if (isNaN(w) || isNaN(l) || isNaN(d) || w <= 0 || l <= 0 || d <= 0) {
+          volumes[fid] = { status: 'failed', why: 'the pocket does not fit in its pad', kept: null };
+        } else if (w > padVol.kept.width || l > padVol.kept.length) {
+          volumes[fid] = { status: 'failed', why: 'the pocket does not fit in its pad', kept: null };
+        } else {
+          var pocketVolume = padVol.kept.volume - w * l * d;
+          volumes[fid] = { status: 'ok', why: null, kept: { volume: pocketVolume }, volume: pocketVolume };
+        }
+      }
+    }
+  }
+  // Build results in order
+  var results = {};
+  var kept = {};
+  for (var i = 0; i < order.length; i++) {
+    var fid = order[i];
+    var vol = volumes[fid];
+    if (!vol) {
+      results[fid] = { status: 'failed', why: 'unknown feature' };
+      continue;
+    }
+    results[fid] = vol;
+    if (vol.kept) {
+      kept[fid] = vol.kept;
+    }
+  }
+  // Handle last valid result for failed features
+  if (last) {
+    for (var i = 0; i < order.length; i++) {
+      var fid = order[i];
+      var vol = volumes[fid];
+      if (vol && vol.status === 'failed' && last[fid] && last[fid].status === 'ok' && last[fid].kept) {
+        results[fid].kept = last[fid].kept;
+      }
+    }
+  }
+  return { order: order, results: results };
+}
 
 
   /* ================= __acad3dV228: Generated elements, the pure part =================
@@ -61327,6 +61547,60 @@ function bimPfRebuild(fs, params, last) { return { order: [], results: {} }; }
      docs/research/research-notion-gltf-assets.md and docs/work-orders/v207/SPEC.md. A glTF's counts from its JSON, a model
      seated on the origin, the limits that ask first, the credit line. Each function is a work order, added below as it is
      built; none uses another file's names. */
+function bimAstGltfStats(g){
+  if(g===null)return null;if(typeof g!=='object')return null;
+  var m=0,p=0,t=0,mat=0,tex=0,ext;
+  if(g.accessors!==undefined){
+    if(g.extensionsUsed!==undefined){
+      var a=[];for(var i=0;i<g.extensionsUsed.length;i++)a[a.length]=g.extensionsUsed[i];ext=a.sort()
+    }
+  }
+  if(g.meshes!==undefined){
+    for(var r=0;r<g.meshes.length;r++){
+      m++;var mg=g.meshes[r];
+      if(mg.primitives!==undefined){
+        for(var k=0;k<mg.primitives.length;k++){
+          p++;var pr=mg.primitives[k];var mo=pr.mode;
+          if(mo===4||mo===undefined){
+            var co;if(pr.indices!==undefined){var ai=pr.indices;if(g.accessors[ai]!==undefined)co=g.accessors[ai].count;else co=0}else{var pa=pr.attributes?pr.attributes.POSITION:undefined;if(pa!==undefined){if(g.accessors[pa]!==undefined)co=g.accessors[pa].count;else co=0}else co=0;}t+=Math.floor(co/3)
+          }
+        }
+      }
+    }
+  }
+  if(g.materials!==undefined)mat=g.materials.length;
+  if(g.textures!==undefined)tex=g.textures.length;
+  return{meshes:m,primitives:p,triangles:t,materials:mat,textures:tex,extensions:ext}
+}
+function bimAstFitBox(min,max,size){
+  var e=[max[0]-min[0],max[1]-min[1],max[2]-min[2]];var l=e[0];if(e[1]>l)l=e[1];if(e[2]>l)l=e[2];
+  var s;if(size>0&&l>0)s=size/l;else s=1;
+  var m0=-(min[0]+max[0])*s/2,m1=-min[1]*s,m2=-(min[2]+max[2])*s/2;if(m0===0)m0=0;if(m1===0)m1=0;if(m2===0)m2=0;
+  var s0=e[0]*s,s1=e[1]*s,s2=e[2]*s;return{scale:s,move:[m0,m1,m2],size:[s0,s1,s2]}
+}
+function bimAstCheck(s,b,l){
+  if(s===null||typeof s!=='object'||Array.isArray(s))return['not a glTF file'];
+  var m=[],t=200000,bc=20971520;
+  if(l!==undefined){
+    if(l.triangles!==undefined)t=l.triangles;
+    if(l.bytes!==undefined)bc=l.bytes;
+  }
+  if(s.triangles!==undefined&&s.triangles>t)m.push(s.triangles+' triangles, over '+t);
+  if(b!==undefined&&b>bc){
+    var f=function(n){var s=n.toFixed(1);return s.endsWith('.0')?s.slice(0,-2):s;};
+    m.push(f(b/1048576)+' MB, over '+f(bc/1048576)+' MB');
+  }
+  return m;
+}
+function bimAstCredit(e){
+  if(e===null||typeof e!=='object'||Array.isArray(e))return'not a glTF file';
+  if(!e.title)return'"Untitled"';
+  var r='"'+e.title+'"';
+  if(e.author){r=r+' by '+e.author}
+  if(e.license){r=r+', '+e.license}
+  if(e.source){r=r+' ('+e.source+')'}
+  return r;
+}
   /* ================= __acad3dV150: the tool palette, on a phone and a tablet =================
      The essential tools in a capsule over the drawing, dragged where the hand wants them, folded
      to one button when the drawing wants the room. Where it was left is kept in this browser. */
