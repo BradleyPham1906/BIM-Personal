@@ -18,7 +18,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-01 [Cline] `bimDrnClamp(p, minAlt, maxAlt, ground)`
+## [x] WO-01 [Cline] `bimDrnClamp(p, minAlt, maxAlt, ground)`
 
 - **It must:** SPEC 5 WO-01: p with its height clamped to ground + minAlt .. ground + maxAlt (minAlt 2 unless 0 or more, maxAlt 120 unless positive, ground 0 unless a number).
 - **May use:** nothing.
@@ -28,7 +28,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-02 [Cline] `bimDrnOrbit(c, r, h, t, period)`
+## [x] WO-02 [Cline] `bimDrnOrbit(c, r, h, t, period)`
 
 - **It must:** SPEC 5 WO-02: the angle 2 pi t / period (30 s unless positive); {eye: [cx + r cos, cy + h, cz + r sin], target: a copy of c}.
 - **May use:** nothing.
@@ -38,7 +38,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-03 [Cline] `bimDrnRoute(pts)`
+## [x] WO-03 [Cline] `bimDrnRoute(pts)`
 
 - **It must:** SPEC 5 WO-03: {segs: the 3D length of each leg, length: their sum}.
 - **May use:** nothing.
@@ -48,7 +48,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-04 [Cline] `bimDrnAt(pts, route, dist)`
+## [x] WO-04 [Cline] `bimDrnAt(pts, route, dist)`
 
 - **It must:** SPEC 5 WO-04: the point dist along the route, dist clamped to 0..length, interpolated on its leg (the last leg takes any remainder); null for no points.
 - **May use:** nothing.
