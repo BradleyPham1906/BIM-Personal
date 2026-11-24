@@ -43036,12 +43036,18 @@ BIM_IFC_SAVE.model=bimIfcSaveModel;
       return {error:s};
     });
   }
-
-
-  /* ================= __acad3dV206: That Open: the Review view and IFC import (with Hub H3's identity), the pure part =================
-     docs/research/research-thatopen.md, research-notion-hub-h3-ifc.md and docs/work-orders/v206/SPEC.md. That Open's
-     geometry as the app's meshes (Z-up to Y-up), IFC GlobalIds (valid, from and to hex), imports compared class by class,
-     measuring and clipping. Each function is a work order, added below as it is built; none uses another file's names. */
+/* ================= __acad3dV206: That Open: the Review view and IFC import (with Hub H3's identity), the pure part ================
+   docs/research/research-thatopen.md, research-notion-hub-h3-ifc.md and docs/work-orders/v206/SPEC.md. That Open's
+   geometry as the app's meshes (Z-up to Y-up), IFC GlobalIds (valid, from and to hex), imports compared class by class,
+   measuring and clipping. Each function is a work order, added below as it is built; none uses another file's names.
+*/
+function bimTorMesh(pos,idx,scale){if(pos.length%3!==0)return null;scale=scale!==undefined&&scale>0?scale:1;var v=[];for(var i=0;i<pos.length;i+=3){var x=pos[i],y=pos[i+1],z=pos[i+2];v.push([x*scale,z*scale,(0-y)*scale])}var f=[];for(var i=0;i<idx.length;i+=3)f.push([idx[i]||0,idx[i+1]||0,idx[i+2]||0]);return{v:v,f:f}}
+function bimTorGuidValid(g){if(typeof g!=='string'||g.length!==22)return false;var A='0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz_$',c=g.charAt(0);if(c<'0'||c>'3')return false;for(var i=1;i<22;i++){if(A.indexOf(g.charAt(i))===-1)return false}return true}
+function bimTorGuidFromHex(hex){if(typeof hex!=='string')return null;var c=hex.replace(/-/g,'');if(c.length!==32)return null;if(!/^[0-9a-fA-F]+$/.test(c))return null;var n=BigInt('0x'+c);var A='0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz_$';var s='';for(var i=0;i<22;i++){s=A[Number(n%64n)]+s;n/=64n}return s}
+function bimTorGuidToHex(g){if(!bimTorGuidValid(g))return null;var A='0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz_$';var n=BigInt(0);for(var i=0;i<22;i++){var idx=A.indexOf(g.charAt(i));if(idx===-1)return null;n=n*64n+BigInt(idx)}var hex=n.toString(16).toLowerCase().padStart(32,'0');return hex}
+function bimTorCompare(a,b){var C={};for(var cls in a)C[cls]=true;for(var cls in b)C[cls]=true;var S=[];for(var cls in C)S.push(cls);S.sort();var same=[],diff=[];for(var i=0;i<S.length;i++){var cls=S[i],ca=a[cls]||0,cb=b[cls]||0;if(ca===cb)same.push(cls);else diff.push({cls:cls,a:ca,b:cb})}return{same:same,diff:diff}}
+function bimTorArea(pts){if(pts.length===0)return 0;var Nx=0,Ny=0,Nz=0,n=pts.length;for(var i=0;i<n;i++){var j=(i+1)%n,xi=pts[i][0],yi=pts[i][1],zi=pts[i][2],xj=pts[j][0],yj=pts[j][1],zj=pts[j][2];Nx+=yi*zj-zi*yj;Ny+=zi*xj-xi*zj;Nz+=xi*yj-yi*xj}return 0.5*Math.sqrt(Nx*Nx+Ny*Ny+Nz*Nz)}
+function bimTorClip(p,plane){var dp=(p[0]-plane.p[0])*plane.n[0]+(p[1]-plane.p[1])*plane.n[1]+(p[2]-plane.p[2])*plane.n[2];return dp>1e-9}
   // ---- Unified import entry point ----
   function bimHandleImportFile(file){
     if(!file)return;
