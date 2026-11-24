@@ -1,6 +1,6 @@
 # The World Engine's mathematics: how a physicist and a mathematician would build it
 
-Status: companion to `plan-world-physics.md`, for the owner's decisions (part 9). Written 2026-11-23.
+Status: companion to `plan-world-physics.md`; decisions answered 2026-11-24 (part 9, all as recommended). Written 2026-11-23.
 Every formula here becomes one pure function and one reference test before it reaches the page; each phase's research
 note re-reads it in its primary source (P) under `research-protocol.md` before the code uses it.
 
@@ -377,7 +377,8 @@ The plan's Stage A (`plan-world-physics.md` part 5) becomes five phases, built a
 Every later domain phase then supplies only its constitutive law, coefficients (registry data) and boundary
 conditions to one of these solvers.
 
-**Decisions for the owner** (in addition to `plan-world-physics.md` part 10):
+**Decisions for the owner** (in addition to `plan-world-physics.md` part 10). **Answered 2026-11-24** (the owner:
+"all as recommend"): all four as recommended.
 
 1. **Archetypes first.** Build the six archetype solvers once (V277a to V277e) and express every domain through them.
    Recommended: yes.

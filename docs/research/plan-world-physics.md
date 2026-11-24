@@ -1,6 +1,6 @@
 # The World Engine: a plan for simulating the real world in World BIM
 
-Status: plan, for the owner's decisions (part 10). Written 2026-11-23 after the math evaluation of the same day.
+Status: plan, decisions answered 2026-11-24 (part 10, all as recommended). Written 2026-11-23 after the math evaluation of the same day.
 Phase numbers below are proposals (V277 on, after the last number in use, V276); each phase still needs its own
 research note under `docs/research/research-protocol.md` before work orders are written.
 
@@ -298,6 +298,9 @@ It is not a game, and it does not copy any game's content, look or code. It does
 engineering. It does not need a server: everything runs in the browser, offline, with pinned libraries.
 
 ## 10. The owner's decisions
+
+**Answered 2026-11-24** (the owner: "all as recommend"): every decision below takes its recommendation.
+V277 to V282 go into the queue after V248 once each has its research and work orders.
 
 Asked together, each with a recommendation.
 

@@ -1,0 +1,1 @@
+{"experiment":"e01","compositions":1000000,"quat_no_renorm_max_norm_err":1.2367884494324244e-13,"quat_renorm_max_norm_err":2.220446049250313e-16,"matrix_1e5_products_orthogonality_err":3.7952280207420586e-14,"node":"v22.23.5"}
