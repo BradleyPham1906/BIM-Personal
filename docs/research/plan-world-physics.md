@@ -246,6 +246,26 @@ equations, tensors and verification ladder each phase uses. The table below is t
 | V299 | Smoke: a two-zone smoke filling model feeding the evacuation's tenability | Against a published zone model example |
 | V300 | The demonstration project and the world test T1 to T9 as a browser suite | All nine pass on desktop and phone |
 
+### Added 2026-11-24: the world's look (V301 to V312)
+
+From `research-world-look.md` (the owner asked for live weather, a sky that follows it, efficiency, and assets). They
+join the stages above; V301 comes early in Stage C, because forests, crowds and traffic all need it.
+
+| Phase | What | Stage |
+|---|---|---|
+| V301 | Instance batches in the app's renderer, picking and selection kept | C, first |
+| V302 | Levels of detail and impostors | C |
+| V303 | Walkers and cars as GPU instances animated from a texture | C / F |
+| V304 | Live weather: fetch, cache, fallbacks, the WeatherState and its blending | E |
+| V305 | The sky (three.js `Sky.js`), fog and wet surfaces driven by the WeatherState | E |
+| V306 | Rain, snow and lightning as an overlay; wind sway | E |
+| V307 | Hillaire's lookup-table atmosphere | E |
+| V308 | Generated trees from the Urban Tree Database (our own Weber and Penn generator) | F |
+| V309 | People: CC0 rigged glTF characters animated from the walkers | F |
+| V310 | Vehicles and street furniture from CC0 glTF kits | F |
+| V311 | Sound (Web Audio) | F |
+| V312 | Compressed textures (KTX2 and Basis), after its library research | C |
+
 ## 6. What open-world games teach, and what we take
 
 | Game technique | What it is | Our use |
