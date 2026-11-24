@@ -28,7 +28,7 @@ published method that runs on an iPhone 6s. What the app lacks is a handful of s
 - **Weather:** one keyless request per site per hour (Open-Meteo, CORS open; MET Norway as the fallback), kept with the
   project for offline use, turned into a small *WeatherState* (cloud layers, fog from visibility by the WMO's
   definition, precipitation kind and intensity, wind, wetness) and blended toward it frame-rate independently, as games
-  blend their weather types. Weather models update every 1 to 6 hours, so polling more often gains nothing.
+  blend their weather types. The main weather models update every 1 to 6 hours, so polling more often gains nothing.
 - **Sky:** three.js r186's own `Sky.js` (MIT; the release the app vendors, but not in its bundle) with its built-in
   cloud layer first; Hillaire's lookup-table atmosphere as the quality step; volumetric clouds on desktops only.
   Moving weather (rain, snow, lightning, drifting cloud) is drawn as an overlay, because the rendered view averages
@@ -45,7 +45,7 @@ published method that runs on an iPhone 6s. What the app lacks is a handful of s
   from noise and footsteps, engines and birds from CC0 recordings.
 
 **Recommendation.** Twelve phases, V301 to V312 (part 5), inserted in the plan's Stages C, E and F; and the owner's
-sixteen decisions in part 11.
+seventeen decisions in part 11.
 
 ## 2. The question and the hypotheses
 
@@ -56,7 +56,7 @@ assets-audio H1 to H12). The ones that decide the plan:
 |---|---|---|---|
 | W-H1 | A keyless live source always answers a browser | **Partly failed**: Open-Meteo's CORS is open, but its free API is non-commercial and limited to 10,000 calls a day per IP; this machine's shared IP was refused (429) | weather-sky 4.1 |
 | W-H2 | At least two other keyless, CORS-open sources exist | **Held**: MET Norway (global), the US National Weather Service, Bright Sky (Germany); aviationweather.gov sends no CORS header and is named, not proxied | weather-sky 4.1 |
-| W-H3 | Polling more often than hourly gains nothing | **Held**: ten models update every 1 to 6 hours | weather-sky 4.6 |
+| W-H3 | Polling more often than hourly gains nothing | **Held**: the ten models named update every 1 to 6 hours (some, such as ItaliaMeteo, every 12) | weather-sky 4.6 |
 | W-H5 | A lookup-table sky costs about as little as today's gradient dome | **Held** (software rendering; Hillaire's own figure about 1 ms on an iPhone 6s) | weather-sky 4.4 |
 | W-H6 | Volumetric clouds run at 60 fps on a phone | **Failed**: 36 to 53 fps on an iPhone 13 at the lowest quality (takram) | weather-sky 4.5 |
 | W-H9 | Weather fits the rendered view unchanged | **Failed**: it accumulates passes and restarts on change; moving weather must be an overlay | weather-sky 8 |
@@ -80,8 +80,17 @@ after one 200 in Chromium.
 ### 3.1 The independent check
 
 A separate agent re-read the source of every fact the code or the decisions rely on, across the three side notes, and
-re-ran one decisive experiment from each: `research-world-look/independent-check.md`. Its outcome is recorded here
-once it is complete.
+re-ran one decisive experiment from each: `research-world-look/independent-check.md`. 40 facts: 38 confirmed, 1 not
+confirmed, 1 not readable. **Not confirmed (C8):** calling MET Norway from the browser with `If-Modified-Since`; its
+terms (revised 2026-11-05) allow only simple cross-origin requests from low-volume websites, preflights are "explicitly
+not supported", and the terms must be "accepted by a human in authority" (now decision W8; weather-sky 4.1 corrected).
+**Not readable (C5):** the per-model update times came from Open-Meteo's API, which the checker was told not to call;
+Open-Meteo's documentation table agrees, and adds ItaliaMeteo at 12 hours (the range is now stated for the models named).
+Limits recorded: four facts rest on secondary sources (Mixamo, Ready Player Me, takram's iPhone figures and one more);
+RainViewer's terms say "personal or educational use"; Quaternius gives only part of each CC0 kit free; Freesound still
+carries old Sampling+ sounds. All three experiments reproduced (the blend 0.950213 at 30, 60, 120 fps; -6.02 dB per
+doubling; 218,400,000 bytes merged and 1,602,184 bytes instanced at 100,000 trees: the results file recorded 1,602,028,
+from before the page moved to 32-bit indices, a 156-byte difference that changes nothing).
 
 ## 4. Findings, by topic (summaries; evidence and levels in the side notes)
 
@@ -98,7 +107,9 @@ GPU server per user, against the app's offline, one-file and phone contract.
 
 Open-Meteo: keyless, `access-control-allow-origin: *`, CC BY 4.0 with a credit link, free for non-commercial use only,
 10,000 calls a day, 5,000 an hour, 600 a minute per IP. MET Norway Locationforecast: global, CC BY 4.0 and NLOD, a
-shared limit of 20 requests a second for all users. NWS: the US only. Models update every 1 to 6 hours and publish
+shared limit of 20 requests a second for all users; from a browser only "simple" requests from "low-volume
+websites" (no custom headers, no preflight), and its terms must be accepted by a person (correction C8). NWS: the US
+only. Models update every 1 to 6 hours and publish
 1.5 to 7.5 hours after each run, so one request per site per hour, at a random minute, only while the rendered view is
 open and visible, is enough; `timeformat=unixtime` avoids daylight-saving and fractional time-zone traps; the answer is
 kept with the project. The mapping to a WeatherState uses the WMO's definition of visibility (fog extinction
@@ -229,6 +240,10 @@ Asked together, each with its recommendation.
    Recommended: yes.
 7. **W7 Credits.** "Weather data by Open-Meteo.com" and "Data from MET Norway", with links, whenever live weather is on.
    Recommended: yes.
+8. **W8 MET Norway's terms.** Its terms must be accepted by a person in authority before the app uses it, and allow the
+   browser only simple, low-volume requests. Accept them and use MET Norway as a low-volume fallback (simple GETs,
+   honouring `Expires`), or leave it out and fall back from Open-Meteo straight to the cache. Recommended: accept, as
+   the fallback only (read the terms at api.met.no/doc/TermsOfService first).
 
 **Rendering**
 8. **R1 Where first.** The living world is drawn first in the app's own renderer (picking and layers keep working),

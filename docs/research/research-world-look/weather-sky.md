@@ -142,12 +142,21 @@ nests 3 h. Both recorded; the metadata is the measurement.)
 answers with `Expires` and `Last-Modified`. Terms (revised 2026-11-05): identify yourself by User-Agent, or, where
 a browser cannot, "the website must instead identify itself using an Origin (Javascript) or Referer" header, which
 browsers send; total traffic under 20 requests a second per application, "total, not per client", including
-traffic "coming directly from the browsers"; never repeat a request before `Expires`; use `If-Modified-Since`;
+traffic "coming directly from the browsers"; never repeat a request before `Expires`; use `If-Modified-Since`
+(from a server; see the correction below);
 truncate coordinates to 4 decimals (5 or more answers 403 on new products); spread requests, not on the hour;
 "Applications on mobile devices must not retrieve new data as long as the application is not in use"; the
 user's IP is logged in Oslo. Licence: CC BY 4.0 and NLOD 2.0, credit "Data from MET Norway". The compact
 product has cloud area fraction, precipitation amount, wind and a symbol code; it has no visibility (to confirm
 in the complete product: U).
+
+**Correction from the independent check (C8).** The same terms allow only "low-volume websites" to make "simple
+cross-origin Javascript requests"; requests with custom headers and CORS preflights are "explicitly not supported";
+heavy traffic must go through a caching proxy; the CORS conditions are "still under review"; and the terms must be
+"accepted by a human in authority". So the app may call MET Norway from the browser only with a simple GET (no
+`If-Modified-Since`, which a script cannot send without a preflight), honouring `Expires` from its cache, as a
+low-volume fallback, and only after the owner accepts the terms (decision W8). The 204 preflight seen here is not
+permission.
 
 **US National Weather Service, api.weather.gov.** Keyless, CORS open, US only. Docs: open data "free to use for
 any purpose"; rate limit "not public", retry after about 5 seconds; a User-Agent with contact is asked for (an
@@ -157,7 +166,8 @@ empty one got 403 here; the browser's own was accepted, 200 from Chromium). Obse
 **AviationWeather.gov Data API.** Keyless, worldwide METARs (airports only), JSON. **No CORS**: no
 `Access-Control-Allow-Origin` on the GET; the browser refused it. Named here, not proxied.
 
-**RainViewer.** Keyless, CORS open on the index and the tiles. "Free public weather radar API for personal,
+**RainViewer.** (Its Terms of Use paragraph says "personal or educational use", narrower than the FAQ quoted next:
+independent check.) Keyless, CORS open on the index and the tiles. "Free public weather radar API for personal,
 educational, and small-scale community use"; attribution mandatory ("Weather data by RainViewer" with a link);
 past 2 hours at 10-minute steps; maximum zoom 7 (about 1.2 km a pixel at the equator, our arithmetic); radar
 coverage only where radars exist. Useful later for "is it raining at the site right now" in covered places; not
@@ -281,7 +291,8 @@ lever.
 - **Cadence.** Models update every 1 to 6 hours (measured), so one request per site per hour, at a random minute
   (MET Norway's rule against peaks on the hour), returning the next 24 hours of 15-minute steps and the last
   2 hours (`past_minutely_15`), is enough; between requests the app interpolates. 24 requests a day per user is
-  0.24 % of Open-Meteo's daily limit. MET Norway: honour `Expires` and `If-Modified-Since`.
+  0.24 % of Open-Meteo's daily limit. MET Norway: a simple GET only, honouring `Expires` (correction C8). The "1 to 6
+hours" holds for the models named here; Open-Meteo's table lists ItaliaMeteo at 12 hours (independent check C5).
 - **On change only.** The live weather is fetched only while the rendered view is open, the tab is visible
   (`document.visibilityState`) and "live" is on; the WeatherState is quantised (for example cover in tenths,
   visibility in a log step) into the view's signature so the picture restarts and the PMREM is redone only when

@@ -194,7 +194,7 @@ practice uses authored rigs and motion libraries and retargets between them (thr
 
 | Source | Licence read at the source | May the public repository carry the files? | Level |
 |---|---|---|---|
-| Quaternius CC0 packs: Universal Base Characters (26 models, glTF), Universal Animation Library (120+ clips, GLB) and Library 2 (130+, January 2026), Ultimate Animated Character Pack, Animated Men and Women | CC0 on each pack's page; the FAQ: no attribution, modification allowed | Yes | P |
+| Quaternius CC0 packs (only a portion of each kit is free; the rest goes to supporters: independent check): Universal Base Characters (26 models, glTF), Universal Animation Library (120+ clips, GLB) and Library 2 (130+, January 2026), Ultimate Animated Character Pack, Animated Men and Women | CC0 on each pack's page; the FAQ: no attribution, modification allowed | Yes | P |
 | Quaternius QAL packs | QAL v1.0: use in products allowed, but no redistribution "as a standalone asset" even when modified | **No** without a ruling: a public repository's files are extractable as such | P |
 | Kenney Animated Characters (and the rest of Kenney) | CC0 (support page and each asset page) | Yes | P |
 | MakeHuman | code AGPL; bundled assets CC0; the project claims nothing over exports (FBX, OBJ, DAE, MHX2) | Yes for exports from bundled assets only; third-party community assets each have their own licence | P |
@@ -259,7 +259,8 @@ gain and choice among several takes (practice; Andy Farnell's *Designing Sound* 
 **U**, not read). Traffic noise should be one source per nearby vehicle up to a cap, and a filtered bed for the rest.
 Reverberation can use ConvolverNode with an impulse response (the plan's V293 computes reverberation times).
 
-**Sources.** Freesound offers CC0, CC BY and CC BY-NC per sound (P, its FAQ); only CC0 should ship, filtered on the
+**Sources.** Freesound offers CC0, CC BY and CC BY-NC per sound (P, its FAQ), and still carries older Sampling+
+sounds (independent check); only CC0 should ship, filtered on the
 site, and the sound's page recorded. CC0 1.0 waives copyright and falls back to an unconditional licence, but keeps
 trademark and patent rights and gives no warranty (P, the legal code). Poly Haven has no sounds. EZ-Tree's package
 carries a 1.0 MB `ambience.mp3` of unstated origin: not usable.
