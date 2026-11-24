@@ -51,6 +51,7 @@ BAD = [(re.compile(r"throw\s+new\s+Error\(\s*['\"]WO-"), "WO- throw stub"), (re.
        (re.compile(r"[\U0001F000-\U0001FAFF\u2600-\u27BF\uFE0F]"), "emoji")]
 NAME_CALL = re.compile(r"\b(bim[A-Za-z0-9_]*)\s*\(")
 DEFAULT_BUDGET = 120
+PY = "python" if os.name == "nt" else "python3"  # the owner's Windows PCs have python; macOS has python3
 
 
 class Gate(object):
@@ -214,6 +215,9 @@ def preflight(gate):
                   "         git pull --ff-only origin main\n"
                   "         git stash pop\n"
                   "       then run the gate again." % ", ".join(newer))
+    if git("ls-remote", "--heads", "origin", "wip/park", check=False).strip():
+        gate.fail("work from another machine is parked on wip/park. Bring it here first, then run the gate again:\n"
+                  "         %s tools/handoff.py resume" % PY)
     edited = set(git("diff", "--name-only", "HEAD").split()) | set(git("ls-files", "--others", "--exclude-standard").split())
     mine = sorted(f for f in edited if is_protected(f))
     if mine:
@@ -320,8 +324,8 @@ def check(phase, ids, gate, llm=True, strict_llm=False):
     if stray:
         print("       Other work is in the working tree. Ship one phase at a time: set it aside, ship, bring it back:\n"
               "         git stash push -m other -- %s\n"
-              "         python tools/gate.py ship %s %s\n"
-              "         git stash pop" % (" ".join(stray), phase, " ".join(ids)))
+              "         %s tools/gate.py ship %s %s\n"
+              "         git stash pop" % (" ".join(stray), PY, phase, " ".join(ids)))
     budget = sum(s["budget"] for s in scopes)
     if added_src > budget:
         gate.fail("%d src lines added, over the budget of %d; split the task or ask Claude" % (added_src, budget))

@@ -11,7 +11,9 @@ The routine is in `docs/dev/WORKFLOW.md`. Do these steps, then report in a few l
 1. `git status` and `git branch --show-current`. If there are uncommitted changes, or `aider/*`
    branches not merged into main, they are most likely Aider's: run the review-aider skill on them
    first (`.claude/skills/review-aider/SKILL.md`). Never discard them.
-2. `git fetch origin`. Then:
+2. `git fetch origin`, then `python3 tools/handoff.py status` (Windows: `python`). The owner works on a
+   MacBook, a Beelink at home and an office PC; if work is parked from another machine and this tree is
+   clean, run `python3 tools/handoff.py resume` on `main` and say what came back. Then:
    - On `main`: `git pull`.
    - On another branch: say how far it is behind `origin/main`, and ask whether to keep working on it
      or start from `main`. In a cloud session, stay on the branch the session was given.
@@ -19,7 +21,7 @@ The routine is in `docs/dev/WORKFLOW.md`. Do these steps, then report in a few l
    Count the open rows in `docs/work-orders/*/GATE-LOG.md` (Cline's shipped work awaiting `/audit`) and
    the phases ready in `docs/work-orders/QUEUE.md`. If fewer than two phases are ready for Cline, say
    so: writing the next specs comes before anything else, so Cline never waits.
-4. On the PC only: check whether Qwen is reachable (`http://localhost:11434/v1/models`). One line: up or
+4. On the owner's machines (not in a cloud session): check whether Qwen is reachable (`http://localhost:11434/v1/models`). One line: up or
    not. If not, say "Ollama is off (start it, or run `ollama serve`)" and carry on; it is not needed to start.
 5. Report: the branch, whether it is current, what is next per PIPELINE.md, open audits, phases queued, Qwen up or not. Then ask
    what the owner wants to work on, suggesting the next phase.

@@ -19,6 +19,8 @@ It is complete only after `tools/gate.py ship` succeeds and the gate's commit is
 
 ## Complete and ship
 
+0. Run `python3 tools/handoff.py status` (Windows: `python`). If work is parked from another machine, run
+   `python3 tools/handoff.py resume` first and ship that work before starting anything new.
 1. Check `git status` and confirm the branch is `main`. If there are changes you cannot explain, stop and tell the
    owner. Do not overwrite or discard existing work.
 2. Run `git pull --ff-only origin main` when local `main` has no unpushed commits. If it fails, continue only if the
@@ -53,6 +55,13 @@ It is complete only after `tools/gate.py ship` succeeds and the gate's commit is
 
 This workflow ends with the normal response; do not invoke a tool named `finish` or the separate Claude `/finish`
 routine for a Cline work order.
+
+## Leaving a machine (the owner, 2026-11-24)
+
+The owner moves between a MacBook, the Beelink at home and the office PC. Unshipped work stays on the machine
+it was done on, where the next machine cannot see it. When the owner says they are stopping or switching
+machines and a task is not shipped, run `python3 tools/handoff.py park` (Windows: `python`): it puts the work
+on the `wip/park` branch on GitHub and leaves this machine clean. Never push it any other way.
 
 ## Stop rules (the owner, 2026-11-24)
 
