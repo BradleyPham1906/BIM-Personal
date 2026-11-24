@@ -18,7 +18,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-01 [Cline] `bimSwmUnder(eyeY, waterY)`
+## [x] WO-01 [Cline] `bimSwmUnder(eyeY, waterY)`
 
 - **It must:** SPEC 5 WO-01: true when waterY is a number and eyeY < waterY.
 - **May use:** nothing.
@@ -28,7 +28,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-02 [Cline] `bimSwmStep(v, inp, dt, P)`
+## [x] WO-02 [Cline] `bimSwmStep(v, inp, dt, P)`
 
 - **It must:** SPEC 5 WO-02: each axis i: v_i + (inp_i thrust - drag v_i + (buoy on the y axis)) dt; drag 2 and thrust 1.5 unless positive, buoy 0.3 unless a number; a missing input is 0.
 - **May use:** nothing.
@@ -38,7 +38,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-03 [Cline] `bimSwmFog(depth, clear)`
+## [x] WO-03 [Cline] `bimSwmFog(depth, clear)`
 
 - **It must:** SPEC 5 WO-03: depth / clear (8 unless positive) clamped to 0..1.
 - **May use:** nothing.
@@ -48,7 +48,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-04 [Cline] `bimSwmSurface(pos, waterY, eye)`
+## [x] WO-04 [Cline] `bimSwmSurface(pos, waterY, eye)`
 
 - **It must:** SPEC 5 WO-04: when pos[1] > waterY - eye (eye 0.2 unless positive), the point at waterY - eye; else a copy.
 - **May use:** nothing.
