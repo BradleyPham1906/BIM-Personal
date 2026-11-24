@@ -28,7 +28,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-02 [Cline] `bimAstFitBox(min, max, size)`
+## [x] WO-02 [Cline] `bimAstFitBox(min, max, size)`
 
 - **It must:** SPEC 5 WO-02: s = size / the largest extent when both are positive, else 1; {scale: s, move: [-(minX + maxX)/2 s, -minY s, -(minZ + maxZ)/2 s] (written so 0 stays 0, never -0), size: the extents times s}.
 - **May use:** nothing.

@@ -61572,6 +61572,12 @@ function bimAstGltfStats(g){
   if(g.textures!==undefined)tex=g.textures.length;
   return{meshes:m,primitives:p,triangles:t,materials:mat,textures:tex,extensions:ext}
 }
+function bimAstFitBox(min,max,size){
+  var e=[max[0]-min[0],max[1]-min[1],max[2]-min[2]];var l=e[0];if(e[1]>l)l=e[1];if(e[2]>l)l=e[2];
+  var s;if(size>0&&l>0)s=size/l;else s=1;
+  var m0=-(min[0]+max[0])*s/2,m1=-min[1]*s,m2=-(min[2]+max[2])*s/2;if(m0===0)m0=0;if(m1===0)m1=0;if(m2===0)m2=0;
+  var s0=e[0]*s,s1=e[1]*s,s2=e[2]*s;return{scale:s,move:[m0,m1,m2],size:[s0,s1,s2]}
+}
   /* ================= __acad3dV150: the tool palette, on a phone and a tablet =================
      The essential tools in a capsule over the drawing, dragged where the hand wants them, folded
      to one button when the drawing wants the room. Where it was left is kept in this browser. */
