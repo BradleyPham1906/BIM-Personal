@@ -200,7 +200,32 @@ def function_declaration_count(source, name):
 
 # ---------- the checks ----------
 
+def is_protected(path):
+    return path.startswith(PROTECTED) and path not in PROTECTED_EXEMPT
+
+
+def preflight(gate):
+    """Stop early, with the fix spelled out, on the two mistakes that are never Cline's to work around."""
+    git("fetch", "-q", "origin", "main", check=False)
+    newer = git("diff", "--name-only", "HEAD...origin/main", "--", "tools/", ".cline/", check=False).split()
+    if newer and subprocess.run(["git", "merge-base", "--is-ancestor", "origin/main", "HEAD"], cwd=ROOT).returncode:
+        gate.fail("origin/main has a newer gate or skill (%s). Get it first, keeping your work, one command at a time:\n"
+                  "         git stash push -m wip\n"
+                  "         git pull --ff-only origin main\n"
+                  "         git stash pop\n"
+                  "       then run the gate again." % ", ".join(newer))
+    edited = set(git("diff", "--name-only", "HEAD").split()) | set(git("ls-files", "--others", "--exclude-standard").split())
+    mine = sorted(f for f in edited if is_protected(f))
+    if mine:
+        gate.fail("protected path(s) edited locally: %s. They are Claude's: never edit them to get past the gate.\n"
+                  "         Undo with: git checkout -- %s   (delete any new file there), then report to the owner."
+                  % (", ".join(mine), " ".join(mine)))
+    return not gate.fails
+
+
 def check(phase, ids, gate, llm=True, strict_llm=False):
+    if not preflight(gate):
+        return find_tasks(phase, ids), None
     tasks = find_tasks(phase, ids)
     print("gate: %s %s" % (phase, ", ".join(t["id"] + " " + t["title"] for t in tasks)))
     for t in tasks:
@@ -214,17 +239,22 @@ def check(phase, ids, gate, llm=True, strict_llm=False):
     task_files = set(t["file"] for t in tasks)
     if not allowed_src:
         gate.fail("the task names no src/ file; add `- **Files:** `src/...`` to its block")
+    for p in sorted(allowed_src):
+        if is_protected(p):
+            gate.fail("spec error (Claude's, not yours): the task names %s, a protected path. Stop and report it to "
+                      "the owner; do not move the code or edit the gate." % p)
     base = base_commit()
     files = changed_files(base)
     if not files:
         gate.fail("nothing changed since origin/main")
     added_src = 0
     js = []
+    stray = []
     for f in files:
         added, removed = file_diff(base, f)
         if f == "canvas_v10.html":
             continue
-        if f.startswith(PROTECTED) and f not in PROTECTED_EXEMPT:
+        if is_protected(f):
             gate.fail("%s is a protected path (Claude's)" % f)
             continue
         if f in task_files or f == "docs/work-orders/%s/GATE-LOG.md" % phase:
@@ -242,6 +272,7 @@ def check(phase, ids, gate, llm=True, strict_llm=False):
             continue
         if f not in allowed_src:
             gate.fail("%s is outside the task's scope (allowed: %s)" % (f, ", ".join(sorted(allowed_src)) or "none"))
+            stray.append(f)
             continue
         if f.endswith(".js"):
             js.append(f)
@@ -286,6 +317,11 @@ def check(phase, ids, gate, llm=True, strict_llm=False):
         elif definitions[0][0] not in scope["src"]:
             gate.fail("%s: %s is declared in %s, not a file named by the task" % (
                 task["id"], name, definitions[0][0]))
+    if stray:
+        print("       Other work is in the working tree. Ship one phase at a time: set it aside, ship, bring it back:\n"
+              "         git stash push -m other -- %s\n"
+              "         python tools/gate.py ship %s %s\n"
+              "         git stash pop" % (" ".join(stray), phase, " ".join(ids)))
     budget = sum(s["budget"] for s in scopes)
     if added_src > budget:
         gate.fail("%d src lines added, over the budget of %d; split the task or ask Claude" % (added_src, budget))

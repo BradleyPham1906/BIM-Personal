@@ -49,7 +49,9 @@ The review Claude used to do by hand, as checks a script runs in seconds. It fai
   the TASKS file's opening paragraph; paths after "do not" / "not" are left out), or in a protected
   path (`core/`, `history/`, `rendered-core.js`, `tools/`, `.github/`, `runtime/`, `vendor/`,
   `src/index.html`, the rules and docs/dev; `history/hub-files.js` and `history/hub-access.js` are
-  exempt, as pure files Claude scaffolded for V216/V217; a new exemption is a line in `PROTECTED_EXEMPT`);
+  exempt, as pure files Claude scaffolded for V216/V217; a new exemption is a line in `PROTECTED_EXEMPT`;
+  `tools/check_work_orders.py`, in `npm run check`, fails CI when an open `[Cline]` task names a protected
+  path, no src/ file or no test, so a spec Cline cannot ship is caught before Cline starts it);
 - a test line is removed or changed (tests may only grow), a SPEC changes, or a TASKS file changes
   beyond its checkboxes;
 - added code is not ES5, has an emoji, a `WO-` stub or `debugger`, touches import/export lines, or
