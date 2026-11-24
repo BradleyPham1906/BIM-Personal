@@ -48,7 +48,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-04 [Cline] `bimAstCredit(e)`
+## [x] WO-04 [Cline] `bimAstCredit(e)`
 
 - **It must:** SPEC 5 WO-04: '"title" by author, license (source)', each part only when present; 'Untitled' without a title.
 - **May use:** nothing.
