@@ -51390,6 +51390,38 @@ function bimRecAdd(path, pose, t, minDist, minTurn) {
   copy.push({ t: t, p: [pose.p[0], pose.p[1], pose.p[2]], yaw: pose.yaw, pitch: pose.pitch === undefined ? 0 : pose.pitch });
   return copy;
 }
+
+
+function bimRecAt(path, t) {
+  if (path.length === 0) {
+    return null;
+  }
+  var last = path[path.length - 1];
+  if (t >= last.t) {
+    return last;
+  }
+  var first = path[0];
+  if (t <= first.t) {
+    return first;
+  }
+  var i;
+  for (i = 0; i < path.length - 1; i = i + 1) {
+    var a = path[i];
+    var b = path[i + 1];
+    if (t >= a.t && t <= b.t) {
+      var u = (t - a.t) / (b.t - a.t);
+      var p = [
+        a.p[0] + (b.p[0] - a.p[0]) * u,
+        a.p[1] + (b.p[1] - a.p[1]) * u,
+        a.p[2] + (b.p[2] - a.p[2]) * u
+      ];
+      var pitch = a.pitch + (b.pitch - a.pitch) * u;
+      var yaw = a.yaw + bimRecAngle(a.yaw, b.yaw) * u;
+      return { t: t, p: p, yaw: yaw, pitch: pitch };
+    }
+  }
+  return last;
+}
   /* ================= __acad3dV98: annotation grips =================
      The grip list and the drag below index the SAME points, in the same order, per kind. */
   function bimAnnotGripPoints(o){

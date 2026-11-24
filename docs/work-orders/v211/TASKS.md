@@ -38,7 +38,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-03 [Cline] `bimRecAt(path, t)`
+## [x] WO-03 [Cline] `bimRecAt(path, t)`
 
 - **It must:** SPEC 5 WO-03: null for no path; the first pose at or before the first time, the last after the last; else between the two poses around t, u = (t - a.t)/(b.t - a.t): positions and pitch linear, yaw a.yaw + bimRecAngle(a.yaw, b.yaw) u.
 - **May use:** bimRecAngle (WO-01).
