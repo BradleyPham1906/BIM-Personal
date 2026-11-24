@@ -1,0 +1,5 @@
+levels 3 (trunk, branch, twig)	tubes 40	verts 699	tris 1068	index Uint16
+levels 4 (defaults)	tubes 328	verts 4155	tris 6252	index Uint16
+levels 5, children [3,12,8,4]	tubes 1480	verts 17979	tris 26988	index Uint16
+defaults, radialSegments 4	tubes 328	verts 3965	tris 5960	index Uint16
+defaults, trunkLength 20 (a 20 m tree)	tubes 328	verts 5589	tris 9120	index Uint16

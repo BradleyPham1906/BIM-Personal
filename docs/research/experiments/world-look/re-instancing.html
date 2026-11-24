@@ -1,0 +1,116 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>re-instancing</title>
+<style>html,body{margin:0;background:#000}canvas{display:block}</style></head>
+<body><canvas id="c" width="1280" height="720"></canvas>
+<script>
+/* Research experiment (docs/research/research-world-look/rendering-efficiency.md), not app code.
+   Draws N copies of one low-poly tree three ways in WebGL2:
+     single    : one drawElements per copy, its place a uniform (what a naive per-object renderer does)
+     merged    : every copy baked into one vertex buffer, one drawElements (what gpu-batches.js does today)
+     instanced : one copy of the tree, a per-instance attribute (vertexAttribDivisor 1), one drawElementsInstanced
+     merged1   : the merged buffer drawn by drawElementsInstanced with one instance (separates the instanced path from instancing)
+   &detail=k  : the cones get 8*k sides (26 triangles at k=1), so the per-instance work can be raised
+   ?mode=single|merged|instanced &n=1000 &anim=0|1 (anim: every copy moves every frame, as a crowd would)
+   Results go to window.__result. */
+(function(){
+  var q={};location.search.slice(1).split('&').forEach(function(p){var kv=p.split('=');q[kv[0]]=kv[1];});
+  var MODE=q.mode||'instanced',N=parseInt(q.n||'1000',10),ANIM=q.anim==='1',SECS=parseFloat(q.secs||'3'),DET=parseInt(q.detail||'1',10);
+  var cv=document.getElementById('c'),gl=cv.getContext('webgl2',{antialias:false});
+  var R={mode:MODE,n:N,anim:ANIM,detail:DET};
+  if(!gl){R.error='no webgl2';window.__result=R;return;}
+  var dbg=gl.getExtension('WEBGL_debug_renderer_info');
+  R.renderer=dbg?gl.getParameter(dbg.UNMASKED_RENDERER_WEBGL):gl.getParameter(gl.RENDERER);
+  R.vendor=dbg?gl.getParameter(dbg.UNMASKED_VENDOR_WEBGL):gl.getParameter(gl.VENDOR);
+  R.version=gl.getParameter(gl.VERSION);
+  /* the tree: a 5-sided trunk and two 8-sided cones, flat-shaded, 26 triangles, 78 vertices */
+  var P=[],C=[];
+  function tri(a,b,c,col){P.push(a[0],a[1],a[2],b[0],b[1],b[2],c[0],c[1],c[2]);for(var i=0;i<3;i++)C.push(col[0],col[1],col[2]);}
+  function ring(n,r,y){var o=[];for(var i=0;i<n;i++){var t=i/n*Math.PI*2;o.push([Math.cos(t)*r,y,Math.sin(t)*r]);}return o;}
+  var b0=ring(5,0.15,0),b1=ring(5,0.15,1),i,k;
+  for(i=0;i<5;i++){k=(i+1)%5;tri(b0[i],b0[k],b1[k],[0.40,0.26,0.13]);tri(b0[i],b1[k],b1[i],[0.40,0.26,0.13]);}
+  var CS=8*DET,c0=ring(CS,1.2,0.8),c1=ring(CS,0.8,2.0);
+  for(i=0;i<CS;i++){k=(i+1)%CS;tri(c0[i],c0[k],[0,2.4,0],[0.18,0.45,0.20]);tri(c1[i],c1[k],[0,3.4,0],[0.22,0.55,0.24]);}
+  var NV=P.length/3,NT=NV/3;R.trisPerTree=NT;R.trisTotal=NT*N;
+  var IDX=new Uint32Array(NV);for(i=0;i<NV;i++)IDX[i]=i;
+  /* places on a square grid, 6 m apart, seen from above at an angle so all are in view */
+  var side=Math.ceil(Math.sqrt(N)),sp=6,half=side*sp/2,OFF=new Float32Array(N*4);
+  for(i=0;i<N;i++){OFF[i*4]=(i%side)*sp-half;OFF[i*4+1]=0;OFF[i*4+2]=Math.floor(i/side)*sp-half;OFF[i*4+3]=0.8+0.4*((i*2654435761>>>0)%1000)/1000;}
+  function sh(t,s){var o=gl.createShader(t);gl.shaderSource(o,s);gl.compileShader(o);if(!gl.getShaderParameter(o,gl.COMPILE_STATUS))throw new Error(gl.getShaderInfoLog(o));return o;}
+  var VS='#version 300 es\nin vec3 aPos;in vec3 aCol;in vec4 aOff;uniform vec4 uOff;uniform mat4 uVP;uniform float uT;uniform int uUseAttr;out vec3 vC;\n'+
+    'void main(){vec4 o=uUseAttr==1?aOff:uOff;vec3 w=aPos*o.w+o.xyz;vC=aCol*(0.6+0.4*clamp(aPos.y/3.4,0.0,1.0));gl_Position=uVP*vec4(w,1.0);}';
+  var FS='#version 300 es\nprecision mediump float;in vec3 vC;out vec4 f;void main(){f=vec4(vC,1.0);}';
+  var pr=gl.createProgram();gl.attachShader(pr,sh(gl.VERTEX_SHADER,VS));gl.attachShader(pr,sh(gl.FRAGMENT_SHADER,FS));
+  gl.bindAttribLocation(pr,0,'aPos');gl.bindAttribLocation(pr,1,'aCol');gl.bindAttribLocation(pr,2,'aOff');gl.linkProgram(pr);
+  if(!gl.getProgramParameter(pr,gl.LINK_STATUS))throw new Error(gl.getProgramInfoLog(pr));
+  gl.useProgram(pr);
+  var uOff=gl.getUniformLocation(pr,'uOff'),uVP=gl.getUniformLocation(pr,'uVP'),uUse=gl.getUniformLocation(pr,'uUseAttr');
+  var vao=gl.createVertexArray();gl.bindVertexArray(vao);
+  var t0=performance.now(),bytes=0,posB,colB,offB,idxB,idxType=gl.UNSIGNED_SHORT,count=NV,mergedPos=null;
+  function buf(target,data,usage){var b=gl.createBuffer();gl.bindBuffer(target,b);gl.bufferData(target,data,usage||gl.STATIC_DRAW);bytes+=data.byteLength;return b;}
+  if(MODE==='merged'||MODE==='merged1'){
+    mergedPos=new Float32Array(NV*N*3);var mc=new Float32Array(NV*N*3),mi=new Uint32Array(NV*N),j;
+    for(i=0;i<N;i++){var s=OFF[i*4+3];for(j=0;j<NV;j++){var d=(i*NV+j)*3;mergedPos[d]=P[j*3]*s+OFF[i*4];mergedPos[d+1]=P[j*3+1]*s;mergedPos[d+2]=P[j*3+2]*s+OFF[i*4+2];mc[d]=C[j*3];mc[d+1]=C[j*3+1];mc[d+2]=C[j*3+2];mi[i*NV+j]=i*NV+j;}}
+    posB=buf(gl.ARRAY_BUFFER,mergedPos,ANIM?gl.DYNAMIC_DRAW:gl.STATIC_DRAW);gl.enableVertexAttribArray(0);gl.vertexAttribPointer(0,3,gl.FLOAT,false,0,0);
+    colB=buf(gl.ARRAY_BUFFER,mc);gl.enableVertexAttribArray(1);gl.vertexAttribPointer(1,3,gl.FLOAT,false,0,0);
+    idxB=buf(gl.ELEMENT_ARRAY_BUFFER,mi);idxType=gl.UNSIGNED_INT;count=NV*N;
+    gl.uniform1i(uUse,0);gl.uniform4f(uOff,0,0,0,1);
+  }else{
+    posB=buf(gl.ARRAY_BUFFER,new Float32Array(P));gl.enableVertexAttribArray(0);gl.vertexAttribPointer(0,3,gl.FLOAT,false,0,0);
+    colB=buf(gl.ARRAY_BUFFER,new Float32Array(C));gl.enableVertexAttribArray(1);gl.vertexAttribPointer(1,3,gl.FLOAT,false,0,0);
+    idxB=buf(gl.ELEMENT_ARRAY_BUFFER,IDX);idxType=gl.UNSIGNED_INT;
+    if(MODE==='instanced'){
+      offB=buf(gl.ARRAY_BUFFER,OFF,ANIM?gl.DYNAMIC_DRAW:gl.STATIC_DRAW);gl.enableVertexAttribArray(2);gl.vertexAttribPointer(2,4,gl.FLOAT,false,0,0);gl.vertexAttribDivisor(2,1);
+      gl.uniform1i(uUse,1);
+    }else gl.uniform1i(uUse,0);
+  }
+  gl.finish();R.setupMs=performance.now()-t0;R.bytesUploaded=bytes;
+  /* camera: looking down at 45 degrees at the whole grid */
+  function persp(f,a,n,fa){var t=1/Math.tan(f/2);return [t/a,0,0,0,0,t,0,0,0,0,(fa+n)/(n-fa),-1,0,0,2*fa*n/(n-fa),0];}
+  function mul(a,b){var r=new Array(16),x,y;for(x=0;x<4;x++)for(y=0;y<4;y++)r[y*4+x]=a[x]*b[y*4]+a[4+x]*b[y*4+1]+a[8+x]*b[y*4+2]+a[12+x]*b[y*4+3];return r;}
+  var dist=half*2.2+20,e=[0,dist*0.7,dist*0.7],L=Math.hypot(e[1],e[2]),dz=[0,e[1]/L,e[2]/L],rx=[1,0,0],uy=[0,dz[2],-dz[1]];
+  var V=[rx[0],uy[0],dz[0],0,rx[1],uy[1],dz[1],0,rx[2],uy[2],dz[2],0,-(rx[0]*e[0]+rx[1]*e[1]+rx[2]*e[2]),-(uy[0]*e[0]+uy[1]*e[1]+uy[2]*e[2]),-(dz[0]*e[0]+dz[1]*e[1]+dz[2]*e[2]),1];
+  gl.uniformMatrix4fv(uVP,false,new Float32Array(mul(persp(0.9,1280/720,1,dist*4),V)));
+  gl.enable(gl.DEPTH_TEST);gl.viewport(0,0,1280,720);gl.clearColor(0.5,0.7,0.9,1);
+  var px=new Uint8Array(4),frame=0,uploadBytesFrame=0;
+  function animate(t){
+    /* every copy moves: instanced re-sends N*16 bytes, merged re-sends every vertex, single sends a uniform per draw */
+    var dx=Math.sin(t*0.001)*0.5;
+    if(MODE==='instanced'){for(var a=0;a<N;a++)OFF[a*4+1]=dx;gl.bindBuffer(gl.ARRAY_BUFFER,offB);gl.bufferSubData(gl.ARRAY_BUFFER,0,OFF);uploadBytesFrame=OFF.byteLength;}
+    else if(MODE==='merged'||MODE==='merged1'){var prev=mergedPos.__dy||0;for(var b=1;b<mergedPos.length;b+=3)mergedPos[b]+=dx-prev;mergedPos.__dy=dx;gl.bindBuffer(gl.ARRAY_BUFFER,posB);gl.bufferSubData(gl.ARRAY_BUFFER,0,mergedPos);uploadBytesFrame=mergedPos.byteLength;}
+    else{for(var c2=0;c2<N;c2++)OFF[c2*4+1]=dx;}
+  }
+  function draw(t){
+    if(ANIM)animate(t);
+    gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
+    if(MODE==='instanced')gl.drawElementsInstanced(gl.TRIANGLES,count,idxType,0,N);
+    else if(MODE==='merged')gl.drawElements(gl.TRIANGLES,count,idxType,0);
+    else if(MODE==='merged1')gl.drawElementsInstanced(gl.TRIANGLES,count,idxType,0,1);
+    else for(var a=0;a<N;a++){gl.uniform4f(uOff,OFF[a*4],OFF[a*4+1],OFF[a*4+2],OFF[a*4+3]);gl.drawElements(gl.TRIANGLES,count,idxType,0);}
+  }
+  /* 1: synchronous cost: draw, then read one pixel so the GPU (here SwiftShader) has finished; at least 5 frames or SECS */
+  var syncT=[],s0=performance.now();
+  while(syncT.length<5||(performance.now()-s0<SECS*1000&&syncT.length<200)){
+    var f0=performance.now();draw(f0);gl.readPixels(0,0,1,1,gl.RGBA,gl.UNSIGNED_BYTE,px);syncT.push(performance.now()-f0);
+    if(syncT.length>=5&&performance.now()-s0>SECS*1000)break;
+  }
+  syncT.sort(function(a,b){return a-b;});
+  R.syncFrames=syncT.length;R.syncMedianMs=syncT[syncT.length>>1];R.syncMinMs=syncT[0];R.syncMaxMs=syncT[syncT.length-1];
+  /* 2: requestAnimationFrame for SECS seconds: frames presented, as a person would see them */
+  var rafT=[],subT=[],last=0,r0=0;
+  function tick(t){
+    if(!r0){r0=t;last=t;}else rafT.push(t-last);last=t;
+    var d0=performance.now();draw(t);subT.push(performance.now()-d0);frame++;   /* the main thread's share: issuing the frame, not waiting for it */
+    if(t-r0<SECS*1000)requestAnimationFrame(tick);
+    else{
+      var tot=rafT.reduce(function(a,b){return a+b;},0);
+      R.rafFrames=rafT.length;R.rafFps=rafT.length/(tot/1000);
+      rafT.sort(function(a,b){return a-b;});R.rafMedianMs=rafT[rafT.length>>1];R.rafP95Ms=rafT[Math.floor(rafT.length*0.95)];
+      subT.sort(function(a,b){return a-b;});R.submitMedianMs=subT[subT.length>>1];
+      R.uploadBytesPerFrame=uploadBytesFrame;R.drawCallsPerFrame=MODE==='single'?N:1;
+      R.pixel=Array.prototype.slice.call(px);
+      window.__result=R;
+    }
+  }
+  requestAnimationFrame(tick);
+})();
+</script></body></html>

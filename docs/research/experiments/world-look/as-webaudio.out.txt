@@ -1,0 +1,94 @@
+{
+ "default launch": {
+  "stateBefore": "running",
+  "policy": "n/a",
+  "sampleRate": 44100,
+  "baseLatency": 0.01,
+  "stateAfterClickNewContext": "running"
+ },
+ "version": "158.0.8127.36",
+ "render": [
+  {
+   "model": "equalpower",
+   "sources": 1,
+   "renderMs": 85,
+   "realtimeFactor": 117.4
+  },
+  {
+   "model": "equalpower",
+   "sources": 8,
+   "renderMs": 671,
+   "realtimeFactor": 14.9
+  },
+  {
+   "model": "equalpower",
+   "sources": 32,
+   "renderMs": 2587,
+   "realtimeFactor": 3.9
+  },
+  {
+   "model": "equalpower",
+   "sources": 64,
+   "renderMs": 5104,
+   "realtimeFactor": 2
+  },
+  {
+   "model": "HRTF",
+   "sources": 1,
+   "renderMs": 336,
+   "realtimeFactor": 29.7
+  },
+  {
+   "model": "HRTF",
+   "sources": 8,
+   "renderMs": 635,
+   "realtimeFactor": 15.8
+  },
+  {
+   "model": "HRTF",
+   "sources": 32,
+   "renderMs": 2731,
+   "realtimeFactor": 3.7
+  },
+  {
+   "model": "HRTF",
+   "sources": 64,
+   "renderMs": 5711,
+   "realtimeFactor": 1.8
+  }
+ ],
+ "inverseGain": [
+  {
+   "m": 1,
+   "gain": 1,
+   "dB": 0
+  },
+  {
+   "m": 2,
+   "gain": 0.5,
+   "dB": -6.02
+  },
+  {
+   "m": 4,
+   "gain": 0.25,
+   "dB": -12.04
+  },
+  {
+   "m": 8,
+   "gain": 0.125,
+   "dB": -18.06
+  },
+  {
+   "m": 16,
+   "gain": 0.0625,
+   "dB": -24.08
+  }
+ ],
+ "flag user-gesture-required": {
+  "stateBefore": "running",
+  "policy": "n/a",
+  "sampleRate": 44100,
+  "baseLatency": 0.01,
+  "stateAfterClickNewContext": "running"
+ }
+}
