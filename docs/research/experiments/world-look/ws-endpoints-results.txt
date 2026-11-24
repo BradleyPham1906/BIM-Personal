@@ -1,0 +1,238 @@
+run at 2026-11-24T19:22:34Z
+=== open-meteo forecast
+URL: https://api.open-meteo.com/v1/forecast?latitude=51.5074&longitude=-0.1278&current=temperature_2m,relative_humidity_2m,is_day,precipitation,rain,showers,snowfall,weather_code,cloud_cover,wind_speed_10m,wind_direction_10m,wind_gusts_10m,visibility&minutely_15=precipitation,rain,snowfall,weather_code,visibility,wind_speed_10m&hourly=cloud_cover_low,cloud_cover_mid,cloud_cover_high,visibility,weather_code&forecast_days=1&timezone=auto
+--- GET with Origin
+status=429 ttfb=0.181143s total=0.181268s bytes=86
+Content-Type: application/json; charset=utf-8
+X-RateLimit-Limit: 10000.0
+X-RateLimit-Remaining: 0.0
+X-RateLimit-Reset: 1795564832
+X-RateLimit-Window: 86400
+Retry-After: 16678
+access-control-allow-origin: *
+access-control-allow-headers: accept, authorization, content-type, origin, x-requested-with, user-agent, access-control-allow-origin, range, if-match, if-unmodified-since
+access-control-allow-methods: GET, POST, OPTIONS
+access-control-expose-headers: x-ratelimit-cost, x-ratelimit-limit, x-ratelimit-remaining, x-ratelimit-reset, x-ratelimit-window, retry-after
+access-control-max-age: 600
+--- body (first 600 bytes)
+{"error":true,"reason":"Daily API request limit exceeded. Please try again tomorrow."}
+--- OPTIONS preflight (Access-Control-Request-Headers: user-agent)
+status=200
+access-control-allow-origin: *
+access-control-allow-headers: accept, authorization, content-type, origin, x-requested-with, user-agent, access-control-allow-origin, range, if-match, if-unmodified-since
+access-control-allow-methods: GET, POST, OPTIONS
+access-control-expose-headers: x-ratelimit-cost, x-ratelimit-limit, x-ratelimit-remaining, x-ratelimit-reset, x-ratelimit-window, retry-after
+access-control-max-age: 600
+
+=== open-meteo forecast ukmo
+URL: https://api.open-meteo.com/v1/forecast?latitude=51.5074&longitude=-0.1278&current=cloud_cover,weather_code&models=ukmo_seamless&forecast_days=1
+--- GET with Origin
+status=429 ttfb=0.279128s total=0.279209s bytes=86
+Content-Type: application/json; charset=utf-8
+X-RateLimit-Limit: 10000.0
+X-RateLimit-Remaining: 0.0
+X-RateLimit-Reset: 1795564802
+X-RateLimit-Window: 86400
+Retry-After: 16647
+access-control-allow-origin: *
+access-control-allow-headers: accept, authorization, content-type, origin, x-requested-with, user-agent, access-control-allow-origin, range, if-match, if-unmodified-since
+access-control-allow-methods: GET, POST, OPTIONS
+access-control-expose-headers: x-ratelimit-cost, x-ratelimit-limit, x-ratelimit-remaining, x-ratelimit-reset, x-ratelimit-window, retry-after
+access-control-max-age: 600
+--- body (first 600 bytes)
+{"error":true,"reason":"Daily API request limit exceeded. Please try again tomorrow."}
+--- OPTIONS preflight (Access-Control-Request-Headers: user-agent)
+status=200
+access-control-allow-origin: *
+access-control-allow-headers: accept, authorization, content-type, origin, x-requested-with, user-agent, access-control-allow-origin, range, if-match, if-unmodified-since
+access-control-allow-methods: GET, POST, OPTIONS
+access-control-expose-headers: x-ratelimit-cost, x-ratelimit-limit, x-ratelimit-remaining, x-ratelimit-reset, x-ratelimit-window, retry-after
+access-control-max-age: 600
+
+=== open-meteo meta dwd_icon
+URL: https://api.open-meteo.com/data/dwd_icon/static/meta.json
+--- GET with Origin
+status=200 ttfb=0.137632s total=0.137749s bytes=595
+Content-Type: application/json; charset=utf-8
+last-modified: Tue, 24 Nov 2026 16:45:40 GMT
+etag: "1795538740-595"
+access-control-allow-origin: *
+access-control-allow-headers: accept, authorization, content-type, origin, x-requested-with, user-agent, access-control-allow-origin, range, if-match, if-unmodified-since
+access-control-allow-methods: GET, POST, OPTIONS
+access-control-expose-headers: x-ratelimit-cost, x-ratelimit-limit, x-ratelimit-remaining, x-ratelimit-reset, x-ratelimit-window, retry-after
+access-control-max-age: 600
+--- body (first 600 bytes)
+{"chunk_time_length":253,"crs_wkt":"GEOGCRS[\"WGS 84\",\n    DATUM[\"World Geodetic System 1984\",\n        ELLIPSOID[\"WGS 84\",6378137,298.257223563]],\n    CS[ellipsoidal,2],\n        AXIS[\"latitude\",north],\n        AXIS[\"longitude\",east],\n        ANGLEUNIT[\"degree\",0.0174532925199433]\n    USAGE[\n        SCOPE[\"grid\"],\n        BBOX[-90.0,-180.0,90.0,179.75]]]","data_end_time":1796173200,"last_run_availability_time":1795535187,"last_run_initialisation_time":1795521600,"last_run_modification_time":1795535187,"temporal_resolution_seconds":3600,"update_interval_seconds":21600}
+--- OPTIONS preflight (Access-Control-Request-Headers: user-agent)
+status=200
+access-control-allow-origin: *
+access-control-allow-headers: accept, authorization, content-type, origin, x-requested-with, user-agent, access-control-allow-origin, range, if-match, if-unmodified-since
+access-control-allow-methods: GET, POST, OPTIONS
+access-control-expose-headers: x-ratelimit-cost, x-ratelimit-limit, x-ratelimit-remaining, x-ratelimit-reset, x-ratelimit-window, retry-after
+access-control-max-age: 600
+
+=== open-meteo meta ecmwf_ifs025
+URL: https://api.open-meteo.com/data/ecmwf_ifs025/static/meta.json
+--- GET with Origin
+status=200 ttfb=0.174931s total=0.175003s bytes=596
+Content-Type: application/json; charset=utf-8
+last-modified: Tue, 24 Nov 2026 13:32:36 GMT
+etag: "1795527156-596"
+access-control-allow-origin: *
+access-control-allow-headers: accept, authorization, content-type, origin, x-requested-with, user-agent, access-control-allow-origin, range, if-match, if-unmodified-since
+access-control-allow-methods: GET, POST, OPTIONS
+access-control-expose-headers: x-ratelimit-cost, x-ratelimit-limit, x-ratelimit-remaining, x-ratelimit-reset, x-ratelimit-window, retry-after
+access-control-max-age: 600
+--- body (first 600 bytes)
+{"chunk_time_length":104,"crs_wkt":"GEOGCRS[\"WGS 84\",\n    DATUM[\"World Geodetic System 1984\",\n        ELLIPSOID[\"WGS 84\",6378137,298.257223563]],\n    CS[ellipsoidal,2],\n        AXIS[\"latitude\",north],\n        AXIS[\"longitude\",east],\n        ANGLEUNIT[\"degree\",0.0174532925199433]\n    USAGE[\n        SCOPE[\"grid\"],\n        BBOX[-90.0,-180.0,90.0,179.75]]]","data_end_time":1796029200,"last_run_availability_time":1795527040,"last_run_initialisation_time":1795500000,"last_run_modification_time":1795527040,"temporal_resolution_seconds":10800,"update_interval_seconds":21600}
+--- OPTIONS preflight (Access-Control-Request-Headers: user-agent)
+status=200
+access-control-allow-origin: *
+access-control-allow-headers: accept, authorization, content-type, origin, x-requested-with, user-agent, access-control-allow-origin, range, if-match, if-unmodified-since
+access-control-allow-methods: GET, POST, OPTIONS
+access-control-expose-headers: x-ratelimit-cost, x-ratelimit-limit, x-ratelimit-remaining, x-ratelimit-reset, x-ratelimit-window, retry-after
+access-control-max-age: 600
+
+=== nws points
+URL: https://api.weather.gov/points/38.8894,-77.0352
+--- GET with Origin
+status=200 ttfb=0.183247s total=0.183378s bytes=3921
+content-type: application/geo+json
+access-control-allow-origin: *
+access-control-expose-headers: X-Correlation-Id, X-Request-Id, X-Server-Id
+cache-control: public, max-age=35523, s-maxage=86400
+expires: Wed, 25 Nov 2026 05:14:39 GMT
+--- body (first 600 bytes)
+{
+    "@context": [
+        "https://geojson.org/geojson-ld/geojson-context.jsonld",
+        {
+            "@version": "1.1",
+            "wx": "https://api.weather.gov/ontology#",
+            "s": "https://schema.org/",
+            "geo": "http://www.opengis.net/ont/geosparql#",
+            "unit": "http://codes.wmo.int/common/unit/",
+            "@vocab": "https://api.weather.gov/ontology#",
+            "geometry": {
+                "@id": "s:GeoCoordinates",
+                "@type": "geo:wktLiteral"
+            },
+            "city": "s:addressLocality",
+            "state": "s:addressRegio
+--- OPTIONS preflight (Access-Control-Request-Headers: user-agent)
+status=200
+access-control-allow-methods: GET
+access-control-allow-headers: API-Key, User-Agent
+access-control-max-age: 86400
+access-control-allow-origin: *
+
+=== nws latest observation KDCA
+URL: https://api.weather.gov/stations/KDCA/observations/latest
+--- GET with Origin
+status=200 ttfb=0.230237s total=0.230360s bytes=4316
+content-type: application/geo+json
+last-modified: Tue, 24 Nov 2026 18:25:00 GMT
+access-control-allow-origin: *
+access-control-expose-headers: X-Correlation-Id, X-Request-Id, X-Server-Id
+cache-control: public, max-age=300, s-maxage=300
+expires: Tue, 24 Nov 2026 19:27:36 GMT
+--- body (first 600 bytes)
+{
+    "@context": [
+        "https://geojson.org/geojson-ld/geojson-context.jsonld",
+        {
+            "@version": "1.1",
+            "wx": "https://api.weather.gov/ontology#",
+            "s": "https://schema.org/",
+            "geo": "http://www.opengis.net/ont/geosparql#",
+            "unit": "http://codes.wmo.int/common/unit/",
+            "@vocab": "https://api.weather.gov/ontology#",
+            "geometry": {
+                "@id": "s:GeoCoordinates",
+                "@type": "geo:wktLiteral"
+            },
+            "city": "s:addressLocality",
+            "state": "s:addressRegio
+--- OPTIONS preflight (Access-Control-Request-Headers: user-agent)
+status=200
+access-control-allow-methods: GET
+access-control-allow-headers: API-Key, User-Agent
+access-control-max-age: 86400
+access-control-allow-origin: *
+
+=== aviationweather metar EGLL
+URL: https://aviationweather.gov/api/data/metar?ids=EGLL&format=json
+--- GET with Origin
+status=200 ttfb=0.213670s total=0.213793s bytes=438
+content-type: application/json; charset=utf-8
+cache-control: max-age=60
+etag: W/"1b6-O2MPMoWfr2XfRcEwwG4BLzkTle0"
+--- body (first 600 bytes)
+[{"icaoId":"EGLL","receiptTime":"2026-11-24T18:55:12.314Z","obsTime":1795546200,"reportTime":"2026-11-24T19:00:00.000Z","temp":6,"dewp":2,"wdir":100,"wspd":10,"visib":"6+","altim":1015,"qcField":19,"metarType":"METAR","rawOb":"METAR EGLL 241850Z COR AUTO 10010KT 9999 OVC021 06/02 Q1015 NOSIG","lat":51.477,"lon":-0.461,"elev":26,"name":"London/Heathrow Intl, EN, GB","cover":"OVC","clouds":[{"cover":"OVC","base":2100}],"fltCat":"MVFR"}]
+--- OPTIONS preflight (Access-Control-Request-Headers: user-agent)
+status=200
+
+=== met.no locationforecast
+URL: https://api.met.no/weatherapi/locationforecast/2.0/compact?lat=51.5074&lon=-0.1278
+--- GET with Origin
+status=200 ttfb=0.572226s total=0.680736s bytes=38846
+Content-Type: application/json
+Expires: Tue, 24 Nov 2026 19:25:34 GMT
+Last-Modified: Tue, 24 Nov 2026 18:54:00 GMT
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Methods: GET
+Access-Control-Allow-Headers: Origin
+Age: 1717
+--- body (first 600 bytes)
+{"type":"Feature","geometry":{"type":"Point","coordinates":[-0.1278,51.5074,8]},"properties":{"meta":{"updated_at":"2026-11-24T17:19:01Z","units":{"air_pressure_at_sea_level":"hPa","air_temperature":"celsius","cloud_area_fraction":"%","precipitation_amount":"mm","relative_humidity":"%","wind_from_direction":"degrees","wind_speed":"m/s"}},"timeseries":[{"time":"2026-11-24T18:00:00Z","data":{"instant":{"details":{"air_pressure_at_sea_level":1015.8,"air_temperature":4.6,"cloud_area_fraction":95.3,"relative_humidity":86.8,"wind_from_direction":96.8,"wind_speed":3.7}},"next_12_hours":{"summary":{"s
+--- OPTIONS preflight (Access-Control-Request-Headers: user-agent)
+status=204
+
+=== met.no nowcast (Nordic only)
+URL: https://api.met.no/weatherapi/nowcast/2.0/complete?lat=59.91&lon=10.75
+--- GET with Origin
+status=200 ttfb=0.398076s total=0.398216s bytes=2792
+Content-Type: application/json
+Expires: Tue, 24 Nov 2026 19:22:31 GMT
+Last-Modified: Tue, 24 Nov 2026 19:19:31 GMT
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Methods: GET
+Access-Control-Allow-Headers: Origin
+Age: 187
+--- body (first 600 bytes)
+{"type":"Feature","geometry":{"type":"Point","coordinates":[10.75,59.91,3]},"properties":{"meta":{"updated_at":"2026-11-24T19:18:54Z","units":{"air_temperature":"celsius","apparent_air_temperature":"celsius","precipitation_amount":"mm","precipitation_rate":"mm/h","relative_humidity":"%","ultraviolet_index_clear_sky":"1","wind_from_direction":"degrees","wind_speed":"m/s","wind_speed_of_gust":"m/s"},"radar_coverage":"ok"},"timeseries":[{"time":"2026-11-24T19:20:00Z","data":{"instant":{"details":{"air_temperature":-3.3,"apparent_air_temperature":-6.9,"precipitation_rate":0.0,"relative_humidity":7
+--- OPTIONS preflight (Access-Control-Request-Headers: user-agent)
+status=204
+
+=== rainviewer maps index
+URL: https://api.rainviewer.com/public/weather-maps.json
+--- GET with Origin
+status=200 ttfb=0.445188s total=0.445371s bytes=818
+content-type: application/json
+etag: "W/"2236242954""
+expires: Thu, 01 Jan 1970 00:00:01 GMT
+cache-control: no-cache
+access-control-allow-origin: *
+--- body (first 600 bytes)
+{"version":"2.0","generated":1795548021,"host":"https://tilecache.rainviewer.com","radar":{"past":[{"time":1795540800,"path":"/v2/radar/da6089cb016d"},{"time":1795541400,"path":"/v2/radar/0d2fd221a398"},{"time":1795542000,"path":"/v2/radar/ba11d04f471f"},{"time":1795542600,"path":"/v2/radar/7fc3f0ea46dc"},{"time":1795543200,"path":"/v2/radar/7975d3d321d5"},{"time":1795543800,"path":"/v2/radar/4a6617ea13d9"},{"time":1795544400,"path":"/v2/radar/fd90547bbcf5"},{"time":1795545000,"path":"/v2/radar/5dcd61be5491"},{"time":1795545600,"path":"/v2/radar/dbb43ec6dc00"},{"time":1795546200,"path":"/v2/ra
+--- OPTIONS preflight (Access-Control-Request-Headers: user-agent)
+status=200
+access-control-allow-origin: *
+access-control-allow-methods: GET, OPTIONS, HEAD
+access-control-allow-headers: Authorization, Origin, X-Requested-With, Content-Type, Accept
+
+=== brightsky current
+URL: https://api.brightsky.dev/current_weather?lat=52.52&lon=13.40
+--- GET with Origin
+status=200 ttfb=0.421615s total=0.421749s bytes=1323
+access-control-allow-origin: *
+content-type: application/json
+--- body (first 600 bytes)
+{"weather":{"source_id":303711,"timestamp":"2026-11-24T19:00:00+00:00","cloud_cover":100,"condition":"dry","dew_point":-0.19,"solar_10":0.0,"solar_30":0.0,"solar_60":0.0,"precipitation_10":0.0,"precipitation_30":0.0,"precipitation_60":0.0,"pressure_msl":1026.2,"relative_humidity":86,"visibility":38665,"wind_direction_10":250,"wind_direction_30":247,"wind_direction_60":252,"wind_speed_10":4.3,"wind_speed_30":4.0,"wind_speed_60":5.0,"wind_gust_direction_10":250,"wind_gust_direction_30":250,"wind_gust_direction_60":260,"wind_gust_speed_10":6.8,"wind_gust_speed_30":6.8,"wind_gust_speed_60":9.7,"su
+--- OPTIONS preflight (Access-Control-Request-Headers: user-agent)
+status=200
+access-control-allow-headers: user-agent
+access-control-allow-methods: GET
+access-control-allow-origin: *
+access-control-max-age: 600
+

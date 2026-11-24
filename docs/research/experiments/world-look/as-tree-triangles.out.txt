@@ -1,0 +1,27 @@
+preset	type	levels	branches	branchTris	leaves	leafTris	totalTris	branchVerts	leafVerts	uint16
+ash_large	deciduous	3	287	11832	2420	9680	21512	8738	19360	ok
+ash_medium	deciduous	3	209	9120	2720	10880	20000	6639	21760	ok
+ash_small	deciduous	2	56	5616	1364	5456	11072	3706	10912	ok
+aspen_large	deciduous	2	89	7200	1617	6468	13668	4861	12936	ok
+aspen_medium	deciduous	2	56	5088	528	2112	7200	3376	4224	ok
+aspen_small	deciduous	2	26	2496	280	1120	3616	1642	2240	ok
+bush_1	deciduous	3	137	8880	1248	4992	13872	6331	9984	ok
+bush_2	deciduous	2	56	3352	352	1408	4760	2375	2816	ok
+bush_3	evergreen	3	274	13674	624	2496	16170	10212	4992	ok
+oak_large	deciduous	3	311	12006	2640	10560	22566	8984	21120	ok
+oak_medium	deciduous	3	183	3166	2660	10640	13806	2780	21280	ok
+oak_small	deciduous	3	81	3206	900	3600	6806	2344	7200	ok
+pine_large	evergreen	1	101	12192	1800	7200	19392	7817	14400	ok
+pine_medium	evergreen	1	83	10032	2460	9840	19872	6431	19680	ok
+pine_small	evergreen	1	92	11112	1911	7644	18756	7124	15288	ok
+trellis	deciduous	3	153	7608	1344	2688	10296	5684	5376	ok
+
+LOD	branches	branchTris	leaves	leafTris	totalTris	branchVerts	leafVerts	uint16
+oak_medium.json low (rings x0.5, sides min 3, leaves x0.25, single quad)	183	1754	840	1680	3434	1900	3360	ok
+oak_medium.json mid (as shipped)	183	3166	2660	10640	13806	2780	21280	ok
+oak_medium.json high (rings x2, sides x1.5, leaves x2)	183	10324	5180	20720	31044	7164	41440	ok
+
+LOD	branches	branchTris	leaves	leafTris	totalTris	branchVerts	leafVerts	uint16
+pine_medium.json low (rings x0.5, sides min 3, leaves x0.25, single quad)	83	2508	656	1312	3820	2003	2624	ok
+pine_medium.json mid (as shipped)	83	10032	2460	9840	19872	6431	19680	ok
+pine_medium.json high (rings x2, sides x1.5, leaves x2)	83	30096	4920	19680	49776	17545	39360	ok

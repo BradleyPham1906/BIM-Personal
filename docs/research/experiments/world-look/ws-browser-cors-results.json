@@ -1,0 +1,47 @@
+{
+ "when": "2026-11-24T19:23:07.831Z",
+ "browser": "158.0.8127.36",
+ "origin": "http://127.0.0.1:33107",
+ "results": {
+  "openmeteo_forecast": {
+   "status": 200,
+   "ms": 399,
+   "bytes": 398,
+   "head": "{\"latitude\":51.51147,\"longitude\":-0.13078308,\"generationtime_ms\":0.08356571197509766,\"utc_offset_seconds\":0,\"timezone\":\""
+  },
+  "openmeteo_meta": {
+   "status": 200,
+   "ms": 93,
+   "bytes": 595,
+   "head": "{\"chunk_time_length\":253,\"crs_wkt\":\"GEOGCRS[\\\"WGS 84\\\",\\n    DATUM[\\\"World Geodetic System 1984\\\",\\n        ELLIPSOID[\\\""
+  },
+  "nws_observation": {
+   "status": 200,
+   "ms": 591,
+   "bytes": 4316,
+   "head": "{\n    \"@context\": [\n        \"https://geojson.org/geojson-ld/geojson-context.jsonld\",\n        {\n            \"@version\": \""
+  },
+  "aviationweather_metar": {
+   "error": "TypeError: Failed to fetch",
+   "ms": 190
+  },
+  "metno_locationforecast": {
+   "status": 200,
+   "ms": 422,
+   "bytes": 38846,
+   "head": "{\"type\":\"Feature\",\"geometry\":{\"type\":\"Point\",\"coordinates\":[-0.1278,51.5074,8]},\"properties\":{\"meta\":{\"updated_at\":\"2026"
+  },
+  "rainviewer_index": {
+   "status": 200,
+   "ms": 463,
+   "bytes": 818,
+   "head": "{\"version\":\"2.0\",\"generated\":1795548021,\"host\":\"https://tilecache.rainviewer.com\",\"radar\":{\"past\":[{\"time\":1795540800,\"p"
+  },
+  "brightsky_current": {
+   "status": 200,
+   "ms": 438,
+   "bytes": 1323,
+   "head": "{\"weather\":{\"source_id\":303711,\"timestamp\":\"2026-11-24T19:00:00+00:00\",\"cloud_cover\":100,\"condition\":\"dry\",\"dew_point\":-"
+  }
+ }
+}
