@@ -18,7 +18,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-01 [Cline] `bimSrvRole(acl, user, elId)`
+## [x] WO-01 [Cline] `bimSrvRole(acl, user, elId)`
 
 - **It must:** SPEC 5 WO-01: with BIM_SRV_RANK {viewer 1, commenter 2, editor 3, owner 4} and BIM_SRV_NEED {read 1, comment 2, edit 3, share 4, delete 4} just above it: among the user's entries that are project-wide (no element) or for this element, a denial for this element gives null at once; else the highest-ranked role, or null.
 - **May use:** BIM_SRV_RANK, BIM_SRV_NEED (this task).
@@ -28,7 +28,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-02 [Cline] `bimSrvCan(acl, user, elId, action)`
+## [x] WO-02 [Cline] `bimSrvCan(acl, user, elId, action)`
 
 - **It must:** SPEC 5 WO-02: false for an action not in BIM_SRV_NEED; else whether the role's rank reaches the action's need.
 - **May use:** bimSrvRole (WO-01).
@@ -38,7 +38,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-03 [Cline] `bimSrvRedact(result, fields)`
+## [x] WO-03 [Cline] `bimSrvRedact(result, fields)`
 
 - **It must:** SPEC 5 WO-03: only the listed fields the result has.
 - **May use:** nothing.
@@ -48,7 +48,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-04 [Cline] `bimSrvAudit(user, action, elId, allowed, when)`
+## [x] WO-04 [Cline] `bimSrvAudit(user, action, elId, allowed, when)`
 
 - **It must:** SPEC 5 WO-04: {at: when, user, action, element (all as strings), allowed (as a boolean)}.
 - **May use:** nothing.
