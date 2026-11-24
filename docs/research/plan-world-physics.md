@@ -182,6 +182,10 @@ Phase numbers are proposals; durations are not given, since Cline's pace sets th
 
 ### Stage A: the math core (blocks everything else)
 
+Revised 2026-11-23: `plan-world-physics-math.md` part 9 splits this stage into V277a to V277e around six
+mathematical archetypes (elliptic, parabolic, hyperbolic, ODE, eigenproblem, complementarity), with the governing
+equations, tensors and verification ladder each phase uses. The table below is the first outline, kept for reference.
+
 | Phase | What | Pass when |
 |---|---|---|
 | V277 | `core/math`: vec3, mat3, mat4, quat; transforms, Euler both ways, slerp; robust predicates; units | Identities hold over random cases: R Rt = I, det R = 1, q to R to q; old duplicates replaced |
