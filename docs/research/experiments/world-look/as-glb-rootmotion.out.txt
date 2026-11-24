@@ -1,0 +1,13 @@
+== RobotExpressive_RobotExpressive.glb
+Idle	Body	travel x,y,z 0,0.001,0	clip 3.333s
+Running	Foot.R	travel x,y,z 0,0.018,0.024	clip 0.958s
+Walking	Foot.R	travel x,y,z 0,0.007,0.019	clip 0.958s
+WalkJump	Foot.L	travel x,y,z 0,0.016,0.01	clip 0.833s
+== Soldier.glb
+Idle	mixamorig:Hips	travel x,y,z 0.141,1.039,0.563	clip 1.967s
+Run	mixamorig:Hips	travel x,y,z 2.475,3.24,10.447	clip 0.700s
+Walk	mixamorig:Hips	travel x,y,z 6.405,5.809,8.547	clip 1.033s
+== Xbot.glb
+idle	mixamorig:Hips	travel x,y,z 0.127,0.03,0.579	clip 2.500s
+run	mixamorig:Hips	travel x,y,z 2.823,9.421,0	clip 0.700s
+walk	mixamorig:Hips	travel x,y,z 4.828,4.399,0	clip 0.967s

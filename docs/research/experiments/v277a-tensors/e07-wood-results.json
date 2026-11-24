@@ -1,0 +1,146 @@
+{
+ "experiment": "e07",
+ "source": "FPL-GTR-282 (2021) Tables 5-1, 5-2",
+ "rows": [
+  {
+   "species": "Balsa",
+   "asym_as_tabulated": {
+    "S12_vs_S21": 0.4147777777777777,
+    "S13_vs_S31": 0.18666666666666665,
+    "S23_vs_S32": 0.061264822134387435
+   },
+   "minEig_symmetrised": 0.9846557425451778,
+   "minEig_minor_from_reciprocity": 0.9899314797904322,
+   "derived_muRL": 0.0105,
+   "tabulated_muRL": 0.018,
+   "derived_muTL": 0.0073,
+   "tabulated_muTL": 0.009
+  },
+  {
+   "species": "Birch, yellow",
+   "asym_as_tabulated": {
+    "S12_vs_S21": 0.2272558139534883,
+    "S13_vs_S31": 0.060416666666666605,
+    "S23_vs_S32": 0.04881425303960523
+   },
+   "minEig_symmetrised": 0.9263240753837313,
+   "minEig_minor_from_reciprocity": 0.9365341570347508,
+   "derived_muRL": 0.0332,
+   "tabulated_muRL": 0.043,
+   "derived_muTL": 0.0226,
+   "tabulated_muTL": 0.024
+  },
+  {
+   "species": "Mahogany, African",
+   "asym_as_tabulated": {
+    "S12_vs_S21": 0.0010000000000001017,
+    "S13_vs_S31": 0.0015625000000000014,
+    "S23_vs_S32": 0.03057603057603043
+   },
+   "minEig_symmetrised": 0.9437256775007459,
+   "minEig_minor_from_reciprocity": 0.943055498350907,
+   "derived_muRL": 0.033,
+   "tabulated_muRL": 0.033,
+   "derived_muTL": 0.0321,
+   "tabulated_muTL": 0.032
+  },
+  {
+   "species": "Mahogany, Honduras",
+   "asym_as_tabulated": {
+    "S12_vs_S21": 0.018121212121212014,
+    "S13_vs_S31": 0.0032941176470588788,
+    "S23_vs_S32": 0.10085430881256803
+   },
+   "minEig_symmetrised": 0.9411910618008336,
+   "minEig_minor_from_reciprocity": 0.9379245214937643,
+   "derived_muRL": 0.0336,
+   "tabulated_muRL": 0.033,
+   "derived_muTL": 0.0341,
+   "tabulated_muTL": 0.034
+  },
+  {
+   "species": "Sweetgum",
+   "asym_as_tabulated": {
+    "S12_vs_S21": 0.15056818181818168,
+    "S13_vs_S31": 0.12391304347826075,
+    "S23_vs_S32": 0.04038272126072875
+   },
+   "minEig_symmetrised": 0.9488278589651309,
+   "minEig_minor_from_reciprocity": 0.9570243555684482,
+   "derived_muRL": 0.0374,
+   "tabulated_muRL": 0.044,
+   "derived_muTL": 0.0202,
+   "tabulated_muTL": 0.023
+  },
+  {
+   "species": "Walnut, black",
+   "asym_as_tabulated": {
+    "S12_vs_S21": 0.009038461538461525,
+    "S13_vs_S31": 0.016888888888888783,
+    "S23_vs_S32": 0.033571538738368316
+   },
+   "minEig_symmetrised": 0.8830413489686859,
+   "minEig_minor_from_reciprocity": 0.8810445745049514,
+   "derived_muRL": 0.0525,
+   "tabulated_muRL": 0.052,
+   "derived_muTL": 0.0354,
+   "tabulated_muTL": 0.036
+  },
+  {
+   "species": "Yellow-poplar",
+   "asym_as_tabulated": {
+    "S12_vs_S21": 0.0248,
+    "S13_vs_S31": 0.11284210526315788,
+    "S23_vs_S32": 0.0012884894938550522
+   },
+   "minEig_symmetrised": 0.9625141689283034,
+   "minEig_minor_from_reciprocity": 0.9650154036590706,
+   "derived_muRL": 0.0293,
+   "tabulated_muRL": 0.03,
+   "derived_muTL": 0.0169,
+   "tabulated_muTL": 0.019
+  },
+  {
+   "species": "Douglas-fir",
+   "asym_as_tabulated": {
+    "S12_vs_S21": 0.44844444444444437,
+    "S13_vs_S31": 0.22586206896551717,
+    "S23_vs_S32": 0.23324944951242524
+   },
+   "minEig_symmetrised": 0.9557987022174828,
+   "minEig_minor_from_reciprocity": 0.9741883523927819,
+   "derived_muRL": 0.0199,
+   "tabulated_muRL": 0.036,
+   "derived_muTL": 0.0225,
+   "tabulated_muTL": 0.029
+  },
+  {
+   "species": "Spruce, Sitka",
+   "asym_as_tabulated": {
+    "S12_vs_S21": 0.2746000000000001,
+    "S13_vs_S31": 0.19676,
+    "S23_vs_S32": 0.021193092621664158
+   },
+   "minEig_symmetrised": 0.9560151532114739,
+   "minEig_minor_from_reciprocity": 0.9673635964604775,
+   "derived_muRL": 0.029,
+   "tabulated_muRL": 0.04,
+   "derived_muTL": 0.0201,
+   "tabulated_muTL": 0.025
+  },
+  {
+   "species": "Spruce, Engelmann",
+   "asym_as_tabulated": {
+    "S12_vs_S21": 0.34920481927710845,
+    "S13_vs_S31": 0.5300344827586206,
+    "S23_vs_S32": 0.04197303921568628
+   },
+   "minEig_symmetrised": 0.8771168960520775,
+   "minEig_minor_from_reciprocity": 0.936170984184715,
+   "derived_muRL": 0.054,
+   "tabulated_muRL": 0.083,
+   "derived_muTL": 0.0273,
+   "tabulated_muTL": 0.058
+  }
+ ]
+}

@@ -137,6 +137,8 @@ the <!-- @include --> lines of src/index.html. -->
     src/js/vendor/openskp.js            SketchUp reader (third-party, never edited by hand)
     src/js/engine/_begin.js, _end.js    open and close the engine's one closure
     src/js/engine/core/                 state, IndexedDB store, storage/theme, mesh primitives, save
+    src/js/engine/math/                 the math core: vectors, rotations, quaternions, tensors (V277)
+    src/js/engine/weather/              live weather: the WeatherState, blending, the Open-Meteo request (V304)
     src/js/engine/render/               WebGL/WebGPU, GPU batches and picking, view cube, the rendered view (three.js)
     src/js/engine/drawing/              drawing tools: lines, arcs, curves, construction lines, endings
     src/js/engine/editing/              selection, push/pull, offset/align/trim, precision, modify toolbox

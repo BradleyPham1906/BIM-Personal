@@ -1,0 +1,56 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>re-caps</title></head>
+<body><canvas id="c" width="256" height="256"></canvas>
+<script>
+/* Research experiment (docs/research/research-world-look/rendering-efficiency.md), not app code.
+   What this browser's WebGL 1 and WebGL 2 offer that the rendering plan depends on, and how many animation
+   frames an occlusion query's answer takes to arrive (the WebGL 2 specification forbids it in the same task).
+   Results go to window.__result. */
+(function(){
+  var R={};
+  var c1=document.createElement('canvas'),g1=c1.getContext('webgl');
+  R.webgl1=!!g1;
+  if(g1){R.webgl1Instancing=!!g1.getExtension('ANGLE_instanced_arrays');R.webgl1FloatTex=!!g1.getExtension('OES_texture_float');
+    R.webgl1VertexTexUnits=g1.getParameter(g1.MAX_VERTEX_TEXTURE_IMAGE_UNITS);R.webgl1Uint32Index=!!g1.getExtension('OES_element_index_uint');}
+  var gl=document.getElementById('c').getContext('webgl2');
+  R.webgl2=!!gl;
+  if(!gl){window.__result=R;return;}
+  var dbg=gl.getExtension('WEBGL_debug_renderer_info');
+  R.renderer=dbg?gl.getParameter(dbg.UNMASKED_RENDERER_WEBGL):gl.getParameter(gl.RENDERER);
+  R.extensions=gl.getSupportedExtensions();
+  R.multiDraw=R.extensions.indexOf('WEBGL_multi_draw')>=0;
+  R.compressed={astc:R.extensions.indexOf('WEBGL_compressed_texture_astc')>=0,etc:R.extensions.indexOf('WEBGL_compressed_texture_etc')>=0,
+    s3tc:R.extensions.indexOf('WEBGL_compressed_texture_s3tc')>=0,bptc:R.extensions.indexOf('EXT_texture_compression_bptc')>=0,
+    etc1:R.extensions.indexOf('WEBGL_compressed_texture_etc1')>=0,pvrtc:R.extensions.indexOf('WEBGL_compressed_texture_pvrtc')>=0};
+  R.timerQuery=R.extensions.indexOf('EXT_disjoint_timer_query_webgl2')>=0;
+  R.maxTextureSize=gl.getParameter(gl.MAX_TEXTURE_SIZE);R.maxVertexAttribs=gl.getParameter(gl.MAX_VERTEX_ATTRIBS);
+  R.maxUniformBlockSize=gl.getParameter(gl.MAX_UNIFORM_BLOCK_SIZE);R.maxVertexTexUnits=gl.getParameter(gl.MAX_VERTEX_TEXTURE_IMAGE_UNITS);
+  R.maxElementIndex=gl.getParameter(gl.MAX_ELEMENT_INDEX);
+  /* an occlusion query around one cleared-screen triangle */
+  var vs=gl.createShader(gl.VERTEX_SHADER);gl.shaderSource(vs,'#version 300 es\nin vec2 p;void main(){gl_Position=vec4(p,0.0,1.0);}');gl.compileShader(vs);
+  var fs=gl.createShader(gl.FRAGMENT_SHADER);gl.shaderSource(fs,'#version 300 es\nprecision mediump float;out vec4 f;void main(){f=vec4(1.0);}');gl.compileShader(fs);
+  var pr=gl.createProgram();gl.attachShader(pr,vs);gl.attachShader(pr,fs);gl.linkProgram(pr);gl.useProgram(pr);
+  var b=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,b);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,0,1]),gl.STATIC_DRAW);
+  gl.enableVertexAttribArray(0);gl.vertexAttribPointer(0,2,gl.FLOAT,false,0,0);
+  var q=gl.createQuery();gl.beginQuery(gl.ANY_SAMPLES_PASSED_CONSERVATIVE,q);gl.drawArrays(gl.TRIANGLES,0,3);gl.endQuery(gl.ANY_SAMPLES_PASSED_CONSERVATIVE);
+  var spins=0,availSameTask=false;for(spins=0;spins<1000;spins++)if(gl.getQueryParameter(q,gl.QUERY_RESULT_AVAILABLE)){availSameTask=true;break;}
+  R.queryAvailableInSameTask=availSameTask;
+  var frames=0,t0=performance.now();
+  function poll(){
+    frames++;
+    if(gl.getQueryParameter(q,gl.QUERY_RESULT_AVAILABLE)){R.queryFramesToResult=frames;R.queryMsToResult=performance.now()-t0;R.queryResult=gl.getQueryParameter(q,gl.QUERY_RESULT);done();}
+    else if(frames<120)requestAnimationFrame(poll);else{R.queryFramesToResult='>120';done();}
+  }
+  function done(){
+    if(!navigator.gpu){R.webgpu='navigator.gpu absent';window.__result=R;return;}
+    navigator.gpu.requestAdapter().then(function(a){
+      if(!a){R.webgpu='no adapter';window.__result=R;return;}
+      var f=[];a.features.forEach(function(x){f.push(x);});
+      R.webgpu={features:f,info:a.info?{vendor:a.info.vendor,architecture:a.info.architecture,description:a.info.description}:null,
+        maxStorageBufferBindingSize:a.limits.maxStorageBufferBindingSize};
+      window.__result=R;
+    },function(e){R.webgpu='error '+e;window.__result=R;});
+  }
+  requestAnimationFrame(poll);
+})();
+</script></body></html>

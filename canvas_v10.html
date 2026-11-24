@@ -5650,6 +5650,14 @@ return OpenSkp;
    ES5 throughout. */
 (function(){
 try{
+
+
+  /* ================= __acad3dV277a: The math core, layer 1: vectors, rotations and tensors, the pure part =================
+     docs/research/research-tensors-rotations.md and docs/work-orders/v277a/SPEC.md. vec3; 3x3 matrices row-major; unit
+     quaternions [x, y, z, w] with Hamilton's algebra; the exponential map; angles about the displayed axes; a column-major 4x4
+     placement; symmetric tensors in Mandel's six components; principal values by cyclic Jacobi; isotropic and orthotropic
+     elasticity. Units: base SI. Each function is a work order, added below as it is built; none uses another file's names. */
+
   var LSK='acad3dV1';
   /* __acad3dV172g: D5. WebKit refuses storage to a page opened from a file: reading window.localStorage throws
      SecurityError and so does indexedDB.open (part 4.4). Known once, first, so the app says one true thing -- the project
@@ -9387,6 +9395,15 @@ function bimM2Visible(a, b, tris, view, samples) {
     a3dToast('Sun: '+bimSunText(bimSunNow(true)));
     return true;
   }
+
+
+  /* ================= __acad3dV304: Live weather, the pure part =================
+     docs/research/research-world-look.md (part 4.2) and docs/research/research-world-look/weather-sky.md (4.3, 4.6, 7);
+     docs/work-orders/v304/SPEC.md. WMO 4677 codes, precipitation intensity, fog from visibility (WMO-No. 8), clouds,
+     the WeatherState, frame-rate independent blending, wetness, the Open-Meteo request, sampling the cached answer at a
+     moment, when to fetch, and the fallback order. Each function is a work order, added below as it is built; none uses
+     another file's names. */
+
   /* ================= __acad3dV108: terrain -- TIN, contours, earthwork =================
      A surface is its survey points and nothing else: the triangles are derived from them whenever
      they are needed (Delaunay, Bowyer-Watson), never stored beside them. Each triangle is a plane,

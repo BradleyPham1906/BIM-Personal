@@ -1,0 +1,1 @@
+{"experiment":"e08","iterations":20000000,"ns_per_cross_best_of_5":[["array, new per call",10.2],["Float64Array, new per call",37.57],["array, caller output",8.49],["Float64Array, caller output",11.34],["inline, no call (floor)",7.46]],"node":"v22.23.5","v8":"12.4.254.21-node.57","sink":true}

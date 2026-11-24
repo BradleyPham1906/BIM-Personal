@@ -1,0 +1,320 @@
+{
+ "when": "2026-11-24T19:31:19.060Z",
+ "cases": {
+  "clear_day": {
+   "cloudCoverage": 0.05,
+   "cloudLow": 0,
+   "cloudMid": 0,
+   "cloudHigh": 0.05,
+   "randomOverlap": 0.05,
+   "cloudDensity": 0.3,
+   "overcast": 0,
+   "fogSigma": 0.00007489,
+   "fogExp2Density": 0.00004327,
+   "visibility_m": 40000,
+   "precipKind": "none",
+   "precipIntensity": 0,
+   "windSpeed": 2,
+   "windFrom": 270,
+   "gust": 2,
+   "thunder": false,
+   "day": true,
+   "codeKnown": true
+  },
+  "london_overcast_from_metar": {
+   "cloudCoverage": 1,
+   "cloudLow": 1,
+   "cloudMid": 0,
+   "cloudHigh": 0,
+   "randomOverlap": 1,
+   "cloudDensity": 0.9,
+   "overcast": 1,
+   "fogSigma": 0.0002996,
+   "fogExp2Density": 0.0001731,
+   "visibility_m": 10000,
+   "precipKind": "none",
+   "precipIntensity": 0,
+   "windSpeed": 5.1,
+   "windFrom": 100,
+   "gust": 5.1,
+   "thunder": false,
+   "day": false,
+   "codeKnown": true
+  },
+  "dense_fog": {
+   "cloudCoverage": 1,
+   "cloudLow": 1,
+   "cloudMid": 0,
+   "cloudHigh": 0,
+   "randomOverlap": 1,
+   "cloudDensity": 0.9,
+   "overcast": 1,
+   "fogSigma": 0.01997,
+   "fogExp2Density": 0.01154,
+   "visibility_m": 150,
+   "precipKind": "none",
+   "precipIntensity": 0,
+   "windSpeed": 0.5,
+   "windFrom": 0,
+   "gust": 0.5,
+   "thunder": false,
+   "day": true,
+   "codeKnown": true
+  },
+  "heavy_rain_showers": {
+   "cloudCoverage": 0.9,
+   "cloudLow": 0.7,
+   "cloudMid": 0.6,
+   "cloudHigh": 0,
+   "randomOverlap": 0.88,
+   "cloudDensity": 0.72,
+   "overcast": 0.75,
+   "fogSigma": 0.0009986,
+   "fogExp2Density": 0.0005769,
+   "visibility_m": 3000,
+   "precipKind": "rain",
+   "precipIntensity": 1,
+   "windSpeed": 9,
+   "windFrom": 0,
+   "gust": 18,
+   "thunder": false,
+   "day": true,
+   "codeKnown": true
+  },
+  "snow": {
+   "cloudCoverage": 1,
+   "cloudLow": 0.9,
+   "cloudMid": 0,
+   "cloudHigh": 0,
+   "randomOverlap": 0.9,
+   "cloudDensity": 0.84,
+   "overcast": 1,
+   "fogSigma": 0.002496,
+   "fogExp2Density": 0.001442,
+   "visibility_m": 1200,
+   "precipKind": "snow",
+   "precipIntensity": 0.6,
+   "windSpeed": 4,
+   "windFrom": 0,
+   "gust": 4,
+   "thunder": false,
+   "day": true,
+   "codeKnown": true
+  },
+  "thunder_hail": {
+   "cloudCoverage": 1,
+   "cloudLow": 0.8,
+   "cloudMid": 0,
+   "cloudHigh": 0,
+   "randomOverlap": 0.8,
+   "cloudDensity": 0.78,
+   "overcast": 1,
+   "fogSigma": 0.001498,
+   "fogExp2Density": 0.0008654,
+   "visibility_m": 2000,
+   "precipKind": "hail",
+   "precipIntensity": 1,
+   "windSpeed": 12,
+   "windFrom": 0,
+   "gust": 25,
+   "thunder": true,
+   "day": true,
+   "codeKnown": true
+  },
+  "edge_unknown_code": {
+   "cloudCoverage": 0.5,
+   "cloudLow": 0.5,
+   "cloudMid": 0,
+   "cloudHigh": 0,
+   "randomOverlap": 0.5,
+   "cloudDensity": 0.6,
+   "overcast": 0,
+   "fogSigma": 0.0003745,
+   "fogExp2Density": 0.0002164,
+   "visibility_m": 8000,
+   "precipKind": "none",
+   "precipIntensity": 0,
+   "windSpeed": 0,
+   "windFrom": 0,
+   "gust": 0,
+   "thunder": false,
+   "day": false,
+   "codeKnown": false
+  },
+  "edge_visibility_null": {
+   "cloudCoverage": 0.4,
+   "cloudLow": 0.4,
+   "cloudMid": 0,
+   "cloudHigh": 0,
+   "randomOverlap": 0.4,
+   "cloudDensity": 0.54,
+   "overcast": 0,
+   "fogSigma": 0.00005991,
+   "fogExp2Density": 0.00003462,
+   "visibility_m": 50000,
+   "precipKind": "none",
+   "precipIntensity": 0,
+   "windSpeed": 0,
+   "windFrom": 0,
+   "gust": 0,
+   "thunder": false,
+   "day": false,
+   "codeKnown": true
+  },
+  "edge_visibility_zero": {
+   "cloudCoverage": 1,
+   "cloudLow": 1,
+   "cloudMid": 0,
+   "cloudHigh": 0,
+   "randomOverlap": 1,
+   "cloudDensity": 0.9,
+   "overcast": 1,
+   "fogSigma": 0.1498,
+   "fogExp2Density": 0.08654,
+   "visibility_m": 20,
+   "precipKind": "none",
+   "precipIntensity": 0,
+   "windSpeed": 0,
+   "windFrom": 0,
+   "gust": 0,
+   "thunder": false,
+   "day": false,
+   "codeKnown": true
+  },
+  "edge_layers_no_total": {
+   "cloudCoverage": 0.875,
+   "cloudLow": 0.5,
+   "cloudMid": 0.5,
+   "cloudHigh": 0.5,
+   "randomOverlap": 0.875,
+   "cloudDensity": 0.6,
+   "overcast": 0.688,
+   "fogSigma": 0.0001498,
+   "fogExp2Density": 0.00008654,
+   "visibility_m": 20000,
+   "precipKind": "none",
+   "precipIntensity": 0,
+   "windSpeed": 0,
+   "windFrom": 0,
+   "gust": 0,
+   "thunder": false,
+   "day": false,
+   "codeKnown": true
+  },
+  "edge_drizzle_no_amount": {
+   "cloudCoverage": 1,
+   "cloudLow": 1,
+   "cloudMid": 0,
+   "cloudHigh": 0,
+   "randomOverlap": 1,
+   "cloudDensity": 0.9,
+   "overcast": 1,
+   "fogSigma": 0.0005991,
+   "fogExp2Density": 0.0003462,
+   "visibility_m": 5000,
+   "precipKind": "drizzle",
+   "precipIntensity": 0.09,
+   "windSpeed": 0,
+   "windFrom": 0,
+   "gust": 0,
+   "thunder": false,
+   "day": false,
+   "codeKnown": true
+  }
+ },
+ "blending": {
+  "fps_30": 0.950213,
+  "fps_60": 0.950213,
+  "fps_120": 0.950213,
+  "one_step_60s": 0.950213,
+  "analytic_1_minus_exp_minus3": 0.950213
+ },
+ "wetness": {
+  "rain_1h_then_dry": [
+   [
+    0,
+    0
+   ],
+   [
+    15,
+    0.593
+   ],
+   [
+    30,
+    0.835
+   ],
+   [
+    45,
+    0.933
+   ],
+   [
+    60,
+    0.973
+   ],
+   [
+    75,
+    0.895
+   ],
+   [
+    90,
+    0.823
+   ],
+   [
+    105,
+    0.758
+   ],
+   [
+    120,
+    0.697
+   ],
+   [
+    135,
+    0.641
+   ],
+   [
+    150,
+    0.59
+   ],
+   [
+    165,
+    0.543
+   ],
+   [
+    180,
+    0.499
+   ],
+   [
+    195,
+    0.459
+   ],
+   [
+    210,
+    0.423
+   ],
+   [
+    225,
+    0.389
+   ],
+   [
+    240,
+    0.358
+   ],
+   [
+    255,
+    0.329
+   ],
+   [
+    270,
+    0.303
+   ],
+   [
+    285,
+    0.279
+   ],
+   [
+    300,
+    0.256
+   ]
+  ]
+ }
+}

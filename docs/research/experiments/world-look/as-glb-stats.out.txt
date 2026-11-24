@@ -1,0 +1,124 @@
+{
+ "file": "RobotExpressive_RobotExpressive.glb",
+ "bytes": 463988,
+ "version": 2,
+ "generator": "FBX2glTF",
+ "meshes": 14,
+ "verts": 7214,
+ "tris": 3237,
+ "skins": 2,
+ "joints": [
+  43,
+  43
+ ],
+ "weightsPerVertex": 4,
+ "morphTargets": 3,
+ "materials": 3,
+ "images": 0,
+ "imageBytes": 0,
+ "animationBytes": 93888,
+ "binBytes": 381256,
+ "extensionsUsed": [],
+ "animations": [
+  "Dance 3.33s/12ch",
+  "Death 0.96s/18ch",
+  "Idle 3.33s/7ch",
+  "Jump 0.71s/18ch",
+  "No 1.67s/7ch",
+  "Punch 0.83s/15ch",
+  "Running 0.96s/18ch",
+  "Sitting 0.42s/10ch",
+  "Standing 0.42s/10ch",
+  "ThumbsUp 1.58s/15ch",
+  "Walking 0.96s/20ch",
+  "WalkJump 0.83s/18ch",
+  "Wave 1.83s/18ch",
+  "Yes 1.67s/7ch"
+ ]
+}
+{
+ "file": "Soldier.glb",
+ "bytes": 2160468,
+ "version": 2,
+ "generator": "blendergltf v1.2.0",
+ "meshes": 2,
+ "verts": 7434,
+ "tris": 11376,
+ "skins": 2,
+ "joints": [
+  49,
+  2
+ ],
+ "weightsPerVertex": 4,
+ "morphTargets": 0,
+ "materials": 2,
+ "images": 2,
+ "imageBytes": 662582,
+ "animationBytes": 241744,
+ "binBytes": 1808464,
+ "extensionsUsed": [],
+ "animations": [
+  "Idle 1.97s/156ch",
+  "Run 0.70s/156ch",
+  "TPose 0.03s/156ch",
+  "Walk 1.03s/156ch"
+ ]
+}
+{
+ "file": "Xbot.glb",
+ "bytes": 2930032,
+ "version": 2,
+ "generator": "Khronos glTF Blender I/O v1.1.46",
+ "meshes": 2,
+ "verts": 28374,
+ "tris": 49112,
+ "skins": 1,
+ "joints": [
+  67
+ ],
+ "weightsPerVertex": 4,
+ "morphTargets": 0,
+ "materials": 2,
+ "images": 0,
+ "imageBytes": 0,
+ "animationBytes": 713936,
+ "binBytes": 2601840,
+ "extensionsUsed": [],
+ "animations": [
+  "agree 1.83s/201ch",
+  "headShake 2.57s/201ch",
+  "idle 2.50s/201ch",
+  "run 0.70s/201ch",
+  "sad_pose 0.07s/201ch",
+  "sneak_pose 0.07s/201ch",
+  "walk 0.97s/201ch"
+ ]
+}
+{
+ "file": "Michelle.glb",
+ "bytes": 3276888,
+ "version": 2,
+ "generator": "Khronos glTF Blender I/O v3.4.50",
+ "meshes": 1,
+ "verts": 16340,
+ "tris": 28106,
+ "skins": 1,
+ "joints": [
+  65
+ ],
+ "weightsPerVertex": 4,
+ "morphTargets": 0,
+ "materials": 1,
+ "images": 4,
+ "imageBytes": 718619,
+ "animationBytes": 1429596,
+ "binBytes": 3170696,
+ "extensionsUsed": [
+  "KHR_materials_specular",
+  "KHR_materials_ior"
+ ],
+ "animations": [
+  "SambaDance 18.23s/195ch",
+  "TPose 0.07s/195ch"
+ ]
+}
