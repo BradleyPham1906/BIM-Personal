@@ -305,6 +305,10 @@ changes e08's ranking (needs a device).
 
 ## 11. The owner's decisions
 
+**Answered 2026-11-24** (the owner: "V277a decisions just do as recommended"): D1 to D11 as recommended. One
+change in carrying them out: the core lives in `src/js/engine/math/math.js`, not `core/`, because `tools/gate.py`
+keeps `core/` for Claude and these are Cline's work orders.
+
 Asked together, each with its recommendation. They refine decision 3 of `plan-world-physics.md` (free tilt).
 
 1. **D1 Quaternion convention.** Store `[x, y, z, w]`, Hamilton, unit, w >= 0. Recommended: yes (H1).
