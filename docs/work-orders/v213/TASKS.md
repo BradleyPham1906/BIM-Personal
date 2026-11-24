@@ -18,7 +18,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-01 [Cline] `bimGenAchievable(lot, far, cov, levels)`
+## [x] WO-01 [Cline] `bimGenAchievable(lot, far, cov, levels)`
 
 - **It must:** SPEC 5 WO-01: plateCap = lot cov, capacity = plateCap levels, farLimit = lot far, achievable = the smaller; plates filled from the ground, each the smaller of plateCap and what is left (never under 0). {plateCap, capacity, farLimit, achievable, plates}.
 - **May use:** nothing.
@@ -28,7 +28,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-02 [Cline] `bimGenStoreys(h, ftf)`
+## [x] WO-02 [Cline] `bimGenStoreys(h, ftf)`
 
 - **It must:** SPEC 5 WO-02: ftf 3.5 unless positive; {storeys: floor(h / ftf + 1e-9), top: storeys ftf}; {0, 0} when h is not positive.
 - **May use:** nothing.
@@ -38,7 +38,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-03 [Cline] `bimGenStalls(needs)`
+## [x] WO-03 [Cline] `bimGenStalls(needs)`
 
 - **It must:** SPEC 5 WO-03: needs [{qty, per, ratio}] (ratio stalls per 'per' of qty): ceil(sum of qty / per ratio - 1e-9), lines with per or qty not positive left out; 0 (never -0) when the sum is 0.
 - **May use:** nothing.
@@ -48,7 +48,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-04 [Cline] `bimGenParking(w, d, stall, aisle)`
+## [x] WO-04 [Cline] `bimGenParking(w, d, stall, aisle)`
 
 - **It must:** SPEC 5 WO-04: stall {w 2.6, d 5.5} and aisle 7.2 unless positive; perRow = floor(w / stall.w + 1e-9); a double module is 2 stall.d + aisle deep; doubleModules = floor(d / module + 1e-9); singleRows 1 when the rest is at least stall.d + aisle; stalls = perRow (2 doubleModules + singleRows).
 - **May use:** nothing.
@@ -58,7 +58,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-05 [Cline] `bimGenLots(frontage, target)`
+## [x] WO-05 [Cline] `bimGenLots(frontage, target)`
 
 - **It must:** SPEC 5 WO-05: [] unless both positive; n = max(1, floor(frontage / target + 1e-9)) lots of frontage / n.
 - **May use:** nothing.
