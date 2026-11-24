@@ -18,7 +18,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-01 [Cline] `bimRecAngle(a, b)`
+## [x] WO-01 [Cline] `bimRecAngle(a, b)`
 
 - **It must:** SPEC 5 WO-01: the signed turn from a to b in -pi..pi: (b - a) mod 2 pi, less 2 pi when over pi, plus 2 pi when under -pi.
 - **May use:** nothing.
