@@ -6,7 +6,7 @@
   "scripts": {
     "build": "python3 tools/build_app.py",
     "modules": "node tools/engine_modules.cjs",
-    "check": "python3 tools/check_static_rules.py && python3 tools/build_app.py --check && node tools/engine_modules.cjs --check && python3 tools/embed_py.py --check && python3 tools/build_docs.py --check",
+    "check": "python3 tools/check_static_rules.py && python3 tools/check_work_orders.py && python3 tools/build_app.py --check && node tools/engine_modules.cjs --check && python3 tools/embed_py.py --check && python3 tools/build_docs.py --check",
     "test": "node --test \"tests/unit/**/*.test.mjs\"",
     "test:e2e": "python3 tests/e2e/run_all.py"
   },

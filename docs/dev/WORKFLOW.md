@@ -17,11 +17,11 @@ words; Claude does the steps and says what it found.
 
 | Tool | Where | For |
 |---|---|---|
-| Cline | VS Code on the PC, using the owner's free Nemotron 3.5 Super VL option | The primary first-pass implementer for researched prototypes and work orders on local `main`; rebuilds the offline HTML and runs the required checks. |
-| Claude Code, local | `C:\World-BIM-platform\BIM-Personal`, run `claude` in PowerShell | Research, phase specs, difficult design or debugging, and review/refinement of Cline's prototype against the research and task criteria. Sends bounded bulk work to Qwen. |
+| Cline | VS Code on any of the machines below, using the owner's free Nemotron 3.5 Super VL option | The primary first-pass implementer for researched prototypes and work orders on local `main`; rebuilds the offline HTML and runs the required checks. |
+| Claude Code, local | The repository's folder on that machine, run `claude` in its terminal | Research, phase specs, difficult design or debugging, and review/refinement of Cline's prototype against the research and task criteria. Sends bounded bulk work to Qwen. |
 | Claude Code, cloud | The Claude app or claude.ai/code | Work away from the PC, research, watching PRs and fixing CI, a second task in parallel. |
 | Aider (backup) | VS Code's terminal on the PC, run `aider` in the repo | Fallback when Cline is unavailable or the owner asks to switch. Uses the same `main` rules; ships only through `tools/gate.py`. |
-| Qwen 2.5 Coder 14B | Ollama, `http://localhost:11434/v1`, model `qwen2.5-coder:14b` | Aider's model and the subcontractor local Claude sends bulk work to (`tools/local_llm.py`). Only reachable from the PC. |
+| Qwen 2.5 Coder 14B | Ollama, `http://localhost:11434/v1`, model `qwen2.5-coder:14b` | Aider's model and the subcontractor local Claude sends bulk work to (`tools/local_llm.py`). Only on a machine where Ollama is installed. |
 
 Local and cloud Claude share one usage limit (`/usage` shows it). Cline's free model option, Aider
 and Qwen do not use that Claude limit. Aider and Claude share the one Qwen model: keep Aider on
@@ -86,7 +86,26 @@ checks pass. See `docs/work-orders/README.md`.
 After a usable task or coherent group passes its required checks, make a local checkpoint commit so
 the last known-good prototype is recoverable. Only `tools/gate.py ship` pushes it.
 
-## This PC's setup (2026-11-08)
+## The machines (the owner, 2026-11-24)
+
+The owner works on a MacBook (zsh), a Windows mini PC (Beelink) at home and a Windows PC at the
+office (both PowerShell 5.1). GitHub is the only thing they share: work not on GitHub is invisible to
+the next machine.
+
+- **Arriving:** `/start` (Claude) or step 0 of Cline's ship-task skill runs `tools/handoff.py status`
+  and `resume` when work is parked, then `git pull`.
+- **Leaving with unshipped work:** `python3 tools/handoff.py park` (Windows: `python`). It puts the
+  work, committed or not, on `wip/park` on GitHub and leaves the machine clean at `origin/main`, with a
+  local copy at `refs/parked/last`. One slot: park refuses while something is parked.
+- The gate refuses while work is parked, and while `origin/main` has a newer `tools/` or `.cline/` than
+  this machine, and prints the commands to fix each.
+- Cline's shell rule (`.clinerules/shell.md`) keeps commands valid in both zsh and PowerShell 5.1.
+- Qwen (Ollama) runs where it is installed; elsewhere the gate skips its advisory review with a warning.
+
+Each machine needs: Git, Node, Python 3, TypeScript installed globally (the module check needs it), the
+clone on `main`. Line endings need no setting: `.gitattributes` checks every file out with LF on every OS.
+
+## The first Windows PC's setup (2026-11-08)
 
 Git 2.56, Node 26, Python 3.13 (with a `python3.exe` copy beside `python.exe`), TypeScript 5.9.3
 installed globally (the module check needs it), PowerShell execution policy `RemoteSigned` for the user.

@@ -12,6 +12,9 @@ user-facing trigger only where the client supports it.
 The routine is in `docs/dev/WORKFLOW.md`. Do these steps, then report in a few lines.
 
 1. `git status`. If nothing changed and nothing is unpushed, say so and stop.
+   If the changes on `main` are Cline's unshipped work orders (files its open `[Cline]` tasks name) and the
+   owner is leaving this machine, run `python3 tools/handoff.py park` (Windows: `python`) instead of steps
+   2 to 6: the next machine picks them up with `resume`. Never put Cline's work on a `claude/` branch.
 2. If the branch is `main`, make a new branch for the work first (`claude/<task>` or `aider/<task>`).
    Never push to `main`.
 3. Run only what CLAUDE.md's Rule #1 table asks for the files that changed. If anything under `src/`
