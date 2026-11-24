@@ -38,7 +38,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-03 [Cline] `bimAstCheck(stats, bytes, limits)`
+## [x] WO-03 [Cline] `bimAstCheck(stats, bytes, limits)`
 
 - **It must:** SPEC 5 WO-03: messages: no stats ['not a glTF file']; triangles over limits.triangles (200000 by default): 'N triangles, over T'; bytes over limits.bytes (20 MB, 20971520): 'X MB, over Y MB', MB to one decimal.
 - **May use:** nothing.

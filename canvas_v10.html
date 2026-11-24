@@ -61578,6 +61578,29 @@ function bimAstFitBox(min,max,size){
   var m0=-(min[0]+max[0])*s/2,m1=-min[1]*s,m2=-(min[2]+max[2])*s/2;if(m0===0)m0=0;if(m1===0)m1=0;if(m2===0)m2=0;
   var s0=e[0]*s,s1=e[1]*s,s2=e[2]*s;return{scale:s,move:[m0,m1,m2],size:[s0,s1,s2]}
 }
+function bimAstCheck(s,b,l){
+  if(s===null||typeof s!=='object'||Array.isArray(s))return['not a glTF file'];
+  var m=[],t=200000,bc=20971520;
+  if(l!==undefined){
+    if(l.triangles!==undefined)t=l.triangles;
+    if(l.bytes!==undefined)bc=l.bytes;
+  }
+  if(s.triangles!==undefined&&s.triangles>t)m.push(s.triangles+' triangles, over '+t);
+  if(b!==undefined&&b>bc){
+    var f=function(n){var s=n.toFixed(1);return s.endsWith('.0')?s.slice(0,-2):s;};
+    m.push(f(b/1048576)+' MB, over '+f(bc/1048576)+' MB');
+  }
+  return m;
+}
+function bimAstCredit(e){
+  if(e===null||typeof e!=='object'||Array.isArray(e))return'not a glTF file';
+  if(!e.title)return'"Untitled"';
+  var r='"'+e.title+'"';
+  if(e.author){r=r+' by '+e.author}
+  if(e.license){r=r+', '+e.license}
+  if(e.source){r=r+' ('+e.source+')'}
+  return r;
+}
   /* ================= __acad3dV150: the tool palette, on a phone and a tablet =================
      The essential tools in a capsule over the drawing, dragged where the hand wants them, folded
      to one button when the drawing wants the room. Where it was left is kept in this browser. */
