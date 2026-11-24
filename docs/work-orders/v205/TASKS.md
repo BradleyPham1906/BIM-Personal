@@ -18,7 +18,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-01 [Cline] `bimSplatParse(buf)`
+## [x] WO-01 [Cline] `bimSplatParse(buf)`
 
 - **It must:** SPEC 5 WO-01: an ArrayBuffer of 32-byte splats, little-endian: position float32 x3 at 0, scale float32 x3 at 12, colour uint8 x4 at 24, rotation uint8 x4 at 28 read as (b - 128) / 128. {n, pos, scale (Float32Array n*3), rgba (Uint8Array n*4), rot (Float32Array n*4)}; a length not a multiple of 32 gives {error: 'not a .splat file (its length is not a multiple of 32)'}.
 - **May use:** nothing.
@@ -28,7 +28,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-02 [Cline] `bimSplatBounds(pos)`
+## [x] WO-02 [Cline] `bimSplatBounds(pos)`
 
 - **It must:** SPEC 5 WO-02: {min, max, centre} of the [x, y, z] triples; null for none.
 - **May use:** nothing.
@@ -38,7 +38,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-03 [Cline] `bimSplatFit2(a0, a1, b0, b1)`
+## [x] WO-03 [Cline] `bimSplatFit2(a0, a1, b0, b1)`
 
 - **It must:** SPEC 5 WO-03: in plan (x, z): s = |b1 - b0| / |a1 - a0|, rot = the difference of their headings (atan2(dz, dx)), t = b0 - s R a0 in plan and b0[1] - s a0[1] in height. {s, rot, t}; null when either pair's plan length is under 1e-9.
 - **May use:** nothing.
@@ -48,7 +48,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-04 [Cline] `bimSplatApply(T, p)`
+## [x] WO-04 [Cline] `bimSplatApply(T, p)`
 
 - **It must:** SPEC 5 WO-04: [s (cos x - sin z) + t0, s y + t1, s (sin x + cos z) + t2].
 - **May use:** nothing.
@@ -58,7 +58,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-05 [Cline] `bimSplatOrder(pos, eye)`
+## [x] WO-05 [Cline] `bimSplatOrder(pos, eye)`
 
 - **It must:** SPEC 5 WO-05: the indices sorted by squared distance from the eye, farthest first, ties by index; [] for none.
 - **May use:** nothing.
@@ -68,12 +68,12 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-06 [Claude] Splats in the rendered view
+## [x] WO-06 [Claude] Splats in the rendered view
 
 Claude's: import, the layer, the placement tool with its error, drawing in three.js (the rendered view) back to front, the size limit; the test to tests/unit/; npm run modules; the browser check.
 
 ---
 
-## [ ] WO-07 [Claude] The records
+## [x] WO-07 [Claude] The records
 
 PIPELINE row 205 (the old row 200), Notion.
