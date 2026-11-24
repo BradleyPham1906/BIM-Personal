@@ -18,7 +18,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-01 [Cline] `bimPfmLine(l)`
+## [x] WO-01 [Cline] `bimPfmLine(l)`
 
 - **It must:** SPEC 5 WO-01: gross = qty rate periods (periods 1 unless positive; missing qty or rate 0); vacancy used when 0 <= v < 1, else 0; {name (or ''), gross, effective: gross (1 - v)}.
 - **May use:** nothing.
@@ -28,7 +28,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-02 [Cline] `bimPfmTotals(lines, opex)`
+## [x] WO-02 [Cline] `bimPfmTotals(lines, opex)`
 
 - **It must:** SPEC 5 WO-02: {gross, effective (sums of the lines), opex (0 unless positive), noi: effective - opex}.
 - **May use:** bimPfmLine (WO-01).
@@ -38,7 +38,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-03 [Cline] `bimPfmCost(items)`
+## [x] WO-03 [Cline] `bimPfmCost(items)`
 
 - **It must:** SPEC 5 WO-03: the sum of the items' finite numeric amounts.
 - **May use:** nothing.
@@ -48,7 +48,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-04 [Cline] `bimPfmMetrics(noi, cost, cap)`
+## [x] WO-04 [Cline] `bimPfmMetrics(noi, cost, cap)`
 
 - **It must:** SPEC 5 WO-04: {yieldOnCost: noi / cost (null unless cost > 0), value: noi / cap (null unless cap > 0), profit: value - cost, marginOnCost: profit / cost} with nulls carried.
 - **May use:** nothing.
