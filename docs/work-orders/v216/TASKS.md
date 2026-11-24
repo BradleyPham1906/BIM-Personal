@@ -18,7 +18,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-01 [Cline] `bimHubCanonical(x)`
+## [x] WO-01 [Cline] `bimHubCanonical(x)`
 
 - **It must:** SPEC 5 WO-01: JSON with object keys sorted, keys whose value is undefined left out, numbers as String(Number(x.toPrecision(12))), non-finite numbers and null and undefined as null, strings and booleans by JSON.stringify, arrays in order.
 - **May use:** nothing.
@@ -28,7 +28,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-02 [Cline] `bimHubHash(s)`
+## [x] WO-02 [Cline] `bimHubHash(s)`
 
 - **It must:** SPEC 5 WO-02: 32-bit FNV-1a over the string's char codes (offset 0x811c9dc5, prime 16777619, written as the shifts h + (h<<1) + (h<<4) + (h<<7) + (h<<8) + (h<<24), unsigned), as 8 lower-case hex digits.
 - **May use:** nothing.
@@ -38,7 +38,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-03 [Cline] `bimHubPath(el)`
+## [x] WO-03 [Cline] `bimHubPath(el)`
 
 - **It must:** SPEC 5 WO-03: 'elements/' + (bim.type, else t, else 'object') with characters outside A-Z a-z 0-9 _ - as _ + '/' + id with characters outside A-Z a-z 0-9 _ . - as _ + '.json'.
 - **May use:** nothing.
@@ -48,7 +48,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-04 [Cline] `bimHubManifest(els, schema)`
+## [x] WO-04 [Cline] `bimHubManifest(els, schema)`
 
 - **It must:** SPEC 5 WO-04: {schema (1 when absent), elements: {id: bimHubHash(bimHubCanonical(element))}} with ids in sorted order.
 - **May use:** bimHubCanonical (WO-01), bimHubHash (WO-02).
@@ -58,7 +58,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-05 [Cline] `bimHubOrphans(els)`
+## [x] WO-05 [Cline] `bimHubOrphans(els)`
 
 - **It must:** SPEC 5 WO-05: for each element, each of hostWallId, levelId, sourceId, buildingId (read from bim, else the element) that is a non-empty string naming no element: {id, field, missing}.
 - **May use:** nothing.
