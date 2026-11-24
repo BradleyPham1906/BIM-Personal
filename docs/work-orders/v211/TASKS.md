@@ -48,7 +48,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-04 [Cline] `bimRecInfo(path)`
+## [x] WO-04 [Cline] `bimRecInfo(path)`
 
 - **It must:** SPEC 5 WO-04: {length: the sum of the 3D steps, duration: last t - first t, poses: the count}; zeros for no path.
 - **May use:** nothing.

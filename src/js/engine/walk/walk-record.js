@@ -71,3 +71,18 @@ function bimRecAt(path, t) {
   }
   return last;
 }
+
+
+function bimRecInfo(path) {
+  var length = 0, i;
+  for (i = 1; i < path.length; i = i + 1) {
+    var a = path[i - 1], b = path[i];
+    var dx = b.p[0] - a.p[0], dy = b.p[1] - a.p[1], dz = b.p[2] - a.p[2];
+    length = length + Math.sqrt(dx * dx + dy * dy + dz * dz);
+  }
+  var duration = 0, poses = path.length;
+  if (poses > 0) {
+    duration = path[path.length - 1].t - path[0].t;
+  }
+  return { length: length, duration: duration, poses: poses };
+}
