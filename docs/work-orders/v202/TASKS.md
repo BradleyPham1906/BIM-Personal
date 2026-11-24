@@ -62,7 +62,7 @@ Done 2026-11-13: the file (with `BIM_NBI_URL` and `bimCityRecs` too), its includ
 - **Example:** `bimDep3Url({w:1,s:1,e:2,n:2},2,2)` contains `bbox=111319.49,111325.14,222638.98,222684.21&` and `size=2,2&`.
 - **May use:** `BIM_3DEP_URL` (`measured-context.js`)
 - **Files:** `src/js/engine/map/measured-context.js`, `docs/work-orders/v202/v202.test.mjs`
-- **Budget:** 25
+- **Budget:** 70
 - **Test:** `node --test --test-name-pattern="WO-02" docs/work-orders/v202/v202.test.mjs`
 - **Done when:** `python3 tools/gate.py check v202 WO-02` passes; then `ship` it.
 
@@ -78,7 +78,7 @@ Done 2026-11-13: the file (with `BIM_NBI_URL` and `bimCityRecs` too), its includ
 - **Example:** at the centre of pixel (0,0) it returns `g.data[0]`; at the centre of a 2 x 2 grid, the mean of the four.
 - **May use:** nothing beyond `Math`
 - **Files:** `src/js/engine/map/measured-context.js`, `docs/work-orders/v202/v202.test.mjs`
-- **Budget:** 30
+- **Budget:** 70
 - **Test:** `node --test --test-name-pattern="WO-03" docs/work-orders/v202/v202.test.mjs`
 - **Done when:** `python3 tools/gate.py check v202 WO-03` passes; then `ship` it.
 
@@ -94,7 +94,7 @@ Done 2026-11-13: the file (with `BIM_NBI_URL` and `bimCityRecs` too), its includ
 - **Example:** `approx_hgt:170, max_hgt:558.2, base_elevation:34.5` at `unit:0.3048` returns `{h:51.82, top:170.14, base:10.52, from:'city', id:rec.id}`.
 - **May use:** nothing beyond `Math`; write the crossing test inside the function (the gate refuses new import lines)
 - **Files:** `src/js/engine/map/measured-context.js`, `docs/work-orders/v202/v202.test.mjs`
-- **Budget:** 35
+- **Budget:** 70
 - **Test:** `node --test --test-name-pattern="WO-04" docs/work-orders/v202/v202.test.mjs`
 - **Done when:** `python3 tools/gate.py check v202 WO-04` passes; then `ship` it.
 
@@ -111,7 +111,7 @@ Done 2026-11-13: the file (with `BIM_NBI_URL` and `bimCityRecs` too), its includ
 - **Example:** line (0,0)-(100,0) and a structure at (40,12) with clearance 6.43 returns it, with `dist:12, clear:6.43`.
 - **May use:** nothing beyond `Math`
 - **Files:** `src/js/engine/map/measured-context.js`, `docs/work-orders/v202/v202.test.mjs`
-- **Budget:** 45
+- **Budget:** 70
 - **Test:** `node --test --test-name-pattern="WO-05" docs/work-orders/v202/v202.test.mjs`
 - **Done when:** `python3 tools/gate.py check v202 WO-05` passes; then `ship` it.
 
