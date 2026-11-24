@@ -223,6 +223,11 @@ species texture sources; whether the owner's deployment is non-commercial (a dec
 
 ## 11. The owner's decisions
 
+**Answered 2026-11-24** (the owner: "nah u do what best"): every decision as recommended, with one limit: W8's
+terms must be accepted by a person in authority, which Claude cannot do for the owner, so MET Norway stays off until
+the owner reads and accepts them (api.met.no/doc/TermsOfService); until then the app falls back from Open-Meteo to its
+cache. W1 is recorded as the owner's position: non-commercial while there are no subscriptions or advertising.
+
 Asked together, each with its recommendation.
 
 **Weather and sky**
