@@ -18,7 +18,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-01 [Cline] `bimSvDms(s)`
+## [x] WO-01 [Cline] `bimSvDms(s)`
 
 - **It must:** SPEC 5 WO-01: a number as it is (null when not finite); a string 'D-M-S' or 'D M S' (minutes and seconds optional, seconds decimal, a leading minus) as D + M/60 + S/3600 with the sign; null for anything else or minutes or seconds of 60 or more.
 - **May use:** nothing.
@@ -28,7 +28,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-02 [Cline] `bimSvLatDep(legs)`
+## [x] WO-02 [Cline] `bimSvLatDep(legs)`
 
 - **It must:** SPEC 5 WO-02: legs [[azimuth degrees from north clockwise, distance]]: {lat: d cos az, dep: d sin az (each per leg), sumN, sumE, perimeter}.
 - **May use:** nothing.
@@ -38,7 +38,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-03 [Cline] `bimSvClosure(legs, kind, start, end)`
+## [x] WO-03 [Cline] `bimSvClosure(legs, kind, start, end)`
 
 - **It must:** SPEC 5 WO-03: 'open': {status: 'not assessable', why: 'an open traverse has no independent closure'}; 'link' without start or end: 'not assessable', 'a link traverse needs its known end'; else {status: 'computed', east, north (the sums, or start + sums - end for a link), misclosure, perimeter, ratio: perimeter / misclosure (Infinity at 0)}.
 - **May use:** bimSvLatDep (WO-02).
@@ -48,7 +48,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-04 [Cline] `bimSvCompass(legs, start)`
+## [x] WO-04 [Cline] `bimSvCompass(legs, start)`
 
 - **It must:** SPEC 5 WO-04: the start [E, N], then each point after a leg moved by its departure and latitude less sumE d / perimeter and sumN d / perimeter.
 - **May use:** bimSvLatDep (WO-02).
@@ -58,7 +58,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-05 [Cline] `bimSvAngular(angles)`
+## [x] WO-05 [Cline] `bimSvAngular(angles)`
 
 - **It must:** SPEC 5 WO-05: the sum of the interior angles less (n - 2) 180; null for fewer than 3.
 - **May use:** nothing.
