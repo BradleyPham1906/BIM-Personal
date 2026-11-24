@@ -48,7 +48,8 @@ The review Claude used to do by hand, as checks a script runs in seconds. It fai
 - a changed file is outside the task's files (its `**Files:**` line, else the paths in its block, else
   the TASKS file's opening paragraph; paths after "do not" / "not" are left out), or in a protected
   path (`core/`, `history/`, `rendered-core.js`, `tools/`, `.github/`, `runtime/`, `vendor/`,
-  `src/index.html`, the rules and docs/dev);
+  `src/index.html`, the rules and docs/dev; `history/hub-files.js` and `history/hub-access.js` are
+  exempt, as pure files Claude scaffolded for V216/V217; a new exemption is a line in `PROTECTED_EXEMPT`);
 - a test line is removed or changed (tests may only grow), a SPEC changes, or a TASKS file changes
   beyond its checkboxes;
 - added code is not ES5, has an emoji, a `WO-` stub or `debugger`, touches import/export lines, or

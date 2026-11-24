@@ -39,6 +39,9 @@ PROTECTED = ("src/js/engine/core/", "src/js/engine/render/rendered-core.js", "sr
              "src/js/engine/_begin.js", "src/js/engine/_end.js", "src/js/vendor/", "src/index.html",
              "tools/", ".github/", "runtime/", "vendor/", "tests/unit/helpers/", "tests/fixtures/",
              ".clinerules/", ".claude/", "CLAUDE.md", "package.json", "docs/dev/")
+# Files inside a protected folder that Claude scaffolded as pure work-order files for Cline (no shared state,
+# no saving or loading): the folder stays protected, only these named files are open to a [Cline] task.
+PROTECTED_EXEMPT = ("src/js/engine/history/hub-files.js", "src/js/engine/history/hub-access.js")
 HEADING = re.compile(r"^## \[( |x|skipped)\] ((?:WO|T)-\d+) \[(Cline|Claude)\] (.*)$")
 TICK = re.compile(r"^(## )\[( |x|skipped)\]")
 ES6 = [(re.compile(r"\b(let|const)\s+[A-Za-z_$\[{]"), "let/const"), (re.compile(r"=>"), "arrow function"),
@@ -221,7 +224,7 @@ def check(phase, ids, gate, llm=True, strict_llm=False):
         added, removed = file_diff(base, f)
         if f == "canvas_v10.html":
             continue
-        if f.startswith(PROTECTED):
+        if f.startswith(PROTECTED) and f not in PROTECTED_EXEMPT:
             gate.fail("%s is a protected path (Claude's)" % f)
             continue
         if f in task_files or f == "docs/work-orders/%s/GATE-LOG.md" % phase:
