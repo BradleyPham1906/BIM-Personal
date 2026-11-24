@@ -17,3 +17,25 @@ function bimRecAngle(a, b) {
   }
   return d;
 }
+
+
+function bimRecAdd(path, pose, t, minDist, minTurn) {
+  var copy = path.slice();
+  minDist = minDist === undefined ? 0.05 : minDist;
+  minTurn = minTurn === undefined ? 0.02 : minTurn;
+  var last = copy[copy.length - 1];
+  if (last) {
+    var dx = pose.p[0] - last.p[0];
+    var dy = pose.p[1] - last.p[1];
+    var dz = pose.p[2] - last.p[2];
+    var d = Math.sqrt(dx * dx + dy * dy + dz * dz);
+    var turn = Math.abs(bimRecAngle(last.yaw, pose.yaw));
+    var pitch = pose.pitch === undefined ? 0 : pose.pitch;
+    var dpitch = Math.abs(pitch - last.pitch);
+    if (d < minDist && turn < minTurn && dpitch < minTurn) {
+      return copy;
+    }
+  }
+  copy.push({ t: t, p: [pose.p[0], pose.p[1], pose.p[2]], yaw: pose.yaw, pitch: pose.pitch === undefined ? 0 : pose.pitch });
+  return copy;
+}

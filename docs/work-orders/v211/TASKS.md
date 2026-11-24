@@ -28,7 +28,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-02 [Cline] `bimRecAdd(path, pose, t, minDist, minTurn)`
+## [x] WO-02 [Cline] `bimRecAdd(path, pose, t, minDist, minTurn)`
 
 - **It must:** SPEC 5 WO-02: a copy of the path, with {t, p (copied), yaw, pitch (0 when absent)} added unless there is a last pose and the move is under minDist (0.05), the yaw turn (bimRecAngle) under minTurn (0.02) and the pitch change under minTurn.
 - **May use:** bimRecAngle (WO-01).
