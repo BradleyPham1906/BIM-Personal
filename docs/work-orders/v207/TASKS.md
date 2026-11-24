@@ -18,7 +18,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-01 [Cline] `bimAstGltfStats(g)`
+## [x] WO-01 [Cline] `bimAstGltfStats(g)`
 
 - **It must:** SPEC 5 WO-01: null unless an object; {meshes, primitives, triangles, materials, textures, extensions (extensionsUsed sorted)}: triangles summed over primitives of mode 4 or no mode, floor(count / 3) of the indices accessor, else of the POSITION accessor.
 - **May use:** nothing.
