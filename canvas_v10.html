@@ -57092,7 +57092,108 @@ function bimPfExpr(s, params) {
   if (!r.error && i < sLen) return { error: 'unexpected (' + s[i] + ')' };
   return r;
 }
-function bimPfRebuild(fs, params, last) { return { order: [], results: {} }; }
+function bimPfRebuild(fs, params, last) {
+  // Build feature reference map
+  var fm = {};
+  if (Array.isArray(fs)) {
+    for (var i = 0; i < fs.length; i++) {
+      if (fs[i] && fs[i].id) fm[fs[i].id] = fs[i];
+    }
+  } else {
+    var idList = Object.keys(fs);
+    for (var i = 0; i < idList.length; i++) {
+      if (fs[idList[i]]) fm[idList[i]] = fs[idList[i]];
+    }
+  }
+  // Get ordered features
+  var orderResult = bimPfOrder(fs);
+  if (orderResult.error) return { error: 'cycle', ids: orderResult.ids };
+  var order = orderResult.order;
+  // Compute volumes/areas for each feature
+  var volumes = {};
+  for (var i = 0; i < order.length; i++) {
+    var fid = order[i];
+    var feature = fm[fid];
+    if (!feature) continue;
+    var inputs = feature.inputs || {};
+    var kind = feature.kind;
+    function getParam(name) {
+      if (params && name in params) return params[name];
+      return parseFloat(name);
+    }
+    if (kind === 'sketch') {
+      // Sketch uses 'w' and 'l' property keys
+      var w = getParam(inputs.w);
+      var l = getParam(inputs.l);
+      if (isNaN(w) || isNaN(l) || w <= 0 || l <= 0) {
+        volumes[fid] = { status: 'failed', why: 'the sketch needs a positive width and length', kept: null };
+      } else {
+        var area = w * l;
+        volumes[fid] = { status: 'ok', why: null, kept: { width: w, length: l, area: area }, volume: area };
+      }
+    } else if (kind === 'pad') {
+      var refId = feature.refs ? feature.refs[0] : null;
+      var refVol = volumes[refId];
+      if (!refVol || refVol.status !== 'ok' || !refVol.kept) {
+        volumes[fid] = { status: 'failed', why: 'its sketch or depth is not valid', kept: null };
+      } else {
+        var depth = getParam(inputs.depth);
+        if (isNaN(depth) || depth <= 0) {
+          volumes[fid] = { status: 'failed', why: 'its sketch or depth is not valid', kept: null };
+        } else {
+          var padArea = refVol.kept.area;
+          var padVolume = padArea * depth;
+          volumes[fid] = { status: 'ok', why: null, kept: { depth: depth, area: padArea, volume: padVolume, width: refVol.kept.width, length: refVol.kept.length }, volume: padVolume };
+        }
+      }
+    } else if (kind === 'pocket') {
+      var padRef = feature.refs ? feature.refs[0] : null;
+      var padVol = volumes[padRef];
+      if (!padVol || padVol.status !== 'ok' || !padVol.kept) {
+        volumes[fid] = { status: 'failed', why: 'its pad is not valid', kept: null };
+      } else {
+        // Use the pocket's own depth input
+        var d = getParam(inputs.depth);
+        var w = getParam(inputs.w);
+        var l = getParam(inputs.l);
+        if (isNaN(w) || isNaN(l) || isNaN(d) || w <= 0 || l <= 0 || d <= 0) {
+          volumes[fid] = { status: 'failed', why: 'the pocket does not fit in its pad', kept: null };
+        } else if (w > padVol.kept.width || l > padVol.kept.length) {
+          volumes[fid] = { status: 'failed', why: 'the pocket does not fit in its pad', kept: null };
+        } else {
+          var pocketVolume = padVol.kept.volume - w * l * d;
+          volumes[fid] = { status: 'ok', why: null, kept: { volume: pocketVolume }, volume: pocketVolume };
+        }
+      }
+    }
+  }
+  // Build results in order
+  var results = {};
+  var kept = {};
+  for (var i = 0; i < order.length; i++) {
+    var fid = order[i];
+    var vol = volumes[fid];
+    if (!vol) {
+      results[fid] = { status: 'failed', why: 'unknown feature' };
+      continue;
+    }
+    results[fid] = vol;
+    if (vol.kept) {
+      kept[fid] = vol.kept;
+    }
+  }
+  // Handle last valid result for failed features
+  if (last) {
+    for (var i = 0; i < order.length; i++) {
+      var fid = order[i];
+      var vol = volumes[fid];
+      if (vol && vol.status === 'failed' && last[fid] && last[fid].status === 'ok' && last[fid].kept) {
+        results[fid].kept = last[fid].kept;
+      }
+    }
+  }
+  return { order: order, results: results };
+}
 
 
   /* ================= __acad3dV228: Generated elements, the pure part =================
