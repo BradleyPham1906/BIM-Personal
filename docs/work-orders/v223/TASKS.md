@@ -18,7 +18,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-01 [Cline] `bimCpDate(s)`
+## [x] WO-01 [Cline] `bimCpDate(s)`
 
 - **It must:** SPEC 5 WO-01: 'YYYY-MM-DD' as Date.UTC(year, month - 1, day); null for anything else. Write bimCpIso(t), the inverse ('YYYY-MM-DD' from UTC), with it.
 - **May use:** nothing.
@@ -28,7 +28,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-02 [Cline] `bimCpWorkdayBefore(need, n, holidays)`
+## [x] WO-02 [Cline] `bimCpWorkdayBefore(need, n, holidays)`
 
 - **It must:** SPEC 5 WO-02: null for a bad date or n under 0; n times: one day back, then further back while the day is Saturday, Sunday or in holidays ('YYYY-MM-DD' strings); the result as 'YYYY-MM-DD'.
 - **May use:** bimCpDate, bimCpIso (WO-01).
@@ -38,7 +38,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-03 [Cline] `bimCpScores(tp, fp, fn)`
+## [x] WO-03 [Cline] `bimCpScores(tp, fp, fn)`
 
 - **It must:** SPEC 5 WO-03: {precision: tp / (tp + fp), recall: tp / (tp + fn)}, each null when its denominator is 0.
 - **May use:** nothing.
