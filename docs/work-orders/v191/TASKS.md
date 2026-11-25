@@ -18,7 +18,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-01 [Cline] `bimRoofJacobi(A)`
+## [x] WO-01 [Cline] `bimRoofJacobi(A)`
 
 - **It must:** SPEC 5 WO-01: the eigen-decomposition of a symmetric 3x3 by cyclic Jacobi rotations (at most 50; stop when the largest off-diagonal is under 1e-15): {values: the diagonal, vectors: the columns of the accumulated rotation, as three [x, y, z]}; the input unchanged.
 - **May use:** nothing.
@@ -38,7 +38,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-03 [Cline] `bimRoofInRing(pts, ring)`
+## [x] WO-03 [Cline] `bimRoofInRing(pts, ring)`
 
 - **It must:** SPEC 5 WO-03: the points whose (x, y) is inside the ring (even-odd), in order.
 - **May use:** nothing.
@@ -48,7 +48,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-04 [Cline] `bimRoofCoverage(pts, ring, cell)`
+## [x] WO-04 [Cline] `bimRoofCoverage(pts, ring, cell)`
 
 - **It must:** SPEC 5 WO-04: cells of size cell (1 when not positive) from the ring's minimum corner, kept while their centre is before the maximum; those whose centre is in the ring are the footprint's; the share of them holding at least one point (by floor((x - x0)/cell), floor((y - y0)/cell)); 0 for none.
 - **May use:** bimRoofInRing (WO-03).
