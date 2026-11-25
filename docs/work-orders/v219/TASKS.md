@@ -18,7 +18,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-01 [Cline] `bimGcDiffuse(a, n, alpha, steps, f32)`
+## [x] WO-01 [Cline] `bimGcDiffuse(a, n, alpha, steps, f32)`
 
 - **It must:** SPEC 5 WO-01: on an n x n grid (row-major) with a zero boundary, each step: interior c + alpha (up + down + left + right - 4 c) into a new grid; with f32 every operation rounded by Math.fround in the order ((((up + down) + left) + right) - 4c), times alpha, plus c. Returns the grid after the steps; the input unchanged.
 - **May use:** nothing.
@@ -28,7 +28,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-02 [Cline] `bimGcCompare(a, b)`
+## [x] WO-02 [Cline] `bimGcCompare(a, b)`
 
 - **It must:** SPEC 5 WO-02: {max: the largest |a - b|, rms: the root mean square of the differences} (0 for none).
 - **May use:** nothing.
@@ -38,7 +38,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-03 [Cline] `bimGcSum(a)`
+## [x] WO-03 [Cline] `bimGcSum(a)`
 
 - **It must:** SPEC 5 WO-03: the sum.
 - **May use:** nothing.
@@ -48,7 +48,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-04 [Cline] `bimGcWorkgroups(n, size)`
+## [x] WO-04 [Cline] `bimGcWorkgroups(n, size)`
 
 - **It must:** SPEC 5 WO-04: ceil(n / size), size 8 unless positive.
 - **May use:** nothing.
