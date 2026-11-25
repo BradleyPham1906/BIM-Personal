@@ -18,7 +18,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-01 [Cline] `bimTilesSse(ge, dist, h, fov)`
+## [x] WO-01 [Cline] `bimTilesSse(ge, dist, h, fov)`
 
 - **It must:** SPEC 5 WO-01: ge h / (2 dist tan(fov / 2)); Infinity when dist is not positive.
 - **May use:** nothing.
@@ -28,7 +28,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-02 [Cline] `bimTilesDist(sphere, eye)`
+## [x] WO-02 [Cline] `bimTilesDist(sphere, eye)`
 
 - **It must:** SPEC 5 WO-02: the distance from the eye to the sphere [x, y, z, r]'s surface, 0 inside.
 - **May use:** nothing.
@@ -38,7 +38,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-03 [Cline] `bimTilesSelect(tile, eye, h, fov, maxSse, parentRefine)`
+## [x] WO-03 [Cline] `bimTilesSelect(tile, eye, h, fov, maxSse, parentRefine)`
 
 - **It must:** SPEC 5 WO-03: a tile whose error is within maxSse, or with no children, gives its content uri (when it has one); else ADD tiles (refine inherited from the parent, REPLACE by default) give their own uri and then their children's, REPLACE tiles only their children's, depth first in order.
 - **May use:** bimTilesSse (WO-01), bimTilesDist (WO-02).
