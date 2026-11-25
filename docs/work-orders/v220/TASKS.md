@@ -18,7 +18,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-01 [Cline] `bimWtrStep(h, v, n, damp)`
+## [x] WO-01 [Cline] `bimWtrStep(h, v, n, damp)`
 
 - **It must:** SPEC 5 WO-01: on an n x n grid: each interior cell's velocity becomes (v + (the mean of its four neighbours' heights - h) 2) damp (damp 0.995 unless in 0..1], 1 allowed), boundary velocities unchanged; then every height plus its new velocity. {h, v} new arrays.
 - **May use:** nothing.
@@ -28,7 +28,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-02 [Cline] `bimWtrDrop(h, n, x, y, r, s)`
+## [x] WO-02 [Cline] `bimWtrDrop(h, n, x, y, r, s)`
 
 - **It must:** SPEC 5 WO-02: a copy with, at each cell within distance r of (x, y) (d = distance / r < 1), s (0.5 + cos(pi d) / 2) added.
 - **May use:** nothing.
@@ -38,7 +38,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-03 [Cline] `bimWtrSchlick(n1, n2, cosT)`
+## [x] WO-03 [Cline] `bimWtrSchlick(n1, n2, cosT)`
 
 - **It must:** SPEC 5 WO-03: f0 + (1 - f0)(1 - cosT)^5 with f0 = ((n1 - n2)/(n1 + n2))^2.
 - **May use:** nothing.
@@ -48,7 +48,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-04 [Cline] `bimWtrCaustic(oldA, newA)`
+## [x] WO-04 [Cline] `bimWtrCaustic(oldA, newA)`
 
 - **It must:** SPEC 5 WO-04: oldA / newA, Infinity when newA is not positive.
 - **May use:** nothing.
