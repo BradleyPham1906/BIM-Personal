@@ -18,7 +18,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-01 [Cline] `bimCpSlabNet(w, l, t, holes)`
+## [x] WO-01 [Cline] `bimCpSlabNet(w, l, t, holes)`
 
 - **It must:** SPEC 5 WO-01: w l t less each hole's w l times its depth (its t when positive, capped at t; else t); never under 0.
 - **May use:** nothing.
@@ -28,7 +28,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-02 [Cline] `bimCpLine(q, P)`
+## [x] WO-02 [Cline] `bimCpLine(q, P)`
 
 - **It must:** SPEC 5 WO-02: order = q (1 + waste) (waste 0 unless 0 or more), material = order matRate, hours = q hoursPer, labour = hours labRate (missing rates 0); {order, material, hours, labour, total: material + labour}.
 - **May use:** nothing.
@@ -38,7 +38,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-03 [Cline] `bimCpAllocate(amount, splits)`
+## [x] WO-03 [Cline] `bimCpAllocate(amount, splits)`
 
 - **It must:** SPEC 5 WO-03: any share not 0 or more, or a total over 1 (by 1e-12): {error: 'invalid allocation'}; else {assigned: amount times each share, unallocated: amount - amount times the total}.
 - **May use:** nothing.
@@ -48,7 +48,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-04 [Cline] `bimCpBuckets(items)`
+## [x] WO-04 [Cline] `bimCpBuckets(items)`
 
 - **It must:** SPEC 5 WO-04: items [{amount, split: {bucket: share}}]: each bucket's sum of amount times share.
 - **May use:** nothing.
