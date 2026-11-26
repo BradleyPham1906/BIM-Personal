@@ -18,7 +18,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-01 [Cline] `bimDpGsd(sw, f, iw, h)`
+## [x] WO-01 [Cline] `bimDpGsd(sw, f, iw, h)`
 
 - **It must:** SPEC 5 WO-01: sensor width mm, focal length mm, image width px, height m: sw h 100 / (f iw) cm per pixel; null unless all positive.
 - **May use:** nothing.
@@ -28,7 +28,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-02 [Cline] `bimDpHeight(gsd, sw, f, iw)`
+## [x] WO-02 [Cline] `bimDpHeight(gsd, sw, f, iw)`
 
 - **It must:** SPEC 5 WO-02: the inverse: gsd f iw / (sw 100) m; null unless gsd, sw and iw are positive.
 - **May use:** nothing.
@@ -38,7 +38,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-03 [Cline] `bimDpFootprint(sw, sh, f, h)`
+## [x] WO-03 [Cline] `bimDpFootprint(sw, sh, f, h)`
 
 - **It must:** SPEC 5 WO-03: {w: sw h / f, h: sh h / f} in metres; null unless f is positive.
 - **May use:** nothing.
@@ -48,7 +48,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-04 [Cline] `bimDpSpacing(len, overlap)`
+## [x] WO-04 [Cline] `bimDpSpacing(len, overlap)`
 
 - **It must:** SPEC 5 WO-04: len (1 - overlap) for 0 <= overlap < 1, else null.
 - **May use:** nothing.
@@ -58,7 +58,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-05 [Cline] `bimDpLines(width, spacing)`
+## [x] WO-05 [Cline] `bimDpLines(width, spacing)`
 
 - **It must:** SPEC 5 WO-05: ceil(width / spacing - 1e-9) + 1; null unless spacing is positive.
 - **May use:** nothing.
