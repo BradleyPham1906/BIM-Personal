@@ -18,7 +18,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-01 [Cline] `bimPdName(program, code)`
+## [x] WO-01 [Cline] `bimPdName(program, code)`
 
 - **It must:** SPEC 5 WO-01: with BIM_PD_PS (the 44 PSLRFD codes and names of the spec's inventory) and BIM_PD_ST (the 57 STLRFD codes in section order, 5.3 CFG to 5.59 ORF) just above it: for 'PS' the name or null; for 'ST' 'Design Plate Location' for DPL, else the code when it is an STLRFD command, else null; any other program null.
 - **May use:** BIM_PD_PS, BIM_PD_ST (this task).
