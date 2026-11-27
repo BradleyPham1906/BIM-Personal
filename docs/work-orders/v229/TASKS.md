@@ -38,7 +38,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-03 [Cline] `bimSgRepeat(len, size)`
+## [x] WO-03 [Cline] `bimSgRepeat(len, size)`
 
 - **It must:** SPEC 5 WO-03: {n: 0, size: 0} unless len and size are both over 0; else n = max(1, floor(len / size + 0.5 + 1e-9)) (the nearest count, a half going up, at least one) and {n, size: len / n}.
 - **May use:** nothing.
