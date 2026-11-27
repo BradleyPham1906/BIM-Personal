@@ -28,7 +28,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-02 [Cline] `bimPlSmall(rooms, links, bay, depth, t, maxPer)`
+## [x] WO-02 [Cline] `bimPlSmall(rooms, links, bay, depth, t, maxPer)`
 
 - **It must:** SPEC 5 WO-02: rooms [{id, area}] in programme order; small when area < t bay depth (t 0.6, maxPer 3 unless above 0). A link's strength between two rooms is the least (strongest) over links not rejected (2 when none given). In order: a room not small is its own cluster; a small room joins the cluster of its most strongly linked earlier small room (ties to the lower id) whose cluster has fewer than maxPer rooms, else starts a cluster. Clusters in order of creation: {ids, area: their sum, small}.
 - **May use:** nothing.

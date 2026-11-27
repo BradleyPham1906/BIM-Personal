@@ -16147,6 +16147,40 @@ function bimPlBayWidth(areas, depth, bmin, bmax, step) {
   return best;
 }
 
+/* WO-02: bimPlSmall(rooms, links, bay, depth, t, maxPer) - 36 lines */
+function bimPlSmall(rooms, links, bay, depth, t, maxPer) {
+  t = t || 0.6; maxPer = maxPer || 3;
+  var isSmall = function (a) { return a.area < t * bay * depth; };
+  var clusters = []; var ids, area, small;
+  for (var r = 0; r < rooms.length; r++) {
+    var room = rooms[r];
+    if (!isSmall(room)) clusters.push([[room.id], room.area, false]);
+    else {
+      var bestIdx = -1, bestStr = -1;
+      for (var l = 0; l < links.length; l++) {
+        var link = links[l];
+        if ((link.a === room.id || link.b === room.id) && link.status !== 'rejected') {
+          var otherId = (link.a === room.id) ? link.b : link.a;
+          if (isSmall(rooms.find(function (ri) { return ri.id === otherId; }))) {
+            var cid = -1;
+            for (var i = 0; i < clusters.length; i++)
+              if (clusters[i][0].indexOf(otherId) >= 0) { cid = i; break; }
+            if (cid >= 0 && clusters[i][0].length < maxPer) {
+              var str = link.strength !== undefined ? link.strength : 2;
+              if (str > bestStr || (str === bestStr && bestIdx >= 0 && clusters[bestIdx][0][0] > clusters[cid][0][0])) bestStr = str, bestIdx = cid;
+            }
+          }
+        }
+      }
+      if (bestIdx >= 0) { clusters[bestIdx][0].push(room.id); clusters[bestIdx][1] += room.area; }
+      else clusters.push([[room.id], room.area, true]);
+    }
+  }
+  var r = []; var c;
+  for (var i = 0; i < clusters.length; i++) { c = clusters[i]; r.push({ ids: c[0], area: c[1], small: c[2] }); }
+  return r;
+}
+
 /* ================= __acad3dV193: LOD-F, LOD3 openings on rectified facades, the pure part =================
      docs/research/research-notion-v191-openings.md and docs/work-orders/v193/SPEC.md. Openings on a rectified facade:
      one-dimensional clusters, snapping, regularised rows and columns, overlaps, the app's wall opening. Each function is a
