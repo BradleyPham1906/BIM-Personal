@@ -18,7 +18,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-01 [Cline] `bimSgSizes(len, sizes)`
+## [x] WO-01 [Cline] `bimSgSizes(len, sizes)`
 
 - **It must:** SPEC 5 WO-01: sizes: a number is absolute; {rel: r} is r times len; {fl: f} is floating. Negative numbers, rel and fl count as 0; anything else is 0. The floating parts share max(0, len - the absolute and relative sizes) in proportion to their f (0 each when the f sum to 0). The resolved sizes, in order; nothing is cut here.
 - **May use:** nothing.
@@ -28,7 +28,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-02 [Cline] `bimSgSplit(len, sizes)`
+## [x] WO-02 [Cline] `bimSgSplit(len, sizes)`
 
 - **It must:** SPEC 5 WO-02: the sizes from bimSgSizes placed end to end from 0: [{i (the part's position in sizes), at, size}], each size cut to what is left of len; a part of 1e-9 or less (after cutting) is left out and does not advance; parts after the scope is full are therefore left out.
 - **May use:** bimSgSizes (WO-01).
