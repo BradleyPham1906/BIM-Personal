@@ -18,7 +18,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 
 ---
 
-## [ ] WO-01 [Cline] `bimPlBayWidth(areas, depth, bmin, bmax, step)`
+## [x] WO-01 [Cline] `bimPlBayWidth(areas, depth, bmin, bmax, step)`
 
 - **It must:** SPEC 5 WO-01: null unless depth is above 0 and the areas sum above 0. For b = bmin + n step (rounded to 1e-6; bmin 3, step 0.3 unless above 0; bmax at least bmin) up to bmax: each room takes k = max(1, round(area / (b depth))) bays; error = sum |k b depth - area| / sum of areas. The b with the least error (a later b replaces it only when smaller by over 1e-12): {bay, bays: [k per room], error}.
 - **May use:** nothing.
