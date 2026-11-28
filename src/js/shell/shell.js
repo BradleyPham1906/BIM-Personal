@@ -209,6 +209,7 @@
     ['CITYJSONOUT',['EXPORTCITYJSON','CITYJSON'],'cityjsonout','Export the buildings as CityJSON 2.0, in the site\'s UTM zone'],
     ['CITYJSONIN',['IMPORTCITYJSON'],'cityjsonin','Import a CityJSON file\'s buildings, placed by their UTM coordinates'],
     ['IFCIN',['IMPORTIFC','IFC','OPENIFC'],'ifcin','Open an IFC model (IFC2x3, IFC4, IFC4.3): every element in its colour with its openings, on layers by class, its storeys as levels and its property sets in Properties'],   /* __acad3dV196 */
+    ['REVIEW',['IFCREVIEW','REVIEWIFC','VIEWIFC'],'review','Review IFC models with That Open, without importing them: several files at once, select for IFC data, section planes, length and area, hide and isolate, storeys and classes, then Import'],   /* __acad3dV206 */
     ['GLTFIN',['IMPORTGLTF','GLB','GLTF','IMPORTGLB'],'gltfin','Open a glTF or GLB model: its meshes as solids by material, on a layer named after the file, and kept in Assets as a block'],   /* __acad3dV195 */
     ['GLTFOUT',['EXPORTGLTF','EXPORTGLB'],'gltfout','Export the model shown as a .glb, an element a mesh under a node for its layer, for Blender, SketchUp, game engines and headsets'],
     ['EXPORTDWG',['DWGOUT','SAVEDWG'],'dwgout','Export the plan as an AutoCAD DWG file (2013 format) through cc-dwg'],   /* __acad3dV252 */

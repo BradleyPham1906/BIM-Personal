@@ -12,6 +12,7 @@ import { bimSelectedGrid } from '../bim/grid-editing.js';
 import { bimFileNotWork, bimFileOpen, bimFileSave } from '../io/file-save.js';
 import { bimClbKey } from '../site-analysis/climate-board.js';
 import { refreshProps } from '../site-analysis/panel.js';
+import { A3D_RVW } from '../io/thatopen-review.js';
 import { paint } from '../map/terrain-3d.js';
 import { A3D_WALK } from '../walk/walk-mode.js';
 import { bimCloseRailPop } from './shortcuts.js';
@@ -156,6 +157,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
   }
   function onKey(ev){
     if(!A3D.on)return;
+    if(A3D_RVW.open)return;   /* __acad3dV206: the Review view is over the app; its keys are its own (io/thatopen-review.js) */
     if(A3D_WALK.on)return;   /* __acad3dV203: walking, the keys are the walk's (walk/walk-controls.js): Space is a jump, not the last command again */
     /* __acad3dV124: a drag from the library is the innermost thing Escape can end */
     if(ev.key==='Escape'&&bimAssetDragCancel()){a3dToast('Nothing placed');ev.preventDefault();ev.stopImmediatePropagation();return;}

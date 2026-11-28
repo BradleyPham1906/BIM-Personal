@@ -1,0 +1,43 @@
+That Open e02, 2026-11-28, Linux (cloud container), Node 22, Chromium 158.0.8127.36 (build 1243) by Playwright,
+WebGL by SwiftShader (--use-angle=swiftshader). The pinned runtime as committed: runtime/three/0.186.1/bim-three.min.js
+(the app's own three), runtime/thatopen/3.6.0/{bim-webifc.min.js, bim-webifc-wasm.js, bim-thatopen.min.js}, built by
+tools/thatopen/build_thatopen.mjs from @thatopen/components 3.6.0, components-front 3.6.1, fragments 3.6.1,
+web-ifc 0.0.79, camera-controls 3.1.2. page.html is the experiment; run.mjs drives it.
+
+Files (not committed): buildingSMART/Sample-Test-Files (main), same SHA-256 prefixes as e01 and V196 e01, plus two:
+  c4db65ba847f6b36    92542  2x3-arch.ifc    IFC 2.3.0.1 (IFC 2x3 TC1)/Simple-Scene/Building-Architecture.ifc
+  8790a1e193e82b8e   142325  4-arch.ifc      IFC 4.0.2.1 (IFC 4 ADD2 TC1)/Simple-Scene/Building-Architecture.ifc
+  6012bb5e0c33d992  1742591  4-bridge.ifc    IFC 4.0.2.1 (IFC 4 ADD2 TC1)/Simple-Scene/Infra-Bridge.ifc
+  903b5a005901397a   185185  4-struct.ifc    IFC 4.0.2.1 (IFC 4 ADD2 TC1)/Simple-Scene/Building-Structural.ifc
+  73b0e45d931d5dc1    12492  4-wallopen.ifc  IFC 4.0.2.1 (IFC 4 ADD2 TC1)/ISO Spec - ReferenceView_V1.2/wall-with-opening-and-window.ifc
+  d1620988e2a27e4a     2720  v177_wall_ifcos.ifc  tests/fixtures/ifc (written by the app's own IFC save, V177)
+
+What each run does: a That Open world (SimpleScene, SimpleRenderer, OrthoPerspectiveCamera) in an 800x600 div;
+FragmentsManager on the inline worker (http: module worker; file://: toClassicWorker + classicWorker); IfcLoader with
+autoSetWasm false and the wasm handed over by a fetch wrapper from BIMWEBIFC_WASM; load, frame, draw; then the data
+the import needs (getCategories, getSpatialStructure, getItemsWithGeometry, getGuidsByLocalIds, getItemsData with
+IsDefinedBy and ContainedInStructure, getItemsGeometry), a ray at the view's centre (Raycasters), a clipping plane
+(Clipper.createFromNormalAndCoplanarPoint), LengthMeasurement made, getItemsVolume of the first item.
+
+Results, identical over http (module worker) and from file:// (classic worker); times from the file:// run:
+  file            box (m)                  cats storeys items guids parts  tris  psets(1st) vol(1st) m3  total ms
+  2x3-arch.ifc    38.386 x 7     x 24.183    24    1      14    14    22   1170   1          0.8008     1667
+  4-arch.ifc      39.219 x 7     x 24.719    28    1      13    13    13   1143   1          6.3459     1548
+  4-bridge.ifc    45.367 x 11.275 x 57.809   28    0      48    48    78  13240   2          0.3461     1845
+  4-struct.ifc    38.807 x 6.576 x 24.519    25    1      16    16    17   1486   2          0.0540     1584
+  4-wallopen.ifc   3     x 2     x 0.3       17    1       2     2     2     44   1          1.5        1509
+  v177_wall_ifcos  6     x 3     x 0.3        9    1       1     1     1     12   1          5.4        1352
+  guids: every item's GlobalId came back, 22 characters. getItemsData keys: _category, _localId, _guid, Name,
+  Description, ObjectType, Tag, IsDefinedBy, ContainedInStructure. getItemsGeometry: per item a list of parts, each
+  {positions Float32Array, indices Uint16Array, transform Matrix4 (16)}: the import's meshes are parts x transform.
+  Ray at the centre: hit on the two small files (wall: localId 45 -> 3ZYW59sxj8lei475l7EhLU; the app's own file:
+  29 -> 3fUx7AAmz4fPtpAGQY2IfE, its wall's GlobalId); on the others the centre of the frame is empty ground (the box
+  includes a site object far from the building, see the screenshot), so null is expected, not a fault.
+  Clipping: one plane in renderer.clippingPlanes after create. No page errors, no console errors, in either mode.
+  Bridge: 4-bridge.ifc has no IfcBuildingStorey (an IFC4 infrastructure file: storeys 0 is right).
+
+What it shows (closes research-thatopen.md part 10's first and last open items): That Open draws, clips, picks and
+measures in a canvas on the app's own three.js from file:// and over http, with its WebGPU paths and potree-core left
+out (the stubs were never reached), and gives every element's GlobalId, property sets, storey and meshes, which is
+what WO-09 needs. Not tried: a phone, Safari, Firefox; files over 2 MB (the bridge, 1.7 MB, took 0.5 s to convert).
+SimpleRenderer draws That Open's logo, which its docs ask apps to keep as credit (showLogo); the app keeps it.

@@ -373,6 +373,34 @@
    "sha256": "9af885467c05afe44008ce4bd2fe8e87bdef112607374f4bc6082cb8a5b24100",
    "from": "written by tools/occt/build_occt_import.mjs: the source offer",
    "licence": "LGPL-2.1 (occt-import-js; OpenCASCADE)"
+  },
+  {
+   "path": "thatopen/3.6.0/bim-thatopen.min.js",
+   "bytes": 2636322,
+   "sha256": "504bd2a0003681b0976fe13e6a9148c32a856523d9370f542732dbf834cd2b3d",
+   "from": "npm @thatopen/components@3.6.0 (the tarball sha512-NFO8G8axXVgsXklxhTS7gYcP5O1pe/PnS+jzDSwICaeE2zENk23vCtxHQfHlfWmx15E5Iu4LwsqfRdgM5iSNtA==), npm @thatopen/components-front@3.6.1 (the tarball sha512-y9PmqH/NFsx2pHh5S/OOGqCMBN9aL38O/WZzZVkqX7UTzpb5D5txsEl/H4apBeWADfF6WY8LA30ao+a4SlRmpQ==), npm @thatopen/fragments@3.6.1 (the tarball sha512-dHrzuJGI0yx4tj/5Rcf4eU/FsJZBdDwDfmYuce8JGqVnq1aUupWGecBjJ4SClfcsEm2phg9gJPHLlgWaZG2liQ==) and @nodable/entities, anynum, camera-controls, core-util-is, earcut, fast-xml-builder, fast-xml-parser, flatbuffers, immediate, inherits, isarray, jszip, lie, lru-cache, pako, path-expression-matcher, process-nextick-args, readable-stream, safe-buffer, setimmediate, string_decoder, strnum, three, three-mesh-bvh, util-deprecate, xml-naming, xxhash-wasm, bundled unchanged by esbuild 0.28.2: tools/thatopen/build_thatopen.mjs",
+   "licence": "MIT (That Open) and the licences in LICENSES.txt"
+  },
+  {
+   "path": "thatopen/3.6.0/bim-webifc.min.js",
+   "bytes": 3526505,
+   "sha256": "dd39306efa8260165bd77de7fc1a3b4c47c6469aa07e6819b51f514339a3c2a7",
+   "from": "npm web-ifc@0.0.79 (the tarball sha512-g7bGXiW3ewxwnw9zJdVzZnRiRbDl+Fd3HWuFYs1rosQ5tmDRsOOM9pwKLBjWJYla3t88hPclJWD0J2mlksWFMQ==), web-ifc-api.js, bundled unchanged by esbuild 0.28.2: tools/thatopen/build_thatopen.mjs",
+   "licence": "MPL-2.0 (web-ifc)"
+  },
+  {
+   "path": "thatopen/3.6.0/bim-webifc-wasm.js",
+   "bytes": 2239429,
+   "sha256": "ddf168dca8d89961186a7fc97ab33ddaf67052bfb9a413720ca26eba4120e74c",
+   "from": "npm web-ifc@0.0.79 (the tarball sha512-g7bGXiW3ewxwnw9zJdVzZnRiRbDl+Fd3HWuFYs1rosQ5tmDRsOOM9pwKLBjWJYla3t88hPclJWD0J2mlksWFMQ==), web-ifc.wasm as base64: tools/thatopen/build_thatopen.mjs",
+   "licence": "MPL-2.0 (web-ifc)"
+  },
+  {
+   "path": "thatopen/3.6.0/LICENSES.txt",
+   "bytes": 59374,
+   "sha256": "a1c0a610c1cdb0d81d30babfc3e606ef3f877d201abeecdad7780c0d8425ebaa",
+   "from": "the licence file of every package bundled: tools/thatopen/build_thatopen.mjs",
+   "licence": "as listed in it"
   }
  ],
  "three": "0.186.1",
@@ -382,5 +410,6 @@
  "geotiff": "3.0.5",
  "cc-dwg": "e36a94d",
  "occt": "1.2.1",
- "occtImport": "0.0.23"
+ "occtImport": "0.0.23",
+ "thatopen": "3.6.0"
 }

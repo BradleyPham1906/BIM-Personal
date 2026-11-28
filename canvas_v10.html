@@ -1459,6 +1459,41 @@ body.light-theme .a3d-rktitle{color:#202124}body.light-theme .a3d-rkcat{color:#3
   .a3d-walking .a3d-walkbar{top:6px;gap:4px;padding:4px;max-width:calc(100% - 32px);flex-wrap:wrap;justify-content:center}
   .a3d-walkbar button{font-size:12px;padding:7px 9px}
 }
+/* __acad3dV206: the Review view (io/thatopen-review.js): That Open's world over the app, with its bar, tree and data */
+.a3d-review{position:fixed;inset:0;z-index:30000;display:flex;flex-direction:column;background:var(--bg,#191919);color:var(--text,#fff);
+  font:13px/1.35 system-ui,-apple-system,"Segoe UI",sans-serif}
+.a3d-rvw-bar{display:flex;flex-wrap:wrap;gap:6px;padding:8px 16px;border-bottom:1px solid rgba(128,128,128,.3)}
+.a3d-rvw-bar button{font:inherit;color:inherit;background:transparent;border:1px solid rgba(128,128,128,.45);border-radius:7px;
+  padding:6px 11px;min-height:32px;cursor:pointer;white-space:nowrap}
+.a3d-rvw-bar button:hover{background:rgba(128,128,128,.15)}
+.a3d-rvw-bar button.on{background:#3a6fd8;border-color:#3a6fd8;color:#fff}
+.a3d-rvw-bar .a3d-rvw-close{margin-left:auto}
+.a3d-rvw-main{flex:1;display:flex;min-height:0;overflow:hidden}
+.a3d-rvw-view{position:relative;flex:1;min-width:0;outline:none;touch-action:none;background:#e9ebee}
+body:not(.light-theme) .a3d-rvw-view{background:#2a2d31}
+.a3d-rvw-view canvas{display:block;position:absolute;inset:0;width:100%;height:100%}
+.a3d-rvw-side{width:320px;max-width:40%;overflow:auto;border-left:1px solid rgba(128,128,128,.3);padding:8px 12px}
+.a3d-rvw-side details{margin:2px 0}
+.a3d-rvw-side summary{cursor:pointer;padding:3px 0}
+.a3d-rvw-side ul{list-style:none;margin:0;padding:0 0 0 18px}
+.a3d-rvw-side li{display:flex;align-items:center;gap:4px}
+.a3d-rvw-side li button{font:inherit;color:inherit;background:none;border:0;padding:3px 2px;cursor:pointer;text-align:left;flex:1}
+.a3d-rvw-side li button:hover{text-decoration:underline}
+.a3d-rvw-side li span{opacity:.6}
+.a3d-rvw-props h4{margin:12px 0 6px;font-size:14px}
+.a3d-rvw-props table{width:100%;border-collapse:collapse;font-size:12px}
+.a3d-rvw-props th{text-align:left;font-weight:500;opacity:.7;padding:2px 8px 2px 0;vertical-align:top;width:42%;word-break:break-word}
+.a3d-rvw-props td{padding:2px 0;word-break:break-word}
+.a3d-rvw-hint{opacity:.7}
+.a3d-rvw-status{padding:6px 16px;border-top:1px solid rgba(128,128,128,.3);font-size:12px;opacity:.85;min-height:18px}
+@media (pointer:coarse){.a3d-rvw-bar button{min-height:40px;padding:8px 12px}}
+/* phone and narrow tablet: the tree and data under the view */
+@media (max-width:760px){
+  .a3d-rvw-main{flex-direction:column}
+  .a3d-rvw-side{width:auto;max-width:none;max-height:38%;border-left:0;border-top:1px solid rgba(128,128,128,.3)}
+  .a3d-rvw-bar{gap:4px;padding:6px 16px}
+  .a3d-rvw-bar button{font-size:12px;padding:7px 9px}
+}
 @media(max-width:720px),(max-height:500px){
 .a3d-drawerbtn{display:inline-block}
 .a3d-tb{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch}
@@ -2044,6 +2079,7 @@ body.light-theme .a3d-tl-msgs,body.light-theme .a3d-tl-hn span,body.light-theme 
     ['CITYJSONOUT',['EXPORTCITYJSON','CITYJSON'],'cityjsonout','Export the buildings as CityJSON 2.0, in the site\'s UTM zone'],
     ['CITYJSONIN',['IMPORTCITYJSON'],'cityjsonin','Import a CityJSON file\'s buildings, placed by their UTM coordinates'],
     ['IFCIN',['IMPORTIFC','IFC','OPENIFC'],'ifcin','Open an IFC model (IFC2x3, IFC4, IFC4.3): every element in its colour with its openings, on layers by class, its storeys as levels and its property sets in Properties'],   /* __acad3dV196 */
+    ['REVIEW',['IFCREVIEW','REVIEWIFC','VIEWIFC'],'review','Review IFC models with That Open, without importing them: several files at once, select for IFC data, section planes, length and area, hide and isolate, storeys and classes, then Import'],   /* __acad3dV206 */
     ['GLTFIN',['IMPORTGLTF','GLB','GLTF','IMPORTGLB'],'gltfin','Open a glTF or GLB model: its meshes as solids by material, on a layer named after the file, and kept in Assets as a block'],   /* __acad3dV195 */
     ['GLTFOUT',['EXPORTGLTF','EXPORTGLB'],'gltfout','Export the model shown as a .glb, an element a mesh under a node for its layer, for Blender, SketchUp, game engines and headsets'],
     ['EXPORTDWG',['DWGOUT','SAVEDWG'],'dwgout','Export the plan as an AutoCAD DWG file (2013 format) through cc-dwg'],   /* __acad3dV252 */
@@ -42500,13 +42536,34 @@ function bimGenLots(frontage, target) {
       });
     });
   }
+  /* __acad3dV206 WO-09: the file read through That Open (io/thatopen-runtime.js, the owner's choice of 2026-11-13), and
+     through cc-ifc when That Open cannot be loaded or cannot read it; D.engine says which. cc-ifc stays until the two
+     agree on V196's 13 files (docs/research/experiments/thatopen/e03) */
+  var BIM_IFC_ENGINE={use:'thatopen'};
+  /* which engine reads first: 'thatopen' (the default) or 'cc-ifc' (e03 compares the two through the same import) */
+  function bimIfcEngineUse(n){BIM_IFC_ENGINE.use=n==='cc-ifc'?'cc-ifc':'thatopen';return BIM_IFC_ENGINE.use;}
+  function bimIfcReadAny(bytes){
+    var text='';
+    try{text=new TextDecoder('utf-8').decode(bytes.subarray(0,Math.min(bytes.length,4194304)));}catch(eT){text='';}
+    function viaCc(why){
+      if(why)console.warn('[BIM] IFC import: That Open did not read the file ('+why+'); cc-ifc is used');
+      return bimIfcLoad().then(function(R){return bimIfcRead(R,bytes);}).then(function(D){D.engine='cc-ifc';return D;});
+    }
+    if(BIM_IFC_ENGINE.use!=='thatopen')return viaCc('');
+    return bimToeRead(bytes,text).then(function(D){
+      if(!D.parts.length)return viaCc('no elements with geometry');
+      D.engine='That Open';
+      return D;
+    },function(e){return viaCc(String(e&&e.message||e));});
+  }
   /* IfcWallStandardCase -> IfcWall: the class an element's layer is named after */
   function bimIfcClass(t){return String(t||'IfcProduct').replace(/StandardCase$|ElementedCase$/,'');}
   var BIM_IFC_KIND={IfcWall:'wall',IfcSlab:'floor'};
   function bimIfcImportBuffer(buf,filename){
     var name=String(filename||'model.ifc'),stem=name.replace(/^.*[\\\/]/,'').replace(/\.ifc$/i,'')||'IFC',t0=Date.now();
     var bytes=buf instanceof Uint8Array?buf:new Uint8Array(buf);
-    return bimIfcLoad().then(function(R){return bimIfcRead(R,bytes);}).then(function(D){
+    return bimIfcReadAny(bytes).then(function(D){
+      var tRead=Date.now()-t0;
       if(!D.parts.length)throw new Error('no elements with geometry in '+name);
       var made=[],ids=[],byClass={},names={},levels=0,i,EP={};
       /* __acad3dV177: the walls-and-slabs reader's parameters, for Make editable (bimIfcMakeEditable) */
@@ -42549,6 +42606,7 @@ function bimGenLots(frontage, target) {
       if(bimLayerById(was))A3D.activeLayer=was;
       refreshTree();refreshLevels();refreshLayers();refreshProps();fitScene();paint();saveSoon();
       return {ids:ids,layers:made,levels:levels,coord:D.coord,triangles:D.tris,cut:D.cut,skipped:D.skipped,notes:D.notes,booleans:D.booleans,ms:Date.now()-t0,
+        engine:D.engine||'',stages:D.ms||null,readMs:tRead,
         text:'IFC'+(D.schema?' ('+D.schema+')':'')+': '+ids.length+' element'+(ids.length===1?'':'s')+' from '+name+', '+levels+' level'+(levels===1?'':'s')+
           ', on the '+stem+' layer by class'+
           (D.booleans?'':'; openings not cut (the geometry library could not be loaded)')+
@@ -42564,7 +42622,7 @@ function bimGenLots(frontage, target) {
     return bimIfcImportBuffer(buf,name).then(function(r){a3dToast(r.text);return r;},function(e){
       var s=String(e&&e.message||e);
       console.warn('[BIM] IFC import: '+s,e);
-      if(A3D_IFC.st==='failed'){
+      if(A3D_IFC.st==='failed'&&A3D_TOE.st!=='ready'){
         a3dToast('The IFC engine could not be loaded, so only walls and slabs are read');
         var text='';
         try{text=new TextDecoder('utf-8').decode(buf);}catch(eD){text='';}
@@ -43416,11 +43474,659 @@ BIM_IFC_SAVE.model=bimIfcSaveModel;
 */
 function bimTorMesh(pos,idx,scale){if(pos.length%3!==0)return null;scale=scale!==undefined&&scale>0?scale:1;var v=[];for(var i=0;i<pos.length;i+=3){var x=pos[i],y=pos[i+1],z=pos[i+2];v.push([x*scale,z*scale,(0-y)*scale])}var f=[];for(var i=0;i<idx.length;i+=3)f.push([idx[i]||0,idx[i+1]||0,idx[i+2]||0]);return{v:v,f:f}}
 function bimTorGuidValid(g){if(typeof g!=='string'||g.length!==22)return false;var A='0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz_$',c=g.charAt(0);if(c<'0'||c>'3')return false;for(var i=1;i<22;i++){if(A.indexOf(g.charAt(i))===-1)return false}return true}
-function bimTorGuidFromHex(hex){if(typeof hex!=='string')return null;var c=hex.replace(/-/g,'');if(c.length!==32)return null;if(!/^[0-9a-fA-F]+$/.test(c))return null;var n=BigInt('0x'+c);var A='0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz_$';var s='';for(var i=0;i<22;i++){s=A[Number(n%64n)]+s;n/=64n}return s}
-function bimTorGuidToHex(g){if(!bimTorGuidValid(g))return null;var A='0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz_$';var n=BigInt(0);for(var i=0;i<22;i++){var idx=A.indexOf(g.charAt(i));if(idx===-1)return null;n=n*64n+BigInt(idx)}var hex=n.toString(16).toLowerCase().padStart(32,'0');return hex}
+/* __acad3dV206 (Claude, the audit): WO-03 and WO-04 without BigInt, which is not ES5 and would stop the whole engine
+   from parsing in a browser without it: the 128 bits are handled as 0s and 1s, the same characters out */
+var BIM_TOR_B64='0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz_$';
+function bimTorGuidFromHex(hex){
+  if(typeof hex!=='string')return null;
+  var c=hex.replace(/-/g,''),bits='',i,k,n,s='';
+  if(c.length!==32||!/^[0-9a-fA-F]+$/.test(c))return null;
+  for(i=0;i<32;i++){n=parseInt(c.charAt(i),16);for(k=3;k>=0;k--)bits+=(n>>k)&1;}
+  s=BIM_TOR_B64.charAt(parseInt(bits.slice(0,2),2));
+  for(i=2;i<128;i+=6)s+=BIM_TOR_B64.charAt(parseInt(bits.slice(i,i+6),2));
+  return s;
+}
+function bimTorGuidToHex(g){
+  if(!bimTorGuidValid(g))return null;
+  var bits='',i,k,n,v,out='';
+  for(i=0;i<22;i++){
+    v=BIM_TOR_B64.indexOf(g.charAt(i));
+    for(k=(i===0?1:5);k>=0;k--)bits+=(v>>k)&1;
+  }
+  for(i=0;i<128;i+=4){n=parseInt(bits.slice(i,i+4),2);out+=n.toString(16);}
+  return out;
+}
 function bimTorCompare(a,b){var C={};for(var cls in a)C[cls]=true;for(var cls in b)C[cls]=true;var S=[];for(var cls in C)S.push(cls);S.sort();var same=[],diff=[];for(var i=0;i<S.length;i++){var cls=S[i],ca=a[cls]||0,cb=b[cls]||0;if(ca===cb)same.push(cls);else diff.push({cls:cls,a:ca,b:cb})}return{same:same,diff:diff}}
 function bimTorArea(pts){if(pts.length===0)return 0;var Nx=0,Ny=0,Nz=0,n=pts.length;for(var i=0;i<n;i++){var j=(i+1)%n,xi=pts[i][0],yi=pts[i][1],zi=pts[i][2],xj=pts[j][0],yj=pts[j][1],zj=pts[j][2];Nx+=yi*zj-zi*yj;Ny+=zi*xj-xi*zj;Nz+=xi*yj-yi*xj}return 0.5*Math.sqrt(Nx*Nx+Ny*Ny+Nz*Nz)}
 function bimTorClip(p,plane){var dp=(p[0]-plane.p[0])*plane.n[0]+(p[1]-plane.p[1])*plane.n[1]+(p[2]-plane.p[2])*plane.n[2];return dp>1e-9}
+
+/* ---- __acad3dV206 WO-09 (Claude): That Open's data as the import's (docs/research/experiments/thatopen/e02) ----
+   That Open's values come as {value, type}; its geometry as parts already +Y up in metres, each with a 4x4 transform
+   (column-major); its spatial tree alternates category nodes ({category, localId null}) and item nodes ({localId}). */
+var BIM_TOE_MAX={sets:40,props:80,text:200};
+/* a value of That Open's as text: {value, type} unwrapped, numbers to 6 figures, lists joined */
+function bimToeVal(v){
+  if(v==null)return '';
+  if(Object.prototype.toString.call(v)==='[object Array]'){var a=[],i;for(i=0;i<v.length;i++)a.push(bimToeVal(v[i]));return a.join(', ');}
+  if(typeof v==='object'&&v.hasOwnProperty('value'))return bimToeVal(v.value);
+  if(typeof v==='number')return isFinite(v)?String(Math.abs(v)>=1e-4||v===0?+v.toPrecision(6):v):'';
+  if(typeof v==='boolean')return v?'Yes':'No';
+  if(typeof v==='object')return '';
+  return String(v).replace(/\s+/g,' ').slice(0,BIM_TOE_MAX.text);
+}
+/* a value of That Open's as it is ({value, type} unwrapped), for ids: never formatted, so 1007971 stays 1007971 */
+function bimToeRaw(v){return v!=null&&typeof v==='object'&&v.hasOwnProperty('value')?v.value:v;}
+/* the project's length unit in metres, from the file's text (ISO 10303-21): the length unit of the unit assignment
+   IfcProject names (else the first one), an SI unit with its prefix or a conversion-based foot, inch, yard or mile;
+   1 when none is found */
+var BIM_TOE_SI={EXA:1e18,PETA:1e15,TERA:1e12,GIGA:1e9,MEGA:1e6,KILO:1e3,HECTO:1e2,DECA:1e1,DECI:1e-1,CENTI:1e-2,MILLI:1e-3,
+  MICRO:1e-6,NANO:1e-9,PICO:1e-12,FEMTO:1e-15,ATTO:1e-18};
+var BIM_TOE_FT={FOOT:0.3048,FEET:0.3048,INCH:0.0254,YARD:0.9144,MILE:1609.344};
+function bimToeUnit(text){
+  var t=String(text||''),re=/#(\d+)\s*=\s*(IFC[A-Z0-9]+)\s*\(([^;]*)\)\s*;/gi,m,lines={},project=null,assigns=[],i,refs,u,k;
+  while((m=re.exec(t))){
+    var ty=m[2].toUpperCase();
+    if(ty==='IFCPROJECT')project=m[3];
+    else if(ty==='IFCUNITASSIGNMENT'){lines[m[1]]={ty:ty,a:m[3]};assigns.push(m[1]);}
+    else if(ty==='IFCSIUNIT'||ty==='IFCCONVERSIONBASEDUNIT')lines[m[1]]={ty:ty,a:m[3]};
+  }
+  if(!assigns.length)return 1;
+  var pick=assigns[0];
+  if(project){refs=project.match(/#\d+/g)||[];for(i=0;i<refs.length;i++)if(assigns.indexOf(refs[i].slice(1))>=0){pick=refs[i].slice(1);break;}}
+  refs=lines[pick].a.match(/#\d+/g)||[];
+  for(i=0;i<refs.length;i++){
+    u=lines[refs[i].slice(1)];
+    if(!u||!/\.LENGTHUNIT\./i.test(u.a))continue;
+    if(u.ty==='IFCSIUNIT'){var p=/\.LENGTHUNIT\.\s*,\s*(?:\.([A-Z]+)\.|\$)/i.exec(u.a);return p&&p[1]&&BIM_TOE_SI[p[1].toUpperCase()]||1;}
+    var nm=/'([^']*)'/.exec(u.a);
+    if(nm)for(k in BIM_TOE_FT)if(BIM_TOE_FT.hasOwnProperty(k)&&nm[1].toUpperCase().indexOf(k)>=0)return BIM_TOE_FT[k];
+    return 1;
+  }
+  return 1;
+}
+/* That Open's spatial tree as {holder: {item: the storey (or a space outside storeys) that holds it}, storeys: [ids],
+   cats: {item: its IFC class}} */
+function bimToeTree(root){
+  var holder={},storeys=[],cats={};
+  (function walk(n,cat,hold){
+    if(!n)return;
+    var kids=n.children||[],i,here=hold;
+    if(n.localId!=null){
+      cats[n.localId]=cat||'';
+      if(hold!=null&&holder[n.localId]==null)holder[n.localId]=hold;
+      if(cat==='IFCBUILDINGSTOREY'){storeys.push(n.localId);here=n.localId;}
+      else if(cat==='IFCSPACE'&&hold==null)here=n.localId;
+      for(i=0;i<kids.length;i++)walk(kids[i],null,here);
+    }else for(i=0;i<kids.length;i++)walk(kids[i],n.category||cat,hold);
+  })(root,null,null);
+  return {holder:holder,storeys:storeys,cats:cats};
+}
+/* an item's property and quantity sets (getItemsData with IsDefinedBy) as [{name, rows: [[name, value]]}] */
+function bimToeSets(item){
+  var out=[],defs=(item&&item.IsDefinedBy)||[],i,j,k,d,list,q,val,rows;
+  for(i=0;i<defs.length&&out.length<BIM_TOE_MAX.sets;i++){
+    d=defs[i];if(!d)continue;
+    list=d.HasProperties||d.Quantities||[];rows=[];
+    for(j=0;j<list.length&&rows.length<BIM_TOE_MAX.props;j++){
+      q=list[j];if(!q||!q.Name)continue;
+      val='';
+      for(k in q)if(q.hasOwnProperty(k)&&/Value$/.test(k)&&q[k]!=null){val=bimToeVal(q[k]);break;}
+      if(!val&&q.EnumerationValues)val=bimToeVal(q.EnumerationValues);
+      if(!val&&q.ListValues)val=bimToeVal(q.ListValues);
+      rows.push([bimToeVal(q.Name),val]);
+    }
+    if(rows.length)out.push({name:bimToeVal(d.Name)||'Properties',rows:rows});
+  }
+  return out;
+}
+/* an item's parts ([{positions, indices, transform}], transform a 16-number column-major matrix or {elements}) as one
+   {pos, idx}, flat, each part moved by its transform; parts without triangles are left out */
+function bimToeMesh(parts){
+  var pos=[],idx=[],i,k,base,p,m,v,ix,x,y,z;
+  for(i=0;i<(parts||[]).length;i++){
+    p=parts[i];v=p&&p.positions;ix=p&&p.indices;
+    if(!v||!ix||ix.length<3)continue;
+    m=p.transform&&p.transform.elements?p.transform.elements:(p.transform||[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]);
+    base=pos.length/3;
+    for(k=0;k+2<v.length;k+=3){
+      x=v[k];y=v[k+1];z=v[k+2];
+      pos.push(m[0]*x+m[4]*y+m[8]*z+m[12],m[1]*x+m[5]*y+m[9]*z+m[13],m[2]*x+m[6]*y+m[10]*z+m[14]);
+    }
+    for(k=0;k+2<ix.length;k++)idx.push(base+ix[k]);
+    for(;k<ix.length;k++)idx.push(base+ix[k]);
+  }
+  return {pos:pos,idx:idx};
+}
+/* That Open's colour ({r, g, b} from 0 to 1) as #rrggbb; grey for none */
+function bimToeHex(c){
+  if(!c||typeof c!=='object')return '#b8b8b0';
+  var a=[c.r,c.g,c.b],s='#',i,h;
+  for(i=0;i<3;i++){h=Math.max(0,Math.min(255,Math.round((+a[i]||0)*255))).toString(16);s+=h.length<2?'0'+h:h;}
+  return s;
+}
+/* the colour and opacity of each item, from getItemsMaterialDefinition's [{localIds, definition}]: the first opaque
+   colour that covers it, and the mean of its materials' opacities */
+function bimToeLook(defs){
+  var out={},i,j,d,id,o;
+  for(i=0;i<(defs||[]).length;i++){
+    d=defs[i]&&defs[i].definition;if(!d)continue;
+    var op=typeof d.opacity==='number'&&isFinite(d.opacity)?Math.max(0,Math.min(1,d.opacity)):1;
+    for(j=0;j<(defs[i].localIds||[]).length;j++){
+      id=defs[i].localIds[j];o=out[id]||(out[id]={col:'',sum:0,n:0,opacity:1});
+      if(!o.col&&op>=0.99)o.col=bimToeHex(d.color);
+      if(!o.first)o.first=bimToeHex(d.color);
+      o.sum+=op;o.n++;o.opacity=o.sum/o.n;
+    }
+  }
+  for(id in out)if(out.hasOwnProperty(id)){if(!out[id].col)out[id].col=out[id].first;delete out[id].first;delete out[id].sum;delete out[id].n;}
+  return out;
+}
+/* the Review view's tree: [{storey: id or null, classes: {CLASS: [ids]}}], one row per storey in the file's order and
+   a last one (storey null) for what no storey holds; spatial elements themselves are not listed */
+var BIM_TOE_SPATIAL={IFCPROJECT:1,IFCSITE:1,IFCBUILDING:1,IFCBUILDINGSTOREY:1,IFCFACILITY:1,IFCFACILITYPART:1,IFCBRIDGE:1,
+  IFCROAD:1,IFCRAILWAY:1,IFCMARINEFACILITY:1};
+function bimToeStoreyClasses(root){
+  var T=bimToeTree(root),rows=[],at={},id,c,r,i;
+  for(i=0;i<T.storeys.length;i++){at[T.storeys[i]]=rows.length;rows.push({storey:T.storeys[i],classes:{}});}
+  var rest={storey:null,classes:{}};
+  for(id in T.cats){
+    if(!T.cats.hasOwnProperty(id))continue;
+    c=T.cats[id];if(!c||BIM_TOE_SPATIAL[c])continue;
+    r=T.holder[id]!=null&&at.hasOwnProperty(T.holder[id])?rows[at[T.holder[id]]]:rest;
+    (r.classes[c]||(r.classes[c]=[])).push(+id);
+  }
+  for(i=0;i<rows.length;i++)for(c in rows[i].classes)if(rows[i].classes.hasOwnProperty(c))rows[i].classes[c].sort(function(a,b){return a-b;});
+  for(c in rest.classes)if(rest.classes.hasOwnProperty(c))rest.classes[c].sort(function(a,b){return a-b;});
+  for(c in rest.classes)if(rest.classes.hasOwnProperty(c)){rows.push(rest);break;}
+  return rows;
+}
+/* the schema's spelling of a class That Open names in capitals (IFCWALLSTANDARDCASE -> IfcWallStandardCase), from lists
+   of class names (web-ifc's IFC4X3, IFC4 and IFC2X3 namespaces, newest first); a guess from the capitals if none has it */
+function bimToeClassName(up,lists){
+  var u=String(up||'').toUpperCase(),i,k,L;
+  if(!u)return 'IfcProduct';
+  for(i=0;i<(lists||[]).length;i++){L=lists[i]||[];for(k=0;k<L.length;k++)if(String(L[k]).toUpperCase()===u)return L[k];}
+  return 'Ifc'+u.slice(3).charAt(0)+u.slice(4).toLowerCase();
+}
+/* ================= __acad3dV206: That Open Engine, loaded on demand =================
+   docs/research/research-thatopen.md (the owner's decisions, 2026-11-13) and research-thatopen-gap/. That Open
+   (@thatopen/components 3.6.0, components-front 3.6.1, fragments 3.6.1, MIT) and web-ifc 0.0.79 (MPL-2.0) are three
+   files in runtime/thatopen/<ver>/, pinned by size and SHA-256 in runtime/MANIFEST.json and built by tools/thatopen,
+   fetched only when an IFC file is opened or the Review view is asked for: from the page's folder over http(s), and
+   for a copy on a disk first from a runtime folder beside it, then from the Pages address. They run on the app's own
+   three.js (render/rendered-view.js loads it), never a second copy.
+   Two things make it work from file:// (e01, e02): web-ifc's wasm is carried in a script and handed to web-ifc by a
+   fetch wrapper that answers only its address, and the fragments worker is made a classic worker by the library's own
+   toClassicWorker(). This file is the only meeting point with the library: its loader, and the reader that turns an
+   IFC file into the import's data (the same shape as io/ifc-full.js's bimIfcRead). */
+var BIM_TOE={ver:'3.6.0',dir:'thatopen/3.6.0/',wasmUrl:'https://bim-webifc.invalid/web-ifc.wasm',
+  files:[
+    {f:'bim-webifc.min.js',g:'BIMWEBIFC',sri:'sha256-3TkwbvqCYBZb133n/Bo7TEfGRpqgfmgZtR9RQzmjwqc='},
+    {f:'bim-webifc-wasm.js',g:'BIMWEBIFC_WASM',sri:'sha256-3fFo3KjYmWEYan/JerM92vZwUr+5pBNyDKJuukEg50w='},
+    {f:'bim-thatopen.min.js',g:'BIMTOE',sri:'sha256-UEvSoAA2gbCXb+E+apFIwyqFZSPZNw9UJzLb+DTNKz0='}],
+  maxTris:1500000,chunk:400,
+  /* as V196: spaces are rooms, not solids (web-ifc and cc-ifc leave them out too); the facility parts are added */
+  skip:{IFCSPACE:1,IFCOPENINGELEMENT:1,IFCOPENINGSTANDARDCASE:1},
+  addClasses:['IFCSPATIALZONE','IFCROADPART','IFCBRIDGEPART','IFCRAILWAYPART','IFCMARINEPART','IFCFACILITYPARTCOMMON']};
+var A3D_TOE={load:null,st:'',err:'',L:null};
+/* where each file is asked for, in order: beside the page from a disk, then the runtime's address (with its hash) */
+function bimToeSources(protocol,base,file){
+  var p=String(protocol||''),out=[];
+  if(p!=='http:'&&p!=='https:')out.push({u:'runtime/'+BIM_TOE.dir+file.f,sri:false});
+  out.push({u:String(base)+BIM_TOE.dir+file.f,sri:true});
+  return out;
+}
+function bimToeScript(file){
+  if(window[file.g])return Promise.resolve(window[file.g]);
+  var src=bimToeSources(window.location&&window.location.protocol,bimLbBase(),file),i=0;
+  return new Promise(function(res,rej){
+    function next(){
+      if(i>=src.length){rej(new Error(file.f+' could not be loaded from '+src.map(function(s){return s.u;}).join(' or ')));return;}
+      var s=src[i++],tag=document.createElement('script');
+      tag.src=s.u;
+      if(s.sri){tag.integrity=file.sri;tag.crossOrigin='anonymous';}
+      tag.onload=function(){if(window[file.g])res(window[file.g]);else next();};
+      tag.onerror=function(){if(tag.parentNode)tag.parentNode.removeChild(tag);next();};
+      document.head.appendChild(tag);
+    }
+    next();
+  });
+}
+/* web-ifc asks for its wasm by fetch; the wrapper answers that one address from the script's base64 and passes every
+   other request on unchanged */
+function bimToeWasmShim(b64){
+  if(window.fetch&&window.fetch.bimToeShim)return;
+  var bin=atob(b64),bytes=new Uint8Array(bin.length),i,f0=window.fetch;
+  for(i=0;i<bin.length;i++)bytes[i]=bin.charCodeAt(i);
+  var shim=function(u){
+    var s=String(u&&u.url||u);
+    if(s===BIM_TOE.wasmUrl)return Promise.resolve(new Response(bytes.slice(0),{headers:{'Content-Type':'application/wasm'}}));
+    return f0.apply(this,arguments);
+  };
+  shim.bimToeShim=true;
+  window.fetch=shim;
+}
+/* the library, asked for once: a promise of {T, OBC, OBF, FRAGS, W, worker} */
+function bimToeLoad(){
+  var R=A3D_TOE;
+  if(R.load)return R.load;
+  R.st='loading';R.err='';
+  R.load=bimRvLoad().then(function(T){
+    var k=0;
+    function next(){return k<BIM_TOE.files.length?bimToeScript(BIM_TOE.files[k++]).then(next):Promise.resolve();}
+    return next().then(function(){
+      bimToeWasmShim(window.BIMWEBIFC_WASM);
+      var E=window.BIMTOE;
+      return E.FRAGS.FragmentsModels.getWorker().then(function(u){return E.FRAGS.toClassicWorker(u);}).then(function(w){
+        R.L={T:T,OBC:E.OBC,OBF:E.OBF,FRAGS:E.FRAGS,W:window.BIMWEBIFC,worker:w};
+        R.st='ready';
+        return R.L;
+      });
+    });
+  }).then(null,function(e){R.st='failed';R.err=String(e&&e.message||e);R.load=null;throw e;});
+  return R.load;
+}
+/* a That Open session: components with a fragments manager on the classic worker, and an IFC loader that never fetches
+   (its wasm comes through the shim). Each caller disposes its own (components.dispose()) */
+function bimToeSession(L){
+  var c=new L.OBC.Components(),fm=c.get(L.OBC.FragmentsManager),ld=c.get(L.OBC.IfcLoader);
+  fm.init(L.worker,{classicWorker:true});
+  return ld.setup({autoSetWasm:false,wasm:{path:BIM_TOE.wasmUrl.replace(/[^\/]*$/,''),absolute:true}}).then(function(){
+    return {c:c,fm:fm,loader:ld};
+  });
+}
+/* the ids that pass, in chunks, through an async call of the model's, and the results joined */
+function bimToeChunks(ids,fn){
+  var out=[],i=0;
+  function next(){
+    if(i>=ids.length)return Promise.resolve(out);
+    var part=ids.slice(i,i+BIM_TOE.chunk);i+=BIM_TOE.chunk;
+    return Promise.resolve(fn(part)).then(function(r){out=out.concat(r||[]);return next();});
+  }
+  return next();
+}
+/* the IFC file read through That Open, as io/ifc-full.js's bimIfcRead gives it: {parts: [{id, type, guid, name, col,
+   opacity, mesh, psets}], storeys: [{id, name, elev}], holder, tris, cut, skipped, notes, booleans, schema, coord}.
+   Meshes in metres, +Y up, moved near the origin as web-ifc's COORDINATE_TO_ORIGIN does; coord's translation is the
+   shift from the file's frame, as cc-ifc's coordination matrix (e02: equal to it in meaning, by measurement) */
+function bimToeRead(bytes,text){
+  var S=null,model=null,T0=Date.now(),ms={};
+  return bimToeLoad().then(function(L){return bimToeSession(L);}).then(function(s){
+    S=s;
+    return S.loader.load(bytes,false,'bim-import',{instanceCallback:function(imp){
+      /* IFC4.3's facility parts carry geometry, which cc-ifc draws and That Open's list leaves out (e03, the road) */
+      var W=window.BIMWEBIFC,k;
+      for(k=0;k<BIM_TOE.addClasses.length;k++)if(W&&typeof W[BIM_TOE.addClasses[k]]==='number')imp.classes.elements.add(W[BIM_TOE.addClasses[k]]);
+    }});
+  }).then(function(m){
+    model=m;ms.convert=Date.now()-T0;
+    return Promise.all([model.getItemsWithGeometry(),model.getSpatialStructure(),model.getCoordinates(),
+      model.getMetadata().then(null,function(){return {};})]);
+  }).then(function(r){
+    var items=r[0],tree=bimToeTree(r[1]),base=r[2]||[0,0,0],meta=r[3]||{},ids=[],k=0;
+    function ids1(){
+      if(k>=items.length)return Promise.resolve();
+      return Promise.resolve(items[k++].getLocalId()).then(function(id){if(id!=null)ids.push(id);return ids1();});
+    }
+    return ids1().then(function(){
+      var unit=bimToeUnit(text),D={parts:[],storeys:[],holder:tree.holder,tris:0,cut:0,skipped:0,notes:[],booleans:true,
+        schema:String(meta.schema||''),coord:[1,0,0,0,0,1,0,0,0,0,1,0,+base[0]||0,+base[1]||0,+base[2]||0,1]};
+      return Promise.all([
+        bimToeChunks(ids,function(p){return model.getItemsData(p,{attributesDefault:true,relations:{IsDefinedBy:{attributes:true,relations:true}}});}),
+        model.getItemsMaterialDefinition(ids),
+        tree.storeys.length?model.getItemsData(tree.storeys,{attributesDefault:true}):Promise.resolve([])
+      ]).then(function(q){
+        var data=q[0],look=bimToeLook(q[1]),byId={},i;ms.data=Date.now()-T0-ms.convert;
+        for(i=0;i<data.length;i++)if(data[i]&&bimToeRaw(data[i]._localId)!=null)byId[bimToeRaw(data[i]._localId)]=data[i];
+        for(i=0;i<q[2].length;i++){
+          var sd=q[2][i],e=sd&&sd.Elevation&&sd.Elevation.value;
+          D.storeys.push({id:+bimToeRaw(sd._localId),name:bimToeVal(sd.Name)||('Storey '+(i+1)),
+            elev:typeof e==='number'?e*unit+(+base[1]||0):null});
+        }
+        ids=ids.filter(function(id){var c=bimToeVal((byId[id]||{})._category)||tree.cats[id]||'';return !BIM_TOE.skip[String(c).toUpperCase()];});
+        var j=0;
+        function geo(){
+          if(j>=ids.length)return Promise.resolve();
+          var part=ids.slice(j,j+BIM_TOE.chunk);j+=BIM_TOE.chunk;
+          return model.getItemsGeometry(part).then(function(G){
+            for(var g=0;g<part.length;g++){
+              var id=part[g],it=byId[id]||{},lk=look[id]||{col:'#b8b8b0',opacity:1},cls=bimToeVal(it._category)||tree.cats[id]||'IFCPRODUCT';
+              var raw=bimToeMesh(G[g]),t=raw.idx.length/3;
+              if(!t){D.skipped++;continue;}
+              if(D.tris+t>BIM_TOE.maxTris){D.cut+=t;continue;}
+              var mm=bimGltfWeld(raw.pos,raw.idx);
+              if(!mm.f.length){D.skipped++;continue;}
+              mm.fe=bimGltfFeatureEdges(mm);
+              D.tris+=mm.f.length;
+              D.parts.push({id:id,type:bimToeClassName(cls,bimToeClassLists()),guid:bimToeVal(it._guid),name:bimToeVal(it.Name),
+                col:lk.col,opacity:Math.max(0.05,Math.min(1,lk.opacity)),mesh:mm,psets:bimToeSets(it)});
+            }
+            return geo();
+          });
+        }
+        return geo().then(function(){ms.geometry=Date.now()-T0-ms.convert-ms.data;D.ms=ms;return D;});
+      });
+    });
+  }).then(function(D){
+    var t1=Date.now();
+    if(S)try{S.c.dispose();}catch(eX){console.warn('[BIM] That Open: the reading session could not be closed',eX);}
+    if(D.ms){D.ms.dispose=Date.now()-t1;D.ms.read=Date.now()-T0;}
+    return D;
+  },function(e){
+    if(S)try{S.c.dispose();}catch(eX){}
+    throw e;
+  });
+}
+/* the class names web-ifc's schemas know, once, for bimToeClassName */
+function bimToeClassLists(){
+  if(A3D_TOE.names)return A3D_TOE.names;
+  var W=window.BIMWEBIFC||{},out=[],ns=['IFC4X3','IFC4','IFC2X3'],i,k,L;
+  for(i=0;i<ns.length;i++){L=[];if(W[ns[i]])for(k in W[ns[i]])if(/^Ifc[A-Z]/.test(k)&&!/(Enum|Select)$/.test(k))L.push(k);out.push(L);}
+  A3D_TOE.names=out;
+  return out;
+}
+/* ================= __acad3dV206 WO-08: the Review view =================
+   docs/research/research-thatopen.md (the owner's choice B, 2026-11-13) and research-thatopen-gap/. One or more IFC
+   models looked at as they are, without importing them, in That Open's own world on the app's three.js: fast display
+   of large and federated models, picking with their IFC data, section planes, length and area measuring, hiding and
+   isolating, and a tree of storeys and classes. Import brings the model under review into the editable model through
+   the same reader as File, Import (io/ifc-full.js). It opens over the app, on every screen size, and gives everything
+   back when closed. Loaded on demand (io/thatopen-runtime.js): nothing of That Open is fetched until REVIEW. */
+var A3D_RVW={open:false,busy:false,el:null,L:null,c:null,world:null,fm:null,hl:null,clip:null,len:null,area:null,hider:null,
+  mode:'select',models:[],seq:0,keys:null};
+var BIM_RVW_MODES={select:'Select',clip:'Section',length:'Length',area:'Area'};
+function bimRvwStatus(t){var R=A3D_RVW,s=R.el&&R.el.querySelector('.a3d-rvw-status');if(s)s.textContent=String(t||'');}
+function bimRvwHtml(){
+  var m,b='';
+  for(m in BIM_RVW_MODES)if(BIM_RVW_MODES.hasOwnProperty(m))b+='<button type="button" data-rvwmode="'+m+'">'+BIM_RVW_MODES[m]+'</button>';
+  return '<div class="a3d-rvw-bar" role="toolbar" aria-label="Review">'+
+    '<button type="button" data-rvw="open" title="Open one or more IFC files to review">Open IFC</button>'+
+    '<button type="button" data-rvw="fit" title="Frame every model">Fit</button>'+b+
+    '<button type="button" data-rvw="clear" title="Remove the section planes and measurements">Clear</button>'+
+    '<button type="button" data-rvw="hide" title="Hide the selection">Hide</button>'+
+    '<button type="button" data-rvw="isolate" title="Show only the selection">Isolate</button>'+
+    '<button type="button" data-rvw="show" title="Show everything">Show all</button>'+
+    '<button type="button" data-rvw="import" title="Bring the model under review into the editable model">Import</button>'+
+    '<button type="button" data-rvw="close" class="a3d-rvw-close" title="Close the Review view">Close</button>'+
+    '<input type="file" accept=".ifc" multiple hidden data-rvwfile></div>'+
+    '<div class="a3d-rvw-main"><div class="a3d-rvw-view" tabindex="0"></div>'+
+    '<div class="a3d-rvw-side"><div class="a3d-rvw-tree"><p class="a3d-rvw-hint">Open an IFC file to review it.</p></div>'+
+    '<div class="a3d-rvw-props"></div></div></div>'+
+    '<div class="a3d-rvw-status" aria-live="polite">Review: That Open Engine (MIT) on web-ifc (MPL-2.0)</div>';
+}
+/* the world, once per opening: scene, renderer and camera in the view's box; fragments on the classic worker; the tools */
+function bimRvwWorld(L){
+  var R=A3D_RVW,T=L.T,OBC=L.OBC,OBF=L.OBF,c=new OBC.Components(),view=R.el.querySelector('.a3d-rvw-view');
+  var w=c.get(OBC.Worlds).create();
+  w.scene=new OBC.SimpleScene(c);w.scene.setup();w.scene.three.background=null;
+  w.renderer=new OBC.SimpleRenderer(c,view);
+  w.camera=new OBC.OrthoPerspectiveCamera(c);
+  c.init();
+  c.get(OBC.Grids).create(w);
+  var fm=c.get(OBC.FragmentsManager);
+  fm.init(L.worker,{classicWorker:true});
+  w.camera.controls.addEventListener('update',function(){fm.core.update();});
+  fm.list.onItemSet.add(function(e){e.value.useCamera(w.camera.three);w.scene.three.add(e.value.object);fm.core.update(true);});
+  c.get(OBC.Raycasters).get(w);
+  var hl=c.get(OBF.Highlighter);
+  hl.setup({world:w,selectMaterialDefinition:{color:new T.Color('#3a8fd8'),opacity:1,transparent:false,renderedFaces:0}});
+  hl.events.select.onHighlight.add(function(map){bimRvwProps(map);});
+  hl.events.select.onClear.add(function(){var p=R.el&&R.el.querySelector('.a3d-rvw-props');if(p)p.innerHTML='';});
+  var clip=c.get(OBC.Clipper);clip.enabled=false;
+  var len=c.get(OBF.LengthMeasurement);len.world=w;len.enabled=false;len.color=new T.Color('#e8a33a');
+  var area=c.get(OBF.AreaMeasurement);area.world=w;area.enabled=false;area.color=new T.Color('#e8a33a');
+  area.list.onItemAdded.add(function(a){bimRvwStatus(bimRvwAreaText(a));});
+  R.c=c;R.world=w;R.fm=fm;R.hl=hl;R.clip=clip;R.len=len;R.area=area;R.hider=c.get(OBC.Hider);
+}
+/* an area's readout: That Open's value, checked against the app's own Newell area of the same points (bimTorArea) */
+function bimRvwAreaText(a){
+  var pts=[];
+  try{a.points.forEach(function(p){pts.push([p.x,p.y,p.z]);});}catch(eP){pts=[];}
+  var ours=bimTorArea(pts),theirs=+a.value;
+  return 'Area: '+(isFinite(theirs)?theirs:ours).toFixed(3)+' m2 ('+pts.length+' points'+
+    (isFinite(theirs)&&Math.abs(theirs-ours)>1e-3*Math.max(1,ours)?'; out of plane, the app measures '+ours.toFixed(3):'')+')';
+}
+/* the picked element's IFC data in the side panel: class, GlobalId, name, storey, then its property and quantity sets */
+function bimRvwProps(map){
+  var R=A3D_RVW,p=R.el&&R.el.querySelector('.a3d-rvw-props'),mid,id,n=0,k;
+  if(!p)return;
+  for(k in map)if(map.hasOwnProperty(k)){map[k].forEach(function(x){if(id==null){id=x;mid=k;}n++;});}
+  if(id==null){p.innerHTML='';return;}
+  var M=R.fm.list.get(mid);
+  if(!M)return;
+  M.getItemsData([id],{attributesDefault:true,relations:{IsDefinedBy:{attributes:true,relations:true},ContainedInStructure:{attributes:true,relations:false}}})
+  .then(function(d){
+    var it=d&&d[0]||{},sets=bimToeSets(it),st=(it.ContainedInStructure||[])[0],h='';
+    function row(a,b){return '<tr><th>'+bimEsc(a)+'</th><td>'+bimEsc(b)+'</td></tr>';}
+    h+='<h4>'+bimEsc(bimToeVal(it.Name)||bimToeClassName(bimToeVal(it._category),bimToeClassLists()))+(n>1?' <small>and '+(n-1)+' more</small>':'')+'</h4>';
+    h+='<table>'+row('IFC Class',bimToeClassName(bimToeVal(it._category),bimToeClassLists()))+row('GlobalId',bimToeVal(it._guid))+
+      (st?row('Storey',bimToeVal(st.Name)):'')+row('Model',(bimRvwModel(mid)||{}).name||'')+'</table>';
+    sets.forEach(function(s){h+='<details><summary>'+bimEsc(s.name)+'</summary><table>'+s.rows.map(function(r){return row(r[0],r[1]);}).join('')+'</table></details>';});
+    p.innerHTML=h;
+  },function(e){p.textContent='The element\'s data could not be read: '+String(e&&e.message||e);});
+}
+function bimRvwModel(mid){var R=A3D_RVW,i;for(i=0;i<R.models.length;i++)if(R.models[i].id===mid)return R.models[i];return null;}
+/* the tree of each model: storeys, then classes with their counts; a box shows or hides, a name selects */
+function bimRvwTree(){
+  var R=A3D_RVW,t=R.el&&R.el.querySelector('.a3d-rvw-tree');
+  if(!t)return Promise.resolve();
+  if(!R.models.length){t.innerHTML='<p class="a3d-rvw-hint">Open an IFC file to review it.</p>';return Promise.resolve();}
+  return Promise.all(R.models.map(function(m){
+    return m.model.getSpatialStructure().then(function(root){
+      var rows=bimToeStoreyClasses(root),ids=rows.filter(function(r){return r.storey!=null;}).map(function(r){return r.storey;});
+      return (ids.length?m.model.getItemsData(ids,{attributesDefault:true}):Promise.resolve([])).then(function(sd){
+        var names={};
+        (sd||[]).forEach(function(x){names[bimToeRaw(x._localId)]=bimToeVal(x.Name);});
+        m.rows=rows;m.names=names;
+      });
+    });
+  })).then(function(){
+    var h='',mi,ri,c;
+    for(mi=0;mi<R.models.length;mi++){
+      var m=R.models[mi];
+      h+='<details open><summary><label><input type="checkbox" checked data-rvwvis="'+mi+'"> '+bimEsc(m.name)+'</label></summary>';
+      for(ri=0;ri<(m.rows||[]).length;ri++){
+        var r=m.rows[ri],nm=r.storey!=null?(m.names[r.storey]||('Storey '+(ri+1))):'Not in a storey';
+        h+='<details open><summary><label><input type="checkbox" checked data-rvwvis="'+mi+','+ri+'"> '+bimEsc(nm)+'</label></summary><ul>';
+        for(c in r.classes)if(r.classes.hasOwnProperty(c))
+          h+='<li><label><input type="checkbox" checked data-rvwvis="'+mi+','+ri+','+bimEsc(c)+'"></label> <button type="button" data-rvwsel="'+mi+','+ri+','+bimEsc(c)+'">'+
+            bimEsc(bimToeClassName(c,bimToeClassLists()))+' <span>'+r.classes[c].length+'</span></button></li>';
+        h+='</ul></details>';
+      }
+      h+='</details>';
+    }
+    t.innerHTML=h;
+  });
+}
+/* a tree key ("model", "model,row" or "model,row,CLASS") as That Open's {modelId: Set of ids} */
+function bimRvwMap(key){
+  var R=A3D_RVW,k=String(key).split(','),m=R.models[+k[0]],out={},ids=[],ri,c;
+  if(!m)return out;
+  var rows=k.length>1?[m.rows[+k[1]]]:(m.rows||[]);
+  for(ri=0;ri<rows.length;ri++){
+    if(!rows[ri])continue;
+    for(c in rows[ri].classes)if(rows[ri].classes.hasOwnProperty(c)&&(k.length<3||c===k[2]))ids=ids.concat(rows[ri].classes[c]);
+  }
+  out[m.id]=new Set(ids);
+  return out;
+}
+function bimRvwMode(mode){
+  var R=A3D_RVW,b,i;
+  if(!R.c)return;
+  if(R.area&&R.area.enabled)try{R.area.cancelCreation();}catch(eA){}
+  if(R.len&&R.len.enabled)try{R.len.cancelCreation();}catch(eL){}
+  R.mode=BIM_RVW_MODES.hasOwnProperty(mode)?mode:'select';R.lenPts=0;
+  R.hl.config.selectEnabled=R.mode==='select';
+  R.clip.enabled=R.mode==='clip';
+  R.len.enabled=R.mode==='length';
+  R.area.enabled=R.mode==='area';
+  b=R.el.querySelectorAll('[data-rvwmode]');
+  for(i=0;i<b.length;i++)b[i].classList.toggle('on',b[i].getAttribute('data-rvwmode')===R.mode);
+  bimRvwStatus({select:'Select: tap an element for its IFC data',clip:'Section: double-click a face to cut there; Delete removes the plane under the pointer',
+    length:'Length: double-click two points',area:'Area: double-click the corners, Enter to finish'}[R.mode]);
+}
+function bimRvwFit(){
+  var R=A3D_RVW;
+  if(!R.world||!R.models.length)return Promise.resolve();
+  return Promise.resolve(R.world.camera.fitToItems()).then(function(){return R.fm.core.update(true);});
+}
+/* files opened into the review: each read by That Open into a fragments model of its own (nothing enters the project) */
+function bimRvwAdd(bytes,name){
+  var R=A3D_RVW,L=R.L,ld=R.c.get(L.OBC.IfcLoader),id='review-'+(++R.seq);
+  return ld.setup({autoSetWasm:false,wasm:{path:BIM_TOE.wasmUrl.replace(/[^\/]*$/,''),absolute:true}}).then(function(){
+    return ld.load(bytes,true,id);
+  }).then(function(model){
+    R.models.push({id:id,name:String(name||'model.ifc'),bytes:bytes,model:model});
+    return bimRvwTree().then(bimRvwFit);
+  });
+}
+function bimRvwFiles(list){
+  var R=A3D_RVW,files=[],i,k=0;
+  for(i=0;i<(list||[]).length;i++)files.push(list[i]);
+  if(!files.length)return Promise.resolve();
+  R.busy=true;
+  function next(){
+    if(k>=files.length)return Promise.resolve();
+    var f=files[k++];
+    bimRvwStatus('Reading '+f.name+'...');
+    return f.arrayBuffer().then(function(b){return bimRvwAdd(new Uint8Array(b),f.name);}).then(function(){
+      bimRvwStatus(f.name+': ready. '+R.models.length+' model'+(R.models.length===1?'':'s')+' under review');
+      return next();
+    });
+  }
+  return next().then(function(){R.busy=false;},function(e){
+    R.busy=false;
+    var s=String(e&&e.message||e);
+    bimRvwStatus('The file could not be read: '+s);a3dToast('Review: the file could not be read: '+s);
+  });
+}
+/* the section planes' report: how many of each model's elements have their centre on the cut-away side (bimTorClip) */
+function bimRvwSectionText(){
+  var R=A3D_RVW,planes=[];
+  R.clip.list.forEach(function(pl){if(pl&&pl.normal&&pl.origin)planes.push({n:[-pl.normal.x,-pl.normal.y,-pl.normal.z],p:[pl.origin.x,pl.origin.y,pl.origin.z]});});
+  if(!planes.length||!R.models.length)return Promise.resolve('');
+  return Promise.all(R.models.map(function(m){return m.model.getPositions();})).then(function(all){
+    var cut=0,n=0,i,j,k,p;
+    for(i=0;i<all.length;i++)for(j=0;j<(all[i]||[]).length;j++){
+      p=all[i][j];n++;
+      for(k=0;k<planes.length;k++)if(bimTorClip([p.x,p.y,p.z],planes[k])){cut++;break;}
+    }
+    return 'Section: '+planes.length+' plane'+(planes.length===1?'':'s')+'; '+cut+' of '+n+' elements have their centre cut away';
+  },function(){return '';});
+}
+function bimRvwAct(a){
+  var R=A3D_RVW,sel=R.hl?R.hl.selection.select:null,has=false,k;
+  for(k in sel||{})if(sel.hasOwnProperty(k)&&sel[k]&&sel[k].size)has=true;
+  if(a==='open'){var f=R.el.querySelector('[data-rvwfile]');f.value='';f.click();return;}
+  if(a==='close'){bimReviewClose();return;}
+  if(!R.c)return;
+  if(a==='fit')bimRvwFit();
+  else if(a==='clear'){R.clip.deleteAll();R.len.list.clear();R.area.list.clear();bimRvwStatus('Section planes and measurements removed');}
+  else if(a==='hide'){if(has)R.hider.set(false,sel).then(function(){return R.hl.clear('select');});else bimRvwStatus('Select an element to hide first');}
+  else if(a==='isolate'){if(has)R.hider.isolate(sel);else bimRvwStatus('Select an element to isolate first');}
+  else if(a==='show')R.hider.set(true);
+  else if(a==='import'){
+    var m=null;
+    for(k in sel||{})if(sel.hasOwnProperty(k)&&sel[k]&&sel[k].size)m=bimRvwModel(k);
+    if(!m&&R.models.length===1)m=R.models[0];
+    if(!m){bimRvwStatus(R.models.length?'Select an element of the model to import':'Open an IFC file first');return;}
+    bimRvwStatus('Importing '+m.name+'...');
+    var bytes=m.bytes,name=m.name;
+    bimReviewClose();
+    bimIfcImportBuffer(bytes,name).then(function(r){a3dToast(r.text);},function(e){a3dToast('IFC import failed: '+String(e&&e.message||e));});
+  }
+}
+function bimRvwWire(){
+  var R=A3D_RVW,el=R.el,view=el.querySelector('.a3d-rvw-view');
+  el.addEventListener('click',function(ev){
+    var t=ev.target,b=t.closest&&t.closest('[data-rvw],[data-rvwmode],[data-rvwsel]');
+    if(!b)return;
+    if(b.hasAttribute('data-rvwmode'))bimRvwMode(b.getAttribute('data-rvwmode'));
+    else if(b.hasAttribute('data-rvwsel')){if(R.hl)R.hl.highlightByID('select',bimRvwMap(b.getAttribute('data-rvwsel')),true,true);}
+    else bimRvwAct(b.getAttribute('data-rvw'));
+  });
+  el.addEventListener('change',function(ev){
+    var t=ev.target;
+    if(t.hasAttribute('data-rvwfile'))bimRvwFiles(t.files);
+    else if(t.hasAttribute('data-rvwvis')&&R.hider){
+      R.hider.set(!!t.checked,bimRvwMap(t.getAttribute('data-rvwvis')));
+      var box=t.closest('details'),sub=box?box.querySelectorAll('[data-rvwvis]'):[],i;
+      for(i=0;i<sub.length;i++)if(sub[i]!==t&&sub[i].getAttribute('data-rvwvis').indexOf(t.getAttribute('data-rvwvis')+',')===0)sub[i].checked=t.checked;
+    }
+  });
+  /* That Open's measuring tools take their point from the last pointer move over the canvas; a tap on a touch screen
+     makes none, so the view sends one where the double-click is and waits (at most 800 ms) for the pick to settle */
+  function pointAt(ev,tool){
+    var cv=R.world.renderer.three.domElement,was=tool.lastPick&&tool.lastPick.point?tool.lastPick.point.clone():null,t0=Date.now();
+    try{cv.dispatchEvent(new PointerEvent('pointermove',{clientX:ev.clientX,clientY:ev.clientY,bubbles:true,pointerType:'mouse'}));}catch(eP){}
+    return new Promise(function(res){
+      (function wait(){
+        var p=tool.lastPick&&tool.lastPick.point;
+        if((p&&(!was||!p.equals(was)))||Date.now()-t0>800){res();return;}
+        setTimeout(wait,30);
+      })();
+    });
+  }
+  view.addEventListener('dblclick',function(ev){
+    if(!R.c)return;
+    if(R.mode==='clip')Promise.resolve(R.clip.create(R.world)).then(bimRvwSectionText).then(function(s){if(s)bimRvwStatus(s);});
+    else if(R.mode==='length'){
+      /* a length is two points: its readout once the second is placed, from the finished measurement */
+      R.lenPts=(R.lenPts||0)+1;
+      pointAt(ev,R.len).then(function(){return R.len.create();}).then(function(){
+        if(R.lenPts<2){bimRvwStatus('Length: double-click the second point');return;}
+        R.lenPts=0;
+        var last=null;R.len.list.forEach(function(l){last=l;});
+        if(last)bimRvwStatus('Length: '+(+last.value).toFixed(3)+' m');
+      });
+    }
+    else if(R.mode==='area')pointAt(ev,R.area).then(function(){return R.area.create();});
+  });
+  R.keys=function(ev){
+    if(!R.open)return;
+    if(ev.key==='Escape'){if(R.mode!=='select')bimRvwMode('select');else bimReviewClose();ev.preventDefault();}
+    else if(ev.key==='Enter'&&R.mode==='area'){try{R.area.endCreation();}catch(eE){}ev.preventDefault();}
+    else if((ev.key==='Delete'||ev.key==='Backspace')&&R.mode==='clip'){R.clip.delete(R.world);ev.preventDefault();}
+  };
+  document.addEventListener('keydown',R.keys,true);
+  ['dragover','drop'].forEach(function(n){el.addEventListener(n,function(ev){
+    ev.preventDefault();
+    if(n==='drop'&&ev.dataTransfer)bimRvwFiles([].filter.call(ev.dataTransfer.files||[],function(f){return /\.ifc$/i.test(f.name);}));
+  });});
+}
+/* REVIEW: the view opened (That Open loaded the first time), optionally with files */
+function bimReviewOpen(files){
+  var R=A3D_RVW;
+  if(R.open){if(files)bimRvwFiles(files);return Promise.resolve(true);}
+  var el=document.createElement('div');
+  el.className='a3d-review';el.setAttribute('role','dialog');el.setAttribute('aria-label','Review IFC models');
+  el.innerHTML=bimRvwHtml();
+  document.body.appendChild(el);
+  R.el=el;R.open=true;R.models=[];
+  bimRvwWire();
+  bimRvwStatus('Loading That Open (about 2 MB, once)...');
+  return bimToeLoad().then(function(L){
+    if(!R.open)return false;
+    R.L=L;bimRvwWorld(L);bimRvwMode('select');
+    if(files)return bimRvwFiles(files).then(function(){return true;});
+    return true;
+  },function(e){
+    var s=String(e&&e.message||e);
+    console.warn('[BIM] Review: That Open could not be loaded',e);
+    bimRvwStatus('That Open could not be loaded: '+s);a3dToast('Review: That Open could not be loaded: '+s);
+    return false;
+  });
+}
+function bimReviewClose(){
+  var R=A3D_RVW;
+  if(!R.open)return;
+  R.open=false;
+  if(R.keys)document.removeEventListener('keydown',R.keys,true);
+  try{if(R.c)R.c.dispose();}catch(eD){console.warn('[BIM] Review: That Open could not be closed cleanly',eD);}
+  if(R.el&&R.el.parentNode)R.el.parentNode.removeChild(R.el);
+  R.el=null;R.c=null;R.world=null;R.fm=null;R.hl=null;R.clip=null;R.len=null;R.area=null;R.hider=null;R.models=[];R.keys=null;
+}
+function bimReviewCommand(){if(A3D_RVW.open)bimReviewClose();else bimReviewOpen();}
   // ---- Unified import entry point ----
   function bimHandleImportFile(file){
     if(!file)return;
@@ -76443,6 +77149,7 @@ function bimRptPlan(families) {
   }
   function onKey(ev){
     if(!A3D.on)return;
+    if(A3D_RVW.open)return;   /* __acad3dV206: the Review view is over the app; its keys are its own (io/thatopen-review.js) */
     if(A3D_WALK.on)return;   /* __acad3dV203: walking, the keys are the walk's (walk/walk-controls.js): Space is a jump, not the last command again */
     /* __acad3dV124: a drag from the library is the innermost thing Escape can end */
     if(ev.key==='Escape'&&bimAssetDragCancel()){a3dToast('Nothing placed');ev.preventDefault();ev.stopImmediatePropagation();return;}
@@ -79350,6 +80057,7 @@ function bimRptPlan(families) {
     cityjsonout:function(){bimCityJsonExport();},
     cityjsonin:function(){bimCityJsonPick();},
     ifcin:function(){bimIfcPick();},   /* __acad3dV196 */
+    review:function(){bimReviewCommand();},   /* __acad3dV206 */
     gltfin:function(){bimGltfPick();},   /* __acad3dV195 */
     gltfout:function(){bimGltfExport();},
     ifcout:function(){bimIfcExport();},
@@ -80505,6 +81213,27 @@ function bimSdkSnapshot(state, fields) {
     sync:bimSceneSync,scene:function(){return A3D_SCENE;}};
   /* __acad3dV196: full IFC import */
   window.__acad3dV196='ifcin,ccifc,manifold,openings,storeys,psets,ifcclasslayers';
+  /* __acad3dV206: That Open, its reader and which engine the import uses first (docs/research/experiments/thatopen/e03) */
+  window.__acad3dV206='thatopen,toeread,toeengine,review';
+  window.__a3dReview=function(){return A3D_RVW;};
+  window.__a3dToe={load:bimToeLoad,read:bimToeRead,state:function(){return {st:A3D_TOE.st,err:A3D_TOE.err};},use:bimIfcEngineUse,
+    compare:bimTorCompare,
+    /* what an import made, for e03: elements by IFC class, valid GlobalIds, storeys, sets, triangles, the box (metres) */
+    summary:function(ids){
+      var set={},by={},bad=[],g=0,ps=0,tri=0,st={},mn=[1e18,1e18,1e18],mx=[-1e18,-1e18,-1e18],i,k,o;
+      for(i=0;i<(ids||[]).length;i++)set[ids[i]]=true;
+      for(i=0;i<A3D.objs.length;i++){
+        o=A3D.objs[i];if(!set[o.id]||!o.bim)continue;
+        k=bimIfcClass(o.bim.ifcType);by[k]=(by[k]||0)+1;
+        if(bimTorGuidValid(o.bim.guid))g++;else if(bad.length<4)bad.push([o.bim.ifcType,String(o.bim.guid).slice(0,40),o.name]);
+        ps+=(o.bim.psets||[]).length;if(o.bim.storey)st[o.bim.storey]=1;
+        tri+=o.mesh&&o.mesh.f?o.mesh.f.length:0;
+        for(k=0;o.mesh&&k<o.mesh.v.length;k++){var v=o.mesh.v[k];
+          mn=[Math.min(mn[0],v[0]),Math.min(mn[1],v[1]),Math.min(mn[2],v[2])];mx=[Math.max(mx[0],v[0]),Math.max(mx[1],v[1]),Math.max(mx[2],v[2])];}
+      }
+      return {byClass:by,guids:g,bad:bad,psets:ps,storeys:Object.keys(st).length,tris:tri,
+        box:[mx[0]-mn[0],mx[1]-mn[1],mx[2]-mn[2]].map(function(x){return Math.round(x*1000)/1000;}),min:mn};
+    }};
   window.__a3dIfc={importBuffer:bimIfcImportBuffer,read:bimIfcRead,meshParts:bimIfcMeshParts,storeys:bimIfcStoreys,containers:bimIfcContainers,
     set:bimIfcSet,val:bimIfcVal,cls:bimIfcClass,hex:bimIfcHex,sources:bimIfcSources,propsHtml:bimIfcPropsHtml,limits:BIM_IFC};
   /* __acad3dV195: glTF in and out */

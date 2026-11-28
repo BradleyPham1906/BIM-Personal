@@ -9,7 +9,7 @@ The owner's decisions (2026-11-14): for every phase below, all as its research r
 overrule any there). V177's D1 to D4 and That Open's four were answered 2026-11-13. The phases are numbered in one
 sequence, 175c to 248 (228 to 232 are algorithmic design, the owner's thirteen decisions, 2026-11-15; 233 to 238 program to plan, the owner's ten decisions, 2026-11-16; 239 to 247 the physical world, the owner's answer 2026-11-22: standard and scalable, `research-physical-world.md` part 11), in `docs/dev/PIPELINE.md`; there are no "later" rows.
 
-## Ready for Cline, in order (349 tasks)
+## Ready for Cline, in order (342 tasks)
 
 | Phase | What | Tasks | Where | Tests |
 |---|---|---|---|---|
@@ -31,7 +31,6 @@ sequence, 175c to 248 (228 to 232 are algorithmic design, the owner's thirteen d
 | v201 | MEP runs, first slice (a checked tree, straight friction only) | WO-01 to WO-07 (7) | `v201/TASKS.md` | `v201/v201.test.mjs` |
 | v204 | The Parametric Design Foundation, sketch to Pad to Pocket | WO-01 to WO-04 (4) | `v204/TASKS.md` | `v204/v204.test.mjs` |
 | v205 | LOD-G, Gaussian splats as a backdrop | WO-01 to WO-05 (5) | `v205/TASKS.md` | `v205/v205.test.mjs` |
-| v206 | That Open: the Review view and IFC import (with Hub H3's identity) | WO-01 to WO-07 (7) | `v206/TASKS.md` | `v206/v206.test.mjs` |
 | v207 | glTF models in Assets, and valdrada's credited models | WO-01 to WO-04 (4) | `v207/TASKS.md` | `v207/v207.test.mjs` |
 | v208 | Walkthrough W2, drive | WO-01 to WO-04 (4) | `v208/TASKS.md` | `v208/v208.test.mjs` |
 | v209 | Walkthrough W3, fly and drone | WO-01 to WO-04 (4) | `v209/TASKS.md` | `v209/v209.test.mjs` |
@@ -84,6 +83,7 @@ records.
 
 | Phase | Where |
 |---|---|
+| v206 That Open | Done 2026-11-28: WO-01 to WO-07 shipped by Cline (WO-03, WO-04 rewritten without BigInt in the audit); Claude's WO-08 (the Review view, 18 of 18) and WO-09 (the import through That Open, e03: 12 of 13 agree, the 13th better). cc-ifc's retirement and the gap plan wait for the owner: `docs/research/research-thatopen-gap.md` part 11 |
 | v203 Walkthrough W1 | Done 2026-11-21: WO-01 to WO-08 shipped by Cline; Claude's C-02 to C-08 (WALK, its controls, the rendered view's moving mode, the browser check 25 of 25) |
 | v175c | Done 2026-11-21: WO-11 to WO-17 shipped; Claude's WO-18 (Open as layout, Work in viewport, the vector page; 13 of 13) and WO-19 |
 | v177 | Done 2026-11-21: steps 1, 2a and 2b; the browser check on Cline's functions and Make editable, 26 of 26 |

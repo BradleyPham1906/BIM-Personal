@@ -16978,3 +16978,26 @@ The owner, 2026-11-22: "do it all in one run". Research and the full list: `docs
   loaded on first IGES import (`io/iges-io.js`); tested on an IGES box of our own (`tests/unit/iges.test.mjs`).
 - Checks: syntax, `npm run modules`, the build, `npm run check`, `npm test` 496 of 496, the browser check
   `tests/e2e/bim_phase266_273_check.mjs` 35 of 35.
+
+## Phase 206 (V206) - That Open: the Review view and the IFC import
+
+The owner, 2026-11-24: "i need you to establish researches and plug their code to our ... i want to actually catch up
+with that repo." Research: `docs/research/research-thatopen-gap.md` (the synthesis) and its four parts in
+`docs/research/research-thatopen-gap/`, with the independent check.
+
+- That Open 3.6 (components 3.6.0, components-front 3.6.1, fragments 3.6.1, MIT) and web-ifc 0.0.79 (MPL-2.0, its own
+  file) pinned in `runtime/thatopen/3.6.0/` by `tools/thatopen/build_thatopen.mjs`, on the app's own three.js, WebGPU
+  paths and potree-core left out; 31 packages' licences in `LICENSES.txt`; 2.0 MB compressed, fetched only on REVIEW
+  or the first IFC import. From file:// the wasm comes through a fetch wrapper and the worker is made classic (e02).
+- REVIEW (`io/thatopen-review.js`): several IFC files at once, select for IFC data, section planes (counted by Cline's
+  bimTorClip), length, area (checked by bimTorArea), hide, isolate, show all, a storey and class tree, Import. The app's
+  key handler steps aside while it is open; measuring points follow a tap on touch screens.
+- The IFC import reads through That Open first (`io/thatopen-runtime.js` bimToeRead), then cc-ifc, then the walls-and-
+  slabs reader. e03: 12 of V196's 13 files agree class by class with every GlobalId; FM_ARC_DigitalHub reads all 705
+  elements where cc-ifc stops at the triangle cap. 2.5 to 5 times slower than cc-ifc on large files. Found by e03 and
+  fixed, each with a unit test: class names (web-ifc's name table is empty before Init), spaces skipped as V196 did,
+  IFC4.3 facility parts and spatial zones added, ids over 999,999 collided when formatted.
+- Audit of Cline's WO-01 to WO-07: WO-03 and WO-04 used BigInt, rewritten in ES5; WO-01 is for Z-up input only.
+- Checks: syntax, `npm run modules`, the build, `npm run check`, `npm test` 513 of 513, `tools/check_runtime.py`,
+  the browser check `tests/e2e/bim_phase206_review_check.mjs` 18 of 18 (http and file://).
+- Waiting for the owner: cc-ifc's retirement and the gap plan (research-thatopen-gap.md part 11, twelve decisions).

@@ -1,0 +1,35 @@
+/* __acad3dV206: the Review view (io/thatopen-review.js): That Open's world over the app, with its bar, tree and data */
+.a3d-review{position:fixed;inset:0;z-index:30000;display:flex;flex-direction:column;background:var(--bg,#191919);color:var(--text,#fff);
+  font:13px/1.35 system-ui,-apple-system,"Segoe UI",sans-serif}
+.a3d-rvw-bar{display:flex;flex-wrap:wrap;gap:6px;padding:8px 16px;border-bottom:1px solid rgba(128,128,128,.3)}
+.a3d-rvw-bar button{font:inherit;color:inherit;background:transparent;border:1px solid rgba(128,128,128,.45);border-radius:7px;
+  padding:6px 11px;min-height:32px;cursor:pointer;white-space:nowrap}
+.a3d-rvw-bar button:hover{background:rgba(128,128,128,.15)}
+.a3d-rvw-bar button.on{background:#3a6fd8;border-color:#3a6fd8;color:#fff}
+.a3d-rvw-bar .a3d-rvw-close{margin-left:auto}
+.a3d-rvw-main{flex:1;display:flex;min-height:0;overflow:hidden}
+.a3d-rvw-view{position:relative;flex:1;min-width:0;outline:none;touch-action:none;background:#e9ebee}
+body:not(.light-theme) .a3d-rvw-view{background:#2a2d31}
+.a3d-rvw-view canvas{display:block;position:absolute;inset:0;width:100%;height:100%}
+.a3d-rvw-side{width:320px;max-width:40%;overflow:auto;border-left:1px solid rgba(128,128,128,.3);padding:8px 12px}
+.a3d-rvw-side details{margin:2px 0}
+.a3d-rvw-side summary{cursor:pointer;padding:3px 0}
+.a3d-rvw-side ul{list-style:none;margin:0;padding:0 0 0 18px}
+.a3d-rvw-side li{display:flex;align-items:center;gap:4px}
+.a3d-rvw-side li button{font:inherit;color:inherit;background:none;border:0;padding:3px 2px;cursor:pointer;text-align:left;flex:1}
+.a3d-rvw-side li button:hover{text-decoration:underline}
+.a3d-rvw-side li span{opacity:.6}
+.a3d-rvw-props h4{margin:12px 0 6px;font-size:14px}
+.a3d-rvw-props table{width:100%;border-collapse:collapse;font-size:12px}
+.a3d-rvw-props th{text-align:left;font-weight:500;opacity:.7;padding:2px 8px 2px 0;vertical-align:top;width:42%;word-break:break-word}
+.a3d-rvw-props td{padding:2px 0;word-break:break-word}
+.a3d-rvw-hint{opacity:.7}
+.a3d-rvw-status{padding:6px 16px;border-top:1px solid rgba(128,128,128,.3);font-size:12px;opacity:.85;min-height:18px}
+@media (pointer:coarse){.a3d-rvw-bar button{min-height:40px;padding:8px 12px}}
+/* phone and narrow tablet: the tree and data under the view */
+@media (max-width:760px){
+  .a3d-rvw-main{flex-direction:column}
+  .a3d-rvw-side{width:auto;max-width:none;max-height:38%;border-left:0;border-top:1px solid rgba(128,128,128,.3)}
+  .a3d-rvw-bar{gap:4px;padding:6px 16px}
+  .a3d-rvw-bar button{font-size:12px;padding:7px 9px}
+}
