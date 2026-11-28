@@ -408,6 +408,27 @@
    "sha256": "111e704e25fba1168f1176395a8c854fb378ed49e11eeda3a1678c0246dc9c1a",
    "from": "the licence file of every package bundled: tools/thatopen/build_thatopen.mjs",
    "licence": "as listed in it"
+  },
+  {
+   "path": "bimcraft/79b603f6/LICENSE",
+   "bytes": 10174,
+   "sha256": "0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594",
+   "from": "getcadcraft/bimcraft@79b603f6, LICENSE",
+   "licence": "Apache-2.0 (BimCraft)"
+  },
+  {
+   "path": "bimcraft/79b603f6/NOTICE",
+   "bytes": 422,
+   "sha256": "cfaa71fce2eb8c5c2e2246a543985c7c3ca4bb86c32fd84d654c3db71081353c",
+   "from": "getcadcraft/bimcraft@79b603f6, NOTICE",
+   "licence": "Apache-2.0 (BimCraft)"
+  },
+  {
+   "path": "bimcraft/79b603f6/bim-craft.min.js",
+   "bytes": 1276393,
+   "sha256": "0269a5f77115c1ca47645fc8064cb70c322bd3fbea116928ec2a0d5b76dcf5c9",
+   "from": "getcadcraft/bimcraft@79b603f6 app/ (vendor/bimcraft, 33 roots and what they import), bundled unchanged by esbuild 0.28.2: tools/bimcraft/build_bimcraft.mjs",
+   "licence": "Apache-2.0 (BimCraft)"
   }
  ],
  "three": "0.186.1",
@@ -418,5 +439,6 @@
  "cc-dwg": "e36a94d",
  "occt": "1.2.1",
  "occtImport": "0.0.23",
- "thatopen": "3.6.0"
+ "thatopen": "3.6.0",
+ "bimcraft": "79b603f6"
 }
