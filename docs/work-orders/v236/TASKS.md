@@ -43,7 +43,7 @@ Nothing calls these functions until Claude's first task after them. Scores are f
 - **It must:** SPEC 5 WO-03: units [{ids, k, areas}] in order. Side A takes units while its bays are below ceil(total bays / 2), the rest go to side B. K = the larger side's bays; length L = K bay. Side A from x = 0 rightwards at y 0 to depth; side B from x = L leftwards at y depth + corridor to 2 depth + corridor. A unit is k bay wide; its rooms are stacked across the band in proportion to their areas (1 each when areas are missing or not above 0), the first room against the corridor. {rooms: [{id, x, y, w, h}], length: L, spare: [K - side A's bays, K - side B's bays], corridor: {x: 0, y: depth, w: L, h: corridor}}.
 - **May use:** nothing.
 - **Files:** `src/js/engine/bim/program-layout.js`, `docs/work-orders/v236/v236.test.mjs`
-- **Budget:** 40
+- **Budget:** 160
 - **Test:** the cases named `WO-03 ...` in `docs/work-orders/v236/v236.test.mjs`. **Score:** 0+1+0+0+2+0 = 3.
 
 ---
