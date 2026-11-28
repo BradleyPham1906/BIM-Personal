@@ -29,6 +29,9 @@ function follow(rel) {
   }
 }
 ROOTS.forEach(follow);
+// their English wording (app/lang/en.json), which i18n.js takes as its catalog: without it every word of the interface
+// comes back as its key (V308's browser check: rooms named "model.room.name")
+seen.add('lang/en.json');
 const files = [...seen].sort(), top = ['LICENSE', 'NOTICE', 'PROVENANCE.md', 'TRADEMARKS.md', 'THIRD_PARTY.md'];
 const out = path.join(root, 'vendor', 'bimcraft'), sha = (b) => crypto.createHash('sha256').update(b).digest('hex');
 const list = top.map((f) => [f, path.join(src, f)]).concat(files.map((f) => ['app/' + f, path.join(app, f)]));

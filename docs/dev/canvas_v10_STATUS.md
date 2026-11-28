@@ -17021,3 +17021,18 @@ The owner, 2026-11-28: "Do what's standard and as recommended" (research-thatope
   tests, each test checked against a reference implementation kept outside the repository; queued after v202.
 - Checks: `npm test` 516 of 516, `npm run check`, check_runtime, check_work_orders, the browser check
   `tests/e2e/bim_phase206_review_check.mjs` 21 of 21 (http and file://), e03 final from a frozen worktree.
+
+## Phase 308 (V308) - DESIGN on BimCraft's authoring core
+
+The owner, 2026-11-28: "we need to update to bridge the gap for BIM design features like revit ... copy their code,
+reuse the codes, dont write new stuff". Research: `docs/research/research-bimcraft-gap.md` and four parts.
+- BimCraft @ 79b603f6 (Apache-2.0) copied unchanged: `vendor/bimcraft` (181 files, `tools/bimcraft/copy_upstream.mjs
+  --check`), bundled by `tools/bimcraft/build_bimcraft.mjs` into `runtime/bimcraft/79b603f6/bim-craft.min.js` (BIMCRAFT,
+  554 KB compressed), with its English wording cut to what the core names.
+- DESIGN (`bim/bimcraft-design.js`): walls by type (compound, joined), doors and windows by type, floors, ceilings, roofs,
+  rooms, section lines on BimCraft's PlanView; undo and redo; plan and drawing-set PDFs; IFC; Send to model through the
+  app's import, a second send replacing the first.
+- Found by the browser check and fixed: rooms named "model.room.name" (BimCraft's wording was not loaded); Manifold's
+  console errors from file:// (Design takes Manifold only over http).
+- Checks: `npm test` 521 of 521, `npm run check`, check_runtime, e05 11 of 11, `tests/e2e/bim_phase308_design_check.mjs`
+  17 of 17 and the Review check 21 of 21 (http and file://).

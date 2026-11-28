@@ -1,6 +1,7 @@
-e05 (V308), 2026-11-28, Chromium 158 (build 1243) by Playwright. BimCraft @ 79b603f6, copied unchanged (vendor/bimcraft,
-151 files) and bundled by tools/bimcraft/build_bimcraft.mjs (runtime/bimcraft/79b603f6/bim-craft.min.js, 1,276,393
-bytes, 395,143 compressed), with the Manifold of runtime/cc-ifc/cfbd948 (the same 3.5.4 BimCraft pins).
+e05 (V308), 2026-11-28, Chromium 158 (build 1243) by Playwright. BimCraft @ 79b603f6, copied unchanged (vendor/bimcraft)
+and bundled by tools/bimcraft/build_bimcraft.mjs (runtime/bimcraft/79b603f6/bim-craft.min.js). First run on 151 files
+(1,276,393 bytes, 395,143 compressed); run again on the final 181 files with the English wording (1,778,820 bytes,
+553,526 compressed): 11 of 11 again, with the Manifold of runtime/cc-ifc/cfbd948 (the same 3.5.4 BimCraft pins).
 page.html builds BimCraft's own test house with the calls of tests/tools/bimcraft-test/make-small-house.mjs, saves it,
 opens it again and checks what house-test.mjs checks against numbers worked by hand. node run.mjs [http|file].
 

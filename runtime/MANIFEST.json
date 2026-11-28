@@ -425,9 +425,9 @@
   },
   {
    "path": "bimcraft/79b603f6/bim-craft.min.js",
-   "bytes": 1276393,
-   "sha256": "0269a5f77115c1ca47645fc8064cb70c322bd3fbea116928ec2a0d5b76dcf5c9",
-   "from": "getcadcraft/bimcraft@79b603f6 app/ (vendor/bimcraft, 33 roots and what they import), bundled unchanged by esbuild 0.28.2: tools/bimcraft/build_bimcraft.mjs",
+   "bytes": 1778820,
+   "sha256": "cffbe9287f1d57ef28a00127cdd4eefda569732da8d5e43cc6a4ec3a367ec137",
+   "from": "getcadcraft/bimcraft@79b603f6 app/ (vendor/bimcraft, 34 roots and what they import), bundled unchanged by esbuild 0.28.2: tools/bimcraft/build_bimcraft.mjs",
    "licence": "Apache-2.0 (BimCraft)"
   }
  ],

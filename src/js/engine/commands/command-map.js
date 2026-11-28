@@ -78,6 +78,7 @@ import { bimGltfExport, bimGltfPick } from '../io/gltf.js';
 import { bimIfcPick } from '../io/ifc-full.js';
 import { bimIfcExport } from '../io/ifcos-worker.js';
 import { bimReviewCommand } from '../io/thatopen-review.js';
+import { bimDesignCommand } from '../bim/bimcraft-design.js';
 import { bimRvCommand } from '../render/rendered-view.js';
 import { bimBenchmark, bimGraphicsCommand } from '../render/webgpu.js';
 import { bimCtxFetch, bimCtxRemove } from '../map/surroundings-3d.js';
@@ -266,6 +267,7 @@ import { bimOpenToolsPanel } from '../ui/discipline-tabs.js';
     cityjsonin:function(){bimCityJsonPick();},
     ifcin:function(){bimIfcPick();},   /* __acad3dV196 */
     review:function(){bimReviewCommand();},   /* __acad3dV206 */
+    design:function(){bimDesignCommand();},   /* __acad3dV308 */
     gltfin:function(){bimGltfPick();},   /* __acad3dV195 */
     gltfout:function(){bimGltfExport();},
     ifcout:function(){bimIfcExport();},

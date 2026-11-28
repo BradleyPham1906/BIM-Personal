@@ -75,6 +75,7 @@ import { A3D_IFCOS, bimIfcExportText } from '../io/ifcos-worker.js';
 import { bimTorCompare, bimTorGuidValid } from '../io/ifc-review.js';
 import { A3D_TOE, bimToeLoad, bimToeRead } from '../io/thatopen-runtime.js';
 import { A3D_RVW } from '../io/thatopen-review.js';
+import { A3D_DSN } from '../bim/bimcraft-design.js';
 import { toScreen } from '../io/import-entry.js';
 import { A3D_GL, setA3D_GL, setA3D_GL_FAILED } from '../render/webgl.js';
 import {
@@ -443,6 +444,9 @@ import { cvH, cvW } from '../ui/canvas-size.js';
   /* __acad3dV206: That Open, its reader and which engine the import uses first (docs/research/experiments/thatopen/e03) */
   window.__acad3dV206='thatopen,toeread,toeengine,review';
   window.__a3dReview=function(){return A3D_RVW;};
+  /* __acad3dV308: Design (bim/bimcraft-design.js) */
+  window.__acad3dV308='design,bimcraft,planview,drawingset';
+  window.__a3dDesign=function(){return A3D_DSN;};
   window.__a3dToe={load:bimToeLoad,read:bimToeRead,state:function(){return {st:A3D_TOE.st,err:A3D_TOE.err};},use:bimIfcEngineUse,
     compare:bimTorCompare,
     /* the levels an IFC import made ("... (IFC)"), and their removal, so e03 compares each engine's storeys */

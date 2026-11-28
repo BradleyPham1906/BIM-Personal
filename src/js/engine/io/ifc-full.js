@@ -301,7 +301,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
     return true;
   }
 export {
-  BIM_IFC, bimIfcClass, bimIfcContainers, bimIfcEngineUse, bimIfcHex, bimIfcImportBuffer, bimIfcMeshParts,
-  bimIfcPick, bimIfcPropsHtml, bimIfcRead, bimIfcSet, bimIfcSources, bimIfcStoreys, bimIfcVal,
-  bimImportIFCFull
+  BIM_IFC, bimIfcClass, bimIfcContainers, bimIfcEngineUse, bimIfcHex, bimIfcImportBuffer, bimIfcLoad,
+  bimIfcMeshParts, bimIfcPick, bimIfcPropsHtml, bimIfcRead, bimIfcSet, bimIfcSources, bimIfcStoreys,
+  bimIfcVal, bimImportIFCFull
 };

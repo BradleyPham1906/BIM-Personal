@@ -16,4 +16,7 @@ export const ROOTS = [
   // (anno-standard.js, anno-scale-bim.js), rooms' geometry (spaces-geom.js): what tests/tools/bimcraft-test/house-test.mjs
   // and make-small-house.mjs drive
   'new-model.js', 'model-ops.js', 'model-grids.js', 'res-views.js', 'res-sheets.js', 'comforts-views.js',
-  'anno-standard.js', 'anno-scale-bim.js', 'spaces-geom.js'];
+  'anno-standard.js', 'anno-scale-bim.js', 'spaces-geom.js',
+  // the plan of a level as the plan view draws it (planSceneOf: joined walls, wall pieces cut at the cut height, door
+  // swings and window symbols) and as a file (planFile: PDF, SVG, DWG, DXF)
+  'plan-export.js'];

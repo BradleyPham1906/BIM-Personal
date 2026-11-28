@@ -1,7 +1,8 @@
 # BimCraft's BIM-authoring core (V308)
 
 `app/` is BimCraft (https://github.com/getcadcraft/bimcraft) at commit `79b603f6683f2f000b9e8346c1fc92cf466ab01d`
-(2026-11-23), copied unchanged: the modules `tools/bimcraft/roots.mjs` names and every file they import (151 files),
+(2026-11-23), copied unchanged: the modules `tools/bimcraft/roots.mjs` names and every file they import, with their
+English wording `lang/en.json` (181 files),
 with that repository's `LICENSE` (Apache License 2.0), `NOTICE`, `PROVENANCE.md`, `TRADEMARKS.md` and `THIRD_PARTY.md`.
 Copyright 2026 The Data Design Group, Inc. `FILES.txt` lists each file with its SHA-256. Its names (CadCraft, BimCraft)
 are their trademarks and are not used for this app (NOTICE; TRADEMARKS.md; Apache-2.0 section 6).
@@ -20,4 +21,4 @@ model through BimCraft's own cc-ifc (`app/ifc/`, at the same revision as the res
   through the bundle and checks what their `house-test.mjs` checks, from numbers worked by hand.
 
 Never edit these files by hand; to move to a newer revision, set `REV` in `tools/bimcraft/roots.mjs`, copy, rebuild, and
-rerun e05.
+rerun e05 and `tests/e2e/bim_phase308_design_check.mjs`. DESIGN (`src/js/engine/bim/bimcraft-design.js`) is the app's panel on it.

@@ -17,7 +17,14 @@ const vend = path.join(root, 'vendor', 'bimcraft'), app = path.join(vend, 'app')
 if (!fs.existsSync(path.join(mod, 'esbuild'))) { console.error('Run npm ci --ignore-scripts in tools/bimcraft first'); process.exit(2); }
 const ebver = JSON.parse(fs.readFileSync(path.join(mod, 'esbuild', 'package.json'), 'utf8')).version;
 const nameOf = (f) => f.replace(/\.js$/, '').replace(/^ifc\/api$/, 'ifc').replace(/[\/-]([a-z])/g, (m, c) => c.toUpperCase());
-const entry = ROOTS.map((f) => "export * as " + nameOf(f) + " from './" + f + "';").join('\n') + '\n';
+// the English catalog for i18n.js, cut to the key families the copied code names (a key is often built at run time,
+// 'model.ot.' + a type's key, so whole families are kept: every key whose first part is quoted in the code as 'part.)
+const codeText = fs.readdirSync(app, { recursive: true }).filter((f) => /\.js$/.test(f)).map((f) => fs.readFileSync(path.join(app, f), 'utf8')).join('\n');
+const families = new Set([...codeText.matchAll(/['"`]([a-z0-9]+)\./g)].map((m) => m[1]));
+const en = JSON.parse(fs.readFileSync(path.join(app, 'lang', 'en.json'), 'utf8')), strings = {};
+for (const k of Object.keys(en)) if (k.charAt(0) !== '@' && families.has(k.split('.')[0])) strings[k] = en[k];
+const entry = "import { init as __bimI18n } from './i18n.js';\n__bimI18n({ locale: 'en', strings: " + JSON.stringify(strings) + " });\n" +
+  ROOTS.map((f) => "export * as " + nameOf(f) + " from './" + f + "';").join('\n') + '\n';
 const leftOut = { name: 'left-out', setup(b) {
   b.onResolve({ filter: /^(manifold-3d|delaunator|robust-predicates)$/ }, (a) => ({ path: a.path, namespace: 'out' }));
   b.onResolve({ filter: /(^|\/)tin\.js$/ }, (a) => ({ path: 'tin.js', namespace: 'out' }));
@@ -52,3 +59,4 @@ fs.writeFileSync(manPath, JSON.stringify(man, null, 1) + '\n');
 const b = fs.readFileSync(out);
 console.log('runtime/bimcraft/' + REV + '/bim-craft.min.js: ' + b.length + ' bytes, sri sha256-' + crypto.createHash('sha256').update(b).digest('base64'));
 console.log('namespaces: ' + ROOTS.map(nameOf).join(' '));
+console.log('English strings: ' + Object.keys(strings).length + ' of ' + Object.keys(en).filter((k) => k.charAt(0) !== '@').length + ' (families: ' + [...families].filter((f) => Object.keys(strings).some((k) => k.startsWith(f + '.'))).length + ')');
