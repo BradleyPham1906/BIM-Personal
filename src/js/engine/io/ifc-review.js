@@ -128,12 +128,43 @@ function bimToeMesh(parts){
   }
   return {pos:pos,idx:idx};
 }
-/* That Open's colour ({r, g, b} from 0 to 1) as #rrggbb; grey for none */
+/* That Open's colour ({r, g, b} from 0 to 1, linear, as three.js holds colours) as the app's #rrggbb (sRGB, as the
+   file wrote it and as cc-ifc gives it): each channel through the sRGB transfer function (IEC 61966-2-1). Without it
+   every colour came out darker (measured 2026-11-28: cc-ifc #939393, That Open #4a4a4a); grey for none */
 function bimToeHex(c){
   if(!c||typeof c!=='object')return '#b8b8b0';
-  var a=[c.r,c.g,c.b],s='#',i,h;
-  for(i=0;i<3;i++){h=Math.max(0,Math.min(255,Math.round((+a[i]||0)*255))).toString(16);s+=h.length<2?'0'+h:h;}
+  var a=[c.r,c.g,c.b],s='#',i,h,v;
+  for(i=0;i<3;i++){
+    v=Math.max(0,Math.min(1,+a[i]||0));
+    v=v<=0.0031308?12.92*v:1.055*Math.pow(v,1/2.4)-0.055;
+    h=Math.max(0,Math.min(255,Math.round(v*255))).toString(16);s+=h.length<2?'0'+h:h;
+  }
   return s;
+}
+/* one item's colour and opacity by cc-ifc's rule (io/ifc-full.js bimIfcMeshParts): of its parts' materials, the
+   opaque one (alpha at least 0.99) covering the most triangles, else the one covering the most; opacity the triangle-
+   weighted mean of alpha. parts: getItemsGeometry's [{sampleId, indices}]; sampleMat: {sampleId: materialId} (from
+   getSamples); mats: {materialId: {r, g, b, a}}, 0 to 255 (getMaterials, the file's own values). null when no part
+   has a known material (e03, 2026-11-28: the first-opaque rule matched cc-ifc on 69.5% of dental_clinic's elements) */
+function bimToePartsLook(parts,sampleMat,mats){
+  var by={},i,p,m,t,k,h,best='',bestN=-1,any='',anyN=-1,op=0,n=0;
+  for(i=0;i<(parts||[]).length;i++){
+    p=parts[i];if(!p||p.sampleId==null||!p.indices)continue;
+    m=(mats||{})[(sampleMat||{})[p.sampleId]];if(!m)continue;
+    t=Math.floor(p.indices.length/3);if(!t)continue;
+    h='#';
+    for(k=0;k<3;k++){var c=Math.max(0,Math.min(255,Math.round(+[m.r,m.g,m.b][k]||0))).toString(16);h+=c.length<2?'0'+c:c;}
+    var a=typeof m.a==='number'&&isFinite(m.a)?Math.max(0,Math.min(1,m.a/255)):1;
+    if(!by[h])by[h]={n:0,o:0};
+    by[h].n+=t;if(a>=0.99)by[h].o+=t;
+    op+=a*t;n+=t;
+  }
+  if(!n)return null;
+  for(h in by)if(by.hasOwnProperty(h)){
+    if(by[h].o>bestN&&by[h].o>0){best=h;bestN=by[h].o;}
+    if(by[h].n>anyN){any=h;anyN=by[h].n;}
+  }
+  return {col:best||any,opacity:op/n};
 }
 /* the colour and opacity of each item, from getItemsMaterialDefinition's [{localIds, definition}]: the first opaque
    colour that covers it, and the mean of its materials' opacities */
@@ -180,6 +211,6 @@ function bimToeClassName(up,lists){
   return 'Ifc'+u.slice(3).charAt(0)+u.slice(4).toLowerCase();
 }
 export {
-  bimToeClassName, bimToeLook, bimToeMesh, bimToeRaw, bimToeSets, bimToeStoreyClasses, bimToeTree, bimToeUnit,
-  bimToeVal, bimTorArea, bimTorClip, bimTorCompare, bimTorGuidValid
+  bimToeClassName, bimToeLook, bimToeMesh, bimToePartsLook, bimToeRaw, bimToeSets, bimToeStoreyClasses,
+  bimToeTree, bimToeUnit, bimToeVal, bimTorArea, bimTorClip, bimTorCompare, bimTorGuidValid
 };

@@ -450,18 +450,18 @@ import { cvH, cvW } from '../ui/canvas-size.js';
     clearLevels:function(){for(var i=A3D.levels.length-1;i>=0;i--)if(/\(IFC\)$/.test(A3D.levels[i].name))A3D.levels.splice(i,1);},
     /* what an import made, for e03: elements by IFC class, valid GlobalIds, storeys, sets, triangles, the box (metres) */
     summary:function(ids){
-      var set={},by={},bad=[],g=0,ps=0,tri=0,st={},mn=[1e18,1e18,1e18],mx=[-1e18,-1e18,-1e18],i,k,o;
+      var set={},by={},cols={},bad=[],g=0,ps=0,tri=0,st={},mn=[1e18,1e18,1e18],mx=[-1e18,-1e18,-1e18],i,k,o;
       for(i=0;i<(ids||[]).length;i++)set[ids[i]]=true;
       for(i=0;i<A3D.objs.length;i++){
         o=A3D.objs[i];if(!set[o.id]||!o.bim)continue;
-        k=bimIfcClass(o.bim.ifcType);by[k]=(by[k]||0)+1;
+        k=bimIfcClass(o.bim.ifcType);by[k]=(by[k]||0)+1;cols[o.col]=(cols[o.col]||0)+1;
         if(bimTorGuidValid(o.bim.guid))g++;else if(bad.length<4)bad.push([o.bim.ifcType,String(o.bim.guid).slice(0,40),o.name]);
         ps+=(o.bim.psets||[]).length;if(o.bim.storey)st[o.bim.storey]=1;
         tri+=o.mesh&&o.mesh.f?o.mesh.f.length:0;
         for(k=0;o.mesh&&k<o.mesh.v.length;k++){var v=o.mesh.v[k];
           mn=[Math.min(mn[0],v[0]),Math.min(mn[1],v[1]),Math.min(mn[2],v[2])];mx=[Math.max(mx[0],v[0]),Math.max(mx[1],v[1]),Math.max(mx[2],v[2])];}
       }
-      return {byClass:by,guids:g,bad:bad,psets:ps,storeys:Object.keys(st).length,tris:tri,
+      return {byClass:by,cols:cols,guids:g,bad:bad,psets:ps,storeys:Object.keys(st).length,tris:tri,
         box:[mx[0]-mn[0],mx[1]-mn[1],mx[2]-mn[2]].map(function(x){return Math.round(x*1000)/1000;}),min:mn};
     }};
   window.__a3dIfc={importBuffer:bimIfcImportBuffer,read:bimIfcRead,meshParts:bimIfcMeshParts,storeys:bimIfcStoreys,containers:bimIfcContainers,

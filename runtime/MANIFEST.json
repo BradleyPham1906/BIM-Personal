@@ -383,22 +383,22 @@
   },
   {
    "path": "thatopen/3.6.0/bim-webifc.min.js",
-   "bytes": 3526505,
-   "sha256": "dd39306efa8260165bd77de7fc1a3b4c47c6469aa07e6819b51f514339a3c2a7",
-   "from": "npm web-ifc@0.0.79 (the tarball sha512-g7bGXiW3ewxwnw9zJdVzZnRiRbDl+Fd3HWuFYs1rosQ5tmDRsOOM9pwKLBjWJYla3t88hPclJWD0J2mlksWFMQ==), web-ifc-api.js, bundled unchanged by esbuild 0.28.2: tools/thatopen/build_thatopen.mjs",
+   "bytes": 3655299,
+   "sha256": "8cfc089391cc973861d45c68727b5749e32c88695ac892c8e3090d72238daee7",
+   "from": "npm web-ifc@0.0.81 (the tarball sha512-1RV6EGpny6im7USgSXMn0HYavy4VCNZCp9UV+zfy1xffku3OBLL5DxQR475HMgs1CCfMvxG41dqGtQYAkGS5lw==), web-ifc-api.js, bundled unchanged by esbuild 0.28.2: tools/thatopen/build_thatopen.mjs",
    "licence": "MPL-2.0 (web-ifc)"
   },
   {
    "path": "thatopen/3.6.0/bim-webifc-wasm.js",
-   "bytes": 2239429,
-   "sha256": "ddf168dca8d89961186a7fc97ab33ddaf67052bfb9a413720ca26eba4120e74c",
-   "from": "npm web-ifc@0.0.79 (the tarball sha512-g7bGXiW3ewxwnw9zJdVzZnRiRbDl+Fd3HWuFYs1rosQ5tmDRsOOM9pwKLBjWJYla3t88hPclJWD0J2mlksWFMQ==), web-ifc.wasm as base64: tools/thatopen/build_thatopen.mjs",
+   "bytes": 2295909,
+   "sha256": "cc34edca0faee9d3e9115c1922a2ee8a7dd680103478134dbb0edf1193d4cf3c",
+   "from": "npm web-ifc@0.0.81 (the tarball sha512-1RV6EGpny6im7USgSXMn0HYavy4VCNZCp9UV+zfy1xffku3OBLL5DxQR475HMgs1CCfMvxG41dqGtQYAkGS5lw==), web-ifc.wasm as base64: tools/thatopen/build_thatopen.mjs",
    "licence": "MPL-2.0 (web-ifc)"
   },
   {
    "path": "thatopen/3.6.0/LICENSES.txt",
    "bytes": 92952,
-   "sha256": "dc12c3bf7d87a19d1a01f5a028c5c66eceba4c83882f6e4cc6fa34b80b3c2917",
+   "sha256": "7e56f1a00bf7f2a9f49cff5f524699acdfbf3a4bfa236379391bb0d0236d0e3c",
    "from": "the licence file of every package bundled: tools/thatopen/build_thatopen.mjs",
    "licence": "as listed in it"
   }

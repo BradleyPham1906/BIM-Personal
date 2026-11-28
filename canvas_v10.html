@@ -9193,6 +9193,19 @@ function bimM2Visible(a, b, tris, view, samples) {
     }
     bimRenderInto(el.lvlrows,h);   /* __acad3dV118 */
   }
+/* ================= __acad3dV305 OB1: IFC identity, GlobalIds that last =================
+   docs/research/research-thatopen-gap.md (the owner's answers, 2026-11-28) and research-thatopen-gap/authoring-openbim.md
+   part 9. Every element, wall segment, opening, building, storey, the site and the project keeps one IFC GlobalId from
+   the first save on, in its own record (bim.ifc), so a second save writes the same GlobalIds and BCF issues, model
+   diffs and federated coordination can follow an element. A copy is a new element and forgets its identity.
+   Each function is a work order (docs/work-orders/v305/), added below as it is built; all are pure but the two that
+   say they stamp a record. */
+/* ================= __acad3dV306 OB2: IFC class and predefined type =================
+   docs/research/research-thatopen-gap.md (the owner's answers, 2026-11-28) and research-thatopen-gap/authoring-openbim.md
+   part 9. Which IFC4 class and predefined type each element is written as: from the element's own choice (bim.ifc)
+   when it has one, else from what the element is (a wall is an IfcWall STANDARD). The predefined types are IFC4 ADD2
+   TC1's enumerations, read from web-ifc's schema (docs/research/experiments/thatopen-gap/ifc4-predefined.json).
+   Each function is a work order (docs/work-orders/v306/), added below as it is built; all are pure. */
   /* ---------- Phase 42: structural grid datums ----------
      Grids are datums, not model elements: they live in A3D.grids rather than A3D.objs,
      span every level (a grid is a vertical plane in Revit, so it is stored as a plan
@@ -43715,12 +43728,43 @@ function bimToeMesh(parts){
   }
   return {pos:pos,idx:idx};
 }
-/* That Open's colour ({r, g, b} from 0 to 1) as #rrggbb; grey for none */
+/* That Open's colour ({r, g, b} from 0 to 1, linear, as three.js holds colours) as the app's #rrggbb (sRGB, as the
+   file wrote it and as cc-ifc gives it): each channel through the sRGB transfer function (IEC 61966-2-1). Without it
+   every colour came out darker (measured 2026-11-28: cc-ifc #939393, That Open #4a4a4a); grey for none */
 function bimToeHex(c){
   if(!c||typeof c!=='object')return '#b8b8b0';
-  var a=[c.r,c.g,c.b],s='#',i,h;
-  for(i=0;i<3;i++){h=Math.max(0,Math.min(255,Math.round((+a[i]||0)*255))).toString(16);s+=h.length<2?'0'+h:h;}
+  var a=[c.r,c.g,c.b],s='#',i,h,v;
+  for(i=0;i<3;i++){
+    v=Math.max(0,Math.min(1,+a[i]||0));
+    v=v<=0.0031308?12.92*v:1.055*Math.pow(v,1/2.4)-0.055;
+    h=Math.max(0,Math.min(255,Math.round(v*255))).toString(16);s+=h.length<2?'0'+h:h;
+  }
   return s;
+}
+/* one item's colour and opacity by cc-ifc's rule (io/ifc-full.js bimIfcMeshParts): of its parts' materials, the
+   opaque one (alpha at least 0.99) covering the most triangles, else the one covering the most; opacity the triangle-
+   weighted mean of alpha. parts: getItemsGeometry's [{sampleId, indices}]; sampleMat: {sampleId: materialId} (from
+   getSamples); mats: {materialId: {r, g, b, a}}, 0 to 255 (getMaterials, the file's own values). null when no part
+   has a known material (e03, 2026-11-28: the first-opaque rule matched cc-ifc on 69.5% of dental_clinic's elements) */
+function bimToePartsLook(parts,sampleMat,mats){
+  var by={},i,p,m,t,k,h,best='',bestN=-1,any='',anyN=-1,op=0,n=0;
+  for(i=0;i<(parts||[]).length;i++){
+    p=parts[i];if(!p||p.sampleId==null||!p.indices)continue;
+    m=(mats||{})[(sampleMat||{})[p.sampleId]];if(!m)continue;
+    t=Math.floor(p.indices.length/3);if(!t)continue;
+    h='#';
+    for(k=0;k<3;k++){var c=Math.max(0,Math.min(255,Math.round(+[m.r,m.g,m.b][k]||0))).toString(16);h+=c.length<2?'0'+c:c;}
+    var a=typeof m.a==='number'&&isFinite(m.a)?Math.max(0,Math.min(1,m.a/255)):1;
+    if(!by[h])by[h]={n:0,o:0};
+    by[h].n+=t;if(a>=0.99)by[h].o+=t;
+    op+=a*t;n+=t;
+  }
+  if(!n)return null;
+  for(h in by)if(by.hasOwnProperty(h)){
+    if(by[h].o>bestN&&by[h].o>0){best=h;bestN=by[h].o;}
+    if(by[h].n>anyN){any=h;anyN=by[h].n;}
+  }
+  return {col:best||any,opacity:op/n};
 }
 /* the colour and opacity of each item, from getItemsMaterialDefinition's [{localIds, definition}]: the first opaque
    colour that covers it, and the mean of its materials' opacities */
@@ -43768,7 +43812,7 @@ function bimToeClassName(up,lists){
 }
 /* ================= __acad3dV206: That Open Engine, loaded on demand =================
    docs/research/research-thatopen.md (the owner's decisions, 2026-11-13) and research-thatopen-gap/. That Open
-   (@thatopen/components 3.6.0, components-front 3.6.1, fragments 3.6.1, MIT) and web-ifc 0.0.79 (MPL-2.0) are three
+   (@thatopen/components 3.6.0, components-front 3.6.1, fragments 3.6.1, MIT) and web-ifc 0.0.81 (MPL-2.0) are three
    files in runtime/thatopen/<ver>/, pinned by size and SHA-256 in runtime/MANIFEST.json and built by tools/thatopen,
    fetched only when an IFC file is opened or the Review view is asked for: from the page's folder over http(s), and
    for a copy on a disk first from a runtime folder beside it, then from the Pages address. They run on the app's own
@@ -43779,8 +43823,8 @@ function bimToeClassName(up,lists){
    IFC file into the import's data (the same shape as io/ifc-full.js's bimIfcRead). */
 var BIM_TOE={ver:'3.6.0',dir:'thatopen/3.6.0/',wasmUrl:'https://bim-webifc.invalid/web-ifc.wasm',
   files:[
-    {f:'bim-webifc.min.js',g:'BIMWEBIFC',sri:'sha256-3TkwbvqCYBZb133n/Bo7TEfGRpqgfmgZtR9RQzmjwqc='},
-    {f:'bim-webifc-wasm.js',g:'BIMWEBIFC_WASM',sri:'sha256-3fFo3KjYmWEYan/JerM92vZwUr+5pBNyDKJuukEg50w='},
+    {f:'bim-webifc.min.js',g:'BIMWEBIFC',sri:'sha256-jPwIk5HMlzhh1FxocntXSeMsiGlayJLI4wkNciONruc='},
+    {f:'bim-webifc-wasm.js',g:'BIMWEBIFC_WASM',sri:'sha256-zDTtyg+u6dPpEVwZIqLuin3WgBA0eBNNuw7fEZPUzzw='},
     {f:'bim-thatopen.min.js',g:'BIMTOE',sri:'sha256-UEvSoAA2gbCXb+E+apFIwyqFZSPZNw9UJzLb+DTNKz0='}],
   maxTris:1500000,chunk:400,
   /* as V196: spaces are rooms, not solids (web-ifc and cc-ifc leave them out too); the facility parts are added */
@@ -43912,15 +43956,26 @@ function bimToeRead(bytes,text){
         function geo(){
           if(j>=ids.length)return Promise.resolve();
           var part=ids.slice(j,j+BIM_TOE.chunk);j+=BIM_TOE.chunk;
-          return model.getItemsGeometry(part).then(function(G){
+          var G,own={},sampleMat={},mats={};
+          return model.getItemsGeometry(part).then(function(G0){
+            G=G0;
             /* each part to its element by its own localId (the list's order only where a part has none) */
-            var own={},g,q,m2;
+            var g,q,m2,sids=[];
             for(g=0;g<(G||[]).length;g++)for(q=0;q<(G[g]||[]).length;q++){
               m2=G[g][q];var key=m2&&m2.localId!=null?m2.localId:part[g];
               (own[key]||(own[key]=[])).push(m2);
+              if(m2&&m2.sampleId!=null)sids.push(m2.sampleId);
             }
-            for(g=0;g<part.length;g++){
-              var id=part[g],it=byId[id]||{},lk=look[id]||{col:'#b8b8b0',opacity:1},cls=bimToeVal(it._category)||tree.cats[id]||'IFCPRODUCT';
+            /* each part's material, for the colour by cc-ifc's rule (bimToePartsLook) */
+            return sids.length?model.getSamples(sids).then(function(S1){
+              var mids=[];
+              S1.forEach(function(v,k){sampleMat[k]=v.material;mids.push(v.material);});
+              return model.getMaterials(mids);
+            }).then(function(M){M.forEach(function(v,k){mats[k]=v;});},function(eM){console.warn('[BIM] That Open: the parts\' materials could not be read; colours from the items\' definitions',eM);}):null;
+          }).then(function(){
+            for(var g=0;g<part.length;g++){
+              var id=part[g],it=byId[id]||{},cls=bimToeVal(it._category)||tree.cats[id]||'IFCPRODUCT';
+              var lk=bimToePartsLook(own[id]||[],sampleMat,mats)||look[id]||{col:'#b8b8b0',opacity:1};
               var raw=bimToeMesh(own[id]||[]),t=raw.idx.length/3;
               if(!t){D.skipped++;continue;}
               if(D.tris+t>BIM_TOE.maxTris){D.cut+=t;continue;}
@@ -44263,6 +44318,13 @@ function bimReviewClose(){
   R.el=null;R.c=null;R.world=null;R.fm=null;R.hl=null;R.clip=null;R.len=null;R.area=null;R.hider=null;R.models=[];R.keys=null;
 }
 function bimReviewCommand(){if(A3D_RVW.open)bimReviewClose();else bimReviewOpen();}
+/* ================= __acad3dV307 OB3: types as IFC type objects =================
+   docs/research/research-thatopen-gap.md (the owner's answers, 2026-11-28) and research-thatopen-gap/authoring-openbim.md
+   part 9. The app's types (bim/type-instance-params.js, TYPE_CATS) written as IfcWallType, IfcSlabType and their kin,
+   each with a GlobalId that lasts, shared by the elements of that type; a predefined type on the type, and on an
+   element only where it differs (the owner: the instance overrides the type).
+   Each function is a work order (docs/work-orders/v307/), added below as it is built; all are pure but the one that
+   says it stamps a record. */
   // ---- Unified import entry point ----
   function bimHandleImportFile(file){
     if(!file)return;
@@ -81359,18 +81421,18 @@ function bimSdkSnapshot(state, fields) {
     clearLevels:function(){for(var i=A3D.levels.length-1;i>=0;i--)if(/\(IFC\)$/.test(A3D.levels[i].name))A3D.levels.splice(i,1);},
     /* what an import made, for e03: elements by IFC class, valid GlobalIds, storeys, sets, triangles, the box (metres) */
     summary:function(ids){
-      var set={},by={},bad=[],g=0,ps=0,tri=0,st={},mn=[1e18,1e18,1e18],mx=[-1e18,-1e18,-1e18],i,k,o;
+      var set={},by={},cols={},bad=[],g=0,ps=0,tri=0,st={},mn=[1e18,1e18,1e18],mx=[-1e18,-1e18,-1e18],i,k,o;
       for(i=0;i<(ids||[]).length;i++)set[ids[i]]=true;
       for(i=0;i<A3D.objs.length;i++){
         o=A3D.objs[i];if(!set[o.id]||!o.bim)continue;
-        k=bimIfcClass(o.bim.ifcType);by[k]=(by[k]||0)+1;
+        k=bimIfcClass(o.bim.ifcType);by[k]=(by[k]||0)+1;cols[o.col]=(cols[o.col]||0)+1;
         if(bimTorGuidValid(o.bim.guid))g++;else if(bad.length<4)bad.push([o.bim.ifcType,String(o.bim.guid).slice(0,40),o.name]);
         ps+=(o.bim.psets||[]).length;if(o.bim.storey)st[o.bim.storey]=1;
         tri+=o.mesh&&o.mesh.f?o.mesh.f.length:0;
         for(k=0;o.mesh&&k<o.mesh.v.length;k++){var v=o.mesh.v[k];
           mn=[Math.min(mn[0],v[0]),Math.min(mn[1],v[1]),Math.min(mn[2],v[2])];mx=[Math.max(mx[0],v[0]),Math.max(mx[1],v[1]),Math.max(mx[2],v[2])];}
       }
-      return {byClass:by,guids:g,bad:bad,psets:ps,storeys:Object.keys(st).length,tris:tri,
+      return {byClass:by,cols:cols,guids:g,bad:bad,psets:ps,storeys:Object.keys(st).length,tris:tri,
         box:[mx[0]-mn[0],mx[1]-mn[1],mx[2]-mn[2]].map(function(x){return Math.round(x*1000)/1000;}),min:mn};
     }};
   window.__a3dIfc={importBuffer:bimIfcImportBuffer,read:bimIfcRead,meshParts:bimIfcMeshParts,storeys:bimIfcStoreys,containers:bimIfcContainers,

@@ -1,13 +1,14 @@
 import { bimLbBase } from '../ladybug/runtime.js';
 import { bimGltfFeatureEdges, bimGltfWeld } from './gltf.js';
 import {
-  bimToeClassName, bimToeLook, bimToeMesh, bimToeRaw, bimToeSets, bimToeTree, bimToeUnit, bimToeVal
+  bimToeClassName, bimToeLook, bimToeMesh, bimToePartsLook, bimToeRaw, bimToeSets, bimToeTree, bimToeUnit,
+  bimToeVal
 } from './ifc-review.js';
 import { bimRvLoad } from '../render/rendered-view.js';
 
 /* ================= __acad3dV206: That Open Engine, loaded on demand =================
    docs/research/research-thatopen.md (the owner's decisions, 2026-11-13) and research-thatopen-gap/. That Open
-   (@thatopen/components 3.6.0, components-front 3.6.1, fragments 3.6.1, MIT) and web-ifc 0.0.79 (MPL-2.0) are three
+   (@thatopen/components 3.6.0, components-front 3.6.1, fragments 3.6.1, MIT) and web-ifc 0.0.81 (MPL-2.0) are three
    files in runtime/thatopen/<ver>/, pinned by size and SHA-256 in runtime/MANIFEST.json and built by tools/thatopen,
    fetched only when an IFC file is opened or the Review view is asked for: from the page's folder over http(s), and
    for a copy on a disk first from a runtime folder beside it, then from the Pages address. They run on the app's own
@@ -18,8 +19,8 @@ import { bimRvLoad } from '../render/rendered-view.js';
    IFC file into the import's data (the same shape as io/ifc-full.js's bimIfcRead). */
 var BIM_TOE={ver:'3.6.0',dir:'thatopen/3.6.0/',wasmUrl:'https://bim-webifc.invalid/web-ifc.wasm',
   files:[
-    {f:'bim-webifc.min.js',g:'BIMWEBIFC',sri:'sha256-3TkwbvqCYBZb133n/Bo7TEfGRpqgfmgZtR9RQzmjwqc='},
-    {f:'bim-webifc-wasm.js',g:'BIMWEBIFC_WASM',sri:'sha256-3fFo3KjYmWEYan/JerM92vZwUr+5pBNyDKJuukEg50w='},
+    {f:'bim-webifc.min.js',g:'BIMWEBIFC',sri:'sha256-jPwIk5HMlzhh1FxocntXSeMsiGlayJLI4wkNciONruc='},
+    {f:'bim-webifc-wasm.js',g:'BIMWEBIFC_WASM',sri:'sha256-zDTtyg+u6dPpEVwZIqLuin3WgBA0eBNNuw7fEZPUzzw='},
     {f:'bim-thatopen.min.js',g:'BIMTOE',sri:'sha256-UEvSoAA2gbCXb+E+apFIwyqFZSPZNw9UJzLb+DTNKz0='}],
   maxTris:1500000,chunk:400,
   /* as V196: spaces are rooms, not solids (web-ifc and cc-ifc leave them out too); the facility parts are added */
@@ -151,15 +152,26 @@ function bimToeRead(bytes,text){
         function geo(){
           if(j>=ids.length)return Promise.resolve();
           var part=ids.slice(j,j+BIM_TOE.chunk);j+=BIM_TOE.chunk;
-          return model.getItemsGeometry(part).then(function(G){
+          var G,own={},sampleMat={},mats={};
+          return model.getItemsGeometry(part).then(function(G0){
+            G=G0;
             /* each part to its element by its own localId (the list's order only where a part has none) */
-            var own={},g,q,m2;
+            var g,q,m2,sids=[];
             for(g=0;g<(G||[]).length;g++)for(q=0;q<(G[g]||[]).length;q++){
               m2=G[g][q];var key=m2&&m2.localId!=null?m2.localId:part[g];
               (own[key]||(own[key]=[])).push(m2);
+              if(m2&&m2.sampleId!=null)sids.push(m2.sampleId);
             }
-            for(g=0;g<part.length;g++){
-              var id=part[g],it=byId[id]||{},lk=look[id]||{col:'#b8b8b0',opacity:1},cls=bimToeVal(it._category)||tree.cats[id]||'IFCPRODUCT';
+            /* each part's material, for the colour by cc-ifc's rule (bimToePartsLook) */
+            return sids.length?model.getSamples(sids).then(function(S1){
+              var mids=[];
+              S1.forEach(function(v,k){sampleMat[k]=v.material;mids.push(v.material);});
+              return model.getMaterials(mids);
+            }).then(function(M){M.forEach(function(v,k){mats[k]=v;});},function(eM){console.warn('[BIM] That Open: the parts\' materials could not be read; colours from the items\' definitions',eM);}):null;
+          }).then(function(){
+            for(var g=0;g<part.length;g++){
+              var id=part[g],it=byId[id]||{},cls=bimToeVal(it._category)||tree.cats[id]||'IFCPRODUCT';
+              var lk=bimToePartsLook(own[id]||[],sampleMat,mats)||look[id]||{col:'#b8b8b0',opacity:1};
               var raw=bimToeMesh(own[id]||[]),t=raw.idx.length/3;
               if(!t){D.skipped++;continue;}
               if(D.tris+t>BIM_TOE.maxTris){D.cut+=t;continue;}

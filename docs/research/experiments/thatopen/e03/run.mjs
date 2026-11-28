@@ -47,7 +47,7 @@ for (const f of files) {
   console.log(JSON.stringify({ file: f, bytes: fs.statSync(path.join(dir, f)).size, agree: !!ok,
     thatopen: A.error || { engine: A.engine, stages: A.stages, readMs: A.readMs, n: A.n, guids: A.guids, bad: A.bad, storeys: A.storeys, levels: A.levels, psets: A.psets, tris: A.tris, box: A.box, coord: A.coord, ms: A.ms, cut: A.cut },
     ccifc: B.error || { engine: B.engine, readMs: B.readMs, n: B.n, guids: B.guids, storeys: B.storeys, levels: B.levels, psets: B.psets, tris: B.tris, box: B.box, coord: B.coord, ms: B.ms, cut: B.cut },
-    classesSame: C && C.same.length, classDiff: C && C.diff, levels: [A.levelRel, B.levelRel] }));
+    classesSame: C && C.same.length, classDiff: C && C.diff, levels: [A.levelRel, B.levelRel], cols: process.env.E03_COLS ? [A.cols, B.cols] : undefined }));
 }
 console.log('agree on ' + agree + ' of ' + files.length + '; page errors: ' + (errs.length ? errs.join(' | ') : 'none'));
 await browser.close(); srv.close();

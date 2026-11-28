@@ -125,6 +125,8 @@ practice element by element.
 
 ## 7. Edges and risks
 
+- Colour of elements with several materials: cc-ifc takes the colour covering most triangles, That Open's data the
+  first opaque material; on FZK-Haus two of 83 elements differ (e03 colour run, 2026-11-28).
 - Speed: That Open's import is 2.5 to 5 times slower than cc-ifc on large files (e03). The fragments note's route
   (IfcImporter then a single-threaded model, no worker round trips) may recover some; measure before deciding.
 - `lastPick`: the Review view waits for That Open's measuring pick through a field its types mark protected; if it
@@ -154,7 +156,7 @@ highlight, clip, measure, viewpoints), BlenderBIM/Bonsai (IfcOpenShell as the au
 - The class names, the space skip, the IFC4.3 facility parts and the id formatting were found by e03 and each has a
   unit test (`tests/unit/thatopen.test.mjs`).
 
-## 11. The owner's decisions (to ask together)
+## 11. The owner's decisions (asked together; answered 2026-11-28)
 
 1. cc-ifc: the condition of 2026-11-13 is met (12 of 13 agree, the 13th better). Retire it now (one IFC reader, 1.1 MB
    less in `runtime/`), or keep it as the fallback because it is 2.5 to 5 times faster on large files? Recommended:
@@ -177,6 +179,31 @@ highlight, clip, measure, viewpoints), BlenderBIM/Bonsai (IfcOpenShell as the au
 12. Footing-to-host relation written or not; elements on hidden layers exported or not (`authoring-openbim.md` 11).
 13. pako (inside fragments) is "MIT AND Zlib"; the zlib licence is permissive but not named in CLAUDE.md's list.
     Recommended: allow it (it asks only that the notice stay, which `LICENSES.txt` does).
+
+**The owner's answers (2026-11-28): "Do what's standard and as recommended."** The questions were put as fourteen
+(12 split in two, the recommendations given for each); the answers, and what followed:
+
+1. cc-ifc stays one phase more as the fallback while the faster route (IfcImporter then a single-threaded model) is
+   measured; then it is retired. A `[Claude]` task in OB1's phase.
+2. Order: OB1 (lasting GlobalIds), OB2 (class and predefined type), OB3 (types) first, then BCF, then OB4 to OB8 and
+   the ports in part 5's order. OB1 to OB3 are V305 to V307 (`docs/work-orders/`).
+3. Approach B: the app's JSON model with an IFC identity and relations as data, written by IfcOpenShell.
+4. IFC4 written now; IFC4X3 with OB8.
+5. Predefined types and standard properties on the type and per instance, the instance overriding.
+6. The footing-to-host relation is written (IfcRelConnectsElements), in OB7.
+7. Elements on hidden layers are exported (today they are not, `ifcos-worker.js:142`), the file saying so in its
+   header's description; in OB1's phase, as it touches the same export.
+8. Wall layers: structure and finish first, then insulation; layers drawn in plan cuts later (OB4).
+9. Uniclass 2015 first, once its licence is read (OB8).
+10. BCF in Review now through That Open; our own IDS checker (That Open's has faults).
+11. Point clouds and splats in Review through That Open (potree-core as an optional file).
+12. Unstyled elements: "as the import looked". Measured: cc-ifc gives white too (web-ifc colours an unstyled element
+    white; V196's grey was only for no colour at all), so nothing changes. The same measurement found That Open's
+    colours are linear where the app's are sRGB: every imported colour was darker (cc-ifc #939393, That Open
+    #4a4a4a). Fixed in `bimToeHex` (the sRGB transfer function) with a unit test; colours now agree on 5 of 6 files
+    to one step of rounding, the sixth differing on two elements of several materials (part 7).
+13. web-ifc 0.0.81: e03 and the browser check were run on it, then the pin moved (`runtime/thatopen/3.6.0/`).
+14. pako's zlib licence allowed; CLAUDE.md's list of licences names it.
 
 ## 12. References
 

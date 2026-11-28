@@ -9,11 +9,14 @@ The owner's decisions (2026-11-14): for every phase below, all as its research r
 overrule any there). V177's D1 to D4 and That Open's four were answered 2026-11-13. The phases are numbered in one
 sequence, 175c to 248 (228 to 232 are algorithmic design, the owner's thirteen decisions, 2026-11-15; 233 to 238 program to plan, the owner's ten decisions, 2026-11-16; 239 to 247 the physical world, the owner's answer 2026-11-22: standard and scalable, `research-physical-world.md` part 11), in `docs/dev/PIPELINE.md`; there are no "later" rows.
 
-## Ready for Cline, in order (342 tasks)
+## Ready for Cline, in order (357 tasks)
 
 | Phase | What | Tasks | Where | Tests |
 |---|---|---|---|---|
 | v202 | Site context C3: measured heights, ground and bridges; part B, the Site and Map interface; part C, heights on one datum and the GEM-15 surface model (the owner, 2026-11-21: next) | WO-01 to WO-05, WO-12 to WO-14, WO-22 to WO-26 (13), any order | `v202/TASKS.md` | `v202/v202.test.mjs`, `v202/v202-ui.test.mjs`, `v202/v202-datum.test.mjs`, `v202/v202-surface.test.mjs` |
+| v305 | OB1, IFC identity: GlobalIds that last across saves (the owner, 2026-11-28: the gap plan's first) | WO-01 to WO-06 (6) | `v305/TASKS.md` | `v305/v305.test.mjs` |
+| v306 | OB2, IFC class and predefined type (IFC4's lists, from web-ifc's schema) | WO-01 to WO-04 (4) | `v306/TASKS.md` | `v306/v306.test.mjs` |
+| v307 | OB3, types as IFC type objects (after v305 WO-01) | WO-01 to WO-05 (5) | `v307/TASKS.md` | `v307/v307.test.mjs` |
 | v178 | Presentation P3, the report (Site Analysis and DA), styles, export | WO-01 to WO-12 (12) | `v178/TASKS.md` | `v178/v178.test.mjs` |
 | v181 | Interiors I3, circulation and escape routes | WO-01 to WO-05 (5) | `v181/TASKS.md` | `v181/v181.test.mjs` |
 | v182 | Interiors I4, sightlines and views | WO-01 to WO-05 (5) | `v182/TASKS.md` | `v182/v182.test.mjs` |

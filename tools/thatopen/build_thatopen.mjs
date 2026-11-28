@@ -23,7 +23,7 @@ import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 
 const PINS = { '@thatopen/components': '3.6.0', '@thatopen/components-front': '3.6.1', '@thatopen/fragments': '3.6.1',
-  'web-ifc': '0.0.79', 'camera-controls': '3.1.2', three: '0.186.1' };
+  'web-ifc': '0.0.81', 'camera-controls': '3.1.2', three: '0.186.1' };
 const VER = PINS['@thatopen/components'];
 const here = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(here, '..', '..');

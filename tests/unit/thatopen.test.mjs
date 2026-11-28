@@ -110,7 +110,10 @@ test('an item\'s parts as one mesh, each moved by its column-major transform', (
 });
 
 test('colours and opacity per item, from the material definitions', () => {
-  assert.equal(E.bimToeHex({ r: 1, g: 0.5, b: 0 }), '#ff8000');
+  // That Open's colours are linear; the app's are sRGB (the file's): 0.291771 linear is 0x93 = 147 in sRGB, cc-ifc's value
+  assert.equal(E.bimToeHex({ r: 1, g: 0, b: 0 }), '#ff0000');
+  assert.equal(E.bimToeHex({ r: 0.291771, g: 0.291771, b: 0.291771 }), '#939393');
+  assert.equal(E.bimToeHex({ r: 0.215861, g: 0.502886, b: 0.001518 }), '#80bc05', 'the linear segment near black');
   assert.equal(E.bimToeHex(null), '#b8b8b0');
   const L = E.bimToeLook([
     { localIds: [1, 2], definition: { color: { r: 1, g: 1, b: 1 }, opacity: 1 } },
@@ -156,4 +159,25 @@ test('the Review tree: each storey\'s classes, and what no storey holds', () => 
     { storey: 20, classes: { IFCSLAB: [200] } },
     { storey: null, classes: { IFCGEOGRAPHICELEMENT: [9] } }]);
   assert.deepEqual(E.bimToeStoreyClasses(cat('IFCPROJECT', [item(1)])), [], 'nothing but spatial elements: no rows');
+});
+
+test('an item\'s colour by cc-ifc\'s rule: the opaque material over most triangles; opacity weighted by triangles', () => {
+  const tri = (n) => ({ length: 3 * n });
+  const mats = { 1: { r: 200, g: 100, b: 50, a: 255 }, 2: { r: 0, g: 128, b: 255, a: 51 }, 3: { r: 10, g: 10, b: 10, a: 255 } };
+  const sm = { 11: 1, 12: 2, 13: 3 };
+  // a window: frame (opaque, 10 triangles), glass (20 percent, 30 triangles), handle (opaque, 2)
+  const w = E.bimToePartsLook([{ sampleId: 11, indices: tri(10) }, { sampleId: 12, indices: tri(30) }, { sampleId: 13, indices: tri(2) }], sm, mats);
+  assert.equal(w.col, '#c86432', 'the opaque material over most triangles, not the glass');
+  assert.ok(Math.abs(w.opacity - (10 + 30 * 0.2 + 2) / 42) < 1e-9);
+  // all see-through: the one over most triangles
+  const g = E.bimToePartsLook([{ sampleId: 12, indices: tri(4) }], sm, mats);
+  assert.equal(g.col, '#0080ff');
+  assert.ok(Math.abs(g.opacity - 0.2) < 1e-9);
+  // the same material in two parts adds up
+  const t = E.bimToePartsLook([{ sampleId: 13, indices: tri(3) }, { sampleId: 11, indices: tri(4) }, { sampleId: 13, indices: tri(3) }], sm, mats);
+  assert.equal(t.col, '#0a0a0a');
+  // nothing known: null, so the definitions are used
+  assert.equal(E.bimToePartsLook([{ sampleId: 99, indices: tri(3) }], sm, mats), null);
+  assert.equal(E.bimToePartsLook([], sm, mats), null);
+  assert.equal(E.bimToePartsLook(null, null, null), null);
 });

@@ -1,0 +1,132 @@
+{
+ "source": "web-ifc 0.0.81, IFC4 namespace",
+ "enums": {
+  "IfcWall": [
+   "MOVABLE",
+   "PARAPET",
+   "PARTITIONING",
+   "PLUMBINGWALL",
+   "SHEAR",
+   "SOLIDWALL",
+   "STANDARD",
+   "POLYGONAL",
+   "ELEMENTEDWALL",
+   "USERDEFINED",
+   "NOTDEFINED"
+  ],
+  "IfcSlab": [
+   "FLOOR",
+   "ROOF",
+   "LANDING",
+   "BASESLAB",
+   "USERDEFINED",
+   "NOTDEFINED"
+  ],
+  "IfcCovering": [
+   "CEILING",
+   "FLOORING",
+   "CLADDING",
+   "ROOFING",
+   "MOLDING",
+   "SKIRTINGBOARD",
+   "INSULATION",
+   "MEMBRANE",
+   "SLEEVING",
+   "WRAPPING",
+   "USERDEFINED",
+   "NOTDEFINED"
+  ],
+  "IfcColumn": [
+   "COLUMN",
+   "PILASTER",
+   "USERDEFINED",
+   "NOTDEFINED"
+  ],
+  "IfcBeam": [
+   "BEAM",
+   "JOIST",
+   "HOLLOWCORE",
+   "LINTEL",
+   "SPANDREL",
+   "T_BEAM",
+   "USERDEFINED",
+   "NOTDEFINED"
+  ],
+  "IfcFooting": [
+   "CAISSON_FOUNDATION",
+   "FOOTING_BEAM",
+   "PAD_FOOTING",
+   "PILE_CAP",
+   "STRIP_FOOTING",
+   "USERDEFINED",
+   "NOTDEFINED"
+  ],
+  "IfcRoof": [
+   "FLAT_ROOF",
+   "SHED_ROOF",
+   "GABLE_ROOF",
+   "HIP_ROOF",
+   "HIPPED_GABLE_ROOF",
+   "GAMBREL_ROOF",
+   "MANSARD_ROOF",
+   "BARREL_ROOF",
+   "RAINBOW_ROOF",
+   "BUTTERFLY_ROOF",
+   "PAVILION_ROOF",
+   "DOME_ROOF",
+   "FREEFORM",
+   "USERDEFINED",
+   "NOTDEFINED"
+  ],
+  "IfcStair": [
+   "STRAIGHT_RUN_STAIR",
+   "TWO_STRAIGHT_RUN_STAIR",
+   "QUARTER_WINDING_STAIR",
+   "QUARTER_TURN_STAIR",
+   "HALF_WINDING_STAIR",
+   "HALF_TURN_STAIR",
+   "TWO_QUARTER_WINDING_STAIR",
+   "TWO_QUARTER_TURN_STAIR",
+   "THREE_QUARTER_WINDING_STAIR",
+   "THREE_QUARTER_TURN_STAIR",
+   "SPIRAL_STAIR",
+   "DOUBLE_RETURN_STAIR",
+   "CURVED_RUN_STAIR",
+   "TWO_CURVED_RUN_STAIR",
+   "USERDEFINED",
+   "NOTDEFINED"
+  ],
+  "IfcDoor": [
+   "DOOR",
+   "GATE",
+   "TRAPDOOR",
+   "USERDEFINED",
+   "NOTDEFINED"
+  ],
+  "IfcWindow": [
+   "WINDOW",
+   "SKYLIGHT",
+   "LIGHTDOME",
+   "USERDEFINED",
+   "NOTDEFINED"
+  ],
+  "IfcSpace": [
+   "SPACE",
+   "PARKING",
+   "GFA",
+   "INTERNAL",
+   "EXTERNAL",
+   "USERDEFINED",
+   "NOTDEFINED"
+  ],
+  "IfcBuildingElementProxy": [
+   "COMPLEX",
+   "ELEMENT",
+   "PARTIAL",
+   "PROVISIONFORVOID",
+   "PROVISIONFORSPACE",
+   "USERDEFINED",
+   "NOTDEFINED"
+  ]
+ }
+}

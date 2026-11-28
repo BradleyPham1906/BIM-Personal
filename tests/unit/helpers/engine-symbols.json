@@ -282,6 +282,7 @@
   "bimToeHex",
   "bimToeLook",
   "bimToeMesh",
+  "bimToePartsLook",
   "bimToeRaw",
   "bimToeSets",
   "bimToeSources",
