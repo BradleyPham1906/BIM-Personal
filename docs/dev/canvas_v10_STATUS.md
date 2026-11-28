@@ -17000,4 +17000,7 @@ with that repo." Research: `docs/research/research-thatopen-gap.md` (the synthes
 - Audit of Cline's WO-01 to WO-07: WO-03 and WO-04 used BigInt, rewritten in ES5; WO-01 is for Z-up input only.
 - Checks: syntax, `npm run modules`, the build, `npm run check`, `npm test` 513 of 513, `tools/check_runtime.py`,
   the browser check `tests/e2e/bim_phase206_review_check.mjs` 18 of 18 (http and file://).
-- Waiting for the owner: cc-ifc's retirement and the gap plan (research-thatopen-gap.md part 11, twelve decisions).
+- The independent check (`research-thatopen-gap/second-reader.md`): nine facts confirmed; one wrong (That Open had
+  already turned storey elevations into metres, so millimetre files' levels collapsed): fixed with
+  replaceStoreyElevation off, and e03 now compares levels too. jszip's licence text added to LICENSES.txt.
+- Waiting for the owner: cc-ifc's retirement and the gap plan (research-thatopen-gap.md part 11, thirteen decisions).

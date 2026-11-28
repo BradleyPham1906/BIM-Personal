@@ -46,6 +46,9 @@ built? Hypotheses, set before the work:
   (cc-ifc stops at the triangle cap). **Counter-evidence found:** it is 2.5 to 5 times slower on large files.
 - H3: Some That Open repository can serve as the app's authoring engine. **False** (P): Clay is stale and faulty
   (`authoring-openbim.md` part 4); components and fragments edit fragments, not elements with rules.
+- The independent check (`second-reader.md`) confirmed nine of the facts the code uses and found one wrong: That Open
+  had already turned storey elevations into metres, so millimetre files' levels collapsed; fixed, and e03 now compares
+  the levels as well (part 4).
 - H4: The app's own model is already IFC-ready apart from a few fields. **False** (P): authored elements get new
   GlobalIds at every save (`io/ifc-save.js:80`), types, Psets, Qtos, layer sets, spaces, joins and classification
   are not written (`authoring-openbim.md` part 6).
@@ -128,6 +131,8 @@ practice element by element.
   goes, the view waits 800 ms instead (no error). Re-run the browser check at each update.
 - Churn: That Open releases every few weeks; the pins stay until a re-run of e02, e03 and the browser check passes.
 - One browser (Chromium 158, SwiftShader); no Safari, Firefox or a real phone yet.
+- components-front carries a jsdelivr address for opentype.js in its font loader; the app never calls it (the rule
+  forbids run-time CDN fetches: if a later Review feature needs text in 3D, the font must be vendored first).
 - The fetch wrapper for the wasm and the classic worker rely on behaviour the library allows but does not document.
 
 ## 8. What is still open
@@ -170,6 +175,8 @@ highlight, clip, measure, viewpoints), BlenderBIM/Bonsai (IfcOpenShell as the au
 11. Point clouds and splats through That Open in Review (potree-core, MIT, as an optional file), given V205's splats
     are not drawn (`components-front-ui.md`).
 12. Footing-to-host relation written or not; elements on hidden layers exported or not (`authoring-openbim.md` 11).
+13. pako (inside fragments) is "MIT AND Zlib"; the zlib licence is permissive but not named in CLAUDE.md's list.
+    Recommended: allow it (it asks only that the notice stay, which `LICENSES.txt` does).
 
 ## 12. References
 

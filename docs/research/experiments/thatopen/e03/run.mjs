@@ -23,12 +23,12 @@ let agree = 0;
 for (const f of files) {
   const b64 = fs.readFileSync(path.join(dir, f)).toString('base64');
   const one = async (eng) => page.evaluate(async ([b, n, e]) => {
-    window.__a3dTestSetObjs([]); window.__a3dToe.use(e);
+    window.__a3dTestSetObjs([]); window.__a3dToe.clearLevels(); window.__a3dToe.use(e);
     const bin = atob(b), u = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i);
     const t0 = performance.now(); let R;
     try { R = await window.__a3dIfc.importBuffer(u, n); } catch (x) { return { error: String(x && x.message || x).slice(0, 300) }; }
     const S = window.__a3dToe.summary(R.ids); S.ms = Math.round(performance.now() - t0); S.engine = R.engine; S.n = R.ids.length; S.levels = R.levels;
-    S.cut = R.cut; S.stages = R.stages; S.readMs = R.readMs; S.coord = R.coord ? [R.coord[12], R.coord[13], R.coord[14]].map((x) => Math.round(x * 1000) / 1000) : null;
+    S.levelElev = window.__a3dToe.levels().map((l) => l.elev).sort((a, b) => a - b); S.cut = R.cut; S.stages = R.stages; S.readMs = R.readMs; S.coord = R.coord ? [R.coord[12], R.coord[13], R.coord[14]].map((x) => Math.round(x * 1000) / 1000) : null;
     window.__a3dTestSetObjs([]); return S;
   }, [b64, f, eng]);
   // ENGINE_ORDER=cc-first runs cc-ifc first, so the app's first-paint costs fall on it (they are not the reader's)
@@ -37,12 +37,17 @@ for (const f of files) {
   else { A = await one('thatopen'); B = await one('cc-ifc'); }
   const C = A.byClass && B.byClass ? await page.evaluate(([a, b]) => window.__a3dToe.compare(a, b), [A.byClass, B.byClass]) : null;
   const boxOk = A.box && B.box && A.box.every((v, i) => Math.abs(v - B.box[i]) <= 0.01);
-  const ok = C && C.diff.length === 0 && boxOk && A.guids === A.n;
+  // the storeys as levels: the same elevations to 1 cm, each measured from its engine's own shift to the origin (a
+  // level moves with the geometry), so in the file's own frame (the second reader's F4: added 2026-11-28)
+  const rel = (S) => S.levelElev && S.coord ? S.levelElev.map((v) => Math.round((v - S.coord[1]) * 1000) / 1000) : null;
+  A.levelRel = rel(A); B.levelRel = rel(B);
+  const lvOk = A.levelRel && B.levelRel && A.levelRel.length === B.levelRel.length && A.levelRel.every((v, i) => Math.abs(v - B.levelRel[i]) <= 0.01);
+  const ok = C && C.diff.length === 0 && boxOk && A.guids === A.n && lvOk;
   if (ok) agree++;
   console.log(JSON.stringify({ file: f, bytes: fs.statSync(path.join(dir, f)).size, agree: !!ok,
     thatopen: A.error || { engine: A.engine, stages: A.stages, readMs: A.readMs, n: A.n, guids: A.guids, bad: A.bad, storeys: A.storeys, levels: A.levels, psets: A.psets, tris: A.tris, box: A.box, coord: A.coord, ms: A.ms, cut: A.cut },
     ccifc: B.error || { engine: B.engine, readMs: B.readMs, n: B.n, guids: B.guids, storeys: B.storeys, levels: B.levels, psets: B.psets, tris: B.tris, box: B.box, coord: B.coord, ms: B.ms, cut: B.cut },
-    classesSame: C && C.same.length, classDiff: C && C.diff }));
+    classesSame: C && C.same.length, classDiff: C && C.diff, levels: [A.levelRel, B.levelRel] }));
 }
 console.log('agree on ' + agree + ' of ' + files.length + '; page errors: ' + (errs.length ? errs.join(' | ') : 'none'));
 await browser.close(); srv.close();

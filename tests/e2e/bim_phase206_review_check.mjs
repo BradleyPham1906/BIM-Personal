@@ -48,7 +48,7 @@ if (shots) await page.screenshot({ path: path.join(shots, 'review-desktop-' + mo
 await page.locator('[data-rvwsel]').first().click();
 await page.waitForFunction((g) => document.querySelector('.a3d-rvw-props') && document.querySelector('.a3d-rvw-props').textContent.indexOf(g) >= 0, GUID, { timeout: 20000 });
 const props = await page.locator('.a3d-rvw-props').innerText();
-ck(/IfcWall/.test(props) && props.indexOf(GUID) >= 0 && /Storey/.test(props), 'selecting shows the IFC data with the GlobalId (' + props.replace(/\s+/g, ' ').slice(0, 140) + ')');
+ck(/IfcWall/.test(props) && props.indexOf(GUID) >= 0 && /Contained in/.test(props), 'selecting shows the IFC data with the GlobalId (' + props.replace(/\s+/g, ' ').slice(0, 140) + ')');
 if (shots) await page.screenshot({ path: path.join(shots, 'review-selected-' + mode + '.png') });
 
 // hide, show all
@@ -71,7 +71,7 @@ for (const [fx, fy] of [[0.5, 0.5], [0.45, 0.55], [0.55, 0.45], [0.5, 0.6], [0.4
   hit = await page.evaluate(() => window.__a3dReview().clip.list.size);
   if (hit) break;
 }
-ck(hit >= 1 && /Section: 1 plane/.test(await status()), 'Section: a plane on the face (' + (await status()) + ')');
+ck(hit >= 1 && /Section: 1 plane; \d+ of \d+ elements have their placement point/.test(await status()), 'Section: a plane on the face (' + (await status()) + ')');
 await page.click('[data-rvw="clear"]');
 ck(await page.evaluate(() => window.__a3dReview().clip.list.size) === 0, 'Clear removes the planes');
 

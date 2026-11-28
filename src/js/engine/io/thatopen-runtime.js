@@ -92,6 +92,16 @@ function bimToeSession(L){
     return {c:c,fm:fm,loader:ld};
   });
 }
+/* the importer as the app wants it: IFC4.3's facility parts and spatial zones, which carry geometry cc-ifc draws and
+   That Open's list leaves out (e03, the road); and, for the import (raw true), each storey's Elevation left as the file
+   has it. That Open's default replaces it by the storey's absolute height already in metres, which the import's own
+   unit factor would then scale again: the second reader found millimetre files' levels collapsed to within 12 mm */
+function bimToeImporterSetup(imp,raw){
+  var W=window.BIMWEBIFC,k;
+  for(k=0;k<BIM_TOE.addClasses.length;k++)if(W&&typeof W[BIM_TOE.addClasses[k]]==='number')imp.classes.elements.add(W[BIM_TOE.addClasses[k]]);
+  if(raw)imp.replaceStoreyElevation=false;
+  return imp;
+}
 /* the ids that pass, in chunks, through an async call of the model's, and the results joined */
 function bimToeChunks(ids,fn){
   var out=[],i=0;
@@ -110,11 +120,7 @@ function bimToeRead(bytes,text){
   var S=null,model=null,T0=Date.now(),ms={};
   return bimToeLoad().then(function(L){return bimToeSession(L);}).then(function(s){
     S=s;
-    return S.loader.load(bytes,false,'bim-import',{instanceCallback:function(imp){
-      /* IFC4.3's facility parts carry geometry, which cc-ifc draws and That Open's list leaves out (e03, the road) */
-      var W=window.BIMWEBIFC,k;
-      for(k=0;k<BIM_TOE.addClasses.length;k++)if(W&&typeof W[BIM_TOE.addClasses[k]]==='number')imp.classes.elements.add(W[BIM_TOE.addClasses[k]]);
-    }});
+    return S.loader.load(bytes,false,'bim-import',{instanceCallback:function(imp){bimToeImporterSetup(imp,true);}});
   }).then(function(m){
     model=m;ms.convert=Date.now()-T0;
     return Promise.all([model.getItemsWithGeometry(),model.getSpatialStructure(),model.getCoordinates(),
@@ -146,9 +152,15 @@ function bimToeRead(bytes,text){
           if(j>=ids.length)return Promise.resolve();
           var part=ids.slice(j,j+BIM_TOE.chunk);j+=BIM_TOE.chunk;
           return model.getItemsGeometry(part).then(function(G){
-            for(var g=0;g<part.length;g++){
+            /* each part to its element by its own localId (the list's order only where a part has none) */
+            var own={},g,q,m2;
+            for(g=0;g<(G||[]).length;g++)for(q=0;q<(G[g]||[]).length;q++){
+              m2=G[g][q];var key=m2&&m2.localId!=null?m2.localId:part[g];
+              (own[key]||(own[key]=[])).push(m2);
+            }
+            for(g=0;g<part.length;g++){
               var id=part[g],it=byId[id]||{},lk=look[id]||{col:'#b8b8b0',opacity:1},cls=bimToeVal(it._category)||tree.cats[id]||'IFCPRODUCT';
-              var raw=bimToeMesh(G[g]),t=raw.idx.length/3;
+              var raw=bimToeMesh(own[id]||[]),t=raw.idx.length/3;
               if(!t){D.skipped++;continue;}
               if(D.tris+t>BIM_TOE.maxTris){D.cut+=t;continue;}
               var mm=bimGltfWeld(raw.pos,raw.idx);
@@ -182,4 +194,4 @@ function bimToeClassLists(){
   A3D_TOE.names=out;
   return out;
 }
-export { A3D_TOE, BIM_TOE, bimToeClassLists, bimToeLoad, bimToeRead };
+export { A3D_TOE, BIM_TOE, bimToeClassLists, bimToeImporterSetup, bimToeLoad, bimToeRead };

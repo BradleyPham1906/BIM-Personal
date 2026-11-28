@@ -74,7 +74,9 @@ function packagesOf(r) {
   }
   return [...s].sort();
 }
-const allowed = /^(MIT|ISC|BSD-[23]-Clause|Apache-2\.0|MPL-2\.0|BlueOak-1\.0\.0|\(MIT OR GPL-3\.0-or-later\)|\(MIT AND Zlib\)|0BSD)$/;
+// the licences CLAUDE.md's library rule allows; pako's "MIT AND Zlib" is MIT plus the zlib licence (permissive, recorded
+// for the owner: research-thatopen-gap.md part 11); jszip is dual and used under its MIT option
+const allowed = /^(MIT|ISC|BSD-[23]-Clause|Apache-2\.0|MPL-2\.0|\(MIT OR GPL-3\.0-or-later\)|\(MIT AND Zlib\))$/;
 const pkgsToe = packagesOf(toe), pkgsWif = packagesOf(wif);
 const licences = [];
 for (const n of [...new Set(pkgsToe.concat(pkgsWif))].sort()) {
@@ -82,7 +84,7 @@ for (const n of [...new Set(pkgsToe.concat(pkgsWif))].sort()) {
   if (!allowed.test(lic)) { console.error(n + ': licence "' + lic + '" is not one the rule allows'); process.exit(1); }
   // That Open's npm packages carry no licence file: theirs is kept in licences/, from the repositories (ThatOpen/
   // engine_components @ 6bedaa4 for components and components-front, ThatOpen/engine_fragment @ 643d24e for fragments)
-  const f = ['LICENSE', 'LICENSE.md', 'LICENSE.txt', 'license', 'LICENCE', 'license.md'].map((x) => path.join(mod, n, x))
+  const f = ['LICENSE', 'LICENSE.md', 'LICENSE.txt', 'LICENSE.markdown', 'license', 'LICENCE', 'license.md'].map((x) => path.join(mod, n, x))
     .concat([path.join(here, 'licences', n.replace('@', '').replace('/', '-') + '.md')]).find((x) => fs.existsSync(x));
   // a package that declares its licence but ships no file: the declaration and its author are recorded instead
   const au = p.author ? (typeof p.author === 'string' ? p.author : [p.author.name, p.author.email].filter(Boolean).join(' ')) : '';

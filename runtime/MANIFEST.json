@@ -397,8 +397,8 @@
   },
   {
    "path": "thatopen/3.6.0/LICENSES.txt",
-   "bytes": 59374,
-   "sha256": "a1c0a610c1cdb0d81d30babfc3e606ef3f877d201abeecdad7780c0d8425ebaa",
+   "bytes": 92952,
+   "sha256": "dc12c3bf7d87a19d1a01f5a028c5c66eceba4c83882f6e4cc6fa34b80b3c2917",
    "from": "the licence file of every package bundled: tools/thatopen/build_thatopen.mjs",
    "licence": "as listed in it"
   }

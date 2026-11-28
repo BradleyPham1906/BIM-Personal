@@ -3,7 +3,7 @@ import { bimIfcImportBuffer } from './ifc-full.js';
 import {
   bimToeClassName, bimToeRaw, bimToeSets, bimToeStoreyClasses, bimToeVal, bimTorArea, bimTorClip
 } from './ifc-review.js';
-import { BIM_TOE, bimToeClassLists, bimToeLoad } from './thatopen-runtime.js';
+import { BIM_TOE, bimToeClassLists, bimToeImporterSetup, bimToeLoad } from './thatopen-runtime.js';
 import { a3dToast } from '../bim/csg-booleans.js';
 
 /* ================= __acad3dV206 WO-08: the Review view =================
@@ -81,7 +81,7 @@ function bimRvwProps(map){
     function row(a,b){return '<tr><th>'+bimEsc(a)+'</th><td>'+bimEsc(b)+'</td></tr>';}
     h+='<h4>'+bimEsc(bimToeVal(it.Name)||bimToeClassName(bimToeVal(it._category),bimToeClassLists()))+(n>1?' <small>and '+(n-1)+' more</small>':'')+'</h4>';
     h+='<table>'+row('IFC Class',bimToeClassName(bimToeVal(it._category),bimToeClassLists()))+row('GlobalId',bimToeVal(it._guid))+
-      (st?row('Storey',bimToeVal(st.Name)):'')+row('Model',(bimRvwModel(mid)||{}).name||'')+'</table>';
+      (st?row('Contained in',bimToeVal(st.Name)+' ('+bimToeClassName(bimToeVal(st._category),bimToeClassLists())+')'):'')+row('Model',(bimRvwModel(mid)||{}).name||'')+'</table>';
     sets.forEach(function(s){h+='<details><summary>'+bimEsc(s.name)+'</summary><table>'+s.rows.map(function(r){return row(r[0],r[1]);}).join('')+'</table></details>';});
     p.innerHTML=h;
   },function(e){p.textContent='The element\'s data could not be read: '+String(e&&e.message||e);});
@@ -155,7 +155,7 @@ function bimRvwFit(){
 function bimRvwAdd(bytes,name){
   var R=A3D_RVW,L=R.L,ld=R.c.get(L.OBC.IfcLoader),id='review-'+(++R.seq);
   return ld.setup({autoSetWasm:false,wasm:{path:BIM_TOE.wasmUrl.replace(/[^\/]*$/,''),absolute:true}}).then(function(){
-    return ld.load(bytes,true,id);
+    return ld.load(bytes,true,id,{instanceCallback:function(imp){bimToeImporterSetup(imp,false);}});
   }).then(function(model){
     R.models.push({id:id,name:String(name||'model.ifc'),bytes:bytes,model:model});
     return bimRvwTree().then(bimRvwFit);
@@ -181,10 +181,16 @@ function bimRvwFiles(list){
     bimRvwStatus('The file could not be read: '+s);a3dToast('Review: the file could not be read: '+s);
   });
 }
-/* the section planes' report: how many of each model's elements have their centre on the cut-away side (bimTorClip) */
+/* the section planes' report: how many of each model's elements have their placement point on the cut-away side
+   (bimTorClip). The plane is read from what is drawn (its three.js plane, current after a drag); three.js cuts away
+   the side where the signed distance is negative, so bimTorClip is given the opposite normal */
 function bimRvwSectionText(){
-  var R=A3D_RVW,planes=[];
-  R.clip.list.forEach(function(pl){if(pl&&pl.normal&&pl.origin)planes.push({n:[-pl.normal.x,-pl.normal.y,-pl.normal.z],p:[pl.origin.x,pl.origin.y,pl.origin.z]});});
+  var R=A3D_RVW,T=R.L.T,planes=[];
+  R.clip.list.forEach(function(pl){
+    var P=pl&&pl.three;if(!P||!P.normal)return;
+    var c=P.coplanarPoint(new T.Vector3());
+    planes.push({n:[-P.normal.x,-P.normal.y,-P.normal.z],p:[c.x,c.y,c.z]});
+  });
   if(!planes.length||!R.models.length)return Promise.resolve('');
   return Promise.all(R.models.map(function(m){return m.model.getPositions();})).then(function(all){
     var cut=0,n=0,i,j,k,p;
@@ -192,7 +198,7 @@ function bimRvwSectionText(){
       p=all[i][j];n++;
       for(k=0;k<planes.length;k++)if(bimTorClip([p.x,p.y,p.z],planes[k])){cut++;break;}
     }
-    return 'Section: '+planes.length+' plane'+(planes.length===1?'':'s')+'; '+cut+' of '+n+' elements have their centre cut away';
+    return 'Section: '+planes.length+' plane'+(planes.length===1?'':'s')+'; '+cut+' of '+n+' elements have their placement point cut away';
   },function(){return '';});
 }
 function bimRvwAct(a){
