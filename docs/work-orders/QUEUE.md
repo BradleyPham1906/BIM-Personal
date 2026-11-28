@@ -9,11 +9,14 @@ The owner's decisions (2026-11-14): for every phase below, all as its research r
 overrule any there). V177's D1 to D4 and That Open's four were answered 2026-11-13. The phases are numbered in one
 sequence, 175c to 248 (228 to 232 are algorithmic design, the owner's thirteen decisions, 2026-11-15; 233 to 238 program to plan, the owner's ten decisions, 2026-11-16; 239 to 247 the physical world, the owner's answer 2026-11-22: standard and scalable, `research-physical-world.md` part 11), in `docs/dev/PIPELINE.md`; there are no "later" rows.
 
-## Ready for Cline, in order (349 tasks)
+## Ready for Cline, in order (357 tasks)
 
 | Phase | What | Tasks | Where | Tests |
 |---|---|---|---|---|
 | v202 | Site context C3: measured heights, ground and bridges; part B, the Site and Map interface; part C, heights on one datum and the GEM-15 surface model (the owner, 2026-11-21: next) | WO-01 to WO-05, WO-12 to WO-14, WO-22 to WO-26 (13), any order | `v202/TASKS.md` | `v202/v202.test.mjs`, `v202/v202-ui.test.mjs`, `v202/v202-datum.test.mjs`, `v202/v202-surface.test.mjs` |
+| v305 | OB1, IFC identity: GlobalIds that last across saves (the owner, 2026-11-28: the gap plan's first) | WO-01 to WO-06 (6) | `v305/TASKS.md` | `v305/v305.test.mjs` |
+| v306 | OB2, IFC class and predefined type (IFC4's lists, from web-ifc's schema) | WO-01 to WO-04 (4) | `v306/TASKS.md` | `v306/v306.test.mjs` |
+| v307 | OB3, types as IFC type objects (after v305 WO-01) | WO-01 to WO-05 (5) | `v307/TASKS.md` | `v307/v307.test.mjs` |
 | v178 | Presentation P3, the report (Site Analysis and DA), styles, export | WO-01 to WO-12 (12) | `v178/TASKS.md` | `v178/v178.test.mjs` |
 | v181 | Interiors I3, circulation and escape routes | WO-01 to WO-05 (5) | `v181/TASKS.md` | `v181/v181.test.mjs` |
 | v182 | Interiors I4, sightlines and views | WO-01 to WO-05 (5) | `v182/TASKS.md` | `v182/v182.test.mjs` |
@@ -31,7 +34,6 @@ sequence, 175c to 248 (228 to 232 are algorithmic design, the owner's thirteen d
 | v201 | MEP runs, first slice (a checked tree, straight friction only) | WO-01 to WO-07 (7) | `v201/TASKS.md` | `v201/v201.test.mjs` |
 | v204 | The Parametric Design Foundation, sketch to Pad to Pocket | WO-01 to WO-04 (4) | `v204/TASKS.md` | `v204/v204.test.mjs` |
 | v205 | LOD-G, Gaussian splats as a backdrop | WO-01 to WO-05 (5) | `v205/TASKS.md` | `v205/v205.test.mjs` |
-| v206 | That Open: the Review view and IFC import (with Hub H3's identity) | WO-01 to WO-07 (7) | `v206/TASKS.md` | `v206/v206.test.mjs` |
 | v207 | glTF models in Assets, and valdrada's credited models | WO-01 to WO-04 (4) | `v207/TASKS.md` | `v207/v207.test.mjs` |
 | v208 | Walkthrough W2, drive | WO-01 to WO-04 (4) | `v208/TASKS.md` | `v208/v208.test.mjs` |
 | v209 | Walkthrough W3, fly and drone | WO-01 to WO-04 (4) | `v209/TASKS.md` | `v209/v209.test.mjs` |
@@ -84,6 +86,7 @@ records.
 
 | Phase | Where |
 |---|---|
+| v206 That Open | Done 2026-11-28: WO-01 to WO-07 shipped by Cline (WO-03, WO-04 rewritten without BigInt in the audit); Claude's WO-08 (the Review view, 18 of 18) and WO-09 (the import through That Open, e03: 12 of 13 agree, the 13th better). cc-ifc's retirement and the gap plan wait for the owner: `docs/research/research-thatopen-gap.md` part 11 |
 | v203 Walkthrough W1 | Done 2026-11-21: WO-01 to WO-08 shipped by Cline; Claude's C-02 to C-08 (WALK, its controls, the rendered view's moving mode, the browser check 25 of 25) |
 | v175c | Done 2026-11-21: WO-11 to WO-17 shipped; Claude's WO-18 (Open as layout, Work in viewport, the vector page; 13 of 13) and WO-19 |
 | v177 | Done 2026-11-21: steps 1, 2a and 2b; the browser check on Cline's functions and Make editable, 26 of 26 |

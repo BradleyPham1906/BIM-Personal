@@ -1,0 +1,87 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>BimCraft core e05</title></head><body>
+<script src="../../../../../runtime/cc-ifc/cfbd948/bim-ifc.min.js"></script>
+<script src="../../../../../runtime/bimcraft/79b603f6/bim-craft.min.js"></script>
+<script>
+// e05 (V308), 2026-11-28: BimCraft's BIM-authoring core, copied unchanged and bundled (runtime/bimcraft), runs in this app's
+// runtime. It builds BimCraft's own test house the way tests/tools/bimcraft-test/make-small-house.mjs does, then checks what
+// house-test.mjs checks against numbers worked by hand. Driven by run.mjs.
+window.ccIfcGeoWorker = false;   // their engine meshes on the page (mesh-stream.js 24), as their Node tests run it
+window.e05 = async function (opts) {
+  const C = window.BIMCRAFT, out = { checks: [], ms: {} }, t0 = performance.now();
+  const ok = (c, m, d) => out.checks.push({ ok: !!c, m, d: c ? undefined : d });
+  const near = (a, b, tol = 1) => Math.abs(a - b) <= tol;
+  let manifold = null;
+  try { manifold = await BIMIFC.Manifold({ locateFile: (f) => opts.manifold }); manifold.setup(); } catch (e) { out.manifold = String(e).slice(0, 120); }
+  out.manifoldLoaded = !!manifold;
+  const W = C.ifc, N = C.newModel, OPS = C.modelOps, MG = C.modelGrids, SH = C.resSheets, V = C.resViews, CV = C.comfortsViews;
+  const H = { name: 'Small house', w: 10000, d: 7000, levelHeight: 3000, ext: { type: 'ext-300', t: 300 }, int: { type: 'int-100', t: 100 }, partitionX: 5000,
+    doors: [{ wall: 'south', at: 2500, type: 'door-single' }, { wall: 'partition', at: 3500, type: 'door-single' }],
+    windows: [{ wall: 'south', at: 7500, type: 'win-double-hung' }, { wall: 'west', at: 3500, type: 'win-double-hung' }, { wall: 'north', at: 7500, type: 'win-double-hung' }],
+    rooms: [{ name: 'Living room', seed: [2500, 3500] }, { name: 'Bedroom', seed: [7500, 3500] }], roof: { pitch: 30, overhang: 300 },
+    grid: { u: { count: 3, spacing: 5000 }, v: { count: 2, spacing: 7000 }, extend: 1500 },
+    sections: [{ name: 'A', a: [2500, -2000], b: [2500, 9000] }, { name: 'B', a: [-2000, 3500], b: [12000, 3500] }], roomArea: 4800 * 6700 };
+  // ---- make-small-house.mjs, the same calls
+  const text = N.newBuilding({ name: H.name, siteName: 'Site', levels: N.stackLevels(1, H.levelHeight, () => 'Ground floor'), fileName: 'small-house.ifc', now: new Date('2026-11-11T12:00:00Z') });
+  const eng = await C.ifcModel.IfcModel.create(W, null, manifold ? { manifold } : undefined);
+  await eng.load(new TextEncoder().encode(text), () => {}, { worker: false });
+  const ed = new C.ifcEdit.IfcEditor(W, eng);
+  const L1 = OPS.snapshotModel(ed).levels[0];
+  const ring = (pts) => pts.map((p, i) => ({ a: p, b: pts[(i + 1) % pts.length] }));
+  ed.modelChange(OPS.drawWalls({ storey: L1.guid, segs: ring([[0, 0], [H.w, 0], [H.w, H.d], [0, H.d]]), typeKey: H.ext.type, extSide: 'right' }));
+  ed.modelChange(OPS.drawWalls({ storey: L1.guid, segs: [{ a: [H.partitionX, 0], b: [H.partitionX, H.d] }], typeKey: H.int.type }));
+  const walls = () => OPS.snapshotModel(ed).walls;
+  const along = (w, p) => Math.hypot(p[0] - w.a[0], p[1] - w.a[1]);
+  const wallAt = (p) => walls().find((w) => { const L = Math.hypot(w.b[0] - w.a[0], w.b[1] - w.a[1]), t = ((p[0] - w.a[0]) * (w.b[0] - w.a[0]) + (p[1] - w.a[1]) * (w.b[1] - w.a[1])) / (L * L);
+    const q = [w.a[0] + (w.b[0] - w.a[0]) * t, w.a[1] + (w.b[1] - w.a[1]) * t]; return t >= 0 && t <= 1 && Math.hypot(q[0] - p[0], q[1] - p[1]) < 1; });
+  const spot = { south: (x) => [x, 0], north: (x) => [x, H.d], west: (y) => [0, y], east: (y) => [H.w, y], partition: (y) => [H.partitionX, y] };
+  for (const o of [...H.doors, ...H.windows]) { const p = spot[o.wall](o.at), w = wallAt(p); if (!w) throw new Error('no wall at ' + p); ed.modelChange(OPS.placeOpening({ wall: w.guid, typeKey: o.type, offset: along(w, p), face: 'right' })); }
+  for (const r of H.rooms) {
+    ed.modelChange(OPS.placeFloor({ storey: L1.guid, seed: r.seed, mode: 'room' }));
+    ed.modelChange(OPS.placeCeiling({ storey: L1.guid, seed: r.seed, mode: 'room' }));
+    const sp = OPS.snapshotModel(ed).derived.spaces.find((q) => q.seed && Math.hypot(q.seed[0] - r.seed[0], q.seed[1] - r.seed[1]) < 2400);
+    if (!sp) throw new Error('no room at ' + r.seed); ed.modelChange(OPS.changeDerived(sp.guid, { name: r.name }));
+  }
+  ed.modelChange(OPS.placeRoof({ storey: L1.guid, seed: H.rooms[0].seed, pitch: H.roof.pitch, overhang: H.roof.overhang, edges: '' }));
+  ed.modelChange(MG.placeGrid({ storey: L1.guid, axes: MG.gridLayout({ origin: [0, 0], angle: 0, u: H.grid.u, v: H.grid.v, extend: H.grid.extend }) }));
+  for (const s of H.sections) ed.modelChange(SH.placeSectionLine({ level: L1.guid, a: s.a, b: s.b, name: s.name }));
+  const bytes = ed.save(); out.ifcBytes = bytes.length; out.ms.build = Math.round(performance.now() - t0);
+  // ---- house-test.mjs, the same checks, on the file saved and opened again
+  const eng2 = await C.ifcModel.IfcModel.create(W, null, manifold ? { manifold } : undefined);
+  const model = await eng2.load(bytes, () => {}, { worker: false });
+  const ed2 = new C.ifcEdit.IfcEditor(W, eng2), w = new C.modelWrite.ModelWriter(W, ed2.api, ed2.mid), snap = OPS.snapshotModel(ed2);
+  const kinds = (k) => snap.openings.filter((o) => o.kind === k);
+  ok(snap.walls.length === 5 && kinds('door').length === 2 && kinds('window').length === 3 && snap.derived.spaces.length === 2 && snap.derived.floors.length === 2 && snap.derived.ceilings.length === 2,
+    'five walls, two doors, three windows, two rooms each with a floor and a ceiling', JSON.stringify({ w: snap.walls.length, d: kinds('door').length, win: kinds('window').length, r: snap.derived.spaces.length }));
+  const ext = snap.walls.filter((x) => x.typeKey === H.ext.type), int = snap.walls.filter((x) => x.typeKey === H.int.type);
+  ok(ext.length === 4 && ext.every((x) => near(x.t, 300, 0.01)) && ext.map((x) => Math.round(x.len)).sort().join() === '10000,10000,7000,7000' && int.length === 1 && near(int[0].t, 100, 0.01), 'four 300 mm outside walls 10 000 and 7 000 long, one 100 mm partition');
+  ok(kinds('door').map((o) => o.mark).join() === 'D1,D2' && kinds('window').map((o) => o.mark).join() === 'W1,W2,W3', 'door marks D1, D2, window marks W1, W2, W3');
+  ok(snap.derived.spaces.map((s) => s.number + ' ' + s.name).join() === '101 Living room,102 Bedroom', 'rooms 101 Living room and 102 Bedroom');
+  const areas = (OPS.loopsOf(ed2, snap.levels[0].id).rooms || []).map((r) => Math.round(r.area));
+  ok(areas.length === 2 && areas.every((a) => near(a, H.roomArea, 2000)), 'each room 4 800 x 6 700 mm = 32.16 m2', areas.join());
+  const axes = MG.readGrids(w).flatMap((g) => g.axes), secs = SH.readSectionLines(w);
+  ok(axes.map((x) => x.tag).join() === '1,2,3,A,B' && secs.map((s) => s.name).join() === 'A,B', 'grids 1, 2, 3, A, B and section lines A and B');
+  const g = snap.levels[0], M = C.modelPlan.viewerToPlan(eng2.api.GetCoordinationMatrix(model.modelID), w.storeyWorld(g.id));
+  const els = V.modelTriangles(model, M), gAxes = MG.toPlan(w, g.id, MG.readGrids(w)).flatMap((x) => x.axes), elev = {};
+  for (const [side, dir] of Object.entries(V.elevationDirs)) elev[side] = { ...V.projectView(els, { dir }), grids: MG.gridsInView(gAxes, dir) };
+  const wOf = (v) => v.bounds.x1 - v.bounds.x0;
+  ok(near(wOf(elev.south), 10900, 30) && near(wOf(elev.north), 10900, 30) && near(wOf(elev.east), 7900, 30) && near(wOf(elev.west), 7900, 30), 'elevations: south and north 10 900 wide, east and west 7 900 (walls and eaves)', Object.values(elev).map(wOf).map(Math.round).join());
+  const flat = (v, h, min = 600, max = 1200) => v.lines.filter((l) => near(l[1], h, 3) && near(l[3], h, 3) && Math.abs(l[2] - l[0]) > min && Math.abs(l[2] - l[0]) < max).length;
+  ok(flat(elev.south, 2032) >= 2 && flat(elev.south, 508) >= 1, 'south elevation: the door head and the window sill drawn (door 914 x 2 032, sill 508)');
+  ok(elev.south.grids.map((x) => x.tag).join() === '1,2,3', 'the south elevation carries grids 1, 2, 3');
+  const secView = (sl) => { const sd = SH.sectionDir(sl); return V.projectView(els, { dir: sd.dir, cut: { o: sd.o }, far: sl.depth }); };
+  const sA = secView(secs[0]), sB = secView(secs[1]), wallsCut = (v) => new Set(v.cuts.filter((c) => c.cls === 'IfcWall').map((c) => c.key)).size;
+  ok(wallsCut(sA) === 2 && wallsCut(sB) === 3, 'section A cuts 2 walls, section B 3 (the partition too)', wallsCut(sA) + ',' + wallsCut(sB));
+  const input = { plans: [], elevations: Object.entries(elev).map(([k, view]) => ({ ref: k, title: k + ' elevation', view })),
+    sections: [{ ref: 'A', title: 'Section A', view: sA }, { ref: 'B', title: 'Section B', view: sB }],
+    schedules: [{ ref: 'doors', title: 'Doors', head: ['Mark', 'Type', 'Size'], rows: kinds('door').map((o) => [o.mark, o.typeName, o.sizeName]), total: null }] };
+  const set = SH.buildSet(input, { paper: 'a1', units: 'mm', project: H.name, date: '2026-11-11' });
+  out.sheets = set.map((s) => s.number);
+  const pdf = SH.setPdf(set, { paper: 'a1', title: H.name });
+  const pdfText = new TextDecoder('latin1').decode(pdf);
+  out.pdfPages = (pdfText.match(/\/Type \/Page\b/g) || []).length;
+  ok(pdfText.startsWith('%PDF-1.4') && out.pdfPages === set.length && set.length >= 4, 'the drawing set as a PDF: ' + set.length + ' sheets (' + out.sheets.join(', ') + '), ' + out.pdfPages + ' pages');
+  out.ms.total = Math.round(performance.now() - t0);
+  return out;
+};
+</script></body></html>

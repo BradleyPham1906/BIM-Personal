@@ -11,6 +11,7 @@ import { bimIfcEditParams, bimImportIFC } from './import-ifc.js';
 import { bimSkpLayer } from './sketchup-import.js';
 import { bimGltfFeatureEdges, bimGltfWeld } from './gltf.js';
 import { bimIfcEditButtonHtml } from './ifc-editable.js';
+import { A3D_TOE, bimToeRead } from './thatopen-runtime.js';
 import { bimHandleImportFile } from './import-entry.js';
 import { paint } from '../map/terrain-3d.js';
 import { fitScene } from '../ui/tool-palette.js';
@@ -183,13 +184,34 @@ import { a3dToast } from '../bim/csg-booleans.js';
       });
     });
   }
+  /* __acad3dV206 WO-09: the file read through That Open (io/thatopen-runtime.js, the owner's choice of 2026-11-13), and
+     through cc-ifc when That Open cannot be loaded or cannot read it; D.engine says which. cc-ifc stays until the two
+     agree on V196's 13 files (docs/research/experiments/thatopen/e03) */
+  var BIM_IFC_ENGINE={use:'thatopen'};
+  /* which engine reads first: 'thatopen' (the default) or 'cc-ifc' (e03 compares the two through the same import) */
+  function bimIfcEngineUse(n){BIM_IFC_ENGINE.use=n==='cc-ifc'?'cc-ifc':'thatopen';return BIM_IFC_ENGINE.use;}
+  function bimIfcReadAny(bytes){
+    var text='';
+    try{text=new TextDecoder('utf-8').decode(bytes.subarray(0,Math.min(bytes.length,4194304)));}catch(eT){text='';}
+    function viaCc(why){
+      if(why)console.warn('[BIM] IFC import: That Open did not read the file ('+why+'); cc-ifc is used');
+      return bimIfcLoad().then(function(R){return bimIfcRead(R,bytes);}).then(function(D){D.engine='cc-ifc';return D;});
+    }
+    if(BIM_IFC_ENGINE.use!=='thatopen')return viaCc('');
+    return bimToeRead(bytes,text).then(function(D){
+      if(!D.parts.length)return viaCc('no elements with geometry');
+      D.engine='That Open';
+      return D;
+    },function(e){return viaCc(String(e&&e.message||e));});
+  }
   /* IfcWallStandardCase -> IfcWall: the class an element's layer is named after */
   function bimIfcClass(t){return String(t||'IfcProduct').replace(/StandardCase$|ElementedCase$/,'');}
   var BIM_IFC_KIND={IfcWall:'wall',IfcSlab:'floor'};
   function bimIfcImportBuffer(buf,filename){
     var name=String(filename||'model.ifc'),stem=name.replace(/^.*[\\\/]/,'').replace(/\.ifc$/i,'')||'IFC',t0=Date.now();
     var bytes=buf instanceof Uint8Array?buf:new Uint8Array(buf);
-    return bimIfcLoad().then(function(R){return bimIfcRead(R,bytes);}).then(function(D){
+    return bimIfcReadAny(bytes).then(function(D){
+      var tRead=Date.now()-t0;
       if(!D.parts.length)throw new Error('no elements with geometry in '+name);
       var made=[],ids=[],byClass={},names={},levels=0,i,EP={};
       /* __acad3dV177: the walls-and-slabs reader's parameters, for Make editable (bimIfcMakeEditable) */
@@ -232,6 +254,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
       if(bimLayerById(was))A3D.activeLayer=was;
       refreshTree();refreshLevels();refreshLayers();refreshProps();fitScene();paint();saveSoon();
       return {ids:ids,layers:made,levels:levels,coord:D.coord,triangles:D.tris,cut:D.cut,skipped:D.skipped,notes:D.notes,booleans:D.booleans,ms:Date.now()-t0,
+        engine:D.engine||'',stages:D.ms||null,readMs:tRead,
         text:'IFC'+(D.schema?' ('+D.schema+')':'')+': '+ids.length+' element'+(ids.length===1?'':'s')+' from '+name+', '+levels+' level'+(levels===1?'':'s')+
           ', on the '+stem+' layer by class'+
           (D.booleans?'':'; openings not cut (the geometry library could not be loaded)')+
@@ -247,7 +270,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
     return bimIfcImportBuffer(buf,name).then(function(r){a3dToast(r.text);return r;},function(e){
       var s=String(e&&e.message||e);
       console.warn('[BIM] IFC import: '+s,e);
-      if(A3D_IFC.st==='failed'){
+      if(A3D_IFC.st==='failed'&&A3D_TOE.st!=='ready'){
         a3dToast('The IFC engine could not be loaded, so only walls and slabs are read');
         var text='';
         try{text=new TextDecoder('utf-8').decode(buf);}catch(eD){text='';}
@@ -278,6 +301,7 @@ import { a3dToast } from '../bim/csg-booleans.js';
     return true;
   }
 export {
-  BIM_IFC, bimIfcClass, bimIfcContainers, bimIfcHex, bimIfcImportBuffer, bimIfcMeshParts, bimIfcPick,
-  bimIfcPropsHtml, bimIfcRead, bimIfcSet, bimIfcSources, bimIfcStoreys, bimIfcVal, bimImportIFCFull
+  BIM_IFC, bimIfcClass, bimIfcContainers, bimIfcEngineUse, bimIfcHex, bimIfcImportBuffer, bimIfcLoad,
+  bimIfcMeshParts, bimIfcPick, bimIfcPropsHtml, bimIfcRead, bimIfcSet, bimIfcSources, bimIfcStoreys,
+  bimIfcVal, bimImportIFCFull
 };

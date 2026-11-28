@@ -1,0 +1,13 @@
+{
+  "name": "bim-personal-bimcraft-runtime",
+  "private": true,
+  "description": "Builds runtime/bimcraft/<rev>/bim-craft.min.js: BimCraft's BIM-authoring core (vendor/bimcraft, Apache-2.0, copied unchanged) as one classic script. A build tool only: the app has no npm dependencies.",
+  "type": "module",
+  "scripts": {
+    "build": "node build_bimcraft.mjs",
+    "check": "node build_bimcraft.mjs --check"
+  },
+  "devDependencies": {
+    "esbuild": "0.28.2"
+  }
+}

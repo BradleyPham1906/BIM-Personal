@@ -1,0 +1,17 @@
+/* __acad3dV308: Design (bim/bimcraft-design.js), in the Review view's frame (review.css), with the tokens BimCraft's plan
+   view reads for its ink, poche and lines (vendor/bimcraft/app/model-planview.js TOKENS) */
+.a3d-design{--ink:#e8eaee;--ink-2:#a9b0bb;--line:#5a616c;--grid:#2f343b;--grid-minor:#262a30;--sheet:#1e2126;--sheet-2:#252930;
+  --action:#3a8fd8;--poche:#8d939c;--layer-blue:#4b8fe0;--layer-red:#e05a4b;--layer-ochre:#c9a227;--layer-green:#4fb06b;
+  --layer-orange:#e08a3a;--layer-magenta:#c45bb5;--layer-violet:#8a6be0;--layer-cyan:#3fb6c4}
+body.light-theme .a3d-design{--ink:#1a1d22;--ink-2:#555c66;--line:#9aa1ab;--grid:#e3e6ea;--grid-minor:#eef0f2;--sheet:#ffffff;
+  --sheet-2:#f5f6f8;--poche:#6c727b}
+.a3d-design .a3d-dsn-plan{background:var(--sheet)}
+.a3d-design .a3d-dsn-plan canvas{cursor:crosshair}
+.a3d-design .a3d-rvw-bar select{font:inherit;color:inherit;background:transparent;border:1px solid rgba(128,128,128,.45);border-radius:7px;
+  padding:5px 8px;min-height:32px;max-width:150px}
+.a3d-design .a3d-rvw-bar select option{color:#111}
+.a3d-dsn-side table{width:100%;border-collapse:collapse;font-size:12px;margin:2px 0 8px}
+.a3d-dsn-side th{text-align:left;font-weight:500;opacity:.7;padding:2px 6px 2px 0}
+.a3d-dsn-side td{padding:2px 6px 2px 0}
+.a3d-dsn-side summary span{opacity:.6}
+@media (pointer:coarse){.a3d-design .a3d-rvw-bar select{min-height:40px}}

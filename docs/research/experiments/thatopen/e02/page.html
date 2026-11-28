@@ -1,0 +1,79 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>That Open e02</title>
+<style>html,body{margin:0;height:100%;background:#fff}#v{position:absolute;inset:0}</style></head>
+<body><div id="v"></div>
+<!-- the app's own pinned three.js, then the V206 runtime, as the adapter loads them -->
+<script src="../../../../../runtime/three/0.186.1/bim-three.min.js"></script>
+<script src="../../../../../runtime/thatopen/3.6.0/bim-webifc.min.js"></script>
+<script src="../../../../../runtime/thatopen/3.6.0/bim-webifc-wasm.js"></script>
+<script src="../../../../../runtime/thatopen/3.6.0/bim-thatopen.min.js"></script>
+<script>
+// e02, 2026-11-28: That Open drawn in a canvas on the app's three, with clipping, picking, measuring and the data the
+// import needs. window.e02(bytes, opts) returns its measurements; driven by run.mjs.
+(function () {
+  var b64 = window.BIMWEBIFC_WASM, bin = atob(b64), wasm = new Uint8Array(bin.length);
+  for (var i = 0; i < bin.length; i++) wasm[i] = bin.charCodeAt(i);
+  var f0 = window.fetch;
+  window.fetch = function (u, o) {   // web-ifc's wasm from the script, never fetched (works from file://)
+    if (/web-ifc\.wasm(\?|$)/.test(String(u && u.url || u)))
+      return Promise.resolve(new Response(wasm.slice(0), { headers: { 'Content-Type': 'application/wasm' } }));
+    return f0.apply(this, arguments);
+  };
+})();
+window.e02 = async function (bytes, opts) {
+  var T = window.BIMTHREE, OBC = BIMTOE.OBC, OBF = BIMTOE.OBF, FRAGS = BIMTOE.FRAGS, out = { steps: [] }, t0 = performance.now();
+  function step(n) { out.steps.push(n + ' ' + Math.round(performance.now() - t0) + ' ms'); }
+  var components = new OBC.Components();
+  var world = components.get(OBC.Worlds).create();
+  world.scene = new OBC.SimpleScene(components); world.scene.setup(); world.scene.three.background = new T.Color(0xffffff);
+  world.renderer = new OBC.SimpleRenderer(components, document.getElementById('v'));
+  world.camera = new OBC.OrthoPerspectiveCamera(components);
+  components.init(); step('world');
+  var fm = components.get(OBC.FragmentsManager);
+  var url = await FRAGS.FragmentsModels.getWorker();
+  if (opts.classic) url = await FRAGS.toClassicWorker(url);
+  fm.init(url, { classicWorker: !!opts.classic });
+  world.camera.controls.addEventListener('update', function () { fm.core.update(); });
+  fm.list.onItemSet.add(function (e) { e.value.useCamera(world.camera.three); world.scene.three.add(e.value.object); fm.core.update(true); });
+  var loader = components.get(OBC.IfcLoader);
+  await loader.setup({ autoSetWasm: false, wasm: { path: 'https://bim-webifc.invalid/', absolute: true } }); step('loader');
+  var model = await loader.load(new Uint8Array(bytes), true, 'm'); step('converted and loaded');
+  await fm.core.update(true);
+  var box = new T.Box3().setFromObject(model.object), c = box.getCenter(new T.Vector3()), s = box.getSize(new T.Vector3());
+  out.box = [s.x, s.y, s.z].map(function (v) { return +v.toFixed(3); });
+  await world.camera.controls.setLookAt(c.x + s.x, c.y + s.y, c.z + s.z, c.x, c.y, c.z, false);
+  await fm.core.update(true); await new Promise(function (r) { setTimeout(r, 400); }); await fm.core.update(true);
+  world.renderer.three.render(world.scene.three, world.camera.three); step('drawn');
+  // what the import needs: categories, spatial tree, items with geometry, GUIDs, attributes and property sets, meshes
+  var cats = await model.getCategories(); out.categories = cats.length;
+  var spatial = await model.getSpatialStructure();
+  out.storeys = (function walk(n, acc) { if (n.category === 'IFCBUILDINGSTOREY') acc.push(n.localId); (n.children || []).forEach(function (k) { walk(k, acc); }); return acc; })(spatial, []).length;
+  var items = await model.getItemsWithGeometry(), ids = [];
+  for (var k = 0; k < items.length; k++) ids.push(await items[k].getLocalId());
+  out.items = ids.length;
+  var guids = await model.getGuidsByLocalIds(ids); out.guidsOk = guids.filter(function (g) { return typeof g === 'string' && g.length === 22; }).length;
+  var data = await model.getItemsData([ids[0]], { attributesDefault: true, relations: { IsDefinedBy: { attributes: true, relations: true }, ContainedInStructure: { attributes: true, relations: false } } });
+  out.dataKeys = Object.keys(data[0]).slice(0, 20);
+  out.psets = (data[0].IsDefinedBy || []).length;
+  var geo = await model.getItemsGeometry(ids), tris = 0, parts = 0;
+  geo.forEach(function (list) { list.forEach(function (m) { parts++; if (m.indices) tris += m.indices.length / 3; }); });
+  out.parts = parts; out.tris = tris;
+  out.firstMesh = geo[0] && geo[0][0] ? { pos: geo[0][0].positions && geo[0][0].positions.constructor.name, idx: geo[0][0].indices && geo[0][0].indices.constructor.name, m: geo[0][0].transform && geo[0][0].transform.elements.length } : null;
+  step('data');
+  // picking at the centre of the view
+  var rc = components.get(OBC.Raycasters).get(world);
+  var cv = world.renderer.three.domElement, r = cv.getBoundingClientRect();
+  var hit = await rc.castRay({ position: new T.Vector2(0, 0) }).catch(function (e) { return { err: String(e) }; });
+  out.pick = hit && hit.localId !== undefined ? { localId: hit.localId, guid: (await model.getGuidsByLocalIds([hit.localId]))[0] } : (hit && hit.err || null);
+  step('picked');
+  // a clipping plane through the middle, then measuring a length
+  var clipper = components.get(OBC.Clipper); clipper.enabled = true;
+  clipper.createFromNormalAndCoplanarPoint(world, new T.Vector3(0, -1, 0), c.clone());
+  await fm.core.update(true); world.renderer.three.render(world.scene.three, world.camera.three);
+  out.clipPlanes = world.renderer.three.clippingPlanes.length; step('clipped');
+  var len = components.get(OBF.LengthMeasurement); len.world = world; len.enabled = true; out.measure = typeof len.create;
+  out.vol = +(await model.getItemsVolume([ids[0]])).toFixed(4);
+  out.ms = Math.round(performance.now() - t0);
+  return out;
+};
+</script></body></html>

@@ -1,0 +1,20 @@
+{
+  "name": "bim-personal-thatopen-runtime",
+  "private": true,
+  "description": "Builds runtime/thatopen/<ver>/: That Open Engine (components, components-front, fragments) and web-ifc as classic scripts on the app's own three.js (potree-core as its own optional file), for the Review view and the IFC import (V206). A build tool only: the app has no npm dependencies.",
+  "type": "module",
+  "scripts": {
+    "build": "node build_thatopen.mjs",
+    "check": "node build_thatopen.mjs --check"
+  },
+  "devDependencies": {
+    "@thatopen/components": "3.6.0",
+    "@thatopen/components-front": "3.6.1",
+    "@thatopen/fragments": "3.6.1",
+    "camera-controls": "3.1.2",
+    "esbuild": "0.28.2",
+    "potree-core": "2.0.17",
+    "three": "0.186.1",
+    "web-ifc": "0.0.81"
+  }
+}

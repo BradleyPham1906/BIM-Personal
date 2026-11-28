@@ -1,0 +1,73 @@
+That Open e03 (V206 WO-09), 2026-11-28: the app's own IFC import (io/ifc-full.js bimIfcImportBuffer) through That Open
+(io/thatopen-runtime.js) and through cc-ifc (V196), on V196's 13 files, in the built canvas_v10.html (final run: commit a9f1444, web-ifc 0.0.81, run from a frozen worktree of it), Chromium 158
+(build 1243) by Playwright, SwiftShader WebGL. run.mjs; ENGINE_ORDER=cc-first so the app's first-paint costs fall on
+cc-ifc's first import, not on That Open's (measured: they are the app's, about 5 s on the first large import).
+Files: the 13 of docs/research/experiments/v196-ifc/results.txt, same SHA-256 prefixes (checked 2026-11-28); the large
+ones from ThatOpen/engine_web-ifc @ 9ab7d5c tests/ifcfiles/public, the small from buildingSMART/Sample-Test-Files.
+"agree": the same elements class by class (bimTorCompare), every GlobalId valid (bimTorGuidValid), the same model box
+to 1 cm, and the same storeys as levels to 1 cm, each measured from its engine's own shift to the origin (levels
+added after the independent check found That Open's elevations scaled twice: second-reader.md, F4; run again after
+the fix). readMs: the reader alone (bimToeRead or bimIfcRead), not the import's own steps.
+Columns: That Open / cc-ifc. Raw JSON lines: e03-http.jsonl, e03-file.jsonl (with each engine's colours: E03_COLS=1).
+
+== http
+e03 2026-11-28, Chromium 158.0.8127.36, http, http://127.0.0.1:<port>/canvas_v10.html
+4-wallopen.ifc         AGREE  elements     2/2     guids     2/2     tris       44/44       levels [0]                        read ms    591/69     
+2x3-arch.ifc           AGREE  elements    12/12    guids    12/12    tris     1130/1130     levels [0]                        read ms    336/18     
+2x3-struct.ifc         AGREE  elements    16/16    guids    16/16    tris     1494/1496     levels [0]                        read ms    300/18     
+4-hvac.ifc             AGREE  elements     5/5     guids     5/5     tris     1061/1064     levels [0]                        read ms    191/10     
+4-arch.ifc             AGREE  elements    12/12    guids    12/12    tris     1127/1130     levels [0]                        read ms    252/19     
+43-road.ifc            AGREE  elements    65/65    guids    65/65    tris     2580/2584     levels []                         read ms    270/28     
+43-landscape.ifc       AGREE  elements     6/6     guids     6/6     tris     4799/4824     levels []                         read ms    315/53     
+43-bridge.ifc          AGREE  elements    48/48    guids    48/48    tris    13240/13292    levels []                         read ms    364/81     
+fzk-haus.ifc           AGREE  elements    83/83    guids    83/83    tris    21636/21684    levels [0, 2.7]                   read ms   1038/263    
+dental_clinic.ifc      AGREE  elements  2586/2586  guids  2586/2586  tris   173409/168559   levels [-1, 0, 4.57, 9.25]        read ms   5191/1319   
+FM_ARC_DigitalHub.ifc  DIFF   elements   705/596   guids   705/596   tris   306502/1500000  levels [-3.37, -0.15, 3.75]       read ms   3319/14467  [{"cls": "IfcDoor", "a": 64, "b": 21}, {"cls": "IfcRailing", "a": 13, "b": 0}, {"cls": "IfcSlab", "a": 24, "b": 23}, {"cls": "IfcWall", "a": 178, "b": 166}, {"cls": "IfcWindow", "a": 47, "b": 7}]
+advanced_model.ifc     AGREE  elements  6401/6401  guids  6401/6401  tris  1263039/1349102  levels [0.094, 3.8, 7.3, 10.9]    read ms  11330/5059   
+schependomlaan.ifc     AGREE  elements  3504/3504  guids  3504/3504  tris   260942/261457   levels [-1, 0, 3, 6, 9, 12]       read ms  15692/2720   
+agree on 12 of 13; page errors: none
+
+== file
+e03 2026-11-28, Chromium 158.0.8127.36, file, file:///tmp/claude-0/-home-user-BIM-Personal/c41fdb99-93f3-54c1-8d9f-7af0333c81e8/scratchpad/wt-e03/canvas_v10.html
+4-wallopen.ifc         AGREE  elements     2/2     guids     2/2     tris       44/44       levels [0]                        read ms    865/655    
+2x3-arch.ifc           AGREE  elements    12/12    guids    12/12    tris     1130/1130     levels [0]                        read ms    409/29     
+2x3-struct.ifc         AGREE  elements    16/16    guids    16/16    tris     1494/1496     levels [0]                        read ms    290/16     
+4-hvac.ifc             AGREE  elements     5/5     guids     5/5     tris     1061/1064     levels [0]                        read ms    213/17     
+4-arch.ifc             AGREE  elements    12/12    guids    12/12    tris     1127/1130     levels [0]                        read ms    280/23     
+43-road.ifc            AGREE  elements    65/65    guids    65/65    tris     2580/2584     levels []                         read ms    346/24     
+43-landscape.ifc       AGREE  elements     6/6     guids     6/6     tris     4799/4824     levels []                         read ms    357/51     
+43-bridge.ifc          AGREE  elements    48/48    guids    48/48    tris    13240/13292    levels []                         read ms    451/169    
+fzk-haus.ifc           AGREE  elements    83/83    guids    83/83    tris    21636/21684    levels [0, 2.7]                   read ms   1193/303    
+dental_clinic.ifc      AGREE  elements  2586/2586  guids  2586/2586  tris   173409/168559   levels [-1, 0, 4.57, 9.25]        read ms   4448/1942   
+FM_ARC_DigitalHub.ifc  DIFF   elements   705/596   guids   705/596   tris   306502/1500000  levels [-3.37, -0.15, 3.75]       read ms   3058/14637  [{"cls": "IfcDoor", "a": 64, "b": 21}, {"cls": "IfcRailing", "a": 13, "b": 0}, {"cls": "IfcSlab", "a": 24, "b": 23}, {"cls": "IfcWall", "a": 178, "b": 166}, {"cls": "IfcWindow", "a": 47, "b": 7}]
+advanced_model.ifc     AGREE  elements  6401/6401  guids  6401/6401  tris  1263039/1349102  levels [0.094, 3.8, 7.3, 10.9]    read ms  10900/4343   
+schependomlaan.ifc     AGREE  elements  3504/3504  guids  3504/3504  tris   260942/261457   levels [-1, 0, 3, 6, 9, 12]       read ms  13905/3349   
+agree on 12 of 13; page errors: none
+
+Colours (colours.py, the http run; the file:// run gives the same), elements coloured as cc-ifc within 2 steps of 255:
+  4-wallopen.ifc             2 elements, 100.0% coloured as cc-ifc; left: []
+  2x3-arch.ifc              12 elements, 100.0% coloured as cc-ifc; left: []
+  2x3-struct.ifc            16 elements, 100.0% coloured as cc-ifc; left: []
+  4-hvac.ifc                 5 elements, 100.0% coloured as cc-ifc; left: []
+  4-arch.ifc                12 elements, 100.0% coloured as cc-ifc; left: []
+  43-road.ifc               65 elements, 100.0% coloured as cc-ifc; left: []
+  43-landscape.ifc           6 elements, 100.0% coloured as cc-ifc; left: []
+  43-bridge.ifc             48 elements, 100.0% coloured as cc-ifc; left: []
+  fzk-haus.ifc              83 elements, 100.0% coloured as cc-ifc; left: []
+  dental_clinic.ifc       2586 elements,  99.1% coloured as cc-ifc; left: [('#808080', 22)]
+  FM_ARC_DigitalHub.ifc    705 elements,  77.7% coloured as cc-ifc; left: [('#787878', 83), ('#8b6346', 41), ('#c7c7c7', 21), ('#ffffff', 6)]
+  advanced_model.ifc      6401 elements, 100.0% coloured as cc-ifc; left: []
+  schependomlaan.ifc      3504 elements,  99.4% coloured as cc-ifc; left: [('#fcfcfc', 14), ('#faffff', 5), ('#ffffa8', 1)]
+
+What it shows. 12 of 13 agree, levels included, over http and from file:// alike, on web-ifc 0.0.81 as on 0.0.79.
+The 13th, FM_ARC_DigitalHub, is the one where cc-ifc stops at the import's 1,500,000-triangle cap (its curved B-reps
+sampled 20 times finer than needed, V196 section 4) and drops 109 elements; That Open reads all 705, the count V196
+measured for both engines without the cap. Its levels agree too. So That Open matches V196's reference on all 13.
+Colours: 99.1 to 100% of elements coloured as cc-ifc on the 12 (FM_ARC's 77.7% is mostly the 109 cc-ifc leaves out).
+Found on the way and fixed, each with a unit test: class names (web-ifc's name table is empty before Init); spaces
+skipped as V196 did; IFC4.3 facility parts and spatial zones added; ids over 999,999 collided when formatted; storey
+levels scaled twice on millimetre files (That Open already gives metres: the second reader's F4); colours linear where
+the app's are sRGB (all darker); the colour of elements of several materials chosen by cc-ifc's rule (bimToePartsLook).
+Speed: That Open reads small files in 0.2 to 1.3 s and large ones 2.5 to 6 times slower than cc-ifc (schependomlaan
+about 14 s against 2.5 s); the time is its IFC-to-fragments conversion. FM_ARC_DigitalHub is the exception (2.7 s
+against 11 to 12 s). The single-threaded route that may recover some is V305 WO-09.

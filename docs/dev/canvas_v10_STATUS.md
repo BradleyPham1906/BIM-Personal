@@ -16978,3 +16978,61 @@ The owner, 2026-11-22: "do it all in one run". Research and the full list: `docs
   loaded on first IGES import (`io/iges-io.js`); tested on an IGES box of our own (`tests/unit/iges.test.mjs`).
 - Checks: syntax, `npm run modules`, the build, `npm run check`, `npm test` 496 of 496, the browser check
   `tests/e2e/bim_phase266_273_check.mjs` 35 of 35.
+
+## Phase 206 (V206) - That Open: the Review view and the IFC import
+
+The owner, 2026-11-24: "i need you to establish researches and plug their code to our ... i want to actually catch up
+with that repo." Research: `docs/research/research-thatopen-gap.md` (the synthesis) and its four parts in
+`docs/research/research-thatopen-gap/`, with the independent check.
+
+- That Open 3.6 (components 3.6.0, components-front 3.6.1, fragments 3.6.1, MIT) and web-ifc 0.0.79 (MPL-2.0, its own
+  file) pinned in `runtime/thatopen/3.6.0/` by `tools/thatopen/build_thatopen.mjs`, on the app's own three.js, WebGPU
+  paths and potree-core left out; 31 packages' licences in `LICENSES.txt`; 2.0 MB compressed, fetched only on REVIEW
+  or the first IFC import. From file:// the wasm comes through a fetch wrapper and the worker is made classic (e02).
+- REVIEW (`io/thatopen-review.js`): several IFC files at once, select for IFC data, section planes (counted by Cline's
+  bimTorClip), length, area (checked by bimTorArea), hide, isolate, show all, a storey and class tree, Import. The app's
+  key handler steps aside while it is open; measuring points follow a tap on touch screens.
+- The IFC import reads through That Open first (`io/thatopen-runtime.js` bimToeRead), then cc-ifc, then the walls-and-
+  slabs reader. e03: 12 of V196's 13 files agree class by class with every GlobalId; FM_ARC_DigitalHub reads all 705
+  elements where cc-ifc stops at the triangle cap. 2.5 to 5 times slower than cc-ifc on large files. Found by e03 and
+  fixed, each with a unit test: class names (web-ifc's name table is empty before Init), spaces skipped as V196 did,
+  IFC4.3 facility parts and spatial zones added, ids over 999,999 collided when formatted.
+- Audit of Cline's WO-01 to WO-07: WO-03 and WO-04 used BigInt, rewritten in ES5; WO-01 is for Z-up input only.
+- Checks: syntax, `npm run modules`, the build, `npm run check`, `npm test` 513 of 513, `tools/check_runtime.py`,
+  the browser check `tests/e2e/bim_phase206_review_check.mjs` 18 of 18 (http and file://).
+- The independent check (`research-thatopen-gap/second-reader.md`): nine facts confirmed; one wrong (That Open had
+  already turned storey elevations into metres, so millimetre files' levels collapsed): fixed with
+  replaceStoreyElevation off, and e03 now compares levels too. jszip's licence text added to LICENSES.txt.
+- Waiting for the owner: cc-ifc's retirement and the gap plan (research-thatopen-gap.md part 11, thirteen decisions).
+
+## Phase 206 (V206), continued 2026-11-28 - the owner's answers, OB1 to OB3 specified, reality capture in Review
+
+The owner, 2026-11-28: "Do what's standard and as recommended" (research-thatopen-gap.md part 11, fourteen answers).
+- Colours: That Open's are linear, the app's sRGB, so every imported colour was darker: `bimToeHex` encodes sRGB; and
+  an element of several materials takes cc-ifc's rule (`bimToePartsLook`: the opaque material over most triangles,
+  opacity weighted by triangles). e03: 99.1 to 100% of elements coloured as cc-ifc on 12 files.
+- web-ifc 0.0.81 pinned after e03 (12 of 13 agree, levels included) and the browser check on it.
+- pako's zlib licence allowed in CLAUDE.md's list.
+- REVIEW reads point clouds (Potree 2.0, three files from the device; potree-core 2.0.17 as `bim-potree.min.js`, fetched
+  only then) and Gaussian splats (`.ply`), drawn in That Open's deferred pass. The first check passed a cloud that was
+  loaded but never drawn (SimpleRenderer has no such pass): the check now asserts the points and gaussians drawn.
+  Our own synthetic test data: `tests/fixtures/thatopen/` by `docs/research/experiments/thatopen/e04/make-fixtures.mjs`.
+- V305 (OB1, lasting GlobalIds), V306 (OB2, IFC class and predefined type), V307 (OB3, type objects): SPEC, TASKS and
+  tests, each test checked against a reference implementation kept outside the repository; queued after v202.
+- Checks: `npm test` 516 of 516, `npm run check`, check_runtime, check_work_orders, the browser check
+  `tests/e2e/bim_phase206_review_check.mjs` 21 of 21 (http and file://), e03 final from a frozen worktree.
+
+## Phase 308 (V308) - DESIGN on BimCraft's authoring core
+
+The owner, 2026-11-28: "we need to update to bridge the gap for BIM design features like revit ... copy their code,
+reuse the codes, dont write new stuff". Research: `docs/research/research-bimcraft-gap.md` and four parts.
+- BimCraft @ 79b603f6 (Apache-2.0) copied unchanged: `vendor/bimcraft` (181 files, `tools/bimcraft/copy_upstream.mjs
+  --check`), bundled by `tools/bimcraft/build_bimcraft.mjs` into `runtime/bimcraft/79b603f6/bim-craft.min.js` (BIMCRAFT,
+  554 KB compressed), with its English wording cut to what the core names.
+- DESIGN (`bim/bimcraft-design.js`): walls by type (compound, joined), doors and windows by type, floors, ceilings, roofs,
+  rooms, section lines on BimCraft's PlanView; undo and redo; plan and drawing-set PDFs; IFC; Send to model through the
+  app's import, a second send replacing the first.
+- Found by the browser check and fixed: rooms named "model.room.name" (BimCraft's wording was not loaded); Manifold's
+  console errors from file:// (Design takes Manifold only over http).
+- Checks: `npm test` 521 of 521, `npm run check`, check_runtime, e05 11 of 11, `tests/e2e/bim_phase308_design_check.mjs`
+  17 of 17 and the Review check 21 of 21 (http and file://).

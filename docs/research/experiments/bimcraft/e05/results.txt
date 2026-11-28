@@ -1,0 +1,17 @@
+e05 (V308), 2026-11-28, Chromium 158 (build 1243) by Playwright. BimCraft @ 79b603f6, copied unchanged (vendor/bimcraft)
+and bundled by tools/bimcraft/build_bimcraft.mjs (runtime/bimcraft/79b603f6/bim-craft.min.js). First run on 151 files
+(1,276,393 bytes, 395,143 compressed); run again on the final 181 files with the English wording (1,778,820 bytes,
+553,526 compressed): 11 of 11 again, with the Manifold of runtime/cc-ifc/cfbd948 (the same 3.5.4 BimCraft pins).
+page.html builds BimCraft's own test house with the calls of tests/tools/bimcraft-test/make-small-house.mjs, saves it,
+opens it again and checks what house-test.mjs checks against numbers worked by hand. node run.mjs [http|file].
+
+http:   11 of 11 pass; Manifold loaded; the IFC 90,989 bytes; built in 256 ms, checked in 831 ms; no page errors
+  five walls, two doors, three windows, two rooms each with a floor and a ceiling
+  four 300 mm outside walls 10 000 and 7 000 long, one 100 mm partition
+  door marks D1, D2, window marks W1, W2, W3; rooms 101 Living room and 102 Bedroom, each 32.16 m2
+  grids 1, 2, 3, A, B and section lines A and B
+  elevations: south and north 10 900 wide, east and west 7 900 (walls and eaves); the door head and sill drawn
+  section A cuts 2 walls, section B 3
+  the drawing set as a PDF: A-201, A-202, A-301, A-401, 4 pages (no plan sheet: the plan scene is the page's, a later step)
+file:// 11 of 11 pass; Manifold's wasm cannot be fetched from file:// (as for the app's IFC import, which then takes the
+  site's copy), so openings are not cut in the 3D meshes; the drawings, symbols and schedules do not need it.
