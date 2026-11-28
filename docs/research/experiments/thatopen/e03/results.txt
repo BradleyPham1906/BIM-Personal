@@ -5,43 +5,46 @@ cc-ifc's first import, not on That Open's (measured: they are the app's, about 5
 Files: the 13 of docs/research/experiments/v196-ifc/results.txt, same SHA-256 prefixes (checked 2026-11-28); the large
 ones from ThatOpen/engine_web-ifc @ 9ab7d5c tests/ifcfiles/public, the small from buildingSMART/Sample-Test-Files.
 "agree": the same elements class by class (bimTorCompare), every GlobalId valid (bimTorGuidValid), the same model box
-to 1 cm. readMs: the reader alone (bimToeRead or bimIfcRead), not the import's own steps.
+to 1 cm, and the same storeys as levels to 1 cm, each measured from its engine's own shift to the origin (levels
+added after the independent check found That Open's elevations scaled twice: second-reader.md, F4; run again after
+the fix). readMs: the reader alone (bimToeRead or bimIfcRead), not the import's own steps.
 Columns: That Open / cc-ifc. Raw JSON lines: e03-http.jsonl, e03-file.jsonl.
 
 == http
 e03 2026-11-28, Chromium 158.0.8127.36, http, http://127.0.0.1:<port>/canvas_v10.html
-4-wallopen.ifc         AGREE  elements     2/2     guids     2/2     tris       44/44       box 3x2x0.3                  read ms    646/84     
-2x3-arch.ifc           AGREE  elements    12/12    guids    12/12    tris     1130/1130     box 38.543x7x24.286          read ms    320/32     
-2x3-struct.ifc         AGREE  elements    16/16    guids    16/16    tris     1494/1496     box 38.343x6.576x24.086      read ms    266/16     
-4-hvac.ifc             AGREE  elements     5/5     guids     5/5     tris     1061/1064     box 38.043x6.15x23.286       read ms    162/10     
-4-arch.ifc             AGREE  elements    12/12    guids    12/12    tris     1127/1130     box 38.543x7x24.286          read ms    223/10     
-43-road.ifc            AGREE  elements    65/65    guids    65/65    tris     2580/2584     box 72.182x0.59x48.416       read ms    293/19     
-43-landscape.ifc       AGREE  elements     6/6     guids     6/6     tris     4799/4824     box 46.99x13.108x30.786      read ms    297/50     
-43-bridge.ifc          AGREE  elements    48/48    guids    48/48    tris    13240/13292    box 45.367x11.275x57.809     read ms    373/90     
-fzk-haus.ifc           AGREE  elements    83/83    guids    83/83    tris    21636/21684    box 18x7.318x16              read ms    906/230    
-dental_clinic.ifc      AGREE  elements  2586/2586  guids  2586/2586  tris   173415/168559   box 52.685x14.754x66.103     read ms   4019/1300   
-FM_ARC_DigitalHub.ifc  DIFF   elements   705/596   guids   705/596   tris   306506/1500000  box 159.308x13.82x63.53      read ms   2793/11755  [{"cls": "IfcDoor", "a": 64, "b": 21}, {"cls": "IfcRailing", "a": 13, "b": 0}, {"cls": "IfcSlab", "a": 24, "b": 23}, {"cls": "IfcWall", "a": 178, "b": 166}, {"cls": "IfcWindow", "a": 47, "b": 7}]
-advanced_model.ifc     AGREE  elements  6401/6401  guids  6401/6401  tris  1263039/1349102  box 72.498x19.85x55.634      read ms  10367/3977   
-schependomlaan.ifc     AGREE  elements  3504/3504  guids  3504/3504  tris   260942/261457   box 23.95x15.056x24.465      read ms  12805/2501   
-agree on 12 of 13; page errors: none
-== file
-e03 2026-11-28, Chromium 158.0.8127.36, file, file:///home/user/BIM-Personal/canvas_v10.html
-4-wallopen.ifc         AGREE  elements     2/2     guids     2/2     tris       44/44       box 3x2x0.3                  read ms    621/684    
-2x3-arch.ifc           AGREE  elements    12/12    guids    12/12    tris     1130/1130     box 38.543x7x24.286          read ms    326/32     
-2x3-struct.ifc         AGREE  elements    16/16    guids    16/16    tris     1494/1496     box 38.343x6.576x24.086      read ms    243/14     
-4-hvac.ifc             AGREE  elements     5/5     guids     5/5     tris     1061/1064     box 38.043x6.15x23.286       read ms    168/10     
-4-arch.ifc             AGREE  elements    12/12    guids    12/12    tris     1127/1130     box 38.543x7x24.286          read ms    471/16     
-43-road.ifc            AGREE  elements    65/65    guids    65/65    tris     2580/2584     box 72.182x0.59x48.416       read ms    329/26     
-43-landscape.ifc       AGREE  elements     6/6     guids     6/6     tris     4799/4824     box 46.99x13.108x30.786      read ms    314/59     
-43-bridge.ifc          AGREE  elements    48/48    guids    48/48    tris    13240/13292    box 45.367x11.275x57.809     read ms    355/107    
-fzk-haus.ifc           AGREE  elements    83/83    guids    83/83    tris    21636/21684    box 18x7.318x16              read ms    849/316    
-dental_clinic.ifc      AGREE  elements  2586/2586  guids  2586/2586  tris   173415/168559   box 52.685x14.754x66.103     read ms   3807/1372   
-FM_ARC_DigitalHub.ifc  DIFF   elements   705/596   guids   705/596   tris   306506/1500000  box 159.308x13.82x63.53      read ms   2967/12063  [{"cls": "IfcDoor", "a": 64, "b": 21}, {"cls": "IfcRailing", "a": 13, "b": 0}, {"cls": "IfcSlab", "a": 24, "b": 23}, {"cls": "IfcWall", "a": 178, "b": 166}, {"cls": "IfcWindow", "a": 47, "b": 7}]
-advanced_model.ifc     AGREE  elements  6401/6401  guids  6401/6401  tris  1263039/1349102  box 72.498x19.85x55.634      read ms  10196/4260   
-schependomlaan.ifc     AGREE  elements  3504/3504  guids  3504/3504  tris   260942/261457   box 23.95x15.056x24.465      read ms  14028/2666   
+4-wallopen.ifc         AGREE  elements     2/2     guids     2/2     tris       44/44       levels [0]                        read ms    643/110    
+2x3-arch.ifc           AGREE  elements    12/12    guids    12/12    tris     1130/1130     levels [0]                        read ms    372/21     
+2x3-struct.ifc         AGREE  elements    16/16    guids    16/16    tris     1494/1496     levels [0]                        read ms    294/17     
+4-hvac.ifc             AGREE  elements     5/5     guids     5/5     tris     1061/1064     levels [0]                        read ms    171/9      
+4-arch.ifc             AGREE  elements    12/12    guids    12/12    tris     1127/1130     levels [0]                        read ms    212/15     
+43-road.ifc            AGREE  elements    65/65    guids    65/65    tris     2580/2584     levels []                         read ms    316/22     
+43-landscape.ifc       AGREE  elements     6/6     guids     6/6     tris     4799/4824     levels []                         read ms    313/44     
+43-bridge.ifc          AGREE  elements    48/48    guids    48/48    tris    13240/13292    levels []                         read ms    369/85     
+fzk-haus.ifc           AGREE  elements    83/83    guids    83/83    tris    21636/21684    levels [0, 2.7]                   read ms    979/239    
+dental_clinic.ifc      AGREE  elements  2586/2586  guids  2586/2586  tris   173415/168559   levels [-1, 0, 4.57, 9.25]        read ms   3948/1305   
+FM_ARC_DigitalHub.ifc  DIFF   elements   705/596   guids   705/596   tris   306506/1500000  levels [-3.37, -0.15, 3.75]       read ms   2929/11965  [{"cls": "IfcDoor", "a": 64, "b": 21}, {"cls": "IfcRailing", "a": 13, "b": 0}, {"cls": "IfcSlab", "a": 24, "b": 23}, {"cls": "IfcWall", "a": 178, "b": 166}, {"cls": "IfcWindow", "a": 47, "b": 7}]
+advanced_model.ifc     AGREE  elements  6401/6401  guids  6401/6401  tris  1263039/1349102  levels [0.094, 3.8, 7.3, 10.9]    read ms  10486/4296   
+schependomlaan.ifc     AGREE  elements  3504/3504  guids  3504/3504  tris   260942/261457   levels [-1, 0, 3, 6, 9, 12]       read ms  14230/2538   
 agree on 12 of 13; page errors: none
 
-What it shows. 12 of 13 agree, over http and from file:// alike. The 13th, FM_ARC_DigitalHub, is the one where cc-ifc
+== file
+e03 2026-11-28, Chromium 158.0.8127.36, file, file:///home/user/BIM-Personal/canvas_v10.html
+4-wallopen.ifc         AGREE  elements     2/2     guids     2/2     tris       44/44       levels [0]                        read ms    943/559    
+2x3-arch.ifc           AGREE  elements    12/12    guids    12/12    tris     1130/1130     levels [0]                        read ms    318/35     
+2x3-struct.ifc         AGREE  elements    16/16    guids    16/16    tris     1494/1496     levels [0]                        read ms    275/17     
+4-hvac.ifc             AGREE  elements     5/5     guids     5/5     tris     1061/1064     levels [0]                        read ms    166/9      
+4-arch.ifc             AGREE  elements    12/12    guids    12/12    tris     1127/1130     levels [0]                        read ms    235/25     
+43-road.ifc            AGREE  elements    65/65    guids    65/65    tris     2580/2584     levels []                         read ms    286/28     
+43-landscape.ifc       AGREE  elements     6/6     guids     6/6     tris     4799/4824     levels []                         read ms    289/55     
+43-bridge.ifc          AGREE  elements    48/48    guids    48/48    tris    13240/13292    levels []                         read ms    364/90     
+fzk-haus.ifc           AGREE  elements    83/83    guids    83/83    tris    21636/21684    levels [0, 2.7]                   read ms    976/313    
+dental_clinic.ifc      AGREE  elements  2586/2586  guids  2586/2586  tris   173415/168559   levels [-1, 0, 4.57, 9.25]        read ms   4184/1150   
+FM_ARC_DigitalHub.ifc  DIFF   elements   705/596   guids   705/596   tris   306506/1500000  levels [-3.37, -0.15, 3.75]       read ms   2598/12083  [{"cls": "IfcDoor", "a": 64, "b": 21}, {"cls": "IfcRailing", "a": 13, "b": 0}, {"cls": "IfcSlab", "a": 24, "b": 23}, {"cls": "IfcWall", "a": 178, "b": 166}, {"cls": "IfcWindow", "a": 47, "b": 7}]
+advanced_model.ifc     AGREE  elements  6401/6401  guids  6401/6401  tris  1263039/1349102  levels [0.094, 3.8, 7.3, 10.9]    read ms  10073/3600   
+schependomlaan.ifc     AGREE  elements  3504/3504  guids  3504/3504  tris   260942/261457   levels [-1, 0, 3, 6, 9, 12]       read ms  13191/2539   
+agree on 12 of 13; page errors: none
+
+What it shows. 12 of 13 agree, levels included, over http and from file:// alike. The 13th, FM_ARC_DigitalHub, is the one where cc-ifc
 stops at the import's 1,500,000-triangle cap (its curved B-reps sampled 20 times finer than needed, V196 section 4) and
 drops 109 elements; That Open reads all 705, which is the count V196 measured for both engines without the cap. So That
 Open matches V196's reference on all 13. Its triangles are within 3% of cc-ifc's except where cc-ifc over-samples.
