@@ -8,8 +8,8 @@
 //                         wrapper, which is what works from file:// (e01, F12)
 //   bim-thatopen.min.js   @thatopen/components, components-front and fragments (MIT) with their MIT/ISC/BSD/
 //                         Apache-2.0 dependencies; its only global is BIMTOE. "three" is the app's own BIMTHREE
-//                         (runtime/three), "web-ifc" is BIMWEBIFC; three/webgpu, three/tsl and potree-core are left out
-//                         and throw if reached (WebGPU-only paths, point clouds: research F8, F14)
+//                         (runtime/three), "web-ifc" is BIMWEBIFC, "potree-core" is BIMPOTREE; three/webgpu, three/tsl are left out
+//                         and throw if reached (WebGPU-only paths: research F8, F14)
 // The licence of every package in the bundles is written beside them. runtime/MANIFEST.json pins every file by size
 // and SHA-256 (tools/check_runtime.py); this script writes their entries, so the manifest cannot fall behind.
 //
@@ -23,7 +23,7 @@ import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 
 const PINS = { '@thatopen/components': '3.6.0', '@thatopen/components-front': '3.6.1', '@thatopen/fragments': '3.6.1',
-  'web-ifc': '0.0.81', 'camera-controls': '3.1.2', three: '0.186.1' };
+  'web-ifc': '0.0.81', 'camera-controls': '3.1.2', three: '0.186.1', 'potree-core': '2.0.17' };
 const VER = PINS['@thatopen/components'];
 const here = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(here, '..', '..');
@@ -37,11 +37,14 @@ for (const n of Object.keys(PINS)) {
 }
 const ebver = pkg('esbuild').version;
 
-// "three" and "web-ifc" are the page's globals; three/webgpu, three/tsl and potree-core are left out
+// "three", "web-ifc" and "potree-core" are the page's globals; three/webgpu and three/tsl are left out
 const globals = { name: 'globals', setup(b) {
   b.onResolve({ filter: /^three$/ }, () => ({ path: 'BIMTHREE', namespace: 'g' }));
   b.onResolve({ filter: /^web-ifc$/ }, () => ({ path: 'BIMWEBIFC', namespace: 'g' }));
-  b.onResolve({ filter: /^(three\/(webgpu|tsl)|potree-core)$/ }, (a) => ({ path: a.path, namespace: 'out' }));
+  // potree-core is its own optional file (bim-potree.min.js, global BIMPOTREE): components-front reaches it only by a
+  // dynamic import when a point cloud is opened, by which time the adapter has loaded it (the owner, 2026-11-28)
+  b.onResolve({ filter: /^potree-core$/ }, () => ({ path: 'BIMPOTREE', namespace: 'g' }));
+  b.onResolve({ filter: /^three\/(webgpu|tsl)$/ }, (a) => ({ path: a.path, namespace: 'out' }));
   b.onLoad({ filter: /.*/, namespace: 'g' }, (a) => ({ contents: 'module.exports = window.' + a.path, loader: 'js' }));
   b.onLoad({ filter: /.*/, namespace: 'out' }, (a) => ({ contents: "throw new Error('" + a.path + " is left out of the app\\'s That Open build')", loader: 'js' }));
 } };
@@ -53,6 +56,12 @@ const toe = await esbuild.build(Object.assign({}, common, {
     "export * as FRAGS from '@thatopen/fragments';\nexport * as OBC from '@thatopen/components';\n" +
     "export * as OBF from '@thatopen/components-front';\n", resolveDir: here, loader: 'js' },
   globalName: 'BIMTOE', plugins: [globals] }));
+const pot = await esbuild.build(Object.assign({}, common, {
+  stdin: { contents: "export * from 'potree-core';\n", resolveDir: here, loader: 'js' }, globalName: 'BIMPOTREE',
+  plugins: [{ name: 'three', setup(b) {
+    b.onResolve({ filter: /^three$/ }, () => ({ path: 'BIMTHREE', namespace: 'g' }));
+    b.onLoad({ filter: /.*/, namespace: 'g' }, (a) => ({ contents: 'module.exports = window.' + a.path, loader: 'js' }));
+  } }] }));
 const wif = await esbuild.build(Object.assign({}, common, {
   stdin: { contents: "export * from 'web-ifc';\n", resolveDir: here, loader: 'js' }, globalName: 'BIMWEBIFC',
   // web-ifc reaches for Node's modules only when it runs in Node; in a browser that branch never runs
@@ -77,9 +86,9 @@ function packagesOf(r) {
 // the licences CLAUDE.md's library rule allows; pako's "MIT AND Zlib" is MIT plus the zlib licence (permissive, recorded
 // for the owner: research-thatopen-gap.md part 11); jszip is dual and used under its MIT option
 const allowed = /^(MIT|ISC|BSD-[23]-Clause|Apache-2\.0|MPL-2\.0|\(MIT OR GPL-3\.0-or-later\)|\(MIT AND Zlib\))$/;
-const pkgsToe = packagesOf(toe), pkgsWif = packagesOf(wif);
+const pkgsToe = packagesOf(toe), pkgsWif = packagesOf(wif), pkgsPot = packagesOf(pot);
 const licences = [];
-for (const n of [...new Set(pkgsToe.concat(pkgsWif))].sort()) {
+for (const n of [...new Set(pkgsToe.concat(pkgsWif, pkgsPot))].sort()) {
   const p = pkg(n), lic = typeof p.license === 'string' ? p.license : (p.license && p.license.type) || '';
   if (!allowed.test(lic)) { console.error(n + ': licence "' + lic + '" is not one the rule allows'); process.exit(1); }
   // That Open's npm packages carry no licence file: theirs is kept in licences/, from the repositories (ThatOpen/
@@ -109,6 +118,9 @@ const wasm = fs.readFileSync(path.join(mod, 'web-ifc', 'web-ifc.wasm'));
 const files = {
   'bim-thatopen.min.js': bannerToe + toe.outputFiles[0].text,
   'bim-webifc.min.js': bannerWif + wif.outputFiles[0].text,
+  'bim-potree.min.js': '/* __acad3dV206: potree-core ' + PINS['potree-core'] + ' (github.com/tentone/potree-core, MIT) and brotli (MIT), unchanged, as one\n' +
+    '   classic script by esbuild ' + ebver + ' (tools/thatopen/build_thatopen.mjs), on the page\'s BIMTHREE. Its only global is BIMPOTREE;\n' +
+    '   fetched only when the Review view opens a point cloud. Licences: LICENSES.txt. */\n' + pot.outputFiles[0].text,
   'bim-webifc-wasm.js': '/* __acad3dV206: web-ifc ' + PINS['web-ifc'] + "'s web-ifc.wasm (MPL-2.0, unchanged), as base64, for file:// pages. */\n" +
     'var BIMWEBIFC_WASM="' + wasm.toString('base64') + '";\n',
   'LICENSES.txt': credits
@@ -139,10 +151,11 @@ const from = {
     pkgsToe.filter((n) => !/^@thatopen\//.test(n)).join(', ') + ', bundled unchanged by esbuild ' + ebver + ': tools/thatopen/build_thatopen.mjs',
   'bim-webifc.min.js': tb('web-ifc') + ', web-ifc-api.js, bundled unchanged by esbuild ' + ebver + ': tools/thatopen/build_thatopen.mjs',
   'bim-webifc-wasm.js': tb('web-ifc') + ', web-ifc.wasm as base64: tools/thatopen/build_thatopen.mjs',
+  'bim-potree.min.js': tb('potree-core') + ' and ' + pkgsPot.filter((n) => n !== 'potree-core' && n !== 'three').join(', ') + ', bundled unchanged by esbuild ' + ebver + ': tools/thatopen/build_thatopen.mjs',
   'LICENSES.txt': 'the licence file of every package bundled: tools/thatopen/build_thatopen.mjs'
 };
 const licOf = { 'bim-thatopen.min.js': 'MIT (That Open) and the licences in LICENSES.txt', 'bim-webifc.min.js': 'MPL-2.0 (web-ifc)',
-  'bim-webifc-wasm.js': 'MPL-2.0 (web-ifc)', 'LICENSES.txt': 'as listed in it' };
+  'bim-webifc-wasm.js': 'MPL-2.0 (web-ifc)', 'bim-potree.min.js': 'MIT (potree-core, brotli)', 'LICENSES.txt': 'as listed in it' };
 const mine = Object.keys(files).map((f) => {
   const rel = 'thatopen/' + VER + '/' + f, b = fs.readFileSync(path.join(root, 'runtime', rel));
   return { path: rel, bytes: b.length, sha256: sha(b), from: from[f], licence: licOf[f] };

@@ -109,8 +109,8 @@ drawings and sheets, DXF, mesh export.
 | Display | Hover pre-highlight, highlight styles with priority, outlines | MISSING / PARTIAL | P | S, M, M | components-front-ui 3 |
 | Display | Pen and ambient-occlusion styles (postproduction) | MISSING | P | L | components-front-ui 3 |
 | Measuring | 3D length, area, angle, volume on model surfaces in the editable model | PARTIAL (plan only) | P (done in Review for length and area: R) | M | components-front-ui 3 |
-| Reality | Gaussian splats drawn (V205 left them undrawn), PLY and SOG | MISSING | R in Review (SplatLoader) or P | M | components-front-ui 3 |
-| Reality | Streamed Potree point clouds, eye-dome lighting; E57 | MISSING | R (potree-core, MIT) / P (E57 reader) | M | components-front-ui 3, components-core 3 |
+| Reality | Gaussian splats drawn (V205 left them undrawn), PLY and SOG | NONE in Review since V206 (PLY); MISSING in the model's rendered view | done (R); P for the model | M | components-front-ui 3 |
+| Reality | Streamed Potree point clouds, eye-dome lighting; E57 | Potree: NONE in Review since V206; E57 MISSING | done (R); P (E57 reader) | M | components-front-ui 3, components-core 3 |
 | Civil | IfcAlignment import, cross-section at a station | MISSING | R in Review (CivilNavigators) | M | components-front-ui 3 |
 | Writing | web-ifc's writer for saving an imported IFC back with edited properties | MISSING | R, checked by IfcOpenShell's validator | M | fragments-webifc 6 |
 
@@ -129,6 +129,8 @@ practice element by element.
   first opaque material; on FZK-Haus two of 83 elements differ (e03 colour run, 2026-11-28).
 - Speed: That Open's import is 2.5 to 5 times slower than cc-ifc on large files (e03). The fragments note's route
   (IfcImporter then a single-threaded model, no worker round trips) may recover some; measure before deciding.
+- The deferred pipeline: once a cloud or a splat is opened, Review draws through That Open's deferred pass (pen and
+  shadows), which costs frame time on large models; it stays on until Review is closed.
 - `lastPick`: the Review view waits for That Open's measuring pick through a field its types mark protected; if it
   goes, the view waits 800 ms instead (no error). Re-run the browser check at each update.
 - Churn: That Open releases every few weeks; the pins stay until a re-run of e02, e03 and the browser check passes.
@@ -196,7 +198,13 @@ highlight, clip, measure, viewpoints), BlenderBIM/Bonsai (IfcOpenShell as the au
 8. Wall layers: structure and finish first, then insulation; layers drawn in plan cuts later (OB4).
 9. Uniclass 2015 first, once its licence is read (OB8).
 10. BCF in Review now through That Open; our own IDS checker (That Open's has faults).
-11. Point clouds and splats in Review through That Open (potree-core as an optional file).
+11. Point clouds and splats in Review through That Open (potree-core as an optional file). Done: REVIEW's Point cloud
+    reads a Potree 2.0 cloud's three files from the device (byte ranges cut from the files, `bimToeRange`; potree-core
+    2.0.17, MIT, `bim-potree.min.js`, 100 KB compressed, fetched only then) and Splat a Gaussian splat `.ply`. Both are
+    drawn only in the deferred occlusion pass of That Open's PostproductionRenderer (components-front PointCloudLoader
+    323-324, 592-598), turned on at the first one as its example does; the first check passed a cloud loaded but never
+    drawn, so the browser check now asserts what is drawn (1600 of 1600 points, 64 of 64 gaussians, on our own
+    synthetic data, `experiments/thatopen/e04/`). Splats in the model's rendered view (V205) are still not drawn.
 12. Unstyled elements: "as the import looked". Measured: cc-ifc gives white too (web-ifc colours an unstyled element
     white; V196's grey was only for no colour at all), so nothing changes. The same measurement found That Open's
     colours are linear where the app's are sRGB: every imported colour was darker (cc-ifc #939393, That Open

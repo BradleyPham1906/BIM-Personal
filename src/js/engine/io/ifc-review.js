@@ -210,7 +210,25 @@ function bimToeClassName(up,lists){
   for(i=0;i<(lists||[]).length;i++){L=lists[i]||[];for(k=0;k<L.length;k++)if(String(L[k]).toUpperCase()===u)return L[k];}
   return 'Ifc'+u.slice(3).charAt(0)+u.slice(4).toLowerCase();
 }
+/* an HTTP Range header ("bytes=a-b", b inclusive, or "bytes=a-") as {start, end} with end exclusive, clamped to a file
+   of size bytes; null for none or one that cannot be served. For the Review view's point clouds read from local files
+   (potree-core asks for byte ranges of octree.bin and hierarchy.bin) */
+function bimToeRange(header,size){
+  var m=/^\s*bytes\s*=\s*(\d+)\s*-\s*(\d*)\s*$/.exec(String(header||'')),n=Math.max(0,Math.floor(+size||0)),a,b;
+  if(!m)return null;
+  a=parseInt(m[1],10);b=m[2]===''?n:Math.min(n,parseInt(m[2],10)+1);
+  if(a>=n||b<=a)return null;
+  return {start:a,end:b};
+}
+/* a Potree 2.0 cloud's files that are not among the names chosen (only the base names count) */
+var BIM_TOE_POTREE=['metadata.json','hierarchy.bin','octree.bin'];
+function bimToePotreeMissing(names){
+  var have={},i,n;
+  for(i=0;i<(names||[]).length;i++){n=String(names[i]||'').split(/[\\\/]/).pop();have[n]=true;}
+  return BIM_TOE_POTREE.filter(function(f){return !have[f];});
+}
 export {
-  bimToeClassName, bimToeLook, bimToeMesh, bimToePartsLook, bimToeRaw, bimToeSets, bimToeStoreyClasses,
-  bimToeTree, bimToeUnit, bimToeVal, bimTorArea, bimTorClip, bimTorCompare, bimTorGuidValid
+  bimToeClassName, bimToeLook, bimToeMesh, bimToePartsLook, bimToePotreeMissing, bimToeRange, bimToeRaw,
+  bimToeSets, bimToeStoreyClasses, bimToeTree, bimToeUnit, bimToeVal, bimTorArea, bimTorClip, bimTorCompare,
+  bimTorGuidValid
 };

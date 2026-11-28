@@ -128,7 +128,7 @@ test('colours and opacity per item, from the material definitions', () => {
 test('the loader\'s pins are runtime/MANIFEST.json\'s, and every file is there', () => {
   const man = JSON.parse(fs.readFileSync(path.join(ROOT, 'runtime/MANIFEST.json'), 'utf8'));
   assert.equal(man.thatopen, E.BIM_TOE.ver);
-  for (const f of E.BIM_TOE.files) {
+  for (const f of E.BIM_TOE.files.concat([E.BIM_TOE.potree])) {
     const m = man.files.find((x) => x.path === E.BIM_TOE.dir + f.f);
     assert.ok(m, f.f + ' is pinned');
     assert.equal(f.sri, 'sha256-' + Buffer.from(m.sha256, 'hex').toString('base64'), f.f + ': the loader checks the pinned hash');
@@ -180,4 +180,23 @@ test('an item\'s colour by cc-ifc\'s rule: the opaque material over most triangl
   assert.equal(E.bimToePartsLook([{ sampleId: 99, indices: tri(3) }], sm, mats), null);
   assert.equal(E.bimToePartsLook([], sm, mats), null);
   assert.equal(E.bimToePartsLook(null, null, null), null);
+});
+
+test('a byte range from potree-core, served from a local file', () => {
+  assert.deepEqual(E.bimToeRange('bytes=0-21', 28800), { start: 0, end: 22 }, 'the end is inclusive in HTTP');
+  assert.deepEqual(E.bimToeRange('bytes=100-', 28800), { start: 100, end: 28800 });
+  assert.deepEqual(E.bimToeRange('bytes=28000-99999', 28800), { start: 28000, end: 28800 }, 'clamped to the file');
+  assert.deepEqual(E.bimToeRange(' bytes = 5 - 9 ', 100), { start: 5, end: 10 });
+  assert.equal(E.bimToeRange('bytes=28800-', 28800), null, 'past the end');
+  assert.equal(E.bimToeRange('bytes=9-5', 100), null);
+  assert.equal(E.bimToeRange('bytes=-500', 100), null, 'a suffix range is not one potree-core asks for');
+  assert.equal(E.bimToeRange(null, 100), null);
+  assert.equal(E.bimToeRange('items=0-5', 100), null);
+});
+
+test('a Potree 2.0 cloud needs its three files', () => {
+  assert.deepEqual(E.bimToePotreeMissing(['metadata.json', 'hierarchy.bin', 'octree.bin']), []);
+  assert.deepEqual(E.bimToePotreeMissing(['scan/metadata.json', 'scan\\octree.bin', 'log.txt']), ['hierarchy.bin'], 'folders do not count');
+  assert.deepEqual(E.bimToePotreeMissing([]), ['metadata.json', 'hierarchy.bin', 'octree.bin']);
+  assert.deepEqual(E.bimToePotreeMissing(null), ['metadata.json', 'hierarchy.bin', 'octree.bin']);
 });

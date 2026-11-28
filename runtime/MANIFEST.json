@@ -376,8 +376,8 @@
   },
   {
    "path": "thatopen/3.6.0/bim-thatopen.min.js",
-   "bytes": 2636322,
-   "sha256": "504bd2a0003681b0976fe13e6a9148c32a856523d9370f542732dbf834cd2b3d",
+   "bytes": 2636284,
+   "sha256": "10c25b2d8b2083f1b43717445cf7a73c8b49988bae77dc0a341334e5594fb420",
    "from": "npm @thatopen/components@3.6.0 (the tarball sha512-NFO8G8axXVgsXklxhTS7gYcP5O1pe/PnS+jzDSwICaeE2zENk23vCtxHQfHlfWmx15E5Iu4LwsqfRdgM5iSNtA==), npm @thatopen/components-front@3.6.1 (the tarball sha512-y9PmqH/NFsx2pHh5S/OOGqCMBN9aL38O/WZzZVkqX7UTzpb5D5txsEl/H4apBeWADfF6WY8LA30ao+a4SlRmpQ==), npm @thatopen/fragments@3.6.1 (the tarball sha512-dHrzuJGI0yx4tj/5Rcf4eU/FsJZBdDwDfmYuce8JGqVnq1aUupWGecBjJ4SClfcsEm2phg9gJPHLlgWaZG2liQ==) and @nodable/entities, anynum, camera-controls, core-util-is, earcut, fast-xml-builder, fast-xml-parser, flatbuffers, immediate, inherits, isarray, jszip, lie, lru-cache, pako, path-expression-matcher, process-nextick-args, readable-stream, safe-buffer, setimmediate, string_decoder, strnum, three, three-mesh-bvh, util-deprecate, xml-naming, xxhash-wasm, bundled unchanged by esbuild 0.28.2: tools/thatopen/build_thatopen.mjs",
    "licence": "MIT (That Open) and the licences in LICENSES.txt"
   },
@@ -389,6 +389,13 @@
    "licence": "MPL-2.0 (web-ifc)"
   },
   {
+   "path": "thatopen/3.6.0/bim-potree.min.js",
+   "bytes": 271265,
+   "sha256": "98fa332fe4fe4e58a44c321711ab96b078292489ff80988a91d159a57516757c",
+   "from": "npm potree-core@2.0.17 (the tarball sha512-bTm1fB7SO5I6B76Cox2AcVYja/rYYw7TI5KqspvH6dpXWQqjJRg//Mbl+lPmLgOVaSdZJQCYr2t3PxXb7bENyA==) and base64-js, brotli, bundled unchanged by esbuild 0.28.2: tools/thatopen/build_thatopen.mjs",
+   "licence": "MIT (potree-core, brotli)"
+  },
+  {
    "path": "thatopen/3.6.0/bim-webifc-wasm.js",
    "bytes": 2295909,
    "sha256": "cc34edca0faee9d3e9115c1922a2ee8a7dd680103478134dbb0edf1193d4cf3c",
@@ -397,8 +404,8 @@
   },
   {
    "path": "thatopen/3.6.0/LICENSES.txt",
-   "bytes": 92952,
-   "sha256": "7e56f1a00bf7f2a9f49cff5f524699acdfbf3a4bfa236379391bb0d0236d0e3c",
+   "bytes": 98098,
+   "sha256": "111e704e25fba1168f1176395a8c854fb378ed49e11eeda3a1678c0246dc9c1a",
    "from": "the licence file of every package bundled: tools/thatopen/build_thatopen.mjs",
    "licence": "as listed in it"
   }

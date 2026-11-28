@@ -1,9 +1,12 @@
 import { bimEsc } from '../layers/layer-manager.js';
 import { bimIfcImportBuffer } from './ifc-full.js';
 import {
-  bimToeClassName, bimToeRaw, bimToeSets, bimToeStoreyClasses, bimToeVal, bimTorArea, bimTorClip
+  bimToeClassName, bimToePotreeMissing, bimToeRange, bimToeRaw, bimToeSets, bimToeStoreyClasses, bimToeVal,
+  bimTorArea, bimTorClip
 } from './ifc-review.js';
-import { BIM_TOE, bimToeClassLists, bimToeImporterSetup, bimToeLoad } from './thatopen-runtime.js';
+import {
+  BIM_TOE, bimToeClassLists, bimToeImporterSetup, bimToeLoad, bimToePotreeLoad
+} from './thatopen-runtime.js';
 import { a3dToast } from '../bim/csg-booleans.js';
 
 /* ================= __acad3dV206 WO-08: the Review view =================
@@ -22,6 +25,8 @@ function bimRvwHtml(){
   for(m in BIM_RVW_MODES)if(BIM_RVW_MODES.hasOwnProperty(m))b+='<button type="button" data-rvwmode="'+m+'">'+BIM_RVW_MODES[m]+'</button>';
   return '<div class="a3d-rvw-bar" role="toolbar" aria-label="Review">'+
     '<button type="button" data-rvw="open" title="Open one or more IFC files to review">Open IFC</button>'+
+    '<button type="button" data-rvw="cloud" title="Open a Potree 2.0 point cloud: choose its metadata.json, hierarchy.bin and octree.bin">Point cloud</button>'+
+    '<button type="button" data-rvw="splat" title="Open a Gaussian splat (.ply or .compressed.ply)">Splat</button>'+
     '<button type="button" data-rvw="fit" title="Frame every model">Fit</button>'+b+
     '<button type="button" data-rvw="clear" title="Remove the section planes and measurements">Clear</button>'+
     '<button type="button" data-rvw="hide" title="Hide the selection">Hide</button>'+
@@ -29,7 +34,9 @@ function bimRvwHtml(){
     '<button type="button" data-rvw="show" title="Show everything">Show all</button>'+
     '<button type="button" data-rvw="import" title="Bring the model under review into the editable model">Import</button>'+
     '<button type="button" data-rvw="close" class="a3d-rvw-close" title="Close the Review view">Close</button>'+
-    '<input type="file" accept=".ifc" multiple hidden data-rvwfile></div>'+
+    '<input type="file" accept=".ifc" multiple hidden data-rvwfile>'+
+    '<input type="file" multiple hidden data-rvwcloud>'+
+    '<input type="file" accept=".ply" hidden data-rvwsplat></div>'+
     '<div class="a3d-rvw-main"><div class="a3d-rvw-view" tabindex="0"></div>'+
     '<div class="a3d-rvw-side"><div class="a3d-rvw-tree"><p class="a3d-rvw-hint">Open an IFC file to review it.</p></div>'+
     '<div class="a3d-rvw-props"></div></div></div>'+
@@ -40,10 +47,12 @@ function bimRvwWorld(L){
   var R=A3D_RVW,T=L.T,OBC=L.OBC,OBF=L.OBF,c=new OBC.Components(),view=R.el.querySelector('.a3d-rvw-view');
   var w=c.get(OBC.Worlds).create();
   w.scene=new OBC.SimpleScene(c);w.scene.setup();w.scene.three.background=null;
-  w.renderer=new OBC.SimpleRenderer(c,view);
+  /* That Open's PostproductionRenderer (a SimpleRenderer with its passes): point clouds are drawn only in its deferred
+     occlusion pass (components-front PointCloudLoader 323-324, 592-598) */
+  w.renderer=new OBF.PostproductionRenderer(c,view);
   w.camera=new OBC.OrthoPerspectiveCamera(c);
   c.init();
-  c.get(OBC.Grids).create(w);
+  var grid=c.get(OBC.Grids).create(w);
   var fm=c.get(OBC.FragmentsManager);
   fm.init(L.worker,{classicWorker:true});
   w.camera.controls.addEventListener('update',function(){fm.core.update();});
@@ -57,6 +66,7 @@ function bimRvwWorld(L){
   var len=c.get(OBF.LengthMeasurement);len.world=w;len.enabled=false;len.color=new T.Color('#e8a33a');
   var area=c.get(OBF.AreaMeasurement);area.world=w;area.enabled=false;area.color=new T.Color('#e8a33a');
   area.list.onItemAdded.add(function(a){bimRvwStatus(bimRvwAreaText(a));});
+  R.grid=grid;R.deferred=false;
   R.c=c;R.world=w;R.fm=fm;R.hl=hl;R.clip=clip;R.len=len;R.area=area;R.hider=c.get(OBC.Hider);
 }
 /* an area's readout: That Open's value, checked against the app's own Newell area of the same points (bimTorArea) */
@@ -201,10 +211,89 @@ function bimRvwSectionText(){
     return 'Section: '+planes.length+' plane'+(planes.length===1?'':'s')+'; '+cut+' of '+n+' elements have their placement point cut away';
   },function(){return '';});
 }
+/* point clouds (and splats) are drawn only in the deferred occlusion pass of That Open's PostproductionRenderer: turned on
+   at the first one, as That Open's own example sets it (components-front PointCloudLoader/example.ts 64-68: enabled,
+   DEFERRED, pen and shadows, the grid kept out of the passes); off until then, as it costs frame time */
+function bimRvwDeferred(){
+  var R=A3D_RVW,pp=R.world.renderer.postproduction,OBF=R.L.OBF;
+  if(R.deferred)return;
+  pp.enabled=true;
+  pp.mode=OBF.PostproductionMode.DEFERRED;
+  pp.style=OBF.PostproductionAspect.COLOR_PEN_SHADOWS;
+  if(R.grid&&R.grid.material&&pp.basePass&&pp.basePass.isolatedMaterials)pp.basePass.isolatedMaterials.push(R.grid.material);
+  R.deferred=true;
+}
+/* the camera on a box, as That Open's examples frame a cloud or a splat: from a radius out, a little above */
+function bimRvwFrame(box){
+  var R=A3D_RVW,T=R.L.T;
+  if(!box||box.isEmpty())return;
+  var c=box.getCenter(new T.Vector3()),r=box.getSize(new T.Vector3()).length()/2||8;
+  R.world.camera.controls.setLookAt(c.x+r,c.y+r*0.7,c.z+r,c.x,c.y,c.z,true);
+}
+/* __acad3dV206, the owner's decision 11 (2026-11-28): point clouds and splats beside the models, through That Open. A Potree 2.0
+   cloud is read from the three files chosen on this device: potree-core (bim-potree.min.js, fetched now, once) asks for
+   byte ranges, which are cut from the files here (bimToeRange), so nothing goes over the network */
+function bimRvwCloud(list){
+  var R=A3D_RVW,files={},names=[],i;
+  for(i=0;i<(list||[]).length;i++){files[list[i].name]=list[i];names.push(list[i].name);}
+  var miss=bimToePotreeMissing(names);
+  if(miss.length){bimRvwStatus('A Potree 2.0 point cloud needs '+miss.join(', ')+' too: choose its three files together');return Promise.resolve(false);}
+  var rm={
+    getUrl:function(u){return 'local/'+u;},
+    fetch:function(input,init){
+      var u=String(input&&input.url||input),name=u.split(/[\\\/]/).pop().split('?')[0],f=files[name],h=null;
+      if(!f)return Promise.resolve(new Response(null,{status:404}));
+      try{h=new Headers(init&&init.headers).get('Range');}catch(eH){h=null;}
+      var r=bimToeRange(h,f.size);
+      return Promise.resolve(r?new Response(f.slice(r.start,r.end),{status:206}):new Response(f));
+    }
+  };
+  bimRvwStatus('Reading the point cloud (the first time loads its reader, about 100 KB)...');
+  return bimToePotreeLoad().then(function(){
+    var pcl=R.c.get(R.L.OBF.PointCloudLoader);
+    pcl.world=R.world;
+    bimRvwDeferred();
+    return pcl.load({url:'local',requestManager:rm},{id:'cloud-'+(++R.seq)});
+  }).then(function(cloud){
+    bimRvwFrame(cloud&&cloud.box);
+    var z=cloud&&cloud.box&&!cloud.box.isEmpty()?cloud.box.getSize(new R.L.T.Vector3()):null;
+    bimRvwStatus('Point cloud'+(z?' of '+z.x.toFixed(2)+' x '+z.z.toFixed(2)+' m, '+z.y.toFixed(2)+' m high':'')+
+      '. A section plane cuts it as it cuts the models');
+    return true;
+  },function(e){
+    var s=String(e&&e.message||e);
+    bimRvwStatus('The point cloud could not be read: '+s);a3dToast('Review: the point cloud could not be read: '+s);
+    return false;
+  });
+}
+/* a Gaussian splat (.ply, .compressed.ply: INRIA 3DGS) from this device, drawn among the models by That Open's own
+   WebGL2 splat renderer, in the same deferred pass as the clouds */
+function bimRvwSplat(file){
+  var R=A3D_RVW;
+  bimRvwStatus('Reading '+file.name+'...');
+  return file.arrayBuffer().then(function(b){
+    var sl=R.c.get(R.L.OBF.SplatLoader);
+    sl.world=R.world;
+    bimRvwDeferred();
+    return Promise.resolve(sl.load({fileBytes:new Uint8Array(b)},{id:file.name+'-'+(++R.seq)})).then(function(h){
+      var box=h&&h.box&&!h.box.isEmpty()?h.box:null,z=box?box.getSize(new R.L.T.Vector3()):null;
+      bimRvwFrame(box);
+      bimRvwStatus('Splat '+file.name+(z?': '+z.x.toFixed(2)+' x '+z.z.toFixed(2)+' m, '+z.y.toFixed(2)+' m high':''));
+      return true;
+    });
+  }).then(null,function(e){
+    var s=String(e&&e.message||e);
+    bimRvwStatus('The splat could not be read: '+s);a3dToast('Review: the splat could not be read: '+s);
+    return false;
+  });
+}
 function bimRvwAct(a){
   var R=A3D_RVW,sel=R.hl?R.hl.selection.select:null,has=false,k;
   for(k in sel||{})if(sel.hasOwnProperty(k)&&sel[k]&&sel[k].size)has=true;
-  if(a==='open'){var f=R.el.querySelector('[data-rvwfile]');f.value='';f.click();return;}
+  if(a==='open'||a==='cloud'||a==='splat'){
+    var f=R.el.querySelector(a==='open'?'[data-rvwfile]':a==='cloud'?'[data-rvwcloud]':'[data-rvwsplat]');
+    f.value='';f.click();return;
+  }
   if(a==='close'){bimReviewClose();return;}
   if(!R.c)return;
   if(a==='fit')bimRvwFit();
@@ -235,6 +324,8 @@ function bimRvwWire(){
   el.addEventListener('change',function(ev){
     var t=ev.target;
     if(t.hasAttribute('data-rvwfile'))bimRvwFiles(t.files);
+    else if(t.hasAttribute('data-rvwcloud'))bimRvwCloud(t.files);
+    else if(t.hasAttribute('data-rvwsplat')&&t.files&&t.files[0])bimRvwSplat(t.files[0]);
     else if(t.hasAttribute('data-rvwvis')&&R.hider){
       R.hider.set(!!t.checked,bimRvwMap(t.getAttribute('data-rvwvis')));
       var box=t.closest('details'),sub=box?box.querySelectorAll('[data-rvwvis]'):[],i;
@@ -311,7 +402,7 @@ function bimReviewClose(){
   if(R.keys)document.removeEventListener('keydown',R.keys,true);
   try{if(R.c)R.c.dispose();}catch(eD){console.warn('[BIM] Review: That Open could not be closed cleanly',eD);}
   if(R.el&&R.el.parentNode)R.el.parentNode.removeChild(R.el);
-  R.el=null;R.c=null;R.world=null;R.fm=null;R.hl=null;R.clip=null;R.len=null;R.area=null;R.hider=null;R.models=[];R.keys=null;
+  R.el=null;R.c=null;R.world=null;R.grid=null;R.deferred=false;R.fm=null;R.hl=null;R.clip=null;R.len=null;R.area=null;R.hider=null;R.models=[];R.keys=null;
 }
 function bimReviewCommand(){if(A3D_RVW.open)bimReviewClose();else bimReviewOpen();}
 export { A3D_RVW, bimReviewCommand };

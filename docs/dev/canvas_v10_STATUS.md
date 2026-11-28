@@ -17004,3 +17004,20 @@ with that repo." Research: `docs/research/research-thatopen-gap.md` (the synthes
   already turned storey elevations into metres, so millimetre files' levels collapsed): fixed with
   replaceStoreyElevation off, and e03 now compares levels too. jszip's licence text added to LICENSES.txt.
 - Waiting for the owner: cc-ifc's retirement and the gap plan (research-thatopen-gap.md part 11, thirteen decisions).
+
+## Phase 206 (V206), continued 2026-11-28 - the owner's answers, OB1 to OB3 specified, reality capture in Review
+
+The owner, 2026-11-28: "Do what's standard and as recommended" (research-thatopen-gap.md part 11, fourteen answers).
+- Colours: That Open's are linear, the app's sRGB, so every imported colour was darker: `bimToeHex` encodes sRGB; and
+  an element of several materials takes cc-ifc's rule (`bimToePartsLook`: the opaque material over most triangles,
+  opacity weighted by triangles). e03: 99.1 to 100% of elements coloured as cc-ifc on 12 files.
+- web-ifc 0.0.81 pinned after e03 (12 of 13 agree, levels included) and the browser check on it.
+- pako's zlib licence allowed in CLAUDE.md's list.
+- REVIEW reads point clouds (Potree 2.0, three files from the device; potree-core 2.0.17 as `bim-potree.min.js`, fetched
+  only then) and Gaussian splats (`.ply`), drawn in That Open's deferred pass. The first check passed a cloud that was
+  loaded but never drawn (SimpleRenderer has no such pass): the check now asserts the points and gaussians drawn.
+  Our own synthetic test data: `tests/fixtures/thatopen/` by `docs/research/experiments/thatopen/e04/make-fixtures.mjs`.
+- V305 (OB1, lasting GlobalIds), V306 (OB2, IFC class and predefined type), V307 (OB3, type objects): SPEC, TASKS and
+  tests, each test checked against a reference implementation kept outside the repository; queued after v202.
+- Checks: `npm test` 516 of 516, `npm run check`, check_runtime, check_work_orders, the browser check
+  `tests/e2e/bim_phase206_review_check.mjs` 21 of 21 (http and file://), e03 final from a frozen worktree.

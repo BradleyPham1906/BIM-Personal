@@ -21,7 +21,9 @@ var BIM_TOE={ver:'3.6.0',dir:'thatopen/3.6.0/',wasmUrl:'https://bim-webifc.inval
   files:[
     {f:'bim-webifc.min.js',g:'BIMWEBIFC',sri:'sha256-jPwIk5HMlzhh1FxocntXSeMsiGlayJLI4wkNciONruc='},
     {f:'bim-webifc-wasm.js',g:'BIMWEBIFC_WASM',sri:'sha256-zDTtyg+u6dPpEVwZIqLuin3WgBA0eBNNuw7fEZPUzzw='},
-    {f:'bim-thatopen.min.js',g:'BIMTOE',sri:'sha256-UEvSoAA2gbCXb+E+apFIwyqFZSPZNw9UJzLb+DTNKz0='}],
+    {f:'bim-thatopen.min.js',g:'BIMTOE',sri:'sha256-EMJbLYsgg/G0NxdEXPenPItJmIuud9wKNBM05VlPtCA='}],
+  /* potree-core (MIT) is its own file, fetched only when the Review view opens a point cloud (the owner, 2026-11-28) */
+  potree:{f:'bim-potree.min.js',g:'BIMPOTREE',sri:'sha256-mPozL+T+TlikTDIXEauWsHgpJIn/gJiKkdFZpXUWdXw='},
   maxTris:1500000,chunk:400,
   /* as V196: spaces are rooms, not solids (web-ifc and cc-ifc leave them out too); the facility parts are added */
   skip:{IFCSPACE:1,IFCOPENINGELEMENT:1,IFCOPENINGSTANDARDCASE:1},
@@ -84,6 +86,8 @@ function bimToeLoad(){
   }).then(null,function(e){R.st='failed';R.err=String(e&&e.message||e);R.load=null;throw e;});
   return R.load;
 }
+/* potree-core, after That Open: a promise of BIMPOTREE */
+function bimToePotreeLoad(){return bimToeLoad().then(function(){return bimToeScript(BIM_TOE.potree);});}
 /* a That Open session: components with a fragments manager on the classic worker, and an IFC loader that never fetches
    (its wasm comes through the shim). Each caller disposes its own (components.dispose()) */
 function bimToeSession(L){
@@ -206,4 +210,4 @@ function bimToeClassLists(){
   A3D_TOE.names=out;
   return out;
 }
-export { A3D_TOE, BIM_TOE, bimToeClassLists, bimToeImporterSetup, bimToeLoad, bimToeRead };
+export { A3D_TOE, BIM_TOE, bimToeClassLists, bimToeImporterSetup, bimToeLoad, bimToePotreeLoad, bimToeRead };

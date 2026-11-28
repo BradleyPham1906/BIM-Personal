@@ -283,6 +283,8 @@
   "bimToeLook",
   "bimToeMesh",
   "bimToePartsLook",
+  "bimToePotreeMissing",
+  "bimToeRange",
   "bimToeRaw",
   "bimToeSets",
   "bimToeSources",

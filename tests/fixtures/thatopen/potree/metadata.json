@@ -1,0 +1,74 @@
+{
+ "version": "2.0",
+ "name": "bim-personal-e04",
+ "description": "synthetic: a floor and a wall (docs/research/experiments/thatopen/e04)",
+ "points": 1600,
+ "projection": "",
+ "hierarchy": {
+  "firstChunkSize": 22,
+  "stepSize": 4,
+  "depth": 0
+ },
+ "offset": [
+  0,
+  0,
+  0
+ ],
+ "scale": [
+  0.001,
+  0.001,
+  0.001
+ ],
+ "spacing": 0.5,
+ "boundingBox": {
+  "min": [
+   0,
+   0,
+   0
+  ],
+  "max": [
+   10,
+   6,
+   3
+  ]
+ },
+ "encoding": "DEFAULT",
+ "attributes": [
+  {
+   "name": "position",
+   "description": "",
+   "size": 12,
+   "numElements": 3,
+   "elementSize": 4,
+   "type": "int32",
+   "min": [
+    0,
+    0,
+    0
+   ],
+   "max": [
+    10,
+    6,
+    3
+   ]
+  },
+  {
+   "name": "rgb",
+   "description": "",
+   "size": 6,
+   "numElements": 3,
+   "elementSize": 2,
+   "type": "uint16",
+   "min": [
+    0,
+    0,
+    0
+   ],
+   "max": [
+    65535,
+    65535,
+    65535
+   ]
+  }
+ ]
+}

@@ -87,6 +87,30 @@ ck(len >= 1 && /Length: (0\.0*[1-9]|[1-9])/.test(await status()), 'Length: measu
 await page.keyboard.press('Escape');
 ck(await page.locator('[data-rvwmode="select"].on').count() === 1, 'Escape goes back to Select');
 
+// reality capture (the owner's decision 11): a Potree 2.0 cloud and a Gaussian splat of our own (tests/fixtures/thatopen,
+// made by docs/research/experiments/thatopen/e04/make-fixtures.mjs), read from local files, no network
+const PC = path.join(root, 'tests/fixtures/thatopen/potree');
+await page.setInputFiles('[data-rvwcloud]', [path.join(PC, 'metadata.json')]);
+await page.waitForFunction(() => /needs/.test(document.querySelector('.a3d-rvw-status').textContent), null, { timeout: 10000 });
+ck(/hierarchy\.bin, octree\.bin/.test(await status()), 'one file of three: it says which are missing (' + (await status()) + ')');
+await page.setInputFiles('[data-rvwcloud]', ['metadata.json', 'hierarchy.bin', 'octree.bin'].map((f) => path.join(PC, f)));
+await page.waitForFunction(() => /Point cloud|could not/.test(document.querySelector('.a3d-rvw-status').textContent), null, { timeout: 60000 });
+// drawn, not only loaded: That Open draws clouds in its deferred pass (the first check here passed a cloud never drawn)
+await page.waitForFunction(() => { const R = window.__a3dReview(), L = R.c.get(R.L.OBF.PointCloudLoader); let v = 0; L.list.forEach((c) => { v += c.visiblePointCount; }); return v === 1600; }, null, { timeout: 15000 }).catch(() => null);
+const pc = await page.evaluate(() => { const R = window.__a3dReview(), L = R.c.get(R.L.OBF.PointCloudLoader);
+  let n = 0, v = 0; L.list.forEach((c) => { n++; v += c.visiblePointCount; });
+  return { n, visible: v, potree: !!window.BIMPOTREE, deferred: R.deferred, status: document.querySelector('.a3d-rvw-status').textContent }; });
+ck(pc.n === 1 && pc.visible === 1600 && pc.potree && pc.deferred && /Point cloud of 10\.00 x 6\.00 m, 3\.00 m high/.test(pc.status),
+  'a Potree 2.0 cloud from local files, its reader loaded on demand: all 1600 points drawn, its size right (' + JSON.stringify(pc) + ')');
+if (shots) await page.screenshot({ path: path.join(shots, 'review-cloud-' + mode + '.png') });
+await page.setInputFiles('[data-rvwsplat]', path.join(root, 'tests/fixtures/thatopen/splat.ply'));
+await page.waitForFunction(() => /^Splat|could not/.test(document.querySelector('.a3d-rvw-status').textContent), null, { timeout: 30000 });
+// framed on load, That Open draws every gaussian: its splatCount is what was drawn in the last frame
+await page.waitForFunction(() => { const R = window.__a3dReview(); return R.c.get(R.L.OBF.SplatLoader).splatCount === 64; }, null, { timeout: 15000 }).catch(() => null);
+const sp = await page.evaluate(() => { const R = window.__a3dReview(); return { drawn: R.c.get(R.L.OBF.SplatLoader).splatCount, status: document.querySelector('.a3d-rvw-status').textContent }; });
+ck(sp.drawn === 64 && /^Splat splat\.ply: 5\.20 x 5\.20 m/.test(sp.status), 'a Gaussian splat .ply, framed: all 64 gaussians drawn (' + JSON.stringify(sp) + ')');
+if (shots) await page.screenshot({ path: path.join(shots, 'review-splat-' + mode + '.png') });
+
 // phone width: the bar wraps, the tree goes under the view, nothing overflows
 await page.setViewportSize({ width: 390, height: 844 });
 await page.waitForTimeout(500);
